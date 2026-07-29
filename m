@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9044F43CEE9;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91F9F43DA49;
 	Wed, 29 Jul 2026 08:27:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785313631; cv=none; b=VjFv2EQRR/HmZdce1qpQRiuHwzqI6V4vJpX8Y/6YM3hNnl7pUYFeFTLY3Y1My2Ggyb35SS+IgdHAdtfVWau3v0aTbk2FBWjR0/a3Pqmzqrv3LZROi2AbkdLKMH1sJjEW4ea7kWsBn2HfqfcUw2I+pzfvcJRfL54CXjwYqofH8LE=
+	t=1785313631; cv=none; b=Rx/jmI2M/oLSd/U3IWVY1qu4ZZg0eh0n9haxo/jeb9jtHov8t+M3M+928ydG2DpCthmkPozlhGRvJv/5EN9zW6ZDrK/68RZ9rN8f5IDeKjo2sstUmJXq6rAL7qM7ZxIEakItRt+gM7nrgR7NH/MWB96kZVHuiN894qYCik/cgF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1785313631; c=relaxed/simple;
-	bh=8MhduG14jsXaL5k4h11ocWyrck/47G7XvTTKiN8VDTM=;
+	bh=gUe9z9eeno/NKDkm6/191gj6dt3Tu4dKrv8Wd5lfPp0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uu/DU1Ci0ygoQgxTO6SXGCz++UwwNJTkAYClnvJl9zld6zLxhYdCkndbU4Q8eVGmJY6zV6ZYN1vvh5zYjxv7GeV2Kr5ZM8are49lCH52nel1r4HZwvhlF3xDDYsYd9jsvmAT7teBwkmOqV3ue7OI2VdLHZL1qVhXktCbiEyXW/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jNRviSn4; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=aGdowU+apWL8gJQDymLNWrYmODyOb+0JC0sQySmb50CWmENGELxUBam9aL3D8zCfLGkEBAoZR1oouqZ++emiNMX15xFDVoIZ1RLfD0LXlqQeqtsSnpsfP5abKzZrP9rt9QejURfF+MawPQXRAwTgVu38GQUqEH1v5pdu/0BSGPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WbST348B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jNRviSn4"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EB92EC4AF09;
-	Wed, 29 Jul 2026 08:27:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WbST348B"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AC76EC32782;
+	Wed, 29 Jul 2026 08:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1785313629;
-	bh=8MhduG14jsXaL5k4h11ocWyrck/47G7XvTTKiN8VDTM=;
+	bh=gUe9z9eeno/NKDkm6/191gj6dt3Tu4dKrv8Wd5lfPp0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=jNRviSn4IIJwEvdiCaSWz6Im3D5PNmY3OtiG7fjPlITXoDiCS7Yb8dvMmvDMHHYV+
-	 D9EiE7zeC11jX8k5RhQnsS2IsPePYxPF2Ywp9Bi1ChuOQ3TeyWF8/bQXNgwgDKu8xr
-	 2TA59dd8qfTPNgC63PvOGUcD4/u2EqKJGUd4K13VwItgdXscxkeOtWBcCrJI6+lVDK
-	 6ijy9lOzBpYh0H/tEOQvua0eF9iU2F2g/EbSjz1xcnkQyUkoKe5lBBaeTblJCpH0iR
-	 oCCmwhYwrjF91LgANM8bnpCevhgUAiPx2uqQaGMQjZsGiqv5rlA5TuMXk9FhQb5ezc
-	 g4wxab0w5GDpA==
+	b=WbST348BS8fxEkvnmIdsYmyySKq9tYlw5BYVIa6DbLXOy4zjfcvCzS6ph2vsnd9Ab
+	 BH84HAGDkJV72awOUfMzVwXJxrrlu41cJBfiFPsmBUa7s+fwXMENg9WkDZpF1kw8Gb
+	 rzJp5Ekeh06nD0CkJFbY7HZUrfWGiAy6R/UjI9gLJGY8Y9ET85+pBcRHu2/wpR9DIx
+	 Dzbw/oelJr6q0gQiomy8qE/e/bP5Uobo7VAaDq+KqGHZgS/87i746VEmyR0indZv8r
+	 Be+QnwtPpVEi0ueN5sAoDazxBM0b1gFqEibh2H72xh3rxwqnN7o47ODUGB++on5ODH
+	 S88SzUGDRnAfA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D72F8C54FCE;
-	Wed, 29 Jul 2026 08:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C330C54FCD;
+	Wed, 29 Jul 2026 08:27:09 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 29 Jul 2026 09:25:32 +0100
-Subject: [PATCH v10 05/17] iio: core: support 64-bit register through
- debugfs
+Date: Wed, 29 Jul 2026 09:25:43 +0100
+Subject: [PATCH v10 16/17] iio: ABI: add docs for ad9910 sysfs and debugfs
+ entries
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260729-ad9910-iio-driver-v10-5-aa1f6167729e@analog.com>
+Message-Id: <20260729-ad9910-iio-driver-v10-16-aa1f6167729e@analog.com>
 References: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
 In-Reply-To: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -57,11 +57,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785313627; l=5286;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785313627; l=4219;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=rhtJXuF4mkm1WH5HBYUmnTDdQ7mLzj7pscCY6q7WDzI=;
- b=m7uOL/EgjWH4eRv7/igLH6/P25+9tz9tnNNmSzwoqBScRzKHtI1Cf1QoRULxD/BFoTW26bGmk
- 7+wtFLLj0fJAopbt14N2e+tNDSTvXE0eReSNeu8K0+5lIfE8zjvx24X
+ bh=RWkt+CZ/atJCmJFD35sIYFcjBZDuLrdT2GnoWo+bZpY=;
+ b=FfzXN59V7p+T79jqAZPD1XTAB1mwsZTor48mMGJFMN+i6Na3scwJwRkgAhqAVzclOF7VXMZFJ
+ Fn/bXH7pe2FB6fjYfs/bxdboEIR3Hp6g/Hw/ED/izG3ycpnlj7+PkP8
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,141 +71,97 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add debugfs_reg64_access function pointer field into iio_info and modify
-file operation callbacks to favor 64-bit variant when it is available.
+Add custom ABI documentation files for the DDS AD9910 with sysfs and
+debugfs entries. The sysfs ones control parameters from the Digital Ramp
+Generator and OSK engine. The debugfs attributes are read-only and
+evaluate into source channel labels for each DDS core parameter.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 33 ++++++++++++++++++++++++---------
- include/linux/iio/iio-opaque.h  |  2 +-
- include/linux/iio/iio.h         |  7 +++++++
- 3 files changed, 32 insertions(+), 10 deletions(-)
+ Documentation/ABI/testing/debugfs-iio-ad9910       | 23 ++++++++++++++++
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     | 31 ++++++++++++++++++++++
+ MAINTAINERS                                        |  2 ++
+ 3 files changed, 56 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index a45277bc5d99..98fc00343dc5 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -388,6 +388,7 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
- 	struct iio_dev *indio_dev = file->private_data;
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	unsigned int val = 0;
-+	u64 val64 = 0;
- 	int ret;
- 
- 	if (*ppos > 0)
-@@ -395,9 +396,17 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
- 					       iio_dev_opaque->read_buf,
- 					       iio_dev_opaque->read_buf_len);
- 
--	ret = indio_dev->info->debugfs_reg_access(indio_dev,
--						  iio_dev_opaque->cached_reg_addr,
--						  0, &val);
-+	if (indio_dev->info->debugfs_reg64_access) {
-+		ret = indio_dev->info->debugfs_reg64_access(indio_dev,
-+							    iio_dev_opaque->cached_reg_addr,
-+							    0, &val64);
-+	} else {
-+		ret = indio_dev->info->debugfs_reg_access(indio_dev,
-+							  iio_dev_opaque->cached_reg_addr,
-+							  0, &val);
-+		val64 = val;
-+	}
+diff --git a/Documentation/ABI/testing/debugfs-iio-ad9910 b/Documentation/ABI/testing/debugfs-iio-ad9910
+new file mode 100644
+index 000000000000..7083a20d5a40
+--- /dev/null
++++ b/Documentation/ABI/testing/debugfs-iio-ad9910
+@@ -0,0 +1,23 @@
++What:		/sys/kernel/debug/iio/iio:deviceX/frequency_source
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only. Reports the channel label that is read from the
++		<dir>_<type>[Y]_label attribute, which corresponds to the on-chip
++		signal generator that is currently driving the output frequency.
 +
- 	if (ret) {
- 		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
- 		return ret;
-@@ -405,7 +414,7 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
++What:		/sys/kernel/debug/iio/iio:deviceX/phase_source
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only. Reports the channel label that is read from the
++		<dir>_<type>[Y]_label attribute, which corresponds to the on-chip
++		signal generator that is currently driving the output phase.
++
++What:		/sys/kernel/debug/iio/iio:deviceX/amplitude_source
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only. Reports the channel label that is read from the
++		<dir>_<type>[Y]_label attribute, which corresponds to the on-chip
++		signal generator that is currently driving the output amplitude.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+new file mode 100644
+index 000000000000..4e25f538af4a
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+@@ -0,0 +1,31 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_dwell_en
++What:		/sys/bus/iio/devices/iio:deviceX/out_frequencyY_dwell_en
++What:		/sys/bus/iio/devices/iio:deviceX/out_phaseY_dwell_en
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that produces parametric sweeps, this attribute controls
++		the sweep behavior at the configured limit. It enables dwell mode at a
++		sweep limit when set to 1, i.e., after the sweep is complete the output
++		value stays at the limit. Otherwise (setting this value to 0), the sweep
++		may stop or restart from the initial position, or even continue by
++		reversing the sweep direction.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw_roc
++What:		/sys/bus/iio/devices/iio:deviceX/out_frequencyY_raw_roc
++What:		/sys/bus/iio/devices/iio:deviceX/out_phaseY_raw_roc
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that produces parametric sweeps, this attribute controls
++		the rate of change of the parameter in raw units per second (slope).
++		This value may be influenced by the channel sampling_frequency attribute
++		if available. Multiplying this value by the scale attribute of the
++		channel yields the rate of change in physical units per second.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw_roc_available
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Lists the available roc values for the channel. Values are
++		space-separated in ascending order.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 816ccfaa88ca..d671c1ff71d5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1683,6 +1683,8 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/ABI/testing/debugfs-iio-ad9910
++F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+ F:	drivers/iio/frequency/ad9910.c
  
- 	iio_dev_opaque->read_buf_len = snprintf(iio_dev_opaque->read_buf,
- 						sizeof(iio_dev_opaque->read_buf),
--						"0x%X\n", val);
-+						"0x%llX\n", val64);
- 
- 	return simple_read_from_buffer(userbuf, count, ppos,
- 				       iio_dev_opaque->read_buf,
-@@ -417,8 +426,9 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- {
- 	struct iio_dev *indio_dev = file->private_data;
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
--	unsigned int reg, val;
-+	unsigned int reg;
- 	char buf[80];
-+	u64 val64;
- 	int ret;
- 
- 	if (*ppos != 0 || count >= sizeof(buf))
-@@ -431,7 +441,7 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- 
- 	buf[ret] = '\0';
- 
--	ret = sscanf(buf, "%i %i", &reg, &val);
-+	ret = sscanf(buf, "%i %lli", &reg, &val64);
- 
- 	switch (ret) {
- 	case 1:
-@@ -439,8 +449,12 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- 		break;
- 	case 2:
- 		iio_dev_opaque->cached_reg_addr = reg;
--		ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
--							  val, NULL);
-+		if (indio_dev->info->debugfs_reg64_access)
-+			ret = indio_dev->info->debugfs_reg64_access(indio_dev, reg,
-+								    val64, NULL);
-+		else
-+			ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
-+								  val64, NULL);
- 		if (ret) {
- 			dev_err(indio_dev->dev.parent, "%s: write failed\n",
- 				__func__);
-@@ -471,7 +485,8 @@ static void iio_device_register_debugfs(struct iio_dev *indio_dev)
- {
- 	struct iio_dev_opaque *iio_dev_opaque;
- 
--	if (indio_dev->info->debugfs_reg_access == NULL)
-+	if (!indio_dev->info->debugfs_reg_access &&
-+	    !indio_dev->info->debugfs_reg64_access)
- 		return;
- 
- 	if (!iio_debugfs_dentry)
-diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
-index b87841a355f8..98330385e08d 100644
---- a/include/linux/iio/iio-opaque.h
-+++ b/include/linux/iio/iio-opaque.h
-@@ -73,7 +73,7 @@ struct iio_dev_opaque {
- #if defined(CONFIG_DEBUG_FS)
- 	struct dentry			*debugfs_dentry;
- 	unsigned int			cached_reg_addr;
--	char				read_buf[20];
-+	char				read_buf[24];
- 	unsigned int			read_buf_len;
- #endif
- };
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 711c00f67371..cd17703274a6 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -484,6 +484,10 @@ struct iio_trigger; /* forward declaration */
-  * @update_scan_mode:	function to configure device and scan buffer when
-  *			channels have changed
-  * @debugfs_reg_access:	function to read or write register value of device
-+ * @debugfs_reg64_access: function to read or write 64-bit register value of
-+ *			device. debugfs_reg_access() and debugfs_reg64_access()
-+ *			are mutually exclusive, but the 64-bit variant has
-+ *			precedence in case both are implemented.
-  * @fwnode_xlate:	fwnode based function pointer to obtain channel specifier index.
-  * @hwfifo_set_watermark: function pointer to set the current hardware
-  *			fifo watermark level; see hwfifo_* entries in
-@@ -572,6 +576,9 @@ struct iio_info {
- 	int (*debugfs_reg_access)(struct iio_dev *indio_dev,
- 				  unsigned int reg, unsigned int writeval,
- 				  unsigned int *readval);
-+	int (*debugfs_reg64_access)(struct iio_dev *indio_dev,
-+				    unsigned int reg, u64 writeval,
-+				    u64 *readval);
- 	int (*fwnode_xlate)(struct iio_dev *indio_dev,
- 			    const struct fwnode_reference_args *iiospec);
- 	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned int val);
 
 -- 
 2.43.0
