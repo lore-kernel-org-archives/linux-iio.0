@@ -1,160 +1,249 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC174248A1
-	for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 07:34:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8098D43CE6F;
+	Wed, 29 Jul 2026 08:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785310494; cv=none; b=DNtQYvhJGMMO2FELpQVl4ab4itOCQ0sbD653YCQ5tsYqxVm83aBNOTtr5KKX1TNyCvi4HkB/w5Sj0F6RTwDt6yJynahuzKcJKtrRiSGlOT4zJrM6GMLAM4uKPPQdLqY6fKiKw/bQw0OxoCM579/TM5nz+mkv3m0a2FOnDcMwsfI=
+	t=1785313629; cv=none; b=KmlZDhPGo/bN3TGu6/eFptyn4bbsA7eMveuWbYoB5Ov8BZyQfo917z67Plgf5MV5WTMa5gD2pwAoLJ382aZ7KxpvWdkP1TOakMLKeOlERR5nu7UJQFqmXPeL53QCUSk/qo1UcFY9q1D2BQ75TBgZrcJNlOFVig8kizZlDos6usc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785310494; c=relaxed/simple;
-	bh=2M47jzI3GMCSI8tvz+uvp+NPMu46ffAFj6LSFWJX3H8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ABA9MlJpjT0gn+Ig2V19K16APHE1T9KwE38ACysY8JmGa5xAyhyHHr/CBDJMLLcbFFf3s+5BaxK2DH0hBgn/4HZxaCqaKV01LRvUjmrDVFHasaargV+MREWIo2nRUQi0PgBSDdPoGWARle9nDF48/VrrAn7qdUJJDXjt3KB8b8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oro2Jv/S; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785313629; c=relaxed/simple;
+	bh=Y/f1ahrtaR0xglfvxEySyh1FC++gJgsKQBGwanvx/Ag=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=VZiAv2b9zenw+AUuN/StKnCcxwRUQoIbVxQOlDH208wATQDJYuj0H6aWdooLhZEl9y3/j4fVy51dFjrFZnnRuWHl1hQCkNv4ZrPb6dlD0ixvX5gIp2isslXbIeY4xsLv68sWk2lXHi4UzVo5FawouNrnwgk+LkRD991sbc/mb58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kiia6Zyw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oro2Jv/S"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-47f7854678bso254686f8f.3
-        for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 00:34:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785310482; x=1785915282; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=J96GiC3Lu8OCM/Ebd7ATNlWx75x2wiMwCn6WDtv6ToQ=;
-        b=oro2Jv/Slc5uXuReyUFXa2J06F6B9icXGdCaLPxXbKnXN7LiPK7LntH/RmELENMg6W
-         Hm/bmGDCNFEwiWW6h5j433hdoMr/2TfuRrnX4bMyyHQh8OdVnq3IFyGF2sNE1OPGaTIN
-         +ygOyBUDc3Rw5rieiTt0acn+pRMMTdWGwAZBQ2BD8KDQenfJfFkvPGgPjbHZ/uME7LRH
-         rs+w1KMF3Gq+QfY2C2+WRtxeg0yvaTJ/wOJGNT24EfsjFZmxjHOVd6kAiWQq+ZtTl//E
-         TNd22U2DdJiCAODPKRCGx/5uouRiI/Hhrd9dk/r5BlQ5NFDMOd2/sKoT+MeXtl+5A7cU
-         VSrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785310482; x=1785915282;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=J96GiC3Lu8OCM/Ebd7ATNlWx75x2wiMwCn6WDtv6ToQ=;
-        b=H+Lv2hhNLloAb8DHgRy5WkEbJT9CUkEnHuD+FMKMhO+3dCIs6VP/vmGlN+WtjFvkvk
-         RW/zq0Xb+XO1flfxA6f9xOIfOxWPf995oDp0DnWIhpzp5Kk6aclhRMtSyx8E8Z51KeP0
-         FPjXbuf6IdW4mt49+fGjWnajacQWTUxxo1mx3qBnGW7Ojqm9kZObfLnlBYJMndlrEqG5
-         eekreDkwfv3WjLZe+hPGGvX1S9Y7mOQsuNsMJhsc7nX20ZryLWsmATs6G1cUunAE+cya
-         4Z65n7Fn2C7mSwmxIMmWdRU060qk/PxJzYkDDI8EG5AQfCSvQkFeikTRUC6Bgjslgc1/
-         af/A==
-X-Forwarded-Encrypted: i=1; AHgh+RqJTkNNgk7qR42eqVI4Hz8H9DtknADGJB3kqRs+cBMo8WLcuxmbShemWSNWDS0Qlw6WUjbMByDclMY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyzJVp/QAzce0SE2fwImuLsV8NvthlR3IaGLiaoz0V6Bu5lBzNJ
-	2zRpsXrkl/ow69YMmDJ2ozofFVagbSYCh/pJs1F6yfvUiDi8vAVRMdNH
-X-Gm-Gg: AR+sD10rmbuJrFdQfhFWwKMkt78e58KqvNX3rx9lUlZLQkUJ9wULOaPGDXVqXMyzrcu
-	9ufiNJ5y/ftB8hhQa36srijcyuG9WIUuxGtEIAqxKxUqdMeNTpG+BaP3g7bhXFspvx6uP1Wyf/5
-	Lr03gxq+Hoyl9QQ+b/USDRqLpCj+xi5woDOkDChYFl33U4AHko5EdYZ5OwF7GtIozN42g5S1s1g
-	aA3jzJIVALaTvz0xvVE4j/iki9p1V8o9p108/Yr4BLEtNm39EEU4HDCj3lC2ruZzOC3j0gbU2zI
-	+6mo3rHdoOPq93dbU62lC/B8lgApEpVJTjehDKtlJCirfEwu8hjeyAEXq1Tz0taeoBamy1eAvEF
-	qHLfSRhmGeMivjPocnYraMioGy4qDPUMm4uLAYvSReMjspZ0OXi7XIoo8R/8uHGK8wGpkFfdZb8
-	kS3EuA5djSUNneuP5Sd9JsA6GIKPeWr+M9JFcm+f0Ol16C8KhirtDdeg1+Iz+42e/g3QWsfUjJV
-	MI9QG/NWGLZKtdDQMMQ5SweQuJm1mNxnzJnuQ8mLu7qFimy8iz0xVivb8kbP5kUlixcPfr7L2bt
-	qiEzb7Xda9iTvEE5GT1tlY0OgHhr7DgLl60JJysh8Wd5wmYYI6tmHltsdi+JJesl2iOg0b3SfSY
-	wCXDWeRm5MPrds5PpedlvExvvQpOb0fF5WmKDJSSCcOly82PQOcBaJX7vhg671annGzDbeHw=
-X-Received: by 2002:a5d:5d0a:0:b0:47f:9260:4bc9 with SMTP id ffacd0b85a97d-47fb1f10855mr6272310f8f.29.1785310481628;
-        Wed, 29 Jul 2026 00:34:41 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fb6aa3a32sm5852689f8f.2.2026.07.29.00.34.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2026 00:34:41 -0700 (PDT)
-Date: Wed, 29 Jul 2026 09:34:39 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Babanpreet Singh <bbnpreetsingh@gmail.com>
-Cc: William Breathitt Gray <wbg@kernel.org>, Kamel Bouhara
- <kamel.bouhara@bootlin.com>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] counter: microchip-tcb-capture: Fix DT channel
- validation
-Message-ID: <20260729093439.00007440@gmail.com>
-In-Reply-To: <20260714042910.7-1-bbnpreetsingh@gmail.com>
-References: <20260714042910.7-1-bbnpreetsingh@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kiia6Zyw"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A21C3C2BCFB;
+	Wed, 29 Jul 2026 08:27:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1785313628;
+	bh=Y/f1ahrtaR0xglfvxEySyh1FC++gJgsKQBGwanvx/Ag=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=Kiia6ZywkJQExtt5e7i1NyHxG37K+H2ZTUQYC3RLZCnkVbWKVMcILhw617xhWaexm
+	 fOsb3ADI0dVcth5ltygC3g3dmv98HK8vxf8cGiKb93CpuOuiB6zsk7UmZkuKGXx3Xf
+	 LwnmiAZzo5MgSpcd7DyszpDZyimF2rpdYr0dvrYm2V5TuISMdVUy98+zWfiO9B2WPP
+	 LXr6W5rUo8x1UIHONly2BbpvuB2O09SLs49i3vYB/vF6jDWbOz0z90iFCyW4IaApYW
+	 NwqVZF+xgvIxL0qWiu7kvu6X4i95bY/F7jVR83r9827YSD30XOAOB93YVYbPKOMM9z
+	 ol8M643GsuVng==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DF3C53200;
+	Wed, 29 Jul 2026 08:27:08 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Subject: [PATCH v10 00/17] AD9910 Direct Digital Synthesizer
+Date: Wed, 29 Jul 2026 09:25:27 +0100
+Message-Id: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAPi4aWoC/23Qy2rDMBAF0F8JWldFM6OHp6v+R+lC1iMRtHGwi
+ 2kJ+ffKoeAUaTkDOnN1r2JJc0mLeDlcxZzWspTpXAdQTwcRTv58TLLEuhCo0CqEQfrIDEqWMsk
+ 4lzXNkkeKCDqggSzqu8uccvm+o2/vdT6V5Wuaf+43Vti2fxqqjraCVJJGtNp7PXhQr/7sP6bjc
+ 5g+xcatuBPUDbRiJZLjzDSmkAEagnZCg+sRVAnkkckBesShIfROGNVNoSsR0Y45okqJYkOYB6K
+ fwmxdgGEOw0CgfUPYnbD9LmwlHAOanMekqa3T7YRT3RSuEl6nQCpbcqolhgcCdI8Yto9YJg4Ul
+ IvYEPxAIPYIroQ2HCFm44Ox/4jb7fYLfokYd8wCAAA=
+X-Change-ID: 20260218-ad9910-iio-driver-9b3d214c251f
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, Johan Hovold <johan@kernel.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785313626; l=8833;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=Y/f1ahrtaR0xglfvxEySyh1FC++gJgsKQBGwanvx/Ag=;
+ b=JuQqfqYOFZEnRQwg1CwEqorXKA7A9sjM4+x/+EJbgCz3z7WmcMu071lUC3vukv/nMCy2lL7x/
+ 4z6epKy4/ZGCkpAdNFV9vYUPttfhlkNWESa+cwYFcXQ8Kzp8pUmWoDB
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Tue, 14 Jul 2026 04:29:10 +0000
-Babanpreet Singh <bbnpreetsingh@gmail.com> wrote:
+This patch series adds support for the Analog Devices AD9910 DDS.
 
-> mchp_tc_probe() reads the devicetree "reg" cell - a u32, per the API
-> contract of of_property_read_u32_index() - into a signed int, so the
-> bounds check "channel > 2" fails to reject cell values at or above
-> 0x80000000: reinterpreted as a negative int, they compare below 2 and
-> pass validation.
->=20
-> A malformed devicetree can therefore drive a negative channel into the
-> ATMEL_TC_REG() offset arithmetic, making the driver access syscon
-> regmap offsets outside the TC block's register window, and into the
-> "t%d_clk" clock-name formatting, where it truncates clk_name (sized
-> for "t0_clk".."t2_clk").
->=20
-> Declare channel as u32, matching the API contract; the unsigned
-> comparison then rejects everything except channels 0..2. Adjust the
-> format specifier to %u accordingly, which also resolves the W=3D1
-> warning that exposed the gap:
->=20
->   microchip-tcb-capture.c:520:56: warning: '%d' directive output may
->     be truncated writing between 1 and 11 bytes into a region of size
->     6 [-Wformat-truncation=3D]
->   note: directive argument in the range [-2147483648, 2]
->=20
-> No behavior change for well-formed devicetrees: channels 0..2 take
-> identical paths before and after.
->=20
-> Fixes: 106b104137fd ("counter: Add microchip TCB capture counter")
-> Assisted-by: Claude:claude-fable-5 [gcc W=3D1]
-> Signed-off-by: Babanpreet Singh <bbnpreetsingh@gmail.com>
-> ---
-> Note: struct mchp_tc_data's channel[2] member stays int =E2=80=94 after t=
-his
-> fix it can only ever hold 0..2, so converting it (and the QDEC-mode
-> comparisons reading it) would be churn beyond the minimal fix. Happy
-> to do that conversion as a follow-up if preferred.
->=20
->  drivers/counter/microchip-tcb-capture.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/mi=
-crochip-tcb-capture.c
-> index 19d457ae4c3b..e53a8390756b 100644
-> --- a/drivers/counter/microchip-tcb-capture.c
-> +++ b/drivers/counter/microchip-tcb-capture.c
-> @@ -483,7 +483,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
->  	char clk_name[7];
->  	struct regmap *regmap;
->  	struct clk *clk[3];
-> -	int channel;
-> +	u32 channel;
->  	int ret, i;
-> =20
->  	counter =3D devm_counter_alloc(&pdev->dev, sizeof(*priv));
-> @@ -517,7 +517,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
-> =20
->  		priv->channel[i] =3D channel;
-> =20
-> -		snprintf(clk_name, sizeof(clk_name), "t%d_clk", channel);
-> +		snprintf(clk_name, sizeof(clk_name), "t%u_clk", channel);
-> =20
->  		clk[i] =3D of_clk_get_by_name(np->parent, clk_name);
->  		if (IS_ERR(clk[i])) {
->=20
-> base-commit: 3b029c035b34bbc693405ddf759f0e9b920c27f1
+This is a follow-up of the V3/V4/V5 discussion. For V1, we reached into
+this channel composition agreement where physical channels may have
+sub-channels. That adds the flexibility necessary for this design.
+During V2, some feedback indicated that the ABI is too device-specific,
+so DRG/RAM destination and operating modes are configured through
+alternate paths and profile channels are created. In V3/V4/V5, there was
+further discussion on the ABI and on mode priority debug.
 
-Makes sense.
+The AD9910 DDS core can be driven through several independent mechanisms:
+single tone profiles, a digital ramp generator, an internal RAM playback
+engine, a parallel data port, and output shift keying. Each of these
+represents a distinct signal path into the DDS accumulator, so the driver
+models them as separate IIO output channels (IIO_ALTCURRENT, IIO_PHASE
+and IIO_FREQUENCY). This per-channel separation allows userspace to
+configure each mode independently through its own set of sysfs attributes,
+and to enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying
+on the hardware's own mode selection architecture.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+The AD9910 register map is not suited for the regmap framework: register
+widths vary across the map (16, 32, and 64 bits). The driver instead
+implements direct SPI access helpers with a software register cache, using
+type-specific read/write/update functions (ad9910_reg{16,32,64}_{read,
+write,update}) that handle endianness conversion and cache coherency.
 
---=20
+Registers are cached for several reasons. The control/function registers
+(CFR1, CFR2) are frequently queried to determine the current operating
+mode (e.g., checking RAM_ENABLE before every profile register access),
+and caching avoids repeated SPI read transactions for what are
+essentially state checks. The cache also enables efficient
+read-modify-write updates on multi-byte registers: the update functions
+merge new field values with the cached register content without issuing
+a SPI read, and skip the write entirely when the value is unchanged.
+Finally, the profile registers serve dual purposes depending on whether
+RAM mode is active -- they hold single tone parameters (FTW, POW, ASF)
+in normal operation but are repurposed for RAM playback configuration
+(start/end address, step rate, operating mode) when RAM is enabled. A
+shadow register array (reg_profile[]) preserves the inactive mode's
+settings across transitions, so no state is lost when switching between
+single tone and RAM operation.
+
+RAM data is loaded through firmware upload infrastructure. Userspace
+writes the waveform data as a raw binary buffer (up to 4096 bytes for
+the full 1024x32-bit RAM), and the driver reverses the byte array and
+transfers it to the device in a single SPI transaction. Per-profile
+start/end addresses and playback parameters (operating mode, step rate,
+no-dwell control) are also configured through firmware update, using
+metadata in the header.
+
+Streaming data to the DDS core through the parallel data port at the
+PD_CLK rate is not covered by this series. That functionality would
+be added in a separate patch series, building on top of the IIO backend
+infrastructure to provide a proper buffered data path.
+
 Kind regards,
-Joshua Crofts
+
+Rodrigo Alencar
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+Changes in v10:
+- Drop cleanup() op for RAM fw update.
+- Drop priority mode check for parallel-port.
+- Fix typos and misc changes.
+- Link to v9: https://lore.kernel.org/r/20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com
+
+Changes in v9:
+- Separate in/out raw attribute descriptions in sysfs ABI
+- Use KUnit visibility.h to expose function-to-be-tested.
+- Implement cleanup() op for RAM fw update.
+- Link to v8: https://lore.kernel.org/r/20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com
+
+Changes in v8:
+- Adjust channel prefix kunit test.
+- Include raw attribute ABI for frequency channels.
+- SW powerdown split into two steps.
+- Address some of sashiko's feedback and other minor changes.
+- Link to v7: https://lore.kernel.org/r/20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com
+
+Changes in v7:
+- Use seq_buf instead of scnprintf() in __iio_chan_prefix_emit().
+- Add tests for __iio_chan_prefix_emit().
+- #clock-cells as required in the dt-binding.
+- Add drctl as pwm in the dt-binding.
+- Check refclk freq range when pll is disabled.
+- Address other minor feedback (e.g. sashiko's ones) 
+- Link to v6: https://lore.kernel.org/r/20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com
+
+Changes in v6:
+- Introduce IIO_FREQUENCY channel type.
+- Replace altvoltage channels for altcurrent.
+- DRG and Parallel Port destination handled with different channel types.
+- Parent attribute shows channel prefix rather than label.
+- Link to v5: https://lore.kernel.org/r/20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com
+
+Changes in v5:
+- Drop RFC tag to the patch series.
+- Address sashiko's comments.
+- Add parent-child relationship between iio channels.
+- List vs Table changes in documentation.
+- Add crc and version check to RAM mode firmware update.
+- Link to v4: https://lore.kernel.org/r/20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com
+
+Changes in v4:
+- Digital Ramp step exposed as a rate of change.
+- Dwell modes of Digital Ramp are controlled with dwell_en attribute. 
+- Disable of active profile behaves as a software powerdown.
+- Expose debugfs attributes to show mode priority.
+- Add 64-bit debugfs reg access support into iio core.
+- Link to v3: https://lore.kernel.org/r/20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com
+
+Changes in v3:
+- RAM custom configs (address range, destination, modes) loaded during firmware write.
+- DRG destination defined when attrs are written.
+- DRG modes broken down into enable attrs for ramp up/down channels.
+- Add separate profile channels, switching done through enable attr
+- Link to v2: https://lore.kernel.org/r/20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com
+
+Changes in v2:
+- Device-tree bindings changes.
+- RAM loading to use firmware update interface.
+- Rearrange of channels into a hierarchy.
+- Link to v1: https://lore.kernel.org/r/20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com
+
+---
+Rodrigo Alencar (17):
+      iio: ABI: add attributes for altcurrent channels
+      iio: ABI: raw, scale and offset for frequency/phase channels
+      iio: ABI: add parent entry for iio channels
+      iio: add IIO_FREQUENCY channel type
+      iio: core: support 64-bit register through debugfs
+      iio: core: create local __iio_chan_prefix_emit() for reuse
+      iio: test: add kunit tests for channel prefix naming generation
+      iio: core: add hierarchical channel relationships
+      dt-bindings: iio: frequency: add ad9910
+      iio: frequency: ad9910: initial driver implementation
+      iio: frequency: ad9910: add basic parallel port support
+      iio: frequency: ad9910: add digital ramp generator support
+      iio: frequency: ad9910: add RAM mode support
+      iio: frequency: ad9910: add output shift keying support
+      iio: frequency: ad9910: show channel priority in debugfs
+      iio: ABI: add docs for ad9910 sysfs and debugfs entries
+      docs: iio: add documentation for ad9910 driver
+
+ Documentation/ABI/testing/debugfs-iio-ad9910       |   23 +
+ Documentation/ABI/testing/sysfs-bus-iio            |   82 +
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     |   31 +
+ .../bindings/iio/frequency/adi,ad9910.yaml         |  209 ++
+ Documentation/iio/ad9910.rst                       |  792 +++++++
+ Documentation/iio/index.rst                        |    1 +
+ MAINTAINERS                                        |   18 +
+ drivers/iio/frequency/Kconfig                      |   21 +
+ drivers/iio/frequency/Makefile                     |    1 +
+ drivers/iio/frequency/ad9910.c                     | 2347 ++++++++++++++++++++
+ drivers/iio/iio_core.h                             |    7 +
+ drivers/iio/industrialio-core.c                    |  249 ++-
+ drivers/iio/test/Kconfig                           |   14 +
+ drivers/iio/test/Makefile                          |    1 +
+ drivers/iio/test/iio-test-channel-prefix.c         |  307 +++
+ include/linux/iio/iio-opaque.h                     |    2 +-
+ include/linux/iio/iio.h                            |   12 +
+ include/uapi/linux/iio/types.h                     |    1 +
+ tools/iio/iio_event_monitor.c                      |    2 +
+ 19 files changed, 4009 insertions(+), 111 deletions(-)
+---
+base-commit: e0484d62e8e1cff75b210938be835ea6221bda59
+change-id: 20260218-ad9910-iio-driver-9b3d214c251f
+
+Best regards,
+-- 
+Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+
