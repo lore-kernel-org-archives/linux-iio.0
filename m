@@ -1,62 +1,63 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010035.outbound.protection.outlook.com [52.101.61.35])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011041.outbound.protection.outlook.com [52.101.52.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CC1C436BD3;
-	Wed, 29 Jul 2026 12:55:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6A7E48665E;
+	Wed, 29 Jul 2026 12:55:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785329727; cv=fail; b=jtYqd5LR2W+cwCaCszqKA/rj0T62EDiYa7ipLTbpGSejYQR1lG2ehbDA8dMvpEirxYaWTUO6uahqakrgo2oHehjCcsbv7qPJRDNYAFNSmV8nkShR6NkyzZNFXNR/oITJO4bgKWNaFHrzuMaGuf55N/DEfhOGYgcj/mVEAvbjx2M=
+	t=1785329736; cv=fail; b=QcIxCu//0lTmEgzISVHbVLjP4mG7FDs2OXDiVpZ9qjVFhkL9uHEV8xEf4sQXhAwux77vTHOk152GF/AgzO6n8JxTMhOiFU3/eyh4rlYeDOM/XieVHrUcmlXM6mV9aPhvj6x8qDn05mLXBChcezbq8HfjEyshpg2QWS9pI1Ii+Rw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785329727; c=relaxed/simple;
-	bh=fdrw6JxcY8G1TD+BPlgbD8M0T0qRD3TP5Y++rrTZDT4=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RxiTIypsGQKBCVY/8/Az2z+BYbu6TR7hkLZghFfmSeX78HXdcdbKCmtnGmydV7rM3b9zJIEMmn9t8naiwMZONvBo0qr1Kp29o9K8youlSVr8vxzX0C1xDp+ic+AR02Q6WMGpVWkED0e67XS7WndZa+50dHTosHgwD0ky4NoNA0s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=f5QR9+j5; arc=fail smtp.client-ip=52.101.61.35
+	s=arc-20240116; t=1785329736; c=relaxed/simple;
+	bh=w5GupznUJq2wo6WtqadMZ8n7/vLFPz+7OdNJ91d2KYE=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=skwstX44Qa4AQeSE9ttSuPVY4sssHgTr2au0SYxUdkk3wD0lF0cAFr8GXDO87h0UvoeZucyZAnzosDzY13c/A6STa9O17KYQRdOj9EVZaeaQWl0JW+hrpc1zyJSsHTWVSvob9kM8V++mqznoNH8GR00aM2hsd+peS0Fhi6UP2ig=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=2diW129M; arc=fail smtp.client-ip=52.101.52.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="f5QR9+j5"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="2diW129M"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=E9FLAvcDzK2lJvnYsfMSMQ6rZz21Xk0sj04LIgs6uuMMkPpyY3Mr5eWd6bLvlRmv98+WJKdyio7SyAeNPVqB0rT8NLFFAHvKyJkOxmMxNJcj8RrpelRvWX+MvaM+N0Swpadplf/iarHa+aXY6EQSp2Vo2luRl1H1ZdyJRBLSkHPPr60I9XGmv/3q4kguZgs+OB86YygkeH3GzGlz/uBvFG5LyiKKR+zqHTjadCeHZ2Xhph6OvTbN/T3N1Idxo2mS6DIUM90LuaopgINpoI1ziALBiA6Lk+NIoKb8zgjIOQMWCwJSJj92UJUihDBvRMg7gkJknY5OQPEE2jS6HAy3zA==
+ b=nOZdksW9KHvmxEgOFk9pcwUqtBTjrjlKpcscsYh1svjIv9o2280Vz50VBInQvBJiP2vZ33ipEGcaVuOk4l4nbpDuln8+uh47NY4LNY155DjY46WwyTCbBRmTscr2UMCpvnSvibSt/wJzi/s/+MCdOLneIYqK/BSdNU2hdJ//+ztPBqhQjSHKkL60zbK1xl1C4qmokvch906tbK8YXLJsoNQCZJf7EKR9Fb6tbPu9LIJ1IsefD0esPk7UqaXk76xKHgsB64GMtvi4KDt08VECoYMSrWvwm26N8OYX4+JxHiMDoEdJwGcqKlD9S7n/7CS3+cY4Y2E2QjDQVfYnyjS9qQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N6dH0Gfnug0Itmi1EYYzp7vNlTRp4cIvjpJnn04Vt7s=;
- b=FmZbayk1pTxcFoxNlCIir2v4EgUohFXZsp7KcEgbzxkUT1593/OsP8qboPzYrUDh0ZZVaEqmnDx5Oi2oPOnvTzSDdjifCFIBweJbS7+gEq9I8R1BhuVUkuN7oqdNoUV+vJlcPA2Qw6wZC3JjREXZUOV4vRub/U6w1c+W9Js5s7A0M10GKTFbJ2atdqSWbVIdy+lf84d0zkDELSli8f5ZpbJnW5ST8HTf8h7EDVRW5FUoJ6kcL1J2hZWtlw4pMOJ3KKP2TrhVQCE/21rGC8eBUzesCNsVg6YFN9obDbT25whqXzyfH1LMShfwUACLVbaYbtcTvRpSpzh8tNoJAXg8Wg==
+ bh=+PY1MrCwdqriMyPC0+KQlB8q4wSKcvSpFbpyU+0OoSY=;
+ b=L6/U2IG+sBsTYpy1Yyg2jDBIn9uiXrTeApxnopRXrBql3k2ODc9ZNl1bWQWSujQ97y66YmNxoMBFbFUVTB4POrv372YEjgmCS1BpFdvnxaJ6EAiPZmeVhdVU/BhbnGuvCrfAZqvTWv9TluIXyr031h/e8an3HCSONIXv4i0MTdUKCubJJmURC/BSkuKCcHJLUy15KqjcB22ev+3a0UTPqMjyJMLsSJStWoigFZJlyBOUeOqNzk/GsTsprJi4DcFJ28bqcF4jp8ZIaTAhJe6xklfB2xqbFeZLmFk59LHOy+x4wN646SgEWiHI+aUfwlc3g2I2UXjg5BIh+0qljukTEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N6dH0Gfnug0Itmi1EYYzp7vNlTRp4cIvjpJnn04Vt7s=;
- b=f5QR9+j5CY5suBtiqleXV9bmziHpCJngmXFTbVJWGqb210YMKUWI45GBuLJMcp4StO08gLpaMwGLun1oy33NbSKANQDcK8tXPq4m7EIfzzMBhpzbqtbh1svMB9natdKWkWbv6ERQNrfYZDCPNY8etnORTeCVK0eyLJEahJK5+fQ=
-Received: from BN0PR04CA0135.namprd04.prod.outlook.com (2603:10b6:408:ed::20)
- by SA0PR12MB4414.namprd12.prod.outlook.com (2603:10b6:806:9a::11) with
+ bh=+PY1MrCwdqriMyPC0+KQlB8q4wSKcvSpFbpyU+0OoSY=;
+ b=2diW129Mm3Kf8T6xrh4POzHYXalut3UHElM2D/cH06T6ciFP1PFFsLMdBLiqePupA0+AZfdS5+cl5BYz6zo0W1EhCrhkZJT67iDBLwVAWQqpHc2aXkYkTT31by6BmbmLA8sLXyb5/RimzBZBMxJT/8QvOwmLsm9N02VBbCJXYm4=
+Received: from CH2PR19CA0022.namprd19.prod.outlook.com (2603:10b6:610:4d::32)
+ by BY5PR12MB4067.namprd12.prod.outlook.com (2603:10b6:a03:212::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.13; Wed, 29 Jul
- 2026 12:55:08 +0000
-Received: from BN2PEPF00004FBC.namprd04.prod.outlook.com
- (2603:10b6:408:ed:cafe::7d) by BN0PR04CA0135.outlook.office365.com
- (2603:10b6:408:ed::20) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.270.13 via Frontend Transport; Wed,
- 29 Jul 2026 12:55:08 +0000
+ 2026 12:55:24 +0000
+Received: from CH2PEPF00000143.namprd02.prod.outlook.com
+ (2603:10b6:610:4d:cafe::84) by CH2PR19CA0022.outlook.office365.com
+ (2603:10b6:610:4d::32) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.245.13 via Frontend Transport; Wed,
+ 29 Jul 2026 12:55:23 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- BN2PEPF00004FBC.mail.protection.outlook.com (10.167.243.182) with Microsoft
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CH2PEPF00000143.mail.protection.outlook.com (10.167.244.100) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.270.5 via Frontend Transport; Wed, 29 Jul 2026 12:55:08 +0000
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.270.5 via Frontend Transport; Wed, 29 Jul 2026 12:55:23 +0000
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Wed, 29 Jul
- 2026 07:55:07 -0500
+ 2026 07:55:22 -0500
 Received: from xhdappanad40.xilinx.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server id 15.2.2562.41 via Frontend
- Transport; Wed, 29 Jul 2026 07:55:04 -0500
+ Transport; Wed, 29 Jul 2026 07:55:18 -0500
 From: Dileep Kumar Nagavarapu <DileepKumar.Nagavarapu@amd.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	<dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -64,11 +65,14 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	Conall O'Griofa <conall.ogriofa@amd.com>
 CC: <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>, <git@amd.com>, Dileep Kumar Nagavarapu
-	<DileepKumar.Nagavarapu@amd.com>
-Subject: [PATCH v3 0/6] iio: adc: xilinx-xadc: Add I2C interface support for System Management Wizard
-Date: Wed, 29 Jul 2026 18:24:49 +0530
-Message-ID: <20260729125455.95893-1-DileepKumar.Nagavarapu@amd.com>
+	<DileepKumar.Nagavarapu@amd.com>, Sai Krishna Potthuri
+	<sai.krishna.potthuri@amd.com>
+Subject: [PATCH v3 4/6] iio: adc: xilinx-xadc: Add .setup_channels() to struct xadc_ops
+Date: Wed, 29 Jul 2026 18:24:53 +0530
+Message-ID: <20260729125455.95893-5-DileepKumar.Nagavarapu@amd.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260729125455.95893-1-DileepKumar.Nagavarapu@amd.com>
+References: <20260729125455.95893-1-DileepKumar.Nagavarapu@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,120 +83,124 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF00004FBC:EE_|SA0PR12MB4414:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8139107b-fd91-4dd7-e16a-08deed709e8d
+X-MS-TrafficTypeDiagnostic: CH2PEPF00000143:EE_|BY5PR12MB4067:EE_
+X-MS-Office365-Filtering-Correlation-Id: d24921fd-9549-432e-f326-08deed70a776
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|23010399003|376014|36860700016|20046099003|18002099003|5023799004|11063799006|56012099006|3023799007|6133799003|10067099003;
+	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700016|23010399003|56012099006|11063799006|10067099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	M2F4kVofCIsYKTaxmVx01IMFgoBjtlMhM3Lmo9hOZ2S95bvPTf3R92XXuxRyXVpw8jjujeSj9PxsB6/OZuiME0n7cP3LYnoicjjtn19QroAG1DwjWEVk/X0QS3i7U2pwtRAYJH9mjVbCaF5Jk5QhvB4CKUUJyaMAncXaK22mlUJWZtg0Gao83auOLEwEyg+KmpkKIkIa+PexkBulrv6zvL22NQZKkW9iBE5qxHNGbz2QzP3JG1g3wBaUsoBLnWd0XK75j9EvmgY8hYy1eCLgzvPNPh7l10nJ7TNM2QMhTpsh9bZtKGffiezTR9yHHXPluMgn4cSJH2AgE+IlV4ITY/1WrL1/ibhO9PPb9sut+iR0WH66cK4HiqxS4cvwAJ3qJYfodPLg+qzSdVJhX1tPk1+M4rvRabDefOHlU1zpUDtQuXYoUXjvNzkklIAnHFIok3NAAdqNZ2NbI1tXgYmYLAJkbamDI45aYgkjgny1ecrTdjXXN9/c6hVpCYdcEYxi4yNQ5joMPfDW9vPT1IhIuLpWqvYg8MFO6yXKhAcMglAHsfsoM4fDPYDiv2Ug9O1WspfpSbCt0e/CMvvpj/+sBDbzFiJPlCEjt7bovZQjFJ7mqtLnlq0QS+mYOuvgLs3R8Ubl7l3s8hoxSX0qaXbkhKOi9yPGr9yBxuwBOqU4UICcp4XetqQHov8dUCMY4qNtNdPncpOI+MRgHF3XnJxUpA==
+	sngyDBXMJJkGPQWM8ECBkK2a/bJJjEr8Qgxcs1w1+HhDU9iRv2GVmJh7HlEjlP5XjPuV7mwsTRkaDcUye5fpKWJ2W35ETWq3O0Fgviz6QXYIknR9g5RiG+a/y9n3ShnMAhDP3W4EfUdCsJjvGsRRwtGNcnkEcIvy72xRcw5bJucPyL0Y6oYMPt7vcBSzH3W7StGVLAqOw6OV95axfGow4dE6wyW67CtD9iINsGF/r5nfTlCFyuv05jLoOZOCOuYvMtMGPaOZ/6pmUvvEdRUy+aXOZV/qHzhOrc3v1ZF3sCm77pQtUJYUiiQrKULkcu/mzF3n3x9FlDdwbGQ2epcAcUKXPWWHShUo78yE4vI68239bZ23xhc7NRk6BtssJ1z+H9KhHjyz9+0v2MvCkiANAuJoOUPzq15/2hc+/929qRw5TQTvAPb2wTJRkWiwG8HwIT4ZQrWYa5Lf1lAFvaSfs/KzKPTWGqAq6A+okvpe/VcLOM6jHv744ONMbk3WY+1s0o5SLxwIrdmFPUeoBFUOPSngifhgb8G/6OfOel2S6VwL063uMJCT7iB5bsmgZXIaEouMoxTfvBRrM4tA6XowVs4GcFCAedzwmP8ggB8veIVgkWkcVdag5zLe7XhW6v3Qx49iM5oE3iAe3IB65+SQeBewVjK4xahuU5m1o7T4wJTBngXknA+nW477aSdmWBDG5GOsq78Xsl61ZJTdadFuVQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(23010399003)(376014)(36860700016)(20046099003)(18002099003)(5023799004)(11063799006)(56012099006)(3023799007)(6133799003)(10067099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700016)(23010399003)(56012099006)(11063799006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	Vog4dMwLtkf+2rsVAifjM/0s8NsjJfUpsTpl+cwa2ORtG7ACJ8waPWL2lil/MenBGbToXfklsaS8V9I52luIaL5qA3lROiCz+fNDBSXKeYCMEfzHk/BJ0GM2KOVmQk5byEr69em/L4PY8fdlXiHqZbz/tftpa/kPAWc1ZFNv2bjWRrTeQGcvwyIRAYC3da5W0d6R2YGpWLzOqEwproWo5vi8Q88DFFL5ZhhwcQg62lm/gAmaRGyQZgpGWXKtn3m3F0jYvYflNO+fw6vCyM0kb6YsnVDE1zXArgrSmSoyuyvZoB3lkbdpY3shg5vepotkS5r+q+2BeEl1SEzwWIo69BMttg04hlLzvyMXNUjfp8UWq2Dci0jvRnd+uLhSKdSgtG9Pl+pD1xETZO/iXaHCxUI0JnbYNFHTKkcTiMEr9Pfcrev/jsQD714hnWvdQ+Nx
+	4SwlaPwJBW3GKgG0+hYICZq1KaPL/x8g/AaE61gmeDcxkRdIP20WP74KvyOHXDW348VZ7enFmuJViLcuRvbV8D6XczFj7qMyaswlYemOgzMxK/v5szW0dxqXHD9oPpMMEDbpMAcgNpDEFm+Q+nb6syC0vDQlLx1rKzk3o1Hw9fhYHxarWCSB9RXCu2KGy5cOouLmcFPLvcC16niqDNeokKY0u4DVBXd8NNaQztaU8bmvzWUsmbTkZxIf8XX4B6/LYdqRcfjPE9KvrFS1yxAPOBaRnsODehWiGenDq0I9ircVwUNg/doXg6eEEsso9GFWxy+qiC7ep63iBNFoU1NPdkj9d9CdgiuEXWkmVGvUIrCAshxlmDSLX3k0zNjLPPcpTNsoexQFKvEbfxVhoGhqHr5H0UPlPLSi/HW2ENRCt3mDAffMkpku0MqpCEY8gHNf
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2026 12:55:08.4975
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2026 12:55:23.4344
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8139107b-fd91-4dd7-e16a-08deed709e8d
+X-MS-Exchange-CrossTenant-Network-Message-Id: d24921fd-9549-432e-f326-08deed70a776
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF00004FBC.namprd04.prod.outlook.com
+	CH2PEPF00000143.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4414
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4067
 
-The existing driver only supported AXI memory-mapped access to the System
-Management Wizard IP. This series extends the driver to support I2C-based
-access, which is particularly useful for System Controller usecases.
+Add .setup_channels() function pointer to struct xadc_ops to enable
+different interfaces to have custom channel setup logic.
 
-Key Changes:
-- Split the xilinx-xadc-core.c file into two files(xilinx-xadc-core.c and
-  xilinx-xadc-platform.c)
-- Add required helper functions and callbacks
-- Add channel configuration via callback mechanism
-- New I2C driver for UltraScale+ System Management Wizard for basic
-  voltage and temperature monitoring
-- Converted text binding to YAML schema format
+Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Signed-off-by: Dileep Kumar Nagavarapu <DileepKumar.Nagavarapu@amd.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c     | 6 ++++--
+ drivers/iio/adc/xilinx-xadc-platform.c | 3 +++
+ drivers/iio/adc/xilinx-xadc.h          | 2 ++
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
-Note: We are working on x86 platform support where fixed channel
-configuration is used(no DT support). The .setup_channels() function
-pointer introduced in patch 2/4 enables different channel configuration
-approaches for various platforms.
-
-This series was originally posted by Sai Krishna Potthuri.
-
-Link:https://lore.kernel.org/all/20260323074505.3853353-1-sai.krishna.potthuri@amd.com/
-
-I will be maintaining the series going forward and posting updated
-revisions.
-
-Changes in v3:
--> 1/6 - Modernized the driver code with latest kernel coding styles
-         and guidelines.
-       - Restored one-variable-per-line declarations where no
-         functional change  was intended.
-       - Added unit suffixes to timing and clock-rate constants.
-       - Replaced GENMASK() and FIELD_PREP() in appropriate places.
-       - Added guard(spinlock_irq) helper to manage the spinlock
-         automatically on scope exit.
-       - Added MAINTAINERS entry for XILINX XADC driver.
--> 2/6 - Refactored the xadc_setup_buffer_and_triggers function
-         with only two arguments.
-       - Added xadc_device_setup() and xadc_device_configure() to handle
-         device initialization and configuration separately.
--> 3/6 - Added IIO_XADC namespace to all exported symbols and
-         imported the namespace in platform specific modulue.
-       - Spliting the driver with modrern driver changes.
--> 4/6 - Added .setup_channels() to handle custom channel setup
-         and configuration.
--> 5/6 - Replaced mutex initialization with devm_mutex_init()
-       - Removed unused i2c_set_clientdata() usage.
-       - Added comments describing the DRP packet layout used
-         for I2C  transactions.
-       - Added comment for hardware initialization check from xadc i2c
-         write and read functions.
-       - Wrapped Kconfig help text to conform to kernel style guidelines.
-       - Switched device setup error handling to dev_err_probe().
--> 6/6 - Removed write edge default configuration in XADCIF_CFG register.
--> Dropped the binding to YAML conversion patch as this is already sent by
-   Pramod Maurya and is in discussion.
-
-Changes in v2:
--> 1/4 - Split the xilinx-xadc-core.c file into two files
-         xilinx-xadc-core.c and xilinx-xadc-platform.c(comments from Andy).
--> 2/4 - Referred as .setup_channels instead of setup_channels.
--> 3/4 - Created separate functions for i2c read and write.
-       - Created separate file for i2c interface handling.
--> 4/4(comments from Krzysztof)
-       - Removed $defs and use it directly under xlnx,channels.
-       - Documented the error information in the commit message due to
-         vendor prefix properties.
-       - Kept only one example as there is not much differences.
-
-
-Dileep Kumar Nagavarapu (6):
-  iio: adc: xilinx-xadc: Modernize driver code
-  iio: adc: xilinx-xadc: Add helper functions for the device setup
-  iio: adc: xilinx-xadc: Split driver into core and platform files
-  iio: adc: xilinx-xadc: Add .setup_channels() to struct xadc_ops
-  iio: adc: xilinx-xadc: Add I2C interface support
-  iio: adc: xilinx-xadc: Correct Write edge in CFG
-
- MAINTAINERS                                   |    7 +
- drivers/iio/adc/Kconfig                       |   23 +-
- drivers/iio/adc/Makefile                      |    6 +-
- drivers/iio/adc/xilinx-xadc-core.c            |  886 ++------------
- drivers/iio/adc/xilinx-xadc-events.c          |   54 +-
- drivers/iio/adc/xilinx-xadc-i2c.c             |  228 ++++
- ...inx-xadc-core.c => xilinx-xadc-platform.c} | 1043 ++---------------
- drivers/iio/adc/xilinx-xadc.h                 |  108 +-
- 8 files changed, 609 insertions(+), 1746 deletions(-)
- create mode 100644 drivers/iio/adc/xilinx-xadc-i2c.c
- copy drivers/iio/adc/{xilinx-xadc-core.c => xilinx-xadc-platform.c} (34%)
-
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index e3b1d5bebe98..d39ff54439ba 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -656,7 +656,7 @@ static const struct iio_info xadc_info = {
+ 	.update_scan_mode = &xadc_update_scan_mode,
+ };
+ 
+-static int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq)
++int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq)
+ {
+ 	struct device *dev = indio_dev->dev.parent;
+ 	struct xadc *xadc = iio_priv(indio_dev);
+@@ -762,6 +762,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_NS_GPL(xadc_parse_dt, "IIO_XADC");
+ 
+ static const char *const xadc_type_names[] = {
+ 	[XADC_TYPE_S7] = "xadc",
+@@ -789,9 +790,10 @@ EXPORT_SYMBOL_NS_GPL(xadc_device_setup, "IIO_XADC");
+ int xadc_device_configure(struct device *dev, struct iio_dev *indio_dev, int irq,
+ 			  unsigned int *conf0, unsigned int *bipolar_mask)
+ {
++	struct xadc *xadc = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	ret = xadc_parse_dt(indio_dev, conf0, irq);
++	ret = xadc->ops->setup_channels(indio_dev, conf0, irq);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/adc/xilinx-xadc-platform.c b/drivers/iio/adc/xilinx-xadc-platform.c
+index 38748a38da15..bd033315c72f 100644
+--- a/drivers/iio/adc/xilinx-xadc-platform.c
++++ b/drivers/iio/adc/xilinx-xadc-platform.c
+@@ -405,6 +405,7 @@ static const struct xadc_ops xadc_zynq_ops = {
+ 	.get_dclk_rate = xadc_zynq_get_dclk_rate,
+ 	.interrupt_handler = xadc_zynq_interrupt_handler,
+ 	.update_alarm = xadc_zynq_update_alarm,
++	.setup_channels = xadc_parse_dt,
+ 	.type = XADC_TYPE_S7,
+ 	/* Temp in C = (val * 503.975) / 2**bits - 273.15 */
+ 	.temp_scale = 503975,
+@@ -509,6 +510,7 @@ static const struct xadc_ops xadc_7s_axi_ops = {
+ 	.get_dclk_rate = xadc_axi_get_dclk,
+ 	.update_alarm = xadc_axi_update_alarm,
+ 	.interrupt_handler = xadc_axi_interrupt_handler,
++	.setup_channels = xadc_parse_dt,
+ 	.flags = XADC_FLAGS_BUFFERED | XADC_FLAGS_IRQ_OPTIONAL,
+ 	.type = XADC_TYPE_S7,
+ 	/* Temp in C = (val * 503.975) / 2**bits - 273.15 */
+@@ -523,6 +525,7 @@ static const struct xadc_ops xadc_us_axi_ops = {
+ 	.get_dclk_rate = xadc_axi_get_dclk,
+ 	.update_alarm = xadc_axi_update_alarm,
+ 	.interrupt_handler = xadc_axi_interrupt_handler,
++	.setup_channels = xadc_parse_dt,
+ 	.flags = XADC_FLAGS_BUFFERED | XADC_FLAGS_IRQ_OPTIONAL,
+ 	.type = XADC_TYPE_US,
+ 	/**
+diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
+index 3a9cc87c43b5..67efa093157e 100644
+--- a/drivers/iio/adc/xilinx-xadc.h
++++ b/drivers/iio/adc/xilinx-xadc.h
+@@ -78,6 +78,7 @@ struct xadc_ops {
+ 	void (*update_alarm)(struct xadc *xadc, unsigned int alarm);
+ 	unsigned long (*get_dclk_rate)(struct xadc *xadc);
+ 	irqreturn_t (*interrupt_handler)(int irq, void *devid);
++	int (*setup_channels)(struct iio_dev *indio_dev, unsigned int *conf, int irq);
+ 
+ 	unsigned int flags;
+ 	enum xadc_type type;
+@@ -223,6 +224,7 @@ static inline int xadc_write_adc_reg(struct xadc *xadc, unsigned int reg, u16 va
+ void xadc_write_reg(struct xadc *xadc, unsigned int reg, uint32_t val);
+ void xadc_read_reg(struct xadc *xadc, unsigned int reg, uint32_t *val);
+ struct iio_dev *xadc_device_setup(struct device *dev, int size, const struct xadc_ops **ops);
++int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq);
+ int xadc_device_configure(struct device *dev, struct iio_dev *indio_dev,
+ 			  int irq, unsigned int *conf0, unsigned int *bipolar_mask);
+ int xadc_read_samplerate(struct xadc *xadc);
 -- 
 2.34.1
 
