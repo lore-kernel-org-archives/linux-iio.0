@@ -1,195 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EABD3D9DD7;
-	Wed, 29 Jul 2026 20:47:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387DB3C3C00
+	for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 21:40:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785358080; cv=none; b=VJRm+Sq14d4WYfKT+QxKOv7aWAv3elX8/V9iufhnruRp/2aExDuLNueyzFzFtUWjiGll55odvAckDrmVq+/o04m5cKRHIl51sGUqT/hK3k6T+Ztz0TZgJfQH7sTtYz6A2k9Gl39Lvp8l5aaQIvjJS4OqIGi4KY4iniUltpv7TYc=
+	t=1785361205; cv=none; b=Py7/k/r6aki4ROofHXiiLlABTAz3a3A6TDwzCVHjR+Nq2G1FH3XtP7XNkWGdtanXta+eube7t5vWbpK6MEx2SX8K/sduG9iGyLzYPHFL9zVmZxxh+J8ssQWz98hCFYmWuzoeXTUVauOJbWZ8WQc7XXv3v1KSwcWhVgQ7G11RXrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785358080; c=relaxed/simple;
-	bh=kmrVgsXdfqOCx8i6BHt0bOfCHxunCU/x25fxz7sPQPs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cAuKrh2p3z80E5rsHupubKYsrZu3CCCWTkmOYrDDmlCj9terZyFaUyyPry0RFUvjSTgv8PC3Z/bBQpsBKe+iiH6QVkUrLdAjBkwstPKbGSzc7+madCGdOpk2b+rom7YQXtWA6KN2+GyjEDW96EETCZ/QMlenF8suWfcE+AGwzz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TUxUsJhp; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785361205; c=relaxed/simple;
+	bh=9DCe5l+RMdzIky2GyIi+0Ksfo59MslthuX/VTCcR/ug=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BAT2amjN/IOFxnDQPqsQ3g7ve16kB7BrwkiT2Nm72PbQujmjT7vJJ6/v9FrQoGocyh0vM5ZS85aNGn0mIwg3B+116z4h4UQhRPXGHJbrCKYhV6mmpjEENo0nN0tSplZVUzP0BaYtnEder7NofwWATzPreDyuQ7fGQYHjheFi9nY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=T2OrQg2c; arc=none smtp.client-ip=209.85.160.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TUxUsJhp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F08E1F000E9;
-	Wed, 29 Jul 2026 20:47:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785358072;
-	bh=YkV6rISoCu+fAaQT3dWDfFizbFzVweE3SNioXxA5sCQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=TUxUsJhp6JGmt6uXPS8WT/IN2BYerMuGdmcpsOsVJb6cp4hvYnaT4PcaOHYlZfmnW
-	 atCZRsNMJQiDZoBY6425iXjdpt1cVnUzgpD3YCC/OrYWsJyhQ3b/PigJgIvcwnP9wr
-	 RhQxEGeslvXbLhAK4g24oW78yfRSZ9lmeYQZGR6zHKCDZZ1AvU88SntwXYuYFOKO+U
-	 4/xypX65fSLIfK+aDSYavLeMKbMxiA6XhW4Wq2NnZw5F4GqAWjLkfLFWt4EyjkwKji
-	 pU6uMo+P7QZsUmTmbgVfx5hXYAjNRCNeLVI+RGdOKXizkwKlI6RJJijAgBM/kiFB0A
-	 2wVXu0za1Lk/Q==
-Date: Wed, 29 Jul 2026 21:47:45 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Janani Sunil <janani.sunil@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Mark Brown <broonie@kernel.org>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
-	linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
-Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
- spi-device-addr
-Message-ID: <20260729-hundredth-suffice-f28afa67bc06@spud>
-References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
- <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
- <cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
- <20260725230739.63ff7000@jic23-huawei>
- <20260728-patronize-thwarting-56fab2e11077@spud>
- <20260728221719.7f668a73@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="T2OrQg2c"
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-43cce34c881so979764fac.2
+        for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 14:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1785361202; x=1785966002; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1c9/5KPmcV+l1Jp7+hRXQDRlqBfhfCFzAoiMmQn8lR8=;
+        b=T2OrQg2cE7xcQxnI0O4BydHj8yXfMQevniBTqiz965PkVMdnFKMb+3sBx5ZgFyllBH
+         j/sMG0RimQrlBz9mrda+IWe7NTgyXKlWXT1EMLCbqIu+EvwdjDR4VLJRTzrCwoLwxpQN
+         MaHbzeD1VdIjWnOgffDAgc64hYYBoQPqMOOa3mVtdicT8zHvNGRyzzTROP1XYlk0pFmc
+         vmiKaTLmzgAK2tShCMxctpNUtQYqtWdq/vOCeB7lnEvdo4CPhhfUmK06sp0Y3J2Wyrke
+         In51x6GHtD/J4N4FmVCgLHZfyix8CCUD3T47XMXivhCATBaFuWWwABjkfi4mJwLH9kB+
+         bx5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785361202; x=1785966002;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=1c9/5KPmcV+l1Jp7+hRXQDRlqBfhfCFzAoiMmQn8lR8=;
+        b=WoQytnMjAI09m//zlj7OOkT22MMHwT6NFdz+k3cGJBznuqoXoqvNWWDzcReEahDW5q
+         7yhLnRyPp5auW8xS9z77KqDNkg1+cYpHB0IjWMTArfAL2T9IfamvdQ5hgPsDeFAYAjoT
+         PhjyeQb6+cNs1XEOu21gL0GJQzQmNIdrjIa1xT2mACulbactgqjVxCEzbhasGHjkaql4
+         6fscnGTue+UGDSC7JEVxdIuz7I/bhSqOh5V+p1Ast1fuVLrRD4KZ6/HJ1v9crMKv1pJh
+         XgR2zpxHYLU/wNHX2GHPgnZTb1PNfxNtj6q7ozXQ+KgLehEEdoeGy8BvEQlYzZsDHYVj
+         SVoQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoPshRvm55LqOZ3qd256c1XtyJbfs7GHuR3eMoxL8eCYOV7Lvhg38kfww4/iY5TsKKJftp1WBYyalc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVgS4lpn+bSqYgA9FKfaJ5fj02CvWDpjhI0j/e9Nj6cW2+SE6N
+	0NQdo1zDV28c5zRft8uyaMcrMNZHj/8JyCDP3ywRcXq/KnYT8ojAan/T6AsQRq7/iyk=
+X-Gm-Gg: AR+sD13zS7sOVbjWJ3zqO6fYvp8d311ujPUiARgV2bDVA/oAZNo1qzuqRP5YwOdIdJk
+	5xrOygsfFwpBjXG0nNBO7MXunNB4BdjmhfSWgPSA3KQX4Pep4Z/m5do3xGO6xHLifaGRgUVUCEy
+	diiAce4qWDEBk2re5DcIFU7/xGv2uyWW5kVP6B7vxeo5opwZ8HnJF5koPt570i2Bj0fFSzmY0k+
+	59wrfmaxAUjM0+sQ47hqrdRdmyePntjREaHedRL4WN7HDsYSH70+EGtAiyDL4+6AOtM1dYR3q8T
+	vRKpX7qKmk9rmt3lrqI//t6KLrpRSsNx84VqV0lhbWcDDFhAoioUV/UPM6dIHfb15qXa1Eimgo+
+	Al7l+lrwBU/BeUdKFe6a5rgH6hCiDgg1Ke1mu5TQO0CFRj3pN6Xaxo1Ki2I0tcHK5RNhGwcgjWE
+	BThA9/tOgVIsOHrT+2jMRwlAHgBnWCqApJaEv0X9oRa0RDby0F4gIJ+QDz/EpfK5HvAF/kRHnvm
+	/p6AmZjkNm9THU02/MhJhShsqJ73QH7gxyAqxQ=
+X-Received: by 2002:a05:6870:8271:b0:448:9d5b:6393 with SMTP id 586e51a60fabf-458c0dc6a14mr63345fac.14.1785361202134;
+        Wed, 29 Jul 2026 14:40:02 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:ea38:c35b:7ec6:8152? ([2600:8803:e7e4:500:ea38:c35b:7ec6:8152])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458c0df60fasm79258fac.13.2026.07.29.14.40.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jul 2026 14:40:01 -0700 (PDT)
+Message-ID: <ea9c043f-27c9-4095-9488-e81e0bbb5273@baylibre.com>
+Date: Wed, 29 Jul 2026 16:40:00 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="xw+N1UAUFYpS9Flr"
-Content-Disposition: inline
-In-Reply-To: <20260728221719.7f668a73@jic23-huawei>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
+ spi-device-addr
+To: Conor Dooley <conor@kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Mark Brown <broonie@kernel.org>,
+ Marius Cristea <marius.cristea@microchip.com>,
+ Marcus Folkesson <marcus.folkesson@gmail.com>,
+ Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
+ linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
+References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
+ <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+ <cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
+ <20260725230739.63ff7000@jic23-huawei>
+ <20260728-patronize-thwarting-56fab2e11077@spud>
+ <20260728221719.7f668a73@jic23-huawei>
+ <20260729-hundredth-suffice-f28afa67bc06@spud>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260729-hundredth-suffice-f28afa67bc06@spud>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
---xw+N1UAUFYpS9Flr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 7/29/26 3:47 PM, Conor Dooley wrote:
 
-On Tue, Jul 28, 2026 at 10:17:19PM +0100, Jonathan Cameron wrote:
-> On Tue, 28 Jul 2026 17:00:55 +0100
-> Conor Dooley <conor@kernel.org> wrote:
->=20
-> > On Sat, Jul 25, 2026 at 11:07:39PM +0100, Jonathan Cameron wrote:
-> > > On Sat, 25 Jul 2026 15:57:07 -0500
-> > > David Lechner <dlechner@baylibre.com> wrote:
-> > >  =20
-> > > > On 7/22/26 2:54 AM, Janani Sunil wrote: =20
-> > > > > Add the generic spi-device-addr property to the binding and depre=
-cate
-> > > > > the existing vendor specific microchip,hw-device-address property.
-> > > > >=20
-> > > > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> > > > > ---
-> > > > >  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         |=
- 10 ++++++++--
-> > > > >  1 file changed, 8 insertions(+), 2 deletions(-)
-> > > > >=20
-> > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,=
-mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.=
-yaml
-> > > > > index 675319276197..de1ea289e7f5 100644
-> > > > > --- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564=
-=2Eyaml
-> > > > > +++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564=
-=2Eyaml
-> > > > > @@ -80,6 +80,7 @@ properties:
-> > > > >      $ref: /schemas/types.yaml#/definitions/uint32
-> > > > >      minimum: 0
-> > > > >      maximum: 3
-> > > > > +    deprecated: true
-> > > > >      description:
-> > > > >        The address is set on a per-device basis by fuses in the f=
-actory,
-> > > > >        configured on request. If not requested, the fuses are set=
- for 0x1.
-> > > > > @@ -91,6 +92,12 @@ properties:
-> > > > >        clocking of the device address (BITS[7:6] - top two bits o=
-f COMMAND BYTE
-> > > > >        which is first one on the wire).
-> > > > > =20
-> > > > > +  spi-device-addr:
-> > > > > +    maxItems: 1   =20
-> > > >=20
-> > > > Does it not make sense to all for more than once device connected
-> > > > to the same CS here? I would expect maxItems to be 4 to match the
-> > > > number of possible addresses.
-> > > >  =20
-> > >=20
-> > > I think for this part their isn't a reason to aggregate.
-> > > No magic accesses that touch them all at once.  So this hits
-> > > exactly the point you raised about how we set the address for
-> > > more than one of them. =20
-> >=20
-> > No David is actually right here, and maxitems should be 4.
-> > Setting the address for multiple was already discussed I thought, with
-> > the property being an array and each compatible being used to determine
-> > the "stride" between entries based on the number of supported channels?
->=20
-> I don't think that applies for this device or at least to do so
-> is a major driver rewrite, not a simple binding change.  Probably we'd
+...
 
-Whether or not it is a big driver change, the binding should represent
-what the hardware is capable of.
+> Only going to reply to this for now, I'll reply to the other thread of
+> this conversation later so as not to end up duplicating discussion, but
+> I am thinking of things like what if someone puts a mcp3654r and an
+> ad5529r on the same chip select? I think that's actually perfectly
+> functional on a hardware level, provided the fuses/pins are set up
+I'm not sure this works in general since SPI devices aren't going to
+have a standard way to specify the address.
 
-> just add a bus and hang the 4 instances off it. They are running on own
-> timing etc so we can't grab data across all of them in any sort of
-> synchronous way - the clocks will probably drift over time etc.
+For example, ad5529r has the address at bits [14:12] in a 16-bit
+"instruction phase" while mcp3654r has the address at [7:6] in the
+"command byte".
 
-Did I miss something about the ADI devices in this thread where they
-have some multicast ability to read all devices at once? I thought that
-that was a different series where each device had dedicated mosi and
-miso lines, rather than the shared ones here. I didn't think the ad5529r
-did anything special from my reading of the datasheet but I'm not the
-expert in this area!
+An ad5529r instruction could inadvertently be interpreted as a
+command by mcp3654r. So I don't think they could exist on the
+same CS.
 
-> They are independent devices (think of them using spi-device-address
-> like an i2c address) -  so why have one DT node for up to 4 of
-> them?  Note this is different from the AD5529R where the design
-> is intended for them to operate as one single larger device.
+> correctly (and if it is not, mixing the microchip devices is possible
+> and probably mixing future ADI ones will be too).
+> 
 
-I don't buy this argument, I just don't see what differs between the
-devices. The microchip datasheet I read talked about using 3 devices to
-measure 3 phase power setups (I think that's what it was) which is, in
-my book, evidence that they're not just intended to be used
-independently.
+Yes, I suppose this could be possible, but I don't think they would
+be considered a single logical device in that case. So would be
+covered by the device@cs,spi-addr binding that we already discussed.
 
-That said, the more this discussion goes on, the more I think that
-merging the devices into a single node is a mistake. Logically there may
-be one device, but really there are one to four devices. Doing the
-logical device thing is nice maybe for software but I no longer think
-that it represents the hardware correctly. I know this will cause
-problems with registration of devices in the SPI core, but we need to
-pick one representation for these devices that fits in all usecases
-and with the things brought up in the other mail I am having a lot of
-doubts.
+Example:
 
-Only going to reply to this for now, I'll reply to the other thread of
-this conversation later so as not to end up duplicating discussion, but
-I am thinking of things like what if someone puts a mcp3654r and an
-ad5529r on the same chip select? I think that's actually perfectly
-functional on a hardware level, provided the fuses/pins are set up
-correctly (and if it is not, mixing the microchip devices is possible
-and probably mixing future ADI ones will be too).
+adc@0,0 {
+    compatible = "adi,adc1";
+    ...
+};
 
-Cheers,
-Conor.
-
---xw+N1UAUFYpS9Flr
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCampm8AAKCRB4tDGHoIJi
-0mivAP9rCEbG5qLXmNs7la92hDJM/u5bXPae1zq/5WP52YDCYgD/WemkvJ6s/E9A
-XEBSWh5RufyJUAiBfSDsxfxyGUTrNAU=
-=OwuA
------END PGP SIGNATURE-----
-
---xw+N1UAUFYpS9Flr--
+adc@0,1 {
+    compatible = "adi,adc2";
+    ...
+};
