@@ -1,142 +1,223 @@
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387DB3C3C00
-	for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 21:40:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1830A37E5CE;
+	Wed, 29 Jul 2026 22:47:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785361205; cv=none; b=Py7/k/r6aki4ROofHXiiLlABTAz3a3A6TDwzCVHjR+Nq2G1FH3XtP7XNkWGdtanXta+eube7t5vWbpK6MEx2SX8K/sduG9iGyLzYPHFL9zVmZxxh+J8ssQWz98hCFYmWuzoeXTUVauOJbWZ8WQc7XXv3v1KSwcWhVgQ7G11RXrA=
+	t=1785365260; cv=none; b=AdZXlk7CYcNJO/MJ3nwfpAj20YMfGBuFDLSAxS8KIAVOa6LQ+kY6YYYU5xpGMBskotxVXSFANfmo7O2XG8un1Tjs1f1ZJVcNeAV13LpSLWLhM+sqRw9FgW7IONfi3L1A2g8IVYHLfX138imGhoBJVmrgrUGT74Ra7P31CcCeIuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785361205; c=relaxed/simple;
-	bh=9DCe5l+RMdzIky2GyIi+0Ksfo59MslthuX/VTCcR/ug=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BAT2amjN/IOFxnDQPqsQ3g7ve16kB7BrwkiT2Nm72PbQujmjT7vJJ6/v9FrQoGocyh0vM5ZS85aNGn0mIwg3B+116z4h4UQhRPXGHJbrCKYhV6mmpjEENo0nN0tSplZVUzP0BaYtnEder7NofwWATzPreDyuQ7fGQYHjheFi9nY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=T2OrQg2c; arc=none smtp.client-ip=209.85.160.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785365260; c=relaxed/simple;
+	bh=W4Ui70n5xFnTa802mEnZLkbAQG4UwWdi84S/0eTZq+s=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ncDv6VxBwyslBaIg+qs+zPnJVTFXcl2W4UXYoYfVZE32c6ECq93X6O32d9mp6xE8F+2q/zEBdxSjGcd6w3zO2cYcaaABONFaodJVvhd1NAKMsNVQAGMuh6Lt8Hrpe+OGLXb8Nlgxa3HiiAZsSkNO6ws8pg06pAyB2u5ME1oxpIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AxSKw8HL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="T2OrQg2c"
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-43cce34c881so979764fac.2
-        for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 14:40:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785361202; x=1785966002; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=1c9/5KPmcV+l1Jp7+hRXQDRlqBfhfCFzAoiMmQn8lR8=;
-        b=T2OrQg2cE7xcQxnI0O4BydHj8yXfMQevniBTqiz965PkVMdnFKMb+3sBx5ZgFyllBH
-         j/sMG0RimQrlBz9mrda+IWe7NTgyXKlWXT1EMLCbqIu+EvwdjDR4VLJRTzrCwoLwxpQN
-         MaHbzeD1VdIjWnOgffDAgc64hYYBoQPqMOOa3mVtdicT8zHvNGRyzzTROP1XYlk0pFmc
-         vmiKaTLmzgAK2tShCMxctpNUtQYqtWdq/vOCeB7lnEvdo4CPhhfUmK06sp0Y3J2Wyrke
-         In51x6GHtD/J4N4FmVCgLHZfyix8CCUD3T47XMXivhCATBaFuWWwABjkfi4mJwLH9kB+
-         bx5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785361202; x=1785966002;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=1c9/5KPmcV+l1Jp7+hRXQDRlqBfhfCFzAoiMmQn8lR8=;
-        b=WoQytnMjAI09m//zlj7OOkT22MMHwT6NFdz+k3cGJBznuqoXoqvNWWDzcReEahDW5q
-         7yhLnRyPp5auW8xS9z77KqDNkg1+cYpHB0IjWMTArfAL2T9IfamvdQ5hgPsDeFAYAjoT
-         PhjyeQb6+cNs1XEOu21gL0GJQzQmNIdrjIa1xT2mACulbactgqjVxCEzbhasGHjkaql4
-         6fscnGTue+UGDSC7JEVxdIuz7I/bhSqOh5V+p1Ast1fuVLrRD4KZ6/HJ1v9crMKv1pJh
-         XgR2zpxHYLU/wNHX2GHPgnZTb1PNfxNtj6q7ozXQ+KgLehEEdoeGy8BvEQlYzZsDHYVj
-         SVoQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoPshRvm55LqOZ3qd256c1XtyJbfs7GHuR3eMoxL8eCYOV7Lvhg38kfww4/iY5TsKKJftp1WBYyalc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzVgS4lpn+bSqYgA9FKfaJ5fj02CvWDpjhI0j/e9Nj6cW2+SE6N
-	0NQdo1zDV28c5zRft8uyaMcrMNZHj/8JyCDP3ywRcXq/KnYT8ojAan/T6AsQRq7/iyk=
-X-Gm-Gg: AR+sD13zS7sOVbjWJ3zqO6fYvp8d311ujPUiARgV2bDVA/oAZNo1qzuqRP5YwOdIdJk
-	5xrOygsfFwpBjXG0nNBO7MXunNB4BdjmhfSWgPSA3KQX4Pep4Z/m5do3xGO6xHLifaGRgUVUCEy
-	diiAce4qWDEBk2re5DcIFU7/xGv2uyWW5kVP6B7vxeo5opwZ8HnJF5koPt570i2Bj0fFSzmY0k+
-	59wrfmaxAUjM0+sQ47hqrdRdmyePntjREaHedRL4WN7HDsYSH70+EGtAiyDL4+6AOtM1dYR3q8T
-	vRKpX7qKmk9rmt3lrqI//t6KLrpRSsNx84VqV0lhbWcDDFhAoioUV/UPM6dIHfb15qXa1Eimgo+
-	Al7l+lrwBU/BeUdKFe6a5rgH6hCiDgg1Ke1mu5TQO0CFRj3pN6Xaxo1Ki2I0tcHK5RNhGwcgjWE
-	BThA9/tOgVIsOHrT+2jMRwlAHgBnWCqApJaEv0X9oRa0RDby0F4gIJ+QDz/EpfK5HvAF/kRHnvm
-	/p6AmZjkNm9THU02/MhJhShsqJ73QH7gxyAqxQ=
-X-Received: by 2002:a05:6870:8271:b0:448:9d5b:6393 with SMTP id 586e51a60fabf-458c0dc6a14mr63345fac.14.1785361202134;
-        Wed, 29 Jul 2026 14:40:02 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:ea38:c35b:7ec6:8152? ([2600:8803:e7e4:500:ea38:c35b:7ec6:8152])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458c0df60fasm79258fac.13.2026.07.29.14.40.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jul 2026 14:40:01 -0700 (PDT)
-Message-ID: <ea9c043f-27c9-4095-9488-e81e0bbb5273@baylibre.com>
-Date: Wed, 29 Jul 2026 16:40:00 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AxSKw8HL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F7D1F000E9;
+	Wed, 29 Jul 2026 22:47:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785365258;
+	bh=vMXRsnL3EafGsZdVSmTWqi92Pdp6B251xlDnGExp0iw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=AxSKw8HLkRHHqjcc1/u1RT1Q2jwU5+NEYqAinUt5CcD4xvrymZnPeH6RuWUhntiny
+	 VtdgFAK77/dfdwxf03MXlsZaq+9aT/g1lnVklNhdw5NGg2cKjlCfOLX6plVnZ1sbtA
+	 CIfFv1P8N8hZHTa6Qc4vdthyoIs85mpp5NJFgou0vXIQyY3ZRha3yzi7pPWzJTcZPY
+	 yAWBT4XAvW0hGyjsFgbACFOG1YSJP7K6ZI5AjVeVUonj110HpUERBBgCk1wRJTDTa3
+	 prdJYAkSPlHB05FaBIUoQE0xYBj3tS/L11W7eZX6lNOiRgxQdBp+g2gqbuqLzc3udj
+	 l83AhvsGTpHDA==
+Date: Wed, 29 Jul 2026 23:47:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Conor Dooley <conor@kernel.org>, Janani Sunil <janani.sunil@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
+ Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
+ Khan <skhan@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Marius
+ Cristea <marius.cristea@microchip.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil
+ <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson
+ <nedo80@gmail.com>
+Subject: Re: [PATCH v7 1/7] spi: dt-bindings: Add spi-device-addr peripheral
+ property
+Message-ID: <20260729234733.6b092a00@jic23-huawei>
+In-Reply-To: <163c9872-17ef-4b01-9392-96e896c284b8@baylibre.com>
+References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
+	<20260722-ad5529r-driver-v7-1-7781cd74ad75@analog.com>
+	<e2118cfc-feef-4843-917f-844834ef4e60@baylibre.com>
+	<20260725230445.60a445a0@jic23-huawei>
+	<20260728-barrette-rickety-788b47da503c@spud>
+	<e1f977a8-ab38-4dc6-a82b-b955545550a0@baylibre.com>
+	<20260728220544.5c65bc50@jic23-huawei>
+	<163c9872-17ef-4b01-9392-96e896c284b8@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
- spi-device-addr
-To: Conor Dooley <conor@kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Cc: Janani Sunil <janani.sunil@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- Mark Brown <broonie@kernel.org>,
- Marius Cristea <marius.cristea@microchip.com>,
- Marcus Folkesson <marcus.folkesson@gmail.com>,
- Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
- linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
-References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
- <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
- <cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
- <20260725230739.63ff7000@jic23-huawei>
- <20260728-patronize-thwarting-56fab2e11077@spud>
- <20260728221719.7f668a73@jic23-huawei>
- <20260729-hundredth-suffice-f28afa67bc06@spud>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260729-hundredth-suffice-f28afa67bc06@spud>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 7/29/26 3:47 PM, Conor Dooley wrote:
+On Tue, 28 Jul 2026 16:46:26 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-...
+> On 7/28/26 4:05 PM, Jonathan Cameron wrote:
+> > On Tue, 28 Jul 2026 13:39:20 -0500
+> > David Lechner <dlechner@baylibre.com> wrote:
+> >   
+> >> On 7/28/26 11:10 AM, Conor Dooley wrote:  
+> >>> On Sat, Jul 25, 2026 at 11:04:45PM +0100, Jonathan Cameron wrote:    
+> >>>> On Sat, 25 Jul 2026 15:55:01 -0500
+> >>>> David Lechner <dlechner@baylibre.com> wrote:
+> >>>>    
+> >>>>> On 7/22/26 2:54 AM, Janani Sunil wrote:    
+> >>>>>> Some SPI devices support sharing a single chip select across multiple
+> >>>>>> physical chips by encoding a device address in the SPI frame itself.
+> >>>>>> Add the generic spi-device-addr property for describing these hardware
+> >>>>>> addresses. The property is placed on the SPI peripheral node and may
+> >>>>>> contain multiple addresses.
+> >>>>>>
+> >>>>>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> >>>>>> ---
+> >>>>>>  Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 7 +++++++
+> >>>>>>  1 file changed, 7 insertions(+)
+> >>>>>>
+> >>>>>> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> >>>>>> index 880a9f624566..b59d047cf117 100644
+> >>>>>> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> >>>>>> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> >>>>>> @@ -142,6 +142,13 @@ properties:
+> >>>>>>      minItems: 2
+> >>>>>>      maxItems: 4
+> >>>>>>  
+> >>>>>> +  spi-device-addr:
+> >>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> >>>>>> +    description:
+> >>>>>> +      Device addresses used when multiple peripherals share a single chip
+> >>>>>> +      select. The array allows one logical peripheral to comprise multiple
+> >>>>>> +      physical devices, with one address per device.      
+> >>>>>
+> >>>>> "per physical device" for clarity.
+> >>>>>    
+> >>>>
+> >>>> We may end up relaxing that again if multichip packages start doing this.
+> >>>> Fine to add that clarification for now. We can revisit when / if it ever
+> >>>> needs that relaxing.
+> >>>>    
+> >>>>>> +
+> >>>>>>    st,spi-midi-ns:
+> >>>>>>      deprecated: true
+> >>>>>>      description: |
+> >>>>>>       
+> >>>>>
+> >>>>> If there is nothing useful the SPI core code can do with this information,
+> >>>>> I'm not entirely convinced that this needs to be a common property.    
+> >>>>
+> >>>> I think being common does make some sense from a standarization point of
+> >>>> view and it isn't obvious where to put it other than under spi.
+> >>>>    
+> >>>>>
+> >>>>> And this only allows for one logical device. If we wanted to treat each
+> >>>>> address as a logical device (all with same CS), we would need #address-cells = <2>;
+> >>>>> instead where the DT "address" is two values, the CS and the device address.    
+> >>>>
+> >>>> Ah.  Good point for the adc@address or similar needing to match a combination
+> >>>> of CS and spi-device-addr.  Conor any thoughts on how this would be done?    
+> >>>
+> >>> I'm sorry, I don't quite understand. Why do you want to support both of
+> >>> these representations? Hardware wise both of these things would be
+> >>> describing the same setup, so allowing this alternate "multiple logical
+> >>> device" typically is not permitted. What even is the use case of it?  
+> > 
+> > The microchip parts.  They are entirely independent. The device address is
+> > just a way to save pins.  That is contrasting those with the one in this
+> > series where the design assumes you want to treat them as a large logical
+> > device in a similar way to spi device chaining.
+> > 
+> >   
+> >>> Does it matter at all if you have one or more logical devices from a
+> >>> consumer perspective?
+> >>>
+> >>> I do have an idea of how to solve the adc@address problem (you can do
+> >>> adc@address,spi-device-address like some other devices) but as I said I
+> >>> don't get why it would be needed.    
+> > 
+> > I think we should often do this because there are some confusing cases
+> > otherwise. See below.
+> >   
+> >>
+> >> I would expect that if such a device was intended to be used as individual
+> >> logical devices that they would just be wired up each with their own chip
+> >> select rather than sharing one.
+> >>
+> >> The only reason I can think of actually needing adc@address,spi-device-address
+> >> would be on a system that was really short on pins on the MCU.
+> >>
+> >> So not saying that we need it right now. Just wanted to make sure we were
+> >> intentional about saying we don't need it if we don't.  
+> > 
+> > To enumerate the cases:
+> > 
+> > 1. One CS has multiple spi-device-address and needs to be a combined device.
+> > 	Given this ADC does some fun stuff to include messages with no
+> >         spi-device-address that are meant to be received by all such
+> > 	devices we pretty much have to map any that share a CS to one
+> > 	logical device - we have to bind one driver.  This is kind of
+> > 	similar to SPI device chaining.
+> > 	address == cs.  spi-device-address property not used for that.
+> > 	- This one can be normal SPI style.
+> > 
+> > 2. One CS has multiple spi-device-address but logically separate otherwise.
+> > 	This is the microchip devices I think.  For those the device-address
+> > 	is just a pin saving exercise.
+> > 	address == spi-device-address. CS not needed as there is only one.  
+> 
+> We would still need CS to tell the SPI controller which one is wired. So
+> we should never have adc@spi-device-address, only adc@cs,spi-device-address.
+> 
+> (There currently isn't any binding for SPI_NO_CS, so the controller would
+> still need a CS line even if it isn't wired/muxed and CS on the peripheral
+> is hardwired.)
 
-> Only going to reply to this for now, I'll reply to the other thread of
-> this conversation later so as not to end up duplicating discussion, but
-> I am thinking of things like what if someone puts a mcp3654r and an
-> ad5529r on the same chip select? I think that's actually perfectly
-> functional on a hardware level, provided the fuses/pins are set up
-I'm not sure this works in general since SPI devices aren't going to
-have a standard way to specify the address.
+Sure - it needs to provided today because the reg entry must match the adc@reg
+bit.  That 'could' be relaxed.  I don't think it's a good idea but
+I thought this was what Conor was proposing.
 
-For example, ad5529r has the address at bits [14:12] in a 16-bit
-"instruction phase" while mcp3654r has the address at [7:6] in the
-"command byte".
-
-An ad5529r instruction could inadvertently be interpreted as a
-command by mcp3654r. So I don't think they could exist on the
-same CS.
-
-> correctly (and if it is not, mixing the microchip devices is possible
-> and probably mixing future ADI ones will be too).
+> 
+> > 
+> > 2b.  Same as 2, but there is another normal ADC with a chip select.
+> > 	How do we know adc@spi-device-address vs adc@cs given they could
+> > 	easily take same address value by coincidence?  
+> 
+> As above.
+> 
+> > 
+> > 2c. Basically Case as 2 but * N CS all on same SPI bus.
+> > 	As David calls out this is the pin count minimization case.
+> > 	E.g. I want 8 devices each of which has 2 pin straps to set the
+> > 	device address.  So I have to use at least 2 CS.
+> > 	For this I need both cs and device-address and Conor's suggestion works.
+> > 
+> > There is a case of 1 + 2 with different device types but result is same
+> > as 2c.
+> > 
+> > Now, to me the question is whether we say that if spi-device-address is
+> > present you always do adc@cs,spi-device-address or do we allow for not
+> > doing so for the composite devices where nothing else is sharing the CS
+> > (like this driver).
+> > 
+> > My inclination is standardize on always doing it for these devices.
+> > 
+> > Jonathan
+> >   
+> >>
+> >>  
+> >   
 > 
 
-Yes, I suppose this could be possible, but I don't think they would
-be considered a single logical device in that case. So would be
-covered by the device@cs,spi-addr binding that we already discussed.
-
-Example:
-
-adc@0,0 {
-    compatible = "adi,adc1";
-    ...
-};
-
-adc@0,1 {
-    compatible = "adi,adc2";
-    ...
-};
