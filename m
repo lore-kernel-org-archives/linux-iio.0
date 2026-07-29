@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FD8643B6D1;
-	Wed, 29 Jul 2026 08:27:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62B2E4028F5;
+	Wed, 29 Jul 2026 08:27:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785313629; cv=none; b=U9ErLElsCC7Tr1IPMZmHSvuUw7eYckpcOkFx1cfVPfE1KoZOv28YGg/Yszc4AF5yarP7+wRKD5WuIyvoIzAdnVh5EsRqBBUDi7pi+7Q5GluefQ/9pUOjrc5frRnnorApD8iyhvWczx/+qj2IZf2jUJI2cKADFYHlQyYbCbimSbQ=
+	t=1785313631; cv=none; b=APMQxL8pR+Di6UuqLeCGrzORY5w67nXbYpnmYpNg238jMAONMzTcxjOdAaKmcaztSKL+a0r/aNUuC+jfy2wA+d4oCn8vWnmdcKaNCUftO2ZP0aGLBuEMdHy81L/wC7n/iclbmqFejyW8OPCqu3jb3gNapwiPP58Ul9p0oymBtpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785313629; c=relaxed/simple;
-	bh=c2p5L1q6zxv7wWh9EpdRkFyHFnzsFh472s+WmtKCZhw=;
+	s=arc-20240116; t=1785313631; c=relaxed/simple;
+	bh=wjGU47dMiUmh3ewETIM8jiZt5gDJ6tkeOfiYVNEuSWQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KmIzoqbD7zjaWcpJhV4UtPUruUoIeG5j6b/A18b6IQIV/4/u44CJGI+7hW/USEH75S3TZtDMd/MhZsozShPwoPZDUdyGf5N8inBrrr0ruLa/N6b/AaR0EQrVqQ60gJY/EC2lQneGEER7a528GO/J9K6gXEU+xB4cbsyFoKWOksI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qaZrPsqc; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=sMtxSTmdJzFrsClNNt1SijsZ8MdBsmX7djj8zqJtjm2U0MHnJ6xul9khMWkBlRARPDuxiqrUOADGhJQev3eVLuEUtda4Ftqw+3LYPi4nus3K9EK9QP4HdFy1c0Q0UY7nUCrcb0Z+h3s892lCUXSTnJJU6ZkgXZuoKbwozSyaEQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WbuNuqcO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qaZrPsqc"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AF34FC2BCB3;
-	Wed, 29 Jul 2026 08:27:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WbuNuqcO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5B07AC4AF4D;
+	Wed, 29 Jul 2026 08:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1785313628;
-	bh=c2p5L1q6zxv7wWh9EpdRkFyHFnzsFh472s+WmtKCZhw=;
+	s=k20201202; t=1785313629;
+	bh=wjGU47dMiUmh3ewETIM8jiZt5gDJ6tkeOfiYVNEuSWQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=qaZrPsqc46Va3HGE5DQv6PSJD2aEq7KN7B2MnLDrsaZzCCN3xaE5QKi7ZVo+RghaS
-	 2cECdSTMyXjs+h11nWxfdxk0UU+289s49mnRkwubvWmz0gvi3atWSU/Res25/55MkY
-	 3wJjOlZjaj4TTFjkmmY25m6LQBu/p+1MxAIJcyCymZKCF+/QwLh8KyppKqYTLMNdMK
-	 57oHWaPYlirS99z1rMg2Jdufy/y+EZGFlXz6bPAlXeu+lq13klzOkJXGNg0cnOXbp9
-	 xRyYc5HLX6HcFyJhvfAepyackC88eSZOvBof8WyrIa+u+ufmof0Fd8HMLoSqVQ2+Gy
-	 gXMTlXVkL5hag==
+	b=WbuNuqcOfq2ase2EZIGtmUUYV/AK3Sw7s0FVDMoioHkJNdjb6TInepEVHXcevtyEJ
+	 1GOnsKojceNP5PzPZPY9hLTf4qJeMXkCzqpjKCSziOmTlQ/EzYzt+kUPpSXlceAMP+
+	 zcmux9VebcaI8Ty6ArTUZG8F8X4mUYJ8OJONqEtp5WZDnbRSyjmZeM8951J4G2W/dR
+	 pjELMo4sh9mFarWzHv6MImy2cq8xT+gmVsaLXI+E3AA0G8BnRsSLFqCqJQCZqUTBBu
+	 9MTbeZsewsjYLg9rohM50soJ/jFxkRBnNu6nyKRBV3EN7DFpgefrfueXQ8MYkOBGK+
+	 WPqqIaHTE26Ow==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9935CC53219;
-	Wed, 29 Jul 2026 08:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 452BBC53219;
+	Wed, 29 Jul 2026 08:27:09 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 29 Jul 2026 09:25:28 +0100
-Subject: [PATCH v10 01/17] iio: ABI: add attributes for altcurrent channels
+Date: Wed, 29 Jul 2026 09:25:38 +0100
+Subject: [PATCH v10 11/17] iio: frequency: ad9910: add basic parallel port
+ support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260729-ad9910-iio-driver-v10-1-aa1f6167729e@analog.com>
+Message-Id: <20260729-ad9910-iio-driver-v10-11-aa1f6167729e@analog.com>
 References: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
 In-Reply-To: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -54,14 +55,13 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Johan Hovold <johan@kernel.org>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785313627; l=3588;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785313627; l=9246;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=NMyQtwKnhP7ghLAaLd8Vv8Yqv0bWLLVXShCmZ6SK4qg=;
- b=Qxwrjl8ACDFxXM51QGFN44XesPSFtyNyG8BXgOcrSLrWggCkgEZI9r5qo8bYuNawGAklFqpFa
- ZcOPZhGRQCnDZVCj5U7VdbGuhYPBmSCrMm6INNaWiTTafCq/nTduags
+ bh=fxc3LNHFMCvmFNXVI1Q9NxrOcuqJsc2ClYxY6gEQXnU=;
+ b=Kag8xedBONLwxH0XkeWqgw1ZYG/ZHGgap/rXP2kaa0V7GvI0xDIWR1F3SYYyfXs5lo4/NffdD
+ XY5wrvjp8rQAk+s7IaH5/kBNIljyRGST/MwQxol9pjbZjJ2rwa1qN4w
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,84 +71,254 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add attributes applicable to altcurrent channels, e.g., frequency, phase,
-scale, raw, label and powerdown. Those are going to be used by a DDS
-device to be introduced shortly.
+Add parallel port support with amplitude, phase and frequency channels.
+Those will be buffered capable channels, but only basic control of offset
+and scale are implemented at this point. There are separate amplitude
+and phase control for polar destination, which will provide different scan
+types. Enabling and disabling of parallel mode will be implemented with
+buffer setup ops or with update_scan_mode() once IIO backend integration
+is in place.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/iio/frequency/ad9910.c | 154 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 154 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 5cc2e82c4997..3e75ce1c97c6 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -478,6 +478,10 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_current_q_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrent_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrent_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
-@@ -799,6 +803,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
- What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_powerdown
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrent_powerdown
- KernelVersion:	2.6.38
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -809,6 +815,7 @@ Description:
- 		together.
+diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+index b41b011af281..aaeff2e7640e 100644
+--- a/drivers/iio/frequency/ad9910.c
++++ b/drivers/iio/frequency/ad9910.c
+@@ -122,9 +122,13 @@
+ /* Auxiliary DAC Control Register Bits */
+ #define AD9910_AUX_DAC_FSC_MSK			GENMASK(7, 0)
  
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_frequency
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -835,8 +842,10 @@ Description:
- 		all the other channels, since it involves changing the VCO
- 		fundamental output frequency.
++/* POW Register Bits */
++#define AD9910_POW_PP_LSB_MSK			GENMASK(7, 0)
++
+ /* ASF Register Bits */
+ #define AD9910_ASF_RAMP_RATE_MSK		GENMASK(31, 16)
+ #define AD9910_ASF_SCALE_FACTOR_MSK		GENMASK(15, 2)
++#define AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK	GENMASK(7, 2)
+ #define AD9910_ASF_STEP_SIZE_MSK		GENMASK(1, 0)
  
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_phase
- What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_i_phase
- What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_q_phase
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_phase
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_i_phase
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_q_phase
-@@ -850,6 +859,7 @@ Description:
- 		channel.
+ /* Multichip Sync Register Bits */
+@@ -148,7 +152,9 @@
+ #define AD9910_MAX_PHASE_MICRORAD	(AD9910_PI_NANORAD / 500)
  
- What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw
- Date:		May 2012
- KernelVersion:	3.5
- Contact:	Johan Hovold <jhovold@gmail.com>
-@@ -1736,6 +1746,7 @@ Description:
+ #define AD9910_ASF_MAX			FIELD_MAX(AD9910_PROFILE_ST_ASF_MSK)
++#define AD9910_ASF_PP_LSB_MAX		FIELD_MAX(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK)
+ #define AD9910_POW_MAX			FIELD_MAX(AD9910_PROFILE_ST_POW_MSK)
++#define AD9910_POW_PP_LSB_MAX		FIELD_MAX(AD9910_POW_PP_LSB_MSK)
+ #define AD9910_NUM_PROFILES		8
  
- What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_raw
- KernelVersion:	3.17
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -2126,7 +2137,9 @@ Description:
+ /* PLL constants */
+@@ -203,6 +209,8 @@
+  * @AD9910_CHANNEL_PROFILE_5: Profile 5 output channel
+  * @AD9910_CHANNEL_PROFILE_6: Profile 6 output channel
+  * @AD9910_CHANNEL_PROFILE_7: Profile 7 output channel
++ * @AD9910_CHANNEL_PARALLEL: Parallel Data output channel
++ * @AD9910_CHANNEL_PARALLEL_POLAR: Parallel Polar Data output channel
+  */
+ enum ad9910_channel {
+ 	AD9910_CHANNEL_PHY = 100,
+@@ -214,6 +222,8 @@ enum ad9910_channel {
+ 	AD9910_CHANNEL_PROFILE_5 = 115,
+ 	AD9910_CHANNEL_PROFILE_6 = 116,
+ 	AD9910_CHANNEL_PROFILE_7 = 117,
++	AD9910_CHANNEL_PARALLEL = 120,
++	AD9910_CHANNEL_PARALLEL_POLAR = 121,
+ };
  
- 		Raw counter device counters direction for channel Y.
+ enum {
+@@ -226,6 +236,11 @@ enum {
+ 	AD9910_CHAN_IDX_PROFILE_5,
+ 	AD9910_CHAN_IDX_PROFILE_6,
+ 	AD9910_CHAN_IDX_PROFILE_7,
++	AD9910_CHAN_IDX_PARALLEL_AMP,
++	AD9910_CHAN_IDX_PARALLEL_PHASE,
++	AD9910_CHAN_IDX_PARALLEL_FREQ,
++	AD9910_CHAN_IDX_PARALLEL_POLAR_AMP,
++	AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE,
+ };
  
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_label
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_label
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_label
- What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_label
- KernelVersion:	5.8
- Contact:	linux-iio@vger.kernel.org
+ enum {
+@@ -610,6 +625,53 @@ static const struct iio_chan_spec ad9910_channels[] = {
+ 	[AD9910_CHAN_IDX_PROFILE_5] = AD9910_PROFILE_CHAN(5),
+ 	[AD9910_CHAN_IDX_PROFILE_6] = AD9910_PROFILE_CHAN(6),
+ 	[AD9910_CHAN_IDX_PROFILE_7] = AD9910_PROFILE_CHAN(7),
++	[AD9910_CHAN_IDX_PARALLEL_AMP] = {
++		.type = IIO_ALTCURRENT,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_PARALLEL,
++		.address = AD9910_CHAN_IDX_PARALLEL_AMP,
++		.parent = &ad9910_channels[AD9910_CHAN_IDX_PHY],
++	},
++	[AD9910_CHAN_IDX_PARALLEL_PHASE] = {
++		.type = IIO_PHASE,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_PARALLEL,
++		.address = AD9910_CHAN_IDX_PARALLEL_PHASE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),
++		.parent = &ad9910_channels[AD9910_CHAN_IDX_PHY],
++	},
++	[AD9910_CHAN_IDX_PARALLEL_FREQ] = {
++		.type = IIO_FREQUENCY,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_PARALLEL,
++		.address = AD9910_CHAN_IDX_PARALLEL_FREQ,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.parent = &ad9910_channels[AD9910_CHAN_IDX_PHY],
++	},
++	[AD9910_CHAN_IDX_PARALLEL_POLAR_AMP] = {
++		.type = IIO_ALTCURRENT,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_PARALLEL_POLAR,
++		.address = AD9910_CHAN_IDX_PARALLEL_POLAR_AMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.parent = &ad9910_channels[AD9910_CHAN_IDX_PHY],
++	},
++	[AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE] = {
++		.type = IIO_PHASE,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_PARALLEL_POLAR,
++		.address = AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.parent = &ad9910_channels[AD9910_CHAN_IDX_PHY],
++	},
+ };
+ 
+ static int ad9910_read_raw(struct iio_dev *indio_dev,
+@@ -691,6 +753,48 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 			*val = 0;
+ 			*val2 = tmp64 >> 14;
+ 			return IIO_VAL_INT_PLUS_NANO;
++		case AD9910_CHAN_IDX_PARALLEL_PHASE:
++			*val = 0;
++			*val2 = AD9910_PI_NANORAD >> 15;
++			return IIO_VAL_INT_PLUS_NANO;
++		case AD9910_CHAN_IDX_PARALLEL_FREQ:
++			tmp32 = FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
++					  st->reg[AD9910_REG_CFR2].val32);
++			tmp64 = (u64)st->data.sysclk_freq_hz << tmp32;
++			tmp64 = ad9910_rational_scale(tmp64, NANO, BIT_ULL(32));
++			*val = div_s64_rem(tmp64, NANO, val2);
++			return IIO_VAL_INT_PLUS_NANO;
++		case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
++			tmp64 = (u64)st->data.output_current_uA *
++				AD9910_NANO_MILLIAMP_PER_MICROAMP;
++			*val = 0;
++			*val2 = tmp64 >> 8;
++			return IIO_VAL_INT_PLUS_NANO;
++		case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++			*val = 0;
++			*val2 = AD9910_PI_NANORAD >> 7;
++			return IIO_VAL_INT_PLUS_NANO;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_OFFSET:
++		switch (chan->address) {
++		case AD9910_CHAN_IDX_PARALLEL_FREQ:
++			tmp64 = (u64)st->reg[AD9910_REG_FTW].val32 * MICRO;
++			tmp64 >>= FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
++					    st->reg[AD9910_REG_CFR2].val32);
++			iio_val_s64_decompose(tmp64, val, val2);
++			return IIO_VAL_DECIMAL64_MICRO;
++		case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
++			tmp32 = FIELD_GET(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK,
++					  st->reg[AD9910_REG_ASF].val32);
++			iio_val_s64_decompose(MICRO * tmp32 >> 6, val, val2);
++			return IIO_VAL_DECIMAL64_MICRO;
++		case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++			tmp32 = FIELD_GET(AD9910_POW_PP_LSB_MSK,
++					  st->reg[AD9910_REG_POW].val16);
++			iio_val_s64_decompose(MICRO * tmp32 >> 8, val, val2);
++			return IIO_VAL_DECIMAL64_MICRO;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -794,9 +898,52 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			tmp32 = DIV_U64_ROUND_CLOSEST((u64)val2 << 14,
+ 						      AD9910_NANO_MILLIAMP_PER_MICROAMP);
+ 			return ad9910_set_dac_current(st, tmp32, true);
++		case AD9910_CHAN_IDX_PARALLEL_FREQ:
++			if (val < 0 || val2 < 0)
++				return -EINVAL;
++
++			tmp64 = ad9910_rational_scale((u64)val * NANO + val2, BIT_ULL(32),
++						      (u64)st->data.sysclk_freq_hz * NANO);
++			tmp64 = roundup_pow_of_two(clamp(tmp64, 1ULL, BIT_ULL(15)));
++			tmp32 = FIELD_PREP(AD9910_CFR2_FM_GAIN_MSK, ilog2(tmp64));
++			return ad9910_reg32_update(st, AD9910_REG_CFR2,
++						   AD9910_CFR2_FM_GAIN_MSK,
++						   tmp32, true);
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case IIO_CHAN_INFO_OFFSET: {
++		s64 val64 = iio_val_s64_compose(val, val2);
++
++		if (val64 < 0)
++			return -EINVAL;
++
++		tmp64 = val64;
++		switch (chan->address) {
++		case AD9910_CHAN_IDX_PARALLEL_FREQ:
++			tmp32 = BIT(FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
++					      st->reg[AD9910_REG_CFR2].val32));
++			tmp64 = ad9910_rational_scale(tmp64, tmp32, MICRO);
++			tmp64 = min_t(u64, tmp64, U32_MAX);
++			return ad9910_reg32_write(st, AD9910_REG_FTW, tmp64, true);
++		case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
++			tmp64 = ad9910_rational_scale(tmp64, BIT(6), MICRO);
++			tmp64 = min_t(u64, tmp64, AD9910_ASF_PP_LSB_MAX);
++			tmp32 = FIELD_PREP(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK, tmp64);
++			return ad9910_reg32_update(st, AD9910_REG_ASF,
++						   AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK,
++						   tmp32, true);
++		case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++			tmp64 = ad9910_rational_scale(tmp64, BIT(8), MICRO);
++			tmp64 = min_t(u64, tmp64, AD9910_POW_PP_LSB_MAX);
++			tmp32 = FIELD_PREP(AD9910_POW_PP_LSB_MSK, tmp64);
++			return ad9910_reg16_update(st, AD9910_REG_POW,
++						   AD9910_POW_PP_LSB_MSK,
++						   tmp32, true);
++		default:
++			return -EINVAL;
++		}
++	}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -823,6 +970,8 @@ static int ad9910_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_OFFSET:
++		return IIO_VAL_DECIMAL64_MICRO;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -884,6 +1033,11 @@ static const char * const ad9910_channel_str[] = {
+ 	[AD9910_CHAN_IDX_PROFILE_5] = "profile5",
+ 	[AD9910_CHAN_IDX_PROFILE_6] = "profile6",
+ 	[AD9910_CHAN_IDX_PROFILE_7] = "profile7",
++	[AD9910_CHAN_IDX_PARALLEL_AMP] = "parallel_amplitude",
++	[AD9910_CHAN_IDX_PARALLEL_PHASE] = "parallel_phase",
++	[AD9910_CHAN_IDX_PARALLEL_FREQ] = "parallel_frequency",
++	[AD9910_CHAN_IDX_PARALLEL_POLAR_AMP] = "parallel_polar_amplitude",
++	[AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE] = "parallel_polar_phase",
+ };
+ 
+ static int ad9910_read_label(struct iio_dev *indio_dev,
 
 -- 
 2.43.0
