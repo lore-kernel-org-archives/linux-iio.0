@@ -1,97 +1,160 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C8F63B5E10
-	for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 05:41:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC174248A1
+	for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 07:34:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785303665; cv=none; b=MJ1KbsUd5Xrc4bPg1+qMkLRZ5XicfKsZ2Jku94W1+fCtxqIvYcb+wi2XLCiyHH3XuGonxke4aYnyDsDRn8yosEdugfPFdKvJ1tDflnylHga4q01wB1bxMQD5nhbu5brvSLSmbWlV7jMUIAH9M+A/3487suPK2xU3NSHEoiOhHMA=
+	t=1785310494; cv=none; b=DNtQYvhJGMMO2FELpQVl4ab4itOCQ0sbD653YCQ5tsYqxVm83aBNOTtr5KKX1TNyCvi4HkB/w5Sj0F6RTwDt6yJynahuzKcJKtrRiSGlOT4zJrM6GMLAM4uKPPQdLqY6fKiKw/bQw0OxoCM579/TM5nz+mkv3m0a2FOnDcMwsfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785303665; c=relaxed/simple;
-	bh=lfTYsE/6ZAFQj1QetMnj/IgohbPhMLjdhTn20RmFQNE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YQIaNTbKN6eZLQ+UwyZftQPIlobVL0h5TVwr4W/Z5N7LKN3HZk6c6PUZX0YnbwKw1aVkwa4j9cDFKfdK3Ru2sYK08dB6y7fHlDG8EKRN+IcRZrIdEoKNck5kF6Wp+OgSy2bDI6yc/FWbBlVHTuhhrxq412oPeFb9gaAAdJ1y6Ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Su9md0p5; arc=none smtp.client-ip=209.85.210.177
+	s=arc-20240116; t=1785310494; c=relaxed/simple;
+	bh=2M47jzI3GMCSI8tvz+uvp+NPMu46ffAFj6LSFWJX3H8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ABA9MlJpjT0gn+Ig2V19K16APHE1T9KwE38ACysY8JmGa5xAyhyHHr/CBDJMLLcbFFf3s+5BaxK2DH0hBgn/4HZxaCqaKV01LRvUjmrDVFHasaargV+MREWIo2nRUQi0PgBSDdPoGWARle9nDF48/VrrAn7qdUJJDXjt3KB8b8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oro2Jv/S; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Su9md0p5"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-84e04df8c46so638494b3a.2
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2026 22:41:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oro2Jv/S"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-47f7854678bso254686f8f.3
+        for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2026 00:34:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785303664; x=1785908464; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=lfTYsE/6ZAFQj1QetMnj/IgohbPhMLjdhTn20RmFQNE=;
-        b=Su9md0p5mcPMYMgqljAllcKMa/e6vk5gxAY18X8Vjcd9r/ulSNw6jmZVkAxcOPM2AS
-         4hF6bBgqk64yGOF/iBdmeHkVgd7IBfc6hnNgfzxyTtvDkFrSw29J1goTVGAJtvbqdvPS
-         cxNYEf17RvajNYLbWVWdm0QqnWmSTIS0no9keY0Ou1NKZzoLolcZuo/4srOizMie1TJe
-         LV0kI0wFrJc5aZdVTHJxi8a6VBX1a620MWukNwlCy07dKHaxddfzhj22mic4gUTQ+qxh
-         Vod2SgfV0w2RSajAvjRWn3Ph94OKX21XO5K2wSiIsqJxrLERi0EiRYSewDcl/LOASw4O
-         ykAA==
+        d=gmail.com; s=20251104; t=1785310482; x=1785915282; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=J96GiC3Lu8OCM/Ebd7ATNlWx75x2wiMwCn6WDtv6ToQ=;
+        b=oro2Jv/Slc5uXuReyUFXa2J06F6B9icXGdCaLPxXbKnXN7LiPK7LntH/RmELENMg6W
+         Hm/bmGDCNFEwiWW6h5j433hdoMr/2TfuRrnX4bMyyHQh8OdVnq3IFyGF2sNE1OPGaTIN
+         +ygOyBUDc3Rw5rieiTt0acn+pRMMTdWGwAZBQ2BD8KDQenfJfFkvPGgPjbHZ/uME7LRH
+         rs+w1KMF3Gq+QfY2C2+WRtxeg0yvaTJ/wOJGNT24EfsjFZmxjHOVd6kAiWQq+ZtTl//E
+         TNd22U2DdJiCAODPKRCGx/5uouRiI/Hhrd9dk/r5BlQ5NFDMOd2/sKoT+MeXtl+5A7cU
+         VSrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785303664; x=1785908464;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lfTYsE/6ZAFQj1QetMnj/IgohbPhMLjdhTn20RmFQNE=;
-        b=jt6aamE+FANh4yYjQS8Wsb/Nan8UqlVRu5BSeHseRualwj2bNgvGrDnUdHOFptb9rA
-         iTe3hanQ2nJmuj0mA8L1jnYoMOWA6/JsgDeODh5gnBTdb8w6uOUhT59YhXVa68daQP6J
-         fflXxOf4awCMVpFlbAKemYkqMbi/jn9ap19y7iy59yNH/1D4u+SO3aVsC5/gZW0FsHnS
-         eA+06pA7pz8/chepDJSfIQDDpfm7KTuFOUoeUvolZ2/I4NmUgwnkOqWSmTWU8X1txNlh
-         sbIUR7Nq+VIx/OH5TN9FQudpCFBbT+mlayxuVwc/uOVw+q371oETHT9PQyrN6kvU0Ve4
-         eVaQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqVn/tYyN+mv/AqdkbfIYbCqOYwMagB7CT1Gvo117z3CoScHp3e7zWoM8ewPRJtoaWsfqrQ+vxWHOk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzGz8iBZwh/mWShNhq+WllyXbtywHuOLAANEXXU6qrPDEyu33LB
-	2Z2hiI1sGy/6O1t9UsH6TVj4uPh7I1sfBeNItCWP9pmzaC1p+iOzIYfE
-X-Gm-Gg: AR+sD13BxL3y9+m+N7gHphneBzrMj6H5S/OQUrNCUzVl2ZibY5rKPd5QlMn4KfLicuX
-	a4q1sebrjJ2gSuzz0coRZMhhC23LjYWjWV3o4P3G6TIpPHljoqotPheRi+RTZQAKsPDG8DpfTdq
-	RZNHiBDmWQaCwSyPWiKp/oxOPEGHDvLrsiMc63LO41j+HcszHO28iVdiKuWpPXJbZmedHVGa5tw
-	l/aEgw2s93lPWoC8uNxQwQeofFoZ4Kpo5/tIs5ScD7qRBrhh8ryJYiXHJGP2JQ6fIiiOK1wkm/H
-	K1vxMvuv5C7pgDl3pzw0dGd/T2bHEmZk6mqcz08/OFc8dVoeICRiTlpZ8IjxPQFYyS3L6HYOt2F
-	TrV/4yP/7hY4uM4n6jADB3xunjM7+WTiZOppYrz/xYntWafInAyW+EXpgwPsiukpW3AWIWZe0wi
-	2AifV4pBKYeUAAILKBIUXVs+Qac9fn0Wt8Mc0QaLWgechZeYiML6906TPc/jR7
-X-Received: by 2002:a05:6a00:94ee:b0:845:e08c:a4eb with SMTP id d2e1a72fcca58-84e9336c861mr5698218b3a.58.1785303663650;
-        Tue, 28 Jul 2026 22:41:03 -0700 (PDT)
-Received: from kdev.. ([108.180.130.139])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84ea02f8473sm774744b3a.31.2026.07.28.22.41.03
+        d=1e100.net; s=20251104; t=1785310482; x=1785915282;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=J96GiC3Lu8OCM/Ebd7ATNlWx75x2wiMwCn6WDtv6ToQ=;
+        b=H+Lv2hhNLloAb8DHgRy5WkEbJT9CUkEnHuD+FMKMhO+3dCIs6VP/vmGlN+WtjFvkvk
+         RW/zq0Xb+XO1flfxA6f9xOIfOxWPf995oDp0DnWIhpzp5Kk6aclhRMtSyx8E8Z51KeP0
+         FPjXbuf6IdW4mt49+fGjWnajacQWTUxxo1mx3qBnGW7Ojqm9kZObfLnlBYJMndlrEqG5
+         eekreDkwfv3WjLZe+hPGGvX1S9Y7mOQsuNsMJhsc7nX20ZryLWsmATs6G1cUunAE+cya
+         4Z65n7Fn2C7mSwmxIMmWdRU060qk/PxJzYkDDI8EG5AQfCSvQkFeikTRUC6Bgjslgc1/
+         af/A==
+X-Forwarded-Encrypted: i=1; AHgh+RqJTkNNgk7qR42eqVI4Hz8H9DtknADGJB3kqRs+cBMo8WLcuxmbShemWSNWDS0Qlw6WUjbMByDclMY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyzJVp/QAzce0SE2fwImuLsV8NvthlR3IaGLiaoz0V6Bu5lBzNJ
+	2zRpsXrkl/ow69YMmDJ2ozofFVagbSYCh/pJs1F6yfvUiDi8vAVRMdNH
+X-Gm-Gg: AR+sD10rmbuJrFdQfhFWwKMkt78e58KqvNX3rx9lUlZLQkUJ9wULOaPGDXVqXMyzrcu
+	9ufiNJ5y/ftB8hhQa36srijcyuG9WIUuxGtEIAqxKxUqdMeNTpG+BaP3g7bhXFspvx6uP1Wyf/5
+	Lr03gxq+Hoyl9QQ+b/USDRqLpCj+xi5woDOkDChYFl33U4AHko5EdYZ5OwF7GtIozN42g5S1s1g
+	aA3jzJIVALaTvz0xvVE4j/iki9p1V8o9p108/Yr4BLEtNm39EEU4HDCj3lC2ruZzOC3j0gbU2zI
+	+6mo3rHdoOPq93dbU62lC/B8lgApEpVJTjehDKtlJCirfEwu8hjeyAEXq1Tz0taeoBamy1eAvEF
+	qHLfSRhmGeMivjPocnYraMioGy4qDPUMm4uLAYvSReMjspZ0OXi7XIoo8R/8uHGK8wGpkFfdZb8
+	kS3EuA5djSUNneuP5Sd9JsA6GIKPeWr+M9JFcm+f0Ol16C8KhirtDdeg1+Iz+42e/g3QWsfUjJV
+	MI9QG/NWGLZKtdDQMMQ5SweQuJm1mNxnzJnuQ8mLu7qFimy8iz0xVivb8kbP5kUlixcPfr7L2bt
+	qiEzb7Xda9iTvEE5GT1tlY0OgHhr7DgLl60JJysh8Wd5wmYYI6tmHltsdi+JJesl2iOg0b3SfSY
+	wCXDWeRm5MPrds5PpedlvExvvQpOb0fF5WmKDJSSCcOly82PQOcBaJX7vhg671annGzDbeHw=
+X-Received: by 2002:a5d:5d0a:0:b0:47f:9260:4bc9 with SMTP id ffacd0b85a97d-47fb1f10855mr6272310f8f.29.1785310481628;
+        Wed, 29 Jul 2026 00:34:41 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fb6aa3a32sm5852689f8f.2.2026.07.29.00.34.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2026 22:41:03 -0700 (PDT)
-From: Babanpreet Singh <bbnpreetsingh@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Babanpreet Singh <bbnpreetsingh@gmail.com>
-Subject: Re: [PATCH] counter: microchip-tcb-capture: Fix DT channel validation
-Date: Wed, 29 Jul 2026 05:41:02 +0000
-Message-ID: <20260729054102.7-1-bbnpreetsingh@gmail.com>
-X-Mailer: git-send-email 2.47.3
+        Wed, 29 Jul 2026 00:34:41 -0700 (PDT)
+Date: Wed, 29 Jul 2026 09:34:39 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Babanpreet Singh <bbnpreetsingh@gmail.com>
+Cc: William Breathitt Gray <wbg@kernel.org>, Kamel Bouhara
+ <kamel.bouhara@bootlin.com>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] counter: microchip-tcb-capture: Fix DT channel
+ validation
+Message-ID: <20260729093439.00007440@gmail.com>
 In-Reply-To: <20260714042910.7-1-bbnpreetsingh@gmail.com>
 References: <20260714042910.7-1-bbnpreetsingh@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi William,
+On Tue, 14 Jul 2026 04:29:10 +0000
+Babanpreet Singh <bbnpreetsingh@gmail.com> wrote:
 
-A gentle ping on this one - it has been a couple of weeks without any
-comments, and I could not find a competing fix on the list or in
-linux-next.
+> mchp_tc_probe() reads the devicetree "reg" cell - a u32, per the API
+> contract of of_property_read_u32_index() - into a signed int, so the
+> bounds check "channel > 2" fails to reject cell values at or above
+> 0x80000000: reinterpreted as a negative int, they compare below 2 and
+> pass validation.
+>=20
+> A malformed devicetree can therefore drive a negative channel into the
+> ATMEL_TC_REG() offset arithmetic, making the driver access syscon
+> regmap offsets outside the TC block's register window, and into the
+> "t%d_clk" clock-name formatting, where it truncates clk_name (sized
+> for "t0_clk".."t2_clk").
+>=20
+> Declare channel as u32, matching the API contract; the unsigned
+> comparison then rejects everything except channels 0..2. Adjust the
+> format specifier to %u accordingly, which also resolves the W=3D1
+> warning that exposed the gap:
+>=20
+>   microchip-tcb-capture.c:520:56: warning: '%d' directive output may
+>     be truncated writing between 1 and 11 bytes into a region of size
+>     6 [-Wformat-truncation=3D]
+>   note: directive argument in the range [-2147483648, 2]
+>=20
+> No behavior change for well-formed devicetrees: channels 0..2 take
+> identical paths before and after.
+>=20
+> Fixes: 106b104137fd ("counter: Add microchip TCB capture counter")
+> Assisted-by: Claude:claude-fable-5 [gcc W=3D1]
+> Signed-off-by: Babanpreet Singh <bbnpreetsingh@gmail.com>
+> ---
+> Note: struct mchp_tc_data's channel[2] member stays int =E2=80=94 after t=
+his
+> fix it can only ever hold 0..2, so converting it (and the QDEC-mode
+> comparisons reading it) would be churn beyond the minimal fix. Happy
+> to do that conversion as a follow-up if preferred.
+>=20
+>  drivers/counter/microchip-tcb-capture.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/mi=
+crochip-tcb-capture.c
+> index 19d457ae4c3b..e53a8390756b 100644
+> --- a/drivers/counter/microchip-tcb-capture.c
+> +++ b/drivers/counter/microchip-tcb-capture.c
+> @@ -483,7 +483,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
+>  	char clk_name[7];
+>  	struct regmap *regmap;
+>  	struct clk *clk[3];
+> -	int channel;
+> +	u32 channel;
+>  	int ret, i;
+> =20
+>  	counter =3D devm_counter_alloc(&pdev->dev, sizeof(*priv));
+> @@ -517,7 +517,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
+> =20
+>  		priv->channel[i] =3D channel;
+> =20
+> -		snprintf(clk_name, sizeof(clk_name), "t%d_clk", channel);
+> +		snprintf(clk_name, sizeof(clk_name), "t%u_clk", channel);
+> =20
+>  		clk[i] =3D of_clk_get_by_name(np->parent, clk_name);
+>  		if (IS_ERR(clk[i])) {
+>=20
+> base-commit: 3b029c035b34bbc693405ddf759f0e9b920c27f1
 
-No urgency from my side; I mainly want to check the patch has not simply
-been missed. Happy to respin if you would prefer a different shape, or to
-drop it if you would rather leave the validation as it is.
+Makes sense.
 
-For convenience:
-https://lore.kernel.org/all/20260714042910.7-1-bbnpreetsingh@gmail.com/
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Thanks,
-Baban
+--=20
+Kind regards,
+Joshua Crofts
