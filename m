@@ -1,126 +1,125 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203DE3A48ED
-	for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 19:54:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00B0372B26;
+	Thu, 30 Jul 2026 20:07:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785441270; cv=none; b=aLaQvfjzK362ChME1nJnsnwV+wNBoWIfCt/W+CG/vMUF/WpVhUioN0tbsQWBnqO4uHDplbM9G0Hh15jtxwIcPhkDqyurrbaJV3FQ1tKZR1SFdCrCkvietlL1v47n4J9F+WUylV7cA5+mGJmcdDdSlRWyzUbFWQE28+Bqx4KWm98=
+	t=1785442036; cv=none; b=Mmj2bYia+gdlHB050C66yePCbxeDRp6MIeX9PIkpIZxGnmY/HoAeLfGY+Iw9/WNwmYlydJhxbPz4dL8c25NxqfC2bkrd8l0Nmk/HENabJFMq3OVLx3/cUQmYb4leABR4HArHgk87RFhVxzm2ynqKLBlR9keuXS4JWHNHlLpWtn8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785441270; c=relaxed/simple;
-	bh=rVGHrnlM8S0Tru24jhbKwCBMGMa41rcxjUCE1vIpC6A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WrUkjcv0TttViVhAH1kHYGcehTH66zvFYLfhabXOLtaHCl2QtDuF2uGddAARoJZzEeJnV7CRay65+P4CY94q8vKjtpR4EPZpw9gluTyC7ODRW17/KhaFtPMw/y95tX/lJ4bIER7nZywR+edBOPsjvGIe0/Wl3F0SDBMn5aaa+Tk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=MLElI9dR; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785442036; c=relaxed/simple;
+	bh=pbP1Mw0hqJriVsJNj78DV1NDIDK6RHyzUByOUzW4gcQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Z6l+NkMHMMRtincPbbL7gWijRrQRAwHASLdDV7OGwsBZIvO06RxTHVubGqy8NE+I3QCHly1XJsggvj08/EYk+YmGz5hsgxx41BkkvtAIAYR30qMEojY0Fnpsl2uIF1sU8k/7E+IYV/LDqOWtds9+L0UyxXN0l/2n70h2/kjoQ/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=JRNNL+Xz; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="MLElI9dR"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-495635a85d2so1401275e9.0
-        for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 12:54:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785441265; x=1786046065; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rVGHrnlM8S0Tru24jhbKwCBMGMa41rcxjUCE1vIpC6A=;
-        b=MLElI9dR2bwEIKgDWIKS6lMc7SiePuEeCwdVTrF/oB2kFj+bHfRMhRxoX4BuyBvCL0
-         S3ImqI7lPCEo78J6kGVWajgad3fiLGhijYyKTJUHgfmHzZWC5O9u30HLtDJ4KcqtRYbl
-         +P7tnNaYasFnPBN16a680uNqwO03B8f4SaYm+B7n8EYuS5YN1w4QvaVFDqqMD3fOI5vS
-         PE6dT8im12ik9z+bq55nXuhlmFcEaDXEAtA6i4JuIomC40ZJbg6mAmiFG+C2O7TbNqjD
-         +/23iHaP2Q79MVITxCzhrxVLWAnj9OWO1r0JzcLaEYS46iEdwThWoGxMtaA5u9dpK/J5
-         nJkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785441265; x=1786046065;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=rVGHrnlM8S0Tru24jhbKwCBMGMa41rcxjUCE1vIpC6A=;
-        b=gO6kSN4Y8C9kwh9q+eeOz6pg5n0Pm82W/Bxebvza+87EqQLJZVW4Y1ml5CEnG54XZv
-         4rj1lMIX7G/tIKauKcNgibM9mKBVoZRm0Yj7aRlXC/BkwJ91SMa4J5E5gkQ0JUQakCc9
-         ZUZoH+8kHttjDtp/ftbM1ftk0TjRnLG15PThFr359haIFIIF8TyrkIvX6Xtg027AN6vI
-         cgQ4NNKmERqDuuGZuM4oCDXTC/AINYKYwSjTf9bj2p/OrYu9I4Dyyz5cJC7+O2vDt/zK
-         3y642SfGYtU1616ASkwjWZLeYVdA0oxSA6mJxCbGYdsu8a9XK9b0xjArs72Lv9uJ/qCX
-         vIZg==
-X-Forwarded-Encrypted: i=1; AHgh+RqYHc9yRQBjRaSkmn6VOxGnM3lz3KuNKDAbbA6UNgRqoDIaQICPYdBhRhdRCrCOxQeuSTGIC7pDJsk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwnW6k431+8pNXZ5fq+Iyoec7YYbHY4FBRqYjsfsFO6XzX0C30e
-	Z2hZXvV1wOcb3uNzToF0SZ1PfbjOdtaP11Sm0PjnKc42/etIsbdywybxjcIbTQzGK6Q=
-X-Gm-Gg: AR+sD11a1uwkex4/9PhlOhTWHzUWgYKDMgdcCapnTwM/WbycogRUIQL01M2DEHwmiO0
-	QAXr32+4eFJUlkXeN7GDU9FokBgFlb7e/qTgKwjzGBv2Z5wa3VVrjQatEDnUmBLdoPrQxM86Bee
-	HW+ce3pKHQaanfVEm/V+XMKjeZNzTxqW4jXzbtXzgiEq2PHaWbdv6NLYbXAd0bjZAhYMRdIybyG
-	oW1XMWm0AkvtmNSqg+ZZIpC1AxXfnVEX2OlzQTvZcgzHYtnZwQw97aISzKvW+/x3S+RfAbo+gT1
-	XbU5VXtqCkCwhmD0s1d4DRzFCzsdynE1p+yL7dwstWMhWxuo/s/GdleVg5G6/nDBw6VIZq1DQVP
-	KPQHDLcLTw7aImESISz9ZFm1jik87RO/aiB+O/mtUVAwzfN8s0FdsMD1lj4p0/ZXdlKUOfCpZ/O
-	K/cAha5kpW196Lr8zOe6pxQmvFW/X5URiijS8VLOlLh+NqvAWm9RSVpZImtxxYaLi8lQ==
-X-Received: by 2002:a05:600c:a3a2:b0:495:6396:8b67 with SMTP id 5b1f17b1804b1-49800e89181mr42298655e9.4.1785441265073;
-        Thu, 30 Jul 2026 12:54:25 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-498011f341fsm71200825e9.5.2026.07.30.12.54.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 12:54:24 -0700 (PDT)
-Date: Thu, 30 Jul 2026 21:54:23 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Kaustabh Chakraborty <kauschluss@disroot.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Peter Griffin <peter.griffin@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: proximity: add driver for Sharp GP2AP070S
- proximity sensor
-Message-ID: <amurhVbZi_y0N55n@monoceros>
-References: <20260731-gp2ap070s-v2-0-1bdfee07d5ea@disroot.org>
- <20260731-gp2ap070s-v2-2-1bdfee07d5ea@disroot.org>
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="JRNNL+Xz"
+Received: from mail01.layka.lan (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id 7662F847ED;
+	Thu, 30 Jul 2026 22:07:11 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+ by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
+ id MGyFMOuAgvrF; Thu, 30 Jul 2026 22:07:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1785442030; bh=pbP1Mw0hqJriVsJNj78DV1NDIDK6RHyzUByOUzW4gcQ=;
+	h=From:Subject:Date:To:Cc;
+	b=JRNNL+Xzb5wzfm1TLJH7CzauBNoKJ9NuilMq8fqqBxRGgjnSUv7C/FIUHJx1+sBTF
+	 7c6lrXTv8QK0r9ppZk0whl5UtDsbPNj3H6jOZUKTqD3hR8/5J7Rdsi/hokRVVIEPtt
+	 lJ7FJg+hj+RKrg2cvqEVcPQeuwgRmQ+zLuwHQSZuftZDpSWSJu44PFyR7/qQ2Sdvzx
+	 KNUacVYc2sMN1gx7TQjPhPgfQXqjLzj1QyN51p/j8Rh66U8+upxVAdAqcZwpe/yR2O
+	 E9o1GwrRvtbHuTv8MQQEGkNvdOKDsLKBxZFoEDRxw93/tZQ1111t5hc0BVciiwWQ9H
+	 A5dIZf/A+2jFg==
+From: Kaustabh Chakraborty <kauschluss@disroot.org>
+Subject: [PATCH v3 0/3] Add Sharp GP2AP070S Proximity Driver and enable it
+ in Galaxy J6 (j6lte)
+Date: Fri, 31 Jul 2026 01:36:59 +0530
+Message-Id: <20260731-gp2ap070s-v3-0-d1f5cecf9fe7@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6iqq33laew6sina5"
-Content-Disposition: inline
-In-Reply-To: <20260731-gp2ap070s-v2-2-1bdfee07d5ea@disroot.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22NwQ7CIBAFf6XZs5gFrKgn/8N4oLBt8VAaqETT9
+ N+FeqmJx0nezJshUnAU4VLNECi56PyQQe4qML0eOmLOZgaB4ohKSNaNQo+oMLJWEXKBZ4W6hrw
+ fA7XutbZu9y/HZ/MgM5VAWfQuTj6817PEy+5fN3GGrDkZLfXBcLT2al0M3k97Hzoo5SQ2ruRbV
+ 2SXN7YlQmVr0r/usiwfH+Pf+PIAAAA=
+X-Change-ID: 20260723-gp2ap070s-f7e0120970a5
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Kaustabh Chakraborty <kauschluss@disroot.org>, 
+ Peter Griffin <peter.griffin@linaro.org>, 
+ Alim Akhtar <alim.akhtar@samsung.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-samsung-soc@vger.kernel.org
 
+Sharp GP2AP070S is a promixity sensor (NOT an ambient light sensor) in
+mobile devices. This sensor chip is found in mobile devices, including
+(but perhaps not limited to) Samsung Galaxy J6 (codename: j6lte).
 
---6iqq33laew6sina5
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v2 2/3] iio: proximity: add driver for Sharp GP2AP070S
- proximity sensor
-MIME-Version: 1.0
+To the best of my knowledge, there's no public documentation available
+for this device. [1] is a downstream kernel implementation, which has
+been the single source for developing this driver. Some bits have also
+been stolen from existing GP2AP* drivers available in iio/light.
 
-Hello,
+The last patch in this series touches the device tree sources to add the
+light sensor node in j6lte. This needs to be accepted into next only
+when the former patches are in next.
 
-On Fri, Jul 31, 2026 at 01:01:30AM +0530, Kaustabh Chakraborty wrote:
-> +#include <linux/i2c.h>
-> [...]
-> +#include <linux/mod_devicetable.h>
+[1] https://github.com/Exynos7870/android_kernel_samsung_universal7870/blob/lineage-16.0/drivers/sensors/gp2ap070s.c
 
-<linux/i2c.h> is enough to get the definitions for i2c_device_id and
-of_device_id. Please rely on that and don't explicitly add an include
-for <linux/mod_devicetable.h>. The latter is a dependency hell and is
-going away soon.
+Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
+---
+Changes in v3:
+- Revoke stale patches sent erroneously, v2 changelog applies
+- Link to v2: https://patch.msgid.link/20260731-gp2ap070s-v2-0-1bdfee07d5ea@disroot.org
 
-Best regards
-Uwe
+Changes in v2:
+- Reshuffle and add missing header inclusions (Joshua Crofts)
+- Add missing regulators in driver and dt-schema
+  (Joshua Crofts, Jonathan Cameron)
+- Rename and rearrange register addresses, masks and values (Jonathan Cameron)
+- Use regmap_get_device() for carrying dev pointer (Jonathan Cameron)
+- Use FIELD_GET() instead of !! (Jonathan Cameron)
+- Drop unused i2c_set_clientdata() (Jonathan Cameron)
+- Use fsleep() instead of usleep_range() (Jonathan Cameron)
+- Check if proximity-near-level is available before reading its value
+  (Jonathan Cameron)
+- Drop redundant dev_err_probe() from devm_request_threaded_irq()
+  (Joshua Crofts)
+- Use mutex guards for guarding concurrent read/write calls (Sashiko)
+- Add reset chip action on removal (Sashiko)
+- Ensure input value in iio_write_event_value() is 16-bit (Sashiko)
+- Use regmap_bulk_*() instead of regmap_raw_*() (Jonathan Cameron)
+- Hint volatile registers for regmap (Jonathan Cameron)
+- Link to v1: https://patch.msgid.link/20260723-gp2ap070s-v1-0-b8ca3a4c10dd@disroot.org
 
---6iqq33laew6sina5
-Content-Type: application/pgp-signature; name="signature.asc"
+---
+Kaustabh Chakraborty (3):
+      dt-bindings: iio: proximity: add Sharp GP2AP070S proximity sensor
+      iio: proximity: add driver for Sharp GP2AP070S proximity sensor
+      arm64: dts: exynos7870-j6lte: add Sharp GP2AP070S proximity sensor
 
------BEGIN PGP SIGNATURE-----
+ .../bindings/iio/proximity/sharp,gp2ap070s.yaml    |  60 +++
+ arch/arm64/boot/dts/exynos/exynos7870-j6lte.dts    |  55 ++-
+ drivers/iio/proximity/Kconfig                      |  11 +
+ drivers/iio/proximity/Makefile                     |   1 +
+ drivers/iio/proximity/gp2ap070s.c                  | 505 +++++++++++++++++++++
+ 5 files changed, 630 insertions(+), 2 deletions(-)
+---
+base-commit: 290aaf24a551d5a0dce037e3fab30820f9113a10
+change-id: 20260723-gp2ap070s-f7e0120970a5
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmprq+wACgkQj4D7WH0S
-/k6zUAf/Sx1cl/BKPkqGFdNbaghmO2SASm11okWqQNPUBAASK9s2FJe8D7X0d2Pc
-rxbD9qNMckkIkAmLcK0z25WgZBGBFp9p7JFMNNaNtODVdDrSzVAWkpVsCP+1KxKx
-wpfH4GBPCJ7KZs5VSphtsnQZEUPocJI1S6+FR/2erYowET73idWdL578hdOguif3
-gGC3nzPWAAeIr2NuLcA/wszaK7meQrPxhg24VjiqyZiKWV+sCg6btmb31dzv0U+w
-iNJKNRoMfAACrLENOmFoF7u5Ca/msHAhYS5POf7oB3t3//qGzwY98+DPRHeZzWfu
-loDsTIst5Wzn48eksG4i14baHoA+Rg==
-=xgKb
------END PGP SIGNATURE-----
+Best regards,
+--  
+Kaustabh Chakraborty <kauschluss@disroot.org>
 
---6iqq33laew6sina5--
