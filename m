@@ -1,123 +1,187 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED669432E94
-	for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 14:29:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E55243E06E
+	for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 15:57:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785421752; cv=none; b=i6utvNYUWuo+4yG/9yBtbQDpTowP9lU/53J+ph03PRiZmj08uRGUWJzP+e6nD8sNCQ1ALiqX53IfED7wSoYfdiCZEQwkCtBtnjg7RheoYd7uwC9uRuPx/hbwcOKCGPdZvygBqFbP4NHmabfMOwoytZYL4TQjMQKVAjc/bI/cC7A=
+	t=1785427059; cv=none; b=ueJ+HsfQelJRjSy/S2u5itJ5f7rqz5yv3Z8YWadgLmZ394V5GfPrGC50RZSfeA0QA0oWcVMwJJO7jww01Yh+u8Lf24VOe52Tq+sAk0sZDdwViZwTD2uhfWCsmfdvHYNQ3o9sWtAszyP3CerPPMXyHWMcEctcGhGwdN6luMo6T/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785421752; c=relaxed/simple;
-	bh=NqbpnMEMVT6pZFLXx+aKwNvaoAIbJW/qveLfeiOxRIg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e864qv1fk13MKM6SKlaXivmPwcMgjp4EwgjAMrZL3oV05UkHOnTdCh7WBWyDBG5o79ONTSSioKl68nb5yhC+s9RP6kVtUfWCAxmhXFseG0DmXJ/f/u/LQXIL3xHW/4dkZIWN9WvqtGBqrqFqgUnDzXitNO5iVva0IZNgnHR1Jr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ObtGsHj0; arc=none smtp.client-ip=209.85.128.44
+	s=arc-20240116; t=1785427059; c=relaxed/simple;
+	bh=ALckN1nV5wzz8cd6PQjathMwp9PWXp/GbdcbSmSLNEQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AnETFkgHQ3ahwdiByOSN2T5DUVum/sTbGKm8ZZltWmM56SZh6cs89L6yuEVTsYDj4VE7R+06D3OYDYWq0ZPyF2CvlExCuBZSP7XEWUzWq7LwwqbYeNwyi+rfKxkUaNQ+H9kyWxiJ70+VVBAKWTE1AR01A6O82fGfcOYi59LPBQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q4Ix/Whb; arc=none smtp.client-ip=209.85.215.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ObtGsHj0"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-49550ec592cso5252865e9.0
-        for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 07:29:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q4Ix/Whb"
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-cbb662575d3so1387725a12.0
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 08:57:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785421749; x=1786026549; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=BiODsEReZFxde+7AXbuA9TsINgA6XK/L0TB2Iycg95w=;
-        b=ObtGsHj0QvWvcoZk33Zg+k9Gq7cv5BR/IhtjjiVeCsXtGj4YQymEql1B/LXDsPxI4m
-         dTCjsZbPVJZUdVrb76YDCZgHcJU55brKxrL3ANsz5OHLgSpEOvBu27eDE1JfqTVBsTRN
-         TTs95OnE+8ajYmXxu9HIbBSCKA9gKp8Qsro+y1giT5C7OYfv0O8VIMHpgdztMGSymEsM
-         Vu3923AoBJbvbbGD/YcdUv5lQ03VOql5Rt0Msyk8XrXKXA0qbq/CbUU+6YNBet0s5ZdK
-         PDdZHkcsEu2zc7KugJbgYzd0+Ypfo2FC3jaApKyDCKz6abcIjNoKoXNlA3MUb1Skepqj
-         JL7A==
+        d=gmail.com; s=20251104; t=1785427057; x=1786031857; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=hJ72M8reVIZqxbhzSXS1Mi2+37hAcyZSuGI4YdKYzKM=;
+        b=Q4Ix/WhbWDv6H7PK0m63V6++Gu69Q0t1KIO4/oJCXndAPGkG/Lfya0W4nfZj4afdG5
+         YPX63gG0D0tgAFRTrKL6Vj8GsfmUIofALkqc+aYhbgMNh72/cB094IS8YUaiglOCj8KY
+         vdyF6/AZyfJx6leUwYXk2KAxubPemgBfFr6BnfDtfU/6kD8O9hJuS2nKX8K1+AA8ynPl
+         UCSP/BKR6QqU1v2AYYBDyxZIzrJ9OZntBEA4bMu6qYb6UB7HfgII2Sjlv1kqu5PBp5/s
+         Yg1UbK6T+xGzjPoGT96tbN1ZBzX9zOzehyK/3qslHV6n6UnTQXbZr/0E27JbdH4oRWfY
+         Fmwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785421749; x=1786026549;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=BiODsEReZFxde+7AXbuA9TsINgA6XK/L0TB2Iycg95w=;
-        b=ijjs9cIcKLvZ1ApFuqCOpKMV7Eluv0gGQhX1+Ygj2gut0QAush77aGinlP0WXhWviO
-         qAu7Bg+xoJoG29Hv+h+cOAk/7242UsAq7uf/9SSxl1x9xF+vMmRBMIQfvfnmopCqHJKj
-         L7lTDUtdZ1cDB8tiixrHxZ85ntj6vbI5ChPUk32/hegW8WF89ZSFonzuxQUBoY1xGXbo
-         p96DEqrAo42ZfUZSLIW3mT/nrDcx6QiwKXqOy5YXxcUs7d0iSOgRac8saoNsnE5iH5n8
-         eMA+wTO9zixFY6K1uUdu9HdpDk9DxRFnCVnOsIW/xOIX41JQ3je7Gt9h/Ky6fuKKYiJm
-         DCDQ==
-X-Forwarded-Encrypted: i=1; AHgh+RodDmNL2c+HwOubgiOb/EFywa3PypQf6p6+zDha3Sn1KSd7+aWwqCTVGOtThp7e9iCcffNIq500z3E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxSrcuBQ+Y6DTv8LsOLDWBeFkX0Z4C8fs/Udw6oIlCbK+yDilud
-	dZsjTHKHlGLgXhKKo1o4CpX3TtY3JP/5p+4Uuro4mYvIPONRa50hPwN2
-X-Gm-Gg: AR+sD13Wh+HWngDqIIbJulrtHsHsdgRll4vE1bS0sV6yEynrtKhBlODphO/GLNP5prf
-	KFsylnn7tl2XIOQc/AE1w4jU/kf8VsoZa0qD0NlDpDN/RdTuTcyFz0+wdm93cAqxos0Q5YtmFBN
-	ZDFwsgXyOjupmJKl53bitmenAF8+SVloCtuf2M1LbUfj8Elq0xAWaCUPhbHcNcq9ZDip0YYyN94
-	J3B85kMtuynYQbLIKP9oufO/rAESd8CLouohAojT1As4a//qppjrKV843CNiXlkKlDg3CE0UIYe
-	8Mss2gAMIANAYcAOh2ybFAhHOcDK4yzMMtW82DYmRkMP7k6xNXb6s1d8q27U1egPZ0tGWBoFMOn
-	5Ykz0R4sUTteuOpB362McIPdl4LgMjvFUwH4zVJVUJ26vsoCiSInuLPBX3WCAB+M8F480IK1ABR
-	Ol/fRHS0ZE+T8cgT3pxCwzoYlSd+ntl6TvednSRcFAS6w5kwzfvK+tzi6fbV4EbcuX7QIeF1ase
-	DrqTm+MKCE8auEREg62wVAVx650Wlpy5kL2KYTwodD7n9QrPv8jJMCBXSXm3d3PT5L1kyEluzFW
-	cfEiX35e7j52ku8mityiMSSi+pBypF3fNtWAEcvvkMznPH9KzPDghML4b1w6I+cHZ2S7Vba+RQQ
-	YIEP/Co1wgiYP8kNm8xaeCyoPBuvTXBh17/N1IjbOVUTxB158fV4+PxrqUgI4GbMmmsuuFts=
-X-Received: by 2002:a05:600c:1551:b0:495:5d6d:9cc1 with SMTP id 5b1f17b1804b1-49804c8f0d1mr8791095e9.0.1785421748939;
-        Thu, 30 Jul 2026 07:29:08 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-498010aae15sm66472515e9.13.2026.07.30.07.29.08
+        d=1e100.net; s=20251104; t=1785427057; x=1786031857;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=hJ72M8reVIZqxbhzSXS1Mi2+37hAcyZSuGI4YdKYzKM=;
+        b=E5ZP4pl1gRW4Blk8twm5UpzlvnEoOieaY762IJpZVpm3EcHahQ63koe/K98bAMoN+c
+         si2e18SG8qLrNYOcvw6G8EOPajSk/BTAbq6ZW0IO5DpfhGKKj4QFFkFJ0VjFIuy6m+OM
+         ZsD9RoQBCz7XZGfI5JH0kQw0erTm8aZEDlPFqHK8VzyQPxSNfQhpLe6HfgdEvc8L/Wm+
+         x8McXYKi3/Pknml8M4ociQAf/Jqs/xq/Us8gho2m+2282lNtfLjwlCV8OdMOlgHoKwzc
+         DKtaQm5F9I0xjYkEGI/lvesdnigMdavN1ETMZtI8AyoF5wNrwQQ5LqSVS4eNoRiN+rEY
+         PllQ==
+X-Forwarded-Encrypted: i=1; AHgh+Ro/swaR9fDh0GgXg3eRv11eCoFcAhTU7giRNGvuuo9F1c0Ilazn5Bx2gJPyLNEkkF8naWmbHAp05OY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzb7v8mfczwL7WC2NlpJTwVh6HPyzY4PYT38dri6K1XGbTM9Zh9
+	IFfFf1LCGOzx14av2mLoaoGh2U0Dx5Y8a1S6K1QNoKXxcsu2Jr6oK/52
+X-Gm-Gg: AR+sD11P1hrnIvVW1Rblz/+ZhB67urAn/3zNjLl1ZNKb8ABdhz8hUtEh2cB/mVZ50BX
+	oDAqgiiCZDCqURvZtfMmXXC/81Ishwx1/LrrpE45idTON3lN3nueVmYPVH0eE0OxNEiN3W+80po
+	FJUwMt6LLuqbHcaa8sklUIem+Yp2Gu1bHlfmTjaS5f9qb2n8u5sgZjN08aJv6+/WQIuvP+6tVH6
+	VPp8EHmeGuj9VCbsFwN7QyxQyNp4BaA254ZpuKwBUdl8Pv9KL0RQhFPyBeTBjt+dSb3BUcL9A5K
+	sXwleWV+rhKjCUfd2vyEgcJlQmr9kkNIAHAJxqhvHRH8MbHnFa0mTkzWD3USJGqm6k83cmBOCYa
+	7UJDty95qk3Xek4VRZnJNjLk5F5bKErQJ6xoJzd4rTNRIue4hMj4fcxeslIyzVRwg9fOfLQy5PH
+	l0p+XV8JVrLz48NJ3suIcEvHkgX2LDzcWYRG6HkLulaTjige7rl5rRD8TUjJg=
+X-Received: by 2002:a05:6a21:4d91:b0:3c0:b766:7500 with SMTP id adf61e73a8af0-3c90075983emr3111077637.68.1785427057464;
+        Thu, 30 Jul 2026 08:57:37 -0700 (PDT)
+Received: from ubuntu.. ([2405:201:8026:213e:5fd6:849a:c1fd:20ef])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504e1ff81sm23423608eec.31.2026.07.30.08.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 07:29:08 -0700 (PDT)
-Date: Thu, 30 Jul 2026 16:29:07 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: mdshahid03@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, David Lechner
- <dlechner@baylibre.com>, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>
-Subject: Re: [PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to use
- dev_err_probe()
-Message-ID: <20260730162907.0000588b@gmail.com>
-In-Reply-To: <20260730140405.369634-2-mdshahid03@gmail.com>
-References: <20260727034009.5c6b0be9@jic23-huawei>
-	<20260730140405.369634-1-mdshahid03@gmail.com>
-	<20260730140405.369634-2-mdshahid03@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Thu, 30 Jul 2026 08:57:36 -0700 (PDT)
+From: mdshahid03@gmail.com
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andy@kernel.org>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Mohammad Shahid <mdshahid03@gmail.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>
+Subject: [RESEND PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to use dev_err_probe()
+Date: Thu, 30 Jul 2026 21:27:12 +0530
+Message-ID: <20260730155712.374464-1-mdshahid03@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 30 Jul 2026 19:32:45 +0530
-mdshahid03@gmail.com wrote:
+From: Mohammad Shahid <mdshahid03@gmail.com>
 
-> From: Mohammad Shahid <mdshahid03@gmail.com>
-> 
-> Replace open-coded probe error handling with dev_err_probe() for
-> resource acquisition and initialization failures.
-> 
-> This simplifies the error paths, avoids repetitive error handling,
-> and automatically suppresses duplicate messages when -EPROBE_DEFER is
-> returned while preserving the existing error messages.
-> 
-> Also remove the redundant error message after iproc_adc_enable(),
-> allowing the error to be propagated without additional logging.
-> 
-> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
-> ---
+Replace open-coded probe error handling with dev_err_probe() for
+resource acquisition and initialization failures.
 
-Hi Mohammad,
+This simplifies the error paths, avoids repetitive error handling,
+and automatically suppresses duplicate messages when -EPROBE_DEFER is
+returned while preserving the existing error messages.
 
-Please don't reply with a new patch version to to the previous patch,
-it breaks tools like b4 and appears weird in people's email clients.
+Also remove the redundant error message after iproc_adc_enable(),
+allowing the error to be propagated without additional logging.
 
-Since this is just a matter of resending, please send the patch again
-(not replying to the previous thread) with the tag [RESEND PATCH] in
-the subject instead.
+Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+---
+v2:
+- Convert remaining probe error paths to use dev_err_probe().
+- Remove redundant error message after iproc_adc_enable()
+ drivers/iio/adc/bcm_iproc_adc.c | 52 +++++++++++++++------------------
+ 1 file changed, 24 insertions(+), 28 deletions(-)
 
-Thanks
-
+diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+index cf4738b16e62..08e056468d8e 100644
+--- a/drivers/iio/adc/bcm_iproc_adc.c
++++ b/drivers/iio/adc/bcm_iproc_adc.c
+@@ -522,52 +522,48 @@ static int iproc_adc_probe(struct platform_device *pdev)
+ 
+ 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+ 			   "adc-syscon");
+-	if (IS_ERR(adc_priv->regmap)) {
+-		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
+-		ret = PTR_ERR(adc_priv->regmap);
+-		return ret;
+-	}
++	if (IS_ERR(adc_priv->regmap))
++		return dev_err_probe(&pdev->dev,
++				     PTR_ERR(adc_priv->regmap),
++				     "failed to get handle for tsc syscon\n");
+ 
+ 	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
+-	if (IS_ERR(adc_priv->adc_clk)) {
+-		dev_err(&pdev->dev,
+-			"failed getting clock tsc_clk\n");
+-		ret = PTR_ERR(adc_priv->adc_clk);
+-		return ret;
+-	}
++	if (IS_ERR(adc_priv->adc_clk))
++		return dev_err_probe(&pdev->dev,
++				     PTR_ERR(adc_priv->adc_clk),
++				     "failed getting clock tsc_clk\n");
+ 
+ 	adc_priv->irqno = platform_get_irq(pdev, 0);
+ 	if (adc_priv->irqno < 0)
+-		return adc_priv->irqno;
++		return dev_err_probe(&pdev->dev,
++				     adc_priv->irqno,
++				     "failed to get IRQ\n");
+ 
+ 	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
+ 				IPROC_ADC_AUXIN_SCAN_ENA);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to write IPROC_REGCTL2 %d\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&pdev->dev,
++				     ret,
++				     "failed to write IPROC_REGCTL2\n");
+ 
+ 	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
+ 				iproc_adc_interrupt_handler,
+ 				iproc_adc_interrupt_thread,
+ 				IRQF_SHARED, "iproc-adc", indio_dev);
+-	if (ret) {
+-		dev_err(&pdev->dev, "request_irq error %d\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&pdev->dev,
++				     ret,
++				     "failed to request IRQ\n");
+ 
+ 	ret = clk_prepare_enable(adc_priv->adc_clk);
+-	if (ret) {
+-		dev_err(&pdev->dev,
+-			"clk_prepare_enable failed %d\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&pdev->dev,
++				     ret,
++				     "failed to enable clock\n");
+ 
+ 	ret = iproc_adc_enable(indio_dev);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to enable adc %d\n", ret);
++	if (ret)
+ 		goto err_adc_enable;
+-	}
+ 
+ 	indio_dev->name = "iproc-static-adc";
+ 	indio_dev->info = &iproc_adc_iio_info;
 -- 
-Kind regards,
-Joshua Crofts
+2.43.0
+
