@@ -1,187 +1,302 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E55243E06E
-	for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 15:57:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6583AFD08;
+	Thu, 30 Jul 2026 17:34:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785427059; cv=none; b=ueJ+HsfQelJRjSy/S2u5itJ5f7rqz5yv3Z8YWadgLmZ394V5GfPrGC50RZSfeA0QA0oWcVMwJJO7jww01Yh+u8Lf24VOe52Tq+sAk0sZDdwViZwTD2uhfWCsmfdvHYNQ3o9sWtAszyP3CerPPMXyHWMcEctcGhGwdN6luMo6T/k=
+	t=1785432872; cv=none; b=Y7phijTIYkmYgz3wvdPdLqt+DjQMcI2JrzvWSGKfPcIqCHVTE4Q8P9XC9HAI2uYc9DcZFGWJi3kNiH2CoS8XCW3dOSQZAboV2ofj5qjjtzmRolcUtcMxU27boVULlAXMn80kDvB2lND9wCLvXcYgt8jpD6WUVhlgjEgqHCd45fs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785427059; c=relaxed/simple;
-	bh=ALckN1nV5wzz8cd6PQjathMwp9PWXp/GbdcbSmSLNEQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AnETFkgHQ3ahwdiByOSN2T5DUVum/sTbGKm8ZZltWmM56SZh6cs89L6yuEVTsYDj4VE7R+06D3OYDYWq0ZPyF2CvlExCuBZSP7XEWUzWq7LwwqbYeNwyi+rfKxkUaNQ+H9kyWxiJ70+VVBAKWTE1AR01A6O82fGfcOYi59LPBQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q4Ix/Whb; arc=none smtp.client-ip=209.85.215.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785432872; c=relaxed/simple;
+	bh=wVCHEiB4jfgGm4pZxUP0mkHcMrjil6cNQBNLsE11hUQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FTqQ08MguVwexcAD/7Fo/S7B5TJNfwKLYvkKzQ3+bwyXPq78TtaI2mEl4LRuoamS9azYC6VIVkllNvAPt+yAfHf1jZ8cTb5z0DO0V3riei7cA/MLzNvr2WHLM8u1pNLX8hvZAZE/2NaAdaK6/MILM0Q733CY0ZXqCqw9Bh2FlII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZRmYqDNJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q4Ix/Whb"
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-cbb662575d3so1387725a12.0
-        for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 08:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785427057; x=1786031857; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=hJ72M8reVIZqxbhzSXS1Mi2+37hAcyZSuGI4YdKYzKM=;
-        b=Q4Ix/WhbWDv6H7PK0m63V6++Gu69Q0t1KIO4/oJCXndAPGkG/Lfya0W4nfZj4afdG5
-         YPX63gG0D0tgAFRTrKL6Vj8GsfmUIofALkqc+aYhbgMNh72/cB094IS8YUaiglOCj8KY
-         vdyF6/AZyfJx6leUwYXk2KAxubPemgBfFr6BnfDtfU/6kD8O9hJuS2nKX8K1+AA8ynPl
-         UCSP/BKR6QqU1v2AYYBDyxZIzrJ9OZntBEA4bMu6qYb6UB7HfgII2Sjlv1kqu5PBp5/s
-         Yg1UbK6T+xGzjPoGT96tbN1ZBzX9zOzehyK/3qslHV6n6UnTQXbZr/0E27JbdH4oRWfY
-         Fmwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785427057; x=1786031857;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=hJ72M8reVIZqxbhzSXS1Mi2+37hAcyZSuGI4YdKYzKM=;
-        b=E5ZP4pl1gRW4Blk8twm5UpzlvnEoOieaY762IJpZVpm3EcHahQ63koe/K98bAMoN+c
-         si2e18SG8qLrNYOcvw6G8EOPajSk/BTAbq6ZW0IO5DpfhGKKj4QFFkFJ0VjFIuy6m+OM
-         ZsD9RoQBCz7XZGfI5JH0kQw0erTm8aZEDlPFqHK8VzyQPxSNfQhpLe6HfgdEvc8L/Wm+
-         x8McXYKi3/Pknml8M4ociQAf/Jqs/xq/Us8gho2m+2282lNtfLjwlCV8OdMOlgHoKwzc
-         DKtaQm5F9I0xjYkEGI/lvesdnigMdavN1ETMZtI8AyoF5wNrwQQ5LqSVS4eNoRiN+rEY
-         PllQ==
-X-Forwarded-Encrypted: i=1; AHgh+Ro/swaR9fDh0GgXg3eRv11eCoFcAhTU7giRNGvuuo9F1c0Ilazn5Bx2gJPyLNEkkF8naWmbHAp05OY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzb7v8mfczwL7WC2NlpJTwVh6HPyzY4PYT38dri6K1XGbTM9Zh9
-	IFfFf1LCGOzx14av2mLoaoGh2U0Dx5Y8a1S6K1QNoKXxcsu2Jr6oK/52
-X-Gm-Gg: AR+sD11P1hrnIvVW1Rblz/+ZhB67urAn/3zNjLl1ZNKb8ABdhz8hUtEh2cB/mVZ50BX
-	oDAqgiiCZDCqURvZtfMmXXC/81Ishwx1/LrrpE45idTON3lN3nueVmYPVH0eE0OxNEiN3W+80po
-	FJUwMt6LLuqbHcaa8sklUIem+Yp2Gu1bHlfmTjaS5f9qb2n8u5sgZjN08aJv6+/WQIuvP+6tVH6
-	VPp8EHmeGuj9VCbsFwN7QyxQyNp4BaA254ZpuKwBUdl8Pv9KL0RQhFPyBeTBjt+dSb3BUcL9A5K
-	sXwleWV+rhKjCUfd2vyEgcJlQmr9kkNIAHAJxqhvHRH8MbHnFa0mTkzWD3USJGqm6k83cmBOCYa
-	7UJDty95qk3Xek4VRZnJNjLk5F5bKErQJ6xoJzd4rTNRIue4hMj4fcxeslIyzVRwg9fOfLQy5PH
-	l0p+XV8JVrLz48NJ3suIcEvHkgX2LDzcWYRG6HkLulaTjige7rl5rRD8TUjJg=
-X-Received: by 2002:a05:6a21:4d91:b0:3c0:b766:7500 with SMTP id adf61e73a8af0-3c90075983emr3111077637.68.1785427057464;
-        Thu, 30 Jul 2026 08:57:37 -0700 (PDT)
-Received: from ubuntu.. ([2405:201:8026:213e:5fd6:849a:c1fd:20ef])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31504e1ff81sm23423608eec.31.2026.07.30.08.57.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 08:57:36 -0700 (PDT)
-From: mdshahid03@gmail.com
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andy@kernel.org>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Mohammad Shahid <mdshahid03@gmail.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>
-Subject: [RESEND PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to use dev_err_probe()
-Date: Thu, 30 Jul 2026 21:27:12 +0530
-Message-ID: <20260730155712.374464-1-mdshahid03@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZRmYqDNJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEAFD1F000E9;
+	Thu, 30 Jul 2026 17:34:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785432870;
+	bh=wFd/U3+bJJzWJa3YP6HFnPKazM7hBVF6VDlozGeiPbQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ZRmYqDNJews0kLUI8EyKKf+rvLW4Zg8UqwachQ+sdUKw4y4pPK3wDQeDtTTjfvU6R
+	 qK080T53q70LBdhHe7hJA5Ymqcpl+HLTlo1c3v+RUd7LR3GyOwWxPnRE4eohRF4P3E
+	 VhbAhG2/zp4KxvnXyl5J4ts0/0sLLXqY8dhRMM+RNfWtH3ROEcusxBrvufY3NP9JGx
+	 loZfoKSJAZYyYjbR/NR22avpYwMxkkZMfz/qRF+U9Va2fze9ErZMeNjfqWaZKcb7od
+	 0uobfcZHYUQo3w1rf4a8lQQVQDsq+DjdGaVt4XDaZGeIDQfpDZotY9hbbkFRHFa0Jo
+	 DMxqzTBEHdlkw==
+Date: Thu, 30 Jul 2026 18:34:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc: Conor Dooley <conor@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Janani Sunil <janani.sunil@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Mark Brown <broonie@kernel.org>, Marius Cristea
+ <marius.cristea@microchip.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil
+ <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson
+ <nedo80@gmail.com>
+Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
+ spi-device-addr
+Message-ID: <20260730183425.22f2ba8c@jic23-huawei>
+In-Reply-To: <amslUWahHYtwXuCG@nsa>
+References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
+	<20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+	<cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
+	<20260725230739.63ff7000@jic23-huawei>
+	<20260728-patronize-thwarting-56fab2e11077@spud>
+	<20260728221719.7f668a73@jic23-huawei>
+	<20260729-hundredth-suffice-f28afa67bc06@spud>
+	<20260730000929.2ec20cf8@jic23-huawei>
+	<amslUWahHYtwXuCG@nsa>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Mohammad Shahid <mdshahid03@gmail.com>
+On Thu, 30 Jul 2026 11:25:34 +0100
+Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
 
-Replace open-coded probe error handling with dev_err_probe() for
-resource acquisition and initialization failures.
+> On Thu, Jul 30, 2026 at 12:09:29AM +0100, Jonathan Cameron wrote:
+> > On Wed, 29 Jul 2026 21:47:45 +0100
+> > Conor Dooley <conor@kernel.org> wrote:
+> >  =20
+> > > On Tue, Jul 28, 2026 at 10:17:19PM +0100, Jonathan Cameron wrote: =20
+> > > > On Tue, 28 Jul 2026 17:00:55 +0100
+> > > > Conor Dooley <conor@kernel.org> wrote:
+> > > >    =20
+> > > > > On Sat, Jul 25, 2026 at 11:07:39PM +0100, Jonathan Cameron wrote:=
+   =20
+> > > > > > On Sat, 25 Jul 2026 15:57:07 -0500
+> > > > > > David Lechner <dlechner@baylibre.com> wrote:
+> > > > > >      =20
+> > > > > > > On 7/22/26 2:54 AM, Janani Sunil wrote:     =20
+> > > > > > > > Add the generic spi-device-addr property to the binding and=
+ deprecate
+> > > > > > > > the existing vendor specific microchip,hw-device-address pr=
+operty.
+> > > > > > > >=20
+> > > > > > > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> > > > > > > > ---
+> > > > > > > >  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml    =
+     | 10 ++++++++--
+> > > > > > > >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > > > > > > >=20
+> > > > > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/micr=
+ochip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mc=
+p3564.yaml
+> > > > > > > > index 675319276197..de1ea289e7f5 100644
+> > > > > > > > --- a/Documentation/devicetree/bindings/iio/adc/microchip,m=
+cp3564.yaml
+> > > > > > > > +++ b/Documentation/devicetree/bindings/iio/adc/microchip,m=
+cp3564.yaml
+> > > > > > > > @@ -80,6 +80,7 @@ properties:
+> > > > > > > >      $ref: /schemas/types.yaml#/definitions/uint32
+> > > > > > > >      minimum: 0
+> > > > > > > >      maximum: 3
+> > > > > > > > +    deprecated: true
+> > > > > > > >      description:
+> > > > > > > >        The address is set on a per-device basis by fuses in=
+ the factory,
+> > > > > > > >        configured on request. If not requested, the fuses a=
+re set for 0x1.
+> > > > > > > > @@ -91,6 +92,12 @@ properties:
+> > > > > > > >        clocking of the device address (BITS[7:6] - top two =
+bits of COMMAND BYTE
+> > > > > > > >        which is first one on the wire).
+> > > > > > > > =20
+> > > > > > > > +  spi-device-addr:
+> > > > > > > > +    maxItems: 1       =20
+> > > > > > >=20
+> > > > > > > Does it not make sense to all for more than once device conne=
+cted
+> > > > > > > to the same CS here? I would expect maxItems to be 4 to match=
+ the
+> > > > > > > number of possible addresses.
+> > > > > > >      =20
+> > > > > >=20
+> > > > > > I think for this part their isn't a reason to aggregate.
+> > > > > > No magic accesses that touch them all at once.  So this hits
+> > > > > > exactly the point you raised about how we set the address for
+> > > > > > more than one of them.     =20
+> > > > >=20
+> > > > > No David is actually right here, and maxitems should be 4.
+> > > > > Setting the address for multiple was already discussed I thought,=
+ with
+> > > > > the property being an array and each compatible being used to det=
+ermine
+> > > > > the "stride" between entries based on the number of supported cha=
+nnels?   =20
+> > > >=20
+> > > > I don't think that applies for this device or at least to do so
+> > > > is a major driver rewrite, not a simple binding change.  Probably w=
+e'd   =20
+> > >=20
+> > > Whether or not it is a big driver change, the binding should represent
+> > > what the hardware is capable of.
+> > >  =20
+> > > > just add a bus and hang the 4 instances off it. They are running on=
+ own
+> > > > timing etc so we can't grab data across all of them in any sort of
+> > > > synchronous way - the clocks will probably drift over time etc.   =
+=20
+> > >=20
+> > > Did I miss something about the ADI devices in this thread where they
+> > > have some multicast ability to read all devices at once? I thought th=
+at
+> > > that was a different series where each device had dedicated mosi and
+> > > miso lines, rather than the shared ones here. I didn't think the ad55=
+29r
+> > > did anything special from my reading of the datasheet but I'm not the
+> > > expert in this area! =20
+> >=20
+> > It's a DAC so other way around but yes they have exactly that in the se=
+ction:
+> > https://www.analog.com/media/en/technical-documentation/data-sheets/ad5=
+529r.pdf
+> >=20
+> > 	Register Details: Hotpath DAC registermap.
+> >=20
+> > The is a brief description earlier of the whole feature that might
+> > serve for this discussion:
+> >=20
+> > "DAC HOTPATH
+> > The DAC hotpath is a dedicated register region that optimizes
+> > DAC updates in multidevice configurations where several AD5529R
+> > devices share a common SPI bus. It reduces the number of SPI
+> > frames required to write DAC data and supports synchronized
+> > output updates across devices. In single device systems, the hotpath
+> > offers no advantage over the standard register map and can be
+> > disregarded."
+> >=20
+> > As an example
+> > MULTI DEVICE SW LDAC MODE 0 REGISTER
+> > "This register sends a software LDAC update to the selected devices
+> > that share the SPI lines but have different addresses, using the ID0
+> > and ID1 pins. The selection is done on a per-device basis corresponding
+> > to the configured bit field."
+> >=20
+> > This one triggers all selected DACs (there is bit corresponding to
+> > each address) to update in sync. (Lets put aside normal systems
+> > where an LDAC gpio is wired to multiple devices as that is a whole
+> > different problem).
+> >=20
+> >=20
+> > It is this part that is driving the suggestion of having
+> > a combined device representation for multiple physical devices.
+> > In practice it is very similar to chained devices where we do that
+> > already in that a longer access sequence is used to talk to multiple
+> > devices at once.
+> >=20
+> > Those SPI messages do not carry the address (or they are ignored - I di=
+dn't
+> > dig into the mechanism).
+> >=20
+> >  =20
+> > >  =20
+> > > > They are independent devices (think of them using spi-device-address
+> > > > like an i2c address) -  so why have one DT node for up to 4 of
+> > > > them?  Note this is different from the AD5529R where the design
+> > > > is intended for them to operate as one single larger device.   =20
+> > >=20
+> > > I don't buy this argument, I just don't see what differs between the
+> > > devices. The microchip datasheet I read talked about using 3 devices =
+to
+> > > measure 3 phase power setups (I think that's what it was) which is, in
+> > > my book, evidence that they're not just intended to be used
+> > > independently. =20
+> >=20
+> > Sure but that could just as easily be done with normal SPI and 3 chip
+> > selects. For these devices there is no broadcast write magic (I think
+> > anyway!)
+> >  =20
+> > >=20
+> > > That said, the more this discussion goes on, the more I think that
+> > > merging the devices into a single node is a mistake. Logically there =
+may
+> > > be one device, but really there are one to four devices. Doing the
+> > > logical device thing is nice maybe for software but I no longer think
+> > > that it represents the hardware correctly. I know this will cause
+> > > problems with registration of devices in the SPI core, but we need to
+> > > pick one representation for these devices that fits in all usecases
+> > > and with the things brought up in the other mail I am having a lot of
+> > > doubts. =20
+> >=20
+> > This wasn't about use cases as such but the broadcast like facilities t=
+he
+> > ADI parts have which to me smell like the main reason you'd put them on
+> > a single bus and use this feature in the first place - you are making
+> > one big DAC from multiple chips.
+> >  =20
+> > >=20
+> > > Only going to reply to this for now, I'll reply to the other thread of
+> > > this conversation later so as not to end up duplicating discussion, b=
+ut
+> > > I am thinking of things like what if someone puts a mcp3654r and an
+> > > ad5529r on the same chip select? I think that's actually perfectly
+> > > functional on a hardware level, provided the fuses/pins are set up
+> > > correctly (and if it is not, mixing the microchip devices is possible
+> > > and probably mixing future ADI ones will be too). =20
+> >=20
+> > The broadcast stuff is what breaks this.  Otherwise I fully agree they
+> > should be independent and we should have SPI allow that.
+> >  =20
+>=20
+> Exactly! The idea of having the devices as separate nodes always felts
+> really appealing to me given that's what we have (strictly sepaking) in
+> HW. But as you stated, the big reason to pack multiple devices (for the
+> ADI case) is to basically increase the number of channels and so
+> aggregate the devices together.
 
-This simplifies the error paths, avoids repetitive error handling,
-and automatically suppresses duplicate messages when -EPROBE_DEFER is
-returned while preserving the existing error messages.
+Key detail is not just aggregate devices but have them act as one device
+from an interface point of view (just like SPI chaining).  One message
+affects multiple devices.
 
-Also remove the redundant error message after iproc_adc_enable(),
-allowing the error to be propagated without additional logging.
+> But taking on David's suggestion,
+> couldn't we somehow reuse that for AD5529R such that the additional
+> DAC's would be child nodes?
 
-Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
----
-v2:
-- Convert remaining probe error paths to use dev_err_probe().
-- Remove redundant error message after iproc_adc_enable()
- drivers/iio/adc/bcm_iproc_adc.c | 52 +++++++++++++++------------------
- 1 file changed, 24 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index cf4738b16e62..08e056468d8e 100644
---- a/drivers/iio/adc/bcm_iproc_adc.c
-+++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -522,52 +522,48 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
- 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
- 			   "adc-syscon");
--	if (IS_ERR(adc_priv->regmap)) {
--		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
--		ret = PTR_ERR(adc_priv->regmap);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->regmap))
-+		return dev_err_probe(&pdev->dev,
-+				     PTR_ERR(adc_priv->regmap),
-+				     "failed to get handle for tsc syscon\n");
- 
- 	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
--	if (IS_ERR(adc_priv->adc_clk)) {
--		dev_err(&pdev->dev,
--			"failed getting clock tsc_clk\n");
--		ret = PTR_ERR(adc_priv->adc_clk);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->adc_clk))
-+		return dev_err_probe(&pdev->dev,
-+				     PTR_ERR(adc_priv->adc_clk),
-+				     "failed getting clock tsc_clk\n");
- 
- 	adc_priv->irqno = platform_get_irq(pdev, 0);
- 	if (adc_priv->irqno < 0)
--		return adc_priv->irqno;
-+		return dev_err_probe(&pdev->dev,
-+				     adc_priv->irqno,
-+				     "failed to get IRQ\n");
- 
- 	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
- 				IPROC_ADC_AUXIN_SCAN_ENA);
--	if (ret) {
--		dev_err(&pdev->dev, "failed to write IPROC_REGCTL2 %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&pdev->dev,
-+				     ret,
-+				     "failed to write IPROC_REGCTL2\n");
- 
- 	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
- 				iproc_adc_interrupt_handler,
- 				iproc_adc_interrupt_thread,
- 				IRQF_SHARED, "iproc-adc", indio_dev);
--	if (ret) {
--		dev_err(&pdev->dev, "request_irq error %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&pdev->dev,
-+				     ret,
-+				     "failed to request IRQ\n");
- 
- 	ret = clk_prepare_enable(adc_priv->adc_clk);
--	if (ret) {
--		dev_err(&pdev->dev,
--			"clk_prepare_enable failed %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&pdev->dev,
-+				     ret,
-+				     "failed to enable clock\n");
- 
- 	ret = iproc_adc_enable(indio_dev);
--	if (ret) {
--		dev_err(&pdev->dev, "failed to enable adc %d\n", ret);
-+	if (ret)
- 		goto err_adc_enable;
--	}
- 
- 	indio_dev->name = "iproc-static-adc";
- 	indio_dev->info = &iproc_adc_iio_info;
--- 
-2.43.0
+If they were child nodes that just means we have a device specific binding
+and in practice ends up the same as a binding that just makes it one device.
+
+adc@cs {
+
+	adc@spi-device-addr0 {
+		spi-device-addr =3D spi-device-addr0;
+	};
+	adc@spidevice-addr1 {
+		spi-device-addr =3D spi-device-addr1;
+	};
+}
+
+Fun question of where we do the xlate for references to channels so
+does a consumer point at the outer node or the inner one?
+
+I'm not seeing a gain over having an array of spi-device-addr in the
+top level node.
+
+>=20
+> I agree that we should just pick one representation and it feels
+> to me that device@cs,spi-addr (or something like it) is the more
+> flexible approach.
+
+Agreed though if there is an array it will be first spi-addr.  That
+should be fine.
+
+>=20
+> - Nuno S=C3=A1
+>=20
 
