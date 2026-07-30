@@ -1,129 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F6D40B360;
-	Thu, 30 Jul 2026 14:26:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED669432E94
+	for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 14:29:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785421575; cv=none; b=kDhoKaQeMXPbpHcI29Yk9Wy2pFRQNXLhNDvVOECaDWmVKKtkrAwiqmNgH1/3zxeqypDo9HoeSD+eIp9puNpwaq8s8675/0RzHOnLyXnP18m1h0S7gp+iG3wqAMIGzwJnRCILQVkk40esst0dy/lIlSUhNJOL2sFWMtkcG8BlfOk=
+	t=1785421752; cv=none; b=i6utvNYUWuo+4yG/9yBtbQDpTowP9lU/53J+ph03PRiZmj08uRGUWJzP+e6nD8sNCQ1ALiqX53IfED7wSoYfdiCZEQwkCtBtnjg7RheoYd7uwC9uRuPx/hbwcOKCGPdZvygBqFbP4NHmabfMOwoytZYL4TQjMQKVAjc/bI/cC7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785421575; c=relaxed/simple;
-	bh=WBm4shRjG88RQW0Ld/AlkK/DAXGllqvzcf2au4FwcWY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=iJp7W830ueTzrUJbFc4KnsG2dtV+9UI9r9l312cjd2iyzxcfHHtGPEVUg76XgC9BN4NXnsIFQLyEof7fon0PF/DehY19ykRmlhRnEuy4CJExTwiurcbzGMZnYN0K3yC/EDvaecg5hSUKaXowpZDnsZeI6i4UFPOzOPhPUtYADbc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jko937Xo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1785421752; c=relaxed/simple;
+	bh=NqbpnMEMVT6pZFLXx+aKwNvaoAIbJW/qveLfeiOxRIg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=e864qv1fk13MKM6SKlaXivmPwcMgjp4EwgjAMrZL3oV05UkHOnTdCh7WBWyDBG5o79ONTSSioKl68nb5yhC+s9RP6kVtUfWCAxmhXFseG0DmXJ/f/u/LQXIL3xHW/4dkZIWN9WvqtGBqrqFqgUnDzXitNO5iVva0IZNgnHR1Jr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ObtGsHj0; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jko937Xo"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FB09C2BCF7;
-	Thu, 30 Jul 2026 14:26:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1785421575;
-	bh=WBm4shRjG88RQW0Ld/AlkK/DAXGllqvzcf2au4FwcWY=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Jko937XoJkAvAGGzu3lGr2sDDWUzfoUi8DunsImTmY8CVDAN6wcrk0HWPBnUXjHPD
-	 QZeOB+B70vnYYUQwwdfMT4qt+lmY4BlRuWoinM5ysAyqe/OxkpsR05BzbtB9IcrXaT
-	 jzICboASfI16ziVNuv5q4raklDYwzEHQ2U3yayttNWdKL5kQLx/tGdtoj02MJXjn7d
-	 AR67Av4F+Tthj4PF7nlvKcPCIceaCsRG5970kIVmww+vaBj+v76EhHJ53J+AoMHLWl
-	 E9xJOgrJx5LUvnkEnFyStxsdtsZ6O4DgUHwfL9nDYfxslHyARItionZapVh6TcNT8g
-	 JkfFxSKYvti/w==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0610C5516D;
-	Thu, 30 Jul 2026 14:26:14 +0000 (UTC)
-From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Thu, 30 Jul 2026 15:23:15 +0100
-Subject: [PATCH 8/9] spi: dw: Use dma_slave_caps bus width helpers
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ObtGsHj0"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-49550ec592cso5252865e9.0
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2026 07:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785421749; x=1786026549; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=BiODsEReZFxde+7AXbuA9TsINgA6XK/L0TB2Iycg95w=;
+        b=ObtGsHj0QvWvcoZk33Zg+k9Gq7cv5BR/IhtjjiVeCsXtGj4YQymEql1B/LXDsPxI4m
+         dTCjsZbPVJZUdVrb76YDCZgHcJU55brKxrL3ANsz5OHLgSpEOvBu27eDE1JfqTVBsTRN
+         TTs95OnE+8ajYmXxu9HIbBSCKA9gKp8Qsro+y1giT5C7OYfv0O8VIMHpgdztMGSymEsM
+         Vu3923AoBJbvbbGD/YcdUv5lQ03VOql5Rt0Msyk8XrXKXA0qbq/CbUU+6YNBet0s5ZdK
+         PDdZHkcsEu2zc7KugJbgYzd0+Ypfo2FC3jaApKyDCKz6abcIjNoKoXNlA3MUb1Skepqj
+         JL7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785421749; x=1786026549;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=BiODsEReZFxde+7AXbuA9TsINgA6XK/L0TB2Iycg95w=;
+        b=ijjs9cIcKLvZ1ApFuqCOpKMV7Eluv0gGQhX1+Ygj2gut0QAush77aGinlP0WXhWviO
+         qAu7Bg+xoJoG29Hv+h+cOAk/7242UsAq7uf/9SSxl1x9xF+vMmRBMIQfvfnmopCqHJKj
+         L7lTDUtdZ1cDB8tiixrHxZ85ntj6vbI5ChPUk32/hegW8WF89ZSFonzuxQUBoY1xGXbo
+         p96DEqrAo42ZfUZSLIW3mT/nrDcx6QiwKXqOy5YXxcUs7d0iSOgRac8saoNsnE5iH5n8
+         eMA+wTO9zixFY6K1uUdu9HdpDk9DxRFnCVnOsIW/xOIX41JQ3je7Gt9h/Ky6fuKKYiJm
+         DCDQ==
+X-Forwarded-Encrypted: i=1; AHgh+RodDmNL2c+HwOubgiOb/EFywa3PypQf6p6+zDha3Sn1KSd7+aWwqCTVGOtThp7e9iCcffNIq500z3E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxSrcuBQ+Y6DTv8LsOLDWBeFkX0Z4C8fs/Udw6oIlCbK+yDilud
+	dZsjTHKHlGLgXhKKo1o4CpX3TtY3JP/5p+4Uuro4mYvIPONRa50hPwN2
+X-Gm-Gg: AR+sD13Wh+HWngDqIIbJulrtHsHsdgRll4vE1bS0sV6yEynrtKhBlODphO/GLNP5prf
+	KFsylnn7tl2XIOQc/AE1w4jU/kf8VsoZa0qD0NlDpDN/RdTuTcyFz0+wdm93cAqxos0Q5YtmFBN
+	ZDFwsgXyOjupmJKl53bitmenAF8+SVloCtuf2M1LbUfj8Elq0xAWaCUPhbHcNcq9ZDip0YYyN94
+	J3B85kMtuynYQbLIKP9oufO/rAESd8CLouohAojT1As4a//qppjrKV843CNiXlkKlDg3CE0UIYe
+	8Mss2gAMIANAYcAOh2ybFAhHOcDK4yzMMtW82DYmRkMP7k6xNXb6s1d8q27U1egPZ0tGWBoFMOn
+	5Ykz0R4sUTteuOpB362McIPdl4LgMjvFUwH4zVJVUJ26vsoCiSInuLPBX3WCAB+M8F480IK1ABR
+	Ol/fRHS0ZE+T8cgT3pxCwzoYlSd+ntl6TvednSRcFAS6w5kwzfvK+tzi6fbV4EbcuX7QIeF1ase
+	DrqTm+MKCE8auEREg62wVAVx650Wlpy5kL2KYTwodD7n9QrPv8jJMCBXSXm3d3PT5L1kyEluzFW
+	cfEiX35e7j52ku8mityiMSSi+pBypF3fNtWAEcvvkMznPH9KzPDghML4b1w6I+cHZ2S7Vba+RQQ
+	YIEP/Co1wgiYP8kNm8xaeCyoPBuvTXBh17/N1IjbOVUTxB158fV4+PxrqUgI4GbMmmsuuFts=
+X-Received: by 2002:a05:600c:1551:b0:495:5d6d:9cc1 with SMTP id 5b1f17b1804b1-49804c8f0d1mr8791095e9.0.1785421748939;
+        Thu, 30 Jul 2026 07:29:08 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-498010aae15sm66472515e9.13.2026.07.30.07.29.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2026 07:29:08 -0700 (PDT)
+Date: Thu, 30 Jul 2026 16:29:07 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: mdshahid03@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, David Lechner
+ <dlechner@baylibre.com>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>
+Subject: Re: [PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to use
+ dev_err_probe()
+Message-ID: <20260730162907.0000588b@gmail.com>
+In-Reply-To: <20260730140405.369634-2-mdshahid03@gmail.com>
+References: <20260727034009.5c6b0be9@jic23-huawei>
+	<20260730140405.369634-1-mdshahid03@gmail.com>
+	<20260730140405.369634-2-mdshahid03@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260730-dmaengine-support-wider-dma-masks-v1-8-3732f1f9d9ca@analog.com>
-References: <20260730-dmaengine-support-wider-dma-masks-v1-0-3732f1f9d9ca@analog.com>
-In-Reply-To: <20260730-dmaengine-support-wider-dma-masks-v1-0-3732f1f9d9ca@analog.com>
-To: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785421644; l=2124;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=xOfZPTRVqperUBS/PjyP6dyo86jTJj1kQ2OEqLzOYA4=;
- b=Oz3H58dUS3/UdN8cU0Fc5yd515ijLhxFdYHLsyQurpATZ2HI6jArioARnr2NcpKVACzIDPz8F
- 2+sk1BLTYeWAHEdQVJZyIRL+uxEgabsiOX4J2eElT2thmXvZ4Dn1N8A
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
- auth_id=100
-X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Reply-To: nuno.sa@analog.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Nuno Sá <nuno.sa@analog.com>
+On Thu, 30 Jul 2026 19:32:45 +0530
+mdshahid03@gmail.com wrote:
 
-Store the common TX destination and RX source bus widths in a
-driver-owned DMA bus width bitmap and populate it through the
-dma_slave_caps helper.
+> From: Mohammad Shahid <mdshahid03@gmail.com>
+> 
+> Replace open-coded probe error handling with dev_err_probe() for
+> resource acquisition and initialization failures.
+> 
+> This simplifies the error paths, avoids repetitive error handling,
+> and automatically suppresses duplicate messages when -EPROBE_DEFER is
+> returned while preserving the existing error messages.
+> 
+> Also remove the redundant error message after iproc_adc_enable(),
+> allowing the error to be propagated without additional logging.
+> 
+> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+> ---
 
-This avoids depending on the legacy src_addr_widths and dst_addr_widths
-masks returned by dma_get_slave_caps().
+Hi Mohammad,
 
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
----
- drivers/spi/spi-dw-dma.c | 6 +++---
- drivers/spi/spi-dw.h     | 3 ++-
- 2 files changed, 5 insertions(+), 4 deletions(-)
+Please don't reply with a new patch version to to the previous patch,
+it breaks tools like b4 and appears weird in people's email clients.
 
-diff --git a/drivers/spi/spi-dw-dma.c b/drivers/spi/spi-dw-dma.c
-index fe726b9b1780..2e23ead4a94f 100644
---- a/drivers/spi/spi-dw-dma.c
-+++ b/drivers/spi/spi-dw-dma.c
-@@ -100,10 +100,10 @@ static int dw_spi_dma_caps_init(struct dw_spi *dws)
- 
- 	/*
- 	 * Assuming both channels belong to the same DMA controller hence the
--	 * peripheral side address width capabilities most likely would be
-+	 * peripheral side bus width capabilities most likely would be
- 	 * the same.
- 	 */
--	dws->dma_addr_widths = tx.dst_addr_widths & rx.src_addr_widths;
-+	dma_slave_caps_intersect_widths(&tx, &rx, dws->dma_bus_widths);
- 
- 	return 0;
- }
-@@ -253,7 +253,7 @@ static bool dw_spi_can_dma(struct spi_controller *ctlr,
- 
- 	dma_bus_width = dw_spi_dma_convert_width(dws->n_bytes);
- 
--	return dws->dma_addr_widths & BIT(dma_bus_width);
-+	return test_bit(dma_bus_width, dws->dma_bus_widths);
- }
- 
- static int dw_spi_dma_wait(struct dw_spi *dws, unsigned int len, u32 speed)
-diff --git a/drivers/spi/spi-dw.h b/drivers/spi/spi-dw.h
-index 9cc79c566a70..9111ffc5e9d7 100644
---- a/drivers/spi/spi-dw.h
-+++ b/drivers/spi/spi-dw.h
-@@ -10,6 +10,7 @@
- #include <linux/scatterlist.h>
- #include <linux/spi/spi-mem.h>
- #include <linux/bitfield.h>
-+#include <linux/dmaengine.h>
- 
- /* Synopsys DW SSI IP-core virtual IDs */
- #define DW_PSSI_ID			0
-@@ -190,7 +191,7 @@ struct dw_spi {
- 	struct dma_chan		*rxchan;
- 	u32			rxburst;
- 	u32			dma_sg_burst;
--	u32			dma_addr_widths;
-+	DECLARE_DMA_BUS_WIDTHS(dma_bus_widths);
- 	unsigned long		dma_chan_busy;
- 	dma_addr_t		dma_addr; /* phy address of the Data register */
- 	const struct dw_spi_dma_ops *dma_ops;
+Since this is just a matter of resending, please send the patch again
+(not replying to the previous thread) with the tag [RESEND PATCH] in
+the subject instead.
+
+Thanks
 
 -- 
-2.55.0
-
-
+Kind regards,
+Joshua Crofts
