@@ -1,97 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3761D5CFE;
-	Fri, 31 Jul 2026 04:32:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FD36360EE2
+	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 06:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785472343; cv=none; b=sVHloJs/QKuZDlAAdpMzBNk6iJ/7G0ZxGfvtmlryil4EGpUbgcpEgJpj/H/6Hlhj8bYk3lk5+vqTrbtxA+/kwX/n2D6VsQhfCmj253o7S1IC7JXOeGT26tDpgAdXLe+BoWNm9qRM8iG0tLay+KWIbNLIiJ6H/ZIfIMnp4dYykZU=
+	t=1785477653; cv=none; b=Y7+tUVN+L+aE4U9kWgJAafrT4GISDpna3IZQ30VNDuChqHDSMYBOP75lX+ozo4NUa4PlZG/vBv5+svT3l1dPmN8/XsevC6gPNpaaDVISmKrL31f+YmuAQhL/44XhDEf7Int5tYkA0XKIYLz6zT3ETb1fAIETwjMDkNwjSzfrSek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785472343; c=relaxed/simple;
-	bh=X+roWFSN9q9wAMDayMWUsz/I5RDfVwLQZrg3X5E3EpM=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=F1wrS+q7pUkOAMcNlW3lozNFxUytDlqDWFC1GTSTGjdZkeXg8g5TO1Z+4anMUIgCI8DbFYo2rt9R+4EbLC9hdIR30FTr+8KsppDuU+NAY1cy4KSHaNdGfolXLkMgXwbDQsDLsFmjx7KP27iDu7k0u0ioQSPhmG8IoJZBig4R+hw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QsVvs3JS; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785477653; c=relaxed/simple;
+	bh=NTznVSHSuISkxzuPy7fdk40UUaz/IICS7tkiyc0KWm8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Qnd23dGCOh7cASbzJ/xHXdOPdg3AygqkBdwXHVpu8M2A5hv9bGafRipk4gAllDW0NWDGUoxU2YO1Fr3h25r27d6l+jmkSGBKbRo3b0KRLD3cvkCDz8yluNKFIJwBQ4enONuzf3/uxJJL4yoGMBTzCA9YgOYNqZ74Pq8zwhNEUiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=fXy69GNG; arc=none smtp.client-ip=95.215.58.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QsVvs3JS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBCA81F000E9;
-	Fri, 31 Jul 2026 04:32:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785472342;
-	bh=PghJxRzb05xscJ08yhU/aH3P/ezQ8OakJRmokm95+PY=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject;
-	b=QsVvs3JSvAvWXngKT35/yW6dX22OmEWW4mKYPMoWaPsDZ2gSqjpFvB/T4OsOlDEEe
-	 U/HTfqTRecGajxAiFH0S1PhbwdiZ1UgIgkubyRIkzYIYs9mI5pM27bpL6zAlmiu/kZ
-	 6dT6tJatQu1HmfOxeUwTl9HaBz/0hZ5N/GHn3ru3VK4ul5yBBe/5wHzkggyzcssAxp
-	 fw76hadWnNmAjO/zx3M/ISOKj4nFRxhC+McuesmafzPxhwioYJSsUA570Gefi9JQQy
-	 HFoW6tlbNeC24Bs2ibuMnlRRpfS7P6d/uHw+eZk4+F9QyqGN1bawZI2z29jN9jx3MB
-	 ttUIgTjStDN8g==
-Date: Thu, 30 Jul 2026 23:32:21 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="fXy69GNG"
+Message-ID: <df3edbd24fe35ba8897efefa0af69c58ffc1a39d.camel@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1785477639;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bi8pYGxOA4BhmQrdhbWsAAtgHe/9OU2yu3CWPfjgQ+A=;
+	b=fXy69GNGgario6digWvIrdgBVaN/fd9SLCvIS1saiZwTtDz7Dt7iq/Mrf0Rjw78dPd1XIx
+	zZ6Lmm6XQxvMHI6CtM6nImA5uYhBYC8FEwZd25eezCX9bL0HzSmyzCG9vAyyxBoQablM8w
+	uxlC54mKk5AsHiC8aAfSa5qD1h8mQu0=
+Subject: Re: [PATCH v6 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Siratul Islam <siratul.islam@linux.dev>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@kernel.org,
+ 	andy@kernel.org, nuno.sa@analog.com, linux@roeck-us.net, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com, 
+	ciprian.hegbeli@analog.com, u.kleine-koenig@baylibre.com, 
+	joshua.crofts1@gmail.com
+Date: Fri, 31 Jul 2026 12:00:06 +0600
+In-Reply-To: <20260730131738.822405-3-stefan.popa@analog.com>
+References: <20260730131738.822405-1-stefan.popa@analog.com>
+	 <20260730131738.822405-3-stefan.popa@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, 
- Mark Brown <broonie@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-To: Kyle Hsieh <kylehsieh1995@gmail.com>
-In-Reply-To: <20260731-ti-ads112c04-driver-v2-1-aab0168c3c01@gmail.com>
-References: <20260731-ti-ads112c04-driver-v2-0-aab0168c3c01@gmail.com>
- <20260731-ti-ads112c04-driver-v2-1-aab0168c3c01@gmail.com>
-Message-Id: <178547234112.2038676.6805487929501076296.robh@kernel.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads112c04: Add
- binding for ADS112C04
+X-Migadu-Flow: FLOW_OUT
 
+On Thu, 2026-07-30 at 16:17 +0300, Stefan Popa wrote:
+> The MAX40080 is a bidirectional current-sense amplifier with an
+> integrated 12-bit ADC and an I2C/SMBus interface. It measures the
+> voltage across an external shunt resistor and the input bus voltage,
+> storing the results in an internal FIFO.
+>=20
+...
+> +
+> +#define MAX40080_REG_FIFO_CFG		0x0A
+> +#define=C2=A0 MAX40080_FIFO_CFG_STORE_IV_MSK	GENMASK(1, 0)
+> +
+> +#define MAX40080_REG_IV			0x10
+> +/* Current is a 13-bit two's-complement value (magnitude + sign bit). */
+> +#define=C2=A0 MAX40080_IV_I_MSK		GENMASK(12, 0)
+> +#define=C2=A0 MAX40080_IV_I_SIGN_BIT		12
+> +#define=C2=A0 MAX40080_IV_V_MAG_MSK		GENMASK(27, 16)
+> +#define=C2=A0 MAX40080_IV_VALID_MSK		BIT(31)
+> +
+> +/* CFG.mode field values. */
+> +#define MAX40080_CFG_MODE_STDBY		0x00
+> +#define MAX40080_CFG_MODE_SINGLE	0x02
+> +
+> +/* CFG.range field values. */
+> +#define MAX40080_CFG_RANGE_50MV		0
+> +#define MAX40080_CFG_RANGE_10MV		1
+this and other "MV"s below should be mV(m lowercase) as=C2=A0
+I suggested in the previous version.
+> +
+> +/* FIFO_CFG.store_iv field values. */
+> +#define MAX40080_FIFO_CFG_STORE_I_V	0x02
+I also had a question on why this is I_V and not IV like the rest of them?
+> +
+> +#define MAX40080_ADC_RES_BITS		12
+> +#define MAX40080_INTER_VREF_MV		1250
+> +#define MAX40080_V_BUFF_GAIN		30
+> +#define MAX40080_CSA_50MV_GAIN		25
+> +#define MAX40080_CSA_10MV_GAIN		125
+...
+Looks like you missed some of the reviews. If it was intentional,
+please acknowledge that. It is a good idea to reply to emails
+and discuss/confirm stuff before sending a new patch.
 
-On Fri, 31 Jul 2026 10:58:24 +0800, Kyle Hsieh wrote:
-> Add device tree binding documentation for Texas Instruments ADS112C04
-> I2C Analog-to-Digital Converters.
-> 
-> These devices provide 4-channel, 16-bit delta-sigma ADCs with an I2C
-> interface, programmable gain amplifier (PGA), and data-ready (DRDY)
-> interrupt output.
-> 
-> The binding uses child nodes to dynamically define the connected
-> single-ended or differential channels.
-> 
-> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
-> ---
->  .../devicetree/bindings/iio/adc/ti,ads112c04.yaml  | 122 +++++++++++++++++++++
->  1 file changed, 122 insertions(+)
-> 
+Also avoid sending --to mailing lists (linux-iio@vger.kernel.org).=C2=A0
+Send to maintainers and Cc reviewers and lists.
 
-My bot found errors running 'make dt_binding_check' on your patch:
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml: properties:ti,refp-refn-resistor-ohms: '$ref' should not be valid under {'const': '$ref'}
-	hint: Standard unit suffix properties don't need a type $ref
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.kernel.org/project/devicetree/patch/20260731-ti-ads112c04-driver-v2-1-aab0168c3c01@gmail.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+--
+Best regards,
+Sirat
