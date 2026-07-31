@@ -1,218 +1,199 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E903D3310
-	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 09:53:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E4F53E168A
+	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 11:36:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785491607; cv=none; b=j2fk0bsa2+16Ewo6Ily/VCQ17OBPkWW5cBqCLWpqiI4tEn6RU8p9xpSMY5DamStWeWmi8a0o5wofVtu1PjchD3Ow866o8R5ldIH515yTV4oF9AGAk/PjKAJjQkWuCdpGp3sjkeMWAGV8ABdNvzg9Sadek62KE0IBdbd6nGX7lgs=
+	t=1785497809; cv=none; b=skcVbjrlUm/nEpT/nkDyPbIFqaNuqLVmhuWjyX9jQX3YpDMjqhNbYrjVJJQttGEKiw8rbvk3ImWo5WjLYj4mtA1A6Xpq6fW2+frMSPwksMQ4l+sgSFqZim9jzrs7/gMgGa+EH87SWeqwpndfO8t6zQDB64C+k7dQOwZ3Nldvka4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785491607; c=relaxed/simple;
-	bh=O2hr3mgkWv9ZH0QPbcAjngEx9k1/2RVfWmF8S8xTYno=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FZfWUBTz+iI729s0YMDL0L/tZDzC8lfkk3IwlIXsfONHh5uRzLACknx9/lCQ8utuWRtMaN6dAmlrNSvYmkfogRSnngJnAtH1Gyq1Pm2Egwe3W+af5XspDeg9MlqGy/GRE5E/5wZvqxwGnUvDqmPVZbiuA/yw2Dq4pmR/Tqytdog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=peRiO/aj; arc=none smtp.client-ip=209.85.221.46
+	s=arc-20240116; t=1785497809; c=relaxed/simple;
+	bh=AUKrB+1UwvRA+EobKyrqOVgmoMGLyj3fg3zoQatKMk0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GRBavwzIUD8wKxy0XdMeftwY9k3OcqsR5oDiPSxE7UEGrHOxZUtZNiULjoZ4CkC/DbhIqgHkVoStUruA/sQHCu5HP+dD93KkF32zQOY25zV7tfq9vzOYzHoszM2HoR/9SHYjWVqNF8DUbrn3Veb2ZPWjLHPViA4bkRiCISzHsHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bp11gIzP; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="peRiO/aj"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-47f84023916so801778f8f.3
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 02:53:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bp11gIzP"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-472326ca506so611956f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 04:36:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785491591; x=1786096391; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=fwbZejQtpnuo86QdZNkvfiwPzfIoi9keDu3oZjpOvc0=;
-        b=peRiO/ajL9HZlJB4kLNz2iyYZ5sS/d9c7VptVlBfxGBBWLKcTx9jlm1G0AdNrz+/Da
-         U6L6LXKeohO81z+I4ZtbsoYg4q0b0nUgqfiWEqYLmsQN9dEWvV1Uqg4qKlNEVCVZJkbt
-         u7TEL/bw0OwJyVU1jA5E37FZIKEnNTQGOmex+KdgUHPyPK8MWt/sbMDuE4siuEMeQxKJ
-         pZXMJw2+E57XmDZv+9fbHh3c1TwD5jR1kscw8aFwIK7wXRETlrUVFc47mLWk5ZAP7A90
-         QPYUEe9/ATNo/502NgCyke64jg/Zkud6JS9JfLWjQs6iwjsOtim6sYYoh0TgQZ8ssZKY
-         8Z3Q==
+        d=gmail.com; s=20251104; t=1785497806; x=1786102606; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0oYKY0Gc5U72MShEoavxG+AazK3v/FMxLUqW5uFuuYY=;
+        b=Bp11gIzPk6NYgpg1sKmqDzQj0k+pJwwA7Tgr93OPALc8zQZOc/iNVXpdyyk/n4mfrL
+         wy16LTzLImgsBmwwPFkgIrAqFCZOdg3LEzZK3XaF8HFwhndS6okO6DuyZfgwkVHnk1k/
+         ObLtsFusHDLCy5SW1CZjelqFAtFWCmrNXK3zLLWXPnXRoDtEnOCua2sueJrwvauZfPec
+         q1BmTleFvzO4cbAgh/xZPuEFP6DDwiqA3eFcg5WyiG3zUx3K3K/Q92QxHwK8yHqDCqo9
+         S+NqHR8TpKLwscFv/GU5LMgWHaOWe7GyojfjRjxlcdDsj5eH+KKNVvGJ43xnMJL8hYj7
+         7uzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785491591; x=1786096391;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=fwbZejQtpnuo86QdZNkvfiwPzfIoi9keDu3oZjpOvc0=;
-        b=oAqkfZJw6ZlYf8g1EfCLyB+VW22xydI08B1/LMSQ6ERH+I2mSRHmrJ1HqxIBY6P7O2
-         zYOjBV0BTAi7M+K4U4gBcmaeOD9wdJjPEx+K4SSOweqd6TGKC+2YU1qEi8woX21vEqDY
-         ZlqepfW8oxz2W89IXK5bb/EizVP04FRmql30SDgRup9KQgc6tRPA/FT1VuK0VKayVJRl
-         NpQcjChCc6LeVrM+VJd0hOr9M7gwe1CVXGeXFiWhNO4KrXvzasWWeZ87B4a4RmQu7lu7
-         Qo4zOd5CTeJAW1dodwc++Xf1EUglYpPhsUOt0O3oegbGyI7JYlxwPZBtGJjHWDJ7t4Rv
-         KoNw==
-X-Forwarded-Encrypted: i=1; AHgh+RrCyEjROVg5viJNYTrdR6Mb2Ylx5YcMHOuEoiFpY07bN5ehkbBv5Pf0M+S/GoRgUfKRCRxeX3iFFb0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwvmmGJZmXlgcxZ3IkfXEj/l+fm/l++KneqQy+5LiBqA4KNVvlQ
-	5u+XT+SKiB8rZsD4vqEoBKT0DYblU+MKcn6l0fri20fJ92dGNl3nbuYa
-X-Gm-Gg: AR+sD117J4RIMVyMSnrSBT32GdGiD72MC35rm5kvABtkjaqFi02SApDE2HVIw9BwVlm
-	Qqv4qfWdcP3XnwQ5s5Zye59ShSK8P9NPdnm58LsBoZ8FnOfBC81pEErJ1HkBiD3fRGY+ppb4Ia3
-	BWH9V8+ETk1eI+c4wBritx7pzf+hM3C1WXYHmqV4gUW5if6etNCZvLrv2I7vpzUg8ZHhL82SYJ9
-	J98mCoxLhVRPBgLTolgtQ/k2tDuQQNSAG56ucwgYoWIWk/5/jo/jI7Mgg72BOQa2ykp6N8ta4RK
-	Ts1Sq9sUIKs6SDGkltcsBzPMsEfGQQwwW8Tw8zJiDy+VdfT9EggdBex+/qkrGYCr43XqPs93GPc
-	xUyO7G0JG4+K/K+aV4Nk6qm9F+blCDjyTWDchrWIDLwOmSMFXNj5VvVodI6oZcelaPmA274h2pE
-	KkxypEfuJ5aCYJyp9G5gW81jPVuxyFBVJqr2QiUZ+S3SJVomIzZrWqzGpI5ZVUSuGmuL9VcVtFf
-	FQE97PAdJBff8baf0aHmby6JYPlloAcrJqq40dFdMVXY8KQBP8jgu8kbC8AJ7MpSp5m95eDpbca
-	t8NjUZz84jqThAIosjnO81zFW3p6SkLYn3X6gRq3PUX6WwjpSuWxTR42R+7x4EXFMmfBkOxCIeY
-	+7TOVOF5d2n8tjLs00u+4npXcJjzAzhU5mYt2G1l0YMLAO+arpj6yBMzYRf0i4cWGrFkgYGI=
-X-Received: by 2002:a05:6000:712:b0:47f:9254:d453 with SMTP id ffacd0b85a97d-47fd2abbdf4mr3203164f8f.8.1785491591146;
-        Fri, 31 Jul 2026 02:53:11 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd45a0ae0sm2757970f8f.33.2026.07.31.02.53.10
+        d=1e100.net; s=20251104; t=1785497806; x=1786102606;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0oYKY0Gc5U72MShEoavxG+AazK3v/FMxLUqW5uFuuYY=;
+        b=R0Vtofv9YX3UGzhtBYfnBEhRG3gRfXBhEZGmy4rnfDj0jtX7F1cDW79VyBYvjJzWlp
+         iTg5fhXUzBMTOGF1irmwcPBxHEQAx+Wu59jnnM9a6cdj7lBTggciZiWtRN9vd9LJWkCq
+         3jKNeZYtroKfNozz8mx1wcTODfOpD9f4Pn2bP53WGpJLCrAk8TvP8bUQxVqLgsWy3J+S
+         b+mwGcr5p2o5zFmWgDTWGifAVs4pbau27/M5MuBEw/AhL5tgm9ptl6IOeX6nRnStgow2
+         +qewD4+j2zbZccfU+6Sfrr2jj1sOmZDQL4EAHO1mawXprHr7GRpclqa8Au9tJZg4brrY
+         RZEQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqpUxilaVYY+XALKiAoYkfcQDSDp8kRkI5s21rGf2hA0qnse9f/AtSrhZDALv5yRcTBviIA/KXtRBQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYpguNWCpsZGkvY07Qhq02aJHPskrmJ+8tL0+3l44Gp530agU9
+	tNa6lRZSMUVD2h868oznWLlzvjgeh2G03KtRUt7xX09v4D4lGZB7aAKwUdJAAg==
+X-Gm-Gg: AR+sD11AvnDcbkT1T5d2EstGQ7YsQFzb7w8NWOu9ee7cozciWnVvU+hy/Anuy+YKClE
+	JWOOpRmkkB1elZ4VXvWh7VQfjU6LO1+EfCl/V8eif/cOVGdIQWD6f2hLqBgm+d6B3wdYsJyPJkx
+	PKXDTlrcEu5o+Ce7OI3rybyarLea8HPX5qb3GTCFuEXPErDZZONRTULSQnRmj20nktsYeidCDdZ
+	5U4UwJWO+rWsCBww1jnaaUjFgX5hp/qiQtMMlCnrht77+TNobcwRQn5prdE0zKuH3bVhC9MSDRW
+	7gFkzhEbMGC0GOjexCCvCdty/aQqhrstBgX8yNXfA8VKqaU88XpfBXBW2GNPm0kfOmc+jFT11Yu
+	qFmENdEC1iismPDxDbhsZYniqA+uu+vF9BrDqNzkL/HerP0lzQWcuxrznkoK70/G3wfngj5ihPt
+	oDbqoc67yxVSDNB1etoHk0HGbZcvKw5HB5AIrHSqXHCuvtL0hm6z0D4Syl+Ic4NDn8VkKaIwZBW
+	4JgZdbuqA==
+X-Received: by 2002:a05:6000:2904:b0:47f:2de3:b351 with SMTP id ffacd0b85a97d-47fd2adcad1mr4260062f8f.26.1785497805482;
+        Fri, 31 Jul 2026 04:36:45 -0700 (PDT)
+Received: from xeon ([188.163.112.51])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd45a0c8bsm3670646f8f.34.2026.07.31.04.36.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 02:53:10 -0700 (PDT)
-Date: Fri, 31 Jul 2026 11:53:09 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: mdshahid03@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, David Lechner
- <dlechner@baylibre.com>, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>
-Subject: Re: [RESEND PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to
- use dev_err_probe()
-Message-ID: <20260731115309.000073a3@gmail.com>
-In-Reply-To: <20260730155712.374464-1-mdshahid03@gmail.com>
-References: <20260730155712.374464-1-mdshahid03@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Fri, 31 Jul 2026 04:36:44 -0700 (PDT)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Lee Jones <lee@kernel.org>,
+	Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>,
+	Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Helge Deller <deller@gmx.de>,
+	Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>,
+	dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	mfd@lists.linux.dev,
+	linux-fbdev@vger.kernel.org
+Subject: [PATCH v6 00/14] mfd: lm3533: convert to OF bindings, improve support
+Date: Fri, 31 Jul 2026 14:36:18 +0300
+Message-ID: <20260731113632.158440-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 30 Jul 2026 21:27:12 +0530
-mdshahid03@gmail.com wrote:
+Convert LM3533 to OF bindings, add missing VIN supply, add support for
+setting mapping mode and LED sources based on device tree. 
 
-> From: Mohammad Shahid <mdshahid03@gmail.com>
-> 
-> Replace open-coded probe error handling with dev_err_probe() for
-> resource acquisition and initialization failures.
-> 
-> This simplifies the error paths, avoids repetitive error handling,
-> and automatically suppresses duplicate messages when -EPROBE_DEFER is
-> returned while preserving the existing error messages.
-> 
-> Also remove the redundant error message after iproc_adc_enable(),
-> allowing the error to be propagated without additional logging.
+---
+Changes in v2:
 
-Separate patch for this along with the removal of dev_err() at
-devm_request_threaded_irq(), see below.
+schema
+- maximum led sources for leds set to 4
+- anyOf > oneOf in ALS
+- improved ALS descriptions
+- adjusted example
+drivers
+- dropped devm convertion of irq and mfd helpers
+- all als configuration moved into lm3533_als_setup
+- added regulator/consumer.h
+- lm3533_bl_setup set before sysfs_create_group in backlight
+- added check if LVLED is valid
+- LM3533_REG_OUTPUT_CONF1 > LM3533_REG_OUTPUT_CONF2 for LVLED4 and LVLED5
 
-> 
-> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
-> ---
-> v2:
-> - Convert remaining probe error paths to use dev_err_probe().
-> - Remove redundant error message after iproc_adc_enable()
->  drivers/iio/adc/bcm_iproc_adc.c | 52 +++++++++++++++------------------
->  1 file changed, 24 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-> index cf4738b16e62..08e056468d8e 100644
-> --- a/drivers/iio/adc/bcm_iproc_adc.c
-> +++ b/drivers/iio/adc/bcm_iproc_adc.c
-> @@ -522,52 +522,48 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  
->  	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
->  			   "adc-syscon");
-> -	if (IS_ERR(adc_priv->regmap)) {
-> -		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
-> -		ret = PTR_ERR(adc_priv->regmap);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(adc_priv->regmap))
-> +		return dev_err_probe(&pdev->dev,
+Changes in v3:
 
-Given the amount of &pdev->dev calls, it would be a good idea to introduce a
-local `struct device *dev = &pdev->dev;` in a separate patch which would go
-before the dev_err_probe() patch.
+- ohm -> ohms
+- added default PWM mask to schema
+- added commit removing driver regmap wrappers
+- added commits which flatten pdata helpers
+- adjusted check if als->irq > 0 since als->irq can be negative if error/missing
+- added count for children defined in device tree and mfd_cell is allocated
+  via devm_kcalloc to be able to contain all of them
+- fixed backlight boundary check
+- fixed count increased unconditionally
+- dev_err returns node name instead of reg value
+- LM3533_MAX_CURRENT_* defines moved to common header since they are used to clamp
+  current values read from the tree
+- mapping mode commit splitted into 2 (sysfs logic improvement > mode from DT)
+- backlight mode configuration set before sysfs group is created
+- fixed LVLED check on LEDs setup
+- added check if HVLED is valid
+- fixed wrong err_sysfs_remove goto in lm3533_bl
+- added commit implementing backlight_scale property
 
-> +				     PTR_ERR(adc_priv->regmap),
-> +				     "failed to get handle for tsc syscon\n");
->  
->  	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
-> -	if (IS_ERR(adc_priv->adc_clk)) {
-> -		dev_err(&pdev->dev,
-> -			"failed getting clock tsc_clk\n");
-> -		ret = PTR_ERR(adc_priv->adc_clk);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(adc_priv->adc_clk))
-> +		return dev_err_probe(&pdev->dev,
-> +				     PTR_ERR(adc_priv->adc_clk),
-> +				     "failed getting clock tsc_clk\n");
->  
->  	adc_priv->irqno = platform_get_irq(pdev, 0);
->  	if (adc_priv->irqno < 0)
-> -		return adc_priv->irqno;
-> +		return dev_err_probe(&pdev->dev,
-> +				     adc_priv->irqno,
-> +				     "failed to get IRQ\n");
+Changes in v4:
 
-Remove this, platform_get_irq() already prints an error message, keep
-the original.
+- fixed regmap_update_bits val and mask swap in lm3533_als_set_int_mode
+- fixed als->irq check in store_thresh_either_en
+- removed clamping of r_select in als driver
+- added use_of_reg and of_reg for backlight and leds registration
+- added intermediate step in asigning props.brightness
+- fixed HVLED/LVLED configuration overwriting
+- added bounds check for num_leds in leds and backlight driver
+- switched to regmap_clean/set/assign/test_bits helpers where appropriate
+- dropped extern from header function declartions
+- switched lm3533 pointer in cell structures to regmap
+- sysfs_create_group > device_add_group
+- changes in backlight sysfs were expanded to all properties
 
->  
->  	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
->  				IPROC_ADC_AUXIN_SCAN_ENA);
-> -	if (ret) {
-> -		dev_err(&pdev->dev, "failed to write IPROC_REGCTL2 %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(&pdev->dev,
-> +				     ret,
-> +				     "failed to write IPROC_REGCTL2\n");
->  
->  	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
->  				iproc_adc_interrupt_handler,
->  				iproc_adc_interrupt_thread,
->  				IRQF_SHARED, "iproc-adc", indio_dev);
-> -	if (ret) {
-> -		dev_err(&pdev->dev, "request_irq error %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(&pdev->dev,
-> +				     ret,
-> +				     "failed to request IRQ\n");
+Changes in v5:
 
-You only need to return ret here, devm_request_threaded_irq() already
-prints an error message on failure. Separate patch for the removal please
-(ideally the first patch in your series to reduce churn).
+- aligned driver helpers to use u32
+- child nodes parsing linked with 'else if' to ensure there is one call per node
+- removed redundant pwm var init for leds
+- fixed regmap_test_bits return check
+- fixed leds and backlight counting handling
+- iterator variables made scoped
+- lm3533_als_setup() set to exit after mode set if m0de is pwm
 
->  
->  	ret = clk_prepare_enable(adc_priv->adc_clk);
-> -	if (ret) {
-> -		dev_err(&pdev->dev,
-> -			"clk_prepare_enable failed %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(&pdev->dev,
-> +				     ret,
-> +				     "failed to enable clock\n");
->  
->  	ret = iproc_adc_enable(indio_dev);
-> -	if (ret) {
-> -		dev_err(&pdev->dev, "failed to enable adc %d\n", ret);
-> +	if (ret)
->  		goto err_adc_enable;
-> -	}
->  
->  	indio_dev->name = "iproc-static-adc";
->  	indio_dev->info = &iproc_adc_iio_info;
+Changes in v6:
 
-Also, you've missed an additional dev_err() in the iio_device_register()
-check, you can change that one as well.
+- expanded commit message in OF conversion commit
+- restored original comment regarding PWM mode of ALS
+- switched to FIELD_PREP macro in core for helper flattening
+---
+
+Svyatoslav Ryhel (14):
+  dt-bindings: leds: Document TI LM3533 LED controller
+  mfd: lm3533: Remove driver specific regmap wrappers
+  mfd: lm3533: Remove extern from shared functions in the header
+  mfd: lm3533: Pass only regmap and light sensor presence to child
+    devices
+  iio: light: lm3533-als: Remove redundant pdata helpers
+  mfd: lm3533-core: Remove redundant pdata helpers
+  mfd: lm3533: Use dev_groups in struct device_driver
+  mfd: lm3533: Convert to use OF bindings
+  mfd: lm3533: Add support for VIN power supply
+  mfd: lm3533: Set DMA mask
+  video: backlight: lm3533_bl: Improve logic of sysfs functions
+  video: backlight: lm3533_bl: Set initial mapping mode from DT
+  video: backlight: lm3533_bl: Implement backlight_scale property
+  video: leds: backlight: lm3533: Support getting LED sources from DT
+
+ .../leds/backlight/ti,lm3533-backlight.yaml   |  69 ++++
+ .../bindings/leds/ti,lm3533-leds.yaml         |  67 ++++
+ .../devicetree/bindings/leds/ti,lm3533.yaml   | 169 ++++++++
+ drivers/iio/light/lm3533-als.c                | 179 ++++-----
+ drivers/leds/leds-lm3533.c                    | 181 ++++++---
+ drivers/mfd/lm3533-core.c                     | 378 +++++++-----------
+ drivers/mfd/lm3533-ctrlbank.c                 |  33 +-
+ drivers/video/backlight/lm3533_bl.c           | 231 ++++++-----
+ include/linux/mfd/lm3533.h                    |  75 +---
+ 9 files changed, 818 insertions(+), 564 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/backlight/ti,lm3533-backlight.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533-leds.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533.yaml
 
 -- 
-Kind regards,
-Joshua Crofts
+2.53.0
+
