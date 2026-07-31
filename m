@@ -1,82 +1,76 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00ED44582ED
-	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 18:24:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 846B7453A3D
+	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 18:41:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785522286; cv=none; b=WSRQHKzIIqpsC/C/E5q1rsB4NpYK8cTrYa2hPi8kLN8mhw2PkrouOJ3A9y71h5wJbhykfVs+9bcA0SokVUtoNvMx0CZvIewznEqCAhL+wOFKPzGVTw61ZZSM2VNX3cc04/jEARtXyL4Ui866OpRsfalOnt5yx27y6YBifjNEdSY=
+	t=1785523295; cv=none; b=K2mEVdxmycw5iUxRk4jRaXuHPNrv30xkdpa7vcLFn2XOsmc56HEo+JSF8NJ9ZUL4RuwErumUvPPuTB7fKS7XU0MKXHxK5GbN30C2N8LpbzktOldNQfRntiBgAiMMZI1Gj7yJwp1yYXxC1SvCqORezfQufNAZOUYOxhWi/MBigls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785522286; c=relaxed/simple;
-	bh=VD2QHojgachEtitvCMQ22pgLNRLQvtYqV1cce6F2O+o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KTpWM61m1ZPJ5w4OUKRkms/QkUrnPSIJCSm1OflQOGK88bS1kLy4rVDRBXGbxbW/yaWG3NCSYyiQ/iarItDt0cNjxRxP9cf9y8Wa0Oc6PU+hHAKSzeV0rp6JlL/T/Pdtc1wEmoaAMtJicO8T2fTkPhDrxLj+rTmL2kMQEQ58wq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lko9YkiT; arc=none smtp.client-ip=209.85.216.45
+	s=arc-20240116; t=1785523295; c=relaxed/simple;
+	bh=7LNFTMs6nkB60Ajw7pQWpTWA3laGLhCMvmJrV0QSrCU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=u55nzDThJ4ZNRZz3wGmtZIfe0mDktu4moKokQ3Y8gaK+Lu68rOmKOGhjlwykTsNM1TCNdCG9/Y/4nIeKxbWNgzyN9u0ZdMaufGxAkt3dELtHEQsJntQRLZxHmeUi8JI58GVmETPGOQCdNVbq2rrUuzgW3exHM9cMR8X3TQJwhcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WJEje0cH; arc=none smtp.client-ip=209.85.219.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lko9YkiT"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-38e58034d05so1429159a91.2
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 11:24:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WJEje0cH"
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-8ef1dc934d1so8494046d6.0
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 11:41:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785522282; x=1786127082; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=S96pVSc6qSK7JNjBnWVrJfF1KAwOzUVlXD18tkrIn6w=;
-        b=lko9YkiTAslGn6X5mbMSTAL7xnSHkPC7oG6e5OEZQ9Gk2nBce5wfjEJIx5aPsQwaCU
-         Rjy9frMFar0Q4xU26XtTcLzHh6p1jzD1hBrQdqBOknFrbxO2Jdsk0kfop/Yeew8ZzGeK
-         9N15s/VHiMXOwQWg2DAcDcxXFwB5LtD92rpCcFVSzHIua4t6P7mkYUN0P9wzN3r1mWgD
-         cWY/8BbEdXTla8DX2vSbP8g9hrLLYid890zNT+fn+/NA3iUy/tU7Xyu+Ms0RnA0AzSAK
-         0q8IkTDFzbxY21TVH9DVjoBp6Mm8Lg0zTfRL2Ecrf7VemiS4WfZV61HI6FvBtKniADes
-         lqhQ==
+        d=gmail.com; s=20251104; t=1785523292; x=1786128092; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=CTMjmGFusOMu1vcQVsEPcYR4aahhp3Y9Dwu7CieMQ38=;
+        b=WJEje0cHOaTLlr8VRVoEm0WZDvEKmZdhtPheKDfj/CE9w74laTCkN7od6Mw7DhRsIL
+         a2590ytayi5qpFk2cM064bCx0TS3M3cr3QecuWSoObUQkAL7YifAZaVZzo4qvwx8CPEP
+         37ZDeXc5Zlrj+z09NN08q3QbTjoD+25Tw0Cq5DJogbGh96PWzfLH2ktyINgN/QQxQlAE
+         5GwkSoT76aeO3PaHF5rr8fXQD42TocEbX48R4UVhZ0EhPNIljWFsP89AMEzPZ/oGcs28
+         9BdQD1DABvm72+bbpaRl4vSLxZ/nTK1swhdTbVTrGlGW3csIrhD/5rQ2oraK5Daex09L
+         cJgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785522282; x=1786127082;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=S96pVSc6qSK7JNjBnWVrJfF1KAwOzUVlXD18tkrIn6w=;
-        b=VHpwgS7nGYwiVlX572K0LJAb3t4cjs9QUWeP9W/GFYUpWy25KilzJU+MdbbFiudBoL
-         uUxnVtxXnACuOQHn35LD4o+uIHIV/6I+jawheb4bIKd3BFc1nfkWfbMjOIyxq31umuNq
-         iCGp/u8rrpHqj2OApi6cR7RXzPLkn61kH3wgSatNNle4O6bmYyljhHebs+n3UXqT/Vdq
-         qLJ80VDn1YKyS+Lxpp52UmL7uMLsN5iyZ0w8rocN0Te5BapeR1Pbis/0cUkv1j7jAO8w
-         J7hxJRqfs3j+hSk0FygJ5dMwmJD9fFnbfyquvWqgoQ3gniXeM4c1/KDKvBvOsm0PS05/
-         yKRw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp03XlLo+gux+Y8BiunZOZ9cSF8To49utwWbktSKeYv10d/5+w75+ZG5526PtnCuSNQv5dAe3MxkjQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1ezEwVkoDxugNwKTNVDdfRcIuAmqT/W4WXvV0meTV0D6MROX9
-	OMFWi1xfwEvOa9yUsBtEgn35qLbdNQKa8nya3kSuP77nahcTevL+hekj
-X-Gm-Gg: AR+sD10sRyDDDyUWnz+MxWVivv1ATt8JoL96jgGGq6v72bPuKtKvJa+kCzZCqNRDEv7
-	2x3rzMzbH09XPqgJ83IW2myi9ZTMQJI0ms2OMTCXf5bRTf5tk9zGxqbkddvcKsBLEukAWez+Zi9
-	fJNeZQrhDo6FfxnuC37Aq/ZClXdQJ78cv+TYWn2CwR+6DvS4Pkyo6jFg386bVG45Vqpb1nKsHeQ
-	DZ3T+lj+sJMxozFOCq1RM5LNdXw9ffVG2L8lwGx1K066MIAt/3LuE8i0kEBim7yU7hAFrcJVoV0
-	19pYeZNfHyA8Q895KrH2dzsvBAXzxNmHo4mF6L2O1KK9TD2ouMkUJYQ9ysry5cwcYPTs5SMIyhP
-	bObHyCGx3uvr+dxw+yJbIiOKgHVO6wxdlZKSw35HMf42tuooDhQxyL622y4ypVSpSan3h6+Yk8P
-	RQ+WlCV8vL/ARheZnhFvVlgrgjuL5mIXpA4EFrF8m1USxMhUIImQR3S+/kiV8=
-X-Received: by 2002:a17:903:3886:b0:2ca:feb:303b with SMTP id d9443c01a7336-2d052429193mr8562495ad.25.1785522282316;
-        Fri, 31 Jul 2026 11:24:42 -0700 (PDT)
-Received: from ubuntu.. ([2405:201:8026:213e:d69c:7f00:28b4:311c])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3153dd9c1casm8400785eec.10.2026.07.31.11.24.36
+        d=1e100.net; s=20251104; t=1785523292; x=1786128092;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CTMjmGFusOMu1vcQVsEPcYR4aahhp3Y9Dwu7CieMQ38=;
+        b=N4tffIIf83xDCyyw7BqLTLmisZjLTyXeDDcHRh/m2pYXDUF35NKvBH6fFPlkhUcHh6
+         nbiQqD9yFAkDLvu/4XV58lVHddFA7EH1BpKipJ9xl+s4ipQAVPnYhG9kBEZ+h/wVvc0f
+         bZyFwSbO0ndp6yHrDGd+TZecv0ynX3aLQpUXrV9fbnV/WKimOa2Xl3ucboP8l01VYP1f
+         AvsqvCmXcEGQ/3BLZTHAW4fcyW/7XwAYvGLNUjhz6w9gf0SX4ua6sOGHrRRSFt0TnLl+
+         Apwns8EoO028JqQST6SGvZ6AlPMoRc/kgzF/qJbFRwzCgOuxPqAaSBh9JVuT7kFPZ/0j
+         zLLw==
+X-Forwarded-Encrypted: i=1; AHgh+RokyxGGpvZfIeeQ/JPXd4LMOWWPc95cfi3M3XcxtIggLeV8ETOBG2k20HtcL63rFoL66CsgD/7bzI4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwsrMWkOq1dFHdhS3nezDL8+1XURJZkMJ0MHbb+4IYdejZP1BaX
+	Nf5l4/YPS/w/p8mbdGtdFnBwN8ukKwwrl7z93/uFc9CylqojzUy+2vOv
+X-Gm-Gg: AR+sD12P5+9quZjpLyX3T5pKUFHzIdYP/1t3NW+bzQm1orDqB7oNarYMEEywXm1Mka4
+	mAhAgx1XqCEfQzpH5bxJWq+t8T2moE5Xn5XMx9KigOqKDWaDJla384AWMQkV80HA/FcuWwi5pWt
+	Kwu1TMPAziElR30Qp8Lzi/HMdjMSSI8y+MQY/tGZHm/ZOQYQx/ZmPTgzzTay6XILRReXkWhbh6l
+	vwcFxs999Kye+hylFmEaj/dBnUs21vV1QhEYdtw2N7BTHEcaxZ9d75CaQK4J/VvbLyo8dlm6+/r
+	kKyI51Dlzv0U2+sJ/mw6k+F+F4zpirz6UprSW5PM77r5chnHznYUtaZGTCUuvCw2jZOqF1ZCSfa
+	tr0uj0ZjuYR1sVjv92gyuHd11BZ1QX6MNVbgUifQqR6cqgq5f2bKBeS6qWUVdQ9S+AY04aNH4Uz
+	MWR7omtICb5nGUJ0TVVFJ4cWOGHqNaAu6kkDbBh8y1mSOvm2KxifsMwYHJm1B5QxnSNYg=
+X-Received: by 2002:a05:6214:590d:b0:8e9:cd74:87bb with SMTP id 6a1803df08f44-908431e1f25mr60578946d6.18.1785523292065;
+        Fri, 31 Jul 2026 11:41:32 -0700 (PDT)
+Received: from localhost ([2600:4808:5693:8201:bb19:d9f0:6e53:91ed])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-908436071b7sm16241546d6.48.2026.07.31.11.41.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 11:24:41 -0700 (PDT)
-From: mdshahid03@gmail.com
-To: Jonathan Cameron <jic23@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Joshua Crofts <joshua.crofts@broadcom.com>,
-	Broadcom internal kernel list <bcm-kernel-feedback-list@broadcom.com>,
-	David Lechner <dlechner@baylibre.com>,
-	linux-arm-kernel@lists.infradead.org,
+        Fri, 31 Jul 2026 11:41:31 -0700 (PDT)
+From: Marco Chen <marcochen.dev@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	pmeerw@pmeerw.net,
+	matt@ranostay.sg,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Mohammad Shahid <mdshahid03@gmail.com>
-Subject: [PATCH v3 3/3] iio: adc: bcm_iproc_adc: Convert probe error handling to dev_err_probe()
-Date: Fri, 31 Jul 2026 23:53:47 +0530
-Message-ID: <20260731182347.42888-4-mdshahid03@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260731182347.42888-1-mdshahid03@gmail.com>
-References: <20260731182347.42888-1-mdshahid03@gmail.com>
+	skhan@linuxfoundation.org,
+	linux-kernel-mentees@lists.linux.dev
+Subject: [PATCH v1] iio: health: max30102: fix NULL dereference in interrupt handler
+Date: Fri, 31 Jul 2026 14:41:23 -0400
+Message-ID: <20260731184124.112124-1-marcochen.dev@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,98 +79,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Mohammad Shahid <mdshahid03@gmail.com>
+The interrupt is requested in max30102_probe() and stays enabled
+for the lifetime of the device, but indio_dev->active_scan_mask is only
+valid while a buffer is enabled. When an interrupt arrives while no
+buffer is enabled, the handler dereferences the NULL active_scan_mask:
 
-This simplifies the probe error handling by replacing open-coded
-dev_err() and return sequences. Also remove the redundant
-dev_err() after iproc_adc_enable(), as the helper already reports
-the failure.
+  Unable to handle kernel NULL pointer dereference at virtual address 
+0000000000000000
+  pc : __bitmap_weight+0x64/0x98
+  lr : max30102_interrupt_handler+0x48/0x160 [max30102]
+  Call trace:
+   __bitmap_weight+0x64/0x98 (P)
+   max30102_interrupt_handler+0x48/0x160 [max30102]
+   irq_thread_fn+0x28/0xa8
+   irq_thread+0x184/0x30c
+   kthread+0x118/0x124
+   ret_from_fork+0x10/0x20
 
-Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+Return early when no buffer is enabled. The interrupt status register is
+read before returning, since reading it deasserts the chip's active-low
+interrupt pin. Otherwise the pin would stay asserted and no further
+edges would be delivered.
+
+Fixes: 90579b69e94b ("iio: health: max30102: Add MAX30105 support")
+Signed-off-by: Marco Chen <marcochen.dev@gmail.com>
 ---
- drivers/iio/adc/bcm_iproc_adc.c | 43 +++++++++++++++------------------
- 1 file changed, 19 insertions(+), 24 deletions(-)
+I ran into this while interfacing with the MAX30102 over I2C on a
+Raspberry Pi 4 running the IIO subsystem tree testing branch and
+learning the IIO sysfs interface for the first time. When physically
+rearranging INT pin wiring with no buffer enabled, the kernel oopsed.
+This happened because max30102_interrupt_handler() attempted to
+dereference active_scan_mask, which is NULL because no buffer is
+enabled. With this patch, the same situation no longer oopses
+and the buffered capture was tested to work normally afterward.
 
-diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index 29ea35972a23..5fcd528eb88a 100644
---- a/drivers/iio/adc/bcm_iproc_adc.c
-+++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -523,19 +523,16 @@ static int iproc_adc_probe(struct platform_device *pdev)
+Some things I am unsure about though:
+- Is IRQ_HANDLED or IRQ_NONE preferred here? I chose IRQ_HANDLED 
+  because of the status register read to deassert the INT pin, but 
+  I am not 100% confident on this choice.
+- Should the regmap_read() return value be checked? I did not add a 
+  check because I do not see a useful recovery path from this I2C failure, 
+  but I can add a check in a v2 if it is better.
+Thank you.
+
+drivers/iio/health/max30102.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
+index c37316c86f14..c30b029ba8aa 100644
+--- a/drivers/iio/health/max30102.c
++++ b/drivers/iio/health/max30102.c
+@@ -290,10 +290,23 @@ static irqreturn_t max30102_interrupt_handler(int irq, void *private)
+ {
+ 	struct iio_dev *indio_dev = private;
+ 	struct max30102_data *data = iio_priv(indio_dev);
+-	unsigned int measurements = bitmap_weight(indio_dev->active_scan_mask,
+-						  iio_get_masklength(indio_dev));
++	unsigned int measurements, val;
+ 	int ret, cnt = 0;
  
- 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
- 			   "adc-syscon");
--	if (IS_ERR(adc_priv->regmap)) {
--		dev_err(dev, "failed to get handle for tsc syscon\n");
--		ret = PTR_ERR(adc_priv->regmap);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->regmap))
-+		return dev_err_probe(dev,
-+				     PTR_ERR(adc_priv->regmap),
-+				     "failed to get handle for tsc syscon\n");
++	if (!indio_dev->active_scan_mask) {
++		/*
++		 * No buffer is enabled so there is nothing to read. Read the
++		 * status register anyway to deassert the max30102's interrupt
++		 * pin; otherwise it would stay asserted and further edges
++		 * would not be delivered.
++		 */
++		regmap_read(data->regmap, MAX30102_REG_INT_STATUS, &val);
++		return IRQ_HANDLED;
++	}
++
++	measurements = bitmap_weight(indio_dev->active_scan_mask,
++				     iio_get_masklength(indio_dev));
++
+ 	mutex_lock(&data->lock);
  
- 	adc_priv->adc_clk = devm_clk_get(dev, "tsc_clk");
--	if (IS_ERR(adc_priv->adc_clk)) {
--		dev_err(dev,
--			"failed getting clock tsc_clk\n");
--		ret = PTR_ERR(adc_priv->adc_clk);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->adc_clk))
-+		return dev_err_probe(dev,
-+				     PTR_ERR(adc_priv->adc_clk),
-+				     "failed getting clock tsc_clk\n");
- 
- 	adc_priv->irqno = platform_get_irq(pdev, 0);
- 	if (adc_priv->irqno < 0)
-@@ -543,10 +540,10 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
- 	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
- 				IPROC_ADC_AUXIN_SCAN_ENA);
--	if (ret) {
--		dev_err(dev, "failed to write IPROC_REGCTL2 %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev,
-+				     ret,
-+				     "failed to write IPROC_REGCTL2\n");
- 
- 	ret = devm_request_threaded_irq(dev, adc_priv->irqno,
- 				iproc_adc_interrupt_handler,
-@@ -556,17 +553,14 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	ret = clk_prepare_enable(adc_priv->adc_clk);
--	if (ret) {
--		dev_err(dev,
--			"clk_prepare_enable failed %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev,
-+				     ret,
-+				     "failed to enable clock\n");
- 
- 	ret = iproc_adc_enable(indio_dev);
--	if (ret) {
--		dev_err(dev, "failed to enable adc %d\n", ret);
-+	if (ret)
- 		goto err_adc_enable;
--	}
- 
- 	indio_dev->name = "iproc-static-adc";
- 	indio_dev->info = &iproc_adc_iio_info;
-@@ -576,7 +570,8 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret) {
--		dev_err(dev, "iio_device_register failed:err %d\n", ret);
-+		dev_err_probe(dev, ret,
-+			      "failed to register IIO device\n");
- 		goto err_clk;
- 	}
- 
+ 	while (cnt || (cnt = max30102_fifo_count(data)) > 0) {
 -- 
-2.43.0
+2.55.0
 
