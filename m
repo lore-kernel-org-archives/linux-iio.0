@@ -1,110 +1,116 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA9D41D126
-	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 14:11:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C3A42C4ED
+	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 14:23:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785507093; cv=none; b=sypVkbLxP1yx06o7dUnZZUmsN2UTCeaYWAQCHFdgIHoG6CHZZOG+WXiIqD3wrgQTdcphxDFd0/al8S7DP628S5mvEoqCSRdsRBXQyPO3WgRsRTtjXqnE7KyMF9J+t3Tq2nJ6Mp5wqnVR9gKfHK3hinlUSnY9AD6k5Ctt3wMIyMk=
+	t=1785507792; cv=none; b=KnzIsMZCQYeMO4GMudWkPNVlrGQ/JY7sTaO2r9/sTgzRyJKB+L2d6d4JXFE1VQwT0mP0m4eOeKWipacddtklU11g15qC4DAJ0HzkRaOeODMo5xNYJEnXsgyxE1/EqYbGGol4fis08VWId83W5Hg/ZyqFgag/xv6ROY0fbtTFzW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785507093; c=relaxed/simple;
-	bh=QcfhcVT4fLpsSWuVJhNof9PQqGw8NjXiFiCRLj17V/4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Q1ZHLW4tDz4D5pwM04D3aVBh49jrnbfRnFqsSwpJQ6kAcjyX+4fA0fmMw0zHu+QwNdHUcy4y1uxvHEqtp+qRCrK+97iNq7gMq2GnICKH6k80dXHv1rhir11nKeVD1vITyZBed1rJHBH35cH7FPuBE5XKH8TGlUSA7HmRTmgiO5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A0pgXi2O; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785507792; c=relaxed/simple;
+	bh=7wWRfOgAHNVaTxFv3Orz/thFdJ+yQdiNQGRNQ2UkQIw=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=HFA8PnFac+u1Rs0f/RPhMT3xZz++Gj/tHMA67KD9A476GMMf7K4GFvQq+c18NzhxkWV8Uz9TozokXt/U+WKrwDGCvoXiP4pJ3QbIr+xOVuILaZxwQKaIvgPvYTJlLVVVrI/9CusXfsuxMLmlJP3anTT8VRANPR4Q9Bgl8p6rpso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ENvhzYLJ; arc=none smtp.client-ip=209.85.161.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A0pgXi2O"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-47f59f25ec4so506908f8f.2
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 07:11:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ENvhzYLJ"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-6ab04bbcc8fso604304eaf.1
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 07:23:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785507090; x=1786111890; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Mutstjg8Bx5ogWkUe9a0r8ZjMMf7n8vHq8hP7WaWrX0=;
-        b=A0pgXi2O5Q6Kd2Ym1GOv6fMbBmYylneE7uE++/Dd4NyyWVbppYtUE22X100fBpx4+I
-         NLLs/65S3uAg+I+wU2jn07qq1Dgw+25BJ1aLMd0dfVFo4nIaDkg/qEYi3QSwRyRStOKj
-         675kcmBkqNWDc8OPrzXV/eJf3Um76PlMc09oAtDNa0s+EQGgq7dQ1Rj5V/adYHioNHTX
-         me4zdFBHtgV4zvQb25z4+lUDn4QWPZobC2CZqHEySRW4H+v6SSeKbnXCUev6mzetvjOY
-         vzJ7I68MGRfMx7r2LUsHLeqTIcpNTpalJw6k5WW6y8J2qk2dZdYPX7ReQxbze27QDMwG
-         ogCw==
+        d=baylibre.com; s=google; t=1785507790; x=1786112590; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=OT5kpLMx1NAQDxJj+okIQJAeHFw/yj3RKxDWm0fm7Ys=;
+        b=ENvhzYLJIbBAvpyvAKKDUgTilyUnExp8cLnLmFOuuX27cHm/SpZOrT2gd1/BPIHZmG
+         z3SCPNvbHqeAlER6iaOzgOhedUISpNhpTW0cK0qwAMqBmeaBYY+/3xItF1VfMwsCZnkv
+         nI9e/WNXFai1TY43TalsMNrgEHU62CVPfP6V9dciiFGZQB+X7X3HUuHpzk8QkR06yJvT
+         AN9n9xFPMQKfJwdkkvjFbfG2QL20H036GmTyf24XA67j19ayurXV4mUQ8eiazZoiASv4
+         Utmn4qc0YwtFKOOebV6SgsTiE0B6QFzF3zG6dwJPpGV737AZNvqd0cWbBYCRBbBrBGt/
+         5PyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785507090; x=1786111890;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Mutstjg8Bx5ogWkUe9a0r8ZjMMf7n8vHq8hP7WaWrX0=;
-        b=JJtlQ4RTs39j79GiVJF1fSWJwFS0lFlLs9XUDJ/+POOu4UdueKNWQpzcOltsWKmh57
-         LJS+OLh5D+Tk66SgYrZDnFEnMxv53eTSNQFUlEAVtmaCmtQCbueBQEE4pFpC4tO6pI14
-         HcKYrjeyI1acd1i287nqTaX0p6RjxR6PwIllm9ZL/tCJEEDwXN0OHw3BZur945p6wUwb
-         VWhJMY1bn2Z4iHOT36agShKQ7qIspXGleotwQefrbw+g4128gWzxeZ8RJRmLTML8deBW
-         BVYtltoKml0n2kFpuG7COqKJjVhCav1X3xsV3uc4PzFiYs8DLR5Api7srVU6PdoUrOW+
-         PzmA==
-X-Forwarded-Encrypted: i=1; AHgh+Rpn1GZo3nziazavpzSuDsVZPMBEOWGoI4E9qiTlLRMWeyLMI6ujn+1jyONdTfZ1+Q6JILOdmTm9uaw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxjJIYTQUvAYM8pn+6jafg5wEWBZ3XwjdHJOUlpNI3wpEiXI/pT
-	yi4WDUxfItOI27RCfBsYpNkkF8hnS3tTcws6D/IbHGP1tjux2iF3XdTW
-X-Gm-Gg: AR+sD113o5dWWRISsFWE1oZHjNpXJmnK3PFmvtoQDgQD2Na8T8wio8jBJZSS3+lt5xL
-	zJ/W08XSUm2j5OvNh0PRVe9b/ELMRsskKdJ4pO/EIr+bmLTBLjbT5MmTYP3/I+Rv7PfOgWaPju6
-	ONimiiZNir7+pDye8t1cwyOR8P3eiYXupENWX57q2xkLNF4C7IGJ7RWsuxA+J0Z9UATGp048IZb
-	Jlr0uAyvsgmjtc/lo6xIveNfcx/0FKDMbTLD0iI4540axlWOHLTecx2wh5Zud7vDDlvrpTWbSqg
-	Dl0mSbZy66GUzvm4Yaa8L64ZwZ+aARYMfSAd61ccJw6zVlxb3owqYFye6LDIUSSHKgB8hGOiOzs
-	/1ccYftrn5vAKNX8AjHrBsqT6vq6W4sjqdf4L+LrgJNUvuKyEb65I+ft0hAUc5Cv7giGA9009Bc
-	Wg0glw7PypVJYPNLeWdZzGRbvRDdYGDEnZa+VSsAZBOiKLBocVh9U8ukM78i2i7uI33ni150IQn
-	GA+Pn4daiuxGdbaC1VnVKB/jLJeUWzsjVpDiSqwcv2QQHi9MQgph+W4unee+3PGphQ/vkFw6k4v
-	5odJkLwRB1DhKMH/SQfUj3eAGusJ5BEoJajgHUQxSIzo+tOiSQaAbJM9AWnpSdkeIEXVcfxalIZ
-	QyxWjsVsl8xySeoRegsOfcnAntbjUNC9VCfq1OIzpVsZ33/M2nXrxhK6DJJW2s6ckHHVKt/Q=
-X-Received: by 2002:a05:6000:2408:b0:47f:8cf9:a12b with SMTP id ffacd0b85a97d-47fd2ab99ebmr5275934f8f.6.1785507089949;
-        Fri, 31 Jul 2026 07:11:29 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd4068fb7sm6050421f8f.0.2026.07.31.07.11.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 07:11:29 -0700 (PDT)
-Date: Fri, 31 Jul 2026 16:11:27 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: Kevin Tsai <ktsai@capellamicro.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
-Subject: Re: [PATCH] iio: light: cm32181: return zero after writing
- calibscale
-Message-ID: <20260731161127.00001478@gmail.com>
-In-Reply-To: <20260731132048.199946-2-giorgitchankvetadze1997@gmail.com>
-References: <20260731132048.199946-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        d=1e100.net; s=20251104; t=1785507790; x=1786112590;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=OT5kpLMx1NAQDxJj+okIQJAeHFw/yj3RKxDWm0fm7Ys=;
+        b=HHhC6MKeDN4OKUtHMLNF+0aYi9mJpYcvNIdV+qORA5hW7jtELYtt0myJPGzlAzheAI
+         wLAr5tKIdDCJEVP2CfDKtff5y+6ey/B/opw+wrt4/Nfq/KKhQJMHxdIrSqwvmcdbifth
+         rSh6LtOjA+7YrJdKdZ36Q2n0HW4nnVetRtVoQVFZRNFS47fjcVivDj8o/s8Hps6KY6Z3
+         EhgY4dsd+IoE1qtIDhovCpX2ug/7a4mqNf6dvhdAva5266Zj8ciYxIl8/V6eeV1XFjCX
+         22C+y8GkpSHCXOW6e00Bb0l91K6Uqjv8O3A5Vf7/Ljobctk7gzEexJiAZgc3sk2Y8KqR
+         KHkA==
+X-Gm-Message-State: AOJu0Yz1q4HiNlnkeYspvK7edwffv2cqKXHucg/0detIkz9hBEOqy2t7
+	4uWiwHnyT1fChj0DWBnoHSoXGmuQCBZAs8NJyidBuiG/FPtF0N0rBMnNbIt0Fjzi1BE=
+X-Gm-Gg: AR+sD10H2hL7LA867fvKY02FSuOHTrTsoqyD5zzBVqupRQL2pDmlINoW/GjfHNjPFC2
+	MmnqLpAJWvBTpK00M9qM5yatPNCxT91TYXE4nIinvwLpV5XyQ3syiJ6L+gEfR69PpgNdf/YFgmb
+	loB5efHu9vjqYP+tKv+QsEOIN67MapOmEWoWgAQMYGuqR/IyanedDpf4wN0NK3aXlgz3KdzC7vB
+	2Lq0Lwx60/ZYmEO9d973S6YiPwX8bsEoHDmB/hMWVyM5p7LdIWQGmWi5pyhkZN3vWuVfWaJmRbN
+	RXgPCyYFEv20fVONaBcocgRoInC4o5tF/mKLGoM3kypJyTELbGbzbrwa8EhCjicl8h/N3qb255R
+	kiJHlEqoihte75AaQ+w9JItLt9SvMe1/Fz9ZkzSyBwOKuaMgUERKYqpsFBCUKQlPVFlQf2+dM2v
+	whxkTdwwQhE6gyKgoiQylAIbPjX9MlmXSnn3EOVZrU6cjNnJJJyR+g2pbhcMei9to4NbGiofpcV
+	IEIHQXP5KjXI8SKmpzS/kQ/XHEeOI+j5GWjEKg=
+X-Received: by 2002:a4a:e90d:0:b0:6a1:4af2:f8e4 with SMTP id 006d021491bc7-6ae4339556cmr468939eaf.31.1785507789733;
+        Fri, 31 Jul 2026 07:23:09 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:fa40:746f:401a:3b75? ([2600:8803:e7e4:500:fa40:746f:401a:3b75])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6ae3a0c5dfdsm957497eaf.10.2026.07.31.07.23.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2026 07:23:08 -0700 (PDT)
+Message-ID: <8860e628-69e6-40de-94fc-4dd9154e23a4@baylibre.com>
+Date: Fri, 31 Jul 2026 09:23:07 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads112c04: Add binding
+ for ADS112C04
+From: David Lechner <dlechner@baylibre.com>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>, Jonathan Cameron
+ <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260731-ti-ads112c04-driver-v2-0-aab0168c3c01@gmail.com>
+ <20260731-ti-ads112c04-driver-v2-1-aab0168c3c01@gmail.com>
+ <b2297241-e0ae-4058-a406-348440798e38@baylibre.com>
+Content-Language: en-US
+In-Reply-To: <b2297241-e0ae-4058-a406-348440798e38@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 Jul 2026 17:20:48 +0400
-Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
+On 7/31/26 8:52 AM, David Lechner wrote:
+> On 7/30/26 9:58 PM, Kyle Hsieh wrote:
+>> Add device tree binding documentation for Texas Instruments ADS112C04
+>> I2C Analog-to-Digital Converters.
+>>
+...
 
-> From: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
+>> +
+>> +      single-channel:
+>> +        maximum: 3
+>> +
+>> +      diff-channels:
+>> +        items:
+>> +          maximum: 3
 > 
-> The write_raw callback is documented to return 0 on success or a
-> negative error code.  However, the IIO_CHAN_INFO_CALIBSCALE case
-> returns 'val' (the user-supplied value) instead of 0.
+> For this chip, we should also have excitation-channels, excitation-current-nanoamp,
+> and reference-sources.
+
+And burn-out-current-nanoamp.
+
 > 
-> Fix it by returning 0 on success, matching the behavior of other
-> calibscale implementations in the subsystem.
-> 
-> Fixes: 971672c0b3cc ("iio: add Capella CM32181 ambient light sensor driver.")
-> Signed-off-by: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
-> ---
+>> +
+>> +    oneOf:
+>> +      - required: [ single-channel ]
+>> +      - required: [ diff-channels ]
+>> +
 
-LGTM.
-
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
--- 
-Kind regards,
-Joshua Crofts
