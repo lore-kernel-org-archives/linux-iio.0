@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C050400E1A;
-	Fri, 31 Jul 2026 14:39:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D847442F6ED;
+	Fri, 31 Jul 2026 14:43:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785508783; cv=none; b=GH7CpVWXDigQY8UdUMWPUbhxtsNqqpXj0/gZmmmetfiPNJQGeVrrAG4B/rn+SPPULBUErsLKTtmFTZu51HeTtr+Gan9UVtq6daFFXOL41fHAfp9NGHGPeg1Q1gfVkWc+NFBzUD7Wg4KMjAvZKbOkq+Xv98DboDf3N3LirFvysWo=
+	t=1785509017; cv=none; b=NFg812UcGzMAySrDUsO22Plzve1MpIRKEgfg4u47WuBayj8yfB6h6PpseGk/88jXwYrCI6r+go93w8Bw4pLrJbYGT4RbnxdvNExdqgZ4DZkrozTY2v07dOGdIAvZsdo0vahXZlfEVjIdGnVcUcnkKJWhOz+WkZMcM7MZFB/AmGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785508783; c=relaxed/simple;
-	bh=U/5XQK/L7yYZk9xQ82GY4qt7EW00pexUQsC+XdH1Wq0=;
+	s=arc-20240116; t=1785509017; c=relaxed/simple;
+	bh=KS1e1a+U+sb99UzCmbBACw9ymiMSvnKnefigVOuL5IA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uaBvKKb1xCobmY2PchndtdvBZCcKsCauS+aQqnX+nwh3OQ9FVpH/gK5sS99hbSQB3gOvO0HMVF1eit4tTTxKGnGJIT3HTEUAwwzqQ9INFyLSQTu+KsAAKITTGX/l2Yh22au2nZXVbEUBfuPw2WbIMRw36mDMe3nCQ7qZaAKuBmo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GnPU6xko; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=ou9Lbbu8VKT1uMmOwGd1Q8DlZG7nCZC6jYflPqu/JPFfz5K7grn8QvdAYcwrzuErNz3nf3xcocDk8HV4pXkp0U7iWxt9a7qxEFCg0fmDa9LWIb4Vv3ObAMtjGXFhUNOpdY2m72HTn/Q98ciVCFcdTlNz7UeP2Kjy2Gp6JnFeX54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YlY9V6Z6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GnPU6xko"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A1F71F000E9;
-	Fri, 31 Jul 2026 14:39:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YlY9V6Z6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722C01F00A3A;
+	Fri, 31 Jul 2026 14:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785508782;
-	bh=ryPqQ3wPmCBEPuGEr6/KTKvRORIV9Tt/Y/mcOa0Awic=;
+	s=k20260515; t=1785509015;
+	bh=GNY36rin3dwLur+0LRzxKLX3kZHncZvjakN/xZMe7+o=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=GnPU6xkoCSSVpSd9iPfsPBPZCeAS+4H/65Muv9K6QtU0IZw0TWPIWncaa0SGtheuS
-	 fTBmVUq65ERZCUU4zP2C0rFB3Nrm4U/8NWZ3Liia20PL5BdBl2RJwaWYmvoFwp8aGu
-	 JWOY7oAtUj3zCBbS11A6El3u3UQxIIK+rn5KBbyvSLNNDIUNRC/8zB0k1UItgMT/as
-	 D+R4qB1UJKMOT9Y4NyLbdySxnHTNXEwt6ygWDnRdImiQYlqY5YIehRr0Dk6OXUyJbo
-	 aTbaMg/eBW56zuXqd0PyyGTgxmLyPtfgwbLFDD3YLxoSwnK0FMz3rc6G2JsEpvwNGJ
-	 4dHJWkcIgNUtQ==
+	b=YlY9V6Z6kU1oDHrFwCbqNs5bVFZkOKRc5FU8HOVMEQz47vfb2XZ/Dx2ZHik8o5VJC
+	 U+TpIt/MiJHYMnhSKHK/rATf6ZGsO87Wfm86Dw1Tk42/Dlm3aASAYP0FERPL98OOUs
+	 fI8HiF1AD8GsHmwAklfoyFjydG43UJ5b+8P1Gh7Ma0hN9XZypyfmORKpIfvez2M6AY
+	 xxtIIT/I9fTkgW2o6EU1hE2PTI0NRWhGXE6YZquWg1cT0LQDXXbBTTB3PGAFoKVDYl
+	 MrDeXGL2fYMPfWFYJDIDnghs4O/Z56haE4GrzTg/4GG6N/VnR8SEAa8Em74w2/kSV1
+	 +ZNKw1+nHusAg==
 Received: from johan by xi.lan with local (Exim 4.99.4)
 	(envelope-from <johan@kernel.org>)
-	id 1wpoOh-00000000XLr-3kZN;
-	Fri, 31 Jul 2026 16:39:39 +0200
-Date: Fri, 31 Jul 2026 16:39:39 +0200
+	id 1wpoST-00000000XdU-17IA;
+	Fri, 31 Jul 2026 16:43:33 +0200
+Date: Fri, 31 Jul 2026 16:43:33 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Svyatoslav Ryhel <clamor95@gmail.com>
 Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
@@ -45,13 +45,13 @@ Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
 	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v5 01/14] dt-bindings: leds: Document TI LM3533 LED
- controller
-Message-ID: <amyzq2XEhiOH28DD@hovoldconsulting.com>
+Subject: Re: [PATCH v5 04/14] mfd: lm3533: Pass only regmap and light sensor
+ presence to child devices
+Message-ID: <amy0lU289vvQzslO@hovoldconsulting.com>
 References: <20260617080031.99156-1-clamor95@gmail.com>
- <20260617080031.99156-2-clamor95@gmail.com>
- <akeFmMQ_S1Y18hlu@hovoldconsulting.com>
- <CAPVz0n23=F2Q2fSJJx1E_mST2zhomKcvhKtOy-Af3aoq-pZ-Zw@mail.gmail.com>
+ <20260617080031.99156-5-clamor95@gmail.com>
+ <akeF_VrijPbebz3I@hovoldconsulting.com>
+ <CAPVz0n1+wrq+g3p3UTc3hzHcsz8k02=QsvmseBD45d+SoSFsBw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,19 +61,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPVz0n23=F2Q2fSJJx1E_mST2zhomKcvhKtOy-Af3aoq-pZ-Zw@mail.gmail.com>
+In-Reply-To: <CAPVz0n1+wrq+g3p3UTc3hzHcsz8k02=QsvmseBD45d+SoSFsBw@mail.gmail.com>
 
-On Tue, Jul 14, 2026 at 04:27:08PM +0300, Svyatoslav Ryhel wrote:
-> пт, 3 лип. 2026 р. о 12:49 Johan Hovold <johan@kernel.org> пише:
-
-> > > +            light-sensor {
+On Tue, Jul 14, 2026 at 04:28:24PM +0300, Svyatoslav Ryhel wrote:
+> пт, 3 лип. 2026 р. о 12:50 Johan Hovold <johan@kernel.org> пише:
 > >
-> > Doesn't the binding (or dts) checker complain about this node not having
-> > an address?
+> > On Wed, Jun 17, 2026 at 11:00:21AM +0300, Svyatoslav Ryhel wrote:
+> > > Instead of passing the entire lm3533 core data structure, only pass the
+> > > regmap and the light sensor presence flag to child devices.
+> >
+> > Again, why?
 > >
 > 
-> No it does not
+> Because none of the child cells needs entire parents private
+> structure, regmap is all that is used.
 
-Thanks for confirming.
+Just because you can do something doesn't necessarily mean you should.
 
 Johan
