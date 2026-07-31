@@ -1,64 +1,64 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DDA83FADF6
-	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 11:37:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5E6400966
+	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 11:37:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785497828; cv=none; b=Bt5U2t/lQE4pfWuIkHfXUOpZ8VTq9DzQNLIeARrCFQ6aqWbPETFk13LWnKjhWMARwKom6EAvx/MTQz22wSpzVlbylyKI/OCzPWjlMjBkZAZcIimQ5jl2T+RbxDfoBJrLMeyOILPWDZVUJeRjDamDH5Bga/aq+JDF/Cdqi5dnUn8=
+	t=1785497830; cv=none; b=rM5CaqSS5+8GrsIF69J45RkUWtoSrJo8fPDExU520XyclQX2mOBf7QxO40/FsQZdgU34e9aFuMuyGyRcKpbQaHI9bwaYYHM5MaPbAxpprXPE2dXIpzEN2G+Nk17UayV19ElzUXQ3F2jB3dYj9gSKkmICvJXiHDTgJ8MEjMkmIX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785497828; c=relaxed/simple;
-	bh=utgrkcrPEexnwKubYxzeT83rM8IkZKoDxi9jYmOHcaA=;
+	s=arc-20240116; t=1785497830; c=relaxed/simple;
+	bh=vOJZIL8hR0cnu0DgFb5kL+GSXYmqw7zQYPQUbRUs9eA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pIOZLYxatYC+KYvTPIrfs+pt6Y+bnPJr2gPjvq7bU3QhWzTyrrfHv387jx0oifzs5Ctbjym9RNcQbRMthavVbZIHVcV4tWYhPwwAPsTlXTPG38mVC5xWMY+ZTDlm8GtKNhts8jwc1vz7wNKlvJMjpaH4x9Zu4tNMZKqQJpd1Ho0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bVsyJL0i; arc=none smtp.client-ip=209.85.221.42
+	 MIME-Version; b=oRPvu02GWBFxJ5zETu0nBFlSYyvpouqzIbzxKuWrogF2NTKirsKC8nWX+ZlkFIylQ/g1sUcmoEz1xyZIZUNzMEzszUekS+V6QgPSyUmxpso05DcisAdicCKNuFnEasFJTKpcdzNL9qgeZiaOIXB1ZgNI74Pb+dp1HngnYRAagno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NQM70YjR; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bVsyJL0i"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-47f3b39f2a1so191043f8f.2
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 04:37:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NQM70YjR"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-4799b3f7c83so669099f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 04:37:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785497822; x=1786102622; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785497825; x=1786102625; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=NbqFKXAPXCgqFlzsfbnx5DNlo8ULOW4jbUhFKit/7gU=;
-        b=bVsyJL0iA1ILDrQepRgEpqQNOPuwkNzhvXYcEx5ESXDi44zEYYSGlwME8ecqFNVOn+
-         LMoHcPanl7RD/WZOh+zci0B7M+w7KuS4UDhiAj/Nx33nM9TWb6gizZneGDH1mWs6UL0g
-         FGuy5AuoWbUdLAMpaITzdx/obza62VLz7reFi/BRy98xqZ558/n7c3euCCqjbhHlCV/3
-         VBSf1lUJSXxP1aC9U8Nt//L2WPoBq1KaYlWzpTho8Mi9j8XT4GJ1c361IpzoCgSylCzi
-         EcIwsi6JEKKW/MoJzc9V+isAXWy7meSh+qSCLfEHIXbP+eD1TFIfRPH2EzB8vA5b/4iu
-         oFhQ==
+        bh=ircJJN/vjkOsrZPEPqNXfhhtl9Kl7VXZaKYIBCeg3Vg=;
+        b=NQM70YjRUso0HBskcENn5rDD9M/+tp7M29W+Ogvltken9MkqJj7A0yifdU57jIQl3D
+         jahrrAyoZjAtVKxHOs5bxK29uC97NNxmY47tK4AL6Tn+ZSn2SRVuszfXpgRMsMxSnKqm
+         r0DBRLvY380qoAyLo/iak0kRRj68zefMh2HzCm5ghbECptch5kfpmPJ+k4JjRm1veco2
+         vSvyx9bk4fEsLuCubIE7PGkQ6f2BJ1xEASENWq0qCaYyzkavoTI0pu1jKkok7eQm3V6h
+         DRGvw52l9nAUwcAL1vmahJWozRnjDB5ktDqFRpUowiSWR70mv31wyXixvG4NdyMvY3oj
+         cMaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785497822; x=1786102622;
+        d=1e100.net; s=20251104; t=1785497825; x=1786102625;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=NbqFKXAPXCgqFlzsfbnx5DNlo8ULOW4jbUhFKit/7gU=;
-        b=F5zMOJk37mbUiOJ4ChGXfE9BW/lVtOTycSIzGafsjBCVl4XJ8TJcicc7o7egMuJscC
-         iXQTANHBz78DQ5t3LeZL/ZdjHGJVkoAjsh7xC1TTcxljye6MaHr7qDW6g9iYm7cgEubV
-         d9cAVpT5Cl8Pa6fFbCJfM7NNkhbxyeE46lDFb0yaVZtqlsRPLd5uomYOvtb1C6lDRaPD
-         ckbcXtDcRTwestivjsO5t/5lpC2jAx6JLoxRFyL78vwSejSn4Gx44wu4AfOftkW7D9Ni
-         E1Pgh3hCHKpYVf7fRp2hlOjnewlIyegn86owYsHbzFx8vV4EIrpj1Uem4Y/Ecexe/cOI
-         dKJQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rr2VN/aPQOF+4g7ScWponSTUkEOZrlkNlzcdoY3OY+dy0Y9iBkKm3xZKi3XBZfZ6dgeE5z0JtnMz9Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx6zmbxl+uzB0l1UlM+a+HvdasKHXL0jOy60W+xcpj7svE8X2Um
-	8oigFscYgwMK0uHYYp6gOxqiYVD0cfQMti2TJmflDFNcbclMoz0bXpW4
-X-Gm-Gg: AR+sD13U2DTikMz+GJ0aowkguhY05Pf/vxvebtjBK4gMNh3p+PA9teX7vpdlbtejK/2
-	qu1sBNeaDx5lRaWce0WT70zK6mwmlkgxoK/qphJoTK24hEQK65TkaYDhES3Li8jlnXNr8x6MfIn
-	BROce/YbLBOJySMMaaUzJ2udxWqLzzuh2aTg0K8eG7TkMoQMCmdm8lpMIEQ/pTgZM3z06mpdrGn
-	e1GsV8MFKho+jDxw2lo66Y5EPLr/OEwsgNZH943aCpQOzNexc0WTNwvE70sCBJGnh7ubYuIFktD
-	9xwDzLwu9gKzx/rINTmDP3o+V34yQ/jfMI/1tFVNWLX6b9ocllpobZsGLVVIE9vNCcvqk/FmWPs
-	GqOTFwNhvN2AJNRu/UFUlzVKoYzieJ8zrfnJw4abxtewaqouGfuYv2lSQuea4PkFuyio1F6qfxn
-	9zhyuMigad6XMxCoyzz4P2NzGqp11Y9Z+E+jm+ezDZZJi12G2svGACla75Z3usmDfAnmFkEiZ3y
-	JVuuKYJIQ==
-X-Received: by 2002:a05:6000:2997:20b0:47f:9661:6766 with SMTP id ffacd0b85a97d-47fd2b9824emr2824366f8f.61.1785497822299;
-        Fri, 31 Jul 2026 04:37:02 -0700 (PDT)
+        bh=ircJJN/vjkOsrZPEPqNXfhhtl9Kl7VXZaKYIBCeg3Vg=;
+        b=CJJAlNevdEBvgF0Ba1MQnYfHCFfQm4+thaJdZv/MoWV1oPDmD7kkKDqTkN2eyLEpch
+         ulvyAo3qDCeJfCcFNmNRdnFprKxk3s+dOqKZwKR4EcnlgTWjC93tEXDrMzNFtJCSWneQ
+         JBVzzdJrX/mwnCZdOGprVUFSqe3LS1mU2evrfRxUULGfw/ugzpi+eYN0JCgA+Z5iHWVm
+         ieD+vkHD/C9oQP1TbXgWCJH09UvVeVLtBky18QpNASR8B0GU8NxZC5gJ7ngC054TjNvL
+         1fH+x8nDBfD9tb4lZ0fyD8UAauHPOjLYv4/1Yi7iktFNqXluEJrmFX1WUyEw6fSUrDG8
+         /wUQ==
+X-Forwarded-Encrypted: i=1; AHgh+Row5pnF6SKV0Fc7k46tYs047+v1EETDEGECiWisTCfNLwYmZ5T4e2pyZzW8HTKpSL4Guusk9b8MtCE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQAlGeK24gfU5FeZsEewILN73/BdeT7XpF41Nf0xq/bepL0EoN
+	45MT7Ud17eHUh/4SY6yod6tXYiH1uEfAz4b+2U5aEpBnZ1eYkXhxYIz2
+X-Gm-Gg: AR+sD13uZ+tLhosZK4n06ZVBobspR96C+uBHlaWObwbgKLQdBCU31kIC5njU7NIz2dZ
+	BMDINHZ9/Q6aWKxroVians6s5orBj93G6eg9RyqkbhitbiKxGjL9Zr7UspEDi9gPLhibK3KCPlT
+	4llOogdhBsDDL2tseIfi9aRusJFN8NEA43gbtxx8NoFu322bjJ1apJ5F0kcspjKEfpK6Uzb+4Rj
+	grtOA2uz8wAu68sRTivRK9qcR7O78vx/Oikq3L6dGmHDcD0oKe0yyhGd26dCNMyADyxvqJSCULn
+	AtnRL2G5tvdFtgMJ4w++TtWSrL5BIIhBxQZ7cpAcqLAlnu8Q4Jmnoc7jhcdubSSXNIPJn+r29sT
+	9eFw7OMCjgajIftRMAyhFSCOe4cuKUawX4PdRBntIt7klzC9PA268XjNIpVQvbryHbadov5CldF
+	RtOHr26BbG/1WLyIpgQNuRaKz9fQX0DjxJ0GwRjiDJtOZOvIncJVyK8hQs0jZB3q4jRbsvEhh8y
+	PYwc0QP0g==
+X-Received: by 2002:a05:6000:420f:b0:46d:d6e0:9cc8 with SMTP id ffacd0b85a97d-47fd2b56316mr3933735f8f.46.1785497824680;
+        Fri, 31 Jul 2026 04:37:04 -0700 (PDT)
 Received: from xeon ([188.163.112.51])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd45a0c8bsm3670646f8f.34.2026.07.31.04.37.00
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd45a0c8bsm3670646f8f.34.2026.07.31.04.37.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 04:37:01 -0700 (PDT)
+        Fri, 31 Jul 2026 04:37:03 -0700 (PDT)
 From: Svyatoslav Ryhel <clamor95@gmail.com>
 To: Lee Jones <lee@kernel.org>,
 	Daniel Thompson <danielt@kernel.org>,
@@ -81,9 +81,9 @@ Cc: Johan Hovold <johan@kernel.org>,
 	linux-iio@vger.kernel.org,
 	mfd@lists.linux.dev,
 	linux-fbdev@vger.kernel.org
-Subject: [PATCH v6 06/14] mfd: lm3533-core: Remove redundant pdata helpers
-Date: Fri, 31 Jul 2026 14:36:24 +0300
-Message-ID: <20260731113632.158440-7-clamor95@gmail.com>
+Subject: [PATCH v6 07/14] mfd: lm3533: Use dev_groups in struct device_driver
+Date: Fri, 31 Jul 2026 14:36:25 +0300
+Message-ID: <20260731113632.158440-8-clamor95@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260731113632.158440-1-clamor95@gmail.com>
 References: <20260731113632.158440-1-clamor95@gmail.com>
@@ -95,118 +95,134 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The lm3533_set_boost_freq() and lm3533_set_boost_ovp() functions are used
-only in lm3533_device_setup(), which in turn is only called by
-lm3533_device_init(). Incorporate their code directly into
-lm3533_device_init() to simplify driver readability.
+Instead of creating and removing the device sysfs attributes directly
+during probe and remove of the driver, respectively, use dev_groups in
+struct device_driver to point to the attribute definitions and let the
+core take care of creating and removing them.
 
+No intentional functional impact.
+
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Reviewed-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/mfd/lm3533-core.c | 61 ++++++++++-----------------------------
- 1 file changed, 15 insertions(+), 46 deletions(-)
+ drivers/mfd/lm3533-core.c           | 16 ++++++----------
+ drivers/video/backlight/lm3533_bl.c | 22 ++++++++--------------
+ 2 files changed, 14 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/mfd/lm3533-core.c b/drivers/mfd/lm3533-core.c
-index f9bdc0a1d9bec..5baf934fac825 100644
+index 5baf934fac825..53b87958c2c68 100644
 --- a/drivers/mfd/lm3533-core.c
 +++ b/drivers/mfd/lm3533-core.c
-@@ -7,6 +7,7 @@
-  * Author: Johan Hovold <jhovold@gmail.com>
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/kernel.h>
-@@ -23,10 +24,7 @@
- 
- 
- #define LM3533_BOOST_OVP_MASK		0x06
--#define LM3533_BOOST_OVP_SHIFT		1
--
- #define LM3533_BOOST_FREQ_MASK		0x01
--#define LM3533_BOOST_FREQ_SHIFT		0
- 
- #define LM3533_BL_ID_MASK		1
- #define LM3533_LED_ID_MASK		3
-@@ -80,35 +78,6 @@ static struct mfd_cell lm3533_led_devs[] = {
- 	},
+@@ -294,6 +294,11 @@ static struct attribute_group lm3533_attribute_group = {
+ 	.attrs		= lm3533_attributes
  };
  
--static int lm3533_set_boost_freq(struct lm3533 *lm3533,
--						enum lm3533_boost_freq freq)
--{
--	int ret;
--
--	ret = regmap_update_bits(lm3533->regmap, LM3533_REG_BOOST_PWM,
--				 LM3533_BOOST_FREQ_MASK,
--				 freq << LM3533_BOOST_FREQ_SHIFT);
--	if (ret)
--		dev_err(lm3533->dev, "failed to set boost frequency\n");
--
--	return ret;
--}
--
--
--static int lm3533_set_boost_ovp(struct lm3533 *lm3533,
--						enum lm3533_boost_ovp ovp)
--{
--	int ret;
--
--	ret = regmap_update_bits(lm3533->regmap, LM3533_REG_BOOST_PWM,
--				 LM3533_BOOST_OVP_MASK,
--				 ovp << LM3533_BOOST_OVP_SHIFT);
--	if (ret)
--		dev_err(lm3533->dev, "failed to set boost ovp\n");
--
--	return ret;
--}
--
- /*
-  * HVLED output config -- output hvled controlled by backlight bl
-  */
-@@ -406,18 +375,6 @@ static int lm3533_device_led_init(struct lm3533 *lm3533)
- 	return 0;
- }
- 
--static int lm3533_device_setup(struct lm3533 *lm3533,
--					struct lm3533_platform_data *pdata)
--{
--	int ret;
--
--	ret = lm3533_set_boost_freq(lm3533, pdata->boost_freq);
--	if (ret)
--		return ret;
--
--	return lm3533_set_boost_ovp(lm3533, pdata->boost_ovp);
--}
--
- static int lm3533_device_init(struct lm3533 *lm3533)
++static const struct attribute_group *lm3533_attribute_groups[] = {
++	&lm3533_attribute_group,
++	NULL,
++};
++
+ static int lm3533_device_als_init(struct lm3533 *lm3533)
  {
  	struct lm3533_platform_data *pdata = dev_get_platdata(lm3533->dev);
-@@ -437,9 +394,21 @@ static int lm3533_device_init(struct lm3533 *lm3533)
- 
- 	lm3533_enable(lm3533);
- 
--	ret = lm3533_device_setup(lm3533, pdata);
--	if (ret)
-+	ret = regmap_update_bits(lm3533->regmap, LM3533_REG_BOOST_PWM,
-+				 LM3533_BOOST_FREQ_MASK,
-+				 FIELD_PREP(LM3533_BOOST_FREQ_MASK, pdata->boost_freq));
-+	if (ret) {
-+		dev_err(lm3533->dev, "failed to set boost frequency\n");
- 		goto err_disable;
-+	}
-+
-+	ret = regmap_update_bits(lm3533->regmap, LM3533_REG_BOOST_PWM,
-+				 LM3533_BOOST_OVP_MASK,
-+				 FIELD_PREP(LM3533_BOOST_OVP_MASK, pdata->boost_ovp));
-+	if (ret) {
-+		dev_err(lm3533->dev, "failed to set boost ovp\n");
-+		goto err_disable;
-+	}
- 
- 	lm3533_device_als_init(lm3533);
+@@ -414,16 +419,8 @@ static int lm3533_device_init(struct lm3533 *lm3533)
  	lm3533_device_bl_init(lm3533);
+ 	lm3533_device_led_init(lm3533);
+ 
+-	ret = sysfs_create_group(&lm3533->dev->kobj, &lm3533_attribute_group);
+-	if (ret < 0) {
+-		dev_err(lm3533->dev, "failed to create sysfs attributes\n");
+-		goto err_unregister;
+-	}
+-
+ 	return 0;
+ 
+-err_unregister:
+-	mfd_remove_devices(lm3533->dev);
+ err_disable:
+ 	lm3533_disable(lm3533);
+ 
+@@ -434,8 +431,6 @@ static void lm3533_device_exit(struct lm3533 *lm3533)
+ {
+ 	dev_dbg(lm3533->dev, "%s\n", __func__);
+ 
+-	sysfs_remove_group(&lm3533->dev->kobj, &lm3533_attribute_group);
+-
+ 	mfd_remove_devices(lm3533->dev);
+ 	lm3533_disable(lm3533);
+ }
+@@ -530,6 +525,7 @@ MODULE_DEVICE_TABLE(i2c, lm3533_i2c_ids);
+ static struct i2c_driver lm3533_i2c_driver = {
+ 	.driver = {
+ 		   .name = "lm3533",
++		   .dev_groups = lm3533_attribute_groups,
+ 	},
+ 	.id_table	= lm3533_i2c_ids,
+ 	.probe		= lm3533_i2c_probe,
+diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
+index 4d6f680334802..9ef171d3aaeab 100644
+--- a/drivers/video/backlight/lm3533_bl.c
++++ b/drivers/video/backlight/lm3533_bl.c
+@@ -237,6 +237,11 @@ static struct attribute_group lm3533_bl_attribute_group = {
+ 	.attrs		= lm3533_bl_attributes
+ };
+ 
++static const struct attribute_group *lm3533_bl_attribute_groups[] = {
++	&lm3533_bl_attribute_group,
++	NULL,
++};
++
+ static int lm3533_bl_setup(struct lm3533_bl *bl,
+ 					struct lm3533_bl_platform_data *pdata)
+ {
+@@ -304,28 +309,17 @@ static int lm3533_bl_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, bl);
+ 
+-	ret = sysfs_create_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to create sysfs attributes\n");
+-		return ret;
+-	}
+-
+ 	backlight_update_status(bd);
+ 
+ 	ret = lm3533_bl_setup(bl, pdata);
+ 	if (ret)
+-		goto err_sysfs_remove;
++		return ret;
+ 
+ 	ret = lm3533_ctrlbank_enable(&bl->cb);
+ 	if (ret)
+-		goto err_sysfs_remove;
++		return ret;
+ 
+ 	return 0;
+-
+-err_sysfs_remove:
+-	sysfs_remove_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
+-
+-	return ret;
+ }
+ 
+ static void lm3533_bl_remove(struct platform_device *pdev)
+@@ -339,7 +333,6 @@ static void lm3533_bl_remove(struct platform_device *pdev)
+ 	bd->props.brightness = 0;
+ 
+ 	lm3533_ctrlbank_disable(&bl->cb);
+-	sysfs_remove_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+@@ -377,6 +370,7 @@ static struct platform_driver lm3533_bl_driver = {
+ 	.driver = {
+ 		.name	= "lm3533-backlight",
+ 		.pm	= &lm3533_bl_pm_ops,
++		.dev_groups = lm3533_bl_attribute_groups,
+ 	},
+ 	.probe		= lm3533_bl_probe,
+ 	.remove		= lm3533_bl_remove,
 -- 
 2.53.0
 
