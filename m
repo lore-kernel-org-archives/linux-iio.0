@@ -1,84 +1,82 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AABF739F184
-	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 09:27:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E903D3310
+	for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 09:53:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785490077; cv=none; b=NgtFR5K5CUto7+iv1J9zuWhRpTvSrKCEKSBkPfrhH26BSlbwCmJqXE2TZmm93Zp90ui385pwURPVPiG/w6MW4RQiEllezADS4tqgaTb2WFtbwohGBlp0zQgtB0P+bf86gT7bWU35vMWcgHD0JDhnUxar1pcOVdoV2+CPyhZjNvA=
+	t=1785491607; cv=none; b=j2fk0bsa2+16Ewo6Ily/VCQ17OBPkWW5cBqCLWpqiI4tEn6RU8p9xpSMY5DamStWeWmi8a0o5wofVtu1PjchD3Ow866o8R5ldIH515yTV4oF9AGAk/PjKAJjQkWuCdpGp3sjkeMWAGV8ABdNvzg9Sadek62KE0IBdbd6nGX7lgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785490077; c=relaxed/simple;
-	bh=dBojC7m5k/Eu43d4+BU6RkpF01KtlM3p+/LRHXcKrj4=;
+	s=arc-20240116; t=1785491607; c=relaxed/simple;
+	bh=O2hr3mgkWv9ZH0QPbcAjngEx9k1/2RVfWmF8S8xTYno=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XIdELxpyCLkOF1PWYKrvR8wmfKIQG+viQLh3OwAyF9y6FCq7Cc4mzscSPRNmzpz/obr1oRAHN8uHGS77kNlgEImX7dtv8qTyF9Go2J8LELAe783TVsMuTv7GnFO9DN1oIag0m/pX7FiAqMOLIFoyXq/znWxzrrl0GJaZF6EKJiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HG2kuDy3; arc=none smtp.client-ip=209.85.221.41
+	 MIME-Version:Content-Type; b=FZfWUBTz+iI729s0YMDL0L/tZDzC8lfkk3IwlIXsfONHh5uRzLACknx9/lCQ8utuWRtMaN6dAmlrNSvYmkfogRSnngJnAtH1Gyq1Pm2Egwe3W+af5XspDeg9MlqGy/GRE5E/5wZvqxwGnUvDqmPVZbiuA/yw2Dq4pmR/Tqytdog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=peRiO/aj; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HG2kuDy3"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-47fd4531020so197388f8f.3
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 02:27:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="peRiO/aj"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-47f84023916so801778f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 02:53:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785490073; x=1786094873; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785491591; x=1786096391; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=PZORN38XTqAyT6yavuiE6bLcxUPHB4t2R8mGewp+hEc=;
-        b=HG2kuDy3UzdkEycoS03KobV0ML6hz/O253BU2oDRbgo5HoiPfGFgG7e5t6LfDPfTza
-         b3dHNcOojgDE6CGL8r5glvSUANW+0HXpaToCvwqFYiPMgk6C7naetMojgBV6fdS05q9A
-         4ILn3CTBiMrZRMrtbO69rX4cpNp4Vl/nlyuuAFg2fbQ6TZqiZvMlXiyPXiwJasPlGsMf
-         LStvc43u6tDC8GFGrFokds0f1OyXtRcbEy9yLYBmGcJx9EqwWnUbNatNmg2Tgf2Ox00Y
-         G63UxBansWTst3BrAgJJNHGlXn2aS9D3qI2FUUwywVwHLw3L6hrapfT8sU4NC5WmdJmt
-         gLpg==
+        bh=fwbZejQtpnuo86QdZNkvfiwPzfIoi9keDu3oZjpOvc0=;
+        b=peRiO/ajL9HZlJB4kLNz2iyYZ5sS/d9c7VptVlBfxGBBWLKcTx9jlm1G0AdNrz+/Da
+         U6L6LXKeohO81z+I4ZtbsoYg4q0b0nUgqfiWEqYLmsQN9dEWvV1Uqg4qKlNEVCVZJkbt
+         u7TEL/bw0OwJyVU1jA5E37FZIKEnNTQGOmex+KdgUHPyPK8MWt/sbMDuE4siuEMeQxKJ
+         pZXMJw2+E57XmDZv+9fbHh3c1TwD5jR1kscw8aFwIK7wXRETlrUVFc47mLWk5ZAP7A90
+         QPYUEe9/ATNo/502NgCyke64jg/Zkud6JS9JfLWjQs6iwjsOtim6sYYoh0TgQZ8ssZKY
+         8Z3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785490073; x=1786094873;
+        d=1e100.net; s=20251104; t=1785491591; x=1786096391;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=PZORN38XTqAyT6yavuiE6bLcxUPHB4t2R8mGewp+hEc=;
-        b=MX9JbD/RI33LLiwLma5IYfAaAYHAJPPKM/rwYzHId8KuCC1tRMk3gbnVoivXe+zi7z
-         K4ENyWBOeCJ4+hw+d6vFWlJT0x4S4JAydN1zbFjDYQjeZybgiNGpSGuzvuPBa7fBGvZN
-         37u1LD2Ghfcw+6xkmSzZNgGWdTWnvv03xcLJ56y46hWGlZGdpgBFUED/LnO7VM35TCCt
-         Fr8+zaMxL0p3/b985Yh3/Kgmbt83JEL2qju5Olla5sgQsVKd6jUyHBRckv0m+MB1Uz9P
-         QYngM25RhMIAAXYPpGmOtVlX89walbueSz7QH4udMj0PTzUD7THjeijBzwRoNZOwqfcJ
-         Jqlg==
-X-Forwarded-Encrypted: i=1; AHgh+RpaKJXFAFr3QUUyug2h3xOWU5TynufAzAAkjtIs+S3kZyCkIMOwlSAXjYjHPb1Z+Nenqry/g5qq7E8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJyJh0l/4o+dFOncaNZtH6eFfTITO2KZvCkPeRQXWO4YAC72yz
-	2q1hmDEAK8JbtNvGZqrM9y9uuWxqufnloD3dq9ByVRZN8akM5EKReZf9
-X-Gm-Gg: AR+sD13Yk3ls9q3lQ1CLv5J3pvrK6fl63a5/ZHqhHHYALDi4I7b31MbnIT0J6NqQ5FO
-	qRXKNU44zrjVQ3Y/vTmLNSJWyidktxDmsWt2F5343p1YEj3Z5aegMMl0+fNsAnxFPGMiNQ8aZl9
-	A21ffS8YIPIHGOZhr1tzD1o+ZI/3H33/l4zftEc5AVoRPdFnJQ94xnbBzO3lihmxFUoxmX9avcX
-	ktFBg/eq0rUl3UFxS/bsO5MyJFRNpEucbXDB+cG8QchpPAGIWhL8qMV8uMJLH+LKbtN+hVzGRXW
-	1niVhacbC8fDs08jYGaQfWdi0xDd8FQqwyB9ja9fwCi2ECrkWau+vrZk3Lh0LrbMcYyObDRS7W2
-	GfGlmwSkB5LfLcWBH9TKtp5AOVTehcAmmUCBQpmmOXTtV98PEjC9Mgg64/QDKEWQlJOrzD8YG7A
-	A3pyaqhXgQ0f85c14qHCg4iX4aO/Vjz0PAt36EK68GdDbw1H0qFacFgfgQRoC8GM7I8FTh0/YeD
-	iUdJudEttBdJp93d0Tf5XGty1MRrzCbBY34rjpAAKHxZgv128dds03ZwzNcI19pV10TY+xmM88D
-	XmkxAaQjb1DUJTEAgTQJ2oOihisQJST/b/3GFHTyTul7i/aw4BrB2gg535xVQq9BkYg505kdbFn
-	r4Azz1ElxxYsn9aqhNevl3hfCUp4tg7TwYspKya0EyyqDxsUYqc3j2zYTQRhjg1+jBLHCs06lVb
-	oNJ0s9Bg==
-X-Received: by 2002:a05:6000:4006:b0:47f:853d:476d with SMTP id ffacd0b85a97d-47fd2ab7961mr3299769f8f.10.1785490072616;
-        Fri, 31 Jul 2026 02:27:52 -0700 (PDT)
+        bh=fwbZejQtpnuo86QdZNkvfiwPzfIoi9keDu3oZjpOvc0=;
+        b=oAqkfZJw6ZlYf8g1EfCLyB+VW22xydI08B1/LMSQ6ERH+I2mSRHmrJ1HqxIBY6P7O2
+         zYOjBV0BTAi7M+K4U4gBcmaeOD9wdJjPEx+K4SSOweqd6TGKC+2YU1qEi8woX21vEqDY
+         ZlqepfW8oxz2W89IXK5bb/EizVP04FRmql30SDgRup9KQgc6tRPA/FT1VuK0VKayVJRl
+         NpQcjChCc6LeVrM+VJd0hOr9M7gwe1CVXGeXFiWhNO4KrXvzasWWeZ87B4a4RmQu7lu7
+         Qo4zOd5CTeJAW1dodwc++Xf1EUglYpPhsUOt0O3oegbGyI7JYlxwPZBtGJjHWDJ7t4Rv
+         KoNw==
+X-Forwarded-Encrypted: i=1; AHgh+RrCyEjROVg5viJNYTrdR6Mb2Ylx5YcMHOuEoiFpY07bN5ehkbBv5Pf0M+S/GoRgUfKRCRxeX3iFFb0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwvmmGJZmXlgcxZ3IkfXEj/l+fm/l++KneqQy+5LiBqA4KNVvlQ
+	5u+XT+SKiB8rZsD4vqEoBKT0DYblU+MKcn6l0fri20fJ92dGNl3nbuYa
+X-Gm-Gg: AR+sD117J4RIMVyMSnrSBT32GdGiD72MC35rm5kvABtkjaqFi02SApDE2HVIw9BwVlm
+	Qqv4qfWdcP3XnwQ5s5Zye59ShSK8P9NPdnm58LsBoZ8FnOfBC81pEErJ1HkBiD3fRGY+ppb4Ia3
+	BWH9V8+ETk1eI+c4wBritx7pzf+hM3C1WXYHmqV4gUW5if6etNCZvLrv2I7vpzUg8ZHhL82SYJ9
+	J98mCoxLhVRPBgLTolgtQ/k2tDuQQNSAG56ucwgYoWIWk/5/jo/jI7Mgg72BOQa2ykp6N8ta4RK
+	Ts1Sq9sUIKs6SDGkltcsBzPMsEfGQQwwW8Tw8zJiDy+VdfT9EggdBex+/qkrGYCr43XqPs93GPc
+	xUyO7G0JG4+K/K+aV4Nk6qm9F+blCDjyTWDchrWIDLwOmSMFXNj5VvVodI6oZcelaPmA274h2pE
+	KkxypEfuJ5aCYJyp9G5gW81jPVuxyFBVJqr2QiUZ+S3SJVomIzZrWqzGpI5ZVUSuGmuL9VcVtFf
+	FQE97PAdJBff8baf0aHmby6JYPlloAcrJqq40dFdMVXY8KQBP8jgu8kbC8AJ7MpSp5m95eDpbca
+	t8NjUZz84jqThAIosjnO81zFW3p6SkLYn3X6gRq3PUX6WwjpSuWxTR42R+7x4EXFMmfBkOxCIeY
+	+7TOVOF5d2n8tjLs00u+4npXcJjzAzhU5mYt2G1l0YMLAO+arpj6yBMzYRf0i4cWGrFkgYGI=
+X-Received: by 2002:a05:6000:712:b0:47f:9254:d453 with SMTP id ffacd0b85a97d-47fd2abbdf4mr3203164f8f.8.1785491591146;
+        Fri, 31 Jul 2026 02:53:11 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd458bb4esm2904074f8f.30.2026.07.31.02.27.51
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd45a0ae0sm2757970f8f.33.2026.07.31.02.53.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 02:27:52 -0700 (PDT)
-Date: Fri, 31 Jul 2026 11:27:50 +0200
+        Fri, 31 Jul 2026 02:53:10 -0700 (PDT)
+Date: Fri, 31 Jul 2026 11:53:09 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Kyle Hsieh <kylehsieh1995@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
- Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c04: Add support for TI
- ADS112C04
-Message-ID: <20260731112750.00002c37@gmail.com>
-In-Reply-To: <20260731-ti-ads112c04-driver-v2-2-aab0168c3c01@gmail.com>
-References: <20260731-ti-ads112c04-driver-v2-0-aab0168c3c01@gmail.com>
-	<20260731-ti-ads112c04-driver-v2-2-aab0168c3c01@gmail.com>
+To: mdshahid03@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, David Lechner
+ <dlechner@baylibre.com>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>
+Subject: Re: [RESEND PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to
+ use dev_err_probe()
+Message-ID: <20260731115309.000073a3@gmail.com>
+In-Reply-To: <20260730155712.374464-1-mdshahid03@gmail.com>
+References: <20260730155712.374464-1-mdshahid03@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -89,415 +87,131 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 Jul 2026 10:58:25 +0800
-Kyle Hsieh <kylehsieh1995@gmail.com> wrote:
-> diff --git a/drivers/iio/adc/ti-ads112c04.c b/drivers/iio/adc/ti-ads112c04.c
-> new file mode 100644
-> index 000000000000..28d3be81934f
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads112c04.c
+On Thu, 30 Jul 2026 21:27:12 +0530
+mdshahid03@gmail.com wrote:
 
-Hi Kyle, quick review from me, comments inline. Additionally, please
-check Sashiko's review as there are some move severe issues (mostly
-I2C stuff), see it here:
-https://sashiko.dev/#/patchset/20260731-ti-ads112c04-driver-v2-0-aab0168c3c01%40gmail.com
+> From: Mohammad Shahid <mdshahid03@gmail.com>
+> 
+> Replace open-coded probe error handling with dev_err_probe() for
+> resource acquisition and initialization failures.
+> 
+> This simplifies the error paths, avoids repetitive error handling,
+> and automatically suppresses duplicate messages when -EPROBE_DEFER is
+> returned while preserving the existing error messages.
+> 
+> Also remove the redundant error message after iproc_adc_enable(),
+> allowing the error to be propagated without additional logging.
 
-> @@ -0,0 +1,378 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Texas Instruments ADS112C04 16-bit I2C ADC driver
-> + * Based on TI Reference Code and standard Linux IIO framework.
+Separate patch for this along with the removal of dev_err() at
+devm_request_threaded_irq(), see below.
 
-Usually we'd add a Copyright (c) 2026 your_name_here your_email_here
-and maybe a datasheet link for easy lookup.
+> 
+> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+> ---
+> v2:
+> - Convert remaining probe error paths to use dev_err_probe().
+> - Remove redundant error message after iproc_adc_enable()
+>  drivers/iio/adc/bcm_iproc_adc.c | 52 +++++++++++++++------------------
+>  1 file changed, 24 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+> index cf4738b16e62..08e056468d8e 100644
+> --- a/drivers/iio/adc/bcm_iproc_adc.c
+> +++ b/drivers/iio/adc/bcm_iproc_adc.c
+> @@ -522,52 +522,48 @@ static int iproc_adc_probe(struct platform_device *pdev)
+>  
+>  	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+>  			   "adc-syscon");
+> -	if (IS_ERR(adc_priv->regmap)) {
+> -		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
+> -		ret = PTR_ERR(adc_priv->regmap);
+> -		return ret;
+> -	}
+> +	if (IS_ERR(adc_priv->regmap))
+> +		return dev_err_probe(&pdev->dev,
 
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/delay.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/mutex.h>
+Given the amount of &pdev->dev calls, it would be a good idea to introduce a
+local `struct device *dev = &pdev->dev;` in a separate patch which would go
+before the dev_err_probe() patch.
 
-Please sort your headers alphabetically.
+> +				     PTR_ERR(adc_priv->regmap),
+> +				     "failed to get handle for tsc syscon\n");
+>  
+>  	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
+> -	if (IS_ERR(adc_priv->adc_clk)) {
+> -		dev_err(&pdev->dev,
+> -			"failed getting clock tsc_clk\n");
+> -		ret = PTR_ERR(adc_priv->adc_clk);
+> -		return ret;
+> -	}
+> +	if (IS_ERR(adc_priv->adc_clk))
+> +		return dev_err_probe(&pdev->dev,
+> +				     PTR_ERR(adc_priv->adc_clk),
+> +				     "failed getting clock tsc_clk\n");
+>  
+>  	adc_priv->irqno = platform_get_irq(pdev, 0);
+>  	if (adc_priv->irqno < 0)
+> -		return adc_priv->irqno;
+> +		return dev_err_probe(&pdev->dev,
+> +				     adc_priv->irqno,
+> +				     "failed to get IRQ\n");
 
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
+Remove this, platform_get_irq() already prints an error message, keep
+the original.
 
-Group <linux/iio/*> headers separately and add them after the generic
-<linux/*> headers.
-
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/property.h>
-> +#include <linux/gpio/consumer.h>
-
-Additionally, you're missing jiffies.h, err.h, bitops.h, types.h
-
-> +/* ADS112C04 Commands */
-
-Unnecessary comment IMO, it's clear that these are commands from the
-*_CMD_* part (same goes for your registers comment).
-
-> +#define ADS112C04_CMD_RESET         0x06
-> +#define ADS112C04_CMD_START_SYNC    0x08
-> +#define ADS112C04_CMD_POWERDOWN     0x02
-> +#define ADS112C04_CMD_RDATA         0x10
-> +#define ADS112C04_CMD_RREG(reg)     (0x20 | ((reg) << 2))
-> +#define ADS112C04_CMD_WREG(reg)     (0x40 | ((reg) << 2))
-> +
-> +/* Registers */
-> +#define ADS112C04_REG_CONFIG0       0x00
-> +#define ADS112C04_REG_CONFIG1       0x01
-> +#define ADS112C04_REG_CONFIG2       0x02
-> +#define ADS112C04_REG_CONFIG3       0x03
-> +
-> +#define ADS112C04_DRDY_MASK         BIT(7)
-> +#define ADS112C04_MUX_MASK          GENMASK(7, 4)
-> +
-> +struct ads112c04_state {
-> +	struct i2c_client *client;
-> +	/* Protects concurrent ADC reads and device configuration */
-> +	struct mutex lock;
-> +	struct completion completion;
-> +	struct regulator *vref_reg;
-> +	int vref_mv;
-
-vref_mV, this is a good exception to the no camelCase rule, as it's a SI
-unit.
-
-> +	u8 config0;
-> +	u8 config1;
-> +};
-> +
-> +static int ads112c04_write_cmd(struct i2c_client *client, u8 cmd)
-> +{
-> +	int ret = i2c_master_send(client, &cmd, 1);
-> +
-> +	return ret < 0 ? ret : 0;
-> +}
-> +
-> +static int ads112c04_read_reg(struct i2c_client *client, u8 reg, u8 *val)
-> +{
-> +	u8 cmd = ADS112C04_CMD_RREG(reg);
-> +	int ret;
-> +
-> +	ret = i2c_master_send(client, &cmd, 1);
-
-i2c_master_send returns either the amount of bytes sent or an error
-code. If the device NACKs, the function will return 0 (zero bytes sent)
-but this will be interpreted as success.
-
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_master_recv(client, val, 1);
-> +	return ret < 0 ? ret : 0;
-> +}
-> +
-> +static int ads112c04_write_reg(struct i2c_client *client, u8 reg, u8 val)
-> +{
-> +	u8 buf[2] = { ADS112C04_CMD_WREG(reg), val };
-> +	int ret;
-> +
-> +	ret = i2c_master_send(client, buf, 2);
-
-Use sizeof, don't hardcode the buffer sizes.
-
-> +	return ret < 0 ? ret : 0;
-> +}
-> +
-> +static int ads112c04_wait_for_data(struct ads112c04_state *st)
-> +{
-> +	int ret;
-> +	u8 val;
-> +
-> +	if (st->client->irq > 0) {
-> +		ret = wait_for_completion_timeout(&st->completion, msecs_to_jiffies(1000));
-> +		if (!ret)
-> +			return -ETIMEDOUT;
-> +		return 0;
-> +	}
-> +
-> +	return read_poll_timeout(ads112c04_read_reg, ret,
-> +				 (ret < 0 || (val & ADS112C04_DRDY_MASK)),
-> +				 1000, 1000000, false,
-
-Sashiko points out that read_poll_timeout discards any I2C read errors and returns
-0. Remove the ret < 0 condition.
-
-> +				 st->client, ADS112C04_REG_CONFIG2, &val);
-> +}
-> +
-> +static int ads112c04_read_data(struct ads112c04_state *st, int *val)
-> +{
-> +	u8 cmd = ADS112C04_CMD_RDATA;
-> +	__be16 buf;
-> +	int ret;
-> +
-> +	ret = i2c_master_send(st->client, &cmd, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_master_recv(st->client, (u8 *)&buf, 2);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = sign_extend32(be16_to_cpu(buf), 15);
-> +	return 0;
-> +}
-> +
-> +static int ads112c04_get_adc_result(struct ads112c04_state *st,
-> +				    struct iio_chan_spec const *chan,
-> +				    int *val)
-> +{
-> +	int ret;
-> +	u8 mux, new_config0;
-
-Reverse xmas tree order please.
-> +
-> +	mux = FIELD_PREP(ADS112C04_MUX_MASK, chan->address);
-> +	new_config0 = (st->config0 & 0x0F) | mux;
-> +
-> +	if (st->config0 != new_config0) {
-> +		ret = ads112c04_write_reg(st->client, ADS112C04_REG_CONFIG0, new_config0);
-> +		if (ret < 0)
-> +			return ret;
-> +		st->config0 = new_config0;
-> +	}
-> +
-> +	reinit_completion(&st->completion);
-> +
-> +	ret = ads112c04_write_cmd(st->client, ADS112C04_CMD_START_SYNC);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = ads112c04_wait_for_data(st);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return ads112c04_read_data(st, val);
-> +}
-> +
-> +static int ads112c04_read_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int *val, int *val2, long mask)
-> +{
-> +	struct ads112c04_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&st->lock);
-> +		ret = ads112c04_get_adc_result(st, chan, val);
-> +		mutex_unlock(&st->lock);
-> +
-> +		if (ret < 0)
-> +			return ret;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref_mv;
-> +		*val2 = 15;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static irqreturn_t ads112c04_irq_handler(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct ads112c04_state *st = iio_priv(indio_dev);
-> +
-> +	complete(&st->completion);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static const struct iio_info ads112c04_info = {
-> +	.read_raw = ads112c04_read_raw,
-> +};
-> +
-> +static void ads112c04_regulator_disable(void *data)
-> +{
-> +	regulator_disable(data);
-> +}
-> +
-> +static int ads112c04_parse_channels(struct iio_dev *indio_dev)
-> +{
-> +	struct device *dev = indio_dev->dev.parent;
-> +	struct iio_chan_spec *channels;
-> +	u32 num_channels, i = 0, pair[2];
-> +
-> +	num_channels = device_get_named_child_node_count(dev, "channel");
-> +	if (!num_channels)
-> +		return -EINVAL;
-> +
-> +	channels = devm_kcalloc(dev, num_channels, sizeof(*channels), GFP_KERNEL);
-> +	if (!channels)
-> +		return -ENOMEM;
-> +
-> +	device_for_each_named_child_node_scoped(dev, child, "channel") {
-> +		struct iio_chan_spec *spec = &channels[i];
-> +
-> +		spec->type = IIO_VOLTAGE;
-> +		spec->indexed = 1;
-> +		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE);
-> +		spec->scan_index = i;
-> +
-> +		if (fwnode_property_present(child, "single-channel")) {
-> +			fwnode_property_read_u32(child, "single-channel", &pair[0]);
-
-The return value of fwnode_property_read_u32 isn't checked, meaning that
-pair[0] will contain stack garbage.
-
-> +			spec->channel = pair[0];
-> +			spec->differential = 0;
-> +			spec->address = 0x08 + pair[0];
-> +		} else if (fwnode_property_present(child, "diff-channels")) {
-> +			fwnode_property_read_u32_array(child, "diff-channels", pair, 2);
-> +			spec->channel = pair[0];
-> +			spec->channel2 = pair[1];
-> +			spec->differential = 1;
-> +
-> +			if (pair[0] == 0 && pair[1] == 1)
-> +				spec->address = 0x00;
-> +			else if (pair[0] == 0 && pair[1] == 2)
-> +				spec->address = 0x01;
-> +			else if (pair[0] == 0 && pair[1] == 3)
-> +				spec->address = 0x02;
-> +			else if (pair[0] == 1 && pair[1] == 0)
-> +				spec->address = 0x03;
-> +			else if (pair[0] == 1 && pair[1] == 2)
-> +				spec->address = 0x04;
-> +			else if (pair[0] == 1 && pair[1] == 3)
-> +				spec->address = 0x05;
-> +			else if (pair[0] == 2 && pair[1] == 3)
-> +				spec->address = 0x06;
-> +			else if (pair[0] == 3 && pair[1] == 2)
-> +				spec->address = 0x07;
-> +			else
-> +				return -EINVAL;
-> +		} else {
-> +			return -EINVAL;
-> +		}
-> +		i++;
-> +	}
-> +
-> +	indio_dev->channels = channels;
-> +	indio_dev->num_channels = num_channels;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads112c04_probe(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ads112c04_state *st;
-> +	struct gpio_desc *reset_gpio;
-
-Reverse xmas tree order here as well.
-
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +	st->client = client;
-> +
-> +	ret = devm_mutex_init(&client->dev, &st->lock);
+>  
+>  	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
+>  				IPROC_ADC_AUXIN_SCAN_ENA);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "failed to write IPROC_REGCTL2 %d\n", ret);
+> -		return ret;
+> -	}
 > +	if (ret)
-> +		return ret;
-> +
-> +	init_completion(&st->completion);
-> +
-> +	indio_dev->name = "ads112c04";
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &ads112c04_info;
-> +
-> +	ret = ads112c04_parse_channels(indio_dev);
+> +		return dev_err_probe(&pdev->dev,
+> +				     ret,
+> +				     "failed to write IPROC_REGCTL2\n");
+>  
+>  	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
+>  				iproc_adc_interrupt_handler,
+>  				iproc_adc_interrupt_thread,
+>  				IRQF_SHARED, "iproc-adc", indio_dev);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "request_irq error %d\n", ret);
+> -		return ret;
+> -	}
 > +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_regulator_get_enable(&client->dev, "avdd");
-> +	if (ret)
-> +		return dev_err_probe(&client->dev, ret, "failed to get avdd regulator\n");
-> +
-> +	ret = devm_regulator_get_enable(&client->dev, "dvdd");
-> +	if (ret)
-> +		return dev_err_probe(&client->dev, ret, "failed to get dvdd regulator\n");
-> +
-> +	st->vref_reg = devm_regulator_get_optional(&client->dev, "refp");
-> +	if (IS_ERR(st->vref_reg)) {
-> +		ret = PTR_ERR(st->vref_reg);
-> +		if (ret == -ENODEV) {
-> +			st->vref_mv = 2048;
-> +			st->config1 = 0x00;
-> +		} else {
-> +			return ret;
-> +		}
-> +	} else {
-> +		ret = regulator_enable(st->vref_reg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = devm_add_action_or_reset(&client->dev, ads112c04_regulator_disable,
-> +					       st->vref_reg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regulator_get_voltage(st->vref_reg);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		st->vref_mv = ret / 1000;
-> +		st->config1 = 0x02;
-> +	}
-> +
-> +	reset_gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_LOW);
-> +	if (IS_ERR(reset_gpio))
-> +		return PTR_ERR(reset_gpio);
-> +
-> +	if (reset_gpio) {
-> +		gpiod_set_value_cansleep(reset_gpio, 1);
-> +		fsleep(1000);
-> +		gpiod_set_value_cansleep(reset_gpio, 0);
-> +	} else {
-> +		ret = ads112c04_write_cmd(client, ADS112C04_CMD_RESET);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	fsleep(1000);
+> +		return dev_err_probe(&pdev->dev,
+> +				     ret,
+> +				     "failed to request IRQ\n");
 
-Why 1000? Add a comment that links to the datasheet or an explanation.
+You only need to return ret here, devm_request_threaded_irq() already
+prints an error message on failure. Separate patch for the removal please
+(ideally the first patch in your series to reduce churn).
 
-> +
-> +	st->config0 = 0x01;
-> +	ret = ads112c04_write_reg(client, ADS112C04_REG_CONFIG0, st->config0);
+>  
+>  	ret = clk_prepare_enable(adc_priv->adc_clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev,
+> -			"clk_prepare_enable failed %d\n", ret);
+> -		return ret;
+> -	}
 > +	if (ret)
-> +		return ret;
-> +
-> +	ret = ads112c04_write_reg(client, ADS112C04_REG_CONFIG1, st->config1);
+> +		return dev_err_probe(&pdev->dev,
+> +				     ret,
+> +				     "failed to enable clock\n");
+>  
+>  	ret = iproc_adc_enable(indio_dev);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "failed to enable adc %d\n", ret);
 > +	if (ret)
-> +		return ret;
-> +
-> +	if (client->irq > 0) {
-> +		ret = devm_request_irq(&client->dev, client->irq,
-> +				       ads112c04_irq_handler,
-> +				       0,
-> +				       indio_dev->name, indio_dev);
-> +		if (ret) {
-> +			dev_err(&client->dev, "Failed to request DRDY IRQ\n");
-> +			return ret;
+>  		goto err_adc_enable;
+> -	}
+>  
+>  	indio_dev->name = "iproc-static-adc";
+>  	indio_dev->info = &iproc_adc_iio_info;
 
-Just return ret, devm_request_irq() already prints an error message on
-failure.
+Also, you've missed an additional dev_err() in the iio_device_register()
+check, you can change that one as well.
 
 -- 
 Kind regards,
