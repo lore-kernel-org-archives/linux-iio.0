@@ -1,156 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFD6733AD8B;
-	Fri, 31 Jul 2026 07:06:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1598A3D411A;
+	Fri, 31 Jul 2026 08:30:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785481606; cv=none; b=KTK83D+q/LOApxYcVUaiZ773+2fixptzgN7sZQTbFTmDtbg3/oeeypsylcsZlYJRwYK77GmwRikBISTn4U9N6TOg4r47jSlS5zk6+OUGzIRwjt5lGGxGwHQnmhNdPA/pVMEFRI3tHyx34Ix/3SHISXEiVhU69SwOVhuZNuozGkA=
+	t=1785486653; cv=none; b=Wvm9ISGkU5rAydRQl/LCSef9NCfCcesBKF5YTGwU+APYI4AdFENS3WGwtTCcC2JIRbLMbcVCQFhKMYZd1u0yewXIZZA/ucdnBQA4GTaTxIY+6HT1EC2NXxXJMRmE6ihdlrcWy0jZege6Ae2Ce9lYRIxMGl8y5darMlQWqzO1xuc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785481606; c=relaxed/simple;
-	bh=FVqvsKe/n2dYeThJDHcpjCZ9n//kHlaTzT9mHseqK1I=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=l4Y/urSRh4JCHaVTNDC/zTDmEimuc43aH/aUgbt7QB0MlPBSukO2m7znig5wrAsyLcdczLVcV3S9Xp7oAq490FkpXdvrQPSJGrri7WwvNCurYZ5XkssLK/Owqta/DdjB81fwNvSr3Ta3c06nr4ptLw550C07Mx/chY4r/8DiTlE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HJy9rmAG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785486653; c=relaxed/simple;
+	bh=875MmK3q0FCt74sb8cP8FMnOYT4YdmEAvebDWQdLLXc=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CU3twwj1Is7DlZfAMhN6c6VuA1BYjfCXAk5CZeLdMziutXOdTDvDQtoOygTb17DUeVJ8CpuTkiFbj+t2Qq06sBgPfThPj4SBVEhDlbdtipJ0QuruXTZxfBly8HuedyR8arKq5ktD8nTz4Xv0VXIufWCuu0OnHLhfKJYJQeDBnsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=pnEjX9wF; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HJy9rmAG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF17F1F000E9;
-	Fri, 31 Jul 2026 07:06:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785481604;
-	bh=YXpVRawU4eKqO1E5kHdvQATW/LnGM3EvAkC4h7gA85Q=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To;
-	b=HJy9rmAGp+SLNVmA8FzS09mlNWwpiDc/dJLJq31DbdrmN+NgRBxxjsTq+Pl6a5Ji9
-	 SLgVEK6L6+Yb2f/2nfVXONsjzOxFMWVl58Y4WsjNzMzBGXv8Go9QRqrHi5YY/tmy8s
-	 1LOS48JbwTqd3b10uROXFW7Lrxfk7spMcnpbpfew+9urRFJ8syGimlHGTbddOjXZ8j
-	 UowduSq4zN6cODohTakgTdA47Krw18WxuadTEWxu5Oh8A+3sZfi57jcw+f9pGoWwee
-	 jg4P/hgSyBdPY+6d3a/7kTI7fhQzK43J3IcHpvOkC1xuIOO+IisqI2IG1dc8j71i33
-	 TJDSiFj0IJxJw==
-Message-ID: <f0ec8d8e-b7fe-4620-a715-65af36166e05@kernel.org>
-Date: Fri, 31 Jul 2026 09:06:36 +0200
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="pnEjX9wF"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66V7x5jq3069474;
+	Fri, 31 Jul 2026 04:30:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=PyyUX2RMl/iHAykHdWwi664oS65
+	9ryLXfFzvWgrn8XU=; b=pnEjX9wFt+rVRF+xpLTy/vZ5f+FQ61wBsEhfFlaY+Ec
+	CY+Yv/uSI7+2gdXtsmnzAM3xUv0xTfuQRJIex3pjopE3ci1sTNJK8n6kZBRHq2Z0
+	KUSWUXDYoBZaqtJ7E201WWbby5mARuGsH18ARfd2V0XKS64vH8Jcf91umW3ktQgc
+	QXmgapUdrhrq+VaS4A+N3vQlMmCuF61CH22l5Ubc5vh/T48qz5sJ2uhDiKhh6Akx
+	W63bmsUghvF1Y7WANbf5OUZ2MuB2xIMcBJoECEeNHrfmjzORYb6wYmXuD8As0gY8
+	rIqxO84yorVMUoFQoC18rAadmWBqZexRooSy7JaMRbQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fqj4f9hsg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 31 Jul 2026 04:30:31 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66V8UUNH039891
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 31 Jul 2026 04:30:30 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 31 Jul 2026 04:30:29 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 31 Jul 2026 04:30:29 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 31 Jul 2026 04:30:29 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.148])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66V8UDN6026738;
+	Fri, 31 Jul 2026 04:30:15 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        "Shuah
+ Khan" <skhan@linuxfoundation.org>,
+        Radu Sabau <radu.sabau@analog.com>,
+        "Marcelo Schmitt" <marcelo.schmitt@analog.com>,
+        Jorge Marques
+	<jorge.marques@analog.com>,
+        Salih Erim <salih.erim@amd.com>,
+        Matti Vaittinen
+	<mazziesaccount@gmail.com>,
+        Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+        <linux-iio@vger.kernel.org>, <linux@analog.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+Subject: [PATCH v2 0/4] iio: adc: ade9000: add support for ADE9078
+Date: Fri, 31 Jul 2026 11:29:46 +0300
+Message-ID: <20260731082951.1228-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/2] dt-bindings: iio: adc: add adi,max40080
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Stefan Popa <stefan.popa@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@kernel.org,
- andy@kernel.org, nuno.sa@analog.com, linux@roeck-us.net, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com,
- ciprian.hegbeli@analog.com, siratul.islam@linux.dev,
- u.kleine-koenig@baylibre.com, joshua.crofts1@gmail.com
-References: <20260730131738.822405-1-stefan.popa@analog.com>
- <20260730131738.822405-2-stefan.popa@analog.com>
- <20260731-steadfast-peculiar-bee-33fec4@quoll>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20260731-steadfast-peculiar-bee-33fec4@quoll>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: PiHbYgxtWr3vDytYKvkVsNSJMy_xUIdV
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMxMDA2MCBTYWx0ZWRfX94SOC/p/4te/
+ L75lZFPtGsbqmmlGwhdpeWNVazg2KnT9YM4u62BypLu1ZNrCv8NENf+eCyNx445NfEYUc0ZtvvH
+ YRgrh6g1XvtsTonCOi8e5EQTNrVad/4BvVnN1kWDHXR/eaUbLGS95obIXRtGYpr1EIF0fQAjDlZ
+ kuKb0GIBAnWFJK4IDwIVQcAa7iHfgP0FhRixhHrIZej7y0WVT5Vs3CXB5FgDVlDY5lhgg3t8+AV
+ EmaeXf3R4QnyqRA2tzEnx2r8GAcdIeV8y+gLSgRudbyuue2Irf73qTnlhEA4rxc2ioHNSSuYwbX
+ 9PpcG4Tym4GYeZ2ldu16HuSHkC5RxRYSh/t6eRUFJVk9gl8FfehXo8ofe5X6JtD1ae7/SEgI2Yt
+ UrCfGDaci00W1gwaqCCVEt+D0VE3DjTgTbuti7VK/IiJW2XLZZ9GZSMbOKKzOmgpRBejBA6OLjR
+ 4dg/Z6OQOQYdVPxI/iQ==
+X-Authority-Analysis: v=2.4 cv=EMk2FVZC c=1 sm=1 tr=0 ts=6a6c5d27 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=VwQbUJbxAAAA:8 a=zsVk_H6PqY_VlGaDqAMA:9
+X-Proofpoint-GUID: PiHbYgxtWr3vDytYKvkVsNSJMy_xUIdV
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMxMDA2MCBTYWx0ZWRfXyT6tO83BXI6v
+ Vcpbv2eTShctYanpDs7qbThqGTt1LEsC+cZazECfPJ4nN4nm3/CL6zdrqPxhbYYTtim/nLKNSZ8
+ ScwSgjJsjH7ojma9WcyBhHuFsoO/w26uyUfWbWWDaH1yo8UfmUS8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-31_03,2026-07-30_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 malwarescore=0 phishscore=0
+ spamscore=0 suspectscore=0 clxscore=1011 adultscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607310060
 
-On 31/07/2026 09:04, Krzysztof Kozlowski wrote:
-> On Thu, Jul 30, 2026 at 04:17:37PM +0300, Stefan Popa wrote:
->> +  vdd-supply:
->> +    description: Power supply for the device.
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +    description: ALERT output for overcurrent/undervoltage threshold events.
->> +
->> +  shunt-resistor-micro-ohms:
->> +    description:
->> +      Value of the current-sense shunt resistor connected between the IN+ and
->> +      IN- inputs. Used to scale the reported current.
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - shunt-resistor-micro-ohms
-> 
-> Supply is required
-> 
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    i2c {
->> +        #address-cells = <1>;
->> +        #size-cells = <0>;
->> +
->> +        adc@20 {
->> +            compatible = "adi,max40080";
->> +            reg = <0x20>;
->> +            #io-channel-cells = <1>;
->> +            shunt-resistor-micro-ohms = <100000>;
->> +        };
->> +    };
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index e087673237636..e1170230c4bb2 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -28893,3 +28893,11 @@ S:	Buried alive in reporters
->>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>  F:	*
->>  F:	*/
->> +
->> +MAXIM MAX40080 CURRENT SENSE AMPLIFIER DRIVER
-> 
-> Honestly, how did it appear at the end? Do you see any other
-> commit/patchset adding it there? No, so this should raise questions on
-> your side.
+The ADE9078 is a polyphase energy metering device from the same family as
+the ADE9000 and is register compatible with it. The main differences
+relevant to the driver are the absence of the on-chip dip/swell detection,
+a lower maximum SPI clock (10 MHz), and slightly different full-scale ADC
+codes.
 
-And this is quite different than v5 and nothing explains that change in
-the changelog.
+This series adds support for the ADE9078 to the existing ade9000 driver.
+It first refactors the driver to move the part-specific values (device
+name, channel table, and full-scale codes) into a chip_info structure
+retrieved via device match data, then adds the new device tree compatible
+and the ADE9078 support itself, and finally updates the documentation.
 
-Use b4 prep to see what you did between revisions.
+Changes in v2:
+- move the "respective datasheets" comment wording to avoid churn.
+- use a generic Kconfig title and list the supported parts.
+- duplicate the RMS voltage macro instead of a shared base macro.
 
-Best regards,
-Krzysztof
+v1: https://lore.kernel.org/linux-iio/<FILL-IN-v1-MESSAGE-ID>/
+
+Antoniu Miclaus (4):
+  iio: adc: ade9000: introduce chip_info structure
+  dt-bindings: iio: adc: adi,ade9000: add adi,ade9078 compatible
+  iio: adc: ade9000: add support for ADE9078
+  docs: iio: ade9000: document ADE9078 support
+
+ .../bindings/iio/adc/adi,ade9000.yaml         |  30 ++-
+ Documentation/iio/ade9000.rst                 |  28 +--
+ drivers/iio/adc/Kconfig                       |  16 +-
+ drivers/iio/adc/ade9000.c                     | 180 ++++++++++++------
+ 4 files changed, 175 insertions(+), 79 deletions(-)
+
+
+base-commit: 0b5e142ced4bcf20532da051934bd694d1bbd470
+-- 
+2.43.0
+
