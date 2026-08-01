@@ -1,178 +1,109 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774401F2380
-	for <linux-iio@vger.kernel.org>; Sat,  1 Aug 2026 06:45:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D0948989F
+	for <linux-iio@vger.kernel.org>; Sat,  1 Aug 2026 08:48:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785566720; cv=none; b=iATyLLA1ofBPeZ2FPn2jfzJ6Cl/CpepoVpstnZwMgf8S/GKrokR8Cw12R5YhC8jfRBXHNrElPX9zYYXhpbjLSVdRISKNrT8FPd3EFC6s5TuVy0rUKxX1V6C9GjzNZOxqrU6Xp9ypXOUvSRuyonf2GH8dNHBIc9vDTZz7/bXDpl4=
+	t=1785574114; cv=none; b=COJGo02b8AqrdxJkqe6yqdYa19tF09DFg4lj4Nkhl++ZGsxMXZUxFedCEhRrZqdb0tMi40Rf0C8RrDcB890V4/55NwC+AoUXS2eyfXkQBTfk7suzKaDMJ+TEMk6C3JEyRzpTbaP5JFoI+pXevkQaoJSlw+fUMYGsasv9NJx/jJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785566720; c=relaxed/simple;
-	bh=GvdZ662JCMXzbW8+6bNSz/VzMykfM7w2yO2nTWSDYKA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=goXc4KSoxZyoHFLvv7TrkL8ruo311pCPqIYVzM9I5IE5ZNXSa87UTXKLA7p1xYXZGFlw0GvzXUCjrTpj1jIaX8WGqPN2Hgp2MhkGvz3v9Z2ySGzmc97k4hZQOzthXS6pHjNYCRuKgW/cYrjrAaieFb5wU2GCGA/FRsqbZSxkObY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=osZ2WNbo; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785574114; c=relaxed/simple;
+	bh=CBTuGAaSO+Mj6Xd9zM2Dy/TQHDvuh1uTIenUQEv3ye8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tgCkHs0gI5S5BnqVIa/XQOG2+mf0Q76f/5g7Baq62i79jFXbG3kbW8I+MbU3zG/M2sYB1O/r/8QRHW5VzByChUENUBcbdIfZ1MsyWxq3RLMlaz5CDnd6RfOdq/2V5anbBMAENPnc9ugNctiBn0zNdeyY4EgBG6YBWZ7cv6ZjQco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tweaklogic.com; spf=pass smtp.mailfrom=tweaklogic.com; dkim=pass (2048-bit key) header.d=tweaklogic.com header.i=@tweaklogic.com header.b=hntZ1oT8; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tweaklogic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tweaklogic.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="osZ2WNbo"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-47f93b2fe4cso1126011f8f.0
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2026 23:45:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=tweaklogic.com header.i=@tweaklogic.com header.b="hntZ1oT8"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2cad8076b01so20101645ad.2
+        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 01:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785566717; x=1786171517; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=shXI5gTecK3XzXEfQhSt8Ph409l47ex30hjHXtZWBBA=;
-        b=osZ2WNboAnUPujABCAYXUjKloEyFWGvTf2Pu9hACHWcNLtS1ki99liP4LVtNfKlacT
-         P+QGh1padWva+H6VS8eg9HOR397Ugv+ePGmWYw/M66F4tk6l497E501+anFz9uUb+Lb6
-         fnusB74xgbuh0ZfdV6G3ulnfyIa9fvVCbH0o/UHU9SVSvGsyAybfreTDVcvZuXYOSm0l
-         wd7vOCo+bhsmE5FX+wT2xv5g1XFhCfPSdNNTyzuCxpWGyIDuqAuPC2O8rQM6p1/2/P9V
-         YZ65fdCZ0Z79DmN2R+spQlPoknXmQEEU0YDIOISpwahoB8zHv1ZJVL2mk/tfdLy3Ivk6
-         BfEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785566717; x=1786171517;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=tweaklogic.com; s=google; t=1785574111; x=1786178911; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=shXI5gTecK3XzXEfQhSt8Ph409l47ex30hjHXtZWBBA=;
-        b=jL2hFAb6mHe1jc7KMQ1brpW/JsTJpeAXWMNJYWV14Xiwx7cs+ja8ht0lNuLq0kWqD1
-         sgrd4JTfO/MGIz5bQie0DeNQDpnfE+cbFQojKno5I6AwTmzubM+mYYwgV+7FKgTZwGOK
-         hU3r8Gc8sGzzgXd95Lo2Hp8vUTlq3VCu7tyUNN0wFA6z9kWz3uzrrxagTbd3qNa3VOfg
-         Q5i6YgurXIFh/bLOZAQ0hd0i9G5xfbBaPqe8UchyFjDJPnFCsYY/yLJVRI1H0APLxNXs
-         ebsnIImhYXKFXgIBdeHefnRW3ubuk9ZCLjFXeugLmcSVtz9Nw+FKxHDPVS3NPsQsHuwc
-         nRIg==
-X-Forwarded-Encrypted: i=1; AHgh+RruNJ54pv43T4cBTBA7V8btTSJJ9AJCSxfAtvlNA4MGy9yHtZ/JiegsU2yRxF8x+6RkjhBp2qI4/BA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YztJifgQIWmX0HtieAz8Hw8RQwU5X3u0EIfIlSl/pCIjI2dXUwy
-	rscgrDFuSpARyE0ZFfEv2jaRkvMQzbUgxiBZKXWbtybBJPQdfKGEC8OT
-X-Gm-Gg: AR+sD13JKfKgHiu8F4oPtBOILOfnZWH8DKjpJrSntW4E/4JJxxNVOhSVTTtLyYFkD9b
-	kWo+mvEvPa9cJXTSTsJFQJPylnF1uNxFtxHUcj6wySE7Y6kKLL6v04dk2rI9Rf95L+8Z1W5WAK/
-	mQwyHVqc3S9RNcNbRHHj5PZFl7gi0EEV/H0Ee6pX3Rm3F5g77k5Iz1U4FQ46r2fN16KV92FUXc8
-	irh4kloSdTu8Z06QJQNm11LqO74YzVwKFN5DcearTtAdIo97/sZGQa7BOaLFu6VhDewg/gcWr9o
-	5rgxkztZgK+j/5IUsDiJz9Fhp4I/FVmxPZBSjmXHTjXWmV5ANQhaNXM/4iJIzHilRJmPC4clNgi
-	cjJ8fr6Rupmcx7cU+rM0v3rq7B9NcG1YLgDKUAto7tvlvSCyOjsDW3+3qZXa6VKhGcGINGrP35V
-	b4BQJ5AuQz9vp7ccbt9A6EwJzF7YTTOQkXNsZjAKJsyx1nuZbJ+o7vh5GTTYtycR0dOB7cz/6M+
-	/iXL9LlioUKyOeKvO55mSx93yV7WLDi59z0zG2ptCfZZ8cKMPkj6SfzpCxhJfV9JE1V7jQsBUxw
-	0ssd8AZkmTZxjM6zWR9n1alc6A1/zqe+JtbZKB1gumcb9kCNvq0q0gHEnbK+Hsr0syVt1f+8v94
-	QD+2XFTbb9plHQ0le/D4uQbawwP1wbJjzf/rEnQP6vtEvXZyRMPYM3TlVvDc=
-X-Received: by 2002:a05:6000:186e:b0:47f:aead:f81b with SMTP id ffacd0b85a97d-47fd72c48a0mr4568734f8f.21.1785566716620;
-        Fri, 31 Jul 2026 23:45:16 -0700 (PDT)
-Received: from systembl0wer (109-81-110-31.rct.o2.cz. [109.81.110.31])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd458ea4asm12408852f8f.31.2026.07.31.23.45.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 23:45:16 -0700 (PDT)
-Date: Sat, 1 Aug 2026 08:45:11 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: mdshahid03@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Joshua Crofts
- <joshua.crofts@broadcom.com>, Broadcom internal kernel list
- <bcm-kernel-feedback-list@broadcom.com>, David Lechner
- <dlechner@baylibre.com>, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>, Scott
- Branden <sbranden@broadcom.com>
-Subject: Re: [PATCH v3 3/3] iio: adc: bcm_iproc_adc: Convert probe error
- handling to dev_err_probe()
-Message-ID: <20260801084511.795962ac@systembl0wer>
-In-Reply-To: <20260731182347.42888-4-mdshahid03@gmail.com>
-References: <20260731182347.42888-1-mdshahid03@gmail.com>
-	<20260731182347.42888-4-mdshahid03@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+        bh=/pZ8m7pRzCz8D91oW/VyFl59Ql2se0V6HINSg9JYJs8=;
+        b=hntZ1oT876WG+B50DD6Rfv1ytRErqAhdgAnwdGLjMZ1sq93p0V+YL9yfjIcFeiEW3D
+         nUy2TiFOhB0yr+nDi+Aoyyu2Egnbql+BegP4n51OfWJl0juTPtg6v0R2EDPrY5oN3ENQ
+         Jno2zrBps7HIAuJfA+aTEg6pUwDHyK4JDp840Dv0BkDj+6ul4e9eB30ydxLdsD373jgu
+         xqlX4ET3UmUrfF/6DpPh8HSgJzVw/Rd99TOfyptCeTyq9DYMXxVEXcwqDfLdcTKsJKPl
+         siEZWlrCbJ6UZo6mdRzqoOtc/8t97l5q8IrJZhtbQTpf2ESXnG6enPCuYNmjB3Yt0imA
+         mOqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785574111; x=1786178911;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=/pZ8m7pRzCz8D91oW/VyFl59Ql2se0V6HINSg9JYJs8=;
+        b=pLnnJLuxABI7eaSor+reUv/DM8FudLNNz8yw94ot7/zQTWFHBZb4nD9jZWVkyhz8+O
+         kZWtW7DrvSYC7Im2jbuwUj/wLTFz5FHlFQhVApLlVVkcvRLwOuomPQn5fiNeafJ796e9
+         xy/nZZ+hSM0arGOXqKOAIninGuy1rjytxPaNYnAoWrMU4TDpUrr+zC/emjPkyPBNKBHW
+         yqGMlPj2puixdQvenxWWrgoJXPLZ74rpllU85v6IvF9EwMjj6kbNQpBAX7QA5y1Zgzpj
+         sHYJNLHkMOFykKmU3+NprTmWcu5uiCXSP7pjlC8fnf9eJuQYu6M5wHMUlYUYZE8D7bto
+         XY/Q==
+X-Forwarded-Encrypted: i=1; AHgh+RrQ8Jd+HiGfr/DDNGLejDJD5IECV0XSQm/QDA/rpHoTYLK3Q9kv5kLgjELh43i9TQRCZH2dBRTQwpg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYFFbi14MOJLp3PHyAlxQCPfFLlubSC1R9sLuZaWanK6CFnx5P
+	wA5ZISnnfXNvS0D1paM7zphtHL09BnMAzYT2qYa9jSbBensQ1Nx1BcqRtZ3gR4BHgEM=
+X-Gm-Gg: AR+sD11aPwWymbt0qyt6N7HOKN7rmxxJ/Q5l2ShabHluKEPJjhuYQ2vo039mCS9jLqD
+	kvN+l1r6TOVaenEHPwQ/73u8He5Orbs7KiIhbRR7FIu4cIAnYlXMU4azWV8p7NfBhKueAy/Z/vT
+	iV7qgQh/0CSvLTs2yGAwloP+ei7dw8k4cn6se7miCSFxIhK6Uon+C5+x2jQnCL3U1d41uRIUWu/
+	GHJMO4oEeS53QmDpFTx1lAA8OkPXcdOIjVhbXfYenNhSOqnOLO1OZU5Zd4mbaAhH56yemT8BhtL
+	6/7u1cAJphSFfvabhR/A8TORpfsj11W4PMK9aMUmdCQGmyh9/c+YYfH40oU3HOuFJdy3vgzLygn
+	YtygWdOKHqV9eS+tQqtLUV32tQ5NsLbJIaP970C/+I672+HRRxNtVVAXQsNSEF8aB1rxc/vIeWf
+	d8X+Du26DnsXfolFEBTdV6um0BvyWNyPLkrRi05gPOzK415525w5wt7+6Fw2hAAeiGcPxPEMkcA
+	zPj+w==
+X-Received: by 2002:a17:902:f541:b0:2ca:5970:732d with SMTP id d9443c01a7336-2d0524810e8mr29279355ad.41.1785574110963;
+        Sat, 01 Aug 2026 01:48:30 -0700 (PDT)
+Received: from [10.104.119.12] ([129.127.204.12])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d04b0eb598sm15724405ad.51.2026.08.01.01.48.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 01 Aug 2026 01:48:30 -0700 (PDT)
+Message-ID: <166588b4-7bd6-400e-9be3-300dd1a1f9f6@tweaklogic.com>
+Date: Sat, 1 Aug 2026 18:23:19 +0930
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: light: apds9306: fix PM reference leak in
+ apds9306_read_data()
+To: Jonathan Cameron <jic23@kernel.org>,
+ Moksh Panicker <mokshpanicker.7@gmail.com>
+Cc: dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ skhan@linuxfoundation.org
+References: <20260725051048.5616-1-mokshpanicker.7@gmail.com>
+ <20260727033151.0ea0cb9d@jic23-huawei>
+Content-Language: en-US
+From: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
+In-Reply-To: <20260727033151.0ea0cb9d@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 Jul 2026 23:53:47 +0530
-mdshahid03@gmail.com wrote:
-
-> From: Mohammad Shahid <mdshahid03@gmail.com>
+On 27/7/26 12:01 pm, Jonathan Cameron wrote:
+> On Sat, 25 Jul 2026 05:10:48 +0000
+> Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
 > 
-> This simplifies the probe error handling by replacing open-coded
-> dev_err() and return sequences. Also remove the redundant
-> dev_err() after iproc_adc_enable(), as the helper already reports
-> the failure.
+>> apds9306_read_data() calls pm_runtime_resume_and_get() but several
+>> error paths return directly without calling pm_runtime_put_autosuspend(),
+>> leaking the runtime PM reference and preventing the device from
+>> autosuspending.
+>>
+>> Add a goto label before pm_runtime_put_autosuspend() and use it on
+>> all error paths after a successful pm_runtime_resume_and_get().
+>>
+>> Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+> Good find.
+> Please look at PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and matching ERR macro.
 > 
-> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
-> ---
->  drivers/iio/adc/bcm_iproc_adc.c | 43 +++++++++++++++------------------
->  1 file changed, 19 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-> index 29ea35972a23..5fcd528eb88a 100644
-> --- a/drivers/iio/adc/bcm_iproc_adc.c
-> +++ b/drivers/iio/adc/bcm_iproc_adc.c
-> @@ -523,19 +523,16 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  
->  	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
->  			   "adc-syscon");
-> -	if (IS_ERR(adc_priv->regmap)) {
-> -		dev_err(dev, "failed to get handle for tsc syscon\n");
-> -		ret = PTR_ERR(adc_priv->regmap);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(adc_priv->regmap))
-> +		return dev_err_probe(dev,
-> +				     PTR_ERR(adc_priv->regmap),
-> +				     "failed to get handle for tsc syscon\n");
->  
->  	adc_priv->adc_clk = devm_clk_get(dev, "tsc_clk");
-> -	if (IS_ERR(adc_priv->adc_clk)) {
-> -		dev_err(dev,
-> -			"failed getting clock tsc_clk\n");
-> -		ret = PTR_ERR(adc_priv->adc_clk);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(adc_priv->adc_clk))
-> +		return dev_err_probe(dev,
-> +				     PTR_ERR(adc_priv->adc_clk),
-> +				     "failed getting clock tsc_clk\n");
->  
->  	adc_priv->irqno = platform_get_irq(pdev, 0);
->  	if (adc_priv->irqno < 0)
-> @@ -543,10 +540,10 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  
->  	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
->  				IPROC_ADC_AUXIN_SCAN_ENA);
-> -	if (ret) {
-> -		dev_err(dev, "failed to write IPROC_REGCTL2 %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(dev,
-> +				     ret,
-> +				     "failed to write IPROC_REGCTL2\n");
->  
->  	ret = devm_request_threaded_irq(dev, adc_priv->irqno,
->  				iproc_adc_interrupt_handler,
-> @@ -556,17 +553,14 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  		return ret;
->  
->  	ret = clk_prepare_enable(adc_priv->adc_clk);
-> -	if (ret) {
-> -		dev_err(dev,
-> -			"clk_prepare_enable failed %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(dev,
-> +				     ret,
-> +				     "failed to enable clock\n");
->  
->  	ret = iproc_adc_enable(indio_dev);
-> -	if (ret) {
-> -		dev_err(dev, "failed to enable adc %d\n", ret);
-> +	if (ret)
+> Using that should simplify this fix quite a bit and generally give us nicer code.
 
-I'd say it would be better to move this change to the patch where
-you remove the dev_err() at devm_request_threaded_irq().
+Nice. Ditto. I have to read about it too. Thanks Jonathan.
 
--- 
-Kind regards,
-Joshua Crofts
