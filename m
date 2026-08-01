@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A72473DA7C3;
-	Sat,  1 Aug 2026 23:46:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 880743C456F;
+	Sat,  1 Aug 2026 23:50:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785627984; cv=none; b=Ew1xbQ60Fd/3DCI8GxHBbfB5ien72UtO3eLjfWP1QrG9ySWsofHCHG0P0wMS+GM/nwEJ1JZXWRULT/k2oSBY6ujFxvOkjY1VCFOaSnbLQlUTuiJ6luMz37oae1Bp8hgwaRW2IO6idH3kejRfVwg17KkjEzolFEZm7d95v81R4ss=
+	t=1785628248; cv=none; b=QzSNvxunVVcQzv+bt19oPWbPI/V5IJTbGR+km9xOahwbHBGXFpLEqROhhxPavYeCFn4KWD7kbgeIqyXSprLxeFhej8U6Flo1r/domS1k82MhRxK7CTz+f2szdSRRl9KN+dv6Sz1bMWe//pXM+uhqDqdcZbZsLwZHTrn824ZNfp4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785627984; c=relaxed/simple;
-	bh=JnJuiR0JWYtbX1tR+PspE7sckWrdy+4EPs9wXERewUk=;
+	s=arc-20240116; t=1785628248; c=relaxed/simple;
+	bh=i2jZYc/ZCxuwnAA+UrTQAowvFScwo+tAL53sdT8csUo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=j49n6Ly5raTh3dsqROuiDTLeuV9p9In+rXdPMnKTQn+fX5po2ZybUhT+vQM2BIykOfo/eZFqHg1vOhuIQLDLPEfljV43I6rio8COyeQZNt5ULlO2sNydviVZbvJV4Gw/l5wHyHYI/JGbI6rDkwg6MG8Bq5l9MJ5ywo33SLFNu2s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5XvI8MU; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=JaDeV/Fy5hUB0FTOJUs625RKpCzAaF41EYnTE+F8TvvaIuYYA5ANmnzTRaXgUUm0jY1QPhaEA3q4+8jKCWZarPkJOeh6LGTMtmJDab8JFjSR7663ULSQvct2Z/QZ7fn56OiaV9xgG2JL/Ee+e+vKcKmN1Bi5pYQ/qkSzL0uMtLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NXDHIWha; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5XvI8MU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6B51F00AC4;
-	Sat,  1 Aug 2026 23:46:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NXDHIWha"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B991F00AC4;
+	Sat,  1 Aug 2026 23:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785627980;
-	bh=HeE/t9xrv9DqIQ9OSKeeh2U7hnhTxo26v+r6kRTJCO8=;
+	s=k20260515; t=1785628247;
+	bh=XJpgGzY2LSckMA17Px1/0pVqzwhUui7XYXpSf2+imQI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=N5XvI8MUKVVAi3PQHFD3IoutAhoAyoPStBfNacR7gBCP9/wHfiXhz6PKcllt5ozeU
-	 1Tzp+NxBCJeS4D+hEVvXcJWDwJFf6KCp73mItoznsDc0wSCZla+/BFMfyC0gOYa6vj
-	 f9Q6cSn/h7K+QADUB4aasT9GApeUUP14/MNlIifnXUvaQCPzjt0t1TP3cS2G6fHHi1
-	 zOcntDsghbu+ki5nVhgFNBoNgCsL8D9l4BRkHYoaVdxfkpROtrPfE7CAfPGo/Mn28y
-	 8ZkaGPXsMB8lrRu4pqx205kWLqam/EEXhrIo4tbaseULtLU1SPRU3JBU+f3/M82BHh
-	 FR+CfGDqcxrHw==
-Date: Sun, 2 Aug 2026 00:46:15 +0100
+	b=NXDHIWhahtLzshu2bbnwUeORyWlmyvj88Qxy3TH32a5QzVCyo4wIYiExQVbxsFP5n
+	 gHgenm4qM5qfPIouiGdFsNJgaWpDAbfO1Ay0VuR4uYSnmZ7EkcP7v/XjP3PxM+XjWc
+	 W+Si+xrcZq8RopqhUWtYkL2KGeFVtoRmNII1jfe4vI8jVgfx8cPNhwvngsK3V2uD3Z
+	 frCVowbYuldzwJAT4y0MCdQdX/Vm8uis50nxHvQWoY/kUbM8j4UtrUtGsudhrptmMc
+	 1S54Ea6pQT6A8oNX2rnM+1xlSjfHqGEJs9g91MzrLu1XYBvzFbjiUPGm9R6OHMAUas
+	 OWEgGhwG5edtA==
+Date: Sun, 2 Aug 2026 00:50:42 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Wadim Mueller <wafgo01@gmail.com>
 Cc: krzk+dt@kernel.org, robh@kernel.org, conor+dt@kernel.org,
@@ -34,12 +34,10 @@ Cc: krzk+dt@kernel.org, robh@kernel.org, conor+dt@kernel.org,
  maxwell@maxwelld.cc, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, marcelo.schmitt1@gmail.com,
  455.rodrigo.alencar@gmail.com
-Subject: Re: [PATCH v6 2/4] dt-bindings: iio: flow: add Sensirion SLF3S
- liquid flow sensor
-Message-ID: <20260802004615.2193f11b@jic23-huawei>
-In-Reply-To: <20260728214943.29820-3-wafgo01@gmail.com>
+Subject: Re: [PATCH v6 0/4] iio: flow: Sensirion SLF3S liquid flow sensor
+Message-ID: <20260802005042.2352936e@jic23-huawei>
+In-Reply-To: <20260728214943.29820-1-wafgo01@gmail.com>
 References: <20260728214943.29820-1-wafgo01@gmail.com>
-	<20260728214943.29820-3-wafgo01@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,118 +48,123 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 23:49:41 +0200
+On Tue, 28 Jul 2026 23:49:39 +0200
 Wadim Mueller <wafgo01@gmail.com> wrote:
 
-> Document the bindings for the Sensirion SLF3S family of digital
-> liquid-flow sensors on I2C.  The family currently covers the
-> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
+> Hi all,
+> 
+> this series adds a driver for the Sensirion SLF3S family of I2C liquid
+> flow sensors (SLF3S-0600F / -1300F / -4000B) and a new IIO_VOLUMEFLOW
+> channel type.
 
-FWIW there is a false positive from Sashiko on this where it says
-there is no interrupt pin.  I'll guess that it found a datasheet
-talking about one packaging option perhaps?
+I'm going to apply this now, but as it will be in my testing branch (which
+I do rebase) for a few days fully welcome any additional comments or
+tags.
 
-The first one I checked has the interrupt pin.
+Applied to the testing branch of iio.git
+
+Thanks,
 
 Jonathan
-
 > 
-> All variants share the same register map and differ only in the flow
-> scale factor and the calibrated measurement range, which the driver
-> reads back from the product-information register.  Since that lookup
-> is needed in any case, a fallback compatible would buy nothing, so
-> each variant gets its own compatible without a fallback.  A future
-> drop-in compatible part can then claim one of these compatibles and
-> work on kernels that do not know its product ID yet.
+> First of all: sorry for the noise.  Patch 4/4 of v5 never made it to the
+> list or to patchwork - it got lost on the way out from the machine I sent
+> v5 from, as Jonathan noticed:
 > 
-> The active calibration medium (water / IPA) is runtime-switchable
-> via the in_volumeflow_medium sysfs attribute and therefore not a
-> DT property.
+>   https://lore.kernel.org/linux-iio/20260720032927.14fc4f9f@jic23-huawei/
 > 
-> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
-> ---
->  .../bindings/iio/flow/sensirion,slf3s.yaml    | 55 +++++++++++++++++++
->  MAINTAINERS                                   |  7 +++
->  2 files changed, 62 insertions(+)
+> So this v6 is mostly a resend of v5 with the driver patch actually
+> included, plus the binding change we converged on in the meantime.  The
+> driver changes that were listed in the v5 changelog are repeated below,
+> since nobody got to see them.
+> 
+> The series is based on iio.git testing, which already contains Rodrigo
+> Alencar's IIO_VAL_DECIMAL64_* core formatting work; patch 3/4 adds the
+> IIO_VAL_DECIMAL64_FEMTO format type on top of it.
+> 
+> Changes since v5
+> ----------------
+>   * 4/4 is included this time - v5 only had 1-3 on the list
+>   * dt-bindings: dropped the fallback compatible entirely; each variant
+>     now has its own compatible, per the conclusion of the v4 discussion
+>     between Krzysztof and Jonathan.  Since the driver has to look at the
+>     product-information register anyway, a fallback buys nothing, while
+>     separate compatibles let a future drop-in part claim a known
+>     compatible and work on older kernels
+>   * dt-bindings: dropped Krzysztof's Reviewed-by, since the compatible
+>     schema changed
+>   * dt-bindings: commit message and example updated accordingly
+>   * driver: reworded the slf3s_detect_variant() comment and the commit
+>     message, which referred to the now-gone fallback compatible.  The
+>     behaviour is unchanged: an unknown sub-type still falls back to the
+>     variant named in the device tree / I2C table
+>   * rebased onto current iio.git testing
+> 
+> Changes since v4 (from the v5 posting, repeated because 4/4 was lost)
+> ---------------------------------------------------------------------
+>   * driver: include err.h for PTR_ERR() and math.h for struct s32_fract,
+>     per Andy
+>   * driver: fold the per-variant scale_num/scale_den pair into a
+>     struct s32_fract, per Andy
+>   * driver: add enum slf3s_variant_id and use it for the variant table
+>     and the I2C/OF match tables instead of bare indices, per Andy
+>   * driver: slf3s_send_cmd(): drop the "at_least 2" parameter
+>     annotation, decouple the ret assignment from its declaration and
+>     check errors first, per Andy
+>   * driver: use sizeof() instead of ARRAY_SIZE() for the measurement
+>     byte buffer, per Andy
+>   * driver: parenthesise the (FEMTO / MILLI) factor so it folds into a
+>     single constant multiplication, per Andy
+>   * driver: derive the temperature scale from MILLIDEGREE_PER_DEGREE
+>     instead of a bare 1000, per Andy
+>   * driver: checked the struct slf3s_data layout (re Andy's pahole
+>     question): the non-pointer members total 260 bytes, so one 4-byte
+>     hole remains for any member order; left as is
+>   * driver: drop the inline comment on the mutex that duplicated the
+>     kernel-doc, per Jonathan (checkpatch still moans about it)
+>   * driver: fix the duplicated argument in the DT/sensor variant
+>     mismatch dev_info(), per Jonathan
+>   * driver: reformat the i2c_device_id/of_device_id tables to one
+>     member per line, per Jonathan
+>   * MAINTAINERS: updated Maxwell's address in the R: entry to
+>     maxwell@maxwelld.cc, as he requested on the v4 thread
+> 
+> The signaling-flags word (air-in-line / high-flow / smoothing status) in
+> each measurement frame is intentionally not read; exposing it can be a
+> later follow-up.
+> 
+> v5: https://lore.kernel.org/linux-iio/20260714085358.20842-1-wafgo01@gmail.com/
+> v4: https://lore.kernel.org/linux-iio/20260611132700.671322-1-wafgo01@gmail.com/
+> 
+> Thanks,
+> Wadim
+> 
+> Wadim Mueller (4):
+>   iio: types: add IIO_VOLUMEFLOW channel type
+>   dt-bindings: iio: flow: add Sensirion SLF3S liquid flow sensor
+>   iio: core: add IIO_VAL_DECIMAL64_FEMTO format type
+>   iio: flow: add Sensirion SLF3S liquid flow sensor driver
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio       |  11 +
+>  Documentation/ABI/testing/sysfs-bus-iio-flow  |  21 +
+>  .../bindings/iio/flow/sensirion,slf3s.yaml    |  55 ++
+>  MAINTAINERS                                   |   8 +
+>  drivers/iio/Kconfig                           |   1 +
+>  drivers/iio/Makefile                          |   1 +
+>  drivers/iio/flow/Kconfig                      |  22 +
+>  drivers/iio/flow/Makefile                     |   7 +
+>  drivers/iio/flow/slf3s.c                      | 543 ++++++++++++++++++
+>  drivers/iio/industrialio-core.c               |   3 +
+>  include/linux/iio/types.h                     |   1 +
+>  include/uapi/linux/iio/types.h                |   1 +
+>  tools/iio/iio_event_monitor.c                 |   2 +
+>  13 files changed, 676 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-flow
 >  create mode 100644 Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
+>  create mode 100644 drivers/iio/flow/Kconfig
+>  create mode 100644 drivers/iio/flow/Makefile
+>  create mode 100644 drivers/iio/flow/slf3s.c
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml b/Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
-> new file mode 100644
-> index 000000000000..79718f4f98bd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
-> @@ -0,0 +1,55 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/flow/sensirion,slf3s.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Sensirion SLF3S liquid flow sensor
-> +
-> +maintainers:
-> +  - Wadim Mueller <wafgo01@gmail.com>
-> +
-> +description:
-> +  Family of digital liquid-flow sensors from Sensirion with I2C interface. All
-> +  family members share the same register map; sub-types differ only in the flow
-> +  scale factor and the calibrated measurement range. The sub-type can be
-> +  identified from the product-information register.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - sensirion,slf3s-0600f
-> +      - sensirion,slf3s-1300f
-> +      - sensirion,slf3s-4000b
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vdd-supply: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        flow-sensor@8 {
-> +            compatible = "sensirion,slf3s-0600f";
-> +            reg = <0x08>;
-> +            vdd-supply = <&reg_3v3>;
-> +            interrupt-parent = <&gpio0>;
-> +            interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ce020ded5fd3..497492825f70 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -24583,6 +24583,13 @@ S:	Maintained
->  F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
->  F:	drivers/iio/chemical/sgp40.c
->  
-> +SENSIRION SLF3S LIQUID FLOW SENSOR DRIVER
-> +M:	Wadim Mueller <wafgo01@gmail.com>
-> +R:	Maxwell Doose <maxwell@maxwelld.cc>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
-> +
->  SENSIRION SPS30 AIR POLLUTION SENSOR DRIVER
->  M:	Tomasz Duszynski <tduszyns@gmail.com>
->  S:	Maintained
+> 
+> base-commit: e0484d62e8e1cff75b210938be835ea6221bda59
 
