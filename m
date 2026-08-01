@@ -1,45 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7364F3AA1AE;
-	Sat,  1 Aug 2026 02:30:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBF0D3A5452;
+	Sat,  1 Aug 2026 02:31:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785551418; cv=none; b=N/0TTAyU5jOSc4gvZwZZqUvYFl5drK+t9kGj33sDsHQDBfo4k/GPAiqfYuQzktIBSXmPa+ZiPInEvOiWhWg9o/OPqv3gP+41do2Y4oteRK7A1GjU3hsxxNyjmv8qYjJKIYPSWAKGvjzzZ8WI9sz7mb6W4DckwnsTuG8SAu5bltw=
+	t=1785551478; cv=none; b=FA48zaRU1broqLrwGVrZGxkncE0WLGno0yCT0kEsC2zZ3ReaurnSgFnCmv/dpdm6DJ3oZj9uroTM8u5Ca9f4azyKsfmMqJ2J8r6xEZVgRc4KDlvQKuoZ05d+1Ym0wxV5wbbUJHK83qqHuiz1/t2bOH6uRHLh9STs9pI2bS2/TcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785551418; c=relaxed/simple;
-	bh=Rq0oBTe+Mcs5biEmmS9SrC3jXkeu48lEvrmGrGx/NQ8=;
+	s=arc-20240116; t=1785551478; c=relaxed/simple;
+	bh=6hJn9hyB2Ab/GtXT5mlDA97bIfaIE0YQnuIq+ACU+UI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RN0t7aO4zTRUa538YH1Dp3IY2EOV5waJrWEig30igEbqyoA2+rYG0/QhnggeSF+vo59CQvOak63HJfDqdFVmv0Pff5ShX0M2rQ1FO/FSNVwM1VhXpTZv1BIT1kkpyINCiPdWF8dROoOMrXnbKM5osrSu3gQuz0zsEUa7/MzsGHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e9yYBGWw; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=EjUTN67H608XFUV5ucp/fmIV3E37chblOxf4iH8EABOWPuYNftO5qBqGfCDGpf5gV765FoZYJT9BSr1tYFC1Qfdi/NKeATO5tM5txBe2sZlG7iGykleoVIb58pUFYsrxQwW52t6lJ/paTKm8UdxGSbMOM0qR8Lxg4z4T7mQc6RM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nTRM1Pwi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e9yYBGWw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F35E51F00AC4;
-	Sat,  1 Aug 2026 02:30:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nTRM1Pwi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC931F00AC4;
+	Sat,  1 Aug 2026 02:31:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785551416;
-	bh=3PHsBdYoVSlgCeOS6877ND0yWjnfwO/dHJ0X8pqb7Ro=;
+	s=k20260515; t=1785551476;
+	bh=uMiANvgoUOZB5Ic39C9vx3u15Hl4R58pnfusraQYRB4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=e9yYBGWwynpwuqkVlhWTaVy4UxS2X98FgEIBOd7mx/7peLMRimi7Y/WdqpD9Ig8Cl
-	 qGmYCi4xM4d4X4z+75ZcZLxRDjiPKMGzCspurWXHM4D3nuGzYzd4/HPRKh8KgGh6oM
-	 C57i6ntAWE1067cNSsvzu3qbWE0v/z2Ieh5xclfyCFZeyiO6duI2zPhXZ2lpeKaeIV
-	 4MQc3s3Kg8wJhERMIB3Op8v8vpkuLFzOEkKwdJt8urANoBLUYXhelttlJpA5p92jQ9
-	 Hp3U5inVS2yYvsvYUTMKRJegIj0vifShohtD2z6Ry7kfdQLXoixPRxqlhACM9k6OL8
-	 MHdpH17NFzFGg==
-Date: Sat, 1 Aug 2026 03:30:13 +0100
+	b=nTRM1Pwi/+Q8tslAMfl52eTxm5iZLLbgmzM3Uyqvo9waNHnaVdcHMSF21WGtS9+OT
+	 qy47DxnoXpiGJslPQRKcrT9Jbo42jgYR1j0FtPjlgnFZoOtTBx5DLZHhnMjQ2X8jwh
+	 K9T4P+fea0vTi5VYbFfmii/ltZfgOAk3gEZ9EV0YcLLhfpJc//GivIPpyQJ5803Lcc
+	 +Zb+iVjmOe/lB/dXbtTOht2WDMpJUz0Dn+MLWu777Gk4gt7K5fjsoJEkx8C5NygzEn
+	 s07lLpFxdjyNigZ6GYzZwjr0JjRVpcRleavEnQOPsUU72r1suj0U7GMQC8idgpBnh/
+	 mu8Vju3YPR8uA==
+Date: Sat, 1 Aug 2026 03:31:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: sashiko-bot@kernel.org, sashiko-reviews@lists.linux.dev,
- devicetree@vger.kernel.org, conor+dt@kernel.org, robh@kernel.org,
- linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
- dlechner@baylibre.com
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 2/2] iio: dac: mcp47a1: add support for new device
-Message-ID: <20260801033013.19ef2b2f@jic23-huawei>
-In-Reply-To: <20260728151559.000067ef@gmail.com>
+Message-ID: <20260801033112.43169ed1@jic23-huawei>
+In-Reply-To: <20260727-mcp47a1-add-support-v2-2-d4591a2ce69e@gmail.com>
 References: <20260727-mcp47a1-add-support-v2-0-d4591a2ce69e@gmail.com>
 	<20260727-mcp47a1-add-support-v2-2-d4591a2ce69e@gmail.com>
-	<20260727184226.DFC1E1F000E9@smtp.kernel.org>
-	<20260728151559.000067ef@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,59 +49,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 15:15:59 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> On Mon, 27 Jul 2026 18:42:26 +0000
-> sashiko-bot@kernel.org wrote:
-> 
-> > Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> > - [Medium] Potential off-by-one in DAC scale calculation denominator.
-> > --  
-> 
-> Responding to Sashiko's comment.
-> 
-> > --- Patch [2]: [PATCH v2 2/2] iio: dac: mcp47a1: add support for new device ---
-> > commit 38bec2fbb020c3f749c52a26e5cc3e78e72eeaf5
-> > Author: Joshua Crofts <joshua.crofts1@gmail.com>
-> > 
-> > iio: dac: mcp47a1: add support for new device
-> > 
-> > The Microchip MCP47A1 is a 6-bit volatile Digital-to-Analog converter
-> > which communicates via I2C.
-> >   
-> > > diff --git a/drivers/iio/dac/mcp47a1.c b/drivers/iio/dac/mcp47a1.c
-> > > new file mode 100644
-> > > index 0000000000000..140e93ff2ba01
-> > > --- /dev/null
-> > > +++ b/drivers/iio/dac/mcp47a1.c    
-> > [ ... ]  
-> > > +static int mcp47a1_read(struct iio_dev *indio_dev,
-> > > +			struct iio_chan_spec const *chan,
-> > > +			int *val, int *val2, long mask)
-> > > +{
-> > > +	struct mcp47a1_data *data = iio_priv(indio_dev);
-> > > +	int ret;
-> > > +
-> > > +	switch (mask) {    
-> > [ ... ]  
-> > > +	case IIO_CHAN_INFO_SCALE:
-> > > +		*val = data->vref_mV;
-> > > +		*val2 = MCP47A1_MAX_STEP;    
-> > 
-> > [Severity: Medium]
-> > Does this code use the correct denominator for the scale calculation?
-> > 
-> > Since this is a 6-bit DAC, shouldn't the scale denominator be 64 (2^6)
-> > instead of the maximum step value of 63? Using MCP47A1_MAX_STEP (63) here
-> > introduces an off-by-one error that could cause userspace to calculate
-> > output voltages with a ~1.5% LSB scaling error when reading the sysfs
-> > attribute.  
-> 
-> Yes, the max amount of steps is 64, which should be passed here. I'll
-> add a separate macro for this in v3.
-I'd just use + 1 at this location given the clear relationship between
-the maximum value that can be taken and the number of steps.
+> diff --git a/drivers/iio/dac/mcp47a1.c b/drivers/iio/dac/mcp47a1.c
+> new file mode 100644
+> index 000000000000..140e93ff2ba0
+> --- /dev/null
+> +++ b/drivers/iio/dac/mcp47a1.c
+> @@ -0,0 +1,169 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Microchip MCP47A1 DAC driver
+> + *
+> + * Copyright (c) 2026 Joshua Crofts <joshua.crofts1@gmail.com>
+> + *
+> + * Datasheet: https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/25154A.pdf
+> + */
+> +
+> +#include <linux/array_size.h>
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
+> +#define MCP47A1_REG_MAX		0x40
+> +#define MCP47A1_CMD_CODE	0x00
+> +#define MCP47A1_MAX_STEP	63
+> +
+> +struct mcp47a1_data {
+> +	struct i2c_client *client;
+> +	int vref_mV;
+> +};
+> +
+> +static const int mcp47a1_raw_avail[] = { 0, 1, MCP47A1_MAX_STEP };
+> +
+> +static const struct iio_chan_spec mcp47a1_channels[] = {
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.indexed = 1,
+> +		.output = 1,
+> +		.channel = 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +	},
 
-> 
+Given you are doing a v3 anyway, drop the array.  A single channel
+is fine - just use &mc47a1_channel when referring to it and provide
+channel count of 1 directly (obviously correct as it is clear you
+aren't pointing to an array).
 
+> +};
