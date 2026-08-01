@@ -1,43 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CFC53B9D9D;
-	Sat,  1 Aug 2026 21:12:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 781CF3955CD;
+	Sat,  1 Aug 2026 22:59:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785618762; cv=none; b=IXpd2PiFjiLv+c20KkvARPVIWDsvgasyrJ4SR0i6iPA7jq3Ijy73t40232JdX2320cbwj2f+yrPfNdWvWOqdtm5sWweOB3dT9fFDJw6N66auAPKMnEDeJwYBxF8PYCVy6a/r5z1oN3docBm2/Ix2OeYi1AEI4QA3uOwEp7QlqO4=
+	t=1785625167; cv=none; b=b0arrDGzBc38QHwSzQWc2KfMdhQa06StBOJxR12uYuQ2kj8ZSU2ER2MDIZSHiHxvhIPYVo0t955uBOJA4F6IeZqm6OyoM25AxM07/ZyEKtznpSaT0uJL+Z24w4Uk57zwjgk9gxCZDJH/+plhP2CrSvtBwEK4QtSBjTB5ovq6hVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785618762; c=relaxed/simple;
-	bh=Y0j3huWyH69Yd8AT4hwX8NfNzRum0j7gqSiacjr117g=;
+	s=arc-20240116; t=1785625167; c=relaxed/simple;
+	bh=0f0pkrHWiPweb5toMwM6IBYpqlC6hYwhLuFVhFuoA10=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=b6L6Cqn4nCeENFfVUW/1knF90ucSBmhDoUAT+Zk61ry9G9Jm+Y/b3cTb0KHbhOofLqEd2SnPj3N04s58W6LmNPJ0oOr/qJ0Eh0Cnaa5bqOqxXvxR3lo5F6Tjwcn/yA/f9bcVD02tX7CuhSDwbTm5Bjd7QWgeu5Vh9N6YiKlZNVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TeUJT6Yt; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=pRD17y0u6tHnirV/KXhEZm4roX53XjsSXk6Dpr4uUu/cRb9jV9Pvk2mg4+/Cpj44d5P5/We3ud1wHre8GQDQLyD5M3wUfFX3taF7yvRWZEsvL4kbVRWmazM5Wy93qVeUZl/TnnPwaAUMPP6LZpi36e/P8LbXK0YzYvevCVjPFEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XiDLXEpX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TeUJT6Yt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766BC1F00AC4;
-	Sat,  1 Aug 2026 21:12:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XiDLXEpX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2861C1F00AC4;
+	Sat,  1 Aug 2026 22:59:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785618761;
-	bh=VTmEEMG7q1jUBwom+54FxcU6cI6YJWwoxTYuyOT3yoY=;
+	s=k20260515; t=1785625166;
+	bh=fGy18zbKRi3eAH+597kqk2neCAK1RDfK4wBtBEZ7IL0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TeUJT6YtEWILgeAPQRkdRZvwPdWX48Ia7gCS4KpCvGojMdEHOEmPNlolp8oNu+oMB
-	 8GpClCG40A8Q1bSTxx1iY8jItRcIT0Kl8uJnBkQEoykGcPdUWHqj+7WhXjKdC5//LE
-	 CB2/VWN6KKMVqhT0OYaD+dXb7zEia3+zAjfFXMH1+6raJa8rUQH3lvGzvccZeLGlaR
-	 Y0M4VwX2ty76TbstlROBYLaUXm3M55D1fNf4JIYeSFSoofaLRJO+dZDe1L9758pRyg
-	 lB0YOs/ErXd6P6y8bmTofjsDqNj2vXe66fBa7lMrqeKiRjtXd/6DL4NGYd9CLyFDfG
-	 Hq/c5nZdStG0g==
-Date: Sat, 1 Aug 2026 22:12:36 +0100
+	b=XiDLXEpXxHqLxMaCyv4SZrOlXEVNRauMAMzWub0VKRncWhITG8gdJxmr3BqapfjHw
+	 YRC0I8MsENFJAZJoG0JIvRuLQji2izCGKpT07mxyfOD0s53aqLyP8oiUsA9IGvdwce
+	 qxWGhMQcmlm1ABAVaCbQvqzOA0pmHkO2nmoa7J5evXNde/zHe5LorTlw6NuR2UCdOZ
+	 CQIT8hgPTVktas1RUX3uUT2pPtnNZBtCv7WOD126YVr6D0Oq6h2gSiDTYCWACJ9Iep
+	 XLb59fi2nTbLkM9i68taHCg7pt2Mhq0ZV6Y9LV3PBWkULjRH0C+v+T27fj1F9Py141
+	 mEQxtcFF68Kjw==
+Date: Sat, 1 Aug 2026 23:59:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: linux-iio@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt@analog.com>,
- conor+dt@kernel.org, robh@kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v9 5/6] iio: adc: ltc2378: Add support for LTC2338-18
-Message-ID: <20260801221236.6c07fa49@jic23-huawei>
-In-Reply-To: <amiqwmIHsgO7v8zC@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1785186980.git.marcelo.schmitt@analog.com>
-	<39f2ff86cf736ff97286d6451fcc45fdba6732f9.1785186980.git.marcelo.schmitt@analog.com>
-	<20260727214022.C81191F000E9@smtp.kernel.org>
-	<amiqwmIHsgO7v8zC@debian-BULLSEYE-live-builder-AMD64>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Kyle Hsieh <kylehsieh1995@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
+ Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c04: Add support for TI
+ ADS112C04
+Message-ID: <20260801235920.434c7cf9@jic23-huawei>
+In-Reply-To: <20260731112750.00002c37@gmail.com>
+References: <20260731-ti-ads112c04-driver-v2-0-aab0168c3c01@gmail.com>
+	<20260731-ti-ads112c04-driver-v2-2-aab0168c3c01@gmail.com>
+	<20260731112750.00002c37@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,79 +50,57 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 10:12:34 -0300
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+On Fri, 31 Jul 2026 11:27:50 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> On 07/27, sashiko-bot@kernel.org wrote:
-> > Thank you for your contribution! Sashiko AI review found 1 potential is=
-sue(s) to consider:
-> > - [Low] Declaring a variable immediately after a switch case label with=
-out a block statement causes a compilation error.
-> > --
-> >=20
-> > --- Patch [5]: [PATCH v9 5/6] iio: adc: ltc2378: Add support for LTC233=
-8-18 ---
-> > commit 29728b1d34f34b2970657e2d83536de22940ee2e
-> > Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> >=20
-> > iio: adc: ltc2378: Add support for LTC2338-18
-> >=20
-> > This commit adds support for the LTC2338-18 ADC to the existing ltc2378
-> > driver. It extends the driver to handle the internal voltage reference =
-and
-> > input signal attenuation specific to this part.
-> >  =20
-> > > diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
-> > > --- a/drivers/iio/adc/ltc2378.c
-> > > +++ b/drivers/iio/adc/ltc2378.c =20
-> >=20
-> > [ ... ]
-> >  =20
-> > > @@ -383,7 +395,10 @@ static int ltc2378_read_raw(struct iio_dev *indi=
-o_dev,
-> > >  		return IIO_VAL_INT;
-> > >  	}
-> > >  	case IIO_CHAN_INFO_SCALE:
-> > > +		struct u32_fract fract =3D st->info->internal_div; =20
-> >=20
-> > [Severity: Low]
-> > Does this declaration cause a build error? =20
-> No, at least not when I built with clang/llvm-22.
-Maybe but given we still stick to declarations at top of scope (if not
-strictly required) makes me want add scope here anyway.
+> On Fri, 31 Jul 2026 10:58:25 +0800
+> Kyle Hsieh <kylehsieh1995@gmail.com> wrote:
+> > diff --git a/drivers/iio/adc/ti-ads112c04.c b/drivers/iio/adc/ti-ads112c04.c
+> > new file mode 100644
+> > index 000000000000..28d3be81934f
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/ti-ads112c04.c  
+> 
+> Hi Kyle, quick review from me, comments inline. Additionally, please
+> check Sashiko's review as there are some move severe issues (mostly
+> I2C stuff), see it here:
+> https://sashiko.dev/#/patchset/20260731-ti-ads112c04-driver-v2-0-aab0168c3c01%40gmail.com
+Be careful with these.   Some may be misleading or the correct
+response may be in a very different place to sashiko suggests.
+For example we wouldn't typically bother to defend against nonsense
+interrupt types from DT, so if level isn't a plausible type then
+state what is as a comment in the DT.
 
-So I tweaked it to add the {}
+Also, multi master doesn't seems like something we should worry
+too much about.  That's not to say there isn't a better way to handle that
+transaction.
 
-Series applied to the testing branch of iio.git.
+> > +static int ads112c04_read_reg(struct i2c_client *client, u8 reg, u8 *val)
+> > +{
+> > +	u8 cmd = ADS112C04_CMD_RREG(reg);
+> > +	int ret;
+> > +
+> > +	ret = i2c_master_send(client, &cmd, 1);  
+> 
+> i2c_master_send returns either the amount of bytes sent or an error
+> code. If the device NACKs, the function will return 0 (zero bytes sent)
+> but this will be interpreted as success.
 
-Thanks,
+This one is fun and not necessarily that simple. (I used to assume it was!)
+Mostly nacks will result in error codes, but there are other obscure
+reasons it might return 0.  
 
-Jonathan
+Anyhow, whatever the reason, agreed we annoyingly have to check these to see if
+they are not 0.
 
-
->=20
-> > Declaring a variable immediately
-> > after a switch case label without a block statement is not a valid stat=
-ement
-> > in C and usually causes a compiler error. Could this case be wrapped in=
- a
-> > block to scope the variable, or the declaration be moved to the top of =
-the
-> > function?
-> >  =20
-> > >  		*val =3D st->ref_uV / MILLI;
-> > > +		if (fract.numerator && fract.denominator)
-> > > +			*val =3D mult_frac(*val, fract.numerator, fract.denominator);
-> > >  		/*
-> > >  		 * For all LTC2378-like devices, the amount of bits that express
-> > >  		 * voltage magnitude depend on the polarity / output code format: =
-=20
-> >=20
-> > --=20
-> > Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.178518698=
-0.git.marcelo.schmitt@analog.com?part=3D5 =20
->=20
-
+Or, better, as per David's comment use the smbus command if that is possible.
+> 
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	ret = i2c_master_recv(client, val, 1);
+> > +	return ret < 0 ? ret : 0;
+> > +}
