@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0883923392C;
-	Sat,  1 Aug 2026 18:28:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAAD1A5B9D;
+	Sat,  1 Aug 2026 18:32:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785608901; cv=none; b=a1Nppc5+7hQloVx2VnoXcXsYjRAhDYagTGQ/7KwTtzgPYlP7HAOXsbOEym3flFPGhU1LyFQsAiriEAKrfhMBTb28yu15i8ERSBADbFOMVkEXAUJ9zXKDRRm7MpxgDm99tQFUFq7oiS9JWHYruSYyvhd9qlOOoKy+2opNbeSEbsI=
+	t=1785609159; cv=none; b=QURdqXYV5qcaQd8Ayqf+n5+d47+4K2vofzzH2eNLxjkIEvPBfNeitLzYIIj7AjsV2iCTbRwJos9D4Lhcp5K2snAQeegBoM4+JEBJ2PrP302GCkIfRd2sfxiOlzA7gWHfyAr5LRI1ScCYpQuaL9OBoLXw5MKb12OrcFWqiZ9rwog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785608901; c=relaxed/simple;
-	bh=T4Mxi4Cim0BsIc1nHGZLlofPXCmSua4eanBz18rPrl4=;
+	s=arc-20240116; t=1785609159; c=relaxed/simple;
+	bh=GhKYehAxSIzsnQfG1N6ngNX1GZQ3HXF9pec7MPlKvWU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bvMda+7SUNaVspt642ghvhHZb9flqpJgOShgXS6DpWJROPVxWG/Sc27XhXrr960xxMuwSuJQt5bSHJGZ8IWn4re2/ZuN11DD0heIzQKOSFwTc+ZeV1zpC/4e0JSBIprQadraUooj+WiP9oEyAcZ3Km+/uB6RWMbXM4nrFWltD9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ep9uWX9d; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=gMG+/mNE+wKSdFRza/dv7yZZwNlL4zhCEMzomB1RXAZcmcc7zUHGcWHLXsAIjqk0LaIT5TEMlIhZPGDUVVO8NlB/UWwv+WztoZ9ytaQ/monoM7cpiAT0j5ZfloNwNkZb8UrSB9VCreR3VwLdjKEgowd0CXuTE5bSyLXhxRhJsaM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i/OaOz1r; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ep9uWX9d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 282B11F00AC4;
-	Sat,  1 Aug 2026 18:28:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i/OaOz1r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 224CD1F00AC4;
+	Sat,  1 Aug 2026 18:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785608899;
-	bh=HG2U8MykJzsiSMn9ycz7/qbc6oIXoF73xguh9yWH0UU=;
+	s=k20260515; t=1785609158;
+	bh=ozqz1uFRDAK/9brUdJKAmZbb6k9kYfIkc1JZvt64ZO8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ep9uWX9dr8oFEl17K2DHu0KPKXGsH9ixeYBRWVTjApNSvRaGrlrHSg72mQDxKA5Ny
-	 4E3NyfrxdL4k4qAC5LwArSksFbEoJ1+V/1PNZlJl0qmCWOmJFEehLRc8eEOBC0Z65g
-	 YOG7/IYId5PctYNcN0p8o2d+tWNeG5RtYvzVjKjk/uYo92IABPRIhr8XOKz2lRpfU9
-	 TLCKG9KrvCuG7hmWFakJ/E5rxtPE8eCY/3L4BhwjMU/R2Yhm9k/RThTiHeOiVEjveV
-	 pNRXmekbKfQb6zZXxZAiMi49A0JI8u/YtA8ueMHVhBWNiesB+jlHapDHaZL6+fjVmG
-	 S+kqzroYtAoJw==
-Date: Sat, 1 Aug 2026 19:28:14 +0100
+	b=i/OaOz1rg6YbjT6FWwvk0JbhRNvyol9SQvu99wc6rLWHSl+o9zfoL87jIPiaoTdei
+	 xCu8xkLf9K3f7/daJxDSPqjm11ojo2s4uHDQ6Tk5iFkTdJtmOOGFza+MhcMjOhYMAa
+	 eiQMjbkSGUqj+xtxvhd7GfNHnOZOXR6Q7wTCT/a46dX9RGzkaNCEBzk9UenNRvW7ey
+	 pKppRrOMUn8JRrq2IEbt1HjvJKCAcPmqdQ8YwxUZ92MDzzhHAQ95XAiGRQxk9YzZtj
+	 uj1FiTqc1gze84xM+Idk59A1TNDo7MudS6L5zXlKlFABPvS+2uUAsEnG2wQCFasii0
+	 ZR1CZw71gswwA==
+Date: Sat, 1 Aug 2026 19:32:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Archit Anant <architanant5@gmail.com>
 Cc: dlechner@baylibre.com, andy@kernel.org, nuno.sa@analog.com,
  u.kleine-koenig@baylibre.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] iio: adc: ti-ads1015: use
- DEFINE_RUNTIME_DEV_PM_OPS()
-Message-ID: <20260801192814.425330a9@jic23-huawei>
-In-Reply-To: <20260727192102.37968-2-architanant5@gmail.com>
+Subject: Re: [PATCH v2 4/6] iio: adc: ti-ads1015: use local device pointer
+ in probe
+Message-ID: <20260801193233.69de4f35@jic23-huawei>
+In-Reply-To: <20260727192102.37968-5-architanant5@gmail.com>
 References: <20260727192102.37968-1-architanant5@gmail.com>
-	<20260727192102.37968-2-architanant5@gmail.com>
+	<20260727192102.37968-5-architanant5@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,99 +48,107 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 00:50:57 +0530
+On Tue, 28 Jul 2026 00:51:00 +0530
 Archit Anant <architanant5@gmail.com> wrote:
 
-> Replace the deprecated SET_RUNTIME_PM_OPS() with the modern
-> DEFINE_RUNTIME_DEV_PM_OPS() macro. This allows for the removal of the
-> macro automatically handles dropping unused functions when PM is
-> disabled.
-> 
-> Update the driver struct to use pm_ptr() to avoid unused variable
-> warnings.
+> Introduce a local device pointer 'dev' in ads1015_probe to
+> avoid accessing &client->dev repeatedly.
 > 
 > Signed-off-by: Archit Anant <architanant5@gmail.com>
 Hi Archit,
 
-This looks fine but did make me look at the code that was being protected
-and in particular ads1015_set_conv_mode()
-
-A few things jump out about that which might make sense for further improvement
-if you want to take them on.
-
-
-> static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
-> {
-> 	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-> 				  ADS1015_CFG_MOD_MASK,
-> 				  mode << ADS1015_CFG_MOD_SHIFT);#
-
-Use FIELD_PREP() here and drop the ADS1015_CFG_MOD_SHIFT macro.
-That made me wonder how extensive _SHIFT macros are in this driver and the
-answer is very!  Get rid of all of them in favour of FIELD_PREP()
-and FIELD_GREP() and using the field masks.
-
-
-> }
-The other thing is the question of why this function exists at all
-given with the value of mode inline it would be obvious what it is doing
-without the wrapper and this is the only similar little helper function.
-
-I'd squash it so we do the regmap_update_bits() calls directly instead
-of via this helper function.
-
-I did debate whether brining setting conv_invalid into the function made
-sense but on balance I think not.
-
-If you do make these changes, 1 patch for dropping all the _SHIFT
-macros and replacing with FIELD_PREP() / FIELD_GET() and a second
-patch to remove the helper function.
-
-Thanks,
-
-Jonathan
-
+To avoid churn in the series this should be done slightly different.
+See below but in short it is a case of not updating everything in
+this patch given you are going to touch the same code in the next
+one.
 
 > ---
->  drivers/iio/adc/ti-ads1015.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
+>  drivers/iio/adc/ti-ads1015.c | 27 ++++++++++++++-------------
+>  1 file changed, 14 insertions(+), 13 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> index 8a272af69f7d..9cd620b71429 100644
+> index 293fdd49381f..59ce2f89daeb 100644
 > --- a/drivers/iio/adc/ti-ads1015.c
 > +++ b/drivers/iio/adc/ti-ads1015.c
-> @@ -1066,7 +1066,6 @@ static void ads1015_remove(struct i2c_client *client)
->  			 ERR_PTR(ret));
->  }
->  
-> -#ifdef CONFIG_PM
->  static int ads1015_runtime_suspend(struct device *dev)
+> @@ -933,6 +933,7 @@ static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
+>  static int ads1015_probe(struct i2c_client *client)
 >  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> @@ -1087,12 +1086,11 @@ static int ads1015_runtime_resume(struct device *dev)
+>  	const struct ads1015_chip_data *chip;
+> +	struct device *dev = &client->dev;
+>  	struct iio_dev *indio_dev;
+>  	struct ads1015_data *data;
+>  	int ret;
+> @@ -940,9 +941,9 @@ static int ads1015_probe(struct i2c_client *client)
 >  
->  	return ret;
->  }
-> -#endif
+>  	chip = i2c_get_match_data(client);
+>  	if (!chip)
+> -		return dev_err_probe(&client->dev, -EINVAL, "Unknown chip\n");
+> +		return dev_err_probe(dev, -EINVAL, "Unknown chip\n");
 >  
-> -static const struct dev_pm_ops ads1015_pm_ops = {
-> -	SET_RUNTIME_PM_OPS(ads1015_runtime_suspend,
-> -			   ads1015_runtime_resume, NULL)
-> -};
-> +static DEFINE_RUNTIME_DEV_PM_OPS(ads1015_pm_ops,
-> +				 ads1015_runtime_suspend,
-> +				 ads1015_runtime_resume,
-> +				 NULL);
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
 >  
->  static const struct ads1015_chip_data ads1015_data = {
->  	.channels	= ads1015_channels,
-> @@ -1147,7 +1145,7 @@ static struct i2c_driver ads1015_driver = {
->  	.driver = {
->  		.name = ADS1015_DRV_NAME,
->  		.of_match_table = ads1015_of_match,
-> -		.pm = &ads1015_pm_ops,
-> +		.pm = pm_ptr(&ads1015_pm_ops),
->  	},
->  	.probe		= ads1015_probe,
->  	.remove		= ads1015_remove,
+> @@ -978,15 +979,15 @@ static int ads1015_probe(struct i2c_client *client)
+>  					    &ads1015_regmap_config :
+>  					    &tla2024_regmap_config);
+>  	if (IS_ERR(data->regmap)) {
+> -		dev_err(&client->dev, "Failed to allocate register map\n");
+> +		dev_err(dev, "Failed to allocate register map\n");
+>  		return PTR_ERR(data->regmap);
+
+Leave updating this one for next patch (and ignore sashiko if it complains ;)
+
+>  	}
+>  
+> -	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
+> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+>  					      ads1015_trigger_handler,
+>  					      &ads1015_buffer_setup_ops);
+>  	if (ret < 0) {
+> -		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		dev_err(dev, "iio triggered buffer setup failed\n");
+Likewise, do this as part of der_err_probe()
+>  		return ret;
+>  	}
+>  
+> @@ -1018,7 +1019,7 @@ static int ads1015_probe(struct i2c_client *client)
+>  		if (ret)
+>  			return ret;
+>  
+> -		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +		ret = devm_request_threaded_irq(dev, client->irq,
+>  						NULL, ads1015_event_handler,
+>  						irq_trig | IRQF_ONESHOT,
+>  						client->name, indio_dev);
+> @@ -1032,18 +1033,18 @@ static int ads1015_probe(struct i2c_client *client)
+>  
+>  	data->conv_invalid = true;
+>  
+> -	ret = pm_runtime_set_active(&client->dev);
+> +	ret = pm_runtime_set_active(dev);
+>  	if (ret)
+>  		return ret;
+> -	pm_runtime_set_autosuspend_delay(&client->dev, ADS1015_SLEEP_DELAY_MS);
+> -	pm_runtime_use_autosuspend(&client->dev);
+> -	pm_runtime_enable(&client->dev);
+> +	pm_runtime_set_autosuspend_delay(dev, ADS1015_SLEEP_DELAY_MS);
+> +	pm_runtime_use_autosuspend(dev);
+> +	pm_runtime_enable(dev);
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
+> -		dev_err(&client->dev, "Failed to register IIO device\n");
+> -		pm_runtime_disable(&client->dev);
+> -		pm_runtime_set_suspended(&client->dev);
+> +		dev_err(dev, "Failed to register IIO device\n");
+
+Leave this one for dev_err_probe() patch.  Just this line not the ones around it.
+
+> +		pm_runtime_disable(dev);
+> +		pm_runtime_set_suspended(dev);
+>  		return ret;
+>  	}
+>  
 
