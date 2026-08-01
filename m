@@ -1,331 +1,224 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCA5384250
-	for <linux-iio@vger.kernel.org>; Sat,  1 Aug 2026 15:02:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34463388382
+	for <linux-iio@vger.kernel.org>; Sat,  1 Aug 2026 15:06:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785596552; cv=none; b=grZLURKWVNn/sGXSgBKWU0s+FqJ/MiUM8/xQwdnb+bcjsbiB9gejcVOJhbGlrR9SHYNZacix5UJVPjs6azVs64FxYbq1uOlhwFW3+1GADDK/Rwjf5H2kUYy921qALi1VxXp3dN00G/BW0yN38+TnTUMrRMPg5xkdM/Ey+f4vZSI=
+	t=1785596763; cv=none; b=l0FUANejp5kr9qBUbqm08YzCmZhPXjGnXm0Sm72mlAD1JhJVnHUniPawQBSofHNIVzB3vQoWYwEIcELYlh8nDRvWRSKPUnbAIapRT8rPFPwGpmy1qeEo9IAlfnhN5gEFKiiTsHcXGok2A8mq6IVf7z2TNawQG2L9Bctl/Hcnu7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785596552; c=relaxed/simple;
-	bh=xRVg1yasPBB5NzmjfBOkqOl/aTRuM2I+kwlfUDeA67s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FcjvGAidfsN8rkjPi9Szmv+W9V8Pwn+c3FN2Wf8gyoUFaF6vn4HabM5wAuskcFIEHKdnVRB7oeOi5u4m0sgYNilWJfGVzyAzb2aBbClnQPNAO4MFwGr+I6dHyvf5Xg1PbQoolNkeiO55MJOjK3k/HDiUbwXYLukOOR3AwfmNANc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=dQ01LDNB; arc=none smtp.client-ip=209.85.210.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785596763; c=relaxed/simple;
+	bh=3vp2hLKTmc09zaIHpCig4bUhEfQiMWD47tjAhsEdWyU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Vle6VwKjS7AcJ3YfgTo1pSRN7wu2L8/zdANwPlvwcO4m9ZmDxZg1TgvUqzJSJhGcY7lm2a6CiFbFvEQ7ZDN5hDmAPlEmdmLGqksjrH1hOq4sv/NM48ulh8Nh2Pg/w4Kbe0qLQqr6fT1flcPNQCtDnu0Lb947XODyIXaUXTE9hKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=S82Ypath; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=CI3IouVE; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="dQ01LDNB"
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7ec58fa3e01so953892a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 08:02:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="S82Ypath";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="CI3IouVE"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 671Cbord2927310
+	for <linux-iio@vger.kernel.org>; Sat, 1 Aug 2026 15:06:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=fxqtwBV1yl8Oo30paZH3pe
+	KPiKzsEGqLBKYrL80s9vc=; b=S82YpathuThkYFuVhUj4YndQmYRF6kAlPZEw6y
+	Qs0c2zxOKMUMKq3QoUfBw/2BPVoqgnj/kGEBXiYHJ71ZyVcYw2qbPqyHleKxnPp1
+	2u325ZB8Wk8K2rAltBXC4rg9b2wI69qQR261ArHw98j8c/i83dm/lQeLwhu5UnoN
+	juIuNrO/V1Z3ogRjfYaUVhs5u+0kRy1FJ22mMVDR+QAMssg52WmArynxB1JgopN+
+	i4eeDm+xLHgWWhTrALbL9IRYYK5vilgN2B2HIAm9LOAvykwoZo0JO3korvcjTt7H
+	BVn83Oci05kYtALMYtQxz+6MkybQ2KyynVLHAHfHhtrxw0HQ==
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fs8r6h6f2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 15:06:01 +0000 (GMT)
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-51c1d7886cdso36825861cf.1
+        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 08:06:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785596549; x=1786201349; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=U+dM9uqc02yFtNS8yxq8WdKy5Ckg/Jxy7aMC/aM+dL0=;
-        b=dQ01LDNBQHMlY7LfQRcvsp+fFidQP+84qa5IPPubm1tF4mCMMSKvQvn/JjxMoN8cv6
-         VtkxYaHOCcEum6ksnSPuX4RroxlBmXEst1lVxEzWXyea5jlNRpQ5oYsqiDIXEfhi5mtd
-         VrBNUbUpzf5JQOYy/2LxfpLK2cOdl4AWky4b2oepYC/s8oubeTm5rzGV1h2k64+WUIMF
-         Gidw5+p2TexZCypa6AAxjoYd90YKbqH1GL2SxdWK9tsZMTyBdoAVLSoKgKmcNS9ozCDf
-         wNDuUk+eZ+Sz9QUFCjUp68DKbFIa5Oym1aq8FYwaM3hwzTllT+XXQraPq2vudEy5FhUD
-         e4Yw==
+        d=oss.qualcomm.com; s=google; t=1785596760; x=1786201560; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=fxqtwBV1yl8Oo30paZH3peKPiKzsEGqLBKYrL80s9vc=;
+        b=CI3IouVEZCVMdl4CF8XsTtoxIY43vaxoeHenxVQzKZnfLk425AcB9VX0saUkUsLs6/
+         gPmNWP7qqo4pCOhqtLpyfryQEwuTgCSMs+GyCl8dH9GAmDZtl5EhjyHGaUpg+EyqSgwI
+         4DBpXovzs7jEpx1V9F9njeCu19ElO5Y1AKH1VkzGSR38MuE8PmsQWWha3RImxc9h87m7
+         Ks1I1OCXKBh421ybBDyqjRn82BzSBwXBAO/boPIIjsoZ1XcZwOGpzHwndqZ1iYRL4Rfw
+         U0kFbgI7fFq+jadGYz2UVCc8n1pXdECzGQ2x6RT5O/93ByqMF042/hyEqJ022ztn9BEx
+         Jh1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785596549; x=1786201349;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=U+dM9uqc02yFtNS8yxq8WdKy5Ckg/Jxy7aMC/aM+dL0=;
-        b=K43X92dF5S0JnEM+oqR6J9LWYVe7gvVRX1zfvBEcZ2MIHnyo5RWvuT8vZ/Xv5vf15e
-         5ceItfntN2ipFl8ZibERPUNNStVySuK9/U05+nrmLHon91bs2vBet9ZTJWlMteaGLt7Q
-         nm4S2q+KHD0SdxS1R7pp8UX4mTB2BADfqqaiLVoVsEbddRBRTTx4DRsv0Zp77WEhTI96
-         93OtSQCpR/bMpR2poQu8/u8F5COQgzvx3o1tNnKeHxf4sHCx04FLDhis1pzbcP8HL5S5
-         RyU2JYDXHUv3+cUI4b1uG3hEGUveP7Sy3LzmRXtl2Z8e4WO/Qf+isx7f/iLDLT4M2W8d
-         AGSA==
-X-Gm-Message-State: AOJu0YyoztJqCFxvHEKW4XV/Tf744TGLwkW2tEK8mo/KVy4RMNjtkism
-	ApIwgTjdvZs0TrMj3rA7yPYO9A05FH4NyDFCGwHppzLseIriO7QLVEeW9+oZt/Nmi+g=
-X-Gm-Gg: AR+sD10X37RRxHFXCZ5srX9HxJBvsdalhvLEmuVbdKhw7OpRoWIaYIaA6d7jQwEbW7o
-	c02jbT1p9HEjXYmz1kxfUJU8qdHPUYQt20fTEQbp9k8ohwck2l362rxZ3swRniOCNbnl4Y5zAgx
-	Om6v0aguhPTj3CMJajA+kY+u4fng3BFR5Y+D4mjXb0RsKfGYKWM6qDUK0IHm2RYW4/vvP5ZOSN3
-	wCOA/7xAYfjARekRQ/gBX0GX+o1xzIISyfYlei5y5even01Pk3+NMqdCF6PjKHS+qOuARgYd7+q
-	0NB7j+Fr/e/OZmbCJYDeTYitaKFE0EZUpzjvxHbRpcCe5YplphLBk0Q/8ZDMqM7e8iFMjHS9EHN
-	C+JjEY2XytC9OJSKWIk7doW/HdEedoJ9imjHssuVNuAgeWxheKcMRUzIH6Upub1YOCi5eQSUG5M
-	KT7dJWRuWlg+OSBhyXcfJ2hMhPN1T73GDh97yStNdUWBOoB9dzqYM71+O0WnOXgX8PZkzmvOa4q
-	hKgqg+vzi6pbFJ2J3ME2pkHcrQono8Y3QFgsY2wrwQIdB3f3Ug=
-X-Received: by 2002:a05:6820:221e:b0:6ae:4767:a503 with SMTP id 006d021491bc7-6ae4767a98fmr4756954eaf.34.1785596548637;
-        Sat, 01 Aug 2026 08:02:28 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:359b:17f1:d4f9:4949? ([2600:8803:e7e4:500:359b:17f1:d4f9:4949])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f18f0da951sm3168830a34.24.2026.08.01.08.02.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 01 Aug 2026 08:02:27 -0700 (PDT)
-Message-ID: <185632fa-8e1d-467a-a194-aafac05dbdea@baylibre.com>
-Date: Sat, 1 Aug 2026 10:02:27 -0500
+        d=1e100.net; s=20251104; t=1785596760; x=1786201560;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=fxqtwBV1yl8Oo30paZH3peKPiKzsEGqLBKYrL80s9vc=;
+        b=gMHQMfIsuUCtBA60/rR/5FzOWZeJuB/pGNa6bfBDzJG4f8lE3N+cPcHVlf4/ht833x
+         o/qvarbrUCZbjfe2Tpap8RKIrGCDqPuhosSkA8Ek177TOSaSooxxIFYQh7yPYMJ7zgbV
+         MozqHLvnqcJ7yIl3gE7G823/VwRONVOxo5HvcU0yJUveon/Ya37mnhYchpfEzG/DGvMj
+         9nFZdiKP4HPcX6Rno7kj8QH95+VF1NpiVHwHjEakZ+9F31lEK1pInijeGSN633Z5rwas
+         +qruN7/ZMYYuIcx+w8Vvy6KoIlSOuc6cTAZYpjUjgBkgU/5SqQDpzFi81XViQwRTDVIv
+         FkWQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqaxlE7xVkQLr32/PODcXm1gubGJTBNGeAgd4RuVbIdut9TJhq71Sy3n9vb3cddfZvE0dhMJ/GSziA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxVYefgnTbkHvXecfkDfV/3Cdc2rlhSVt4fPGRf4nzy5xXf4BkB
+	wPEZ1c0g8hiQwiV16T+iCASg8oQhLw17Gtit1rK0qzkF7eTrGJqsYuBqRqAJH4nAyHhpQrkYcdI
+	F4i9bmLFzpJCVjL1GgkDg/oXq2VhoaKu2LXM/LKLs3PG8sKZRjQPwT5NVPPEWDvQ=
+X-Gm-Gg: AR+sD12qmbD7w5xzfw98SqWioKN3YjPLDyNdspDyUrn/NcQGAkrVOhT9Ue2QIqlDcOI
+	4EUJI0EK6+SblQt81nBH98IcyBxpxu87OFqv9manGLmedDbr72S1Hnetnol3bG432RNxlmtQRNA
+	ey/0bj3WxdD2FvICcjefSafs/kKR53Ic+hoE20k96blzJXMuyBjfOdsd6LmdnCWmyRoQ0OJ+dku
+	TXYqEEYzHP5P+Wsq55TF0rQODnAPZKQ9VFtLlxfkKFLDiFq74cpmt0T2js2kurnVjWzeANKZTOh
+	EdGG8Xim9IyI6+tURTpHvNcNhivp2aYUHqwr5QFQkPYYEiZa7pn+fqGd8CxyDoM9MUmyjhbZrgM
+	Til1UOdnPn7FUzYTGMZl+Lrjj
+X-Received: by 2002:a05:622a:1350:b0:517:96f0:5658 with SMTP id d75a77b69052e-52b566aa84bmr69865321cf.14.1785596760353;
+        Sat, 01 Aug 2026 08:06:00 -0700 (PDT)
+X-Received: by 2002:a05:622a:1350:b0:517:96f0:5658 with SMTP id d75a77b69052e-52b566aa84bmr69864741cf.14.1785596759972;
+        Sat, 01 Aug 2026 08:05:59 -0700 (PDT)
+Received: from [127.0.1.1] ([178.197.223.174])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49807b85be7sm79293395e9.2.2026.08.01.08.05.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Aug 2026 08:05:58 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH v2 0/9] arm64: dts: exynos/google/fsd: Trivial white-space
+ changes to adjust to DTS coding style
+Date: Sat, 01 Aug 2026 17:05:42 +0200
+Message-Id: <20260801-b4-dts-coding-style-strict-v2-0-c0b4c68b2ba0@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iio: dac: mcp47a1: add support for new device
-To: Joshua Crofts <joshua.crofts1@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260727-mcp47a1-add-support-v2-0-d4591a2ce69e@gmail.com>
- <20260727-mcp47a1-add-support-v2-2-d4591a2ce69e@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260727-mcp47a1-add-support-v2-2-d4591a2ce69e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42OQQ6CMBBFr2K6tqQUpODKexgW0E6hBqh0CpEQ7
+ m5BE7dufvImP+/PShCcASTX00oczAaNHQLw84nIthoaoEYFJpzxjAme0TqlyiOVVpmhoeiXDkI
+ 6Iz0VTKdKJyIvNJAgeDrQ5nXI7+WHcaofIP1u/DYcjFNY9b9aa9BbtxwvzfF+/Wt9jimjUEACR
+ S4KxS43ixiNU9VJ2/dRCFJu2/YGWhHJQvIAAAA=
+X-Change-ID: 20260726-b4-dts-coding-style-strict-70f4df3789fe
+To: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Peter Griffin <peter.griffin@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        =?utf-8?q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+        Tudor Ambarus <tudor.ambarus@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>, linux-fsd@tesla.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3383;
+ i=krzysztof.kozlowski@oss.qualcomm.com; h=from:subject:message-id;
+ bh=3vp2hLKTmc09zaIHpCig4bUhEfQiMWD47tjAhsEdWyU=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBqbgtJlWfEjoO2CLrZldVzCgLdfG7CgAqjZHVMX
+ GdQDs/H6JyJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCam4LSQAKCRDBN2bmhouD
+ 1+fSD/sH8Wl4wRRGrpeoxeC65IdstMKa/hp1c+W0C9K3mzWf6z/wWiDQszD9UoTsBNR2kmWdoTg
+ IVZY1dZllJ6CZH2/qX5ecO1UfxhR4uWMEB9HNXiWXo7dAs1vcqTy9s/OdtFDK+4R2l0ZGE/sgQm
+ KedNNWtAg2qz2VpLeNmDDLZSFjCWpt9GRJbKOEHB1yLE6e/zuOKx8OGy7HCjtkpj75GnsAs+cta
+ d2IkmCI+KG/fm7aTpeDzomCixn7OWYLRY0+yCcaF8buGjlizR3XuYzPoYGNF3UBB+n/3u7vCCjB
+ wgEEhnMx0aQUhhEzxdztFC1fZj+IYfgVxtu+OfsxPT5m758+ultp+EfvbJw5Ef+HTU/goZ7VN8X
+ Yus5Q8kkgDiooovHc7qT9kEgZlGAug7IE6UZy8rgWexAP/1zRWIAOGFQ83o06KfzfP7ga7qmjuu
+ DVerCHEY1ikwbQdRMgxPdgm3z0Q8Qpx6XW6OYi5mtiD8u5gxqj6Gv2hURgHnymcIUHRuCSm1Tof
+ HMQTyIh197fQM35/f+GrGHcM+LnS3MK/z6IpjH8QxrZC7PAlYNXhuMAdcwisjGKBHmuMb5o/+1j
+ ETT2WpZ+QIpoE/VCTCKXkeBJeLStei71PCrx1xf/HuBmPeosEouFV7uaoZHbXB1/T3eg6o6uSNW
+ Jrb8ZlG7tO8zKvA==
+X-Developer-Key: i=krzysztof.kozlowski@oss.qualcomm.com; a=openpgp;
+ fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODAxMDEyMSBTYWx0ZWRfX243siosAn8Dw
+ iTIunSBH+BzDpfwNm+wqqP4oOF2a5BOqQzfuKGuCwAcR12PfYe+wE+5Cnmpi3va4xPwNJOcXbw2
+ sb50dF4imcqYvrGiJpmrGXNdiDbYDYg=
+X-Proofpoint-GUID: PSTHNXLWs-muCPuIZzf5sKR85wAfah0I
+X-Proofpoint-ORIG-GUID: PSTHNXLWs-muCPuIZzf5sKR85wAfah0I
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODAxMDEyMSBTYWx0ZWRfX32PT35NwnOmw
+ Ws6aIuC1u3Ml+UPoNHoSO8cibalCfEqYlzwOJigxTv2aqXzXYJY+noW0yFdouIDDsFuKhOZOSaW
+ ra2CwblhIp0iL/IcT7x8oKUATHbGT3utzbIDR9FpIBnqrHt6lg2zfiC2DZ5jCdppJr2qCibww3w
+ DpjDX0lojE0hEzMJmhy5aAWsWofhTYqLRPZAgbtMlOpPU+cyrIIXdkwRHqyEN4jcolswb1VOgiu
+ nYL8150/XjaaMT6EJ41/CSTrFdVJiBGdpegQyOnv1vUhjjq+ZodjcAZB/C6RTQ2yvQ72Zs/Ss/g
+ hc7WDsEqaJC97UX3laB0RI8GUI0pIVOeGrkZnjxRbrSQtXGY4MD1++udHavGMuP2MqqhNlu1pvN
+ y+gVqhyatNsBIStzHdKNl/draEZzDW0UVxf4K613id04Q4qkiwdDlKxfyxp3WxjVcOHEvIFWhVD
+ g7gfPwv7MPdShWxuyTA==
+X-Authority-Analysis: v=2.4 cv=Q5ziJY2a c=1 sm=1 tr=0 ts=6a6e0b59 cx=c_pps
+ a=WeENfcodrlLV9YRTxbY/uA==:117 a=N6niishs+lR9UBL1FN3Qrw==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
+ a=EUspDBNiAAAA:8 a=DwXAirjAvZakPEmmhRcA:9 a=QEXdDO2ut3YA:10
+ a=kacYvNCVWA4VmyqE58fU:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-01_01,2026-07-30_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 spamscore=0 clxscore=1015 impostorscore=0
+ priorityscore=1501 suspectscore=0 adultscore=0 bulkscore=0 malwarescore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608010121
 
-On 7/27/26 1:31 PM, Joshua Crofts wrote:
-> The Microchip MCP47A1 is a 6-bit volatile Digital-to-Analog converter
-> which communicates via I2C.
-> 
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
->  MAINTAINERS               |   1 +
->  drivers/iio/dac/Kconfig   |  10 +++
->  drivers/iio/dac/Makefile  |   1 +
->  drivers/iio/dac/mcp47a1.c | 169 ++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 181 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8a0b23418a64..552ced65cf75 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17703,6 +17703,7 @@ MICROCHIP MCP47A1 DAC DRIVER
->  M:	Joshua Crofts <joshua.crofts1@gmail.com>
->  S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
-> +F:	drivers/iio/dac/mcp47a1.c
->  
->  MICROCHIP MCP9982 TEMPERATURE DRIVER
->  M:	Victor Duicu <victor.duicu@microchip.com>
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index d6d560c09e25..1d00cd911826 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -565,6 +565,16 @@ config MCP4728
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mcp4728.
->  
-> +config MCP47A1
-> +	tristate "MCP47A1 DAC driver"
-> +	depends on I2C
-> +	help
-> +	  Say Y here if you want to build a driver for the Microchip
-> +	  MCP47A1 digital-to-analog converter with an I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mcp47a1.
-> +
->  config MCP47FEB02
->  	tristate "MCP47F(E/V)B01/02/04/08/11/12/14/18/21/22/24/28 DAC driver"
->  	depends on I2C
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 5d20d37e44ce..992f8930f95c 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -55,6 +55,7 @@ obj-$(CONFIG_MAX5821) += max5821.o
->  obj-$(CONFIG_MCF54415_DAC) += mcf54415_dac.o
->  obj-$(CONFIG_MCP4725) += mcp4725.o
->  obj-$(CONFIG_MCP4728) += mcp4728.o
-> +obj-$(CONFIG_MCP47A1) += mcp47a1.o
->  obj-$(CONFIG_MCP47FEB02) += mcp47feb02.o
->  obj-$(CONFIG_MCP4821) += mcp4821.o
->  obj-$(CONFIG_MCP4922) += mcp4922.o
-> diff --git a/drivers/iio/dac/mcp47a1.c b/drivers/iio/dac/mcp47a1.c
-> new file mode 100644
-> index 000000000000..140e93ff2ba0
-> --- /dev/null
-> +++ b/drivers/iio/dac/mcp47a1.c
-> @@ -0,0 +1,169 @@
-> +// SPDX-License-Identifier: GPL-2.0
+Changes in v2:
+- Fix stray blank line
+- Collect tags
 
-Prefer more specific GPL-2.0-only or GPL-2.0-or-later (your choice).
+Fix a few obvious dt-check-style strict warnings.  No functional impact.
 
-> +/*
-> + * Microchip MCP47A1 DAC driver
-> + *
-> + * Copyright (c) 2026 Joshua Crofts <joshua.crofts1@gmail.com>
-> + *
-> + * Datasheet: https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/25154A.pdf
-> + */
-> +
-> +#include <linux/array_size.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/types.h>
-> +#include <linux/units.h>
-> +
-> +#include <linux/iio/iio.h>
-> +
-> +#define MCP47A1_REG_MAX		0x40
+Best regards,
+Krzysztof
 
-Unused macro.
+---
+Krzysztof Kozlowski (9):
+      arm64: dts: exynos: Move 'status' to the end to match coding style
+      arm64: dts: exynos: Align continued properties and add missing blank lines
+      arm64: dts: exynos5433: Override thermal zones by phandle
+      arm64: dts: exynos: Re-order clocks and align continued properties
+      arm64: dts: google: Move 'status' to the end to match coding style
+      arm64: dts: google: Align continued properties and add missing blank lines
+      arm64: dts: fsd: Move 'status' to the end to match coding style
+      arm64: dts: fsd: Align continued properties and add missing blank lines
+      MAINTAINERS: Drop redundant lists from various Samsung entries
 
-> +#define MCP47A1_CMD_CODE	0x00
-> +#define MCP47A1_MAX_STEP	63
-> +
-> +struct mcp47a1_data {
-> +	struct i2c_client *client;
-> +	int vref_mV;
-> +};
-> +
-> +static const int mcp47a1_raw_avail[] = { 0, 1, MCP47A1_MAX_STEP };
-> +
-> +static const struct iio_chan_spec mcp47a1_channels[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.indexed = 1,
-> +		.output = 1,
-> +		.channel = 0,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +};
-> +
-> +static int mcp47a1_write(struct iio_dev *indio_dev,
-> +			 struct iio_chan_spec const *chan,
-> +			 int val, int val2, long mask)
-> +{
-> +	struct mcp47a1_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val > MCP47A1_MAX_STEP)
+ MAINTAINERS                                        |  21 -
+ arch/arm64/boot/dts/exynos/exynos2200-g0s.dts      |   2 +
+ arch/arm64/boot/dts/exynos/exynos2200.dtsi         |  98 ++++
+ arch/arm64/boot/dts/exynos/exynos5433-bus.dtsi     |  29 ++
+ arch/arm64/boot/dts/exynos/exynos5433-pinctrl.dtsi |   8 +-
+ .../boot/dts/exynos/exynos5433-tm2-common.dtsi     | 167 ++++--
+ arch/arm64/boot/dts/exynos/exynos5433-tmu.dtsi     |  49 +-
+ arch/arm64/boot/dts/exynos/exynos5433.dtsi         | 570 ++++++++++++---------
+ arch/arm64/boot/dts/exynos/exynos7-espresso.dts    |  13 +-
+ .../arm64/boot/dts/exynos/exynos7-trip-points.dtsi |   7 +
+ arch/arm64/boot/dts/exynos/exynos7.dtsi            |  58 ++-
+ arch/arm64/boot/dts/exynos/exynos7870-j6lte.dts    |   4 +-
+ arch/arm64/boot/dts/exynos/exynos7870.dtsi         |   9 +-
+ .../boot/dts/exynos/exynos7885-jackpotlte.dts      |   3 +-
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi         |  21 +-
+ arch/arm64/boot/dts/exynos/exynos850-e850-96.dts   |  13 +-
+ arch/arm64/boot/dts/exynos/exynos850-pinctrl.dtsi  |   1 +
+ arch/arm64/boot/dts/exynos/exynos850.dtsi          |  47 +-
+ arch/arm64/boot/dts/exynos/exynos8855.dtsi         |   5 +
+ arch/arm64/boot/dts/exynos/exynos8895-dreamlte.dts |   1 +
+ arch/arm64/boot/dts/exynos/exynos8895.dtsi         |  56 +-
+ arch/arm64/boot/dts/exynos/exynos9810.dtsi         |   9 +-
+ arch/arm64/boot/dts/exynos/exynos990-c1s.dts       |   3 +-
+ arch/arm64/boot/dts/exynos/exynos990-r8s.dts       |   3 +-
+ .../boot/dts/exynos/exynos990-x1s-common.dtsi      |   3 +-
+ arch/arm64/boot/dts/exynos/exynos990.dtsi          |   5 +-
+ arch/arm64/boot/dts/exynos/exynosautov9-sadk.dts   |   9 +-
+ arch/arm64/boot/dts/exynos/exynosautov9.dtsi       |  86 +++-
+ arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts |   2 +
+ arch/arm64/boot/dts/exynos/exynosautov920.dtsi     |  64 +++
+ arch/arm64/boot/dts/exynos/google/gs101-oriole.dts |   2 +
+ .../boot/dts/exynos/google/gs101-pixel-common.dtsi |  12 +-
+ arch/arm64/boot/dts/exynos/google/gs101-raven.dts  |   2 +
+ arch/arm64/boot/dts/exynos/google/gs101.dtsi       |  81 ++-
+ arch/arm64/boot/dts/tesla/fsd-evb.dts              |   8 +-
+ arch/arm64/boot/dts/tesla/fsd.dtsi                 | 121 +++--
+ 36 files changed, 1165 insertions(+), 427 deletions(-)
+---
+base-commit: 392dc8766489bd451c5f20928d01cc24ff9eec0d
+change-id: 20260726-b4-dts-coding-style-strict-70f4df3789fe
 
-There is also in_range() which is nice for this sort of check.
+Best regards,
+--  
+Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-> +			return -EINVAL;
-> +
-> +		return i2c_smbus_write_byte_data(data->client, MCP47A1_CMD_CODE,
-> +						 val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int mcp47a1_read(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val, int *val2, long mask)
-> +{
-> +	struct mcp47a1_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = i2c_smbus_read_byte_data(data->client, MCP47A1_CMD_CODE);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = ret;
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = data->vref_mV;
-> +		*val2 = MCP47A1_MAX_STEP;
-> +
-> +		return IIO_VAL_FRACTIONAL;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int mcp47a1_read_avail(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		*vals = mcp47a1_raw_avail;
-> +		*type = IIO_VAL_INT;
-> +		return IIO_AVAIL_RANGE;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info mcp47a1_info = {
-> +	.write_raw = mcp47a1_write,
-> +	.read_raw = mcp47a1_read,
-> +	.read_avail = mcp47a1_read_avail,
-> +};
-> +
-> +static int mcp47a1_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct mcp47a1_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +
-> +	ret = devm_regulator_get_enable(dev, "vdd");
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
-> +
-> +	/* Delay after device exits reset state (see AC/DC characteristics) */
-> +	fsleep(20);
-> +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "Failed to read vref\n");
-> +
-> +	data->vref_mV = ret / (MICRO / MILLI);
-> +
-> +	indio_dev->name = "mcp47a1";
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &mcp47a1_info;
-> +	indio_dev->channels = mcp47a1_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mcp47a1_channels);
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct of_device_id mcp47a1_of_match[] = {
-> +	{ .compatible = "microchip,mcp47a1" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, mcp47a1_of_match);
-> +
-> +static const struct i2c_device_id mcp47a1_id[] = {
-> +	{ .name = "mcp47a1" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mcp47a1_id);
-> +
-> +static struct i2c_driver mcp47a1_driver = {
-> +	.driver = {
-> +		.name = "mcp47a1",
-> +		.of_match_table = mcp47a1_of_match,
-> +	},
-> +	.probe = mcp47a1_probe,
-> +	.id_table = mcp47a1_id,
-> +};
-> +module_i2c_driver(mcp47a1_driver);
-> +
-> +MODULE_AUTHOR("Joshua Crofts <joshua.crofts1@gmail.com>");
-> +MODULE_DESCRIPTION("MCP47A1 DAC");
-> +MODULE_LICENSE("GPL");
-> 
-
-If only all drivers were this simple. :-)
