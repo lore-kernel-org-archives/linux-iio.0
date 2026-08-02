@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 324981B85F8;
-	Sun,  2 Aug 2026 23:19:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E64372F1FEC;
+	Sun,  2 Aug 2026 23:41:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785712794; cv=none; b=UuaoZoDl95LwVThMLMSbtONomBk9QyXEzXHzQRWHKww2Wgj3G1nvxnrGzsjTU3dD/tcNdOBCj9XVDBygHJ7kZFRaC6lFBCIXZAqSrNO3vWLUlXApB1fFnqpDTCeT3Mt7Ap7v3Ty78TYUkKt94nFPZVzI1gHm/yNuO9Qq9rVG/2M=
+	t=1785714082; cv=none; b=KXtJ6H540hnaBRc1AtvoChj1QmfFNtEbp3anbeFfVbXetToTIYH0ykqoWXP2t/QkT1VrdVGCBPbTQmpdfTX+4Sx3PsTUZgRPKhwOdGyWHe16wfxyvoSMTAmSR4ew5bVX2M443zrPJotBYFiHcU0+AdtpMNRpQ0ruDSfd1dOPdeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785712794; c=relaxed/simple;
-	bh=+dg4cM/1sUDRT6npItsFcNKriAveLPOrGSDXZ0wX6as=;
+	s=arc-20240116; t=1785714082; c=relaxed/simple;
+	bh=saInv1esiO8O6zHPyX+ufBsfM4xEBN9JSeDDHbAsSpE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ALF7r+Y03iFmBbCN0ijOczIinx+3Q0o9+WymB+By13r/pDFBqzAkdK10wLeowraxULAv7JjZYeEmC+k5cPkuieeYAmvwoo1Nh39eD6n1nDWzJMVUepRjmNAE5r1G5aQG3PlTnqJpRBWbk9V3pwwscFT9KWlG1lAQExhYYP9Ydjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cHSi0a0e; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ieuIMi2/RJJvHGxSlIQ0zplfmni7FZuV99K5V8WlzBNFcBjorxXL9vHb2ZF4PP1gMXjZKxj/YzpraMpiQQqsvXy9ewisi457Sr0YhczNG9wP8eEhgShdWmiNHhG4qFDSKVA7Wyif1rJH1esSm115qLXxSnXEnAhLKREr3iWqfP4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8pgiA5p; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cHSi0a0e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B791F000E9;
-	Sun,  2 Aug 2026 23:19:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8pgiA5p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B986E1F000E9;
+	Sun,  2 Aug 2026 23:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785712792;
-	bh=eY6VgtIgRMIMVNF+YSKtWPFHsrwxoff5oqA8sV51QoA=;
+	s=k20260515; t=1785714080;
+	bh=baRHJ5pCzhbJNIZ1mXCf1/EuHtWXAmVKciU3amIoVMw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cHSi0a0euDY1dCGcnR7u9ZJ9kJg8uqvH2pwoey66fnCf4oyx1m/bzMwto15CdOAQ7
-	 dmy0FN0GmCa0G9t07m0A1o2aZrvobBEA6Chu/U2/gRob6iEQdsVhrXmnWadlyPGsI1
-	 l4qSmgfjTe3N4TZ6xFeolnuXievHooXQWz2fxeGQL+yoCiHzh0vNb+fHn7KlXoGeK/
-	 mFM7sHc2YqYGQ/m3EVdZMfOvMLRCjwdRl4yEt2sa4VJQpIA+uSvE7WNTyOWozmbib2
-	 QeSyLy9d6wFszXjGChAckNb/VEk1Qzk7NyyeNZdn+26l8ukHLCjUpG+uxy09tka6sz
-	 qz2OIucMwJ5SQ==
-Date: Mon, 3 Aug 2026 00:19:47 +0100
+	b=Z8pgiA5pLaCCCtflNoXV/PNdqlw3pJ2rg7eK3a0WzBJ02dFr28ZGuS2E8ZunI905K
+	 C2vS4V0aNz7N6bznJlidsFsfJT39UCUfyI0iWsC11bd1nBB3jki//j0X++O9nB0RhR
+	 YVQIyFEChHNEXboSaUY6kmATNx+xKSv35GACnj3Mh0N1FWdWeRJERYhE5d0ORNxi01
+	 hLaEmLOjfd8vSyKD8BzFnejWCrJNm9f9kAfYRO/NDr6+3GLfUTHEf6Uw+GYMFD8C1b
+	 Fo0Pg/mTs1J4hsov1f+ghL/N9geL3iDWMkOGUrdyGzN9Znlv2DuNz6Gcp8IFgi42yW
+	 8nvPi+p3WaicQ==
+Date: Mon, 3 Aug 2026 00:41:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Linus Walleij <linusw@kernel.org>
-Cc: Cong Nguyen <congnt264@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: mpu3050: fix sign of raw angular velocity
- readings
-Message-ID: <20260803001947.4ca48e75@jic23-huawei>
-In-Reply-To: <CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
-References: <20260802065540.8120-1-congnt264@gmail.com>
-	<CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
+To: Moksh Panicker <mokshpanicker.7@gmail.com>
+Cc: dlechner@baylibre.com, subhajit.ghosh@tweaklogic.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v2] iio: light: apds9306: fix PM reference leak in
+ apds9306_read_data()
+Message-ID: <20260803004116.7e97cb68@jic23-huawei>
+In-Reply-To: <20260802190701.10685-1-mokshpanicker.7@gmail.com>
+References: <20260802190701.10685-1-mokshpanicker.7@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,44 +44,64 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 23:30:31 +0200
-Linus Walleij <linusw@kernel.org> wrote:
+On Sun,  2 Aug 2026 19:07:01 +0000
+Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
 
-> On Sun, Aug 2, 2026 at 8:55=E2=80=AFAM Cong Nguyen <congnt264@gmail.com> =
-wrote:
->=20
-> > The MPU-3050 gyroscope output registers hold 16-bit two's complement
-> > values; the angular velocity channels are declared with .sign =3D 's'.
-> > When mpu3050_read_raw() handles IIO_CHAN_INFO_RAW it reads the register
-> > via a big-endian regmap_bulk_read() and assigns it with:
-> >
-> >         *val =3D be16_to_cpu(raw_val);
-> >
-> > be16_to_cpu() yields an unsigned 16-bit quantity, so negative rates
-> > (bit 15 set) are reported to userspace as large positive integers
-> > (e.g. -1 becomes 65535) instead of the correct negative value.
-> >
-> > Cast to s16 before the assignment, matching the temperature channel a
-> > few lines above which already handles the sign correctly.
-> >
-> > Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-> > Cc: stable@vger.kernel.org
-> > Assisted-by: Claude:claude-opus-4
-> > Signed-off-by: Cong Nguyen <congnt264@gmail.com> =20
->=20
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
-Applied to the fixes-togreg branch of iio.git
+> apds9306_read_data() calls pm_runtime_resume_and_get() but several
+> error paths return directly without calling pm_runtime_put_autosuspend(),
+> leaking the runtime PM reference and preventing the device from
+> autosuspending.
+> 
+> Use PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and PM_RUNTIME_ACQUIRE_ERR() to
+> automatically handle runtime PM reference release on all return paths.
+> 
+> Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+Applied to the fixes-togreg branch of iio.git.
 
-Note this will probably not go upstream until the merge window.
+Note however that I'm not planning to do another fixes pull request for this
+cycle so this will go upstream during the coming merge window
 
 Thanks,
 
 Jonathan
 
->=20
-> Yours,
-> Linus Walleij
+> ---
+> Changes in v2:
+>  - Use PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and PM_RUNTIME_ACQUIRE_ERR()
+>    instead of goto pattern as suggested by Jonathan Cameron
+> 
+>  drivers/iio/light/apds9306.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
+> index 5ca4c87524fe..d582bda4d847 100644
+> --- a/drivers/iio/light/apds9306.c
+> +++ b/drivers/iio/light/apds9306.c
+> @@ -469,9 +469,9 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+>  	int status = 0;
+>  	u8 buff[3];
+>  
+> -	ret = pm_runtime_resume_and_get(data->dev);
+> -	if (ret)
+> -		return ret;
+> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(data->dev, pm);
+> +	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
+> +		return PM_RUNTIME_ACQUIRE_ERR(&pm);
+>  
+>  	ret = regmap_field_read(rf->intg_time, &intg_time_idx);
+>  	if (ret)
+> @@ -535,8 +535,6 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+>  
+>  	*val = get_unaligned_le24(&buff);
+>  
+> -	pm_runtime_put_autosuspend(data->dev);
+> -
+>  	return 0;
+>  }
+>  
 
