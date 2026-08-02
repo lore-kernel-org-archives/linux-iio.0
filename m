@@ -1,116 +1,162 @@
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AADA21F4181
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 01:23:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A31C1A5B8C;
+	Sun,  2 Aug 2026 01:25:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785633830; cv=none; b=EVcw+WcUi3B7ybZL/SEVvQq9kT38DlXbqCZMjWzxyJciGgnJaen/JnSFHISdy+jN1SCcSLYxwa6hLRLDebvHhM/2JMgtJy9893pZsELw3ykyVkaKeMniiVfPvBzeCjgDfkalSlScKBriH29Jg8qlMZvI3aWTMIPaKkKHcX0vSVc=
+	t=1785633917; cv=none; b=f9nKPw6Vg82Y5c4bHgyMKGv1k8CeKdKviF+CdgD3lJV+mbQn49RAtPTX6p7XssLvdu4pFkCanRGf6V4mZRKBI/DWtQYCQYfEght45GV0ameHQVpnh5+jErzXRXgO7MPmENLdsQwRP1Ozpyh5ctBdvv7Vxl78B5MrQIxeYkcdacI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785633830; c=relaxed/simple;
-	bh=Tkcyj1pIcSE+uem/7Raqyt4F4YMYHe/HbEy/1nXpsj0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uvzLIbAbv4AVfxhGZ8o8+PQgl4Blu9KRxWygn3dpVwEl1byXkUhnnkFSc3W4f6d74Y41HXbrIcs/eM6K1KkMgc3IlOjrsjSo3d65ldnFCMcF7HN/iT6IDmV13Q1+VQsgg2ErptojEcHo3VtS2eZAKgu1LhWpofSrvQpL7IOVSQw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zzu1CwmS; arc=none smtp.client-ip=209.85.215.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785633917; c=relaxed/simple;
+	bh=QmDMA5nbNYG0hlv5Yo0hAQ4tTqCnfFP22Pc7ZN0mk9A=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UO1VTeTvkXRe3gC03TxE7TKtsokuOybLL9S1G7uzHfYAGk7Sol2DGUYevvYvSwaRxlZVYhfLU9Pf/ECFAaazZPCSXGHkW9bG/Asin8uuFcBNyGQceI5K7MXJLEA5tB2T2jLnXN2jh5tsB+Ce3MQTr5MQ/u6o7Nwh0kDHMe0b8SY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G5zyQOD3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zzu1CwmS"
-Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cbb973e6749so2517280a12.1
-        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 18:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785633828; x=1786238628; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=3pTsE0k2zb7kd5dP6EHONBGSxmW+mcist3GzpPTbszk=;
-        b=Zzu1CwmS005pxz3dquClpTNOUD13sMYLvvY9UONgOPKOdfW3hhwe+JyufEouzdyVWS
-         yJQkpQeUNS5EqJGl9zOM6YW6fgfrjSjQuSnBtgrGKdUGsqVBXnJtQe6GLAOUZVoGAs6g
-         BCj806hdpwWx70wAOZcMQwqeQAuE7IGPk5XQmeBlLPGrf7K/SZzxUjCq3GeUYMjQ96Zz
-         BJVhqsLwD5hEqF/HcIIZ4eBa3Ddgsiffh0qMgyYRjn9PwxKKz9FsHzjQhguFTFtJgMxP
-         Y+dkBoDFQxpMZCmQ0/7FNzKiQNllUT1+uj385F9xipN92kVS488/O6lXJk8UqHDr0YFp
-         oixg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785633828; x=1786238628;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=3pTsE0k2zb7kd5dP6EHONBGSxmW+mcist3GzpPTbszk=;
-        b=CvMlYIAOlAhmXBhcVeRfdRJlZOiIa2Do3x4JwAQiRk36C7Zvs3MxbEIA7hf4KAjkKT
-         Yeuci5Zf51gtMFLb4BleSDUPV9YoySBuEh5zyMakkL43sLHNqrXqgQNGj8c1U3vHyvJe
-         Vh2ZF7v/LIeGnwQ3FNmXi9sI/cuhmUW7joIdwlz6Y1KvLYteDT01nbVA+dXOKYH9O1cO
-         hMpHTxOVyh7RKkiWpvWFooIjWw+CqRzgvB6sL6OKXLCBTJzFmCUT21+eMPbxMYZuZGzo
-         WLbca6ooOHHf9HAdHv/IRLDBhQn9CILbqXxviD4+a9x2wNLNN2g6C+2aAfam+YIeUy7H
-         2gpA==
-X-Forwarded-Encrypted: i=1; AHgh+RqZdsv7ZiDITMjrLqvPaOfW3nxHqLIb5gnFE72oZyycfmYEbJzcPZzKlVq7Y7XKd8pnjT+dFexYQgs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxVPN1x1mEz+7RapGK3ybbL6lCbFRUE4S9WR2xF04oUTFXuT4DZ
-	yXrmtQxqebylgvA5ABCAmYo1e0NDqeHagdyZyKQkMLCF33LC962euo8V
-X-Gm-Gg: AR+sD13qLqYmMY7fuKdSKHYQalGLGmb5k22a8n3/KrYQCbV7++nIAq7w4YrZ4U/tLP4
-	fExkOYYOpiL4SFoT39Ye9DwaK4daI5POchVJXD2E8OnyyJ3tj3RqodtQyQ4EeXiSBz8BrUduxol
-	7GS4z9CIF/d5wLVTfuDn/keozXqkscZbE4knOW/kxD+OUiqwKqAY/6DRExZRgMs+bHN0TSMoxGd
-	W6+agHFgcHjRHsAm6TtbMUsb6V+Cb+D5cKFZKOaW6a/MIUkl3Zpfs23p6M7yWKSDColT7nEG61c
-	BVNesJfCbWRwZMcU4QSdKlAAbcNIkeJQGh6LM2g7Ya4Tl/gJYL6B6GWnzLnLzs7SQWesZIN4qnN
-	u8XiE5XaO0O7vOAN7JYw+p8vceVwboZe+SXn4PidrdQscHJ7MfXK3BpHIP2O7HwuiCeFCh2TmMO
-	lhT/FJRyLIgGcu+36a+tIEEsXLC8n6TVbHqwcXo2Lk8CXjr9u2q5CJwkzUSMvPdn6gT4ox654Hh
-	iXWyHvXdwz67n02zNfbIjBdC42u8ulnYJqX/dTzXve1ixN2WWT1lg2G0ohAWA==
-X-Received: by 2002:a05:6a21:6b13:b0:3c3:b57b:6285 with SMTP id adf61e73a8af0-3c92a51e081mr5409487637.13.1785633827927;
-        Sat, 01 Aug 2026 18:23:47 -0700 (PDT)
-Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3153e18e114sm36906954eec.28.2026.08.01.18.23.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2026 18:23:47 -0700 (PDT)
-From: Adi Nata <adinata.softwareengineer@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	u.kleine-koenig@baylibre.com,
-	adinata.softwareengineer@gmail.com,
-	dakr@kernel.org,
-	bhelgaas@google.com,
-	mazziesaccount@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH] iio: humidity: htu21: Fix SYMBOLIC_PERMS chekcpatch warning
-Date: Sun,  2 Aug 2026 09:23:26 +0800
-Message-ID: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G5zyQOD3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE78C1F00AC4;
+	Sun,  2 Aug 2026 01:25:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785633916;
+	bh=kwTGn+/QtvOFidqJ9dhPUG4S++xFkaTnPQZI5VDyrUs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=G5zyQOD3F0u2oY5jI+j/s3WMi6X25Ry5ldtN9umu7tK5DN6D7nCFvxLHqZ9yvq3oR
+	 EYMmrAYO5MDxUVDtcgB8P1U9kHXQCjxRfu7cG0E3/BD9z22Ak1Lzz5P60yVW9V9eIV
+	 AUyhpVNBGNpGhq1XIz39CVyfVrx7Bg6UVdTQ3T5A1K6p7vhhBvgGApuds9EGvZb/Wh
+	 KkbXrVSjrnGCb1wX12vJNtz7dgB7eSDXdeZKuflkaqujKbb4m05OXH6kuLyVpGAfaq
+	 HLrBPeDV8K/cBY4orMyFc0JEWAFcd3VTENW9+gY+xZuZSWCdfzpUjnA+VaPCer4cmD
+	 FHd7hJSTiHMaA==
+Date: Sun, 2 Aug 2026 02:25:11 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: joshua.crofts1@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
+Subject: Re: [PATCH v2] iio: light: veml3328: reshape scale array for
+ readability
+Message-ID: <20260802022511.42b9e769@jic23-huawei>
+In-Reply-To: <20260730082932.79484-3-giorgitchankvetadze1997@gmail.com>
+References: <20260730082932.79484-3-giorgitchankvetadze1997@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Checkpatch warning:
+On Thu, 30 Jul 2026 12:29:34 +0400
+Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
 
-WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal permissions '0444'.
-+static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
+> From: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
+> 
+> The veml3328_scale_vals array is declared as a flattened [4][8] array,
+> so accessing a scale value requires calculating the offset of its
+> (val, val2) pair using gain_inx * 2.
+> 
+> Reshape the array as [4][4][2], with separate dimensions for integration
+> time, gain and the scale value pair. This removes the manual stride
+> calculation and makes the relationship between the indexes and values
+> explicit.
+> 
+> Suggested-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
 
-WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO | S_IWUSR' are not preferred. Consider using octal permissions '0644'.
-+static IIO_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR,
+This is good but a further suggestion below.
 
-Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
----
- drivers/iio/humidity/htu21.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> ---
+> Changes in v2:
+> - Reshape veml3328_scale_vals as [4][4][2], as suggested by
+>   David Lechner.
+> - Update read and write paths to access the scale value pair directly.
+> 
+> Link to v1:
+> https://lore.kernel.org/r/20260727112726.211344-1-giorgitchankvetadze1997@gmail.com
+> 
+>  drivers/iio/light/veml3328.c | 39 +++++++++++++++++++++++++++---------
+>  1 file changed, 29 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
+> index 7ff1753925c4..ef0bb82e54e0 100644
+> --- a/drivers/iio/light/veml3328.c
+> +++ b/drivers/iio/light/veml3328.c
+> @@ -91,11 +91,31 @@ static const struct iio_chan_spec veml3328_channels[] = {
+>   * Gain indexes: 0 (x0.5), 1 (x1), 2 (x2), 3 (x4)
+>   * IT indexes: 0 (50ms), 1 (100ms), 2 (200ms), 3 (400ms)
+>   */
+> -static const int veml3328_scale_vals[4][8] = {
+> -	{ 0, 768000, 0, 384000, 0, 192000, 0, 96000 },
+> -	{ 0, 384000, 0, 192000, 0, 96000,  0, 48000 },
+> -	{ 0, 192000, 0, 96000,  0, 48000,  0, 24000 },
+> -	{ 0, 96000,  0, 48000,  0, 24000,  0, 12000 },
+> +static const int veml3328_scale_vals[4][4][2] = {
+> +	{ /* 50 ms */
+Given both this and veml3328_it_times are indexing on the same thing
+I wonder if it is worth
 
-diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
-index a9dbf08b4f1a..fe7192d142ec 100644
---- a/drivers/iio/humidity/htu21.c
-+++ b/drivers/iio/humidity/htu21.c
-@@ -154,9 +154,9 @@ static ssize_t htu21_write_heater(struct device *dev,
- }
- 
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(htu21_show_samp_freq);
--static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
-+static IIO_DEVICE_ATTR(battery_low, 0444,
- 		       htu21_show_battery_low, NULL, 0);
--static IIO_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR,
-+static IIO_DEVICE_ATTR(heater_enable, 0644,
- 		       htu21_show_heater, htu21_write_heater, 0);
- 
- static struct attribute *htu21_attributes[] = {
--- 
-2.47.3
+#define VEML3328_CONT_IT_50MSECS	0
+#define VEML3328_CONT_IT_100MSECS	1
+#define VEML3328_CONT_IT_200MSECS	2
+#define VEML3328_CONT_IT_400MSECS	3
+
+Then here use
+	[VEML3328_CONT_IT_50MSECS] = {
+
+and similar for the veml3328_it_times array.
+That way we keep them in sync with code rather than comments.
+
+Jonathan
+
+	
+> +		{ 0, 768000 },
+> +		{ 0, 384000 },
+> +		{ 0, 192000 },
+> +		{ 0, 96000 },
+> +	},
+> +	{ /* 100 ms */
+> +		{ 0, 384000 },
+> +		{ 0, 192000 },
+> +		{ 0, 96000 },
+> +		{ 0, 48000 },
+> +	},
+> +	{ /* 200 ms */
+> +		{ 0, 192000 },
+> +		{ 0, 96000 },
+> +		{ 0, 48000 },
+> +		{ 0, 24000 },
+> +	},
+> +	{ /* 400 ms */
+> +		{ 0, 96000 },
+> +		{ 0, 48000 },
+> +		{ 0, 24000 },
+> +		{ 0, 12000 },
+> +	},
+>  };
+>  
+>  /* integration times in microseconds */
+> @@ -184,9 +204,8 @@ static int veml3328_read_raw(struct iio_dev *indio_dev,
+>  		if (it_inx >= ARRAY_SIZE(veml3328_it_times) || gain_inx >= 4)
+>  			return -EINVAL;
+>  
+> -		/* Stride by 2 through the flattened array to match (val, val2) */
+> -		*val = veml3328_scale_vals[it_inx][gain_inx * 2];
+> -		*val2 = veml3328_scale_vals[it_inx][gain_inx * 2 + 1];
+> +		*val = veml3328_scale_vals[it_inx][gain_inx][0];
+> +		*val2 = veml3328_scale_vals[it_inx][gain_inx][1];
+>  
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  
+> @@ -282,8 +301,8 @@ static int veml3328_write_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  
+>  		for (i = 0; i < 4; i++) {
+> -			if (val == veml3328_scale_vals[it_inx][i * 2] &&
+> -			    val2 == veml3328_scale_vals[it_inx][i * 2 + 1])
+> +			if (val == veml3328_scale_vals[it_inx][i][0] &&
+> +			    val2 == veml3328_scale_vals[it_inx][i][1])
+>  				break;
+>  		}
+>  
 
