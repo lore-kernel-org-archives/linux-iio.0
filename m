@@ -1,85 +1,74 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22BE3C8EB
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 02:52:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C33E3033DA
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 06:55:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785639124; cv=none; b=JtaE1qAWFEZ5F8VeNDq2I6HOIKmI1SvhyHkbR9k74ezXsDBKVXDUmGkgtHwnlh4ugFNcPvfU6aiaw4tu8cIPeC2WjkM/MwLvJVoeBiKEijkKRLgRkYOtRT3C9/Ml8OrjOChM4ZNrkYe1UFKfzRJ16MOnxpEyNqx52JqtFddiLTs=
+	t=1785653749; cv=none; b=EbjrquAd5kQ7ptuEmZOPTN+O791pbWg0NPNpw3GVAFCE8/j9+m0m+MJeJffpLJslwwiTKW+e7qZCnteJAtuwzKJ+RkSaR0WI0QV4NFjkRR/SG+lHGoaTYSx7V2nbtuurFPcKnUWbJPpRBFTefic62vOPkdqQp3bhRsQUgiuvRZk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785639124; c=relaxed/simple;
-	bh=UPRI0r3DoBTzPZT1PoU35E3d26DOutcvNUNGRfbh7TQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OoMpqKv/dJR0MnJRP0jYsZR6z8BXJDPjBdb9Lk3oV6grNjNgObi3ylQpAIG2f003TGeoCnCy0GJrGHT6dlM2Dy6zk7BHeKAL4asFL6Lj4XXdMNmLPrJfkpkLltr6aLzx3Th02WrFXWJZaz+QdPU23qAgR73EXUI8aUyXf+kXPdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lJ8f2uFK; arc=none smtp.client-ip=209.85.216.45
+	s=arc-20240116; t=1785653749; c=relaxed/simple;
+	bh=O0QzfMOPr6vkrOHrhbKyJAHJOjCmMJTXKRxMQ/xCu50=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=M5HIU1p6BpC0Mcr3xNX+H8DaWP+wrXdWJYGOVTNg0tcZWCbmiw6UZTFvZHCAGdmyegHjYe14u7UQasfQGNCJWTqvZGBnkuYqPLgduGxmcarDIpLNrwlnDPfsJPfmhetgTQnqHb5VNG1TIdBNMg4106UuzrrRF+YIlEmevnWOoKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HJSVOCmT; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lJ8f2uFK"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-38dc69c74b8so2086133a91.0
-        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 19:52:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HJSVOCmT"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-38dc4553f62so2250253a91.0
+        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 23:55:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785639122; x=1786243922; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=elZkS/aYURa0ZPHqh1a/2YjlLP3po0YPtp2jV5sHCWw=;
-        b=lJ8f2uFKBhlHPdRWGOYo7adiNWKkKMess4oeaKGtYe/W/7gPc7MhZR6Qdzx8L6L11q
-         OgUDtb7BkAlepnodRxAz2w4oFyHZMmlOOOPuF5xmnobAFXyjnC9a9QBSNehV36dctHKS
-         0AcKJWoonpPpYYzJxR5bM0Pfc79lebaiMTj2uhfG1IDzXvfH9cSktizFEmih/TZX2RiN
-         NapKTSTtDcRptd2K+L3g0oiuQUwYQBEDkOIw/I3jJ04s6nciFdW9NJhA9Cch88pU3pBE
-         h3FD8kdri9p9BFqRpw4Iq4no0XYHEcAQoPzGpqsLcYxkvq5u0RVOWO4a/KYb4W8QuVMp
-         iPZw==
+        d=gmail.com; s=20251104; t=1785653748; x=1786258548; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=f8LYikitMrC+BH+jG/GkXkTeEEEki2FXKlfuLfV91rU=;
+        b=HJSVOCmT72GlPOmufknuGfA0G/KuRhq9H7kzDXKBW9DFqBfR4yGPqEcrsktSUJOJB1
+         WQV63nNmTp3pWvfA1EZ22Wz4cK1BhDB2DFuidHyVdMPT8hFXwXhIk5FYMTG/6sMP6wv5
+         ULo5xfnO0zw2S4/Xe+Ml+3yC0maF6FvpVyuMgVTu9ibx2hQEHDQCy0xp7SyzWCVZM49l
+         wRjMcCI7r97q/x8y8vSK1WB0Kbt5r7CJBBrClmjR7qKyj3Md+LhTMCG1ownolOWqnD/N
+         qgi69ZD7g5ZQUxGno1jiktEUpUTM9MaKTYQUSAVx63A90kEqKw1QutZIQvMmA97RfIux
+         8Bsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785639122; x=1786243922;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=elZkS/aYURa0ZPHqh1a/2YjlLP3po0YPtp2jV5sHCWw=;
-        b=RS9WsvsQUYefCh5wDFAiGcCiSTEnQqu2wpn64k98VXwI8nr/94lCrFnR9iOh/ZC0Vb
-         76L0M/ynPD37cEkAB7unFCvF7z2EfP+AbGo22IYgs1KoS9VICAH3dLO/eaQhDjJT6dMJ
-         JAXyHlZ2lod8jAmvE3ejYPHZlvdy9hdkEZqD7tceNgebh+hrdgz0EEtY+jp/rxxjLoY2
-         Z8DUG/+AZXQYJo1k2mEYAww+TGj8+9IJwHF9aKDdOf+TvcimyZXnyeufrkwYP0wafEtz
-         ms8bOYrSfzsdoJOMa84WO/KvX1HmcIvg1rfdXUuBDr08yvOwol/zG245eNYEGwx2PKim
-         HIDw==
-X-Forwarded-Encrypted: i=1; AHgh+Rpivi1WCcg88//3Zo0Rd5mTiofFCpWl2oWltX7nbCfZW5/2Lnqmk0ngnwXVbMiuqTILo/tljgiWASw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8Ca8fkhb7snyoJzJyuI5VsJeRwX7w5K/Dm7vU8qvy+JS0Erfs
-	iHTvQXzHmei+G/1+g3Q/5Pj0bCH0+Tc5nuqbXJdfKq49AZwkvlFKGI1W
-X-Gm-Gg: AR+sD11pFBKr03hUKHrinb6NxuRReNbXJpyjqKKmBe9yNyyNKOsvad1c28L5louwWwO
-	Psuzay+bHJByV5xvEOfaFZ3njfe60j/uYUjDWkaKwR+67D6TzdSugzN2/f8/q1qlJMMR7c/VlS0
-	jnDABqPHKI1IcKcDLMb7TH4hkxCrKrL3LD/iv+cUZjrWmj8mh08ols/hlaW7dRMqQSvsP9OIO+O
-	4b84aIbYZNwNVIP58py4zo2O7F6OMoDnyXB65y/csqrCvEXHO+r6WBwkovs0WUWoMEp36hjtvRA
-	TTKaD32DFxTxPFn+z6dl6c/RS33W/g3FBKhnUTS74wUTFjXEVTrFMSrWLZQz/hQFnMl8RV3AKeX
-	aM4fkdevsuv2TLgJmSy7MOjnKBfOKg0hl01WU3SJIE+Al80ZlgmY97kBXLkyTOp3o4ua1e7dVfd
-	l17IGzjkfErjh0Iq9GsM2LBjAD7XNy+Z/KIe9n4lA+iFtyidQG1LuJrBINwME7RBxdXSc0hKm+A
-	Or0dnKF6xYe8eoks5MjyAZfQEYcE6CViYbd91P8eQABwx91yjch0m1b4sltVg==
-X-Received: by 2002:a17:90b:5305:b0:38e:5dc:af03 with SMTP id 98e67ed59e1d1-38fbc5b51f4mr5664911a91.40.1785639122499;
-        Sat, 01 Aug 2026 19:52:02 -0700 (PDT)
-Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13fab4cb51asm27904804c88.9.2026.08.01.19.51.59
+        d=1e100.net; s=20251104; t=1785653748; x=1786258548;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=f8LYikitMrC+BH+jG/GkXkTeEEEki2FXKlfuLfV91rU=;
+        b=EE3YRPO/jve47hcQSybRqPtKI30NHxFMC2ZnwYKmZnaB0o9Nb53EruQ0ltsj4YLY44
+         dJIuP2Uy0/aP/1xYB3Mbt/6x4ryPg7+Un4yi1m9J0+fmtIP9OgwbpP0OAWB5SqxACDTZ
+         zNGD0i2rzJoRYw+7DstZcOs0WSySwWkWGYWiwrw5GA63OT6Pp1Cu1UFojx5ReArVb8Bi
+         k8oMpRDGNC2K1ucbHO83aj3hLIuDpWOO4EhWBMTQfJjXSoupEUycxxWBsUbfFhnOYT1+
+         j9ZVvpo8bgpv9sfH9p79Vn/qzayDM+zIhzzMvaOVp/LxPyBlrCu3HKJjAqQLwOLDET9b
+         luHA==
+X-Forwarded-Encrypted: i=1; AHgh+RoEv4ryUhV2Ev0BJG86iAA4Msc14K1K/pdfgZBAh4QL6Id5qy8NeIEVDqseY3IdIrcvbOPupi9siD8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwznJDEcYUXOcVAmlKBfIhzuF8yeCxOg17ZETAOOBSxfw5ULCp2
+	ONzdIMR98zY8zjlxI77zpX0i0Xpc0bftYu+8CciWD1QbnJKWgRoGyZ7f
+X-Gm-Gg: AR+sD117CBAm+oflcH+lFu+YE/ucS0RdCJRQ3NuwMDjvMIIVZjmFH0OYXvSorLnLoR2
+	PReUKNPKb18yqj5t4dhd82VZc4R/x/u4ur+FCstWcxT37UTLE74PLXhLXQ5KF+WZXGJPWpICEjB
+	e0i18LO4Jn5I96B1TSdpdFzBDv2fnwZq9/iU0zxPgjCBv8I97J9BD+Jzdpdqvrr3ndLkuzyHFbd
+	mGwXIPu2Z5l/r4QoHdD3V8G7EjCIDfq1ZcjiGE4kxDQtpYZBLb5kl3oa6njdDJyf25APt+meaHS
+	qTpdmrpyt1iFG4B57OiumoqhLgBxqb508aTC5+V97EoYBgy9sXd73tP68/NSxPPFnypxZ3/eLlQ
+	LK/E1m8+s7MXp5rlMLTIOzXWTIRovd1nb07GWEB1zWbQEl5TeiwRTihG+Ao1qnc/YhUr411PwrL
+	dW3gp8AIcbFbmU+9YM1ruOGR/5CuklyMcKMXwDpDfXyr2jSbtvg5cqcH0F5JzEwQKVkZ2U3lyPY
+	HQaXTqczkQ5fBhf
+X-Received: by 2002:a17:90b:5111:b0:37f:ad36:8fc5 with SMTP id 98e67ed59e1d1-38fbc53430emr5982092a91.23.1785653747827;
+        Sat, 01 Aug 2026 23:55:47 -0700 (PDT)
+Received: from SGN-LDSENG.tasernet.com ([2405:4800:5cc3:11a:1ac0:4dff:fe8b:4a69])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13fab24ec10sm19641297c88.6.2026.08.01.23.55.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2026 19:52:01 -0700 (PDT)
-From: Adi Nata <adinata.softwareengineer@gmail.com>
-To: joshua.crofts1@gmail.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	u.kleine-koenig@baylibre.com,
-	email@sirat.me,
-	bhelgaas@google.com,
-	mazziesaccount@gmail.com,
-	adinata.softwareengineer@gmail.com,
-	krzysztof.kozlowski@oss.qualcomm.com,
+        Sat, 01 Aug 2026 23:55:47 -0700 (PDT)
+From: Cong Nguyen <congnt264@gmail.com>
+To: Linus Walleij <linusw@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Cc: linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v2] iio: chemical: sgp30: fix checkpatch warn to prefer __packed
-Date: Sun,  2 Aug 2026 10:51:31 +0800
-Message-ID: <20260802025134.25319-1-adinata.softwareengineer@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260723235542.152a6a25@systembl0wer>
-References: <20260723235542.152a6a25@systembl0wer>
+Subject: [PATCH] iio: gyro: mpu3050: fix sign of raw angular velocity readings
+Date: Sun,  2 Aug 2026 13:55:40 +0700
+Message-Id: <20260802065540.8120-1-congnt264@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -88,37 +77,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Change instance of __attribute__((__packed__)) to __packed per checkpatch.pl warning
+The MPU-3050 gyroscope output registers hold 16-bit two's complement
+values; the angular velocity channels are declared with .sign = 's'.
+When mpu3050_read_raw() handles IIO_CHAN_INFO_RAW it reads the register
+via a big-endian regmap_bulk_read() and assigns it with:
 
-Reported by checkpatch:
-FILE: drivers/iio/chemical/sgp30.c
-WARNING: Prefer __packed over __attribute__((__packed__))
-+} __attribute__((__packed__));
+	*val = be16_to_cpu(raw_val);
 
-Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
+be16_to_cpu() yields an unsigned 16-bit quantity, so negative rates
+(bit 15 set) are reported to userspace as large positive integers
+(e.g. -1 becomes 65535) instead of the correct negative value.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Cast to s16 before the assignment, matching the temperature channel a
+few lines above which already handles the sign correctly.
 
-v2:
-- Rename commit title and message
-
+Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+Cc: stable@vger.kernel.org
+Assisted-by: Claude:claude-opus-4
+Signed-off-by: Cong Nguyen <congnt264@gmail.com>
 ---
- drivers/iio/chemical/sgp30.c | 2 +-
+ drivers/iio/gyro/mpu3050-core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
-index f10bbebc29e4..c33592a1e0c9 100644
---- a/drivers/iio/chemical/sgp30.c
-+++ b/drivers/iio/chemical/sgp30.c
-@@ -82,7 +82,7 @@ struct sgp_version {
- struct sgp_crc_word {
- 	__be16 value;
- 	u8 crc8;
--} __attribute__((__packed__));
-+} __packed;
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index d84e04e4b431..07c0f9011c63 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -356,7 +356,7 @@ static int mpu3050_read_raw(struct iio_dev *indio_dev,
+ 				goto out_read_raw_unlock;
+ 			}
  
- union sgp_reading {
- 	u8 start;
+-			*val = be16_to_cpu(raw_val);
++			*val = (s16)be16_to_cpu(raw_val);
+ 			ret = IIO_VAL_INT;
+ 
+ 			goto out_read_raw_unlock;
 -- 
-2.47.3
+2.25.1
 
