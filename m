@@ -1,128 +1,84 @@
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFF54184
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 19:07:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C023C2D
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 21:30:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785697635; cv=none; b=sQxM3LRq21JA+cnKaWQa9EQ/mBuX/V2A++YGIrbfui5VP9sTh1zYjQzPEnbUOV2ZGV9gzvuh/gQWIael+4u2aGyXegtfUum3CcZcnNixF6b85mdMOCYSu4DdZn0HaMsqrpETVgpjcU9XvTbX7QZpwMEVRj1KUiyj7Tl18mAdwK4=
+	t=1785706245; cv=none; b=G29aBfgSPJYcOUe+Bh6nBvt5QoIwrAgS95Gv609DRhivO8pF8tI9hY2JekarC/z/BnWMhr80KlM/zawoS45rVe4kJLcFT/vC6H8U3PpbVW/t6q22l+SwXvCtGkfs6r3ck9pP2D8opF1CdfVQl0eSe+hjw3ghK76wL/qPSzkZdHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785697635; c=relaxed/simple;
-	bh=qBxSFoCzQaqnh+On9GpKXj78dp0yTwBTfmfH4W/cnM0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=oVWmvZNjJnX2XgxzhUukn38TMEqXkcJXrYmxAiuKZFGEFkBKSt+xBS0I6c1w6z/V+9fAnrIDhXpNnyaXFefrjSz3JWAzYUb+OKgc5WgaBd6PEFx3OHe05OJZycYtmiigbzvwjDi/Bzeah4CIjwRe68CrUE5TDEV4GXrbeRZT4RQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DSRXLVgy; arc=none smtp.client-ip=209.85.215.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785706245; c=relaxed/simple;
+	bh=3ERM+5ebJ3QggCt+IqpXuH/xRriK3iW+E6J9HVJBiiI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=igOWELvn6rrBewIUDiszBP7K6u5+EOkvu2/JUvsE6+fJ9k561hjR6EQbx5FIURH+5MvnQ3C9OSETACyj27poAdRjeFXZXCTjHrGTHUzzUvdq84kuzTg9G9+7KhAAH3eD0OhqL8dpsVVn9xlMCLmiQ7s8RTC58fF3XnpsH7m7S3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OObSaILx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DSRXLVgy"
-Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-cbb662575d3so1432413a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 12:07:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785697633; x=1786302433; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=xCRPNpaghBi1odlqwrDxT5domUb3WMfvy7ws3EyQGHE=;
-        b=DSRXLVgyYmooOir9KKr8ndTRH4M70NDF42u7YiITjkDPKKIe242AW8+Xn9AKZi7WZU
-         1yA+NJBsWEEKckqIr+ge+CN80irHl8z9y1OSEvtQ8M4kliOSlhhPWrKxQOKHanFGhckV
-         lBIexM5xaHWBLQRKzNM/MAX2elomwNwCTvajRujKpVxxW2GhmSdgTiM3O4VHNX+Ot5v5
-         5AUTflMec7k1f1+fEuyn9P71hVOK+NK5Nepjkm04PTTF5WCH9lGJ2AYBgmqpXduifhF2
-         nkfo6HuDESI1OPpVPE+OpbLPT5U185uM7gtIP+DELmW2roS22U6CUC5rXXbn3hQYCKGt
-         6nFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785697633; x=1786302433;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=xCRPNpaghBi1odlqwrDxT5domUb3WMfvy7ws3EyQGHE=;
-        b=Hwg0EfhsXKVqi7kqHg3LyqUbpLVxH1TIOLfFmPThVTCq921ZisdSUoeeOviQAyPlxv
-         wh8D5hxeLFyCQhtVVd0iOkSCm+lowA2VXScdck73vlp9yVEhJqajD4FajOhE3r0FHsS4
-         wyN+2lG6jQDjMR1HrGctx4eAcUNuQ+19S4tkmTJhYr3yHmYHyQJ7W56261tgFCENbTp3
-         a5NhB0OQSirU28HgW00wUEkkl8IWeigkQB4Z2Rg/bdL3aGtxicuXrkjx0QPGiRcZklfu
-         OWgafkc5HyAR77YyAoP9mJ9KoROjKynrqHx09TGNeAYrzgaIMf0ta0U/t8ieigeoebEc
-         qMZg==
-X-Forwarded-Encrypted: i=1; AHgh+RqdnFsJg2guGsgFxF7n6eCr8wThuJe52tAK2RPC93JoikVqLLj/EqpWMCxsKnA8tCoOUMWqP4S3H3E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzAbo+1+wd5t46MLuFI3tlL3/lPAo/31KAK4Mo+jKpCebdsQlXF
-	S7drhWdgsWM7JbO+hjgpV9BNhvTD/DS3NDmPjU+yBJ4VQ+o5Zs/uZsQw
-X-Gm-Gg: AR+sD10JMa6ORZMxmacjof0b9j1SaLkS1IgfWT0BSjir6+YiLBmkTOsDkC5p6rJ50Ez
-	YETtde+7r4K1n1ZXgTC9tG7gUv5vvfT+F2z4brImxlX1WpbAw/5OpH2ZyLVqd4gEdQroAh2eaRn
-	pNToc+EDZ9H+oilNGVEXS1WkLr2gIXhzThSlCzl0hla5YukoxCbQXy0QPWCUs/odXE3WTNgo8NN
-	HCt+IR2yFsC2o5TLCHarqr5sfsQdeCfM6Ci8CiunR51GbxhOY9eSB4tx3xrWq6chXmsh+hAQybk
-	NmR5PzKc9nYfTFKvSuG3x87nrckpZU9RbmhqWvG32SEcGRp9jE3AiqL28Ed1xag8ngQoI+shEct
-	ME1csAPK0OYi6Nu/FH1/IgwKYaGiHYQmRt6nYpdmOHAh4nxoRkRWXwwvQiyR/DRpE1VTHSWQuzH
-	Opm2aqsLVynK9KIsFNAVI+dedglEC8/9ZcLL7YAWX3t/OlRboXNfJCxcfwO32jLbqgr/tBJvoOy
-	bcahhLxz6LQAJy8eAf3u7/gW7CJ/YZsAcufz9w=
-X-Received: by 2002:a05:6a21:700a:b0:3b3:241f:66c6 with SMTP id adf61e73a8af0-3c92a830f9bmr7094838637.26.1785697633053;
-        Sun, 02 Aug 2026 12:07:13 -0700 (PDT)
-Received: from moksh-Nitro-ANV15-51.. ([36.255.90.7])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13fab132cc4sm23531153c88.2.2026.08.02.12.07.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Aug 2026 12:07:11 -0700 (PDT)
-From: Moksh Panicker <mokshpanicker.7@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	subhajit.ghosh@tweaklogic.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	Moksh Panicker <mokshpanicker.7@gmail.com>
-Subject: [PATCH v2] iio: light: apds9306: fix PM reference leak in apds9306_read_data()
-Date: Sun,  2 Aug 2026 19:07:01 +0000
-Message-Id: <20260802190701.10685-1-mokshpanicker.7@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OObSaILx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835051F00A3D
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 21:30:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785706244;
+	bh=JYejFk6oi270c2G7kYnJaTLzFCKL1TN6flHz+VLwlqM=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=OObSaILxMLr0QNWT65IP15TS13s26vGXsE58kRV4XTq4XCfh5a/AqZZWc6r5WvnqB
+	 WpPTveQYXGRVi6k7/qqfUCqo5ayEL7PUNHebRdIZU6j1vKm9jzxteIjH1NQ7q0nMly
+	 V0x4a5jRAkY5yvXb31FmPjnwD2chVeJhbwrSDz8mNctK77nUiuAhYIdRGHpEFEbc5C
+	 NjuQ2S8zAENTOs54rg2mFINvuHufwZg1zIfsDAa5kKlDoei/eLnKbNAxlNJ35oAukl
+	 Q2dJ72cy3TAQEzNAIpkFmz/DpT4Idu0yvZoEsVeKuxbvHMfbmigtHEDXBS2y3C6eqc
+	 1CzNqzK+glQ+w==
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5aec6360133so2475688e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 14:30:44 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RoiJFPbsD2aVOVSicJ4XitTFcEQ20FcWgmfyH06puqLSDOt0zIvH1CVOkaPmiTzRm8dAj0EavF20Xg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy9T0b0Cuzn43VvmxOayvcUsM+L87IafDWbX7GHqClVWQkNSFaM
+	mpERRFHYvMFgJWQJbmSVJNb3LvGWGbyUM3PXu5uKf39FKXsQcRu8FT5RtZvqp45CtID4gQm+B9Q
+	9QDxw/8dA7OWK5lNorw2R9+YQkIUw4jE=
+X-Received: by 2002:a05:6512:2553:b0:5b0:1ab1:263a with SMTP id
+ 2adb3069b0e04-5b2e4f9359bmr971692e87.55.1785706243330; Sun, 02 Aug 2026
+ 14:30:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260802065540.8120-1-congnt264@gmail.com>
+In-Reply-To: <20260802065540.8120-1-congnt264@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Sun, 2 Aug 2026 23:30:31 +0200
+X-Gmail-Original-Message-ID: <CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
+X-Gm-Features: AUfX_mwF3NePZgakiWKnSGGEGuccwmYZ-hE2GPaJv1BFI4VjtgXY8RH58kKFJq4
+Message-ID: <CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
+Subject: Re: [PATCH] iio: gyro: mpu3050: fix sign of raw angular velocity readings
+To: Cong Nguyen <congnt264@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-apds9306_read_data() calls pm_runtime_resume_and_get() but several
-error paths return directly without calling pm_runtime_put_autosuspend(),
-leaking the runtime PM reference and preventing the device from
-autosuspending.
+On Sun, Aug 2, 2026 at 8:55=E2=80=AFAM Cong Nguyen <congnt264@gmail.com> wr=
+ote:
 
-Use PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and PM_RUNTIME_ACQUIRE_ERR() to
-automatically handle runtime PM reference release on all return paths.
+> The MPU-3050 gyroscope output registers hold 16-bit two's complement
+> values; the angular velocity channels are declared with .sign =3D 's'.
+> When mpu3050_read_raw() handles IIO_CHAN_INFO_RAW it reads the register
+> via a big-endian regmap_bulk_read() and assigns it with:
+>
+>         *val =3D be16_to_cpu(raw_val);
+>
+> be16_to_cpu() yields an unsigned 16-bit quantity, so negative rates
+> (bit 15 set) are reported to userspace as large positive integers
+> (e.g. -1 becomes 65535) instead of the correct negative value.
+>
+> Cast to s16 before the assignment, matching the temperature channel a
+> few lines above which already handles the sign correctly.
+>
+> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+> Cc: stable@vger.kernel.org
+> Assisted-by: Claude:claude-opus-4
+> Signed-off-by: Cong Nguyen <congnt264@gmail.com>
 
-Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
-Cc: stable@vger.kernel.org
-Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
----
-Changes in v2:
- - Use PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and PM_RUNTIME_ACQUIRE_ERR()
-   instead of goto pattern as suggested by Jonathan Cameron
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
- drivers/iio/light/apds9306.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
-index 5ca4c87524fe..d582bda4d847 100644
---- a/drivers/iio/light/apds9306.c
-+++ b/drivers/iio/light/apds9306.c
-@@ -469,9 +469,9 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
- 	int status = 0;
- 	u8 buff[3];
- 
--	ret = pm_runtime_resume_and_get(data->dev);
--	if (ret)
--		return ret;
-+	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(data->dev, pm);
-+	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
-+		return PM_RUNTIME_ACQUIRE_ERR(&pm);
- 
- 	ret = regmap_field_read(rf->intg_time, &intg_time_idx);
- 	if (ret)
-@@ -535,8 +535,6 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
- 
- 	*val = get_unaligned_le24(&buff);
- 
--	pm_runtime_put_autosuspend(data->dev);
--
- 	return 0;
- }
- 
--- 
-2.34.1
-
+Yours,
+Linus Walleij
