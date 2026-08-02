@@ -1,114 +1,77 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAE52309AA
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 12:38:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BDFDDDA9;
+	Sun,  2 Aug 2026 12:44:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785674320; cv=none; b=cAqy/JwCQ7WbtPxOo6fZr+lUIMy0sRioIcllQqHdoVPMny91bZBbAhlOuiHpIUWZyn0Zp2OySKhPQjdh8VHrTW4y4cth+jIw5cQuWCmNDZhrcMqRbKxlMH4nj0wzaEhkXB21M5bSnKg9pKTl4XrWkjGsZZl0Op5sZjaeHa1seDo=
+	t=1785674691; cv=none; b=hPNqk91qMHNSV7j/GaAusdJaBUhZ2vP25wUlGT6o+CChWQrMdYj+w7M4xmZ7KNWL2mcYOpdF/luvXZ4rWoxjMkEvil0JkKJF9JB0TjcUO1HU7qz41QavJDZN+n7fT03xgkRCLNSNyRl/Rt4/4VI+dZAXknE78L6UtHAebDEylVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785674320; c=relaxed/simple;
-	bh=FUud0qIrxq+PQmP+DKOJ9cRWUJkFwQBvJb/k9126FCI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QWPi431/E8pcju/CqNXhW2BnH4P2IYT0WYpPRyo7bv3T3wdraZof3Ai2kF4kjoElLdFQxVp8AofNzi+WSU/h6/snvake6/aogSsNKmrr/fuOT3DNtPSLxK4+enlojxNd+VPklY3hokG5+UUQH3AKs1ZubtdcXFRi/IDDwO94t2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LNAxDBaY; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785674691; c=relaxed/simple;
+	bh=m6k+jbAYow2oYDHeB9oDQ7K3y7QjCL/E51HzfRPyYVY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mlY/PtWC5iTBOo0SG4sKADRe4ImUO0gkmE9miLlzP7I1V605H0gU3IfDVROMOzC1ojmeaGf4mXZs5S1rcSsoUay36c8F5HFralf1NxCtrpe9c50j5RXPVUo+QUTrkEKusSBOlJE17s9jM2xIUbAwzsUqiXwcYHg+JuzB884o6gI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lFZMu0QQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LNAxDBaY"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-47f84023916so2545503f8f.3
-        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 05:38:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785674317; x=1786279117; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=FUud0qIrxq+PQmP+DKOJ9cRWUJkFwQBvJb/k9126FCI=;
-        b=LNAxDBaYMl9Ye/5mcGhb3pdDamUiI2Fc7thYMpSwOCEA949ioUMdrAqcmRILtDJDlM
-         1mBiA2t/iaLxqtti1/xzzNrrvHoHkGN2kTNp5NDYC7VwNyL4KDEif9l6WWzLsDf3wgLq
-         REqSx17n35mPsdI3sBtvMhq1MItAEY9V97xBnvmfYOFOBdC7qaM/PqMBA96GyqMNpHjc
-         LV6eSXc7qR5qNrAVZGWy5zUph1nxz+wpoujl770CVY4hOgYFE6kS152o/M05rIjBq5oi
-         WNZ6vT+HW4kGwFopn5roBnrE2eGnbfkBvy0ahxKB1cMUxGNea4MDE8DAj+jxmSlcWcI4
-         tzeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785674317; x=1786279117;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=FUud0qIrxq+PQmP+DKOJ9cRWUJkFwQBvJb/k9126FCI=;
-        b=ngdAL5ZX6jZpoA4Ewb5+7yV4+1Dzv77zeZU0v7OicEiTR+xESt+jaBywiVeQdEvlbs
-         3n7Ge3uohqxZM7GNs+J/PBEHJvyZSrRiTQ0XtFl1j2UiowqNyeg/K4sQ4rsP5FJh2BLs
-         44sU5/R+WJstnq75J99Hhqir8phdMQcHECXl8ZbEASEXeMiMLJ4p836z/nC2HetYiPzH
-         ApVM/KqMiekZlIuvztb52Vro4KAijJVEX6FuiXARNnBxzjJR4i6EJ+a3m+k4RfUztbnw
-         YVbW+ab3mZtt33CxuGcclm4OcvIEMyf09GAlD9tjmyPojTtxDt1cpUs7yNWlSWnHHFqf
-         ohxg==
-X-Forwarded-Encrypted: i=1; AHgh+RqWBz7mtcNIuVMRUaSqgMSP5OzNFqN7CSBnhtZMVzl0JggQWRnrQ39IqVAS9OnIY/TcKxBuYVAoXCQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjN88HlXE7jlrMYBmSw+4w6pEZYeWxMwVEwmWNqZDvPDzp+Evw
-	yVpRca8vhrOyiKdrfs4Vc96fPrG0MdaZ1giq7zX7SQp+5viP3Q++p95/nncJCYn3MJU=
-X-Gm-Gg: AR+sD103sDo+3e7oxOvDxh3dByzi/p7dgtXdirBJEang9POjYLm0MbSCLuPu8DbtwIT
-	/DnM5VB6AkGqPXN1enegr8Jlgi0zP4ov0+4fBDla7WRwPPPbF3gWuwavX9VOCoRJ+QutmdeH8vO
-	Mbeiy3yokVqBNvXgyAk7/w/9gGp208XTXfpuk29ruRB9mBWC0Bibk7HJckR9d5FQgchgywtn/xm
-	v/6FFa6X9tcgM2zaePKZDeJRdJtI5koDDS3HpLlPORKttSkds/UKZcQ5JmD25hjsBLWi6A9r6h3
-	CJEh4IUIdh5hbklsnvgZfpZVWLe/QRQ6BWmQWsJ594EllL4+WszVHYtYjL1tscQsuaWLkSSCLiI
-	4WP6PTIOSREIekvmAsLe1zx2DZz7sJqzCY1LTvt1ARO+efuL8xMFn3TS//zZAOTDxROuf0JfD8k
-	LUShnZPCWzyFVrrQayS682RGPdNsMCIKg7PGTTXH6ZVDYgSScNhE7tCGTl2hGC1zHR7A==
-X-Received: by 2002:a05:6000:41c5:b0:47f:6f9e:1e82 with SMTP id ffacd0b85a97d-47fd72bbc06mr17510605f8f.9.1785674317371;
-        Sun, 02 Aug 2026 05:38:37 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47fd45a0d7csm20932880f8f.35.2026.08.02.05.38.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Aug 2026 05:38:35 -0700 (PDT)
-Date: Sun, 2 Aug 2026 14:38:35 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Adi Nata <adinata.softwareengineer@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, dakr@kernel.org, bhelgaas@google.com, mazziesaccount@gmail.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: humidity: htu21: Fix SYMBOLIC_PERMS chekcpatch
- warning
-Message-ID: <am86LUUeP7FYpQTC@monoceros>
-References: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lFZMu0QQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15DF1F000E9;
+	Sun,  2 Aug 2026 12:44:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785674690;
+	bh=wIgY+IMYJBLWoIJQunkjMT26i2eXWjAiHggq3CCm8wo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=lFZMu0QQXsZFP2E4DZe/wDPcZTBokID55KNR65R3vOUvSrvETjuZiGbPX3KKu5H+2
+	 s6J2RQXRO0cafFKdaLMByN0oKj+LeOJTv36L8cQFl+hMYgD+P/e1tGQjwFtX36o12I
+	 NMu9a/kkCgU6HViPhjoReM1r7B5l7Wo8XiNTlF8wN+YAo9OuA6XTCNmdiLd6dEAWkN
+	 wfqm/YvcckDXj4YO6GlqeAG7YrFo677KnOUi+v+40oDYP07ZdGGt86x91mLNl8sqw6
+	 kqBN9QMaGLTM96e9iOZ7/wko4SXaL30DlExU0G1bJHD6yKqwta4kmNrzxLQpP0f7e3
+	 dHypnth62L99w==
+From: William Breathitt Gray <wbg@kernel.org>
+To: Babanpreet Singh <bbnpreetsingh@gmail.com>
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	Kamel Bouhara <kamel.bouhara@bootlin.com>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH] counter: microchip-tcb-capture: Fix DT channel validation
+Date: Sun,  2 Aug 2026 21:44:40 +0900
+Message-ID: <178567458124.1423913.11797126534465463278.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260714042910.7-1-bbnpreetsingh@gmail.com>
+References: <20260714042910.7-1-bbnpreetsingh@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="l65pe66ab5ly532k"
-Content-Disposition: inline
-In-Reply-To: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=904; i=wbg@kernel.org; h=from:subject:message-id; bh=0S4lXB13dHTIa2w5VuqTQh0fZHhgzlprGNYaCmPYFMk=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFn51pvu//3FqvhQdUJKMlvevmmza9+usUpd/qW4N/BQ8 IVNVR8Wd5SyMIhxMciKKbL0mp+9++CSqsaPF/O3wcxhZQIZwsDFKQATEVzK8Fe4/d+JZQzFLRf3 qKod+13Rulxu3sK/zkkxa6O+fu2bk2vC8E/rTp7cGlUN5qUfHFXWNc5N/T75FJPnmh2F+RLXJe6 HZPEBAA==
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+Content-Transfer-Encoding: 8bit
 
 
---l65pe66ab5ly532k
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH] iio: humidity: htu21: Fix SYMBOLIC_PERMS chekcpatch
- warning
-MIME-Version: 1.0
+On Tue, 14 Jul 2026 04:29:10 +0000, Babanpreet Singh wrote:
+> mchp_tc_probe() reads the devicetree "reg" cell - a u32, per the API
+> contract of of_property_read_u32_index() - into a signed int, so the
+> bounds check "channel > 2" fails to reject cell values at or above
+> 0x80000000: reinterpreted as a negative int, they compare below 2 and
+> pass validation.
+> 
+> A malformed devicetree can therefore drive a negative channel into the
+> ATMEL_TC_REG() offset arithmetic, making the driver access syscon
+> regmap offsets outside the TC block's register window, and into the
+> "t%d_clk" clock-name formatting, where it truncates clk_name (sized
+> for "t0_clk".."t2_clk").
+> 
+> [...]
 
-Hello,
+Applied, thanks!
 
-$Subject ~= s/chekc/check/
+[1/1] counter: microchip-tcb-capture: Fix DT channel validation
+      commit: f1a3a9946aab611dd2200c01ff122f64b033dad2
 
-Best regards
-Uwe
-
---l65pe66ab5ly532k
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpvOkgACgkQj4D7WH0S
-/k7Nggf/f2iAO0YAqCaePzleJcYfHLcZ/pnmQl8QJ50jszqhMA3KeV7PESWbfUzw
-TDpx2x+JLkfK6EGtb2wbMT9PFcQwMGgI1A00w5Vmpl9RpT6k4stJQHx45Sjzh+iy
-svZjzBVIfMcTO3zwd8Gx9mBCQP/NCpgd9PRFr6GJ2SQFXP/EIsJ7vizhgabz8NQA
-V0UIjgac0UKr4eO+xn0OEJLDIgdhdjF/I1D2kIsVCa47uTnA3AvPT4AhZ4ZJN1TP
-3iv/9AWHluthE6ifBGzUYcRN7s1XZ1GSq8mmVHBgcqoYIRq5RTI2n0N8ceAiOUh9
-A3t+hvdPhKdg37gTn2TTVWAIMioiDw==
-=Vnaz
------END PGP SIGNATURE-----
-
---l65pe66ab5ly532k--
+Best regards,
+-- 
+William Breathitt Gray <wbg@kernel.org>
