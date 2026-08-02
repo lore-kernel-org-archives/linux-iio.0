@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D215D23504B;
-	Sun,  2 Aug 2026 18:32:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8C22931F4;
+	Sun,  2 Aug 2026 18:42:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785695551; cv=none; b=dC53MZCC99JxK6ai4owIb/3q9OwA5Lcw4YGGo4RZx/ksJ0eMt5gDpMLAo5ccH+zlqR+ytWrNPGISfgXpWDyNGasPSoM4wMVlsPRs9V+z9w6B41opDoeRplgmMNX97+NLT4BMxdm/f1GaPRebH4K5PuPzHukXqnpD8o3jtbkqlLc=
+	t=1785696150; cv=none; b=MBvfBoyYnZI5SOU5tk/LsSML7duXYgvFRkvfbn3fHqaz9cMUDrFNLc32jiM6dM8bV9fb8RmHAFLKchd3/0bsur4GbffR29ui455jlgp4ICt0xEXWtGnomYxkR865O3spGyrtTRJBxqTEux8CYp76e6/c2M2cJ0RtvwSnKtQPZwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785695551; c=relaxed/simple;
-	bh=JloHv8PwHYhzJlqE75AHsRMeALYFuXVhUZbtf1hnkww=;
+	s=arc-20240116; t=1785696150; c=relaxed/simple;
+	bh=RDdNclBMO0GcfSn+P8gxi9eSc7QEDJsVz1VgoCTlnlo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=g+jy63OcMiDN9MRqJDAmD3tWbLvjgi/MBKMcmLatIR7CwgCBLcC8TiYilSbD2G4bHE9YfOeJgQc9SdPn1vPoheTd4hPOw+PK9mwdm9h6IEwsrJnwHYePgo6jHw5WKIkdNbreSmySRuSE8U/HvGhZ/dekldm2P5HRHhghr4pRDyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aOFtjuZe; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ldFZM0wenDgBWoYI1g8+wiCvb5RX4FzwPJa8Jjstnwn7mOZKi1shFXjxo7ubhZrJaZCDUjes58Rf15sSNSv3Rr37ES45660A35yzIjEq+dUwb+6YDHY6LYDtRYDK7QuMl+1/4ucHWTnoVv9xX26F/OQxtF1SyNRrtZidxybCvWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bh9HDnZM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aOFtjuZe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BFDD1F000E9;
-	Sun,  2 Aug 2026 18:32:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bh9HDnZM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 815C11F000E9;
+	Sun,  2 Aug 2026 18:42:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785695548;
-	bh=jIA9ZVx8PyWBnxesA2G9zsi4wxw8T9NgAK+26zwicsw=;
+	s=k20260515; t=1785696148;
+	bh=oS63NQlYDX3UkgpwTZTp0r+Evq8Hp+633HbhULQ7qtE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aOFtjuZe3y6QliGB9wYVn/Qzohs3dgnCqpVO38P2mF4gCXkoVYdRaZD5iuarshpUk
-	 WHX4xR9BcRfc2z0pP3I18CSNJNVYdil5X3fG3YvnjI4Dofj5RBpA9t0NjxnRUFTY4J
-	 T+Mtu9PZqNGfDcHNunkOfFaWNSOAKF8LWvbE5vtJMHOIK5rCzncL3q7MV0/sZbMiNC
-	 zFqvqK4++yYkkUQjqprWfNDQu0y1/91k6aG0QPkxZ8D2N27jGoxhoACag9EMat+ej2
-	 xmZ7W1XyDzIBxLFkn0y1YXThMWLkru9Osbus4kGU4YV3cnc0cghs3Lw9NgIfvnyGEU
-	 0nnApJRdN3KUw==
-Date: Sun, 2 Aug 2026 19:32:24 +0100
+	b=Bh9HDnZMWR+fJPzAEZ1xUVocFpcMoa88bHHyFvH42apzT4DpvgmqYvwUpKniTdJK8
+	 4Ehh5GlHvhDkzE0mv5uJOSSPMEczSiSjyQwzYsFxTK0OC7x9BqabBnqwc/uZebizIy
+	 DeeXaG5aThrX60f1qzCuf3oUfwPOgKohvYGyKOSncXnuCVRLOvHZHswaE09Nu4uGeG
+	 tiPGACKXlU/d8gLlWIZMdl0sGSKDvQJta3sZX2NuUyVHdIaG3Z4DeTtx+yKS68tAC4
+	 NjOmCwQYV1Fm8zXCbRJh2LBxUDJ9dKRbAAt3ICYCyJiFxQkMcqBPbe7ImpBNTe4e9j
+	 yVGZW1nNceBlA==
+Date: Sun, 2 Aug 2026 19:42:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Fan Wu <fanwu01@zju.edu.cn>
-Cc: mranostay@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, Matt Ranostay <matt@ranostay.sg>
-Subject: Re: [PATCH] iio: chemical: atlas-sensor: use
- iio_trigger_poll_nested() to fix remove UAF
-Message-ID: <20260802193224.1a565cbe@jic23-huawei>
-In-Reply-To: <20260802071858.430780-1-fanwu01@zju.edu.cn>
-References: <20260802071858.430780-1-fanwu01@zju.edu.cn>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Fan Wu <fanwu01@zju.edu.cn>, nuno.sa@analog.com, michal.simek@amd.com,
+ bgolaszewski@baylibre.com, DileepKumar.Nagavarapu@amd.com,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org, Conall O'Griofa
+ <conall.ogriofa@amd.com>
+Subject: Re: [PATCH] iio: adc: xilinx-xadc: free IRQ before cancelling the
+ unmask worker on unbind
+Message-ID: <20260802194133.467ae096@jic23-huawei>
+In-Reply-To: <750f615a-c00f-4e98-9bcf-8fa8704acfba@baylibre.com>
+References: <20260802082851.433476-1-fanwu01@zju.edu.cn>
+	<750f615a-c00f-4e98-9bcf-8fa8704acfba@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,104 +50,92 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  2 Aug 2026 07:18:58 +0000
-Fan Wu <fanwu01@zju.edu.cn> wrote:
+On Sun, 2 Aug 2026 10:39:58 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> The atlas driver requests its hardware data-ready IRQ with
-> devm_request_threaded_irq(); its threaded handler queues an irq_work,
-> atlas_work_handler(), that calls iio_trigger_poll(data->trig).
-> 
-> The IRQ is devm-managed, so free_irq() runs from the devres unwind after
-> atlas_remove() returns without flushing that irq_work.  Once a buffer is
-> enabled, conversion-complete IRQs keep firing and queueing it; a pending
-> irq_work can therefore run after the unwind has freed atlas_data/indio_dev
-> and the trigger, when atlas_work_handler() derives the atlas_data pointer
-> via container_of() and dereferences data->trig, a use-after-free.
-> 
-> Call iio_trigger_poll_nested() directly from the threaded handler instead
-> of bouncing through irq_work.  free_irq() then drains the threaded handler,
-> closing the window; other iio drivers with a threaded data-ready IRQ do the
-> same (e.g. bmi270).
-> 
-> This issue was found by an in-house static analysis tool.
-> 
-> Fixes: 7103b99b031c ("iio: chemical: atlas-ph-sensor: reorg driver to allow multiple chips")
-> Cc: stable@vger.kernel.org # v6.4+
-> Assisted-by: Codex:gpt-5.6
-> Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
+> On 8/2/26 3:28 AM, Fan Wu wrote:
+> > The ZYNQ XADC interrupt handler xadc_zynq_interrupt_handler() arms the
+> > zynq_unmask_work delayed work via schedule_delayed_work() every time an
+> > alarm condition is observed, and that worker re-arms itself for as long
+> > as the alarm stays asserted.
+> > 
+> > In xadc_probe() the IRQ is requested with devm_request_irq() before the
+> > devm_add_action_or_reset() that registers xadc_cancel_delayed_work().
+> > Because devres release runs in LIFO order, on unbind the delayed work is
+> > cancelled before the IRQ is freed. The IRQ is still live at that point,
+> > so a pending alarm can make the handler run once more and re-arm
+> > zynq_unmask_work after it has been cancelled; that instance then runs
+> > after the xadc structure that embeds zynq_unmask_work has been freed, a
+> > use-after-free in xadc_zynq_unmask_worker().
+> > 
+> > Register the cancel-work devm action before requesting the IRQ so devres
+> > LIFO teardown frees (and synchronizes) the IRQ first, then cancels the
+> > delayed work. After free_irq() the handler can no longer re-arm the
+> > work, and the subsequent cancel_delayed_work_sync() drains any instance
+> > armed just before the IRQ was torn down.
+> > 
 
-Added another email address for Matt.
+This seems a bit too verbose to me.  A simpler explanation might get to the
+key detail faster. Something like:
 
-There are reasons why he might have got the irq_work route but I can't
-recall if they applied.  What we lose here is the ability to hang
-other consumers that need a top half of the trigger.  If that doesn't
-matter then agreed your solution is the cleanest path forwards.
+The driver clears outstanding work using a devm callback. That work is
+queued up by schedule_delayed_work() in the alarm irq handler.
+Reorder the work clear to occur after the devm cleanup for the irq
+ensuring no additional work can be queued after the workqueue is
+cleared. In practice this means registering the devm callback earlier
+than the call to devm_irq_request_threaded().
 
-One day someone will get the time to make combining nested
-trigger handling with top halves cleverer than current approach of
-just not running them.
+If this was AI generated description (which I do as well sometimes)
+it is useful to tell the AI to be brief.
 
-Jonathan
+> > This issue was found by an in-house static analysis tool.
+> > 
+> > Fixes: 2a9685d1a3b7 ("iio: adc: xilinx: use more devres helpers and remove remove()")
+> > Cc: stable@vger.kernel.org
+> > Assisted-by: Codex:gpt-5.6
+> > Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
+> > ---
+> > 
+> >  drivers/iio/adc/xilinx-xadc-core.c | 11 +++++++----
+> >  1 file changed, 7 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+> > --- a/drivers/iio/adc/xilinx-xadc-core.c
+> > +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> > @@ -1395,13 +1395,16 @@ static int xadc_probe(struct platform_device *pdev)
+> >  	}
+> > 
+> >  	if (irq > 0) {
+> > -		ret = devm_request_irq(dev, irq, xadc->ops->interrupt_handler,
+> > -				       0, dev_name(dev), indio_dev);
+> > +		/* devm LIFO: register the cancel-work action before the IRQ,
+> > +		 * so unbind frees the IRQ first, then drains the work.
+> > +		 */
 
+Wrong comment style.  Otherwise this seems correct to me but I'd like the
+AMD / Xilinx folk to take a look.  Added a couple more +CC.
 
-> ---
+Not sure we need the comment, or perhaps the comment should just be
+/* Clear out an work queued by the interrupt */
+
+> > +		ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
+> > +					       &xadc->zynq_unmask_work);
+> >  		if (ret)
+> >  			return ret;
+> > 
+> > -		ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
+> > -					       &xadc->zynq_unmask_work);
+> > +		ret = devm_request_irq(dev, irq, xadc->ops->interrupt_handler,
+> > +				       0, dev_name(dev), indio_dev);
+> >  		if (ret)
+> >  			return ret;
+> >  	}
+> > --
+> > 2.43.0
+> >   
 > 
->  drivers/iio/chemical/atlas-sensor.c | 13 +------------
->  1 file changed, 1 insertion(+), 12 deletions(-)
+> Makes sense.
 > 
-> diff --git a/drivers/iio/chemical/atlas-sensor.c b/drivers/iio/chemical/atlas-sensor.c
-> --- a/drivers/iio/chemical/atlas-sensor.c
-> +++ b/drivers/iio/chemical/atlas-sensor.c
-> @@ -13,7 +13,6 @@
->  #include <linux/mutex.h>
->  #include <linux/err.h>
->  #include <linux/irq.h>
-> -#include <linux/irq_work.h>
->  #include <linux/i2c.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/regmap.h>
-> @@ -88,7 +87,6 @@ struct atlas_data {
->  	struct iio_trigger *trig;
->  	const struct atlas_device *chip;
->  	struct regmap *regmap;
-> -	struct irq_work work;
->  	unsigned int interrupt_enabled;
->  	/* 96-bit data + 32-bit pad + 64-bit timestamp */
->  	__be32 buffer[6] __aligned(8);
-> @@ -437,13 +435,6 @@ static const struct iio_buffer_setup_ops atlas_buffer_setup_ops = {
->  	.predisable = atlas_buffer_predisable,
->  };
-> 
-> -static void atlas_work_handler(struct irq_work *work)
-> -{
-> -	struct atlas_data *data = container_of(work, struct atlas_data, work);
-> -
-> -	iio_trigger_poll(data->trig);
-> -}
-> -
->  static irqreturn_t atlas_trigger_handler(int irq, void *private)
->  {
->  	struct iio_poll_func *pf = private;
-> @@ -470,7 +461,7 @@ static irqreturn_t atlas_interrupt_handler(int irq, void *private)
->  	struct iio_dev *indio_dev = private;
->  	struct atlas_data *data = iio_priv(indio_dev);
-> 
-> -	irq_work_queue(&data->work);
-> +	iio_trigger_poll_nested(data->trig);
-> 
->  	return IRQ_HANDLED;
->  }
-> @@ -666,8 +657,6 @@ static int atlas_probe(struct i2c_client *client)
->  		goto unregister_trigger;
->  	}
-> 
-> -	init_irq_work(&data->work, atlas_work_handler);
-> -
->  	if (client->irq > 0) {
->  		/* interrupt pin toggles on new conversion */
->  		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> --
-> 2.43.0
-> 
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
 > 
 
