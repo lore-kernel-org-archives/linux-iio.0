@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F0E72206A7;
-	Sun,  2 Aug 2026 02:04:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D98128030E;
+	Sun,  2 Aug 2026 02:06:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785636279; cv=none; b=n5bdA9Y8iWEI6CRah1quxqlY0rvjxskTC6/UDKTmQ54zsJzRc6gUAcg+LgSPa1/Irou2WlXxItIg6My6UuMFserFbKOCZ3SduyvHfKa3pZNEFjDrJoMzPsbPyBLoVl3migOKl6m7e9VdqwYlUglMElTb0R+eGoxibH3crAIE54k=
+	t=1785636379; cv=none; b=UiMLd5N6RpK1Z2OzgkKjOK1il8oB6oAwXQgEsu+ggqASYCOYucgepGeAxFU1oXErpso3uvU0MZCeb7PvGvh7ggeryjWDjg77n55jddlrSPpJh1ZvIxj6QFDwY/fmLi11z8Le4FUl7l6/TbhHdp2L6fY9k9fWMsY5H6RGvZ8S7Jc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785636279; c=relaxed/simple;
-	bh=Pq4Sco49jqDdrih1lqE2KwE3SWQQANjm7WCwNxKuoVU=;
+	s=arc-20240116; t=1785636379; c=relaxed/simple;
+	bh=3e41xfqffCnZ8UWpLqUgGI9WJBRF2IsAXh0LAzMW4eQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kuWZ8gC/LRzuy1lL0PJYjh7JS/pkEVz6d/lmzVXxd79QzkW9IcBNLwEDVQsGsZPpcFp03WC7moJWKGDRh96ppzi/AiKn+5FkYotGm44B1Jr6rR2ndRB3pdOUIj6vqnRA2nIlte79VGegV6DB5zsN4IUcJHmtAoZoXYSU0CXZtuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CMiGMS1j; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=WPbjdPniBdVg0faQcfbWV8FY3WzFCA/FwmPAMzNIODGZUbzuFGMoDGsXZV7sIHobOtHKxGpFngbE3qiMeBRKUhyNhuqc6qOjdMoSced2nqA69GWRMZrMHCPmTGDJh8tg22PLAxEkUqsiKG/byHf33dW9g4VhVxNy+a3kwmAV3DA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NBrorHX6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CMiGMS1j"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C761F00AC4;
-	Sun,  2 Aug 2026 02:04:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NBrorHX6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE731F00AC4;
+	Sun,  2 Aug 2026 02:06:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785636277;
-	bh=wpl02wFSQUzfqIkSPliw06Gp8adNirX4z9LPQ52Pyoc=;
+	s=k20260515; t=1785636377;
+	bh=yP//XZWU/wam33jmY64c/D2Purb8/lgGfb2RqvHbImk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=CMiGMS1jP6rl5SRFkGe1GyfGx+nkF27OZQoj2S2oyeuHlfyeUx6XwCWR0lGxUYvy+
-	 kskAM6uVTKhSKLOTW13V1zfMZ7qky2AkdB+uzjcqI0bE3c4A9HW0kJQ+b3okY1oZMY
-	 sRTjww7zazHYe61GKsjFuOaLvFWf5nr4MZw96i1vSezSqm8+IvjTRnPfO6y/9iqfeR
-	 SCWT3kxoI9lGyz69Ez8RaEan7h1P/FfnS6NRr59pPpEEn01914Wxobz4lKO9e5TXof
-	 EDGFZEgGj1AHG0C4GA23EXo0jQjIwCT57hBPvZ3KHEdyZ5lYfX/QbrfG1O8Bd4WfoJ
-	 ASPscnS7VEKQQ==
-Date: Sun, 2 Aug 2026 03:04:33 +0100
+	b=NBrorHX6yC0XB9s4ldhhiPekP+dmM6FpcmAsvJ9WC2+QgobXirBV19XRbK9YUWqYv
+	 QTRNcN/iUB2YIUiwz4RxWx2z1wq1QPFc8wySSWloanb4idmiqkuy2Wadzt+rRIrgIn
+	 U++90KXMtyVRHNueIneB+FC2QHvFSbTWliEthLHtCrZrO2K1b82NJ1+l6vv3tJwj4K
+	 rfnqKpvb7empFEYeTTtUsrYwscCeQ3luhA3v10HIb2BY9KQNyThYmR7zkZZ1VAIBF5
+	 22VWT+yQCpD57cZn/eGDInOC/JdM15VMFzPJbyz4AJPZWiXoFVaM24dWAFuEHJGQp4
+	 tbVA+TVDwgHJA==
+Date: Sun, 2 Aug 2026 03:06:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: mdshahid03@gmail.com
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joshua Crofts
@@ -36,12 +36,11 @@ Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joshua Crofts
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>, Scott
  Branden <sbranden@broadcom.com>
-Subject: Re: [PATCH v3 3/3] iio: adc: bcm_iproc_adc: Convert probe error
- handling to dev_err_probe()
-Message-ID: <20260802030433.696454fe@jic23-huawei>
-In-Reply-To: <20260731182347.42888-4-mdshahid03@gmail.com>
-References: <20260731182347.42888-1-mdshahid03@gmail.com>
-	<20260731182347.42888-4-mdshahid03@gmail.com>
+Subject: Re: [PATCH v4 0/3] iio: adc: bcm_iproc_adc: Simplify probe error
+ handling
+Message-ID: <20260802030611.363c6aee@jic23-huawei>
+In-Reply-To: <20260801090953.61603-1-mdshahid03@gmail.com>
+References: <20260801090953.61603-1-mdshahid03@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,126 +51,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 Jul 2026 23:53:47 +0530
+On Sat,  1 Aug 2026 14:39:50 +0530
 mdshahid03@gmail.com wrote:
 
 > From: Mohammad Shahid <mdshahid03@gmail.com>
 > 
-> This simplifies the probe error handling by replacing open-coded
-> dev_err() and return sequences. Also remove the redundant
-> dev_err() after iproc_adc_enable(), as the helper already reports
-> the failure.
+> Hi,
 > 
-> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
-> ---
->  drivers/iio/adc/bcm_iproc_adc.c | 43 +++++++++++++++------------------
->  1 file changed, 19 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-> index 29ea35972a23..5fcd528eb88a 100644
-> --- a/drivers/iio/adc/bcm_iproc_adc.c
-> +++ b/drivers/iio/adc/bcm_iproc_adc.c
-> @@ -523,19 +523,16 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  
->  	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
->  			   "adc-syscon");
-> -	if (IS_ERR(adc_priv->regmap)) {
-> -		dev_err(dev, "failed to get handle for tsc syscon\n");
-> -		ret = PTR_ERR(adc_priv->regmap);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(adc_priv->regmap))
-> +		return dev_err_probe(dev,
-> +				     PTR_ERR(adc_priv->regmap),
-> +				     "failed to get handle for tsc syscon\n");
+> This series simplifies the probe error handling in bcm_iproc_adc.
+Hi Mohammad
 
-Look for places to wrap less as part of this change. E.g.
-		return dev_err_probe(dev, PTR_ERR(adc_priv->regmap),
-				     "failed to get handle for tsc syscon\n");
-
->  
->  	adc_priv->adc_clk = devm_clk_get(dev, "tsc_clk");
-> -	if (IS_ERR(adc_priv->adc_clk)) {
-> -		dev_err(dev,
-> -			"failed getting clock tsc_clk\n");
-> -		ret = PTR_ERR(adc_priv->adc_clk);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(adc_priv->adc_clk))
-> +		return dev_err_probe(dev,
-> +				     PTR_ERR(adc_priv->adc_clk),
-Same here.
-> +				     "failed getting clock tsc_clk\n");
->  
->  	adc_priv->irqno = platform_get_irq(pdev, 0);
->  	if (adc_priv->irqno < 0)
-> @@ -543,10 +540,10 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  
->  	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
->  				IPROC_ADC_AUXIN_SCAN_ENA);
-> -	if (ret) {
-> -		dev_err(dev, "failed to write IPROC_REGCTL2 %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(dev,
-Definitely the same here!
-> +				     ret,
-> +				     "failed to write IPROC_REGCTL2\n");
->  
->  	ret = devm_request_threaded_irq(dev, adc_priv->irqno,
->  				iproc_adc_interrupt_handler,
-> @@ -556,17 +553,14 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  		return ret;
->  
->  	ret = clk_prepare_enable(adc_priv->adc_clk);
-
-This should be combined with the get (be careful on ordering
-
-> -	if (ret) {
-> -		dev_err(dev,
-> -			"clk_prepare_enable failed %d\n", ret);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		return dev_err_probe(dev,
-and here.
-
-The local style before this patch was a bit odd. No need to keep it.
-
-> +				     ret,
-> +				     "failed to enable clock\n");
->  
->  	ret = iproc_adc_enable(indio_dev);
-> -	if (ret) {
-> -		dev_err(dev, "failed to enable adc %d\n", ret);
-> +	if (ret)
->  		goto err_adc_enable;
-Look at converting the whole thing to devm managed cleanup.  You'll
-need one custom cleanup function and devm_add_action_or_reset()
-
-> -	}
->  
->  	indio_dev->name = "iproc-static-adc";
->  	indio_dev->info = &iproc_adc_iio_info;
-> @@ -576,7 +570,8 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret) {
-> -		dev_err(dev, "iio_device_register failed:err %d\n", ret);
-> +		dev_err_probe(dev, ret,
-> +			      "failed to register IIO device\n");
-dev_err_probe() is as you see much less of an improvement when
-we aren't returning.  If we switch the whole thing to devm managed
-cleanup then we will be returning here.   If you make that change
-I don't mind if you flip to return dev_err_probe() directly in that
-patch to avoid unnecessary code churn.
-
-thanks
+See comments on v3 + slow down. It wastes your time and that of reviewers
+if you post new versions too quickly.
 
 Jonathan
 
->  		goto err_clk;
->  	}
->  
+> 
+> Changes in v4:
+> - Move the redundant iproc_adc_enable() error message removal into the
+>   cleanup patch as suggested by Joshua Crofts.
+> 
+> Mohammad Shahid (3):
+>   iio: adc: bcm_iproc_adc: Remove redundant probe error messages
+>   iio: adc: bcm_iproc_adc: Introduce local device pointer
+>   iio: adc: bcm_iproc_adc: Convert probe error handling to
+>     dev_err_probe()
+> 
+>  drivers/iio/adc/bcm_iproc_adc.c | 54 +++++++++++++++------------------
+>  1 file changed, 24 insertions(+), 30 deletions(-)
+> 
 
