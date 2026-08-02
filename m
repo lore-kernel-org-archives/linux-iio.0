@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC661EFF8D;
-	Sun,  2 Aug 2026 17:20:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F913C455B;
+	Sun,  2 Aug 2026 17:27:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785691213; cv=none; b=PkSN5SeBrFO1Q781FSKARDS36Ni5sh6mFAtKqzACs6z6JW1PALx9ZsJw2q9d7vUcf2G8COkCvfbi0vRgdOkapzDuGU1auRAr4sEg7vE+HrdBgTml8wNzhMmBHh/aTAv8jJuHG3tmeIk+SDbZgr2UQJbQE151CNy6ZXUavHbwde0=
+	t=1785691623; cv=none; b=IP5+M/aeA9bKtkyJMpgVkvz5kWRsZXIjcgowGtadPreLmLEjlAV+ur040NOURa+6BbPuT00EfLQHPrgWvdaZsh4GyOWNupLeHYp80FBcSe3QVc4jbGw3GyI94gzQAbJQKVN86lNXSC8myLc4J2fD5uu67+Kc24ApBbCAobAPsz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785691213; c=relaxed/simple;
-	bh=e7egtbVJvt3W6WK50mjwooxrC86vQpNye1bWxT3HcKw=;
+	s=arc-20240116; t=1785691623; c=relaxed/simple;
+	bh=GLu7tNGjJwMWX4u8hWBSklnoyl9KmTUE+uMA6SgSCnE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=STg91LCyMSG4IaYkAtlTxvjP7h7Z0fypEUVWVyivh68b3it3Dvj+SFpDZBxASiVrY40h5rBnCzohX9ZKP9LEIEM9MfegzdSz+mSrZHUsBnD6pbRVO20Jfm2Yn7+c6KcCd4xfr/GOnjs/WeDFO36HqVYMnsrTcHfeiUHgAbKH4Ds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YS8V0x/V; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=lwllVEOpd9RwBPBn2npYhw1522Co/WcJ1FridiSOdVHW6WFInHjJzWEZVKfPzjgAFivGNEnVTMrui7tB1tE/jb2uNX++0l0X5OH1YbLgwett/tjxlAWXKDxAwAU3jQ4yzkD7gk1Kl063RuHwobC4vwtUYKL2N22HWI+Yo5PCZ3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kdgOrd1g; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YS8V0x/V"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 676D31F000E9;
-	Sun,  2 Aug 2026 17:20:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kdgOrd1g"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D9C91F00A3A;
+	Sun,  2 Aug 2026 17:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785691211;
-	bh=TtFKY9tlREPJCcadsF6YiRwrg4UX4kRMx1CrYAQF59w=;
+	s=k20260515; t=1785691621;
+	bh=YQIE8XgKYt/EUINULOT/JC5r+V7wX1jbi6M/ucAZS60=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=YS8V0x/VVbTxFVkzD4lODlzFMrsQGBxsFhlXTBsMpkcPs+8zfYTKrJc6vFdSCuZBS
-	 gJgKQLK1dTrW1OLtviQ+7awLB1IcbusiS2IeK5uEMaIYAJd9i9V729BWnyzyqaNGDN
-	 TT+FF7UjP97LDgdMECEpSGZQi/DLKsEs/808T3ZQfpvHpyVDSfjoqO1t7k5LzovAI/
-	 5VBqKYuuEzN0QKDn8o81pf9ullnY9kdd3Wh1yfRkvcmL9c/JjncNgmsdcf1b7joTgg
-	 xcMXEA3bSl8RIqPJ8nvxpKSUHBY8Q7xIJ3jC9028km6hrIZSXn5/rc81AUXT2sXp8o
-	 R+0IPCkmbGwaw==
-Date: Sun, 2 Aug 2026 18:20:07 +0100
+	b=kdgOrd1gSiqTPL+atSoKrTrrQNdxHnVW3zeXTYGN0bZ0IJt+tn32WLspNIF4GpFUo
+	 wlWn+kttl0ZfBnn6EWmiwJE4IaGwzwZ7tlYhN0z62Sde5LfTyLH5fOGdojkssJoaVV
+	 0ebz2uTZr2QjAnNvFSACZzMdH7ZEuUzeWz4ewLUPbsUH0gvFSp8VU6VelC2+BZzmCM
+	 oylCdz8nLuyeeZTjm3Rx/xfzOwlcnFLP2rgSI26tZ2m330+pPhfJC/o7Tj0zFl7hIM
+	 DxiJVCY5w20PT0sr69VcS6SWzYxyQQTYe+k04rurnfyZd24g7ioAEuJhTh2MQzVj/z
+	 YKZ3Y97yMp4LA==
+Date: Sun, 2 Aug 2026 18:26:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Wadim Mueller <wafgo01@gmail.com>, krzk+dt@kernel.org, robh@kernel.org,
- conor+dt@kernel.org, nuno.sa@analog.com, andy@kernel.org,
- maxwell@maxwelld.cc, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, marcelo.schmitt1@gmail.com,
- 455.rodrigo.alencar@gmail.com, Rodrigo Alencar <rodrigo.alencar@analog.com>
-Subject: Re: [PATCH v6 3/4] iio: core: add IIO_VAL_DECIMAL64_FEMTO format
- type
-Message-ID: <20260802182007.7ebc8847@jic23-huawei>
-In-Reply-To: <cfb955b4-0843-48aa-b201-fa60aceb03f9@baylibre.com>
-References: <20260728214943.29820-1-wafgo01@gmail.com>
-	<20260728214943.29820-4-wafgo01@gmail.com>
-	<cfb955b4-0843-48aa-b201-fa60aceb03f9@baylibre.com>
+To: mdshahid03@gmail.com
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Joshua Crofts
+ <joshua.crofts@broadcom.com>, Broadcom internal kernel list
+ <bcm-kernel-feedback-list@broadcom.com>, David Lechner
+ <dlechner@baylibre.com>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Ray Jui <rjui@broadcom.com>, Scott
+ Branden <sbranden@broadcom.com>
+Subject: Re: [PATCH v3 3/3] iio: adc: bcm_iproc_adc: Convert probe error
+ handling to dev_err_probe()
+Message-ID: <20260802182657.65d459e0@jic23-huawei>
+In-Reply-To: <20260802103520.114582-1-mdshahid03@gmail.com>
+References: <20260802030433.696454fe@jic23-huawei>
+	<20260802103520.114582-1-mdshahid03@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,71 +52,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 11:01:28 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sun,  2 Aug 2026 16:05:20 +0530
+mdshahid03@gmail.com wrote:
 
-> On 7/28/26 4:49 PM, Wadim Mueller wrote:
-> > Extend the IIO_VAL_DECIMAL64_* family with a femto-scaled variant
-> > (scale 15), following the existing MILLI/MICRO/NANO/PICO pattern. Both
-> > the read formatting path in __iio_format_value() and the write parsing
-> > path in iio_write_channel_info() (via kstrtodec64()) already derive
-> > their scale from "type - IIO_VAL_DECIMAL64_BASE", so the new type only
-> > needs to be added to the respective switch cases.
-> > 
-> > This is needed by drivers reporting very small SI quantities where the
-> > existing pico scale loses precision. For example the Sensirion SLF3S
-> > liquid flow sensor reports its volume-flow scale in m^3/s, where the
-> > SLF3S-0600F scale is ~1.667e-12 m^3/s: at pico scale only a single
-> > significant digit survives, whereas femto scale preserves the full
-> > sensor resolution.
-> > 
-> > Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
-> > Reviewed-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > ---
-> >  drivers/iio/industrialio-core.c | 2 ++
-> >  include/linux/iio/types.h       | 1 +
-> >  2 files changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> > index 37cf2817b3d0..767a7794624a 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -715,6 +715,7 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
-> >  	case IIO_VAL_DECIMAL64_MICRO:
-> >  	case IIO_VAL_DECIMAL64_NANO:
-> >  	case IIO_VAL_DECIMAL64_PICO:
-> > +	case IIO_VAL_DECIMAL64_FEMTO:
-> >  	{
-> >  		int scale = type - IIO_VAL_DECIMAL64_BASE;
-> >  		s64 frac;
-> > @@ -1032,6 +1033,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
-> >  		case IIO_VAL_DECIMAL64_MICRO:
-> >  		case IIO_VAL_DECIMAL64_NANO:
-> >  		case IIO_VAL_DECIMAL64_PICO:
-> > +		case IIO_VAL_DECIMAL64_FEMTO:
-> >  			dec_scale = type - IIO_VAL_DECIMAL64_BASE;
-> >  			fallthrough;
-> >  		case IIO_VAL_INT_64:
-> > diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> > index 924ac9dc6893..d8944c9e5e90 100644
-> > --- a/include/linux/iio/types.h
-> > +++ b/include/linux/iio/types.h
-> > @@ -42,6 +42,7 @@ enum iio_event_info {
-> >  #define IIO_VAL_DECIMAL64_MICRO		(IIO_VAL_DECIMAL64_BASE + 6)
-> >  #define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
-> >  #define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
-> > +#define IIO_VAL_DECIMAL64_FEMTO		(IIO_VAL_DECIMAL64_BASE + 15)
-> >  
-> >  static inline s64 iio_val_s64_compose(s32 val0, s32 val1)
-> >  {  
+> From: Mohammad Shahid <mdshahid03@gmail.com>
 > 
-> Would be nice to add this to drivers/iio/test/iio-test-format.c too.
+> Hi Jonathan,
+> 
+> Thanks for the detailed review and suggestions.
+> 
+> I'll address the formatting comments in patch 3 and also reduce the
+> unnecessary churn in patch 2 as you suggested.
+> 
+> Regarding the suggestion to convert the probe cleanup to
+> devm_add_action_or_reset(), my intention was to keep this series focused
+> on the dev_err_probe() conversion and submit the devm-managed cleanup as
+> a separate follow-up series, since it is a larger refactoring.
+> 
+> Would that approach be acceptable, or would you prefer that the cleanup
+> be included in this series?
 
-Good point.  I somehow keep forgetting we now have tests!
+I'd leave the dev_err() prints where there is a goto alone
+and do them as part of the devm_ change so as to reduce churn on
+the code and shorter the eventual set of patches.
 
-That can be a follow up patch
+Just add a note to the dev_err_probe() patch to say you are doing
+that and then they can be separate series.
+
+Or if you prefer just do the lot in one series.
+
+Thanks
 
 Jonathan
 
 > 
+> Thanks,
+> Shahid
 
