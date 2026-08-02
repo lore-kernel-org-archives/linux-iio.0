@@ -1,226 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16B823093D3;
-	Sun,  2 Aug 2026 19:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC16E184
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 19:06:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785697513; cv=none; b=AGsRg/XXrT9809v9V75/GF3HL2Rzzb3FZIXgCZ89kcmRYjg2eM0kOxyNUEGuQCk4a5R/zwH5sqMu2WXZLNs8p6INE3pRhbHcE4e8tNpSRPL/M3hrrltNc3ifj5hNDbnRV/Z9CBqI/6uqSInzL5cQgFq9zjqrG7fe4/ZHR1hhO14=
+	t=1785697565; cv=none; b=cQ7ADQnNrs5IXS2dGnlME006mvLQ+bRyhrdK3wyFtOn4IpYOQ0/8OPt3MuEUc6U6huP+AwGo5teUyFTC50PfObTO+kKduOEkZ1Vvw3nfN3eG7phG9yDsZQTYP0UsnALxmLlVQEokI8aDHwvUxRsJyewLgSt1N+Q2C+gLJaj4A1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785697513; c=relaxed/simple;
-	bh=w67aoVsBn/Vqw2lcENpnqIFmssJmTYIR/Ch57P92ioc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I5FwoufU6QzmpIi0W5qzkXfmKQ9D3HSfnTNElMjj+OhN32W2ZFXBYpb7sDCitU7wKQoF2KOTMu+1VTdRDYgOisRfhWSOQB5fOkLX2GXg50N20gJHZjrJoZ1GGXgJDuotC4mTA9tjgI7EfzZk3lK6bAHdaGUGsNnJ0cobN1Ivxrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F1spDSRf; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785697565; c=relaxed/simple;
+	bh=yRaoIX+Gxw5W4NOc1GOUXDnqw2CxdICPvpu3Ivq2vUQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iCRUvM6K9OX959SqW5Y5kQ8FJbRhbjfPxPOdGU9pgnZUsC2gzjHeMD5feqtXetwahhQ26LTm8nY+BP7WDUqmJ54bWCBDb02KcNc039yAYApoJwIPInJ/YN7fJh2wVA59Y/UGesOlAw4rHCaYOoJHO7KnkDjoxzQ9BDMNjuSnkRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=iC+dirAN; arc=none smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F1spDSRf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EE6C1F000E9;
-	Sun,  2 Aug 2026 19:05:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785697511;
-	bh=3W8VYnHpKJP0B2AFARzuxHuP2Of/uzZg0uo8Zhf5Tjg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=F1spDSRf6OqTvyL4gfrex16jQsgj6bt0jyse+q033U7z+EwjjAl1Yh6K8SJRh63Zk
-	 vx5s/ZMbocCjSum0vvl4mSK5uXoGcrEpVSQrk91cbg8JGmzWoAmxUKfc8uu2pufBCo
-	 5spBb7f1VTqPZhfT0MyKx7Z5GS7ne5Mrc+kEkkBALh4+aXXoBICDRwvhKFk0vjcuHg
-	 HROob0pd01/cZqmHNNiluyB7drMB67W0ovDQfSM/OBnjf/g+acZfiT7NEjG/9lttkw
-	 7lm1YIfIRV6qaqYPBKvo6kEM3NG6n0720HP48Pv8AYTDe3f/28bJsl31joWXf6LBkk
-	 6tBHpBBXexzBg==
-Date: Sun, 2 Aug 2026 20:05:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Lukas Metz <lukas.metz@gmx.net>, Siratul Islam
- <siratul.islam@linux.dev>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: dac: dac8163: Add driver for DAC8163
-Message-ID: <20260802200504.06e1f94c@jic23-huawei>
-In-Reply-To: <50fee508-db53-46c3-b245-22893023f370@baylibre.com>
-References: <20260802-dac8163-work-v3-0-3ecc7bc66d0d@gmx.net>
-	<20260802-dac8163-work-v3-2-3ecc7bc66d0d@gmx.net>
-	<50fee508-db53-46c3-b245-22893023f370@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="iC+dirAN"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-4a4c6081f9fso537807b6e.3
+        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 12:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1785697562; x=1786302362; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Kw69Z0wzWemMAZPaY5Skc4txf5IJBcX28PQN2HOehxQ=;
+        b=iC+dirANL25Ekmh5lDF8Bp6+HT/MLxhTYwsmzOQoeCHY+IOkRVu71zSWSg/Xt3FGw3
+         HleJwHwUW0N1tBzSuIWljyhXAX65Oql+XR8h7kv2eJF4hSS1gADMes635cd0tDtduGKD
+         KAW9vJspzJqfwcfKWv5CZLjecBkMGJ/AggN7nFpUdJ33kKyD6JJq6+nE7b4rrjD+ABSr
+         Psbtv7n87YysR3BKXY7tAggR+P7vaO7jb5pP9lCwnoAKajyB4tMPRfnV182cA4qKc/vd
+         WjlBdXXYetB99BJw5Q96XYtrGDhzA+xPk2T87lundV0lPyQafXPO1QI/Ggvd8i59DkI3
+         GCLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785697562; x=1786302362;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Kw69Z0wzWemMAZPaY5Skc4txf5IJBcX28PQN2HOehxQ=;
+        b=PIUyAQHIZ1uHw8Ep1IZrVXr4JS7WR8jkDBn/mQ8nUjneu6e2trCu4byIqFVASUQRBU
+         waqS/ImVpSzSgwHIxpYegUIRFrgfZ02+eNXoy0JCdSij652Dm68JOSYqiY2+fcxb66Rr
+         CZp7DU/FDVRqIOCxwWiAgTY87jyDSTTutaO0r0jQE1EWc5CQk/JyT4vY2o7DqBRgv7Ro
+         J5ELi4TcF4HO6qDPE+i4O76HnwC2jMWkPQs5PR/WkKekyG1qzCQe0VcUTSd4QAbRsTfa
+         KjZ8KuuPziyBv6VgdxyYYLqVHTLShvum6BjtzR9ClsEZ6fbm9uPZQ1nUzrOUa3+zguy5
+         Pa+A==
+X-Forwarded-Encrypted: i=1; AHgh+RpgeYfpJdBswLunXdeNP5c9KXC1B1sf54UBG4og4MpFmpQqszvvcsa96iiUWbOe4xiYAHMcFa/+1AE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxz6fBcFRQQoXBsQzhkj+9RyV9lVv0oMnUBUwz+f0ArVVT6tpkc
+	SpfrwL4BORUrU+VhwycrukT+JRIfhPnhqXMcltH/SvL/jykRk5feV9/WLy/SuMnxkR0=
+X-Gm-Gg: AR+sD1221zW08lRPiSzcCltxbsgtW8HKDBoKVf1O2JJt5MTbwZtT7UI1ll8jCU70q2G
+	tOyPE0prwx8u+8xkeNhyz3JUCHkj9F7IuXILw0ZSJD9syb8N9LRyjR68AFWq5aBnwLsgMkT6DhN
+	Fn4DT+BpchQumYxKFvXEIEO5VKtP0TFoSSgwxSY0HYU5BFcwXOgTDpbkQBOEonVMv2bQl3woa3i
+	5YSF4mLjhJfalIY+Dk52f64md6bRbzuEEIHAAWk92IOG28wkrnxvL2HaDk2re+HU2OTXS8vMhUB
+	T5EXSjLdQN+JAc1Ninu6lRiScmXvvHE6myj0GaSwHKctYD8YhSjZL91BVOp5yzpQB499NEEKMFH
+	Nf6NVcCVlmLfFC7NXEwnjsznodKlx/js+6BddwZOwdfdGAvuohrwpOhKBYR/lOsfGUWcobaev1u
+	cKompDFzJ/rF6M+QCBV+gmBkfWadewdmdPEtkwSL3IRy6Ac2BR3i8H2O2gbc4tkpLCcq3IM2sqQ
+	dTUxOHgP49HR49BIEbnX11KBviMbaSj/9Yra2E=
+X-Received: by 2002:a05:6808:2384:b0:4a4:da68:9434 with SMTP id 5614622812f47-4af5e329152mr11191023b6e.14.1785697561734;
+        Sun, 02 Aug 2026 12:06:01 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:5487:2b6e:1057:d3d3? ([2600:8803:e7e4:500:5487:2b6e:1057:d3d3])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4af58d13152sm5530140b6e.6.2026.08.02.12.05.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 02 Aug 2026 12:06:00 -0700 (PDT)
+Message-ID: <3562a294-d74f-4a03-839d-c861df604914@baylibre.com>
+Date: Sun, 2 Aug 2026 14:05:58 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/3] iio: adc: ti-ads112c14: add continuous mode
+ support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Chris Hall <c-hall@ti.com>,
+ Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260731-iio-adc-ti-ads112c14-continuous-mode-v2-0-eb13da38e8fc@baylibre.com>
+ <20260731-iio-adc-ti-ads112c14-continuous-mode-v2-3-eb13da38e8fc@baylibre.com>
+ <20260802191753.2c98d7bb@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260802191753.2c98d7bb@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 12:19:07 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On 8/2/26 1:17 PM, Jonathan Cameron wrote:
+> On Fri, 31 Jul 2026 18:48:12 -0500
+> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
+> 
+>> Add support for continuous mode in the TI ADS112C14 ADC driver. In this
+>> mode the ADC itself is starting each conversion, so we add a trigger
+>> based on the DRDY interrupt to read each sample. This mode is also
+>> limited in that only one channel can be enabled at a time since the
+>> chip does not have a sequencer or simultaneous sampling capability.
+>> Continuous mode will only be used when this new trigger is the current
+>> trigger.
+>>
+>> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+> There is some follow on stuff in here from the earlier suggestion to
+> check the status register even when datardy involved
+> 
+>> ---
+>>  drivers/iio/adc/ti-ads112c14.c | 146 ++++++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 144 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
+>> index c6d83298c312..5147d10785fb 100644
+>> --- a/drivers/iio/adc/ti-ads112c14.c
+>> +++ b/drivers/iio/adc/ti-ads112c14.c
+>> @@ -9,6 +9,7 @@
+>>   */
+>>  
+>>  #include <linux/bitfield.h>
+>> +#include <linux/bitmap.h>
+>>  #include <linux/cleanup.h>
+>>  #include <linux/completion.h>
+>>  #include <linux/crc8.h>
+>> @@ -18,6 +19,7 @@
+>>  #include <linux/i2c.h>
+>>  #include <linux/iio/buffer.h>
+>>  #include <linux/iio/iio.h>
+>> +#include <linux/iio/trigger.h>
+>>  #include <linux/iio/trigger_consumer.h>
+>>  #include <linux/iio/triggered_buffer.h>
+>>  #include <linux/interrupt.h>
+>> @@ -257,6 +259,7 @@ struct ads112c14_measurement {
+>>  struct ads112c14_data {
+>>  	const struct ads112c14_chip_info *chip_info;
+>>  	struct regmap *regmap;
+>> +	struct iio_trigger *drdy_trig;
+>>  	/* Synchronizes access to register value fields. */
+>>  	struct mutex lock;
+>>  	int drdy_irq;
+>> @@ -280,11 +283,32 @@ static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
+>>  	struct iio_dev *indio_dev = private;
+>>  	struct ads112c14_data *data = iio_priv(indio_dev);
+>>  
+>> -	complete(&data->drdy_completion);
+>> +	if (indio_dev->trig && iio_trigger_using_own(indio_dev))
+>> +		iio_trigger_poll(data->drdy_trig);
+> 
+> Even for this path we should be checking it wasn't a spurious interrupt.
+> If that's happening in a threaded interrupt we'll then call iio_trigger_poll_nested()
+> and the handler will happen in the interrupt thread.   So the overhead
+> of that check should just be the check.
+> 
+For now, I think we'll not bother with checking for spurious interrupts.
+The only reason it should happen is electrical noise (or disconnecting
+wires on a live system). And we can add it in a follow up patch if we
+decide we need it. The overhead of an extra read for each sample might be
+a bit much at the higher sample rates. So we'll want to implement the
+higher sample rates first anyway.
 
-> On 8/2/26 11:07 AM, Lukas Metz wrote:
-> > The DAC756x, DAC816x, and DAC856x devices are low-power, voltage-output,
-> > dual-channel, 12-, 14-, and 16-bit digital-to-analog converters (DACs),
-> > respectively. These devices include a 2.5-V, 4-ppm/=C2=B0C internal
-> > reference, giving a full-scale output voltage range of 2.5 V or 5 V.
-> >=20
-> > Signed-off-by: Lukas Metz <lukas.metz@gmx.net>
-> > ---
-> >  MAINTAINERS                  |   1 +
-> >  drivers/iio/dac/Kconfig      |  16 ++
-> >  drivers/iio/dac/Makefile     |   1 +
-> >  drivers/iio/dac/ti-dac8163.c | 449 +++++++++++++++++++++++++++++++++++=
-++++++++
-> >  4 files changed, 467 insertions(+)
-> >=20
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 314f235332f5..5512f5eaab44 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -26399,6 +26399,7 @@ M:	Lukas Metz <lukas.metz@gmx.net>
-> >  L:	linux-iio@vger.kernel.org
-> >  S:	Maintained
-> >  F:	Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
-> > +F:	drivers/iio/dac/ti-dac8163.c
-> > =20
-> >  TI DATA TRANSFORM AND HASHING ENGINE (DTHE) V2 CRYPTO DRIVER
-> >  M:	T Pratham <t-pratham@ti.com>
-> > diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> > index db9f5c711b3d..aa80b871995b 100644
-> > --- a/drivers/iio/dac/Kconfig
-> > +++ b/drivers/iio/dac/Kconfig
-> > @@ -632,6 +632,22 @@ config TI_DAC7612
-> > =20
-> >  	  If compiled as a module, it will be called ti-dac7612.
-> > =20
-> > +config TI_DAC8163
-> > +	tristate "Texas Instruments 12/14/16-bit 2-channel DAC driver"
-> > +	depends on SPI_MASTER
-> > +	select REGMAP_SPI
-> > +	help
-> > +	  Driver for the Texas Instruments digital-to-analog converter
-> > +	  family dacxx6x compatible with the following variants
-> > +	  - DAC7562 (2 channels, 12 bits, resets to zero)
-> > +	  - DAC7563 (2 channels, 12 bits, resets to mid-scale)
-> > +	  - DAC8162 (2 channels, 14 bits, resets to zero)
-> > +	  - DAC8163 (2 channels, 14 bits, resets to mid-scale)
-> > +	  - DAC8562 (2 channels, 16 bits, resets to zero)
-> > +	  - DAC8563 (2 channels, 16 bits, resets to mid-scale)
-> > +
-> > +	  If compiled as a module, it will be called ti-dac8163.
-> > +
-> >  config VF610_DAC
-> >  	tristate "Vybrid vf610 DAC driver"
-> >  	depends on HAS_IOMEM
-> > diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> > index 2a80bbf4e80a..359cde446623 100644
-> > --- a/drivers/iio/dac/Makefile
-> > +++ b/drivers/iio/dac/Makefile
-> > @@ -62,4 +62,5 @@ obj-$(CONFIG_TI_DAC082S085) +=3D ti-dac082s085.o
-> >  obj-$(CONFIG_TI_DAC5571) +=3D ti-dac5571.o
-> >  obj-$(CONFIG_TI_DAC7311) +=3D ti-dac7311.o
-> >  obj-$(CONFIG_TI_DAC7612) +=3D ti-dac7612.o
-> > +obj-$(CONFIG_TI_DAC8163) +=3D ti-dac8163.o
-> >  obj-$(CONFIG_VF610_DAC) +=3D vf610_dac.o
-> > diff --git a/drivers/iio/dac/ti-dac8163.c b/drivers/iio/dac/ti-dac8163.c
-> > new file mode 100644
-> > index 000000000000..35af7828dc22
-> > --- /dev/null
-> > +++ b/drivers/iio/dac/ti-dac8163.c
-> > @@ -0,0 +1,449 @@
-> > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > +/*
-> > + * DAC8163 IIO driver (SPI)
-> > + * https://www.ti.com/de/lit/gpn/dac8163
-> > + */
-> > +
-> > +#include <linux/array_size.h>
-> > +#include <linux/bitfield.h>
-> > +#include <linux/bits.h>
-> > +#include <linux/err.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/module.h>
-> > +#include <linux/property.h>
-> > +#include <linux/regmap.h>
-> > +#include <linux/regulator/consumer.h>
-> > +#include <linux/spi/spi.h>
-> > +#include <linux/stddef.h>
-> > +#include <linux/types.h>
-> > +#include <linux/units.h>
-> > +
-> > +#include <linux/iio/iio.h>
-> > +
-> > +#define COMMAND_MASK GENMASK(6, 3)
-> > +#define ADDRESS_MASK GENMASK(2, 0)
-> > +
-> > +#define CMD_WRITE_INPUT_REG	0x0
-> > +#define CMD_UPDATE_DAC		0x1
-> > +#define CMD_WRITE_UPDATE_ALL	0x2
-> > +#define CMD_WRITE_UPDATE	0x3
-> > +#define CMD_POWER_MODE		0x4
-> > +#define CMD_SOFT_RST		0x5
-> > +#define CMD_LDAC_MODE		0x6
-> > +#define CMD_REF			0x7
-These are very generic names and that's where we risk shadowing
-a define somewhere else.  I'd prefix them all with
-DAC8163 even though it leads to some longer lines.
-
-> > +
-> > +#define LDAC_CHANNEL_A_MASK BIT(0)
-> > +#define LDAC_CHANNEL_B_MASK BIT(1)
-> > +#define VREF_MASK	    BIT(0)
-
-> > +
-> > +	if (device_property_present(&spi->dev, "vrefin-supply")) {
-> > +		ret =3D devm_regulator_get_enable_read_voltage(&spi->dev,
-> > +							     "vrefin");
-> > +		if (ret < 0)
-> > +			return dev_err_probe(&spi->dev, ret,
-> > +					     "failed to get vrefin voltage\n");
-> > +
-> > +		st->vref_mV =3D ret / (MICRO / MILLI);
-> > +		internal_reference =3D false;
-> > +		st->gain =3D 1;
-> > +	} else {
-> > +		st->vref_mV =3D DAC8163_INTERNAL_REF_mV;
-> > +		internal_reference =3D true;
-> > +		st->gain =3D 2;
-> > +	}
-> > +
-> > +	ret =3D regmap_write(st->regmap, FIELD_PREP(COMMAND_MASK, CMD_SOFT_RS=
-T),
-> > +			   FULL_RESET);
-> > +	if (ret < 0)
-> > +		return dev_err_probe(&spi->dev, ret,
-> > +				     "failed to reset device\n");
-> > +
-> > +	ret =3D regmap_write(st->regmap, FIELD_PREP(COMMAND_MASK, CMD_LDAC_MO=
-DE),
-> > +			   FIELD_PREP(LDAC_CHANNEL_A_MASK, LDAC_INACTIVE) |
-> > +			   FIELD_PREP(LDAC_CHANNEL_B_MASK, LDAC_INACTIVE)); =20
->=20
->=20
-> I know I have said many times before not to hide FIELD_PREP() in a macro.
-> However, that was for register _values_, not register _addresseses_.
->=20
-> In this case, I think we can make an exception for the address like:
->=20
-> #define DAC8163_REG(cmd, addr) \
-> 	(FIELD_PREP(COMMAND_MASK, (cmd)) | FIELD_PREP(ADDRESS_MASK, (addr)))
-
-This makes sense but given it will then be the only place COMMAND_MASK
-and ADDRESS_MASK are used, roll the GENMASK in there.
-
-The generic nature of those macro names suggests to me we might
-well get a naming clash with a header define in the long run so
-i was going to suggest prefixing them.  Just not having them does
-the job as well.
->=20
-> So we can write it like:
->=20
-> 	ret =3D regmap_write(st->regmap, DAC8163_REG(CMD_LDAC_MODE, 0),
-> 			   FIELD_PREP(LDAC_CHANNEL_A_MASK, LDAC_INACTIVE) |
-> 			   FIELD_PREP(LDAC_CHANNEL_B_MASK, LDAC_INACTIVE));
->=20
-> Having FIELD_PREP() on all of the register addresses throught this patch
-> was really throwing me off and gets quite verbose and repetitive.
->=20
-> > +	if (ret < 0)
-
+We can read the status along with the data in a single transfer, so that
+might be a more efficient way to do it too.
 
