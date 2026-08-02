@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E4E6262808;
-	Sun,  2 Aug 2026 16:56:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 882F52C11CA;
+	Sun,  2 Aug 2026 17:03:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785689818; cv=none; b=Gijw2SUe9nSP/d80d99n6Zthzi+D2YyPnWOux2XcosGfA3/+YTGZ/ka6Ul9fWRBXmEbvGsWLUhadRlUpWZvKhQxHbbY4YRfpuP0amjTeKK/4yJXeVcoKhfvJnVFXIkjLguX1erY+uEb73WBgp42Npc+UCXxqU5+NYwblPlme5nE=
+	t=1785690196; cv=none; b=HPuMPW6ItdCOClC1bJY6dr9KVMtn3gTyeyHcPMrcr0GGBagyQY61Vv3LJ6+kXiUUqLOlGcKJSQE6EJ+L3uDbDBwcxiOKAP50Z7fkwiAcxr7gpa7xT1bfuS02/aPWGduKGulRfiHn9t89NLm7B/VtyopLrUR42KvSNUGXMNYLR8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785689818; c=relaxed/simple;
-	bh=UYj/8/sPkA/+jqwyNKq8M0eFVii1VImucTpFNyJ1i9Y=;
+	s=arc-20240116; t=1785690196; c=relaxed/simple;
+	bh=zDjgMYsSM67rwBm06O+xUeytwHah7ZueYsiVkGdndKk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RRLOIRNUe0McEV0C7A9Nt2yRJ8ygTCV3FH5nPWtanxARiWsAro4Xi7kszb12435y92IZ2EX+C9dBCMtFSpQ1/aeC9zX+vHiGfaBUhw6C56DgOi1eSDNuKTm6D+R/ZK+IhwgbL6RbGnjxdz4Y4qYIfg3U7T+1U3ybkJXtL548x5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bNhcsCGj; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=VVpN79ox78a7BIGCzm/6hvP3ejD561b2xoDrC/U5k0ZW7dNSy/p9Wfs/1gBxqHnSL/ShnDOm4jOTy2+egXPYQBj2xLOlVok6mb4SsKUtFAFXr5MKDzPQYpuws1GC/NRmj0KlaMtCI/ix0qe4KUBFSNPRquB435E8nowvJvrYpyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JClkKLL+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bNhcsCGj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CAB1F000E9;
-	Sun,  2 Aug 2026 16:56:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JClkKLL+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC771F00A3A;
+	Sun,  2 Aug 2026 17:03:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785689816;
-	bh=gIw6SXWx9dw9s6rvvkTvzjfybSlZKH/e6BuOvWYZPWI=;
+	s=k20260515; t=1785690194;
+	bh=yAbPfDbsNXYKFbJpkHtynyiXO4tpZHmVCigjm5J9Qtg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bNhcsCGjET6bdq4uLc+7xe+tLZ78aIJv0akAvm/tpivr/NEeQ2dFs3hXIsvD7QDll
-	 lwz8kxcuqlbWIoWNSobCXkJ7ZOEBdnhqnGWexH1c4I8SnHQ0CeniSZj3cpboFvM9d7
-	 baw7zYn+MR5uxSpl04/GlX4sr/0x5Jl1gL8Cmb3QB4vpvD2ZoTlwzLC9xoLfDA2Nsq
-	 Gqcizr+seesgnqTM5qMHB6yJdc4GHw1QD1Rac3T196XCX3mryMxnk8s0ZFpthHnn8Q
-	 kaRJYiRwt3d8+1PrJeFQFqoWo1HgWGHi2S7GtEek79d8YtPRrKssAR4aLrSztra4e8
-	 TROj8wbripLfg==
-Date: Sun, 2 Aug 2026 17:56:50 +0100
+	b=JClkKLL+42YgAw81yxXBrBFY8ElECkBPq7UQlcWKUs8njJK+ILRIQyDwjl8uZyXZZ
+	 mbDrFq8+YuesBNMtRfR2X9RSfi63dBhvZlkeBQ1JtZNHc6skLeNdy482G5SozPBRlS
+	 BJ/co2qJdhBKKSz4nDo4Hp/WVwH80csLaa2WnOTejfTrFDAFe/LYCfvLDarCqjhAuv
+	 9hZYbVhZZ7j1RdphBbDDogltTfRLxuKur2iLo0uNGtZbssKL5WZP3maq+6966mLjL7
+	 jphRY1WpLCKK/YbCprTW34Oaae0CavknV1TGBU7xN8cvqzzMWv7/JTAtDs7tGoeeM1
+	 bUMJb66s/HIkQ==
+Date: Sun, 2 Aug 2026 18:03:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Adi Nata <adinata.softwareengineer@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- u.kleine-koenig@baylibre.com, dakr@kernel.org, bhelgaas@google.com,
- mazziesaccount@gmail.com, linux-iio@vger.kernel.org,
+To: David Lechner <dlechner@baylibre.com>
+Cc: Adi Nata <adinata.softwareengineer@gmail.com>, nuno.sa@analog.com,
+ andy@kernel.org, u.kleine-koenig@baylibre.com, mazziesaccount@gmail.com,
+ bhelgaas@google.com, o-takashi@sakamocchi.jp, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: humidity: htu21: Fix SYMBOLIC_PERMS chekcpatch
- warning
-Message-ID: <20260802175650.54895dff@jic23-huawei>
-In-Reply-To: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
-References: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
+Subject: Re: [PATCH] iio: humidity: htc100c: Fix checkpatch warn unnecessary
+ else
+Message-ID: <20260802180310.78201b95@jic23-huawei>
+In-Reply-To: <f8670ea5-1e76-4a04-9c5e-e43ffac92be0@baylibre.com>
+References: <20260802014417.15485-1-adinata.softwareengineer@gmail.com>
+	<f8670ea5-1e76-4a04-9c5e-e43ffac92be0@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,51 +49,65 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  2 Aug 2026 09:23:26 +0800
-Adi Nata <adinata.softwareengineer@gmail.com> wrote:
+On Sun, 2 Aug 2026 09:48:11 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> Checkpatch warning:
+> On 8/1/26 8:44 PM, Adi Nata wrote:
+> > Checkpatch warning:  
 > 
-> WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal permissions '0444'.
-> +static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
+> Making checkpatch happy is not a good reason for a change on it's own.
+> It is only there for guidance. It is not a strict rule that has to be
+> followed.
 > 
-> WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO | S_IWUSR' are not preferred. Consider using octal permissions '0644'.
-> +static IIO_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR,
+> I think this is a good change because it reduces duplication of the
+> return statements and eliminates an unreachable break statement. So
+> write the commit message with that reasoning and don't mention checkpatch.
 
-Would be nice to have some information on why they are not
-preferred as part of the patch description.
+A 'whilst I was looking at this code' comment below if you want to take
+on an additional minor readability improvement.  Whilst it is a bit
+churn heavy given touching most of the code you are changing here, I think
+it would still need to be a separate follow on patch.  Also do check my
+suggestion carefully as I may have missed something!
 
+thanks,
+
+Jonathan
 > 
-> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
-> ---
->  drivers/iio/humidity/htu21.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > WARNING:UNNECESSARY_ELSE: else is not generally useful after a break or return
+> > +			return IIO_VAL_FRACTIONAL;
+> > +		} else {
+> > 
+> > Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
+> > ---
+> >  drivers/iio/humidity/hdc100x.c | 4 +---
+> >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+> > index bc452cc8fbcf..38903239fb9a 100644
+> > --- a/drivers/iio/humidity/hdc100x.c
+> > +++ b/drivers/iio/humidity/hdc100x.c
+> > @@ -229,13 +229,11 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
+> >  		if (chan->type == IIO_TEMP) {
+> >  			*val = 165000;
+> >  			*val2 = 65536;
+A whilst we are here comment.
+
+This is 2**16  So maybe can use chan->real_bits
+to provide a form of documentation of where it comes from and
+then return IIO_VAL_FRACTIONAL_LOG2;
+
+
+> > -			return IIO_VAL_FRACTIONAL;
+> >  		} else {
+> >  			*val = 100000;
+> >  			*val2 = 65536;
+> > -			return IIO_VAL_FRACTIONAL;
+> >  		}
+> > -		break;
+> > +		return IIO_VAL_FRACTIONAL;
+> >  	case IIO_CHAN_INFO_OFFSET:
+> >  		*val = -15887;
+> >  		*val2 = 515151;  
 > 
-> diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
-> index a9dbf08b4f1a..fe7192d142ec 100644
-> --- a/drivers/iio/humidity/htu21.c
-> +++ b/drivers/iio/humidity/htu21.c
-> @@ -154,9 +154,9 @@ static ssize_t htu21_write_heater(struct device *dev,
->  }
->  
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(htu21_show_samp_freq);
-> -static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
-> +static IIO_DEVICE_ATTR(battery_low, 0444,
->  		       htu21_show_battery_low, NULL, 0);
-
-Now fits on one line.
-
-
-
-> -static IIO_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR,
-> +static IIO_DEVICE_ATTR(heater_enable, 0644,
->  		       htu21_show_heater, htu21_write_heater, 0);
-I don't mind having this one on a single line as well even though it is
-a bit over the 80 chars soft limit at around 84 chars.
-
-static IIO_DEVICE_ATTR(heater_enable, 0644, htu21_show_heater, htu21_write_heater, 0);
-
->  
->  static struct attribute *htu21_attributes[] = {
-
 
