@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C51153A6B8F;
-	Sun,  2 Aug 2026 17:12:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C5E3B71C6;
+	Sun,  2 Aug 2026 17:14:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785690760; cv=none; b=ioc/78yDTXc654SoPdZDtSQAUmp4uAntvcIF4JG6P76DK6dFDntIalZ0HI0uuhDwbYNTM2j3QlU+FU6HEiAV0xaasCewingi+gZc7Fsl0UpaR/594zXWzboklc/BcftIwOP8BrOfzxDkgHtnZTwhbzFwmPm7TNrtXTBH0XcQPoo=
+	t=1785690899; cv=none; b=If0AGt8aDgxu1pFSySfasq9eRR8fW5JRCA9yxu9cxPTVZKeOmoNTZCKiEZT7d3mS/YxYMfH4fAGIZe9pVGA3KZ3gEAKEngD8kjcAfYRTGr9iLPtVGKPTODN7pHSa9O+iMGdopZNUN9aQrNk/MhsDYMJimZ3GYOphUyPMtTsz1+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785690760; c=relaxed/simple;
-	bh=TAwz7zDdhrO/RO7iz0Q7zXJArhhoVVKcE2nAWH7xfeo=;
+	s=arc-20240116; t=1785690899; c=relaxed/simple;
+	bh=bJQPRPnBwrNvzbWdDn8UdEdCIN4B45DhUiezXv0/AJg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ll0vGLcPn58g0xx9WDUqhcLMe+Oip3rzD5mKZq1dfGyUZb2CSfiMbEOsen/hp89BYRbd8gVrXqwyqXnu4fFkGb4Woy7IzHqoeQ+nROvaBIeojWmtFxvnP4p1v56syYVLbCPv1rxZs+zbbqSOQqJUkmaWEeD+eFSF0VTp/CtDJkk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gnEbhZMA; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=cDPpTYrxHk5IUW7YIcojkKNEP9OVv9GdXVwvSYu5ZCXhQyd7DYJUbi6gBjAJqX4x1KXwV1axGfBwqoLSTUotz0ZevzwDKFLJ/R8PgIB9o7ZWHZ9svgSD89la8IAQH+0ydL7EoPcEPXIJbHiISU1JxFPVLblQi8XU6BlEGwEkaVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jWrVek5C; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gnEbhZMA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA14F1F000E9;
-	Sun,  2 Aug 2026 17:12:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jWrVek5C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D881F1F000E9;
+	Sun,  2 Aug 2026 17:14:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785690756;
-	bh=x77TEwp1ZbLt/BvOuNsHvCp1UdV2izmSI915dF93mOI=;
+	s=k20260515; t=1785690898;
+	bh=+mWb9cxgHPz89lNbjczirAai50Pbwj8bl52HCnd6Rkc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gnEbhZMAZkc0YPd4zkuj0/X00JB432hZJypTeVzdiCMvc2tvsv/Veu7qdQuv2zng2
-	 q1OLlTBUeCWabr11KEBTmaH6YAgMBkeHYZB/CPYI1jHPxy3QIsG79nQRAEHJY5K0+k
-	 ZPnhbqW8U3NApHNW5DneakfbQSXHFPcEQ0CYwu4Pa0cwIoNFnRQreMkla0plOvWcPF
-	 L6LU0CsVI3ePrXM1h6wJbE/2DH85mWNcBYb8pSOSZlyFEgNH63J+2acWG9g/62puyE
-	 Ug2aEnCb7SmfM2m49K8KNZc8/NpEc7kyzzZeeyNggfJ1rNASjs8Clwv+hknCUDTpL4
-	 K30q2IM0kaJvw==
-Date: Sun, 2 Aug 2026 18:12:33 +0100
+	b=jWrVek5CNAmiu/Ep0+4YSGNPFfclgUaR+gEFLo4HXhr7TuldekpJ2QKIFh8BdR3YF
+	 bT4TZqVyDJzl70epD6+EeDK+WO2rH/ivMNjZz9z/SLWszgd20NVRxYYnsnmrYNrRH2
+	 7Um2OwtYGqgTacLw+XoT4Cxyi8KgjICsJUyr5hNwQAP+B2m0ymrT8IX7QaTO7c1w7e
+	 s4qJUe5nYb5WMwmxiJoGSiVYC41i3TvgEdy0KzpCzf5BXdw3XUcXqT+PXne5zPIppL
+	 gJPkxLJDRGpzxGi+0GdyD4unFMz5gaxkIqlcTrcdveo0Zb3knyxzxLiFfnJIXDHA8w
+	 dOAXumtRHyKLQ==
+Date: Sun, 2 Aug 2026 18:14:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Adi Nata <adinata.softwareengineer@gmail.com>, lorenzo@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+To: Adi Nata <adinata.softwareengineer@gmail.com>
+Cc: lorenzo@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: humidity: hts221: Fix checkpatch blank line
+Subject: Re: [PATCH] iio: humidity: hts221: Fix checkpatch symbolic perms
  warning
-Message-ID: <20260802181233.535eeb12@jic23-huawei>
-In-Reply-To: <20260802173852.32b4bc52@systembl0wer>
-References: <20260802020614.19732-1-adinata.softwareengineer@gmail.com>
-	<20260802173852.32b4bc52@systembl0wer>
+Message-ID: <20260802181449.12b7e117@jic23-huawei>
+In-Reply-To: <20260802014945.17221-1-adinata.softwareengineer@gmail.com>
+References: <20260802014945.17221-1-adinata.softwareengineer@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,47 +47,55 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 17:38:52 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Sun,  2 Aug 2026 09:49:45 +0800
+Adi Nata <adinata.softwareengineer@gmail.com> wrote:
 
-> On Sun,  2 Aug 2026 10:06:13 +0800
-> Adi Nata <adinata.softwareengineer@gmail.com> wrote:
+> Checkpatch warning:
 > 
-> > Checkpatch warning:
-> > 
-> > WARNING: Missing a blank line after declarations
-> > +	struct hts221_hw *hw = iio_priv(iio_dev);
-> > 
-> > Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
-> > ---  
+> WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal permissions '0444'.
+> +static IIO_DEVICE_ATTR(in_humidity_oversampling_ratio_available, S_IRUGO,
 > 
-> This seems like churn on its own, Jonathan may not apply it.
+> WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal permissions '0444'.
+> +static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available, S_IRUGO,
 > 
+> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
 
-True.  This highlights a broader point.  When making
-a number of cleanups to a driver (and I am generally more willing
-to take those than many maintainers) please group them into
-a little patch series with a cover letter.
+Hi Adi,
 
-If this is one of a set and overall the seem worthwhile I might
-pick them up.  Plus this driver is pretty aged so there are other
-quality of code / modernization things that will make much more
-of an impact than just this blank line.  Take a look at some
-of the other similar cleanup series on the IIO list and see what
-makes sense here. To give you a starter, dev_err_probe() and
-checking which prints are actually useful + stopping the driver
-rejecting Device tree falllback compatibles because of the hard
-fail on a device ID mismatch.
+Rather than doing this minor change please take on making these
+report via the read_avail() callback.
 
-> 
-> Also, I feel like just putting checkpatch warnings directly into the
-> commit message is bad practice. Much better if it were "Add a blank line
-> after variable declarations per checkpatch warning."
+This is a reasonably old driver, so some of that infrastructure may
+not have existed back then.  Moving to the callback makes the
+available info accessible to in kernel consumers and ensures correct
+formatting etc.
 
-Fully agree with this.  We really don't care what the print is, just
-what is being improved and why.
+To make that sort of change you'll need to work out how to test it.
+Probably just commenting out accesses to the device and reading only
+the files you are affecting will be enough here.
 
-Thanks
+Thanks,
 
 Jonathan
+
+> ---
+>  drivers/iio/humidity/hts221_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
+> index bfeb0a60d3af..bad98da100bd 100644
+> --- a/drivers/iio/humidity/hts221_core.c
+> +++ b/drivers/iio/humidity/hts221_core.c
+> @@ -521,9 +521,9 @@ static int hts221_validate_trigger(struct iio_dev *iio_dev,
+>  	return hw->trig == trig ? 0 : -EINVAL;
+>  }
+>  
+> -static IIO_DEVICE_ATTR(in_humidity_oversampling_ratio_available, S_IRUGO,
+> +static IIO_DEVICE_ATTR(in_humidity_oversampling_ratio_available, 0444,
+>  		       hts221_sysfs_rh_oversampling_avail, NULL, 0);
+> -static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available, S_IRUGO,
+> +static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available, 0444,
+>  		       hts221_sysfs_temp_oversampling_avail, NULL, 0);
+>  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hts221_sysfs_sampling_freq);
+>  
 
