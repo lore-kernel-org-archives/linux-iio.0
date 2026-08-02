@@ -1,73 +1,73 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C33E3033DA
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 06:55:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD163438B5
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 07:12:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785653749; cv=none; b=EbjrquAd5kQ7ptuEmZOPTN+O791pbWg0NPNpw3GVAFCE8/j9+m0m+MJeJffpLJslwwiTKW+e7qZCnteJAtuwzKJ+RkSaR0WI0QV4NFjkRR/SG+lHGoaTYSx7V2nbtuurFPcKnUWbJPpRBFTefic62vOPkdqQp3bhRsQUgiuvRZk=
+	t=1785654775; cv=none; b=Wmu3wXkKtZ7u23vZTkGhh7e500sWi90M3FyYooBzB5n0q7lhfmx12b5n0KV//Giw/ZqhSdsay2hQbGSu83LK2QT47vVzroJIZoQf50vpjaZJI0JZkMqluV3LQPaX3/qxglFVgHDACD0QQdDTodkKme4brb8kIN+WQkUDSFgKK6Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785653749; c=relaxed/simple;
-	bh=O0QzfMOPr6vkrOHrhbKyJAHJOjCmMJTXKRxMQ/xCu50=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=M5HIU1p6BpC0Mcr3xNX+H8DaWP+wrXdWJYGOVTNg0tcZWCbmiw6UZTFvZHCAGdmyegHjYe14u7UQasfQGNCJWTqvZGBnkuYqPLgduGxmcarDIpLNrwlnDPfsJPfmhetgTQnqHb5VNG1TIdBNMg4106UuzrrRF+YIlEmevnWOoKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HJSVOCmT; arc=none smtp.client-ip=209.85.216.54
+	s=arc-20240116; t=1785654775; c=relaxed/simple;
+	bh=T5lHOsgdNKHdvpMQPLi2YhCHxETt7OgdaHUH/4aE+aA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uPKahlYoSLTwLN9l3of9PKxiB4hpHzqGG+uBEwtYTDsdHOEO+JrCgBhu4zf+x3t8CTUGwU50Ov6UcNKj5fwaDpn7FP+JTrr8D8QpjoEDiXxTpJM5LJvr7ljGldha6EpOBp4ISTKYb6H33YMFgoBBIcOVzU9wm7XZOC0P2CT1kBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eHKOg9nl; arc=none smtp.client-ip=209.85.215.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HJSVOCmT"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-38dc4553f62so2250253a91.0
-        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2026 23:55:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eHKOg9nl"
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-c9cf07d2df6so1753642a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 00:12:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785653748; x=1786258548; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785654773; x=1786259573; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=f8LYikitMrC+BH+jG/GkXkTeEEEki2FXKlfuLfV91rU=;
-        b=HJSVOCmT72GlPOmufknuGfA0G/KuRhq9H7kzDXKBW9DFqBfR4yGPqEcrsktSUJOJB1
-         WQV63nNmTp3pWvfA1EZ22Wz4cK1BhDB2DFuidHyVdMPT8hFXwXhIk5FYMTG/6sMP6wv5
-         ULo5xfnO0zw2S4/Xe+Ml+3yC0maF6FvpVyuMgVTu9ibx2hQEHDQCy0xp7SyzWCVZM49l
-         wRjMcCI7r97q/x8y8vSK1WB0Kbt5r7CJBBrClmjR7qKyj3Md+LhTMCG1ownolOWqnD/N
-         qgi69ZD7g5ZQUxGno1jiktEUpUTM9MaKTYQUSAVx63A90kEqKw1QutZIQvMmA97RfIux
-         8Bsw==
+        bh=ZPIdTnQh1QKWeUAz+tiT4s3AcWBx4iUakbRHDtSIp1I=;
+        b=eHKOg9nlHsH/RKeQf1QlQ25AGMODQxFMlGuvjMST2dmmXm71ddPASakSbvPiNHTfci
+         lzdGUWFeIn/5BF1OuYHksO/Ik3Z4jogIG/NxNmWqxFahPRz/bB1U7Ch7oYIoTO+VqFgl
+         DelFYfcXCPsJmMXcHC7WUA0l7RxEs8bDgjCWyes/yrC4P7xlENrzFqaF47nYIZFCNjsw
+         YgY2SgorkwtycUYCwlWN7Gkt0vPYy98iot/WS5U8aKXJ4TE4LgRFV90qPpfHy6cHLd7i
+         A6QyZ+r7V1zhiursIKRYEGqKeQIWBjiTCh/xNCrKHsO2LnJvHUNwgVjxIi8f1YwymEA2
+         40/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785653748; x=1786258548;
+        d=1e100.net; s=20251104; t=1785654773; x=1786259573;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=f8LYikitMrC+BH+jG/GkXkTeEEEki2FXKlfuLfV91rU=;
-        b=EE3YRPO/jve47hcQSybRqPtKI30NHxFMC2ZnwYKmZnaB0o9Nb53EruQ0ltsj4YLY44
-         dJIuP2Uy0/aP/1xYB3Mbt/6x4ryPg7+Un4yi1m9J0+fmtIP9OgwbpP0OAWB5SqxACDTZ
-         zNGD0i2rzJoRYw+7DstZcOs0WSySwWkWGYWiwrw5GA63OT6Pp1Cu1UFojx5ReArVb8Bi
-         k8oMpRDGNC2K1ucbHO83aj3hLIuDpWOO4EhWBMTQfJjXSoupEUycxxWBsUbfFhnOYT1+
-         j9ZVvpo8bgpv9sfH9p79Vn/qzayDM+zIhzzMvaOVp/LxPyBlrCu3HKJjAqQLwOLDET9b
-         luHA==
-X-Forwarded-Encrypted: i=1; AHgh+RoEv4ryUhV2Ev0BJG86iAA4Msc14K1K/pdfgZBAh4QL6Id5qy8NeIEVDqseY3IdIrcvbOPupi9siD8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwznJDEcYUXOcVAmlKBfIhzuF8yeCxOg17ZETAOOBSxfw5ULCp2
-	ONzdIMR98zY8zjlxI77zpX0i0Xpc0bftYu+8CciWD1QbnJKWgRoGyZ7f
-X-Gm-Gg: AR+sD117CBAm+oflcH+lFu+YE/ucS0RdCJRQ3NuwMDjvMIIVZjmFH0OYXvSorLnLoR2
-	PReUKNPKb18yqj5t4dhd82VZc4R/x/u4ur+FCstWcxT37UTLE74PLXhLXQ5KF+WZXGJPWpICEjB
-	e0i18LO4Jn5I96B1TSdpdFzBDv2fnwZq9/iU0zxPgjCBv8I97J9BD+Jzdpdqvrr3ndLkuzyHFbd
-	mGwXIPu2Z5l/r4QoHdD3V8G7EjCIDfq1ZcjiGE4kxDQtpYZBLb5kl3oa6njdDJyf25APt+meaHS
-	qTpdmrpyt1iFG4B57OiumoqhLgBxqb508aTC5+V97EoYBgy9sXd73tP68/NSxPPFnypxZ3/eLlQ
-	LK/E1m8+s7MXp5rlMLTIOzXWTIRovd1nb07GWEB1zWbQEl5TeiwRTihG+Ao1qnc/YhUr411PwrL
-	dW3gp8AIcbFbmU+9YM1ruOGR/5CuklyMcKMXwDpDfXyr2jSbtvg5cqcH0F5JzEwQKVkZ2U3lyPY
-	HQaXTqczkQ5fBhf
-X-Received: by 2002:a17:90b:5111:b0:37f:ad36:8fc5 with SMTP id 98e67ed59e1d1-38fbc53430emr5982092a91.23.1785653747827;
-        Sat, 01 Aug 2026 23:55:47 -0700 (PDT)
+        bh=ZPIdTnQh1QKWeUAz+tiT4s3AcWBx4iUakbRHDtSIp1I=;
+        b=Ijot0uRSnOdVhZfsiLbMGN9F951zBeR+3974+VMNJEj0xLwqpw1AWU8/UOIQQYJ3KJ
+         GBk3wWrI5ng9x/Gqt1PT/rygP0mkQTI1pRIhMqPPiW+JWpjxYO/12b+cSf3ZSC4BGoHK
+         FQjg5Q87H+ndQVSMtPdHHYO6fEGiWnqdugbCQMDJt79XL5fKfDfkHKAbYu5xskBrb42P
+         qOqrVQ9t0AV7FjuDFL1dDcPG6YPoUBpQj3hK2gzTSsrltzJWNMOPt+z2I5pZQ+Qtc8d/
+         CC/YVZWqTa1sJ20NdG6KoBRYhOuwn6+3+SIGWm/TB7ZFDBXnyspJWbKBpRwvtu14/4T5
+         A+AQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rp4Bskyj/1WDhCTrPVQc6SVU4SSHxF+avuKB01sXtXMYqzX8zIhQtyh+A4ldMYdctEoct7vu+VcSHY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyMvHQ0KmXzKFy2W9YKfYjiAZu/YKunWRPZITZR619QbzW0K7YD
+	2qFBCu/Hi7dKl5cYijLvOLdmqg4GmjCjgXfDsq1zt9hgpeIf1NUSIRiN
+X-Gm-Gg: AR+sD12mTUSXMwHWp6BSsqsys7MzWwwA7n8hX8poM6bGwm8zhyIX7MBsc9HFuUch3wy
+	QgSA5p9aBipub7uZ2b/bBvmrnzrrvBA3xpTuv+GTus1qHGd0xjZVmF2YzXyI6DFnn9LFDQKZTQn
+	yVDWvbdO8KalOVAoQmmGorLPXj+a3hQjfxQFiTRg/5JiVf4PaIeZ0+o0sdQ/aczW/cOooPp6r/x
+	4vpWm1pSAPY+noWPkVOIcyCTrKsUPeUC+PdnPmUveYQdRJUBjwOTKoBtiODmk5ko73zJNTE7WzU
+	reAbdIRDPaKiWyYSfV3VWFLYWopHiWDP16wsNTK8do0d2pzgLMXVwJVXVia/uevHDayXS7Doz57
+	XyIj7fW3X/rP300+w6846poSrSJjlOTfQ+bLz/kQqlzmu2uwGTlk7XE+PmSUbHAFjHi+7sBl/E0
+	BLyI+HBfD604zVzR13vL/PKJgowS8kFEIP+oeBjxMhQgol3eB6y6kj0I2HQ5pQQyhrkdT4lTbQN
+	ezBtQ==
+X-Received: by 2002:a05:6a20:4499:b0:3c3:8de3:8eee with SMTP id adf61e73a8af0-3c92a88ee11mr5685030637.61.1785654773335;
+        Sun, 02 Aug 2026 00:12:53 -0700 (PDT)
 Received: from SGN-LDSENG.tasernet.com ([2405:4800:5cc3:11a:1ac0:4dff:fe8b:4a69])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13fab24ec10sm19641297c88.6.2026.08.01.23.55.45
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13fab050d8csm34288859c88.0.2026.08.02.00.12.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2026 23:55:47 -0700 (PDT)
+        Sun, 02 Aug 2026 00:12:52 -0700 (PDT)
 From: Cong Nguyen <congnt264@gmail.com>
-To: Linus Walleij <linusw@kernel.org>,
+To: Matteo Martelli <matteomartelli3@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: gyro: mpu3050: fix sign of raw angular velocity readings
-Date: Sun,  2 Aug 2026 13:55:40 +0700
-Message-Id: <20260802065540.8120-1-congnt264@gmail.com>
+Subject: [PATCH] iio: adc: pac1921: fix wrong channel used in trigger handler read
+Date: Sun,  2 Aug 2026 14:12:46 +0700
+Message-Id: <20260802071246.62046-1-congnt264@gmail.com>
 X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -77,41 +77,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The MPU-3050 gyroscope output registers hold 16-bit two's complement
-values; the angular velocity channels are declared with .sign = 's'.
-When mpu3050_read_raw() handles IIO_CHAN_INFO_RAW it reads the register
-via a big-endian regmap_bulk_read() and assigns it with:
+pac1921_trigger_handler() walks the enabled channels with
+iio_for_each_active_channel(), which yields the scan index (bit) of each
+active channel, while ch is a separate counter used to pack the samples
+contiguously into the scan buffer.
 
-	*val = be16_to_cpu(raw_val);
+The register to read was looked up with the packing counter instead of
+the scan index:
 
-be16_to_cpu() yields an unsigned 16-bit quantity, so negative rates
-(bit 15 set) are reported to userspace as large positive integers
-(e.g. -1 becomes 65535) instead of the correct negative value.
+	ret = pac1921_read_res(priv, idev->channels[ch].address, &val);
 
-Cast to s16 before the assignment, matching the temperature channel a
-few lines above which already handles the sign correctly.
+pac1921_channels[] is ordered by scan index, so channels[bit] is the
+channel that is actually enabled, whereas channels[ch] is merely the
+ch-th array entry. These coincide only when the enabled channels form a
+contiguous prefix (e.g. all channels enabled). With a sparse scan mask -
+for example when only the power channel (scan index 3) is enabled - the
+handler reads the wrong register (VBUS instead of VPOWER) and pushes it
+to userspace as the enabled channel's data.
 
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+Index the channel array by the scan index (bit) to read the correct
+register, keeping ch only for contiguous packing into the scan buffer.
+
+Fixes: 371f778b83cd ("iio: adc: add support for pac1921")
 Cc: stable@vger.kernel.org
 Assisted-by: Claude:claude-opus-4
 Signed-off-by: Cong Nguyen <congnt264@gmail.com>
 ---
- drivers/iio/gyro/mpu3050-core.c | 2 +-
+ drivers/iio/adc/pac1921.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index d84e04e4b431..07c0f9011c63 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -356,7 +356,7 @@ static int mpu3050_read_raw(struct iio_dev *indio_dev,
- 				goto out_read_raw_unlock;
- 			}
+diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
+index bce7185953ec..0037509503ed 100644
+--- a/drivers/iio/adc/pac1921.c
++++ b/drivers/iio/adc/pac1921.c
+@@ -1037,7 +1037,7 @@ static irqreturn_t pac1921_trigger_handler(int irq, void *p)
+ 	iio_for_each_active_channel(idev, bit) {
+ 		u16 val;
  
--			*val = be16_to_cpu(raw_val);
-+			*val = (s16)be16_to_cpu(raw_val);
- 			ret = IIO_VAL_INT;
+-		ret = pac1921_read_res(priv, idev->channels[ch].address, &val);
++		ret = pac1921_read_res(priv, idev->channels[bit].address, &val);
+ 		if (ret)
+ 			goto done;
  
- 			goto out_read_raw_unlock;
 -- 
 2.25.1
 
