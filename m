@@ -1,68 +1,68 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26C1B3BBFC0
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 15:21:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4B83B47DC
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 15:31:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785684108; cv=none; b=sDF/HUuq+Kdxl78YIt/kSQA+HWKM00wysVgfi+IH+SlpR+mUCX4k2zSu3I7n1KOBlLhb0+Y94pBFglrNxfDlsqNhPp0eDkXfRkRKdfkeDTywZmGQT7PQbbQeSJPOibpTIM2mBbyUSj+ZLdDNNrRTBh+7pPJAiJ4mw9RTOFe30HY=
+	t=1785684696; cv=none; b=e+FEvaN67jd5H6uDJwLumKMSI9tSumYPYCspsA6MZokxD3MdDjQRK54vnPQbeRmYiSpTC50WVjsf7KHTyEYwQXN9JqJn+ZMrrraZFDdmkJ1aXuqtZZ5ITPvvw1OoV28J1YV0l8ge/dzYBGTo9jobauVy76L2UZtFw5E61Gv8lhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785684108; c=relaxed/simple;
-	bh=oPIPJIbT996fDCjpLjlK/ZsY97vJTBErQkLcDSYPjus=;
+	s=arc-20240116; t=1785684696; c=relaxed/simple;
+	bh=px8dE3bxwRZq5Tg8BoYdcga/Yvyq8YGWjYTGt0qUMgE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EyJb69/XXRJYjhzyMpyqHdqc37jWfp4n4sPeFZ2d529/l8B2JdAwW6o08IUZxwpQPfXsvpllGeHXnGTiFkTnDiYY4TG6YzBvsK8TQnJ7DkmA5HZsMEdBS9ms0O6JIlJlYpjJVwJEsUHR2REJpRbUuYdHhxaBGmPMaKqLwBhE0Vo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=FuUHKUM1; arc=none smtp.client-ip=209.85.160.48
+	 In-Reply-To:Content-Type; b=B0VIJXKuHhOvPsXAN02WUjA5fV1K8pC/u+mKAduOEp3Rh1QZPYCguNeH6ywUtg7Slg8yOuJdnyQENIOHmq9djkKwjpuzh6PCvwJLKQVNhVTTaESlu2hCy4hPMRkxamXbpWEIfFMqdm4ca7w2BSFDulnBiLlxH3Gdt+IswzgUQes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LBBOqr2R; arc=none smtp.client-ip=209.85.160.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="FuUHKUM1"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-4569e871502so701278fac.1
-        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 08:21:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LBBOqr2R"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-448b89f700fso2572365fac.2
+        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 08:31:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785684105; x=1786288905; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1785684692; x=1786289492; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=kPqOl4wp7KWWvdGsj9eCGVRa0PYoR/ErdETgCVgpTQk=;
-        b=FuUHKUM1KzwS2MQ+9NmMqcT6uJHYboTu5ZF99UbQje0MzLpo95skdMWNbl8rDrIMxd
-         fTpMLYL0uZ0iG6PiRqLmgtk8JvnCiwtWAZKWqsVkn/aY2Y6130RcXtq3gJ12ebLBIiPC
-         IMaWN5fkotB6wFMThjZuqXWJOxDrK/iXTZowUUjX0nhRM4LaKSEvhzJ6blI0ti87kMll
-         U01PoeijqcXdNMgCfTF6s2NgW5zaeFLk00MGIjYG7WGvwB6qb/Ym3GPTcEJw+K9dByFZ
-         3ywppGBYQbXsZzSs5aiFelAIBpdHRueIml4xHSApD+4iu3YLx3hEAF0lBGsEEjeMXCCn
-         araw==
+        bh=dCFVPQGLGHHPRubIvlqdNztK/91BUJyCsT+AEegVq4Q=;
+        b=LBBOqr2Ry9AS09q3WZUdYFRt5XI43M3AOxfE0+tF97+SospNqLGS0SZv+WEOA2CIka
+         Dyitz0o5uxOKH2WEMmKgskEVXz5cKI8lruTaEFm9Pf7K332N10KFOJ08rH6+TtebnZYg
+         GBEBZKpIWgLkaPqhXfP4PDG652wJibp5pyd7W/iuPOB53X3aShfxTCt/uIhDjFt/R667
+         dKQ8RdNGZ7e9oNe7VRdpXVUJa0QHNRFV8q+q3hWRIge1AEBd492tcaOOz7MZccpcp/59
+         SGQD6GDcPERhXDOs+zXn7B0Zp+5GKzWDSRi4LCxxAJdLqnexHgVQXEe0xxEigLP2vbfL
+         h8fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785684105; x=1786288905;
+        d=1e100.net; s=20251104; t=1785684692; x=1786289492;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=kPqOl4wp7KWWvdGsj9eCGVRa0PYoR/ErdETgCVgpTQk=;
-        b=Q6g7JqLAa0hditatc1+oN46sz4nSWNqVwWuWuJEim0yZGX5+PQmrEKoLApm+aTCGaT
-         Ousq+U0ZQIqNJrfUk1dc6OWCGnuWirsqVUFVar+CYSPExo8U9rFnjuKJRV5KrxEaysss
-         6MKuPRwPZyEmksNFNGni+NzmPDxfBtGKYNJtptJxzvt7XEUoMFsNlU65Na/P/ZO5wcFr
-         nCR+zLMXzuTa0xvtsld1MDUnnMOIhNRbg9AGJN4EnuH3EA6X4OR6waOA5MQwf9Qvcmhz
-         nvQ4KQW49SJq3F4OOzmyGKrjxi19MAusjPTS1dnZIsVbqsUr2zqQuV/kb4v9d5HS0eEY
-         AT3g==
-X-Forwarded-Encrypted: i=1; AHgh+Rpp/YGa5p1ntL6hLUzcJXYs3GsQYHyVEOqL3Tss7G5VyutJ53pC6rAiWKVbPUXwkqHTvclmigrGeLw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx2xM/DO7DsR9AjJHg39L4ekn7g4LfW+/0ameVHAT2be7KYYn4g
-	HozsfTvIpzJ+EGQffP90dF/2Myeq7+R6Fhw9gnnIyAw0Y8hC+ihRvspwiyRMhDRvoM8=
-X-Gm-Gg: AR+sD10oPUfJMZDHOwl7tJhnliPPCRTQ/9i1LsRId6xLYW2WeqHD80nckJOTwpus7Kh
-	BHNXfUUuJs6nf5TEOpeZJ6PUmoPvggAKm/G3CUG2R09AhqoeOk7r7W9kSjXIvBfddbyC3OhroHh
-	Ls5WVlcDFoxG1Bph79yWm42Elt9PW+QShiMBwHNfdCflbsJjN2179aCcxHdNVPfb16Dqv/mMD5k
-	5/4zGHctAectx+m5gkwdy/w/o+cw30f0Y5hTjAk9c9PdgFTq6Ix1hFQ9LD/j5aao7OLPvNbeC28
-	B4qHdFut0nrILBVyp69UtqNqz96+mMmAUaOSNyJNPgOnfmysQKUhHq2gAhjisRSuZT8R6WT/QAl
-	a6a03WwYbHpJcvsjKENOUe8e3y+zrO/K2uYrm0XPhHVI137D6q7PHH0LPCd6D+V/C5ujO49Pu1w
-	f35jxzsoNSD9sBUJ4PquNNQx0IvPgZqXq/YhmrDLsFB/LErlMaBd8r8Y9L/uiLNKwPAazEz0n8C
-	TwO+FfFpt5q6xDo5lNx6fnPRnf+yoaN4UPYSmQ=
-X-Received: by 2002:a05:6820:991:b0:6ae:46cd:e8fd with SMTP id 006d021491bc7-6ae46cdea66mr8564071eaf.21.1785684104915;
-        Sun, 02 Aug 2026 08:21:44 -0700 (PDT)
+        bh=dCFVPQGLGHHPRubIvlqdNztK/91BUJyCsT+AEegVq4Q=;
+        b=WP83grYinqBXPhkannb6pokYIGKC57D3OQ5O+oNO2AMga+n/403ApcLIYLkZ2g/mVr
+         YxGEpPOKgqwgCHnVBexboi+X1Vsdz3m0Bl01EMplZsqwCZh0YyaE7ySkPHhm9XHqlJrl
+         DdJCE/oOwGNmioiJkxHA6CY6TtZfLx12YVkKvViwzf2nsmDlAx0a5+SAsQt5LAq9tbHz
+         1wr1IL0gYgZ33nK/nkTU84JaWw9byGWVhrMv296CFV7IwOPMkYOl4tAhs74flxL6ph4K
+         Dcjf1DrhfzEsOe3Urev5KvryXQkiXkgY2m45c9XMMhR+toxbgjReSejZuvyxfZ6KWAmI
+         kqOQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqhEE7TQYb7Npxx/0w3gq36qk5Y+tD2mogItbDWKX6Um2a0qebmzlSWtmyHOU67dHX+mp8KHqCaSHc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxh3U5ShJ1YfDnEu7O8fPoI87PujaipwxHCXUta6CZabP815lR7
+	X5gbLqUWjRFIj5NI/LCZIox0gjMxhWmxBVet3ztrKV4j3Nu05KbM/IM6C3Kss2Kw2F4=
+X-Gm-Gg: AR+sD10KHPGsVplfFBUT4a/yB/iYqb+u8RoWwS0M0LqpT1q34K8iaqy8c4okkVNV8Ym
+	G0sxj76kd1R/XrCNfrNc07OjDtgkcZVLU57gaMeOXS4uDjp5BvaJ3vNyTuCh4rgRWbFUWD2F+QS
+	QYAQZHG5Uptq69fcvfknkSIPGFOe/MlpND4QTHg6+YA5j+ffG02zV46uth0lPNbdjDzqgK3TVJF
+	3Natt7TPtQRwHcHrVVWYozOYN3f7aSqWr8vx/iqtNMLv8VXPcvy0PsMm1KDQWPXcMDbSXLsFTEr
+	drySzi2Cn1Yc5T7bF6iIL2YKI9lMheY/WF/EX5pGpULYYrV3mB9JWtDFl3z98pFjjWd/+kQbisV
+	+bkysQt8EzmgUI/XJUyLOG1jiEaNnHhJ1XICnzbljtmXfQkT2iODMaFK9gxa8yvOTdQMlNsSk1f
+	tpRu2Hi2dyo910OCb01+f/yM2mYrDHRO1lawbf9NWHD6V1vBbJnjWzGtEAuBm3z3x+ZT0KDTEI6
+	/b223m6MYbHV9rvfphWShqHmIIPRmP3k7IWpMw=
+X-Received: by 2002:a05:6870:1256:b0:459:88c:12d0 with SMTP id 586e51a60fabf-459088c199dmr8364418fac.2.1785684692137;
+        Sun, 02 Aug 2026 08:31:32 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:5487:2b6e:1057:d3d3? ([2600:8803:e7e4:500:5487:2b6e:1057:d3d3])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458f60650c2sm6608256fac.2.2026.08.02.08.21.41
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458f66c1d89sm6362690fac.13.2026.08.02.08.31.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2026 08:21:43 -0700 (PDT)
-Message-ID: <89176b25-bcf6-4d44-94b3-7a29abec7b10@baylibre.com>
-Date: Sun, 2 Aug 2026 10:21:41 -0500
+        Sun, 02 Aug 2026 08:31:31 -0700 (PDT)
+Message-ID: <0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com>
+Date: Sun, 2 Aug 2026 10:31:29 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,46 +70,80 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] iio: health: max30102: fix NULL dereference in
- interrupt handler
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Marco Chen <marcochen.dev@gmail.com>, nuno.sa@analog.com,
- andy@kernel.org, pmeerw@pmeerw.net, matt@ranostay.sg,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
-References: <20260731184124.112124-1-marcochen.dev@gmail.com>
- <aca9bdb5-f068-491f-a651-d24a80a2786e@baylibre.com>
- <20260802031035.6eb2be14@jic23-huawei>
+Subject: Re: [PATCH] staging: iio: ad7816: avoid DMA from stack in spi_read
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>, nuno.sa@analog.com,
+ Michael.Hennerich@analog.com, jic23@kernel.org, gregkh@linuxfoundation.org
+Cc: andy@kernel.org, linux@analog.com, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260802113840.17730-1-abdelnasserhussein11@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260802031035.6eb2be14@jic23-huawei>
+In-Reply-To: <20260802113840.17730-1-abdelnasserhussein11@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 8/1/26 9:10 PM, Jonathan Cameron wrote:
-> On Sat, 1 Aug 2026 10:18:42 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
+On 8/2/26 6:38 AM, Abdelnasser Hussein wrote:
+> The SPI core may use DMA for transfers. Using a stack-allocated
+> buffer for DMA is unsafe and can trigger faults when VMAP_STACK is
+> enabled, since the stack is not guaranteed to be DMA-accessible.
 > 
->> On 7/31/26 1:41 PM, Marco Chen wrote:
->>> The interrupt is requested in max30102_probe() and stays enabled  
->>
->> I've always wondered why most IIO drivers seem to do this. It seems to
->> me that requesting the irq with IRQF_NO_AUTOEN and only enabling it
->> when everything is set up for reading data would avoid spurious interrupts
->> like this.
-> 
-> It teaches discipline.  More serious from what I recall the no autoen thing
-> used to be done via a racey bit of trying to turn it off as fast as you can.
-> 
-> Most of the time we should be able to write drivers that don't need to
-> use that flag and don't touch enable_irq() at all.
-> 
-> Obviously that's not always true.
+> Move the transfer buffer from the stack into the ad7816_chip_info
+> structure so it has a stable lifetime suitable for DMA transfers.
+> Mark the buffer with ____cacheline_aligned to ensure proper alignment
+> for DMA operations.
+
+Should also mention fixing the "wrong" sizeof() use in the spi_read()
+call. It was the correct size, but the wrong variable was referenced.
+
 > 
 
-Hmm... so I should go back and change [1] since it isn't strictly
-required there?
+Probably deserves a Fixes: tag.
 
-[1]: https://lore.kernel.org/linux-iio/20260731-iio-adc-ti-ads112c14-continuous-mode-v2-1-eb13da38e8fc@baylibre.com/
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> ---
+>  drivers/staging/iio/adc/ad7816.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index 0e32a2295990..fcaadebff0f4 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -50,6 +50,7 @@ struct ad7816_chip_info {
+>  	u8  oti_data[AD7816_CS_MAX + 1];
+>  	u8  channel_id;	/* 0 always be temperature */
+>  	u8  mode;
+> +	__be16 rx_buf ____cacheline_aligned;
 
+In IIO, we have a special macro for this instead of `____cacheline_aligned`. 
+
+__aligned(IIO_DMA_MINALIGN);
+
+>  };
+>  
+>  enum ad7816_type {
+> @@ -65,7 +66,6 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+>  {
+>  	struct spi_device *spi_dev = chip->spi_dev;
+>  	int ret;
+> -	__be16 buf;
+>  
+>  	gpiod_set_value(chip->rdwr_pin, 1);
+>  	gpiod_set_value(chip->rdwr_pin, 0);
+> @@ -91,14 +91,12 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+>  
+>  	gpiod_set_value(chip->rdwr_pin, 0);
+>  	gpiod_set_value(chip->rdwr_pin, 1);
+> -	ret = spi_read(spi_dev, &buf, sizeof(*data));
+> +	ret = spi_read(spi_dev, &chip->rx_buf, sizeof(chip->rx_buf));
+>  	if (ret < 0) {
+>  		dev_err(&spi_dev->dev, "SPI data read error\n");
+>  		return ret;
+>  	}
+> -
+> -	*data = be16_to_cpu(buf);
+> -
+> +	*data = be16_to_cpu(chip->rx_buf);
+>  	return ret;
+>  }
+>  
 
