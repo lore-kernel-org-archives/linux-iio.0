@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2875E2264C7;
-	Sun,  2 Aug 2026 18:17:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC7F2264C7;
+	Sun,  2 Aug 2026 18:21:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785694680; cv=none; b=isAXNOWEc7CtQjUEXcGekfhzdYKSElH4LYvxbUgqS1L/+QPl4QIINbgqQNcbbSAvcTOdRXZqrUJxYPZhhGNKKT7yUgEdrhBrA/D1kOAMmChiWYmv3BY7/5YlTSpvz4omwpJZyVtmvjmqRvBpzwoQpK7Ol/rbIMo4cZGUZzZLsrg=
+	t=1785694900; cv=none; b=Pd5V4GNa7KrdyHQ+9UL4viujztDZ5E1M2FYLsIKiZu/DvgUKvk6C+8YvUWln66YM+YVEZrlqDs600a+8n1Iwkvm0407psRj5V41pzAos0gncwULuLSCHoZ7SHh9CUPjleX099TwPEUTFTfX+OfnkbrlYnyPcOBTAga0Aob1as58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785694680; c=relaxed/simple;
-	bh=o1eBXfB94obow01AtNkpYMoQ37BpmLtXBMkjD0JlqHg=;
+	s=arc-20240116; t=1785694900; c=relaxed/simple;
+	bh=hPkBZ27HYMyLAEw2FJZJtqjWp2w6rYlCI/CvQM3Vu04=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sPIAeoD1VjUpSIdHLpXH39lWlzqJ05llH0P6rHFAH3U+ZT6coydxg37i4Dl6s19zYIy1tWbo606U5Q95aNzn51wAmhLJuKrXt7O6tAgimvXa9D+aZ2IAYKzNTSGiNsC8CJMUVVbe0FQLNDgUFkI/MKt8eeuSPlqX9HVJbtnd4iM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g4El5Hl4; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=QFFkxRgBw0P83VQVnxuQJyg6c28Pu1aLrunNLSyXIs0hH9bfz7OyR6gOxsLsiGlHhbgZI8te5ey8Nu0ch3fVjAAPeSDUb4/eEWuUliNE8KO52Ir7CDefXgMU+b0ksq5euoFPAkhM8ljYtPBjhdFPiUNYvOhnsZM3RfQ8It49W1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MKWVNDUe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g4El5Hl4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A831F000E9;
-	Sun,  2 Aug 2026 18:17:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MKWVNDUe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 591461F000E9;
+	Sun,  2 Aug 2026 18:21:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785694678;
-	bh=1KW93rhzgnMdKxZPY9JoRqQbfL3fVg+wHOPB3wr4hnY=;
+	s=k20260515; t=1785694898;
+	bh=5CPWfFeyUhmK9l6Bga30vy6fwbQtui3iKRb3sQay5v0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=g4El5Hl4ZZwDig7jXPfv9vZ1Cxm3KAEDJ4INO3+6mV66KjdFBA2wAvRHFL/ivPuwC
-	 tMlptn2I+UGn9czePqOQ1prd/3A2O8y6EQNvxt2rLwX3w9AVIVeWtJIWLv018n5vBv
-	 /XNGt7/ihHfh43j4Dn/RvXRDidQKC7s8ug1xNDRESCNn63Nrl1C0005yO6L6tXUTlJ
-	 Jwi5bSMPTMAIG0zKB4rPXpqcEU3/2165EVSz7v0j8+hztNknxDtO3cO2CuQsLnf8ig
-	 pOUiPkv23y9x7pEG8fVIlNlQ5AZcbvVlGtPhDfYcEApIHZfLYvS2Gze50uwupzf3Ww
-	 h5vWVnnznYlNg==
-Date: Sun, 2 Aug 2026 19:17:53 +0100
+	b=MKWVNDUeyRtW12tXN2MfEw5tz03VzWB8PqrI6WlLJr+EQfGn2p+i2UXpjEPr2GYk+
+	 DG0JAjGBv4m1ofhJgVHQmQXXIIehf8cg5Mqhp47/GfGkcz0kxV6QRR1MrZr8dYhM41
+	 qtAFABFzkQcTfiIjfYnAu4+3T/dL35pJbcxlYmKsGhWaNYHhlxqKXPYVsyQdqum/CP
+	 By1WfUk5eOdnyUvzT1j+k6yw5aYf7PR6XbLXa+LOHRkS0/PZGVKJC7zpD8weDL5SwB
+	 CMg9otpW/tYv2f3zzdrstFBgqw+cIfyXmuuqBL5j9hW0IKf+8kJ6QtLn2vl+mZ9Jl5
+	 1G5DjgjaAkhLg==
+Date: Sun, 2 Aug 2026 19:21:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Chris Hall <c-hall@ti.com>, Patrick Edwards
- <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] iio: adc: ti-ads112c14: add continuous mode
- support
-Message-ID: <20260802191753.2c98d7bb@jic23-huawei>
-In-Reply-To: <20260731-iio-adc-ti-ads112c14-continuous-mode-v2-3-eb13da38e8fc@baylibre.com>
-References: <20260731-iio-adc-ti-ads112c14-continuous-mode-v2-0-eb13da38e8fc@baylibre.com>
-	<20260731-iio-adc-ti-ads112c14-continuous-mode-v2-3-eb13da38e8fc@baylibre.com>
+To: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, shuaijie wang
+ <wangshuaijie@awinic.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: aw96103: validate firmware data length
+Message-ID: <20260802192134.32a0349d@jic23-huawei>
+In-Reply-To: <20260801193700.57457-1-acharyalaxman8848@gmail.com>
+References: <20260801193700.57457-1-acharyalaxman8848@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,98 +47,106 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 Jul 2026 18:48:12 -0500
-"David Lechner (TI)" <dlechner@baylibre.com> wrote:
+On Sun,  2 Aug 2026 01:22:00 +0545
+Laxman Acharya Padhya <acharyalaxman8848@gmail.com> wrote:
 
-> Add support for continuous mode in the TI ADS112C14 ADC driver. In this
-> mode the ADC itself is starting each conversion, so we add a trigger
-> based on the DRDY interrupt to read each sample. This mode is also
-> limited in that only one channel can be enabled at a time since the
-> chip does not have a sequencer or simultaneous sampling capability.
-> Continuous mode will only be used when this new trigger is the current
-> trigger.
+> The firmware parser reads a length from the binary header and then uses
+> it to walk six-byte register/value entries. A truncated firmware image
+> can make the parser read beyond the copied firmware buffer. A value
+> smaller than the four-byte count field also underflows, producing a very
+> large length.
 > 
-> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-There is some follow on stuff in here from the earlier suggestion to
-check the status register even when datardy involved
+> Read the little-endian field with get_unaligned_le32(), as previously
+> proposed by David Lechner. Validate the header size, reject an
+> underflowed length, ensure the resulting payload is contained in the
+> firmware image, and require it to contain whole register/value entries.
+> 
+> Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
+> Link: https://lore.kernel.org/r/20260314-iio-proximity-aw96103-fix-firmware-read-v1-1-c74fe9ccd82b@baylibre.com
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
+Looks fine to me, but I'll leave it on list a little while so others
+have time to take a look, ideally including Shuaijie Wang
+
+Thanks
+
+Jonathan
 
 > ---
->  drivers/iio/adc/ti-ads112c14.c | 146 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 144 insertions(+), 2 deletions(-)
+>  drivers/iio/proximity/aw96103.c | 30 ++++++++++++++++++++++++------
+>  1 file changed, 24 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-> index c6d83298c312..5147d10785fb 100644
-> --- a/drivers/iio/adc/ti-ads112c14.c
-> +++ b/drivers/iio/adc/ti-ads112c14.c
-> @@ -9,6 +9,7 @@
->   */
+> diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
+> index 8fbb755dc..8352d51e5 100644
+> --- a/drivers/iio/proximity/aw96103.c
+> +++ b/drivers/iio/proximity/aw96103.c
+> @@ -24,6 +24,7 @@
+>  #define AW96103_BIN_VALID_DATA_OFFSET		64
+>  #define AW96103_BIN_DATA_LEN_OFFSET		16
+>  #define AW96103_BIN_DATA_REG_NUM_SIZE		4
+> +#define AW96103_BIN_REG_SIZE			6
+>  #define AW96103_BIN_CHIP_TYPE_SIZE		8
+>  #define AW96103_BIN_CHIP_TYPE_OFFSET		24
 >  
->  #include <linux/bitfield.h>
-> +#include <linux/bitmap.h>
->  #include <linux/cleanup.h>
->  #include <linux/completion.h>
->  #include <linux/crc8.h>
-> @@ -18,6 +19,7 @@
->  #include <linux/i2c.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/trigger.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/interrupt.h>
-> @@ -257,6 +259,7 @@ struct ads112c14_measurement {
->  struct ads112c14_data {
->  	const struct ads112c14_chip_info *chip_info;
->  	struct regmap *regmap;
-> +	struct iio_trigger *drdy_trig;
->  	/* Synchronizes access to register value fields. */
->  	struct mutex lock;
->  	int drdy_irq;
-> @@ -280,11 +283,32 @@ static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
->  	struct iio_dev *indio_dev = private;
->  	struct ads112c14_data *data = iio_priv(indio_dev);
+> @@ -229,14 +230,27 @@ static const struct aw_chip_info aw_chip_info_tbl[] = {
+>  	},
+>  };
 >  
-> -	complete(&data->drdy_completion);
-> +	if (indio_dev->trig && iio_trigger_using_own(indio_dev))
-> +		iio_trigger_poll(data->drdy_trig);
-
-Even for this path we should be checking it wasn't a spurious interrupt.
-If that's happening in a threaded interrupt we'll then call iio_trigger_poll_nested()
-and the handler will happen in the interrupt thread.   So the overhead
-of that check should just be the check.
-
-> +	else
-> +		complete(&data->drdy_completion);
-
-For this single shot read we are probably less bothered by overhead so
-moving this to a thread should be fine I think.
-
->  
->  	return IRQ_HANDLED;
+> -static void aw96103_parsing_bin_file(struct aw_bin *bin)
+> +static int aw96103_parsing_bin_file(struct aw_bin *bin)
+>  {
+> +	u32 data_len;
+> +
+> +	if (bin->len < AW96103_BIN_VALID_DATA_OFFSET)
+> +		return -EINVAL;
+> +
+> +	data_len = get_unaligned_le32(bin->data + AW96103_BIN_DATA_LEN_OFFSET);
+> +	if (data_len < AW96103_BIN_DATA_REG_NUM_SIZE)
+> +		return -EINVAL;
+> +
+> +	bin->valid_data_len = data_len - AW96103_BIN_DATA_REG_NUM_SIZE;
+> +	if (bin->valid_data_len > bin->len - AW96103_BIN_VALID_DATA_OFFSET ||
+> +	    bin->valid_data_len % AW96103_BIN_REG_SIZE)
+> +		return -EINVAL;
+> +
+>  	bin->valid_data_addr = AW96103_BIN_VALID_DATA_OFFSET;
+> -	bin->valid_data_len =
+> -		*(unsigned int *)(bin->data + AW96103_BIN_DATA_LEN_OFFSET) -
+> -		AW96103_BIN_DATA_REG_NUM_SIZE;
+>  	memcpy(bin->chip_type, bin->data + AW96103_BIN_CHIP_TYPE_OFFSET,
+>  	       AW96103_BIN_CHIP_TYPE_SIZE);
+> +
+> +	return 0;
 >  }
 >  
-> +static int ads112c14_trigger_set_state(struct iio_trigger *trig, bool state)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> +	struct ads112c14_data *data = iio_priv(indio_dev);
+>  static const struct regmap_config aw96103_regmap_confg = {
+> @@ -500,7 +514,7 @@ static int aw96103_bin_valid_loaded(struct aw96103 *aw96103,
+>  	int ret;
+>  
+>  	for (i = 0; i < aw_bin_data_s->valid_data_len;
+> -	     i += 6, start_addr += 6) {
+> +	     i += AW96103_BIN_REG_SIZE, start_addr += AW96103_BIN_REG_SIZE) {
+>  		reg_addr = get_unaligned_le16(aw_bin_data_s->data + start_addr);
+>  		reg_data = get_unaligned_le32(aw_bin_data_s->data +
+>  					      start_addr + 2);
+> @@ -550,6 +564,8 @@ static int aw96103_para_loaded(struct aw96103 *aw96103)
+>  static int aw96103_cfg_all_loaded(const struct firmware *cont,
+>  				  struct aw96103 *aw96103)
+>  {
+> +	int ret;
 > +
-> +	if (state)
-> +		enable_irq(data->drdy_irq);
-> +	else
-> +		disable_irq(data->drdy_irq);
-> +
+>  	if (!cont)
+>  		return -EINVAL;
+>  
+> @@ -561,7 +577,9 @@ static int aw96103_cfg_all_loaded(const struct firmware *cont,
+>  	aw_bin->len = cont->size;
+>  	memcpy(aw_bin->data, cont->data, cont->size);
+>  	release_firmware(cont);
+> -	aw96103_parsing_bin_file(aw_bin);
+> +	ret = aw96103_parsing_bin_file(aw_bin);
+> +	if (ret)
+> +		return ret;
+>  
+>  	return aw96103_bin_valid_loaded(aw96103, aw_bin);
+>  }
 
-So do we need to do this to avoid some condition, or is this the defensive
-stuff you pointed out in that other thread?
-
-I'd normally expect a dataready trigger to be controlling if the interrupt
-is generated at all rather than masking host end.
-
-> +	return 0;
-> +}
-> +
-> +static const struct iio_trigger_ops ads112c14_trigger_ops = {
-> +	.set_trigger_state = ads112c14_trigger_set_state,
-> +	.validate_device = iio_trigger_validate_own_device,
-> +};
-> +
