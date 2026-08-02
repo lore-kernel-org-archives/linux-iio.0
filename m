@@ -1,149 +1,105 @@
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4B83B47DC
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 15:31:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2843259498
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 15:39:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785684696; cv=none; b=e+FEvaN67jd5H6uDJwLumKMSI9tSumYPYCspsA6MZokxD3MdDjQRK54vnPQbeRmYiSpTC50WVjsf7KHTyEYwQXN9JqJn+ZMrrraZFDdmkJ1aXuqtZZ5ITPvvw1OoV28J1YV0l8ge/dzYBGTo9jobauVy76L2UZtFw5E61Gv8lhk=
+	t=1785685143; cv=none; b=ZVGSZWMgdA5hVA+W1neOEvNZw2FstxyYsLfvlTpKEjCn3nS0ZoQd/O0vNCOszYXWHBqg+bxEXxb9PQaSWFTPgoOmM6gxGS4/hB8eO+//Iq/bw9Pv9vCvfsxCcDiFy3skemPeX9vabB0xiJzUGCZurtLMMfBqbQDZPjVeFhPAwc0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785684696; c=relaxed/simple;
-	bh=px8dE3bxwRZq5Tg8BoYdcga/Yvyq8YGWjYTGt0qUMgE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=B0VIJXKuHhOvPsXAN02WUjA5fV1K8pC/u+mKAduOEp3Rh1QZPYCguNeH6ywUtg7Slg8yOuJdnyQENIOHmq9djkKwjpuzh6PCvwJLKQVNhVTTaESlu2hCy4hPMRkxamXbpWEIfFMqdm4ca7w2BSFDulnBiLlxH3Gdt+IswzgUQes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LBBOqr2R; arc=none smtp.client-ip=209.85.160.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785685143; c=relaxed/simple;
+	bh=Cw3BW59pzjhQ6yYtaY8oTMbMzdfEUldSAQFGv5og+Wk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GZhWyBAt+APGL0OG9UQ2wNNk5VvTGIfK4/GWoRr2HfezaZODpHP8QV5gS4+empYL6dUnzTjKQOI3spN8gpy/dSHOuGv3Nr1WIeFlRs9rR1bP+OdMm0Vd01PXEgHO2PnvLAcojTKuMKY5o2X2QTf1ButT8o8fLj/N8mUpKe2cN+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U5rcpdEH; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LBBOqr2R"
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-448b89f700fso2572365fac.2
-        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 08:31:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U5rcpdEH"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-69c1220bd51so3949963a12.3
+        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 08:39:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785684692; x=1786289492; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=dCFVPQGLGHHPRubIvlqdNztK/91BUJyCsT+AEegVq4Q=;
-        b=LBBOqr2Ry9AS09q3WZUdYFRt5XI43M3AOxfE0+tF97+SospNqLGS0SZv+WEOA2CIka
-         Dyitz0o5uxOKH2WEMmKgskEVXz5cKI8lruTaEFm9Pf7K332N10KFOJ08rH6+TtebnZYg
-         GBEBZKpIWgLkaPqhXfP4PDG652wJibp5pyd7W/iuPOB53X3aShfxTCt/uIhDjFt/R667
-         dKQ8RdNGZ7e9oNe7VRdpXVUJa0QHNRFV8q+q3hWRIge1AEBd492tcaOOz7MZccpcp/59
-         SGQD6GDcPERhXDOs+zXn7B0Zp+5GKzWDSRi4LCxxAJdLqnexHgVQXEe0xxEigLP2vbfL
-         h8fA==
+        d=gmail.com; s=20251104; t=1785685140; x=1786289940; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=a1DcnFU7EismyxYSalD2E+hMXE3WVdszKjjvYYTM+tk=;
+        b=U5rcpdEH0PLADr2u6M6FipdFgWteBE98gQ+0DU4QT9xdwvZI0Usvv0KyGfzaZY0a+k
+         ROe4aZGbSSSW8yUIx/CpFYkkRzW3MBXmo8zUDcl1HWvvHPubFaRUVT1eBW1pJc2OiQjE
+         ixRi1DGhU67raPepdyLFsGI6q59tqTTDtNhZdxfDSQ9ir6BTh0E7gJ4R1lIxOU0CG95h
+         ePK/eYfPlspxBki7EH0y/FgQi+oG5Ay5poDU89/f91s5fqkcBlYISHVV1OpyW3kwPuxZ
+         YjIBgpgywMRl/oDxpK7V1Kw5tcy29xOdChbxg2cr5xT7zNyXf7X2zq/8MOYeIJVmg/AO
+         OVsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785684692; x=1786289492;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dCFVPQGLGHHPRubIvlqdNztK/91BUJyCsT+AEegVq4Q=;
-        b=WP83grYinqBXPhkannb6pokYIGKC57D3OQ5O+oNO2AMga+n/403ApcLIYLkZ2g/mVr
-         YxGEpPOKgqwgCHnVBexboi+X1Vsdz3m0Bl01EMplZsqwCZh0YyaE7ySkPHhm9XHqlJrl
-         DdJCE/oOwGNmioiJkxHA6CY6TtZfLx12YVkKvViwzf2nsmDlAx0a5+SAsQt5LAq9tbHz
-         1wr1IL0gYgZ33nK/nkTU84JaWw9byGWVhrMv296CFV7IwOPMkYOl4tAhs74flxL6ph4K
-         Dcjf1DrhfzEsOe3Urev5KvryXQkiXkgY2m45c9XMMhR+toxbgjReSejZuvyxfZ6KWAmI
-         kqOQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqhEE7TQYb7Npxx/0w3gq36qk5Y+tD2mogItbDWKX6Um2a0qebmzlSWtmyHOU67dHX+mp8KHqCaSHc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxh3U5ShJ1YfDnEu7O8fPoI87PujaipwxHCXUta6CZabP815lR7
-	X5gbLqUWjRFIj5NI/LCZIox0gjMxhWmxBVet3ztrKV4j3Nu05KbM/IM6C3Kss2Kw2F4=
-X-Gm-Gg: AR+sD10KHPGsVplfFBUT4a/yB/iYqb+u8RoWwS0M0LqpT1q34K8iaqy8c4okkVNV8Ym
-	G0sxj76kd1R/XrCNfrNc07OjDtgkcZVLU57gaMeOXS4uDjp5BvaJ3vNyTuCh4rgRWbFUWD2F+QS
-	QYAQZHG5Uptq69fcvfknkSIPGFOe/MlpND4QTHg6+YA5j+ffG02zV46uth0lPNbdjDzqgK3TVJF
-	3Natt7TPtQRwHcHrVVWYozOYN3f7aSqWr8vx/iqtNMLv8VXPcvy0PsMm1KDQWPXcMDbSXLsFTEr
-	drySzi2Cn1Yc5T7bF6iIL2YKI9lMheY/WF/EX5pGpULYYrV3mB9JWtDFl3z98pFjjWd/+kQbisV
-	+bkysQt8EzmgUI/XJUyLOG1jiEaNnHhJ1XICnzbljtmXfQkT2iODMaFK9gxa8yvOTdQMlNsSk1f
-	tpRu2Hi2dyo910OCb01+f/yM2mYrDHRO1lawbf9NWHD6V1vBbJnjWzGtEAuBm3z3x+ZT0KDTEI6
-	/b223m6MYbHV9rvfphWShqHmIIPRmP3k7IWpMw=
-X-Received: by 2002:a05:6870:1256:b0:459:88c:12d0 with SMTP id 586e51a60fabf-459088c199dmr8364418fac.2.1785684692137;
-        Sun, 02 Aug 2026 08:31:32 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:5487:2b6e:1057:d3d3? ([2600:8803:e7e4:500:5487:2b6e:1057:d3d3])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458f66c1d89sm6362690fac.13.2026.08.02.08.31.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2026 08:31:31 -0700 (PDT)
-Message-ID: <0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com>
-Date: Sun, 2 Aug 2026 10:31:29 -0500
+        d=1e100.net; s=20251104; t=1785685140; x=1786289940;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=a1DcnFU7EismyxYSalD2E+hMXE3WVdszKjjvYYTM+tk=;
+        b=EcsGbEQz+BewWazwL8tcpAG5OCsmoPtjS74BznIuobwLjJUt9yl/zpctZZqx44ATQk
+         TVyhGSJ041Z3e2Z798SnvqgpsyHXvRpGeZd1dJDpMwD5aKKbUEJzz8VWyFjHO5uaEC8E
+         k3lw8/KpXgPj4oX0XhdB2l/bhepHZEAcgfR1FvhZCKBwLSg1r3LIfa6edfYCOYc/Cpaq
+         ubCmjXE/lCn4uCfiOKr561hOrp/jXFmvdkaZf1COMo5v2GDzegHtb/LlI9ponD/VIwue
+         DTtZRYY+WcT5EnZ1BzaHaLtDdHbNiUMv8AUPUoq+zMwspLtGksKaMN4YGycOVYLwQwmM
+         U2hg==
+X-Forwarded-Encrypted: i=1; AHgh+RrkDRv5LopGZhk9twASbP54iUyOtYtvDY2w7U8BwnAiryVvvg11wV1pRSfZPv7EgMB/5RlhZqitJJQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyUFD7RzQhVBCzicgPyAYV+GcqnBso/r0mJ3Xw2ZKQ79wdNJFfC
+	Y/bOMKZ73cQ0hFhxc9EEkDQfAQW4oHq5cNJyXA/pLSqBdr+2b5J7rY3d
+X-Gm-Gg: AR+sD11jjfZ/Phb+mMfOfcpQJ0e3XJW48uDKi5VMUwh9v54ZP16NzD3kchy5fJizUoy
+	yXW0gyV09X9sXW7H2K47dIM+8vJYwehtw+rbbFauViW6bgjK1FcBtGkk4uFiLPFCArLtsfvDRH2
+	4yabValXg4CTf5h+Xc3eP2NNq0fXffat2E0DfhThZx0kkrj+GA4ZZiRTyvUtkPbPH/EnvJwePQR
+	61FYPsvYVztCCSuQgg9P0I5A4L6PuoW7d6BmiTNZaFqQNJKklq1JCEN5D+C17ySt7mZrCSeX0DN
+	4gQTxUReP8c1VqFsQFow+OtmzMnnz1glEAcFl+sam/WUQHO1l+TlEUHgzTKq4ggTwXWpll27SzM
+	QGgiQJvNJX0BZvGKSzUeDrTozareqezMDkW/KOnK9c949tJzYVeEwZVVxocn5Hp3CaUOkhZcAzU
+	Qk4cI7lJviv98/aydfoxhB3H1OWIbc20rapxxNNDSE0X34hkABXmhHRSe2kEuJv8T+A83D8fWHc
+	G5qr5hDDd8hbXDAZo/gvsMFL4uiltnnFigoU3wNnF+rXKIe/5DQJgFdyz/k/8e20RUjQKfrWZ7e
+	BxakxjWd9goo8jcp+isDme9reTQSUvbSRmmjIe9sVewxvoGzKkEXDc9ctyBXRsZpzUqSK/k5Fc9
+	mcazEIol814dmqXMXrB3aa0iRi3mM4OawhkQR
+X-Received: by 2002:a17:906:4e83:b0:c1f:5d05:34e8 with SMTP id a640c23a62f3a-c1fe80cad02mr347793066b.21.1785685139681;
+        Sun, 02 Aug 2026 08:38:59 -0700 (PDT)
+Received: from systembl0wer ([185.94.52.228])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1fd4534fc4sm418261566b.51.2026.08.02.08.38.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2026 08:38:59 -0700 (PDT)
+Date: Sun, 2 Aug 2026 17:38:52 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Adi Nata <adinata.softwareengineer@gmail.com>
+Cc: lorenzo@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH] iio: humidity: hts221: Fix checkpatch blank line
+ warning
+Message-ID: <20260802173852.32b4bc52@systembl0wer>
+In-Reply-To: <20260802020614.19732-1-adinata.softwareengineer@gmail.com>
+References: <20260802020614.19732-1-adinata.softwareengineer@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] staging: iio: ad7816: avoid DMA from stack in spi_read
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, jic23@kernel.org, gregkh@linuxfoundation.org
-Cc: andy@kernel.org, linux@analog.com, linux-iio@vger.kernel.org,
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260802113840.17730-1-abdelnasserhussein11@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260802113840.17730-1-abdelnasserhussein11@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 8/2/26 6:38 AM, Abdelnasser Hussein wrote:
-> The SPI core may use DMA for transfers. Using a stack-allocated
-> buffer for DMA is unsafe and can trigger faults when VMAP_STACK is
-> enabled, since the stack is not guaranteed to be DMA-accessible.
+On Sun,  2 Aug 2026 10:06:13 +0800
+Adi Nata <adinata.softwareengineer@gmail.com> wrote:
+
+> Checkpatch warning:
 > 
-> Move the transfer buffer from the stack into the ad7816_chip_info
-> structure so it has a stable lifetime suitable for DMA transfers.
-> Mark the buffer with ____cacheline_aligned to ensure proper alignment
-> for DMA operations.
-
-Should also mention fixing the "wrong" sizeof() use in the spi_read()
-call. It was the correct size, but the wrong variable was referenced.
-
+> WARNING: Missing a blank line after declarations
+> +	struct hts221_hw *hw = iio_priv(iio_dev);
 > 
-
-Probably deserves a Fixes: tag.
-
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
 > ---
->  drivers/staging/iio/adc/ad7816.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 0e32a2295990..fcaadebff0f4 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -50,6 +50,7 @@ struct ad7816_chip_info {
->  	u8  oti_data[AD7816_CS_MAX + 1];
->  	u8  channel_id;	/* 0 always be temperature */
->  	u8  mode;
-> +	__be16 rx_buf ____cacheline_aligned;
 
-In IIO, we have a special macro for this instead of `____cacheline_aligned`. 
+This seems like churn on its own, Jonathan may not apply it.
 
-__aligned(IIO_DMA_MINALIGN);
+Also, I feel like just putting checkpatch warnings directly into the
+commit message is bad practice. Much better if it were "Add a blank line
+after variable declarations per checkpatch warning."
 
->  };
->  
->  enum ad7816_type {
-> @@ -65,7 +66,6 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
->  {
->  	struct spi_device *spi_dev = chip->spi_dev;
->  	int ret;
-> -	__be16 buf;
->  
->  	gpiod_set_value(chip->rdwr_pin, 1);
->  	gpiod_set_value(chip->rdwr_pin, 0);
-> @@ -91,14 +91,12 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
->  
->  	gpiod_set_value(chip->rdwr_pin, 0);
->  	gpiod_set_value(chip->rdwr_pin, 1);
-> -	ret = spi_read(spi_dev, &buf, sizeof(*data));
-> +	ret = spi_read(spi_dev, &chip->rx_buf, sizeof(chip->rx_buf));
->  	if (ret < 0) {
->  		dev_err(&spi_dev->dev, "SPI data read error\n");
->  		return ret;
->  	}
-> -
-> -	*data = be16_to_cpu(buf);
-> -
-> +	*data = be16_to_cpu(chip->rx_buf);
->  	return ret;
->  }
->  
-
+-- 
+Kind regards,
+Joshua Crofts
