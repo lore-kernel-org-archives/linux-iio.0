@@ -1,159 +1,128 @@
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC16E184
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 19:06:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFF54184
+	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 19:07:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785697565; cv=none; b=cQ7ADQnNrs5IXS2dGnlME006mvLQ+bRyhrdK3wyFtOn4IpYOQ0/8OPt3MuEUc6U6huP+AwGo5teUyFTC50PfObTO+kKduOEkZ1Vvw3nfN3eG7phG9yDsZQTYP0UsnALxmLlVQEokI8aDHwvUxRsJyewLgSt1N+Q2C+gLJaj4A1k=
+	t=1785697635; cv=none; b=sQxM3LRq21JA+cnKaWQa9EQ/mBuX/V2A++YGIrbfui5VP9sTh1zYjQzPEnbUOV2ZGV9gzvuh/gQWIael+4u2aGyXegtfUum3CcZcnNixF6b85mdMOCYSu4DdZn0HaMsqrpETVgpjcU9XvTbX7QZpwMEVRj1KUiyj7Tl18mAdwK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785697565; c=relaxed/simple;
-	bh=yRaoIX+Gxw5W4NOc1GOUXDnqw2CxdICPvpu3Ivq2vUQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iCRUvM6K9OX959SqW5Y5kQ8FJbRhbjfPxPOdGU9pgnZUsC2gzjHeMD5feqtXetwahhQ26LTm8nY+BP7WDUqmJ54bWCBDb02KcNc039yAYApoJwIPInJ/YN7fJh2wVA59Y/UGesOlAw4rHCaYOoJHO7KnkDjoxzQ9BDMNjuSnkRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=iC+dirAN; arc=none smtp.client-ip=209.85.167.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785697635; c=relaxed/simple;
+	bh=qBxSFoCzQaqnh+On9GpKXj78dp0yTwBTfmfH4W/cnM0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=oVWmvZNjJnX2XgxzhUukn38TMEqXkcJXrYmxAiuKZFGEFkBKSt+xBS0I6c1w6z/V+9fAnrIDhXpNnyaXFefrjSz3JWAzYUb+OKgc5WgaBd6PEFx3OHe05OJZycYtmiigbzvwjDi/Bzeah4CIjwRe68CrUE5TDEV4GXrbeRZT4RQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DSRXLVgy; arc=none smtp.client-ip=209.85.215.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="iC+dirAN"
-Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-4a4c6081f9fso537807b6e.3
-        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 12:06:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DSRXLVgy"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-cbb662575d3so1432413a12.0
+        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 12:07:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785697562; x=1786302362; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Kw69Z0wzWemMAZPaY5Skc4txf5IJBcX28PQN2HOehxQ=;
-        b=iC+dirANL25Ekmh5lDF8Bp6+HT/MLxhTYwsmzOQoeCHY+IOkRVu71zSWSg/Xt3FGw3
-         HleJwHwUW0N1tBzSuIWljyhXAX65Oql+XR8h7kv2eJF4hSS1gADMes635cd0tDtduGKD
-         KAW9vJspzJqfwcfKWv5CZLjecBkMGJ/AggN7nFpUdJ33kKyD6JJq6+nE7b4rrjD+ABSr
-         Psbtv7n87YysR3BKXY7tAggR+P7vaO7jb5pP9lCwnoAKajyB4tMPRfnV182cA4qKc/vd
-         WjlBdXXYetB99BJw5Q96XYtrGDhzA+xPk2T87lundV0lPyQafXPO1QI/Ggvd8i59DkI3
-         GCLQ==
+        d=gmail.com; s=20251104; t=1785697633; x=1786302433; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=xCRPNpaghBi1odlqwrDxT5domUb3WMfvy7ws3EyQGHE=;
+        b=DSRXLVgyYmooOir9KKr8ndTRH4M70NDF42u7YiITjkDPKKIe242AW8+Xn9AKZi7WZU
+         1yA+NJBsWEEKckqIr+ge+CN80irHl8z9y1OSEvtQ8M4kliOSlhhPWrKxQOKHanFGhckV
+         lBIexM5xaHWBLQRKzNM/MAX2elomwNwCTvajRujKpVxxW2GhmSdgTiM3O4VHNX+Ot5v5
+         5AUTflMec7k1f1+fEuyn9P71hVOK+NK5Nepjkm04PTTF5WCH9lGJ2AYBgmqpXduifhF2
+         nkfo6HuDESI1OPpVPE+OpbLPT5U185uM7gtIP+DELmW2roS22U6CUC5rXXbn3hQYCKGt
+         6nFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785697562; x=1786302362;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1785697633; x=1786302433;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Kw69Z0wzWemMAZPaY5Skc4txf5IJBcX28PQN2HOehxQ=;
-        b=PIUyAQHIZ1uHw8Ep1IZrVXr4JS7WR8jkDBn/mQ8nUjneu6e2trCu4byIqFVASUQRBU
-         waqS/ImVpSzSgwHIxpYegUIRFrgfZ02+eNXoy0JCdSij652Dm68JOSYqiY2+fcxb66Rr
-         CZp7DU/FDVRqIOCxwWiAgTY87jyDSTTutaO0r0jQE1EWc5CQk/JyT4vY2o7DqBRgv7Ro
-         J5ELi4TcF4HO6qDPE+i4O76HnwC2jMWkPQs5PR/WkKekyG1qzCQe0VcUTSd4QAbRsTfa
-         KjZ8KuuPziyBv6VgdxyYYLqVHTLShvum6BjtzR9ClsEZ6fbm9uPZQ1nUzrOUa3+zguy5
-         Pa+A==
-X-Forwarded-Encrypted: i=1; AHgh+RpgeYfpJdBswLunXdeNP5c9KXC1B1sf54UBG4og4MpFmpQqszvvcsa96iiUWbOe4xiYAHMcFa/+1AE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxz6fBcFRQQoXBsQzhkj+9RyV9lVv0oMnUBUwz+f0ArVVT6tpkc
-	SpfrwL4BORUrU+VhwycrukT+JRIfhPnhqXMcltH/SvL/jykRk5feV9/WLy/SuMnxkR0=
-X-Gm-Gg: AR+sD1221zW08lRPiSzcCltxbsgtW8HKDBoKVf1O2JJt5MTbwZtT7UI1ll8jCU70q2G
-	tOyPE0prwx8u+8xkeNhyz3JUCHkj9F7IuXILw0ZSJD9syb8N9LRyjR68AFWq5aBnwLsgMkT6DhN
-	Fn4DT+BpchQumYxKFvXEIEO5VKtP0TFoSSgwxSY0HYU5BFcwXOgTDpbkQBOEonVMv2bQl3woa3i
-	5YSF4mLjhJfalIY+Dk52f64md6bRbzuEEIHAAWk92IOG28wkrnxvL2HaDk2re+HU2OTXS8vMhUB
-	T5EXSjLdQN+JAc1Ninu6lRiScmXvvHE6myj0GaSwHKctYD8YhSjZL91BVOp5yzpQB499NEEKMFH
-	Nf6NVcCVlmLfFC7NXEwnjsznodKlx/js+6BddwZOwdfdGAvuohrwpOhKBYR/lOsfGUWcobaev1u
-	cKompDFzJ/rF6M+QCBV+gmBkfWadewdmdPEtkwSL3IRy6Ac2BR3i8H2O2gbc4tkpLCcq3IM2sqQ
-	dTUxOHgP49HR49BIEbnX11KBviMbaSj/9Yra2E=
-X-Received: by 2002:a05:6808:2384:b0:4a4:da68:9434 with SMTP id 5614622812f47-4af5e329152mr11191023b6e.14.1785697561734;
-        Sun, 02 Aug 2026 12:06:01 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:5487:2b6e:1057:d3d3? ([2600:8803:e7e4:500:5487:2b6e:1057:d3d3])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4af58d13152sm5530140b6e.6.2026.08.02.12.05.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2026 12:06:00 -0700 (PDT)
-Message-ID: <3562a294-d74f-4a03-839d-c861df604914@baylibre.com>
-Date: Sun, 2 Aug 2026 14:05:58 -0500
+        bh=xCRPNpaghBi1odlqwrDxT5domUb3WMfvy7ws3EyQGHE=;
+        b=Hwg0EfhsXKVqi7kqHg3LyqUbpLVxH1TIOLfFmPThVTCq921ZisdSUoeeOviQAyPlxv
+         wh8D5hxeLFyCQhtVVd0iOkSCm+lowA2VXScdck73vlp9yVEhJqajD4FajOhE3r0FHsS4
+         wyN+2lG6jQDjMR1HrGctx4eAcUNuQ+19S4tkmTJhYr3yHmYHyQJ7W56261tgFCENbTp3
+         a5NhB0OQSirU28HgW00wUEkkl8IWeigkQB4Z2Rg/bdL3aGtxicuXrkjx0QPGiRcZklfu
+         OWgafkc5HyAR77YyAoP9mJ9KoROjKynrqHx09TGNeAYrzgaIMf0ta0U/t8ieigeoebEc
+         qMZg==
+X-Forwarded-Encrypted: i=1; AHgh+RqdnFsJg2guGsgFxF7n6eCr8wThuJe52tAK2RPC93JoikVqLLj/EqpWMCxsKnA8tCoOUMWqP4S3H3E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzAbo+1+wd5t46MLuFI3tlL3/lPAo/31KAK4Mo+jKpCebdsQlXF
+	S7drhWdgsWM7JbO+hjgpV9BNhvTD/DS3NDmPjU+yBJ4VQ+o5Zs/uZsQw
+X-Gm-Gg: AR+sD10JMa6ORZMxmacjof0b9j1SaLkS1IgfWT0BSjir6+YiLBmkTOsDkC5p6rJ50Ez
+	YETtde+7r4K1n1ZXgTC9tG7gUv5vvfT+F2z4brImxlX1WpbAw/5OpH2ZyLVqd4gEdQroAh2eaRn
+	pNToc+EDZ9H+oilNGVEXS1WkLr2gIXhzThSlCzl0hla5YukoxCbQXy0QPWCUs/odXE3WTNgo8NN
+	HCt+IR2yFsC2o5TLCHarqr5sfsQdeCfM6Ci8CiunR51GbxhOY9eSB4tx3xrWq6chXmsh+hAQybk
+	NmR5PzKc9nYfTFKvSuG3x87nrckpZU9RbmhqWvG32SEcGRp9jE3AiqL28Ed1xag8ngQoI+shEct
+	ME1csAPK0OYi6Nu/FH1/IgwKYaGiHYQmRt6nYpdmOHAh4nxoRkRWXwwvQiyR/DRpE1VTHSWQuzH
+	Opm2aqsLVynK9KIsFNAVI+dedglEC8/9ZcLL7YAWX3t/OlRboXNfJCxcfwO32jLbqgr/tBJvoOy
+	bcahhLxz6LQAJy8eAf3u7/gW7CJ/YZsAcufz9w=
+X-Received: by 2002:a05:6a21:700a:b0:3b3:241f:66c6 with SMTP id adf61e73a8af0-3c92a830f9bmr7094838637.26.1785697633053;
+        Sun, 02 Aug 2026 12:07:13 -0700 (PDT)
+Received: from moksh-Nitro-ANV15-51.. ([36.255.90.7])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13fab132cc4sm23531153c88.2.2026.08.02.12.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2026 12:07:11 -0700 (PDT)
+From: Moksh Panicker <mokshpanicker.7@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	subhajit.ghosh@tweaklogic.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	skhan@linuxfoundation.org,
+	Moksh Panicker <mokshpanicker.7@gmail.com>
+Subject: [PATCH v2] iio: light: apds9306: fix PM reference leak in apds9306_read_data()
+Date: Sun,  2 Aug 2026 19:07:01 +0000
+Message-Id: <20260802190701.10685-1-mokshpanicker.7@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] iio: adc: ti-ads112c14: add continuous mode
- support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Chris Hall <c-hall@ti.com>,
- Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260731-iio-adc-ti-ads112c14-continuous-mode-v2-0-eb13da38e8fc@baylibre.com>
- <20260731-iio-adc-ti-ads112c14-continuous-mode-v2-3-eb13da38e8fc@baylibre.com>
- <20260802191753.2c98d7bb@jic23-huawei>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260802191753.2c98d7bb@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 8/2/26 1:17 PM, Jonathan Cameron wrote:
-> On Fri, 31 Jul 2026 18:48:12 -0500
-> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
-> 
->> Add support for continuous mode in the TI ADS112C14 ADC driver. In this
->> mode the ADC itself is starting each conversion, so we add a trigger
->> based on the DRDY interrupt to read each sample. This mode is also
->> limited in that only one channel can be enabled at a time since the
->> chip does not have a sequencer or simultaneous sampling capability.
->> Continuous mode will only be used when this new trigger is the current
->> trigger.
->>
->> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> There is some follow on stuff in here from the earlier suggestion to
-> check the status register even when datardy involved
-> 
->> ---
->>  drivers/iio/adc/ti-ads112c14.c | 146 ++++++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 144 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
->> index c6d83298c312..5147d10785fb 100644
->> --- a/drivers/iio/adc/ti-ads112c14.c
->> +++ b/drivers/iio/adc/ti-ads112c14.c
->> @@ -9,6 +9,7 @@
->>   */
->>  
->>  #include <linux/bitfield.h>
->> +#include <linux/bitmap.h>
->>  #include <linux/cleanup.h>
->>  #include <linux/completion.h>
->>  #include <linux/crc8.h>
->> @@ -18,6 +19,7 @@
->>  #include <linux/i2c.h>
->>  #include <linux/iio/buffer.h>
->>  #include <linux/iio/iio.h>
->> +#include <linux/iio/trigger.h>
->>  #include <linux/iio/trigger_consumer.h>
->>  #include <linux/iio/triggered_buffer.h>
->>  #include <linux/interrupt.h>
->> @@ -257,6 +259,7 @@ struct ads112c14_measurement {
->>  struct ads112c14_data {
->>  	const struct ads112c14_chip_info *chip_info;
->>  	struct regmap *regmap;
->> +	struct iio_trigger *drdy_trig;
->>  	/* Synchronizes access to register value fields. */
->>  	struct mutex lock;
->>  	int drdy_irq;
->> @@ -280,11 +283,32 @@ static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
->>  	struct iio_dev *indio_dev = private;
->>  	struct ads112c14_data *data = iio_priv(indio_dev);
->>  
->> -	complete(&data->drdy_completion);
->> +	if (indio_dev->trig && iio_trigger_using_own(indio_dev))
->> +		iio_trigger_poll(data->drdy_trig);
-> 
-> Even for this path we should be checking it wasn't a spurious interrupt.
-> If that's happening in a threaded interrupt we'll then call iio_trigger_poll_nested()
-> and the handler will happen in the interrupt thread.   So the overhead
-> of that check should just be the check.
-> 
-For now, I think we'll not bother with checking for spurious interrupts.
-The only reason it should happen is electrical noise (or disconnecting
-wires on a live system). And we can add it in a follow up patch if we
-decide we need it. The overhead of an extra read for each sample might be
-a bit much at the higher sample rates. So we'll want to implement the
-higher sample rates first anyway.
+apds9306_read_data() calls pm_runtime_resume_and_get() but several
+error paths return directly without calling pm_runtime_put_autosuspend(),
+leaking the runtime PM reference and preventing the device from
+autosuspending.
 
-We can read the status along with the data in a single transfer, so that
-might be a more efficient way to do it too.
+Use PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and PM_RUNTIME_ACQUIRE_ERR() to
+automatically handle runtime PM reference release on all return paths.
+
+Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+Cc: stable@vger.kernel.org
+Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+---
+Changes in v2:
+ - Use PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and PM_RUNTIME_ACQUIRE_ERR()
+   instead of goto pattern as suggested by Jonathan Cameron
+
+ drivers/iio/light/apds9306.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
+index 5ca4c87524fe..d582bda4d847 100644
+--- a/drivers/iio/light/apds9306.c
++++ b/drivers/iio/light/apds9306.c
+@@ -469,9 +469,9 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+ 	int status = 0;
+ 	u8 buff[3];
+ 
+-	ret = pm_runtime_resume_and_get(data->dev);
+-	if (ret)
+-		return ret;
++	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(data->dev, pm);
++	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
++		return PM_RUNTIME_ACQUIRE_ERR(&pm);
+ 
+ 	ret = regmap_field_read(rf->intg_time, &intg_time_idx);
+ 	if (ret)
+@@ -535,8 +535,6 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+ 
+ 	*val = get_unaligned_le24(&buff);
+ 
+-	pm_runtime_put_autosuspend(data->dev);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
 
