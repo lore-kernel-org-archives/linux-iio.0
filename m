@@ -1,46 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40E8C2C11CA;
-	Sun,  2 Aug 2026 16:50:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E4E6262808;
+	Sun,  2 Aug 2026 16:56:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785689441; cv=none; b=EKoahjz7FVjFcRs+ltIossjSDWmebi0gPYFr6NIO8SMqzY65B9H1yoNUeeDaWmR6YoX5uoqghuVIQx/Ism0Pwrq7iIGUxylI1DjdrjDW0Hk/Wybfuex8ewd4zN4otvMFfBrvXN9kvjuFFv7SJw1Y1TN5mEbDgKVUvE7wfpDXnFM=
+	t=1785689818; cv=none; b=Gijw2SUe9nSP/d80d99n6Zthzi+D2YyPnWOux2XcosGfA3/+YTGZ/ka6Ul9fWRBXmEbvGsWLUhadRlUpWZvKhQxHbbY4YRfpuP0amjTeKK/4yJXeVcoKhfvJnVFXIkjLguX1erY+uEb73WBgp42Npc+UCXxqU5+NYwblPlme5nE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785689441; c=relaxed/simple;
-	bh=tpNiPuwQ+MoVZLwrBnjMP5e1CjpSOhg+8Chtcm9qcAE=;
+	s=arc-20240116; t=1785689818; c=relaxed/simple;
+	bh=UYj/8/sPkA/+jqwyNKq8M0eFVii1VImucTpFNyJ1i9Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fCXzp57FplYJhpRQi+4zaooVJDc1tU9yGAItUcCUftDvK2OA6BRKbDNqios9vrV2z4P4U/S5I/cxNgGypNJIzKI+aJlBBvq8qQo81GF8kV2AH8uJVrsCVu+pr/+GGRijP11X/jIWK3e7BQGOynWSbQPfNpf3Ab8IEk5KzJU2m0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HbAmQ5W3; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=RRLOIRNUe0McEV0C7A9Nt2yRJ8ygTCV3FH5nPWtanxARiWsAro4Xi7kszb12435y92IZ2EX+C9dBCMtFSpQ1/aeC9zX+vHiGfaBUhw6C56DgOi1eSDNuKTm6D+R/ZK+IhwgbL6RbGnjxdz4Y4qYIfg3U7T+1U3ybkJXtL548x5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bNhcsCGj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HbAmQ5W3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F2EE1F000E9;
-	Sun,  2 Aug 2026 16:50:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bNhcsCGj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CAB1F000E9;
+	Sun,  2 Aug 2026 16:56:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785689439;
-	bh=I6uSqCKusZkPfne/Wfg3la3O6niFuwnjDwXPVVaVhG0=;
+	s=k20260515; t=1785689816;
+	bh=gIw6SXWx9dw9s6rvvkTvzjfybSlZKH/e6BuOvWYZPWI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HbAmQ5W3PiXLr+8G6xJ9/S9CWpelB5w0G7cNF4Qcw5cina4JrhdBPAvCXAQQCZoZV
-	 ZEndESju3U9B346tMXcxIQJoXQEKjm0DuR7+WjtJLmtzJTTlTECTi8lXmvPPM/N2qp
-	 6e8/JElVn5bDoxGyOqf+r9Oziv6SdHymEUb3KqSWyv2KxhN6LO7+f3raO8J/nIdYAk
-	 6PHQrd/L1nFK1usbBJoGR0KGD6ZG+RhSSy+gr9pIoMF7C4j2QtI+h8DHs8xZbfKTO4
-	 dJkisOn2UXXj1V7oqGzEHqZSP1M+VQMvYBssZ5kb1I0jdP8+4TqbhaAGO8y+9WCEs7
-	 fKjyqtoqtzyYQ==
-Date: Sun, 2 Aug 2026 17:50:32 +0100
+	b=bNhcsCGjET6bdq4uLc+7xe+tLZ78aIJv0akAvm/tpivr/NEeQ2dFs3hXIsvD7QDll
+	 lwz8kxcuqlbWIoWNSobCXkJ7ZOEBdnhqnGWexH1c4I8SnHQ0CeniSZj3cpboFvM9d7
+	 baw7zYn+MR5uxSpl04/GlX4sr/0x5Jl1gL8Cmb3QB4vpvD2ZoTlwzLC9xoLfDA2Nsq
+	 Gqcizr+seesgnqTM5qMHB6yJdc4GHw1QD1Rac3T196XCX3mryMxnk8s0ZFpthHnn8Q
+	 kaRJYiRwt3d8+1PrJeFQFqoWo1HgWGHi2S7GtEek79d8YtPRrKssAR4aLrSztra4e8
+	 TROj8wbripLfg==
+Date: Sun, 2 Aug 2026 17:56:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>
-Cc: Adi Nata <adinata.softwareengineer@gmail.com>, joshua.crofts1@gmail.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, email@sirat.me,
- bhelgaas@google.com, mazziesaccount@gmail.com,
- krzysztof.kozlowski@oss.qualcomm.com, linux-iio@vger.kernel.org,
+To: Adi Nata <adinata.softwareengineer@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ u.kleine-koenig@baylibre.com, dakr@kernel.org, bhelgaas@google.com,
+ mazziesaccount@gmail.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH v2] iio: chemical: sgp30: fix checkpatch warn to prefer
- __packed
-Message-ID: <20260802175032.13aa14a3@jic23-huawei>
-In-Reply-To: <am84xDCfJC7c-21r@monoceros>
-References: <20260723235542.152a6a25@systembl0wer>
-	<20260802025134.25319-1-adinata.softwareengineer@gmail.com>
-	<am84xDCfJC7c-21r@monoceros>
+Subject: Re: [PATCH] iio: humidity: htu21: Fix SYMBOLIC_PERMS chekcpatch
+ warning
+Message-ID: <20260802175650.54895dff@jic23-huawei>
+In-Reply-To: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
+References: <20260802012329.9877-1-adinata.softwareengineer@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,68 +45,54 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 14:34:59 +0200
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com> wrote:
+On Sun,  2 Aug 2026 09:23:26 +0800
+Adi Nata <adinata.softwareengineer@gmail.com> wrote:
 
-> Hello,
->=20
-> Just a few nitpicks. These might not justify a v3, as Jonathan sometimes
-> fixes up such thing while applying.
+> Checkpatch warning:
+> 
+> WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal permissions '0444'.
+> +static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
+> 
+> WARNING:SYMBOLIC_PERMS: Symbolic permissions 'S_IRUGO | S_IWUSR' are not preferred. Consider using octal permissions '0644'.
+> +static IIO_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR,
 
-There are enough things across various patches from Adi that I'd like
-new versions incorporating all the various bits of feedback.
+Would be nice to have some information on why they are not
+preferred as part of the patch description.
 
-But wait a few days first in case there is more to come from additional
-reviewers!
+> 
+> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
+> ---
+>  drivers/iio/humidity/htu21.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
+> index a9dbf08b4f1a..fe7192d142ec 100644
+> --- a/drivers/iio/humidity/htu21.c
+> +++ b/drivers/iio/humidity/htu21.c
+> @@ -154,9 +154,9 @@ static ssize_t htu21_write_heater(struct device *dev,
+>  }
+>  
+>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(htu21_show_samp_freq);
+> -static IIO_DEVICE_ATTR(battery_low, S_IRUGO,
+> +static IIO_DEVICE_ATTR(battery_low, 0444,
+>  		       htu21_show_battery_low, NULL, 0);
 
-Thanks,
+Now fits on one line.
 
-Jonathan
 
->=20
-> On Sun, Aug 02, 2026 at 10:51:31AM +0800, Adi Nata wrote:
-> > Change instance of __attribute__((__packed__)) to __packed per checkpat=
-ch.pl warning
-> >=20
-> > Reported by checkpatch:
-> > FILE: drivers/iio/chemical/sgp30.c
-> > WARNING: Prefer __packed over __attribute__((__packed__))
-> > +} __attribute__((__packed__));
-> >=20
-> > Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
-> >=20
-> > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com> =20
->=20
-> No empty lines in the S-o-B block, and please put your S-o-b last.
->=20
-> > v2:
-> > - Rename commit title and message =20
->=20
-> the v2 changelog belongs after the tripple dash.
->=20
-> >=20
-> > ---
-> >  drivers/iio/chemical/sgp30.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
-> > index f10bbebc29e4..c33592a1e0c9 100644
-> > --- a/drivers/iio/chemical/sgp30.c
-> > +++ b/drivers/iio/chemical/sgp30.c
-> > @@ -82,7 +82,7 @@ struct sgp_version {
-> >  struct sgp_crc_word {
-> >  	__be16 value;
-> >  	u8 crc8;
-> > -} __attribute__((__packed__));
-> > +} __packed; =20
->=20
-> Otherwise looks fine.
->=20
-> Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com>
->=20
-> Best regards
-> Uwe
+
+> -static IIO_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR,
+> +static IIO_DEVICE_ATTR(heater_enable, 0644,
+>  		       htu21_show_heater, htu21_write_heater, 0);
+I don't mind having this one on a single line as well even though it is
+a bit over the 80 chars soft limit at around 84 chars.
+
+static IIO_DEVICE_ATTR(heater_enable, 0644, htu21_show_heater, htu21_write_heater, 0);
+
+>  
+>  static struct attribute *htu21_attributes[] = {
+
 
