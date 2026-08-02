@@ -1,45 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8C22931F4;
-	Sun,  2 Aug 2026 18:42:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1E830F803;
+	Sun,  2 Aug 2026 18:47:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785696150; cv=none; b=MBvfBoyYnZI5SOU5tk/LsSML7duXYgvFRkvfbn3fHqaz9cMUDrFNLc32jiM6dM8bV9fb8RmHAFLKchd3/0bsur4GbffR29ui455jlgp4ICt0xEXWtGnomYxkR865O3spGyrtTRJBxqTEux8CYp76e6/c2M2cJ0RtvwSnKtQPZwU=
+	t=1785696464; cv=none; b=fhb9CaLJV37y1Xp/mCJW42W32G9uLp64VzPyL8yDkW/6kK0hSotaljefIYiCTfWsXlWdCqN90anJT+1DA9CGHL6WMYYscVVzLr69adNcxn2+h/PyakzLP7ZzcEZseir++bqlhieNaW9htZwxSgfix+akY6AVthOFPDBe/M/899A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785696150; c=relaxed/simple;
-	bh=RDdNclBMO0GcfSn+P8gxi9eSc7QEDJsVz1VgoCTlnlo=;
+	s=arc-20240116; t=1785696464; c=relaxed/simple;
+	bh=hjg58UYGY/TkTDjz2jwIAmpKTZXxBbuIoeN85Dht244=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ldFZM0wenDgBWoYI1g8+wiCvb5RX4FzwPJa8Jjstnwn7mOZKi1shFXjxo7ubhZrJaZCDUjes58Rf15sSNSv3Rr37ES45660A35yzIjEq+dUwb+6YDHY6LYDtRYDK7QuMl+1/4ucHWTnoVv9xX26F/OQxtF1SyNRrtZidxybCvWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bh9HDnZM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=SmpPiBsiTKMYoedkKF85K3Y962ryUeZewcjH0bAA8OtegrIwAM4uq7ij4B+scd1JxD8712norfpANDYkmdYE0e4agC+/grjvasXW+3uT92xOSB4EJ9t8n6aBYI6xeDWrKtRQ+2dQwLsR9gdiEbfzQkgb0uklyJ5KbwmUCTzO6Y8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U8x7MVS7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bh9HDnZM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 815C11F000E9;
-	Sun,  2 Aug 2026 18:42:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U8x7MVS7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FC61F000E9;
+	Sun,  2 Aug 2026 18:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785696148;
-	bh=oS63NQlYDX3UkgpwTZTp0r+Evq8Hp+633HbhULQ7qtE=;
+	s=k20260515; t=1785696462;
+	bh=TvgyDk2HC89KcYNBNEsGQw6P/bZVUyMqtjZ5ahgyVhw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Bh9HDnZMWR+fJPzAEZ1xUVocFpcMoa88bHHyFvH42apzT4DpvgmqYvwUpKniTdJK8
-	 4Ehh5GlHvhDkzE0mv5uJOSSPMEczSiSjyQwzYsFxTK0OC7x9BqabBnqwc/uZebizIy
-	 DeeXaG5aThrX60f1qzCuf3oUfwPOgKohvYGyKOSncXnuCVRLOvHZHswaE09Nu4uGeG
-	 tiPGACKXlU/d8gLlWIZMdl0sGSKDvQJta3sZX2NuUyVHdIaG3Z4DeTtx+yKS68tAC4
-	 NjOmCwQYV1Fm8zXCbRJh2LBxUDJ9dKRbAAt3ICYCyJiFxQkMcqBPbe7ImpBNTe4e9j
-	 yVGZW1nNceBlA==
-Date: Sun, 2 Aug 2026 19:42:23 +0100
+	b=U8x7MVS7QhkhXAoKznwL0UdXqLHko9btcbfYC4r/eQtMQKpMbNrACCvLNCIJkzDw3
+	 A5UffDXBSNaVGmEnnk1lsrTolIOv5E3XnTLTLBKWLC9NJ/OW4kwUGXR84fUvsXaIAz
+	 klGXANjn1bIcdTVhqM2cU1sM9wCMDDroZpbfrk2L6/EUWINVEwIqox9WJ706FxfKjC
+	 b7pPVtz+STSnvAta8ZftdcfW/rYLAMs67PFC688Abzsyjs4x+DQEbMyQMoAUtnKjUa
+	 El+FGpRqoY8W3accSc+9sidGjqDdLji+YzqYA2ouc7qECvW5PwhM9K4zSMb2zopf6R
+	 BbUjhWClVj+eg==
+Date: Sun, 2 Aug 2026 19:47:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Fan Wu <fanwu01@zju.edu.cn>, nuno.sa@analog.com, michal.simek@amd.com,
- bgolaszewski@baylibre.com, DileepKumar.Nagavarapu@amd.com,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, Conall O'Griofa
- <conall.ogriofa@amd.com>
-Subject: Re: [PATCH] iio: adc: xilinx-xadc: free IRQ before cancelling the
- unmask worker on unbind
-Message-ID: <20260802194133.467ae096@jic23-huawei>
-In-Reply-To: <750f615a-c00f-4e98-9bcf-8fa8704acfba@baylibre.com>
-References: <20260802082851.433476-1-fanwu01@zju.edu.cn>
-	<750f615a-c00f-4e98-9bcf-8fa8704acfba@baylibre.com>
+Cc: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>,
+ nuno.sa@analog.com, Michael.Hennerich@analog.com,
+ gregkh@linuxfoundation.org, andy@kernel.org, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: ad7816: avoid DMA from stack in spi_read
+Message-ID: <20260802194738.034382ef@jic23-huawei>
+In-Reply-To: <0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com>
+References: <20260802113840.17730-1-abdelnasserhussein11@gmail.com>
+	<0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,92 +49,85 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 10:39:58 -0500
+On Sun, 2 Aug 2026 10:31:29 -0500
 David Lechner <dlechner@baylibre.com> wrote:
 
-> On 8/2/26 3:28 AM, Fan Wu wrote:
-> > The ZYNQ XADC interrupt handler xadc_zynq_interrupt_handler() arms the
-> > zynq_unmask_work delayed work via schedule_delayed_work() every time an
-> > alarm condition is observed, and that worker re-arms itself for as long
-> > as the alarm stays asserted.
+> On 8/2/26 6:38 AM, Abdelnasser Hussein wrote:
+> > The SPI core may use DMA for transfers. Using a stack-allocated
+> > buffer for DMA is unsafe and can trigger faults when VMAP_STACK is
+> > enabled, since the stack is not guaranteed to be DMA-accessible.
 > > 
-> > In xadc_probe() the IRQ is requested with devm_request_irq() before the
-> > devm_add_action_or_reset() that registers xadc_cancel_delayed_work().
-> > Because devres release runs in LIFO order, on unbind the delayed work is
-> > cancelled before the IRQ is freed. The IRQ is still live at that point,
-> > so a pending alarm can make the handler run once more and re-arm
-> > zynq_unmask_work after it has been cancelled; that instance then runs
-> > after the xadc structure that embeds zynq_unmask_work has been freed, a
-> > use-after-free in xadc_zynq_unmask_worker().
-> > 
-> > Register the cancel-work devm action before requesting the IRQ so devres
-> > LIFO teardown frees (and synchronizes) the IRQ first, then cancels the
-> > delayed work. After free_irq() the handler can no longer re-arm the
-> > work, and the subsequent cancel_delayed_work_sync() drains any instance
-> > armed just before the IRQ was torn down.
-> > 
-
-This seems a bit too verbose to me.  A simpler explanation might get to the
-key detail faster. Something like:
-
-The driver clears outstanding work using a devm callback. That work is
-queued up by schedule_delayed_work() in the alarm irq handler.
-Reorder the work clear to occur after the devm cleanup for the irq
-ensuring no additional work can be queued after the workqueue is
-cleared. In practice this means registering the devm callback earlier
-than the call to devm_irq_request_threaded().
-
-If this was AI generated description (which I do as well sometimes)
-it is useful to tell the AI to be brief.
-
-> > This issue was found by an in-house static analysis tool.
-> > 
-> > Fixes: 2a9685d1a3b7 ("iio: adc: xilinx: use more devres helpers and remove remove()")
-> > Cc: stable@vger.kernel.org
-> > Assisted-by: Codex:gpt-5.6
-> > Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
-> > ---
-> > 
-> >  drivers/iio/adc/xilinx-xadc-core.c | 11 +++++++----
-> >  1 file changed, 7 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-> > --- a/drivers/iio/adc/xilinx-xadc-core.c
-> > +++ b/drivers/iio/adc/xilinx-xadc-core.c
-> > @@ -1395,13 +1395,16 @@ static int xadc_probe(struct platform_device *pdev)
-> >  	}
-> > 
-> >  	if (irq > 0) {
-> > -		ret = devm_request_irq(dev, irq, xadc->ops->interrupt_handler,
-> > -				       0, dev_name(dev), indio_dev);
-> > +		/* devm LIFO: register the cancel-work action before the IRQ,
-> > +		 * so unbind frees the IRQ first, then drains the work.
-> > +		 */
-
-Wrong comment style.  Otherwise this seems correct to me but I'd like the
-AMD / Xilinx folk to take a look.  Added a couple more +CC.
-
-Not sure we need the comment, or perhaps the comment should just be
-/* Clear out an work queued by the interrupt */
-
-> > +		ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
-> > +					       &xadc->zynq_unmask_work);
-> >  		if (ret)
-> >  			return ret;
-> > 
-> > -		ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
-> > -					       &xadc->zynq_unmask_work);
-> > +		ret = devm_request_irq(dev, irq, xadc->ops->interrupt_handler,
-> > +				       0, dev_name(dev), indio_dev);
-> >  		if (ret)
-> >  			return ret;
-> >  	}
-> > --
-> > 2.43.0
+> > Move the transfer buffer from the stack into the ad7816_chip_info
+> > structure so it has a stable lifetime suitable for DMA transfers.
+> > Mark the buffer with ____cacheline_aligned to ensure proper alignment
+> > for DMA operations.  
+> 
+> Should also mention fixing the "wrong" sizeof() use in the spi_read()
+> call. It was the correct size, but the wrong variable was referenced.
+> 
 > >   
 > 
-> Makes sense.
+> Probably deserves a Fixes: tag.
 > 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> > Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> > ---
+> >  drivers/staging/iio/adc/ad7816.c | 8 +++-----
+> >  1 file changed, 3 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> > index 0e32a2295990..fcaadebff0f4 100644
+> > --- a/drivers/staging/iio/adc/ad7816.c
+> > +++ b/drivers/staging/iio/adc/ad7816.c
+> > @@ -50,6 +50,7 @@ struct ad7816_chip_info {
+> >  	u8  oti_data[AD7816_CS_MAX + 1];
+> >  	u8  channel_id;	/* 0 always be temperature */
+> >  	u8  mode;
+> > +	__be16 rx_buf ____cacheline_aligned;  
+> 
+> In IIO, we have a special macro for this instead of `____cacheline_aligned`. 
+
+We've had a couple of these recently.  ____cacheline_aligned is simply
+wrong and I'm curious where that is coming from?  That's the performance
+hint cache line size, typically that of l1 and l2. In some systems other
+caches before the incoherent SPI controllers have larger cacheline sizes
+and we have to align to those.
+
+The correct option if not using the IIO one is __aligned(ARCH_DMA_MINALIGN)
+
+For historical reasons IIO has it's own version of that which predates
+all architectures providing ARCH_DMA_MINALIGN.
+
+> 
+> __aligned(IIO_DMA_MINALIGN);
+> 
+> >  };
+> >  
+> >  enum ad7816_type {
+> > @@ -65,7 +66,6 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+> >  {
+> >  	struct spi_device *spi_dev = chip->spi_dev;
+> >  	int ret;
+> > -	__be16 buf;
+> >  
+> >  	gpiod_set_value(chip->rdwr_pin, 1);
+> >  	gpiod_set_value(chip->rdwr_pin, 0);
+> > @@ -91,14 +91,12 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+> >  
+> >  	gpiod_set_value(chip->rdwr_pin, 0);
+> >  	gpiod_set_value(chip->rdwr_pin, 1);
+> > -	ret = spi_read(spi_dev, &buf, sizeof(*data));
+> > +	ret = spi_read(spi_dev, &chip->rx_buf, sizeof(chip->rx_buf));
+> >  	if (ret < 0) {
+> >  		dev_err(&spi_dev->dev, "SPI data read error\n");
+> >  		return ret;
+> >  	}
+> > -
+> > -	*data = be16_to_cpu(buf);
+> > -
+> > +	*data = be16_to_cpu(chip->rx_buf);
+> >  	return ret;
+> >  }
+> >    
+> 
 > 
 
