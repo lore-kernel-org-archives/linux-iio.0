@@ -1,84 +1,89 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C023C2D
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 21:30:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 324981B85F8;
+	Sun,  2 Aug 2026 23:19:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785706245; cv=none; b=G29aBfgSPJYcOUe+Bh6nBvt5QoIwrAgS95Gv609DRhivO8pF8tI9hY2JekarC/z/BnWMhr80KlM/zawoS45rVe4kJLcFT/vC6H8U3PpbVW/t6q22l+SwXvCtGkfs6r3ck9pP2D8opF1CdfVQl0eSe+hjw3ghK76wL/qPSzkZdHM=
+	t=1785712794; cv=none; b=UuaoZoDl95LwVThMLMSbtONomBk9QyXEzXHzQRWHKww2Wgj3G1nvxnrGzsjTU3dD/tcNdOBCj9XVDBygHJ7kZFRaC6lFBCIXZAqSrNO3vWLUlXApB1fFnqpDTCeT3Mt7Ap7v3Ty78TYUkKt94nFPZVzI1gHm/yNuO9Qq9rVG/2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785706245; c=relaxed/simple;
-	bh=3ERM+5ebJ3QggCt+IqpXuH/xRriK3iW+E6J9HVJBiiI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=igOWELvn6rrBewIUDiszBP7K6u5+EOkvu2/JUvsE6+fJ9k561hjR6EQbx5FIURH+5MvnQ3C9OSETACyj27poAdRjeFXZXCTjHrGTHUzzUvdq84kuzTg9G9+7KhAAH3eD0OhqL8dpsVVn9xlMCLmiQ7s8RTC58fF3XnpsH7m7S3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OObSaILx; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785712794; c=relaxed/simple;
+	bh=+dg4cM/1sUDRT6npItsFcNKriAveLPOrGSDXZ0wX6as=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ALF7r+Y03iFmBbCN0ijOczIinx+3Q0o9+WymB+By13r/pDFBqzAkdK10wLeowraxULAv7JjZYeEmC+k5cPkuieeYAmvwoo1Nh39eD6n1nDWzJMVUepRjmNAE5r1G5aQG3PlTnqJpRBWbk9V3pwwscFT9KWlG1lAQExhYYP9Ydjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cHSi0a0e; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OObSaILx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835051F00A3D
-	for <linux-iio@vger.kernel.org>; Sun,  2 Aug 2026 21:30:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cHSi0a0e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B791F000E9;
+	Sun,  2 Aug 2026 23:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785706244;
-	bh=JYejFk6oi270c2G7kYnJaTLzFCKL1TN6flHz+VLwlqM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=OObSaILxMLr0QNWT65IP15TS13s26vGXsE58kRV4XTq4XCfh5a/AqZZWc6r5WvnqB
-	 WpPTveQYXGRVi6k7/qqfUCqo5ayEL7PUNHebRdIZU6j1vKm9jzxteIjH1NQ7q0nMly
-	 V0x4a5jRAkY5yvXb31FmPjnwD2chVeJhbwrSDz8mNctK77nUiuAhYIdRGHpEFEbc5C
-	 NjuQ2S8zAENTOs54rg2mFINvuHufwZg1zIfsDAa5kKlDoei/eLnKbNAxlNJ35oAukl
-	 Q2dJ72cy3TAQEzNAIpkFmz/DpT4Idu0yvZoEsVeKuxbvHMfbmigtHEDXBS2y3C6eqc
-	 1CzNqzK+glQ+w==
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5aec6360133so2475688e87.1
-        for <linux-iio@vger.kernel.org>; Sun, 02 Aug 2026 14:30:44 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RoiJFPbsD2aVOVSicJ4XitTFcEQ20FcWgmfyH06puqLSDOt0zIvH1CVOkaPmiTzRm8dAj0EavF20Xg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy9T0b0Cuzn43VvmxOayvcUsM+L87IafDWbX7GHqClVWQkNSFaM
-	mpERRFHYvMFgJWQJbmSVJNb3LvGWGbyUM3PXu5uKf39FKXsQcRu8FT5RtZvqp45CtID4gQm+B9Q
-	9QDxw/8dA7OWK5lNorw2R9+YQkIUw4jE=
-X-Received: by 2002:a05:6512:2553:b0:5b0:1ab1:263a with SMTP id
- 2adb3069b0e04-5b2e4f9359bmr971692e87.55.1785706243330; Sun, 02 Aug 2026
- 14:30:43 -0700 (PDT)
+	s=k20260515; t=1785712792;
+	bh=eY6VgtIgRMIMVNF+YSKtWPFHsrwxoff5oqA8sV51QoA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=cHSi0a0euDY1dCGcnR7u9ZJ9kJg8uqvH2pwoey66fnCf4oyx1m/bzMwto15CdOAQ7
+	 dmy0FN0GmCa0G9t07m0A1o2aZrvobBEA6Chu/U2/gRob6iEQdsVhrXmnWadlyPGsI1
+	 l4qSmgfjTe3N4TZ6xFeolnuXievHooXQWz2fxeGQL+yoCiHzh0vNb+fHn7KlXoGeK/
+	 mFM7sHc2YqYGQ/m3EVdZMfOvMLRCjwdRl4yEt2sa4VJQpIA+uSvE7WNTyOWozmbib2
+	 QeSyLy9d6wFszXjGChAckNb/VEk1Qzk7NyyeNZdn+26l8ukHLCjUpG+uxy09tka6sz
+	 qz2OIucMwJ5SQ==
+Date: Mon, 3 Aug 2026 00:19:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Linus Walleij <linusw@kernel.org>
+Cc: Cong Nguyen <congnt264@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: mpu3050: fix sign of raw angular velocity
+ readings
+Message-ID: <20260803001947.4ca48e75@jic23-huawei>
+In-Reply-To: <CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
+References: <20260802065540.8120-1-congnt264@gmail.com>
+	<CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260802065540.8120-1-congnt264@gmail.com>
-In-Reply-To: <20260802065540.8120-1-congnt264@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Sun, 2 Aug 2026 23:30:31 +0200
-X-Gmail-Original-Message-ID: <CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
-X-Gm-Features: AUfX_mwF3NePZgakiWKnSGGEGuccwmYZ-hE2GPaJv1BFI4VjtgXY8RH58kKFJq4
-Message-ID: <CAD++jLmdgtA=5z+83jFivgbDNnrh0f5C_YNnHdZw_FmTJc2ZgA@mail.gmail.com>
-Subject: Re: [PATCH] iio: gyro: mpu3050: fix sign of raw angular velocity readings
-To: Cong Nguyen <congnt264@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 2, 2026 at 8:55=E2=80=AFAM Cong Nguyen <congnt264@gmail.com> wr=
-ote:
+On Sun, 2 Aug 2026 23:30:31 +0200
+Linus Walleij <linusw@kernel.org> wrote:
 
-> The MPU-3050 gyroscope output registers hold 16-bit two's complement
-> values; the angular velocity channels are declared with .sign =3D 's'.
-> When mpu3050_read_raw() handles IIO_CHAN_INFO_RAW it reads the register
-> via a big-endian regmap_bulk_read() and assigns it with:
->
->         *val =3D be16_to_cpu(raw_val);
->
-> be16_to_cpu() yields an unsigned 16-bit quantity, so negative rates
-> (bit 15 set) are reported to userspace as large positive integers
-> (e.g. -1 becomes 65535) instead of the correct negative value.
->
-> Cast to s16 before the assignment, matching the temperature channel a
-> few lines above which already handles the sign correctly.
->
-> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-> Cc: stable@vger.kernel.org
-> Assisted-by: Claude:claude-opus-4
-> Signed-off-by: Cong Nguyen <congnt264@gmail.com>
+> On Sun, Aug 2, 2026 at 8:55=E2=80=AFAM Cong Nguyen <congnt264@gmail.com> =
+wrote:
+>=20
+> > The MPU-3050 gyroscope output registers hold 16-bit two's complement
+> > values; the angular velocity channels are declared with .sign =3D 's'.
+> > When mpu3050_read_raw() handles IIO_CHAN_INFO_RAW it reads the register
+> > via a big-endian regmap_bulk_read() and assigns it with:
+> >
+> >         *val =3D be16_to_cpu(raw_val);
+> >
+> > be16_to_cpu() yields an unsigned 16-bit quantity, so negative rates
+> > (bit 15 set) are reported to userspace as large positive integers
+> > (e.g. -1 becomes 65535) instead of the correct negative value.
+> >
+> > Cast to s16 before the assignment, matching the temperature channel a
+> > few lines above which already handles the sign correctly.
+> >
+> > Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+> > Cc: stable@vger.kernel.org
+> > Assisted-by: Claude:claude-opus-4
+> > Signed-off-by: Cong Nguyen <congnt264@gmail.com> =20
+>=20
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
+Applied to the fixes-togreg branch of iio.git
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+Note this will probably not go upstream until the merge window.
 
-Yours,
-Linus Walleij
+Thanks,
+
+Jonathan
+
+>=20
+> Yours,
+> Linus Walleij
+
