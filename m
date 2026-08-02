@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 088CB3C07A;
-	Sun,  2 Aug 2026 17:04:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C51153A6B8F;
+	Sun,  2 Aug 2026 17:12:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785690297; cv=none; b=KSLltNuTekyU+uN+K+m4DUTOZ83Ua/uJAbqaEXINf5SKhHigBn2ed/xOzfafD65U9XY6O5PrZPh479qebo6imHtZ2IUgSB7cYuxZBxoxtihArD011Ma7VE6LfiecQWY6wIvi+rkyDPy0r6M6DNHmp8CFKRqcXWIB1zSPOJ357Po=
+	t=1785690760; cv=none; b=ioc/78yDTXc654SoPdZDtSQAUmp4uAntvcIF4JG6P76DK6dFDntIalZ0HI0uuhDwbYNTM2j3QlU+FU6HEiAV0xaasCewingi+gZc7Fsl0UpaR/594zXWzboklc/BcftIwOP8BrOfzxDkgHtnZTwhbzFwmPm7TNrtXTBH0XcQPoo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785690297; c=relaxed/simple;
-	bh=5sJ9hl7U6NywExSKlQaosS2jKxVTyc77DMhD3po5/Co=;
+	s=arc-20240116; t=1785690760; c=relaxed/simple;
+	bh=TAwz7zDdhrO/RO7iz0Q7zXJArhhoVVKcE2nAWH7xfeo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BsuRtBIkD8/lIW2FMyOvIgoK0rvZHIFpSYzc17vgHicXQlIbdnIK9nn43PsNketgVgCJgL7OgxlER8EGf42uz/MnUa1SklJHdff+Nt+PuAgvzdJpfZzhTJNeMqLk9uZYyFuwc/8JGB3LDodIev7fXX0y2La2M1DW+b3gri808mo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fVRnb7Ba; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ll0vGLcPn58g0xx9WDUqhcLMe+Oip3rzD5mKZq1dfGyUZb2CSfiMbEOsen/hp89BYRbd8gVrXqwyqXnu4fFkGb4Woy7IzHqoeQ+nROvaBIeojWmtFxvnP4p1v56syYVLbCPv1rxZs+zbbqSOQqJUkmaWEeD+eFSF0VTp/CtDJkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gnEbhZMA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fVRnb7Ba"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C391F000E9;
-	Sun,  2 Aug 2026 17:04:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gnEbhZMA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA14F1F000E9;
+	Sun,  2 Aug 2026 17:12:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785690295;
-	bh=whlOKJ2KJDioAOiaCFJ2U5Y05ke+K0Fn4fxnzeBTT+o=;
+	s=k20260515; t=1785690756;
+	bh=x77TEwp1ZbLt/BvOuNsHvCp1UdV2izmSI915dF93mOI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=fVRnb7BavLzQAt+CGdw3RYQ2sBqdURjBu12SJ4iFhvt+7Gq38xe38i9RR2yujH1vP
-	 Y5BoVY986mI6Y2D6BD/8xcwYKwGAXZ1bVHYc03Js+/z+c4dIOvjvu85ePsGsMjs0bo
-	 9EWYwzOCc7Chy3cTbjx/EahQ36npidecjXXCUEiYE7X5D3uWw5Kz04Gn9/8n+8UaWY
-	 ZibbGHtlZdO4RP075A3pYpN+z//MQ82/bX1o31+KazSdnII3+jjdixjn2IMbeFOIE7
-	 6cuZcVz7XOfmORrp17Rrc/Z//1NfvjLeYAI+bMcYya2Si2KkxXhwlwktjeIHMJU/g9
-	 UxNWCFfaWR/Kg==
-Date: Sun, 2 Aug 2026 18:04:50 +0100
+	b=gnEbhZMAZkc0YPd4zkuj0/X00JB432hZJypTeVzdiCMvc2tvsv/Veu7qdQuv2zng2
+	 q1OLlTBUeCWabr11KEBTmaH6YAgMBkeHYZB/CPYI1jHPxy3QIsG79nQRAEHJY5K0+k
+	 ZPnhbqW8U3NApHNW5DneakfbQSXHFPcEQ0CYwu4Pa0cwIoNFnRQreMkla0plOvWcPF
+	 L6LU0CsVI3ePrXM1h6wJbE/2DH85mWNcBYb8pSOSZlyFEgNH63J+2acWG9g/62puyE
+	 Ug2aEnCb7SmfM2m49K8KNZc8/NpEc7kyzzZeeyNggfJ1rNASjs8Clwv+hknCUDTpL4
+	 K30q2IM0kaJvw==
+Date: Sun, 2 Aug 2026 18:12:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Adi Nata <adinata.softwareengineer@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- u.kleine-koenig@baylibre.com, dakr@kernel.org, bhelgaas@google.com,
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Adi Nata <adinata.softwareengineer@gmail.com>, lorenzo@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: humidity: htu21: Fix checkpatch tabstop warn
-Message-ID: <20260802180450.33fbab86@jic23-huawei>
-In-Reply-To: <20260802013333.12689-1-adinata.softwareengineer@gmail.com>
-References: <20260802013333.12689-1-adinata.softwareengineer@gmail.com>
+Subject: Re: [PATCH] iio: humidity: hts221: Fix checkpatch blank line
+ warning
+Message-ID: <20260802181233.535eeb12@jic23-huawei>
+In-Reply-To: <20260802173852.32b4bc52@systembl0wer>
+References: <20260802020614.19732-1-adinata.softwareengineer@gmail.com>
+	<20260802173852.32b4bc52@systembl0wer>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,58 +49,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  2 Aug 2026 09:33:31 +0800
-Adi Nata <adinata.softwareengineer@gmail.com> wrote:
+On Sun, 2 Aug 2026 17:38:52 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> Checkpatch warning:
+> On Sun,  2 Aug 2026 10:06:13 +0800
+> Adi Nata <adinata.softwareengineer@gmail.com> wrote:
 > 
-> WARNING:TABSTOP: Statements should start on a tabstop
-> +        }
+> > Checkpatch warning:
+> > 
+> > WARNING: Missing a blank line after declarations
+> > +	struct hts221_hw *hw = iio_priv(iio_dev);
+> > 
+> > Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
+> > ---  
 > 
-> WARNING:TABSTOP: Statements should start on a tabstop
-> +        }
-That's an amusingly uninformative set of warnings.  I'm guessing
-you cropped out the bit that says 'where' those are?  
+> This seems like churn on its own, Jonathan may not apply it.
+> 
 
-Anyhow, I'd not bother with what checkpatch printed for this.
-Instead just say what the change is and that checkpatch suggested it.
+True.  This highlights a broader point.  When making
+a number of cleanups to a driver (and I am generally more willing
+to take those than many maintainers) please group them into
+a little patch series with a cover letter.
+
+If this is one of a set and overall the seem worthwhile I might
+pick them up.  Plus this driver is pretty aged so there are other
+quality of code / modernization things that will make much more
+of an impact than just this blank line.  Take a look at some
+of the other similar cleanup series on the IIO list and see what
+makes sense here. To give you a starter, dev_err_probe() and
+checking which prints are actually useful + stopping the driver
+rejecting Device tree falllback compatibles because of the hard
+fail on a device ID mismatch.
+
+> 
+> Also, I feel like just putting checkpatch warnings directly into the
+> commit message is bad practice. Much better if it were "Add a blank line
+> after variable declarations per checkpatch warning."
+
+Fully agree with this.  We really don't care what the print is, just
+what is being improved and why.
 
 Thanks
 
 Jonathan
-
-> 
-> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
-> ---
->  drivers/iio/humidity/htu21.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
-> index a9dbf08b4f1a..908661c64eb9 100644
-> --- a/drivers/iio/humidity/htu21.c
-> +++ b/drivers/iio/humidity/htu21.c
-> @@ -105,12 +105,12 @@ static const struct iio_chan_spec htu21_channels[] = {
->  		.type = IIO_TEMP,
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
->  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	 },
-> +	},
->  	{
->  		.type = IIO_HUMIDITYRELATIVE,
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
->  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	 }
-> +	}
->  };
->  
->  /*
-> @@ -122,7 +122,7 @@ static const struct iio_chan_spec ms8607_channels[] = {
->  		.type = IIO_HUMIDITYRELATIVE,
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
->  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	 }
-> +	}
->  };
->  
->  static ssize_t htu21_show_battery_low(struct device *dev,
 
