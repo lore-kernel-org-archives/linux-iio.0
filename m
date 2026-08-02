@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 882F52C11CA;
-	Sun,  2 Aug 2026 17:03:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 088CB3C07A;
+	Sun,  2 Aug 2026 17:04:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785690196; cv=none; b=HPuMPW6ItdCOClC1bJY6dr9KVMtn3gTyeyHcPMrcr0GGBagyQY61Vv3LJ6+kXiUUqLOlGcKJSQE6EJ+L3uDbDBwcxiOKAP50Z7fkwiAcxr7gpa7xT1bfuS02/aPWGduKGulRfiHn9t89NLm7B/VtyopLrUR42KvSNUGXMNYLR8M=
+	t=1785690297; cv=none; b=KSLltNuTekyU+uN+K+m4DUTOZ83Ua/uJAbqaEXINf5SKhHigBn2ed/xOzfafD65U9XY6O5PrZPh479qebo6imHtZ2IUgSB7cYuxZBxoxtihArD011Ma7VE6LfiecQWY6wIvi+rkyDPy0r6M6DNHmp8CFKRqcXWIB1zSPOJ357Po=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785690196; c=relaxed/simple;
-	bh=zDjgMYsSM67rwBm06O+xUeytwHah7ZueYsiVkGdndKk=;
+	s=arc-20240116; t=1785690297; c=relaxed/simple;
+	bh=5sJ9hl7U6NywExSKlQaosS2jKxVTyc77DMhD3po5/Co=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VVpN79ox78a7BIGCzm/6hvP3ejD561b2xoDrC/U5k0ZW7dNSy/p9Wfs/1gBxqHnSL/ShnDOm4jOTy2+egXPYQBj2xLOlVok6mb4SsKUtFAFXr5MKDzPQYpuws1GC/NRmj0KlaMtCI/ix0qe4KUBFSNPRquB435E8nowvJvrYpyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JClkKLL+; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=BsuRtBIkD8/lIW2FMyOvIgoK0rvZHIFpSYzc17vgHicXQlIbdnIK9nn43PsNketgVgCJgL7OgxlER8EGf42uz/MnUa1SklJHdff+Nt+PuAgvzdJpfZzhTJNeMqLk9uZYyFuwc/8JGB3LDodIev7fXX0y2La2M1DW+b3gri808mo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fVRnb7Ba; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JClkKLL+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC771F00A3A;
-	Sun,  2 Aug 2026 17:03:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fVRnb7Ba"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C391F000E9;
+	Sun,  2 Aug 2026 17:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785690194;
-	bh=yAbPfDbsNXYKFbJpkHtynyiXO4tpZHmVCigjm5J9Qtg=;
+	s=k20260515; t=1785690295;
+	bh=whlOKJ2KJDioAOiaCFJ2U5Y05ke+K0Fn4fxnzeBTT+o=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JClkKLL+42YgAw81yxXBrBFY8ElECkBPq7UQlcWKUs8njJK+ILRIQyDwjl8uZyXZZ
-	 mbDrFq8+YuesBNMtRfR2X9RSfi63dBhvZlkeBQ1JtZNHc6skLeNdy482G5SozPBRlS
-	 BJ/co2qJdhBKKSz4nDo4Hp/WVwH80csLaa2WnOTejfTrFDAFe/LYCfvLDarCqjhAuv
-	 9hZYbVhZZ7j1RdphBbDDogltTfRLxuKur2iLo0uNGtZbssKL5WZP3maq+6966mLjL7
-	 jphRY1WpLCKK/YbCprTW34Oaae0CavknV1TGBU7xN8cvqzzMWv7/JTAtDs7tGoeeM1
-	 bUMJb66s/HIkQ==
-Date: Sun, 2 Aug 2026 18:03:10 +0100
+	b=fVRnb7BavLzQAt+CGdw3RYQ2sBqdURjBu12SJ4iFhvt+7Gq38xe38i9RR2yujH1vP
+	 Y5BoVY986mI6Y2D6BD/8xcwYKwGAXZ1bVHYc03Js+/z+c4dIOvjvu85ePsGsMjs0bo
+	 9EWYwzOCc7Chy3cTbjx/EahQ36npidecjXXCUEiYE7X5D3uWw5Kz04Gn9/8n+8UaWY
+	 ZibbGHtlZdO4RP075A3pYpN+z//MQ82/bX1o31+KazSdnII3+jjdixjn2IMbeFOIE7
+	 6cuZcVz7XOfmORrp17Rrc/Z//1NfvjLeYAI+bMcYya2Si2KkxXhwlwktjeIHMJU/g9
+	 UxNWCFfaWR/Kg==
+Date: Sun, 2 Aug 2026 18:04:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Adi Nata <adinata.softwareengineer@gmail.com>, nuno.sa@analog.com,
- andy@kernel.org, u.kleine-koenig@baylibre.com, mazziesaccount@gmail.com,
- bhelgaas@google.com, o-takashi@sakamocchi.jp, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: humidity: htc100c: Fix checkpatch warn unnecessary
- else
-Message-ID: <20260802180310.78201b95@jic23-huawei>
-In-Reply-To: <f8670ea5-1e76-4a04-9c5e-e43ffac92be0@baylibre.com>
-References: <20260802014417.15485-1-adinata.softwareengineer@gmail.com>
-	<f8670ea5-1e76-4a04-9c5e-e43ffac92be0@baylibre.com>
+To: Adi Nata <adinata.softwareengineer@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ u.kleine-koenig@baylibre.com, dakr@kernel.org, bhelgaas@google.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH] iio: humidity: htu21: Fix checkpatch tabstop warn
+Message-ID: <20260802180450.33fbab86@jic23-huawei>
+In-Reply-To: <20260802013333.12689-1-adinata.softwareengineer@gmail.com>
+References: <20260802013333.12689-1-adinata.softwareengineer@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,65 +47,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 09:48:11 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sun,  2 Aug 2026 09:33:31 +0800
+Adi Nata <adinata.softwareengineer@gmail.com> wrote:
 
-> On 8/1/26 8:44 PM, Adi Nata wrote:
-> > Checkpatch warning:  
+> Checkpatch warning:
 > 
-> Making checkpatch happy is not a good reason for a change on it's own.
-> It is only there for guidance. It is not a strict rule that has to be
-> followed.
+> WARNING:TABSTOP: Statements should start on a tabstop
+> +        }
 > 
-> I think this is a good change because it reduces duplication of the
-> return statements and eliminates an unreachable break statement. So
-> write the commit message with that reasoning and don't mention checkpatch.
+> WARNING:TABSTOP: Statements should start on a tabstop
+> +        }
+That's an amusingly uninformative set of warnings.  I'm guessing
+you cropped out the bit that says 'where' those are?  
 
-A 'whilst I was looking at this code' comment below if you want to take
-on an additional minor readability improvement.  Whilst it is a bit
-churn heavy given touching most of the code you are changing here, I think
-it would still need to be a separate follow on patch.  Also do check my
-suggestion carefully as I may have missed something!
+Anyhow, I'd not bother with what checkpatch printed for this.
+Instead just say what the change is and that checkpatch suggested it.
 
-thanks,
+Thanks
 
 Jonathan
+
 > 
-> > 
-> > WARNING:UNNECESSARY_ELSE: else is not generally useful after a break or return
-> > +			return IIO_VAL_FRACTIONAL;
-> > +		} else {
-> > 
-> > Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
-> > ---
-> >  drivers/iio/humidity/hdc100x.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> > index bc452cc8fbcf..38903239fb9a 100644
-> > --- a/drivers/iio/humidity/hdc100x.c
-> > +++ b/drivers/iio/humidity/hdc100x.c
-> > @@ -229,13 +229,11 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
-> >  		if (chan->type == IIO_TEMP) {
-> >  			*val = 165000;
-> >  			*val2 = 65536;
-A whilst we are here comment.
-
-This is 2**16  So maybe can use chan->real_bits
-to provide a form of documentation of where it comes from and
-then return IIO_VAL_FRACTIONAL_LOG2;
-
-
-> > -			return IIO_VAL_FRACTIONAL;
-> >  		} else {
-> >  			*val = 100000;
-> >  			*val2 = 65536;
-> > -			return IIO_VAL_FRACTIONAL;
-> >  		}
-> > -		break;
-> > +		return IIO_VAL_FRACTIONAL;
-> >  	case IIO_CHAN_INFO_OFFSET:
-> >  		*val = -15887;
-> >  		*val2 = 515151;  
+> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
+> ---
+>  drivers/iio/humidity/htu21.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
+> diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
+> index a9dbf08b4f1a..908661c64eb9 100644
+> --- a/drivers/iio/humidity/htu21.c
+> +++ b/drivers/iio/humidity/htu21.c
+> @@ -105,12 +105,12 @@ static const struct iio_chan_spec htu21_channels[] = {
+>  		.type = IIO_TEMP,
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	 },
+> +	},
+>  	{
+>  		.type = IIO_HUMIDITYRELATIVE,
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	 }
+> +	}
+>  };
+>  
+>  /*
+> @@ -122,7 +122,7 @@ static const struct iio_chan_spec ms8607_channels[] = {
+>  		.type = IIO_HUMIDITYRELATIVE,
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	 }
+> +	}
+>  };
+>  
+>  static ssize_t htu21_show_battery_low(struct device *dev,
 
