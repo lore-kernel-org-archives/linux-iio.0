@@ -1,45 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BABA72622;
-	Mon,  3 Aug 2026 00:19:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49972231830;
+	Mon,  3 Aug 2026 00:27:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785716378; cv=none; b=gJw2nUO4YwgPfjUmWv81SYeKlDpEt7S5juAVcQFLkJUounQ2cZ62dgfKcvUNjWBwVAf88HQPJBOBUT8dL5u/0biToNluKbIblgWQKx1rkJPn+l95k3qlBE04blQc0aPcyszr27GJRyIepgyYATab9mPP+DZTdFjsReZtUHlUP00=
+	t=1785716864; cv=none; b=fkOBRDqNvwquUjBd3N4dFYyZxOLhSGXtam6vzgpYxJB1jzgQsoVh7cyL4EvzrOk4PCT6YH7Pck7dyhsFFUpaVokt6RmJcaw7rL80vrdC/L7B1mRVpuIUytbuUqnbJ+8pd0v+kDS3nvd09N8FiDdCfMaoKZ+CcKultnlU/4vhKmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785716378; c=relaxed/simple;
-	bh=LEQbiK6ocKErgUeSn1sHIxuhOHc3/L3rhyDRoHzWx5s=;
+	s=arc-20240116; t=1785716864; c=relaxed/simple;
+	bh=mp88gHt5d4dy6iz0OeSB1olGJRkwo2VPphDbdI8+rLI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nDj/O8d9KSbisJd1y86nJdCTy1peIwF8jZdaNDZwbf4C8WLK9eee21dH4Oot0NhpaKev7gpGJas2cmhYlHnPDq1YQZs1TDA22C4WkCk0JCYoQNZJhBRYO3DY0AKY9vgx5id+RmRM+BKzKv1g55pCZ6wlWYs1TZ88sPNZOfsqC08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A179PDYK; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hC3ayeTrpOYhNK2Ce3f2h7NYsSvc689kONK/uNIqbEN5iuQVR2jI0oo0BB31+bQutzqi4g2BccwbYtHo25q/oulcNpg4jgHYTfgmBhcA6wh7GMDHRr/BhU4hDwyONnBjp6uLF0qsPM9rRRa0frVypKhntZK50fNnpBLqOrh1foQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jLP2Y9fn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A179PDYK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E50291F000E9;
-	Mon,  3 Aug 2026 00:19:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jLP2Y9fn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF50F1F000E9;
+	Mon,  3 Aug 2026 00:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785716376;
-	bh=us8MaYLEDRAZ1xUqukGs8EH2WIR6ASFqOCtYH0pFOgQ=;
+	s=k20260515; t=1785716862;
+	bh=tqOT/xy2dSQP6NEFGjBJhWcm09ei+VNOGl7bDPZhhjQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=A179PDYKNnZS5Win0meFN6XHYTrABdCsYmtuGN2uF4hQmexLK3YdE7RajmepViPtX
-	 A85DsWGlIGe1VTiFh+DMjHz1cho7MRTrsn2+pzhzQa+47SxsrTjxjZ6qZHM00d3v2m
-	 8zcJRccxfyG3L6Zte6qIw6WQqrVi6RdQkQE3vM0ey2hswsFN2tztGp4KPRopdyyqud
-	 DCLVQf5kgfuj8WcVAW29rqaJl0vehhQBLFbQtDhcu5pHj9djZe1wvWniNURziAfH4x
-	 Z8pVPhoELkWS1WIPagChJx5G7hr9THLSCnBJeQK67pA6INlU3fp+ow294VgTyWtQqL
-	 uR4KyaoToZA8A==
-Date: Mon, 3 Aug 2026 01:19:31 +0100
+	b=jLP2Y9fnmpY8l/+xvAquvyUmhRdKbt/o65Ab0oMTYAJbPjHnul9rnXQIkB1smBrX0
+	 Q5Bl5nkizkz/hAtzTVtL0PQbG9AnW2K99ty/SsqAtu0BDDAQKbMNq/Y+kgbm/kL+2A
+	 KZjL0acSj/0G6JHgIqmB6GeLG/GBcPZjJY1ggDpje6kiLknjt+B9jT7ZkFoNcP08Ci
+	 wYvMURP550pEJ3o6OYG7Yd8s2c/b/fxJRr+3Cv00NSDLFF0efCF5psNb8L3RBsqo0F
+	 QILHOhjm17Y0of1Lk1rYHkHYmw4ypwCvCmt2eUOLGXqK9iAd3OKS8lsrl78AYmm3Qs
+	 24ZmyzkalH3jA==
+Date: Mon, 3 Aug 2026 01:27:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Nikhil Gautam <nikhilgtr@gmail.com>
 Cc: Linus Walleij <linus.walleij@linaro.org>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] iio: light: gp2ap002: Fix unbalanced runtime PM
- on repeated event writes
-Message-ID: <20260803011931.1451deca@jic23-huawei>
-In-Reply-To: <20260725015245.5f911412@jic23-huawei>
+Subject: Re: [PATCH v2 3/3] iio: light: gp2ap002: Fix regulator leaks in
+ runtime resume error path
+Message-ID: <20260803012738.2abf14db@jic23-huawei>
+In-Reply-To: <20260722162247.8229-4-nikhilgtr@gmail.com>
 References: <20260722162247.8229-1-nikhilgtr@gmail.com>
-	<20260722162247.8229-2-nikhilgtr@gmail.com>
-	<20260725015245.5f911412@jic23-huawei>
+	<20260722162247.8229-4-nikhilgtr@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,82 +49,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 25 Jul 2026 01:52:45 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 22 Jul 2026 21:52:47 +0530
+Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 
-> On Wed, 22 Jul 2026 21:52:45 +0530
-> Nikhil Gautam <nikhilgtr@gmail.com> wrote:
+> If enabling vio fails, vdd is left enabled; if re-initializing the
+> sensor fails, both regulators are left enabled.
 > 
-> > The IIO core does not filter duplicate writes to the event enable
-> > attribute, so writing the same value twice invokes
-> > write_event_config() twice. Enabling twice leaks a runtime PM
-> > reference, preventing the device from ever suspending again;
-> > disabling twice underflows the usage count and triggers a
-> > "Runtime PM usage count underflow" warning.
-> > 
-> > Bail out early when the requested state matches the current state.
-> > While at it, switch to pm_runtime_resume_and_get() so a failed
-> > resume is propagated to userspace instead of silently marking the
-> > event enabled.
-> > 
-> > Fixes: 97d642e23037c ("iio: light: Add a driver for Sharp GP2AP002x00F")
-> > Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>  
+> unwind previously enabled regulators on failure, mirroring the error
+> handling already used in probe.
 > 
-> https://sashiko.dev/#/patchset/20260722162247.8229-1-nikhilgtr%40gmail.com
+> Fixes: 97d642e23037c ("iio: light: Add a driver for Sharp GP2AP002x00F")
+> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+I'm already carrying this fix via a patch from Laxman,
+so dropping this one.
+
+
+Applied 1 and 2 but there was some noise due to other changes near this
+code so please take a look.
+
+Applied to the fixes-togreg branch of iio.git
+
+Thanks
+
+Jonathan
+
+> ---
+>  drivers/iio/light/gp2ap002.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
 > 
-> Sashiko raises a point about concurrent accessors. My previous understanding
-> was that we were fine if there was only a single file involved.  Having
-> dug around a bit I'm fairly sure that is correct.
-> The comment here implying to me that we are fine.
-> https://elixir.bootlin.com/linux/v7.1.4/source/fs/kernfs/file.c#L340
-> 
-> Now if we had more than one file then we couldn't rely on this.
-> Hence to me it's a bit fragile and we should probably add a local lock
-> anyway.
-> 
-> One other comment inline.
-Huh. no idea what that comment was.  Never mind.
-> 
-> > ---
-> >  drivers/iio/light/gp2ap002.c | 13 +++++++++----
-> >  1 file changed, 9 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
-> > index 42859e5b1089..966459994995 100644
-> > --- a/drivers/iio/light/gp2ap002.c
-> > +++ b/drivers/iio/light/gp2ap002.c
-> > @@ -343,6 +343,10 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
-> >  				       bool state)
-> >  {
-> >  	struct gp2ap002 *gp2ap002 = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	if (state == gp2ap002->enabled)
-> > +		return 0;
-> >  
-> >  	if (state) {
-> >  		/*
-> > @@ -350,14 +354,15 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
-> >  		 * already) and reintialize the sensor by using runtime_pm
-> >  		 * callbacks.
-> >  		 */
-> > -		pm_runtime_get_sync(gp2ap002->dev);
-> > -		gp2ap002->enabled = true;  
-> 
-> > +
-> > +		ret = pm_runtime_resume_and_get(gp2ap002->dev);
-> > +		if (ret)
-> > +			return ret;
-> >  	} else {
-> > -		pm_runtime_mark_last_busy(gp2ap002->dev);
-> >  		pm_runtime_put_autosuspend(gp2ap002->dev);
-> > -		gp2ap002->enabled = false;
-> >  	}
-> >  
-> > +	gp2ap002->enabled = state;
-> >  	return 0;
-> >  }
-> >    
-> 
-> 
+> diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
+> index e8ba9c00dabb..430336b51f83 100644
+> --- a/drivers/iio/light/gp2ap002.c
+> +++ b/drivers/iio/light/gp2ap002.c
+> @@ -677,7 +677,7 @@ static int gp2ap002_runtime_resume(struct device *dev)
+>  	ret = regulator_enable(gp2ap002->vio);
+>  	if (ret) {
+>  		dev_err(dev, "failed to enable VIO regulator in resume path\n");
+> -		return ret;
+> +		goto out_disable_vdd;
+>  	}
+>  
+>  	msleep(20);
+> @@ -685,13 +685,19 @@ static int gp2ap002_runtime_resume(struct device *dev)
+>  	ret = gp2ap002_init(gp2ap002);
+>  	if (ret) {
+>  		dev_err(dev, "re-initialization failed\n");
+> -		return ret;
+> +		goto out_disable_vio;
+>  	}
+>  
+>  	/* Re-activate the IRQ */
+>  	enable_irq(gp2ap002->irq);
+>  
+>  	return 0;
+> +
+> +out_disable_vio:
+> +	regulator_disable(gp2ap002->vio);
+> +out_disable_vdd:
+> +	regulator_disable(gp2ap002->vdd);
+> +	return ret;
+>  }
+>  
+>  static DEFINE_RUNTIME_DEV_PM_OPS(gp2ap002_dev_pm_ops, gp2ap002_runtime_suspend,
 
