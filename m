@@ -1,122 +1,144 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DC0E42A17D
-	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 19:19:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7671E312815
+	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 19:35:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785784744; cv=none; b=lxy+4+pjAcVspiWo+AnR77szyaVN6QJetxtA6I0f3KhliUi7NrU/iWfunEhW+NwSyMn/hdLF0wHDhH0c9YxZUKJGUgnZCa30Prkiu81B7wICZizRgiwBZwEOudbb9+m9zupoXrYYvv4fd4KxVKBkdMEzyJkiYC+d8koOSDIYyh4=
+	t=1785785726; cv=none; b=n1P6gw5M1stCi9nyYmNLRVaFvN75WXy6KGyNOuPKCGk7uAzquHruLncyq97M8zZFVrq9osFl1BHvUOOVcEqz8T18fLIhQ98Fv6KmqitrFcPX+qDTNAgADrP8dzo9wPCcgssc+c2t97PtAl9aXXhjahd1nPZ0Of8zzt9t90Dc1wA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785784744; c=relaxed/simple;
-	bh=XKGpIuuo6O7kytNhl1VQHpUrM4ZOOWo1SPMYBBVs6II=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I7sfQtrL3hhcpSooNMyFr/FD8Y2g9k+upxnmyCP/Y6Pd1x+qHososOkR8898G16DQBcNe4ojoq7k7uT+UaI2GfbuasHTfa3RbBy6hbFjWLYHPcTAcGXe5AR7VEZ8LNRbe7ZFyLpCRzFK00ymWnY9rlh5jARNcm9+3Nxxqzl3A4E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=k617tlsJ; arc=none smtp.client-ip=209.85.210.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785785726; c=relaxed/simple;
+	bh=VjAnPKkOhrNzBBj74/3IQ5jyXGO7ZA3AmQIZeJkp3YE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=A5V3RSg3EHGtf7HVuLZqzE+KmIgNlMYVcG6Mbfg1I/jDFAJbxuOboNpWgcDyrxGOuNE8V0vtxzohj/Bi0Y/7VR86/G9+/pi/d04V7wLXUnPXjeazYdXNMvNenCfs6LdISp5MJNsCr4SS7ixTTsZV7qSIi1D2a7Dc+ULa2GbvNyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UOtd5Iux; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="k617tlsJ"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7eb787dec99so2423996a34.0
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 12:19:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UOtd5Iux"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-49558ce01afso19472795e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 12:35:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785784741; x=1786389541; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=yWhNVuNUeWmdXxG9AxDJ/JJjMmObR+VfZMlaxit4KDY=;
-        b=k617tlsJSnXA+ObJtUmS4S3TPzDdSCOKnh5P+acMy2VpV93oxwg3ywmUWCevWQbrIz
-         DuIfYAUTaLXXP2zXjo+SECM7Cry2ctsMgvSt93TtMxcwlgN8NmjPpoMv3AXnPtgITr7u
-         jsM1n9hybsNdSs5XAEasSO8jZw4X57OdS0DhsZhk+CXhWzLv6kMEk+j8w6twhQpTDbmD
-         94bSOpROqxFNmxVeHKaptDq4pfeMs8ZnON9P28piUvvO5rgV4eyw4Z2eXaH7yY66MALK
-         MMeSgYxL2NhQed2WFAZJebvxzU08uy1prJ9rzFRczrIgxjXthFfoo4dStcQUUSgv7MT9
-         0yfw==
+        d=gmail.com; s=20251104; t=1785785722; x=1786390522; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=rIsx6zbYaQEdLVAaackOaf7e88l+t3puadax1/1AhNI=;
+        b=UOtd5IuxjO+0CawwxJUBWuop0lzlLd5/uZhrltQgg9jIS3N5sre30KR2dsAcsc4ktb
+         Ov5KYlNJSnRUmZGMTSiDoLWCe/dYmIFDvE7JlWxd3LpcsoPlxLmBFRz+LItp6Oa2+UqY
+         7F7Iufx7c+TMi96uou4UHWerJcRNlMwFuFjdIP6BGheHMSeZVnZ9u5EcOT2R6YfbLEQY
+         CCXbgR7NGUxw52lQXuq1JZHeA4ha5fCd2xo5IbuMwdRk4mbeiREkkz4KfKsWqE2I5YvW
+         13ZvmhaXLrfJb9r3YMNjeGTpymqzb20UqVL+NkpEzvWlwWnogdrZMe04ntu9hxAIdlIk
+         bMoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785784741; x=1786389541;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=yWhNVuNUeWmdXxG9AxDJ/JJjMmObR+VfZMlaxit4KDY=;
-        b=M3zVOHFJiIpHxyqrE3VhBZT+d5YfSHtn9NBO6jeUkklhH1/+jnjTB2anW/amEVtqDk
-         ZbwHy3FYKR0LHwAAzgjobxdRHyhaj8jnowQLXkqs224Hj5YDHeoiC8dagY1GaCh0dJi1
-         BCYqWeMziuIU+J3ERuBGgMh2yMIdvn2Lq5aeoEuZC5+b9Cc8Z9tyZqpKJ3sBKIKM3gSg
-         GeVHp0a0c3RwS48PF+5/jPyV+62D2kri2/MbnRqNqqveRCvy32Wg3OT0IaYGv9jfwqmK
-         5kxZsCK7FEhWh/lX7bZPJeua24xNpzu+t2I1WOZD93PXcjWoKbADOPQzua4v0nUkyQ7N
-         nDpA==
-X-Gm-Message-State: AOJu0YyNePbm9gCzLckRfBbQvLp/jb/wSWBm1PsK5OrN+lbs+YPXUzhm
-	RNoMHP311W+/aBlBb6pOEDdYIwYnZ3chGLZsXwdpDH+RLnJjCakA32ytmVeIfA38cyY=
-X-Gm-Gg: AR+sD11691sAluJ5UEAPbxpCHP+ldcjZvOy4B2e8HLRsINYrymkwsM+Imb1ZoETzPCk
-	ythLsNfHCzZ9UE1lzY6houqcik45jAO/sDfAc3YW9SzUcTftVEcot+KkFiIJJk30AbEeSIlQ87A
-	44mhdtDDdt8+sSRgX8LXTYEgpndAE/Xq2IVzk/EHf6sXgET1DlSH98J23gxGHf2Q9zE0HWmJ0DF
-	IdhUOovmjFHwIVV4I3TVBIzA+Fg7sN7FlYSOhaa7lVdr6/xZJp5yBzUrLLrfUK+sWSstQJ7iZE7
-	fmOd1fellBDOCKIaS47VtCEzDfJxfHVuOJUroL38sRFtmQU1YrxJuqVFQpmXsOAz6Y7QN2wEk7R
-	w9JeNN64hVApfM+I8jXOm2YYXlxE0jkfHo3wA2JTCiIyaKiUhytp2bAFeDbNq1EdyXyxOw5/Yq7
-	aRhOnUUs93yIo78T7QGC8STIN67woEzveLzBuC5y00pDkM8fqZH4l+TxX2m9NILCswx7MXL2uOy
-	k4KETCnT9dYq/IRXkmWFQMjbYiSg0/1og==
-X-Received: by 2002:a05:6830:6413:b0:7e9:d082:3b87 with SMTP id 46e09a7af769-7f196b61346mr16269729a34.1.1785784741332;
-        Mon, 03 Aug 2026 12:19:01 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b8f7:1f5e:7c:a7d1? ([2600:8803:e7e4:500:b8f7:1f5e:7c:a7d1])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f18f11e522sm8029109a34.25.2026.08.03.12.19.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Aug 2026 12:19:00 -0700 (PDT)
-Message-ID: <43059ed9-2ff8-4bf3-846a-53a4c7cd72bd@baylibre.com>
-Date: Mon, 3 Aug 2026 14:18:59 -0500
+        d=1e100.net; s=20251104; t=1785785722; x=1786390522;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rIsx6zbYaQEdLVAaackOaf7e88l+t3puadax1/1AhNI=;
+        b=seGkPOH+SJ1wxYg6mzh8ODL1c533xa7FLVFF84RvYL9zOpGUbsETOcKEh3BVl643/5
+         uFGEr6ZDvAxbZ6qcWAE7kj3A4CIB31CAHq4cO7WXu7a3qrrglxUmRgXiS9kpz6QgdgQR
+         mtoZBUcM0jV2ciSvZI9XU2jI6uZ2RZX7G0+91vSqpoobWaxcxXQ3tU0q978smZWqiHQV
+         qCG0RtBb9wPB2upXXKHm1MEwAxbcQ7S81OtQVs/6Of4pPZBvJLkU4doIAbPynZPVU0kd
+         Nc6SHiScpGV69FgttMgNRVYHsiHXtYlgzk1UDqMgnogA4N527osEAR3nisPXLXCMUEUd
+         OkaQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqVGfSOyLioMj6tB/ySNfqhmbvaxdkX8htIX9BRFHHfAA2F/UWvRk7L5ek/cpX1cpn36s+Ww8d4EsQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy0MFGo3kYcQo7tPRvPL1OS1SGGdexNcWqnNt/ynjHmj/a6V69v
+	7ajo3asuXjxZR9ybaqHeYCxfTzWXVVtc20pB/QWshFMhJl/FErPenPGf
+X-Gm-Gg: AR+sD11Ds6ID3WFj7B9pnIsjrCvapjzM71FaE08vGKuxN+eAy0aTblR2dZAqI9Z1ZKa
+	yPCGmfA8pPaT6HHcf4qRQGmymjHksX1Pvs7XG+E/orfMrVMdqanHFNnIMIliHv/T6AM43BlKoSO
+	/zOBpJcMm+wMFoBXqJ3kJ/qBQaIciibL71R2JT6M1q0uBzzm/YoVoBf1wd9132K4VFlZyu9GeC6
+	ylfZCr9Wrag3DWmvgpKCvAQdJdbxD9Yzde+SIiAKI6V+zrOFKruTUFYt4KBBRb86ZZ/YeR6359/
+	a+rei7CvjFmaxQR1y/P7yfPjUW1OLfhbYyIcZzprGUG5/mviQgdEl9OaFmQxXATfBCMfDM0hNtS
+	mQHbkfM/EFbGxK1Hq8H47DOu/Al4zwEQusSRPcYzPrEMOE0tWvaBmqCnEKSczF69VZaKYawI1hJ
+	cJ2Hlp9titXWsNVCqgG1nbf21DB2UjH/JEL9PNEk9YwzW7I07VxynceIh8ydWyqQtyac23dGeha
+	7KsibKQN8eG4Lln2wl/N7rPCEa8BbAmf6UW78tV3yaEd+ZNkvoKhEsDqksn6FzYCI3l+7P4RoPb
+	IbYfEMr0G2a0yw8J5/nJn/dgdDyTny4lKtHudPYO0btkd5I+GHtQ9ZbqMa7c10SAn7sNPED/b3k
+	WQkHbMkhPfAXn5z+JJwRIt3QT7aiyB/GE
+X-Received: by 2002:a05:600c:3b99:b0:498:519:e660 with SMTP id 5b1f17b1804b1-4980c66d8b0mr265523695e9.4.1785785721474;
+        Mon, 03 Aug 2026 12:35:21 -0700 (PDT)
+Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd456220esm36742356f8f.18.2026.08.03.12.35.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Aug 2026 12:35:21 -0700 (PDT)
+Date: Mon, 3 Aug 2026 21:35:19 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: sashiko-bot@kernel.org
+Cc: sashiko-reviews@lists.linux.dev, devicetree@vger.kernel.org,
+ robh@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
+ jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: add support for mcp47a1
+Message-ID: <20260803213519.7d3d241e@systembl0wer>
+In-Reply-To: <20260803180717.4BE651F000E9@smtp.kernel.org>
+References: <20260803-mcp47a1-add-support-v3-0-540e71b4fd2e@gmail.com>
+	<20260803-mcp47a1-add-support-v3-1-540e71b4fd2e@gmail.com>
+	<20260803180717.4BE651F000E9@smtp.kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] iio: proximity: add driver for Sharp GP2AP070S
- proximity sensor
-To: Kaustabh Chakraborty <kauschluss@disroot.org>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Peter Griffin
- <peter.griffin@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org
-References: <20260731-gp2ap070s-v3-0-d1f5cecf9fe7@disroot.org>
- <20260731-gp2ap070s-v3-2-d1f5cecf9fe7@disroot.org>
- <380b864f-6266-40fb-87a4-027afb422885@baylibre.com>
- <DKFHI80E1741.3L5TMU6D3P9OC@disroot.org>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <DKFHI80E1741.3L5TMU6D3P9OC@disroot.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 8/3/26 12:28 PM, Kaustabh Chakraborty wrote:
-> On 2026-08-01 11:41 -05:00, David Lechner wrote:
->> On 7/30/26 3:07 PM, Kaustabh Chakraborty wrote:
->>> The GP2AP070S is a proximity sensor designed and manufactured by Sharp
->>> Corporation. This sensor is used in mobile devices, including, but not
->>> limited to - the Samsung Galaxy J6.
->>>
->>> The driver has been adopted from Samsung's downstream kernel
->>> implementation [1]. Due to the lack of public documentation about the
->>> schematics of this device. The downstream driver acts as the secondary
->>> source of information. Driver clarity has also been improved with the
->>> help of the GP2AP* drivers in iio/light.
->>>
->>> Link: https://github.com/Exynos7870/android_kernel_samsung_universal7870/blob/lineage-16.0/drivers/sensors/gp2ap070s.c [1]
->>> Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
->>> ---
-> 
-> [...]
-> 
->>> +static void gp2ap070s_reset_action(void *private)
->>> +{
->>> +	struct gp2ap070s_drvdata *drvdata = private;
->>
->> Usually, we don't bother with a cast/local variable in these.
->> The void* can be passed directly as an arg.
-> 
-> Yeah, but CFI will not be happy about that.
+On Mon, 03 Aug 2026 18:07:16 +0000
+sashiko-bot@kernel.org wrote:
 
-How so? We do this all the time and no one has reported any
-issues with it.
+> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
+> - [Medium] The I2C addresses specified in the schema and example appear to be 8-bit write addresses instead of the 7-bit addresses required by the DT specification.
+> - [Low] The `reg` property schema applies an integer `enum` directly to a matrix array element, which will cause `dt_binding_check` validation to always fail.
+> --
+> 
+> --- Patch [1]: [PATCH v3 1/2] dt-bindings: iio: dac: add support for mcp47a1 ---
+> commit 441e840b5a2a3f037c3520c49013a55b7dc4c1bd
+> Author: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
+> dt-bindings: iio: dac: add support for mcp47a1
+> 
+> The Microchip MCP47A1 is a 6-bit volatile Digital-to-Analog converter
+> which communicates via I2C.
+> 
+> > diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
+> > new file mode 100644
+> > index 0000000000000..b181fe73dce84
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml  
+> [ ... ]
+> > +properties:
+> > +  compatible:
+> > +    const: microchip,mcp47a1
+> > +
+> > +  reg:
+> > +    items:
+> > +      - enum: [0x2e, 0x3e]  
+> 
+> [Severity: Low]
+> Will this cause dt_binding_check validation to fail?
+
+No, this is a perfectly valid dt-schema which passes dt_binding_check.
+
+> 
+> Since dt-schema parses reg values into a uint32-matrix (an array of arrays),
+> the items array applied to it defines a tuple schema for the outer array's
+> elements. This means the inner array [0x2e] will be matched against the
+> integer enum [0x2e, 0x3e], which will mathematically fail since an array
+> is not an integer.
+> 
+> [Severity: Medium]
+> Are these 8-bit write addresses instead of the 7-bit addresses required by
+> the Device Tree specification?
+> 
+> If these are indeed 8-bit addresses (as indicated by the 0 LSB and typical
+> Microchip datasheet conventions), they must be shifted right by 1. That would
+> make the correct 7-bit DT addresses 0x17 and 0x1f.
+
+No clue what Sashiko is on about since these are indeed 7-bit addresses which
+do work when tested on the actual hardware.
+
+-- 
+Kind regards,
+Joshua Crofts
