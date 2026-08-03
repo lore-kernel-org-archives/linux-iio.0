@@ -1,64 +1,64 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7323E3BFACC
-	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 13:44:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B98D40F729
+	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 13:44:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785764650; cv=none; b=LgA/OGNr/VlFG70wJEqt8rJVW94MnpfhgWOUeoZaBoRDHSn5XJaxlSFPx4lnQYJaufLmqcPd3vnntIXbZgcebUOVFc0ozBsT45EOY8M+eI78W7qY/eEr0/hqsdLNRRcNAVw5F/iahhw9d1bewGHpwMlpw82DTcDisAsEmWO7odw=
+	t=1785764654; cv=none; b=gJ1eMcCDOATQbyzMVR9xXGRM4rRfn5QL/O+zFL27+uDHcRadVrd7J5x2hdHDbIgNPxiA7cgJmJTlAI6/j2aajmnyLEhEr09XV0+H0D2mqkq3+zlJRIlWhLXhKdnwLGX6+v8vjTD2OXooqwBVmgvCMGfg0tgQuV8SLf+tjSQVhLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785764650; c=relaxed/simple;
-	bh=YM8dfmlqxShxjvZGqRGiSNpTyF4I8DQHGxMXfAniN4Y=;
+	s=arc-20240116; t=1785764654; c=relaxed/simple;
+	bh=lhQg0++53cN6YWLsvuYUtWRHnABUxZRuUet4RxtPuNY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=I/HkW6tAi/ZfupNB4b8TLnSxzzsa0a2I5ZldOQiro7cuVaANgTmtQIuVF0Mqx3MhxEKadonqtCGCE+NTH1dbE/qqU4Ti88yqDz1HYn9trr4Yy7+9Vp0Rx7nUxJIs9TV+aNaBlMh/Kr6eXssW4mTs0frYonLDdwn3IWR7HwgCGAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k63liqe2; arc=none smtp.client-ip=209.85.221.54
+	 MIME-Version; b=gPN6tIZLev/zAwVH7jAL2P+3CfRRXgZzWKV5AC0YpZzrXHudD7EBOrPhydgSq41dflQZRVAVX2doM7cCwOLy8Td1c7koUxU0EFiMONoKXj5lCeNiUzLLJtiiiRdMhBJMBBTdHHCr41CZBQepWS+PQssQgPhC2Y1k7pYuFhNgqUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R7N4Ncjk; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k63liqe2"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-47fdb6f7d72so723005f8f.0
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 06:44:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R7N4Ncjk"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-47fde295992so1032113f8f.0
+        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 06:44:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785764645; x=1786369445; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785764651; x=1786369451; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=kDNUtFHnwjFHImwGnadLZYX2nGq1XShrI3jQKtCkmMY=;
-        b=k63liqe26Fl8IPI3al0/6RKdWIV3N+CUBv5PvQQ1u8xlHB5hFfnW02YYzaQS6yX0v1
-         F7sQbslg0bM7DPqAaVedo3cKXtAf+trRfJz7xOfvb3ww731k77R794XbLoZedyaZ5vzt
-         Lfi3tfM2PyZ6BzrClhYe4FbfhMa17pZWoFy7Vz4ENpi+PNUsnTvq1ah8cazYICd61zQD
-         oN4q5dAeLH7pCdtvILvqY4t0oTMuFWIev2Dt9QmDnso1mwKyw9EmEO/I0ODsmlmovHtC
-         pn5mPm0YK2s0+b2kquLA2EDhGesfgghh4+bzvkMqUi/UgLP33Jvtvuz3e2grp2eeFtIe
-         Xj4g==
+        bh=opTcDvpoHFRHn9n+WZGobddkXtZDg7nJ4XpbwWq3BKs=;
+        b=R7N4Ncjk7l42lOULN9LZzVTtMer4ESR+yo+rBJHGQakMHxDJT9RNth3+VZBilPT5sB
+         LubDAM2o998ccbANNXaiiOcODa0LsVGiQFORJ9xTAqt3vWUjV0c7DtQfDzp/IAKEmZd3
+         XAQz2JPnILvaSfkRtAgr+Fh+GjwSKZMu+VNzK5iM1d3zFyZjOxLdWc1sCs8NwfhguVFJ
+         xbFZWnMaUhnFm3WDObv51l2G5OErByjLpdhJlRMTFg5DlF7MsNMh1KOFs1dzNPamInC1
+         M1jNxwEhQY2K+dWedFQlTNYKGyx7P2YLbzs66UbmxBBDYydzSv+M/s2sHoNvTR015eff
+         RQ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785764645; x=1786369445;
+        d=1e100.net; s=20251104; t=1785764651; x=1786369451;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kDNUtFHnwjFHImwGnadLZYX2nGq1XShrI3jQKtCkmMY=;
-        b=n88Bp3kFP1PG0mDNeoWFiSaGnxGssyfjMhI7XI2M0H55d7maYFBbK18sQEPT6/HFtH
-         5TzYl1mZMphJa5zS4sPSyas8Sis3HRRnR45uc3IxZuihSHCm0Vbo29Pnnt6R7ECPXtBt
-         FtYz3RfovjTsozpJH94Og1uqul+Ml8KJ1fcyzHaOYeNfAsrO8JRZlm8+Yz+55ImSzRbi
-         JF/kz8fvJse8F6kXGt8Z2o2hpfBmsgdZ/fBIxsU4qpGa6BAqqeOcLH18AT1Zg6QwkxCt
-         /IXTPpUMnh2WN9dAUKB7WhqdLkKMxyWlivj/PSMZMWwz+n/61aUieVqZOQK3ukYkDqfH
-         JChA==
-X-Forwarded-Encrypted: i=1; AHgh+Rq2DqV3/qz8x8XDzcBO9PpTVNfBW+ay6C3mxO59z/7Yla2E8feyZq3p10Y44ZpXhPEU7DmirmInpJg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyMZB5064Ih3Dt0VPG5ATH0JS9xXJeVV2LtFP2Ni/5NBu5KqBXk
-	oOuvyx4XEyawQRvcSW8kFB/1lPxiryilkmrysm9rEY0P65Ip4iIgZlwO
-X-Gm-Gg: AR+sD12O6PjGTgN0i2pa27ld7I2WA4tR5Zn84Pgw1aRWadvbbkyQzrYUKeFczX1vXtM
-	pogltNDFovHAU/YolMZIxJu9wMPGBZ8q/g/TAlBFb0kzHufVxuHqZLsdEY83LouVjxg/vUHUyP/
-	u/rF+0FZWEjwYnoIDNqokddsUsviLVAU2iCcM32AVhxh6QspYYzwUp4ha40LpAAg6NHoeTKsLdn
-	v39vdyVIFPqVYlyJghdMbyOVYV/6cxnPNPhSQYyYTWwgZihuFYxOTiALqQBtfl0i01fS2e16fVX
-	ZcyK4x8OXKIeB0EAeBbKFka/GuMX+85rwT06xa5e+chH3AOrIZ39czY6NxKRBZN0bTAJQRZdlqm
-	TD+tTRFIAWf2ZP7S/AerLRzsri9/egrrO6imNUVzNRpQb0Vu8QdbfYJjI9vxNFvuiNrqRxMEadi
-	9/LqnuTGGY6RzdfioQSNtuAJ2lH6uypLaWGjycIqSa48JNx+xE3cgaXSwt4kTjztXwZWnT3Hh8P
-	TsGZrWYSw==
-X-Received: by 2002:a05:6000:2087:b0:47d:ea8a:d211 with SMTP id ffacd0b85a97d-47fd9f93ed8mr23273896f8f.29.1785764645563;
-        Mon, 03 Aug 2026 06:44:05 -0700 (PDT)
+        bh=opTcDvpoHFRHn9n+WZGobddkXtZDg7nJ4XpbwWq3BKs=;
+        b=OlwGtsgSbMPIoS5vS9Lc4j5s/4p2Mk9J0OHBUZdJh9X/4wNTquVBQ2AkqQflUTOAN0
+         MMn9ZhLOy1bX8ik7XQ8VH/yT5VVtaWSuD1YmOuz/qGVLZSDPTZhItE9bZl90KYFPeq9e
+         xwG5VMqKydzoox+Wqb8ila1X71vVUOsD/rDQKasEC2qeUuNRG+CUo6WGO5RrBFNMEAGf
+         JTivU7lDLV9ylrDUrGB8HPV7ipMdN7aLHipKTbBWf1plLuAdakrypmwbXeR8uL5AFVIF
+         zJSan+WeibtdoHF/062ra1GDNJ+KX22JSqF7gJQ2iFy2oJ/XleQGYJANvGcZUql/eQVE
+         pOyA==
+X-Forwarded-Encrypted: i=1; AHgh+RqoyRwdmyVjLMWyE2FiXjY1Qu9Ja7nVMGUyySTZZuIHoWYZpXkqx6i04YhOCVsB0kNmI6S16RVa09c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwoF/s4/fWH0MNk7PN+A4saOLz7pZFY23KDQNBtqU2IEB83Nzw2
+	kZYK0UOFPE0TNfGwNOEV2/V5P418YyYICAXkghkIXRrjIcC+aJtm1zMA
+X-Gm-Gg: AR+sD11FfGWXQQaF+6/ZBX9CN2yY9zjoNxSpo11MTUTnQtIepsVN4REXTj277MVDigd
+	ouZ4zMCznrZaapVXDJ+ZNFQ2gSBgnPPYsIUnBPFm8a2x9Sx0OCRO6DNiCp8e9kPuBN0gQpMXf+d
+	QYpCoUQfUYLCIUmx90WsitHy/iVNSrNPTxzfjU2FceYCwhOiPzQe1o5B88cajqodbNUp9l/2npX
+	1j/nyB9+qFKWglWJjj8XjNAn1eSpwF8AkYA5+xu/IUsPNJf+uTLBX1ABBcX7dzs/qOlYATohCP8
+	cencJux04jCdEHOTuQ8SrWpyApF2dnob2IVkGsUXc5nY1lRKikslFkEBTFFIcSNDUn0JZ5ce0Fp
+	w2MsGyFgU6zDuUlGms8dhfZkPEpxe5rKDiRdXl5UkfT0HO4/huMydvHRak7cEdrhlNPfpc2PhWG
+	snKZePJA7dBDIvXkFegV5TiXD37rvsa7V4JeB5RsqEXwIYtrCbwmT6KqGpdaHeDgAeV73vSsjdr
+	ThScUlLnw==
+X-Received: by 2002:a05:6000:1846:b0:47f:6e8b:699c with SMTP id ffacd0b85a97d-47fd729208fmr23158328f8f.14.1785764651304;
+        Mon, 03 Aug 2026 06:44:11 -0700 (PDT)
 Received: from fedora ([154.182.126.98])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd4068fb7sm34328908f8f.0.2026.08.03.06.44.04
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd4068fb7sm34328908f8f.0.2026.08.03.06.44.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 06:44:05 -0700 (PDT)
+        Mon, 03 Aug 2026 06:44:10 -0700 (PDT)
 From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 To: jic23@kernel.org
 Cc: nuno.sa@analog.com,
@@ -66,10 +66,11 @@ Cc: nuno.sa@analog.com,
 	gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH v3 1/2] staging: iio: ad7816: serialize ad7816_spi_read() with a mutex
-Date: Mon,  3 Aug 2026 16:43:44 +0300
-Message-ID: <20260803134346.6733-3-abdelnasserhussein11@gmail.com>
+	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>,
+	kernel test robot <lkp@intel.com>
+Subject: [PATCH v3 2/2] staging: greybus: audio_codec: remove redundant else-if check
+Date: Mon,  3 Aug 2026 16:43:45 +0300
+Message-ID: <20260803134346.6733-4-abdelnasserhussein11@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260803134346.6733-1-abdelnasserhussein11@gmail.com>
 References: <20260803134346.6733-1-abdelnasserhussein11@gmail.com>
@@ -81,71 +82,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The ad7816_spi_read() path performs a sequence of SPI transfers and GPIO
-state changes that must not be interleaved with another read operation.
+In gbaudio_module_update(), the widget id is validated earlier in the
+function to ensure it is either snd_soc_dapm_aif_in or
+snd_soc_dapm_aif_out.
 
-Without serialization, concurrent callers can interfere with each other,
-leading to inconsistent device state and incorrect data being returned.
+Remove the redundant else-if check for snd_soc_dapm_aif_out. The
+remaining branch can only handle snd_soc_dapm_aif_out, which avoids
+a compiler warning about a potentially uninitialized variable.
 
-Add a mutex to struct ad7816_chip_info and hold it across the entire read
-sequence to ensure exclusive access to the device.
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202606140347.gGVWDnbi-lkp@intel.com/
 
 Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 ---
- drivers/staging/iio/adc/ad7816.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Changes in v3:
+- Split from the previous v2 patch to address the uninitialized variable
+  warning separately.
 
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 0e32a2295990..b5a0c2871e00 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -50,6 +50,7 @@ struct ad7816_chip_info {
- 	u8  oti_data[AD7816_CS_MAX + 1];
- 	u8  channel_id;	/* 0 always be temperature */
- 	u8  mode;
-+	struct mutex lock; /* protect device state during SPI transfers */
- };
- 
- enum ad7816_type {
-@@ -67,11 +68,14 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- 	int ret;
- 	__be16 buf;
- 
-+	mutex_lock(&chip->lock);
-+
- 	gpiod_set_value(chip->rdwr_pin, 1);
- 	gpiod_set_value(chip->rdwr_pin, 0);
- 	ret = spi_write(spi_dev, &chip->channel_id, sizeof(chip->channel_id));
- 	if (ret < 0) {
- 		dev_err(&spi_dev->dev, "SPI channel setting error\n");
-+		mutex_unlock(&chip->lock);
- 		return ret;
- 	}
- 	gpiod_set_value(chip->rdwr_pin, 1);
-@@ -94,11 +98,13 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- 	ret = spi_read(spi_dev, &buf, sizeof(*data));
- 	if (ret < 0) {
- 		dev_err(&spi_dev->dev, "SPI data read error\n");
-+		mutex_unlock(&chip->lock);
-+
- 		return ret;
- 	}
- 
- 	*data = be16_to_cpu(buf);
--
-+	mutex_unlock(&chip->lock);
- 	return ret;
- }
- 
-@@ -359,7 +365,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
- 	if (!indio_dev)
- 		return -ENOMEM;
- 	chip = iio_priv(indio_dev);
--
-+	mutex_init(&chip->lock);
- 	chip->spi_dev = spi_dev;
- 	for (i = 0; i <= AD7816_CS_MAX; i++)
- 		chip->oti_data[i] = 203;
+ drivers/staging/greybus/audio_codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
+index 295222ec0f1a..6daa4e706792 100644
+--- a/drivers/staging/greybus/audio_codec.c
++++ b/drivers/staging/greybus/audio_codec.c
+@@ -322,7 +322,7 @@ int gbaudio_module_update(struct gbaudio_codec_info *codec,
+ 			ret = gbaudio_module_enable_tx(codec, module, dai_id);
+ 		else
+ 			ret = gbaudio_module_disable_tx(module, dai_id);
+-	} else if (w->id == snd_soc_dapm_aif_out) {
++	} else {
+ 		if (enable)
+ 			ret = gbaudio_module_enable_rx(codec, module, dai_id);
+ 		else
 -- 
 2.54.0
 
