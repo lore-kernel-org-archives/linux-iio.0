@@ -1,217 +1,100 @@
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FC2F40683F
-	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 13:42:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90BC53E5A20
+	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 13:42:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785764530; cv=none; b=LA0jLgLYW1JngUyXhPiphA87rPVrQJ7pnI4c5aYq6xx2ptUugOovqJ19XgeVMVqKm9mTvMx8ISjVJRVWGUKanFbAAcAnDzs44FBjMnulTDebhR7fZBySwMKWa/q95hEawkWHfneHDATejTDCnCDWE1HiiYMrsv7pJgLi1BI6xbw=
+	t=1785764558; cv=none; b=TbPywjJL39xmwWVS9qz3W7ka6/FfOI6i5fj45xI8nun4l4NKcly2+ECo5qOl/aBaEt8s6F2o3O6SyrmKtqm3YABh6Ie/MT2GlN1TFSL8+6CWZ86+8ewOoz4zpaRGhqzsG3kgcVQrTox+CQUqO1JrHWYkHQ5nYA2vJsx/VVfOa+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785764530; c=relaxed/simple;
-	bh=oGmjKkdANcszWWeB7hVj7Roa1B24F4uV2BexEwNone8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OHC9HALZspSptC08CsW5NabCMPUlNI1qFMJnmznaQJe/3j2W+fjthc5Aiqhz0bIAbyFJMBMjdZqQXTMxHtUbLLEZA7bD9iImiJI38sd6k/KD4TcKTwKWrmU3Qg8THoeJujhST8Aj2/QzNpxu8dkIeIiu7tDw02yiEOI7dP4Qd1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=YzbPaD11; arc=none smtp.client-ip=209.85.161.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785764558; c=relaxed/simple;
+	bh=6IOKZsfWbl0KdHo6yBZWTJ5hCBVC2Ohi71h1zoTz6F4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rCfrzj+anD90bs4qt5mX+3ywveDuNW+3gSanIRCoAWvZDzim3VE4X3UkTVCjNTRhJBCnhxMIbq4V+Fc02y4mZTUFrV1coVjYq6S7gdCtUCRMrSDCrIwFnALaQAM5vLqp6X3OgFlpPp97ICsoC6jFQKNJ18BMU/kVBy3Ewpaliyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lYcPQrmp; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="YzbPaD11"
-Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-6aae5eb0ee0so926847eaf.3
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 06:42:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lYcPQrmp"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-498028b3d5eso23635935e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 06:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785764527; x=1786369327; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4pLzSiAF7h+MHs5QbYnjTgM1XAsnbqoEGTBpx5mogmc=;
-        b=YzbPaD11JY0YwaLYuV9RidYx9eNGzdEZX19bWHsj1oi4ffVdwQmQxBdx2psC/C4H8J
-         7yWgvG7d5b7HC80k58HfqLaVmOJpcT0XFr2x3D+Fc+GLBQYiAkSW/uAtz8y3u9JlzbWi
-         d2pFNDFns/js4NbjYk8RSiqX08ap/WpeDKhjny0eTSLCkoRGID2Z/I+3BhC0vz1j3Op+
-         rhFDS23bpGDcaI5Uf1viqla8lD2ArxTfMWQmxjwJKdPUdjI74B9uCbecMsH/dkWPmWxA
-         kaEwGawPLkHP2kZ9AOg0Dh0wLvcB0lLcbG7+XzE8EfR5CrcoOsp6ofI/bDdaVERZGynD
-         +DRA==
+        d=gmail.com; s=20251104; t=1785764554; x=1786369354; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=1X+ykpLdd5ThCtWEVokoM38JgTmEtcRmlEOdlCScJxQ=;
+        b=lYcPQrmpYfXseZ9OOLWG/2f3q0vSWrjKUI/TDO4ufSXEHmgpo3/bPaC23kMzE0gs1e
+         n46hz2LZ5fFcc5nzzdeJjcW24KbXowirrMTB4QmexfLg0XY4qocSn82H+TTAuRrnZzRL
+         FsuGIckzjpQ+zSxJL3Q09wOH0Qv0H9ogsjHCT1H/0gZE8OQv5WaybsGRwbXg0CJmV6n3
+         r1SzPJOAl+QUaNqCQHMqna80vbqUGsE5zK16CepRF/ETdnp1Zkqeic6QOQtaHjAEmbt4
+         Crr8BY5GSQI+AnKbI825/q27n1yC9CL0VgulfYDs5CGpVA5LG/6x++++aFo1RuMthiD/
+         eL4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785764527; x=1786369327;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=4pLzSiAF7h+MHs5QbYnjTgM1XAsnbqoEGTBpx5mogmc=;
-        b=BlWIE+SwbuB6P18S10x1iASpCBtZzs45hnzJck8lycfjmw4cDg4OMQyKrHJt+HNqr0
-         dmwGiXP+Dy+blqG8Wrd1UGcD23JS1hp7uC311dm+1WMmG5NmdU1N0mrs49md653M+Ou/
-         wuVX+ByrJqvumTmKAL8r5p3nMP5c1t/dY2OrAt5CDHhIRoI7Ldb24VcqX2u7cY2aMhQN
-         R54giCTgKAcK/lVUEmPb/YNTNbpHxGdS/yktcs4FugJWfaesGNXSb/tfYbhpjCbiEcRz
-         Au8p0wcODXX8aRjf2SNa7maLf7OOaTsWJXf/5BGBpk3UOt8entaHeUPzHFzdFYFX+RfL
-         bQFw==
-X-Forwarded-Encrypted: i=1; AHgh+RptX1LyHXre+1YiSdee+L1V2j0PUEkLW2zL0kyUDYog85Plo0ALBYBKbNGC54Z3AHH6hWQHFKiDtS4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxteg2+90D/4a4efFHWH/IjnORBGe9bN7t/wzrudu9zXT6pPqUR
-	/rxYbSIE+oBieSmEY4kc0R78TA5/IMbEaaZQoGyy5gPKbN4eZaotJoiI2gq2Ke/jfBY=
-X-Gm-Gg: AR+sD10DeX+4PSxz6JofbV/RhYHy69MU3hU0J4aKfhd8xO/QnUgbyN0ERzkC8nc65Y2
-	pEvc96aRws3j4nUfKCYVy9oax/rYXZBEzZgkIWamXCk3WGOzY9FMk3Oosej01efAUew/gYkrXqD
-	LmZN3T0oaLBa6YyJX6HPzPejTLt8IyLcaigpAJGaYcoP0hXL1Ec5DSeLOkwld0dGMvnJjuZSIcS
-	XDAHTUJRnDG64yjRzzopZCo806fDpuJg1s25lYxaXZPiUi9LBSprnYhS5CakyLkzCHQ8tARW6H3
-	wM7RvTjdHeHRhGRyJgT6oGYUer1WvwIAUomCN8kcmzIfkxZmaQTMw5x+pM5bhOpNB1XlY79At6i
-	8CXOBj9K73fg4rK78svkJXI6b+9VsSs9HfoAhzecECSuIxSsGkH9BjXRHYXlPFp4ZawXXwSCds5
-	u2gQ8VbIY72NSBoVIkBZ7xkHNd1+PZh6DGjEdJYpuL/YxpD5ljnPpe7y26s9ev2TrcAKIyXk14V
-	XRZ2qkaJq5DF5zvB0LdENVKFf/ClKf9phitF1a+/BDE+TUYIywF8jZ5
-X-Received: by 2002:a05:6820:8106:b0:6a3:d77e:725a with SMTP id 006d021491bc7-6ae432bbc33mr13969350eaf.20.1785764526752;
-        Mon, 03 Aug 2026 06:42:06 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b8f7:1f5e:7c:a7d1? ([2600:8803:e7e4:500:b8f7:1f5e:7c:a7d1])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458f6064d2esm9428382fac.3.2026.08.03.06.42.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Aug 2026 06:42:06 -0700 (PDT)
-Message-ID: <93d0f625-9a84-445c-98f8-fb3e569dc833@baylibre.com>
-Date: Mon, 3 Aug 2026 08:42:05 -0500
+        d=1e100.net; s=20251104; t=1785764554; x=1786369354;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1X+ykpLdd5ThCtWEVokoM38JgTmEtcRmlEOdlCScJxQ=;
+        b=iV6Jo2/agiIRc18cE8n2Nzp0nEONasn9evADHaWN5R0z960578CYzHLkDoF7Y9nXqF
+         dZ4ZsHnJ4EtCd5G7PepmrYZaZ2csIlpGpjk4cpKJb4/u1ayvDVptdm82Xha8OO54MZ96
+         LWcwveEflCbOl2QqujCHz4kgGdFh70hPmflJlYR691o4Iptkg9U9kBFsHOhUpTlZVEtn
+         5ByGCiYGB9K8y2pFAL1XoYsKOhKr5yWDuoon09TeDeDvrj/Ui+n8J+e8po/bFDaJxy6L
+         r1Tu0r++L80JbcbyTXXN0QLTa8JGhIPF82O2aSWv6Ak61v6ehFEeg1+Jjpyvj+V0i7fH
+         QjHQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpH7LnZr2dNn/Kr47CjqkY15HeXr/z3DItXHGB5q64EvLvTcdO04X2mdtFYU3Cvdpp7r7k4ug2/vfw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxPK53cOf6KpJIWHi9qRKo4wipqfifsNCTqAEeMVZZy/FxQCdGS
+	7ajUX5Ry0OLtavoCR8oj5CtkCgltN2KD+7NQIB4ExWEE26H/Z5sHYFZ2
+X-Gm-Gg: AR+sD11pCIT/uT9Zmf5fWOQzYSPmeP6pCE4z406I8isRLWkUL0rxJePPNvuIXnVW6up
+	R5WJ/DCzOwTxAemWW9WIuisvRqVy0ywqD3cZM5t1mLRBEVNkigueZu0+fJKA3mcAGZizSvRzuUE
+	WyqFy8NKHcW8oIsUcBgbA0rRVOFfEtV/Gbexp8FVytyuRGJAzlF8hnypD9H9eLdxSOHGL1+2kq9
+	TcvKXkPxVnbiAAhMUFAcftnZIouvaR2QSrDOeqJ/BtaC7jGRI0w7qIronACyjwh/2vdveqUcS6e
+	tqDH3raPyDAJqKJN2VxatGVKgdPAV4f5GAJjS8uXbxbuGhFK7zpuJJ9NIlZqpV5KEz1LgeZEASz
+	6pgrLZEb2KYN+rf1ZT7zoZt9rdQWWAob4DhPvdFJIow+i4vCAjatLAOIrNIoHSJ1POqScGwQqCm
+	Exov8OmFd7YzW/L+lf6SLspXyFHBOXprGAnIVC3EHahVS0Ez8Y6fuEUVdnfjALF5V8EkP/csIGH
+	9kOZjQOQ1ys1Bni37t1gCeQB1+Zf0HeRFwGwxjo0I5VeLUXFGppILHeNX1fE/vXmqrefIn7g1oc
+	2/uRfF09gsNEwMIXq9Rpab/z7N8bHZh0fD/LlRTOwTg3veW4U8huDt+3PdtWNBjdtXs/1Py+IxV
+	0fEiEa7bT9Lxydw/+Osfd+iKQbGnvbhoPdEEPmAjHlOKtVulPmixgFdQW/1BaijDsakPK2xE=
+X-Received: by 2002:a05:600c:840f:b0:496:c379:b2a1 with SMTP id 5b1f17b1804b1-4980c66d7bbmr193854515e9.2.1785764553379;
+        Mon, 03 Aug 2026 06:42:33 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4980878dcb4sm376529765e9.13.2026.08.03.06.42.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Aug 2026 06:42:33 -0700 (PDT)
+Date: Mon, 3 Aug 2026 15:42:31 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+ gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+ linux-staging@linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] staging: iio: ad7816: Fix DMA from stack and
+ race conditions
+Message-ID: <20260803154231.000070ab@gmail.com>
+In-Reply-To: <20260803121520.6274-1-abdelnasserhussein11@gmail.com>
+References: <0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com>
+	<20260803121520.6274-1-abdelnasserhussein11@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads112c04: Add binding
- for ADS112C04
-To: Kyle Hsieh <kylehsieh1995@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260731-ti-ads112c04-driver-v2-0-aab0168c3c01@gmail.com>
- <20260731-ti-ads112c04-driver-v2-1-aab0168c3c01@gmail.com>
- <b2297241-e0ae-4058-a406-348440798e38@baylibre.com>
- <CAF7HswOr1CbsR2+K06NwCNty=xJg5mgCa8mXxY_nSP8um-YBRQ@mail.gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CAF7HswOr1CbsR2+K06NwCNty=xJg5mgCa8mXxY_nSP8um-YBRQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 8/2/26 9:32 PM, Kyle Hsieh wrote:
-> On Fri, Jul 31, 2026 at 9:52 PM David Lechner <dlechner@baylibre.com> wrote:
->>
->> On 7/30/26 9:58 PM, Kyle Hsieh wrote:
->>> Add device tree binding documentation for Texas Instruments ADS112C04
->>> I2C Analog-to-Digital Converters.
->>>
->>> These devices provide 4-channel, 16-bit delta-sigma ADCs with an I2C
->>> interface, programmable gain amplifier (PGA), and data-ready (DRDY)
->>> interrupt output.
->>>
->>> The binding uses child nodes to dynamically define the connected
->>> single-ended or differential channels.
->>>
->>> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
->>> ---
->>>  .../devicetree/bindings/iio/adc/ti,ads112c04.yaml  | 122 +++++++++++++++++++++
->>>  1 file changed, 122 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml
->>> new file mode 100644
->>> index 000000000000..6a5ffda84b80
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml
->>> @@ -0,0 +1,122 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/iio/adc/ti,ads112c04.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Texas Instruments ADS112C04 ADC
->>> +
->>> +maintainers:
->>> +  - Kyle Hsieh <kylehsieh1995@gmail.com>
->>> +
->>> +description: |
->>
->> The | isn't needed in this case. (It is only needed if we needed
->> to preserve formatting, or if there is a : in the text that would
->> be interpreted as a dict key.)
-> Understood. I will remove the `|` from in v3.
->>
->>> +  The ADS112C04 (16-bit) are precision analog-to-digital converters (ADCs)
->>> +  with an I2C interface. They feature a flexible input multiplexer, a
->>> +  low-noise programmable gain amplifier (PGA), two programmable excitation
->>> +  current sources, a voltage reference, and a precision temperature sensor.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - ti,ads112c04
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +    description: I2C address of the device.
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +    description: Data ready (DRDY) interrupt output.
->>> +
->>> +  "#address-cells":
->>> +    const: 1
->>> +
->>> +  "#size-cells":
->>> +    const: 0
->>> +
->>> +  reset-gpios:
->>> +    maxItems: 1
->>> +    description: GPIO connected to the RESET pin. Active low.
->>> +
->>> +  avdd-supply: true
->>> +  dvdd-supply: true
->>> +
->>> +  refp-supply: true
->>> +  refn-supply: true
->>> +
->>> +  ti,refp-refn-resistor-ohms:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>
->> As the bot said, don't need $ref here because it is a standard unit.
->> (So don't forget to run `make dt_binding_check DT_SCHEMA_FILES=ads112c04`
->> before sending.)
-> Yes, the `dt_binding_check` robot caught this right away. I will
-> removed the redundant `$ref` and resolved the warning locally.
->>
->>> +    description: Resistance of the external resistor between REFP and REFN.
->>> +
->>> +patternProperties:
->>> +  "^channel@[0-9a-f]$":
->>> +    $ref: adc.yaml
->>> +    unevaluatedProperties: false
->>> +    properties:
->>> +      reg:
->>> +        items:
->>> +          - maximum: 15
->>
->> This chip doesn't allow arbitrary combinations, so there
->> are actually only 12 possible single-channel + diff-channels
->> values. So maximum: 11 and channel@[0-9a-b] would make sense.
-> I will update the regex and set the reg maximum to 11 to strictly reflect
-> the 12 possible MUX configurations supported by the hardware.
->>
->>> +
->>> +      single-channel:
->>> +        maximum: 3
->>> +
->>> +      diff-channels:
->>> +        items:
->>> +          maximum: 3
->>
->> For this chip, we should also have excitation-channels, excitation-current-nanoamp,
->> and reference-sources.
-> I will add these properties to the binding to fully describe
-> the hardware capabilities.
->>
->>> +
->>> +    oneOf:
->>> +      - required: [ single-channel ]
->>> +      - required: [ diff-channels ]
->>> +
+On Mon,  3 Aug 2026 15:15:18 +0300
+Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-In the future, you don't need to reply to comments you agree with.
-Just reply to ones you don't agree with or have further questions
-on. We have way too many mailing lists emails to read, so anything
-we can cut out helps.
+>  drivers/staging/iio/adc/ad7816.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
+> 
+
+Please don't send new versions as a reply to the previous version,
+it breaks workflow tools like b4 and there's a higher chance it
+won't get reviewed by others.
+
+-- 
+Kind regards,
+Joshua Crofts
