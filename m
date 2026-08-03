@@ -1,111 +1,211 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 471223DBD49
-	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 09:32:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785749563; cv=none; b=E3KD/LJW5RsHOmyb5CVD2VEgmC/yy5CnVgfGla/fOQ1j6AtexU55K9sLx84KfOaSdQ+J2khYueV+EoaemQQGf+YGqhEfeTelKIs8FZDmeOQ7M8YncskCGClQgkySbUG+Y16Tsf78/lGf8yWw9dpiMghAze34gJyHldKVFRehfcA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785749563; c=relaxed/simple;
-	bh=abNN/kqFNibFqpeeX7Sc8+iZx1RJSU3/djmn15kEPGY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ECKTGBEDFLZ45vesVO5rFxpTXH+nTYJZX8Y2UFWyBQFLf8TnSI7fhZDhigszscuQpfZhMBuSv276LtDIMwUSFsABCLHCoyWfIPbpUzlMuu0WJv+vytZyhQzEb9o87RiIYg+V9+90XlV9OKcN8VbIJqengRdRbtryRKIDntEaizc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DWI5Tgns; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A90C36402D
+	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 12:09:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785758966; cv=pass; b=H4BQeJprIuKUp1IUeMd9VvlmYQQd9L0G8mE8VgU4PxEctg1sxLyp/rTTYhe+8+F/Yi3iG/7uxZWqh+yQ8liuB3+s/HuP77VdCJArs1CErqO6utFW4HRi+ZCQ4QfzXB9peXT3vY7Z583gdsgDxFhDN8UHBa6zRNuWnDGhUvOFs6I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785758966; c=relaxed/simple;
+	bh=GBh7xuyHZSYcri5erZ0fuibf+63TnyENMGP92EyT63g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CAT1pbx7yrjAMxPyc4BrI4/LT9AaWi0YZOb7aAn+13ttP0/j2jsM2tmj2jEuiVBvFSukpbiaIlOpTd3YAmM1ax0ZfG64opNrQGiDAX25R5oGakQVx2rct44AWj03GeNOlnvOIYOjpY/zFC7FoGvSOIj7xEq6SquM76TGJB36hD8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XVhVzZZW; arc=pass smtp.client-ip=209.85.160.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DWI5Tgns"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4954a2e73a9so11115455e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 02:32:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XVhVzZZW"
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-459281bc13bso863026fac.2
+        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 05:09:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785758964; cv=none;
+        d=google.com; s=arc-20260327;
+        b=eNVxNUD2n9gEZiQTKe7rQMTSCa0W6lcjZWW5S3e3azXIY9+fMEAZsxG7E1nOjYdMm+
+         5sr0JWyPyw9euJ2y+aCQjHeoTIjtcoE2RuOwgz6+JK4KyoIVToe/uy40ThlunBa1pgq/
+         drq0RSvY9NEBB+8+elxyatf4qbRurmSkGTxHEwoK8qU00sn6EHGlIaHxZB0C8yaG9jyR
+         8skokTSSzJFDlE8ds55KKGL6nv0KPzbRn5OIkrXX3ZKyfLZ3UFciPUou2klH9KcnSl34
+         GRm+fdqSqrJQleHF7n9LyxuuEg6d+JzydAP6O1q3vro9RU+iUXzC0OCLMHb1yzER+uNd
+         42XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=l+eiDhEKEJzv/YlOG+Kaa8MtY0pGCEb7E3JQDfcJnSk=;
+        fh=4SvfZw0r1EiV2Yrs5GAnZtSifd50+ZcbPG77+zzkZW8=;
+        b=ilpURJ5PsNqDOI4wpy3CsHKfkCHh01f6sUzBL53HSTxmTHs+P/WTCW5clE0Q3Z/Z4E
+         olTuCrRxBBlsA7LDTHsj2W5LrN/T9SNrJr59aylOPm7+UTB0p4Kx8zlGdUaJkyq1CkuH
+         NP0jkksrH8kDu5KVaR+jrvlRGv4TI7Jf26SuzZow6y0cKOpAt8YWNMf5/z+krlayda5X
+         Cf8ZrSr5wEtgkPToC4kLs+v5fdH5umS4aOgMh1ZDN1zRXYkOdwhvHz2brPCn/DgGvl/y
+         cOG43b5GX5h3EArWGHBDQsHNM1JJPfGy8pcrEsdqgL+9iFwfibOaXE/B7HnJsZvPEkEr
+         WCAw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785749554; x=1786354354; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1785758964; x=1786363764; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=YRSnGgtZ7AscHIrA+ZyhPls/W82Qa2a03dgwWmp/mE4=;
-        b=DWI5TgnsbHM9eurp/FQ6hC22cNUkO3LWv/1dBSxOA1BkiGXwiPcZ40sp7PjvDzhMLg
-         mN5clHldyIWU2jbu6GRkdwunaLrR4Rv3K3FNb4xo+hXgOpVe4WKSD9oh1440YUAmcxq3
-         bO4T2iG2dkjszZX/Sz9pKXCooglp/MugudjZvEOLmwNoxgkmkImPO6fiVo06VwaGxtIW
-         nOAmcQZCxpvPAzKb4y1PNZTizDwGsHfbXyDBx/DUHNWRDcghkXGlIeq6G06GB9Ymh/KF
-         ZERH4eQ2LLfeRzi88YV+A2fPFpbGrr34ox+kx3czuaGXi8lfugDiRSODyURG5NNohJKM
-         hhYg==
+        bh=l+eiDhEKEJzv/YlOG+Kaa8MtY0pGCEb7E3JQDfcJnSk=;
+        b=XVhVzZZWhtASrae9eyTw2eTLBwVYs7iNV7+OXPr5hy4S7y7mp2KjlJDvtjrKMra//G
+         VB5LIBVUl0asP8z9HDqzWO1rbiWvmE/CjSlH4HzIxUmIFbaRGbnZKJAsvVd5phOq9s14
+         1Ud9DRq2uadCQVsF5bp8RLm4/APZCbj+391Od5LckkO9lXwWQTSFlDdyumP8Co3c3l5M
+         S+YtepZESe3+D1Ae1Gk6vfCeLFlzUZqptkZEpzxGiuN2AlRAyxzuB3ASg4dBR+NANXDB
+         0Qjw8PU2Uuj0FuWrot73DOU8YTPBf87L82vz61TBs++YwNqpMG3UiFG2UlJZDzycp4nO
+         ywLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785749554; x=1786354354;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1785758964; x=1786363764;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=YRSnGgtZ7AscHIrA+ZyhPls/W82Qa2a03dgwWmp/mE4=;
-        b=kMJIDHk6/KaMt2h+kCSxGE0baKVfAAlFHycYBAHlMis6/XKqbZSzpOKWoWb1krDLk6
-         qST+lk3y0f6TinyzcTICuFytHt/lrowUGUmnmdLZQHUztUdFyYEXGhTOXrT5PWfAGLaE
-         fQxKYcT8opaQpZtL4O0ZmrMVP4likm6OHvGRZiqDcG1aHRB4WWmAcZZ8Xio9zqRBOyzD
-         B7SDlhyY8y/kJtcu3lnK6k56/fWpygcdtMIwWSkS1seDE19mGe3myzjwcw7T3n6CYwpb
-         gs1eBK8HuAosulpoinqq/gqxQFSZl/B9aCO4qAV9AodnK5EuTLr7gSgHbhqfKiR75TNj
-         q+Lg==
-X-Forwarded-Encrypted: i=1; AHgh+RrP1UZFuUDBX/N1xfl2/91BMGpuv5R7M8WLK6EKeWkIY12Y6v65h6cISdrePUOqtZ+zk8g/Omj4lPE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxiqUtLmVqI6QyhtYl3Myl8CRG3fHpz4bYjjRgDBIKeh29AxuQY
-	ry5fEQpbJQPzm9Vtp5T9mEAnG6EKo/Qk4CZwrKDG6Ha6lWMjti2CUxUn
-X-Gm-Gg: AR+sD10sa5Q8MHrDpToQ9XGqEyuNzrN8jk4Si1SmSTWfjSZeiEMp1zEYoHikcLyAE8J
-	m5aV+0R3xxOmxL/00wwSSkzEX5yK+0nIicBVW9K1gXIePuBoTnTs0SyheUHJrh9jVcclqITNViO
-	VW62ghrUSmH/m3Ce3PC3dhlJ26cFpc49DjfIZNztQ1hRnpznqfczFWE7qt6Dn/GaoOcj+hMwo9f
-	Wt5XI9hRr1WQSX1bTyGnNRMwF4Xvoft3bZzH2+5mAjwSzfe6ohfgGtDJnFO71sljQLJpNh6yeVc
-	+exRDec4YLwjyd+I4sxy/lKm/huvI+MZATu27KzmbNtdFWDG8/H/Hvq9yEVW3ibIjX+1GczOZxQ
-	nHgt7DAZuMBx7RTeKzn9n6N7BkjVPLMbLVBWdn7sJ1B6q/Guig3RtKNkMRywspYwgvc35R4GaM7
-	wLQOY2pkDcfHB0HiOtr7HA8caf87Li5YfjO7YeQkQXK3IVPC5uLRnk3gAAyTW5swNuQ21SqnfZ5
-	DsqQdPtMacfhGwGyadWRWksMUc7bNUS3YXhUrw63gKfFDqk/TtbGCvp9DZvbc+2chJQDt/ZgTHE
-	MU76r5f9ea7YsNWH+4+Z6ZtK6LhS02RcgjDsQnMmyikBtsVphv24EfXINAEDqhT1h6qRW70xwOb
-	smHuGsIDzICaFGVY0Yb273+ldFCIY+7NcgLZ0x2dEVgwzPBlfZO0GeL7fctC/ATnRwF0HMapZLW
-	CIfHFY+w==
-X-Received: by 2002:a05:600c:e548:10b0:498:943:ccc0 with SMTP id 5b1f17b1804b1-4980c649c63mr154714125e9.6.1785749553608;
-        Mon, 03 Aug 2026 02:32:33 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49808691014sm219556615e9.11.2026.08.03.02.32.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 02:32:33 -0700 (PDT)
-Date: Mon, 3 Aug 2026 11:32:31 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Wadim Mueller <wafgo01@gmail.com>
-Cc: jonathan.cameron@oss.qualcomm.com, krzk+dt@kernel.org, robh@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, maxwell@maxwelld.cc, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- marcelo.schmitt1@gmail.com, 455.rodrigo.alencar@gmail.com
-Subject: Re: [PATCH v6 1/4] iio: types: add IIO_VOLUMEFLOW channel type
-Message-ID: <20260803113231.00004302@gmail.com>
-In-Reply-To: <20260728214943.29820-2-wafgo01@gmail.com>
-References: <20260728214943.29820-1-wafgo01@gmail.com>
-	<20260728214943.29820-2-wafgo01@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        bh=l+eiDhEKEJzv/YlOG+Kaa8MtY0pGCEb7E3JQDfcJnSk=;
+        b=KHFhQwM4/tKRCd26E6NY+0neUxYRiJpweoecrmeFU8F7s8UlE37TrxccKenzYxdcwm
+         kkpgfRQkfMuPrUtggo6OxlW1Ij4W88PPl9jqvJbPiroRx9mWaj1qV+7BPevyn5qSl0Bz
+         PKS6V3JUAMHVV0VM20lUsPbQAWKOervVwr1hh3/oDCYM4iMH9/J6cnzVYX0r6p0cJQbA
+         QddNdJGopYsS/r+8Wf8wdsy7c8/gxjwdDMpNNGKjVg1cYzClItZGKKqoxNSx6lnmxr0j
+         7yN5UGUGjyGUFQDbGXer1oUwpwMY6BtY/lCpGfYGo6tlHrOelxj+xy8G0QrPVB4MkSkR
+         oloQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqmBYrMgCM8layPIxIzoRW9qn1hTieI+/EqQAHMyvR4+J3Z85ZCRJivVJVVUFr9L3YA48DwkfJOc10=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwLMcOQun/QkeUKKJDI3qCsuPbcF1WMs6GCgRJm55An8QuL/0rm
+	4M2oRRHvkKlzcvKpMWOYct17n8A+TDJZKyZcx2H/bYoMQ0uMe7iJ7Rxla13xm0N0+vd6U74omN9
+	syPWTKCdMbL+oDwB2ZlqUCoyodkjyqVQ=
+X-Gm-Gg: AR+sD12USxB+18ytrQ2PXjbthdwxmxBYPl59DmDaTVzSUM3tpuGyXswuYNGChDP+GYO
+	IBu1pYjnoYmuvAuYJMCayc3tRyFMgjjoSfyRlVtlh/vRv8xmHjmT2N6a4MDcyutaswdxiFPML88
+	PnSSIDG3s2KUvY9U9Z0JNAHF5gRiNLHG5x7+YBBgGuBYVnob9EoMmeRysLAGDeaKKcS3XIozoiF
+	EO9DjDp1jKME2KgRAua8M0En5wvaJtHLzC2FLDtEwRw5jM5xDi4Jm7tvjXNGDJq5LjfIrBnb/JI
+	E1W3OHc2zdnDJVOvqsNxU0AHmJrNjgZT7QRcw/x62mBBTw==
+X-Received: by 2002:a05:6870:4686:b0:451:3852:25a9 with SMTP id
+ 586e51a60fabf-45905dd7fdfmr14512993fac.21.1785758964094; Mon, 03 Aug 2026
+ 05:09:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260802113840.17730-1-abdelnasserhussein11@gmail.com>
+ <0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com> <20260802194738.034382ef@jic23-huawei>
+In-Reply-To: <20260802194738.034382ef@jic23-huawei>
+From: nasser <abdelnasserhussein11@gmail.com>
+Date: Mon, 3 Aug 2026 15:09:13 +0300
+X-Gm-Features: AUfX_mxkDdPmJMT43CqX3qldlTS1ZnrEhcdMI7mWW1gOwzvpAJi2bPGzYHMtvfc
+Message-ID: <CANpqX3bYkz0GT9H9i2LFfxW3VxoPRAxDv+LMzU3cOXVh_UP1cA@mail.gmail.com>
+Subject: Re: [PATCH] staging: iio: ad7816: avoid DMA from stack in spi_read
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com, Michael.Hennerich@analog.com, 
+	gregkh@linuxfoundation.org, andy@kernel.org, linux@analog.com, 
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 28 Jul 2026 23:49:40 +0200
-Wadim Mueller <wafgo01@gmail.com> wrote:
+Hi David,
 
-> Add a new IIO channel type for liquid volumetric flow sensors.  The
-> unit exposed via the standard _scale attribute is cubic metres per
-> second (m^3/s), following the SI convention used by the other IIO
-> channel types.
-> 
-> Update iio-core's name table, the iio_event_monitor whitelist and
-> the sysfs-bus-iio ABI document to match.  The new _scale attribute is
-> folded into the existing shared _scale block; only the per-type _raw
-> needs a fresh entry.
-> 
-> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
-> ---
+Thanks for the review and suggestions.
 
-Since there's still time for additional tags (and this patch has none)
+> Should also mention fixing the "wrong" sizeof() use in the spi_read() cal=
+l.
+> Probably deserves a Fixes: tag.
+> In IIO, we have a special macro for this instead of `____cacheline_aligne=
+d`.
+> __aligned(IIO_DMA_MINALIGN);
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+I have applied all these changes. Following Jonathan's advice, I also
+added a mutex to protect the SPI read sequence to prevent race
+conditions.
 
--- 
-Kind regards,
-Joshua Crofts
+I have split these changes into a two-patch v2 series and will send it
+to the list shortly.
+
+Best regards,
+Abdelnasser
+
+On Sun, Aug 2, 2026 at 9:47=E2=80=AFPM Jonathan Cameron <jic23@kernel.org> =
+wrote:
+>
+> On Sun, 2 Aug 2026 10:31:29 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+>
+> > On 8/2/26 6:38 AM, Abdelnasser Hussein wrote:
+> > > The SPI core may use DMA for transfers. Using a stack-allocated
+> > > buffer for DMA is unsafe and can trigger faults when VMAP_STACK is
+> > > enabled, since the stack is not guaranteed to be DMA-accessible.
+> > >
+> > > Move the transfer buffer from the stack into the ad7816_chip_info
+> > > structure so it has a stable lifetime suitable for DMA transfers.
+> > > Mark the buffer with ____cacheline_aligned to ensure proper alignment
+> > > for DMA operations.
+> >
+> > Should also mention fixing the "wrong" sizeof() use in the spi_read()
+> > call. It was the correct size, but the wrong variable was referenced.
+> >
+> > >
+> >
+> > Probably deserves a Fixes: tag.
+> >
+> > > Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> > > ---
+> > >  drivers/staging/iio/adc/ad7816.c | 8 +++-----
+> > >  1 file changed, 3 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/a=
+dc/ad7816.c
+> > > index 0e32a2295990..fcaadebff0f4 100644
+> > > --- a/drivers/staging/iio/adc/ad7816.c
+> > > +++ b/drivers/staging/iio/adc/ad7816.c
+> > > @@ -50,6 +50,7 @@ struct ad7816_chip_info {
+> > >     u8  oti_data[AD7816_CS_MAX + 1];
+> > >     u8  channel_id; /* 0 always be temperature */
+> > >     u8  mode;
+> > > +   __be16 rx_buf ____cacheline_aligned;
+> >
+> > In IIO, we have a special macro for this instead of `____cacheline_alig=
+ned`.
+>
+> We've had a couple of these recently.  ____cacheline_aligned is simply
+> wrong and I'm curious where that is coming from?  That's the performance
+> hint cache line size, typically that of l1 and l2. In some systems other
+> caches before the incoherent SPI controllers have larger cacheline sizes
+> and we have to align to those.
+>
+> The correct option if not using the IIO one is __aligned(ARCH_DMA_MINALIG=
+N)
+>
+> For historical reasons IIO has it's own version of that which predates
+> all architectures providing ARCH_DMA_MINALIGN.
+>
+> >
+> > __aligned(IIO_DMA_MINALIGN);
+> >
+> > >  };
+> > >
+> > >  enum ad7816_type {
+> > > @@ -65,7 +66,6 @@ static int ad7816_spi_read(struct ad7816_chip_info =
+*chip, u16 *data)
+> > >  {
+> > >     struct spi_device *spi_dev =3D chip->spi_dev;
+> > >     int ret;
+> > > -   __be16 buf;
+> > >
+> > >     gpiod_set_value(chip->rdwr_pin, 1);
+> > >     gpiod_set_value(chip->rdwr_pin, 0);
+> > > @@ -91,14 +91,12 @@ static int ad7816_spi_read(struct ad7816_chip_inf=
+o *chip, u16 *data)
+> > >
+> > >     gpiod_set_value(chip->rdwr_pin, 0);
+> > >     gpiod_set_value(chip->rdwr_pin, 1);
+> > > -   ret =3D spi_read(spi_dev, &buf, sizeof(*data));
+> > > +   ret =3D spi_read(spi_dev, &chip->rx_buf, sizeof(chip->rx_buf));
+> > >     if (ret < 0) {
+> > >             dev_err(&spi_dev->dev, "SPI data read error\n");
+> > >             return ret;
+> > >     }
+> > > -
+> > > -   *data =3D be16_to_cpu(buf);
+> > > -
+> > > +   *data =3D be16_to_cpu(chip->rx_buf);
+> > >     return ret;
+> > >  }
+> > >
+> >
+> >
+>
