@@ -1,109 +1,94 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37F5A411A01
-	for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2026 14:13:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785766410; cv=pass; b=CVwY6cD3nbqAYzoUaUdGpsU/2U3R7q7XZruQLUh1ZV2dNQ5xVjNlXjBtoZLltw2cKerGl/46taUjNFNH97n1wJmkyP+85NixF0fXkB134moZNznUryyMNOv7dFPV8gCNtsT7n64ONW8/8KIvT3k1ZQzotN4IHt0B2T+5XyPz4SE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785766410; c=relaxed/simple;
-	bh=oQhcgDYE4V9l+J4BrYp1bBzaqMS76rGWzomp6RT6kyM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=M2eJlnBBgcOl7TCJ3LMXgMXQghbXJe8Lx/6okhvZcmyQjyarbRWwHoObs1IKi8SDKGJUJQpNfvIXl1aksZxjFGitMIE+rGrgCc9MgzoB4GF3ddwWc/Op3GGaL8hldYKQHiT06zr4m57+m5+aU4mPx73XPikoxdIV05rE0crlcMM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qS3foQOl; arc=pass smtp.client-ip=209.85.161.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83535377AB4;
+	Mon,  3 Aug 2026 15:29:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785770965; cv=none; b=ccKIS5AbKmCfvbJlXVXOH7oE3ZrLkNBYhArkCxl31Z8ZfPNomNtLk8NU2fRSEFDzgqLv7D00WR3Me7DM79tZO4oSTPzW54Q10b4Ic4hReN5UwZcd1jPVUuBU5P8sJQYP5aWCnalV3L5TDaqmdZmH0AGnlnsDVMKA0FlFX9PuQ24=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785770965; c=relaxed/simple;
+	bh=m4lhw/Jv2cOGVKtxwDMFYaL3S9AWYvh2eqbd0iICxjk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KVCToO66Hja+HPlKcWtu3qfaMKFqJ7b9VTwhhJmQLAgpkXxW11tmRyQXJxUlfIgvjvlW7hE2b3PBU+xnyd6OQ53NnHABtHL0Cmh+Zk34xUFmon93xF0pQ2j49Fsv87HT71i8ap3Ap6uOzyEhIKHlQjWWByTV+WtRfLTa+wsRAhk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=g3gghL9R; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qS3foQOl"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-6acb63301acso1407783eaf.0
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 07:13:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785766408; cv=none;
-        d=google.com; s=arc-20260327;
-        b=NJarhhzG//LuDKq1vB3pB2XqTwM4YJDN37YOItqi5cvvUOoZXYrOIa7CjfJhGf0Q5s
-         6F+FEfefIOjvJE+ZaMdmMih3ax61FE5OA+0zrf+0BW0y0XEEO9R4WqdcCHRzCW5rEfb0
-         7Sd6asqfwSHbJDZ9/cZQHFYio6ie/IDHkxZlPfJhan98+kxti/F9961rl3ujP+UAvwWP
-         bU5p5HAFzTIeLDsgPV5wqzldWvG6Kwn5Mf9d6jwnPCf2Ff5RAPjM2B9+ayVSGkcarBP/
-         ZZXezyE6lyGggeARwjgzoRKV6n1rEvpxKDW69H/f3E6qgu0A1U+l3ZItBryy6hlLX7V1
-         IMmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=oQhcgDYE4V9l+J4BrYp1bBzaqMS76rGWzomp6RT6kyM=;
-        fh=3ZTt3uoUg2xm9UTfHMROHixnfxyjMhpJ9tXktkglMjI=;
-        b=ieH1MOikq/QQG/mQthaR3Zjl+GYczX3gpOOrPYaqiRHi3+Eq8M3f+jjzjcG45pu8tk
-         rorMBdsAgyWrdts15erzgJfq6xwqBT+3w7ggkhycvdPD3m/HCMS6jRevo3ge4+4wcRBu
-         X1jOl8z6WAKrVKWGSGIu/f9DiibAz4EnmjKE2GR+rP4/VzhceWdawuTWI1m9YoY5AYYO
-         8jSZzcCQPF7yf/JXz12NlWNdcBQciWG3PDx4mncknB8Jd8L5td+9JP7pPuchdeE0O442
-         Q5kr3TRqX5Mpr/UpK8vD10/dL8k6HKeyAz4NBJLyQK8oF0kb+76MiTM9gnGc0cRmPYms
-         m0/g==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785766408; x=1786371208; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oQhcgDYE4V9l+J4BrYp1bBzaqMS76rGWzomp6RT6kyM=;
-        b=qS3foQOlgDijzwk2Rei7/KmfvM5/xOCyflCQkTWiqG/fn0kUaKmKyXWxB1ZtN0gfY3
-         pnIddgpnIIX7X3pIpkUp/sECxMeE+ybGmx0O0Tfvrt+GL0SKHNTJVQthp5RtGO0on3w3
-         4JGILw9zDScELMKns0LuVUzg94jOsZ03LHbseILnJpzjYQtg6TPXBkO+yST3sUx5V0JR
-         AUbdreMxYzO2xkw7x0QvfjDhu+bgzWkFnLCwS2h8Z5N3QpSi42Pl4/tHnJnA6tFhcRhs
-         TS2686UDAK6XnEkb0dyEPyGlLmIeG1QnJQHrLcDqpobACMCm9buQSzh3JlbzCMtfw4lr
-         qOyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785766408; x=1786371208;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=oQhcgDYE4V9l+J4BrYp1bBzaqMS76rGWzomp6RT6kyM=;
-        b=PVdQEhLYLKGniR2kFPsLx5vp/HsQVMdbII84TTLYpTeZWx/slx4xulEEThE2VOKXmv
-         QoYAQftfkl6fChzW06MjkwVf/1OHRA+usSIjv3lMA/npqiWyhk2zSqrrs6wNXCUjDMnl
-         mUl0cWRNJSyR5e2NTCTBhDWHsVus/YRC/hCaOwgsysNVnTItbuUlQfZgcg7eZvcwiM3s
-         k9zX8oyAhVHOcUVB/Cvw+DVKBsqKD96zMWhJSIqHK0pphSl6F4HcNKRo9gEgak/7fRCR
-         R4HbOh8GpuESIGtzzgoT8Htnb1kTiOHX6PsFV9v0BJrCg8xx0kMnnyv4ska7KcXIUg5C
-         2w7A==
-X-Forwarded-Encrypted: i=1; AHgh+RoRK12LiekZ00hGexvLGfhkprDlzk//7DMiaim0NfBrzys2341p0P88DSUMeeTDccZecXTpE12uDiY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzc1FU/Mn6xL5wlH4ICW/YTnvqim4MriOD5muaXKL8ZYaSe44UX
-	a6iDYiUgj+hFoD8rIpiRW+gIzEVL1GsmbdDEnAkCCqKFSZBcJTKY2Pyzfv3a8BUpHFvnrqZncC8
-	EWVVVElPZQrHzAy6iWQtJWHzdEX9u4Bg=
-X-Gm-Gg: AR+sD12jJ9mZQyrWYApKU2SP7p3tPLFePVDG/EDwmk4p6jdq1GjiFiylJ2EYV7C2VL7
-	S+grwbM/A66bw9iOq5/BP1d37c0RmSzF/hPiZV49be5B4YAiRYse+/J4qdMGOIthWiwHtcKLv/W
-	bKTTtYAeoQ+CI6tGZQR6jwG9q/zZ5tmcTwggpJCmeVvHXOG5ctHkvXLEJ0glDV0loKb+izHVF81
-	oW5nX6ImnGaqRVpzU3qCTLwwvwvRzGbSeBYtCqinOT+b1t8Yqn6K6NacwWfQ8EZXO1jAyuvrBK8
-	kEOZ+Hh5u3oGWjAPR4ldh4TYeumetOxYt3XxXjh+OayJU+/nhxT2S/ZQ
-X-Received: by 2002:a05:6820:f026:b0:6aa:da90:8bd1 with SMTP id
- 006d021491bc7-6ae38367df7mr16031842eaf.11.1785766407959; Mon, 03 Aug 2026
- 07:13:27 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="g3gghL9R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF541F000E9;
+	Mon,  3 Aug 2026 15:29:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1785770964;
+	bh=vrm66Ol1+5+Gj10RQNk/dwLlIabIRjgIc07UDVejGWY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=g3gghL9Rp3pK7blXfGt+soMLcNc21lC9ExNTfbmZw6UHw2bjygZufu1tk6t7B0EhZ
+	 yblyxb4a3LwFIjHx79v1rzkWk+uP471LIlEqGVrL21iYZAH5U2M13YKRz6hrSeQpGK
+	 x98mrqCE+7E1Ed9ZgptCBhbgQquNRTZRier7WOPA=
+Date: Mon, 3 Aug 2026 17:29:08 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH v3 1/2] staging: greybus: audio_codec: fix sscanf return
+ value check
+Message-ID: <2026080313-dubbed-palace-d33e@gregkh>
+References: <20260803134346.6733-1-abdelnasserhussein11@gmail.com>
+ <20260803134346.6733-2-abdelnasserhussein11@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <0bde2343-8a70-44d4-9b27-8ce42c099309@baylibre.com>
- <20260803121520.6274-1-abdelnasserhussein11@gmail.com> <20260803154231.000070ab@gmail.com>
-In-Reply-To: <20260803154231.000070ab@gmail.com>
-From: nasser <abdelnasserhussein11@gmail.com>
-Date: Mon, 3 Aug 2026 17:13:17 +0300
-X-Gm-Features: AUfX_mx26LfhxigSYrDT8xCyVWGLlJyya_tQ4hFcVXkYDlAVSBLkgKGnQKxuMyY
-Message-ID: <CANpqX3aj4i=X3-aLasXQsjPS+R+woJEGzRJHPHb6wpTafTfLuQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] staging: iio: ad7816: Fix DMA from stack and race conditions
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com, 
-	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org, 
-	linux-staging@linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260803134346.6733-2-abdelnasserhussein11@gmail.com>
 
-Hi all,
+On Mon, Aug 03, 2026 at 04:43:43PM +0300, Abdelnasser Hussein wrote:
+> Smatch static checker warns:
+> drivers/staging/greybus/audio_codec.c:335 gbaudio_module_update()
+> warn: sscanf doesn't return error codes
+> 
+> The sscanf() function returns the number of successfully matched input
+> items, not a negative error code. Compare the return value directly
+> with the expected number of conversions (3) instead of storing it in
+> 'ret' and returning it as an error code, which leads to returning
+> a positive value on failure.
+> 
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Closes: https://lore.kernel.org/all/YoOLnDkHgVltyXK7@kili/
+> 
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> ---
+> Changes in v3:
+> - Split from the previous v2 patch into a separate patch.
+> - Updated tags to properly credit Dan Carpenter for the smatch warning.
+> 
+>  drivers/staging/greybus/audio_codec.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
+> index 720aa752e17e..295222ec0f1a 100644
+> --- a/drivers/staging/greybus/audio_codec.c
+> +++ b/drivers/staging/greybus/audio_codec.c
+> @@ -311,8 +311,7 @@ int gbaudio_module_update(struct gbaudio_codec_info *codec,
+>  	}
+>  
+>  	/* parse dai_id from AIF widget's stream_name */
+> -	ret = sscanf(w->sname, "%s %d %s", intf_name, &dai_id, dir);
+> -	if (ret < 3) {
+> +	if (sscanf(w->sname, "%s %d %s", intf_name, &dai_id, dir) != 3) {
+>  		dev_err(codec->dev, "Error while parsing dai_id for %s\n", w->name);
+>  		return -EINVAL;
+>  	}
+> -- 
+> 2.54.0
+> 
 
-Please ignore this v3 series.
+You didn't cc: the staging list?  And the blank line above your
+signed-off-by isn't going to work well.  Please, when you split patches
+up, be mindful of what tree they are going to.
 
-I accidentally sent a few unrelated patches after forgetting to clean
-my working directory before running git send-email.
+thanks,
 
-Sorry for the confusion and the extra noise. I'll send a clean v4
-with only the correct ad7816 patches.
-
-Best regards,
-Abdelnasser
+greg k-h
