@@ -1,48 +1,48 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34E0349CD2;
-	Tue,  4 Aug 2026 11:34:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17CDD345CB2;
+	Tue,  4 Aug 2026 11:35:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785843300; cv=none; b=Gg9n3NctJgYR190dW6XxXtYHGBdA4PnRSkrEMOIr54RsAP2bI2uuoiCu2hu//lO2wf5X0niqI/RuEZrAxB+835mrN9uvNzy+1YIFHbC9avsbSD4ryqSoV3QCXL19TZFcoozzYDOkxAh3KCs7AlV/8EsS/xC46n9xbNY1RpWOGc4=
+	t=1785843310; cv=none; b=R0Jpp9B6xI8S9nORDAy9dNOYiJZZtNRhfV5w31659O5Yc/Fy1P8sb+GopyRkmIAIMdaeqyA/HxHpvXkekbb+e+QF07swhs0HL1KFUS0ghndUFal7oYdXkBvezFsapDkaIDlam3IU5h++6RZNFuqmGpz8S9dDFO7L5/pCdvoRkPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785843300; c=relaxed/simple;
-	bh=qCks5QmHaWli0znQDgqe7ceH6hFdVyHKYF2/F2T/0N0=;
+	s=arc-20240116; t=1785843310; c=relaxed/simple;
+	bh=9TV+tsofy6TCtX8zVKSBqg0wGh2pcJEEZrqQnPraG7U=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nISJtjT24OvCXW96hnUhJ0U0WEnLj5+fPceL32vcy9jdG4PR9SwhUyrp8VyMA239cWCTAW5epVCMlFPQx13Ul6nBhqQ4L5Gs4eiWz/44JU+GgtiAnxJ8xmV+9R7X9hzVv3MJLwLdn/kF5LErz3Mcp6S8ziGHI9Lo7CjUTR6a5gk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=xBZ6+giu; arc=none smtp.client-ip=68.232.153.233
+	 MIME-Version:Content-Type; b=c78Vg/lQ9DJ/KPHKtc3qgB6PjKI5/KYyibtKzGPYL7P4Qx1gsyvVJTfMT3mEqKx4dlY5YAAFfLsS1g6zGo8fmoM/jGTFp7qhPfYOyFV1OO8kBOZf37fo7Bh+MqsPOHu3BqGM91zA9ez6sDgY/7bYC24ZWMRxtRWc/eCUCqGeXxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Yba0J31z; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="xBZ6+giu"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Yba0J31z"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785843298; x=1817379298;
+  t=1785843309; x=1817379309;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=qCks5QmHaWli0znQDgqe7ceH6hFdVyHKYF2/F2T/0N0=;
-  b=xBZ6+giuVb6zNZ6j8mVGEI9GwQA5tmPtXmhO8EHSdzuVwOPiopujbhVk
-   P18TdsUFJs6rs8yNAEnn484S8wN2NYZTtxNebQ0kS2ubWe45cX68TN1xS
-   3cenwdzr38UE35P7sO3g7LWDZKGd/C3GCdmrdfOobrBSNiw6vGKyvymmm
-   3dvWI+0r2GvK7NO0/9RbUbqOJ7XUSlO/nwO2ozRhIzhFCTeDIC653L9EN
-   3Y3cu2PcSSwENoHawj/gmH95Kr6N9jbTPp+enj2RpapXB0qvDc2l1h3AX
-   Kp6yEKaxK5d9IPIr7FjFI66xz3L6D00YNGjolZ1a0OxZRDuMc1SoXNxhA
-   g==;
-X-CSE-ConnectionGUID: 4xEEaEPvTgOvr5QEq3UPIQ==
-X-CSE-MsgGUID: 5r93qYngSDKfxPhyB9+CLg==
+  bh=9TV+tsofy6TCtX8zVKSBqg0wGh2pcJEEZrqQnPraG7U=;
+  b=Yba0J31zOaXKkQLGLySznWEkLuzoNCz8mvmAcRe6wDcOsHWPRDePa3TU
+   6OUtmsOfcQPRjJCkmNnFBgXD2/x0HieNNst79dnDeurLQd0t7IC/wVVm7
+   TQmM9CuSza15zGRkbqjYa3jVwDhRGWLxuCwp4+uFH8H3JIxuuN496XlRW
+   K9sAIXitUxUrQ3KgFKiRGbNzaTz70BTTIB46YnVXy9/zRgBrtuQzS6Rhf
+   KI6YoE4Qtx17OCQpIOorkmjVUrTjID0ipsQvTXtE2LcBttGDh75w8Dscw
+   CDe3aedWScWweq+SpVvRzFsUdk+oCsxBKI0Cd1hSw6HDgmeP6xKKwMhHN
+   w==;
+X-CSE-ConnectionGUID: yfxC7KBAQd6vPqPozAyiQg==
+X-CSE-MsgGUID: GFuF1eQFRsChfJj6SXdpgA==
 X-IronPort-AV: E=Sophos;i="6.25,204,1779174000"; 
-   d="scan'208";a="71197889"
+   d="scan'208";a="60737177"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 Aug 2026 04:34:57 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 Aug 2026 04:35:08 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Tue, 4 Aug 2026 04:34:57 -0700
+ 15.1.2507.58; Tue, 4 Aug 2026 04:35:07 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:34:47 -0700
+ 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:34:57 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -55,9 +55,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<mazziesaccount@gmail.com>, <varshini.rajendran@microchip.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 06/17] iio: adc: at91-sama5d2_adc: remove unnecessary casts in of_device_id
-Date: Tue, 4 Aug 2026 17:03:27 +0530
-Message-ID: <20260804113338.261782-7-varshini.rajendran@microchip.com>
+Subject: [PATCH v5 07/17] iio: adc: at91-sama5d2_adc: adapt the driver for sama7d65
+Date: Tue, 4 Aug 2026 17:03:28 +0530
+Message-ID: <20260804113338.261782-8-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260804113338.261782-1-varshini.rajendran@microchip.com>
 References: <20260804113338.261782-1-varshini.rajendran@microchip.com>
@@ -70,29 +70,82 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-The .data field in struct of_device_id is 'const void *', so explicit
-casts are unnecessary when assigning addresses of const structs.
+Add support for sama7d65 ADC. The differences are highlighted with the
+compatible. The calibration data layout is the main difference.
 
-Reviewed-by: Eugen Hristev <ehristev@kernel.org>
+Update Kconfig help text to mention SAMA7 SoC family support.
+
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/Kconfig            |  2 +-
+ drivers/iio/adc/at91-sama5d2_adc.c | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 3755a81c1efd..85b443853a08 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -647,7 +647,7 @@ config AT91_SAMA5D2_ADC
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for Atmel SAMA5D2 ADC which is
+-	  available on SAMA5D2 SoC family.
++	  available on SAMA5D2 and SAMA7 SoC families.
+ 
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called at91-sama5d2_adc.
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 5b21367cf6b4..3e9feb824a66 100644
+index 3e9feb824a66..c1e5139a058c 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -2628,10 +2628,10 @@ static const struct dev_pm_ops at91_adc_pm_ops = {
- static const struct of_device_id at91_adc_dt_match[] = {
- 	{
- 		.compatible = "atmel,sama5d2-adc",
--		.data = (const void *)&sama5d2_platform,
-+		.data = &sama5d2_platform,
+@@ -528,6 +528,15 @@ static const struct at91_adc_temp_calib_layout sama7g5_temp_calib = {
+ 	.p1_scale = { .numerator = 1000, .denominator = 1 },
+ };
+ 
++static const struct at91_adc_temp_calib_layout sama7d65_temp_calib = {
++	.tag_idx = 1,
++	.p1_idx = 3,
++	.p4_idx = 2,
++	.p6_idx = 5,
++	.min_len = 11,
++	.p1_scale = { .numerator = 1, .denominator = 1000 },
++};
++
+ /* Temperature sensor calibration - Vtemp voltage sensitivity to temperature. */
+ #define AT91_ADC_TS_VTEMP_DT		(2080U)
+ 
+@@ -766,6 +775,24 @@ static const struct at91_adc_platform sama7g5_platform = {
+ 	.temp_calib_layout = &sama7g5_temp_calib,
+ };
+ 
++static const struct at91_adc_platform sama7d65_platform = {
++	.layout = &sama7g5_layout,
++	.adc_channels = &at91_sama7g5_adc_channels,
++	.nr_channels = AT91_SAMA7G5_SINGLE_CHAN_CNT +
++		       AT91_SAMA7G5_DIFF_CHAN_CNT +
++		       AT91_SAMA7G5_TEMP_CHAN_CNT,
++	.max_channels = ARRAY_SIZE(at91_sama7g5_adc_channels),
++	.max_index = AT91_SAMA7G5_MAX_CHAN_IDX,
++	.hw_trig_cnt = AT91_SAMA7G5_HW_TRIG_CNT,
++	.osr_mask = GENMASK(18, 16),
++	.oversampling_avail = { 1, 4, 16, 64, 256 },
++	.oversampling_avail_no = 5,
++	.chan_realbits = 16,
++	.temp_sensor = true,
++	.temp_chan = AT91_SAMA7G5_ADC_TEMP_CHANNEL,
++	.temp_calib_layout = &sama7d65_temp_calib,
++};
++
+ static int at91_adc_chan_xlate(struct iio_dev *indio_dev, int chan)
+ {
+ 	int i;
+@@ -2632,6 +2659,9 @@ static const struct of_device_id at91_adc_dt_match[] = {
  	}, {
  		.compatible = "microchip,sama7g5-adc",
--		.data = (const void *)&sama7g5_platform,
-+		.data = &sama7g5_platform,
+ 		.data = &sama7g5_platform,
++	}, {
++		.compatible = "microchip,sama7d65-adc",
++		.data = &sama7d65_platform,
  	}, {
  		/* sentinel */
  	}
