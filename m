@@ -1,73 +1,51 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F3D27FD49
-	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 06:49:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C31A03546C2;
+	Tue,  4 Aug 2026 08:20:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785826170; cv=none; b=JVhQ+zEXXVgzwINqC4SAJ2JWLEkpTfhTx+k5Vya6rDFusYApJTDOJqHE0eqWSFFbZ0Y0QiLHxjjb+l6FKVk3ZQBDsx8P83PwpHuQcXPI+E8gxeoqStp/YQbF82RAqJkt82Gm3O5Ge12RSTdMe+Mw5mu6qTWWHHenGw5FDPcO1Sg=
+	t=1785831631; cv=none; b=Q69n1e/pHDP1yF4+wKFlGrMn8EXcSFAiBqFYg6lX0u7mBgM6z+x0XVaiyZw5MyA1QFTfvrUjpgI3SdFcx3Z9QvX9KNMsOJhg+jrygkMkgpWGQOI7L2HL+MrZ5e3KQ9mmTjbWvJP5qgJtcVG9U1/xHH3rkXSN6ovjer5O/lGmBAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785826170; c=relaxed/simple;
-	bh=DMpO3ajwC7Btu5PMHyb9DYRbQhvyvou7TYl47BKDq7w=;
-	h=Date:Message-ID:In-Reply-To:From:References:Subject:To:Cc:
-	 MIME-Version:Content-Type; b=Y8Br9S7hKWORLFuymEfNo86YSFhBuF1T594Cs+v8l9bU1xD/yHfBb5hABoutYbtuP70Z+l/+9pktBRP25Nq6F3/mRXAKnTaCH6ekIHGaTLA1TnNE/oV5MlZi72viwxCO0Ow46J6utrerk1K7FCzcRbd93pA1NEb+3tKC8E2npjk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oFPiv4LE; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785831631; c=relaxed/simple;
+	bh=uMyvUdU4ThXE8jcdAR6oaEHWSbN0mhwoasyqRIwVz7A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jRipGkXPUJobOySipRbKlAZrLPJaVx6zxsW2hMp6O8B4YzpcFhQfpY7jb/NgSz9yYdmMnnLh7U7d8oUoT+Oz+d9r5h3G/RUslmcZ9RVXWgcLxVmyeF+mFKBNguLDivmK/vxpCcraC5zigjRnGiG98lkEewyy1Zaeh2BPbd7b+4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AeMfAHdB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFPiv4LE"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-498028b3d5eso30109725e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2026 23:49:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785826167; x=1786430967; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:cc:to:subject
-         :references:from:in-reply-to:message-id:date:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ATMBDpTJ93xuadTJt1TrQQurBYrCmx1OgG4lu8gYdpI=;
-        b=oFPiv4LEatyzD8ZSFeAPEO+6Nl2/hfKhfdgRIeYQ2lxm05lIvMt4zrs7BgJqA8M0/A
-         JE9zoC+vTjF2Ruof3omONvuaJbUx0BwsXC+iFwPutuY8EdkybTd3X4gpaITtnYYse9AI
-         dgwdXgpvkvtWgibLYcAl0oNPbkWRKLolWg2BYPjK/L4ls/d/L0mlVgOU3XQb3Ja4wsUh
-         MOs3yMcXYJI1FxYPDcNkCu/g/y+IddktkBIQyBdBD4NTIq1st+jjCcJzIY3d36GsSyO1
-         Q5OWOPGTfXVsjB42zcXWPlcajb8o4umSjSINvY2aFjKhbIcrF++bi1k1ehwvgeBWshm+
-         IAWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785826167; x=1786430967;
-        h=content-transfer-encoding:content-type:mime-version:cc:to:subject
-         :references:from:in-reply-to:message-id:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ATMBDpTJ93xuadTJt1TrQQurBYrCmx1OgG4lu8gYdpI=;
-        b=GVrWKQLB/rXv7cwCopvJmor+POXus/NIDPQJ9vSb+FC+gtX2Eq/zZfWdjltk1mEDUn
-         KVV1nQ3+InmF9+YZ5NkpWHLURp+r7/14CbvJfmcByJ3wyd24GgMnjzL51/8lBgS0jXIN
-         gsxkiUp0gPeE+zk0QjRGqH+yj2XPW0tqtmjNKaKNJ6Nq51yAblMgALvOzZCTCE3xn+mi
-         9D0RXZ+4NLLehsuw6J0e9yOWSGV0O2K5uWdLHxwHfi8BP9e5gktVpWB9CxvnKftIJ6fP
-         EHdbcHfKpgEEk08TwbAFUpucoB3s8UUaGFbOJrkNulh53cGxIXIiJM5NxhxzreHnDVdu
-         qlaQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrDzqiPIJvcXNGPP2yKbMtLvo8YA9AHvND+2WUB3VHNw/nNo+01D+FaRG5Djls9B+xErQw33cbj6zU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyo0DLBdEvJKiaERJ8Z4MpQ97GfxoLVnY/JogpYDo9BoDpZEyn3
-	x9z8J7f9Q3HwQ5HBSfPSIhntmXNtyyM/OvQuqUvtGR14uUI12D5A6rX/
-X-Gm-Gg: AR+sD11ftKR66VvN0Y/Q+22e0gaH59RtKuaJqAewj6G6XSzbKy6OtSs72+cKZY55/We
-	amEFo0vaXTjhCXORLXXC+6Hr8XHvQvZRbhfKYWX54S1me29sBEoca0E8usZH1tvgcpHEI6Wh/k+
-	U8eeIwbkyemd9B1GpNr2uy0fb79V0BuGTTIi//w8oP7BhR80MH9Yr6La4VrunHLwiculxDpSQui
-	zA0/DmN0HPtUOTOdvIy2RbrXtjDMAOPdcfye7Z9m4shPPUzhuhM+/Hm24lr4hZGTfMYU3r4OyjX
-	sF2NwJLs8EdPBjRrq3r7j9J78gJQDpza1L9QZYg+ZF3gM/RSVtkmQ7CjzNrFeOwS7ykBd0r7uJE
-	8UU9nKluF2UX43PdsW4DnmojxpZDSJHQ3IuJ63XwJ0Z2d1628QTMAthPx+erEI5NoL8aa5aScZn
-	jOvyw0mkYKNixX1weThuz3uQvRnu6oWfYiRmApbsD39SWcK3aew5a3C27Ie988i6rbQnQEN5lGX
-	ep5rfz/tK+6qdqQ6+AZA6+PqQA2IwgIDcDHwSGDtLHhFBzQtYQCeZHp2L1u2pk0V8W1WVns
-X-Received: by 2002:a05:600c:33a5:b0:496:c1f3:e8f8 with SMTP id 5b1f17b1804b1-4980c66d95bmr204358605e9.7.1785826166768;
-        Mon, 03 Aug 2026 23:49:26 -0700 (PDT)
-Received: from localhost (host-95-246-56-150.retail.telecomitalia.it. [95.246.56.150])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49949fdf392sm99790885e9.11.2026.08.03.23.49.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2026 23:49:26 -0700 (PDT)
-Date: Tue, 04 Aug 2026 08:49:25 +0200
-Message-ID: <5ea928fb5e9370824d62a0c5d5913458@gmail.com>
-In-Reply-To: <20260802071246.62046-1-congnt264@gmail.com>
-From: Matteo Martelli <matteomartelli3@gmail.com>
-References: <20260802071246.62046-1-congnt264@gmail.com>
-Subject: Re: [PATCH] iio: adc: pac1921: fix wrong channel used in trigger handler read
-To: Cong Nguyen <congnt264@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?iso-8859-1?b?U+E=?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Matteo Martelli <matteomartelli3@gmail.com>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AeMfAHdB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF211F000E9;
+	Tue,  4 Aug 2026 08:20:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785831628;
+	bh=ErN/rXvd8AZnHQ1jQfyz1IaQg+OYv8k/6ZjCX+2Q/q0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=AeMfAHdBM8vG705UAGj+BI2fvN+YxIaEBL4QjctWMGWJFWCK+9nPWAY3/0DZ38Qb5
+	 KIgoQe7GFu19XofItavn71lrraMuz/soT7F5qDeIrXfLUOAm9MJ62VkKXO1+vvdj1E
+	 CQF0NvWU4nMtREV7pck595RHKwI2NNo/w5koXw1gO6F/NSWBWXBjv2VjrmtStLufv7
+	 frzZGwMeh9zTBKJ68Er77iHhE+zVfyE9yvtsF5Q9ZSO0izLlRsWv6+a9uHrRqlkbu6
+	 V9m51jNqxo+YvK5kJEQ+LDAsBAz9hoT428HmrH7FQzIOmS/NMbdvmSQ5C32zEKl5j3
+	 hp6vp0rjLKtbw==
+Date: Tue, 4 Aug 2026 10:20:24 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
+	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>, Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>, 
+	Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>, Priyansh Jain <priyansh.jain@oss.qualcomm.com>
+Subject: Re: [PATCH 1/7] dt-bindings: iio: adc: Add support for QCOM PMIC5
+ Gen4 ADC
+Message-ID: <20260804-marvellous-crayfish-of-recreation-d06401@quoll>
+References: <20260731-pmic5_gen4_adc-v1-0-9c49b2eea6f9@oss.qualcomm.com>
+ <20260731-pmic5_gen4_adc-v1-1-9c49b2eea6f9@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,58 +53,56 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+In-Reply-To: <20260731-pmic5_gen4_adc-v1-1-9c49b2eea6f9@oss.qualcomm.com>
 
-
-On Sun,  2 Aug 2026 14:12:46 +0700, Cong Nguyen <congnt264@gmail.com> wrote:
-> pac1921_trigger_handler() walks the enabled channels with
-> iio_for_each_active_channel(), which yields the scan index (bit) of each
-> active channel, while ch is a separate counter used to pack the samples
-> contiguously into the scan buffer.
+On Fri, Jul 31, 2026 at 11:36:14PM +0530, Jishnu Prakash wrote:
+> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made for
+> improved performance, mostly at the hardware level. The main differences are
+> increased ratiometric conversion resolution (from 14 bits to 16 bits) and
+> increased bit field width for PMIC SID (to allow communication with an
+> increased number of PMICs, supported on latest SoCs).
 > 
-> The register to read was looked up with the packing counter instead of
-> the scan index:
-> 
-> 	ret = pac1921_read_res(priv, idev->channels[ch].address, &val);
-> 
-> pac1921_channels[] is ordered by scan index, so channels[bit] is the
-> channel that is actually enabled, whereas channels[ch] is merely the
-> ch-th array entry. These coincide only when the enabled channels form a
-> contiguous prefix (e.g. all channels enabled). With a sparse scan mask -
-> for example when only the power channel (scan index 3) is enabled - the
-> handler reads the wrong register (VBUS instead of VPOWER) and pushes it
-> to userspace as the enabled channel's data.
-> 
-> Index the channel array by the scan index (bit) to read the correct
-> register, keeping ch only for contiguous packing into the scan buffer.
-> 
-> Fixes: 371f778b83cd ("iio: adc: add support for pac1921")
-> Cc: stable@vger.kernel.org
-> Assisted-by: Claude:claude-opus-4
-> Signed-off-by: Cong Nguyen <congnt264@gmail.com>
+> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
 > ---
->  drivers/iio/adc/pac1921.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../bindings/iio/adc/qcom,spmi-adc5-gen3.yaml      | 47 +++++++++++++++++++++-
+>  1 file changed, 46 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
-> index bce7185953ec..0037509503ed 100644
-> --- a/drivers/iio/adc/pac1921.c
-> +++ b/drivers/iio/adc/pac1921.c
-> @@ -1037,7 +1037,7 @@ static irqreturn_t pac1921_trigger_handler(int irq, void *p)
->  	iio_for_each_active_channel(idev, bit) {
->  		u16 val;
+> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
+> index 149f4af8f4b8..e79ddc2acca0 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
+> @@ -21,9 +21,14 @@ description: |
+>    All boards using a particular (SOC + master PMIC) combination will have the
+>    same number of ADC SDAMs supported on that PMIC.
 >  
-> -		ret = pac1921_read_res(priv, idev->channels[ch].address, &val);
-> +		ret = pac1921_read_res(priv, idev->channels[bit].address, &val);
->  		if (ret)
->  			goto done;
+> +  PMIC5 Gen4 ADC is similar to Gen3 ADC, with some differences such as
+> +  improved ratiometric conversion resolution.
+> +
+>  properties:
+>    compatible:
+> -    const: qcom,spmi-adc5-gen3
+> +    enum:
+> +      - qcom,spmi-adc5-gen3
+> +      - qcom,spmi-adc5-gen4
 >  
-> -- 
-> 2.25.1
-> 
+>    reg:
+>      items:
+> @@ -83,6 +88,46 @@ patternProperties:
+>            This property indicates ADC_TM monitoring is done on this channel.
+>          type: boolean
+>  
+> +      qcom,adc5-gen4:
+> +        description:
+> +          Indicates channel is of type ADC5 Gen4. This may be needed in cases where the
+> +          master PMIC has an ADC peripheral of type Gen3, but some of the other PMICs it
+> +          communicates with have ADC peripherals of type Gen4, so channels of those PMICs
+> +          need to be marked as Gen4 to ensure their conversions are handled correctly.
+> +        type: boolean
 
-This looks correct to me. I guess I didn't test it properly with a subset of
-enabled channels when I wrote this.
-Thanks for the fix!
+It is implied by the compatibles, in this case the peripheral
+compatible.
 
-Acked-by: Matteo Martelli <matteomartelli3@gmail.com>
+Best regards,
+Krzysztof
+
