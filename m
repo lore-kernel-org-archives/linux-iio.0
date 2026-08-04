@@ -1,36 +1,36 @@
-Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
+Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7ACD3E7BCC
-	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 14:35:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC2B39F168;
+	Tue,  4 Aug 2026 14:44:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785854148; cv=none; b=gYg7+eHPxnDHbFFjzmRTKDaZu/QVX+GY8zsqQS5/DZAt6kbLm4T3IhnyTpSqJHCf+cOc/DRrpaSkU3C/1CBrWvprsyIjfHXG+MR1qMBW/nJNz2LpiHttEa42GFzlloCPQ4t5SfzHsjeIdbzVD+7idfwStpCWpGzMKFrGgAcQ1Os=
+	t=1785854650; cv=none; b=ZjPFITwQ+1b5sO9bmnFMlKiUuSvoWfvx/mPJXCPJgLaeBnD2mTqGs5F0Vnd+NH6rOhBWL4ULUemAvmK6tHEhkwl3TOuKR5pKugj6NfG9geOGJxt7sfRlzST5j8g0+PlmVyfyqiATKEWlc9nHisbIoFV0oWC9k4WRdLFhAb2CTAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785854148; c=relaxed/simple;
-	bh=klPzKzrG3VbkJnJUHINxPqEMDHhiQvV/o/b3ZahuIrM=;
+	s=arc-20240116; t=1785854650; c=relaxed/simple;
+	bh=tRCtExrDNycQl/KAnVn8BjSsdXGk5ty79EyIiX9CMl8=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=W7cONFfQuR0+/2foGBG9F1ZjlPfc7UuT8M7bTDTjP+pAChgL3bE88h3BsglPw80RB9oOH0K+6Haez2c5JHEE/jrSvTk9qZVSBpVpvolmdhXD0FEkR3cxkU3zbOIntBIyK3dkzpWCKR52if1BOLypPPDmeDYiO/HMizX27qifY1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Kl01eEYG; arc=none smtp.client-ip=79.135.106.111
+	 MIME-Version:Content-Type; b=mlKeBjqg9bzObcY5n8k3+djmdqbKA+GWpCbQx3BuX00P9Icr8H83HhNI2kPnXEjmmPg5VOKHMIkV1vJxcZJnwC6nKWY1KG6eZI6cg/PlzivaGPQ2LVouZwNGV4B3Ozq1Y4/w07jpMx9MXFgy+o1NlCkMYmf8v9pcbufEgbmpkdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=VULEBSCS; arc=none smtp.client-ip=109.224.244.107
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Kl01eEYG"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="VULEBSCS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1785854133; x=1786113333;
-	bh=89HwBQw+GSLg6utOGg8Ydnn1rVuwDCSYF9R+2PaebFM=;
+	s=protonmail3; t=1785854645; x=1786113845;
+	bh=3in15dZVLlxJAE+j8ddyRNkSfPjTBhBwJNuRl15WtEo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=Kl01eEYG7Cg8mqEfsQyBekxDBv1/bQTCWwP7yaM1uaXnv4JPRVoT6q+wFhy22trQH
-	 FPXPQePyxMz6sPHjaEQ404mtHUzdN2GD2XYKdjGq0iq3ezUS8nn+tLr3xqxNA22gK9
-	 MJPKzGmmhaDVOlKnZ9YrEQixF6Pcl3Cm7eCKIK9YvNSStw6tt50kQ9fJoGSxr7axq7
-	 S7tJDiqRuDC5YtP1BMHqcp6dJSeCz/pDMdeOpzIOf3v9L3wlxP37JTrP7hhBU3lKHS
-	 7jqpUDrDVFq4m8qw1xBACIwt8OMJMBlkUh8n+gokNYQhyuFCvW4zW2NtPklG2b8C/k
-	 ReFTw+hD27jOw==
-X-Pm-Submission-Id: 4hDx0c2CrRz2Scps
+	b=VULEBSCSFDmTrYu2ZUZBelXLro7VZZafL6B0A2h0fevCZC0fv30PX3fXioG1wEeBp
+	 8RiE4dNvkqeWqPLc5ZO/1SLi6YKOG4RcY+S/4l+uozkLgKhkcwHYX18RNOV5WjLI1H
+	 vw4G52rvYGYyRRRYJVKBI5JpVxh71iTzziCOO46zbWysHdKW8CM0kXBcGXI0iG252q
+	 d0biXlAldn2KLQBuGL4mlOU290Gcfmy/eOMVGbCmNFDPf5UG5At1bBdwozSDhs9Ve+
+	 TEjVOTlLmoJ1Qa9clOxhXL9iHRHt87ejQnarxpiMaYwL5ISga9Qy2S/7ll+RegKubm
+	 7x50L0rII0tLg==
+X-Pm-Submission-Id: 4hDxBW5qM9z1DDrp
 From: Esben Haabendal <esben@geanix.com>
-To: "Jonathan Cameron" <jonathan.cameron@oss.qualcomm.com>
-Cc: "Krzysztof Kozlowski" <krzk@kernel.org>,  "David Lechner"
+To: Nuno =?utf-8?Q?S=C3=A1?= <noname.nuno@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
  <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
   "Andy Shevchenko"
  <andy@kernel.org>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
@@ -38,18 +38,19 @@ Cc: "Krzysztof Kozlowski" <krzk@kernel.org>,  "David Lechner"
   "Nikita Travkin" <nikita@trvn.ru>,  "Maslov Dmitry"
  <maslovdmitry@seeed.cc>,  <linux-iio@vger.kernel.org>,
   <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/4] dt-bindings: iio: light: ltr501: Add ltr329
- compatible
-In-Reply-To: <20260719023830.5f99d335@jic23-huawei> (Jonathan Cameron's
-	message of "Sun, 19 Jul 2026 02:38:41 +0100")
+Subject: Re: [PATCH v2 3/4] iio: light: ltr501: Add ltr329 driver support
+In-Reply-To: <lax5ggtixwejynztwul5brnkciq4gq5scbd4cuoyev2w3hgcti@dflf7hnw4rgq>
+	("Nuno =?utf-8?Q?S=C3=A1=22's?= message of "Wed, 15 Jul 2026 16:25:58
+ +0200")
 References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
-	<20260715-liteon-ltr329-v2-2-d18af55edab5@geanix.com>
-	<20260716-adept-kraken-of-calibration-cddebc@quoll>
-	<pnxaJvFlsLehHV30SMlmWECZnbQ6Rqb2cvWWlVbjYKsg9v0i_Wyu28e7U_OYfV1XooewL13ZLUMBjODBTYnBuiI0t9m-bxt8AdKsz9oizok=@geanix.com>
-	<9Ekqt5M10zvl-oDffITzNkebHtnMwG2Z_kIEqGL-cokgqKRyNyFxqCB5wZZelUe9dEO9EWhjqt59zBsqU7jMbg==@protonmail.internalid>
-	<20260719023830.5f99d335@jic23-huawei>
-Date: Tue, 04 Aug 2026 16:35:27 +0200
-Message-ID: <87ldamar80.fsf@geanix.com>
+	<20260715-liteon-ltr329-v2-3-d18af55edab5@geanix.com>
+	<Q-ueoELrVUGcnBAEpAJE8z7yejEFFfSQBfk5ZeoZgVu4Cf1NwcMQRiRH-cvknalrNQBzoSJDMCG7w56-0MrHVw==@protonmail.internalid>
+	<6vro5bil5b5j72rigujnm5zj4ot56rtwgs4fvn6xydybxpi4rz@vrc6p6bbkl3m>
+	<87ldbcmkr5.fsf@geanix.com>
+	<Ouq1f3XzhZ5grFMyCxC8cEFbB3eSSXdVMwFQWynPlH_OezdqbjGeOQrNu0oM9NcPieYKgzdY-MnZLTFJebC9-g==@protonmail.internalid>
+	<lax5ggtixwejynztwul5brnkciq4gq5scbd4cuoyev2w3hgcti@dflf7hnw4rgq>
+Date: Tue, 04 Aug 2026 16:44:02 +0200
+Message-ID: <87h5laaqtp.fsf@geanix.com>
 User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,53 +58,83 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-"Jonathan Cameron" <jonathan.cameron@oss.qualcomm.com> writes:
+Nuno S=C3=A1 <noname.nuno@gmail.com> writes:
 
-> On Thu, 16 Jul 2026 16:14:55 +0000
-> Esben Haabendal <esben@geanix.com> wrote:
->
->> On Thursday, 16 July 2026 at 10:07, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> On Wed, Jul 15, 2026 at 03:43:10PM +0200, Esben Haabendal wrote:
+>> Nuno S=C3=A1 <noname.nuno@gmail.com> writes:
 >>
->> > On Wed, Jul 15, 2026 at 02:27:24PM +0200, Esben Haabendal wrote:
->> > > LTR-329ALS-01 is an ambient light sensor similar to LTR-303ALS-01, but
->> > > without interrupt support.
->> > >
->> > > Signed-off-by: Esben Haabendal <esben@geanix.com>
->> > > ---
->> > >  Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
->> > >  1 file changed, 1 insertion(+)
->> > >
->> > > diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
->> > > index ab9bb68dd736..76e81eba7ea4 100644
->> > > --- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
->> > > +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
->> > > @@ -19,6 +19,7 @@ properties:
->> > >        - liteon,ltr559
->> > >        - liteon,ltr301
->> > >        - liteon,ltr303
->> > > +      - liteon,ltr329
+>> > On Wed, Jul 15, 2026 at 02:27:25PM +0200, Esben Haabendal wrote:
+>> >> This adds support for the LTR-329ALS-01 chip, which is similar to
+>> >> LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
+>> >> have.
+>> >>
+>> >> Signed-off-by: Esben Haabendal <esben@geanix.com>
+>> >> ---
 >> >
->> > Do not grow lists at the end, they are ordered alphanumerically to avoid
->> > conflicts.
+>> > Hi, I have a small not below. Kind of personal preference though. But
+>> > what Joshua mentioned should be addressed. With that:
+>> >
+>> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+>> >
+>> >>  drivers/iio/light/ltr501.c | 33 +++++++++++++++++++++++++++++++++
+>> >>  1 file changed, 33 insertions(+)
+>> >>
+>> >> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+>> >> index 7d045be78c6d..379e57ac5f5b 100644
+>> >> --- a/drivers/iio/light/ltr501.c
+>> >> +++ b/drivers/iio/light/ltr501.c
+>> >> @@ -15,6 +15,7 @@
+>> >>  #include <linux/delay.h>
+>> >>  #include <linux/regmap.h>
+>> >>  #include <linux/regulator/consumer.h>
+>> >> +#include <linux/array_size.h> // for ARRAY_SIZE
+>> >>
+>> >
+>> > ...
+>> >
+>> >>
+>> >> +	if (!ltr501_has_irq_support(data->chip_info))
+>> >> +		return 0;
+>> >> +
+>> >>  	if (val < 0 || val2 < 0)
+>> >>  		return -EINVAL;
+>> >>
+>> >> @@ -1257,6 +1270,18 @@ static const struct ltr501_chip_info ltr501_ch=
+ip_info_tbl[] =3D {
+>> >>  		.channels =3D ltr301_channels,
+>> >>  		.no_channels =3D ARRAY_SIZE(ltr301_channels),
+>> >>  	},
+>> >> +	[ltr329] =3D {
+>> >> +		.partid =3D 0x0A,
+>> >> +		.als_gain =3D ltr559_als_gain_tbl,
+>> >> +		.als_gain_tbl_size =3D ARRAY_SIZE(ltr559_als_gain_tbl),
+>> >> +		.als_mode_active =3D BIT(0),
+>> >> +		.als_gain_mask =3D BIT(2) | BIT(3) | BIT(4),
+>> >> +		.als_gain_shift =3D 2,
+>> >> +		.info =3D &ltr301_info_no_irq,
+>> >> +		.info_no_irq =3D &ltr301_info_no_irq,
+>> >> +		.channels =3D ltr301_channels,
+>> >> +		.no_channels =3D ARRAY_SIZE(ltr301_channels),
+>> >
+>> > Instead of playing the above game with info vs info_no_irq, an explicit
+>> > has_no_irq would probably be better. I mean conceptually if the pointe=
+rs
+>> > are the same, it could also mean that both are with IRQ support. With
+>> > it, I think it would be safe to leave the .info pointer as NULL as it
+>> > would be always overwritten.
+>> >
+>> > Having said the above, so strong feelings about it so up to you :)
 >>
->> Placing the new entry at the top would produce a rather strangely order list:
->>
->> ltr329
->> ltr501
->> ltr559
->> ltr301
->> ltr329
->>
->> Should I add a patch sorting the entire list to avoid this kind of
->> confusion in the future?
+>> Calling it has_irq would avoid double negation. But we would then have
+>> to set it to true in most of the entries (all except ltr329 for now).
 >
-> Please do a precursor patch for that  Also do it for the id tables in the driver.
+> Yeps, that=C2=B4s is why I proposed has_no_* :)
 
-Ok. Sorting ltr501_id and ltr501_of_match should be trivial.
-But what about ltr501_chip_info_tbl (and the anonymous enum used to
-index it, should they be sorted as well? And ltr301 being 0 instead of
-ltr501, the original device the driver was written for?
+The has_no_irq could also be read as a variable saying if there is an
+irq (pending) right now. For that reason, I will go with no_irq_support
+instead. I hope you agree with that as well :)
 
 /Esben
