@@ -1,48 +1,48 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8783235201F;
-	Tue,  4 Aug 2026 11:34:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34E0349CD2;
+	Tue,  4 Aug 2026 11:34:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785843289; cv=none; b=I61vsNgIEsaIvEg1eFGoG2Qba3kLDd2u4q/3dRhN3agh9GEvPi9lNP1ZlPHth2+2R7ZbNV22d4kvJ9o3iEyjUqPht3N7dSjZBZECkXJLcyDAhJunfNVKC3+r8wjV8S6J0bzeaIuxXqCAy5NWUxDENcReg+3Qmq/oVIIseTiAfho=
+	t=1785843300; cv=none; b=Gg9n3NctJgYR190dW6XxXtYHGBdA4PnRSkrEMOIr54RsAP2bI2uuoiCu2hu//lO2wf5X0niqI/RuEZrAxB+835mrN9uvNzy+1YIFHbC9avsbSD4ryqSoV3QCXL19TZFcoozzYDOkxAh3KCs7AlV/8EsS/xC46n9xbNY1RpWOGc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785843289; c=relaxed/simple;
-	bh=HAGc0aQvGQ6xckPzuGtbesPxW4BhT95FbIaJJrF46dg=;
+	s=arc-20240116; t=1785843300; c=relaxed/simple;
+	bh=qCks5QmHaWli0znQDgqe7ceH6hFdVyHKYF2/F2T/0N0=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JRTg7MJN0lxZZixRwbvRyUFgA0UE45F+gsUt3M1ymg4cAMl6TaVy46t8QN8vw8fk9lHOiLtA627ueAbzce1huxjGszkkUFTtNTxjgYQmeshhmclgi6DcQJX5fCJV2OjqodNqnob7RDr3Wtk2iv9e4fAMPKUO5awM5QdtCF4VC8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=HrO/n72Y; arc=none smtp.client-ip=68.232.154.123
+	 MIME-Version:Content-Type; b=nISJtjT24OvCXW96hnUhJ0U0WEnLj5+fPceL32vcy9jdG4PR9SwhUyrp8VyMA239cWCTAW5epVCMlFPQx13Ul6nBhqQ4L5Gs4eiWz/44JU+GgtiAnxJ8xmV+9R7X9hzVv3MJLwLdn/kF5LErz3Mcp6S8ziGHI9Lo7CjUTR6a5gk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=xBZ6+giu; arc=none smtp.client-ip=68.232.153.233
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="HrO/n72Y"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="xBZ6+giu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785843288; x=1817379288;
+  t=1785843298; x=1817379298;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=HAGc0aQvGQ6xckPzuGtbesPxW4BhT95FbIaJJrF46dg=;
-  b=HrO/n72YOgoj6IKC5vRMCBvoaRV3WEFAutdeL4b2xRh6BTOIn/EmytLk
-   RNQH/zbWcq8kGuDIHbvasxoQcLKXfbe5WEKDN89Nod25+IXpKQORz1iLd
-   ZCraQGWoLOCNFHVeBliXcRuheAG0KzPkfszylXMecT97xVcfxjpWYiR0V
-   8J6YtKNKzs6yEW2ymROHE6EG3+NC1Zm14rRcn2dbzOKqkT2qQvCtzfgKa
-   g34JNNr23FDXpYRKEDP43EgIft0iewTeHlU5yNsfsLRWxKI/itbMOvMVo
-   2gOWLFTU0iRua1QU6MrTa/M78NjXN1UvFhnVkyleAtaDkhOc5CMHkf921
-   w==;
-X-CSE-ConnectionGUID: hQ0YnYp7SQGjHFa3FSHSsg==
-X-CSE-MsgGUID: nSraFaAjTEum1TRTSW9ddw==
+  bh=qCks5QmHaWli0znQDgqe7ceH6hFdVyHKYF2/F2T/0N0=;
+  b=xBZ6+giuVb6zNZ6j8mVGEI9GwQA5tmPtXmhO8EHSdzuVwOPiopujbhVk
+   P18TdsUFJs6rs8yNAEnn484S8wN2NYZTtxNebQ0kS2ubWe45cX68TN1xS
+   3cenwdzr38UE35P7sO3g7LWDZKGd/C3GCdmrdfOobrBSNiw6vGKyvymmm
+   3dvWI+0r2GvK7NO0/9RbUbqOJ7XUSlO/nwO2ozRhIzhFCTeDIC653L9EN
+   3Y3cu2PcSSwENoHawj/gmH95Kr6N9jbTPp+enj2RpapXB0qvDc2l1h3AX
+   Kp6yEKaxK5d9IPIr7FjFI66xz3L6D00YNGjolZ1a0OxZRDuMc1SoXNxhA
+   g==;
+X-CSE-ConnectionGUID: 4xEEaEPvTgOvr5QEq3UPIQ==
+X-CSE-MsgGUID: 5r93qYngSDKfxPhyB9+CLg==
 X-IronPort-AV: E=Sophos;i="6.25,204,1779174000"; 
-   d="scan'208";a="61934860"
+   d="scan'208";a="71197889"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2026 04:34:47 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex1.mchp-main.com (10.10.87.30) with Microsoft SMTP Server
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 Aug 2026 04:34:57 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.45; Tue, 4 Aug 2026 04:34:47 -0700
+ 15.1.2507.58; Tue, 4 Aug 2026 04:34:57 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:34:36 -0700
+ 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:34:47 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -55,9 +55,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<mazziesaccount@gmail.com>, <varshini.rajendran@microchip.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 05/17] iio: adc: at91-sama5d2_adc: add condition to validate calibration data
-Date: Tue, 4 Aug 2026 17:03:26 +0530
-Message-ID: <20260804113338.261782-6-varshini.rajendran@microchip.com>
+Subject: [PATCH v5 06/17] iio: adc: at91-sama5d2_adc: remove unnecessary casts in of_device_id
+Date: Tue, 4 Aug 2026 17:03:27 +0530
+Message-ID: <20260804113338.261782-7-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260804113338.261782-1-varshini.rajendran@microchip.com>
 References: <20260804113338.261782-1-varshini.rajendran@microchip.com>
@@ -70,27 +70,31 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Add additional condition to validate the calibration data read from the
-NVMEM cell using the TAG of the packet.
+The .data field in struct of_device_id is 'const void *', so explicit
+casts are unnecessary when assigning addresses of const structs.
 
+Reviewed-by: Eugen Hristev <ehristev@kernel.org>
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/at91-sama5d2_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 82db8f2f4db0..5b21367cf6b4 100644
+index 5b21367cf6b4..3e9feb824a66 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -2297,7 +2297,8 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
- 		return dev_err_probe(dev, PTR_ERR(buf),
- 				     "Failed to read calibration data!\n");
- 
--	if (len < layout->min_len * sizeof(*buf)) {
-+	if (len < layout->min_len * sizeof(*buf) ||
-+	    buf[layout->tag_idx] != AT91_TEMP_CALIB_TAG_ACST) {
- 		dev_err(dev, "Invalid calibration data!\n");
- 		return -EINVAL;
+@@ -2628,10 +2628,10 @@ static const struct dev_pm_ops at91_adc_pm_ops = {
+ static const struct of_device_id at91_adc_dt_match[] = {
+ 	{
+ 		.compatible = "atmel,sama5d2-adc",
+-		.data = (const void *)&sama5d2_platform,
++		.data = &sama5d2_platform,
+ 	}, {
+ 		.compatible = "microchip,sama7g5-adc",
+-		.data = (const void *)&sama7g5_platform,
++		.data = &sama7g5_platform,
+ 	}, {
+ 		/* sentinel */
  	}
 -- 
 2.34.1
