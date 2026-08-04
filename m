@@ -1,57 +1,75 @@
-Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC2B39F168;
-	Tue,  4 Aug 2026 14:44:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152364399C8
+	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 14:56:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785854650; cv=none; b=ZjPFITwQ+1b5sO9bmnFMlKiUuSvoWfvx/mPJXCPJgLaeBnD2mTqGs5F0Vnd+NH6rOhBWL4ULUemAvmK6tHEhkwl3TOuKR5pKugj6NfG9geOGJxt7sfRlzST5j8g0+PlmVyfyqiATKEWlc9nHisbIoFV0oWC9k4WRdLFhAb2CTAw=
+	t=1785855370; cv=none; b=Ve/efR/wZsqMm5xnYBO4daifrDfY7GFT7s44W5O68gGD64hMFWD6f17ykMpcL6/2KT0uZihzKkfKw9k1CtnXPCrb5sK/61FdXykuDxI+Jc6L7J8gBNUTRkXxcD+/9FFoeR/DnYFalIceqG5Y5m4aEHo0CWEWL1qnHobbdvjcaNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785854650; c=relaxed/simple;
-	bh=tRCtExrDNycQl/KAnVn8BjSsdXGk5ty79EyIiX9CMl8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=mlKeBjqg9bzObcY5n8k3+djmdqbKA+GWpCbQx3BuX00P9Icr8H83HhNI2kPnXEjmmPg5VOKHMIkV1vJxcZJnwC6nKWY1KG6eZI6cg/PlzivaGPQ2LVouZwNGV4B3Ozq1Y4/w07jpMx9MXFgy+o1NlCkMYmf8v9pcbufEgbmpkdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=VULEBSCS; arc=none smtp.client-ip=109.224.244.107
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1785855370; c=relaxed/simple;
+	bh=i+H7jY0mSc+KEc7VSzDtqOTfn56oYjDd3KqE1qtHxmE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=e9BL9H62yGDpt6N+TlmoluYQA3qsOpwdRtTretqqw/85dpfEwu852wnZHP5ztL2ESnHRAfheuTqxBeUBY52pMpszIKduLBbF28MXSbHifG3Pjv9FHQLaITDp7aFZGuqt4a/KLa2CnxSgaCuBJvZn9j+OHxMq91XsHBX2z9egr4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jNaxwrPT; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="VULEBSCS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1785854645; x=1786113845;
-	bh=3in15dZVLlxJAE+j8ddyRNkSfPjTBhBwJNuRl15WtEo=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=VULEBSCSFDmTrYu2ZUZBelXLro7VZZafL6B0A2h0fevCZC0fv30PX3fXioG1wEeBp
-	 8RiE4dNvkqeWqPLc5ZO/1SLi6YKOG4RcY+S/4l+uozkLgKhkcwHYX18RNOV5WjLI1H
-	 vw4G52rvYGYyRRRYJVKBI5JpVxh71iTzziCOO46zbWysHdKW8CM0kXBcGXI0iG252q
-	 d0biXlAldn2KLQBuGL4mlOU290Gcfmy/eOMVGbCmNFDPf5UG5At1bBdwozSDhs9Ve+
-	 TEjVOTlLmoJ1Qa9clOxhXL9iHRHt87ejQnarxpiMaYwL5ISga9Qy2S/7ll+RegKubm
-	 7x50L0rII0tLg==
-X-Pm-Submission-Id: 4hDxBW5qM9z1DDrp
-From: Esben Haabendal <esben@geanix.com>
-To: Nuno =?utf-8?Q?S=C3=A1?= <noname.nuno@gmail.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
- <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
-  "Andy Shevchenko"
- <andy@kernel.org>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
-  "Nikita Travkin" <nikita@trvn.ru>,  "Maslov Dmitry"
- <maslovdmitry@seeed.cc>,  <linux-iio@vger.kernel.org>,
-  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/4] iio: light: ltr501: Add ltr329 driver support
-In-Reply-To: <lax5ggtixwejynztwul5brnkciq4gq5scbd4cuoyev2w3hgcti@dflf7hnw4rgq>
-	("Nuno =?utf-8?Q?S=C3=A1=22's?= message of "Wed, 15 Jul 2026 16:25:58
- +0200")
-References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
-	<20260715-liteon-ltr329-v2-3-d18af55edab5@geanix.com>
-	<Q-ueoELrVUGcnBAEpAJE8z7yejEFFfSQBfk5ZeoZgVu4Cf1NwcMQRiRH-cvknalrNQBzoSJDMCG7w56-0MrHVw==@protonmail.internalid>
-	<6vro5bil5b5j72rigujnm5zj4ot56rtwgs4fvn6xydybxpi4rz@vrc6p6bbkl3m>
-	<87ldbcmkr5.fsf@geanix.com>
-	<Ouq1f3XzhZ5grFMyCxC8cEFbB3eSSXdVMwFQWynPlH_OezdqbjGeOQrNu0oM9NcPieYKgzdY-MnZLTFJebC9-g==@protonmail.internalid>
-	<lax5ggtixwejynztwul5brnkciq4gq5scbd4cuoyev2w3hgcti@dflf7hnw4rgq>
-Date: Tue, 04 Aug 2026 16:44:02 +0200
-Message-ID: <87h5laaqtp.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jNaxwrPT"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-49553515a8bso50464405e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 04 Aug 2026 07:56:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785855367; x=1786460167; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=dw7iJbqbHaMY2LBdW8tLp5jrEOVyIbWuPmPQ4OlZuQ4=;
+        b=jNaxwrPTdiDg27z2uFqzTSPKHFp5tfNnhj7YWC1WHwJam18D6mO7cPGU3keJkB/3Dr
+         KOt29CLrRPrMIn02BAd5buyshdGdlspqhbzjq15FK+3YVhqPJDAEtw6wJqJKnlZ/OL19
+         hIbvbI5k0shcqJtDXdpD8/+DSN6dVVUqoxT3fj9R5UyzU13Xzyckf2tWOEvEZ4RoRjEs
+         sPPy6kM/PsUhNIr8/ziwNN1rOKi5dX1C8q2lj70Mmf9r3hSMwIm4IUNXHSEkk0akp24v
+         V05Eswr2bUnyYmdGNFWDMIi9Pwe+KnV6OsFp5fY4P2hPFtLvHAOBl+PItPHu3Evm9e4V
+         1hWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785855367; x=1786460167;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=dw7iJbqbHaMY2LBdW8tLp5jrEOVyIbWuPmPQ4OlZuQ4=;
+        b=qsQS3vVDZ9smI9Yb+jL/mW50x97DyFqjDaPsZkaBQYVDwgitFAjWM9ds5pN5wLJbW3
+         RMgUHwk7tJAW0Nbhm21L3bjkY+Izt3X3RLa6J66hSqgOJ5mMZ2DzSD6pH4/DtrcHss2o
+         xBtBqJzx7RwBgjVHy3q6Int6vTZ+de7X/bojB63j4tfpYSFMgIPa/3qpB40EgQqVFgsF
+         dqqrCeC30fKHwU3jCU2gwpEzDeMiQDEFm8mO/Nv9s7uo33KDEN7eHnMXPX0HVYBp0753
+         5swGA8PgZGbMBCBJDyC6I8UpoQFrYSMI9HfgDOFoTKae7aex6wl2WVk7yKevYdZtCV60
+         XtEQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoOl0qE9Y0kOOMzkkxnhWdvSSyrovBAxLBoh5CYx9K0iDflY/lXmbEVPlTmflj4jIkYlFouElL89Wo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzHNZAUAX9Yq2QxWYo6kXg0bYRvyqXAME7HyDs2r2zcxjkl/ZJn
+	xznQVQfxcx1+AtzF2ubazDT52JqArUqN6wZiK2gVvYKxqiTjzANCBI7J
+X-Gm-Gg: AR+sD11PeYXG6GSWCiuxHUg4cH5WRa+E08wXAMH8gPmgeec5iH3i6NF56K/dI3+ac0x
+	IyOR6Gm5nSco7RYMqHHpmP1PqKUmLTjDB/MOyBEB1xzSyBIXZgqjuxQAj2PordizOGcCRhgpPdd
+	CmhokgGus0v2rFsJmqUzr8FTlU5QR7CVS9bjyGRZ639CeTsPWvRV8CULxvw0/o3Esn+RcZ2I1yB
+	A3Vl5SLtFNSuYCQ3kDd+zPGayAFmBcig+754DD92Ow7NGR4r5g6Hqav4w7cpcqcGq08wbeIu68D
+	10K5FRfuWaqlEcSONNsD6umWw6xiTHujYYJydlgpVvvA29p+8Qotm4KMO1umsArKFjOS3oZfYLE
+	idztf27cgm2y7m8i5tb1HGEi+6dUtHuynTViwxVAEslBXR02abB6OucGWUu+P+/ZD9lbV+rW3PU
+	vyP/UOPRt+O5VUVgrJZ8lz7hRfAr84GJ1rXyCZpIP76QRPKXhAxb7L
+X-Received: by 2002:a05:600c:8b16:b0:492:6447:7a7f with SMTP id 5b1f17b1804b1-4980c66c84emr273645135e9.6.1785855366892;
+        Tue, 04 Aug 2026 07:56:06 -0700 (PDT)
+Received: from nsa ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4994e041b4bsm3730495e9.12.2026.08.04.07.56.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Aug 2026 07:56:06 -0700 (PDT)
+Date: Tue, 4 Aug 2026 15:57:17 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, andi.shyti@kernel.org, 
+	wsa+renesas@sang-engineering.com, ojeda@kernel.org, dakr@kernel.org, igor.korotin@linux.dev, 
+	branstj@gmail.com
+Subject: Re: [RFC PATCH v4 3/3] iio: position: add Rust driver for ams AS5600
+Message-ID: <anH7kbxvS6z5GlPI@nsa>
+References: <20260707151542.91997-1-muchamadcoirulanwar@gmail.com>
+ <20260707151542.91997-4-muchamadcoirulanwar@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -59,82 +77,59 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260707151542.91997-4-muchamadcoirulanwar@gmail.com>
 
-Nuno S=C3=A1 <noname.nuno@gmail.com> writes:
+Hi Coirul,
 
-> On Wed, Jul 15, 2026 at 03:43:10PM +0200, Esben Haabendal wrote:
->> Nuno S=C3=A1 <noname.nuno@gmail.com> writes:
->>
->> > On Wed, Jul 15, 2026 at 02:27:25PM +0200, Esben Haabendal wrote:
->> >> This adds support for the LTR-329ALS-01 chip, which is similar to
->> >> LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
->> >> have.
->> >>
->> >> Signed-off-by: Esben Haabendal <esben@geanix.com>
->> >> ---
->> >
->> > Hi, I have a small not below. Kind of personal preference though. But
->> > what Joshua mentioned should be addressed. With that:
->> >
->> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
->> >
->> >>  drivers/iio/light/ltr501.c | 33 +++++++++++++++++++++++++++++++++
->> >>  1 file changed, 33 insertions(+)
->> >>
->> >> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
->> >> index 7d045be78c6d..379e57ac5f5b 100644
->> >> --- a/drivers/iio/light/ltr501.c
->> >> +++ b/drivers/iio/light/ltr501.c
->> >> @@ -15,6 +15,7 @@
->> >>  #include <linux/delay.h>
->> >>  #include <linux/regmap.h>
->> >>  #include <linux/regulator/consumer.h>
->> >> +#include <linux/array_size.h> // for ARRAY_SIZE
->> >>
->> >
->> > ...
->> >
->> >>
->> >> +	if (!ltr501_has_irq_support(data->chip_info))
->> >> +		return 0;
->> >> +
->> >>  	if (val < 0 || val2 < 0)
->> >>  		return -EINVAL;
->> >>
->> >> @@ -1257,6 +1270,18 @@ static const struct ltr501_chip_info ltr501_ch=
-ip_info_tbl[] =3D {
->> >>  		.channels =3D ltr301_channels,
->> >>  		.no_channels =3D ARRAY_SIZE(ltr301_channels),
->> >>  	},
->> >> +	[ltr329] =3D {
->> >> +		.partid =3D 0x0A,
->> >> +		.als_gain =3D ltr559_als_gain_tbl,
->> >> +		.als_gain_tbl_size =3D ARRAY_SIZE(ltr559_als_gain_tbl),
->> >> +		.als_mode_active =3D BIT(0),
->> >> +		.als_gain_mask =3D BIT(2) | BIT(3) | BIT(4),
->> >> +		.als_gain_shift =3D 2,
->> >> +		.info =3D &ltr301_info_no_irq,
->> >> +		.info_no_irq =3D &ltr301_info_no_irq,
->> >> +		.channels =3D ltr301_channels,
->> >> +		.no_channels =3D ARRAY_SIZE(ltr301_channels),
->> >
->> > Instead of playing the above game with info vs info_no_irq, an explicit
->> > has_no_irq would probably be better. I mean conceptually if the pointe=
-rs
->> > are the same, it could also mean that both are with IRQ support. With
->> > it, I think it would be safe to leave the .info pointer as NULL as it
->> > would be always overwritten.
->> >
->> > Having said the above, so strong feelings about it so up to you :)
->>
->> Calling it has_irq would avoid double negation. But we would then have
->> to set it to true in most of the entries (all except ltr329 for now).
->
-> Yeps, that=C2=B4s is why I proposed has_no_* :)
+Same as Jonathan on my rust capabilities (maybe now I'll have proper
+motivation to learn it :)).
 
-The has_no_irq could also be read as a variable saying if there is an
-irq (pending) right now. For that reason, I will go with no_irq_support
-instead. I hope you agree with that as well :)
+Just one question below...
 
-/Esben
+On Tue, Jul 07, 2026 at 10:15:42PM +0700, Muchamad Coirul Anwar wrote:
+> Add a Rust driver for the ams AS5600 12-bit magnetic rotary position
+> sensor. The driver exposes in_angl_raw and in_angl_scale via the IIO
+> sysfs interface.
+> 
+> Features:
+> - ARef<I2cClient> for safe refcounted I2C client access
+> - Mutex-serialized status + angle read sequence
+> - Static channel spec (module-level const)
+> - No magnet validation at probe (deferred to read_raw per IIO convention)
+> - Error propagation via ? operator (no recovery state machine)
+> 
+> The byte order for the AS5600's big-endian registers is handled via
+> swap_bytes() in-driver. This is equivalent to C's
+> i2c_smbus_read_word_swapped(). The long-term solution is regmap-rs
+> where endianness is configured once at the transport level.
+> 
+> Tested on BeagleBone Black (AM335x) with AS5600 on i2c-2 (0x36).
+> 
+> Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+> ---
+
+...
+
+> +impl IioDriver for As5600Priv {
+> +    fn read_raw(&self, _chan: *const iio_chan_spec, mask: isize) -> Result<IioVal> {
+> +        const INFO_RAW: isize = iio_chan_info_enum_IIO_CHAN_INFO_RAW as isize;
+> +        const INFO_SCALE: isize = iio_chan_info_enum_IIO_CHAN_INFO_SCALE as isize;
+
+Likely stupid question but do we always need the above? Some drivers might have
+several INFO_* bits sets and we often need to nest the match if multiple channels have the
+same bits. For those cases having to define all of them like this and
+then doing the match seems not great to me. I guess we can directly have 
+` iio_chan_info_enum_IIO_CHAN_INFO_RAW as isize` in match but not sure
+if it's also that neat...
+
+So bottom line, it would be nice if we could have something nicely
+readable that we could directly pass to match.
+
+On another topic, I believe mask is present in several drivers for
+historic reasons but note that this parameter is not really a mask. So
+other name like 'info' is more appropriate.
+
+- Nuno Sá
+
