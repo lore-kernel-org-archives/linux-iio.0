@@ -1,48 +1,48 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E81E35E1AE;
-	Tue,  4 Aug 2026 11:35:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D406356777;
+	Tue,  4 Aug 2026 11:35:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785843343; cv=none; b=b86dAszzLWIBWO8SGfMds3pDFLaqo99NN1918bhTKRLrBkgk0pgaTHPPxA2U8K9nXCaZGVtVBK7yhMnKx9KLdRlYvaquekogAXpxniIbLzCFsXbITKiM9V08O43iZYEKAG5jRnRqo4fVGs1WQUNlfIWohGuRmEP3xksdQa8n/kc=
+	t=1785843353; cv=none; b=NNTC0DZSaUQ6INq6VUx/L7DLw7iAj2aa3jwhSRIA0ZDuXbG+D2EOO3GlHvrvzyfUkl+6/DwgPzyiS/GVgOqzBY/+4GLqEZTqYJwy9LklZWlAe3s/EA/YIDEf7vEzB3/AL6SFyh7KJ/LbVrF8wYW0UQ9pXq5hBh9XgNCuI3yPk+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785843343; c=relaxed/simple;
-	bh=Av6eeg2ekqj+HOs2zrQPFQA1RnGOcXg/+B9uTPlD7J8=;
+	s=arc-20240116; t=1785843353; c=relaxed/simple;
+	bh=lDo397Z36GO5xj/mcw2tiDDKm6eDwSGNrKDHn0UvbBw=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pz1FTmhOrXZrbca3/zbN+vyuHnkXjqdxiuksou7GhX3HBuQNpH/xLeodoyXybaBanZB8ZolL4nANVIbM7vSx56OXYaRTW3y1k8CZBns4CcQ7rdhmzhb73bxdsPO0ecewxiFcO7KdTP1huGUVgLDEQWFTMDrgzW2IFvDfP4w4SSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Xg91NT6A; arc=none smtp.client-ip=68.232.154.123
+	 MIME-Version:Content-Type; b=CbyY3MQ3Ov2MwbE19SJOVJjtP1qdMgNTE3gUKRpXe2LtS1KYIoap3wbLrYcQc6Np9qOUrXo4ZXcBD+GnLQ3A1Eb22gEWHOaD0oVP/mV9SYFReJkScav7ZQ7ysoKBoly+c8QdoZ2ZE+0qf9hvQPlVfwNetAWN20SKLyMYZJiUduc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=VYwf0Dba; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Xg91NT6A"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="VYwf0Dba"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785843342; x=1817379342;
+  t=1785843352; x=1817379352;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=Av6eeg2ekqj+HOs2zrQPFQA1RnGOcXg/+B9uTPlD7J8=;
-  b=Xg91NT6AyBAYlf0RVQN5Mr8pt/VAsA/24Hh34mLm5Llfq/xoD6tQy0qk
-   53Va7NQpakbUqnL89clH6fgxk2FnhWjyiBAAuGmIiSj4KlJwXhbhl3CBf
-   LG/Eox2uo7bRQR9ZFNZigwPQ4t74XwbkDPR2maP97mIQQ4S5j/JjEphD8
-   auKD7jVxbVXRU3oYpwGBwuAp7EP0m4CB8vsu0UH7toDInpOXrbR2k4Ngh
-   8/ja6p7SpqDtL9bDvBteX3mRl8KHEO5ndmXZCfMQ55P8rCofdJDDQjg/2
-   R3x29Mgk3AOa09udn074aM97AOAiB/YI3bjfMBBLiNy2PIUp7PpYG8ESp
+  bh=lDo397Z36GO5xj/mcw2tiDDKm6eDwSGNrKDHn0UvbBw=;
+  b=VYwf0DbaQbL1uxRxoxEHVcPoMqIsbe03rZlvJxj/7CtX2Sk7E6OvyTMQ
+   AqgsK9Az0Legk7VdSi5CnP3Evrf+lN3UAWqREK4025gwKr6JTx/W2R7fw
+   x//l0nWKuYulGuRvxL32eMpGZbz9foKhvdJMyPHi75ffxAI+z85iPt8EV
+   C/rt4HExnCdDr1Uu04FhdzZvrGW/qvXISOUqQ9BYUG41HrE/gOgDVyE1N
+   IGuts//OUfjgt6DG+KsLhcdoKIpOlwu0zNOFf4wWEEPJzpgA/gZuFr9Hr
+   Df0DONh4X/ef9IBB/X90ZLdwSwd3yhHowOiWyNiWWrdyG4h6mDaRSm3UI
    w==;
-X-CSE-ConnectionGUID: 9Xxrn/ddQv+JEDEp8rZysg==
-X-CSE-MsgGUID: d0CaX/zIS2mlZGcQFiIrqA==
+X-CSE-ConnectionGUID: X+sZNq9OTGeKdn8HtHvAfg==
+X-CSE-MsgGUID: YvRNkxoISDCzfAxE4XOFcg==
 X-IronPort-AV: E=Sophos;i="6.25,204,1779174000"; 
-   d="scan'208";a="228765807"
+   d="scan'208";a="60737197"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2026 04:35:41 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex3.mchp-main.com (10.10.87.32) with Microsoft SMTP Server
+  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 Aug 2026 04:35:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.45; Tue, 4 Aug 2026 04:35:40 -0700
+ 15.1.2507.58; Tue, 4 Aug 2026 04:35:50 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:35:30 -0700
+ 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:35:41 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -55,9 +55,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<mazziesaccount@gmail.com>, <varshini.rajendran@microchip.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 10/17] nvmem: microchip-otpc: nvmem: add emulation mode and OTP access validation
-Date: Tue, 4 Aug 2026 17:03:31 +0530
-Message-ID: <20260804113338.261782-11-varshini.rajendran@microchip.com>
+Subject: [PATCH v5 11/17] ARM: dts: microchip: sama7d65: add cpu opps
+Date: Tue, 4 Aug 2026 17:03:32 +0530
+Message-ID: <20260804113338.261782-12-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260804113338.261782-1-varshini.rajendran@microchip.com>
 References: <20260804113338.261782-1-varshini.rajendran@microchip.com>
@@ -70,63 +70,67 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Add validation of OTP memory accessibility and emulation mode status
-during probe.
-
-When the boot packet is not configured, emulation mode allows access to
-the other packets. When both are not available an informational message
-is logged to help with debugging.
+Add CPU OPPs table for SAMA7D65.
 
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- drivers/nvmem/microchip-otpc.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/microchip/sama7d65.dtsi | 36 +++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/drivers/nvmem/microchip-otpc.c b/drivers/nvmem/microchip-otpc.c
-index a17f82afdc37..6b0184423463 100644
---- a/drivers/nvmem/microchip-otpc.c
-+++ b/drivers/nvmem/microchip-otpc.c
-@@ -18,6 +18,7 @@
- #define MCHP_OTPC_CR_READ		BIT(6)
- #define MCHP_OTPC_MR			(0x4)
- #define MCHP_OTPC_MR_ADDR		GENMASK(31, 16)
-+#define MCHP_OTPC_MR_EMUL		BIT(7)
- #define MCHP_OTPC_AR			(0x8)
- #define MCHP_OTPC_SR			(0xc)
- #define MCHP_OTPC_SR_READ		BIT(6)
-@@ -343,7 +344,8 @@ static int mchp_otpc_probe(struct platform_device *pdev)
- {
- 	struct nvmem_device *nvmem;
- 	struct mchp_otpc *otpc;
--	u32 size;
-+	bool emul_enable;
-+	u32 size, mr_val;
- 	int ret;
+diff --git a/arch/arm/boot/dts/microchip/sama7d65.dtsi b/arch/arm/boot/dts/microchip/sama7d65.dtsi
+index ec200848c153..dfac17e34e65 100644
+--- a/arch/arm/boot/dts/microchip/sama7d65.dtsi
++++ b/arch/arm/boot/dts/microchip/sama7d65.dtsi
+@@ -35,6 +35,7 @@ cpu0: cpu@0 {
+ 			d-cache-size = <0x8000>;	// L1, 32 KB
+ 			i-cache-size = <0x8000>;	// L1, 32 KB
+ 			next-level-cache = <&L2>;
++			operating-points-v2 = <&cpu_opp_table>;
  
- 	otpc = devm_kzalloc(&pdev->dev, sizeof(*otpc), GFP_KERNEL);
-@@ -355,10 +357,22 @@ static int mchp_otpc_probe(struct platform_device *pdev)
- 		return PTR_ERR(otpc->base);
+ 			L2: l2-cache {
+ 				compatible = "cache";
+@@ -45,6 +46,41 @@ L2: l2-cache {
+ 		};
+ 	};
  
- 	otpc->dev = &pdev->dev;
++	cpu_opp_table: opp-table {
++		compatible = "operating-points-v2";
 +
-+	mr_val = readl_relaxed(otpc->base + MCHP_OTPC_MR);
-+	emul_enable = mr_val & MCHP_OTPC_MR_EMUL;
-+	if (emul_enable)
-+		dev_info(otpc->dev, "Emulation mode enabled\n");
++		opp-90000000 {
++			opp-hz = /bits/ 64 <90000000>;
++			opp-microvolt = <1050000 1050000 1225000>;
++			clock-latency-ns = <320000>;
++		};
 +
- 	ret = mchp_otpc_init_packets_list(otpc, &size);
- 	if (ret)
- 		return ret;
- 
-+	if (!size) {
-+		dev_warn(otpc->dev, "Cannot access OTP memory\n");
-+		if (!emul_enable)
-+			dev_info(otpc->dev, "Boot packet not programmed and emulation mode disabled\n");
-+	}
++		opp-250000000 {
++			opp-hz = /bits/ 64 <250000000>;
++			opp-microvolt = <1050000 1050000 1225000>;
++			clock-latency-ns = <320000>;
++		};
 +
- 	mchp_nvmem_config.dev = otpc->dev;
- 	mchp_nvmem_config.add_legacy_fixed_of_cells = true;
- 	mchp_nvmem_config.size = size;
++		opp-600000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <1050000 1050000 1225000>;
++			clock-latency-ns = <320000>;
++			opp-suspend;
++		};
++
++		opp-800000000 {
++			opp-hz = /bits/ 64 <800000000>;
++			opp-microvolt = <1150000 1125000 1225000>;
++			clock-latency-ns = <320000>;
++		};
++
++		opp-1000000002 {
++			opp-hz = /bits/ 64 <1000000002>;
++			opp-microvolt = <1250000 1225000 1300000>;
++			clock-latency-ns = <320000>;
++		};
++	};
++
+ 	clocks {
+ 		main_xtal: clock-mainxtal {
+ 			compatible = "fixed-clock";
 -- 
 2.34.1
 
