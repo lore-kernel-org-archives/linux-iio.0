@@ -1,151 +1,142 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A659D3546C0;
-	Tue,  4 Aug 2026 11:36:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 533FE45FFD3;
+	Tue,  4 Aug 2026 13:29:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785843419; cv=none; b=BXiU/vKbAiLq0tSGYm1NlusnYNqo7h1DJFbFy4yU+pnF5UGI91qJZdxzb7PxqJxfTARxPGNDY5WiNSmQBKsTNYa7rUNl4BAKLyTRaEhbOklvSxSTcsN1GKHRrrSsQTHrIwuzQuhpqGrMRjnzYIDCMElckMu+05A3rw7Pl2SDqh8=
+	t=1785850200; cv=none; b=qkKVeebDxuxYvtjOjfge/3DDdGe4K57Fq8VuaevPFNr7TE3FQHBEuvwjLk+MpKBPLAayhknJScYzyP2WSuUgmQ+4MKKqiogggdLeeG6H+IZak/gNJAZJuBFyiXwkPbO450u27LlgG05F3KAmNTCv2VN39SPlpPbg6I01RP5IoGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785843419; c=relaxed/simple;
-	bh=XNeG3M4dWAfIsmDBbwjWj2IXhD+Qtz4KOR6R5jwR+jw=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Swc9CK8llI8JAFLypprjQ/RHmj11cPZSGbUBaPRYFsYCCvUszaXPCwov75WVAsTgLSDHsY/OSLKXosB1b9MxIPKYgPgKZ1lnpAA7/ai3Oaj7c0+QpigNlOhy/G3POdR+gJxOjDBxRsTUSXitKYeVJMCHNQFpbCXMUrf58lvrV6U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=OuSGkuKN; arc=none smtp.client-ip=68.232.153.233
+	s=arc-20240116; t=1785850200; c=relaxed/simple;
+	bh=s4gj4uULZM4dmrLq0Q+BFyrBtz1BVx2bE29MH8NZTbI=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=ZA8ra6wfLX4YK8c1VYjqL3h+fYGVzjLeF7KE3ocv1Y4m9UIB2TQrSK/kV4TiEzYC8Mg/Xro/nAeyamrwmLiU9eg5lr78y4OK7gc4C0dNmRTmSdF7frWs8IgQ9HhWQYM07dhTa4dNfPeCbNiP7gLbtYByWVbS1rveVRlwPX6tzrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=R/4ovfxR; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="OuSGkuKN"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="R/4ovfxR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785843417; x=1817379417;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=XNeG3M4dWAfIsmDBbwjWj2IXhD+Qtz4KOR6R5jwR+jw=;
-  b=OuSGkuKNH1sAeVWoJfLdr6t2lQGVZ8PINK9gaRqs9UYDD0QgsyLDbMst
-   j5CqJGsnY5QCceuCVcAGozUu/XZwPef1QVAbDqACvmi2W/ehjrZBbc0ef
-   W//mspeRvnW/ODeDEZDPOvkNzkwwyJcnPbAATyVlzwxDzv1tIh/xTbrPw
-   iyyguo/8AO2FyGgJ6XyCpSkMJBr6wMccBRvhAuUSoAjViPVpbhj0LQ++1
-   2H361U1P7eoz7IJPcae31BRgWXbznZ618NON8z/0Edch2ANnfej0ApfLO
-   EMfYGFaaEilDf1+ELZCc+YAIae+Di4goZz1owIl4w6/Fc+ZjyB+BPAt7H
-   Q==;
-X-CSE-ConnectionGUID: 7CuNwgWqRGiaWdZkGYCKTQ==
-X-CSE-MsgGUID: sI5zwelDS8SKIypgjElsaA==
+  t=1785850198; x=1817386198;
+  h=from:subject:date:message-id:mime-version:
+   content-transfer-encoding:to:cc;
+  bh=s4gj4uULZM4dmrLq0Q+BFyrBtz1BVx2bE29MH8NZTbI=;
+  b=R/4ovfxRONKPL0Av5RIMdZn5yIudHxsDcl9baFnSPk+pdXVLcpkG4axC
+   Kuxks5vWz/cl7h1z/VdaU8JPyM2QGyMnMJqj43dG6DPb1WcZt8ENDbQZZ
+   ctslLPvJXYbV6o79LyYRH5eGrcdYCM/wA05rAZgg4IfQyYNU6xnJ77MXH
+   jfYuzbnv+VG3Zqif0coRHKA7eX4KeKH1vrdJjNkam8HK+GLKK47rzN2he
+   dtme8vcGb1ts3kv0x7TT/Py3LH214VbGd0QGwRGQbIonaShdq1TnJJXrT
+   5ePfjYi4Mv+n9SuTf5dXEVTzv9yIVQjbihDnHBJkSEw5Hd0Xki4mFinAc
+   w==;
+X-CSE-ConnectionGUID: PdyIKO/KRqmtC5pL79kSSQ==
+X-CSE-MsgGUID: FLM0HkANSveIbciXI2iLmQ==
 X-IronPort-AV: E=Sophos;i="6.25,204,1779174000"; 
-   d="scan'208";a="292994117"
+   d="scan'208";a="61938335"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 Aug 2026 04:36:56 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 Aug 2026 06:29:56 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Tue, 4 Aug 2026 04:36:55 -0700
-Received: from che-ll-i67070.microchip.com (10.10.85.11) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:36:44 -0700
-From: Varshini Rajendran <varshini.rajendran@microchip.com>
-To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
-	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
-	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
-	<srini@kernel.org>, <marcelo.schmitt@analog.com>, <radu.sabau@analog.com>,
-	<joshua.crofts1@gmail.com>, <jorge.marques@analog.com>,
-	<Jonathan.Santos@analog.com>, <jishnu.prakash@oss.qualcomm.com>,
-	<antoniu.miclaus@analog.com>, <duje@dujemihanovic.xyz>,
-	<mazziesaccount@gmail.com>, <varshini.rajendran@microchip.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 17/17] ARM: dts: microchip: sama7d65: add thermal zones node
-Date: Tue, 4 Aug 2026 17:03:38 +0530
-Message-ID: <20260804113338.261782-18-varshini.rajendran@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260804113338.261782-1-varshini.rajendran@microchip.com>
-References: <20260804113338.261782-1-varshini.rajendran@microchip.com>
+ 15.1.2507.58; Tue, 4 Aug 2026 06:29:56 -0700
+Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Tue, 4 Aug 2026 06:29:53 -0700
+From: Ariana Lazar <ariana.lazar@microchip.com>
+Subject: [PATCH v3 0/3] Refactor Microchip MCP47FEB02 I2C driver in
+ separate modules to add support for MCP48FEB02 SPI driver
+Date: Tue, 4 Aug 2026 16:29:46 +0300
+Message-ID: <20260804-mcp47feb02_refactor-v3-0-97f8b81f3628@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAErpcWoC/22NQQ6CMBBFr0JmbU2ZQkFX3sMQU8ZBZgElrSEa0
+ rtbcevy/fn/zQaRg3CEc7FB4FWi+DmDORRAo5sfrOSeGVCj1RZrNdFSNQP3Gm+BB0dPH9Tg2gq
+ 1Y4MtQl4u+SKv3XrtMo8Sc+29P1nLb/rzNWj++tZSacVcn9ga22BPl0koeBplOZKfoEspfQDyn
+ NgaugAAAA==
+X-Change-ID: 20260625-mcp47feb02_refactor-fa8420ae3282
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785850193; l=2975;
+ i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
+ bh=s4gj4uULZM4dmrLq0Q+BFyrBtz1BVx2bE29MH8NZTbI=;
+ b=H7T/YaOMWpzQE9TwnIq5L7B/mHG922Vb2Lax73So9neaGAPoMPkLVJU8xuknZkvSvBVeYdGF0
+ +J4pKxP2O2uACGi7hAg+OdLF+qh495I+I9h6EBrVb0EMVigu2afOU5j
+X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
+ pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-Add thermal zones node for SAMA7D65 with trip points for passive
-cooling and critical shutdown.
+Refactor I2C driver implementation into separate modules in order to add
+support for SPI MCP48FxBy1/2/4/8 DAC family on top of the I2C implementation.
+The I2C and SPI devices have the same memory map and supported
+functionalities.
 
-Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 ---
- arch/arm/boot/dts/microchip/sama7d65.dtsi | 42 +++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+Changes in v3:
+- renumbering the patch version to include the first patch submision
+- fix review comments device tree binding:
+   - change 'additionalProperties' to unevaluatedProperties
+   - add else branch with spi-max-frequency in the condition which checks
+     if a device has SPI interface
+   - correct SPI address example
+   - add clock polarity and clock phase properties for SPI devices
+   - enumerate I2C devices in lexicographic order from the description section
+   - specify supported SPI modes using dependencies
+- fix review comments driver:
+   - remove unneccesarry libraries and add the missing ones
+   - correct comment typo
+   - return -ENODEV using dev_err_probe() in protocol probe functions
+   - use named initializers
+   - move defines for registers and enums from the header to the core file
+   - add dev_set_drvdata() in probe()
+   - move mutex aquiring from mcp47feb02_write_to_eeprom() to
+     store_eeprom_store()
+   - write correct value into Vref register in resume()
+- Link to v2: https://lore.kernel.org/r/20260723-mcp47feb02_refactor-v1-0-ee59e63672bc@microchip.com
 
-diff --git a/arch/arm/boot/dts/microchip/sama7d65.dtsi b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-index 3aba73983c79..7743f9e8f692 100644
---- a/arch/arm/boot/dts/microchip/sama7d65.dtsi
-+++ b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-@@ -16,6 +16,7 @@
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/mfd/at91-usart.h>
- #include <dt-bindings/nvmem/microchip,sama7g5-otpc.h>
-+#include <dt-bindings/thermal/thermal.h>
- 
- / {
- 	model = "Microchip SAMA7D65 family SoC";
-@@ -38,6 +39,7 @@ cpu0: cpu@0 {
- 			i-cache-size = <0x8000>;	// L1, 32 KB
- 			next-level-cache = <&L2>;
- 			operating-points-v2 = <&cpu_opp_table>;
-+			#cooling-cells = <2>; /* min followed by max */
- 
- 			L2: l2-cache {
- 				compatible = "cache";
-@@ -126,6 +128,46 @@ thermal_sensor: thermal-sensor {
- 		io-channel-names = "sensor-channel";
- 	};
- 
-+	thermal-zones {
-+		cpu_thermal: cpu-thermal {
-+			polling-delay-passive = <1000>;
-+			polling-delay = <5000>;
-+			thermal-sensors = <&thermal_sensor>;
-+
-+			trips {
-+				cpu_normal: cpu-alert0 {
-+					temperature = <90000>;
-+					hysteresis = <0>;
-+					type = "passive";
-+				};
-+
-+				cpu_hot: cpu-alert1 {
-+					temperature = <95000>;
-+					hysteresis = <0>;
-+					type = "passive";
-+				};
-+
-+				cpu_critical: cpu-critical {
-+					temperature = <100000>;
-+					hysteresis = <0>;
-+					type = "critical";
-+				};
-+			};
-+
-+			cooling-maps {
-+				map0 {
-+					trip = <&cpu_normal>;
-+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-+				};
-+
-+				map1 {
-+					trip = <&cpu_hot>;
-+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-+				};
-+			};
-+		};
-+	};
-+
- 	soc {
- 		compatible = "simple-bus";
- 		ranges;
+v2:
+- include in the same patch series the refactoring of the driver and the
+  support for SPI devices, but in different patches
+- remove changes regarding review comments received not related to the
+  code refactoring
+- first version of the combined refactoring I2C and adding support for SPI
+  driver
+- Link to v1: https://lore.kernel.org/all/20260403-mcp47feb02-fix2-v1-1-da60c773550e@microchip.com
+
+v1:
+- first version which did not separate the refactoring and adding support for
+  SPI devices (into different patches from the same series)
+
+---
+Ariana Lazar (3):
+      iio: dac: mcp47feb02: refactor MCP47FEB02 I2C driver into two modules
+      dt-bindings: iio: dac: add support for MCP48FEB02 SPI
+      iio: dac: add support for Microchip MCP48FEB02
+
+ .../bindings/iio/dac/microchip,mcp47feb02.yaml     | 221 +++++++++++---
+ MAINTAINERS                                        |   5 +-
+ drivers/iio/dac/Kconfig                            |  33 +-
+ drivers/iio/dac/Makefile                           |   4 +-
+ .../iio/dac/{mcp47feb02.c => mcp47feb02-core.c}    | 336 ++-------------------
+ drivers/iio/dac/mcp47feb02-i2c.c                   | 144 +++++++++
+ drivers/iio/dac/mcp47feb02-spi.c                   | 145 +++++++++
+ drivers/iio/dac/mcp47feb02.h                       |  48 +++
+ 8 files changed, 576 insertions(+), 360 deletions(-)
+---
+base-commit: 9c6acc6e6555d34198e45cb0d309569dfbadf929
+change-id: 20260625-mcp47feb02_refactor-fa8420ae3282
+
+Best regards,
 -- 
-2.34.1
+Ariana Lazar <ariana.lazar@microchip.com>
 
