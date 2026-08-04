@@ -1,37 +1,37 @@
 Received: from mail-244106.protonmail.ch (mail-244106.protonmail.ch [109.224.244.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A21353ECBE5;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38F6485CC1;
 	Tue,  4 Aug 2026 17:02:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785862973; cv=none; b=PGXJZuZliQacKuZUqehhpWmw1NTRLjO53wJmJcRXP1kK8/cXUEpB8rp5HP1afywOVntqwNfbdkimOLZzss8KxkoQWCwzcAIlCkrRfWWOu88mkbTCVULTgEMqUVQhsTvBJeGy2UBQfG1mpWlaFc8M7k9nBVLcZrZslhwY0zGQUu8=
+	t=1785862975; cv=none; b=cwE7sQ28Tx0O8aK7azf2YX+NLRzwUxbgrGYVmKfhL73np4TDVc7NuX1OnntIyHpU9y//vIGZ0mAi2IY7FWVlNVGdFTbl9AQnc4TqNLgLMecR+kwMczXsadmSf1Hjg1uMwYIPIQ9P/72et9FppssrmZLKB43AG6YcDFSJ4YbqP3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785862973; c=relaxed/simple;
-	bh=chSx2lJzLdFN5R/TGmmzpmF0sv5tO+hbYYUIO9ygA04=;
+	s=arc-20240116; t=1785862975; c=relaxed/simple;
+	bh=mvNJmDmVsp8KUVgsp1225/noNvG1ucZekie3JkvhBfQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=q+QIl0/934ejzjkLB67nJeh5QveO+X+Y+8uI7jAZSvfdDVzDOYC+gpibhYpl5YYr0UwMSzdtc+WJ9UMWV/ev61mN1tdkpFFOvhiZVrF18oIHnoYi/S9kULxSj7ySZzPMXQnOH1zxeMibXzXlfHOfns8vWbTYliMs7Hmf7xw3NMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=uvC42Xep; arc=none smtp.client-ip=109.224.244.106
+	 In-Reply-To:To:Cc; b=mJM69CSlftgh2qJLUZRX0J9eRWeWpJfcG/UdU3MU6rF+QOU+EfFK9dTufNy1IRmLIqOgDqE7xT/agkPg23z0D7sMYAmhDu0CAnvWlky7lYEXN/Hx9PqjnzH+iB2ahxt7cy5hb5+yLdzWQZYFqZiVU/tG4GkkQJqcDPVGQYyLC80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Gac8kTm9; arc=none smtp.client-ip=109.224.244.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="uvC42Xep"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Gac8kTm9"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1785862952; x=1786122152;
-	bh=evxTxET7ULEQIK9aSBquN+mpS2+hq109UcF239xLq7o=;
+	s=protonmail3; t=1785862954; x=1786122154;
+	bh=lx4b8MwYSUgqf30P2GLTCz9k8BWV9/z7MLxR4uMDIeo=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=uvC42XepPc0qzk3gQh1S6ACbxySI+cl4bjpjsIuUg8LRdWs1PYO+s/eloa2uAovu/
-	 5rlCNJE6hlPrcuopzWR76TltjOJKHMMThapT+8fLHHdwBPHz0xlR5IVjzwP81hYCKk
-	 WfbskVe7o02bNMBT+167thdJrhnOynVspQ2UZFCBRWIybOylNZaLnc1KQFyEBhiRtw
-	 jFoK7iMgBguge1xxRXPCbZVjkDXLul5icDYBPBpJdU1uEH/JI0AtVp46xyI/LMFfuo
-	 NGLpA8v6CCA/Cp3mj+RPs5Kh4phHjWZUmxjefEAqGqVNdxcsVQYR7ijGOk2RP8YbAC
-	 bDxarGMznqwrg==
-X-Pm-Submission-Id: 4hF0GG5PYHz1DFF3
+	b=Gac8kTm9vDqxJdrwd+QBEEKGBhzUN3NAbJ05bHpNl6gKLLAzV0wE0/zKKZZW4IjdW
+	 SYhzKNi6ecQBJvfv2k3ND4mpgdZZJiD8V6qUWDWDw4usH1dlEzRB/2sUiZ84s8hnXf
+	 dp+I0I5dMm7z6A/Vubump7aoGnDgrd8g77YZIm4aO7Eb+jnJljGGek5m31tzK2SmkQ
+	 54lF1pXlajXsCWFq3P8Lw8YnVcDf8qeAIMtK7IxFne1mJ3Lrqns81mV5Em9mVIiQhb
+	 zZtr4mgZcBCn6VsMkUlSqOw8DLG7zluGL+0+Bnejrm6KlNzxuj3zh9DSdSqFByGfni
+	 3V+jv29McwrGg==
+X-Pm-Submission-Id: 4hF0GJ54DNz2ScQ9
 From: Esben Haabendal <esben@geanix.com>
-Date: Tue, 04 Aug 2026 19:02:12 +0200
-Subject: [PATCH v3 1/6] dt-bindings: iio: light: ltr501: Sort compatible
- enum array
+Date: Tue, 04 Aug 2026 19:02:13 +0200
+Subject: [PATCH v3 2/6] dt-bindings: iio: light: ltr501: Add missing ltr303
+ compatible
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260804-liteon-ltr329-v3-1-c6b768c7c745@geanix.com>
+Message-Id: <20260804-liteon-ltr329-v3-2-c6b768c7c745@geanix.com>
 References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
 In-Reply-To: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -55,36 +55,35 @@ Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785862947; l=783;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785862947; l=833;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=chSx2lJzLdFN5R/TGmmzpmF0sv5tO+hbYYUIO9ygA04=;
- b=ECxa5aYePo/YDDZvf28mH5FgEO/cqbtsQhPahwMpu0PMMQhNTVGCnIao9WHhOJVfaikSNMkwW
- 1bOdaxyyvLvAa6V3dy2+Gy+JUhy5YFVLRJoEiVWVFz7azGGM9IFRuXm
+ bh=mvNJmDmVsp8KUVgsp1225/noNvG1ucZekie3JkvhBfQ=;
+ b=7XyJcZuf9rAR3b+5GoZ0U0xlEHhEDr6NLTQOlcjfeHGfGumZeZOmBvDpHp+v6ktR02PBSNvLL
+ imjqFGbrWhpDUijXGZupqeXwtAXUCstj+3tOmVNEraEpz6H3QqWBKgY
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Restore alphabetical sorting of the properties.compatible.enum array.
+When support for ltr303 was back in 2021, the bindings documentation was
+not updated accordingly.
 
+Fixes: 7d71d289e1ba ("iio: light: ltr501: Added ltr303 driver support")
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-index c8074f180a79..480523ca3750 100644
+index 480523ca3750..6234e2eaec2e 100644
 --- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
 +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-@@ -15,9 +15,9 @@ allOf:
- properties:
+@@ -16,6 +16,7 @@ properties:
    compatible:
      enum:
-+      - liteon,ltr301
+       - liteon,ltr301
++      - liteon,ltr303
        - liteon,ltr501
        - liteon,ltr559
--      - liteon,ltr301
  
-   reg:
-     maxItems: 1
 
 -- 
 2.55.0
