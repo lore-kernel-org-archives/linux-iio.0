@@ -1,190 +1,79 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543F73E49F5;
-	Tue,  4 Aug 2026 06:24:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB6F72931E6;
+	Tue,  4 Aug 2026 06:43:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785824686; cv=none; b=INozVsuUQUJp49xnkesjWKnEBU6ld6KjucuNbHUOZu+i1TndLIj5pkQ8yOXsaf7O4zZ/8pJ8K0N7HVpCIhGZI3rMpsHgMy463f1j5YFal+jOFxiQOdsKjnmHTMvQZCJMIw1Pllf5K0JHoYKGQ+ZXPcWYikfF8+nV2EtySxeMDXk=
+	t=1785825831; cv=none; b=M6lnaCsNY9thTOYtCJRyBVfixBcFTS32ElI3GZTJ8l2eu5zOg3RoBaokUQJy/PjOdICo7nL4SxtbqQDupR5TaPn6U5MMQTfXMHRw7ypyhB9TiF6V3PWpJrzCRg3xCFPpJRFAqFZu5tF563db3zd7AetMGxxM6tEtIAjh6fVDtuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785824686; c=relaxed/simple;
-	bh=KKZFpNziv8p8HKPLsoOocbI9p7wTHRY7703zAFRVqFM=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=IXhQfnxSa1QOhlFnO25oUSOua9DFoYylz/mdevOKxpMKyrikiuX0V3VoDi5ihNN8sd+8adRulu5AnQ/zVs2SctfdF/kncn/hJK23Ke9MFdCFIpnW8TxhjRYNnwGEt26fIYPPIahMTAU53ORJ36PXV8aicOOXpGUJMgpZ73HOTv4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jRBQuaXc; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1785825831; c=relaxed/simple;
+	bh=o86kDL/eQOkMYirE0085aVzDejlnByCKVgBoA9NlkDM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BZlHh54M5u1chI9AhxfQdSigBjQd3hZnq4gfyW3z/v93P7oCWqbpR/odtcSgAvq8UNbPSNAjpalkzs6pS76tlox8wyyZ8/NCIFxj5EfQe6b6pFhfF04TVgnt9JKwVmPQy4B347aC2msANSu42RLp4jED/q2IhaXEMk0bSS2ZRDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bYIYGpvS; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jRBQuaXc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785824684; x=1817360684;
-  h=date:from:to:cc:subject:message-id;
-  bh=KKZFpNziv8p8HKPLsoOocbI9p7wTHRY7703zAFRVqFM=;
-  b=jRBQuaXcHv+jtggjffiFHpd3ZoKS+eeL32LLqLR/PCBlFs57zufmaasI
-   4LaI7E0KWuWhaNhDA+Y21WU+vDMgp0rFCdOmscj+i40/QRZIAAqW2zAZ9
-   T7RvT7OqHcSpIuUXj8S2Lf0GdHsn31BCVgCr6dSOkLZtTV/miHObWYx+k
-   kC851gh4uDdkjTMOvZUUhWZDwgvmxTtS/YBZpcWytuzO3oDnR4oScmMiv
-   pHIe9yclA3x9FAlTfMpiBjbfCNmOEvHrB969aKULKbf6A6EkpN/AV50ok
-   FiI3tIwd05V3TrpaSQTbtGk484NzWc+H6XnnC1cJUI3dktlVHsXKRHECK
-   Q==;
-X-CSE-ConnectionGUID: vM8Fu5QqQGCOdzzRqWt9+g==
-X-CSE-MsgGUID: D/6Qv+MyTmOGyGLc+rdinQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11864"; a="90179417"
-X-IronPort-AV: E=Sophos;i="6.25,203,1779174000"; 
-   d="scan'208";a="90179417"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 23:24:42 -0700
-X-CSE-ConnectionGUID: COFkYOwiRDeMNnPUy81RQg==
-X-CSE-MsgGUID: WbO2gSoCTg+tnth5R6yU4Q==
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO 6eda058d650d) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 03 Aug 2026 23:24:39 -0700
-Received: from kbuild by 6eda058d650d with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1wr8Zp-0000000097p-0Ov6;
-	Tue, 04 Aug 2026 06:24:37 +0000
-Date: Tue, 04 Aug 2026 14:24:23 +0800
-From: kernel test robot <lkp@intel.com>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Linux Memory Management List <linux-mm@kvack.org>,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
- linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
- Mark Brown <broonie@kernel.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 9a4cdc958dd79fc6c3b20b51a10debec6ca09fec
-Message-ID: <202608041404.bOHh2XuT-lkp@intel.com>
-User-Agent: s-nail v14.9.25
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bYIYGpvS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DE91F00A3A;
+	Tue,  4 Aug 2026 06:43:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785825829;
+	bh=OQhwquqdctjZ1UHfZD2UDugfhU37PYH8dyJNWWrI5/4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=bYIYGpvSstYe1hvCRHYHOAjfLF8chI638oZO82gQdzx0vjdEWbGCeysginQRzE/hh
+	 qwnDeefM2nQ3LI7+uYzVgYer/WcUEClIBXiv60mcWgzxRo1D6LZtnHwLv6Za/Z1d9Q
+	 1LX+nBEksm0pXd/rYMqRy7gB+AS/CgantxY//GQXm/RqGdtPGs1Avt/RNlFAqUWpPG
+	 55fhN+DYdIWh9mi919lsGfAt/Hea6yodjZcW6NttZGhgZGD/FWzM5YCGLaWoTL2Az9
+	 3eVoALIfFzlqXM43IhgD8+O8VJ5nsfh6s1uKO2QMhvRN8sm8anRu6bVs7mwNmh3GoO
+	 XYkisHK7ASf3A==
+Date: Tue, 4 Aug 2026 08:43:45 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: jonathan.cameron@oss.qualcomm.com, krzk+dt@kernel.org, robh@kernel.org, 
+	conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	maxwell@maxwelld.cc, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, marcelo.schmitt1@gmail.com, 455.rodrigo.alencar@gmail.com
+Subject: Re: [PATCH v6 2/4] dt-bindings: iio: flow: add Sensirion SLF3S
+ liquid flow sensor
+Message-ID: <20260804-dashing-walrus-of-sunshine-ee0a4a@quoll>
+References: <20260728214943.29820-1-wafgo01@gmail.com>
+ <20260728214943.29820-3-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260728214943.29820-3-wafgo01@gmail.com>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 9a4cdc958dd79fc6c3b20b51a10debec6ca09fec  Add linux-next specific files for 20260803
+On Tue, Jul 28, 2026 at 11:49:41PM +0200, Wadim Mueller wrote:
+> Document the bindings for the Sensirion SLF3S family of digital
+> liquid-flow sensors on I2C.  The family currently covers the
+> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
+> 
+> All variants share the same register map and differ only in the flow
+> scale factor and the calibrated measurement range, which the driver
+> reads back from the product-information register.  Since that lookup
+> is needed in any case, a fallback compatible would buy nothing, so
+> each variant gets its own compatible without a fallback.  A future
+> drop-in compatible part can then claim one of these compatibles and
+> work on kernels that do not know its product ID yet.
+> 
+> The active calibration medium (water / IPA) is runtime-switchable
+> via the in_volumeflow_medium sysfs attribute and therefore not a
+> DT property.
+> 
+> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+> ---
+>  .../bindings/iio/flow/sensirion,slf3s.yaml    | 55 +++++++++++++++++++
+>  MAINTAINERS                                   |  7 +++
+>  2 files changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
 
-Unverified Error/Warning (likely false positive, kindly check if interested):
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-    https://lore.kernel.org/oe-kbuild/202608040800.45L57Mym-lkp@intel.com
+Best regards,
+Krzysztof
 
-    drivers/iio/magnetometer/qmc6308.c:402:7: error: call to '__compiletime_assert_472' declared with 'error' attribute: FIELD_PREP: value too large for the field
-    drivers/net/ethernet/airoha/airoha_eth.c:3470:25: sparse: sparse: division by zero
-
-Error/Warning ids grouped by kconfigs:
-
-recent_errors
-|-- arm-randconfig-r121-20260803
-|   `-- drivers-net-ethernet-airoha-airoha_eth.c:sparse:sparse:division-by-zero
-`-- um-randconfig-002-20260803
-    `-- drivers-iio-magnetometer-qmc6308.c:error:call-to-__compiletime_assert_NNN-declared-with-error-attribute:FIELD_PREP:value-too-large-for-the-field
-
-elapsed time: 726m
-
-configs tested: 100
-configs skipped: 1
-
-tested configs:
-alpha                            allnoconfig    gcc-16.1.0
-alpha                           allyesconfig    gcc-16.1.0
-alpha                              defconfig    gcc-16.1.0
-arc                             allmodconfig    gcc-16.1.0
-arc                             allyesconfig    gcc-16.1.0
-arc                  randconfig-001-20260804    gcc-15.2.0
-arc                  randconfig-002-20260804    gcc-8.5.0
-arm                  randconfig-001-20260804    gcc-10.5.0
-arm                  randconfig-002-20260804    gcc-15.2.0
-arm                  randconfig-003-20260804    clang-17
-arm                  randconfig-004-20260804    gcc-8.5.0
-arm64                randconfig-001-20260804    clang-24
-arm64                randconfig-002-20260804    gcc-9.5.0
-arm64                randconfig-003-20260804    gcc-11.5.0
-arm64                randconfig-004-20260804    gcc-9.5.0
-csky                            allmodconfig    gcc-16.1.0
-csky                 randconfig-001-20260804    gcc-9.5.0
-csky                 randconfig-002-20260804    gcc-11.5.0
-hexagon              randconfig-001-20260804    clang-24
-hexagon              randconfig-002-20260804    clang-24
-i386                            allmodconfig    gcc-14
-i386                buildonly-randconfig-001    gcc-14
-i386       buildonly-randconfig-001-20260804    clang-22
-i386       buildonly-randconfig-002-20260804    clang-22
-i386       buildonly-randconfig-003-20260804    clang-22
-i386       buildonly-randconfig-004-20260804    gcc-12
-i386       buildonly-randconfig-005-20260804    clang-22
-i386       buildonly-randconfig-006-20260804    gcc-14
-i386                 randconfig-001-20260804    gcc-14
-i386                 randconfig-002-20260804    gcc-14
-i386                 randconfig-003-20260804    gcc-14
-i386                 randconfig-004-20260804    gcc-14
-i386                 randconfig-005-20260804    gcc-14
-i386                 randconfig-006-20260804    clang-22
-i386                 randconfig-007-20260804    gcc-14
-i386                 randconfig-011-20260804    clang-22
-i386                 randconfig-012-20260804    gcc-14
-i386                 randconfig-013-20260804    clang-22
-i386                 randconfig-014-20260804    gcc-14
-i386                 randconfig-015-20260804    clang-22
-i386                 randconfig-016-20260804    gcc-13
-i386                 randconfig-017-20260804    clang-22
-loongarch                          defconfig    clang-24
-loongarch            randconfig-001-20260804    clang-24
-loongarch            randconfig-002-20260804    gcc-16.1.0
-nios2                           allmodconfig    gcc-11.5.0
-nios2                            allnoconfig    gcc-11.5.0
-nios2                randconfig-001-20260804    gcc-8.5.0
-nios2                randconfig-002-20260804    gcc-11.5.0
-parisc                          allmodconfig    gcc-16.1.0
-parisc                          allyesconfig    gcc-16.1.0
-parisc                             defconfig    gcc-16.1.0
-parisc               randconfig-001-20260804    gcc-8.5.0
-parisc               randconfig-002-20260804    gcc-8.5.0
-powerpc                      eiger_defconfig    clang-24
-powerpc              randconfig-001-20260804    clang-24
-powerpc              randconfig-002-20260804    gcc-11.5.0
-powerpc64            randconfig-001-20260804    gcc-8.5.0
-powerpc64            randconfig-002-20260804    gcc-8.5.0
-riscv                randconfig-002-20260804    gcc-13.4.0
-s390                 randconfig-001-20260804    clang-21
-s390                 randconfig-002-20260804    clang-18
-sh                                 defconfig    gcc-16.1.0
-sh                   randconfig-001-20260804    gcc-16.1.0
-sh                   randconfig-002-20260804    gcc-16.1.0
-sparc                randconfig-001-20260804    gcc-16.1.0
-sparc                randconfig-002-20260804    gcc-16.1.0
-sparc64              randconfig-001-20260804    clang-24
-sparc64              randconfig-002-20260804    clang-20
-um                   randconfig-001-20260804    gcc-14
-um                   randconfig-002-20260804    gcc-14
-x86_64              buildonly-randconfig-001    gcc-12
-x86_64     buildonly-randconfig-001-20260804    gcc-14
-x86_64     buildonly-randconfig-002-20260804    clang-22
-x86_64     buildonly-randconfig-003-20260804    gcc-14
-x86_64     buildonly-randconfig-004-20260804    gcc-14
-x86_64     buildonly-randconfig-005-20260804    clang-22
-x86_64     buildonly-randconfig-006-20260804    clang-22
-x86_64                                 kexec    clang-22
-x86_64               randconfig-001-20260804    gcc-14
-x86_64               randconfig-002-20260804    gcc-13
-x86_64               randconfig-003-20260804    clang-22
-x86_64               randconfig-004-20260804    clang-22
-x86_64               randconfig-005-20260804    gcc-14
-x86_64               randconfig-006-20260804    clang-22
-x86_64               randconfig-011-20260804    clang-22
-x86_64               randconfig-012-20260804    gcc-14
-x86_64               randconfig-013-20260804    clang-22
-x86_64               randconfig-014-20260804    clang-22
-x86_64               randconfig-015-20260804    clang-22
-x86_64               randconfig-016-20260804    clang-22
-x86_64               randconfig-071-20260804    gcc-14
-x86_64               randconfig-072-20260804    gcc-14
-x86_64               randconfig-073-20260804    gcc-14
-x86_64               randconfig-074-20260804    gcc-12
-x86_64               randconfig-075-20260804    gcc-14
-x86_64               randconfig-076-20260804    clang-22
-x86_64                          rhel-9.4-bpf    gcc-14
-xtensa               randconfig-001-20260804    gcc-8.5.0
-xtensa               randconfig-002-20260804    gcc-14.3.0
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
