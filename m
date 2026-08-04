@@ -1,36 +1,36 @@
-Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BF2C3DDB0A
-	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 14:26:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7ACD3E7BCC
+	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 14:35:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785853573; cv=none; b=nYo21pdYFIcIqKe7pt5BHYATreh3K0+UzG+8PyJGoTNSe/UMMJbFQOZrZYrSv6DURQILjYjes7x5ASDUxyCEEjj8PyGNObp0FqyioQsMTUmjgqqO53Hr1CBefF6qyD0B0Kjs4N0zyv1/8j6gjtKL4T+9u8+xtyWfg+1ZWhe+gSI=
+	t=1785854148; cv=none; b=gYg7+eHPxnDHbFFjzmRTKDaZu/QVX+GY8zsqQS5/DZAt6kbLm4T3IhnyTpSqJHCf+cOc/DRrpaSkU3C/1CBrWvprsyIjfHXG+MR1qMBW/nJNz2LpiHttEa42GFzlloCPQ4t5SfzHsjeIdbzVD+7idfwStpCWpGzMKFrGgAcQ1Os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785853573; c=relaxed/simple;
-	bh=67XLaFo/5/VoGNHxtmTccdA6ofDmzGdrHAJ1QHQ03kA=;
+	s=arc-20240116; t=1785854148; c=relaxed/simple;
+	bh=klPzKzrG3VbkJnJUHINxPqEMDHhiQvV/o/b3ZahuIrM=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=aLsnIZupZx2yG2YEpEeVgNjTH1jcZdoMVG63j9JfevcKNN2sk8kJrCIM3sQ/ZvkuMYWwa/5AoBmsFxFVAP2XxpbF0TWDpJR7NzqOzabLhllHp2Ze/KfZ1s0HoIVMlUBlq26I99sfT5KdXaTCx64p8i8qDX+q9TDDgGsSniGYauI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=UGzLkZBI; arc=none smtp.client-ip=109.224.244.108
+	 MIME-Version:Content-Type; b=W7cONFfQuR0+/2foGBG9F1ZjlPfc7UuT8M7bTDTjP+pAChgL3bE88h3BsglPw80RB9oOH0K+6Haez2c5JHEE/jrSvTk9qZVSBpVpvolmdhXD0FEkR3cxkU3zbOIntBIyK3dkzpWCKR52if1BOLypPPDmeDYiO/HMizX27qifY1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Kl01eEYG; arc=none smtp.client-ip=79.135.106.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="UGzLkZBI"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Kl01eEYG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1785853553; x=1786112753;
-	bh=Ba/RjtYsmvz37DHViL1O7QBRUqwko+fiAx2FOcnBgvw=;
+	s=protonmail3; t=1785854133; x=1786113333;
+	bh=89HwBQw+GSLg6utOGg8Ydnn1rVuwDCSYF9R+2PaebFM=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=UGzLkZBIbVd9VQyWOPziZ9d7/foF6XckE/dH89jeIjRMAARPmYNp0IQBoZ93dzMLu
-	 0DFRXsXVFfx8sSrqXhzjxFF3ws//yUCy0PsOOOikU4lqHab0knifHmUTc/Imf+6uX0
-	 Wzc5HXgZO92xNL1fCA3i4xc1EeCLI9Mf8Lya1smOJw28IDjw8NQJ6tR38ZDsxLu1Jz
-	 5ChqebTtepGzVBetECvfTTBF3NN/iUr2LaG6PaaNtCtQ18nTVfWJAXqjD1wWYPjg8E
-	 fvoM04JEGy2kQAyFD7G3ZOcmdAz5c3HY2df3lRnZP3viFKvHUE8fm8GxxJhpPVr+Op
-	 QWi6G46vTA+Nw==
-X-Pm-Submission-Id: 4hDwnW3cMyz2Scpm
+	b=Kl01eEYG7Cg8mqEfsQyBekxDBv1/bQTCWwP7yaM1uaXnv4JPRVoT6q+wFhy22trQH
+	 FPXPQePyxMz6sPHjaEQ404mtHUzdN2GD2XYKdjGq0iq3ezUS8nn+tLr3xqxNA22gK9
+	 MJPKzGmmhaDVOlKnZ9YrEQixF6Pcl3Cm7eCKIK9YvNSStw6tt50kQ9fJoGSxr7axq7
+	 S7tJDiqRuDC5YtP1BMHqcp6dJSeCz/pDMdeOpzIOf3v9L3wlxP37JTrP7hhBU3lKHS
+	 7jqpUDrDVFq4m8qw1xBACIwt8OMJMBlkUh8n+gokNYQhyuFCvW4zW2NtPklG2b8C/k
+	 ReFTw+hD27jOw==
+X-Pm-Submission-Id: 4hDx0c2CrRz2Scps
 From: Esben Haabendal <esben@geanix.com>
-To: "Krzysztof Kozlowski" <krzk@kernel.org>
-Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
+To: "Jonathan Cameron" <jonathan.cameron@oss.qualcomm.com>
+Cc: "Krzysztof Kozlowski" <krzk@kernel.org>,  "David Lechner"
  <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
   "Andy Shevchenko"
  <andy@kernel.org>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
@@ -38,17 +38,18 @@ Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
   "Nikita Travkin" <nikita@trvn.ru>,  "Maslov Dmitry"
  <maslovdmitry@seeed.cc>,  <linux-iio@vger.kernel.org>,
   <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/4] dt-bindings: iio: light: ltr501: Add missing
- ltr303 compatible
-In-Reply-To: <dabf891b-8728-4fcf-987e-969ce623616b@kernel.org> (Krzysztof
-	Kozlowski's message of "Thu, 16 Jul 2026 10:06:30 +0200")
+Subject: Re: [PATCH v2 2/4] dt-bindings: iio: light: ltr501: Add ltr329
+ compatible
+In-Reply-To: <20260719023830.5f99d335@jic23-huawei> (Jonathan Cameron's
+	message of "Sun, 19 Jul 2026 02:38:41 +0100")
 References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
-	<20260715-liteon-ltr329-v2-1-d18af55edab5@geanix.com>
-	<20260716-adaptable-thankful-serval-ecb3cd@quoll>
-	<zy7szTf7RKcKwWr42yNSRjQXdyZGTq0xo-sJc64u12fs-40hP2VBxckGWy_OoWqsiH1oztnknlEyqgxRYiakIw==@protonmail.internalid>
-	<dabf891b-8728-4fcf-987e-969ce623616b@kernel.org>
-Date: Tue, 04 Aug 2026 16:25:50 +0200
-Message-ID: <87pkzyaro1.fsf@geanix.com>
+	<20260715-liteon-ltr329-v2-2-d18af55edab5@geanix.com>
+	<20260716-adept-kraken-of-calibration-cddebc@quoll>
+	<pnxaJvFlsLehHV30SMlmWECZnbQ6Rqb2cvWWlVbjYKsg9v0i_Wyu28e7U_OYfV1XooewL13ZLUMBjODBTYnBuiI0t9m-bxt8AdKsz9oizok=@geanix.com>
+	<9Ekqt5M10zvl-oDffITzNkebHtnMwG2Z_kIEqGL-cokgqKRyNyFxqCB5wZZelUe9dEO9EWhjqt59zBsqU7jMbg==@protonmail.internalid>
+	<20260719023830.5f99d335@jic23-huawei>
+Date: Tue, 04 Aug 2026 16:35:27 +0200
+Message-ID: <87ldamar80.fsf@geanix.com>
 User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -58,24 +59,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-"Krzysztof Kozlowski" <krzk@kernel.org> writes:
+"Jonathan Cameron" <jonathan.cameron@oss.qualcomm.com> writes:
 
-> On 16/07/2026 10:05, Krzysztof Kozlowski wrote:
->> On Wed, Jul 15, 2026 at 02:27:23PM +0200, Esben Haabendal wrote:
->>> When support for ltr303 was back in 2021, the bindings documentation was
->>> not updated accordingly.
->>>
->>> Fixes: 7d71d289e1ba ("iio: light: ltr501: Added ltr303 driver support")
->>> Signed-off-by: Esben Haabendal <esben@geanix.com>
->>> ---
->>>  Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
->>>  1 file changed, 1 insertion(+)
->>
->> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> On Thu, 16 Jul 2026 16:14:55 +0000
+> Esben Haabendal <esben@geanix.com> wrote:
 >
-> Except that compatible goes before liteon,ltr501, not to the end of lists.
+>> On Thursday, 16 July 2026 at 10:07, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>> > On Wed, Jul 15, 2026 at 02:27:24PM +0200, Esben Haabendal wrote:
+>> > > LTR-329ALS-01 is an ambient light sensor similar to LTR-303ALS-01, but
+>> > > without interrupt support.
+>> > >
+>> > > Signed-off-by: Esben Haabendal <esben@geanix.com>
+>> > > ---
+>> > >  Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
+>> > >  1 file changed, 1 insertion(+)
+>> > >
+>> > > diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+>> > > index ab9bb68dd736..76e81eba7ea4 100644
+>> > > --- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+>> > > +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+>> > > @@ -19,6 +19,7 @@ properties:
+>> > >        - liteon,ltr559
+>> > >        - liteon,ltr301
+>> > >        - liteon,ltr303
+>> > > +      - liteon,ltr329
+>> >
+>> > Do not grow lists at the end, they are ordered alphanumerically to avoid
+>> > conflicts.
+>>
+>> Placing the new entry at the top would produce a rather strangely order list:
+>>
+>> ltr329
+>> ltr501
+>> ltr559
+>> ltr301
+>> ltr329
+>>
+>> Should I add a patch sorting the entire list to avoid this kind of
+>> confusion in the future?
+>
+> Please do a precursor patch for that  Also do it for the id tables in the driver.
 
-I will add a commit that fixes the order first. Looks a bit strange to
-place this new entry before liteon,ltr301.
+Ok. Sorting ltr501_id and ltr501_of_match should be trivial.
+But what about ltr501_chip_info_tbl (and the anonymous enum used to
+index it, should they be sorted as well? And ltr301 being 0 instead of
+ltr501, the original device the driver was written for?
 
 /Esben
