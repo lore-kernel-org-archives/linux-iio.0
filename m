@@ -1,111 +1,199 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F0E456E09
-	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 10:56:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2BD430F815;
+	Tue,  4 Aug 2026 11:33:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785840996; cv=none; b=Cp4p2QYoM/nUV0YK7GP8pyAIc19gv6gEvvlc0mm1xjksVY0a3ojYbO6PuM/79kln1evXXsTDQAsh476JaBdtc7AP8xun4OOX01zMJJOANgxCKOJaTcyEGu7q5vOfpPdygk658YldtHCISZgfMy5A6tzhZbQWdc24FR6E9shh7UE=
+	t=1785843241; cv=none; b=Dxg1iVKcskx0aRSEjkXBdL/NgrXwAiymNSw7grEtYVavJdiB4IANTNr2HjRIzNF1OFIH33JsOaTrtywkNiV++KH737GINTArb3TuXpEV++EtZmDjsh6YxK+t24aZO3QV8IrKg9HSBwcOVBuA+45iBfDbMb+4+eoO3O9UJc6x6NM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785840996; c=relaxed/simple;
-	bh=tfG0Z0jIMdFAG9oiaWmU0MahhS2UILJuEyqDEjU+XCs=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XpjwznA5G5TMV8/k+Cm48uoL1l9BNtIxYP5c35HrdIWUlYVs+OrLN7lZlOJUJV6FfXS2KMyxHJUVfa35KxWUTYko+MEurzeavnmTg36DJgN4nEwfW/TgyRj+zREzHipK00zRf4uKkobhOvm8RsNUrHETOL1WItmtxSfeiNLHcnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sVfumHet; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785843241; c=relaxed/simple;
+	bh=WhoNM5O54DFe0bcpJqMEJUCNtmQOlrahFXQNiszOq7k=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=NgYSvjNUgya6ZFLKWqDsJdIc55HYR/3xMuoBv3A6Kef+i/TeCZZx2pNrXTlfmAkweuJMEIeNuN3oeouhILSLszYJnhMmr0FBP9Ok0T1UG1hTprRxsBiEwpPviUAjZGFAi7oIzXtEV6xeqj3MrVMKb+yOxamRTKJPYH3pOSI13X8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=HNzZU534; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sVfumHet"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-c169ae1cb26so136371566b.1
-        for <linux-iio@vger.kernel.org>; Tue, 04 Aug 2026 03:56:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785840989; x=1786445789; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=nk3LyOamE4sB1BfHbMoeJeRq5q4+Y+ZWeLxrJz2kYbU=;
-        b=sVfumHetN7651IkP+3C9kpo/k/exwbhkjEiqofVtSngoRgVzkP6xVz8P2zQcKjeuFz
-         zp+QUrR+htWI09pd5pt2v2iIs4lXNAlLgZO0g8b9MApJXSQM/4yPu2wy9Juw5yZT0Szj
-         w6KHPGcLw/fEu/F4ebMT6myDC8HHZHASRVFWnxWNoZNRJWEf0LbxNB578YNN/GZMMGw2
-         +BWaNSg/gBGEWf3VD4xfhSAwqivvJpVcNRFlbSYboChOLg2YVsT7QdyCWSqXTxzGpin2
-         8m6gAbzIK3TxdP/m4dQc4C2Deo3r+uhBXqRIIXgaE1O2UOWbpu6GSzvlqhXTU30kVGJX
-         rG4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785840989; x=1786445789;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=nk3LyOamE4sB1BfHbMoeJeRq5q4+Y+ZWeLxrJz2kYbU=;
-        b=CJEGmJHaegc4/WA68xAzt9DYHOgOCBVNCXLc8IjXUggNmfmIgw9stm/ZTXvrDylNHf
-         yxwFnjBeQ0iIpek/oxqcRS9Wzg/vp0dipUj/du37RK+lqt01gVQjdbNVWpYeP8DnkxBH
-         o5daqWDCZEpuMXFy0KBwpIyUkKL7kUqPj9mtMMOC11kkWJJWUPZRAmTu4yWnLc1lQ53r
-         yZJ/Jc54vyHCDzVcVRbpKThwyn1tCi9aL/s00gwxLNT4AClxD7jQf01ThL0utWKsLNrR
-         Dmed0MUen0RVTOeo75YQJIeoD2WlpMVf9JXMBA0MeirM08Et3V2Q8OowecsCBbz+FpL8
-         8rWw==
-X-Gm-Message-State: AOJu0Yy3FTf438Z7yJAv/vHeRxsAfQrKgRgXBY+EmOcKeJHKjwJU/FX1
-	qkvIwkEuY5t0Vi1h6CODXeIjL15ZdhnlDh6Iuiw3/lzrkSv9HVe6SOM/Qzu/nHcv
-X-Gm-Gg: AR+sD120BAG3F6NVxNutn2SPfJbiK3Z++SXmrbFrU+GkUfNNVskiz0Wg0FZDQjbY9gO
-	2Tw1SYpYU+w5TLj1AjX8zkgvB+qg2iZ43htuaQL23BLB1ItVPI3xdhwTSdAfU5K1uC9MOzsN8nh
-	r8wANY2fS8WDt8utJqOpUV+33a3uenAgR7qAGA0e3ynSzkuIlZws0BR3O+9L8xoCbUlo4MM/lmz
-	y2cUHsTkraSaE3UoQoRODmgnzrw7EEdoRmXk80wq+Yn5i1ghMNAarhprXTf3kkQbvwzlc8r9Ipz
-	mHP6rCE8R5PaOlB8ViICShgHgo6N52TRWLvkz+vF/RtSoLiPq2LDsbwFFnkuVD9G0zgMqtTQovr
-	IIMKcUV8R7wnX5/bnXgdIvxbho4WT5enfvsrUPSlavKFiJ2yYlrAEVkC4eyKP7BRINhMiPp3cU4
-	HKkZFHaNEwoAlZDgDFBZ52kpCBjXnR97YfELXTpXP1QZHem/ch3jMEvhkXHZgvgNL6ZYU1Tdf5k
-	aZgbmFWgY9mg6iG/XEMkMrYrcUB/iwc+ZSuzIwWxDx5v5tcM7oXFVufGrTT9J3S
-X-Received: by 2002:a17:907:3e07:b0:c12:3cbf:9f6d with SMTP id a640c23a62f3a-c20244fb9a5mr341232766b.1.1785840988759;
-        Tue, 04 Aug 2026 03:56:28 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1fd3c9e5adsm657578066b.23.2026.08.04.03.56.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2026 03:56:28 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Date: Tue, 4 Aug 2026 11:56:26 +0100
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Conor Dooley <conor.dooley@microchip.com>, 
-	Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v10 00/17] AD9910 Direct Digital Synthesizer
-Message-ID: <q2t53ly3vl73kmu3ehvntnj75pxl2smntctcuxzjuaguihqwju@adzts2ezpg5x>
-References: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
- <20260802010959.25f9f4df@jic23-huawei>
- <20260802015846.2be354ec@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="HNzZU534"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1785843239; x=1817379239;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WhoNM5O54DFe0bcpJqMEJUCNtmQOlrahFXQNiszOq7k=;
+  b=HNzZU5342JJMahqw+zk+G50zZuLtLTzKEI1CFkAzghjPhqmKpgAg0lP6
+   ypX8xFjfl78CCF2S6zZksgE/C3qu7bEmmMDHFapKTusmX+ay2a2Zspt3y
+   AtGX66jBk8QBdZtoo67TImbibvn7rsaUHJgeBgTOB5a8LvUMqpYYD1fvh
+   UZFogAiAOXSzjz1+Ch8jjL9oFujN3eMZaaHU5Z+/jSq06JsXAjRTvFw8Q
+   ZNhx+zRFWhbe+IARU8zUeXFTlBIsqJMbyFjANwf+8g59Ts4qowj7+LYwZ
+   cW+LWjMrkDlI76cOnjq6vPEhFbd66y6S2yKiS5dpwde2g7llpcJ3Lu6Qa
+   A==;
+X-CSE-ConnectionGUID: 9OftkTBlS/C8UOwtVzj6mA==
+X-CSE-MsgGUID: w1jY0Ep8Sqy8R7p66x0HmQ==
+X-IronPort-AV: E=Sophos;i="6.25,204,1779174000"; 
+   d="scan'208";a="228765730"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2026 04:33:53 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
+ chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.45; Tue, 4 Aug 2026 04:33:51 -0700
+Received: from che-ll-i67070.microchip.com (10.10.85.11) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.58 via Frontend Transport; Tue, 4 Aug 2026 04:33:41 -0700
+From: Varshini Rajendran <varshini.rajendran@microchip.com>
+To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
+	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
+	<srini@kernel.org>, <marcelo.schmitt@analog.com>, <radu.sabau@analog.com>,
+	<joshua.crofts1@gmail.com>, <jorge.marques@analog.com>,
+	<Jonathan.Santos@analog.com>, <jishnu.prakash@oss.qualcomm.com>,
+	<antoniu.miclaus@analog.com>, <duje@dujemihanovic.xyz>,
+	<mazziesaccount@gmail.com>, <varshini.rajendran@microchip.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 00/17] Add thermal management support for sama7d65
+Date: Tue, 4 Aug 2026 17:03:21 +0530
+Message-ID: <20260804113338.261782-1-varshini.rajendran@microchip.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260802015846.2be354ec@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On 02/08/26 01:58, Jonathan Cameron wrote:
-> On Sun, 2 Aug 2026 01:09:59 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Wed, 29 Jul 2026 09:25:27 +0100
-> > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> > 
-> > > This patch series adds support for the Analog Devices AD9910 DDS.
-> > >   
-> > Series applied with that small Kconfig help tweak and a bit of fuzz
-> > around the new channel type due to the flow sensor I merged earlier today.
+Thermal management system of sama7d65 includes:
 
-Thanks! Let me know if you need a v11, I suppose We are going to wait on the
-mul_u64_add_u64_div_u64() fix anyways.
+- Temperature sensor as a part of ADC channel
+- Temperature calibration data retrieved from the OTP memory for
+  improved accuracy of the readings
+- DVFS implementation
+- Thermal system with DVFS as cooling cell.
 
-> And dropped again :( See patch 11 reply.
+This patch series adds support for the following:
+
+- Tag-based packet lookup for the NVMEM OTPC driver while preserving
+  backward compatibility with existing ID-based access
+- Temperature calibration layout handling in the ADC driver to support
+  different SoC-specific calibration data formats
+- ADC driver adaptation for sama7d65
+- DT nodes for OTP, ADC, temperature sensor, and thermal zones for
+  sama7d65
+
+Changes in v5:
+	- Placed the DEFINE_FREE helper in the header file and added it as a
+	  new commit
+	- Added IS_ERR_OR_NULL(_T) condition to the DEFINE_FREE of nvmem_cell_put
+	- Reorder signing tags alphabetically in Patch 1
+	- Kept the changes minimal by retaining ret variable
+	- Collected the Rb tags
+
+Link to v4: https://lore.kernel.org/lkml/20260727122633.117435-1-varshini.rajendran@microchip.com/
+
+Changes in v4:
+	- Reworked cleanup.h usage: define and assign __free() variables at point
+	  of use after early returns, add DEFINE_FREE(nvmem_cell_put, ...) for
+	  nvmem_cell cleanup
+	- Split patch 3/13 into two: refactoring (layout struct) and tag validation
+	- Used struct u32_fract for p1 scaling factors
+	- Return -ENODEV instead of -EINVAL when layout is missing
+	- New precursor patch to remove unnecessary casts in of_device_id
+	- Removed trailing comma from single-line initializer array
+	- Moved emulation mode validation into a separate patch
+	- Added FourCC validation for packet tags; invalid tags fall back to ID-only
+	  access
+	- Mentioned FourCC in commit message and comments
+	- Used intermediate variable for off % 4
+	- Rename tmp → mr_val, val→ tag
+	- Addressed style issues: Removed comment blocks, put functions in
+	  one line
+	- Remove blank line after compatible in regulator node
+	- Reorder properties.
+
+Link to v3: https://lore.kernel.org/lkml/20260630093603.38663-1-varshini.rajendran@microchip.com/
+
+Changes in v3:
+    - Updated the commit message with reasoning for a new compatible
+      without a fallback (sama7d65-adc)
+    - Split patch 2/12 into two patches: a patch with cleanup.h changes only
+      and the rework patch
+    - Added comment explaining the TAG ACST
+    - Fixed the holes identified in the at91_adc_platform struct by
+      pahole tool
+    - Dropped labels in the dt document example
+    - Added temp variable in mchp_otpc_resolve_packet() to avoid % and /
+      operations in the same instruction (avoiding compiler optimization)
+    - Added the SoC details in the ADC driver Kconfig help section
+    - Maintained reverse xmas ordering in declarations
+    - Fixed node ordering (alphabetically) in the board dts file
+
+Link to v2: https://lore.kernel.org/lkml/20260623105944.128840-1-varshini.rajendran@microchip.com/
+
+Changes in v2:
+    - Preserved backward compatibility with ID-based packet lookup to
+      avoid breaking existing users
+    - Removed sama7g5 DTS changes (not needed with backward compatible
+      driver - will be sent later to update to the new access method)
+    - Preserved the packet data structure returned not to break the
+      consumers
+    - Reworked ADC driver to use a calibration layout structure instead of
+      hardcoded indexes, for scalability
+    - Fixed kernel-doc Return section
+    - Removed stray blank line in mchp_otpc_read()
+    - Removed unnecessary UL suffix in writel_relaxed()
+    - Dropped unused packet types
+    - Fixed stray spaces before exclamation marks in error messages
+    - Added ASCII representation to TAG macro definition
+    - Removed odd MAX enum with trailing comma and refactored
+    - Moved DTS patches to the end of series
+    - Used cleanup.h helpers for NVMEM data buffer handling in ADC driver
+    - Combined multiple v1 patches into logical units
+    - Used correct subject prefixes for dt-bindings patches
+    - Used fixed-layout NVMEM syntax for sama7d65 DTS and binding
+      instead of deprecated syntax
+    - Added cpu-supply linkage for proper DVFS voltage scaling
+    - Updated stale stride=4 comment in dt-bindings header
+
+Link to v1: https://lore.kernel.org/linux-arm-kernel/20250804100219.63325-1-varshini.rajendran@microchip.com/
+
+Varshini Rajendran (17):
+  dt-bindings: iio: adc: at91-sama5d2: document sama7d65
+  nvmem: add DEFINE_FREE for nvmem_cell_put cleanup
+  iio: adc: at91-sama5d2_adc: use cleanup.h for NVMEM buffer
+  iio: adc: at91-sama5d2_adc: rework temp calibration layout handling
+  iio: adc: at91-sama5d2_adc: add condition to validate calibration data
+  iio: adc: at91-sama5d2_adc: remove unnecessary casts in of_device_id
+  iio: adc: at91-sama5d2_adc: adapt the driver for sama7d65
+  dt-bindings: nvmem: microchip,sama7g5-otpc: add sama7d65 and dt node
+    example
+  nvmem: microchip-otpc: nvmem: microchip-otpc: add tag-based packet
+    lookup
+  nvmem: microchip-otpc: nvmem: add emulation mode and OTP access
+    validation
+  ARM: dts: microchip: sama7d65: add cpu opps
+  ARM: dts: microchip: sama7d65: Add ADC node
+  ARM: dts: microchip: sama7d65_curiosity: Enable ADC, DVFS
+  ARM: dts: microchip: sama7d65: add otpc node
+  ARM: dts: microchip: sama7d65: add cells for temperature calibration
+  ARM: dts: microchip: sama7d65: add temperature sensor
+  ARM: dts: microchip: sama7d65: add thermal zones node
+
+ .../bindings/iio/adc/atmel,sama5d2-adc.yaml   |   1 +
+ .../nvmem/microchip,sama7g5-otpc.yaml         |  28 +++-
+ .../dts/microchip/at91-sama7d65_curiosity.dts |  27 ++++
+ arch/arm/boot/dts/microchip/sama7d65.dtsi     | 131 +++++++++++++++++
+ drivers/iio/adc/Kconfig                       |   2 +-
+ drivers/iio/adc/at91-sama5d2_adc.c            | 124 +++++++++++-----
+ drivers/nvmem/microchip-otpc.c                | 133 ++++++++++++++++--
+ .../nvmem/microchip,sama7g5-otpc.h            |   4 +-
+ include/linux/nvmem-consumer.h                |   4 +
+ 9 files changed, 404 insertions(+), 50 deletions(-)
 
 -- 
-Kind regards,
+2.34.1
 
-Rodrigo Alencar
