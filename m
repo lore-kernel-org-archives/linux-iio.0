@@ -1,164 +1,119 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1674748CD70
-	for <linux-iio@vger.kernel.org>; Tue,  4 Aug 2026 17:06:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 591A847A0B7;
+	Tue,  4 Aug 2026 17:30:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785863191; cv=none; b=bjrzmU+3Ghvhzh4LmZzuHhgfOiJVc/8J+yyGm8bvJXWAzE1uOBKWNbI8S8ZHAp/D1nGGlz95sxrxvTLF1VoiHcFCccqm83/yVD4g7UtPKHb4r3YqanFyP8TkgY22F9qMBIUGkMMeoCbHI1JlDjEhW5swIdRlc/6MKWN1f8ATEMo=
+	t=1785864644; cv=none; b=slN4MPHpy3TcXUgTRSZibjxIVfuypOvgN3Hb8idOXZZ7ZjambHSVaMuXcvarcwH4OT38Wm0RVxtjAZZbMq+8ZGeke07LxxSeKGnpMTj6CqWjBsmhSXAt9MQbwB9hNVEf9mDB9YEHqyw14AAQkauuL3UTvR2oqJvZGh9MdYXsSjc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785863191; c=relaxed/simple;
-	bh=aaG3fmxJFvgG+2hFmR/kUuEaeX8ZQwfOcPELccRjOzQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=W7k9ZHMaZjhlyN0W3NBDR/fwESCZAgyf1c/mzxgxEGA5efvw1yA7QHxTRYvpmLN2G6bjuggitwmvFPz4GnVsAMMa7wVfB5IuSTAsWTrCtu1wUM7yKyKbMdZAcSnO+UsUDreKB+gZvmPxhIKRCdByV0WRyxj9okPP4VVKI0gHaT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WBbvmu0C; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785864644; c=relaxed/simple;
+	bh=gPN5ohq+ElnkyqoN2bqWqlPIELg6HwK6BJIhnPdujXE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ObblBLQevx9mlWju1kOuOs04kI8hXmRwhEJyD4a3Gi7Wj7OanvH6pTqi8Yt6iKXT/YBFFxGrnLTK8tbZUJMIZNCTpzgGYFVu5QSfHqRTipzyhjBjrPQ+ZuNn/7dACq0lGMrrqICNBSTpuvnE9B3iAkNFU1K31cO5NvuAfXVIKi4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WRCSbCj0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WBbvmu0C"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2cab973140bso1183945ad.3
-        for <linux-iio@vger.kernel.org>; Tue, 04 Aug 2026 10:06:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785863180; x=1786467980; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=/WxyWYexSwoS0Xhfap20Ecck/ANPlEcZKb1zpjgFsT0=;
-        b=WBbvmu0C6DRhghhkcJl+g0iMqEkLHvApWeA3H/ftbbVto+TQem8J3G7UftYCL3eYeL
-         8iCzxIvzeDwrABHO81i7X/62hWSHX3s46ZXwFXD6v+Z7bWS9aRmn4DAR26SpRlaX66zm
-         X5+OG4ab10xgzuxB8uHZnKhvrGBkOOCfzq6igx43XdlBNX2S8JaRGqvYeqGvyeKAwuSc
-         gf2LvDM8RhQMDiZpbN5/9ga93uKwSBUdEgOMEYmwGig7FatoODaAz2QHlhrmFLHSOKio
-         m0lnutkD7HrNtdAdFvEW+5YOlU7U5lIbCuvlBkfXGWVHdGIgPi5aOYOBaQE4NDGgPRS8
-         fWmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785863180; x=1786467980;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=/WxyWYexSwoS0Xhfap20Ecck/ANPlEcZKb1zpjgFsT0=;
-        b=VDDExIw+EM0N0FftdNMeHRr+QSXYyflT6PtxiiDrjY6fEJVQwdqE2xw3kPGKSLGKHt
-         BdRmPA8mudP8S7NteyCQe5RTDIjfmaIXA7zqYgZ/iQffMoCg+SLXcWKzjKDF4TbcZ1jS
-         qDDNvq9Yf+4BMKkVlpVZ4Bu1+Pg3XxAghH+ir2yTLpj7vCMMA7DK7jyM0ADww851RZjU
-         vufAk7cXkdhJjYjz5desK3N5+oKn3HESMqElOye9e6wwmitWgwOexJrsPcSOwS9cf2fN
-         v5mk2vWPwkpaaCAt5gMFY05fbWG0y/xXqnifllVwA0AbZCxewIXamJws4QxGAekubAHQ
-         HRdA==
-X-Forwarded-Encrypted: i=1; AHgh+RoVH2srxd9+9xmIPId2fX/5s6gGExSUQro+DYJfVtHzwIavw4Yjvteoh3Xti+SOGLaltoZy+d09B/4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwIEVM5cNHQ6xP26gDF/ui5AmpKEA/SGrtufE7Koni1cZLJ1VTI
-	cxgqUM8T+WMa655t7bK9QSsJpVgciXJ3Yjxr43/joFRzPYF7Xz3sUhgx
-X-Gm-Gg: AR+sD12rjIi4ve6tw1sjWqlEghfIdc6FbSV0y1k3YzXmaXQp4hFy9AoClQH5vtmPcGR
-	3i+xb6E6eziS1K249DGk/OloQo8GT04/WD6DrTl87ez7FvDkijPIe8pSvjVE8hNQ9qZFWo5GcMm
-	Vqz0mwu2GOTrCWlO5+F2Njoz/GPiTZHv82WFXpZw+CAFuVN0LRev27U2XeZo/DqCsz9+8bFmRIV
-	wnG7wbxIhTLJPupgx7dAm7PrTssXKItARb8nHYFQTwKFRHe0yl2dim1lAY5clIwnYOfMvVx/AN/
-	NCogpJh1gaQWLiKieSvY+sgmKm97REs2zixL7WADlR92gmJrcpoNsWsqSwknhaAEzsSxSLKLmhJ
-	30fTdKWteBpezhY+l3s6R8o+eKQvAxzz6s/sIFek1pftHI1pVDoP5EUxBVuw4O+kGKVUGeqZZy/
-	g5fCD8ULyLeQ3q9HKgTFHIX5grwKS7HZ7oxuaqh2HfDWg4aL4JS+LNcI4YQtLRFJtAgZ0LCLxFR
-	nc4dob1OA==
-X-Received: by 2002:a17:903:2b0d:b0:2ce:faa6:7cbb with SMTP id d9443c01a7336-2d0ca7afcc1mr2775625ad.4.1785863180300;
-        Tue, 04 Aug 2026 10:06:20 -0700 (PDT)
-Received: from ubuntu.. ([2405:201:8026:213e:1461:a94d:d559:948d])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31586162e80sm7230582eec.0.2026.08.04.10.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2026 10:06:19 -0700 (PDT)
-From: mdshahid03@gmail.com
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WRCSbCj0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 484751F000E9;
+	Tue,  4 Aug 2026 17:30:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785864642;
+	bh=FmbMSXBnTdxS8Bf3zgCzs96igb83r/aC/Ca1iL8RCfw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=WRCSbCj030LspXN7pVmNm1HoKGDmFF0RrlKCAmHfFNAnk9XxQI73INtfiNeyUtoX5
+	 vkOJD1PleYPatZTFaxc77hoahjy6Ng03s6UBUIIMZ3M5PpP2DE33lYY6ZRaO19OSvm
+	 bAj7c4iH1JtDTb74aYLX3ttkIJ0eq36nI6yMVrQ6DecZtkIPxuzb1+7taACS2M0iOg
+	 SCovdx8ETvzVT1ltsMG7sMwIbnHYF7c2O4ZMSKk0rP39jpotcZmPEBzorCAIp4r9Ab
+	 lvYc87EJMIkLpgdJHHkQ+t+hDgM8MMCpq4TtHXlq62E+NARerLUz8avBKWOd8XYwHx
+	 pVmsi3MkP2ZCg==
+Date: Tue, 4 Aug 2026 18:30:38 +0100
+From: Conor Dooley <conor@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andy@kernel.org>,
+Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Markus Elfring <Markus.Elfring@web.de>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Mohammad Shahid <mdshahid03@gmail.com>
-Subject: [PATCH v5 3/3] iio: adc: bcm_iproc_adc: Convert probe error handling to dev_err_probe()
-Date: Tue,  4 Aug 2026 22:35:21 +0530
-Message-ID: <20260804170521.196393-4-mdshahid03@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260804170521.196393-1-mdshahid03@gmail.com>
-References: <20260804170521.196393-1-mdshahid03@gmail.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Luca Weiss <luca.weiss@fairphone.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] iio: imu: inv_icm42600: drop the whoami check
+Message-ID: <20260804-scarily-hacker-651df3eafea9@spud>
+References: <20260728184351.75015-1-jorijnvdgraaf@catcrafts.net>
+ <20260728184351.75015-3-jorijnvdgraaf@catcrafts.net>
+ <20260801032310.18f5f16d@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="goaxSQJDDMJ3/Lmf"
+Content-Disposition: inline
+In-Reply-To: <20260801032310.18f5f16d@jic23-huawei>
 
-From: Mohammad Shahid <mdshahid03@gmail.com>
+--goaxSQJDDMJ3/Lmf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Replace open-coded dev_err() followed by return with dev_err_probe()
-for probe failures that immediately return.
+On Sat, Aug 01, 2026 at 03:23:10AM +0100, Jonathan Cameron wrote:
+> On Tue, 28 Jul 2026 20:43:50 +0200
+> Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net> wrote:
+>=20
+> > A WHOAMI value differing from the one the compatible implies aborts
+> > probe with -ENODEV, preventing a register-compatible part described
+> > with a fallback compatible from probing at all.
+> >=20
+> > The devicetree compatible is authoritative for which part is fitted:
+> > drop the check, and with it the now-unused whoami definitions. No
+> > warning replaces it, since probing via a fallback compatible is
+> > legitimate use, not a condition to report. This changes the probe
+> > outcome on mismatch for all parts the driver supports.
+> >=20
+> > Tested via a backport to a Fairphone 6 running a 7.1-based kernel: its
+> > ICM-42630 (WHOAMI 0x0C), described with an icm42631 fallback compatible
+> > and matched as icm42631, probes silently, and accelerometer, gyroscope
+> > and temperature reads work.
+> >=20
+> > Suggested-by: Conor Dooley <conor@kernel.org>
+> > Link: https://lore.kernel.org/all/20260722-creature-volley-0f083b904c1d=
+@spud/
+> > Link: https://lore.kernel.org/all/20260728-extradite-yanking-42d918637f=
+61@spud/
+> > Assisted-by: Claude:claude-fable-5
+> > Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+>=20
+> Hi Jorijn,
+>=20
+> I'm open to other opinions, particularly from those who are using
+> this driver but I think dropping any form of hint that the device isn't
+> the one we expect is too far when previous we just failed to probe.
 
-Leave error paths that jump to cleanup labels unchanged to reduce code
-churn. These paths will be converted separately together with the
-planned devm-managed cleanup using devm_add_action_or_reset().
+FWIW, what I don't want is warning or error level printouts, so
+something informational is tolerable to me.
 
-Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
----
- drivers/iio/adc/bcm_iproc_adc.c | 31 ++++++++++++-------------------
- 1 file changed, 12 insertions(+), 19 deletions(-)
+>=20
+> We have a lot of drivers that issue such a print and my understanding
+> is that has been useful.  If we want to make it non threatening we could
+> phrase it as something like "Device ID XX is not the YY associate with the
+> FW specified device, probably using a valid fallback compatible".  That
+> would still provide the breadcrumb for anyone seeing an unexpected
+> part change on their device vs the DT.
+>=20
 
-diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index 312be7c12e58..9238dc8c8873 100644
---- a/drivers/iio/adc/bcm_iproc_adc.c
-+++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -522,18 +522,14 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
- 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
- 			   "adc-syscon");
--	if (IS_ERR(adc_priv->regmap)) {
--		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
--		ret = PTR_ERR(adc_priv->regmap);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->regmap))
-+		return dev_err_probe(dev, PTR_ERR(adc_priv->regmap),
-+				     "failed to get handle for tsc syscon\n");
- 
- 	adc_priv->adc_clk = devm_clk_get(dev, "tsc_clk");
--	if (IS_ERR(adc_priv->adc_clk)) {
--		dev_err(&pdev->dev, "failed getting clock tsc_clk\n");
--		ret = PTR_ERR(adc_priv->adc_clk);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->adc_clk))
-+		return dev_err_probe(dev, PTR_ERR(adc_priv->adc_clk),
-+				     "failed getting clock tsc_clk\n");
- 
- 	adc_priv->irqno = platform_get_irq(pdev, 0);
- 	if (adc_priv->irqno < 0)
-@@ -541,10 +537,9 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
- 	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
- 				IPROC_ADC_AUXIN_SCAN_ENA);
--	if (ret) {
--		dev_err(&pdev->dev, "failed to write IPROC_REGCTL2 %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "failed to write IPROC_REGCTL2\n");
- 
- 	ret = devm_request_threaded_irq(dev, adc_priv->irqno,
- 				iproc_adc_interrupt_handler,
-@@ -554,11 +549,9 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	ret = clk_prepare_enable(adc_priv->adc_clk);
--	if (ret) {
--		dev_err(&pdev->dev,
--			"clk_prepare_enable failed %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "failed to enable clock\n");
- 
- 	ret = iproc_adc_enable(indio_dev);
- 	if (ret)
--- 
-2.43.0
+--goaxSQJDDMJ3/Lmf
+Content-Type: application/pgp-signature; name=signature.asc
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCanIhugAKCRB4tDGHoIJi
+0piNAQDB1fNsjsOb10VCF5Kh/TFY/ezsqjVEZ7jG3W4l0kxQqgEA9hmIFRBeAGJQ
+d0iLpIRr6XYKYor/cB+OHwRRaYi5CQE=
+=CaxK
+-----END PGP SIGNATURE-----
+
+--goaxSQJDDMJ3/Lmf--
