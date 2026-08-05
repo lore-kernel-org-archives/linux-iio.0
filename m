@@ -1,51 +1,68 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D248D3F9A1C;
-	Wed,  5 Aug 2026 11:03:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4524D453A54;
+	Wed,  5 Aug 2026 12:00:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785927792; cv=none; b=Np+LFY4wmlILsAAyKiL+Q9beiezXCw2aZuP/e7pHTjRI0bIAqayAnamq6EwKXas6T4TcHMZ0xSyQUVV5P9vDWmqs74QPOhlDqDuj7aphCaqiPU36UY661L6wmv5GJCTkdfJO7989+uDusq4eM7HxEsy221kPxQDvJJcz3IsJRmA=
+	t=1785931223; cv=none; b=Twz3WLxElfZedunctiNerL0KndXnxXFUvi8yElHXow3duKg8aQSLCpXqkqIUIjnixtDvRDlifjb3fuAVCEufMjAsf/R7N2fQ6OVpUtFmOAsHKsJrgC9tmsFGjrrphMDI/EOd64h3wgwiDygTCCwTh5fd7/gaUq91oBz88jfgRdE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785927792; c=relaxed/simple;
-	bh=lDENA6J9KMSu46VHtIYqK914IPiNKRvreU1gKOW6LKA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ddg8Ehwnibxbn6JD9A9BrP8eARMnxAgd6juVV2qLcqpM7gWL58fZrwCJy4YnLb2DjN0dr4CzT1xdh1G0fvtThOWA9vQBOE/veoeuqniulnJ8EV/N9fjrDSMjfGx8pLrRH1qERcJ04mlBRq9/C4c9y3bcFiMtzSNN2u/SarYbf+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 3880bd0c90bd11f1aa26b74ffac11d73-20260805
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.12,REQID:ae55e5b6-6109-4d36-81ef-2f55f735cfc6,IP:0,U
-	RL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:25
-X-CID-META: VersionHash:e7bac3a,CLOUDID:27b9eeac4b96a84773bbc7052178abf1,BulkI
-	D:nil,BulkQuantity:0,Recheck:0,SF:102|850|865|898,TC:nil,Content:0|15|50,E
-	DM:5,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:
-	0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 3880bd0c90bd11f1aa26b74ffac11d73-20260805
-X-User: lilinmao@kylinos.cn
-Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 247699715; Wed, 05 Aug 2026 19:02:59 +0800
-From: Linmao Li <lilinmao@kylinos.cn>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Wadim Mueller <wafgo01@gmail.com>,
-	Maxwell Doose <maxwell@maxwelld.cc>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Linmao Li <lilinmao@kylinos.cn>
-Subject: [PATCH] iio: flow: slf3s: restart measurement if VDD disable fails
-Date: Wed,  5 Aug 2026 19:02:55 +0800
-Message-Id: <20260805110255.504576-1-lilinmao@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1785931223; c=relaxed/simple;
+	bh=b7otmni9aoOFzUMCWl9ouWtfFGrnKm33Gjf703uM48U=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=SoVcsYi4c7tCq+eP03c7841hGzxoHUEW27SerZy/0vGWO8IKluAAizJjFWgXGrkOy9QGD5lWJVPseuabdj2FheA9UeS1zR2FaRlOxsVgoIhdF0a81mfbnCKPP89q4A2FYqEsISgzfAvOGuWdaGmQqx1DVopA9F1KbTkxphLAXJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=chbGYII/; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="chbGYII/"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6758fLdI413462;
+	Wed, 5 Aug 2026 08:00:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=0OcGq2SbnoRRrbUhk5Gr//V7jXE
+	f3HGk8CL6Z/VO33Y=; b=chbGYII/Opolx6coL6UZS5hLvHgldCWGNp9ZtYUT6R2
+	GhCz2VNCmTEMy/d2VVFS68GyCYbur9lOTbnMiB/TznaD1RT+s4Cxztl7Is/GyHY/
+	AawIX185h4utOwuY7Ki569cR6jpnP+09zlTGuVjD8PSAmfEVkEQnefTH5rjDV6cB
+	J7k0vOxKG+EQnwsV6oV4VhRxKT28aJfYd9IXxSDp7DRCEph/bdpVfJYzfrEEZliD
+	Xvm3sjMhr38h9hUF15lqUR/jo68AoqZueQf0AxTBTvdm3zXF/uaJJTDB2VUu7+QV
+	m6qMc33/qBpaATe2BtyVrooHTix93CNgAdP21AskFiw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fue6wnu4a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 05 Aug 2026 08:00:17 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 675C0Gp4016157
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 5 Aug 2026 08:00:16 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 5 Aug
+ 2026 08:00:16 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 5 Aug 2026 08:00:16 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.223.86])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 675C049l000726;
+	Wed, 5 Aug 2026 08:00:06 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Marcelo Schmitt <marcelo.schmitt@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Cosmin Tanislav
+	<cosmin.tanislav@analog.com>, <linux@analog.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH 0/2] iio: accel: adxl367: add INT2 interrupt pin support
+Date: Wed, 5 Aug 2026 14:59:50 +0300
+Message-ID: <20260805115952.33894-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,55 +70,53 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=SdzHsPRu c=1 sm=1 tr=0 ts=6a7325d1 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=LHrYOUlWEv7JUqxRrFYA:9
+X-Proofpoint-ORIG-GUID: 9uIPWUTvQ1FC1TAl1sr2SZPe1CC3YLTF
+X-Proofpoint-GUID: 9uIPWUTvQ1FC1TAl1sr2SZPe1CC3YLTF
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODA1MDA5NSBTYWx0ZWRfXw/IcPeyIWYCH
+ i6cQlmVy4GikNFemirlNXMTGGBIBUq71UR3xSK6VfoF3RKPF4xB3yhYnU4fSr6B8DQDELCCFtA9
+ HF7cEowbjwaZecHD7q0GPF10x//GjQzX87AJ1nhHzW6R3UtIUKvOTvTxJ7XJNjzfc2R3sDV1Wb/
+ yk1zpioCeg1uIpaTzRBBxNMqXnK/clnTk2WaQWHQiLvQE/xH3N5YHcFdJ82Sw6bl7TUcn/bEEcT
+ cLls3Bp6R07GY+Pvxs0ZYncYW7YDhjYFXomqaRhUeyUOJ7PdIswUPLZgTcllYEdtkw1ULPuFI4U
+ p4KM+cQgOA6rVEIcQgiqXjnfJ9XdQBFVF1RMTvjde/r7llPDjixYIs2pvec+wH5m7bTND2JwkrN
+ gOPTQPdiJbGIuubJ3GH8/SJN5U8X+/wvkdw8hbzA0kPJ6I40s6Jx8f1cZa+9AzHeGeX4hlIFT4x
+ MEGMkTWg2XVXUrM22Rw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODA1MDA5NSBTYWx0ZWRfX9sBK2IiutgF1
+ 09arQ8/6f+njYNHwDi8rXjf2zAGcx61aLFnG/91Mmlquj++KfTub97mid0yf8gDQlKzdUZvNHow
+ I1AZQJrzOhlwAEfFPhxvmDmm7eOLIC4qOS7nHZkdZdQczZ+R/niv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-05_03,2026-08-04_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 priorityscore=1501 spamscore=0 phishscore=0 suspectscore=0
+ malwarescore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608050095
 
-slf3s_suspend() stops continuous measurement before disabling VDD. If
-regulator_disable() fails while the supply remains enabled, the system
-sleep transition is aborted. Since the PM core does not call the
-corresponding resume callback for a device whose suspend callback failed,
-the sensor remains idle after the system returns to the running state and
-subsequent reads fail.
+The ADXL367 has two independent interrupt output pins, INT1 and INT2,
+either of which may be wired to the host. So far the driver hardcoded
+INT1 for all interrupt mappings, so a board that routes only INT2 could
+never receive activity, inactivity or FIFO watermark interrupts.
 
-Attempt to restart continuous measurement on this error path. Preserve the
-regulator error and warn if restarting the measurement also fails.
+This series adds an optional interrupt-names device tree property to
+describe which pin ("INT1" and/or "INT2") is connected, and teaches the
+driver to route its interrupt mappings to the matching register
+(INTMAP1_LOWER or INTMAP2_LOWER). When no interrupt-names are present,
+the driver defaults to INT1 to preserve the existing behaviour.
 
-Fixes: d240b0b8a1ce ("iio: flow: add Sensirion SLF3S liquid flow sensor driver")
-Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
----
- drivers/iio/flow/slf3s.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+Antoniu Miclaus (2):
+  dt-bindings: iio: accel: adi,adxl367: add interrupt-names
+  iio: accel: adxl367: add support for INT2 interrupt pin
 
-diff --git a/drivers/iio/flow/slf3s.c b/drivers/iio/flow/slf3s.c
-index dfa7c14090454..75ee82fbd3295 100644
---- a/drivers/iio/flow/slf3s.c
-+++ b/drivers/iio/flow/slf3s.c
-@@ -462,6 +462,7 @@ static int slf3s_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct slf3s_data *sf = iio_priv(indio_dev);
-+	int restart_ret;
- 	int ret;
- 
- 	guard(mutex)(&sf->lock);
-@@ -470,7 +471,16 @@ static int slf3s_suspend(struct device *dev)
- 	if (ret)
- 		return ret;
- 
--	return regulator_disable(sf->vdd);
-+	ret = regulator_disable(sf->vdd);
-+	if (!ret)
-+		return 0;
-+
-+	restart_ret = slf3s_start_meas(sf, sf->medium);
-+	if (restart_ret)
-+		dev_warn(dev, "failed to restart measurement after suspend failure: %d\n",
-+			 restart_ret);
-+
-+	return ret;
- }
- 
- static int slf3s_resume(struct device *dev)
+ .../bindings/iio/accel/adi,adxl367.yaml       | 11 ++++++-
+ drivers/iio/accel/adxl367.c                   | 33 +++++++++++++++++--
+ 2 files changed, 40 insertions(+), 4 deletions(-)
 
-base-commit: 0efaefce4e95a3331550329c0078b2fb38b3ff1f
 -- 
-2.25.1
+2.43.0
 
