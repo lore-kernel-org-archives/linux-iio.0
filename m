@@ -1,96 +1,97 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85DD13F9A08
-	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 10:01:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89CD41B357
+	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 10:09:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785924093; cv=pass; b=F2JvRmPuUk+p8U/QvWW5JXF6KJUCHFF3W1r6pKC3Am9yRUQw9fG2jeby+nyXMekunWESguKci7rUJXTw8REo4auYAFCc7MxyOtxan8luo1/j1KQ7zwuxz9NYZk/Ael2inmco9FV8cOYsuG0yeWT3u5FtWZ3X6RhwyF9bQcC3dvk=
+	t=1785924571; cv=pass; b=R8LhZxcfQTl5zsuMFVfsBQSdPO6pBugicN989ABZl3cM08wwg7pvjI2q65ZLx2wSgVGz4e2O9pSpDndeSndZ5pAs+TD9VOmMrvLxdAqCtC1wnUzhNKKTajwn55a+5VlqxMK+cL3wDajuuYmMsp0yNQuEKJK2L0TR+Zn8pimEL/g=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785924093; c=relaxed/simple;
-	bh=aCuQ4awIDkcto3h7JAxQRBcQRaCA8V5TXtFjb1C7Jqw=;
+	s=arc-20240116; t=1785924571; c=relaxed/simple;
+	bh=s2EZGq8avtY+ZczTxmKohK65/+Hn2MJ4OYkx6lf9xsU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=faogiamS53HTrVlABF7u05g/qLNMJXeyr18Qi1PbBKB9Prez8H29MvZtJLB/RjaySnMmwepCOXYV8CSM6x3NtOykYqC/rGmtuYrwI5mTDSc00y9CkFGgvLGc6Ef1LwfgVFriCs8Wiu48xCcjB+rqTQfqCdIIgjKlbTLXMKzcPwk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oU9gyGy/; arc=pass smtp.client-ip=209.85.218.47
+	 To:Cc:Content-Type; b=TvczO/xpc9CAQlX/AoLF+dkEV7B0zptMgSCqmxFzdFyeJnilZjrw0grVKOXq2IXu+uT5N+zaDQlcZyN4fefybf1GwAXkPqPJP6xmcb8rKlDRYt6T5TodYHp6F5aHPyX/jYj7YZYPO0XbDbCi38oldM4KiDcjTJQzjQDJUb0JAmA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OVJVaf5S; arc=pass smtp.client-ip=209.85.218.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oU9gyGy/"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c1c26d7e951so135712366b.0
-        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 03:01:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785924089; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OVJVaf5S"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c15e592da74so102489066b.1
+        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 03:09:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785924567; cv=none;
         d=google.com; s=arc-20260327;
-        b=QA+ruH7Zo2dT/SIR/LArTOdIKu2NpxNCqJu6jJMD4f2TwrmS8N59qtd4LADV9Llbvu
-         wzE7lo3xwJUI+/PjI96BVPeJecubI2Tg7ZiGKfjKtXtR7JSmErT9kPPYqS65W0I3tMS1
-         qllFV28yiREqw/qVStP9Do/Mzh+8EJ0Vw8ttQBQvs3EyHEI4y6Gr68Jn6caYNW0I2IrQ
-         j+OlBbUwfkE3tI9r8ov+L/C/kN0wCAhd+jW3zjNCZf+Kr/S02upQRu/VbVjN89MtoMKA
-         ZcNS5GGBrqpd0L9ym+e1BT4Rby8DgEHNJl84hrbQcrTFjfAiNfXR/WcBi3LqKPtbfBoc
-         hO8Q==
+        b=Xb3K0ywSgTNBiQqgxPvYL6bZpunt/AU9OvO136eTLLN9bPfSGb35PrSjYGyQuOorAM
+         8bkgxhGcIjv6PRFP9aWWoQQ9FsSw8rdjXALjz0BBpEKw87K8Uu9WB8pyZvzx/wIMRw6V
+         Nnopi6nFlL2OSA0TaOoxD+2VAViTQ++W371EASevAEuVeljQpZTqWtbu254LHCzVsSRc
+         q/OjjpWw7nXYlGUphTkITdWMeRRPH25GZ3l4PdoiRMbXESoTCL910+B+kThL0fAA2LnT
+         yo8LJhRKXMSEC27lFXRlLdbCLmE/SGp90q9S3C5mxZxya7SGBfOQMo4Jvl4RY5aKn/Vo
+         L53Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=Nnl7dBC/2J2lIlaFKwTpn9e1OS3QoYewBPdtWMkrWUc=;
-        fh=nvvM6G7pMwn0aBFBugXYkIMsOoYoIlsrFddcLfYaSZM=;
-        b=jbopPmzCHo+BD7jJ9nTONCoOUJv+gCMtp+fRELu/WWzdaetLa2Gl2UrGRLdfx4X4gG
-         PR+RPj0pYb94+/OEcsb2DQzpsjGlI1IKq10k18MhhoEDZWUkUkMi67X9eZ5A3N6aBwks
-         seLxhohWh9IVwFOHjIRsX2qw0mBITccd/f0BciiK+FnWIcCAMTkFXZX1mfZCG5rz8a0w
-         iUZ79t4KslfV0yW3yyulN1G479n59LyMmKSnYWpsbgZ7MFMf+RcUikIskHfBX70smobA
-         9Bk//C7Z+vd6ky6wslWFGrB9NDpFS42yw9rFqmN6weR8h6/kJW+vvct/Umfw2RdIo2hO
-         8FTg==;
+        bh=nZg5H2XX+nqsFn9nvqPTcpl9c0SWPMoYdf46e77DPqw=;
+        fh=41lMUTPWJbmbg5z2Ieqm3eoa2PDPlFLUNR+hN1g/ivE=;
+        b=UL+D8E0hge+FCuqaMS9fbDIa1yDFJnKILmr3ZCOkDeoF+uLjL/GWbtWJWtvsl3Fpf+
+         AeN471q4PA8ElFdIm6E9Qe3kaKpd3W6vODDy/Omii4pvcSdgLejSoE2tIq61y0mpMdBl
+         jOaigQlbym+uR5kiRJIP7BUp3smCwUQBSjuN5ViL9Cs+wUwgQoVHAFjESLynWVrN0Uit
+         aGUn7QMrx31j3ALB1iqkQ1Dhc54zsSWU+OI/Utn3RSDDntuPAGQh94wI6mHGuHhLTLNb
+         rcUasH6i2+LuALSdzYsJaYqWO1viKzEeqc7iNgkVH6r3D1Imz204mv9yZ6W1T9dTavYJ
+         Z+Hg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785924089; x=1786528889; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785924567; x=1786529367; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Nnl7dBC/2J2lIlaFKwTpn9e1OS3QoYewBPdtWMkrWUc=;
-        b=oU9gyGy/C5nrjgJx98zRUyagS8GwnZ9J7gr0uQoFcum+k86VezsGOSH8zb9kNiCZ3+
-         Kn0JvsnHQjJPFV8saQZhCT6GFKuFc8iv0N4esJ+YkfrvoKV5fcaK9ElDG8II1T0IBlWV
-         BGCwq7Ws/3tYXmotBS0IICK14WrFfgJHstIeKBwG2yay6RMjHY+2NtRKXx5DXbvfT/4z
-         gjxH1LUk70RojATFvXRKM1yjNnk535aG89plizdqKYqllKZmv9tz/ON8CLZvbIRdxhmJ
-         nq2971kS9xxB5k7GiU99Luj41ARB6cqbo3GZQ4PFF5RRZ1dg+0TUGHhXFg2HIehOG4aZ
-         AvGA==
+        bh=nZg5H2XX+nqsFn9nvqPTcpl9c0SWPMoYdf46e77DPqw=;
+        b=OVJVaf5SM9SqXXAzgdifGkaMKpAhMrQ1WdETD3QQvi0fNnaPE+OjxoZdWgMFSaWApq
+         BKcuB1k/YV+JD2O4gkYbljGrJUiLhvdKXAlOdstZYHLfhyZXlOQ21uum5mIkHSlAB2m6
+         +oYbEI1wtw9TlNTsJDBLa1iIOfoshgkjZAEnz6ROpfb/Ou6C6Om8JPGRdKSTtTukD3Xm
+         HF+Kw8bCv5vPhxHd/wAsRgTy5tWWX6SOJiBBpGnspR00nASpaTRr8yDHqlety4DhISBK
+         NGbGx5TZB2ZKEt1wUcGOAO7PNG884O0du2YmXq+hSanPGGr5NjuFI0xM/5swd+8m+X9v
+         tqAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785924089; x=1786528889;
+        d=1e100.net; s=20251104; t=1785924567; x=1786529367;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Nnl7dBC/2J2lIlaFKwTpn9e1OS3QoYewBPdtWMkrWUc=;
-        b=NImpwNzSR8TNs0JuX1gM0bJ/RhR3kBW9VreADICThJ88qqF6XMvvpslcNvyvQH/FAC
-         LLNJjaH+8yWeEvV7xgIKJgWZZZZ8RzjTOowyb/sJGx53MVe3BKoNsQLOA717pLNKyyAv
-         seRwguws2Qri7aYB6Srt79ikRWN9lTw4AYFqZS5bKzqFX0sAJ89mpLfaf+5mVgNcwREl
-         RJVktVYyXoBRtfY8M/HUqbJ+edmuguW9syaGbGQY07tLtF4Ye2hIINUftF48538V2uA2
-         bi7kY5NWcHzGLo38kfh5AQtYWAnq1rpDPcTieFmR99egEDKE78WVC2Ze6OoAsVOyeZV/
-         8f6g==
-X-Forwarded-Encrypted: i=1; AHgh+RrtDUJdvMR2mby3wNYN9s5Wdw3C/En+Lr4VnF5kBMkk72cIebiyNmNygPfDg82K+kmqb3qz5rNzxLw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzPYXpfcOGEECmmoDLBmlf2eKF/hYo2ClzdkllTJAb9XaC/Y6S5
-	uT/N+YrfHZt//x0EkTX9Mc1+ti8DN9kOupdpxgM1hpSB6u3BNOwhywv6uILTNe1n0MGQt85pjGa
-	Hun5oq1lCdwBLvihVypA5H/Kb76HgHdY=
-X-Gm-Gg: AR+sD11ryFC/TfGeRtqpdd0oRF/cFA6YPMtRnW4D+lvh9xooEx7YhokSDWo3M6pN7b0
-	Z9YYvwfpPfbmODlVYYhnD+pvzEtgqK35G1/pZN+MYbfJSt207zIbURWkpGDoK/MD17CpyxhdS66
-	iIfBjnyzIcmq6zeRxGWUKviXnNXYApWH2jv75DtYZd7KLrv1ZUrQCyo5F+52XbNahOMii+bcYSF
-	HjCGVbRNO9v43qXrk2NoofT6ZPC/nRR3MuTbSnLJLa1r5JARAW6dBzNl3MkGm1iW97HyOSoqRSD
-	oX/2J4pJuYPiTbNB9MB53RijAtJ8j7wIWLrN9+BXzkjIrxmcIqGQKLkxhn3v69/nrJ92+p2HUIN
-	s1hSrroBg+50+blI9qtplu6E2A/KvACtmgpEWYwNDX0kG3Ceo+vaDH+pSPzsdpDsVTDfV/vtie8
-	GgMGOcdKreaWsS9bHlrgs2ioLiaHxdG5woqdF44O856v+VqBKQB868LL1WfEcwTQg=
-X-Received: by 2002:a17:907:a713:b0:c15:e118:9b99 with SMTP id
- a640c23a62f3a-c2039f3d9bdmr219169966b.23.1785924089154; Wed, 05 Aug 2026
- 03:01:29 -0700 (PDT)
+        bh=nZg5H2XX+nqsFn9nvqPTcpl9c0SWPMoYdf46e77DPqw=;
+        b=lREQMSNOYlN0gfZlnwS5tj8XuWIkzK5dQlapmzWAcSwFu0Snyv0N8YqM8ZTPZ0Wm/3
+         aRXvVb2DWblkRy2OkTmilLe48v0V8tw4ZqeAe+kJwYa89Tl6Spnpsv1RREeN8J284nwj
+         EzBPA4gTSuTyTUVBXyqe69Tgi4oQMFlxISHaA5/Xev0xFUEixuuNVHK1mmpiVdcbqoeI
+         AXld6FiVRvd4GJCekk2wMohXhmLkkmTXlT2XvA/x29AYh61ozkHTTnpalIo17VAR1IIM
+         jHwBPeM5K3zgrVhxUwpvZZYeh9rK0YRYzEDtxrzuJLS53abK1FPXIzXZHcL0TSlKgzV6
+         3mbg==
+X-Forwarded-Encrypted: i=1; AHgh+RqvLf17t2RAhVpg0r9zRRdBQeiNgdX/2RZI2Gqat8VOfE1IiN+0Nm6p8MlACE0hiLmCC+MfTnYcQQU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwCimbgEnAJroXNgc8Lg1tsYKn6J/Afxy7GB/PFto+hAMAj9JV3
+	AKSzpUMG4XDOBzVoNBvxUi28vbON7GzwA76nAQ3oOd7k62BNMibeqnabOE7tI2cyIWtsCJcYEMc
+	jscANgYmpTo9whYL9XFwp4HaCiRemAOY=
+X-Gm-Gg: AR+sD10wNbDUWeHjuG7MCRJ/XYC+AFsx3UAlTAxK7gT3Xei8rQws0JX/k5y0jmnPtrv
+	C8aP0tdmY5fulzcfnWCdTky/4jqhLcdbkNVfwsPXf42qye8+smhyt+qVpkiZDYGn38BFp7Z6WKZ
+	YnmpL7NqHQMhRbkeEpCE3h1H7mi9ugJzJk3HPAIG7HJFakRv1as3jquPgGbqSZPvEyP25C2LLQW
+	2Z/d3b6bHR244/TZSNl+LsYZvbAz92ZMNi8miNL8a9npXAUhD8ZxswmCtckbNAiyabjG5c5ktDv
+	entqrsusJRQR5oUFJs/iXu83FKuSb7nizQ1vGNDakhre8ZAzVD5S1F5pXvv3nWBz3Z4DvyvO49q
+	czV9pibXhqDP8acV2lsuDtZQ1RPS+MD3crwboPGWKvB+Ig4br0wzmSk1Zg2yM3krgCZTymBUakG
+	/p9oWzFVeL9a35KnwE4HNS25OmE34Ly27Jo32yL6pjlbx0pvs/fWWVUvJhV0OfYSPWmt0Mpx01o
+	Q==
+X-Received: by 2002:a17:907:1c8e:b0:c16:13d4:8165 with SMTP id
+ a640c23a62f3a-c2039ec3e55mr233465366b.22.1785924566629; Wed, 05 Aug 2026
+ 03:09:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260805094135.11762-1-andrei.stancovici@analog.com> <20260805094135.11762-3-andrei.stancovici@analog.com>
-In-Reply-To: <20260805094135.11762-3-andrei.stancovici@analog.com>
+References: <20260805094135.11762-1-andrei.stancovici@analog.com> <20260805094135.11762-4-andrei.stancovici@analog.com>
+In-Reply-To: <20260805094135.11762-4-andrei.stancovici@analog.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 5 Aug 2026 13:00:52 +0300
-X-Gm-Features: AUfX_myxZcCbcuRckig6xJMzKtCW_4zohTq4GXPN5nDQZGPWkO2ClR0bcilWv3E
-Message-ID: <CAHp75Vd7sq58kFE6EsLxFwk2z0QtOsyNwh0b-CrZb0HDYVjDJA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iio: adc: ltc2497: add LTC2499 internal temperature channel
+Date: Wed, 5 Aug 2026 13:08:50 +0300
+X-Gm-Features: AUfX_mxeQ9DsICXq-Cq3Ww3vOFE8a4_KfRhxrKtEhMeTmOjBrfiU1bDozFoNXxI
+Message-ID: <CAHp75VeNFTPwujkLWG-NbSdbJU-r-xThroOiOJrhz_R8+vMikA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: adc: ltc2497: add 2x conversion speed mode
 To: Andrei Stancovici <andrei.stancovici@analog.com>
 Cc: =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
 	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
@@ -104,103 +105,154 @@ Content-Transfer-Encoding: quoted-printable
 On Wed, Aug 5, 2026 at 12:44=E2=80=AFPM Andrei Stancovici
 <andrei.stancovici@analog.com> wrote:
 >
-> The LTC2499 has an internal PTAT (proportional to absolute temperature)
-> sensor that is activated by a second I2C configuration byte (EN2 | IM).
-> Expose it as an IIO_TEMP channel providing raw, scale and offset so the
-> standard IIO formula
+> The LTC2499 supports a 2x output rate (SPD bit in the second
+> configuration byte).  In 2x mode the offset auto-calibration is
+> disabled, roughly doubling the conversion rate (~13.6Hz vs ~6.8Hz in
+> simultaneous 50/60Hz rejection) while leaving linearity and full-scale
+> errors unchanged (datasheet).  During a temperature measurement the part
+> always converts at 1x regardless of SPD.
 >
->         T[m=C2=B0C] =3D (raw + offset) * scale
+> Expose the rate through the standard sampling_frequency /
+> sampling_frequency_available ABI on the voltage channels only: SPD is
+> ignored for temperature conversions, so the temperature channel
+> deliberately carries no SAMP_FREQ attribute.  A new has_speed_mode
+> capability flag gates the feature (LTC2499); the two-byte command path
+> is now taken for has_temp || has_speed_mode, since both features need the
+> second config byte.
 >
-> reconstructs the temperature.
+> The conversion-time wait becomes mode dependent: 150ms at 1x, 76ms at 2x
+> (datasheet t_CONV max, simultaneous rejection, rounded up).  The wait is
+> keyed on the conversion currently in flight, whose duration is fixed by
+> the mode that was active when it started - not by the newly selected
+> mode.  This matters on a 1x->2x switch: a 1x conversion may still be
+> running when the first 2x read arrives, and reprogramming the device
+> before it finishes would be NACKed with -EIO.  Timing is centralized in
+> ltc2497core_conv_time_ms() so a future FA/FB rejection-mode selection
+> can extend it into a [rejection][speed] lookup without touching callers.
 >
-> The PTAT sensor yields the absolute temperature as
+> LTC2496/LTC2497 (no speed mode) keep the single-byte path and the
+> unchanged 150ms wait.
 >
->         T(K) =3D DATAOUT24 * Vref / 1570          (Vref in volts)
->
-> The raw value exported here is sign-extended and normalised to
-> 2^(resolution + 1) =3D=3D 2^25, i.e. raw =3D 2 * DATAOUT24, so on the IIO
-> milli-degree-Celsius convention
->
->         scale[m=C2=B0C/LSB] =3D Vref_uV / 3140000
->         offset         =3D -273150 * 3140000 / Vref_uV
->
-> The scale and offset are derived from the reference voltage returned by
-> regulator_get_voltage(); its error is propagated as before, so a board
-> that fails to describe vref-supply gets a clear read error instead of a
-> silently wrong temperature. No board-specific reference value is assumed
-> in the driver.
->
-> The single temperature channel is appended as the last entry of the
-> shared channel array and excluded via num_channels for parts without an
-> internal sensor, so the existing LTC2497 channel layout and device name
-> are unchanged.
->
-> The LTC2499 latches its converter configuration from the second command
-> byte and only re-evaluates it when that byte has EN2 set. EN2 | IM
-> selects the internal temperature sensor. Because a single-byte command,
-> or a second byte with EN2 =3D 0, means "keep previous", a one-byte channe=
-l
-> select cannot pull the device back out of temperature mode: after a
-> temperature read every subsequent voltage read would keep returning the
-> PTAT result instead of the selected input. Temperature support is
-> therefore only correct if the voltage path also emits a second command
-> byte that re-selects an external input.
->
-> Send two-byte commands for all conversions on parts that have the sensor
-> (has_temp):
->
->         temperature:    EN2 | IM
->         voltage:        EN2                     (IM =3D 0 -> external inp=
-ut)
->
-> The LTC2497 and LTC2496, which lack the second-byte mechanism, keep using
-> the original single-byte channel select and are unchanged.
+> Validated on a live LTC2499: 20 reads take ~3.1s at 1x and ~1.6s at 2x
+> (~0.5x, no -EIO), voltage and temperature readings stay sane in both
+> modes, and the temperature/voltage interleave (sticky-PTAT) regression
+> still passes at 1x and 2x.
 
 ...
 
-> +               case IIO_VOLTAGE:
-> +                       *val =3D ret / 1000;
+>  #include <linux/delay.h>
+> +#include <linux/device.h>
 
-We have SI unit multipliers
+Why? On a brief look I haven't noticed the use of this header.
 
-> +                       *val2 =3D ddata->chip_info->resolution + 1;
-> +                       return IIO_VAL_FRACTIONAL_LOG2;
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/driver.h>
+>  #include <linux/math64.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/slab.h>
 
-...
+Neither is this.
 
-> +       case IIO_CHAN_INFO_OFFSET:
-> +               switch (chan->type) {
-> +               case IIO_TEMP:
-> +                       ret =3D regulator_get_voltage(ddata->ref);
-> +                       if (ret < 0)
-> +                               return ret;
-> +                       /*
-> +                        * 0 =C2=B0C =3D=3D 273.15 K must map to raw + of=
-fset such that
-> +                        * (raw + offset) * scale =3D=3D 0 m=C2=B0C, i.e.
-> +                        *   offset =3D -273150 / scale
-> +                        *          =3D -273150 * 3140000 / Vref_uV
-> +                        * Computed in 64-bit to avoid overflow.
-> +                        */
-> +                       *val =3D div_s64(-273150LL * 3140000, ret);
-
-We have ABSOLUTE_ZERO_MILLICELSIUS, use it.
-
-> +                       return IIO_VAL_INT;
+Perhaps you wanted the device/devres.h?
 
 ...
 
->         indio_dev->num_channels =3D ARRAY_SIZE(ltc2497core_channel);
-> +       /* Only the ltc2499 has a temperature channel; it is the last ent=
-ry. */
-> +       if (!ddata->chip_info->has_temp)
-> +               indio_dev->num_channels--;
+> +static int ltc2497core_write_raw(struct iio_dev *indio_dev,
+> +                                struct iio_chan_spec const *chan,
+> +                                int val, int val2, long mask)
+> +{
+> +       struct ltc2497core_driverdata *ddata =3D iio_priv(indio_dev);
+> +       bool sped_2x;
+> +       int i;
 
-I would do it explicitly:
-if (...)
-  num_channels =3D ARRAY_SIZE(...);
-else
-  num_channels =3D ARRAY_SIZE(...) - 1;
+Why signed?
+
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               /* Match the (val, val2) pair against the advertised rate=
+s. */
+> +               for (i =3D 0; i < ARRAY_SIZE(ltc2497core_samp_freq_avail)=
+; i +=3D 2) {
+> +                       if (val =3D=3D ltc2497core_samp_freq_avail[i] &&
+> +                           val2 =3D=3D ltc2497core_samp_freq_avail[i + 1=
+])
+> +                               break;
+> +               }
+> +               if (i >=3D ARRAY_SIZE(ltc2497core_samp_freq_avail))
+
+'=3D=3D' should suffice.
+
+> +                       return -EINVAL;
+> +
+> +               sped_2x =3D i / 2;
+> +
+> +               mutex_lock(&ddata->lock);
+> +               ddata->sped_2x =3D sped_2x;
+> +               /*
+> +                * The new speed only takes effect once the second comman=
+d byte
+> +                * is reprogrammed, so force the next read to reprogram r=
+ather
+> +                * than reuse the value already latched for this address.
+> +                * LTC2497_CONFIG_DEFAULT is not a valid channel/temperat=
+ure
+> +                * address, so it is a safe re-arm sentinel (as used at p=
+robe).
+> +                *
+> +                * A conversion started under the old speed may still be =
+in
+> +                * flight; its own duration (conv_time_prev), not the new=
+ mode's,
+> +                * still gates the next reprogram, so the timing state is=
+ left
+> +                * untouched here.
+> +                */
+> +               ddata->addr_prev =3D LTC2497_CONFIG_DEFAULT;
+> +               mutex_unlock(&ddata->lock);
+> +
+> +               return 0;
+
+...
+
+> +       if (ddata->chip_info->has_speed_mode) {
+> +               struct iio_chan_spec *channels;
+> +               unsigned int i;
+> +
+> +               channels =3D devm_kmemdup(dev, ltc2497core_channel,
+> +                                       sizeof(ltc2497core_channel), GFP_=
+KERNEL);
+> +               if (!channels)
+> +                       return -ENOMEM;
+
+> +               for (i =3D 0; i < indio_dev->num_channels; i++) {
+
+Iterrator is not used outside, so can be
+
+  for (unsigned int i...)
+
+> +                       if (channels[i].type !=3D IIO_VOLTAGE)
+> +                               continue;
+> +                       channels[i].info_mask_shared_by_type |=3D
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ);
+> +                       channels[i].info_mask_shared_by_type_available |=
+=3D
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ);
+> +               }
+> +
+> +               indio_dev->channels =3D channels;
+> +       }
+
+...
+
+> +#define LTC2497_CONV_TIME_1X_MS                150ULL  /* t_CONV_1 simul=
+t. max 149.9 */
+> +#define LTC2499_CONV_TIME_2X_MS                76ULL   /* t_CONV_2 simul=
+t. max  75.1 */
+
+I didn't get the rounding rules. Is it just a ceiling for all cases?
+Can we use more precise (10x) values instead?
 
 --=20
 With Best Regards,
