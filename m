@@ -1,206 +1,142 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87703E9C17
-	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 08:38:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785919087; cv=none; b=e3KblX1y1G3Jr18KYQT/7s4db52z8d+qzbF8IsPRII8bUoDj4CCpwM+t1xX1So0672B/WPdKZ2VA842NDppXisXC4XERC7O5N9L/yauQQGoAfdJcneC9bfPF24GBtPN99nvE19VzdhXZVmf2FN81Zq01mU12ZoAPA9mq2s97Iss=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785919087; c=relaxed/simple;
-	bh=xbdXc93eVoEnHSc6HZmwLx7VOseAbmuXTYlOJgdHCsY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hVsg8cFTrvaIvVSKM8fjUPWGRB/dnTsGERtSeUeA7Oqz26uyeHAijVKN1xvy9DFA7tEzjqlKZFNkLlQCalFtpZqqBMXteS4WSwbMnL0sLFmUbAuR3xRr+1cVvsHePBDOgq5cQBmlirVRylZwe8a3Itw25uMhhcLuKNWUjXeR4fo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YzgfhLjb; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F103F4845
+	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 09:20:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785921619; cv=pass; b=RcD5T8b4q4qEZvYostAil7Xfdv8AS+zLcpSRAx1ZSVcE/ySHWOBsC6Zg05EY1fzoGYhrmZy1axWn8oHB6Ms/C8VsmzZecMvwRJcWxho/leavokzebBqsIL8erANRvohqydiQV9OBpuV6NWfHABKbkVVGrCdQp69vyO3Iiomvtj0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785921619; c=relaxed/simple;
+	bh=axlEM3fgX5sf6tpDr6oDm62vYzzd5lG+OjtCYy4uiGE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=C0hc903QWTyGDVyjYk3nGQgioKvWySLJACq4sEicKX7jBmLpg3wNoHrQ3+qv9lFqr7JLAnMvxeLnh8h7lpXe3W11wylF4P3/vCx4QelA8/eh5e2hemZucQILezyp5xXK7BLtEtfERkCnCczfpbQwHQLYB3o6B2JLDZQfBxoeKfI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a4Dw0dn2; arc=pass smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YzgfhLjb"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-47c2ae992beso47128f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 01:38:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a4Dw0dn2"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c15dd4b9132so131771066b.1
+        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 02:20:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785921614; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ruSmsqLHuGQL2reLNd/vVeYAZIVylUZ7kaLHIA+Cb5Z4mZNyC4MhB2RUQd9Xvk1VgJ
+         jBHS+P7GduTbqoZHn5Qa13KhAyrR5XTQokTeuEHlFavzeCzdLT4BYL3NhxGpYNgTfBad
+         V79MfJYfPEedbJCy01GhoGKq5IUKvuQlMIXEZwrBvwlyiJcwWxWHuAFS2dqH+bIQm5MY
+         gTiW/ZACOfKzznD+PHidIQkt0dKAsv5KNCkxUafx4MsilehyZ05dggfSRybd7Lcac14v
+         19yMieyZxLOV15iEcech9nv7RNN4a/JCQu//MMefhef2xZZbWmBS+Iux1kfrz4LcPucV
+         2uBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=dlwkeDo6yXakPtOLdepmMmrxJfsb1eamCAvds4wEgrE=;
+        fh=eNcwtrjURPM0Sbl367Uy0zWUAsLVTOPmI6iwYWqjSvE=;
+        b=X84ibySwAybBNNpHa/daK96T0lIYiIdxzGbnAsOu8laf7n/MV8mlIPgNDvJxxt00Fp
+         OzmTzIjRpSYmbQlkuhwMGyQm4hUoHykdMAgcRjc51FXL0dSJVDk9ch6+/3SRaC0WlmSs
+         JLyp81j3GFxAND1EmOfQM10X/YLUCu1i4E998efrOk69j8SfDrTzbTRsiRBlWzdULm3p
+         N9GxYHN5FRaT55w0RtW06U8juzEz+KgZ1nU67asnZ4gnraTjntZsonaFQBkXKwQqj+oZ
+         XYS4eoLKxFuwhDOioMTaUgx8YviaRGGKKBbdX0dCXIMBkz3Fo4UyqWKzUp+PUD8saFtA
+         dIMg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785919084; x=1786523884; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Ve8270E6MOdj8YsOaSYLA5r25PubDk8jW4r4l/rs05g=;
-        b=YzgfhLjbTO6RRXbSTLSsQO4IWHlkcsvWluvHK5iODWoNjpxGXkqvNgKjgOPunYN6RL
-         rj4rXr4Z1pqfh6xGfGeEvafzOAkru5qTXmgK5s26hHjkgIhaLao48n25Fnpjm+ImIe6V
-         inax94/QLiSB3UUBjiL1KCzYRDQxJWZLGEcV5SxM9xh58IsRQsIUudvPcIdgkBgOXxDW
-         xcSruyrkNBg8SSAKX/apvDeT4duIaYtE8G/q75diueJOqIQx6yIq0ij/YO7gPgNEIK7n
-         p9/XoOO11y8F6+Yyoiu1ReIZi+aKJmCPCMudFGhldVxC4330hbUWoyxXgo8hJ/RE8vg2
-         LqAQ==
+        d=gmail.com; s=20251104; t=1785921614; x=1786526414; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=dlwkeDo6yXakPtOLdepmMmrxJfsb1eamCAvds4wEgrE=;
+        b=a4Dw0dn2SXCv/uMK/WYFUf/BgcE4Jki1bsz7mAHMKhOX6a7jIV7GdfF2L4t2mQhoFQ
+         3m0w8UV7qadraxoTPv256Hlkdn+qr1yAiiL5glZyQ2mlciFJHbhzDx3wXrIOgUnte2Ss
+         QEYobHz0wSz59Cb3/UdC/RHdZjTcYltnccXAftVgIpfwmeg7cw6KTIlyRUoK0ITz3RLw
+         vN6uwhPqZNXoQUDMUGskKuwtguynuJRlxF7F1vkyey3WpTpt7LodPUqRcdWFI3qMDka1
+         7GzDMRZW+61HXCUoA3Ijb/W1OwXaGZCoSU+BpIvXIDTzwZP900na6xdorEoznEuVPYwa
+         Z96Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785919084; x=1786523884;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Ve8270E6MOdj8YsOaSYLA5r25PubDk8jW4r4l/rs05g=;
-        b=ndXJa3hrlENDDArOWvzE7eqtCawkRll+SGe1hofZt8AFiw5u6Vio4Md/WToNQqNI6F
-         QgxedY5lne9c4oQjz7DEFUVd8h5D7200kKNW8e2blWkVF1CmzS6I7gJKMlqSdQ+QlcL5
-         gJi0eck6exqfsDEulCIeS6ucQYTUGGpyXJDl0xFkX5vupjwuFVe6sHOTwLrxuycUhHnZ
-         czibmFVCX3pzuhPjxs+tOWmWvQlfxJtQOKRTo8hfE1QVgk91X07XLmuMWmKy2Lu7VYSD
-         GciElnM+RjLg1lYrfMumkvIJ5lKAkaQlvkfoEl/SadH/bz2JqZP7UKfPPnUfdzptA2C6
-         Qivg==
-X-Gm-Message-State: AOJu0YyRzKYC1lrtVOJs0mtTVB/IQ2SMz/nmUTRQoRsb250uj6Nhrnjp
-	zURpeaL1uFDkiE/9Tsn1iqWnW7r3FqQpikVk6diUbOI2IiKzeqz6fCkD4taw3Ee0
-X-Gm-Gg: AR+sD11+gfMkfPwL3vC+G5HnXWwXlYw93qJtoGvRHvhX5JbQjCab+GPd5G+obrfeWZN
-	A4X+qiybO4hln8mafKdSFsdO4hIUTlBtLhIHX/T0eVBrobZtjJcuJPXfB2r5WqLCvWMjxGIQTIV
-	rSTSZ3gjUWAQSWG2bi+jJ1OM4DWo/zJDCxBbu5up9VNG0mPqJwBFj5Jxqsj467RtapCi122qBhl
-	rmk14jxRdPB131T33suBt0+xQnbkSXzuMOfSxRK4PgNusBvzHAcZXqR0qqUcQWRGwXQRsh+68LT
-	qUUgc42wbpXckQLNO5lfEjWYs1Mp7mQg/NJnmt8sGJNNrejN/gacUcBMpKSw4HRnWBDCKImEDuc
-	K2njMoxTlQK8KXDIUCHb7fZeRCGIx0D5K+GvOwNi+qbpGpAkTaVL8+aahSj3q6d5w+lhsUT9g2t
-	vUQuFyCMFy5KuD61gaOY1gZgrmmdHa0jCeNjxCIv5TZS+uy3wlSHuilTGilZF8SW8KWLbjcKAXs
-	S4TMJCe0Zwe97xOvHVevcMsBUhSYWX8WNSf7JrW7wW2x/ohIsV5Kv+KCCqL0Pt0VNlpuUSLQ3FH
-	XlQFUQjBWdh1MA==
-X-Received: by 2002:a5d:5f83:0:b0:47f:80e0:53bf with SMTP id ffacd0b85a97d-47fec5322c9mr3831273f8f.3.1785919083806;
-        Wed, 05 Aug 2026 01:38:03 -0700 (PDT)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47febfe5d68sm6707621f8f.9.2026.08.05.01.38.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Aug 2026 01:38:03 -0700 (PDT)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	joshua.crofts1@gmail.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
-Subject: [PATCH v3] iio: light: veml3328: reshape scale array for readability
-Date: Wed,  5 Aug 2026 12:35:34 +0400
-Message-ID: <20260805083532.92585-3-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+        d=1e100.net; s=20251104; t=1785921614; x=1786526414;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=dlwkeDo6yXakPtOLdepmMmrxJfsb1eamCAvds4wEgrE=;
+        b=GyR6GnK9xkVCBFl4Irp08gg6vx/zkejVItbBHwIYD3kAo2/vWjBT6ElKfcDwBIDVn+
+         +EiaEdB+mJeNd115E1PKBes34HRQp7bfLWpRl7GzbKFt0VaE4J1IIjWmNR900Vb98A61
+         o9hs/cGiUexmSk6NeD7yG7hYl1v+aNoloqrXwpHcQaslAJMtP6R6ihzDWumpC+LJApuC
+         Cg8uAVhmG88Xzpc3VQBxEqOxGvYsH2BB8nrXGIa+5eMtS7IiDU3LLsG5tchg+tufLU52
+         6Bk02gYaPxElccip6Ptl/daNtNV1bFK8nJGZLdTJgOUDQtEQE/nSLGhOtt79H1H2CPpF
+         fOOw==
+X-Forwarded-Encrypted: i=1; AHgh+RqV1Jt3vyAUU9Ti26trDoJVd0bxxlQ+w5Vv4wKQg0M2BYSG865QuSN/lgzzlZhgAYQEQPshxtwinno=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzrA59jnsukhxBXq/0D8kM/4ahiiQvGYVQ6ibmdg9tPqeGaUiCs
+	jmB512Ko0SS0+ty0XkPjU/Mz/9uy1SjipMngx4NCVsG8hkeK83AB06SCU82k7fSJ+4Fr/1YSUJn
+	hGun1ucbfoh/UrzC2wjExbqd80VaemE4=
+X-Gm-Gg: AR+sD10POOVfwoeQNIbKAkrHkgJVfhksc34i7wbDtgA9wwiOLSUteSfs+U2nRVCNwMY
+	7AU02gE+M13GYiZqa937EL6wrmp+E51gQWkP4wliHb0TUfLXjjJ5Wh3qraCW7y37WXOauxOprBm
+	G8reYUIEAz9troILoZqZ9EyjvT9I9xBts9rFXLdcdjKxIb1c6P0NnJCChYGP59f0xOuBAwAPVP8
+	3xqlkeVgHRmZ6b4Xy4/OnB0IWtogWG1rnmQp3vDPsIWHdrCMhFbwf2vsGbDypKX8l4z98UtcJ2U
+	XAbAmM/l4WfDfuKpV6kNl7qv02SdEfFenU6OQTT6iI6n1WRA41YS7hQE7FeN9u+++Y08Y/HJDKF
+	bACH8Sdi3zV3eJDVMtqXFnEhI1kf0fV61K2cUL6YJc1DP7a9F6ZePssluRpdqvcXiTnyQ4J4Dfe
+	5AzKcI5j4eVLRoUNh2hZL/7F9or+YpANSoaS3vw3/3ETzHvcC5RmGfjiYGkSJIsI0=
+X-Received: by 2002:a17:907:3e22:b0:c05:b9db:68cc with SMTP id
+ a640c23a62f3a-c203997b6e4mr292585966b.0.1785921614024; Wed, 05 Aug 2026
+ 02:20:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260805040621.84843-1-marcochen.dev@gmail.com>
+In-Reply-To: <20260805040621.84843-1-marcochen.dev@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 5 Aug 2026 12:19:36 +0300
+X-Gm-Features: AUfX_myhIIB_JTz7NAD1bcLfDF1q2D1KmHo_OyYoZAD8hIxO2MH11qNDDtG7GMU
+Message-ID: <CAHp75VdL+NarOfkY7mOB1U3Aud-TMjM8MPEsCapjYCoL0ikpbg@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: health: max30102: fix NULL dereference in
+ interrupt handler
+To: Marco Chen <marcochen.dev@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, pmeerw@pmeerw.net, matt@ranostay.sg, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
+On Wed, Aug 5, 2026 at 7:06=E2=80=AFAM Marco Chen <marcochen.dev@gmail.com>=
+ wrote:
+>
+> The interrupt is requested in max30102_probe() and stays enabled
+> for the lifetime of the device, but indio_dev->active_scan_mask is only
+> valid while a buffer is enabled. When an interrupt arrives while no
+> buffer is enabled, the handler dereferences the NULL active_scan_mask:
+>
+>   Unable to handle kernel NULL pointer dereference at virtual address
+> 0000000000000000
 
-The veml3328_scale_vals array is declared as a flattened [4][8] array,
-so accessing a scale value requires calculating the offset of its
-(val, val2) pair using gain_inx * 2.
+>   pc : __bitmap_weight+0x64/0x98
+>   lr : max30102_interrupt_handler+0x48/0x160 [max30102]
 
-Reshape the array as [4][4][2], with separate dimensions for integration
-time, gain and the scale value pair. This removes the manual stride
-calculation and makes the relationship between the indexes and values
-explicit.
+For these two lines see the below comment
 
-Add named integration-time indexes and use designated initializers for
-veml3328_it_times and veml3328_scale_vals so both tables use the same
-index definitions.
+>   Call trace:
+>    __bitmap_weight+0x64/0x98 (P)
+>    max30102_interrupt_handler+0x48/0x160 [max30102]
 
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
----
-Changes in v3:
-- Add named integration-time indexes as suggested by Jonathan Cameron.
-- Use designated initializers for veml3328_it_times and
-  veml3328_scale_vals to keep both tables indexed consistently.
+>    irq_thread_fn+0x28/0xa8
+>    irq_thread+0x184/0x30c
+>    kthread+0x118/0x124
+>    ret_from_fork+0x10/0x20
 
-Changes in v2:
-- Reshape veml3328_scale_vals as [4][4][2], as suggested by
-  David Lechner.
-- Update read and write paths to access the scale value pair directly.
+As Submitting Patches documentation recommends these lines are not
+significant in a traceback example and may be dropped. So altogether
+drop 6 unneeded lines.
 
-drivers/iio/light/veml3328.c | 53 ++++++++++++++++++++++++++----------
- 1 file changed, 38 insertions(+), 15 deletions(-)
+> Call max30102_fifo_count() at the top of the handler and return early
+> unless it reports a FIFO sample is ready. Because FIFO_RDY is the only
+> interrupt source enabled in max30102_chip_init(), an invocation of
+> max30102_interrupt_handler() without the FIFO_RDY interrupt status bit
+> set carries no data to read and can return before touching
+> active_scan_mask. A negative return from max30102_fifo_count()
+> indicates a failed interrupt status read and is treated the same way.
 
-diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
-index 7ff1753925c4..df36c48204be 100644
---- a/drivers/iio/light/veml3328.c
-+++ b/drivers/iio/light/veml3328.c
-@@ -32,6 +32,11 @@
- #define VEML3328_REG_DATA_B		0x07
- #define VEML3328_REG_DATA_IR		0x08
- 
-+#define VEML3328_CONT_IT_50MSECS	0
-+#define VEML3328_CONT_IT_100MSECS	1
-+#define VEML3328_CONT_IT_200MSECS	2
-+#define VEML3328_CONT_IT_400MSECS	3
-+
- #define VEML3328_CONF_IT_MASK		GENMASK(5, 4)
- #define VEML3328_CONF_GAIN_MASK		GENMASK(11, 10)
- 
-@@ -89,21 +94,40 @@ static const struct iio_chan_spec veml3328_channels[] = {
-  * Precomputed scale values (micro units).
-  * Formula for calculation: 0.384 * (50000 / IT_us) * (1 / Gain)
-  * Gain indexes: 0 (x0.5), 1 (x1), 2 (x2), 3 (x4)
-- * IT indexes: 0 (50ms), 1 (100ms), 2 (200ms), 3 (400ms)
-  */
--static const int veml3328_scale_vals[4][8] = {
--	{ 0, 768000, 0, 384000, 0, 192000, 0, 96000 },
--	{ 0, 384000, 0, 192000, 0, 96000,  0, 48000 },
--	{ 0, 192000, 0, 96000,  0, 48000,  0, 24000 },
--	{ 0, 96000,  0, 48000,  0, 24000,  0, 12000 },
-+static const int veml3328_scale_vals[4][4][2] = {
-+	[VEML3328_CONT_IT_50MSECS] = {
-+		{ 0, 768000 },
-+		{ 0, 384000 },
-+		{ 0, 192000 },
-+		{ 0, 96000 },
-+	},
-+	[VEML3328_CONT_IT_100MSECS] = {
-+		{ 0, 384000 },
-+		{ 0, 192000 },
-+		{ 0, 96000 },
-+		{ 0, 48000 },
-+	},
-+	[VEML3328_CONT_IT_200MSECS] = {
-+		{ 0, 192000 },
-+		{ 0, 96000 },
-+		{ 0, 48000 },
-+		{ 0, 24000 },
-+	},
-+	[VEML3328_CONT_IT_400MSECS] = {
-+		{ 0, 96000 },
-+		{ 0, 48000 },
-+		{ 0, 24000 },
-+		{ 0, 12000 },
-+	},
- };
- 
- /* integration times in microseconds */
- static const int veml3328_it_times[][2] = {
--	{ 0, 50 * USEC_PER_MSEC },
--	{ 0, 100 * USEC_PER_MSEC },
--	{ 0, 200 * USEC_PER_MSEC },
--	{ 0, 400 * USEC_PER_MSEC },
-+	[VEML3328_CONT_IT_50MSECS] = { 0, 50 * USEC_PER_MSEC },
-+	[VEML3328_CONT_IT_100MSECS] = { 0, 100 * USEC_PER_MSEC },
-+	[VEML3328_CONT_IT_200MSECS] = { 0, 200 * USEC_PER_MSEC },
-+	[VEML3328_CONT_IT_400MSECS] = { 0, 400 * USEC_PER_MSEC },
- };
- 
- static int veml3328_power_down(struct veml3328_data *data)
-@@ -184,9 +208,8 @@ static int veml3328_read_raw(struct iio_dev *indio_dev,
- 		if (it_inx >= ARRAY_SIZE(veml3328_it_times) || gain_inx >= 4)
- 			return -EINVAL;
- 
--		/* Stride by 2 through the flattened array to match (val, val2) */
--		*val = veml3328_scale_vals[it_inx][gain_inx * 2];
--		*val2 = veml3328_scale_vals[it_inx][gain_inx * 2 + 1];
-+		*val = veml3328_scale_vals[it_inx][gain_inx][0];
-+		*val2 = veml3328_scale_vals[it_inx][gain_inx][1];
- 
- 		return IIO_VAL_INT_PLUS_MICRO;
- 
-@@ -282,8 +305,8 @@ static int veml3328_write_raw(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 
- 		for (i = 0; i < 4; i++) {
--			if (val == veml3328_scale_vals[it_inx][i * 2] &&
--			    val2 == veml3328_scale_vals[it_inx][i * 2 + 1])
-+			if (val == veml3328_scale_vals[it_inx][i][0] &&
-+			    val2 == veml3328_scale_vals[it_inx][i][1])
- 				break;
- 		}
- 
--- 
-2.52.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
