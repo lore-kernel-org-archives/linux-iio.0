@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26975343D80;
-	Wed,  5 Aug 2026 00:14:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A2642E3FE;
+	Wed,  5 Aug 2026 00:33:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785888872; cv=none; b=ZSz5MLegNDGHvL3pm6Hy3KK7Syu9Pdfb2/hNh8EwknIgGxB7q14OItDJuGo1fnPdlu+XIOv5lN+bUBomHXUv2+z99FVArNUn4IbnYH9wEH7qqG+6jXjA07aBeTtz+BT7FQZVhm1BPHQTAvpIQsWR7+/oVYaAvjRTlOAQCgIFv/Q=
+	t=1785890022; cv=none; b=MMbMz+w95l+Tr/b7zVX9CmPSGQr1EjxPJr1uMwJ3rPidKwpKjvdo4e+G3DSbIXdvmlOyXrXgz9i5tbSVDyZr+CgovTUsdyzz+YyfUnO4UJiLrHi7L6d93ot8kjQQ/XObFJUfim9rJ926St0LkIzS7apoDLtZ++raVvC5O6Mwznc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785888872; c=relaxed/simple;
-	bh=7KgHhLOEtdJ3O59rIjiiHNzN68stBdXRqIAyKkaBGk0=;
+	s=arc-20240116; t=1785890022; c=relaxed/simple;
+	bh=S/wEKZwN9oj83+4uNZtAximyr7S7iepImeaKpOEJdic=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XT+7QVpFq3muD6qPGmPVf/6weeJVt3YWVqXdag+nIh5KTc70ooRbQMH1jWtcMXlDLDgbFDV5M0rJJyN3nB+Hig9rAWh8RBPbWaCu9KKDzqzyM+Jmc2yUktUj76mm5fAk9gMV0wtergpwXgrYkLqA4eSScfZ4fQGALLdhabgDwU0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oVDsSqZd; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=X0cyjTwBn5UFdIs5qyyx7eZn45lgcYgMn2cm9DU1LFakV+IjsMHg9gt1SyPibmPzyYCLbAxEzgD41fkGS88iW6rZA972F7U7dbaVNVrhBECES5I1KbLstVJgx0qs64ZeDMAYSw002JvbJET+61IKAOogQWf+pWQ9Fd6lL+XTFKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZsAE/KR5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oVDsSqZd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 897CC1F00A3A;
-	Wed,  5 Aug 2026 00:14:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZsAE/KR5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A8461F000E9;
+	Wed,  5 Aug 2026 00:33:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785888871;
-	bh=CW7w5X7Kc7OcEIZG2VU37B9p/7O1Pd1V1X1of2ZTIEs=;
+	s=k20260515; t=1785890020;
+	bh=jf/xVNbWPols23hslUUwD7fcUT/RrrsqrpMbZwK78iA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oVDsSqZd9vKQYvQg2mhT3Ha3A6Ci6tEF4CjKEZ7TMk/ilf3j+RUZl8ImS4Tm/3CIr
-	 acWBjtXkOp13HwQJfuUfexbsLFCINwJGqN9LMWKzyHwkqoXQ+wQ+JsWWD6kKhWvP78
-	 nLBvhopqW5+fElzBp+uzG/r1f7rRXUVdLhR/jRzr6WKq3lcb8tXbfC0xLbzsMvtU6p
-	 h1yCJ6YwjUoY3H5Hp9gdQzjW9dP2DcswZfpgDZJl5ZW8Jf69ADcEhFBlselRLmbF40
-	 Xymvg4IOWZdT+oYuw8Z7PCeFN23Cy1f0wRLCXnoD5rJlINXHfqHVo5dHL5iku61Kpy
-	 tD0vK0VuKeDxA==
-Date: Wed, 5 Aug 2026 01:14:26 +0100
+	b=ZsAE/KR5jsl+73ewpPJ90yFlmGYeO7a/wU07gbrHhMBmdf2F7ePh3+D6jz4/Yvg+N
+	 675vAD3SbnXCak/e6mSmhMiirV3WDfNQEA2LDct1FWFIuqG+MNwHTbruXgTZbbWtc6
+	 MjuMfKZ/wyvQ0Kd+VFExQUnJyMNZ31FnnYVilc6wfpN8Y6QapN+M/XcDG3My7JaY3S
+	 f0NwSVZ50X7wH3OHI4nJI1uCw5K+6hRv/gDBJBV/KvkvspNC0xGWkbGohBhhbGBZQv
+	 yXlRidHfTfUNxbqlME8YG9BJw8RxuHD6fKpCPpEJhRP3jfYi0XLE6MtCpYBITsXgTI
+	 lxGgiv42yPQkQ==
+Date: Wed, 5 Aug 2026 01:33:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Conor Dooley
- <conor.dooley@microchip.com>
-Subject: Re: [PATCH v3 0/2] iio: dac: mcp47a1: add support for new device
-Message-ID: <20260805011426.30a4b5e1@jic23-huawei>
-In-Reply-To: <20260803-mcp47a1-add-support-v3-0-540e71b4fd2e@gmail.com>
-References: <20260803-mcp47a1-add-support-v3-0-540e71b4fd2e@gmail.com>
+To: kernel test robot <lkp@intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Linux Memory Management List
+ <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ netdev@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ 9a4cdc958dd79fc6c3b20b51a10debec6ca09fec
+Message-ID: <20260805013336.4bd8a298@jic23-huawei>
+In-Reply-To: <202608041404.bOHh2XuT-lkp@intel.com>
+References: <202608041404.bOHh2XuT-lkp@intel.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,32 +48,140 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 03 Aug 2026 19:32:24 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Tue, 04 Aug 2026 14:24:23 +0800
+kernel test robot <lkp@intel.com> wrote:
 
-> This patch series adds support for the MCP47A1 DAC.
+> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> branch HEAD: 9a4cdc958dd79fc6c3b20b51a10debec6ca09fec  Add linux-next specific files for 20260803
 > 
-> The Microchip MCP47A1 is a volatile 6-bit Digital-to-Analog converter
-> which communicates via I2C. It is a low-power, low-cost DAC commonly
-> used in embedded systems.
+> Unverified Error/Warning (likely false positive, kindly check if interested):
 > 
-> Reasons for adding a new driver:
-> - Existing Microchip DACs use a more complicated set of commands
->   whereas the MCP47A1 communicates via SMBus using only one command.
-> - The closest Microchip DAC already in the tree - the MCP4725 - uses
->   an EEPROM while the MCP47A1 is volatile, meaning that altering
->   the driver of the former would worsen the code flow.
-> - The MCP47A1 maps cleanly to a standard regmap.
+>     https://lore.kernel.org/oe-kbuild/202608040800.45L57Mym-lkp@intel.com
 > 
-> The driver was tested on a Raspberry Pi 4 using a breakout board with
-> the MCP47A1.
-> 
-> The datasheet can be viewed here:
-> https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/25154A.pdf
-> 
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Applied to the testing branch of iio.git
+>     drivers/iio/magnetometer/qmc6308.c:402:7: error: call to '__compiletime_assert_472' declared with 'error' attribute: FIELD_PREP: value too large for the field
 
-Thanks,
+The line in question is setting a 2 bit field (GENMASK(3, 2)) to 0.
+No idea what is triggering that warning.
 
-Jonathan
+>     drivers/net/ethernet/airoha/airoha_eth.c:3470:25: sparse: sparse: division by zero
+> 
+> Error/Warning ids grouped by kconfigs:
+> 
+> recent_errors
+> |-- arm-randconfig-r121-20260803
+> |   `-- drivers-net-ethernet-airoha-airoha_eth.c:sparse:sparse:division-by-zero
+> `-- um-randconfig-002-20260803
+>     `-- drivers-iio-magnetometer-qmc6308.c:error:call-to-__compiletime_assert_NNN-declared-with-error-attribute:FIELD_PREP:value-too-large-for-the-field
+> 
+> elapsed time: 726m
+> 
+> configs tested: 100
+> configs skipped: 1
+> 
+> tested configs:
+> alpha                            allnoconfig    gcc-16.1.0
+> alpha                           allyesconfig    gcc-16.1.0
+> alpha                              defconfig    gcc-16.1.0
+> arc                             allmodconfig    gcc-16.1.0
+> arc                             allyesconfig    gcc-16.1.0
+> arc                  randconfig-001-20260804    gcc-15.2.0
+> arc                  randconfig-002-20260804    gcc-8.5.0
+> arm                  randconfig-001-20260804    gcc-10.5.0
+> arm                  randconfig-002-20260804    gcc-15.2.0
+> arm                  randconfig-003-20260804    clang-17
+> arm                  randconfig-004-20260804    gcc-8.5.0
+> arm64                randconfig-001-20260804    clang-24
+> arm64                randconfig-002-20260804    gcc-9.5.0
+> arm64                randconfig-003-20260804    gcc-11.5.0
+> arm64                randconfig-004-20260804    gcc-9.5.0
+> csky                            allmodconfig    gcc-16.1.0
+> csky                 randconfig-001-20260804    gcc-9.5.0
+> csky                 randconfig-002-20260804    gcc-11.5.0
+> hexagon              randconfig-001-20260804    clang-24
+> hexagon              randconfig-002-20260804    clang-24
+> i386                            allmodconfig    gcc-14
+> i386                buildonly-randconfig-001    gcc-14
+> i386       buildonly-randconfig-001-20260804    clang-22
+> i386       buildonly-randconfig-002-20260804    clang-22
+> i386       buildonly-randconfig-003-20260804    clang-22
+> i386       buildonly-randconfig-004-20260804    gcc-12
+> i386       buildonly-randconfig-005-20260804    clang-22
+> i386       buildonly-randconfig-006-20260804    gcc-14
+> i386                 randconfig-001-20260804    gcc-14
+> i386                 randconfig-002-20260804    gcc-14
+> i386                 randconfig-003-20260804    gcc-14
+> i386                 randconfig-004-20260804    gcc-14
+> i386                 randconfig-005-20260804    gcc-14
+> i386                 randconfig-006-20260804    clang-22
+> i386                 randconfig-007-20260804    gcc-14
+> i386                 randconfig-011-20260804    clang-22
+> i386                 randconfig-012-20260804    gcc-14
+> i386                 randconfig-013-20260804    clang-22
+> i386                 randconfig-014-20260804    gcc-14
+> i386                 randconfig-015-20260804    clang-22
+> i386                 randconfig-016-20260804    gcc-13
+> i386                 randconfig-017-20260804    clang-22
+> loongarch                          defconfig    clang-24
+> loongarch            randconfig-001-20260804    clang-24
+> loongarch            randconfig-002-20260804    gcc-16.1.0
+> nios2                           allmodconfig    gcc-11.5.0
+> nios2                            allnoconfig    gcc-11.5.0
+> nios2                randconfig-001-20260804    gcc-8.5.0
+> nios2                randconfig-002-20260804    gcc-11.5.0
+> parisc                          allmodconfig    gcc-16.1.0
+> parisc                          allyesconfig    gcc-16.1.0
+> parisc                             defconfig    gcc-16.1.0
+> parisc               randconfig-001-20260804    gcc-8.5.0
+> parisc               randconfig-002-20260804    gcc-8.5.0
+> powerpc                      eiger_defconfig    clang-24
+> powerpc              randconfig-001-20260804    clang-24
+> powerpc              randconfig-002-20260804    gcc-11.5.0
+> powerpc64            randconfig-001-20260804    gcc-8.5.0
+> powerpc64            randconfig-002-20260804    gcc-8.5.0
+> riscv                randconfig-002-20260804    gcc-13.4.0
+> s390                 randconfig-001-20260804    clang-21
+> s390                 randconfig-002-20260804    clang-18
+> sh                                 defconfig    gcc-16.1.0
+> sh                   randconfig-001-20260804    gcc-16.1.0
+> sh                   randconfig-002-20260804    gcc-16.1.0
+> sparc                randconfig-001-20260804    gcc-16.1.0
+> sparc                randconfig-002-20260804    gcc-16.1.0
+> sparc64              randconfig-001-20260804    clang-24
+> sparc64              randconfig-002-20260804    clang-20
+> um                   randconfig-001-20260804    gcc-14
+> um                   randconfig-002-20260804    gcc-14
+> x86_64              buildonly-randconfig-001    gcc-12
+> x86_64     buildonly-randconfig-001-20260804    gcc-14
+> x86_64     buildonly-randconfig-002-20260804    clang-22
+> x86_64     buildonly-randconfig-003-20260804    gcc-14
+> x86_64     buildonly-randconfig-004-20260804    gcc-14
+> x86_64     buildonly-randconfig-005-20260804    clang-22
+> x86_64     buildonly-randconfig-006-20260804    clang-22
+> x86_64                                 kexec    clang-22
+> x86_64               randconfig-001-20260804    gcc-14
+> x86_64               randconfig-002-20260804    gcc-13
+> x86_64               randconfig-003-20260804    clang-22
+> x86_64               randconfig-004-20260804    clang-22
+> x86_64               randconfig-005-20260804    gcc-14
+> x86_64               randconfig-006-20260804    clang-22
+> x86_64               randconfig-011-20260804    clang-22
+> x86_64               randconfig-012-20260804    gcc-14
+> x86_64               randconfig-013-20260804    clang-22
+> x86_64               randconfig-014-20260804    clang-22
+> x86_64               randconfig-015-20260804    clang-22
+> x86_64               randconfig-016-20260804    clang-22
+> x86_64               randconfig-071-20260804    gcc-14
+> x86_64               randconfig-072-20260804    gcc-14
+> x86_64               randconfig-073-20260804    gcc-14
+> x86_64               randconfig-074-20260804    gcc-12
+> x86_64               randconfig-075-20260804    gcc-14
+> x86_64               randconfig-076-20260804    clang-22
+> x86_64                          rhel-9.4-bpf    gcc-14
+> xtensa               randconfig-001-20260804    gcc-8.5.0
+> xtensa               randconfig-002-20260804    gcc-14.3.0
+> 
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
+
