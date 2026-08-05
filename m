@@ -1,59 +1,37 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BF003DCD95;
-	Wed,  5 Aug 2026 07:19:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E704F3E3C4D;
+	Wed,  5 Aug 2026 07:21:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785914342; cv=none; b=BEywoMcGKDyfS/bVQaJaTo4vvno3aOz8+9N3kyH5FodONxqOhH+j9fdv8/mIcNV1bMR/DWHe+W2QsY8UAySRzxiNWhp/E5b2Lx6pn7/dRZkmfj/rXlhzN3t3HhMUqkVfkI20noSOXt+Qc9iU74rSgZMUOGLm8CdCP4+mglX43jc=
+	t=1785914514; cv=none; b=UHSS5PBD9sKWYTHdcs6Sf5W7hWKHULJCpczT9hYA2dbxCNi5z2KDXQrrTr0425jYUqhioWwt96x1c+trNFiF9fhGAHfCjDhEWknJrpWnCkhLaSBWWO/FfAH3pSCBkWO5CRMdLYbgBPdTRZseDxKnBXAhrBiHA65HsLSQL9KbsWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785914342; c=relaxed/simple;
-	bh=SUWfRwOz006w4rnX+uhSHeMauGb0CvdpxA7wkpa4hw4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=dWzStGxUBGaG4vG9XkfBW/FTL2P181HPHc/PQAU4+OJZsRwWEOxz9p9Y4sH57hxtphMJQUG15QZafpFJmLqupdYhdS7edPLzOp7NI2WVg7MQDWQrNK1qveU0GTf9qtFku7kFz9FBm1+1oQeJVRbgNMXwAKv0oU4BogFc1UZ7Jfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Jfepwt1f; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1785914514; c=relaxed/simple;
+	bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=qhHNhMhDOIUCN/KrPjwHyqJeWuy29op+yZ5czv5xFL0+haXQuKYQWkke0yXKzzRNKLmNPx2XQE3kbq9mjJQw3GEQFp/Fx6GQVjoRTcRUDDxI6Gr1OhZ1GWNfvcW/VzCavmOYZxUMONeqyA/Gk5zlxmtsuY+Acp/1EHov3b2z9T0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Hfe05xOg; arc=none smtp.client-ip=109.224.244.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Jfepwt1f"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6755ip733611333;
-	Wed, 5 Aug 2026 03:18:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=kioGU
-	QlXKd+LeAp2oGUfnjUEklCzGVTUI0Dt3AP9YHY=; b=Jfepwt1f/sm1xjR9Mn6LG
-	TwzgalH26MnbEzWsl/yzdfbGHxEl2ZGOtbLM5DdQFUhoUac5FvwfwUeM2PlowyqE
-	UPsUzqG2cGzv5OYLOkkIqx5ZoNO0eVKQjVn7hpQXTXRjibrPoaBJZm7QxBFqzLdk
-	BHPXloSxYeRYvn0Rtuj6pefJ1AtDI6zXnxtAbUjNpPMbP09P7vtPFE6hnstnnGRC
-	b3YqsKIGkZk5/HbVkOk0Brml6VlnON2vQ5gS6yMNEU+4FI3+iL6DD+MSrhqNWZv5
-	m+J7BGmsm0OtOs3eZWeysL+OPBO3fd5/PSX6MZ3Ns8gu6Qs3DL7CiFXF98KtIXZQ
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4fue73ctkt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 05 Aug 2026 03:18:19 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6757IITG052747
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 5 Aug 2026 03:18:18 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 5 Aug 2026 03:18:18 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 5 Aug 2026 03:18:17 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 5 Aug 2026 03:18:17 -0400
-Received: from HYB-e1y2fvUQ3cx.ad.analog.com (HYB-e1y2fvUQ3cx.ad.analog.com [10.44.3.60])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6757Hgx6021587;
-	Wed, 5 Aug 2026 03:18:09 -0400
-From: Janani Sunil <janani.sunil@analog.com>
-Date: Wed, 5 Aug 2026 09:17:42 +0200
-Subject: [PATCH v8 2/3] dt-bindings: iio: dac: Add AD5529R
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Hfe05xOg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail3; t=1785914508; x=1786173708;
+	bh=sNcmNScEhpmF/4cOJIi/n2ntDi0iE/3WYicZo1sq86I=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=Hfe05xOgaLxrUU4CSWee8VZ0Qco4byjmVXfTgFunwxqSGzr6Esxl8ypvFcF1SZZ2Z
+	 FFZBW/Qb/MHNi/DbAfux6r5fJg8dR5iPFHo61TFeHaM+9HYe7/igZkPhteDVcqqk8A
+	 60630TIZeDdQiUHZ5ETKWDlOgnrON/7ODHXe9q4+Ml6p/ItIOTahUm8T21kkZoKdJe
+	 ENI2bQPtIbvuqGVumY99LE0hvJD2j+jkOZaZ67tGpm9rByxHi78XIhh0aTdZI4QN5c
+	 5SbmL0rq6mfVMD3eSwdlsQbUlpM8h0vUjyiTWj1B0tGNm6jyVq4SH3LRTVRLIp8i8z
+	 nFPFRmBmgdsoA==
+X-Pm-Submission-Id: 4hFMKk3dKbz2ScQF
+From: Esben Haabendal <esben@geanix.com>
+Date: Wed, 05 Aug 2026 09:21:35 +0200
+Subject: [PATCH v3 1/4] dt-bindings: iio: accel: mma8452: Add
+ drive-open-drain
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,374 +39,56 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-ID: <20260805-ad5529r-driver-v8-2-b41781f5632a@analog.com>
-References: <20260805-ad5529r-driver-v8-0-b41781f5632a@analog.com>
-In-Reply-To: <20260805-ad5529r-driver-v8-0-b41781f5632a@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
-        =?utf-8?q?Nuno_S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Jonathan
- Corbet" <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Mark Brown
-	<broonie@kernel.org>,
-        Marius Cristea <marius.cristea@microchip.com>,
-        "Marcus
- Folkesson" <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara
-	<daire.mcnamara@microchip.com>,
-        Paul Walmsley <pjw@kernel.org>, "Palmer
- Dabbelt" <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, "Alexandre
- Ghiti" <alex@ghiti.fr>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        Janani Sunil
-	<jan.sun97@gmail.com>, <linux-spi@vger.kernel.org>,
-        Kent Gustavsson
-	<nedo80@gmail.com>, <linux-riscv@lists.infradead.org>,
-        Janani Sunil
-	<janani.sunil@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785914262; l=8927;
- i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=SUWfRwOz006w4rnX+uhSHeMauGb0CvdpxA7wkpa4hw4=;
- b=MCopLnR66QbPt/oyTtsavxBks0/DGHJigGnB1Fsccqvi1t+YFoD2LyKIuNHhfewALXQ39wV3A
- 5nwRLFqyGs6AAa00Dc5nRodqdZL0sa8tmGWhVRw9oG22OPzIeaT3M0f
-X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
- pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: QeBSatXpkRTjciKTe07KuP4C3o-j_Rb4
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODA1MDA1NSBTYWx0ZWRfXw3HGxT3eEPt6
- uD3JXqmCRtQAStI8QVwq+FTRkckc4P/tc6tmGuUm2/7U35BAWN8EZ2/+lLy+X63NrqQARryDSX5
- +LwUeaTzoixCnETXuwlaVn1NTkTXFpcejM0bQb/m+7EZbEGVPFD4
-X-Authority-Analysis: v=2.4 cv=aY9RWxot c=1 sm=1 tr=0 ts=6a72e3bb cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gEfo2CItAAAA:8
- a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=_8HuqRvhGMKECD3spBQA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-ORIG-GUID: QeBSatXpkRTjciKTe07KuP4C3o-j_Rb4
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODA1MDA1NSBTYWx0ZWRfX8HSxt3VoFQP0
- LF012liZPNQGvGWYQQ/7UCdIOoLjxe5MYcswHV94ILJbpACqjBIdhqbZux60so4eD3YpVHInqdm
- Z+V7F2ZNy1LAbzj5FAa9/aUHZHls5HJOa2QnBjeVTaN4216CE9qp+aQ4/mpHIQoLK0h8V4EzYlg
- 02lDpsMKOtPUlehB/mgW0jrW7Fkh6663gUBhE7NhImwB3V8adE6BnVnJDnbDv7jMV1ujJCEBK38
- XEp2MGllKCEzoXyWZFyQPLqYVV7KHegetQmR1b6Elv3+OMobWHmLOHvnPd1f+wY7sXehQZYP5az
- 4lpGsL1TEK/Pj9bmmAGdR/YHU/MxRP9oqDrm1nOp9OqE3QcBWyP3ecWl2gDyEiUb1E2DWfBrgAm
- a/zg1N8M42t7LszRVCXmVAT0Rtj5FdgdUJ/XOTvo3gd61kC77pMFUoNFeDgdgxfi0Gu/+MisfPB
- BXh4GOZiGgewNFaV27g==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-05_02,2026-08-04_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 bulkscore=0 impostorscore=0 spamscore=0 suspectscore=0
- lowpriorityscore=0 phishscore=0 clxscore=1011 adultscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608050055
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260805-mma8452-open-drain-v3-1-6149f406a409@geanix.com>
+References: <20260805-mma8452-open-drain-v3-0-6149f406a409@geanix.com>
+In-Reply-To: <20260805-mma8452-open-drain-v3-0-6149f406a409@geanix.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, 
+ Sean Nyekjaer <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785914502; l=1037;
+ i=esben@geanix.com; s=20240523; h=from:subject:message-id;
+ bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+ b=zeuEIpiflvNI5qTAsOwgR6ssTbK/cxdygHvk78HyZiDpvUtJXvDtz7IpBjsHSXdurCtM7WgjL
+ RuAChg2Sp6nB/nrSaJEdp2IFBfj0HjOXnt34o7lX3SJf2ej0rMpDuLm
+X-Developer-Key: i=esben@geanix.com; a=ed25519;
+ pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-buffered voltage output digital-to-analog converter (DAC) with an
-integrated precision reference.
+Add new boolean to configure selected interrupt pin to open drain instead
+of the default push-pull mode.
 
-Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   | 254 +++++++++++++++++++++
- MAINTAINERS                                        |   7 +
- 2 files changed, 261 insertions(+)
+ Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-new file mode 100644
-index 000000000000..9c390d460e5f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-@@ -0,0 +1,254 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/adi,ad5529r.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD5529R 16-Channel 12/16-bit High Voltage DAC
-+
-+maintainers:
-+  - Janani Sunil <janani.sunil@analog.com>
-+
-+description: |
-+  The AD5529R is a 16-channel, 12-bit or 16-bit, high voltage, buffered voltage
-+  output digital-to-analog converter (DAC) with an integrated precision reference.
-+  The device operates from unipolar and bipolar supplies. It is guaranteed
-+  monotonic and has built-in rail-to-rail output buffers that can source or
-+  sink up to 25mA.
-+
-+  Specifications:
-+  * 16 independent 12-bit or 16-bit DAC channels
-+  * Independently programmable output ranges: 0V to 5V, 0V to 10V, 0V to 20V,
-+    0V to 40V, ±5V, ±10V, ±15V, and ±20V
-+  * The device supports SPI communication with Mode 0 and Mode 3.
-+  * 4.096V precision reference, 12ppm/°C maximum
-+  * Built-in function generation: Toggle, Sinusoidal Dither, and Ramp waveforms
-+  * Multiplexer for output voltage, load current sense and die temperature
-+
-+  Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ad5529r.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad5529r-16   # 16-bit variant
-+      - adi,ad5529r-12   # 12-bit variant
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 25000000
-+    description:
-+      Maximum SPI frequency. The device supports SPI Mode 0 and Mode 3.
-+      Read operations are limited to 25MHz maximum.
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO connected to the RESET pin. Active low. When asserted low,
-+      performs a power-on reset and initializes the device to its default state.
-+
-+  clear-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO connected to the CLEAR pin. Active low. When asserted low,
-+      clears all DAC data registers without affecting configuration settings.
-+
-+  interrupts:
-+    maxItems: 1
-+    description:
-+      Interrupt connected to the ALARM pin. Active low interrupt output
-+      for overtemperature conditions, SPI CRC errors, and function completion.
-+
-+  pwms:
-+    minItems: 1
-+    maxItems: 4
-+    description:
-+      PWM signals connected to the TG0-TG3 toggle pins. Pulsing these pins
-+      based on trigger edge settings allows selected DACs to be updated
-+      synchronously for digital function generation.
-+
-+  pwm-names:
-+    minItems: 1
-+    maxItems: 4
-+    items:
-+      enum: [ tg0, tg1, tg2, tg3 ]
-+
-+  io-channels:
-+    maxItems: 1
-+    description:
-+      ADC channel connected to the MUXOUT pin for monitoring output voltage,
-+      load current sense, and die temperature.
-+
-+  io-channel-names:
-+    const: muxout
-+
-+  vdd-io-supply:
-+    description: Digital power supply (1.08V to 1.98V)
-+
-+  vdd-5v-supply:
-+    description: Analog power supply (4.75V to 5.25V)
-+
-+  vdd-hv0-supply:
-+    description:
-+      High voltage positive supply (7V to 45V) for channels 0 to 3.
-+
-+  vdd-hv1-supply:
-+    description:
-+      High voltage positive supply (7V to 45V) for channels 4 to 7.
-+
-+  vdd-hv2-supply:
-+    description:
-+      High voltage positive supply (7V to 45V) for channels 8 to 11.
-+
-+  vdd-hv3-supply:
-+    description:
-+      High voltage positive supply (7V to 45V) for channels 12 to 15.
-+
-+  vss-hv0-supply:
-+    description:
-+      High voltage negative supply (-22.5V to 0V) for channels 0 to 3.
-+
-+  vss-hv1-supply:
-+    description:
-+      High voltage negative supply (-22.5V to 0V) for channels 4 to 7.
-+
-+  vss-hv2-supply:
-+    description:
-+      High voltage negative supply (-22.5V to 0V) for channels 8 to 11.
-+
-+  vss-hv3-supply:
-+    description:
-+      High voltage negative supply (-22.5V to 0V) for channels 12 to 15.
-+
-+  vref-supply:
-+    description:
-+      External voltage reference supply (4.056V to 4.136V, typically 4.096V).
-+      When specified, the device uses external reference mode and the VREF pin
-+      becomes an input. The device uses the internal 4.096V precision reference
-+      otherwise.
-+
-+  spi-device-addr:
-+    minItems: 1
-+    maxItems: 4
-+    items:
-+      enum: [0, 1, 2, 3]
-+    default: 0
-+    description:
-+      Hardware address of each device, selected by the ID0 and ID1 pins.
-+      Up to four AD5529R devices can share a single SPI chip select.
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+patternProperties:
-+  "^channel@([0-9a-f]{1,2})$":
-+    $ref: dac.yaml
-+    type: object
-+    description: Child nodes for individual channel configuration
-+
-+    properties:
-+      reg:
-+        description:
-+          Flattened channel number across all AD5529R devices sharing the chip
-+          select. Within each 16-channel block, the physical channel number is reg % 16.
-+        minimum: 0
-+        maximum: 63
-+
-+      output-range-microvolt:
-+        description:
-+          Output voltage range for this channel as [min, max] in
-+          microvolts.
-+        oneOf:
-+          - items:
-+              - const: 0
-+                default: 0
-+              - enum: [5000000, 10000000, 20000000, 40000000]
-+                default: 5000000
-+          - items:
-+              - const: -5000000
-+              - const: 5000000
-+          - items:
-+              - const: -10000000
-+              - const: 10000000
-+          - items:
-+              - const: -15000000
-+              - const: 15000000
-+          - items:
-+              - const: -20000000
-+              - const: 20000000
-+
-+    required:
-+      - reg
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-io-supply
-+  - vdd-5v-supply
-+  - vdd-hv0-supply
-+  - vdd-hv1-supply
-+  - vdd-hv2-supply
-+  - vdd-hv3-supply
-+
-+dependencies:
-+  spi-cpha: [ spi-cpol ]
-+  spi-cpol: [ spi-cpha ]
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        dac@0 {
-+            compatible = "adi,ad5529r-16";
-+            reg = <0>;
-+            spi-max-frequency = <25000000>;
-+            spi-device-addr = <0>;
-+
-+            vdd-io-supply = <&vdd_io_regulator>;
-+            vdd-5v-supply = <&vdd_5v_regulator>;
-+            vdd-hv0-supply = <&vdd_hv0_regulator>;
-+            vdd-hv1-supply = <&vdd_hv1_regulator>;
-+            vdd-hv2-supply = <&vdd_hv2_regulator>;
-+            vdd-hv3-supply = <&vdd_hv3_regulator>;
-+            vss-hv0-supply = <&vss_hv0_regulator>;
-+            vss-hv1-supply = <&vss_hv1_regulator>;
-+            vss-hv2-supply = <&vss_hv2_regulator>;
-+            vss-hv3-supply = <&vss_hv3_regulator>;
-+
-+            reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            channel@0 {
-+                reg = <0>;
-+                output-range-microvolt = <0 5000000>;
-+            };
-+
-+            channel@1 {
-+                reg = <1>;
-+                output-range-microvolt = <(-10000000) 10000000>;
-+            };
-+
-+            channel@2 {
-+                reg = <2>;
-+                output-range-microvolt = <0 40000000>;
-+            };
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6c3c7d22403..320e84765ce6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1507,6 +1507,13 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
- F:	drivers/iio/adc/ad4851.c
+diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
+index b0dd2b4e116a..20701aa725d0 100644
+--- a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
+@@ -39,6 +39,12 @@ properties:
+     minItems: 1
+     maxItems: 2
  
-+ANALOG DEVICES INC AD5529R DRIVER
-+M:	Janani Sunil <janani.sunil@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
++  drive-open-drain:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: the interrupt line will be configured as open drain, which is
++      useful if several sensors share the same interrupt line. (This binding is
++      taken from pinctrl.)
 +
- ANALOG DEVICES INC AD5706R DRIVER
- M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
- L:	linux-iio@vger.kernel.org
+   vdd-supply: true
+   vddio-supply: true
+ 
 
 -- 
-2.43.0
+2.55.0
 
