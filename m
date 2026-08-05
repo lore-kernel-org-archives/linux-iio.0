@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97D5B3DDAF6;
-	Wed,  5 Aug 2026 06:43:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692283DFC7B;
+	Wed,  5 Aug 2026 06:46:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785912226; cv=none; b=Ji+IQdzRClo66VPswoYGzFENa+mbdFuSlRAK42VXjRUQ7P5qK+87w0EZYeyayQjUuS/aJXmWjafnCLvFN2j3qR7yvmT+g9u9+zTGRQgvDVmu86kCKz+OLBbjDgTm60t1gmSQy6fXYYBh/ljIk+0Ar4Ov94EDwk6BbVyYi6ZmOWA=
+	t=1785912407; cv=none; b=cOwcf734dqWJgWZ8c89F+eDxchx02IjERfFpymNVbaVY1RkvYFgEQP6gbOX+rbAkhrxc9kcuomf2/eMbW3T9AAkoCmIVdwKexko/04Z4/+HxhJVTuH4aW6oPLK4urJtHCkToupyISaExqgmy7E9Fe/hQSKF56PXYjG0nVF90NSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785912226; c=relaxed/simple;
-	bh=Mxr0tTmQ3VUDvKF8WdVMbMYTm4AB28fyLjygu5rzdFY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jwFkGDlGIgoEfU11lFGaQ5PsTrN89Ua7sYXiqCKPCx5vCIVVj6kjGlTSzcl5jaTD+2qG8JVoU8VilUKL2PZ/3foc3Awi3SkvCbq733GHAPmsyqkKhLLz+RcxB+66B2iWco1uG4v9Fjko3UhegkcSthEAxdxFwwoyS45qbTR6MSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BL4mSD85; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785912407; c=relaxed/simple;
+	bh=whKtfQLvG2JRPa8EP+38sPRZNqgNuKUVp/JUzpBTa0s=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=isAww2lJZjmPuArhiZDh5GTFzz/234oh1v99Hb95nGd3IM8U0U5/3UagPuB7x4UftfqpsyTpCzc0Zt6dJNv3wmoUqTowqex3hWY+Fth/DNcvcTN0S/05fadbWcXL+ZuBmWiKZ5yqVZsv/PMzb97jxpqAMMbcVf1MZ5RXKToTOZs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DG6/UrKc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BL4mSD85"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9255D1F000E9;
-	Wed,  5 Aug 2026 06:43:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DG6/UrKc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EA61F000E9;
+	Wed,  5 Aug 2026 06:46:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785912225;
-	bh=WsMyjdYIKXPOuGd5x/xBpP35dHsImMFYp70Om1g0Gp0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=BL4mSD85jqtJanVjO32qlGYNJKTx4DsWWVThsT7cUP+C4tE5ZQJ7rwh/mpYBE/mV5
-	 K36d3nyPqsfzUG1BmIKgWpRR6/CPMMK9pgKN43GogWIgtdhO+PskFjESsdw/wEln+1
-	 vwRy82bZ24/mWXl4ezhVaz42nPm5floq9iIlhMiwuMVtKoIJ0yrMx5hBCM7ipQ3DsL
-	 YkR1GbaF0Vka4ZJ1pdT2oHr4RCqyzyFGK/hziqHy6TWwaH06UDypOZFqROi7dU4kq/
-	 GWGBgxICyVOPKJfdd3AvFxwUTRo0flqFZLj7wi4Xy5hjRK7TSeTopCqG+vHP4/EugK
-	 gsaX6ssD4ho1Q==
-Message-ID: <4841976e-ca36-45c0-a853-75c647bf8a79@kernel.org>
-Date: Wed, 5 Aug 2026 08:43:38 +0200
+	s=k20260515; t=1785912406;
+	bh=GLHIEoomhJybC3Z+tB49LFlxjj8MddlLkN3MP2fWnW8=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To;
+	b=DG6/UrKcoP8ovIlkJhcWfW8Y/t1LgGMLvikgghd+o0Cbu21/VaShjHtopzlUzQ0Tr
+	 YnWXbcaiQTbI0S9xeq3DVN8+UDald9IQ707jRV4thj0nyu/xe2rHDZSToOQo3+oSnD
+	 x3Q643fGn6tBlU4lXmVO5j8BBUXO813VxWNth6EzuAlv6SBxCoEtEnk0UKOYCNKwUo
+	 dO2M9i+0bVI6GjxUvDg1LRbmyr8JKjGLvtYTNg0yeRinaNMs65uF6U22LVDs59JwTm
+	 nBie1Smg8IizSY8zGaUQQOvitf6PzrEk9l96HOMvIBjkbhmXp3QENb+pYeJmjaD0Px
+	 J8RlgPMojR/0A==
+Message-ID: <a225f41f-b13d-427a-b0ca-734267a8cc3f@kernel.org>
+Date: Wed, 5 Aug 2026 08:46:39 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -37,6 +37,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3 0/2] iio: adc: Add support for Texas Instruments
  ADS112C04
+From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Kyle Hsieh <kylehsieh1995@gmail.com>, Jonathan Cameron
  <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
  =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
@@ -47,7 +48,7 @@ To: Kyle Hsieh <kylehsieh1995@gmail.com>, Jonathan Cameron
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20260805-ti-ads112c04-driver-v3-0-49f436829e01@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+ <4841976e-ca36-45c0-a853-75c647bf8a79@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -92,35 +93,43 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260805-ti-ads112c04-driver-v3-0-49f436829e01@gmail.com>
+In-Reply-To: <4841976e-ca36-45c0-a853-75c647bf8a79@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 05/08/2026 07:38, Kyle Hsieh wrote:
-> This patch series introduces support for the Texas Instruments ADS112C04
-> Analog-to-Digital Converters.
-> 
-> The ADS112C04 (16-bit) is precision, low-power, delta-sigma ADCs with
-> an I2C interface. They feature a flexible input multiplexer supporting
-> single-ended and differential measurements, a programmable gain amplifier,
-> and an internal voltage reference.
-> 
-> Note: While this chip shares similarities with the ADS112C14 (currently 
-> being upstreamed by David Lechner), the register maps and feature sets 
-> are sufficiently different to warrant a separate driver. However, the
-> DT bindings and channel parsing logic have been aligned with the
-> ADS112C14 conventions.
-> 
-> This initial submission provides a minimal feature set (single-shot 
-> conversions and basic DRDY interrupt) covering current use cases.
-> 
-> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
-> ---
-> Changes in v3:
-> - dt-bindings: iio: adc: ti,ads112c04:
->   - Resolved dt_binding_check errors by removing redundant $ref for
->     standard unit suffixes and fixing YAML array syntax.
-Yet you still decided NOT TO TEST it before sending.
+On 05/08/2026 08:43, Krzysztof Kozlowski wrote:
+> On 05/08/2026 07:38, Kyle Hsieh wrote:
+>> This patch series introduces support for the Texas Instruments ADS112C04
+>> Analog-to-Digital Converters.
+>>
+>> The ADS112C04 (16-bit) is precision, low-power, delta-sigma ADCs with
+>> an I2C interface. They feature a flexible input multiplexer supporting
+>> single-ended and differential measurements, a programmable gain amplifier,
+>> and an internal voltage reference.
+>>
+>> Note: While this chip shares similarities with the ADS112C14 (currently 
+>> being upstreamed by David Lechner), the register maps and feature sets 
+>> are sufficiently different to warrant a separate driver. However, the
+>> DT bindings and channel parsing logic have been aligned with the
+>> ADS112C14 conventions.
+>>
+>> This initial submission provides a minimal feature set (single-shot 
+>> conversions and basic DRDY interrupt) covering current use cases.
+>>
+>> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+>> ---
+>> Changes in v3:
+>> - dt-bindings: iio: adc: ti,ads112c04:
+>>   - Resolved dt_binding_check errors by removing redundant $ref for
+>>     standard unit suffixes and fixing YAML array syntax.
+> Yet you still decided NOT TO TEST it before sending.
+
+Although after further looking this could be using properties added in
+iio tree, thus bot's report about failure.
+
+Well, if that is the case, that's unfortunate because if previous
+versions were not tested by you, this one cannot be tested by the bot,
+thus I look at this one as also untested.
 
 Best regards,
 Krzysztof
