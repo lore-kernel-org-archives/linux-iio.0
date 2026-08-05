@@ -1,69 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA490348C76
-	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 03:02:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A0F1D9A5F;
+	Wed,  5 Aug 2026 03:55:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785898977; cv=none; b=HneUwUxRHXxdRiCVyQtiwajWUc/fYW+PWBPmU8w2cXpkqtnK5Xdqj2u6TVGQqoELaSgUdDUlNXuiHq6TxW2C1lBFORNGjdNQxqmsRJ0wO3oMwJRxHYUkDWtDLjgSE0sRw60ZBvI1VgzDaHMjjapDH33YItpAyWhUIRJy2+ysbFI=
+	t=1785902105; cv=none; b=jrbXRm2hRvd7hVkOHgSvXNglQdTg33NMVDbYRHh2Jl+AKBJbuvdGrfHG5QdJdVpUR4+HY8MfGgW9WDA2tNfQtoyID8jvGQjQU5k0Hm2m7Jn5Ao2jwtjLXXbplrXt0iCtUK8XLKQFhliCsBUmPBlakPIIvI7jxq5ZPqMeSrVk540=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785898977; c=relaxed/simple;
-	bh=jap97A4svyHGjLLJ91pWZ4pJuBTZ6OW/+1/v1XMQF1A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sTCSZ5hDO2PLy9MI3OE6yzqL/oe5ayCKpg29eIGDW/rK9E3nHseVZ4Ld1bK4MRQDZjNbBACwzVQRX8ADQzqG/RGOfwm9YpRnO+mNF5MoBqWeKyVJEp1pra1Qmkf3jVFSQYT+SODzypiYf/wjkL7zB7hyPC7IGYHreXCQiMnxjjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y5sBPwjF; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y5sBPwjF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 975511F00A3D;
-	Wed,  5 Aug 2026 03:02:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785898976;
-	bh=I6irIAsciEVpY85696Lhao/wxVP6jdf+4qpyxXMhz0M=;
-	h=From:To:Cc:Subject:Date;
-	b=Y5sBPwjFkzV2zE6F792wpuuy7NNdksLxvLyIYQG0e1fQsdtfwj0Thguya7rlObENC
-	 eVpHc2lyKCA53w3uzCk45jaQlXWwHsWVmo6hGshFM7qgQOd3Sf5oLOfsJezNrUV9jC
-	 MISQnXEmFWq4PK7YIHvUe+Xt1VhliMe5xQRKsnhBNlfOVzENu/qp13fFMokcXreZLK
-	 b1zG2drG1M0za1yrrE1nHJGk2cJ7p2FZCSxLN4oHJHKHbxkhbB+KchElTierU2PHYB
-	 lW9Xy8eHMqgJdot9YXnM1+LZrmDS3CZfOmqy98pvfWETkKjqidQAeRSiCpC08yWL8A
-	 kOrDAJSd+YphA==
-From: William Breathitt Gray <wbg@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: William Breathitt Gray <wbg@kernel.org>,
-	linux-iio@vger.kernel.org
-Subject: [GIT PULL] Counter fixes for 7.2
-Date: Wed,  5 Aug 2026 12:02:49 +0900
-Message-ID: <20260805030250.1502786-1-wbg@kernel.org>
-X-Mailer: git-send-email 2.55.0
+	s=arc-20240116; t=1785902105; c=relaxed/simple;
+	bh=oBZk+sXuJ8SM44hLPHsRoXp2llIklhbdQbeSodJCtDM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uTQ66FdqfiiDwiQ5jpqj2Qf14sePJ1a1Svm6irL7+87qwRaI5DIo6yEAJLwKI943BKb5DAD+efFKSJhpUJIlUMQf2LiDBiaCd3eFx//pV8RiVUTXZvcPqelsr4vUzictP98N9+HUpAgAPyaONWseJuChlfXlr9/ixHNALwLb1BQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 6d5b3976908111f1aa26b74ffac11d73-20260805
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:0f7af518-ba87-48e5-88a1-a48b0aefb76c,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:20
+X-CID-META: VersionHash:e7bac3a,CLOUDID:95c0440cf884ee1151d48f6b283735d1,BulkI
+	D:nil,BulkQuantity:0,Recheck:0,SF:102|136|850|865|898,TC:nil,Content:0|15|
+	50,EDM:5,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,
+	OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 6d5b3976908111f1aa26b74ffac11d73-20260805
+X-User: lilinmao@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 845792877; Wed, 05 Aug 2026 11:54:58 +0800
+From: Linmao Li <lilinmao@kylinos.cn>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Chris Morgan <macromorgan@hotmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Linmao Li <lilinmao@kylinos.cn>
+Subject: [PATCH togreg 0/2] iio: imu: inv_icm42607: fix PM error handling
+Date: Wed,  5 Aug 2026 11:54:49 +0800
+Message-Id: <20260805035451.487465-1-lilinmao@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=902; i=wbg@kernel.org; h=from:subject; bh=jap97A4svyHGjLLJ91pWZ4pJuBTZ6OW/+1/v1XMQF1A=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFlFy8+/dXNuOsHX42/Mk2i+bGFPffC8hMye6V3ta5Y+k PHf/UOso5SFQYyLQVZMkaXX/OzdB5dUNX68mL8NZg4rE8gQBi5OAZiI6A+G/ymlTe8WuIqUzvXk la/VtD+XIXAhUyKWlX/2b43Jvz++jGP4p12mlRfTecJKfMuURgv/Y5PfxzguXzL74Ibok0IfCye 4MAIA
-X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
 Content-Transfer-Encoding: 8bit
 
-The following changes since commit dc59e4fea9d83f03bad6bddf3fa2e52491777482:
+The recently queued ICM-42607 PM support has two error paths that can leave
+the PM core's state inconsistent with the device.
 
-  Linux 7.2-rc1 (2026-06-28 12:01:31 -0700)
+Patch 1 propagates sensor shutdown failures from runtime suspend, matching
+the behavior of the sibling ICM-42600 driver. Patch 2 ensures that system
+resume restores runtime PM management on both of its error paths, so that
+a failed resume does not leave runtime PM disabled for good.
 
-are available in the Git repository at:
+The Fixes commit is in iio.git togreg and has been included in
+next-20260804. It has not reached mainline.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wbg/counter.git tags/counter-fixes-for-7.2
+Based on iio.git togreg at 0efaefce4e95.
 
-for you to fetch changes up to f1a3a9946aab611dd2200c01ff122f64b033dad2:
+Both patches were compile-tested with W=1 and checked with smatch. No
+ICM-42607 hardware or fault-injection setup was available.
 
-  counter: microchip-tcb-capture: Fix DT channel validation (2026-08-02 21:41:51 +0900)
+Linmao Li (2):
+  iio: imu: inv_icm42607: propagate runtime suspend errors
+  iio: imu: inv_icm42607: restore runtime PM on system resume errors
 
-----------------------------------------------------------------
-Counter fixes for 7.2
+ .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 36 ++++++++++++-------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
-A fix for microchip-tcb-capture to read the devicetree "reg" cell into a
-u32 variable to match the expected data type.
 
-----------------------------------------------------------------
-Babanpreet Singh (1):
-      counter: microchip-tcb-capture: Fix DT channel validation
+base-commit: 0efaefce4e95a3331550329c0078b2fb38b3ff1f
+-- 
+2.25.1
 
- drivers/counter/microchip-tcb-capture.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
