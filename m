@@ -1,96 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-54.ptr.blmpb.com (va-2-54.ptr.blmpb.com [209.127.231.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B8A3EEAD0;
-	Wed,  5 Aug 2026 16:30:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D53783F23A6
+	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 16:40:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785947404; cv=none; b=MRYSbGYa22DYKh5DYAEs/H55OG1rFON8R5bNKL7k9rO9EXVvADFLZAfcKkmifcStIoHS26LIUdHp/aRO8zBdhTHX3BBwCgPGwsT1MvzxjMWQ/x+y4o/xZ7kcI5NLPXRasvHQLV2F0eCmPQI9q/IZd7Ke/DithF+wn5jl0NftFv0=
+	t=1785948043; cv=none; b=Ula9NSgExt0NOw0roGSaGcNG7vQi5KjidFoTvqiLDvVC7uIXHjxkB+54y5XoAipnRVpj40RgPdsYY4zboefroDnuFUpWfpR1F/ZQpNXFf/LkwHvCLsxmCB8kF4EegquT9DvjUL5PeqWuJ78ROIw/wTCcS2s+GDbMQ9MKcKdciF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785947404; c=relaxed/simple;
-	bh=2SG2FZhElwQiDCbm8UKj/zw7brGqIk7YhSgEajStjIU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oZAFUecJAJjcetZJGqn9LZ/6qqBEE2VCMiO+TIjNo0U3ykZk+L67SvW9eBuc1AkZfEMIvH+IWXq6zkbL4DZjOWbBBRGT4iukz8bh2eUVLYJU67eKJ0nceMOEEMsjCwOocefnnZNKekJbQq1RRDORjkM9LbwunrhZpr0b3jbw7KQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=la2ITovw; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785948043; c=relaxed/simple;
+	bh=1eaZjSyQiauYjPvavxFDl1LvGdOwtRGiMfDerN/NcNc=;
+	h=Date:Mime-Version:To:From:Subject:Message-Id:Content-Type:Cc; b=TtiGbniD5gpi8mPKgxXbv37IxBsap/farqfJ1W0yLJ44qDb0O1ChT6TXCfSQBBVlTYLUABlOpbEUzMUMdh6vUl1ScJBjZVeghKQx8SIHxcKSsqqZY3wXLW7cECMvMxLKwGjHkN+1kdl0LtZhNKDobn1lhbla9izm7g+SDMVtVKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=VZImHwDo; arc=none smtp.client-ip=209.127.231.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="la2ITovw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F246A1F00A3A;
-	Wed,  5 Aug 2026 16:29:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785947398;
-	bh=2SG2FZhElwQiDCbm8UKj/zw7brGqIk7YhSgEajStjIU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=la2ITovwDNoQQ+lebVDhplFW1Suj90Ng1jwbBZ//p8+6pzNjsQ2D1w7dxZ6C8BK0i
-	 Q8GKbR8aUVc/H1aRMp/5UULRVTJavsVQPTXh1E/2WfmXQjz2LSPiYuXROZKy55BIP9
-	 8dHPmc6iqw18bzvvrM0aes4eaYDeAPBvrMBCd3jDNtulbCKgWFnkaq7kwqhDJZ9JUT
-	 c/MMkeYVOPaoHEsprtbLEE6RynatFn3TF/jkd7X6BEjEw4IYYZLWtqC8rT0b2nq2N0
-	 FYstJu3VFcTRWGPgGWiH//P+E76LP9spYZcKR8eVda1ji0qptPfRK/b4CgjO17dSyL
-	 EGk9konvrxUog==
-Date: Wed, 5 Aug 2026 17:29:50 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Mark Brown <broonie@kernel.org>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Kent Gustavsson <kent@minoris.se>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Daire McNamara <daire.mcnamara@microchip.com>,
-	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	Janani Sunil <jan.sun97@gmail.com>, linux-spi@vger.kernel.org,
-	Kent Gustavsson <nedo80@gmail.com>, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v8 2/3] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260805-unrefined-knelt-ef167d1ee8fe@spud>
-References: <20260805-ad5529r-driver-v8-0-b41781f5632a@analog.com>
- <20260805-ad5529r-driver-v8-2-b41781f5632a@analog.com>
+	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="VZImHwDo"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604220257; d=cherr.cc; t=1785947916; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=LnsE1iNZiHSw8OO+Ugls5I5U6nYU7LBTDmRHK5suJ3U=;
+ b=VZImHwDo0JalED+kG++QnWTV07wV81cfVk+C7p3gAVIg6XB6+fLvsdOKfQcn7dQ/HFb9gp
+ /ivk5pibGare/KttFMfhNCqLlpzAtRAPOQiCfEDeMuXpPS3WxxGNVTJRnepA3VgCIeCbms
+ jV/h+x9Htne7h5CRD/ukPQ+Dia7niPhluK2R3T1KPFHibDDSc/vhuDPgtlYkF9w3oaKm0Y
+ bAg9JzStRHaMGRk8BQNBhv7KypOyj9rAJHYs7LhzcGgwhA7sliOssHmRnX8I9/adTuZSdD
+ DXBzhBqKFiwFqwkn+UZXgrtqo5ygp4f6+OI6hZ0ybT/bpLPE5y0bX0zfVNdXqA==
+Date: Thu, 06 Aug 2026 00:38:19 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="AfwjZNltJEtqQdzn"
-Content-Disposition: inline
-In-Reply-To: <20260805-ad5529r-driver-v8-2-b41781f5632a@analog.com>
+Mime-Version: 1.0
+Received: from [192.168.9.107] ([111.40.58.243]) by smtp.feishu.cn with ESMTPS; Thu, 06 Aug 2026 00:38:33 +0800
+To: "Jiri Kosina" <jikos@kernel.org>, "Jonathan Cameron" <jic23@kernel.org>, 
+	"Srinivas Pandruvada" <srinivas.pandruvada@linux.intel.com>, 
+	"Benjamin Tissoires" <bentiss@kernel.org>
+From: "Shengzhuo Wei" <me@cherr.cc>
+Subject: [PATCH] HID: sensor-hub: fix out-of-bounds access in sensor_hub_get_feature()
+Message-Id: <20260806-hid-sensor-hub-oob-v1-1-f8e210e7eafe@cherr.cc>
+X-Change-Id: 20260806-hid-sensor-hub-oob-f316fd015b76
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.14.2
+Content-Type: text/plain; charset=UTF-8
+X-Original-From: Shengzhuo Wei <me@cherr.cc>
+Cc: <linux-input@vger.kernel.org>, <linux-iio@vger.kernel.org>, 
+	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, 
+	"Shengzhuo Wei" <me@cherr.cc>
+X-B4-Tracking: v=1; b=H4sIAPpmc2oC/x3MQQqAIBBA0avErBvQIouuEi0yx5yNhkMRSHdPW r7F/wWEMpPA3BTIdLNwihW6bWAPWzwI2VVDpzqjJmUwsEOhKCljuCymZNH32nin9GBHAzU8M3l +/umyvu8HR4BHdWQAAAA=
+X-Lms-Return-Path: <lba+26a73670a+ae85e9+vger.kernel.org+me@cherr.cc>
 
---AfwjZNltJEtqQdzn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+sensor_hub_get_feature() copies each field value with
+memcpy(..., report->field[...]->report_size / 8), a size taken only
+from the descriptor and bounded neither to the caller buffer nor to the
+field->value[] array.
 
-On Wed, Aug 05, 2026 at 09:17:42AM +0200, Janani Sunil wrote:
-> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-> buffered voltage output digital-to-analog converter (DAC) with an
-> integrated precision reference.
->=20
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+When report_size exceeds the remaining buffer (e.g. a 64-bit power-state
+field into a 4-byte int) the copy overflows the caller's stack on the
+first iteration; when report_size > 32 it also reads past field->value[]
+(one __s32 per logical value) into slab, leaking bytes to userspace via
+callers that expose the buffer (hid-sensor-custom show_value over sysfs).
+Reachable from an untrusted USB or Bluetooth HID device with no local
+privileges.
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+Bound the per-iteration copy to min(report_size/8,
+(report_count-i)*sizeof(__s32), buffer_size - buffer_index).
 
---AfwjZNltJEtqQdzn
-Content-Type: application/pgp-signature; name=signature.asc
+Fixes: 5459ada2b3cd ("HID: sensor-hub: Fix packing of result buffer for feature report")
+Cc: stable@vger.kernel.org
+Signed-off-by: Shengzhuo Wei <me@cherr.cc>
+---
+ drivers/hid/hid-sensor-hub.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 34f710c465b80a0c46cc207e3d99a07c5767f291..978335db71b09617c87e879911b8e75b6bfdebb8 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -270,11 +270,18 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 
+ 	val_ptr = (u8 *)report->field[field_index]->value;
+ 	for (i = 0; i < report->field[field_index]->report_count; ++i) {
++		int copy = report->field[field_index]->report_size / 8;
++		int src_remaining = (report->field[field_index]->report_count - i) *
++				    sizeof(__s32);
++
+ 		if (buffer_index >= ret)
+ 			break;
+ 
+-		memcpy(&((u8 *)buffer)[buffer_index], val_ptr,
+-		       report->field[field_index]->report_size / 8);
++		if (copy > src_remaining)
++			copy = src_remaining;
++		if (copy > buffer_size - buffer_index)
++			copy = buffer_size - buffer_index;
++		memcpy(&((u8 *)buffer)[buffer_index], val_ptr, copy);
+ 		val_ptr += sizeof(__s32);
+ 		buffer_index += (report->field[field_index]->report_size / 8);
+ 	}
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCanNk/gAKCRB4tDGHoIJi
-0n8CAP9UQoKgTQNzIthZtfOEAQcvA4iVbixd3DeiT1fmLwxHJgEAvjGN4gtWStZp
-TLBwYCZ6rsPwFBFzKksT74SEX9jQNwI=
-=eu2m
------END PGP SIGNATURE-----
+---
+base-commit: bf0a94fb2b59542f9dd6fea4eec67336f1ccfa56
+change-id: 20260806-hid-sensor-hub-oob-f316fd015b76
 
---AfwjZNltJEtqQdzn--
+Best regards,
+-- 
+Shengzhuo Wei <me@cherr.cc>
