@@ -1,160 +1,141 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F093C3F4B;
-	Wed,  5 Aug 2026 17:05:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84C347AF6B
+	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 17:06:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785949509; cv=none; b=YcyfUeJxDikfDv72g1Wi49qzAaMAQHA283Gny00zv/vjqDxnHvNfVcuPqBnlbSgPdNR0Nnr+egl1DAHzay9pHyK9sMF3vGwghdKmC7PReN6zm/eQPS16tmbpZexPkYQAA2v2Bp895sbqKqasx9QUCGwbH5UyN8rloAXt/VBAgBc=
+	t=1785949620; cv=none; b=HDLR6aCwKcGUTo4e2zB83UgAakI6enO4YwZbhv6OD23PE+tAQLDT/+vk+dMBF0hHCt3IEyW+o07Gd7UoHHI9VC4VQTN6/n/3Npo/0vo0M6CcCP5Xg7Auf0hi/vC3//29F2UVpCesaIgdZzmbkAYvFgi910RvL8bAQSDjAWGDwds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785949509; c=relaxed/simple;
-	bh=QiEEDunoEbE34+oEHqUg7+IJfL2ep4DHrf6JxCZvHMU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Wn0uiO1ukw9m2tnOLMcXMdYUIC2Z6woSsPSADsZZv+2ZK8NDHLfRHK2zzGReAstf0S/tHRdwq1KCp+ZV61mskqzvD16h57OEyEfwOdNhnsUxOd1OzAQFle+5OYdWe/J1VTrOCzQm6XG8jVJYFr75OIp52vDhcj4E7eCxlHCYivg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C2xiLxcq; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1785949620; c=relaxed/simple;
+	bh=m8q6OK/anRR6LU8bDyid2t7U6ZwpjLrM3FKrURqspZA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bsq78WIO2r+foQjTX/3M8pAs2V1/LWgA+MEsreiRxkUesrRtD7HuEevlJTWEwLAahQY+vCYH4Tt/TPBZTe6SR4F0vdwa7ieAePU/ZLxLL5y+OzexYnWaxdYTsI4DsVnhmt+CFBvcHHdYKIJaBkVz3wJeCmvUYPrxUg3XoQonvIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KsYu42+q; arc=none smtp.client-ip=209.85.222.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C2xiLxcq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785949507; x=1817485507;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=QiEEDunoEbE34+oEHqUg7+IJfL2ep4DHrf6JxCZvHMU=;
-  b=C2xiLxcqZMulR3CZ5UWx2tZOP2lZA5H/qZ27UtoeMd7b2wlAljANgo7H
-   jvZl3ZIdXOD6C0EHP1ulSPVtQE7TKaUPoZq3rHfwZJDcnd8MA3krjl6Aw
-   +Inainqw3SMzL3YSLV4rEMcX0TqLCkh5X5xxbm1UPnfnFfvFMVAZyM7d6
-   YF26IDRsMnmm/KKag+dfUPR7bT7BaCAioadxm8HlSQNmGjzGIIu7SBgcV
-   +oFJc4NaiygZg/1JmjLVQThcMaXfTW+WzYa+5t5ge9YWPRRiyGde5eUfG
-   zMD1DBifIn2Jg25zhr+E7+zy/PqeHNKNRRWir+ULBiH+qk3O4AM0uk0t6
-   A==;
-X-CSE-ConnectionGUID: 9THtuLdVRnKX8x/jftTLnQ==
-X-CSE-MsgGUID: 0sB3N6SGT5KbOwdbxC3I8w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11866"; a="90347763"
-X-IronPort-AV: E=Sophos;i="6.25,206,1779174000"; 
-   d="scan'208";a="90347763"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2026 10:05:06 -0700
-X-CSE-ConnectionGUID: aoTNVkWBQ+6fxFA07S6Jsg==
-X-CSE-MsgGUID: OTczlXtYRJOQtzF9crDfFg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,206,1779174000"; 
-   d="scan'208";a="263843068"
-Received: from unknown (HELO spandruv-desk2.jf.intel.com) ([10.241.242.127])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2026 10:00:56 -0700
-Message-ID: <519ed426adad9031dabe2270b27e1ef7374bcaa5.camel@linux.intel.com>
-Subject: Re: [PATCH] HID: sensor-hub: fix out-of-bounds access in
- sensor_hub_get_feature()
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Shengzhuo Wei <me@cherr.cc>, Jiri Kosina <jikos@kernel.org>, Jonathan
- Cameron <jic23@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>,
- Bakabaka_9	 <baka9@bakabaka9.tech>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Date: Wed, 05 Aug 2026 10:00:55 -0700
-In-Reply-To: <20260806-hid-sensor-hub-oob-v1-1-f8e210e7eafe@cherr.cc>
-References: <20260806-hid-sensor-hub-oob-v1-1-f8e210e7eafe@cherr.cc>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KsYu42+q"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-92e5c92c389so70784985a.3
+        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 10:06:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785949615; x=1786554415; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wcCQ5yjpmgh/+ucZRtqgqUFJTrSq89wHY1nMeO3mD/g=;
+        b=KsYu42+q3tt+0iiTxfKwjivK9ZY90Er/7pNhJEcE0WnfYN6ctkGNMRNcolNjUqjVQy
+         Cd2DMXHuMGlzpifuY8fz8qKIKdt0bf/NqmHrBAAqZPOI3SkYzHH1Y2yP8Zm+7N3oglFb
+         bPt7MwzdqRBQeGLDKM6JmhCKgYY9i5aoslo8l6uFUkf1wGV6tAoLn419wInfF2HGyF/D
+         8BBBJSuwz6zuoH/o0s67OffZJEcX3/U+fN41RHdgQb4YGFNOtbyFl3E3wbfjZ8h0OaHC
+         u7Go54Xq7vTqtXkSjszwt2DOpPjFjVxw+k1bxhIV5+kxPaRLXVOdD3r9G+pcbOwUCmQZ
+         VNQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785949615; x=1786554415;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wcCQ5yjpmgh/+ucZRtqgqUFJTrSq89wHY1nMeO3mD/g=;
+        b=gtyUCppIZsvenD8hQkZCCPnizcEk+bPNmbe1dpRkzsp/50eymiXw5wdKRfYv5RiaXr
+         joBkhrfmTRqjI/C+D9KW6BzdGrkQWU+wtvverXZLfl2OuRvnnot5XGIqS8wkSAQQeskC
+         JdNw0q/gLgUd8JS4b2mBtFlid7D8VDJbk+tGKQ5ozegp3Pl9Z5hOwaL3IGzfgRg3g4R8
+         FdQmAx5UmN22TXhSvAjHpG9nSiZJHYIwcayxMQbgYXg8SROz4EWYvUqZHsy0OaW/Ra9L
+         hDhlZDjPO/UaZ1pkTbnHWfpvLxg8FVzEKK3N/qz21fxK9rw2TVz0RUYFa9Rb2DzTMHI2
+         SjtA==
+X-Forwarded-Encrypted: i=1; AHgh+RrfmvRrzKcw3MxUa0mDIvd2xZI0LjgnURU34p3nBV1OA0s4+hcPDUQ0xTy9MLDSiRp1w+ebuNDgtbs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBfYWUrQTMW/YE2L01b7+YAcrOA0/sFd6SYnR8Q1JoHCSDFX0s
+	MYCJftgdPv7WUTgJBjwlHaCNt6couLo9ok8/nFfJGMNp+eX/dAfCwtx3
+X-Gm-Gg: AR+sD12xE+owSv1/2aISHU/D0qQ+Mj8zfK1+8qOd5ijoCCOEBS3tW3zQt8n4NZp8eqt
+	yjxgQRu3MuycaGE4u/jWMwkFoIsTTuFF8y8lqlh1uF0bWjynKyBZRcfk7bQhrOp25V7iLZmM6ba
+	XUSq6qTjApUxMXGn+lLziTwKJoZAr0smTuz3btvL5ZtfenBUmntyEeWyt83Ot6ngORjKWr8TGSM
+	bSQekvNt8EldupWq6DYrVtOYDZ98PCQFi6tI/8+EywL4uDp5m5NOCaxj573HeBn17/FvLZGRmPM
+	yF5V0otC9iXoMOe+H95vL0wgYr5/ARd4rRSpUlWiUnyBU7FXYklHB0PdPYQeh1Kvy+X8QnaNm7A
+	u9VC1lZHxaNB/hPDa1+HccrXTVTDqCNOv5eyUbmXxGZKhY3ppMsCrLXLlXCbyCCvYMiUH/DbsRk
+	6y0nclGM5ZUAZbxEjjqoNIgbDfIcKwZlApqdM+RTgYv7kdX/OligxPl8y653I2M41xzSAxGEa9o
+	GilHI3Rh29HSA==
+X-Received: by 2002:a05:620a:a502:b0:923:7821:dc0d with SMTP id af79cd13be357-93649267a9fmr689507285a.33.1785949615468;
+        Wed, 05 Aug 2026 10:06:55 -0700 (PDT)
+Received: from louisarchdesktop ([2601:184:417f:5ad5:c570:9008:5a2b:8db7])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9364a3fc9bbsm196220785a.10.2026.08.05.10.06.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 10:06:55 -0700 (PDT)
+Date: Wed, 5 Aug 2026 13:06:51 -0400
+From: Louis Adamian <adamianlouis@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: pressure: ms5637: Add variant specific
+ temperature compensation
+Message-ID: <20260805130651.4aceb71f@louisarchdesktop>
+In-Reply-To: <aisNMmwMREF7Iga6@ashevche-desk.local>
+References: <20260610020458.104818-1-adamianlouis@gmail.com>
+	<20260610020458.104818-3-adamianlouis@gmail.com>
+	<aimvBvJp8CsNKlPU@ashevche-desk.local>
+	<20260611151026.4abf8804@louisarchdesktop>
+	<aisNMmwMREF7Iga6@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 2026-08-06 at 00:38 +0800, Shengzhuo Wei wrote:
-> sensor_hub_get_feature() copies each field value with
-> memcpy(..., report->field[...]->report_size / 8), a size taken only
-> from the descriptor and bounded neither to the caller buffer nor to
-> the
-> field->value[] array.
->=20
-> When report_size exceeds the remaining buffer (e.g. a 64-bit power-
-> state
-> field into a 4-byte int) the copy overflows the caller's stack on the
-> first iteration; when report_size > 32 it also reads past field-
-> >value[]
-> (one __s32 per logical value) into slab, leaking bytes to userspace
-> via
-> callers that expose the buffer (hid-sensor-custom show_value over
-> sysfs).
-> Reachable from an untrusted USB or Bluetooth HID device with no local
-> privileges.
->=20
-> Bound the per-iteration copy to min(report_size/8,
-> (report_count-i)*sizeof(__s32), buffer_size - buffer_index).
->=20
+On Thu, 11 Jun 2026 22:32:02 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-There was a patch posted "PATCH v2] HID: sensor-hub: Fix out-of-bounds
-write in sensor_hub_get_feature"
-and I did ACK. But checked it didn't have correct CC list.
+> On Thu, Jun 11, 2026 at 03:10:26PM -0400, Louis Adamian wrote:
+> > On Wed, 10 Jun 2026 21:37:58 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
+> > > On Tue, Jun 09, 2026 at 10:04:58PM -0400, Louis Adamian wrote:  
+> 
+> ...
+> 
+> > > >  struct ms_tp_dev {
+> > > >  	struct i2c_client *client;    
+> > >   
+> > > >  	const struct ms_tp_hw_data *hw;
+> > > >  	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
+> > > >  	u8 res_index;
+> > > > +	const struct ms_tp_comp_consts *comp_consts;    
+> > > 
+> > > Please, check with `pahole` if this is the best layout.  
+> > 
+> > I will correct the packing on this per pahole's finding.  
+> > > >  struct ms_tp_data {
+> > > >  	const char *name;
+> > > >  	const struct ms_tp_hw_data *hw;
+> > > > +	const struct ms_tp_comp_consts *comp_consts;
+> > > >  };    
+> > > 
+> > > Can this be simply embedded into ms_tp_dev (and copied there if
+> > > required)?  
+> > 
+> > Copying in ms_tp_comp_consts provides no benefit over
+> > referencing the pointer; the values are per-descriptor, not
+> > per-instance and never modified. I'll keep the pointer (same as
+> > ms_tp_hw_data).  
+> 
+> Okay, let me ask differently then: Can we use the same data type in
+> ms_tp_dev instead of adding basically the same fields as in
+> ms_tp_data?
+> 
+Sorry for the very slow reply. Yes, for v3 ms_tp_dev will hold a single
+const ms_tp_data *data instead of its own hw and comp_consts. This
+drops the duplicated hw that predates this series. 
 
-"
-Fixes: 5459ada2b3cd69 ("HID: sensor-hub: Fix packing of result buffer
-for feature report")
-Cc: stable@kernel.org
-Assisted-by: OpenAI:GPT-5.5-Cyber
-Signed-off-by: Xingrui Li <baka9@bakabaka9.tech>
-"
-
-Xingrui, Please resend to all in this list here.
+One thing worth noting before I do that: ms_tp_data is currently
+private to ms5637.c and will need to be moved to ms_sensors_i2c.h for
+ms_tp_dev to point to it. I don't think this is a problem; it matches
+how ms_tp_hw_data is defined now, but let me know if you would like to
+avoid it.
 
 Thanks,
-Srinivas
-
-
-
-
-
-> Fixes: 5459ada2b3cd ("HID: sensor-hub: Fix packing of result buffer
-> for feature report")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Shengzhuo Wei <me@cherr.cc>
-> ---
-> =C2=A0drivers/hid/hid-sensor-hub.c | 11 +++++++++--
-> =C2=A01 file changed, 9 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
-> hub.c
-> index
-> 34f710c465b80a0c46cc207e3d99a07c5767f291..978335db71b09617c87e879911b
-> 8e75b6bfdebb8 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -270,11 +270,18 @@ int sensor_hub_get_feature(struct
-> hid_sensor_hub_device *hsdev, u32 report_id,
-> =C2=A0
-> =C2=A0	val_ptr =3D (u8 *)report->field[field_index]->value;
-> =C2=A0	for (i =3D 0; i < report->field[field_index]->report_count;
-> ++i) {
-> +		int copy =3D report->field[field_index]->report_size /
-> 8;
-> +		int src_remaining =3D (report->field[field_index]-
-> >report_count - i) *
-> +				=C2=A0=C2=A0=C2=A0 sizeof(__s32);
-> +
-> =C2=A0		if (buffer_index >=3D ret)
-> =C2=A0			break;
-> =C2=A0
-> -		memcpy(&((u8 *)buffer)[buffer_index], val_ptr,
-> -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 report->field[field_index]->repor=
-t_size / 8);
-> +		if (copy > src_remaining)
-> +			copy =3D src_remaining;
-> +		if (copy > buffer_size - buffer_index)
-> +			copy =3D buffer_size - buffer_index;
-> +		memcpy(&((u8 *)buffer)[buffer_index], val_ptr,
-> copy);
-> =C2=A0		val_ptr +=3D sizeof(__s32);
-> =C2=A0		buffer_index +=3D (report->field[field_index]-
-> >report_size / 8);
-> =C2=A0	}
->=20
-> ---
-> base-commit: bf0a94fb2b59542f9dd6fea4eec67336f1ccfa56
-> change-id: 20260806-hid-sensor-hub-oob-f316fd015b76
->=20
-> Best regards,
+Louis 
