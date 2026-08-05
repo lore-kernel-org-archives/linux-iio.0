@@ -1,142 +1,134 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F103F4845
-	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 09:20:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785921619; cv=pass; b=RcD5T8b4q4qEZvYostAil7Xfdv8AS+zLcpSRAx1ZSVcE/ySHWOBsC6Zg05EY1fzoGYhrmZy1axWn8oHB6Ms/C8VsmzZecMvwRJcWxho/leavokzebBqsIL8erANRvohqydiQV9OBpuV6NWfHABKbkVVGrCdQp69vyO3Iiomvtj0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785921619; c=relaxed/simple;
-	bh=axlEM3fgX5sf6tpDr6oDm62vYzzd5lG+OjtCYy4uiGE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=C0hc903QWTyGDVyjYk3nGQgioKvWySLJACq4sEicKX7jBmLpg3wNoHrQ3+qv9lFqr7JLAnMvxeLnh8h7lpXe3W11wylF4P3/vCx4QelA8/eh5e2hemZucQILezyp5xXK7BLtEtfERkCnCczfpbQwHQLYB3o6B2JLDZQfBxoeKfI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a4Dw0dn2; arc=pass smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D772D403EA0;
+	Wed,  5 Aug 2026 09:44:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785923070; cv=none; b=QgOPnw6OUivlRHDhCGRq+ek/rHEiAEH9kQzPvi2rcI10p8doKfv3wE8ldEIcfysgwTxG11Y0B0Ax0kYpWPBXnCzDAgwWlVPrWfn1qQIx79EH1LQnaRbQEDwuv5BoAqXrbAZZlKNic7qMpxhUL1UIrlDPOe9pnGe+CQs+7hWYIG0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785923070; c=relaxed/simple;
+	bh=JpUpg6pBYE59cria0Nsx4NjW4BZpnViIeVnstnAJCWU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RtIKaBYaj/tGN3cEQUcCmLKqMl3a6IQhYnXieYzndDFlTBZRlRAp4EyoF+yP5ZxyFF2ir72DmK1guYN9CggR1i1BqjPMpvuzeF8D/Lldd08qrXcOBCN5JEHcqbOisn9AKj6h9u9HgB/uOA4vSxRM0U0Z3DCPv8Mhy2vRtTHX0B4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=WpUfOyxU; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a4Dw0dn2"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c15dd4b9132so131771066b.1
-        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 02:20:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785921614; cv=none;
-        d=google.com; s=arc-20260327;
-        b=ruSmsqLHuGQL2reLNd/vVeYAZIVylUZ7kaLHIA+Cb5Z4mZNyC4MhB2RUQd9Xvk1VgJ
-         jBHS+P7GduTbqoZHn5Qa13KhAyrR5XTQokTeuEHlFavzeCzdLT4BYL3NhxGpYNgTfBad
-         V79MfJYfPEedbJCy01GhoGKq5IUKvuQlMIXEZwrBvwlyiJcwWxWHuAFS2dqH+bIQm5MY
-         gTiW/ZACOfKzznD+PHidIQkt0dKAsv5KNCkxUafx4MsilehyZ05dggfSRybd7Lcac14v
-         19yMieyZxLOV15iEcech9nv7RNN4a/JCQu//MMefhef2xZZbWmBS+Iux1kfrz4LcPucV
-         2uBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=dlwkeDo6yXakPtOLdepmMmrxJfsb1eamCAvds4wEgrE=;
-        fh=eNcwtrjURPM0Sbl367Uy0zWUAsLVTOPmI6iwYWqjSvE=;
-        b=X84ibySwAybBNNpHa/daK96T0lIYiIdxzGbnAsOu8laf7n/MV8mlIPgNDvJxxt00Fp
-         OzmTzIjRpSYmbQlkuhwMGyQm4hUoHykdMAgcRjc51FXL0dSJVDk9ch6+/3SRaC0WlmSs
-         JLyp81j3GFxAND1EmOfQM10X/YLUCu1i4E998efrOk69j8SfDrTzbTRsiRBlWzdULm3p
-         N9GxYHN5FRaT55w0RtW06U8juzEz+KgZ1nU67asnZ4gnraTjntZsonaFQBkXKwQqj+oZ
-         XYS4eoLKxFuwhDOioMTaUgx8YviaRGGKKBbdX0dCXIMBkz3Fo4UyqWKzUp+PUD8saFtA
-         dIMg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785921614; x=1786526414; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=dlwkeDo6yXakPtOLdepmMmrxJfsb1eamCAvds4wEgrE=;
-        b=a4Dw0dn2SXCv/uMK/WYFUf/BgcE4Jki1bsz7mAHMKhOX6a7jIV7GdfF2L4t2mQhoFQ
-         3m0w8UV7qadraxoTPv256Hlkdn+qr1yAiiL5glZyQ2mlciFJHbhzDx3wXrIOgUnte2Ss
-         QEYobHz0wSz59Cb3/UdC/RHdZjTcYltnccXAftVgIpfwmeg7cw6KTIlyRUoK0ITz3RLw
-         vN6uwhPqZNXoQUDMUGskKuwtguynuJRlxF7F1vkyey3WpTpt7LodPUqRcdWFI3qMDka1
-         7GzDMRZW+61HXCUoA3Ijb/W1OwXaGZCoSU+BpIvXIDTzwZP900na6xdorEoznEuVPYwa
-         Z96Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785921614; x=1786526414;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=dlwkeDo6yXakPtOLdepmMmrxJfsb1eamCAvds4wEgrE=;
-        b=GyR6GnK9xkVCBFl4Irp08gg6vx/zkejVItbBHwIYD3kAo2/vWjBT6ElKfcDwBIDVn+
-         +EiaEdB+mJeNd115E1PKBes34HRQp7bfLWpRl7GzbKFt0VaE4J1IIjWmNR900Vb98A61
-         o9hs/cGiUexmSk6NeD7yG7hYl1v+aNoloqrXwpHcQaslAJMtP6R6ihzDWumpC+LJApuC
-         Cg8uAVhmG88Xzpc3VQBxEqOxGvYsH2BB8nrXGIa+5eMtS7IiDU3LLsG5tchg+tufLU52
-         6Bk02gYaPxElccip6Ptl/daNtNV1bFK8nJGZLdTJgOUDQtEQE/nSLGhOtt79H1H2CPpF
-         fOOw==
-X-Forwarded-Encrypted: i=1; AHgh+RqV1Jt3vyAUU9Ti26trDoJVd0bxxlQ+w5Vv4wKQg0M2BYSG865QuSN/lgzzlZhgAYQEQPshxtwinno=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrA59jnsukhxBXq/0D8kM/4ahiiQvGYVQ6ibmdg9tPqeGaUiCs
-	jmB512Ko0SS0+ty0XkPjU/Mz/9uy1SjipMngx4NCVsG8hkeK83AB06SCU82k7fSJ+4Fr/1YSUJn
-	hGun1ucbfoh/UrzC2wjExbqd80VaemE4=
-X-Gm-Gg: AR+sD10POOVfwoeQNIbKAkrHkgJVfhksc34i7wbDtgA9wwiOLSUteSfs+U2nRVCNwMY
-	7AU02gE+M13GYiZqa937EL6wrmp+E51gQWkP4wliHb0TUfLXjjJ5Wh3qraCW7y37WXOauxOprBm
-	G8reYUIEAz9troILoZqZ9EyjvT9I9xBts9rFXLdcdjKxIb1c6P0NnJCChYGP59f0xOuBAwAPVP8
-	3xqlkeVgHRmZ6b4Xy4/OnB0IWtogWG1rnmQp3vDPsIWHdrCMhFbwf2vsGbDypKX8l4z98UtcJ2U
-	XAbAmM/l4WfDfuKpV6kNl7qv02SdEfFenU6OQTT6iI6n1WRA41YS7hQE7FeN9u+++Y08Y/HJDKF
-	bACH8Sdi3zV3eJDVMtqXFnEhI1kf0fV61K2cUL6YJc1DP7a9F6ZePssluRpdqvcXiTnyQ4J4Dfe
-	5AzKcI5j4eVLRoUNh2hZL/7F9or+YpANSoaS3vw3/3ETzHvcC5RmGfjiYGkSJIsI0=
-X-Received: by 2002:a17:907:3e22:b0:c05:b9db:68cc with SMTP id
- a640c23a62f3a-c203997b6e4mr292585966b.0.1785921614024; Wed, 05 Aug 2026
- 02:20:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="WpUfOyxU"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6758fMQg413574;
+	Wed, 5 Aug 2026 05:44:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=4WPSCb6+vNzQEfakDFWEQHhz0zA
+	KSp5niYQF0ZwJWpo=; b=WpUfOyxU9axwj2RRJZTktG02lFurvvYwJagrYHHRmGJ
+	5ytgTXWXCe9v0MZ8ck/By6qujSb4A2lTI9jQ048LdKXqTLbh2Lfl37AXNUXQC4oX
+	/L5n4tWlUEkCdM7T9qOc7dSn+KcqX8zv2l9pKroeySD7Gv754WWA+jH5CmmLzotJ
+	O586gJgcg7TshKPhXLOofkbfjvjaarEQmvplPQotwIxZGruEQzVjFUyO3ldSyzVC
+	s8BoxpwFVMCmFXF/mdcPHM5jBhY7zgrQoqLqHdWIhoLfr3ihpF2WEpWgHWTpvD/j
+	4DTsfOtokgPSP/i2Z+zUqRy35p6LCNVMykHF33LwCtg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fue6wnc92-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 05 Aug 2026 05:44:24 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6759iMRK004988
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 5 Aug 2026 05:44:23 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 5 Aug 2026 05:44:22 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 5 Aug 2026 05:44:22 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 5 Aug 2026 05:44:22 -0400
+Received: from HYB-li3PrmDPxTz.ad.analog.com (HYB-li3PrmDPxTz.ad.analog.com [10.48.65.201])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6759iBgH028984;
+	Wed, 5 Aug 2026 05:44:13 -0400
+From: Andrei Stancovici <andrei.stancovici@analog.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David
+ Lechner" <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, "Rob
+ Herring" <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Conor
+ Dooley" <conor+dt@kernel.org>,
+        Liam Beguin <liambeguin@gmail.com>, <linux@analog.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Andrei Stancovici <andrei.stancovici@analog.com>
+Subject: [PATCH 0/3] iio: adc: add LTC2499 features support
+Date: Wed, 5 Aug 2026 12:41:26 +0300
+Message-ID: <20260805094135.11762-1-andrei.stancovici@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260805040621.84843-1-marcochen.dev@gmail.com>
-In-Reply-To: <20260805040621.84843-1-marcochen.dev@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 5 Aug 2026 12:19:36 +0300
-X-Gm-Features: AUfX_myhIIB_JTz7NAD1bcLfDF1q2D1KmHo_OyYoZAD8hIxO2MH11qNDDtG7GMU
-Message-ID: <CAHp75VdL+NarOfkY7mOB1U3Aud-TMjM8MPEsCapjYCoL0ikpbg@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: health: max30102: fix NULL dereference in
- interrupt handler
-To: Marco Chen <marcochen.dev@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, pmeerw@pmeerw.net, matt@ranostay.sg, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=SdzHsPRu c=1 sm=1 tr=0 ts=6a7305f8 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gM_vYgSqSg-Sw1jdCGIA:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: 6_J2YAandXO6cS0uaLaYLpJnCKj0EEm3
+X-Proofpoint-GUID: 6_J2YAandXO6cS0uaLaYLpJnCKj0EEm3
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODA1MDA3NyBTYWx0ZWRfX5IZW48n79ck3
+ FN/CjWgijiin3iI7lQyZ4vh8vrnlJIUZZrDmRQpYb46kS1WMeXt8lw8DhjcQxiF8uJF4BLPuK32
+ rup6tnsqnZRbKAR+UvWY0dbEJSZOIv/7Ilk5OH1EC81QJUZNwkD1agSFJcFy2R45NV8OfYPW+l2
+ 0IMBCyR5iYNEIvhxT6ZWAyHpfcWxAb6vfznxBsw5JOqcAUvCtcPA/F4fyFk7SsoQ5xtnkHPkxp3
+ GowMxJgOGH2xtrmCtG2ekXsrxoqypw92T4rPQb56ljk5jYJwfUvd79/G6qk4wEXKSe0xPXcqB0F
+ gvo6yivR1HIWCRXuQsfA5FhaBVCPYveknQKNEioMyIzOlK4e7NevU/CChPuCxJnf9tZUjyFVYPC
+ 1zfzTra/rc8dqxgxOXwQCzrQK9awkFAdkN20bynh2DgoYpFaFSa33CJ2Elj5eqOs3oYtWrRek5y
+ Y4BvIPbwxHWyk1Jmn9Q==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODA1MDA3NyBTYWx0ZWRfX2Fw5vUrXwrG4
+ SzvtuxwCM8a2JQnDwiQ+phcH4LxglnvToizFKRnSpNnyjsFeCmdWtXuuMhZbkNNFBPu+VerqYr7
+ xZm23+HNaxMH2wUsavBCLguVese7MFrola1RykbO+uM/cjcdFHON
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-05_03,2026-08-04_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 priorityscore=1501 spamscore=0 phishscore=0 suspectscore=0
+ malwarescore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1011
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608050077
 
-On Wed, Aug 5, 2026 at 7:06=E2=80=AFAM Marco Chen <marcochen.dev@gmail.com>=
- wrote:
->
-> The interrupt is requested in max30102_probe() and stays enabled
-> for the lifetime of the device, but indio_dev->active_scan_mask is only
-> valid while a buffer is enabled. When an interrupt arrives while no
-> buffer is enabled, the handler dereferences the NULL active_scan_mask:
->
->   Unable to handle kernel NULL pointer dereference at virtual address
-> 0000000000000000
+This series adds LTC2499 support on top of the existing LTC2497 driver.
 
->   pc : __bitmap_weight+0x64/0x98
->   lr : max30102_interrupt_handler+0x48/0x160 [max30102]
+It includes:
+- a small binding title correction for LTC2499,
+- the LTC2499 internal temperature channel,
+- the LTC2499 2x conversion speed mode exposed via sampling_frequency.
 
-For these two lines see the below comment
+Validation performed on Raspberry Pi 4 hardware with an DC1012A-A board:
+- temperature raw/scale/offset read correctly,
+- voltage channels remain sane after temperature reads,
+- sampling_frequency 1x/2x switching works,
+- pyadi-iio LTC2499 validation passed.
 
->   Call trace:
->    __bitmap_weight+0x64/0x98 (P)
->    max30102_interrupt_handler+0x48/0x160 [max30102]
+Andrei Stancovici (3):
+  dt-bindings: iio: adc: lltc,ltc2497: add LTC2499 to title
+  iio: adc: ltc2497: add LTC2499 internal temperature channel
+  iio: adc: ltc2497: add 2x conversion speed mode
 
->    irq_thread_fn+0x28/0xa8
->    irq_thread+0x184/0x30c
->    kthread+0x118/0x124
->    ret_from_fork+0x10/0x20
+ .../bindings/iio/adc/lltc,ltc2497.yaml        |   2 +-
+ drivers/iio/adc/ltc2497-core.c                | 221 +++++++++++++++++-
+ drivers/iio/adc/ltc2497.c                     |  37 +++
+ drivers/iio/adc/ltc2497.h                     |  36 ++-
+ 4 files changed, 284 insertions(+), 12 deletions(-)
 
-As Submitting Patches documentation recommends these lines are not
-significant in a traceback example and may be dropped. So altogether
-drop 6 unneeded lines.
+-- 
+2.43.0
 
-> Call max30102_fifo_count() at the top of the handler and return early
-> unless it reports a FIFO sample is ready. Because FIFO_RDY is the only
-> interrupt source enabled in max30102_chip_init(), an invocation of
-> max30102_interrupt_handler() without the FIFO_RDY interrupt status bit
-> set carries no data to read and can return before touching
-> active_scan_mask. A negative return from max30102_fifo_count()
-> indicates a failed interrupt status read and is treated the same way.
-
---=20
-With Best Regards,
-Andy Shevchenko
