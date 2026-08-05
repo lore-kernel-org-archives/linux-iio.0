@@ -1,142 +1,114 @@
-Received: from mx.hiro.moe (mx.hiro.moe [118.91.186.92])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-59.ptr.blmpb.com (va-2-59.ptr.blmpb.com [209.127.231.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 881023DAAC5;
-	Wed,  5 Aug 2026 19:07:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.91.186.92
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E3243E9C32
+	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 21:15:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.59
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785956866; cv=none; b=YCFPypYeQ61ttT3TYv7r7h3zCT0efmvPemZ5fzkRA35+xcW/B63pE4wQ1WXUpkGGbfIjNhiRemaLMdw3phUl1TSdFArCtZiYh+zmqo+2SQaffSa4St9kvKyLjMgSX1jz5PWzekkrorBChJI82BsqjK8jXpjdVtwARjyiGFA3wmA=
+	t=1785964524; cv=none; b=IEBGTZE4agETR2xRzjcpUhu8ZAsgc2De7Yx+JlZU5pGx1MlORrxXD5eoSqgZo8HZDyevI5wQRt3BQHtlkbBHh2RufRSCCQLylH/q0GUUrXPGTPAUs3yAgv/NuurXMb+Mu87x+hpZ584df8VIroQMon4N6yZbhk57ao+g+oAMvcI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785956866; c=relaxed/simple;
-	bh=LcfOuQL/DTf+VuNERCxYkeZGTFdnIPrpgO4tHX6l0v8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QR8x11donaORSS8TD/ltXIErsutWkycakcnA3cgZP1jBb9alDlrfIdsZsSqbSXgQM1rVwwPZfSVs0MA1KnWkQzYpEhPSCQiyAVtsQHWSVKneyt0w/iAiEGsS5rO91KoUmyb1JsduR3wAL0jNuL25EePHuvScnf5dRt2W9aToGWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bakabaka9.tech; spf=pass smtp.mailfrom=bakabaka9.tech; dkim=pass (2048-bit key) header.d=bakabaka9.tech header.i=@bakabaka9.tech header.b=RM7x/1DH; arc=none smtp.client-ip=118.91.186.92
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bakabaka9.tech
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bakabaka9.tech
+	s=arc-20240116; t=1785964524; c=relaxed/simple;
+	bh=rYfqoIFNwjvCC+6kagJIIOet3GAFYFzNfC6GCrz6IBQ=;
+	h=Cc:Subject:Mime-Version:Content-Type:To:Message-Id:From:Date; b=IafuXPYxs1ttkHh2O2hym5CvVdchk8jc6Q6C0yaKR8b1mbZuDsQ6BEnKnUUQ8LBvpDVaTsf9dWOR4CDIOUotSh6uuGnuDwsjYDWAkFTb6yFu30FqrSW6IAmNDBf3Wn4R/8UMnIYGIn+cdPn/pyg6dlKsKf0ObjQdskLd/jNveY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=vyDVk+y1; arc=none smtp.client-ip=209.127.231.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bakabaka9.tech header.i=@bakabaka9.tech header.b="RM7x/1DH"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id BBF53C99E5;
-	Thu,  6 Aug 2026 02:58:12 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bakabaka9.tech;
-	s=dkim; t=1785956295; h=from:subject:date:message-id:to:cc:mime-version:
-	 content-transfer-encoding; bh=lvYoLdsKTcl0fSewV/cx+DkK9/GJsf16sAKIu/NWIVc=;
-	b=RM7x/1DHlrEhscKnRluSrdgfTCWts4zXjl+WtSFS0Sy+rmfRxXnh3tLOvvqWloPECHjQjX
-	7xCBMur8lelytBoec5sSQKOSFipS1l91PM2p75pAJRrp79Xrjwl7Ix3GUGEVnOogQE6+6P
-	vipwIXBwA0VHH78KnS27XX45LgZodVUzXCxF+dIodYrJSMO8JZpToBih3xRV/TzzkNQ1Vk
-	DsE21/78X6ZP9H0uQnb+s5WpPXmGwewaYly1f+cxnODUiGNJKLOUBJ0fcXcMqAyu2JDFvn
-	MavtD0jMNq4kv2zMLtMWpxX2wwKLHfmFEBF/DhT7R85k3j+2muWrHm98Vjjtkg==
-From: bakabaka9 <baka9@bakabaka9.tech>
-To: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com,
-	bentiss@kernel.org
-Cc: linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Xingrui Li <baka9@bakabaka9.tech>,
-	stable@kernel.org
-Subject: [PATCH v2 RESEND] HID: sensor-hub: Fix out-of-bounds write in sensor_hub_get_feature
-Date: Wed,  5 Aug 2026 18:57:53 +0000
-Message-ID: <20260805185753.3069-1-baka9@bakabaka9.tech>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="vyDVk+y1"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604220257; d=cherr.cc; t=1785964502; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=DOdeTHScjlg8KvRPtx1PQYGvpV3GwXW8tvnccpldDFc=;
+ b=vyDVk+y1D1boASSO3/8EkkQMJuSdmz8r7iUnHR091TlCQ+T3lPzi/MeDehtE3TgmQsOAxO
+ HFzS2fKKC3yK3wRddUCSEQrgIOChA3aSKEJCNGpxSoOdXbZP5BH4KOYP4vPCGNqB1Y++lG
+ 27VC2uUPCFm8upPH0XSB6lnzOfDGPY+/P7Qip9rpNeznxP7h3nF4tb8mnTbIggO3eBEvBX
+ oJWHMbSv4hdlJ6ok5E5rsw9QB94BFGTucFauNmUgg0/ysKr2o6PuWK8oUyxehkiyS3pbbO
+ j8YHoHqUljH8yeRWHz/wYc7MRB5omnABuEIug38wtdH0+4QbfOixjHuE/LgRog==
+X-Change-Id: 20260806-fxls8962af-fifo-c3812fd02eeb
+Content-Transfer-Encoding: 7bit
+Received: from [192.168.9.107] ([111.40.58.194]) by smtp.feishu.cn with ESMTPS; Thu, 06 Aug 2026 05:15:00 +0800
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
+	"Jonathan Cameron" <jic23@kernel.org>, <stable@vger.kernel.org>, 
+	"Shengzhuo Wei" <me@cherr.cc>
+Subject: [PATCH] iio: accel: fxls8962af: clamp FIFO sample count
+X-Lms-Return-Path: <lba+26a73a7d4+d36c15+vger.kernel.org+me@cherr.cc>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+To: "Jonathan Cameron" <jic23@kernel.org>, 
+	"David Lechner" <dlechner@baylibre.com>, 
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+	"Andy Shevchenko" <andy@kernel.org>, "Sean Nyekjaer" <sean@geanix.com>
+X-Original-From: Shengzhuo Wei <me@cherr.cc>
+Message-Id: <20260806-fxls8962af-fifo-v1-1-bd9d27047fee@cherr.cc>
+X-Mailer: b4 0.14.2
+X-B4-Tracking: v=1; b=H4sIAMync2oC/x3MQQqAIBBA0avIrBNsArGuEi3MZmogLBRCCO+et HyL/1/IlIQyTOqFRI9kuWJD3ykIh487admaAQ1a44zVXM7sRoueNQtfOgyuR94MEq3QqjsRS/m P81LrBzw2uzFhAAAA
+From: "Shengzhuo Wei" <me@cherr.cc>
+Date: Thu, 06 Aug 2026 05:14:53 +0800
 
-From: Xingrui Li <baka9@bakabaka9.tech>
+fxls8962af_fifo_flush() copies the number of samples the device reports
+in its FIFO status register into an on-stack buffer
 
-sensor_hub_get_feature() clamps its return value to the caller's buffer
-size, but the copy loop still copies field->report_size / 8 bytes for
-each report value. A malicious HID descriptor can advertise a large
-feature field size while an IIO caller supplies a small stack buffer,
-such as a single s32, causing an out-of-bounds write.
+	u16 buffer[FXLS8962AF_FIFO_LENGTH * 3];
 
-HID core stores parsed report values in __s32 slots and clamps extracted
-values to 32 bits. Reject feature fields that require more than one slot
-per value, guard the total byte count calculation, and clamp each
-per-value copy to the remaining caller buffer.
+which is sized for at most FXLS8962AF_FIFO_LENGTH (32) samples. The
+sample count is read from the BUF_STATUS register and only masked to its
+6 valid bits:
 
-Fixes: 5459ada2b3cd69 ("HID: sensor-hub: Fix packing of result buffer for feature report")
-Cc: stable@kernel.org
-Assisted-by: OpenAI:GPT-5.5-Cyber
-Signed-off-by: Xingrui Li <baka9@bakabaka9.tech>
+	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
+
+so it can be 0..63, while the buffer holds 32. The only other limit,
+the watermark, is applied on the write path (fxls8962af_set_watermark)
+but not here on the read path. count samples are then transferred into
+buffer[]:
+
+	fxls8962af_fifo_transfer(data, buffer, count);
+
+fxls8962af_fifo_transfer() reads count * 6 bytes through regmap, so a
+malfunctioning, malicious or counterfeit accelerometer (or an attacker
+tampering with the I2C/SPI bus) that reports up to 63 samples writes up
+to 378 bytes into the 192-byte buffer: a stack out-of-bounds write of up
+to 186 bytes that clobbers the stack canary, saved registers and the
+return address.
+
+Clamp count to FXLS8962AF_FIFO_LENGTH, the number of samples buffer[] is
+sized for, before the transfer, mirroring the watermark clamp already
+done in fxls8962af_set_watermark(). A well-formed flush reports at most
+FXLS8962AF_FIFO_LENGTH samples, so legitimate devices are unaffected.
+
+Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
+Cc: stable@vger.kernel.org
+Assisted-by: GLM:5.2
+Signed-off-by: Shengzhuo Wei <me@cherr.cc>
 ---
- drivers/hid/hid-sensor-hub.c | 42 +++++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 17 deletions(-)
+This series adds a single patch clamping the device-reported FIFO sample
+count in fxls8962af_fifo_flush(), mirroring the bmc150 fix (ce0e1cae2609).
+---
+ drivers/iio/accel/fxls8962af-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 34f710c465b8..6470a290ebfc 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -239,12 +239,17 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 			   u32 field_index, int buffer_size, void *buffer)
- {
- 	struct hid_report *report;
-+	struct hid_field *field;
- 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
--	int report_size;
-+	size_t field_size;
-+	size_t report_size;
-+	size_t copied = 0;
-+	size_t to_copy;
- 	int ret = 0;
--	u8 *val_ptr;
--	int buffer_index = 0;
--	int i;
-+	unsigned int i;
-+
-+	if (!buffer || buffer_size <= 0)
-+		return -EINVAL;
- 
- 	memset(buffer, 0, buffer_size);
- 
-@@ -258,26 +263,29 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
- 	hid_hw_wait(hsdev->hdev);
- 
-+	field = report->field[field_index];
-+
- 	/* calculate number of bytes required to read this field */
--	report_size = DIV_ROUND_UP(report->field[field_index]->report_size,
--				   8) *
--				   report->field[field_index]->report_count;
--	if (!report_size) {
-+	field_size = DIV_ROUND_UP(field->report_size, 8);
-+	/* HID core stores each parsed report value in a __s32 slot. */
-+	if (!field_size || field_size > sizeof(field->value[0])) {
-+		ret = -EINVAL;
-+		goto done_proc;
-+	}
-+	if (field->report_count > SIZE_MAX / field_size) {
- 		ret = -EINVAL;
- 		goto done_proc;
+diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+index d0c2a8daef0db964134ad10b25782b9f5752613d..3aa96adf3eef8ff525e65ceec9a371da82216ea4 100644
+--- a/drivers/iio/accel/fxls8962af-core.c
++++ b/drivers/iio/accel/fxls8962af-core.c
+@@ -966,6 +966,7 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
  	}
--	ret = min(report_size, buffer_size);
  
--	val_ptr = (u8 *)report->field[field_index]->value;
--	for (i = 0; i < report->field[field_index]->report_count; ++i) {
--		if (buffer_index >= ret)
--			break;
-+	report_size = field_size * field->report_count;
-+	report_size = min_t(size_t, report_size, buffer_size);
+ 	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
++	count = min_t(u8, count, FXLS8962AF_FIFO_LENGTH);
+ 	if (!count)
+ 		return 0;
  
--		memcpy(&((u8 *)buffer)[buffer_index], val_ptr,
--		       report->field[field_index]->report_size / 8);
--		val_ptr += sizeof(__s32);
--		buffer_index += (report->field[field_index]->report_size / 8);
-+	for (i = 0; i < field->report_count && copied < report_size; ++i) {
-+		to_copy = min(field_size, report_size - copied);
-+		memcpy(&((u8 *)buffer)[copied], &field->value[i], to_copy);
-+		copied += to_copy;
- 	}
-+	ret = copied;
- 
- done_proc:
- 	mutex_unlock(&data->mutex);
+
+---
+base-commit: 848acc8ffe1b7cd5f1bf427b93069becfebc2c9d
+change-id: 20260806-fxls8962af-fifo-c3812fd02eeb
+
+Best regards,
 -- 
-2.43.0
-
+Shengzhuo Wei <me@cherr.cc>
