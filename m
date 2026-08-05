@@ -1,141 +1,146 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84C347AF6B
-	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 17:06:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A36D38E8B4;
+	Wed,  5 Aug 2026 17:15:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785949620; cv=none; b=HDLR6aCwKcGUTo4e2zB83UgAakI6enO4YwZbhv6OD23PE+tAQLDT/+vk+dMBF0hHCt3IEyW+o07Gd7UoHHI9VC4VQTN6/n/3Npo/0vo0M6CcCP5Xg7Auf0hi/vC3//29F2UVpCesaIgdZzmbkAYvFgi910RvL8bAQSDjAWGDwds=
+	t=1785950108; cv=none; b=gkxtL7sU87wWQK6VFkvws65GuuNI1o8S//L2k05cbgRc+HSUYXmxazRYezVo7gQ0rgixWYbDMJg6TDJQkLrjoftBRAJZxXuyFas10QVwuq62w8yBN37wJFG0TE+41k4P3SVWNexJ6I4dHtUBs6Y9qVtIVq17Tqh2vM5DUkVjTl0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785949620; c=relaxed/simple;
-	bh=m8q6OK/anRR6LU8bDyid2t7U6ZwpjLrM3FKrURqspZA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bsq78WIO2r+foQjTX/3M8pAs2V1/LWgA+MEsreiRxkUesrRtD7HuEevlJTWEwLAahQY+vCYH4Tt/TPBZTe6SR4F0vdwa7ieAePU/ZLxLL5y+OzexYnWaxdYTsI4DsVnhmt+CFBvcHHdYKIJaBkVz3wJeCmvUYPrxUg3XoQonvIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KsYu42+q; arc=none smtp.client-ip=209.85.222.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785950108; c=relaxed/simple;
+	bh=yrMtwvffhOFgch0ZpZ3JKvaHFhD0dyMlZsfsRbSr9CY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RsMa/BG5yjdoMs02CR6NBN1qg1Qb2LTVUHIa2khg326bwaDltitOXMJjnXd1kHjgT0HDT+o/cisWlZtdecfzjkw4zwH635D0XGX/Dm5E+E378CnSGIdM2fJD1qaCuWN0zR5wg2uZ75jmhspO+ODqpzPA5O0vTBU4KhRuVvhDNSQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AQ54UW3P; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KsYu42+q"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-92e5c92c389so70784985a.3
-        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 10:06:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785949615; x=1786554415; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=wcCQ5yjpmgh/+ucZRtqgqUFJTrSq89wHY1nMeO3mD/g=;
-        b=KsYu42+q3tt+0iiTxfKwjivK9ZY90Er/7pNhJEcE0WnfYN6ctkGNMRNcolNjUqjVQy
-         Cd2DMXHuMGlzpifuY8fz8qKIKdt0bf/NqmHrBAAqZPOI3SkYzHH1Y2yP8Zm+7N3oglFb
-         bPt7MwzdqRBQeGLDKM6JmhCKgYY9i5aoslo8l6uFUkf1wGV6tAoLn419wInfF2HGyF/D
-         8BBBJSuwz6zuoH/o0s67OffZJEcX3/U+fN41RHdgQb4YGFNOtbyFl3E3wbfjZ8h0OaHC
-         u7Go54Xq7vTqtXkSjszwt2DOpPjFjVxw+k1bxhIV5+kxPaRLXVOdD3r9G+pcbOwUCmQZ
-         VNQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785949615; x=1786554415;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wcCQ5yjpmgh/+ucZRtqgqUFJTrSq89wHY1nMeO3mD/g=;
-        b=gtyUCppIZsvenD8hQkZCCPnizcEk+bPNmbe1dpRkzsp/50eymiXw5wdKRfYv5RiaXr
-         joBkhrfmTRqjI/C+D9KW6BzdGrkQWU+wtvverXZLfl2OuRvnnot5XGIqS8wkSAQQeskC
-         JdNw0q/gLgUd8JS4b2mBtFlid7D8VDJbk+tGKQ5ozegp3Pl9Z5hOwaL3IGzfgRg3g4R8
-         FdQmAx5UmN22TXhSvAjHpG9nSiZJHYIwcayxMQbgYXg8SROz4EWYvUqZHsy0OaW/Ra9L
-         hDhlZDjPO/UaZ1pkTbnHWfpvLxg8FVzEKK3N/qz21fxK9rw2TVz0RUYFa9Rb2DzTMHI2
-         SjtA==
-X-Forwarded-Encrypted: i=1; AHgh+RrfmvRrzKcw3MxUa0mDIvd2xZI0LjgnURU34p3nBV1OA0s4+hcPDUQ0xTy9MLDSiRp1w+ebuNDgtbs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwBfYWUrQTMW/YE2L01b7+YAcrOA0/sFd6SYnR8Q1JoHCSDFX0s
-	MYCJftgdPv7WUTgJBjwlHaCNt6couLo9ok8/nFfJGMNp+eX/dAfCwtx3
-X-Gm-Gg: AR+sD12xE+owSv1/2aISHU/D0qQ+Mj8zfK1+8qOd5ijoCCOEBS3tW3zQt8n4NZp8eqt
-	yjxgQRu3MuycaGE4u/jWMwkFoIsTTuFF8y8lqlh1uF0bWjynKyBZRcfk7bQhrOp25V7iLZmM6ba
-	XUSq6qTjApUxMXGn+lLziTwKJoZAr0smTuz3btvL5ZtfenBUmntyEeWyt83Ot6ngORjKWr8TGSM
-	bSQekvNt8EldupWq6DYrVtOYDZ98PCQFi6tI/8+EywL4uDp5m5NOCaxj573HeBn17/FvLZGRmPM
-	yF5V0otC9iXoMOe+H95vL0wgYr5/ARd4rRSpUlWiUnyBU7FXYklHB0PdPYQeh1Kvy+X8QnaNm7A
-	u9VC1lZHxaNB/hPDa1+HccrXTVTDqCNOv5eyUbmXxGZKhY3ppMsCrLXLlXCbyCCvYMiUH/DbsRk
-	6y0nclGM5ZUAZbxEjjqoNIgbDfIcKwZlApqdM+RTgYv7kdX/OligxPl8y653I2M41xzSAxGEa9o
-	GilHI3Rh29HSA==
-X-Received: by 2002:a05:620a:a502:b0:923:7821:dc0d with SMTP id af79cd13be357-93649267a9fmr689507285a.33.1785949615468;
-        Wed, 05 Aug 2026 10:06:55 -0700 (PDT)
-Received: from louisarchdesktop ([2601:184:417f:5ad5:c570:9008:5a2b:8db7])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9364a3fc9bbsm196220785a.10.2026.08.05.10.06.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Aug 2026 10:06:55 -0700 (PDT)
-Date: Wed, 5 Aug 2026 13:06:51 -0400
-From: Louis Adamian <adamianlouis@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: pressure: ms5637: Add variant specific
- temperature compensation
-Message-ID: <20260805130651.4aceb71f@louisarchdesktop>
-In-Reply-To: <aisNMmwMREF7Iga6@ashevche-desk.local>
-References: <20260610020458.104818-1-adamianlouis@gmail.com>
-	<20260610020458.104818-3-adamianlouis@gmail.com>
-	<aimvBvJp8CsNKlPU@ashevche-desk.local>
-	<20260611151026.4abf8804@louisarchdesktop>
-	<aisNMmwMREF7Iga6@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AQ54UW3P"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1785950106; x=1817486106;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yrMtwvffhOFgch0ZpZ3JKvaHFhD0dyMlZsfsRbSr9CY=;
+  b=AQ54UW3Pekba7S4GwOCZF6OHP8+cw9jJZqNqlkbHLrUVDEszhgGsEu56
+   9aicXO+VAdDL8Ms94KYQ5GjsVMR260ulwiihVSV42KcweTpnyAoJoTNLM
+   XM8jebV5xf0+d7VHIf+zZquoC4pJOXCiV5jVRdHZFZabA5K7JNUM657jz
+   EeLaTcA3d70ZcGf/ZeNJF0HEgfTKEv6f57M2+TzR1elGhpFTEODtZLucF
+   zrRk3jVMGaaSFngc1ufQK0MiAqkaJlefQx6sDog+hXB5rcIo6yPADQljM
+   creqRuX6wvv0E+M/khHvszpP7rlSCrr/aoLRCQxxxqdrkttKBY4XyBApj
+   g==;
+X-CSE-ConnectionGUID: Pqsa8PBcSBaNqTfHoBDiXQ==
+X-CSE-MsgGUID: 0qk4/+m3Rai4MoY4TF8qLQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11866"; a="86410044"
+X-IronPort-AV: E=Sophos;i="6.25,206,1779174000"; 
+   d="scan'208";a="86410044"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2026 10:15:05 -0700
+X-CSE-ConnectionGUID: VRz7co5gQKSrJlf7sDiNNg==
+X-CSE-MsgGUID: h9AoMFrLT5ay6hxjHNNouQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,206,1779174000"; 
+   d="scan'208";a="261929312"
+Received: from soc-pf446t5c.clients.intel.com (HELO [10.24.80.90]) ([10.24.80.90])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2026 10:15:05 -0700
+Message-ID: <9864f171-f702-4e30-997c-b0ecd8cb1311@linux.intel.com>
+Date: Wed, 5 Aug 2026 10:15:04 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 0/6] iio: light: ltr501: Add ltr329 support
+To: Esben Haabendal <esben@geanix.com>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
+ Maslov Dmitry <maslovdmitry@seeed.cc>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
+Content-Language: en-US
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, 11 Jun 2026 22:32:02 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+Hi,
 
-> On Thu, Jun 11, 2026 at 03:10:26PM -0400, Louis Adamian wrote:
-> > On Wed, 10 Jun 2026 21:37:58 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
-> > > On Tue, Jun 09, 2026 at 10:04:58PM -0400, Louis Adamian wrote:  
+On 8/4/2026 10:02 AM, Esben Haabendal wrote:
+> The LiteON LTR-329ALS-01 chip is similar to the LTR-303ALS-01, except for
+> interrupt support and related registers, which LTR-329ALS-01 does not have.
 > 
-> ...
-> 
-> > > >  struct ms_tp_dev {
-> > > >  	struct i2c_client *client;    
-> > >   
-> > > >  	const struct ms_tp_hw_data *hw;
-> > > >  	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
-> > > >  	u8 res_index;
-> > > > +	const struct ms_tp_comp_consts *comp_consts;    
-> > > 
-> > > Please, check with `pahole` if this is the best layout.  
-> > 
-> > I will correct the packing on this per pahole's finding.  
-> > > >  struct ms_tp_data {
-> > > >  	const char *name;
-> > > >  	const struct ms_tp_hw_data *hw;
-> > > > +	const struct ms_tp_comp_consts *comp_consts;
-> > > >  };    
-> > > 
-> > > Can this be simply embedded into ms_tp_dev (and copied there if
-> > > required)?  
-> > 
-> > Copying in ms_tp_comp_consts provides no benefit over
-> > referencing the pointer; the values are per-descriptor, not
-> > per-instance and never modified. I'll keep the pointer (same as
-> > ms_tp_hw_data).  
-> 
-> Okay, let me ask differently then: Can we use the same data type in
-> ms_tp_dev instead of adding basically the same fields as in
-> ms_tp_data?
-> 
-Sorry for the very slow reply. Yes, for v3 ms_tp_dev will hold a single
-const ms_tp_data *data instead of its own hw and comp_consts. This
-drops the duplicated hw that predates this series. 
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> ---
 
-One thing worth noting before I do that: ms_tp_data is currently
-private to ms5637.c and will need to be moved to ms_sensors_i2c.h for
-ms_tp_dev to point to it. I don't think this is a problem; it matches
-how ms_tp_hw_data is defined now, but let me know if you would like to
-avoid it.
+Acked-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-Thanks,
-Louis 
+
+> Changes in v3:
+> - Removed duplicated error message on devm_request_threaded_irq() failure.
+> - Added Fixes: and Cc: stable tags to fix for error handling of
+>   devm_request_threaded_irq() failure.
+> - Added no_irq_support boolean to simplify checking for chip irq support.
+> - Moved check for no_irq_support from ltr501_read_intr_prst() and
+>   ltr501_write_intr_prst() to callers. Note: event functions are not
+>   registered for no_irq_support devices.
+> - Moved #include <linux/array_size.h> into its place according to
+>   alphabetical sorting order (although the rest is not really wel sorted).
+> - Restored alphanumerical ordering of compatible list in bindings
+>   documentation.
+> - Ordered device arrays and enum values according to alphanumerical sorting
+>   order.
+> - Link to v2: https://patch.msgid.link/20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com
+> 
+> Changes in v2:
+> - Fixed error handling when irq is defined for a chip that does not support
+>   irq, powering the chip down again.
+> - Added simlar fix to error handling of devm_request_threaded_irq() error
+>   handling, powering the chip down again on failure.
+> - Added explicit #include <linux/array_size.h>.
+> - Link to v1: https://patch.msgid.link/20260715-liteon-ltr329-v1-0-31f027051594@geanix.com
+> 
+> To: Jonathan Cameron <jic23@kernel.org>
+> To: David Lechner <dlechner@baylibre.com>
+> To: Nuno Sá <nuno.sa@analog.com>
+> To: Andy Shevchenko <andy@kernel.org>
+> To: Rob Herring <robh@kernel.org>
+> To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> To: Conor Dooley <conor+dt@kernel.org>
+> To: Nikita Travkin <nikita@trvn.ru>
+> To: Maslov Dmitry <maslovdmitry@seeed.cc>
+> To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: linux-iio@vger.kernel.org
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> 
+> ---
+> Esben Haabendal (6):
+>       dt-bindings: iio: light: ltr501: Sort compatible enum array
+>       dt-bindings: iio: light: ltr501: Add missing ltr303 compatible
+>       dt-bindings: iio: light: ltr501: Add ltr329 compatible
+>       iio: light: ltr501: Power down chip if request irq fails
+>       iio: light: ltr501: Add ltr329 driver support
+>       iio: light: ltr501: Fix sorting order of device arrays
+> 
+>  .../bindings/iio/light/liteon,ltr501.yaml          |   4 +-
+>  drivers/iio/light/ltr501.c                         | 117 +++++++++++++--------
+>  2 files changed, 78 insertions(+), 43 deletions(-)
+> ---
+> base-commit: 075b74841bd0065a3bda3440873c747938e69b68
+> change-id: 20260711-liteon-ltr329-a3eb12414866
+> 
+> Best regards,
+> --  
+> Esben Haabendal <esben@geanix.com>
+> 
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
+
