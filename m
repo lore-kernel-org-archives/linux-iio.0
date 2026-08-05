@@ -1,134 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f48.google.com (mail-yx1-f48.google.com [74.125.224.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C404E2D3A93;
-	Wed,  5 Aug 2026 01:13:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785892428; cv=none; b=r8qg+VSq7GQ5o8De2G+jsF+tUefQDgsUPI0ujPWB0ja6OnXQLsfmFuVb4ywvkMA6W0Ne0M8Xucw4fyi/svVi7LXWQOb3ScP67SvC72m7Yq+qCXl6cLslIAaGFe1R6CgnS8YIP9h5rOKMvJv+ZKVps6mmXrsKQLeocLTr4IYlxYY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785892428; c=relaxed/simple;
-	bh=MblzNipihIKaqXhR6O2qNRqJBQ1j+x+tDwplCUWPtXo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oKr3ENAVQwp02Srow8D6gHg3AQL9bXeJr3bVUb5eNC3WilZrFETvcVJpL90eEyabxAu765UbFbzI5Yuzym90sYm4lVztV3czY0TM7Q5APiFORWIXR3rbQHiAZ8wkR37+2//lblqu6NnUGxYswmg4SuuG/nDf0i6X6UH+r5FBgtw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zm3rjrcd; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C41DA2E7185
+	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 01:24:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785893053; cv=pass; b=f4HrM5CBxsvl5Ev2M84Ddw4juUy7HM5cVqZdX3TFUxxkeclD16scKUnG9b+BIGHRiMq/aqieXcosIEqT5Oz09jmQd7miTPyZpcAxVoaDSdDrDL0mXg12LdirFehqqHx/m8XxLBKsXm0D0LAmTqi+0fWVxTiErdLOguzQEiJvfQI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785893053; c=relaxed/simple;
+	bh=tmxvPnC8g8NOlS/WboF/VhTQfeG5R00KcSwfFVREwI8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=P6dNNaURwd9wPseT4nqT68K0IwTikqTPE30uYu7aVD9Uj18dfrf7wAJB5ix758IwBZ9jBnnYmLxgP2LO4+qbRHLC5rPok68jA+0QFD9cCqHmQ06D587Rq6kOG3RGehvFKYGD/YUlYjzsQcJ4co2EuKPdDhgiM+j9L0lnzA067bQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=frame.work; spf=pass smtp.mailfrom=frame.work; dkim=pass (2048-bit key) header.d=frame.work header.i=@frame.work header.b=pv4BB5OS; arc=pass smtp.client-ip=74.125.224.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=frame.work
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=frame.work
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zm3rjrcd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF55F1F000E9;
-	Wed,  5 Aug 2026 01:13:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785892427;
-	bh=IRPMULM9cPsG7UmqJWpg6T8v4cl7nyfCUu8KZ1r4nk4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Zm3rjrcdAF3lPMdKrArQmvVa9/ajyO4XgVDmLxigfV+091zZdD2v8axyWnepBQrv1
-	 Eh/l9h/RN7DRsr59H3PxZM3o673rV5LV/1RkGizNqv7XcRdD8d5LgqfdsZinyUmq9z
-	 XpZ0PwF4Xcrk4aho6odOo0UtZU5Cp9cp/PjJeoDdfsqUp+fJhtIjjLfVOgjtHmNIdx
-	 yRRFegMImwqeLCEUoTnJBGI2Wpa+TfLP6sN6IkTidIDr+fOoDZX5++6hh3WTn0MaOA
-	 a6dGuUze0f59pKaGarldBmBVAprxYnIotfMNGnxAyMt1n/VuPR3tarj06OBsDsqlxk
-	 zoFdwJ1/yoDUQ==
-Date: Wed, 5 Aug 2026 02:13:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 1/3] iio: dac: mcp47feb02: refactor MCP47FEB02 I2C
- driver into two modules
-Message-ID: <20260805021341.2b45e680@jic23-huawei>
-In-Reply-To: <20260804-mcp47feb02_refactor-v3-1-97f8b81f3628@microchip.com>
-References: <20260804-mcp47feb02_refactor-v3-0-97f8b81f3628@microchip.com>
-	<20260804-mcp47feb02_refactor-v3-1-97f8b81f3628@microchip.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=frame.work header.i=@frame.work header.b="pv4BB5OS"
+Received: by mail-yx1-f48.google.com with SMTP id 956f58d0204a3-66892c81725so614757d50.2
+        for <linux-iio@vger.kernel.org>; Tue, 04 Aug 2026 18:24:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785893051; cv=none;
+        d=google.com; s=arc-20260327;
+        b=AzLBA9xRwt4WvGT95xaCRn6RMxA97f3aiJz8+YdGpxuKd0pVMsTjATckVaTg7NrN07
+         wJFhz5d9uKe45MXIzIPPEt8iMLWHAPHQK0R2+WCIgYjqw3vJkpTaqBhZfrylW31JyrHG
+         fqeU/NUxst4wWMSPyxV/F+gv6HF2Od0HdeGmNQxc7idZwd4X9EslZERGybt0FUeezZ7O
+         tsn2P2xM/sksavh1j9vzS4v0pLXdo0UI+7I2hGczKdKuFG1hJ8Td879NdJ8Ix3+Z03/h
+         SH/lrvEmg3EXi9xS233jHnWIqnIg+bdo/Lw1ZRXMV+MJLei+tk9WICbuKGOqW7IPydIm
+         EzJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=YTZY9qIc5z9CVljfPesZ7wDN4EMIeL5vhxioi/EavNE=;
+        fh=MsAvy4PyG+iWuA976aB9yZ8yoWWlYi7J/dGiqHyR4Rs=;
+        b=bSaXVwdKWyI486aAbFuyHBY38eQO/GkS3MhrHZd9X+ncFNSOakGDuXewAcYVp9sj73
+         8zQlzMRjYYJ4HYkLqiCA0Hah4NdcYuuUzswtNPKDbk5QZKt/CB7Eea3q+7Ba9gFF+kvl
+         CDDPJeFmqpnkIX39eGtJKgfenhtUwWQvHWutiQjPEkZmeETNVyljqeRUKPWExszA98zZ
+         L0G6rMrfOZRn0sRA7O2HIzatlPaYHkBOs49oQ8bC8qucv4IO5B+BkDRAeMLr1sg8+jxS
+         9zAl6Rnn2NAxw3gdgYFRzghIW6C79iGOe2cFUTPT3kXNIRULcXQIv5+k7SwsAaImuy94
+         sppw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=frame.work; s=google; t=1785893051; x=1786497851; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YTZY9qIc5z9CVljfPesZ7wDN4EMIeL5vhxioi/EavNE=;
+        b=pv4BB5OS/Ri0wgCFSarJUf3N0JOGFZYuXr2xbeR4bvI2W8GArKV3+OsbE/MRw7fc1b
+         M2uEqhRei+ktencUNMoi4ipc/Ji8QG4fpQjmKcOiA2Z1BLUosZRZ6kikIiFdxGINFRVM
+         huiu5RNMKz+4K3fBpaIsdc+iNn7gpeAsX44fhRlyz6NhEVqS15xmn5DjsTH2zkAmNdA5
+         DwIZx8687P/NC4TotAbJtZVqX1vS1CSv7yQEyPJ4tT44FTyfX8Jg8Z/Yo8VEeNUXUcI2
+         L4ld3TtADjO0yXbXSbxRTfcJV3x5STVHqjE5DWWlf0oOZoCyMcNu24RBaxsfb1NfsjqC
+         LHdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785893051; x=1786497851;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=YTZY9qIc5z9CVljfPesZ7wDN4EMIeL5vhxioi/EavNE=;
+        b=arlqpgMm/KTNIGSYh8UJctAudpghqQ9lN0+qSQN7cAZOkAI3ec1P65ucjmwJ+XbAkf
+         eVsf/VAme8GYMVJPeJmWjQWk4JsBTPqhxfvA/+BIarYQrEHuJo2mYFnLbH4j24twqtc+
+         FMnRuOLCvFwHNs32TM9wV7Fft9xE8jLINlwvLNnjvhDubsfEy7CkOmutAcTApBMCsj7G
+         rdBT/qqheIN86krCxdqGfV2tJU6qQ/CnQi38qP3N7NsL6b/rcrnL81Vf+RrmgLH704Nw
+         ckp/pATjjUcW7sTl8w6GRy82HTa7YYxC0bWJrQMRWm7YWNooJogVPhuqaFJO+Wqu7Mux
+         6YiQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrvN1FEYikqIWyMC7ULhRw4M81x3qyYll+lYuLNQsRuMXbmuUA3Vi9FVYC9VNqTsND4t9dqxx/IGJQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyagfVoePMnLqZ4+9vHqOHjqzB1q7MfTa9eo7C6V2JXOAjeRLAb
+	XhxQGr74B2271Z5s+QcZgpCssMT9StKti8JONADPpDSXR95/Yuh+HrgQ1YDTrSnZ/t46VTnYKPZ
+	8XNPiTHHcBOneorV1W7JfHiuCFVl/HXkITK430iGoSQ==
+X-Gm-Gg: AR+sD12oKeOhhT056lNPqG6iMlDDsO6efriVdT+iSRD67jDiRtr7rY0VwAj0//mWcV5
+	jAEH/he3DNjqsoNR/WL7s8WgJbmiyOhJZHHWe0npIcoods0C6HALdRVrEyN795ATD/GmugSWboK
+	HJEHYO7A/UgZ0XtBDGRMs6HDIAbOlai6mIpcDG7adzmu+Nby+G4M76+NZpaZEAMTodc+Ml6KdwP
+	aY4uv67mMx1Is58714+Hd3ZEDlVjpYgTjKegGpisWJvtGCkLQqS0Xumi0nX6FUTf2LSaPF8vuGa
+	TS/Axyi45P1CSPg7GjyFbNraJqau35WinulOeJxlriuJYj1HbSbzOsRYVY2KJ3wZSCik/6xrhCN
+	QzHXBBQW/C5HLkSbA40P0ePi90kS2nNmbz71Awh+EImUkwSRm7VCggabiO4U=
+X-Received: by 2002:a53:de46:0:b0:668:8bca:3c41 with SMTP id
+ 956f58d0204a3-6699aa07c2bmr1434552d50.17.1785893050757; Tue, 04 Aug 2026
+ 18:24:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260723-chromaticity-v1-1-5ef5746ace2a@frame.work>
+ <b6e684365758146193421ac3a36b58d55af77691.camel@linux.intel.com>
+ <20260727221338.29f1da9b@jic23-huawei> <CAAjcXz45hB7+4wns0L=2VKeAeq2UaPhwHa11vPgFJux7Q1WLRg@mail.gmail.com>
+In-Reply-To: <CAAjcXz45hB7+4wns0L=2VKeAeq2UaPhwHa11vPgFJux7Q1WLRg@mail.gmail.com>
+From: Daniel Schaefer <dhs@frame.work>
+Date: Wed, 5 Aug 2026 09:23:34 +0800
+X-Gm-Features: AUfX_mzowNSw8oJ_BWsMvsuBfDPCC2ZoMA7KG6a59qc4VajLvGMGgnsWHW0O6FI
+Message-ID: <CAAjcXz5Y7W69LaUsFg323rTsd7waaSnLkD=dJYJvOCwPV2Apmg@mail.gmail.com>
+Subject: Re: [PATCH] iio: hid-sensor: als: scale each channel individually
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>, Jiri Kosina <jikos@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, =?UTF-8?Q?Sven_Vaink=C3=BCla?= <sven@xn--vainkla-r2a.ee>, 
+	linux@frame.work
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 4 Aug 2026 16:29:47 +0300
-Ariana Lazar <ariana.lazar@microchip.com> wrote:
+>  I'll queue it up on the testing branch of iio.git but more eyes welcome if
+anyone has time to take a look.
 
-> Prepare the driver for the bus-specific code by refactoring into separate
-> files. The renamed file will contain the common DAC functionality shared by
-> the MCP47FxBy1/2/4/8 I2C and MCP48FxBy1/2/4/8 SPI drivers. The MCP47FEB02
-> driver was refactored into two modules: mcp47feb02-core.c and
-> mcp47feb02-i2c.c in order to prepare the support for SPI MCP48FxBy1/2/4/8
-> DAC family on top of the current implementation.
-> 
-> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
-Hi Ariana,
-
-There are a couple of things in here unrelated to the code movement etc
-and splitting of the drivers. Please pull anything like that out to
-precursor patches where we can clearly see what changed.
-
-Jonathan
-
-> diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02-core.c
-> similarity index 72%
-> rename from drivers/iio/dac/mcp47feb02.c
-> rename to drivers/iio/dac/mcp47feb02-core.c
-> index a823c2a673a26d70e5829cb587034da435af0451..e686c511d73f2be978f3a77af7a4004194e5d284 100644
-> --- a/drivers/iio/dac/mcp47feb02.c
-> +++ b/drivers/iio/dac/mcp47feb02-core.c
-> @@ -1,8 +1,8 @@
->  // SPDX-License-Identifier: GPL-2.0+
->  /*
-> - * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface
-> + * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C and SPI interface
->   *
-> - * Copyright (C) 2025 Microchip Technology Inc. and its subsidiaries
-> + * Copyright (C) 2025-2026 Microchip Technology Inc. and its subsidiaries
->   *
->   * Author: Ariana Lazar <ariana.lazar@microchip.com>
->   *
-> @@ -15,13 +15,12 @@
->  #include <linux/bits.h>
->  #include <linux/bitfield.h>
->  #include <linux/delay.h>
-> +#include <linux/dev_printk.h>
->  #include <linux/err.h>
-> -#include <linux/i2c.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/kstrtox.h>
->  #include <linux/module.h>
-> -#include <linux/mod_devicetable.h>
->  #include <linux/mutex.h>
->  #include <linux/property.h>
->  #include <linux/regmap.h>
-> @@ -30,11 +29,13 @@
->  #include <linux/types.h>
->  #include <linux/units.h>
->  
-> +#include "mcp47feb02.h"
-> +
->  /* Register addresses must be left shifted with 3 positions in order to append command mask */
->  #define MCP47FEB02_DAC0_REG_ADDR			0x00
->  #define MCP47FEB02_VREF_REG_ADDR			0x40
->  #define MCP47FEB02_POWER_DOWN_REG_ADDR			0x48
-> -#define MCP47FEB02_DAC_CTRL_MASK			GENMASK(1, 0)
-> +#define MCP47FEB02_CMD_MASK				GENMASK(1, 0)
-
-These renames don't belong in a patch doing anything else. Please break
-them out as a precursor. 
-
->  
->  #define MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR		0x50
->  #define MCP47FEB02_GAIN_BIT_MASK			BIT(0)
-> @@ -53,7 +54,7 @@
->  #define DAC_CTRL_MASK(ch)				(GENMASK(1, 0) << (2 * (ch)))
->  #define DAC_CTRL_VAL(ch, val)				((val) << (2 * (ch)))
->  
-> -/* Gain Control and I2C Slave Address Reguster fields */
-> +/* Gain Control and I2C Slave Address Register fields */
-
-This is also an unrelated change. Precursor patch.
-
->  #define DAC_GAIN_MASK(ch)				(BIT(0) << (8 + (ch)))
->  #define DAC_GAIN_VAL(ch, val)				((val) << (8 + (ch)))
+Sorry I'm not sure what that means. Is the patch applied or
+should I send another one with commit message update?
