@@ -1,48 +1,48 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC82E412C17;
-	Thu,  6 Aug 2026 08:47:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CD1B41DEE0;
+	Thu,  6 Aug 2026 08:47:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786006037; cv=none; b=UdD1Pwzxmt7ln+McRY1fxPIru29JphT01QMMHZ1APMEs2PaqNbgzXJqR4jMQgfij/aheDx200v349ND+UPGV37NE6EHGImroWiblvNtj5R8hYyPgqIygkbBJL1wKxDmdgEIxr9oEo+YE8uQfE1Aj0QG34fjPHqlK9Tk8+Lxc1CM=
+	t=1786006047; cv=none; b=uOdGNt/e591HpCVYuncwDAX6FFsEzEO91UvQ/fEGVO0WBdDb2Uj06N/VoaHQBM0tcXofTT5Uk4U3Kow5xumO/ASVN151DraiONcQZdas7j9d85V94BjTluFK78sG1SGbeew46bdxnv0q08wEw5/MPOrba2RiUg9I23kXqW4me8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786006037; c=relaxed/simple;
-	bh=5L04fm8dXyW6Qb/yl6MetSQ5Bfk/JYbRIvYAJ4AiOu0=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Es3BpqfgO8Wc1cRKEcuX77NwxLtEyPNcgzz3bzjcbnEtmifoTEmplEYvIRyXxAz8kv7odgc5vOoCSFpWogU5j/WozGaLf/khvUk11s4j6KbR1WdV+kYiu4IhqwQXYjCMwl1h4bEsmOiIwYtHKdISrm+RaxBIE506ZAHCQNHmu8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=sb0KMkR2; arc=none smtp.client-ip=68.232.153.233
+	s=arc-20240116; t=1786006047; c=relaxed/simple;
+	bh=WMbz2x0oy9U6MHDiryFzAYvYHXh9EzXZWymCLH/WBvQ=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pAsoC+L2C1P5HB/pkd4AVMfMy41D4Vsl1NNJJ+fH0osCVS+zQYf5NKHhM4IQBE4XbEAlQvcVpYHZxd6mdTExLznXYadmFYdg0XvO7XvEBQJY3/cFgC9pDJ6c3qoM1od2RUP9DveJTXogYKwlff+BlGzHru0uCvTV4AJAocu3WQo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=IuwaaECw; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="sb0KMkR2"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="IuwaaECw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1786006039; x=1817542039;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5L04fm8dXyW6Qb/yl6MetSQ5Bfk/JYbRIvYAJ4AiOu0=;
-  b=sb0KMkR2OCpVfBdsF5D6kyl0JK56aVQ6ZGWL8o5PITB9s5xv9YDfJvtK
-   r9qa4kdylutUBVwiDFP+ryWd6lmlNVdqusBcQFuYNH7lbChNcNynDGxVg
-   GjGbPiAqlpDa0QPTaUNcR95lqb2Ep41efCCIM6z+AJ3Ul0GeDDZKPrkUy
-   B8CjTEFYcdaUI9p1V+vVQtmYy8wpMN4QvvQ6/U6bYE3Bglj43xMPIbK0r
-   wxiWS+Ztvse6NXu2bNaB8D+uuCD/txET9gacfz7LV9mY3Kh7vML3fUyDU
-   bh7oEd618PAHZQTVMCRCPI713ro6I87mXnO2MqZFcICetCc44DYeYuvSB
-   A==;
-X-CSE-ConnectionGUID: wf4YWoMsT2eGlH+1bLVYDQ==
-X-CSE-MsgGUID: XU5AHxb4QkmA2dVRiSTzZg==
+  t=1786006046; x=1817542046;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=WMbz2x0oy9U6MHDiryFzAYvYHXh9EzXZWymCLH/WBvQ=;
+  b=IuwaaECwGdfDcNNyWMj6T8SWir6z7CfbOdRPxT3WpNrLzq3Uc8BFN0Eo
+   weeEH9SvVmcgeh/YvQSKEnm8rjYsng8tTSyw2h67QMnhJ3ABNUEin2f0+
+   /woo5mUZEpeYQVXm/uxYU91Gy+/9DCLbi0A5yHQYKpoSpjUYGBM7YKDDG
+   /U0RyT+0cD7ETF7VACXv7pZaO8x+8Js/Kl+j7vdJa/W2MRKfDoZWKmbUc
+   LuF5jmxqreMfcAVJKVQ/E/nPZfGr1uLa09w7auKhDLqVaa03JrbkyGXNj
+   ViDwyw9yg2CCDR7ndEYJNWjkS0ekhje9LrEn5SAwmTgBTbzDV20hlZyoD
+   w==;
+X-CSE-ConnectionGUID: 6nyZD9YrRwOUDGq3SChm/A==
+X-CSE-MsgGUID: gPDyfDrBTDOngd2OKLbjLg==
 X-IronPort-AV: E=Sophos;i="6.25,208,1779174000"; 
-   d="scan'208";a="71343301"
+   d="scan'208";a="228880362"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Aug 2026 01:47:18 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Aug 2026 01:47:25 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Thu, 6 Aug 2026 01:47:14 -0700
+ 15.1.2507.58; Thu, 6 Aug 2026 01:47:24 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Thu, 6 Aug 2026 01:47:03 -0700
+ 15.1.2507.58 via Frontend Transport; Thu, 6 Aug 2026 01:47:14 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -55,10 +55,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<mazziesaccount@gmail.com>, <varshini.rajendran@microchip.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v6 03/17] iio: adc: at91-sama5d2_adc: use cleanup.h for NVMEM buffer
-Date: Thu, 6 Aug 2026 13:10:10 +0530
-Message-ID: <20260806074024.531259-4-varshini.rajendran@microchip.com>
+Subject: [PATCH v6 04/17] iio: adc: at91-sama5d2_adc: rework temp calibration layout handling
+Date: Thu, 6 Aug 2026 13:10:11 +0530
+Message-ID: <20260806074024.531259-5-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260806074024.531259-1-varshini.rajendran@microchip.com>
 References: <20260806074024.531259-1-varshini.rajendran@microchip.com>
@@ -71,73 +70,160 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Use __free(kfree) and __free(nvmem_cell_put) cleanup helpers in
-at91_adc_temp_sensor_init() to simplify error handling paths.
+Extend support to handle different temperature calibration layouts.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Add a temperature calibration data layout structure to describe indexes
+of the factors P1, P4, P6, tag, minimum length of the packet and the
+scaling factors for P1 (p1_scale) which are SoC-specific instead of the
+older non scalable id structure. This helps handle the differences in the
+same function flow and prepare the calibration data to be applied.
+
+Reviewed-by: Eugen Hristev <ehristev@kernel.org>
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 25 ++++++++++---------------
- 1 file changed, 10 insertions(+), 15 deletions(-)
+ drivers/iio/adc/at91-sama5d2_adc.c | 66 ++++++++++++++++++++++--------
+ 1 file changed, 48 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index e8a5285bb6d4..09390f082fc4 100644
+index 09390f082fc4..82db8f2f4db0 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -2249,8 +2249,6 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
+@@ -16,6 +16,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
++#include <linux/math.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+@@ -444,6 +445,27 @@ static const struct at91_adc_reg_layout sama7g5_layout = {
+ #define at91_adc_writel(st, reg, val)					\
+ 	writel_relaxed(val, (st)->base + (st)->soc_info.platform->layout->reg)
+ 
++/* Temperature calibration tag "ACST" in ASCII */
++#define AT91_TEMP_CALIB_TAG_ACST	0x41435354
++
++/**
++ * struct at91_adc_temp_calib_layout - temperature calibration packet layout
++ * @tag_idx:	index of Packet tag in the NVMEM cell buffer
++ * @p1_idx:	index of FT1_TEMP, equivalent to P1 in the NVMEM cell buffer
++ * @p4_idx:	index of FT1_VPAT, equivalent to P4 in the NVMEM cell buffer
++ * @p6_idx:	index of FT2_VBG, equivalent to P6 in the NVMEM cell buffer
++ * @min_len:	minimum number of u32 words expected in the NVMEM cell buffer
++ * @p1_scale:	scaling factor applied to P1 to convert to millicelcius
++ */
++struct at91_adc_temp_calib_layout {
++	unsigned int tag_idx;
++	unsigned int p1_idx;
++	unsigned int p4_idx;
++	unsigned int p6_idx;
++	unsigned int min_len;
++	struct u32_fract p1_scale;
++};
++
+ /**
+  * struct at91_adc_platform - at91-sama5d2 platform information struct
+  * @layout:		pointer to the reg layout struct
+@@ -462,6 +484,7 @@ static const struct at91_adc_reg_layout sama7g5_layout = {
+  * @oversampling_avail_no: number of available oversampling values
+  * @chan_realbits:	realbits for registered channels
+  * @temp_chan:		temperature channel index
++ * @temp_calib_layout:	temperature calibration packet layout
+  * @temp_sensor:	temperature sensor supported
+  */
+ struct at91_adc_platform {
+@@ -479,6 +502,7 @@ struct at91_adc_platform {
+ 	unsigned int				oversampling_avail_no;
+ 	unsigned int				chan_realbits;
+ 	unsigned int				temp_chan;
++	const struct at91_adc_temp_calib_layout	*temp_calib_layout;
+ 	bool					temp_sensor;
+ };
+ 
+@@ -495,18 +519,13 @@ struct at91_adc_temp_sensor_clb {
+ 	u32 p6;
+ };
+ 
+-/**
+- * enum at91_adc_ts_clb_idx - calibration indexes in NVMEM buffer
+- * @AT91_ADC_TS_CLB_IDX_P1: index for P1
+- * @AT91_ADC_TS_CLB_IDX_P4: index for P4
+- * @AT91_ADC_TS_CLB_IDX_P6: index for P6
+- * @AT91_ADC_TS_CLB_IDX_MAX: max index for temperature calibration packet in OTP
+- */
+-enum at91_adc_ts_clb_idx {
+-	AT91_ADC_TS_CLB_IDX_P1 = 2,
+-	AT91_ADC_TS_CLB_IDX_P4 = 5,
+-	AT91_ADC_TS_CLB_IDX_P6 = 7,
+-	AT91_ADC_TS_CLB_IDX_MAX = 19,
++static const struct at91_adc_temp_calib_layout sama7g5_temp_calib = {
++	.tag_idx = 1,
++	.p1_idx = 2,
++	.p4_idx = 5,
++	.p6_idx = 7,
++	.min_len = 19,
++	.p1_scale = { .numerator = 1000, .denominator = 1 },
+ };
+ 
+ /* Temperature sensor calibration - Vtemp voltage sensitivity to temperature. */
+@@ -744,6 +763,7 @@ static const struct at91_adc_platform sama7g5_platform = {
+ 	.chan_realbits = 16,
+ 	.temp_sensor = true,
+ 	.temp_chan = AT91_SAMA7G5_ADC_TEMP_CHANNEL,
++	.temp_calib_layout = &sama7g5_temp_calib,
+ };
+ 
+ static int at91_adc_chan_xlate(struct iio_dev *indio_dev, int chan)
+@@ -2249,12 +2269,19 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
  				     struct device *dev)
  {
  	struct at91_adc_temp_sensor_clb *clb = &st->soc_info.temp_sensor_clb;
--	struct nvmem_cell *temp_calib;
--	u32 *buf;
++	const struct at91_adc_temp_calib_layout *layout;
  	size_t len;
  	int ret = 0;
  
-@@ -2258,7 +2256,8 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
+ 	if (!st->soc_info.platform->temp_sensor)
  		return 0;
  
- 	/* Get the calibration data from NVMEM. */
--	temp_calib = nvmem_cell_get(dev, "temperature_calib");
-+	struct nvmem_cell *temp_calib __free(nvmem_cell_put) =
-+		nvmem_cell_get(dev, "temperature_calib");
- 	if (IS_ERR(temp_calib)) {
- 		ret = PTR_ERR(temp_calib);
- 		if (ret != -ENOENT)
-@@ -2266,16 +2265,14 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
- 		return ret;
- 	}
- 
--	buf = nvmem_cell_read(temp_calib, &len);
--	nvmem_cell_put(temp_calib);
--	if (IS_ERR(buf)) {
--		dev_err(dev, "Failed to read calibration data!\n");
--		return PTR_ERR(buf);
--	}
--	if (len < AT91_ADC_TS_CLB_IDX_MAX * 4) {
-+	u32 *buf __free(kfree) = nvmem_cell_read(temp_calib, &len);
-+	if (IS_ERR(buf))
-+		return dev_err_probe(dev, PTR_ERR(buf),
-+				     "Failed to read calibration data!\n");
-+
-+	if (len < AT91_ADC_TS_CLB_IDX_MAX * sizeof(*buf)) {
- 		dev_err(dev, "Invalid calibration data!\n");
--		ret = -EINVAL;
--		goto free_buf;
++	layout = st->soc_info.platform->temp_calib_layout;
++	if (!layout)
++		return -ENODEV;
++	if (!layout->p1_scale.denominator)
 +		return -EINVAL;
++
+ 	/* Get the calibration data from NVMEM. */
+ 	struct nvmem_cell *temp_calib __free(nvmem_cell_put) =
+ 		nvmem_cell_get(dev, "temperature_calib");
+@@ -2270,20 +2297,23 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
+ 		return dev_err_probe(dev, PTR_ERR(buf),
+ 				     "Failed to read calibration data!\n");
+ 
+-	if (len < AT91_ADC_TS_CLB_IDX_MAX * sizeof(*buf)) {
++	if (len < layout->min_len * sizeof(*buf)) {
+ 		dev_err(dev, "Invalid calibration data!\n");
+ 		return -EINVAL;
  	}
  
  	/* Store calibration data for later use. */
-@@ -2288,9 +2285,7 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
+-	clb->p1 = buf[AT91_ADC_TS_CLB_IDX_P1];
+-	clb->p4 = buf[AT91_ADC_TS_CLB_IDX_P4];
+-	clb->p6 = buf[AT91_ADC_TS_CLB_IDX_P6];
++	clb->p1 = buf[layout->p1_idx];
++	clb->p4 = buf[layout->p4_idx];
++	clb->p6 = buf[layout->p6_idx];
+ 
+ 	/*
+-	 * We prepare here the conversion to milli to avoid doing it on hotpath.
++	 * Here we prepare the conversion to milli to avoid doing it on hotpath.
++	 * The p1 value is multiplied and divided with a scaling factor as per
++	 * the SoC storage format described by per-platform calibration layout.
  	 */
- 	clb->p1 = clb->p1 * 1000;
+-	clb->p1 = clb->p1 * 1000;
++	clb->p1 *= layout->p1_scale.numerator;
++	clb->p1 /= layout->p1_scale.denominator;
  
--free_buf:
--	kfree(buf);
--	return ret;
-+	return 0;
+ 	return 0;
  }
- 
- static int at91_adc_probe(struct platform_device *pdev)
 -- 
 2.34.1
 
