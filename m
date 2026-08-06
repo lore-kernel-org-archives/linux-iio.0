@@ -1,103 +1,118 @@
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [4.193.249.245])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8EA6C37F8CB;
-	Thu,  6 Aug 2026 13:34:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=4.193.249.245
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786023265; cv=none; b=o3NkXOf2r3egh79Gl9EmCiKTMarsEcqnBqDk/3QuxL33WI2Jh/k2BI54nMr9McGopGTcyzkPK54Wa/oP8ithQrPAwqg/EgEZXGKQjDhIO/0XEJ5s3y4jM2JUf7ej71KBAZDyd5u7p3Cb9chBKSal1KDIbpBfjbJ/JxZtEXsyk/U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786023265; c=relaxed/simple;
-	bh=rzDW+KrsvEk2Fd6tkNWh+6QdqtHMEql8C53bwYKVFbI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jQiSr8dall1wUVKgvBh1nG5rAySECtvMdHGu/4HN3vqk8dbwr3LcRDF+DoliJLPRVTQXOD/NbhPodzGD6FHrpDivWJh5jK1qy/yY/+pYrX1atwQ84gAWadKOjCc2sXFo6mlr5lCHqkohnLzjveXmEShNUdLWRmWL89AoWxuSTZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=4.193.249.245
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [10.98.66.117])
-	by mtasvr (Coremail) with SMTP id _____wBHQH9KjXRq6kxuAA--.5031S3;
-	Thu, 06 Aug 2026 21:34:03 +0800 (CST)
-Received: from localhost.localdomain (unknown [10.98.66.117])
-	by mail-app2 (Coremail) with SMTP id zC_KCgD3idBJjXRqpI6cAw--.10593S2;
-	Thu, 06 Aug 2026 21:34:01 +0800 (CST)
-From: Fan Wu <fanwu01@zju.edu.cn>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Fan Wu <fanwu01@zju.edu.cn>
-Subject: [PATCH] iio: light: gp2ap020a00f: drain irq_work after free_irq
-Date: Thu,  6 Aug 2026 13:29:23 +0000
-Message-Id: <20260806132923.468833-1-fanwu01@zju.edu.cn>
-X-Mailer: git-send-email 2.34.1
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08246390CA3
+	for <linux-iio@vger.kernel.org>; Thu,  6 Aug 2026 14:14:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786025662; cv=pass; b=kLsobWP9DSVZx615spnXpa/hDMGIq/9gBYAt19dX6JDw6YBJe8VcV1oTq7xjoMa3Pzcdg7OqJD2+j4XOjRVhdGQB5oBQldimNhxb9mHuovRUgGj3MER8qWvKAtbEwFFOE3819L2CUvclWagr3BIteRuy6ijW1BRq/pvgyUm/BMI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786025662; c=relaxed/simple;
+	bh=46+6JcjA6rR1QTyo23kusNcDsQJr8RhFi6PkBjNbAdc=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=R4hvQPuIOK+8/ct4LXRLsg18yVEgMCURhe5GuxOFAWZgJjOVPDbTC8Rt7kWGNT5G4kgY4BRpDsXHNVNHqkr38qXQjKxpNMh7OOPYjjILVJyarvUE3E7rjJKq8TGJqqpnIurRR6Yy2zGGa1BiZRlm27NN7jMtBPAhh47aMnxS6LE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=blr/mYQl; arc=pass smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="blr/mYQl"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6a1a546a6bbso889610a12.1
+        for <linux-iio@vger.kernel.org>; Thu, 06 Aug 2026 07:14:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786025658; cv=none;
+        d=google.com; s=arc-20260327;
+        b=obpOEX4ypRJFSRWbeI+7y6u1kJVurCYxkmqMR4gEcg/dPjsVmzyk+peNGrRpLMoHQN
+         B2TKkzhR2kdW8WaZVmTctp/SMPq7FW2E24+u+oEeGsxYuIkf14dIZs90Dvo/n4PVIxI5
+         8IaEQqq8GMtXyEx2+EUn9KL9J2uJ2G+3tS4Kh9cjn3sjO/mONtwe10O6n/aJAdqCSUMx
+         3sMpPsRYuYbx5rhNOwHfbxkxl9Cvc+2vTMAB7FbjEaGneKnMLxvvNFfDbvDU8B5MMKGf
+         O7/MPiEO7uOv1iprfKFBdGSu6AocVSYpm+/4HBQbM+vRzphJya86p5b7RG7pOszTyXfd
+         0z/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=46+6JcjA6rR1QTyo23kusNcDsQJr8RhFi6PkBjNbAdc=;
+        fh=Aj2P0+JvzE6UE8i6sSCdIt6UDh6uY0ZmQYHH4E3r3aw=;
+        b=HTQ9fWmvhQ4cMsx4CuybhcZy/Iw554U9nKNCBCooD8i/GtkNE200KRGvhWxJjfmwJc
+         v4qym0e1dIMIpBG7oPisNrAwKhsKm4aGJA/0cU9l7t23f/Zr8Bu6MKb2sIfGjixlAJL9
+         Z47+vjWFOJXPVMIngD0LjKIUOJ3yKfrSMV2sh0Ty4ojPliaKbDqOP5asOmPPFVBmoX66
+         4+TYGPiFzyPDlLpj/6ku9v6qypX+pgX4BgiGVmhpdceMGVtrfsjxN+hfGAsp6Il+QdHw
+         mHFl7arw2YzdBworYENxMUpB0PjDSD6i5wADPZc0staQRBJNe8D+PXYlW5j8ZylvW/26
+         lpRA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786025658; x=1786630458; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=46+6JcjA6rR1QTyo23kusNcDsQJr8RhFi6PkBjNbAdc=;
+        b=blr/mYQlnKQU0et8FG3B6vi/I4ZaiPIhUbqaQAVU5lgokjamnWhREUUfidzdU29RAP
+         7YqRFyVZfClwpIxUTlIijSxR6AYfLjEQIyZzKQGmQtEiO2fOvl9MLnmitHZf5rpD0gvA
+         AU9+CbIjRs3csIiWjbMOUabUrLjU4lj5Emfa0+ssJPsnWTA7JY3+IyxLlmd3art4Cktj
+         Pvqoa0JXq4KvkXeJ78SESi8LppLKCvri8n6QSyY4JV02D46vn8zTXxnceNVWWFFWeZHW
+         XFW8VX+h49mqgaI7bp19MDLRoyQzGRl3ouDbjwVXenn9kId8IRnxnoHohwtZ7PGFVdUO
+         xV9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786025658; x=1786630458;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=46+6JcjA6rR1QTyo23kusNcDsQJr8RhFi6PkBjNbAdc=;
+        b=lUScfKc6Ye+iorz5MHKk+r2lgehxrX1+TjZSOeATJKj7FhpQdEU76dqxn344wsTDRL
+         NdMWXGTBzZF6eHfHNmI8z7NiIFkmN2bZp1xzfw6v87g3w6pTn1NmRrtc25IJoicE9CCf
+         TObg/cars8jt+ZPksb0SvLa4g3LkuRwOrgHG6THvgkztVeMOTzfbb95u6bGUnA9qYbiI
+         Wa7LRDGEGpL9YZw3q10DwXg4t5mVdu0R8rUMtoo0+t/Cjf07IuD/HTad2XXv7DKyJ/rH
+         vEyMc/KZqFRDoPoPINRTT+OisGB8FZAMJEBAgI9E7M8JJsCNgEK84eQ9qhuHnmPxMR49
+         ehiQ==
+X-Gm-Message-State: AOJu0Yz1gBaWoz+HhKdU0/Ei0EcEepm2yIB1lQB8epQ2h3a7aq/fIKw1
+	CyvrsJdOnlZxg8XmPKPY59chluW2wOKDUNKLVjbIBktvn8LgqJwfoY3q+x7B7wlOwkFUXuTYP/q
+	heMifNeCLIyn0A0ZmiARDLIBk7mvKOlqcB1ix
+X-Gm-Gg: AR+sD11P5rHg0cYT8gPbM2ybqvVn1pj1b7JyAxpsnTsUKhzASlcu3UNYaVs0E8QKhV0
+	NS1ZHV7ZLEmKYJiF7bsuRz54WjR/2uwg9Sg1594RuAd33BgI8N4AJKbyCZIyWTFK8SiVdNxaoiW
+	+ojSwCCsovAInWPJUx76zF1+di3bwx7mZT1RfPDVCJiniFq5zhtdY9Cn8p5JhuqZRG/ykFwp96N
+	5sCBLeksA8qN2KxKF7tNDTVApmnTHdS9qIlVdMGHK8S+DjIEpqhmdBc6MLPjBmCzzcWWJr0PLb8
+	igrAZZI4zHb89nfFOsZOzyODk4Vu1DwQ42Cv021rmhn9VPD2dtukHjislwLrdQxQn1FyHAGh0KO
+	jw/4TVAQCVxePjROA4O+f/VA43z5fhfvh5w==
+X-Received: by 2002:a05:6402:a0c9:b0:6a0:926e:f8f9 with SMTP id
+ 4fb4d7f45d1cf-6a1b4a9e9c8mr1139610a12.2.1786025657529; Thu, 06 Aug 2026
+ 07:14:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zC_KCgD3idBJjXRqpI6cAw--.10593S2
-X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
-X-CM-DELIVERINFO: =?B?lfkbHAXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
-	sfncGSG+szpQCInt5Y8rbJUI18Th2eK5VvAmQWWJW1W/15G0Ib5M1TLFoBcQes49cO2hHS
-	+iwQR8i9mgTulNDGFaKp9E6mavGmQbzmcFsnzP86
-X-Coremail-Antispam: 1Uk129KBj93XoW7ZFWrWFyxJrWDZr43KFW8Xwc_yoW8AFWUpF
-	nxua9xuryvqF4I9r4Dua1xGFyIv3W7J34UCrWUuwnru398Ar1S9rySyF1rXF1xXrW8Xr42
-	yFWvya9Ykrs8AFcCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUU9Gb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AK
-	xVW0oVCq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc804V
-	CY07AIYIkI8VC2zVCFFI0UMc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AK
-	xVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48Icx
-	kI7VAKI48JM4x0Y48IcxkI7VAKI48G6xCjnVAKz4kxMxAIw28IcxkI7VAKI48JMxC20s02
-	6xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_Jr
-	I_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v2
-	6r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj4
-	0_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8
-	JrUvcSsGvfC2KfnxnUUI43ZEXa7IU85l1PUUUUU==
+From: Olivier Tanoh <olivier.tanoh19@gmail.com>
+Date: Thu, 6 Aug 2026 16:14:05 +0200
+X-Gm-Features: AUfX_my-AHn15nDLn3sdNVQS9_K6dWjM0r1262xHTl7Pz5OygNB6RwCJyxMasNU
+Message-ID: <CAM49wQtRt5JWDWZtu4Kc-Lk9miv-Uc0nYocd7JFiTVycXQExkw@mail.gmail.com>
+Subject: Guidance for a first IIO sensor driver contribution
+To: linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-The threaded IRQ handler queues data->work through irq_work_queue() so
-the trigger is polled from a per-CPU context.  free_irq() does not flush
-an irq_work the handler already queued, so after gp2ap020a00f_remove()
-returns that work may still run and call iio_trigger_poll() on data->trig,
-which the devm cleanup has already freed, causing a use-after-free.
+Hi all,
 
-Add irq_work_sync(&data->work) after free_irq() in remove() and in the
-probe error path, mirroring commit 78601726d4a5 ("iio: trigger: sysfs:
-fix use-after-free on remove").
+I'm an embedded Linux engineer looking to contribute my first sensor
+driver to IIO. I'm familiar with the submission process (I've had
+patches merged to staging), and I've studied the structure of existing
+IIO drivers, si7005.c in particular, so I'm comfortable with probe,
+channel definitions and read_raw.
 
-Found by an in-house static analysis tool, confirmed by manual review.
+I have I2C hardware for testing (Raspberry Pi CM4), so I can buy a
+part and validate on real hardware.
 
-Fixes: bf29fbeaa13d ("iio: gp2ap020a00f: Add a driver for the device")
-Cc: stable@vger.kernel.org
-Assisted-by: Codex:gpt-5.6
-Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
----
- drivers/iio/light/gp2ap020a00f.c | 2 ++
- 1 file changed, 2 insertions(+)
+My difficulty is picking a target. Most of the simple
+temperature/humidity sensors I looked at (SHT3x, AHT20, ...) already
+have hwmon drivers, and the recent parts I found in vendor catalogs
+(e.g. MAX30210) are already being submitted upstream.
 
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index c7df4b258e2c..20d1aa9e99d7 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1560,6 +1560,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
- 	iio_trigger_unregister(data->trig);
- error_free_irq:
- 	free_irq(client->irq, indio_dev);
-+	irq_work_sync(&data->work);
- error_uninit_buffer:
- 	iio_triggered_buffer_cleanup(indio_dev);
- error_regulator_disable:
-@@ -1582,6 +1583,7 @@ static void gp2ap020a00f_remove(struct i2c_client *client)
- 	iio_device_unregister(indio_dev);
- 	iio_trigger_unregister(data->trig);
- 	free_irq(client->irq, indio_dev);
-+	irq_work_sync(&data->work);
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	regulator_disable(data->vled_reg);
- }
+Two questions:
 
+Are there sensors the IIO community would like to see supported that
+currently have no driver?
+For a sensor that already has an hwmon driver, is an IIO driver
+considered worthwhile (for buffer/trigger support), or is that
+generally seen as redundant?
+
+I'd rather pick something useful than duplicate existing work. Any
+guidance would be appreciated.
+
+Thanks,
+Olivier Tanoh
