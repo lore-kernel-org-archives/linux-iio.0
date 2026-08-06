@@ -1,47 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C210A3DEAF6;
-	Thu,  6 Aug 2026 21:37:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF3C3E3C49;
+	Thu,  6 Aug 2026 21:39:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786052272; cv=none; b=JPjZurEsd2quQT49ysp9YXcjhlBBu3Hu9uASihtpEuvR5YHTJMYcYMKdZ8ya1FmHuXrJ37BqoKNnyEGc6pMPEZB6s6mLxfQ0Rih4iBiU5sxoiF55x/D2SkDjjQl2xaJ+oIZk7sHYVm69OD86aH6TJ8NCJYbSGpeCHgJt6CYwCGI=
+	t=1786052354; cv=none; b=jU4NqKvM8RkTuXcP8PBBNxo/tf/8pGiJTXc0mciJoQ+PL1hIVHYJDtDH9mQwGN/z129DiTZAKHtCjFfVH7AgNGQwZhcROikx2D3UnHIL6Tm8MdajQk2AbUiIOVTd+qR3TccdwXfdaAOliUb+RSQELzHvRmHTEdjYOFgRQzDDA18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786052272; c=relaxed/simple;
-	bh=mjGVUIQVFQSUlNRTElAwT9SVkk1YkNAmsTb3lxEI7Tw=;
+	s=arc-20240116; t=1786052354; c=relaxed/simple;
+	bh=UAGQcGrc+pF9SmEoLvjAupKFj+QmunUUBxrjmHOlLx4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a/76i0ES6UZL6+9LY+aGVTrXI7I5YgcAsUIQmv+aLzWO56dKm0+5zXTleYRU6j56u0E1ONdh4uFCFFUaQTDo5se7SG5fGZfgWjBfOx0wPESpCBtO2oBRySPUTYQpC2qiBayepjfj/HddBrR5g2JHrPnBRv7vnZMSnupqClTuR5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n9zwjhgt; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=DlsBNxDcTPZrV0/m1z9ELS8Gg9idvXo5tRbuK9h9K9dOVHjycp3RyY6GuuXjTWDvmtoK03gjVuqchweb+MGzOoGc+tFMuh1WgSiLT+42NdgMBP7qKdj1r7ps1Uq5xA1ZFpWpjjWBtmPbp7wXmSo5p+gQbyKLlr+cUnpKXpY1/QE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j9kHpsez; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n9zwjhgt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j9kHpsez"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786052271; x=1817588271;
+  t=1786052351; x=1817588351;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=mjGVUIQVFQSUlNRTElAwT9SVkk1YkNAmsTb3lxEI7Tw=;
-  b=n9zwjhgtE5AS6dFziqyk2eFIUrudfexsHuiOxE3RrktIZrxKYpFzKsRG
-   We4h/7OXhwnMCRbVAGhPt9IbvgcTfTw4TDhZ15D+Ai9UhZmf5DtSu42vG
-   +5xrj5Ob4UBBo/RxkkebNw1jfQlofDRTOQcDiVAYtS2hQXK9plnsu8jlc
-   VTQUNUzYW/N0cCNG0kmiJbwq9QYhbe5QBqmQv76dfg5GGmg/3JfxuYzDb
-   7PMyM8ZmtVyDXrNG/jxLJQoI8FZ7TLjdFI8xmRz5+OuXAze8zhJ2XVebF
-   Ug9yVItR7YlKg0Z+VD/ycwfLyPop0rn9tY4rl1wWLIlctwipfARqhfYdE
-   A==;
-X-CSE-ConnectionGUID: N4jsXghkRcWxuJkrO4ieXg==
-X-CSE-MsgGUID: QCllghm2T/6+T/jn5GcfOQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="74199394"
+  bh=UAGQcGrc+pF9SmEoLvjAupKFj+QmunUUBxrjmHOlLx4=;
+  b=j9kHpsezQUz3IHrHfiGRnOssq5+o6jf/V0+nxEfCE+QfvBIWY3jDvILV
+   Z5y8y3nVBybMtDAndL0Ir52hMrqT/YefZdhvI50y6ICgpXSVjJw+ET5ZY
+   MGrAi4sjuIIGMCbKEgnpVoH6D900Xh8OzCWEs9R/2pD5cRLn+BAk4ocyV
+   glaeKg2AaAGOEzWD0/8K22kiqC/KmqoasXw6kmiInXL942b/HOAw9TgE7
+   F+67E9kvF6jldD/4tyXgLn/VEz81QLYhCzbfNc/W45PxcPctOQdS2jW8z
+   2/59AJ36GULssP1hJJ+hMww/WQ7V7SjVC6YkOMsQ7//cZzwZOI+64sDoc
+   g==;
+X-CSE-ConnectionGUID: vUliLZ4eRHKBu/Qkv3eI0A==
+X-CSE-MsgGUID: IoH+b0bRT8OAQJ5UHoFseA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="89185210"
 X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="74199394"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:37:50 -0700
-X-CSE-ConnectionGUID: q2z1aFAzSP6ZvmILdJpalQ==
-X-CSE-MsgGUID: ve2ZWh9wQKyOPW9r8bgqYQ==
+   d="scan'208";a="89185210"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:39:08 -0700
+X-CSE-ConnectionGUID: qm3FMHI3S2SrE/S4BAUIzQ==
+X-CSE-MsgGUID: RS5s2t2+SgeG/8ZH/BG0jg==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
+   d="scan'208";a="286895005"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.50])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:37:46 -0700
-Date: Fri, 7 Aug 2026 00:37:44 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:39:04 -0700
+Date: Fri, 7 Aug 2026 00:39:02 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Esben Haabendal <esben@geanix.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -53,12 +55,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Maslov Dmitry <maslovdmitry@seeed.cc>,
 	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3 4/6] iio: light: ltr501: Power down chip if request
- irq fails
-Message-ID: <anT-qMXnSJ2BL9x2@ashevche-desk.local>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 5/6] iio: light: ltr501: Add ltr329 driver support
+Message-ID: <anT-9vI9jD8V0Q0_@ashevche-desk.local>
 References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
- <20260804-liteon-ltr329-v3-4-c6b768c7c745@geanix.com>
+ <20260804-liteon-ltr329-v3-5-c6b768c7c745@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,25 +68,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260804-liteon-ltr329-v3-4-c6b768c7c745@geanix.com>
+In-Reply-To: <20260804-liteon-ltr329-v3-5-c6b768c7c745@geanix.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Aug 04, 2026 at 07:02:15PM +0200, Esben Haabendal wrote:
-> In case devm_request_threaded_irq() failed, we were leaving the chip
-> powered instead of powering it down again. Power down the chip switching
-> ALS and PS modes to standby.
-> 
-> The dev_err() message was causing duplicated error messages, as
-> devm_request_threaded_irq() calls dev_err_probe() on failure.
+On Tue, Aug 04, 2026 at 07:02:16PM +0200, Esben Haabendal wrote:
+> This adds support for the LTR-329ALS-01 chip, which is similar to
+> LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
+> have.
 
-> Fixes: 7ac702b3144b ("iio: ltr501: Add interrupt support")
+...
 
-Be careful with this. The removing of the error message should either go
-separately, or you should be assured that the IRQ core prints it for you
-in all stable kernels where this goes to be backported.
+>  	if (client->irq > 0) {
+> +		if (!ltr501_has_irq_support(data->chip_info)) {
+> +			dev_err(&client->dev, "chip does not support irq\n");
+> +			ret = -EINVAL;
 
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
+Can this be
+
+			ret = dev_err_probe(-EINVAL);
+
+?
+
+> +			goto powerdown_on_error;
+> +		}
 
 -- 
 With Best Regards,
