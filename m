@@ -1,143 +1,124 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49C847F77A
-	for <linux-iio@vger.kernel.org>; Thu,  6 Aug 2026 21:46:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786052781; cv=pass; b=f3nRgVtuO1FESS9GjEFZUuyeeBkQ0+C6C+5fPeWL3S/zF+LqAdd1dABblwYYB09rFTU0fwawlsDuhzqai84TSPauji2Cfsop1lZ2PQ+5vEjqyK9377duGwCMQbfD7nBIL8D21bYSjiv1uPTi3vOHnQaglR/hfK/5UXtzK+5j9I8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786052781; c=relaxed/simple;
-	bh=Wfr8L3wblvcW0Bq2ZrAPzo+EmjIsw9i/NV/YDRHbPvI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bu/IbL9FPgW7BBeCINeN5yTJiFBPcglAidzcktW87+vn+SboMbseL0jn8Gn2W7U3RErJPYMSo3pTMs2i+ktqL/HCplz0x7+ZYjppnKcbyUJb3JlmVxqkF+WhbwZXbEG6JABYJBQqXTGVmWVdAgZe/A2ZQEwvxDtAH78rby7J+nQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CcjFzpLO; arc=pass smtp.client-ip=209.85.160.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F12241A900;
+	Thu,  6 Aug 2026 23:14:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786058058; cv=none; b=girfBI3NbC/2tTVJSPA1FoLbzYURGqn4WHez6+bRTYrGeJaONQGk5RmPrGUuByrNV9EI2VOXSM6qYq3nox8nTQspmoSSpu4tmMc4dvSOwDCbMXuhlBMSzxN3HZkZL6HikV3FOwzU0UjwJUdBxxr7vuYwqRItEHOUF25xUXleh7c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786058058; c=relaxed/simple;
+	bh=S58XBp6CgG55cDr5siPSfHS+brVFmFzjNnKLPmjLufw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VEoTgePORjkDEuBpk9xIJ3tL1EMF/NEQ6znrMJ8V12wnRc1TH7YQEc+iaGpDe1Khz13aiIHgVk3R7MPZHWaguenUFGhcjxqGR4E0DEIJe1kWNZ1nWI/sdSauM0PIJJJiJmnAEf6ctxs1d7RTNVzZJz2dZ9fsPX6q8DCV+VbbyLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kUoQDNgs; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CcjFzpLO"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-44cb057311bso1601901fac.0
-        for <linux-iio@vger.kernel.org>; Thu, 06 Aug 2026 14:46:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786052778; cv=none;
-        d=google.com; s=arc-20260327;
-        b=H5bq9B50VA7SBVCeRY+SvwlHbZVKjdPKNKoD/u3DhzCY5Jhwr69IhHI6XKNr9Y62hr
-         tljMZgB8JCkzQXQ2F5sVefNksND0VWwKYqPJBpbkXs7WgwMOepgcJ4EixJKAWJuitmO5
-         SlaTYVELEoB4gIiaE4lzfUqdAq1EzEPp7u6at18kwRTgNRR+xrCZijQoo0Gt8MqxKT2R
-         8hrMw9vMzEldBCwicLRxWIr03Q0/NDyfaeLZxgbo7kjSinDTKsIL0efZJd9xk94gcLVz
-         R2SAdcU/1Pki1KOAEAkFs/77MRA15TTMVsT0kTHVAwi5SxfsH8PoqKPPcbm3jWfEXPFS
-         CXKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=/LqB88POXPCUrm0OGXikTnU+sodKuQSJ3LtNfIU66ao=;
-        fh=b0kBp5wo9Xscczft2muVNkPUGcWZZdhfVzWF7Ruksps=;
-        b=d9XdOPBmoLGbsPnUF4+cND9RAMcl146fSfrBR4p17UjfI0lQfd8vXbUwFkAOZ3wFhJ
-         gfkQyRsqKN52WJ7TywP0xM8dfAp7QlmniLMzzPxmPKGVGDBZTfgwTuUyZePOP5lbBcEm
-         7qwnl43eN6zFoa3nJ/004lT9P2K0Kx+22g5TTq6XQ5TknGZtcS7XYqfiY1MJthwhiuzy
-         vggTd9lRXfkNABroZb62+RJ+pXB2VPk8B0K3vw17T4TlaSnow/L7jA48jOCnq0LiESxd
-         DNji73J/jIP/g2EYjy8F1ERDZxfklp8FJ13rzsC3YsKrkC1WntEyXdjhF0lXLFmYfvGl
-         LsqA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786052778; x=1786657578; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=/LqB88POXPCUrm0OGXikTnU+sodKuQSJ3LtNfIU66ao=;
-        b=CcjFzpLO7nzyZRZ5O3XYGz94WXBTtMethOjeQRSgXLPS2FULMMXeq3JeL9F9kUjFw9
-         hO6qlG18NAanl6dHJARQk9LUg69ghpw0riM8bAqh8+s9exo/6OqcTMPVBuvYBiRVpxvo
-         UlOfqSHBiIew+NaxvYGQdAOFhBvkt5C6PtIZmJqZKQdsNduau2na0Wuts3uBI+DI8RD6
-         wxA0yyNCU4BXgOGM3JtXUL/GlqrEdTcxf5dTPM6O5XgTWxm9mBcU4xmDbv7K9N/BtfRL
-         9Lfr9Am+HnnG5C9ase5Df32rczeV35QtB1zhyDSdWl8vbERFJnY7Y2CUhhc4VqJ18jBm
-         I9Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786052778; x=1786657578;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=/LqB88POXPCUrm0OGXikTnU+sodKuQSJ3LtNfIU66ao=;
-        b=Kden70zO0ai9pZenk3EcC0Bsa4dFYKm1wrnTDv4O3z/S/M9zm6cpdXOWz+XMvv0NmU
-         veIYMI1KJ3UjfJZSfmHoyaazAlCSqjP2ce2fLtPh19abR0omiCAyS4nQNbQ/pmvndfUL
-         VP//HmuTHHFGAf2oApL3DUTVICxGQwf8W5RvVrH+67awB3/GOM9GxcxQLrNORa3ZEhRC
-         H025qbrcUyMkLdRTG5Vm6t9jZRpBK5Th8eUOCz57PuN7bTo+vOI1BRt6n1DocRQ9QcWp
-         mIlRZh9iDC4Pzc+IsjOdRvrp2B859lXPrU4EpX80vi2iCRzDT3pzckRaGv4rSeVHvoy6
-         uDvQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqDhED062sqcw7ZNF/c7rZ+56A9tVob45OqntflqzfBqWF7y4T9Z4k3cZni4SYPrUJYAI+rbaCuIWg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz8L4T1Xi+fMD29ogKfo1OFxjAqh6G85q0oXKD475yDO/X5L/oL
-	boGhBcIIW5uYolsgbmT6NMFgkuc12nRc9+v+NLXaV5WZ9Tgv7mVUQRCXL7wJuFnM4mZEOV5NeOQ
-	et2dIkR74PWdnRtQntHLnaLdoU0KMb0A=
-X-Gm-Gg: AR+sD12SmdoNHD2N3EotF/GoQc64dWFn1Daku8Quc1an8fjE5ZYhr5WEFklhgLX+wm3
-	wD7AH4AszA8UKbdvPn/vLV30UsaZt5khcl3MHK+/66waWgIbF8gvh+mFHWGndPVF5QMYzj+jXkt
-	MXtSaGD6c9ThIrFVGvKwLNIgYBVZEO4DGWBlBMEN/BTdj6Bk8qkmJwk3AzI/uI5Z/wZKbU43NOf
-	wauxT0GVwrR3OOEK/f6Br5/dTBDxiGzGwKLJto/+ZoXorMYzIbkV4P/YLTBkM+MwC3Wb/MN8D4F
-	tkK2ZC3eWimucYAS6OGkiIr5WVAKuOn9ofPUF41dTsM=
-X-Received: by 2002:a05:6870:e136:b0:451:ffac:5643 with SMTP id
- 586e51a60fabf-4599eda4d93mr9510272fac.10.1786052778574; Thu, 06 Aug 2026
- 14:46:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kUoQDNgs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E81E1F00A3D;
+	Thu,  6 Aug 2026 23:14:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786058056;
+	bh=R6tlUTvCGRlJ2FeynitfLk6pTOF3tpwEhQMLaAXg5to=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=kUoQDNgse+jy7PUDlzeVlwKNUBC/MPwtT1uTaozv4nazlhDPN48I9G9sRn6xBL5PH
+	 9M9gsys2eje4UAqCzX1e22qOJTz6HSBP9Z9UeOWfzDavtXIAsNI9qioPEhcKdK42ae
+	 8QONljr+/IDE9BTZJ5Vz0ARAUlC2e+dDQfhlTMr54cau5Jqitb5DR/32MOA0jOiYPA
+	 /I43uVMM0XhyPvirrcS5a29QYucwlw/Q7AHtGaRwjluJXghNDZABkBUnCiXMmGbYmF
+	 ACr1P4zncHC+CXglSCEJGL1AiHQpLJPxVdUbs6ugw/ydPFa1YdaNQeJyD+f3aMhYWV
+	 xQf8BqdzlJ9xg==
+Date: Fri, 7 Aug 2026 00:14:12 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
+ <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
+ <kamal.wadhwa@oss.qualcomm.com>, Anjelique Melendez
+ <anjelique.melendez@oss.qualcomm.com>, Manaf Meethalavalappu Pallikunhi
+ <manaf.pallikunhi@oss.qualcomm.com>, Priyansh Jain
+ <priyansh.jain@oss.qualcomm.com>
+Subject: Re: [PATCH 1/7] dt-bindings: iio: adc: Add support for QCOM PMIC5
+ Gen4 ADC
+Message-ID: <20260807001412.673b1bf1@jic23-huawei>
+In-Reply-To: <bc1096de-94c8-4713-88cb-5b9e96b5419b@oss.qualcomm.com>
+References: <20260731-pmic5_gen4_adc-v1-0-9c49b2eea6f9@oss.qualcomm.com>
+	<20260731-pmic5_gen4_adc-v1-1-9c49b2eea6f9@oss.qualcomm.com>
+	<20260803004940.0277c0ac@jic23-huawei>
+	<bc1096de-94c8-4713-88cb-5b9e96b5419b@oss.qualcomm.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260802020614.19732-1-adinata.softwareengineer@gmail.com>
- <20260802173852.32b4bc52@systembl0wer> <20260802181233.535eeb12@jic23-huawei>
-In-Reply-To: <20260802181233.535eeb12@jic23-huawei>
-From: Adi <adinata.softwareengineer@gmail.com>
-Date: Fri, 7 Aug 2026 05:46:06 +0800
-X-Gm-Features: AUfX_mxV5h_WhCX6rdYpCZC3Qyu8dhQpGeTB5wv3UFz4WE0D31WUAnv1Muga6Ow
-Message-ID: <CABZ6vuBOECSgu=OpnKmk6jsrE-xQd9-nZO_VUftve73AtOEJtA@mail.gmail.com>
-Subject: Re: [PATCH] iio: humidity: hts221: Fix checkpatch blank line warning
-To: Jonathan Cameron <jic23@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: lorenzo@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kernel-mentees@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 3, 2026 at 1:12=E2=80=AFAM Jonathan Cameron <jic23@kernel.org> =
-wrote:
->
-> On Sun, 2 Aug 2026 17:38:52 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
->
->
-> True.  This highlights a broader point.  When making
-> a number of cleanups to a driver (and I am generally more willing
-> to take those than many maintainers) please group them into
-> a little patch series with a cover letter.
->
-> If this is one of a set and overall the seem worthwhile I might
-> pick them up.  Plus this driver is pretty aged so there are other
-> quality of code / modernization things that will make much more
-> of an impact than just this blank line.  Take a look at some
-> of the other similar cleanup series on the IIO list and see what
-> makes sense here. To give you a starter, dev_err_probe() and
-> checking which prints are actually useful + stopping the driver
-> rejecting Device tree falllback compatibles because of the hard
-> fail on a device ID mismatch.
->
-> >
-> > Also, I feel like just putting checkpatch warnings directly into the
-> > commit message is bad practice. Much better if it were "Add a blank lin=
-e
-> > after variable declarations per checkpatch warning."
->
-> Fully agree with this.  We really don't care what the print is, just
-> what is being improved and why.
->
-> Thanks
->
-> Jonathan
->
+On Thu, 6 Aug 2026 16:22:02 +0530
+Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
 
-Hi Jonathan and Joshua,
+> Hi Jonathan,
+> 
+> On 8/3/2026 5:19 AM, Jonathan Cameron wrote:
+> > On Fri, 31 Jul 2026 23:36:14 +0530
+> > Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+> >   
+> >> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made for
+> >> improved performance, mostly at the hardware level. The main differences are
+> >> increased ratiometric conversion resolution (from 14 bits to 16 bits) and
+> >> increased bit field width for PMIC SID (to allow communication with an
+> >> increased number of PMICs, supported on latest SoCs).  
+> > 
+> > Hi Jishnu,
+> > 
+> > The mixed case is enough of a surprise (to me least) that I'd expect
+> > there to either be more discussion here or for it to be handled first
+> > as a dt binding patch to allow for v4 channels on v3 hardware.
+> >   
+> 
+> If I understand your comment correctly, you mean I should either add a
+> description of the mixed cases in the commit message, or split the
+> patch - one patch to add the new compatible and one to add the new
+> channel properties ?
 
-Thank you for the advice. I will create a new patch series with a cover let=
-ter
-for this hts221 driver accordingly based on your feedback.
+Hi Jishnu,
+> 
 
-Regards,
-Adi Nata
+Yes. I was indeed not very clear!  That was exactly what I meant.
+
+> I think it's slightly better to add details in the commit message
+> and keep the changes in a single patch. What do you think ?
+
+My preference would be split patches so the discussion is extra clear,
+but I'm not that bothered if dt maintainers don't mind them being combined.
+
+Jonathan
+
+> 
+> Thanks,
+> Jishnu
+> 
+> 
+> > That would provide a place for a description of why that is necessary and
+> > then the following gen4 dt-bindings patch with gen3 channels would seem
+> > like a natural extension.
+> > 
+> > Other than that this seems fine to me.
+> > 
+> > Jonathan
+> >   
+> >>
+> >> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+> >> ---
+> >>  .../bindings/iio/adc/qcom,spmi-adc5-gen3.yaml      | 47 +++++++++++++++++++++-
+> >>  1 file changed, 46 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml  
+
