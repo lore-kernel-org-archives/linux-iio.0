@@ -1,104 +1,91 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65EF23ACEE2;
-	Thu,  6 Aug 2026 21:34:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C210A3DEAF6;
+	Thu,  6 Aug 2026 21:37:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786052052; cv=none; b=o+kBFGTOpW5Wut/ue0k8DRYYhiLwju1D8fhyCwQ/TkuzvYmbVHy771BS0cmk3yPFwKot8KclPzgIHItUAtCYAZfMng0GrxRcLWtHlr0LdHEgZFGnWzR8Ssmdd8YSgfTOF6tiZ0vzcI8QqYXvTGM+EKT3wT/Wbu6cqstygZOyYic=
+	t=1786052272; cv=none; b=JPjZurEsd2quQT49ysp9YXcjhlBBu3Hu9uASihtpEuvR5YHTJMYcYMKdZ8ya1FmHuXrJ37BqoKNnyEGc6pMPEZB6s6mLxfQ0Rih4iBiU5sxoiF55x/D2SkDjjQl2xaJ+oIZk7sHYVm69OD86aH6TJ8NCJYbSGpeCHgJt6CYwCGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786052052; c=relaxed/simple;
-	bh=odfYAIGK6SJNSRv9LzQomDhybvJv2MdeBybaCNeMxeg=;
+	s=arc-20240116; t=1786052272; c=relaxed/simple;
+	bh=mjGVUIQVFQSUlNRTElAwT9SVkk1YkNAmsTb3lxEI7Tw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S8anf6SUw/zIxNeqiEoxxCZi1yKLVLIy8aw1HZPuNlKgl5CebW7oNH0mCb4EHNrbPwbkB62Xf0GBFJnTy36rFoIckiloFkf5sYlVJ3kIwAgRDF3Kzmctl706nM0/OHs5SMmRktgja6GAg3R+VgTklTWsmdFMx7KyQKmfbRsHoiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ROGqqrY5; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=a/76i0ES6UZL6+9LY+aGVTrXI7I5YgcAsUIQmv+aLzWO56dKm0+5zXTleYRU6j56u0E1ONdh4uFCFFUaQTDo5se7SG5fGZfgWjBfOx0wPESpCBtO2oBRySPUTYQpC2qiBayepjfj/HddBrR5g2JHrPnBRv7vnZMSnupqClTuR5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n9zwjhgt; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ROGqqrY5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n9zwjhgt"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786052049; x=1817588049;
+  t=1786052271; x=1817588271;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=odfYAIGK6SJNSRv9LzQomDhybvJv2MdeBybaCNeMxeg=;
-  b=ROGqqrY5ikCfeQJlzZHunybP7gtWsjVKu0ld0gIbW/vPO02Bus9Ndd7V
-   WB05NBACi+QdZLHvdUe3eQ2wXyTBE2WS/McV2qPXdqgEwyeTJeE2rVAqL
-   uoFPLaN/iaohJi8yeNP9SaMwmWTtW2MmuMQWx3hPFlD3CMnexWvPyNRNa
-   XKQnI1b9w+gNtsO/TFJl+RoWoOPPh0Z265j8bseDq6lutcux6LDg6o3OO
-   VgvKi512Q33yudBRWQjQnjtZYXyLSmmL7AnhuknIjRUl9eVwuXW5NrCdM
-   /W4R3D+o6CIEDpKw5qoRPb8PGTsJs0JGnZK794uvu3w3X/9nlaA/qLFci
-   g==;
-X-CSE-ConnectionGUID: Ce4A48ddQv+BPGaLfoUwsg==
-X-CSE-MsgGUID: Uhjab5chSrGLbGc48YLIkA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="86599073"
+   mime-version:in-reply-to;
+  bh=mjGVUIQVFQSUlNRTElAwT9SVkk1YkNAmsTb3lxEI7Tw=;
+  b=n9zwjhgtE5AS6dFziqyk2eFIUrudfexsHuiOxE3RrktIZrxKYpFzKsRG
+   We4h/7OXhwnMCRbVAGhPt9IbvgcTfTw4TDhZ15D+Ai9UhZmf5DtSu42vG
+   +5xrj5Ob4UBBo/RxkkebNw1jfQlofDRTOQcDiVAYtS2hQXK9plnsu8jlc
+   VTQUNUzYW/N0cCNG0kmiJbwq9QYhbe5QBqmQv76dfg5GGmg/3JfxuYzDb
+   7PMyM8ZmtVyDXrNG/jxLJQoI8FZ7TLjdFI8xmRz5+OuXAze8zhJ2XVebF
+   Ug9yVItR7YlKg0Z+VD/ycwfLyPop0rn9tY4rl1wWLIlctwipfARqhfYdE
+   A==;
+X-CSE-ConnectionGUID: N4jsXghkRcWxuJkrO4ieXg==
+X-CSE-MsgGUID: QCllghm2T/6+T/jn5GcfOQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="74199394"
 X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="86599073"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:34:08 -0700
-X-CSE-ConnectionGUID: gJZ8FVh0R9ufio5NI6hn/g==
-X-CSE-MsgGUID: kVeTbTz4Ruu4cXuRo80zgQ==
+   d="scan'208";a="74199394"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:37:50 -0700
+X-CSE-ConnectionGUID: q2z1aFAzSP6ZvmILdJpalQ==
+X-CSE-MsgGUID: ve2ZWh9wQKyOPW9r8bgqYQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="257914277"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.50])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:34:05 -0700
-Date: Fri, 7 Aug 2026 00:34:03 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:37:46 -0700
+Date: Fri, 7 Aug 2026 00:37:44 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: =?iso-8859-1?Q?Nicol=E1s?= Antinori <nico.antinori.7@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>,
-	Brigham Campbell <me@brighamcampbell.com>,
+To: Esben Haabendal <esben@geanix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Jori Koolstra <jkoolstra@xs4all.nl>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: humidity: am2315: add am2320 to i2c_device_id table
-Message-ID: <anT9y_izVXiwPKrS@ashevche-desk.local>
-References: <20260805183733.1000550-1-nico.antinori.7@gmail.com>
- <anRXbXxTLUfUgEPd@nsa>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
+	Maslov Dmitry <maslovdmitry@seeed.cc>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3 4/6] iio: light: ltr501: Power down chip if request
+ irq fails
+Message-ID: <anT-qMXnSJ2BL9x2@ashevche-desk.local>
+References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
+ <20260804-liteon-ltr329-v3-4-c6b768c7c745@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <anRXbXxTLUfUgEPd@nsa>
+In-Reply-To: <20260804-liteon-ltr329-v3-4-c6b768c7c745@geanix.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Aug 06, 2026 at 10:46:13AM +0100, Nuno Sá wrote:
-> On Wed, Aug 05, 2026 at 03:37:26PM -0300, Nicolás Antinori wrote:
-
-...
-
-> >  config AM2315
-> > -	tristate "Aosong AM2315 relative humidity and temperature sensor"
-> > +	tristate "Aosong AM2315/AM2320 relative humidity and temperature sensor"
-> >  	depends on I2C
-> >  	select IIO_BUFFER
-> >  	select IIO_TRIGGERED_BUFFER
-> >  	help
-> >  	  If you say yes here you get support for the Aosong AM2315
-> > -	  relative humidity and ambient temperature sensor.
-> > +	  and AM2320 relative humidity and ambient temperature sensors.
+On Tue, Aug 04, 2026 at 07:02:15PM +0200, Esben Haabendal wrote:
+> In case devm_request_threaded_irq() failed, we were leaving the chip
+> powered instead of powering it down again. Power down the chip switching
+> ALS and PS modes to standby.
 > 
-> The above (same on the tristate title) does not really scale nicely and
-> we've seen too often already. So I use something like "... and similar
-> devices"
+> The dev_err() message was causing duplicated error messages, as
+> devm_request_threaded_irq() calls dev_err_probe() on failure.
 
-Right, and here something to be a list of the supported devices (in case more
-will come):
+> Fixes: 7ac702b3144b ("iio: ltr501: Add interrupt support")
 
-	  If you say yes here you get support for the Aosong
-	  relative humidity and ambient temperature sensors:
-	  - AM2315
-	  - AM2320
+Be careful with this. The removing of the error message should either go
+separately, or you should be assured that the IRQ core prints it for you
+in all stable kernels where this goes to be backported.
+
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
 
 -- 
 With Best Regards,
