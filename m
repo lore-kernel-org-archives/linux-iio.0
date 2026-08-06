@@ -1,56 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A86D6270552;
-	Thu,  6 Aug 2026 23:18:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 030B830C16E;
+	Thu,  6 Aug 2026 23:32:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786058313; cv=none; b=i5LE2AqbeP4mA28tK8VTNptn4vzkuG1BVeN3yxdxjHH+wJjol59RGNVVdmk6U82G+QLLEytaHpHgR6RKewuFMsHb86bfZHt8UvgmKD2BDvZIEU2QZ3ayqN0sbn3BggYaeMs+//WPvbgyjVGa5ABL7xoQJPvyGhArHeMrDAxTWrU=
+	t=1786059150; cv=none; b=roMgSBxz3qW8MidVBN5QEtLZl9fWvtajJR4yFI+6s/k6CP01kxqypGD3hiV23QqV7NC1o5lutpDcqo5/xQhxqCBJaDQb+Q3als9ieA83vwRvFWi5YjOOO99ZgKNwg7pIOckSkbOKXu7mdU+XWq4xGbjVwry+MA860KuI2f6zQeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786058313; c=relaxed/simple;
-	bh=i+nWvwN4DAqRS3zJb3JcjJIqvyB+vgXInNvi000M08A=;
+	s=arc-20240116; t=1786059150; c=relaxed/simple;
+	bh=SjjqwDbA2OUpr1c5Btx7awJ++SJxb1hdaQGEGBcUdrg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=De/CkF/WLBtehne+nm29D3CurXcYRInvCTYEfHiDV+dqyZ2DXgJvXD168ppASr1oVI3iWp+WEBqMdpdHBrgv/v94ncO4d0KuXgiPPUiQ3LyfHmZ3MZBF+0GIhdjOkbaPo0gAG0MzSIBwT5IcojvGZ99+BzHVu9ZPMQJYnelMHrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kTuL8GQO; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=AhoT346NV4i7sj9m1jkosPkNRnvSTW0OFWKqXt+7I6UpagwWhNt3TcigDPYsMDcvL1v/ZgHUggDL/mDoMHMpJ0rmm1O+aMyNWRrt4fYZsNlg8NVG2ypQPHwMgpNKHm9w3nVJPgd+GNTCunN7bfx/oXmeSiX6X+5Emzx/Bqi8KDg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YuIJvndM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kTuL8GQO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD73C1F000E9;
-	Thu,  6 Aug 2026 23:18:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YuIJvndM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0713A1F000E9;
+	Thu,  6 Aug 2026 23:32:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786058312;
-	bh=wj891lSkf1SbhMF9hHkTqNbiH9O10btAEC7aqlA3NE8=;
+	s=k20260515; t=1786059148;
+	bh=mYVYfDEEfl9keszVXmDdgRY7w/vLy5C9cApYnwvZoEI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=kTuL8GQOGf1XdLtElxa8DVv4Qs8f9i5ZNmRkYtPi2O2AmsPjWkBddPzC7ozSe5/rL
-	 ydPdvArOo0A6Qp12SFNac8y+ztLnlKdpRNSLzUUNN488BkTdOFbbv5X83REupE9adG
-	 LtQFRjlrvGtX2E7E7sb3A9+8VGzxECJxLu/QB46mQriKDC0ExfiQqFPdGwi+t4XsHd
-	 IA9kZl2bRunRISlqXtJIm9lK4zeQGhh7rcN4bwYhmLbXRFf7gX5AEo8v36PX3NA/48
-	 uec23vthklaT/rnETbF0VqfrLwrAPbB7rJrKDaQuhHItaosW44zOZK3Oum3zdXqnZl
-	 tb7U9JiHigk4w==
-Date: Fri, 7 Aug 2026 00:18:22 +0100
+	b=YuIJvndMiWSTa6tu8TJ6XfTiAFlRBtLqM+shOtAB/qGxPpH5C1RBz6wHs+Yc0g+Uj
+	 55apNqiLqF8KdT4ECvpwsY7FuuWxOdZa1rcPCDj8Zj99vfHXFqzWj3zrf5lv3Kmt5H
+	 2Tg9ixUDtQVp2Sn9UgkVPKYfxbZJfPB9iy2NcTvmxlCZRglfY6UXYwncECYFDban/s
+	 qB8xv+JPhPGx2uIh4V3Nil4/HRf8njOIpvMv+B/ryjfFAI0u/3cV66tBT2Yt0q3WMN
+	 Y1CakHknVqktHuUFo1nCImMO4Gj0litCCUdm7DzG8Y6XTmCYBBrdYtUJ2iyam/QNan
+	 D/gnE4/KXUDQg==
+Date: Fri, 7 Aug 2026 00:32:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
- <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
- Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
- <kamal.wadhwa@oss.qualcomm.com>, Anjelique Melendez
- <anjelique.melendez@oss.qualcomm.com>, Manaf Meethalavalappu Pallikunhi
- <manaf.pallikunhi@oss.qualcomm.com>, Priyansh Jain
- <priyansh.jain@oss.qualcomm.com>
-Subject: Re: [PATCH 2/7] iio: adc: qcom-spmi-adc5-gen3: Add support for QCOM
- PMIC5 Gen4 ADC
-Message-ID: <20260807001822.31f7c137@jic23-huawei>
-In-Reply-To: <a98d90bd-aa9d-4af3-aa54-3a34300070d4@oss.qualcomm.com>
-References: <20260731-pmic5_gen4_adc-v1-0-9c49b2eea6f9@oss.qualcomm.com>
-	<20260731-pmic5_gen4_adc-v1-2-9c49b2eea6f9@oss.qualcomm.com>
-	<20260803011400.1fb6c93a@jic23-huawei>
-	<a98d90bd-aa9d-4af3-aa54-3a34300070d4@oss.qualcomm.com>
+To: Haoxiang Li <haoxiang_li2024@163.com>
+Cc: jikos@kernel.org, srinivas.pandruvada@linux.intel.com,
+ bentiss@kernel.org, linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] HID: sensor: custom: Fix fields lifetime issues
+Message-ID: <20260807003224.3eceff06@jic23-huawei>
+In-Reply-To: <20260712005906.4f196ff9@jic23-huawei>
+References: <20260707071545.3087073-1-haoxiang_li2024@163.com>
+	<20260712005906.4f196ff9@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -61,80 +47,57 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 6 Aug 2026 16:22:16 +0530
-Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+On Sun, 12 Jul 2026 00:59:06 +0100
+Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> wrote:
 
-> Hi Jonathan,
+> On Tue,  7 Jul 2026 15:15:43 +0800
+> Haoxiang Li <haoxiang_li2024@163.com> wrote:
 > 
-> On 8/3/2026 5:44 AM, Jonathan Cameron wrote:
-> > On Fri, 31 Jul 2026 23:36:15 +0530
-> > Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
-> >   
-> >> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made
-> >> for improved performance, mostly at the hardware level.
-> >>
-> >> One significant software change is that ratiometric conversion resolution
-> >> has been increased from 14 bits to 16 bits, so the maximum value of
-> >> these measurements needs to be updated for Gen4. Add a new scaling
-> >> function for thermistor channels which use this type of conversion.
-> >>
-> >> In the latest PMIC arbiter version (v8), there can be up to 4 buses
-> >> under the PMIC arbiter and 32 PMICs under each bus. In order to
-> >> support communication between ADC on the master PMIC and ADCs on any
-> >> of the other PMICs, a field of width 2 bits is added for bus index
-> >> and the bits for SID are extended from 4 to 5 bits, in the SID
-> >> register. Add support for this.
-> >>
-> >> In addition, it is possible that the master PMIC has ADC of one generation
-> >> and it needs to communicate with another PMIC with ADC of a different
-> >> generation.  
+> > Hi,
 > > 
-> > "Possible" sounds a bit hypothetical.  Can we state this actually happens
-> > on some devices?  
-> 
-> Considering existing upstream platforms, this is applicable for SM8750. I'll
-> mention this in the next version of the series.
-
-What happens on that platform today?  Wrong values?  Should this be treated
-as a fix rather than a feature? 
-
-
-> >> -static int adc5_gen3_read_voltage_data(struct adc5_chip *adc, u16 *data)
-> >> +static int adc5_gen3_read_voltage_data(struct adc5_chip *adc,
-> >> +				       struct adc5_channel_common_prop *prop,
-> >> +				       u16 *data)
-> >>  {
-> >>  	u8 rslt[2];
-> >>  	int ret;
-> >> @@ -99,8 +101,10 @@ static int adc5_gen3_read_voltage_data(struct adc5_chip *adc, u16 *data)
-> >>  	*data = get_unaligned_le16(rslt);
-> >>  
-> >>  	if (*data == ADC5_USR_DATA_CHECK) {  
-> > This feels backwards.   We first check for the top bit being
-> > set then check whether we care if it is set or not.  I think
-> > checking if we should look at it first makes more sense.  Also
-> > shorter max line length:
+> > This series fixes lifetime issues around sensor_inst->fields and the
+> > sysfs attributes that can access it.
 > > 
-> > 	if (!(prop->generation == ADC5_GEN4 && prop->cal_method == ADC5_RATIOMETRIC_CAL)) {
-> > 		if (*data == ADC5_USR_DATA_CHECK) {
-> > 	...	  
+> > The first patch creates the field attributes before exposing enable_sensor
+> > and removes enable_sensor before freeing the field attributes. This keeps
+> > enable_sensor from accessing power_state and report_state pointers after
+> > the fields array has been freed.
+> > 
+> > The second patch fixes the original field sysfs group leak on probe
+> > failure by unwinding any field groups that were created before a later
+> > sysfs_create_group() failure.  
+> Series applied to the fixes-togreg branch of iio.git
 > 
-> I thought it was more efficient to have the check like this because
-> there may be several channels satisfying the longer if() check for Gen4
-> ratiometric channels, but the chance of *data being exactly equal to
-> the error value ADC5_USR_DATA_CHECK is lower generally. So if I reverse
-> the checks as you suggested, the outer if() check would pass for every
-> read done on a channel which is not both Gen4 and ratiometric, which
-> seems inefficient for an error check.
-> 
-> What do you think, should I make any changes here?
-
-Efficiency here is going to be hard to judge without guessing how good
-the prefetchers are and to me this doesn't smell like a performance
-critical path.   I'd go for clarity of code and check only
-for the invalid value after you've established it might actually be
-invalid. So change it.
-
-Thanks,
+Sorry - I wasn't paying attention to what I was picking up.
+These should go via Jiri's tree.
+Dropping them from the iio-fixes tree.
 
 Jonathan
+
+> Thanks,
+> 
+> Jonathan
+> 
+> > 
+> > Changes in v3:
+> >  - Move the enable_sensor registration reorder from patch 2 to patch 1.
+> >  - Add a comment explaining why enable_sensor is removed before fields.
+> >  - Add Reported-by and Link tags for the Sashiko review.
+> >  - Keep patch 2 focused on the field sysfs group cleanup. Tanks, Jonathan!
+> > 
+> > Changes in v2:
+> >  - Split the fix into two patches.
+> >  - Unwind already-created field sysfs groups on failure. Thanks, Jiri!
+> > 
+> > Haoxiang Li (2):
+> >   HID: sensor: custom: Fix use-after-free in enable_sensor
+> >   HID: sensor: custom: Fix field sysfs group cleanup on failure
+> > 
+> >  drivers/hid/hid-sensor-custom.c | 26 +++++++++++++++++---------
+> >  1 file changed, 17 insertions(+), 9 deletions(-)
+> > 
+> > 
+> > base-commit: ef0c9f75a19532d7675384708fc8621e10850104  
+> 
+> 
+
