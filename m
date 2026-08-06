@@ -1,101 +1,125 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05A442F30;
-	Thu,  6 Aug 2026 21:40:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786052404; cv=none; b=nFhFG4IF0ZW0BR+xbMaypgf8XlcTJ/hAMinEZE2JSvFUFpBnrjMIVLrZKcnmO81zCixL1IV6GlJwDm2RTkO5m9Vuq9rIlPq0/c9N38rmvHC7gFDutEJHX6l1VDFhwKplEc9cYmoyovB9UsZO3blUi18VB4cymyU0osxANvQZZZk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786052404; c=relaxed/simple;
-	bh=ompdTaruDcMcsO0WZZQEhlBbEsXJ8M0alKlUXccljqA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DKFIMw60Yre5yjXJ5ahEzZjRNMd5ucMY/vxs4bLxxgjACsnvr3G1r7wVMMJdV8E7iZ6vRJC/prL6MAhR6dTLZJVY43IlSjK3WObiX3DnK9tvxI6yujf7uK0EB4BdnYvFFYCz2dFMHkrb/dRptWObV3R23IYnLp8DzfLgBBbFi8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g7UloFae; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291C042122D
+	for <linux-iio@vger.kernel.org>; Thu,  6 Aug 2026 21:43:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786052603; cv=pass; b=XsSGPI4fI+DmM1LY4LFpeghrPGPyecyc+FXN9MDo1VHWXVjsQZSrWD/6VVEq9e3eWt7b6HY8q/CgHPJHes01rYifU1t9/zEnPDl5VAbDbKg20UJbqtXuAmHavdkuCT9klvVZoIE6ViZBKDTIjMc7p9hniWiQszie28A/buAVeKc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786052603; c=relaxed/simple;
+	bh=B4RhCkP9S/2UPiy2bHOf4EZfWfEQo8ptwLer6SDVHUo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cMxFrlsofbxfrlzijyhtSLve9PUPY7OM5TVxJoC37PGL14+bWIz6ijPnjvy54melpI3PV74U5hb/knf3VA6n1V8LCcNBRNinnHd60Cf+ScK/Z3l2UF9Om3mi75oTCJ6qheFLnr12MeivgBuVzqftN/ZRN3cgcHGkT9yLl33WhY8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TS1+V/eG; arc=pass smtp.client-ip=209.85.160.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g7UloFae"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786052403; x=1817588403;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ompdTaruDcMcsO0WZZQEhlBbEsXJ8M0alKlUXccljqA=;
-  b=g7UloFaew+NQcvKf8j+p/r4EyR8IPCiCNHyLZYX5O7kHrkyg/cxIiCav
-   ConzUMk9hLp0OXVvO0jDy5DE5+3LpVVdPseLnXuEbS5B9tz6CTUf++9vn
-   OdTFfNQ7in7NBFTbRnj1vwLF+npmvOIB3wA29r1XynvFkMdGVEfTU9cj8
-   S0PKUpvAGzdN/u0Qp2k4ZlRfopLb57lPj/NTjdm/0I70+2Xhc5q3SPlx2
-   tiD2YLydqlTM0zTqEu9TYfErIZKyde4xWYfDUz9+A0G5pSSqGUZsHy9jN
-   Orxb790wLVSAxliNHdI/rVYekvixRbP0hSW+7rg2YHZVUxxliEMQ1XeI0
-   Q==;
-X-CSE-ConnectionGUID: PoJ5WfCUSpmWAltDCVo/jw==
-X-CSE-MsgGUID: 5jlL6VpIS7i9eMqnYCpQUA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="85782225"
-X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="85782225"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:40:02 -0700
-X-CSE-ConnectionGUID: ve7vJNPlR1+0zq3deJn6/w==
-X-CSE-MsgGUID: 0PvSLkvXQVefxRyXYzKI6Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="257915212"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.50])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 14:39:55 -0700
-Date: Fri, 7 Aug 2026 00:39:53 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
-	Maslov Dmitry <maslovdmitry@seeed.cc>,
-	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 6/6] iio: light: ltr501: Fix sorting order of device
- arrays
-Message-ID: <anT_KYZjkX2Tcnqu@ashevche-desk.local>
-References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
- <20260804-liteon-ltr329-v3-6-c6b768c7c745@geanix.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TS1+V/eG"
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-4518ad44e83so1744599fac.0
+        for <linux-iio@vger.kernel.org>; Thu, 06 Aug 2026 14:43:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786052601; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ZBXVkBU32aw74I77q5gq2pVhlB/zjjFYtrgu5iGwXH61jmohhIQ3sUvzwGyBdO+NTy
+         NM2p4U98vOH0RNPD/8Z15n8BbKHdoJLKq17eM0SgcdFVkehATrWn+Vc2q2q6ZDPhOa+2
+         CamUHrovRl2/nUf9EW14bp4ravnwNnJpH92831W7BwQFy6Lj/zJulmxavMsghiNuF6LG
+         +29tcvgKlDsJBCgVPMzir1CwtFI1ZD/ps4UBLPxSgDu9TWZqM7IywNRjTW5oZ9/NH7xR
+         gSWpACrboXvurF5EmyZUW02pgDQyK93zKBZxvSwyoDePgl2RuiH+nBhV7FafXLtr1R8G
+         Tx4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=teq5dtPqyWSwQIzSbfOi9mILXkjf6R2fNiUCCXuIGlw=;
+        fh=Dmer/ObQCjkT5dbsq9OtCeChlQ5RpUeyQC0IzzxOsBU=;
+        b=HqSReiNy5vIc95e72VhaxBD+ixHDT+FcuSPEpcyJmT5RIE1UnX3XXPglso1ecYfF4y
+         u7tUW+nnlS1ObVfORmV6DPTFTV1Jdv016Fwdc2gor5zHFFTSDPbxwaBQIpHZI12gL+Fq
+         uv1RorB0fluzdlDkesCJrpve5EKEb2bQK1hXfq5i8iBFiRybZVyFS21T8dU/rVeyEBUu
+         uiZZB+RNvqB6Dr27UqhH/6uqUf7muFSarRoyz5TxOBmJNKOprKIM5MT+v6Tgm9O6X623
+         A/9pJFG2Uy3CkV1Z2WR0yfSKG0QyFA9wtAeId0S9KMsUIrlzie41zjV0n9ahJvE3/Vgu
+         WObA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786052601; x=1786657401; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=teq5dtPqyWSwQIzSbfOi9mILXkjf6R2fNiUCCXuIGlw=;
+        b=TS1+V/eG5pQddZXtVoS+nUOmlt25sGZwUwvz2IsGDWfit2K11UitBTZKgbaSns/0SY
+         PaJkMsLV9M3BhJLme0/gB0AEYzWUcBSmW3DVyHrFXX9frn9U8hW5Em47mh4G3pCBx5x9
+         nAyDsxNaHX52ABbDUTt6pDNGSEZ98FwnH2D8PiXCNj2ElsdWs7WfTkaxAZD5UlMRyEFr
+         jNeWP/tI/vJa+3ervJx7k7M6EM830lNbJW2kLqCJB7di1AEy7KZVYDpEzOVZFy48DMqJ
+         vii3JPh01FlQJnW/WwjUH4ZDn2PJFMNyhQOmb7nqG1MAvGsLK4RpvsGCRtZ62/hekL5E
+         9gSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786052601; x=1786657401;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=teq5dtPqyWSwQIzSbfOi9mILXkjf6R2fNiUCCXuIGlw=;
+        b=U6C6ktZcMMXkMvSoHSTAI82+clYPuloM/mxHlHq/u+gF9nnxF5suIfCIvyYGv3KCtn
+         FqDkZwmDlmiWDKOpFW+PtHab4nD2nc69UBBS6h2pWpB0MOrZMaJRovTZthuBkfN3t8+b
+         NwihjbH2omFJKgMH+TXtTM2qIazvl3wPa5Z1YTmBo4rcz291lPiCpYQdStqDYejE8edm
+         2vBXaeVZJKpjv/blJM4ttBo1x7FXKO4C2ms+nA406M+nAdf2RlzGBXRWJ5jVmMZIppBb
+         bsvPv75xnBlNe/czaCIH/Sj7BuJbU017lBHutP9b4WLdds3A76HoNUhHMnjUUAdldyTp
+         pvJQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqKx6wHb0LVJ1tQbvMy+Hz578E0gNHd4b1VWdIsLrC2eZ3LnpU4QGCClEjleGloH1SSzgf/lG+vDu0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLdEEt3yPu2UCRCHNxLA3taZv2eQEbmlKd1Sel++IVB/bg+nFm
+	Sa6Jw2R/7YtTwb8Ya6Ek4G6ies3KIcTm5zXR2Cczes7t9uUf2Pb3q1AXt5DRzXZ2cpOKYUsVhlN
+	BEbgWrpbz/Ji8K+Uiptj+U9vik1IM3xo=
+X-Gm-Gg: AR+sD11XU5lBfuSlJs/t8THSr4owJJ75cC2tUNhJ723todR22gZKqBTE5JRz8hSxL9c
+	PbHV//KK8LVEOeycPNUgoWack3kDRR86znKwVKS+eGcO3UzUedwsXvBDaOJOCzuJmoAbDBQbFAI
+	DvVCBoUsLUt4wOcAUb37EiyY+uze5IKxgrCWjQurJn2B4bnb3jnZoOfw7BqjiCU52Z/eEiaOyV1
+	KRADyECfizoR0AK0bpaLQKeTFBlh1Y4Aye3L+Q5mOirVUxoqQ8ALTcakbI7UzYw/PNQ9Ke0l+8+
+	o0v/i1B60CneBjZ1GNJv58mWlj6FUfkwiGF1dwFgJZdu14fOzDD8jKI=
+X-Received: by 2002:a05:6871:10a:b0:44a:e7ac:b14 with SMTP id
+ 586e51a60fabf-459e2f73b52mr2523280fac.11.1786052601015; Thu, 06 Aug 2026
+ 14:43:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260804-liteon-ltr329-v3-6-c6b768c7c745@geanix.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260802014945.17221-1-adinata.softwareengineer@gmail.com> <20260802181449.12b7e117@jic23-huawei>
+In-Reply-To: <20260802181449.12b7e117@jic23-huawei>
+From: Adi <adinata.softwareengineer@gmail.com>
+Date: Fri, 7 Aug 2026 05:43:07 +0800
+X-Gm-Features: AUfX_mxkCFVARBKks4zpYdZV7Yd4C2QJHclf4P5bGdi5j-O4q42jHt_KobUlmNU
+Message-ID: <CABZ6vuAL=FMMQp5UTJQJMJi+7nnF+OOYtdRYbbZWveSjninsrg@mail.gmail.com>
+Subject: Re: [PATCH] iio: humidity: hts221: Fix checkpatch symbolic perms warning
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: lorenzo@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kernel-mentees@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 04, 2026 at 07:02:17PM +0200, Esben Haabendal wrote:
-> Using alphanumerical sort order for these should help reduce merge
-> conflicts.
+On Mon, Aug 3, 2026 at 1:14=E2=80=AFAM Jonathan Cameron <jic23@kernel.org> =
+wrote:
+> Hi Adi,
+>
+> Rather than doing this minor change please take on making these
+> report via the read_avail() callback.
+>
+> This is a reasonably old driver, so some of that infrastructure may
+> not have existed back then.  Moving to the callback makes the
+> available info accessible to in kernel consumers and ensures correct
+> formatting etc.
+>
+> To make that sort of change you'll need to work out how to test it.
+> Probably just commenting out accesses to the device and reading only
+> the files you are affecting will be enough here.
+>
+> Thanks,
+>
+> Jonathan
 
-...
+Hi Jonathan,
 
->  enum {
-> -	ltr501 = 0,
-> -	ltr559,
-> -	ltr301,
+Thank you for the suggestion and feedback. I will create a new patch series
+with a cover letter for this hts221 driver.
 
-> +	ltr301 = 0,
-
-Is the 0 required? Why?
-
->  	ltr303,
->  	ltr329,
-> +	ltr501,
-> +	ltr559,
->  };
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Regards,
+Adi Nata
