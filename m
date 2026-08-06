@@ -1,114 +1,109 @@
-Received: from va-2-59.ptr.blmpb.com (va-2-59.ptr.blmpb.com [209.127.231.59])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E3243E9C32
-	for <linux-iio@vger.kernel.org>; Wed,  5 Aug 2026 21:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.59
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BF8E3AA1BA
+	for <linux-iio@vger.kernel.org>; Thu,  6 Aug 2026 01:37:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785964524; cv=none; b=IEBGTZE4agETR2xRzjcpUhu8ZAsgc2De7Yx+JlZU5pGx1MlORrxXD5eoSqgZo8HZDyevI5wQRt3BQHtlkbBHh2RufRSCCQLylH/q0GUUrXPGTPAUs3yAgv/NuurXMb+Mu87x+hpZ584df8VIroQMon4N6yZbhk57ao+g+oAMvcI=
+	t=1785980235; cv=none; b=a3xYdUMa8pulU/5dM7QpbX5BZ7FLY0pdGf7Dq18zkndhUMfHrhRVA63lFZ8nR4Ev1gD1w0op4eqqOiJxGq4BvWyP47kYmceTvTk5FCpCuVLn7A6G/H6Ll5UtFxBOHrX/oo4xVx02DsYhPjIxv2o2qHHqGpHEytSPV6X3QDA83sQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785964524; c=relaxed/simple;
-	bh=rYfqoIFNwjvCC+6kagJIIOet3GAFYFzNfC6GCrz6IBQ=;
-	h=Cc:Subject:Mime-Version:Content-Type:To:Message-Id:From:Date; b=IafuXPYxs1ttkHh2O2hym5CvVdchk8jc6Q6C0yaKR8b1mbZuDsQ6BEnKnUUQ8LBvpDVaTsf9dWOR4CDIOUotSh6uuGnuDwsjYDWAkFTb6yFu30FqrSW6IAmNDBf3Wn4R/8UMnIYGIn+cdPn/pyg6dlKsKf0ObjQdskLd/jNveY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=vyDVk+y1; arc=none smtp.client-ip=209.127.231.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
+	s=arc-20240116; t=1785980235; c=relaxed/simple;
+	bh=2bPmce2VvElbr9s+Y3BqN8NxKw7USlulDA+SOx5EnbA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=D2Q5HVORFw22HgikwePLr3euYwaNOpWcyywgGVxqP5L5rn5rnQbcjwc8hHyYVtJMyWjfcIsp2GIelqXLEk6bKOpouSGRX73owk4BARyTJy9j0lZ8LPZV2CnhPX9TQKitv2iu4HfFmiCt5GivuiuiRtqnQfhAE1p3ss/XXzB3O5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JgrTgYEh; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="vyDVk+y1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604220257; d=cherr.cc; t=1785964502; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=DOdeTHScjlg8KvRPtx1PQYGvpV3GwXW8tvnccpldDFc=;
- b=vyDVk+y1D1boASSO3/8EkkQMJuSdmz8r7iUnHR091TlCQ+T3lPzi/MeDehtE3TgmQsOAxO
- HFzS2fKKC3yK3wRddUCSEQrgIOChA3aSKEJCNGpxSoOdXbZP5BH4KOYP4vPCGNqB1Y++lG
- 27VC2uUPCFm8upPH0XSB6lnzOfDGPY+/P7Qip9rpNeznxP7h3nF4tb8mnTbIggO3eBEvBX
- oJWHMbSv4hdlJ6ok5E5rsw9QB94BFGTucFauNmUgg0/ysKr2o6PuWK8oUyxehkiyS3pbbO
- j8YHoHqUljH8yeRWHz/wYc7MRB5omnABuEIug38wtdH0+4QbfOixjHuE/LgRog==
-X-Change-Id: 20260806-fxls8962af-fifo-c3812fd02eeb
-Content-Transfer-Encoding: 7bit
-Received: from [192.168.9.107] ([111.40.58.194]) by smtp.feishu.cn with ESMTPS; Thu, 06 Aug 2026 05:15:00 +0800
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
-	"Jonathan Cameron" <jic23@kernel.org>, <stable@vger.kernel.org>, 
-	"Shengzhuo Wei" <me@cherr.cc>
-Subject: [PATCH] iio: accel: fxls8962af: clamp FIFO sample count
-X-Lms-Return-Path: <lba+26a73a7d4+d36c15+vger.kernel.org+me@cherr.cc>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JgrTgYEh"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-81ee6b2da98so24575457b3.3
+        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2026 18:37:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785980233; x=1786585033; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=YwMB0g/fJOrIyIUhv0tBgJ3DoHlp79+JSCvFcZYypKo=;
+        b=JgrTgYEhu/tSD1i0P6r5jyW3VFpoC13WfzSgI31h3zd2sBzY711gFbvDFZV9fxhWBX
+         7K/zIXDGgR+6tr2I+8t67vcZrFUGpbLGpL2PkaRZp9qmLiHt6kmIegYEVayFRKd09Mup
+         aImw5SQOfqgjUuUcZhp+F2dq0YFYg0m3ZnYNRHQwE1anyK7CpVn8WGqLNJHSlPNdSnPm
+         YmcJwn97P1OR6aaTHNqzA+gNCc88gYPpqtJDCJfQRtyargYF/lf5dPYq/NT3YZDxlnwr
+         02aqN8XFpG7E24kXoC6fmXNR4T6nVCPOalYWNt1OZ+1cXNBjrZI8MmRKx7h1/+SGyz2N
+         wd9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785980233; x=1786585033;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=YwMB0g/fJOrIyIUhv0tBgJ3DoHlp79+JSCvFcZYypKo=;
+        b=Oh5jY231SsKUJzOp5F8QmXprurLDIfQd9XA4oiVcZsvKDy/5J6G9v69DDLkzlnX6Ij
+         zr/08dFEeamPWdKkMjWPAi/RA9zJt3Mrl0LLk8wZsjYGRXYHX2itE3seYCoQf8wLNodS
+         Zsxqj4S191+dOcOLWMCbjNhwcnJ0lX5Yq3q5nBFxDMehauLAItZy9C+Y9y621BDQMFKj
+         A2s0CCA1XnklHKcYOHnlmC/T2wW0YJYTkPVKRGg3DYQQ12Yo459nYOAKAtn3SfzrdW3X
+         wq9LAhioTfMJp9Fp2k5pBtGKzkuGdv6dPnf+TiFgHOVkyHBjM6ylBrielQ6ORTwfW1Z2
+         634Q==
+X-Forwarded-Encrypted: i=1; AHgh+RojFTHAd/3rTfjcz2aKCMBpV11DX+b7QVakQJ7XnTV3/yIDVI2ZQ9etGaUDdVDDwlfefoIps8LZnSs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzWhTk8gKC0W04k52FYeoLLoCg9/wW23WNMLhpvrLKIf0bE/bJZ
+	FBnb6b/MXDKkmMsFIzUdEfTWp0RF7Q0L8Eh5mICPTlPxvdq9ex3Om1cnK+1EuHr9
+X-Gm-Gg: AR+sD111rrYfW7yf2eWzalcaFp2aRnFf1fi3dwG90aHpdHRnHk0fvZUh+MGsZf1FleB
+	sLhv0xKjllm2h6iw4Tfj2jBkgoMGvjF3410jziWzzR7kV7SkONmcnGG9bxzbT/+FhfF/krDFCc9
+	1JmwQP5vY+cQ2h3LQX2PC5vHDQzpVX3v+qPu6eWvJvt+KdL/Wx2kUzhpT9kJnjfe+Q/3hMibKTU
+	RjSMDgBS05XHFA6DCnpk4Qbzq5eI7E9bs4KvJ+2ytaOBimX5eeNaxH/5rtgsrYvbocCJpylYDuA
+	cBH1259iKGmHguMYL3T6BTKa0sAyAGtj41Ii/r/HStMDm5whYVJ0hcD+1E9rK762UnR32Y3XGYI
+	++33UL0G89Kxla6d/d/LxTrFpHaGGSoPtwQKGfWc4hnMLWDJV5wc3u/9mKfHsF/l3EdrxY6DVgL
+	wScAMG4/DGj6UremF68zqgMUd6GldbZN9LaStkU3UGc6H2mLcDsJCI+5FJY0p2K4BnI2hefSxix
+	rNBlZk=
+X-Received: by 2002:a05:690c:6212:b0:81f:64cf:2c58 with SMTP id 00721157ae682-8201bccf8ddmr66971477b3.6.1785980233193;
+        Wed, 05 Aug 2026 18:37:13 -0700 (PDT)
+Received: from localhost ([2804:30c:166c:b00:15f4:95ba:67e9:7ce8])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-82013261c83sm30848417b3.18.2026.08.05.18.37.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 18:37:11 -0700 (PDT)
+Date: Wed, 5 Aug 2026 22:37:44 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: =?iso-8859-1?Q?Nicol=E1s?= Antinori <nico.antinori.7@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+	Brigham Campbell <me@brighamcampbell.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Jori Koolstra <jkoolstra@xs4all.nl>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH] iio: humidity: am2315: add am2320 to i2c_device_id table
+Message-ID: <anPlaMvCo5aPmIut@debian-BULLSEYE-live-builder-AMD64>
+References: <20260805183733.1000550-1-nico.antinori.7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-To: "Jonathan Cameron" <jic23@kernel.org>, 
-	"David Lechner" <dlechner@baylibre.com>, 
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
-	"Andy Shevchenko" <andy@kernel.org>, "Sean Nyekjaer" <sean@geanix.com>
-X-Original-From: Shengzhuo Wei <me@cherr.cc>
-Message-Id: <20260806-fxls8962af-fifo-v1-1-bd9d27047fee@cherr.cc>
-X-Mailer: b4 0.14.2
-X-B4-Tracking: v=1; b=H4sIAMync2oC/x3MQQqAIBBA0avIrBNsArGuEi3MZmogLBRCCO+et HyL/1/IlIQyTOqFRI9kuWJD3ykIh487admaAQ1a44zVXM7sRoueNQtfOgyuR94MEq3QqjsRS/m P81LrBzw2uzFhAAAA
-From: "Shengzhuo Wei" <me@cherr.cc>
-Date: Thu, 06 Aug 2026 05:14:53 +0800
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260805183733.1000550-1-nico.antinori.7@gmail.com>
 
-fxls8962af_fifo_flush() copies the number of samples the device reports
-in its FIFO status register into an on-stack buffer
+Hello,
 
-	u16 buffer[FXLS8962AF_FIFO_LENGTH * 3];
+On 08/05, Nicolás Antinori wrote:
+> The AM2320 is fully compatible with the AM2315 sensor in terms of I2C
+> communication protocol and measurement conversions.
+> 
+> Add the "am2320" entry to the i2c_device_id table.
+> 
+> Signed-off-by: Nicolás Antinori <nico.antinori.7@gmail.com>
+> ---
 
-which is sized for at most FXLS8962AF_FIFO_LENGTH (32) samples. The
-sample count is read from the BUF_STATUS register and only masked to its
-6 valid bits:
 
-	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
+> Tested with Raspberry Pi 3b+
+> 
+> Used as reference AM2315 Datasheet [1] and AM2320 datasheet [2]
+> 
+The two designs are pretty much the same. Skimmed through the data sheets and
+spotted no relevant divergence among them. The sensor external casing/appearance
+seems to be the main difference.
 
-so it can be 0..63, while the buffer holds 32. The only other limit,
-the watermark, is applied on the write path (fxls8962af_set_watermark)
-but not here on the read path. count samples are then transferred into
-buffer[]:
+Few changes, new device supported. Nice patch.
 
-	fxls8962af_fifo_transfer(data, buffer, count);
-
-fxls8962af_fifo_transfer() reads count * 6 bytes through regmap, so a
-malfunctioning, malicious or counterfeit accelerometer (or an attacker
-tampering with the I2C/SPI bus) that reports up to 63 samples writes up
-to 378 bytes into the 192-byte buffer: a stack out-of-bounds write of up
-to 186 bytes that clobbers the stack canary, saved registers and the
-return address.
-
-Clamp count to FXLS8962AF_FIFO_LENGTH, the number of samples buffer[] is
-sized for, before the transfer, mirroring the watermark clamp already
-done in fxls8962af_set_watermark(). A well-formed flush reports at most
-FXLS8962AF_FIFO_LENGTH samples, so legitimate devices are unaffected.
-
-Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
-Cc: stable@vger.kernel.org
-Assisted-by: GLM:5.2
-Signed-off-by: Shengzhuo Wei <me@cherr.cc>
----
-This series adds a single patch clamping the device-reported FIFO sample
-count in fxls8962af_fifo_flush(), mirroring the bmc150 fix (ce0e1cae2609).
----
- drivers/iio/accel/fxls8962af-core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index d0c2a8daef0db964134ad10b25782b9f5752613d..3aa96adf3eef8ff525e65ceec9a371da82216ea4 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -966,6 +966,7 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
- 	}
- 
- 	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
-+	count = min_t(u8, count, FXLS8962AF_FIFO_LENGTH);
- 	if (!count)
- 		return 0;
- 
-
----
-base-commit: 848acc8ffe1b7cd5f1bf427b93069becfebc2c9d
-change-id: 20260806-fxls8962af-fifo-c3812fd02eeb
-
-Best regards,
--- 
-Shengzhuo Wei <me@cherr.cc>
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
