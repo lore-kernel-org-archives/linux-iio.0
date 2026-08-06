@@ -1,65 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD54649504E;
-	Thu,  6 Aug 2026 23:44:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5320C4B048C;
+	Thu,  6 Aug 2026 23:50:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786059860; cv=none; b=Wd7GNpuC6T4AMfmPbLajPXPBQ6+1Qrr+bnMHHQLshVLWmqGpIDwm2ohqfOSP8dum9zfq2JbUv76jzH3IdFSGKv1BjRaR5o831bzfwMlJrNDE52L3stNNjOLamKmHgiXmlNzJysfF3VKESkTpZIDGShmw6QAbT5VaNhdbjEZYz0Q=
+	t=1786060240; cv=none; b=CoF2D85Q2c4oWcEdBU4Co804ptPYD6geCpJI03biztadv8+68zhcfrZfVwKfU9AM3JU91+x4xp28qJSujPeHAB/nxvq6ywVznhP0qVXLNyqQCVHzuHF+Zre7TYtQ7uv9HnAjmf2BVgapS29avCyHrEslV8nQIm/ZjmeVKT7KPVM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786059860; c=relaxed/simple;
-	bh=l2+DY/+zfm6kc8T511ebTpdJYLnOb77/Vrd25+t/IAI=;
+	s=arc-20240116; t=1786060240; c=relaxed/simple;
+	bh=kKLOSlFiKcKTHwiRLrLPxhtjlh2a0eF4wg9zelMpFRk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gl4GC6zIRcVwtsGcSVz71O2BP35xFyo2ydMJ5s4MHNJshcWrmMzZ3kRjT7NCGtaC1cOP13mVTDaelK9oDCKE5H6ttXdIQKZRUUlVb9MLSUmDnlHmVIdBsU20fRAsSu4m4SLxJ8yXh4RvxsMfPOhBqZOGKML3FaR9mWcIDtyqgCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g3vijAnz; arc=none smtp.client-ip=198.175.65.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=arDH84nW4vZFPLTP6q7UWk5ShkX16LtzdJtBHaWIgSaUL6aCkqwxYh9Ll/D3vodgW7ZtJGTPoYqTWcWu34KcpMnfeQ19DbOUeYLENYbla/R0HmTxvz4fNRScnD8//rlADTM71oxRVDbsFFmT5AH6bnbB8OmLhU3nysnprYOaDmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N4miflwN; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g3vijAnz"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N4miflwN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786059857; x=1817595857;
+  t=1786060240; x=1817596240;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=l2+DY/+zfm6kc8T511ebTpdJYLnOb77/Vrd25+t/IAI=;
-  b=g3vijAnz/zrcxK9AyTU5rbd77JYs6olo9H00fDwtqv0qenBX59Bv3Xk0
-   4ni4sRJsqJVir4HzzjAsbG6vfEhfSouqDco+MAEkYInJJHgkFJmuGpeGf
-   /SffpySiUa5adL98Hr01rujjpYGEHTdCLvO4eTcEuiQIdpVpeXRcgsMMR
-   qTgtfbbyBEQhXIf4GrwNqC+r23ltstFZOygGMcLqUqNNx3x+I2B+SCUpn
-   xqI+qwpDeTEYOMnzaJ1qcZlpIiZmWhUmAdhCPIGmM4oEualPQQ70AefEx
-   BHaDjebEF3gngBgvLv9kywTwv/HxUuYcdGE4XAFCQAOVz81Q7c/JpmiLc
+  bh=kKLOSlFiKcKTHwiRLrLPxhtjlh2a0eF4wg9zelMpFRk=;
+  b=N4miflwNLxGOYccFB5oFpoJpTfbJ+uz9Rilzy+GptS2HjfYcHzNhZlcQ
+   sy1DtWwBgowmUbeSnlODnFTpsdpveXFL5G7jq8fsohEo3O1fqsQBkwS9z
+   1UK1kmubAEwsXEwkZgbGVxal0Euib6YTCOne3UpKJV1vGBO6tkXzlu436
+   h37KYJylyREvAgjIPV4Gmuauc2/A2lW7LMMtW/1N8pr3bO8f8EvwMFgim
+   R+HDN10TIicSXYIg2Ip0ALlroCnz5PLgASs4ULTqD2hqDcRYINiXPruoe
+   29UELKUxpLj7cOmDSOUXE8ispnI5gwQIvTBC9YJ08T3cFjCArfqWrj6je
    w==;
-X-CSE-ConnectionGUID: kaorRZ35QRGfXRxhgTZIRQ==
-X-CSE-MsgGUID: qEVUL4Q+Q9+vHt+9cUPDZw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="86874195"
+X-CSE-ConnectionGUID: /RPLPVmFTfetbDVnuqTT7Q==
+X-CSE-MsgGUID: Uit64OzOQiqdreazHM8U2g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="86606912"
 X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="86874195"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 16:44:16 -0700
-X-CSE-ConnectionGUID: 6qSmh78FTvG1M+9UW4jjzg==
-X-CSE-MsgGUID: H617RV3XQOqFholnuMijRw==
+   d="scan'208";a="86606912"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 16:50:39 -0700
+X-CSE-ConnectionGUID: pDQtYCSCRAKL//ir7Y0GPA==
+X-CSE-MsgGUID: 0JzKfXPLTkSZA5H5+0xUfA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
-   d="scan'208";a="262301863"
+   d="scan'208";a="260964048"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.50])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 16:44:10 -0700
-Date: Fri, 7 Aug 2026 02:44:08 +0300
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 16:50:36 -0700
+Date: Fri, 7 Aug 2026 02:50:33 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Yu-Chun Lin <eleanor.lin@realtek.com>
-Cc: linusw@kernel.org, mwalle@kernel.org, brgl@kernel.org,
-	tychang@realtek.com, wbg@kernel.org,
-	mathieu.dubois-briand@bootlin.com, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, jic23@kernel.org, andy@kernel.org,
-	o-takashi@sakamocchi.jp, u.kleine-koenig@baylibre.com,
-	dakr@kernel.org, bhelgaas@google.com, dlechner@baylibre.com,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org, cy.huang@realtek.com,
-	james.tai@realtek.com, stanley_chang@realtek.com
-Subject: Re: [PATCH v8 9/9] gpio: realtek: Add driver for Realtek DHC RTD1625
- SoC
-Message-ID: <anUcSPcJjJkLh0Z-@ashevche-desk.local>
-References: <20260726125209.140307-1-eleanor.lin@realtek.com>
- <20260726125209.140307-10-eleanor.lin@realtek.com>
+To: mdshahid03@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	David Lechner <dlechner@baylibre.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
+Subject: Re: [PATCH v2] iio: adc: bcm_iproc_adc: Convert probe() to use
+ dev_err_probe()
+Message-ID: <anUdydEokIvj2pyO@ashevche-desk.local>
+References: <20260727034009.5c6b0be9@jic23-huawei>
+ <20260730140405.369634-1-mdshahid03@gmail.com>
+ <20260730140405.369634-2-mdshahid03@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,227 +67,111 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260726125209.140307-10-eleanor.lin@realtek.com>
+In-Reply-To: <20260730140405.369634-2-mdshahid03@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Jul 26, 2026 at 08:52:00PM +0800, Yu-Chun Lin wrote:
+On Thu, Jul 30, 2026 at 07:32:45PM +0530, mdshahid03@gmail.com wrote:
 
-> Add support for the GPIO controller found on Realtek DHC RTD1625 SoCs.
+> Replace open-coded probe error handling with dev_err_probe() for
+> resource acquisition and initialization failures.
 > 
-> Unlike the existing Realtek GPIO driver (drivers/gpio/gpio-rtd.c),
-> which manages pins via shared bank registers, the RTD1625 introduces
-> a per-pin register architecture. Each GPIO line now has its own
-> dedicated 32-bit control register to manage configuration independently,
-> including direction, output value, input value, interrupt enable, and
-> debounce. Therefore, this distinct hardware design requires a separate
-> driver.
+> This simplifies the error paths, avoids repetitive error handling,
+> and automatically suppresses duplicate messages when -EPROBE_DEFER is
+> returned while preserving the existing error messages.
 > 
-> The RTD1625 GPIO controller has a hardware quirk where both 'assert'
-> and 'de-assert' interrupts are fired simultaneously on any edge toggle.
-> The driver works around this quirk to correctly handle edge interrupts.
-> 
-> Interrupt support is optional for this device, matching the dt-bindings.
-> If the interrupts property is not provided, the driver simply skips IRQ
-> initialization and operates purely as a basic GPIO controller.
-
-I see this is already applied, but consider the below as a material to follow up.
+> Also remove the redundant error message after iproc_adc_enable(),
+> allowing the error to be propagated without additional logging.
 
 ...
 
-> +static int rtd1625_reg_mask_xlate(struct gpio_regmap *gpio, enum gpio_regmap_operation op,
-> +				  unsigned int base, unsigned int offset, unsigned int *reg,
-> +				  unsigned int *mask)
-> +{
-> +	/* Each GPIO has its own dedicated 32-bit register */
-> +	struct rtd1625_gpio *data = gpio_regmap_get_drvdata(gpio);
-> +	int val = 0, ret = 0;
+> static int iproc_adc_probe(struct platform_device *pdev)
 
-ret assignment is redundant.
+While at it, consider adding
 
-> +	*reg = base + offset * 4;
-> +
-> +	switch (op) {
-> +	case GPIO_REGMAP_SET_OP:
-> +		*mask = RTD1625_GPIO_OUT;
-> +		return 0;
-> +
-> +	case GPIO_REGMAP_GET_OP:
-> +		ret = regmap_read(data->regmap, *reg, &val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (val & RTD1625_GPIO_DIR)
-> +			*mask = RTD1625_GPIO_OUT;
-> +		else
-> +			*mask = RTD1625_GPIO_IN;
-> +		return 0;
-> +
-> +	case GPIO_REGMAP_GET_DIR_OP:
-> +	case GPIO_REGMAP_SET_DIR_OP:
-> +		*mask = RTD1625_GPIO_DIR;
-> +		return 0;
-> +
-> +	default:
-> +		return -ENOTSUPP;
-> +	}
-> +}
+	struct device *dev = &pdev->dev;
 
-...
+at the top of the function to simplify the below calls.
 
-> +static void rtd1625_gpio_irq_handle(struct irq_desc *desc)
-> +{
-> +	unsigned int (*get_reg_offset)(struct rtd1625_gpio *gpio, unsigned int offset);
-> +	struct rtd1625_gpio *data = irq_desc_get_handler_data(desc);
-> +	struct irq_chip *chip = irq_desc_get_chip(desc);
-> +	unsigned int irq = irq_desc_get_irq(desc);
-> +	struct irq_domain *domain = data->domain;
-> +	unsigned int reg_offset, i, j, val;
-> +	irq_hw_number_t hwirq;
-> +	unsigned long status;
-> +	u32 irq_type;
-> +	int ret;
-> +
-> +	if (irq == data->irqs[RTD1625_IRQ_ASSERT])
-> +		get_reg_offset = &rtd1625_gpio_gpa_offset;
-> +	else if (irq == data->irqs[RTD1625_IRQ_DEASSERT])
-> +		get_reg_offset = &rtd1625_gpio_gpda_offset;
-> +	else if (irq == data->irqs[RTD1625_IRQ_LEVEL])
-> +		get_reg_offset = &rtd1625_gpio_level_offset;
-> +	else
-> +		return;
-> +
-> +	chained_irq_enter(chip, desc);
+>  	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+>  			   "adc-syscon");
+> -	if (IS_ERR(adc_priv->regmap)) {
+> -		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
+> -		ret = PTR_ERR(adc_priv->regmap);
+> -		return ret;
+> -	}
+> +	if (IS_ERR(adc_priv->regmap))
+> +		return dev_err_probe(&pdev->dev,
+> +				     PTR_ERR(adc_priv->regmap),
+> +				     "failed to get handle for tsc syscon\n");
 
-> +	for (i = 0; i < data->info->num_gpios; i += 32) {
+		return dev_err_probe(dev, PTR_ERR(adc_priv->regmap),
+				     "failed to get handle for tsc syscon\n");
 
-Can be
+>  	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
+> -	if (IS_ERR(adc_priv->adc_clk)) {
+> -		dev_err(&pdev->dev,
+> -			"failed getting clock tsc_clk\n");
+> -		ret = PTR_ERR(adc_priv->adc_clk);
+> -		return ret;
+> -	}
+> +	if (IS_ERR(adc_priv->adc_clk))
+> +		return dev_err_probe(&pdev->dev,
+> +				     PTR_ERR(adc_priv->adc_clk),
+> +				     "failed getting clock tsc_clk\n");
 
-	for (unsigned int i = 0; i < data->info->num_gpios; i += 32) {
-
-> +		reg_offset = get_reg_offset(data, i);
-> +		ret = regmap_read(data->regmap, reg_offset, &val);
-> +		if (ret) {
-> +			pr_err_ratelimited("Failed to read IRQ status for GPIO %u: %d\n", i, ret);
-
-You have a device, use dev_err_ratelimited().
-
-> +			continue;
-> +		}
-> +
-> +		status = val;
-> +
-> +		/*
-> +		 * Hardware quirk: The controller fires both "assert" and "de-assert"
-> +		 * interrupts simultaneously on any edge toggle.
-> +		 * We must pre-clear edge interrupts here. If we drop an unwanted
-> +		 * de-assert interrupt below, it will never reach the IRQ core
-> +		 * (generic_handle_domain_irq), meaning ->irq_ack() won't be called.
-> +		 * Failing to clear it here leads to an interrupt storm.
-> +		 */
-> +		if (irq != data->irqs[RTD1625_IRQ_LEVEL]) {
-> +			ret = regmap_write(data->regmap, reg_offset, status);
-> +			if (ret)
-> +				pr_err_ratelimited("Failed to clear edge IRQ for GPIO %u: %d\n",
-> +						   i, ret);
-
-As per above.
-
-> +		}
-> +
-> +		for_each_set_bit(j, &status, 32) {
-> +			hwirq = i + j;
-> +			irq_type = irq_get_trigger_type(irq_find_mapping(domain, hwirq));
-> +
-> +			/*
-> +			 * Filter out the hardware-forced de-assert interrupt unless
-> +			 * the user explicitly requested IRQ_TYPE_EDGE_BOTH.
-> +			 */
-> +			if (irq == data->irqs[RTD1625_IRQ_DEASSERT] &&
-> +			    irq_type != IRQ_TYPE_EDGE_BOTH)
-> +				continue;
-> +
-> +			generic_handle_domain_irq(domain, hwirq);
-
-This calls again the irq_find_mapping() (okay, its equivalent) beneath. Using
-same IRQ descriptor that you get from above and call handle_irq_desc().
-
-> +		}
-
-		for_each_set_bit(j, &status, 32) {
-			irq_hw_number_t hwirq = i + j;
-			unsigned int girq;
-			struct irq_desc *gdesc = __irq_resolve_mapping(domain, hwirq, &girq);
-
-			/*
-			 * Filter out the hardware-forced de-assert interrupt unless
-			 * the user explicitly requested IRQ_TYPE_EDGE_BOTH.
-			 */
-			if (irq == data->irqs[RTD1625_IRQ_DEASSERT] &&
-			    irq_get_trigger_type(girq) != IRQ_TYPE_EDGE_BOTH)
-				continue;
-
-			handle_irq_desc(gdesc);
-		}
-
-However, it uses some kind of "protected" (in terms of OOP) function call,
-perhaps the duplication is not a problem as the original (your code) uses
-public APIs.
-
-In any case, consider moving the hwirq definition inside the for-loop.
-
-> +	}
-> +
-> +	chained_irq_exit(chip, desc);
-> +}
+And here, and so on...
 
 ...
 
-> +static int rtd1625_gpio_setup_irq(struct platform_device *pdev, struct rtd1625_gpio *data)
-> +{
-> +	unsigned int num_irqs;
-> +	int irq;
-> +
-> +	/* IRQ is optional; operate as basic GPIO if absent */
-> +	irq = platform_get_irq_optional(pdev, 0);
-> +	if (irq == -ENXIO)
-> +		return 0;
-> +	if (irq < 0)
-> +		return irq;
-> +
-> +	num_irqs = (data->info->irq_type_support & IRQ_TYPE_LEVEL_MASK) ? 3 : 2;
+>  	adc_priv->irqno = platform_get_irq(pdev, 0);
+>  	if (adc_priv->irqno < 0)
+> -		return adc_priv->irqno;
+> +		return dev_err_probe(&pdev->dev,
+> +				     adc_priv->irqno,
+> +				     "failed to get IRQ\n");
 
-> +
+This is wrong. The above call print an error.
 
-Unneeded blank line as these two (assignment and a for-loop) are coupled together.
+>  	ret = regmap_clear_bits(adc_priv->regmap, IPROC_REGCTL2,
+>  				IPROC_ADC_AUXIN_SCAN_ENA);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "failed to write IPROC_REGCTL2 %d\n", ret);
+> -		return ret;
+> -	}
+> +	if (ret)
+> +		return dev_err_probe(&pdev->dev,
+> +				     ret,
+> +				     "failed to write IPROC_REGCTL2\n");
 
-> +	for (unsigned int i = 0; i < num_irqs; i++) {
-> +		irq = platform_get_irq(pdev, i);
-> +		if (irq < 0)
-> +			return irq;
-> +
-> +		data->irqs[i] = irq;
-> +		irq_set_chained_handler_and_data(data->irqs[i], rtd1625_gpio_irq_handle, data);
-> +	}
-> +
-> +	return 0;
-> +}
+It's a one line still (with the above change):
+
+		return dev_err_probe(dev, ret, "failed to write IPROC_REGCTL2\n");
+
+>  	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
+>  				iproc_adc_interrupt_handler,
+>  				iproc_adc_interrupt_thread,
+>  				IRQF_SHARED, "iproc-adc", indio_dev);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "request_irq error %d\n", ret);
+> -		return ret;
+> -	}
+
+> +	if (ret)
+> +		return dev_err_probe(&pdev->dev,
+> +				     ret,
+> +				     "failed to request IRQ\n");
+
+This should be a separate patch to drop the dup message. The IRQ core prints
+it.
 
 ...
 
-> +static const struct rtd1625_gpio_info rtd1625_isom_gpio_info = {
-> +	.num_gpios        = 4,
-> +	.irq_type_support = IRQ_TYPE_EDGE_BOTH | IRQ_TYPE_LEVEL_LOW |
-> +			    IRQ_TYPE_LEVEL_HIGH,
+> +		return dev_err_probe(&pdev->dev,
+> +				     ret,
+> +				     "failed to enable clock\n");
 
-	.irq_type_support = IRQ_TYPE_DEFAULT,
-
-> +	.base_offset      = 0x20,
-> +	.gpa_offset       = 0x00,
-> +	.gpda_offset      = 0x04,
-> +	.level_offset     = 0x18,
-> +	.write_en_all     = RTD1625_ISOM_GPIO_WREN_ALL,
-> +};
+One line.
 
 -- 
 With Best Regards,
