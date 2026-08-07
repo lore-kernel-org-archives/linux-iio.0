@@ -1,192 +1,521 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 496764B0493
-	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 00:11:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B474B049E;
+	Fri,  7 Aug 2026 00:28:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786061495; cv=none; b=kRHfg7qZSYqlRqEro6TYsIhg9Gip9j5pAMUkddRNaoboC4xpfTBsGUW0uQT9Aq3d1t3QgdFSd+6YiTvciB8Hqgiv3jj3HLxow5Z38NSThXSr5+O9myVxxqjJsiWNMwysTLs33ExSQu1c566ulASTIL4g7t2yL595/ScHGF3YcRc=
+	t=1786062499; cv=none; b=lr87W29SfEzB8Pzmyrx3PLQDHGbJHoagwX3r12Jy5VR+1kcaHy5M/YNpHU9Q0wU5XHAQRcDwqZH448GAydwaua2aNUl6CeacW2MQ5cQ/bbWnGyO41F267nmR/ySd0jNi2HJwDdRqwNxDr6I6lenth+K8RUbfQd/ht5AuhDCuov8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786061495; c=relaxed/simple;
-	bh=hW/zwenJced3Zqwhe38g803cN8OXCMj4BGnMJCsKvVI=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=HR+5Mh1bO7Adnqpy79DU8yV9bAaaBWTPsFac7Ef9VhcmCtcYe5RtZ2IHstXhZzQ4IU8kXhuAzuJXEex/CRj2OE+SMzUyI9QsBGnhlJsg3Jn7FTy1iqk8v9tqh4c1MHYaCuiXd6Y3/Q9qwxaSL8I3w7BVX7NPMuv4ax8nJOFsnpE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QQs6Qp8K; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786062499; c=relaxed/simple;
+	bh=fAgGaE7Bge7S6Gvxnw+mbjQTtNJx336SuDBx1Mmjl5o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GvvEVYBKZ1drmDhyNuy75r+3v8eNlTvJ1WVJvDrB/dIeKMidWIaabchCM8RzqvHrZjDxM/F4T+38Zj3w0Uy8C/qgIfGuUX99gf/iOSHDoDf4M2uH4EqOU8wxkFY7Z0hYW4mlZogSA/zLUPUJ4pt32FL6dLmu+kh9aBTngkkqriw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Rg+TQJFY; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QQs6Qp8K"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAEF01F000E9;
-	Fri,  7 Aug 2026 00:11:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786061494;
-	bh=v3gdVRGX/fXCboRwzUIAoFMVOGWbo0Mc/dzXtS4U+X0=;
-	h=Date:From:To:Subject;
-	b=QQs6Qp8KXfrS43Cv0nKNDlPq+1gXQAbN5iOJEIUIzyMNBVHBFcUe/LiQo1Rz5KImz
-	 y30CRuhhaw1NHZfKLD6sW0g+Ig8/Ku5HU4KiMp2LGfNTSSyujO5HJ/Cs+UpJLNqTjg
-	 4HBsyMpYfRR/HKrTLItjUG7ILrRFmmsDkj0Tu1EO7JA7Z5Le78DncfUhnybTR0TyN3
-	 0m4+kK+xEf6YHAmWKayBmotGNmbdjgh1B9TJdSA0rYfyYP1untO2dsk17l3SSrVJgB
-	 SzcwJsly7foiCerLViB9NnSRSjqyzbne2Kq79fCnrOYHnuMWvvH/hNSp28ovf5qbnD
-	 bP0MJuDg5DVwg==
-Date: Fri, 7 Aug 2026 01:11:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL] IIO: Fixes for 7.2 set 2 (probably now for merge window)
-Message-ID: <20260807011131.7ea4a639@jic23-huawei>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Rg+TQJFY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786062496; x=1817598496;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=fAgGaE7Bge7S6Gvxnw+mbjQTtNJx336SuDBx1Mmjl5o=;
+  b=Rg+TQJFYj96zOcSGq1E3WwPKphcI6n0RuOFaEa/poLkg6vLpF+lYSu/B
+   XTs1yjJT6uzNq2ABVaftiqGJbncwIH9RoGk+j0qecnSfF6ddUn3L2Jhvy
+   uE2uBFNUtePuXhEYMkIO5AADEvEIy4us7wIyTFZM5uOChNU/rSrkC+rbK
+   cvs88SExvnYvu0dKUM/KwLl0ek74ee15ApPTnlYK2MHfjFhxi8BmDJK5D
+   Wqt6RDYT2K/b8tsj2Tw0DRilD7vleNakHKdd0KLZW1LCrcnKyS5tIj+JN
+   r2db+v8d/19op6GXFWTlhWedku/J157tqpYGV0C7km1AzNhbOEnCqkc2m
+   Q==;
+X-CSE-ConnectionGUID: /YGsjPOXTFO19Tb+3X+PgA==
+X-CSE-MsgGUID: EAQ8Qv7lQAGBENwDRqHaAQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="86698543"
+X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
+   d="scan'208";a="86698543"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 17:28:16 -0700
+X-CSE-ConnectionGUID: VdCM8yGyT0GEhqCkxTkFiQ==
+X-CSE-MsgGUID: bX2hfQQfS9yLhbIgVnb5zw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,209,1779174000"; 
+   d="scan'208";a="266088332"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.50])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2026 17:28:10 -0700
+Date: Fri, 7 Aug 2026 03:28:08 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Michael Walle <mwalle@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v2 4/7] iio: adc: Add AD7768 IIO Driver support
+Message-ID: <anUmmKFMEJyc5tW7@ashevche-desk.local>
+References: <20260806-ad7768-driver-v2-0-027ac5e2a641@analog.com>
+ <20260806-ad7768-driver-v2-4-027ac5e2a641@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260806-ad7768-driver-v2-4-027ac5e2a641@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The following changes since commit 3585cfd4563731a8ae406b32807613c667c2b887:
+On Thu, Aug 06, 2026 at 05:41:23PM +0200, Janani Sunil wrote:
+> Add support for AD7768 4/8 channel,simultaneous sampling Sigma-Delta
+> ADCs. The driver supports configurable decimation filters, per-channel
+> conversion delay, VCM regulation, runtime PM and IIO backend data
+> capture.
 
-  Merge tag 'iio-fixes-for-7.2a' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-linus (2026-07-09 07:44:06 +0200)
+Can you split this to the basic minimum + patch per feature?
 
-are available in the Git repository at:
+1.7k LoC is too much for a review, the usual size is ~750±150 per patch.
+Here sounds like 3+ patches.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.2b
+...
 
-for you to fetch changes up to 0a929ce0cc99371152582270da52b5fb555d4603:
+> +#define   AD7768_PICO_PER_SEC			1000000000000ULL
 
-  iio: chemical: atlas-sensor: use iio_trigger_poll_nested() to fix remove UAF (2026-08-07 00:32:49 +0100)
+Don't we have this in time.h (beneath it somewhere)?
 
-----------------------------------------------------------------
-IIO: 2nd set of fixes for the 7.2 cycle.
+...
 
-Given timing these are probably now merge window material.
+> +struct ad7768_freq_config {
+> +	unsigned int freq;
 
-Usual mixed bunch of ancient issues and newer ones.
+freq_Hz?
 
-core,buffer
-- Fix a potential UAF in release on anonymous buffers.
-- Make sure DMA fence lock lifetime matches that of the DMA fence.
-- Make IIO DMA fence release RCU safe.
-various
-- Kconfig missing REGMAP* related selects.
-- Unbalance of runtime pm or regulators in error paths.
+> +	unsigned int dec_rate;
+> +};
 
-adi,ad3552r-hs
-- Fixing wrong buffers size for string printing.
-adi,ad4080
-- Fix 16-bit part support by adding path to tell the backend what
-  the data size is - avoiding corrupted data capture.
-adi,ad5446
-- Wrong MODULE_DEVICE_TABLE() type due to case error.
-atlas,sensor
-- Drop use of irq_work() in favour of iio_trigger_poll_nested() avoiding
-  a possible UAF.
-hid-temperature
-- Potential release ordering issue due to mixed devm and not that
-  can lead to long timeouts.
-infineon,dps310
-- Fix NULL dereference on ACPI platforms.
-invense,mpu3050
-- Fix sign of raw angular velocity readings.
-mitsubishi,m62332
-- Fix a regulator reference counting issue when switching channels.
-sharp,gp2ap002
-- Unbalanced runtime PM on repeated event writes.
-- Reenable irq if runtime suspend fails.
-ti,ads7138
-- Disable statistics gathering whilst reading conversions results
-  to avoid data corruption.
-ti,opt4001
-- Ensure integration times with integer part are rejected rather than
-  ignoring the integer part of the value.
-- Fix use of wrong register.
-- Pointer type mismatch to div_u64_rem()
-- Fix reversed GENMASK() arguements.
-ti,opt4060
-- Ensure integration times with integer part are rejected rather than
-  ignoring the integer part of the value.
-- Pointer type mismatch to div_u64_rem()
-- Wrong register name in an error print.
-ti,pac1921
-- Fix wrong channel used in the trigger handler for some combinations
-  of enabled channels.
+...
 
-----------------------------------------------------------------
-Antoniu Miclaus (2):
-      iio: adc: adi-axi-adc: add data size support for AD408X backend
-      iio: adc: ad4080: configure backend data size
+> +struct ad7768_avail_freq {
+> +	unsigned int n_freqs;
+> +	int freqs[MAX_FREQ_PER_MODE];
 
-Babanpreet Singh (1):
-      iio: dac: ad3552r-hs: fix scnprintf() buffer bound in data source show
+Negative frequency?
 
-Can Peng (1):
-      iio: dac: ad5446: fix OF module device table
+> +	struct ad7768_freq_config freq_cfg[MAX_FREQ_PER_MODE];
+> +};
 
-Cong Nguyen (3):
-      iio: srf04: fix pm_runtime handling on probe error path
-      iio: gyro: mpu3050: fix sign of raw angular velocity readings
-      iio: adc: pac1921: fix wrong channel used in trigger handler read
+...
 
-Erick Henrique (1):
-      iio: dac: m62332: Fix regulator reference count imbalance
+> +struct ad7768_state {
+> +	struct spi_device *spi;
+> +	struct regmap *regmap;
 
-Fan Wu (1):
-      iio: chemical: atlas-sensor: use iio_trigger_poll_nested() to fix remove UAF
+One of them seems redundant. Is regmap created out from &spi->dev?
 
-Joshua Crofts (3):
-      iio: adc: max34408: add missing 'select REGMAP_I2C' to Kconfig
-      iio: adc: max14001: add missing 'select REGMAP' to Kconfig
-      iio: dac: mcp47feb02: add missing 'select REGMAP_I2C' to Kconfig
+> +	struct mutex lock; /* Protects device register access and configuration */
+> +	struct clk *mclk;
+> +	unsigned int datalines;
+> +	enum ad7768_power_modes power_mode;
+> +	const struct ad7768_chip_info *chip_info;
+> +	struct ad7768_avail_freq avail_freq[AD7768_NUM_POWER_MODES];
+> +	unsigned int n_freqs;
+> +	int freqs[AD7768_MAX_FREQS];
+> +	unsigned int chn_mode[AD7768_MAX_CHANNEL];
+> +	unsigned int ch_freq[AD7768_MAX_CHANNEL];
+> +	u64 ch_convdelay_ps[AD7768_MAX_CHANNEL];
+> +	enum ad7768_filter_type ch_filter[AD7768_MAX_CHANNEL];
+> +	struct iio_backend *back;
+> +	struct regulator_dev *vcm_rdev;
+> +	unsigned int avdd1_uv;
 
-Lars-Peter Clausen (3):
-      iio: buffer: Fix potential use-after-free in anonymous buffer release
-      iio: buffer: Tie IIO dma fence lock lifetime to the fence
-      iio: buffer: Make IIO DMA fence release RCU-safe
+_uV
 
-Laxman Acharya Padhya (1):
-      iio: light: gp2ap002: Disable regulators on resume failure
+> +
+> +	__be16 d16 __aligned(IIO_DMA_MINALIGN);
+> +};
 
-Moksh Panicker (2):
-      iio: chemical: atlas-sensor: fix PM reference leak in buffer postenable
-      iio: light: apds9306: fix PM reference leak in apds9306_read_data()
+...
 
-Nikhil Gautam (6):
-      iio: light: opt4001: Fix power down clearing bits of the wrong register
-      iio: light: opt4001: Fix incompatible pointer type passed to div_u64_rem()
-      iio: light: opt4001: Reject integration times with a non-zero seconds part
-      iio: light: opt4001: Fix reversed GENMASK() arguments in fault count mask
-      iio: light: gp2ap002: Fix unbalanced runtime PM on repeated event writes
-      iio: light: gp2ap002: re-enable irq if runtime suspend fails
+> +static const unsigned int ad7768_vcm_voltage_table[] = {
+> +	0, 1650000, 2500000, 2140000
 
-Paul Geurts (1):
-      iio: ti-ads7138: Disable STATS_EN bit while reading conversion results
+In this case, keep trailing comma.
 
-Rupesh Majhi (1):
-      iio: pressure: dps310: fix NULL pointer dereference on ACPI probe
+> +};
 
-Sanjay Chitroda (1):
-      iio: temperature: hid-sensor-temperature: switch to non-devm iio_device_register()
+...
 
-Vidhu Sarwal (4):
-      iio: light: ltrf216a: fix runtime PM reference leak in error path
-      iio: light: opt4060: Reject integration times with a non-zero seconds part
-      iio: light: opt4060: Fix pointer type passed to div_u64_rem()
-      iio: light: opt4060: Fix incorrect register name in threshold read error message
+> +static int ad7768_vcm_is_enabled(struct regulator_dev *rdev)
+> +{
+> +	struct ad7768_state *st = rdev_get_drvdata(rdev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(&st->spi->dev, pm);
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(st->regmap, AD7768_REG_GENERAL_CONFIG, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return !(val & AD7768_GEN_CONFIG_VCM_PD);
 
- drivers/iio/adc/Kconfig                          |  2 ++
- drivers/iio/adc/ad4080.c                         |  5 +++
- drivers/iio/adc/adi-axi-adc.c                    | 30 +++++++++++++++++
- drivers/iio/adc/pac1921.c                        |  2 +-
- drivers/iio/adc/ti-ads7138.c                     | 42 +++++++++++++++++++-----
- drivers/iio/chemical/atlas-sensor.c              | 19 ++++-------
- drivers/iio/dac/Kconfig                          |  1 +
- drivers/iio/dac/ad3552r-hs.c                     |  2 +-
- drivers/iio/dac/ad5446-i2c.c                     |  2 +-
- drivers/iio/dac/m62332.c                         | 17 +++++++---
- drivers/iio/gyro/mpu3050-core.c                  |  2 +-
- drivers/iio/industrialio-buffer.c                | 38 ++++++++++-----------
- drivers/iio/light/apds9306.c                     |  8 ++---
- drivers/iio/light/gp2ap002.c                     | 24 +++++++++++---
- drivers/iio/light/ltrf216a.c                     |  3 +-
- drivers/iio/light/opt4001.c                      | 37 +++++++--------------
- drivers/iio/light/opt4060.c                      |  9 +++--
- drivers/iio/pressure/dps310.c                    |  3 +-
- drivers/iio/proximity/srf04.c                    |  1 +
- drivers/iio/temperature/hid-sensor-temperature.c |  3 +-
- 20 files changed, 156 insertions(+), 94 deletions(-)
+regmap_test_bits() ?
+
+> +}
+
+...
+
+> +static const int ad7768_dec_rate[MAX_FREQ_PER_MODE] = {
+> +	32, 64, 128, 256, 512, 1024
+
+Even in the very same page you have inconsistent approach. Make sure your code
+is consistent in every aspect. Two+ people wrote the driver?
+
+> +};
+> +
+> +static const int ad7768_mclk_div[3] = {
+> +	32, 8, 4
+> +};
+> +
+> +static const unsigned int ad7768_available_datalines[] = {
+> +	1, 2, 8,
+> +};
+> +
+> +static const unsigned int ad7768_4_available_datalines[] = {
+> +	1, 4,
+> +};
+> +
+> +static const u8 ad7768_chan_map[] = {
+> +	0, 1, 2, 3, 4, 5, 6, 7,
+> +};
+> +
+> +static const u8 ad7768_4_chan_map[] = {
+> +	0, 1, 4, 5,
+> +};
+
+...
+
+> +static int ad7768_set_power_mode(struct ad7768_state *st, unsigned int mode);
+
+Can forward decl be avoided?
+
+...
+
+> +static u8 ad7768_all_channels_mask(const struct ad7768_state *st)
+> +{
+> +	u8 mask = 0;
+> +	unsigned int ch;
+> +
+> +	for (ch = 0; ch < st->chip_info->num_channels; ch++)
+
+	for (unsigned int ch = 0; ch < st->chip_info->num_channels; ch++)
+
+> +		mask |= ad7768_channel_mask(st, ch);
+> +
+> +	return mask;
+> +}
+
+...
+
+> +static int ad7768_regmap_read(void *context, const void *reg_buf,
+> +			      size_t reg_size, void *val_buf, size_t val_size)
+> +{
+> +	struct spi_device *spi = context;
+> +	struct ad7768_state *st = spi_get_drvdata(spi);
+> +	u8 *data_val = val_buf;
+> +	unsigned int reg;
+> +	int ret;
+> +	struct spi_transfer t[] = {
+> +		{
+> +			.tx_buf = &st->d16,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +		}, {
+> +			/*
+> +			 * The second transfer clocks out the readback data, so
+> +			 * we must provide dummy TX bytes while receiving the
+> +			 * response. The device ignores MOSI in this phase, so
+> +			 * reuse st->d16 for both TX and RX.
+> +			 */
+> +			.tx_buf = &st->d16,
+> +			.rx_buf = &st->d16,
+> +			.len = 2,
+> +		},
+> +	};
+> +
+> +	reg = *(const u8 *)reg_buf;
+> +
+> +	st->d16 = cpu_to_be16(AD7768_SPI_READ_CMD |
+> +			      FIELD_PREP(AD7768_SPI_REG_MASK, reg));
+
+be16_replace_bits() ?
+
+> +	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
+> +	if (ret)
+> +		return ret;
+> +
+> +	*data_val = FIELD_GET(AD7768_SPI_DATA_MASK, be16_to_cpu(st->d16));
+
+be16_get_bits()?
+
+> +	return ret;
+> +}
+
+...
+
+> +static int ad7768_read_calib_value(struct ad7768_state *st,
+> +				   unsigned int base_reg, unsigned int *val)
+> +{
+> +	u8 data[3];
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret = regmap_bulk_read(st->regmap, base_reg, data, ARRAY_SIZE(data));
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = (data[0] << 16) | (data[1] << 8) | data[2];
+
+get_unaligned_be24()
+
+> +	return 0;
+> +}
+
+> +static int ad7768_write_calib_value(struct ad7768_state *st,
+> +				    unsigned int base_reg, unsigned int val)
+> +{
+> +	int ret;
+> +
+> +	if (val > AD7768_CALIB_REG_MSK)
+> +		return -EINVAL;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret = regmap_write(st->regmap, base_reg,
+> +			   FIELD_GET(AD7768_CALIB_REG_MSB_MSK, val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, base_reg + 1,
+> +			   FIELD_GET(AD7768_CALIB_REG_MID_MSK, val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_write(st->regmap, base_reg + 2,
+> +			    FIELD_GET(AD7768_CALIB_REG_LSB_MSK, val));
+
+Can you prepare value and use bulk write? Probably you want
+put_unaligned_be24().
+
+> +}
+
+...
+
+> +static int ad7768_set_clk_divs(struct ad7768_state *st,
+> +			       unsigned int freq)
+> +{
+> +	unsigned int mclk, dclk, dclk_div, i;
+> +	struct ad7768_freq_config f_cfg = {};
+> +	unsigned int chan_per_doutx;
+> +
+> +	mclk = clk_get_rate(st->mclk);
+> +
+> +	chan_per_doutx = st->chip_info->num_channels / st->datalines;
+> +	if (!chan_per_doutx)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < st->avail_freq[st->power_mode].n_freqs; i++) {
+> +		f_cfg = st->avail_freq[st->power_mode].freq_cfg[i];
+> +		if (freq == f_cfg.freq)
+> +			break;
+> +	}
+> +
+> +	if (i == st->avail_freq[st->power_mode].n_freqs)
+> +		return -EINVAL;
+> +
+> +	dclk = f_cfg.freq * AD7768_SAMPLE_SIZE * chan_per_doutx;
+> +	if (dclk > mclk)
+> +		return -EINVAL;
+> +
+> +	/* Set dclk_div to the nearest power of 2 less than the original value */
+> +	dclk_div = DIV_ROUND_CLOSEST_ULL(mclk, dclk);
+
+_ULL for sure?! Please, use 32-bit arithmetics for 32-bit values (yes, 32-bit,
+they never be 64 in real life).
+
+> +	if (dclk_div > AD7768_MAX_DCLK_DIV)
+> +		dclk_div = AD7768_MAX_DCLK_DIV;
+> +	else if (dclk_div > 0 && hweight32(dclk_div) != 1)
+> +		dclk_div = 1 << (fls(dclk_div) - 1);
+
+rounddown_pow_of_two() ?
+
+> +	return regmap_update_bits(st->regmap, AD7768_REG_INTERFACE_CFG,
+> +				  AD7768_INTERFACE_CFG_DCLK_DIV_MSK,
+> +				  AD7768_INTERFACE_CFG_DCLK_DIV_MODE(dclk_div));
+> +}
+
+...
+
+> +static bool ad7768_freq_supported(const struct ad7768_state *st,
+> +				  unsigned int mode, unsigned int freq)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < st->avail_freq[mode].n_freqs; i++) {
+
+	for (unsigned int i = 0; i < st->avail_freq[mode].n_freqs; i++) {
+
+> +		if (freq == st->avail_freq[mode].freq_cfg[i].freq)
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static bool ad7768_freq_supported_in_any_mode(const struct ad7768_state *st,
+> +					      unsigned int freq)
+> +{
+> +	unsigned int mode;
+> +
+> +	for (mode = 0; mode < AD7768_NUM_POWER_MODES; mode++) {
+
+Ditto.
+
+> +		if (ad7768_freq_supported(st, mode, freq))
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+
+...
+
+> +static int ad7768_set_lowest_noise_mode(struct ad7768_state *st,
+> +					const unsigned long *scan_mask)
+> +{
+> +	unsigned int channel;
+> +	unsigned int mode;
+> +
+> +	/*
+> +	 * The output data rate ranges overlap between the power modes. At a
+> +	 * common ODR, the faster mode has lower noise, so prefer the fastest
+> +	 * mode that supports every enabled channel.
+> +	 */
+> +	for (mode = AD7768_NUM_POWER_MODES; mode-- > 0;) {
+
+	unsigned int mode = AD7768_NUM_POWER_MODES;
+	...
+	while (mode--) {
+
+> +		for (channel = 0; channel < st->chip_info->num_channels; channel++) {
+> +			if (test_bit(channel, scan_mask) &&
+> +			    !ad7768_freq_supported(st, mode, st->ch_freq[channel]))
+> +				break;
+> +		}
+> +
+> +		if (channel == st->chip_info->num_channels)
+> +			return ad7768_set_power_mode(st, mode);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+
+...
+
+> +	struct ad7768_state *st = iio_priv(indio_dev);
+> +
+> +	if (!freq)
+> +		return -EINVAL;
+> +
+> +	if (!ad7768_freq_supported_in_any_mode(st, freq))
+> +		return -EINVAL;
+> +
+> +	guard(mutex)(&st->lock);
+
++ blank line here.
+
+> +	st->ch_freq[ch] = freq;
+> +
+> +	return 0;
+
+...
+
+> +static int ad7768_get_freq_cfg(struct ad7768_state *st, unsigned int freq,
+> +			       struct ad7768_freq_config *f_cfg)
+> +{
+> +	unsigned int i;
+
+Embed into for-loop.
+
+> +	for (i = 0; i < st->avail_freq[st->power_mode].n_freqs; i++) {
+> +		*f_cfg = st->avail_freq[st->power_mode].freq_cfg[i];
+> +		if (freq == f_cfg->freq)
+> +			return 0;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+
+...
+
+> +static void ad7768_filter_wait(const unsigned int *mode_freq,
+> +			       const enum ad7768_filter_type *mode_filter,
+> +			       const bool *mode_used)
+> +{
+> +	unsigned long t_settle_us = 0;
+> +	unsigned int mode;
+> +
+> +	for (mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
+> +		unsigned long t_mode_us;
+
+Hmm... Are you sure about the type? Shouldn't it be always 64-bit (or 32-bit)?
+
+> +		unsigned int settling_samples;
+> +
+> +		if (!mode_used[mode] || !mode_freq[mode])
+> +			continue;
+> +
+> +		if (mode_filter[mode] == AD7768_FILTER_TYPE_SINC5)
+> +			settling_samples = AD7768_SINC5_SETTLING_SAMPLES;
+> +		else
+> +			settling_samples = AD7768_WIDEBAND_SETTLING_SAMPLES;
+> +
+> +		t_mode_us = DIV_ROUND_UP_ULL((u64)settling_samples *
+> +					     USEC_PER_SEC,
+> +					     mode_freq[mode]);
+> +		t_settle_us = max(t_settle_us, t_mode_us);
+> +	}
+> +
+> +	if (t_settle_us)
+> +		fsleep(t_settle_us);
+> +}
+
+...
+
+I stopped here as this is too much and unreviewable bulk.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
