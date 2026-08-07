@@ -1,70 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F5EB3C457D;
-	Fri,  7 Aug 2026 07:27:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF91334107D
+	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 07:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786087664; cv=none; b=gB76I2yO+y+p/d+DnfF43q0nOpCG6JqMOmhF/dHyUBfuWmwwS1eiKS6Lcpj9L8Ykk537UvqJ5D8yEv5uTJ//PyqPdCkFdPBVnJMq+SpLGCVKzo/lEISG3ZJ+meOnW9YtT08xvf7YyhYk5HqvDz0o1xGiIjEsFady8DfUFmMe3Og=
+	t=1786087946; cv=none; b=lt3oDYI9hSW8f+Eaf6dN8K6gUBNkwWBtTEkpyPnamg5jgazy8QSNhm6Q8eQQg5yuNjVkpf0F2j8o9yJNsflt+MZfV0dFPHSuzI/1Qye5Vaaliwdia5DlilZVPukzvdWzD0Oj15epvmEhqZqVg0WnQnquvOSgyx/rxQFKlprR3eY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786087664; c=relaxed/simple;
-	bh=Aog2Ut7LD4S+Um1s5g9WJEnSkln1mw075/FMX/NDj2M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bj8oo6lpSt0yKGV8CVyrPFdGfC3Ny+I+UkKw/hz2MYmFQBAAf7LZCGUQ1TEfxn2IkGT1AG6l1pfuK/nRN1d8smHdHbKreCD3XuXBdimWNn9ecweZuI1Q72pnoQqWR543g/3cwgcDg7kIndKBKdngAJiJZ3AhL9X38uLSIWV84mo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C6Lx5SM+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786087946; c=relaxed/simple;
+	bh=unZyHVEipl9wdEWFBpOzZAY8m4Aj3u2FhP2DEVz2+VE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=FG1BO1UTAW9L4AVNm9bpb7jWs3RIZjKUv7cIKWHkMYnIy8p+19swfSYJmgK1upssatLQALpTTgYzyDhHryDChf8/ZSu+OSUlrtdqXQIQ96t0UYCznMN6IL/xSfw8NkGAtP5hC03L+KtEEbEqDYVxIjtZKyOHMZgeGAJR00zhTSs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=DeG4ygGW; arc=none smtp.client-ip=109.224.244.107
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C6Lx5SM+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF3FA1F000E9;
-	Fri,  7 Aug 2026 07:27:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786087660;
-	bh=Rf2beZcl9yWU11eO4KDNx5gmas3zaF8gFschCgphPcY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=C6Lx5SM+iELUCrDDutx1/WR2hCoopoptyQGRytPS4EGOD3Vs2dVdC/6bxnq/CRTF+
-	 2nzc9L9TsJDNSla37Mj8uKqdcmgdQEfwD8MHq3xYLyO4u00nSo9WedPHvz8HwRqBbJ
-	 NI3GIpzgw/z/1Ohm7YNHDieP2C6r8oe2gsxMuZmde0oLJZE+ZrYkg4QWBrbP3YP8pR
-	 q4hyA09bE2gTQLHirLZzkXXWt3TLwS+n1w/EXPGpWFf/dQY41KbcIaGCIiu0hfem4f
-	 5fsYh3ulliShoOQfP0EJaPACOkkbrSL4LrUrs2mDJ+TvYVNqioUCGrf8rsBMY/Hh3H
-	 UtworTQL4sBsQ==
-Date: Fri, 7 Aug 2026 09:27:36 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Kaustabh Chakraborty <kauschluss@disroot.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Peter Griffin <peter.griffin@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] dt-bindings: iio: proximity: add Sharp GP2AP070S
- proximity sensor
-Message-ID: <20260807-aggressive-exceptional-macaw-cfaabe@quoll>
-References: <20260807-gp2ap070s-v4-0-74f6a67b6272@disroot.org>
- <20260807-gp2ap070s-v4-1-74f6a67b6272@disroot.org>
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="DeG4ygGW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail3; t=1786087929; x=1786347129;
+	bh=unZyHVEipl9wdEWFBpOzZAY8m4Aj3u2FhP2DEVz2+VE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=DeG4ygGW8G2ec6P+5H3tLB1u4xfYKnvgVHhRXMU4YCKQ/JBf6WCGm5yx6hVotC+Ob
+	 pTTQ6uLov/tHcDqXEikbq0M7MKtoTigXpNemWOwZwdo9MH5KGA+iVgdftoKY2urYdB
+	 wIJh9y/VlqnhcwApTJfFjU5DhDttXIFDHcx+lTXz2FBHewBOftTbUWMO2+b9WxNdhH
+	 mVVhepRRT8NZwd8TNgC6dhVWWA+YCjemhdOPQyvCiCijrgG0PY3xq5DJgzXuG5vAAd
+	 sHbyVGNnprvOJLLGuTEdMRHAKPsj73HUgBWHToO8gE9GX+Y6ftM3YT6PCKQFueGn/q
+	 uFjIEsPhBxztA==
+X-Pm-Submission-Id: 4hGbSk5SPqz1DDrs
+From: Esben Haabendal <esben@geanix.com>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
+ <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+  "Andy Shevchenko"
+ <andy@kernel.org>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
+  "Nikita Travkin" <nikita@trvn.ru>,  "Maslov Dmitry"
+ <maslovdmitry@seeed.cc>,  "Kuppuswamy Sathyanarayanan"
+ <sathyanarayanan.kuppuswamy@linux.intel.com>,
+  <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
+  <linux-kernel@vger.kernel.org>,  <stable@vger.kernel.org>
+Subject: Re: [PATCH v3 4/6] iio: light: ltr501: Power down chip if request
+ irq fails
+In-Reply-To: <anT-qMXnSJ2BL9x2@ashevche-desk.local> (Andy Shevchenko's message
+	of "Fri, 07 Aug 2026 00:37:44 +0300")
+References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
+	<20260804-liteon-ltr329-v3-4-c6b768c7c745@geanix.com>
+	<Zg1kHClcaJDFipprnST6IAFp1kSIfzNtPzTtyzC1z4Eg_i5zCWZEysYVmODsCK7SrQ9uupp0K1upHP0skEoRzQ==@protonmail.internalid>
+	<anT-qMXnSJ2BL9x2@ashevche-desk.local>
+Date: Fri, 07 Aug 2026 09:32:05 +0200
+Message-ID: <87mruyxu6i.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260807-gp2ap070s-v4-1-74f6a67b6272@disroot.org>
+Content-Type: text/plain
 
-On Fri, Aug 07, 2026 at 01:18:41AM +0530, Kaustabh Chakraborty wrote:
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vdd-supply:
-> +    description: Voltage supply for the internal circuitry
-> +
-> +  vled-supply:
-> +    description: Voltage supply for the IR LED
-> +
-> +  proximity-near-level: true
+"Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
 
-Same comment.
+> On Tue, Aug 04, 2026 at 07:02:15PM +0200, Esben Haabendal wrote:
+>> In case devm_request_threaded_irq() failed, we were leaving the chip
+>> powered instead of powering it down again. Power down the chip switching
+>> ALS and PS modes to standby.
+>>
+>> The dev_err() message was causing duplicated error messages, as
+>> devm_request_threaded_irq() calls dev_err_probe() on failure.
+>
+>> Fixes: 7ac702b3144b ("iio: ltr501: Add interrupt support")
+>
+> Be careful with this. The removing of the error message should either go
+> separately, or you should be assured that the IRQ core prints it for you
+> in all stable kernels where this goes to be backported.
 
-Best regards,
-Krzysztof
+Ah yes. The duplicate error message removal is only valid as of
+6.18.
+I will split into a separate patch, and mark it with Fixes against the
+change in devres.c that prints the error messsage.
 
+/Esben
