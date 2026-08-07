@@ -1,33 +1,33 @@
-Received: from mail-43171.protonmail.ch (mail-43171.protonmail.ch [185.70.43.171])
+Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADCD3469850
-	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 07:53:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01D3E3B27DE;
+	Fri,  7 Aug 2026 07:57:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786089220; cv=none; b=TKzfiLrmixCrYR3ErOcFXoq/j1Dtf3JGC6PqBm1fVXvSXf/smNkWl3U/h5yPsssTsVxavJQdTs4kbCnUHAdfPurIHeZd7Cf6a8StDhx/vF/cqv0TD0mYxzna0iSgDInqnvJCCS7WHGkujU7CXszSSXo/7G+2FCCQxOlciyabrsk=
+	t=1786089448; cv=none; b=Cpjf7dXNlW9dnEhHXbb6M15WcJfs3b2M/Dki6OOuY0OIMIZTA/XL7C0k9oPG4hR2e0idygD4Re0QnzQ8sVkuvP/KuCmPh7pdj4rxOBrie9PI4YeW7VMcvo3Bv9XnmMZYBc4zC5pfqfzB8Qba67u1/+uhiPAmkGwW/JgJcz3Ij44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786089220; c=relaxed/simple;
-	bh=QLP/i4NRRMnx80Z/b7Z4XlZVAbVGaYzmvDz7f2/8Rxk=;
+	s=arc-20240116; t=1786089448; c=relaxed/simple;
+	bh=cGL3Am/dpGjkP0UgvffaB5WNP5I0zU57WnkGcSi+68U=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=X5O/5MrD6hjgiUhOxq5eve+WoJ1wHOtDNLhwUx/gfZEyrL0zBytIzThUezNDvkgMelFLPnDEb+guBgg6DwPgsa+vbW6sD/JTGPhu9bRoBJNHzyPHUFbjM9ix+mBCGNsntx4dEi7XdhkFjY+0AxKopaOzYWcYvIE3S38bWD8TsI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=CFp45qV7; arc=none smtp.client-ip=185.70.43.171
+	 MIME-Version:Content-Type; b=SemMBCCcERMAmnw0VyMv9059GnwQK6r5jhTzNciEXUhf6ugksn017j84354Ovhs01QOVGZWk8TGEKpk8C9LqPFZklBCgh+OmnoU0P+d8g1/4mkXSIO9yUQHOZoeNWsAdki9+T20sl8fdFLxqRyoeRo+inP0BwrCOfRf6l3o+q8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=LslJ6cNi; arc=none smtp.client-ip=109.224.244.107
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="CFp45qV7"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="LslJ6cNi"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1786089194; x=1786348394;
-	bh=utG1OblDnBhYPxHr5DHQ0s7aMRcaT6XmCcSoPGXZogg=;
+	s=protonmail3; t=1786089441; x=1786348641;
+	bh=zqv8zJFvmVPbjP9s76gjZ7fUWAcpJyUHyf2MwhE8bqU=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=CFp45qV7J82guxbviH8PZmAU39WQjx3DG1Xd6Z7mbaabdONa4U83fgeCeXXv8k8KG
-	 tDvO8PtMzdQW77qFWu7XJLW+wp2Srpo/qemZgtkAb1MsVAeI1BHWwjnVKTdmaxUeRj
-	 v1pT+mIH7s5aL8Bo43KJ/+l65NjbTNczivE8/AFasZZIJdBZWNW+uQwL8pgofn90du
-	 8ED8f7x9u0VVjk4Fmy4hy+8aAll9HhhBMggnVGV3t8lqiSn4uB0UXXtGYFJXTUrIRX
-	 G5cxwvZTcBmOLJe6MPe7jcvz/sxD4ieAPxwaN8j/KKN22ObG83WZ0QN9/5ZIh85G07
-	 xs2AyZLaTvLGw==
-X-Pm-Submission-Id: 4hGbx40NMQz2Scpf
+	b=LslJ6cNiS8hzkcA8CH7dZ+gmk0YZerDJa8hic6QR6la8e6wcZBd1o4cqIFITIhYli
+	 GGwM1J0335Rdy4YgJgObJ6KXIugWxFSlGCxeHvCL0U4It2VHLzDH1UIxZK1UmtGXsV
+	 fzKXrqecEs2eibsKlqaDW8D8AytC5sxT2zBGR7QXRP91pGLIchnsdnRbYTIY48jTiR
+	 8qb47aGrPBMHUr2WI3OcnRRFzGhX2OFBISolaLHOIvoYjQE8yFM3vcZNOI1fYaMiWp
+	 b+1SZmTNP9LGzlHJSXWloxjqLwHfNz+wZbMHm36LUg6asfeaDh4peUb9aaXjgdZTw+
+	 kefcNeh+QKB4A==
+X-Pm-Submission-Id: 4hGc1p5FH7z1DDWf
 From: Esben Haabendal <esben@geanix.com>
 To: "Andy Shevchenko" <andriy.shevchenko@intel.com>
 Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
@@ -40,15 +40,16 @@ Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
  <sathyanarayanan.kuppuswamy@linux.intel.com>,
   <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
   <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 5/6] iio: light: ltr501: Add ltr329 driver support
-In-Reply-To: <anT-9vI9jD8V0Q0_@ashevche-desk.local> (Andy Shevchenko's message
-	of "Fri, 07 Aug 2026 00:39:02 +0300")
+Subject: Re: [PATCH v3 6/6] iio: light: ltr501: Fix sorting order of device
+ arrays
+In-Reply-To: <anT_KYZjkX2Tcnqu@ashevche-desk.local> (Andy Shevchenko's message
+	of "Fri, 07 Aug 2026 00:39:53 +0300")
 References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
-	<20260804-liteon-ltr329-v3-5-c6b768c7c745@geanix.com>
-	<GosXsaKWx6E9mVl9UgD6Bm-yOPFZHzktTL8zxE7yEucs3KmgSRhnP5q1undPbc8-rr0hYUCiTQBFM36MfhR8sQ==@protonmail.internalid>
-	<anT-9vI9jD8V0Q0_@ashevche-desk.local>
-Date: Fri, 07 Aug 2026 09:53:11 +0200
-Message-ID: <87ik5mxt7c.fsf@geanix.com>
+	<20260804-liteon-ltr329-v3-6-c6b768c7c745@geanix.com>
+	<XtotGdyhZvQIq-19qWwYJ2t9CGaZ4kcJXvUUcRmfXmC7YVRVj4wVkAttk_2tgzsuymMdFgL7wMAWYgvA8RFcuA==@protonmail.internalid>
+	<anT_KYZjkX2Tcnqu@ashevche-desk.local>
+Date: Fri, 07 Aug 2026 09:57:17 +0200
+Message-ID: <87ecgaxt0i.fsf@geanix.com>
 User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -60,29 +61,33 @@ Content-Type: text/plain
 
 "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
 
-> On Tue, Aug 04, 2026 at 07:02:16PM +0200, Esben Haabendal wrote:
->> This adds support for the LTR-329ALS-01 chip, which is similar to
->> LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
->> have.
+> On Tue, Aug 04, 2026 at 07:02:17PM +0200, Esben Haabendal wrote:
+>> Using alphanumerical sort order for these should help reduce merge
+>> conflicts.
 >
 > ...
 >
->>  	if (client->irq > 0) {
->> +		if (!ltr501_has_irq_support(data->chip_info)) {
->> +			dev_err(&client->dev, "chip does not support irq\n");
->> +			ret = -EINVAL;
+>>  enum {
+>> -	ltr501 = 0,
+>> -	ltr559,
+>> -	ltr301,
 >
-> Can this be
+>> +	ltr301 = 0,
 >
-> 			ret = dev_err_probe(-EINVAL);
+> Is the 0 required? Why?
 
-Sure can, if that is the preferred style. But it will probably still be
-two lines due to line width considerations.
+As for the code produced, it should not make any difference.
 
-And personally, as it would not take advantage of the -EPROBE_DEFER
-logic of dev_err_probe(), I find the dev_err() style more clear.
+I assume it was put here for improved code readability, and I did not
+see any reason to change that.
 
->> +			goto powerdown_on_error;
->> +		}
+I don't care about it myself, so will be happy to remove it if that is
+the preferred style now.
+
+>>  	ltr303,
+>>  	ltr329,
+>> +	ltr501,
+>> +	ltr559,
+>>  };
 
 /Esben
