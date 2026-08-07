@@ -1,79 +1,80 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8FE46AF2D
-	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 10:20:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63D5641DDE0
+	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 10:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786098037; cv=none; b=L9I+RMZ0uZxrPYeHOGst6a8BORFXdqpGrfEW3Gqt/ma3ygmRmQT58ATQUKUe73neYlin7lkq+U+vKSRXnLGxO8ud5kVa4hvt3rk3LH57c8GWh/FaJFoL4v3ttY8BFSYihbxNzU0johsd8S3l0mfLy8QPJYSI7XMYDY1iOy9O0wY=
+	t=1786099067; cv=none; b=GNG72kLRifkPL+WgxXsuvWbyOGQMM/wO2RnZ58g3XZXqSQvp+mZXRq+y2QI9Wb0lCq5emJSlaE5FEE7hLFu/76k1g0SZeKdCIyL+fblEtj1Ln+egqLQZoCsVm6gkqf+P/n0k36p1Z33CC0cIbcbEp4qKGJy4DBLn40UUcQIlww0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786098037; c=relaxed/simple;
-	bh=zHvxZJ1HTzk1ABYWJzT5MESmqHko3h8ghIIuYn8l+1M=;
+	s=arc-20240116; t=1786099067; c=relaxed/simple;
+	bh=0osyU0Eei1ghBAIeDh53nND29cJLCbKBrbgTAnuTeZs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SMFO663jrQn7R83PAvyMAuFKrBc+hal8dUTb5e9IcRLa+JzyMJoluU3CoUzjrfwWNfAXH2FpE90Bwx5SDRTUvVrWCqIzf+ujfTXa6fIMr+E1B2nHEwQRy4X6Nq0WOJMlPnVg3ZC/J6l5keiDazBXqIxcpcuU9vu1FwpsKncUlng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HAJWHKMa; arc=none smtp.client-ip=209.85.128.49
+	 MIME-Version:Content-Type; b=JsR9aV6s/PN0Q0GegKEsijLMfsBjJoRTnstraCNexccA7cipJFGUHPT5/WGtkionxcZQVy7tIGLvfUENV0k43D9w4tsuP5Ub1V4xjw0uHpA8E4z9SR6TgESX5jf89wSTJtZwx6YRVsF8k6XdUCS5wtMQDp34S4u2I4Blt4skC1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dscQSS4t; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HAJWHKMa"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4957eefd361so23915315e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 07 Aug 2026 03:20:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dscQSS4t"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-49554ebb87dso29476775e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 07 Aug 2026 03:37:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786098034; x=1786702834; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786099064; x=1786703864; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=sV2OJp2pqrql39Us6FANqWDFNjIhbcgZdjPsmWI3EPI=;
-        b=HAJWHKMa3rSzC/Vk/ht5i4iIELdy5gGyNe1N9DslCCXf1mcK217OmdunYNZJeNVcuP
-         wR86TLji3UuoHjRor7j4Dgg49eBm5aXcekBUXVhZXWb7tsyLuO+TguNzlhxEhuqz0vsS
-         rCq2GY1268xt94wWESbyNOjsvcS+417Mp+DlmVz7PV3GtnWBhoOJGjETINutuMde9oUV
-         BkEEmks+dEaiMkXk26EZ7eOEvDlLsB4xADToEgxtdGR8H9e2KY23rhzty+fyyjpB5efH
-         7pOoKYyyH8N+8dkk+Jtnk38Fii2+YDyj7DLYYwwOfIw2M4Y1GJsQtD9IdppAuhYdlAIr
-         UuvA==
+        bh=ReqVE0zF5sYuPuVqJdocfOpxaTR0IUKRNwoPkTUY/3g=;
+        b=dscQSS4tN3YjZ2V8x0t7ge5iVxsTO1/QUY+dCTqK1jz5364hJ86gzz9Jn8LiL6KTPd
+         /AEHrpej+crBblA5cBF4aiv6dTu17AD7VC50isg8rB7hpsMZvVHR+J+SxFh5E808vz1o
+         /DRrTpFgRHF1RBNlQQ+KIxMVqu9HMqDXniR3ewIX5Vqg79iLF27lzZbXZ4CCn8OqxqMQ
+         R9YVCI8C07oNzOoxLLspHWcqsLPiDTX21NwepbrtJCrJonfUAJScPh/fgVZT1i9TaiAr
+         niweGuvzBk+YdhjChC/3cKSWsFjnq8moTR6ANYWgVuHIEy5iE2sVJpPm+sX7wXOHR1E3
+         DX/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786098034; x=1786702834;
+        d=1e100.net; s=20251104; t=1786099064; x=1786703864;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=sV2OJp2pqrql39Us6FANqWDFNjIhbcgZdjPsmWI3EPI=;
-        b=QM3hvyXiO4HvHrGxZZC6EApvz16jvPneyaM28CEb8k/nP+647CGENVPStnPJkuBKsO
-         fzdkGky/4LVmDHwZAoVEVK6n0mAdTOh4wSJmGDHrHGEMucCQSwkLLLZqjNv37r1FP6WB
-         WwSTTSFWx2gI1Yi9u2Ag/r3GkxGSbxpB7mKH1B8VEUl5mS1TrOB/o1op4jaFTQncVA+2
-         TNVF+PhS0nWTMYX2/XXNbba6W2C687rfR3eicfQuINaiDWub+XXvH2hjDSD7UCGzysK+
-         9+n3QRGqvsDkNYfyUzL7nKhShxSVXTWtl+VmXTkogBtWhYmd4b9a4ATFOtbU74pqvv1y
-         Hf3w==
-X-Forwarded-Encrypted: i=1; AHgh+RoBTXIG0DoGpBbOz1t5f8R+CpYFh8rJhu6GeDgKPpzXAzzzmn0L08UBE2suHTiI222cMnAAqPrkt0Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwWTJvi5p5PGlgwSfo52I15TNS4JOcS/MsmQHqLj/EJwh9F6T/f
-	zO+Enbfr/fMdK9zGX1qwz8qLcTM1WuyioKcqcuvZRgOoacD79eYzpt7Q
-X-Gm-Gg: AR+sD13Ck5J1neww8sp//oSK9/hxfRMFZABjjPSQWgmO2GhyHPiY9YChIfcuI6I0xAW
-	qorPIVbew8jr0AHMn372/025at9+DHcdJ5SO9f7AEAEZTdzICzgPwH/Wrqd6Xxq0JZmsaunZQXG
-	231m3TTd/DdrvEPRquANJBjQWnqgsNHywDfs8d/dz8H/T8/1dVVD/2IfbpcV6bz8/wEww9OEMsd
-	HqCm59P0K+7CIMc1x9WOw2k3GtOtmVyPky4scYl8taMNNRdyO6gArDVqjfuaUXqJy+lI+n87qes
-	n+CSS7oiuldCqFGtbMYqezuA40H4ha6y6+nWxxCiVzCmzY1vzkyvNzX/EhrPCMFoegpu6ZwOdfw
-	FAvWGPAg5gcNXTpqFSKPPW61rO7whKELhlKbDVsMHUEuVElDo3THILTRcGbeyD2NhqQNqSJa8FK
-	7h++1XDgUvHbhZ6EZJFlx3eHZaUSt9yIS4NwS/Ffuyc/nHGk0f61HcgX3YtfykwGQhieySFTwGP
-	EB1W1QVGI+xSXfIw2P7jdwF7fB13bJufZcQ67OdqwXV0gMTuB2nvpDkw3P+KUyFRV7+WmJ4LaRa
-	cvGcY51UQvJpQiz+VZHSiIA+675gxfwFqUpas+Izb+u9TLFAxzCp3bE8p/w0eavKspGR+QGe2GE
-	BbAUhxpmU7ZAb7L/2lUmq8HU2tOXvMyM/IyrVlpH5M8zXPK9J+mp/STrcTu85nBfAcHpvJAo=
-X-Received: by 2002:a05:600c:6612:b0:495:4811:7998 with SMTP id 5b1f17b1804b1-4995e0ebf84mr44035485e9.17.1786098013509;
-        Fri, 07 Aug 2026 03:20:13 -0700 (PDT)
+        bh=ReqVE0zF5sYuPuVqJdocfOpxaTR0IUKRNwoPkTUY/3g=;
+        b=A1L7oTKtOssAKeVWBpPdFS/Gum5vPb6EXPVwdHyz8V9oh69rUP3DE5fmh1zncmb0j+
+         cLE4JwzKKxSf/MbYKWy7p6W67bwfcMn60NsFVWUawDeHlI9l1kkjjaNsvrRoDkzwneWu
+         ajeR4jbbxjhQ5yLLWc7J/U8TCRwEU/gPZ2siwfVwQBC+yBqaqTZ975isqlihcJEs2Bs0
+         QbeX9tChAvQETiglBytnAAwJOzLvEx78w3OQc8WkRABCqndQlvqijA6SwfFMtWJJ61NT
+         kDcWRch/tjLUVJvyze7mzY0/EnZWvfYy0F84ujjjLqil8X63FTLFcEhDJP3owKYX2VKk
+         445A==
+X-Forwarded-Encrypted: i=1; AHgh+RopWp0apVT62AmI0eFYas4J6VLmCgylONZ7J53uicN9TX22qbGJtv+piCRNXmZPTPEiOSnJ3ev45Wk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzrj/9cYbr1Z/p4t2j9CgBNNncnCFJq0VmqFkCLGOu3tF43OjdF
+	Wh67UFgs0iA3Rfal1rQR1FjYKkiMwf0j65U8EB/5s3lDzp3y10ABR1T1
+X-Gm-Gg: AR+sD13p5ZLdpNwSt/BzkPBQjtnyCEQEztWsrFOQUYmI0TIG9SMvfVw7sh4vl8ynjZZ
+	JqC9TdR91OXcS6u9JPojUUKVQrgEREnI0q6WwYF9dM1b6FvUsyrwQYIhzKRA59mue0vj0b8gXYG
+	5nFkOAjZB8Bebj44YN2eDnMu4DbgtVK7IT06KCnr3a8r8VrVJyjE/JncstJkWL2L/fLodxnr0bp
+	edOshEgg+BEuoN9fP6PC9u6co0n4lCERFLHuGH+AvIMB3kk8frrtQbarKjeKxnAhV9NCLNyQJxm
+	/+Xs/LgFcqnvSQwRZ4iB6db+pIwDDrdg+BzRDe9ByWkjhN9p20BfxSGg+2M2/Ildrdhv7oJRdsL
+	THIE/Uuj9+9uXNMvBJQhCWpRSloQyCM3Dir50wHTbMLHWMeG67T5lHEggQ04dRDJx5+/gmHCWrV
+	o0bRnHaXdO5WdqtxmxRrGHw8kYtObQc2rTLYv1pjdOppxiog7VLPV1ySLhjceRoeimkDpLeAXaR
+	ASu5u3zVZ4jTCeFUcuyLhejtUjx74HtQwBqTZuNO9UkuQTN6SWruV/q4KwYuKndBSGi9t9veZNv
+	Y8T7PTbGoq8woIzqmD6RqPDGm+LQAcoGVU13ZZVCdzJqnWjv3ByOLEH6IlNsd6zlg2JGxrA+4vG
+	Ag+Np2sG0vBNIteOHiccY1EzW7FlMYNXDgkqgILING7OpTQmPLN+QL9y/lR2keR1BgjIvYUI=
+X-Received: by 2002:a05:600c:1f86:b0:499:52ab:a50c with SMTP id 5b1f17b1804b1-49952aba5b3mr174593855e9.1.1786099063373;
+        Fri, 07 Aug 2026 03:37:43 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4995e9f9424sm22957005e9.8.2026.08.07.03.20.12
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4995421934asm143535625e9.5.2026.08.07.03.37.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 03:20:13 -0700 (PDT)
-Date: Fri, 7 Aug 2026 12:20:11 +0200
+        Fri, 07 Aug 2026 03:37:43 -0700 (PDT)
+Date: Fri, 7 Aug 2026 12:37:42 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: "Shengzhuo Wei" <me@cherr.cc>
-Cc: "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Sean Nyekjaer" <sean@geanix.com>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <stable@vger.kernel.org>
-Subject: Re: [PATCH] iio: accel: fxls8962af: clamp FIFO sample count
-Message-ID: <20260807122011.0000086d@gmail.com>
-In-Reply-To: <20260806-fxls8962af-fifo-v1-1-bd9d27047fee@cherr.cc>
-References: <20260806-fxls8962af-fifo-v1-1-bd9d27047fee@cherr.cc>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, <linux-iio@vger.kernel.org>,
+ <linux@analog.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] iio: adc: ade9000: request interrupts after
+ powering the device
+Message-ID: <20260807123742.00006d8e@gmail.com>
+In-Reply-To: <20260807085643.5502-2-antoniu.miclaus@analog.com>
+References: <20260807085643.5502-1-antoniu.miclaus@analog.com>
+	<20260807085643.5502-2-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -84,46 +85,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 06 Aug 2026 05:14:53 +0800
-"Shengzhuo Wei" <me@cherr.cc> wrote:
+On Fri, 7 Aug 2026 11:56:41 +0300
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> fxls8962af_fifo_flush() copies the number of samples the device reports
-> in its FIFO status register into an on-stack buffer
+> The IRQ handlers do SPI register accesses, but the interrupts were
+> requested before the vdd regulator was enabled. An interrupt arriving
+> while the chip is unpowered runs a handler against a dead chip, causing
+> SPI errors or garbage reads.
 > 
-> 	u16 buffer[FXLS8962AF_FIFO_LENGTH * 3];
+> Request the interrupts after enabling the regulator. This keeps irq1
+> registered before ade9000_reset(), which waits on it, and lets devm free
+> the interrupts before the regulator is disabled.
 > 
-> which is sized for at most FXLS8962AF_FIFO_LENGTH (32) samples. The
-> sample count is read from the BUF_STATUS register and only masked to its
-> 6 valid bits:
-> 
-> 	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
-> 
-> so it can be 0..63, while the buffer holds 32. The only other limit,
-> the watermark, is applied on the write path (fxls8962af_set_watermark)
-> but not here on the read path. count samples are then transferred into
-> buffer[]:
-> 
-> 	fxls8962af_fifo_transfer(data, buffer, count);
-> 
-> fxls8962af_fifo_transfer() reads count * 6 bytes through regmap, so a
-> malfunctioning, malicious or counterfeit accelerometer (or an attacker
-> tampering with the I2C/SPI bus) that reports up to 63 samples writes up
-> to 378 bytes into the 192-byte buffer: a stack out-of-bounds write of up
-> to 186 bytes that clobbers the stack canary, saved registers and the
-> return address.
-> 
-> Clamp count to FXLS8962AF_FIFO_LENGTH, the number of samples buffer[] is
-> sized for, before the transfer, mirroring the watermark clamp already
-> done in fxls8962af_set_watermark(). A well-formed flush reports at most
-> FXLS8962AF_FIFO_LENGTH samples, so legitimate devices are unaffected.
-> 
-> Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
-> Cc: stable@vger.kernel.org
-> Assisted-by: GLM:5.2
-> Signed-off-by: Shengzhuo Wei <me@cherr.cc>
+> Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > ---
 
-Makes sense.
+LGTM.
 
 Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
