@@ -1,121 +1,125 @@
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 956D53D8103
-	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 08:54:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.126.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E7A3D8103;
+	Fri,  7 Aug 2026 08:58:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786092900; cv=none; b=tYZv/e34OCp3NRGG60t9/ukoKtHGHvTSK5f/4Hi4BMjIaNYkeEYUHNmK0yN+NhqmH+WMyWT9vqT5Qlu+LRNcI1+4Yp7DCdcxzCQArM9c/AT9WIcVrzoK5ljlBNiEMnftGwCiOxfQ74yZdi5Vy2AiLLfef1OgmCq4gf5aiAdf6CI=
+	t=1786093126; cv=none; b=Dyw5GyVyguBz5bDbBN6l5qmzbK0lFs6k44i7wkApBq5dBaCwV/mVVmMntp1w7mul9u/HsbFM7eCxbZZgIuWUEa9azJyng60kUYvU9Wo7VpOGNBjsyWXXv5BIVmqpj2TQm0MLYEnY1phs0y7z7OnXeoTmMmpvIsWhPMPZSUe5SYM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786092900; c=relaxed/simple;
-	bh=W7DRp7+AjN5nzlthpslQyqsiov8QvA05Vp0mVKrQGko=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=XLgYOLVHRZ4IwQxu1svHqsjW14IZBqh5gcZDHt6c6H3zj2eUHIfTOy9TNMixHoxBmh666qI8qVVHpixI/sY01OSdzbOERT+31ku3ttD/f3DHdfwSJ/5/wnEtHNr4zbjjDipAp5Zo/MIr92yDAYT3fR/jEf70cg9bJdfBe7hI/LM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=henneberg-systemdesign.com; spf=pass smtp.mailfrom=henneberg-systemdesign.com; dkim=pass (2048-bit key) header.d=henneberg-systemdesign.com header.i=jh@henneberg-systemdesign.com header.b=QQVVrahV; arc=none smtp.client-ip=212.227.126.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=henneberg-systemdesign.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=henneberg-systemdesign.com
+	s=arc-20240116; t=1786093126; c=relaxed/simple;
+	bh=mf5ScwRldBoTu6PizKpsedJ+VNQr2D8dAz939oRS66U=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=mY1aMUBpa7kxc5/U6XF21fAEq8yddA8AO6+D6pb99kiDTmxYl0IvjFSsI5UIh/PB7FhVNUAPIuxQ4J1Kca2Sw06m88BOHAaI4zWZsoulQI8s1rpj/LNunKkoA4n+ZvrpL1tyCRJFNK1JsrUH3DQI13M3QdTO7x3/bVNCSdOm9MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=sEzE3xgT; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=henneberg-systemdesign.com header.i=jh@henneberg-systemdesign.com header.b="QQVVrahV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=henneberg-systemdesign.com; s=s1-ionos; t=1786092894;
-	x=1786697694; i=jh@henneberg-systemdesign.com;
-	bh=3hGDYIpT6fBUcK8fWLnSyRK1830StjG7rWOx3R0rQcg=;
-	h=X-UI-Sender-Class:From:To:Subject:Date:Message-ID:MIME-Version:
-	 Content-Type:cc:content-transfer-encoding:content-type:date:from:
-	 message-id:mime-version:reply-to:subject:to;
-	b=QQVVrahVtQjlYQ4iXXPwP4ReVZeVXlXYlyk4Yv2uuKXM1C5mALjmK3GjHabjKYeO
-	 LsW0g1BOh6vj+eeXY9BE2dGwc2bSy0/s88vOquwr57u0qrZhBURcQYPirshBTN0UJ
-	 w3JRiA4UENz8PTtR8jAeB/MUJ7usrhOAwRRKfdKyrdYY+TGsv2B8KTF9M6HyWqhq/
-	 la4aT9sN8DzFPvB2y+HbTrRju/8Qc075flHuO8dMVLZZSmFaIym3Dfh0NntTfxXRn
-	 jRlhf5vIL7DPm56LjRCtpfvs3XQ6nFHmNymviBtKvdyG8QzzdDg7D6uk/lXSZjp3+
-	 8Q4mUf4Kx/6FO6gfmA==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from client.hidden.invalid by mrelayeu.kundenserver.de (mreue012
- [213.165.67.97]) with ESMTPSA (Nemesis) id 1M7ehh-1wofSk0bhV-00DGxy for
- <linux-iio@vger.kernel.org>; Fri, 07 Aug 2026 10:30:15 +0200
-From: Jochen Henneberg <jh@henneberg-systemdesign.com>
-To: linux-iio@vger.kernel.org
-Subject: Question about bno055 mismatched reset gpio logical/physical state
-User-Agent: mu4e 1.14.2; emacs 30.2
-Date: Fri, 07 Aug 2026 10:30:14 +0200
-Message-ID: <87ecgafi3t.fsf@henneberg-systemdesign.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="sEzE3xgT"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6776ZfoC752554;
+	Fri, 7 Aug 2026 04:58:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=6TOpr5XZozoxPYLhnTbduB/0AT6
+	Lu2XfbaBTqdkySpE=; b=sEzE3xgT/B70xOkS/PQygNZaEjy43cMN5FPE3RgM/mO
+	MmfPIvJ9j2VakhHi3D/tdJolFSKEFDMDlzcLss9Oc/xWGfMllKQj81GOSmxBIKU7
+	RToPw/8lQYphLkbOn+GyJhLRt63p3kB9FbSbxA6UTiPI++D9vG1FoLgOtqxcsyrd
+	TU0A7qdsOidRpPV99FlfhM/KTE5ib7iutI3OEIANxGYkXLUYr4RVlfMqkysxf+SM
+	Qc3WNeQflUk+i+QMvD/3nymurJ/+TT0crxLJtJ1jNqUObtdMGe31bixHjveLD+Pc
+	UQTQF/g/7hd6HQm4RupUP0VzhQorOjen0xZayWhnDWA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fvrcpwq86-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 07 Aug 2026 04:58:41 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6778wehC059711
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 7 Aug 2026 04:58:40 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 7 Aug 2026 04:58:40 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 7 Aug 2026 04:58:40 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 7 Aug 2026 04:58:39 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.223.86])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6778wTrA022705;
+	Fri, 7 Aug 2026 04:58:31 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, <linux-iio@vger.kernel.org>,
+        <linux@analog.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] iio: adc: ade9000: series of probe and channel fixes
+Date: Fri, 7 Aug 2026 11:56:40 +0300
+Message-ID: <20260807085643.5502-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Provags-ID: V03:K1:XBJ9WCSroXNuWLKo2epNIEhuTOSfELoM44xu9YMZclnIalVHjFn
- oFlAQVne5aOFcuhoE0Sj7Te41MdKRJRGdPfOob/pn6dsBUpWRdnq+juf1r9ZvMXU8sw+oXL
- +Vn4WWY3sWrvQ8pwGvHnbz6iFq/SysFDMAzNAe8nGB8Geuo5WzOHy8YrorJKZOaY01aQTpj
- MSXI9bwR1g8tZCldDQP1g==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:3yOcwPfMBFo=;8GWWbcwR1t02G13JsL4HYp03/Va
- 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
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: Zt75LzenDy5grlJqkWYUIFIR6XnlE5mm
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODA3MDA2NiBTYWx0ZWRfXxWXF4vLzE3Pa
+ wDbwtY5DxuyDIAjrBB4KcIs8KvXDIyDKAqdnSdoOdgCnj3dHaOk9MAhKdAvDU7TGOQNIpt21eAF
+ PwvQkj2Z6F0xEEf6Lb1rPwIaA5THg065RqNZOjIfFOBwBWmTaxN8
+X-Proofpoint-ORIG-GUID: Zt75LzenDy5grlJqkWYUIFIR6XnlE5mm
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODA3MDA2NiBTYWx0ZWRfX5+2TXu0x5w/S
+ Ahd3QZ9bi8GrsGdHULuhktxBgXtpw7lIdiUTRjNE5u4aq9CwoKSoOlCtJl2d+LIH45sZwg+XRxJ
+ XHihRHCBPkNKa9U3oiZhjsKFZDREXFhs/R47P4ZH+W7tJE6lSvT2e8aaK5ui8R5Wuur9cCqjb7t
+ PJwojTV0txFJGp7hG+X2dn+WComVnTpveXZxIivwLJQxlWI5VrboVXObjYf1nnQN9JV5knPjRXA
+ U2wNyJ5S5K4F+/p8hlorCw3noMksj0d+DpHAMFEJHVzF9ahSCIEc5GRd6ksLi4RkNwoZkVWf7ei
+ aF8+AG/t9wzUwo1Fd4KpipUzmzmObbyV2x6aJwwhajBd2hAA4FhytmPaNhYmKF+d29E7JuMb6ut
+ TSlb4ea10Rc0EUDqsKpMyyPP58CvhHdMLU9bqY4obD03ohQEdgbAN6FLjK7TmsfZCk+T/CJRFtd
+ AJxYPiCRFor9WVcmZOg==
+X-Authority-Analysis: v=2.4 cv=IPwyzAvG c=1 sm=1 tr=0 ts=6a759e41 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=xpfcq4rGskaNeJp9eGYA:9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-07_01,2026-08-06_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 priorityscore=1501 impostorscore=0 lowpriorityscore=0
+ phishscore=0 malwarescore=0 bulkscore=0 spamscore=0 suspectscore=0
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608070066
 
-Hi,
+This series fixes three issues in the ade9000 driver, all present since
+the driver was added.
 
-I just stumbled over a mismatch in bno055 where the wrong logical states
-for the reset gpio are set and I'm not sure how to deal with it.
+Patch 1 moves the interrupt requests after the vdd regulator is enabled,
+so an early interrupt no longer runs a handler doing SPI accesses against
+an unpowered chip.
 
-Looking at:
+Patch 2 corrects the overlapping scan_index values for the current and
+voltage channels, which caused the Phase B and C waveform buffers to be
+configured incorrectly.
 
-static int bno055_system_reset(struct bno055_priv *priv)
-{
-	int ret;
+Patch 3 fixes the STATUS1 event scan bound so that Phase C dip events
+(bit 25) are actually reported.
 
-	if (priv->reset_gpio) {
-		gpiod_set_value_cansleep(priv->reset_gpio, 0);
-		usleep_range(5000, 10000);
-		gpiod_set_value_cansleep(priv->reset_gpio, 1);
-	} else if (priv->sw_reset) {
-		ret = regmap_write(priv->regmap, BNO055_SYS_TRIGGER_REG,
-				   BNO055_SYS_TRIGGER_RST_SYS);
-		if (ret)
-			return ret;
-	} else {
-		return 0;
-	}
+Antoniu Miclaus (3):
+  iio: adc: ade9000: request interrupts after powering the device
+  iio: adc: ade9000: fix overlapping scan_index for current and voltage
+    channels
+  iio: adc: ade9000: handle Phase C dip events in IRQ1 handler
 
-	regcache_drop_region(priv->regmap, 0x0, 0xff);
-	usleep_range(650000, 700000);
+ drivers/iio/adc/ade9000.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-	return 0;
-}
+-- 
+2.43.0
 
-To reset the reset is first turned off and then turned on which makes no
-sense unless the gpio is configured active high for an active low
-pin. This happens also at another place in the code.
-
-Question is: Does it make sense to provide a patch which will then
-potentially break dtsi files of many projects? Or should this better get
-a note in the binding documentation?
-
-Regards
--Jochen
