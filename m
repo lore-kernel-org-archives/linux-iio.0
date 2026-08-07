@@ -1,153 +1,142 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EC0132A3C9
-	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 18:33:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF1E43B489
+	for <linux-iio@vger.kernel.org>; Fri,  7 Aug 2026 20:15:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786127587; cv=none; b=VeOHNd5huXw/gkNn+XyFDAYi6o/37rdC3aGnJmlJM1w/EDqxgCtCd4Y4Nxx6Sq0qkMr14auhLai0bVe0edLeXUFnF+raeWsY0uZMjeqGhjIJjdgMfnKYx09VBF1IIXYPFa9gFcNE3PGXnNk6z4pZPJfZueR9w18lyGfNkBsdD9A=
+	t=1786133747; cv=none; b=iNuJrieTj2BIyzn9hQbrS1wifCpvJDrty/rubopVcewxvKymBinPqBqsy47WHsRCQPX0YzVY6TsqP3oUBNywC61d02Qg+F0m3cbxmV+DDo0wBQn3J49wvX4B0fczxSdla4aQI6n99dhit7AmFAdDQ2M9ngf2a/UmAJFw3sjdkhc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786127587; c=relaxed/simple;
-	bh=LVRpvRWQSaxHfSgYe3MtbFfNAnOMtlsZRIWS10Dv0GE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Bo5OAjX4ZzvDIGqRI+L51C8xWq8j539UaJG6PJhcOQnslCQHbnm+x0XCcX3UH+2e2IfWylOb4p021DS35Et0bu4PKKx7V+GmohU/DQPYRzN//uLFaZ/2r22/fIWMIAItAgK2ipaTZ8W1PKDSdyJA5DazSNVeMqWar3tHszjJin8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZXQxGHOA; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786133747; c=relaxed/simple;
+	bh=YSXzr2qDW6IB6pgbTnr7HMKxhYbfWr6lHnHoebLKAbg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FbHBG5O98/OO70apo4yECQlwfxDox6VZCKGdYPBs+Vpx7P9Pgfil94iJiOgn34KaFyO15XiL5mqeA58FvwOS2p14f4dc+XsZ2n6Vndm5G2z4COh+hV2iAcyEg+iaLqsXsW/me15X/aguRXP7O8xwm4zokWbQdQQOTkxswuwQcfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LP2e9MyI; arc=none smtp.client-ip=209.85.210.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZXQxGHOA"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-92e54f8c051so197322585a.3
-        for <linux-iio@vger.kernel.org>; Fri, 07 Aug 2026 11:33:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LP2e9MyI"
+Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7eb42a2f5feso1667419a34.1
+        for <linux-iio@vger.kernel.org>; Fri, 07 Aug 2026 13:15:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786127585; x=1786732385; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rCdCLUuBP8/CkfxUK6b74oN1gwbSsaQEa9gHG9eOXxo=;
-        b=ZXQxGHOAbmMIHVU/Yu7D4PNpE+Ee56ASOWUid5PZeXt2kis9luGCXXULW6gHNYSqap
-         9f/fI3A9q7/MGwWOwAFk2ojXbbCU/uGVDBi6fIfoROv89Qm6f5Ibq5hULAlMAwAtxFtn
-         B5O16ktooqjyYXKgiiEQGe5sY/vhfbg0csKGHJX4ijtRcchdgerYNY8C39Aj3plGA3Qz
-         vCdoDrB8Y7o5P9ZW//zB12pv8LSk1iFBfm0zTLJgosY+K/2HqFfT747ArhhMBcG2e/w9
-         bB6TeCWaLesmdd6kbb5OHQOr5V8CFOLtzPx+iAZTcq4KNVxq63mRrNtFD20q8WGDK6p9
-         jz2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786127585; x=1786732385;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=baylibre.com; s=google; t=1786133743; x=1786738543; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=rCdCLUuBP8/CkfxUK6b74oN1gwbSsaQEa9gHG9eOXxo=;
-        b=MTE0q6l49fHQVUjYgkEP4kFsO3yIwdL1ON/RMk/c3wnlj1NzRpKjUuIytMyVao8LpY
-         tfpRpWxmE5eYLqJfdbfmzOHoMjh0RcEqhfwMaL+MIqfRkEJdV0ulS2NPEMs2jv8a+kQE
-         cmy1i0lqCpVkq5Hipxh2tUnZnz7m14QRKnBSvzUz3K5FXbg2QMNHVxA5ZawI1nFSeO+K
-         GBv7ihosA28edbteE0c59JMBVmGSz7ETQ5evpqAIUz/ixviOKk3NlIBuzDyEU3I1zms6
-         K9DCBzDISzgBe1vR9SqxnJ/vOy7dYHSXSPgLYpFS/ide19lWnNVQbHlfRpqXF7IQPr75
-         sPiQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rq7I3OPC+/QcEQOAw3IrlE7oJzLR6Xipkl3N5wiBv0sGVS2VRwMVqTMcY53cOEqiGSSTfh2EwNUpsE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwXx0aLNPP6e3PTds8sgzNMQsZWB1dCfqBaR09jqZamDFDO7Y8B
-	hJMca4b0Pwxf9xUd3FUoN8s4aT6i5J4uzn5hj+Id6mYmjxOZCHDRx5tG
-X-Gm-Gg: AR+sD13Q0IyBt8HGXqlgDo1/PeB94Uu50iTps7PI4K/GoA/GR+Xe/gpK1ixyisNnZN8
-	QkCTamGlQ+yjH6x4nzJ8Ajf+uRDdarfG9H3xeCeRGU4I9iNHOVYN9fF5BzzM3rxdvtmideCKoUX
-	Plu0TOxS8iFydv6fdscaR6JvTe9IMr87Dz7SgY4XiYG+18qcZZXyaUUPAEuf/v+DUUaQcQDW5wJ
-	PNwg3YmjUCZdDM1TBv6Qq5D5NNGdURPqY3+jGHpVIdddTTEA2qGfVAVJkRDSwtSFVU6hi0rhBwM
-	mrNYBz/ltd8Poo8CFzlYM8RGoopzYrToNxDTfvSPgON7Mu4qsrsDkFbjOQ4aleKrmozL0YhPE/s
-	jHuVAXmQm9+prnf4I0Z0qw1RN++19Z7ZxJ+VHf4HgNrms97AS0dfHvqi84Af4pLZLkmbXOtS1bW
-	0crLd3vlcg+T9XGKCeGQRpylxNO7yEudsAZCi+jJb6WzRWGCpekzYTeut7yLhAgbLOCIs2L7Gat
-	A==
-X-Received: by 2002:a05:620a:2614:b0:932:deb4:7788 with SMTP id af79cd13be357-93648fc7072mr2802915985a.2.1786127584946;
-        Fri, 07 Aug 2026 11:33:04 -0700 (PDT)
-Received: from louisarchdesktop ([2601:184:417f:5ad5:c570:9008:5a2b:8db7])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9366e229853sm206057085a.28.2026.08.07.11.33.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 11:33:04 -0700 (PDT)
-Date: Fri, 7 Aug 2026 14:33:01 -0400
-From: Louis Adamian <adamianlouis@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: pressure: ms5637: Add variant specific
- temperature compensation
-Message-ID: <20260807143220.409fe4ec@louisarchdesktop>
-In-Reply-To: <anT8Qs1ga7ayvtWZ@ashevche-desk.local>
-References: <20260610020458.104818-1-adamianlouis@gmail.com>
-	<20260610020458.104818-3-adamianlouis@gmail.com>
-	<aimvBvJp8CsNKlPU@ashevche-desk.local>
-	<20260611151026.4abf8804@louisarchdesktop>
-	<aisNMmwMREF7Iga6@ashevche-desk.local>
-	<20260805130651.4aceb71f@louisarchdesktop>
-	<anT8Qs1ga7ayvtWZ@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+        bh=dpeDkCyTn5YS50r2G03VKYqbjFd7CkwFCzk1kWY72VM=;
+        b=LP2e9MyIGG9nIRSUYbrHL05AL8B+ihkTQHqRYm4pSn/5HiQRi7vAnJUIi5FBQQ8NY5
+         dc1S95cB+q+V3BJI0v8FkFPUcyAYeLOLMRpyyqrTAvhOqi3WPtz38FH8IyfS07gHQEZX
+         /XmJLPDBYRr6UHERnJAve+nRV6e2l2eUt9nkJNjYDfo9QjVkpc0YHIGR/Y4fG1T8CPMl
+         PWul1Ux3wvHzEqDgxHpBIfAuTjkm3HnwtLefYB+L5ZnjMyCxTiCKHkVM+Pdq8z2oELhk
+         ydNvw+WUiwhh5UDmL0PFO8+bJs0O/XXuX7fo3XXxj6SDq15YV5d+t+xLoeDlLn+AtcSz
+         lrBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786133743; x=1786738543;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dpeDkCyTn5YS50r2G03VKYqbjFd7CkwFCzk1kWY72VM=;
+        b=aLTu7vzf7M5Jo62SSUeJexZiMcvivqPrFaCj2drydrgZ07nr0dOdr9TTgBtP5eKRK6
+         lC+ytARrIXrJFW4qp9OwrxUT7pG9NTF34V7lxXY9BQIZYbAbByRqJoNAQftafdaVpWN1
+         gQ41lUr1y34qRG2cYZs8NcTxBA0qHdpvDRQK7gL7yZCFbJJdP2ovO+SMAdzMyqQjc3h6
+         eUldjrjF/zQ7tvIqX7vBZxfgi4smAMWKj1AkcGiiTSfGNP75CxvmmYjoasYGFhcXTINm
+         VdeEfRRjnk/GnpHW1kxzfYJxuKgcfvR6ZUUyxPKTaIGM52zJsb/QuzyPz6WIeLpQexqU
+         6rMA==
+X-Forwarded-Encrypted: i=1; AHgh+Rp8IZAZHkWRkJZY3JzNIDOMpYQlAv1d9FMX3QFgveb+p0Sw9rsgb9SIOxe68uosAVyJWPTPKz1SrRo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyW276jvv+izBJjEHFUe/pAgf9WOB4H3RDA83C2vMWOYG3vs2Ra
+	8xQBSB1Vvpbf80rFr8LJBmZJUXVXQkFuEXs7aEpO6jAaLx+NM+C0L0yJXKgjUzozj30=
+X-Gm-Gg: AR+sD11Fr+cf4Ri6O7CqbFXw3yzwyrZpeeN9TaEwDOCJb993njhRjya/duk2Gy+pSrp
+	Du0NrrH46SXwJTFPwgFI0rqT+9KSQYqc//DuhE2gQUPdG5X5YSaE2K+AEnikj4zBX/4lt/7lb5P
+	p1QQ+db6gZO+iHzv8Lj2HZX3Lztxxg1KvMyWKvv7YICi1L/MZQvj1PI34a5pDCIij295sxr4hw5
+	jHQRtVKLxgCO8RBlkAWoV2qfBt7nByyEtE4+oS7lycNxok5Y07YDvvR73x4IOjcLm+o+9EOUqsE
+	D6NiIipVaVjOjMsY+kYdImlfHchYloZwlql96j1AXXm+KuY9L6rOjegvTkGLGI6ZT1Mg+2ZINm/
+	mANXHIX/jNuCV855ivlNcrSdt+JYtxd9E5Ii9vIY9nKcZ+EZwH7rOzrS3S3ewmPft+IA5IuoIeD
+	mju0EWz4BXslb6J7b4SCWf2TWBzgrgAiUlCjcKUzSJeHOprxyGNgf6/OjOqgB3GUaCZzJXdAGB6
+	7n+ybW937a2MqUN2/IhFg0jfax2nq2OlT/C
+X-Received: by 2002:a05:6830:828e:b0:7dc:c4ae:a689 with SMTP id 46e09a7af769-7f1e5c13d47mr17747832a34.2.1786133743641;
+        Fri, 07 Aug 2026 13:15:43 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b714:88c:313d:dee2? ([2600:8803:e7e4:500:b714:88c:313d:dee2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f35b76ff90sm1889573a34.17.2026.08.07.13.15.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Aug 2026 13:15:43 -0700 (PDT)
+Message-ID: <3b0e2254-7806-4828-876a-0faa6e9d7029@baylibre.com>
+Date: Fri, 7 Aug 2026 15:15:42 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: adc: ti,ads112c04: Add binding
+ for ADS112C04
+To: "Rob Herring (Arm)" <robh@kernel.org>,
+ Kyle Hsieh <kylehsieh1995@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Mark Brown <broonie@kernel.org>,
+ Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Liam Girdwood <lgirdwood@gmail.com>, devicetree@vger.kernel.org,
+ Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+References: <20260805-ti-ads112c04-driver-v3-0-49f436829e01@gmail.com>
+ <20260805-ti-ads112c04-driver-v3-1-49f436829e01@gmail.com>
+ <178591106730.3177648.16689407752813401069.robh@kernel.org>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <178591106730.3177648.16689407752813401069.robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260807183301.jojTkoO7qAdG4ooOhaI6oqPjKBj8ters_AwSWjZQZt4@z>
 
-On Fri, 7 Aug 2026 00:27:30 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On 8/5/26 1:24 AM, Rob Herring (Arm) wrote:
+> 
+> On Wed, 05 Aug 2026 13:38:20 +0800, Kyle Hsieh wrote:
+>> Add device tree binding documentation for Texas Instruments ADS112C04
+>> I2C Analog-to-Digital Converters.
+>>
+>> These devices provide 4-channel, 16-bit delta-sigma ADCs with an I2C
+>> interface, programmable gain amplifier (PGA), and data-ready (DRDY)
+>> interrupt output.
+>>
+>> The binding uses child nodes to dynamically define the connected
+>> single-ended or differential channels.
+>>
+>> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+>> ---
+>>  .../devicetree/bindings/iio/adc/ti,ads112c04.yaml  | 146 +++++++++++++++++++++
+>>  1 file changed, 146 insertions(+)
+>>
+> 
+> My bot found errors running 'make dt_binding_check' on your patch:
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml: excitation-channels: missing type definition
 
-> On Wed, Aug 05, 2026 at 01:06:51PM -0400, Louis Adamian wrote:
-> > On Thu, 11 Jun 2026 22:32:02 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
-> > > On Thu, Jun 11, 2026 at 03:10:26PM -0400, Louis Adamian wrote:  
-> > > > On Wed, 10 Jun 2026 21:37:58 +0300
-> > > > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:    
-> > > > > On Tue, Jun 09, 2026 at 10:04:58PM -0400, Louis Adamian
-> > > > > wrote:    
+I think this is just because base-commit: in the cover letter is wrong.
+It is pointing to something shortly after v7.2-rc4.
+
+Make sure that it comes from a branch that includes the required
+prerequisites. So either iio/togreg or linux-next.
+
 > 
-> ...
+> doc reference errors (make refcheckdocs):
 > 
-> > > > > >  struct ms_tp_dev {
-> > > > > >  	struct i2c_client *client;      
-> > > > >     
->  [...]  
-> > > > > 
-> > > > > Please, check with `pahole` if this is the best layout.    
-> > > > 
-> > > > I will correct the packing on this per pahole's finding.    
->  [...]  
-> > > > > 
-> > > > > Can this be simply embedded into ms_tp_dev (and copied there
-> > > > > if required)?    
-> > > > 
-> > > > Copying in ms_tp_comp_consts provides no benefit over
-> > > > referencing the pointer; the values are per-descriptor, not
-> > > > per-instance and never modified. I'll keep the pointer (same as
-> > > > ms_tp_hw_data).    
-> > > 
-> > > Okay, let me ask differently then: Can we use the same data type
-> > > in ms_tp_dev instead of adding basically the same fields as in
-> > > ms_tp_data?
-> > >   
-> > Sorry for the very slow reply. Yes, for v3 ms_tp_dev will hold a
-> > single const ms_tp_data *data instead of its own hw and
-> > comp_consts. This drops the duplicated hw that predates this
-> > series. 
-> > 
-> > One thing worth noting before I do that: ms_tp_data is currently
-> > private to ms5637.c and will need to be moved to ms_sensors_i2c.h
-> > for ms_tp_dev to point to it. I don't think this is a problem; it
-> > matches how ms_tp_hw_data is defined now, but let me know if you
-> > would like to avoid it.  
+> See https://patchwork.kernel.org/project/devicetree/patch/20260805-ti-ads112c04-driver-v3-1-49f436829e01@gmail.com
 > 
-> The pointer may be opaque, in that case it's not needed to be exposed.
+> The base for the series is generally the latest rc1. A different dependency
+> should be noted in *this* patch.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit after running the above command yourself. Note
+> that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+> your schema. However, it must be unset to test all examples with your schema.
 > 
 
-ms_sensors_i2c.c dereferences both ->hw->prom_len in
-ms_sensors_tp_read_prom and ->comp_consts in
-ms_sensors_read_temp_and_pressure, so an opaque ms_tp_data would require
-passing both pointers as parameters. I plan on moving ms_tp_data into
-ms_sensors_i2c.h, dropping the original duplicate hw, unless you prefer
-otherwise.
-
--- 
-Thanks,
-Louis
