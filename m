@@ -1,176 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CDCC37E5DB;
-	Sat,  8 Aug 2026 21:06:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08B3E2C031E
+	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 22:02:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786223218; cv=none; b=jvb6QVTqvuEDl9o6zR/Ew8T3cL15WeH280ZzTt1QkHVh+waCJqeXbN0dAn0bTY1LzXGKldIYaTUCY/FpNllPXhn1uLnUWj77fVII8172fsbcuwYF23nz0OiE7ngUuhQYeS3tVnx6HVG09jnoYKSmL9JvRMBPWmuv6JRh1R8KRiM=
+	t=1786226568; cv=none; b=eMgP7t070Hjh8IOb1tz4dapFQ5FVI51608x82XhY6YtQiP9vX6fpg7ezpkROx1pAADKLiXIzBea/RFoidTj4rL3LxXWgew+VkCFVPDrQC1uW+Tx7eP7rJhNgbCCIU5saDJl/HoQj8PrgA/6Q4TyZzzwdI2yVfV4TK0VV/Jb9X7E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786223218; c=relaxed/simple;
-	bh=3uaIIBiCU8ZU2xp1Kg6FoVtc0HMvElGXp9+wOyz+WT0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Li2mvTFAA/sqxWHu9NJ0Y7+xBYkn6+sqdCTu2sscQoiIqVFbKI7HPef2c7E00lh17/cCRVFeVkUUUg9T+1HyxKnvjNCxeLwNx56cN2NQDPMs/aUxA6CvktuK4dD/VMpF9WbSSqeT6cI+NG8Du105MwYVjavP/3ZduyPEryKGeWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X52o9e3M; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1786226568; c=relaxed/simple;
+	bh=MXNABjwkFM3ygJXG4y9MWDjU26SEGoy9JsAm0VFfye0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GzdvZHjHihE755BFM3F/vlm8uX7tqxYtmg9Hj2T3NkrHP4tiIP6rAcqcDqLD6ju1AfHawCTqHIPUS0nmGeHEAQAFlfA56LE90wuW9BGh9C5kd5VebTFFaRozRYqZtufv9QkNF/V2pGs9dxwk8WQtom+kGJ850Sn5gZ3V7xfFii4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aLMe0S6H; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X52o9e3M"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786223216; x=1817759216;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3uaIIBiCU8ZU2xp1Kg6FoVtc0HMvElGXp9+wOyz+WT0=;
-  b=X52o9e3MngSS0AWFPwuPrm15jHtdN2Fc9TInpVIWhiy+gLwHOPraZ017
-   rTvJtnN0O4b1HRQ4EfL1BYivkArR+o0B6vZcgTxVHkq9+E/405542IeWU
-   ZWV0EfN0H8svww+Vgg82Ojf0FqnW0jVs2N8RpjLJPuYMbRwoEF2I2cKbA
-   F6hSPvx3jy0y2OkBU3D2jnV90YywvvnyPm5Aws6EUXxRCpo/lPaRj0nXw
-   lr30Y5qs7yIs6eKl41dknrOtKoiEDzcGLAbmJrBS6EVM+vJsscnxtyD8m
-   mtn+MzAV1of9KWeV5t+qY93+5lo8V48llCBE6SKUOeS+50LCraahMhGYM
-   A==;
-X-CSE-ConnectionGUID: 5JQvV/7lQoG0YnnO6PskBA==
-X-CSE-MsgGUID: 3+KRzg9/Qp2FYdXgvTWBFg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11869"; a="86672656"
-X-IronPort-AV: E=Sophos;i="6.25,212,1779174000"; 
-   d="scan'208";a="86672656"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 14:06:55 -0700
-X-CSE-ConnectionGUID: Y7Sn9Uc9RfqymAl2nC60yw==
-X-CSE-MsgGUID: d7mDPEAGQHiTjs47ogbYrQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,212,1779174000"; 
-   d="scan'208";a="259365082"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 14:06:51 -0700
-Date: Sun, 9 Aug 2026 00:06:48 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-	Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
-	Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
-	Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>,
-	Priyansh Jain <priyansh.jain@oss.qualcomm.com>
-Subject: Re: [PATCH 2/7] iio: adc: qcom-spmi-adc5-gen3: Add support for QCOM
- PMIC5 Gen4 ADC
-Message-ID: <aneaaJ_gmyyLh8mY@ashevche-desk.local>
-References: <20260731-pmic5_gen4_adc-v1-0-9c49b2eea6f9@oss.qualcomm.com>
- <20260731-pmic5_gen4_adc-v1-2-9c49b2eea6f9@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aLMe0S6H"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-38dcbade417so633886a91.1
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 15:02:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786226566; x=1786831366; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=9ivHxQvBYprAvSvmBWNQylCm2WbLG79/ppwc2RYVtyQ=;
+        b=aLMe0S6HWIRI1eyirq+I2yjRmJxtX03H28hs3vC2w6Iwb3t4Oyz/gYYaqFxUaOYTFR
+         WQrtAvc6LIgU+rZVKbJ1XC/Orc+Dn+D4KjBirGUj3uWvVsREZUbwr9Ggmwt0caq/H03Y
+         KtSsExA6ehTIMBWfY9qTnDEN7LyrlcQNGUJkKcv8InaR58umcNq6a0YtNXCT8Ne/LNYH
+         GR8aYfg9rQWZzjUkrOHr/WWIE7TF2Lf4GsY0PDUTXz5IVaTGIIJ/lF3YFIxCUvp5gqmX
+         hvuo60HG5DzcYsuzj1/7it1T41TdmoLPLBL8zrMNGVmQFg1a9BoBdNh3LrLK4pDlSbhK
+         AwCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786226566; x=1786831366;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=9ivHxQvBYprAvSvmBWNQylCm2WbLG79/ppwc2RYVtyQ=;
+        b=RvH1PACDwvXW/H8yXVu4iQGcruJVqPeRXRbK8vAsJE3PuAybL4sbYnWvMxrwfb/v4X
+         nXWRRX8rqaThPufG3KL4xE+JCw9+VwOEcGxPEiVYrgh7XCICFrIsMo/ZqM0M5Y8UrLVV
+         bDL/Zb+3JiT1vHPtxjm4YKnXak6jJEui1YJ8ZZf4tiob3w7zMPMIC5s1YB8Rnldnoev/
+         QGugm4DERExViGEPM5xsVPqX2vxoqpqRIUrGXeKEVGzCb1XjoWm+hzmq/PsQnSSlE8ik
+         +D0WXBDsxCUY3ujb+HuNwda29vbwnRjnrPCFdA96IA6eJD5CqrrZrvrea1EdjCRq2v1W
+         3PGQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rp47fASXzHkFDIQuN+93NXo5Hd35UOeJxYVw9dZp1nuUbIWLspc3h24ZUBEwTv1+vRexoWYtOTAgDI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx0baLii314Ka602KhZsYMnEDpp+KTuHFRYesAQdXBCeYd340zP
+	XEqFyOnW8lyZIBiQAzZrBRhYiK4d6jL+zv0T2VR6SADkY01dflJ7GPCw5dgcHYKV
+X-Gm-Gg: AR+sD12RxhvZ7ZH6nHA7PB7eYEjMjnvZfDBOHjRxLwkl7eE/bqWYlXbn0jJRI1EzPhd
+	zoLD4007DjZleZgkWkIr/3VI/E+4j6huK1fnriyZ+kTeawKynPcSaktGNI9tL+OadGt7A5q8Je5
+	/etAhx1rNU+lVVEE9Nc7aQy3EzNrb7h6QG/ijI6Iw82x6FL0lWAWHuwAElrfNYlnO6MZ4qDDlIa
+	l23VIoVvM1jsAdMxfOqBS88yPOemI1NKWQjAJ3I5bMZ7cQ+2rFpxOo7erFtIwDkZD7sl7DBdfn8
+	9xUObPwtXnI4r6hrv6fcegPgYJPfwG0SqvaNC6oA6SDZwAa2Q7QSeDvjPqe9lgFTWq/yXPbi2Hl
+	rFHoQr7U/ogKxNg27R7l8Ot+w5KVF1rs2xdiWc8VKlisuWfeu0hk/exuUwiJKPE44wL8jUEi48+
+	dI9MWY6/dJ5dxzFqk4Bxa/PcbVcN0bMpfcRpU6+7K2L2V2D/8ifY695wDu35mfjYyKgiRRJn+77
+	B4rKGI6
+X-Received: by 2002:a17:90b:5112:b0:38e:542:6485 with SMTP id 98e67ed59e1d1-3903c5919c4mr34140068a91.12.1786226566256;
+        Sat, 08 Aug 2026 15:02:46 -0700 (PDT)
+Received: from yash-Bravo-15-B5DD.. ([2409:40d4:1066:5a44:df99:5069:f01e:6025])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39085f2b2easm9490571a91.11.2026.08.08.15.02.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Aug 2026 15:02:45 -0700 (PDT)
+From: Yash Suthar <yashsuthar983@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Yash Suthar <yashsuthar983@gmail.com>
+Subject: [PATCH] iio: accel: bmc150: use IIO_DECLARE_BUFFER_WITH_TS
+Date: Sun,  9 Aug 2026 03:32:36 +0530
+Message-ID: <20260808220236.421832-1-yashsuthar983@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260731-pmic5_gen4_adc-v1-2-9c49b2eea6f9@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jul 31, 2026 at 11:36:15PM +0530, Jishnu Prakash wrote:
-> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made
-> for improved performance, mostly at the hardware level.
-> 
-> One significant software change is that ratiometric conversion resolution
-> has been increased from 14 bits to 16 bits, so the maximum value of
-> these measurements needs to be updated for Gen4. Add a new scaling
-> function for thermistor channels which use this type of conversion.
-> 
-> In the latest PMIC arbiter version (v8), there can be up to 4 buses
-> under the PMIC arbiter and 32 PMICs under each bus. In order to
-> support communication between ADC on the master PMIC and ADCs on any
-> of the other PMICs, a field of width 2 bits is added for bus index
-> and the bits for SID are extended from 4 to 5 bits, in the SID
-> register. Add support for this.
-> 
-> In addition, it is possible that the master PMIC has ADC of one generation
-> and it needs to communicate with another PMIC with ADC of a different
-> generation. Add new DT properties "qcom,adc5-gen3" and "qcom,adc5-gen4",
-> to distinguish Gen3 channels under a Gen4 master and Gen4 channels
-> under a Gen3 master respectively, to ensure that their conversions are handled
-> correctly.
+Replace bmc150_accel_data plain buffer with
+IIO_DECLARE_BUFFER_WITH_TS() that also keep
+timestamp aligned.
 
-...
+Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
+---
+ drivers/iio/accel/bmc150-accel.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +static const struct adc5_channels adc5_gen4_chans_pmic[ADC5_MAX_CHANNEL] = {
-> +	[ADC5_GEN4_OFFSET_REF]		= ADC5_CHAN_VOLT(0,
-> +						SCALE_HW_CALIB_DEFAULT)
-
-Always nice to see a macro with the embedded comma...
-
-> +	[ADC5_GEN4_1P25VREF]		= ADC5_CHAN_VOLT(0,
-> +						SCALE_HW_CALIB_DEFAULT)
-> +	[ADC5_GEN4_VPH_PWR]		= ADC5_CHAN_VOLT(1,
-> +						SCALE_HW_CALIB_DEFAULT)
-> +	[ADC5_GEN4_VBAT_SNS_QBG]	= ADC5_CHAN_VOLT(1,
-> +						SCALE_HW_CALIB_DEFAULT)
-> +	[ADC5_GEN4_DIE_TEMP]		= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_PMIC_THERM_PM7)
-> +	[ADC5_GEN4_AMUX1_THM_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX2_THM_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX3_THM_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX4_THM_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX5_THM_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX6_THM_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX1_GPIO_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX2_GPIO_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX3_GPIO_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX4_GPIO_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +	[ADC5_GEN4_AMUX5_GPIO_100K_PU]	= ADC5_CHAN_TEMP(0,
-> +						SCALE_HW_CALIB_THERM_100K_PU_GEN4)
-> +};
-
-...
-
->  enum adc5_cal_method {
->  	ADC5_NO_CAL = 0,
-
-(here as well, see below)
-
->  	ADC5_RATIOMETRIC_CAL,
-
->  };
->  
-> +enum adc_generation {
-> +	ADC5_GEN3 = 0,
-
-Why is this assignment? What's wrong with the C standard?
-
-> +	ADC5_GEN4,
-
-If these are related to HW communication protocol or bit fields, all of them
-must be explicitly assigned (to make code robust against changes in the middle
-of enum).
-
-> +};
-
+diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+index e8f26198359f..e0773533efeb 100644
+--- a/drivers/iio/accel/bmc150-accel.h
++++ b/drivers/iio/accel/bmc150-accel.h
+@@ -64,7 +64,7 @@ struct bmc150_accel_data {
+ 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+ 	struct mutex mutex;
+ 	u8 fifo_mode, watermark;
+-	s16 buffer[8];
++	IIO_DECLARE_BUFFER_WITH_TS(s16, buffer, 3);
+ 	/*
+ 	 * Ensure there is sufficient space and correct alignment for
+ 	 * the timestamp if enabled
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
