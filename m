@@ -1,96 +1,119 @@
-Received: from sg-2-3.ptr.blmpb.com (sg-2-3.ptr.blmpb.com [71.18.227.3])
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D74B1F09A5
-	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 22:32:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=71.18.227.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D3581F09A5
+	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 22:35:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786228371; cv=none; b=Q3GubDCxx+TO8x+fcQMFbeNK24AQbKWuAqzM7WfivL3vp6ii93624O4RnZiMG6CmzLlbwZvdJVCZaOXUAVJUklPTi6+cq97RP20Rz5briZfIkkL41tKGj2bMLpR9Ok6TR/kniDszv2jr2F1rVrDous5NeMoVoTMwNnujZMrrEw0=
+	t=1786228552; cv=none; b=PdV/QSqbEyhH4wqZBhOKZP5hn9AO35ACJA50Lof4WrSPMqPF1Qeo6JGdIFB45ey4hIDmkcbsmI2UvAilun/3GYQ4ndIwx67P+RPv9LWQ0Nc1x+W6x2LgIun18FryXfDAfjBGaT5K6JPa8hC+H/rtgbWZlOOnK73bXALBPSOvpTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786228371; c=relaxed/simple;
-	bh=nc5DPVw4jcyXLKvfSpa8kU0mNWLfdlTs263oOiPP68s=;
-	h=Subject:Message-Id:Content-Type:To:From:Mime-Version:Cc:Date; b=KYz/CGvjhkAMireBRYVIgSfdNQQsD/oo3Ji7tdOxxUdjnveJ3RIYCCz4iye/CHv4Koqzf3sR5v0yfTbyDOrxJo2pdL+tU5CpvoeH6aAbGVk9hYi5Jmwg0/aZU57qsbf8gTQwnGM2nFm4aC7r/7BvoXu5MfRixSdYLBKTQ3WoI50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=AvWoUFN4; arc=none smtp.client-ip=71.18.227.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
+	s=arc-20240116; t=1786228552; c=relaxed/simple;
+	bh=ThsXSy910Kxj+U09LRzpiF8ougdSnR07B8GFSNyb9hE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kDyxfCFVndwnAW2buZ13XxpquZn0jCFOLlRpYjoJv4jZXgkd5HQlIjCFdTfGkmAA6GVKadLG7E3/3s4zTj+o3Azej4PoVXu/sgH7/tP7uoQkihDQ3QnQBXpkYHoKXrLAi9NVsKrES152dhoEJ1vGeyOGG8HPQcsNItmszc8wn+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=osuxGL7l; arc=none smtp.client-ip=209.85.167.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="AvWoUFN4"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604220257; d=cherr.cc; t=1786228362; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=fz9A3WehZXe25/IP43AHGuGTXuBYJEnSgrJ0apvlm2s=;
- b=AvWoUFN4AWw9Uj9lbQyTfIKwATfksW2tI0SVq55Us1I6847oyzg6bFPQHtjEB2w1rrxSaa
- KUmaNdYinEPrz9S7GI0QLpkvR2z51jaDUTahtOPL8Ehm2wlT5ebSU/hglzThEKRt5wY4pF
- 2YDm7Y9egO9pJ4mmYIwVFfdFWI8ZgX7NfxlrXxKJ+NR1PzNcqeXL6ZZTBQS1MPuIcxIZAo
- SEG9ljde6fzpX/cTioF0M5LrsLZ2en4BpV6rKMMWSJcRCfOJd+WCWfBp5TcB5F+3llDmyf
- oe0odH8BV16WXR4Au0KrkjUNIC6/5GWaC6CpmPvdm1HPnMu90lTuiWYdVyhYSg==
-Subject: [PATCH] iio: accel: adxl367: clamp FIFO sample count
-Message-Id: <20260809-adxl367-fifo-clamp-v1-1-6eb35eaebcde@cherr.cc>
-Content-Type: text/plain; charset=UTF-8
-X-B4-Tracking: v=1; b=H4sIAISud2oC/x3MSQqAMAxA0atI1gbSinW4irgoNdGAEy2IIN7d4 vIt/n8gcVRO0BcPRL406bFnmLKAsPh9ZtQpGyxZRy116Kd7rVyDonJgWP12Yk1ijSGmSlrI4Rl Z9P6nw/i+H1GE69JkAAAA
-X-Change-Id: 20260809-adxl367-fifo-clamp-50f2110e03f8
-X-Original-From: Shengzhuo Wei <me@cherr.cc>
-To: "Marcelo Schmitt" <marcelo.schmitt@analog.com>, 
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
-	"Michael Hennerich" <Michael.Hennerich@analog.com>, 
-	"Jonathan Cameron" <jic23@kernel.org>, 
-	"David Lechner" <dlechner@baylibre.com>, 
-	"Andy Shevchenko" <andy@kernel.org>, 
-	"Cosmin Tanislav" <demonsingur@gmail.com>
-From: "Shengzhuo Wei" <me@cherr.cc>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="osuxGL7l"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-4af173320f9so407753b6e.2
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 15:35:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1786228549; x=1786833349; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=yQfW34he5hWnfmFpf7/3FQ0KRYGIGQ/GJRwqEgPg7k8=;
+        b=osuxGL7l32HYiWWk8lOTLuGfIWr4q+DAqz6xjqmg+jiO/uz4S2Pk8CSigfgH2w5SQr
+         MHivnLSutOpDSt7dICGrO3BIzJiAhkR/ruae/gDHDRqTZZ9+zS99R3/opzQdlhF90HcB
+         OpdkeOEyR/UQAK/lGEGx4qSyZUK1NTbiG+oOj2Vu2E9g1P8iCt555iYygL5zAgq3VBRn
+         pWUTLRaUCdgMsnYHpZNTYmUbW/resD5MWqGcGFaTARIdM8gV6zealANbhWzjCb3ZzX43
+         fJHxeEn69qd4yBUFSRNhESY2P/yLYp+ZClt10bDCypq/DPsaQuwBqEaG0uP22cr18hPP
+         fTlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786228549; x=1786833349;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=yQfW34he5hWnfmFpf7/3FQ0KRYGIGQ/GJRwqEgPg7k8=;
+        b=pXD1mN/jm/hLJbSxLCcEgHFmd2zegqK/cTr7ygxWeZg6eDbrfFWKeG55mUFjTUGoL5
+         XequWwYJFm3f1ne4n2Xm8aKIkAd2Ye51ipG1mNc7qqzD1bz9xbC7d2BloX6jDlaSjKIS
+         4+aX3O4oz3nHKhjjVwjgnug+M5VqKYRlgg6X66XcdWXmc9RwhfrYw3Dk3TJShGz6S9Ma
+         mxpBGNji5HOBNZ1HcxSj6Rk1X7cPv8/G01XzaF7DXlhXicHId/jn07N+XAoHHP9sKDBq
+         QS8ZqJgXZ1WL5Wgz1l4wbaoMQD88RBWDjPBpF0VgIZNbqC4MuOQuA8AWDNm7ErgZnFFf
+         1PRQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpOCbRO+ctduakrO+FHU4F0ZxOPrnsIVCFlQgRH0z0p4NQw8ILAfbr5HhXzYsdMHi+G+xzRieoZ1+c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwcTPlbUPpCsVXC4P+G96yzfp8nVcR4USdCCt95xcOXMzZc0vA/
+	hax80mUPR4IpMcVWLlgWroVuLKJdNm8Frdkp1FfjRfb4IZfN+c6w060JKCqxLVqBukE=
+X-Gm-Gg: AR+sD13VTwRN06K3WaWaqsG3Q1J/Qx3QA2D5Lr2hBiIjNhJlAbKM6UGy4mrphhVCmz8
+	dkH4A4eZzGcGb+IRPZOty74NfcZof1psqXbOYu8gq4RURmhg7y8+2xVbMyR8/tqd/eeeYkoNHbQ
+	bIh1+B9r7oS2nkTp6f2fJopBCKrFQhbFv1tW1ygh/zrc4E0im4S066Bzt0UOb/uKNjQDfWhBi5w
+	Vy59z7R7CdebN8gnFmEKPB4BXTvvinGV8RCmIGBw9ojMlZ2KWVzKSaShpxzdSnvErsWTfEk801f
+	JhxUfR2c29YvF2rCgBiYVIGaTPQAYTopQJHEUhSbAEeCEiNK8OIRp07A9RE4pWWefpmD78W2xXu
+	gTEv8bRukH7K9EaivAedR5iL/NXykoCcvcxS1keRaRcmOAn0E1bRLqlz4s4hXgRyxuIjkocGJWW
+	5qTlvzeXIhDLZ5MNUlEVm6PUHNqgtfMTzInqRhGsbhytkcJxRPb2PARsQOQll1nj9qMw7oEbEmJ
+	O26x0BmFHz0KPeoEBEYz0LvGWTpwSBz41FLTfA=
+X-Received: by 2002:a05:6808:191b:b0:4aa:cad:cb4c with SMTP id 5614622812f47-4b13317f7ccmr10407933b6e.1.1786228549426;
+        Sat, 08 Aug 2026 15:35:49 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:99c2:f16e:201c:3bb5? ([2600:8803:e7e4:500:99c2:f16e:201c:3bb5])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4b1af63b441sm2919282b6e.14.2026.08.08.15.35.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Aug 2026 15:35:47 -0700 (PDT)
+Message-ID: <261dcaa5-3e9f-4da8-adb9-dae4eb7310f2@baylibre.com>
+Date: Sat, 8 Aug 2026 17:35:45 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Received: from [192.168.9.107] ([111.42.148.100]) by smtp.feishu.cn with ESMTPS; Sun, 09 Aug 2026 06:32:40 +0800
-X-Lms-Return-Path: <lba+26a77ae89+f2d477+vger.kernel.org+me@cherr.cc>
-Cc: <linux@analog.com>, <linux-iio@vger.kernel.org>, 
-	<linux-kernel@vger.kernel.org>, "Jonathan Cameron" <jic23@kernel.org>, 
-	<stable@vger.kernel.org>, "Shengzhuo Wei" <me@cherr.cc>
-Date: Sun, 09 Aug 2026 06:32:37 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: accel: bmc150: use IIO_DECLARE_BUFFER_WITH_TS
+To: Yash Suthar <yashsuthar983@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260808220236.421832-1-yashsuthar983@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260808220236.421832-1-yashsuthar983@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.14.2
 
-The FIFO entry count is a 10-bit device-reported value and can therefore
-be as large as 1023. fifo_buf[], however, only has room for
-ADXL367_FIFO_SIZE (512) entries.
+On 8/8/26 5:02 PM, Yash Suthar wrote:
+> Replace bmc150_accel_data plain buffer with
+> IIO_DECLARE_BUFFER_WITH_TS() that also keep
+> timestamp aligned.
 
-After rounding the count down to a multiple of fifo_set_size,
-adxl367_push_fifo_data() uses it directly as the length of a bulk FIFO
-read. If the reported count exceeds ADXL367_FIFO_SIZE, this can
-overflow fifo_buf.
+Please don't wrap the lines so short. In git commits we usually
+aim for 76 columns, IIRC.
 
-Clamp the reported entry count to the size of fifo_buf before rounding
-it down.
+> 
+> Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
+> ---
+>  drivers/iio/accel/bmc150-accel.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+> index e8f26198359f..e0773533efeb 100644
+> --- a/drivers/iio/accel/bmc150-accel.h
+> +++ b/drivers/iio/accel/bmc150-accel.h
+> @@ -64,7 +64,7 @@ struct bmc150_accel_data {
+>  	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+>  	struct mutex mutex;
+>  	u8 fifo_mode, watermark;
+> -	s16 buffer[8];
+> +	IIO_DECLARE_BUFFER_WITH_TS(s16, buffer, 3);
+>  	/*
+>  	 * Ensure there is sufficient space and correct alignment for
+>  	 * the timestamp if enabled
 
-Fixes: cbab791c5e2a ("iio: accel: add ADXL367 driver")
-Cc: stable@vger.kernel.org
-Assisted-by: GLM:5.2
-Signed-off-by: Shengzhuo Wei <me@cherr.cc>
----
- drivers/iio/accel/adxl367.c | 1 +
- 1 file changed, 1 insertion(+)
+Probably also needs fixes tag since the old array was not properly aligned.
 
-diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
-index 8c3de11a10a37d228f8758b688156e3ee958c4e9..c82f6c8e5a0d8f4a66ea6c97b78c3838f6138502 100644
---- a/drivers/iio/accel/adxl367.c
-+++ b/drivers/iio/accel/adxl367.c
-@@ -787,6 +787,7 @@ static bool adxl367_push_fifo_data(struct iio_dev *indio_dev, u8 status,
- 	if (!FIELD_GET(ADXL367_STATUS_FIFO_FULL_MASK, status))
- 		return false;
- 
-+	fifo_entries = min(fifo_entries, ADXL367_FIFO_SIZE);
- 	fifo_entries -= fifo_entries % st->fifo_set_size;
- 
- 	ret = st->ops->read_fifo(st->context, st->fifo_buf, fifo_entries);
 
----
-base-commit: 848acc8ffe1b7cd5f1bf427b93069becfebc2c9d
-change-id: 20260809-adxl367-fifo-clamp-50f2110e03f8
+And as a follow-up task (in a separate patch), we can look at replacing
+iio_push_to_buffers_with_timestamp() with iio_push_to_buffers_with_ts()
+in this driver. Should be trivial in this case.
 
-Best regards,
--- 
-Shengzhuo Wei <me@cherr.cc>
