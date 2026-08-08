@@ -1,64 +1,64 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98C1A3B7B97
-	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 09:01:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67CA73B47C1
+	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 09:01:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786179665; cv=none; b=GxUOYZHYiZCnz5MJrLrVywgl1hrDK+ZJ7SM+XpA53WjE8zdKFTvhpHFeiS8BbazMoKxarGkQ+ONA4jp7gOXqaKb2lcNBSkwHXIuXl46lzSrNxzm5mCzAUiw3tpERBZdtxZnLpQNi2FgAVqEwMtxonEHaqHLSkcFN9PW7pS7aruI=
+	t=1786179671; cv=none; b=N/IX7tump1iyNvET9lSkN+JSFEFEfnK/WJSMHF5ErVs/qwJosSaJCQBXAjDf/AwBJdIoI8K9H9S3AGzL5Vx0v/+iy/FfbLHBJFShDPFg8EmzwGWWo07lLKmjWw2pTlpzkSk/68u77MDZlMTuDsmnU7ThEx3Cx+RkqCPO3qm2/5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786179665; c=relaxed/simple;
-	bh=Al+keQgNW/pNQNnVIlyN6dMkqxOCg3QqdJNuM9v8JS4=;
+	s=arc-20240116; t=1786179671; c=relaxed/simple;
+	bh=EHfaoi/H5aVDlNxnEr2yGng8APrb8ROD3VYBvv0JVis=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=h3L6VSN1q8pKNH53SIW01u9/BPrfhWKzDL2d0dMUewGTmeGmOo3LLVrCvoM3p3/Dr0hWWiFPno4fCgKH9pcdTXebDfqpoRO0ajyLMwv+pY9AdXs6/K2Q2Ncc38Z/OwlokUHrNxUK4kPA8THUejt6ruP8mqq0L9R1IVDYxj4cxKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Br0L/tVg; arc=none smtp.client-ip=209.85.210.171
+	 MIME-Version; b=tth4y+Q9RT6wWmr653DfKl1ZRszTHzGdzMBiqVpHBXAi/yzYlkwsOEdSDyWwckGNnH0Gl0o3oEKDnYYbzn9qt8GpP3CpP+wbqVlZxJnWvjjBkFZq6K55P/MrAxo5DlVpUjPzW0UOXB9s9hJdzZo51PCq3uKSavDYDKdPnIPumpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=POfxsR+o; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Br0L/tVg"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-84f38f3b36eso196514b3a.1
-        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 02:01:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="POfxsR+o"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-848743155bcso80240b3a.0
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 02:01:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786179664; x=1786784464; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786179668; x=1786784468; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=kF/b+Gd23S8p1kMd//04QDrp+FqRSM+cdSuEkId8c2c=;
-        b=Br0L/tVgEF5jRdZCcCHaxnOkaQClwNrY/c/chdEK046dW3g5ptmmjs/RxdWh+Hg+XQ
-         oUB1hPshHRGv9RPzLaxD8aIkMi9XCO7lojGKEU2mEu+whO3Rhrr8udm+JT8xWcT4nwob
-         5IrYRfaJGH7HboTqsbxq2pGO5oUM/0qShnx+6IaHt31N16cNK/bGklEdJVud1IqYh87P
-         pbXvpg9Kb4a9OfbNjs+Pem5iGtP0Uxe7k84ym7umqGEXasYAYc8wruT1k8+ir0A9bnWX
-         90fKdZTKr3br04AWxwpkgCkr07dKshUGjPX7/MikXChpfPJZtDIX4+lc1iwKe4ZWBWVM
-         5fiA==
+        bh=y0kd4BZdCcR2jnnA1HcZjBK3ddxINoAkrrsu0qcIwIE=;
+        b=POfxsR+ocwgVUhaYW72DlLRGNjGsxhYuTbpfZ36s/t1LCGv5DY/cIkS+fiGipnvn38
+         7xYG4ztHYi5/4K+cIVGpWOq7Hzqxxbqb+s8tINUhwK3cdBiM4FfhR9+0TNf2/BQ4sG/U
+         xy/cwQqGzz+scH/RvTRNVxoJu06nCHB72e6DUXW1WwBTuNshUi4KxY1sgvfe2Rv9d5Te
+         kycK3yNzYU5czCLY/brqkVEiSzC5okNatT4EzH8rTee+uHV0C7zxcmoDDJvgLcmeVjXp
+         aOJdV+LcqivtfZ004TmZ/ENoEUldDoeuevck1ehW6hRA1xVVqOISAvIeC9CGFJXEjBjm
+         pvNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786179664; x=1786784464;
+        d=1e100.net; s=20251104; t=1786179668; x=1786784468;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kF/b+Gd23S8p1kMd//04QDrp+FqRSM+cdSuEkId8c2c=;
-        b=fjXvmVIX8YJbNzHhmi7W6ApoKAlLpLBCf0fK6AR/7TibvVk6ZsHAhWdyJwvuNaDwIJ
-         w1B9Rpx7Y+ukcXyYE3mMxI2TvV2Ojpbf9pThcLOdjZHHxTWW15C/Pj+Q7xIXadUCxWmo
-         XjI9fNV1LQAGfRBuhPsuKtVEQbahodTOd0KVlVj7AR8WF6Mq4i+LJ8bfctitFAk+SbLf
-         sOcvgC5jDTi7fXcCHr0GkAKnb/sp7wzKC3yEPepK0RgmLmNQ3nREVWbNW+FMdzZVe6lu
-         GrPBzUsvlH/bmkWCc9JuZzwAPP0y9qHI7SMbLVnpe1M9ui5eTq+3i+boj4G3HVeIJl2P
-         U26g==
-X-Forwarded-Encrypted: i=1; AHgh+RqNSgN8/EVjzvR38kwiEyeVXx+g5OdYyi9+7iCqU64cnJGuiO+cD2oPk8LLF7gB3VNgd4twD34Icds=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwD/pvOibhrw8FCBVU4OuLpysDSvMdCT6sGz10NVjWdVDd24DC+
-	hpAeEcOnFdUuV870EMEz+liB3z3qQUFwy0sNSC1/vGs6hXRwrZFov5te
-X-Gm-Gg: AR+sD11KrOBELlo1erOp9cNQR28lAolnKLkGhHmN+awdiJqPFjRR4KoNAzMt226ddBA
-	qw4GHgBmIJN5yqKqZ4uxP7sEbi4vehwKEMDlVMKNlpwmXTDdJI5AENsgKr35CaQhoKeEr+uoaPm
-	kpCJaCz0qosATnHEyuQUrQEowS4lOlzfaJgGJCIkefTxSYxNVj2HYHoVg+kae+73iQYRL93NISf
-	H8VSI41bLLtoM8n0uo9JaSZdcNwRNwU3SDEQdiSDJnsyff2kWh1F0Bz53mjqryciXDMoUAZc9t9
-	1cgNa+W4uEt1XiEw0t9FzSEgdF19OiZNj1NNa0UIKBXQvBhT+e1wIS7dNEtPnnOm1mPtIPZn0Oh
-	nPK2XRCegiysfExoX8kWNKt4E9IaPIX/BgTGfTF/tRTchqe9iLlYOH+BNorfXAmxzwpr7MJbwhe
-	Zrgkmq/t5Z4Jz1vHeJh0mojx1bT0LiWsOtedkysCJ8KSsjBYInW8vqVq9EcAgQVn8+7BbPKYKAz
-	S9Vl1qXf5neYUcgz/TVOpGoG4sWfJwfvTH/y7vj9wu1rpeB70RYfVbirHT+ng==
-X-Received: by 2002:a05:6a00:399f:b0:848:42a7:1854 with SMTP id d2e1a72fcca58-84f4fee21bemr16602687b3a.39.1786179663846;
-        Sat, 08 Aug 2026 02:01:03 -0700 (PDT)
+        bh=y0kd4BZdCcR2jnnA1HcZjBK3ddxINoAkrrsu0qcIwIE=;
+        b=PAcJ+ywc1VSbzRrNIn5Y9AoNEBCUCPDQ/wFBqTVUDfcsJav00ldD4zVqBCP0KvixNP
+         h+S8kBXHjdQ+TrR02j7LV0yLOgFrUGgL8Mct3jwb8h505AW8u+2PiFYYvvnbsV0JSYSb
+         CSfQ4vIsA06GoIxbgmTpqJVGWTLl8aY5IimBV8E1zPSox1Yra5t0GIbv3PLURv7aWeGt
+         gnV7xI02qEJfJLuPSe2p6PpgIS4eVIA6U60HCALQBDIlkloTlsdFk+EK4S9LzgM9oRoa
+         Fs1ZaVRlrADf7Cu3Gku8rwyQmb5WF0P+c1nq4qyO8yP22aYPIOf107bHnzz06amv/xZt
+         7cCQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoaBDMPMi6uoj+r0WdPy+0bYiC8+6Dqju8OMJG6XNFCDluPBd9BcO5subYymKti1ydwyoEAEa+5QHw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxaAyiF1hVESvnKlmb6oldtN8+YKG2qFcJprztGF4a+R2Z08V5G
+	y5+vvIeDx/a2r9TpLqsgIgoqmAB5MzLRuLHm/oMkPY1yFnZ8aLwdvKhE
+X-Gm-Gg: AR+sD13NKADkPW3d+KbAAq4cMGky5d2Rrj3mrSXnQ5GASEo8Kmi47un3a7YbDOW+lfR
+	U5yHoD0OtXl4CBAUiaV+x3zyCvCRxY8DMCIKAO67Kg+vK1GjW1w2v9BFjlMJs7xakmwb45SN46V
+	c+oj5SKbzD9tySN8Z5rDE7rWvEDgRyXp9DESZmSNf252fmPqNv98IUsL1PmTZJLX6StGgU6UeSn
+	O2A83aIpbWM+2Eg1WboQs0cfKqbJh2ONaaOLFCcWmXl3Sovqrf61l5kGc7a21ManUcfKzZHfafN
+	f3sVK057bDWnJj6a4oI94sR3F30Mz4PP1NWNMZNjVhWvVWVk8gjXi6W31oioRFNQtHwLeDpGIH0
+	xCQhm7V7Td3yyFHIZ0dAV1HVlh1D9MKwwCVzcUmPu3EaaSmu360VSVSHU9Me7sbPJNwOhUBgnOq
+	SQ891fExfL1ZJK/VXP+QQQtfYJ0klc6BQpMBI3jGMnQQLb6eI/c+Xhz08O5DbdgBSIvcfJezfDp
+	QA1vlsAWGeHbu14Vh1BfMhg1IRxlBPms89FwIUjUf/0SDHmqxyLcPbJUrPEQw==
+X-Received: by 2002:a05:6a00:8d1:b0:845:ba94:a56 with SMTP id d2e1a72fcca58-84f4fd9f82amr15992649b3a.5.1786179668348;
+        Sat, 08 Aug 2026 02:01:08 -0700 (PDT)
 Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a51e9f0sm1973871b3a.28.2026.08.08.02.01.00
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a51e9f0sm1973871b3a.28.2026.08.08.02.01.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Aug 2026 02:01:03 -0700 (PDT)
+        Sat, 08 Aug 2026 02:01:07 -0700 (PDT)
 From: Adi Nata <adinata.softwareengineer@gmail.com>
 To: lorenzo@kernel.org,
 	jic23@kernel.org,
@@ -69,9 +69,9 @@ To: lorenzo@kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: linux-kernel-mentees@lists.linux.dev,
 	Adi Nata <adinata.softwareengineer@gmail.com>
-Subject: [PATCH 2/5] iio: humidity: hts221: Add a blank line after variable declarations
-Date: Sat,  8 Aug 2026 17:00:23 +0800
-Message-ID: <20260808090026.34187-3-adinata.softwareengineer@gmail.com>
+Subject: [PATCH 3/5] iio: humidity: hts221: Allow unknown whoami for DT fallback
+Date: Sat,  8 Aug 2026 17:00:24 +0800
+Message-ID: <20260808090026.34187-4-adinata.softwareengineer@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260808090026.34187-1-adinata.softwareengineer@gmail.com>
 References: <20260808090026.34187-1-adinata.softwareengineer@gmail.com>
@@ -83,25 +83,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Improve code readability per checkpatch warning
+The WHOAMI check currently returns -ENODEV when the chip ID is not
+0xbc. That rejects Device Tree fallback compatibles.
+
+Keep failing if the WHOAMI register cannot be read. On an unexpected
+ID, log it and continue so OF fallback matching can work.
+
+Use dev_err_probe() for the read-failure path.
 
 Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
 ---
- drivers/iio/humidity/hts221_buffer.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/humidity/hts221_core.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/hts221_buffer.c
-index 4d03db19063e..c868549d09c0 100644
---- a/drivers/iio/humidity/hts221_buffer.c
-+++ b/drivers/iio/humidity/hts221_buffer.c
-@@ -194,6 +194,7 @@ static irqreturn_t hts221_buffer_handler_thread(int irq, void *p)
- int hts221_allocate_buffers(struct iio_dev *iio_dev)
- {
- 	struct hts221_hw *hw = iio_priv(iio_dev);
-+
- 	return devm_iio_triggered_buffer_setup(hw->dev, iio_dev,
- 					NULL, hts221_buffer_handler_thread,
- 					&hts221_buffer_ops);
+diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
+index 76a391f421f5..da773d2edc80 100644
+--- a/drivers/iio/humidity/hts221_core.c
++++ b/drivers/iio/humidity/hts221_core.c
+@@ -139,16 +139,13 @@ static int hts221_check_whoami(struct hts221_hw *hw)
+ 	int err, data;
+ 
+ 	err = regmap_read(hw->regmap, HTS221_REG_WHOAMI_ADDR, &data);
+-	if (err < 0) {
+-		dev_err(hw->dev, "failed to read whoami register\n");
+-		return err;
+-	}
++	if (err < 0)
++		return dev_err_probe(hw->dev, err,
++				     "failed to read whoami register\n");
+ 
+-	if (data != HTS221_REG_WHOAMI_VAL) {
+-		dev_err(hw->dev, "wrong whoami {%02x vs %02x}\n",
+-			data, HTS221_REG_WHOAMI_VAL);
+-		return -ENODEV;
+-	}
++	if (data != HTS221_REG_WHOAMI_VAL)
++		dev_info(hw->dev,
++			 "unexpected whoami 0x%02x, continuing\n", data);
+ 
+ 	return 0;
+ }
 -- 
 2.47.3
 
