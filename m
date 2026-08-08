@@ -1,150 +1,111 @@
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 520C93C3448
-	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 03:59:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A5D5346FA8
+	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 09:00:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786161550; cv=none; b=cwbz4i6hGoVLbniyV0sbPJzYE4BbvtPnSui/8akLwpcnSa19yu7Q2VZB2F/IyvTQPgT4+n+W7JqCVleDmL72CsQLIUQqRaWdJa2h0rNMcwVdK6AIUr6YU7K+LI15tl6z+vC94+5SbjzD68V8KbJfxPqsm86nhAocFUnDuLGuxIg=
+	t=1786179648; cv=none; b=EYTff7P3HfbSfognbbyheshYkq0UBHyr7HEZ831zMfp2AADadMH/5VZ8Skkmtqw1MWcFTYbr25Iu1hjyp/zRd/A8iiJpC40/yVUW+YNGatwqrKT61sHxfHwaAleGb1EmQP+mls3V5NN1GCK3Jk5z7dGWCAMGlaKcpmq0xhRRNc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786161550; c=relaxed/simple;
-	bh=ALPm4wN0XxL4MAFfiFBimkAb2s7JRwqMzky26VfX7JM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mIdvrKVUSIv2fUWfIApSafa3EE/sjS2j3sm8+9W0CdIduawMd02GEafiP/aNi8oLcXuUfZOLDilISnCUpjEz8qd/z48pLrt2MpWYc11aNndkGluqP/u0Dj/XODCDQZDa4SIQ1IO3Hm5lvkzArlhq1i+OkC5e1hceb4NjgbGP+XQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VVhbSvW3; arc=none smtp.client-ip=209.85.221.175
+	s=arc-20240116; t=1786179648; c=relaxed/simple;
+	bh=qxWTv8ASCjnCZ6TSATakBcbHMCZGrem2cbfSEhGoUeE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XIeRkuEmHUIHbqXJuZMHvo7hXuVtwE3+A4SEOe3YXAK+OYWLWVne2jK9F3ZIJF/+4iXIUaT6a8uxIAmtHqiWcW1cFpfRz/BySGauAud2orYmsujI+sKmjSvBazs269K8omAoD85s+XRfwbYWlr0s1OBJrQoMNLgnamijn+zME1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CKwFCzcz; arc=none smtp.client-ip=209.85.210.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VVhbSvW3"
-Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-5c276bfce7eso192517e0c.2
-        for <linux-iio@vger.kernel.org>; Fri, 07 Aug 2026 20:59:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CKwFCzcz"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-84847482584so210080b3a.0
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 02:00:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786161547; x=1786766347; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=+Z33c2/VIdQJHXYt//EgpTsqkZyaHvNkSYBF+LRNUwo=;
-        b=VVhbSvW33O2Q7jd0o1t2l73Y/OFOskS8IYccyEO6ANNqlqmNv6RxnR93kXC8Rrv+n5
-         k9XgSQqlo/NAh1Z/2Qt1pr5px1c+Wwa5fSBsad93nyXw5g3pkBlVxQ+IJDAf0X1IBnC8
-         x+jOsk/JfO/sE2Awzo7vfPUT96QvWy1f9jjVZ1tqVV30Z19jshHRwPtK+29jSx2wQ1i9
-         aC3wMW0IVLss6icIJ77cFANq/w4S4MTvE4t/JHlZk7I5AAHd5Df3ix16mD/Uqwo3DMMp
-         cZLQRdSGwYLDmupGnoQPmWF/dQrKlaIEYBj9aZVhmGKDbttjWwx9lycV4UXmU2eI1BnU
-         pgjA==
+        d=gmail.com; s=20251104; t=1786179646; x=1786784446; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Yt88+cQt+lLHD2Jf2jU1wGbeT/wb1MRSKM+kEtCms9Y=;
+        b=CKwFCzczC13fvKgngW6oNitU8eRyts1zXKWl1b9okwT4KNsAAkVD1eXr9u86tbLMz7
+         Xoyz8YE8fWTk1ngNiU93Hlincly+idvpONyk41JtaIyWLhXO6+HWxSNgj1xSOe/a+Jau
+         0/CbiqGS2sc5Kl9lxABJ/s809Ewh9vHaF69c6IbVhK+u0xpLMB4faCiZ9CLXW/UqQ2qo
+         pg/XMG8XFtmrR/mw3wfuBfzA4TFp05zGA/wsJBQXMNgGJGYhvY0d/BJcj6NJd0z7Zxc9
+         uPOhpg8lJoUXzmqIem2d1F9vpDCqpze0fNKHiUWx/74Gj814qaRiTFsP88bFwitIPW/9
+         P9ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786161547; x=1786766347;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+Z33c2/VIdQJHXYt//EgpTsqkZyaHvNkSYBF+LRNUwo=;
-        b=RosNA3OE36Z2iVL5lDR6jy3UJxt5tL7ziF6Werj5umFDS0KpDyAPUu350ZhPYmMk23
-         z63pnYVHV1zGDd9u6uoaYCNqrvWfcxC+LW2Pb1aFrKYYrOLnedud7YvonPbOTAAoGvuv
-         0XZQXA0T9zHKwqL1sUKLJ1+ChqTFvEQZ2oe+NsA17sDDkwTfoqL6nnO7dBRZZGGfwVIP
-         NWRhsuimzEfrxYnrHhsbGdRQ1amSnJW5kupcNvSKrCuQyNqo1yfjngVOdY2TuUyaGvUN
-         Y0eqEhdmFC7dUKj8PTpouf1QuQ3PlnznIkL7+nBRqBgu4ybGqQsFo99iXK/84INNEfMC
-         Qkgg==
-X-Forwarded-Encrypted: i=1; AHgh+Rq+B8z1JW0ojHdp2yJrYFF3zcZSObS69doV694tkT6dvXcBwrNA6M+wxt7lD7WjGb17J8sGZ3tLU6M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyTsJLqHbykRUalgy4o/EjqpbAHFHxHWR3zbzAnKrUZFsHlc5fg
-	mwC85kL7fX05VwDEGVKAXB9vASBAGESCH2/HxJqlTDGWCXq5C3UXRAXS
-X-Gm-Gg: AR+sD11Vw/loGQ7epIvnNfF+pyBpazIsvX8LZrVbvvsmVXI9mCZqZlxEGvJ78DCNw0d
-	ERIgPjrLlg7EgVPQ67TB5lV68Voq4zRRNry2VhXJzpiQgMETxVF6MJuxxvUMyou3VMbJtg/8+4N
-	0HfSfuH5MjjkfS2xoDMIq0BpaOct7rtFzxYdgcvzbYvZeWFl+ZbFp1qHUcCxfzqUvvR915g6BTX
-	p8n57i1iN6EtdNcL4SrXrV9dEpWJGZNuD9F5VBWf3U8GT/1VRWZkspTfU+vLleSOHAgIX7wM6wy
-	3rrRsJZie2tLuAsm9gm8J2DkuqSNROixy7GUQ0KhYNC9o53y0ebujxSpc1q4CqrqUNotvjHtI40
-	6UYcEtXMp97Jik6TRlxW3D3kiYjMmzZ6dkBtXakkGixiL0dxm9DlSe+4hIIau+dz5+u5HjS+Fe5
-	0qYpZZS+u+RYv7tcVszCxxh8aTvzT7Kxy1QYrFhxgeL0Ftf57epmVzJtBTu6mG
-X-Received: by 2002:a05:6122:e142:b0:5bf:bb2c:1328 with SMTP id 71dfb90a1353d-5c3d9068a9emr4114304e0c.3.1786161547188;
-        Fri, 07 Aug 2026 20:59:07 -0700 (PDT)
-Received: from [192.168.100.6] ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c40b212fa6sm1432936e0c.16.2026.08.07.20.59.05
+        d=1e100.net; s=20251104; t=1786179646; x=1786784446;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Yt88+cQt+lLHD2Jf2jU1wGbeT/wb1MRSKM+kEtCms9Y=;
+        b=f/+4g4TWMwsyDkP9Ob/UMnrDp3adFaTdr9+IekEIuzoGnnnBqoFiccKIGvpcJRSWyv
+         HM7gmermsIC0zw8PZRj7FpMc1w5IqSFWpXeO8zBWAtApDtqC3V0eXvJLGuG7feXOzIya
+         deRL8zfsF9GYFeu4E5jo4hcKOB4yCtMH2OwoXul15RZ0ILtTPRVV8PpEaHJvcZYm3+SU
+         VD3sXxNQ6bxgFiB3KSj32o2QJTGEgnLTlO0Onh9dL+9TpQiuso3rvdJgpIFNCgxByH1l
+         ih/dzpsfIIssi7GARBSq9XQ+1T47Ez9F75Bs8eEWiVRI1v1C+d+Z07T8VWYX/RGguDdA
+         Rcig==
+X-Forwarded-Encrypted: i=1; AHgh+RpaqYGzvxQmgqdBj1/ybbiB6ePX3uOXDLdL8YdhnMhqIDdcq0fWSABSTYIPIWhOXg/hLVkArabhHcQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyv71qrcPZrDTeG1fl1XzbxjKvG1sfvjke4TlvPsGv7lJLqdMPd
+	rocuPlxLvU1/hQaki4bOkUV4kQr9oMDRMNyfsBmdjULDHNbgYZ7CvTqk
+X-Gm-Gg: AR+sD13tediAaHRdP7E8LtDPBwJCgtcWFjwlagVPmfKG8fCqYb40hAH0XMElN0Zc5M0
+	GwXFCx76cw2QcpLxOu+YileDMvG97Vk7bGcsqAvwtvzFroQPh6To8J+DdvNBpsX/FbT3yBMH5a6
+	WFzx0IObsqCNydFz0MDcmPrap245jYxa/vv9vLnuJStZY3v19KM28gYJJ54Lx5wXjSb7L+dH0AF
+	ucI0NtcseCNhkGDPvZyjhTDSQmPVfAWnw9ZDxrfLhKh5NPAu5Mb93WimPV9I+j+PFB9UJfuWkUJ
+	mDPEKrWpLBQrvj8BMbzQUjkk8Wah358q8AqujVNrPIdyITR+cEGErmwI5b/snIJnhnmfbJQzUSR
+	4vi8rST8kCTVO+K/gS59YcAVUUZqTHAplypRGip+cspUzMM5VXA98dNMEbzmXX/hFWrhJtIlE4/
+	3NKksKpGJJbkZgxJU7tpwtdCThsdGZ1LZ7oEkJufNnFzWliL2PgUmw+HuJyeNLLkzbCWnD316wu
+	B9yaPm9RmciQia3XMtRu4mpSMmkZeHvjcaWjBzrB26Le8yQBBaoo5GNz1raCg==
+X-Received: by 2002:a05:6a00:3d0a:b0:847:9d6c:a56d with SMTP id d2e1a72fcca58-84f6b78b1bamr3840408b3a.12.1786179646272;
+        Sat, 08 Aug 2026 02:00:46 -0700 (PDT)
+Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a51e9f0sm1973871b3a.28.2026.08.08.02.00.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 20:59:06 -0700 (PDT)
-From: Kurt Borja <kuurtb@gmail.com>
-Date: Fri, 07 Aug 2026 22:58:31 -0500
-Subject: [PATCH v3 9/9] iio: adc: ti-ads1262: support common mode supplies
+        Sat, 08 Aug 2026 02:00:45 -0700 (PDT)
+From: Adi Nata <adinata.softwareengineer@gmail.com>
+To: lorenzo@kernel.org,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: linux-kernel-mentees@lists.linux.dev,
+	Adi Nata <adinata.softwareengineer@gmail.com>
+Subject: [PATCH 0/5] iio: humidity: hts221: update probe and logging implementations
+Date: Sat,  8 Aug 2026 17:00:21 +0800
+Message-ID: <20260808090026.34187-1-adinata.softwareengineer@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260807-ads126x-v3-9-f89925d72792@gmail.com>
-References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
-In-Reply-To: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
-To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>, 
- Bartosz Golaszewski <brgl@kernel.org>, 
- David Lechner <dlechner@baylibre.com>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1626; i=kuurtb@gmail.com;
- h=from:subject:message-id; bh=ALPm4wN0XxL4MAFfiFBimkAb2s7JRwqMzky26VfX7JM=;
- b=owGbwMvMwCUmluBs8WX+lTTG02pJDFllKyv+Bi7cp7Z2Ws4kW07VnctsRJW3+IbVM4j9nBazW
- Ei6USeqo5SFQYyLQVZMkaU9YdG3R1F5b/0OhN6HmcPKBDKEgYtTACbivJuRYeWM5Y9b32dbyz5U
- 835veax3o2ybb8nmVZWsf16svJQk9JeRYbXY1eC4ZllZh1OuHVLKgq8MKmM/688WLC+r3/Yjsia
- RHQA=
-X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
- fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
+Content-Transfer-Encoding: 8bit
 
-Enable common mode regulators. The usual configuration is to have our
-own 'vbias' regulator connected internally as common mode voltage on the
-AINCOM pin.
+HTS221 is an older driver. This series groups a few small modernizations
+based on current development practices.
 
-Signed-off-by: Kurt Borja <kuurtb@gmail.com>
----
- drivers/iio/adc/ti-ads1262.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+- Report available values via read_avail()
+- Add a blank line after variable declarations (style)
+- Allow unknown whoami for DT fallback instead of erroring out
+- Use dev_err_probe() in probe paths
+- Reject calibration data that would cause division by zero
 
-diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
-index 533574169b04..238d803abc50 100644
---- a/drivers/iio/adc/ti-ads1262.c
-+++ b/drivers/iio/adc/ti-ads1262.c
-@@ -962,6 +962,27 @@ static irqreturn_t ads1262_irq_handler(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static int ads1262_common_mode_setup(struct ads1262 *st)
-+{
-+	struct device *dev = &st->spi->dev;
-+	char name[sizeof("aincom")];
-+	int ret;
-+
-+	for (unsigned int i = 0; i <= ADS1262_INPMUX_AINCOM; i++) {
-+		if (i < ADS1262_INPMUX_AINCOM)
-+			scnprintf(name, sizeof(name), "ain%u", i);
-+		else
-+			scnprintf(name, sizeof(name), "aincom");
-+
-+		ret = devm_regulator_get_enable_optional(dev, name);
-+		if (ret < 0 && ret != -ENODEV)
-+			return dev_err_probe(dev, ret,
-+					     "failed to get common mode supply: %s\n", name);
-+	}
-+
-+	return 0;
-+}
-+
- static int ads1262_regulator_enable(struct regulator_dev *rdev)
- {
- 	struct ads1262 *st = rdev_get_drvdata(rdev);
-@@ -1797,6 +1818,10 @@ static int ads1262_spi_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
-+	ret = ads1262_common_mode_setup(st);
-+	if (ret)
-+		return ret;
-+
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 					      iio_pollfunc_store_time,
- 					      ads1262_trigger_handler,
+No HTS221 hardware was available. Verified with checkpatch --strict and
+builds of hts221, hts221_i2c and hts221_spi. Probe and calibration
+error paths were exercised against i2c-stub with register contents
+pre-loaded via i2cset.
+
+Adi Nata (5):
+  iio: humidity: hts221: report available values via read_avail()
+  iio: humidity: hts221: Add a blank line after variable declarations
+  iio: humidity: hts221: Allow unknown whoami for DT fallback
+  iio: humidity: hts221: use dev_err_probe() in probe paths
+  iio: humidity: hts221: fix division by zero in calibration parsing
+
+ drivers/iio/humidity/hts221_buffer.c |   1 +
+ drivers/iio/humidity/hts221_core.c   | 171 ++++++++++++---------------
+ drivers/iio/humidity/hts221_i2c.c    |   8 +-
+ drivers/iio/humidity/hts221_spi.c    |   8 +-
+ 4 files changed, 85 insertions(+), 103 deletions(-)
 
 -- 
-2.55.0
+2.47.3
 
