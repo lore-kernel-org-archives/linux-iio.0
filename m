@@ -1,68 +1,68 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9CE4EEC0
-	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 18:37:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E676339F18A
+	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 18:38:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786214277; cv=none; b=UISaG91BO90SdqRHzbyEr7SjzSensMWAJsc+xo2khJrb15bcDa38SdYdO1mdXNq8IeiYabPuXHwy230eq8iWoeWu5XdnrlW8Uz4vGPk1d+HIAx9svTL/mphMaBFWIL7mtjARa5Jdk3asgWfMo/fd7jyGQ1IgP7VAV952N4e5Bw4=
+	t=1786214319; cv=none; b=QfsJjgTIr/onQTBl6MmHi+9Lw6HxeVDdMknnZKycUapcA98SLAov2imNZV3m491RkQfxFv4Wbxw4gcw7nhNIAdLbKs64VhIbSMLTbb8pq4RvjSB+rFjXpSnAv02fk2AyrQAa0WIqpf6CCsxWKRw2T1RPaLO/KhGtr02ZpywVwoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786214277; c=relaxed/simple;
-	bh=dzrdC/V9hfKSduqXaxnSIK04OaPh9Ms/hShv+g+bUtk=;
+	s=arc-20240116; t=1786214319; c=relaxed/simple;
+	bh=K2TOovoxyOuQXz0NUxhR+aOkqI/H40z4teyVi6PX3F0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=V+leIdVsUuJsX92mHcQg40Q3eKjX4Ez5CI8/o86Xkxri/ANlEwG2P1bJ5pbxoheo0NXiqQb77oNRrv103ttu/fmXN5v7fqV7llW5eyjWQYQZIGPB9fT8AHmuzSpNjcVITkkVeRlUItjrqh6d2hW2JzGMhUTsUtzvGWZql0hmOYQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=DxxesmrU; arc=none smtp.client-ip=209.85.167.176
+	 In-Reply-To:Content-Type; b=PtluJtbLvTATZCCDHRF5lFUNzisvp7tPUPH1tyOubb2gsJvkZ3N/D2/7Xj3P2NfbXG1qwLFhdKgpJ0jeJ3dLAnNgHpvpKzB3pF1V7KrwkuVt1QiKwnXfsxCWP21q4vIMPp8RekLM8yJKYEfFvMD51rk7PRZnH1WAvUxVqVOCUrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Eu/twQzC; arc=none smtp.client-ip=209.85.161.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="DxxesmrU"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-4af173320f9so341902b6e.2
-        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 11:37:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Eu/twQzC"
+Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-6ae9b721927so403378eaf.0
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 11:38:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1786214275; x=1786819075; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1786214317; x=1786819117; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=oc0GfmclcP67zAT/ARwTrf4zGQv32puYST7E+4xbpn8=;
-        b=DxxesmrUaut/NiFBEF1oWMWI1sbb9mj7QnWp8nXTx9fuQcSOMG6gnbbDFKxawSNO4S
-         455+nPuVc89VEwnD5oBM0vlEF/wbmv+eqJFP9WAhpy7XTujVIdOo/9w8AgMssX2S6gYz
-         1AAw5/v28Y+N5itp2GpYegE2k37YnIJWkiLL2uI5E7KwQhhvLRlnQTUFcOMXzFjAYot/
-         hzgA1wD1wQZdmHMwX785r88C++TXnSdd/DEpdrw4dfjvmuq1klw0uPU1F67ZZj8c/vPP
-         vpgSwXeGRzw/Nyi73eH3ipDiEU+yUH9XSxQuNssEF2OhbeHI/TrgIPuTcqHtnbEvwhK5
-         gsgw==
+        bh=BYohLP+0c4lv6k8Vs2Mp24gW1cAJvUuJNgonaHAKjlI=;
+        b=Eu/twQzCrd6A23ES5ns+4/7Ns/rHO95wM3c9D/PpuV+C1EYQJSXmG+RINA0GzL+N/n
+         FPmG7TwvIgjivH8fAdH+6RJXkAJdZe1iaQW2+We0aBurNIoMKKbh4JszK5yH6e+St+F+
+         3tiQWPWVopOKCvyEcw0BPSNEk/pA5p8Z6ICP/emv0UVU0ojC6i6cfCMQZSYC4yA0ArUs
+         AAunM3eLcdlTw6Hkkqm+q6y/bNcCzIvseRemHnTTunC++iz8p4e4wwCNpXEX7/m0Eool
+         0KrP9yLS9vSenSu9rqABgc8YrxBIcbPdoTrzpFfi3NtrBSe9g9xfW98q12j3SdQaIlpW
+         YhJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786214275; x=1786819075;
+        d=1e100.net; s=20251104; t=1786214317; x=1786819117;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=oc0GfmclcP67zAT/ARwTrf4zGQv32puYST7E+4xbpn8=;
-        b=bLc6kjITH7AHWpM28hOZ6C2zX7RfJe2X4Qc0tBLT7kVkiNX4f+4gU+ABUTQu3q4ZyK
-         oFdi6AuxdybD/zFrj2sbIKSWHC3MgicYth++1IJxlgY2k2EX1UpjgyawTKxQ29TcTI8h
-         /SbRG3xbBIPgGJCZbXMGktVnom7LJ54eluFVROmVp+RLQp22BO/bvS7mLbrm9qz9s7mS
-         6fZNrjiBNVb3tcApIwjeYD95IbmcASNvgvSC6wuZMUz1Bx0ZjCGtOZiD7pcWhnhgnsW1
-         P/tD4T/MXFwp5AYKrKQSM9WGeXW76RtDwoy4EeC9U1Shk35nAMKdBFTumS1MT5lEf0l2
-         ciNQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rphrd2tHptL8fLyi9jfNqW3d1plpJH04ThizUfAqv8HWQZ9ca9hxkKZhfRPdre1P1ZX4ofHZ/KI8UQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx7QxCBcL0yP9wEUOetGhl8fEG3g/kEAp54VqKTVblPQoKmaCJC
-	1g37btpXANXW2CNpqmvXmC2/un5Zj5bxEX7MW1kUTXzRi9i7ql7MGZ1IzP+/bKkGn0Y=
-X-Gm-Gg: AR+sD13IXP8t/Z5N38SLR3AkKZR7MQPkd2E70u9qWgGbOWyKwOaNPglrCQAWlsjL9RN
-	jpVDWiY4f9VSOVoz9FVv0y5tr/asSzy48s2ZJ28CvYAi4KeOU4hjBKEKbmHBmCWaP4sSFFSXov8
-	l8FM8/of0PP745DVdyB+Ct28RneSwnNOMwVLbf98sUxkalPFmhnQ1PfNGKHAKRjdc5dkkEyKKLE
-	no6vVGmNJJx+OQ87BWuPiB981S53qwwCD0ZZhGVdYMCBeZyn8bG7pdBv2el48YuD7iZ9DGB2WSr
-	B7Wr1OsXDfccus63ZYBmeUM4XLkH02Lh/J1gVI5NzPYcEng9rM0PDhwA7C+pk1zxWnsNB1b/F1X
-	CfMfdESfgNbIk8gnNIN5WcRQAkeT5/d+oYgW347paDsxb/2hA1LOywtU2g56gEfxB7GPb0yE/a1
-	pdioYXAuOkcsjUPuiWs93Bfv0BMD5Td6oyj+7ma5H/ruErWgQMj2UT3OqRCwGrh5xYbDKmyQ2Tt
-	6U5StdyWTeSucKeGUNz86/GiyaYiA8lIQEWy2vCWp1cvyyVvoI=
-X-Received: by 2002:a05:6808:14d3:b0:4a3:3108:8653 with SMTP id 5614622812f47-4b13326e600mr9343974b6e.9.1786214274819;
-        Sat, 08 Aug 2026 11:37:54 -0700 (PDT)
+        bh=BYohLP+0c4lv6k8Vs2Mp24gW1cAJvUuJNgonaHAKjlI=;
+        b=e7n60Ydrgw4GE9nsJ6ieQX7D6ziBgPCxkstr0UWGcXUlEvIfqhi8T5dDtqCdCY1pvO
+         bur0aPBsE2yCp0kYlFCnsON/nEhjvMVixK2+Yd/xzZu4z8MUWwhRhq6DvZ7vnKyy9LHd
+         AJEOrc4VS74U2w/x/JmEbYzwvrAfXFUtAnHsECm5kR5vBWojCoz8No81hJp25+IM/TF2
+         AKrCV0NDijPaMv4E7g1thKRnAn06fma6WzV+jbYbLagTrGH3kgT0aPJNuUKAQkuzaOb4
+         iJpM85ndCnCuDmgyTpdX0zvrlLBiM0DFVG+ee98j5DgT7+OgW/ELpzdW6MPzka6D1ajN
+         BZyw==
+X-Forwarded-Encrypted: i=1; AHgh+Rqr9Cjbg8RwsNI/pR7z/kBxN9cZQwbgorHjTsFkoVCRZ7ayvkRbM7a+/M4dA0VxYi4tQf3on4yoogA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzifE5CLQoxWw9I+9g/zw9y9ZFTDJfJSm+hLb+H8AaAmsk81RuU
+	5GRtYc3blRIUB4Itpm9gddQT5Zjp7uYS/0uP+1QHSoS8/uiDXyZDvdzooIEfhG4rE/Q=
+X-Gm-Gg: AR+sD12cQkgb3a43vgQAOaPfcbj8DDpojzBsdV6KZA74fid0CJOCz0abFiR/YqSE1cx
+	xCOkJXyjNl6jYV0C7GzNxGOIy0AMfWLmTkHzk4ffzXalq84kVsxf1hzTttuzuh1v3Y94jIz8FfC
+	jC6TdIcaxdoQKk3P/DpGrRDUaWn4cMJNva7u75e3jD+fr81Z+0U8VpkXHgsgp13M9smj9cd22fH
+	VoYaiHanYPM2AA/5sGiGzR330kHEke/we5OldfyyH+5kWo2B5TElFJUmvgEHDFuz3fx4rn9w0RD
+	K28wWa7b8rdf/l1qV+PnntBCilxEZuN90vuYGm4SwNR+5WQJbhA7xZ+KieD6DSQcG6J1UturKCA
+	Cv48I+WjsNQ8UU06E9LWzyVK8138sTJq9iHOO6VVDbYRCYSd0E0D7Xeu89EpEcz2Zqbc6RcTD8K
+	K1mgef4NGpMpfzYfHBbH6wzbZBclH8f57+Y1eXv1OQUuOg5wcYuYx7Cp+ChkrZ9iqgexViwXZca
+	bjSBr6CRC7uEV7SS88cHmw0WUtBruoo3gYEArw=
+X-Received: by 2002:a05:6820:c3c9:b0:6b0:5233:f69a with SMTP id 006d021491bc7-6b05233f906mr1653779eaf.30.1786214316792;
+        Sat, 08 Aug 2026 11:38:36 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:99c2:f16e:201c:3bb5? ([2600:8803:e7e4:500:99c2:f16e:201c:3bb5])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4b1af5e7b77sm2718840b6e.10.2026.08.08.11.37.52
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6b02be9294fsm5236394eaf.13.2026.08.08.11.38.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Aug 2026 11:37:54 -0700 (PDT)
-Message-ID: <9c2e2c46-32de-4e8a-88c3-bfc2cfe8157c@baylibre.com>
-Date: Sat, 8 Aug 2026 13:37:52 -0500
+        Sat, 08 Aug 2026 11:38:36 -0700 (PDT)
+Message-ID: <c7faac0a-e3a5-42bf-8cc1-aee1370ef662@baylibre.com>
+Date: Sat, 8 Aug 2026 13:38:35 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +70,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/9] iio: adc: Add TI ADS126X ADC family support
+Subject: Re: [PATCH v3 1/9] dt-bindings: iio: adc: support the TI ADS126x ADC
+ family
 To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
@@ -80,68 +81,145 @@ Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-gpio@vger.kernel.org
 References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
+ <20260807-ads126x-v3-1-f89925d72792@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
+In-Reply-To: <20260807-ads126x-v3-1-f89925d72792@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 8/7/26 10:58 PM, Kurt Borja wrote:
+> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
+> integrated PGA, internal reference, excitation and burn-out current
+> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
+> 24-bit delta-sigma ADC (ADC2) for background measurements.
+> 
 
 ...
 
->   - @David: I added support for the monitor channels, but I prefer to
->     parse them from DT instead of making them static (similar to the
->     ad4170-4 approach too :p).
+> +patternProperties:
+> +  "^ain([0-9]|com)-supply$":
+> +    description:
+> +      Common-mode voltage supply connected to AIN<N> or AINCOM.
+> +
+> +  "^refp[1-3]-supply$":
+> +    description:
+> +      Positive voltage reference connected to REFP1 (AIN0), REFP2 (AIN2) or
+> +      REFP3 (AIN4). If not described, its assumed to be connected to ground
+> +      (0V).
 
-Why? Unless there really is some property that depends on how the
-system is wired up, it seems like this is just making unnecessary
-work for users to be able to use the monitor channels. And if someone
-decided later that they do in fact want to use the monitoring channel
-and it wasn't in the devicetree, sometimes it can be very difficult
-to actually change the devicetree.
+Would we really have a case with a negative only reference? I would say if not
+described, assume the pin is free for other use.
 
-The monitor inputs also have many restrictions compared to a
-normal input that it would be really hard to describe correctly
-in the bindings without allowing things that should not actually
-be allowed. (can't have excitation current or burnout, temperature
-channel requires internal reference, most should be single-channel,
-etc.)
+> +
+> +  "^refn[1-3]-supply$":
+> +    description:
+> +      Negative voltage reference connected to REFN1 (AIN1), REFN2 (AIN3) or
+> +      REFN3 (AIN5). If not described, its assumed to be connected to ground
+> +      (0V).
 
-> 
->   - @David: About filters... As I mentioned in the previous version, the
->     data_rate configuration takes precedence over the filter selection.
->     If an incompatible filter (given a data rate) is selected, the chip
->     resorts to a sane compatible one when doing conversions (either
->     SINC1 or plain SINC5).
-> 
->     Now, I don't know how to expose this in userspace. Should I limit
->     the sampling_frequency_available attribute (given a filter)? Or
->     should it be the other way around, limit the filter_type_available
->     attribute (given a data rate)?.
- I figured that the filter type selection would be more important than
-the rate so when I implemented it for ADS112C14, I made it so that
-one has to pick the filter first and everything else flows from that.
-(I didn't expose sampling frequency until the same time as filter type.)
+Assumption is only true when corresponding refp supply is described. Otherwise
+we should assume the pin is free for other uses.
 
-The thinking behind this is that if you do care about filtering, then
-you are picking filter type and sampling rate to get certain notches
-and/or frequency response of the filter rather than trying to get a
-faster or slower sample rate.
+> +
+> +  "^ti,refp[1-3]-refn[1-3]-resistor-ohms$":
+> +    description:
+> +      Magnitude of the external reference resistor connected between REFP<N>
+> +      and REFN<M>. In ratiometric configurations, such as RTD measurements, the
+> +      IDAC excitation current returns through this resistor, generating the
+> +      reference voltage for the conversion.
+> +
+> +  "^channel@[0-9]+$":
+> +    $ref: /schemas/iio/adc/adc.yaml#
+> +    unevaluatedProperties: false
+> +
+> +    properties:
+> +      reg:
+> +        maxItems: 1
+> +
+> +      single-channel:
+> +        minimum: 0
+> +        maximum: 10
+> +
+> +      common-mode-channel:
+> +        minimum: 0
+> +        maximum: 10
+> +        default: 10
+> +
+> +      diff-channels:
+> +        description: |
+> +          In addition to the analog input pins 0 (AIN0) - 10 (AINCOM), there are
+> +          special inputs that can be selected from the following values:
+> +          11: Temperature sensor monitor
+> +          12: Analog power supply monitor
+> +          13: Digital power supply monitor
+> +          14: TDAC test signal
 
-And the driver also allows using an hrtimer trigger to do single-shot
-samples for cases where one doesn't want to sample as fast as possible
-in continuous mode. This would be more useful to someone who just cares
-about sample rate and not about filtering.
+For reasons mentioned in the reply to the cover letter, I'm not a fan of the
+monitor channels here.
 
-Just posted the series yesterday:
-https://lore.kernel.org/linux-iio/20260807-iio-adc-ti-ads112c14-filter-support-v1-0-4d3ba00caf18@baylibre.com/T/#t
+> +        items:
+> +          minimum: 0
+> +          maximum: 14
+> +
 
-ADS126X seems a little less complicated in this regard though
-as the same sampling rates are available for all filters with
-the exception of the FIR filter having a limited subset. So I
-would go with the option to limit sampling rate based on filter
-type, not the other way around. If a higher rate is selected
-when changing to the FIR filter type, just have it go to the
-max (20 SPS).
+...
 
+> +      input-chopping: true
+> +
+> +      ti,idac-rotation:
+
+Should we make this one a standard property like input-chopping?
+
+> +        $ref: /schemas/types.yaml#/definitions/flag
+> +        description:
+> +          Automatically swap the IDAC1 and IDAC2 connections of alternate
+> +          conversions. The ADC averages the alternate conversions to eliminate
+> +          IDAC mismatch.
+> +
+
+...
+
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        adc@0 {
+> +            compatible = "ti,ads1262";
+> +            reg = <0>;
+> +            spi-max-frequency = <8000000>;
+> +            spi-cpha;
+> +            avdd-supply = <&avdd>;
+> +            dvdd-supply = <&dvdd>;
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            interrupts-extended = <&gpio 0 IRQ_TYPE_EDGE_FALLING>;
+> +            interrupt-names = "drdy";
+> +
+> +            /* Typical common mode voltage configuration */
+> +            aincom-supply = <&ads1262_vbias>;
+> +
+> +            regulators {
+> +                ads1262_vbias: vbias {
+> +                    regulator-name = "vbias";
+
+The node name is already "vbias" so giving regulator-name is redundant.
+
+> +                };
+> +            };
+> +
+> +            channel@0 {
+> +                reg = <0>;
+> +                single-channel = <0>;
+> +                /* The VBIAS is enabled on pin 10 (AINCOM) */
+> +                common-mode-channel = <10>;
+> +            };
+> +        };
+> +    };
+> +
