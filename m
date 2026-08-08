@@ -1,69 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74BAF1A9F91;
-	Sat,  8 Aug 2026 20:21:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96652264C0;
+	Sat,  8 Aug 2026 20:33:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786220489; cv=none; b=d1g0tr3xYShvf2MA7uUXz3PpymJvJ1w9s0K1G03ac+7W8QKxvRs2whBTs41jYlR7RLqvcdOYiglAgtJj7MWmpHp0GcijTGURKomTP9KMDkhq/p1BoWv5M/IjofgUfxDoIunIKz2vqS/QRBkRVHykSt6eX+hPyHQ7eH32ySlrG/k=
+	t=1786221225; cv=none; b=PU0fY2EjgzT4kqBcWpVvVvvnHvOxDv8sFcP+4W62XkX7A+VGpQ5faJc/Ze46c932jKgoLub2K656zN1rCZuTsSdXBDdEG/ssDtJzwYvHufFlQGV2r3hQyuHaXHOJgHEqHitwrGwtviwKbV52IgpGkOGIYDiKUiW1XX+kVfi39UA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786220489; c=relaxed/simple;
-	bh=AKclGaNLUskbQeh9Z1Vh18Hb3hbuoaoxxiMAuMFVMPQ=;
+	s=arc-20240116; t=1786221225; c=relaxed/simple;
+	bh=XLezFx3+FT1rDp0UafMefWEfdWnzz0g6tNztN1MV+nM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nXa4Be/RIEISadap9dyl6pYbbJ+sjZg8wdTX0zJQLQI8a/tvxI+ctpSdyXcpGjfuT4n20BeT7SFw0Fw9TsfDdCAKK5Btm1oGS2Jqlh1+aahTKUJEnj9id3FwEwCs1ENHXzcDGN7lC+varZFW5JcYg6Oo+cyaNbaNC76NoZSkLZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Uot02xt8; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=tQYHKtkfact4VKmnNagFpnf6XC6S/ZS/5/8EkiPCFs9Ms8mXx533uF3/7mBvuTYv9hyhHTb8dBS1OZGyCaJrgTQTnGZjgTpM8IZRaQ2aaAMFIzxJ85zgRWR7mMQMc7pIy5dOim0ks92aNd/G5qH9WpkzuYUYzCqqOnoZ3wCvK3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f6eK8h23; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Uot02xt8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f6eK8h23"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786220488; x=1817756488;
+  t=1786221224; x=1817757224;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=AKclGaNLUskbQeh9Z1Vh18Hb3hbuoaoxxiMAuMFVMPQ=;
-  b=Uot02xt8VpPvt6Lt0wF6T0Hj5+828d89XVrnd5CyruSGJGzncLzOQ7GX
-   /+TaJPfDseXQVk11szH1cucJmUW4m2xeGHrTrnPKTdCt1iD9uaplljxCk
-   8PKKiMhD97n4Q8DMHc24ufphbHER7G0cR+DmHGR2K1mkm11XIlQ0ivLw4
-   DMoUxFkg0cc3X7EWjfDXK+FQM9DUIZaAl2Y/WZl7R86Nn1RTI/Hb0YPwP
-   kEOF/9tRYDQYXZ/rQ8xfmajeL+AnMdqDrP3RUkYD1ogWbTlX8NSyU2Hv8
-   hFOT+FU5h4lb6igkrOMrph11yfsgMs//HWR33rpLl9CH0fUjPCcwHmrne
+  bh=XLezFx3+FT1rDp0UafMefWEfdWnzz0g6tNztN1MV+nM=;
+  b=f6eK8h23ehuC7mEfvHUpQzllWTbx7YLo0+JLCbY2B4EFsJTYbuoa21ps
+   ya/ex5JLKTm+29mOeNvY4Iaon4WBXfxg1RprOPqMT0w5Ru8tUvwiyJtvp
+   GnvT6IzBVU56An1plLnJre7RofZLtsdtkaxPYeK3C3+f8Gn8tvKVFq+Vx
+   Lt/wX+2Od6niXJGxgrDeT/20j0cq8+ZaAVrxQSAR2ZLOjU9iAlCRye/Dd
+   K4SMCuwqbcMmibajf/fhPUsQRlrXN0H14rcC1PjR/8DxA4TZLQ6XdjGMX
+   dt0EfaLQ9vzURxbJ0M+8+o3gQWbea4T3BuPP8h7ZsQN2N4VyBM7YjZZT9
    Q==;
-X-CSE-ConnectionGUID: Ek4Ne9PPQXaYhnwC9n7RMA==
-X-CSE-MsgGUID: qDLvfgEJTC2ZUtNPipRm4Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11869"; a="90473379"
+X-CSE-ConnectionGUID: eBRqvUrDQOGV3j4qJh5SrQ==
+X-CSE-MsgGUID: h3b6OMDtSjGpl/GAujI33Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11869"; a="86647137"
 X-IronPort-AV: E=Sophos;i="6.25,212,1779174000"; 
-   d="scan'208";a="90473379"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:21:28 -0700
-X-CSE-ConnectionGUID: 9Z4gJDvvS16/PX3J8KgErQ==
-X-CSE-MsgGUID: niV5Xq0yQC6bSeJSCSMNZA==
+   d="scan'208";a="86647137"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:33:44 -0700
+X-CSE-ConnectionGUID: V/VshTl/QvW9eRzG4HuU1Q==
+X-CSE-MsgGUID: P1HDFp8+R7iuCY/mHWVCBA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,212,1779174000"; 
-   d="scan'208";a="261383506"
 Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:21:25 -0700
-Date: Sat, 8 Aug 2026 23:21:22 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:33:41 -0700
+Date: Sat, 8 Aug 2026 23:33:39 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Esben Haabendal <esben@geanix.com>
+To: Danil Sirin <danilsirin24@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
-	Maslov Dmitry <maslovdmitry@seeed.cc>,
-	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 6/6] iio: light: ltr501: Fix sorting order of device
- arrays
-Message-ID: <anePwmLumk4k8l9e@ashevche-desk.local>
-References: <20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com>
- <20260804-liteon-ltr329-v3-6-c6b768c7c745@geanix.com>
- <XtotGdyhZvQIq-19qWwYJ2t9CGaZ4kcJXvUUcRmfXmC7YVRVj4wVkAttk_2tgzsuymMdFgL7wMAWYgvA8RFcuA==@protonmail.internalid>
- <anT_KYZjkX2Tcnqu@ashevche-desk.local>
- <87ecgaxt0i.fsf@geanix.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: accel: mma8452: add ACPI match table
+Message-ID: <aneSo9VObeSt3PD_@ashevche-desk.local>
+References: <CALoEA-zR7Z75k3uNRD_Swqf7G0+mYmFkPfXTJ5O-mBr6_iu8qA@mail.gmail.com>
+ <20260807171326.1137-1-danilsirin24@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,44 +62,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87ecgaxt0i.fsf@geanix.com>
+In-Reply-To: <20260807171326.1137-1-danilsirin24@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Aug 07, 2026 at 09:57:17AM +0200, Esben Haabendal wrote:
-> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> > On Tue, Aug 04, 2026 at 07:02:17PM +0200, Esben Haabendal wrote:
+On Fri, Aug 07, 2026 at 08:13:25PM +0300, Danil Sirin wrote:
+> The mma8452 driver supports obtaining chip-specific data through
+> i2c_get_match_data(), but only provides Device Tree and I2C match
+> tables.
+> 
+> On ACPI-based x86 systems, compatible devices such as the MMA8653 are
+> enumerated via ACPI, preventing the driver from binding.
+> 
+> Add an ACPI match table mapping the supported devices to the existing
+> chip information structures.
+> 
+> Tested on a Bay Trail tablet exposing an MMA8653 device via ACPI. With
+> this change the driver successfully probes, reads the expected chip ID
+> (0x5a), and registers an IIO device.
 
 ...
 
-> >>  enum {
-> >> -	ltr501 = 0,
-> >> -	ltr559,
-> >> -	ltr301,
-> >
-> >> +	ltr301 = 0,
-> >
-> > Is the 0 required? Why?
-> 
-> As for the code produced, it should not make any difference.
-> 
-> I assume it was put here for improved code readability, and I did not
-> see any reason to change that.
-> 
-> I don't care about it myself, so will be happy to remove it if that is
-> the preferred style now.
 
-It's not about the style, it's about understanding the C language.
-As per style, we have only one requirement in IIO, if the value is used
-in communication with HW (part of protocol or a bitfield) *all* enum
-values must be explicitly assigned, otherwise (Linux only case) none
-(with, of course some exceptions, which are not the case here).
+Jonathan beat me up to it, so follow exactly what he said, we do not accept
+fake ACPI IDs, they must be properly registered. Yet, for the broken ones in
+the wild (device is on market), we need to have a shameful comment and a note
+to the vendor of the firmware (BIOS) to explain them that they are wrong.
 
-> >>  	ltr303,
-> >>  	ltr329,
-> >> +	ltr501,
-> >> +	ltr559,
-> >>  };
+Also check the MS catalog for the ID if it appears in the Windows drivers.
+This information also has to be added to the commit message.
 
 -- 
 With Best Regards,
