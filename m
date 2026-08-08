@@ -1,63 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 596B03B14B6;
-	Sat,  8 Aug 2026 20:10:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA343353A96;
+	Sat,  8 Aug 2026 20:12:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786219818; cv=none; b=Xbv9ca7d/WBOdP8EbKNRiPA/4o6ofltgzIjlfg+3W/nSpoh7mxOE3g5R392KWUsgwQwvN6Sq82G1wutgZ3Gd0eLMl+UdlyfA+mTUXHp7Unrp36WkdNukAuV5saPNUz635ljTD1TSOALCIkQEkDQmFfWs7rApW7yCkFPclUlhNfk=
+	t=1786219965; cv=none; b=d5FDt2AFDpxFbB9WrLVCn7t1b90uF2uGzsxiYRsQFzjpKfy8c58j2j+Hi0gFWLiDy1QnSIQLOcTtC8n6G+rivlslvOtyrkD1K2CPoVNnTxTAjOLuC9+kJ+CFHXllxnwamhOfnPlfgpHNvuZcr9rphxbYesIKnBgRdKPrSoT9hVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786219818; c=relaxed/simple;
-	bh=YyZ1w6DdQDXpeQEKgiF/HHllRQkv0UMKkuw4OVlch08=;
+	s=arc-20240116; t=1786219965; c=relaxed/simple;
+	bh=AM1Tb1OylvXbJreir7NeXrSsS8YJgenYu6SmiEiPh0Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dlZnAADbXLKpBtEvze6Vp3Jrbambak0AldHpu79snv1xX8X4L8d95VxdPmX6vi7tD2K+bhq6s4+gKgYCwDzKz5SmzVizgus5t2np8Ngh+c2x//q9eK+cRLvQQXhlTgUPrMSn338WwuSWYkfRxJuk5KZszMB2azQLhAQXYEia0H4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NB/mckT9; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=sx4cMdPFNiUVbNED8kK0wyiGbME7aZxyMJV3Yq2VLFptX5c1iYmFpT8ZZ2t+Aag9A4dXMuzpZ0JE+RkMDxTHrKedEjImEJOehg6PUcNWeCFZr1Tm89o045K4TzWlIecjS0jsbxsJI1wgkn3DYxD2raqLT9QX5lHiw6vdbASR/T0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iFctcFiA; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NB/mckT9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iFctcFiA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786219817; x=1817755817;
+  t=1786219963; x=1817755963;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=YyZ1w6DdQDXpeQEKgiF/HHllRQkv0UMKkuw4OVlch08=;
-  b=NB/mckT98x6mw7iTsX46v9OtVdfdfpieb55S+AtTMBs0ZwBBxoVqqAqc
-   5MMa3Eanrc9DS0GrQcWrWWJ3ZdcXg8ToiWsi78TZs3noFUEi8ZSix73Ss
-   QmyhuJ4K1WerAz8qcfqH9znlYSOIM8PF9HmxwuE8roRrQsWMWfnFzfyS+
-   QEROWRZjWz0ZMYL9zpD9mkpAk49YU+tnk/hpxvLr2CeCtYZUUy1MRqydx
-   cKQiKnAPRGlx37ggSqAWrACWBHgUgcSKnpmrfKpbdazlOlbGzdKnp1XnR
-   q31gIym1puWqvj7vKY+q83TiTOMlJELMOgRoVoYc9DNkgp4t8U8fUl/6C
-   w==;
-X-CSE-ConnectionGUID: udeu66l0Twy5gnLe8VbUag==
-X-CSE-MsgGUID: L/syX5/KQF+zkFtHkhcWQQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11869"; a="104186444"
+  bh=AM1Tb1OylvXbJreir7NeXrSsS8YJgenYu6SmiEiPh0Y=;
+  b=iFctcFiApCOAqbrBX8p4SA+ySOXyQiRCCmosvRBfZ6AAKPaZzKMpB85J
+   NSCD3YpJ8qbXVwr8VcIbmI9iDs+X/qMG3ODNIKbEWpf2S+NlrbjO4WrBZ
+   C7ozPS0GA9fuW7t1MAaOEux8xS+DGAZTq28QLcriwZK2ROonmZtolqb7R
+   zh+cIA05wa73fPN54NjtpYVXxWne2Qp2tIih7oN/4ZAZ5i6H3AWirnUEa
+   EcDMm3PT/0lPhQlCvx9NE6Z5WX+m4AsFsEZQvkLnZMwPDQUAeqrYFDPea
+   dZXDTHv0BWoe1I5LmXAdjTm/zmSB03yw6pMSVMMHEL9HcaOZ0fs4rSFbN
+   g==;
+X-CSE-ConnectionGUID: Ju07z0IFQyi0vv3eLQGM5Q==
+X-CSE-MsgGUID: CfmR2JkNQ6iaN4ZVsRdAbQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11869"; a="86646570"
 X-IronPort-AV: E=Sophos;i="6.25,212,1779174000"; 
-   d="scan'208";a="104186444"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:10:16 -0700
-X-CSE-ConnectionGUID: qCaiY9rvTPapFYnfyQTe5w==
-X-CSE-MsgGUID: pl5A6+GmRJWR3Ljx/lOTPg==
+   d="scan'208";a="86646570"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:12:42 -0700
+X-CSE-ConnectionGUID: is/d15nXTTqUB3mporthjg==
+X-CSE-MsgGUID: thKKXUJWSn63wRlkdMPwYg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,212,1779174000"; 
-   d="scan'208";a="286076280"
+   d="scan'208";a="292583402"
 Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:10:13 -0700
-Date: Sat, 8 Aug 2026 23:10:11 +0300
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 13:12:39 -0700
+Date: Sat, 8 Aug 2026 23:12:37 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: sanjayembeddedse@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Benjamin Tissoires <bentiss@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v5 03/13] HID: hid-sensor-hub: introduce device managed
- API
-Message-ID: <aneNIxxRVuJDFgh0@ashevche-desk.local>
-References: <20260806-28-apr-iio-redundant-argument-v5-temp-v5-0-f1f92c1d830f@gmail.com>
- <20260806-28-apr-iio-redundant-argument-v5-temp-v5-3-f1f92c1d830f@gmail.com>
+To: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
+	nuno.sa@analog.com, gregkh@linuxfoundation.org,
+	joshua.crofts1@gmail.com, skhan@linuxfoundation.org,
+	me@brighamcampbell.com, jkoolstra@xs4all.nl,
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] staging: iio: frequency: ad9832/ad9834: add comment
+ explaining do_div usage
+Message-ID: <aneNtcyLLQjMmPA7@ashevche-desk.local>
+References: <20260807094704.5371-1-raizudeen.kerneldev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,83 +64,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260806-28-apr-iio-redundant-argument-v5-temp-v5-3-f1f92c1d830f@gmail.com>
+In-Reply-To: <20260807094704.5371-1-raizudeen.kerneldev@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Aug 06, 2026 at 05:55:49PM +0530, Sanjay Chitroda via B4 Relay wrote:
-
-> sensor_hub_register_callback() is common API used for the HID IIO drivers,
-> prepare devm API devm_sensor_hub_register_callback() to acquire resource
-> during setup and release using device managed framework during drivers
-> fail, unbind or remove path.
+On Fri, Aug 07, 2026 at 03:17:03PM +0530, Mohamad Raizudeen wrote:
+> Previous attempts to change do_div() to div64_ul were rejected because
+> mclk will always fit within 32 fits for this hardware, making do_div()
+> safe to use.
 > 
-> store the required callback removal context (hsdev and usage_id) in a
+> However, Coccinelle continues to flag this as a false positive. To
+> prevent future developers from submitting unnecessary fixes, add a
+> comment explaining why do_div() is intentionally kept.
 
-Store
-
-> dedicated struct sensor_hub_cb_devres, and register a devres action to
-> handle to release resource with devres framework and helper API.
-
-...
-
-> +static void sensor_hub_remove_callback_helper(void *ptr)
-> +{
-> +	struct sensor_hub_cb_devres *res = ptr;
-> +
-> +	sensor_hub_remove_callback(res->hsdev, res->usage_id);
-> +}
-> +
-> +int devm_sensor_hub_register_callback(struct device *dev,
-> +				      struct hid_sensor_hub_device *hsdev,
-> +				      u32 usage_id,
-> +				      struct hid_sensor_hub_callbacks *usage_callback)
-> +{
-> +	struct sensor_hub_cb_devres *res;
-> +	int ret;
-> +
-> +	ret = sensor_hub_register_callback(hsdev, usage_id, usage_callback);
-> +	if (ret)
-> +		return ret;
-> +
-> +	res = devm_kmalloc(dev, sizeof(*res), GFP_KERNEL);
-> +	if (!res) {
-> +		sensor_hub_remove_callback(hsdev, usage_id);
-> +		return -ENOMEM;
-> +	}
-
-Why is this order? What's wrong with the memory allocation first?
-
-> +	res->hsdev = hsdev;
-> +	res->usage_id = usage_id;
-> +
-> +	return devm_add_action_or_reset(dev, sensor_hub_remove_callback_helper, res);
-> +}
-
-...
-
-> +/**
-> + * devm_sensor_hub_register_callback() - Managed register client callbacks
-> + * @dev: Device for resource management
-> + * @hsdev: Hub device instance
-> + * @usage_id: Usage id of the client (e.g. 0x200076 for Gyro)
-> + * @usage_callback: Callback function storage
-> + *
-> + * This is the devres (managed) version of sensor_hub_register_callback().
-> + * The callback will be automatically unregistered when the device is detached.
-
-Here, and everywhere else, validate kernel-doc. Here you introduced a new warning
-(missing return section).
-
-> + */
-
-Also, why kernel-doc is here?! It should accompany the implementation, here is
-a declaration.
-
-> +int devm_sensor_hub_register_callback(struct device *dev,
-> +				      struct hid_sensor_hub_device *hsdev,
-> +				      u32 usage_id,
-> +				      struct hid_sensor_hub_callbacks *usage_callback);
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
