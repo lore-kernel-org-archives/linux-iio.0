@@ -1,137 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A008933D4E4;
-	Sat,  8 Aug 2026 10:27:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CA77414A03
+	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 12:57:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786184837; cv=none; b=fPWrkaqKkHaf0tGQu+oupWUqGo8VQkT9+clHt/WDQpJbTPx3xZP9q9IGo2nJT06Om5C/AEIo+N6u2qJS5L5aUGyQIz6dNeqwuO7QrwIkXRp7AFyOh0oIWVSZ9D/rzpXR26mNKwba2a2WFgBl/G9IwmIu6sgqP/9PBRFP4j37Tro=
+	t=1786193874; cv=none; b=V8pW2NvAdjFCVJL8qBXI+XGxv4PgSYCwIcgysY33hwzQH0Xm4hKuK6cXOcgvOvNEX+ZmMh17ZIJAfpxQLLSgvjyz1BF525ncgcyy8xxxee/Vc3aYrfqkMkPjSyc16z9MGugQ0lSD3mCYYRnbMd6Xc+XMYd1AH4ZTWo8nS/GiQlA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786184837; c=relaxed/simple;
-	bh=7sYX9tqbyD0jbd/vwwHPiwfeqU+jQ3LaziNeCL02SkQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mJwORZySmkKf9I3kUzVatsU9Co+9meyYcwFqPadVU0h7PmZHdhSDKy2S+L9Yc67+2yCgClKL5B3rX6ZXSIDbOwU/9j6Zpw8f7OmWEQYzQAn+PaItumOqNYr6PB1C1ziti72Tcmcm0R8D4IHOQGHR6FpRTs6+igoKRrfzqpt/iSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bTYGsF2w; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1786193874; c=relaxed/simple;
+	bh=OEZ/e0YjUiCKKW9fTpOkAY6Bx96tX9uEI1A8iPd7l28=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JTsB7eYRBzd6LClqJrU6o6rf+Xai6/xon03K66Mg6hx4c38/nFH/qlrP8a+c1Nd6bCI3cHFDrXC5oDL8DAhNsNmgx8O2ff/upLjePHx0kM3TixLmr6rAxnSZgbeN0ebCoXExqHxpI4EHL48SOaDQitRMuuPSAKkJWr/zyCAF3Lw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=dblbYNWM; arc=none smtp.client-ip=209.85.161.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bTYGsF2w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786184834; x=1817720834;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7sYX9tqbyD0jbd/vwwHPiwfeqU+jQ3LaziNeCL02SkQ=;
-  b=bTYGsF2wvU03FGT+30nkXIMgDWcZ/M7grfm5t94r9zKUsAwPSelnVOxI
-   xewPFj/+9NcT67RO9tTiB/O/UVl4/SCXWkHpKnY09l7YibfconCb3r4I1
-   9PTqn+8TbB7G/F/YtErgQTEsL5ODzcpXl1r4DNWWEK6SoaTPVSWers4Y3
-   F+t7ToPoqSEAQ8+V1HZQasYPCOzDK1RsGveALTx+ykcM2YuxiaTp7ADvc
-   RssmZKo/1BN8wLxqLeL8sKxJ4jC4EYc8ppjF7qkzSTjMMcHwez/pEbrSb
-   XWulVat5rDiwxJFFNbcT0y5fNQ7EXIuNQOYT1hL/j5gUSQ4n0YkA7b8eS
-   g==;
-X-CSE-ConnectionGUID: rMsUKotQSaKH5DoOTxyt6A==
-X-CSE-MsgGUID: InPxloshQ32zRXDexkfA5A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11868"; a="86804807"
-X-IronPort-AV: E=Sophos;i="6.25,211,1779174000"; 
-   d="scan'208";a="86804807"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 03:27:13 -0700
-X-CSE-ConnectionGUID: fOfsIfiPSNCoBnhv66K+uw==
-X-CSE-MsgGUID: QlshT/uDQ4S23eBRVrLrPQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,211,1779174000"; 
-   d="scan'208";a="262655520"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2026 03:27:11 -0700
-Date: Sat, 8 Aug 2026 13:27:09 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] iio: ABI: add sinc4+sinc1+pf1 filter_type
-Message-ID: <ancEfS1iqZqfiks8@ashevche-desk.local>
-References: <20260807-iio-adc-ti-ads112c14-filter-support-v1-0-4d3ba00caf18@baylibre.com>
- <20260807-iio-adc-ti-ads112c14-filter-support-v1-3-4d3ba00caf18@baylibre.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="dblbYNWM"
+Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-6ae4475c68aso94023eaf.2
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 05:57:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1786193869; x=1786798669; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=vqOVgeQ8pxr3czPYlvO2CjRZ0GEXGMq3LroVmNRAd4A=;
+        b=dblbYNWMcNNl9BZ3gQGHcklohco+kJXgZ5w6I7hki5eqE0aP3RmOyqpzYFelR83lLe
+         iGR3GKxSF1pnWrh1YMqvjWiwxol81ZCHp4O9jotL+GAmWewoC6nw73RpdwuphAeO579O
+         kzyxx44/TQqFJewCqnT3B3oFIRiTOBfYW7qvf1r1SOp2LyZravo7YSQZUe8hLakdy3bs
+         he9I8Pd2Q3RT1rRAPRhEO385tcQwpN/s8I+bp95Enx61ZZYOBxmKkdvtLccZVsNXDc6V
+         +sNoQPD4h9g62k/y0EjT8s8Wpg/HQ5mZMCm1N1AWh/2NetHPrBilegALgvdJcaBQa7QH
+         kpeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786193869; x=1786798669;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=vqOVgeQ8pxr3czPYlvO2CjRZ0GEXGMq3LroVmNRAd4A=;
+        b=pw8ntSC/WrI4qnAxCEXS08YPnZ+Aj3xzZ1w4SBQEIFFz5GVpwIekIjdaKNNTEPy+dj
+         tIvBZBGptp7GsYQEvsySWnNGYOVFRwkHTckgU78apYySkwcBi9k6yUKNkgTCC2Qu6rco
+         DWamvOMyPR92g2MoRdvds+NlHCl4sIj2o85G+LIlNX0P7Jys/VLj/z088M19JY4V7hyD
+         R47aBHzkyNncJgoZM5SgW/qV3ZIuBA2a495ozrzQafHNszT4j5IKyIoDPUXb2y2X83HV
+         wYGVkuE0vGivbflyW8U9f+HbxDoIkyAXO5YN9Br1dPDlO8T4+7Bp6BjrZnPV3WQ0/1YE
+         915g==
+X-Forwarded-Encrypted: i=1; AHgh+RpZGlDhanuNnC0YLLJVwS/aqNN3vleZhACYXh1ThE4QgTUBtSeDyWB5qAEOEndbpkzWrXnuvadINgM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxc5MxeCQwlm5D9fUIVKdu61RE5BoFCq/aktkLoIEW0cyxfLR22
+	e8qFoIRG5F1hgz3grvI2plFfaqGBINzrCnrFz//ermKlvZvsX3xLr1+KqXY76gOon9A=
+X-Gm-Gg: AR+sD10ynxMCxNVbc5KqJoUMObiOIssPRWErP7MRIgdIftGs5BQd2tt4I/B3KKbcVdW
+	Ubo8BOGOLb/ybarWdEaDg6tZfRI+ORIeMwPD3DLQ3Gz7Ad6yhDJa9vgxQZGc0L+MiOx1O9d7cxb
+	SjMPZT3jFGOK+j2EuD8vKijf7hcrHLXobJeRuDsNZwx72QSMSq5kGQM8+744YqZkqhUUSc11XaU
+	aQZQm0AF6rqvZam6pO9ko+ed7nof5/IMv3g/preMGCVQei2BWp1aIN37uDVyNOjH9XFuxYvpfkW
+	ZdYwEOnpABgL681QuvHRsQMkZW8bOCeuMAK1m349kTPtxvTFLSR22YzlbipLUWDDp8ZEq0N4I35
+	/bZq0Xwp9LL1unJjks2VZ8h6q6BQeC0jo7DrmbWmciHWP+Lpg6FvHjRQL3fhq6aFBWUoIb60/8r
+	HL/JuISuhDzRwin5UAd8HGzduNQMLcJ0PHxVa+96KdQQeF+snAFSS9PN+8FitiCsNNrQApDQ7rp
+	C403IEyGV8+5zOxVKc6TwrfOVSrHYUakXQ4VAs=
+X-Received: by 2002:a05:6820:c87:b0:6a1:3ee1:d679 with SMTP id 006d021491bc7-6ae96feda46mr16255133eaf.30.1786193869033;
+        Sat, 08 Aug 2026 05:57:49 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:99c2:f16e:201c:3bb5? ([2600:8803:e7e4:500:99c2:f16e:201c:3bb5])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6b02bc7f3d1sm4915953eaf.8.2026.08.08.05.57.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Aug 2026 05:57:47 -0700 (PDT)
+Message-ID: <4072672a-dd9e-449c-b208-4bab3058c034@baylibre.com>
+Date: Sat, 8 Aug 2026 07:57:45 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260807-iio-adc-ti-ads112c14-filter-support-v1-3-4d3ba00caf18@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/5] iio: ABI: add sinc4+sinc1+pf1 filter_type
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260807-iio-adc-ti-ads112c14-filter-support-v1-0-4d3ba00caf18@baylibre.com>
+ <20260807-iio-adc-ti-ads112c14-filter-support-v1-3-4d3ba00caf18@baylibre.com>
+ <ancEfS1iqZqfiks8@ashevche-desk.local>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <ancEfS1iqZqfiks8@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 07, 2026 at 07:19:48PM -0500, David Lechner (TI) wrote:
-> Document "sinc4+sinc1+pf1" as a valid value for the filter_type
-> attributes (used by the ti-ads112c14 driver).
-
-This patch does much more than that. And I can't easily see what, so many lines
-shuffled. Seems like two patches were squashed indeliberately?
-
-...
-
-> +static int ads112c14_set_filter_type(struct iio_dev *indio_dev,
-> +				     struct iio_chan_spec const *chan,
-> +				     unsigned int val)
-> +{
-> +	struct ads112c14_data *data = iio_priv(indio_dev);
-> +	struct ads112c14_channel_state *channel_state;
-> +	int ret;
-> +
-> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
-> +		return -EBUSY;
-> +
-> +	guard(mutex)(&data->lock);
-> +
-> +	channel_state = &data->channel_states[chan->scan_index];
-> +
-> +	ret = ads112c14_get_filter_type_from_state(channel_state);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * channel_state->filter_osr affects multiple attributes, so don't modify
-> +	 * it if the filter type is already set to the requested value.
-> +	 */
-> +	if (ret == val)
-> +		return 0;
-> +
-> +	/* Otherwise, pick an arbitrary default for each type. */
-> +	switch (val) {
-
-I'm wondering if the above can be written as
-
-	case ret:
-		/* ...comment... */
-		break;
-
-(it is more of the curiosity about C rather than practical suggestion, as I
- understand the cons of this).
-
-> +	case ADS112C14_FILTER_TYPE_SINC4:
-> +		channel_state->filter_osr = ADS112C14_DATA_RATE_CFG_FLTR_OSR_16;
-> +		break;
-> +	case ADS112C14_FILTER_TYPE_SINC4_SINC1:
-> +		channel_state->filter_osr = ADS112C14_DATA_RATE_CFG_FLTR_OSR_128;
-> +		break;
-> +	case ADS112C14_FILTER_TYPE_SINC4_SINC1_PF1:
-> +		channel_state->filter_osr = ADS112C14_DATA_RATE_CFG_FLTR_OSR_25SPS;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+On 8/8/26 5:27 AM, Andy Shevchenko wrote:
+> On Fri, Aug 07, 2026 at 07:19:48PM -0500, David Lechner (TI) wrote:
+>> Document "sinc4+sinc1+pf1" as a valid value for the filter_type
+>> attributes (used by the ti-ads112c14 driver).
+> 
+> This patch does much more than that. And I can't easily see what, so many lines
+> shuffled. Seems like two patches were squashed indeliberately?
+> 
+> ...
+Oops, yes, looks like botched last-minute squash into the wrong patch.
