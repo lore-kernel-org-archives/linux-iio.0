@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02412385539;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 039A43859DE;
 	Sat,  8 Aug 2026 16:58:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786208307; cv=none; b=KvgHMJanl9rzse4aEinAVI/Fo6m5lsYsWNO53D7dgGMvO0ggZ7K0Zq6BYVeWUZiNoQj0mnaJy2Z9NNGSX7MVPbG+n1OcAzAzt2/crKVS2p/Z/7BFhAnQWxA+VlWEFM/UUiLe2RuIsfVk7D5zCTA7HqiMtE2tcu4i/VssJFgOCIA=
+	t=1786208307; cv=none; b=Kz/jFSjoat4Sk7jFPhcjuWKUJwkVyht7fADT80qH4T4YcdSi8nV7YdtgiIjKxqIiQgh5500mpXnB2oz/nAvD1ldQKNF4o5ltRT8aoUcVCTpRpClkbyZms9mPv6zkh9P2/+XUMfTQPAQNMfJLzCnsnyFG23leMyY1q0O+P6xuyjI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1786208307; c=relaxed/simple;
-	bh=6+KkOzOWnk3R4ovpFsXB9TLO/2SuUdQCN5qBuI+bS+k=;
+	bh=kVur/c2lmhRBF1BxLzgDZ6JCl3MBnHF89gEoZwZKFyI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qH8UCPrW799KGLFkmHR3CvufA1BFj8I+2YjvKFTwRHomsZbnzORUXsPymd82GKWSaQmPGEtg9ZqxbsMGQ+/TCw9rUzBbUO8G2d3/I2Op3OdOsGHUWXkKWyTILHB7e1x4krhWioCk6TsfFyNYhTYI7CHPnfcdyv1K0+dbcGemKic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ov3M397t; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=FGrZ2aL4FXjAXHMmRqHsuPmYtOZqLCZZ85ctNvWJ6o3MBO4N2unTrmw/K8n1UBf7mo6dTMCcpVIwRfhQB9wrK8bky/9fr/ZrQXFkiKTHwV+BYSUp0lrEyn4ot7f2yi/iN3jG4pyu4BAlBiUB5JwfdCgURlAuhpwL1vgNQdYvJ2c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rYI2alaR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ov3M397t"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 93AE5C2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rYI2alaR"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C0141C2BD00;
 	Sat,  8 Aug 2026 16:58:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1786208306;
-	bh=6+KkOzOWnk3R4ovpFsXB9TLO/2SuUdQCN5qBuI+bS+k=;
+	bh=kVur/c2lmhRBF1BxLzgDZ6JCl3MBnHF89gEoZwZKFyI=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Ov3M397th2PVuhe3L53UpoTsTp9hjz2bmhHuso/8tzdnas9HkbWkPg61E8k4cES6I
-	 0cY+F9na/0Mg34F5HsOXTYJ+eI8cJqkml2ZI/ohkFMwtvMZamUSnsXaWBEtWoIkyHH
-	 bwWtSQaS9Gcwe5Mq7K51fGCk4WVbEkyzt531d24MlZuk6UI3hnyabzQu3Z0q+OS/n1
-	 gMYgQZHhbMbzFUVgYXvFbOjox31OrR/77IgvdV0C6tSWBbh0zc5Z5O3wBQ28ZF8+v2
-	 LUWL4TM1nUP9rl/42eCu7RiBw9ZmilTNgRDPPyvvC4uoOngCU46kVm/iUFzGFN6u0h
-	 beK69I4aGLuHg==
+	b=rYI2alaRrBe9i8WI3T8amSj/JWnanpcUsAWNQJ+3O71GbSOSKAkLePFz8omf8y9Oq
+	 WG9jsrr5n+2mP00sjOQz9gcMeCVxoILSXTYco6Q660GkbrIPELh8iUFMHflhf0N72N
+	 GHnJpSgpTATlcfjKLiwD6PrWqg8hZcVG0xrQIhXliIVzDnDDSbUaKQ55ykiOWe9ljx
+	 D0AcC1jriSvEMF3kzaGVF1svrLwmBBPX8gvdsP3iw8eChgWwv1PyACo2YXztPquo9z
+	 SdEOYUEZS+efpyWxgqDvKQ04xeTA7H/LF+xzIoBhN45KrA3EB1h6y+sGZZeRjdmd37
+	 y8tsHBx27mY7g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71818C55174;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6DCC5AD56;
 	Sat,  8 Aug 2026 16:58:26 +0000 (UTC)
 From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Sat, 08 Aug 2026 22:28:13 +0530
-Subject: [PATCH v5 1/4] iio: accel: mma8452: convert to bulk regulator
- usage
+Date: Sat, 08 Aug 2026 22:28:16 +0530
+Subject: [PATCH v5 4/4] iio: accel: mma8452: use guard() to release mutexes
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260808-15-apr-pm-iio-mma8452-v4-temp-v5-1-d177e93ce3f8@gmail.com>
+Message-Id: <20260808-15-apr-pm-iio-mma8452-v4-temp-v5-4-d177e93ce3f8@gmail.com>
 References: <20260808-15-apr-pm-iio-mma8452-v4-temp-v5-0-d177e93ce3f8@gmail.com>
 In-Reply-To: <20260808-15-apr-pm-iio-mma8452-v4-temp-v5-0-d177e93ce3f8@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -50,14 +49,13 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Sanjay Chitroda <sanjayembeddedse@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>, 
- Jonathan Cameron <jic23@kernel.org>
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786208304; l=5696;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786208304; l=2727;
  i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=msc6kn8HwdwOjnZXXGBlOINiVjEatD5na+kGlio23Jk=;
- b=flE64OqSBpLo8l8ux06XgdPSFkdD8PQ+YYa+Uagrp45wQ3vbRX+ARyt6+s8rIOvMK1LrbhSew
- 7pxmnkcuem3DBijQWV/6xehxkVIzFL1RTOxrvTSB9RQdxrynuDVqdC8
+ bh=OOn777kWwWFjPtK7zt9fE1n7hpyeCG6+jUtusY+qlS8=;
+ b=b33Z14shYtJUPnJmEL3kbcN3hl/05xpqEbFgWEPtB7vz/L3aTDEGa3NGAXo6G74/GonguVDbb
+ 4eRgvRTGpE4AHiPcawogliFAeEzY1ZBCeMSFpQT16ZMKclgci1hNOdy
 X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
  pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
 X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
@@ -67,168 +65,104 @@ Reply-To: sanjayembeddedse@gmail.com
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-The "vdd" and "vddio" regulators are always controlled together. Switch
-to the regulator bulk API to handle setup, enable, and disable paths in
-a single call.
+Replace explicit mutex_lock() and mutex_unlock() with the guard() and
+scoped_guard() macro for cleaner and safer mutex handling.
 
-No functional change intended.
-
-Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
 ---
 changes in v4:
-- added explicit header with input from Joshua Crofts
-- validate new member of structure with `pahole` and `bloat-o-meter`
-  comment from Andy
-  ./scripts/bloat-o-meter mma8452-before.o mma8452-after.o
-  add/remove: 0/0 grow/shrink: 0/6 up/down: 0/-1013 (-1013)
-  Function                                     old     new   delta
-  _entry_ptr                                    72      56     -16
-  _entry                                       396     308     -88
-  mma8452_remove                               646     548     -98
-  mma8452_runtime_suspend                      633     467    -166
-  mma8452_runtime_resume                       939     639    -300
-  mma8452_probe                               4247    3902    -345
-  Total: Before=36561, After=35548, chg -2.77%
-
-  pahole before:
-    /* size: 288, cachelines: 5, members: 10 */
-    /* sum members: 278, holes: 2, sum holes: 10 */
-
-  pahole after:
-    /* size: 320, cachelines: 5, members: 9 */
-    /* sum members: 310, holes: 2, sum holes: 10 */
-  summary: overall size of driver is optimized and all new member are in same cacheline
-- v3 link -> https://lore.kernel.org/all/20260505174640.3998281-7-sanjayembedded@gmail.com/
+- add blank line with input from Andy
+- v3 link -> https://lore.kernel.org/all/20260505174640.3998281-11-sanjayembedded@gmail.com/
+changes in v3:
+- Following input from Jonathan extended mutex scope for
+  IIO_CHAN_INFO_RAW case to include math operation under lock
+- v2 link -> https://lore.kernel.org/all/20260422165643.2148195-7-sanjayembedded@gmail.com/
 ---
- drivers/iio/accel/mma8452.c | 60 ++++++++++++---------------------------------
- 1 file changed, 16 insertions(+), 44 deletions(-)
+ drivers/iio/accel/mma8452.c | 30 ++++++++++++------------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 7d683686dd9d..772463d5ff47 100644
+index c78b1b742b08..fe62a903f0e2 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -18,6 +18,7 @@
-  * TODO: orientation events
+@@ -19,6 +19,7 @@
   */
  
-+#include <linux/array_size.h>
+ #include <linux/array_size.h>
++#include <linux/cleanup.h>
  #include <linux/delay.h>
  #include <linux/i2c.h>
  #include <linux/module.h>
-@@ -110,8 +111,7 @@ struct mma8452_data {
- 	u8 data_cfg;
- 	const struct mma_chip_info *chip_info;
- 	int sleep_val;
--	struct regulator *vdd_reg;
--	struct regulator *vddio_reg;
-+	struct regulator_bulk_data regs[2];
+@@ -500,9 +501,9 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 		if (IIO_DEV_ACQUIRE_FAILED(claim))
+ 			return -EBUSY;
  
- 	/* Ensure correct alignment of time stamp when present */
- 	struct {
-@@ -1569,25 +1569,15 @@ static int mma8452_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
+-		mutex_lock(&data->lock);
++		guard(mutex)(&data->lock);
++
+ 		ret = mma8452_read(data, buffer);
+-		mutex_unlock(&data->lock);
+ 		if (ret < 0)
+ 			return ret;
  
--	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
--	if (IS_ERR(data->vdd_reg))
--		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_reg),
--				     "failed to get VDD regulator!\n");
--
--	data->vddio_reg = devm_regulator_get(&client->dev, "vddio");
--	if (IS_ERR(data->vddio_reg))
--		return dev_err_probe(&client->dev, PTR_ERR(data->vddio_reg),
--				     "failed to get VDDIO regulator!\n");
--
--	ret = regulator_enable(data->vdd_reg);
-+	data->regs[0].supply = "vdd";
-+	data->regs[1].supply = "vddio";
-+	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(data->regs), data->regs);
- 	if (ret)
--		return dev_err_probe(dev, ret, "failed to enable VDD regulator!\n");
-+		return dev_err_probe(dev, ret, "failed to get regulators\n");
+@@ -600,36 +601,30 @@ static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
+ 	int ret;
+ 	int is_active;
  
--	ret = regulator_enable(data->vddio_reg);
--	if (ret) {
--		dev_err_probe(dev, ret, "failed to enable VDDIO regulator!\n");
--		goto disable_regulator_vdd;
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	is_active = mma8452_is_active(data);
+-	if (is_active < 0) {
+-		ret = is_active;
+-		goto fail;
 -	}
-+	ret = regulator_bulk_enable(ARRAY_SIZE(data->regs), data->regs);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to enable regulators\n");
++	if (is_active < 0)
++		return is_active;
  
- 	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
+ 	/* config can only be changed when in standby */
+ 	if (is_active > 0) {
+ 		ret = mma8452_standby(data);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 	}
+ 
+ 	ret = i2c_smbus_write_byte_data(data->client, reg, val);
  	if (ret < 0)
-@@ -1722,10 +1712,7 @@ static int mma8452_probe(struct i2c_client *client)
- 	mma8452_trigger_cleanup(indio_dev);
+-		goto fail;
++		return ret;
  
- disable_regulators:
--	regulator_disable(data->vddio_reg);
--
--disable_regulator_vdd:
--	regulator_disable(data->vdd_reg);
-+	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
- 
- 	return ret;
- }
-@@ -1747,8 +1734,7 @@ static void mma8452_remove(struct i2c_client *client)
- 	mma8452_trigger_cleanup(indio_dev);
- 	mma8452_standby(iio_priv(indio_dev));
- 
--	regulator_disable(data->vddio_reg);
--	regulator_disable(data->vdd_reg);
-+	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
- }
- 
- #ifdef CONFIG_PM
-@@ -1766,15 +1752,9 @@ static int mma8452_runtime_suspend(struct device *dev)
- 		return -EAGAIN;
+ 	if (is_active > 0) {
+ 		ret = mma8452_active(data);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
  	}
  
--	ret = regulator_disable(data->vddio_reg);
--	if (ret) {
--		dev_err(dev, "failed to disable VDDIO regulator\n");
--		return ret;
--	}
+-	ret = 0;
+-fail:
+-	mutex_unlock(&data->lock);
 -
--	ret = regulator_disable(data->vdd_reg);
-+	ret = regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
- 	if (ret) {
--		dev_err(dev, "failed to disable VDD regulator\n");
-+		dev_err(dev, "failed to disable regulators\n");
- 		return ret;
- 	}
+-	return ret;
++	return 0;
+ }
  
-@@ -1787,16 +1767,9 @@ static int mma8452_runtime_resume(struct device *dev)
+ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
+@@ -1741,9 +1736,8 @@ static int mma8452_runtime_suspend(struct device *dev)
  	struct mma8452_data *data = iio_priv(indio_dev);
- 	int ret, sleep_val;
+ 	int ret;
  
--	ret = regulator_enable(data->vdd_reg);
--	if (ret) {
--		dev_err(dev, "failed to enable VDD regulator\n");
--		return ret;
--	}
--
--	ret = regulator_enable(data->vddio_reg);
-+	ret = regulator_bulk_enable(ARRAY_SIZE(data->regs), data->regs);
- 	if (ret) {
--		dev_err(dev, "failed to enable VDDIO regulator\n");
--		regulator_disable(data->vdd_reg);
-+		dev_err(dev, "failed to enable regulators\n");
- 		return ret;
- 	}
- 
-@@ -1814,8 +1787,7 @@ static int mma8452_runtime_resume(struct device *dev)
- 	return 0;
- 
- runtime_resume_failed:
--	regulator_disable(data->vddio_reg);
--	regulator_disable(data->vdd_reg);
-+	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
- 
- 	return ret;
- }
+-	mutex_lock(&data->lock);
+-	ret = mma8452_standby(data);
+-	mutex_unlock(&data->lock);
++	scoped_guard(mutex, &data->lock)
++		ret = mma8452_standby(data);
+ 	if (ret < 0) {
+ 		dev_err(dev, "powering off device failed\n");
+ 		return -EAGAIN;
 
 -- 
 2.34.1
