@@ -1,119 +1,105 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19ACA156661
-	for <linux-iio@vger.kernel.org>; Sun,  9 Aug 2026 11:13:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A7734F46F
+	for <linux-iio@vger.kernel.org>; Sun,  9 Aug 2026 16:24:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786273999; cv=none; b=Brc8aoNczp7th3hLIKU13pPCvys9ogz/Fou0VuN5tM2CGsrJ5LLR+EDjFB5CBusOSrHNI72cWsYRIMnLCd67jGVtIupdJXw7PMI7nGQmfLgIvDaQF6VEllDtHJHBj5nQsMEcRlNwGEkr+M3c+RB+KfKoGdGHBwXWaw7I1Z9FSTc=
+	t=1786292655; cv=none; b=qICjEvQ6kdQoqxbS5L36fQJob276eR66JYgMuaEP4J6osBdLNAyd/of8Ywg364XH1LlGIhdt9/As5QEY/h0/HZH6Zkjwp6vC+PTeExWLJucCeWzkTn08qTchYwy2iPF3sR4eFOBeg2qFKKenbANUkUdmDi0ztSISiG00TFjUIbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786273999; c=relaxed/simple;
-	bh=XaP8uJa2B1P/h9IrcbZZC7i4WH42BO4pc64EM9r5Efk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lKpsw/hQdqWuv2qAdr8BveLDCNIvbvFxYF4x4T+WIB/1Rmc1eycK/pBZh+QP9yy48BSt4ISZ/rPBuf3zbO9vCp6yYiHaz3nf/Q4sV9bVOoonwgbY2cxBgN0QtgYVzTIS1YqwnmRBW4ZNOJvytfXD5QcHBY1BDGaAbbjAKjrtIjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i26axEgK; arc=none smtp.client-ip=209.85.216.46
+	s=arc-20240116; t=1786292655; c=relaxed/simple;
+	bh=L8jVhzcEx/1Ri/TiJ6hXDYJPVTTnzDVvCCZJTFtQQNw=;
+	h=Mime-Version:Content-Type:Date:Message-Id:From:To:Cc:Subject:
+	 References:In-Reply-To; b=hW4ItO5hkEXEIGVqOnJYh5UgE2MejHDVHtVy7QQ8HTLmfEt8TxOUItd1MJiW/nLc3BcoZEOMkzAkXiJ+EQHE9LVRXBPrNcFd5iXqDBRrvcvoy8bkNut0GSuaWNOI4D67m6a0Nv1kX30C5NY/x0Hnv/XOboZ6CBK49yK64C5pKF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R00Blv2j; arc=none smtp.client-ip=209.85.221.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i26axEgK"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-384930ca5e2so1000471a91.3
-        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2026 04:13:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R00Blv2j"
+Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-5c39cb2115cso2572533e0c.1
+        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2026 09:24:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786273997; x=1786878797; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ATYrTrILFqq0zNcxTWZD3wbBBugHUrs0A91546BI8T8=;
-        b=i26axEgKi06fDpH574IyFMK6KXI04v9p0c1QYfhcQB68eljFaz3KM9f05EpJuPxQR2
-         pJbqAqEH99Asbo/TzjOY4nRKNVfrLJrh0bG6Xld19meJZzJ8sCRsyt4t/0MaioTEi/dv
-         M5Gpf9h7iEnpOTzB6EOASaDdSNojOgADMoliIorm06OwBp5Yf8OmkY4VFdOFJThHouIH
-         vTKRgzItgobW+/vspCD1AD8oE4GFMTNRGxOTAQmDEq5VcMnf5K8nWhrBw3oBw8C4VeyF
-         Cm9Qhf9aBGMFqK1FIVayO2+D3o1DXACGJipo+p8Xe2b0fbx8+gVAdS7oQaKwnpiHwBzk
-         4TXQ==
+        d=gmail.com; s=20251104; t=1786292653; x=1786897453; darn=vger.kernel.org;
+        h=in-reply-to:references:subject:cc:to:from:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=L8jVhzcEx/1Ri/TiJ6hXDYJPVTTnzDVvCCZJTFtQQNw=;
+        b=R00Blv2jCyJ1JHvOuRWxIirbnXSieJQnaFuU2qIecCIGssL2OXmby9NhkIpXoGkRHv
+         V4nUCAP/zl9IUOas4zwgcMDvP73s5uLLWL6rdtod7P/3TKnxcEkEAG7HVcy9ycyioDOt
+         gAApCeEgS8qZ81mk1iFxSACvDPGQ/eTM2qtA3l/Wz8iTnzo18Vi6Dwz7XCWdC9g+j7QV
+         ClZVK+56rnmJ8HyMwTURBkICw4WGXy6U7u8Jk9R3iaTg5JmtLFu2HoxT/TM0XfDHTz8R
+         TuBoUkQrcEsJYQUH2Sn9miCwmkUGudqDOELVw1UaQk+hJZKMZdilOMaZH7EChD+xLJ5J
+         5KGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786273997; x=1786878797;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ATYrTrILFqq0zNcxTWZD3wbBBugHUrs0A91546BI8T8=;
-        b=NEfu2bGmJlYNeasnn5OSImuF5gPsJSrk9Kg2l0lZTPQ9SQdzBZVoQMKSHSl1O2pWgl
-         +5q9vjVE4WMYy7GdbKo3XUUI1Hf0lEFwFUIAJoqxSM8DkDd6XDQcNJlFWqX3cUAVfH+r
-         Ol0pWmsisFIoPGsqwzJ7jbO7BRGm1becvFe2iIwwnV8m7J68PT1kIS9VET6Y+QEo+taD
-         qpUxoTDCb426ZH1+mbHiklW9VzkvzKpdaRVRDXYr7++uWJuuuNdRcuIdwPTxTyX/8HCk
-         quserBBuL9nd/kdpffj+R83ivhrW8Q4mKAtPXOOCygD3wNjyZo6iZkzb78wRjabSHPG9
-         Uy1g==
-X-Forwarded-Encrypted: i=1; AHgh+RqXQAJbnan8S18JM7hjTudjj2uDq4f7cFK6N0fNITYQn4fSFX4RxjzW2wh6uf26WV6V3cau8+jd81s=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1tijUCXI26KfJg3EUX28oqxVZnp1MQHKDH5XKvtSOcpEfDS4r
-	XYDOGJgNhT/BzRDQxYBECoCHH3YL5egBG5Q8bQenZ+yI1w42NTBPB9bV3I39SVW6
-X-Gm-Gg: AR+sD12esFZ+UH6PUG2updjO11HJ8kGQfJQW/hazAOJojEX1AbeeyzCUF0gWK0R+DdD
-	inpGozj0vjnErlPdPXcTd/Yv8I3UWEHArAZOBmVWDsBVbvmOXnkkzXBCURad4fWolLrSriDlTBO
-	rzPeMj/Dj+tGSj8OKTz9LbHh6MIu5y5iGaXbQh9Lk2wywX14wH+rYhvIBKRTlBya88KWNtkCbH2
-	lWh9oZs2q5OouhCRXCfEIbYZXZxzBF7shguk+zjmdcklT8yO2NLQusRpAsQpsEfDSETl+h68xzX
-	sTIg+GKbhxTB4FdNoecdP+7/s/cQVqlbc2eLsfUCR6ih07o/Sax6K15odqNIs2UTMXO81A5Cxkj
-	bvqGfScefj/953TMKARIjzkM5LdD6EU4HHJLZNFAMXOvaVLaBGUDhf6sxxA4gNZT3Noe+IdkJnE
-	3JAHe8nqMmjepwWk41hzrPP1GGWanoS5qY2xbZnH3sLXxCwfBIPieabAqLDabFNFz90/0g1tPmX
-	bkbnD3P
-X-Received: by 2002:a17:90b:498b:b0:38e:7268:220d with SMTP id 98e67ed59e1d1-3903c628176mr38953678a91.20.1786273997367;
-        Sun, 09 Aug 2026 04:13:17 -0700 (PDT)
-Received: from yash-Bravo-15-B5DD.. ([2409:40d4:1066:5a44:8324:6698:a7a4:2315])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-315be8a9220sm32046945eec.7.2026.08.09.04.13.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Aug 2026 04:13:16 -0700 (PDT)
-From: Yash Suthar <yashsuthar983@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Yash Suthar <yashsuthar983@gmail.com>
-Subject: [PATCH] iio: accel: bmc150: use iio_push_to_buffers_with_ts()
-Date: Sun,  9 Aug 2026 16:43:03 +0530
-Message-ID: <20260809111303.496393-1-yashsuthar983@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20251104; t=1786292653; x=1786897453;
+        h=in-reply-to:references:subject:cc:to:from:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=L8jVhzcEx/1Ri/TiJ6hXDYJPVTTnzDVvCCZJTFtQQNw=;
+        b=GVHWJkgcqIH+CLt+zzDwjsReNR1B7oieC3lG04yldQ7j1y4X7EFJFikjb8PuOdug1d
+         27CbdmBWzJanRhPXBcQi4VoG0iIyoEtF9xwPWgUBpo+8gVIZ7oWtco7HhdTz6y5hlxTB
+         NeQAYDH/lFPH6ZnQZlq1bO4Zer7pfxYtNyKH4ZaBVWrDYLYqutsa6zMMSVso03eoNTjj
+         5wiAus27J+hL2WXNCsy71q0e7OYlao27t1pdfP9BPUniw+aAfocImY8sgnGPeL2TR3x9
+         +lU98UwwFKQ45NpISqYr5eg7evoVO64E1SOaz0DrnTarUDl07he4wmUk66QeDbaysElp
+         qtEQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpD2ozTIUt2hgb2MvLaROrgyVagg5zH0WH8pfBKwk9upAzyHJz/BfJmICnuxKGb9pVuGrp6DfGda1o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxT/fIPMdtIAjgzIFH7mYpWhtQRN5IUyAKA8XLNlrM4pRLM0xnn
+	sSea8JUNFxuMvSylih+XbA5GMrIXWsec5VPsbC8xDjTAlEYFrCOELf9W
+X-Gm-Gg: AR+sD1146TrTViai33baWctUbr+DaDabwYy3ZBS2AAZic+/nocCkHMl19yCczT63Uj6
+	9EuSi/K64/Af9TuyyR8jgYzRIOM+27rAR1Rhr8YrO0XX5b4x7EwwE2BBob9Inm6TSDVrVUNvxX2
+	nimLQpa13Wzse4hf8iMui6viDN0UVi8/IkoXNR3DsFzYc5SfdRXfRbuOAtWWI/oFPLJaTMVMpjD
+	hVcFxPyivzne+O4JYSce9bREPXAzLAvAT0+RMOhu3KQ2qL3883sUnbeK+d+SjHrf1BZlX3FMf5N
+	ypw8rqPzs5o0ptwLh7DDOmDokMvFTK1f9JdsQfGdBdNzJyB3w1KA8sB37GNrWBm6WLgA7SMCZSD
+	/BGFnpO/D7moOlG/HbrGARbhSbBMSjh4QM8VCWYnB38VQ3HJhyIgbni9Np5Rwakwpr1l2FOYdF/
+	dK2AVgWdA/tFbRp1v4G4j2fYBRndTtjdIVXRav3d6aUUu9dQ2SUXg=
+X-Received: by 2002:a05:6122:2385:b0:5c2:c79c:c093 with SMTP id 71dfb90a1353d-5c4152d5cf1mr1326569e0c.5.1786292652899;
+        Sun, 09 Aug 2026 09:24:12 -0700 (PDT)
+Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c4133821e5sm2592233e0c.18.2026.08.09.09.24.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Aug 2026 09:24:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 09 Aug 2026 11:24:05 -0500
+Message-Id: <DKKJW8KLSTON.18355X0IQHY5C@gmail.com>
+From: "Kurt Borja" <kuurtb@gmail.com>
+To: =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>, "Kurt
+ Borja" <kuurtb@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Linus Walleij" <linusw@kernel.org>, "Bartosz
+ Golaszewski" <brgl@kernel.org>, "David Lechner" <dlechner@baylibre.com>,
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>
+Subject: Re: [PATCH v3 2/9] iio: adc: add the ti-ads1262 driver
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
+ <20260807-ads126x-v3-2-f89925d72792@gmail.com> <anetMEd_kLs1YXwu@monoceros>
+In-Reply-To: <anetMEd_kLs1YXwu@monoceros>
 
-Replace deprecated iio_push_to_buffers_with_timestamp() with
-iio_push_to_buffers_with_ts() to allow source size runtime checks.
+On Sat Aug 8, 2026 at 5:28 PM -05, Uwe Kleine-K=C3=B6nig wrote:
+> Hello,
+>
+> On Fri, Aug 07, 2026 at 10:58:24PM -0500, Kurt Borja wrote:
+>> +#include <linux/mod_devicetable.h>
+>> [...]
+>> +#include <linux/spi/spi.h>
+>
+> Please rely on <linux/spi/spi.h> to provide the structs of_device_id and
+> spi_device_id and drop <linux/mod_devicetable.h>.
+> <linux/mod_devicetable.h> is planned to go away soon.
 
-Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
----
-Follow-up suggested in:
-https://lore.kernel.org/linux-iio/261dcaa5-3e9f-4da8-adb9-dae4eb7310f2@baylibre.com/
+Thanks for the heads up!
 
- drivers/iio/accel/bmc150-accel-core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index dc8a6285cf3d..d904136720d5 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1011,8 +1011,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
- 			memcpy(&data->scan.channels[j++], &buffer[i * 3 + bit],
- 			       sizeof(data->scan.channels[0]));
- 
--		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
--						   tstamp);
-+		iio_push_to_buffers_with_ts(indio_dev, &data->scan,
-+					    sizeof(data->scan), tstamp);
- 
- 		tstamp += sample_period;
- 	}
-@@ -1196,8 +1196,8 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
- 	if (ret < 0)
- 		goto err_read;
- 
--	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
--					   pf->timestamp);
-+	iio_push_to_buffers_with_ts(indio_dev, data->buffer,
-+				    sizeof(data->buffer), pf->timestamp);
- err_read:
- 	iio_trigger_notify_done(indio_dev->trig);
- 
--- 
-2.43.0
-
+--=20
+Thanks,
+ ~ Kurt
