@@ -1,75 +1,112 @@
-Received: from sg-2-4.ptr.blmpb.com (sg-2-4.ptr.blmpb.com [71.18.227.4])
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9192378D70
-	for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2026 22:44:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=71.18.227.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86CD82F3C37
+	for <linux-iio@vger.kernel.org>; Sun,  9 Aug 2026 05:55:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786229100; cv=none; b=nv6BcpcyTQ0iXzuWZFYzjghpLyYT4x2otTfJwmQBOiTyAFYqMEkU154Y8CebXHaaw3G/YyPgE6WM78V04rge0E1uB4jnRYTdQJ1fdlLp497TPBZr1BBGX6EE+X+cjJqnZlk59H4mmL/yJ9GEvxlrXdXjOfSOufl+DNcDLrYZr+o=
+	t=1786254909; cv=none; b=ZWV/E72/J2PFTd95euml1rV79txQo1O3hLz1PTFj51TqGgw7+XDYcWc9kaE5SSPkSR3PtIvQIVsH+j2b9LJ+X0KlWHrxC9q2Lyt+Kkw/woVjHFj241qyj0Rt2cYPE+0yMnjjSzDJe+eqOnWH9MshBc5EJ0212Xb3K5hQNDNE0r0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786229100; c=relaxed/simple;
-	bh=BumHtW1PoIoUN94RKThzrTA0PcLi8hrHEifW1Se1TDE=;
-	h=Message-Id:To:From:Subject:Content-Type:References:In-Reply-To:
-	 Content-Disposition:Mime-Version:Cc:Date; b=sZ6DM4KmsRQCYPQp7dAAJ+qfgycSPUq6L1GeVvu4MWlL3by1NRciebeMIcH6NO1ICFO7aHFSsn6f/H7DxHg13b8umU9fLfFMeNu/w//Tyg6NDGfRH8ocOuzuXY4hrtnihJPWcFBkgHFi1/A4TeaA01mUWN794kQVqbGaqTvpwHU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=kwk9ZBSW; arc=none smtp.client-ip=71.18.227.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
+	s=arc-20240116; t=1786254909; c=relaxed/simple;
+	bh=B+c2pKvqi++PEZyBteJQHtBcjL2yh0u5LqizqDOzpMk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=QiI+d78xkXOrXBNtsNhxsphhmvMM7bC0nPnsW3NC6dqid5eLGOYrpjPN9E7r/37fDw+Uldn0sqY3tSxRt6SQ6ers35uT+GzHgyi8AGU4n3BXdLM9+xjwrP5z22czroZaRBWCEfJIzrIdrt3ztxj7NISvCz27glBv53l/dTp/0zk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kXEb2c3i; arc=none smtp.client-ip=209.85.215.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="kwk9ZBSW"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604220257; d=cherr.cc; t=1786229091; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=BumHtW1PoIoUN94RKThzrTA0PcLi8hrHEifW1Se1TDE=;
- b=kwk9ZBSWxntvTugbcPkfv3LRBXTFN7lw+zfJWUuWGOmPoOMmVh9+DESxtl9L8fhijz+vcr
- ft0aAPWqLY0ppwv0Y+VgxcDjDMs6MeKGwV4WZPRCDLp6OWYV29to8fFUyLZdsEpcjpQHb2
- gmTth1kUFV7EQdaZtxw4nSEmuTNoEIVEBYgpkki2PiX0U0u03vYAg3hw+9B/4emoidoyvu
- f9hrg+mviKLvB2QIgICNnLfXINJ8zg7dA7WySuivD2lXluFZ65vMKu1BigW2lJZhCLG+9A
- pk1MECJ1sJdqiSD+mi0MEzyuc8xFXDd2fudBNR0iOoJmIxy+ljjDF/9RiPRgGw==
-Message-Id: <anexXU9DHIr8T0JJ@pve>
-X-Original-From: Shengzhuo Wei <me@cherr.cc>
-X-Lms-Return-Path: <lba+26a77b161+89ff9b+vger.kernel.org+me@cherr.cc>
-To: "David Lechner" <dlechner@baylibre.com>
-From: "Shengzhuo Wei" <me@cherr.cc>
-Subject: Re: [PATCH RESEND v2] iio: accel: fxls8962af: clamp FIFO sample count
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-References: <20260809-fxls8962af-fifo-v2-1-80ff1be1f1f2@cherr.cc> <f35f30e7-15c4-46f5-8aca-8a4a79c740ab@baylibre.com>
-In-Reply-To: <f35f30e7-15c4-46f5-8aca-8a4a79c740ab@baylibre.com>
-Content-Disposition: inline
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kXEb2c3i"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-c9eefcf9175so736190a12.3
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2026 22:55:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786254908; x=1786859708; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CehgxbX+uIsr9VLyi5jm78aSD7vYR8WIjTWSVAm23q0=;
+        b=kXEb2c3iVZXVbsRRb/O1Oi5YbDmmY/cfARSrJy5Eor+kgjJOf0NynCvT2/3DOUsBUv
+         J71AOgErb1gbGejmRDHjc5T+fMCekUpp+UJ3jC/K2Xr8B4ueEPHneztZVkMOg8Fmo/Uv
+         uFYzl2znYRMmTZGv6b/9K/00rUYSQ7jTYybsPiqgS4CaAsivKweT6fDGgGehIJo/TpTt
+         BLhRW11qTQAbv7R2jyHxb9J2fQwupdD/glLfXEYQfcII/zBJb1GkjcP9GhI8PF1sWb+H
+         n6uPa1zDTAS2OpQzQESXiGe+nq395uWZZnVVkG0HUbqarg3MU07tE20xMH7n4oaNBG2k
+         OHdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786254908; x=1786859708;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=CehgxbX+uIsr9VLyi5jm78aSD7vYR8WIjTWSVAm23q0=;
+        b=S7qRKFzM0yETA3kzIPxh3OdEEbfuRVuBCMdFUOaQY7952AKWkM5Wp2Ym4E38yVg9Cq
+         LknZdMN2mqk1lMxvx13956HDCgE5guVtRhqcURSEOJYxjauNUMby10xfi5r9xL7GTnoX
+         yWanOHBRFUs31Hl/+b3uZcdv8K9vFBuWpDEYKE5OwzJ6lO13shim58XIU8ViS0gTyAY9
+         0u4SUExwisH33DOaxZryCXgtkOeRfXvq5BcpHi3vEDrmN23gEoRQWCCfq7JhbByU4tYH
+         xFGquCHuDyLFlCJC1MhqkJiltVIgemQGVqdy8v6ztSH7+fnAJdOX0AnfzDSLU9C781uz
+         n2bA==
+X-Forwarded-Encrypted: i=1; AHgh+Ro9/VgZyEvCjleP341lMrTC/nsHjOWLcfr97WtgdoWh91wvxg0BImTwLvWEemUOG5V+UVLojtIZeWw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxf3Vv/4bubeeYH00AVknQtiKQiQ8S4PN4f+1DO8XhIPeJtKbrP
+	Eh2GpXAnzg9/g9uXBtWtiCBtLIHa7wi1y0sp3MJdSmqQ+UmFY869/7lP
+X-Gm-Gg: AR+sD10BK+gXHw1jWZ9f9oHoq/8uq26SDLRPbcToiS7Umvvq4Z7IyahAYjfE8jSHtxz
+	5D7ZoKpNe0Tt6uM55BxCprLNtrEgiM6ilmhSJnFLfkDfZPFdKVCK/gdMWq7No2gSm9qLKgl+vVJ
+	QRumCHz4ho59iAy7xPGhOyUlxBki37lulRKGgR05sLGQ9HWkqwhsC3vMeM0uLljTJUTJkufI38v
+	rdEEsNWEm2Be+1SZDrUc+g6VVNLY5KvBS167J1OlI3PPkkatmZfXoq5rUcI1w0vCvGfdrwO5jy8
+	7P/FD9IHvuG7UbzKasvgaJjvC8xIKbgZhN24YMKCQ0/ZcZ6t8wUaRAEZVDhTP/eUAj+aieLLd+U
+	vIHi39QBLVadK7TuUIi43dNrwm5JHosNMiU0QjxTJ/j2Jb+P+zL3kIJTkTWwMSKyd8vP6QD9hJq
+	OPbwF+NKOQYaq/JEb7Eu5/e1o24U8zmhLFBLjc4gv9XzZRHyxhnaRDGTUhQOv5zQavsGuE9w4Ll
+	U/BQpRW
+X-Received: by 2002:a05:6a20:4322:b0:3c3:b57b:6285 with SMTP id adf61e73a8af0-3cbc01b4a9bmr13416174637.13.1786254907703;
+        Sat, 08 Aug 2026 22:55:07 -0700 (PDT)
+Received: from yash-Bravo-15-B5DD.. ([2409:40d4:1066:5a44:383d:b342:28d9:ba64])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1410199bfd8sm22311869c88.2.2026.08.08.22.55.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Aug 2026 22:55:07 -0700 (PDT)
+From: Yash Suthar <yashsuthar983@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Yash Suthar <yashsuthar983@gmail.com>
+Subject: [PATCH v2] iio: accel: bmc150: use IIO_DECLARE_BUFFER_WITH_TS
+Date: Sun,  9 Aug 2026 11:24:42 +0530
+Message-ID: <20260809055442.434972-1-yashsuthar983@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260808220236.421832-1-yashsuthar983@gmail.com>
+References: <20260808220236.421832-1-yashsuthar983@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Received: from pve ([111.42.148.195]) by smtp.feishu.cn with ESMTPS; Sun, 09 Aug 2026 06:44:48 +0800
-Cc: "Shengzhuo Wei" <me@cherr.cc>, "Jonathan Cameron" <jic23@kernel.org>, 
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
-	"Andy Shevchenko" <andy@kernel.org>, "Sean Nyekjaer" <sean@geanix.com>, 
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
-	<stable@vger.kernel.org>, "Joshua Crofts" <joshua.crofts1@gmail.com>
-Date: Sun, 9 Aug 2026 06:44:45 +0800
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On 2026-08-08 17:39, David Lechner wrote:
+Replace bmc150_accel_data plain buffer with IIO_DECLARE_BUFFER_WITH_TS()
+that also keep timestamp aligned.
 
-> When you do a RESEND, please say here why, otherwise we don't know.
-> Did something change?
+Fixes: bd7fe5b71918 ("iio: accel: BMC150 accel support")
+Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
+---
+v2:
+- Rewrap commit message.
+- Add Fixes tag.
 
-Hi David,
+ drivers/iio/accel/bmc150-accel.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Nothing changed =E2=80=94 this is an identical resend of v2. The original v=
-2
-bounced off the mailing list and never made it to lore, so I resent it
-unchanged to make sure it reached the list and the maintainers.
+diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+index e8f26198359f..e0773533efeb 100644
+--- a/drivers/iio/accel/bmc150-accel.h
++++ b/drivers/iio/accel/bmc150-accel.h
+@@ -64,7 +64,7 @@ struct bmc150_accel_data {
+ 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+ 	struct mutex mutex;
+ 	u8 fifo_mode, watermark;
+-	s16 buffer[8];
++	IIO_DECLARE_BUFFER_WITH_TS(s16, buffer, 3);
+ 	/*
+ 	 * Ensure there is sufficient space and correct alignment for
+ 	 * the timestamp if enabled
+-- 
+2.43.0
 
-You're right that I should have noted the reason in the changelog; I'll
-do that for any future resends.
-
-Best regards,
-Shengzhuo Wei
-
-> > Changes in v2:
-> > - Use min() instead of min_t() as suggested by Andy Shevchenko.
-> > - Link to v1: https://lore.kernel.org/r/20260806-fxls8962af-fifo-v1-1-b=
-d9d27047fee@cherr.cc
