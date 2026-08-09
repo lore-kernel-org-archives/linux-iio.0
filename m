@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD7532C08D0;
-	Sun,  9 Aug 2026 23:31:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56AE125A321;
+	Sun,  9 Aug 2026 23:53:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786318266; cv=none; b=TUyRMZn09moctiW3nSLFfoc5gtcrt+NJ6sU1J/b838Fof/TpLZu/O6o6hOEifeY0YoL8a8PKlSfY7thCTzA52GZl9WyMxsTWOJN8H+rpvOlkCMkjUYNnq3Xhrx6uFGoMWyKUOty7J3wK84Vkakj7XUhktXXeI9uMNZ+O4qkLivw=
+	t=1786319628; cv=none; b=S7UF4dbglIbcYZOxLEWgnlTdyRqY+ma+ISiwXYZVTm5BYebIBulK12ryxXt+cbkw1eLufUTrQaHdmYlNoYzTv011qAvTELslUGjsd18l5B+rK+Aps1UDuMNoBWm4N9tveOpwIs6VYk17eAJFSnhh+urgtHPr0tbt86vaW4PKvXQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786318266; c=relaxed/simple;
-	bh=IM7+SYk+rGmWqE1qhkY/SeZ8qpgEV3KwaUHAx+kY1hw=;
+	s=arc-20240116; t=1786319628; c=relaxed/simple;
+	bh=XJnXglM9VAov07Q1LKJ/Dm0Qo5/2/vHqNqz+iQ5YEWs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XhahCH/PCYyiG4qyGRY0QxQEss1jmDGFyDhQT9gKcdACKgV34YUIN0ObIhNG/ecMUmzWZ8UyxzPGV90CMwT2jF8bymEGleAsUUCXrGkycoIMuS+lFsE9UgjF11rfjS5DX4ZxAlU1/1hOjF415U8gNR+RjZegWEyMu8/xr+Tnq54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iHbyfhQ8; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ku2Y0j262Cv3V5Hv7lzR+bbuwkvJQzJ2geE7ExPnViqvysTXioQmLvEug+0SBCCBpWay9I2ckHjWp1yQdg8V690TtyjPP2opWiGWFoHmCYt7Thk9mrDPGHGGGWT5gKgyCvRAdT5RMN5q3y6GQ3it7YUIh26m4MMjpogBnUr6wrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OIrzE05B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iHbyfhQ8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539771F000E9;
-	Sun,  9 Aug 2026 23:31:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OIrzE05B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118D21F000E9;
+	Sun,  9 Aug 2026 23:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786318265;
-	bh=WFm50zDkKXzJOqAKehKXwJtF9ALEWVpbeQsvmVeNkG4=;
+	s=k20260515; t=1786319626;
+	bh=LyKqWc3Je9E24a7EMPHeRWMh9LhZWQy9z7WQ8ohgBP8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=iHbyfhQ86X81uoofC5S4207G0TtPYxzuTj4hEEG/QO/OVZji26P1cGx5PPm6/MQmS
-	 K1rdH/HdQuBbm6zdsVMn/XeneJVk9SKWjD6DFDumL0wcBBIuf7fw0IsEp0K3RaixR6
-	 KoNUbCMXfWrW2kN+jIWFFvaJxFLi1DEhmmBy18k0i/Q6qJXNcVCwPdoXbYgPubXcYk
-	 tIxewM9mKqpBvkxYHgzTtxnen+9CIw66a0jzLekQ4MWmrdsyBZuNo2MlxhavMub1iC
-	 0sZUD1xzpaTy8ddyr4qd/yuRD1o2vollhYSaPVCM14XM14dBcQDL0bfnTLnhqCGYIb
-	 0Gdfpfmzuiqyg==
-Date: Mon, 10 Aug 2026 00:31:01 +0100
+	b=OIrzE05BEt3Ct9Rg5a5BkKnq7SBevJ+PKyI+V4Hz3mG53qJsTxJKFL9mQhRi+pAEF
+	 Uotza/p3Ub49/Nfb0qSs4LOsnSh5MR/vrWiL/i1FuDLFYJ0QXBH9TmLm9o58jx9zQC
+	 9jXI0D1Zb7vmAOkZecCCCzaRVJqN7HrIxnZgZWqdfKstWNwsZGVXdiMbIkYb22wbSp
+	 ejhynlLPbjHdAnLJBeCldJNuIrXahLmvNBn5HyNGVzmEGGiPQVlP3QAHKbZ0iIbfiF
+	 KOPgaBo9tN0Tjb1/myNpzljuEnZArgZTHEZdTIih7D+ird9SOHuOGkO8pc8PeaW1Eb
+	 GnXxyGnRJjrqQ==
+Date: Mon, 10 Aug 2026 00:53:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Shengzhuo Wei" <me@cherr.cc>
-Cc: "David Lechner" <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Sean Nyekjaer"
- <sean@geanix.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, "Joshua Crofts"
- <joshua.crofts1@gmail.com>
-Subject: Re: [PATCH RESEND v2] iio: accel: fxls8962af: clamp FIFO sample
- count
-Message-ID: <20260810003101.3a2d1967@jic23-huawei>
-In-Reply-To: <20260809-fxls8962af-fifo-v2-1-80ff1be1f1f2@cherr.cc>
-References: <20260809-fxls8962af-fifo-v2-1-80ff1be1f1f2@cherr.cc>
+To: Marco Chen <marcochen.dev@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ pmeerw@pmeerw.net, matt@ranostay.sg, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v4] iio: health: max30102: fix NULL dereference in
+ interrupt handler
+Message-ID: <20260810005340.638d6b1b@jic23-huawei>
+In-Reply-To: <20260808195450.25420-1-marcochen.dev@gmail.com>
+References: <20260808195450.25420-1-marcochen.dev@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,67 +48,77 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 09 Aug 2026 05:04:41 +0800
-"Shengzhuo Wei" <me@cherr.cc> wrote:
+On Sat,  8 Aug 2026 15:54:50 -0400
+Marco Chen <marcochen.dev@gmail.com> wrote:
 
-> fxls8962af_fifo_flush() copies the number of samples the device reports
-> in its FIFO status register into an on-stack buffer
+> The interrupt is requested in max30102_probe() and stays enabled
+> for the lifetime of the device, but indio_dev->active_scan_mask is only
+> valid while a buffer is enabled. When an interrupt arrives while no
+> buffer is enabled, the handler dereferences the NULL active_scan_mask:
 > 
-> 	u16 buffer[FXLS8962AF_FIFO_LENGTH * 3];
+>   Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+>   Call trace:
+>    __bitmap_weight+0x64/0x98 (P)
+>    max30102_interrupt_handler+0x48/0x160 [max30102]
 > 
-> which is sized for at most FXLS8962AF_FIFO_LENGTH (32) samples. The
-> sample count is read from the BUF_STATUS register and only masked to its
-> 6 valid bits (0..63), with no clamp to the buffer size. The watermark
-> path caps the count on the write side (fxls8962af_set_watermark) but
-> the read path does not, so a malfunctioning or malicious device
-> reporting BUF_CNT > 32 overflows the buffer.
+> Call max30102_fifo_count() at the top of the handler and return early
+> unless it reports a FIFO sample is ready. Because FIFO_RDY is the only
+> interrupt source enabled in max30102_chip_init(), an invocation of
+> max30102_interrupt_handler() without the FIFO_RDY interrupt status bit
+> set carries no data to read and can return before touching
+> active_scan_mask. A negative return from max30102_fifo_count()
+> indicates a failed interrupt status read and is treated the same way.
 > 
-> Clamp count to FXLS8962AF_FIFO_LENGTH, mirroring the watermark clamp.
-> 
-> Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
+> Fixes: 90579b69e94b ("iio: health: max30102: Add MAX30105 support")
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Marco Chen <marcochen.dev@gmail.com>
+Applied to the fixes-togreg branch of iio.git.
 
-Same comments as similar patches.
-- Not a fix, but rather hardening against buggy hardware.
-- Don't hide the problem by clamping.  If this happens in the wild
-  we want to know about it!
+Note however that this has missed my last pull request for this cycle
+so won't go anywhere until after rc1 which is in about 3 weeks time.
 
+thanks,
 
-> Cc: stable@vger.kernel.org
-> Assisted-by: GLM:5.2
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Signed-off-by: Shengzhuo Wei <me@cherr.cc>
+Jonathan
+
 > ---
-> The transfer reads count * 6 bytes through regmap, so a device reporting
-> up to 63 samples writes up to 378 bytes into the 192-byte buffer,
-> clobbering the stack canary, saved registers and the return address.
-> This mirrors the bmc150 fix (ce0e1cae2609). A well-formed flush reports
-> at most FXLS8962AF_FIFO_LENGTH samples, so legitimate devices are
-> unaffected.
-> ---
-> Changes in v2:
-> - Use min() instead of min_t() as suggested by Andy Shevchenko.
-> - Link to v1: https://lore.kernel.org/r/20260806-fxls8962af-fifo-v1-1-bd9d27047fee@cherr.cc
-> ---
->  drivers/iio/accel/fxls8962af-core.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Changes in v4:
+> - Trim the backtrace to only relevant frames and unwrap the first line
+>   as suggested by Andy.
 > 
-> diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-> index d0c2a8daef0db964134ad10b25782b9f5752613d..18d7b09bddd2b4f506c3348bf4e8cf94ce1c554a 100644
-> --- a/drivers/iio/accel/fxls8962af-core.c
-> +++ b/drivers/iio/accel/fxls8962af-core.c
-> @@ -969,6 +969,8 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
->  	if (!count)
->  		return 0;
->  
-> +	count = min(count, FXLS8962AF_FIFO_LENGTH);
+> max30102_fifo_count() still has the odd name and int return you mentioned
+> in v2, so I will send a follow-up patch once this lands.
+> 
+> Tested on a MAX30102 on Raspberry Pi 4 over I2C.
+> 
+> v1: https://lore.kernel.org/linux-iio/20260731184124.112124-1-marcochen.dev@gmail.com/
+> v2: https://lore.kernel.org/linux-iio/20260804234355.65319-1-marcochen.dev@gmail.com/
+> v3: https://lore.kernel.org/linux-iio/20260805040621.84843-1-marcochen.dev@gmail.com/
+> 
+>  drivers/iio/health/max30102.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
+> index c37316c86f14..aee96167f01e 100644
+> --- a/drivers/iio/health/max30102.c
+> +++ b/drivers/iio/health/max30102.c
+> @@ -290,9 +290,15 @@ static irqreturn_t max30102_interrupt_handler(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct max30102_data *data = iio_priv(indio_dev);
+> -	unsigned int measurements = bitmap_weight(indio_dev->active_scan_mask,
+> -						  iio_get_masklength(indio_dev));
+> -	int ret, cnt = 0;
+> +	unsigned int measurements;
+> +	int ret, cnt;
 > +
->  	data->old_timestamp = data->timestamp;
->  	data->timestamp = iio_get_time_ns(indio_dev);
+> +	cnt = max30102_fifo_count(data);
+> +	if (cnt <= 0)
+> +		return IRQ_HANDLED;
+> +
+> +	measurements = bitmap_weight(indio_dev->active_scan_mask,
+> +				     iio_get_masklength(indio_dev));
 >  
-> 
-> ---
-> base-commit: 848acc8ffe1b7cd5f1bf427b93069becfebc2c9d
-> change-id: 20260806-fxls8962af-fifo-c3812fd02eeb
-> 
-> Best regards,
+>  	mutex_lock(&data->lock);
+>  
 
