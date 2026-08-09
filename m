@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D43622E401;
-	Sun,  9 Aug 2026 23:18:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE80136403B;
+	Sun,  9 Aug 2026 23:19:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786317539; cv=none; b=LMgC1finbMZRem5JRX0mYaF2n9xo782UKN5dc4j1GCaSsMM7jik7odHtm0otoIqUp1uWaI4WjTEVSzdTOlVrthpzFer7TenNEhbvQD6sHNvW9O8Aa8SpMOsJ5wdyE4IlcGgwI8/1XoJRGNOw7bsGZPxtQYAD3CIUuAE/RzKpGNg=
+	t=1786317593; cv=none; b=KKkav4svhJo1aqe6/2HJb0Ru3W5G89+xVB4Sw6o3w20A+cl+r2maqKi0q5HWU408JU6oLPlVk+j476Xgw5vR5Q65B/Eki2SGRWapcTNXWjm8Uc4RxHHTSoXLAYe1wn2a3FM4VIqQ18oEWqrI0y53ZkL3ya7ohXW33DFSOZhVV0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786317539; c=relaxed/simple;
-	bh=qoOBhhHcHtV5XcQ5ydDCNWcZWW8+WFZv1FXAOGl1hdI=;
+	s=arc-20240116; t=1786317593; c=relaxed/simple;
+	bh=G9DNuLMch4ONlK/zIz5hHPtlrDhG+X0LJ8OoFtRxgpQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rIaS8V0AeLAiG2L72Tkz/8vy/CTFUZG5f/QMUZTMfj/6Ad/W1+ZdPgJAn2yFhvHOoJeIpzPXKTJ4xNORk5vSQgPOyrTn12KyafqMo2CrRhNhHro6CxLVl/j/OLp2EW9Q6LoCu7qTVv6GyK7tTS3SIgz6Pb3sNkJrhPjVzsjntEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mOlK2Xwt; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=E8DeNfyvhGEb5KIPLWFWXdOA8mY/BEdeD2ZVDMA8f2PuZIJpGDIbThdQ+Le1zHRpAOt6AlBI0Mu4okpEM/U5lxopK8Fyn2ge2G98h34oWds7FQK0JRzGteh9qsHIP4QEPtgswg9v55ui6rQTMk3YlC+pY3SHOhNPJR6Z/0OMz4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mjtRtVZT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mOlK2Xwt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F68B1F000E9;
-	Sun,  9 Aug 2026 23:18:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mjtRtVZT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E271F00A3D;
+	Sun,  9 Aug 2026 23:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786317537;
-	bh=dNlxyD0tnvIXGCgSg0Bg9MSA4aZ7eLd8BBO2V6oGo2Y=;
+	s=k20260515; t=1786317591;
+	bh=s32b7eZO6HKkPNrsjJvULZ7193813c7PyQ6Njhfuu94=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mOlK2XwtVxSJu8YRWPrlXIpkS+JH1p0DOYGlKxOvJSKlG0oLeea3XCWzLK9O6a88B
-	 K9UIGaRrXjGTWCVi3FNv41v7eCO4Wn0pX0fV/8CVSxxhSgXK9TOn/wK+oWMWfuARs8
-	 XfkGWOT/UGlJcDAIgT7HCe1QhFCq0kfmzcSkpZBt4jz2EIQYuQuqjeEaYMOlE/ytFn
-	 BCxCqAhXhIA9soVWH2PAsB7rU4BEL05yqo55FE8gdH4W+UgM+uE2s8EuC/+DFSk5jn
-	 zcVx4RXZPYbpiGncOIrPjwGyHeRj1JaVKB9vqCzjsXzlmNHXY4tOLPDBPhKVjMv33w
-	 Q7gDYsZ9LBRYA==
-Date: Mon, 10 Aug 2026 00:18:52 +0100
+	b=mjtRtVZTsSEeaskCTvYsZVLpDriuLONzbYDSVcYS7Bj1LFwJurvXNJPRj3n7HMP8o
+	 wLXpPnmAT2hJsf7sPoV0gPsbB46ULJ/yLM1x/ijM9QZCrNuBpijRTFjrsK6vEifeKm
+	 Bs+OF2bjEdqtGOGEv4nH7AwP5Fw4hAudDyB61ufPGVvwLY8A5riZPJLtRQj+U3dFce
+	 +qd5Rst3flZz8iAM+Y6oSynB4PtVJ470Gn7R5CC862usbRI69O/ePemH1zedy+lMIJ
+	 2BEnbb1/Cc36rWKL/gDySxLr26W6tKyIeryZsUL6Oh8+yxXPUxlhgxtv/y2vR0QL0d
+	 LJZNOKN/C9Gjg==
+Date: Mon, 10 Aug 2026 00:19:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Yash Suthar <yashsuthar983@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: accel: bmc150: use IIO_DECLARE_BUFFER_WITH_TS
-Message-ID: <20260810001852.6afc2c2e@jic23-huawei>
-In-Reply-To: <20260809235934.6045eab8@jic23-huawei>
-References: <20260808220236.421832-1-yashsuthar983@gmail.com>
-	<20260809055442.434972-1-yashsuthar983@gmail.com>
-	<20260809235934.6045eab8@jic23-huawei>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
+ <andy.shevchenko@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: accel: bmc150: use
+ iio_push_to_buffers_with_ts()
+Message-ID: <20260810001946.2f5b3a55@jic23-huawei>
+In-Reply-To: <20260809174928.565911-1-yashsuthar983@gmail.com>
+References: <20260809111303.496393-1-yashsuthar983@gmail.com>
+	<20260809174928.565911-1-yashsuthar983@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,112 +49,53 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 9 Aug 2026 23:59:34 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun,  9 Aug 2026 23:19:28 +0530
+Yash Suthar <yashsuthar983@gmail.com> wrote:
 
-> On Sun,  9 Aug 2026 11:24:42 +0530
-> Yash Suthar <yashsuthar983@gmail.com> wrote:
+> Replace deprecated iio_push_to_buffers_with_timestamp() with
+> iio_push_to_buffers_with_ts() to allow source size runtime checks.
 > 
-> > Replace bmc150_accel_data plain buffer with IIO_DECLARE_BUFFER_WITH_TS()
-> > that also keep timestamp aligned.
-> > 
-> > Fixes: bd7fe5b71918 ("iio: accel: BMC150 accel support")
-> > Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>  
-> 
-> For future reference, please never reply to an existing thread with 
-> a new version of a patch.  I'm a bit confused why this one keeps
-> coming up as I'm not aware of any part of the kernel that requests
-> doing it this way.  Reasons not to do this:
-> 1) Confusing threads once they get sufficient numbers of replies, including
->    making it harder for tooling to work out what is going on.
-> 2) Reviewers and maintainers tend to use mail clients that put replies
->    to old threads, somewhere back in history, so the chances of getting
->    a review is reduced.
-> 
-> Anyhow, don't resend existing patches to 'fix this' but make sure
-> to do new threads, if you send out any new versions.
-> 
-> This looks fine to me so applied to the fixes-togreg branch of iio.git
-> Note that branch will be rebased on rc1 once it is available.
+> Suggested-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
+See the other thread.  Given there will be dependencies between
+the patches, for v3, send them as a thread with an appropriate cover
+letter.
 
-Actually no. I've backed that out. 
-
-Given the data alignment is fixed, if we were going to do this it would
-be clearer as 
-struct {
-	s16 chans[3]; //see later, I believe this should be __le16
-	aligned_s64 timestamp;
-};
-
-But that is very similar to the structure that follows immediately after
-this, but that has __le16 chans[] 
-
-So what is going on here?
-
-bmc150_accel_trigger_handler() Does a bulk read into data->buffer (so the
-array this patch is touching). That is then pushed to the buffers.
-Note this should be DMA safe, so we need to ensure nothing shares cache
-line with it that might be edited concurrently.
-
-data->scan is used in __bmc150_accel_fifo_flush() by memcpying
-from a local buffer into this to marshal data.
-
-That local buffer isn't dma safe, so good to fix that as a separate issue.
-The buffer is fairly small (32 x 3 x 2 bytes) so one choice would be to put an
-aligned buffer at the end of the iio_priv() structure.  Anyhow, that's
-a different issue.  
-
-So we already have two very similar structures.  
-The chan spec is little endian so the scan one is more correct.
-
-So I think the fix for this issue is move the scan element to the end of
-struct bmc150_accel_data and mark it with __aligned(IIO_DMA_MINALIGN);
-
-Then use that for both the bmc150_accel_trigger_handler() and __bmc150_accel_fifo_flush()
-paths.  A second fix will resolve the local buffer in __bmc150_accel_fifo_flush()
-that is being used for a bulk regmap transfer that may need a dma safe buffer.
-
-I'd place that after the moved scan element in struct bmc150_accel_data.
-Do that change as a separate fix.  As we have two dma buffer issues in this
-driver take a look for any other bulk regmap accesses that may have similar
-problems!
-
-Please combine these two fixes (if you agree with my analysis) with a
-follow up to do the iio_push_to_buffers_with_ts() all in one series
-as they will be touching the same code.
+Thanks,
 
 Jonathan
 
-
-
+> ---
+> v2:
+> - Add Suggested-by tag
 > 
-> Thanks,
+>  drivers/iio/accel/bmc150-accel-core.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> Jonathan
-> 
-> 
-> 
-> > ---
-> > v2:
-> > - Rewrap commit message.
-> > - Add Fixes tag.
-> > 
-> >  drivers/iio/accel/bmc150-accel.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
-> > index e8f26198359f..e0773533efeb 100644
-> > --- a/drivers/iio/accel/bmc150-accel.h
-> > +++ b/drivers/iio/accel/bmc150-accel.h
-> > @@ -64,7 +64,7 @@ struct bmc150_accel_data {
-> >  	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
-> >  	struct mutex mutex;
-> >  	u8 fifo_mode, watermark;
-> > -	s16 buffer[8];
-> > +	IIO_DECLARE_BUFFER_WITH_TS(s16, buffer, 3);
-> >  	/*
-> >  	 * Ensure there is sufficient space and correct alignment for
-> >  	 * the timestamp if enabled  
-> 
-> 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index dc8a6285cf3d..d904136720d5 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -1011,8 +1011,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+>  			memcpy(&data->scan.channels[j++], &buffer[i * 3 + bit],
+>  			       sizeof(data->scan.channels[0]));
+>  
+> -		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
+> -						   tstamp);
+> +		iio_push_to_buffers_with_ts(indio_dev, &data->scan,
+> +					    sizeof(data->scan), tstamp);
+>  
+>  		tstamp += sample_period;
+>  	}
+> @@ -1196,8 +1196,8 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+>  	if (ret < 0)
+>  		goto err_read;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -					   pf->timestamp);
+> +	iio_push_to_buffers_with_ts(indio_dev, data->buffer,
+> +				    sizeof(data->buffer), pf->timestamp);
+>  err_read:
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
 
