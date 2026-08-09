@@ -1,68 +1,67 @@
 Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53DD13AB28F
-	for <linux-iio@vger.kernel.org>; Sun,  9 Aug 2026 08:29:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5A43A9615
+	for <linux-iio@vger.kernel.org>; Sun,  9 Aug 2026 08:29:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786264170; cv=none; b=SG4g6STc8kd5gbFadjAZFPNseTsDh+p+sdb3zbfkFrizhERStDVgzs8b27GKHhmwO3IzT+wQzL/+qY9p8LILRSNbM6YOUUIiN37BDGpHFbUG0GfCA5LLYjJjXvYha+NaAuHAy2Lnt7/giTver4rOOnE+0PRHqYh6BTu8sHZcOpU=
+	t=1786264199; cv=none; b=l7Ug8+Xm0DTV1hGb73We58ZbrXtd+GaWsQ95KFYwGM9VXPT1ncXITMbhnqTWYy0Y9TlW4dKrYO7uR0qIDbtHlSqC6dAsFNQda22XvTEE0afyDBHDTtbU8DqH0rEG06S47VfThGgR93IZ8KqjfHXD7P6VukbVFah8hsXfUk7HBrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786264170; c=relaxed/simple;
-	bh=EBuidInqLSxAdzSs+bLYDtRsXG0JLW7LAHbGM2gja1s=;
-	h=Content-Type:Date:Message-Id:From:To:Cc:Subject:Mime-Version:
-	 References:In-Reply-To; b=qgYwYoyORtyuAll1XoIW3RnIcV/5TrM+QrlBlqD54FGjgA5DBjF8N6Ot//TrBBWLH9jXXaQXAnK7xY/puQdFQEb3giFmYZMIH9Bf2Bx2yVmRGo47VM5a+FpRE9BVRKdU1Xy+iV6jCC/cl76bMj15uizhWNTIq3MbU30/U77BIf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mGX/JI32; arc=none smtp.client-ip=209.85.221.173
+	s=arc-20240116; t=1786264199; c=relaxed/simple;
+	bh=Tr0vhSlpYrIm8pUdtGcembVGsxzFGAswf+yCpBXcDns=;
+	h=Content-Type:Date:Message-Id:To:Cc:Subject:From:Mime-Version:
+	 References:In-Reply-To; b=bvtAuzU9xnyrJAg+cpnVDt7sWGDjSshTx8tf7Ofu8xS8294p9ATzcEF3RwrTssz/a+u5YxDaSCyWB7Duyu2X4waJw5hb4w+5JNI5nAP3LNus8mOpWgacGPuttA04iXxCo2fRIl3OlQQ8UT279cZn5GCIpFO0asC1s+/vxOzgqRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NYVeFaCw; arc=none smtp.client-ip=209.85.221.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mGX/JI32"
-Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5bfc5b77c02so805367e0c.0
-        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2026 01:29:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NYVeFaCw"
+Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5bfb5e20a90so735646e0c.2
+        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2026 01:29:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786264168; x=1786868968; darn=vger.kernel.org;
-        h=in-reply-to:references:content-transfer-encoding:mime-version
-         :subject:cc:to:from:message-id:date:content-type:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2d9hycM5USzc32zfTtkd5yElWmTjF3/U684OFwwThv4=;
-        b=mGX/JI32tx5o9SLZcsgEX6nBCQZ2ZVJCaw3hwQOk3d8PrW7Wfj7zsFqNGg6Zs0TpV2
-         f3tIdFup3Ows24tBcKqizbkPZ9R6BNonaTyt/V+PJYxTgKWacUPatSlr0bCb3FUlWPjY
-         D5oBuhQXFV9mA5JigJttqKrIXbB2LaLG2Kd+FqgL0fU2qKuN8QSojX+9P4nAmH+rg0V3
-         hl75q23rjbGIXORMSgnk9KuloZ8E7xEeaAdK5NTih0Ta6DwWu2gHVoUKo3HlAU8vpLBQ
-         vrab7JPStAGpyc5QEeGNuz/JLekY52HoZihMxJKavZFvfDnETQwki9Ati8L218VfO7Rr
-         Schg==
+        d=gmail.com; s=20251104; t=1786264196; x=1786868996; darn=vger.kernel.org;
+        h=in-reply-to:references:mime-version:content-transfer-encoding:from
+         :subject:cc:to:message-id:date:content-type:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=d8UdgNkOqkWbZyhRHf5OOeBdpskYt04c7oStZ3xaPyw=;
+        b=NYVeFaCwJ1w9W8lBSg19+M1n3++sgJndS1B6Kr4q9aG8FX8X7wfBVSr7SbyNrOLK7E
+         k69KfK9vKh4MA6o0kig3qc4aZEKaymfh5VozEHOgULEXfDM0IzJX9450A5BeK/0+YHfH
+         6lmyWnZMNbk4HEcL/QEMDwqK75x3H+iun5OmTmQCIqo3TIxvgsYrefvmYCXLCV8vEPN1
+         XxXwVR5T63KbKQirbFAczjeYLKVrb6iVuyy/5mfY6Zdf1JO9QGux+sCE8Mri9Fu/h7z4
+         bmm7FG7sdVtZ+ZSWP+O2MyJ2IvvEysedx/MPzvWUH+Uk6DzDNUe4uaR5d47TedF/LFwU
+         QNVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786264168; x=1786868968;
-        h=in-reply-to:references:content-transfer-encoding:mime-version
-         :subject:cc:to:from:message-id:date:content-type:x-gm-gg
+        d=1e100.net; s=20251104; t=1786264196; x=1786868996;
+        h=in-reply-to:references:mime-version:content-transfer-encoding:from
+         :subject:cc:to:message-id:date:content-type:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=2d9hycM5USzc32zfTtkd5yElWmTjF3/U684OFwwThv4=;
-        b=EF9wliHH0dYM4Ef/f5N7/V7wR00oyELPDXc76fuA1Int6YGnrgaAjwzpslrQGHL08x
-         Y5GdPQMtZA8kg7W6DI8MWUJioDGL/lCtw0+glMKQNjTXf4z0eNJ6z4qOSArX+BzpAmTf
-         jYRqnD7Amh2TmQ38KDRTslgRylhp8c5cC7mytJiIxBaCOK6B2jgVar2HlEP2m6x5ceMP
-         k/NpNqO312gkxUErzYnieBRv456sc3BO+9mf/xkmlAL2zmAMgyO4Kt14WtVzBx3xwa7V
-         PZ5f2288ggzrlmBKxxLcMF+xnvrxGkmv40C8S6jU6XP4llI6Scsm0tiFO0OOdXbX1fDF
-         DPzg==
-X-Forwarded-Encrypted: i=1; AHgh+RqHN+4GKL+JykgVATIzm/kw63SV17nlSH5ohP10jmxQx6Q9wAwycOo/4hVSIT4aCs6xBT9egt4jXrA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YznpMRceFWYfnxgAZoyOTzhib7SEVubBNJEv95HH8CF3dzWkJD+
-	bpn/nT/QJCc42Qn9S+3K0C4xN1EeA4uzGYuXfrcS3/tqfiM02VF6e7Cx
-X-Gm-Gg: AR+sD10IkxYVZlp7jaIaT0Fvqihd79wTGZVnF5ycZPEXt6SR2cIdlDWGqH6UdAmq1VG
-	CR/mwnTQCr8IFzUt0dyKlK0NI9jsS0+uK7QOFxxvp3FAz//PeP1KvYGplrmnqgNEy/PfyYmyUy/
-	fjIu1IrWL27H1EeVcR0mrTY1rQKrk0U2kUnkGkFc0KSLoWRVl58YQ1j/FfNv6Xx3Y1X8RSaaiP7
-	vex83P3/SmBLnckcJLdTplCQLrRrjyFmiBfSoO8Dd2icoABflSUBLeHlm5wsKbUb1HDVwwasyt0
-	3GUVoc2DXzKhnZDa2vcJYTIItrTJ38dgO89aA0q5dWTBnliZ2Bgn/Jrz5RVg8PhwQIm0gwhQGUs
-	qYY8ceV3N50NVqZrBxjxvhNa/xWjs4Z2e/aNeRB7yZlN2ZXvfyTi2WAJ7/pjiXcTLfg24VHJpVD
-	N0UhUwyLNWJlsijBmMMz9VhiLJ30L5Pow3OxQzmARUIaoDqNR9czk=
-X-Received: by 2002:a05:6122:4884:b0:5c1:31ed:157 with SMTP id 71dfb90a1353d-5c3d9259f67mr5068345e0c.13.1786264168276;
-        Sun, 09 Aug 2026 01:29:28 -0700 (PDT)
+        bh=d8UdgNkOqkWbZyhRHf5OOeBdpskYt04c7oStZ3xaPyw=;
+        b=kuUidn3XxFLynlBVFLjfXRE6zp8qnQWuTFxpxEjqN5oH4CjsQpi7+POcaxb4rrv2RA
+         AnbF9Sg87LshNn179HJuQgwH1KLCco2YOYjj3EzDo5JjHjs8W11zTg31XocuLxj7QWz2
+         z+zM9AmeWD9NAln9crrqfMRFxOrnVrPq3HeptTfXQpsMYQB3HfUre79uToeRO5B/eioF
+         M/iO6achkn6NlEuFlpDprPogdL3BBKPXcVJPJyg/mqVfOugSQFKN5Jc9sGJ0FaIFgvDE
+         OxBiWnO+8qMxPtP5lMO3pVsnqJ02FO1P3Y9dF81Lk7f3c5HKOhcRjaVLU0PKDx2kTZ7l
+         VLFQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rr5OV8d15uhIDkq6zqGJQiuf6ZjbNqjeDFm9fYHo/4Rz+Gnm8U5Wv6XldgIgp3ORGBl6DlmI3es7dk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvJ8CnFvvW9b1KjeKfoIMiBkoiu0XpioL+405FH92gUtGLF9sA
+	ED4cCAtKrz/Z1ocUnVZDTf7P5x9MlqQSvcrHoWPQ67eEnrOvuVdnCXhO
+X-Gm-Gg: AR+sD13e8rxISy7WetlrBQm/6gpUZj3XJAa4UH60JpTqriawryy79pfq3TwyI3zXXUR
+	uWLewfbOfaS/1ZYZ0B3mimMSp8TqOnI8yPXNrcCrfjRZgTQF0tYH6MUJcTqmV2oVv+CFofGQLMh
+	p5h63lvSiEIOrqK/hCFbgDBRIT9Y8raywrZFnZZpHPLCDLis+vT/UTC3JiS83uXhEKLa2Sk/5ep
+	lPECYdK8KKfvCRnA6KJ/E3tvGOM5XlQBpUO/6GyZAoBQQhbB7ZI/jGW8P2/QrUe0dMm7XV5QZTh
+	4jEhZS4uMw6W9N5+r03tN8Jz8FENrIXvvkL99rWNG9gDqeMwNF/G1D95XN6rjmjrOIFx3D8KtiR
+	uzMMnhlIr0nGEKF3GIWwgi3O1YgcJJw2EpwtvBmvkGrVKgMxufZFbDMoXGO9IMFtAPqtM4Ar8/r
+	6DmqqXtBDkKL65wjc8wAlkFnN2IulUSoF9k1wWK8z3NfXd//H4JOQ=
+X-Received: by 2002:a05:6102:801b:b0:744:dd70:a364 with SMTP id ada2fe7eead31-7634d10f5c8mr6869570137.9.1786264196337;
+        Sun, 09 Aug 2026 01:29:56 -0700 (PDT)
 Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c40ae6a78esm2856941e0c.4.2026.08.09.01.29.26
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-763feadc5e1sm3238702137.6.2026.08.09.01.29.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Aug 2026 01:29:27 -0700 (PDT)
+        Sun, 09 Aug 2026 01:29:55 -0700 (PDT)
 Content-Type: text/plain; charset=UTF-8
-Date: Sun, 09 Aug 2026 03:29:20 -0500
-Message-Id: <DKK9SR2E6KW6.2BS7C3ZY2MBC1@gmail.com>
-From: "Kurt Borja" <kuurtb@gmail.com>
+Date: Sun, 09 Aug 2026 03:29:49 -0500
+Message-Id: <DKK9T3XRZJEV.R83PII0D35H@gmail.com>
 To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
  <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring"
  <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
@@ -72,59 +71,111 @@ Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
  <andy@kernel.org>, <linux-iio@vger.kernel.org>,
  <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
  <linux-gpio@vger.kernel.org>
-Subject: Re: [PATCH v3 9/9] iio: adc: ti-ads1262: support common mode
- supplies
+Subject: Re: [PATCH v3 0/9] iio: adc: Add TI ADS126X ADC family support
+From: "Kurt Borja" <kuurtb@gmail.com>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 X-Mailer: aerc 0.21.0-0-g5549850facc2
 References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
- <20260807-ads126x-v3-9-f89925d72792@gmail.com>
- <b760633d-a9af-4dc1-be6d-496b7a19e847@baylibre.com>
-In-Reply-To: <b760633d-a9af-4dc1-be6d-496b7a19e847@baylibre.com>
+ <9c2e2c46-32de-4e8a-88c3-bfc2cfe8157c@baylibre.com>
+In-Reply-To: <9c2e2c46-32de-4e8a-88c3-bfc2cfe8157c@baylibre.com>
 
-On Sat Aug 8, 2026 at 1:40 PM -05, David Lechner wrote:
+On Sat Aug 8, 2026 at 1:37 PM -05, David Lechner wrote:
 > On 8/7/26 10:58 PM, Kurt Borja wrote:
->> Enable common mode regulators. The usual configuration is to have our
->> own 'vbias' regulator connected internally as common mode voltage on the
->> AINCOM pin.
->>=20
->> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
->> ---
->>  drivers/iio/adc/ti-ads1262.c | 25 +++++++++++++++++++++++++
->>  1 file changed, 25 insertions(+)
->>=20
->> diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
->> index 533574169b04..238d803abc50 100644
->> --- a/drivers/iio/adc/ti-ads1262.c
->> +++ b/drivers/iio/adc/ti-ads1262.c
->> @@ -962,6 +962,27 @@ static irqreturn_t ads1262_irq_handler(int irq, voi=
-d *dev_id)
->>  	return IRQ_HANDLED;
->>  }
->> =20
->> +static int ads1262_common_mode_setup(struct ads1262 *st)
->> +{
->> +	struct device *dev =3D &st->spi->dev;
->> +	char name[sizeof("aincom")];
->> +	int ret;
->> +
->> +	for (unsigned int i =3D 0; i <=3D ADS1262_INPMUX_AINCOM; i++) {
->> +		if (i < ADS1262_INPMUX_AINCOM)
->> +			scnprintf(name, sizeof(name), "ain%u", i);
->> +		else
->> +			scnprintf(name, sizeof(name), "aincom");
->> +
->> +		ret =3D devm_regulator_get_enable_optional(dev, name);
 >
-> We need to get the voltage which is then used to provide an offset
-> (IIO_CHAN_INFO_OFFSET) for the channel.
+> ...
+>
+>>   - @David: I added support for the monitor channels, but I prefer to
+>>     parse them from DT instead of making them static (similar to the
+>>     ad4170-4 approach too :p).
+>
+> Why? Unless there really is some property that depends on how the
+> system is wired up, it seems like this is just making unnecessary
+> work for users to be able to use the monitor channels. And if someone
+> decided later that they do in fact want to use the monitoring channel
+> and it wasn't in the devicetree, sometimes it can be very difficult
+> to actually change the devicetree.
 
-Sure! I didn't think it was necessary but I can definitely add it.
+The only thing I can think of is the reference source. The datasheet
+says "Measure the supply monitor readings using either the internal or
+an external reference".
+
+I saw that the ti-ads112c14 also allows the monitors to be referenced
+externally but you didn't implement support for it. In my case I think
+it's okay to leave it unimplemented too and make the channels static.
+
+>
+> The monitor inputs also have many restrictions compared to a
+> normal input that it would be really hard to describe correctly
+> in the bindings without allowing things that should not actually
+> be allowed. (can't have excitation current or burnout, temperature
+> channel requires internal reference, most should be single-channel,
+> etc.)
+
+Good point.
+
+>
+>>=20
+>>   - @David: About filters... As I mentioned in the previous version, the
+>>     data_rate configuration takes precedence over the filter selection.
+>>     If an incompatible filter (given a data rate) is selected, the chip
+>>     resorts to a sane compatible one when doing conversions (either
+>>     SINC1 or plain SINC5).
+>>=20
+>>     Now, I don't know how to expose this in userspace. Should I limit
+>>     the sampling_frequency_available attribute (given a filter)? Or
+>>     should it be the other way around, limit the filter_type_available
+>>     attribute (given a data rate)?.
+>  I figured that the filter type selection would be more important than
+> the rate so when I implemented it for ADS112C14, I made it so that
+> one has to pick the filter first and everything else flows from that.
+> (I didn't expose sampling frequency until the same time as filter type.)
+>
+> The thinking behind this is that if you do care about filtering, then
+> you are picking filter type and sampling rate to get certain notches
+> and/or frequency response of the filter rather than trying to get a
+> faster or slower sample rate.
+
+I think this makes a lot of sense in your chip because there is no
+plain "data rate" register. The data rate ends up being a consequence of
+the modulator divider + OSR/filter settings.
+
+>
+> And the driver also allows using an hrtimer trigger to do single-shot
+> samples for cases where one doesn't want to sample as fast as possible
+> in continuous mode. This would be more useful to someone who just cares
+> about sample rate and not about filtering.
+
+Why did you go for this instead of just leaving the continuous mode
+running and reading on each trigger?
+
+>
+> Just posted the series yesterday:
+> https://lore.kernel.org/linux-iio/20260807-iio-adc-ti-ads112c14-filter-su=
+pport-v1-0-4d3ba00caf18@baylibre.com/T/#t
+
+Can you Cc me this series too? The settlingtime stuff is something I'll
+implement too.
+
+>
+> ADS126X seems a little less complicated in this regard though
+> as the same sampling rates are available for all filters with
+> the exception of the FIR filter having a limited subset. So I
+> would go with the option to limit sampling rate based on filter
+> type, not the other way around. If a higher rate is selected
+> when changing to the FIR filter type, just have it go to the
+> max (20 SPS).
+
+I'll go for this!
+
+>
+
+Thank you very much for your review and tags :)
 
 --=20
 Thanks,
