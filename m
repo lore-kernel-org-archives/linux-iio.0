@@ -1,466 +1,248 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11021103.outbound.protection.outlook.com [52.101.62.103])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D08415F2C;
-	Mon, 10 Aug 2026 14:49:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.103
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B4C639CD00;
+	Mon, 10 Aug 2026 15:06:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.135.77
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786373397; cv=fail; b=eQCxEWDCJKIDMTRvKftvTB4hH/zssBHpdcxZgnBXpEldqmaETz/5YK6zFHWIB09NREvAO2bvh0oep8q5mTz6bnw1sYEo3DibGCr1xEJkzt79Ooxt+l/gFyBhnyPpeT/6SmqSuwl8ZTorvWKTv66vY9M06AvB2tm5U3WGHAxEIv8=
+	t=1786374376; cv=fail; b=ObpTHGNraSrG8uxNSFSOQyHceWVgeEJ84hJPbNdXrpT2+VopI4U1FwmuXi3oq7rS2dnPY2UjeEJZzViPgmfQ8OZJb4f6HME0l+Mdzbt0nyqXmrNc8utB8BzJc3JdX1Rzi3gI1gvRP3i7Wh9k/2UJOPnCtrZ+9iBThkqhe3t1Ido=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786373397; c=relaxed/simple;
-	bh=q10xQewckkFzhyFbWUqmuq4rjdpDRGiqM4MDJsrTNKs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=eSMxD6egytxZalE5LIVyxYf118CyUrF05BltYaBCE7xzGdDydWyzMQKybq95ugVTPz61CQrkzHMQh7FIzHvpO2O5yKbJSXQdxP/OKhQaZGOi+93XxBdUw527FaUolxMY7eKhIBeyfQ9IlJUIFPMUrPtUX0cyAKiBmBRoFXGUkhg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=Xclivr+B; arc=fail smtp.client-ip=52.101.62.103
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
+	s=arc-20240116; t=1786374376; c=relaxed/simple;
+	bh=3HghJ/9pBoAKSNsR9ZJkox3882nTasCVAjCxNoI4L1g=;
+	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=PsM+HpPl4zLESSSI1sItz6nQ3kmsMN2ftljWMADgE7sJ4nN3rc7esNC0zm5xchW8PGPHBCPVsuzX1Cjc9yjiOo5+/kI20oQvpNEgpyFgP/Zl3x+QdelpDTYxy3F+iZuYnSag0oqPut5naPRYUnXh9Yeh97odtzQMFAkU9AdIRsc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ilzXO74B; arc=fail smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="Xclivr+B"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ilzXO74B"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67ACsJC01464309;
+	Mon, 10 Aug 2026 11:05:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=VRCnAE0IIOJlXoVffYIh0CT8tLq
+	MXth8Vbiu2ch7hUQ=; b=ilzXO74BPI9++KCoaSowdiicL6hD5hcvetLrOX+Yjax
+	8b9h1V/AQtHOZJFIPJ39FZc+/UoveZBCnWRIqqArOtNli/U8aq+8ZkrJzWR4Tyko
+	n6WmGtdoLcuNtIlgU4g0Qkamx9UYWCCweQRaZuu78AqhNE3HcZCrYEqg4e6kyJQk
+	a9ypmPGfpzP4aZCihxgUbSxb2ny+8VrqbNhGqdycx69w6nOgqocqbneu2jzk1deZ
+	XPhTsEjOSWawjGaXBGaEHVe2xoNcb7hr4sQ0AKdNLRKjQ6KuCuqPQYyezQS94RXi
+	d6wlQp2xtEiB/5DHOj2eU37KK7PAk/sjX3UJQhVgR1A==
+Received: from sn4pr2101cu001.outbound.protection.outlook.com (mail-southcentralusazon11012036.outbound.protection.outlook.com [40.93.195.36])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4fxjse5ast-2
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Mon, 10 Aug 2026 11:05:41 -0400 (EDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=l8wl7AxSuqjBEbMLx/ZUvJZm7srk0I5g98AXKqXbyW6ANFj1Om2n+7rtEkNOpKfRbYXuYEBteSU3pRb7u7kJdkzyJjsTFaHPqBQHJggTCb7Crb9d4THbNBNw9DlNbwgcdIJkWWvT9Z63rPe8s6Q4n7+qjVssyIvc983yA4rY1Enh3lk00dKFrm0aEo2i4/4SCvYRR7MrfOSUSGouXuMiZwmSRInrClG1a04/8W3LLpQXSejA8Y6PG/IEJvfF0TL7SOknIT0YwTXtmh3NNvS9wB0wGtwQVS/w2wHQdNHijOH+6cr+mb7NjGluQqGEbJiLYMGDOzFNDnLFLhjpAIHsaA==
+ b=h3emD70imhlFqmIVmXbjO+Aghj+d46UVR/IIgZlTZR8Og7GvdxjkXZU03G0/Iri4/1YwoyzOpV8hxravsXWy5vdEtqqG5+btAONtTYiZM8jJbnGP+WX55a9R+NRoJJ1yPIMhk1gYw1hqjwlmydggjfyUO7Xvx3kPvp8vvusEt6oW5WL8z4IPxz1FmrHo1FrxN6UJSlNVtZBG0gLNMoz+KfMy7LZVFXXFPvuzY0IkVG+V/RFjZUgvdNYfiXr1rpJG8BLFTK9plT6rpQL2gqobk9h8RBIMT5g6VnNGLGlEUd8tkkWSAIuDV1Jzw6TW2A9uU2BbdlSfOb0z6xmD1sZydA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n2zs7GI5jAqT+hOA5NCl01lebziYzNK03BpttKrJ2FY=;
- b=UxnRb98mUDFOwk2iEKWUa0iVrQ9SXUdbrnEpJgOuu3iUhQmTSpmjg6plbMbmud0G+Hux35ixtU5UyE7Xz/NWws74FJE8qAUWENG28pC9leo56ANRmNeylyzwQIYVn+p3LRLgkkSOmc5Qwwg/bvCmQhAMl0VHCwcEApdn5o4X7JEQsOPTbN3OUxmeOLSNKRdrf1p2LIbzpHFXAY/+ljYUsBPWg0qf7rijfnkg1j5EB1yldv1fkqq0A/rn4duvMDQqHnOfBjnH/LgPzbebRj+FMvqzZKhckpyEUjKGD8caaFblE5oYnjlbWyp2K4T/8nPcGMJDqE03+cLnKA3MG18Pog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 64.62.143.114) smtp.rcpttodomain=analog.com smtp.mailfrom=axiado.com;
- dmarc=none action=none header.from=axiado.com; dkim=none (message not
- signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n2zs7GI5jAqT+hOA5NCl01lebziYzNK03BpttKrJ2FY=;
- b=Xclivr+BnM/4JuKTEpEgVBjHDifVPdT9uM70c3gblVwgFLwCSxf4UyO2LiezsKqGhKGYH265vSYp1so97mpL+zZUzfmTPvAtQR7dkqRPmSpDXq8wbB1+5KKHNtyA4zQ1zaugammYqxgOY+9TQpkM6Uwsyf0bt8XsffZtdMfEO8CM5/71hjR/rLfWOKG2e5anmFhH5+KT/N9wPbO8jGgPtl1kL0+M1moOcHu61WaPl5JatJJqzjpuYByxmUT4CdrX1iFdd8sRxyRMHoqK9nqB0+g3DurjJ9Y16KmTzlfUvOphzSqoSJQtMYRS95BYPvLBk86D2YQDcnp1uhdmiT4pxA==
-Received: from CH5P221CA0002.NAMP221.PROD.OUTLOOK.COM (2603:10b6:610:1f2::27)
- by MN2PR18MB3654.namprd18.prod.outlook.com (2603:10b6:208:26e::9) with
+ bh=VRCnAE0IIOJlXoVffYIh0CT8tLqMXth8Vbiu2ch7hUQ=;
+ b=Albhb+rdm4Gr6VqCXeBeCT/a045vOGi/sDHtGkb4rRMw4afVUOO2OfSqVO8FEnBvHCo2jyxiY03EqmuR8f3OaywVVHePuePuhonN59eTwWq5RCeCmglVQQlTmNBmfnlrNnxwt34Bv/fuDlg4K4dVyKi1a1l5kNTuuWjrhPSghc9JRjeqXFBk0/aQ9aVovzB9iKWAT8fcQu19beAjmJMOvJ6qiUQP/7k6fh2rXnI7rto7Ip+s6HFGFoB8uCp1o6BECeFpd9AgUmkR/54g7/Qt5mrRl6LYf6vrD6egggUuCItzxEgmaW0SuqioK20PVAPwjWVG98vxppRWHFhz5yny5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
+ by DS7PR03MB8170.namprd03.prod.outlook.com (2603:10b6:8:266::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Mon, 10 Aug
- 2026 14:49:45 +0000
-Received: from CH1PEPF0000A348.namprd04.prod.outlook.com
- (2603:10b6:610:1f2:cafe::8) by CH5P221CA0002.outlook.office365.com
- (2603:10b6:610:1f2::27) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.292.25 via Frontend Transport; Mon,
- 10 Aug 2026 14:49:45 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 64.62.143.114)
- smtp.mailfrom=axiado.com; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axiado.com;
-Received-SPF: Fail (protection.outlook.com: domain of axiado.com does not
- designate 64.62.143.114 as permitted sender) receiver=protection.outlook.com;
- client-ip=64.62.143.114; helo=smtp.corp.axiado.com;
-Received: from smtp.corp.axiado.com (64.62.143.114) by
- CH1PEPF0000A348.mail.protection.outlook.com (10.167.244.4) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.315.6
- via Frontend Transport; Mon, 10 Aug 2026 14:49:45 +0000
-Received: from axz-uw1-build-vm02.corp.axiado.com (unknown [10.14.1.22])
-	by smtp.corp.axiado.com (Postfix) with ESMTP id 93FA24186B59;
-	Mon, 10 Aug 2026 07:49:44 -0700 (PDT)
-From: Petar Stepanovic <pstepanovic@axiado.com>
-Date: Mon, 10 Aug 2026 07:49:36 -0700
-Subject: [PATCH v5 2/2] iio: adc: add Axiado SARADC driver
+ 2026 15:05:34 +0000
+Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
+ ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
+ ([fe80::2a19:76b2:e731:8c5a%6]) with mapi id 15.21.0292.024; Mon, 10 Aug 2026
+ 15:05:34 +0000
+From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Subject: [PATCH v2 0/9] dmaengine: Support bus widths of 32 bytes and above
+Date: Mon, 10 Aug 2026 16:06:41 +0100
+Message-Id: <20260810-dmaengine-support-wider-dma-masks-v2-0-1f7b798d035f@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42OQQ6CMBBFr2K6toa2QsWV9zAshnaAqrSkBdQQ7
+ i7FmLhk+SY/781EAnqDgZx3E/E4mmCcXYDvd0Q1YGukRi9MeMKzJGMp1S2grY1FGoauc76nT6P
+ RxzttIdwDTQEU48dcIpdk8XQeK/NaG9fiy2Eob6j6KI6LxoTe+ff6xMji7tfLNvRGRhOqgQs4a
+ VXKNLuAhYerD8q10b6qpEi2qoQUvGJVrnMF/6pinucPjV6a9TABAAA=
+X-Change-ID: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
+To: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, Frank Li <Frank.Li@nxp.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786374404; l=3157;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=3HghJ/9pBoAKSNsR9ZJkox3882nTasCVAjCxNoI4L1g=;
+ b=IdXnZ7X3kC2KGD4kV6V46pNw/mH5EkIufhTaLbwcz/ngHQ4lJw39Tg+ewPS6iZzD83fT6fvfS
+ Mt/cWLP9t9HA5c7jon+K2n+5ETTg3dM7GZKo6xsmNKeZS4+8jH4EiQB
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-ClientProxiedBy: MA2P292CA0019.ESPP292.PROD.OUTLOOK.COM (2603:10a6:250::17)
+ To SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260810-axiado-ax3000-ax3005-saradc-v5-2-bb0df3ecedaa@axiado.com>
-References: <20260810-axiado-ax3000-ax3005-saradc-v5-0-bb0df3ecedaa@axiado.com>
-In-Reply-To: <20260810-axiado-ax3000-ax3005-saradc-v5-0-bb0df3ecedaa@axiado.com>
-To: Akhila Kavi <akavi@axiado.com>, 
- Prasad Bolisetty <pbolisetty@axiado.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Petar Stepanovic <pstepanovic@axiado.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786373384; l=10399;
- i=pstepanovic@axiado.com; s=20250916; h=from:subject:message-id;
- bh=q10xQewckkFzhyFbWUqmuq4rjdpDRGiqM4MDJsrTNKs=;
- b=YHj2xnpGpFdtjxPomdhCvRzlBNPfyZe+zTtJG1tZ1jpNJc81Omnc2a7ul+igN/3J+FPPTuJIZ
- 7Mn6hNZcKo5DnjJPtWh4h2peODsY0ugPRMFMhrLESgxm8D+G62ybezy
-X-Developer-Key: i=pstepanovic@axiado.com; a=ed25519;
- pk=70f1UJOGT9U11ZK6o+ENXtv0I5wBE3e+Y9YWODzRsdI=
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000A348:EE_|MN2PR18MB3654:EE_
-X-MS-Office365-Filtering-Correlation-Id: b5089a1f-f5fc-44a6-12ae-08def6ee9e8c
+X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|DS7PR03MB8170:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b8b1fe1-a7b1-4779-65aa-08def6f0d3e9
+X-LD-Processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|23010399003|376014|7416014|56012099006|10067099003|6133799003|18002099003|22082099003|921020;
+ BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|6133799003|10067099003|56012099006|11063799006|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	jkZsKXj/6Q9now9z/WcwvUyLs6sqsJN04mDYAiGlMpyzdcBEE2cRusOFJ6APoQrnOFvie8yL8rOBo+0C5GjefWTixoRblmiOOwHMyJSxruYKluRkyaujB3qfPKi5TuSXeskv4/IvTSXPVdVvmmxRW7fnNHyzT+YhqeucSwzmc4val7+ZWj++yRtJtLCwBa9JKN6AFM3+uKR5LjXqg0Q62Ba/zY5FZVSq0/OZ2vdnjXB91m5w4UMYmSG6ireaowcsa6bcWF1hqFnnFksR6VUjUKyO7pdmhb0v338eN7411G2TcDRoGDEjARyvB2q7qkOukcH0yUGiuYTutvCCQHGGCnLEnbDKoQf+HOXROJECbgwGJckOAZGsJ5clIfuWDAku2HynUjv96soQWGpbkbzkWKCAxiTlXqC1am6CMav3uDkHNw+PXxUWadpTSNF1vc0DjKLzQplmZbggOfDohUzSX6iimxgGpdU/D4eAmgwc0dir6ZrxNLhV+FQUNqZTw+2PRRmab/RrP6TpinBKn3Qau1PvA++dc7VLd1Fs+OC8aXMbhHePmMKfOJY8oMPx8vNZmqJ4Vc+Ih2E0SJplG6VCOFhHADi/jgef2EsF1qEt8lql9LKfh2XEkYXQY/jk5wzVAaOFRvcw/PUacLIuC+FWTOFSxYzoEOmPm7J43XgLFEx/mZcH16ZlaUOsgF2/Juy699SRRAPNAtH1gPRYdJI040ayvdJLEUh/wpFYi50AgVlRu704uoDjXRMj20u4qTS9
+ s0Bkqj63mDfGU1f21jy76UsoNOpl9j71KdiwXr5jQX5zAyUuwutBmnhgeyN7loZ06cXSsD+qNqa3wzM5EHsFU2O89t6E3nofXbFx6zG2Mn+QDaXKZGK3R+2qsvX8jYdJwum3D3YX3KdYY/6KHFUwt8aEtQ6koNbAZwnkptEZEx4VtpOEhyGQ1uoao3jWccloaAyQyWrCk219LfhwXSwsq/A5QWnN8yncZL0862o2YG50t9yUDzNheCx397gT5TFi7aAQanyLb3VJ75SquEOFiAA6gGdJa50hZhMLBn82IOirxx23h0jj3q0bjZzfYGqK+wczwIOhJ7ByJwPESIOJeBxBhe3Qd9tZInrt5o5bZz3Xj2reniWY1bKp/fusJEjVMapHH685+suMYIVdTYNBVPEsFcEK37fqiEn1yF0HsiVJMiJ5p31O1YPXB6Ac/cC5wanKFsbQAvODidcW4/ACEdjwkx2FTYT40CoZIvk26c0TTUIGfod1JhXgcFi85bE0fWIuxjW/p/UgFf5bUoC5QolCNDXJIxzRtqo88gRW3ur2PdHPp/abcr/jO7Gri3ewLGMdYjU0OJ2OVnui+9to+qGccK4StqS0j1GceLMKtDFWTF5vyR6LXMZBObIz0MZ26cjmPWa365tVsd2ertyCclgyMjMIDLxw3uL+aDgstwg=
 X-Forefront-Antispam-Report:
-	CIP:64.62.143.114;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:smtp.corp.axiado.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(23010399003)(376014)(7416014)(56012099006)(10067099003)(6133799003)(18002099003)(22082099003)(921020);DIR:OUT;SFP:1102;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(6133799003)(10067099003)(56012099006)(11063799006)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	Fl3+T3Y08SQmrSBgSZ9OzWjx/Jw9SvBX+oUdmqlO1s3PmdOPeml6uXjwFYKImjb0RzzIBlfnCpcE6GEfxycI0VnkGi4z0cvvPw4EZC6RRgZz3twQrq+2b+UHEqtS1SZtQ3NLp6daWPPMV1bbewpwnZu86Wc7f4DhATmBNdDIRKVpJ2dE+hpCkAf/Z6S600zI3tev11Tu7MLz6fvNXMusiNJEFJ0hXknetSbfIu97qndFyWKDlh7cCCqIKoV1eHcfsPsRzuKAhQFEJ5h9IIrMuvVcgTg02v/6CGK3gpmySAxY8eamXNf3rCobUA8nTVcWUUbtmHyquQrE7C1ph2F/n+NAXvcDXM1pMCrTLJqTitS2tQLjpn9offEfm53rAOfE+hdJQIxgIz7cYdH/e0u/ZjQMk2zXPgP3P3BadrimdOzktjBpckPN4D/8H+9tQWGP
-X-OriginatorOrg: axiado.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2026 14:49:45.2732
+ =?utf-8?B?SHhKOWtNdUFZTktqcExYbXlsRENxWUZTRGRXcklsZDU1YnE4UURxV1JmcEZt?=
+ =?utf-8?B?N3ovS3NndjBKNnhyUlNTdjBOSmlnN2RLaGJNcTdwd3ZmQ2VUUzRicVJrWEEr?=
+ =?utf-8?B?YXU0Z1RHUldadXNGV2ZtSmQxOFFMZmkrUmU5eUVKdnJzWUhBdFdIUllkSlpC?=
+ =?utf-8?B?WW1JTFBxK3lrZ2JaUlN1UnpjbmdBMW9RUm1Hd1hPZUlzaDJaU0lSejZvbDU5?=
+ =?utf-8?B?cDBzcWJHQXZkSzg5T3lIMTBDd0RJcnJBZ2o3RHg3RGZndVBHZTJ4Vm50SzBz?=
+ =?utf-8?B?aSs3aVI2bDhyWEtiYmpRYjU2NVVwaEU4U2JwVlBCcG1IUDY0TVJxZWRWQUlk?=
+ =?utf-8?B?VkpqcXF0aVk3dXlpTWg5bXZrcEg1Yy9pYUdiU1pXWUlDZi80MUVPd20rSElV?=
+ =?utf-8?B?dkdTS0QyVmVERzBzYU5aVXV1a0dhQWNCeUdxYXFVcVpzYTN6YTJJSXN1bHJ5?=
+ =?utf-8?B?VDV6RXJ3QllsQkV1TUQwUW51UmQ4eTRMaXdsTDlmMDZpbHJMTlYyeWt0dERT?=
+ =?utf-8?B?Ti8rU1BpT0FTR3Eyd1lTUzZRU1Vmd0NzYk5xMXdnTmV6VVUzZjVjSURWN2pq?=
+ =?utf-8?B?dzZmZnBRKzVjYlNLc0J6NXZpQ216RXJVaW1NSzMzdWJzNExDRlFYbjlpSGs1?=
+ =?utf-8?B?QTI4NXU4aytEQjNXZGYxUlNkdFVjY3hZSzNaeVVwRHl0dURQMVVEVGRTaG51?=
+ =?utf-8?B?a09UQ1B1ZzJTdjNOaDlua3h2R1hQSW5oNzRjMGpCUDIwSlRGam1FMUxMemJ2?=
+ =?utf-8?B?Y2swRENLdzJydFM2MlBTRDgrMGVwSUdrRmtBT1NCRy94WWR3dFMrSU51TGZl?=
+ =?utf-8?B?T0IxakVkL0JnSjJ4YnJJalZSTHNTaG00clV4RXhJUFo3MytPbVM5MXhhNVVo?=
+ =?utf-8?B?UXBwNHlGRmFhNkxoM2o0RDNrU3REdzZTVlU2S3AzdEpDZjdRbitiR1R0S1A1?=
+ =?utf-8?B?bGVXKzZIMlNIcmpHZXFrT2VGVm1PbFZZU3R1QStFaEtlUVZPbEVKMjJGVVdW?=
+ =?utf-8?B?VlloVUlFeUFwSU9oazRkTTBaanNRQ1MzQkUzMXZJUExqS0N3V1ZSZ0JoanM4?=
+ =?utf-8?B?ZExxWDFtMjRDV2w3a205NEh5dFptcG1JTVRTeE9FUG9IMFBGUFBld2RkWVFr?=
+ =?utf-8?B?Mk42bTE1YmJDbnZhS1c1bko4bW5nODQ5b0hUY1c5SXBHR1djT3c2cFZaT1pi?=
+ =?utf-8?B?Rk0wNmp6MVR3d3VSaWpEWnZmd1VZb3dTNkRVUWVvMjE4V1YzczlsdTNRRDBM?=
+ =?utf-8?B?bHhmNkR0L2QxSXVMTnN3VjBoTEh1TWNKRFhEZ1lwdEVSR0dXS1lnVG1uczNu?=
+ =?utf-8?B?OWtFdWk0OTB0SVZjMGpSa1pFUVhNVWJ3TDBzNFlZL2wrbkFka3NoMVFMTlhD?=
+ =?utf-8?B?ZngyeW9VNitvdS9KQ2c5UUJNVFlDcGliTkhPY2ZsZGtOT2dabjVJaVJGUHhZ?=
+ =?utf-8?B?MldReGNmYjVUUzhmb2JsU0lxdjhYM1F3cVQ0cEg0dDV3cHBxbmpyY0JwOXE3?=
+ =?utf-8?B?Tzk5enFyTmx1MjkzTkRpRzNaZ016c0Z5S01VelNFTlBEbjEyUmMvOERWRWVX?=
+ =?utf-8?B?bDRGbi96K0c0SGs5eThacjJRYkVDaHBReVZWYXFyT2UrZGFpMkIvRW8zemhy?=
+ =?utf-8?B?NEQyRUJMSDY0eFFYblJ5dC8yTzdRRGdlNSt0L1J1czNWYkFlMEhtMXBZM1JP?=
+ =?utf-8?B?OEgyTnh1SElvY2JnUnpwME9UV1FuM2MxdXZiUEJLa3pWelN5UDNMN2Y1L2NT?=
+ =?utf-8?B?RE9TSVJqbHRyVXg0d2tVaWRvRkVPNExXMmpSTXFaMDAweG1ybWdsZnhRTndn?=
+ =?utf-8?B?d2NzVUY2eFBwODMzZ1BBVWpXT3dwZVdpT3JWY0JsbGlSOWcxRE1BVFN2L25l?=
+ =?utf-8?B?Ly9tY1pDTmhjMjdvMldRN0J1c010ek9pL2JBZnp4OFgvamJ4eFdDekc3WlBv?=
+ =?utf-8?B?SXlnZEE2WlM2MUoxU1FkZmNjMXhFQ0E5VFBmODVEUkhHeWhCdkRJYUNYVUpt?=
+ =?utf-8?B?LzZvek9wU0FtR0lVcjFTcWw0NEJTNVdmWFpOMXlRMUE0TGxWS1IzZzVlQ1lw?=
+ =?utf-8?B?L3pxWWdrTDlMeURnR1RWQmNBdDJSVmloL2hRaEYvaVpKQ25yRFNXQXVHdWVm?=
+ =?utf-8?B?QnpscjEvOEtsWDNMV1BQVG1WbytpUEZ2QXNZWTFnV3lxTDVldTdKWXZGOHVC?=
+ =?utf-8?B?RXk0MG5MMy8rdkQrZ3JFdEUxRXN3cnV4VnVYTUdESlJackZWcVczOEZhTXNu?=
+ =?utf-8?B?UlhnOHhyVmdMQk85bTczc0F4Y3BzajdvVnB3WnVmdFI0S1U5YlFOMFZUMS9X?=
+ =?utf-8?B?clFkQVNwcGJnMVRzb011UnpGMjkrOUZvOGNqSi9pRW00UVR2ZkViZz09?=
+X-Exchange-RoutingPolicyChecked:
+	poCO70EyS+D0Im69rdVI76Y6uaKx7yunFJCXpIRc7jL3az3SYncndR2OqWeyp6jMS/FVZzrfIiH3vgS2yVjseF5TF/WtlgaID8exY1lFdu+YR2vfkvXmVXSkyy448AyM8vRSRop9F62yYuj0Iz7XC10eLC4gf2pwHUiFmD4/U5Di5NdOpMW2E7yUhsYSTdwYd0W9bnQohNkblKf40rdg9YeZjDfwrq6lqC/zY+q+H23kyRBT643KLfCAKQWTx2kLjVfHA3Wif19kpgjypOSFrORjrhu77N2FU2LQT6nm6j0JNMAjKU3uBN/azXJQPUz3L4b/5aLrJ5HsGnGXp9S4MQ==
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b8b1fe1-a7b1-4779-65aa-08def6f0d3e9
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2026 15:05:34.2271
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5089a1f-f5fc-44a6-12ae-08def6ee9e8c
-X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ff2db17c-4338-408e-9036-2dee8e3e17d7;Ip=[64.62.143.114];Helo=[smtp.corp.axiado.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0000A348.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3654
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EJ8WvKYobUC8kKeD5H6qh7HWQ9fNaG2GK7TwcS6AltCZ6UufDtpJ0TKjkXxAXrrjP6FbB6N5VyVgY7GTuZNmfw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR03MB8170
+X-Proofpoint-ORIG-GUID: nrEoVOBh2GCj_wxbA2-xyb_TS99-AUYo
+X-Proofpoint-GUID: nrEoVOBh2GCj_wxbA2-xyb_TS99-AUYo
+X-Authority-Analysis: v=2.4 cv=MLBQXsZl c=1 sm=1 tr=0 ts=6a79e8c5 cx=c_pps
+ a=1PMvcOD3Mx+UKTR1GZf1Bw==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
+ a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
+ a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=M51BFTxLslgA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22
+ a=VwQbUJbxAAAA:8 a=bC-a23v3AAAA:8 a=gAnH3GRIAAAA:8 a=lWmi8EHbcr2KEopbcr8A:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=FO4_E8m0qiDe52t0p3_H:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEwMDEzMCBTYWx0ZWRfX0AadYFecdirq
+ 4ydagKznNfIUZzK56LJqnIZ/vWRGr8q+DLhZsX4ZYTjTCeBa0o1iRfLJhM5z46pS0zojHd+qIwj
+ 5rcszsD8+MtDP7u4WxsuDbbLlIeZEtWEGNmVnXQss9GHAFJWheifYn8YdV+fPWL23VwKC0gKPXT
+ ysfrMBRUY7u+APaErHj9FIQPY95FELZ6Gg1YGO769ZbV9Y9pob8DLIISoSPUvOE9vaDdewcoN9M
+ 7fVM280USzyMv49toJfqeqF+q9NI0xnGOCM/oHdQBct8Z//ZiKiV3zPEVjziWNiGJ8XCTCzopVF
+ uQ+dxGkUgV5fIv6qVOcVpCrtzmK4NADYIMAVMfxWZyVVQPkBkJde3LsD2mp+EBB7zXlF0boYqFC
+ CeLS3PGy1ixWDZIdOHikoo/LYZzEfdLdOUubsrlU0gMvKT8qaR3bjX4XCIyORoIoIRDUqRf80zq
+ Bi4NOBfBGe77KpqhODQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODEwMDEzMCBTYWx0ZWRfX/1BrivB/phdK
+ eAqca+tuYYEmzBB+aHdRsD2xTsxyWgsYkeIPu0L2VtZ+uyglMwMblXNwhVpB+uLtr6tILu2bdmR
+ yrWaLwP0kHUXQmckxevVHQlYYbkPimidYZ2hd8XOAhnJ+nBQBXMk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-10_03,2026-08-07_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0 adultscore=0 suspectscore=0 impostorscore=0
+ spamscore=0 clxscore=1011 lowpriorityscore=0 bulkscore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608100130
 
-Add support for the SARADC controller found on Axiado AX3000 and
-AX3005 SoCs.
+The DMA engine slave capabilities advertise the supported source and
+destination bus widths through src_addr_widths / dst_addr_widths. These
+are plain u32 bitmasks where a set bit's position equals the
+corresponding enum dma_slave_buswidth value, e.g.
+DMA_SLAVE_BUSWIDTH_4_BYTES sets bit 4.
 
-The driver supports single-shot voltage reads through the IIO
-subsystem. The number of available input channels is selected from
-the SoC match data, allowing AX3000 and AX3005 variants to use the
-same driver.
+The consequence is that widths of 32 bytes and above cannot be
+represented at all: DMA_SLAVE_BUSWIDTH_32/64/128_BYTES would need bits
+32, 64 and 128, which do not fit in a u32. Hardware with wider data
+paths is becoming common, so add a representation that can express these
+widths while still using enum dma_slave_buswidth.
 
-Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+This series switches consumers and a small set of producers to bitmap
+based bus width capabilities. The legacy dma_device u32 fields are kept
+for now so the remaining DMA controller drivers can be converted
+incrementally. dma_get_slave_caps() folds legacy producer masks into the
+new bitmap representation returned to consumers.
+
+Once the remaining producers are converted, the legacy dma_device
+src/dst_addr_widths fields can be removed as a final cleanup.
+
+This issue was discussed before here:
+
+https://lore.kernel.org/dmaengine/abkoXXbaxaiqbBuX@vaman/
+
 ---
- MAINTAINERS                     |   1 +
- drivers/iio/adc/Kconfig         |  11 ++
- drivers/iio/adc/Makefile        |   1 +
- drivers/iio/adc/axiado_saradc.c | 278 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 291 insertions(+)
+Changes in v2:
+- Patch 5:
+  - Goto the error label instead of directly returning so the clock is
+    disabled if setting the bus width capabilities fails.
+- Patch 9:
+  - Improve the commit message to make it explicit that only the
+    struct dma_slave_caps legacy fields are removed and that the
+    struct dma_device ones are kept until all the DMA controller drivers
+    are converted.
+- Link to v1: https://patch.msgid.link/20260730-dmaengine-support-wider-dma-masks-v1-0-3732f1f9d9ca@analog.com
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6f4febfe4fd..d2e99c2260fa 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4319,6 +4319,7 @@ M:	Prasad Bolisetty <pbolisetty@axiado.com>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/adc/axiado,ax3000-saradc.yaml
-+F:	drivers/iio/adc/axiado_saradc.c
- 
- AXIS ARTPEC ARM64 SoC SUPPORT
- M:	Jesper Nilsson <jesper.nilsson@axis.com>
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a9dedbb8eb46..c6fe026dc70e 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -631,6 +631,17 @@ config AT91_SAMA5D2_ADC
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called at91-sama5d2_adc.
- 
-+config AXIADO_SARADC
-+	tristate "Axiado SARADC driver"
-+	depends on ARCH_AXIADO || COMPILE_TEST
-+	select REGMAP_MMIO
-+	help
-+	  Say yes here to build support for the SARADC found in Axiado
-+	  SoCs.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called axiado_saradc.
-+
- config AXP20X_ADC
- 	tristate "X-Powers AXP20X and AXP22X ADC driver"
- 	depends on MFD_AXP20X
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 097357d146ba..96de0ce1d90a 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -54,6 +54,7 @@ obj-$(CONFIG_ADI_AXI_ADC) += adi-axi-adc.o
- obj-$(CONFIG_ASPEED_ADC) += aspeed_adc.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
- obj-$(CONFIG_AT91_SAMA5D2_ADC) += at91-sama5d2_adc.o
-+obj-$(CONFIG_AXIADO_SARADC) += axiado_saradc.o
- obj-$(CONFIG_AXP20X_ADC) += axp20x_adc.o
- obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
- obj-$(CONFIG_BCM_IPROC_ADC) += bcm_iproc_adc.o
-diff --git a/drivers/iio/adc/axiado_saradc.c b/drivers/iio/adc/axiado_saradc.c
-new file mode 100644
-index 000000000000..daa98dd2f176
---- /dev/null
-+++ b/drivers/iio/adc/axiado_saradc.c
-@@ -0,0 +1,278 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (c) 2021-2026 Axiado Corporation
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/math.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/types.h>
-+#include <linux/units.h>
-+
-+#include <linux/iio/iio.h>
-+
-+/* Register offsets */
-+#define AX_SARADC_GLOBAL_CTRL_REG	0x0004
-+#define AX_SARADC_MANUAL_CTRL_REG	0x0008
-+#define AX_SARADC_DOUT_REG	0x001C
-+
-+/* GLOBAL_CTRL register fields */
-+#define AX_SARADC_GLOBAL_CTRL_CH_EN_MASK	GENMASK(31, 16)
-+#define AX_SARADC_GLOBAL_CTRL_SAMPLE_MASK	GENMASK(6, 5)
-+#define AX_SARADC_GLOBAL_CTRL_MODE_MASK		GENMASK(4, 3)
-+#define AX_SARADC_GLOBAL_CTRL_PD		BIT(2)
-+#define AX_SARADC_GLOBAL_CTRL_ENABLE		BIT(0)
-+
-+/* GLOBAL_CTRL SAMPLE_MASK field value: 0 selects 16 samples */
-+#define AX_SARADC_GLOBAL_CTRL_SAMPLE_16	0
-+
-+/* GLOBAL_CTRL MODE_MASK field value: 1 selects manual mode */
-+#define AX_SARADC_GLOBAL_CTRL_MODE_MANUAL	1
-+
-+/* MANUAL_CTRL register fields */
-+#define AX_SARADC_MANUAL_CTRL_ENABLE	BIT(0)
-+#define AX_SARADC_MANUAL_CTRL_CH_SEL_MASK	GENMASK(4, 1)
-+
-+#define AX_RESOLUTION_BITS	10
-+#define AX_SARADC_CONV_CYCLES	13
-+#define AX_SARADC_CONV_DELAY_MARGIN_US	10
-+
-+struct axiado_saradc {
-+	struct regmap *regmap;
-+	struct mutex lock; /* Serializes ADC conversions. */
-+	unsigned long clk_rate;
-+	int vref_uV;
-+};
-+
-+/*
-+ * Registers contain transient control, status, and conversion data,
-+ * so accesses must always go directly to hardware.
-+ */
-+static const struct regmap_config axiado_saradc_regmap_config = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = 4,
-+	.max_register = AX_SARADC_DOUT_REG,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+};
-+
-+static int axiado_saradc_conversion(struct axiado_saradc *info,
-+				    struct iio_chan_spec const *chan, int *val)
-+{
-+	unsigned long usecs;
-+	unsigned int regval;
-+	int ret;
-+
-+	guard(mutex)(&info->lock);
-+
-+	/* Select the channel to be used and trigger conversion */
-+	ret = regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG,
-+			   AX_SARADC_MANUAL_CTRL_ENABLE |
-+			   FIELD_PREP(AX_SARADC_MANUAL_CTRL_CH_SEL_MASK, chan->channel));
-+	if (ret)
-+		return ret;
-+
-+	/* Hardware requires 13 conversion cycles at clk_rate */
-+	usecs = DIV_ROUND_UP(AX_SARADC_CONV_CYCLES * USEC_PER_SEC,
-+			     info->clk_rate);
-+	fsleep(usecs + AX_SARADC_CONV_DELAY_MARGIN_US);
-+
-+	ret = regmap_read(info->regmap, AX_SARADC_DOUT_REG, &regval);
-+
-+	/* Best effort to stop manual conversion. */
-+	regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG, 0);
-+
-+	if (ret)
-+		return ret;
-+
-+	*val = regval & GENMASK(AX_RESOLUTION_BITS - 1, 0);
-+
-+	return 0;
-+}
-+
-+static int axiado_saradc_read_raw(struct iio_dev *indio_dev,
-+				  struct iio_chan_spec const *chan,
-+				  int *val, int *val2, long mask)
-+{
-+	struct axiado_saradc *info = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = axiado_saradc_conversion(info, chan, val);
-+		if (ret)
-+			return ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = info->vref_uV / (MICRO / MILLI);
-+		*val2 = AX_RESOLUTION_BITS;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info axiado_saradc_iio_info = {
-+	.read_raw = axiado_saradc_read_raw,
-+};
-+
-+struct axiado_saradc_soc_data {
-+	const char *name;
-+	unsigned int num_channels;
-+};
-+
-+static const struct axiado_saradc_soc_data ax3000_saradc_data = {
-+	.name = "ax3000_saradc",
-+	.num_channels = 16,
-+};
-+
-+static const struct axiado_saradc_soc_data ax3005_saradc_data = {
-+	.name = "ax3005_saradc",
-+	.num_channels = 8,
-+};
-+
-+#define AX_SARADC_CH(_index)                                            \
-+	{                                                               \
-+		.type = IIO_VOLTAGE,                                    \
-+		.indexed = 1,                                           \
-+		.channel = (_index),                                    \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
-+		.datasheet_name = "adc" #_index,                        \
-+	}
-+
-+static const struct iio_chan_spec axiado_saradc_iio_channels[] = {
-+	AX_SARADC_CH(0),
-+	AX_SARADC_CH(1),
-+	AX_SARADC_CH(2),
-+	AX_SARADC_CH(3),
-+	AX_SARADC_CH(4),
-+	AX_SARADC_CH(5),
-+	AX_SARADC_CH(6),
-+	AX_SARADC_CH(7),
-+	AX_SARADC_CH(8),
-+	AX_SARADC_CH(9),
-+	AX_SARADC_CH(10),
-+	AX_SARADC_CH(11),
-+	AX_SARADC_CH(12),
-+	AX_SARADC_CH(13),
-+	AX_SARADC_CH(14),
-+	AX_SARADC_CH(15),
-+};
-+
-+static void axiado_saradc_disable(void *map)
-+{
-+	regmap_write(map, AX_SARADC_GLOBAL_CTRL_REG, AX_SARADC_GLOBAL_CTRL_PD);
-+}
-+
-+static int axiado_saradc_probe(struct platform_device *pdev)
-+{
-+	const struct axiado_saradc_soc_data *soc_data;
-+	struct device *dev = &pdev->dev;
-+	struct axiado_saradc *info;
-+	struct iio_dev *indio_dev;
-+	void __iomem *regs;
-+	struct regmap *map;
-+	struct clk *clk;
-+	u32 regval;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	info = iio_priv(indio_dev);
-+
-+	regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
-+
-+	map = devm_regmap_init_mmio(dev, regs, &axiado_saradc_regmap_config);
-+	if (IS_ERR(map))
-+		return PTR_ERR(map);
-+	info->regmap = map;
-+
-+	clk = devm_clk_get_enabled(dev, NULL);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	info->clk_rate = clk_get_rate(clk);
-+	if (!info->clk_rate)
-+		return dev_err_probe(dev, -EINVAL, "invalid clock rate\n");
-+
-+	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to get vref voltage\n");
-+
-+	info->vref_uV = ret;
-+
-+	soc_data = device_get_match_data(dev);
-+	if (!soc_data)
-+		return dev_err_probe(dev, -EINVAL, "failed to get match data\n");
-+
-+	ret = devm_mutex_init(dev, &info->lock);
-+	if (ret)
-+		return ret;
-+
-+	regval = FIELD_PREP(AX_SARADC_GLOBAL_CTRL_CH_EN_MASK,
-+			    GENMASK(soc_data->num_channels - 1, 0)) |
-+		 FIELD_PREP(AX_SARADC_GLOBAL_CTRL_SAMPLE_MASK,
-+			    AX_SARADC_GLOBAL_CTRL_SAMPLE_16) |
-+		 FIELD_PREP(AX_SARADC_GLOBAL_CTRL_MODE_MASK,
-+			    AX_SARADC_GLOBAL_CTRL_MODE_MANUAL) |
-+		 AX_SARADC_GLOBAL_CTRL_ENABLE;
-+
-+	ret = regmap_write(map, AX_SARADC_GLOBAL_CTRL_REG, regval);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(dev, axiado_saradc_disable, map);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = soc_data->name;
-+	indio_dev->info = &axiado_saradc_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = axiado_saradc_iio_channels;
-+	indio_dev->num_channels = soc_data->num_channels;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct of_device_id axiado_saradc_match[] = {
-+	{
-+		.compatible = "axiado,ax3000-saradc",
-+		.data = &ax3000_saradc_data,
-+	},
-+	{
-+		.compatible = "axiado,ax3005-saradc",
-+		.data = &ax3005_saradc_data,
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, axiado_saradc_match);
-+
-+static struct platform_driver axiado_saradc_driver = {
-+	.driver = {
-+		.name = "axiado-saradc",
-+		.of_match_table = axiado_saradc_match,
-+	},
-+	.probe = axiado_saradc_probe,
-+};
-+module_platform_driver(axiado_saradc_driver);
-+
-+MODULE_AUTHOR("Axiado Corporation");
-+MODULE_DESCRIPTION("Axiado SARADC driver");
-+MODULE_LICENSE("GPL");
+---
+Nuno Sá (9):
+      dmaengine: Support bus widths of 32 bytes and above
+      dmaengine: dma-axi-dmac: Use bus width capability helpers
+      dmaengine: dw-axi-dmac: Use bus width capability helpers
+      dmaengine: qcom: gpi: Use bus width capability helpers
+      dmaengine: stm32-dma3: Use bus width capability helpers
+      iio: buffer-dmaengine: Use dma_slave_caps bus width accessors
+      ALSA: pcm_dmaengine: Use dma_slave_caps bus width helpers
+      spi: dw: Use dma_slave_caps bus width helpers
+      dmaengine: Drop legacy bus width fields from dma_slave_caps
 
--- 
-2.34.1
+ drivers/dma/dma-axi-dmac.c                         |  13 +-
+ drivers/dma/dmaengine.c                            |  20 +-
+ drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c     |  39 ++--
+ drivers/dma/qcom/gpi.c                             |  11 +-
+ drivers/dma/stm32/stm32-dma3.c                     |  32 +--
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c |  15 +-
+ drivers/spi/spi-dw-dma.c                           |   6 +-
+ drivers/spi/spi-dw.h                               |   3 +-
+ include/linux/dmaengine.h                          | 234 ++++++++++++++++++++-
+ sound/core/pcm_dmaengine.c                         |  14 +-
+ 10 files changed, 323 insertions(+), 64 deletions(-)
+---
+base-commit: 0613e7934ee233d726af8d8c89f251a1c4df738d
+change-id: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
+--
+
+Thanks!
+- Nuno Sá
 
