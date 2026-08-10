@@ -1,65 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3685F306B3B;
-	Mon, 10 Aug 2026 18:37:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF87CA6F;
+	Mon, 10 Aug 2026 18:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786387049; cv=none; b=NYDAdW3udYUtlecDEfbRQAU+D/FAY84uz2URuMnGDUcwQoPScsu9e6R/tOZxc5Bm4Ot22+OC9NUPAA8fyiVLGYqBx+QW7LoytDZDJ/mhvlGAFBq3FYWoOT+v4zt/ur9MdPMa970PoUf3dN29LyDvWZhwyvCfs5bvKv9v50Oau28=
+	t=1786387304; cv=none; b=aUFAW3NmWbe34gX96VRYY1jyAOmBvSCD3jNEHG4r4sGDMDOEbONvzTeZwD9Jj9UO77VlBdJLzrE8Lw8i9i0Cw+Fmijt51UbjTRZIX354uIX85Vi5XPhXjaAE54YoBNMG9Fa3Mdl62kV5fgttIadYtzDMcuTm+SVavSSGIq6FVyY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786387049; c=relaxed/simple;
-	bh=fCJ3IU6wY98UeZ2VxZeJrOZZPe0TGlme/Eo9Mkvpung=;
+	s=arc-20240116; t=1786387304; c=relaxed/simple;
+	bh=57E9cRtdfwsINd7J4tO4q+jRMsonEqxgIkInVerD7lU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=irpbh1tgiKM2J1s84/feJ46gLFhav17wsSreULSZQY8lcbDcGJ7sLlYXXtWwyhxOOpv73Jr8ZNsihCZG0DxUze5eVXPbC2yz+6OQHjMtNS/LCR3jTGOCU6xbeR+biCOcc9+C2+W6smKRp5nAtrZ3IUK+QVTeXRHlvNTZO9HREkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h9XDqUNc; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=lJx0tNkBxZhhgQquHXVgxvM65FRsxPPo77K8PVhxNVyBexqQjiiapqm4wWNlcaNt4rph/fp2G6/1bjRmXKpFbCkY2fiim413MpScK6L5n5OOHUCKMztAalXKSFUufPrEoF985vqCJ8Wu8WeeBut5lbTjVdSPy27HpKoNs15IsoQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kOKKZXFH; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h9XDqUNc"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kOKKZXFH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786387047; x=1817923047;
+  t=1786387303; x=1817923303;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=fCJ3IU6wY98UeZ2VxZeJrOZZPe0TGlme/Eo9Mkvpung=;
-  b=h9XDqUNc+G1dcbOgz620L/o+1A40O/9aPkETy6866AWxduu078SoGR1Q
-   cGI8wYO+MrWxUzGtgUHIcMDs2KluHtfiAGQcwBg1FvYo+kuqYOm2J76ru
-   3po0aAOFbQB8DTPVctvLVS/CFoS7bvoXnePU1oqomOFLnBUNeVkfumA2P
-   Baf5G8Fjhf1m/5JS+BJ9Cfp1Bcd2OdHJDZPphRiATY/IMfCEtMzeF7XiT
-   b5TQAZS/wukZllYffChv4+vqIJI44s6XbgNA5gvXXEdTIdmt6ki4xUnjT
-   8a+JYwwV9Luz9Ai1EuIZ4ocGt8stFLGlTTiY2q/TaUrdJ21IBI7Wq+MN2
-   w==;
-X-CSE-ConnectionGUID: CMC4Ta7ySWKyazPVhEd/eg==
-X-CSE-MsgGUID: 5sytLKOTQI2PjzF2vF7M9A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="90724956"
+  bh=57E9cRtdfwsINd7J4tO4q+jRMsonEqxgIkInVerD7lU=;
+  b=kOKKZXFHwFIBuWgAlJ40MkEM1jIC0rRSyWE/pV3O8x7CP8mjmUIEGrAh
+   Vs/VLTDK8ukrWCf3ttGvPM0We4o22COm1jOjXh9ruVNCtm4eNpMhismPZ
+   InkZaf8JOz6Phx/cZeM6IEf1yE41a6/IdqHWqKgmZEiJRp9xbsI486kbB
+   tvH69WDoHnKGXo6Sdwv06vE0xOGaoKmlMRs++wQuo6Rmt727iZlpPH+Lb
+   ajqly8WxSsBE3jx/r5jRH3rqMn9bVVvPx6NAc36eByhr8z1a139XWyd2A
+   s7plBZubXuACZhOOfk8Gb4y4QGHx23muP6jynrVoWctYDkAIF9pROUFq7
+   A==;
+X-CSE-ConnectionGUID: rNCHmiECSbCSb8aAVTQelg==
+X-CSE-MsgGUID: VXf7XX+WTGSMWwMcSSUQ1w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="97506961"
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="90724956"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:37:27 -0700
-X-CSE-ConnectionGUID: Dr8OJFLqSseG5yxhQREAOw==
-X-CSE-MsgGUID: rN7lVtyZQ/GXQ6g9EdOJ9A==
+   d="scan'208";a="97506961"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:41:42 -0700
+X-CSE-ConnectionGUID: ckk3Az1oSyK78n3nKIch9w==
+X-CSE-MsgGUID: qZJmAYj2T3SBy0CRdzEWbA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="259267928"
+   d="scan'208";a="263716389"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:37:23 -0700
-Date: Mon, 10 Aug 2026 21:37:21 +0300
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:41:36 -0700
+Date: Mon, 10 Aug 2026 21:41:34 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	Kees Cook <kees@kernel.org>,
-	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Luca Weiss <luca.weiss@fairphone.com>
-Subject: Re: [PATCH 3/3] iio: light: stk3310: support the Sensortek STK36C61
-Message-ID: <anoaYQNHKSNE8Pci@ashevche-desk.local>
-References: <20260810110423.41697-1-jorijnvdgraaf@catcrafts.net>
- <20260810110423.41697-4-jorijnvdgraaf@catcrafts.net>
+To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, marcelo.schmitt@analog.com,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	mike.looijmans@topic.nl, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jorge.marques@analog.com,
+	antoniu.miclaus@analog.com, mazziesaccount@gmail.com,
+	jishnu.prakash@oss.qualcomm.com, duje@dujemihanovic.xyz,
+	wens@kernel.org, sakari.ailus@linux.intel.com, linusw@kernel.org
+Subject: Re: [PATCH v9 1/3] iio: adc: ti-ads1100: Fix incorrect reading when
+ datarate changed in single mode
+Message-ID: <anobXhtKuDZHGaa_@ashevche-desk.local>
+References: <20260804192840.29121-1-jakubszczudlo40@gmail.com>
+ <20260804192840.29121-2-jakubszczudlo40@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,62 +67,71 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260810110423.41697-4-jorijnvdgraaf@catcrafts.net>
+In-Reply-To: <20260804192840.29121-2-jakubszczudlo40@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 10, 2026 at 01:04:23PM +0200, Jorijn van der Graaf wrote:
-> The Sensortek STK36C61 is a 3-in-1 ambient light / proximity / RGB
-> colour sensor (chip ID 0x95) found in the Fairphone 6. Its register
-> interface is compatible with the feature set this driver uses: the
-> STATE/FLAG bit layout, the data and threshold registers and the gain
-> and integration-time fields, verified on that device (the ALS and
-> proximity readings scale with their gain and integration-time fields,
-> thresholds written through the event interface read back from the
-> chip, and the FLAG near/far bit crosses with them). Add its chip ID to
-> the known-ID list and the device table entries.
-> 
-> Whenever the ALS engine runs, the chip also measures four colour
-> channels, laid out directly after the ALS data as 16-bit big-endian
-> values in R (0x15), G (0x17), B (0x19), C (0x1B) order; the R, G and B
-> assignments were each confirmed by the matching channel dominating
-> under red, green and blue illumination, and clear by its broadband
-> response. The ALS data register tracks the green channel exactly.
-> There is no public datasheet and therefore no counts-to-physical
-> mapping for the colour channels, so they are exposed as raw-only
-> intensity channels; the gain field the scale attribute controls does
-> not govern clear either.
+On Tue, Aug 04, 2026 at 09:28:38PM +0200, Jakub Szczudlo wrote:
+> When device is suspended and it is in single mode then changing
+> datarate doesn't make it actually wait for new measurement, so to
+> be sure that read after change is correct, functions that changes
+> datarate and gain will wait for a new data.
+
+A couple of minor issues (no need to resend just for these).
 
 ...
 
-> -	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY &&
-> +	    chan->type != IIO_INTENSITY)
->  		return -EINVAL;
+> +static int ads1100_start_single_conversion(struct ads1100_data *data)
+> +{
+> +	u8 config = data->config | ADS1100_CFG_SC;
+> +	int ret;
+> +
+> +	ret = i2c_master_send(data->client, &config, sizeof(config));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C write fail: %d\n", ret);
+> +		return ret;
+> +	}
 
-Is this now a duplicating a bit with the below choices?
+> +   /* Need to wait because of change from continuous to single mode */
 
-...
+Broken indentation.
 
->  	switch (mask) {
+> +	ret = ads1100_wait_single_conversion(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	config |= ADS1100_CFG_ST_BSY;
+> +
+> +	ret = i2c_master_send(data->client, &config, sizeof(config));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C write fail: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* No need to cache it, it's status bit */
+> +	data->config = config & ~ADS1100_CFG_ST_BSY;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ads1100_poll_data_ready(struct ads1100_data *data)
+> +{
+> +	int ret;
+> +
+> +	ret = ads1100_start_single_conversion(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ads1100_wait_single_conversion(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return ads1100_set_config_bits(data, ADS1100_CFG_SC,
+> +			      ADS1100_CONTINUOUS);
 
->  	case IIO_CHAN_INFO_INT_TIME:
->  		if (chan->type == IIO_LIGHT)
->  			ret = regmap_field_read(data->reg_als_it, &index);
-> -		else
-> +		else if (chan->type == IIO_PROXIMITY)
->  			ret = regmap_field_read(data->reg_ps_it, &index);
-> +		else
-> +			return -EINVAL;
+It's one line (81 characters which is acceptable).
 
-If you want to keep a single point of return, use
-
-			ret = -EINVAL;
-
-here and below in _read_raw().
-
->  		if (ret < 0)
->  			return ret;
+> +}
 
 -- 
 With Best Regards,
