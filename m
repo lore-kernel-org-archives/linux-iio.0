@@ -1,30 +1,30 @@
-Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
+Received: from out-175.mta1.migadu.com (out-175.mta1.migadu.com [95.215.58.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC72384CEF
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:52:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFC6D384CEF
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:52:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348350; cv=none; b=OyrJA5CeOghWqU9Vx32S5CRI9nwr/bthhAVyrwjfIUfwGy/pxX9JtSQrWSh27uAJmcfqc1pftSBPVvjV1DoejFsmVG9jG7otQzgWBVvc/x+6ieQ4jhGRJDHrSNMzy1bRTvGKMllvQH8bqiDoOazsYCmR67g8QPKP4CY8zjjbzuc=
+	t=1786348381; cv=none; b=JvSmegUpskoml1dKhOCUZdUEou8AnBZs+7h6thfaR3A/ex66v8I+N342xayU6ZRhtvYXcThXppcd6ygmXoDs2183KlpLTA1IIg2/N7O5YVgXIak7ijVKGgYqHhX4Oc0ltwCxQtrt2UNMBLWnH8yrjaOLx6vY0qGxHOMTCqCxh1o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348350; c=relaxed/simple;
-	bh=Sf0i42shFsIJxWpnZfQzTBN4eFSekniquXXbfx+XhWw=;
+	s=arc-20240116; t=1786348381; c=relaxed/simple;
+	bh=LVed4bWdf2HKOqT4E1kfml0ufefVYA2isaxiE90fZrw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PglOqQbzwGJHtun3UyJ8IGGAkrM7Cg//11Njz8cMjLL/2iijItDe4XM61FZyDKMB7Uad6KMsFJCArunE2KUwRbWvpHQxhLvf06xCDCT80nwz5lOSsz+vhdRpRka6O8jZtu6x2djGTPjvYmfamdxMHr5WKmELlIS0NycdGQQdxJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=aB0A6hzI; arc=none smtp.client-ip=95.215.58.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=UCkgwZiTLETj93oI0DX+LZyxw3DkI82zzNbkprVkLH92xgeDLmvuUMd9hOFk4j2LnAMpDeGr9+d7899xRVNzrtb+M/Qi5niEVXMtM0sCVbZDwOpfqemz+5PL6WQ9OWloorQFI33butuFZlqB2v5JZXjfWfQ1cRL3SZ6rBdAxTEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=g1WsNOPC; arc=none smtp.client-ip=95.215.58.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="aB0A6hzI"
-Date: Mon, 10 Aug 2026 10:51:38 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="g1WsNOPC"
+Date: Mon, 10 Aug 2026 10:52:47 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348347; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348377; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=7Wj0jGHBOpOwOerk9TCXZGOWhMSAGjptDHTiW1Id/wo=;
-	b=aB0A6hzIRD5WJ5ZiV1Syoq6g0ZTRt1k01IzIaMJmQAfjBRYsFZon9hUJsSEzU+DK6M5cd7
-	oPJdoKHPVb3XpVkYGA2Ity3xnjmchAXgwFHzdsfq7HeF7NGz6Ifqv+NMmfCmZJ1NqCHh0J
-	91pLiyXEQwFLTi1Dv7ubEgdjiaN16GE=
+	bh=tDeZoVHDwPDrk337fTH2l5X9VG6M6V6h04Z+lCjgZPA=;
+	b=g1WsNOPCTDsF0ib3EUwXx47K0R8o34BwIgcb6HY+9G7LgdzFNLk2OJ2sHvbZTfVEJfXS5O
+	ruyuvv87XW1E120KETj03Xtk3TM9Y3gHYMd8LBW6+xYAqg9UOVRNWsN75lFRSUYCLBG9AG
+	U5pce0rce+6BQk6/3tu7r/nFSpwcaUA=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
@@ -39,8 +39,9 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 05/12] iio: dac: rohm-bd79703: Do not allow writing SCALE
-Message-ID: <bf75f4bb0d3d620e5c613c04cfc874767a51ff38.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 06/12] iio: pressure: rohm-bm1390: Return error when read
+ fails
+Message-ID: <ba361c8c8405d5e4f9d94fe0ec34b6c316593472.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -50,64 +51,59 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="1xA2rRkbj2vi5ica"
+	protocol="application/pgp-signature"; boundary="ZtcSuXjKGftasQag"
 Content-Disposition: inline
 In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---1xA2rRkbj2vi5ica
+--ZtcSuXjKGftasQag
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The BD79703 has adds IIO_CHAN_INFO_SCALE in the info_mask_shared_by_type
-so users can read the scale, which depends on the used reference
-voltage. This, however, enables users to try writing the scale as well.
-This isn't really supported but the bd79703_write_raw() does not check
-the mask, and if written scale values pass the validation, the driver
-will proceed writing the DAC value when users writes the scale.
-
-Prevent the unsupported scale setting and return an error.
+The data reading function ignores the cached error value, and
+unconditionally returns 0. Return cached 'ret' -value after stopping
+the measurement so user knows if read failed and data is garbage.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Fixes: af6aca656a85 ("iio: dac: Support ROHM BD79703 DAC")
+Fixes: 534674463a59 ("iio: bm1390: simplify using guard(mutex)")
 ---
- drivers/iio/dac/rohm-bd79703.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/pressure/rohm-bm1390.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/rohm-bd79703.c b/drivers/iio/dac/rohm-bd79703.c
-index e91090e4a66d..68e66e7286d8 100644
---- a/drivers/iio/dac/rohm-bd79703.c
-+++ b/drivers/iio/dac/rohm-bd79703.c
-@@ -73,6 +73,9 @@ static int bd79703_write_raw(struct iio_dev *idev,
- {
- 	struct bd79703_data *data =3D iio_priv(idev);
+diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm=
+-bm1390.c
+index b3be9de03678..d00d7ed54cb1 100644
+--- a/drivers/iio/pressure/rohm-bm1390.c
++++ b/drivers/iio/pressure/rohm-bm1390.c
+@@ -289,7 +289,7 @@ static int bm1390_read_data(struct bm1390_data *data,
+ 	if (warn)
+ 		dev_warn(data->dev, "Failed to stop measurement (%d)\n", warn);
 =20
-+	if (mask !=3D IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
- 	if (val < 0 || val >=3D 1 << BD79703_DAC_BITS)
- 		return -EINVAL;
+-	return 0;
++	return ret;
+ }
 =20
+ static int bm1390_read_raw(struct iio_dev *idev,
 --=20
 2.55.0
 
 
---1xA2rRkbj2vi5ica
+--ZtcSuXjKGftasQag
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gwoACgkQeFA3/03a
-ocWYgwgAmdeguctzgeUh4DXpbnRsx4/scOnBDEh9zAV38f4dcSUk5OWLocamRAO/
-BLzXtJ48H1Ng+/+CM3xtQGyIqOWCN5vmUzasJhYGwuQBhzNea2BHw0OjZGbi+0Hr
-toNqBgBbwSKLHOm8TgiuVYRfdPbOfHHbhwqsbQlPg6u7lsVFF2LE0qSRXCGbC2Bg
-73GOVypBsOWnQ7YpkuZtDL5kTDk12ybGdeG5VA+PvUTe7ichK80I3nSUfUoadQdD
-xLyRAFb1wI2EJVIdPK3/rxKhR1Tj3tjG07rG2+blaclsipnHO6pOvfNiPGtvozoH
-py1K+MlQcKgtiCI4nAJ1Sn6nxn/jVQ==
-=4IUX
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g04ACgkQeFA3/03a
+ocWoaQf/fYgd7oXgOisk8Ykc/Qx6QTYiXoH5T8Vz9986RJOct8H/aJlTQdeh2GUA
+M7x9TrIQxAjyNwIp6ecO1Z2nNiWHbBx1C0yxxet+sQXqi4m2ACdW6vMQIf9SlZ91
+5Abe7CgXKoLNm5c4+FjYsuKR+x45ErzvTUICHFaXghw5NKMumPozHyOdF+Ll9ioc
+ZMsDoAxTZFArIyQEBpCCL6ZswA8nIBnxvtqmoQQjJ3LEzsftYW+iblDd+G3KpVDP
+v9egcu6OY92M3n4gS7b55OATWieiN1l+AE++mEy4ZqoyvtrR6Me/cGlichnYSxPD
+M5XwDpf9Nhhbc6Qxzdg4LIsfjrfhYw==
+=2uDx
 -----END PGP SIGNATURE-----
 
---1xA2rRkbj2vi5ica--
+--ZtcSuXjKGftasQag--
