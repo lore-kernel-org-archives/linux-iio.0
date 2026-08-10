@@ -1,125 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-2-1.ptr.blmpb.com (sg-2-1.ptr.blmpb.com [71.18.227.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E4FF13CA92;
-	Mon, 10 Aug 2026 04:38:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA9637F015
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 05:06:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=71.18.227.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786336727; cv=none; b=Ut5H3O2XeCPNBuO0EOb7tprZKLB5ddNeesXZSoYR/u8QX1hwBwj+3b02l1FpaMUHt8oGGlHmX13cxtvYeufNSK/4Kw5GSUVfxpr1AgXOGdYkJnKjyJnQ7qaCiGHco6ic6I5GMABo0Wfr0M7l1h7XfPKnlMQp9CY/ai6YFR2SCLQ=
+	t=1786338378; cv=none; b=MzPUuwliV2stj7GuQK0x6VIZAvyZdX35KPl+0kE1TwofCfn/qJS/DX282K6OcvOVFxu0+l0/oIhMEw5a031upswvnXWWjx1hCZkRMNKia/GiE4FztgQA4SxosuLDD6aGrNHeYBQa1AXoZ7/sCXFGLycLCCMyQdWsbWM1Fmu7mrg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786336727; c=relaxed/simple;
-	bh=fNoB0Hg8c7JQX1t9VdFRqFJqKrRMH4YPN73EnmlpkqU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JnlvbSO610pxMSqnSVllo9zsj+Z8huUY3z9X/fm53+0zFDWfsTTHEwzvCe1SgaV5vOFb4aAlcT9XinodzU5F2hHvdqXutSvBv4xRd+9HJQYXKt6bF85/5V2Cas3fEHGtJk8Bs/8sQyo4Tkpqx4ihy1iUk7UxVofdg9uNu55kpsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zgiqt/3G; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786338378; c=relaxed/simple;
+	bh=UwtoF8WCtXk9zFXDkcpLrNH/XAXzLP3ASIL5gUziyrM=;
+	h=Content-Type:From:Subject:References:In-Reply-To:Message-Id:
+	 Mime-Version:Content-Disposition:Cc:To:Date; b=TINAeSYgQ5ChY0ve6Kli2CoxHo7O2LBLijAUrxR1MfDA/mwNyYxFaWA2B4kfbf6YlrXYRf0W6qGKt08bYKd7T0ierPXFZsYkbG6c0dpc6xd7Kd2tGmHr7xTsMw8vG5cDcBQmPREE8YoTtuthQogWYBzss3RY6a/r4UACVDd9XTk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=ZxwagLtB; arc=none smtp.client-ip=71.18.227.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zgiqt/3G"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 542BE1F000E9;
-	Mon, 10 Aug 2026 04:38:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786336726;
-	bh=SXbB0p8bY1g4pIBgkLXxQqZbuZ63Hp34XN5ZoOdkkSQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Zgiqt/3GXVhdFVv8f3hUikEP/U9+ksffocqxXditNVY2lhuwfftzsC7yNiUDwoHsU
-	 M3EtqhwTwbWAj3U/27PV9/czAPMQnC3jtlcN2lzHQebVBk4g3nPJ5VJdrbOBjrze4Q
-	 WM0E5C4avNTTADAFpteBM26UtI61xbBuVfcZqz3VheZI+0tTYHe4fqd0EyFoJzc0px
-	 BpbdKq8V2DeS6ZwnL5R1TVkn+FUAhz8xF+5yZhAAB5ceNcW5ngo7T3yBVfGzvz0LC6
-	 43d3cD+0oJngQv+dv0Bcil30JgRim1mVvlJtWi0K4Fr+Y9UNdAJIFFXdR3Bl1Oy0/L
-	 obd4Hg2aFapOw==
-Date: Mon, 10 Aug 2026 06:38:43 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Eliav Farber <farbere@amazon.com>
-Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, 
-	guohanjun@huawei.com, mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
-	laurent.pinchart@ideasonboard.com, linusw@kernel.org, brgl@kernel.org, orsonzhai@gmail.com, 
-	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, dmitry.torokhov@gmail.com, hansg@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, W_Armin@gmx.de, fabio.m.de.francesco@linux.intel.com, 
-	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, 
-	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org, linux-acpi@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH v4 02/13] pwm: iqs620a: use
- devm_blocking_notifier_chain_register()
-Message-ID: <anlRaaztPEu5u6Zn@monoceros>
-References: <20260726101739.33170-1-farbere@amazon.com>
- <20260726101739.33170-3-farbere@amazon.com>
+	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="ZxwagLtB"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604220257; d=cherr.cc; t=1786338369; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=pGLKIkrykXTegAbf95GWZLKiQkazLl3chVfsyo2cLj0=;
+ b=ZxwagLtBjVwbUVMMp6WgQmuMIZgsDRTm6f1uiemqW6oEN+VoFWlgFloihD083M2c1KgWxk
+ 0FXaG4k26p0wtj4AasK3tTkEDs8o02TLioJi7IPehJ83yyZD3eyP1xvldLMTXi/jjlV6ou
+ u2VUuRnKkBV9En6z4AQEIeKlRHg7khxNShJ5LXt5l4KmXr4pGOMBVe4wrL3nhoWin8r9hM
+ f+uO6OWErwOg0fZ5gWC2YD5DUXF1hp8rt7hyBByNqTEwPfvkcy/zsTo5vnxUYTWHe7codo
+ QR0AsQ1cgbUIS8ES35fulbfI8uC/Bf3qc9YETn10KpAKwYojM7bDXCZRDYmldw==
+Content-Type: text/plain; charset=UTF-8
+From: "Shengzhuo Wei" <me@cherr.cc>
+Subject: Re: [PATCH] iio: accel: adxl380: clamp FIFO sample count
+References: <20260809-adxl380-fifo-clamp-v1-1-780d86ef25eb@cherr.cc> <20260810002808.76ffd95a@jic23-huawei>
+X-Lms-Return-Path: <lba+26a795c3f+1c6dba+vger.kernel.org+me@cherr.cc>
+In-Reply-To: <20260810002808.76ffd95a@jic23-huawei>
+Message-Id: <anlcOa5tkTUN9EQr@nobug>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lxpal74eyemjmxfe"
+Mime-Version: 1.0
+X-Original-From: Shengzhuo Wei <me@cherr.cc>
 Content-Disposition: inline
-In-Reply-To: <20260726101739.33170-3-farbere@amazon.com>
-
-
---lxpal74eyemjmxfe
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
+Cc: "Shengzhuo Wei" <me@cherr.cc>, 
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+	"Michael Hennerich" <Michael.Hennerich@analog.com>, 
+	"Ramona Gradinariu" <ramona.gradinariu@analog.com>, 
+	"Antoniu Miclaus" <antoniu.miclaus@analog.com>, 
+	"David Lechner" <dlechner@baylibre.com>, 
+	"Andy Shevchenko" <andy@kernel.org>, <linux@analog.com>, 
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
+	<stable@vger.kernel.org>
+Received: from nobug ([202.112.51.208]) by smtp.feishu.cn with ESMTPS; Mon, 10 Aug 2026 13:06:06 +0800
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4 02/13] pwm: iqs620a: use
- devm_blocking_notifier_chain_register()
-MIME-Version: 1.0
+To: "Jonathan Cameron" <jic23@kernel.org>
+Date: Mon, 10 Aug 2026 13:06:01 +0800
 
-Hello,
-
-On Sun, Jul 26, 2026 at 10:17:28AM +0000, Eliav Farber wrote:
-> Replace the blocking_notifier_chain_register() +
-> devm_add_action_or_reset() pattern with a single call to
-> devm_blocking_notifier_chain_register(), removing the
-> iqs620_pwm_notifier_unregister() callback.
+=E5=9C=A8 2026-08-10 00:28=EF=BC=8CJonathan Cameron =E5=86=99=E9=81=93=EF=
+=BC=9A
+> > Fixes: df36de13677a ("iio: accel: add ADXL380 driver")
 >=20
-> Signed-off-by: Eliav Farber <farbere@amazon.com>
-> ---
->  drivers/pwm/pwm-iqs620a.c | 21 +++------------------
->  1 file changed, 3 insertions(+), 18 deletions(-)
+> In my opinion at least, these are not fixes. In general we don't expect
+> drivers to be hardened against broken hardware returning out of spec
+> values.  I don't mind taking simple cases though that don't complicate
+> the code much and if anything make it a little easier to follow,
+> but I don't currently see any reason to mark them as a fix.
 >=20
-> diff --git a/drivers/pwm/pwm-iqs620a.c b/drivers/pwm/pwm-iqs620a.c
-> index 13e5e138c8e9..12f7b1415ed4 100644
-> --- a/drivers/pwm/pwm-iqs620a.c
-> +++ b/drivers/pwm/pwm-iqs620a.c
-> @@ -173,17 +173,7 @@ static const struct pwm_ops iqs620_pwm_ops =3D {
->  	.get_state =3D iqs620_pwm_get_state,
->  };
-> =20
-> -static void iqs620_pwm_notifier_unregister(void *context)
-> -{
-> -	struct iqs620_pwm_private *iqs620_pwm =3D context;
-> -	int ret;
-> =20
-> -	ret =3D blocking_notifier_chain_unregister(&iqs620_pwm->iqs62x->nh,
-> -						 &iqs620_pwm->notifier);
-> -	if (ret)
-> -		dev_err(iqs620_pwm->dev,
-> -			"Failed to unregister notifier: %d\n", ret);
-> -}
-> =20
+> So drop that tag for v2.
+>=20
 
-Too much remaining whitespace here. Other than that looks ok.
+Hi Jonathan,
 
-There is no specified merge plan yet, and this depends on patch #1, so
-it cannot get applied yet. Given that IMHO patch #1 should change, I
-expect there will be a v5 and we can consider application then.
+Thanks. Understood =E2=80=94 I'll drop the Fixes tag and stop clamping.=20
 
-Best regards
-Uwe
+> This is papering over what we think is a hardware failure. Unless I am
+> missing something the device is returning garbage, otherwise we are in
+> range and this has no affect. We have no idea how much data there is
+> if we get a value outside the expected range.=20
+>=20
+> As such I'd expect an error print and probably no attempt to carry
+> on reading as we have no idea what happened.
 
---lxpal74eyemjmxfe
-Content-Type: application/pgp-signature; name="signature.asc"
+For v2 I'll treat an out-of-range count as a hardware error,=20
+log it, and skip the read rather than carrying on:
 
------BEGIN PGP SIGNATURE-----
+    ret =3D adxl380_get_fifo_entries(st, &fifo_entries);
+    if (ret)
+            return IRQ_HANDLED;
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmp5VdAACgkQj4D7WH0S
-/k7W7Af+N+HNhcp8o5wU5XfbYK4z26aXXjonv42lAgO+vYSVuo09+FUg908qguLD
-bQwaxNTEDLWp2KhOimYvtwOmLnBi5LpFdRkl+3O+1hNbkdEqPzEhHR2E5fYln/ni
-L53rfttbwzJAvZsNiNf7YyuWCkDn/EYR/lBjhwxkGMWAJrtvogleUK4cqx54q6yb
-FAr4pZRVLXYh00yzvHs6YYcVltcr90a+ElTaN842ccl/3fSbCyqWFbOzgv4BZhWL
-N2AeOhzToeosPeKdM0jX/PPQEeLMEdBQKmKvYYWgaIcJM64IxhD2A733ZL64GZ0W
-W3ONy68gDEEzxPPwExzGleo7svm85w==
-=VCpG
------END PGP SIGNATURE-----
+    if (fifo_entries > ADXL380_FIFO_SAMPLES) {
+            dev_err_ratelimited(st->dev,
+                                "invalid FIFO entry count %u (max %lu)\n",
+                                fifo_entries, ADXL380_FIFO_SAMPLES);
+            return IRQ_HANDLED;
+    }
 
---lxpal74eyemjmxfe--
+    fifo_entries =3D rounddown(fifo_entries, st->fifo_set_size);
+    ret =3D regmap_noinc_read(st->regmap, ADXL380_FIFO_DATA, &st->fifo_buf,
+                            sizeof(*st->fifo_buf) * fifo_entries);
+
+Same for adxl367 (push_fifo_data: dev_err_ratelimited and return true
+without reading the FIFO).
+
+I'll send the two as a single series with a cover letter, no Fixes tags.
+
+Let me know if this looks OK to you, or if you'd change anything, and
+I'll send the v2 series.
+
+Best regards,
+Shengzhuo Wei
