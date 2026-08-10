@@ -1,130 +1,152 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90234437101
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 21:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1C46215161
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 23:06:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786399090; cv=none; b=oEBDxxRrBziifCTaDBieDvSX9VA5dR8vlOeiiQ3NtrgMPOqsF/vpLPF/NZP2muOZ080oeSH4gA4OXNLMxBxYjQFrJ1Na0SdGr5TR/mFcr61B9psL7r2hFA3aKPqPXfaky+5PoVNtkV6RE8K+ucS/KszWd8Vhfx0MwVRSlYJZHA0=
+	t=1786403208; cv=none; b=dV6qptfeIPFnzjMb/QlkK6Mli9zpiVbukb/nby1xcV+ce6oDctVFCwOSAMcYLUGShzZj39COjtmdTEJMuHqvMeymk6mr+QlKBHC1nR715CWj+CtE5kzI6wyn2WmHGF+1bqZPZE91l0/2S1Kvo6CexZhtDExTVLmiZrXHWCWhfTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786399090; c=relaxed/simple;
-	bh=FZ+/71kynJZqIhRLVCnpGq9DzPUvEW+6dLYoLNMlYPY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KGk8IXd+xn/5D2aTC1enK9VznPmRzCcWoAD4dqMBpEZlwAOKU6IW30ZSlJ/5Gq6FGf/qqXnlwu1gnzcI+9fxOfsjPEIQlC1dR8/K49Pd1FqZcqRXKbHER13ej2cKGrhYzLcPKCbGg/Y4E0SCupt0XwxlCpw7lkUnOtFNksw1uE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S3gX9Dz4; arc=none smtp.client-ip=209.85.210.169
+	s=arc-20240116; t=1786403208; c=relaxed/simple;
+	bh=ZVxOG33XzzMNHk1oqzzwmRCKYAbGR9wBVWiGeldsiuc=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=fsDqFs3K7rHYTOvK7oZuw4p+aa1qcTO2HjO2FWy6/zzf4L3w+QNZcGskjVXZIAq0Ufg40KXSShnGYbBLy/8rta64mKxkzw/v2vcNOhWpUo05OG1XImOxrNHnBhonDF90WwtSsTgJIMIljDDhDIqfXfQglffi1heJfgqE4QqGe38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sGalDDki; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S3gX9Dz4"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-84a2dcede83so3115480b3a.3
-        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 14:58:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sGalDDki"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4956242332dso23430415e9.2
+        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 16:06:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786399089; x=1787003889; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=d7bGIdvE0TviHkwGAKBCM6Lg6niDAldjBWkfqCqVxew=;
-        b=S3gX9Dz4Pc1HKmDJ/pIFAotDBLY3uF1uhlnIto77UchCf5I+lCJs+iP+sLC/k3yoC7
-         w2WbNwKBhsdP8lRc4dToplh8p/iOmwja1Adyfe2upglynyFnmpRNdlgX4M70sHAdDTqa
-         i5loIJU+4LmiqBLvxkPNQlQ6JwHPs2kU6YIXbXAnfMJWkxNiEqJbxinyIF1pwa2y9kYL
-         e2wRRwJDnsa7xwbzIumxAp5ABcuAjb4x1l90QSp9Q0NGxRlwFJ7cloZ8xzfSEkGI9vzD
-         snxLRy6qAMlhyg8EAaA3FpinKk6GBNdyW27xgb728i6X2ozwIYnIbj/zaTTJ1ko89wdh
-         ECCw==
+        d=gmail.com; s=20251104; t=1786403205; x=1787008005; darn=vger.kernel.org;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=ZVxOG33XzzMNHk1oqzzwmRCKYAbGR9wBVWiGeldsiuc=;
+        b=sGalDDkisHjzznQRso9u30bOhTQHWp8Mt+cyHbB7HCMXmaoy8NH7V49J4edu+6WAfz
+         tUmWD1iResKN/nsMsPyJ7teSQj+A4JKp/jnSOhjYuSz3uhQcl7pkSK3mM4EtHVg/GqEX
+         xLtPcsZON4CMzJEgI0KqbUSFKWWhLySKmpngxTg2lyRqgjosO+XfnaVnFx5TDG3DCxc0
+         u3Pndkinvc7uyOS5Z+LH1GLtvIOBGqn+qhOm8AizktMbXdlYrxV3d9Fe8QqLkey5HRfG
+         Evvfwm8OK9NUXUZu911zyJPrHnmwaZbaOlov6NgAShcwNuDrgmzjK4aShe9sEUYplQoN
+         jPzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786399089; x=1787003889;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=d7bGIdvE0TviHkwGAKBCM6Lg6niDAldjBWkfqCqVxew=;
-        b=QKhnkiUC1TvhTBYReKQpUpt5G8L3HtXMeNEJN+2J8/pmH9zvDmkuwj5VPBOPgnJ86o
-         DS/1feTls+Wh/gP1vHL68Js/XjbIxnW6FMyv46qDx55aMI0xFC2j+ixgXCLKPTPcaJDN
-         EnfeSJm7QbQHZo1BxZFqE/FApo2MIBG8EL8ejc7OvhndG68VX6S/Ensw6j3LP/WR+8yb
-         IW9ewSd4ajdtBaYgbMyM8ceMTnhTGJHsadZ7wyoGBcfF3zpnUTWDVgQkNIpx0hCN89Q/
-         G+jAy/ixut4DKy2mQ9Eh++VBUqToFy5KfLfpZ8m3W6ylynYJrMNhhj/eubWi9M0FIJq6
-         OGSg==
-X-Forwarded-Encrypted: i=1; AHgh+RrXMWKr7Me6gGo5r9HGHG8oEMJsHtXOcDfjUy1R0bsTDss7ue778pJ9B6moIlJJICSMEjazg/aLQBs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+1JE6gNoWLdkaTbnmB9uiwymT8eQkh+Hx4Ls8n9R/wLS0CbpO
-	ZKE2dC/vcvMMTjUDlgWTnWSRjp2sUwpPca8ZOI7Z4pBdJ+Yb6eLLv1jb
-X-Gm-Gg: AR+sD13GyxRtN0n1JSe25Vk0omVRs9z7WqPodqHoqOgJSKyscannap7Xpyco0JtWKqb
-	rUlkfxO1u0jNbni63gB5PkUXHu7gzH0DvJqYdieRevBite4LhtEvlcktMytrfH6H8p4yzq2sKl/
-	L1R7Cjp8e+ArnuCG1KnnHA51OqITX8BsdW6x7mq4AaOIen0u+8Rywy7VW01bQbIFfMAmuaFKD14
-	/3nsomIIQWYxeql91ELnl0yUKNZ2JqRNfpYskSTW5dPsI+waZlniux7ey2/WgY7iCPKkkz+UWQc
-	fDgMsNZ6jCJAiXmFp9J7zuHkpuEQwoGem2ODaPw94sua8aB9/RCIyAJ2h67cDRNTn6qNgVsFU+X
-	8B2HRFRqWw5mIu1GG95XrxZBNmxZFGWURaOyYE6QUiwDGf2ugf9gqVhQSynTDg3JS+T8LdrXSJp
-	mqSjQy75fztOePw6V2B2woig1pbpseVTxOVReINPxTE47ukfuON/fBd6dmkuhK/cd4GPk7Scvms
-	nJLnpVzcw==
-X-Received: by 2002:a05:6a00:1150:b0:845:c5d5:3745 with SMTP id d2e1a72fcca58-84f5e10f964mr27414921b3a.34.1786399088547;
-        Mon, 10 Aug 2026 14:58:08 -0700 (PDT)
-Received: from yash-Bravo-15-B5DD.. ([2402:8100:2aa2:1af5:b8c4:d4c2:cc72:1386])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cbe8f38b7d9sm4508200a12.32.2026.08.10.14.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2026 14:58:07 -0700 (PDT)
-From: Yash Suthar <yashsuthar983@gmail.com>
-To: jic23@kernel.org
-Cc: andriy.shevchenko@intel.com,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: accel: bmc150: use IIO_DECLARE_BUFFER_WITH_TS
-Date: Tue, 11 Aug 2026 03:28:00 +0530
-Message-ID: <20260810215800.55944-1-yashsuthar983@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260810001852.6afc2c2e@jic23-huawei>
-References: <20260810001852.6afc2c2e@jic23-huawei>
+        d=1e100.net; s=20251104; t=1786403205; x=1787008005;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZVxOG33XzzMNHk1oqzzwmRCKYAbGR9wBVWiGeldsiuc=;
+        b=Xh7Zu5Sas9sCZF+KWj+Jdqd1dyEDVeHGUab7yDceW1/Bk8U4AYV5+PkZOgz7kYHsFK
+         MtmeeCz/5sqE6vtB5XzHah5pOLKqqyOLFBwHYWGRiyQ+I4qUZ31oYz0fwD8I0ivWWcFH
+         qS2eI8L/y3Cxy894/rDgSjTu8kl6+lZ9XEtvmcJdTJHoPFhWdMOhlVhXnM3zpdMj87oL
+         jN/6ZFVdSFxobtS4MMvhzTYu8gZIlKZLUxWo2rGyCgRNUrFpjUYTAw1fWw/cA/aoISwm
+         HpxWPNH8e4H1c/WXAM1jY19/ahzOiyoR4jQ3q3nF4pV5ulGOTO/TBQQ+qceqc5MMQ8zS
+         CU5Q==
+X-Forwarded-Encrypted: i=1; AHgh+RoZ/zNf0Vvo1CS+YzkrKPAZi1jjeBrfVwSuSYTNxebH/sVDO3YYafMysJe8gJrYkGH8ARuRAyxKcTU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyGXlj6eYF4vBF1WpGm4NyHnps0S+8QxUE2D5WwMSNCWvdmoCpG
+	KTURO9NEJe5TyZbh45HZtESf45nGl7MZaZPlATMYSAIHPQglADzV78ru
+X-Gm-Gg: AR+sD11+8c5scW9dQ6An3/YJfnM51hsXxxuegsRaK7p2NOwGvcOrUC0M6xLrxu06huk
+	5T+uo+40TMjwjHZkcX7Sg3aW9jZj5mL4XVeqwsIUlvoBOFCMYejGqRTmSh5T0+7XLpqLTqKHeC8
+	15OkZ6/MBe4aLLjDUcU2XJ72J5d08vJXA+3+M3OvLOaJNv5M3wagOKcPCu0qeeJVSzbF6oE5za1
+	6iUbkqMgEm3QbBinrA/XOkFS0Kw5BDVRZdsAuaQkaveCaHleMnGHt7LElfnUGUEuhmYfOA0s8uV
+	MDLWPC/Ka7whs/1KJvCWxtH0glNEQtqJjiOvyiJdGHbtliowiIkq76C7CkFlTYUA9wQkXldt2fr
+	vAwVfl5oFTVsiSj6t03a/UCk61ujhfkPUqCzlnJ2MrwqvyxLmaBD8UmGLOfZo80R7BFR5eca4PA
+	Br7fd796Ihsmw8Y9poLM5nmT7E7qve12gl+Ij61OqMtFVrIWzhgDE1kG8ZOVtigzbPEkZtq/GAQ
+	isRmpYxdK3lbg==
+X-Received: by 2002:a05:600c:a42:b0:496:c378:6420 with SMTP id 5b1f17b1804b1-49961964937mr272065215e9.8.1786403204676;
+        Mon, 10 Aug 2026 16:06:44 -0700 (PDT)
+Received: from localhost ([2001:4bb8:16f:15e0:67a4:d119:6328:800e])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-480021e8c5asm40104966f8f.18.2026.08.10.16.06.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Aug 2026 16:06:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 11 Aug 2026 01:06:42 +0200
+Message-Id: <DKLN31OCJZ98.3JFEAVU1AM0F9@gmail.com>
+Subject: Re: [PATCH v5 2/4] iio: light: add support for veml6031x00 ALS
+ series
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "Lars-Peter Clausen"
+ <lars@metafoo.de>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "David Lechner"
+ <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Javier Carrasco"
+ <javier.carrasco.cruz@gmail.com>
+From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
+X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
+References: <20260807-veml6031x00-v5-0-e60876fb3640@gmail.com>
+ <20260807-veml6031x00-v5-2-e60876fb3640@gmail.com>
+ <annUbQQn2TzzuFNC@ashevche-desk.local>
+In-Reply-To: <annUbQQn2TzzuFNC@ashevche-desk.local>
 
-On Mon, Aug 10, 2026 at 12:00:05PM +0300, Andy Shevchenko wrote:
-> > So what is going on here?
+On Mon Aug 10, 2026 at 3:38 PM CEST, Andy Shevchenko wrote:
+> On Fri, Aug 07, 2026 at 03:51:53PM +0200, Javier Carrasco wrote:
+>> These sensors provide two light channels (ALS and IR), I2C communication
+>> and a multiplexed interrupt line to signal data ready and configurable
+>> threshold alarms.
+>>
+>> This first implementation provides basic functionality (measurement
+>> configuration, raw reads and ID validation) and defines the different
+>> register regions in preparation for extended features in the subsequent
+>> patches of the series.
 >
-> AI slop?
+> Since it's going to be a new version, my comments below.
+>
 
-No. I only intended to convert buffer to IIO_DECLARE_BUFFER_WITH_TS() and dont
-want to mix it with the existing scan member. Really sorry for that i should 
-have asked.
+Hi Andy, thank you for your review. I agree with most of your comments
+and I will apply your suggestions for V6.
 
-On Mon, Aug 10, 2026 at 12:18:52AM +0100, Jonathan Cameron wrote:
-> Given the data alignment is fixed, if we were going to do this it would
-> be clearer as
-> struct {
-> 	s16 chans[3]; //see later, I believe this should be __le16
-> 	aligned_s64 timestamp;
-> };
->
-> But that is very similar to the structure that follows immediately after
-> this, but that has __le16 chans[]
->
-> So what is going on here?
 > ...
-> The chan spec is little endian so the scan one is more correct.
 >
-> So I think the fix for this issue is move the scan element to the end of
-> struct bmc150_accel_data and mark it with __aligned(IIO_DMA_MINALIGN);
+> + array_size.h // ARRAY_SIZE()
 >
-> Then use that for both the bmc150_accel_trigger_handler() and
-> __bmc150_accel_fifo_flush() paths.  A second fix will resolve the local
-> buffer in __bmc150_accel_fifo_flush() that is being used for a bulk
-> regmap transfer that may need a dma safe buffer.
+>> +#include <linux/bitfield.h>
 >
-> Please combine these two fixes (if you agree with my analysis) with a
-> follow up to do the iio_push_to_buffers_with_ts() all in one series
-> as they will be touching the same code.
+> Is this in use?
+>
 
-Thanks, Jonathan.
-I agree with your analysis.
+This one is in use for FIELD_PREP()
 
-On type, kept s16 because that was the originally used.
-I'll keep __le16 and will merge buffer and scan together as you suggested.
-Will move scan to the end with __aligned(IIO_DMA_MINALIGN) and use it for both
-trigger handler and fifo flush.
-A separate patch for the FIFO stack buffer and keep the
-iio_push_to_buffers_with_ts() change in the same.
+> + bits.h // BIT()
+>
+>> +#include <linux/cleanup.h>
+>> +#include <linux/delay.h>
+>
+>> +#include <linux/device.h>
+>
+> Oh, the whole headers hell is loaded just due to dev_get_drvdata() it see=
+ms...
+>
 
-Yash Suthar
+I will rely on <linux/i2c.h> instead, which is also what I am going to do
+to get rid of <linux/mod_devicetable.h> as Uwe suggested.
+
+
+>> +#include <linux/err.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/limits.h>
+>
+> I missed probably it, but is it used?
+>
+
+This one is used for U16_MAX.
+
+>> +#include <linux/module.h>
+>> +#include <linux/mod_devicetable.h>
+>> +#include <linux/mutex.h>
+>
+>> +#include <linux/pm.h>
+>
+
+The rest of your comments need no reply from my side.
+
+Best regards,
+Javier
