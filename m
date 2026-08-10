@@ -1,223 +1,291 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011001.outbound.protection.outlook.com [52.101.65.1])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFA4C42C4FF;
-	Mon, 10 Aug 2026 16:57:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786381035; cv=fail; b=RRztHvteUeCrDJnE+JvFa0h0aFrY+xbd9+Pzp8ijfT2ewNIsbCxrfBQsTb3LPJrb7Auk0/qOGb0s2W1GEhMI7moNC1NeYxXxnhWOAOKwhGnQZErNJNuI9GTGmXB4mLSOCJGr0+naXr/Q2T1DclXUu9KZojBCn6r2ebPI6t4tW0o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786381035; c=relaxed/simple;
-	bh=Ai9ylBXQnfTvNP8Vb5bfkyAcJXXfCkG9Q9+2t8lEurc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=BXExSvJNcUhXP6eHSU8ijoZZz1hBAtXK6cP476kMNb4p7G9Om59t6/Bnfak91NO/2SVGsaKv4JitvqY7Ib1u/z9pZ3p2eF2bODngR3ztJBOYpYlzQMuY07/adTAtY5XLaWHZ8fV9ciSjKGnVnbbcOVUasQn/6HpWwU7FlMEUYeE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=Fj2eK1KC reason="signature verification failed"; arc=fail smtp.client-ip=52.101.65.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EAAE431A3E;
+	Mon, 10 Aug 2026 16:58:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786381111; cv=none; b=lLOnXNgDneKImmqKHVqhYKfGPYADKDA6mVgdwmV75LY321YSloailV2iB8O8WLlqHJIMVa+RCIJqTOjDRfhd0DRAH5jpONcNGC60Fo0lWAJDahGimsW1WbCt6AENr+ftpreE7Q3NOhAtaf9fMO/H7Et+4PG5+EPqv7ZGUfVKOgU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786381111; c=relaxed/simple;
+	bh=EdmODO+K8FY1/Ukkl4ewZeDwc8sjwFVCQZUjor0bOQU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W4gOfjCVhDH8uCDydAc2JBHSAhKFuvdAx+UIANhvXUJRfAbIG+Z+qAIJ+sZYKDbqQHibBJuLw178JdTWasGg9+pXvCD1QnfxGwdZZ7wDimTn3ojLyXKlUsqwynxSCwd78+wBrV0U1PQFVcDjpBmYqZazj8bXXOf/WK+HSzOTPxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FXZR3S4i; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="Fj2eK1KC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Sj22qgseRckWBzpLl1QqvuNpCPOzCaaAou34qQ/tjZtWVOGvS5HQXrXeM5DQGv8/rJhYej7hZ+khqO1rth4af2t02ffpcorrFdOt9qNjoiewIBQeex5YiyoxBEfZR7WsI4fcob5jeQw2f2H1anyii5QRoOEPhWDOJ2we+dOk8UFPbvdVmPQaNaTVflt66Z6nwHdUjtRAnUAS6EyExUUqg+eZ3TIKkL+R0ogLjqqoalWsQzheOOCM+D9j7ic2RysoYBfpEaD7bYYyhYRthN2n555Ij/FHaD54ULo4Jk/q5CZJAJyzAySYB5vL0KPYMAuPJYKtgn/Z2esh1g9TKdrxVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MZSvomQRrCEbVQcXVx4n1GE3TRWv1gonGhkfRUuewf8=;
- b=MMRcGrp0+Ro0H4/+okMOCnBmc4C/64XfAGphcbd2wRwd7t/uF6IGXsEo0DKNUYNDdcJ5QL1dIlAoCM/i0yUwXR7JswiLk3ZFBC5jlInqcqUkmgx81g7xiukI4yAqps3REmWsvz27mpIihjjF52/1dxUgJoVBm4eM37L+M9mlTY4/pxWspCHUTwRw8pa1DHilyMcFk5qvYAwvVyuPwypds97ipbcZEdlp5/RBynIQCbWgpmZFpfTPjvQ42hBuISdOnOGwCtCkH5lBftVuliuJXoDFKVCz8zBE4ysyeQ4aM2wtHoYQEyfMtwZjB4jjI37tHY3C1zfuxrMY73x6n2zZbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MZSvomQRrCEbVQcXVx4n1GE3TRWv1gonGhkfRUuewf8=;
- b=Fj2eK1KCqR62hpHEwxmxUd2+BW6r6gKQ+sTx4anWlJocwdKhmI9wsCIlUCivP1ge7Q2IMBhDAlv4cPyE1YhLf5pWIS0pkdJHrLSY30an2lXgoB07KB4rKhnkMVSKb4DpXFUx9tJVgOHb7FK7ZiqUqcA/qAIT+4qYwAefa8qiim+yXxaOD51B/5/WqG5lATR263yFuHj018wVH7yn0HS49kxcEbqSha/2KlQV+aRmHamwHGeY1tyx4SMfTUYw4wxHL78WkjoiUFjbQNamc1OFeiqpEmO1zhmn+XNKdKX4is6IXw2G+5yyiGWZkVtxwm7W8rR15BLi++7tLQSeF9D5jw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
- by AM9PR04MB9016.eurprd04.prod.outlook.com (2603:10a6:20b:40a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Mon, 10 Aug
- 2026 16:57:06 +0000
-Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
- ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
- ([fe80::2146:83a2:5329:b7c%7]) with mapi id 15.21.0292.024; Mon, 10 Aug 2026
- 16:57:06 +0000
-Date: Mon, 10 Aug 2026 11:56:58 -0500
-From: Frank Li <Frank.li@oss.nxp.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FXZR3S4i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786381110; x=1817917110;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EdmODO+K8FY1/Ukkl4ewZeDwc8sjwFVCQZUjor0bOQU=;
+  b=FXZR3S4i13xbqqiTyqrYOQ1+JZLkufTVVSch1lOl7NywOZUJ8xff8PXK
+   w7l1cQYVo/dFX3rdCIpXJ0nONJ2RS8RfZlH9pThNXj9k34RbUy0Z0hYrm
+   HAlTdNKVX0O1vs5aVKwfhu+El73Y6fB68AlM+fMiDncggFXyONway/HdC
+   WeRBhbW97S1HsHr5aIGV/0DIHp0Viv7vj/NQ2XMM5VWnLeBMxiVtSjzNl
+   +TapVqv8suucC7k297uLRvPqnSyPWvr51BUmAphHG89HbrTE/eTNvNLul
+   KMw9E9a7R67Qpm3JVt5JtqpBs+3H+3jhdkb19JZcKt2n82L/CxXIcwSuF
+   w==;
+X-CSE-ConnectionGUID: 5Sq9GzGBRu2PUEeqjBpNIA==
+X-CSE-MsgGUID: N7EEE/S3T1SYn34JAWtmJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="104294094"
+X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
+   d="scan'208";a="104294094"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 09:58:26 -0700
+X-CSE-ConnectionGUID: V8VOidKtSz+yDdfOwNZuGw==
+X-CSE-MsgGUID: 9+1VXaZXSC21N3EzgfuuGg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
+   d="scan'208";a="301324218"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 09:58:22 -0700
+Date: Mon, 10 Aug 2026 19:58:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Kaustabh Chakraborty <kauschluss@disroot.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 9/9] dmaengine: Drop legacy bus width fields from
- dma_slave_caps
-Message-ID: <anoC2nCE2wjYBKYL@SMW015318>
-References: <20260810-dmaengine-support-wider-dma-masks-v2-0-1f7b798d035f@analog.com>
- <20260810-dmaengine-support-wider-dma-masks-v2-9-1f7b798d035f@analog.com>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260810-dmaengine-support-wider-dma-masks-v2-9-1f7b798d035f@analog.com>
-X-ClientProxiedBy: SA0PR11CA0007.namprd11.prod.outlook.com
- (2603:10b6:806:d3::12) To GV2PR04MB11799.eurprd04.prod.outlook.com
- (2603:10a6:150:2cf::9)
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH v4 2/3] iio: proximity: add driver for Sharp GP2AP070S
+ proximity sensor
+Message-ID: <anoDKzl84lO58GbQ@ashevche-desk.local>
+References: <20260807-gp2ap070s-v4-0-74f6a67b6272@disroot.org>
+ <20260807-gp2ap070s-v4-2-74f6a67b6272@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|AM9PR04MB9016:EE_
-X-MS-Office365-Filtering-Correlation-Id: c84dc7da-ba87-4b74-9cfd-08def7006871
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|23010399003|19092799006|6133799003|4143699003|11063799006|56012099006|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	9OEQWdrUYqF9uArihdoLR6+KZVuqxkXifrIVHpuX0gR0Tw88nMwTHpLILLPgV3J/DtE4iLhuk4kMFGSo7qnjBWuw7YMs8j/3naLusPOvVBxsbH/lvVtKhMn8M4urdz245OnrzxVB+fJgSS0XhKF3LLu/D6zZLrFWJnul8NQlW0fOpUn5WqNDOdQWsesHSpV9tvLcTPzpfktMJpIzNAk/06cc9CTKzGxLfTaKiO7S+9hbYOn/JCtfusOlu3fmRd61tDq9nzmCyuaQYuJd9DH8JXJsI4cTW5K/zvXaUnsqa7emtIyb74fdQWz45o9EGOyENqMHkaZ1etKlw2nau5vjm2wwALsDeWQ1N/8kMgib2DEeBQSTMbiy9x5l0ghtG16Bh5sDN/+lTaC2TVzherR67tzrXNI7qIqMh0CUlog/8hXZR1KTbaCF4Kocvc+GoMWGqf7DffYRdUD6FUHCJ72mAfAH1xtZvY+x07zDMkQRelp2XtTNNhovQ2sClSkUjovMtAHrVOWjrNfa+6miM0snRtQiBuYzft4iGi5VJUb7D3epvdm3OBErEDau79oCkM4ms2+VJKq+vfibjDxNb0kPMTl7J7uKT6/IVD3qvznhmP369azID4URDgCoqgUkyjc9GApBZLgI4wJSQWIajheZRLqoLgZJ9lX4klC5CVzla8I=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(23010399003)(19092799006)(6133799003)(4143699003)(11063799006)(56012099006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?iso-8859-1?Q?kUyjCknH4r8P8gyiXbe0R4Zu78uw7cGdGyzz4hjmWbeBI75NIkuYgt9KRD?=
- =?iso-8859-1?Q?KDs6NItxuiVD84/c9etpdP7U8IvS6SpQFEFtM0PsTxdL8Sv1/BkinvMIb4?=
- =?iso-8859-1?Q?HqY6nBWf2wLHDZy4b3hh3dXbeT5FoIZetERFQX5P2mQ0Jwlk9bkIpgo89H?=
- =?iso-8859-1?Q?k3lkzj8XGO3W1paHiiYyD5OOgh5xUCmW6A3+NQ0avXUPx9XXMPcDfxyvP0?=
- =?iso-8859-1?Q?ciY12hdbz0bmGDj9RLnJ6tKjq2Akycl1s2lTGxKAMLlorISGYcqqKZk7bI?=
- =?iso-8859-1?Q?j3pYycJrFX1UwoDbxarMH2/SjjPrm65xvyZsJQCId3POOXrLgtDZVL8VC7?=
- =?iso-8859-1?Q?pgWrXS7DQQiginVtXGydlayU9ENNT31iqHw5aURZqNTzNbL+SoD+jbhXZd?=
- =?iso-8859-1?Q?uR4BjzKIQxKsP+jShyv4+pbJqC3I9j4nwCK3C04dpr+EHK3b7IfC/7PNai?=
- =?iso-8859-1?Q?q+6LU11+UQICVdx+97Ch4Jp9opDjAxHNHCnY4u4+V42IdznDvWCc791LoQ?=
- =?iso-8859-1?Q?ruEM2W/RcA7ugebka/2ZX9cr5kYDLiWzkXjgm/PEs1JKCNGEwjENYzfVYz?=
- =?iso-8859-1?Q?UzJReVTXHmff1CodF0qAt4XnZayGxe623uKnqWa7uNDCTHd65nM4WW2vi3?=
- =?iso-8859-1?Q?WtZBxHL5HoY+buRX1PU7Co2WkiBTfxxPu1v7Btl2BqYOPRkSxVL4cgHZnj?=
- =?iso-8859-1?Q?j5AN0xF7bOlCTmKRnno5PZ2PbgTGCOxb1KbCH9oUBMkQ+E0M89PFkYJwJz?=
- =?iso-8859-1?Q?shoGfND3AFQ5XCvXLZstw3Yeuv6K/zfVa4vEOWNnyHwgr+Q0nkTpWiQXyK?=
- =?iso-8859-1?Q?h+IP7QA+8ouMxlcCQzFkcyARwNfLqLXYENOkri5JaRPIV8KoLLBX04ju9U?=
- =?iso-8859-1?Q?FrvIMZCt3ssR719MzAujtrD/h8ext+HnWvnO5TNHJfzyTQFaqKXzeXo2Vh?=
- =?iso-8859-1?Q?LuS84TfdzdLVaJXzgtY9k4ln61xLhUwcaAI9eoVBMT+nnB6ZoBVRwwqQe8?=
- =?iso-8859-1?Q?Z8TBI5T6HmVzImEpiKWtdqiymGeJ06qpnf6WFkW646r3xvbRTPAO1iaLtI?=
- =?iso-8859-1?Q?mwWBBwIqS96CSV1tYzdfx33TcIBVmg2oVhLlPryvv+Z5iB8WoIbtss1hpw?=
- =?iso-8859-1?Q?8BAre7k707QKD3tnS5dEt63r/BBxDBgRseqlizD91AP8riBi9cQxl8JJUz?=
- =?iso-8859-1?Q?u/+46E+F6wF8BdoL6QjY/94hvqBJSwLOdkJZvZA2C5Rd8w16e2ZK0jA8di?=
- =?iso-8859-1?Q?EljqbUMz18qVePPf5Hg5a1dMuazMXssjabbz7pimQpNrzfEBLFEbdTkiv7?=
- =?iso-8859-1?Q?ECTnA+p1Mu0aOonIJSDzAx9Bs0kZT0ETwngkW1DLMWxmn8A5W9BN+ildw8?=
- =?iso-8859-1?Q?JZMOX41xOy1HO/8X98AfONrtJYSAzlxC9xgYgq0GxopTLKZ6gPhyS4v4Ro?=
- =?iso-8859-1?Q?BxqJaiKCllv1oTOfL+4JgFabMbKlk9KNNenMpMxhrpJopZ/eMjdqeJK+ul?=
- =?iso-8859-1?Q?oZa+Di0ksfLUuVckkHyA8vORUs1PIrI3t+1pbf+oha+Xcb2BrfUXy103lj?=
- =?iso-8859-1?Q?fj+a5Rn+h2iJYXv6E45fsIlsWNVRnBEj22Jw+dMNlanMIVvXuAc0So0EFB?=
- =?iso-8859-1?Q?ZudvmRRj3YmMYRLQjKV0BaXgRpWOF5HUIKIRrFlEFMOCCZdML9zSTjkEeO?=
- =?iso-8859-1?Q?l7ziu5pgAuDEKcZNqCOy6kZrGL1WtvAbomSBDFHcBMdn3O8HHme3xkFpUF?=
- =?iso-8859-1?Q?EbrM+MLl3wT+ZRVBQT72fE1Y4uwqZNOv//ZgaeyXWBj/G5XjMPU7awPTbR?=
- =?iso-8859-1?Q?n4jJSX/Tmloy33Kz0U1dcfGUBCDi0N6hc+4LzomlbHO+V5cXDnFJ?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c84dc7da-ba87-4b74-9cfd-08def7006871
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2026 16:57:06.0480
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UkyMeOdnFrMQVVHVRMo/jnQr2FO17sAn8SLAfAGXXcFhSvu/UKrSSqbwRkXmO0WI9sFGj/h+V+xWVz2C67fNTmhktRssiwgYtx7IHkHYAlf6cAZOWjr3wyNC8Yx7+0rc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB9016
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260807-gp2ap070s-v4-2-74f6a67b6272@disroot.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 10, 2026 at 04:06:50PM +0100, Nuno Sá wrote:
-> All users of dma_get_slave_caps() that inspect bus width capabilities now
-> use the bitmap helpers.
->
-> Hence, remove the legacy u32 src_addr_widths and dst_addr_widths fields
-> from struct dma_slave_caps and stop copying the dma_device masks into
-> them.
->
-> Note the legacy u32 src_addr_widths and dst_addr_widths fields in struct
-> dma_device are kept for now as every DMA controller driver setting them
-> still has to be converted to the new helpers. dma_get_slave_caps() keeps
-> folding those masks into the bitmaps it returns so unconverted producers
-> continue to work during the transition.
->
-> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> ---
+On Fri, Aug 07, 2026 at 01:18:42AM +0530, Kaustabh Chakraborty wrote:
+> The GP2AP070S is a proximity sensor designed and manufactured by Sharp
+> Corporation. This sensor is used in mobile devices, including, but not
+> limited to - the Samsung Galaxy J6.
+> 
+> The driver has been adopted from Samsung's downstream kernel
+> implementation [1]. Due to the lack of public documentation about the
+> schematics of this device. The downstream driver acts as the secondary
+> source of information. Driver clarity has also been improved with the
+> help of the GP2AP* drivers in iio/light.
 
-Reviewed-by: Frank Li <Frank.Li@nxp.com>
+...
 
->  drivers/dma/dmaengine.c   |  2 --
->  include/linux/dmaengine.h | 16 ++--------------
->  2 files changed, 2 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
-> index a80a84cf87eb..36e9b6ddd88d 100644
-> --- a/drivers/dma/dmaengine.c
-> +++ b/drivers/dma/dmaengine.c
-> @@ -592,7 +592,6 @@ int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
->  	if (!device->directions)
->  		return -ENXIO;
->
-> -	caps->src_addr_widths = device->src_addr_widths;
->  	if (bitmap_empty(device->src_bus_widths, DMA_SLAVE_BUSWIDTH_MAX)) {
->  		bitmap_zero(caps->src_bus_widths, DMA_SLAVE_BUSWIDTH_MAX);
->  		bitmap_from_arr32(caps->src_bus_widths,
-> @@ -602,7 +601,6 @@ int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
->  			    DMA_SLAVE_BUSWIDTH_MAX);
->  	}
->
-> -	caps->dst_addr_widths = device->dst_addr_widths;
->  	if (bitmap_empty(device->dst_bus_widths, DMA_SLAVE_BUSWIDTH_MAX)) {
->  		bitmap_zero(caps->dst_bus_widths, DMA_SLAVE_BUSWIDTH_MAX);
->  		bitmap_from_arr32(caps->dst_bus_widths,
-> diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
-> index 8697583e2ed3..4efaa27e9f7e 100644
-> --- a/include/linux/dmaengine.h
-> +++ b/include/linux/dmaengine.h
-> @@ -503,9 +503,7 @@ enum dma_residue_granularity {
->   * @src_bus_widths: bitmap of source bus widths the channel supports.
->   *	Width is specified in bytes, e.g. for a channel supporting
->   *	a width of 4 the bitmap should have bit 4 set.
-> - * @src_addr_widths: legacy bit mask of source bus widths the channel supports.
->   * @dst_bus_widths: bitmap of destination bus widths the channel supports.
-> - * @dst_addr_widths: legacy bit mask of destination bus widths the channel supports.
->   * @directions: bit mask of slave directions the channel supports.
->   *	Since the enum dma_transfer_direction is not defined as bit flag for
->   *	each type, the dma controller should set BIT(<TYPE>) and same
-> @@ -524,14 +522,8 @@ enum dma_residue_granularity {
->   * resubmitted multiple times
->   */
->  struct dma_slave_caps {
-> -	struct {
-> -		DECLARE_DMA_BUS_WIDTHS(src_bus_widths);
-> -		u32 src_addr_widths;
-> -	};
-> -	struct {
-> -		DECLARE_DMA_BUS_WIDTHS(dst_bus_widths);
-> -		u32 dst_addr_widths;
-> -	};
-> +	DECLARE_DMA_BUS_WIDTHS(src_bus_widths);
-> +	DECLARE_DMA_BUS_WIDTHS(dst_bus_widths);
->  	u32 directions;
->  	u32 min_burst;
->  	u32 max_burst;
-> @@ -1922,8 +1914,6 @@ dma_slave_caps_clear_src_width(struct dma_slave_caps *caps,
->  			       enum dma_slave_buswidth width)
->  {
->  	__clear_bit(width, caps->src_bus_widths);
-> -	if (width < DMA_SLAVE_BUSWIDTH_32_BYTES)
-> -		caps->src_addr_widths &= ~BIT(width);
->  }
->
->  /**
-> @@ -1936,8 +1926,6 @@ dma_slave_caps_clear_dst_width(struct dma_slave_caps *caps,
->  			       enum dma_slave_buswidth width)
->  {
->  	__clear_bit(width, caps->dst_bus_widths);
-> -	if (width < DMA_SLAVE_BUSWIDTH_32_BYTES)
-> -		caps->dst_addr_widths &= ~BIT(width);
->  }
->
->  static inline int __dma_set_bus_widths(unsigned long *bus_widths,
->
-> --
-> 2.55.0
->
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+
++ bits.h // BIT() et alia
+
+> +#include <linux/delay.h>
+
++ dev_printk.h
++ device/devres.h
+
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+
++ sysfs.h // sysfs_emit()
+
+> +#include <linux/types.h>
+> +#include <linux/units.h>
+
++ asm/byteorder.h // le16_to_cpu()
+
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+
+> +#include <linux/iio/types.h>
+
+I believe there is an agreement that iio.h implies types.h in iio/.
+
+...
+
+> +#define GP2AP070S_REG_PS_THD_LO_LE16	0x88
+> +#define GP2AP070S_REG_PS_THD_HI_LE16	0x8a
+> +#define GP2AP070S_REG_D0_LE16		0x90
+
+All those _LE16 do not add any value, we see that from the use of them.
+
+> +#define GP2AP070S_REG_MAX		(GP2AP070S_REG_D0_LE16 + 1)
+
+...
+
+> +struct gp2ap070s_drvdata {
+> +	struct regmap *regmap;
+> +	struct mutex mutex;
+
+Lock should have a comment explaining the data it protects.
+
+> +	u32 near_level;
+> +};
+
+...
+
+> +static const struct regmap_config gp2ap070s_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.volatile_reg = gp2ap070s_regmap_volatile,
+> +	.max_register = GP2AP070S_REG_MAX,
+> +	.cache_type = REGCACHE_FLAT,
+
+Oh, registers are from 0x80 to 0x91, why FLAT and not MAPLE?
+
+> +};
+
+...
+
+> +static int gp2ap070s_iio_read_raw(struct iio_dev *indio_dev,
+> +				  struct iio_chan_spec const *chan, int *val,
+> +				  int *val2, long mask)
+
+Split logically here and everywhere else.
+
+static int gp2ap070s_iio_read_raw(struct iio_dev *indio_dev,
+				  struct iio_chan_spec const *chan,
+				  int *val, int *val2, long mask)
+
+...
+
+> +static int gp2ap070s_iio_read_event_value(struct iio_dev *indio_dev,
+> +					  const struct iio_chan_spec *chan,
+> +					  enum iio_event_type type,
+> +					  enum iio_event_direction dir,
+> +					  enum iio_event_info info, int *val,
+> +					  int *val2)
+
+Ditto.
+
+> +{
+> +	struct gp2ap070s_drvdata *drvdata = iio_priv(indio_dev);
+> +	__le16 value;
+> +	int ret;
+> +
+> +	if (type != IIO_EV_TYPE_THRESH || info != IIO_EV_INFO_VALUE)
+> +		return -EINVAL;
+> +
+> +	guard(mutex)(&drvdata->mutex);
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		ret = regmap_bulk_read(drvdata->regmap,
+> +				       GP2AP070S_REG_PS_THD_HI_LE16, &value,
+> +				       sizeof(value));
+
+Ditto.
+
+(With above comment about LE16 this will become
+
+		ret = regmap_bulk_read(drvdata->regmap, GP2AP070S_REG_PS_THD_HI,
+				       &value, sizeof(value));
+
+which is one line shorter.)
+
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = le16_to_cpu(value);
+> +		return IIO_VAL_INT;
+> +	case IIO_EV_DIR_FALLING:
+> +		ret = regmap_bulk_read(drvdata->regmap,
+> +				       GP2AP070S_REG_PS_THD_LO_LE16, &value,
+> +				       sizeof(value));
+
+Ditto.
+
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = le16_to_cpu(value);
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+> +static int gp2ap070s_iio_write_event_value(struct iio_dev *indio_dev,
+> +					   const struct iio_chan_spec *chan,
+> +					   enum iio_event_type type,
+> +					   enum iio_event_direction dir,
+> +					   enum iio_event_info info, int val,
+> +					   int val2)
+
+Same as per above function.
+
+...
+
+> +		/* Ensure hi_threshold > lo_threshold */
+> +		threshold_other = le16_to_cpu(value);
+> +		if (threshold_other <= val)
+> +			return -EINVAL;
+> +
+> +		value = cpu_to_le16(val);
+> +		ret = regmap_bulk_write(drvdata->regmap,
+> +					GP2AP070S_REG_PS_THD_LO_LE16, &value,
+> +					sizeof(value));
+> +		if (ret)
+> +			return ret;
+> +
+> +		return 0;
+
+		return regmap_bulk_write(...);
+
+...
+
+> +	ret = regmap_write_bits(drvdata->regmap, GP2AP070S_REG_PS2,
+> +				GP2AP070S_PS2_IOUT | GP2AP070S_PS2_SUM32,
+> +				FIELD_PREP_CONST(GP2AP070S_PS2_IOUT,
+> +						 GP2AP070S_PS2_IOUT_89mA) |
+
+> +				GP2AP070S_PS2_SUM32);
+
+What's the point to have dup constant to be ORed?
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to set current output\n");
+
+...
+
+> +	fsleep(10 * (MICRO / MILLI));
+
+What's is this multiplier for? I think you wanted USEC_PER_MSEC from time.h.
+Also add a comment with the reference to the datasheet (or other means) of why
+this value has been chosen.
+
+...
+
+> +	if (device_property_present(dev, "proximity-near-level")) {
+> +		ret = device_property_read_u32(dev, "proximity-near-level",
+> +					       &drvdata->near_level);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Failed to get value for proximity-near-level\n");
+> +	}
+
+Any default to be applied?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
