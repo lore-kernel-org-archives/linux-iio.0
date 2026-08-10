@@ -1,35 +1,36 @@
-Received: from out-173.mta0.migadu.com (out-173.mta0.migadu.com [91.218.175.173])
+Received: from out-180.mta1.migadu.com (out-180.mta1.migadu.com [95.215.58.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11CF7388E55
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:55:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34D90390C84
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:55:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348515; cv=none; b=NqnHqGkCIfRy9RUkVl8YHpHfbSswDKW9+fy4jIemC2HGkKG4cEGbopemOYKIgRykVXXXZIzLKLLYVyfTWx08WrWHCzeCbtSzWAPQPwXaeOEAZf+k0VLNkEPfken4/VTA0aqUtFTEGCl7zaqAE/h9NXMSIILm+dds2hu4g/XJ4Sc=
+	t=1786348545; cv=none; b=VWssIFWUoE+EfuBQkjyW6rZA3jmAsxW7IZXhWDbVl396I4cpYcV/sMlfsarz0S9Xf6GfkHVXRld6gPAp1ytptzvXw8POTA+UTAW93x3+rC3951agwSVcIbQ+BPcpCMjGHRE599qShZc+N5dKl79F4SjEZlEk1F482tJqWqNKe/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348515; c=relaxed/simple;
-	bh=rsC7ZAU+lWgrhECQQExmehmWD+SEeAIJdEoJyeBSByQ=;
+	s=arc-20240116; t=1786348545; c=relaxed/simple;
+	bh=CfY9GXcy7Uu6pe55Y290vufRTa2iQtz0q30tAtYPN80=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n91rYWut3hzGqnI6djC+yb3TZ0NRXQX3ONjmSYnV7A+0G2xnI75vtcx4G2KAtFsKZUfK/Enmz3oj8DU2ebTcPHKASU1i39i0buFcM9BTcitpfh1Tdt3hvkOjZWtHgCcecIpDIU5OevUvRfaPcx1kbqb130/liqmeo/dXPcIBRFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=fZS1CsYj; arc=none smtp.client-ip=91.218.175.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=cXAoXTLo54la0TdbPARWJWnN9JFT/EXIYaxYl9V+jQSkQHyy9B+PozvbZBJYEHcED4wmsjGxOD4oDFj2srvZcFuqC8dw7r08isLm3jH5liF2swTLn8eNS9iKaMRJNCLmOqNf52X5N/NApqlvnFlBtqdz4eygf4eSpBuNy4hjH9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=WYFhlo/F; arc=none smtp.client-ip=95.215.58.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="fZS1CsYj"
-Date: Mon, 10 Aug 2026 10:55:03 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="WYFhlo/F"
+Date: Mon, 10 Aug 2026 10:55:25 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348511; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348540; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=S4/DNiYy9MWkTc1iQO/io8PRq7s6kyJYqDekbNN2XwQ=;
-	b=fZS1CsYjEetBOcgSDvpORR8l5XxJyvSGctyCXXkC6nO0eYlWysS1OxeneAz0bB0WGTRN6g
-	dyKchDUcCY7v9MdN9vWZfRgRA9OzleAAmN7DlIKrWFJAt2cJ2rzLNzOrxeGyM1zX0HsPSg
-	zWiop3rLr2YQ2hhYAFH9WPcjBHKngac=
+	bh=82lkkM/QsZF2kEurZLORw+0RKriA3bE/GFTKcOTjUvg=;
+	b=WYFhlo/FTXbcOjxZGzzOTPrfsoxj2uN/4mAqeEwHZhaesRUSmmijT+3KPA1iTR0tic4VFI
+	iQR83ch6BgNhKutPVWmJQTZYA92lIKt20beTe0KwTGS4GV6FGrjWbpyDJwVVc/9T3IF+uq
+	K9RragYyKxbtXl/d9jCXNZ3SvCcA8Ls=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-	Matti Vaittinen <matti.vaittinen@linux.dev>
+	Matti Vaittinen <matti.vaittinen@linux.dev>,
+	0012-iio-accel-kx022a-Fix-IPOL-macro-name.patch@mva-rohm
 Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -39,9 +40,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 11/12] iio: accel: kionix-kx022a: Prevent memory leak and fix
- state
-Message-ID: <85e6bd3998863e0247c52dcf0c1486b2cddff567.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 12/12] iio: accel: kionix-kx022a: Fix IPOL macro name
+Message-ID: <c26c2741ca11adf7a089c094d8648f4ec6cbab54.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -51,106 +51,72 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="F6/KSGT0MhpUJjYQ"
+	protocol="application/pgp-signature"; boundary="QyBQFuSnY8wRRi53"
 Content-Disposition: inline
 In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---F6/KSGT0MhpUJjYQ
+--QyBQFuSnY8wRRi53
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The driver allocates memory for samples at buffer enable path. If regmap
-operation fails in the kx022a_fifo_enable() at the buffer enable path, the
-allocated memory is never freed. Furthermore, the state information and
-previous hardware configuration(s) aren't undone, potentially leaving
-WMI interrupts and buffers enabled, or driver state flags wrong.
+The "interrupt polarity high" -macro for KX022A variant is defined as:
+However, the KX022A_MASK_IPOL1 is not defined anywhere, so actually
+using the KX022A_IPOL_HIGH would produce a compile error.
 
-Free the memory and revert the hardware configuration and state flags on
-error path.
+Fix the define by using correct mask.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Fixes: e7123a4dfcd7 ("iio: accel: kionix-kx022a: Refactor driver and add ch=
-ip_info structure")
----
- drivers/iio/accel/kionix-kx022a.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
 
-diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-k=
-x022a.c
-index 8a13f78aeab0..49e8b4b943da 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-@@ -980,26 +980,43 @@ static int kx022a_fifo_enable(struct kx022a_data *dat=
-a)
- 	guard(mutex)(&data->mutex);
- 	ret =3D __kx022a_turn_on_off(data, false);
- 	if (ret)
--		return ret;
-+		goto err_free_out;
-=20
- 	/* Update watermark to HW */
- 	ret =3D kx022a_fifo_set_wmi(data);
- 	if (ret)
--		return ret;
-+		goto err_free_out;
-=20
- 	/* Enable buffer */
- 	ret =3D regmap_set_bits(data->regmap, data->chip_info->buf_cntl2,
- 			      KX022A_MASK_BUF_EN);
- 	if (ret)
--		return ret;
-+		goto err_free_out;
-=20
- 	data->state |=3D KX022A_STATE_FIFO;
- 	ret =3D regmap_set_bits(data->regmap, data->ien_reg,
- 			      KX022A_MASK_WMI);
- 	if (ret)
--		return ret;
-+		goto err_wmi_out;
-=20
--	return __kx022a_turn_on_off(data, true);
-+	ret =3D __kx022a_turn_on_off(data, true);
-+	if (ret)
-+		goto err_on_out;
-+
-+	return ret;
-+
-+err_on_out:
-+	regmap_clear_bits(data->regmap, data->ien_reg,
-+			  KX022A_MASK_WMI);
-+err_wmi_out:
-+	regmap_clear_bits(data->regmap, data->chip_info->buf_cntl2,
-+			  KX022A_MASK_BUF_EN);
-+err_free_out:
-+	kfree(data->fifo_buffer);
-+	data->state &=3D ~KX022A_STATE_FIFO;
-+	__kx022a_turn_on_off(data, true);
-+
-+	return ret;
- }
-=20
- static int kx022a_buffer_postenable(struct iio_dev *idev)
+---
+It appears the KX022A_IPOL_HIGH is unused as the IRQ is currently,
+unconditionally set level low in kx022a_prepare_irq_pin(). The KX022A
+hardware would support other configurations though. So, another
+potential fix would be removing the define altogether. I decided to
+leave the define there, as having it will allow users who need different
+configuration to simply change the KX022A_IPOL_LOW to KX022A_IPOL_HIGH,
+which is kind of a "easy to try" thing.
+
+I don't have a strong preference here though.
+---
+ drivers/iio/accel/kionix-kx022a.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/kionix-kx022a.h b/drivers/iio/accel/kionix-k=
+x022a.h
+index 0ed54f584223..a2d122c1e234 100644
+--- a/drivers/iio/accel/kionix-kx022a.h
++++ b/drivers/iio/accel/kionix-kx022a.h
+@@ -65,7 +65,7 @@
+ #define KX022A_MASK_IEN		BIT(5)
+ #define KX022A_MASK_IPOL	BIT(4)
+ #define KX022A_IPOL_LOW		0
+-#define KX022A_IPOL_HIGH	KX022A_MASK_IPOL1
++#define KX022A_IPOL_HIGH	KX022A_MASK_IPOL
+ #define KX022A_MASK_ITYP	BIT(3)
+ #define KX022A_ITYP_PULSE	KX022A_MASK_ITYP
+ #define KX022A_ITYP_LEVEL	0
 --=20
 2.55.0
 
 
---F6/KSGT0MhpUJjYQ
+--QyBQFuSnY8wRRi53
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g9cACgkQeFA3/03a
-ocVxLgf+L4sKnnXX2zgpws7llF5AQpcUzcmAMoiF8/NLGnUPgiS7yXnl0vDFiv77
-KII2TA2JWnonePhWLkXADj0ADUzEJ7wqUxTnxsJ8bRuqrFD6cHSvxcB5QpT/yUu2
-gc/cvyEwl4Xin3XGVUAsixOHehH7oV19iq0mWJCIBS2zzOXzcTYxPtRrcbU/XOJW
-kT5473PBPBJJ0bq3QgOfveWypdYrGHfdVrmCqsqtcuQ2m4qbE9ZaPEYrz1vt6VI2
-lo005mlVj4lxxIps8DJY+cZioSRjZfpPdmxZlABBq37OdjauU5i/662yzwD4M7jT
-OC3NOD5GNUzFjt4tDHeDr9E3qaKrtA==
-=jKJR
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g+0ACgkQeFA3/03a
+ocWszgf/R0DYNmXxaREMAcNc1Mz3mLHRrv8E+sAro2trSrF6Go8eA1+1xOyxHaYt
+KX3EpzAEkpgN0nY0imEM6bcIBbD9CXk5ymKJ6K0Tu6RyP4B7Vm73TsQF8kin/qk6
+fddQAJ29oXfPp/5t17MuKM/Nk8dm1OA7aKnZCcEUMK6rbzLop8VcolAUJuzHZS+I
+I6ndSfDI9ioGNVtGX+PVCvNZy58MO5U3ztj93ZwTVUODPjfy2ZoNvcBHzkWLDe8h
+IuKpKTIEyj46KB0x3mxJiGJBZpuLRFbbgMd2UoXcv07Zwd64lSNA0BYiDan3ytfn
+JslR+J2a5+FJQQki/9UWfay1sEE/DA==
+=CIkl
 -----END PGP SIGNATURE-----
 
---F6/KSGT0MhpUJjYQ--
+--QyBQFuSnY8wRRi53--
