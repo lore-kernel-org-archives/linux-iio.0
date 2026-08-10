@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8007D1DE4E0;
-	Mon, 10 Aug 2026 20:06:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2359434407;
+	Mon, 10 Aug 2026 20:09:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786392396; cv=none; b=CjRc4QgKneaNCcqf/tcftP9wFwm3qoCxwBv1N09YACn2z+N646zfsisu/wuAS9K5ViFy6pg/RMvh433lrJU6eYCirCXRwW8y1nbxz1hcLEg8S7M2HwW/jrfoGdLzjJJluhXf5LVQrDaZR5yks/IzGFaFA6kjrDyz6Om3ejlwviQ=
+	t=1786392552; cv=none; b=Vnodr3OzH+/91S6En/+R1jhut+ZTsuhyQolmfRhy5Ca1X9UScB7ojQZR1hoQ3UWfblm0a9X19Ol51gPDHr3AimQTY/tDtv4KI4g6P98kAo27Ib1eCkcZkNpLPmuVos/qrTVSOy3NdoO2noN1C73ZVSjcAP7W/vg+LH5bGc1XiPc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786392396; c=relaxed/simple;
-	bh=EDg8+d/Wgrz2vd4bXMUEEOsm44AwfcqYT6C1OYwENNg=;
+	s=arc-20240116; t=1786392552; c=relaxed/simple;
+	bh=YpngZ9Bfsdt3fMXJC57bZqYf4bniANnpg/maoX3eins=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JtHlW/KGSLIr7gj5lqDbx4dDRdxg9HpwTTxyHZOmygnXZUtfqgZlyeFQ65jDCi1lbcv0+cf3rEK3s+wZLNRkLgD19upkr3UaU5vFOTMa3g4QqJCFohz53yvH87U6LrtNOtq09HHWddeicq2F1URzqGg6MVxccsr4+ov3k20XLPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cDeqaQgU; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=miw9yUTuFGPNeIn4NKo1/InnqTArabXALYYxJrTQE/dSTdsFk/wOBEdTxs7dcwJNkK6iEZ9xVL23i0Jp9/Vdb1+oALcZd3m4+gAAZOXGF/7wX9vUllAMwyBxXL2Z/Ooz05lRc4DZT+uk5uHPac1Sxh7k5mo3/Mtt0iuYOW5gg6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=igPRiUtZ; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cDeqaQgU"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="igPRiUtZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786392394; x=1817928394;
+  t=1786392550; x=1817928550;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EDg8+d/Wgrz2vd4bXMUEEOsm44AwfcqYT6C1OYwENNg=;
-  b=cDeqaQgUdVMu/DWlBtWf/dgfoLT2gQpjog+SBXRV+Uas7jE99AFLR/ZI
-   jP1zS86GNlyeaFsqd7iw9yGatYSYEUM0USdDVJJ3ZWwLIJ+IXFevWfDUF
-   jnQrKMuuVa2WOGfetk/RxWLs4wgSNSHNUDDqLw4mTKhmU/kdZDV3zAmU8
-   dqk2EbrzvHmIHjgjRW17F4fX4BdT2aUlx9gGDfyzCsvHT0Yvj7cTNxz3x
-   a8keLxgbmH8Bzq2LsaEqIJ5arkOIN54PzMWvMaXQWauS6bL8ZNn7HA6Y2
-   cNG3iynyfR7s1bZip1JrkEO01tQLMhzFRHCgjpV3Ucb4vSWR5ZOqfPzwL
-   g==;
-X-CSE-ConnectionGUID: 0V664pPAQx+fkOi2jZmdQA==
-X-CSE-MsgGUID: DxusBbsFTNaT1meJcasodw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86795945"
+  bh=YpngZ9Bfsdt3fMXJC57bZqYf4bniANnpg/maoX3eins=;
+  b=igPRiUtZxjpBbMVKORGHbCiIo7qJ1/pnG+SDDs1fBUEgLQMoa6yi0IQ/
+   nX5kL26QC6FdKq3XZcAE/F9wobBQo4/jSdRCNfWrjPAHgmQTMSa70oi31
+   +HJ5mPwGyaagxyqzOl/MYu0ogslAFG/tpSLis/XqX8N0nR0mGVy3TVyle
+   NwTu15oGAVTM+ntNHlKuOzqRMqfq5ihFX/k0WfAcde9U2pxTOBbFzI0x5
+   cHBYN3tZbEO5WUV5X7/VL/rXek5BhWoIxa0vpQbV+buG2eImHILdf278U
+   9pY5JbjC64vYWOQ1OpTwwR9ra1Yme7HYXkDVW9ey3nwVnrFpvj7ePo9ng
+   w==;
+X-CSE-ConnectionGUID: QdKuUM/+QlSg1BnAx4pMdw==
+X-CSE-MsgGUID: 6qeDJQ29QEWBHtw703ClbQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86943346"
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="86795945"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 13:06:33 -0700
-X-CSE-ConnectionGUID: i3/0IzfZRIqQQa7Pj0240A==
-X-CSE-MsgGUID: ZaLqvLY8RYqDToKULZHnbA==
+   d="scan'208";a="86943346"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 13:09:09 -0700
+X-CSE-ConnectionGUID: Lochv8MbRw2v8TFcrsnEoQ==
+X-CSE-MsgGUID: ZlamzNP3QoCQvevOXZMdvA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="287830215"
+   d="scan'208";a="262632333"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 13:06:30 -0700
-Date: Mon, 10 Aug 2026 23:06:28 +0300
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 13:09:06 -0700
+Date: Mon, 10 Aug 2026 23:09:03 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Matti Vaittinen <mazziesaccount@gmail.com>
 Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
@@ -56,11 +56,11 @@ Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
- initialization
-Message-ID: <anovRGxtsyJZ8cO9@ashevche-desk.local>
+Subject: Re: [PATCH 09/12] iio: light: rohm-bu27034: Fix infinite delay on
+ error
+Message-ID: <anov33hvjioArKpw@ashevche-desk.local>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
- <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
+ <2601f407f145ea77733280fd1e2370dcdb4b69e2.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,20 +69,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
+In-Reply-To: <2601f407f145ea77733280fd1e2370dcdb4b69e2.1786347811.git.mazziesaccount@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 10, 2026 at 10:53:07AM +0300, Matti Vaittinen wrote:
-> From: Matti Vaittinen <mazziesaccount@gmail.com>
-> 
-> The BM1390 tries to initialize the AVE_NUM to 110b at the start-up. The
-> field location is not taken into account, and value is written unsifted.
-> This causes the AVE_NUM to be initialized to zero.
-> 
-> Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
+On Mon, Aug 10, 2026 at 10:54:04AM +0300, Matti Vaittinen wrote:
 
-Can it be FIELD_PREP_CONST()?
+> When reading an integration-time fails, the code will use error code to
+> compute the sleep time.
+> 
+> Fix this by using the smallest integration time as a default if
+> reading fails.
+
+...
+
+> +#define BU27034_INT_TIME_MIN 55000
+
+#define BU27034_INT_TIME_US_MIN (55 * USEC_PER_MSEC)
+
+?
 
 -- 
 With Best Regards,
