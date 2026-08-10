@@ -1,62 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9A5385515;
-	Mon, 10 Aug 2026 17:02:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BCC438657E;
+	Mon, 10 Aug 2026 17:04:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786381329; cv=none; b=VltsinA/AdnXfPPhunN9w4rSkiTvJq0Q12WJNR7bCj/fgpX5/VrR85uSidPy1XRBM4HC4qOuLoGHspRs+HNUPmOmrtaBn8zzuqAvBz25H45BRUFP7CgnEdGv4vDO3RI2GJBNMznrXLwNLwBuwagA4owf8bGEkTbRK2D5D0BP3IA=
+	t=1786381473; cv=none; b=BDU1hr2rWiIx9U06PNEZ5Ni4NyOPxKwm+N7Kp6x2s9bgQFm3zvJEv8QY4xYDql6Ol62/TTD0IKK4grRJROEiiVblWVmBhNM2czlFcgdh4KV7E7vXd+5SFNOlwzimHqIycOXHBsREsgO35SgGrGInj61EytgdsKyClbiwWTRK18c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786381329; c=relaxed/simple;
-	bh=qbKkS7s39tO59YnnxrXHo4fczdU9CTqXcTNa80t2qLk=;
+	s=arc-20240116; t=1786381473; c=relaxed/simple;
+	bh=GWx5cWR77+Aur8AsrliPdyoIYO3RJr9tjfz1Bv9lfsE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BT1Lr7lo5J18+bAyplrbj2oyTXKvk5lJphTj0kRRrqfiCooNcBmu1kUEjT3x7q2jpPh9DJjUJi0JmZkr6VpSESAP2KIG3XlTJAg+b71vOZNJoV3TTNpJn7muFSDTLak5WtSbvkISC6yeQgRVjuX8WwWt/JKa00y0g3rdpiEkGwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HUxNcv/k; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=qQkLL5bjmhgtGoXI7wRqm55kO40n4dN6AS5gu/XzUcCNbdS4AE3R6Y4deoNqKI90X4fcfU/rhnkowUpWZ6i0LoaC8yOOob0Q3qQXdvM5AAzKBqnbO5+hGDWWc49IW/Yuwj7+J/7+ERdrJrln7gMMhsgaSKWm+EBTlHb0yDR8/t0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FbcZ/jN5; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HUxNcv/k"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FbcZ/jN5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786381328; x=1817917328;
+  t=1786381471; x=1817917471;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=qbKkS7s39tO59YnnxrXHo4fczdU9CTqXcTNa80t2qLk=;
-  b=HUxNcv/kSuoCIDVmHLJ16WWiZr+UkxSncIcoWhJ8qbkXf394uOkXeYhh
-   j8VyhmJx6kK67TlvWM7/B3qGeTvRhp+e3PIuGyR1SIU0/J+ttbGmLM5C8
-   M+q4nXeJro0jwOyFFGgtLFqLc7WV5zGsRWNEX3BZOM/N3HoPPeTvbnHgk
-   O/B5YAxSjfS9LBkfk094fDzgTEztTvCA+RhW4JCp0hxHuel7/MgXrF0rm
-   ZrOO3wacF2h8MlVFK5p2gX5fjHxy52BQQeHol3jokSG2yMQ6UE8RFPEPA
-   vgkntqVb2jTuIu9a7Sd34M8qftzupPczTJNQbs/vT5hoPqj0eQfS4xZIe
-   g==;
-X-CSE-ConnectionGUID: bm9s+EB6QLOZ/y0tmsdIew==
-X-CSE-MsgGUID: ynD+ia8VRKShOWUs14zMeQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86662011"
+  bh=GWx5cWR77+Aur8AsrliPdyoIYO3RJr9tjfz1Bv9lfsE=;
+  b=FbcZ/jN5vLglGtZNyM/evJ/1OMRfYnmn19NZ8MqyKgUIP2TfzvQ7xPtY
+   ulPStwjajsJjXHk+q3cwNvhlDift0pp8tD4Nm8ZZD399V1LvX2RqcJDhT
+   NxYbL4PKjcyZ2vAOQSTx/+DY10JgDkVbjhn+gcU9XnsnuQJGvDV04TcMg
+   CjMQkgWB8/x5j4R+QwqdY6rd+w4Tk64XrXQ/B8I2gl9pA4YPw4MQOIM4W
+   oPugRN2RlbRPOpwKPLm4feqIDrhQBAnTayrOOC6x/Hui4vssUXlQlZT68
+   I+2nJ9iMaMOCAJBFdHzmf+SToJ/FLB6y0v/kaeaSKZIY9/STXsRzxNy2A
+   w==;
+X-CSE-ConnectionGUID: lXPjsMIwS4SGMDm/PdnEJw==
+X-CSE-MsgGUID: lUouIA5FTgST8gZVdgSWeg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="104294955"
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="86662011"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 10:02:00 -0700
-X-CSE-ConnectionGUID: cpMx6TNJRXC4FhCJULRi1A==
-X-CSE-MsgGUID: CFlvzCKzQDCHpJv+DMym8g==
+   d="scan'208";a="104294955"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 10:04:28 -0700
+X-CSE-ConnectionGUID: yCith6j/Th67/Kt4sHy4Fw==
+X-CSE-MsgGUID: h8dytrhmSxukfe+zi9SU2w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="256868218"
+   d="scan'208";a="301326206"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 10:01:57 -0700
-Date: Mon, 10 Aug 2026 20:01:55 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 10:04:26 -0700
+Date: Mon, 10 Aug 2026 20:04:23 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Cong Nguyen <congnt264@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Chris Hall <c-hall@ti.com>,
-	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: adc: ti-ads112c14: add DRDY interrupt support
-Message-ID: <anoEA4ekSph93vU8@ashevche-desk.local>
-References: <20260807-iio-adc-ti-ads112c14-continuous-mode-v3-0-76e0d30e6c6b@baylibre.com>
- <20260807-iio-adc-ti-ads112c14-continuous-mode-v3-1-76e0d30e6c6b@baylibre.com>
- <anmQw2X2-CjzSMko@ashevche-desk.local>
- <9caea0d2-3fad-4a47-a437-096c269938d5@baylibre.com>
+Subject: Re: [PATCH v2] iio: adc: max1363: sign-extend bipolar differential
+ channel reads
+Message-ID: <anoElwDzKRBoHTcA@ashevche-desk.local>
+References: <20260810164446.2555239-1-congnt264@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,32 +62,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9caea0d2-3fad-4a47-a437-096c269938d5@baylibre.com>
+In-Reply-To: <20260810164446.2555239-1-congnt264@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 10, 2026 at 10:59:20AM -0500, David Lechner wrote:
-> On 8/10/26 3:50 AM, Andy Shevchenko wrote:
-> > On Fri, Aug 07, 2026 at 04:19:46PM -0500, David Lechner (TI) wrote:
+On Mon, Aug 10, 2026 at 11:44:46PM +0700, Cong Nguyen wrote:
+> MAX1363 differential channels are bipolar (scan_type.sign = 's'), but
 
-...
+The (...) can also be dropped, but I leave that to Jonathan, no need to resend.
 
-> >> +	if (device_property_present(dev, "interrupts")) {
-> > 
-> > Unfortunately this is no-go for ACPI-enabled systems.
-> > On ACPI we expect to have 'interrupt-names' but 'interrupts' is OF-only.
+> max1363_read_single_chan() masks the raw value to the ADC resolution
+> without sign-extending it. Negative differential readings are therefore
+> reported to userspace as large positive values (e.g. -1 as 4095 on a
+> 12-bit part).
 > 
-> So device_property_present(dev, "interrupt-names") is OK?
+> Sign-extend the masked value from the resolution bit for differential
+> channels. Single-ended channels are unipolar and are left unchanged.
 
-As long as we use _irq_get_byname(), yes. Because the below call relies on that
-property to be present in any supported FW description.
-
-> >> +		data->drdy_irq = fwnode_irq_get_byname(dev_fwnode(dev), "drdy");
-
-OTOH, you may also introduce _optional() variant for this to avoid layering
-violation (why should driver know about that property at all?). But I haven't
-checked how many existing users (if any) we have. If none, perhaps also a
-TODO/FIXME/et cetera here to point out on this.
+Now looks good to me,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
