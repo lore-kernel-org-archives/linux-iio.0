@@ -1,68 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88CA537E2ED;
-	Mon, 10 Aug 2026 19:52:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D91B42FCB8;
+	Mon, 10 Aug 2026 19:57:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786391526; cv=none; b=Ki0JqggouUKYj1QEpv2Dt8Nm5BcBb4VIx4dw9FN6MJFozx84HEVrzn2Pu18Ko+V2+m60nSLB9RI98zkGKccWfbRiwMwzpatzsFXBlQ/2BqP1ZZKC0OF15q2kf7l5xrGdeD2bYNzwSaZo0hsT44AAZkMmK3jsMqGlZdOKftwXHPI=
+	t=1786391833; cv=none; b=sRywgDB8+g0bPk2Ni3hOxzVE18xgVT0thpbGC+szUwzPlVxguYfQqNHIca9wxZ7lqaUV0Ro62ihNOzx62aKynfmZD3mS5alN17KpHtchls8JNPPBZMNobYXsSF9r4xYsj464EKNpXdimZmT7Yaqmd13IzYktahM1aaRcbk1WpDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786391526; c=relaxed/simple;
-	bh=3E9JKUGHh3Bphur8ewBI2aYVOmD/kOR3W/Q+NYYrAjA=;
+	s=arc-20240116; t=1786391833; c=relaxed/simple;
+	bh=Xl9xNNU9znyqMZcqgHnfjOO7ers+5q9eyWjieiSU3Cg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kx1YmYpwVDS9tS+48eWqvj6aqVP9PGICPnwmN7YpBjDJNF2jITYOfAprbjgHzIpt2B2OV7UiTBJekh06/lmJ8yQqUn15MzppVutJvZHDWrZAoeFLHUsKY9kEeR4kv95AMDM6GmgOrQG2q/TQDRYnX5J3RLiOVcH1nE30xR4LUKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yu7mwoWY; arc=none smtp.client-ip=192.198.163.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=rTw8jrNzCxyINTAQEZTxxf/LJPBkoHRipllqVQEtd41DgI32hvfYMLFnnRwsyk9MGddK6hrpyrmzmpKLoVrh/iNYDH1TcC9BgBxndSRK14XZVWJr5eHsLse3OW+5j4OqYJRH4fG78TEFXt6ZjpmyBiAYLwS4iTxT281G4yw8fKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ARhxPCTz; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yu7mwoWY"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ARhxPCTz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786391524; x=1817927524;
+  t=1786391832; x=1817927832;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=3E9JKUGHh3Bphur8ewBI2aYVOmD/kOR3W/Q+NYYrAjA=;
-  b=Yu7mwoWY66q3DCmSZ6MvKqkgIp3IdaV/OI0UcihkaAgPfqOJbcIH2kZh
-   jETDA1j4GK/N59izRbHP6Nhz05FIYpF2pknqRAlW+zj4aFonY6gQNVGsi
-   JIOiUyXPfrt5o1tymxWblE6CpJ80seLFU4DGZwRHq+pzUPSHE1OHCHMXo
-   O+9KOn6JThENQbXfOxu2GBt4fqwox5zQdF8kDClnuro7xVeeiznfDuPOj
-   TDYCY//5mJvxGBeYLI8tN0nbXdBsfbaofX3x4EN+g9Iqn7OJd59FaHTrq
-   d7LtWP0BS9xXABDgSARCN8HNcymFdXYp/eW0meRSoPiNA7xGrHDXpyoee
-   A==;
-X-CSE-ConnectionGUID: RkpJgYQYSQ6F6bX2VpsFXQ==
-X-CSE-MsgGUID: 49WkHhH8SAmlCddlskbNrg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="98276797"
+  bh=Xl9xNNU9znyqMZcqgHnfjOO7ers+5q9eyWjieiSU3Cg=;
+  b=ARhxPCTz6/j9KGIakTwGy6VLtSZOLMOLx2RIgmXOpI9JyYF3ffHLi7fJ
+   xJ8xd1dhW8YtjF8vCub205WAUL15VZgx8AYEqINr+omXviFKS+ImuXvHl
+   tRPODLfTUHUEOqVrvwCuHba9WkPFWQLdoouoiamLC4r7S4v7c1xiySFP1
+   zPJWPYHDtuRM/WyjrtwLvWk9eEPLuOvcvyKQVwJxcrwb8k66ChOtQC6TE
+   rasytWacC+4NFC+COgENFJiaeYGJl4ycHCWej9pMIa1YNqhRSvpGH0kzl
+   aCVJaHJs+clUyGNcsvJwDEwYbvlKijne+P3IIbh8agIxXexiEE8l2rnUg
+   w==;
+X-CSE-ConnectionGUID: F9I3Seu1RuCTkIKW0mVAcg==
+X-CSE-MsgGUID: YPzm+5csRNq3CcnTpbIDoA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="89443708"
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="98276797"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:52:03 -0700
-X-CSE-ConnectionGUID: akfeCHbPQOaFajEAOXIExA==
-X-CSE-MsgGUID: 2z1K1TqOQRWfEzwAuUxolw==
+   d="scan'208";a="89443708"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:57:11 -0700
+X-CSE-ConnectionGUID: z2Tb7+NiTRW6mpiRvkuHQg==
+X-CSE-MsgGUID: rBWht3/oSOaUedl0eEl/tw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="262630046"
+   d="scan'208";a="301355572"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:52:00 -0700
-Date: Mon, 10 Aug 2026 22:51:57 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:57:07 -0700
+Date: Mon, 10 Aug 2026 22:57:04 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Esben Haabendal <esben@geanix.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Martin Kepplinger <martink@posteo.de>,
-	Sean Nyekjaer <sean@geanix.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] iio: accel: mma8452: Allow open drain interrupt
- pin configuration
-Message-ID: <anor3Yq60APxW45c@ashevche-desk.local>
-References: <20260805-mma8452-open-drain-v3-0-6149f406a409@geanix.com>
- <20260805-mma8452-open-drain-v3-4-6149f406a409@geanix.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
+	Maslov Dmitry <maslovdmitry@seeed.cc>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Thomas Gleixner <tglx@kernel.org>, Pan Chuang <panchuang@vivo.com>,
+	Yangtao Li <frank.li@vivo.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 6/7] iio: light: ltr501: Add ltr329 driver support
+Message-ID: <anotEG6n8AXLXcTg@ashevche-desk.local>
+References: <20260810-liteon-ltr329-v4-0-8bd3dfd15280@geanix.com>
+ <20260810-liteon-ltr329-v4-6-8bd3dfd15280@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,22 +69,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260805-mma8452-open-drain-v3-4-6149f406a409@geanix.com>
+In-Reply-To: <20260810-liteon-ltr329-v4-6-8bd3dfd15280@geanix.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Aug 05, 2026 at 09:21:38AM +0200, Esben Haabendal wrote:
-> When sharing interrupt line with other chips, the interrupt pin most
-> likely needs to be configured in open-drain mode instead of push-pull.
-> 
-> The PP_OD bit in CTRL_REG3 is set when open-drain mode is configured,
-> allowing sharing the interrupt line with other devices (with same interrupt
-> polarity).
-> The IRQF_SHARED flag is added to request_threaded_irq() flags, indicating
-> that the interrupt line can be shared with other devices.
+On Mon, Aug 10, 2026 at 09:11:16AM +0200, Esben Haabendal wrote:
+> This adds support for the LTR-329ALS-01 chip, which is similar to
+> LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
+> have.
 
-OK!
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+...
+
+> static int ltr501_probe(struct i2c_client *client)
+
+>  	if (client->irq > 0) {
+> +		if (!ltr501_has_irq_support(data->chip_info)) {
+> +			ret = dev_err_probe(&client->dev, -EINVAL,
+> +					    "chip does not support irq\n");
+> +			goto powerdown_on_error;
+> +		}
+
+Why making it fatal? Perhaps
+
+	if (!ltr501_has_irq_support(data->chip_info) && client->irq > 0) {
+		client->irq = 0;
+		dev_warn(chip doesn't support IRQ);
+	}
+
 
 -- 
 With Best Regards,
