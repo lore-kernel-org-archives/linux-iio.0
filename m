@@ -1,68 +1,68 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F66429024
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 16:42:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1EEA3E3159
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 16:42:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786380161; cv=none; b=GbWwdeS5svUo8qPjMQPOMAtj3D4Dg9RG35iyeMpQ17ww/ssG7wRXYiyqkjZHydeHwbcU+H9fbgfm7OjPT2m+5D/4Fu5WktHsnQanW9n8eayAR03NRJDUsJxOrJ7HPfXlXIBZGd42ZX0i+hk5sWUfrDCGMcfeS1ybxzUg2mKHtC4=
+	t=1786380183; cv=none; b=Hs4Muipq+qEqH2eKrft8QtZX/W6w9l+7IP6mRDMJmXZ4xaD23P101UtxgtzB6XkItR/55LbKTC0q8qKV076qPCJAoDY0YEwnkIVCbellyghhZ0GYJk1fUp9BeQZVWLlF4hgr/OQSc98PwyIniqWSL60QRqeKre512Lipy740U20=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786380161; c=relaxed/simple;
-	bh=BHyJkKWPtabg9chKvlw5ajLWZWczWFC02vAW2qDPPtw=;
+	s=arc-20240116; t=1786380183; c=relaxed/simple;
+	bh=qswzUvLeWzD1ypEyusL4JpuvZviHdsdZlDLSs8pxD1Y=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D7l1UnUSrMI/v5M+IduVIhi7NQCh8X/ndO2r6CxpERDWphD9enuwsuKx6CvU9fhfh/x0IIglCYA6TZPmCA20VYySboib+iDpxDQpesjimJEaDbdatiT9qZCtf3boC0SgqK0anNvgvgM8ON8piBBqGhjI/DdWV3Z7wTuxzKMwhRw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OTcBvOkb; arc=none smtp.client-ip=209.85.210.47
+	 In-Reply-To:Content-Type; b=Xgff7d24Xc03eJ4win6nps3Q4pm8DQE3D1PtjNBPL7pPi1gsY0CsjDi/6Wu2Td4VSft8dr3HISymmjQwqrAaZ39VXQPQavHrp6lH44PiGnr8UW9CFUrc9HBdXPFIzd6Cy5uMCht3yRdSw4n0QsiRwd2iEf8pfxXJFrlCINzv7TE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=aeA02L7E; arc=none smtp.client-ip=209.85.210.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OTcBvOkb"
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7ee4399c3abso1266265a34.2
-        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 09:42:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="aeA02L7E"
+Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7ee4399c423so1267805a34.0
+        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 09:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1786380156; x=1786984956; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1786380176; x=1786984976; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=MH5p5bgeIASO8oIGcJrEMux/A5GCFedD9u/VSUjCZzM=;
-        b=OTcBvOkb9/qG+lSWL2VHfpGH8kWkXmgR67QGvpX79BL/8675QAMuvnraG87EFPua6Q
-         g/wgvhgylk+JVQ6Ac9vu2GvKjE6RAQfO3NRM0qUoSbuQkfJuvu+rVKIJ/n14WkxiF/c+
-         fYw9/25CcyO505609HjOkYpMdRVI+tj7nlR2BEpn+0RxYZx6bZ/hbLEz5KSOg5p40QiS
-         z6OrsJ1uRklWZGLCp7yHQvKZOPFcQXvtzjJbawcwhn3xyk+c1jiZT4BQyXIkQQurwVMQ
-         uvhfWmQ1gDwxjSlW3sZ9OnuCEFlsNoE+3e7mMduz7l06jA8zxOPSRMRXOCDiq7M627yF
-         aMwA==
+        bh=SF0UuKcYo2PEY9aDv0M4yYRYVyTu0AJ1rxJHPH4mQVc=;
+        b=aeA02L7EvQN2bdibNcN4KqlRuYCVq3wgwHOuuGnrz3J88LwnPay54FF6zkDqA8eYh0
+         vbdOWfTmIz1bdwNJZIcobwTZL6Ql+ZUHtualTsqAn8+xogfK7TGHz3M1us6GxZHj1QFZ
+         nVBE56zEGKRnbmSBmKV/995cThNOVPc/bdBr0iA+FhYJsVGyAXVldam5GqXwSNrkLoHz
+         IFVDnqo1riis/fMhbkNF2u2Oq9ibNtCow9yaCBwB02+jlKLVxgiFUHBhBaojwl8KwyhS
+         LakjXkjLSPLxmS1pEN9nJwIaFm+x/M/gjoOSFB4MeMyJK4KZ7KcPwdkdskKGQW0I4SlI
+         Ju8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786380156; x=1786984956;
+        d=1e100.net; s=20251104; t=1786380176; x=1786984976;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=MH5p5bgeIASO8oIGcJrEMux/A5GCFedD9u/VSUjCZzM=;
-        b=SHMdL096uT1pvQyljK//YgRLeJmYMrFX1agvu1FQV9n/YG8CGBIDKrhzvQCdl24MNZ
-         Zq1E3F7cDa8a+8+C0S3SKG4bAnN9B7d5PX0ec6+8FabdsjXWXAgE8atUIxHP7VZcVjRG
-         +s5sKR+n4++A1gSODedr2TFduwSgllLLqIJKG9W3lucFQ63yWJqf2hR5IzUdIr3TBNH0
-         awgizEaLCT9gZBdkTGokYDv1TiFGems9dwlidGj+UDeMH/avnLD3izr5PsNK0lczF0Ha
-         GjLUqHvtpzmCJuqUfsPRqLonk3C2pQxbEtA0sAwLxgPG9TWiFzwUHDqbe9FY1mDRcxsp
-         N5dQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpHyKED+FWNu3It6vFoSdpXgIG5zDEPK00wb/QTB57cOzWy5vc1zvHruPJEIqgRgEVXupskeVCnW1Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyZS+buHxj514zFt6Aq25rokz/dWfgpzXA9wcHImgxQyQHAjJlA
-	El+jj/+nxftHxcKuIhVSH8Ooa+uu1VpWVYbmtbT+mQXkXI5JqTHByZU2iPbPPPoQNok=
-X-Gm-Gg: AR+sD13QCchQfA9ffh0vreTt2D8nuO+51cBWhzTLnnbZIPhtbYkSwKfIVCV7ry48Y2a
-	yXrxQxDIpIAl+ChZtjNbbapy4P5BBEYHFLR+IrL/3roMqeTryTBU24CE6ZyKPvPaMr9ENJfaoZO
-	EIyTErzJWmL510sdDmVA4NETI2C5SexF5QHW6EUozOez69LEEalXvxgJ9ouyYEJfmZoCue2AZBS
-	bBB6mj7ExSYb6GIkl7oot6cnWKlKFICmwIL19Tzk0mbwRh4M+zd13M7CZ1mFsiH649Cdee3J2K1
-	jAQJTDubBybIhZkyUiOQz222zY23ZZ1jbBOqyX3UsI0vO7y/LyxqoweQA9wLNqhHqW2kMKtTtgm
-	52kjLwxnJVW4NdxEcgq4rRctnHuYGajVABJbHdEmOMrzFF+wTenQUKkWAHsDOmlzn5D45cs1gbO
-	pIioB95GOyocmUuWSVltk3HkPWLQY4t5o4gpPUtuBKwA8McysVdqr1l5o837afT+/2WNR5RlTWg
-	gwy+nzga8ndDPGdk1frWI/+D0/i/plT5NfcjcM=
-X-Received: by 2002:a05:6820:1c8a:b0:6ae:5250:dd1c with SMTP id 006d021491bc7-6b035366c4bmr12452912eaf.29.1786380156501;
-        Mon, 10 Aug 2026 09:42:36 -0700 (PDT)
+        bh=SF0UuKcYo2PEY9aDv0M4yYRYVyTu0AJ1rxJHPH4mQVc=;
+        b=cXqdqS5OIFRFr3PVYCdp3t8Z90ASoe1fx/Lu0a1kVXgf+lNRzlOgMnV81id8MePylh
+         3BbKm9/ijZd3V/xbtE1+2aeNCJWFyV5EMFsj1/mAI3j53gH8hzw2cSBMV/1rrBsTsz7G
+         Npg70iOfJ6WSvCiIWfXpSl0/KxHo5JhyYFjtkblXnkyZUD6NbQ8dklrFpAX0Po2tgSLp
+         /Gum6Hn96g4qKXMaJWVKjfZFny3b6JXLRs/CjLEOrKA64hK8yDYEhioKh7tcafS2Y41d
+         ue0G8nNbqsqFH+vTZQUF74Dt7vBwgldnWEt3fpPHrZ7oVMGQzYzuXX7hdIxy0uGx+3t0
+         7zuQ==
+X-Forwarded-Encrypted: i=1; AHgh+Ro5zmXwfYKdbX1kLdFeHv848Kjmf85l7jkt7Z4w7jUeMak7A6THqOz8DIOAgZ6K8bepiAhIdVgnmKQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1L1eh7D9qVkiSLQ6+a+MoxlqsON2NI7Qh9K1ACDqmHkWn4K71
+	ZaSHiy3TJ/kbpl5IMI+vlLEmO3DS75IuvaTgZaV4XCCR9tLYdGKGHhAjawHFsoAHC9k=
+X-Gm-Gg: AR+sD11s+u/0mGzy0GMOw7cJE7pzjFRlHCXJYnmWIxW2SXbIAsJIKoElrgAPVSFtRre
+	0eonuE01oH9pN8lr4nBVW//U+V2mfzZQO9+E4eRacQk99+/IjIVX8iXCrshG/bcsat5DGa9rsIF
+	CAaMaXePiGmHIniUCgQgOfhoisZXrqx0CRnHkIOaJJ0csp10lTlwALQo2py03T52c9z4LV7z0Te
+	j+Jdx5riEzjBm3Rst5tDKbWnMxSaK7UmRzWd0UGJ7g6kjEFBfyDWeJNDMVb+y/ikoRO2XxnM2We
+	+7nYkzZiwvUBkn7bmaEHhMuNRNr+rOkN64jEioYhQenBSOYPfwCXVY16IwGNnWjRZN3lfQ7HspH
+	OEGlhvj/9+J39DUPrK3SFQvpLrNfmAb63RVfiq6vNDvJBNJRNp6HL44UiO9rCW0af8XsVyKvm9Y
+	E/FsYAfjDrIGcBweUkViWtdWEzW/lfYBINpKiitUQAiZbA48jPERSeOib/re/K0BBA4nGdNLnuT
+	i8B70LtA+JxBJ50O7cMkYkDagIWJZxvXk3A5So=
+X-Received: by 2002:a05:6830:6605:b0:7e9:d634:77b8 with SMTP id 46e09a7af769-7f34dcf165fmr18922818a34.2.1786380176296;
+        Mon, 10 Aug 2026 09:42:56 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:e05b:7923:cf50:e4cf? ([2600:8803:e7e4:500:e05b:7923:cf50:e4cf])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6b0512521a1sm5971037eaf.5.2026.08.10.09.42.35
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f35b5a836dsm7575949a34.12.2026.08.10.09.42.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Aug 2026 09:42:36 -0700 (PDT)
-Message-ID: <7a42a318-780d-4bd0-baf1-55d030b39233@baylibre.com>
-Date: Mon, 10 Aug 2026 11:42:35 -0500
+        Mon, 10 Aug 2026 09:42:55 -0700 (PDT)
+Message-ID: <c902cbe5-6435-4548-ae92-7399d8d48d62@baylibre.com>
+Date: Mon, 10 Aug 2026 11:42:54 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +70,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/9] iio: adc: add the ti-ads1262 driver
+Subject: Re: [PATCH v3 1/9] dt-bindings: iio: adc: support the TI ADS126x ADC
+ family
 To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
@@ -80,76 +81,184 @@ Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-gpio@vger.kernel.org
 References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
- <20260807-ads126x-v3-2-f89925d72792@gmail.com>
- <ad95afb4-e667-4290-8878-fdd7067f20fe@baylibre.com>
- <DKK9QWYHOBOT.2VD8XMZTE65H4@gmail.com>
+ <20260807-ads126x-v3-1-f89925d72792@gmail.com>
+ <c7faac0a-e3a5-42bf-8cc1-aee1370ef662@baylibre.com>
+ <DKK9QKE0OYZA.3BCNK78VTHNYN@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <DKK9QWYHOBOT.2VD8XMZTE65H4@gmail.com>
+In-Reply-To: <DKK9QKE0OYZA.3BCNK78VTHNYN@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 8/9/26 3:26 AM, Kurt Borja wrote:
-> On Sat Aug 8, 2026 at 1:39 PM -05, David Lechner wrote:
+> On Sat Aug 8, 2026 at 1:38 PM -05, David Lechner wrote:
 >> On 8/7/26 10:58 PM, Kurt Borja wrote:
->>> Add the ti-ads1262 driver with initial support for the primary ADC
->>> (ADC1). The ADS1263 auxiliary ADC (ADC2) is handled by a separate driver
->>> and interoperability considerations were taken into account.
+>>> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
+>>> integrated PGA, internal reference, excitation and burn-out current
+>>> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
+>>> 24-bit delta-sigma ADC (ADC2) for background measurements.
+>>>
 >>
-
-...
-
->>> +static int ads1262_dev_reset(struct ads1262 *st)
->>> +{
->>> +	int ret;
->>> +
->>> +	if (st->reset_gpiod) {
->>> +		ret = gpiod_set_value_cansleep(st->reset_gpiod, 1);
->>> +		if (ret)
->>> +			return ret;
->>> +
->>> +		/*
->>> +		 * The RESET pulse timing requirement is 4 clock cycles, at the
->>> +		 * minimum clock rate this is 4 microseconds.
->>> +		 */
->>> +		fsleep(4);
+>> ...
 >>
->> How long do we have to hold reset before the chip powers down?
-> 
-> For power down 65536 clk cycles. Less than that is simple reset.
-
-How long is 65536 clk cycles in microseconds at the fasted clock rate?
-Hopefully won't accidentally shut down the chip here even if fsleep()
-goes significantly longer than requested.
-
-> 
-> [...]
-> 
->>> +static int ads1262_wait_for_conversion(struct ads1262 *st)
->>> +{
->>> +	u64 max_lat_ms;
->>> +	long ret;
+>>> +patternProperties:
+>>> +  "^ain([0-9]|com)-supply$":
+>>> +    description:
+>>> +      Common-mode voltage supply connected to AIN<N> or AINCOM.
 >>> +
->>> +	/*
->>> +	 * The first conversion latency is affected by the channel's data rate,
->>> +	 * filter, the configurable conversion delay and whether chop mode
->>> +	 * and/or IDAC rotation mode are enabled.
->>> +	 *
->>> +	 * The worst possible latency is calculated by taking the lowest data
->>> +	 * rate (2.5 SPS) and the sinc4 filter. This gives a latency of 1600 ms
->>> +	 * (Table 9-13). Then we scale it by the actual clock rate and multiply
->>> +	 * by 4 to account for chop and IDAC rotation modes (Equation 20).
->>> +	 */
->>> +	max_lat_ms = 4 * div_u64(mul_u32_u32(1600, 7372800), st->clk_rate);
+>>> +  "^refp[1-3]-supply$":
+>>> +    description:
+>>> +      Positive voltage reference connected to REFP1 (AIN0), REFP2 (AIN2) or
+>>> +      REFP3 (AIN4). If not described, its assumed to be connected to ground
+>>> +      (0V).
 >>
->> These are constant values, so don't need mul_u32_u32(). Also, given the wide
->> range of possible sampling rates, I would include the current sampling rate
->> in the calculation. No need to wate 1.6 seconds for something that should
->> take a few 10s of microseconds.
+>> Would we really have a case with a negative only reference? I would say if not
+>> described, assume the pin is free for other use.
 > 
-> Can we leave it like this until I implement the settlingtime? That way I
-> can calculate the actual first conversion latency.
+> In bipolar supply configurations, I believe it would make sense to wire
+> the negative reference to -2.5V and ground the positive. Also we have
+> the ti,reference-reversal case, where you may wire the "negative"
+> reference to say 2.5V and the positive to ground.
 > 
-Sure. Just maybe mention it below the --- in the comment message on the
-next revision to remind us.
+
+OK. I guess the better wording for both of these would be that if any
+channel references one of these in reference-sources and it is not present
+assume it is connected to ground (0V).
+
+>>
+>>> +
+>>> +  "^refn[1-3]-supply$":
+>>> +    description:
+>>> +      Negative voltage reference connected to REFN1 (AIN1), REFN2 (AIN3) or
+>>> +      REFN3 (AIN5). If not described, its assumed to be connected to ground
+>>> +      (0V).
+>>
+>> Assumption is only true when corresponding refp supply is described. Otherwise
+>> we should assume the pin is free for other uses.
+> 
+> I'll clarify it.
+> 
+>>
+>>> +
+>>> +  "^ti,refp[1-3]-refn[1-3]-resistor-ohms$":
+>>> +    description:
+>>> +      Magnitude of the external reference resistor connected between REFP<N>
+>>> +      and REFN<M>. In ratiometric configurations, such as RTD measurements, the
+>>> +      IDAC excitation current returns through this resistor, generating the
+>>> +      reference voltage for the conversion.
+>>> +
+>>> +  "^channel@[0-9]+$":
+>>> +    $ref: /schemas/iio/adc/adc.yaml#
+>>> +    unevaluatedProperties: false
+>>> +
+>>> +    properties:
+>>> +      reg:
+>>> +        maxItems: 1
+>>> +
+>>> +      single-channel:
+>>> +        minimum: 0
+>>> +        maximum: 10
+>>> +
+>>> +      common-mode-channel:
+>>> +        minimum: 0
+>>> +        maximum: 10
+>>> +        default: 10
+>>> +
+>>> +      diff-channels:
+>>> +        description: |
+>>> +          In addition to the analog input pins 0 (AIN0) - 10 (AINCOM), there are
+>>> +          special inputs that can be selected from the following values:
+>>> +          11: Temperature sensor monitor
+>>> +          12: Analog power supply monitor
+>>> +          13: Digital power supply monitor
+>>> +          14: TDAC test signal
+>>
+>> For reasons mentioned in the reply to the cover letter, I'm not a fan of the
+>> monitor channels here.
+>>
+>>> +        items:
+>>> +          minimum: 0
+>>> +          maximum: 14
+>>> +
+>>
+>> ...
+>>
+>>> +      input-chopping: true
+>>> +
+>>> +      ti,idac-rotation:
+>>
+>> Should we make this one a standard property like input-chopping?
+> 
+> Maybe excitation-current-chopping or excitation-channel-chopping?
+
+I suppose. All of the TI literature seems to call it "rotation" rather
+than "chopping", but I did find a few other sources that call it
+"chopping" and that would be consistent with input-chopping.
+
+I would go with excitation-channel-chopping since we are swapping
+the current generators, not just the current magnitude.
+
+> 
+>>
+>>> +        $ref: /schemas/types.yaml#/definitions/flag
+>>> +        description:
+>>> +          Automatically swap the IDAC1 and IDAC2 connections of alternate
+>>> +          conversions. The ADC averages the alternate conversions to eliminate
+>>> +          IDAC mismatch.
+>>> +
+>>
+>> ...
+>>
+>>> +examples:
+>>> +  - |
+>>> +    #include <dt-bindings/gpio/gpio.h>
+>>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>>> +
+>>> +    spi {
+>>> +        #address-cells = <1>;
+>>> +        #size-cells = <0>;
+>>> +
+>>> +        adc@0 {
+>>> +            compatible = "ti,ads1262";
+>>> +            reg = <0>;
+>>> +            spi-max-frequency = <8000000>;
+>>> +            spi-cpha;
+>>> +            avdd-supply = <&avdd>;
+>>> +            dvdd-supply = <&dvdd>;
+>>> +            #address-cells = <1>;
+>>> +            #size-cells = <0>;
+>>> +
+>>> +            interrupts-extended = <&gpio 0 IRQ_TYPE_EDGE_FALLING>;
+>>> +            interrupt-names = "drdy";
+>>> +
+>>> +            /* Typical common mode voltage configuration */
+>>> +            aincom-supply = <&ads1262_vbias>;
+>>> +
+>>> +            regulators {
+>>> +                ads1262_vbias: vbias {
+>>> +                    regulator-name = "vbias";
+>>
+>> The node name is already "vbias" so giving regulator-name is redundant.
+> 
+> Is it okay to leave it empty?
+> 
+>     ads1262_vbias: vbias { };
+> 
+
+Yes. (Unless make dt_binding_check says otherwise.)
+
+>>
+>>> +                };
+>>> +            };
+>>> +
+>>> +            channel@0 {
+>>> +                reg = <0>;
+>>> +                single-channel = <0>;
+>>> +                /* The VBIAS is enabled on pin 10 (AINCOM) */
+>>> +                common-mode-channel = <10>;
+>>> +            };
+>>> +        };
+>>> +    };
+>>> +
+> 
 
