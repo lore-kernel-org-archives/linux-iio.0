@@ -1,30 +1,30 @@
-Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
+Received: from out-173.mta1.migadu.com (mta1.migadu.com [37.59.57.117])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B1DA385539
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:54:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 784DF386562
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:54:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.59.57.117
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348463; cv=none; b=U0B/9zpof/epb+/UboDUwABDmod5qdkbWP464bsfU2H5DmQUgUSNtwU8wQat0IIWYzFyrfuKMqUayEv6XQAXswMFB8rm3K0OJRa98+W5CTzyI+vSE4JzfXChEqcvaAmP+fcPZwSYS8B0u4z4xk7lX6HNECWcgMOYbBOcDobR8Gc=
+	t=1786348498; cv=none; b=XP6qZDtUbsnAgFYacqqyRCmeET3wuYovDe0vvC/WZsqrcdqQT5Odx2jRJOwGg48YszYcue83esVm1NgugnNJQY5koJasztUNH7zm4nVrHZayLNQ3mSDSXq5gNe3nCY+sdlmnanbMmfSCgYfmAu5YyFgUezDmRzqcQGuMbvbmn9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348463; c=relaxed/simple;
-	bh=mlqr9GcX2IDi1zaW8m2/E9Nxt7miAYZhD24amXdb1MQ=;
+	s=arc-20240116; t=1786348498; c=relaxed/simple;
+	bh=YtykBh5tS3V5E7niEnXyBQRrlY0P7/CZ5JFgVsb5gKo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K7WVdlf2FwtyH4by9lDHZBr4At9tbgm8L3IdEGN5Q+u8Y6s01yKlhUOiTnbf9Lj8dA9vr7Pf7bEu12Kcl2GyP39MoH60wq9C4bg7EPt7nkDKAQ8DWB37sS77mwpdRwid7p8EDR8Ws7bxjMpJd1Sx1aiTEo6VuqzVd+B7wtyK1ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=JFu9ejSQ; arc=none smtp.client-ip=95.215.58.179
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bj62UagD2lHDeUmeWEeFsW4Aa4+dETJwoP7nK8n2KRHNsZtBMNbilw+w3JDoVKkbY5yXkg8mBNEXhBn8mLdGFakCNiihm4I8qZpkzUY3jtM6LKbORHMEM6n70VjI7lRG4vtiVBDn/M2SE/sYvvXS2GhBYIvckGuAlSuLNMN3ckU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=PavIWh1z; arc=none smtp.client-ip=37.59.57.117
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="JFu9ejSQ"
-Date: Mon, 10 Aug 2026 10:54:04 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="PavIWh1z"
+Date: Mon, 10 Aug 2026 10:54:32 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348458; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348494; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=Zpjf0DAE++YUbowsbux4tZWqdckIRO+0LNKEgxNzkqg=;
-	b=JFu9ejSQKZICiPjiGOfkszUXD6foCmwVCd+qSwYjjYz8jex2kNokJ5zQBZ4BGOiZhh6PLt
-	ZLZl1D4POAGSlrZsaQCWHE6OCAsqihi6J6IyPgBKkl+0woLGSD7oErEsXEUIhvu3uuYZXg
-	l3Pnlp3KgkE7kFBLCyt3jmU84HkdRDI=
+	bh=GYUM+yCl2IWol2CPXBtefVWVk+q0YpjCsmfy44rlLgk=;
+	b=PavIWh1zNH3aSVmSHRhpVjFF8o0U4UmGvl6TYEtE71ObonyyD6BpwitIHndPDdPhwpjuwn
+	kiBX69uCYAGpnlLtXlmgylcVqNzgDfNkmgHChw1usMIqV0DNeWCxZcw2RKs/WHinbjmW4v
+	/oqtZ8ntgFiDUdwKj3x/rpib7/Ri4Ss=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
@@ -39,8 +39,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 09/12] iio: light: rohm-bu27034: Fix infinite delay on error
-Message-ID: <2601f407f145ea77733280fd1e2370dcdb4b69e2.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 10/12] iio: accel: kionix-kx022a: Fix array boundary check
+Message-ID: <159f1048852afc74cfc2d219298a5a6f9d70cbb4.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -50,77 +50,62 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Ub1i837GTMXb8Q0F"
+	protocol="application/pgp-signature"; boundary="L9D7vCdI1pJSxYKm"
 Content-Disposition: inline
 In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---Ub1i837GTMXb8Q0F
+--L9D7vCdI1pJSxYKm
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-When reading an integration-time fails, the code will use error code to
-compute the sleep time.
+The driver performs a sanity check for an array size, when converting a
+register value to an array index. The check incorrectly accepts the
+sizeof(array) as a last index, when last valid index should be
+sizeof(array) - 1.
 
-Fix this by using the smallest integration time as a default if
-reading fails.
+Fix the check by bailing out when index >=3D sizeof(array).
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Fixes: e52afbd61039 ("iio: light: ROHM BU27034 Ambient Light Sensor")
+Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
 ---
- drivers/iio/light/rohm-bu27034.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iio/accel/kionix-kx022a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27=
-034.c
-index f9a421618406..e6efb8adfe37 100644
---- a/drivers/iio/light/rohm-bu27034.c
-+++ b/drivers/iio/light/rohm-bu27034.c
-@@ -137,6 +137,7 @@ static const struct iio_gain_sel_pair bu27034_gains[] =
-=3D {
- #define BU27034_MEAS_MODE_200MS		2
- #define BU27034_MEAS_MODE_400MS		4
+diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-k=
+x022a.c
+index 39485572a76b..8a13f78aeab0 100644
+--- a/drivers/iio/accel/kionix-kx022a.c
++++ b/drivers/iio/accel/kionix-kx022a.c
+@@ -649,7 +649,7 @@ static int kx022a_read_raw(struct iio_dev *idev,
+ 		if (ret)
+ 			return ret;
 =20
-+#define BU27034_INT_TIME_MIN 55000
- static const struct iio_itime_sel_mul bu27034_itimes[] =3D {
- 	GAIN_SCALE_ITIME_US(400000, BU27034_MEAS_MODE_400MS, 8),
- 	GAIN_SCALE_ITIME_US(200000, BU27034_MEAS_MODE_200MS, 4),
-@@ -1162,6 +1163,15 @@ static int bu27034_buffer_thread(void *arg)
- 	data =3D iio_priv(idev);
-=20
- 	wait_ms =3D bu27034_get_int_time(data);
-+
-+	/*
-+	 * If reading the integration time fails, default to the minimum so we
-+	 * don't lose samples. This may waste CPU cycles, but as a hardening
-+	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
-+	 */
-+	if (wait_ms < 0)
-+		wait_ms =3D BU27034_INT_TIME_MIN;
-+
- 	wait_ms /=3D 1000;
-=20
- 	wait_ms -=3D BU27034_MEAS_WAIT_PREMATURE_MS;
+-		if ((regval & KX022A_MASK_ODR) >
++		if ((regval & KX022A_MASK_ODR) >=3D
+ 		    ARRAY_SIZE(kx022a_accel_samp_freq_table)) {
+ 			dev_err(data->dev, "Invalid ODR\n");
+ 			return -EINVAL;
 --=20
 2.55.0
 
 
---Ub1i837GTMXb8Q0F
+--L9D7vCdI1pJSxYKm
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g5wACgkQeFA3/03a
-ocV6lAf8CsxDR7p0x59qYkztZdv4XB5fjIByeTS9+dMEIU0alQV+cchhDyLT3mNJ
-JMjJdv+ceGnAIycts2Wtn4E3Nw8kqVa/c4xVIPovWHIU3wbsRNf5imehcWRTccX6
-h63/tLSLnNR0098MOKJ8EtuqX3gEf6C7PWWJLM9OdgYvZgrZP0O/UYXH7a53yufV
-+RPZazIRCzjWuvl/ybk1zm60NhQ11vptIyLOegyZ3ASfxRqQNxvoOI7dOEF11Ai4
-LMD4UVsqu5szvQVlv3eagOKTw0olCpq1/DSir5McIs167ClNO9eaqpi4EKK8nL13
-4zH2nM0pXUp9kgnK28Q9vZOgRGy0EA==
-=3sDS
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g7gACgkQeFA3/03a
+ocXo7Af+LlXYSGoycqVvzVxtYqz5E/z7dKDQNf7tuNO7ZBSNvUHVn3UxOQduHaU+
+AH8rDUk3sMxN0GD9pqWREcny/l18w+SYTbYt2hk2jJ8+iCMzjLJbkzQFEvDUilia
+kiIYF+cwRVfS+epiPCOeB8pb9m4VnkrVwtnMg0EsEei2ERxUeglNZZvdAy6mAoRO
+KXgwT11G3oyA5yGRsk4spDsPL1+PBjAgwaM0uDvfsQhhjTCROXWyrnR92/hxO3E0
+RJct6tNj0cZxQOrmjL9JpBudmPTtGmDf1daZrQMA5uvSADB5sv9rDhLCRa0aUG57
+ZEmV7PrPeTucxybgBemjE5+QN5CCLg==
+=j8ef
 -----END PGP SIGNATURE-----
 
---Ub1i837GTMXb8Q0F--
+--L9D7vCdI1pJSxYKm--
