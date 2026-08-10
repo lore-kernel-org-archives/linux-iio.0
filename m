@@ -1,120 +1,132 @@
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E626A3939C1
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 06:42:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786344163; cv=none; b=HiUBm9Ql+Mrchc+9RQZcQSfFtorYjsBK5Rz2u1KJGDeQbXqsy2S0WdSdaqPY8EH1fPVydKb8ZrlveyG3b8w7qxe6vBbgMOWwRjnxQ/33uY5KN1onaeAValjO444ncHxUpMvZnWSe9ew6/XBrZnQ+tqe4C9CJElury2108a36wCM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786344163; c=relaxed/simple;
-	bh=cdpz0h7C3OKumL0be6c2g+3rMM3vhRcq1Ia1fnXu0oA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=hokEaZ04tE+NshOy9qhLugEMdLRZ8NE8hdYa86E3Av7c6K5LFB+19wzlR1f1BQyImlJis+NFx1FfyhqnYDFKosubXrsobDmjnAlnW4fI2ai27eapGITmsS++YFNiy65ZtalVT1YadY5aYuM5KOZDWeFIYrYPMvoWrGWCTrHstLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p3VZpTTB; arc=none smtp.client-ip=209.85.216.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73B8135C1A6
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 06:45:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786344345; cv=pass; b=VcsdetlugQ76+tMDSNmEnYIUebzT+LVTxb++o/m03QT7APXqXI/ycpco+7GPooWXvgyeW6a0yA2oL4sTm3hjD2AFgx2M2ZAyvivxWNMAh8OyJv6n0SOUykOx5kyHpSekDG/DK/Q+Ln2x3l9Jxu86Rq5ScDM6gKY7EV8/KWTNFX8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786344345; c=relaxed/simple;
+	bh=6QLcu9A9KrdkmU5J8jY6ZKHAPoHX7aOeecWkTsMmAII=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=aK+4VRPhapCPNGmCeeuPLBW7//gwaMCSci0GmGf+hOW8gsGo7CJBgyKp/slz3f8yZ1Rn5bjZNq8bjWtRp3EOvoneEqODIAEwDg5WYeWV1gVVisI4YuOoIrY0jMb8OxJRwMp76XFdpUVVgCr7jYjpiy5J2QFwou5g9cgJIhassyo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d3+EI4tx; arc=pass smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p3VZpTTB"
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-38e08baf860so1359523a91.2
-        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2026 23:42:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d3+EI4tx"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6a1542cdb53so1333289a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2026 23:45:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786344343; cv=none;
+        d=google.com; s=arc-20260327;
+        b=osd1QO004H4S0tH58gSocS2yr3JD7UM56N14ZAkOFkKi25634eKiFgSKvC4Y+29YdY
+         HlwK2LnrN024pIwm9a0jhmn4HKKF36L7MoiAHxNckdCNzytLlTogfmj0Ip3vw5bE+4ab
+         8AnjUYM5Ls75P478Wp/8EAkm7WOudAbK6/+0UMuFBzJgiTBEVJNeCZRm+d32Bkmatkxp
+         IjYd/X3PXTXet386lyiYIbjk44/epzTE0E7RIKlazEAp1+ECxeF7WW+IAfGc0vKy0Y8j
+         syJT2v/3ms6cYjwdEqnB3XzrdYMaJJhCyM6HvEPXv7DWwREDVW5LNBfZQYAA+t7qZ7HE
+         HkkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=6QLcu9A9KrdkmU5J8jY6ZKHAPoHX7aOeecWkTsMmAII=;
+        fh=SonJofjX4as7KZ2EePQTL3kjLR1ea7gA0NXdw2IS/co=;
+        b=YQz11Y042n7iZM0NPB8cNF3WCaFbPeUO/ckO4Zks13FrZcw+ZikwL5cALEY7n9+rgK
+         xSQd40EWjt4YTyemcZhrxNBPZh/hXpnH9RYF/acjBzA9DQWcvjzJxVad8dL1K3Ue9DlK
+         t8DiNFsMvW4TSXbKfWEEQQKWgm3N5w9B8/YbmzKsssbzwu1jt/wwjlhgBXxciveHgd7m
+         fDNnmWkwt3AjAFmWcXRfWGokfmsJN9waqRcrhaDYuZVYAWBmiy6C1MfDsyJ8T3Utb0DT
+         62FTAZy7qDeA00fcn6Omvmoba9XTIerIqG6rMmSH8T0W2YpHO68zTori2t8LHBJI8l4l
+         p2zw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786344161; x=1786948961; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=F8jEBE9QHGlloAt0vMeYtcsHxC6qpAYVWGP4wjQCzdc=;
-        b=p3VZpTTBkovmiYJhGV08ShawlfpcJ/5iebSMCFC4QALbk0IgLJEbwffcb5930p62I9
-         92LD2jg9wG+KAvmMCfMrJgB4K8Nuwomz/RJzRfSQ9gysMc+iAfoolXOgzvWM8HbQrzko
-         bHp2S4AWBDauewlr8wjkm22hYqNf5y0hQJ65q4nNHfbuqtxldt322C5es0hI4zEVRPCf
-         85kKZoFCSbzNmyHgJBKSTzstjWBczS5fIn8/WwaZBUBVGLYIlDpoMzU1GSG6M2gI92LK
-         jzTrMdtSZCeLjFcNzpyiXC6VHF5yymcu4SxoLSqR9t5yriuaDnRjy/nSmRCQgyaXrZ6L
-         VetQ==
+        d=gmail.com; s=20251104; t=1786344343; x=1786949143; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=6QLcu9A9KrdkmU5J8jY6ZKHAPoHX7aOeecWkTsMmAII=;
+        b=d3+EI4txz/xyPzoSyajwX2nxSLf9mNW6skiGm3WiXb3ZGTE2lcAhTdCCEDYHtWuxUX
+         fMV3iS3IFLSvIEMJlNaUttJvDpYzTuPCKd3knqXJDmSaIqXHXONc8qmYF6/fVBdAB6jD
+         u2IRAXpgRn4CKecU98/8B3qbk+o7zFu4/zLWieOex425OvL2TApr6eE8t44JbTEVkjDF
+         4UgcXV2gOpDnM7rbILvM9ESwPQNdWKlyKhRUKYEzwHDB4QwrTngscSbfpyD5VNoYUEWd
+         4ygR7Oy57HjXl6H7f9S2Drr1DSehHnTaVLakEr++eX2/WrPA05XedWAkbbbMuE2Y7OiF
+         zPww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786344161; x=1786948961;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=F8jEBE9QHGlloAt0vMeYtcsHxC6qpAYVWGP4wjQCzdc=;
-        b=PUYv7GPwPmTkVIouDEQ8DSsUhshAl30+Nu0vYyWpWgiZieqNWGh624UjZMXKRbDB3T
-         8avDGuiOAuvWIAgr7TRXDqPh3Wn3IIwC81z06chl86hn8bglPiQV+u8VhGKDa/NHIIlE
-         ZIASeC/BXAQu5PypqMKDNuYC39mq4vlGqu3UDOPn6ku+8nDfCB9uXt7/GYQMjr45j/N0
-         e6QsVd8w/HxjnzVVPReShPUugUFRVWvYsR4ntxZxs3UuKoDii2c1RT1PPVpdcBqymXnZ
-         c/F1/abdLLXPq8K9dmb3eo8cSmyz3Fctt6LPvOBXLHMwoXmSgIzzhQRL50zrLl+1kXOp
-         uDFA==
-X-Forwarded-Encrypted: i=1; AHgh+RpoABxRLR46tmn4MFwJLfgxpdX+7FRdHKB8zayb1c8VRKuug3HOJYodmaCiBSQFz6ldM0bAICsHoq0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyD80eHcVT12oCT3A/UqLvUlpjWQFCuM7xaxfJjRdmk3Flx+ug7
-	LR8ryW2wXzkdpi6BdShapnJ1aGwsJo5zLObUBLb5sjcUE+qzIrrX6YkW
-X-Gm-Gg: AR+sD10yL+KDyRas+FppQ72zkdndcpY6jACOoy2+2PWQvJxs2lBVgQGu1jURpGZQFvM
-	DMZDzpNTVB800fy1dDP5sQFPWfgkNFJYOlJBt42Y0M8J7snfAUo8+hZ9a0wYb1x2jAX/2Ss5nQe
-	1OsBnGtcACZrLqrwlUUAbbA+lUn7HkR/XmbFrNy8MmnyCCuVjR/4XFp+II0EnnQ0lmQGOmfl71q
-	R5ogHVm5GxURbcNP7wP+QdAxlnNBZVgldqxCw2r3l2GujlxbtdMEm9q6h/2+jiQwdSH8zj/b02I
-	pVU2UCwnqlud6S4W7Eiyq3zRUtcEnX+3eJY7lsLtuPRS50romkubYqn1JyHscbv1C1H6Hk0W5dl
-	HGkkut3kriApP/I36PeaI8nnvZijw3YgzUTBGecDFvtqmkZci8bGdKjqScVUgjhKfSGJ0JtPyV4
-	E0JNLbTBawLs39obUlkqEyBOiakxx/dazkkbf313xjKkb20+ECsH1Jj5mB4C6YgkPWe8tCEWleY
-	aPnOA==
-X-Received: by 2002:a17:90a:d64f:b0:38f:caa2:5721 with SMTP id 98e67ed59e1d1-3903c5dc500mr39010781a91.17.1786344161101;
-        Sun, 09 Aug 2026 23:42:41 -0700 (PDT)
-Received: from SGN-LDSENG.tasernet.com ([2405:4800:5cc3:11a:1ac0:4dff:fe8b:4a69])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-315bebee8d0sm37667662eec.24.2026.08.09.23.42.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Aug 2026 23:42:40 -0700 (PDT)
-From: Cong Nguyen <congnt264@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: max1363: sign-extend bipolar differential channel reads
-Date: Mon, 10 Aug 2026 13:42:34 +0700
-Message-Id: <20260810064234.1850833-1-congnt264@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        d=1e100.net; s=20251104; t=1786344343; x=1786949143;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6QLcu9A9KrdkmU5J8jY6ZKHAPoHX7aOeecWkTsMmAII=;
+        b=fv32A+xVUDi6eduEyFkHaU3IvZzOUaLQ40+ixJzxPOKUEgp4hK6L5174wjXOdQWebZ
+         88PgmwNSjG8GbAORFNDRZ0jOEaTtEB5ddIPPUsM7dDe5ur1bhQ+3TuYhvocVFwdKR54Y
+         2W9YojE5V2BDLb/9x4z0VhT0uDnd8YFtTUVz20vgcEuFghkxGVG9ZA6EE//8L3MSGVwU
+         srk7jSLpXE/cNlYWfpYkI1OrOCnUvnYUO31Z0ic3bNRoe70X1DmAEgQpLLuMI9JIpj+w
+         rUhPj3T3355HQlzaSxzn0IIQUE4Q221Ke30mQE7RBz2nclehftgs2KQo5ilevB+YPv33
+         eQDQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoJlMzFaI0UykiEDy/gw8AmAgjD0Ay2HR/8SjOW/QbiIP4sUWiyN6m6fVJjqUgRqI/1EHarWH+DTZw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwqQNwDs502tagk/l1dWcQfZ94KEqK7c7ZVCcChGsQinMSZxBfQ
+	sSvgu9x9k/wXb7sW6CJHCC7JIrKDNsgyxzknauuzAOhD8FnPsnfSU8iL/FsKr/67K7AXJj7s6eg
+	8gO3RNKn7YAggdRF6nwbcPQ35ozEPH+AlN9wr
+X-Gm-Gg: AR+sD13Pe0b+GHlelokIT6DZVHgMocFD71AZGdpr66wQ89s2ezgbxMSbNG1PXeK/gXp
+	GOSugkknPHXOEVJGVWkIN03LKFL5rR5t3clIoRBg210/sXiql48P/1xarx5arYS+4TY+aIVe/ry
+	0nK7VcTIp0kQOg3tfzbGEpVxcfl4WSxIveLpzg5Mmgsx0Tgbzi1gEvzlmDYHNgR/LXBGvgT6xcc
+	UevBdr/fBfjWKTnHqnr8o2IYBAGUO24ESWRp+BpeRljLh2m0rUW3TdzzNeUsjidh9nDsoq0O5Mf
+	JV3B1VAxHKCl4k5bFNBSvPYPTbcCXQ6OAfwCG65ozmJx4rGn1cQfRCyko2pmJI68FbDmjo6sDSJ
+	3jmAe4n7/dfejZI1aF6lowsh5biOcgBDeBcvJtT+jKn4YkVA5dxyLK4sFz0M4gGSnQ4Kd+SQOC2
+	ewrMMM/OR7ElBys57503yYTCIs41I9x/83EB1P+Z3j4nCIBxsBKIoBtA==
+X-Received: by 2002:a17:907:e1cc:10b0:c20:83b0:92d8 with SMTP id
+ a640c23a62f3a-c2083b0934emr648679166b.0.1786344342470; Sun, 09 Aug 2026
+ 23:45:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260810064234.1850833-1-congnt264@gmail.com>
+In-Reply-To: <20260810064234.1850833-1-congnt264@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 10 Aug 2026 09:45:05 +0300
+X-Gm-Features: AUfX_mxrE8pNd267WhEyBxyLos6OjYm3bVOTtBQ_3c-gISNIhDoHX2Yydt0R42M
+Message-ID: <CAHp75Vfzb6cyrpfadfr3-UkNKVqNP1jsLMkmnozG9uqizt=thQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: max1363: sign-extend bipolar differential
+ channel reads
+To: Cong Nguyen <congnt264@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The MAX1363 differential channels are bipolar (scan_type.sign = 's') and
-the device returns those samples in two's complement. However
-max1363_read_single_chan() masks the raw value to the ADC resolution and
-stores it as-is, without sign extension. A negative differential reading
-is therefore reported to userspace as a large positive value (for a 12-bit
-part, -1 reads back as 4095).
+On Mon, Aug 10, 2026 at 9:42=E2=80=AFAM Cong Nguyen <congnt264@gmail.com> w=
+rote:
+>
+> The MAX1363 differential channels are bipolar (scan_type.sign =3D 's') an=
+d
+> the device returns those samples in two's complement. However
+> max1363_read_single_chan() masks the raw value to the ADC resolution and
+> stores it as-is, without sign extension. A negative differential reading
+> is therefore reported to userspace as a large positive value (for a 12-bi=
+t
+> part, -1 reads back as 4095).
 
-These channels expose only IIO_CHAN_INFO_RAW (no offset), so the raw sysfs
-value is expected to be the signed result. Sign-extend the masked value
-from the resolution bit for differential channels before returning it.
-Single-ended channels are unipolar (sign = 'u') and are left unchanged.
+Try to make it more compact (remove unneeded or duplicative details,
+do not blindly rely on AI).
 
-Fixes: 168c9d95a940 ("iio:adc:max1363 move from staging.")
-Cc: stable@vger.kernel.org
-Assisted-by: Claude:claude-opus-4
-Signed-off-by: Cong Nguyen <congnt264@gmail.com>
----
- drivers/iio/adc/max1363.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> These channels expose only IIO_CHAN_INFO_RAW (no offset), so the raw sysf=
+s
+> value is expected to be the signed result. Sign-extend the masked value
+> from the resolution bit for differential channels before returning it.
+> Single-ended channels are unipolar (sign =3D 'u') and are left unchanged.
 
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 4d0b79cfeb27..497f5daadcea 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -405,6 +405,14 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
- 
- 		data = rxbuf[0];
- 	}
-+
-+	/*
-+	 * Differential channels are bipolar and the device returns the sample
-+	 * in two's complement, so sign-extend it from the resolution bit.
-+	 */
-+	if (chan->differential)
-+		data = sign_extend32(data, st->chip_info->bits - 1);
-+
- 	*val = data;
- 
- 	return 0;
--- 
-2.25.1
+Same here.
 
+> Fixes: 168c9d95a940 ("iio:adc:max1363 move from staging.")
+
+This is a wrong reference in case the driver existed before (and that
+is suggested by the commit description).
+
+--=20
+With Best Regards,
+Andy Shevchenko
