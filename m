@@ -1,29 +1,30 @@
-Received: from out-180.mta0.migadu.com (out-180.mta0.migadu.com [91.218.175.180])
+Received: from out-173.mta1.migadu.com (mta1.migadu.com [37.59.57.117])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A83377EA2
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:49:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B824F37C0F6
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:50:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.59.57.117
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348196; cv=none; b=NNzuYQistrHDv1kTFDVtxrDM9roERSaTYlJTMxdIImux8cdx5xu3FG/UyYHriHFjG4aLRTJvERz5Zztta2dJWvoR8fTO25Wupgt01/zIVYHtKxH1a8Qb2L4Rfpvn4RGEQFAX9dpwIu+KNxujMRDYxyO7eb5ZrqelALPOUp+llHE=
+	t=1786348213; cv=none; b=UgDBs6w2kbLbarA7pScMAdtLOH6+WCckAxh6KSj+ABcWIRdc1LvJ69LWCLVuf/s6Wzs42RKAe4stxYDNNOvTv+IhpD1b+Oi+XHhhHCTxh4GxoSlXiBiAE6w/9ou9bVv9qc5nW+s77xrt2XKC5pGJvqETMnFf8o/U0BABf77+G9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348196; c=relaxed/simple;
-	bh=wAvYSzqDJhvKzUXfeLcsQzrLHs1CZIaOqXP0NRLKhUw=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=s+vdBkGMM45NiaV8XxA9zmK8o9G2UBvmhofZGbatrmpYqIvq8ZN/N5ks5zkzzcLpBy+y95874p7hYd8xExOnm/N4U8riIOwV9Rb9+m74urnh2G81LK/zb3VxnC6VOdfTjRzCsPXM2EYE3thKO4ZVMi5qvBLVsJBsfbQGLrOOMdA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=owqlS9Yp; arc=none smtp.client-ip=91.218.175.180
+	s=arc-20240116; t=1786348213; c=relaxed/simple;
+	bh=111RdZsm5n3HpHBprU08HwbC11zxACACz0z1bDcFO2w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O6/jPaayXQV58je0tsNy/b3eW4Ov5Tm4coYHsqbq/MxV3/hw40sxKERizZ5tKloQNyISAA+Alhj6jyA+pmmX4oJmeH2d1vy62zF1kI29AcidUgNmc615kA/UyBfebqN5hzm68jcTHJUWbWghwROnSCqSNHR6rt4oxwLAsV56saQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=tLITZCyL; arc=none smtp.client-ip=37.59.57.117
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="owqlS9Yp"
-Date: Mon, 10 Aug 2026 10:49:19 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="tLITZCyL"
+Date: Mon, 10 Aug 2026 10:49:56 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348182; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348209; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type; bh=/4Hko42W1ERoWfD1oR0O6YYo/pXBqvtxITIamBMTiGI=;
-	b=owqlS9YpLQOTkDPl1QTFq6xtaf6D5FFEBRZQPQ83cN+eQ4eSTjq4cyXgXtnnO3ywXqkUct
-	KG1B1i1vje76snXBxllU8SeNMiP3D1OHqHHAunqeeP6zAw0Gr85FVWFm2nWDTEKZJc8KxC
-	3shCbNaIsYiR8PLJqZPjgrLIK8wynik=
+	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
+	bh=aA2jtwlO52nIvZCZu4zJthKMa7t4MR6SNIoGarpcQbA=;
+	b=tLITZCyLhw29q6+MeN2cTbN76fe3dmePVfNeiYyJgRVXowZLrUX+2SlUoZJyyfiC6f/qL/
+	Gwnlcai3M5F2tTscTjv7jFoU3V/NNz2COM88DdLCgDGUhufvamRJ1LtUt7sMxqTqpt4ehY
+	m5x/LN45OBBvLqlzBJcr9NbZdzKK78I=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
@@ -38,9 +39,10 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 00/12] ROHM IIO fixes
-Message-ID: <cover.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 01/12] iio: adc: rohm-bd79124: Fix rising alarm
+Message-ID: <b38dd82c759db17796054b6847fd7f770be27efd.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
+References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -48,71 +50,60 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="QjqCo3Kv3nrLx3Om"
+	protocol="application/pgp-signature"; boundary="dGzkdkXLnrATO1NO"
 Content-Disposition: inline
+In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---QjqCo3Kv3nrLx3Om
+--dGzkdkXLnrATO1NO
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Fix a few issues from IIO drivers for ROHM components.
+=46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-I hired couple of gnomes to work for me. :) (Ran AI reviews).
-Unsurprizingly some bugs were spotted. Time to try fix mess (mostly) I
-have authored.
+The rising alarm is using the cached falling alarm value causing wrong
+value to be used.
 
-Bugs were found by AI review but fixes are made by hand. Hence no
-AI-tooling tags are added. Please, let me know if one is needed.
+Fix this by using the correct cached value for rising alarm.
 
+Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Fixes: 3f57a3b9ab74 ("iio: adc: Support ROHM BD79124 ADC")
 ---
+ drivers/iio/adc/rohm-bd79124.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-NOTE: Only _very_ shallow testing is done. Some of the fixes are not
-tested in the hardware at all. All reviewing and testing is appreciated
-as usual!
-
-Matti Vaittinen (12):
-  iio: adc: rohm-bd79124: Fix rising alarm
-  iio: adc: rohm-bd79124: Fix channel initialization
-  iio: adc: rohm-bd79124: Fix GPIO mask check
-  iio: adc: rohm-bd79124: Catch regmap errors at measurement start/stop
-  iio: dac: rohm-bd79703: Do not allow writing SCALE
-  iio: pressure: rohm-bm1390: Return error when read fails
-  iio: pressure: rohm-bm1390: Fix AVE_NUM initialization
-  iio: light: rohm-bu27034: Fix error return
-  iio: light: rohm-bu27034: Fix infinite delay on error
-  iio: accel: kionix-kx022a: Fix array boundary check
-  iio: accel: kionix-kx022a: Prevent memory leak and fix state
-  iio: accel: kionix-kx022a: Fix IPOL macro name
-
- drivers/iio/accel/kionix-kx022a.c  | 29 +++++++++++++++++++++++------
- drivers/iio/accel/kionix-kx022a.h  |  2 +-
- drivers/iio/adc/rohm-bd79124.c     | 20 ++++++++++++++------
- drivers/iio/dac/rohm-bd79703.c     |  3 +++
- drivers/iio/light/rohm-bu27034.c   | 12 +++++++++++-
- drivers/iio/pressure/rohm-bm1390.c |  6 ++++--
- 6 files changed, 56 insertions(+), 16 deletions(-)
-
-
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
+diff --git a/drivers/iio/adc/rohm-bd79124.c b/drivers/iio/adc/rohm-bd79124.c
+index 864f3b1366b5..f703c74309cc 100644
+--- a/drivers/iio/adc/rohm-bd79124.c
++++ b/drivers/iio/adc/rohm-bd79124.c
+@@ -525,7 +525,7 @@ static int bd79124_enable_event(struct bd79124_data *da=
+ta,
+ 		return ret;
+=20
+ 	if (dir =3D=3D IIO_EV_DIR_RISING) {
+-		limit =3D &data->alarm_f_limit[channel];
++		limit =3D &data->alarm_r_limit[channel];
+ 		reg =3D BD79124_GET_HIGH_LIMIT_REG(channel);
+ 	} else {
+ 		limit =3D &data->alarm_f_limit[channel];
 --=20
 2.55.0
 
 
---QjqCo3Kv3nrLx3Om
+--dGzkdkXLnrATO1NO
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gnoACgkQeFA3/03a
-ocU02gf/T8DREGoKYp2nhPmomyHgM3yEMECX5bjfDGaR53zYxK8ORFDtlnprybfu
-Q0cdxku/UH1dITJTFKq2JVz75rEn1vFsMcFdzevpox9QXY3plmQYH7NJuWW4+9cu
-746L0ibPiaF4IlISiRSchsL6yiXS0ZqaGA6UXAMBGu16y8jJSz5ZEzaeK98wdKtC
-7VsD1MFQbC5bj+AXOoQ1ky5i6G4FB0ikaz1XbzEbX6S/YbInffD9qmgMOeLksymD
-qpxayFI2ztGXgbItFJcG4GH9VPeFkzovdkBdKpAk+Pb3rQ/RSPLvsV8ImuffHLsi
-lmy/e31UXEVvVwnbFLIgcL+AjR3YlA==
-=m3vA
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gqQACgkQeFA3/03a
+ocXWVQf+NV25xXjCt2gTfw5t7SZ7bSgKn2rM+iSyqflAi6TaOuYJFZ7/tRzA7F57
+lTzBRvHK7HjPZF/4MP+WC23xI8Q93H+SUsBBt8tEqzd0C4xALD6k7o2BLKy6evnV
+EA8K1XtkZHxERKbrVXrf1VNnai1LND/NRnxmPL529JvwXqO2t1Z9OLH5XZpNQrVq
+3cv/+QsaTkaK2cZ0DfVGPYZ8Joqdgay9obGiy+nKT3Ei+sBAyBxFObMrKlbvLrEv
+mqvb9TTb0xJLHg2uCOs/sD2LGBP2cEm1jWZEcQJQiGOW199cB8po4QBPA/9AYmxH
+tk1W3GBHuS9zkSwJqgalsCY6xFklQw==
+=KtqD
 -----END PGP SIGNATURE-----
 
---QjqCo3Kv3nrLx3Om--
+--dGzkdkXLnrATO1NO--
