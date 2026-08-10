@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5049F2E5B2A;
-	Mon, 10 Aug 2026 19:04:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F2C3090D4;
+	Mon, 10 Aug 2026 19:05:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786388656; cv=none; b=RPCuvfN/Y5Yi4dbRF79LE558Wr/3S+4BeRiD4coSUCt/xkJrGhi1MGGVglFbO+TD0S0e48Q5LeUzE5WiO8oNAarlkS+5qu5S8GF8u1+qSDJ4fasGzBsl2z1k1ZI57AQWBvxsSgv3vm7pyisnavkZ3Zz2Rj4AFCOXgVtOXjr9nts=
+	t=1786388722; cv=none; b=nQREm351jobVcRx/sXaI7oANTm51+ZYW7WCqNcKVgdjKR+cvk+JGNAA0rcbKF9eZ/LN65Utt5ThTGcaI79EtFVPk6K94tPVTsKTTGmc30ILLvit6wUdwt3xZAZd1vP2jrDiCGfRuda846Bfm0r+s8LhwWx6NyPwm8+9m5n+HH+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786388656; c=relaxed/simple;
-	bh=p3EOHRDcIsjjnfmVNE6qO6wdAxXQstusCBbuQ6fqIvc=;
+	s=arc-20240116; t=1786388722; c=relaxed/simple;
+	bh=XY5UUFT2TlhYjiXeoS7JFGPvLcLz9sEhprKQAkhVlSw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=duI/x+LaBccxAJm0pnTXiyZztgH+Oq1qdHKh2hOfYP9mTZnJPsKhwuQSd5koqccISZkS3ROXuiJVzwBN5yfaDEvk/X0JBjhkynFT7uxzoWilEaCDkxRNWaOA4ClieLg+fDl3vdVRXEMR1F4hepWLz3kEQyfegViKo12W7wV461Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OlV+Srkf; arc=none smtp.client-ip=198.175.65.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=dMZVRL0OoC/mTrC5z1mYYfmgu17wpSrfhZEjbx77hxHBukdCc//GOl7Z4OSE14ROYdCLN4oWXeLYZ9+P98FOYYXMDoxWHmclkFPA3RgipoXQypTZdqGaEWenj+WgV/o2T3KcuAwvYrdveP9bqIXZNQnDpkLpIT9PayE3yRR2aQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C83pAoqv; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OlV+Srkf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C83pAoqv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786388655; x=1817924655;
+  t=1786388721; x=1817924721;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=p3EOHRDcIsjjnfmVNE6qO6wdAxXQstusCBbuQ6fqIvc=;
-  b=OlV+SrkfWBEMglqR7SFC3yv7HBkI1LD3Cl1vs6dnL9TxdGvDXKWLQELM
-   joMGVHTEWYKrvFWMeQkYyrbpUV+BSj0bAHtzG0wtEiqSa8j/cJquAGkWA
-   6wkTcLJp0xfcThfbmQ49TScMFN/6ap5sAVitCFHQvzbBiMjhu0i5EQn5T
-   g9OrKCHqg+ZE7U+ua/7yhy3KlQ7XmQqag6rHcZyqt4SOOZaPNDL0T1uR4
-   UrILbtFRnP72Q1qS0li6fhXQUsJhndhliBGpmTO8qwollHxllmfD2a9MT
-   2ws88pmgkmYW1NY2WNukjAXlQLEdzhi9NyDMDEMzDSwRwpV0WkPuaXmlu
-   w==;
-X-CSE-ConnectionGUID: Vsp+/VVOQlS/QWPDE21QMQ==
-X-CSE-MsgGUID: xoEXKvu3RtiHXG0A0y1yuQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="97264197"
+  bh=XY5UUFT2TlhYjiXeoS7JFGPvLcLz9sEhprKQAkhVlSw=;
+  b=C83pAoqvAM9DYr3p/YvYo5jZ+ynzjACdQhx5R2Ggk+CM5Oy5V9JqAmkx
+   iUkC5Fjc26uX9KBeHvGCTtbW2UIRSrZuT9fd3UbNrcla1Rw3dGTjOcjFp
+   SFJXcc1EoYv6M9Xv57lr+A5JkB3Mc7RI8dlnYxHQJcD7aFtVmELxvMQXi
+   InEaAEmuIJQZKZMf6ZwHswn/Y0vkpaVQtUsFpH2YM5Ufj1S+cx2cMbA18
+   5gy5k9Are5nXfZ3BmwLoJ1ZUmFypgsq5ujXTJlwRtlw23Y+YQo3bfq+RF
+   SA7OjaK0VihwYlbUV9Ve5Dj6L00aFcW5aTNNBsePE88YZopzQoUJvYUeJ
+   Q==;
+X-CSE-ConnectionGUID: mY3dKZOqTGiCbiUeSm7aJQ==
+X-CSE-MsgGUID: L7mNk5J/SS+DZiCMgGeqhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86846544"
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="97264197"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:04:14 -0700
-X-CSE-ConnectionGUID: 5MjL9ZyXSny7xPrD/F6Ajw==
-X-CSE-MsgGUID: WwxIWlxGSBu5GPD/RN5QWw==
+   d="scan'208";a="86846544"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:05:14 -0700
+X-CSE-ConnectionGUID: ZMNFdt1mSfmBbwALAnzaHw==
+X-CSE-MsgGUID: 7YpdHooZSy2/i4jdKEjxkA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="258844653"
+   d="scan'208";a="259274059"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:04:06 -0700
-Date: Mon, 10 Aug 2026 22:04:04 +0300
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:05:06 -0700
+Date: Mon, 10 Aug 2026 22:05:01 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Philip Mueller <philm@manjaro.org>
 Cc: Thierry Reding <thierry.reding@gmail.com>,
@@ -53,11 +53,11 @@ Cc: Thierry Reding <thierry.reding@gmail.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: imu: bmi270: Match PNP ID found on OneXPlayer
- X1 Pro (AMD)
-Message-ID: <anogpNeCbeF2UnUA@ashevche-desk.local>
+Subject: Re: [PATCH 3/4] iio: imu: bmi270: add BOSC0160 PNP ID for gaming
+ handhelds
+Message-ID: <anog3cV9JvSxZU0Y@ashevche-desk.local>
 References: <20260731195325.44453-1-philm@manjaro.org>
- <20260731195325.44453-3-philm@manjaro.org>
+ <20260731195325.44453-4-philm@manjaro.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,34 +66,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260731195325.44453-3-philm@manjaro.org>
+In-Reply-To: <20260731195325.44453-4-philm@manjaro.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jul 31, 2026 at 09:53:23PM +0200, Philip Mueller wrote:
-> The OneXPlayer X1 Pro (AMD) uses 10EC5280 rather than BMI0260 or BOSC0260 as PNP ID.
-> Adding the ID will enable the BMI260 accelerometer on the device using the bmi270 driver.
+On Fri, Jul 31, 2026 at 09:53:24PM +0200, Philip Mueller wrote:
+> Adding BOSC0160 as PNP ID will enable more gaming
+> handhelds using a BMI260 sensor with this PNP ID
+> to properly use the bmi270 driver.
 
 ...
 
->  	/* OrangePi Neo 2026 (since BIOS BCPH01_V1.20), etc. */
->  	{ "BOSC0260", (kernel_ulong_t)&bmi260_chip_info },
-> +	/* OneXPlayer X1 Pro (AMD), etc. */
-> +	{ "10EC5280", (kernel_ulong_t)&bmi260_chip_info },
+>  	/* GPD Win Mini, Aya Neo AIR Pro, OXP Mini Pro, etc. */
+>  	{ "BMI0160",  (kernel_ulong_t)&bmi260_chip_info },
+> +	{ "BOSC0160", (kernel_ulong_t)&bmi260_chip_info },
 
-Yeah, this is in Realtek PCI scope which ACPI incorporates by
-the specification, and yes, I have a long discussion about this
-or similar IDs that are misused. If we go this way, this needs
-a good shameful comment to point all this creepy choice made by
-some unaware vendor(s).
+Keep it ordered by HID.
 
-Also, keep it ordered, I think this should go first in the table.
-
->  	{ }
->  };
-
-See also ca2f16c31568 ("Add 10EC5280 to bmi160_i2c ACPI IDs to allow binding on some devices")
-for more details.
+>  	/* GPD Win Max 2 2023(sincice BIOS v0.40), etc. */
+>  	{ "BMI0260",  (kernel_ulong_t)&bmi260_chip_info },
 
 -- 
 With Best Regards,
