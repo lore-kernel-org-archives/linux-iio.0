@@ -1,30 +1,30 @@
-Received: from out-176.mta1.migadu.com (out-176.mta1.migadu.com [95.215.58.176])
+Received: from out-179.mta0.migadu.com (out-179.mta0.migadu.com [91.218.175.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317331DDA18
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:50:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31B5B1DDA18
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:51:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348241; cv=none; b=hZ9UtY5PGin9iITaPbK435HfZVS4QEh+Iq+9V10MVWudy+14nQoWbZ+7LkoBbJ95lcHU39nweM2rPZmeUnyzqyfDBieEdtsb1tRWJ9jm+mDDyBsZch2Pb5OHYzfKDmU2aQIlckb2PUbeODOh1SaEPQuv0XzpeYDo2SOypZbv2zI=
+	t=1786348262; cv=none; b=ZfpJQBiGrTk2nYfm2IPegKhRebqG6FL9s3JtS3TbjT49Z8rkC5JX8qADdw7l9Zrsr+dPP+Txn7G8gNn6D6cKM/qAKw32qb9A6dtFnVH1Lzx+ggZpG/Cix36gyFJnDiKX/JgzA8CS6ypvfbcbuTFkVGYl4ndBbHK2EHztWjmjm4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348241; c=relaxed/simple;
-	bh=2j0SdMfFMU38+CTsQO4UceXiRjokHyw731gIkPFYLvY=;
+	s=arc-20240116; t=1786348262; c=relaxed/simple;
+	bh=pmEPY4uuMD/93Jyz8SMLZJrCuhzMw3ohmxTuyXaAkLw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YD/oJXTJ0DK/X715j1AVOI6aZInlyJV+mV5QE0JASHk8a0nskAQC9Iv+FpxXl1A1S549vAblYtOw/SARYirW6dULcKCaQQi6GqVSBEWCK6j36m08vxcuLQLvECz46WgzyMSwqR7YtPPbkwzCPXfRBVOT1mfAT23FXdmbOHfCy24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=wKYLyPic; arc=none smtp.client-ip=95.215.58.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=omn6PHXjcd9qalzxJfI1BWiP9d8Pcz9te464kbDd5HKJPieVR+fB5Uk3My5BNRxQRQQ0ZyMAYu6uLxiipoq5v9FM9Lrq+Q3rzq+Afkk6zz6OAqSs1lOKotQW5YjGtnCTwQUctUbdfYIfB0UQRapdv6JMjq52RjFjhRahzYKgIec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=O/A1rSTf; arc=none smtp.client-ip=91.218.175.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="wKYLyPic"
-Date: Mon, 10 Aug 2026 10:50:21 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="O/A1rSTf"
+Date: Mon, 10 Aug 2026 10:50:49 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348237; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348259; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=l2+Pp38OdG5aA+L8Hocx58bkKM9cYRU7AmkrJmDzu+k=;
-	b=wKYLyPicmd30qb9OZycUnFNSaqzFYDVl9hP3huUVLaDAcw/Rq4jbu+QQG0/tyXRsd4Vp7e
-	973LhZqj7qlh4KChJmchd/nnbkknqJTsxtS7/d3q8P1ZNmlvLQP03pwjRAZc8J1Zdm5hyz
-	zngv+h2ObnpdQJvFpCozpXZbq6Jl40I=
+	bh=Pv0bGALvhEBK9KopYXwuAV3r8qk/EvYo7FKT84DGw9I=;
+	b=O/A1rSTfLuDT4QREr9xK1pEGrHLDtb2AqvU72rIAIB6ATcp/HnVhPy9AxKL47i2ujxAQ9r
+	MtgOJiHcKcO5pP+VoBWYv4cR+qlmV8WQsprvfN1rqbcpc0Myn6yNIR6SfmRhr5vMfyzIHe
+	mVdChwJUNAQ30sBdaQXLAYk5H7x8k80=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
@@ -39,8 +39,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 02/12] iio: adc: rohm-bd79124: Fix channel initialization
-Message-ID: <4abf69bc827f57d301839d123ae184cfdfc31953.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 03/12] iio: adc: rohm-bd79124: Fix GPIO mask check
+Message-ID: <02b3f620fb3aca640dd2c7f53cc5af1e52e68149.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -50,75 +50,66 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="RFAzpDowJDyemkY3"
+	protocol="application/pgp-signature"; boundary="AxbImmTjne7lh+0i"
 Content-Disposition: inline
 In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---RFAzpDowJDyemkY3
+--AxbImmTjne7lh+0i
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The alarm limit register on BD79124 span to two consecutive registers.
-The first register for high-limit containing also hysteresis
-configuration. The initialization in driver writes only one 8-bit
-register, overwriting the hysteresis and leaving the other limit
-register uninitialized.
+The ROHM BD79124 has pins which can be configured as GPOs or as ADC
+inputs. The bd79124gpo_set_multiple() is intended to ensure that a pin
+which is requested to be toggled, is indeed configured as a GPO.
 
-Fix the limit initialization by using the bd79124_write_int_to_reg(),
-which correctly initializes the limit on both of the registers.
+The check uses XOR, causing it to fail if mask is not exactly same as
+GPO configuration. Eg, if not all GPOs are asked to be toggled at once.
+
+Fix this by checking that mask does not contain pins that are not
+configured as GPO, allowing some of the pins which are configured as
+GPO to be untouched.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
 Fixes: 3f57a3b9ab74 ("iio: adc: Support ROHM BD79124 ADC")
 ---
- drivers/iio/adc/rohm-bd79124.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/rohm-bd79124.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/rohm-bd79124.c b/drivers/iio/adc/rohm-bd79124.c
-index f703c74309cc..72207e0c60b8 100644
+index 72207e0c60b8..84ac7fc94581 100644
 --- a/drivers/iio/adc/rohm-bd79124.c
 +++ b/drivers/iio/adc/rohm-bd79124.c
-@@ -920,13 +920,13 @@ static int bd79124_chan_init(struct bd79124_data *dat=
-a, int channel)
- {
- 	int ret;
-=20
--	ret =3D regmap_write(data->map, BD79124_GET_HIGH_LIMIT_REG(channel),
--			   BD79124_HIGH_LIMIT_MAX);
-+	ret =3D bd79124_write_int_to_reg(data, BD79124_GET_HIGH_LIMIT_REG(channel=
-),
-+				       BD79124_HIGH_LIMIT_MAX);
+@@ -201,7 +201,7 @@ static int bd79124gpo_set_multiple(struct gpio_chip *gc=
+, unsigned long *mask,
  	if (ret)
  		return ret;
 =20
--	return regmap_write(data->map, BD79124_GET_LOW_LIMIT_REG(channel),
--			    BD79124_LOW_LIMIT_MIN);
-+	return bd79124_write_int_to_reg(data, BD79124_GET_LOW_LIMIT_REG(channel),
-+					BD79124_LOW_LIMIT_MIN);
- }
+-	if (all_gpos ^ *mask) {
++	if (*mask & ~all_gpos) {
+ 		dev_dbg(data->dev, "Invalid mux config. Can't set value.\n");
 =20
- static int bd79124_get_gpio_pins(const struct iio_chan_spec *cs, int num_c=
-hannels)
+ 		return -EINVAL;
 --=20
 2.55.0
 
 
---RFAzpDowJDyemkY3
+--AxbImmTjne7lh+0i
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gr0ACgkQeFA3/03a
-ocUpXAf9FMCB8qWxWv5NdTfRnmRYUJOmkG6thaRBnomZpmp2vfJskacIbIGFAQw+
-EkA5cSi9btg1xqejot5oTWVgi0WwgLgSN0kPH+B77lSiF2sqwXtGkSm37KbnlOOq
-VYAeroqukMUC/8aCelvSvh4gzgFoZL0fsfK+Alf4fCCxYYoNpQOp2qCpyG7VERfP
-pBh5XHIWez0226FYMM1kyoHid4qz3mbSQhejyz4SU98Nc5dckAfvilBQvCQrn6uy
-19bWrolvMiXujBMFzl28U1xUjD21IGF5oX0bf75earGw5YcFecHmtAQnF7eqeZ+X
-8oYqp0wnLZLP/paQB5l7k791vgoVwA==
-=4xAQ
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gtkACgkQeFA3/03a
+ocUeyQgAj6g9lTPmAOu4ZWcLodOYjGZxcWWJYAQaYp8phzUssUTH0XRlYvlB3A8C
+erZAeYceU6bp3D7f/i6y9/TKwNaDMBtyFYv/8Fr2aLTuXRKpFmZ8zpDr8vUG1IqF
+t7lFFi8GwBuAFdumSVYWj0weW0wNSAQuvj+GFYJylQMq8UaJ9hzQKJde0B3KjqyI
+U14nU3T3rp1f1aT7qM97elzAGIYJBnLf/IVAPnOEl10hF/On18LLl5lg2ZlHqjbc
+n2vQ2BjlTOCNEvb/3V3OO0ccydb31BACSEq9SLQqg5ddv4GFGk6HYxTerbUV3Pj0
+TeHqeZfNimb7mnpo8KYggLEh8Yzmdw==
+=A5gw
 -----END PGP SIGNATURE-----
 
---RFAzpDowJDyemkY3--
+--AxbImmTjne7lh+0i--
