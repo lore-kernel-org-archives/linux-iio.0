@@ -1,30 +1,30 @@
-Received: from out-174.mta1.migadu.com (out-174.mta1.migadu.com [95.215.58.174])
+Received: from out-180.mta1.migadu.com (out-180.mta1.migadu.com [95.215.58.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEDA9385539
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:53:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E1B38910F
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:53:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348399; cv=none; b=I2RTzZRdW2iXFm2vICYX15/4narXWyQLYvXLAalZFuEtpz2M5PyntjIlLPV9WCLaLDB2wuWcGqFnqM/WVUPAvQid828QJFedym3uIFluFM5qCjk3FeR+SZqUSKJ2sboZ29su3LZsUDQsYEbH4RFlNeuA0AfFeZ5+dD+CeeNpKsU=
+	t=1786348437; cv=none; b=O9C1vRAG/uHanj6glNd9V6eS5b6Ox3SM+C3FBH4gRgBe9+Un18rjS6oPjGJZAxnMrVVPJns8tzOvLIyVjezZVP9h+WQ+hTdtDCAR92ZGYqkUQ1ywQttly5T08kHkpHBPGMrGenU4NLi0FuCCFxHVsfrC6DNY/toUdw2J8s/P5ME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348399; c=relaxed/simple;
-	bh=Z1iVgCBnI7rXPv4+in4EiqMrCDStBpAuaisn8RsY4U4=;
+	s=arc-20240116; t=1786348437; c=relaxed/simple;
+	bh=NvAqxVCVl+o43PBxncHk89OIjzpQVqejdSjtE/6hyio=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sX3XzDAbcgJd852WEvVIiKlwZy6upIQhDkONIvXlLPRpEIR81+RRDVNbswBG9iKUaSn0Cf609CpvUs1kXpV5WQLlxc90cEqT1Lj/8HOw0ouZyhZKEP26Bqam6GXhhXTQuFIhXDq0sKtm2vmFBCq/gp8qvghaHqIiq5L/fzEmFZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=WjnZDT5I; arc=none smtp.client-ip=95.215.58.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y17Saq1FwsY4Y0N4ztw291YqjeuF9SjaYIJyBn+QWMZ+7U0DDDvWocA90gjpBJ1znrfgVs3/bgBK01NhTWWUpux8r0wtkTtLusytxhnDFQMdPlA9bgwasxnUNB1bwdL8eWKCFcvzNpmP3DgDuSGqdMFpXA7q6Q++Byk5ZCb5/n4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=ibUdImxn; arc=none smtp.client-ip=95.215.58.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="WjnZDT5I"
-Date: Mon, 10 Aug 2026 10:53:07 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="ibUdImxn"
+Date: Mon, 10 Aug 2026 10:53:35 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348395; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348434; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=ld8firE/E8hbzBR080ohm8SFPRY+SLjFJ7lWSnovIFI=;
-	b=WjnZDT5ImzblUJrB8g8cK1n2VxG7hWALmw1Ui8CsHKG8+VsNmQ+ToYly7nZ8ljVVwpizqx
-	RTMU/NbNSqY3NpcWAndnzNSqQxhz8oVHGaO5pLddlZhqUlVS7zcxEk8HRjsdzmb7J2RM5u
-	2pSlma5Tdc9d4y18QwlJCj8xzTSSq/g=
+	bh=fyIIkpJ1wM6nP/6D8IO6+sXMqHu80d+stYd/eBqLQgA=;
+	b=ibUdImxndHTzXguU3gdfQ8g7FnsC1q282gAqGpCnOaeBlJLm0yu8NaSe393/AhuOOXqMM+
+	6JGYyoT5rwWaew+s/MgPypTJkWdyStEyHDmwKtF4jkt+XseUlRasEkCS/H9xOufItFu9sh
+	CpXen9bD/ClXtA6aMGWW412Mw4eXq4g=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
@@ -39,8 +39,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM initialization
-Message-ID: <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 08/12] iio: light: rohm-bu27034: Fix error return
+Message-ID: <bfe7f9146960bf0fffb3ce09a14e7912394f5ad8.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -50,71 +50,62 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="4M9x3AXcv/9rH5I1"
+	protocol="application/pgp-signature"; boundary="ps2+aY4vUgKeycWv"
 Content-Disposition: inline
 In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---4M9x3AXcv/9rH5I1
+--ps2+aY4vUgKeycWv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The BM1390 tries to initialize the AVE_NUM to 110b at the start-up. The
-field location is not taken into account, and value is written unsifted.
-This causes the AVE_NUM to be initialized to zero.
+When BU27034 fails to read gain value at integration-time setting, it
+returns 0. This leaves caller unaware of the fact that setting the
+integration time failed.
 
-Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
+Fix this by returning the relevant error instead of zero.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
+Fixes: 439c2cef8157 ("iio: bu27034: simplify using guard(mutex)")
 ---
- drivers/iio/pressure/rohm-bm1390.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/light/rohm-bu27034.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm=
--bm1390.c
-index d00d7ed54cb1..29454570f257 100644
---- a/drivers/iio/pressure/rohm-bm1390.c
-+++ b/drivers/iio/pressure/rohm-bm1390.c
-@@ -479,6 +479,7 @@ static const struct iio_info bm1390_info =3D {
+diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27=
+034.c
+index 28d111ac8c0a..f9a421618406 100644
+--- a/drivers/iio/light/rohm-bu27034.c
++++ b/drivers/iio/light/rohm-bu27034.c
+@@ -415,7 +415,7 @@ static int bu27034_try_set_int_time(struct bu27034_data=
+ *data, int time_us)
+ 	for (i =3D 0; i < numg; i++) {
+ 		ret =3D bu27034_get_gain(data, gains[i].chan, &gains[i].old_gain);
+ 		if (ret)
+-			return 0;
++			return ret;
 =20
- static int bm1390_chip_init(struct bm1390_data *data)
- {
-+	u8 regval;
- 	int ret;
-=20
- 	ret =3D regmap_write_bits(data->regmap, BM1390_REG_POWER,
-@@ -512,8 +513,9 @@ static int bm1390_chip_init(struct bm1390_data *data)
- 	 * Default to use IIR filter in "middle" mode. Also the AVE_NUM must
- 	 * be fixed when IIR is in use.
- 	 */
-+	regval =3D FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
- 	ret =3D regmap_update_bits(data->regmap, BM1390_REG_MODE_CTRL,
--				 BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
-+				 BM1390_MASK_AVE_NUM, regval);
- 	if (ret)
- 		return ret;
-=20
+ 		ret =3D iio_gts_find_new_gain_by_old_gain_time(&data->gts,
+ 							     gains[i].old_gain,
 --=20
 2.55.0
 
 
---4M9x3AXcv/9rH5I1
+--ps2+aY4vUgKeycWv
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g2MACgkQeFA3/03a
-ocVvrAf+Ohyf86sR2E0/0nlQmJFpSsXJDM/7dM1eWXMcGwGU2ocB3qzOQKn+R0eq
-hIGYlg7lLst6QYkihm+J3LhXVXOLCIFy7YX4HdgRRrhwvSW+zdsO+L/jhxPjzPZu
-haNqnHiSL09zgcZ8evrNmEwfjy4CxGma5nA0YXmEGfOUGos2hrIW/bxmIAt59Q+Y
-rHvDvUXa8jAyCLeQhZA8I37EnH8nhLWJzMnboMMn8TpNpyq3+U1t0lgBpzhKURzZ
-dczhH2tguQsMsgAOvjCIihz9knX/PeZEmN1vm7wf0q26DuiTTnrnPWZCay2pVsxj
-LSQa4hz3coGPyBoYLq5LH4PP7jY1Yw==
-=jCUJ
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5g38ACgkQeFA3/03a
+ocWY6Qf9FF8fQGHAYPGF7eXTDSY7Zqv6IehenTPxOWdVZR17cl14h5pF87ufsR5U
+avc6KW4XJ2yygWEKDT5BbLt/7o4QlmqObHRVHRLvrHO63yGgCM4RdR5q8EFAZ9kx
+Mc0Q1VuEnTJ77i0NNSh88tXvm5KEqYXMWANO/upLMRjbkoqNKL7C4qADSTgFBXkP
+zXeTCzkPU65h9U8DZFe92GLDXNE41d/ArP3t75oHnzwiPy8FInVU29D/uB27pF9Z
+SALKbuPVB62vVV8pB9b1JOMT3H+dnkvBKmy03wiM5LkKQ2+FTC8LMhdMkbJ7F/Wt
+qO1uP3d4MJWf/Ck4hM8x91UN24wioQ==
+=WjWi
 -----END PGP SIGNATURE-----
 
---4M9x3AXcv/9rH5I1--
+--ps2+aY4vUgKeycWv--
