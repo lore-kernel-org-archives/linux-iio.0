@@ -1,133 +1,215 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-2z4y-a156.jellyfish.systems (out-2z4y-a156.jellyfish.systems [198.54.127.156])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86DBE3A4F30;
-	Mon, 10 Aug 2026 09:12:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CF0E3955C4
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 11:05:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.156
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786353173; cv=none; b=sQBjk89j5JUiQblNWNilI3w9FlyWA7igykDDhK6i3TkSZXfrI2r9rtLOt36iMHRtt/brJ6jVLq3XM9yXXDSq31PF1GNo0SAZg+BgefwcJVlRpvJ8pz0OAl75VN7D/AX7bkbzBlsWfNWEJWeDFm0jVTsZ3Hyf0IxiFNJO43OwXvY=
+	t=1786359911; cv=none; b=WqFKOCaDnYIlnwPvbuhGZSBFgcyQD84AzeKtLj2jBKs1axKDVxeBc+4n7YPOS64EPGPLxZ6EWYbu/KHhkWRIskKFV/H1BQK+0XNKL+M/mrVnS0810TSdQrO5Zj/fH2jo6VHeBWBC4tWqjFSosaJ0Xfg40mlu34fPK7NdWR87hew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786353173; c=relaxed/simple;
-	bh=KbyP52yX1Fc5M0iYUxcfXNkbcaU95W0GezyjeE8qj58=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jGZbyJQxYzfgF347c6N/W7wRX7mCZXB/CudFQ9IJLXnqvZCu0F8c3UX9VC1q/hEFxOh4rI+jxSjh9oK56rwSdk2CgQb/Vt3Lgquq9Awsra0yuyWETLnr3sNwu9nWmoIjnGJSRKdNLIQHK00bE3klYmtOfLJ2xzf/a2jS27xW6Dg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EMMTWoPQ; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EMMTWoPQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786353172; x=1817889172;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=KbyP52yX1Fc5M0iYUxcfXNkbcaU95W0GezyjeE8qj58=;
-  b=EMMTWoPQsE3KlcM0nNk7HkvGyjk/bolUF9qke3QUPk9P3U+vkLI6u3ky
-   yLHgaE1V2BlfZKp67bPztIBXDdu5nhMrVxTSEA5e40Ee+dgq74V8rUM/u
-   jhLgxpH//3E7hM78HdG7GZvbxzg5eFH4cxujci9LSyWveve/tJ8HIMCXI
-   8aMQSglKejJYxQJnq1AgiOi0W4oVM3lwEPFMXxknzgHrdeWrXOLmgsLlA
-   HMgcVvBpt05qsVMWI6B5JjktZKtOuFWCp/a0t3rzrQFK9AJHsuMXAo0AK
-   SOKoq7PlKjM9e7hYCKYbOq3pRWKODSSrQ0e5RifQNv3bzOOusNiE1yetQ
-   g==;
-X-CSE-ConnectionGUID: WlFaw+YYS0ygSmEGGGJdJw==
-X-CSE-MsgGUID: TmsmZ3B3ReScbkx7sIAcag==
-X-IronPort-AV: E=McAfee;i="6800,10657,11870"; a="90540087"
-X-IronPort-AV: E=Sophos;i="6.25,215,1779174000"; 
-   d="scan'208";a="90540087"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 02:12:51 -0700
-X-CSE-ConnectionGUID: Zap65IgfRyao47/XSMPIRA==
-X-CSE-MsgGUID: 2mcW99ImTKyDObLUkRAsdQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,215,1779174000"; 
-   d="scan'208";a="287692937"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 02:12:44 -0700
-Date: Mon, 10 Aug 2026 12:12:41 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
-Cc: Eliav Farber <farbere@amazon.com>, rafael@kernel.org,
-	tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com,
-	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org,
-	laurent.pinchart@ideasonboard.com, linusw@kernel.org,
-	brgl@kernel.org, orsonzhai@gmail.com, baolin.wang@linux.alibaba.com,
-	zhang.lyra@gmail.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, dmitry.torokhov@gmail.com,
-	hansg@kernel.org, ilpo.jarvinen@linux.intel.com, W_Armin@gmx.de,
-	fabio.m.de.francesco@linux.intel.com, kaihengf@nvidia.com,
-	ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br,
-	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org,
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH v4 01/13] notifier: add device-managed registration APIs
-Message-ID: <anmWCWT_p8sIMwyf@ashevche-desk.local>
-References: <20260726101739.33170-1-farbere@amazon.com>
- <20260726101739.33170-2-farbere@amazon.com>
- <anlUQXtxrghA8kNT@monoceros>
- <anmVwiYW6fT7XhD2@ashevche-desk.local>
+	s=arc-20240116; t=1786359911; c=relaxed/simple;
+	bh=bwjCD43E9bjMXAxChdrLhk7PINHWYkrOck/9FWTc4F8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dEkoaVy5qSOMNYWyDYPC7365DB/Qw1sSShDgdvr7XikyjaAiLrmenQxQRsGN3S/a+qN4pKXDrkjme6ACOaza/Ha+JDE7po57/Fd3DDp3IPgRMACooC/jhEvcjrerPttW3R8CrpqS7Zqf2HnPaNMaFd1CG+N65wd3hapl6SEdoL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.156
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
+Received: from mail.privateemail.com (unknown [87.215.145.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.privateemail.com (Postfix) with ESMTPSA id 4hJX2k6PYnz8sWQ;
+	Mon, 10 Aug 2026 11:04:46 +0000 (UTC)
+From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	Kees Cook <kees@kernel.org>,
+	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Luca Weiss <luca.weiss@fairphone.com>,
+	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Subject: [PATCH 3/3] iio: light: stk3310: support the Sensortek STK36C61
+Date: Mon, 10 Aug 2026 13:04:23 +0200
+Message-ID: <20260810110423.41697-4-jorijnvdgraaf@catcrafts.net>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260810110423.41697-1-jorijnvdgraaf@catcrafts.net>
+References: <20260810110423.41697-1-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <anmVwiYW6fT7XhD2@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-Envelope-From: jorijnvdgraaf@catcrafts.net
 
-On Mon, Aug 10, 2026 at 12:11:40PM +0300, Andy Shevchenko wrote:
-> On Mon, Aug 10, 2026 at 06:37:25AM +0200, Uwe Kleine-König wrote:
-> > On Sun, Jul 26, 2026 at 10:17:27AM +0000, Eliav Farber wrote:
+The Sensortek STK36C61 is a 3-in-1 ambient light / proximity / RGB
+colour sensor (chip ID 0x95) found in the Fairphone 6. Its register
+interface is compatible with the feature set this driver uses: the
+STATE/FLAG bit layout, the data and threshold registers and the gain
+and integration-time fields, verified on that device (the ALS and
+proximity readings scale with their gain and integration-time fields,
+thresholds written through the event interface read back from the
+chip, and the FLAG near/far bit crosses with them). Add its chip ID to
+the known-ID list and the device table entries.
 
-...
+Whenever the ALS engine runs, the chip also measures four colour
+channels, laid out directly after the ALS data as 16-bit big-endian
+values in R (0x15), G (0x17), B (0x19), C (0x1B) order; the R, G and B
+assignments were each confirmed by the matching channel dominating
+under red, green and blue illumination, and clear by its broadband
+response. The ALS data register tracks the green channel exactly.
+There is no public datasheet and therefore no counts-to-physical
+mapping for the colour channels, so they are exposed as raw-only
+intensity channels; the gain field the scale attribute controls does
+not govern clear either.
 
-> > > +{
-> > > +	struct atomic_notifier_chain_devres *dr;
-> > > +	int ret;
-> > > +
-> > > +	dr = devres_alloc(devm_atomic_notifier_chain_unregister,
-> > > +			  sizeof(*dr), GFP_KERNEL);
-> > > +	if (!dr)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	ret = atomic_notifier_chain_register(nh, n);
-> > > +	if (ret) {
-> > > +		devres_free(dr);
-> > > +		return ret;
-> > > +	}
-> > > +
-> > > +	dr->nh = nh;
-> > > +	dr->nb = n;
-> > > +	devres_add(dev, dr);
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(devm_atomic_notifier_chain_register);
-> > 
-> > IMHO devm_atomic_notifier_chain_register() should look as follows:
-> > 
-> > 	ret = atomic_notifier_chain_register(nh, n);
-> > 	if (ret)
-> > 		return ret;
-> > 
-> > 	return devm_add_action_or_reset(dev, devm_atomic_notifier_chain_unregister, dr)
-> > 
-> > which is much easier and includes less details from the inner workings
-> > of devm. Same for the blocking variant.
-> 
-> Won't work. We need more than one parameter and hence the whole devres_alloc().
-> Please, look closer to the code.
+Assisted-by: Claude:claude-fable-5
+Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+---
+ drivers/iio/light/stk3310.c | 44 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 41 insertions(+), 3 deletions(-)
 
-And just answering ahead, no, devm_kmalloc() is not good bandaid as it makes code
-not anyhow better to read and have a downside of memory fragmentation.
-
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 249396b9bf80..288b544a8abb 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -40,6 +40,11 @@
+ #define STK3310_REG_PS_DATA_LSB			0x12
+ #define STK3310_REG_ALS_DATA_MSB		0x13
+ #define STK3310_REG_ALS_DATA_LSB		0x14
++#define STK36C61_REG_RED_DATA_MSB		0x15
++#define STK36C61_REG_GREEN_DATA_MSB		0x17
++#define STK36C61_REG_BLUE_DATA_MSB		0x19
++#define STK36C61_REG_CLEAR_DATA_MSB		0x1B
++#define STK36C61_REG_CLEAR_DATA_LSB		0x1C
+ #define STK3310_REG_ID				0x3E
+ #define STK3310_MAX_REG				0x80
+ 
+@@ -54,6 +59,7 @@
+ #define STK3311S34_CHIP_ID_VAL			0x1E
+ #define STK3311X_CHIP_ID_VAL			0x12
+ #define STK3335_CHIP_ID_VAL			0x51
++#define STK36C61_CHIP_ID_VAL			0x95
+ #define STK3310_PSINT_EN			0x01
+ #define STK3310_PS_MAX_VAL			0xFFFF
+ 
+@@ -102,6 +108,7 @@ static const u8 stk3310_chip_ids[] = {
+ 	STK3311X_CHIP_ID_VAL,
+ 	STK3311_CHIP_ID_VAL,
+ 	STK3335_CHIP_ID_VAL,
++	STK36C61_CHIP_ID_VAL,
+ };
+ 
+ /* Estimate maximum proximity values with regard to measurement scale. */
+@@ -202,11 +209,28 @@ static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
+ 	.ext_info = stk3310_ext_info,			\
+ }
+ 
++#define STK36C61_INTENSITY_CHANNEL(_mod, _reg) {	\
++	.type = IIO_INTENSITY,				\
++	.modified = 1,					\
++	.channel2 = IIO_MOD_LIGHT_##_mod,		\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.address = _reg,				\
++}
++
+ static const struct iio_chan_spec stk3310_channels[] = {
+ 	STK3310_LIGHT_CHANNEL,
+ 	STK3310_PROXIMITY_CHANNEL,
+ };
+ 
++static const struct iio_chan_spec stk36c61_channels[] = {
++	STK3310_LIGHT_CHANNEL,
++	STK3310_PROXIMITY_CHANNEL,
++	STK36C61_INTENSITY_CHANNEL(RED, STK36C61_REG_RED_DATA_MSB),
++	STK36C61_INTENSITY_CHANNEL(GREEN, STK36C61_REG_GREEN_DATA_MSB),
++	STK36C61_INTENSITY_CHANNEL(BLUE, STK36C61_REG_BLUE_DATA_MSB),
++	STK36C61_INTENSITY_CHANNEL(CLEAR, STK36C61_REG_CLEAR_DATA_MSB),
++};
++
+ /**
+  * struct stk3310_chip_info - chip-specific data
+  * @name: device name reported to the IIO core
+@@ -225,6 +249,12 @@ static const struct stk3310_chip_info stk3310_chip_info = {
+ 	.num_channels = ARRAY_SIZE(stk3310_channels),
+ };
+ 
++static const struct stk3310_chip_info stk36c61_chip_info = {
++	.name = "stk36c61",
++	.channels = stk36c61_channels,
++	.num_channels = ARRAY_SIZE(stk36c61_channels),
++};
++
+ static IIO_CONST_ATTR(in_illuminance_scale_available, STK3310_SCALE_AVAILABLE);
+ 
+ static IIO_CONST_ATTR(in_proximity_scale_available, STK3310_SCALE_AVAILABLE);
+@@ -400,7 +430,8 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+ 	struct stk3310_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+ 
+-	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
++	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY &&
++	    chan->type != IIO_INTENSITY)
+ 		return -EINVAL;
+ 
+ 	switch (mask) {
+@@ -419,8 +450,10 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_INT_TIME:
+ 		if (chan->type == IIO_LIGHT)
+ 			ret = regmap_field_read(data->reg_als_it, &index);
+-		else
++		else if (chan->type == IIO_PROXIMITY)
+ 			ret = regmap_field_read(data->reg_ps_it, &index);
++		else
++			return -EINVAL;
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -430,8 +463,10 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type == IIO_LIGHT)
+ 			ret = regmap_field_read(data->reg_als_gain, &index);
+-		else
++		else if (chan->type == IIO_PROXIMITY)
+ 			ret = regmap_field_read(data->reg_ps_gain, &index);
++		else
++			return -EINVAL;
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -567,6 +602,7 @@ static bool stk3310_is_volatile_reg(struct device *dev, unsigned int reg)
+ 	switch (reg) {
+ 	case STK3310_REG_ALS_DATA_MSB:
+ 	case STK3310_REG_ALS_DATA_LSB:
++	case STK36C61_REG_RED_DATA_MSB ... STK36C61_REG_CLEAR_DATA_LSB:
+ 	case STK3310_REG_PS_DATA_LSB:
+ 	case STK3310_REG_PS_DATA_MSB:
+ 	case STK3310_REG_FLAG:
+@@ -801,6 +837,7 @@ static const struct i2c_device_id stk3310_i2c_id[] = {
+ 	{ .name = "STK3310", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
+ 	{ .name = "STK3311", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
+ 	{ .name = "STK3335", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
++	{ .name = "STK36C61", .driver_data = (kernel_ulong_t)&stk36c61_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
+@@ -819,6 +856,7 @@ static const struct of_device_id stk3310_of_match[] = {
+ 	{ .compatible = "sensortek,stk3310", .data = &stk3310_chip_info },
+ 	{ .compatible = "sensortek,stk3311", .data = &stk3310_chip_info },
+ 	{ .compatible = "sensortek,stk3335", .data = &stk3310_chip_info },
++	{ .compatible = "sensortek,stk36c61", .data = &stk36c61_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, stk3310_of_match);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.55.0
 
