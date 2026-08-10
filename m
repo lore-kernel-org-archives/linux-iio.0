@@ -1,65 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5D94353A60;
-	Mon, 10 Aug 2026 07:32:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A8349620;
+	Mon, 10 Aug 2026 07:37:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786347165; cv=none; b=mMcwC0NOUmQqJEOdY+2OksRjxmP5m5RS0yqBl6Y9hDCESGwutS1aMVBHutLkYVvh+oICVdkeGxL1/+GFHdKvOSgYoEH5Cq5JpPPW8mOn/+6hwPju5M0EZCGA46pgzAdRR0AxqH6s1+GAuGN7m5GKCIo53l4muzDahX3Paxp3oNY=
+	t=1786347465; cv=none; b=N9uHe7tWjxsIdkcxEWdvVZEC+IR9VX283YAm4gLUaGnq1NiRxx83EApaoOv0XPYwobEn3FqrwxBJt63LGRt9aTLUYpvetO6caFSQSETY/UWUVtjgKP9WTQZXi2Bly0CXXq72840jQbpzRbnXU2rS6y5Lt+k336MqWwkRUPjEDoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786347165; c=relaxed/simple;
-	bh=3TGFlPgAJB1XJ2S22zKpSve6oasatRD0oXn0iV6g3Io=;
+	s=arc-20240116; t=1786347465; c=relaxed/simple;
+	bh=TgQQzWCJY/JrfSUkJZttCW7uCDWksy2HvntTzshU1uQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IkyLavtcCIAyP3YPBsZW9M2XyF7eUF3GmYcZgjJf2fVmSU1tYXu34gHbrGCY24e5xVKKO33/J4nkFUHbVGEggs+Fs4qW1AH0HxEi0BdBFbvFoafRT+ms2A1udXzc1PCur1leJ80rblzNuT9/PC1fGQhhHrEO24JwjFyVqUjWhis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KFbrS3hG; arc=none smtp.client-ip=198.175.65.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=X2is3LVaLLEfm7QaHI4PS/T5VZYyVgBAT3bNc/RVrhysbuvumVAnHduB6FaFr1ZD3ym+qyItnYYZPia7Ub2tluDFMhNvpSd/5OmjGiUq6JhrzylLXie5LhBpMaz4ZwIwnq4fyBay5Ifa6/tOrBeiJjbvOPuo8NdD841o+LFlB/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PU6tjC+9; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KFbrS3hG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PU6tjC+9"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786347164; x=1817883164;
+  t=1786347464; x=1817883464;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=3TGFlPgAJB1XJ2S22zKpSve6oasatRD0oXn0iV6g3Io=;
-  b=KFbrS3hGZEb7J0fhW/lzpE8yaWfdWiFDob4u1bIzAByMgtvx07jHFsTl
-   Zj+iwJvj7t3lCgZOtwU6UsNKqOrWrSZO1oDN4mwJxmKxOz0XlNAq+3uSa
-   knk3VNxieSJHcgPLxrnrOTm1D62QMOCnyx7zrW0AsNbvLJOlu1tO9Kogi
-   YC8TTYAQ8x/w0PbI2/5M+f16gHzCCNmCrAKfFRG6Oks/6f3XloBiAVM1Y
-   Ur3m5Z/Lg7TOH4auLn59EIoD2zS3zQUz/WFqMAewwAvXF/Q8Oc1Y2B2Ta
-   3H35ylTm00rvC5OwsSdNuurMU+OqJFVsMD1zle2lzRsfK7yyGMzLD4Znu
+  bh=TgQQzWCJY/JrfSUkJZttCW7uCDWksy2HvntTzshU1uQ=;
+  b=PU6tjC+9FjdZk46f9jUctLUJwJMEXgfYBztiYIcIKuZgtG8f5jGgRALn
+   BKeu1Ju5e578YS/7IjElI98sqfL3AiX0oF9lB6KTTFq6bYZOQLoHPUQ4/
+   KFbW14P7ymMjLWnwv+ZuwTAuP+VosLM+vX9MoQCrcKzP1nvJ291A33WGI
+   pq7b/IABE0ZXAK91Zh60H+Mnqpwv2OCIZxmxlYvKkrPGZ6iq+8nfcuhwt
+   nW+6GxVOnKZbsZP4DyV8aqEOODOCcEpaGbgKDDrkz5NB5iRQkLwRt4Phq
+   wKsSfsCH4jgb8cmZiOJZwdgW9RfbuDYC1xtiZlFQ+7WtbAxeIvU4GjpEF
    A==;
-X-CSE-ConnectionGUID: LonsxN+ySmSdZNZHJogV7Q==
-X-CSE-MsgGUID: 4GtsimJJQ2arSJHVst/6aw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11870"; a="90738858"
+X-CSE-ConnectionGUID: U+y1RxEsQ4OM16KsmuBSAA==
+X-CSE-MsgGUID: 1mcFdv4MTOKxwhoZCNuppQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11870"; a="90532105"
 X-IronPort-AV: E=Sophos;i="6.25,215,1779174000"; 
-   d="scan'208";a="90738858"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 00:32:08 -0700
-X-CSE-ConnectionGUID: qBB2uY2ORJCTa/sU/SP/CQ==
-X-CSE-MsgGUID: 3y0qq3kGR1OUDo6Spn0cwg==
+   d="scan'208";a="90532105"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 00:37:42 -0700
+X-CSE-ConnectionGUID: AFE0Rqc9SB24tkx4bn4xhQ==
+X-CSE-MsgGUID: WdxuH6KFQlGpo/Iy5X4jqg==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,215,1779174000"; 
+   d="scan'208";a="266453289"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 00:32:03 -0700
-Date: Mon, 10 Aug 2026 10:32:01 +0300
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 00:37:38 -0700
+Date: Mon, 10 Aug 2026 10:37:35 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Petar Stepanovic <pstepanovic@axiado.com>
-Cc: Akhila Kavi <akavi@axiado.com>,
-	Prasad Bolisetty <pbolisetty@axiado.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: add Axiado SARADC driver
-Message-ID: <anl-cYX-wUQr_Pvb@ashevche-desk.local>
-References: <20260716-axiado-ax3000-ax3005-saradc-v4-0-810527a9d27f@axiado.com>
- <20260716-axiado-ax3000-ax3005-saradc-v4-2-810527a9d27f@axiado.com>
- <alnpMFK6_ZkdWlLi@ashevche-desk.local>
- <de947dc3-6d02-43de-a9e5-7f1e950231b9@axiado.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, julianbraha@gmail.com,
+	marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v9 5/6] iio: adc: ltc2378: Add support for LTC2338-18
+Message-ID: <anl_v428aTL6waBK@ashevche-desk.local>
+References: <cover.1785186980.git.marcelo.schmitt@analog.com>
+ <39f2ff86cf736ff97286d6451fcc45fdba6732f9.1785186980.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,27 +64,55 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <de947dc3-6d02-43de-a9e5-7f1e950231b9@axiado.com>
+In-Reply-To: <39f2ff86cf736ff97286d6451fcc45fdba6732f9.1785186980.git.marcelo.schmitt@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jul 28, 2026 at 08:58:10AM +0200, Petar Stepanovic wrote:
-> On 7/17/2026 10:34 AM, Andy Shevchenko wrote:
+On Mon, Jul 27, 2026 at 06:31:58PM -0300, Marcelo Schmitt wrote:
+> LTC2338-18 is similar to LTC2378-18, differentiating from the already
+> supported part mainly on the embedment of an internal voltage reference and
+> addition of a resistor divider network connected to the input signal path.
+> Extend the device driver, handling the internal reference and input signal
+> attenuation, enabling it to also support LTC2338-18.
 
 ...
 
-> >> +static const struct regmap_config axiado_saradc_regmap_config = {
-> >> +     .reg_bits = 32,
-> >> +     .val_bits = 32,
-> >> +     .reg_stride = 4,
-> >> +     .max_register = AX_SARADC_DOUT_REG,
-> > No cache?
-> 
-> No cache is intentional. The registers represent transient control, status,
-> and conversion data, so accesses should always go directly to the hardware.
-> Since REGCACHE_NONE is the default, it is not specified explicitly.
+> +static int ltc2378_refin_setup(struct device *dev, struct ltc2378_state *st)
+> +{
+> +	int ret;
+> +
+> +	/*
+> +	 * The internal reference buffer amplifies both the internal reference
+> +	 * and REFIN by a factor of 2.
+> +	 */
+> +	ret = devm_regulator_get_enable_read_voltage(dev, "refin");
+> +	if (ret == -ENODEV) { /* refin is optional */
+> +		st->ref_uV = st->info->internal_ref_uV * 2;
+> +		return 0;
+> +	}
+> +
+> +	if (ret < 0)
+> +		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
+> +
+> +	st->ref_uV = ret * 2;
+> +
+> +	return 0;
 
-Perhaps add a short comment here to summarise the above?
+I'm not sure about others' preferences, but I would do it as if-else-if and
+remove dup return 0.
+
+	if (ret == -ENODEV) /* refin is optional */
+		st->ref_uV = st->info->internal_ref_uV * 2;
+	else if (ret < 0)
+		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
+	else
+		st->ref_uV = ret * 2;
+
+	return 0;
+
+It also makes code shorter (in amount of LoC).
+
+> +}
 
 -- 
 With Best Regards,
