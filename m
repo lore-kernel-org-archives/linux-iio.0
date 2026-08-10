@@ -1,160 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF275339391;
-	Mon, 10 Aug 2026 18:27:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EC9B437448
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 18:34:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786386456; cv=none; b=KKGKvizC4M8x5Q9X+2o6pOsfpfThw76RLAttIkTkFcY2SJSqXqSn4PyLg3DveeYQl68pOQR7nJhqPsQ3oKKJ5I95+YuimdIZ3cdSUY4OcU8035WHc0jISrlgOtuFbqlgkbzNpPfacqy4+Mhs4AclZVMc10T0sa2ZSP9yF7QiKv4=
+	t=1786386841; cv=none; b=Jn04bttuHGbzJ0IxbPP0Th2IwSBkUIh7qzJnq+IpyNgM8vXxQeO4D5N9koJJRelFJpYHigrMmB81xj0xEMxuUvtid2giXmvBMGnMSpbcIsNIwohxIPHzCRTTF6X954VEECq7TaiVEX0BZhw0199ezQruVXtTBgnraV8FOcvf+6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786386456; c=relaxed/simple;
-	bh=8h7g0wplfTmMtiDtt71tGq38X0APIXuCqV22D46BWvQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CYqnhfOGvEqiEZzhcaOf2an2UVYUtHg7KkfKD0pslE6LltsmAopJ2Uqk9eJw9v5Z6KJ98PODreGlhDnHq+stffo/tlMDJgm4VBR4tARHO34KUluD7IwD+qQU0skcmDdMrIZNPNpnDeBkJwdck0zJ+L3imLWzTHHPXBgwoJYkC/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bONE1qHH; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1786386841; c=relaxed/simple;
+	bh=SqcgA4LJuoWFHZgSuIGEdqOlMctmYEWvqDTQVUq2iwI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gtPBNk2rG3yGtbnxCPjJyUYS1QgHlGnolY1wklhRNHYGFzZUtvSSJh4QjjTs8gp57AuMSLoyY+g6xc2UHtqa7pDu62RWuC2k82QtnE6YoXXuFZFmVPQkS5Kr7ow4kMo+nuh/Xy4v99t1Y1hKTht8xEV3UIWuHj0RZBHa0UktgsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eKGt0K8q; arc=none smtp.client-ip=209.85.215.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bONE1qHH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786386455; x=1817922455;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8h7g0wplfTmMtiDtt71tGq38X0APIXuCqV22D46BWvQ=;
-  b=bONE1qHHTBQltxV+HPUlJBP7aD2FGVtnZmx8Q9Ot0JMju1g6lpedbJY+
-   2WHXnK2Ekf7OnzfxdicluJnAwrh5qTwnr+qW+L6IO14tYzmcGefAYBvIP
-   4b+ECuY/SKJvSm8mHT7MAxZhnpF5+Ftz03i4mA0TbBwWi6K+gVggaFk2+
-   YmHuRk6h1XFaSC1ZBqm79YC5yrAHcmTABRm4w0SrixB/eoP/e70xvJW5Z
-   hcK2k+G7SopBFtdPwJC2ZbfPMrwHw3Q/vTSc77ZJfK/UnpPper8FCWGHh
-   Y7E2LOd7v5Li3QobfuslH4uFZwFdGy5l9q0q8PO482Je/KtdmzB6zDlI4
-   g==;
-X-CSE-ConnectionGUID: 1BJMX8dBQk2nbIyQR0rBaQ==
-X-CSE-MsgGUID: wjkMB2/ETOqkRRs3bEh8Ow==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="97564149"
-X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="97564149"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:27:33 -0700
-X-CSE-ConnectionGUID: 14oKCL5+TX6VP6+LCmVvtw==
-X-CSE-MsgGUID: JSCe0SpWT/6vj6a6CCF1QA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="293040054"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:27:30 -0700
-Date: Mon, 10 Aug 2026 21:27:26 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Petar Stepanovic <pstepanovic@axiado.com>
-Cc: Akhila Kavi <akavi@axiado.com>,
-	Prasad Bolisetty <pbolisetty@axiado.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eKGt0K8q"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-caf45fc5202so1853977a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 11:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786386839; x=1786991639; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=MKUjBVCjl00/cCCAjLM5qqAoQDkenE2Pgtyp/CT8tOo=;
+        b=eKGt0K8qslLTv2CxTswmX7IWBsEOGFP1w6JbPl5qyoe02nuDQzfkAubjUHco1quCWW
+         azWRYACTtTzOtUxsNdOK3uMf/XdtG37P17+N7G3TOUbtv7c2XdFl/HX9tNtzoO0BCjFA
+         0t9wNVtr0sLbuUBu/TjtI+crZ0+nrfTvx4IGB0ZRazaXoIaxvMHCF8Kk+YtKfRGiPxJO
+         GcXCFYKwZR07wRUEq40Kp0SdER+13c4GEok8F63ahCggWlawJDRTWdzCpgN1E9fJfiRQ
+         VAry4QuAZpRuv9chKj++RXpXeRU7TUPQPSb2sB2L8vg+7XHiCzBzrMmJN1TTdLxDAUR3
+         JA4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786386839; x=1786991639;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=MKUjBVCjl00/cCCAjLM5qqAoQDkenE2Pgtyp/CT8tOo=;
+        b=QRcwKXHh27J1A3tyYC2wP9LGw4VBH5GP6q4+rhae2TbKIKry402UFHu4n9mesY8WKQ
+         tLlCDfEaadruRsPerhHmj6MvtTx5/Ic/SaaUN63uGYIVKLPL8MICdWVAb2PADf4OG+Ta
+         +deaMVLCpQXQxYbARa1cfQ4fdo4e5F/YpbcU8E+6IRddGZ9VQLFMqRO2Dq927A6ljHAl
+         xHSoRAADWuxAHlSXi1FohVLR4bItQ1aSC6FAC0jcLIKhAaIimJV0j0JvU9mZ2ln6fI/e
+         XmDLN1/5j685QM/rdhL/ioxW2A9u97U5hMXhw8mj/b9iYmwr3xzr5gz33bbHbh1yn57S
+         cwPQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpCDqX5SssdQlMUDlVsmwV+YsntLiPyhB7jZhZPBXf6IaRuExmCoGFK//o47owANCQtCgQZ493HliE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyA0OijpDMCTXNw8CWImN+Uk/ef0Qtz4Zf2HRI91lkLx1gX1+if
+	18BNWgXycXAqtYfz1gbSS0k55/KiGgcW69a2Fmem6FJ6YaCsw3vhGgrW1vnA4qY=
+X-Gm-Gg: AR+sD10yajw4Y7V785dUQ3t4+4gLtnRtMlu/uuzbhZksOpRtYTASqBsvbWaVfjWxT2k
+	URjV5rQPYJO6mkEgk0gK+dQpWzCj2Iv7+q5sOx2lutV3zZEy3vBBW/Dt31t0cGjMvZ55qBRlDUm
+	mUKCxs9wFX2v2tCYUFPA2i4Xrf3eFaWSFFVvNEMYU2Uf5hxRWnGGHmA9OuewSfmNEG4y7d+cy2i
+	nSUbGoBFIPmx3zExEv7F5noaH+jb3kT5nsX8XvuNbEymprzYxL/IQ4dCEKogF0at1JN2I1yaA6R
+	4MT231ZS7OSWB0zu76kJ5mKYG0mxS4WjLmnrPhMYXIyQVSkMddgwa61tzazK1drsvTkCVGJETQ+
+	4bZJHZytA7id0y3MCjxjTS+12sPbIOCfUIeOSl5CrOPwz574knWcYQEYG/sy9O55Hwvqct+ysX9
+	lSyOfLkqEY+d+fXHXW9wKmL2deYAt2DoMa5PybmYu6t1cRe9LpfMxXcy8KSWt9Jlu9VuJ5R9bm3
+	+bycP1n7XsadjEOrkJXO5swQvtCv6ficT9lgCVt
+X-Received: by 2002:a05:6a21:3392:b0:3c3:9595:57ef with SMTP id adf61e73a8af0-3cb85ffd1cemr50581343637.31.1786386839340;
+        Mon, 10 Aug 2026 11:33:59 -0700 (PDT)
+Received: from localhost.localdomain ([186.158.238.108])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-315be8a9220sm48209020eec.7.2026.08.10.11.33.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2026 11:33:58 -0700 (PDT)
+From: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Brigham Campbell <me@brighamcampbell.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: adc: add Axiado SARADC driver
-Message-ID: <anoYDi-bt-t6ZeeD@ashevche-desk.local>
-References: <20260810-axiado-ax3000-ax3005-saradc-v5-0-bb0df3ecedaa@axiado.com>
- <20260810-axiado-ax3000-ax3005-saradc-v5-2-bb0df3ecedaa@axiado.com>
+	Jori Koolstra <jkoolstra@xs4all.nl>,
+	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-kernel-mentees@lists.linux.dev
+Subject: [PATCH v2] iio: humidity: am2315: add am2320 to i2c_device_id table
+Date: Mon, 10 Aug 2026 15:32:31 -0300
+Message-ID: <20260810183337.451812-1-nico.antinori.7@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260810-axiado-ax3000-ax3005-saradc-v5-2-bb0df3ecedaa@axiado.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 10, 2026 at 07:49:36AM -0700, Petar Stepanovic wrote:
-> Add support for the SARADC controller found on Axiado AX3000 and
-> AX3005 SoCs.
-> 
-> The driver supports single-shot voltage reads through the IIO
-> subsystem. The number of available input channels is selected from
-> the SoC match data, allowing AX3000 and AX3005 variants to use the
-> same driver.
+The AM2320 is fully compatible with the AM2315 sensor in terms of I2C
+communication protocol and measurement conversions.
 
-...
+Add the "am2320" entry to the i2c_device_id table.
 
-> +/* MANUAL_CTRL register fields */
+Signed-off-by: Nicolás Antinori <nico.antinori.7@gmail.com>
+---
+v2:
+- Adapted KConfig text using the suggestions from v1 by Nuno Sá and Andy
+  Shevchenko
 
-^^^
+v1: https://lore.kernel.org/all/20260805183733.1000550-1-nico.antinori.7@gmail.com/T/#u
 
-> +#define AX_SARADC_MANUAL_CTRL_ENABLE	BIT(0)
-> +#define AX_SARADC_MANUAL_CTRL_CH_SEL_MASK	GENMASK(4, 1)
-> +
-> +#define AX_RESOLUTION_BITS	10
-> +#define AX_SARADC_CONV_CYCLES	13
-> +#define AX_SARADC_CONV_DELAY_MARGIN_US	10
-> +
-> +struct axiado_saradc {
-> +	struct regmap *regmap;
-> +	struct mutex lock; /* Serializes ADC conversions. */
+ drivers/iio/humidity/Kconfig  | 8 +++++---
+ drivers/iio/humidity/am2315.c | 3 ++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-Choose the same style for all single-line comments (here is a period present
-while in the above, for instance, there is none).
+diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+index 54f11f000b6f..10598a0b15bc 100644
+--- a/drivers/iio/humidity/Kconfig
++++ b/drivers/iio/humidity/Kconfig
+@@ -5,13 +5,15 @@
+ menu "Humidity sensors"
 
-> +	unsigned long clk_rate;
-> +	int vref_uV;
-> +};
+ config AM2315
+-	tristate "Aosong AM2315 relative humidity and temperature sensor"
++	tristate "Aosong AM2315 and similar relative humidity and temperature sensor"
+ 	depends on I2C
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+-	  If you say yes here you get support for the Aosong AM2315
+-	  relative humidity and ambient temperature sensor.
++	  If you say yes here you get support for the Aosong relative
++	  humidity and ambient temperature sensors:
++	  - AM2315
++	  - AM2320
 
-...
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called am2315.
+diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
+index f29baa251f9f..5bce5eec45cc 100644
+--- a/drivers/iio/humidity/am2315.c
++++ b/drivers/iio/humidity/am2315.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Aosong AM2315 relative humidity and temperature
++ * Aosong AM2315 and similar relative humidity and temperature
+  *
+  * Copyright (c) 2016, Intel Corporation.
+  *
+@@ -251,6 +251,7 @@ static int am2315_probe(struct i2c_client *client)
 
-> +static int axiado_saradc_conversion(struct axiado_saradc *info,
-> +				    struct iio_chan_spec const *chan, int *val)
-> +{
-> +	unsigned long usecs;
-> +	unsigned int regval;
-> +	int ret;
-> +
-> +	guard(mutex)(&info->lock);
-> +
-> +	/* Select the channel to be used and trigger conversion */
-> +	ret = regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG,
-> +			   AX_SARADC_MANUAL_CTRL_ENABLE |
-> +			   FIELD_PREP(AX_SARADC_MANUAL_CTRL_CH_SEL_MASK, chan->channel));
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Hardware requires 13 conversion cycles at clk_rate */
-
-> +	usecs = DIV_ROUND_UP(AX_SARADC_CONV_CYCLES * USEC_PER_SEC,
-> +			     info->clk_rate);
-
-I think it's okay to have this on a single line (83 characters).
-
-> +	fsleep(usecs + AX_SARADC_CONV_DELAY_MARGIN_US);
-> +
-> +	ret = regmap_read(info->regmap, AX_SARADC_DOUT_REG, &regval);
-> +
-> +	/* Best effort to stop manual conversion. */
-> +	regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG, 0);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	*val = regval & GENMASK(AX_RESOLUTION_BITS - 1, 0);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +	soc_data = device_get_match_data(dev);
-> +	if (!soc_data)
-> +		return dev_err_probe(dev, -EINVAL, "failed to get match data\n");
-
--ENODATA
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+ static const struct i2c_device_id am2315_i2c_id[] = {
+ 	{ .name = "am2315" },
++	{ .name = "am2320" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, am2315_i2c_id);
+--
+2.47.3
 
