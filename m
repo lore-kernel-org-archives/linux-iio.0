@@ -1,149 +1,128 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EC9B437448
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 18:34:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A49437448;
+	Mon, 10 Aug 2026 18:34:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786386841; cv=none; b=Jn04bttuHGbzJ0IxbPP0Th2IwSBkUIh7qzJnq+IpyNgM8vXxQeO4D5N9koJJRelFJpYHigrMmB81xj0xEMxuUvtid2giXmvBMGnMSpbcIsNIwohxIPHzCRTTF6X954VEECq7TaiVEX0BZhw0199ezQruVXtTBgnraV8FOcvf+6I=
+	t=1786386891; cv=none; b=rNhPYjReHa66xiTi8+xLgf3V5tN4AXXuSBYs28Wj/6tsyXW/TU4ILIRJhWTKBrbMhjl81UJcBIhFG9OqrrLizDNrsnQjfrtUkLcTVG0mBgXkiwq4BykRRBB21ggBRt12iIJOLRgKIlRlyUPOH2KkqICMvjp5RA20veu2gBvOQ9Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786386841; c=relaxed/simple;
-	bh=SqcgA4LJuoWFHZgSuIGEdqOlMctmYEWvqDTQVUq2iwI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gtPBNk2rG3yGtbnxCPjJyUYS1QgHlGnolY1wklhRNHYGFzZUtvSSJh4QjjTs8gp57AuMSLoyY+g6xc2UHtqa7pDu62RWuC2k82QtnE6YoXXuFZFmVPQkS5Kr7ow4kMo+nuh/Xy4v99t1Y1hKTht8xEV3UIWuHj0RZBHa0UktgsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eKGt0K8q; arc=none smtp.client-ip=209.85.215.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786386891; c=relaxed/simple;
+	bh=w7E9hKgMW1GqumxvPPfpkzjLh2yL0WE6NH8MkvAqG5U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qMKC1GDQOw4AHzl21wKHOxNBH3bOfkVXv74cevgWKnIcbMmNYkZyYraXxrzFzLOvrHYy2RGhxz0O+JuOYBY+w5/jtwnX4HnomhE4yAQSdmxTjL4WqNYUvqsEa868xsDF2Bj+mKEKULLv8OkhlhZUjEg9yegZ6fgOn8dhePsazjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DarhLggS; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eKGt0K8q"
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-caf45fc5202so1853977a12.1
-        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 11:34:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786386839; x=1786991639; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=MKUjBVCjl00/cCCAjLM5qqAoQDkenE2Pgtyp/CT8tOo=;
-        b=eKGt0K8qslLTv2CxTswmX7IWBsEOGFP1w6JbPl5qyoe02nuDQzfkAubjUHco1quCWW
-         azWRYACTtTzOtUxsNdOK3uMf/XdtG37P17+N7G3TOUbtv7c2XdFl/HX9tNtzoO0BCjFA
-         0t9wNVtr0sLbuUBu/TjtI+crZ0+nrfTvx4IGB0ZRazaXoIaxvMHCF8Kk+YtKfRGiPxJO
-         GcXCFYKwZR07wRUEq40Kp0SdER+13c4GEok8F63ahCggWlawJDRTWdzCpgN1E9fJfiRQ
-         VAry4QuAZpRuv9chKj++RXpXeRU7TUPQPSb2sB2L8vg+7XHiCzBzrMmJN1TTdLxDAUR3
-         JA4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786386839; x=1786991639;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=MKUjBVCjl00/cCCAjLM5qqAoQDkenE2Pgtyp/CT8tOo=;
-        b=QRcwKXHh27J1A3tyYC2wP9LGw4VBH5GP6q4+rhae2TbKIKry402UFHu4n9mesY8WKQ
-         tLlCDfEaadruRsPerhHmj6MvtTx5/Ic/SaaUN63uGYIVKLPL8MICdWVAb2PADf4OG+Ta
-         +deaMVLCpQXQxYbARa1cfQ4fdo4e5F/YpbcU8E+6IRddGZ9VQLFMqRO2Dq927A6ljHAl
-         xHSoRAADWuxAHlSXi1FohVLR4bItQ1aSC6FAC0jcLIKhAaIimJV0j0JvU9mZ2ln6fI/e
-         XmDLN1/5j685QM/rdhL/ioxW2A9u97U5hMXhw8mj/b9iYmwr3xzr5gz33bbHbh1yn57S
-         cwPQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpCDqX5SssdQlMUDlVsmwV+YsntLiPyhB7jZhZPBXf6IaRuExmCoGFK//o47owANCQtCgQZ493HliE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyA0OijpDMCTXNw8CWImN+Uk/ef0Qtz4Zf2HRI91lkLx1gX1+if
-	18BNWgXycXAqtYfz1gbSS0k55/KiGgcW69a2Fmem6FJ6YaCsw3vhGgrW1vnA4qY=
-X-Gm-Gg: AR+sD10yajw4Y7V785dUQ3t4+4gLtnRtMlu/uuzbhZksOpRtYTASqBsvbWaVfjWxT2k
-	URjV5rQPYJO6mkEgk0gK+dQpWzCj2Iv7+q5sOx2lutV3zZEy3vBBW/Dt31t0cGjMvZ55qBRlDUm
-	mUKCxs9wFX2v2tCYUFPA2i4Xrf3eFaWSFFVvNEMYU2Uf5hxRWnGGHmA9OuewSfmNEG4y7d+cy2i
-	nSUbGoBFIPmx3zExEv7F5noaH+jb3kT5nsX8XvuNbEymprzYxL/IQ4dCEKogF0at1JN2I1yaA6R
-	4MT231ZS7OSWB0zu76kJ5mKYG0mxS4WjLmnrPhMYXIyQVSkMddgwa61tzazK1drsvTkCVGJETQ+
-	4bZJHZytA7id0y3MCjxjTS+12sPbIOCfUIeOSl5CrOPwz574knWcYQEYG/sy9O55Hwvqct+ysX9
-	lSyOfLkqEY+d+fXHXW9wKmL2deYAt2DoMa5PybmYu6t1cRe9LpfMxXcy8KSWt9Jlu9VuJ5R9bm3
-	+bycP1n7XsadjEOrkJXO5swQvtCv6ficT9lgCVt
-X-Received: by 2002:a05:6a21:3392:b0:3c3:9595:57ef with SMTP id adf61e73a8af0-3cb85ffd1cemr50581343637.31.1786386839340;
-        Mon, 10 Aug 2026 11:33:59 -0700 (PDT)
-Received: from localhost.localdomain ([186.158.238.108])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-315be8a9220sm48209020eec.7.2026.08.10.11.33.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2026 11:33:58 -0700 (PDT)
-From: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Brigham Campbell <me@brighamcampbell.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DarhLggS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786386889; x=1817922889;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w7E9hKgMW1GqumxvPPfpkzjLh2yL0WE6NH8MkvAqG5U=;
+  b=DarhLggS/vOzLIKzvHdTDCU/Lv2q7XJ02hmmtkkHV9KH3ilkJkHf5hwZ
+   gfU7M4+rVKRMUx0+/Tj4z7Y5OgPwd7phKNhQE6UZF4Mt8JKxPiMxi14Q9
+   Z4nPTA8Cq5PWMqxZaKxDW9QaJZOfiOuiljSBTaxhpQyVAKLLJooEqqsJh
+   VK+3yQVGAIq9TeLy5zWqLYONXixk7mxf2mE8GLenedRxwuFFvraBscMq6
+   /cpbNoG5wBhHxdEmnHBF8jLjfxx1HOBcJ7NQHL6TN8a8vL04Z6z9B4FT7
+   n0CenyZRf/ZVAZPO/KLxXv8s7YIEwCvL9SfOVEf/CKHOIjQUC65GlMHIe
+   g==;
+X-CSE-ConnectionGUID: 2M2m2xilTzeC3W/uIyjaeg==
+X-CSE-MsgGUID: 6QbpG5UpRreSp/2sJYVuGQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="97564762"
+X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
+   d="scan'208";a="97564762"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:34:48 -0700
+X-CSE-ConnectionGUID: ZREt/oXqRduguFrIQ3mNZg==
+X-CSE-MsgGUID: 0pJK7HhYQL2j8XyViBIZoQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
+   d="scan'208";a="293041329"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:34:45 -0700
+Date: Mon, 10 Aug 2026 21:34:42 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
-	Jori Koolstra <jkoolstra@xs4all.nl>,
-	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v2] iio: humidity: am2315: add am2320 to i2c_device_id table
-Date: Mon, 10 Aug 2026 15:32:31 -0300
-Message-ID: <20260810183337.451812-1-nico.antinori.7@gmail.com>
-X-Mailer: git-send-email 2.47.3
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+	Kees Cook <kees@kernel.org>,
+	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Luca Weiss <luca.weiss@fairphone.com>
+Subject: Re: [PATCH 2/3] iio: light: stk3310: add per-chip match data
+Message-ID: <anoZwgq6ZO_VY064@ashevche-desk.local>
+References: <20260810110423.41697-1-jorijnvdgraaf@catcrafts.net>
+ <20260810110423.41697-3-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260810110423.41697-3-jorijnvdgraaf@catcrafts.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The AM2320 is fully compatible with the AM2315 sensor in terms of I2C
-communication protocol and measurement conversions.
+On Mon, Aug 10, 2026 at 01:04:22PM +0200, Jorijn van der Graaf wrote:
+> Introduce a chip_info structure carrying the device name and channel
+> specification, attach it to every i2c, OF and ACPI table entry, and let
+> probe take it from the match data. Clients instantiated through the
+> sysfs new_device interface under the lowercase compatible-derived name
+> have no firmware node and do not match the uppercase id table entries,
+> so absent match data falls back to the original chip data. The channel
+> data registers move into .address and the shared channel definitions
+> into macros.
+> 
+> This is a preparatory change for a variant that provides more channels
+> than the existing parts. No functional change.
 
-Add the "am2320" entry to the i2c_device_id table.
+...
 
-Signed-off-by: Nicolás Antinori <nico.antinori.7@gmail.com>
----
-v2:
-- Adapted KConfig text using the suggestions from v1 by Nuno Sá and Andy
-  Shevchenko
+> +		ret = regmap_bulk_read(data->regmap, chan->address, &buf,
+> +				       sizeof(buf));
 
-v1: https://lore.kernel.org/all/20260805183733.1000550-1-nico.antinori.7@gmail.com/T/#u
+I would add
 
- drivers/iio/humidity/Kconfig  | 8 +++++---
- drivers/iio/humidity/am2315.c | 3 ++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+	struct regmap *map = data->regmap;
 
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 54f11f000b6f..10598a0b15bc 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -5,13 +5,15 @@
- menu "Humidity sensors"
+and make this on a single line.
 
- config AM2315
--	tristate "Aosong AM2315 relative humidity and temperature sensor"
-+	tristate "Aosong AM2315 and similar relative humidity and temperature sensor"
- 	depends on I2C
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	  If you say yes here you get support for the Aosong AM2315
--	  relative humidity and ambient temperature sensor.
-+	  If you say yes here you get support for the Aosong relative
-+	  humidity and ambient temperature sensors:
-+	  - AM2315
-+	  - AM2320
+>  		if (ret < 0) {
+>  			dev_err(&client->dev, "register read failed\n");
 
- 	  This driver can also be built as a module. If so, the module will
- 	  be called am2315.
-diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
-index f29baa251f9f..5bce5eec45cc 100644
---- a/drivers/iio/humidity/am2315.c
-+++ b/drivers/iio/humidity/am2315.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Aosong AM2315 relative humidity and temperature
-+ * Aosong AM2315 and similar relative humidity and temperature
-  *
-  * Copyright (c) 2016, Intel Corporation.
-  *
-@@ -251,6 +251,7 @@ static int am2315_probe(struct i2c_client *client)
+...
 
- static const struct i2c_device_id am2315_i2c_id[] = {
- 	{ .name = "am2315" },
-+	{ .name = "am2320" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, am2315_i2c_id);
---
-2.47.3
+> +	chip_info = i2c_get_match_data(client);
+> +	if (!chip_info) {
+> +		/*
+> +		 * Clients instantiated through the sysfs new_device
+> +		 * interface under the lowercase compatible-derived name
+> +		 * have no firmware node and do not match the uppercase
+> +		 * id table entries.
+> +		 */
+> +		chip_info = &stk3310_chip_info;
+
+This is an interesting comment and approach.
+
+> +	}
+
+- Where does this lowercase come from? Is it Linux forced conversion?
+- What's wrong with simply failing the probe?
+
+As far as I understand the problem is preexisted. Or was there any default
+taken? How do we know that the chosen default is a good one?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
