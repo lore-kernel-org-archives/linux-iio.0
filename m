@@ -1,137 +1,128 @@
-Received: from mail.zlab.su (mail.zlab.su [109.73.193.145])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7788239E6C;
-	Mon, 10 Aug 2026 09:11:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.73.193.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9763A4F30;
+	Mon, 10 Aug 2026 09:12:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786353071; cv=none; b=Nm5Vgv+YP/NOtRNQ3Brf5k8IvluFwKESBAUalHYV0cwQlmbmxTGCFmTVVt46GdHksq8tve2UdSdorebnqOvJ7aQF/M/Fy1VCwd+CCefmGHorbZoTyAO1r2xk2/IdlNkstK8Mme4zqBMOXI2KDrWnwxqh1eRF+gGFKxKppkqKy2g=
+	t=1786353123; cv=none; b=NNn9Rq9rX4cmxRcPKIx4Y299/mhmy6r7LzVWn+w0DvnfJeSYNV842KFConBtmHdIPpqVlDrYkSmM5q3TqRuuKrEddVRtZ1+/jLeje9Xxjn92XTW+d5/5zPtxr5XwNcHT+VMFEtMTLPHQSi4AlzAanuZqykBg2Hwn8xhftp0Ngxk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786353071; c=relaxed/simple;
-	bh=cnsSd8qUppVFxHiOVA9Kowgu65RaXBTJxtIPJey1yfQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z/fELeZ0gR9bZ6zqAp6EuV4jfRw8Ok35WsG3YlXpKlDQ34Wunw0R/Apy4rye5MGmHJfPNC147eAvZRlGsORtcWWGza+7bg6J1IV4cS2QoTDAOQNikFblFIl9F6o14Qkb2sq9SnpHBLzIfXG+Qok5pSKzLCjD3/Ava2zG4vJ7/oo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zlab.su; spf=pass smtp.mailfrom=zlab.su; dkim=pass (2048-bit key) header.d=zlab.su header.i=@zlab.su header.b=KWJ9hcB3; arc=none smtp.client-ip=109.73.193.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zlab.su
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zlab.su
+	s=arc-20240116; t=1786353123; c=relaxed/simple;
+	bh=wB1WlKNB0e+Hd3mmjMUrAQQLQpQysiLiVLIr2FF4cqg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LpB0wiFQAn7vbMoShX42v+M+mrbq5XIbXzdnGrpyBcCSLFNdQjUyRkCc+itcxXdR2rctMvNq+DWG9jqGXDFQyXw0+avy60wRqFp4G9M+cDwVyTABua64fpFXVb2ChdZMxtDXwyo6BoagAIev0GGLJkb/QXh49dgSUh/ZGVh7RmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bmpZgnj1; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zlab.su header.i=@zlab.su header.b="KWJ9hcB3"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 5404DBFAE6;
-	Mon, 10 Aug 2026 12:10:48 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zlab.su; s=dkim;
-	t=1786353058; h=from:subject:date:message-id:to:cc:mime-version:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=xyle+PTVvJI9HtkNC+doJ7iKTHR2VjoZcHSFBrvKbps=;
-	b=KWJ9hcB3IAX8O35ipyuGOgsC7dWdATXvVpfc9LgZAENQ1kSGfkWfAeWSJxDB5OErCxxbIZ
-	ca1Gq533PI8Dzqke5MI1U3js+lZlErHQQP63ppDjOigcZLA86R8RCkK2VJgqc+PCif8rXA
-	PYIeG0wl+g9b77h4d/piOj603eGybY6mkOFyZmnVC2D9Ie9h/eC7QqaqFlByoxnoGIdtUX
-	XgIWShh7jQRnXSTz4mmk6RVDYAJEkIQmGa97/PQsm7lD1DoK60hkr6tyGrLFc4xYGjRGbD
-	Azzxw69tSQeEvbYE+xgp25uywODWCVaMcp0PMcG2se7XyJH7A88DhZUxLn6xOQ==
-From: Vladislav Leonov <vlad@zlab.su>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Simon Glass <sjg@chromium.org>,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Vladislav Leonov <vlad@zlab.su>
-Subject: [PATCH] iio: adc: rockchip_saradc: Add support for RV1106
-Date: Mon, 10 Aug 2026 12:08:26 +0300
-Message-ID: <20260810090826.146758-1-vlad@zlab.su>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid>
-References: <20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bmpZgnj1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786353122; x=1817889122;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wB1WlKNB0e+Hd3mmjMUrAQQLQpQysiLiVLIr2FF4cqg=;
+  b=bmpZgnj1ebpKmt5x4jtPi+729vQ5OEjUE1UKuZODqdf1l85VomJy4vCe
+   qJg3CLMu+L7Gfc/6rzU5X1mcqbHxmwYuUY1WAm2Ceqt07JKeMIVrnmJVj
+   qU8nORXTe02Z1NYPEbdqKnFYXN75in1UbrK1+mcTI4UJTpjRpG38HmK2A
+   7RyrL6SrXmVvG3I8fTPADujuI/w1vIPrgIi0RE6B1xC7/sayEMBZeymYy
+   5EhrUzcQNn15LvGJMj1rG+eXDfP3aA+IyPK20GP10F51nbgkazYJBtt3F
+   vPbqZ6bCSNOBGlhUX79FreB0rh8nramLNOubcrfVlUS3sSp6lbPRzqMxZ
+   Q==;
+X-CSE-ConnectionGUID: bDRqmvVuRHig+VfHqvn8QA==
+X-CSE-MsgGUID: 6Qy9VgpTR0Wy1eJy/p4Ggw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11870"; a="98012237"
+X-IronPort-AV: E=Sophos;i="6.25,215,1779174000"; 
+   d="scan'208";a="98012237"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 02:11:40 -0700
+X-CSE-ConnectionGUID: m2wuEXZdRFKpDyxYknJDTA==
+X-CSE-MsgGUID: 5yKGuPpuQqiKihNAB4boaw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,215,1779174000"; 
+   d="scan'208";a="259127154"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 02:11:32 -0700
+Date: Mon, 10 Aug 2026 12:11:30 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+Cc: Eliav Farber <farbere@amazon.com>, rafael@kernel.org,
+	tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com,
+	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org,
+	laurent.pinchart@ideasonboard.com, linusw@kernel.org,
+	brgl@kernel.org, orsonzhai@gmail.com, baolin.wang@linux.alibaba.com,
+	zhang.lyra@gmail.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, dmitry.torokhov@gmail.com,
+	hansg@kernel.org, ilpo.jarvinen@linux.intel.com, W_Armin@gmx.de,
+	fabio.m.de.francesco@linux.intel.com, kaihengf@nvidia.com,
+	ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br,
+	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org,
+	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH v4 01/13] notifier: add device-managed registration APIs
+Message-ID: <anmVwiYW6fT7XhD2@ashevche-desk.local>
+References: <20260726101739.33170-1-farbere@amazon.com>
+ <20260726101739.33170-2-farbere@amazon.com>
+ <anlUQXtxrghA8kNT@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+In-Reply-To: <anlUQXtxrghA8kNT@monoceros>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The Successive Approximation ADC (SARADC) in RV1106 uses the v2
-controller and supports:
-- 10-bit resolution
-- Up to 1MS/s sampling rate
-- 2 single-ended input channels
+On Mon, Aug 10, 2026 at 06:37:25AM +0200, Uwe Kleine-König wrote:
+> On Sun, Jul 26, 2026 at 10:17:27AM +0000, Eliav Farber wrote:
 
-"dt-bindings: iio: adc: rockchip-saradc: Add RV1106 compatible"
-documents "rockchip,rv1106-saradc" as falling back to
-"rockchip,rk3588-saradc" (see Link below). The two IP blocks are not
-equivalent, though: per the RV1106 TRM v0.3, chapter 20 (SAR-ADC),
-RV1106 only has 2 channels at 10-bit resolution, versus 8 channels
-at 12-bit on RK3588. Without a dedicated match entry, the driver
-binds via the fallback compatible and uses the RK3588 channel table,
-which reports 8 channels instead of 2, and an in_voltage_scale that
-is off by exactly 4x (4096 vs 1024 full-scale).
+...
 
-Add a dedicated compatible/data pair for RV1106 with the correct
-2-channel, 10-bit layout.
+> > +{
+> > +	struct atomic_notifier_chain_devres *dr;
+> > +	int ret;
+> > +
+> > +	dr = devres_alloc(devm_atomic_notifier_chain_unregister,
+> > +			  sizeof(*dr), GFP_KERNEL);
+> > +	if (!dr)
+> > +		return -ENOMEM;
+> > +
+> > +	ret = atomic_notifier_chain_register(nh, n);
+> > +	if (ret) {
+> > +		devres_free(dr);
+> > +		return ret;
+> > +	}
+> > +
+> > +	dr->nh = nh;
+> > +	dr->nb = n;
+> > +	devres_add(dev, dr);
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(devm_atomic_notifier_chain_register);
+> 
+> IMHO devm_atomic_notifier_chain_register() should look as follows:
+> 
+> 	ret = atomic_notifier_chain_register(nh, n);
+> 	if (ret)
+> 		return ret;
+> 
+> 	return devm_add_action_or_reset(dev, devm_atomic_notifier_chain_unregister, dr)
+> 
+> which is much easier and includes less details from the inner workings
+> of devm. Same for the blocking variant.
 
-Tested on a custom RV1106-based board, with:
+Won't work. We need more than one parameter and hence the whole devres_alloc().
+Please, look closer to the code.
 
-  &saradc {
-	vref-supply = <&vcc_saradc>; /* 1.8V fixed regulator */
-	status = "okay";
-  };
-
-Before this patch:
-  # ls /sys/bus/iio/devices/iio:device0/in_voltage*_raw | wc -l
-  8
-  # cat /sys/bus/iio/devices/iio:device0/in_voltage_scale
-  0.439453125
-
-After this patch:
-  # ls /sys/bus/iio/devices/iio:device0/in_voltage*_raw | wc -l
-  2
-  # cat /sys/bus/iio/devices/iio:device0/in_voltage_scale
-  1.757812500
-
-Link: https://lore.kernel.org/all/20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid/
-Signed-off-by: Vladislav Leonov <vlad@zlab.su>
----
- drivers/iio/adc/rockchip_saradc.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index 0f0bf2906af0..5c45fae11890 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -348,6 +348,19 @@ static const struct rockchip_saradc_data rk3588_saradc_data = {
- 	.read = rockchip_saradc_read_v2,
- };
- 
-+static const struct iio_chan_spec rockchip_rv1106_saradc_iio_channels[] = {
-+	SARADC_CHANNEL(0, "adc0", 10),
-+	SARADC_CHANNEL(1, "adc1", 10),
-+};
-+
-+static const struct rockchip_saradc_data rv1106_saradc_data = {
-+	.channels = rockchip_rv1106_saradc_iio_channels,
-+	.num_channels = ARRAY_SIZE(rockchip_rv1106_saradc_iio_channels),
-+	.clk_rate = 1000000,
-+	.start = rockchip_saradc_start_v2,
-+	.read = rockchip_saradc_read_v2,
-+};
-+
- static const struct of_device_id rockchip_saradc_match[] = {
- 	{
- 		.compatible = "rockchip,saradc",
-@@ -370,6 +383,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
- 	}, {
- 		.compatible = "rockchip,rk3588-saradc",
- 		.data = &rk3588_saradc_data,
-+	}, {
-+		.compatible = "rockchip,rv1106-saradc",
-+		.data = &rv1106_saradc_data,
- 	},
- 	{ }
- };
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
