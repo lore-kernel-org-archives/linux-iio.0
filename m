@@ -1,30 +1,30 @@
-Received: from out-186.mta0.migadu.com (out-186.mta0.migadu.com [91.218.175.186])
+Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A020F37F8C1
-	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:51:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.186
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC72384CEF
+	for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 07:52:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786348291; cv=none; b=SnkmRJj/ckTglL1DEleaU9qhAykJ920X6/DVas6dqv5wy8riUjB3wzV5tq1TN8a/kr15MDYM0aN7afI2J5TMMOLxHpok6RwBZAa+S3/IvYhWBpPCVPctYwlJRbA28v1Nz4qo4Fb7Nv7RW56S3kM/wj5grOKUbYKMvSqwF7prXFk=
+	t=1786348350; cv=none; b=OyrJA5CeOghWqU9Vx32S5CRI9nwr/bthhAVyrwjfIUfwGy/pxX9JtSQrWSh27uAJmcfqc1pftSBPVvjV1DoejFsmVG9jG7otQzgWBVvc/x+6ieQ4jhGRJDHrSNMzy1bRTvGKMllvQH8bqiDoOazsYCmR67g8QPKP4CY8zjjbzuc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786348291; c=relaxed/simple;
-	bh=fRS7joZRLx04hcBEoTZ3nJDf4BLIXkrbe+qjmagvFcI=;
+	s=arc-20240116; t=1786348350; c=relaxed/simple;
+	bh=Sf0i42shFsIJxWpnZfQzTBN4eFSekniquXXbfx+XhWw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DfskAvEVgs5CUkeGX+Op5Qn0imer4BMK8zaEbTwsciurIVUCxE1cdoJn7Llvkmk933R59sV0ck9cBOOKNWuhdTmwo6ubjDNDUHtJw836QSbrekuSmkjIJS0Y9hGvtnCLEj7u20i9xoY6K+kBbQu2MuHjPYU5tiRza+Eo4M7dLf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=GtRNiehU; arc=none smtp.client-ip=91.218.175.186
+	 Content-Type:Content-Disposition:In-Reply-To; b=PglOqQbzwGJHtun3UyJ8IGGAkrM7Cg//11Njz8cMjLL/2iijItDe4XM61FZyDKMB7Uad6KMsFJCArunE2KUwRbWvpHQxhLvf06xCDCT80nwz5lOSsz+vhdRpRka6O8jZtu6x2djGTPjvYmfamdxMHr5WKmELlIS0NycdGQQdxJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=aB0A6hzI; arc=none smtp.client-ip=95.215.58.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="GtRNiehU"
-Date: Mon, 10 Aug 2026 10:51:20 +0300
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="aB0A6hzI"
+Date: Mon, 10 Aug 2026 10:51:38 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786348287; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	t=1786348347; h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=66/LoDmpfjuUWZ79fRWL5OkXp6BR5h7G++jOjO3VNSc=;
-	b=GtRNiehUfIfSFVtwkqMQgRuicCnVJexua5wGe/oJYfZDAf/gBUoyiZPg+F0vD3tIB+yOPs
-	8t9Q9xwIEZWMCo1lOuoDZM+Kd2kUKvQasYOvT4x6OwcVp4WV7f+a7lya1DW4KR6QZAve4c
-	mBXQigb/B7h+xJSVs8kMaJubK983Fow=
+	bh=7Wj0jGHBOpOwOerk9TCXZGOWhMSAGjptDHTiW1Id/wo=;
+	b=aB0A6hzIRD5WJ5ZiV1Syoq6g0ZTRt1k01IzIaMJmQAfjBRYsFZon9hUJsSEzU+DK6M5cd7
+	oPJdoKHPVb3XpVkYGA2Ity3xnjmchAXgwFHzdsfq7HeF7NGz6Ifqv+NMmfCmZJ1NqCHh0J
+	91pLiyXEQwFLTi1Dv7ubEgdjiaN16GE=
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
@@ -39,9 +39,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
 	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
-Subject: [PATCH 04/12] iio: adc: rohm-bd79124: Catch regmap errors at
- measurement start/stop
-Message-ID: <fc198eaf83319548317611ee128e78a542567156.1786347811.git.mazziesaccount@gmail.com>
+Subject: [PATCH 05/12] iio: dac: rohm-bd79703: Do not allow writing SCALE
+Message-ID: <bf75f4bb0d3d620e5c613c04cfc874767a51ff38.1786347811.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -51,83 +50,64 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="irqx7jSrmSqtRjA1"
+	protocol="application/pgp-signature"; boundary="1xA2rRkbj2vi5ica"
 Content-Disposition: inline
 In-Reply-To: <cover.1786347811.git.mazziesaccount@gmail.com>
 X-Migadu-Flow: FLOW_OUT
 
---irqx7jSrmSqtRjA1
+--1xA2rRkbj2vi5ica
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The bd79124_start_measurement() and bd79124_stop_measurement() ignore
-errors from the regmap reads, causing potential use of uninitialized
-stack variable when deciding whether the measurement is already
-started/stopped. The bd79124_stop_measurement() may also ignore failure
-to clear the sequencer state bits, which may make the hardware to ignore
-the setting and leave hardware and driver states out of sync.
+The BD79703 has adds IIO_CHAN_INFO_SCALE in the info_mask_shared_by_type
+so users can read the scale, which depends on the used reference
+voltage. This, however, enables users to try writing the scale as well.
+This isn't really supported but the bd79703_write_raw() does not check
+the mask, and if written scale values pass the validation, the driver
+will proceed writing the DAC value when users writes the scale.
 
-Check the return value and bail-out if error is detected.
+Prevent the unsupported scale setting and return an error.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Fixes: 3f57a3b9ab74 ("iio: adc: Support ROHM BD79124 ADC")
+Fixes: af6aca656a85 ("iio: dac: Support ROHM BD79703 DAC")
 ---
- drivers/iio/adc/rohm-bd79124.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/dac/rohm-bd79703.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/adc/rohm-bd79124.c b/drivers/iio/adc/rohm-bd79124.c
-index 84ac7fc94581..600354fe0ee0 100644
---- a/drivers/iio/adc/rohm-bd79124.c
-+++ b/drivers/iio/adc/rohm-bd79124.c
-@@ -382,6 +382,9 @@ static int bd79124_start_measurement(struct bd79124_dat=
-a *data, int chan)
+diff --git a/drivers/iio/dac/rohm-bd79703.c b/drivers/iio/dac/rohm-bd79703.c
+index e91090e4a66d..68e66e7286d8 100644
+--- a/drivers/iio/dac/rohm-bd79703.c
++++ b/drivers/iio/dac/rohm-bd79703.c
+@@ -73,6 +73,9 @@ static int bd79703_write_raw(struct iio_dev *idev,
+ {
+ 	struct bd79703_data *data =3D iio_priv(idev);
 =20
- 	/* See if already started */
- 	ret =3D regmap_read(data->map, BD79124_REG_AUTO_CHANNELS, &val);
-+	if (ret)
-+		return ret;
++	if (mask !=3D IIO_CHAN_INFO_RAW)
++		return -EINVAL;
 +
- 	if (val & BIT(chan))
- 		return 0;
+ 	if (val < 0 || val >=3D 1 << BD79703_DAC_BITS)
+ 		return -EINVAL;
 =20
-@@ -421,11 +424,16 @@ static int bd79124_stop_measurement(struct bd79124_da=
-ta *data, int chan)
-=20
- 	/* See if already stopped */
- 	ret =3D regmap_read(data->map, BD79124_REG_AUTO_CHANNELS, &enabled_chans);
-+	if (ret)
-+		return ret;
-+
- 	if (!(enabled_chans & BIT(chan)))
- 		return 0;
-=20
- 	ret =3D regmap_clear_bits(data->map, BD79124_REG_SEQ_CFG,
- 				BD79124_MSK_SEQ_START);
-+	if (ret)
-+		return ret;
-=20
- 	/* Clear the channel from the measured channels */
- 	enabled_chans &=3D ~BIT(chan);
 --=20
 2.55.0
 
 
---irqx7jSrmSqtRjA1
+--1xA2rRkbj2vi5ica
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gvgACgkQeFA3/03a
-ocXj9wgAsMAFnfVAOeOdsfa0tfIZGO/qSJXyFP6ibIqvktIBFvXpYla2serHEM7O
-vovXSSiycWTWhgD7WodTONbFi2a9z3J841z9DTfdxCTr26lyh1ku8nCHPjiOzXAA
-qhH5eS2sxoB8sUm2b+AFW/nqbLlhMwmad8TjKQE+0+4gjAD64WCfO1mvvs/4TEvU
-dKEoemAJZVJle4uWC49MFOvXolRh4eeSO2145WsgSFjmRxeYTgOzUQNo2Ghb3H/H
-4Nk25OCaGY+y3PUI2plH4h1p1LDorVU81XdE182aAMZGRf9M+wVMxbEPaqQkpMOb
-N9THE5BgCTWVJRgQ/qRDOz8C/W0hfw==
-=esq7
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmp5gwoACgkQeFA3/03a
+ocWYgwgAmdeguctzgeUh4DXpbnRsx4/scOnBDEh9zAV38f4dcSUk5OWLocamRAO/
+BLzXtJ48H1Ng+/+CM3xtQGyIqOWCN5vmUzasJhYGwuQBhzNea2BHw0OjZGbi+0Hr
+toNqBgBbwSKLHOm8TgiuVYRfdPbOfHHbhwqsbQlPg6u7lsVFF2LE0qSRXCGbC2Bg
+73GOVypBsOWnQ7YpkuZtDL5kTDk12ybGdeG5VA+PvUTe7ichK80I3nSUfUoadQdD
+xLyRAFb1wI2EJVIdPK3/rxKhR1Tj3tjG07rG2+blaclsipnHO6pOvfNiPGtvozoH
+py1K+MlQcKgtiCI4nAJ1Sn6nxn/jVQ==
+=4IUX
 -----END PGP SIGNATURE-----
 
---irqx7jSrmSqtRjA1--
+--1xA2rRkbj2vi5ica--
