@@ -1,49 +1,49 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DFA5312825;
-	Tue, 11 Aug 2026 05:40:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1011137B41F;
+	Tue, 11 Aug 2026 05:42:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786426852; cv=none; b=bI7+ZTcZ4CVrAHqHpbuaBMxtrv0XfboPm6AKEqGrP777F2rFYhMAzdg41cCYnPP0VtF4D+qQfwEPBti9pjD12fsqofRrF+j4tdwLUeJIIPvDg78Dv1TQK5PG8w4pQvDQZ14MQsreCrxwjN95dk7WGN9HhnDOhJxmmW9/9ftRX9A=
+	t=1786426969; cv=none; b=AjMMhb0ZK8D2v/R1la9ehnuawgnl46UbTBoDkYbA7kjbf6H8A+k+Yu5XZsGa8qAaBa4ElKCdrhxw83uk93dJQI1HE2Xyxm9hZirRmjZIQHbrDVYrRYt00yJQjkNTapTfOPdnqEgTP0z/0mFdlVZJlLswtarxqhvkSPqbbuZ9H7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786426852; c=relaxed/simple;
-	bh=tHsoL52w1GHQ9mRSzluEJw0tU8h8Rh+KBSfo1zMYViU=;
+	s=arc-20240116; t=1786426969; c=relaxed/simple;
+	bh=jBdDr5+zYESwQ6ezlgAcxddFBKF7TxDe8OsvLUhsx70=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uzVkrxXIokHzQ9JdYHZ/AX1Kod+m24EC92qPLnarxj8X7SXmk1SilWWhF7LOccW3kDuHEa/VgZqwBR3piNU3fgo9vURCTCvwFimT+9ZZRYNqCZiH2Dz+rnfkcEjGkHEtTU7a4NjW/l2WtiwSkNyWDsSI15k181v5aoKGll3hxyQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HWcUgHj8; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=jVuPBgaCzCMKKwkcGkNt/upUCESanWkDjbSOF3tHlESsWRedD0SofRiTeR9amSHQ7GHTxSowRE91f+hxs7hCXZUk53W8tJKo2c4MwjyB/kpE27JVx8FPWPq+UKdaLIET6FdW9PfmKcEfUL6P2kAV15MWgemNEEV+GQrJGVy/GH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P4z3gDD1; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HWcUgHj8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P4z3gDD1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786426851; x=1817962851;
+  t=1786426968; x=1817962968;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=tHsoL52w1GHQ9mRSzluEJw0tU8h8Rh+KBSfo1zMYViU=;
-  b=HWcUgHj8Y/FrqiIZaV224PJBJgEDqbiqJ/gXfmXAUhKvVgHmAQ6n7G33
-   Z9wbesSooem85u5+0UF6vrbM+dWLJaS8kQyclS9mZh5Zq0d9MweBvSgDt
-   0Yq9gkcxQPJLNSGSdLKEdeGFalD8LPnk1mp0vY0b5h5WwriBc581HI6rW
-   M0X9g47HBlYZkf7CvVURkdoXEWwajCbKy477f7ZoUQ3FWRN4bsdGZZIYq
-   g1QkSBeCFKv4KOY63GOibNmvDrznkkgJnShIF2DRCMQPfTCHspAuuQimx
-   Sr/daO1YI/5Qo+j07XUsIeu/AMxkO0nlHGnhfxpgSl0A+3kAzEBFFNOtK
-   w==;
-X-CSE-ConnectionGUID: WNFFBkhnRnacqJewNCmJjg==
-X-CSE-MsgGUID: RWWHlJJhQqGANxGnPvygWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86071614"
+  bh=jBdDr5+zYESwQ6ezlgAcxddFBKF7TxDe8OsvLUhsx70=;
+  b=P4z3gDD1p8k9NuZAe1vDknjsbb5T6dUkEgi3G81I3cEbujiBoZF9LnXt
+   hwwW5NkHfSkQV2I51TtbjZ66gUtfPVbRDjNYCv1M7dTc5tST7GtQx6A/5
+   rcX7iHc3YgwWMgO+Wi0gNU5N1gAjX7Uhm+47an12Yn4n9J8aMC4AZNcQo
+   XDq8c9I2uo5TEUobDZfRJ79obh/G8gEvtzsSb4La7bjkojg4mR6M8zvo8
+   YFo1jbFIi1kNFcM75lvBpNy4k8VZLGQPfY0j8P3k7YjUiZPN/UY7OEqM1
+   PtVIVO/JTu3t3srEwUeh6gcsZc5o1M8L+tuL6xTeIYVYQNxRhy6UF4QJ7
+   g==;
+X-CSE-ConnectionGUID: Pn1OUvR9REqVnKYp+K3nSA==
+X-CSE-MsgGUID: EypBtwYFTceyzCaA1soXaw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86071740"
 X-IronPort-AV: E=Sophos;i="6.25,217,1779174000"; 
-   d="scan'208";a="86071614"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 22:40:50 -0700
-X-CSE-ConnectionGUID: ESKiThMSRSmAznu4+Keepg==
-X-CSE-MsgGUID: AbjZtyeTRLiJ3yCf+blZyg==
+   d="scan'208";a="86071740"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 22:42:47 -0700
+X-CSE-ConnectionGUID: I2CqqCRPRi+MAH0BoEgeSw==
+X-CSE-MsgGUID: zlXKvOq2QtKZ+fK9e2EAvw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,217,1779174000"; 
-   d="scan'208";a="257016188"
+   d="scan'208";a="266731101"
 Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 22:40:46 -0700
-Date: Tue, 11 Aug 2026 08:40:44 +0300
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 22:42:45 -0700
+Date: Tue, 11 Aug 2026 08:42:42 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -54,12 +54,13 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/4] iio: light: add support for veml6031x00 ALS series
-Message-ID: <anq13MUjEkayDnQn@ashevche-desk.local>
+Subject: Re: [PATCH v5 4/4] iio: light: veml6031x00: add support for events
+ and trigger
+Message-ID: <anq2Uo8We1Lgao89@ashevche-desk.local>
 References: <20260807-veml6031x00-v5-0-e60876fb3640@gmail.com>
- <20260807-veml6031x00-v5-2-e60876fb3640@gmail.com>
- <annUbQQn2TzzuFNC@ashevche-desk.local>
- <DKLN31OCJZ98.3JFEAVU1AM0F9@gmail.com>
+ <20260807-veml6031x00-v5-4-e60876fb3640@gmail.com>
+ <annvIc7WLeWEDCAC@ashevche-desk.local>
+ <DKLN56PMUK93.20VF8V664A37X@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,57 +69,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DKLN31OCJZ98.3JFEAVU1AM0F9@gmail.com>
+In-Reply-To: <DKLN56PMUK93.20VF8V664A37X@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Aug 11, 2026 at 01:06:42AM +0200, Javier Carrasco wrote:
-> On Mon Aug 10, 2026 at 3:38 PM CEST, Andy Shevchenko wrote:
-> > On Fri, Aug 07, 2026 at 03:51:53PM +0200, Javier Carrasco wrote:
+On Tue, Aug 11, 2026 at 01:09:29AM +0200, Javier Carrasco wrote:
+> On Mon Aug 10, 2026 at 5:32 PM CEST, Andy Shevchenko wrote:
+> > On Fri, Aug 07, 2026 at 03:51:55PM +0200, Javier Carrasco wrote:
 
 ...
 
-> > + array_size.h // ARRAY_SIZE()
+> >> +static int veml6031x00_set_interrupt(struct veml6031x00_data *data, bool state)
+> >> +	__must_hold(&data->irq_lock)
 > >
-> >> +#include <linux/bitfield.h>
-> >
-> > Is this in use?
+> > The sparse annotations is fine, but lockdep one is even better.
 > 
-> This one is in use for FIELD_PREP()
+> I have seen a few instances in a number of subsystems where both are used
+> at the same time. What is the preferred alternative here?
 
-Ah, I missed that.
-
-> > + bits.h // BIT()
-> >
-> >> +#include <linux/cleanup.h>
-> >> +#include <linux/delay.h>
-> >
-> >> +#include <linux/device.h>
-> >
-> > Oh, the whole headers hell is loaded just due to dev_get_drvdata() it seems...
-> 
-> I will rely on <linux/i2c.h> instead, which is also what I am going to do
-> to get rid of <linux/mod_devicetable.h> as Uwe suggested.
-
-Sure, but device.h is still required as you use it.
-
-> >> +#include <linux/err.h>
-> >> +#include <linux/i2c.h>
-> >> +#include <linux/limits.h>
-> >
-> > I missed probably it, but is it used?
-> 
-> This one is used for U16_MAX.
-
-Good!
-
-> >> +#include <linux/module.h>
-> >> +#include <linux/mod_devicetable.h>
-> >> +#include <linux/mutex.h>
-> >
-> >> +#include <linux/pm.h>
-> 
-> The rest of your comments need no reply from my side.
+Both. lockdep is a runtime check, sparse one is a build-time.
 
 -- 
 With Best Regards,
