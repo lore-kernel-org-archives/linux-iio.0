@@ -1,85 +1,129 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F86439326
-	for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2026 10:32:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05DB8439326;
+	Tue, 11 Aug 2026 10:33:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786444371; cv=none; b=GZUdEUHpkv0i1thkGrCq8NCjaDt7/vAs0TASwtxfwrgeeq9vH9vrr7D5gVWMWPjpQVOtB0yB3ZkLf0foKBsStksrsxuFVXaGWQltuPd/FP8RZdYcCTpMAgPzHIx81SmLoqBCBx7xzJK1ZNTpsUx36MyJOzNyehK5w/COrpvYM8M=
+	t=1786444397; cv=none; b=TKbGadz3PoTmUpCLda3f6LukQZ3gKm6aaSX17Fclw38nO+hlH1eUZq0aBo9zmkY+ESQEdvOIDNh0RJVogiLuEwMjbHELGAZdRKQxDoGlBie1v9pV1ASw2SlgO8ffZNhKTU6sGhlc1miorg1mzGoQU9WuPIA4mF0CMg6YzLOAaOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786444371; c=relaxed/simple;
-	bh=Y/f3n6dJdsDPq1RRCKCpytHX7WF6MTuDyevdb/9tIlA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SU/5uBt53U+kGV3TsLtOpIhHIJIkPn8zpQ1ah7JrJ4kAA+rfOa6WotfCVih2G8oMypsKZSBM1BbH0nvKkaSTrcfS2NboIPJDwJGdO2ex3sVVGTOHdg6wAsTV+2x+j4Il3rxvUGNvRM5ntJWcg4MrDO3sLg44ZReMhRG9KQEuQ6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gEDk70Z/; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gEDk70Z/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786444370; x=1817980370;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Y/f3n6dJdsDPq1RRCKCpytHX7WF6MTuDyevdb/9tIlA=;
-  b=gEDk70Z/eMQLt2bJSyjMosMH//BtVhmKMnwO4ULm3e9BQtKNFgzIDrTg
-   YsiwaPr/BMk4anjArqanxVoMuqWKjewH0fJetE8I9xuIzndkTn1auJiOS
-   eTCkFZZQhHevoNRB+w7Q3ntq0TjZneT+XhruHTjPMuOlyH41P/VwwHSRQ
-   v17SocyCE5hmKT86tQN76bYC+yKFmT71KeSh6Sp6mYzSoyvYLalabBWdu
-   p6Ej8ZPufj2SfW11OLbN+4UgrY2SGf0FfQdBvZKGapZ4XXT7zWj0RJwJ0
-   ktKshFSTvc5+7CewElhe2hgO0i9bFIetU0AAnPYH031Pq+cMK8+Uikze8
-   g==;
-X-CSE-ConnectionGUID: LoEk901NT76NIqBQbO4K+Q==
-X-CSE-MsgGUID: Z5H7NzN0TJm+X0OeqkqU5g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86849559"
-X-IronPort-AV: E=Sophos;i="6.25,217,1779174000"; 
-   d="scan'208";a="86849559"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2026 03:32:49 -0700
-X-CSE-ConnectionGUID: Zk4GOm8qQNet/DKckvXY/A==
-X-CSE-MsgGUID: j3i2BEq2TZeBd7JDtdfPjg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,217,1779174000"; 
-   d="scan'208";a="261989911"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2026 03:32:47 -0700
-Date: Tue, 11 Aug 2026 13:32:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
+	s=arc-20240116; t=1786444397; c=relaxed/simple;
+	bh=buDv8ZCFgWuf9fSEGu3/jTGw0zCrXlgKpBDMeMAXj0o=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=V3iu4U4d00QNjvOYfLDCRsImE91I00oMigdVokZmGzp1IKJqv3WHy99OkvCgxyvOkMzKYBA1lNsojcwr9l7UEfcFfAnh9rDAFJx8vwb6bGbKAZLzxEgt2toQjFh26egUHq3NgKK/fBV1f6U7ETSaGt2P32UzdcCpZVsR1hBanT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 0b1e192e957011f1aa26b74ffac11d73-20260811
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:bad7504b-a754-49e4-a224-02d6d69ec2a5,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:20
+X-CID-META: VersionHash:e7bac3a,CLOUDID:375a992fb3f914f030151f60ce3935c2,BulkI
+	D:nil,BulkQuantity:0,Recheck:0,SF:81|82|102|136|850|865|898,TC:nil,Content
+	:0|15|50,EDM:5|-100,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,C
+	OL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 0b1e192e957011f1aa26b74ffac11d73-20260811
+X-User: lilinmao@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 358882809; Tue, 11 Aug 2026 18:33:08 +0800
+From: Linmao Li <lilinmao@kylinos.cn>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Jinseob Kim <kimjinseob88@gmail.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Sanjay Chitroda <sanjayembeddedse@gmail.com>,
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Chris Morgan <macromorgan@hotmail.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, sashiko-bot@kernel.org,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [PATCH v2] iio: buffer: Ensure bounce buffer used for unaligned
- case is zeroed.
-Message-ID: <anr6TMSfdmjQk3Oa@ashevche-desk.local>
-References: <20260803012224.219493-1-jic23@kernel.org>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Linmao Li <lilinmao@kylinos.cn>
+Subject: [PATCH togreg v3 1/2] iio: imu: inv_icm42607: propagate runtime suspend errors
+Date: Tue, 11 Aug 2026 18:33:00 +0800
+Message-Id: <20260811103301.1157404-2-lilinmao@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20260811103301.1157404-1-lilinmao@kylinos.cn>
+References: <20260811020345.950137-1-lilinmao@kylinos.cn>
+ <20260811103301.1157404-1-lilinmao@kylinos.cn>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260803012224.219493-1-jic23@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 03, 2026 at 02:22:24AM +0100, Jonathan Cameron wrote:
+The runtime suspend callback always returns success even when updating
+PWR_MGMT0 fails. The PM core can then mark the device suspended while one
+or both sensors remain enabled.
 
-> iio_push_to_buffers_with_ts_unaligned() leaks uninitialized heap memory
-> to userspace if the data passed in is not a multiple of 8 bytes and the
-> timestamp is enabled. Specify __GFP_ZERO for the devm_krealloc()
-> to ensure any extra space is cleared.
+The sibling ICM-42600 driver propagates the corresponding
+inv_icm42600_set_pwr_mgmt0() failure from its runtime suspend callback.
+Make ICM-42607 follow the same behavior by returning the sensor shutdown
+error. Keep a void wrapper for the managed teardown action, where errors
+can only be logged.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Fixes: 3007c1530f96 ("iio: imu: inv_icm42607: Add PM support for icm42607")
+Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+---
+Unchanged since v1.
 
+ drivers/iio/imu/inv_icm42607/inv_icm42607_core.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+index 190e998f7b8ef..0da362967f63b 100644
+--- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
++++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+@@ -537,9 +537,8 @@ static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
+ 	return 0;
+ }
+ 
+-static void inv_icm42607_sensors_off(void *_data)
++static int inv_icm42607_sensors_off(struct inv_icm42607_state *st)
+ {
+-	struct inv_icm42607_state *st = _data;
+ 	const struct device *dev = regmap_get_device(st->map);
+ 	int ret;
+ 
+@@ -552,6 +551,13 @@ static void inv_icm42607_sensors_off(void *_data)
+ 					 st->conf.accel.mode);
+ 	if (ret)
+ 		dev_err(dev, "Unable to turn off sensors\n");
++
++	return ret;
++}
++
++static void inv_icm42607_sensors_off_action(void *data)
++{
++	inv_icm42607_sensors_off(data);
+ }
+ 
+ static void inv_icm42607_disable_vddio_reg(void *_data)
+@@ -619,7 +625,7 @@ int inv_icm42607_core_probe(struct regmap *regmap,
+ 	 * Ensure if sensors get turned on at some point, they're turned off
+ 	 * as part of teardown.
+ 	 */
+-	ret = devm_add_action_or_reset(dev, inv_icm42607_sensors_off, st);
++	ret = devm_add_action_or_reset(dev, inv_icm42607_sensors_off_action, st);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -688,8 +694,7 @@ static int inv_icm42607_runtime_suspend(struct device *dev)
+ 	 * however the tradeoff is that an unused sensor won't be
+ 	 * turned off until the entire chip is no longer in use.
+ 	 */
+-	inv_icm42607_sensors_off(st);
+-	return 0;
++	return inv_icm42607_sensors_off(st);
+ }
+ 
+ EXPORT_NS_GPL_DEV_PM_OPS(inv_icm42607_pm_ops, IIO_ICM42607) = {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
