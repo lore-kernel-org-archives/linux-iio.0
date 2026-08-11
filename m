@@ -1,137 +1,215 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E73333AE6E5
-	for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2026 02:45:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07AB63909A9
+	for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2026 02:45:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786416331; cv=none; b=s2WGSYFpbPo9ebjGuIrJQA2QkU/a+eaElSGss4X3QAmuf2SBzxf2pG9C6q5dqEVp84QdlSQFYYOTdaafVzn3C9TeyFKnxNP4/LcUg+fZrlBYPm9eJlfUDNFnFUK5SKNsWK99+cYP+16TgzYmzehA2JfPSUZxkTx1cbNncBTrqNU=
+	t=1786416355; cv=none; b=HzRSR6p49WAYijZaXztNgJzHzoiBw0r0Hk6uZ3F1DZ7krZLdcaIZgGqtfj6NC+SYFeR0+I/8eX91eLVgA56K7xvTP21qAs1PL8vgOLGRl41YSOZyfljdogNOp+q9+LnmziXdlbaycdFjQP96uoeI7iQv/fwsPCsgpirp8lzN1HE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786416331; c=relaxed/simple;
-	bh=lX4DHJLmOFL2hJOsNkjbJDJK9Gej8ssxYmi+Jgr4XxA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ab9jX8ER5AqY6OIxCD4SwCX9c8DBEsSBTPrADAgklDyrs39sjsBwFBcaO0AGMK29LZaz34V+ZBwKK0b6elpDVlePSxFpr4AHnkPWi43/KvSt+/rKYEelJUOR8yZ5pnlK3FEK7WB8t5mHDzWAdnyJudYHxOtTolE5RFWteFff3oI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o6CB5ann; arc=none smtp.client-ip=209.85.215.178
+	s=arc-20240116; t=1786416355; c=relaxed/simple;
+	bh=qEgnNcLKJmWlemOeo7Gu/L7XvUWNb3FhcVm44FpVdUI=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=PWckQ+bmRi7VcPGa7kySChdAYN9ZiYoroVDGJvP//CVFQ+RDdV8ODB+Y85WMMMloXg3ugNjqSkf/rBtQZTZfS1YfcD9PsLVjsul62KwhjXMfasUFs5zj0NqshbIU42t+r7O1JsVE+Yi7UIsCqKj++A4mH29EB3/ZjAUCShLDf+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mkiMpbSp; arc=none smtp.client-ip=209.85.214.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o6CB5ann"
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-cbe827e3cb4so2790537a12.3
-        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 19:45:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mkiMpbSp"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2cf6d65d8a7so37124455ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 10 Aug 2026 19:45:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786416321; x=1787021121; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=LhWDK5hddMROTflmtcNenCZqcdR+LSNsUsjL3zUAaNE=;
-        b=o6CB5annWGCwgRV9gWqqHffxj8MtdMbCqK7ZywDheOG3P2hx46ms+xH14eP1D5KkwC
-         TppXWbVHowRnzUO5Y5VSeBdhfFFPoBq8varq+vAgzqsFFZuN/cmvuW6kMAJL1s4Xu5Uz
-         jRSz1JeOZeDhHeh8MxGCevor6J0KhWhlg1jCIUfqrkh2260I0g7d1BuYyTYt2Idw1Cct
-         HRxnXSXPsy1qXq4S8c1l4ZxZEn1M7+4k1V9i1N1IQ+gwWPHw7IO5onQTdEfOcM8SYBtf
-         /uSbFDlrQYesX/ygYvczqMzN6VsNyCtH1RACHRdliGHgMDQCOIkXgQjlGtZtU0QjzB1g
-         qOrQ==
+        d=gmail.com; s=20251104; t=1786416344; x=1787021144; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=M0PfwjUI9qKqRqJ2vcNYME7gxL5hCvSOx/yJCbrbL3U=;
+        b=mkiMpbSpEGi6rZH89BRwsQgVplU65YMcX8TEe5s5PEpeLbeRZXfVTksKZ2Gl/bFgBa
+         hnrgGrgIPNgFU1yRHNoUiR4CVXTG+1sHO7iafzqOirv7ODybVi54Z2yEBz5tXHHrCV6u
+         Y05Ej65JaWD7uJ6BAyp9kIho5ABLR27r+f3kIW2Hv/iYpTGL9LB78mPs7vD3DXOyrH0h
+         dQ/njyPJ19O2E8jnYXo+uIXclz/v57FTigwneuVDp6fM8TiWZTz90QutO5YE4imlav3a
+         w49mmlQuO77MbZ+EsaQzElxEF2/pfJBWz7JEVsFw84S6TvmiknJn6UV6wAGfzj/Er92J
+         zu4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786416321; x=1787021121;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LhWDK5hddMROTflmtcNenCZqcdR+LSNsUsjL3zUAaNE=;
-        b=UZE/mZX+/tj/vwXy1bk7/TVqw488ksJ14iDlSUPci3vI+U+De9lff+rCqe0vD+sQx8
-         K5LUT0G+pSf2CMw+s6CcMe6o+RZ5sHyDJs01lNAyMQ0dS8DrJi5DG+WBdyk0IT/0bqrp
-         /ZK/PwSIgF/d95HAVe+er1DrxHq3FuW/RwMSepQtQVSC2Kqbs4UJhhbwdP2VQ3LE13vD
-         CwYIBFab9k7XV/oxf7oAYDQJSnWgkLzese4J6hlsXhyYGP5QOinJ7Xt9uuWC9LbEyrAo
-         6qavsLFhwTJrYwFaJY5ngjDLleGeIAn8TMe2s2kK9IrHEz/rQxydDQ7v2+nm4EHDP8TS
-         4LoA==
-X-Forwarded-Encrypted: i=1; AHgh+RqheRbRZmVl1/DH422vgH+DuWW8GVbAwoOsChmVDgmU4uGUM1urgr4GfQ171iIs6GyaWGcqGUGZF9c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzMCoWSV+pGX1qcrHoQ15hZ0z4+KFy9NSM60EQv7sXjUU3h6LXM
-	YgvfEAs5FTXUoMje0pXpz8ZKrseArqq+80FkdCTSssG57h7fE0jmDwqrPwOAhMTI
-X-Gm-Gg: AR+sD12AOOEIErrhv2ztwLRca1tX+pz/usW+w7dhgA0WgQiX+6UYx68PywHSP5teo3+
-	ERaApd+5g1tJuaZCovJWVsvAN1VSPi4onETgzugoRHQ7F7P8XgKROacPG8Bh96D5MPJG2WChN0h
-	RoDoeIH2xxkT2ROYl3aRpaB21wxDnbDnVnoRW7uYZrk21pM090G7YEZo35SMWfSP1wWkK+Wo53z
-	bsbGwEwf+GP5B66EI7hoXx/qY0ZwHKoaatDbChiednYB/mtRTTkCgM5uCXMHqiKWrRf0vFCu6ew
-	uOohfVcR7mcKIQ8sZ6Q5PELdOirRdVkrTLhOfobljNatCADDLba4AZiiuRWQD8TtSdM++FskodZ
-	IMS9i4eHvpP0g0c25Oi0170bdisB1o7zUp7LLWe6wJe1XDiDEygqKRPm8EPbhN0MusI9wmyIMXR
-	CCwHel+0wnvReOYshw2KapXJF9tKQ93xC9p+TBeLirdlPFJdpt0ojVQduRSl+iggdC0TQ5U//BF
-	H8kypDT
-X-Received: by 2002:a05:6a21:1fc5:b0:398:8870:b58f with SMTP id adf61e73a8af0-3cc2b872b58mr522952637.14.1786416320953;
-        Mon, 10 Aug 2026 19:45:20 -0700 (PDT)
-Received: from localhost ([2804:30c:4018:dc00:8be4:f5b8:4af1:4728])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1412035e08dsm151216c88.1.2026.08.10.19.45.19
+        d=1e100.net; s=20251104; t=1786416344; x=1787021144;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=M0PfwjUI9qKqRqJ2vcNYME7gxL5hCvSOx/yJCbrbL3U=;
+        b=P9OPFlzlw/p0dKGJcSbWTQbp1CSioH3BoTXP0bvgZLrZunQtcRhS5v9y4JGrHb9IRo
+         yxEgprQFAKUZFJvlJzyAS2NuxWeji58Ys1QEcmzjeb/Vjz/guiS14yh7RDa7IP7vk4Df
+         RNRL6H7Zt4yNevWqPcQRsWT8gglkZXITLIFnLrGsUi9FclTQgG3EbuF4JBsKo2WlUt6e
+         qyoQpK2NmgokaKTuUlPMov+bTCNneFQyj5IuXSeLps0leu62A0V8r/5YlTS+kwghLFw6
+         yXNbkZ4XozKvv0YwoVWo/FiFnLp8a+yliyy9ZQIYV6WMyL0aJF1XTr66cMCt51KJ7wpn
+         yZeg==
+X-Gm-Message-State: AOJu0YwxiA+Bke6utTKtgCy76FHkVdKcQ65xgI4XcuLVV/RQ54jYmKUC
+	qsqluLOwhSW9gaN43elTJ252eJP9oFrmsCzQt6zYaeShzK0CvZpzr8+a
+X-Gm-Gg: AR+sD11ytrkTzlj2rTFCC7n69RJMtNdShe3qLW7NhNwREUrBEsShPRE/NrIFZ5VJP0o
+	W4mvznU/s4p5BQftfL14xN1JDRADqiy9oVRI54KNwtcgavZ9+6zSPubPUg7EiepU/R+8jrBXvSm
+	fCQ2OpTVDVb2tMhZt8XtXB4hnXdsBgWtnoKngK0hB2zWh9maIFkxmKm4rtAUHU+QH6NF104WlBO
+	tW8KQl4DppxCf8d3QRB3bPUtGV15o0IRr5H9mLlctefBvHNjwiIDMoD7HOSAxImYTC8G7CQjjIW
+	wlFXjfiTLnuHkbHsi6Pw0wEhSA2nyJdfbwtEG0bP+Wy127kotz0iwI0Eb9/zM27WJ589jeB2rT4
+	rsexw8Qs5L/RnSzwb81JbdtY31qllD5fN2KOMsAClCxIzDYTiJYvXV8UJPpwacWq9F5S1ChySKS
+	WczvZDeU/mEtHLdFBCeWDcW6c2pmuS+gFJVwlcS0bhuUoeFJs/tBMgNf4L8Ssdk2Ntg0WbyJVqa
+	s0ytySoDg3sjh/tegViggks6w1OIXF3ZJlcpKs=
+X-Received: by 2002:a17:902:f54d:b0:2ca:4f33:e86f with SMTP id d9443c01a7336-2d3178cc3bdmr2446725ad.12.1786416343941;
+        Mon, 10 Aug 2026 19:45:43 -0700 (PDT)
+Received: from [127.0.1.1] (61-220-246-151.hinet-ip.hinet.net. [61.220.246.151])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d31623091dsm470185ad.77.2026.08.10.19.45.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2026 19:45:20 -0700 (PDT)
-Date: Mon, 10 Aug 2026 23:45:55 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
-	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, julianbraha@gmail.com
-Subject: Re: [PATCH v9 5/6] iio: adc: ltc2378: Add support for LTC2338-18
-Message-ID: <anqM43NvcVhhkkWI@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1785186980.git.marcelo.schmitt@analog.com>
- <39f2ff86cf736ff97286d6451fcc45fdba6732f9.1785186980.git.marcelo.schmitt@analog.com>
- <anl_v428aTL6waBK@ashevche-desk.local>
+        Mon, 10 Aug 2026 19:45:43 -0700 (PDT)
+From: Kyle Hsieh <kylehsieh1995@gmail.com>
+Subject: [PATCH v4 0/2] iio: adc: Add support for Texas Instruments
+ ADS112C04
+Date: Tue, 11 Aug 2026 10:48:36 +0800
+Message-Id: <20260811-ti-ads112c04-driver-v4-0-ae704ac17241@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <anl_v428aTL6waBK@ashevche-desk.local>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAISNemoC/23OSwqDMBCA4atI1k3JSxO76j1KFzGOOlC1JBJax
+ Ls3CqUPXP4D883MJIBHCOSUzcRDxIDjkEIdMuI6O7RAsU5NBBMF00LRCamtA+fCMUVrjxE8rUC
+ DKZnSRiqSNu8eGnxs6uWausMwjf65HYl8nb49s+tFThlVOocGFIhKm3PbW7wd3diT1Yviy5B83
+ xDJsLZivDBOOsb/DfkxDMv3Dbn+UTZKFkaU8Gssy/IC7UCtTD4BAAA=
+X-Change-ID: 20260724-ti-ads112c04-driver-be7e89047834
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
+ Mark Brown <broonie@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Kyle Hsieh <kylehsieh1995@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5802;
+ i=kylehsieh1995@gmail.com; h=from:subject:message-id;
+ bh=qEgnNcLKJmWlemOeo7Gu/L7XvUWNb3FhcVm44FpVdUI=;
+ b=owEBbQGS/pANAwAKAaWDQrcJVsSBAcsmYgBqeo2HD9Q944NI6Gzhzxe7eO1mgI0goNCgv+Ncr
+ uPZ4GCTvbuJATMEAAEKAB0WIQTJHsaNZOdY+THGqJelg0K3CVbEgQUCanqNhwAKCRClg0K3CVbE
+ gU0AB/9a9NAnVZOC1ElR6tycjvYbByV9v1BLfydQ2As8jIbz/1YfMcF6ehzUQ3pU+PSa6qIoXuA
+ HBohRLlUWB6MSigCDAINuR20H8AjBmGhzGyiLyBI4YENa+j1oMjc0U5nJge6kq70Huo2jLxmt3J
+ ghjev0hjBUDN1T1y9lCc3Oay8C14oqrujUYPX7FgezJh5vyCYItPJMupA6J/jcLuBPoHEESSTkm
+ 2hgPfAg5gYiNMpBJco7sba+tq6jg/iP7/yuGf9XYlUiz3EvBnF/fZoakw/ggmJr3lWULV7iMH4z
+ SMLf90XJbq1wrhoxuv84bGbRQyikoA7boTRiE58erVedrdFN
+X-Developer-Key: i=kylehsieh1995@gmail.com; a=openpgp;
+ fpr=C91EC68D64E758F931C6A897A58342B70956C481
 
-Hi Andy,
+This patch series introduces support for the Texas Instruments ADS112C04
+Analog-to-Digital Converters.
 
-On 08/10, Andy Shevchenko wrote:
-> On Mon, Jul 27, 2026 at 06:31:58PM -0300, Marcelo Schmitt wrote:
-> > LTC2338-18 is similar to LTC2378-18, differentiating from the already
-> > supported part mainly on the embedment of an internal voltage reference and
-> > addition of a resistor divider network connected to the input signal path.
-> > Extend the device driver, handling the internal reference and input signal
-> > attenuation, enabling it to also support LTC2338-18.
-> 
-> ...
-> 
-> > +static int ltc2378_refin_setup(struct device *dev, struct ltc2378_state *st)
-> > +{
-> > +	int ret;
-> > +
-> > +	/*
-> > +	 * The internal reference buffer amplifies both the internal reference
-> > +	 * and REFIN by a factor of 2.
-> > +	 */
-> > +	ret = devm_regulator_get_enable_read_voltage(dev, "refin");
-> > +	if (ret == -ENODEV) { /* refin is optional */
-> > +		st->ref_uV = st->info->internal_ref_uV * 2;
-> > +		return 0;
-> > +	}
-> > +
-> > +	if (ret < 0)
-> > +		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
-> > +
-> > +	st->ref_uV = ret * 2;
-> > +
-> > +	return 0;
-> 
-> I'm not sure about others' preferences, but I would do it as if-else-if and
-> remove dup return 0.
-> 
-> 	if (ret == -ENODEV) /* refin is optional */
-> 		st->ref_uV = st->info->internal_ref_uV * 2;
-> 	else if (ret < 0)
-> 		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
-> 	else
-> 		st->ref_uV = ret * 2;
-> 
-> 	return 0;
-> 
-> It also makes code shorter (in amount of LoC).
+The ADS112C04 (16-bit) is precision, low-power, delta-sigma ADCs with
+an I2C interface. They feature a flexible input multiplexer supporting
+single-ended and differential measurements, a programmable gain amplifier,
+and an internal voltage reference.
 
-This has already been applied to IIO testing. I do send another version of this
-specific patch if that's okay.
+Note: While this chip shares similarities with the ADS112C14 (currently 
+being upstreamed by David Lechner), the register maps and feature sets 
+are sufficiently different to warrant a separate driver. However, the
+DT bindings and channel parsing logic have been aligned with the
+ADS112C14 conventions.
 
-With Best Regards,
-Marcelo
+This initial submission provides a minimal feature set (single-shot 
+conversions and basic DRDY interrupt) covering current use cases.
+
+Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+---
+Changes in v4:
+- dt-bindings: iio: adc: ti,ads112c04:
+  - Fixed excitation-current-nanoamp to use single-entry list syntax
+    (items: - enum: [...]) instead of combining maxItems: 1 with a
+    mapping-style items, which failed dt_binding_check.
+  - Widened excitation-channels to maximum: 5 to account for IDAC1/
+    IDAC2 also being routable to REFP0/REFN0, and documented the
+    mapping, per David Lechner.
+  - Reduced excitation-current-nanoamp to a single entry, since the
+    two IDAC outputs share one current setting, per David Lechner.
+  - Changed burn-out-current-nanoamp to use `const: 10000`, per David
+    Lechner.
+  - Renamed reference-sources' internal enum value to "internal"
+    (dropped voltage suffix, since there is only one internal
+    reference), per David Lechner.
+
+- iio: adc: ti-ads112c04:
+  - Fixed word-read byte ordering by switching to
+    i2c_smbus_read_word_swapped(), addressing a big-endian data
+    corruption issue flagged by Sashiko AI review.
+  - Masked the DRDY interrupt in the hardirq handler
+    (disable_irq_nosync()) and re-enabled it once the conversion data
+    is read, to avoid an interrupt storm on level-triggered DRDY
+    configurations, without hardcoding the trigger type.
+  - Reworked reference-sources handling in parse_channels(): it is now
+    validated against the actually-selected refp-supply instead of
+    being unconditionally rejected, per David Lechner.
+  - Simplified regulator handling in probe() using
+    devm_regulator_get_enable_read_voltage(), dropping the now-unused
+    vref_reg field, per David Lechner.
+  - Corrected the commit message to no longer claim refn-supply
+    support, since it remains explicitly unsupported in probe().
+- Added a MAINTAINERS entry for the new binding and driver.
+- Link to v3: https://lore.kernel.org/r/20260805-ti-ads112c04-driver-v3-0-49f436829e01@gmail.com
+
+Changes in v3:
+- dt-bindings: iio: adc: ti,ads112c04:
+  - Resolved dt_binding_check errors by removing redundant $ref for
+    standard unit suffixes and fixing YAML array syntax.
+  - Added full hardware capability descriptions (excitation-channels,
+    excitation-current-nanoamp, burn-out-current-nanoamp,
+    reference-sources) as suggested by David Lechner.
+  - Restricted the reg maximum to 11 and updated the regex to
+    ^channel@[0-9a-b]$ to accurately reflect the 12 possible MUX
+    combinations.
+
+- iio: adc: ti-ads112c04:
+  - Transitioned all I2C read/write wrappers to use SMBus APIs
+    (i2c_smbus_read_byte_data, i2c_smbus_read_word_data, etc.) to
+    gracefully handle I2C errors, NACKs, and Repeated Starts, addressing
+    feedback from Joshua Crofts and Jonathan Cameron.
+  - Added forward compatibility checks in probe() and parse_channels()
+    using dev_err_probe() to return -EOPNOTSUPP for unimplemented DT
+    properties.
+  - Reverted devm_request_irq() flags to 0 to let the driver inherit the
+    trigger type strictly from the DT, per Jonathan Cameron's advice.
+  - Reduced the data wait timeout to 100ms, reflecting the chip's slowest
+    data rate of 20 SPS.
+  - Fixed #include alphabetical sorting, grouped <linux/iio/*> headers,
+    and added missing headers.
+  - Fixed variable declaration ordering (reverse xmas tree) and updated
+    variable naming to vref_mV (SI unit exception).
+  - Optimized GPIO reset logic using GPIOD_OUT_HIGH.
+- Link to v2: https://lore.kernel.org/r/20260731-ti-ads112c04-driver-v2-0-aab0168c3c01@gmail.com
+
+Changes in v2:
+- Replaced `vref-supply` with `refp-supply` and `refn-supply` to accurately reflect hardware.
+- Refactored the driver to dynamically parse channel configurations and routing from DT child nodes.
+- Modernized the driver using kernel macros.
+- Handled endianness elegantly.
+- Added hardware reset fallback logic.
+- Inherited IRQ trigger type from device tree instead of hardcoding.
+- Fixed a bug where the MUX software cache could desync from hardware if the I2C write failed.
+- Added strict return value checking for all I2C writes during probe.
+- Updated the `i2c_device_id` array to use C99 named initializers.
+- Link to v1: https://lore.kernel.org/r/20260728-ti-ads112c04-driver-v1-0-475efe4e2b78@gmail.com
+
+---
+Kyle Hsieh (2):
+      dt-bindings: iio: adc: ti,ads112c04: Add binding for ADS112C04
+      iio: adc: ti-ads112c04: Add support for TI ADS112C04
+
+ .../devicetree/bindings/iio/adc/ti,ads112c04.yaml  | 148 +++++++
+ MAINTAINERS                                        |   7 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/ti-ads112c04.c                     | 425 +++++++++++++++++++++
+ 5 files changed, 591 insertions(+)
+---
+base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
+change-id: 20260724-ti-ads112c04-driver-be7e89047834
+
+Best regards,
+-- 
+Kyle Hsieh <kylehsieh1995@gmail.com>
+
