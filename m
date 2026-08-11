@@ -1,60 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5628E1F30A9;
-	Tue, 11 Aug 2026 09:53:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5413D42E8DF;
+	Tue, 11 Aug 2026 10:08:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786442009; cv=none; b=NEA20fvLYu/uGiXBw6r/S4yFdTbBEJ4lD3DUhoO1c218VFagZdmOU+BNj1uO4AZUy5qDdImh5IGlLnFD31Iw6kR/bnceMnDaRlC8H59alavHWXU6ChCMwosZnTNUDDZXudWD+C4Qs4pjXZQMWZYvKHBx0sIlfprkYUlSH9HU4pc=
+	t=1786442906; cv=none; b=nHNmKMbBzdwPbad2Y9irhtKjU8auFqF03Ti0bTfkFggzLYKTpKCsthlwbfhByIv+zRvMU2opIFKnUpk90lf2qcsXF7oyFinvBc7vQFdvbh2/gVM8R/IQNoWBWLoI64I0AGpo07iuyzOmxvjLoZFG7yf52QsoFLIw4GwTQ9Tlneo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786442009; c=relaxed/simple;
-	bh=G43tGHbnGB2qUJHPpqi2WjbRmE9j3kNA3SiCEKcgBmY=;
+	s=arc-20240116; t=1786442906; c=relaxed/simple;
+	bh=f742gWR9UuDb96yr7N4MJlaJbG5H+tLnKOozg1XziRk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K9ebioPy1W4FatDByWf4Y399OSE4NgFnZJYJTJ33BupokdFiQKb8x+fMDr9K5zve+V04fmrEFXldd+vQR7gfXgYXuJ09OZT/pYasQOaQZdJfpp9Ymd+mfNTYpNezj8oTAoeupJsN0TJzGvhT0b4XElfQ74w7VHnD9zN03ke+Ds8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U3h+HD8U; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hf5VXXc0MqraWd9/KEjv2g5VklXJ4nFGGJlSBbzT79Inf9hnIKTsnyjIOwaGOvm7JtOA6GcNIJUkJOdHlDiZhpSnwchnIogzGcNCBOmu6X6HQABV1lwC6e7Ni8g16hY593Yt5YngBGkmySX5ntbr8FGhU1ak5K7SVqRS3UyJIPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RRwKhtF6; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U3h+HD8U"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RRwKhtF6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786442007; x=1817978007;
+  t=1786442902; x=1817978902;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=G43tGHbnGB2qUJHPpqi2WjbRmE9j3kNA3SiCEKcgBmY=;
-  b=U3h+HD8UnOZNKlEu7fC84ibUnbUL/wYIJ7ZtyR8CwE5XWSaQK/Igxc8K
-   OPP5rtdEKBAeKA76IyORbqSU83vdRNfbmJuC3nIlAP49FvTux0U6tcqkN
-   cgossLBB9iExGalVROVq9vb3G7bzu+imAy5NbtY2pR+4bEkpwfYImW/tz
-   p3VKvJ0Oz/QTRo+BtsOIW23SYkS35Nyn5xS2GUeE30zbLKvNxhrrC34+N
-   2/ErTupnOvKaJD9wsRky/o7M54BPRuSmqpcR46XxafCGVbj57E+hifZFo
-   2Qgab9C1LKp96stSdWsbyI/KRlVR2R1+dezwLK9DpyLnBJmpnLLq3mlu4
-   A==;
-X-CSE-ConnectionGUID: Biv5YhCAQAWTHfixVWhkow==
-X-CSE-MsgGUID: 10NuKfVoQuqOFY8HqZZyQQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="109757199"
+  bh=f742gWR9UuDb96yr7N4MJlaJbG5H+tLnKOozg1XziRk=;
+  b=RRwKhtF6UXwis6FizMasBF/y8FF2bXvHlfKu07pWZOl3hvZfpSY4a6VZ
+   UPMwq7WC9vF6/Y2CRK5fJyGC2eKIXkdSSQVL9JxF6/rG1saYNUGfyRIfi
+   sr2VcL/YjovqyixjzLoqmJ6Oj/kYPoQ3DaxHqFGenMLWUpxWl6dUI4g/O
+   bJDBdtjt77fLyA+29zDyk9O7O9UgKlgk0LqLR4EPbxKELRl16s3KU0ucb
+   hYcCnxn811LT5tgXXn7sYPfo4VgEYTP0VfdjsxxvRnsiTdqU7gvCrT3DA
+   xLfpHWGARtAdA414uxNw+XZoszVOKhpNM4Oes5NgPmgh6vNoxlLo4j/wP
+   g==;
+X-CSE-ConnectionGUID: c020kHNVS7umggV/sIZQIw==
+X-CSE-MsgGUID: AnHN3QOjRN6Yhb1J2nagyA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86822778"
 X-IronPort-AV: E=Sophos;i="6.25,217,1779174000"; 
-   d="scan'208";a="109757199"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2026 02:53:27 -0700
-X-CSE-ConnectionGUID: CqT2ekd1R76aywAwiEGrxg==
-X-CSE-MsgGUID: PFWQEezfQzCK75JkfORvpQ==
+   d="scan'208";a="86822778"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2026 03:08:19 -0700
+X-CSE-ConnectionGUID: PxezY6T+QTOaDN83yi/tAQ==
+X-CSE-MsgGUID: 3edO+QtfSaGL9gC3YYCBFg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,217,1779174000"; 
-   d="scan'208";a="266778994"
+   d="scan'208";a="259448968"
 Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2026 02:53:24 -0700
-Date: Tue, 11 Aug 2026 12:53:22 +0300
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2026 03:08:16 -0700
+Date: Tue, 11 Aug 2026 13:08:14 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+	Matti Vaittinen <matti.vaittinen@linux.dev>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Tsz Shan Chan <tchan@jacques.com.au>
-Subject: Re: [PATCH 1/2] iio: light: vcnl4000: use correct channel array size
-Message-ID: <anrxEpjjlPVOnR2F@ashevche-desk.local>
-References: <20260811-vcnl4000-v1-0-50e7fb657692@jacques.com.au>
- <20260811-vcnl4000-v1-1-50e7fb657692@jacques.com.au>
+	Andy Shevchenko <andy@kernel.org>,
+	Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
+	Topi =?iso-8859-1?Q?Sonkaj=E4rvi?= <sonkajarvi@hotmail.com>
+Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
+ initialization
+Message-ID: <anr0jtvYorFKaEXY@ashevche-desk.local>
+References: <cover.1786347811.git.mazziesaccount@gmail.com>
+ <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
+ <anovRGxtsyJZ8cO9@ashevche-desk.local>
+ <247b0e35-f49e-4bec-abd4-4a2c3dd49a2d@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,15 +71,24 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260811-vcnl4000-v1-1-50e7fb657692@jacques.com.au>
+In-Reply-To: <247b0e35-f49e-4bec-abd4-4a2c3dd49a2d@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Aug 11, 2026 at 05:07:24PM +1000, Tsz Shan Chan wrote:
-> Use ARRAY_SIZE(vcnl4040_channels) for num_channels to match .channels.
+On Tue, Aug 11, 2026 at 12:05:47PM +0300, Matti Vaittinen wrote:
+> On 10/08/2026 23:06, Andy Shevchenko wrote:
+> > On Mon, Aug 10, 2026 at 10:53:07AM +0300, Matti Vaittinen wrote:
 
-I was under impression that I have seen this patch a few months ago.
-In any case sounds like a fix and hence needs a Fixes tag.
+...
+
+> > > Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
+> > 
+> > Can it be FIELD_PREP_CONST()?
+> 
+> Can you please elaborate why it should in this case?
+
+I'm not sure why it's not obvious, but the parameters are constants, why would
+we need an additional check or even checks?
 
 -- 
 With Best Regards,
