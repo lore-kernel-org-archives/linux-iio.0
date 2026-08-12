@@ -1,114 +1,91 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5076842586F
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 11:40:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786534821; cv=pass; b=GjZJUr832nzHUR4PGHrch3tL1JppT0ofu0xMcRByThL/CRF0URMYKTumcbeRCgbqB/MQTsoUHukeRTfJT8h3Cl9pPQXdT2fTHrpGrfYynpd+RJ6BJdpaRQsasmGLrFOZfFUIW7k1g5l0IXhi2/jnCzCb7qhzYWHtdG0YkUdaxac=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786534821; c=relaxed/simple;
-	bh=ftXlbDu309QmVeN7pDAevs+3sNd39BPkjEn8GSmSF/8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aBZ/GTqAMyahoTTQI3dqHyuinjC34knrcS1m+RiP37Fz9gXV6MG5C36TZZRRhgi9umGnbFEpUjDtxRHiYkpbwn5LYlSFdpwyLstn4RqcuI5CFxClMcwn5z763KAqAoT16/fTlavdCgA0+KE8MDnlJ9X4z4MGEKULntJvAA5pvzA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pa4A8UP9; arc=pass smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D41AE40B108;
+	Wed, 12 Aug 2026 11:43:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786535030; cv=none; b=kkRPJL16eLQwXazO9/2BReNWBsjyAqMrYtI2jBr+L41XyPfiRUUzVVGxSLarHLP2di12Vv3c79Nqi0yo+O9QLvrgzDFluFVlOjbA7oohenr5ldurZdItnwU2X9phGUq8zzNwQ1LeQVqCaeKs/rLsx7wl/xsDD0Clyw7NSZPPO7g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786535030; c=relaxed/simple;
+	bh=hjekVHmV5srSlPUV+cmDzCU6AJUd4zvQcmdsQ1V5S/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jDPUr6fFdp6sFJsmeoCm5qtHfubors6srG8SbLSa6rjH5Btn9aSiiCOavTyyis4gVJxE3N4m+X81+Pl/1V1siD8rM4T5/XXu2YzSJ/7Ek+dHhjb1a095rU41zJoGON6lhGIqJ1VteWij+6gBWA64p17JLwB/Tj3cIDF+Diqwa/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IJcHHLGV; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pa4A8UP9"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2ceeee8c46bso2290815ad.2
-        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 04:40:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786534819; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Sl76/SLCMePprpc0vXYUKAZvrgf09mEo8VW/HDQMYXvZEM0OJMTddfY1oIBr9vn9W8
-         MAB3bwrZCARkQA4dw5OIQd0uLBYOumhW+XWO8ZVdtGrY6Kf6z3cj1rpRmPR4i27kK2Bp
-         ZIBxTOsL3uFDcP75WJR9VjgwEMFyFMoOVrQ8jc25Zosow1V7uXiRseA83lGkcmWDQJ7d
-         4CAlP/z9xx5vWSBxoBbshqWF445Lr/O/805xe8px/YZQb1gNGBz/dWiRfGq8z8UFV+54
-         AUr6V1TX1SMWpJ2M4FfRaFFlvEbrXVJ4GC8gFDhj+ASU7mi7L/HGsx3pOHutYdNiUbKx
-         zpxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=CcrVHQ+LHnpe+MEDWyjgCumfCG5lBDkuaO8drxyGg+c=;
-        fh=W1zrOiCGJW4NhGBbQSX5Ibnej9qrzsPBxQJixKmS0V8=;
-        b=YnOMPh2JDZmYzBg3ldl0TxMuNp/s/oVCC2nsZXd0SSE3i0ToAKqC5YIv+AW/4GTaKG
-         0NsMFh2kbUX15paKfmRD0guY/FHMexdGpf3oxTM0p8mcpB7+3qrWam0Nw1XosWYE8RRn
-         reDt4K/yz0kAyO4PJwCTAkToAccaxmxiOm6U1qB3yIPp2CFTX7Qoo7IQQrMoqcaC7Ib3
-         /ZfaSdjmB8iqBOiqFWNvufbSvfWvogqkZR+LhlE25ItOWtA2fDt4dWuSMx6RVvhfLKXa
-         zad5Q9mySopX+F2b/0g/01QQBdY8uy5SMxBqGvWKtFlwYFKR150+hDtBZIl4BBVbHeb0
-         ySzw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786534819; x=1787139619; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=CcrVHQ+LHnpe+MEDWyjgCumfCG5lBDkuaO8drxyGg+c=;
-        b=Pa4A8UP9qNuIQ2jmP26gB0LwnNZx6MElQYCVcDuws27d+1wlCRH4oBzar7h7QZNDp0
-         EqrflI+w4tPZNkaSTeA6yJWLSDCcNv0dWTVqLM+983PhWl0XtluOmjDs1hUMOxhA6HB9
-         AZJnBS9qYy/EnY1T4spltFfUeeyfJkyX6l8C8HaCNEZnC0uaflx7YWDyL+8wbGu7dJRv
-         ccQrCGqOdxPacc6XrBRlQ2XthbK71BGV0gzJFyrVIfpLEqgNf25Z/40pxeztVzEbCaBq
-         g/V5KSnNxvmv9zj5afTHjMTfjpoLOvE5YGHcDkGk5i+hSHvDUBni0yTRmzqxEt+YOVj+
-         j2Kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786534819; x=1787139619;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=CcrVHQ+LHnpe+MEDWyjgCumfCG5lBDkuaO8drxyGg+c=;
-        b=RoY/pfF0WGCn4uUkHk2sf0HSOOfGYOKD6zVy/wuwI83OAuIYeMCNwa7839E7XRePAS
-         odKIIU5kY5LQ1mm5uRF0FAAIbsssAF50OAX1ePb92VWf/ftVxfaTSy/h4L+hqW13aTpn
-         VB1WWSJaJB90YIOGl9I+DPtopKlUTXrmSl4PD4H5Q+bL2SnBNh0Vl9ZwP6OC6UpXoUs1
-         XKLN0yeCjiCzM2GfzTpTfN5wmzkdgwa8juh5KB004WIfU6Vh8UBeVtPSkPvLm18pPiXp
-         yjWm+PLX8w3Qg2mOT5GXDk+FP1uLWbCjODxm/V+MVXV69eSkAafcJh8+wc2aj62upY1v
-         Q3uQ==
-X-Forwarded-Encrypted: i=1; AHgh+RogggRl/ugzQu4kxDUw9xYFMCyMjMf10ciLsBkwjOLsqoaT5qW/NquU2S54Dvp9GTNPSAB498zkSrQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyV3zAhQ42TSMEg5gnfDm+1WNmahQTsFZJEwxkuFRBh6r/IDz55
-	1z3pdsn/Jv8++8m0JfGjUbwvC8V/fpX/yfgFmtxJNWDLraGvsiQH3+wNd29GpQ5X0vJHzMRJxxu
-	1x8q3HOMGt+ozYkED/IttYqLdBsvQdvE=
-X-Gm-Gg: AR+sD12s/FJ0qdhsDl6HK+3ySkl0TZimyfqiS1awW0cR+olpmTh2H25hVxABIAG9q5b
-	KY7Qxnd1XlAcFtDGDgKIvuEscz+tNA0AoaZ0fh51NWwQzFjyJBF8u/D52WnXymbbi0U3U87X8VU
-	kL1WlnxcHZ4V8M3i4p4ErbzFXIdTL+BBRIrjIVf6wHpXYCHvEXRu4jsIXJFXnG3JfP0j5Od3gx/
-	O2GsnvTfu6LQPOq8LfFwqphrqtUL/14tBa626+K+4j3SLihOdhU7QkbLbjuoBW6j84ovAJ026+/
-	LtIMCWPtTGSETDPYnQccvEjenh10FUUmVfdRH/keZJg=
-X-Received: by 2002:a17:903:144f:b0:2ca:de3:15eb with SMTP id
- d9443c01a7336-2d3450cc3dfmr41499755ad.0.1786534819286; Wed, 12 Aug 2026
- 04:40:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IJcHHLGV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786535029; x=1818071029;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hjekVHmV5srSlPUV+cmDzCU6AJUd4zvQcmdsQ1V5S/U=;
+  b=IJcHHLGVPDeuERmKH4Sp8wGnNn0eZlGqGe2k4tqskUw8jAiP+Qpc70MP
+   LZSeqHUZflx4rSBZQWlZ9XRIZndoLaQdQiEtm78HmEX2cXQFp/sa1wq61
+   Mw8uYqhFx4nfIHAbPbSD1myy6Im9gQwYFX0A7N2ccp4Zx7/muFWqLvDs2
+   ofA+nt8/Dk2hhMfKK1owz80xUOkeVR/BCy7AptmP0VhGQ312YZ43ayS49
+   eHVBTaJOXFL86W0wo4kGSgujfn318rldYRqpqyI18m7aE/B7LR0cDfPpM
+   qq+cYNfiU3h9/397ROeWVA99gS9SuUrSUex+tyTRvl4MDh4pde8Jnn54g
+   A==;
+X-CSE-ConnectionGUID: UOR73FsSToKJMWKMRUBLmA==
+X-CSE-MsgGUID: Gx+OFr0eSAe6tjtndhHJTQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11872"; a="98445402"
+X-IronPort-AV: E=Sophos;i="6.25,219,1779174000"; 
+   d="scan'208";a="98445402"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2026 04:43:48 -0700
+X-CSE-ConnectionGUID: NMKWxMH3QRuplyEjCff9RA==
+X-CSE-MsgGUID: gw8zQ5mBQ7ySlU+8cZVpdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,219,1779174000"; 
+   d="scan'208";a="257424093"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO mdjait-mobl) ([10.245.245.198])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2026 04:43:45 -0700
+Date: Wed, 12 Aug 2026 13:43:35 +0200
+From: Mehdi Djait <mehdi.djait@linux.intel.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, 
+	Matti Vaittinen <matti.vaittinen@linux.dev>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
+	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Kalle Niemi <kaleposti@gmail.com>, Topi =?utf-8?Q?Sonkaj=C3=A4rvi?= <sonkajarvi@hotmail.com>
+Subject: Re: [PATCH 10/12] iio: accel: kionix-kx022a: Fix array boundary check
+Message-ID: <anxb3anPmo3zjIV5@mdjait-mobl>
+References: <cover.1786347811.git.mazziesaccount@gmail.com>
+ <159f1048852afc74cfc2d219298a5a6f9d70cbb4.1786347811.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260808090026.34187-1-adinata.softwareengineer@gmail.com>
- <20260808090026.34187-2-adinata.softwareengineer@gmail.com>
- <20260810010943.014d8db1@jic23-huawei> <CAG442=sRDMfdVZB5GY+f6Wud7Vx8xR3ORN0GWVRVV8NKLVX29Q@mail.gmail.com>
- <20260812060414.427f7616@jic23-huawei>
-In-Reply-To: <20260812060414.427f7616@jic23-huawei>
-From: Adinata Tan <adinatatan99@gmail.com>
-Date: Wed, 12 Aug 2026 19:40:05 +0800
-X-Gm-Features: AUfX_mwG3enKJGDzl_Xy8u7pCaWHXuNDuSePxAeXbnQrdn91TqUXsI2XjDgFjtA
-Message-ID: <CAG442=sn1YnDGdVvfnj6ZaeLknN46EqhAdkYBBp-6AnrrnDGCg@mail.gmail.com>
-Subject: Re: [PATCH 1/5] iio: humidity: hts221: report available values via read_avail()
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: lorenzo@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kernel-mentees@lists.linux.dev, adinata.softwareengineer@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <159f1048852afc74cfc2d219298a5a6f9d70cbb4.1786347811.git.mazziesaccount@gmail.com>
 
-Hi Jonathan,
-Thanks for the input. In this case, we can proceed with the current
-implementation?
+Hi Matti,
 
-> > For this humidity case in particular, would it be better to keep the legacy
-> > implementation while adding the new read_avail()?
->
-> To me it seems vanishingly unlikely there is any code out there jumping
-> through the hoops to read the wrong ABI element to figure out a possible
-> value to write to in_humidityrelative_oversampling_ratio
->
-> So I think this is in the category of ABI that we can change as long
-> as no one notices.  For IIO I will also generally take ABI fixes on
-> basis we actually want to know if anyone is using the broken ABI
-> (and they very rarely are!)
+Thank you for that patch!
+
+On Mon, Aug 10, 2026 at 10:54:32AM +0300, Matti Vaittinen wrote:
+> From: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
+> The driver performs a sanity check for an array size, when converting a
+> register value to an array index. The check incorrectly accepts the
+> sizeof(array) as a last index, when last valid index should be
+> sizeof(array) - 1.
+> 
+> Fix the check by bailing out when index >= sizeof(array).
+>  
+
+Reviewed-by: Mehdi Djait <mehdi.djait@linux.intel.com>
+
+> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
+
+--
+Kind Regards
+Mehdi Djait
