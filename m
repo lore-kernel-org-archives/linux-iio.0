@@ -1,91 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 811012D6E44;
-	Wed, 12 Aug 2026 05:04:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95AC331282F;
+	Wed, 12 Aug 2026 06:43:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.69.201.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786511067; cv=none; b=c5PqeTNnjCwTw5rJewCCXKX6AH/au3G0plDgBWzNNFjePakUHAx1qVdNRbV+aokSHLfabu3mrm/AA08TNMf/wCmA2BWc5TkUX3AiZGX0rFh6VIPB3A+yurQ6dq0N5j+8J/MvUyO1iOhLFx6LDl+urNVgau3MLNBctRi4Gwe/gjY=
+	t=1786517009; cv=none; b=e1LqXxic2zL9rwZVTy2OUNHEhtb+apORFKB2szQEz8OJza/+CmTWqGER9QLgOo5V8RSgr179YHjjY/FPrnn3KktnUWpjrAG53DxJOfkvo+IoPVgHiHwVv4hSGC/39gbLBZt/zleBbOkAepIrKXi9xyOiVXyYXyPdSurH4TRQBh0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786511067; c=relaxed/simple;
-	bh=fvUqixsMmENVtlOJZMvVOpg0P6xWQpGGWYuTbY84gHo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ihSmb3qsXZtfegUG0MUMLRnR0BHg6GnwfYsYlgKZAComnmshbS5aNS0LOE6MLNH4/JpgP30BpwM7hJAOklkdko+/l7TWtj5jqCvpGnijxkvEd92742+LVuMxPMqEexzuBW+keffzFcZwYQLif+dcFytrM3CU04mDCEYOQee6Bls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hGVnY9Hk; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hGVnY9Hk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA361F000E9;
-	Wed, 12 Aug 2026 05:04:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786511066;
-	bh=xIp6Vw8cc/UG25l/s5hyO/zLfoyw8I/uHG2WqSpO++s=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hGVnY9Hk7L7T+y0yvmM/rqSna9Tbsuefd4pkEiA2vPIOa60z1ksTnSkAUWN/r9aNS
-	 r7JvPVt9aZzc+nlag6vTTmKvRtpZJ0vR7w49dQ8ft1LgsFLoeTX5mRpHx/t3Xh3/Qs
-	 Gp/PIjIPPiiMSVRHabx3j1DJRoMCfWZ0mbQWhOdezt96mS5C7/dDC88InagLXXbNqm
-	 JsLrXaoJbSbGJNpdqLboY5JmuXAmvSFEFOr6Zq3dTuUlVL9wj0d+b67mnSOOVC9nM5
-	 dhufaBQ8bQO1gCbZItccshvgkILOW3AwnFo1KfSReulGlmNUa0NROJKfZD7v8XN8cC
-	 ao+JQvKbjMNiA==
-Date: Wed, 12 Aug 2026 06:04:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Adinata Tan <adinatatan99@gmail.com>
-Cc: lorenzo@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH 1/5] iio: humidity: hts221: report available values via
- read_avail()
-Message-ID: <20260812060414.427f7616@jic23-huawei>
-In-Reply-To: <CAG442=sRDMfdVZB5GY+f6Wud7Vx8xR3ORN0GWVRVV8NKLVX29Q@mail.gmail.com>
-References: <20260808090026.34187-1-adinata.softwareengineer@gmail.com>
-	<20260808090026.34187-2-adinata.softwareengineer@gmail.com>
-	<20260810010943.014d8db1@jic23-huawei>
-	<CAG442=sRDMfdVZB5GY+f6Wud7Vx8xR3ORN0GWVRVV8NKLVX29Q@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1786517009; c=relaxed/simple;
+	bh=l9kYW2cjifORa7furRmTiAaP9Rqs4SHR94tXkJbx490=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
+	 References:In-Reply-To; b=M5OkF3hKM8Z+ufk8prMDPKKUsrCTaFdcZ5/9SVsxjg2TYzJQkq1CHMYSYh7Zlp2XmNicmpBUMMWq/FqL7Gf1zpyo0utmXAporcw8a04poURixE5oxMHJWxmwM4QDWLYnB8rfFuCt6Iakfg0TBsMWTwNxdHIQE/4JlVwwy7mchJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=walle.cc; arc=none smtp.client-ip=159.69.201.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=walle.cc
+Received: from localhost (unknown [IPv6:2a02:810b:4320:1000:4685:ff:fe12:5967])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.3ffe.de (Postfix) with ESMTPSA id 81E42141;
+	Wed, 12 Aug 2026 08:43:20 +0200 (CEST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 12 Aug 2026 08:43:20 +0200
+Message-Id: <DKMRF7SNHX5L.263MVTD0EZHD3@kernel.org>
+Subject: Re: [PATCH v2 5/7] gpio: regmap: Add runtime PM and
+ read_output_reg_set support
+Cc: <linux@analog.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+ <jananisunil.dev@gmail.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>
+From: "Michael Walle" <mwalle@kernel.org>
+To: "Janani Sunil" <janani.sunil@analog.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Michael Hennerich" <Michael.Hennerich@analog.com>,
+ "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
+ <dlechner@baylibre.com>, "Andy Shevchenko" <andy@kernel.org>, "Rob Herring"
+ <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
+ Dooley" <conor+dt@kernel.org>, "Olivier Moysan"
+ <olivier.moysan@foss.st.com>, "Philipp Zabel" <p.zabel@pengutronix.de>,
+ "Linus Walleij" <linusw@kernel.org>, "Bartosz Golaszewski"
+ <brgl@kernel.org>, "Jonathan Corbet" <corbet@lwn.net>, "Shuah Khan"
+ <skhan@linuxfoundation.org>
+X-Mailer: aerc 0.20.0
+References: <20260806-ad7768-driver-v2-0-027ac5e2a641@analog.com>
+ <20260806-ad7768-driver-v2-5-027ac5e2a641@analog.com>
+In-Reply-To: <20260806-ad7768-driver-v2-5-027ac5e2a641@analog.com>
 
-On Wed, 12 Aug 2026 08:22:48 +0800
-Adinata Tan <adinatatan99@gmail.com> wrote:
+On Thu Aug 6, 2026 at 5:41 PM CEST, Janani Sunil wrote:
+> The new pm_dev field in gpio_regmap_config allows a driver to supply a
+> device for runtime PM. All operations call pm_runtime_resume_and_get()
+> before accessing the regmap and pm_runtime_put_autosuspend() on return.
+>
+> The new read_output_reg_set flag when set, gpio_regmap_get() checks the
+> pin direction first and reads from reg_set_base instead of reg_dat_base
+> for output pins. Requires both reg_dat_base and reg_set_base to be
+> configured.
 
-> Hi Jonathan,
-> 
-> Thanks for the feedback. I have checked with what Sachiko is saying is correct.
-> The custom attribute was in_humidity_oversampling_ratio_available while
-> the current on is in_humidityrelative_oversampling_ratio_available because in
-> industrial_core.c only has [IIO_HUMIDITYRELATIVE] = "humidityrelative".
-> 
-> For this humidity case in particular, would it be better to keep the legacy
-> implementation while adding the new read_avail()?
+As already mentioned. please split it into two patches. Also, could
+you add some context where/why this is used/useful?
 
-To me it seems vanishingly unlikely there is any code out there jumping
-through the hoops to read the wrong ABI element to figure out a possible
-value to write to in_humidityrelative_oversampling_ratio
+So, if the direction is output, then you just read back the set
+value (instead of the actual line state). Is that correct? Why can't
+you read the input buffer in that case? Input buffer deactivated?
+(NB. you can never get the real line state in that case, which is
+sometimes useful for debugging.)
 
-So I think this is in the category of ABI that we can change as long
-as no one notices.  For IIO I will also generally take ABI fixes on
-basis we actually want to know if anyone is using the broken ABI
-(and they very rarely are!)
+Anyway, you should be able to achieve the same with the
+reg_mask_xlate(), no? Check if the pin is in output mode, then
+change the &reg.
 
-> 
-> The other case declaration will remain changed.
-> 
-> > > Replace the custom oversampling_ratio_available sysfs attributes with
-> > > the standard IIO read_avail() callback. This lets the IIO core create
-> > > and format *_available attributes and exposes the lists to
-> > > in-kernel consumers.  
-> >
-> > Sashiko points out that there is an ABI change in here as oddly
-> > the driver uses
-> > in_humidity_oversampling_ratio_available rather than
-> > in_humidityrelative_oversampling_ratio_available
-> >
-> > Which makes this an ABI fix.  Therefore this should have a fixes
-> > tag and be moved to the start of the set.  Please check that logic
-> > though as maybe I'm missing something.  
-
+-michael
