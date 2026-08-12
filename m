@@ -1,153 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B6263002C8;
-	Wed, 12 Aug 2026 16:03:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A990390212
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 16:44:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786550635; cv=none; b=QxInQIdi99HERxq/MPRKeOAN/S2E5eMaCAZzvaUppbRqhd3aqNyPmzyNE1b7eiF7/CKhlwg2ZWW629hhasiAsGa48Xp/NrcMBZtTCVLnlMfCmDl+PDTEnAdpeqrIQQzqyPKl2CJWLUvtQdHlhRqwx/P3m1030bbSpzCQjtNPQYM=
+	t=1786553091; cv=none; b=kbNDT8qR5pd3rDJmxUbO90wk0vIy+sJvdQldA2MjQvkiHjf/Nf36YhUcjS8/enf+V7ozfCWX79BOiv8d3rQUp5jITvLXiIpc8xy6TlT0089FC983Z9Tm5atN1D6RdZv6P882vRF1tYnzG6H9xNgaC+r8lX7hwV0sZcawj3WRszY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786550635; c=relaxed/simple;
-	bh=5dTc2XtnsAOJkTVU7goXjBLfRMlxIncQUOmpnqBZLbs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iOtfw4k62d5ufS/Lqs3g82u7MBaKp929RA/IL8E9qys01W6bWCVAeNqeqL+qtdgKZJboVq4Pa/wEP2MoICEJosXfXFGgLbDP+sxd2DkqsK858W3CKCSQNWJ4JcSsy95Zfv46ioBVSPQ+gGfUDP0PpP9J7hjPztpn5DQa8J2xmPg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oFGnJ22d; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786553091; c=relaxed/simple;
+	bh=OMdEa+eiE2MKqUHH8XXBut0ICYi8AxN+pkOMvV/Vj1o=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mzwsZ1wVCVPzpyufBWBeDdFOCzxeK10HdqnXDWSOL91tCwA4zdcGUWT1JVlDONN0WlvSeThfHI32rasx3nAzZ3KxGeuxzU1dyrB1+iLL+9AxbG15vcWQ3qNGggcZaPxLZkYwQlZnibpiBVzmBVFc6kFy3wcK4rdHF2jGEmOyBZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jPBSu4Zd; arc=none smtp.client-ip=209.85.215.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oFGnJ22d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E451F000E9;
-	Wed, 12 Aug 2026 16:03:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786550634;
-	bh=3TxMVPEUbs7/WJ/FGn9J8i8hfqblqPhEam02QjMxGEc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=oFGnJ22d/mVWYwGuvQSxzqG7mKBnHJhybyHTerRWgSlMWR1E5TEIerZyH3V0t3cEo
-	 CIo5NMow0nCiWY+50X27AA5BaNqJMyEsXC01cIM0kBnj79dDsFNaCuhtd+BvzpqQ8R
-	 Ws8izNSDIwNc+1GUwrayU+aMcinUFuGhUmTcSqrsVTeqb+HgzaCnKlIf4nQxMCm0sC
-	 PIZMfxKd9dQT+juWNwCHy437BexXwWcZUGhgjEOGoXQ53BBA+5zdhuOA0xafrbTNjG
-	 SJY5umTGSjGEmLktZTk+Iroke5YfSu9jWp2U/MaKuIEbzzQOGHGjVVXK8f/Zi1M08J
-	 A+42irHxOdLNw==
-Date: Wed, 12 Aug 2026 17:03:49 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Kyle Hsieh <kylehsieh1995@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: ti,ads112c04: Add binding
- for ADS112C04
-Message-ID: <20260812-kindness-compactly-2c3f5bb1f0a2@spud>
-References: <20260811-ti-ads112c04-driver-v4-0-ae704ac17241@gmail.com>
- <20260811-ti-ads112c04-driver-v4-1-ae704ac17241@gmail.com>
- <20260811-union-editor-1d475c5f32cc@spud>
- <CAF7HswMcBx_DS4gLtsiy3ceBYBABF1ktJV4=+cDwAD9gLhP26w@mail.gmail.com>
- <20260812051107.204ae084@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jPBSu4Zd"
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c9aea40d799so728286a12.0
+        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 09:44:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786553089; x=1787157889; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=4Vgp03XD4TAR6Veh5Nvw5ei2/BjzAgfusQS5tUaaQiw=;
+        b=jPBSu4ZdV0paiTH/RFzLyHIqC1G4HWaoP7EABn3YzjcqfqblqFPd+FABWX4KQBUbJu
+         ihzP4AC6/IoD02BEPw/GFCB31z0KJVP8M+WSPMdUXI/ZDIxTQrjSXD/5uhrfnRDXTG9J
+         6j7uC8IB+VvXpluaFeKw9uFTv4SvyurwgSfyGbooYTcfg9xwmsg+a440IkG4Ozmp7Y3I
+         Ey5/2DezAsFqnYFPctfV4/0kiTsfPpB4U/VBdsn5khzivZZ2q3pPqtoefEyRBScUsPbL
+         A5XAakK9dE2+nxiX4ruBWREVexDuqz+8hHqy4ipFIGtQv42gONgq8VsNwQysQ8LWb/mm
+         ngIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786553089; x=1787157889;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4Vgp03XD4TAR6Veh5Nvw5ei2/BjzAgfusQS5tUaaQiw=;
+        b=CbVkJ7W7O0+HatwwyNWA35mMtqj9HyPKHnZMnkwPwsuK+jr73AQr5s1MZMwUTpVVUs
+         n4LMeQ0h08WvqQBixCn2tohfPWHANJeHUa71TrGPyTnDouFM0j2YNKdoZ6TC8rPSuGkQ
+         JRdwIhJoNNhsnxEDPOir9RHw7x3qoFDhJfDjYfibURkBUKBhDucNYct51cd87Ip7FezW
+         MB4nNpuvy9/zVGN1E3vHOEKeMMppQX4qdht3gQxb0c9IJbROLT/WuhuknSh/uCZXwwK9
+         jrLa++6fRpT3DNzhlWOk1aGKhPfB2cL5J5Vu7W8wRfzY5kObcPFBOmTh3HP89ZQ632gp
+         YGcg==
+X-Forwarded-Encrypted: i=1; AHgh+RrxlF/QLInFI5uI6rXI0ZjG9dd5P0xkDb0VwEsZGb2Ygi38yaoLERETzs2EvQ5fjOJszE2zdvUM840=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwNvPb+dhoVkku9H1NeaWE0oMbGxoA0pb8NQHFDw0sSUHp1Lprq
+	n0SruEDUYA1JmZFA9ow7K1XqAlC01QIVeCEaAfyV6PBzJ1nYNlhjcfPX
+X-Gm-Gg: AR+sD11OTRDsupttnhhWRFQGpyJ4XFu2BInzZb2tI7HjiqE8Pl/hMn1+76e6alP66u6
+	d2uqjwzLZ/BqhFcyZGeH2/EqjXkXeGYyvhIBVXyW9a+77hU0EkDpskZc0qacb61OER5niBHSWaf
+	Ta9OHUlr6YKxjIO82hKbZLCJ0Wwux5/8HLrM+P76kG/sbJfpEPdJKzG51Cp/yhlod95AiDWc6BQ
+	x+JTNOgHEqMdhR8PjkBJKHRuofWjHWI77nHd3AnGWF1z2KeOQvQyNEKpNCV6NQfDtCfj4OePinX
+	Z+c2oo8OunqUaOSAMUKpEV3fQKrIEXsjG7ynEFLnVNfRYUu6p3fbB6Liywhc/VxVkahPy3HKReN
+	jJtfZYtix/RypIrd0E0cVF4pkszD6h5nbXHaauDoxSsTDBSTpFxiWo+EDwumnP5KeG+CZSFPw6F
+	rPOqWsUgNNGa2hIGH2Z8YXoIyujATwIE1Ww9rly6b4QsO0jWgseunvST/6g4KoCAaJJeKZl+0O5
+	T0xZb8wstH2G7XL3AFnTI9c4uuFIeJWjsI=
+X-Received: by 2002:a05:6a20:729c:b0:3bf:6d96:ac40 with SMTP id adf61e73a8af0-3cc3f5d3760mr7260641637.12.1786553089218;
+        Wed, 12 Aug 2026 09:44:49 -0700 (PDT)
+Received: from debian.ari ([47.30.26.35])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31cf40f7151sm12462621eec.12.2026.08.12.09.44.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2026 09:44:48 -0700 (PDT)
+From: Archit Anant <architanant5@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	andy@kernel.org,
+	nuno.sa@analog.com,
+	u.kleine-koenig@baylibre.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Archit Anant <architanant5@gmail.com>
+Subject: [PATCH v3 0/8] iio: adc: ti-ads1015: modernize resource management
+Date: Wed, 12 Aug 2026 22:14:25 +0530
+Message-Id: <20260812164433.23011-1-architanant5@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="iQVZFxmxc5fBXIth"
-Content-Disposition: inline
-In-Reply-To: <20260812051107.204ae084@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 
---iQVZFxmxc5fBXIth
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series modernizes the ti-ads1015 by transitioning it
+to a fully devm_ architecture.
 
-On Wed, Aug 12, 2026 at 05:11:35AM +0100, Jonathan Cameron wrote:
-> On Wed, 12 Aug 2026 10:53:57 +0800
-> Kyle Hsieh <kylehsieh1995@gmail.com> wrote:
->=20
-> > Hi Conor,
-> >=20
-> > On Wed, Aug 12, 2026 at 12:56=E2=80=AFAM Conor Dooley <conor@kernel.org=
-> wrote:
-> > >
-> > > On Tue, Aug 11, 2026 at 10:48:37AM +0800, Kyle Hsieh wrote: =20
-> > > > Add device tree binding documentation for Texas Instruments ADS112C=
-04
-> > > > I2C Analog-to-Digital Converters.
-> > > >
-> > > > These devices provide 4-channel, 16-bit delta-sigma ADCs with an I2C
-> > > > interface, programmable gain amplifier (PGA), and data-ready (DRDY)
-> > > > interrupt output.
-> > > >
-> > > > The binding uses child nodes to dynamically define the connected
-> > > > single-ended or differential channels.
-> > > >
-> > > > Excitation current, burn-out current, and reference source properti=
-es
-> > > > are also included to fully describe the chip's hardware capabilitie=
-s,
-> > > > aligned with the ti,ads112c14 binding conventions.
-> > > >
-> > > > Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com> =20
-> > > =20
-> > > > +patternProperties:
-> > > > +  "^channel@[0-9a-b]$":
-> > > > +    $ref: adc.yaml
-> > > > +    unevaluatedProperties: false
-> > > > +    properties:
-> > > > +      reg:
-> > > > +        items:
-> > > > +          - maximum: 11
-> > > > +
-> > > > +      single-channel:
-> > > > +        maximum: 3 =20
-> > >
-> > > Can someone explain to me please why the maximum for this is 3 when r=
-eg
-> > > goes up to 11? What do the additional reg entries beyond 3 represent?=
- =20
-> > reg here is just an index for the channel node, not an input pin number.
-> > The chip has 12 usable input MUX settings (8 differential pairs and 4
-> > single-ended inputs), so at most 12 channel nodes can be described,
-> > hence maximum 11.
-> >=20
-> > single-channel refers to the physical analog input pin, and the chip
-> > only has AIN0-AIN3, hence maximum 3.
->=20
-> Exactly as Kyle described - there is no right way to match reg to a prope=
-rty
-> when we have mix of single-channel and diff-channels. Hence in this
-> one corner case reg is just a magic number - though it may reflect
-> ordering of channel acquisition I guess, though we've never documented
-> that requirement in a binding.
->=20
-> We could restrict the differential to be only one direction which would
-> give max 10 channels (4 single then 0-1, 0-2, 0-3, 1-2, 1-3, 2-3)
-> but there isn't a huge advantage in doing so even though it is trivial
-> for software to flip the sign if other direction is wanted.
->=20
-> Note that we don't actually expect to see all the channels configured,
-> it can just be a useful to do things like single ended voltage at
-> top of a resistor and differential across the resistor (to get
-> allow current to be computed) - so it's not unheard to to mix
-> and match.
+By moving resource allocation, device registration, and runtime power
+management to the devm_ infrastructure, the teardown sequence is now
+guaranteed to execute safely in the reverse order of initialization.
+This allows for the complete removal of the ads1015_remove() function,
+eliminating boilerplate code and reducing the risk of future resource
+leaks.
 
-This kinda thing is what I expected, I just was not sure.
+Also the driver's configuration logic has been updated to use
+the modern FIELD_PREP() and FIELD_GET() macros, allowing the removal
+of all custom _SHIFT macros and a redundant helper function.
 
-I forget if I have to:
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+Additionally, housekeeping patches are included to ensure header
+includes remain alphabetically sorted, dev_err_probe() is used
+consistently, and PM macros are updated to modern standards.
 
---iQVZFxmxc5fBXIth
-Content-Type: application/pgp-signature; name=signature.asc
+Changes in v3:
+- Added Patch 7 to replace all custom _SHIFT macros with FIELD_PREP
+  and FIELD_GET as requested by Jonathan Cameron.
+- Added Patch 8 to inline ads1015_set_conv_mode() directly at call
+  sites, allowing for the removal of the final _SHIFT macro.
 
------BEGIN PGP SIGNATURE-----
+Changes in v2:
+- Split the monolithic v1 patch into a 6-patch series to isolate
+  housekeeping, bug fixes, and API modernizations for easier review
+  and backporting.
+- Patch 1: Added to modernize PM ops and remove #ifdef CONFIG_PM.
+- Patch 2: Added to fix a pre-existing PM leak on probe failure
+  identified by Jonathan Cameron.
+- Patch 3: Extracted header sorting into a prerequisite patch.
+- Patch 4 & 5: Extracted the introduction of the local 'dev' pointer
+  and dev_err_probe() conversions, suggested by Jonathan Cameron.
+- Patch 6: Now contains only the devm_ conversions and the removal
+  of ads1015_remove().
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCanyZZQAKCRB4tDGHoIJi
-0jJHAQDtcfyRPQeJETfGXjlpUbDiXXZy+m3P0p18QaAAVF6/CAD/RjAzKYxDuwfT
-L1Lxy/mKUlSoi+wMKX/0y2W1n/+RegI=
-=WHG1
------END PGP SIGNATURE-----
+Archit Anant (8):
+  iio: adc: ti-ads1015: use DEFINE_RUNTIME_DEV_PM_OPS()
+  iio: adc: ti-ads1015: fix PM leak on probe failure
+  iio: adc: ti-ads1015: sort headers alphabetically
+  iio: adc: ti-ads1015: use local device pointer in probe
+  iio: adc: ti-ads1015: use dev_err_probe() for error handling
+  iio: adc: ti-ads1015: convert to fully managed resources
+  iio: adc: ti-ads1015: replace custom shift macros with FIELD_PREP/GET
+  iio: adc: ti-ads1015: inline ads1015_set_conv_mode()
 
---iQVZFxmxc5fBXIth--
+ drivers/iio/adc/ti-ads1015.c | 176 ++++++++++++++++-------------------
+ 1 file changed, 81 insertions(+), 95 deletions(-)
+
+-- 
+2.39.5
+
