@@ -1,175 +1,167 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB3B8471263
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 16:45:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 101DB4749C1
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 18:25:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786553128; cv=none; b=D6y7gMR8gl85RkHwyuyL4vzqRQLiSqZCiPPnZD846vtc2hv8ey4Jp75+aYd0z0Jujg/M4gdOnlm3R9fla6SGu6a7szCdsKaZSWx6fm58WSpjK3zhSrfbqKUPCgVMRDxeXAHyaAJt9LwZtvq5818UWjlYQ4RAxapu6WiSCAvwlIQ=
+	t=1786559106; cv=none; b=mmExP69Gsx9rbDqMxwC58pxJhhrOVCdI8/P1g6GVNAWxKGak9uSb2ITy2ytRsWTu8LBjm2p0hogSVhQ3kJheBk5qgK3jknbIpJNdMF/SQU/KfBSX3IsgIVkRATMaxc3JuIAyxos2w85zQEt15p50Fa+JIjNKYJOdEHi6P15a968=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786553128; c=relaxed/simple;
-	bh=/XNQrm4QeKduCIHL5KJ2niPZuyeWQUlCBkBf8NacRTQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=BrjqCiD/eTTj8vZLrOJTQaEb0p7KQxsjvAhzTZ1PmdZmZc9gAy4bNqXLPdEFDbOPOjVjNV7Ro4o52oQd+Tr8qVpuTbUTuf+ETgGQTtZmWUmmfXKVmG2BdQB4TiU3lly2HbLhh1tBqOd+FWD6+TouvHiBuWXar3fwsl7Td2RXTcY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XY+WICF6; arc=none smtp.client-ip=209.85.216.48
+	s=arc-20240116; t=1786559106; c=relaxed/simple;
+	bh=rK+mXn7Ao2++xP76YmxA4SwjPDptQ817NOGwlmx4Iiw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OfABI/nQm7MkFEX1eZ+HzZ3QGm+cu3bnyqfUZerbqgNxrj6l764ZJFDuOwQXuFiXBj81J5wyvu8ZmVUCD5ardyvdoRg5HcCNqhWnQYzVkuTCAIMtF0s9oYJa5kwbw2wf3irp3CHL9l4jB7t8cpgjvU0B+TArx8EHOu2BuzlSsFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FYgch8WT; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XY+WICF6"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-38e08baf860so1419019a91.2
-        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 09:45:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FYgch8WT"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-84faf0fa17eso1532805b3a.2
+        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 11:25:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786553126; x=1787157926; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ftJ30PM4x/m5W9K7gtsE39EZFCZxBzR1FxNyACc2aDI=;
-        b=XY+WICF6zkkq0TB5paXl2Nz30Y43sf9k9xvK7PlOVSCoS96EJ7v2ZIEQOORuA+0939
-         9IG+OAEAyz+NKKwSfgyTH8UnMjhihbuc4FpEMnrf2Bhaf9ji87AHeLVkZgOVyeFJRSLQ
-         zyxX3hj6GzzSNLp6MUDse1Gaumk7oColL0FU0aBiclxWAdMSfctJzzGFtF0cmzmCa/2D
-         DI0rzfa15/Sstlc4TZQzl6YWneEAnWebqDnb/WGaDBM99qYaz3EsgXzODS7ko4SrDLkh
-         uU0TZcsGKtgMVg0lZM1AH3cxFrYqFT6kyFzh/f8iC1o2Fpk2H/8ZYAeMqBUul2s+6hXr
-         IgYg==
+        d=gmail.com; s=20251104; t=1786559104; x=1787163904; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=/Gu9W7rXgtb1+B1jXnvSAJ86MRbhcY3MT9l/KYXMDwQ=;
+        b=FYgch8WT9xHF0j4jRRpGPAY7cV/uknv98wxLMvDaE5vExNbWAg+oB1b8eNpZ5xZZHg
+         3Y1i+7flnWXyn1hN89L+V+N70VVqjZG+QsuT6JNKbulDI1a7/5E4ocA2porLtl9FReTr
+         VVN8KKl12tOIzmeMIekk66FQHr0EWywiWE/MSIX0rSYMd4LvjU1yhNIPczudrAO7ab/f
+         QHoa/0X+c/OC0WLeljwD91oYZB1ECiO0OE+6SwzgzrfB8W6c4+j/bM/GJ0jM0Kx2Fsmr
+         SUhxYfm6xTn4rQaB5uOSsa7VHJ1iQ3FO3XmVyj1B/JUNGyFYG99gVJftWtLnP4nkX8np
+         VrdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786553126; x=1787157926;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ftJ30PM4x/m5W9K7gtsE39EZFCZxBzR1FxNyACc2aDI=;
-        b=JkFdhOOF8Qydt5crIPlKeK0mMhi6j+9ITggUZXQGMRWG0N1LysJzclO0LbQWCkK3U9
-         Tft24+cyzu477R6BlJbrFDhed0/Z1E61r3zjte2HJF0oPT0NL6qbVwqkq5Ezn+APYGTQ
-         JXNmLHIOmJiDLUJXYnlebJ+fhnRPDGjmZU2Kx9jmLMDBQ3KOJvPxWljS8jSHgajOUGVf
-         pYkrnWrw9jkxd/ndUUg8ZfSpb++zAUB7djybNBBRlN7VKytMb8QcF7enW+p+MO67MjyC
-         A4V5mcA/WWZlGH9kkugjV4vzeVTMC2Oa6VWkvrDycF9PUoj4Esu4F3zRLo6uY0LxHMty
-         pDCg==
-X-Forwarded-Encrypted: i=1; AHgh+RorOaGvPe2OFaMTbNWxf93LlFS6hgjpBKHuoxAKtlvWgvVZ+M+uYnAvoJtonzwotSJKr2qWxadBn8I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyV1awM3WyWbPZwddY01sUXssutg60gp3pOm0dhjeuVZ7qVvvgh
-	M+oj9EGQkyvV87rpcWquv/hnI/tiaQ0QXcwiiJ+nWuCeCQHfdkeZeo7X
-X-Gm-Gg: AR+sD117offqDCo2f9U6evm82oFQOEAb5GdyU45Ri0FbExFKL/y7TjIYSme74jFrIiy
-	MroQuEdK/YWn8fEOSf3WIJ0IkXErdzCcyadaWQ2RWzb+0A8iJuJEVSZ3xg9pNltFKwgBX5nqrR6
-	U0bFjJ64H0djsXJZ8/uUu3aNME6/IFiglCgUNb84oGvvV3d2lyMq5nwEbocW39remWUvOYrt+Z9
-	9T4KJbkAw5ki2iCbBakcTt7RI1IJOpZt2cD3h1fmfMcMFR3t/KA6OUMWfUb3RlVQt8c40B4rD4z
-	A5+FFPg8/bxKiFwq/pRDVhNFLo5UzqOCRtJTV29scP+G95uQ6Pw49U9HrYC9pwyK6KJuw2rxtVd
-	CapiSThDYHSTlgAiBf35PJIkgg6mO63Ne62agvqboccyiJ8E9XY7dWsyMcVlzzfZUiE0sOn/0qS
-	Oq4WPTVICC+XzeR9Q8SWD+7ogT5bRYa2o38hsGN54wMEGg4Y+o35X3NaztAZTDiPE59sqT6vdRj
-	k5Q8AwJHukOIzpRG5RyOxtVUEvtHdiCphE=
-X-Received: by 2002:a17:90b:5828:b0:38e:5964:97a8 with SMTP id 98e67ed59e1d1-393014c10cemr8570598a91.16.1786553126066;
-        Wed, 12 Aug 2026 09:45:26 -0700 (PDT)
-Received: from debian.ari ([47.30.26.35])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31cf40f7151sm12462621eec.12.2026.08.12.09.45.21
+        d=1e100.net; s=20251104; t=1786559104; x=1787163904;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=/Gu9W7rXgtb1+B1jXnvSAJ86MRbhcY3MT9l/KYXMDwQ=;
+        b=Yr4X4svqG727OicXo0PcMTybC+DbBbpPsSdel+tF0VP7cMdYcjPpsgzKFme5zS9qoP
+         Vzfk3B3qB35NTonOcYSCwAuAomiyhVctdbHKZcX3QujlScHFP1y6gSD1uzIqG/PxULxz
+         PjRmHovMS+PPm/owm4PBiywS1RtN2uUnf+lbzdxgdlpxUvPnHlstOhxiIa2w6G76gvfo
+         P++JIx9lLTNjD+/9jAQ0heLLx0HV05m8iykscaPNh3iL4ebk/hz/OysqiTn/nugqhB/3
+         ttA+eDc034exq3tJJAP0ZTIw/+1LTDP2fUIkCwRg1Sp/ELHPVFqPI9eKDmqL6xaoXrDX
+         wLjg==
+X-Forwarded-Encrypted: i=1; AHgh+RoM5PPXY0r0+Ld/ISofVdz+I+5FqKGywHSh64r/ZdCxaEYWwz0kSN7Bi2G49zYfTc1J0FEnopFOXZc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzP/BFqW4NpZugb4GIMxTsRzfZdUujcXmhMXcDPYaiZxLeaXYR9
+	QN2mYNtHTOvEghlYi3Q0dF+YMk+JuGFxxXrujgJ4Ipc76mn6m6k1AIii
+X-Gm-Gg: AR+sD10mhAWRK8IlBHO12p9sTKpr8v/PV0spbKL8dfSLsEaT50hAfTqkRuLpBQBzjTy
+	F8C+nGOP7s96fCSki9h9hVUuCKuufEsGM6UI4OEmbA82N6cZNVx8svpAEYzALsCgBqVLqD48WzG
+	S/4hnkrDC0fZ0lIEyCCVqFz/mHEYrBFuO6oc8QQcgJV5RsHT7ciNJ+wl8WorIak4P2k62Wd/4MD
+	8lQ3MGO8ns3p7i7ld7ZbZHIaeMJw9Ei4rKv1W21Gg5cm2aMVjvgRQD361boDdW+oNvD9j9eRjzE
+	GXqZt8YFkGl6rkC5ch3Mnsdmg/ReYNu7SshgU/fqxk6WVEmJmAvTKM7M+OmLw4M7/Tg/JLh48Qn
+	0myes+sonFhLq6JPc+u6IrUrs5983wesCuYnSM8UVrKRN+hwc6MTWBvb/IT9iHIfFWC0XWB7Qzk
+	wRfvpwvTGOjJt+vtGcZS/+sV9NzmXjp6Ma4DVHkPzXG9adW1E3CGxE2EO0tMa+bBPTmLC8NQ==
+X-Received: by 2002:a05:6a20:e196:b0:3bc:5284:5445 with SMTP id adf61e73a8af0-3cc553180c7mr484009637.21.1786559103989;
+        Wed, 12 Aug 2026 11:25:03 -0700 (PDT)
+Received: from localhost ([2804:30c:4018:dc00:8be4:f5b8:4af1:4728])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31d6aec3947sm10639103eec.17.2026.08.12.11.25.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2026 09:45:25 -0700 (PDT)
-From: Archit Anant <architanant5@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
-	nuno.sa@analog.com,
-	u.kleine-koenig@baylibre.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v3 8/8] iio: adc: ti-ads1015: inline ads1015_set_conv_mode()
-Date: Wed, 12 Aug 2026 22:14:33 +0530
-Message-Id: <20260812164433.23011-9-architanant5@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260812164433.23011-1-architanant5@gmail.com>
-References: <20260812164433.23011-1-architanant5@gmail.com>
+        Wed, 12 Aug 2026 11:25:02 -0700 (PDT)
+Date: Wed, 12 Aug 2026 15:25:41 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, julianbraha@gmail.com
+Subject: Re: [PATCH v9 6/6] iio: ABI: Encourage differential voltage ABI usage
+Message-ID: <any6pe6PBSR1uCZV@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1785186980.git.marcelo.schmitt@analog.com>
+ <959734dd1111f76c5928515b82dd17f3a9dff5c8.1785186980.git.marcelo.schmitt@analog.com>
+ <20260812050051.4313cd91@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260812050051.4313cd91@jic23-huawei>
 
-The ads1015_set_conv_mode() helper function is a single-line wrapper
-around regmap_update_bits().
+On 08/12, Jonathan Cameron wrote:
+> On Mon, 27 Jul 2026 18:32:18 -0300
+> Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+> 
+> > So far, parts that could only do differential voltage measurements were
+> > only required to have a consistent labeling of their channels by complying
+> > either to voltageY or to voltageY-voltageZ ABI. Over time, code maintainers
+> > came to the conclusion that the voltageY-voltageZ ABI is better suited for
+> > differential-only chips as it provides a simple indication to users that
+> > the channels measure the difference of two inputs.
+> > 
+> > Adjust the ABI documentation to recommend using the voltageY-voltageZ ABI
+> > for chips that do only differential voltage measurements.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> Hi Marcelo
+> 
+> Whilst looking at another series, I noticed we did something different
+> again in the devicetree bindings for those devices that have
+> restrictive muxes that means the positive and negative lines
+> always change together.  For those we let
+> 
+> diff-channels = <1 1> 
+> which tends to map to
+> 
+> in_voltageX-voltageX_raw
 
-With the transition to the FIELD_PREP() macro, the raw register updates
-are now self-documenting and easy to read. Remove the wrapper function
-and inline the regmap calls directly at the call sites.
+Hmm, that sounds awesome. Probably a much more accurate way of presenting the
+channel(s) to user space. Wish I had realized that earlier.
 
-This also allows for the removal of the final custom shift macro,
-ADS1015_CFG_MOD_SHIFT.
+> 
+> I'm not sure if we want to explicitly call that out as an option.
+> There is nothing in your new text saying we can't do that.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Archit Anant <architanant5@gmail.com>
----
- drivers/iio/adc/ti-ads1015.c | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+I'd say probably best to mention the voltageX-X case. These fully differential
+inputs (that have the positive and negative lines changing together) are not uncommon.
+Sure, let me write something more comprehensive.
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 3c78d85321e0..e6b6cf61489f 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -40,8 +40,6 @@
- #define ADS1015_LO_THRESH_REG	0x02
- #define ADS1015_HI_THRESH_REG	0x03
- 
--#define ADS1015_CFG_MOD_SHIFT	8
--
- #define ADS1015_CFG_COMP_QUE_MASK	GENMASK(1, 0)
- #define ADS1015_CFG_COMP_LAT_MASK	BIT(2)
- #define ADS1015_CFG_COMP_POL_MASK	BIT(3)
-@@ -915,16 +913,14 @@ static void ads1015_get_channels_config(struct i2c_client *client)
- 	}
- }
- 
--static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
-+static void ads1015_power_off(void *data)
- {
--	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
--				  ADS1015_CFG_MOD_MASK,
--				  mode << ADS1015_CFG_MOD_SHIFT);
--}
-+	struct ads1015_data *st = data;
- 
--static void ads1015_power_off(void *st)
--{
--	ads1015_set_conv_mode(st, ADS1015_SINGLESHOT);
-+	regmap_update_bits(st->regmap, ADS1015_CFG_REG,
-+			   ADS1015_CFG_MOD_MASK,
-+			   FIELD_PREP(ADS1015_CFG_MOD_MASK,
-+				      ADS1015_SINGLESHOT));
- }
- 
- static int ads1015_probe(struct i2c_client *client)
-@@ -1025,7 +1021,10 @@ static int ads1015_probe(struct i2c_client *client)
- 			return ret;
- 	}
- 
--	ret = ads1015_set_conv_mode(data, ADS1015_CONTINUOUS);
-+	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-+				  ADS1015_CFG_MOD_MASK,
-+				  FIELD_PREP(ADS1015_CFG_MOD_MASK,
-+					     ADS1015_CONTINUOUS));
- 	if (ret)
- 		return ret;
- 
-@@ -1055,7 +1054,10 @@ static int ads1015_runtime_suspend(struct device *dev)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct ads1015_data *data = iio_priv(indio_dev);
- 
--	return ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
-+	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-+				  ADS1015_CFG_MOD_MASK,
-+				  FIELD_PREP(ADS1015_CFG_MOD_MASK,
-+					     ADS1015_SINGLESHOT));
- }
- 
- static int ads1015_runtime_resume(struct device *dev)
-@@ -1064,7 +1066,10 @@ static int ads1015_runtime_resume(struct device *dev)
- 	struct ads1015_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = ads1015_set_conv_mode(data, ADS1015_CONTINUOUS);
-+	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-+				  ADS1015_CFG_MOD_MASK,
-+				  FIELD_PREP(ADS1015_CFG_MOD_MASK,
-+					     ADS1015_CONTINUOUS));
- 	if (!ret)
- 		data->conv_invalid = true;
- 
--- 
-2.39.5
+It would also be best to use that notation for ltc2378. IIRC, it's okay to not
+specify the ADC channels in dt if all channels have the same properties so no
+need to update the dt-doc. For the IIO driver, we have the channel sysfs entries
+changing name. Will send v10 in case there's still any chance to get it updated.
+Also okay to wait for the next release cycle if possible.
 
+> 
+> Worth also noting there are short circuit parts where you
+> really do connect both ends of the differential ADC to the
+> same input pin. I think it can be useful for testing / calibration?
+> 
+> Jonathan
+> 
+
+Thanks,
+Marcelo
+
+> 
+> > ---
+> > No changes in v9.
+> > 
+> >  Documentation/ABI/testing/sysfs-bus-iio | 9 +++++----
+> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> > index 5cc2e82c4997..7446e07b9ab2 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-iio
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> > @@ -162,10 +162,11 @@ Contact:	linux-iio@vger.kernel.org
+> >  Description:
+> >  		Raw (unscaled) differential voltage measurement equivalent to
+> >  		channel Y - channel Z where these channel numbers apply to the
+> > -		physically equivalent inputs when non differential readings are
+> > -		separately available. In differential only parts, then all that
+> > -		is required is a consistent labeling.  Units after application
+> > -		of scale and offset are millivolts.
+> > +		physically equivalent inputs when non-differential readings are
+> > +		separately available. Even though differential-only parts had
+> > +		been merely required to have consistent channel labeling, this
+> > +		ABI is preferred over the non-differential one for those chips.
+> > +		Units after application of scale and offset are millivolts.
+> >  
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_rms_raw
+> >  KernelVersion:	6.18
+> 
