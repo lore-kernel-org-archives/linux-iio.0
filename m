@@ -1,64 +1,64 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583DB4746D8
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 16:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49E93471263
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 16:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786553114; cv=none; b=bVObRfewht55KZeFFZGiU8zufULsdYWpAZ+oA+ueD6Z+njAgvK3HqzjMySDyrBlpDki2JdvXYl/8Vy9J2dIf/q5oVXgwGCUNwtKMvsrkc/bgIQWw505mPNmxqn5iCc1kKSRfFsa8K4lSE80iD14D/hkCFjdpf4GVtOYgGT+0qs0=
+	t=1786553120; cv=none; b=Y+I8N4p95gK/FV57NXlD10X2gmeNpd00RS6FOLxuKjBsbnoD49gOzmVNc9htk3ccBgJufI7A3gY2boOeOCPTYK5VzPJLZFZS1uezgm0isfll0QVqRHi8x+yRkxUYh4S0qVPV9euCIJoSr9VpT/SwElSndNiKRK52ibt2LfibIn8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786553114; c=relaxed/simple;
-	bh=Q3QPfXEGFxoothiTJDvk7VcDlkWfIzKXCxIkN0YIC+8=;
+	s=arc-20240116; t=1786553120; c=relaxed/simple;
+	bh=4fFAtjCq/gogDR/iC9hbCXAyAB0YwdsmCUxXp71uC5g=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Ae5riPMCmB3UpGFGZYF5+9Tx0Bf58vqBizGh34bkSuITZ3EAx5brG/CcNcJ5h2WEjC+sNQrdSXfakYd4RmA9fPd8ryNHdI/C2d/kQGLupZb5HCY7h9eQLpx3I6/qoPLO0VJ2qekZCY00LxNaz/jYM2dxfHJVV66rzv8HLfmDR8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hQZFUUsG; arc=none smtp.client-ip=209.85.214.170
+	 MIME-Version; b=g59ZW4R8WIEYf1fgmmiIU+E6gBEY/rX6LQdlav/TgYPxAwNEgel9/+9Axd2FY307OpnfsMa54fZ3uhMKmWGDQE44Fvcs0nyHBfJomCqxP+irhadWiMtWVPOpaKV6K8KfmWHoctxLwsgFTnWUTdcTpzwsJulN/HU41hJM2+Zxdt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rtEVsdzE; arc=none smtp.client-ip=209.85.216.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hQZFUUsG"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2cfff5f88dbso14352375ad.3
-        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 09:45:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rtEVsdzE"
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-384930ca5e2so1274871a91.3
+        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 09:45:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786553112; x=1787157912; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786553117; x=1787157917; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=nbwfQtvcIrPGhiFm4QeTVdd0S+tOeW++mabq1fEtHi8=;
-        b=hQZFUUsG0WwHAMdcUWmqe0bv2gqwdxWqtBSQ2jMF0svGAWXShtXBN/A5h+8pJL97PL
-         8cSbNPWeSj0DiE2loxSZHLZLNqN6PeROg823gVENR+MHa9HXluisxMSf2ZLVPld3Bzsr
-         Ri6yyFyUrQfJr+uHt671sEVXw25BtJVDBYSJiHOLZnMV0JS28fAAFccq9nsAMhWupnjF
-         7aP+FcM698SHXQOyduHDjjIsRRD+c5QhFHQRTqoCSrS7lNHrj4MI1ObvqgRJ1btu9uQ4
-         lyozjR5wLoHkTxhaJP2o9jT9FzUJMptAY5lcFO7ewgP5ylzEuqfz1MQmxOKGWRnLuJrc
-         HeEg==
+        bh=GUVQGwAdKK76pB/K5waiwIxZzAwMiKqICZUp2BwS6s4=;
+        b=rtEVsdzET4uPL4PY739QC4x72zbkalA86Ntqjf/fYi12sRDitDYE95vhiJUMtLlPTg
+         R/LK+HE9CMdacJoj1Ag1UAyMSzyLoeYHQBfxcJ7Lq6UxjnGVDddCgKQH4q4aEZLk99tV
+         AKewmOpyRPbhZVQ8qeYWvm99N1GITMK//lt2hVDyjN45HpxHrhoQW8PNus3XwENgTbs4
+         52dFhss7F6/4hNnG9QLieZGBdHa0GAxJsawyRYnJj81NeGdyd/L1jIm1tLXiQT0czHTW
+         9dcONbzozFhFz5C2P5z5a+x5EQ0/rkNGCotqCi/0rEbY1oqxZSa3dfdtwOKvO8plSyhR
+         jSfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786553112; x=1787157912;
+        d=1e100.net; s=20251104; t=1786553117; x=1787157917;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nbwfQtvcIrPGhiFm4QeTVdd0S+tOeW++mabq1fEtHi8=;
-        b=MeRBMJJsVOlrmfVdATWFkrirWqBPc2m4PNsp6EfR08zOVLveXkUDJTnq262tfxUeW4
-         l2uX4J52xkjRWSyuKPt1k3ypqk2I7tKkYtJrziApDuc06s/dIJFOegBeILhUdchpDf9Z
-         t3zCROX2c/JfXVEaK3qsstjk10W3+39qecJFMC83vJW6HBXH8lK10xo+1Jf5FYxbFtya
-         l6B7N8wQhEMdm09VKJH9HT+VnPBxRBPUqw3zL8FONd52ryXmi8EOvv2zbjbhfM33ojWf
-         Rcn/8Ve07ExUMlyZVhOjsSmYZZP4/Q3yckFwAWCP96dzEdE+8coiJiqIZsstyO/CdHs6
-         QZNg==
-X-Forwarded-Encrypted: i=1; AHgh+RoZ/1V3jtes7se+/Rrw7TaH7cOqEooF/PDhE75S2qwruf2xxDkZE2ONcVskrtnwrGuM68kYMTLePPU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyu8JaBxuFaWXro9ZQuGRTdDJkixAR/B/A4Z3gFTAJiY8/olWDw
-	xtdQRYn8avSWAoDMIEn7H8/EsBij+rQax0xcpoIw63UC4o3PArms50R2
-X-Gm-Gg: AR+sD11lEI7IEcKwC990vvBNT/Najm8ZNmpKqEOCpodZX3siytnDm9KKhSPyEVi4V2Y
-	gNAnE4/zkzSagn+BsdDPBy4Nl395u284D4SxL1ioG4CGqe4GKlzUPn3C3PKXnLy7MpctZzpWQCC
-	VTE9+ES2q992CV8YopkhGidEcyG/Ovqn4hDvkBxbYbBTc2wL/A5MD4QpbCuNoW6T5bx6sK+yZtb
-	muH5GGQ+XvnFWKEYhji5J8CaWdr+WaJ2E2l9oxa8E1z59FFErasogLBM3SIv1LhcfHVS97JscaC
-	EEwOwMDOspa32N3eLUw4AwOFPXWcdw4eg9xKSdoz93Xb0kal65Le6J5IRQ/D/9IZLcOTe0JVVNw
-	PmuD9GP0MKxExCE1m4rQB4EK+gdot9urFVfG/J+tmwEXk1VuDTxNL/3eskJOUlNDX4MyJnrKQAe
-	7A1wkd4dApPaqHAw9T6v/f10vB8dKLKwkLZL3aejTE3tAx1oMz5xQXhSqP/GprKSyUyB/Eza7Xw
-	gSJT74dd96gI5pAPuPQN8xNmuWPHhQ3pGC4X0L1zSzDBw==
-X-Received: by 2002:a05:6a21:4603:b0:3c3:7f50:fc3a with SMTP id adf61e73a8af0-3cc3f821173mr8451560637.33.1786553112243;
-        Wed, 12 Aug 2026 09:45:12 -0700 (PDT)
+        bh=GUVQGwAdKK76pB/K5waiwIxZzAwMiKqICZUp2BwS6s4=;
+        b=CnxLcvRc6hK9jzisR6WM/T3tmgH3D4cPZV9DSnT/74becdcUQL3LFVBhsClGvOLnGr
+         7neRIOzEP87a/ewZtl/pGzY0l5u8vHzsq9WQSs+t/WcvZKqauRmEViVdii0Vhf+0oFGd
+         ErerRFThFIqFH/oCPZ2mwlfJoZ5whskAlPfxl4s6AP3BhlYZyqdVOSAKtuQKKzevLlHN
+         4tlqwwiI5ewA9edC280c/FpHhvbWb2WQRMzw4w8JOmJO004AUNsH3NfH3iBXTw0QC6aW
+         SD2025JKCZUFOo1PfwElIEm62W9TWLfHUPeh8YO6N6n0rV3w+d0Z0E3peHJiUXCwJHPj
+         JRrg==
+X-Forwarded-Encrypted: i=1; AHgh+Rp3dIvAnHzv6jDieaB/k1e5Ji+DKFC5dG9S49OqfDfVynHl5BccXAR4SgNM96huaodh9He3oIQsYAE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQU/sD4DO6SvG8h668IdAaxDErhoHhz8iwLsPPnHw0B8xn3Ax3
+	7KRyDsb3XxIOGkFrjhagIm6KtTfJq1pYk5D+PSXSDY1O0Q77fHO+BC8y
+X-Gm-Gg: AR+sD11CYqxuGYSxGENP8CfMtKOEDRYSABNX365SBslvbzxaMTKouh36QsRbOHUP35/
+	iLp9GU+oiCoFXJjYCT6f0AKyuk9l7msAVczWh8Lxmeu/fjlNKfoDnMP3cGO8UeWI9YrwmSGWwD5
+	SDDUSLP07QJwjPZdgHXXrOcCouWv3z0zlJUQ1WFAcq6KIN5wIGwj9PD+msJUfg4p0u6NPh7+P/e
+	aUMxw8DT233p7h/w/NJy9mv3Ilozx/LTEou9E18jgy0KmqD0MNVJVYs7dni2lptOIyaMXB6rAZu
+	lsgYb5L9f61b9v4RiOH536XKNnEfxy81neJfJQv55eHnbOYGXiTy+98ES/lpLP3E70ogqssGIRG
+	DP4t1rFBWKHf6X4/QaTtFp81kmzlrC+/8kLVdO+34NSxdAxFlIDQ51ZtWvHlCsFyivEUp1Hg9Ve
+	AkANKnPbOsPB2Lol4dp7W7g4+JenCXIn50YFFkolthl9msqfpl4fdQbAlajkfcX8R8UQjh749zi
+	POOm5O/AMVgVAAbvaFQzVL8VIRvOatmkGA=
+X-Received: by 2002:a17:90b:540c:b0:381:3b5d:30f4 with SMTP id 98e67ed59e1d1-3930124d1b0mr7207591a91.1.1786553117024;
+        Wed, 12 Aug 2026 09:45:17 -0700 (PDT)
 Received: from debian.ari ([47.30.26.35])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31cf40f7151sm12462621eec.12.2026.08.12.09.45.07
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31cf40f7151sm12462621eec.12.2026.08.12.09.45.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2026 09:45:11 -0700 (PDT)
+        Wed, 12 Aug 2026 09:45:16 -0700 (PDT)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -68,9 +68,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v3 5/8] iio: adc: ti-ads1015: use dev_err_probe() for error handling
-Date: Wed, 12 Aug 2026 22:14:30 +0530
-Message-Id: <20260812164433.23011-6-architanant5@gmail.com>
+Subject: [PATCH v3 6/8] iio: adc: ti-ads1015: convert to fully managed resources
+Date: Wed, 12 Aug 2026 22:14:31 +0530
+Message-Id: <20260812164433.23011-7-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260812164433.23011-1-architanant5@gmail.com>
 References: <20260812164433.23011-1-architanant5@gmail.com>
@@ -82,89 +82,110 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Simplify the error handling paths in ads1015_probe() and
-ads1015_client_get_channels_config()  by converting dev_err()
-calls that are immediately followed by a return statement
-over to the modern dev_err_probe() helper.
+Refactor the driver to use devm_ allocations and power
+management, allowing for the complete removal of the
+ads1015_remove()
 
-Note: This patch takes advantage of the previously introduced
-local 'dev' pointer when converting the legacy
-dev_err(&client->dev, ...) calls, avoiding unnecessary
-code churn.
+Key changes:
+- Use devm_add_action_or_reset() to ensure the ADC is safely powered
+down upon driver removal.
+- Move to devm_pm_runtime_set_active_enabled() to manage the runtime
+PM lifecycle.
+- Convert iio_device_register() and mutex_init() to their devm_
+variants.
+- Remove the thus obsolete ads1015_remove() function.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Archit Anant <architanant5@gmail.com>
 ---
- drivers/iio/adc/ti-ads1015.c | 32 ++++++++++++++------------------
- 1 file changed, 14 insertions(+), 18 deletions(-)
+ drivers/iio/adc/ti-ads1015.c | 43 ++++++++++++++----------------------
+ 1 file changed, 16 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index c88904d7190d..895bce7859d2 100644
+index 895bce7859d2..f92ec5941c47 100644
 --- a/drivers/iio/adc/ti-ads1015.c
 +++ b/drivers/iio/adc/ti-ads1015.c
-@@ -883,18 +883,16 @@ static int ads1015_client_get_channels_config(struct i2c_client *client)
+@@ -928,6 +928,11 @@ static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
+ 				  mode << ADS1015_CFG_MOD_SHIFT);
+ }
  
- 		if (!fwnode_property_read_u32(node, "ti,gain", &pval)) {
- 			pga = pval;
--			if (pga > 5) {
--				dev_err(dev, "invalid gain on %pfw\n", node);
--				return -EINVAL;
--			}
-+			if (pga > 5)
-+				return dev_err_probe(dev, -EINVAL,
-+						     "invalid gain on %pfw\n", node);
- 		}
++static void ads1015_power_off(void *st)
++{
++	ads1015_set_conv_mode(st, ADS1015_SINGLESHOT);
++}
++
+ static int ads1015_probe(struct i2c_client *client)
+ {
+ 	const struct ads1015_chip_data *chip;
+@@ -948,7 +953,9 @@ static int ads1015_probe(struct i2c_client *client)
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
  
- 		if (!fwnode_property_read_u32(node, "ti,datarate", &pval)) {
- 			data_rate = pval;
--			if (data_rate > 7) {
--				dev_err(dev, "invalid data_rate on %pfw\n", node);
--				return -EINVAL;
--			}
-+			if (data_rate > 7)
-+				return dev_err_probe(dev, -EINVAL,
-+						     "invalid data_rate on %pfw\n", node);
- 		}
+-	mutex_init(&data->lock);
++	ret = devm_mutex_init(dev, &data->lock);
++	if (ret)
++		return ret;
  
- 		data->channel_data[channel].pga = pga;
-@@ -978,18 +976,16 @@ static int ads1015_probe(struct i2c_client *client)
- 	data->regmap = devm_regmap_init_i2c(client, chip->has_comparator ?
- 					    &ads1015_regmap_config :
- 					    &tla2024_regmap_config);
--	if (IS_ERR(data->regmap)) {
--		dev_err(&client->dev, "Failed to allocate register map\n");
--		return PTR_ERR(data->regmap);
--	}
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+				     "Failed to allocate register map\n");
+ 	indio_dev->name = ADS1015_DRV_NAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -1029,42 +1036,25 @@ static int ads1015_probe(struct i2c_client *client)
  
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
- 					      ads1015_trigger_handler,
- 					      &ads1015_buffer_setup_ops);
+ 	data->conv_invalid = true;
+ 
+-	ret = pm_runtime_set_active(dev);
++	ret = devm_add_action_or_reset(dev, ads1015_power_off, data);
+ 	if (ret)
+ 		return ret;
++
+ 	pm_runtime_set_autosuspend_delay(dev, ADS1015_SLEEP_DELAY_MS);
+ 	pm_runtime_use_autosuspend(dev);
+-	pm_runtime_enable(dev);
+ 
+-	ret = iio_device_register(indio_dev);
 -	if (ret < 0) {
--		dev_err(&client->dev, "iio triggered buffer setup failed\n");
--		return ret;
+-		pm_runtime_disable(dev);
+-		pm_runtime_set_suspended(dev);
++	ret = devm_pm_runtime_set_active_enabled(dev);
++	if (ret)
++		return ret;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
+ 		return dev_err_probe(dev, ret,
+ 				     "Failed to register IIO device\n");
 -	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret,
-+				     "iio triggered buffer setup failed\n");
- 
- 	if (client->irq && chip->has_comparator) {
- 		unsigned long irq_trig = irq_get_trigger_type(client->irq);
-@@ -1042,10 +1038,10 @@ static int ads1015_probe(struct i2c_client *client)
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Failed to register IIO device\n");
- 		pm_runtime_disable(dev);
- 		pm_runtime_set_suspended(dev);
--		return ret;
-+		return dev_err_probe(dev, ret,
-+				     "Failed to register IIO device\n");
- 	}
  
  	return 0;
+ }
+ 
+-static void ads1015_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-	struct ads1015_data *data = iio_priv(indio_dev);
+-	int ret;
+-
+-	iio_device_unregister(indio_dev);
+-
+-	pm_runtime_disable(&client->dev);
+-	pm_runtime_set_suspended(&client->dev);
+-
+-	/* power down single shot mode */
+-	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
+-	if (ret)
+-		dev_warn(&client->dev, "Failed to power down (%pe)\n",
+-			 ERR_PTR(ret));
+-}
+-
+ static int ads1015_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+@@ -1147,7 +1137,6 @@ static struct i2c_driver ads1015_driver = {
+ 		.pm = pm_ptr(&ads1015_pm_ops),
+ 	},
+ 	.probe		= ads1015_probe,
+-	.remove		= ads1015_remove,
+ 	.id_table	= ads1015_id,
+ };
+ 
 -- 
 2.39.5
 
