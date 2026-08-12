@@ -1,78 +1,157 @@
-Received: from sg-2-1.ptr.blmpb.com (sg-2-1.ptr.blmpb.com [71.18.227.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A4030FF30
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 07:12:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=71.18.227.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00BA533D4F2;
+	Wed, 12 Aug 2026 07:30:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786518763; cv=none; b=jhAXOKmRvaNZaAOVRQpVVRE+Thv7d3NAU+x5h/uk28PXCy0RpHOKEc63bwdRhzum3o8Nm/i3oqTLnzsBtl+p76yhIWJkPZejQvyyyQmOTWcWRSg+lcNJ+/7LOb6B8CdXPYnwt50sTZRU4E+IC20krjso857JezPH6+1Mx1MBbdM=
+	t=1786519835; cv=none; b=TXHCCRITY+mzstGQpe55WfGbTaeiLa9OJYKwbE09PuVNc2bJ1HzIuN31xWcqVThSi7FA/qZZeuWOUwINrerU74GwZeBfNTlYHAtRDYKSzNYg08TR7gvyWhyU0CV5MEl9ZEzCBiCtOi/fDU458OqNKw8561NOfM08+8Vdtw+yvCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786518763; c=relaxed/simple;
-	bh=v2mdT8xBZcqIC5YgWQChSYzR/3O4S5EIm0wuZ9GCi+8=;
-	h=From:Date:Subject:In-Reply-To:To:Cc:Message-Id:Mime-Version:
-	 References:Content-Disposition:Content-Type; b=GSALIPVbCEJoaJaYrFLm9cTbWqGUmH69Rf5SsL2TFcLH1vgP647w5ob7fLUzFRw6cOcLRY5KRQ+E7NSJAQk1WNSTv+WlQJPRuwscb8gRn6mlCNADYy/Wq9B5poS/Qt4eeWv9jPQnClgGw6uWIn0HT2pbgMwN7R+Cnfz0Jvm7WIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc; spf=pass smtp.mailfrom=cherr.cc; dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b=AmHnaR4s; arc=none smtp.client-ip=71.18.227.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cherr.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cherr.cc
+	s=arc-20240116; t=1786519835; c=relaxed/simple;
+	bh=1q9oFkMiQHtwe4YawVM+nQSG2FrXZBey9Q2BKnaciJA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M3W7/2P2v7KwSi8PM+O8av5Ic9lrq/D94hf07dgQfGh9piyzdaJTTJcf+RvBX6NyZFhxLhAh+5/ZbsoG/d3z3Dfr84G0h+e/ykb3lIRhCCYj5Q2zXpU6jQozpwdIccqDzLJQcvlyCULvbJ8QZcJnuWphwZ3U5wZJdLSXvvaHJiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZRsoY3Oh; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cherr.cc header.i=@cherr.cc header.b="AmHnaR4s"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604220257; d=cherr.cc; t=1786518744; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=v2mdT8xBZcqIC5YgWQChSYzR/3O4S5EIm0wuZ9GCi+8=;
- b=AmHnaR4s4DQrN76ZZ/cDFBhcuUEJYY5x1VqFoXRnRHGSEyrv5JdYeBSH//VHp38utBCzak
- Bh+lxTI/d57VBJGeinJBK642ghuZSP1rr+6EPC+zkFOPGYe0LYkKljmKQTzhmwys1KtMLk
- oIFeHEM67XDzBcx1g/hepmOwtX4++PZgyHPzjAYO2bzEqp5la6VBGLv6J5aMxE0GfYKXb+
- h6IS274C3ZZgYdbvruIMp/SPoJeGJfKkDd/lJWI/1a3P+o8gvHtt1PN0Wl4GvbxSexzQTk
- 8FhNH81+qji3wIxbJK62tEakAZf7Vwokh0DnIdrMr7BrQINqecrSRriyiQ+sAA==
-From: "Shengzhuo Wei" <me@cherr.cc>
-Date: Wed, 12 Aug 2026 15:12:18 +0800
-X-Original-From: Shengzhuo Wei <me@cherr.cc>
-Subject: Re: [PATCH RESEND v2] iio: accel: fxls8962af: clamp FIFO sample count
-In-Reply-To: <20260812055459.4163c1c0@jic23-huawei>
-X-Lms-Return-Path: <lba+26a7c1cd6+eb77f5+vger.kernel.org+me@cherr.cc>
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Shengzhuo Wei" <me@cherr.cc>, "David Lechner" <dlechner@baylibre.com>, 
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
-	"Andy Shevchenko" <andy@kernel.org>, "Sean Nyekjaer" <sean@geanix.com>, 
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
-	<stable@vger.kernel.org>, "Joshua Crofts" <joshua.crofts1@gmail.com>
-Content-Transfer-Encoding: quoted-printable
-Received: from nobug ([202.112.51.208]) by smtp.feishu.cn with ESMTPS; Wed, 12 Aug 2026 15:12:20 +0800
-Message-Id: <anwc0sf8pLdZtyEq@nobug>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZRsoY3Oh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786519834; x=1818055834;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=1q9oFkMiQHtwe4YawVM+nQSG2FrXZBey9Q2BKnaciJA=;
+  b=ZRsoY3OhrNV+8puMaff5c82Qe+OzS6IINVs9T7UFTV8W28uFsCxuWdcu
+   K0OCr/9SPjsTFecI7K8iLS/RPAX/73V8Uvm2fvq06wvLbVpPvophjSKnQ
+   Yxnhi8UtR1PVgL8tsy4otN6qlntLRoScvaL9sBi3TzJVbhtilLmrJqjtX
+   WZOSjsDzjtUoMCXlR+o5tSOP9veQPa8xkUFf3XIr0s2y2lR7Nszy2PKDi
+   iz2JYm7/3lzeNqc5OLd8OzCGi8+9wjPUAJbhIr5G+hojJTt+CnWF1PBUC
+   4wwcXlVM6m0mTOTgugZoQgp06sjxLv/qeh3xEoz1IXqlI+1FGlnz3iaWI
+   w==;
+X-CSE-ConnectionGUID: R3Br4zBpTHWc6Wd2LulEaw==
+X-CSE-MsgGUID: uSm0yyksREW5icJt2ds/Ew==
+X-IronPort-AV: E=McAfee;i="6800,10657,11872"; a="90940813"
+X-IronPort-AV: E=Sophos;i="6.25,219,1779174000"; 
+   d="scan'208";a="90940813"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2026 00:30:34 -0700
+X-CSE-ConnectionGUID: h+xqnM5dQ6SjuvnHS6BP/w==
+X-CSE-MsgGUID: K9MzD47fTzOKsysg22l6Gw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,219,1779174000"; 
+   d="scan'208";a="267062202"
+Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.92])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2026 00:30:31 -0700
+Date: Wed, 12 Aug 2026 10:30:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: adc: ti-ads112c04: Add support for TI
+ ADS112C04
+Message-ID: <anwhFL8PeCMmT9xS@ashevche-desk.local>
+References: <20260811-ti-ads112c04-driver-v4-0-ae704ac17241@gmail.com>
+ <20260811-ti-ads112c04-driver-v4-2-ae704ac17241@gmail.com>
+ <anrt5mJBz5h-a3OL@ashevche-desk.local>
+ <CAF7HswP7+79Y5M92PVoHJ_H_J6rU=Q0p5qWDm1gcA2mPfg0VDw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20260809-fxls8962af-fifo-v2-1-80ff1be1f1f2@cherr.cc> <20260810003101.3a2d1967@jic23-huawei> <anlTG3uxHEkyxtQv@pve> <20260812055459.4163c1c0@jic23-huawei>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAF7HswP7+79Y5M92PVoHJ_H_J6rU=Q0p5qWDm1gcA2mPfg0VDw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-=E5=9C=A8 2026-08-12 05:54=EF=BC=8CJonathan Cameron =E5=86=99=E9=81=93=EF=
-=BC=9A
+On Wed, Aug 12, 2026 at 10:58:48AM +0800, Kyle Hsieh wrote:
+> On Tue, Aug 11, 2026 at 5:39 PM Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > On Tue, Aug 11, 2026 at 10:48:38AM +0800, Kyle Hsieh wrote:
 
-> Oops. That one hit me on a different day and seems didn't think of
-> it in the same way.
->=20
-> At this point I think it's probably not worth more churn for something
-> we don't really expect to see in practice.
->=20
+...
 
-OK, dropping mine.
+You quoted tons of comments to which you haven't replied. Are you agree with
+them?
 
-> However let's do things better for any other drivers we apply
-> similar changes to.
->=20
+...
 
-Will do in the following patches.
+> > > +                     if (pair[0] == 0 && pair[1] == 1)
+> > > +                             spec->address = 0x00;
+> > > +                     else if (pair[0] == 0 && pair[1] == 2)
+> > > +                             spec->address = 0x01;
+> > > +                     else if (pair[0] == 0 && pair[1] == 3)
+> > > +                             spec->address = 0x02;
+> > > +                     else if (pair[0] == 1 && pair[1] == 0)
+> > > +                             spec->address = 0x03;
+> > > +                     else if (pair[0] == 1 && pair[1] == 2)
+> > > +                             spec->address = 0x04;
+> > > +                     else if (pair[0] == 1 && pair[1] == 3)
+> > > +                             spec->address = 0x05;
+> > > +                     else if (pair[0] == 2 && pair[1] == 3)
+> > > +                             spec->address = 0x06;
+> > > +                     else if (pair[0] == 3 && pair[1] == 2)
+> > > +                             spec->address = 0x07;
+> >
+> > I would do this as a 4x4 table
+> >
+> >         -1, 0, 1, 2,
+> >         3, -1, 4, 5,
+> >         -1, -1, -1, 6,
+> >         -1, -1, 7, -1,
+> >
+> > With that done you can even supported the swapped cases
+> >
+> >         -1, 0, 1, 2,
+> >         3, -1, 4, 5,
+> >         1, 4, -1, 6,
+> >         2, 5, 7, -1,
+> >
+> > (but I haven't studied the code if it's toughly relies on the pair[0]/pair[1]
+> >  values to be in a strong order after the address being assigned).
+> I will apply your first 4x4 table for diff-channels - it maps directly to
+> the MUX encoding and is much more readable than the if-else chain.
+> 
+> I did not apply the second (swapped) table. Entries like [2][0] would
+> map to MUX value 1, which is AINP=AIN0/AINN=AIN2, i.e. the opposite
+> polarity, so it would silently return negated values. Supporting swapped
+> pairs properly would need a per-channel inversion flag and negation
+> after conversion, which I'd rather leave out of this initial minimal
+> implementation.
 
-> Thanks,
->=20
-> Jonathan
->=20
+I see, thanks for the information. I agree with your choice.
 
-Best reagrds,
-Shengzhuo
+...
+
+> > > +     /* Requesting OUT_HIGH asserts the active-low reset pin immediately */
+> > > +     reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+> > > +     if (IS_ERR(reset_gpio))
+> > > +             return PTR_ERR(reset_gpio);
+> >
+> > Why reset-gpio driver can't be used instead?
+> David suggested the reset controller framework on v1, but after I moved
+> to gpiod in v2 he suggested GPIOD_OUT_HIGH to simplify it, so I kept
+> gpiod. Switching now would mean changing the binding, which already has
+> a Reviewed-by - happy to do it if you both prefer.
+
+I'm not sure how the binding might be affected by that. reset-gpio should be
+direct replacement of the custom "reset" GPIO handling in the driver. If there
+is a problem with reset framework (on initial state), perhaps it needs to be
+addressed there?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
