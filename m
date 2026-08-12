@@ -1,44 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C102BB13;
-	Wed, 12 Aug 2026 04:48:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48AC229BD8C;
+	Wed, 12 Aug 2026 04:52:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786510117; cv=none; b=Ng5fXQWmIiSrHxSX/rZobQ56PZv4if6UwH8JqK1baRARJ7KIygp2uusXsns/vvjDI5ZdtKKDWfkALeaWWWgm8Ob/WFOZPS+VSZ0eypUg//9pvF5C/w8CcvVzazVN7fb4BtlQWVWdPjgAzmJmvnIVFMjAY2Y5UXCjTVUY8PhFjXI=
+	t=1786510338; cv=none; b=fC4X9+V18DWHMecqnFy19+cVSBTXqkCUxke7B3OB8nvCfABbXrrieU/rzoGPgrWJLa9IhsMUOHfTbjYNV86Iu8MRxydwZ5V8/vqeOz65w5s5V0aVt+BaX++ddVrJ2C3QLIdUy/fhhTe9paV2wBt4NKTICAeH3/CsVTH8Cn9Jjvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786510117; c=relaxed/simple;
-	bh=duxxv6G0rgLv1xlnmMUqBnsy5Pkei0zYUsQaGzJKGic=;
+	s=arc-20240116; t=1786510338; c=relaxed/simple;
+	bh=E18uZqsou2hQskz0XH8/gmSZs0TtKtUB7KnfUL81L/c=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hnJqlBu9y1c6D3NZqFWmIn3W241/Twfj6wXExYqxQDgVNoRCX523fH3reUl4vTedNa6Hz0/oDnCLcCJIcxgHuafvtrSumOQ+DwTpDT7ZMY6BD4gi8MNTSZerKVV9R/RePkdujIVtp0WVS5+ktDxx/mNkjeDThnK/pIM4RC1Lpx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PGD46dmq; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=nYaEidSqpXMQwxiM++cKsZv7wJ1h4Fie3amhiEGLg2ytKL85LCaeXfA2NCm79A4WWPxUS7sMvtF2qtujuEWN/wmIVkq/m8+JMIslRsjWmkaZJjTPNDfthRJynDFAiGZn7Gq9zBdD+JfX3Cijn1iSQP6tFwIx8sTsppS1GSMyx2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SYO2fMu4; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PGD46dmq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC77B1F000E9;
-	Wed, 12 Aug 2026 04:48:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SYO2fMu4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 138811F000E9;
+	Wed, 12 Aug 2026 04:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786510115;
-	bh=dMo8lMjG8gqzkvVwytJqUgoCl4n2bz2YkCquvk/fp9M=;
+	s=k20260515; t=1786510337;
+	bh=6+/13sxdSI5l7PVKZVYBy/IC5KzPDNSBnwCNr9212TI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=PGD46dmqQ8H6xKyEg/J96Y/hSzjPLdnyWDqji63WYR9MbKrZ8C1dyRgHxRTtTdFzo
-	 bQt5M9pFG2rqlxb/qm5W1WLOqfYf6OgpXpastOtO4eFVqpybGtSTfo8YYTAQ7NJNyn
-	 VEEbzl8zuiLFwq2Y25IGDP1nbH/JJX1zTuMd7LXcunv0bhJbXC/fldrEqTHcpYZkjg
-	 D66KroVAWyElNADahoaNJLdm5ILgF+37MxkIWkxIqMzL5vzKLzlZa7G376z7tKg4jO
-	 Vg07ziFlT1ZaOcWZPYS3MJUqdPGp9pXEtz0HlKLn5sfX+ggQb7Kc4i85XX1psan+Jj
-	 xXVuWueDpbz0A==
-Date: Wed, 12 Aug 2026 05:48:27 +0100
+	b=SYO2fMu4Q2YfFdcXx+2bDe/QASxDBfk7vaV6ou5Rn/0bLj8HwJs9X4kmR2DwEHCQR
+	 w8e3cN+2OzbovjFvkgcPHDcRaVS/bjByWrzfEJl1exyiyTc8mi+rWJwF5cCNPAvp2V
+	 Cg//2KHKZ4I2iBSloMnl8tDCuqAGhIMbYczmvnN8Gtse0njpCZH6xucfyrk04iO/yU
+	 xiP20MvZCeJuxDOjuykpylyU0fyBIAcAU82c2fGd9XBRjFBoskJqPHkciXJXTc0AlD
+	 nPhsup+5nWWgj2hiqeNbCHG6YNMpx0SLwk/R2+BIJofHH2SYrSBXfBITtWRr+ZDMMr
+	 0Xa/ZIELU4dvw==
+Date: Wed, 12 Aug 2026 05:52:02 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Cc: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org, Vinod Koul
- <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, David Lechner <dlechner@baylibre.com>, Andy Shevchenko
- <andy@kernel.org>, Frank Li <Frank.Li@nxp.com>
-Subject: Re: [PATCH v2 6/9] iio: buffer-dmaengine: Use dma_slave_caps bus
- width accessors
-Message-ID: <20260812054827.7d97a564@jic23-huawei>
-In-Reply-To: <20260810-dmaengine-support-wider-dma-masks-v2-6-1f7b798d035f@analog.com>
-References: <20260810-dmaengine-support-wider-dma-masks-v2-0-1f7b798d035f@analog.com>
-	<20260810-dmaengine-support-wider-dma-masks-v2-6-1f7b798d035f@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Yash Suthar <yashsuthar983@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: accel: bmc150: use IIO_DECLARE_BUFFER_WITH_TS
+Message-ID: <20260812055202.1fcc271e@jic23-huawei>
+In-Reply-To: <anmTFZkbbSqZ-5CY@ashevche-desk.local>
+References: <20260808220236.421832-1-yashsuthar983@gmail.com>
+	<20260809055442.434972-1-yashsuthar983@gmail.com>
+	<20260809235934.6045eab8@jic23-huawei>
+	<20260810001852.6afc2c2e@jic23-huawei>
+	<anmTFZkbbSqZ-5CY@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,56 +48,41 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 16:06:47 +0100
-Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+On Mon, 10 Aug 2026 12:00:05 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Query the minimum supported source and destination bus widths through
-> the new dma_slave_caps_get_{src,dst}_width_min() helpers rather than
-> decoding the raw legacy u32 width masks. This keeps the buffer working
-> with DMA controllers that advertise bus widths via the new bitmap
-> representation.
->=20
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-I'm currently assuming this will all go through a single tree
-(and not mine) As such
+> On Mon, Aug 10, 2026 at 12:18:52AM +0100, Jonathan Cameron wrote:
+> > On Sun, 9 Aug 2026 23:59:34 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:  
+> > > On Sun,  9 Aug 2026 11:24:42 +0530
+> > > Yash Suthar <yashsuthar983@gmail.com> wrote:  
+> 
+> ...
+> 
+> > Actually no. I've backed that out. 
+> > 
+> > Given the data alignment is fixed, if we were going to do this it would
+> > be clearer as 
+> > struct {
+> > 	s16 chans[3]; //see later, I believe this should be __le16
+> > 	aligned_s64 timestamp;
+> > };
+> > 
+> > But that is very similar to the structure that follows immediately after
+> > this, but that has __le16 chans[] 
+> > 
+> > So what is going on here?  
+> 
+> AI slop?
 
-Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+It's the original code I'm complaining about. Been around a while!
+So for once, nope (I think!)
 
-> ---
->  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 15 +++++++--------
->  1 file changed, 7 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers=
-/iio/buffer/industrialio-buffer-dmaengine.c
-> index 98acce909854..855e3662cd3d 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> @@ -229,14 +229,13 @@ static struct iio_buffer *iio_dmaengine_buffer_allo=
-c(struct dma_chan *chan)
->  		return ERR_PTR(-ENOMEM);
-> =20
->  	/* Needs to be aligned to the maximum of the minimums */
-> -	if (caps.src_addr_widths)
-> -		src_width =3D __ffs(caps.src_addr_widths);
-> -	else
-> -		src_width =3D 1;
-> -	if (caps.dst_addr_widths)
-> -		dest_width =3D __ffs(caps.dst_addr_widths);
-> -	else
-> -		dest_width =3D 1;
-> +	src_width =3D dma_slave_caps_get_src_width_min(&caps);
-> +	if (src_width =3D=3D DMA_SLAVE_BUSWIDTH_UNDEFINED)
-> +		src_width =3D DMA_SLAVE_BUSWIDTH_1_BYTE;
-> +	dest_width =3D dma_slave_caps_get_dst_width_min(&caps);
-> +	if (dest_width =3D=3D DMA_SLAVE_BUSWIDTH_UNDEFINED)
-> +		dest_width =3D DMA_SLAVE_BUSWIDTH_1_BYTE;
-> +
->  	width =3D max(src_width, dest_width);
-> =20
->  	INIT_LIST_HEAD(&dmaengine_buffer->active);
->=20
+
+Jonathan
+
+> 
 
