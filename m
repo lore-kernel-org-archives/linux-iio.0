@@ -1,37 +1,37 @@
 Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE54B45C6EE;
-	Wed, 12 Aug 2026 14:30:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0181845D5D0
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 14:30:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786545060; cv=none; b=vFn55jYxIGDc/1c1ElYXaT2AkB+08MkQ9ga9vokWl5xXZSK9zuGsq9K5JQ9t9R37Hk3ozcrdvNUe2wobrckxoJgOFqYt5a9zn6HDX0Fltx00oF0awZqzSjXwWbRB2Js00Ly7ZDPRcXqATqWxcCmfGcaObMycfjFlecjnFiQ5O6Y=
+	t=1786545063; cv=none; b=mgw9l55KY7iD8UiIyWpfqkrGqi/9MYQZfuCLreMMdZ4TBQFdNpcBIAw3tKZpRQwUsfbD3H2VeURDucJJuSzyBjH6viKHcpkW4Z/h/UTujD4v4j4qvgSVQgq+SP/1rFQM0aVRYoNjFhsyrcbB5V8fwpAyDIfcAI4rv6Qn3jGAUX8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786545060; c=relaxed/simple;
-	bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+	s=arc-20240116; t=1786545063; c=relaxed/simple;
+	bh=tzfxlXisttEhbwqNjklxdIHoQtWVVaaErftAi88NK6M=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=q+QvharlXy+1PmA4UqWfeeIXObKMF/XT3+Hp4JvRSh5vZcTzS1v+8KHGszfMuXOtWwx5UVuhXUkRgSEa9SSkpoJGxkHDF5x3ITxRNNgIW9DPDg8cQSPGijJ1oOGe/V4+u2YCzJYwMa4u3Ern/Gj1d9qa58NU/0JghHUmsdHO2KA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=IxRySKpC; arc=none smtp.client-ip=79.135.106.113
+	 In-Reply-To:To:Cc; b=Rm66PwXOTSaOiUZiGIbPlh98RG6o5myZy35M4PlB9+adSA84jBxKyI8vRuX//CMAVi6tPEOxmno5j8ycs0rGD4RkNVlTglnOE91ki/xdi1iJdbyGBZ9iljulrIvBdCXilVNBJBSzp+jxvJQfnnvmT0JWqHYyWgYFJM6lG/d+GxU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=sjTuthNM; arc=none smtp.client-ip=79.135.106.113
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="IxRySKpC"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="sjTuthNM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786545048; x=1786804248;
-	bh=sNcmNScEhpmF/4cOJIi/n2ntDi0iE/3WYicZo1sq86I=;
+	s=protonmail; t=1786545050; x=1786804250;
+	bh=XJ9dsEYOltvcV8dNsiIVCzLj7uR8oL/YLG98qkFwY0A=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=IxRySKpCbJQ2G+7jOGeEm+8nBRWEcUaYAT1t9EC2hZTnLHBetgZADEhCXs5FavugA
-	 QwogtPmiorj6TY4tRyByFQR/URHQgZAYCu5reXoBUEmTmxjcfICpF1QhX8TRBHTIES
-	 HLH7A3WleR4hkPGJ8Xdogj7eMbs1+UeKMAqrdIcUIAmtWoAUBCQq/hZDpYW98HUNUb
-	 CH5bNr4UN9NlHm7rO2QTAAzoGA+jicu4kSBXY3oNgjXq04bc3Saox5HMgEicC/2JCo
-	 EdhvDpUWiBKaIjJYMMQc2XuR4b/w+E48DejUTvUahGDCJr7m9KhQ8LB5xJE2a6zDlX
-	 VgOZYqDEvWygg==
-X-Pm-Submission-Id: 4hKrWS3nB9z1DDs4
+	b=sjTuthNM1upNX1ST2lG75KmGa4Jpd+L+GZ+stZwv7MZJVvwwnZcSm84AmGaH6weMc
+	 qHzPx/Lvv4+3p/yjngj7WeJ0NAnSUoo0S/dftjGGZWl8ZKvEUuhH000cWEFmRM74Jp
+	 35AVR6AAyAUxO4sqkr8iT9XLWDxgh/qcNQ/P4UvajdHRkuaqTXBuR2RteJds7asgCX
+	 scdMQVHQxzmN8KqYo4b/mYdMH7hNDgpjM0MpFdHLrauggu023A+zlyFc8rn46S4Vz3
+	 vhgmdo4JNjxx7Ymg77YXd30GdZhNfhwqy8PmikMI4Y3CrsmtOfjYuyp3AACwsby7EP
+	 vkDxzmuMnoESg==
+X-Pm-Submission-Id: 4hKrWY00zGz2Sd2n
 From: Esben Haabendal <esben@geanix.com>
-Date: Wed, 12 Aug 2026 16:30:32 +0200
-Subject: [PATCH v4 1/6] dt-bindings: iio: accel: mma8452: Add
- drive-open-drain
+Date: Wed, 12 Aug 2026 16:30:33 +0200
+Subject: [PATCH v4 2/6] iio: accel: mma8452: Optimize struct mm8452_data
+ member orders
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260812-mma8452-open-drain-v4-1-bfca15d02b59@geanix.com>
+Message-Id: <20260812-mma8452-open-drain-v4-2-bfca15d02b59@geanix.com>
 References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
 In-Reply-To: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -52,42 +52,53 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Andy Shevchenko <andy@kernel.org>, 
  Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joshua Crofts <joshua.crofts1@gmail.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786545039; l=1037;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786545039; l=982;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
- b=bOvti1R9EE6QzjIpsHKFDKTfaR5Or9UJi5wEZPsTnQLNvYobzNFiuAP4Lx1xo/CfF6uBQm/a8
- A/wimolQ6PgCa4JmJkD6SJWaX+aT+77tOqYNYn0NFDDpQghTvbgH4AX
+ bh=tzfxlXisttEhbwqNjklxdIHoQtWVVaaErftAi88NK6M=;
+ b=zyRfIA/5/E3+gLwpDcATtpEZwkeHneIpnlXGSWJUvb6Db0g0uG4k+/i0C4KufOY+7rCQZFmPt
+ Ee7mqrHbPYuAyfM+ro1X59U90Vv9BlLro9xmvNGG+J5aFYEvhSxCYMN
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Add new boolean to configure selected interrupt pin to open drain instead
-of the default push-pull mode.
+Reorder struct mma8452_data members to avoid holes.
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/accel/mma8452.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
-index b0dd2b4e116a..20701aa725d0 100644
---- a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
-@@ -39,6 +39,12 @@ properties:
-     minItems: 1
-     maxItems: 2
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 7d683686dd9d..f645a5c6fd1c 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -106,10 +106,7 @@ struct mma8452_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+ 	struct iio_mount_matrix orientation;
+-	u8 ctrl_reg1;
+-	u8 data_cfg;
+ 	const struct mma_chip_info *chip_info;
+-	int sleep_val;
+ 	struct regulator *vdd_reg;
+ 	struct regulator *vddio_reg;
  
-+  drive-open-drain:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: the interrupt line will be configured as open drain, which is
-+      useful if several sensors share the same interrupt line. (This binding is
-+      taken from pinctrl.)
+@@ -118,6 +115,10 @@ struct mma8452_data {
+ 		__be16 channels[3];
+ 		aligned_s64 ts;
+ 	} buffer;
 +
-   vdd-supply: true
-   vddio-supply: true
++	int sleep_val;
++	u8 ctrl_reg1;
++	u8 data_cfg;
+ };
  
+  /**
 
 -- 
 2.55.0
