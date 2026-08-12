@@ -1,81 +1,81 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF7C381E9C
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 02:51:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF11370D7C
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 02:55:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.178
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786503070; cv=pass; b=GGWsq1JW1ISb9TwkEipu6N5uso4ImL7Mc8EWiYJfP5mJtXtAOcN2ukUnqwdD6ZC7H2RDeb2gnu6aY99yx/d9XznETYg5AwhkstZ4fz0H83lGAyuarV7IAyYhRoCHSpCkhBS+H1ywWEUrVDilCtKJMg/dHlcon7WN+i7Xqy+QbVk=
+	t=1786503361; cv=pass; b=PzzNy8b4N2LSwHya3YR4kdBxxyzjPdbWkYJbLSeXeygAEvKd1qoKD7GGKLzX41VLd6ya1ify84DQaaqaLV2HUvhS1SUauGDQSz1+SF6JL+oeFhUjEh0HnlvPF7bmFBnka/SnvpxY0fwqmxOtVTdw1KDU04xEYsbwR/m9onmK7Io=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786503070; c=relaxed/simple;
-	bh=V854Ow2c2JggNkbUsdfKDXvNBoWqMEC1lG5D0DCmDe8=;
+	s=arc-20240116; t=1786503361; c=relaxed/simple;
+	bh=NFIn8l5JahWah2Qi3rHlkYb8ngaL0SqBhw78KSMbvL8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TqEDT9aldVBbfVEvOkmu9oy7aZ8grmfmyGZjPw1FeCsPzvZ483scsd5DSb7AabQNyXjYkDzvukbgrwIStSU2Cl27dcsGfBiQrfOv1y+9BQyhvX4U3zyvZJCciQ3G9PqSe9YIk8FTJCy08S09L2dXd1I3Q0N8pIOxBsX1UdIKD/I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c9Xv0e/H; arc=pass smtp.client-ip=209.85.167.52
+	 To:Cc:Content-Type; b=twxYqceIb0vKiWGkGLQ6uAxFdJ0tEHvH9fdnDjMvX3PMoFzwArN7YMz/HrxKFlJPQAy8GRLrcYZ1zq2s0qaH0MRmrdNoBYHEC3dJiP8WRhaQ5bDgXiqlIS1XvnqxndjUh8TXi4TsWgDYqL1zRNkNzNAtUOiwS3okejKjModvyDs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jjBiw12j; arc=pass smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c9Xv0e/H"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5b01cb18515so359856e87.2
-        for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2026 19:51:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786503067; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jjBiw12j"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-39da69c5ba3so6361391fa.1
+        for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2026 19:55:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786503358; cv=none;
         d=google.com; s=arc-20260327;
-        b=kon2tzYKEnFCF5G6jto0Ncsjtne8XsvJTznw+EfLFz8+JWoUXLk5MSNz/LnjBmmfNn
-         Ky2w7kX6Nf9/QG7iWMGTKP+lPGzj0pN0Cv+LXnr1xxHBkKTCUf4pW4DH2XScQ1Ol4i0q
-         ye2PZv/Ts2DitKzNtqNhyvhwVm8XhrIaUeovvXEKtdd8vM//gGWO2hgTZ2/0UKrQ0Fzn
-         JchxRHLb3NLurCeG5B+oAHMtVPt/t2sF7W8QPj0aQC9O2p0Dy1ikIFEYwHvN85czoqH+
-         ULkJxGhon4IcvL0icMn98owcelee0u0a/5OclxloWb4NiOU9ll1RF5bHSRGJFoKA03Ey
-         unfQ==
+        b=fgrTQNa3UMUGVxjD1tX6LafiMTZdZiIWXONMe9strn//fB6RcUR1vdjV8pPmwS3Mwb
+         qeovDtCuB2HCmipbp7+5ukJKEdkA8qZPyF60w5jkSHdS2qgyaVAIS355c6NKz5wSGau9
+         jS6ukzeLChk7ydlPF2KrFENwZZm5azOuRkIhqHbDZ3IxnPGgSYisVQVdJ3Mi4/D07m/x
+         KMs0ry5F+iC4wAT9fKijuLw1TbxCNDSsdg8eBBlwXe7TGzhN7RIHcHwGMf0IhVSs8N16
+         k5adnCYF9rKqry0L7fmzaO7jd87gMRly0qN6G0xU10prdiX7r9yEfZAGIxSDORDe00u9
+         dGag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=8qdxGMS0Je6Ctd6C+/Ey4+6laaYf85O2UWbiB0Tw8Vg=;
-        fh=2JbqI/bIzMAU3qXNWmOe0vXymXmZleBMQIo9naZaTCE=;
-        b=F2aUJeK5oisynOYCWwZuRsKlw1hPoyXDxb3N/6NhXrbExb7h6Co3/DNETAiK19Ia3P
-         GdwFvs2cVY2LTVgi/XilA1hBcSpyKlZOhRYZB5JUaMszJfYmPCZndTZ+BbS+W07B9i+V
-         PGOT1o6GH3A49cZhXvm3D/Mzrsc0WvXun0O/QVYE/1LymiKZtICoVadvZBLwFYfzdgmd
-         J8o0+jVZjtCHBl1Mqet1xEAkPBBXSkXqQ0y/dgThW3FCg49YyVEkMvd0v7Urszpz+yNw
-         EeHeFlsYnOTchiRf/wkvrkNPKt7jSy3B1KnS6/fx6R4ak6edkKvedkSQBpyz60Cy7xSL
-         ZARw==;
+        bh=+l8MlhCC2LweJ++LLqUpP5yq02ZNdRbuAhkjLfVGC+A=;
+        fh=G+PZZjWu7pMQSEG+DxEfKE+C5+m8pTMxYvZHFyef1mg=;
+        b=ljubiH2oy4rEuxPX13n0aDidPftyBXHc0km9mej6qA7L5DEzzgArjoYNouaSLNlIy/
+         NC+M92/0NOR2YD4EdSsuG/11tz7YHvkZq9nl1at3nr8A8hPcJdmUMz17JdYyNTv/KDyh
+         qbtK22Nh5IrSbQ5viAfPc155XVmdAj6aQq74tWP6LADOl9gCo18hHwsPPTocaicgLywb
+         B6hx8zmwHG5EiHO0gfNr0d0rUIulbhCcg/7ztUQyeyt2X9LCQQiEtyps9D50xBzZZ7A8
+         dtZPG3+AlC+bDahY8oBuivwNogHA7AARYmSXhp1oIf4z08mMA4kwfMDDJUc8CI/7PaIO
+         LoQw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786503067; x=1787107867; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786503358; x=1787108158; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=8qdxGMS0Je6Ctd6C+/Ey4+6laaYf85O2UWbiB0Tw8Vg=;
-        b=c9Xv0e/HavEqYpw8lTxeV5GyK1chgAvRD/Rt0IHTEQ5TrpfZdLyO9GCiW8GiflD1mF
-         CPMYESXycb87iUZnSUjEDJZqfWuWapjrGy/bUEiRhvMpJhMOvD+cOSO9bCOCl5sFL0+D
-         uNPMQYq0FeCOI76Pcta1LsIgVPwgWUbIpz+wqVpMt+KeR3zPZb+oYQa3C9dBaPp/MEFl
-         KZjC5RqU0S+M5fz8Sui1fEyERbl2sDKoOzimAr4iR1PZPQyUVVvE9RTRMJc+FVwgRYM7
-         frX+YRtw6nm6wnMAsT6GaCKmVGGTTc1B2bBPj2w/Pe8JsCn4hVeYeTYpeEj6DJ42blZG
-         PVFg==
+        bh=+l8MlhCC2LweJ++LLqUpP5yq02ZNdRbuAhkjLfVGC+A=;
+        b=jjBiw12jyqQsHEK4KxD02N0TwLPvMNmoZ2tuHnDEYXY29dCnf1bsPnOOxQqOJ3Ek6U
+         YvdGWMYMwxLtqy9bJ7VenJZtZzYMREM6LPiuiEu37ksPGMsS91Zqq4FyVSjPnJZUcYI7
+         U3C1NyQvoydmvfiVkrtF9lx1sxz/9bXhgqnGcQHoXD3lFDRa7I7Yd6h+CA60iPU2DeyO
+         PJnlBdeDdXwYmo1OKGpUwlhKdsBMTkwC2eSPGMLpOcBeh1Rh00zT3pExHXumQbUgYhAp
+         1XUeIMD9ifKx59YxhYdqdo+IqD6wLc3ylYnw6PJ22tykDjZmzO4R1HzBT7EJLUsC3A9q
+         knRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786503067; x=1787107867;
+        d=1e100.net; s=20251104; t=1786503358; x=1787108158;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=8qdxGMS0Je6Ctd6C+/Ey4+6laaYf85O2UWbiB0Tw8Vg=;
-        b=On4nGyWiV1YirlI+ihMiD3qpN/ScNKVqA3kFAQJ9bnWLDN8WWEJfmZHOm6Uz+nofHF
-         Jigu2vYKEnHpU0fGJKnL1/y+Rc06hRewMB24hzSaE1/Wu0Px0g7W5i/PboIdVqENLT4/
-         u6ZmETyqYJDJpQMFuVlVcYK9GYmE9LKAwto0p8R9SBlCxltRw/br9y5oVBDznyIq5IDB
-         BQGBv04iISqsaGespvLnKQSv/ZguPAymJ91V/qGf569kE6bBnZIqtw6/hb49I15kUKY8
-         Q+6/5aUs3Wv6YvK8CnAp4JJH/QblB4Xv4/8Es7kKuZdYyM9eP2bXlz/NIWB9s6vvuzXW
-         yy2g==
-X-Forwarded-Encrypted: i=1; AHgh+Rp6QQWQgMJ7fre020pS6lja1IYvKxOjLbqeJ0ffPnJf5Y4XhMMODs5mDQ2tSe2f4Ye/7CYGQqOe/0o=@vger.kernel.org
-X-Gm-Message-State: AOJu0YySKQc9CptN0bEETpO7limuVwmAbLID8T5XEaHtTx8FMX1b+E9u
-	sknNBRlH+gGONN3ul1PLBly99KfHhmRRdWqQpqqfFvKsIFBqayFEvIO3Xuhx1KyhBj92aW9zwMm
-	GQsTwVBqHF5Iz+hcPMjIv8889noixW8U=
-X-Gm-Gg: AR+sD12rIClhtMKFJAiVb+38gneX6lrcojugy6f8ePCReuhlGDJGlIjSjhwCWpdxSn+
-	m/0aP5u57DXTDYuTDN41eFTCNTQ8gbjagNm4/msvW+MZqqm6aZYtALkKOeItZY/Vj7cocJrwYXt
-	dFxTrF/GLjZomBmvNV8VodRp87SgPexVML7K7nnpUJIkVbDTxHuVxm1cfZ3Y2kxQuhjuwAdzFs3
-	XPOVfYrM5yUtQvpgshmDxB5OR3e9Lhb7JaJZyh2xjmGEktesXaBBDSR169EKQ0KcMtg/V9onzLz
-	w8u3mL8vh2MqZuwj7S3l1AM1xozaj8BSrhqa43t/TZKIiw==
-X-Received: by 2002:ac2:4353:0:b0:5b2:9357:b8ce with SMTP id
- 2adb3069b0e04-5b44e31ebffmr172006e87.40.1786503066563; Tue, 11 Aug 2026
- 19:51:06 -0700 (PDT)
+        bh=+l8MlhCC2LweJ++LLqUpP5yq02ZNdRbuAhkjLfVGC+A=;
+        b=ZUjYvg9ITtKS+hZolMwJlkwIes8sh1tQ7vN/vhvc/4wHzfY1t2V/3Y3qgAPuk1mYhX
+         9GQoIQE1/dYB76V3/s2KIP9mmH1Cd78HS+9jaw8bkItK0/KdXQEjC4chWNAX9C8Zymgp
+         rfGjnrxVtzxYHf4P/yI8fZxQrpzV/eWWk/Epzs6/Drm6NdXo/NSm+N01Pw1JdT+DYhdK
+         48DfzfiQK/vXqAvhuij/0iYi066TH8OyvPobVzl6CJ9zPYOwBzw2nsvI29jcQLwByQH0
+         DPjNHxOR98DVZr53r5fLJv83sZImV16bh6IXIa3vO9/gcQHKMVV7Z3i+1tuxDM54qDO8
+         C0jQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rrkqam8VdwuO6LiEZKwQ0R9dkHdbF2Bw8a20E/hWoEyuwIV1IjKjS25UzLN2PDU4xu9XlAZibqBuRE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyotUNQoPHQSRcopc3FiVDlVUal2dsNtv+uFyE0++Gj3ylqaUBq
+	mI0ycYPbtNyfapluZW+ZKZvgu78GdgVdUd3YudiFHfUtpAgVQJA116dhBvRasbP5EBZ6RUDocV1
+	Sce5n8wr+N+Id0sdhxHwWppl/HyeYpkI=
+X-Gm-Gg: AR+sD138sHsbvIT40/Ryv4QbsEoQrzy7xnd2Zm2lPVblUML797jULd0SZnDoG4wjrG/
+	h0QthfYd7KT1XRewyRBhOqKRjvwYIDD+9QOqcYHuRGoFwiJP3Kp0MZenIPrrlLRtbqnk+9+r0uM
+	z/4OMF6VnU5oP1kOfLD6AU0EigzV92NdQgyGsBqWrueync1KrY6ZNsaK5XCLb5Se6sB1DikAFkK
+	sJFtWMkKivzbJXuradO/ao7lzoQTbnqixzANzGCvQ3pOZo8pLZmrmSBg0V/LLcuacmJrhdstDGl
+	lwPUifmuKyLnoz8xSZ5sFODFUC5iK+R5rGNX8kCczFzmGKW3k169/LoN
+X-Received: by 2002:a05:651c:555:b0:39b:8c6:a6c9 with SMTP id
+ 38308e7fff4ca-3a10d5f4954mr954201fa.25.1786503357666; Tue, 11 Aug 2026
+ 19:55:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,15 +83,14 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260811-ti-ads112c04-driver-v4-0-ae704ac17241@gmail.com>
- <20260811-ti-ads112c04-driver-v4-1-ae704ac17241@gmail.com> <20260811-union-editor-1d475c5f32cc@spud>
-In-Reply-To: <20260811-union-editor-1d475c5f32cc@spud>
+ <20260811-ti-ads112c04-driver-v4-2-ae704ac17241@gmail.com> <anrt5mJBz5h-a3OL@ashevche-desk.local>
+In-Reply-To: <anrt5mJBz5h-a3OL@ashevche-desk.local>
 From: Kyle Hsieh <kylehsieh1995@gmail.com>
-Date: Wed, 12 Aug 2026 10:53:57 +0800
-X-Gm-Features: AUfX_mw_q5_mMZ-WJHvUb4Gvmf9v3nIjjfS1widE18Qorp8AFIvUm08pqXCCl0c
-Message-ID: <CAF7HswMcBx_DS4gLtsiy3ceBYBABF1ktJV4=+cDwAD9gLhP26w@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: ti,ads112c04: Add binding
- for ADS112C04
-To: Conor Dooley <conor@kernel.org>
+Date: Wed, 12 Aug 2026 10:58:48 +0800
+X-Gm-Features: AUfX_mwOGwbRhjlHXgX6nvXNItYNCav6elhnDDRHlO9Hcf77HVaXjq3Bz_3YXng
+Message-ID: <CAF7HswP7+79Y5M92PVoHJ_H_J6rU=Q0p5qWDm1gcA2mPfg0VDw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] iio: adc: ti-ads112c04: Add support for TI ADS112C04
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -101,62 +100,391 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Conor,
+Hi Andy,
 
-On Wed, Aug 12, 2026 at 12:56=E2=80=AFAM Conor Dooley <conor@kernel.org> wr=
-ote:
+Thanks for the detailed review.
+
+On Tue, Aug 11, 2026 at 5:39=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
 >
-> On Tue, Aug 11, 2026 at 10:48:37AM +0800, Kyle Hsieh wrote:
-> > Add device tree binding documentation for Texas Instruments ADS112C04
-> > I2C Analog-to-Digital Converters.
+> On Tue, Aug 11, 2026 at 10:48:38AM +0800, Kyle Hsieh wrote:
+> > Add IIO driver support for the Texas Instruments ADS112C04 (16-bit)
+> > delta-sigma ADCs.
 > >
-> > These devices provide 4-channel, 16-bit delta-sigma ADCs with an I2C
-> > interface, programmable gain amplifier (PGA), and data-ready (DRDY)
-> > interrupt output.
-> >
-> > The binding uses child nodes to dynamically define the connected
-> > single-ended or differential channels.
-> >
-> > Excitation current, burn-out current, and reference source properties
-> > are also included to fully describe the chip's hardware capabilities,
-> > aligned with the ti,ads112c14 binding conventions.
-> >
-> > Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+> > The driver implements:
+> > - Single-shot conversions using the IIO raw read interface.
+> > - Dynamic parsing of single-ended and differential channels from
+> >   device tree child nodes.
+> > - Hardware interrupt support via the DRDY pin, falling back to
+> >   software polling if no IRQ is provided.
+> > - Scale calculation based on the internal 2.048V reference.
+> > - Reference voltage scaling via the regulator subsystem (refp-supply),
+> >   falling back to the internal 2.048V reference if not specified.
+> >   refn-supply is not yet supported.
+> > - Hardware reset fallback using GPIO.
 >
-> > +patternProperties:
-> > +  "^channel@[0-9a-b]$":
-> > +    $ref: adc.yaml
-> > +    unevaluatedProperties: false
-> > +    properties:
-> > +      reg:
-> > +        items:
-> > +          - maximum: 11
+> ...
+>
+> > +#include <linux/bitfield.h>
+> > +#include <linux/bitops.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/err.h>
+> > +#include <linux/gpio/consumer.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/iopoll.h>
+> > +#include <linux/jiffies.h>
+> > +#include <linux/module.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/property.h>
+> > +#include <linux/regulator/consumer.h>
+> > +#include <linux/string.h>
+> > +#include <linux/types.h>
+> > +#include <linux/units.h>
+>
+> ...
+>
+> > +static int ads112c04_wait_for_data(struct ads112c04_state *st)
+> > +{
+> > +     int ret, err;
+> > +     u8 val;
 > > +
-> > +      single-channel:
-> > +        maximum: 3
+> > +     if (st->client->irq > 0) {
+> > +             /* Timeout is 100ms (slowest data rate is 20 SPS) */
+> > +             ret =3D wait_for_completion_timeout(&st->completion,
+> > +                                               msecs_to_jiffies(100));
+> > +             if (!ret)
 >
-> Can someone explain to me please why the maximum for this is 3 when reg
-> goes up to 11? What do the additional reg entries beyond 3 represent?
-reg here is just an index for the channel node, not an input pin number.
-The chip has 12 usable input MUX settings (8 differential pairs and 4
-single-ended inputs), so at most 12 channel nodes can be described,
-hence maximum 11.
+> In this case semantics of ret differs, that's why it's better to write as
+>
+>                 if (!wait_for_completion_timeout(&st->completion, msecs_t=
+o_jiffies(100)))
+>
+> // and I would even dare to put on a single line.
+>
+> > +                     return -ETIMEDOUT;
+> > +
+> > +             return 0;
+> > +     }
+> > +
+> > +     err =3D read_poll_timeout(ads112c04_read_reg, ret,
+> > +                             (ret < 0 || (val & ADS112C04_CONFIG2_DRDY=
+)),
+> > +                             1000, 100 * USEC_PER_MSEC, false,
+> > +                             st->client, ADS112C04_REG_CONFIG2, &val);
+> > +
+> > +     if (ret < 0)
+> > +             return ret;
+> > +
+> > +     return err;
+>
+> In this piece I would swap err and ret, so the ret is outer one and err i=
+s
+> the inner one. This will be consistent with other code pieces.
+>
+> > +}
+>
+> ...
+>
+> > +static int ads112c04_get_adc_result(struct ads112c04_state *st,
+> > +                                 struct iio_chan_spec const *chan,
+> > +                                 int *val)
+> > +{
+> > +     u8 new_config0;
+> > +     int ret;
+> > +
+> > +     new_config0 =3D st->config0;
+> > +     FIELD_MODIFY(ADS112C04_CONFIG0_MUX, &new_config0, chan->address);
+> > +
+> > +     if (st->config0 !=3D new_config0) {
+> > +             ret =3D ads112c04_write_reg(st->client, ADS112C04_REG_CON=
+FIG0, new_config0);
+> > +             if (ret < 0)
+> > +                     return ret;
+> > +             st->config0 =3D new_config0;
+> > +     }
+> > +
+> > +     reinit_completion(&st->completion);
+> > +
+> > +     ret =3D ads112c04_write_cmd(st->client, ADS112C04_CMD_START_SYNC)=
+;
+> > +     if (ret < 0)
+> > +             return ret;
+> > +
+> > +     ret =3D ads112c04_wait_for_data(st);
+> > +     if (ret < 0)
+> > +             return ret;
+> > +
+> > +     ret =3D ads112c04_read_data(st, val);
+>
+> > +     if (st->client->irq > 0)
+> > +             enable_irq(st->client->irq);
+>
+> Why is it fine to leave IRQ enabled even in the error case?
+>
+> > +     return ret;
+> > +}
+>
+> ...
+>
+> > +static int ads112c04_read_raw(struct iio_dev *indio_dev,
+> > +                           struct iio_chan_spec const *chan,
+> > +                           int *val, int *val2, long mask)
+> > +{
+> > +     struct ads112c04_state *st =3D iio_priv(indio_dev);
+> > +     int ret;
+> > +
+> > +     switch (mask) {
+> > +     case IIO_CHAN_INFO_RAW:
+> > +             mutex_lock(&st->lock);
+> > +             ret =3D ads112c04_get_adc_result(st, chan, val);
+> > +             mutex_unlock(&st->lock);
+> > +
+> > +             if (ret < 0)
+> > +                     return ret;
+>
+> If IRQ is left enabled and we call it here, we end up with the unbalanced
+> depth counting.
+>
+> > +             return IIO_VAL_INT;
+> > +
+> > +     case IIO_CHAN_INFO_SCALE:
+> > +             *val =3D st->vref_mV;
+> > +             *val2 =3D 15;
+> > +             return IIO_VAL_FRACTIONAL_LOG2;
+> > +
+> > +     default:
+> > +             return -EINVAL;
+> > +     }
+> > +}
+>
+> ...
+>
+> > +static irqreturn_t ads112c04_irq_handler(int irq, void *private)
+> > +{
+> > +     struct iio_dev *indio_dev =3D private;
+> > +     struct ads112c04_state *st =3D iio_priv(indio_dev);
+>
+> > +     disable_irq_nosync(irq);
+>
+> This is unconditionally called. Where is the guarantee that it becomes en=
+abled
+> once again?
+>
+> > +     complete(&st->completion);
+>
+> > +     return IRQ_HANDLED;
+> > +}
+>
+> ...
+>
+> > +static int ads112c04_parse_channels(struct iio_dev *indio_dev)
+> > +{
+> > +     struct device *dev =3D indio_dev->dev.parent;
+> > +     struct ads112c04_state *st =3D iio_priv(indio_dev);
+> > +     struct iio_chan_spec *channels;
+> > +     u32 num_channels, pair[2];
+>
+> > +     int ret, i =3D 0;
+>
+> Why is 'i' signed? And it's better to decouple definition and assignment,=
+ so
+> the assignment will happen closer to when it's really needed.
+>
+> ...
+>
+> > +             if (fwnode_property_present(child, "reference-sources")) =
+{
+> > +                     const char *ref;
+> > +
+> > +                     ret =3D fwnode_property_read_string(child, "refer=
+ence-sources", &ref);
+> > +                     if (ret)
+> > +                             return dev_err_probe(dev, ret,
+> > +                                                  "failed to read refe=
+rence-sources\n");
+> > +
+> > +                     if ((!strcmp(ref, "external") && !st->has_refp) |=
+|
+> > +                         (!strcmp(ref, "internal") && st->has_refp))
+> > +                             return dev_err_probe(dev, -EINVAL,
+> > +                                                  "reference-sources d=
+oes not match refp-supply\n");
+> > +             }
+>
+> Reinvention of fwnode_property_match_property_string() ?
+>
+> ...
+>
+> > +             if (fwnode_property_present(child, "single-channel")) {
+> > +                     ret =3D fwnode_property_read_u32(child, "single-c=
+hannel", &pair[0]);
+>
+> I don't like the (partial) pair reuse here. It's semantically wrong. Just=
+ add
+> another temporary variable and let compiler to choose what to do with a s=
+tack
+> frame in such a case.
+>
+> > +                     if (ret)
+> > +                             return dev_err_probe(dev, ret,
+> > +                                                  "failed to read sing=
+le-channel property\n");
+> > +
+> > +                     if (pair[0] > 3)
+> > +                             return dev_err_probe(dev, -EINVAL,
+> > +                                                  "single-channel must=
+ be 0-3\n");
+> > +
+> > +                     spec->channel =3D pair[0];
+> > +                     spec->address =3D 0x08 + pair[0];
+> > +             } else if (fwnode_property_present(child, "diff-channels"=
+)) {
+> > +                     ret =3D fwnode_property_read_u32_array(child, "di=
+ff-channels", pair, 2);
+>
+> ARRAY_SIZE()
+>
+> > +                     if (ret)
+> > +                             return dev_err_probe(dev, ret,
+> > +                                                  "failed to read diff=
+-channels property\n");
+> > +
+> > +                     if (pair[0] > 3 || pair[1] > 3)
+> > +                             return dev_err_probe(dev, -EINVAL,
+> > +                                                  "diff-channels must =
+be 0-3\n");
+> > +
+> > +                     spec->channel =3D pair[0];
+> > +                     spec->channel2 =3D pair[1];
+> > +                     spec->differential =3D 1;
+>
+> > +                     if (pair[0] =3D=3D 0 && pair[1] =3D=3D 1)
+> > +                             spec->address =3D 0x00;
+> > +                     else if (pair[0] =3D=3D 0 && pair[1] =3D=3D 2)
+> > +                             spec->address =3D 0x01;
+> > +                     else if (pair[0] =3D=3D 0 && pair[1] =3D=3D 3)
+> > +                             spec->address =3D 0x02;
+> > +                     else if (pair[0] =3D=3D 1 && pair[1] =3D=3D 0)
+> > +                             spec->address =3D 0x03;
+> > +                     else if (pair[0] =3D=3D 1 && pair[1] =3D=3D 2)
+> > +                             spec->address =3D 0x04;
+> > +                     else if (pair[0] =3D=3D 1 && pair[1] =3D=3D 3)
+> > +                             spec->address =3D 0x05;
+> > +                     else if (pair[0] =3D=3D 2 && pair[1] =3D=3D 3)
+> > +                             spec->address =3D 0x06;
+> > +                     else if (pair[0] =3D=3D 3 && pair[1] =3D=3D 2)
+> > +                             spec->address =3D 0x07;
+>
+> I would do this as a 4x4 table
+>
+>         -1, 0, 1, 2,
+>         3, -1, 4, 5,
+>         -1, -1, -1, 6,
+>         -1, -1, 7, -1,
+>
+> With that done you can even supported the swapped cases
+>
+>         -1, 0, 1, 2,
+>         3, -1, 4, 5,
+>         1, 4, -1, 6,
+>         2, 5, 7, -1,
+>
+> (but I haven't studied the code if it's toughly relies on the pair[0]/pai=
+r[1]
+>  values to be in a strong order after the address being assigned).
+I will apply your first 4x4 table for diff-channels - it maps directly to
+the MUX encoding and is much more readable than the if-else chain.
 
-single-channel refers to the physical analog input pin, and the chip
-only has AIN0-AIN3, hence maximum 3.
+I did not apply the second (swapped) table. Entries like [2][0] would
+map to MUX value 1, which is AINP=3DAIN0/AINN=3DAIN2, i.e. the opposite
+polarity, so it would silently return negated values. Supporting swapped
+pairs properly would need a per-channel inversion flag and negation
+after conversion, which I'd rather leave out of this initial minimal
+implementation.
+>
+> > +                     else
+> > +                             return dev_err_probe(dev, -EINVAL,
+> > +                                                  "invalid diff-channe=
+ls combination\n");
+>
+> > +             } else {
+> > +                     return dev_err_probe(dev, -EINVAL,
+> > +                                          "channel node must have sing=
+le-channel or diff-channels\n");
+> > +             }
+> > +
+> > +             i++;
+> > +     }
+> > +
+> > +     indio_dev->channels =3D channels;
+> > +     indio_dev->num_channels =3D i;
+> > +
+> > +     return 0;
+> > +}
+>
+> ...
+>
+> > +#define ADS112C04_VREF_INTERNAL_MV   2048
+>
+> _mV
+>
+> ...
+>
+> > +     if (device_property_present(dev, "refp-supply")) {
+>
+> A dup property check. if (st->has_refp) should suffice, no?
+>
+> > +             ret =3D devm_regulator_get_enable_read_voltage(dev, "refp=
+");
+> > +             if (ret < 0)
+> > +                     return dev_err_probe(dev, ret,
+> > +                                          "failed to get refp voltage\=
+n");
+> > +
+> > +             st->vref_mV =3D ret / (MICRO / MILLI);
+> > +             st->config1 =3D 0x02;
+> > +     } else {
+> > +             st->vref_mV =3D ADS112C04_VREF_INTERNAL_MV;
+> > +             st->config1 =3D 0x00;
+> > +     }
+>
+> ...
+>
+> > +     /* Requesting OUT_HIGH asserts the active-low reset pin immediate=
+ly */
+> > +     reset_gpio =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HI=
+GH);
+> > +     if (IS_ERR(reset_gpio))
+> > +             return PTR_ERR(reset_gpio);
+>
+> Why reset-gpio driver can't be used instead?
+David suggested the reset controller framework on v1, but after I moved
+to gpiod in v2 he suggested GPIOD_OUT_HIGH to simplify it, so I kept
+gpiod. Switching now would mean changing the binding, which already has
+a Reviewed-by - happy to do it if you both prefer.
 
 Best regards,
 Kyle Hsieh
 >
+> > +     if (reset_gpio) {
+> > +             fsleep(1000);
+>
+> 1 * USEC_PER_MSEC
+>
+> > +             gpiod_set_value_cansleep(reset_gpio, 0);
+> > +     } else {
+> > +             ret =3D ads112c04_write_cmd(client, ADS112C04_CMD_RESET);
+> > +             if (ret < 0)
+> > +                     return ret;
+> > +     }
 > > +
-> > +      diff-channels:
-> > +        items:
-> > +          maximum: 3
-> > +
-> > +      excitation-channels:
-> > +        maxItems: 2
-> > +        items:
-> > +          maximum: 5
-> > +        description:
-> > +          Additionally to AIN0-AIN3, IDAC1/IDAC2 can also be routed to
-> > +          REFP0 (4) and REFN0 (5).
+> > +     fsleep(1000);
+>
+> Ditto.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
