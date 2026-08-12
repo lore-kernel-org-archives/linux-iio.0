@@ -1,37 +1,36 @@
-Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0227145DF4B
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 14:30:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C347145DF6E
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 14:30:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786545063; cv=none; b=hI50evc0fdYShlHUox+J9ZWpqeuLBweFFo/XX4ZLiH7SPiLLE0n1eXlfMvgaQuyi4HASucwlKg+ZvMAV+9GIFxabb/DnWZNvKilqpuWmXT2TOR0TpB87jCuKFTXXbI3oYbwGe7drXL5EDiFxza9Kx1N/eQcPftlaUAAakMFnV+w=
+	t=1786545071; cv=none; b=jzFBlfBdSsD8J6YxX6ZDxW7YlvJoGqfsw96VO02zP4f92UoLOds5O5v3/4vgkWUEIMLtIeYPWfDz9gsgbOUOM/Cd/7p3MEydVmrxjXzfS0zf3strnl4DinPp4MHBmMuA09W879nbajO5z3eAfB4U3CTow0TEFjDTwZzM4EftpSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786545063; c=relaxed/simple;
-	bh=PBsOtnCHFAt539AAfYviAHlXValdaGxH9xSoBb5bRo0=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=LMLEGZ/fFCOymTOek8tS0Ya1CxETki0zwB6yJZ+7fTo8in2th0KYkVASxH9exj2f3kAbwPPrkf6vYAiNSr+OczzPD2EnEzyrIcQAbvV8f2S9rvT8BTdsVRdrMpBBI2NduiqMZVAlfmAVpDmYJvkO6ecbUoVg8zdD3YM3YsMCC2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=mK7TaB9W; arc=none smtp.client-ip=109.224.244.108
+	s=arc-20240116; t=1786545071; c=relaxed/simple;
+	bh=zGSxhcoGy7rvndMA3KhI4poiLIO4W4hPtCuAZfoVNGE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=TL/ro3FAtIctLbn+SOWi3Li+c7xgSOQv48Qrapnrvt7/qbGjJOS9bigi3xAw8+ZjmlUq8Fk69MKsatInnZYqDl8BzBySBn7TAtGWd//G7Hh7XFFuAGEKFW//VNMwsKo0ChYT86UzEKIMMrGoHEMz7f+t2N35CzZRH8JatsRBZHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=n8RsRsJY; arc=none smtp.client-ip=79.135.106.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="mK7TaB9W"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="n8RsRsJY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786545044; x=1786804244;
-	bh=0aTOYcyvFqrNukw77kCre4TkM7x3Fs8Pt7uE6hf6umY=;
-	h=From:Subject:Date:Message-Id:To:Cc:From:To:Cc:Date:Subject:
-	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=mK7TaB9WBWKSGqoiJvdchavjMXidh3VGnqcuTM/+0mKcTVyTkfX1dTxTJ4RqQKI9D
-	 8J6ShXMLIs/9vX0QIi3c9eensJzhAiZNbakVEYxg1vSJ4LQYk0+D0Q+2jtsL93zwtE
-	 QcrIdFQgzvwP9ejjYK3ASfs63uydv4csVfE/4FvkOs5TG7RTdh0Ffw0OMMw6MIBIv6
-	 YQa4gSeZOdyGQxMJ70StDSghpliAsQ7HvsgRrgZjcM7sOjFx+jDgEyQddF/Munu1XI
-	 ksXPPlBog6Pe0S85IgtO398DBHkD255EAC4o3f979Pqp2I/K68lQ242IZl5hO3QYze
-	 VUrhMcCb92bXw==
-X-Pm-Submission-Id: 4hKrWP2fkvz2ScdC
+	s=protonmail; t=1786545055; x=1786804255;
+	bh=PVcPNHsYd8zoUj9Px+aFfUNm7RUu8fGQewTpTDJazmg=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=n8RsRsJYqm06TvHtv/H5qjTh4+11XUE75mcTTpnmcxcPn1Y35Y0MM5l4Ay3jMcW1a
+	 Usu0niCUayKt5jyv7YgmVI3ER40RTFWGSo9y+Pxs6DXKV0hldZJn3gtioJIcAzV0h+
+	 Ad24WBwd1Sp833MeHaRT4Q8EJkeHme1vQh+3NCnRrNSxUEvoVlJcwybAysArZUwviA
+	 Q0hzsOTvuWGcrpaIKNKploNlM0P/PkfyVmiyuoNkw/Wcw0y47HOGB4zdGxRHG2Lke4
+	 K6yKnWEY/Ok3rYAsMORpgWd8jFVJuBEDA37vQtLy5Vnv4v1+BUY0704ppYAgoWN7B6
+	 1XViS3FHCuDfA==
+X-Pm-Submission-Id: 4hKrWf1zffz2Sd3n
 From: Esben Haabendal <esben@geanix.com>
-Subject: [PATCH v4 0/6] io: accel: mma8452: Allow open drain interrupt pin
- configuration
-Date: Wed, 12 Aug 2026 16:30:31 +0200
-Message-Id: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
+Date: Wed, 12 Aug 2026 16:30:35 +0200
+Subject: [PATCH v4 4/6] iio: accel: mma8452: Support interrupt sharing
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,12 +38,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XNQQ6DIBCF4as0rEsz4CDSVe/RdIEIykIw2Bgb4
- 92LbpqmJl3+L5lvFjLa5O1IrqeFJDv50ceQA88nYjodWkt9k5tw4AIQGO17XaHgNA420CZpH2j
- FhJQGWSGFIflwSNb5eUfvj9ydH58xvfYfE9vWjStBMnHETYwCrVnTcI0IpoRba3Xw88XEnmzex
- P8bPBtK1FY54VAq8WMUH6OCY6PIRslQOYRSI6gvY13XNwgMCTo9AQAA
-X-Change-ID: 20250401-mma8452-open-drain-81577c41375c
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260812-mma8452-open-drain-v4-4-bfca15d02b59@geanix.com>
+References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
+In-Reply-To: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -54,84 +51,74 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Andy Shevchenko <andy@kernel.org>, 
  Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786545039; l=2899;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786545039; l=1909;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=PBsOtnCHFAt539AAfYviAHlXValdaGxH9xSoBb5bRo0=;
- b=/YsBda7ClY0jjhjGfsf3/crnJuw0HZCkhhWpqzkv78DStk3AeZQUDetmnXv/gMDLPlACtce+t
- 4VA5Xk0FykfCVT86usHU6MSf8Q0Yz29mCEG5P2PjQyY5og2xfClzM3a
+ bh=zGSxhcoGy7rvndMA3KhI4poiLIO4W4hPtCuAZfoVNGE=;
+ b=RB+ZIEwhMq4Pv7X2BjjoM+GTn3xaXxhbIP/wYsFI5I3qHw3Lr54WYNBdrAh0YBPm2Aas/FYtX
+ cCUnrgn0wY6BZ+tZT80kpWknYSKmr8eV2Smtj3OIjRyrk6OnfHNbLiO
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Extend the mma8452 driver with support for configuration of the
-interrupt line in open-drain mode, which is needed for hardware designs
-where the interrupt line is shared with other chips.
+Adding handling of rutnime PM suspension in the interrupt handler allows
+sharing interrupt with other devices.
 
-Adding drive-open-drain property to mma8452 device-tree node for such
-designs to enable switching pin configuration to open-drain mode.
+Keep in mind that the device by default is using push-pull for the irq pin,
+which might require additional hardware design to allow interrupt sharing.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
-Changes in v4:
-- Fixed interrupt handler to check runtime PM status before trying to
-  access the chip.
-- Split open-drain support and interrupt sharing into separate patches.
-- Added new patch to reuse existing struct device * through mma8452_probe()
-  function.
-- Print warning message when irq type is not set by firmware.
-- Link to v3: https://patch.msgid.link/20260805-mma8452-open-drain-v3-0-6149f406a409@geanix.com
+ drivers/iio/accel/mma8452.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-Changes in v3:
-- Reordered patches, swapping #2 and #3.
-- Always add IRQF_SHARED flag.
-- New patch to change it so IQRF_TRIGGER_LOW flag is only added when no
-  trigger type is set by firmware.
-- Link to v2: https://patch.msgid.link/20260715-mma8452-open-drain-v2-0-95be9f5f4795@geanix.com
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 1fb43c5b0b72..106cdd904dbf 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1056,14 +1056,19 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+ 	struct iio_dev *indio_dev = p;
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	irqreturn_t ret = IRQ_NONE;
++	int pm_status;
+ 	int src;
+ 
++	pm_status = pm_runtime_get_if_active(&data->client->dev);
++	if (pm_status == 0)
++		return IRQ_NONE; /* device is powered down */
++
+ 	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+ 	if (src < 0)
+-		return IRQ_NONE;
++		goto out;
+ 
+ 	if (!(src & (data->chip_info->enabled_events | MMA8452_INT_DRDY)))
+-		return IRQ_NONE;
++		goto out;
+ 
+ 	if (src & MMA8452_INT_DRDY) {
+ 		iio_trigger_poll_nested(indio_dev->trig);
+@@ -1089,6 +1094,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+ 		ret = IRQ_HANDLED;
+ 	}
+ 
++out:
++	if (pm_status > 0)
++		pm_runtime_put_autosuspend(&data->client->dev);
++
+ 	return ret;
+ }
+ 
+@@ -1690,7 +1699,7 @@ static int mma8452_probe(struct i2c_client *client)
+ 			dev_info(dev, "invalid irq type, setting default active low\n");
+ 			irq_flags = IRQF_TRIGGER_LOW;
+ 		}
+-		irq_flags |= IRQF_ONESHOT;
++		irq_flags |= IRQF_ONESHOT | IRQF_SHARED;
+ 		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
+ 					   irq_flags, client->name, indio_dev);
+ 		if (ret)
 
-Changes in v2:
-- Commit message of patch 2 updated.
-- Operator precedence bug fixed in flags argument to
-  request_threaded_irq().
-- Always check return value of mma8452_set_interrupt_pin_mode(), and just
-  check for non-zero value.
-- Added new patch with optimization of struct mma8452_data ordering.
-- Link to v1: https://patch.msgid.link/20260715-mma8452-open-drain-v1-0-b1dd2a440c60@geanix.com
-
-To: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Martin Kepplinger <martink@posteo.de>
-To: Sean Nyekjaer <sean@geanix.com>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
----
-Esben Haabendal (6):
-      dt-bindings: iio: accel: mma8452: Add drive-open-drain
-      iio: accel: mma8452: Optimize struct mm8452_data member orders
-      iio: accel: mma8452: Only apply trigger type when not set by firmware
-      iio: accel: mma8452: Support interrupt sharing
-      iio: accel: mma8452: Allow open drain interrupt pin configuration
-      iio: accel: mma8452: Reuse existing dev pointer in mma8452_probe()
-
- .../devicetree/bindings/iio/accel/fsl,mma8452.yaml |  6 ++
- drivers/iio/accel/mma8452.c                        | 90 ++++++++++++++++------
- 2 files changed, 73 insertions(+), 23 deletions(-)
----
-base-commit: db2ddb87143519e20a95aa36c60b36107b736a58
-change-id: 20250401-mma8452-open-drain-81577c41375c
-
-Best regards,
---  
-Esben Haabendal <esben@geanix.com>
+-- 
+2.55.0
 
