@@ -1,146 +1,167 @@
-Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6B1D436BFE
-	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 14:31:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1D113CA4A8
+	for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 15:56:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786545077; cv=none; b=k6m/c7xLDBgqniy8nuAEmLmV6MaZXoWs+ICl6Gr5HiVoEJgOVkBP3pGwVRd3Ps7+2J2NstwqGs7dwNb9ZtXnlxIWiaePefp17ADdpTAByeWAmmOhePabzqlgpX3b8bC2D5sGGzYjQ/WKg4XDMjRyQ4gYPlKd7PCG1X6fljkUVDQ=
+	t=1786550181; cv=none; b=o0EFWEbNlknac3ie5cfYdN/trQ9DzHdY+x/Wcy7C+gk17sGCMv+i05No+kW6fWWZWhVbTOzjfEJNVvWLFllXt+fY20bWGJuhhFSHaFy1k4Zjk9uycuRhokjZn4wgL8akTZ3eC5KZiku+XKxnx55+9unvvdMhOuCX+4+S51TPzYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786545077; c=relaxed/simple;
-	bh=XAB19KdSyMK9mt+Rw2Vp72Vjf2WnClhTTZqjRvwz4C0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=bDiFsG3k+wovxjNvjBwBNnkctDRuOsVzazHlt9IZnzuGldmoIgF6u+3IkjIaTuXMXXjnWmO9vV98ovKJqZCz8RBvUN3bAemZqrcgUOBbuaWlfYcTM1+/sF4cg67rsQibxrd0sQCV939z7y+/3JNCqCHLX8jB0tVYwwvKC9hdl9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=SqS84QYj; arc=none smtp.client-ip=185.70.43.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1786550181; c=relaxed/simple;
+	bh=0AaMJ2ZuNPDpNygnkdWg2dPvVXYhqFjRU2NBOmUvi78=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=bgyVuFt0DAUfjKXs4oxTfWP1eVS3DyuPcuP0op4zWmcAAMufey6iNr8C0FT8Ima1qi70CtOGOV+rijPp13VEE10zQtde7C5FHVU6eDjs2aAJuWcJZNnwYYTh9Yrere8Mjvf7XHQnGe81RjV1DDKQw8O5S6zK+uxNIa6GoIoreaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=keLJ5GAh; arc=none smtp.client-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="SqS84QYj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786545058; x=1786804258;
-	bh=QtCx8kB4Mb3iMCCv5WhZU671IVumwe5Ul6ivPOF137Q=;
-	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=SqS84QYj7RfOGuQYWhwPmumdRbqQ4bjc7QWNHiR0dLjrgPH7woK1J1WTwb7K7lPAh
-	 75RivjZvIkXgDtl4NWjMANc5LUcKt/04PKPqt8bFBB+E4tsLDRcY9L7wknR2EBMwIF
-	 oGjh0TWZu2yq90RoYiKvLNY17z75goSmhQTTJgXpFW7LB9Yt/zlliQkyQtpyrIUFKA
-	 bzgbgAlM/BmOMacnu1WXUjoE2wjgYSeGAkWlxwvOOttwk+Oe/Lr6QnBHRjLeA9PqAp
-	 LgF9ANtr+LguagehgraGEdmTeXMMQX6PC8yULsmGYobuELm4wgc/gjethtZDuZjkhH
-	 /vMl577AiNS3w==
-X-Pm-Submission-Id: 4hKrWh3vcvz2Sd3M
-From: Esben Haabendal <esben@geanix.com>
-Date: Wed, 12 Aug 2026 16:30:36 +0200
-Subject: [PATCH v4 5/6] iio: accel: mma8452: Allow open drain interrupt pin
- configuration
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="keLJ5GAh"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-84e3007a2b7so1154903b3a.0
+        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2026 08:56:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786550180; x=1787154980; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=eNFhq05aNqziwdNErnHS5ilsR28OC8bIWpEV7AXBxgQ=;
+        b=keLJ5GAh0g5RtMV11QpSx2n2/UZJt9lrLY7QD4eGNlZNn9FIeEiokdcdP6RsROEf8l
+         U6l6eayJdsXTmELLoMMF+HpyM8DUHSZJY34KizyKdZKwASxR+VE8QPFL9lE0izyBwEqi
+         qi/D3gC7vH2xQIX+sCK9li90foUuV90LhNHITSCO3jZ4aR1CdgYGWMatJUwhEQgWtEx8
+         rVHWves+vdglinrFZewIaK0qigV2+/PojneTvZUY7aTakNrv0vFm0+GuWspG7MOi+AN1
+         rLTb+paNyED/n4IuYwZIPHko4FVvsp4euXFO7zNFWWHO7cUU9+ViY/6Hkl2JZcPZ3aId
+         muVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786550180; x=1787154980;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=eNFhq05aNqziwdNErnHS5ilsR28OC8bIWpEV7AXBxgQ=;
+        b=Ars2d9dGE+i4U3kZbqVFAh23F7sakyOYVJgo8o13elVItN9qHyziYgqtiCTecugiU9
+         rq+ew1KG0FS+Xa0HU0nM02q8za0fH5+5BmZrQ3iF5qWA5bjmirDJKsN3Hoc7u4FEFCBE
+         ZpwLhjSbJcGdzuGsqMTI3Eo80HyRfKAcKUxMtZ1w/+Ykwsb6hD64FFAnskbwj/T9GgrA
+         ivQ+SqT9qM8xh0YdSygwIgJ+L/lhGm1fq1nhw7Hx4fnOSg1e/049cXMtpBydqDsKDMId
+         jgaHKNqYELCUdE8DFEEmJAURfO5ey6M8AWYdnXTM4vFIlHuMKSIcND66mDyHOJZd0cZR
+         qlCA==
+X-Forwarded-Encrypted: i=1; AHgh+Rqd6tu9LjU8w19KZOVV9e3pjCOxUlPJGl6KOVwPsF99vfAQn5ZNIL+cOFglk6//VyyFLqLpvs2VZAY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy8F9jpcIg5hfg5tg6rcoTNYhgtP+/+0bPzBhnd5ja9u+95RBGR
+	RU6K8aMMnnmSxC/zLUy+1auqPm/SS3/191Vpgog0GIIu8aKqphRj5X0=
+X-Gm-Gg: AR+sD13wDstxIqWy5Ptqgd0BVn3vmjWAP9zH+ckLxG+mL5RS9hi2ph90yC5ORPnWjYh
+	qANAe6NOsyAIyHf7smROpDuKd7LB/w0fLprMgGyVVjtb1KvbyqyDgGGlT73DPK1ZOgK2lAkgBvp
+	TesrDuCPGFp5G5LGexd2uUt/Ej456x2MIl39Q/v6EndUkyEBTwzp9vsKW2oUi+9P5LAqaxQUTaP
+	YJ8/e5fAQ1rQ5WKPp+FrPSh4GqPwrc5ocXTtj+BTNYnHoJvxFwEtTnBHdrvSH0Fxtnc9hxh3bmO
+	iNPqm9lVquRKkezp8Woh6wiIJv+l+wTSEXPR0NPmy6igPaz5IJjWcjwbQQwwJZYrocWvAGWH9J+
+	kt7iRc225HUeQSkJ5nWD9aDb1Ow5pvJrNK18IHL4YfkdEP2MHga0oG1SuvYudujFwoBKkavfAYj
+	3m1Ox79Cwl+1+3U4fkMzC8TlXb1uYxEEyz/cpEYD85zwcYSwntJhGdreZBoez62xWhao7Mgx3DS
+	2qnOWnecYe1k1dHMvnXuTZl
+X-Received: by 2002:a05:6a00:8084:b0:84e:244a:98e8 with SMTP id d2e1a72fcca58-84fb55490b2mr6851084b3a.30.1786550179686;
+        Wed, 12 Aug 2026 08:56:19 -0700 (PDT)
+Received: from localhost ([186.158.238.108])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84fb1f73159sm1220212b3a.56.2026.08.12.08.56.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Aug 2026 08:56:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260812-mma8452-open-drain-v4-5-bfca15d02b59@geanix.com>
-References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
-In-Reply-To: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, 
- Sean Nyekjaer <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786545039; l=2387;
- i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=XAB19KdSyMK9mt+Rw2Vp72Vjf2WnClhTTZqjRvwz4C0=;
- b=eK4jpnBI5+okCdCApB12SWhUorIDm+PahZpu/J8VdFBlBNxEa8qSslkWS3wvKKVy7Hdn2NIVB
- vcRgmt/JhjmDV9lGYJJ5iqMDgi62WM6F69KRZnuhGXOIN+jIsEkKvMs
-X-Developer-Key: i=esben@geanix.com; a=ed25519;
- pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 12 Aug 2026 12:56:15 -0300
+Message-Id: <DKN36K6SLY15.2Z5PITE3CE9CN@gmail.com>
+Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Marcelo Schmitt"
+ <marcelo.schmitt1@gmail.com>, "Andy Shevchenko" <andy@kernel.org>, "Brigham
+ Campbell" <me@brighamcampbell.com>, "Jori Koolstra" <jkoolstra@xs4all.nl>,
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Shuah Khan"
+ <skhan@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-kernel-mentees@lists.linux.dev>
+Subject: Re: [PATCH v2] iio: humidity: am2315: add am2320 to i2c_device_id
+ table
+From: =?utf-8?q?Nicol=C3=A1s_Antinori?= <nico.antinori.7@gmail.com>
+To: "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
+ <dlechner@baylibre.com>
+X-Mailer: aerc 0.20.0
+References: <20260810183337.451812-1-nico.antinori.7@gmail.com>
+ <anqKwJOkl_cxzCT6@debian-BULLSEYE-live-builder-AMD64>
+ <anrRkty6ugdJUGmE@ashevche-desk.local>
+ <DKM7MV8J10HS.2OIM1TDHB9VHQ@gmail.com>
+ <2d7dcced-47f9-4fcf-9668-30acb9e8c9b1@baylibre.com>
+ <DKMB5HGIEQCW.3EKGVS7GLRBOF@gmail.com>
+ <125ac6a1-a089-4ce8-9b20-c3448b6b5208@baylibre.com>
+ <20260812054339.6f58b5fd@jic23-huawei>
+In-Reply-To: <20260812054339.6f58b5fd@jic23-huawei>
 
-When designing systems sharing the interrupt for mma8452 chips, it is
-helpful to be able to configure the irq pin in open-drain mode (default is
-push-pull).
+On Wed Aug 12, 2026 at 1:43 AM -03, Jonathan Cameron wrote:
+> On Tue, 11 Aug 2026 13:06:50 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+>
+>> On 8/11/26 12:58 PM, Nicol=C3=A1s Antinori wrote:
+>> > On Tue Aug 11, 2026 at 12:49 PM -03, David Lechner wrote: =20
+>> >> On 8/11/26 10:12 AM, Nicol=C3=A1s Antinori wrote: =20
+>> >>> On Mon Aug 10, 2026 at 4:28 PM -03, David Lechner wrote: =20
+>> >>>> On 8/10/26 1:32 PM, Nicol=C3=A1s Antinori wrote: =20
+>> >>>>> The AM2320 is fully compatible with the AM2315 sensor in terms of =
+I2C
+>> >>>>> communication protocol and measurement conversions.
+>> >>>>>
+>> >>>>> Add the "am2320" entry to the i2c_device_id table. =20
+>> >>>>
+>> >>>> Interesting. No devicetree bindings for this one? What kind of
+>> >>>> system is it on?
+>> >>>> =20
+>> >>>
+>> >>> I am testing this on a Raspberry Pi 3b mounted on a protoboard. =20
+>> >>
+>> >> How do you tell the RPi to bind the driver?
+>> >>
+>> >> Since Raspberry Pi is ARM-based, usually we would use devicetree
+>> >> overlay to do this, which would mean that we should write a
+>> >> dt-bindings .yaml file for these chips. =20
+>> >=20
+>> > I do it manually.
+>> >=20
+>> > I use that RPi for development, at the moment the kernel I am using is=
+=20
+>> > 7.2.0-rc6-v8+ with CONFIG_AM2315=3Dm. When I need to use the AM2320 I
+>> > modprobe it with:
+>> >=20
+>> > $ sudo modprobe am2315
+>> >=20
+>> > And then=20
+>> >=20
+>> > $ sudo bash -c "echo am2315 0x5c > /sys/bus/i2c/devices/i2c-1/new_devi=
+ce"
+>> >=20
+>> > (With the modifications I made ... echo am2320 ... works as well)
+>> > The pins for i2c I am using are GPIO 2 (SDA) and GPIO 3 (SCL).
+>> >=20
+>> > If a dt-binding yaml is needed I can send another patch with it!
+>> >=20
+>> >  =20
+>>=20
+>> Yes please. It will make it easier for others to use as well.
+>
+> I think (from a quick bit of googling) that these two parts are
+> at least 'kind of' the same thing with different packaging.
+> The name is a nice to have and given the packaging may I guess
+> affect the signal and how it is used it probably makes sense
+> to add it.
+>
+> They only have 4 pins. Power, ground, SCL and SDA.  So it
+> is a rare device simple enough that I think an entry in trivial-devices.y=
+aml
+> is probably sufficient.
+>
+> Ideally add an of_device_id table, even though this will work fine
+> by the fallback path that uses the i2c_device_id table
+>
+> Jonathan
+>
+>>=20
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/iio/accel/mma8452.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+Thank you all for the feedback. I've added of_device_id table, chip_data
+struct (and assign the name from there), and added "aosong,am2315" and
+"aosong,am2320" to trivial-devices.yml.
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 106cdd904dbf..7992f9e38818 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -81,6 +81,8 @@
- #define  MMA8452_CTRL_REG2_RST			BIT(6)
- #define  MMA8452_CTRL_REG2_MODS_SHIFT		3
- #define  MMA8452_CTRL_REG2_MODS_MASK		0x1b
-+#define MMA8452_CTRL_REG3			0x2c
-+#define  MMA8452_CTRL_REG3_PP_OD		BIT(0)
- #define MMA8452_CTRL_REG4			0x2d
- #define MMA8452_CTRL_REG5			0x2e
- #define MMA8452_OFF_X				0x2f
-@@ -119,6 +121,7 @@ struct mma8452_data {
- 	int sleep_val;
- 	u8 ctrl_reg1;
- 	u8 data_cfg;
-+	bool open_drain;
- };
- 
-  /**
-@@ -647,6 +650,22 @@ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
- 	return mma8452_change_config(data, MMA8452_CTRL_REG2, reg);
- }
- 
-+static int mma8452_set_interrupt_pin_mode(struct mma8452_data *data)
-+{
-+	int reg;
-+
-+	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG3);
-+	if (reg < 0)
-+		return reg;
-+
-+	if (data->open_drain)
-+		reg |= MMA8452_CTRL_REG3_PP_OD;
-+	else
-+		reg &= ~MMA8452_CTRL_REG3_PP_OD;
-+
-+	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG3, reg);
-+}
-+
- /* returns >0 if in freefall mode, 0 if not or <0 if an error occurred */
- static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
- {
-@@ -1676,6 +1695,11 @@ static int mma8452_probe(struct i2c_client *client)
- 			goto disable_regulators;
- 	}
- 
-+	data->open_drain = device_property_read_bool(dev, "drive-open-drain");
-+	ret = mma8452_set_interrupt_pin_mode(data);
-+	if (ret)
-+		goto trigger_cleanup;
-+
- 	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
- 			  (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
- 
-@@ -1817,6 +1841,10 @@ static int mma8452_runtime_resume(struct device *dev)
- 		return ret;
- 	}
- 
-+	ret = mma8452_set_interrupt_pin_mode(data);
-+	if (ret)
-+		goto runtime_resume_failed;
-+
- 	ret = mma8452_active(data);
- 	if (ret < 0)
- 		goto runtime_resume_failed;
-
--- 
-2.55.0
-
+I'll wait a few days to send v3 in case something else comes up.
