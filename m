@@ -1,226 +1,139 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 045C43F3289
-	for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 20:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786654703; cv=pass; b=kBctdirMeIuEcTp9tLXelmMgJ7nR/AAD6c8XGsL1iq/Exgk0wl6hRrQqiXDCvNptQJJW0f+dXD13z3Cm5uIf0+slGi/0J/IQbX+dQZv5in2L0juqnOqV12YyY1pfsnyDyyLsPdTruoojt+XnfJIy1qQ2VnR6MG89ESJJiFsheDQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786654703; c=relaxed/simple;
-	bh=/xB5jWHXqzTzVpEIuX53vofBJ70T8JLPbOmbdW9c2j0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fBPkQ261HUb6yxPQZhp6rGExKSQD3nI4DnuFT4wgSjbyOqYJ4q6LcSGLAQV1rHXnrIKaUcLZgfQ2h4tYr6g021N/eR2DcPjV0dy89jSLbrPudVNtfuvvDoD3RRF+4YTtPVKxhyb8V+jMu2k7UpaeALFpR6e5VLVwI/CW89Va6w8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h19OaGZm; arc=pass smtp.client-ip=209.85.208.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC997329E55;
+	Thu, 13 Aug 2026 23:05:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786662309; cv=none; b=jEEz2nuvs30CHISX0zp3ujciM+nuIh5WV+lsPiUmj8iskAnoeoE6PMta8G89+gPl7gYLhGYfGRlu6joZxDCDwyvoDg888O/Gw/7/D5I67TQMIAHzI80vSTcZ/neporHn4IOuf0z67IFW9QxWtba9ZkHnETMj6d9EyfWs75HbO+E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786662309; c=relaxed/simple;
+	bh=bfaOgyh8wniwvroyd+wKFkStGlI0x7TmqoW1aMrnyRU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=hFVzwEfmP054NsG4lxTUwTHsBVj4Fr6ItYnfDT+0fQqAPO2dUZLe1uuKXK/vUs+I7EKZXe9twT+cfpKO58MlzSpajgzYEh0UwlTkWXphRlFBjKzUxyPiLBS4BsumRP9+Ua7WFy4EIJdosRp23/x+6tCSUfxrnGxFUSu0Isgv89s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=NqzAzjk4; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h19OaGZm"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6a0a4a28cbdso420940a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 13:58:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786654700; cv=none;
-        d=google.com; s=arc-20260327;
-        b=X7ToCdyAx7GMZbIu19zJ7/tZ1jc/T2/VUSvfgwG01Qn6BeQ3lNFj8h1Bj762rjlRrc
-         K4lzL1D8cl2gi3Etre31JBW88aQc6UAHoCPtyTR7Kl2M3dKl3shWZhvyFdV5PCgUkix6
-         R9bvPgfXbrnq6pphUUHHu83wGOWWrsWLcVV42AN+jMwTDdradTrwgSqy/7PBOXeq08dK
-         AhRKBhdrXxY2tfIDKz4YhHCjM3P37nZCH2e/gg8gZBL7wbpBtSDoVhZ27dTmbOUYqbwe
-         YsMeq1DBtXIBDTYIciBFq2RTS/lqrf/OupDjVE4G5thjgLdQaE2kxIq5gt3p283/qvZs
-         BG9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=FMKOZgzufVVCLOJWeEGJ15IjqhNjAOcuZzkZmWD1eJY=;
-        fh=n4clxhMzJ9w7eSL00IKSJoToUT/dSgkHxrP1DuCgMUk=;
-        b=SC3SQjDhpVbudj8l8JImUEzdmUc4h5BNa1oFdsPWyh3lDAzzwEVbmsMPN1LYCLL5Ce
-         i1S9Vf6TR7+XJEct7rPkLLogSntILPkTh/LshC9Pk+8QfNSeJ7WtVJW7ei7ejR7hIJvR
-         Ji4SAFx+rDsbF7wnSLdNAmOYWoLHnDZz8ULIipkzg85ruWA/lWOwOIp5+ENb39Hl6JlK
-         ETQE82Gn7aKSW9OppXir3/ctQUfPeKtKEv7UfhTVzUkcQLm1L+BPKSYRlx5W2a5D/veq
-         RnuxiOq4CDvUFfiasEN0m17hk7oBC2F22PfxLV1i0DppOHQgCeF6gAXKm61ow6lF+fGN
-         r0VA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786654700; x=1787259500; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=FMKOZgzufVVCLOJWeEGJ15IjqhNjAOcuZzkZmWD1eJY=;
-        b=h19OaGZmoG4y8EdQqoS+d3m7noBw5+nt2lRRRtROTMXim263mxbszy9tI7C0ucjnZA
-         /Krdp6YmpNxTwpfDOgnsT5yQ39dIFVWC0EdsrmEC+gRskbzuF6vZTo38edzWkSu0bsEg
-         w5gYGf4o/1T1Xd8OMeB7m4MmUpwqhSPkzE8t55CWgZC8Y4M8X19pVNDajDt1M2Wa9gQS
-         m9Z4QadUHbjkiC4ripB/t7BKufuLRjfDaggMBd2Hh/Ee6yWPbDlM620gzi+f2TqsF7aq
-         7glaLoO5S3t5PiaI97WH+1ML0IDmrCK1eypXiG6wy4vs/MNL5TpMSCeDm1eZS/HJ91zc
-         zVyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786654700; x=1787259500;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=FMKOZgzufVVCLOJWeEGJ15IjqhNjAOcuZzkZmWD1eJY=;
-        b=Po2kVTV2115EFPsO4s956twoQhScrPJwlRzL5IRIDAW2yUM1AZgR5IEx/+sT8y5T35
-         Tsv+vOg9Kf4U7rDgKcJK8z7mpbVQvV6/yhWShC1rXhkw11xB86y5dff4j8noGv1ATGJg
-         CzBPpkdjyslA2lEioMU8YITzwOOgFVp4oC6Xxp+hxmRprBgPHwzT7tOkRl5/PnzWXyfO
-         yTSQzbHu6Gepg+wDiPJDEpwzV6j02OEATL2dU7QOBYzBCmAmvBfRidqfAlNd2a4cGkIo
-         1LPa+eEbZeRMk46IuxqT85jtbT2VoEFupNSRkrPUjYdTBaC8LgE8fEa8mav+L7un/2kt
-         vqnA==
-X-Forwarded-Encrypted: i=1; AHgh+RoJmkZz2qecKxUgg4MVOHOMkGFLJ6cuV+C0P/M907JxzKojq/f4uCYDyWwOBx3m1AKEkbIGUjmCn2Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw2lh5I2TbXeBZ8Y3tvVyDKQ534MxHWWMpuDP5QhZfN74bZxeqY
-	fQ4MRjT54O9LqskhwvhZGLR8DNTWx+FRYX2NRMT+HhKubitXZgwBf2f9ymRKkPtCpFdUPpNE2Gt
-	9cspk7Ae+zJABr/YmNpoxu8542CjHEaI=
-X-Gm-Gg: AR+sD12qzDyZYaH/5y2XFQ6RyG3L+OXKIXgXXMO5ShHnMSQ/xYfyKnQ2Rd25AQN+Q+l
-	G9Gu3wJbapNeQLnSzDFZe1R38cSaUO6DPAmTpZsB2wNOn8Eye2aY/jEj4p8RhZ+pwAoLGNs3/ro
-	WqUlaxn6eKqyR4Y8Kdy1hKEQpFmWiQMqJFa45jdV1sPBQ1KUTh4WeiaffuzeNjpjZhbbaG+LVK2
-	rmv4Mg3V9vCRtvKk5K4jpIJPs1qtwxRTiWYRIfO4jLRQfOmhlp/WSklnnTPv8wcf5S7KjrV5UZ1
-	uOMQDjKRXVhQPH+dQDfDzBZZ5o4HBI9Ku4mC4k/eElMyIemmo6BeQtuD0lNG84MVLlySNRmArSI
-	DlFrESva8pvPmVjTvwtT1kX0Kz6557aIknH7llOGB9s7S9lSJmKQoI9hNUEwFdSQseuHNuUst9E
-	/5Gjqxu0n4erjdayJ8K8hrvJsuQHaYfg==
-X-Received: by 2002:a17:907:9612:b0:c20:2eee:97b7 with SMTP id
- a640c23a62f3a-c212a0f45f8mr50426766b.10.1786654699886; Thu, 13 Aug 2026
- 13:58:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="NqzAzjk4"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67DMlbuJ2667835;
+	Thu, 13 Aug 2026 19:05:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=vJi9t1Lo+SW4ngPLa6SgFZWrXnb
+	vC3Ddg1Jz9vUPN3o=; b=NqzAzjk4uc66bUL1sc9IaMDvCBZ52SKC/JA/RtnexT0
+	XOrzdK4t8peFDXhznRuOU4epWo+G/YEIVYIGSbxvNKGTmSVOJfSHlUScxqzOmUwU
+	Hb2ExgnkFLvpY3mtqnnpmLfecGVxYTz4jlnBdzbG19Gr+KUjAXz5K6LdkLNZK9zh
+	V4PPQZlSowvISf1tGMUJZDd5HHD0PVYi/WyRXoRN65lH53HdZluAxWaN2d/8wHc0
+	DzuC++TkLYdThHDfdzOfwc1pal1b9UotAXszCRxTykX35P2zLU7q6JDrpCdEYzu8
+	eQHYi8xzXYQC3PZfNgMomjd1lhtZVPY3CbJahK2/R+g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4g1e1namq3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 13 Aug 2026 19:05:02 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67DN51Gd031367
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 13 Aug 2026 19:05:01 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 13 Aug 2026 19:05:01 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 13 Aug 2026 19:05:01 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 13 Aug 2026 19:05:01 -0400
+Received: from work.maxim-ic.internal ([10.66.6.190])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67DN4nMi025379;
+	Thu, 13 Aug 2026 19:04:51 -0400
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
+        <dlechner@baylibre.com>, <andy@kernel.org>,
+        <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v10 0/2] iio: adc: Add support for LTC2378 and similar ADCs
+Date: Thu, 13 Aug 2026 20:04:40 -0300
+Message-ID: <cover.1786661484.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260813160139.70000-1-andrei.stancovici@analog.com> <20260813160139.70000-3-andrei.stancovici@analog.com>
-In-Reply-To: <20260813160139.70000-3-andrei.stancovici@analog.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 13 Aug 2026 23:57:43 +0300
-X-Gm-Features: AUfX_mzQbBF40TX5-53l7NvXgRquRfw3jQNW53giSLK5VOi38_cPDpZfU8jUQPk
-Message-ID: <CAHp75Vd2_NwPjqM1MMBn-2KP2h=ug=Nv-v1CgfmfPdN3jE50Yg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] iio: adc: ltc2497: add LTC2499 internal
- temperature channel
-To: Andrei Stancovici <andrei.stancovici@analog.com>
-Cc: =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Liam Beguin <liambeguin@gmail.com>, linux@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEzMDE2OSBTYWx0ZWRfXy+YgTqoziEot
+ tZH4pW4kyc2KGSShmAOHDqu0/8YBmfydexpFcse9CY2Bam3eT5AEvZI4g6x3aqqADzQ6I2x+yBY
+ CFijC6neh9cbHJ0uZJgWqRCFQ9Wap5p1ZJuJIDNG00pjGyaKmv2fXY+DAIiIUku9xD8tssX0uoJ
+ 9xlcJ7Zn0mNjq7v+qpbmYJDxJLYfcyt3XFL1nRh+EgkTBqoueNlOgnnPIm2QEisPlbjThdXG/O4
+ ZIIyxEJHZWjJUdX3LEjo3MqD3WCOeWYsMmkBaEnvYGWO0eA5GbBbQIna8NVex4TxH1MvL2e8hFp
+ eNjDAxdqE7BifkJCCnjnNVKNgx1o2ZYozCb6rKRcM3XcCZVrat1KpOngqjY6q3+PVS/m/wYeYkh
+ iVaGsLA0ScO/KqjLYl4p2Q7Q8wxVWwTipkAvl0qfoNFAQrpMYYUzBM84ppRuoYuv3HMLkPmg5Iu
+ k+fdz0FM/CemcNTKUBA==
+X-Proofpoint-ORIG-GUID: UrxGL9qlZlMvYA3rVmsDOunjN_CT5xMy
+X-Proofpoint-GUID: UrxGL9qlZlMvYA3rVmsDOunjN_CT5xMy
+X-Authority-Analysis: v=2.4 cv=fLoJG5ae c=1 sm=1 tr=0 ts=6a7e4d9e cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=N--XFCr6TIEc_64PeIT2:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=pGLkceISAAAA:8
+ a=uZASs6rzk6PZwFqRxqQA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODEzMDE2OSBTYWx0ZWRfXwkwD5PhGW7jK
+ C5RKJhjbeVMSN2209PRjGi1dzLikk1bg/HkhDKmIcMTqFv9VNajfuWlVd7HR5oe6D3Nvosbycnt
+ Dlii8y2E9pJ2qUZky1kE0jH1dT3zVbIcHDvUckvWGgEIvmg/q1aA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-13_07,2026-08-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0 adultscore=0
+ priorityscore=1501 suspectscore=0 spamscore=0 clxscore=1015 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608130169
 
-On Thu, Aug 13, 2026 at 7:02=E2=80=AFPM Andrei Stancovici
-<andrei.stancovici@analog.com> wrote:
->
-> The LTC2499 has an internal PTAT (proportional to absolute temperature)
-> sensor that is activated by a second I2C configuration byte (EN2 | IM).
-> Expose it as an IIO_TEMP channel providing raw, scale and offset so the
-> standard IIO formula
->
->         T[m=C2=B0C] =3D (raw + offset) * scale
->
-> reconstructs the temperature.
->
-> The PTAT sensor yields the absolute temperature as
->
->         T(K) =3D DATAOUT24 * Vref / 1570          (Vref in volts)
->
-> The raw value exported here is sign-extended and normalised to
-> 2^(resolution + 1) =3D=3D 2^25, i.e. raw =3D 2 * DATAOUT24, so on the IIO
-> milli-degree-Celsius convention
->
->         scale[m=C2=B0C/LSB] =3D Vref_uV / 3140000
->         offset         =3D -273150 * 3140000 / Vref_uV
->
-> The scale and offset are derived from the reference voltage returned by
-> regulator_get_voltage(); its error is propagated as before, so a board
-> that fails to describe vref-supply gets a clear read error instead of a
-> silently wrong temperature. No board-specific reference value is assumed
-> in the driver.
->
-> The single temperature channel is appended as the last entry of the
-> shared channel array and excluded via num_channels for parts without an
-> internal sensor, so the existing LTC2497 channel layout and device name
-> are unchanged.
->
-> The LTC2499 latches its converter configuration from the second command
-> byte and only re-evaluates it when that byte has EN2 set. EN2 | IM
-> selects the internal temperature sensor. Because a single-byte command,
-> or a second byte with EN2 =3D 0, means "keep previous", a one-byte channe=
-l
-> select cannot pull the device back out of temperature mode: after a
-> temperature read every subsequent voltage read would keep returning the
-> PTAT result instead of the selected input. Temperature support is
-> therefore only correct if the voltage path also emits a second command
-> byte that re-selects an external input.
->
-> Send two-byte commands for all conversions on parts that have the sensor
-> (has_temp):
->
->         temperature:    EN2 | IM
->         voltage:        EN2                     (IM =3D 0 -> external inp=
-ut)
->
-> The LTC2497 and LTC2496, which lack the second-byte mechanism, keep using
-> the original single-byte channel select and are unchanged.
+Improvementes to LTC2378 device driver according to v9 review.
 
-...
+Rebased on top of
+54355e3b189c ("iio: adc: ltc2378: Enable triggered buffer data capture")
+Will require rebasing testing and togreg branches.
 
-> +                       /*
-> +                        * raw is normalised to 2^(resolution + 1), i.e.
-> +                        * raw =3D 2 * DATAOUT24, so the PTAT scale (data=
-sheet
-> +                        * Vref / 1570 per kelvin) doubles its denominato=
-r and,
+Previous submissions:
+  v9: https://lore.kernel.org/linux-iio/cover.1785186980.git.marcelo.schmitt@analog.com/
+  v8: https://lore.kernel.org/linux-iio/cover.1784835663.git.marcelo.schmitt@analog.com/
+  v7: https://lore.kernel.org/linux-iio/cover.1784235595.git.marcelo.schmitt@analog.com/
+  v6: https://lore.kernel.org/linux-iio/cover.1783629101.git.marcelo.schmitt@analog.com/
+  v5: https://lore.kernel.org/linux-iio/cover.1783028033.git.marcelo.schmitt@analog.com/
+  v4: https://lore.kernel.org/linux-iio/cover.1782397418.git.marcelo.schmitt@analog.com/
+  v3: https://lore.kernel.org/linux-iio/cover.1781661028.git.marcelo.schmitt@analog.com/
+  v2: https://lore.kernel.org/linux-iio/cover.1779976379.git.marcelo.schmitt@analog.com/
+  v1: https://lore.kernel.org/linux-iio/cover.1779117444.git.marcelo.schmitt1@gmail.com/
 
-Kelvin
+Change log v9 -> v10:
+[DT]
+No changes in device tree doc.
+[IIO]
+- Added {} to make local variable at top of code block scope.
+- if-else code neat.
+- Mention the possibility of having same index for diff channels (e.g. voltageX-voltageX)
+  in ABI doc.
 
-> +                        * in m=C2=B0C, becomes Vref_uV / 3140000.
-> +                        */
+With best regards,
+Marcelo
 
-...
 
-> +                       ret =3D regulator_get_voltage(ddata->ref);
-> +                       if (ret < 0)
-> +                               return ret;
-> +                       if (!ret)
+Marcelo Schmitt (2):
+  iio: adc: ltc2378: Add support for LTC2338-18
+  iio: ABI: Encourage differential voltage ABI usage
 
-In this case I would rather see
+ Documentation/ABI/testing/sysfs-bus-iio | 11 ++++---
+ drivers/iio/adc/ltc2378.c               | 44 +++++++++++++++++++++++--
+ 2 files changed, 49 insertions(+), 6 deletions(-)
 
-  if (ret =3D=3D 0)
 
-as it's about value and not a returned error code (success).
+base-commit: 54355e3b189c7015d4575ae04a3bc7b803975bd1
+-- 
+2.53.0
 
-> +                               return -EINVAL;
-> +                       /*
-> +                        * 0 =C2=B0C =3D=3D 273.15 K must map to raw + of=
-fset such that
-> +                        * (raw + offset) * scale =3D=3D 0 m=C2=B0C, i.e.
-> +                        *   offset =3D ABSOLUTE_ZERO_MILLICELSIUS / scal=
-e
-> +                        *          =3D ABSOLUTE_ZERO_MILLICELSIUS * 3140=
-000 / Vref_uV
-
-This is a bit too far. In the comments the plain numbers are much
-better, we should understand math and physics behind.
-
-> +                        * Computed in 64-bit to avoid overflow.
-> +                        */
-> +                       *val =3D div_s64((s64)ABSOLUTE_ZERO_MILLICELSIUS =
-* 3140000, ret);
-
-Casting is not needed, the trick is to add LL type suffix to the 3140000.
-
-> +                       return IIO_VAL_INT;
-> +               default:
-> +                       return -EINVAL;
-> +               }
-
-...
-
->  struct ltc2497_chip_info {
->         u32 resolution;
->         const char *name;
-> +       bool has_temp;
->  };
-
-Have you run `pahole`? It might be that on some architectures there
-will be a gap in between existing ones due to 64-bit required
-alignment.
-
---=20
-With Best Regards,
-Andy Shevchenko
