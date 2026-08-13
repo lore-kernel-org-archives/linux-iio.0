@@ -1,55 +1,60 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B172D48381C;
-	Thu, 13 Aug 2026 13:58:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93882480DE8;
+	Thu, 13 Aug 2026 13:58:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786629497; cv=none; b=iRi0It748aGyCwj153QGPqA48Vmd2i2BJ2+0743st8bZd5HUug+JEgdFmRrRzavjdgGKTBW9jrZj6dr2UwnR2jHiAYAA/aJTr8Nj9wULJhl6k/xx3IyvuXi42zOMBOIQhVsNyboDsN7OgbPRPm96w1jiuEVb5BVp/Rc1DHjKqrE=
+	t=1786629498; cv=none; b=YtkD2zZmV6peYAiCXBUbcx6TNJkfLh8qR04/lvhJEP9rxAG+sh5iLOy259nRI0/EnRHYNXfvDrqEsvRRjZbHW9mujjx3HibZUIo9XqLp6DvU4telmM4kV+EtzyLGXHxwg8johEyXWBv2mOx9BPB/vJlQ6+UCgkv7xKXGC6NwkzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786629497; c=relaxed/simple;
-	bh=UJWSoyXKe14qXIpvAb3M5QVG4cT+Njcg5l1hFRvSyHY=;
+	s=arc-20240116; t=1786629498; c=relaxed/simple;
+	bh=031BCJtxUXX6B1ACSYHhPP3qepuD5qBFVO6CqEsk818=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=daUmmH5qaTNXIenSnFM5d6f8RBg7da5DthLN1reNDY5JEcgB3SkbJ6hqbClJXChIYVw7frGfGRZ9Xdw9y6TFEBW3IFy9/9tbF9HEg4tNV2QAlh2w+zdGPJs0OIOz+PehzZt2aG0W6G5YK6Pk7DnjhFqvqawwD73GkbnFQPX9s7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ymh2Catq; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=eVDJnnBwVhrDUHPH+8815zeqoiNuqC+c7eC3IroZ/j73Rb6k6e5rQSZOA4KLKX88IyMvjwUiAuiGM8OEgTq43baNvab9fQOKUzjfWRl8LUOpSUyxOxWNubmL3ac+mvkqCrsjkQnl0/bS+Y0b14se9+g1k8C/aCVAcM2LagAb0uk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=X35Sljl8; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ymh2Catq"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67DCa7xl2129063;
-	Thu, 13 Aug 2026 09:58:02 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="X35Sljl8"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67DCdCeL1876660;
+	Thu, 13 Aug 2026 09:58:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=vERAW
-	jWK/FBbrldkzn0mpkTsowpwRtCAi+3UBq7AKno=; b=ymh2CatqR4F0q5AiuwvRD
-	dMZEmxmevMETuw+8ThO6NsRS2Q0rA8arv5kblMGX5g1R2DrkcIlEMcIEVnpjcxbo
-	eM812CyIVOIX2FctD9aw9FF8jymnYAlw9AmXWA+ZJ666jl0iXkgWETDipJNpwzI0
-	O92kyxHam756BpM8OqkI1lrfUrS9NVFJEvQaEeCTUbQK95f7s7MBTnGxB1LMB4U7
-	NMKtbJls5kRIIfBJgtoeaP1RFmfZtSVjVRrnV4+2KQdRs5cBeT034HUqSbYBSWez
-	pUjCWYgmGBGyb/tJ4h7DIOD5Dvam4M9hAtqiFNh628pRTEVRUAIZ4Ct0YsEBZc0g
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=2doGa
+	yEixqGplIb8Uz/5lY28sycBGbNDX8ArpvHDKBA=; b=X35Sljl8NFGqONduW0A2x
+	pFJsuSDkqLBI97Hmbe++PIN/7WnJQPkU3c8oG7HUKmJQiEH6MMnelXNnApH2nooK
+	ngy4r9xvABVp1GwDE9NVh4w6h46izEuszsMOPN8qigsDPgpK/0m7NJ6j2zTtLBSY
+	5dnZP4DmXip+o3vVu6pNcmDTztbG7iZNlPIYJikyFJl3fi/79hQu60fdIyYgLcT3
+	IeqWeQ5oXHQxNRT7TB9etqFm13HFZNEH+s2pbjUPFQortJY8V0cI/2l3MmtiSN2M
+	+MEjyJivdhFZRzDdKld6dFdwa05cfPUE+lCCWszgFI8GG14EQhwFRytQMh9wemeV
 	w==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g1e2wgccp-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g1e4b0dbg-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 13 Aug 2026 09:58:02 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67DDw1d8024645
+	Thu, 13 Aug 2026 09:58:05 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67DDw4b2024657
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 13 Aug 2026 09:58:01 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 13 Aug
- 2026 09:58:01 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 13 Aug 2026 09:58:01 -0400
+	Thu, 13 Aug 2026 09:58:04 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 13 Aug 2026 09:58:04 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 13 Aug 2026 09:58:04 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 13 Aug 2026 09:58:04 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com (HYB-e1y2fvUQ3cx.ad.analog.com [10.44.3.60])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67DDvOwZ006802;
-	Thu, 13 Aug 2026 09:57:54 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67DDvOwa006802;
+	Thu, 13 Aug 2026 09:57:57 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Thu, 13 Aug 2026 15:57:00 +0200
-Subject: [PATCH v3 07/14] iio: adc: ad7768: Add calibration controls
+Date: Thu, 13 Aug 2026 15:57:01 +0200
+Subject: [PATCH v3 08/14] iio: adc: ad7768: Add per-channel conversion
+ delay
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,20 +63,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260813-ad7768-driver-v3-7-cb554399ad26@analog.com>
+Message-ID: <20260813-ad7768-driver-v3-8-cb554399ad26@analog.com>
 References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
 In-Reply-To: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>,
+        "David
+ Lechner" <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, "Rob
+ Herring" <robh@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor
- Dooley <conor+dt@kernel.org>,
+        "Conor
+ Dooley" <conor+dt@kernel.org>,
         Olivier Moysan <olivier.moysan@foss.st.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Linus Walleij <linusw@kernel.org>,
@@ -87,248 +92,280 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
 	<u.kleine-koenig@baylibre.com>,
         Janani Sunil <janani.sunil@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786629444; l=6085;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786629444; l=6597;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=UJWSoyXKe14qXIpvAb3M5QVG4cT+Njcg5l1hFRvSyHY=;
- b=9bkyBcjPZ2yzJ22h1QyxZ1T2T8Qi775ijwyl2B19vahytQIboKiJwph62joJ5SnAgbi3bOQP/
- ul+KVIGZLYMDFxyBbBQgj2NiZvqlosyi4Gp4K+Srrla+82UM9zrPk7N
+ bh=031BCJtxUXX6B1ACSYHhPP3qepuD5qBFVO6CqEsk818=;
+ b=VbNLVJoUxz4enrfdt5d0rfzXiurlXAeKtmvrie8zhxzxwCE83jTav5ExZ6twoVmHhVjH1ih9+
+ pg1+mR+sR5qAkxQATRnXu3dPAm37HNUrOiDkdOXx+6t8jG79hNN4fyz
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODEzMDA5OSBTYWx0ZWRfXx/Inru+u/Esx
- 3zdv6kI6W2MX5FhBBJNJkQUm8MIIh8dmO2rMQ2NG87FUvsUd+E9HG5X7Kn7HsZs95t0aR5Aky95
- RTlh5et2gruN47p/3EG+S5EdDd6cML5pGVGCLq1TxMFdtIJ+ZTPh
-X-Proofpoint-GUID: W6y3S3N0m7lIOrhv0MW_X3lyb0Ljd60Z
-X-Authority-Analysis: v=2.4 cv=UJzt2ify c=1 sm=1 tr=0 ts=6a7dcd6a cx=c_pps
+X-Proofpoint-GUID: QqrjfuwdIanX5wvb2DZIvfEj53E7jlT5
+X-Proofpoint-ORIG-GUID: QqrjfuwdIanX5wvb2DZIvfEj53E7jlT5
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODEzMDA5OSBTYWx0ZWRfXyNHngJbgKKbD
+ cShjb+idVsn5XdhJXCdnPu8iEx3FXSSkcVb49EaVfI0Isl1ltU5PQVSJMIHO8UH97ADwg9afwBn
+ yLegSjW0dFP0AOTZAxo/Fl2u1BY6GNBZR5fo7JLB/tSqUb053uQJ
+X-Authority-Analysis: v=2.4 cv=ZZYt8MVA c=1 sm=1 tr=0 ts=6a7dcd6d cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
- a=XhVhMDlc3cf8FCRBbCAA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEzMDA5OSBTYWx0ZWRfX9XHj2m3R1lvT
- +kS/w8bd64Nv1qyc3YBIBjlf+k0HXgK/FU+JiWRz1XHQR9G/Cp8F2iFm458WkUQyzgfs7PdUAo8
- 1whhAWo7fI+O+r9uuvCO4Hp4c+ZeKqq0Ii9/zmT9iiV3jo99EiIfN8LV1vDIOKo4nSegA5acO1M
- /2ppJ4NgtJJKXYJmEw+awbeer4EG4GVi/xNOs8Vj26H/gFkOzeU9jltIg0+0e99ihCNcStAH59Z
- 4ofx1crhZkAGO3Y3GNNJCPBJmiZk3wh/MQaanqGNf+hbCCG4Zw2Q7/xzW4qZhLrlG3u6pZpCx8E
- 4ITNSLj13rXMM4JYkWhqhdI1aVNxraF7X5mqx6lRJ6IW6yJx5WgFp6o+I5VIv22kgNTM+MThN6v
- psGHAeU6CdbZXBCeuoDV1fJg1q4Bg9ZZqrJOPOUIFEde1+WhsSBWV3axR4t6uBYgHPPp/NuT69z
- 7zJaooHeGOg0YGvxhPQ==
-X-Proofpoint-ORIG-GUID: W6y3S3N0m7lIOrhv0MW_X3lyb0Ljd60Z
+ a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
+ a=QS77uNcazL5vWiXudcsA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEzMDA5OSBTYWx0ZWRfX9HmA9/Ug+oki
+ gSMlw6S3gQGZo/5qT/NJ2vvQ6xITf7xKEulbNZKoNRS6kTZxzdw3qX7eShLwk4XAx464+HuhEB+
+ 0GdvInUS3LoGWsZ4VchxKA0uUOHdvu4rLfo/Qw7ZHdmjlXMF8OU5GFHfnnmysufytvsGy0JJbxv
+ +chA6NyabSouXAbTjMwVjfMDNVIaqF4Ub8K52Y2f8wgCVN7GhN2EjGxpIOLUDOQE8zb0ZaojivW
+ GHyKDi5IeaQwshCI+NNPc+yiYw0Cl/PtVbPDCduwi6pkrdJqbgw7PIpbZoFON0yCLDoAXk0/g3b
+ VI6VGX0/jqzoezgiB74beYEYmle1yzRAvttN8As4DqXN9CiTO/Rko/O+rTuTDpILwAYa636Z56M
+ eLT4b3jQBcCCXBNhmt4o4qTCuqyizsgFd0s+8TkVtUjnI0xxd6z4mqtR3vqHOCcAasf3i08Q/nS
+ ZbHWsmEDSfv/BleXdhA==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-13_04,2026-08-12_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 adultscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0
- clxscore=1015 priorityscore=1501 phishscore=0 suspectscore=0 malwarescore=0
+ malwarescore=0 impostorscore=0 bulkscore=0 phishscore=0 priorityscore=1501
+ spamscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608130099
 
-Expose the per-channel offset and gain calibration registers through the
-IIO calibbias and calibscale attributes.
+Expose the per-channel synchronization phase offset through the IIO
+conversion-delay attribute.
 
-Use bulk regmap operations and unaligned big-endian helpers to transfer
-the three register bytes.
+Derive the delay resolution from MCLK, power mode and decimation rate.
+Validate the requested delay and program the corresponding phase
+register when applying the active channel configuration.
 
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- drivers/iio/adc/ad7768.c | 119 ++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 108 insertions(+), 11 deletions(-)
+ drivers/iio/adc/ad7768.c | 146 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 146 insertions(+)
 
 diff --git a/drivers/iio/adc/ad7768.c b/drivers/iio/adc/ad7768.c
-index 3849f544a1e5..08721079bb37 100644
+index 08721079bb37..d332695cc75d 100644
 --- a/drivers/iio/adc/ad7768.c
 +++ b/drivers/iio/adc/ad7768.c
-@@ -25,6 +25,7 @@
+@@ -24,6 +24,7 @@
+ #include <linux/regulator/consumer.h>
  #include <linux/reset.h>
  #include <linux/spi/spi.h>
++#include <linux/time64.h>
  #include <linux/types.h>
-+#include <linux/unaligned.h>
+ #include <linux/unaligned.h>
  
- #include <linux/iio/backend.h>
- #include <linux/iio/iio.h>
-@@ -98,6 +99,7 @@
- #define   MAX_FREQ_PER_MODE			6
- #define   AD7768_MAX_CHANNEL  8
- #define   AD7768_NUM_CHANNEL_MODES		2
-+#define   AD7768_CALIB_REG_MSK			GENMASK(23, 0)
- #define   AD7768_REV_ID_VAL			0x06
- #define   AD7768_WIDEBAND_SETTLING_SAMPLES	68
- #define   AD7768_SINC5_SETTLING_SAMPLES		7
-@@ -209,6 +211,18 @@ static u8 ad7768_all_channels_mask(const struct ad7768_state *st)
- 	return mask;
+@@ -130,6 +131,12 @@ struct ad7768_freq_config {
+ 	unsigned int dec_rate;
+ };
+ 
++struct ad7768_convdelay_params {
++	unsigned int shift;
++	unsigned int max_raw;
++	u64 step_ps;
++};
++
+ struct ad7768_avail_freq {
+ 	unsigned int n_freqs;
+ 	unsigned int freqs[MAX_FREQ_PER_MODE];
+@@ -157,6 +164,7 @@ struct ad7768_state {
+ 	unsigned int n_freqs;
+ 	int freqs[AD7768_MAX_FREQS];
+ 	unsigned int ch_freq[AD7768_MAX_CHANNEL];
++	u64 ch_convdelay_ps[AD7768_MAX_CHANNEL];
+ 	enum ad7768_filter_type ch_filter[AD7768_MAX_CHANNEL];
+ 	struct iio_backend *back;
+ 
+@@ -223,6 +231,12 @@ static unsigned int ad7768_gain_reg(const struct ad7768_state *st,
+ 	return AD7768_REG_GAIN(st->chip_info->chan_map[ch]);
  }
  
-+static unsigned int ad7768_offset_reg(const struct ad7768_state *st,
-+				      unsigned int ch)
++static unsigned int ad7768_phase_reg(const struct ad7768_state *st,
++				     unsigned int ch)
 +{
-+	return AD7768_REG_OFFSET(st->chip_info->chan_map[ch]);
-+}
-+
-+static unsigned int ad7768_gain_reg(const struct ad7768_state *st,
-+				    unsigned int ch)
-+{
-+	return AD7768_REG_GAIN(st->chip_info->chan_map[ch]);
++	return AD7768_REG_PHASE(st->chip_info->chan_map[ch]);
 +}
 +
  static u8 ad7768_precharge_buf1_mask(const struct ad7768_state *st, u16 val)
  {
  	return val & GENMASK(st->chip_info->prebuf_split - 1, 0);
-@@ -327,6 +341,48 @@ static const struct regmap_config ad7768_4_regmap_config = {
- 	.readable_reg = ad7768_4_readable_reg,
- };
+@@ -569,6 +583,105 @@ static int ad7768_set_sampling_freq(struct iio_dev *indio_dev,
+ 	return 0;
+ }
  
-+static unsigned int ad7768_get_calib_reg_base(struct ad7768_state *st,
-+					      const struct iio_chan_spec *chan,
-+					      bool is_gain)
++static int ad7768_get_freq_cfg(struct ad7768_state *st, unsigned int freq,
++			       struct ad7768_freq_config *f_cfg)
 +{
-+	if (is_gain)
-+		return ad7768_gain_reg(st, chan->address);
++	for (unsigned int i = 0;
++	     i < st->avail_freq[st->power_mode].n_freqs; i++) {
++		*f_cfg = st->avail_freq[st->power_mode].freq_cfg[i];
++		if (freq == f_cfg->freq_hz)
++			return 0;
++	}
 +
-+	return ad7768_offset_reg(st, chan->address);
++	return -EINVAL;
 +}
 +
-+static int ad7768_read_calib_value(struct ad7768_state *st,
-+				   unsigned int base_reg, unsigned int *val)
++static int ad7768_get_convdelay_params(struct ad7768_state *st, unsigned int ch,
++				       struct ad7768_convdelay_params *params)
 +{
-+	u8 data[3];
++	struct ad7768_freq_config f_cfg;
++	unsigned int dec_rate;
++	unsigned int mult;
++	u64 mclk;
 +	int ret;
 +
-+	guard(mutex)(&st->lock);
-+
-+	ret = regmap_bulk_read(st->regmap, base_reg, data, ARRAY_SIZE(data));
++	ret = ad7768_get_freq_cfg(st, st->ch_freq[ch], &f_cfg);
 +	if (ret)
 +		return ret;
 +
-+	*val = get_unaligned_be24(data);
++	dec_rate = ad7768_dec_rate[f_cfg.dec_rate];
++	switch (dec_rate) {
++	case 32:
++		params->shift = 3;
++		params->max_raw = 31;
++		mult = 1;
++		break;
++	case 64:
++		params->shift = 2;
++		params->max_raw = 63;
++		mult = 1;
++		break;
++	case 128:
++		params->shift = 1;
++		params->max_raw = 127;
++		mult = 1;
++		break;
++	case 256:
++		params->shift = 0;
++		params->max_raw = 255;
++		mult = 1;
++		break;
++	case 512:
++		params->shift = 0;
++		params->max_raw = 255;
++		mult = 2;
++		break;
++	case 1024:
++		params->shift = 0;
++		params->max_raw = 255;
++		mult = 4;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	mclk = clk_get_rate(st->mclk);
++	if (!mclk)
++		return -EINVAL;
++
++	params->step_ps = DIV_ROUND_CLOSEST_ULL((u64)mult *
++						PSEC_PER_SEC *
++						ad7768_mclk_div[st->power_mode],
++						mclk);
 +
 +	return 0;
 +}
 +
-+static int ad7768_write_calib_value(struct ad7768_state *st,
-+				    unsigned int base_reg, unsigned int val)
++static int ad7768_set_channel_convdelay(struct ad7768_state *st,
++					unsigned int ch)
 +{
-+	u8 data[3];
++	struct ad7768_convdelay_params params;
++	u64 delay_ps = st->ch_convdelay_ps[ch];
++	u64 max_delay_ps;
++	u64 raw;
++	int ret;
 +
-+	if (val > AD7768_CALIB_REG_MSK)
++	ret = ad7768_get_convdelay_params(st, ch, &params);
++	if (ret)
++		return ret;
++
++	max_delay_ps = (u64)params.max_raw * params.step_ps;
++	if (delay_ps > max_delay_ps)
 +		return -EINVAL;
 +
-+	put_unaligned_be24(val, data);
++	raw = DIV_ROUND_CLOSEST_ULL(delay_ps, params.step_ps);
++	if (raw > params.max_raw)
++		return -EINVAL;
 +
-+	guard(mutex)(&st->lock);
-+
-+	return regmap_bulk_write(st->regmap, base_reg, data, ARRAY_SIZE(data));
++	return regmap_write(st->regmap, ad7768_phase_reg(st, ch),
++			    raw << params.shift);
 +}
 +
- static int ad7768_reg_access(struct iio_dev *indio_dev,
- 			     unsigned int reg,
- 			     unsigned int writeval,
-@@ -650,6 +706,8 @@ static int ad7768_read_raw(struct iio_dev *indio_dev,
- 			   int *val, int *val2, long info)
- {
- 	struct ad7768_state *st = iio_priv(indio_dev);
-+	unsigned int base_reg;
-+	unsigned int calib;
- 	int ret;
+ static void ad7768_filter_wait(const unsigned int *mode_freq,
+ 			       const enum ad7768_filter_type *mode_filter,
+ 			       const bool *mode_used)
+@@ -687,6 +800,19 @@ static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
+ 		max_freq = max(max_freq, mode_freq[mode]);
+ 	}
  
- 	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(regmap_get_device(st->regmap), pm);
-@@ -657,22 +715,44 @@ static int ad7768_read_raw(struct iio_dev *indio_dev,
++	for (c = 0; c < st->chip_info->num_channels; c++) {
++		if (!test_bit(c, scan_mask))
++			continue;
++
++		ret = ad7768_set_channel_convdelay(st, c);
++		if (ret == -EINVAL)
++			return dev_err_probe(regmap_get_device(st->regmap), ret,
++					     "Invalid conversion delay for channel %u\n",
++					     c);
++		if (ret)
++			return ret;
++	}
++
+ 	ret = ad7768_set_clk_divs(st, max_freq);
  	if (ret)
  		return ret;
+@@ -737,6 +863,13 @@ static int ad7768_read_raw(struct iio_dev *indio_dev,
  
--	if (info != IIO_CHAN_INFO_SAMP_FREQ)
--		return -EINVAL;
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		guard(mutex)(&st->lock);
-+		*val = st->ch_freq[chan->channel];
-+		return IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		base_reg = ad7768_get_calib_reg_base(st, chan, false);
-+		ret = ad7768_read_calib_value(st, base_reg, &calib);
-+		if (ret)
-+			return ret;
- 
--	guard(mutex)(&st->lock);
--	*val = st->ch_freq[chan->channel];
-+		*val = calib;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		base_reg = ad7768_get_calib_reg_base(st, chan, true);
-+		ret = ad7768_read_calib_value(st, base_reg, &calib);
-+		if (ret)
-+			return ret;
- 
--	return IIO_VAL_INT;
-+		*val = calib;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static int ad7768_write_raw_get_fmt(struct iio_dev *indio_dev,
- 				    struct iio_chan_spec const *chan, long info)
- {
--	if (info == IIO_CHAN_INFO_SAMP_FREQ)
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+	case IIO_CHAN_INFO_CALIBSCALE:
+ 		*val = calib;
  		return IIO_VAL_INT;
--
--	return -EINVAL;
-+	default:
-+		return -EINVAL;
++	case IIO_CHAN_INFO_CONVDELAY: {
++		guard(mutex)(&st->lock);
++		iio_val_s64_decompose(st->ch_convdelay_ps[chan->channel],
++				      val, val2);
++
++		return IIO_VAL_DECIMAL64_PICO;
 +	}
- }
- 
- static int ad7768_write_raw(struct iio_dev *indio_dev,
-@@ -680,6 +760,7 @@ static int ad7768_write_raw(struct iio_dev *indio_dev,
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -750,6 +883,8 @@ static int ad7768_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_CONVDELAY:
++		return IIO_VAL_DECIMAL64_PICO;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -760,6 +895,7 @@ static int ad7768_write_raw(struct iio_dev *indio_dev,
  			    int val, int val2, long info)
  {
  	struct ad7768_state *st = iio_priv(indio_dev);
-+	unsigned int base_reg;
++	s64 delay_ps;
+ 	unsigned int base_reg;
  	int ret;
  
- 	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-@@ -691,10 +772,24 @@ static int ad7768_write_raw(struct iio_dev *indio_dev,
- 	if (ret)
- 		return ret;
+@@ -787,6 +923,15 @@ static int ad7768_write_raw(struct iio_dev *indio_dev,
  
--	if (info == IIO_CHAN_INFO_SAMP_FREQ)
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
- 		return ad7768_set_sampling_freq(indio_dev, val, chan->channel);
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		if (val < 0 || val > AD7768_CALIB_REG_MSK)
-+			return -EINVAL;
- 
--	return -EINVAL;
-+		base_reg = ad7768_get_calib_reg_base(st, chan, false);
-+		return ad7768_write_calib_value(st, base_reg, val);
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		if (val < 0 || val > AD7768_CALIB_REG_MSK)
+ 		base_reg = ad7768_get_calib_reg_base(st, chan, true);
+ 		return ad7768_write_calib_value(st, base_reg, val);
++	case IIO_CHAN_INFO_CONVDELAY: {
++		delay_ps = iio_val_s64_compose(val, val2);
++		if (delay_ps < 0)
 +			return -EINVAL;
 +
-+		base_reg = ad7768_get_calib_reg_base(st, chan, true);
-+		return ad7768_write_calib_value(st, base_reg, val);
-+	default:
-+		return -EINVAL;
++		guard(mutex)(&st->lock);
++		st->ch_convdelay_ps[chan->channel] = delay_ps;
++		return 0;
 +	}
- }
- 
- static int ad7768_read_avail(struct iio_dev *indio_dev,
-@@ -983,7 +1078,9 @@ static int ad7768_parse_config(struct iio_dev *indio_dev,
- 
- 		chan[chan_idx] = (struct iio_chan_spec) {
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1080,6 +1225,7 @@ static int ad7768_parse_config(struct iio_dev *indio_dev,
  			.type = IIO_VOLTAGE,
--			.info_mask_separate = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+			.info_mask_separate = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+					      BIT(IIO_CHAN_INFO_CALIBSCALE) |
-+					      BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 			.info_mask_separate = BIT(IIO_CHAN_INFO_CALIBBIAS) |
+ 					      BIT(IIO_CHAN_INFO_CALIBSCALE) |
++					      BIT(IIO_CHAN_INFO_CONVDELAY) |
+ 					      BIT(IIO_CHAN_INFO_SAMP_FREQ),
  			.info_mask_separate_available =
  				BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 			.indexed = 1,
 
 -- 
 2.43.0
