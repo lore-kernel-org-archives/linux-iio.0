@@ -1,64 +1,64 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CED448CD50
-	for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 15:31:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00CF48CD48
+	for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 15:32:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786635118; cv=none; b=dXOLxIL2sVWXeZkrBCcFnO/mNbjHsCUCnJtTPJxZ2bLeGIq987gBtOeUxr/UzMJzOnmh3L94QdUH6tiLNu3yotlSvIU0gJNO5RmVV7LnuLkJA3ojN+pT4/A3UYEA0IBwgegR4g1M1lHCDyuzeJKQRIf5yNC79IWly3VSzG5MGz0=
+	t=1786635126; cv=none; b=Mo6nye/DvoXyZTkFdDiRNQkd1azTVMqh3StYJxRZVX/zbXpZza0jvPhMO6A1FthHmGlCQC5RE9STCgNHy3U30DirvAQC82/GZrO1UjMVcuPlRVyFqw9/0B1fJcwgK2U0PB6+VO5m9dUJ5pc/J1NzF2LABv/CYxZU6EvL3bRBgUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786635118; c=relaxed/simple;
-	bh=6/z9IRV5ZQn/Frw7BWoJwC2CimqWWJl4hMDciS+A1D0=;
+	s=arc-20240116; t=1786635126; c=relaxed/simple;
+	bh=0weGnRdWwgswxJ4W5rEhhfCRwov11YGiMGfnVZ1X3gA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gjCM5CEcm4nCmR2ZvD/MTZZNxLQ5LqSjZQj4qQLYxSryjECsIDH7z2n2hwACmphDfV2oaMwRGjG5yTw972g9X4F/ZGjclhJS/1/kE0cTKDD3D0m7KVlYXiuwqcZXg6yYsj+PIi+VFRqc8RxTvgPiiCaQKYG0wwkJ2udABEsc9DI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iVhUKz6t; arc=none smtp.client-ip=209.85.215.180
+	 MIME-Version; b=Gu+YNIokOQpjtpQm/GlE6ETJjaevVqyz8dVgVr4THiM/km5cXemyqcAzJH5yC2fM4w51Q5iLxKvkiwoKc3m7rLj5Ir09xfGTSnJD7N2VeKpx+5/CKclv1ceCIXiyLbgLp+rsy0/RWIaDNmOUQeO7OfGONDG/MbE/v/sX0g4BvSg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ddcbPk+O; arc=none smtp.client-ip=209.85.215.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iVhUKz6t"
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-c9aea40d799so1410460a12.0
-        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 08:31:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ddcbPk+O"
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-ca80d708489so788853a12.1
+        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 08:32:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786635116; x=1787239916; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786635122; x=1787239922; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=lRy+t8tNDkimDr+BoBwwY6yvO7nk9mVt02bQsB0YYA8=;
-        b=iVhUKz6todDkgwKQ4DI2oErKKRfJTpIoP2RDQpIlDVZg+orUa6PUB4kcHcEbCB5166
-         Zi/YS6Rmi2mhyx5QB6uuHBhaWcH8xq9W0aDq1WwrLYruAqKsuTHLy1r4AdulR8Ph6gX3
-         qiDgMZbZkEzIPcuT4CHSpMtF/z/EbHu6s7FXu+qLZt7BJ7aCKTC/EoAFjcpxOqvQa7oz
-         tuyMYPUdU+P4NS0vqj9Dfes4YMTe21gfpjur1DQ97vH1+CN4KUylXPRlZxNf3DrXBhVa
-         KH/WdB6/mXrW4jhf8NDQbGCOgpIpm1cGZxZZ2+a55szB35Ibwu+Kri92EPToAfhsY28t
-         fzdg==
+        bh=jRBl9QkRiwpLHI9/rNlYzWl0ldnHScwdP87IIdtHCSI=;
+        b=ddcbPk+OhMbHiK7yRLk8Pe4BvQ8jX6Xsz8BOHDFdC0qpG/4IWjimNNZtSDOOSfp6IA
+         FjZeXWJpD7APNgvYWMGIciE7EC3DWVWAiyHZalCgJWMQALCePVgmDhq+Vdif6GP+5/cl
+         uMPanpV+k35mWVOqzYDiLFaynLSbbDr6I904vT4G59YMSoLGVoSwHXaqvcYxnmLWyDRF
+         7rJVWYlWbl3cVUSKzo8izKJS5ekyuguQcVPGHLqOwpMNRzxNlxB1i9Mr0F+tyaLeZurQ
+         IPjMeJ+63sHvcZfG/BPbj1NzV4LUoi5aRh1xM7L4w/ghsSpugPz1Ldj9MymySZ1/0uzI
+         OkhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786635116; x=1787239916;
+        d=1e100.net; s=20251104; t=1786635122; x=1787239922;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lRy+t8tNDkimDr+BoBwwY6yvO7nk9mVt02bQsB0YYA8=;
-        b=eBgLtO/vD8csnt+CQdIbaVOYO8MqRCFrDxQEaO3ecNMDmX7UuQtAZ176DA7RxA0ket
-         EBUJnOnHwRF2Xp9beAkr1rdN49dCTLfI10yO4+Q0fXwCGmtUF5DWQpjtYRy0oD7rxtgf
-         NAYNljMhvxcP4/z1WHeOqdmtvqqyUfxKiLe1THiteRWxjo845VqOS8tOl3n6NciHrEeX
-         CPnvGRAwZAgkolEFB54Oqv0X3jHv+u3E6sFhi0R+jxlWmGNqOqILMljBEd5jGRDqd/FL
-         1famY6tC2E9uI/WHfQiXKFgl5TEH0RA2TeNTWcp0hA29/NPgfFnYfogHwUFRb8PUm1LR
-         Uh5w==
-X-Forwarded-Encrypted: i=1; AHgh+Rq5edNhNxunoyR8zvkwJx3A1gqDiQ6sANwNEoGIN0fqaUEbl1z6oj23ljTvMwlpGxqwQcOWjLrDDR8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzkf6GWxOzJw8+14K99TcqO1f81X2mOXXkQ10NnKxEv3XHVHefQ
-	YMu9oAQQgIC08ShetNAZhz+7zZ993/gbvFFKw0grhPgoi3MMXRAHm/wS
-X-Gm-Gg: AR+sD12PfqS+7UHq+hchUMo8Nez3r9j+7cVP3tT3kRhsEEd4qYLPSxA5lXL4mnCk6MI
-	MyQCh/jAMW5siMGtheUt9JydEFch/r+U+1fLEXMI7DrzK/Rj+osgOmm/tmYjxWMtNQwBgq3ODtR
-	XytBZhR1fK6LewfbFdZv17ym0dhLpGEe6VtUy+ixLkZe2cTehjrpM0NDoqsQiUzpM5HHZm5Opat
-	XZICEZNsy8vb7Wbbph056ue/zRHRQ1OEY3lCZqpi7DBMxqignKkE876mVUn9w6AQn7Fi/SmMg1t
-	Yjgoe3g/KxXaZm7IF4RQwsHP6i1yby3AKyePVSTQX2Zu2L2mPxE9uZl/26cOFb3YZt+qPuM11Qm
-	2m6GhBlIFvTUxBKb40jHtSP28XJt7gZP6khMhEczwFyazOHrUrnh7xrfRhXOkPswzxwcSXgRoB8
-	XEiVSukiZNaXpPMb5hW0/WLRtVMb89ylz7DQg9xS1VG64zwIH+irC8PKmsvDofkLnJkPvIFjWFI
-	KWwRbS9kMTz+IbphoeY6GdF7PxRpUUQyO2EYowecm4pslldTpqJQp8Td2afaQ==
-X-Received: by 2002:a05:6a20:2589:b0:3bf:7bf7:7913 with SMTP id adf61e73a8af0-3cc5503a34bmr8643790637.14.1786635115961;
-        Thu, 13 Aug 2026 08:31:55 -0700 (PDT)
+        bh=jRBl9QkRiwpLHI9/rNlYzWl0ldnHScwdP87IIdtHCSI=;
+        b=R+XAPfpjNea5iIxlGK8tLs3qsahYnNArmJ5Jr9+bFP/GuupdRSF9nnwEeghkyZK+Jo
+         7JUb6kPLX+2KswAEy/TGEsUIJwvGqhs2ZKFyu2mCXzWQh5Qd63Bj1R8R5pdPw3K6opG8
+         InFDNshfGCmSxDPwXi2OSJcfQr4gY5zPYJXXFKZ/YHIkuJWI9LRD1ap87TMnzBms7zzI
+         N2IysK8e1/RTGHj3VL/U//jFRIkIs1oA8ZaC496v3jM0dDySSbcm9N6Pygh1J6hG7qQd
+         X7OOdojnjNPrPiHBJn8dZFChtkI8082Na+0yfvXldao2GZjMQUYanM1dQoDmjbgVi8Xd
+         GlEw==
+X-Forwarded-Encrypted: i=1; AHgh+Rrqgq/JStne8qxlVnZNXT8JvMikj1LY+/vFnQcGS6Y+F3UPuanL2IESA2LMKEyLSYg6ZiKetLVW8lY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwsIPPtIfbDJPWVvg2l5Nlt7JDjn1kZvngKcdy+dKm9HEwlgD+g
+	ifvT6EMIK1RJFWjGgVZKn7VSArGXuREHn1JoKFzBZO2ZtLKdAXdhf3mP
+X-Gm-Gg: AR+sD13IdgparuBsgwcclfUBfPiPHlmVej3ilmGeDSFvkRxAs8MsfceeyA+MFAIT2Qi
+	WRFxmI1LYg4pkzpF/2ddxvBFInV/3THMOhkAhDKeoF2iVMmcAIiPmMiZ2pGLu2iSUhdVmJ49ey7
+	/cjQL8vW8cUSfMUBaUJobWc3aPtryN6JPup9SfGcFftGOQr8c7M9BcMuM8pkwBUq1TUubnxX0nJ
+	M7AEcfcfFF/b8TyCFHfiaMU0XMqwHKIlDUkUFV6mQw0usywDyOr4Slsastbxy1KVL2RVRKUSnIu
+	AN+RcjpjKIkrAxDMIdnd4yzldz1nQfzVqnqGRAEkh23/RteQ0En+nmgyynOppTYb7EG2Z/c8R+R
+	ydPhNZHpaFKLZsveAt0aAr3WusSc2hZNs6if/VGvLbHGylhc3Yn+t05Q5Nej9np9Y9H1uhXUQec
+	A3LtXPsPmyUo65QBcsUAb0hIESPhh7zktFIr6XfEcI3I+ypP6lVXaqk8+RmmjaV+QkF5yZMc3AF
+	/SXrH3onYe9CLD2gDLEKY8KfaCSd9jPqunn6xF6Bv8NXNxRyFHNFH8JVjJxrw==
+X-Received: by 2002:a05:6a20:3c8f:b0:3b4:6af4:bdd5 with SMTP id adf61e73a8af0-3cc5769db39mr7615107637.15.1786635122196;
+        Thu, 13 Aug 2026 08:32:02 -0700 (PDT)
 Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31ec082943fsm7960604eec.29.2026.08.13.08.31.52
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31ec082943fsm7960604eec.29.2026.08.13.08.31.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 08:31:55 -0700 (PDT)
+        Thu, 13 Aug 2026 08:32:01 -0700 (PDT)
 From: Adi Nata <adinata.softwareengineer@gmail.com>
 To: lorenzo@kernel.org,
 	jic23@kernel.org,
@@ -69,9 +69,9 @@ To: lorenzo@kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: linux-kernel-mentees@lists.linux.dev,
 	Adi Nata <adinata.softwareengineer@gmail.com>
-Subject: [PATCH v2 3/5] iio: humidity: hts221: Allow unknown whoami for DT fallback
-Date: Thu, 13 Aug 2026 23:31:27 +0800
-Message-ID: <20260813153129.12423-4-adinata.softwareengineer@gmail.com>
+Subject: [PATCH v2 4/5] iio: humidity: hts221: use dev_err_probe() in probe paths
+Date: Thu, 13 Aug 2026 23:31:28 +0800
+Message-ID: <20260813153129.12423-5-adinata.softwareengineer@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260813153129.12423-1-adinata.softwareengineer@gmail.com>
 References: <20260813153129.12423-1-adinata.softwareengineer@gmail.com>
@@ -83,48 +83,114 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The WHOAMI check currently returns -ENODEV when the chip ID is not
-0xbc. That rejects Device Tree fallback compatibles.
-
-Keep failing if the WHOAMI register cannot be read. On an unexpected
-ID, log it and continue so OF fallback matching can work.
-
-Use dev_err_probe() for the read-failure path.
+Convert remaining probe-time error logs to dev_err_probe() so the
+errno is included and deferred probe failures stay quiet.
 
 Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
 ---
- drivers/iio/humidity/hts221_core.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/iio/humidity/hts221_core.c | 26 ++++++++------------------
+ drivers/iio/humidity/hts221_i2c.c  | 11 ++++-------
+ drivers/iio/humidity/hts221_spi.c  | 11 ++++-------
+ 3 files changed, 16 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
-index 76a391f421f5..b73c26aae9ec 100644
+index b73c26aae9ec..fda38dfc6742 100644
 --- a/drivers/iio/humidity/hts221_core.c
 +++ b/drivers/iio/humidity/hts221_core.c
-@@ -136,19 +136,15 @@ static const struct iio_chan_spec hts221_channels[] = {
+@@ -578,33 +578,23 @@ int hts221_probe(struct device *dev, int irq, const char *name,
  
- static int hts221_check_whoami(struct hts221_hw *hw)
- {
-+	struct device *dev = hw->dev;
- 	int err, data;
- 
- 	err = regmap_read(hw->regmap, HTS221_REG_WHOAMI_ADDR, &data);
+ 	/* configure humidity sensor */
+ 	err = hts221_parse_rh_caldata(hw);
 -	if (err < 0) {
--		dev_err(hw->dev, "failed to read whoami register\n");
+-		dev_err(hw->dev, "failed to get rh calibration data\n");
 -		return err;
 -	}
 +	if (err < 0)
-+		return dev_err_probe(dev, err, "failed to read whoami register\n");
++		return dev_err_probe(dev, err, "failed to get rh calibration data\n");
  
--	if (data != HTS221_REG_WHOAMI_VAL) {
--		dev_err(hw->dev, "wrong whoami {%02x vs %02x}\n",
--			data, HTS221_REG_WHOAMI_VAL);
--		return -ENODEV;
+ 	data = hts221_avg_list[HTS221_SENSOR_H].avg_avl[3];
+ 	err = hts221_update_avg(hw, HTS221_SENSOR_H, data);
+-	if (err < 0) {
+-		dev_err(hw->dev, "failed to set rh oversampling ratio\n");
+-		return err;
 -	}
-+	if (data != HTS221_REG_WHOAMI_VAL)
-+		dev_info(dev, "unexpected whoami 0x%02x, continuing\n", data);
++	if (err < 0)
++		return dev_err_probe(dev, err, "failed to set rh oversampling ratio\n");
  
- 	return 0;
+ 	/* configure temperature sensor */
+ 	err = hts221_parse_temp_caldata(hw);
+-	if (err < 0) {
+-		dev_err(hw->dev,
+-			"failed to get temperature calibration data\n");
+-		return err;
+-	}
++	if (err < 0)
++		return dev_err_probe(dev, err, "failed to get temperature calibration data\n");
+ 
+ 	data = hts221_avg_list[HTS221_SENSOR_T].avg_avl[3];
+ 	err = hts221_update_avg(hw, HTS221_SENSOR_T, data);
+-	if (err < 0) {
+-		dev_err(hw->dev,
+-			"failed to set temperature oversampling ratio\n");
+-		return err;
+-	}
++	if (err < 0)
++		return dev_err_probe(dev, err, "failed to set temperature oversampling ratio\n");
+ 
+ 	if (hw->irq > 0) {
+ 		err = hts221_allocate_buffers(iio_dev);
+diff --git a/drivers/iio/humidity/hts221_i2c.c b/drivers/iio/humidity/hts221_i2c.c
+index 40276abc5d2e..e6dc9532cfbd 100644
+--- a/drivers/iio/humidity/hts221_i2c.c
++++ b/drivers/iio/humidity/hts221_i2c.c
+@@ -26,17 +26,14 @@ static const struct regmap_config hts221_i2c_regmap_config = {
+ 
+ static int hts221_i2c_probe(struct i2c_client *client)
+ {
++	struct device *dev = &client->dev;
+ 	struct regmap *regmap;
+ 
+ 	regmap = devm_regmap_init_i2c(client, &hts221_i2c_regmap_config);
+-	if (IS_ERR(regmap)) {
+-		dev_err(&client->dev, "Failed to register i2c regmap %ld\n",
+-			PTR_ERR(regmap));
+-		return PTR_ERR(regmap);
+-	}
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "Failed to register i2c regmap\n");
+ 
+-	return hts221_probe(&client->dev, client->irq,
+-			    client->name, regmap);
++	return hts221_probe(dev, client->irq, client->name, regmap);
  }
+ 
+ static const struct acpi_device_id hts221_acpi_match[] = {
+diff --git a/drivers/iio/humidity/hts221_spi.c b/drivers/iio/humidity/hts221_spi.c
+index e6fef2acd523..8bcc1b5d150e 100644
+--- a/drivers/iio/humidity/hts221_spi.c
++++ b/drivers/iio/humidity/hts221_spi.c
+@@ -27,17 +27,14 @@ static const struct regmap_config hts221_spi_regmap_config = {
+ 
+ static int hts221_spi_probe(struct spi_device *spi)
+ {
++	struct device *dev = &spi->dev;
+ 	struct regmap *regmap;
+ 
+ 	regmap = devm_regmap_init_spi(spi, &hts221_spi_regmap_config);
+-	if (IS_ERR(regmap)) {
+-		dev_err(&spi->dev, "Failed to register spi regmap %ld\n",
+-			PTR_ERR(regmap));
+-		return PTR_ERR(regmap);
+-	}
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "Failed to register spi regmap\n");
+ 
+-	return hts221_probe(&spi->dev, spi->irq,
+-			    spi->modalias, regmap);
++	return hts221_probe(dev, spi->irq, spi->modalias, regmap);
+ }
+ 
+ static const struct of_device_id hts221_spi_of_match[] = {
 -- 
 2.47.3
 
