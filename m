@@ -1,112 +1,105 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A40092F260C;
-	Thu, 13 Aug 2026 01:10:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF3D20E334;
+	Thu, 13 Aug 2026 01:17:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786583413; cv=none; b=lV7D+eLkUV9519MW2DRMwA+ElIiGwz4bLSmgYgSHN3kzBteLWYtTaXeTmAEJKa+yZdcgzHBfBYjSjUz16hb39QWXDlbEU8vDeY4B00SrtF041kEYTFZsuq7aRBYJfqKiYxC2a0dkUgB7DyuPawno2T5QgRMz1jMvrwUZqvXm/Cc=
+	t=1786583853; cv=none; b=cuYbNLJrnXUPazDtpK41UGW25CvoNoriNU0Vyq7otsImodUhnHC2R1CNZUgWhtBXgoqMk2292LM0Lbz2pJY95qA9AhjX3Z/U3qVXLZhQx48UfXfpatPYjbWCaV0ameCdDExwKpym01iJDzZazvmR6rLojZINlZNyLJhrVG0bA8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786583413; c=relaxed/simple;
-	bh=5oHIXdwRMlw7mG/JtjZsZn8KwsuypBEdaI6oHICdlaU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DPMfvixLWfZBisHmqUxsobVaDnAUxrwVM9kBaWNm9sXa7icp5DS6i6RCh8MhM+A8kbfNjhWVFOe187LSG7cShHBaTyjoztti0NN/86p4hqGVHGiTe39EyHNatlyUJfH1tS2D6v8DAJ0NczxB+q1/AAowpt0bjr6Mcf5Hpc443Qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aT3/Ll7d; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786583853; c=relaxed/simple;
+	bh=BoAQijyylgl9c8sSNAPJL6Pd0GB60Ydb6KEiTtDKzwA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=pySCrZAra6bhqn/SuTB2Fb9spm5QB1pFYtzK1QWzPXsx/BtO2Q1HWbBaRaw5c5MxsgWPGnwhpq7u4d2ggNQnaHqpeDoi8FADdY7kiEbK+n8IpG5kaE+YLB3b+JPb17Qfp0xjzLDfpD32RQkOw6l0KXeJYV7WDXQDEDoakBGuzMk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AqD/1iKa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aT3/Ll7d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842381F000E9;
-	Thu, 13 Aug 2026 01:10:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AqD/1iKa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E581F000E9;
+	Thu, 13 Aug 2026 01:17:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786583412;
-	bh=q3prjzild7GI/cDnnwF60WjWE2l0dBm22oVauOsvXbk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aT3/Ll7d0zTDUOpsRYMih5nIKZHrRsUfTSN3Pu+L9XJA1Rlw5NdK/FxDaCVCktwMS
-	 cmo1JhdjWUrO6cLV5q7+rTI6MpC7jJML7fnGYi42DddVvvD4hMmoMvqnQckRD20GBf
-	 ok/Mkmam3xCYu0v0AUhMf///PWMCt4DHRZZWgSWFDFlKkOw/5efAjkk8YFBOg3CUAz
-	 H+ZhkFEP0bK2/ykR111KByKwi7a1rIsLT7LCojJuFk6lVd2aXAYLnpOxc4mhatGbuw
-	 wuN/eH7CYMI1I7y1pLdiLVta/BCQX0x2PTtsVifsmVzk6NeQgLDcWILawrOjY/H7xy
-	 XqfuN3biLcDYg==
-Date: Thu, 13 Aug 2026 02:09:58 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 3/4] iio: light: veml6031x00: add support for
- triggered buffers
-Message-ID: <20260813020958.5fc3f0da@jic23-huawei>
-In-Reply-To: <20260812-veml6031x00-v6-3-7eef6e4ce290@gmail.com>
-References: <20260812-veml6031x00-v6-0-7eef6e4ce290@gmail.com>
-	<20260812-veml6031x00-v6-3-7eef6e4ce290@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1786583852;
+	bh=We2rCgMJ7y9Yy2HND4vPUfHIpTeXfWeTJqdY+HyvBsA=;
+	h=From:Date:Subject:To:Cc;
+	b=AqD/1iKaQKAR85pu1WRpvwrg5fdEu0SR40u1K+Gt86FLKE5qfJ26WCuo1tnQRyNoL
+	 mtbS7YQFlF2Ur2C+QxtKTnCLqOVQzST3seQE+eMbzxLJpPbkL3jmDpRDxCxATX9va2
+	 781oHEpnvpc4Sb0cgfp2/qOGgJQvOogMIP+wiITWTocIi9o+cRgjiA7AP95qm++0oL
+	 JHFfTwG+/YQUSYoDgzCPgIQDG4K21EXEQjxxbz4LmkiXZqq4eoq2r1eMUu7DcKvxWz
+	 gvS3g5P3xMTO98suOxyomMPx5e+BA9lh70bw0r3KJRzsjFfVBH9PwcMcWyr+oyYFkf
+	 21kvWGTz0IAjA==
+From: Nathan Chancellor <nathan@kernel.org>
+Date: Wed, 12 Aug 2026 18:17:22 -0700
+Subject: [PATCH linux-next] thermal/drivers/qcom-spmi-mbg-tm: Add module
+ namespace import for IIO_CONSUMER
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260812-qcom-spmi-mbg-tm-ns-modpost-error-v1-1-d849390d2714@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWNywrCMBAAf6Xs2YU2oER/RTw0yaaumIfZVAKl/
+ 27U4zAws4FQYRK4DBsUerNwih2mwwD2PseFkF1nUKM6jXpS+LIpoOTAGMyCNWAUDMnlJBWplFT
+ Qz04bUv6sjxZ6Jxfy3H6PKzw5rg0jtQq3v5PVPMjW7wT2/QONPd53kQAAAA==
+X-Change-ID: 20260812-qcom-spmi-mbg-tm-ns-modpost-error-fad8be2f985c
+To: Amit Kucheria <amitk@kernel.org>, 
+ Thara Gopinath <thara.gopinath@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>
+Cc: Mark Brown <broonie@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
+ linux-iio@vger.kernel.org, linux-pm@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Nathan Chancellor <nathan@kernel.org>
+X-Mailer: b4 0.17-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1885; i=nathan@kernel.org;
+ h=from:subject:message-id; bh=BoAQijyylgl9c8sSNAPJL6Pd0GB60Ydb6KEiTtDKzwA=;
+ b=owGbwMvMwCUmm602sfCA1DTG02pJDFm10mp5y5S5bgTxL9/1x/vIwslh7/ecv7lEzmxH0mYdd
+ d3fBuZ6HaUsDGJcDLJiiizVj1WPGxrOOct449QkmDmsTCBDGLg4BWAiweEMf2UcXReICP82zKo8
+ +19JZtKvjH2Rzp/jGDJmvNDbHh7qacrwP813YrUk/y+ekK7Mr2dXXap5Urmq+lyy6JqFKj+FH5c
+ cZAIA
+X-Developer-Key: i=nathan@kernel.org; a=openpgp;
+ fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
 
-On Wed, 12 Aug 2026 22:27:42 +0200
-Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+Commit ebf1d03dab96 ("iio: inkern: Use namespaced exports") in the iio
+tree restricts certain exported core functions that a driver added in
+commit c3dce117333c ("thermal/drivers/qcom: Add support for Qualcomm MBG
+thermal monitoring") from the thermal tree uses, causing modpost to
+warn (or error without CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS):
 
-> Add triggered buffer functionality for the two channels the device
-> provides (ALS and IR).
-> 
-> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+  ERROR: modpost: drivers/thermal/qcom/qcom-spmi-mbg-tm.ko: module uses symbol 'devm_iio_channel_get' from namespace 'IIO_CONSUMER', but does not import it.
+  ERROR: modpost: drivers/thermal/qcom/qcom-spmi-mbg-tm.ko: module uses symbol 'iio_read_channel_processed' from namespace 'IIO_CONSUMER', but does not import it.
 
-A very trivial comment inline. Feel free to ignore!
+Add the IIO_CONSUMER namespace import to clear up the error.
 
-> diff --git a/drivers/iio/light/veml6031x00.c b/drivers/iio/light/veml6031x00.c
-> index 021bf726c60b..43a701f62aea 100644
-> --- a/drivers/iio/light/veml6031x00.c
-> +++ b/drivers/iio/light/veml6031x00.c
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+I am not sure how this should be handled. As far as I can tell, there is
+no error if this patch is applied to the thermal tree directly but it
+would leave an "orphaned" module namespace import until the iio and
+thermal trees are combined, which may not be preferable. Otherwise, it
+would need to be applied to whatever merge happens second (hence
+including Mark and Jonathan in this conversation).
+---
+ drivers/thermal/qcom/qcom-spmi-mbg-tm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +
-> +static irqreturn_t veml6031x00_trig_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *iio = pf->indio_dev;
-> +	struct veml6031x00_data *data = iio_priv(iio);
-> +	IIO_DECLARE_BUFFER_WITH_TS(__le16, scan, 2) = { };
-> +	unsigned int i = 0;
-> +	int ch, ret;
-> +
-> +	if (test_bit(VEML6031X00_SCAN_ALS, iio->active_scan_mask) &&
-> +	    test_bit(VEML6031X00_SCAN_IR, iio->active_scan_mask)) {
-> +		ret = regmap_bulk_read(data->regmap,
-> +				       VEML6031X00_REG_ALS_L,
-> +				       scan,
-> +				       2 * sizeof(*scan));
-I don't care that much, but you could combine parameters on one line in
-a few more places to reduced the code length a little.
-e.g.
-I'd be tempted to put the two lines above on one line or even
+diff --git a/drivers/thermal/qcom/qcom-spmi-mbg-tm.c b/drivers/thermal/qcom/qcom-spmi-mbg-tm.c
+index 0492d5eeca01..a05bb444627a 100644
+--- a/drivers/thermal/qcom/qcom-spmi-mbg-tm.c
++++ b/drivers/thermal/qcom/qcom-spmi-mbg-tm.c
+@@ -254,3 +254,4 @@ module_platform_driver(mbg_tm_driver);
+ 
+ MODULE_DESCRIPTION("PMIC MBG Temperature monitor driver");
+ MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("IIO_CONSUMER");
 
-		ret = regmap_bulk_read(data->regmap, VEML6031X00_REG_ALS_L,
-				       scan, 2 * sizeof(*scan));
+---
+base-commit: 28d012efb4327f9c75d5e042a7c91e9a542efa98
+change-id: 20260812-qcom-spmi-mbg-tm-ns-modpost-error-fad8be2f985c
 
-> +		if (ret)
-> +			goto done;
-> +	} else {
-> +		iio_for_each_active_channel(iio, ch) {
-> +			ret = regmap_bulk_read(data->regmap,
-> +					       iio->channels[ch].address,
-> +					       &scan[i++],
-> +					       sizeof(*scan));
-> +			if (ret)
-> +				goto done;
-> +		}
-> +	}
-> +
-> +	iio_push_to_buffers_with_ts(iio, scan, sizeof(scan), pf->timestamp);
-> +
-> +done:
-> +	iio_trigger_notify_done(iio->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
+Best regards,
+--  
+Cheers,
+Nathan
+
