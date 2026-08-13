@@ -1,76 +1,76 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C651D4854E4
-	for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 15:01:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE91C48A8D1
+	for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 15:31:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786633267; cv=none; b=NLFc01SErzUc+APKHGDccnnY67U3lAOiWPiFc2LenqLiM3txx5R9r0Z1hg0wCowAZ8ONcB5LrD4yoozfuD0yZfycKBMDJGhiVjCBWH4Ff+9xagCX9ZVdJ0poeZuzoNpVlbuQmWPlWG5w2FTlEVarn1aLLmgR8T4N/tSQSBqVr+w=
+	t=1786635107; cv=none; b=Mi+xyfB9udKATub38mvRZGPsSna928iENDs8vq7C5LCz6VaMN0naLxj0HZGf2+1lS1aKXJEvq5HYJ6IhDKDkmwhg/cQP/OXEC+sMroEnSq4zRrgcI3RCvBFekAE/DwqKvm0CAqiYCQsdMiFj2kvXNvDEo8sQUd/V3/teYsWw/pk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786633267; c=relaxed/simple;
-	bh=xJ79EtUrHEeuEYbAOfI9CE6RiB55ObHJWLRCeFudrRQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=jneHzgPOECPZmWoEk/A5h6FI0i9T5rm+7gC4ODsqCr0yEQEyh5QNGkQn50abcaLV5yaEyHbha9jcF2ZHKfGp4sKqkD4dRP0zxl/hQIp2a6FH5AZHzvzOmq9ZJ1/ewTHMiba0HYtHfiIv8jjlJJaCaul6NOOZZcxupDHeOtUALJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BV2GENNu; arc=none smtp.client-ip=209.85.222.170
+	s=arc-20240116; t=1786635107; c=relaxed/simple;
+	bh=3V58kFwXBYHTqu/lknOdvlSejNFDj4QsTgxXWJELNe8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Q8Vh4OBuTywxl8WeeqszZLRnrbhYObz3P6k2ocS7HJR9a9V/+FSvtuJzQuOsMcfCLqh/taUAbUYXNev0pwVY4Q4hDSDmRNX4Y+cyAwrNQHhJlXOdDGDEvu/srs3IM5Mv6eu+/mLIkoImu8g/akhUdJ4tZsJA1W1G9GS2htO6k2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F57aYVKU; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BV2GENNu"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-934944f2d22so142760585a.0
-        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 08:01:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F57aYVKU"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2cedda2ce6fso515185ad.1
+        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 08:31:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786633265; x=1787238065; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786635104; x=1787239904; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=KWO/kZlEzRmoI80cXBVDsIHqzzbSVdIgM/uL6M2n2SQ=;
-        b=BV2GENNuhqjYNU5GgP2QMaG1wkvs4sKkx5883FjWGg5NQOt3B8RtSj2Jb+Rg/vZ4K5
-         KefwjvykD8x6v14Q+BeubHO0TgqSqin/XglyWGfjdpCZX2cE8W/JZtvUn0phSRUqYQ5T
-         Irvl1BP19fTArsyaLcxDL46HqOJdOIZpwYAyFrNQUXSQ4ccLHgkv5LPo2Gwv6fo9dyYI
-         EsYaRIEuM4MQ7P6DUeFzTk3wVqc3UkZGKzxBVJX7XBT56NlPjo/9G6pZy7CtPbVn//2R
-         40apkDW9JOcRpbN4dZZ8DwSZ92jSgp4q68R1/PCVbmIf8g16wcSaHFAWhVx6w3f9r5WM
-         RGQA==
+        bh=6mMrmCE/vqNNHJNQcz/hlB7uwFXJ2DVitmBQZAYXHgA=;
+        b=F57aYVKU0WPT1Jpm2WCEdWyNR+MpAXYYty/DIC7HaONUAbNhK6mpo9oq3zS6YBLDh7
+         oseprnnDbA3Me+w4NhV7Nz+kdNmz7yfGqKh1J43blF8IdyBd+XpbeJ0RqSWQUOSWNaNn
+         hFG4MGlYtKqognkUhXasvrT6olxfETvorCkYk9aP4C58aJjFBydLbM9LIZEzjwjWgCam
+         S+bVw8Y8qVeIYTizJ7sIsJJdFbaCNG1/paYvg8PmxXMSEpe2Hw1KoGCTEftrbym0q/Ma
+         lF1IdXQGJStg8ZBowiniLOemPOMat39J+of7HgWJps98BojZdQ8RywnmzHPymjGCNjPB
+         E9kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786633265; x=1787238065;
+        d=1e100.net; s=20251104; t=1786635104; x=1787239904;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=KWO/kZlEzRmoI80cXBVDsIHqzzbSVdIgM/uL6M2n2SQ=;
-        b=oeXCXDDwXdBEZHA6By/8cAq2IfpJ9jbTvlBMZAdLYVz7hMjYUiC17g46qdMMt5aUaO
-         v561EBghpC8r7xzQZOlfHjN6DylSukdXHDRz76I4hMxUqXY0TL5MtMtweVVX7hDePQEA
-         p16onp/ubbJ2YbS9uJwI3Yf0OJVaKg089I79lDH2AOBrJS3kxg1JmUCyR9qkJu8/mQ87
-         ABXmKmOlMSkQDG57xMfU+9QF1llyDGu7224jaKj/OgHFzeDN2SYP7bfucveCYCwvem4z
-         P2Ry/w/PPuzZ+1UiKDTWg6OkzemhhNwbBa/HbAIYUIeiDNZtPBIKjYZcanYm1IjWd93j
-         GeTg==
-X-Forwarded-Encrypted: i=1; AHgh+Ro1MLvh+V7G4sHt6/Z+3tZbXfWXSnPWb8/L/n5jOWh2183aNhWJpkwimU64EVQcWdVCMuc0cZhqWJg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzl7LxlUHeuv2RP3k3xDP+PHSGQ5MhKRfnv2as9lgjL6mIwVxcz
-	EfP5mVtlDHQmIpg50YoEbqL09QW1nFMak7JuQtoCMKJGWJr8cOKSpr1+
-X-Gm-Gg: AR+sD1252mXl79FcV9p71ZdVq4TEDzx/SNdAP4n4PvmcZa4ZQJrFyO5D2Ool5hXrbf1
-	deqdBZsHNfKdUGFr3lRk0P1ZYM92SiJtMukkF2QozRFj1kGExesDLAVkmzLmorDXbBAHQuqBvx7
-	11BEPW1Qm835nPhRNZcWvf3F0OilO8Mykh7O6a0OFwqlTT06cqQh4YeO/kX06uhh+PHdu2d7Jg/
-	ilXvMGemZrv8A/FiArISoVP0EfMb8gPDfBJ4yJ9vvvN3OsGu97kcbQFeFzAgwZyqmnVYflwmvhh
-	5QhI+x7IE13aD2TP3+mzYIeu5CaXWBRR1a9lEeCrGZng4QD4YPFvuF3N+0eCsrpkACmVCuE1Upd
-	XgePnyT6guzqmhj6RXer+c5r9mKbr8QOI5PIDF2cjGd5c+eybtJUqFLgravjIOh08BXb4hdIta1
-	O7aXLhrf06mHd5oXRLjuvhCBbaew2Dp/Uq+1o/Spv53Fw2iDFe16CHl/U8/mXfz54/0Eo=
-X-Received: by 2002:a05:620a:8ce:b0:92e:745c:6c5a with SMTP id af79cd13be357-936bf91774fmr525733585a.14.1786633264617;
-        Thu, 13 Aug 2026 08:01:04 -0700 (PDT)
-Received: from localhost ([2600:4808:5693:8201:394e:8b9f:994c:b59f])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-936cdf54cffsm406785a.9.2026.08.13.08.01.03
+        bh=6mMrmCE/vqNNHJNQcz/hlB7uwFXJ2DVitmBQZAYXHgA=;
+        b=Fc9i7w6RCh22r76lXuIiP0Mxg1bAqsFtG2T2p+EA2ZCtB6E40aTLhnNqynJeUca2Qe
+         fxHLQz4kEg4VYI0kMnvvlO+bQOS5EZmkaMDCmtxoRNofIJ0Drk1K8ddiuZMIG6BDap1u
+         NJ6UXy2ZauKGkOtN9tWWSNAOhsBSWxleMPNbQHtdpR0QR/UsKLn4EVkGy4qKPuncyArN
+         x/v2dMw3zim2c0827CWiROTJyLgB+RYn5WgFYOXxoTY7yXu30NZ0rhmsjPIHajKXRm9+
+         TBX8IqHy53UwzAToSNoD2HInS3+ikfEbhfdTb/+pX/WMPlm/ybWwiwwEuaOWSVw4DenH
+         Dcvg==
+X-Forwarded-Encrypted: i=1; AHgh+Rpcl/uWB/lTlHQkyw0gtdTDvLdzQG4WZ0SymlTtkrbadBMAj7zhrqsyhOzT3n2tgqbT6VMDaEQ89i0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyu9A4YDcmkLap7SOAfRJAs6O0Khyz51T6GCJI110HdkS6t1yml
+	lLB9gapn9f+62Wybnf3HA1z2/3UFgjvOy29SxojxUgd8OFyRMo6G4LHO
+X-Gm-Gg: AR+sD11NbyQ9o8JAn9p0VZXhXgOJKKxjrV/9TjqE9a4m4dVOPMRORbA3RIx2+Z9slXA
+	q5iNt4fqckXG3XEMAGjyQrQCO1pBSz4ey/Kq4oybP9Gsi/i+NlHj5qW1+3I5wE8RJ8ixGFhUQfd
+	Wy3omvDDjqqcvFgP076PuZgzBuQOb/89IopFrFfJnUJNrKTExmTBLAg+uwE5LS9s1AWn2b0ebHP
+	P1eN+ThU8pfL70qSBNO/L2nofw3knkKLtLwNf45yoOtGHF2vsw+ErK8noxglYkke+cEJn+sYHhD
+	FkD5A461cjcm8sJsHmnbmYnrgzLQ5E8tJVhLOeJ8okzN/XiRJelL+ZY2uU/h/Xayyx6ycPytJ5G
+	RXXptMFCOryWJ14gGHSANsefb3MjQRSg8Wf1jwSN5s+3ynNcEoNh/ptoy598ek6PYnQ8ER+9fkQ
+	kXx2vNrP0YEau/XG/vllhvChgYskNc/n/pdb4LEUeb0RZEG021D5nEl96XQR4xnqIXB8ZCt3U0R
+	qlbSeH6fxvsGCknoMfZXzEne+sMODampSp9d4tEkvjaUVakrRWeUFACHWBTPA==
+X-Received: by 2002:a17:902:f647:b0:2cc:6329:b7ba with SMTP id d9443c01a7336-2d37ebb797bmr82446625ad.16.1786635103822;
+        Thu, 13 Aug 2026 08:31:43 -0700 (PDT)
+Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31ec082943fsm7960604eec.29.2026.08.13.08.31.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 08:01:04 -0700 (PDT)
-From: Marco Chen <marcochen.dev@gmail.com>
-To: dan@dlrobertson.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
+        Thu, 13 Aug 2026 08:31:43 -0700 (PDT)
+From: Adi Nata <adinata.softwareengineer@gmail.com>
+To: lorenzo@kernel.org,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	andy@kernel.org,
-	jagathjog1996@gmail.com,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v1] iio: accel: bma400: remove completed tasks from TODO list
-Date: Thu, 13 Aug 2026 11:01:03 -0400
-Message-ID: <20260813150103.56350-1-marcochen.dev@gmail.com>
-X-Mailer: git-send-email 2.55.0
+	linux-kernel@vger.kernel.org
+Cc: linux-kernel-mentees@lists.linux.dev,
+	Adi Nata <adinata.softwareengineer@gmail.com>
+Subject: [PATCH v2 0/5] iio: humidity: hts221: update probe and logging implementations
+Date: Thu, 13 Aug 2026 23:31:24 +0800
+Message-ID: <20260813153129.12423-1-adinata.softwareengineer@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,45 +79,45 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Two of the four tasks in the TODO comment have been implemented.
+HTS221 is an older driver. This series groups a few small modernizations
+based on current development practices.
 
-Interrupts were added by commit ffe0ab6a9698 ("iio: accel:
-bma400: Add triggered buffer support"). Support for events was added by
-commit 961db2da159d ("iio: accel: bma400: Add support for single and
-double tap events"), among others. The driver now has an interrupt
-handler pushing IIO events, and event configuration from
-read_event_config(), write_event_config(), read_event_value(), and
-write_event_value().
+- Report available values via read_avail()
+- Add a blank line after variable declarations (style)
+- Allow unknown whoami for DT fallback instead of erroring out
+- Use dev_err_probe() in probe paths
+- Reject calibration data that would cause division by zero
 
-A step count channel was also added by commit d221de60eee3 ("iio: accel:
-bma400: Add separate channel for step counter").
+No HTS221 hardware was available. Verified with checkpatch --strict and
+builds of hts221, hts221_i2c and hts221_spi. Probe and calibration
+error paths were exercised against i2c-stub with register contents
+pre-loaded via i2cset.
 
-The power management and sensor time channel TODOs remain unimplemented.
-
-Signed-off-by: Marco Chen <marcochen.dev@gmail.com>
 ---
-I would like to take on the remaining power management TODO. The driver
-has bma400_set_power_mode() but neither bus assigns a dev_pm_ops
-struct. POWER_MODE_LOW is also never entered. I don't have a BMA400 but
-I would definitely buy one to develop and test on. I also have access to
-a logic analyzer for testing. Is this a patch that is desirable?
+Changes in v2:
+- Use a local 'dev' pointer instead of hw->dev in error logging helpers
+- Fix punctuation in the commit message of patch 2/5
+- Adjust commit message for patch 1/5 to include fixes due to ABI change 
+of in_humidityrelative_oversampling_ratio_available
 
- drivers/iio/accel/bma400_core.c | 2 --
- 1 file changed, 2 deletions(-)
+v1: https://lore.kernel.org/all/20260808090026.34187-1-adinata.softwareengineer@gmail.com/
 
-diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index 7e3cff4cca91..6bc64ca87f4b 100644
---- a/drivers/iio/accel/bma400_core.c
-+++ b/drivers/iio/accel/bma400_core.c
-@@ -6,8 +6,6 @@
-  *
-  * TODO:
-  *  - Support for power management
-- *  - Support events and interrupts
-- *  - Create channel for step count
-  *  - Create channel for sensor time
-  */
- 
+Thanks to the reviewers for all the time you spent going through the
+code and the comments.
+
+Adi Nata (5):
+  iio: humidity: hts221: report available values via read_avail()
+  iio: humidity: hts221: Add a blank line after variable declarations
+  iio: humidity: hts221: Allow unknown whoami for DT fallback
+  iio: humidity: hts221: use dev_err_probe() in probe paths
+  iio: humidity: hts221: fix division by zero in calibration parsing
+
+ drivers/iio/humidity/hts221_buffer.c |   1 +
+ drivers/iio/humidity/hts221_core.c   | 168 ++++++++++++---------------
+ drivers/iio/humidity/hts221_i2c.c    |  11 +-
+ drivers/iio/humidity/hts221_spi.c    |  11 +-
+ 4 files changed, 84 insertions(+), 107 deletions(-)
+
 -- 
-2.55.0
+2.47.3
 
