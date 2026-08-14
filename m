@@ -1,118 +1,151 @@
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB0814570E8
-	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 09:08:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B72EF35C6AC
+	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 09:23:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786698489; cv=none; b=IxeScnWAZpZa4cALx34md5v0TPa+mGwlL/Wc8inc28OG/mnDQl6AsDqQ/5XohwvybwEkDDUCZD2F8DbI4HHpfN2DZViIydwz8NG5SUp2OwgigYs1B+p9q16WRTi27wY/R2s1ot1w8WFJ46tEcQIdz0lMTple/Qkni6tcPd5ed/k=
+	t=1786699410; cv=none; b=dN4GjvFYrpGFeVSraxuZvMnr8sTVvBIaH/CQmslW3ZmGjZYXRnSlCf9tz6W2d5ZK2JVHmA+ICRnAy9urQ9DHSSjZvfweoy36dgrZxPmbZl3O/rynNnQgwNMDWwEBlKb8VRgU/soxlVzUJY3zU+7zBgUELqYY8pHhK7Z4DzNIsak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786698489; c=relaxed/simple;
-	bh=pH6jzKgwrH1zv2mw2pomaAmWb6Kxr53NPHaNTX/EXng=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Unw1gR1XiGW0tn5u9KLBzjo3/bAoLKxFgQEQyY4qC3RmBESMN4MLT82UoljiMwew9GILxj19aN0zyxplsnF9vzHLXAIv/FOkb2DTpOekZC9LDSK3GuIlgsx4LQZGSX/VHgzWrLeuSKv4w8NHpMfpTTwriV3J47pKS/IotL/MHrg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XXIJWXF9; arc=none smtp.client-ip=209.85.128.179
+	s=arc-20240116; t=1786699410; c=relaxed/simple;
+	bh=aOOgMxJ0Wi9wjpidoIa1jqFMJbdgv7Y5I9i5lPA6l0M=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=djaeqwbPDHyDMNb+7zy3/btGzmLLP68xYgT0xGyMc1TgSPw7ALKpt8LNBW9K64fVylg/yMgZA/BGih/lBBc67xqMQhAHwoughFqZ77YwXexLjqFVBTSnPkvPWEGWOU4CUbl8V9l/gPATOV4kWJcYGbu2z3FXOfSH6o8a34UILE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZTr2tFGZ; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XXIJWXF9"
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-8111c0c7561so10026727b3.3
-        for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 02:08:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZTr2tFGZ"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-472326ca506so499675f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 02:23:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786698487; x=1787303287; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=vvJK/3OxQwOhIHM8EH6WtO8ZWdbRyYbnysOx2i6lxyA=;
-        b=XXIJWXF96D1Oo3Aw/iZbct9PeGvAkQ1uLjZmetM6BCCUgqzAxSrejMtrMyfAxrPRk1
-         rGMAJKVsr3pbeQHU4EyTA2HoEFprFsgzYlkis9SQMSYJr+PZe7SlgEhMEvYhBJ2xwYRQ
-         djMMZeN9EUofJryXCXroEkZ9fbKnfTp5biGQRHaTcVf1LticYuhqSQIodawc/6QyHe5m
-         Ib66FjATr73vUJ6ew3SkStGYg9wbbjwwtmgkZn/aH34aa59mxsw/4pR4e9XKM80BjL+C
-         r9IG/vkeK4NNxc+Ol3/qTZ13BFg42JLrIBrELcJz/WGS9zBzV6pk334JB5TdEYL1sYvR
-         DJDA==
+        d=gmail.com; s=20251104; t=1786699407; x=1787304207; darn=vger.kernel.org;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=GAkYCe4/uinOape0Z9uWaL7vPL69AcEJPMJYJNOaYGY=;
+        b=ZTr2tFGZfAkstHFnnwY63Da9QO8KzreukVs6QLk7L6fXNYwO+SYjTITuh1k2JZFtsB
+         9+B1ZiRsjbWSzWpnQ6Q9+7Fr5FoZUP+UeQ6abnnB5qEK+NWeKwoIf/L81dvfBM8wetnq
+         U1oAoX5US4LIs8wrQjfHV197ozzMFfZpfKOexYg+4DF5gTFmPRPTRge84JzPMZE5LmAM
+         U5yfN9Vbu26Fa7niiM3WUalpcA2Sdg67ATygwO1nnTFwTKrqjq0x8pNAstn4nn8LLxu0
+         PAKj9ptYDd8xwWfiLppn/Y2VJtaustm1SxnZPhxmefwy3o570rXGopHjz0WJW6Bollkf
+         Hxvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786698487; x=1787303287;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=vvJK/3OxQwOhIHM8EH6WtO8ZWdbRyYbnysOx2i6lxyA=;
-        b=A2sPLlMp8adIgBWxEkki19RyomDLGgajklPeg8NE/r7NQl7oXlXK8GUsYBisibXXKH
-         GHrOVWdlWB5lyDpOBSB0bANhmiVAxY1EUeB7xwpmvR8TNB92lYoT1Lpk/sN7ZCRYufSI
-         9VfL3k02YM2BClc4ZiM8Tty8oxL33TtMtI2h9M0h+3yR6yWmLhfT/LMOVB/ReIruSYcE
-         +FNy2BncFwQAI+6uuOOQiNZfYKxbVF5DGa+CsM1VYqjtZaaHWvV1tMmehhQrQCYNfpWw
-         vUz3Rw/ll378sJeGloH5ZSM7WrNgLpGCUJxuNk91N5lbrprcidNGht3jimBsUyxwMIsQ
-         Rn5g==
-X-Forwarded-Encrypted: i=1; AHgh+RqlSKKJh+z0bT/qNHTYkSUsoRirMvhV4n5e+ggv55DMMZ3U9J06+2PbWp2Tu7Km/Dm7QksxWMmr6go=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxNRFdzZ7jsqanmrgkcm+LolLdZfMLEmj+Qd1lp+RnGzK9inx6H
-	L/7o15hX66pAcjM8RKLYr+900axcwL4C/Kseyd1evvdKr+cR4UAu5Ak=
-X-Gm-Gg: AR+sD12iNSWZm2gEqdu5CZN/RUnbBzGooYPSpGGGg183dGaHc+uFAhPAM6tubZM9Bo2
-	svz7kX+HeXCCs1MZwZ3I9FvjLj2fOlnec0oewVqVRJrLkslVnGM2D6yBn4Zig66aqk0KT91TZTz
-	tC5ky1n38lWy8a9uIOHwGl7XxzzvxRmBwCCdxK5aymvt/JdgzVT6ncpi5V8ra//mZ5ryGhYEx8W
-	aVfrU/o+QaCH3hd1BhF6hzoicV7K6fcGrBbZFa+vM4vvrJaDj8/G07hNtlkmDpnHNGj9tsZlOrr
-	9qkSnr1f+pi5k6HFUP26wWVXAkohAqLjGqlrb2sCxLA9NgOItCBbdafwY2C9dkla6D1+RHcGquj
-	qQqRTLhK+DLZfpUVNipQS0ofTXTgmPIQ1kG4+z6Pxp5SA1Sn48A+fma4crg7U8BCFFwcIVRyjFm
-	10xrIAa8O417oZMyNe1D3/Y+YrKUg/m20VgA4uNLSTNHZmQvtkEAIcdvY9vFZotfibEYJ5iFZFH
-	9LE4tPE23DJ3qoFtVs=
-X-Received: by 2002:a05:690c:605:b0:826:8d41:897a with SMTP id 00721157ae682-8370e5946ffmr20523157b3.13.1786698486682;
-        Fri, 14 Aug 2026 02:08:06 -0700 (PDT)
-Received: from daffodil.tailc06997.ts.net ([163.152.162.75])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-836bb3ecef9sm10801267b3.4.2026.08.14.02.08.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2026 02:08:05 -0700 (PDT)
-From: Arka Mondal <arkamondalofficial@gmail.com>
-To: nuno.sa@analog.com,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
-	venkat.prashanth2498@gmail.com,
-	rohitsarkar5398@gmail.com,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Arka Mondal <arkamondalofficial@gmail.com>
-Subject: [PATCH 3/3] iio: gyro: adis16136: fix unprotected debugfs reads
-Date: Fri, 14 Aug 2026 18:07:28 +0900
-Message-ID: <20260814090728.965922-3-arkamondalofficial@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260814090728.965922-1-arkamondalofficial@gmail.com>
-References: <20260814090728.965922-1-arkamondalofficial@gmail.com>
+        d=1e100.net; s=20251104; t=1786699407; x=1787304207;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GAkYCe4/uinOape0Z9uWaL7vPL69AcEJPMJYJNOaYGY=;
+        b=R5sgkvU/S3Kd3ILijrXZxYk/+QmT4fpeb87+UAeifreabF2tBoJwTevVlTvwDFu7tN
+         wBPc3uWpiOW9gU1B90b5NjyZLeWQsr8Ar5FzfUjmIzgnb+rD1KnhVYSY01ENyZpyZ7f9
+         XrddwlptfsTNt9S/t5fINqpk4psg7DVRkG9brvBsMsDL8ZzOu9cndBCndCx1TTxxV4KM
+         M0CocPMryUPc7qq9tT+1cGOCa5OH8c8Pz3LXMOZYzV2y2YhqxVPqfvJLM+pd1vFouoLq
+         mxA8pD5Dllp5qLQJKIRS1jMBf/h6rjWKErZH9kcukI68DGdle8RWY7iaxK1T+jPnrgmi
+         w8nA==
+X-Forwarded-Encrypted: i=1; AHgh+RoNpvnZB/gLNqIH+tFm2j6PVxMoiF1oNCHa+ugVLgzG2xPzdcYlYz5KLHOhdtNFKp4J8n34vmWPS9o=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxno/4Wx65U2B23yyltR8D09ENxXJBcIWnRm00aJ8io/9nC1Xju
+	CVlc1yk4btNJTMh4YxyCjpIyAoEXmubLaqx9eYUSv6VzjfuLFg1bNvwh
+X-Gm-Gg: AR+sD117AU3+vN/FDPaYXkCLbMvVLDsCLukTnP2k0l5bUd6GR9ujEkKsMA6y/bwczkX
+	HL9J5rGxRJTPKXQa0vYE85rKkcEifVwyzmLuV/WRYoQ5VL7ftwQNN2Vyw28pV0K5vTE6rSXGIOP
+	rAINPhzg0wZ9nECr8J4GRdro70D4kmblX/EeHsE5eYwzDWGaXPyDuaP9YV9Z8SJ0IhjmkexfzT+
+	vCb5Jl3IJ3TcQX2Xu4sgpU1Me/dy2TunbZoktmDV5fvvIqol1NJ6eBMp/mXQ6dngDV03/CxrSkT
+	QuI5jcF9sdw7MTB76Dm74Ysmsc2tMe6t2hMx0LSERjEMRL+swVCAvA2VjSPA/LxKZhgrSOXOlfU
+	ZMhhXXtR0pWD84SpNwIu4CdsGvuhCXqH/h27i1wusOGZQ1kSXF7wYxB3w6bV1Pocwgs10byCh7L
+	/Ok7wCXh6GxEOvQ5YNIW/P9S7rhVwTb0+BIJIzDsc4BKrg/Z8qF4dMdbQGa2d6WVGAcV6NSJjAl
+	Fk=
+X-Received: by 2002:a05:6000:1889:b0:47f:e877:641b with SMTP id ffacd0b85a97d-48160738643mr5409441f8f.11.1786699399170;
+        Fri, 14 Aug 2026 02:23:19 -0700 (PDT)
+Received: from localhost ([2001:4bb8:16f:15e0:6cd4:2382:91e2:c6e4])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4815f2005bcsm7077632f8f.6.2026.08.14.02.23.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Aug 2026 02:23:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 14 Aug 2026 11:23:16 +0200
+Message-Id: <DKOK2RLVHGH5.Q3B5J8LW2U64@gmail.com>
+Subject: Re: [PATCH v6 2/4] iio: light: add support for veml6031x00 ALS
+ series
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "Lars-Peter Clausen"
+ <lars@metafoo.de>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "David Lechner"
+ <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Javier Carrasco"
+ <javier.carrasco.cruz@gmail.com>
+From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
+X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
+References: <20260812-veml6031x00-v6-0-7eef6e4ce290@gmail.com>
+ <20260812-veml6031x00-v6-2-7eef6e4ce290@gmail.com>
+ <an1rR07iJd_XLSPr@ashevche-desk.local>
+ <DKNPY12RSCH4.2KQCX98171G2H@gmail.com>
+ <an7IpvdXnxzzDknS@ashevche-desk.local>
+ <DKOJJJSXCZ8Y.KCR5NRYX7PVL@gmail.com>
+ <an7atynATsJHlt7_@ashevche-desk.local>
+In-Reply-To: <an7atynATsJHlt7_@ashevche-desk.local>
 
-The serial_number file operations are open coded and never call
-debugfs_file_get(), which debugfs_create_file_unsafe() requires.
-debugfs_remove_recursive() therefore does not wait for a read in
-progress, and unbind frees the iio_dev underneath it.
+On Fri Aug 14, 2026 at 11:07 AM CEST, Andy Shevchenko wrote:
+> On Fri, Aug 14, 2026 at 10:58:10AM +0200, Javier Carrasco wrote:
+>> On Fri Aug 14, 2026 at 9:49 AM CEST, Andy Shevchenko wrote:
+>> > On Thu, Aug 13, 2026 at 11:46:32AM +0200, Javier Carrasco wrote:
+>> >> Hello Andy, thank you again for your thorough review.
+>> >> On Thu Aug 13, 2026 at 8:59 AM CEST, Andy Shevchenko wrote:
+>> >> > On Wed, Aug 12, 2026 at 10:27:41PM +0200, Javier Carrasco wrote:
+>
+> ...
+>
+>> >> >> +	data->regmap =3D devm_regmap_init_i2c(i2c, &veml6031x00_regmap_c=
+onfig);
+>> >> >> +	if (IS_ERR(data->regmap))
+>> >> >> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
+>> >> >> +				     "Failed to set regmap\n");
+>> >> >
+>> >> > Is debugfs access already enabled for regmap after this call? Perha=
+ps you want
+>> >> > mutex to be initialised before that?
+>> >>
+>> >> Could you please explain what you are trying to avoid? Even if the
+>> >> debugfs is already enabled for regmap at this point, what is the
+>> >> possible race condition?
+>> >
+>> > That's my question to you. If you think there is none, then we are all=
+ good.
+>> > Basically the Q is if that mutex (that is initialised later in the pro=
+be) is
+>> > required for the device IO which might be possible immediately when re=
+gmap
+>> > is registered.
+>> >
+>> >> The IIO device is still not registered at this
+>> >> point, and the registers are set to their right values in _hw_init()
+>> >> after the mutexes were initialized. Moving the mutex initialization a
+>> >> couple of lines towards the top is not an issue, but I would like to
+>> >> understand the reasoning behind.
+>> >
+>> > User may read (and depending on the driver case writing) the register =
+map.
+>> > Would it be a problem?
+>>
+>> That is not a problem, as no assumptions about the original values are
+>> made.
+>
+> It's not about the values, it's about the *access* HW during that time wh=
+en
+> there is no mutex available yet.
+>
 
-Use debugfs_create_file() instead.
+There is no issue with that either. The mutex serializes the access to
+multiple registers that store the scale to provide a consistent value
+that can't be manipulated by other accesses (e.g. debugfs). That does
+not have any meaning as long as the IIO device has been registered,
+which of course happens after the mutex initialization.
 
-Fixes: 9aaea09b4cbd ("gyro:adis16136: fix debugfs_simple_attr.cocci warnings")
-Signed-off-by: Arka Mondal <arkamondalofficial@gmail.com>
----
-Compile tested only; no relevant hardware available.
-
- drivers/iio/gyro/adis16136.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
-index 369c7428e1ef..adcf54b67a28 100644
---- a/drivers/iio/gyro/adis16136.c
-+++ b/drivers/iio/gyro/adis16136.c
-@@ -145,7 +145,7 @@ static int adis16136_debugfs_init(struct iio_dev *indio_dev)
- 	struct adis16136 *adis16136 = iio_priv(indio_dev);
- 	struct dentry *d = iio_get_debugfs_dentry(indio_dev);
- 
--	debugfs_create_file_unsafe("serial_number", 0400,
-+	debugfs_create_file("serial_number", 0400,
- 		d, adis16136, &adis16136_serial_fops);
- 	debugfs_create_file_unsafe("product_id", 0400,
- 		d, adis16136, &adis16136_product_id_fops);
--- 
-2.55.0
-
+Best regards,
+Javier
