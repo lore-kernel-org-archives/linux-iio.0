@@ -1,120 +1,74 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09C7C476061
-	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 13:41:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D67A33998;
+	Fri, 14 Aug 2026 13:57:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786714905; cv=none; b=Qd6qqQAbpfHa2SU57nREvOMr2uHFARlCVogOBvcFEnWXtxnNmJIribcVDNq/8bTqaC+MJYQyhlJhtJBm0wbaxib4slq0OguuIktwcXeofwsnlxHQmMsz0gU9rrbnUxLK3PC0djvYaqEFN3w1fCMsCUSIrdS+JcTvC18PyVnBNyA=
+	t=1786715862; cv=none; b=LwUc0wkrOUp3p5dwNYvnXWn6kd7Vl1g3iNRfq+YiY5KDNTFbeqjV18di6ey06yIMY0uSTc5ItPhSkYtd4/vtTtpQP+HaRVSpg6hesqPFMynIf0mBuRZzY3+GVqvXXrHi3GHcDw0UADvrsLPSIDX9RLilbzhMilG2fKNMXGhJbzs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786714905; c=relaxed/simple;
-	bh=gFgCDtaDhkHUy5zlzen5RjHhMrQ/5qm6YfwQtHm+KaM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cpRep08+y6WIIq5TGnRHzagkgaL9dwqkjCoaa5HDQnHXdqTaoNEANos8cesUVVWkZnQ+JdxRkwiEUz79/UQjCloE36bVxzxuh5qpKRdjIBkmUvfF/YbmEIVlSFNYG3o4tiBXW4U0jB/RxSE/snkDfu+T/YSmj2I5EkeoLKETr/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r5f7i46n; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786715862; c=relaxed/simple;
+	bh=E/2f2TlfNMOrVKU2clZnHFHA2uiMXq3C9GevSB2akrE=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=VJYrg8j7lyg4qfpaFYaQEPlwgieArjliF+bpiQgkYAGJHwVXOsB21Em6MMd2NvGkp8R0mDH3sgTpPKuhkT/7VfS4Pq1SXsOp2m1uO3yqTfA+WbBih6XgFBHBOnRnrgFqh+uRwflFbjIGSf1qWgKta1Gzw2UIVhmiZ1GYZvw1oJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W6n8zaLz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r5f7i46n"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cf50c6f235so12554565ad.0
-        for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 06:41:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786714903; x=1787319703; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=AW/kAhpxk6iwgmshFSjwEkP45x3FFpydZgKHFvSyQTQ=;
-        b=r5f7i46ngDcdZiNETABSXzFfZwTfRROE5Nv2iIOw3tOMZ+6x4A4N5Xf9DUdqFIAxkY
-         b9ONMZcrSfkZmI1eb4w04SAYaKFiluv99bJ+3LSD3tyMZf0At/LtXNww1wxv+jybLywE
-         cSamRgB01lrVWWm60MOq6+5PY0Thds/+fYrZx2A8osAPKkkqCACQtTl97VPEYrwE0YX/
-         fdCgDC9KCSdIUa9OmS2Kbh/d+lx2SuBjdxWVRILpfGmDpuvlZLGGCxyO3JM8v1HgWlyG
-         GH68BK25zHGXnUY1pyNt9SBmhNwFWY4i9oKl/JCTRr4Q4xTFzPx/sqfvVoWTeQZj4QF7
-         jizw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786714903; x=1787319703;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=AW/kAhpxk6iwgmshFSjwEkP45x3FFpydZgKHFvSyQTQ=;
-        b=EiIhD4p3G0LdMVyaha/pN7iGzF3P3aXkdohsUDBOP961Zr4ygJQ4yA0KLyCZ3cgbcj
-         8GWrSSdHP8zg1J3ZmZGWdeDxw35QQMZjIfpkLqVnfeOeHDwEHqXlWopOuM2pyrZAr0D7
-         nOUvQOCSr48VKJgkrDJriOBF66Ej1AG/4t47HsOsU6rb6BZR92TBwDYd76PYgxvnm0qX
-         DRdg1XeVq8e2S0/XbbEhlfsbWgxzWzbCKCS+xVNk3AjBpaZBCdl461/LkcfFucRfUmj7
-         LfwFcHNhzGIuZHS6Gi97HrGkvKlBBH8mm0/im4PuBSp400asuQzz0iP3th+anDXV6ocv
-         MrVg==
-X-Gm-Message-State: AOJu0YwGvIeYcsnA/JMD2wCcVQdbcTGyUYIEmEL7YB1LkLucv9EDj42Q
-	rpC5yf8mwU3dLREmAT8MxH/i3nVD/aM/NoaJajGZVTp2yLemWo6imuo6
-X-Gm-Gg: AR+sD13pWki/vENF2PHDy2sBpS9FnRP1233jG4PlPvoBBA6MscfjrmEO3fF7RIRQvgO
-	AAnBC7a1tDwo9O9clHJqL1VNSkzjAsDhPcxm7fe7hQEtXF/2cT6ICaXzJDiW9rvUIyIRxuvmMk9
-	Z4p1Zn3kWVXgpdZYeKWgzChBGN1ZNISpB8/sCzay16+q1qWZTCmBe7ZmSbgsy4FY9PjPNY2gsML
-	d8xYSGV3CdTdqyqZ5satEGKic6FcvlTUSFe3Wq7eY7mZ7BglwoxXUBTP9fTNCCKIeWUlr1Otfpb
-	+s6c95uRmIsU5P680272EAXlJT0noKA4Y9Q4xFkhlBJGEe3MuHsV0U4lWHyObVseKJWc5T8prfp
-	Z0hacIzBOeXGQtIloDpIljrehoygMsCbaJyfwWTGVTg4TeUvuYFXaIQcXH8soaUGriRtreOfjIJ
-	st78TlslzgDcb1zHAf4O3Xd7sadO2rtWeHYh6U5yu651nrntSqiCl102k2eJCejlzS5CxZaPJAn
-	XzOTBRY
-X-Received: by 2002:a17:903:37c7:b0:2c7:f2c6:89e0 with SMTP id d9443c01a7336-2d3b08053b6mr72682355ad.4.1786714903174;
-        Fri, 14 Aug 2026 06:41:43 -0700 (PDT)
-Received: from haichao.tail057a43.ts.net ([2001:da8:e000:1206:e9af:7c0e:be31:2c3f])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d3ae7c067asm10269255ad.28.2026.08.14.06.41.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2026 06:41:42 -0700 (PDT)
-From: Ruoyu Wang <ruoyuw560@gmail.com>
-To: Biju Das <biju.das.jz@bp.renesas.com>,
-	William Breathitt Gray <wbg@kernel.org>,
-	Lee Jones <lee@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ruoyu Wang <ruoyuw560@gmail.com>
-Subject: [PATCH] counter: rz-mtu3-cnt: Balance runtime PM on enable failure
-Date: Fri, 14 Aug 2026 21:41:38 +0800
-Message-ID: <20260814134138.1388045-1-ruoyuw560@gmail.com>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W6n8zaLz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 807531F000E9;
+	Fri, 14 Aug 2026 13:57:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786715861;
+	bh=NP8z+ESGjMEtKt8r9GOcL0yI7hvXgD6vPTVZp3mQtck=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References;
+	b=W6n8zaLzkAPSDvi5c75PAfiQASrwBtD+O3LdCf3Am96ygJ0MziBHi5/z09Kn+eR64
+	 Hj2qfw6mThOve6pHNiaS9LphaZo/7/jdDyeKns3jDgKDSl6J5MMq2tOoSgadYZQZFJ
+	 8FpvJtx295qlQRIFy74+1/DRpxbixEmoQKFKP6Y9WAvXCmXkxi42a5W8CIXVwXIfI7
+	 hfqeJ2E5mf7tenkljNYCkb6iRUJXfNU2EOVK5pGsuIW9RO3jKGq53+v4owJJBumDZZ
+	 ToedG8dfQJ0U5wn98prPAwOLFOW2rGnTtRRg4MP5Ux8h5VJMmA+S2rqAIbBJnDY/iv
+	 louJbrJ/U4/Dw==
+Date: Fri, 14 Aug 2026 15:57:38 +0200 (CEST)
+From: Jiri Kosina <jikos@kernel.org>
+To: Haoxiang Li <haoxiang_li2024@163.com>
+cc: jic23@kernel.org, srinivas.pandruvada@linux.intel.com, bentiss@kernel.org, 
+    linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+    linux-kernel@vger.kernel.org, Sashiko AI Review <sashiko-bot@kernel.org>, 
+    stable@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] HID: sensor: custom: Fix use-after-free in
+ enable_sensor
+In-Reply-To: <20260707071545.3087073-2-haoxiang_li2024@163.com>
+Message-ID: <r48p57s3-5prp-3rro-oor2-499271s8s52o@xreary.bet>
+References: <20260707071545.3087073-1-haoxiang_li2024@163.com> <20260707071545.3087073-2-haoxiang_li2024@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 
-rz_mtu3_count_enable_write() used pm_runtime_get_sync() without checking
-its return value before initializing a counter.  A failed runtime resume
-was therefore ignored and the callback continued with the device
-unavailable.
+On Tue, 7 Jul 2026, Haoxiang Li wrote:
 
-Use pm_runtime_resume_and_get() and return a failed resume to the Counter
-core.  Keep the matching put when shared-channel initialization fails after
-a successful resume, and leave the cached enable state unchanged.
+> enable_sensor_store() can call set_power_report_state(), which
+> dereferences sensor_inst->power_state and sensor_inst->report_state.
+> These pointers refer to entries in sensor_inst->fields.
+> 
+> Create the field attributes before exposing the enable_sensor sysfs
+> attribute, so enable_sensor cannot be accessed before the state it
+> depends on has been initialized.
+> 
+> On remove, delete enable_sensor before freeing the field attributes,
+> so a concurrent sysfs write cannot dereference freed memory through
+> power_state or report_state.
+> 
+> Reported-by: Sashiko AI Review <sashiko-bot@kernel.org>
+> Link: https://sashiko.dev/#/patchset/20260623021950.1736413-1-haoxiang_li2024@163.com?part=1
+> Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Haoxiang Li <haoxiang_li2024@163.com>
 
-This issue was found by a static analysis checker and confirmed by manual
-source review.
+Applied, thanks.
 
-Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter driver")
-Signed-off-by: Ruoyu Wang <ruoyuw560@gmail.com>
----
- drivers/counter/rz-mtu3-cnt.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/counter/rz-mtu3-cnt.c b/drivers/counter/rz-mtu3-cnt.c
-index 7bfb6979193ce..a8ba8ebed236d 100644
---- a/drivers/counter/rz-mtu3-cnt.c
-+++ b/drivers/counter/rz-mtu3-cnt.c
-@@ -504,9 +504,14 @@ static int rz_mtu3_count_enable_write(struct counter_device *counter,
- 		goto exit;
- 
- 	if (enable) {
--		pm_runtime_get_sync(counter->parent);
-+		ret = pm_runtime_resume_and_get(counter->parent);
-+		if (ret < 0)
-+			goto exit;
-+
- 		ret = rz_mtu3_initialize_counter(counter, count->id);
--		if (ret == 0)
-+		if (ret)
-+			pm_runtime_put(counter->parent);
-+		else
- 			priv->count_is_enabled[count->id] = true;
- 	} else {
- 		rz_mtu3_terminate_counter(counter, count->id);
 -- 
-2.51.0
+Jiri Kosina
+SUSE Labs
 
