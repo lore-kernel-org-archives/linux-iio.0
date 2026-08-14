@@ -1,85 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F441421239;
-	Fri, 14 Aug 2026 08:09:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0707943933D;
+	Fri, 14 Aug 2026 08:14:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786694982; cv=none; b=gOxBfxZTK7/yvAgsWnys7CABIcxnrMAodjU9wsI02rcVTg8Rd+R5AgvlYjm3mmy6EXGjUdxZzrQoQoJhE0nNc6nCqA0UsY9lYGBWf6lLDwMX57R9VHaB+fCJS6aK+TgxEHLPOJGGJddqlw5ecFWvpuAgM9/k0T6BcqG31eDNyD8=
+	t=1786695269; cv=none; b=PFgA29f+lxBxQe7Tf2HUV2xWQYx96FWJNfOZ8aAbpKXybHDBkOKfFzeMO2Wvhad0r/acxQHBkCM/gw4GiwScWdPvZYceuzYb1FkFKRkulPpZLoUruGGUkLSqAxRFKlVxag5P1/S+6n9NsnpjOYG6exLkxev3jbzhHo503HC7bwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786694982; c=relaxed/simple;
-	bh=jQr2b3VxS81BP2AonMpXYLNWd/ONbEFOrTkEGF0su4c=;
+	s=arc-20240116; t=1786695269; c=relaxed/simple;
+	bh=Vp6kwkD7UKHHTmZ4lwIepeL3WFGNoFCpelZ68nOcF0A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SJcbTM/W/JDNqHfnucXpsVE4oNKG6fUXcX8OQxOXjmP/lAk9T6uHfZfnceyV9N47iqxJ8E62j/xekU4NwNzusJBD132PmimQ5eo/kplEFCpoRLzNTdxhGvdgTJ43b9SUEP2SbKKLMRzOgpdD4jD7Ku0pNCIxHn5J0iSXB/RJpZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dmkkXOlP; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=suxARKVi8ivOcPoq6/QyvUzHhgCW6aOuxRNna6SFpF62QPeO0h+J068IHdkmX+bH6cVnqVVpBnwo+xBVh5SxAc4lvkRaJahy+QmudnICB0m9hmk65VbvmT2Byx40ti66yyG3dssindddOjAuWCJpuk06cBPNhIPv5Gj/NmlZA80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PWO263Jp; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dmkkXOlP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PWO263Jp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786694980; x=1818230980;
+  t=1786695257; x=1818231257;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jQr2b3VxS81BP2AonMpXYLNWd/ONbEFOrTkEGF0su4c=;
-  b=dmkkXOlPTqv/fkxE+7pPDJh5XPi2t+JiLlfEFcmz8l9e8NC8fXhb7m3X
-   R0heASzTdugATAT+pyy59ZlrKQV81mRvSdimWwj3xXz/PGK4M3Kgr1+6C
-   fnEO2esX8cDxv6edMpsYG32lwVY6hm+I8CsOlAPdIohco5a3gd0sigIGH
-   ASEANm3BXaJQSeFFSnUsphAtUr8gJrV8MlicaLhXv4pl232UaMgYFucbB
-   +vbybAfuBw0PXDHlVvjwArWCcuHdz/T0MqcSQ7OcIt6LfYQYOZS2hlH77
-   CKnVon4yJCyBVH1kS+4QLDPMMjhF4tcmbhi+TQncIZaaDAEXwYN02/2o3
-   w==;
-X-CSE-ConnectionGUID: SbYhxX1/QuC8ETau6WOnaw==
-X-CSE-MsgGUID: Aw1QAbGsQQa+uz1zUTC5rw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11874"; a="112817949"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Vp6kwkD7UKHHTmZ4lwIepeL3WFGNoFCpelZ68nOcF0A=;
+  b=PWO263JpoTnV2GxU3jsBGbaP9/cDzVUJBAmxlJEND2oy3kERpnaauomT
+   dNvRwYoxk3ghryJHyaeH+V/2KSFT/pcyeyNGGcLnigov64UegiW+d5jpn
+   Sqn39rip8xRPcnF2zVwFb4gnZSXWZZDU1laSZ5L7IeQ5H76cFRblex+RU
+   HQfIlbCGdKEZXxDu6madFzO7F8kB8i8tFbmww4h3NTweNFV9XrwjWk7dB
+   PU1qRKS5rZeI5mLjGqk4VUtQG+1mElZBzCiOvyq95dkeQk1RXPxpq3D2L
+   L0mDnWwYaDx4B4Um8s4Nk19I6sBTW8JadGJYZ+6ofCF8DdQxN1HIFDqEh
+   A==;
+X-CSE-ConnectionGUID: 4Tj1MeOWSZGczJlQJrqUnA==
+X-CSE-MsgGUID: LRZ0NpSFSiiaKGkvVbTs+A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11874"; a="91084642"
 X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
-   d="scan'208";a="112817949"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:09:33 -0700
-X-CSE-ConnectionGUID: +IP4D+yMT9aiiDRBUWnPeA==
-X-CSE-MsgGUID: wUl26I7wTLe3o6/YFTlx2w==
+   d="scan'208";a="91084642"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:14:06 -0700
+X-CSE-ConnectionGUID: cx4P2/ToSbGXXPrfDrxRFg==
+X-CSE-MsgGUID: KRxPjzO6QQi4vpqZZZ1wiQ==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
+   d="scan'208";a="268433929"
 Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.134])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:09:30 -0700
-Date: Fri, 14 Aug 2026 11:09:28 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Martin Kepplinger <martink@posteo.de>,
-	Sean Nyekjaer <sean@geanix.com>,
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:14:02 -0700
+Date: Fri, 14 Aug 2026 11:14:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Maxwell Doose <maxwell@maxwelld.cc>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Marius Cristea <marius.cristea@microchip.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/6] iio: accel: mma8452: Support interrupt sharing
-Message-ID: <an7NOEOw8Jn0id0N@ashevche-desk.local>
-References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
- <20260812-mma8452-open-drain-v4-4-bfca15d02b59@geanix.com>
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Subject: Re: [PATCH v1 1/4] iio: light: Unshadow error codes in ->store()
+Message-ID: <an7OSM04kiviu9xL@ashevche-desk.local>
+References: <20260813071912.2465208-1-andriy.shevchenko@linux.intel.com>
+ <20260813071912.2465208-2-andriy.shevchenko@linux.intel.com>
+ <DKO09O8T0FGE.2WMX1VNQN5C7J@maxwelld.cc>
+ <CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
+ <DKOBND0GKI21.2843OFKP0KR40@maxwelld.cc>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260812-mma8452-open-drain-v4-4-bfca15d02b59@geanix.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DKOBND0GKI21.2843OFKP0KR40@maxwelld.cc>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Aug 12, 2026 at 04:30:35PM +0200, Esben Haabendal wrote:
-> Adding handling of rutnime PM suspension in the interrupt handler allows
-> sharing interrupt with other devices.
-> 
-> Keep in mind that the device by default is using push-pull for the irq pin,
-> which might require additional hardware design to allow interrupt sharing.
+On Thu, Aug 13, 2026 at 09:47:00PM -0500, Maxwell Doose wrote:
+> On Thu Aug 13, 2026 at 3:47 PM CDT
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Thu, Aug 13, 2026 at 8:52 PM Maxwell Doose <maxwell@maxwelld.cc> wrote:
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+...
+
+> > Note, that kernel.h shouldn't be there at all, but that is definitely out
+> > of scope here.
+> 
+> Makes sense. I wonder if it may be worth doing a patch series removing
+> all of the kernel.h inclusions in IIO all at once (or maybe some drivers
+> have a legitimate use for it, but that seems highly unlikely).
+
+Yes, for sure! I have simply had no time to do it myself, but I have a low-prio
+item in my always grown TODO list. So, if you do that, I will really appreciate!
+But be careful, the actual patches should care about the whole bunch of the
+inclusions, and not just about kernel.h. This means each driver should be
+carefully inspected in accordance with the IWYU principles.
 
 -- 
 With Best Regards,
