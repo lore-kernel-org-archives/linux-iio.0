@@ -1,49 +1,47 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A17D433059;
-	Fri, 14 Aug 2026 08:07:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F441421239;
+	Fri, 14 Aug 2026 08:09:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786694859; cv=none; b=lQIrrfkXYIz37UkI5yL82DwNsIwldBUJC8T5kSgMDqkHOB0rkGscdrnqZuc2hJc19i0XqmPakYAOhOcZJc0oK8bWwcQEIH1eI+63IuB/m1L8DNp/oKfTVJehbvxd01qxMVKKQ5u29wTu2brjjzzUo5yXo/LQ33zSdydIh0+rPZg=
+	t=1786694982; cv=none; b=gOxBfxZTK7/yvAgsWnys7CABIcxnrMAodjU9wsI02rcVTg8Rd+R5AgvlYjm3mmy6EXGjUdxZzrQoQoJhE0nNc6nCqA0UsY9lYGBWf6lLDwMX57R9VHaB+fCJS6aK+TgxEHLPOJGGJddqlw5ecFWvpuAgM9/k0T6BcqG31eDNyD8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786694859; c=relaxed/simple;
-	bh=Y3IPqi5J7DzGSS5yQkD/LpxCawEONS/A1Vg7M2K1g34=;
+	s=arc-20240116; t=1786694982; c=relaxed/simple;
+	bh=jQr2b3VxS81BP2AonMpXYLNWd/ONbEFOrTkEGF0su4c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MBh3xgf7WCBke3A03OKYsVFB89+y1IjqlLKLfTVVLB2SFhcD81E1Hz7gzjv9iagMxK9KTk+0jIORqUDx35nDPV4D9YRHLmvnpPkklVKKp/DSVM4tH+G1Fp5qUvaWJPIlicXqr34eS/kN8Q+MQh7k9Ct2ox7zATnvzKBj/Brh26w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T+FltGp4; arc=none smtp.client-ip=192.198.163.7
+	 Content-Type:Content-Disposition:In-Reply-To; b=SJcbTM/W/JDNqHfnucXpsVE4oNKG6fUXcX8OQxOXjmP/lAk9T6uHfZfnceyV9N47iqxJ8E62j/xekU4NwNzusJBD132PmimQ5eo/kplEFCpoRLzNTdxhGvdgTJ43b9SUEP2SbKKLMRzOgpdD4jD7Ku0pNCIxHn5J0iSXB/RJpZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dmkkXOlP; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T+FltGp4"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dmkkXOlP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786694857; x=1818230857;
+  t=1786694980; x=1818230980;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Y3IPqi5J7DzGSS5yQkD/LpxCawEONS/A1Vg7M2K1g34=;
-  b=T+FltGp49mon2kRr6pq3lbZevYzi7Cwtb+JFDDoUq5qjJPDEFHfxehPQ
-   D+pk+xEW+oYePmBzpC1HDSDDC7p6gdsblMvpjBBBZrC7GXO0xr33YC8h7
-   zkSWVNZ7PGt5ylm8Wx6L2FB1nNtAlLanzabCJHmjkCfXmb+WoltKEdaBe
-   sO0TDlEKbu9MOrViII6suEncHwkw246RJuDwNrUPOkNbOTZvCY8qiuisZ
-   21VfBvz3TbiFmbmUCkl80LLd0uOCfXJOtxLiXUIIicTRhxcK1Z1rkK+EW
-   YWGBkyLmw1L/WEoIGpvo8fu7hvMknOVDxK4EdlTrym6qk3z2g3LhbJcnB
-   A==;
-X-CSE-ConnectionGUID: kHS5grcdRTyqVywSP0GdSA==
-X-CSE-MsgGUID: jEPps5fqSD6SFw0TUInqVw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11874"; a="112817786"
+  bh=jQr2b3VxS81BP2AonMpXYLNWd/ONbEFOrTkEGF0su4c=;
+  b=dmkkXOlPTqv/fkxE+7pPDJh5XPi2t+JiLlfEFcmz8l9e8NC8fXhb7m3X
+   R0heASzTdugATAT+pyy59ZlrKQV81mRvSdimWwj3xXz/PGK4M3Kgr1+6C
+   fnEO2esX8cDxv6edMpsYG32lwVY6hm+I8CsOlAPdIohco5a3gd0sigIGH
+   ASEANm3BXaJQSeFFSnUsphAtUr8gJrV8MlicaLhXv4pl232UaMgYFucbB
+   +vbybAfuBw0PXDHlVvjwArWCcuHdz/T0MqcSQ7OcIt6LfYQYOZS2hlH77
+   CKnVon4yJCyBVH1kS+4QLDPMMjhF4tcmbhi+TQncIZaaDAEXwYN02/2o3
+   w==;
+X-CSE-ConnectionGUID: SbYhxX1/QuC8ETau6WOnaw==
+X-CSE-MsgGUID: Aw1QAbGsQQa+uz1zUTC5rw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11874"; a="112817949"
 X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
-   d="scan'208";a="112817786"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:07:36 -0700
-X-CSE-ConnectionGUID: nRLLGqwuQmWjd7ihmeTVmQ==
-X-CSE-MsgGUID: HCHhpEw+RWWOse7spjI9bA==
+   d="scan'208";a="112817949"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:09:33 -0700
+X-CSE-ConnectionGUID: +IP4D+yMT9aiiDRBUWnPeA==
+X-CSE-MsgGUID: wUl26I7wTLe3o6/YFTlx2w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
-   d="scan'208";a="262412418"
 Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.134])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:07:32 -0700
-Date: Fri, 14 Aug 2026 11:07:30 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 01:09:30 -0700
+Date: Fri, 14 Aug 2026 11:09:28 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Esben Haabendal <esben@geanix.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -58,11 +56,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 6/6] iio: accel: mma8452: Reuse existing dev pointer
- in mma8452_probe()
-Message-ID: <an7MwteTa-b5x_mE@ashevche-desk.local>
+Subject: Re: [PATCH v4 4/6] iio: accel: mma8452: Support interrupt sharing
+Message-ID: <an7NOEOw8Jn0id0N@ashevche-desk.local>
 References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
- <20260812-mma8452-open-drain-v4-6-bfca15d02b59@geanix.com>
+ <20260812-mma8452-open-drain-v4-4-bfca15d02b59@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,24 +68,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260812-mma8452-open-drain-v4-6-bfca15d02b59@geanix.com>
+In-Reply-To: <20260812-mma8452-open-drain-v4-4-bfca15d02b59@geanix.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Aug 12, 2026 at 04:30:37PM +0200, Esben Haabendal wrote:
-> In commit 32a5c04d4575 ("iio: accel: mma8452: Use dev_err_probe()") the
-> struct device * pointer was assigned to local variable dev, so we can just
-> as well reuse that throughout the function for sligthly more readable code.
+On Wed, Aug 12, 2026 at 04:30:35PM +0200, Esben Haabendal wrote:
+> Adding handling of rutnime PM suspension in the interrupt handler allows
+> sharing interrupt with other devices.
+> 
+> Keep in mind that the device by default is using push-pull for the irq pin,
+> which might require additional hardware design to allow interrupt sharing.
 
-...
-
-> -		return dev_err_probe(&client->dev, -ENODEV,
-> +		return dev_err_probe(dev, -ENODEV,
->  				     "unknown device model\n");
-
-		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
-
-Now a single line.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
