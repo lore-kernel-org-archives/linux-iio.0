@@ -1,172 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AF4542AFAF;
-	Fri, 14 Aug 2026 09:07:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8CC44C66D
+	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 09:07:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786698434; cv=none; b=e78mJ+YonH4ioShlZLgfXmNLF0v0O/1rArT9lCStGaMBAUSo2xIhcxKHirwyiEnXM5U0uc7qchYbserzBFYgwpmjVqPfY5HzH47NRu5Pn9akpo4PFQbXczifpgPca5geSsG2XJ18D5vpqbGcZaAsOIiWzfQW6Pw3n9aN1/TqNdk=
+	t=1786698474; cv=none; b=I6NGolKR13nC1iT8Rml6ChDuS1LqTsQ3eRHRYYt4o6br1GtP+dgdUUisI2bB5wzV+PCsxBC89r00aQC6jrHg9qIb3i+5j5aRbS/alS3UN7rUDJo09ZyyolbREpaMx1yzcWi8QWgme3CxGrvc6ByUHOhmZJNyZqBEU/gAnhEcWc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786698434; c=relaxed/simple;
-	bh=/tDtFX3EjQsn+3Z8JEA1ppYnqFQ/G/7gBPpEhs+uTQc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j8bsXX5DvPy2RkdPjllxRgNumbyIGTDpjoC4hWXQDfysZPKh7bTFeA+wiWhkJNHSbq4a0zfZ62DA/3gGelZ1BEhw0V2lGcad+AN8n4Zu4FD/oLb1pY7UiODOoC8T+Ht8Hp+ScTrNm+9UnC4EsokBhdEwJ+7AuzUU+7DwfGw12DY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jZI+M8Gi; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1786698474; c=relaxed/simple;
+	bh=iAJCdSqNMd1RPknQKw3FBj+sKj+LYIWlnNNynbxmDs4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=doSMhUnIossTq4u/RAMG2EtcEYz9NaL0TGKaWbERfb15JosPeqs7WTjEAbhSLyvYkTSxZqScAwJo4a8S0CrUjga7bC88MGBIWR8sLzEloc4b1YeDdIRm5D4UOCitUPC7Xuyw7j29uYTpA3RGImsMv6qzn9pRz7Hg2hxF2pSSjoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gmOBKDSA; arc=none smtp.client-ip=209.85.128.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jZI+M8Gi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786698433; x=1818234433;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/tDtFX3EjQsn+3Z8JEA1ppYnqFQ/G/7gBPpEhs+uTQc=;
-  b=jZI+M8GidHxFF2Q1SylSC9CEU5/PyqhqS4oIBHvGDfQ3ZY8RzLJ0ZMa3
-   HfRmttbxjeMGWRLZ+JQYHxW6Wk1aEkxJuX5xG2c79Rj9H3IeqovA16nyH
-   MsJVCplPHL9mpDy5bWtLIc3Uyx7M/6kRpujwLYMcBazB60lUQzNPviFWr
-   4A91c9kxLPmS0CAEkYXnOZa2mu4oYrFctkL/R57L2rKolq7O49jxjzpyW
-   ynYHQgL7Obt9E1WCvcV63lQu65pTRUFXOvdswcjnA05pZn96SN6vTKoYe
-   yXz6SWqzdIpMkm7B8zARixCUV1TzPDbH9j5UvA2Wn43rw5ok2srA5odY7
-   w==;
-X-CSE-ConnectionGUID: z6IGDYBVS2Wwa7tedaJAzg==
-X-CSE-MsgGUID: FsfdBfiiRZW7TiJn5Je7jQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11874"; a="90952611"
-X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
-   d="scan'208";a="90952611"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 02:07:09 -0700
-X-CSE-ConnectionGUID: BnpMgjOLSt2rDG9cVx6nNA==
-X-CSE-MsgGUID: b57VzxImRLaVlyUydjW5IA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
-   d="scan'208";a="257955540"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.134])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 02:07:06 -0700
-Date: Fri, 14 Aug 2026 12:07:03 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/4] iio: light: add support for veml6031x00 ALS series
-Message-ID: <an7atynATsJHlt7_@ashevche-desk.local>
-References: <20260812-veml6031x00-v6-0-7eef6e4ce290@gmail.com>
- <20260812-veml6031x00-v6-2-7eef6e4ce290@gmail.com>
- <an1rR07iJd_XLSPr@ashevche-desk.local>
- <DKNPY12RSCH4.2KQCX98171G2H@gmail.com>
- <an7IpvdXnxzzDknS@ashevche-desk.local>
- <DKOJJJSXCZ8Y.KCR5NRYX7PVL@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gmOBKDSA"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-836cd7310f4so11333147b3.2
+        for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 02:07:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786698472; x=1787303272; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ObvL5SEFm+tixGTtsLigZChvOKxNiOQI4cdDw1tb9Go=;
+        b=gmOBKDSAOdeSSm00965+sKSxKe4HPqXJ0OWGqVITyU1a37wkTi1n4NCA0mrwQHzAx+
+         R3ydxDHNmtDILmvMrN+1UswEu2Uw+WTA29t5mbQ+yYRX52LUue7f3qHbf3tmnWI3qMk3
+         50zKCrKTGPvffYyMSFm8ItovRh6yIiv02MzHy44bkEZTzOkabf7yV/4GJBjesFpiphit
+         YUmtA6g4bQWOXsPnS92IQxmm/Jh/khCo+VW42hP/ukHwynjgBt68Ia/QzpzARBkvqNlV
+         1w8v3Xif5tL7RsvftbuC+CK8vHIrKbmVik6kg27mPDer7wZTccn0trMXO4ylAX1yJSk5
+         Zu1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786698472; x=1787303272;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ObvL5SEFm+tixGTtsLigZChvOKxNiOQI4cdDw1tb9Go=;
+        b=XvttSPEmQt5KmkgN0m3Y9BLjOlLz/aFz4dWXx8b5JduQQX1roTAmxyCUlu5PRzIrof
+         epsYqxdQ8SLC+E+vr8Eyjo6YlGRygoDzYWBWyHYcuxacU8jORR00aBzePLKwsHb3Lpbj
+         XMUpQvo4rIcPU/dI5eqSy75xVxsEXCyP1UHMewy6cd6CLsPVRZB5By3ro9OIU9fLv7i/
+         rip/SlnovbvPQkmUu8787+M7YWC2g45hS/YBeosxWsmYmFgk6XzoNd2qSvOlLx18Pc8k
+         GQS4O2T/hK9HBLSyesuhOAYV5VjVkLFBkEROYXi8cH3iuOcR6Uzkmzd9KutfYaOEQ2O0
+         tfaw==
+X-Forwarded-Encrypted: i=1; AHgh+RqszR2324V2cUP5r021A1Y8t/70chkQ9A77HIUir0msjsPa6XyftQgwvT9pU1OH5aX7E25aY50qHYc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2xLreJmqvaGbygcaHi3ulNwZFFMKOXA1b19SiiGnXvlrbZ8ge
+	os8lqYar8487MM5dvPNW2HFJ3p56LLVk9L45DgNp8qd+VncVkzeHKcU=
+X-Gm-Gg: AR+sD11Fy+LTeO6Vc8vji6IMIU0yQ4/lRTzDn8xT1JqULTKg1ToHftbPenZIIKq+fPo
+	L8XGwYMdU7emlJqYSN1a0gKmKu7bDiMoCKNPKaNyLyP7xemH4l/uZYCGS3RlEs9zHZMzROSHOrF
+	We0t2lY1CJi8l4REfcokugVkkUPlQy5dkOdjSLwFjzA3AWHw1vh385Up2duHqpZVNCOUPdZblU2
+	gnIVHtfmCF6adADhaZ7w0X/RMELJ0B7L8kE9iVSGHPY4kOhBbCpjQz/MlVMsoV15xcb87rlKdl6
+	I5dIj0xJGu91APb4Cbz6mYWq9x/GJPDllqMsmeJdStMHYNozXRalyUa8CGPPE7hLJtZj9pS2MBX
+	FU9HaOu/dZoNhvEvFhEBFAHqale5vj5+B6HCuWMLNLIFp0ivvo8KsmFkGfSJxEl+3EwrFn2Hr4y
+	sVCHpgxYqjkVZpfWKpUuOTZfhU8WL3aKnZLps0cGTGVRR2zNrp0uBqb9CwxNqP8Jd7m9G+9FWlV
+	bbjuQV1KQbMG4IhLgY=
+X-Received: by 2002:a05:690c:a6cc:b0:80b:9f4e:a70 with SMTP id 00721157ae682-837124de3b4mr13978267b3.26.1786698472177;
+        Fri, 14 Aug 2026 02:07:52 -0700 (PDT)
+Received: from daffodil.tailc06997.ts.net ([163.152.162.75])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-836bb3ecef9sm10801267b3.4.2026.08.14.02.07.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Aug 2026 02:07:51 -0700 (PDT)
+From: Arka Mondal <arkamondalofficial@gmail.com>
+To: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	andy@kernel.org,
+	venkat.prashanth2498@gmail.com,
+	rohitsarkar5398@gmail.com,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arka Mondal <arkamondalofficial@gmail.com>
+Subject: [PATCH 1/3] iio: imu: adis16480: fix unprotected debugfs reads
+Date: Fri, 14 Aug 2026 18:07:26 +0900
+Message-ID: <20260814090728.965922-1-arkamondalofficial@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DKOJJJSXCZ8Y.KCR5NRYX7PVL@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Aug 14, 2026 at 10:58:10AM +0200, Javier Carrasco wrote:
-> On Fri Aug 14, 2026 at 9:49 AM CEST, Andy Shevchenko wrote:
-> > On Thu, Aug 13, 2026 at 11:46:32AM +0200, Javier Carrasco wrote:
-> >> Hello Andy, thank you again for your thorough review.
-> >> On Thu Aug 13, 2026 at 8:59 AM CEST, Andy Shevchenko wrote:
-> >> > On Wed, Aug 12, 2026 at 10:27:41PM +0200, Javier Carrasco wrote:
+The firmware_revision and firmware_date file operations are open coded
+and never call debugfs_file_get(), which debugfs_create_file_unsafe()
+requires. debugfs_remove_recursive() therefore does not wait for a read
+in progress, and unbind frees the iio_dev underneath it.
 
-...
+Use debugfs_create_file() instead.
 
-> >> >> +	data->regmap = devm_regmap_init_i2c(i2c, &veml6031x00_regmap_config);
-> >> >> +	if (IS_ERR(data->regmap))
-> >> >> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
-> >> >> +				     "Failed to set regmap\n");
-> >> >
-> >> > Is debugfs access already enabled for regmap after this call? Perhaps you want
-> >> > mutex to be initialised before that?
-> >>
-> >> Could you please explain what you are trying to avoid? Even if the
-> >> debugfs is already enabled for regmap at this point, what is the
-> >> possible race condition?
-> >
-> > That's my question to you. If you think there is none, then we are all good.
-> > Basically the Q is if that mutex (that is initialised later in the probe) is
-> > required for the device IO which might be possible immediately when regmap
-> > is registered.
-> >
-> >> The IIO device is still not registered at this
-> >> point, and the registers are set to their right values in _hw_init()
-> >> after the mutexes were initialized. Moving the mutex initialization a
-> >> couple of lines towards the top is not an issue, but I would like to
-> >> understand the reasoning behind.
-> >
-> > User may read (and depending on the driver case writing) the register map.
-> > Would it be a problem?
-> 
-> That is not a problem, as no assumptions about the original values are
-> made.
+Fixes: 9bf94f836e32 ("imu:adis16480: fix debugfs_simple_attr.cocci warnings")
+Signed-off-by: Arka Mondal <arkamondalofficial@gmail.com>
+---
+Compile tested only; no relevant hardware available.
 
-It's not about the values, it's about the *access* HW during that time when
-there is no mutex available yet.
+ drivers/iio/imu/adis16480.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> >> >> +	ret = devm_mutex_init(dev, &data->scale_lock);
-> >> >> +	if (ret)
-> >> >> +		return ret;
-
-...
-
-> >> >> +err_pm_put:
-> >> >> +	pm_runtime_put_noidle(dev);
-> >> >
-> >> > Hmm... This is usually a red flag to see a goto after devm_*() calls.
-> >>
-> >> Could you please elaborate on this? I am aware of the dangers of a goto
-> >> after the cleanup attribute, but devm_*() calls work on a different
-> >> scope, not local to the function. What could go wrong? This goto is just
-> >> a way not to repeat pm_runtime_put_noidle(); return ret; and I am not
-> >> strongly against repeating these two lines wherever there is a goto, but
-> >> I am not sure what we are avoiding in this case.
-> >
-> > No, the goto here may (or may not) lead to the wrong ordering on the cleanup
-> > and/or error paths. It's usually recommended to avoid such a style even if
-> > it works without races in that case. That's why when switching to managed
-> > resources it's highly recommended to wrap everything to be managed (in case
-> > there is no native APIs available) and avoid any flow disruption (goto:s).
-> 
-> In this case I can't see any issue with the goto. It only leads to a
-> call to pm_runtime_put_noidle(), and after returning 'ret', the
-> device-managed resources are released. If the goto is removed and a
-> call to pm_runtime_put_noidle() is carried out in every error path, the
-> result is exactly the same as there are no operations within the probe
-> execution path that affect their behavior.
-
-Right, but again "It's usually recommended to avoid such a style...".
-
-> I can imagine that it might be problematic in some special cases, but
-> the use of devm_*() and goto jumps within a function is allowed and used
-> in the official documentation [1], and in several upstream drivers in IIO
-> [2][3] and other subsystems [4]. Of course, all those examples might be bad
-> examples, but I could not find any reference discouraging the use of
-> goto with devm_*().
-
-> [1] https://docs.kernel.org/driver-api/usb/writing_musb_glue_layer.html
-
-It's not kernel-wide documentation. At a brief glance it has more issues than
-just that one. I would not recommend to refer and use that piece of the
-documentation without fixing it first.
-
-> [2] drivers/iio/accel/kxcjk-1013.c
-> [3] drivers/iio/pressure/hid-sensor-press.c
-> [4] drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index e009f3824768..254b7ff25b66 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -309,9 +309,9 @@ static void adis16480_debugfs_init(struct iio_dev *indio_dev)
+ 	if (!IS_ENABLED(CONFIG_DEBUG_FS))
+ 		return;
+ 
+-	debugfs_create_file_unsafe("firmware_revision", 0400,
++	debugfs_create_file("firmware_revision", 0400,
+ 		d, adis16480, &adis16480_firmware_revision_fops);
+-	debugfs_create_file_unsafe("firmware_date", 0400,
++	debugfs_create_file("firmware_date", 0400,
+ 		d, adis16480, &adis16480_firmware_date_fops);
+ 	debugfs_create_file_unsafe("serial_number", 0400,
+ 		d, adis16480, &adis16480_serial_number_fops);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.55.0
 
