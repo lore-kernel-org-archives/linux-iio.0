@@ -1,93 +1,98 @@
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A76427FB37
-	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 01:38:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7B9827F4F5
+	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 02:47:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.202.193.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786671494; cv=none; b=Vnwp7M5zxefWjnsffuGs14PoFxXiaEoEYUiCWjZ+nNNz3EjUPb0fRibexZJdb+6J6uzMNUrbKo1QYjEgJ1ov0r9D4P6KOCI323ksFm/bq4KmmoJAzH1Aeuwifmq949e3xlgVFmnxHsbvOnGPMFK0dk6GhADeoISWf+0wYdB3nxY=
+	t=1786675630; cv=none; b=BCanBQx6uDJHkiArOlYgeirLmG8Psa6wXzhRA5VDzvaMspCAOCs3T69unJhJm5LKo51KcyKgMJs6Uv0jvv4C7Y1Gs4tQnnlETDmv/kiGBDE788SIkzOFqpL7fNqGk04dM2Dt47PElUgfaJfDJNrkzgBsAhPBHE3tL5di8GeIMCo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786671494; c=relaxed/simple;
-	bh=wH2BVX8rQi+9ZChgxotsL9mWq6mp/O3ySdn0wNdJCUc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F+QD4z+DM6Fd8IWfTJQwT4CEUnqglu42lRg9DVzxAfQux9Frck/7epk5h3Mfs2ayi3GpIYfdSLsnXbnZ10V5o2tid/tNMnMGpX2KDJXORLTePidOBVRc47ty3r38T1rZgi8N5M0RmsSRi5Ks0vm0M/f5eAzEzMmQdGGh8K583J0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RY5yG7wA; arc=none smtp.client-ip=209.85.215.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786675630; c=relaxed/simple;
+	bh=WzbkOIrjUiuD/UW5K+UIEXziUCx65tSEGGqVuBtVTpY=;
+	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:In-Reply-To:
+	 Subject:From:References; b=bHTvd5V0/vInO9LdUkIHgjhPLkTNF+QeCdRb2nyPCJkABn4khGVpde+4tC0UCF9fGkkKJs7/g00FqSaD6/yDicRtEJY7QdJbxfqlKgqqYD+GQC5Q6Yr/4KqMoEhePMePeBQjjHovUkOoO2cAMmQ+HbM5Vs7t2LqQi3lJhuhjVgo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc; spf=pass smtp.mailfrom=maxwelld.cc; dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b=p3M+XbWv; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=QsEU9dSI; arc=none smtp.client-ip=34.202.193.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=maxwelld.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RY5yG7wA"
-Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cbedf433a99so434065a12.2
-        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 18:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786671493; x=1787276293; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=wH2BVX8rQi+9ZChgxotsL9mWq6mp/O3ySdn0wNdJCUc=;
-        b=RY5yG7wArEk7CuQX56iKBlWjiQs0LN5uzSvNel2XPb+ujlDn8yB9AeEtWuoV6kzxAi
-         PHefbkJoczwMUAKlxMtkr3haogIH3r8vNbfy6K6ao5quZa4azTm/TnTEIOUdfH1Rr8L4
-         V62ZLW2zq4Cr2BCrxIWJd1jsoiWzNx3K3ik2MFNmXqpATqAE9Q6Ttuuv+Xdta6lvBDEt
-         y2TgA73jLSbVlvFG3Zpgzal7rlIBJcHnMQxkkw+jLLuDP/duP4rP/38DOjYT7TdbvOW0
-         EmhxcIlHftDfrpmOTGUHlOag8Bnl39RB92yCtYgiC6iMu64G2WLmgk6chyoKCIDs7TeF
-         UOfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786671493; x=1787276293;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wH2BVX8rQi+9ZChgxotsL9mWq6mp/O3ySdn0wNdJCUc=;
-        b=fUSha6+9n7an6o0gJqpZCxNYYTp9C+N9VrHlvJLf+1mL7/C7HCt7+3ELjUDUj+2UJL
-         k0VrCb3lewK6qLqOxF96LCxniKeKBygCW1gMkXCsKY8YseAtlCPEz37XBhbgajepsFx9
-         g9vkHu3XDdLF1za8xrjxU3t3jKZW/8x+kgCfmU+aEKDKsxGxVXgh3DchpowKGRHlhdal
-         m79BbYkMk7FPdnvjqG/WTZ3hhoZ53xX/25H7A9IPBTqEpYclHvBXI1GqYKRc+zPhiakA
-         Iir3Q/FWAroV2DS1qelLyml3KXmboxL/DvqsUaUlm07QbotrEazy3UgSwQl2N1lo0wWZ
-         pWMA==
-X-Forwarded-Encrypted: i=1; AHgh+RrbT6e04Cjqf4wWSf/B6Z1L52iLAqozxouUU9rvxIbrmS6IAfzFwulXh6wn8lORksN8oTy5ao624SE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxj9l53giUH+Mtmp2bF1z38RErnl4iMu8oLcYnwjyo+Bvg6Umpt
-	fxNfFlkZvLLJlF2MxLguiArH1qytkp5EQAq13Z4j0lL96xIESZBMU7AA
-X-Gm-Gg: AR+sD11O4lSPsEpEJGSTl3NhmTFPOCke34paSU8e2QkTrD+3ZAnkhFrRjJnNXRY247n
-	KRMaJysC8IuI6hUG5QVdnfYpXy6Oa8Pm8bBV9iAZU0A9q7jsxK9sE50ehjusKUVNyLrKb9OjeXi
-	4pC0EJDwQqa8CeDTt4F78pRRwd57sG475CAXTZh2VgPl8sVdisE0TaTRhu1wVAz+mya/MoNaA6s
-	s3Vxofj6XS9r5L8Fl32wvvISUB2gf2pxHuJHgASd4FJKWOuW1mMYFt60Qbpz00X4M6OdcPYvjd/
-	l5+lRiCW4FjeUfxeYVXzalgzb06V2IeCXZ10d2NbiyRf6Hz01LN86A39Hp7ijZv6BIF9ufoiyKi
-	/5edDSR6vMuJKh+05Tze8N8wswSRvyJRv9RObBm9nr4qgSeAlQFuVrrW+qiSA7ZDazQmZoQZ++Q
-	hEAJ0by+m0xdXSHPShSHShUaIfwNBtLI3H9rSjiXmXyM01DekMMUW5ofWwrJgjoJzFpHN+gbmWp
-	0hnTZNCHEz75tL4B/F5mFWIW3baTeSNvw==
-X-Received: by 2002:a05:6a20:e613:b0:3cc:55ed:dbfa with SMTP id adf61e73a8af0-3cc71cd3ee1mr2390054637.27.1786671492726;
-        Thu, 13 Aug 2026 18:38:12 -0700 (PDT)
-Received: from localhost (115-70-157-242.ip4.superloop.au. [115.70.157.242])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-141387accdbsm4104230c88.3.2026.08.13.18.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2026 18:38:12 -0700 (PDT)
-Date: Fri, 14 Aug 2026 11:37:59 +1000
-From: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Tsz Shan Chan <tchan@jacques.com.au>
-Subject: Re: [PATCH 2/2] iio: light: vcnl4000: add shared IRQ support
-Message-ID: <an5sgMDgj0ceLfmc@fedora-1>
-References: <anrwMci5d2VW56-X@ashevche-desk.local>
- <20260812044941.6f28cfb7@jic23-huawei>
- <an0jTpda_06HUZcw@fedora-1>
- <an2Aq-wKsIZPvJx_@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b="p3M+XbWv";
+	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="QsEU9dSI"
+Authentication-Results: purelymail.com; auth=pass
+DKIM-Signature: a=rsa-sha256; b=p3M+XbWv5+rGRDAn6S0t7cc6aizW5uAA9Pw6Lgs7To66C+GvmrdTw6An2usZuq/7i3sWgoifcydQ4qfyfWMmO0f97DrPIu8C7xdiKJTnWq4hRZiYUb30fcc54mLMzp4sShrispZFmXFBIgpWM0MYpfUAtygLu0SmYkV8l2bkCZoJAN8Dr0mMwenY8hZjhiJCxl8nSKaS5S8Mn5q+59PhI2uvDv7UGCMwVvabloe/K63NMueaqsyxwITC9++GjhBeMQrIoZtpflwAX0BkE3Z1/yxd86VOMwB4fiag8OdH5W/hnU1ZuVW2n/Jg9traR3HXSQ/eCP3tZF7pV2Cxpl1pYA==; s=purelymail3; d=maxwelld.cc; v=1; bh=WzbkOIrjUiuD/UW5K+UIEXziUCx65tSEGGqVuBtVTpY=; h=Received:Date:To:Subject:From;
+DKIM-Signature: a=rsa-sha256; b=QsEU9dSIlhxlCPB5GwObeTFi+nbCRR7NgHjOHJbZP4HCf1J/EumlkWBFTqGzZWL1sBHMsfdRGRCsA2yLAzq2/qUYn4yEddPH5x59pW2VJlnl9DUO4jwxWV623GK7KsIpGg8RPd7b4zD59tIvwNQCazWDgMHFF+4sB+Pz0D97YkqKi93hEH3Ud8WG21m1v0tFX6dI4zoESgyCxXe2pnYi4bFtliF9ADHJVsBge9ZUDlr9Us3eEDGR+XcCBJXiEKcSJWqMTrURxADTtbjLsgV7ZW8jW2m57aFxAFVzz27rovnAkuhhssVnImzh9FzO3xgKUxyhrett5kiv7pvXK29fKw==; s=purelymail3; d=purelymail.com; v=1; bh=WzbkOIrjUiuD/UW5K+UIEXziUCx65tSEGGqVuBtVTpY=; h=Feedback-ID:Received:Date:To:Subject:From;
+Feedback-ID: 1013395:40550:null:purelymail
+X-Pm-Original-To: linux-iio@vger.kernel.org
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -885924284;
+          (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
+          Fri, 14 Aug 2026 02:47:01 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <an2Aq-wKsIZPvJx_@ashevche-desk.local>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Thu, 13 Aug 2026 21:47:00 -0500
+Message-Id: <DKOBND0GKI21.2843OFKP0KR40@maxwelld.cc>
+To: "Andy Shevchenko" <andy.shevchenko@gmail.com>, "Maxwell Doose"
+ <maxwell@maxwelld.cc>
+Cc: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>, "Jonathan
+ Cameron" <jic23@kernel.org>, "Sakari Ailus" <sakari.ailus@linux.intel.com>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Marius
+ Cristea" <marius.cristea@microchip.com>, "David Lechner"
+ <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, "Tomasz Duszynski"
+ <tduszyns@gmail.com>, "Jean-Baptiste Maneyrol"
+ <jean-baptiste.maneyrol@tdk.com>
+In-Reply-To: <CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/4] iio: light: Unshadow error codes in ->store()
+From: "Maxwell Doose" <maxwell@maxwelld.cc>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260813071912.2465208-1-andriy.shevchenko@linux.intel.com>
+ <20260813071912.2465208-2-andriy.shevchenko@linux.intel.com>
+ <DKO09O8T0FGE.2WMX1VNQN5C7J@maxwelld.cc>
+ <CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
 
-On Thu, Aug 13, 2026 at 11:30:35AM +0300, Andy Shevchenko wrote:
-> I see, so why do we even bother with the _FALLING then? Make it trigger LOW
-> when it's not defined and always enable sharing.
-Makes sense. I'll clean up the checks and pass IRQF_TRIGGER_LOW directly.
+On Thu Aug 13, 2026 at 3:47 PM CDT
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> You can't avoid possible regressions for the cases when firmware neglected to
-> set the trigger type completely.
-Thanks, understood. I'll update it and send v2.
+> On Thu, Aug 13, 2026 at 8:52=E2=80=AFPM Maxwell Doose <maxwell@maxwelld.c=
+c> wrote:
+>> On Thu Aug 13, 2026 at 2:16 AM CDT
+>> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>
+> ...
+>
+>> > -#include <linux/kernel.h>
+>> >  #include <linux/i2c.h>
+>> >  #include <linux/errno.h>
+>> >  #include <linux/delay.h>
+>> > +#include <linux/kernel.h>
+>>
+>> Stray change? The ordering's messed up (seems to be case for many of
+>> these drivers) so perhaps we can send a patch to fix the ordering.
+>
+> Not really. I understand what you mean, but I took a step just for the
+> k*.h letter to group them. It's slightly easier to follow with
+
+Fair enough :)
+
+> kernel.h being moved. Note, that kernel.h shouldn't be there at all,
+> but that is definitely out of scope here.
+
+Makes sense. I wonder if it may be worth doing a patch series removing
+all of the kernel.h inclusions in IIO all at once (or maybe some drivers
+have a legitimate use for it, but that seems highly unlikely).
+
+thanks,
+max
+
+>
+>> > +#include <linux/kstrtox.h>
+>> >  #include <linux/string.h>
+>> >  #include <linux/mutex.h>
+>> >  #include <linux/unistd.h>
+>
+> Thanks for the review!
+
