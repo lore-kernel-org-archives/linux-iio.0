@@ -1,126 +1,223 @@
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3231449B23
-	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 10:19:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08552836F;
+	Fri, 14 Aug 2026 12:01:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786702758; cv=none; b=lRm2C5Y0A6akJUYmhBsg1z/FsTU30TC8rx9XH4anmXPT7XxcljROh9Ibfj0fUUarta+7ZFZMA6ymmA7f1v5mnNhhkr4cXOrFrRPJA/ytcGRPTK8ZoilHAYfdXM0j2cMMO6G1C25nl2dvplXyr9qCPhHF6Cv1R8u7X/cGvlpdBrs=
+	t=1786708906; cv=none; b=bMRmgaws/4koUYbFW8kkhnoP8EWIQcJHU6UjXHE3uwDF+3XCz5oPJuZagZ5IhByDyKHD/F1A3ef4Dc7A0JOZZlypXSRoYRIRBfPj19xG2GVOSUGPLq2OyjiWNUCV+fm0pEMwpgPYg/xINJTGhMbor64v/HoVyudECh2mGfSAFaQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786702758; c=relaxed/simple;
-	bh=gr2vkX2WytW2dclIDo6x+kCceMO3WjL7tTKzxEI7Zlg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gpfTjTnBcSg08XCiHlQCyIxEA+ac4tdia6nD19uFkzrkrPvbT/gykeZQtJFFcZVEiFMsPrQ+y9MMGxD6qAE+i1600Hh/SNcj8Tx8y/Yyvif94/ZG5qZcZdaCs2abxwb2LCBJNk3MbLYWnhXVrN1y4qnjwIqvJqD0QBP1FtDdwkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cm0TXp80; arc=none smtp.client-ip=209.85.216.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786708906; c=relaxed/simple;
+	bh=LsZ1ffheV4O7q3moUGa5YcGjkztBypSGSErLt2fBA/o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Vke6cALm4BfKni9n3jKXQQw2KKuMAb9E5WQL9RZCQea/B4XPdD0aYcDMXMziWxSiWiqqkFgP6JS8gFPx7WhxJjBDVW+DMQZpMcEDH3bRenZXjWRnD1gLqzf27Wn2yyI/FGuDKP5ZfwuYASy13BbgZe2ym+poAySeVY36CnacP6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I0bbuOed; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cm0TXp80"
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-381c51fde6bso944565a91.2
-        for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 03:19:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786702748; x=1787307548; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=8X2DzoqFH7matdonUd7YA/b7NIXmlkIfIulsDTFoluM=;
-        b=Cm0TXp80SMWVMbEfUieXOQHZcsB05uxzppfaz9nfYqB8RO6tfE8vxcw1/sRtjId2mS
-         mXdv3FZQsm6gJ6kVQ4rAaROOkt+dNL4Ng4mv28+VlKnr0cZy36t2bEGRykXSDE/9509e
-         YLy4AwZdatQjvsUBKZBrB8BkXq7HzcwcGSCmaUXz0HTqfJOhBTs9mHs5QOxNibIT13kq
-         EfDSJinBgPqc+nPdg9ivxD4tw+tpZJ0hOFpDNo7gn8ZDLmpi4pnrZsZ9jQu+sU01ofHp
-         NPUdM+B7DFOt3Xm+tPMuy3hRXV5tTIAZwo9aH2ObSxXqw6Ybs/nW+AVU2yP5g3SnBFSf
-         zubA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786702748; x=1787307548;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8X2DzoqFH7matdonUd7YA/b7NIXmlkIfIulsDTFoluM=;
-        b=OOOFUH2EwZkmGuFOVbdzhXp4zDAeF1SUkY3ZW8zHEWDIO12b7+CdxtlCHYmr4+h/j/
-         kd90cyufGTrFPGAt26UGvd43XarDZDb7FJz6dSGOLm28LUN7WmYe9AqRWS39Ksd/QHt5
-         SHKifNCdHJolfn0NebWmhmUub6NWoMlLLrkyisNylBzrS9LXDg0mMWKQqu3Bn4hegGtO
-         9uozoSasFZ+Dhh59OjaH91BX0Tu6a/y6Mi+9L2TPV+Hf8uWvVqpwMFeeaswF3RcGeg11
-         u8PhGTpz4zu8qjzBBNqDx1O1ugR8kEGpSHV7/GqsCxKyEYn0vZuBKxnA3PIWLiMsoARo
-         ClJA==
-X-Forwarded-Encrypted: i=1; AHgh+RrPnFMB0XUEtGTnZKWvcKN+9dD9re8P3+MRnXG8iAmIB+lFvWM585eD53FSOQeniRk/2YFZGf570QY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YymlzGexMnW4yBhrm5vvuT4ZuNJqKUnvOzxEAithSwyMQafUqqY
-	sLreEw5Ej7kEIrHqPLiOE55N1jryCn4NkUZqekzvvFyJBVoGzXqWHYEh
-X-Gm-Gg: AR+sD10s2gxiouQNWggMGRLwxJUF7ysEifp+Z3Pf/TFWuj+9UmCcDmdv+CPLof2iVrd
-	+mg9I2jnbOpSf5EgvBxuSth+Nk2wUy4Jatso1lDcwW8Tf9Dk8o+WhD1gpMRQpfjTx+lMCAa3EGz
-	6f+H3/90cn6EQyNpJjnNpVcpmsZiv7hMVIDO6UF+pbls102as2PKcQE6lTVg+2VgE36DHj09oLA
-	gycCracmnSWvNYMgydCr7FxBLo373M3EHR+izrrseVk1Asb7NzVnb8vF7qhXYfSFW03RdqgOwoS
-	7lXvPCbZf29bABXdprBgr9a/GGMpJno+DIpIScKTXYal/rlGNuKUCKS3TmPFh9eytN39/TyhXG3
-	WGZb8HtDZQR9Gft87ycYAR9mFOFol05Ib36QHRIda8ib5goIgxsSHq2QpCaJvn+iVLlluvQ/W6t
-	AIvKs/mWyTYHjZbIOy0tqQczvLuh78LpCk5GcNteT5TsunR07gZz7y885UYlYDyOW3mtUcdtt7c
-	5civ5aK
-X-Received: by 2002:a17:90b:1c01:b0:381:a766:efcc with SMTP id 98e67ed59e1d1-3933b8c67camr4164703a91.14.1786702747852;
-        Fri, 14 Aug 2026 03:19:07 -0700 (PDT)
-Received: from yash-Bravo-15-B5DD.. ([2409:40d4:124c:2e49:6997:3d3f:909e:c279])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-394e920ba18sm2074218a91.0.2026.08.14.03.19.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2026 03:19:07 -0700 (PDT)
-From: Yash Suthar <yashsuthar983@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	yashsuthar983@gmail.com,
-	grondon@gmail.com,
-	linusw@kernel.org,
-	hexlabsecurity@proton.me,
-	sakari.ailus@linux.intel.com,
-	srinivas.pandruvada@linux.intel.com,
-	linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I0bbuOed"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786708903; x=1818244903;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LsZ1ffheV4O7q3moUGa5YcGjkztBypSGSErLt2fBA/o=;
+  b=I0bbuOed4Ec1hqIlylrRvpXxMfN6hsNh59rd0RwONRhTxyHoBQ9f00UT
+   w0QfaWIHIfClwirPyicYb6zIud9jLupFpm/KNocyq7p8yeCzNd4RD8h55
+   A4/2DWJIMPz19VegMlheOSGiCoQ91Nyack0ONCgnisHMjp5/xwo3hsthA
+   CyPtfL5HBqUPkXdukCqbnD1UtUbm8269F4GV32PbNCs1iKSBlsG07VH41
+   abuA0u+qPd3qd+QMHb/B9E1bDmDwZZaQcDrQyuKw25JLMtkmThKHKl3f7
+   LL9VxosIaFHHWDXQxfbx2iNwIwm3itaJ2lhRC9oS3IWUxHtpwjA5vn1Wk
+   w==;
+X-CSE-ConnectionGUID: aAuQEf/RRHeXL7cdC1DjOg==
+X-CSE-MsgGUID: oScaSBjBSwi8DUBNXAPWRg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11874"; a="97878071"
+X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
+   d="scan'208";a="97878071"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 05:01:42 -0700
+X-CSE-ConnectionGUID: BLDSw9ZCQYqdx0rvZmGwlw==
+X-CSE-MsgGUID: WIyz2X6MTlaYrF2XCvQQBg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,222,1779174000"; 
+   d="scan'208";a="289003358"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.134])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 05:01:39 -0700
+Date: Fri, 14 Aug 2026 15:01:36 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Andrei Stancovici <andrei.stancovici@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Beguin <liambeguin@gmail.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] iio: accel: bmc150: use iio_push_to_buffers_with_ts()
-Date: Fri, 14 Aug 2026 15:48:44 +0530
-Message-ID: <20260814101845.301769-4-yashsuthar983@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260814101845.301769-1-yashsuthar983@gmail.com>
-References: <20260814101845.301769-1-yashsuthar983@gmail.com>
+Subject: Re: [PATCH v2 3/3] iio: adc: ltc2497: add 2x conversion speed mode
+Message-ID: <an8DoMHly_vwwnni@ashevche-desk.local>
+References: <20260813160139.70000-1-andrei.stancovici@analog.com>
+ <20260813160139.70000-4-andrei.stancovici@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260813160139.70000-4-andrei.stancovici@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Replace deprecated iio_push_to_buffers_with_timestamp() with
-iio_push_to_buffers_with_ts() to allow source size runtime checks.
+On Thu, Aug 13, 2026 at 07:01:37PM +0300, Andrei Stancovici wrote:
+> The LTC2499 supports a 2x output rate (SPD bit in the second
+> configuration byte).  In 2x mode the offset auto-calibration is
+> disabled, roughly doubling the conversion rate (~13.6Hz vs ~6.8Hz in
+> simultaneous 50/60Hz rejection) while leaving linearity and full-scale
+> errors unchanged (datasheet).  During a temperature measurement the part
+> always converts at 1x regardless of SPD.
+> 
+> Expose the rate through the standard sampling_frequency /
+> sampling_frequency_available ABI on the voltage channels only: SPD is
+> ignored for temperature conversions, so the temperature channel
+> deliberately carries no SAMP_FREQ attribute.  A new has_speed_mode
+> capability flag gates the feature (LTC2499); the two-byte command path
+> is now taken for has_temp || has_speed_mode, since both features need the
+> second config byte.
+> 
+> The conversion-time wait becomes mode dependent: 150ms at 1x, 76ms at 2x
+> (datasheet t_CONV max, simultaneous rejection, rounded up).  The wait is
+> keyed on the conversion currently in flight, whose duration is fixed by
+> the mode that was active when it started - not by the newly selected
+> mode.  This matters on a 1x->2x switch: a 1x conversion may still be
+> running when the first 2x read arrives, and reprogramming the device
+> before it finishes would be NACKed with -EIO.  Timing is centralized in
+> ltc2497core_conv_time_ms() so a future FA/FB rejection-mode selection
+> can extend it into a [rejection][speed] lookup without touching callers.
+> 
+> LTC2496/LTC2497 (no speed mode) keep the single-byte path and the
+> unchanged 150ms wait.
+> 
+> Validated on a live LTC2499: 20 reads take ~3.1s at 1x and ~1.6s at 2x
+> (~0.5x, no -EIO), voltage and temperature readings stay sane in both
+> modes, and the temperature/voltage interleave (sticky-PTAT) regression
+> still passes at 1x and 2x.
 
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
----
- drivers/iio/accel/bmc150-accel-core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+...
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 30d91d417ac4..476c020c41f0 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1009,8 +1009,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
- 			       &data->fifo_buff[i * 3 + bit],
- 			       sizeof(data->scan.channels[0]));
- 
--		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
--						   tstamp);
-+		iio_push_to_buffers_with_ts(indio_dev, &data->scan,
-+					    sizeof(data->scan), tstamp);
- 
- 		tstamp += sample_period;
- 	}
-@@ -1191,8 +1191,8 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
- 	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_REG_XOUT_L,
- 			       data->scan.channels, AXIS_MAX * 2);
- 	if (!ret)
--		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
--						   pf->timestamp);
-+		iio_push_to_buffers_with_ts(indio_dev, &data->scan,
-+					    sizeof(data->scan), pf->timestamp);
- 	mutex_unlock(&data->mutex);
- 
- 	iio_trigger_notify_done(indio_dev->trig);
+> -static int ltc2497core_wait_conv(struct ltc2497core_driverdata *ddata)
+> +static unsigned int ltc2497core_conv_time_ms(struct ltc2497core_driverdata *ddata,
+> +					     u8 address)
+
+Wondering if you use --histogram when preparing patches. If not, try it, it may give
+more human-readable diffs.
+
+...
+
+> +static int ltc2497core_write_raw(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int val, int val2, long mask)
+> +{
+> +	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
+> +	bool sped_2x;
+> +	unsigned int i;
+
+Reversed xmas tree ordering (longer lines first).
+
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		/* Match the (val, val2) pair against the advertised rates. */
+> +		for (i = 0; i < ARRAY_SIZE(ltc2497core_samp_freq_avail); i += 2) {
+> +			if (val == ltc2497core_samp_freq_avail[i] &&
+> +			    val2 == ltc2497core_samp_freq_avail[i + 1])
+> +				break;
+> +		}
+> +		if (i == ARRAY_SIZE(ltc2497core_samp_freq_avail))
+> +			return -EINVAL;
+> +
+> +		sped_2x = i / 2;
+> +
+> +		mutex_lock(&ddata->lock);
+> +		ddata->sped_2x = sped_2x;
+> +		/*
+> +		 * The new speed only takes effect once the second command byte
+> +		 * is reprogrammed, so force the next read to reprogram rather
+> +		 * than reuse the value already latched for this address.
+> +		 * LTC2497_CONFIG_DEFAULT is not a valid channel/temperature
+> +		 * address, so it is a safe re-arm sentinel (as used at probe).
+> +		 *
+> +		 * A conversion started under the old speed may still be in
+> +		 * flight; its own duration (conv_time_prev), not the new mode's,
+> +		 * still gates the next reprogram, so the timing state is left
+> +		 * untouched here.
+> +		 */
+> +		ddata->addr_prev = LTC2497_CONFIG_DEFAULT;
+> +		mutex_unlock(&ddata->lock);
+> +
+> +		return 0;
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+
+>  };
+
+...
+
+> +	/*
+> +	 * Parts with a speed mode expose in_voltage_sampling_frequency /
+> +	 * _available on the voltage channels only.  SPD is ignored during a
+
+Spell the node name in full, I can't really get if you meant
+in_voltage_available or something else.
+
+> +	 * temperature measurement, so the temperature channel deliberately
+> +	 * carries no SAMP_FREQ attribute.  Patch a private copy of the shared
+> +	 * channel array so parts without a speed mode stay untouched.
+> +	 */
+
+...
+
+>  	/*
+> -	 * Parts with the internal PTAT sensor (LTC2499) latch their converter
+> -	 * configuration via a second command byte and only re-evaluate it when
+> -	 * that byte has EN2 set; a single byte, or a second byte with EN2 = 0,
+> -	 * means "keep previous". A one-byte channel select therefore cannot pull
+> -	 * the device back out of temperature mode, so a voltage read after a
+> -	 * temperature read would keep returning the PTAT result. Always drive the
+> -	 * second byte with EN2 set on these parts: IM = 1 for a temperature read,
+> -	 * EN2 alone (IM = 0) to (re)select an external input. FA = FB = 0 keeps
+> -	 * the power-on simultaneous 50/60Hz rejection, whose worst-case
+> -	 * conversion time the driver's wait already covers.
+> +	 * Parts with a second config byte (LTC2499: internal PTAT sensor and/or
+> +	 * the 2x speed mode) latch their converter configuration from that byte
+> +	 * and only re-evaluate it when EN2 is set; a single byte, or a second
+> +	 * byte with EN2 = 0, means "keep previous". A one-byte channel select
+
+Please, be consistent with 1-space versus double-space at the start of a new
+sentences. See just above comment and compare.
+
+> +	 * therefore cannot pull the device back out of temperature mode, so a
+> +	 * voltage read after a temperature read would keep returning the PTAT
+> +	 * result. Always drive the second byte with EN2 set on these parts:
+> +	 *   - temperature read: IM = 1 (SPD is ignored by the part in
+> +	 *     temperature mode and is left 0 here);
+> +	 *   - voltage read: IM = 0 (external input), plus SPD when 2x is
+> +	 *     selected.
+> +	 * FA = FB = 0 keeps the power-on simultaneous 50/60Hz rejection, whose
+> +	 * worst-case conversion time the driver's wait already covers.
+>  	 *
+>  	 * The two bytes are assembled in the DMA-safe st->data buffer rather than
+>  	 * on the stack, so the pointer handed to i2c_master_send() stays valid on
+>  	 * adapters that DMA the transfer (e.g. with CONFIG_VMAP_STACK).
+>  	 */
+
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
