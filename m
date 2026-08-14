@@ -1,98 +1,117 @@
-Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7B9827F4F5
-	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 02:47:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.202.193.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8E823E25B
+	for <linux-iio@vger.kernel.org>; Fri, 14 Aug 2026 04:31:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786675630; cv=none; b=BCanBQx6uDJHkiArOlYgeirLmG8Psa6wXzhRA5VDzvaMspCAOCs3T69unJhJm5LKo51KcyKgMJs6Uv0jvv4C7Y1Gs4tQnnlETDmv/kiGBDE788SIkzOFqpL7fNqGk04dM2Dt47PElUgfaJfDJNrkzgBsAhPBHE3tL5di8GeIMCo=
+	t=1786681891; cv=none; b=SMiZ02G2t4cwWxoSgKeuq+Ie3qZENDZt4v8oZrJsbWaM9YeF9z9YRzp4JBoc/HhlFRp64XuvNnSSyFWuea9085xv2BIU4FdfkpRJ0AMZEbXbPql6CaHJsjPqVjN4ieUCSD1jt6jMorF45vPjZFoOKlA8U4zivnAoaUJWq/IpRV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786675630; c=relaxed/simple;
-	bh=WzbkOIrjUiuD/UW5K+UIEXziUCx65tSEGGqVuBtVTpY=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:In-Reply-To:
-	 Subject:From:References; b=bHTvd5V0/vInO9LdUkIHgjhPLkTNF+QeCdRb2nyPCJkABn4khGVpde+4tC0UCF9fGkkKJs7/g00FqSaD6/yDicRtEJY7QdJbxfqlKgqqYD+GQC5Q6Yr/4KqMoEhePMePeBQjjHovUkOoO2cAMmQ+HbM5Vs7t2LqQi3lJhuhjVgo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc; spf=pass smtp.mailfrom=maxwelld.cc; dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b=p3M+XbWv; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=QsEU9dSI; arc=none smtp.client-ip=34.202.193.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=maxwelld.cc
+	s=arc-20240116; t=1786681891; c=relaxed/simple;
+	bh=c3DRZX6A6ujbhHk0RR88rGvb7dnMUGViYYhXXdejg28=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=AYuh0lyJQ/nDfH0oC2zneSIAxRRf04HzgjOL9AwJrGVLc6bDuFpcCWEoumiRwAngL8TxuZtPSSPPo8t9W0OFyuA5I7bG3sopXjBLF8gVNke8D95agzDo0/DOC2tAGjwCZMYtB+yF8w5jpVx7e9HwrmyjzCid79vdvWj1DLOJKK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hy3W8JN5; arc=none smtp.client-ip=209.85.216.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b="p3M+XbWv";
-	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="QsEU9dSI"
-Authentication-Results: purelymail.com; auth=pass
-DKIM-Signature: a=rsa-sha256; b=p3M+XbWv5+rGRDAn6S0t7cc6aizW5uAA9Pw6Lgs7To66C+GvmrdTw6An2usZuq/7i3sWgoifcydQ4qfyfWMmO0f97DrPIu8C7xdiKJTnWq4hRZiYUb30fcc54mLMzp4sShrispZFmXFBIgpWM0MYpfUAtygLu0SmYkV8l2bkCZoJAN8Dr0mMwenY8hZjhiJCxl8nSKaS5S8Mn5q+59PhI2uvDv7UGCMwVvabloe/K63NMueaqsyxwITC9++GjhBeMQrIoZtpflwAX0BkE3Z1/yxd86VOMwB4fiag8OdH5W/hnU1ZuVW2n/Jg9traR3HXSQ/eCP3tZF7pV2Cxpl1pYA==; s=purelymail3; d=maxwelld.cc; v=1; bh=WzbkOIrjUiuD/UW5K+UIEXziUCx65tSEGGqVuBtVTpY=; h=Received:Date:To:Subject:From;
-DKIM-Signature: a=rsa-sha256; b=QsEU9dSIlhxlCPB5GwObeTFi+nbCRR7NgHjOHJbZP4HCf1J/EumlkWBFTqGzZWL1sBHMsfdRGRCsA2yLAzq2/qUYn4yEddPH5x59pW2VJlnl9DUO4jwxWV623GK7KsIpGg8RPd7b4zD59tIvwNQCazWDgMHFF+4sB+Pz0D97YkqKi93hEH3Ud8WG21m1v0tFX6dI4zoESgyCxXe2pnYi4bFtliF9ADHJVsBge9ZUDlr9Us3eEDGR+XcCBJXiEKcSJWqMTrURxADTtbjLsgV7ZW8jW2m57aFxAFVzz27rovnAkuhhssVnImzh9FzO3xgKUxyhrett5kiv7pvXK29fKw==; s=purelymail3; d=purelymail.com; v=1; bh=WzbkOIrjUiuD/UW5K+UIEXziUCx65tSEGGqVuBtVTpY=; h=Feedback-ID:Received:Date:To:Subject:From;
-Feedback-ID: 1013395:40550:null:purelymail
-X-Pm-Original-To: linux-iio@vger.kernel.org
-Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -885924284;
-          (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-          Fri, 14 Aug 2026 02:47:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hy3W8JN5"
+Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-38d489b6b71so622545a91.0
+        for <linux-iio@vger.kernel.org>; Thu, 13 Aug 2026 21:31:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786681890; x=1787286690; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=gUfcPE3MIPdF38dpS9oTzmQ7oAgUxQgvZuNHQtltU3I=;
+        b=hy3W8JN5uCX1K4f8I8JUSwGFV7vEA5E39OJc3j1+4UMNieMAzGPIIZerMcXM4IWAGV
+         hJlNesZIEDvD5J24+etliRGD0XKPD5Bjn3clRI1III6o3py6f4lMAyE3orTnXsmtSd/X
+         Hd6ufbFdG6qjV67fVM5m6GYZo243hBnZfYx6NilbiOZOeiBF2fm0kSwuoEUbu4WwUnpU
+         NP35KNOSfmbKlmAfEvz0YEV6G0MuB9S26oC9UBwFgGbKjrqntRozF5LZVusYLZggbHfv
+         cla3UIxd/0EXtqnvZ2E5ffttftMAYZzddz7TwJxx2REm8z+xhZPMqZo2hAuHKMIcbs/Q
+         WXjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786681890; x=1787286690;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=gUfcPE3MIPdF38dpS9oTzmQ7oAgUxQgvZuNHQtltU3I=;
+        b=NqFxhRLhEyrUKTQh+9fWioCgygU2cFCq8/z0HvXXQpUoai6IAOldhCxBpSjSN3B4bc
+         m0GlCXTlQW0O+LRxBTJm7ky/Ki6gpYRTdtxrsFsim3KLINE1AwsrlqgRNAeaGpHsoeEt
+         sdvhnbLV5xc6jCb34Qy8zP28xxm4MCiPYAXa8WddWXN9u4SdHyNZMpUKQh2mS1beQrDg
+         Pk6ZRjip5C8Oo0+xJ/eJltMs+TpTp1nyySmPaXblXsvDXWYmqzQDN08SjOeELvles42k
+         BAsSkbjHfwIKvGSFbqdhhz/ZxygKG++M11QU467WZmUqjoPybWbxXUDusfsTHnRwU5+z
+         cSdA==
+X-Gm-Message-State: AOJu0Ywww4fGkeDerVIlA84ZFQBbZL4pWS4wczHEDI7fGY1qA0mPt+8W
+	mtZmebCE2YHg9dPB/3VVSqK4Wai/MlnsgcWxB6IDpxb0mRWGoXkIsLaITmepjQ==
+X-Gm-Gg: AR+sD11TDDBkjEzaA8jdUp5McHkWz/JZj+8jCHHnTHNGK8EU7WtYct/3HXetbm1d49c
+	TyjHSNXCbtrguQyu8bAvjAKTVWnj6VZD5al4jaEFLVkVmHEWjTz6mA2pk0FCQol77ONL1+cHPaY
+	H2/RVRk7b/7+/rrTYrX8j62HBnGbsbmA9hUPwErDSbBcjp3iKqQkzyIe4IC/M8FY2BRsxUeEGeN
+	+2CnJyXD5p/4S3wv2/fUB32gt5B4FaSW2f1CjLk75CSTr+7aJxWaXl31+3CiO59ij7P0xuU+LBh
+	MyrN2kyfQeleP8fRAIq/Eu6JOPttSkD8zlSW7YpC9VZIer+428e1Jhw4Rhbskke8ErZr+T8ss2l
+	t2GzI7HXeJUWyKfVnhmSROkKGOysGgSWpJK/sS3tq++66aztG74qEFJ9HPaO218twwn9jHD1aOK
+	G3GEkSpksI4wU4LM50r4rapy6YYDXOJbqw8DmYZL+eqHW2FTwRk0iV9lXv25nELdeFLdS6eTZ9I
+	zV2QkizhMV+InzpGOtKKbTH8q/ftTbQzFAdoX8=
+X-Received: by 2002:a17:90b:3b8c:b0:37d:ee77:78ac with SMTP id 98e67ed59e1d1-3933bd0c331mr2508028a91.19.1786681889624;
+        Thu, 13 Aug 2026 21:31:29 -0700 (PDT)
+Received: from [192.168.20.42] (115-70-157-242.ip4.superloop.au. [115.70.157.242])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1413887ee65sm4238288c88.10.2026.08.13.21.31.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Aug 2026 21:31:29 -0700 (PDT)
+From: Tsz Shan Chan <tsz.chan.dev@gmail.com>
+X-Google-Original-From: Tsz Shan Chan <tchan@jacques.com.au>
+Subject: [PATCH v2 0/2] iio: light: vcnl4000: support shared IRQs
+Date: Fri, 14 Aug 2026 14:30:41 +1000
+Message-Id: <20260814-vcnl4000-v2-0-9b771290cc1d@jacques.com.au>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 13 Aug 2026 21:47:00 -0500
-Message-Id: <DKOBND0GKI21.2843OFKP0KR40@maxwelld.cc>
-To: "Andy Shevchenko" <andy.shevchenko@gmail.com>, "Maxwell Doose"
- <maxwell@maxwelld.cc>
-Cc: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>, "Jonathan
- Cameron" <jic23@kernel.org>, "Sakari Ailus" <sakari.ailus@linux.intel.com>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Marius
- Cristea" <marius.cristea@microchip.com>, "David Lechner"
- <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Tomasz Duszynski"
- <tduszyns@gmail.com>, "Jean-Baptiste Maneyrol"
- <jean-baptiste.maneyrol@tdk.com>
-In-Reply-To: <CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/4] iio: light: Unshadow error codes in ->store()
-From: "Maxwell Doose" <maxwell@maxwelld.cc>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260813071912.2465208-1-andriy.shevchenko@linux.intel.com>
- <20260813071912.2465208-2-andriy.shevchenko@linux.intel.com>
- <DKO09O8T0FGE.2WMX1VNQN5C7J@maxwelld.cc>
- <CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/0XMQQ7CIBCF4as0s5ZmIBasK+9hukAcLEahgiWah
+ ruLTYzL/+XlWyBRdJRg3ywQKbvkgq8hNg2YUfsLMXeuDQKFxB1Hlo2/bRGRoSDeW4WkUEK9T5G
+ se63Ucag9uvQM8b3KmX/XH8L/SOYMWVcNe5Kdkr04XLV5zJRaE+6tnmEopXwAWRbVq6UAAAA=
+X-Change-ID: 20260810-vcnl4000-02e19f70e706
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Tsz Shan Chan <tchan@jacques.com.au>
+X-Mailer: b4 0.14.3
 
-On Thu Aug 13, 2026 at 3:47 PM CDT
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+This series contains two changes for the vcnl4000 driver.
 
-> On Thu, Aug 13, 2026 at 8:52=E2=80=AFPM Maxwell Doose <maxwell@maxwelld.c=
-c> wrote:
->> On Thu Aug 13, 2026 at 2:16 AM CDT
->> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> ...
->
->> > -#include <linux/kernel.h>
->> >  #include <linux/i2c.h>
->> >  #include <linux/errno.h>
->> >  #include <linux/delay.h>
->> > +#include <linux/kernel.h>
->>
->> Stray change? The ordering's messed up (seems to be case for many of
->> these drivers) so perhaps we can send a patch to fix the ordering.
->
-> Not really. I understand what you mean, but I took a step just for the
-> k*.h letter to group them. It's slightly easier to follow with
+Patch 1 makes .num_channels match .channels for vcnl4200. vcnl4040 and
+vcnl4000 channel arrays have the same size, so no functional change.
 
-Fair enough :)
+Patch 2 adds shared IRQ support. It changes the trigger type from
+falling edge to low level and adds IRQF_SHARED. The IRQ handlers return
+IRQ_NONE when the device did not generate the interrupt.
 
-> kernel.h being moved. Note, that kernel.h shouldn't be there at all,
-> but that is definitely out of scope here.
+Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
+---
+Changes in v2:
+- 1/2: Clarify in the commit message that the channel arrays have the
+  same size.
+- 2/2: Drop IRQ trigger type checking and use IRQF_TRIGGER_LOW directly.
+- 2/2: Check the interrupt source bits handled by the driver.
+- Link to v1: https://lore.kernel.org/r/20260811-vcnl4000-v1-0-50e7fb657692@jacques.com.au
 
-Makes sense. I wonder if it may be worth doing a patch series removing
-all of the kernel.h inclusions in IIO all at once (or maybe some drivers
-have a legitimate use for it, but that seems highly unlikely).
+---
+Tsz Shan Chan (2):
+      iio: light: vcnl4000: use correct channel array size
+      iio: light: vcnl4000: add shared IRQ support
 
-thanks,
-max
+ drivers/iio/light/vcnl4000.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+---
+base-commit: 3d6d817622b0a9721e3cc404df3469171582be13
+change-id: 20260810-vcnl4000-02e19f70e706
 
->
->> > +#include <linux/kstrtox.h>
->> >  #include <linux/string.h>
->> >  #include <linux/mutex.h>
->> >  #include <linux/unistd.h>
->
-> Thanks for the review!
+Best regards,
+-- 
+Tsz Shan Chan <tchan@jacques.com.au>
 
