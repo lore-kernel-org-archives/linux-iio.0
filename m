@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DB7838E5E9;
-	Sat, 15 Aug 2026 19:55:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DAD62BCF7F;
+	Sat, 15 Aug 2026 20:00:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786823707; cv=none; b=JzmNgmZj7rOWTSyIST9RFEVp/85xMxxOLsOKdo2iQln642TmJcmLy/9P510TzrtMOu+6NTeZhHbIP2opvs2SZpnLt7nDS6Ft/iaxqM5zvO1sNJFRYKABLBk6+LldZnWoSevKtq6myxGOQZREBGOG7sHqQtPhN9fwgh4nhPuaFp4=
+	t=1786824027; cv=none; b=LXzPxTSFpo3wPc0jrB0t6QPhdJaasfNeroeJAKHBqb5Oalf1cOQOKkOu64WRxOEEHR1brk0Z4dpgwpDQmw9CaIJU8HKNlvDNZ5x4hF6CXhuA2K25s7gMkTqT/agK3e7+Y/PmNCNv8iuICsqd031lNewAiUA3y0yYJIgDEdTFAww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786823707; c=relaxed/simple;
-	bh=RCNQju28qlnnG5qsWOXtws2ypbIBA0nCs8gnEVRSHHg=;
+	s=arc-20240116; t=1786824027; c=relaxed/simple;
+	bh=4Vad5jCeq3PZFKpiHcE0odIFICLOCkF5ktkrDOb88uk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VEwNfkcFTEWlSxDYc+/+k3WSeChp62yiTiWJentBRHtc0QAwoBJBrc/DgyB9a10wjzHHHJQSiW3WWcJw8t8PzKL/eLCKNQXWw+ZEg4l4/B3+PUXenSzA47deP38CyEo3ovJNYiI8mvSfgMN2HMmC1ecKXYqJT9+nfEfKzTHJb14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IvhmSjN8; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=uwb6J0UHX9ldWEn5v4B50yx7QaUSeBhJBmZ8gKf+dOmdMqwqL5FLI8K3HJ4uX0KYlvsHWGwMew+6c+vMJoUN0Y879/aHC8bjZ0OW1LVlUlLp2Sfe2b9MZ9+7afRmCmDW6jg9N/oJlqrQ3jdMW7QcRzjpEpjWcr8tTK+rdmmA7dw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L4l3jD1E; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IvhmSjN8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B17101F000E9;
-	Sat, 15 Aug 2026 19:55:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L4l3jD1E"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE7F91F000E9;
+	Sat, 15 Aug 2026 20:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786823706;
-	bh=kMBKU0rITwY608DxPndNNVbf7wU+s4HDR+nTccA0uZk=;
+	s=k20260515; t=1786824026;
+	bh=MVlQn7mhKg7177m1+4VT77S5ExQxaD1xM5hHvrwadVQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IvhmSjN8aAXHz8PrcIrzMB3L8dl6qG2M8Zwb+RkTXNfhGQS6qhiYSOCDw6ELzKBmD
-	 6To5vP3tkjYUCyWNCCh7B828UbN0ZOSUwG94jsFWD06DtDr7owtOhexlH0l1gIPkri
-	 jVO5Cf1Vc6IwNSuKLUvuUMakzljdGJFLIieT1l1FuKBhtc+BzwhwrN4x/ecSmAwitU
-	 i6/iUbxrDqZ8pTDddRez90yPqT06Fo0TvsegQ7kMRzm36g4itegxsPwwhh6T2egzwN
-	 BOcjI0FwltOeo2CedN42q8n2pZteT/tA0ivEiP3/3yZgh1DWLB90fq8AiocqjhCV1P
-	 T0ekcNxNbVmrg==
-Date: Sat, 15 Aug 2026 20:54:57 +0100
+	b=L4l3jD1ECqnQTF/yhNzc/eJR7jrjn3+mrO+W/kgiZYosyXq1jmtd1nti/GAXpTMME
+	 Mw5+344duDDGFDHv3LNYhItD7JfNCdQy0Bcl8jeUQIDBEUFCZiGtlHvumeI0Ej3NrJ
+	 mqHhI8CXXc82NuyM89uSnp/JhYPNVjfL7ntN7ZIDIm7CR1NCgQUJVmLEhPANXTc199
+	 CNBTO9Z8JM0ajyIi8i5UEzHMEZ11kuAK7SD0GlIiWn8dJsg19Dq49SgNPDPB+1V5Mo
+	 tWzPYduryLPqihIPzK7+osBRbb1PTN/boGf6XCRZj7mpDn3lqwozhwUPq5Jl7eVtS3
+	 4sgt1LvxJSnbg==
+Date: Sat, 15 Aug 2026 21:00:18 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Varshini Rajendran <varshini.rajendran@microchip.com>
 Cc: <ehristev@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
@@ -39,14 +39,13 @@ Cc: <ehristev@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
  <antoniu.miclaus@analog.com>, <duje@dujemihanovic.xyz>,
  <mazziesaccount@gmail.com>, <linux-iio@vger.kernel.org>,
  <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-kernel@vger.kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v6 01/17] dt-bindings: iio: adc: at91-sama5d2: document
- sama7d65
-Message-ID: <20260815205457.6cd30d53@jic23-huawei>
-In-Reply-To: <20260806074024.531259-2-varshini.rajendran@microchip.com>
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 04/17] iio: adc: at91-sama5d2_adc: rework temp
+ calibration layout handling
+Message-ID: <20260815210018.460c0eca@jic23-huawei>
+In-Reply-To: <20260806074024.531259-5-varshini.rajendran@microchip.com>
 References: <20260806074024.531259-1-varshini.rajendran@microchip.com>
-	<20260806074024.531259-2-varshini.rajendran@microchip.com>
+	<20260806074024.531259-5-varshini.rajendran@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,40 +56,51 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 6 Aug 2026 13:10:08 +0530
+On Thu, 6 Aug 2026 13:10:11 +0530
 Varshini Rajendran <varshini.rajendran@microchip.com> wrote:
 
-> Add dt-binding documentation for sama7d65 ADC.
+> Extend support to handle different temperature calibration layouts.
 > 
-> sama7d65 requires an individual compatible to address the differences
-> from its predecessor sama7g5. The main difference is the temperature
-> calibration layout and its handling.
+> Add a temperature calibration data layout structure to describe indexes
+> of the factors P1, P4, P6, tag, minimum length of the packet and the
+> scaling factors for P1 (p1_scale) which are SoC-specific instead of the
+> older non scalable id structure. This helps handle the differences in the
+> same function flow and prepare the calibration data to be applied.
 > 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Eugen Hristev <ehristev@kernel.org>
 > Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+https://sashiko.dev/#/patchset/20260806074024.531259-1-varshini.rajendran%40microchip.com
 
-Hi Varshini,
+For the unused define comment.  I 'might' tweak this is apply or go
+meh i can't be bothered and apply it away :) 
+Again - if you respin for another reason please tidy this up.
 
-I'll probably tweak this when applying - but if for some reason
-another version is needed please look at the ordering thing below.
+The other comment from Sashiko doesn't seem particularly useful to
+me even if it is maybe valid.
 
 > ---
->  Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iio/adc/at91-sama5d2_adc.c | 66 ++++++++++++++++++++++--------
+>  1 file changed, 48 insertions(+), 18 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml b/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml
-> index 4817b840977a..e8a65fdcd018 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/atmel,sama5d2-adc.yaml
-> @@ -15,6 +15,7 @@ properties:
->        - atmel,sama5d2-adc
->        - microchip,sam9x60-adc
->        - microchip,sama7g5-adc
-> +      - microchip,sama7d65-adc
-
-Alphabetical order.
-
+> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> index 09390f082fc4..82db8f2f4db0 100644
+> --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/dmaengine.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+> +#include <linux/math.h>
+>  #include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/property.h>
+> @@ -444,6 +445,27 @@ static const struct at91_adc_reg_layout sama7g5_layout = {
+>  #define at91_adc_writel(st, reg, val)					\
+>  	writel_relaxed(val, (st)->base + (st)->soc_info.platform->layout->reg)
 >  
->    reg:
->      maxItems: 1
+> +/* Temperature calibration tag "ACST" in ASCII */
+> +#define AT91_TEMP_CALIB_TAG_ACST	0x41435354
+
+Eagle eyed sashiko spotted this isn't used in this patch.  Should have been
+introduced with first use in patch 5 I think.
 
