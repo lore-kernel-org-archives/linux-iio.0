@@ -1,56 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FDC0301486;
-	Sat, 15 Aug 2026 21:53:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5253D2F2914;
+	Sat, 15 Aug 2026 21:58:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786830837; cv=none; b=D64gyE6VNTwlc9U8sTk19ACwGLegYjegt4+yfKnjasTi3jGWx/v497UBqlKjgjdZR+4IaPcAbIvZlvxX4Qb6rcKh77wp3stDFNwuFYVNO/KIN18/iIyhCMFMXxLEyb/lO890rMvfLj8UB3raLU/9sOSs6mk75nCfS6URKLR6y9Q=
+	t=1786831114; cv=none; b=Qj/GIF52irGO6WtutTP/AzFm03B+OER7HSh4EeyoSeMxns4WokTQu36ynEkjS6UcgCVg6qzEsZJd/Ged7aiWdBtur5xF/m6sN8beQh4dRnojnwGN0d36vytMIzzoZxJiUNHMIQtLvZuPr2JRtKQUSiaVnw/peP3rGHzWFuEpoNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786830837; c=relaxed/simple;
-	bh=VXmq9K/HRCVD/gkYVmOmNvAEYGioPR9ndL6kBSh4Q1s=;
+	s=arc-20240116; t=1786831114; c=relaxed/simple;
+	bh=4orediGEN0RT6tjs3Pn0Ek81telg3NyIX9uWlTIcPFA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dLK9kY56DHP9kDkz7fXPV8ShQb2FUez2gOriKMPOVkc0vQRQjhMrfwEh5RplXvAIAkAnD+8HmOn9G7jYd67fXwwScjzvkJPHJZsAeAOZcZR31NA7tDjtCwaNyOB3ikvgIJKLXlhNrSECNBrigFDvJrW84Qpu5t025P37Z074KFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P2YM3pUO; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=TSGTfGGzD1rkOPCJi63n/UwsENMYy6sLw1umD+/CS7Ewou48zM8n/C0OIhvm0YW3SVYP+NwEYr++8OTB5hqZQLJisgmK3A7zjI5slpe5VpfLKrHdlaqOvmwXVEDkG9bFOAoVLfJCjjpmdqtsgNdIZk8+beNO3HQoaFMykPvww3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VVWxYWtg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P2YM3pUO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CCFD1F000E9;
-	Sat, 15 Aug 2026 21:53:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VVWxYWtg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BADD51F000E9;
+	Sat, 15 Aug 2026 21:58:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786830836;
-	bh=Mng5BWniPeM9reYy1Ta8r3Rg3KlW7xeXbQGcgXUrO34=;
+	s=k20260515; t=1786831113;
+	bh=NXCTlBKyu8BUPb7xFNN5lHswk/UtHZPMMblzmrt/iVI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=P2YM3pUORIKpEYq4xfYIc2GwhcWeDZbxxcP4lsSSZX/EuKfkGIWFksrUm593hpj2V
-	 QQPywa1gnaeYt6zSlInPsAX27cRe8s3RcSoAyIxeR6w8UaWMRtczvz/33lIgHFTDkV
-	 CZWbqITuvZ9Z20aWtrPOtTot/pwF5WNkbuR7C5IPRM1mACFS+UKhF04YIcaSEpkFaj
-	 AsBRHxRNvFa14B/+nZEevp/yHgMvu7ZdmFwijPehZABB8DJ4Ozke5BAzm8GXCwkphl
-	 Ao0gYq+evbHOqdOXx9cBoRRFKCyhJcfkOx4HrsAH7Wmi5hrAY8u2p68T84DqkrKYJ1
-	 F2EvcDDE3s9rw==
-Date: Sat, 15 Aug 2026 22:53:48 +0100
+	b=VVWxYWtgNnMz7fmyQqSZjc4xF7QELTpmLWOnJ2fEu5MVLqw5R+X6tZ/W6s0FwAxMo
+	 +4jE6hvKKswrG9+xxkq0sLwJ+lQ2Zv0GosrnHoDfhmbbriKoOAsnwifYanmZGq9SgT
+	 U6h4GJmw3fFbv5buLTt9mIJkDKmRGPVgdPCJFlmZq5PjRZGZWC0rsH8Av+TlNVxQcY
+	 aXeBRcs6sesYUngXS0JuHBjye2AjL/y60gMj5dcrNcq7802KKpU9bHw9rbp3Tmxu7S
+	 V+kh32fKsSSAQH6kA1qOecG1YborG8uVgblyBu+3q0R3rAzY5JY1Sz63VXXw5WeS0R
+	 WmdurWZ5DZU3A==
+Date: Sat, 15 Aug 2026 22:58:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- Mark Brown <broonie@kernel.org>, Marius Cristea
- <marius.cristea@microchip.com>, Marcus Folkesson
- <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, Conor
- Dooley <conor.dooley@microchip.com>, Daire McNamara
- <daire.mcnamara@microchip.com>, Paul Walmsley <pjw@kernel.org>, Palmer
- Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Alexandre
- Ghiti <alex@ghiti.fr>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, Janani Sunil <jan.sun97@gmail.com>,
- <linux-spi@vger.kernel.org>, Kent Gustavsson <nedo80@gmail.com>,
- <linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH v8 3/3] iio: dac: Add AD5529R DAC driver support
-Message-ID: <20260815225348.7a3bef4d@jic23-huawei>
-In-Reply-To: <20260805-ad5529r-driver-v8-3-b41781f5632a@analog.com>
-References: <20260805-ad5529r-driver-v8-0-b41781f5632a@analog.com>
-	<20260805-ad5529r-driver-v8-3-b41781f5632a@analog.com>
+To: Hui Su <sh_def@163.com>
+Cc: andy@kernel.org, joshua.crofts1@gmail.com, dlechner@baylibre.com,
+ nuno.sa@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: pressure: bmp280: fix out-of-bounds access in
+ sampling frequency lookup
+Message-ID: <20260815225827.2ddb8397@jic23-huawei>
+In-Reply-To: <20260811025252.1187644-2-sh_def@163.com>
+References: <20260805074127.473731-1-sh_def@163.com>
+	<20260811025252.1187644-2-sh_def@163.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -61,56 +48,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 5 Aug 2026 09:17:43 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+On Tue, 11 Aug 2026 10:52:53 +0800
+Hui Su <sh_def@163.com> wrote:
 
-> Add support for AD5529R 16-channel, 12/16 bit Digital to Analog Converter
-> from Analog Devices.
+> The sampling frequency tables store each frequency as an integer part and
+> a fractional part in micro units. num_sampling_freq_avail is initialized
+> to the number of flattened integer elements because read_avail() returns
+> the table as a flat array.
 > 
-> The device communicates over SPI and supports per-channel output range
-> configuration. An optional external 4.096V reference can be used in
-> place of the internal reference.
+> bmp280_write_sampling_frequency(), however, indexes the same table as a
+> two-dimensional array and uses num_sampling_freq_avail as the number of
+> rows. Convert the flattened element count back to the number of rows
+> before iterating over the table.
 > 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> Fixes: 10b40ffba2f9 ("iio: pressure: bmp280: Add more tunable config parameters for BMP380")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Hui Su <sh_def@163.com>
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
+Hi Hui Su
+
+For future reference don't send a new version in reply to an older one. It rapidly looses
+all usefulness as the email threads get deeper and more complex.
+
+LGTM Applied to the fixes-togreg branch of iio.git
+
+Note I plan to rebase that once rc1 is out and a pull request will go upstream
+sometime after that.
+
+Thanks,
+
+Jonathan
+
 > ---
->  MAINTAINERS               |   1 +
->  drivers/iio/dac/Kconfig   |  17 ++
->  drivers/iio/dac/Makefile  |   1 +
->  drivers/iio/dac/ad5529r.c | 530 ++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 549 insertions(+)
+> Changes in v2:
+> - Use plain 2 as the divisor, as suggested by Andy Shevchenko.
+> - Add Joshua Crofts' Reviewed-by tag.
+> Link: https://lore.kernel.org/lkml/20260805074127.473731-1-sh_def@163.com/
 > 
->
-
-...
-
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 657c68e75542..bb1d59889a2a 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -134,6 +134,23 @@ config AD5449
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5449.
+>  drivers/iio/pressure/bmp280-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+> index 990340a9b10c..dbe42233c81d 100644
+> --- a/drivers/iio/pressure/bmp280-core.c
+> +++ b/drivers/iio/pressure/bmp280-core.c
+> @@ -836,7 +836,7 @@ static int bmp280_write_sampling_frequency(struct bmp280_data *data,
+>  					   int val, int val2)
+>  {
+>  	const int (*avail)[2] = data->chip_info->sampling_freq_avail;
+> -	const int n = data->chip_info->num_sampling_freq_avail;
+> +	const int n = data->chip_info->num_sampling_freq_avail / 2;
+>  	int ret, prev;
+>  	int i;
 >  
-> +config AD5529R
-> +	tristate "Analog Devices AD5529R High Voltage DAC driver"
-> +	depends on SPI_MASTER
-> +	select REGMAP_SPI
-> +	help
-> +	  Say yes here to build support for Analog Devices AD5529R
-> +	  16-Channel, 12-Bit/16-Bit, 40V High Voltage Precision Digital to Analog
-
-Trivial but this wrap is rather random. Please tidy it up to a consistent 80 chars
-
-> +	  Converter.
-> +
-> +	  The device features multiple output voltage ranges from -20V to +20V,
-> +	  built-in 4.096V voltage reference, and digital functions including
-> +	  toggle, dither, and ramp modes. Supports both 12-bit and 16-bit
-> +	  resolution variants.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ad5529r.
-> +
->  config AD5592R_BASE
->  	tristate
 
