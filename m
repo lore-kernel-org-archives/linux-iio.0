@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5253D2F2914;
-	Sat, 15 Aug 2026 21:58:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D290617BA2;
+	Sat, 15 Aug 2026 22:00:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786831114; cv=none; b=Qj/GIF52irGO6WtutTP/AzFm03B+OER7HSh4EeyoSeMxns4WokTQu36ynEkjS6UcgCVg6qzEsZJd/Ged7aiWdBtur5xF/m6sN8beQh4dRnojnwGN0d36vytMIzzoZxJiUNHMIQtLvZuPr2JRtKQUSiaVnw/peP3rGHzWFuEpoNo=
+	t=1786831246; cv=none; b=ppODYO7+bBC5VaFk+aaYtRmW5+ZoTbuB599+0TY8GF0Jz7zLJJlivQj6SOO7nYznoAJcHMMcrdOPauIqd8SG5e7BF6Nelr3uDbcYJpO1y0bJMwZ3CkOQXG74lYiO8QiTfKYNWMtppGV96oFGjWMIy1XC35N3olN+2miMcPqFZJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786831114; c=relaxed/simple;
-	bh=4orediGEN0RT6tjs3Pn0Ek81telg3NyIX9uWlTIcPFA=;
+	s=arc-20240116; t=1786831246; c=relaxed/simple;
+	bh=NZbRv2EmzHX/YejxhirIZDgbMuePqVOYR9yERr4w/LI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TSGTfGGzD1rkOPCJi63n/UwsENMYy6sLw1umD+/CS7Ewou48zM8n/C0OIhvm0YW3SVYP+NwEYr++8OTB5hqZQLJisgmK3A7zjI5slpe5VpfLKrHdlaqOvmwXVEDkG9bFOAoVLfJCjjpmdqtsgNdIZk8+beNO3HQoaFMykPvww3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VVWxYWtg; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=R40cFmg9F8qvh1YVgJjLJ7LNSr0P+nDrY9v/keRfTsf9Nsf4Z63a5OLi+Bv68x0XKnHvELSsDvAkEMPmm0+ocYQagai1AUKIY6YpGRlbGP/egr5p3pryeCMFPti90VMwZHjEGMas2o71jAZ/6TBTOZB1iGbFs5EOFCbiqdxo3IY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gflaW6mt; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VVWxYWtg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BADD51F000E9;
-	Sat, 15 Aug 2026 21:58:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gflaW6mt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C27F01F00A3A;
+	Sat, 15 Aug 2026 22:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786831113;
-	bh=NXCTlBKyu8BUPb7xFNN5lHswk/UtHZPMMblzmrt/iVI=;
+	s=k20260515; t=1786831244;
+	bh=y9PgeDPA5GdMV/XDwLeutR+FzcoZDp2G0uJ0kF+aQzw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VVWxYWtgNnMz7fmyQqSZjc4xF7QELTpmLWOnJ2fEu5MVLqw5R+X6tZ/W6s0FwAxMo
-	 +4jE6hvKKswrG9+xxkq0sLwJ+lQ2Zv0GosrnHoDfhmbbriKoOAsnwifYanmZGq9SgT
-	 U6h4GJmw3fFbv5buLTt9mIJkDKmRGPVgdPCJFlmZq5PjRZGZWC0rsH8Av+TlNVxQcY
-	 aXeBRcs6sesYUngXS0JuHBjye2AjL/y60gMj5dcrNcq7802KKpU9bHw9rbp3Tmxu7S
-	 V+kh32fKsSSAQH6kA1qOecG1YborG8uVgblyBu+3q0R3rAzY5JY1Sz63VXXw5WeS0R
-	 WmdurWZ5DZU3A==
-Date: Sat, 15 Aug 2026 22:58:27 +0100
+	b=gflaW6mt8BNOeYJ8nX+33wEp49KTdcqnHFthZvtho0bNZvIX6NdAVJqaE9Fx6qsys
+	 /IZQQCmewiOkSuANn6ee4vxgmseMpZdqt289P7QHzg7PHgBanSc/85mm594Ub85/kB
+	 GWrX/6d5vuxSgN2WHfnrO/zr5wyBoscKfQQ2zNqHe8DM9t7OvhtRo9/U5i2ohxzJn2
+	 1wLYVF8FbHp2/qhS3tmNVQsdNBTfoMn+ETZlc30ARCX5B+V8T7iqnn8QocUmq6Hv14
+	 Ymy24y5NeEaVQYnFwZbrYF5BSv9nzuBBgGt5liqhr5UFxnibilJHUA04mKLp3mJg4o
+	 MolsRKgT1OJkA==
+Date: Sat, 15 Aug 2026 23:00:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Hui Su <sh_def@163.com>
-Cc: andy@kernel.org, joshua.crofts1@gmail.com, dlechner@baylibre.com,
- nuno.sa@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: pressure: bmp280: fix out-of-bounds access in
- sampling frequency lookup
-Message-ID: <20260815225827.2ddb8397@jic23-huawei>
-In-Reply-To: <20260811025252.1187644-2-sh_def@163.com>
-References: <20260805074127.473731-1-sh_def@163.com>
-	<20260811025252.1187644-2-sh_def@163.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: linux-iio@vger.kernel.org, joshua.crofts1@gmail.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-kernel@vger.kernel.org, Giorgi Tchankvetadze
+ <giorgi@tchankvetadze.com>
+Subject: Re: [PATCH v3] iio: light: veml3328: reshape scale array for
+ readability
+Message-ID: <20260815230040.7e6696f5@jic23-huawei>
+In-Reply-To: <20260805083532.92585-3-giorgitchankvetadze1997@gmail.com>
+References: <20260805083532.92585-3-giorgitchankvetadze1997@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,58 +48,136 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 11 Aug 2026 10:52:53 +0800
-Hui Su <sh_def@163.com> wrote:
+On Wed,  5 Aug 2026 12:35:34 +0400
+Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
 
-> The sampling frequency tables store each frequency as an integer part and
-> a fractional part in micro units. num_sampling_freq_avail is initialized
-> to the number of flattened integer elements because read_avail() returns
-> the table as a flat array.
+> From: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
 > 
-> bmp280_write_sampling_frequency(), however, indexes the same table as a
-> two-dimensional array and uses num_sampling_freq_avail as the number of
-> rows. Convert the flattened element count back to the number of rows
-> before iterating over the table.
+> The veml3328_scale_vals array is declared as a flattened [4][8] array,
+> so accessing a scale value requires calculating the offset of its
+> (val, val2) pair using gain_inx * 2.
 > 
-> Fixes: 10b40ffba2f9 ("iio: pressure: bmp280: Add more tunable config parameters for BMP380")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hui Su <sh_def@163.com>
+> Reshape the array as [4][4][2], with separate dimensions for integration
+> time, gain and the scale value pair. This removes the manual stride
+> calculation and makes the relationship between the indexes and values
+> explicit.
+> 
+> Add named integration-time indexes and use designated initializers for
+> veml3328_it_times and veml3328_scale_vals so both tables use the same
+> index definitions.
+> 
+> Suggested-by: David Lechner <dlechner@baylibre.com>
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
 > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
-Hi Hui Su
-
-For future reference don't send a new version in reply to an older one. It rapidly looses
-all usefulness as the email threads get deeper and more complex.
-
-LGTM Applied to the fixes-togreg branch of iio.git
-
-Note I plan to rebase that once rc1 is out and a pull request will go upstream
-sometime after that.
+> Signed-off-by: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
+Applied to the testing branch of iio.git
 
 Thanks,
 
 Jonathan
 
 > ---
+> Changes in v3:
+> - Add named integration-time indexes as suggested by Jonathan Cameron.
+> - Use designated initializers for veml3328_it_times and
+>   veml3328_scale_vals to keep both tables indexed consistently.
+> 
 > Changes in v2:
-> - Use plain 2 as the divisor, as suggested by Andy Shevchenko.
-> - Add Joshua Crofts' Reviewed-by tag.
-> Link: https://lore.kernel.org/lkml/20260805074127.473731-1-sh_def@163.com/
+> - Reshape veml3328_scale_vals as [4][4][2], as suggested by
+>   David Lechner.
+> - Update read and write paths to access the scale value pair directly.
 > 
->  drivers/iio/pressure/bmp280-core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> drivers/iio/light/veml3328.c | 53 ++++++++++++++++++++++++++----------
+>  1 file changed, 38 insertions(+), 15 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-> index 990340a9b10c..dbe42233c81d 100644
-> --- a/drivers/iio/pressure/bmp280-core.c
-> +++ b/drivers/iio/pressure/bmp280-core.c
-> @@ -836,7 +836,7 @@ static int bmp280_write_sampling_frequency(struct bmp280_data *data,
->  					   int val, int val2)
->  {
->  	const int (*avail)[2] = data->chip_info->sampling_freq_avail;
-> -	const int n = data->chip_info->num_sampling_freq_avail;
-> +	const int n = data->chip_info->num_sampling_freq_avail / 2;
->  	int ret, prev;
->  	int i;
+> diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
+> index 7ff1753925c4..df36c48204be 100644
+> --- a/drivers/iio/light/veml3328.c
+> +++ b/drivers/iio/light/veml3328.c
+> @@ -32,6 +32,11 @@
+>  #define VEML3328_REG_DATA_B		0x07
+>  #define VEML3328_REG_DATA_IR		0x08
+>  
+> +#define VEML3328_CONT_IT_50MSECS	0
+> +#define VEML3328_CONT_IT_100MSECS	1
+> +#define VEML3328_CONT_IT_200MSECS	2
+> +#define VEML3328_CONT_IT_400MSECS	3
+> +
+>  #define VEML3328_CONF_IT_MASK		GENMASK(5, 4)
+>  #define VEML3328_CONF_GAIN_MASK		GENMASK(11, 10)
+>  
+> @@ -89,21 +94,40 @@ static const struct iio_chan_spec veml3328_channels[] = {
+>   * Precomputed scale values (micro units).
+>   * Formula for calculation: 0.384 * (50000 / IT_us) * (1 / Gain)
+>   * Gain indexes: 0 (x0.5), 1 (x1), 2 (x2), 3 (x4)
+> - * IT indexes: 0 (50ms), 1 (100ms), 2 (200ms), 3 (400ms)
+>   */
+> -static const int veml3328_scale_vals[4][8] = {
+> -	{ 0, 768000, 0, 384000, 0, 192000, 0, 96000 },
+> -	{ 0, 384000, 0, 192000, 0, 96000,  0, 48000 },
+> -	{ 0, 192000, 0, 96000,  0, 48000,  0, 24000 },
+> -	{ 0, 96000,  0, 48000,  0, 24000,  0, 12000 },
+> +static const int veml3328_scale_vals[4][4][2] = {
+> +	[VEML3328_CONT_IT_50MSECS] = {
+> +		{ 0, 768000 },
+> +		{ 0, 384000 },
+> +		{ 0, 192000 },
+> +		{ 0, 96000 },
+> +	},
+> +	[VEML3328_CONT_IT_100MSECS] = {
+> +		{ 0, 384000 },
+> +		{ 0, 192000 },
+> +		{ 0, 96000 },
+> +		{ 0, 48000 },
+> +	},
+> +	[VEML3328_CONT_IT_200MSECS] = {
+> +		{ 0, 192000 },
+> +		{ 0, 96000 },
+> +		{ 0, 48000 },
+> +		{ 0, 24000 },
+> +	},
+> +	[VEML3328_CONT_IT_400MSECS] = {
+> +		{ 0, 96000 },
+> +		{ 0, 48000 },
+> +		{ 0, 24000 },
+> +		{ 0, 12000 },
+> +	},
+>  };
+>  
+>  /* integration times in microseconds */
+>  static const int veml3328_it_times[][2] = {
+> -	{ 0, 50 * USEC_PER_MSEC },
+> -	{ 0, 100 * USEC_PER_MSEC },
+> -	{ 0, 200 * USEC_PER_MSEC },
+> -	{ 0, 400 * USEC_PER_MSEC },
+> +	[VEML3328_CONT_IT_50MSECS] = { 0, 50 * USEC_PER_MSEC },
+> +	[VEML3328_CONT_IT_100MSECS] = { 0, 100 * USEC_PER_MSEC },
+> +	[VEML3328_CONT_IT_200MSECS] = { 0, 200 * USEC_PER_MSEC },
+> +	[VEML3328_CONT_IT_400MSECS] = { 0, 400 * USEC_PER_MSEC },
+>  };
+>  
+>  static int veml3328_power_down(struct veml3328_data *data)
+> @@ -184,9 +208,8 @@ static int veml3328_read_raw(struct iio_dev *indio_dev,
+>  		if (it_inx >= ARRAY_SIZE(veml3328_it_times) || gain_inx >= 4)
+>  			return -EINVAL;
+>  
+> -		/* Stride by 2 through the flattened array to match (val, val2) */
+> -		*val = veml3328_scale_vals[it_inx][gain_inx * 2];
+> -		*val2 = veml3328_scale_vals[it_inx][gain_inx * 2 + 1];
+> +		*val = veml3328_scale_vals[it_inx][gain_inx][0];
+> +		*val2 = veml3328_scale_vals[it_inx][gain_inx][1];
+>  
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  
+> @@ -282,8 +305,8 @@ static int veml3328_write_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  
+>  		for (i = 0; i < 4; i++) {
+> -			if (val == veml3328_scale_vals[it_inx][i * 2] &&
+> -			    val2 == veml3328_scale_vals[it_inx][i * 2 + 1])
+> +			if (val == veml3328_scale_vals[it_inx][i][0] &&
+> +			    val2 == veml3328_scale_vals[it_inx][i][1])
+>  				break;
+>  		}
 >  
 
