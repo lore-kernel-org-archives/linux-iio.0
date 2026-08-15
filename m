@@ -1,115 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023312DECD3;
-	Sat, 15 Aug 2026 04:14:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96D2935DA69;
+	Sat, 15 Aug 2026 08:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786767267; cv=none; b=SRxP+tIisTrlwFNfBpbHokc0E5dLXZV6C7AtDEPRhBCJkJFln1E141XQGYDqCtgTVo/kZCf1DyPkCWEFCdfremn322k+Tneb5cmsm2YwC6HCDXneAHDpaQyddIq1vYTHhPHPF/oUuN9zGN291jJp3nxG2WhJtha7aouSozqtks4=
+	t=1786783359; cv=none; b=taqhU331ohu+8nCHSOPPkjjJT94Xo5sHmEjAbLuoqeYKi2zTAfr1fyavFH0cpV5Jv8azjF2za/ZmPN1zz5vWaPqd/nmLqsTX51qUHNFwkj93+Q20O+jNSje7y55cYCLCuiUMlDdMNPapUVGp96klM4T+rjNMvxG8N9kCDjWU6J0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786767267; c=relaxed/simple;
-	bh=qYurkZ0zU5P8ELgxTS6Q/4LJZSYpEhSHw7HK1p2ZvIo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RNmOwdWEvfV7mD3P6gQ+s6atxO5WwcDAfM/1Tod/iWn4reIS/vP3lkZvOHQ1ZGE1VxsvbUK6mYNhRk443Fc22LonsuuXT6G01WRiFVTtO9f0MSy21VtnlxO4eJcK2V9mLkCLzu1Z7Wa4R0JqgmtEzomxrWHq1s/35aTBoAo37oM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WgL+kRO5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786783359; c=relaxed/simple;
+	bh=3/3yfMmWd32j3JSL++ZWe0Dhu153GJtuWaM824HdKXU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RVafcfGJuZuTllgFN9OxqJUUTV23+gTA//Fv0LhXCUFZZUkqOqkZLg/w8/pv9e7PFyvRuhNdcbIBihojPzQ39PRiFF2L9fWCr31oyrAllX95v3DuqfiO2MclnDb+fybuziTNVNswau84G3oRZxGjf8N4f1RjN31hGwmwCEV3RT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j+uWniNf; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WgL+kRO5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D871F000E9;
-	Sat, 15 Aug 2026 04:14:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786767265;
-	bh=aNIiry1IuRswXdr8ZGqWPqPMO5dZSKvJ3MsNJpxG1F0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WgL+kRO5p9kHS6vyoq1Z8MQq008qyT79u65cWZ6HceHZ1xMv2gBYKNYOAd4/4lHXU
-	 bEDCmNlSZWT59Zs2mD6SfIi89UKYqYn2wTdNTI9uDABgAL4N7mNhBmzGR31krie7DU
-	 Tbvw5izsakztszkB+CsJXGlXqA1baj5JQXjwXnkTymsyRFZ1e673wAyWcM7CX9qG7t
-	 hor8gC8looII7A3pBcZXPLQTFd/P3iim6rHejW0XCPuAKfXSJfJ6gXOct+lvJHpErX
-	 G0QIW1Bi0JOMW2ji7DyIPhgzD5OROTA6tjghaygacngLoMMyZZ/uKmHY5gzzwrNlsO
-	 dqb9kb35GPQUA==
-Date: Sat, 15 Aug 2026 05:13:56 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, Sean Nyekjaer
- <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Joshua Crofts <joshua.crofts1@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v4 2/6] iio: accel: mma8452: Optimize struct mm8452_data
- member orders
-Message-ID: <20260815051356.4dac350e@jic23-huawei>
-In-Reply-To: <20260812-mma8452-open-drain-v4-2-bfca15d02b59@geanix.com>
-References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
-	<20260812-mma8452-open-drain-v4-2-bfca15d02b59@geanix.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j+uWniNf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786783357; x=1818319357;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3/3yfMmWd32j3JSL++ZWe0Dhu153GJtuWaM824HdKXU=;
+  b=j+uWniNfS3GjAo1VGbkJ1qR9MBMcoNZ3UEFzq3lO/AZMFAO5egqZOAED
+   h10kYP9KjSsS8nqF3nUdcxmC1d1oHSldlZEL5mAujMZtjrBUL014WD9sh
+   JibYEZRxxayfujHrB1etJ3zGLYrhuRNcXtEpsWkhDbSYwUai2cd4sFqeK
+   mNe3eoqocJCT0DwbWPHC77Vn+s7Z1DHtP44rDComoJpXK+ivNEXjxrY0X
+   lB6yC0kI2ipKK9JVpV5r24SV5WVPU+l/1sqU6yLWv+JVo8gFLNwrP2d3J
+   CAQL1532N3cQWdeQvzP4FoCvGg7Z1vwQVZhyHIUHJdmPCUbEhDeB5CYep
+   A==;
+X-CSE-ConnectionGUID: N12XXH/ASXGNhDXu5F448g==
+X-CSE-MsgGUID: k9JPMoi5R767ohpHKxU9Tw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11875"; a="74879741"
+X-IronPort-AV: E=Sophos;i="6.25,224,1779174000"; 
+   d="scan'208";a="74879741"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2026 01:42:36 -0700
+X-CSE-ConnectionGUID: 1E/vcbiERterRFn3jjcu3Q==
+X-CSE-MsgGUID: nve7dWBGQ4Cy1EkFMKFwrA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,224,1779174000"; 
+   d="scan'208";a="287910236"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.12])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2026 01:42:33 -0700
+Date: Sat, 15 Aug 2026 11:42:30 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arka Mondal <arkamondalofficial@gmail.com>
+Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, andy@kernel.org,
+	venkat.prashanth2498@gmail.com, rohitsarkar5398@gmail.com,
+	linux@analog.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: imu: adis16400: fix unprotected debugfs reads
+Message-ID: <aoAmduhNrHoJdmn7@ashevche-desk.local>
+References: <20260814090728.965922-1-arkamondalofficial@gmail.com>
+ <20260814090728.965922-2-arkamondalofficial@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260814090728.965922-2-arkamondalofficial@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 12 Aug 2026 16:30:33 +0200
-Esben Haabendal <esben@geanix.com> wrote:
-
-> Reorder struct mma8452_data members to avoid holes.
-Trivial but sashiko pointed out mm[a]_8452 in the title.
-I'll tidy that up if nothing significant comes up.
-
-Interestingly Sashiko also thinks it found a deadlock.
-Given you are working with this driver if you have time could
-you take a look at that. 
-
-https://sashiko.dev/#/patchset/20260812-mma8452-open-drain-v4-0-bfca15d02b59%40geanix.com
-
-I'm rather surprised to see the lock taken in the runtime
-pm suspend callback. It is probably there to close a race
-where the device is being suspended and the sampling
-frequency is being written.  I'm not immediately sure what
-the best way to fix it is. One thing that would work is to
-do pm_runtime_get* to raise the reference counter and stop
-there being any chance of an autosuspend. 
-
-Jonathan
-
+On Fri, Aug 14, 2026 at 06:07:27PM +0900, Arka Mondal wrote:
+> The serial_number file operations are open coded and never call
+> debugfs_file_get(), which debugfs_create_file_unsafe() requires.
+> debugfs_remove_recursive() therefore does not wait for a read in
+> progress, and unbind frees the iio_dev underneath it.
 > 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> ---
->  drivers/iio/accel/mma8452.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 7d683686dd9d..f645a5c6fd1c 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -106,10 +106,7 @@ struct mma8452_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
->  	struct iio_mount_matrix orientation;
-> -	u8 ctrl_reg1;
-> -	u8 data_cfg;
->  	const struct mma_chip_info *chip_info;
-> -	int sleep_val;
->  	struct regulator *vdd_reg;
->  	struct regulator *vddio_reg;
->  
-> @@ -118,6 +115,10 @@ struct mma8452_data {
->  		__be16 channels[3];
->  		aligned_s64 ts;
->  	} buffer;
-> +
-> +	int sleep_val;
-> +	u8 ctrl_reg1;
-> +	u8 data_cfg;
->  };
->  
->   /**
-> 
+> Use debugfs_create_file() instead.
+
+Have you read the code? Have you read the commit message of the "culprit"
+commit?
+
+NAK. Please, revisit all your patches and be careful next time.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
