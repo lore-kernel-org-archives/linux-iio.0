@@ -1,48 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D3CF9C0;
-	Sat, 15 Aug 2026 19:33:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5608230BE9;
+	Sat, 15 Aug 2026 19:52:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786822409; cv=none; b=BtPcCHe8tlg0VtnZUNjXePooBzd+IYtXTsrjcZU/ZJI0cK1THUOXCGxgfIm8RKmvCBvFxQIM1ItjvuTyfxiowYM4yEgeCyrC2OH+34Uc78f79Xl/Gmw32O63lRCIsEhJDZDKnto9EBsdHDWIL5O//cjXcU0xsabexuQDR19gvyc=
+	t=1786823565; cv=none; b=oFHcYDJhbV8jsztsk14h9/+7TwJPnrPRcLTqA3T6HiXjgPlyEuQHz1vGezBZAxB+gX8adZFeTkTSww0R9Oy36o4D/WlpFM+GtyG78uX3YOW/c3TME5famjCf1UJ9sqT9YZVF8eUIiTkDfpz+WvZg41OsNYXJJgmAYnzvw4kA03w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786822409; c=relaxed/simple;
-	bh=740ZsBSRNdQ7eVvwayJQa0Hzeh/lzlQt+x328SlZpmQ=;
+	s=arc-20240116; t=1786823565; c=relaxed/simple;
+	bh=xVk9crjRUCRyfGxlAmhNWg7FcxM5txoOpJmdHmb0STU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hGXWHJ10zZEv95CGFPVQKe0WI+18FwSzdIQJhBx+L91gAK5ZKfQ+KlQRw/KF8hLyJDT0HdH0uFv3KXSNvy/y2VOqTzruKfeok88CvCOD8EmXGj3y5eJW/2cEt5DbzZvmMFoJ4JuhW4zmGoTyi68yVLH06/bbS4jfrtUA1k4K1Mc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DMK+1BJb; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=me44Sljf0gvdL53Q9LzdtwKq5Uf+SbtmLAQiiVRei1SX8ycIAW2eu5VEP8ObKqij36FkKOCcS1OcQi5Q3sFzeCzITDrJNsIvvDry3UJ4/P2RmWtS81z4I5E7E+s/97btmZ7Cvi3EmKlwaVG42feEcZAjWnhDZuvvIX+Qjj7Asls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EYVc7dIk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DMK+1BJb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC2221F000E9;
-	Sat, 15 Aug 2026 19:33:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EYVc7dIk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B38E71F000E9;
+	Sat, 15 Aug 2026 19:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786822408;
-	bh=I5Yh7x8Pt5usGYhUmGQHISP6sbrREFiI1VOt6YxsRrc=;
+	s=k20260515; t=1786823564;
+	bh=Eq2RtujxGrJTIGd3DVkk78kzCYiIFx37waJS5UewyY4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DMK+1BJbf6QJ7c1JVjZ+KHzsxjPbmES5wd4rWYBoQvgr0vL+kp4gyjSulX4Ho+fj4
-	 g4BVNLyJLOT4bgXEm4VHb1W+jO1ncbJhbxCXPm0ZzbiFnDD2X7kZezAht7ZFT1esYR
-	 RVuY2A1K/474+/EPpZTSDnayGxJ/HD4HBzt2Kpt7U/UqZlZ5To2tnxufAuXuYCfD5O
-	 fTMLrmobhHAQj++sbsfZDLg184jW2G3gRvNnvw5cA44K4FsRoc7A8VP7J0YUzIQ7Q8
-	 CtuTw8VcamF26u2RDtW8JJMjmBzkuDfH7QVQdT9qwhIpxG/uPkSpQ0ZXFlD9OLmdzm
-	 POtycuOAKyQVw==
-Date: Sat, 15 Aug 2026 20:33:25 +0100
+	b=EYVc7dIkz8sAGGnIifOr7xcYSgycnMye4jiiP11Hr7c1BQBb3L07YlIzSFIt0D8Sh
+	 LleR6bQftlhHsbF0iBXN+WAAKwOVt0nIBddZo74lSopOf1tMeh3oX73IKsm3Wrsn7G
+	 JX4RvkdUAU8S1s3bZ2DX7Jbo1nl1Rp41kZQY7nnLH5SxmEjm3/1cYGWogWpRCx8Jk7
+	 KnU9mfFSXAic3PLY1/I5h8Fm4cHGVt0MLLMvCqqj/dZAYxAqjQY5seTx+txR4UKrXt
+	 cD+1nOpQItDhVsC8bXS0YQOUxp0zue/ukMunnWD5RSCz4+WzFgAdyMvE2M0vyjQcb9
+	 wfY1XMXfm+1aw==
+Date: Sat, 15 Aug 2026 20:52:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Esben Haabendal <esben@geanix.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger
- <martink@posteo.de>, Sean Nyekjaer <sean@geanix.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Martin Kepplinger
- <martin.kepplinger@theobroma-systems.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/6] iio: accel: mma8452: Support interrupt sharing
-Message-ID: <20260815203130.7699cb60@jic23-huawei>
-In-Reply-To: <an7NOEOw8Jn0id0N@ashevche-desk.local>
-References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
-	<20260812-mma8452-open-drain-v4-4-bfca15d02b59@geanix.com>
-	<an7NOEOw8Jn0id0N@ashevche-desk.local>
+To: Varshini Rajendran <varshini.rajendran@microchip.com>
+Cc: <ehristev@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+ <andy@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+ <conor+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+ <alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
+ <srini@kernel.org>, <marcelo.schmitt@analog.com>, <radu.sabau@analog.com>,
+ <joshua.crofts1@gmail.com>, <jorge.marques@analog.com>,
+ <Jonathan.Santos@analog.com>, <jishnu.prakash@oss.qualcomm.com>,
+ <antoniu.miclaus@analog.com>, <duje@dujemihanovic.xyz>,
+ <mazziesaccount@gmail.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 02/17] nvmem: add DEFINE_FREE for nvmem_cell_put
+ cleanup
+Message-ID: <20260815205238.6fbfb2f8@jic23-huawei>
+In-Reply-To: <20260806074024.531259-3-varshini.rajendran@microchip.com>
+References: <20260806074024.531259-1-varshini.rajendran@microchip.com>
+	<20260806074024.531259-3-varshini.rajendran@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,18 +56,52 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 14 Aug 2026 11:09:28 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Thu, 6 Aug 2026 13:10:09 +0530
+Varshini Rajendran <varshini.rajendran@microchip.com> wrote:
 
-> On Wed, Aug 12, 2026 at 04:30:35PM +0200, Esben Haabendal wrote:
-> > Adding handling of rutnime PM suspension in the interrupt handler allows
-> > sharing interrupt with other devices.
-> > 
-> > Keep in mind that the device by default is using push-pull for the irq pin,
-> > which might require additional hardware design to allow interrupt sharing.  
+> Add cleanup.h helper for nvmem_cell_put() to enable automatic resource
+> cleanup using __free(nvmem_cell_put) annotation.
 > 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Use IS_ERR_OR_NULL() since nvmem_cell_get() can return error pointers,
+> and passing an ERR_PTR to nvmem_cell_put() would cause issues.
 > 
+> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+> ---
 
-There are a few sashiko comments on this one. I haven't looked
-at them in detail - so if you think they are wrong feel free to say that!
+Srinivas, if you are happy with this header addition please could
+I have an Ack to take this through the IIO tree?  If it's useful
+for other series, I can provide an immutable branch that you can
+pull into the nvmem tree.  I'll probably spin one of those on rc1
+once available anyway just in case someone else needs it later
+in the cycle.
+
+No huge rush - just good to keep this moving!
+
+Jonathan
+
+
+>  include/linux/nvmem-consumer.h | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
+> index 34c0e58dfa26..5315bd862f5f 100644
+> --- a/include/linux/nvmem-consumer.h
+> +++ b/include/linux/nvmem-consumer.h
+> @@ -9,6 +9,7 @@
+>  #ifndef _LINUX_NVMEM_CONSUMER_H
+>  #define _LINUX_NVMEM_CONSUMER_H
+>  
+> +#include <linux/cleanup.h>
+>  #include <linux/err.h>
+>  #include <linux/errno.h>
+>  #include <linux/notifier.h>
+> @@ -243,6 +244,8 @@ static inline struct nvmem_device *nvmem_device_find(void *data,
+>  
+>  #endif /* CONFIG_NVMEM */
+>  
+> +DEFINE_FREE(nvmem_cell_put, struct nvmem_cell *, if (!IS_ERR_OR_NULL(_T)) nvmem_cell_put(_T))
+> +
+>  #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
+>  struct nvmem_cell *of_nvmem_cell_get(struct device_node *np,
+>  				     const char *id);
+
