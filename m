@@ -1,43 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D290617BA2;
-	Sat, 15 Aug 2026 22:00:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F0830B529;
+	Sat, 15 Aug 2026 22:15:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786831246; cv=none; b=ppODYO7+bBC5VaFk+aaYtRmW5+ZoTbuB599+0TY8GF0Jz7zLJJlivQj6SOO7nYznoAJcHMMcrdOPauIqd8SG5e7BF6Nelr3uDbcYJpO1y0bJMwZ3CkOQXG74lYiO8QiTfKYNWMtppGV96oFGjWMIy1XC35N3olN+2miMcPqFZJA=
+	t=1786832119; cv=none; b=oPsMs4h5EB8s+bavnWPZ8kdlQLG/yWi+/C+xWZKmxEoP+OL9QkR7D2IvfitKC0W9O8wRveW32xbhvxLvgH9GC3Jp1u3uTdFJtsSe7vtP//Guj8WHelwzyP+cbjqxy35Nm8AqOzINdvXqvY5iZQFUEDt3StV1w4jiz+EKIpBJYCs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786831246; c=relaxed/simple;
-	bh=NZbRv2EmzHX/YejxhirIZDgbMuePqVOYR9yERr4w/LI=;
+	s=arc-20240116; t=1786832119; c=relaxed/simple;
+	bh=Ni5cUvVnRzyECvv7n0sjYxZWArVIB4s30bPnMQA3xU0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R40cFmg9F8qvh1YVgJjLJ7LNSr0P+nDrY9v/keRfTsf9Nsf4Z63a5OLi+Bv68x0XKnHvELSsDvAkEMPmm0+ocYQagai1AUKIY6YpGRlbGP/egr5p3pryeCMFPti90VMwZHjEGMas2o71jAZ/6TBTOZB1iGbFs5EOFCbiqdxo3IY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gflaW6mt; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ZOz5tZNvrgxXlhqigQ6P4agC8MpW4c0rTZ1reHCJUOF/rQW2gBcqEzPyRtmp1d+eLwQMOmNImm91oITWqfDWtstFrnQ+Q5CPm/BMLWK5lbozNbEjpL7MVanJpgdhND0epo9AOO9OULkEIhALXl3g8MtL0LOdPLPT5ZpK2RwXZ5E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NY949yAk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gflaW6mt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C27F01F00A3A;
-	Sat, 15 Aug 2026 22:00:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NY949yAk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD1101F00A3A;
+	Sat, 15 Aug 2026 22:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786831244;
-	bh=y9PgeDPA5GdMV/XDwLeutR+FzcoZDp2G0uJ0kF+aQzw=;
+	s=k20260515; t=1786832117;
+	bh=kqE1afumisvpdiTkCENJzRQ798Rycw+kpbhIZtpVzvA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gflaW6mt8BNOeYJ8nX+33wEp49KTdcqnHFthZvtho0bNZvIX6NdAVJqaE9Fx6qsys
-	 /IZQQCmewiOkSuANn6ee4vxgmseMpZdqt289P7QHzg7PHgBanSc/85mm594Ub85/kB
-	 GWrX/6d5vuxSgN2WHfnrO/zr5wyBoscKfQQ2zNqHe8DM9t7OvhtRo9/U5i2ohxzJn2
-	 1wLYVF8FbHp2/qhS3tmNVQsdNBTfoMn+ETZlc30ARCX5B+V8T7iqnn8QocUmq6Hv14
-	 Ymy24y5NeEaVQYnFwZbrYF5BSv9nzuBBgGt5liqhr5UFxnibilJHUA04mKLp3mJg4o
-	 MolsRKgT1OJkA==
-Date: Sat, 15 Aug 2026 23:00:40 +0100
+	b=NY949yAkMJYcZKqtPZA2Y0FSOaPQ6cHKYKJ5roM02WuCYRAgMVEzvsLuFEdyBbR4G
+	 AoFixWMjJPfDN94oEDDiPLH8fmYcP9Rem/6aWTubcXEs+bQe+m1u/avXtq9g/+9+8r
+	 5UyVK19VkKn8vX3TEZZNu2ff1oK04JEErxh1Q8HasxPFuCqx1OPK+OOQqU6fIfyJiq
+	 2Bi5N96wPyxglrgyd48d5EUuE7Dl1mxVs3ThSYw6kEHitnilkVugR+plCX8ECThc+X
+	 VLADgqZcfGWaXa8mhdaAkAwZ1M19IU4amkBVbgqQpncuVks5Hkc6Q75uiFnEi5MmVn
+	 i0fukNZudRqLg==
+Date: Sat, 15 Aug 2026 23:15:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: linux-iio@vger.kernel.org, joshua.crofts1@gmail.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-kernel@vger.kernel.org, Giorgi Tchankvetadze
- <giorgi@tchankvetadze.com>
-Subject: Re: [PATCH v3] iio: light: veml3328: reshape scale array for
- readability
-Message-ID: <20260815230040.7e6696f5@jic23-huawei>
-In-Reply-To: <20260805083532.92585-3-giorgitchankvetadze1997@gmail.com>
-References: <20260805083532.92585-3-giorgitchankvetadze1997@gmail.com>
+To: Andrei Stancovici <andrei.stancovici@analog.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
+ Beguin <liambeguin@gmail.com>, <linux@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/3] iio: adc: ltc2497: add LTC2499 internal
+ temperature channel
+Message-ID: <20260815231513.3a72146a@jic23-huawei>
+In-Reply-To: <20260813160139.70000-3-andrei.stancovici@analog.com>
+References: <20260813160139.70000-1-andrei.stancovici@analog.com>
+	<20260813160139.70000-3-andrei.stancovici@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,139 +49,130 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed,  5 Aug 2026 12:35:34 +0400
-Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
+On Thu, 13 Aug 2026 19:01:36 +0300
+Andrei Stancovici <andrei.stancovici@analog.com> wrote:
 
-> From: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
-> 
-> The veml3328_scale_vals array is declared as a flattened [4][8] array,
-> so accessing a scale value requires calculating the offset of its
-> (val, val2) pair using gain_inx * 2.
-> 
-> Reshape the array as [4][4][2], with separate dimensions for integration
-> time, gain and the scale value pair. This removes the manual stride
-> calculation and makes the relationship between the indexes and values
-> explicit.
-> 
-> Add named integration-time indexes and use designated initializers for
-> veml3328_it_times and veml3328_scale_vals so both tables use the same
-> index definitions.
-> 
-> Suggested-by: David Lechner <dlechner@baylibre.com>
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Signed-off-by: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
-Applied to the testing branch of iio.git
+> The LTC2499 has an internal PTAT (proportional to absolute temperature)
+> sensor that is activated by a second I2C configuration byte (EN2 | IM).
+> Expose it as an IIO_TEMP channel providing raw, scale and offset so the
+> standard IIO formula
+>=20
+> 	T[m=C2=B0C] =3D (raw + offset) * scale
+>=20
+> reconstructs the temperature.
+>=20
+> The PTAT sensor yields the absolute temperature as
+>=20
+> 	T(K) =3D DATAOUT24 * Vref / 1570		(Vref in volts)
+>=20
+> The raw value exported here is sign-extended and normalised to
+> 2^(resolution + 1) =3D=3D 2^25, i.e. raw =3D 2 * DATAOUT24, so on the IIO
+> milli-degree-Celsius convention
+>=20
+> 	scale[m=C2=B0C/LSB] =3D Vref_uV / 3140000
+> 	offset         =3D -273150 * 3140000 / Vref_uV
+>=20
+> The scale and offset are derived from the reference voltage returned by
+> regulator_get_voltage(); its error is propagated as before, so a board
+> that fails to describe vref-supply gets a clear read error instead of a
+> silently wrong temperature. No board-specific reference value is assumed
+> in the driver.
+>=20
+> The single temperature channel is appended as the last entry of the
+> shared channel array and excluded via num_channels for parts without an
+> internal sensor, so the existing LTC2497 channel layout and device name
+> are unchanged.
+>=20
+> The LTC2499 latches its converter configuration from the second command
+> byte and only re-evaluates it when that byte has EN2 set. EN2 | IM
+> selects the internal temperature sensor. Because a single-byte command,
+> or a second byte with EN2 =3D 0, means "keep previous", a one-byte channel
+> select cannot pull the device back out of temperature mode: after a
+> temperature read every subsequent voltage read would keep returning the
+> PTAT result instead of the selected input. Temperature support is
+> therefore only correct if the voltage path also emits a second command
+> byte that re-selects an external input.
+>=20
+> Send two-byte commands for all conversions on parts that have the sensor
+> (has_temp):
+>=20
+> 	temperature:	EN2 | IM
+> 	voltage:	EN2			(IM =3D 0 -> external input)
+>=20
+> The LTC2497 and LTC2496, which lack the second-byte mechanism, keep using
+> the original single-byte channel select and are unchanged.
+>=20
+> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
+Hi Andrei
+
+A question inline on why this needs a DMA safe buffer given i2c
+still bounced everything unless we opt in.
 
 Thanks,
 
 Jonathan
 
-> ---
-> Changes in v3:
-> - Add named integration-time indexes as suggested by Jonathan Cameron.
-> - Use designated initializers for veml3328_it_times and
->   veml3328_scale_vals to keep both tables indexed consistently.
-> 
-> Changes in v2:
-> - Reshape veml3328_scale_vals as [4][4][2], as suggested by
->   David Lechner.
-> - Update read and write paths to access the scale value pair directly.
-> 
-> drivers/iio/light/veml3328.c | 53 ++++++++++++++++++++++++++----------
->  1 file changed, 38 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
-> index 7ff1753925c4..df36c48204be 100644
-> --- a/drivers/iio/light/veml3328.c
-> +++ b/drivers/iio/light/veml3328.c
-> @@ -32,6 +32,11 @@
->  #define VEML3328_REG_DATA_B		0x07
->  #define VEML3328_REG_DATA_IR		0x08
->  
-> +#define VEML3328_CONT_IT_50MSECS	0
-> +#define VEML3328_CONT_IT_100MSECS	1
-> +#define VEML3328_CONT_IT_200MSECS	2
-> +#define VEML3328_CONT_IT_400MSECS	3
-> +
->  #define VEML3328_CONF_IT_MASK		GENMASK(5, 4)
->  #define VEML3328_CONF_GAIN_MASK		GENMASK(11, 10)
->  
-> @@ -89,21 +94,40 @@ static const struct iio_chan_spec veml3328_channels[] = {
->   * Precomputed scale values (micro units).
->   * Formula for calculation: 0.384 * (50000 / IT_us) * (1 / Gain)
->   * Gain indexes: 0 (x0.5), 1 (x1), 2 (x2), 3 (x4)
-> - * IT indexes: 0 (50ms), 1 (100ms), 2 (200ms), 3 (400ms)
->   */
-> -static const int veml3328_scale_vals[4][8] = {
-> -	{ 0, 768000, 0, 384000, 0, 192000, 0, 96000 },
-> -	{ 0, 384000, 0, 192000, 0, 96000,  0, 48000 },
-> -	{ 0, 192000, 0, 96000,  0, 48000,  0, 24000 },
-> -	{ 0, 96000,  0, 48000,  0, 24000,  0, 12000 },
-> +static const int veml3328_scale_vals[4][4][2] = {
-> +	[VEML3328_CONT_IT_50MSECS] = {
-> +		{ 0, 768000 },
-> +		{ 0, 384000 },
-> +		{ 0, 192000 },
-> +		{ 0, 96000 },
-> +	},
-> +	[VEML3328_CONT_IT_100MSECS] = {
-> +		{ 0, 384000 },
-> +		{ 0, 192000 },
-> +		{ 0, 96000 },
-> +		{ 0, 48000 },
-> +	},
-> +	[VEML3328_CONT_IT_200MSECS] = {
-> +		{ 0, 192000 },
-> +		{ 0, 96000 },
-> +		{ 0, 48000 },
-> +		{ 0, 24000 },
-> +	},
-> +	[VEML3328_CONT_IT_400MSECS] = {
-> +		{ 0, 96000 },
-> +		{ 0, 48000 },
-> +		{ 0, 24000 },
-> +		{ 0, 12000 },
-> +	},
->  };
->  
->  /* integration times in microseconds */
->  static const int veml3328_it_times[][2] = {
-> -	{ 0, 50 * USEC_PER_MSEC },
-> -	{ 0, 100 * USEC_PER_MSEC },
-> -	{ 0, 200 * USEC_PER_MSEC },
-> -	{ 0, 400 * USEC_PER_MSEC },
-> +	[VEML3328_CONT_IT_50MSECS] = { 0, 50 * USEC_PER_MSEC },
-> +	[VEML3328_CONT_IT_100MSECS] = { 0, 100 * USEC_PER_MSEC },
-> +	[VEML3328_CONT_IT_200MSECS] = { 0, 200 * USEC_PER_MSEC },
-> +	[VEML3328_CONT_IT_400MSECS] = { 0, 400 * USEC_PER_MSEC },
->  };
->  
->  static int veml3328_power_down(struct veml3328_data *data)
-> @@ -184,9 +208,8 @@ static int veml3328_read_raw(struct iio_dev *indio_dev,
->  		if (it_inx >= ARRAY_SIZE(veml3328_it_times) || gain_inx >= 4)
->  			return -EINVAL;
->  
-> -		/* Stride by 2 through the flattened array to match (val, val2) */
-> -		*val = veml3328_scale_vals[it_inx][gain_inx * 2];
-> -		*val2 = veml3328_scale_vals[it_inx][gain_inx * 2 + 1];
-> +		*val = veml3328_scale_vals[it_inx][gain_inx][0];
-> +		*val2 = veml3328_scale_vals[it_inx][gain_inx][1];
->  
->  		return IIO_VAL_INT_PLUS_MICRO;
->  
-> @@ -282,8 +305,8 @@ static int veml3328_write_raw(struct iio_dev *indio_dev,
->  			return -EINVAL;
->  
->  		for (i = 0; i < 4; i++) {
-> -			if (val == veml3328_scale_vals[it_inx][i * 2] &&
-> -			    val2 == veml3328_scale_vals[it_inx][i * 2 + 1])
-> +			if (val == veml3328_scale_vals[it_inx][i][0] &&
-> +			    val2 == veml3328_scale_vals[it_inx][i][1])
->  				break;
->  		}
->  
+> diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+> index c1668b5a351e..57a5406977ed 100644
+> --- a/drivers/iio/adc/ltc2497.c
+> +++ b/drivers/iio/adc/ltc2497.c
+> @@ -84,6 +84,40 @@ static int ltc2497_result_and_measure(struct ltc2497co=
+re_driverdata *ddata,
+>  			return 0;
+>  	}
+> =20
+> +	/*
+> +	 * Parts with the internal PTAT sensor (LTC2499) latch their converter
+> +	 * configuration via a second command byte and only re-evaluate it when
+> +	 * that byte has EN2 set; a single byte, or a second byte with EN2 =3D =
+0,
+> +	 * means "keep previous". A one-byte channel select therefore cannot pu=
+ll
+> +	 * the device back out of temperature mode, so a voltage read after a
+> +	 * temperature read would keep returning the PTAT result. Always drive =
+the
+> +	 * second byte with EN2 set on these parts: IM =3D 1 for a temperature =
+read,
+> +	 * EN2 alone (IM =3D 0) to (re)select an external input. FA =3D FB =3D =
+0 keeps
+> +	 * the power-on simultaneous 50/60Hz rejection, whose worst-case
+> +	 * conversion time the driver's wait already covers.
+> +	 *
+> +	 * The two bytes are assembled in the DMA-safe st->data buffer rather t=
+han
+> +	 * on the stack, so the pointer handed to i2c_master_send() stays valid=
+ on
+> +	 * adapters that DMA the transfer (e.g. with CONFIG_VMAP_STACK).
 
+I'm confused by this (as is sashiko ;)  You aren't using i2c_master_send_dm=
+asafe()
+so the i2c core will bounce the data anyway.  Generally I2C is too slow to =
+care
+about copying a few bytes so we tend not to use that infrastructure unless
+the copy that would be needed is much bigger.
+
+In the wider set of devices supported, the ltc2496 uses SPI and there
+we do need something to ensure we have dma safe buffers.
+
+> +	 */
+> +	if (ddata->chip_info->has_temp) {
+> +		if (address =3D=3D LTC2497_TEMP_ADDR) {
+> +			st->data.d8[0] =3D LTC2497_ENABLE | LTC2497_CONFIG_DEFAULT;
+> +			st->data.d8[1] =3D LTC2499_EN2 | LTC2499_IM;
+> +		} else {
+> +			st->data.d8[0] =3D LTC2497_ENABLE | address;
+> +			st->data.d8[1] =3D LTC2499_EN2;
+> +		}
+> +
+> +		ret =3D i2c_master_send(st->client, (char *)st->data.d8, 2);
+> +		if (ret < 0) {
+> +			dev_err(&st->client->dev, "i2c transfer failed: %pe\n",
+> +				ERR_PTR(ret));
+> +			return ret;
+> +		}
+> +		return 0;
+> +	}
+> +
