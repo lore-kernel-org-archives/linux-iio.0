@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F0830B529;
-	Sat, 15 Aug 2026 22:15:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A96D3218BA;
+	Sat, 15 Aug 2026 22:21:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786832119; cv=none; b=oPsMs4h5EB8s+bavnWPZ8kdlQLG/yWi+/C+xWZKmxEoP+OL9QkR7D2IvfitKC0W9O8wRveW32xbhvxLvgH9GC3Jp1u3uTdFJtsSe7vtP//Guj8WHelwzyP+cbjqxy35Nm8AqOzINdvXqvY5iZQFUEDt3StV1w4jiz+EKIpBJYCs=
+	t=1786832478; cv=none; b=QU2UPb1ZjojSpblUYBb+7vVGj7v/lWVtUpPsi14WGUP2cSh7faVbtcLj0yjPVRIDZ+pO+V5aVbsLiW2/eSh0rSlOlOQvMWtSmKIsWPpi19AALdMFi8KQGS+wRGYwBSMub2G0gyhAsMBT8j6jfWNNCiVjfVmRy3CbCvAO2mwOFM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786832119; c=relaxed/simple;
-	bh=Ni5cUvVnRzyECvv7n0sjYxZWArVIB4s30bPnMQA3xU0=;
+	s=arc-20240116; t=1786832478; c=relaxed/simple;
+	bh=V1XfZu6AEzWxL6/fao+FZ50UGbzisKLKsfc6/E+Ab8Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZOz5tZNvrgxXlhqigQ6P4agC8MpW4c0rTZ1reHCJUOF/rQW2gBcqEzPyRtmp1d+eLwQMOmNImm91oITWqfDWtstFrnQ+Q5CPm/BMLWK5lbozNbEjpL7MVanJpgdhND0epo9AOO9OULkEIhALXl3g8MtL0LOdPLPT5ZpK2RwXZ5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NY949yAk; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ZOldQBOxs/3LxNHpIIKF3z4G8L+99iQaW3uu9/2cVv1YlMweYkq41rQblo11ChDM1/UWKE0M3rFYWt3PmV4QRtXPFUy8GoJdhACJsS6Og0f4BNGfuuyVpePrdkhOc16gHtsoLMKFHlaFin/YD21sO1abwx6fk8QLqpHAmPl/BI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gtusAiLT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NY949yAk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD1101F00A3A;
-	Sat, 15 Aug 2026 22:15:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gtusAiLT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 779A01F000E9;
+	Sat, 15 Aug 2026 22:21:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786832117;
-	bh=kqE1afumisvpdiTkCENJzRQ798Rycw+kpbhIZtpVzvA=;
+	s=k20260515; t=1786832477;
+	bh=NtYxTbItTNoFSKGy4T8ItsBmcI7Bu8RTMSq54EVtic8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NY949yAkMJYcZKqtPZA2Y0FSOaPQ6cHKYKJ5roM02WuCYRAgMVEzvsLuFEdyBbR4G
-	 AoFixWMjJPfDN94oEDDiPLH8fmYcP9Rem/6aWTubcXEs+bQe+m1u/avXtq9g/+9+8r
-	 5UyVK19VkKn8vX3TEZZNu2ff1oK04JEErxh1Q8HasxPFuCqx1OPK+OOQqU6fIfyJiq
-	 2Bi5N96wPyxglrgyd48d5EUuE7Dl1mxVs3ThSYw6kEHitnilkVugR+plCX8ECThc+X
-	 VLADgqZcfGWaXa8mhdaAkAwZ1M19IU4amkBVbgqQpncuVks5Hkc6Q75uiFnEi5MmVn
-	 i0fukNZudRqLg==
-Date: Sat, 15 Aug 2026 23:15:13 +0100
+	b=gtusAiLTx4bgQ02xxl4CgbWL7UWnvfsIrdz9m7WPf/s0GN3Jz+PL9DzBDK/5BEQbc
+	 +nLP0vWi68+FBHe72uDrdEhGV+eqMTjKYJaCafN73NbCXOWRMPfPmrryaB2k06fdI7
+	 DQXy+mDmRzArOC2gcKOFjix0LHZkGQ0QyDDdgLlsnRaZDHfz7yHFDmMzTKBEGAZgCh
+	 FbRO8PDXLIgDV5XC6XtrPwOJmBKQi7N6JrNOctSJpAuk3Hf+08CfhYoA114WxjYzZf
+	 VJhiUWHcj0tswp1MXbWwph027QX48mzFvWg6HbAIw3grRIEbdsRqq9kdEvWty5civI
+	 VQfhstAGhmo4g==
+Date: Sat, 15 Aug 2026 23:21:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andrei Stancovici <andrei.stancovici@analog.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
@@ -36,12 +36,11 @@ Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
  Beguin <liambeguin@gmail.com>, <linux@analog.com>,
  <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/3] iio: adc: ltc2497: add LTC2499 internal
- temperature channel
-Message-ID: <20260815231513.3a72146a@jic23-huawei>
-In-Reply-To: <20260813160139.70000-3-andrei.stancovici@analog.com>
+Subject: Re: [PATCH v2 3/3] iio: adc: ltc2497: add 2x conversion speed mode
+Message-ID: <20260815232111.268ec438@jic23-huawei>
+In-Reply-To: <20260813160139.70000-4-andrei.stancovici@analog.com>
 References: <20260813160139.70000-1-andrei.stancovici@analog.com>
-	<20260813160139.70000-3-andrei.stancovici@analog.com>
+	<20260813160139.70000-4-andrei.stancovici@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,130 +48,46 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 19:01:36 +0300
+On Thu, 13 Aug 2026 19:01:37 +0300
 Andrei Stancovici <andrei.stancovici@analog.com> wrote:
 
-> The LTC2499 has an internal PTAT (proportional to absolute temperature)
-> sensor that is activated by a second I2C configuration byte (EN2 | IM).
-> Expose it as an IIO_TEMP channel providing raw, scale and offset so the
-> standard IIO formula
->=20
-> 	T[m=C2=B0C] =3D (raw + offset) * scale
->=20
-> reconstructs the temperature.
->=20
-> The PTAT sensor yields the absolute temperature as
->=20
-> 	T(K) =3D DATAOUT24 * Vref / 1570		(Vref in volts)
->=20
-> The raw value exported here is sign-extended and normalised to
-> 2^(resolution + 1) =3D=3D 2^25, i.e. raw =3D 2 * DATAOUT24, so on the IIO
-> milli-degree-Celsius convention
->=20
-> 	scale[m=C2=B0C/LSB] =3D Vref_uV / 3140000
-> 	offset         =3D -273150 * 3140000 / Vref_uV
->=20
-> The scale and offset are derived from the reference voltage returned by
-> regulator_get_voltage(); its error is propagated as before, so a board
-> that fails to describe vref-supply gets a clear read error instead of a
-> silently wrong temperature. No board-specific reference value is assumed
-> in the driver.
->=20
-> The single temperature channel is appended as the last entry of the
-> shared channel array and excluded via num_channels for parts without an
-> internal sensor, so the existing LTC2497 channel layout and device name
-> are unchanged.
->=20
-> The LTC2499 latches its converter configuration from the second command
-> byte and only re-evaluates it when that byte has EN2 set. EN2 | IM
-> selects the internal temperature sensor. Because a single-byte command,
-> or a second byte with EN2 =3D 0, means "keep previous", a one-byte channel
-> select cannot pull the device back out of temperature mode: after a
-> temperature read every subsequent voltage read would keep returning the
-> PTAT result instead of the selected input. Temperature support is
-> therefore only correct if the voltage path also emits a second command
-> byte that re-selects an external input.
->=20
-> Send two-byte commands for all conversions on parts that have the sensor
-> (has_temp):
->=20
-> 	temperature:	EN2 | IM
-> 	voltage:	EN2			(IM =3D 0 -> external input)
->=20
-> The LTC2497 and LTC2496, which lack the second-byte mechanism, keep using
-> the original single-byte channel select and are unchanged.
->=20
+> The LTC2499 supports a 2x output rate (SPD bit in the second
+> configuration byte).  In 2x mode the offset auto-calibration is
+> disabled, roughly doubling the conversion rate (~13.6Hz vs ~6.8Hz in
+> simultaneous 50/60Hz rejection) while leaving linearity and full-scale
+> errors unchanged (datasheet).  During a temperature measurement the part
+> always converts at 1x regardless of SPD.
+> 
+> Expose the rate through the standard sampling_frequency /
+> sampling_frequency_available ABI on the voltage channels only: SPD is
+> ignored for temperature conversions, so the temperature channel
+> deliberately carries no SAMP_FREQ attribute.  A new has_speed_mode
+> capability flag gates the feature (LTC2499); the two-byte command path
+> is now taken for has_temp || has_speed_mode, since both features need the
+> second config byte.
+> 
+> The conversion-time wait becomes mode dependent: 150ms at 1x, 76ms at 2x
+> (datasheet t_CONV max, simultaneous rejection, rounded up).  The wait is
+> keyed on the conversion currently in flight, whose duration is fixed by
+> the mode that was active when it started - not by the newly selected
+> mode.  This matters on a 1x->2x switch: a 1x conversion may still be
+> running when the first 2x read arrives, and reprogramming the device
+> before it finishes would be NACKed with -EIO.  Timing is centralized in
+> ltc2497core_conv_time_ms() so a future FA/FB rejection-mode selection
+> can extend it into a [rejection][speed] lookup without touching callers.
+> 
+> LTC2496/LTC2497 (no speed mode) keep the single-byte path and the
+> unchanged 150ms wait.
+> 
+> Validated on a live LTC2499: 20 reads take ~3.1s at 1x and ~1.6s at 2x
+> (~0.5x, no -EIO), voltage and temperature readings stay sane in both
+> modes, and the temperature/voltage interleave (sticky-PTAT) regression
+> still passes at 1x and 2x.
+> 
 > Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
-Hi Andrei
+This looks fine to me
 
-A question inline on why this needs a DMA safe buffer given i2c
-still bounced everything unless we opt in.
-
-Thanks,
-
-Jonathan
-
-> diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-> index c1668b5a351e..57a5406977ed 100644
-> --- a/drivers/iio/adc/ltc2497.c
-> +++ b/drivers/iio/adc/ltc2497.c
-> @@ -84,6 +84,40 @@ static int ltc2497_result_and_measure(struct ltc2497co=
-re_driverdata *ddata,
->  			return 0;
->  	}
-> =20
-> +	/*
-> +	 * Parts with the internal PTAT sensor (LTC2499) latch their converter
-> +	 * configuration via a second command byte and only re-evaluate it when
-> +	 * that byte has EN2 set; a single byte, or a second byte with EN2 =3D =
-0,
-> +	 * means "keep previous". A one-byte channel select therefore cannot pu=
-ll
-> +	 * the device back out of temperature mode, so a voltage read after a
-> +	 * temperature read would keep returning the PTAT result. Always drive =
-the
-> +	 * second byte with EN2 set on these parts: IM =3D 1 for a temperature =
-read,
-> +	 * EN2 alone (IM =3D 0) to (re)select an external input. FA =3D FB =3D =
-0 keeps
-> +	 * the power-on simultaneous 50/60Hz rejection, whose worst-case
-> +	 * conversion time the driver's wait already covers.
-> +	 *
-> +	 * The two bytes are assembled in the DMA-safe st->data buffer rather t=
-han
-> +	 * on the stack, so the pointer handed to i2c_master_send() stays valid=
- on
-> +	 * adapters that DMA the transfer (e.g. with CONFIG_VMAP_STACK).
-
-I'm confused by this (as is sashiko ;)  You aren't using i2c_master_send_dm=
-asafe()
-so the i2c core will bounce the data anyway.  Generally I2C is too slow to =
-care
-about copying a few bytes so we tend not to use that infrastructure unless
-the copy that would be needed is much bigger.
-
-In the wider set of devices supported, the ltc2496 uses SPI and there
-we do need something to ensure we have dma safe buffers.
-
-> +	 */
-> +	if (ddata->chip_info->has_temp) {
-> +		if (address =3D=3D LTC2497_TEMP_ADDR) {
-> +			st->data.d8[0] =3D LTC2497_ENABLE | LTC2497_CONFIG_DEFAULT;
-> +			st->data.d8[1] =3D LTC2499_EN2 | LTC2499_IM;
-> +		} else {
-> +			st->data.d8[0] =3D LTC2497_ENABLE | address;
-> +			st->data.d8[1] =3D LTC2499_EN2;
-> +		}
-> +
-> +		ret =3D i2c_master_send(st->client, (char *)st->data.d8, 2);
-> +		if (ret < 0) {
-> +			dev_err(&st->client->dev, "i2c transfer failed: %pe\n",
-> +				ERR_PTR(ret));
-> +			return ret;
-> +		}
-> +		return 0;
-> +	}
-> +
+J
