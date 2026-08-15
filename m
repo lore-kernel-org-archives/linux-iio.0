@@ -1,64 +1,64 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE53841D131
-	for <linux-iio@vger.kernel.org>; Sat, 15 Aug 2026 17:57:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85D1B425895
+	for <linux-iio@vger.kernel.org>; Sat, 15 Aug 2026 17:57:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786816664; cv=none; b=csltejjWaYwSZCPSDAgOIbFJk/zFhrfGlnECkglcN9atyHTJSjCr9zN2kla/Ia1nmuhwI0aYucdtpkIHKFyBOid/nLHfeK/v96Hei989V+NcYoAHv9kJswlAQ6QkrJXgaHyUdCiDO9XfeFNY/dZHELH3VmaiKkVLYm6wjvvGAtw=
+	t=1786816669; cv=none; b=fXm0/F7Q0umCn1mzu35m5h9Q0q6uxi3mJq2D9kpvWVHOkK5StYJY/eXd8zusXtyAOu+NTd5IyHHHaN7vlR1oVeZbsrvCzUCDvrmXuoXnq0rd0QtQz6tyElqgu5X01wmG1kCO69ypOkyoSX+L8OA/f5T5zLP1kUTX1OKpDz9DIYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786816664; c=relaxed/simple;
-	bh=nKxgDH4TdWB2d36OnxpU2PoAKG4hTH5rCToucuzyeXI=;
+	s=arc-20240116; t=1786816669; c=relaxed/simple;
+	bh=nDPGlDwlnm9kRZGhwhrLqboq0/TEPJOiY31oDryGZyk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=csIdqsHO5e2eEhwwnF5UMfkaYcYM/BwkhD1Pc5/6WNjvqm58TX/EaYYCGAXbURfSj65hcB07baGpD1LpIZlblAlYBcFgWQ5JjbxVD93Ae0xLcB7gOWXCS9vlp1IGOs6Skf1MBdKh1lVpUgKY54slLBRBpd8mrpG2tmz6fVOjta8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k+rh51rz; arc=none smtp.client-ip=209.85.216.48
+	 MIME-Version; b=izmZ0azKJ6Qhw/FP/FkHZ+S3yuBAVPxdPfYu0k7asSJhrmG8YTtq2OltcfgnLggnB18yXyl9aUejGgBPV5v1N/dA7ntnvKaDgnV7GaV2QMJd+JV3gBk3UCeJBJnvV5pBcRfes4nZleMEjeeTdbylWCth18IFv/4E7RXQz94OZlk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JszdG18N; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k+rh51rz"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-381c51fde6bso2534018a91.2
-        for <linux-iio@vger.kernel.org>; Sat, 15 Aug 2026 10:57:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JszdG18N"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2caea3f742bso35681115ad.0
+        for <linux-iio@vger.kernel.org>; Sat, 15 Aug 2026 10:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786816662; x=1787421462; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786816668; x=1787421468; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=nrr+5GeNkVo/Yg6tMxCd6vMnt7MSIfXEc0j1vvogzWg=;
-        b=k+rh51rzE32Bq73aUo4Rjg0fi7JkiB95JMKrmz9wSpvVKMaFkYeHIraikrlCpkq+Qd
-         bBxzSZJII5hs1UaLo0m17ZXUQgaKbbvm+O0fJ8iuEYJMNl2jzSPw00WbFB9Fp6+7I2sO
-         +iy2LhhX8APHRqRHKn4z1AJ8r/lNHafw4ITPolwR+orAarrFnm1/ZemSs93sWFFBUHPS
-         lbsbOPl+kdb0+N28+uVhjpGbK+79YmHakCkee+y8nO6ZUkqajEA9yimxqiwz7gDjAWoA
-         PeMS0l5ZPplK/ASdEUVkJ5xUlqZrAY6+lZKA3lzgcpomL4njZVRf3kWSA98tFiDDY7aj
-         dKHw==
+        bh=gIlktj+wxmAUkq3OHJvtiyHqtwOwmYETQ46YaPY3Vxk=;
+        b=JszdG18NzayTkhgLJ6wngugMo34fHp2p+RUzreOx5Iw3r5GI2zaEoLWUUIRkUv9fk5
+         aaxRKvALG/9KQm/n3Jl2J885wkGxlh3A9V23yoHitoYRHqIJYV43rdzvPmKeYAXjP055
+         TlsVQ1n1Kgyi/wYWrrGcG+R4GI5j1N4OEkHRb7SUh6gR+9Jzw+sjunCXcAM4xBf0LDFB
+         rcv8h+w9wUeCdHrqMnPBAASeRTUeGBtQr8MFVAIF6ElFDRsAje0nnr2w9+Hk37Ht74oh
+         VJqpus9A3SBhwsihNoB4aSNhANX42eBUc6Wkx/t4WVfOL8Py0cJm0f9k4M0q76CW9BOx
+         u3xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786816662; x=1787421462;
+        d=1e100.net; s=20251104; t=1786816668; x=1787421468;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nrr+5GeNkVo/Yg6tMxCd6vMnt7MSIfXEc0j1vvogzWg=;
-        b=D7bIcHFITZ0vu8YsEVd8J+7MmgFvZHLIEQH+D8R4fdGLyvtEZr8Y/MfhvpLfsanMXb
-         g/F+Kkw/Xy5SxZ1GjWthDf9KQTuqR4WmqJ/teBDMV7yFa967umN5386f2IlL6v8K8iXP
-         BqDdVwKXBZCRPOaYiEqqSORFOPz9r+03r6Tffz3K4q0Jxs6Oa6sMSGC27sVpqmmEU9n8
-         sjWCYLudyLBI3ow26f92N4hAt60vtVTHPx0/0cDHHNS8MHbV12WoEZ8wzjm+dWrYAJyP
-         n2rYcIiQsSvzwducXTDVsM86xtxJm9DrwQUqLTqumZ+0Wfk8XDmyIeZc40qfsm1VeO46
-         nU/w==
-X-Forwarded-Encrypted: i=1; AHgh+RpmgwU1iAXvnmG7itz0SSRhK0IfU9cMqjFc++tlne7SD8dLeD7XnDLexJdS19T7Flcde2fBL6+VOPI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywrd7/EteMpzK8WchzYXCzi9YGaVDTeKuRgMSFWpOV008jppjP9
-	zDfx4XrgA7RYZv2pg+i5ZQvkcIVaFnIr7Zy6MlnbLTSHF/IHb82NUJGA
-X-Gm-Gg: AR+sD105D1r5bqDr3MEr9p7pghKhpqbShtBVhVS5iBZcbByQ+O8RhzGsshsp1q6qcvP
-	8SREeLQ/zIe9O/1WXusjgQPbfESBB47z1CYWoL2IkkMy8exyNDbuKpRs2XMKYh20YWbdaq+9vwC
-	fk9zZ8DqhBG07/nVxL8f5n9nemA9woxPUKtamurr+4VcZiuSaWHkQ0ySKuzj5aE2GPZxRy/7ous
-	SSRAETFl+BNxoafzm3ZxWfdUwqYvAdECCgeomAixjNg6jOrKCGFx0Su1tfREjnttrLNOSTgKBY3
-	V6ScZ3b+jw+GlkuEFgEBHabLtQdOSMVaeGNfLCC98zuZyQb/VnTKaakj8z3PAOjJO7SpAK4NEbX
-	/JKSYzmFKF4DGThZpOz6dyj6wM6paY+WK68+n+N/N1f/U/3TYyEIuIH8HW5GPkPftJVyxHZVqfy
-	mrQRMZlh/vZyFYhD8DFQvpemsFiIxLtdww6fR1HHFpxHi5rRD9kTDZ5+NkOhrboi/+9j2drM/WC
-	DqDfByi
-X-Received: by 2002:a17:90b:39b0:b0:38e:659b:f366 with SMTP id 98e67ed59e1d1-3933b500d17mr14996336a91.0.1786816662102;
-        Sat, 15 Aug 2026 10:57:42 -0700 (PDT)
+        bh=gIlktj+wxmAUkq3OHJvtiyHqtwOwmYETQ46YaPY3Vxk=;
+        b=AHXuDPqkWYglNv3weD1fBX1RFoJDkpAxmREOEWnWklf5b6omR63PS9yRtWoU4ph+cf
+         dQPnvq+J09hoVtwBvPFvDdf3ACz+77z/5coGUHI9Bolpkad+b0AU25S7BcvotdH6DvGh
+         gkgmN+uwmYRy10pTHh1sjTrt4Bx8/SFJ/iCYavTo6th2zLdYCmpPYWs0doXW6X77FJC9
+         6UiT7U1osrw3cTj/AECS5ExuckUUIRVwO+3Le4ef7KbP8hpbajtiWerl/U+RMSJf0Ic8
+         WwVlTrZH0cXbzs54In8xIPsDqmIx8cgpSsK7TxEKN4iMg7BQ+bgzfjzCIHXa2GnMSz6S
+         wNFA==
+X-Forwarded-Encrypted: i=1; AHgh+RrenbSHM9N6ueNCkQhaGTAYxWYoaqdHkbAk5fcexQ0jDVQs5aXupDZMOErPOd84d2yf9O8BGDL84VM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxxkGuGuF/+PsfFW2I5rT1+SfYazBh63d5vZfE17udRfXVRoyQv
+	RxGaVCc3YdM8LZ5rxF0XeDdfInZBLwd2QIlycqKIOUkC+UFUCZRrCJRX
+X-Gm-Gg: AR+sD106hArSw6vfRdnMyo023hAN7cS0nlpUysAwp/lfk7XWKVfo9lXHxykKhEjBbCA
+	5qrX2dO39dWmDqtc5A+rtEfCRQJlGOytP2h2f9n8Rhz5gcG7TXA4qoKzCAq+puenzzMSsZKBFY4
+	T6qz0Gbh9Dz0GxpDAblr5wQDFJP/akp0wlG5ZgbUd5LY+geynNeRLKFlblVaT7bGRGwqAuPAp5N
+	zwtfgUlRBbct1NmPMvPEHDHAJQXPK6fiGitXcBs4xHPMRy6/eZacnHrifg6Fu98FRTsh0Sd8Ps4
+	Eu2CcwflYiRynEZGnvIqfX5IvN4LVPsfL3PRfWQ+AzJzo269Dq1//ESbFaFXZ8eEKbh5nNnOYMZ
+	Z1aElCLCiVJ1j6vkl/+DyzXV0utgDIEaghg6feeuC9KEx3BqQiQB/8WVroTHlxq9rEQZhvBUnmD
+	GduTOBJ8MnqTzjmAEf0AU9Q0EhrkNH6OFE/Fx3coqi4dArR/9bF+/zhS0Zlnk9fr0HPnF6SlFRW
+	lOJDamS
+X-Received: by 2002:a05:6a21:e8b:b0:3cb:eb06:ce09 with SMTP id adf61e73a8af0-3cc71de3b98mr15980190637.25.1786816667768;
+        Sat, 15 Aug 2026 10:57:47 -0700 (PDT)
 Received: from yash-Bravo-15-B5DD.. ([2409:40d4:1248:1816:fcb7:1765:17f9:b9a5])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-320ea2fcfb8sm17305163eec.21.2026.08.15.10.57.36
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-320ea2fcfb8sm17305163eec.21.2026.08.15.10.57.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Aug 2026 10:57:41 -0700 (PDT)
+        Sat, 15 Aug 2026 10:57:47 -0700 (PDT)
 From: Yash Suthar <yashsuthar983@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -73,9 +73,9 @@ Cc: dlechner@baylibre.com,
 	srinivas.pandruvada@linux.intel.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] iio: accel: bmc150: use aligned scan buffer for both trigger and fifo
-Date: Sat, 15 Aug 2026 23:27:26 +0530
-Message-ID: <20260815175728.99541-2-yashsuthar983@gmail.com>
+Subject: [PATCH v2 2/3] iio: accel: bmc150: use DMA-safe buffers for regmap bulk reads
+Date: Sat, 15 Aug 2026 23:27:27 +0530
+Message-ID: <20260815175728.99541-3-yashsuthar983@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260815175728.99541-1-yashsuthar983@gmail.com>
 References: <20260815175728.99541-1-yashsuthar983@gmail.com>
@@ -87,66 +87,110 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Drop buffer as duplicate and s16 is not correct we needed __le16 as little
-endian, keep scan at the end of the bmc150_accel_data struct with
-IIO_DMA_MINALIGN, and use it for both paths.
+The FIFO and read_raw buffers are passed to regmap bulk/raw reads
+,which is not DMA-safe.Moved them into struct bmc150_accel_data
+after scan, each aligned to IIO_DMA_MINALIGN.
 
-Fixes: bd7fe5b71918 ("iio: accel: BMC150 accel support")
 Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
 ---
- drivers/iio/accel/bmc150-accel-core.c |  4 ++--
- drivers/iio/accel/bmc150-accel.h      | 14 +++++---------
- 2 files changed, 7 insertions(+), 11 deletions(-)
+ drivers/iio/accel/bmc150-accel-core.c | 14 ++++++--------
+ drivers/iio/accel/bmc150-accel.h      |  5 +++++
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index dc8a6285cf3d..89a475ef9a9b 100644
+index 89a475ef9a9b..e8d27fd1be3f 100644
 --- a/drivers/iio/accel/bmc150-accel-core.c
 +++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1191,12 +1191,12 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+@@ -125,7 +125,6 @@
+ #define BMC150_ACCEL_REG_FIFO_CONFIG0		0x30
+ #define BMC150_ACCEL_REG_FIFO_CONFIG1		0x3E
+ #define BMC150_ACCEL_REG_FIFO_DATA		0x3F
+-#define BMC150_ACCEL_FIFO_LENGTH		32
+ 
+ enum bmc150_accel_axis {
+ 	AXIS_X,
+@@ -622,7 +621,6 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+ 	int axis = chan->scan_index;
+-	__le16 raw_val;
  
  	mutex_lock(&data->mutex);
- 	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_REG_XOUT_L,
--			       data->buffer, AXIS_MAX * 2);
-+			       data->scan.channels, AXIS_MAX * 2);
- 	mutex_unlock(&data->mutex);
- 	if (ret < 0)
- 		goto err_read;
+ 	ret = bmc150_accel_set_power_state(data, true);
+@@ -632,14 +630,14 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+ 	}
  
--	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
- 					   pf->timestamp);
- err_read:
- 	iio_trigger_notify_done(indio_dev->trig);
+ 	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_AXIS_TO_REG(axis),
+-			       &raw_val, sizeof(raw_val));
++			       &data->regval, sizeof(data->regval));
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error reading axis %d\n", axis);
+ 		bmc150_accel_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+-	*val = sign_extend32(le16_to_cpu(raw_val) >> chan->scan_type.shift,
++	*val = sign_extend32(le16_to_cpu(data->regval) >> chan->scan_type.shift,
+ 			     chan->scan_type.realbits - 1);
+ 	ret = bmc150_accel_set_power_state(data, false);
+ 	mutex_unlock(&data->mutex);
+@@ -918,7 +916,7 @@ static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
+  * frame data is discarded.
+  */
+ static int bmc150_accel_fifo_transfer(struct bmc150_accel_data *data,
+-				      char *buffer, int samples)
++				      void *buffer, int samples)
+ {
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int sample_length = 3 * 2;
+@@ -941,7 +939,6 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret, i;
+ 	u8 count;
+-	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
+ 	int64_t tstamp;
+ 	uint64_t sample_period;
+ 	unsigned int val;
+@@ -993,7 +990,7 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 
+ 	count = min_t(u8, count, BMC150_ACCEL_FIFO_LENGTH);
+ 
+-	ret = bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
++	ret = bmc150_accel_fifo_transfer(data, data->fifo_buff, count);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1008,7 +1005,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 
+ 		j = 0;
+ 		iio_for_each_active_channel(indio_dev, bit)
+-			memcpy(&data->scan.channels[j++], &buffer[i * 3 + bit],
++			memcpy(&data->scan.channels[j++],
++			       &data->fifo_buff[i * 3 + bit],
+ 			       sizeof(data->scan.channels[0]));
+ 
+ 		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
 diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
-index e8f26198359f..9deff256aed5 100644
+index 9deff256aed5..8f64b24339e4 100644
 --- a/drivers/iio/accel/bmc150-accel.h
 +++ b/drivers/iio/accel/bmc150-accel.h
-@@ -64,15 +64,6 @@ struct bmc150_accel_data {
- 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
- 	struct mutex mutex;
- 	u8 fifo_mode, watermark;
--	s16 buffer[8];
--	/*
--	 * Ensure there is sufficient space and correct alignment for
--	 * the timestamp if enabled
--	 */
--	struct {
--		__le16 channels[3];
--		aligned_s64 ts;
--	} scan;
- 	u8 bw_bits;
- 	u32 slope_dur;
- 	u32 slope_thres;
-@@ -85,6 +76,11 @@ struct bmc150_accel_data {
- 	void (*resume_callback)(struct device *dev);
- 	struct delayed_work resume_work;
- 	struct iio_mount_matrix orientation;
-+	/* Ensure correct alignment of timestamp and DMA safety */
-+	struct {
-+		__le16 channels[3];
-+		aligned_s64 ts;
-+	} scan __aligned(IIO_DMA_MINALIGN);
+@@ -56,6 +56,8 @@ enum bmc150_accel_trigger_id {
+ 	BMC150_ACCEL_TRIGGERS,
+ };
+ 
++#define BMC150_ACCEL_FIFO_LENGTH		32
++
+ struct bmc150_accel_data {
+ 	struct regmap *regmap;
+ 	int irq;
+@@ -81,6 +83,9 @@ struct bmc150_accel_data {
+ 		__le16 channels[3];
+ 		aligned_s64 ts;
+ 	} scan __aligned(IIO_DMA_MINALIGN);
++	/* DMA-safe buffers for bulk/raw reads */
++	__le16 fifo_buff[BMC150_ACCEL_FIFO_LENGTH * 3] __aligned(IIO_DMA_MINALIGN);
++	__le16 regval __aligned(IIO_DMA_MINALIGN);
  };
  
  int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
