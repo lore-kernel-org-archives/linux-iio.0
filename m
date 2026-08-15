@@ -1,49 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62E111B87C0;
-	Sat, 15 Aug 2026 01:52:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48D7E15C14F;
+	Sat, 15 Aug 2026 01:57:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786758740; cv=none; b=CGPQ+a5c0uV+ShkCIgegl74Wwovg9/j+Dx0CAUFt1dUA2HslMqZhJNVWqbbEPXdaj3Zp+5OJY3Ts6igF7ygECy6LyLvN4zgdqgsWlufeFvYnKU0ddQOhaQWlLT/ZwnYq5GTP5eIg/KsaaXGQ5OQPznWkGH/C3iqlxgrFNi9C128=
+	t=1786759059; cv=none; b=iJbQEAl83fDBOLlaZNkujEMa7IQLKRhL5ft6aLox5NfQMyjBhsQIZXDCi4fGK64ykirguXnJVPL7rrCJl2LuuF7HWvwz7+168RXHeF/GoS6WM2un1xonVWKVsBvhgcbRleQvS5myihwTvWb9yXCQMfSvl95Wk8kxk/YLHuEX+Wk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786758740; c=relaxed/simple;
-	bh=UodzaCqNmgQAz/1FuQH5+/uhhi6N+TbK+KWDow7E9UI=;
+	s=arc-20240116; t=1786759059; c=relaxed/simple;
+	bh=2k21oP3uc3CpSpDf6M9NnnLHW6BVjcb1UHkbnQKiIUM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ohrQUhP92vxux+ABRE/Xq5zsxMCi9vTRolyYQnKPyk79YjKcoKykaK9qXpr96sKRgACW28Wdye428ZEcVKLcxa0GXyepZW664+m84Gd7ar51WJjo4ldgH6H63q1WTWeZBp6lo8vGhkZ3g73wEcWFKs/bkN50smNCNMDtoV35jFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l3viutBT; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hBFPZiq3oCAPlYnRMpYB0b5Ch3VdxX0bTSPZrH4E0r5scOPAPer/E6oom0bs12Bw8Jcjv1Kd1Cj9vTPfJBun8TcmjkdvT0PLK7B3AaZfUXabgYEIXEw7FGUtcZY87hhydzHOXXHMv8aI4K2MY8EtURASG0VjEk2+cyhNB30wdpA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lzZFlhvF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l3viutBT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB381F000E9;
-	Sat, 15 Aug 2026 01:52:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lzZFlhvF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36CD61F000E9;
+	Sat, 15 Aug 2026 01:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786758739;
-	bh=3O3WrexwJC1IwCK2ZQDYE1WLv4B9LI47oY9B0YdvWyw=;
+	s=k20260515; t=1786759058;
+	bh=9zVksnQyuPy07Sp7sNksTJnIRmmkQHtYXS8UklOtV60=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=l3viutBTGOxBM9hejZ+sNjtf+k6yxO8Rgs62sbYI9MiafqaaJi4UngmHLUwnBvLeQ
-	 mm/s39JBkjFwpDpXd/GSvSmH1ioyJYqHUMWy1AFlC4Gzo2lupvCGEZR84M/us8RZV6
-	 Pf5n0SQrIh94ga8Pf6pg4To/dh31u51GVTS09AfBW+J831NjjTBCWqFITw5tsHmzsD
-	 MjO0Zvmb2T8qJOnHUSAEyFyWRHXYZhCGGeNLntKYrl/E+EGZcBawsVjFa6H3QezZUe
-	 Oy8CdZRrXiRZXe+P/ndfqXf2y2YmIxZP3eN+V7WWDxtEWrEKvxf0Eb9NbTOQp4TTeX
-	 nEsXrtmZY/nBg==
-Date: Sat, 15 Aug 2026 02:52:03 +0100
+	b=lzZFlhvFFzT7JNr11cvMu4yCeFnhSny1TroFsX2oiTWNjfDTiOEZTqJqGWdEGU9rl
+	 bby36qoqoQ7Dw1aAMu2RPox6lSE6bOg/yzO+JvRmbGCoafKNJ0Fj0SXVsjJQ1pW2eF
+	 m+nubQelGmT9gTU8c4s7PXn4h/8J9HBYXoEa19sEbQ4tmPqm+TkVJAVkGC5gihMOLY
+	 VpNX9kFcIFqTWesxMGNL/WOKYDO8/Inbh1NhPtTa210nFttRUEfbP4joyQT4vCQFFM
+	 wBDXl5J0nQsvaYB/47BTntXz7YNNTk/l4XwRL6pVNnbapp3t8tN3Oy3UGaUvTV9lKO
+	 GuH0WGA90Z54g==
+Date: Sat, 15 Aug 2026 02:57:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo
- Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
- dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, mfd@lists.linux.dev, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v6 04/14] mfd: lm3533: Pass only regmap and light sensor
- presence to child devices
-Message-ID: <20260815025203.2618cf8f@jic23-huawei>
-In-Reply-To: <20260731113632.158440-5-clamor95@gmail.com>
+To: Lee Jones <lee@kernel.org>
+Cc: Svyatoslav Ryhel <clamor95@gmail.com>, Daniel Thompson
+ <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>, Pavel Machek
+ <pavel@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold
+ <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+ linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ mfd@lists.linux.dev, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v6 08/14] mfd: lm3533: Convert to use OF bindings
+Message-ID: <20260815025717.05a1bbfd@jic23-huawei>
+In-Reply-To: <20260811191132.GA1072730@google.com>
 References: <20260731113632.158440-1-clamor95@gmail.com>
-	<20260731113632.158440-5-clamor95@gmail.com>
+	<20260731113632.158440-9-clamor95@gmail.com>
+	<20260811191132.GA1072730@google.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,12 +55,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 31 Jul 2026 14:36:22 +0300
-Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+On Tue, 11 Aug 2026 20:11:32 +0100
+Lee Jones <lee@kernel.org> wrote:
 
-> Instead of passing the entire lm3533 core data structure, only pass the
-> regmap and the light sensor presence flag to child devices.
+> Jonathan,
 > 
-> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> IIO ack please, mate.
+
+Oops. Not sure why I failed to notice the IIO parts in these other patches.
+
 Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> #for-iio
-(I didn't read the rest on this one)
+
+Thanks for the poke!
+
+Jonathan
+
