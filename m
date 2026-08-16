@@ -1,118 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C4837F8C4;
-	Sun, 16 Aug 2026 21:34:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D173D6CC5;
+	Sun, 16 Aug 2026 21:35:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786916075; cv=none; b=Sr0FDzgJOfm+DgdU9uOSldDs3qBk4EfWG+6VgZnNugYnuoG7H8r++4x/dftTU8rE2sHSsd0zU9alq1HVEXW/yHilIFJBKoFrV3CfQnOK18+j/WVOKjQcasXCcwwM+Sxq9PXQNbVYeUcyauwOZCzsjjVhAaowPaPu5FD5TFSchFM=
+	t=1786916122; cv=none; b=MzMLF4lJ3b8YA1stgxX1IoKr+RIofVFdMwcjqziL/MS3x700zWmOTUzC9Sm4glINil+kUhYBgpOHVPGcreYfSqAAXeJ26I4bKcGpk2Q8l1Kua7199UWbeui4Hj1ICRwqv8QLqtkZVhmBFrhW/5khs6Fy5u8127mo4YBnnGGcAWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786916075; c=relaxed/simple;
-	bh=seiMpe9VE8n0i/uwUuiZVELiVonOtL02DYSK9LXbgG8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ffcn0azPhV51xfiwNwBgHM+2Jm2x9zALxv0JmWrVZAtQ4ogPaKkzSF0ItUrO1sMWH+Tto+1ocnlV3LoaRU7yD34dWM/RiicB+YSE2DScNRgpy8r01xT1Q271bMQ5IUIkIVFIeshBtEQU0HBSFWi0lA4LunIsOlQa18fL4ovtKV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hRBgDFK5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786916122; c=relaxed/simple;
+	bh=doRe9pDoxz83Kw9gKKXePlQ8Oq0sR2Jl9ZDI9XBhcgs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GE8YyoNwxS/rwZj9zybzSWEGMabgmF1jMvjf3caGD1jSI2rOwGeV5n4mqsmrvH5vZo5c2zUl+VtGiqqqR2CoOjN+XWLzJPk2RhHhMlNaTCzTVRBXe4lF/RpPugPtk3ZAEP6H/+fK6qZyTDvaHN0lUlHDFlDlLlSMz/ebolbsXuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=kMmtFYv4; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hRBgDFK5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEB11F000E9;
-	Sun, 16 Aug 2026 21:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786916073;
-	bh=uod8fIMy2JLlgadI/Q24fmG+HITi8bTBWFw375HTSC8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hRBgDFK5a1peDcF2Uu/45iiFRfKDfxbB6qOPxHOHm6S+wDo+wArvBx+3TqJA/ktLx
-	 Wnq2I8CUpvWGqsXp/3A0T+RTSlpwnCesEzNi2Iv2+sVCM3D3XVsZu/eImnRO7RI195
-	 MidbpmxyrC1OwuZ6wtorDbxu4bK/E+9RTp9Mfq5JtnnqZFUQ0WHXl+yeYyuVchV4W8
-	 8jEUrpbNTG09x/qWNQOc8UTVJWSyqRNVnrS8/t1Yy8z2fCH7Aj1qMudeb0by4Ts//e
-	 e28B7tCrtf9QPguFcGhyQi8G/ZgMp6nUzOZ1i9Eq96SMH988J1oU4vKTa8T9hO2zDt
-	 cDPXUExb5WUpw==
-Date: Sun, 16 Aug 2026 22:34:32 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Kurt Borja <kuurtb@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v3 3/9] iio: adc: ti-ads1262: support per-channel
- sampling frequency
-Message-ID: <20260816223432.64ddf4d0@jic23-huawei>
-In-Reply-To: <20260807-ads126x-v3-3-f89925d72792@gmail.com>
-References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
-	<20260807-ads126x-v3-3-f89925d72792@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="kMmtFYv4"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=NMd5U+2sN7asG0sEs5hUQViW9IT3+OUTluZczp87DsQ=; b=kMmtFYv4Vtla8uj1g/UpvDECfW
+	EFkGj+YjxlFHoUDo1Dbiks+Ye8pMYVaW5O1U2onIIXTLJvZe8aorncniAZN2fOEay0QOXRPRzWP2q
+	wOuSpLOyXe1hz0mcFfWsGMXLeGuDUfxEO8Nz2GRbN2G+WVM0f6ww3q+QvuKE0iypV37s/mOVi6GNj
+	UOyS8WnIVVEo5KH1hikaMZoY2opNVLjWqAShzSczkpJPGNjoIWCEx83M5BdvtTteEIYyBDZHGuj7g
+	HBy9VIHKOGBzHbtA3dFGidBJ+WvfSUOVn/EQS8VYmsNARDDCvMRueLyfDmjgUOuIohg2iztvTDh52
+	ol4ZJx7w==;
+Received: from willy by casper.infradead.org with local (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wviVQ-00000008xfA-0dyc;
+	Sun, 16 Aug 2026 21:35:00 +0000
+Date: Sun, 16 Aug 2026 22:34:59 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: Guru Das Srinagesh <linux@gurudas.dev>
+Cc: Alex Lanzano <lanzano.alex@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Gustavo Silva <gustavograzs@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] minmax: Add in_range_inclusive() for inclusive
+ range checks
+Message-ID: <aoItA_ktl04qmhEb@casper.infradead.org>
+References: <20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev>
+ <20260816-minmax-in-range-incl-v2-1-766f737dd6bf@gurudas.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260816-minmax-in-range-incl-v2-1-766f737dd6bf@gurudas.dev>
 
-On Fri, 07 Aug 2026 22:58:25 -0500
-Kurt Borja <kuurtb@gmail.com> wrote:
-
-> Add per-channel sampling frequency support. The "available" attribute is
-> assigned per-channel too, in order to eventually support per-filter
-> availability.
-> 
-> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
-Trivial things only.
-
-> ---
->  drivers/iio/adc/ti-ads1262.c | 159 ++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 158 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
-> index d78e5e3ae13e..b3b7b1249102 100644
-> --- a/drivers/iio/adc/ti-ads1262.c
-> +++ b/drivers/iio/adc/ti-ads1262.c
-> @@ -26,6 +26,7 @@
->  #include <linux/regulator/consumer.h>
->  #include <linux/spi/spi.h>
->  #include <linux/types.h>
-> +#include <linux/units.h>
+On Sun, Aug 16, 2026 at 12:26:20PM -0700, Guru Das Srinagesh wrote:
+> +++ b/include/linux/minmax.h
+> @@ -299,6 +299,25 @@ static inline bool in_range32(u32 val, u32 start, u32 len)
+>  	((sizeof(start) | sizeof(len) | sizeof(val)) <= sizeof(u32) ?	\
+>  		in_range32(val, start, len) : in_range64(val, start, len))
 >  
->  #include <asm/byteorder.h>
->  
-> @@ -148,6 +149,7 @@ enum {
->  	ADS1262_DR_14400_SPS,
->  	ADS1262_DR_19200_SPS,
->  	ADS1262_DR_38400_SPS,
-> +	ADS1262_DR_COUNT,
+> +#define __in_range_inclusive(val, start, end, uval, ustart, uend) ({	\
+> +	typeof(val) uval = (val);					\
+> +	typeof(start) ustart = (start);					\
+> +	typeof(end) uend = (end);					\
+> +	uval >= ustart && uval <= uend;					\
 
-For count / terminating entries, no trailing comma as nothing should ever
-come after them.
+By convention, 'end' is used for exclusive ranges while 'max' is used
+for inclusive ranges.
 
->  };
->  
->  static int ads1262_channel_enable(struct ads1262 *st,
->  				  const struct iio_chan_spec *spec)
->  {
-> +	struct ads1262_channel *chan = &st->channels[spec->scan_index];
-> +	int ret;
->  	u8 val;
->  
->  	guard(mutex)(&st->xfer_lock);
->  	guard(mutex)(&st->chan_lock);
->  
-> +	val = FIELD_PREP(ADS1262_MODE2_DR_MASK, chan->data_rate);
-> +	ret = regmap_update_bits(st->regmap, ADS1262_MODE2_REG,
-> +				 ADS1262_MODE2_DR_MASK, val);
-Not seeing an advantage here over
-	ret = regmap_update_bits(st->regmap, ADS1262_MODE2_REG,
-				 ADS1262_MODE2_DR_MASK,
-				 FIELD_PREP(ADS1262_MODE2_DR_MASK, chan->data_rate));
+Also, this seems completely wrong.  How do you think this is unsigned
+comparisons?  I think you'd do better to follow the example of
+in_range() much more closely.
 
-It is fine to go a little over 80 chars when it helps readability.  Here I think
-that is the case as clear we have matching masks.
-
-> +	if (ret)
-> +		return ret;
-> +
->  	val = FIELD_PREP(ADS1262_INPMUX_MUXN_MASK, spec->channel2) |
->  	      FIELD_PREP(ADS1262_INPMUX_MUXP_MASK, spec->channel);
->  	return regmap_update_bits(st->regmap, ADS1262_INPMUX_REG,
+ie this is AI slop.  Please learn how C works, and write the code
+yourself.  Use the AI to check your work, not do it for you, because it
+leads to people wasting their time trying to manipulate you into
+manipulating your AI to produce good code.  That's not a good thing.
