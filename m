@@ -1,40 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D03B29C327;
-	Sun, 16 Aug 2026 20:44:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B783A9015
+	for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 20:48:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786913083; cv=none; b=g5lflGkO5fIH3YTS5kHe6FWKQqB8Jyj7TpcAgLt6nSGoJLVjmnfDB9ZPDxaJmJrSqa52+riAcK+Q3tuSgOmBNrDE/+4QM1bVNTNw16yLN7KOj2aOnYiE58umi7wlH/82WI0awK1AUqrn0nmFZYLe++BdykrwgBuAuUdlHSECe00=
+	t=1786913285; cv=none; b=gAfZMLFWSLObcQqgRueBKM6gg+Uq486mJQt5K98NuXQy04xOiwEv/UDV0n+QxO0MzTJxN/d264+lh5H/u9nhxi/CryWkJLLcRx3mmxa4gO6dv2HB5CioOWSgBMlyqeU1necxCdtWkoGnweYxtv0uei8tnAjJqVkAYQ8cwRNIuJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786913083; c=relaxed/simple;
-	bh=RqvhbOUuVkHBFuTqOZSYYAco6loxRFwaF3tkfLGrQj8=;
+	s=arc-20240116; t=1786913285; c=relaxed/simple;
+	bh=DuoCdJG+MEx0tgfDfZZF59eyA4gIICfIAGuGBN0B5KI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GGwvVLlKFLU/YRCs+rdOAH9ptuqFtg+QZw0wwNXoh9fKhQwFKN7As0IP5TfGubIeb/gAYhAE6yv4nhYILt71Kx7ukwC7fN2OLdZ2nTlqpflrzKAR5Mzong8Ryu5aZljBpdZGvGPtx+FMZ6ATyX0w154uhkzbHlXGeblclQ2OARY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oZ/hp14X; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=QnyEPdOdV8LILcgyPb3ikWQahgxQ0exOy2PilLb0QYySu9ftkumOLT3bSyubIqUZzKzf6iQME6waxcAjCJp/WA6kVmHrBFbGqOEptfyrodtDcucZeUkv5TSRXkwdDHOEQhk07BNQd5kxd40C2ToXoWw1myaxg0aHzW3LQcjPGFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I16xZDBe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oZ/hp14X"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0523B1F000E9;
-	Sun, 16 Aug 2026 20:44:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I16xZDBe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6CE1F000E9;
+	Sun, 16 Aug 2026 20:48:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786913081;
-	bh=j2i4BAMMq+r21cSKi5lo/JB9+D7moFrU4XD2jrsffbI=;
+	s=k20260515; t=1786913284;
+	bh=5wR4IdSy4//FmVQt6tF+Kc4ZpQuoTt47Cud70UCAZSA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oZ/hp14XxbXgexd1hPaIJ8WZOzr1yKeedjAP9sGDYgad790hNy9upJDZnV3ZS3qAv
-	 0aagDDeNQ/iG6Nf1qhjebzenZc7UQqES01bJHwyispcB2WsuFcs5buImY181+dO3LF
-	 5yjThECNGl5FtBBsGYxjNkvCXXSkdE4Bo7furTANWW88Uj/yzcJpttzIQIBDPqQKEE
-	 hXK+YY756DAyr/oj4TcnkERHlONvepAnYcSbfaUnEBfr7Sni+SSkQkuiVMJJZUknHQ
-	 hsOLDFj8WJiCk4cTk7lOv8BwxqQBCbxu7bdfLK/IC1kwiSnk+FdZ9pZVfCm5enzh8l
-	 xPs1lu9lSQi7g==
-Date: Sun, 16 Aug 2026 21:44:37 +0100
+	b=I16xZDBe5qxaszo5ot2bExa2RAk+zS88SUhcGW3Nwe1ijNQNR/XIe/0yiuuY9HeIv
+	 lC/1xXFLH/JXrwrFPBUw7MbX9VfeSzD8cGQRzBotkMeMsJwvP49NTadnquIhDNWhxg
+	 bcaXlyzc/4bFUI028z5wpz1BXwxvFr2E209kJwvD/RqJiDZd/dg+Pchl6v1eQPSb4G
+	 GGqbSg0dbVLVnQ8ja/vMAHVSfm6paRW/uvfW0/eoA8NZZOeGfBssN9NBHojvhajCjo
+	 Cu1eaB6eQvF68v3blVuYo2drik7sPxgRvt2PUdo2Lomdh2R5CI2iU3U2IIqy+zdl77
+	 NHMwZKBXSTAug==
+Date: Sun, 16 Aug 2026 21:48:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] iio: adc: ti-ads112c14: add filter support
-Message-ID: <20260816214437.745d25bc@jic23-huawei>
-In-Reply-To: <20260807-iio-adc-ti-ads112c14-filter-support-v1-0-4d3ba00caf18@baylibre.com>
-References: <20260807-iio-adc-ti-ads112c14-filter-support-v1-0-4d3ba00caf18@baylibre.com>
+To: Paul Hollinsky <phollinsky@holtechnik.com>
+Cc: Amit Kucheria <amitk@kernel.org>, Thara Gopinath
+ <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] thermal: qcom-spmi-adc-tm5: fix all temperature reads
+ failing with -EINVAL
+Message-ID: <20260816214800.433a39ec@jic23-huawei>
+In-Reply-To: <20260808024552.57496-1-phollinsky@holtechnik.com>
+References: <20260808023938.57146-1-phollinsky@holtechnik.com>
+	<20260808024552.57496-1-phollinsky@holtechnik.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -42,164 +45,59 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 07 Aug 2026 19:19:45 -0500
-"David Lechner (TI)" <dlechner@baylibre.com> wrote:
+On Fri,  7 Aug 2026 19:45:52 -0700
+Paul Hollinsky <phollinsky@holtechnik.com> wrote:
 
-> TI ADS112C14 has several features related to filtering that are all
-> interconnected. And to make things more interesting, not of the register
-> fields map directly to IIO attributes. So this is one of those cases
-> where we need to bend the rules a bit and just document it (we've
-> already discussed this a bit in the previous series for this driver and
-> came to this conclusion).
+> adc_tm5_get_temp() rejects any iio_read_channel_processed() return value
+> that is not IIO_VAL_INT. Since commit bb21ee31f575 ("iio: Fix
+> iio_multiply_value use in iio_read_channel_processed_scale"),
+> iio_read_channel_processed() returns 0 on success, per its documented
+> contract, instead of passing through the value type from the underlying
+> read.
+> 
+> Since IIO_VAL_INT is 1, every successful read now takes the error path,
+> so get_temp() returns -EINVAL unconditionally and every ADC-TM5 thermal
+> zone is dead: with no valid temperature readings the core cannot
+> evaluate trip points. Observed on a SC7180 Trogdor Chromebook (Lenovo
+> IdeaPad Duet 3 / wormdingler), where the charger and skin-temp zones
+> report an error on every read.
+> 
+> The check no longer serves its original defensive purpose either: since
+> commit 05f958d003c9 ("iio: Improve iio_read_channel_processed_scale()
+> precision"), fractional value types are folded into the integer result
+> by iio_multiply_value() inside the IIO core, so the return value carries
+> no information beyond success or failure. Just drop the check and rely
+> on the ret < 0 test above it.
+> 
+> qcom-spmi-adc-tm5 is the only iio_read_channel_processed() consumer in
+> tree still testing the return value this way.
+> 
+> Fixes: bb21ee31f575 ("iio: Fix iio_multiply_value use in iio_read_channel_processed_scale")
+> Cc: stable@vger.kernel.org # 6.18+
+> Signed-off-by: Paul Hollinsky <phollinsky@holtechnik.com>
 
-I've long forgotten that :)
+Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> #from IIO
+Sorry about this. I thought we'd checked all of them but seems some slipped through.
 
->=20
-> Here is the high-level overview:
->=20
-> We are adding sampling_frequency, oversampling_ratio, filter_type, and
-> a (new to IIO) settlingtime attribute.
->=20
-> Since register fields have different meanings depending on filter type
-> we have a quirky rule that if the filter type is sinc4 or sinc4+sinc1,
-> then you need to set the oversampling ratio first in order to see the
-> expected available values for the sampling frequency. For sinc4+sinc1+pf1
-> it is the other way around, you have to set sampling frequency first
-> in order to see the expected available oversampling ratios.
-
-That's rather horrible...
-
->=20
-> In other drivers, we've opted to store the requested values for dependant
-> attributes like this and pick the closest available one when actually
-> starting sampling. I opted not to do that here as there is not much
-> overlap between settings. And as we will see below, there are other
-> reasons for being picky about sampling frequency.
->=20
-> We also discussed in another series about a proposed settlingtime
-> attribute. The conclusion was that it should be the total settling time
-> delay (in seconds) before a chip takes the first sample (after any
-> settings have changed). In this chip there is a DELAY field in a
-> register that programs some extra delay in addition to an always present
-> fixed delay. So the way the attribute will work for this chip is that
-> the settlingtime_available attribute will list the range including a
-> minimum value. This happens to be the always present fixed delay. So the
-> difference between that and the current value of the settlingtime
-> attribute will be programed as the DELAY value. It also seems that the
-> fixed latency period includes the conversion time. We've just glossed
-> over that for now and not subtracted that from the settlingtime
->  attribute.
->=20
-> Now, here is where things really get interesting/complicated. There are
-> even more settings that affect the settling time. We defined the
-> settling time as just a delay before the first sample. However, there
-> are a couple of things that trigger the "first" sample. On this chip,
-> the first sample only counts in continuous sampling mode. So only works
-> as described when using the DRDY trigger in this driver. When using
-> a generic trigger, e.g. a hrtimer trigger, single-shot sampling mode
-> is used, so every sample is a "first" sample and has the settling delay
-> added. This is mostly a non-issue other than it could throw people off
-> that they cannot set the hrtimer frequency close to the sampling
-> frequency attribute and actually get that sampling rate.
-
-Whilst odd I'm not that bothered by this one.  Maybe some weasel
-words about it potentially applying in other circumstances that
-chopping or first sample.
-
-
->=20
-> And there a few other idiosyncrasies we haven't accounted for. To keep
-> things simple, we've implemented settlingtime as tDELAY + tLATENCY
-> (datasheet values). But this actually include the conversion time as
-> well. Also, tLATENCY is longer if you are coming out of standby mode
-> (this doesn't matter at this point since we didn't implement power
-> management, but we wouldn't want to change it and break userspace
-> later).
->=20
-> Then there is also input chopping where the positive and negative input
-> channels are swapped in the mux in the ADC on each sample. In these
-> cases, every conversion requires the settling time because the mux is
-> switched after every conversion. And the actual first sample has
-> additional delay (presumably does two conversions).=20
-
-oh goody.  I wonder if that is standard in any sense for chopping devices?
-
-> So the first sample
-> takes tGC_LATENCY =3D 2 =C3=97 (tDELAY + tLATENCY) =E2=80=93 12 tMOD and =
-every sample
-> after that takes tGC_DATA =3D tDELAY + tLATENCY =E2=80=93 12 tMOD. For th=
-is one,
-> I have valued simplicity over accuracy in the implementation, so it is
-> the same where settlingtime =3D tDELAY + tLATENCY and not worried about
-> the 12 tMOD difference. I think it makes sense to keep settlingtime
-> as a single tDELAY + tLATENCY in this case since the when the mux
-> changes after each sample, the next sample is now the first sample after
-> settings have changed.
->=20
-> This sort of breaks the definition of sampling frequency though since
-> in IIO, the 1 / sampling frequency is the time between each sample
-> being sent over the bus. I don't really want to change how sampling
-> frequency is implemented here though because the current values match
-> the datasheet which can be used to infer information like where the
-> notches in the filter are. The actual observed sampling rate will be
-> 1 / tGC_DATA.
->=20
-> Having written all of this out now though, I'm tempted to go back and
-> change the settlingtime attribute implementation to be more accurate.
-> In any case, tDELAY will always be easy to infer because it is the
-> current value minus the minimum value (from the _available attribute).
-> Then when using input chopping one could get a reasonably accurate
-> sample period by taking 1 / sampling_frequency + settlingtime.
->=20
-> We will follow this up later with a documentation patch that explains
-> all of this too.
-This is pretty nasty but not first time we've had to bend the ABI
-a little. =20
-
-I stopped reviewing later patches as didn't want to unwind that
-misplaces snippet Andy called out.
-
-+ there is quite a bit in flight for this driver and my backlog of
-IIO emails is a mere 268...
-
-J
->=20
-> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 > ---
-> David Lechner (TI) (5):
->       iio: adc: ti-ads112c14: support external clock
->       iio: adc: ti-ads112c14: add filter support
->       iio: ABI: add sinc4+sinc1+pf1 filter_type
->       iio: adc: ti-ads112c14: add settlingtime attribute
->       iio: ABI: add settlingtime attributes
->=20
->  Documentation/ABI/testing/sysfs-bus-iio |  22 +
->  drivers/iio/adc/ti-ads112c14.c          | 859 ++++++++++++++++++++++++++=
-+++++-
->  2 files changed, 862 insertions(+), 19 deletions(-)
-> ---
-> base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
-> change-id: 20260807-iio-adc-ti-ads112c14-filter-support-8a56850f590f
-> prerequisite-change-id: 20260724-iio-adc-ti-ads112c14-continuous-mode-dd1=
-580754609:v3
-> prerequisite-patch-id: 0be96266a72458a63f7da7ca876d87cdf5769a8b
-> prerequisite-patch-id: 32ba48fd5eacaee60d50a0272557859cc9ea83ca
-> prerequisite-patch-id: c1eb09689bd5f259ea0110cbbfb3fa76689bdb04
-> prerequisite-change-id: 20260724-iio-adc-ti-ads112c14-burnout-18430466916=
-5:v1
-> prerequisite-patch-id: 8723aa599dcf5b836fb81cf1efb6c9096bf60b7a
-> prerequisite-patch-id: 12754335ccf210bcdeaa8a5d60b2280618d50993
-> prerequisite-patch-id: ed5d4c1628ef60ed542339fe5fb490383ee8074f
-> prerequisite-patch-id: b92f5609fcf39e958e78b4dd74c3d323ebb6a161
-> prerequisite-patch-id: 755be140432ee53c84c3a4112dc8a42d78dfd01c
-> prerequisite-patch-id: e89fe89cd6ceae3d875219611372a6d48bf0e064
->=20
-> Best regards,
-> -- =20
-> David Lechner (TI) <dlechner@baylibre.com>
->=20
->=20
+>  drivers/thermal/qcom/qcom-spmi-adc-tm5.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/thermal/qcom/qcom-spmi-adc-tm5.c b/drivers/thermal/qcom/qcom-spmi-adc-tm5.c
+> index bb6222c8cc5f..af72db6299cd 100644
+> --- a/drivers/thermal/qcom/qcom-spmi-adc-tm5.c
+> +++ b/drivers/thermal/qcom/qcom-spmi-adc-tm5.c
+> @@ -369,9 +369,6 @@ static int adc_tm5_get_temp(struct thermal_zone_device *tz, int *temp)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	if (ret != IIO_VAL_INT)
+> -		return -EINVAL;
+> -
+>  	return 0;
+>  }
+>  
 
