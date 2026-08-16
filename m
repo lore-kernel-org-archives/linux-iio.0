@@ -1,48 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30EA34B048B;
-	Sun, 16 Aug 2026 01:15:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3807A3A1A23;
+	Sun, 16 Aug 2026 01:32:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786842943; cv=none; b=bOJAH2O0rDdWbWdqrCOxle0WJTPXssP8TmGJeuUJ/oEwWbYHW8t3TTf+04HeMTkV0v/znj08s6FW1LryafK4o8ObedZvvHRKvrtCdt9i4vMiwUcGhL1+QbUpTtiA+W/5SGQSlh0gUp84P8VplRV8CA/SL7mS3NGKFH+B1pQnmjw=
+	t=1786843938; cv=none; b=lMLtfpd0vZ/+Fn0ffuAjVnDwH4328FETeYSQZywByKKjXp1gwJnd/vHJx5WnvSn4TRBhSE+yZlv6dZWPzCSG6qVagQ2bZ1ZedQ+OFmuE7JxBmfOQZ+jpBbP/gklp8RgtugnCsVMSyo/rK9zmw/u67rE+ejvtwrbL5TKL+uFOmK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786842943; c=relaxed/simple;
-	bh=N522CeDOigJDs7cUos5wW7HZ9WGlPSgUYP8lBysoDUk=;
+	s=arc-20240116; t=1786843938; c=relaxed/simple;
+	bh=vvmGUtVWLQU9DRKmRc0hyjAh/DH0vFP4+bG8P3LDDOU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JNptVZ5eCWwG8OC+1WyUUkXR0P7cCXcY4iQGejajfMvz801lZqkam7jdDWdUCVLRP47RRt+KbNdmjuXUdyDXM8ry49Iip2sH1FBpgIq+g44bWx973zSRz+1gknpQGo3OM9tkGot05mV9+eLUlpIDQwTFg885SGat3rvdC5De63k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ecs2r+s/; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LA6scBk0n5VwqH/G6Et9bFGkbqIZido9sTpKLHOob5DSIixXAu9kZTBOA7ZbQjo1n83WNHiGT0dYTATeewB/4KX8x05Y93isGzfIWV7C5FqLmIgOKrJihMKeGxtK0G0DTRZoiS8PPhr/Nvw42/mUiGR3IZ6SORoEsgkD1rR8Z60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YpZEQoTq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ecs2r+s/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDE21F000E9;
-	Sun, 16 Aug 2026 01:15:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YpZEQoTq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15AED1F000E9;
+	Sun, 16 Aug 2026 01:32:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786842941;
-	bh=JFmGP0VJtabRx/4pFXIvCVtLulMVCbvWMx/1YBF3fdM=;
+	s=k20260515; t=1786843934;
+	bh=d9hosoQH9NphUkjXzv2Y1g9DrPCs9polhMUA0fTBt+U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ecs2r+s/2ExFbUc3zmpWPXzsPkwLyD4uyeow+63PNcNBszfM5VPFA6WBJJMlC4rp7
-	 ynZ57pGKuXnY0sVbPgo82340LM0cPyuO1oLQPGJ3OHW0H6LziULspZ/uhVV0WHpy+x
-	 HFNrm5WL8u6JjmvgxP0DXX8EQ8I+ndQjUUTdPxugOSbVpa8I3R0NLchb0C5pykI/Ki
-	 oBF0THPz5kCD0Fbi0NVyEEcuhKDJQJTIQokottACSGek0sOXhAD/jE7JD6ttakrY+3
-	 FDCygu29E7DLsceRzdZJcB4qEJH86FwUeEahAF2oljbNERglR+Q2wMzl3XorOa34Ge
-	 JfaWk5Y2OfXRA==
-Date: Sun, 16 Aug 2026 02:15:39 +0100
+	b=YpZEQoTqalC7K6F/M90LHoRQr9m9pNAXww7gKfgL65zKOvoCVyubrmyFEhqNyYWhY
+	 82v+8+c4vVza/SwXXyk0j/ACdeUK8iNJ78F2M80nlFeWEAPtDHiCeguBwyeX700eV9
+	 ZsjI5NHUXaayMCo5oD9PN7s4TMrmts+6AkQleTud7rR+oac88wIFjoRJxYIPXvUwlm
+	 R5ICxnTPFuNpxrVURPA+K18mTlN5NYAKepaPlNY3GbK8/sWdood569RBiu8dOg89+g
+	 chSyVBkbwOaiV2myGkM0oYCaciWbgJmzFImE23+RnLQHH0TPEY2feOtuZR+z6PBYP9
+	 YEKFQStPVVr6g==
+Date: Sun, 16 Aug 2026 02:32:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: mdshahid03@gmail.com, Andy Shevchenko <andy@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Ray
- Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Broadcom
- internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Markus
- Elfring <Markus.Elfring@web.de>, Joshua Crofts <joshua.crofts1@gmail.com>,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 3/3] iio: adc: bcm_iproc_adc: Convert probe error
- handling to dev_err_probe()
-Message-ID: <20260816021539.5f95f403@jic23-huawei>
-In-Reply-To: <anmMmrbhUvtmm5xs@ashevche-desk.local>
-References: <20260806023902.8608-1-mdshahid03@gmail.com>
-	<20260806023902.8608-4-mdshahid03@gmail.com>
-	<anmMmrbhUvtmm5xs@ashevche-desk.local>
+Cc: sanjayembeddedse@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, Benjamin Tissoires
+ <bentiss@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v5 03/13] HID: hid-sensor-hub: introduce device managed
+ API
+Message-ID: <20260816023210.3205ae5c@jic23-huawei>
+In-Reply-To: <aneNIxxRVuJDFgh0@ashevche-desk.local>
+References: <20260806-28-apr-iio-redundant-argument-v5-temp-v5-0-f1f92c1d830f@gmail.com>
+	<20260806-28-apr-iio-redundant-argument-v5-temp-v5-3-f1f92c1d830f@gmail.com>
+	<aneNIxxRVuJDFgh0@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,68 +52,90 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 11:32:26 +0300
+On Sat, 8 Aug 2026 23:10:11 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Thu, Aug 06, 2026 at 08:09:02AM +0530, mdshahid03@gmail.com wrote:
+> On Thu, Aug 06, 2026 at 05:55:49PM +0530, Sanjay Chitroda via B4 Relay wrote:
 > 
-> > Replace open-coded dev_err() followed by return with dev_err_probe()
-> > for probe failures that immediately return.
+> > sensor_hub_register_callback() is common API used for the HID IIO drivers,
+> > prepare devm API devm_sensor_hub_register_callback() to acquire resource
+> > during setup and release using device managed framework during drivers
+> > fail, unbind or remove path.
 > > 
-> > Leave error paths that jump to cleanup labels unchanged to reduce code
-> > churn. These paths will be converted separately together with the
-> > planned devm-managed cleanup using devm_add_action_or_reset().  
+> > store the required callback removal context (hsdev and usage_id) in a  
+> 
+> Store
+> 
+> > dedicated struct sensor_hub_cb_devres, and register a devres action to
+> > handle to release resource with devres framework and helper API.  
 > 
 > ...
 > 
-> >  	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
-> >  			   "adc-syscon");  
-> 
-> Size note: the above can be also amended (since you have a 'dev') to
-> 
-> 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(dev->of_node,
-> 							   "adc-syscon");
-> 
-> But we can go even further (in a separate patch) and move it to
-> 
-> 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(dev_of_node(dev),
-> 							   "adc-syscon");
-> 
-> ...
-> 
-> >  	adc_priv->adc_clk = devm_clk_get(dev, "tsc_clk");
-> > -	if (IS_ERR(adc_priv->adc_clk)) {
-> > -		dev_err(&pdev->dev,
-> > -			"failed getting clock tsc_clk\n");
-> > -		ret = PTR_ERR(adc_priv->adc_clk);
-> > -		return ret;
-> > -	}
-> > +	if (IS_ERR(adc_priv->adc_clk))
-> > +		return dev_err_probe(dev, PTR_ERR(adc_priv->adc_clk),
-> > +				     "failed getting clock tsc_clk\n");  
-> 
-> >  	ret = clk_prepare_enable(adc_priv->adc_clk);
-> > -	if (ret) {
-> > -		dev_err(&pdev->dev,
-> > -			"clk_prepare_enable failed %d\n", ret);
-> > -		return ret;
-> > -	}
+> > +static void sensor_hub_remove_callback_helper(void *ptr)
+> > +{
+> > +	struct sensor_hub_cb_devres *res = ptr;
+> > +
+> > +	sensor_hub_remove_callback(res->hsdev, res->usage_id);
+> > +}
+> > +
+> > +int devm_sensor_hub_register_callback(struct device *dev,
+> > +				      struct hid_sensor_hub_device *hsdev,
+> > +				      u32 usage_id,
+> > +				      struct hid_sensor_hub_callbacks *usage_callback)
+> > +{
+> > +	struct sensor_hub_cb_devres *res;
+> > +	int ret;
+> > +
+> > +	ret = sensor_hub_register_callback(hsdev, usage_id, usage_callback);
 > > +	if (ret)
-> > +		return dev_err_probe(dev, ret, "failed to enable clock\n");  
+> > +		return ret;
+> > +
+> > +	res = devm_kmalloc(dev, sizeof(*res), GFP_KERNEL);
+> > +	if (!res) {
+> > +		sensor_hub_remove_callback(hsdev, usage_id);
+> > +		return -ENOMEM;
+> > +	}  
 > 
-> This will be less churn if the previous (new) patch will convert this to use
-> devn_clk_get_enabled(). But if Jonathan is okay with this patch as is, you
-> can take my
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Why is this order? What's wrong with the memory allocation first?
 
-Too much in my backlog for me to keep track so I'll merge what we have
-here and a follow up bit of devm_ work can be a separate series (this
-time - look for similar opportunities if you do similar work
-in future!)
+Why do we have a devm_kmalloc() in here at all rather than devres_alloc()
+/devres_add()  When there is an allocation needed that tends to
+end up at a similar level of complexity but with one fewer allocation and
+similar unwind.  Fun thought, maybe we can have a DEFINE_FREE() to do
+the cleanup (devres_free) on error in sensor_hub_register_callback()
+with devres_add(no_free_ptr(devres)) to hand over ownership.
 
-Series applied to the testing branch of iio.git.
 
-Jonathan
-
+> 
+> > +	res->hsdev = hsdev;
+> > +	res->usage_id = usage_id;
+> > +
+> > +	return devm_add_action_or_reset(dev, sensor_hub_remove_callback_helper, res);
+> > +}  
+> 
+> ...
+> 
+> > +/**
+> > + * devm_sensor_hub_register_callback() - Managed register client callbacks
+> > + * @dev: Device for resource management
+> > + * @hsdev: Hub device instance
+> > + * @usage_id: Usage id of the client (e.g. 0x200076 for Gyro)
+> > + * @usage_callback: Callback function storage
+> > + *
+> > + * This is the devres (managed) version of sensor_hub_register_callback().
+> > + * The callback will be automatically unregistered when the device is detached.  
+> 
+> Here, and everywhere else, validate kernel-doc. Here you introduced a new warning
+> (missing return section).
+> 
+> > + */  
+> 
+> Also, why kernel-doc is here?! It should accompany the implementation, here is
+> a declaration.
+> 
+> > +int devm_sensor_hub_register_callback(struct device *dev,
+> > +				      struct hid_sensor_hub_device *hsdev,
+> > +				      u32 usage_id,
+> > +				      struct hid_sensor_hub_callbacks *usage_callback);  
 > 
 
