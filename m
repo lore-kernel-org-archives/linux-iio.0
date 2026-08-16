@@ -1,95 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.zlab.su (mail.zlab.su [109.73.193.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C357333CE9A;
-	Sun, 16 Aug 2026 07:04:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD1783C108E;
+	Sun, 16 Aug 2026 11:37:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.73.193.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786863891; cv=none; b=QfeMeT+RBxgM7CiCUWR20omDc2mZYfLPTxSDb959WcSeB+OlN1kfx0X3v/njtc/Lgs31cVsL9qgd5scp1+p0q0VhHMJ23lt7P2YKs4f7Dm0i9JYEoSPFpxmBRAmZX46dNFlJrA2WmerDay/9CWsN6Cq6s6sNuji21Z3vuUjykwI=
+	t=1786880252; cv=none; b=R9hBV3MIk3ChLAiSAVGV0C5uEVeuDsH73TAp6F8HHzw67cs3Po3T95O0qTBv1f8CN1G51V88h2RXcZhR8aWKMsruVnp5njHrThnQkxFIR0wpEHS4pCbOA8kJLMa3K0iL28CPq64lZnuodGoKiOQaIzez7hzvfO4gewwQjrq2fOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786863891; c=relaxed/simple;
-	bh=umSxNNhx6O6I/O3YfUKvyhJJ7o0ZhYnB9LLBKcLTSTQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k63CRBMo+HfLD/1sfHFXfaP0Uop9/0xuOmMISw61mLYkuh0bdVk++AHwUnApWINI0SR1f9s5CDaGijXKf+myYQxSBxQBf12o5jWKXp6vp8qfVi90WYHDUrXnvzWKTzwfkvelNzZJtRHgi3MMzoeDbDfWf+U2ihfKj68mAnEOwAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f2yUfIq0; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786880252; c=relaxed/simple;
+	bh=rGlRdbT7z8dWK8H9MIyqWiFkuoNGZm2vaJU4/dJA8Cc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hdGYOWzr1PEeS4+jhfvmSNHNZgsrJ5NwLJD8hMNHAyRZtT86ZTlaYT5YeWaiXn2+kUj3aNULIssiP6gFJKh4YQBnNslLSx2rhjkzUAmJA7Dni7NKWfqCXd2daFdeel/FYYOH5J69t9LKQ8uOsYxe+n+SbkkNaGYZhHvF8CGUUdM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zlab.su; spf=pass smtp.mailfrom=zlab.su; dkim=pass (2048-bit key) header.d=zlab.su header.i=@zlab.su header.b=qIp0cxSI; arc=none smtp.client-ip=109.73.193.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zlab.su
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zlab.su
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f2yUfIq0"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 90E4A1F000E9;
-	Sun, 16 Aug 2026 07:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786863890;
-	bh=umSxNNhx6O6I/O3YfUKvyhJJ7o0ZhYnB9LLBKcLTSTQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=f2yUfIq0T7SdCQI/jpZgW58n7dEqEcMqFU74sovc7Rc72Oezw+uYCBE0gIr+Wittc
-	 VSBsp+4Q/sc+8LJyRsfTn5hYyPWH0OFhKOzdmtgIPG3CcNNOs1bGUJ6XCVP31F1Mlq
-	 7DvWkQd7JaAg8PIqMShqlIlDMn1Pno9CTjoOwn9tk7h1NBM4csCBT2SXNSblCs4bkY
-	 WVSn0p8BjNo0ZG1rtkBfwdX6+YEO1R4uErPFW03drpRWIawH9R2iesn+nugHNE1I3J
-	 2iw76WYsQmztaqSDI0zcqvMmxeqIa55OWKsasmjEjDkevDSGftPW0udxED2hQm/LLF
-	 LwgnErISKV7+Q==
-Date: Sun, 16 Aug 2026 09:04:47 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Eliav Farber <farbere@amazon.com>
-Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, 
-	guohanjun@huawei.com, mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
-	laurent.pinchart@ideasonboard.com, linusw@kernel.org, brgl@kernel.org, orsonzhai@gmail.com, 
-	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, dmitry.torokhov@gmail.com, hansg@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, W_Armin@gmx.de, fabio.m.de.francesco@linux.intel.com, 
-	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, 
-	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org, saket.dumbre@intel.com, 
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, acpica-devel@lists.linux.dev
-Subject: Re: [PATCH v5 01/13] notifier: add device-managed registration APIs
-Message-ID: <aoFgF2E4p4DqYLGG@monoceros>
-References: <20260816060648.4030-1-farbere@amazon.com>
- <20260816060648.4030-2-farbere@amazon.com>
+	dkim=pass (2048-bit key) header.d=zlab.su header.i=@zlab.su header.b="qIp0cxSI"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id A458DBFF2B;
+	Sun, 16 Aug 2026 14:37:12 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zlab.su; s=dkim;
+	t=1786880238; h=from:subject:date:message-id:to:cc:mime-version:
+	 content-transfer-encoding; bh=qp+Df4z+2pjjWixA5hPnYlkZ/MmiE6mxJUeWxdVpxVw=;
+	b=qIp0cxSImv3qd5PHPM877Gq6jtaJOUH7zkrr7XJdh8yJCLTZ5gja1QB71K7V+1TAiRKnHi
+	iAKnN+wFGAmGBVER04iYyeaDVEAVzswokIWSYgRM/sNLDw6z/ny6XiePQMPFlDI9fXW1lr
+	hCkVvUB9NpXDn343M2h+qYURcbSlR9y10t2m1Tw4/ymko2N6hI++px8+v4j46xy0R+wxd2
+	ye+IRzI7jnu4RcOiolUePxt5IriyApPsbVeoDA+6qlVLppL7jKzChtw1JPFXvFRmdBPdOB
+	qpI8uoR0YZqsIbk3KL5fS+iMDIgxmQ/66R6LvlMgxzcC5cH+wilIJ0tVpM+tlQ==
+From: Vladislav Leonov <vlad@zlab.su>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Jonas Karlman <jonas@kwiboo.se>,
+	Simon Glass <sjg@chromium.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-rockchip@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Vladislav Leonov <vlad@zlab.su>
+Subject: [PATCH] dt-bindings: iio: adc: rockchip-saradc: Fix RV1106 compatible
+Date: Sun, 16 Aug 2026 14:36:36 +0300
+Message-ID: <20260816113636.33635-1-vlad@zlab.su>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="onpq2odccwuwli4t"
-Content-Disposition: inline
-In-Reply-To: <20260816060648.4030-2-farbere@amazon.com>
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
+rockchip,rv1106-saradc was folded into the fallback enum together
+with rockchip,rk3576-saradc, falling back to rockchip,rk3588-saradc.
+The two IP blocks are not equivalent, though: per the RV1106 TRM v0.3,
+chapter 20 (SAR-ADC), RV1106 only has 2 channels at 10-bit resolution,
+versus 8 channels at 12-bit on RK3588. Documenting it as falling back
+to rk3588-saradc allows device trees that would bind against the wrong
+channel table and report an incorrect voltage scale.
 
---onpq2odccwuwli4t
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v5 01/13] notifier: add device-managed registration APIs
-MIME-Version: 1.0
+Remove rockchip,rv1106-saradc from the RK3588 fallback enum and give
+it its own standalone compatible entry, matching the dedicated match
+table entry added by the driver patch.
 
-Hello,
+Fixes: bdba14f6122c ("dt-bindings: iio: adc: rockchip-saradc: Add RV1106 compatible")
+Link: https://lore.kernel.org/all/20260810090826.146758-1-vlad@zlab.su
+Signed-off-by: Vladislav Leonov <vlad@zlab.su>
+---
+ .../devicetree/bindings/iio/adc/rockchip-saradc.yaml         | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-I already replied to Sashiko's review and only noticed afterwards that
-this way most recipients are stripped. So here again for the wide
-audience:
+diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+index f0551d665916..dc56855527b8 100644
+--- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+@@ -22,9 +22,7 @@ properties:
+       - const: rockchip,rk3562-saradc
+       - const: rockchip,rk3588-saradc
+       - items:
+-          - enum:
+-              - rockchip,rk3576-saradc
+-              - rockchip,rv1106-saradc
++          - const: rockchip,rk3576-saradc
+           - const: rockchip,rk3588-saradc
+       - items:
+           - enum:
+@@ -35,6 +33,7 @@ properties:
+               - rockchip,rv1108-saradc
+               - rockchip,rv1126-saradc
+           - const: rockchip,rk3399-saradc
++      - const: rockchip,rv1106-saradc
+ 
+   reg:
+     maxItems: 1
+-- 
+2.47.3
 
-I suggested to add "Must be called in process context." to the kdoc for
-devm_atomic_notifier_chain_register() as this is a relevant difference
-to atomic_notifier_chain_register() and create an immutable branch for
-it as a base for subsystems to apply their follow-up patches. I'd wait
-till Wednesday for concerns and review tags to tickle in.
-
-Best regards
-Uwe
-
---onpq2odccwuwli4t
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqBYQwACgkQj4D7WH0S
-/k7skgf8C5Wzbv3n8obmaaNWbEaCkUDjzqae3xgk7u64wEFfxeRUOYTWzeQZVOnq
-oQjiSoq6sPHfjWRz1jt3M7nnxPptJpOO7wuHkNWi5wVzcVaR7XjyQJBi3EhQGFtW
-b0Ykm/EHwSuUL5F4ITNOmyjx4+8ViM6+PlWCXJEvjEgCYkC7MVJKvuJZPgW8zsWK
-MbbzQZKUTrtrFc4rTiUsNXiFqsz9TG5XBgSrBoC5fq/9kQa7wunYMwpDI5rOvKf/
-S0NiJIIFkOu/s+ZQZCBDbqE1T6RGlb7lOgKI9GRg/d2pkXusFqa/Ie2vIUQD6BUz
-XgkLX+yXJp4OVU/+dENxKEs1CqBGbA==
-=59T7
------END PGP SIGNATURE-----
-
---onpq2odccwuwli4t--
