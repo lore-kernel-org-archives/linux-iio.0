@@ -1,41 +1,41 @@
-Received: from out-2uec-a117.jellyfish.systems (out-2uec-a117.jellyfish.systems [63.250.43.117])
+Received: from out-93wp-a38.jellyfish.systems (out-93wp-a38.jellyfish.systems [104.207.68.38])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944F03C062C
-	for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 19:26:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=63.250.43.117
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EC953C09EA
+	for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 19:26:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=104.207.68.38
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786908403; cv=none; b=Yt6SkM2P12OzbhXIrEExsVYiTb0doA2KxSoUIyyiVfQb9OaY5bmOy3/8SZ5Gfoo/7/PuAhbp3/FeaObLebRZxdFm6Cp6SB2YViPWtU562gYJvLUmuCtw8dz6i0pbfiqU4JKN443n751+ICPh++1gfh6+iHphppyqDRuIfVuqgRQ=
+	t=1786908409; cv=none; b=BMQV8fKXyS0tPCR6p0mMFZw6ncxGSXreaKjmI33q9migZuOcurooUDNFF/WAsPY97hKJmTScB+r3PkIAfAESKg1TpLvL843uiqe5RaD4eF8j8cJnq0Wx7xtkgmeJdvEcVLs6G5un205tjzMVEsuB9EQlUphLqXUF2ZBnXglPJ28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786908403; c=relaxed/simple;
-	bh=cTsNzRTilqXtdq5//WH6j43o0iiaxMk9zMpXRgUbrWo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=OHtzqrRQWgHRVUfx06jzg4Pqn21eVWFrlz1xVTjP/6U6KPWrDiO1bCccLo0UJHOEfr6Pe/ubAJ1g+VekhXqHnYg08x15Jl37X1cPc0QCb/noZML+RaMb0vd8ebbInbhJEMGFgu5UwsNbA1gvE21zS4/1ewuloM5Uk2EQZxHITbo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev; spf=pass smtp.mailfrom=gurudas.dev; dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b=CjsHwqdF; arc=none smtp.client-ip=63.250.43.117
+	s=arc-20240116; t=1786908409; c=relaxed/simple;
+	bh=pmNfO7S4o+vyLKPAK0hQNBamZkYQ7RpSRJyhmO6cXcw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=k34kv88Ktetn4dqdZ30liD5w/r8lafhvZ69CateAJdihyWgM7u7hOZ4DHzXfnOLyXuTgqAGiC4EDdaEPlU+rb1TOyQm4GoYrqch450kCAfcsYm6a3cY1NcZVXHukf6S9bjpo4NMvUkaRKLNDzqBVgvt6Zc0r13FGwTxb6H7jo+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev; spf=pass smtp.mailfrom=gurudas.dev; dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b=BR6bu7sL; arc=none smtp.client-ip=104.207.68.38
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gurudas.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b="CjsHwqdF"
+	dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b="BR6bu7sL"
 Received: from [192.168.1.104] (107-194-158-19.lightspeed.sntcca.sbcglobal.net [107.194.158.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.spacemail.com (Postfix) with ESMTPSA id 4hNQtn06Mlz2xBx;
-	Sun, 16 Aug 2026 19:26:24 +0000 (UTC)
+	by mail.spacemail.com (Postfix) with ESMTPSA id 4hNQtl0Cz9z2xBq;
+	Sun, 16 Aug 2026 19:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gurudas.dev;
-	s=spacemail; t=1786908386;
-	bh=kkA3d5yArNZAMgQ+2D+cnIfWefjUctmtxT844zZK9Bo=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=CjsHwqdFMTk+o1kZU/XbQNtlALC4r9vYbCWh8zK6dW821Nf8+UUgNf9CTgAKcokLu
-	 OJA8STqxHavDGl4a86TQ4i4csBg0RTBDfejuJH01jIINBjbQRXx+mT2sCtLKdarYJC
-	 QLqiAwtB9SE8hUrufpccnq5dZluanqdv3Wa9Wa9NgfPd99H9iEGJMYd8xdrSehX3eC
-	 Wtte2yAJ3P3n8vlzpAi6p8SxpVhHxIUdPGRKcLvWPA1nySuWwEjl9Wyv19A0sEg4dz
-	 HXWOd6qX3zLlYo+kdpwjCTb8w0SJJf0YqKuv21NgVoKfuuIsHsfo9mKwQavsSChPYu
-	 yWkZLjvB8kbwQ==
+	s=spacemail; t=1786908383;
+	bh=K5Wpi7OfsN/t6yMjrY7LTuSpH1r9zWcZB8g8RlBHHgE=;
+	h=From:Subject:Date:To:Cc:From;
+	b=BR6bu7sLIFIuIZV3j04VqLIjjGSp+KGpOI/7ZP+i8ydp7eF5DpgW4NOd8oR5FDI7n
+	 dzpad0JlY4YAq0H1d/gN2nQ4wPfwHElnqvn5vRfJbV/KpA4M0aLX2UpLvZ0e9F4ShJ
+	 SMnVCWGcjU9sPE8oVPJWBeaxAcPRZfnp7M5T98uY3zcUcXlLkEyy78MRBrI4GxgTq3
+	 UaJUymZHBhiYm9Nl5zmPi8LO/iFvVrBbDFjE4A1Pvx2myUSLH6lTFbo9Oo4NK6ALs8
+	 Y+SrI64uLzcB5MLlj5+pKfh6/ZUGU6giJxVv4t4vY1u5jhGx1IBZUsdGLkEkvKmz++
+	 cEm0pp/DrdjTA==
 From: Guru Das Srinagesh <linux@gurudas.dev>
-Date: Sun, 16 Aug 2026 12:26:21 -0700
-Subject: [PATCH v2 2/2] iio: imu: bmi270: Use in_range_inclusive() in
- bmi270_write_event_value()
+Subject: [PATCH v2 0/2] Introduce in_range_incl() inclusive range check
+ macro
+Date: Sun, 16 Aug 2026 12:26:19 -0700
+Message-Id: <20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -43,10 +43,12 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260816-minmax-in-range-incl-v2-2-766f737dd6bf@gurudas.dev>
-References: <20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev>
-In-Reply-To: <20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev>
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNSw6CMBCGr0Jm7RiYCIgr72FYlHaAMVJICw2Gc
+ Hd5HMDll//xLeDZCXt4RAs4DuKltxvQJQLdKtswitkYKKYsvicpdmI7NaNYdGds9QcVpZpuVHG
+ WZ7BNB8e1zMftqzzZT9Wb9bh/7Y1W/Ni77+ENyd77owgJxqjytM5NobggfjaTm4zyV8MBynVdf
+ 7rFXQrMAAAA
+X-Change-ID: 20260815-minmax-in-range-incl-a25c242be676
 To: Alex Lanzano <lanzano.alex@gmail.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -58,50 +60,77 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 X-Mailer: b4 0.15.2
 X-Envelope-From: linux@gurudas.dev
 
-Replace the three "in_range(val, 0, MAX + 1)" checks with the new
-in_range_inclusive() helper, expressing each as the inclusive [0, MAX]
-range it actually validates.
+Extend the existing in_range() API to provide a user-friendly inclusive
+range check and add one illustrative in-tree example of its use.
 
-No functional change.
+The in_range() API lends itself easily to callers who care about a
+half-open range, but has no straightforward equivalent for callers that
+want to check for an inclusive range. Such callers have to resort to
+this pattern:
 
-Assisted-by: Claude-Code:claude-sonnet-5
+	in_range(val, start, (end - start + 1))
+
+which is quite clunky and easy to mess up. Examples of such callers:
+
+- fs/btrfs/extent-io-tree.c hand-computes the inclusive check by
+  passing "state->end - state->start + 1" as in_range()'s len argument.
+- drivers/md/dm-raid.c has its own file-local __within_range(v, min, max)
+  helper, independently invented, with almost a dozen call sites in
+  that one file.
+- drivers/iio/imu/bmi270/bmi270_core.c has three "in_range(val, 0,
+  MAX + 1)" checks in bmi270_write_event_value(), computing the +1 by
+  hand for the same reason.
+
+This series converts only bmi270_core.c as a first step, as an exemplar
+for the usage of the new API.
+
 Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
 ---
- drivers/iio/imu/bmi270/bmi270_core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Changes in v2:
+- (Andrew) Rename in_range_incl() to in_range_inclusive()
+- (Sashiko) Use __UNIQUE_ID() to fix variable-shadowing bug introduced
+  by choosing fixed tempval names ("__val", "__start", "__end"). The use
+  of __UNIQUE_ID() is in line with other macros listed in minmax.h.
+- (Sashiko) When @end is the type's max value, len overflows to 0, so
+  in_range_inclusive(val, 0, UINT32_MAX) rejected every input.
+- (Sashiko) Abandon idea of reusing in_range() to avoid integer
+  promotion of the "+1" always routing sub-32-bit types to in_range64(),
+  defeating the stated purpose of building on in_range().
+- Solve both issues above with a simple, direct "val >= start && val <=
+  end" instead: an in_range()-style (val-start)<=(end-start) trick was
+  tried first, but that only works under forced-unsigned arithmetic
+  (like in_range32()/in_range64() use); with typeof()'s original,
+  possibly-signed type, it breaks silently instead.
+- Verification: exhaustive sweep over all valid u8 (start, end, val)
+  triples confirms in_range_inclusive() is correct (0 mismatches vs.
+  2.8M for the abandoned approach). -O2 codegen checked on x86, x86_64,
+  arm and arm64: branchless on all four, byte-identical to a raw
+  comparison function on every target - no performance cost from the
+  switch away from in_range().
 
-diff --git a/drivers/iio/imu/bmi270/bmi270_core.c b/drivers/iio/imu/bmi270/bmi270_core.c
-index 2ad230788532..7f386a615b39 100644
---- a/drivers/iio/imu/bmi270/bmi270_core.c
-+++ b/drivers/iio/imu/bmi270/bmi270_core.c
-@@ -1132,7 +1132,7 @@ static int bmi270_write_event_value(struct iio_dev *indio_dev,
- 	guard(mutex)(&data->mutex);
- 
- 	if (type == IIO_EV_TYPE_CHANGE) {
--		if (!in_range(val, 0, BMI270_STEP_COUNTER_MAX + 1))
-+		if (!in_range_inclusive(val, 0, BMI270_STEP_COUNTER_MAX))
- 			return -EINVAL;
- 
- 		raw = val / BMI270_STEP_COUNTER_FACTOR;
-@@ -1152,7 +1152,7 @@ static int bmi270_write_event_value(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 
--		if (!in_range(val, 0, (BMI270_G_MICRO_M_S_2 / uscale) + 1))
-+		if (!in_range_inclusive(val, 0, BMI270_G_MICRO_M_S_2 / uscale))
- 			return -EINVAL;
- 
- 		tmp = (u64)val * BMI270_MOTION_THRES_FULL_SCALE * uscale;
-@@ -1161,7 +1161,7 @@ static int bmi270_write_event_value(struct iio_dev *indio_dev,
- 		regval = FIELD_PREP(BMI270_FEAT_MOTION_THRESHOLD_MSK, raw);
- 		return bmi270_update_feature_reg(data, reg, mask, regval);
- 	case IIO_EV_INFO_PERIOD:
--		if (!in_range(val, 0, BMI270_MOTION_DURAT_MAX + 1))
-+		if (!in_range_inclusive(val, 0, BMI270_MOTION_DURAT_MAX))
- 			return -EINVAL;
- 
- 		raw = BMI270_INT_MICRO_TO_RAW(val, val2,
+Link to v1: https://patch.msgid.link/20260815-minmax-in-range-incl-v1-0-a75f7d9ae92e@gurudas.dev
 
--- 
-2.55.0
+To: Alex Lanzano <lanzano.alex@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+
+---
+Guru Das Srinagesh (2):
+      minmax: Add in_range_inclusive() for inclusive range checks
+      iio: imu: bmi270: Use in_range_inclusive() in bmi270_write_event_value()
+
+ drivers/iio/imu/bmi270/bmi270_core.c |  6 +++---
+ include/linux/minmax.h               | 19 +++++++++++++++++++
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+---
+base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+change-id: 20260815-minmax-in-range-incl-a25c242be676
+
+Best regards,
+--  
+Guru Das Srinagesh <linux@gurudas.dev>
 
