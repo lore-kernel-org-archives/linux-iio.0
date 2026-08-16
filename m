@@ -1,47 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E37F5146D5A;
-	Sun, 16 Aug 2026 00:50:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40A19271456;
+	Sun, 16 Aug 2026 00:54:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786841405; cv=none; b=tTIBjnpSXjyhv6EZXP9UiT70UrDtr2rzOK4Pg5pEa1WzGPqAq6vC1GzXx4UcN9xhiELZaWoQYweDj1c/lNFv4fAowdJdCbo2urUsLsd5vlsbmLES0sJg6LuJdfZ2oRIedGrEmlUhcTg8IxusxvBpEwk1g32/xUpxA3U3xQ5KjxI=
+	t=1786841644; cv=none; b=D1hN8uhp3bcMr2x3zD0AkwVWYVckKazPSdLR1mrHSostvBXWes9I3Eqdo/Z0cTnr44PP/U2xvQrzGpbq9t/AMjueKPn5yje/7h63akOp7IcLKCflSHusZkWYkSDRxPTCXts5cZPuneJd368nZ5CF3xb6A5oI5RyhVpSK8dHAfv0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786841405; c=relaxed/simple;
-	bh=/qAvPMTMjyOZE7kV6Lmo9XjB5d8BapgHnr0awEjQikc=;
+	s=arc-20240116; t=1786841644; c=relaxed/simple;
+	bh=15xdwW/32FQjnvIrD0UIak5lHnG6ls24PG1QQyc3PE4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U5KrAY1vShjrhlqNwjmZgl/HqZZpdy0RNCt0J8Whl9bko9o9+rRusbkEHc4DPH7XYf2LkSYBVuUcpij8ALBcd2YfL8GWGxGWAIEE2CRfwQ1o6JoNR+Y+boTo+kZmB0FaEfj+3MqIQmk+FnvZtUcgwGKU2ZElULmhFfMU6VrLrL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dm/iZx7P; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=TDQJadbClIkSIjfHEeVOCZ/NER9sEuj2xpnlm3fGsZxLaNG9PTGHcbde2iB+e0IPim1A64dAu9V8Sv4mbkkUorVnhrzFHoKt709pS2M1pJLzLp41gOV04B5smB+sfBe7tmH7n4QSxzbHctZ7ELC8NIqJlf46vCDg6XXchdRUADs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AnBdtDX2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dm/iZx7P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EBDB1F000E9;
-	Sun, 16 Aug 2026 00:50:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AnBdtDX2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAC21F00A3A;
+	Sun, 16 Aug 2026 00:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786841403;
-	bh=wX25VOtp0mTKk/k7vLCdTA2N1UptvhRSJw8Sejqx3Q4=;
+	s=k20260515; t=1786841642;
+	bh=T3Q4a/aen9Sh6WiJ81WoHVuIvXPYrJMoJpPvEm6xiJI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Dm/iZx7P39EOQOx3dMNDwy/E6CJy8NXIad8C0rdG/STtqAvE89BkeAGS6d1Znf3Dc
-	 SmgGHRJsMWnZqWgNVo4HF3iIBLvEVC11vtbLX4DmFjxB/1n2jfLxBeAKIRpCrheYXi
-	 8YGa32afQV5vnRH4jBWYdWCqYvD1vGmBjC3JCXVGRhQO2OM7fi9HBKvgUJvF2ON+KO
-	 Ov5lD6IQCcyVWHBDdiilOsTwOOSoEX0oRCKoW169Pbrfhul0efLkPsDMgjzJR/N6A7
-	 Xsm098RekrJI+mMtvLJEdh9h/PeflMx+nxz1FSi9Ea3/w3nVjmc8Cbnrpl9ZgzCvJF
-	 JmqoUjU2HxygA==
-Date: Sun, 16 Aug 2026 01:49:59 +0100
+	b=AnBdtDX2nXGaCYPeXD4O9djhBRlFkJu1E6HWw87iKHW9TXz9CpNbDYOP6sL8ZhcRb
+	 kNEiNxnve2B/QLDmOuIx3KI3g4iBFLCrvSB5ApN8jgo6qhjtCEdRQ9i/hJyE8/inry
+	 lHCuVAJGuB83Sdcu3FcFW446zOHDJu38bfO8seVsH02LFRqMeaqgmqFeq5bzZzoRH2
+	 Zwn7KSqBXWDU7d236taRIe9pKf12uOZnqdAH6q2dqkS+0zexrcC/AnDQB4V4MKqPWs
+	 kzWvv0iFw/93/aHfM/prYWNcBM8icutPzbnQrKl/4nSnWzZvos1qAdQZg8N6uhxCMF
+	 cdzjbvwr5T1Xg==
+Date: Sun, 16 Aug 2026 01:53:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Marcelo Schmitt
- <marcelo.schmitt@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, linux@analog.com,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] iio: accel: adxl367: add support for INT2
- interrupt pin
-Message-ID: <20260816014959.18034ff6@jic23-huawei>
-In-Reply-To: <178671050969.21598.13163934753300429850.b4-review@b4>
-References: <20260813081452.4289-1-antoniu.miclaus@analog.com>
-	<20260813081452.4289-4-antoniu.miclaus@analog.com>
-	<178671050969.21598.13163934753300429850.b4-review@b4>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Shengzhuo Wei <me@cherr.cc>, Ramona Gradinariu
+ <ramona.gradinariu@analog.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Marcelo Schmitt
+ <marcelo.schmitt@analog.com>, linux@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: accel: adxl367: reject out-of-range FIFO
+ entry count
+Message-ID: <20260816015358.76f644f5@jic23-huawei>
+In-Reply-To: <anwqC4tczcdnmF1u@ashevche-desk.local>
+References: <20260812-adxl-fifo-v2-0-86bea20faf1c@cherr.cc>
+	<20260812-adxl-fifo-v2-2-86bea20faf1c@cherr.cc>
+	<anwqC4tczcdnmF1u@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,76 +50,42 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 14 Aug 2026 13:28:29 +0100
-Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+On Wed, 12 Aug 2026 11:08:43 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Thu, 13 Aug 2026 11:14:52 +0300, Antoniu Miclaus <antoniu.miclaus@anal=
-og.com> wrote:
-> > diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
-> > index 8c3de11a10a3..df385740b17b 100644
-> > --- a/drivers/iio/accel/adxl367.c
-> > +++ b/drivers/iio/accel/adxl367.c
-> > @@ -1426,6 +1430,31 @@ static int adxl367_setup(struct adxl367_state *s=
-t)
-> >  	return adxl367_set_measure_en(st, true);
-> >  }
-> > =20
-> > +static int adxl367_set_int_map_reg(struct adxl367_state *st)
-> > +{
-> > +	int irq;
-> > +
-> > +	irq =3D fwnode_irq_get_byname(dev_fwnode(st->dev), "INT1");
-> > +	if (irq =3D=3D -EPROBE_DEFER)
-> > +		return irq;
-> > +	if (irq > 0) {
-> > +		st->int_map_reg =3D ADXL367_REG_INT1_MAP;
-> > +		return 0; =20
->=20
-> sashiko point is sensible but I guess both INT ouputs are pretty much
-> the same? So even even if there's a mismatch against spi/i2c I guess
-> it is not problematic?
+> On Wed, Aug 12, 2026 at 03:58:50PM +0800, Shengzhuo Wei wrote:
+> > The FIFO entry count reported by the device can be as large as 1023
+> > (the low byte plus the low two bits of the high byte), but fifo_buf[]
+> > only has room for ADXL367_FIFO_SIZE (512) entries.
+> > adxl367_push_fifo_data() passes the reported count straight to the FIFO
+> > read, so a count above ADXL367_FIFO_SIZE overflows fifo_buf, a heap
+> > out-of-bounds write of up to 1022 bytes into adjacent memory.
+> > 
+> > Rather than clamp the count and silently drop the excess, abort the
+> > read: a count beyond the FIFO size means the device is returning
+> > garbage, so the data cannot be trusted. The message is ratelimited
+> > because a stuck device can raise the IRQ repeatedly.  
+> 
+> Aren't they already were discussed in linux-iio@ mailing list earlier?
 
-Sashiko has spotted a real problem here, be it one that won't
-pass the binding restrictions which require INT1 to be first
-if it is present at all.  Anyhow we should be checking for a dts
-that provides bother interrupts but ordered as INT2 INT1 then
-the i2c and spi layers will give us the irq associated with
-the first element (so INT2) but the code here will see that
-there is an INT1 and route the interrupts there.  Hence the miss.
+I'm lost.  Yes it was discussed a few times, one of them in the v1 thread
+for this.  Andy, can you be a bit more specific on what you mean here.
+I for one am half asleep today so could do with the pointer!
 
-If you are looking up interrupts by name you should use the
-interrupt number retrieved.=20
-
-return irq from adxl367_set_int_map_reg() on success then
-
-
-	ret =3D adxl367_set_int_map_reg(st);
-	if (ret < 0)
-		return dev_err_probe(st->dev, ret, "Failed to get interrupt\n");
-
-	irq =3D ret;
-	ret =3D devm_request_threaded_irq(st->dev, irq, NULL,
-					adxl367_irq_handler, IRQF_ONESHOT,
-					indio_dev->name, indio_dev);
-	if (ret)
-		return dev_err_probe(st->dev, ret, "Failed to request irq\n");
-
-Or pass it as a pointer so that adxl367_set_int_map_reg() can modify it
-on matching by name.=20
-
-Could argue that we should never see this but I think it's easy to harden
-against, so why not.
-
-Hmm. On a wide awake day I think I'd have spotted this, but not sure I woul=
-d have
-today!
-
-Jonathan
-
->=20
-> - Nuno S=C3=A1
->=20
+> 
+> ...
+> 
+> > +		dev_err_ratelimited(st->dev,
+> > +				    "FIFO entry count %u exceeds FIFO size %lu\n",
+> > +				    fifo_entries,
+> > +				    (unsigned long)ADXL367_FIFO_SIZE);  
+> 
+> In majority of the explicit castings when printing a message they are wrong or
+> unneeded. Use correct format specifiers to begin with.
+> 
+This one I agree with - why would we print it as a long unsigned given it is the
+constant 512?
 
