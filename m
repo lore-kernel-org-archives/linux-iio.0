@@ -1,117 +1,177 @@
-Received: from out-93wp-a30.jellyfish.systems (out-93wp-a30.jellyfish.systems [104.207.68.30])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 011293C09F3
-	for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 19:26:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=104.207.68.30
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 148AA3C7DEB;
+	Sun, 16 Aug 2026 19:35:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786908409; cv=none; b=UXsUzyu+2Snt50oqdJvuLA9u3mwG1cXn/bbBhFGuWidKVLMDKS3miTv8hKMuCwao6qWleAlE/6zd1aDrONQ06CccvREi1jncpMT1snvZ87/OpHnTuUf4hF0cGLl7AVY1w6cG98fBDGwKAMTNmShRMQnohGR3RaGKU5kOyqIzdKI=
+	t=1786908954; cv=none; b=t3Wqlly44NbujuqROXVD/weJfaR/DKo/sRU9gkV0cT4I3iNuFGbOZlb/Tvf10oHpFz5GwUSR485uPOVzqNLDKyC874SH/kZox+OqhcGTQOd4nftXxFkzHBJPej0sG4/6R02PvuteDqI1XN1kKWcdsaLzUKnCt3sug187mkYfgKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786908409; c=relaxed/simple;
-	bh=kNJE/p5U/Ut621rcQKUq/XB68draGwrEOaQCAgmxvSI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=pRkCWPXhUKLly1gtNvZz80LjzXhRnI1//HPYd5hA4SsLtJb+B/9q/VtD7Q/olxFYG9AdUFs36gqJoe+UULz0wK2pDoeY8/udxESFQjEKMqsZ/yXJ34KV+lyxtRjQ1/qCiK089UIvi+D1R8s0yKPaKxXKrTHKrGJ9HCc6maYd2Lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev; spf=pass smtp.mailfrom=gurudas.dev; dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b=PiUFTqRK; arc=none smtp.client-ip=104.207.68.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gurudas.dev
+	s=arc-20240116; t=1786908954; c=relaxed/simple;
+	bh=8hafBoy1jffPLboPg5OQ3zOOPTP/Dy/lJjzMQ+YJGwU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=DxkUv0qRjIco31J9DKIvDf0SxFZ9Fy8OgYH3O4Sm4y5tpy9rMExOOetFy+F2ETBHwxb55R2cBpweJHqb3sRYy35dqb8bvaxzl/MgHpS0z4fJKHv/LdmPjJlDbame3e57GYpZaLSkphsCWWNrgoQssA8OTpZQ3xVuJJMTnvh3tNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C+CpICr7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b="PiUFTqRK"
-Received: from [192.168.1.104] (107-194-158-19.lightspeed.sntcca.sbcglobal.net [107.194.158.19])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.spacemail.com (Postfix) with ESMTPSA id 4hNQtl3sT5z2xBv;
-	Sun, 16 Aug 2026 19:26:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gurudas.dev;
-	s=spacemail; t=1786908384;
-	bh=0O8s60OxVMHSptmXEcJ3WO3W3gjMt4Y0FZu7UvHQCQA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=PiUFTqRKFOlAFdq0lpobv2UHyHSWIrXYIFmuwtzpv2VtQ5c+pK6I5Z05HHafDBw/d
-	 PRiqpJKAwRrjjBJrkPMhH3SFcoEw+139NC7oh5J6XCKv6Zyh0WOO48bXj6oV5iFQWe
-	 FXpBFY67eH+yV/hSND00klw5Eh9jdOZtzHB4C2XP6JQqUZZif7Vrtg2RRfJGGnXs1z
-	 CUyaP8EZjB4Zend7wn52/kpjPlG/eFukJRlmhpY/jYZuoTVe4408neHmYHI5iH/Kmu
-	 GvhP6IXXCEIcQgflOF7DlTgxlrWqXAVaNjeYbCcLYFP5ilORBg7pj9jAL6qiWyQT0v
-	 4xjGiYdDXbQHQ==
-From: Guru Das Srinagesh <linux@gurudas.dev>
-Date: Sun, 16 Aug 2026 12:26:20 -0700
-Subject: [PATCH v2 1/2] minmax: Add in_range_inclusive() for inclusive
- range checks
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C+CpICr7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF2EC1F000E9;
+	Sun, 16 Aug 2026 19:35:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786908952;
+	bh=26LqJlarwP4xeCZaBJJbcUGO6FGjU2dAZv1ce830BDU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=C+CpICr7NXb/EOkmzjcGThO+r7IeXK7lko+/ubm97dwVE91R1ufjK+zJG13ddwJTO
+	 ITh5mwRjT93EFa0j8XI/wEMiN2RyMTRj2AMZTQEZpjl1sMJSuTD/iYESn56lvI5tqA
+	 UKdOJvfDrdeF4kaNKayiGSWQw6bRZNvbU3sNmz52Lrlt51YCdnaPJ3oT2FEQfZk/TJ
+	 QB1OmvAb4zBjPtUYLlCdl+iOdjVgYsqajJZVjzXued4ZZy6HC61pMpoj/dbjco/dpO
+	 4cZGZk+mX8LuEuF4ZJtpxvfiRJgMxUHZEPw2IuF2KHNAHXaIAGwrAuh6tJZL+NagwY
+	 om9ixjhNbKUKg==
+Date: Sun, 16 Aug 2026 20:35:46 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Olivier
+ Moysan <olivier.moysan@foss.st.com>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
+ <linux@analog.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+ <jananisunil.dev@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v3 06/14] iio: adc: ad7768: Add configurable sampling
+ modes
+Message-ID: <20260816203546.6a83fcd8@jic23-huawei>
+In-Reply-To: <20260813-ad7768-driver-v3-6-cb554399ad26@analog.com>
+References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
+	<20260813-ad7768-driver-v3-6-cb554399ad26@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260816-minmax-in-range-incl-v2-1-766f737dd6bf@gurudas.dev>
-References: <20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev>
-In-Reply-To: <20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev>
-To: Alex Lanzano <lanzano.alex@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
- Andrew Morton <akpm@linux-foundation.org>, 
- Gustavo Silva <gustavograzs@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- Guru Das Srinagesh <linux@gurudas.dev>
-X-Mailer: b4 0.15.2
-X-Envelope-From: linux@gurudas.dev
 
-in_range(val, start, len) takes a start and a length, i.e. a half-open
-range. Callers that instead have an inclusive [start, end] bound have
-no ready helper to reach for and either hand-roll the comparison or
-convert it to in_range()'s (start, len) form themselves.
+On Thu, 13 Aug 2026 15:56:59 +0200
+Janani Sunil <janani.sunil@analog.com> wrote:
 
-Add in_range_inclusive(val, start, end) as a direct comparison rather
-than a wrapper around in_range(): computing len as end - start + 1 and
-forwarding it to in_range() subverts in_range()'s 32-bit/64-bit dispatch
-for sub-32-bit types via integer promotion, and overflows to 0 when @end
-is the type's maximum value, silently rejecting every input instead of
-accepting all of them.
+> Derive the available output data rates from MCLK and expose per-channel
+> sampling frequency and filter controls.
+> 
+> Select the fastest compatible power mode for the enabled channels and
+> map matching sampling frequency and filter combinations onto the two
+> hardware channel profiles. Configure the data clock divider and wait for
+> the selected filters to settle before capture.
+> 
+> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 
-val, start and end are each assigned to a __UNIQUE_ID()-generated
-temporary before use, matching the __cmp_once()/__cmp_once_unique()
-pattern: each argument is evaluated exactly once, and the temporary
-can't be shadowed by a caller's own same-named local variable.
+A few things inline,
 
-Assisted-by: Claude-Code:claude-sonnet-5
-Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
----
- include/linux/minmax.h | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+thanks,
 
-diff --git a/include/linux/minmax.h b/include/linux/minmax.h
-index a0158db54a04..cb042733f253 100644
---- a/include/linux/minmax.h
-+++ b/include/linux/minmax.h
-@@ -299,6 +299,25 @@ static inline bool in_range32(u32 val, u32 start, u32 len)
- 	((sizeof(start) | sizeof(len) | sizeof(val)) <= sizeof(u32) ?	\
- 		in_range32(val, start, len) : in_range64(val, start, len))
- 
-+#define __in_range_inclusive(val, start, end, uval, ustart, uend) ({	\
-+	typeof(val) uval = (val);					\
-+	typeof(start) ustart = (start);					\
-+	typeof(end) uend = (end);					\
-+	uval >= ustart && uval <= uend;					\
-+})
-+
-+/**
-+ * in_range_inclusive - Determine if a value lies within an inclusive range.
-+ * @val: Value to test.
-+ * @start: First value in range.
-+ * @end: Last value in range.
-+ *
-+ * @val, @start and @end are each evaluated exactly once.
-+ */
-+#define in_range_inclusive(val, start, end)				\
-+	__in_range_inclusive(val, start, end, __UNIQUE_ID(val_),	\
-+			     __UNIQUE_ID(start_), __UNIQUE_ID(end_))
-+
- /**
-  * swap - swap values of @a and @b
-  * @a: first value
+Jonathan
 
--- 
-2.55.0
+
+> +static int ad7768_find_matching_mode(const bool *mode_used,
+> +				     const unsigned int *mode_freq,
+> +				     const enum ad7768_filter_type *mode_filter,
+> +				     unsigned int freq,
+> +				     enum ad7768_filter_type filter)
+> +{
+> +	unsigned int mode;
+> +
+> +	for (mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
+	for (unsigned int mode = 0; ...
+
+Look for other remaining cases of this as reviewers may only comment
+on a few and expect you to carry the feedback through the whole series.
+
+> +		if (!mode_used[mode] ||
+> +		    (mode_freq[mode] == freq && mode_filter[mode] == filter))
+> +			return mode;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
+> +				      const unsigned long *scan_mask)
+>  {
+>  	struct ad7768_state *st = iio_priv(indio_dev);
+> +	unsigned int mode_freq[AD7768_NUM_CHANNEL_MODES];
+> +	enum ad7768_filter_type mode_filter[AD7768_NUM_CHANNEL_MODES];
+> +	bool mode_used[AD7768_NUM_CHANNEL_MODES] = { };
+>  	unsigned int channel_mask;
+>  	unsigned int standby_mask;
+> +	unsigned int max_freq = 0;
+>  	unsigned int c;
+> -	int ret;
+> +	int mode, ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret = ad7768_set_lowest_noise_mode(st, scan_mask);
+> +	if (ret == -EINVAL)
+> +		return dev_err_probe(regmap_get_device(st->regmap), ret,
+> +				     "No power mode supports all enabled channel frequencies\n");
+> +	if (ret)
+> +		return ret;
+>  
+>  	channel_mask = ad7768_all_channels_mask(st);
+>  	standby_mask = channel_mask;
+> +
+>  	for (c = 0; c < st->chip_info->num_channels; c++) {
+> -		if (test_bit(c, scan_mask))
+> -			standby_mask &= ~ad7768_channel_mask(st, c);
+> +		unsigned int mask;
+> +
+> +		if (!test_bit(c, scan_mask))
+> +			continue;
+
+	for_each_set_bit()?
+
+> +static int ad7768_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long info)
+> +{
+> +	struct ad7768_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(regmap_get_device(st->regmap), pm);
+
+Why the IF_ENABLED variant?  I'd expect the driver to work fine without
+the runtime PM stuff being enabled. Normally that just means leaving the power
+turned on in probe.  
+
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (info == IIO_CHAN_INFO_SAMP_FREQ)
+> +		return ad7768_set_sampling_freq(indio_dev, val, chan->channel);
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static struct iio_chan_spec_ext_info ad7768_ext_info[] = {
+> +	IIO_ENUM("filter_type", IIO_SEPARATE,
+> +		 &ad7768_filter_types_enum),
+> +	IIO_ENUM_AVAILABLE("filter_type", IIO_SEPARATE, &ad7768_filter_types_enum),
+> +	{}
+
+	{ } is the style choice I'm trying to push through IIO.
+
+
+> +};
+
 
