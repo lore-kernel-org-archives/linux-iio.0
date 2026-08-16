@@ -1,48 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40A19271456;
-	Sun, 16 Aug 2026 00:54:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D55346E70;
+	Sun, 16 Aug 2026 01:06:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786841644; cv=none; b=D1hN8uhp3bcMr2x3zD0AkwVWYVckKazPSdLR1mrHSostvBXWes9I3Eqdo/Z0cTnr44PP/U2xvQrzGpbq9t/AMjueKPn5yje/7h63akOp7IcLKCflSHusZkWYkSDRxPTCXts5cZPuneJd368nZ5CF3xb6A5oI5RyhVpSK8dHAfv0=
+	t=1786842372; cv=none; b=DLzZuyFtlPCrii2dXbEHxFAedwbT4NUkCeC7N1IbyOLnHvchSi0U/qUMfoh7ojFOSWS1MGg73b5fv+rzONBRXC/PBvIFIdKaquqDLbs8hp9nW76gKApMOyPqBTLWrliimOsVKsAnfjHNPZ6Jz0JbcAHt4y/dXKA9I7b1GGsHdVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786841644; c=relaxed/simple;
-	bh=15xdwW/32FQjnvIrD0UIak5lHnG6ls24PG1QQyc3PE4=;
+	s=arc-20240116; t=1786842372; c=relaxed/simple;
+	bh=0wwzrgMwIkIo07+F6wwi5vEnl7jIsaDmX6JnAFSjN1o=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TDQJadbClIkSIjfHEeVOCZ/NER9sEuj2xpnlm3fGsZxLaNG9PTGHcbde2iB+e0IPim1A64dAu9V8Sv4mbkkUorVnhrzFHoKt709pS2M1pJLzLp41gOV04B5smB+sfBe7tmH7n4QSxzbHctZ7ELC8NIqJlf46vCDg6XXchdRUADs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AnBdtDX2; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=FrYqAiXSSYrucw4ZPNKf5jka/lGNuTYTg103dh4CDMLlC2FoXI3Vjxgh0+i6Juqq/orM/4JY7Azy+d0ekZnQ9SwqlUykzd1zvBn4O8kGdWtG+Nj9XXaZl4VhgeLlRnltJVuo/XRR/m9Gmc8Oda4eECyPXDHQa8n9Vs6Vxxw+X4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PQdMPM4c; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AnBdtDX2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAC21F00A3A;
-	Sun, 16 Aug 2026 00:54:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PQdMPM4c"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 061B71F000E9;
+	Sun, 16 Aug 2026 01:06:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786841642;
-	bh=T3Q4a/aen9Sh6WiJ81WoHVuIvXPYrJMoJpPvEm6xiJI=;
+	s=k20260515; t=1786842371;
+	bh=XzRhT1LiFDP6gOGqoLGjaBE3aW7kVKLNXIbLkgfJ3nE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=AnBdtDX2nXGaCYPeXD4O9djhBRlFkJu1E6HWw87iKHW9TXz9CpNbDYOP6sL8ZhcRb
-	 kNEiNxnve2B/QLDmOuIx3KI3g4iBFLCrvSB5ApN8jgo6qhjtCEdRQ9i/hJyE8/inry
-	 lHCuVAJGuB83Sdcu3FcFW446zOHDJu38bfO8seVsH02LFRqMeaqgmqFeq5bzZzoRH2
-	 Zwn7KSqBXWDU7d236taRIe9pKf12uOZnqdAH6q2dqkS+0zexrcC/AnDQB4V4MKqPWs
-	 kzWvv0iFw/93/aHfM/prYWNcBM8icutPzbnQrKl/4nSnWzZvos1qAdQZg8N6uhxCMF
-	 cdzjbvwr5T1Xg==
-Date: Sun, 16 Aug 2026 01:53:58 +0100
+	b=PQdMPM4c5KFye7/eR3s2SiLwJpDu0XICwZvntCJZ+8KivMv5bjUuSU0txf/YdDHq3
+	 A/IxbQiO7Xs2kzkWGJBt1+Rpsa6w78vPcZuwlxJSoJiGdpHnCQUNyt4oqhghmz8hv6
+	 rUgHq6IvgWo8lxukIAlpOa03gfDFO9YiYzJgs7zVw98dtHYbae0sGhz9pR+fT8ac6F
+	 2cGrAYwFPUJLQYA24V5wJYk0R1jRcvGY4vBtsUMheiO3USRhuc0QhGRYbBUa3zUFYr
+	 eLqL/0AIemRLksl2b9F99w+FeNLhNbXeFPOj1vXSnP3lrOxL3WqtcyzWO6ssSFX4fs
+	 KNh1fzJXZiHqQ==
+Date: Sun, 16 Aug 2026 02:06:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Shengzhuo Wei <me@cherr.cc>, Ramona Gradinariu
- <ramona.gradinariu@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Marcelo Schmitt
- <marcelo.schmitt@analog.com>, linux@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: accel: adxl367: reject out-of-range FIFO
- entry count
-Message-ID: <20260816015358.76f644f5@jic23-huawei>
-In-Reply-To: <anwqC4tczcdnmF1u@ashevche-desk.local>
-References: <20260812-adxl-fifo-v2-0-86bea20faf1c@cherr.cc>
-	<20260812-adxl-fifo-v2-2-86bea20faf1c@cherr.cc>
-	<anwqC4tczcdnmF1u@ashevche-desk.local>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The
+ Capable Hub)" <u.kleine-koenig@baylibre.com>, Danilo Krummrich
+ <dakr@kernel.org>, Takashi Sakamoto <o-takashi@sakamocchi.jp>, Dixit Parmar
+ <dixitparmar19@gmail.com>, Keerthy <j-keerthy@ti.com>, Samuel Ortiz
+ <sameo@linux.intel.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, amitk@kernel.org
+Subject: Re: [PATCH] iio: adc: twl4030-madc: read MADC_CTRL1 from the
+ correct module
+Message-ID: <20260816020607.1f35a5b2@jic23-huawei>
+In-Reply-To: <20260805123201.219547-2-giorgitchankvetadze1997@gmail.com>
+References: <20260805123201.219547-2-giorgitchankvetadze1997@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,39 +52,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 12 Aug 2026 11:08:43 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed,  5 Aug 2026 16:31:59 +0400
+Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
 
-> On Wed, Aug 12, 2026 at 03:58:50PM +0800, Shengzhuo Wei wrote:
-> > The FIFO entry count reported by the device can be as large as 1023
-> > (the low byte plus the low two bits of the high byte), but fifo_buf[]
-> > only has room for ADXL367_FIFO_SIZE (512) entries.
-> > adxl367_push_fifo_data() passes the reported count straight to the FIFO
-> > read, so a count above ADXL367_FIFO_SIZE overflows fifo_buf, a heap
-> > out-of-bounds write of up to 1022 bytes into adjacent memory.
-> > 
-> > Rather than clamp the count and silently drop the excess, abort the
-> > read: a count beyond the FIFO size means the device is returning
-> > garbage, so the data cannot be trusted. The message is ratelimited
-> > because a stuck device can raise the IRQ repeatedly.  
+> From: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
 > 
-> Aren't they already were discussed in linux-iio@ mailing list earlier?
+> twl4030_madc_set_power() does a read-modify-write on MADC_CTRL1 but
+> reads it from TWL_MODULE_MAIN_CHARGE while writing it back to
+> TWL4030_MODULE_MADC.
+> 
+> Fix it by reading MADC_CTRL1 from TWL4030_MODULE_MADC
+> so the read-modify-write operates on the register's actual
+> contents.
+> 
+> Fixes: f99c1d4f94f9 ("mfd: Add twl4030 madc driver")
+> Signed-off-by: Giorgi Tchankvetadze <giorgi@tchankvetadze.com>
+Whilst I agree this looks likely to be correct, the register
+map for this device is crazy, the defines not named in helpful
+way and generally it is hard to be entirely sure what was intended.
 
-I'm lost.  Yes it was discussed a few times, one of them in the v1 thread
-for this.  Andy, can you be a bit more specific on what you mean here.
-I for one am half asleep today so could do with the pointer!
+So, can you provide some background. Is this a problem you ran into,
+code inspection, or AI looking for possible problems?
 
+Have you checked what is in the register that seems to be being
+incorrectly read?  Basically I'm looking for more detail. 
+
+Amit is listed in the original driver and is still about - so...
+Amit any idea?  Was at least 12 years ago (I got bored looking
+beyond that) so feel free to say you have no idea  :)
+
+> ---
+>  drivers/iio/adc/twl4030-madc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> ...
-> 
-> > +		dev_err_ratelimited(st->dev,
-> > +				    "FIFO entry count %u exceeds FIFO size %lu\n",
-> > +				    fifo_entries,
-> > +				    (unsigned long)ADXL367_FIFO_SIZE);  
-> 
-> In majority of the explicit castings when printing a message they are wrong or
-> unneeded. Use correct format specifiers to begin with.
-> 
-This one I agree with - why would we print it as a long unsigned given it is the
-constant 512?
+> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+> index 0ee7e16b5e24..1156e68ebd91 100644
+> --- a/drivers/iio/adc/twl4030-madc.c
+> +++ b/drivers/iio/adc/twl4030-madc.c
+> @@ -718,7 +718,7 @@ static int twl4030_madc_set_power(struct twl4030_madc_data *madc, int on)
+>  	u8 regval;
+>  	int ret;
+>  
+> -	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE,
+> +	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC,
+>  			      &regval, TWL4030_MADC_CTRL1);
+>  	if (ret) {
+>  		dev_err(madc->dev, "unable to read madc ctrl1 reg 0x%X\n",
 
