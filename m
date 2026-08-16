@@ -1,136 +1,127 @@
-Received: from pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com [35.83.148.184])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BC093CF678;
-	Sun, 16 Aug 2026 06:09:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.83.148.184
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2D073115A2;
+	Sun, 16 Aug 2026 06:47:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786860561; cv=none; b=MaraZ4xUdUh5uvgR5zYQXjNgaWx7HXPeB9EUwKDhMeR8MAzDSZPSMBwzKZUTmyALm8gP2cB1sC5Lj78l2nAnkxPYg0RJyH8fgQMvLRxabbAa12J2IEUuEV1X+7jW6lAtsSyOsFAYrk4ZO3kRHXJLUZxlYeh0D0lv3hgqbN9884Q=
+	t=1786862840; cv=none; b=U7Xwro065xdZ5/n6sJ6YRE4ef6czrbb8qRT0iVQfWSQ/s3O9yAA7iRtGqoR83JIbAY/6i2HKBZcWLCpbu0zWhoARqnnWiS/PLXp7Jg2R2jfJneqnVXEftSlTmGWRT18rTK5hri4LajbRY8nZiqze4HjIJE/XvMlOW6Yjt9ne3Vw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786860561; c=relaxed/simple;
-	bh=dJ68QbooWHZBKQDn5xlKP/a7N1o1WPC7m/Nz/t4kin4=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=J0w/nRXAo6D3/HkgnHzhL60NSxcm4T9aiLN4DDeH9awvVGKMgUn5cB8Uzxg0MNddFNBxoxFsRI8wdnS78BUEb+5hQegFRCjjdgUBpo4mt1UnzKQGJ/E18+V6G/R8u6LzTE08iBKF8YAIxgyjam8npPLNlyE9/gOY3G/QpoZVYe4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b=sWpe8zWS; arc=none smtp.client-ip=35.83.148.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
+	s=arc-20240116; t=1786862840; c=relaxed/simple;
+	bh=tuGgDjjUnd7XTMmE5p/sSXutNK7SpeFudznU3x1ov5k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dTQRp7BKGeS7oXKCsDvkKF/m2wEIAFYl163E9EwGuuw5wKmczO3YCUgPPggRRu5w3CfzJhFuguRT0vZAvDVbj09NUWBSxwbqeAVjk2OOPY6fNSShjrOC2dRKNFVGSqhYmUJmy0TOE6W9Jox1xvKlBfv7pHEbvAtidTjpRy/9uoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vocyr0LK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b="sWpe8zWS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1786860560; x=1818396560;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=1PjrX0TYQgXkSpJZuPaWlzS4502XZn4rTZl60p1SQXk=;
-  b=sWpe8zWSbEq56ev69QcObSdu5UVjFexOuYfO9Py2fMbT9XRKrhnjKQle
-   APtHWAywDKVU+u4vrAl9oPfFJFyuZy5UNsdGkztLeq/xMfAzos5qXKYUT
-   eK0mQGbbEKmkCSb1PN7Y6mxV1T2h99ED0LHXPwMdyauA1+E+gzAVtzxR1
-   36r+Jt6ga3mChTDLVeH0JWx2MnTXzi8cHmGPHHVizSzJmpuQQVJA7kRCq
-   RKuCcBx+rle01jjulSOy9i7vbFy6J/QxDG+GGBTe/Ne6hTjMy71ScDX5Q
-   LO85+94Fcf9BV5sTRb4e30u0ljAFNZkMX156C20+hm7O/JziltoNOkj7l
-   g==;
-X-CSE-ConnectionGUID: zBwooBneTzmajzsATjRFFA==
-X-CSE-MsgGUID: n9OZJxeVTTmMsYFsrooapQ==
-X-IronPort-AV: E=Sophos;i="6.25,226,1779148800"; 
-   d="scan'208";a="25877454"
-Received: from ip-10-5-9-48.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.9.48])
-  by internal-pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2026 06:09:19 +0000
-Received: from EX19MTAUWA002.ant.amazon.com [205.251.233.234:21019]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.12.154:2525] with esmtp (Farcaster)
- id 2206ea0c-d638-4fc5-b838-c3e6de24189b; Sun, 16 Aug 2026 06:09:19 +0000 (UTC)
-X-Farcaster-Flow-ID: 2206ea0c-d638-4fc5-b838-c3e6de24189b
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.45;
- Sun, 16 Aug 2026 06:09:19 +0000
-Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.45; Sun, 16 Aug 2026
- 06:09:13 +0000
-From: Eliav Farber <farbere@amazon.com>
-To: <rafael@kernel.org>, <tony.luck@intel.com>, <bp@alien8.de>,
-	<guohanjun@huawei.com>, <mchehab@kernel.org>, <xueshuai@linux.alibaba.com>,
-	<lenb@kernel.org>, <laurent.pinchart@ideasonboard.com>, <linusw@kernel.org>,
-	<brgl@kernel.org>, <orsonzhai@gmail.com>, <baolin.wang@linux.alibaba.com>,
-	<zhang.lyra@gmail.com>, <jic23@kernel.org>, <dlechner@baylibre.com>,
-	<nuno.sa@analog.com>, <andy@kernel.org>, <dmitry.torokhov@gmail.com>,
-	<hansg@kernel.org>, <ilpo.jarvinen@linux.intel.com>, <W_Armin@gmx.de>,
-	<ukleinek@kernel.org>, <fabio.m.de.francesco@linux.intel.com>,
-	<kaihengf@nvidia.com>, <ankita@nvidia.com>, <leitao@debian.org>,
-	<farbere@amazon.com>, <pedro.pbg@usp.br>, <paulmck@kernel.org>,
-	<frederic@kernel.org>, <kees@kernel.org>, <saket.dumbre@intel.com>,
-	<linux-acpi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-gpio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<platform-driver-x86@vger.kernel.org>, <acpica-devel@lists.linux.dev>
-Subject: [PATCH v5 13/13] reboot: use devm_blocking_notifier_chain_register()
-Date: Sun, 16 Aug 2026 06:06:12 +0000
-Message-ID: <20260816060648.4030-14-farbere@amazon.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260816060648.4030-1-farbere@amazon.com>
-References: <20260816060648.4030-1-farbere@amazon.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vocyr0LK"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 6B4991F000E9;
+	Sun, 16 Aug 2026 06:47:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786862839;
+	bh=x2T0QVPCk/bam794xGeOwBl2jyK+bAZTLI+QcRCUKY0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Vocyr0LK4zCzV4g7MyqKqD6dAlpo6nZ/Zi4MtNooNvhyscxySoUVAMofIYt1oIAYC
+	 hftZiwGQjnl3Ts3+XgIck48BiHSphifAp4txHV/AkawSjRJXWIWNlUydivsqChndK1
+	 aWH3meu4InEjNg8tyX/+K+yEhxgZr5CFMLsaNq7mu8gisY8lDSNfS3a02A01OBWPJe
+	 KYYzHGOdwWJOs0KpdAzKsQM05kgSuEnhp9dFNgzjBBUpdwkF5TFVGBzeYYw7jKhKF9
+	 36l33vAtCiw4YxZOM4rFrJc2uVqXQwrAYUjiAPww06bQHT5xshG85YvazAHBJxCzTI
+	 yDcrdZD6PcYgg==
+Date: Sun, 16 Aug 2026 08:47:16 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: "Farber, Eliav" <farbere@amazon.com>
+Cc: "rafael@kernel.org" <rafael@kernel.org>, 
+	"tony.luck@intel.com" <tony.luck@intel.com>, "bp@alien8.de" <bp@alien8.de>, 
+	"guohanjun@huawei.com" <guohanjun@huawei.com>, "mchehab@kernel.org" <mchehab@kernel.org>, 
+	"xueshuai@linux.alibaba.com" <xueshuai@linux.alibaba.com>, "lenb@kernel.org" <lenb@kernel.org>, 
+	"laurent.pinchart@ideasonboard.com" <laurent.pinchart@ideasonboard.com>, "linusw@kernel.org" <linusw@kernel.org>, 
+	"brgl@kernel.org" <brgl@kernel.org>, "orsonzhai@gmail.com" <orsonzhai@gmail.com>, 
+	"baolin.wang@linux.alibaba.com" <baolin.wang@linux.alibaba.com>, "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>, 
+	"jic23@kernel.org" <jic23@kernel.org>, "dlechner@baylibre.com" <dlechner@baylibre.com>, 
+	"nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org" <andy@kernel.org>, 
+	"dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>, "hansg@kernel.org" <hansg@kernel.org>, 
+	"ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>, "W_Armin@gmx.de" <W_Armin@gmx.de>, 
+	"fabio.m.de.francesco@linux.intel.com" <fabio.m.de.francesco@linux.intel.com>, "kaihengf@nvidia.com" <kaihengf@nvidia.com>, 
+	"ankita@nvidia.com" <ankita@nvidia.com>, "leitao@debian.org" <leitao@debian.org>, 
+	"pedro.pbg@usp.br" <pedro.pbg@usp.br>, "paulmck@kernel.org" <paulmck@kernel.org>, 
+	"frederic@kernel.org" <frederic@kernel.org>, "kees@kernel.org" <kees@kernel.org>, 
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, 
+	"platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>
+Subject: Re: [PATCH v4 10/13] platform/x86: uniwill-wmi: use
+ devm_blocking_notifier_chain_register()
+Message-ID: <aoFcyiofUhsetEiq@monoceros>
+References: <20260726101739.33170-1-farbere@amazon.com>
+ <20260726101739.33170-11-farbere@amazon.com>
+ <anlSAqWxS7boyJBT@monoceros>
+ <MN0PR18MB5870444BD9375EF4F7131851C6D82@MN0PR18MB5870.namprd18.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EX19D033UWC002.ant.amazon.com (10.13.139.196) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="gkd4u7j63fnaijay"
+Content-Disposition: inline
+In-Reply-To: <MN0PR18MB5870444BD9375EF4F7131851C6D82@MN0PR18MB5870.namprd18.prod.outlook.com>
 
-Replace the manual devres_alloc() + register_reboot_notifier() pattern
-with a single call to devm_blocking_notifier_chain_register(), removing
-the devm_unregister_reboot_notifier() callback.
 
-Signed-off-by: Eliav Farber <farbere@amazon.com>
----
-Changes in v3:
-- Fix commit message to accurately describe the old code as using
-  devres_alloc() + register_reboot_notifier() (Sashiko)
+--gkd4u7j63fnaijay
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 10/13] platform/x86: uniwill-wmi: use
+ devm_blocking_notifier_chain_register()
+MIME-Version: 1.0
 
- kernel/reboot.c | 24 ++----------------------
- 1 file changed, 2 insertions(+), 22 deletions(-)
+Hello,
 
-diff --git a/kernel/reboot.c b/kernel/reboot.c
-index 695c33e75efd..557609419989 100644
---- a/kernel/reboot.c
-+++ b/kernel/reboot.c
-@@ -136,30 +136,10 @@ int unregister_reboot_notifier(struct notifier_block *nb)
- }
- EXPORT_SYMBOL(unregister_reboot_notifier);
- 
--static void devm_unregister_reboot_notifier(struct device *dev, void *res)
--{
--	WARN_ON(unregister_reboot_notifier(*(struct notifier_block **)res));
--}
--
- int devm_register_reboot_notifier(struct device *dev, struct notifier_block *nb)
- {
--	struct notifier_block **rcnb;
--	int ret;
--
--	rcnb = devres_alloc(devm_unregister_reboot_notifier,
--			    sizeof(*rcnb), GFP_KERNEL);
--	if (!rcnb)
--		return -ENOMEM;
--
--	ret = register_reboot_notifier(nb);
--	if (!ret) {
--		*rcnb = nb;
--		devres_add(dev, rcnb);
--	} else {
--		devres_free(rcnb);
--	}
--
--	return ret;
-+	return devm_blocking_notifier_chain_register(dev,
-+						     &reboot_notifier_list, nb);
- }
- EXPORT_SYMBOL(devm_register_reboot_notifier);
- 
--- 
-2.47.3
+On Sun, Aug 16, 2026 at 05:39:47AM +0000, Farber, Eliav wrote:
+> > On Sun, Jul 26, 2026 at 10:17:36AM +0000, Eliav Farber wrote:
+> > >  int devm_uniwill_wmi_register_notifier(struct device *dev, struct=20
+> > > notifier_block *nb)  {
+> > > -	int ret;
+> > > -
+> > > -	ret =3D blocking_notifier_chain_register(&uniwill_wmi_chain_head, n=
+b);
+> > > -	if (ret < 0)
+> > > -		return ret;
+> > > -
+> > > -	return devm_add_action_or_reset(dev, devm_uniwill_wmi_unregister_no=
+tifier, nb);
+> > > +	return devm_blocking_notifier_chain_register(dev,
+> > > +						     &uniwill_wmi_chain_head,
+> > > +						     nb);
+> > >  }
+> >
+> > I'd remove this function and replace calls to it directly by devm_block=
+ing_notifier_chain_register().
+>=20
+> uniwill_wmi_chain_head is static in uniwill-wmi.c and the caller is in
+> uniwill-acpi.c. The wrapper encapsulates access to this module-private
+> notifier head - removing it would require exposing the variable through
+> the header, which breaks the current abstraction.
+>=20
+> I'd prefer to keep the wrapper as-is.
 
+Sounds like a good justification, thanks for considering my suggestion.
+
+Uwe
+
+--gkd4u7j63fnaijay
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqBXPEACgkQj4D7WH0S
+/k5G9QgAiPl0SaJnsb71wiarjshHUxBTQ25ctRmpttPlhvHHEBw0CiKuC69HBhlW
+x4a5BrRCQa6F8Tu9QxhAfS+3LfmK8Jxxfmk2cYWxruNUqH7u8elLQxzRTq/GlWX4
+E8a1chJddKP7vbmFVM3YClG+ilryPCNVS2Xg/b+yIT+VgCRzdQjEgme3k6qagUOR
+cIw6LAy1xDecauMYWU94PiXkO48m6a46dST1tmxjveaXMv4ZPJW8vCIg50XRQnMI
+iuFeH4M8+m0g4eZy+4yAaSM7qcevqFFk0fJQFdlOrACDhqFthJIoxF7QFRWrIi4c
+4goHTZRM+F+JcMu6mVFcA7UMd9GPOg==
+=7fHf
+-----END PGP SIGNATURE-----
+
+--gkd4u7j63fnaijay--
