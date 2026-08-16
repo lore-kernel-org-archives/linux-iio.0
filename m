@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A8FA3BE16E;
-	Sun, 16 Aug 2026 18:30:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E9B11F2B88;
+	Sun, 16 Aug 2026 18:33:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786905003; cv=none; b=UMfM5o4wAPypkHbuFd9oop9ENjtCxDo6N4FnoZ5xweO86EMsQvxcWdKEiwHmvUgwlOk9MWRmcIgC5oDRdnjAJMY7Uw+EwoKyuR344hZ1N+3yK/6etAz1OvuJoZQ8qbJ3HeqNrH5AN++K0+uhynaNtu5EdlSCLhjKOq7xYlC1330=
+	t=1786905203; cv=none; b=PpaEDkB1/9XIxw1+NheMlkOE8m9SNyGRwonBchauGy+H2nRrhb1a0IDTdCj6GXtoIkEBwVe1wZtApMpjmOr4azdvCRVoXeGQv5QEPGVlBPfTzJedd/Ra4JlsLbm7t2e/g7jkibea5hGMgeozyQiWzjSsbY0y/0rrMgLj70DnD1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786905003; c=relaxed/simple;
-	bh=YBsNGaQjUZ6udcspzTFyrVrnx++wfVzaiqwjrGfc6rY=;
+	s=arc-20240116; t=1786905203; c=relaxed/simple;
+	bh=PK83bxPW0YYqlAdOhrRSsbzmxCSGTG8H6eqS7tb18G0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=liR1/1KqqVGbO7CrYbTlXEJHHBkPcMRtQmJXdgteeuVTiX+G/4AZagO3XeDznbGZ5kI6K2mgS196bPAaFCmYnDWeTVBTnikma43pmh4A3JnCoQ1jPobDx/yArh7wN7UNqWcqadq9UHPM99yaM4mDOfKCHR8Y6j/woNVCewiw4HU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C2Pg4Aj0; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=DPbxcRa/dm624/sT9BiVIOrt8kTYTcM5Eg/bsEIwLvswfmPu04Mfd6WNFabZBnUNX8j7f9I1nP3vBvai91fy5XMqKJ6XAKyHNUm45/wwm+az1/JduefXwTEKNqG17UadcQ4vxjIP69twONw79t65WPNlCquoGscSmpphXZdhKo8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L0UZHizD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C2Pg4Aj0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4EBD1F000E9;
-	Sun, 16 Aug 2026 18:29:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L0UZHizD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 396791F000E9;
+	Sun, 16 Aug 2026 18:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786905000;
-	bh=cWAN4ld+R8s9/E1GLH5plNepEOeHnrs1B5qaJx3BpVM=;
+	s=k20260515; t=1786905201;
+	bh=lckXmM2GFofMXJ16w+21lc1Yne8DWen4iQpDoMufy6E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=C2Pg4Aj0p/DKGuAhOll5ChH7AaffVZT9QKZqI6NtmlIlJiXphd3DyI4W5jzrFjVz+
-	 mV7fugw1Ql44lbgLzgDhhXtYKdFZP/CzvSanO9s0nbseJZyPPKESjUmdo12hGm6xNl
-	 CHnOlbBUIsZv0R26eXBckej0sSc/1AeMQtQ9Bym6Ockdjq3c14ClD+1R+TA65NWVHZ
-	 73uufEG3irooIWLKJjPr1e4BKka+NrCUd7brJD/ngmjqd9topNBw3RD1ldtUb/nT7G
-	 Tn9oBRXXTCB6H2vDMESEROia5I421pGt/mRddp6QwvlsU/O/7rpUwDlZqoC4h3iH1l
-	 NZX+v0JTkHlwA==
-Date: Sun, 16 Aug 2026 19:29:53 +0100
+	b=L0UZHizDRYZWwMaK/yybWtebomrbcLi2mAWXBcjSW2fBP2Aqt59yJYPpSMG5ZXeAk
+	 flGRFjU+F6MfZP7NAxklIa2DL0zca1wFcGysmQdkQihjeEWgj2/HjvaoLCqZnlLA3S
+	 GxRI/K+loFqyJQHknEnSTEeWVAN3BUpHxkCsPVR9NoS5C4SF52SLo38B6iiZJ2mP+w
+	 b5LhrjaxfNY2Pg1779Cfj622CKf3GnFClNpUqrhArfiIo2QuGkMdIqcCcZxMI2l0os
+	 jwm2pvsEVDkBCSptFqcaPNLzULuRPU1r6kwUtPvom1R9UWVsYnevMkFbH5wWdhjDd0
+	 4WJ3V2yZlOKRw==
+Date: Sun, 16 Aug 2026 19:33:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Janani Sunil <janani.sunil@analog.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
@@ -42,11 +42,12 @@ Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
  <linux-gpio@vger.kernel.org>, <linux-doc@vger.kernel.org>,
  <jananisunil.dev@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
  <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v3 03/14] iio: adc: adi-axi-adc: Initialize state mutex
-Message-ID: <20260816192953.38376b22@jic23-huawei>
-In-Reply-To: <20260813-ad7768-driver-v3-3-cb554399ad26@analog.com>
+Subject: Re: [PATCH v3 02/14] iio: backend: Add support for CRC
+Message-ID: <20260816193316.3ba3697b@jic23-huawei>
+In-Reply-To: <20260816192725.672c0a83@jic23-huawei>
 References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
-	<20260813-ad7768-driver-v3-3-cb554399ad26@analog.com>
+	<20260813-ad7768-driver-v3-2-cb554399ad26@analog.com>
+	<20260816192725.672c0a83@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,46 +58,117 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 15:56:56 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+On Sun, 16 Aug 2026 19:27:25 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> The AXI ADC register access paths serialize transactions with st->lock,
-> but probe does not initialize it. Initialize the mutex before registering
-> the backend.
+> On Thu, 13 Aug 2026 15:56:55 +0200
+> Janani Sunil <janani.sunil@analog.com> wrote:
 > 
-> Fixes: 7ecb8ee5c93b ("iio: adc: adi-axi-adc: support digital interface calibration")
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-Fixes come first.  In future move this up to start of series so it is
-really obvious.
-
-Given it's kind of critical, I'll apply it to the fixes-togreg branch now.
-
-Note that branch won't go upstream until after rc1, but I think it won't
-be too disruptive to have this series go through the slow togreg tree
-in parallel with that.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/adc/adi-axi-adc.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> > Add a backend operation to enable or disable Cyclic Redundancy Check
+> > processing for data integrity verification. When enabled, the backend
+> > will generate, verify, or process CRC information for data samples
+> > transmitted over the interface, allowing the host to detect corrupted
+> > samples.  
 > 
-> diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-> index 26b9c75bd4d8..b5e59b1871b6 100644
-> --- a/drivers/iio/adc/adi-axi-adc.c
-> +++ b/drivers/iio/adc/adi-axi-adc.c
-> @@ -684,6 +684,10 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
->  	if (!st)
->  		return -ENOMEM;
->  
-> +	ret = devm_mutex_init(dev, &st->lock);
-> +	if (ret)
-> +		return ret;
-> +
->  	base = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(base))
->  		return PTR_ERR(base);
+> The backend is generating them?  That seems odd. In my head at least
+> backend is representing the host end of the data pipe.  So what this is
+> enabling is the front end (the ADC itself) generating the CRC and
+> the backend either just passing it on, or potentially checking it
+> for us (the verification part).  So I think I'm either misunderstanding
+> what this is, or it needs a rewrite.
+> 
+
+Ah.  It occurred to me what is going on here. You've written it to
+allow for DAC usage as well.  Rather than clumping in and out in one
+statement can we have separate sentences to say what it enables
+in each direction.
+
+> Jonathan
+> 
+> 
+> > 
+> > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> > ---
+> >  drivers/iio/industrialio-backend.c | 33 +++++++++++++++++++++++++++++++++
+> >  include/linux/iio/backend.h        |  6 ++++++
+> >  2 files changed, 39 insertions(+)
+> > 
+> > diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+> > index f7a4be8ec320..792c2333b057 100644
+> > --- a/drivers/iio/industrialio-backend.c
+> > +++ b/drivers/iio/industrialio-backend.c
+> > @@ -886,6 +886,39 @@ int iio_backend_num_lanes_set(struct iio_backend *back, unsigned int num_lanes)
+> >  }
+> >  EXPORT_SYMBOL_NS_GPL(iio_backend_num_lanes_set, "IIO_BACKEND");
+> >  
+> > +/**
+> > + * iio_backend_crc_enable - Enable the CRC generation.
+> > + * @back: Backend device
+> > + *
+> > + * Enable Cyclic Redundancy Check processing for data integrity verification.
+> > + * When enabled, the backend will generate, verify, or process CRC information
+> > + * for data samples transmitted over the interface.
+> > + *
+> > + * RETURNS:
+> > + * 0 on success, negative error number on failure.
+> > + */
+> > +int iio_backend_crc_enable(struct iio_backend *back)
+> > +{
+> > +	return iio_backend_op_call(back, crc_enable);
+> > +}
+> > +EXPORT_SYMBOL_NS_GPL(iio_backend_crc_enable, "IIO_BACKEND");
+> > +
+> > +/**
+> > + * iio_backend_crc_disable - Disable the CRC generation.
+> > + * @back: Backend device
+> > + *
+> > + * Disable Cyclic Redundancy Check processing. When disabled, the backend will
+> > + * stop generating, verifying, or processing CRC information for data samples.
+> > + *
+> > + * RETURNS:
+> > + * 0 on success, negative error number on failure.
+> > + */
+> > +int iio_backend_crc_disable(struct iio_backend *back)
+> > +{
+> > +	return iio_backend_op_call(back, crc_disable);
+> > +}
+> > +EXPORT_SYMBOL_NS_GPL(iio_backend_crc_disable, "IIO_BACKEND");
+> > +
+> >  /**
+> >   * iio_backend_ddr_enable - Enable interface DDR (Double Data Rate) mode
+> >   * @back: Backend device
+> > diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+> > index 3f95ed1fdf9e..eddaddb47bea 100644
+> > --- a/include/linux/iio/backend.h
+> > +++ b/include/linux/iio/backend.h
+> > @@ -133,6 +133,8 @@ enum iio_backend_capabilities {
+> >   * @filter_type_set: Set filter type.
+> >   * @interface_data_align: Perform the data alignment process.
+> >   * @num_lanes_set: Set the number of lanes enabled.
+> > + * @crc_enable: Enable CRC generation and verification.
+> > + * @crc_disable: Disable CRC generation and verification.
+> >   * @ddr_enable: Enable interface DDR (Double Data Rate) mode.
+> >   * @ddr_disable: Disable interface DDR (Double Data Rate) mode.
+> >   * @data_stream_enable: Enable data stream.
+> > @@ -189,6 +191,8 @@ struct iio_backend_ops {
+> >  			       enum iio_backend_filter_type type);
+> >  	int (*interface_data_align)(struct iio_backend *back, u32 timeout_us);
+> >  	int (*num_lanes_set)(struct iio_backend *back, unsigned int num_lanes);
+> > +	int (*crc_enable)(struct iio_backend *back);
+> > +	int (*crc_disable)(struct iio_backend *back);
+> >  	int (*ddr_enable)(struct iio_backend *back);
+> >  	int (*ddr_disable)(struct iio_backend *back);
+> >  	int (*data_stream_enable)(struct iio_backend *back);
+> > @@ -237,6 +241,8 @@ int iio_backend_filter_type_set(struct iio_backend *back,
+> >  				enum iio_backend_filter_type type);
+> >  int iio_backend_interface_data_align(struct iio_backend *back, u32 timeout_us);
+> >  int iio_backend_num_lanes_set(struct iio_backend *back, unsigned int num_lanes);
+> > +int iio_backend_crc_enable(struct iio_backend *back);
+> > +int iio_backend_crc_disable(struct iio_backend *back);
+> >  int iio_backend_ddr_enable(struct iio_backend *back);
+> >  int iio_backend_ddr_disable(struct iio_backend *back);
+> >  int iio_backend_data_stream_enable(struct iio_backend *back);
+> >   
+> 
 > 
 
