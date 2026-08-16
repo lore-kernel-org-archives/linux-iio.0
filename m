@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C1F718B0A;
-	Sun, 16 Aug 2026 19:37:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B9552AF00;
+	Sun, 16 Aug 2026 19:46:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786909072; cv=none; b=fCkmGuIzk40QKmAF3c1tF2wAszuv0LzRGnL/ZReDrQ7l048IjIr+GJyud6wxcVzt9QMBMW9t3sXCKxCn2mowMnybvHKl1QSj1Hldw9n85B6H1+MqESTMHMwVZ2/km/uXYJZTZHx4ueNltu8wc7Y5S7ui+w6qaDOGRixwhClpYTA=
+	t=1786909573; cv=none; b=o3vSt04Ii+1+DTEzKR0UllXzZIH1E9fIhpO7jwExERhCxhxOCqqy8R4+TNi/cpuSvYDvz4gFVGsufDmDwxz/Ji2/j6fWCZaXlYItymEDq8Xzs6rVsJ6zywcfks1jYUAOuzHmJxqPH10yYGTS6DNoCheLk4ISRSDzDf9OLS4zHOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786909072; c=relaxed/simple;
-	bh=Eg9Sf4COen7JWhleH49GrvobeHCRC5kLGWVb52OzegI=;
+	s=arc-20240116; t=1786909573; c=relaxed/simple;
+	bh=ydTeLTMSrDd3wLWRAr4wXA7xV96UBCvUG47ynPScBEs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tKRLM5SBZ/R88Gz6pGO8hKHS1VQywBTitY+jeKRsvQhN7AnJURriO8uQVb/9i8CNrX7OqefDgayXvqKJe0m8vAtZyYaSaJtj1dkFijESRurcGZf/uWlQQEAF3Jz/tHftNKqINCq+L86Cbe6q2/t21msZGOGTzHDIQGCPJags0bM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mr6Pyz6D; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=jM9XkaykZrJ4y58+jZNdYxxhsMGseNAc2YOwGOukwOmpmmI/dZ7VSKmiVMMoS3xJ+HceAnk/LVeO020p22eIk/ldQjNvk8LLKggsT+ORSofHWTaPGM34nMobr7C0uLQpauGDQScnGsyUDLldpiDkcSY8+4HTdzx0lAxvIIXB0CY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TOs8h5Za; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mr6Pyz6D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B729D1F000E9;
-	Sun, 16 Aug 2026 19:37:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TOs8h5Za"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3AE1F000E9;
+	Sun, 16 Aug 2026 19:46:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786909070;
-	bh=kTNJtD70ZYPLMNbPu0S7+qzngDVI764ksoslrLSai94=;
+	s=k20260515; t=1786909571;
+	bh=m8KwuO3YIIWStRr4n29LMhNSQg5I21ZkYZ9y73+9K+w=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Mr6Pyz6DgW5XT2QmBU6bzBy2vPT4rm3yPOGdaniJMOKvFaTguh5xlmv9upmrIXbBA
-	 7RT+/kyeRylMhv0lYGrDyYSVaejwOId5XrEP0egV4ZmTKNozFY7cCPVi2qSTWUGBb+
-	 I5gpy0rASTRe0+Gu+wl3+ArwJgZkB0EcguciZdlzeuWDqCTEly41M8VaVxSxfBM2cF
-	 WgxyI4uNWpoDdqjCm1AHOQ0zmQFT2joecBhPQxFzvGaBIG2tMCOMM1/e1k1jh0DB86
-	 655Ra2LXp2WK9OlcKIwQ2abr+7ZRdUFDQNyuI/n/PrNtr7pDqy06IiHXOrIHGzWffk
-	 pt0N4PrV1sH4w==
-Date: Sun, 16 Aug 2026 20:37:43 +0100
+	b=TOs8h5ZarTzZy8TNVJ0dCDT+TmLdv9XYoMTYc+U9edK6k8C6OOSqQJz4YNz37iq0r
+	 S2xcYmS1OT+x6rH485w6qU1Y7TwgD6+q+etpP0CY3T/rU2Dmxa6mNYkyWVZFFf0KH/
+	 QDbIBwMmdRYNBAqnXC0eqs9DBtPr1NgjNi9an5yOC4ECwb/xvdyePbhM+OH6TJC6KJ
+	 I+xZrPbYMPc9ktrgrmWy6pgru6grROWrfdc8h0k3zxu52EL8dXELOM56siWY7l+33T
+	 w0EvrH005R5aLMI2Xow0RPHgzt+M1WdBMEcwxbAXmhYndJ9UAuzw9PTp9jlsVzTM6I
+	 hftawInS4pOBw==
+Date: Sun, 16 Aug 2026 20:46:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Janani Sunil <janani.sunil@analog.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
@@ -42,11 +42,11 @@ Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
  <linux-gpio@vger.kernel.org>, <linux-doc@vger.kernel.org>,
  <jananisunil.dev@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
  <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v3 07/14] iio: adc: ad7768: Add calibration controls
-Message-ID: <20260816203743.12f675d3@jic23-huawei>
-In-Reply-To: <20260813-ad7768-driver-v3-7-cb554399ad26@analog.com>
+Subject: Re: [PATCH v3 09/14] iio: adc: ad7768: Add VCM regulator support
+Message-ID: <20260816204605.28a0a81f@jic23-huawei>
+In-Reply-To: <20260813-ad7768-driver-v3-9-cb554399ad26@analog.com>
 References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
-	<20260813-ad7768-driver-v3-7-cb554399ad26@analog.com>
+	<20260813-ad7768-driver-v3-9-cb554399ad26@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,25 +57,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 15:57:00 +0200
+On Thu, 13 Aug 2026 15:57:02 +0200
 Janani Sunil <janani.sunil@analog.com> wrote:
 
-> Expose the per-channel offset and gain calibration registers through the
-> IIO calibbias and calibscale attributes.
+> Expose the on-chip common mode voltage output through the regulator
+> framework. Support the three fixed output levels and the
+> supply-dependent AVDD1/2 setting.
 > 
-> Use bulk regmap operations and unaligned big-endian helpers to transfer
-> the three register bytes.
-No real need to add this detail to the commit description.
+> Keep the ADC runtime active while VCM is enabled and release the runtime
+> PM reference when the output is disabled.
 
-Otherwise, from a quick look this patch is fine.
+Why?  Expectation I think is that VCM is used for powering analog
+front ends or simple circuity directly tied up to what we are measuring
+with the ADC.  Feels like it may well want to only be powered up when
+about to sample stuff.
 
-thanks,
-
-Jonathan
+Perhaps that is a problem for a front end device we aren't currently
+describing.  We don't really have a way to do those for backend 
+/ dma grabbed data today as there isn't a consumer interface in the
+same way there is for the software managed buffers path.
 
 > 
 > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  drivers/iio/adc/ad7768.c | 119 ++++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 108 insertions(+), 11 deletions(-)
+
+
 
