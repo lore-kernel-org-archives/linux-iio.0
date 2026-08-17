@@ -1,48 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A555428373;
-	Mon, 17 Aug 2026 02:45:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26365285058;
+	Mon, 17 Aug 2026 02:54:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786934748; cv=none; b=CwSFzVIb+ot3+xYG+iojbBTfOBBNGTkXE/6zocOdkcpSsz0ixrVcUkfhaAiunZij3xj9Lo/ToLrIwth/IM9L38ce1mXL08fwwD8gAJNA7Q8mDa2A6eod39Q7Vk+EAP0x/qwPaN1l2Xcg8Iwv/EHmpUYXz+X4K3NjPLK/apzD7kg=
+	t=1786935261; cv=none; b=GTzC/Mc8IsvVxmyv/LqRiRI1tRoG1oSaCl/1NGQyUOFp/5tCevD/QKyzd4P8143G6XDlqxDL/NwF3/rIPLBGdTkaTfnQPBzjrJwsLEnyf/f0YgMnfJxkkGsXhrYARUatMa36wicEQ+ILWd+Jqk6zJyIQHv11znCxGjKxDG8IEVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786934748; c=relaxed/simple;
-	bh=ojvMs5tauhaG9Xv/sXKZGCz6S8w8IEgmRwJfQYMgubI=;
+	s=arc-20240116; t=1786935261; c=relaxed/simple;
+	bh=kg2sIjBJhA4XHx46529T54OBFttW0iChZqu/4i2zjZo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Dk23U44xewQQU+Royp/8901NjOOGjz8MlLjofU4VyI9F+i8PejeoD7OddybOw9sKOhcFLyVSR6QsrRkaTRiEXR97tXEzIS7+GDB2uJ/mN4FU1sjun1hNLeFFr7qyBbV2dOiQTGt086X+SA9y0jLzRTthiuzIfxTgf3zhcJPbLpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Lo6ioraA; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=NZDNfQYT6GvlB6G2jYOPtpge+56vk/40Mk2+ZbInSm06WKPcJnbnszmqjT8tBSul04uMTSwEwaN1X6CmnfM3umvFsvZQSuB2e1Htjqdp1oRmLWPaK9AkhsGg+lAq8tUbjfpMuWAlpngr78Ec910ARC4lgWjTZeA9ceHsdpbxGgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=icS3rPx+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Lo6ioraA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E011F000E9;
-	Mon, 17 Aug 2026 02:45:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="icS3rPx+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5301F000E9;
+	Mon, 17 Aug 2026 02:54:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786934747;
-	bh=A8y6rSl+mOT4rzHXtsv7e1d7LlCzxXlgMvDb3lpWqsc=;
+	s=k20260515; t=1786935259;
+	bh=aSE+R53RZjj2pwacXJZ84bfkyt9e4SbIfWux452Smx4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Lo6ioraAzzVI9sgU3qv0U0dMaDFu+0BR1KhIKpbso8eHCx4TAJgUtS8DXZi4Px08S
-	 nwNAlIn947dhYdqmNmRESAAufsdcpNcaoDTSYAlfE6z7d3b+y4xoX+Zmp9YTyo0nAu
-	 KqbdcV9BQH35sM7pTdmVpd3Vy1cZzWKr/iZI20GKJPh7NNKwNr2wvnQ4jlKpPt2vRP
-	 7iWOPSyWFX/C9XImK1K4HhOGN5ierxVJPwLQe32nQtibqTsaDTnI7KeyM9/sI1cgZg
-	 JL4nrE3Ik0jvqkxiR7WzKvhSDT8riSZ7ijSlsSZIQ6S6iBebXOSqQcw8436Tm0O157
-	 dlgppLJ5jqV5w==
-Date: Mon, 17 Aug 2026 03:45:41 +0100
+	b=icS3rPx+L0C4RP4ehIm5dM81RfBnMgfZdEqNHpRyjrocuU+SB/lzIsHxNQ9vlltk5
+	 ssqLgOeH36PTIJzfUj6dB1LpfE2kRs4wXopL/YdgPDRiT1its6xQm0BTsmfxxeq2si
+	 DKMvjij5BQoB0jNvhNgsMZf4peYYlbZzbXqpTEoIFZEJfHmxKdTwKeAa066VJbsUcM
+	 x4fqPjZ06KGVcNjftZ8criRuoq6dYo0elSGIrMs0gmcJJgTQ772Pcfn3+hsJU7Jqbr
+	 cprIamGbEXdei7s5kg3DrG2OmY3JO8KZT+5Oy0jwTK9/l9Ctb8TMOsl4lZEj3+oHHc
+	 8nRufzjsMQ+AQ==
+Date: Mon, 17 Aug 2026 03:54:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Petar Stepanovic <pstepanovic@axiado.com>, Akhila Kavi
- <akavi@axiado.com>, Prasad Bolisetty <pbolisetty@axiado.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Harshit
- Shah <hshah@axiado.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: adc: add Axiado SARADC driver
-Message-ID: <20260817034541.053dac28@jic23-huawei>
-In-Reply-To: <anoYDi-bt-t6ZeeD@ashevche-desk.local>
-References: <20260810-axiado-ax3000-ax3005-saradc-v5-0-bb0df3ecedaa@axiado.com>
-	<20260810-axiado-ax3000-ax3005-saradc-v5-2-bb0df3ecedaa@axiado.com>
-	<anoYDi-bt-t6ZeeD@ashevche-desk.local>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Maxwell Doose
+ <maxwell@maxwelld.cc>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sakari
+ Ailus <sakari.ailus@linux.intel.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Marius Cristea
+ <marius.cristea@microchip.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Tomasz Duszynski <tduszyns@gmail.com>, Jean-Baptiste Maneyrol
+ <jean-baptiste.maneyrol@tdk.com>
+Subject: Re: [PATCH v1 1/4] iio: light: Unshadow error codes in ->store()
+Message-ID: <20260817035414.496912f4@jic23-huawei>
+In-Reply-To: <an7W8VKXrIKzl9xt@ashevche-desk.local>
+References: <20260813071912.2465208-1-andriy.shevchenko@linux.intel.com>
+	<20260813071912.2465208-2-andriy.shevchenko@linux.intel.com>
+	<DKO09O8T0FGE.2WMX1VNQN5C7J@maxwelld.cc>
+	<CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
+	<DKOBND0GKI21.2843OFKP0KR40@maxwelld.cc>
+	<an7OSM04kiviu9xL@ashevche-desk.local>
+	<CALoEA-xkxGY9sTeTR3cXgzadp+Uuk3MZh21ubD82kyijo4NN8g@mail.gmail.com>
+	<an7W8VKXrIKzl9xt@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,153 +55,80 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 10 Aug 2026 21:27:26 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 14 Aug 2026 11:50:57 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On Mon, Aug 10, 2026 at 07:49:36AM -0700, Petar Stepanovic wrote:
-> > Add support for the SARADC controller found on Axiado AX3000 and
-> > AX3005 SoCs.
-> > 
-> > The driver supports single-shot voltage reads through the IIO
-> > subsystem. The number of available input channels is selected from
-> > the SoC match data, allowing AX3000 and AX3005 variants to use the
-> > same driver.  
-> 
+> On Fri, Aug 14, 2026 at 10:25:32AM +0200, Joshua Crofts wrote:
+> > On Fri, 14 Aug 2026 at 10:16, Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote: =20
+> > > On Thu, Aug 13, 2026 at 09:47:00PM -0500, Maxwell Doose wrote: =20
+> > > > On Thu Aug 13, 2026 at 3:47 PM CDT
+> > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote: =20
+> > > > > On Thu, Aug 13, 2026 at 8:52=E2=80=AFPM Maxwell Doose <maxwell@ma=
+xwelld.cc> wrote: =20
+>=20
 > ...
-> 
-> > +/* MANUAL_CTRL register fields */  
-> 
-> ^^^
-> 
-> > +#define AX_SARADC_MANUAL_CTRL_ENABLE	BIT(0)
-> > +#define AX_SARADC_MANUAL_CTRL_CH_SEL_MASK	GENMASK(4, 1)
-> > +
-> > +#define AX_RESOLUTION_BITS	10
-> > +#define AX_SARADC_CONV_CYCLES	13
-> > +#define AX_SARADC_CONV_DELAY_MARGIN_US	10
-> > +
-> > +struct axiado_saradc {
-> > +	struct regmap *regmap;
-> > +	struct mutex lock; /* Serializes ADC conversions. */  
-> 
-> Choose the same style for all single-line comments (here is a period present
-> while in the above, for instance, there is none).
+>=20
+> > > > > Note, that kernel.h shouldn't be there at all, but that is defini=
+tely out
+> > > > > of scope here. =20
+> > > >
+> > > > Makes sense. I wonder if it may be worth doing a patch series remov=
+ing
+> > > > all of the kernel.h inclusions in IIO all at once (or maybe some dr=
+ivers
+> > > > have a legitimate use for it, but that seems highly unlikely). =20
+> > >
+> > > Yes, for sure! I have simply had no time to do it myself, but I have =
+a low-prio
+> > > item in my always grown TODO list. So, if you do that, I will really =
+appreciate!
+> > > But be careful, the actual patches should care about the whole bunch =
+of the
+> > > inclusions, and not just about kernel.h. This means each driver shoul=
+d be
+> > > carefully inspected in accordance with the IWYU principles. =20
+> >=20
+> > This will be a gruelling task (implementing and reviewing), but perhaps=
+ it
+> > would be easier to do one sensor type at a time instead of the entire
+> > subsystem. =20
+Absolutely. One patch per driver for this and not more than 10 ish
+drivers in a series or out for review at a tiem.  This stuff is still quite
+tricky to review, even with details on why each header change below the ---
 
-Hmm. It is inconsistent in other places, but those two are arguably
-correct. The second is a sentence, the first is not (no verb)
+Also precursor patches for any significant reordering to put them in alphab=
+etical
++ block for IIO headers just to make it easier to read the patch that cleans
+up what is included.
 
-Anyhow, I did a sweep for other sentences and not all of them have
-periods.  Given the rest of the driver looked fine to me and the other
-suggestions Andy made are easy to apply.
+I've done some of these as have many others. It's worthy work but slow to
+do!  I'd suggest we leave it as a newbie task, but it requires more underst=
+anding
+than typical for one of those - so if you want to take it on (probably take
+a year or more to finish given review bandwidth!) then that would be most
+welcome.
 
-Applied with the following diff to the testing branch of iio.git
-Note I'm fine with rebasing that (and will do on rc1 once that's available)
-so extra tags or review comments are easy to add for a few weeks at least.
+>=20
+> I would start from the easy cases where kernel.h is just not used at all =
+(not
+> even as a "proxy" header). Then continue with the rest.
 
-Mostly I did this just to reduce how many patch sets were undergoing
-revisions... I'm still over a 100 emails to read and run out of
-time for today.
+yeah - if there are cheap ones were we can just drop it and now do the
+rest of the work then I don't mind seeing those on their own.
 
 Jonathan
-
-
-diff --git a/drivers/iio/adc/axiado_saradc.c b/drivers/iio/adc/axiado_saradc.c
-index daa98dd2f176..699ee31616fc 100644
---- a/drivers/iio/adc/axiado_saradc.c
-+++ b/drivers/iio/adc/axiado_saradc.c
-@@ -34,10 +34,10 @@
- #define AX_SARADC_GLOBAL_CTRL_PD               BIT(2)
- #define AX_SARADC_GLOBAL_CTRL_ENABLE           BIT(0)
- 
--/* GLOBAL_CTRL SAMPLE_MASK field value: 0 selects 16 samples */
-+/* GLOBAL_CTRL SAMPLE_MASK field value: 0 selects 16 samples. */
- #define AX_SARADC_GLOBAL_CTRL_SAMPLE_16        0
- 
--/* GLOBAL_CTRL MODE_MASK field value: 1 selects manual mode */
-+/* GLOBAL_CTRL MODE_MASK field value: 1 selects manual mode. */
- #define AX_SARADC_GLOBAL_CTRL_MODE_MANUAL      1
- 
- /* MANUAL_CTRL register fields */
-@@ -76,16 +76,15 @@ static int axiado_saradc_conversion(struct axiado_saradc *info,
- 
-        guard(mutex)(&info->lock);
- 
--       /* Select the channel to be used and trigger conversion */
-+       /* Select the channel to be used and trigger conversion. */
-        ret = regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG,
-                           AX_SARADC_MANUAL_CTRL_ENABLE |
-                           FIELD_PREP(AX_SARADC_MANUAL_CTRL_CH_SEL_MASK, chan->channel));
-        if (ret)
-                return ret;
- 
--       /* Hardware requires 13 conversion cycles at clk_rate */
--       usecs = DIV_ROUND_UP(AX_SARADC_CONV_CYCLES * USEC_PER_SEC,
--                            info->clk_rate);
-+       /* Hardware requires 13 conversion cycles at clk_rate. */
-+       usecs = DIV_ROUND_UP(AX_SARADC_CONV_CYCLES * USEC_PER_SEC, info->clk_rate);
-        fsleep(usecs + AX_SARADC_CONV_DELAY_MARGIN_US);
- 
-        ret = regmap_read(info->regmap, AX_SARADC_DOUT_REG, &regval);
-@@ -220,7 +219,7 @@ static int axiado_saradc_probe(struct platform_device *pdev)
- 
-        soc_data = device_get_match_data(dev);
-        if (!soc_data)
--               return dev_err_probe(dev, -EINVAL, "failed to get match data\n");
-+               return dev_err_probe(dev, -ENODATA, "failed to get match data\n");
-> 
-> > +	unsigned long clk_rate;
-> > +	int vref_uV;
-> > +};  
-> 
-> ...
-> 
-> > +static int axiado_saradc_conversion(struct axiado_saradc *info,
-> > +				    struct iio_chan_spec const *chan, int *val)
-> > +{
-> > +	unsigned long usecs;
-> > +	unsigned int regval;
-> > +	int ret;
-> > +
-> > +	guard(mutex)(&info->lock);
-> > +
-> > +	/* Select the channel to be used and trigger conversion */
-> > +	ret = regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG,
-> > +			   AX_SARADC_MANUAL_CTRL_ENABLE |
-> > +			   FIELD_PREP(AX_SARADC_MANUAL_CTRL_CH_SEL_MASK, chan->channel));
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Hardware requires 13 conversion cycles at clk_rate */  
-> 
-> > +	usecs = DIV_ROUND_UP(AX_SARADC_CONV_CYCLES * USEC_PER_SEC,
-> > +			     info->clk_rate);  
-> 
-> I think it's okay to have this on a single line (83 characters).
-> 
-> > +	fsleep(usecs + AX_SARADC_CONV_DELAY_MARGIN_US);
-> > +
-> > +	ret = regmap_read(info->regmap, AX_SARADC_DOUT_REG, &regval);
-> > +
-> > +	/* Best effort to stop manual conversion. */
-> > +	regmap_write(info->regmap, AX_SARADC_MANUAL_CTRL_REG, 0);
-> > +
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	*val = regval & GENMASK(AX_RESOLUTION_BITS - 1, 0);
-> > +
-> > +	return 0;
-> > +}  
-> 
-> ...
-> 
-> > +	soc_data = device_get_match_data(dev);
-> > +	if (!soc_data)
-> > +		return dev_err_probe(dev, -EINVAL, "failed to get match data\n");  
-> 
-> -ENODATA
-> 
+>=20
+> Joshua, note, it's only about the drivers that have explicit kernel.h
+> inclusion. In general the entire IIO needs to be revisited, indeed.
+>=20
+> $ git grep -n -lw linux/kernel.h -- drivers/iio/ | wc -l
+> 234
+>=20
+> $ git ls-files | grep ^drivers/iio/.*\.c$ | wc -l
+> 707
+>=20
 
