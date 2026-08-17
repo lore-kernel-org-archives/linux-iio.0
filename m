@@ -1,137 +1,209 @@
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 320FF3B637E
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 21:29:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787002168; cv=none; b=PRnvlqeyiRHFw/pjQ/ijXYCrcU56huR4LH7elLWUvFnBPRyn8fzTnDQgSnkMUG1cqK9LVlbOTTybUO++D3nKE7rtkimlFOUj3m5b/gFB2KHheBri4iVP7TpqeN0USAEK5yFW8Z3H29cqius01/H9wWM/F27VSFPw84UxiiNQAhE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787002168; c=relaxed/simple;
-	bh=RRjYjO9utSwXFNiNlGy5THKzfGm+sRKB/dDa4OjFrtU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Bjw0itJ/uyTmsI26WvJMGLlQXVLbyjjNxoUj0fMsRjnBvdfg3SR+VMWmDGKbOm23py58cxYf5CUMPnA/OR6rjDgt2f8laelqjccF7WW7APd82D3FQco7jszK2WDTo5Y1GYx9xfz0WBP2x87mdzXZNqNnXa0oRXybaHZ0Q0pn678=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hoqc8OOb; arc=none smtp.client-ip=209.85.222.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9193E3D0BED
+	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 22:09:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787004593; cv=pass; b=Z1WyW5CGyOw00Tijl2xIJLXX1bt8HrlGeJl+XZC4si9wSznYZ8LAErwopKsDvPtdP6TPRz76Gi6X/VTXyWqaSYsyS0RQhHBN1jkOVsDX0vUXnRcVnQ29w2fPec5ojI6V7GkHdTGcRUuTXxoXJUJwLlIQclaVISV2HQWmtHyq0qA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787004593; c=relaxed/simple;
+	bh=LsU8FXn8Sh1ONFMFFVsc1tCmKSU/+iheTQ+b1gpFBpA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IbdRkl8FCjJ9i74Qr+CDzlFCLE+bFD5kPeI64Trv+mzVCa1EEYKHlQVFw6l1W2XXMAqUK/vByJOEy0w6VtPBFVFDq+R1WqET2cnR6fUEfbIvqhqEWBaZty7biYH+Q+DkL9hrvgyxHReHSo6ojh6PL5kg2S+IhzA1id/miZbBijQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SoAMG7sy; arc=pass smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hoqc8OOb"
-Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-9696319e14dso1201975241.3
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 14:29:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SoAMG7sy"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-8ff5d1b0f91so24207006d6.2
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 15:09:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787004590; cv=none;
+        d=google.com; s=arc-20260327;
+        b=FUTEe84E/UWCK+ywGVXNESCxafrm7/fC69zxHiVBMpr+aElEUg+BTvrdfdUp1u6qSr
+         1MDKQ2+wObGAh7glCWnQj+HB6fogA8uf8+3osdfJOfs8F2c6kMHl0MBvanzpT9lHgL96
+         CCxNkYsBrV7WciKTmB6FN2avYmc9/1IBJfI+ZpBDqx8J2b3HkDm7p3fEWhigQy2/7dWj
+         6GCoDraG9Wgh7VJ2pkjBuCybVCxvI5w2oGVQqBCUYSEzWhVQcgS6pynqjdnbqFqyisrh
+         umXKiA2XQgZ0ypEijh6T37LhzPCC0RD5NdSWfB8cy9RT/FgQAh8W5B/noSwlbG8mCGao
+         asnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=DqJ/AaCaQofv+XhWcx6RjOb2KUh+9qiVQjO9GYdH4tA=;
+        fh=1s99EcY64a9OcDr0h3h6TEwQqSKjjNYOrfwfNLE5rCo=;
+        b=WNPsbqYeNpsowO8oBrNnDQiYfW3wXFICI7ceMvIjb1iJvmFHFrWMk/JVubuemnGsYB
+         SCa0FH1rA6GK209KhoAOmupGN8GcP65eKw57QAr5LshjRKiK5xT0GDBqLYvtqSYbHKAv
+         zp8CAf1PioBuT3sBrhKgDIg0t1UPNOSrvlf1/32N8Fy3q8W7UZfppFXhpy3QIVYeGSWu
+         grmbpnwZEDpORnofy9nMw8LDFHSr7SluxXoarFtKnEL+K3LyYPoGRLcbPuo76TJEB0Tk
+         sfAC8zV4Q4G3Q4NDbrSODlYCcQxE8TXtSZak9tUOH6txtXmttfvGDMS76DR9QPo04Nmg
+         CHAA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787002165; x=1787606965; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=XiXCkGd4+m7MSxEiROxY/FH+NnJuFc43Sy6i9qtL4cg=;
-        b=hoqc8OObrTRSktIYGRswLh0Swr69w45sBeEdhTkukpOlKpgtQ4fdxDJ8hUrmqSETN8
-         IncKlBoEIHuLFU4DSq3OslZd7rfGnS1/3hCPFQ01PQN1JS/0vCo2NstXnilIBd5gmnPh
-         82mBywHYBAXdzouZ7+SgsD4Ul0jrxJa8cGXqSSBrGjeE+oNORWwEuH3Mr89LSAFtU7wC
-         RbK7UABLQpl4PM7WLObkfUKI0ohB54vyi1E+cGVv4tYPXGvFVYrYpNobw8wHq6sgdPqI
-         LWr9B9PlowBWo3WMkclbd/MzcRBDNbV6ILlelT29CZzLoeBvJoy5emknEP/GA8L+Ovb/
-         fxxQ==
+        d=gmail.com; s=20251104; t=1787004590; x=1787609390; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=DqJ/AaCaQofv+XhWcx6RjOb2KUh+9qiVQjO9GYdH4tA=;
+        b=SoAMG7syyEI+V1pm4DgAgiceqed3DAkxR8fKpURPlIR26Ih77/R07hLP4CEqMKLw+i
+         r8/dhq3BFreiknSwr0bUi/WGZhqjF0vtIsXKei9zRHtjZsc3nOqL/cA3GGJyX2r8/o7j
+         idSfh360qU8fh5jFkw+z49umXK2opillZlxMSyKLwHAXoAWkgyaMa9ZBNR77ryZp7hqn
+         92uDNN2ghDeKVLCpC7We6ORtVLpvqvciL+kpjfYI1JuygnEipNM1lDRmZCw+vivobvrG
+         x7kejMfge/kQcWtALwaPm9+8bXtlY1VSBXdhoOc3fpaTbaJC7odVJoZyq+y1Ws7gt56M
+         ji1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787002165; x=1787606965;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=XiXCkGd4+m7MSxEiROxY/FH+NnJuFc43Sy6i9qtL4cg=;
-        b=chTJzyf0UGT6ykyL8mUtUky+OIJtnQvoRD+cyL1eWMd5uOLk9+HWPJB8MCba/Rsdb4
-         b0S+Tdz5shDfocsxIhNdKxnHf/pmYbv65E5EUCe6VZMbG2RYf7mZPLMYgg59TFMjbL3v
-         yvGh6GIh8dUVtsuskNsu4ACXOyojz/ntLXWwIOngI/C3HBYfKnH3tNElCwvv9vCIJv0U
-         pM/T/RZUFaiADap8R9ghfy9c3WMioOR/EPD53cRVCpighYHO0/VlTg1GYv0rDLYglAdu
-         IILHx/HuSPNcbjOl+GO31usX1ejXqTmnzvSAvp7iB6SHKJnIBc3gfjBKst9Garl8ZMX/
-         KdtQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoFLL11/Qhfb5HojbnpgWfvvx5uBj3SLJ2Z6w+M4oVxAyM87vRYiDHcE2smkDjUuGPqrY21bjxWw9E=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzn+piM9/AcNYMzeUDKMhTe2w4p4PP+fQ/QvXGo6HDATlI9nQP4
-	7Idjt6N/cwxuKVJSxD2snaoHLe+mPOM/Ssde0Vtx1Uhd2Hrk33vXIW/N
-X-Gm-Gg: AR+sD13IYM6OVVD7NRpRiSKFYxf9f/c0mBhsSvnL/W4l5lxTF8GwWqdIKHyDHQr5WCi
-	grCugZCFl6/3JqqjwBbA47RJ1QztF0/rIcKH6QB8uW5qr41XfV9MHK0kUNkmjPwj5S3zZB159A/
-	uFFhjSqF6LJBuouYKJCjqAEsrhcVa1/Cv2j5zH0rFY6KqyBT4Il0PszaWwucwA1mbEI6/qZVNtN
-	HizGqzBxBaqzKvyoHO4oZifMfks8s/1uzwothhnbyRabaxgTnG9E5bZX8KiQW2k1x4YuCDO8f2k
-	rTi7Ezy4KuWffQIHhON2UTczgqL7SOR0LDL9b21dOv8L8kFXEBCqDDktxWuih4GEzo4JvdMZHjy
-	jBvKftBU1GgRp+COQijKdNf1/miavyQZVAgbe4saVBjmij2H6B0ATgkWYqhjHYLUbWd3N7Fvstv
-	AdTaLU17kYvROlUQeJel/8xCz5e7KOlZ/0THVx93JF2ZgF/TnUOJZgfEcizw8wnG2OKQVsGNwrt
-	yvYsQ/aumTQ7yqXzFRwXfzeyIatGLLxQbFX2qcYWeSIDPb1rdelKwzJmZcXkgR5pGZwJoCQ
-X-Received: by 2002:a05:6102:6898:b0:738:1fcb:f276 with SMTP id ada2fe7eead31-7747c0b68c9mr783524137.1.1787002165013;
-        Mon, 17 Aug 2026 14:29:25 -0700 (PDT)
-Received: from ?IPV6:2804:14d:4c64:82a2:de83:b808:5922:82d? ([2804:14d:4c64:82a2:de83:b808:5922:82d])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c5c78eef7asm1683621e0c.16.2026.08.17.14.29.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2026 14:29:24 -0700 (PDT)
-Message-ID: <9f0a6334-f40c-4e19-928f-57b709bbcea9@gmail.com>
-Date: Mon, 17 Aug 2026 18:29:17 -0300
+        d=1e100.net; s=20251104; t=1787004590; x=1787609390;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=DqJ/AaCaQofv+XhWcx6RjOb2KUh+9qiVQjO9GYdH4tA=;
+        b=lL8f6UPEAdUYJXAGj0+hzJLBVqJeZ+E9k6MDTztUWS+l+JgxLv1jL74iTFX/dQfqG6
+         NYSyFKJ5MvAhKuiaPxOkY2i84GQFtE3MnyX36oebp2FF8nc5wEf8nJE4dIL5kLZFghMZ
+         ONTloL/aj7hAL2Mmg1zDWoDhuJ5Nx5q6aLcJsAgjKUI8LMl2f5qUQ17LenU8MgKfBnEj
+         ITsyFpilwLDz+ywA9vsyAlrevL1FYI0yFn8ioAmY12lkFnLK6d0vvROUR5KZPqXeVGOr
+         Cucey+gGWyM+jq4B7bKD7WCcVk59eSCdelnO3I0/LsyV0jEeobD7F8sQpZBbWJs7mGum
+         ludA==
+X-Forwarded-Encrypted: i=1; AHgh+RpLmML2lR7Wo1Uxi9WqC74UTUs1gwh5qWQGZlJCOGt/u4XGybMLca7udR96w4sPhRVZ/wgS6T9rLUI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYJmNfv4pzefkLDIzxnSA2J4EeHr1m535VhO/FA25DJL5PJgR0
+	ASGTKWeQKl6E/erW8LDbmf8bl67VA9SQV5kHiJ4iLxHmNOFc29AluZ68KU3HUwGUXgxBjTffHot
+	e6t8cYX8lztEm7fTqqeYyAQW0vMGnL7IcOc4rDEM=
+X-Gm-Gg: AR+sD11865AvaiADhkPuow7FQ8eRvGIBDrKUh5jAnyPE8FQqIAUw+rM8VdWJe3kzpCc
+	fmp+AhyHR8J5gdDVZ5dVW5D5cZWpu74zmWEUF8cAV+4hRyDPxNe6L/to1LuZprswgPUu5goeKbp
+	JYUZnWHwZ1eYCxBg/pzbCWdGcMS2sMUlgtEL7AppYfx00fa3teK2r5nStnKWIL0LbAPbUri3GXM
+	1FadHQvtGvLMfWKnJ5yvi9X10TqYxXv84jG+WmQQ9DBgGkmgu6GVIJ+k3M+pWD3mObNj7esET9c
+	Xxc8GEHBOo4Q99Z/Jj/AUl/rfGXExqL8NfD17+nWeGivDvVV1jBUPxw5FWSizFeFcoeGc0RqtTW
+	g2A==
+X-Received: by 2002:ad4:5c82:0:b0:908:6080:5da1 with SMTP id
+ 6a1803df08f44-90c4b31366cmr45630156d6.14.1787004590451; Mon, 17 Aug 2026
+ 15:09:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/2] dt-bindings: iio: proximity: move LIDAR-Lite v2
- out of trivial-devices
-To: Matt Ranostay <matt@ranostay.sg>, Jonathan Cameron <jic23@kernel.org>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- mranostay@gmail.com, ~lkcamp/patches@lists.sr.ht,
- linux-kernel-mentees@lists.linux.dev, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260810192131.153495-1-rodrigo.gobbi.7@gmail.com>
- <20260810192131.153495-2-rodrigo.gobbi.7@gmail.com>
- <20260812053450.2e14b074@jic23-huawei>
- <F_gQH7S7C_a2e4gmKfLMZwNzMQ2lvOoBcv-tqJsuNGsWYdJdV-KhzKRPTqo1JS4yGoBK6bn4lscAS3et1Uxm-obr7Tjw3hzePjHOllpSlc4=@ranostay.sg>
-Content-Language: en-US
-From: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-In-Reply-To: <F_gQH7S7C_a2e4gmKfLMZwNzMQ2lvOoBcv-tqJsuNGsWYdJdV-KhzKRPTqo1JS4yGoBK6bn4lscAS3et1Uxm-obr7Tjw3hzePjHOllpSlc4=@ranostay.sg>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260817170725.1074078-1-zoone.rupert@gmail.com> <aoNXMdpsUPvaGwFR@ashevche-desk.local>
+In-Reply-To: <aoNXMdpsUPvaGwFR@ashevche-desk.local>
+From: Rupert Zoone <zoone.rupert@gmail.com>
+Date: Tue, 18 Aug 2026 01:09:39 +0300
+X-Gm-Features: AcwNN1WgZngMC1tWtntsQ-MI0q5LZHHC5VwQdUiucbwPnE0pV6d3OY2UatVuEJM
+Message-ID: <CABpb+S6M6-NY40UhWMLo2Uz+mMN2st=M5Dijv7KP2AULoPS02A@mail.gmail.com>
+Subject: Re: [PATCH v5 0/3] iio: pressure: dps310: FIFO and triggered buffer support
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Eddie James <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>, 
+	Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 8/12/26 07:11, Matt Ranostay wrote:
+On Mon, Aug 17, 2026 at 09:47 PM +0300, Andy Shevchenko wrote:
+> Are the commit messages are written with AI? Please, do it yourself.
 
->> >
->> > diff --git a/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml b/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
->> > new file mode 100644
->> > index 000000000000..e19c8d166b81
->> > --- /dev/null
->> > +++ b/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
->> > @@ -0,0 +1,64 @@
->> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> > +%YAML 1.2
->> > +---
->> > +$id: http://devicetree.org/schemas/iio/proximity/pulsedlight,lidar-lite-v2.yaml#
->> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> > +
->> > +title: Pulsedlight LIDAR-Lite v2 range-finding sensor
->> > +
->> > +maintainers:
->> > +  - Matt Ranostay <mranostay@gmail.com>
-> 
-> I really don't use my gmail address anymore. Would be ideal if it was changed matt@ranostay.sg 
-> Other than that don't have any issues.
-> 
-> Thanks,
-> 
-> Matt
+Yes, with AI help. I should have tagged it Assisted-by, and v6 will.
 
-Thanks Matt, I will send a v6 fixing the e-mail. Since you're fine with it, would you
-mind sending a formal Reviewed-by/Acked-by?
+> They are way too overloaded with unneeded noise and details. Make them
+> to be straight to the point.
 
-> 
-> 
->> I'll need an Ack or Reviewed-by from Matt for this. If Matt either doesn't
->> reply for a while, or isn't happy to take on this much fuller binding,
->> is it something you'd consider putting yourself down for?
->> 
->> Otherwise LGTM
->> 
->> Thanks,
->> 
->> Jonathan
+Agreed. I have cut them down.
 
-I'm happy to be added as a second maintainer for this binding,
-(I can add myself at v6) but I'd rather defer to Matt as the
-primary one for now.
-Thanks!
-Rodrigo.
+The testing is my own. I wired a DPS310 to a BeagleBone Black,
+reproduced the -ERANGE at oversampling 16, 32 and 64 by swapping the
+buggy and fixed defines on the same kernel, and exercised the FIFO and
+trigger paths on that board.
+
+I will wait for more review before sending v6.
+
+Thanks,
+Rupesh
+
+
+On Mon, Aug 17, 2026 at 9:47=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Mon, Aug 17, 2026 at 08:07:22PM +0300, Rupesh Majhi wrote:
+> > The dps310 has no buffer support today. This series adds it, with the
+> > hardware FIFO used when no external trigger is attached and the FIFO
+> > left disabled in favor of the trigger when one is, so the switch betwee=
+n
+> > the two modes can be reviewed together rather than in two submissions.
+> >
+> > Patch 1 fixes the CFG_REG bit definitions and replaces the standalone
+> > fix I sent on 27 July, which Jonathan asked me to fold in here instead:
+> >
+> >   Link: https://lore.kernel.org/linux-iio/20260728223009.0cb86996@jic23=
+-huawei/
+> >
+> > All three of those defines have been wrong since the driver was added,
+> > but only P_SHIFT has a user and only that one misbehaves, so the patch
+> > carries a Fixes tag for the original driver and one for the commit that
+> > added the first user of P_SHIFT, along with Cc: stable. The FIFO enable
+> > is needed by patch 3.
+> >
+> > The three INT_SEL interrupt enables at bits 6 to 4 are still not
+> > defined. Nothing uses them, the driver has no interrupt path, and the
+> > binding has no interrupts property, so adding unused defines to a fix
+> > did not seem worth it. David also asked for the register defines to be
+> > sorted low to high. That is a cleanup series of its own once this lands=
+.
+> >
+> > Patch 2 adds the triggered buffer path.
+> >
+> > Patch 3 adds the hardware FIFO and the selection between it and an
+> > attached trigger. Those started out as separate patches, but the branch
+> > on iio_device_get_current_mode() is four lines and the FIFO patch is
+> > wrong without it, since postenable would otherwise start the FIFO while
+> > a trigger was driving the buffer. Splitting them would only have left a
+> > broken commit in between, so they are one patch.
+> >
+> > Verified on an Infineon DPS310 breakout wired to a BeagleBone Black,
+> > running this series on 7.2.0-rc2. Two modules built from the same tree,
+> > differing only in the three CFG_REG defines corrected here, loaded
+> > seconds apart. Three reads of in_pressure_input per oversampling ratio,
+> > ambient 98.4 kPa and 27.2 degC:
+> >
+> >   OSR    before              after
+> >     1    98.433  98.428      98.445  98.446
+> >     8    98.460  98.460      98.477  98.479
+> >    16    -ERANGE             98.566  98.564
+> >    32    -ERANGE             98.428  98.427
+> >    64    -ERANGE             98.464  98.463
+> >   128    98.439  98.440      98.434  98.434
+> >
+> > Pressure oversampling 16, 32 and 64 return -ERANGE before the fix.
+> > P_SHIFT is never enabled, so the result register no longer matches the
+> > scale factor the compensation divides by, and
+> > dps310_calculate_pressure() ends up negative. 128 is not affected in
+> > practice. Temperature is unaffected throughout, since TMP_SHIFT_EN was
+> > already defined correctly.
+> >
+> > Everything else was checked with checkpatch --strict and a W=3D1 build,
+> > plus an arm build for aspeed_g5 and a boot under qemu-system-arm -M
+> > rainier-bmc, which covers probe, the sysfs values, raw times scale
+> > matching processed, EBUSY on sysfs reads while the buffer is enabled,
+> > and all three scan mask combinations. QEMU's dps310 model implements
+> > neither the FIFO nor the interrupt, so patch 3 was tested on the
+> > BeagleBone Black above only.
+> >
+> > On hardware, patch 3 was checked with both channels enabled, temperatur=
+e
+> > only and pressure only, at 8 Hz and at 128 Hz. A blocking read returns
+> > in every case, which is the part that needs the timer: with no
+> > interrupt, hwfifo_flush_to_buffer alone would leave a reader asleep on
+> > rb->pollq. At 128 Hz, 100 scans arrive in 0.81 s, so the batching is
+> > real. Timestamps are monotonic throughout and land on the configured
+> > period, 125.0000 ms at 8 Hz, except where a drain collected more than
+> > the rate accounts for and the batch is compressed to stay ordered. With
+> > a sysfs trigger attached the FIFO stays disabled and the trigger drives
+> > the buffer, at the rate trigger_now is written.
+>
+> Are the commit messages are written with AI? Please, do it yourself.
+> They are way too overloaded with unneeded noise and details. Make them
+> to be straight to the point.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
