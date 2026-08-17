@@ -1,58 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8087C3B6347;
-	Mon, 17 Aug 2026 07:23:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B8242DEA93;
+	Mon, 17 Aug 2026 07:28:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786951405; cv=none; b=EiiVjl2av0xDS8kgCbcFNvkzegcmFV7zZYlYQIAOjWa5U/lOxLYDHovLmr0PRVvb6YARPlSL0OMwsAZiukPBFAMJOv2B+FiBgX8RI3abiM1zmqR6Q2JclpTzzaQ1gzd4mG4rjKBzaLuiPgnE5dgYT7MBvi7oPgg7WoBPVgE7MZU=
+	t=1786951708; cv=none; b=a4VFVKH/ubyszb1ftVgoBnTHbgepLUf0EqVG1gPnPfsjz+NBETobKoDqTUps/lA11Y5QgVq47utcYCTSof2q3d+wCkKLs5++9Pj266GBhWffhVMVHkwrK8ptf2aIMmjpIb8VQNpmiiz9clgkKQ8Qy0X2qQYUuyEH6rUC8MJA7Ik=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786951405; c=relaxed/simple;
-	bh=VIIivbvauYE/rMIf78/gcHSKi3AMaEN8PkiK841Z2Vc=;
+	s=arc-20240116; t=1786951708; c=relaxed/simple;
+	bh=s9mXG8Q617eLSQ+7yxQL0RwYbcskeR/ngAyJ6xGlXkk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uf3P/XR1u14Jx2gGOckgpkFhn/tAYgCSJUT9qcMZKzSnGaGNejvpEKIhHn/Mg/L/bj41GGRtlPsgwlEYPhAnHX/v6Z9Jbqe8PcgKSdjDVSUDwPNvri5q8YSdd/7Bi2PKuCEJpHcZJdzG3Fh5v/QtsgBR0zUgI6zjFDQvD7BqEE8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ee2QSbwd; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=GUW8uaA/ndvqSmWZmpbDpRLnN8xtDYzxjMFlMhkmbzswez+QwJDnKsCuKZ5a876kd+s2XOl1odR2RQAM707atiC/dx6N3XqNeJCA9VNdfOj9bzN9MrStPBiVz75W5KSHA+qCciR+FO3wF0KW+YyYhQI+LWJp9DuR73EGGGp0vJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hPtYnGKo; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ee2QSbwd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hPtYnGKo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786951403; x=1818487403;
+  t=1786951707; x=1818487707;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=VIIivbvauYE/rMIf78/gcHSKi3AMaEN8PkiK841Z2Vc=;
-  b=Ee2QSbwdo6QxERBloWIp+BeVIMj5oBMRORsbXy+3EgfkKq6nli6Jg7Ol
-   bK5kVKqJL42gAo4M3w/MaCBQehrkjz/WYCzAnlpUyE6GAKEWtAE5Eu7ZF
-   RvZN8BOOhc5lp4z8KuXI5LqWkw1lcy4POcWRBIij4jzZaGFsqN0VCM2n4
-   6DcEImCeGq6GCgd8zaPOIAjPzQ0mY68YxseGCH5aXbQunReldlxES2DMg
-   l/HCh22tmjvdX475sBcpiX++ET0faNHdb74we7h8Nv2yLdxPq5yJ5aweE
-   J7ypoguRJBLetflpjrZq80TnhST/mipBr4klEkAyRf03qujYZf9JUINQy
-   g==;
-X-CSE-ConnectionGUID: 02fxHvz7SV6sIT3CHAJYVA==
-X-CSE-MsgGUID: ddpILKhpTkiEsj7K7C6GjA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11877"; a="104954620"
+  bh=s9mXG8Q617eLSQ+7yxQL0RwYbcskeR/ngAyJ6xGlXkk=;
+  b=hPtYnGKoeLSYQmxNsz/yejsZMi9/XiK2yUxbf4Oyk0LaBkNqxbOCHZMi
+   ILSeAtaqIHbRX6daoPaaPS49fdwf25MXuE7FfAJu1bixMo/aEaNWb82jI
+   MDm2OFlfATWknGECXO+7vUk4LsTvHZjeLsoYfceCF3/IBHg1im/YLUIIq
+   gqkwdso6e5U9P9DXgsLstV5TJzQcd6WLVjG1gxOYlt6M7xJ7vQFMPWs08
+   gY+3GEaTuWLbPZyPiWRSe1XiDTZ8riO64jIB9Sm9tLicj+CRFptpPvul4
+   ulgk4SZLzmQjegtSnxgNV4L7CTJ0Nb7/QzzEMFtqlXT2fyb2wCfEotnA0
+   w==;
+X-CSE-ConnectionGUID: OeeAo1rwRxyCBmSKFYk7gw==
+X-CSE-MsgGUID: mgleri9+SdqBLgOx1AwdxA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11877"; a="98784354"
 X-IronPort-AV: E=Sophos;i="6.25,228,1779174000"; 
-   d="scan'208";a="104954620"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 00:23:23 -0700
-X-CSE-ConnectionGUID: t4lD34MnSpCo635Ffmeizg==
-X-CSE-MsgGUID: RegrtuosRZOLoPiH2kuAKw==
+   d="scan'208";a="98784354"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 00:28:26 -0700
+X-CSE-ConnectionGUID: a5hbcW9lQ7CANrvWFMExBQ==
+X-CSE-MsgGUID: mjjqXt+YQFKF93XBHKtf0w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,228,1779174000"; 
-   d="scan'208";a="262204950"
+   d="scan'208";a="289661250"
 Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.67])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 00:23:21 -0700
-Date: Mon, 17 Aug 2026 10:23:18 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 00:28:23 -0700
+Date: Mon, 17 Aug 2026 10:28:21 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Adi Nata <adinata.softwareengineer@gmail.com>
-Cc: lorenzo@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH v2 0/5] iio: humidity: hts221: update probe and logging
- implementations
-Message-ID: <aoK25pW-4Sxr2yh5@ashevche-desk.local>
-References: <20260813153129.12423-1-adinata.softwareengineer@gmail.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v10 1/2] iio: adc: ltc2378: Add support for LTC2338-18
+Message-ID: <aoK4FXvkPT45RsIV@ashevche-desk.local>
+References: <cover.1786661484.git.marcelo.schmitt@analog.com>
+ <8b0d2e34163b85634266be3b9dd8f76697c89bd2.1786661484.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,26 +61,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260813153129.12423-1-adinata.softwareengineer@gmail.com>
+In-Reply-To: <8b0d2e34163b85634266be3b9dd8f76697c89bd2.1786661484.git.marcelo.schmitt@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Aug 13, 2026 at 11:31:24PM +0800, Adi Nata wrote:
-> HTS221 is an older driver. This series groups a few small modernizations
-> based on current development practices.
-> 
-> - Report available values via read_avail()
-> - Add a blank line after variable declarations (style)
-> - Allow unknown whoami for DT fallback instead of erroring out
-> - Use dev_err_probe() in probe paths
-> - Reject calibration data that would cause division by zero
-> 
-> No HTS221 hardware was available. Verified with checkpatch --strict and
-> builds of hts221, hts221_i2c and hts221_spi. Probe and calibration
-> error paths were exercised against i2c-stub with register contents
-> pre-loaded via i2cset.
+On Thu, Aug 13, 2026 at 08:05:07PM -0300, Marcelo Schmitt wrote:
+> LTC2338-18 is similar to LTC2378-18, differentiating from the already
+> supported part mainly on the embedment of an internal voltage reference and
+> addition of a resistor divider network connected to the input signal path.
+> Extend the device driver, handling the internal reference and input signal
+> attenuation, enabling it to also support LTC2338-18.
 
+LGTM now,
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+...
+
+> -	case IIO_CHAN_INFO_SCALE:
+> +	case IIO_CHAN_INFO_SCALE: {
+> +		struct u32_fract fract = st->info->internal_div;
+
++ blank line
+
+>  		*val = st->ref_uV / MILLI;
+> +		if (fract.numerator && fract.denominator)
+> +			*val = mult_frac(*val, fract.numerator, fract.denominator);
+
+He-he, I have a local patch to add mult_fract() macro for this kind of cases :-)
+Perhaps need to submit it at some point...
 
 -- 
 With Best Regards,
