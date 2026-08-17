@@ -1,36 +1,37 @@
-Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
+Received: from mail-244106.protonmail.ch (mail-244106.protonmail.ch [109.224.244.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A5A45FFA8;
-	Mon, 17 Aug 2026 17:09:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DD91463B6C;
+	Mon, 17 Aug 2026 17:09:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786986559; cv=none; b=bXgh9miV+AqEfaET1J+IgNS0FAP56lzZX5nIKrg1mtUdv4LneYgeoJcskHPIqztrlo3QFuCoeD0gnsmXK4cluOeL1b8F5AhUC9+H1g4blBoEhmNOfPfp6eQ4puWhADGYl3r/PG0AfItByIrUfQ1/sgxRs3enCgh7leGHkKwAAxQ=
+	t=1786986561; cv=none; b=hRNN+M2Iu5tDeJfhHL6GXMhM5h3AAZgJ+sKpiF7IOiFMiiqIhUxvu6uU+5taeNaD849WggcNAzvf9zRy3MFDHXOawOByxpJdQqENb/TMkwqcNkx7wUBrM/P6wgVPFbZd5cpNM84VtSdGd6RvY3JCmgqfQl+HofubHNRT2EsdyOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786986559; c=relaxed/simple;
-	bh=g7nCiYcQngdCpXxLdXAcd1yyDzpaGAuCS7hpQBLAD9k=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=rZi9tpiMN73mkH0+k6jzDYyxF0lB5d4M4SncMAeMp2phGUzZu3JFDbT7hxDsK3nisVoh8i/wE23WJYGoVrdtQtDwR2iKO1Eby+VnkXHDG1vxbLImfRv+pR0hTVezrzWgqB4B5rCXicPYRS1d6lDn7/pEFQj323tY/gAX40l3RyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=J2S6WTsE; arc=none smtp.client-ip=79.135.106.113
+	s=arc-20240116; t=1786986561; c=relaxed/simple;
+	bh=yRmQjSr/b1n+2ZKNAqLdatA7z7rC3bcwWePK4c5tw0I=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=hOBSFxDC7T02qJAZDzM/cDb66GkdDlNCgx4hNRxqTrIPMCnVv6NUFO/tNw94pfCFqhKSPszGbynUggmMl26s26bxdGDMDRlk/C4a/4MN0eF5+SHKZhkWZXGmYF5L0+VT5p1jWbb0kCVIc+Hbu8/FKaMD9hNizpp4pqMQNj0u/Fw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=2aFOtSc5; arc=none smtp.client-ip=109.224.244.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="J2S6WTsE"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="2aFOtSc5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786986550; x=1787245750;
-	bh=reDhZ9aU9Fk2ZVUwiW4cHGgqUkWbfEUrxNONFX7C3mY=;
-	h=From:Subject:Date:Message-Id:To:Cc:From:To:Cc:Date:Subject:
-	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=J2S6WTsEizDrSUNnRTJCcm2nZfuzOEyMIDLkjw24pg8iY+JD9vEKrL9A1Ftl3Fs6g
-	 IEsOqf8QM+kBTr0TuywjPxeA32zLYsoPSqYmvGJOaexMIos55mY/6ekXF1FJ8mWhBU
-	 WLClq/mwJv+ySVKbmOHKMmysjx0Zncguix9x1km/xAvS0x5UAhVruxepxg+sxEME2K
-	 UJYPj+v0hevAP+7cUOK9jtD6auU3Va5TPobMTv5sHxpVA/xxJpZ0ejbVexKXRXOkMl
-	 gCRXTyUMStx9ydba7teJL6gtACsExV4mfAMdk6AwRBa56XlyFsYADkP7nzFqdpKpE9
-	 6OSaqQYiu/YSA==
-X-Pm-Submission-Id: 4hNznr0T83z2SchQ
+	s=protonmail; t=1786986552; x=1787245752;
+	bh=soeIyYa5aMdUFjj2kbEEXj+tc74K06S6inGIFF/6l6Y=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=2aFOtSc5YMNiUt7wH6XfWAXafxQKOkS+phC17QZ9mPJXzPxT+o7190ynAJKHgcxDp
+	 VWLHMgRikQxZKLkxW/buVOs36yPqS/wkuzdD0GS8dqFbJDR931dwe+j/vLvZo7xbx8
+	 Om3GFtK454CLegIFuI85bKEcDJQYWOGaeKDdUT3pGI2TJF83HdYk1SHJAJBkJLxIhw
+	 n395sEAL45mfdtbG60fnqFgJbGvRxFcKfUUl0MnYIti7SDuT/dIm8MqpQmj3j+vx44
+	 QTLLW8DopfnWR4ccnCluqwEPSAVsFmB/Zezpe0BrhWQqe+JhF9P6lH2q468SBiP1zN
+	 pnAFkGX2i26dg==
+X-Pm-Submission-Id: 4hNzny3KVTz2Sd4C
 From: Esben Haabendal <esben@geanix.com>
-Subject: [PATCH v5 0/8] iio: light: ltr501: Add ltr329 support
-Date: Mon, 17 Aug 2026 19:08:49 +0200
-Message-Id: <20260817-liteon-ltr329-v5-0-6f71ab2b0588@geanix.com>
+Date: Mon, 17 Aug 2026 19:08:51 +0200
+Subject: [PATCH v5 2/8] dt-bindings: iio: light: ltr501: Add missing ltr303
+ compatible
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -38,13 +39,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/33Ny27CMBCF4VdBXtfI4zuseA/UhS8TcEUTZKdRK
- pR3rwNCQJC6PNJ8/1xIwZywkO3qQjIOqaSurUN9rEg4uvaANMW6CWdcMwNAT6nHrqWnPgu+oU6
- gBy5BWq1JNeeMTRqvvf3nbZcf/4WhnyPzxTGVvsu/14cDzHf3tlq0B6CMCmgYN0yB2sjdAV2bx
- nXovskcH/i/nFcewbpGKYzOqzcuHtwyueSi8qC90TaYYOQ7l08c2JLLyq2PIjYRFLfshU/T9Af
- I2JsjegEAAA==
-X-Change-ID: 20260711-liteon-ltr329-a3eb12414866
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260817-liteon-ltr329-v5-2-6f71ab2b0588@geanix.com>
+References: <20260817-liteon-ltr329-v5-0-6f71ab2b0588@geanix.com>
+In-Reply-To: <20260817-liteon-ltr329-v5-0-6f71ab2b0588@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -58,96 +56,40 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <jic23@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- stable@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786986543; l=3702;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786986543; l=986;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=g7nCiYcQngdCpXxLdXAcd1yyDzpaGAuCS7hpQBLAD9k=;
- b=j7dwX35+Ko0AYTjKyG1cFzEZXW1smcDGt7nO5cudfcnZnDPEP7hwGqEKLPxoY+RbkNcEKkK7t
- bv4VDhuzursB76GmZ1XdHvAy8BNXjCqV4A/w5euMuW2yuk1Goq0S70+
+ bh=yRmQjSr/b1n+2ZKNAqLdatA7z7rC3bcwWePK4c5tw0I=;
+ b=CHr3gyRlALmWbQgLFDT/zXS1SsNp77yU61LOnGxfTmcb+v35jGrYMX47q9zwG+2oQIOEW7oSA
+ NnZB693In6XA4ALZyGl/YkyXmbRCv8wSVUpEC7ipe5qMb1Mk06Op3dU
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-The LiteON LTR-329ALS-01 chip is similar to the LTR-303ALS-01, except for
-interrupt support and related registers, which LTR-329ALS-01 does not have.
+When support for ltr303 was back in 2021, the bindings documentation was
+not updated accordingly.
 
+Fixes: 7d71d289e1ba ("iio: light: ltr501: Added ltr303 driver support")
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Acked-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
-Changes in v5:
-- Changed error handling of interrupt being configured for ltr329 device to
-  just print a warning message and get on with life.
-- Mark interrupt properties as invalid for liteon,ltr329 bindings.
-- Changed patch 5 to not claim to be a fix.
-- Link to v4: https://patch.msgid.link/20260810-liteon-ltr329-v4-0-8bd3dfd15280@geanix.com
+ Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes in v4:
-- Split the duplicate error message removal into separate patch.
-- Removed uneeded enum =0 assignment.
-- Use dev_err_probe() instead of plain dev_err().
-- Link to v3: https://patch.msgid.link/20260804-liteon-ltr329-v3-0-c6b768c7c745@geanix.com
+diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+index 480523ca3750..6234e2eaec2e 100644
+--- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
++++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+@@ -16,6 +16,7 @@ properties:
+   compatible:
+     enum:
+       - liteon,ltr301
++      - liteon,ltr303
+       - liteon,ltr501
+       - liteon,ltr559
+ 
 
-Changes in v3:
-- Removed duplicated error message on devm_request_threaded_irq() failure.
-- Added Fixes: and Cc: stable tags to fix for error handling of
-  devm_request_threaded_irq() failure.
-- Added no_irq_support boolean to simplify checking for chip irq support.
-- Moved check for no_irq_support from ltr501_read_intr_prst() and
-  ltr501_write_intr_prst() to callers. Note: event functions are not
-  registered for no_irq_support devices.
-- Moved #include <linux/array_size.h> into its place according to
-  alphabetical sorting order (although the rest is not really wel sorted).
-- Restored alphanumerical ordering of compatible list in bindings
-  documentation.
-- Ordered device arrays and enum values according to alphanumerical sorting
-  order.
-- Link to v2: https://patch.msgid.link/20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com
-
-Changes in v2:
-- Fixed error handling when irq is defined for a chip that does not support
-  irq, powering the chip down again.
-- Added simlar fix to error handling of devm_request_threaded_irq() error
-  handling, powering the chip down again on failure.
-- Added explicit #include <linux/array_size.h>.
-- Link to v1: https://patch.msgid.link/20260715-liteon-ltr329-v1-0-31f027051594@geanix.com
-
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Nikita Travkin <nikita@trvn.ru>
-To: Maslov Dmitry <maslovdmitry@seeed.cc>
-To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-To: Thomas Gleixner <tglx@kernel.org>
-To: Pan Chuang <panchuang@vivo.com>
-To: Yangtao Li <frank.li@vivo.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
----
-Esben Haabendal (8):
-      dt-bindings: iio: light: ltr501: Sort compatible enum array
-      dt-bindings: iio: light: ltr501: Add missing ltr303 compatible
-      dt-bindings: iio: light: ltr501: Add ltr329 compatible
-      iio: light: ltr501: Power down chip if request irq fails
-      iio: light: ltr501: Drop duplicated error message
-      iio: light: ltr501: Add ltr329 driver support
-      iio: light: ltr501: Fix sorting order of device arrays
-      dt-bindings: iio: light: ltr501: Make proximity-near-level conditional
-
- .../bindings/iio/light/liteon,ltr501.yaml          |  32 +++++-
- drivers/iio/light/ltr501.c                         | 114 +++++++++++++--------
- 2 files changed, 101 insertions(+), 45 deletions(-)
----
-base-commit: 075b74841bd0065a3bda3440873c747938e69b68
-change-id: 20260711-liteon-ltr329-a3eb12414866
-
-Best regards,
---  
-Esben Haabendal <esben@geanix.com>
+-- 
+2.55.0
 
