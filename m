@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3BFB233923;
-	Mon, 17 Aug 2026 01:12:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3BB28373;
+	Mon, 17 Aug 2026 01:17:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786929177; cv=none; b=k+JYXDbpv5GlSTLSXSS3DifY7PA+hTwtQ9syba6z06tP9WIKYFf41q3Iu9/2Afrdp825jigW0Fr5NaW90MCvi9SH7OheH5uJAxmiGOPHZDmoTfKaWqxGyHdCR1qp7aDxrDKdbvcxq26O43ZW0n8DLk38JkYTBWkm8rNi3A/5DT0=
+	t=1786929438; cv=none; b=DKFIKvkPbW4ysPXiju+wlDW+9NKzMTCLzehVvlpMDjmwWCdg0U2GYeVq32vkupGc8O7I+Zzob0FdZztKT+8DOXFJROX17u2lvlGrzdibvy/A7OsY3a9a0hdiOpK0+RH4eQEs85tyuQN0vIywyVjwYkz8eygWMTuHvY9dL++4LnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786929177; c=relaxed/simple;
-	bh=+pRZo26vEvE6Kmw+ZKRjR6t2Zwvjey2WBqLTvA7aSP0=;
+	s=arc-20240116; t=1786929438; c=relaxed/simple;
+	bh=5QBY8NpjzgqhrOm/772Yu5s7603M/P1qcDrNxibi7zI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=J5UrylUQS0ptB3peCpL6h9KVCJUSZle08pKI6oz0q45Yu1KdxmXJ7pE0mf0dORS4BCh5xYW30ZVSsdCGNDn1gfoomQFQ/35eV3eXnr8BBi1K2HMDXXLgn8mIAPPCm1cyhDxveITc/fnB7duRtPuvf1oVtocUoKvHguDmWQ1Tcw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GNuBpG3j; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=FcN+e5F0g0bOeo3UnICZjB5+JM7a1/AlKjeNc8mWJ+/dwz9KvsEqCCqUEq2qKyChggu4XZj4OIs8p8W2W+mrB6ZCbTVGTLxBDl/mfJA9wnhu9pTRhkvteGhUkQMuVj23LXYB+5hfJnK3z8vXg2c4oHhp2tn1eeXa8MTrnFJx2ns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MiAauyqA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GNuBpG3j"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E86EE1F000E9;
-	Mon, 17 Aug 2026 01:12:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MiAauyqA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 998801F000E9;
+	Mon, 17 Aug 2026 01:17:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786929175;
-	bh=fDdwnsC0Q9B443savPcafKA+OPITeVjQW+jiRd+PY/c=;
+	s=k20260515; t=1786929436;
+	bh=CcZdEwerkvPIx1gdRvGibhKjxnhCAY47D29euYg69T8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=GNuBpG3jv8N/vK7glUDUT1lI54WUXT4dy4H+maQTzvWL6eePKkc4Hq7S2Dp1UMnIO
-	 jOvYjfR4QF+RXFR5dcOknSIxMK+ZjNaWcFyQJ4JfPhoETMSWFj4aWQ0prRmUZSMMYJ
-	 lZ8PD/WYltq8UFgXdra8G3ZUhtP6K0q/o8lR0mntR6X/5mmsHytEb6umuDstXrLv8I
-	 ncCM4x9M9Bx/sf+eQ3BiXccARzqjeb9qcwQEYOF+gxruQ5Trr5DItcEEMcA1PR2MHi
-	 UA1GBR7nZaOD31hFS7K7N//FYBtFxLfdI8Qjt4tW8i5LPskgH6NCyTkZ/iLh0Q0twM
-	 p77MWhW5nZP0Q==
-Date: Mon, 17 Aug 2026 02:12:52 +0100
+	b=MiAauyqAGpqHlUBfFjXlC9h7tTD7tHq3Xj38XEgG0+2ZERFZK20A6PHkFdjPC/vuw
+	 kZWm6WnT1NUjBoq4+HJjGn5wmVTgcckLmpR9TeyD5LzBchbfJ6g7cF2voSJqX3KHCH
+	 zpX7i3hcszFiW3w1EbZyq56TCqEqH8vAvVDBkvhxs8bTb5hC5KCX+tc2FNKLSGxEwX
+	 NDFY5Sk8Qsy+pyNowGznt7oAA1HZFtc3Tgv4rROg/ohvy+5TrHBc1vjQJtNpwvkZCH
+	 cQgqxVsKBkonxaYMBe6qBX9gauWCfLbJVKNTx2oci/FJzG9TvyuG5acGYVMOZzdteV
+	 c7Zlv72BFcO6g==
+Date: Mon, 17 Aug 2026 02:17:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Matti Vaittinen <matti.vaittinen@linux.dev>
 Cc: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
@@ -36,12 +36,11 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
  Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>, Topi
  =?UTF-8?B?U29ua2Fqw6Rydmk=?= <sonkajarvi@hotmail.com>
-Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
- initialization
-Message-ID: <20260817021252.5ef32a57@jic23-huawei>
-In-Reply-To: <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
+Subject: Re: [PATCH 01/12] iio: adc: rohm-bd79124: Fix rising alarm
+Message-ID: <20260817021711.149777d4@jic23-huawei>
+In-Reply-To: <b38dd82c759db17796054b6847fd7f770be27efd.1786347811.git.mazziesaccount@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
-	<7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
+	<b38dd82c759db17796054b6847fd7f770be27efd.1786347811.git.mazziesaccount@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,51 +51,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 10:53:07 +0300
+On Mon, 10 Aug 2026 10:49:56 +0300
 Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
 
 > From: Matti Vaittinen <mazziesaccount@gmail.com>
 > 
-> The BM1390 tries to initialize the AVE_NUM to 110b at the start-up. The
-> field location is not taken into account, and value is written unsifted.
-> This causes the AVE_NUM to be initialized to zero.
+> The rising alarm is using the cached falling alarm value causing wrong
+> value to be used.
 > 
-> Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
+> Fix this by using the correct cached value for rising alarm.
 > 
 > Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
-> ---
->  drivers/iio/pressure/rohm-bm1390.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
-> index d00d7ed54cb1..29454570f257 100644
-> --- a/drivers/iio/pressure/rohm-bm1390.c
-> +++ b/drivers/iio/pressure/rohm-bm1390.c
-> @@ -479,6 +479,7 @@ static const struct iio_info bm1390_info = {
->  
->  static int bm1390_chip_init(struct bm1390_data *data)
->  {
-> +	u8 regval;
->  	int ret;
->  
->  	ret = regmap_write_bits(data->regmap, BM1390_REG_POWER,
-> @@ -512,8 +513,9 @@ static int bm1390_chip_init(struct bm1390_data *data)
->  	 * Default to use IIR filter in "middle" mode. Also the AVE_NUM must
->  	 * be fixed when IIR is in use.
->  	 */
-> +	regval = FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
->  	ret = regmap_update_bits(data->regmap, BM1390_REG_MODE_CTRL,
-> -				 BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
-> +				 BM1390_MASK_AVE_NUM,
-				 FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM));
+> Fixes: 3f57a3b9ab74 ("iio: adc: Support ROHM BD79124 ADC")
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-If respining I would drop the local variable and just go a bit long on the line.
-I like the mask to be clearly visible in both parameters and a local variable
-prevents that. Fine if the line is really long, but it's only about 83 chars here.
+Thanks,
 
 Jonathan
->  	if (ret)
+
+> ---
+>  drivers/iio/adc/rohm-bd79124.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/rohm-bd79124.c b/drivers/iio/adc/rohm-bd79124.c
+> index 864f3b1366b5..f703c74309cc 100644
+> --- a/drivers/iio/adc/rohm-bd79124.c
+> +++ b/drivers/iio/adc/rohm-bd79124.c
+> @@ -525,7 +525,7 @@ static int bd79124_enable_event(struct bd79124_data *data,
 >  		return ret;
 >  
+>  	if (dir == IIO_EV_DIR_RISING) {
+> -		limit = &data->alarm_f_limit[channel];
+> +		limit = &data->alarm_r_limit[channel];
+>  		reg = BD79124_GET_HIGH_LIMIT_REG(channel);
+>  	} else {
+>  		limit = &data->alarm_f_limit[channel];
 
