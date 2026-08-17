@@ -1,66 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6ED43BBFDA;
-	Mon, 17 Aug 2026 08:22:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 403383B71C6;
+	Mon, 17 Aug 2026 08:28:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786954952; cv=none; b=pj61jf6TuOBio3S3s5oEI2LB52o7Mku8DlkDpkqZzjDbXBtiqHvRw3u+WfLpjv9H07yJylq4wO1CN9YgX5ecKY8ru+shI0TSQMADVjRZwXHP4NkehkYH35muWjIDgG+CoO3UiUxNhqVIYqr8edlSRUg+sRzCbC/QQIjfvM6l73c=
+	t=1786955323; cv=none; b=DL3z29UiRQ+tqO4FInAhTLaUvzci9zoiNgPNYay+yHC+qKAssjYRWKlEf5fpBe8/TuprpmoaapShKSrvJHumD6hdR7MRxlBN3C8kj20tXZQn5eQ91739tyKdLeKPheiSTVPVr0z625msA96uerADnlrndsj/oxmf/sRLpfO7WXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786954952; c=relaxed/simple;
-	bh=ffyMtGtlHS1K92WptC/XnBZNY8Kc1ucjVyI6fh+PrAA=;
+	s=arc-20240116; t=1786955323; c=relaxed/simple;
+	bh=l6oIOVkmn4KQdGwGIXOHPfjm7X5b/7AH2NUJtfXKx+Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P5yl32q386zyILS90kJx1+xKj88NxmFxLdIQe8YbSNsdw6wGLkdaLQSQUqLJRwW/x4S8pGD5LLp7iLelqcFR5WqBMGoWrWiwnGDvdyBZn0fBq6eGYdJ++mhBcFthZ/uwydsCH//CV6xX6DdiCS2sp7/Wsf0RFBrZ4t3sPVbhKw0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PFmRIKbn; arc=none smtp.client-ip=198.175.65.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zh5ri/RCBA/vJddolU85V6+akkS+uF6x7+ZdyLdBPcy3So8FkAilMraUek4PsIdMzRgpvOfw4oadzzz1kYHBoup04xTzPra4KCj5iCu8UOhR52cgLMPbMKuccj+p0aIX1JpcVgGugFul+tENDU+i6dVNbqad++PtcR8XdwZeMHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GfbWr1n5; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PFmRIKbn"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GfbWr1n5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786954950; x=1818490950;
+  t=1786955321; x=1818491321;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ffyMtGtlHS1K92WptC/XnBZNY8Kc1ucjVyI6fh+PrAA=;
-  b=PFmRIKbnfq2Agb9g92bd98Jb9sSLX1B5mzjMXmw+QXVOj2xO4TXmd1YY
-   vIonRD8avWzqJtOVWxBUdsLFcUNsJqCyGdGtf8024GrF471v99wabkgsI
-   al++RsecqGPmB9QUf0t+u16I75CFzKNp2t1pdaKocnnKewhsUlljm2UfH
-   eJimeLBRXtqedZi+kEE2LvzTAdlTffSmQQJyjrp+XX6DRZjDIHfMbGaMb
-   1ogIxoNgahp054pnyKYWbGNZD0GnWaKF4g+nP4lMSYBXp0+25Ex4AYSUr
-   cvNmHHFZq6PGNLzX07K2JqxYwcImOrg/QBZ0secSMNBZAYGA180W6TEbp
-   Q==;
-X-CSE-ConnectionGUID: TCi5mdUqTNmUd9YpiAUO+w==
-X-CSE-MsgGUID: B/CSshArQRaniVVEibeZqQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11877"; a="87444793"
+  bh=l6oIOVkmn4KQdGwGIXOHPfjm7X5b/7AH2NUJtfXKx+Y=;
+  b=GfbWr1n5FkTQI33Fjwb5weMDPLlYHvEVY3ngar3GYg/+TCtDzF7IwvHv
+   cGLd2kOLbMQpX+qYcQj6rVmf5DsolpCuQgNDpeEVZ0hBZC6QhCsM01uLv
+   95ajYV6sqrXsBygtNl6w/jX14//6dg4SSoUPNLOxmR4hR8ONLX8Kr4shM
+   d17dHM26Dnjj3e204SSyVHzN4nkD5ZfSUM21rI/IGRr71/SLnYtF8imHl
+   IdbbDo1QjjDw+BO13lYr3BJwxq3CYyQVvC1C1yTMrFeZQ+NWcYKbMAuJP
+   OPjQ/FObiQYwxAHIOQHQC0CcLBUQAqBtZ3Kq8CuePxQtFHt91dz7yP0DJ
+   w==;
+X-CSE-ConnectionGUID: 6uPEcSUOS5WNQcxE9FqI0w==
+X-CSE-MsgGUID: CoewDrgOTcSSj3ZBq2PdiA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11877"; a="87550549"
 X-IronPort-AV: E=Sophos;i="6.25,228,1779174000"; 
-   d="scan'208";a="87444793"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 01:22:29 -0700
-X-CSE-ConnectionGUID: t/8dd2iSQdiKu1QzBHEqpA==
-X-CSE-MsgGUID: yVELMnJHRe+oba6BNl/o3Q==
+   d="scan'208";a="87550549"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 01:28:40 -0700
+X-CSE-ConnectionGUID: tskCHk9QSB2FITl7ChsXtw==
+X-CSE-MsgGUID: rk5dc8QMSUSFXX7cgSKjfg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,228,1779174000"; 
-   d="scan'208";a="262223866"
 Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.67])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 01:22:26 -0700
-Date: Mon, 17 Aug 2026 11:22:23 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 01:28:37 -0700
+Date: Mon, 17 Aug 2026 11:28:34 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
+Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Luca Weiss <luca.weiss@fairphone.com>, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v3 2/9] iio: adc: add the ti-ads1262 driver
-Message-ID: <aoLEv_txdTE7SqS3@ashevche-desk.local>
-References: <20260807-ads126x-v3-0-f89925d72792@gmail.com>
- <20260807-ads126x-v3-2-f89925d72792@gmail.com>
- <20260816223029.0da04d1e@jic23-huawei>
+	Conor Dooley <conor@kernel.org>
+Subject: Re: [PATCH v4 2/3] iio: imu: inv_icm42600: log whoami mismatch
+ instead of failing probe
+Message-ID: <aoLGMkHJZVeyTKxU@ashevche-desk.local>
+References: <20260810191157.125550-1-jorijnvdgraaf@catcrafts.net>
+ <20260810191157.125550-3-jorijnvdgraaf@catcrafts.net>
+ <anoqWLNK9_MzU1YP@ashevche-desk.local>
+ <20260817031859.31212035@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,57 +70,57 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260816223029.0da04d1e@jic23-huawei>
+In-Reply-To: <20260817031859.31212035@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Aug 16, 2026 at 10:30:29PM +0100, Jonathan Cameron wrote:
-> On Fri, 07 Aug 2026 22:58:24 -0500
-> Kurt Borja <kuurtb@gmail.com> wrote:
+On Mon, Aug 17, 2026 at 03:18:59AM +0100, Jonathan Cameron wrote:
+> On Mon, 10 Aug 2026 22:45:28 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Mon, Aug 10, 2026 at 09:11:56PM +0200, Jorijn van der Graaf wrote:
 
 ...
 
-> > +static const struct reg_default ads1262_reg_defaults[] = {
-> > +	{ ADS1262_INTERFACE_REG,
-> > +	  FIELD_PREP_CONST(ADS1262_INTERFACE_STATUS_MASK, true) |
-> > +	  FIELD_PREP_CONST(ADS1262_INTERFACE_CRC_MASK, true) },
-> > +	{ ADS1262_MODE0_REG,		0x00 },
-> > +	{ ADS1262_MODE1_REG,
-> > +	  FIELD_PREP_CONST(ADS1262_MODE1_FILTER_MASK, ADS1262_FILTER_FIR) },
-> > +	{ ADS1262_MODE2_REG,
-> > +	  FIELD_PREP_CONST(ADS1262_MODE2_DR_MASK, ADS1262_DR_20_SPS) },
-> > +	{ ADS1262_INPMUX_REG,
-> > +	  FIELD_PREP_CONST(ADS1262_INPMUX_MUXN_MASK, ADS1262_INPMUX_AIN1) },
-> > +	{ ADS1262_IDACMUX_REG,
-> > +	  FIELD_PREP_CONST(ADS1262_IDACMUX_MUX2_MASK, ADS1262_IDACMUX_NO_CONN) |
-> > +	  FIELD_PREP_CONST(ADS1262_IDACMUX_MUX1_MASK, ADS1262_IDACMUX_NO_CONN) },
-> > +	{ ADS1262_IDACMAG_REG,		0x00 },
-> > +	{ ADS1262_REFMUX_REG,		0x00 },
-> > +	{ ADS1262_TDACP_REG,		0x00 },
-> > +	{ ADS1262_TDACN_REG,		0x00 },
-> > +	{ ADS1262_GPIOCON_REG,		0x00 },
-> > +	{ ADS1262_GPIODIR_REG,		0x00 },
-> > +	{ ADS1262_ADC2CFG_REG,		0x00 },
-> > +	{ ADS1262_ADC2MUX_REG,
-> > +	  FIELD_PREP_CONST(ADS1262_ADC2MUX_MUXN2_MASK, ADS1262_INPMUX_AIN1) },
-> > +};
-> I'm not particularly keen on this formatting from a readability point of view.
-> Maybe using named intializers would help:
+> > >  	if (val != hw->whoami) {
+> > > -		dev_err(dev, "invalid whoami %#02x expected %#02x (%s)\n",
+> > > -			val, hw->whoami, hw->name);
+> > > -		return -ENODEV;
+> > > +		/*
+> > > +		 * SPI interface has no ack mechanism.
+> > > +		 * 0xFF or 0x00 whoami means no response from the device.
+> > > +		 */
+> > > +		if (val == U8_MAX || val == 0)  
+> > 
+> > This is strange to be here. If hw->whoami happens to be 0x00 or 0xff (let's
+> > assume some hypothetical future case), this check will become invalid for them.
+> > 
+> > If it's guaranteed to be not the case for any HW (including the future variants)
+> > this check should be outside, no?
 > 
-> static const struct reg_default ads1262_reg_defaults[] = {
-> 	{ 
-> 		.reg = ADS1262_INTERFACE_REG,
-> 		.def = FIELD_PREP_CONST(ADS1262_INTERFACE_STATUS_MASK, true) |
-> 		       FIELD_PREP_CONST(ADS1262_INTERFACE_CRC_MASK, true),
+> Hmm. This one has both worked in favour of finding connection trouble
+> and bitten us in the past. I vaguely recall a device that indeed
+> had a WHOAMI of 0 (though it might have been a hardware bug) and
+> tripped on such a check.
+> 
+> Personally I'm not that fixed either way on this. If the device isn't
+> there we should know the moment we try to get any data anyway.
 
-And looking at this, this has not to be booleans! Please, use proper integers
-instead (I think 1 is what you wanted).
+My point is that the nesting checks are not needed (assuming 0x00 and 0xff are
+bad values for WHOAMI).
 
-> //extra indent fine here for readability reasons if we end up with some long lines
-> 	},
-> 	{ .reg = ADS1262_MODE0_REG, .def = 0x00 },
-> etc or just maybe use the more open form of the first element for all of them.
-> burns a bunch of lines, but is easy to read. 
+Something like
+
+	/* ...the comment... */
+	if (val == U8_MAX || val == 0)
+		...
+
+	if (val != hw->whoami) {
+		...
+	}
+
+> > > +			return dev_err_probe(dev, -ENODEV,
+> > > +					     "invalid whoami %#04x expected %#04x (%s)\n",
+> > > +					     val, hw->whoami, hw->name);
 
 -- 
 With Best Regards,
