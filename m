@@ -1,49 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF4F19D065;
-	Mon, 17 Aug 2026 02:19:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A2544B048C;
+	Mon, 17 Aug 2026 02:20:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786933146; cv=none; b=oNJrOl2k2W2U7ReUEbNoe7BhmAs6+NOKjVvU3FiHQoId3s26EKyNVW/Mynh+gzXgBGl1BeF+XytpTBpv2V5Fexkey8AvWTSXNAuJL6HYx5S/6xwdsOzgwInA77cxrldZj39eXHlbQpxLR2IKZo6JgyNfIovfjKMghs4+43qG0M8=
+	t=1786933217; cv=none; b=TExHPosvOEwrYIb1xIp4ibsRVVdnK2099H/PY3FbHdDWcLx8BP4XQH9WUnJRUv7CHMPUSBYBVR7gqfL1wOQ1ORvILbxzCh7R+kbReQ6RZYhYgIEiM+dQ/q9IlGxoVPqCZSUeG+/i38Iq/hmN6fW3pClaav2uxDUGpMqpipMWxOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786933146; c=relaxed/simple;
-	bh=/Su4aawtFNWR2y+pzMi40ljiCa3aKN7WknKYdx6vWmk=;
+	s=arc-20240116; t=1786933217; c=relaxed/simple;
+	bh=ksGuJ1o7t7A4b0AWijejAbExiSI6qpSYjNY4w44BdTQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MOzvxiKcg+B+vredhm+7Pni4AD+6DdUx70hI8o1gdHOSAhEKjTc03vfwwq/vmk7jLSmJ8uM3J7+yNqlhthctR9NpLseUVpr/pmVRwv13jjv1nuEZ+m0EMuHZZM7jTgJZFdE019vWJAytoC4WLxqtKalgJqoJ0qcCDNSrk91j0tI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GDOikprP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=lt5xP00iE1EHNi5HZ+oKAT/ptHmFzTDYHS+Ay8A7P8GBbSiTdLOIjrADUSoRg8+kREV3CQeBLS0V87tAbDB/BKzvEouZYQSTnvTCGUnBrfUeyeejHytDUx0zbc8Mb3h7+YguvwIDL3EqncrVAgw5HKKrvfh50fGI/K5/PY/w6IA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cmevl5oL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GDOikprP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AAE71F000E9;
-	Mon, 17 Aug 2026 02:19:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cmevl5oL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4121F000E9;
+	Mon, 17 Aug 2026 02:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786933145;
-	bh=zh5he2Ug5qoM+jVaBV/zHHembW7rCop8VvPY2b0FbFg=;
+	s=k20260515; t=1786933216;
+	bh=Jq6+wkM9G8GNCg847YPoWEIKRWnY0MsoJEGSZLgj/qo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=GDOikprPvyUV11FtPBaBtyJy176v/XOd1C8XK/L8Ys73vciH/a6anPGLzqj3qRcLW
-	 xoZuIfbgAb44lQOEDnZQnb0YMo9SORYWsuhi60UztCtLrxep8ngrTcg9b1+Vn7jm5w
-	 h+EQZuzyOTmuWlu1R+r8M0LHua6lG+rxHBBWHgFdyAkz/K741uKmqje0duXTZvZMcS
-	 gkh2WxIIkGS5JZrurxKlBCIvczg8ZW/nWL0GA7ExDnD66+sm22D3Y620yDtNue1Tzd
-	 HxDpZdicsYTk90m0hWcYIPVYDbfv+wJpaBKauS9Fj2U4hWmLZPYZhBD4QEW6roWdTR
-	 nw72cQZW7HUDg==
-Date: Mon, 17 Aug 2026 03:18:59 +0100
+	b=Cmevl5oLzamrM4ZQNdrPAgWaspI4V/tpUn3q03jLeopeEYkB1jgkXnHJ0cNQAHfCv
+	 /qiLHUzFcpjC2HCg1clVgoY/+gFz5IEPcrMi8vcGB0ZCMqzzc/Cuik7oNppD9rMMne
+	 Kphhv/zxD8cayIDcDhvxZP+3nn8U2+hi9tCwUu8EHiPX9+pLXgel+L+bT1r9R8dYHe
+	 OFf4Jcp+SPL8fVYutB/TNTxPmdqHdv7gMZYSkh0J0xAbLFFmDizO9BhvKwArrCMS5y
+	 gaHb2EHJv+r34uBf2JLfcyf/anXvTn0mUusMlpmLKRQSy+gq+Gt9iXzOGlCIMuoNlm
+	 SRJBwALDFVQ+Q==
+Date: Mon, 17 Aug 2026 03:20:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, Jean-Baptiste
- Maneyrol <jean-baptiste.maneyrol@tdk.com>, David Lechner
+To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chris
  Morgan <macromorgan@hotmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Conor Dooley <conor@kernel.org>
-Subject: Re: [PATCH v4 2/3] iio: imu: inv_icm42600: log whoami mismatch
- instead of failing probe
-Message-ID: <20260817031859.31212035@jic23-huawei>
-In-Reply-To: <anoqWLNK9_MzU1YP@ashevche-desk.local>
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] iio: imu: inv_icm42600: sort device id tables
+ numerically
+Message-ID: <20260817032012.779c01af@jic23-huawei>
+In-Reply-To: <20260810191157.125550-2-jorijnvdgraaf@catcrafts.net>
 References: <20260810191157.125550-1-jorijnvdgraaf@catcrafts.net>
-	<20260810191157.125550-3-jorijnvdgraaf@catcrafts.net>
-	<anoqWLNK9_MzU1YP@ashevche-desk.local>
+	<20260810191157.125550-2-jorijnvdgraaf@catcrafts.net>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,75 +52,117 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 22:45:28 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 10 Aug 2026 21:11:55 +0200
+Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net> wrote:
 
-> On Mon, Aug 10, 2026 at 09:11:56PM +0200, Jorijn van der Graaf wrote:
-> > A WHOAMI value differing from the one the compatible implies aborts
-> > probe with -ENODEV, which prevents a register-compatible part described
-> > with a fallback compatible from probing at all.
-> > 
-> > The devicetree compatible is authoritative for which part is fitted:
-> > log the mismatch at info level and continue. The message keeps a
-> > breadcrumb for anyone seeing an unexpected part change on their device
-> > versus the devicetree; tmp117 takes the same trade at the same level
-> > for its fallback matches.
-> > 
-> > A whoami of 0x00 or 0xff still fails probe: SPI has no transfer-level
-> > ack, so those values mean nothing answered; this is the same
-> > no-response guard inv_icm45600 carries. Otherwise the probe outcome on
-> > mismatch changes for all parts the driver supports.
-> > 
-> > Tested via a backport to a Fairphone 6 running a 7.1-based kernel: its
-> > ICM-42630 (WHOAMI 0x0C), described with an icm42631 fallback compatible
-> > and matched as icm42631, probes with the one informational line, and
-> > accelerometer, gyroscope and temperature reads work.
-> > 
-> > Suggested-by: Conor Dooley <conor@kernel.org>
-> > Suggested-by: Jonathan Cameron <jic23@kernel.org>  
+> The I2C, SPI and OF device id tables list the parts in the chip enum's
+> declaration order, which is neither numeric nor alphabetical. Sort the
+> entries numerically by part number so new entries have an unambiguous
+> position.
 > 
-> > Link: https://lore.kernel.org/all/20260722-creature-volley-0f083b904c1d@spud/
-> > Link: https://lore.kernel.org/all/20260728222015.6a62b287@jic23-huawei/
-> > Link: https://lore.kernel.org/all/20260801032310.18f5f16d@jic23-huawei/
-> > Link: https://lore.kernel.org/all/20260804-scarily-hacker-651df3eafea9@spud/  
-> 
-> What are those links for? I haven't seen references in the above text.
-Yup. That needs tidying up or the links dropping.
-> 
-> ...
-> 
-> >  	if (val != hw->whoami) {
-> > -		dev_err(dev, "invalid whoami %#02x expected %#02x (%s)\n",
-> > -			val, hw->whoami, hw->name);
-> > -		return -ENODEV;
-> > +		/*
-> > +		 * SPI interface has no ack mechanism.
-> > +		 * 0xFF or 0x00 whoami means no response from the device.
-> > +		 */
-> > +		if (val == U8_MAX || val == 0)  
-> 
-> This is strange to be here. If hw->whoami happens to be 0x00 or 0xff (let's
-> assume some hypothetical future case), this check will become invalid for them.
-> 
-> If it's guaranteed to be not the case for any HW (including the future variants)
-> this check should be outside, no?
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Link: https://lore.kernel.org/all/20260724012505.02029e51@jic23-huawei/
+> Assisted-by: Claude:claude-fable-5
+> Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
 
-Hmm. This one has both worked in favour of finding connection trouble
-and bitten us in the past. I vaguely recall a device that indeed
-had a WHOAMI of 0 (though it might have been a hardware bug) and
-tripped on such a check.
+Looks good. I used to pick this sort of thing up ahead of series
+but I'm not sure we've figured out how to let Sashiko know that
+is the case yet. So I'll leave this for when the reset of the
+series is ready to go.
 
-Personally I'm not that fixed either way on this. If the device isn't
-there we should know the moment we try to get any data anyway.
+Thanks for tidying this up.
 
+Jonathan
+
+> ---
+> No changes in v4.
 > 
-> > +			return dev_err_probe(dev, -ENODEV,
-> > +					     "invalid whoami %#04x expected %#04x (%s)\n",
-> > +					     val, hw->whoami, hw->name);
-> > +
-> > +		dev_info(dev,
-> > +			 "device id %#04x is not the %#04x associated with the FW-specified device (%s), probably using a valid fallback compatible\n",
-> > +			 val, hw->whoami, hw->name);
-> >  	}  
+>  drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c | 16 ++++++++--------
+>  drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c | 16 ++++++++--------
+>  2 files changed, 16 insertions(+), 16 deletions(-)
 > 
+> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> index 28552d2db91d..e44ed6dcde02 100644
+> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> @@ -77,10 +77,10 @@ static const struct i2c_device_id inv_icm42600_id[] = {
+>  	{ .name = "icm42600", .driver_data = INV_CHIP_ICM42600 },
+>  	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
+>  	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
+> -	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+>  	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
+> -	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+>  	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
+> +	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+> +	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, inv_icm42600_id);
+> @@ -95,18 +95,18 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
+>  	}, {
+>  		.compatible = "invensense,icm42605",
+>  		.data = (void *)INV_CHIP_ICM42605,
+> -	}, {
+> -		.compatible = "invensense,icm42686",
+> -		.data = (void *)INV_CHIP_ICM42686,
+>  	}, {
+>  		.compatible = "invensense,icm42622",
+>  		.data = (void *)INV_CHIP_ICM42622,
+> -	}, {
+> -		.compatible = "invensense,icm42688",
+> -		.data = (void *)INV_CHIP_ICM42688,
+>  	}, {
+>  		.compatible = "invensense,icm42631",
+>  		.data = (void *)INV_CHIP_ICM42631,
+> +	}, {
+> +		.compatible = "invensense,icm42686",
+> +		.data = (void *)INV_CHIP_ICM42686,
+> +	}, {
+> +		.compatible = "invensense,icm42688",
+> +		.data = (void *)INV_CHIP_ICM42688,
+>  	},
+>  	{ }
+>  };
+> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> index faf743bc6444..3e2f4eb42e97 100644
+> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> @@ -74,10 +74,10 @@ static const struct spi_device_id inv_icm42600_id[] = {
+>  	{ .name = "icm42600", .driver_data = INV_CHIP_ICM42600 },
+>  	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
+>  	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
+> -	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+>  	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
+> -	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+>  	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
+> +	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+> +	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, inv_icm42600_id);
+> @@ -92,18 +92,18 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
+>  	}, {
+>  		.compatible = "invensense,icm42605",
+>  		.data = (void *)INV_CHIP_ICM42605,
+> -	}, {
+> -		.compatible = "invensense,icm42686",
+> -		.data = (void *)INV_CHIP_ICM42686,
+>  	}, {
+>  		.compatible = "invensense,icm42622",
+>  		.data = (void *)INV_CHIP_ICM42622,
+> -	}, {
+> -		.compatible = "invensense,icm42688",
+> -		.data = (void *)INV_CHIP_ICM42688,
+>  	}, {
+>  		.compatible = "invensense,icm42631",
+>  		.data = (void *)INV_CHIP_ICM42631,
+> +	}, {
+> +		.compatible = "invensense,icm42686",
+> +		.data = (void *)INV_CHIP_ICM42686,
+> +	}, {
+> +		.compatible = "invensense,icm42688",
+> +		.data = (void *)INV_CHIP_ICM42688,
+>  	},
+>  	{ }
+>  };
 
