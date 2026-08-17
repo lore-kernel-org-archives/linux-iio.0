@@ -1,46 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC760221F39;
-	Mon, 17 Aug 2026 01:35:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5070218ADD;
+	Mon, 17 Aug 2026 01:37:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786930556; cv=none; b=d/VqmAdG0iqAQjHdDqd4kiwJMBeim3fVfQAiVgONPrEKhFYx8nHplI1mQgKa5Rfkduoy2XVqV+uyzQe0zx/bhTuN2Ac5rR+ViSkjYzG5ii5CY5LQSJBU6LfOM2pSgOUY5SPSbmxcciF9R4R2iObFw602U3Ak161tU9+Q346Awxk=
+	t=1786930664; cv=none; b=no/BPwHOtp7RAtyJTjUR5mjV2Bd5k2LB9clJmjdlN4GfdWAqL3KnVQgHv31nu95Phq31LBrVjkk1qr0lEd1CzShqaaZGVFdHOnZuengAhDpoDSIQdhtu+401aBUZC0XvN51crjuR5loEnM9INH4K349EcvpEQtMNbw2Lk0HiFzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786930556; c=relaxed/simple;
-	bh=6H/K/XdQY2ww/4EstFKhy52hKgigXKqFBvX7CJzIQsg=;
+	s=arc-20240116; t=1786930664; c=relaxed/simple;
+	bh=ONEyWe6j7MWfljV17Ucl4DKYC4laQx7+OLZdfFzwQC4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Xc08Ch+gBZBBomqRV42F91Ra04Lv/JIzGke24cO3YDuHrzegGzwWlY1lDsK9GziVC/wjism6ch3QLVmw/d6/iqXE7nXrBuApv3MRhzxIMH6dOjfzAt3cCvk5D/mY4TGakYtmzyyfRiOFRwd7IcQlVfb/+iNUwnW577efB/+cwNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GHgb7AIb; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=XoP0fW7InhjxFjsd3HST1Nsn0+jQzeIALRUJixCcclSMfY+6Af/w+aXBvnY0JU3oTPIodUWXxMZ7Pq9oUC40LTvCeVAlTC7WY7PssUTqjscCPIsEWOW6HH3ZFfFmpsuXfENZpjEM9LIZZ/0V/BSsd1YwPWpv5z1nPQjAJKTRcc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NtqDrcUx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GHgb7AIb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C251F000E9;
-	Mon, 17 Aug 2026 01:35:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NtqDrcUx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE821F000E9;
+	Mon, 17 Aug 2026 01:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786930555;
-	bh=hdctLFWGDhsL9CZx2qzbLRC7qAxPcCLbzUHP2LnYSX8=;
+	s=k20260515; t=1786930663;
+	bh=q8WHBeZfF7Ni4KTJBY2NpfsHj3T65p9LXXPfS9xaRw4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=GHgb7AIb9kGylimllhSh+1NQPdfwnr97BTY7Vw3cfrmiLAnrOPP+VHcJ/ey5VqvNp
-	 uVIPPmntpMdjNCrXkj23URsacMLmZyRvXT5Niu0DPcQ+d6PGwNHthuZWt/3FJOpgZ0
-	 RjQ+bGKFiolXFa97NCxBTpTVEk5O/6txcx/VfcQbWrYDWuJBFIy5+TewGg8YgqTPpx
-	 zSkOp1AtcAsrpbgrXXFURIMwhFwpOqryhRI5u4BJE5Sd9ac4coop7UwZrtkZ/RQaNK
-	 J372veEdbj2TMc28HSSenq7aaaWAZWjZfJVk6o7meEMwna0agAW2NJzvO8TmgNs0iu
-	 ZWl2flm9eOTgg==
-Date: Mon, 17 Aug 2026 02:35:48 +0100
+	b=NtqDrcUxlh/MW/358rKetbIzDxbAHr4q2Z4XIi/Scq3C4oVntzyPEsng9Og8Eo55J
+	 vL0duRfWkC8TZUSgobJ/TrBrmQbwsYcIYg/cixkNpc/KU3a2L/QQ7+qdkSP5qyiONJ
+	 DkAVRqo1ONOzrj9KAi2eVIkrnLMltE0/ozdOmufDRbU9dT3A4wgwIfwVOeJvUONK87
+	 tEx0Mwi28Ez7Z2Lgjg9ppS/1quELsCQctl2iX+n2YZwq1Tn4OlBgmqlYM4awELWUj2
+	 9cALG2GCjTiuUO5Azgx84tR9/C+nkFF0yjcOinUt12fk3kYtDQ604lgCWPV9yD4ktx
+	 sH7lCbewiiOtQ==
+Date: Mon, 17 Aug 2026 02:37:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Matti Vaittinen <matti.vaittinen@linux.dev>
+To: Mehdi Djait <mehdi.djait@linux.intel.com>
 Cc: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
- <matti.vaittinen@fi.rohmeurope.com>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>, Mehdi
- Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
+ <matti.vaittinen@fi.rohmeurope.com>, Matti Vaittinen
+ <matti.vaittinen@linux.dev>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Javier Carrasco <javier.carrasco.cruz@gmail.com>, Mehdi Djait
+ <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>, Topi
  =?UTF-8?B?U29ua2Fqw6Rydmk=?= <sonkajarvi@hotmail.com>
-Subject: Re: [PATCH 08/12] iio: light: rohm-bu27034: Fix error return
-Message-ID: <20260817023548.75940431@jic23-huawei>
-In-Reply-To: <bfe7f9146960bf0fffb3ce09a14e7912394f5ad8.1786347811.git.mazziesaccount@gmail.com>
+Subject: Re: [PATCH 10/12] iio: accel: kionix-kx022a: Fix array boundary
+ check
+Message-ID: <20260817023740.1b07559f@jic23-huawei>
+In-Reply-To: <anxb3anPmo3zjIV5@mdjait-mobl>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
-	<bfe7f9146960bf0fffb3ce09a14e7912394f5ad8.1786347811.git.mazziesaccount@gmail.com>
+	<159f1048852afc74cfc2d219298a5a6f9d70cbb4.1786347811.git.mazziesaccount@gmail.com>
+	<anxb3anPmo3zjIV5@mdjait-mobl>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,42 +54,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 10:53:35 +0300
-Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
+On Wed, 12 Aug 2026 13:43:35 +0200
+Mehdi Djait <mehdi.djait@linux.intel.com> wrote:
 
-> From: Matti Vaittinen <mazziesaccount@gmail.com>
+> Hi Matti,
 > 
-> When BU27034 fails to read gain value at integration-time setting, it
-> returns 0. This leaves caller unaware of the fact that setting the
-> integration time failed.
+> Thank you for that patch!
 > 
-> Fix this by returning the relevant error instead of zero.
+> On Mon, Aug 10, 2026 at 10:54:32AM +0300, Matti Vaittinen wrote:
+> > From: Matti Vaittinen <mazziesaccount@gmail.com>
+> > 
+> > The driver performs a sanity check for an array size, when converting a
+> > register value to an array index. The check incorrectly accepts the
+> > sizeof(array) as a last index, when last valid index should be
+> > sizeof(array) - 1.
+> > 
+> > Fix the check by bailing out when index >= sizeof(array).
+> >    
 > 
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> Fixes: 439c2cef8157 ("iio: bu27034: simplify using guard(mutex)")
-Applied.
-
-Note I skipped 7 until that discussion comes to a conclusion.
-
-Thanks,
+> Reviewed-by: Mehdi Djait <mehdi.djait@linux.intel.com>
+Applied thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/light/rohm-bu27034.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27034.c
-> index 28d111ac8c0a..f9a421618406 100644
-> --- a/drivers/iio/light/rohm-bu27034.c
-> +++ b/drivers/iio/light/rohm-bu27034.c
-> @@ -415,7 +415,7 @@ static int bu27034_try_set_int_time(struct bu27034_data *data, int time_us)
->  	for (i = 0; i < numg; i++) {
->  		ret = bu27034_get_gain(data, gains[i].chan, &gains[i].old_gain);
->  		if (ret)
-> -			return 0;
-> +			return ret;
->  
->  		ret = iio_gts_find_new_gain_by_old_gain_time(&data->gts,
->  							     gains[i].old_gain,
+> > Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> > Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")  
+> 
+> --
+> Kind Regards
+> Mehdi Djait
 
