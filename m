@@ -1,104 +1,100 @@
-Received: from mail-43170.protonmail.ch (mail-43170.protonmail.ch [185.70.43.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51C9146AA61;
-	Mon, 17 Aug 2026 17:20:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7553B46985F;
+	Mon, 17 Aug 2026 18:15:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786987248; cv=none; b=CWqO/d2BJjgdrhf9D1dh+xPHS7doxMnoeck82o7Tj55a8lxcRXAITaZdseHZeOLbXhEsmneSANBBUAPKkDQmGTBBqXYRLclX9KuKg6vr7oWWa58jaob+TP52mF5eTBejvWlIGvS4tXsJpnal/tl7rLYcApIbH0ZAC7gV1I3AmNI=
+	t=1786990554; cv=none; b=OKa05vJVeYD0Vy6/2W2Anfb3NGsqQawmnrotT+zwBpsm+qRLyW1b9lg97ABI539eLfmv1F9XRbLOECDQnrXwxWKPvg2IdeJUCCSnYtSquOy4nxw7FkAZ4Rkb3a0cwOthQeLsE8R1Ga0JrpZ5JO3Bl7hemS/sDZBjIESjt+lkffo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786987248; c=relaxed/simple;
-	bh=aD1+TxIcp78KfszYueEmzVsPlop8UEkQflASuNmtvRA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=fJRSNd51PeCiCp46gFpfTeZDleBvbOpZGzg30dqMbozY+57c/pWLhq/Vdn9FKZwF95It4a6cxF9QsCy+j0CVPRJdDj/B9m4Cmq/OmN+ySCQegCTMrzLw0brMxC3rKhouODbmnBVV+Jk6727AcKJDOR5cbZwHEl1Qv5Em/fusR0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=zth6WM3Y; arc=none smtp.client-ip=185.70.43.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1786990554; c=relaxed/simple;
+	bh=eGyBb01apftUQ24cX139zedQVRfdr5/PM74x5+NmGwI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=i5xvyuAR5lbqbTsO7Fhq9jVmW4vmwJpFG/JCyD88zlT73WWBQlMvh+vSl7sFnNrhykoYaKngH5kHPi0xiNBqp29OEFIJ1s+noiX6HwHLkHKKVhJpcOTZheYzcpZQ6/1U7czex6cfrrx+QCoyT8BJNdLGpJ31+0ugQyHVwYDNeGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VCXwKpVh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="zth6WM3Y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786987244; x=1787246444;
-	bh=xweKzoAR9wLr7rzqBzvxfCqFwEihx3bUT7MsiLoLTp4=;
-	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=zth6WM3Y1MVhE5Y0KWPrNsNC/19sTBGlkZe/3ugnmBDrEsnK+GQ8nhW6V9C2imbdv
-	 UAdUaLGwwfwt7/Cx2HrU7Z7rujuFzIH6zFqTI06CmT1xOVpUIGyLXJEBFuC2ui8usL
-	 0+YAeX7fC736IuXfJCsROkEaVx+otEs0KGdQJcBHvD9W5A1l6sIz92ex/vjG8b28eo
-	 c8a+wrKPFxJ1f0XoOa5MrLQ7yYtiKMNXVHjVhQFoFaRipHYuQNp4Rsu7pG0EKE8n3t
-	 nwR7jfetKDigNXzL/6bNZvycdD+bU5uASlwGTbmhjjNYx7W3KgiKCOXEP0wSfJru3W
-	 H8OtNMeV0b+yA==
-X-Pm-Submission-Id: 4hP03H2RDwz1DDs5
-From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 17 Aug 2026 19:20:25 +0200
-Subject: [PATCH v5 3/6] iio: accel: mma8452: Only apply trigger type when
- not set by firmware
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VCXwKpVh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 567011F00A3A;
+	Mon, 17 Aug 2026 18:15:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786990553;
+	bh=H+2eX47stH/q2JAw3b8ab2nSSp3xaOSVzVDzvbM7fXE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=VCXwKpVhll6YcTLKNRWWDQ2SgroTkWAx9ELUDk1PMA6ABTgyXyy+Dz0OwlvQb/5YJ
+	 F5Mx/+K5v2cG+mo6GpipnObuMWGG+A6Sknn6zxlM6RQ+AWzsoLccrmog6oB+bJV7LJ
+	 DqRJVsuGPiEfO7msvUKW8YKeE5Tnv6z5dvbk0tCGDaGVKS6pYro6il1WzfuUzz1Lzs
+	 O8FipBF4xXo54N2V5/zsJeUvjv6m6A1b+TAmBr0Al3gg2tOQJo7Qg/W0mW/gIQCYiK
+	 fAOSu5w6mt9ygfcddn4O2fRsCA2RSncPmzKW5i4SnLVmAnwioxDu10i+8zMhw7qTTa
+	 5Qm7RGeuHCGaA==
+From: William Breathitt Gray <wbg@kernel.org>
+To: Wentao Liang <vulab@iscas.ac.cn>
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	david@lechnology.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] counter: ti-eqep: fix refcount leak in ti_eqep_probe()
+Date: Mon, 17 Aug 2026 14:15:43 -0400
+Message-ID: <20260817181545.190769-1-wbg@kernel.org>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260604094036.3777747-1-vulab@iscas.ac.cn>
+References: <20260604094036.3777747-1-vulab@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260817-mma8452-open-drain-v5-3-e34e872d7d57@geanix.com>
-References: <20260817-mma8452-open-drain-v5-0-e34e872d7d57@geanix.com>
-In-Reply-To: <20260817-mma8452-open-drain-v5-0-e34e872d7d57@geanix.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, 
- Sean Nyekjaer <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786987234; l=1389;
- i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=aD1+TxIcp78KfszYueEmzVsPlop8UEkQflASuNmtvRA=;
- b=1MEEgwx3e5yZWDMXxikYEMBrwnExohPuHe4MpbJ6nx6kJEiYLCgBOMl3qRL9Sqb72s1WjjRgK
- /SHaTdCr1+yCnzf7wum9C/oLquQqGuLxZSXuPhucKXb7G4e+YhEWmis
-X-Developer-Key: i=esben@geanix.com; a=ed25519;
- pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1678; i=wbg@kernel.org; h=from:subject; bh=eGyBb01apftUQ24cX139zedQVRfdr5/PM74x5+NmGwI=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFnN/psv7d4rErKXw+tS/JpX8+YVRE99OO/c5jUT3z2YK Ft622R5e0cpC4MYF4OsmCJLr/nZuw8uqWr8eDF/G8wcViaQIQxcnAIwkZs7GBlemZxv/b+U2yNT U8t3zbaGQmanndzH7UTeBVxvVQk1/RPPyLDr8aTXbzijPq9W2CT9JeN0lB9HzYNqoVLZv9p/+H4 WnWUEAA==
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+Content-Transfer-Encoding: 8bit
 
-Instead of unconditionally overriding the trigger type, it is better to
-only apply a default when no trigger type is set by firmware. This should
-be reasonably backward compatible, and should only potentially cause
-problems if systems exist where firmware specifies an incorrect trigger
-type. With a bit of luck, there are no such systems.
+On Thu, Jun 04, 2026 at 09:40:36AM +0000, Wentao Liang wrote:
+> After a successful pm_runtime_get_sync(), ti_eqep_probe() can fail
+> if devm_clk_get_enabled() returns an error.  In that case the
+> runtime PM reference is never released, causing a refcount leak.
+> 
+> Fix this by adding pm_runtime_put_sync() and pm_runtime_disable()
+> calls before returning the error in the clock enable failure path.
+> 
+> The same cleanup pattern is already used when counter_add() fails,
+> so this change makes the error handling consistent.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 0cf81c73e4c6 ("counter: ti-eqep: enable clock at probe")
+> Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
+> ---
+>  drivers/counter/ti-eqep.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+> index d21c157e531a..84fbf500b0f8 100644
+> --- a/drivers/counter/ti-eqep.c
+> +++ b/drivers/counter/ti-eqep.c
+> @@ -548,8 +548,11 @@ static int ti_eqep_probe(struct platform_device *pdev)
+>  	pm_runtime_get_sync(dev);
+> 
+>  	clk = devm_clk_get_enabled(dev, NULL);
+> -	if (IS_ERR(clk))
+> +	if (IS_ERR(clk)) {
+> +		pm_runtime_put_sync(dev);
+> +		pm_runtime_disable(dev);
+>  		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
+> +	}
+> 
+>  	err = counter_add(counter);
+>  	if (err < 0) {
+> --
+> 2.34.1
+> 
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/iio/accel/mma8452.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Hello Wentao,
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index f645a5c6fd1c..1fb43c5b0b72 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1683,9 +1683,16 @@ static int mma8452_probe(struct i2c_client *client)
- 		goto trigger_cleanup;
- 
- 	if (client->irq) {
-+		unsigned long irq_flags;
-+
-+		irq_flags = irq_get_trigger_type(client->irq);
-+		if (irq_flags == IRQ_TYPE_NONE) {
-+			dev_info(dev, "invalid irq type, setting default active low\n");
-+			irq_flags = IRQF_TRIGGER_LOW;
-+		}
-+		irq_flags |= IRQF_ONESHOT;
- 		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
--					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
--					   client->name, indio_dev);
-+					   irq_flags, client->name, indio_dev);
- 		if (ret)
- 			goto buffer_cleanup;
- 	}
+This seems similar to another patch we're working on.[^1] I recommend
+reviewing and commenting on that thread so we can consolidate there.
 
--- 
-2.55.0
+Thanks,
 
+William Breathitt Gray
+
+[^1]: https://lore.kernel.org/all/20260529095834.2561-1-sozdayvek@gmail.com/
