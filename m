@@ -1,37 +1,36 @@
 Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5BB045FFBA
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 17:09:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA8BD463B74;
+	Mon, 17 Aug 2026 17:09:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786986557; cv=none; b=Ow5Nj7NRKg+L23bTPZX8xRDET5hv8RJASvara+wCT1JB9nsmljTMVWBfmllg1X4ehA1KYB4bEFXrN8JyokgofuxmRZdX459MkhpL4nhvCvDwIyG7anpbNm80lIUTU/J3DZeJCJlcp2JjKk5Cwyqan94m5DeEhunojorpTyIxa3w=
+	t=1786986574; cv=none; b=L4w37QHt2nOjD7ebZ18qS0DX3lt6wxCszxvK0vZy61qLxDc3LkXkUIfOVkobGtlBjzkKefZKy8Q/NZ/d3jGbfov7DUyyVJ7uAZp+yiy5H9fTLG08hRRC6ay4V9rREcGBIowf4tXWM7BMMyc5NlG4DTBpRjVNRkXTgBW70t5B9m0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786986557; c=relaxed/simple;
-	bh=KGc+Z0F5Jfw8ScvcfiFrvk9HhEyYqd66fY0XDHsFkhw=;
+	s=arc-20240116; t=1786986574; c=relaxed/simple;
+	bh=UWbyqh4bpm8+cAfa9dXxHxfmaEfW1Oi+9XJLB0ISDPw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sEss8MYerMgn8UlAyNdEpBM0NxdJq1Hr/EzGUCxnBG1iA9E2/Tj5Iyxk4HIp62wGSwrFSD/ujCKCBqPKqjWyz4va+7UB8ckhQL9QcdQB58YFK/qIEBWbkAre9OjQlR6ngRuvsG4DYLGLMpauMYlw6OSaLBGu13eoPWhv8DB4VwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=7/vwbhbO; arc=none smtp.client-ip=79.135.106.111
+	 In-Reply-To:To:Cc; b=EIJ6krc4eTDSph7x20Xgih3h02bJyp1TJHsMVoAxUeiYqgYjWORXLi0qGl2bQUhP07m0y1BLdbrD6nCOsgO95DXch8yyNcbUDpBAqj1/wIDitC+cG6+OYERbwFg1SJnHJPQkGbwNCTvzs84yhiSeZPl3dhqN6t/M5fwHLTwvqnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=1gXNcxwE; arc=none smtp.client-ip=79.135.106.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="7/vwbhbO"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="1gXNcxwE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786986550; x=1787245750;
-	bh=Mo3LpkcaoyYE6UusSztfOfDPcFiBUeHo7hDZGdqFz2E=;
+	s=protonmail; t=1786986558; x=1787245758;
+	bh=dFbW9MGwom17L9c0xKlgzqzd0x2gE+0iK1G6X3CQ5mA=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=7/vwbhbOsFV03mmCQf4/do8Du+vvXSO4Dp2MK772NmK1a5N6IaDwXA5nE7W2UB+5S
-	 VCdg4Dd1IYziQp0Wh0nJHNyejzhRALvBAIo2UZuK/zG6OZuldzf9uFbz9OoxittDqD
-	 DMcGvXUzsi244/Vn0gUlpKCgbujkgiIJP4yvzuTzKMrcDMlS/YYC39RAV2zp2P/JVD
-	 4pmtYbkm6vz0uOenLAbgcFvYE9gLf5fDLefER98nUvUYARBer2B9WMIRN8XuqdfI8z
-	 FFgzFBqtARmFBSv5B/FjG2t2EFKJNGgvcWiFYTl298JR9ST4LrklHsBcXSv68axftd
-	 YsWvpQ4owpHEg==
-X-Pm-Submission-Id: 4hNznw4lbZz1DDs5
+	b=1gXNcxwEhXpFB5k7sVl0TxIzsc/sHz+dPugFhwcu8fyQKV21hbQBF+ceMQF5/uNws
+	 WC/lBRHUGgrg/voCjozbY2heHshtSZs6MYgeN8Zm76AhIrDAROeLQMZvCDZ1gS9Pn+
+	 u0zobO2i2IV4Nken4fxKE1MOo3B8IyNMqScoUuIDv2btdU72HeFPQ6/oKFO6zSA9N2
+	 IbEn6QCgYhDPkI1K16i+e6pV04PWzGkk/OM6xNhrXgNGijvDIWfTWHT8PwMLBHEBET
+	 Q4EzpAbU99LOiha579KdMC0eGJKHTNkBZMtS/WNEfb2yQ+5A6PIOue+j+fA88GQK5n
+	 NubyA6MqEeTfA==
+X-Pm-Submission-Id: 4hNzp53Hfqz1DFFP
 From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 17 Aug 2026 19:08:50 +0200
-Subject: [PATCH v5 1/8] dt-bindings: iio: light: ltr501: Sort compatible
- enum array
+Date: Mon, 17 Aug 2026 19:08:54 +0200
+Subject: [PATCH v5 5/8] iio: light: ltr501: Drop duplicated error message
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +39,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260817-liteon-ltr329-v5-1-6f71ab2b0588@geanix.com>
+Message-Id: <20260817-liteon-ltr329-v5-5-6f71ab2b0588@geanix.com>
 References: <20260817-liteon-ltr329-v5-0-6f71ab2b0588@geanix.com>
 In-Reply-To: <20260817-liteon-ltr329-v5-0-6f71ab2b0588@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -56,40 +55,43 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <jic23@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786986543; l=936;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786986543; l=970;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=KGc+Z0F5Jfw8ScvcfiFrvk9HhEyYqd66fY0XDHsFkhw=;
- b=SVOf7iYTOvPesirRVVo11h62eQNWaPxsQb5XkO7vygzMDxYlM/RUsq5LPNLDy1JmSwvwKAzgv
- pjJ0FRCxt1YAl2eDq75PCMnvBMF9bjpamLb3GqbXG618STbWR4Y37zI
+ bh=UWbyqh4bpm8+cAfa9dXxHxfmaEfW1Oi+9XJLB0ISDPw=;
+ b=y+IXytm5B9BehEeqlGSVdhNSM+oK67C7HNRzJd1FOMifhhmbnzaWyz7BIi853B6TutJPLskbB
+ er2I6YbktCtCHPSiTHagnkK9YTy+N/w3zXhEaODah2famFyoIH4KMcq
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Restore alphabetical sorting of the properties.compatible.enum array.
+The dev_err() message was causing duplicated error messages, as
+devm_request_threaded_irq() calls dev_err_probe() on failure.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Acked-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/light/ltr501.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-index c8074f180a79..480523ca3750 100644
---- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-+++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-@@ -15,9 +15,9 @@ allOf:
- properties:
-   compatible:
-     enum:
-+      - liteon,ltr301
-       - liteon,ltr501
-       - liteon,ltr559
--      - liteon,ltr301
- 
-   reg:
-     maxItems: 1
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 7746d374688f..b36bd10a0262 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -1537,11 +1537,8 @@ static int ltr501_probe(struct i2c_client *client)
+ 						IRQF_ONESHOT,
+ 						"ltr501_thresh_event",
+ 						indio_dev);
+-		if (ret) {
+-			dev_err(&client->dev, "request irq (%d) failed\n",
+-				client->irq);
++		if (ret)
+ 			goto powerdown_on_error;
+-		}
+ 	} else {
+ 		indio_dev->info = data->chip_info->info_no_irq;
+ 	}
 
 -- 
 2.55.0
