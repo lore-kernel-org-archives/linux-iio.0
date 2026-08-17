@@ -1,47 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A2544B048C;
-	Mon, 17 Aug 2026 02:20:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0741E2C326D;
+	Mon, 17 Aug 2026 02:26:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786933217; cv=none; b=TExHPosvOEwrYIb1xIp4ibsRVVdnK2099H/PY3FbHdDWcLx8BP4XQH9WUnJRUv7CHMPUSBYBVR7gqfL1wOQ1ORvILbxzCh7R+kbReQ6RZYhYgIEiM+dQ/q9IlGxoVPqCZSUeG+/i38Iq/hmN6fW3pClaav2uxDUGpMqpipMWxOs=
+	t=1786933562; cv=none; b=J/LPSYVX+0HxAK7A8YHLqi4d6fi6TagLvxrNOOPX+UgK87YSLfxG7mmFdEeaL2qWyNL67GF3J65INk+kZwgFksLuFMNLkGyH9fmoGPkK8NDqoXa8dZpOabXu/9qSXuLOKtddzlTYYBNs4kY96p8ukpdpvfZN4Dr/bs1OdmgoVKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786933217; c=relaxed/simple;
-	bh=ksGuJ1o7t7A4b0AWijejAbExiSI6qpSYjNY4w44BdTQ=;
+	s=arc-20240116; t=1786933562; c=relaxed/simple;
+	bh=vpWvs3/KWV0E7QsvjE/aQojofGn0pvJkVr0xAwTFppA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lt5xP00iE1EHNi5HZ+oKAT/ptHmFzTDYHS+Ay8A7P8GBbSiTdLOIjrADUSoRg8+kREV3CQeBLS0V87tAbDB/BKzvEouZYQSTnvTCGUnBrfUeyeejHytDUx0zbc8Mb3h7+YguvwIDL3EqncrVAgw5HKKrvfh50fGI/K5/PY/w6IA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cmevl5oL; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=X+d5jI1blVNdznBBudniQ+eSLLAsjGtgpyhiuha6J2HlQB9Yjy5efQYqfjL3ZEnpDThRpwPI0BBlMau9EwWWNHGAgOsPB5ZxEEcojPwKXx5dcILBIP4zGt2iUQx2Q2VBV23sFVjy5fFNBO9VUzUL/4EucMqxPlEy/KoGEF+6YRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M5xzTENA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cmevl5oL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4121F000E9;
-	Mon, 17 Aug 2026 02:20:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M5xzTENA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4EB51F000E9;
+	Mon, 17 Aug 2026 02:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786933216;
-	bh=Jq6+wkM9G8GNCg847YPoWEIKRWnY0MsoJEGSZLgj/qo=;
+	s=k20260515; t=1786933560;
+	bh=WgqUVZHhHkr7Mok5OB8xen4dfW9N5ijCeONfcS2eng8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Cmevl5oLzamrM4ZQNdrPAgWaspI4V/tpUn3q03jLeopeEYkB1jgkXnHJ0cNQAHfCv
-	 /qiLHUzFcpjC2HCg1clVgoY/+gFz5IEPcrMi8vcGB0ZCMqzzc/Cuik7oNppD9rMMne
-	 Kphhv/zxD8cayIDcDhvxZP+3nn8U2+hi9tCwUu8EHiPX9+pLXgel+L+bT1r9R8dYHe
-	 OFf4Jcp+SPL8fVYutB/TNTxPmdqHdv7gMZYSkh0J0xAbLFFmDizO9BhvKwArrCMS5y
-	 gaHb2EHJv+r34uBf2JLfcyf/anXvTn0mUusMlpmLKRQSy+gq+Gt9iXzOGlCIMuoNlm
-	 SRJBwALDFVQ+Q==
-Date: Mon, 17 Aug 2026 03:20:12 +0100
+	b=M5xzTENAtQDahv++npkCXetOWV0GmXby03pViQh0jtGut8wjM4pUhKwiIbdr7+Gtq
+	 jWGdKqG8+d5aIPgS9Wd5DTNmRgerZhpEIelsN37Aj6OICbyvxWSkQOURb4wNra4ZNY
+	 01tdYQl2CR4/bzjJ6E5IJxcMBueNRa71feYU0h50uYJj6xJK9+IRTVyb8ITakPTaNH
+	 Ezf+l8k/DEvIL8JEwHvz7XQyZTmlxEGlfbP3t3DqaxJtLjCnXAqezsOYnrDZ9Cee8O
+	 Q6+mZScDEbv0TqyDBz2nl6a6u0lynYKP+5Z7wQuUREUui3s5X0LWwfPCD8Wn8z7CUs
+	 JxBvBzftbfStQ==
+Date: Mon, 17 Aug 2026 03:25:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chris
- Morgan <macromorgan@hotmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] iio: imu: inv_icm42600: sort device id tables
- numerically
-Message-ID: <20260817032012.779c01af@jic23-huawei>
-In-Reply-To: <20260810191157.125550-2-jorijnvdgraaf@catcrafts.net>
-References: <20260810191157.125550-1-jorijnvdgraaf@catcrafts.net>
-	<20260810191157.125550-2-jorijnvdgraaf@catcrafts.net>
+To: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ mranostay@gmail.com, ~lkcamp/patches@lists.sr.ht,
+ linux-kernel-mentees@lists.linux.dev, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/2] iio: proximity: move LIDAR-Lite out of
+ trivial-devices and add Garmin fallback
+Message-ID: <20260817032552.63c04216@jic23-huawei>
+In-Reply-To: <20260810192131.153495-1-rodrigo.gobbi.7@gmail.com>
+References: <20260810192131.153495-1-rodrigo.gobbi.7@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,117 +49,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 21:11:55 +0200
-Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net> wrote:
+On Mon, 10 Aug 2026 16:18:39 -0300
+Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com> wrote:
 
-> The I2C, SPI and OF device id tables list the parts in the chip enum's
-> declaration order, which is neither numeric nor alphabetical. Sort the
-> entries numerically by part number so new entries have an unambiguous
-> position.
+> This series moves the LIDAR-Lite v2 binding out of trivial-devices
+> into a dedicated schema, documenting the power-enable, power-supply
+> and status-output interrupt properties that trivial-devices.yaml has
+> no way to express.
 > 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Link: https://lore.kernel.org/all/20260724012505.02029e51@jic23-huawei/
-> Assisted-by: Claude:claude-fable-5
-> Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+> It then adds the Garmin LIDAR-Lite v3 as a fallback compatible in a
+> separate patch, since it is pin-compatible with the v2 and already
+> matched by the driver, so no driver changes are needed.
+> ---
+Just enough stuff in here that I think a v6 tidying up (and hopefully
+getting a tag from Matt) would be better than me trying to do
+it as part of applying.
 
-Looks good. I used to pick this sort of thing up ahead of series
-but I'm not sure we've figured out how to let Sashiko know that
-is the case yet. So I'll leave this for when the reset of the
-series is ready to go.
-
-Thanks for tidying this up.
+As such I've marked it changes requested in patchwork.
 
 Jonathan
 
+> Changelog:
+> v5:
+>   - split into two commits, one for moving lidar out of trivial and
+>   one for adding a fallback compatible for LIDAR-Lite v3;
+>   - minor changes at yaml like: title, description, adding irq prop;
+>   - improve commit msgs for covering the vendor acquisition and PWM mode;
+> v4: https://lore.kernel.org/all/20260714215433.41259-1-rodrigo.gobbi.7@gmail.com/
+> v3: https://lore.kernel.org/all/20251102221643.9966-1-rodrigo.gobbi.7@gmail.com/
+> v2: https://lore.kernel.org/all/20250801224112.135918-1-rodrigo.gobbi.7@gmail.com/
+> v1: https://lore.kernel.org/all/20250701223341.36835-1-rodrigo.gobbi.7@gmail.com/
 > ---
-> No changes in v4.
+> Rodrigo Gobbi (2):
+>   dt-bindings: iio: proximity: move LIDAR-Lite v2 out of trivial-devices
+>   dt-bindings: iio: proximity: document LIDAR-Lite v3 fallback
+>     compatible
 > 
->  drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c | 16 ++++++++--------
->  drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c | 16 ++++++++--------
->  2 files changed, 16 insertions(+), 16 deletions(-)
+>  .../proximity/pulsedlight,lidar-lite-v2.yaml  | 70 +++++++++++++++++++
+>  .../devicetree/bindings/trivial-devices.yaml  |  2 -
+>  2 files changed, 70 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
 > 
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> index 28552d2db91d..e44ed6dcde02 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-> @@ -77,10 +77,10 @@ static const struct i2c_device_id inv_icm42600_id[] = {
->  	{ .name = "icm42600", .driver_data = INV_CHIP_ICM42600 },
->  	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
->  	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
-> -	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
->  	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
-> -	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
->  	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
-> +	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
-> +	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, inv_icm42600_id);
-> @@ -95,18 +95,18 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
->  	}, {
->  		.compatible = "invensense,icm42605",
->  		.data = (void *)INV_CHIP_ICM42605,
-> -	}, {
-> -		.compatible = "invensense,icm42686",
-> -		.data = (void *)INV_CHIP_ICM42686,
->  	}, {
->  		.compatible = "invensense,icm42622",
->  		.data = (void *)INV_CHIP_ICM42622,
-> -	}, {
-> -		.compatible = "invensense,icm42688",
-> -		.data = (void *)INV_CHIP_ICM42688,
->  	}, {
->  		.compatible = "invensense,icm42631",
->  		.data = (void *)INV_CHIP_ICM42631,
-> +	}, {
-> +		.compatible = "invensense,icm42686",
-> +		.data = (void *)INV_CHIP_ICM42686,
-> +	}, {
-> +		.compatible = "invensense,icm42688",
-> +		.data = (void *)INV_CHIP_ICM42688,
->  	},
->  	{ }
->  };
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-> index faf743bc6444..3e2f4eb42e97 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-> @@ -74,10 +74,10 @@ static const struct spi_device_id inv_icm42600_id[] = {
->  	{ .name = "icm42600", .driver_data = INV_CHIP_ICM42600 },
->  	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
->  	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
-> -	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
->  	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
-> -	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
->  	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
-> +	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
-> +	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, inv_icm42600_id);
-> @@ -92,18 +92,18 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
->  	}, {
->  		.compatible = "invensense,icm42605",
->  		.data = (void *)INV_CHIP_ICM42605,
-> -	}, {
-> -		.compatible = "invensense,icm42686",
-> -		.data = (void *)INV_CHIP_ICM42686,
->  	}, {
->  		.compatible = "invensense,icm42622",
->  		.data = (void *)INV_CHIP_ICM42622,
-> -	}, {
-> -		.compatible = "invensense,icm42688",
-> -		.data = (void *)INV_CHIP_ICM42688,
->  	}, {
->  		.compatible = "invensense,icm42631",
->  		.data = (void *)INV_CHIP_ICM42631,
-> +	}, {
-> +		.compatible = "invensense,icm42686",
-> +		.data = (void *)INV_CHIP_ICM42686,
-> +	}, {
-> +		.compatible = "invensense,icm42688",
-> +		.data = (void *)INV_CHIP_ICM42688,
->  	},
->  	{ }
->  };
 
