@@ -1,200 +1,108 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C5B0405845
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 11:37:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B5D40A937
+	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 11:38:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786966646; cv=none; b=hzF3U0PvEXbjs9Np/wBQ17kZxD+A53pP7E0WD9MFK77emDeUfgKbkxA1tn8lk6cWMj0NNhi86y3AA1u7Qm5w5ARzE5D+g36J8Fl6f0kIMTRLcGe2BBJWP4qslMuCsLA3Ji9k5R2k6SB95+SIu0VHBCNEL4lDCWINKa9lz1Fgcl0=
+	t=1786966718; cv=none; b=tYZY8MEXxP1ZoRpErnOMsOkANLD7iiH5hPqqq17A8MJ+xMMsqg2I4SNLqofe1+ZBwUOLP1dotOqk8bjMaZAUDiY+AStP0BU5P4l1YUHFupsZUrZVB+7fz13LzRpZR5pAk19+ZAjhh9EcVkzKE0Y7WeVZ35lmYcErXNdqoN1jVn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786966646; c=relaxed/simple;
-	bh=Y1uNjHFFLZoi4x2clT8lqTvcIRFqybCxrGvUfITph7I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=INzdJ4oMVX9LNLl+BW7wvpwG1JjJ+51En2uatuXiAU0nCDy7KwotU+NLNPX5r2BCqmyeWFDoxBgGA/n/znqKzQvk0FjIvXAvUXDwENqvaICHiYw7cxJCftP0Lr/5NIBJosAaDPqfRtDuXqvE6g+sQ0tBMGknAbNJhSWWUqiLGIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gtdNbw/c; arc=none smtp.client-ip=209.85.167.54
+	s=arc-20240116; t=1786966718; c=relaxed/simple;
+	bh=preAQSUiNXBbVUYKY80ddcTWhyOTIGO+mcuB1EQ93A4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qAdfVRwNXghR+7ucOjDEevjnOq7MxK+THhW5PDXqOmxoTeuFiXQQXxp0wfWQ/DkaEuoe03SduhfKmnOMBKEPMfSJmun5rDB5uXP+u41LXWq7x5vdbUMFI26VsFeChTAtGHgHas8Y+73mCaX+SmDTmuW1PpnjH6YYGdzO3csKqKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s44uHB23; arc=none smtp.client-ip=209.85.218.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gtdNbw/c"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5b013084dc2so2435248e87.0
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 04:37:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s44uHB23"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c2055573c8cso453406266b.3
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 04:38:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786966643; x=1787571443; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1786966715; x=1787571515; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=C5hxX8xiT0jXe6Ggo36/hfIdImjuZM69X1aiRLfMznU=;
-        b=gtdNbw/cmB0WLnjbUeUP7JZc7yxQ/6ZSQ9ar7avageRsxOw/O/7VZdGd3lZ1U2DDY+
-         HO2gRfJWDZvVDTZNIsSVtDw5pyZ31sGkYt992qIOprKsjpM8ljvpRm1l1capoN3iVYfq
-         ZaqsvoCeRPzHjyd7uqwhyw1Zo9EUQj21/Bxf8HQ2bnk55u2zdCfUxk4EfI39INPec/F/
-         k1Dnq2dvoye4a0Vm6zrnDtwGGVmFO2CkE2afsj2kx79irwWISZaz8zRuh68p7aCK7Sm/
-         47QQc0a5LqWUHNS+ZSkjnKLWuRUMy2cas0dgFH1Lo1OsHvJC4gg48StxJG/MwHerlFll
-         opbg==
+        bh=ntKnsiwJpy1kfM4krSauxn8fNlU0qOy7OW+x+qrciSM=;
+        b=s44uHB23bXSYWN0xx10dqEHph/LjPUrRii7//mfyy5wBJ+Q/1srCESAifTk1gMXe3j
+         3HrKsRDf6D9Or73ouvozCxigIr+DT0cALYXZ0dDj452Hz3RV3DQoSe/a0YMN1R0EiibA
+         WqpjsMIV6hcJ6r8WfUiAH7AL7PERWTBWIOP1In4lnTckO7IVdYBrG1U/PDWMq2LsRDEh
+         Y37jxUde3lzXqxigugp0YM5wzh3TU7Ojr/FGbjujI8et0Gmc25V8TGgeBISxqVjwz1d5
+         Lz7cKpdTzuf1dXEFmVhhRToLjK2+isMFJqnqo4LA3TQKfsOwdfvkdiISjD17q0MSz60m
+         xW1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786966643; x=1787571443;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=C5hxX8xiT0jXe6Ggo36/hfIdImjuZM69X1aiRLfMznU=;
-        b=tBReHg0XYE05UTq5CWiiBMRUhmLbthDk4af3ga8ekoSfaGv+zJ4N/eviCXS//2+zqc
-         FQACYx8MKXZEAMS/u/+BBPaGQBz9+QLcIFYD8NtiJO/HO018qAfoasIKCswhagxKiNtN
-         zQMeAd9gxTFJRnpkugs9FDwSJMNnMGjgBNN3sWpYg6aIPyfslNlye17oAg0gvZIu1C2l
-         FxpuNOtOR0UZmzK6a80iUb8dOCWrs6jt4SnClm3qVGFgLrEPyOyQ9vtyBkkHtwYGrSpL
-         zmN7FM2Ai6/ANyOR2vWaLioo8+jXpyGkiTHd9XI35+WLYRpH6nv7jnsh/JFMKshs2/ky
-         viaA==
-X-Forwarded-Encrypted: i=1; AHgh+RqG9ESxg2appVqgASXztZ6JQBZZiDkpw4Dr98hUhjCuQaKbzT2K//3Ip/gloe/WdUGRhtEColEXGug=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywv+ulD1FcBk+3Wpq5iHdrwN4vBdr2K+ydjD0W9pBtX9BjkAcro
-	y8tFlGDDFdp47WwOYr69XcjVmbmhi6kZwZYi0Px4L4+6YralvgVrnuAJ
-X-Gm-Gg: AR+sD10BFHz4g0UaHrc6UF/9cxBV52nd4veTn3nkWryirs/0jyRSXAN5BGgSEeeQc3y
-	CCINfPDZH825FEUbHWKfm7+hV3KPsi5vIrgse78Y96E3dLUCQvXDsWQEJoBfuJrWuf8M4MAqepg
-	LvFQbQMYGboAIkPAYpfVfy5RdZJGbgDV0oR3GSbzz1Fj1Yb9bDzxiWT2pQVn9TtQ6mVx7QG4WOx
-	1CgDSdGfr9E3BGLLQBOxCFboMUL4UI3mKH9nyP4ltwP3zSi3ruKyRyQJU0PTuvUYpXDVYSjwT6W
-	Xf+gmJ1g55gUYzALPm6ODQB9Npi0yR1eo+lIpAUHIwhw3dDpab+XFFqjXvCJAjhb6b4VMeQZwvY
-	/cxv12HRw1yvPS5Hs9rf41joQHnDaZt4e48qkSmIBlxMomlE1HvFbavFa9DShfEg27d5GV80BJM
-	HraGuTeMQ8eYBUGgKA+qCtdeum+a6p9zCpis+6RBobEQJXKVhsj+Hj/N4Sp7z0ltudl+/LYxxgt
-	PqJ9mYYJX1c81zCLnIjxRKfxCMih4tPHDtWQ/SIQNW1
-X-Received: by 2002:a05:6512:684:b0:5b0:cce:d9e9 with SMTP id 2adb3069b0e04-5b45915d47fmr4348494e87.19.1786966642980;
-        Mon, 17 Aug 2026 04:37:22 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b46cfa1298sm327939e87.26.2026.08.17.04.37.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2026 04:37:22 -0700 (PDT)
-Message-ID: <8e3449fa-83aa-4674-945b-cfa1a5f09f16@gmail.com>
-Date: Mon, 17 Aug 2026 14:37:21 +0300
+        d=1e100.net; s=20251104; t=1786966715; x=1787571515;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ntKnsiwJpy1kfM4krSauxn8fNlU0qOy7OW+x+qrciSM=;
+        b=X41/E2HZ0HQrkf6rlQjEZbcXGsBIABTuTE/LoPSPoHIACWsz7HK+FjHJ2+ozaZxJbS
+         Px8gplHCqeHPCoJwQS4s5LCvWDIa3nPqwWXqanU1UaXpmhY/xaxrvpHCDFQht98Hx0an
+         bo5lV0ePqQJ3RitHnhrq2kqADPub2L2UdItq0Prrrt7V4L4w+/y8kn5XiYzrSbKXAU3U
+         yD0Oyl1aqdQK4f3UIhI5wsgPsNEvwXuEbHlzzdjW99wlkKgsEjJ6n48bbge7DGFRGz0c
+         AK4/53Ea6L1SS1ypCMx4PqQ+rUCP8cigKPZ8CFARQ7p/+Jgl/NI+WNHuaQsisR8hNykc
+         IlQQ==
+X-Gm-Message-State: AOJu0Yz4QAv1XZaswp6R2vgNDXfhNuS338HvpTvLMd/eESc2fl+yvOQP
+	jCpASDVoZwaxPE8SnRwE3htkZeHBV7/pbxiGriloIbnYpzHMgVtuC3tY
+X-Gm-Gg: AR+sD13HDyZwQ1agcm/HL4JjXthluueCNZJ3wHq7UeGz7e+TuOF3V8mrqQjaR0Q7pSK
+	QNR70b2dSzOeDXm9kJOxmuD2xO1vwXHSB0vZ+tGMXQWap0Mlda4HTt2aJ1v6YcSlSmOG8xIXjF6
+	JQNuvmmc/xMlNhpGyEg6ss6dZaMWBPtLjN9XuUE58vdnGXpuo0Q6Etosb50ogvxHPzLqs/65eQM
+	kqpmNOQKB6bT519NCuNIFXnJTeyyiZHbyO/9ka09xGP9+8xOBjBb8LdHqLZ3Z5ejzDKLxx0hzre
+	nGZ+ivzSsUsk6aBZiq222SonsZ5POl3BjTi0WnxKGv1IzbqpZLH8LE0yyrGgm+KFFEClUXQV3W6
+	Vw9PZ3icxscaMw3mQXcMbRKzh/qjvucqhjtzC3EHVQQqnlp3uBA19bQdj2MkkpUJrVLGIit7HoI
+	RsXEFZXXC/73k4oOKwHYycCNhrg9pd0kGhCXmmDq0S3AJC6qGwx6WtVr9ms1vkuKCsCkvR1pbj+
+	O/9DWAxMyKCAuSx6fZN+O8VN0RHoS8VBQgCKyCPqW+00qJ4XaSqAc4Mp+7kOEwL9Y5OjkQNv1hZ
+	F89Db+r197wrQWhisqtjcE2LyjnDpYvTiCj1IdCKmXlS7d1y3Fhx/NA0W8jsWS7RuAiDl1iJOU/
+	O/06lFNV7a3MTzcWN1Ylfi424bK0FS+/8IfNE+rsYxOdj3qkAIUYaFUhb0Qd4giRp3EmsLX4IVJ
+	IedA8h9CjbsAGpP1AJsHzl14NWRRPQv0nFvBF/s23QBGaWsmEnvezwbQPxjAMDCaXMK8CER8CvC
+	/9fdm371cB0zERkDA==
+X-Received: by 2002:a17:907:7b9f:b0:c20:23fb:bb05 with SMTP id a640c23a62f3a-c212a26d65cmr1152187466b.15.1786966715187;
+        Mon, 17 Aug 2026 04:38:35 -0700 (PDT)
+Received: from cs-280612103108-default.europe-west4-a.c.i2f7e30109524dc12-tp.internal (249.139.91.34.bc.googleusercontent.com. [34.91.139.249])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c217feb99d4sm40879666b.22.2026.08.17.04.38.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Aug 2026 04:38:34 -0700 (PDT)
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: add patchwork link to iio entry
+Date: Mon, 17 Aug 2026 11:37:23 +0000
+Message-ID: <20260817113738.1324-1-joshua.crofts1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/12] iio: accel: kionix-kx022a: Prevent memory leak and
- fix state
-To: Jonathan Cameron <jic23@kernel.org>,
- Matti Vaittinen <matti.vaittinen@linux.dev>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>,
- Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
- =?UTF-8?Q?Topi_Sonkaj=C3=A4rvi?= <sonkajarvi@hotmail.com>
-References: <cover.1786347811.git.mazziesaccount@gmail.com>
- <85e6bd3998863e0247c52dcf0c1486b2cddff567.1786347811.git.mazziesaccount@gmail.com>
- <20260817024513.0c2adab7@jic23-huawei>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20260817024513.0c2adab7@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 17/08/2026 04:45, Jonathan Cameron wrote:
-> On Mon, 10 Aug 2026 10:55:03 +0300
-> Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
-> 
->> From: Matti Vaittinen <mazziesaccount@gmail.com>
->>
->> The driver allocates memory for samples at buffer enable path. If regmap
->> operation fails in the kx022a_fifo_enable() at the buffer enable path, the
->> allocated memory is never freed. Furthermore, the state information and
->> previous hardware configuration(s) aren't undone, potentially leaving
->> WMI interrupts and buffers enabled, or driver state flags wrong.
->>
->> Free the memory and revert the hardware configuration and state flags on
->> error path.
->>
->> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->> Fixes: e7123a4dfcd7 ("iio: accel: kionix-kx022a: Refactor driver and add chip_info structure")
->> ---
->>   drivers/iio/accel/kionix-kx022a.c | 27 ++++++++++++++++++++++-----
->>   1 file changed, 22 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
->> index 8a13f78aeab0..49e8b4b943da 100644
->> --- a/drivers/iio/accel/kionix-kx022a.c
->> +++ b/drivers/iio/accel/kionix-kx022a.c
->> @@ -980,26 +980,43 @@ static int kx022a_fifo_enable(struct kx022a_data *data)
->>   	guard(mutex)(&data->mutex);
->>   	ret = __kx022a_turn_on_off(data, false);
->>   	if (ret)
->> -		return ret;
->> +		goto err_free_out;
-> 
-> If we follow this path we are assuming that turn_on_off hasn't
-> had any side effects in failing...
-> 
-> 
->>   
->>   	/* Update watermark to HW */
->>   	ret = kx022a_fifo_set_wmi(data);
->>   	if (ret)
->> -		return ret;
->> +		goto err_free_out;
->>   
->>   	/* Enable buffer */
->>   	ret = regmap_set_bits(data->regmap, data->chip_info->buf_cntl2,
->>   			      KX022A_MASK_BUF_EN);
->>   	if (ret)
->> -		return ret;
->> +		goto err_free_out;
->>   
->>   	data->state |= KX022A_STATE_FIFO;
->>   	ret = regmap_set_bits(data->regmap, data->ien_reg,
->>   			      KX022A_MASK_WMI);
->>   	if (ret)
->> -		return ret;
->> +		goto err_wmi_out;
->>   
->> -	return __kx022a_turn_on_off(data, true);
->> +	ret = __kx022a_turn_on_off(data, true);
->> +	if (ret)
->> +		goto err_on_out;
-> 
-> 
->> +
->> +	return ret;
->> +
->> +err_on_out:
->> +	regmap_clear_bits(data->regmap, data->ien_reg,
->> +			  KX022A_MASK_WMI);
->> +err_wmi_out:
->> +	regmap_clear_bits(data->regmap, data->chip_info->buf_cntl2,
->> +			  KX022A_MASK_BUF_EN);
->> +err_free_out:
->> +	kfree(data->fifo_buffer);
-> 
-> This thing is fine here.
-> 
->> +	data->state &= ~KX022A_STATE_FIFO;
-> 
-> This should also only occur when we have set it in the first place -
-> so under err_wmi_out:
-> 
-> 
->> +	__kx022a_turn_on_off(data, true);
-> 
-> So following path above we should not be calling this.  It might
-> be safe to do so but it isn't logically correct.  It should be a few
-> lines earlier.
-> 
->> +
->> +	return ret;
->>   }
->>   
->>   static int kx022a_buffer_postenable(struct iio_dev *idev)
-> 
+The IIO subsystem entry in MAINTAINERS is missing the link to the IIO
+patchwork system, making its existence lesser known.
 
-Thanks Jonathan. I think you're right. I've no idea what I was thinking 
-when writing this fix...
+Add the missing link.
 
-Yours,
-	-- Matti
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8014b9f82..57d592c27 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12612,6 +12612,7 @@ R:	Nuno Sá <nuno.sa@analog.com>
+ R:	Andy Shevchenko <andy@kernel.org>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
++Q:	https://patchwork.kernel.org/project/linux-iio/list/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+ F:	Documentation/ABI/testing/configfs-iio*
+ F:	Documentation/ABI/testing/sysfs-bus-iio*
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+2.47.3
 
-~~ When things go utterly wrong vim users can always type :help! ~~
