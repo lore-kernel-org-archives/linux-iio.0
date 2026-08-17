@@ -1,112 +1,169 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 069693EC83B
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 09:39:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A53C395276;
+	Mon, 17 Aug 2026 09:40:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786959584; cv=none; b=vCo9U1DvBEWGpP8ggvufy88Er6XUHZZa5aaHOjF8b6iM/kcKuY5WHp5xT0foo+eFzlvW5LHsQ0557lADVbuESyvAu2q7EYFGgmUeW5qkTou+b3kShb/++1imgcPZCZM9+gcbbJ3UaQIn/AAmRcENriLJSpJ66q8tXJfHDWzsG58=
+	t=1786959620; cv=none; b=rtr8GGrRlp0gD5MOa9GBFiIS5B7L+n7TcjCKKexDEtf9SJswfMubaX/sUF4/oL8+Tzt/DsSUkM4PEs2fqFOXo3mQqkaxggnh4C8PntjYcU8JF0BV/+6YQ+mcMzfE7PDLtqsvFV8+qnIfbQW6reHOjScUBP7y0i4b3di4mLHS9CY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786959584; c=relaxed/simple;
-	bh=dtk6e7DXkab0Wi6uKJ4HjHzWIAKxI0jK8NztSrr+wKk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u4P7CqSvs/He3BTf+Ajxl4sZ57/dz6BFR+Ft3TLfUhtz4UEH9A/wsAINNgJndSagbWHtKrnDT7RSX1cZRC3Dm5nw9xweORYd+WNLvRR1QvUWlzJCOEMBciZ2TOKm+U6UJERXGEHsXPorSWJn7I1LhZRP/mgdIBFCpiYsw7rXbaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20251104.gappssmtp.com header.i=@riscstar-com.20251104.gappssmtp.com header.b=hDHFMeiv; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20251104.gappssmtp.com header.i=@riscstar-com.20251104.gappssmtp.com header.b="hDHFMeiv"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49556f97a9dso21297605e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 02:39:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20251104.gappssmtp.com; s=20251104; t=1786959579; x=1787564379; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=dtk6e7DXkab0Wi6uKJ4HjHzWIAKxI0jK8NztSrr+wKk=;
-        b=hDHFMeivnqgaKc+0lZ93f98BgXbzgnxU3Ky/WbFz1oZPuM93N2vbfUSzt7WX7xQNZ4
-         IJc7twCldleo7/B430+SRGv34cEn9G834h7wlUXuQXGkyozNDRowruON2bS8FQwesTp1
-         jxY+ox2LQy6qF+0z/RyxRHKl+sBVwkdtK4oebDRIuueFloW4Jw/OxostUmk1SPyfxVZ1
-         Or9GM2v3mTfzqv9VATtVzpbgn39+vkAMKrlo6Z458IKTXsTZ2qhoHzbFWgGEqEeJbJm/
-         jDOxRdBbimbQBqz/0nQlvmMWUMlS/CpnEdHMEsY1t+5F6upQp9HKhXGq/CQPUzOT8/FR
-         Fp9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786959579; x=1787564379;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=dtk6e7DXkab0Wi6uKJ4HjHzWIAKxI0jK8NztSrr+wKk=;
-        b=TytG3P6Av/QkXdeWkYiNyF2hf4Jq5c43iBPXnQEFkIb6lb5B555qgNwfkSWr7gU1Ti
-         C9j1Iodemxy8INiiXtHOR14ogZaFedNVXHGHUcuJKbT0hrLw7g1O9FtAft2zXDBpaVaV
-         06J0d9ze6aTVWtGqd/277hg5L56rhcnM0ovM6NzMe8+9G5Kr7bPYm/k1P5STyn6zC67c
-         zWgEcsgzjFePpPBtZm1skCyOybuvgLyIEH0pXBDpcK0g/CY7sOYykEYLL7FYTXs5ymZo
-         1FdjBPSsczLBw0OmQ/WAsY+vjzgLOGcSDKkb6unBh992G4Tkc9+uUbnHDbX5wDhXAOc0
-         5B3A==
-X-Forwarded-Encrypted: i=1; AHgh+RoUX6hKbh8FCDjVqqf8odvp7kA/E8A1MpQSlGrgTN6j2tE8j+1lEo70KJ5/2CVB8uUX4t4N98sGp9U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyWO0Mh1aEmMkiPmqeQPY9acddi5xL2N01reYbOtWoHbLgLjxvs
-	V9MqQjDXYd3HEkPCY7qFNR+IPd476MG/A8odkB0KPW9LGDTObmWbxsaUdOfc2xA8YpI=
-X-Gm-Gg: AR+sD10BKdIhn7ZBPV4T9gfas0GlIyajCSKELcsflN5B63GleOESGw7VS3J/Qf+U3MD
-	SuilEgWe1bMc0yAGIYi9YisVdhVGJzPXCMm+kGWaXx0T8JyJGNfXwSBUejP6IehPTTRjqjWd89t
-	ku8d37DoH2/Y3YuOK6DXbA1t5m1nn0ew5gUvDkzpKZmRX00TxfMwAcSz38iDLOmTiB8+VIXWmHs
-	PcD6jtikT5cB16vBnIJcxp1BOHzsyDZYYkZbDNBcpnIGV+Ah13RMYq53sGRg0chwBzzhp8q/Cw7
-	BU4ygJSaMQ1qVooMJMdYQyhcm3cvyaBWi9JfrekKDNhJY21yceEoKy5JoyHVAktJI22PLiFYdFd
-	jDbMf06B2XAf5uga0jAT0Cp0lJQxDUYGiRZL0KoVCGwgH8LgrLWmpL311bfYo4Qb6Un9l8rkWpl
-	54yU3Gt8o8WF3GBxyWV9g0vpxrCz/3xud+I4e8pKYoCDCSi16Y61f4INqBnKyGKOV9cN2HPGzAk
-	+UTO3/GHSCH0kCz0shq6qFUkbOCxCrPmsGCszJhSpG2GgpGHzCQAZY9UOkj9i5PZYdcYFgUY0Fu
-	416hZ0zZZjzuXyCQhspj9abVyUDgDK8mYlOiaT7TMfkCew==
-X-Received: by 2002:a05:600c:4f12:b0:499:491e:4b0d with SMTP id 5b1f17b1804b1-499879c627bmr387093535e9.19.1786959579385;
-        Mon, 17 Aug 2026 02:39:39 -0700 (PDT)
-Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4999610ed6dsm169142985e9.8.2026.08.17.02.39.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 02:39:38 -0700 (PDT)
-Date: Mon, 17 Aug 2026 10:39:36 +0100
-From: Daniel Thompson <daniel@riscstar.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Svyatoslav Ryhel <clamor95@gmail.com>, Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
-	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	mfd@lists.linux.dev, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v6 04/14] mfd: lm3533: Pass only regmap and light sensor
- presence to child devices
-Message-ID: <aoLW2Lo7LDD-OcWF@aspen.lan>
-References: <20260731113632.158440-1-clamor95@gmail.com>
- <20260731113632.158440-5-clamor95@gmail.com>
- <20260815025203.2618cf8f@jic23-huawei>
+	s=arc-20240116; t=1786959620; c=relaxed/simple;
+	bh=asAwnWxlptpAnCA+f+KfGNHkQoMLjrr4vqG2AT7XG1Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BdFm7biTInKFDiWqte5kEkhLMLgwxx3DGrJGrVdASDFlE0L6kvg1v52OrWNU7XuD7hcYbjiRqyKAaBo39k81R0IaM477Lm8wOMKtuhUCQMeIek9bKpiT9Uq2Ai4dosHqUYg98/Lg/HyCaqwFKDYtC+bZQa17QWiBnc2dWiz5ORY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: a2598f189a1f11f19a56ed5b684f684d-20260817
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:5299f48d-3c38-49b2-a63e-6575ae88b585,IP:0,U
+	RL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:25
+X-CID-META: VersionHash:7db8b62,CLOUDID:088e16246dcd3fbc65b5132bbb989c4d,BulkI
+	D:nil,BulkQuantity:0,SF:80|81|82|83|102|136|865|898,TC:nil,Content:0|15|52
+	,EDM:-3|-100,IP:nil,URL:93|82|11|1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil
+	,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_ULN,TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: a2598f189a1f11f19a56ed5b684f684d-20260817
+X-User: lilinmao@kylinos.cn
+Received: from [10.0.2.15] [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_128_GCM_SHA256 128/128)
+	with ESMTP id 70628495; Mon, 17 Aug 2026 17:40:08 +0800
+Message-ID: <c9619639-d9ee-4e4f-a36c-43e0096a0c49@kylinos.cn>
+Date: Mon, 17 Aug 2026 17:40:04 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260815025203.2618cf8f@jic23-huawei>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH togreg v3 2/2] iio: imu: inv_icm42607: restore runtime PM
+ on system resume errors
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Chris Morgan <macromorgan@hotmail.com>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260811020345.950137-1-lilinmao@kylinos.cn>
+ <20260811103301.1157404-1-lilinmao@kylinos.cn>
+ <20260811103301.1157404-3-lilinmao@kylinos.cn>
+ <20260815215848.20d5ea79@jic23-huawei>
+From: Linmao Li <lilinmao@kylinos.cn>
+In-Reply-To: <20260815215848.20d5ea79@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sat, Aug 15, 2026 at 02:52:03AM +0100, Jonathan Cameron wrote:
-> On Fri, 31 Jul 2026 14:36:22 +0300
-> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+
+在 2026/8/16 4:58, Jonathan Cameron 写道:
+> On Tue, 11 Aug 2026 18:33:01 +0800
+> Linmao Li <lilinmao@kylinos.cn> wrote:
 >
-> > Instead of passing the entire lm3533 core data structure, only pass the
-> > regmap and the light sensor presence flag to child devices.
-> >
-> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-> Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> #for-iio
-> (I didn't read the rest on this one)
+>> pm_runtime_force_suspend() leaves runtime PM disabled after it succeeds and
+>> expects pm_runtime_force_resume() to restore runtime PM management during
+>> system resume.
+>>
+>> The resume callback returns early if enabling the vddio regulator or
+>> synchronizing the register cache fails, skipping the matching
+>> pm_runtime_force_resume() call. Runtime PM consequently remains disabled
+>> after the system has resumed, so runtime autosuspend can no longer turn off
+>> sensors enabled afterward.
+>>
+>> Call pm_runtime_force_resume() on both error paths. Keep the first error as
+>> the return value and report a runtime PM restore failure separately.
+>>
+>> Fixes: 3007c1530f96 ("iio: imu: inv_icm42607: Add PM support for icm42607")
+>> Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+> Sashiko has some comments on this:
+> https://sashiko.dev/#/patchset/20260811103301.1157404-1-lilinmao%40kylinos.cn
+>
+> I would note that in some paths error handling is best effort.
+> There isn't always a sequence that leaves us in a remotely
+> useful state.  So maybe what you have here is the best we can do
+> even though it is a bit crazy to expect the driver to do anything
+> useful if it can't power the device.
+>
+>> ---
+>> Changes since v2:
+>> - Restructure inv_icm42607_resume() along the lines Andy suggested:
+>>    handle the error case in its own block and call
+>>    pm_runtime_force_resume() directly on the success path.  No
+>>    functional change.
+>>
+>> Changes since v1:
+>> - Split the device side of inv_icm42607_resume() into a helper so the
+>>    PM bookkeeping stays in the wrapper.  No functional change.
+>>
+>>   .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 23 +++++++++++++++----
+>>   1 file changed, 19 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+>> index 0da362967f63b..f4ef75da22c76 100644
+>> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+>> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+>> @@ -664,9 +664,8 @@ static int inv_icm42607_suspend(struct device *dev)
+>>   	return 0;
+>>   }
+>>   
+>> -static int inv_icm42607_resume(struct device *dev)
+>> +static int inv_icm42607_resume_core(struct inv_icm42607_state *st)
+>>   {
+>> -	struct inv_icm42607_state *st = dev_get_drvdata(dev);
+>>   	int ret;
+>>   
+>>   	ret = inv_icm42607_enable_vddio_reg(st);
+>> @@ -675,9 +674,25 @@ static int inv_icm42607_resume(struct device *dev)
+>>   
+>>   	/* Sync the regcache again after regulator shutdown. */
+>>   	regcache_mark_dirty(st->map);
+>> -	ret = regcache_sync(st->map);
+>> -	if (ret)
+>> +
+>> +	return regcache_sync(st->map);
+>> +}
+>> +
+>> +static int inv_icm42607_resume(struct device *dev)
+>> +{
+>> +	struct inv_icm42607_state *st = dev_get_drvdata(dev);
+>> +	int ret;
+>> +
+>> +	ret = inv_icm42607_resume_core(st);
+>> +	if (ret) {
+>> +		int rc;
+>> +
+>> +		rc = pm_runtime_force_resume(dev);
+>> +		if (rc)
+>> +			dev_warn(dev, "Failed to restore runtime PM state: %d\n", rc);
+>> +
+> There is a question from sashiko on whether this can be reached.
+> Even though that may be the case I'd keep the the error print because
+> it hardens us against future changes.
+Agreed.  I would keep the warning, and I think it is reachable. When
+pm_runtime_force_resume() needs to invoke a runtime-resume callback,
+GET_CALLBACK() can select one from the PM domain, device type, class or
+bus before falling back to the driver.  The NULL runtime_resume in this
+driver's PM ops therefore does not mean that the entire callback chain is
+empty.  For example, a generic PM domain runtime-resume callback can
+fail.
 
-... and it looks like I overlooked that there were backlight changes in
-this one:
-Reviewed-by: Daniel Thompson (RISCstar) <danielt@kernel.org> #for-backlight
+On sashiko's other point, leaving runtime PM disabled would not by itself
+block I/O with -EACCES here.  Provided there is no pre-existing
+runtime_error, the read paths use PM_RUNTIME_ACQUIRE_AUTOSUSPEND(), which
+calls pm_runtime_get_active() with RPM_TRANSPARENT.  The acquisition
+therefore succeeds when runtime PM is disabled.
 
-
-Daniel.
+Calling pm_runtime_force_resume() on the error path consequently does not
+newly expose accesses after a failed hardware resume; that possibility
+already exists without the patch.  Depending on the transport and actual
+hardware state, such accesses may either fail or return unusable data.
+>
+>>   		return ret;
+>> +	}
+>>   
+>>   	return pm_runtime_force_resume(dev);
+>>   }
