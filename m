@@ -1,161 +1,199 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB78832B131
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 05:51:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E2A83AFD07;
+	Mon, 17 Aug 2026 06:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786945913; cv=none; b=LYZyxKkYXVGE/+hHt8NZUc4/TVHwMTNm1EaFi/jjW5Ux0b6UnntQRS1a631Ji3VPECMMW9hroMohpQ94RuxPkqdU7wcKswIjeLthdMczfPT8WnfdY50FPlmPOo3196wnBZGYR4WiDzW4pRk96bsXUkrhJhEwq2sG1BbGAzjgQ6A=
+	t=1786948675; cv=none; b=FHcKTV5gWK5tsW8Y1Yhm0sDzSeZ4QJNrgylW8Jcdp0UFlHn8048V8xCANRxWGhc1E7bp6G0BZC8CjlMnJWzMCeUr+httcQvC4M2p+w4/Ao9NXUER2ZCgvOSjnK8ORxmGVW8qL5PYODjkI5tVUa7i65blCR/ICUCIOxt7qXTIt2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786945913; c=relaxed/simple;
-	bh=3sTakhxLFp3y7eYpZ0tj1IyZHqWP/G2jLPVA6iaS1ns=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BLGmxk7NCARREc0C3FF/JIFC4EGOsur46MaXOeaxzgtqlgsvWOm1M5zh1NNYzzzkKwlR9eLQYeryfY8EM7AUwrFuU3No2af1HkyJdP8FXf0v6ok2CJJ9SuB5im9L+byjwabXhvx3xajloGSDJKX5qDcw/5IWVf5SlzjxJDTapQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e0KaK1RI; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786948675; c=relaxed/simple;
+	bh=jX+vn8QhyoMg/6UX4vvLwa6ME/A9fvS1x5hzoddQIs0=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=kFcfeolrvKqhrp0CgexMbsfM4/Y/Nw+CCr6/zjhB1OTn4g0Jy9uKgb2WJtSVgGtXvWHmVbHqu0zpAkx8D/aYG1jYVpqgzGSHPkyIcNWMAiRZ6SwzKI31jizkTZSK+e+/uCBkO1FPpGTXcU/mLu955pUiVEp67jIVHHu7eMqZOYs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=z1GtAup1; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e0KaK1RI"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5aeb2bc82ccso3410784e87.2
-        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 22:51:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786945910; x=1787550710; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=lULULo2paG56O+MaCK5Ybu4hEzUp5Eji79Gm7iF/Vo4=;
-        b=e0KaK1RI06AE7zpibeFaN5hpSScYLZm5TvBuorafGtUb8YIOrhwJoCywSGTtwprKBx
-         ZYZOCilvYaPBFCkydM+leuPAE2qIhXCaSJoWlO0Uu9bQZRNU+CVl2GQ7bQ/YFVzHduR+
-         wFP+SofyXAlg4z+x1OxOlV9Z7gt0k29pgaQhfgczi8qKmnG23tZjWScidldrrvscXwS3
-         2M5vODoLwA36fC8/NJyj/T+zPxceWhV2NIOWCRgdP3/eeUdQR7uLJYNVNsmlvhOIWp/E
-         2xKP128kd7Jy7W+iNEjE46KRdCEiuDXBO1IRRFQjhtL64lXma2n5coZiad0H1I4jZ8Xc
-         Ov2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786945910; x=1787550710;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=lULULo2paG56O+MaCK5Ybu4hEzUp5Eji79Gm7iF/Vo4=;
-        b=EfzbGez1v7BKTc6wKyHZAiEdtTa7ES8Ge6wuCIWJ8FQG501O4XLPw3u9x44ZK358xo
-         WMGo9qYwpX6Ad9B+rW0m7ot/5j037IT360THsAjwQOuZzcL6x0S+tNm6Q3WmpwrrTGRK
-         +ZFIxVyCyCUo5PO4HeJbZDZnRcGUez+EoV+mvJrAg4aBy8xJ4Zd8mzvIEE57s+lmV9cF
-         dZWkDoLOIC3yKg7l4b1PhgJIlFbD5lsePht/TQYgtJDPB4M11DqIR6YsRyMFJh+G/5DK
-         c1LkrovINjuyA2N9pmz6B2+b4VbdBgUiozveRwyodd2jvDRkxgKSZcRJVr0Y5nPY6/ol
-         41ug==
-X-Forwarded-Encrypted: i=1; AHgh+Rpj61p6geiN+rKrpZ6p1djeOx9O+mEE0IbEeRjflVwSUL87/xvVO1RymijKXgyBB2YQ/OP1GEMfZa8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzMpOQv5JLi56Jqg5vdMj7awr5l/ysP3uLNnnBEjRmFBxX+HJ9i
-	2j9lNq4vUerXkAaTjIg4mNDnlMAZF7ti4V5n1cuPI/VJQgkXLsIjxu2u
-X-Gm-Gg: AR+sD10uls0VxdWUqjZ3m36txrSyjcPw9jD9THZVWyPq8SM/n/gaihUxwz8JBJa5IJD
-	JM2/mbd5Z/dVYdXhE8Ie844HdUkB791SEix/m5DgEGrB8cG9pPktojQdodEB/Jdth+5ckGx1/5v
-	LJTZC4Bj2xzOKszjntbDDEq4pHDSGWzjznzFVRJjh9YkVtb0yl5PySgpSoaeBwuAM0Tf5vWSmPI
-	BU1L8BGq28j4FTJZ/xI3Vnvkc3uoLHfa2ZYFQTifysDzu+ExxhYfaF1/cWPZWoHVeH4y5djrhPV
-	ZkbdiMihVjgyIbDVXRkWdeIVMi4SrByOF7V1SVaEYhAVNU6NDsfKxCLJWh6XS2bqMylZ7LqJCWp
-	lvpsX/Arw35PyHnKbe395rddZnmM5d57AanFlaMsWEfGrQMK4/RAqyrqeVjEd0oqhwabgkEoPvy
-	oYVmX06/y5FUKNcGxvmzpkezq1u6nYX8+O01+ltZHgaigoOUVYh7vJ0Yq0LQ0S3zD5WIq5UHU14
-	5RVNyK2PXny9CqG2NR55tCLolG/31jYe3yyzjZ/ehmm
-X-Received: by 2002:a05:6512:8050:b0:5ae:bd53:70f6 with SMTP id 2adb3069b0e04-5b45910e0c7mr2408861e87.4.1786945909481;
-        Sun, 16 Aug 2026 22:51:49 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b46d00ab29sm89427e87.56.2026.08.16.22.51.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Aug 2026 22:51:47 -0700 (PDT)
-Message-ID: <a6ea43ab-964a-4667-924f-50efb86dd73c@gmail.com>
-Date: Mon, 17 Aug 2026 08:51:46 +0300
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="z1GtAup1"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67H65x9F2808878;
+	Mon, 17 Aug 2026 02:37:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=Rle1P/G/l5CBuEm3jeqr7oB8K9E
+	GSkp3LgiUF/UC1t0=; b=z1GtAup1jJIShI+dJ67HwY2C5iicRvgxpUvsLpDabuO
+	KDz2ARA2qhlW2dBPW6hG1e6+QhtSe7JpQPXnAZuUNHQ4UvYXQ/NwZsvgetef06D3
+	w9NTHCD3yDOrTseeCNkN0paD2HLuQcVrCsU0GwCcgiUiCasMuQxq4MQlfswMmD4a
+	fr+spejCqc2o/gWF5efSdiqJ0NJzWWmjBDolPGTDv5a/QiKRpbiJAyg2d+5BTNy3
+	+GRJcQdtBw4+rspXT6VQxITiqWyzEpyAj427aR9W8pkuM0AedGkxqqPCQCuuAEdo
+	hPnioeoRBek1E4JZYPWojaqzdExXjjZXVkIp61zbHAw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g39efkcng-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Aug 2026 02:37:46 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67H6bjYh012489
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 17 Aug 2026 02:37:45 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 17 Aug 2026 02:37:45 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 17 Aug 2026 02:37:45 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 17 Aug 2026 02:37:45 -0400
+Received: from [10.0.2.15] ([10.66.6.193])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67H6bW5O022522;
+	Mon, 17 Aug 2026 02:37:35 -0400
+From: Kim Seer Paller <kimseer.paller@analog.com>
+Subject: [PATCH v3 0/4] Add support for AD5710R/AD5711R DAC
+Date: Mon, 17 Aug 2026 14:37:10 +0800
+Message-ID: <20260817-iio-ad5710r-upstream-v3-0-3a4bf7b9c78b@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
- initialization
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIABasgmoC/4WNQQ7CIBQFr9KwFgMUoXXlPYwLCr8tRksDLdE0v
+ btQN7owLid5b2ZBAbyFgI7FgjxEG6wbEpS7AuleDR1gaxIjRpggkgpsrcPKHCQlHs9jmDyoOwZ
+ ONasrQbkWKF1HD619bNrz5c1hbq6gp+zKi96Gyfnn1o007/4kIsUEQ8UrxZtGEtqe1KBurttrd
+ 0e5EdmHhdEfFpYsJeM1r42WzKgvy7quL62VaPYRAQAA
+X-Change-ID: 20260716-iio-ad5710r-upstream-e41c298614c6
 To: Jonathan Cameron <jic23@kernel.org>,
- Matti Vaittinen <matti.vaittinen@linux.dev>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>,
- Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
- =?UTF-8?Q?Topi_Sonkaj=C3=A4rvi?= <sonkajarvi@hotmail.com>
-References: <cover.1786347811.git.mazziesaccount@gmail.com>
- <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
- <20260817021252.5ef32a57@jic23-huawei>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20260817021252.5ef32a57@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        David Lechner
+	<dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        "Andy
+ Shevchenko" <andy@kernel.org>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Rob Herring <robh@kernel.org>,
+        "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Philipp
+ Zabel" <p.zabel@pengutronix.de>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux@analog.com>, <devicetree@vger.kernel.org>,
+        Kim Seer Paller
+	<kimseer.paller@analog.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786948652; l=3412;
+ i=kimseer.paller@analog.com; s=20250213; h=from:subject:message-id;
+ bh=jX+vn8QhyoMg/6UX4vvLwa6ME/A9fvS1x5hzoddQIs0=;
+ b=4yzI5BW2wurjng+XTok0M8m4iWDj+mNkog6evJeOUbPXobr6Qm824K7XELmbMY99+wlCIkB8+
+ 8HpLGD3po1MDkc+eXeSUrzLoKoaSm0+EV3Pr1+ulD+tUXwDUQCf1twV
+X-Developer-Key: i=kimseer.paller@analog.com; a=ed25519;
+ pk=SPXIwGLg4GFKUNfuAavY+YhSDsx+Q+NwGLceiKwm8Ac=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: xYO1SK42ydg1ccfkUAYZJa7dwktRMgy-
+X-Proofpoint-ORIG-GUID: xYO1SK42ydg1ccfkUAYZJa7dwktRMgy-
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE3MDA0NyBTYWx0ZWRfXwtA/cOZIBJPe
+ iHVGrhHO28xhMrC3Pkhj8FAo63IDt0LRkDuvtxyWNpc+qL+nzSnuwKHLWkk15Jzt5CyTO7GQ6mn
+ 6pbsmQdFJ2Og5oUUHkdygAOP6X+mCGiix/bWw0r5EXC3jSA5tbX7
+X-Authority-Analysis: v=2.4 cv=VM/tWdPX c=1 sm=1 tr=0 ts=6a82ac3a cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
+ a=bC-a23v3AAAA:8 a=VwQbUJbxAAAA:8 a=IpJZQVW2AAAA:8 a=Cq0ByINQD8B-c4KUiCMA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=FO4_E8m0qiDe52t0p3_H:22
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE3MDA0NyBTYWx0ZWRfXzIQmES2lk48u
+ UvsoThbvdIA0g8RSDGmlLwdVVD4peHm0WOBzyUUamPMKy5xXMxeiTCqxd7oRrjNAQavguWKAH+t
+ Rz55Cl4JgJxLJVDNiF5NoLxgLVJNary5iuJo8dvNvzCMs46ZddemswKtC379jR9QIqNO3mxsjIc
+ 12PrPFyEYupJO6/OJCQcf4IpldfZ76ruJmsONbdC/jX2ASN+Efo4tTcXEpZZeGG13ndt6Tp/0Oi
+ 5jocpbLX1k92q8NHOsgaPRhGTGgehKfy+/VVCOzxoT09VVTQj1B5dSEaNXbvRVEQfnNVEcnRl0D
+ 39/vXNl8fg51jHbaHcNblY4qmEvHTtYaoyUv2yZc6S/AC7NrvK9+ddPxrSWyesgobRowu9CqAkO
+ nMOFd07onLSC9WDLMbyCGyvsT7py8ioftGql8ti4w1CtN5M/kmIvc5rQD952Hn++lNtmIgwzYI3
+ MWLCvN9x4EuHbSgDoXw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-16_06,2026-08-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 impostorscore=0 bulkscore=0 malwarescore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608170047
 
-On 17/08/2026 04:12, Jonathan Cameron wrote:
-> On Mon, 10 Aug 2026 10:53:07 +0300
-> Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
-> 
->> From: Matti Vaittinen <mazziesaccount@gmail.com>
->>
->> The BM1390 tries to initialize the AVE_NUM to 110b at the start-up. The
->> field location is not taken into account, and value is written unsifted.
->> This causes the AVE_NUM to be initialized to zero.
->>
->> Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
->>
->> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
->> ---
->>   drivers/iio/pressure/rohm-bm1390.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
->> index d00d7ed54cb1..29454570f257 100644
->> --- a/drivers/iio/pressure/rohm-bm1390.c
->> +++ b/drivers/iio/pressure/rohm-bm1390.c
->> @@ -479,6 +479,7 @@ static const struct iio_info bm1390_info = {
->>   
->>   static int bm1390_chip_init(struct bm1390_data *data)
->>   {
->> +	u8 regval;
->>   	int ret;
->>   
->>   	ret = regmap_write_bits(data->regmap, BM1390_REG_POWER,
->> @@ -512,8 +513,9 @@ static int bm1390_chip_init(struct bm1390_data *data)
->>   	 * Default to use IIR filter in "middle" mode. Also the AVE_NUM must
->>   	 * be fixed when IIR is in use.
->>   	 */
->> +	regval = FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
->>   	ret = regmap_update_bits(data->regmap, BM1390_REG_MODE_CTRL,
->> -				 BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
->> +				 BM1390_MASK_AVE_NUM,
-> 				 FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM));
-> 
-> If respining I would drop the local variable and just go a bit long on the line.
-> I like the mask to be clearly visible in both parameters and a local variable
-> prevents that. Fine if the line is really long, but it's only about 83 chars here.
+The AD5710R (16-bit) and AD5711R (12-bit) are 8-channel, low-power,
+configurable current/voltage output DACs with an on-chip 2.5V reference.
+Each channel can be independently configured as a voltage output
+(0V to VREF or 0V to 2xVREF) or a current output (0mA to 50mA).
 
-I am not going to insist - but I will explain my view - which will sound 
-like insisting XD
+This series adds support for these parts:
+ - ABI documentation for the high_z powerdown mode and the current-output
+   powerdown attributes
+ - device tree bindings for the AD5710R/AD5711R
+ - basic IIO DAC driver, supporting per-channel voltage/current output
+   selection, per-channel powerdown, software or hardware (LDAC) DAC
+   updates, optional output range doubling, internal or external
+   reference, and hardware reset (with a software-reset fallback).
 
-For me it is always a tad harder to read code when function or macro 
-"calls" are done inside a parameter list. Hence I like a local variable 
-here. I do 100% agree with you that mask (and sometimes raw numbers) 
-should be visible in code - and not hidden into variables / defines. 
-Still, in this case, the mask is assigned to the variable right above 
-the line it gets used. So, I could argue the mask is still pretty 
-visible, and FIELD_PREP() is called on it's own line and not inside the 
-regmap_update_bits() parameter list - which is more readable for me.
+Datasheet:
+https://www.analog.com/media/en/technical-documentation/data-sheets/ad5711r-ad5710r.pdf
 
-Well, if you feel strongly about the variable - then I can ditch it. 83 
-chars is still okay(ish) - even on my "old eyes, big font and 3 
-terminals in parallel" -display setup ;)
+Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+---
+Changes in v3:
+- ad3530r: factor the op-mode register/mask computation into a helper
+  shared by the powerdown access and channel parsing.
+- ad3530r: pass iio_dev into setup/parse and set channels/num_channels
+  directly, dropping the duplicated pointers in driver state.
+- ad3530r: use regmap_test_bits() for the powerdown reads and drop the
+  unused AD5710R_NUM_CHANNELS macro.
+- ad3530r: split the file header comment into separate AD5710R/AD5711R lines.
+- dt-bindings: drop the redundant items wrapper on channel reg and tidy
+  the 2 x Vref wording.
+- Link to v2: https://patch.msgid.link/20260721-iio-ad5710r-upstream-v2-0-324949dc72da@analog.com
 
-Yours,
-	-- Matti
+Changes in v2:
+- Drop the standalone ad5710r driver and fold AD5710R/AD5711R support
+  into the existing ad3530r driver.
+- Add a preparatory patch parameterizing the DAC resolution in ad3530r
+  so the 12-/16-bit AD5711R/AD5710R can reuse the raw/scale paths.
+- ABI: drop the "high_z" powerdown mode, which is a synonym of the
+  existing "three_state" and use "three_state" instead.
+- Link to v1: https://patch.msgid.link/20260716-iio-ad5710r-upstream-v1-0-e848a4bb701f@analog.com
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Michael Hennerich <Michael.Hennerich@analog.com>
+To: Kim Seer Paller <kimseer.paller@analog.com>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux@analog.com
+Cc: devicetree@vger.kernel.org
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+---
+Kim Seer Paller (4):
+      iio: ABI: Add DAC current powerdown attributes and 15kohm_to_gnd mode
+      dt-bindings: iio: dac: add adi,ad5710r.yaml
+      iio: dac: ad3530r: parameterize DAC resolution
+      iio: dac: ad3530r: add support for AD5710R/AD5711R
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   5 +
+ .../devicetree/bindings/iio/dac/adi,ad5710r.yaml   | 143 ++++++++++
+ MAINTAINERS                                        |   1 +
+ drivers/iio/dac/Kconfig                            |   1 +
+ drivers/iio/dac/ad3530r.c                          | 302 +++++++++++++++++++--
+ 5 files changed, 430 insertions(+), 22 deletions(-)
+---
+base-commit: fc69c7ed31f2c36d0232a6d04750acec8f9e0c31
+change-id: 20260716-iio-ad5710r-upstream-e41c298614c6
+
+Best regards,
+--  
+Kim Seer Paller <kimseer.paller@analog.com>
+
