@@ -1,37 +1,37 @@
-Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
+Received: from mail-43170.protonmail.ch (mail-43170.protonmail.ch [185.70.43.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC70946AA92;
-	Mon, 17 Aug 2026 17:20:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51C9146AA61;
+	Mon, 17 Aug 2026 17:20:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786987246; cv=none; b=q0pMtjlCiJoe9nMcVTfPX3K0MW7yYSnvbSLiy1rJe7cgO8iHkCZzdIl8C7owJQLW5Gs+4r5rR0zisBkcCdUOpchFkgrbM7imfMh6n7dC5265/O92jUgj+veg99ye2y97z4hkR2V9sPldjXG7m2D1lMl3rbBz022D8myar/BB6ds=
+	t=1786987248; cv=none; b=CWqO/d2BJjgdrhf9D1dh+xPHS7doxMnoeck82o7Tj55a8lxcRXAITaZdseHZeOLbXhEsmneSANBBUAPKkDQmGTBBqXYRLclX9KuKg6vr7oWWa58jaob+TP52mF5eTBejvWlIGvS4tXsJpnal/tl7rLYcApIbH0ZAC7gV1I3AmNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786987246; c=relaxed/simple;
-	bh=tzfxlXisttEhbwqNjklxdIHoQtWVVaaErftAi88NK6M=;
+	s=arc-20240116; t=1786987248; c=relaxed/simple;
+	bh=aD1+TxIcp78KfszYueEmzVsPlop8UEkQflASuNmtvRA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NQHifhSrL59glmvU5sfCSuJukHR2dWVmZdnYFZfAasP99mPIhyy9JD/8Lmt+bXhfD6IOW9lMEfglxiSwTeaEyPWKl/rMT5kkFrImuW8tN3IWyyQO7zRmtyps4N5n3d7Zb1RP65+9eOc9NGc4+JpLWwAFMG121JHCHFvc70yYUU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=BFoQwpLf; arc=none smtp.client-ip=109.224.244.107
+	 In-Reply-To:To:Cc; b=fJRSNd51PeCiCp46gFpfTeZDleBvbOpZGzg30dqMbozY+57c/pWLhq/Vdn9FKZwF95It4a6cxF9QsCy+j0CVPRJdDj/B9m4Cmq/OmN+ySCQegCTMrzLw0brMxC3rKhouODbmnBVV+Jk6727AcKJDOR5cbZwHEl1Qv5Em/fusR0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=zth6WM3Y; arc=none smtp.client-ip=185.70.43.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="BFoQwpLf"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="zth6WM3Y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1786987242; x=1787246442;
-	bh=XJ9dsEYOltvcV8dNsiIVCzLj7uR8oL/YLG98qkFwY0A=;
+	s=protonmail; t=1786987244; x=1787246444;
+	bh=xweKzoAR9wLr7rzqBzvxfCqFwEihx3bUT7MsiLoLTp4=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=BFoQwpLfxIqnFlfrIhO+sgn1aAVJhCQCmTqI6ubDKs0wf49RRD2EvyxMKkWWA9nmr
-	 TtRToJI9bJtuoma15KaAv++RCEalZbrOA+0mecbqj+74sqyJN2IIepG3s+YqLBaO0m
-	 Ozc3dWH0XMqebFosPHO+bFlyXhIiOoIGa0DVyf0vWi2S+b+hqQI8wWpOj2Q5sgXiIx
-	 xAr7iSQg4j3qqqPvULOwBll9zkYgi3QTaibVsoytMNi4FdgL/FRekieqIzoiJ8kXsc
-	 lsOycU0sCKzeCwVKEvMk8rtF7+7jZgzYxdGPpXO8qVBU+htvSZmlOMX7iadKffgThn
-	 6TOhiMjepC7YQ==
-X-Pm-Submission-Id: 4hP03D4DvYz2Scd3
+	b=zth6WM3Y1MVhE5Y0KWPrNsNC/19sTBGlkZe/3ugnmBDrEsnK+GQ8nhW6V9C2imbdv
+	 UAdUaLGwwfwt7/Cx2HrU7Z7rujuFzIH6zFqTI06CmT1xOVpUIGyLXJEBFuC2ui8usL
+	 0+YAeX7fC736IuXfJCsROkEaVx+otEs0KGdQJcBHvD9W5A1l6sIz92ex/vjG8b28eo
+	 c8a+wrKPFxJ1f0XoOa5MrLQ7yYtiKMNXVHjVhQFoFaRipHYuQNp4Rsu7pG0EKE8n3t
+	 nwR7jfetKDigNXzL/6bNZvycdD+bU5uASlwGTbmhjjNYx7W3KgiKCOXEP0wSfJru3W
+	 H8OtNMeV0b+yA==
+X-Pm-Submission-Id: 4hP03H2RDwz1DDs5
 From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 17 Aug 2026 19:20:24 +0200
-Subject: [PATCH v5 2/6] iio: accel: mma8452: Optimize struct mma8452_data
- member orders
+Date: Mon, 17 Aug 2026 19:20:25 +0200
+Subject: [PATCH v5 3/6] iio: accel: mma8452: Only apply trigger type when
+ not set by firmware
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260817-mma8452-open-drain-v5-2-e34e872d7d57@geanix.com>
+Message-Id: <20260817-mma8452-open-drain-v5-3-e34e872d7d57@geanix.com>
 References: <20260817-mma8452-open-drain-v5-0-e34e872d7d57@geanix.com>
 In-Reply-To: <20260817-mma8452-open-drain-v5-0-e34e872d7d57@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -53,52 +53,51 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
  Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786987234; l=982;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786987234; l=1389;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=tzfxlXisttEhbwqNjklxdIHoQtWVVaaErftAi88NK6M=;
- b=u1EW4dFESXTsJEwZojlLWMj3nD3QcypxX7Qfd/c8tRV2WVlycm6uPke2Un1KEechNN8WT37p7
- 5oMC9KH0C1BCtGZRkVdtOu5yMGJ2zKPzRq79eNDTdIVfwTOkQmWcsb8
+ bh=aD1+TxIcp78KfszYueEmzVsPlop8UEkQflASuNmtvRA=;
+ b=1MEEgwx3e5yZWDMXxikYEMBrwnExohPuHe4MpbJ6nx6kJEiYLCgBOMl3qRL9Sqb72s1WjjRgK
+ /SHaTdCr1+yCnzf7wum9C/oLquQqGuLxZSXuPhucKXb7G4e+YhEWmis
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Reorder struct mma8452_data members to avoid holes.
+Instead of unconditionally overriding the trigger type, it is better to
+only apply a default when no trigger type is set by firmware. This should
+be reasonably backward compatible, and should only potentially cause
+problems if systems exist where firmware specifies an incorrect trigger
+type. With a bit of luck, there are no such systems.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/accel/mma8452.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iio/accel/mma8452.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 7d683686dd9d..f645a5c6fd1c 100644
+index f645a5c6fd1c..1fb43c5b0b72 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -106,10 +106,7 @@ struct mma8452_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	struct iio_mount_matrix orientation;
--	u8 ctrl_reg1;
--	u8 data_cfg;
- 	const struct mma_chip_info *chip_info;
--	int sleep_val;
- 	struct regulator *vdd_reg;
- 	struct regulator *vddio_reg;
+@@ -1683,9 +1683,16 @@ static int mma8452_probe(struct i2c_client *client)
+ 		goto trigger_cleanup;
  
-@@ -118,6 +115,10 @@ struct mma8452_data {
- 		__be16 channels[3];
- 		aligned_s64 ts;
- 	} buffer;
+ 	if (client->irq) {
++		unsigned long irq_flags;
 +
-+	int sleep_val;
-+	u8 ctrl_reg1;
-+	u8 data_cfg;
- };
- 
-  /**
++		irq_flags = irq_get_trigger_type(client->irq);
++		if (irq_flags == IRQ_TYPE_NONE) {
++			dev_info(dev, "invalid irq type, setting default active low\n");
++			irq_flags = IRQF_TRIGGER_LOW;
++		}
++		irq_flags |= IRQF_ONESHOT;
+ 		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
+-					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+-					   client->name, indio_dev);
++					   irq_flags, client->name, indio_dev);
+ 		if (ret)
+ 			goto buffer_cleanup;
+ 	}
 
 -- 
 2.55.0
