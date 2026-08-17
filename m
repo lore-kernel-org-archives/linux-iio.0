@@ -1,131 +1,273 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDF8E314A6F
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 05:06:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786943184; cv=none; b=B61FG2nea6N8vn6DotYQpo0+yK6q/5Y7bG764WUSv/YVaJuWc925LwjwoFzTkIMoY6wkUs3Tu/ef/AHEiuyS3s9RYNiTpmrrS5JTdJ/qowhRE8wzHDCVutyZ0V9OHxIwZzM0miWzBLgPS74rFUdRRYfFYwanF6G6Z72ymq2BEz0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786943184; c=relaxed/simple;
-	bh=o+EwF5sNn/62qlSMhm+//xRPbGNuVP8t8sGE3lVuums=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PngtcJAyrQsdjrPxb8a7o4QSMh08WtU/JYlVnn8WIT1Pqt3dZL4rv/ur+pg4kgpP8XKzBOQUYWSNlM946jIMpnq21UUjvrXPOyAbHxalVfo9dX3lNtrB6VX/XFrZZI0QuI43tTiKk2oaJ5j6TSrfqXNUfFyNIwWhTlTgxizBcTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NDSmM+a1; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EB90379C4E
+	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 05:36:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.177
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786944964; cv=pass; b=lqQzt5RmMDyMgbAQnPw6CTrRFuO/UP52JUsjVK1qkAT3X+Z43N+raL0wyNqYL1nrrTbaaBAtDGlbJb/N7CqUbAjG4JM6HscNx6zU/dzDkq1Vw4dpST0Mg5MRfmNY90zcs3PE655oLmvFd/diJZvgZzsYBJyIh9/OKw2QV9VD/pg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786944964; c=relaxed/simple;
+	bh=dBqku483Tr8lZOPnGGzRMy6kbH+Bn5fcTfRJaM2LVh4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rPLn1kUdCkwcAriAw9452cbVqxbUXAEk+FkcpGTFlybq4W2e3N9/bEcu+zzFG9oY+4QuvRRWrHNoH9S7nNX8sO8qo2pOr1usHCeB4lScnrjDQUKLuX0Tyd7pWZwdr7Qy/+8VlWQ6vFC/mF59olHYIQfr/3q5FgUi2vdve/hP3as=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lEqFImoQ; arc=pass smtp.client-ip=209.85.208.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NDSmM+a1"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5b0117dda13so2846387e87.0
-        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 22:06:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lEqFImoQ"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-39c8dbf4f38so26581981fa.3
+        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2026 22:36:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786944961; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ox9h+yevcqL5a0qhEU6ITprLe3wD9bLgiX913/y0UQmv5J7dgO7wR2pm/mUWM/rcw9
+         GjalVUvAcJFdQGKAJItywJ4SZKifvwrG1diI8gvTrHQnS7iRlzfi+/VbV0UWtN5ZJwZ4
+         WdlXRSNYrdEszHMGtl8ein1uL/HBWK4NPjxIspCOuRs/hGUD9jtn1ic9SrTBKWxpEXJ3
+         BJ3jQ5aRvAddRq7j41/0mW1I1DjVYZHafHcYPtXf7li1l8Ur2dB4K25EtTFecqZKwJMk
+         qGEvqDwNjdBIbioKgWsyANu3MM/JcJvQuBtsOyQMGCaSbn6T2SS+6h9lXWIHq5X96q4j
+         rIPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=iuYx92zoubwFpQjcYMVGvP9XZdEVQ+XxrKAQgWuEjNQ=;
+        fh=aIxG9eG/HJi9p0Qk1L/ltdEv4XUhcWu6vHARyJUtfdo=;
+        b=lMm3Yg7mT3GkmnbwiKJxJdNsiMsyg90J5yPrxTXsPvAHtMmeXbCK7TPZ7JSgnTOtSS
+         5LJ4G9rUfX35iXCnx1Vij1v77TbdbD7QMdHkbVoIoJWSy6niRgDukvDCJA8GWaseU3n/
+         +CqTkPR0TyC2IcQvQ4uE3Nvv/Pi4Cu1WXYbtI0cQSTGKVw3H/y6RgvdNtV1E8d9nSqOV
+         Gr8gr9Cc+RT58toB+aNfvZkjPXO6s6uxDlGUC0wspm7UP47zE/iW4B0gVN7vaBA5rN0e
+         Grtfp2q1IxjmJwPt5obrtuo3wgmxNpWYiju7+i7fzFBeDggvUQaIt9G6ra71j0KdU3H6
+         7prg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786943181; x=1787547981; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=B+RYmCe6QLOGqYQGrPMnf2Nsi3pMxXU8BaOAMJ9Mmig=;
-        b=NDSmM+a1zNeDhb2vm2sAD3SKY1LE9kfvo1nG8IKvZPDjHge3t7T7yapkr0Di1W1ZoI
-         oF+wnZwxwRnSscMiqidrbAcRnXi+2Lix0RgAX0Hjuiy1pc2n2zhaYVIs6Vs3ayju2D58
-         Dmvwp1DF2bouo2+GHsrLgwsgYoK/pi3VE3P5UZRSkZSXkEOpZMC3PDF8HV+RrqSI0d0C
-         fh37nK2/I7Vip/y+3Hd/+tbI2EruKZ1tUW2cF+owb4BXCpf6h0Ny+GzoFIGQcLBKXlg5
-         hJVa9ZE9uz/sHeSiZXVmGSPL/OndZzAncZxWbrzvv/oO6xK2hn9d7emIcJ5qGR6wEA3X
-         8qCw==
+        d=gmail.com; s=20251104; t=1786944961; x=1787549761; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=iuYx92zoubwFpQjcYMVGvP9XZdEVQ+XxrKAQgWuEjNQ=;
+        b=lEqFImoQhBxRCCPgg/NVBjxiFU6o2CpCuVH/ctq1YKWVxK/9AdJ0Wxk+HXzZjTCliJ
+         6rwCJqBI8V/zwxb4WqVcxBTAOC/L8FsYz2dLb29bpDYYkm+zrirbQyACsLXjX+BZw/Y7
+         dMGpLJUuDFB6v5aHp8m1+fpsaKdCZTjaJeesfDwJSQ7CJp9GHu2kRjcbX9YseC81H82p
+         KKOobjRBmhjFDZ/En3xiQhJU9QyorQJbeBHBjU4GQEFSoyjTyj8+0sU8XYN+eXQpbsax
+         WC/4Tzs5moNLEquRXoNLyWEd2s/MCB3dTt6tFvsyn34AQXSMiYxcia5fzf0hyCDjYnmq
+         +Ctw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786943181; x=1787547981;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=B+RYmCe6QLOGqYQGrPMnf2Nsi3pMxXU8BaOAMJ9Mmig=;
-        b=LL7SYWZlDa1WQ25ISu5ahdM9LLY1+rfMhLPcLMKrQDmWDa1h6CSUMY5VMN5e3l4B/1
-         JwEFF+kDUhaHtUo6CZfCaZUSI10lbo44AMLbNmgairhccwxyWc4/s54j8zP9tjMtngg4
-         ZK0wbk27IlHCwx+HBsV+RcanyzVKkiZ3WU1o0WNNuz7z5e6bnU7XLN3ZOZGJSzLAJfSf
-         xDRaXaNjCuWWBuwq8Z8R+JWbnflmTICgvH15tryrQGDLiKt/3r7i6PYOMBZm085RtLfY
-         ALLoTCnFFBP7eom6e8LqLhuBznPl6pIs2Ixk4ewGPInXACQV7GoacIynCUSHploQF6S+
-         bGdw==
-X-Forwarded-Encrypted: i=1; AHgh+RoFS/mc8fAm9XIi0KRBeiY97udex5lVi16c9vdwf0yxa75h2DFiQZGrwkdpF9DUmV/IDiBCGo05Rew=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVl1kuh8+jnyh8vNFZkv0L0HfaQ6W4fQeYpvjekSe9Iza/uqnj
-	uIk70JkQKLSEFAdg3DhUDyoXfjvb3NHDQYU5JcxnrAJRnSLu2dQEhJ4v
-X-Gm-Gg: AR+sD11uFH+TRZJbQqZ39w1mqDwGm8MMhYKIK+R1NVUbQ4kskXwYRkDb2iMFr6cnq6M
-	P79qMmkGDEAXqH1cw4wYxN/e2TFNL9lmRtbWDka2ubJlr4sBovhA33bDsSqp+buCIhQakd74H9Q
-	I4E0T0ZIV4zwgZ2IRLxOY5ur2Q1qMiR7nR3zBKzGA8Sbvs3XDbNsXHjPerbhy1SdD1726YZMVhd
-	UHV32/TEjWz9lY6F1VeD6RITYu+aa5qeg0+2+0V5FVlK8OreKu5WHGhMi/vuF4hvsx1FWs47qDD
-	nvpEIGMshup8mFZHGjjHDqYn9g2wh2m7+IKEDBW5DLDSxTdpRre7LeKQsZjP67ayLWbem56KwKu
-	qV4IixpTQR6tEBB22vkEp0lMC/5yAOclcB1dYjswx0ZVFNcljrDwp8rs7YnlyFvFNpBSv5HPkvI
-	GRPh8uwlusuwGUs8705CqJRpUczwEVszOfQ/F6ag57PlWlA+64Ed1+Q/fkmPI4qGUu6GhgPMn9l
-	8Mc1uZUVWmRvyKmrRZ9Lr0zWbk1tNpdeT5pVgYYROQlVhRChg0ukhc=
-X-Received: by 2002:a05:6512:3b91:b0:5b2:aaa2:1d80 with SMTP id 2adb3069b0e04-5b459149932mr3844377e87.47.1786943180507;
-        Sun, 16 Aug 2026 22:06:20 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b46cfa096asm65020e87.19.2026.08.16.22.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Aug 2026 22:06:19 -0700 (PDT)
-Message-ID: <a4b7cbb2-17f4-45fe-8cac-b8a7b1859206@gmail.com>
-Date: Mon, 17 Aug 2026 08:06:16 +0300
+        d=1e100.net; s=20251104; t=1786944961; x=1787549761;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=iuYx92zoubwFpQjcYMVGvP9XZdEVQ+XxrKAQgWuEjNQ=;
+        b=YI5j6JrFOZWbU09e8fDRDyeeO9NPA5T8VUTTZYNIjyX5gR0ibrS08cwgQ6fCQafnKI
+         WWJo5fLF7MrpUdW9XnOxc0EDyIE1mYwBHVIZ1l0gOtLGEaNOk/9cBp58HQUSXN01DNbH
+         QWKu3tgCEH/3+LOpX/YnZRYSY+/MtatDCDmqEg9sFJqq37rCZmP60n9fQW3hyUXIpcTr
+         9WeBG7fQZnWos1NhnLiOsoTTGgDeofRSaXJGk+Byt1i2SUHPuWBqCMsFV7KEm8eLuF+d
+         FRNeZz88Ew6aDDByA5j39Ajcq+RVyJ53M8yanZhwHYp22qim+L76MXRcFJABMxehGiY2
+         Oqkw==
+X-Forwarded-Encrypted: i=1; AHgh+Rq/dliOJ3yFaG/LtHQ/IYwgXisqE0GKUNkN7Us1qiWqfthwdqWNKs09zLQdhFe3CF1YpZEuGzm/oCA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVMAQLoR4QtiWHdYXNlGs5hD1/n1ppkFo7M56tbL/RUAMWQ8C2
+	jHmnpC6l0iyLlwpNeV41rV9xdpf+LYbFML8xAPg/D3u7aloqXvzYfx61ak2NyV82exv2dsCZpk7
+	pugjv7VpRg9SnLssxayIzfK1VI+h1GPg=
+X-Gm-Gg: AR+sD103Z3/3PVhY750AyUt/YbdZPdDVTp5Z8VVmcl6mAWCi6zlg+AUQ4wGx1bvZMAy
+	65De+pKjgTs1iOUjxORhlwTQOIRAvsJRgWDPJPQShO7FLllqsFlfmkTU8+lbDyQIJyOmFkCBkyb
+	X6GaDM2YTQPvLg4XmZDc+MckWkF3obYznSzfzctohcbRqweOqIvuY8N8tY88kVG9Ic2N2FryfPb
+	Ccq2H7eNvbG74F5DloIghaFnpFgb2RdxLyjGzZOCNnzq3LetbyEQTzj3BIjwRhURWqz6O150CCQ
+	BJDEgAaENDsYrQFbx6kwA8TwVBj4r0gft2b017qchjjPnw==
+X-Received: by 2002:a2e:a54f:0:b0:39b:15b4:79ef with SMTP id
+ 38308e7fff4ca-3a13249d4afmr20231811fa.17.1786944961068; Sun, 16 Aug 2026
+ 22:36:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 05/12] iio: dac: rohm-bd79703: Do not allow writing SCALE
-To: Jonathan Cameron <jic23@kernel.org>,
- Matti Vaittinen <matti.vaittinen@linux.dev>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>,
- Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
- =?UTF-8?Q?Topi_Sonkaj=C3=A4rvi?= <sonkajarvi@hotmail.com>
-References: <cover.1786347811.git.mazziesaccount@gmail.com>
- <bf75f4bb0d3d620e5c613c04cfc874767a51ff38.1786347811.git.mazziesaccount@gmail.com>
- <20260817023217.2fd9e42c@jic23-huawei>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20260817023217.2fd9e42c@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20260813-ti-ads112c04-driver-v5-0-79dff9e249cd@gmail.com>
+ <20260813-ti-ads112c04-driver-v5-1-79dff9e249cd@gmail.com> <20260813165748.GA2065977-robh@kernel.org>
+In-Reply-To: <20260813165748.GA2065977-robh@kernel.org>
+From: Kyle Hsieh <kylehsieh1995@gmail.com>
+Date: Mon, 17 Aug 2026 13:38:54 +0800
+X-Gm-Features: AcwNN1Vbhevhud9cKWrmo32hz_ACvcEqPiKW3pQSSAukqHeCRuMkVWcQpNH8veQ
+Message-ID: <CAF7HswMiAA454Y1eFA2O1DtGjg-SQXUwLimaM9tVkjkDJSJSuw@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: ti,ads112c04: Add binding
+ for ADS112C04
+To: Rob Herring <robh@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Conor Dooley <conor.dooley@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 17/08/2026 04:32, Jonathan Cameron wrote:
-> On Mon, 10 Aug 2026 10:51:38 +0300
-> Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
-> 
->> From: Matti Vaittinen <mazziesaccount@gmail.com>
->>
->> The BD79703 has adds IIO_CHAN_INFO_SCALE in the info_mask_shared_by_type
->> so users can read the scale, which depends on the used reference
->> voltage. This, however, enables users to try writing the scale as well.
->> This isn't really supported but the bd79703_write_raw() does not check
->> the mask, and if written scale values pass the validation, the driver
->> will proceed writing the DAC value when users writes the scale.
->>
->> Prevent the unsupported scale setting and return an error.
->>
->> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->> Fixes: af6aca656a85 ("iio: dac: Support ROHM BD79703 DAC")
-> 
-> Applied.
-> 
-> BTW convention is Fixes goes before SoB.
-> I did wonder if is documented anywhere and claude sent me
-> to the tip docs.
-> https://www.kernel.org/doc/Documentation/process/maintainer-tip.rst
-> 
-> IIO can follow that.
-> 
-> Anyhow, I'll swap them around whilst applying.
+On Fri, Aug 14, 2026 at 12:57=E2=80=AFAM Rob Herring <robh@kernel.org> wrot=
+e:
+>
+> On Thu, Aug 13, 2026 at 11:06:02AM +0800, Kyle Hsieh wrote:
+> > Add device tree binding documentation for Texas Instruments ADS112C04
+> > I2C Analog-to-Digital Converters.
+> >
+> > These devices provide 4-channel, 16-bit delta-sigma ADCs with an I2C
+> > interface, programmable gain amplifier (PGA), and data-ready (DRDY)
+> > interrupt output.
+> >
+> > The binding uses child nodes to dynamically define the connected
+> > single-ended or differential channels.
+> >
+> > Excitation current, burn-out current, and reference source properties
+> > are also included to fully describe the chip's hardware capabilities,
+> > aligned with the ti,ads112c14 binding conventions.
+> >
+> > Reviewed-by: David Lechner <dlechner@baylibre.com>
+> > Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> > Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+> > ---
+> >  .../devicetree/bindings/iio/adc/ti,ads112c04.yaml  | 148 +++++++++++++=
+++++++++
+> >  MAINTAINERS                                        |   6 +
+> >  2 files changed, 154 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yam=
+l b/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml
+> > new file mode 100644
+> > index 000000000000..68a0df21cedd
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c04.yaml
+> > @@ -0,0 +1,148 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/adc/ti,ads112c04.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Texas Instruments ADS112C04 ADC
+> > +
+> > +maintainers:
+> > +  - Kyle Hsieh <kylehsieh1995@gmail.com>
+> > +
+> > +description:
+> > +  The ADS112C04 (16-bit) are precision analog-to-digital converters (A=
+DCs)
+> > +  with an I2C interface. They feature a flexible input multiplexer, a
+> > +  low-noise programmable gain amplifier (PGA), two programmable excita=
+tion
+> > +  current sources, a voltage reference, and a precision temperature se=
+nsor.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - ti,ads112c04
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +    description: I2C address of the device.
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +    description: Data ready (DRDY) interrupt output.
+> > +
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 0
+> > +
+> > +  reset-gpios:
+> > +    maxItems: 1
+> > +    description: GPIO connected to the RESET pin. Active low.
+> > +
+> > +  avdd-supply: true
+> > +  dvdd-supply: true
+> > +
+> > +  refp-supply: true
+> > +  refn-supply: true
+> > +
+> > +  ti,refp-refn-resistor-ohms:
+> > +    description: Resistance of the external resistor between REFP and =
+REFN.
+> > +
+> > +patternProperties:
+> > +  "^channel@[0-9a-b]$":
+> > +    $ref: adc.yaml
+> > +    unevaluatedProperties: false
+> > +    properties:
+> > +      reg:
+> > +        items:
+> > +          - maximum: 11
+> > +
+> > +      single-channel:
+> > +        maximum: 3
+> > +
+> > +      diff-channels:
+> > +        items:
+> > +          maximum: 3
+> > +
+> > +      excitation-channels:
+> > +        maxItems: 2
+> > +        items:
+> > +          maximum: 5
+> > +        description:
+> > +          Additionally to AIN0-AIN3, IDAC1/IDAC2 can also be routed to
+> > +          REFP0 (4) and REFN0 (5).
+> > +
+> > +      excitation-current-nanoamp:
+> > +        items:
+> > +          - enum: [10000, 50000, 100000, 250000, 500000, 1000000, 1500=
+000]
+>
+> Drop 'items'. Just enum is enough.
+>
+> > +
+> > +      burn-out-current-nanoamp:
+> > +        items:
+> > +          - const: 10000
+>
+> Just 'const'
+>
+> > +
+> > +      reference-sources:
+> > +        items:
+> > +          - enum: [internal, external, avdd]
+> > +            default: internal
+>
+> default for an items entry doesn't make sense as the entry has to be
+> present. Instead (at the same level as 'items'):
+>
+> default: [ internal ]
+>
 
-Thanks x2. (Once for pointing it out and once for fixing it!)
+Will fix all three in v6, thanks.
 
-Yours,
-	-- Matti
+> > +
+> > +    dependencies:
+> > +      excitation-channels: [ excitation-current-nanoamp ]
+> > +      excitation-current-nanoamp: [ excitation-channels ]
+> > +
+> > +    oneOf:
+> > +      - required: [ single-channel ]
+> > +      - required: [ diff-channels ]
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - avdd-supply
+> > +  - dvdd-supply
+> > +
+> > +dependencies:
+> > +  refn-supply: [ refp-supply ]
+> > +
+> > +oneOf:
+> > +  - required:
+> > +      - refp-supply
+>
+> Just to make sure, refp-supply is allowed without refn-supply? If not,
+> either this should be refn or the dependencies reversed.
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+Yes - refp-supply alone is valid when REFN is tied to AVSS/ground, which
+is the common single-ended case (and what my board does). The
+dependency is one-directional on purpose: refn-supply requires
+refp-supply, but not the other way round.
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+Kyle Hsieh
