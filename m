@@ -1,56 +1,55 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF14F3B0ACE;
-	Mon, 17 Aug 2026 06:37:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 985053A7F45;
+	Mon, 17 Aug 2026 06:38:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786948677; cv=none; b=swN/GTkldPQ6vNOOJ0FGORaWTdQl3DLj0EWrlI+1OiFsxtNFXfpgEHtLAfYOtGAoXEyzQDNha0hGD/JFaOU1cMuCcZoZ/o1YAslnZtbbhFybgLQ4ctFmW5rfOV5biG2/QcWgIknIhrlKtwHn/zJnqXhUZZCufNtbr7wZAvYaiWM=
+	t=1786948682; cv=none; b=j1WJK+M1cMtIT5hMv/14xcKAoPEg96Ubx1DqVKgd/kKfgztVcbYimWMe3Z+sWQooJWPJ3n3p6Z8Ajr0NrXSz4JbOaIyo3uxQfnEI2FBeVI2SLrGt+X08IlMraOU/UOWYvDZLSINA7Cq/0i1vj50w54pyW3fubmIXJQ4U12XnGzs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786948677; c=relaxed/simple;
-	bh=SqvRGnn+IhUEoK2N6AByTvHIxzmZJCKr0fzFRMHv+Bc=;
+	s=arc-20240116; t=1786948682; c=relaxed/simple;
+	bh=V8Xs8kiSuMjqxnt84C4yrY7EUkpoWZ+cgnk7Dcy1MEU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=EVkzWd3Nz6Exfdwn/LtSt6wJReexwn3sgDkg4G+bnXXchKp46QhutJUk4QPfsWNYP9MspggwnqkGhVNpG/jvwhjgMETnHdgqFGCmHH+LxEbsUO3zCXm1ycVWxYC/DGP0msYke9eIWanUbLzhdImLQz6QFXVu8r4cH4USKJfCN5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=eZVjI0oK; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=R0zRgsm8NtEyp234aCBwMh2WevEjxxH3MWLvHPxyr36HKT66MeBi/vzXD7tXS3FVVgRj5SZA5/+3th60KI+XCKZnjdI7gDCLccaM4Wpkvkks2Wv2tZZO8pkflDcdqmppQ9Ag9WozH+Xiks0IYyoAgftnt9r0yCw/Qh004ltWpy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=wm7A2Udb; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="eZVjI0oK"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67H6A78u2809427;
-	Mon, 17 Aug 2026 02:37:51 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="wm7A2Udb"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67H1L4WC2108086;
+	Mon, 17 Aug 2026 02:37:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=ZH2tN
-	kf9nle0iSvyskoHPhsLVSlLZkHFzRnKUGDufQw=; b=eZVjI0oKZsoyqxc5TlQq4
-	NhwBD+eqFWNKicNFPvh4XUuBX3jIBC0avQGBHPQyAlL+zeI/XTvSYBcyfgoJK2hO
-	oV9cd5sD7iZPfOu1f+84tYnlsnOVWG9DBLIs4rvKkg6NpYn6uXGRclCWbA3CcfYT
-	WwFXYBXvDf740MJSgLfb3INSFs/8CcOTnemN42TKQuIK/wzQm3FBCV1ZAY8BuzkH
-	uiC8VLqKDfqTC5cm9FuvDZsyIR97SExMvA3b5JMN3CzQr3lLsikhjxUaXFMMsD8P
-	oSOL5v/pkp8HG2MZTHaF7S79QOTjjavpz+R/huMb2LuKALgpjRPSltojdSkqNjzR
-	Q==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=AY7CN
+	2SMKmyULXefGSkE4GJdeVzVCahvwAa6eibMweE=; b=wm7A2Udb19uv++QM6ujWv
+	8+lUXX9M0yBXIGKtuxEbOlemRXzjIvvryuIg9/fD5ruyoPOAD7dlghxaOvZcMiJv
+	YcpacIlHOYHEbQM4jYSWoSX+t8OZZ7XFXFH+4jMkW28YE/koDwN8cp0AK3EARRZa
+	E+Rif9Lhq/DBfcwccpIdRgRPQ1yY0DU0YK+tMPnUN1rgfIUKgFSM2JtvW86ZQD7K
+	nlE5P38w+jGFl2+NFWCLILCLb6Sv8wL/nnPqjNRd7r7t1m2U6Ac94ZUSKenN+3wL
+	Ff5Y4th0spsTGhvR+3x0lYKFzsiU8USjDtZ7g9UnCG1RMS/DrGc4OOqHeFz5jU52
+	g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g39efkcnn-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4g36edbsru-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Aug 2026 02:37:50 -0400 (EDT)
+	Mon, 17 Aug 2026 02:37:54 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67H6bnKc012498
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67H6brHs012505
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 17 Aug 2026 02:37:49 -0400
+	Mon, 17 Aug 2026 02:37:53 -0400
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 17 Aug
- 2026 02:37:49 -0400
+ 2026 02:37:53 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 17 Aug 2026 02:37:49 -0400
+ Transport; Mon, 17 Aug 2026 02:37:53 -0400
 Received: from [10.0.2.15] ([10.66.6.193])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67H6bW5P022522;
-	Mon, 17 Aug 2026 02:37:43 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67H6bW5Q022522;
+	Mon, 17 Aug 2026 02:37:47 -0400
 From: Kim Seer Paller <kimseer.paller@analog.com>
-Date: Mon, 17 Aug 2026 14:37:11 +0800
-Subject: [PATCH v3 1/4] iio: ABI: Add DAC current powerdown attributes and
- 15kohm_to_gnd mode
+Date: Mon, 17 Aug 2026 14:37:12 +0800
+Subject: [PATCH v3 2/4] dt-bindings: iio: dac: add adi,ad5710r.yaml
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,8 +57,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260817-iio-ad5710r-upstream-v3-1-3a4bf7b9c78b@analog.com>
+Content-Transfer-Encoding: 8bit
+Message-ID: <20260817-iio-ad5710r-upstream-v3-2-3a4bf7b9c78b@analog.com>
 References: <20260817-iio-ad5710r-upstream-v3-0-3a4bf7b9c78b@analog.com>
 In-Reply-To: <20260817-iio-ad5710r-upstream-v3-0-3a4bf7b9c78b@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -81,80 +80,212 @@ CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Kim Seer Paller
 	<kimseer.paller@analog.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786948652; l=2032;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786948652; l=5185;
  i=kimseer.paller@analog.com; s=20250213; h=from:subject:message-id;
- bh=SqvRGnn+IhUEoK2N6AByTvHIxzmZJCKr0fzFRMHv+Bc=;
- b=PZLCcKjgKDk3lnRViD7ImyUIZRMN6t4hAFapVTwtqgZQzI5rt3vpiv1dZgvQ0EMfXH+2X/xv/
- HAUJG83aLBYCsTSLqIZvOz+xsSbTh/J6DHqCha7iQr6sDOyXrlyqf5q
+ bh=V8Xs8kiSuMjqxnt84C4yrY7EUkpoWZ+cgnk7Dcy1MEU=;
+ b=5Lu7x6dxO85YuERUuMC/7AGV2QLnkbB4E+1JO2oFGCmORWUMfypZee9l+BYojIwOKt6m4NpCK
+ 8EoKd33QHtICWEJcxc8uj7Q9/c73gcq528t3UX5OUJbY10v4s2KPnfJ
 X-Developer-Key: i=kimseer.paller@analog.com; a=ed25519;
  pk=SPXIwGLg4GFKUNfuAavY+YhSDsx+Q+NwGLceiKwm8Ac=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: xWjMZYviHLbi7UKggfw_B0jDAr0VVC_p
-X-Proofpoint-ORIG-GUID: xWjMZYviHLbi7UKggfw_B0jDAr0VVC_p
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE3MDA0NyBTYWx0ZWRfX0eTc5llOyMtt
- GQ763SplyTraV7TQ2CIyrsZMGD2Wc/bazXtfjpX+KbPtHdFDBziRsA4HAYpd0bTcIpDdsAL0891
- Ehk29blApsnXY0yQ60zyIlWbr+ABY7pFdR3CsuX6WFC3iVSIrIVX
-X-Authority-Analysis: v=2.4 cv=VM/tWdPX c=1 sm=1 tr=0 ts=6a82ac3e cx=c_pps
+X-Proofpoint-GUID: SMYSOJRwo-z0qsQXCCj3SqGF-YXRLFvP
+X-Proofpoint-ORIG-GUID: SMYSOJRwo-z0qsQXCCj3SqGF-YXRLFvP
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE3MDA0NyBTYWx0ZWRfX6nsr7FJKJ9Mk
+ JSulWq+MEbcTOGFFShYVoEXhMnViux92+wZpfkxHHxDCUvCqc0mrkxTu4xei4YAk1X8pWLMfCN9
+ WzvbJ1Qxzr4PAwJWgTtMJx3mCM2/Hor82LNixP6hPvwPPtcsfvAd
+X-Authority-Analysis: v=2.4 cv=S8vpBosP c=1 sm=1 tr=0 ts=6a82ac43 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
- a=VwQbUJbxAAAA:8 a=50yiy_OdUqj7sOdj0TsA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE3MDA0NyBTYWx0ZWRfX4cYhW10PrUYD
- r21qItrkcrNyzNWvd9TduxaG5/UttejIqG5vOsfPYsJ47/Yp0G/04pNUKja2hSIGvCYXNKkVUVs
- ZJAF1omKccJMO4UV1AUpEMRdMKzVNhjmXgFB0YWnEmOB0MWKF55roJWsGt6qgWPPRblZJ2DS6ZR
- mG8c6YapL5QtOK7Rq9DcZX2u/kj9OXlr5KKth4hXxthzkehdQOqige1VkX2/bx12/jxu6PkSMnC
- uRfK7Oo4FjK9jCVt7UOPHMudDX+CzbeY4AH4pLGELXZcM3MPmZMFFmBIK0M9I6IPTm6SxnE5fR/
- x/JZ1CKDlsF2CQzP5XTN8nJ4M6Wco7J8zjnMwkKRsxZfIxeJ5CaMMU1AVWi7kquSh6DztvsyKe9
- h3Vnjs9KMS9PFjCpiYesJvXI4gOtt+CDKGYURN4jhyIEa1GuXMg8/MenhDdRPPPpf9YY62xzbOV
- +ViJV2sEwuxPgWWvhDw==
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gEfo2CItAAAA:8
+ a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=UDoUUgFuJgqny170jhoA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE3MDA0NyBTYWx0ZWRfX4sUfaQBTCzGZ
+ HbqB8kU2J4pRjmvxqyyc+epS1dhGhas45OItzUpbdiPrEdBBslJxn8HDy3aipUlfaQcHi9tC/Ip
+ uD0dy9E+83KP9uUR/g8ZYwWFJwS4YehPHBXzJpeNbnTBEmWIJUoMoVTaPcif3LSWDT3L8ueToaK
+ ZnPP63msmm/j5/CC7hihCYixt6QezKOtHpBz3SHJ+8PCTAmUSn7NABnvhf+shCjTC2XWulxzcCP
+ 6z+N19rHnzd2XST+2DcxJ2gTPuV254yfWwq7+Ihb5HNWpvfEF+IqNyk0LRkQdk4/CxRff/vUdOX
+ nBNFub8XldsZvKFo/r9bIeHK2ooK9JE4JfWzvujudJ/koQ33rc5DA7sblLvX7+hVl0+xNaSmOR2
+ QQ8GoSutTX3U6p0Hpw8+dCaeiaL3rp7rIhtbTaOHrpgdcmWqMs3JuLiYx9i1IpH9j3VfySkwA6Q
+ dg47sYqD1OXIAaBCo4w==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-16_06,2026-08-12_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 bulkscore=0 malwarescore=0 suspectscore=0
- priorityscore=1501 phishscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
+ clxscore=1015 adultscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 phishscore=0 spamscore=0 priorityscore=1501 suspectscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608170047
 
-Document the out_currentY_powerdown and out_currentY_powerdown_mode
-attributes for current-output DAC channels, and add the 15kohm_to_gnd
-powerdown mode.
+Add device tree bindings for the Analog Devices AD5710R/AD5711R
+8-channel 12-/16-bit Configurable IDAC/VDAC.
 
 Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../devicetree/bindings/iio/dac/adi,ad5710r.yaml   | 143 +++++++++++++++++++++
+ MAINTAINERS                                        |   1 +
+ 2 files changed, 144 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a4f5595722ad..a0f9aada5c62 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -762,6 +762,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown_mode
- What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown_mode
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown_mode
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_powerdown_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/out_current_powerdown_mode
- KernelVersion:	2.6.38
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -774,6 +776,7 @@ Description:
- 		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
- 		7.7kohm_to_gnd: connected to ground via a 7.7kOhm resistor,
- 		10kohm_to_gnd: connected to ground via a 10kOhm resistor,
-+		15kohm_to_gnd: connected to ground via a 15kOhm resistor,
- 		16kohm_to_gnd: connected to ground via a 16kOhm resistor,
- 		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
- 		32kohm_to_gnd: connected to ground via a 32kOhm resistor,
-@@ -802,6 +805,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
- What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
-+What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_powerdown
-+What:		/sys/bus/iio/devices/iio:deviceX/out_current_powerdown
- KernelVersion:	2.6.38
- Contact:	linux-iio@vger.kernel.org
- Description:
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml
+new file mode 100644
+index 000000000000..259866ca87cf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml
+@@ -0,0 +1,143 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/dac/adi,ad5710r.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD5710R/AD5711R 8-channel 12-/16-bit Configurable IDAC/VDAC
++
++maintainers:
++  - Kim Seer Paller <kimseer.paller@analog.com>
++
++description: |
++  The AD5710R (16-bit) and AD5711R (12-bit) are 8-channel, low-power,
++  configurable current/voltage output digital-to-analog converters (DACs) with
++  an on-chip 2.5V, 3ppm/°C reference. Each channel can be independently
++  configured as a voltage output (0V to VREF or 0V to 2 x VREF) or a current
++  output (0mA to 50mA). These devices operate from a single 2.7V to 5.5V
++  supply and are guaranteed monotonic by design.
++
++  Datasheet can be found here:
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5711r-ad5710r.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,ad5710r
++      - adi,ad5711r
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 20000000
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  vdd-supply:
++    description: Power Supply Input.
++
++  iovdd-supply:
++    description: Digital Power Supply Input.
++
++  io-channels:
++    description:
++      ADC channel used to monitor internal die temperature, output voltages, and
++      current of a selected channel via the MUXOUT pin.
++    maxItems: 1
++
++  ref-supply:
++    description:
++      Reference Input/Output. The voltage at the REF pin sets the full-scale
++      range of all channels. If not provided the internal reference is used and
++      also provided on the VREF pin.
++
++  reset-gpios:
++    description:
++      Active low signal that is falling edge sensitive. When it is deasserted,
++      the digital core initialization is performed and all DAC registers except
++      the Interface Configuration A register are reset to their default values.
++    maxItems: 1
++
++  ldac-gpios:
++    description:
++      LDAC pin to be used as a hardware trigger to update the DAC channels. If
++      not present, the DAC channels are updated by Software LDAC.
++    maxItems: 1
++
++  adi,range-double:
++    description:
++      Configure the output range for all channels. If the property is present,
++      the output will range from 0V to 2 x Vref. If the property is not present,
++      the output will range from 0V to Vref.
++    type: boolean
++
++patternProperties:
++  "^channel@[0-7]$":
++    $ref: /schemas/iio/dac/dac.yaml#
++    type: object
++    description:
++      Represents the external channels which are connected to the DAC.
++
++    properties:
++      reg:
++        description: Channel number
++        minimum: 0
++        maximum: 7
++
++      adi,ch-func:
++        description:
++          Channel output type. Use CH_FUNC_VOLTAGE_OUTPUT for voltage
++          output or CH_FUNC_CURRENT_OUTPUT for current output.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [1, 2]
++
++    required:
++      - reg
++      - adi,ch-func
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++  - iovdd-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/iio/addac/adi,ad74413r.h>
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dac@0 {
++            compatible = "adi,ad5710r";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            vdd-supply = <&vdd>;
++            iovdd-supply = <&iovdd>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++                reg = <0>;
++                adi,ch-func = <CH_FUNC_VOLTAGE_OUTPUT>;
++            };
++
++            channel@1 {
++                reg = <1>;
++                adi,ch-func = <CH_FUNC_CURRENT_OUTPUT>;
++            };
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3c5084fec202..bed05d0cccb7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1444,6 +1444,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad3530r.yaml
++F:	Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml
+ F:	drivers/iio/dac/ad3530r.c
+ 
+ ANALOG DEVICES INC AD3552R DRIVER
 
 -- 
 2.34.1
