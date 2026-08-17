@@ -1,64 +1,64 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00AD347126B
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 21:11:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4A20471CE9
+	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 21:11:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787001099; cv=none; b=Aq4xkqnzZTjJ/TTl5FTqo8YZCnmFqKcI0xFLgiFG/Q48kxuduUbOIFtWC/LlREEt0AloYEUw24sAsgza1sOnp1f6+Rntchy1lDBO0okA0w8i3tdKNv5bWNS7ENghB86mhXkB7b2OeO7NHNlReSVvJL/XBTGiQVwAbjuEZjjlNqo=
+	t=1787001101; cv=none; b=Vzs0/Wb+U3yhE0LdrJ4l9xWK3x2iEqbMqeJitHE2Y5OI5c0RVbT01zEPJZdiJgsc9SRCADBDIe2k5WwB//4YjQSUhp0zL5mb8wXjtHdKP++i2uQ1TiAAjUt7MzaqwhN8QFMivXTypL74m7OXchYGwITr7X3nw1G1NIz/xNtMBdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787001099; c=relaxed/simple;
-	bh=Z9Qda5xfMXdPM0y7cS1w18J7wtGYePS3JSB15genqNo=;
+	s=arc-20240116; t=1787001101; c=relaxed/simple;
+	bh=aNLYiY8tiU4jrBfATIo+G+2FSehF6lKWMP6uC1EN+YQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LlBYMWNzu6hErvYCkSrsb3odY+ulYj7HJENejYW3enPF9g6wv7mqcno5z3ByvSO083wB3qJEQd9FPXRJGAOZg3jO9eARleVPDb7wH7dUkxeohExVBVZ9VB7Fj+i6hOwCTWSqbhV/J9ypNYdsstmPcc1WIPoQTBubu6aB0DKa2uw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XwdC0oFV; arc=none smtp.client-ip=209.85.128.52
+	 MIME-Version; b=FQ+boy/HEjJA+zS5eItXoQi+Kb884a2OuPmnkVnlzmF90wJZyRFotfk97/cjVIU9DvE2CtXFElA6fSM5ZychvlosUy6OM65IrUj53DqS31HGnoIgcv+E5ECvTPzIx5psRnzJ84J6F6TzvQkW8+SP5d2oN1TJXBscmXhfLryD+oE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ajBla6Ml; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XwdC0oFV"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-495437bb891so2833865e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 14:11:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ajBla6Ml"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-47f7027ca11so2398174f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 14:11:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787001092; x=1787605892; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787001098; x=1787605898; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Mf18W8QZAz94WDVtYPu89VIwzujNXA0lX7aId/Aud6w=;
-        b=XwdC0oFViIjdYnSC2LmEXQm79fiXONJMvKkA42enzl1OCCCvkEKmtAZndk90PpC3sQ
-         cYDCDbTX1hKK9McHkvBGWS3TQTnMW2tHxPnJxLDsIrcUgd3kfqK8hdQowOLxo5aJuk7M
-         i/F4ZiWT2W/pDCOqL59/FAXbABfydflXEdCqjM4lu9W3Rl1jSB8nldxcdteRH2skSdoC
-         w1nWz3x7g3R78hKPGlU5d5yv20TfnLV5nD0m520uwb/WNgvpGyRmZTpKibp951/Zma2n
-         rxWpv68dCpCUZ93vmZQ7CNVVvQRbQkDGQFshoYR0d5WVNO+fveLaByixQuyFzgArrsyX
-         eg6Q==
+        bh=4Sn4eADzJ/6sfHwf7n+bx/UFgtIfsM24y9dSKsP+YBs=;
+        b=ajBla6MlitU53YnDq7XkgpZcQBFZ6Q3axctz2td5PY3GTwjHHWmxE8b1hS2nkPrBWW
+         /uyIluund1n08nibSwQXztJnQTdg4OSp7WBqIry0wQYQREfiEITrqYVxEgUobhiYx8LV
+         2A4tnR9MgSfwS0HY+6jIMEopwEPR0+YcOCIYWXtCwE7jNOjLU61gQrIMHKaJDXFc5ncG
+         mdIMJEYk6PtxZKL43e3aspFdUHmaUJQqUa/pBQCZOYhA8dhIy+8Ara+Hgp01vgxrss1E
+         p1evCRrVF5ZsEIfqfWgTaN8gvz3+OJGy4mSMohO8/yfoDM0ZB1jXYDwQCg7uF6n2e4zt
+         RihA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787001092; x=1787605892;
+        d=1e100.net; s=20251104; t=1787001098; x=1787605898;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Mf18W8QZAz94WDVtYPu89VIwzujNXA0lX7aId/Aud6w=;
-        b=AhOXOBIoBRyoCoqwEvePcjC9P+b708R0TgQ/TIrEMCAwbZUWDnHFlkdz2HxkLx1q3P
-         xkkm1l9Le3dBObL74PmpGonEAta6A1RcDbkHIFpyL9YfdkLyI0R3DVKM7+/NgpdtFLSf
-         0uxH5Vw/IjMXqxsaub9LrgfalXs4X/ULT0AuSq3Y1joQ7Iz5fZEc7c5hl3Q2USFwvftO
-         Yp8Ylg8yZdsFr/rHr+MY6oDS7h5ePy+0Ruf4SRpxjs7lmRcJaRUieX1+ckokVTnRlP9o
-         Wh70VqtN9/2nY4F2ebONLMOFA+UtHglF/p+ARtwx2UoxEKHyUSXBL5s38RXUhiPIHLud
-         ABnw==
-X-Forwarded-Encrypted: i=1; AHgh+RqmmRk/oKbLHGJn+lZuxB+rc21DctgPP7mUfFSXV6oKoc3MoxcPtj5y/msDdaNXTBn1pT2sDxzdlVM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyndqSY+fTd+b6gzaTpfYKrHybrNaH6QR/y/gCaNVw4AumRucDK
-	4Qj40Aowm0qwM0FVLtZKLZzWfYDueyaFxgIR2dz3k1DBc2FOydAgSvkTHnPUZg==
-X-Gm-Gg: AR+sD10guXEG7oKzyn6l7sh9cRF/VHVMU7SUtmxNX73ZdHkq1evwaLS4fesCgyZRIRR
-	Y3hnz9DMjYzumHQr5P1jXiihUXysO1emnULFBH6PP3EenO67SYbnWDMhbdU1MdPW8oWGmipfmMF
-	ts0hib6hnyIk9Y9FbriikrtT3Gwu/tfZEt1Ovklnd9zE/dnM7FUzL7uYcTUw3dN5YC+g5XJHDXX
-	bb314DOApRTDEXM9a8vjmSHUsjcG8HpM1IIYf9wo07uohFaMhwniPC5yCYCN44F2aW5+sHyDnmR
-	unZWzSFWKe9FC5XUNjKXW842y5mk/MxgtQpjn7Wmw2S62vJ/HWjcaRYqkw355tb31gK2S7PT40D
-	MbYohmPEu3cYBiDeqI2qeGw+UtNKpRms1uTCmgy1L1+jMuZ3qHifYEEEoZJ6tHtq25ghrY44VI6
-	+CN1HaBThGK+XKzGXf5fdDeD7AOTJ+FlNaxvhHJsk8c+j7BaQBQ7RCpxGXiMae8HFwOB37iQhl6
-	GREynEd8sAiLvNFildI/wQ=
-X-Received: by 2002:a05:600c:8b77:b0:493:f783:c46a with SMTP id 5b1f17b1804b1-499a206a553mr7835055e9.6.1787001092211;
-        Mon, 17 Aug 2026 14:11:32 -0700 (PDT)
+        bh=4Sn4eADzJ/6sfHwf7n+bx/UFgtIfsM24y9dSKsP+YBs=;
+        b=bmldj4k3/ruLIc7068xP24gxSUBSag7A2IcTDf4f9czL7cuzASCyEawgX1ewqOHBlJ
+         gvltbuF+0xYaUWSUcmtltXMQ08Z7n9qfxCa2sOdZmgOZr+gtSJAG2Vt1IpQ+9o0PWiV4
+         BJSQaQz/3+tFUyqvGsu0N91wRj/C8R02MFy7+15sOrw9YZspA1Na6QNgrWy7G+gPQgl8
+         IGq33cm/BAzJ6rkDagsRjdjdH44aAavNq0QX5mGA7QHrLN8GoRThgSWhdodSkaruRWkH
+         +8PbjeKpNqwKdGOCCjDDWgfIU9ZBhAlUhHesWoTsqsplZ6JP2p9I25dj9B0I7YfVMTWK
+         wxfw==
+X-Forwarded-Encrypted: i=1; AHgh+Roxx2LCnhqddxTg8Y1Sctj3XrON5+66kkfxv+bB2IpDeZnMn3iJW3allm5Ke5deN6mu5Ueq/32cNBY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvKNMO0djckT5kBxDkmOshGNIhC5C4j+cWWkcV6p/aRzEA4J4Y
+	cQLm2xlhAqsQsmJ2VCU3BNlt9yhebYfPfVnPBzA0kW/bMUWJ4BtsZn26
+X-Gm-Gg: AR+sD11mYUG/UBDICc0cid8h82+sgMBhNsIaPH125d0ArNH/UdNBTBC64z4w5eGQesp
+	ht+s7eBHR3SF/Z8UIwTxRoJUKf6fe/TlKmktWnlYlhHJ0qzsQQNV9Ks9En8lWBF9TMr0yBUawhj
+	mu8R1D80ao9oEeWMSDUsHED6xxS6YgtxGOL6mnlnzUSn6jsNuTOuCDBEf0V7qIB2R+kxllgvzt5
+	cd6X9Q6Ad4YGAPtjIT8Ckm7nIYdymggglsliN0Y6Yrc7WBrxYEULL09qU61gLbk5lJEG+BTqcEa
+	HOR0s5arqVaMk/iGrFqaPtaC5s4GAqiFCbMoujP8XCz7hVHUKD8w0ZY83FmuP+/RlmrIBq0KNep
+	wZVQiPtriYDmr3U4sXwetEfC7JRtQYAIBd/Z99uXjiWHHYyrWXH4DZ1xnfmaDoqLfVV/eqfxw/F
+	FKTK0P/X3I79w5eGPYXpMSjm0HMRxbc5+3oqgi7JlQjFMLNG1HWMIg9bb1itLRXQsqa2JX/QlQV
+	VTMgYruQK8o
+X-Received: by 2002:a05:600c:4614:b0:499:858f:2653 with SMTP id 5b1f17b1804b1-49987929193mr291105475e9.2.1787001097786;
+        Mon, 17 Aug 2026 14:11:37 -0700 (PDT)
 Received: from fedora ([105.74.73.207])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49996176b95sm134587625e9.10.2026.08.17.14.11.30
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49996176b95sm134587625e9.10.2026.08.17.14.11.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 14:11:31 -0700 (PDT)
+        Mon, 17 Aug 2026 14:11:37 -0700 (PDT)
 From: Taha Ed-Dafili <0rayn.dev@gmail.com>
 To: jic23@kernel.org,
 	lars@metafoo.de
@@ -75,9 +75,9 @@ Cc: Michael.Hennerich@analog.com,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Taha Ed-Dafili <0rayn.dev@gmail.com>
-Subject: [PATCH v4 2/6] iio: dac: ad5504: Align headers with IWYU principle
-Date: Mon, 17 Aug 2026 17:11:11 -0400
-Message-ID: <20260817211118.21833-3-0rayn.dev@gmail.com>
+Subject: [PATCH v4 4/6] iio: dac: ad5504: introduce local lock to protect state and spi transfers
+Date: Mon, 17 Aug 2026 17:11:13 -0400
+Message-ID: <20260817211118.21833-5-0rayn.dev@gmail.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260817211118.21833-1-0rayn.dev@gmail.com>
 References: <20260817211118.21833-1-0rayn.dev@gmail.com>
@@ -89,62 +89,148 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Update the header inclusions to follow the IWYU principle and ensure
-they are sorted alphabetically:
+The AD5504 driver currently lacks locking, exposing it to several
+multi-threading race conditions:
+1. The shared DMA-safe SPI transfer buffers (st->data) can be
+   corrupted if multiple threads trigger read_raw or write_raw
+   simultaneously.
+2. The ad5504_write_dac_powerdown() routine executes a sequence of
+   back-to-back SPI writes (a CTRL register update followed by a
+   mandatory NOOP). This entire sequence must be atomic.
+3. Internal state variables like pwr_down_mask and pwr_down_mode
+   can be read and modified concurrently.
 
-- Remove <linux/fs.h>, <linux/slab.h>, and <linux/kernel.h> as they
-  are unused. The driver relies on devm_ managed allocations, so slab
-  is not required.
-- Replace <linux/bitops.h> with <linux/bits.h> as only the BIT() and
-  GENMASK() macros are used.
-- Add <linux/mod_devicetable.h> for struct spi_device_id.
-- Add <linux/errno.h> and <linux/types.h> for error codes and data types.
-- Add <asm/byteorder.h> for cpu_to_be16().
-- Add <linux/array_size.h> for ARRAY_SIZE().
-- Add <linux/kstrtox.h> for string to integer conversions.
-- Replaced <linux/device.h> with <linux/dev_printk.h>
+Introduce a mutex in the ad5504_state structure and initialize it via
+devm_mutex_init() in probe. Use the modern scoped guard(mutex) macro
+at the top-level public IIO callbacks (read_raw, write_raw, and the
+powerdown attributes) to safely serialize access to the device state
+and the SPI bus.
+
+In ad5504_read_raw() and ad5504_write_raw(), guard(mutex) is scoped to
+the IIO_CHAN_INFO_RAW case only, since IIO_CHAN_INFO_SCALE merely reads
+vref_mv, which is fixed at probe time and never modified afterward and
+therefore needs no serialization. Because guard(mutex) declares a
+cleanup-scoped variable, it cannot appear directly after a case label;
+wrap the case body in a compound statement (case IIO_CHAN_INFO_RAW: {
+... }) to give it the block scope it requires.
 
 Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
 ---
- drivers/iio/dac/ad5504.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+Note: The concurrency race conditions addressed in this patch were 
+originally reported by the Sashiko bot:
+https://sashiko.dev/#/patchset/20260509142047.30302-1-0rayn.dev@gmail.com
+
+ drivers/iio/dac/ad5504.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index ad1a74678cf2..689147cdaa14 100644
+index 55ce7e49e0e0..87946cdf69e7 100644
 --- a/drivers/iio/dac/ad5504.c
 +++ b/drivers/iio/dac/ad5504.c
-@@ -5,22 +5,26 @@
-  * Copyright 2011 Analog Devices Inc.
-  */
+@@ -7,12 +7,14 @@
  
--#include <linux/bitops.h>
--#include <linux/device.h>
--#include <linux/fs.h>
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/dev_printk.h>
-+#include <linux/errno.h>
+ #include <linux/array_size.h>
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/dev_printk.h>
+ #include <linux/errno.h>
  #include <linux/interrupt.h>
--#include <linux/kernel.h>
-+#include <linux/kstrtox.h>
-+#include <linux/mod_devicetable.h>
+ #include <linux/kstrtox.h>
+ #include <linux/mod_devicetable.h>
  #include <linux/module.h>
++#include <linux/mutex.h>
  #include <linux/regulator/consumer.h>
--#include <linux/slab.h>
  #include <linux/spi/spi.h>
  #include <linux/sysfs.h>
-+#include <linux/types.h>
+@@ -49,10 +51,12 @@
+  * @pwr_down_mask:	power down mask
+  * @pwr_down_mode:	current power down mode
+  * @data:		transfer buffer
++ * @lock:		lock to protect state and spi transfers
+  */
+ struct ad5504_state {
+ 	struct spi_device		*spi;
+ 	struct regulator		*reg;
++	struct mutex			lock;
+ 	unsigned short			vref_mv;
+ 	unsigned			pwr_down_mask;
+ 	unsigned			pwr_down_mode;
+@@ -103,7 +107,8 @@ static int ad5504_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
  
- #include <linux/iio/dac/ad5504.h>
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+ 	switch (m) {
+-	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_RAW: {
++		guard(mutex)(&st->lock);
+ 		ret = ad5504_spi_read(st, chan->address);
+ 		if (ret < 0)
+ 			return ret;
+@@ -111,6 +116,7 @@ static int ad5504_read_raw(struct iio_dev *indio_dev,
+ 		*val = ret;
  
-+#include <asm/byteorder.h>
+ 		return IIO_VAL_INT;
++	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = st->vref_mv;
+ 		*val2 = chan->scan_type.realbits;
+@@ -128,11 +134,13 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_RAW: {
++		guard(mutex)(&st->lock);
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+ 		return ad5504_spi_write(st, chan->address, val);
++	}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -148,6 +156,7 @@ static int ad5504_get_powerdown_mode(struct iio_dev *indio_dev,
+ {
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+ 
++	guard(mutex)(&st->lock);
+ 	return st->pwr_down_mode;
+ }
+ 
+@@ -156,6 +165,7 @@ static int ad5504_set_powerdown_mode(struct iio_dev *indio_dev,
+ {
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+ 
++	guard(mutex)(&st->lock);
+ 	st->pwr_down_mode = mode;
+ 
+ 	return 0;
+@@ -173,6 +183,7 @@ static ssize_t ad5504_read_dac_powerdown(struct iio_dev *indio_dev,
+ {
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+ 
++	guard(mutex)(&st->lock);
+ 	return sysfs_emit(buf, "%d\n",
+ 			  !(st->pwr_down_mask & (1 << chan->channel)));
+ }
+@@ -185,6 +196,7 @@ static ssize_t ad5504_write_dac_powerdown(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+ 
++	guard(mutex)(&st->lock);
+ 	ret = kstrtobool(buf, &pwr_down);
+ 	if (ret)
+ 		return ret;
+@@ -284,6 +296,10 @@ static int ad5504_probe(struct spi_device *spi)
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	ret = devm_mutex_init(dev, &st->lock);
++	if (ret)
++		return ret;
 +
- #define AD5504_RES_MASK			GENMASK(11, 0)
- #define AD5504_CMD_READ			BIT(15)
- #define AD5504_CMD_WRITE		0
+ 	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.55.0
 
