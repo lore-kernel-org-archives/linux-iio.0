@@ -1,106 +1,164 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118503D811B
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 09:18:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2976A3E8C78;
+	Mon, 17 Aug 2026 09:32:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786958308; cv=none; b=BSnhzdhfEOAk2le1O2OSds5lRvvQZeCf1fGjHsikLUufULqP/NRBYxLLoSs0ous6+ikq8SJAOuGpKgQme0gpipv70L9pHAtWpuVG57egYx8xYCcGk3d3eUps4rqt2zeaCCt2ct1/XFe4MwXfaeqlzCSwjkOF0cRLxnRVRGkOOac=
+	t=1786959186; cv=none; b=qxzIkULpINOQsUD8bPGuOotDH3xy2D+qkbfddkbtUPRH8oB6ufEZCHQZCdL7G3fmGVQj6ut8Z0XWaxr+uviTiH0sMbvl13S0pxmWkQNt0ZCCVBM7Ay9DhuYRM9vMkqKlpuEjEnrkXGuiSVYh3LwI7+bzGwFkIPV5WcgyXgAeqys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786958308; c=relaxed/simple;
-	bh=iXaBam8np7C+h1PSqLUNbzfW2XGwFXd+uvNQzXPWkqE=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=goSd0Pla5KzBqtK5P3OC0Ab4gx2B0EjZGPoEDKfJtwyR1o7jEb7330z2Mhh3raZmU3WXdUDF4S/t6QuCtBK3PIi8wB+H4TL+kwnoO7v+2I+ZeTgV5azytQzp8iOYOkGxfSDslzZjVozXf9QdJ+n1mjITCNZc6vwkabxtFKfix58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Slwlmx0u; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Slwlmx0u"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-476a130c138so3311876f8f.0
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 02:18:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786958302; x=1787563102; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=MDk3a5hAgJy1HWw7PqbxGeNqF102RYP7hM6I5DNLSyQ=;
-        b=Slwlmx0uxkIMnsqfjYq+WkUn0LwB+O21MHUyfG2qMvleO3qVU7Ca3pY0Gl8p25+++R
-         5mjaIeElHN54pdstDUTntNABvNSSQwVN8/3kWiTpJwOA6hH0R2UcTFzDHz5XK5eicHmi
-         r3NbrVB8cjwz46IzDB/zJN0P+Ei7xHfdcwhfzyvwWZtWe6Lx2zWpOoExOm/k5eXlCLGM
-         oM/86QYkO4F9xOM+Olcxh73K7Dx2xEURpwbCamLdl0cjaULPJs15ASnxDEPuDZi6yVXI
-         q4C+TOYb6sHT7TAqmv/O///4tq7XSfb6t5QnwcBIHa3p86NcKzTYKjW9AIn/8JuOrQOq
-         uRgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786958302; x=1787563102;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :subject:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=MDk3a5hAgJy1HWw7PqbxGeNqF102RYP7hM6I5DNLSyQ=;
-        b=UOydcLbcevJENS93jrGeM/nCJLB2E5lK3FNORklJaMuOwCOh4ZopCdfKG9Cy4Y0+Fu
-         K6/fiIk2DFpu+Cd6736mAQoddyDsI4uILwbImgAqnepYdDFHlzLjUOZ0nxHMD+PEFBVx
-         9sCnaav67jl/ThXq+j37nAhkwZzcsOhem9a4hYa63/fk8VLsy6qTPvsY+dTfYPCa28wn
-         lYRWyf6MgFfabQPlZv/eHDObDu1l1ge1O9t1d8gf7TY/nW4zkrEEOAZESbZuXgwjr+eT
-         b7gYZoNkAE3ubxibCJmr03N2uf4/QzJ1CYEiz2F5rHwnsrmTTvmsqiEspVIu0ZOiqzsN
-         7BqQ==
-X-Gm-Message-State: AOJu0Yyf1cj5ERIaFEMIjPtKwhJCAs9xpLMKzs9wR5h4C2jl5N636mJh
-	e/OUY29bMRGWfovPKWQ4DeE+FHViBs/5NJOKJkyA5RkGJ/l/osfMk+yBLOu/p+UcuRI=
-X-Gm-Gg: AR+sD111mlruzvYOHsvd0242DgUPtJ1gzf8matnNq691kbNX3xJhgt+O7wEcDCQ7wQ/
-	DX6l+2UrSxYPstgwQMeqdaYTstHpc0bjQQHQWMAHPfGWczNEZ01u+FRQmbAi6MECAM/1jAuioUx
-	VsY42qL9DE01fI3F3dmM9xHa+s4FpsyLHF2kvqUsvFVnvtC0OgVyVIqQimjdtiV3xjEAQ+ZX/+X
-	Z8tnvVkD3zefHtvmqQub8uoJecBWJtIzppUO785jd3lf/Q9UAZaN8vKpe72rWeGAXtRJZkICV+k
-	AK1p2+rSlOvG64aTsmLgDXLyIPQnEmJVITKEJ2rDwgIsq4kEYcEXanjTTNSBZiqGgwIfoNC1cKe
-	nA99lJQaiyJRY/LWIWk5WYAyJpYl3ZPyis5J2+OCop92H9LYCR9nHdJpBhw7Ha8Gb1fUDwD39q3
-	wVTFrClRbD62lIXBgph3g9ZUKsW5iD+b2UGHVph2dsd6ERjS7eZkf9U7sAgEUvbUNaRCFohFe0Y
-	9WxbGo+jIwhQ5HTv8LHG1A5zz0/hYPP5gwuFF+upzwHSLR7Bu7qhUSxWFfujAf/xDgGCvz40cbL
-	CxeZDY1FoU9N0o+OoiZYnB6hYNKNB5CHlb5BkidX7SGQbDnBW/w2qI9Fb+Fec9MUl5NOF4v6ngL
-	UClfEEXMJFHrQKAUMAAcVjPvZYa7jz/0xohWCYHalt2baR/80g4jnHMGhU3E3LkV8TA9lsQ==
-X-Received: by 2002:a05:600c:1914:b0:499:726b:7375 with SMTP id 5b1f17b1804b1-4998796a1e1mr361798695e9.14.1786958301866;
-        Mon, 17 Aug 2026 02:18:21 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4999d10b7f6sm23406205e9.12.2026.08.17.02.18.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 02:18:21 -0700 (PDT)
-Date: Mon, 17 Aug 2026 11:18:25 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, andy@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com
-Subject: [RFC] Maintainer entry profile/contributor guide for IIO
-Message-ID: <20260817111825.000063f6@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	s=arc-20240116; t=1786959186; c=relaxed/simple;
+	bh=mWOhG75wa+8dAlYfw970eWFyLANVtyaQj88LY0Mnjzo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kErknoSGPWejlR2GZ0JPrzz+Ixebj3k8mXeNHU4v5Ayi5LKNAyRA7vgxwpX4cjlhqVBKuT/fzgQvQZw2ud7MlltjZ2/AxLa9CEOsNBirhZ45br/eoI6CGI6akLarmxZ+2DLIQ0b+12swA5yHH+5VXMToGGnolJCKIpcxWQDzCIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 9b330c2e9a1e11f19a56ed5b684f684d-20260817
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:6ed4dce8-9393-419a-8cc0-1dbcabd42684,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:7db8b62,CLOUDID:3d8cdabbb776ca01fb8297f2148520dd,BulkI
+	D:nil,BulkQuantity:0,SF:80|81|82|83|102|136|865|898,TC:nil,Content:0|15|52
+	,EDM:-3|-100,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OS
+	I:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 9b330c2e9a1e11f19a56ed5b684f684d-20260817
+X-User: lilinmao@kylinos.cn
+Received: from [10.0.2.15] [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_128_GCM_SHA256 128/128)
+	with ESMTP id 204623507; Mon, 17 Aug 2026 17:32:46 +0800
+Message-ID: <51769a1a-8d28-4224-9b36-06b04282db74@kylinos.cn>
+Date: Mon, 17 Aug 2026 17:32:43 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH togreg v3 1/2] iio: imu: inv_icm42607: propagate runtime
+ suspend errors
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Chris Morgan <macromorgan@hotmail.com>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260811020345.950137-1-lilinmao@kylinos.cn>
+ <20260811103301.1157404-1-lilinmao@kylinos.cn>
+ <20260811103301.1157404-2-lilinmao@kylinos.cn>
+ <20260815215028.784c7579@jic23-huawei>
+From: Linmao Li <lilinmao@kylinos.cn>
+In-Reply-To: <20260815215028.784c7579@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi all,
 
-I was browsing lore and checked out the ksummit mailing list, where the
-topic about guiding new contributors arose [1]. New contributors tend to
-make the same mistakes when sending patches, causing reviewers to point
-these out all the time over and over again. For IIO, this is definitely the
-case (I myself send an email telling people not to send a v2 in reply to a
-v1 several times a week). Other subsystems have a "Maintainer entry profile"
-that contains subsystem-specific process info (DAMON for example [2]) and 
-(sometimes even [3]) a document describing the code style of the subsystem
-(this would be a great place where to mention things like not using
-kernel.h in new drivers etc.). I'm happy to create both of the documents
-but it's always great to hear other people's ideas! 
+在 2026/8/16 4:52, Jonathan Cameron 写道:
+> On Tue, 11 Aug 2026 18:33:00 +0800
+> Linmao Li <lilinmao@kylinos.cn> wrote:
+>
+>> The runtime suspend callback always returns success even when updating
+>> PWR_MGMT0 fails. The PM core can then mark the device suspended while one
+>> or both sensors remain enabled.
+>>
+>> The sibling ICM-42600 driver propagates the corresponding
+>> inv_icm42600_set_pwr_mgmt0() failure from its runtime suspend callback.
+>> Make ICM-42607 follow the same behavior by returning the sensor shutdown
+>> error. Keep a void wrapper for the managed teardown action, where errors
+>> can only be logged.
+> What is the practical affect of a sensor remaining enabled?  Bit of
+> power loss or something more significant?  This info matter when deciding
+> if we should rush this in during the rc phase, or wait for the next
+> merge window.
+As far as I can tell, the practical effect is additional power
+consumption while the device is idle.  I found no corruption path, but I
+have no ICM-42607 hardware to reproduce the failure or measure the
+current.
 
-Second of all, the idea of having a bot that would automatically detect new
-contributors (i.e. the email they're submitting the patch with doesn't show
-up in `git log --author`) and send an email reminding them of the basic rules
-(while also referring to the entry profile mentioned above) sounds like a
-great idea, but of course hosting and maintaining are pain points.
+It does not necessarily persist indefinitely.  If the PWR_MGMT0 write
+fails, regmap may contain the requested OFF state while the hardware
+remains ON.  A later sensor read requests an enabled mode, so
+inv_icm42607_set_pwr_mgmt0() retries the write instead of taking its
+"no change" return.  If the bus error was transient, the cache and
+hardware are then resynchronized.
 
-Please let me know what you think of the above ideas!
+I also noticed a cost to this patch: returning an error such as -EIO from
+.runtime_suspend() makes the PM core set power.runtime_error. Subsequent
+reads then fail in PM_RUNTIME_ACQUIRE_AUTOSUSPEND() before any sensor
+register is accessed, until the PM status is reset.  A successful system
+suspend may clear that state.
 
-[1] https://lore.kernel.org/ksummit/87y0ekm9nw.fsf@trenco.lwn.net/
-[2] https://github.com/torvalds/linux/blob/master/Documentation/mm/damon/maintainer-profile.rst
-[3] https://github.com/torvalds/linux/blob/master/Documentation/hwmon/submitting-patches.rst
+The patch therefore trades a logged idle power leak that may recover on
+a later access for a potentially sticky runtime-PM failure.  Since this
+was found by inspection only, I would not rush it into the rc phase.  I
+would rather revisit the error handling and target the next merge window.
 
--- 
-Kind regards,
-Joshua Crofts
+Linmao
+
+>
+> Jonathan
+>
+>
+>> Fixes: 3007c1530f96 ("iio: imu: inv_icm42607: Add PM support for icm42607")
+>> Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+>> ---
+>> Unchanged since v1.
+>>
+>>   drivers/iio/imu/inv_icm42607/inv_icm42607_core.c | 15 ++++++++++-----
+>>   1 file changed, 10 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+>> index 190e998f7b8ef..0da362967f63b 100644
+>> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+>> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+>> @@ -537,9 +537,8 @@ static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
+>>   	return 0;
+>>   }
+>>   
+>> -static void inv_icm42607_sensors_off(void *_data)
+>> +static int inv_icm42607_sensors_off(struct inv_icm42607_state *st)
+>>   {
+>> -	struct inv_icm42607_state *st = _data;
+>>   	const struct device *dev = regmap_get_device(st->map);
+>>   	int ret;
+>>   
+>> @@ -552,6 +551,13 @@ static void inv_icm42607_sensors_off(void *_data)
+>>   					 st->conf.accel.mode);
+>>   	if (ret)
+>>   		dev_err(dev, "Unable to turn off sensors\n");
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void inv_icm42607_sensors_off_action(void *data)
+>> +{
+>> +	inv_icm42607_sensors_off(data);
+>>   }
+>>   
+>>   static void inv_icm42607_disable_vddio_reg(void *_data)
+>> @@ -619,7 +625,7 @@ int inv_icm42607_core_probe(struct regmap *regmap,
+>>   	 * Ensure if sensors get turned on at some point, they're turned off
+>>   	 * as part of teardown.
+>>   	 */
+>> -	ret = devm_add_action_or_reset(dev, inv_icm42607_sensors_off, st);
+>> +	ret = devm_add_action_or_reset(dev, inv_icm42607_sensors_off_action, st);
+>>   	if (ret)
+>>   		return ret;
+>>   
+>> @@ -688,8 +694,7 @@ static int inv_icm42607_runtime_suspend(struct device *dev)
+>>   	 * however the tradeoff is that an unused sensor won't be
+>>   	 * turned off until the entire chip is no longer in use.
+>>   	 */
+>> -	inv_icm42607_sensors_off(st);
+>> -	return 0;
+>> +	return inv_icm42607_sensors_off(st);
+>>   }
+>>   
+>>   EXPORT_NS_GPL_DEV_PM_OPS(inv_icm42607_pm_ops, IIO_ICM42607) = {
