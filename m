@@ -1,165 +1,104 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A4473C3F69
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 11:03:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55E7F3B5E10;
+	Mon, 17 Aug 2026 11:15:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786964638; cv=none; b=QkJGk3paTOCqAEYUIrjRWo0zwRGtdE978XKvgspJtOhCnn4dd/hG4KNl/2kzAowhdATayyBd6qY1a8lDJQPN7pH2PVwLYntjbWeaUy0ZVXP4ea2OcCCJtAN+OSQdt/zdbNS0oo03o1JSli39aU+F/7wJ+Lk5ZViXa1z8Q6rRU6c=
+	t=1786965334; cv=none; b=tj/IcJGePmfB5eIEHyu5xNKlR5W3pkm/KskdlfqV68MrIrtEu9MEgKbtcg6ZgY+A6hSWEWunO4krA7LOH7N7zQBptuUcnOeimshDMheXgo2/kYI5eErw8RTNHvJEZn5+IOVFrSuP8BgPFalz28JViCK4SQno8Pq43Hw4Ud9Y99w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786964638; c=relaxed/simple;
-	bh=UVOCMtcyrfHs/Axz/F/mt3T12esPR3HkihmXhokS90k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LVIVTZs69k+kYj8daGbNGs0ecm62A/i9shv3UULUH8rVKtI9Ila9NtHR7yS6dNRyHZYAx/vJ4oBhmj2hiMar7+ZfTk4yeNy6MFyOVG3m00lk5c6KcG4Vet/se4WGpEg4gGgeNaae+7Db++i2Ins37o8si2GUKnN6fWOOCQOCl+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pAvJo8WU; arc=none smtp.client-ip=209.85.167.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786965334; c=relaxed/simple;
+	bh=tKwnrrIu2kal6pWdhpkNGPu7zRq/0jbusyObZKem3UE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GiUEk+XeZAQ4vgjAFqB49xL5Q/Pq93JyX2jvw0ki8H30WLfgDOE3tdpm2D3JTQIl107EwCL+Kqw2DaboTqFTeEqiZnWr9SMKmLda40ViUVD6seElNDx6oXdrdFPH78ttHY8gnn1MnpmfNNNVpUbt0JyuzGE7vxwEjyOyMGlkD6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n7sUo9ll; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pAvJo8WU"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5b29599b81cso4499714e87.1
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 04:03:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786964635; x=1787569435; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=5roxsSwPYXmdBRG7+L0luHhV1ywCWm3yG7rXSaCHp/g=;
-        b=pAvJo8WU+ZEoxbj0AhDNp9JFeiAbxjm+qOaUTbuE87KAzHHFNyGijMgZZUs1+O1as8
-         6Fmp4uU3jLVN3/17YMUEVHtp8t7XwCqDyksEELv9HDQOz0kV+7EvaCi6biFa/dEIMr4Q
-         1EaPRUpghXUmTkTRdiGXt9FHiEeP3IfqWsbk0Eigj8BMPlUT54RzaKutm5fVjwSWdPdA
-         /tOER1VbQD1T0JAsh09lVEwlBQ7zMJcQ9uFGy7gktZY2/NFUWpOGT3rAMYWF7ENBbMln
-         YXrTlefsDj6UdKLRSjltLdBxxkq8kUCrplDCwj/PIu+DgH4DQ7Jwugfz4B4KRgr7tXv6
-         cv6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786964635; x=1787569435;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=5roxsSwPYXmdBRG7+L0luHhV1ywCWm3yG7rXSaCHp/g=;
-        b=nNIbxMjvKodkGqtCBzZVUXT9zpgBwz1XGw5kRQXcJ2VML0aGt7e3ByGOe8vWMIOJNc
-         uB2mOrnBxHif5fwLXRki/yhADJ+4k1h83SbjwPWFE01HKZzi1bFLJbuTJUKM1XE3//N/
-         0IQ5fqpNM3nBwOiX+u9kv3UFYWlshHZgKoEG1ybfSFBhtElOgR/DetZpdxa2v8mY9Gek
-         wHCu12SZApNGa/8r+QrTbMZYuwm/2lGFjyiHx4X78tcUvGGtifn0Wivp90zx3jiynvBX
-         +WnWy13THBqGHIaG6PHewejfELai90JKpnJjDR61mappo6mVJBN0X5zv/P10BiGV29g5
-         Q4gA==
-X-Gm-Message-State: AOJu0YxwYs/cGvPHGgUbgppdj7gyUyvLGaTlw0iFBHBo+mebdiUtcqfF
-	j91NGgsBD49FYIzxR/GNlYA6BLcW6EXMNiLb9kQKE/0Wts0RZ1DxBbne
-X-Gm-Gg: AR+sD12xc+d+aI66FGGO59aKfeQ0pLC7RYEY7ssmwSP3ZpeWayOgyFECf8jyqs+w7Cq
-	5ITtAxJmeRAUMivzrRdOhIFBNZuW6GU2d7lvesaGtNqMqBewZgrfNhwuu78L1/XGGtY+1Y01JSP
-	TRNpnmc0NNl5LYtSEueYgm0fMWzgoRDN7VCJPp35S2gLMEAl6vHvK5CcKKUn7vbUT66D7L4zA+H
-	20IdEcIo695PhZXL5bPVwrzDJvLgdj+oAYt8+7X4078q4mIlauw5xZgJsje6aC62IJsvh5KLlKl
-	Ad5dhpT9SA87gqDqfgNjvUN31GpArBZvtXPkPNifptga0pIe5dxlfJ0/p2V7kroS38/u13/htGj
-	ozqp5DJoO+n6ZNO+a6qdpFVoCL+DR/mcahU/+wQU2+vWD4+wt7UmE+x/GN0z1YUgfOgV4ltuf7X
-	QizqCCmgNMjyRVkpjjgwK3lJcjL6IqzmC/iU2aFkLJ12cm2gpOygyYY4kdA0WTXR/DQbXrG67a4
-	vkzAl8YZ9/OESQ3HaSzEvNPEZiH+LUm9OglzF3HzqoL
-X-Received: by 2002:a05:6512:159c:b0:5b1:5a31:85fa with SMTP id 2adb3069b0e04-5b459112f5bmr3161805e87.16.1786964635159;
-        Mon, 17 Aug 2026 04:03:55 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b46cf95db3sm306642e87.12.2026.08.17.04.03.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2026 04:03:54 -0700 (PDT)
-Message-ID: <7155f6fd-435a-4176-aa9a-79888e0b5ccc@gmail.com>
-Date: Mon, 17 Aug 2026 14:03:53 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n7sUo9ll"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786965332; x=1818501332;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tKwnrrIu2kal6pWdhpkNGPu7zRq/0jbusyObZKem3UE=;
+  b=n7sUo9llYZaA6pUKtab7xCJqwu6SROQztmcKXH7OQgHTrwXfguE6KHA2
+   fSnE1c2LqX/0tAV6WTg1GW75w/KjnVlNLl4iONMennPSkcQKqb+4KxVyO
+   xH7ey+uQlPYfmE0VosNVz8m0qjlpk5JWfBzvQIcEjmkiTvyq4TTwCPnNV
+   6E6XGuqgZudXN6ZaJayYtpgmQLcnTdk6r5wKFBuXdRO8QXao8KCTvBSLN
+   VcmGJRLGxEOZqgTEeAIgBlbvs8i6dy9s+eaXmTZbhDh20JFXY2QK/8uA2
+   /Y3LX9D7si7UkmQOq50oYzNvFqrD5LZyCt/BcF0FVF4sIvXF3BZXkyEpB
+   Q==;
+X-CSE-ConnectionGUID: 9f7R/8grSIqvM3gYvdHIvQ==
+X-CSE-MsgGUID: XXwhiB8WTJ+aQNdoLcAlFA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11877"; a="98800432"
+X-IronPort-AV: E=Sophos;i="6.25,228,1779174000"; 
+   d="scan'208";a="98800432"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 04:15:31 -0700
+X-CSE-ConnectionGUID: MHhmRpU9RuSDZzf+WNBSfw==
+X-CSE-MsgGUID: OtCYfmO3Tz6NZNYSDRYrTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,228,1779174000"; 
+   d="scan'208";a="260672542"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.67])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 04:15:28 -0700
+Date: Mon, 17 Aug 2026 14:15:26 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Kim Seer Paller <kimseer.paller@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] iio: dac: ad3530r: parameterize DAC resolution
+Message-ID: <aoLtTlpc6HIyR_a2@ashevche-desk.local>
+References: <20260817-iio-ad5710r-upstream-v3-0-3a4bf7b9c78b@analog.com>
+ <20260817-iio-ad5710r-upstream-v3-3-3a4bf7b9c78b@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: gts-helper: fix error headers
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260815-iio-gts-err-headers-v1-1-3a668373aaae@gmail.com>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20260815-iio-gts-err-headers-v1-1-3a668373aaae@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260817-iio-ad5710r-upstream-v3-3-3a4bf7b9c78b@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 15/08/2026 01:23, Javier Carrasco wrote:
-> Both industrialio-gts-helper.c and iio-gts-helper.h use error codes
-> defined in <asm-generic/errno-base.h> (usually included via
-> <linux/errno.h>), but only industrialio-gts-helper.c includes it. On the
-> other hand, that file also uses error macros like IS_ERR() and
-> PTR_ERR(), which are included in <linux/err.h>.
-> 
-> Add the right includes to provide the used elements from the error
-> headers:
-> 
-> - <linux/errno.h> in iio-gts-helper.h
-> 
-> - <linux/err.h> in industrialio-gts-helper.c, which in turn includes
->    <asm/errno.h>, which only includes <asm-generic/errno-base.h>
-> 
-> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-> ---
-> I stumbled upon this while refactoring veml6031x00.c
-> (which uses IIO GTS) just because clangd threw a couple of errors where
-> -EINVAL is returned in iio-gts-helper.h
-> 
-> In the end everything compiles anyway, and therefore I have not
-> added a "Fixes:" tag, but please let me know if that is really required
-> for something like this. It is also true that if the gts header is
-> included first, the compiler will throw the same error clangd showed me
-> and the kernel won't compile... Unlikely to ever happen, though.
+On Mon, Aug 17, 2026 at 02:37:13PM +0800, Kim Seer Paller wrote:
+> In preparation for adding the AD5710R/AD5711R, which support selectable
+> 12-/16-bit resolution, add a per-chip resolution field and use it in the
+> raw read/write and scale paths instead of assuming 16 bits. Drop
+> AD3530R_REG_VAL_MASK and AD3530R_DAC_MAX_VAL, which hardcoded the 16-bit
+> width and are now unused.
 
-Unlikely or not, this sounds like an error to me. Hence, I don't think a 
-fixes-tag would be wrong either.
+...
 
-Anyways - thanks!
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (val < 0 || val > AD3530R_DAC_MAX_VAL)
+> +		if (val < 0 || val > (1 << st->chip_info->resolution) - 1)
 
-Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+		if (val < 0 || val > (BIT(st->chip_info->resolution) - 1))
 
-> 
-> I have compiled and tested this implementation with the driver I am
-> attempting to upstream without any issues.
-> ---
->   drivers/iio/industrialio-gts-helper.c | 2 +-
->   include/linux/iio/iio-gts-helper.h    | 1 +
->   2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/industrialio-gts-helper.c b/drivers/iio/industrialio-gts-helper.c
-> index 4f52dc373abf..af6ed37fb34a 100644
-> --- a/drivers/iio/industrialio-gts-helper.c
-> +++ b/drivers/iio/industrialio-gts-helper.c
-> @@ -5,7 +5,7 @@
->    */
->   
->   #include <linux/device.h>
-> -#include <linux/errno.h>
-> +#include <linux/err.h>
->   #include <linux/export.h>
->   #include <linux/minmax.h>
->   #include <linux/module.h>
-> diff --git a/include/linux/iio/iio-gts-helper.h b/include/linux/iio/iio-gts-helper.h
-> index 66f830ab9b49..f63a482b82b8 100644
-> --- a/include/linux/iio/iio-gts-helper.h
-> +++ b/include/linux/iio/iio-gts-helper.h
-> @@ -7,6 +7,7 @@
->   #ifndef __IIO_GTS_HELPER__
->   #define __IIO_GTS_HELPER__
->   
-> +#include <linux/errno.h>
->   #include <linux/types.h>
->   
->   struct device;
-> 
-> ---
-> base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
-> change-id: 20260814-iio-gts-err-headers-d7ecb6b5ebb7
-> 
-> Best regards,
+OR
 
+		if (val < 0 || val > GENMASK(st->chip_info->resolution - 1, 0))
+
+One (GENMASK) works for 32, another (BIT) for 0. While it's tempting to use
+BIT() for readability, the 0 is unlikely is correct, but 32 might be.
+
+>  			return -EINVAL;
 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+With Best Regards,
+Andy Shevchenko
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+
