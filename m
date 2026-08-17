@@ -1,108 +1,144 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B5D40A937
-	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 11:38:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8427640B0E9
+	for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 11:43:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786966718; cv=none; b=tYZY8MEXxP1ZoRpErnOMsOkANLD7iiH5hPqqq17A8MJ+xMMsqg2I4SNLqofe1+ZBwUOLP1dotOqk8bjMaZAUDiY+AStP0BU5P4l1YUHFupsZUrZVB+7fz13LzRpZR5pAk19+ZAjhh9EcVkzKE0Y7WeVZ35lmYcErXNdqoN1jVn0=
+	t=1786967005; cv=none; b=DEghFfZfr4tM7xjhXlJ5DSfzLYlGv9bmueESQD8pR5yFN2sb41fqYMCZJUwXZfP0V478aYwDOBnXwfj6/DjVaNCx/U/sK1QDir0G+9B/E6Aah/YWQb8fie+l+b0MEzeB85qK/ZAzFx/J9rFEz10nIjiUwrgnRMHZCy6+d9FLDXc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786966718; c=relaxed/simple;
-	bh=preAQSUiNXBbVUYKY80ddcTWhyOTIGO+mcuB1EQ93A4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qAdfVRwNXghR+7ucOjDEevjnOq7MxK+THhW5PDXqOmxoTeuFiXQQXxp0wfWQ/DkaEuoe03SduhfKmnOMBKEPMfSJmun5rDB5uXP+u41LXWq7x5vdbUMFI26VsFeChTAtGHgHas8Y+73mCaX+SmDTmuW1PpnjH6YYGdzO3csKqKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s44uHB23; arc=none smtp.client-ip=209.85.218.47
+	s=arc-20240116; t=1786967005; c=relaxed/simple;
+	bh=fIskz79NQn02ibLnjRh7ZKaMY8crCq3Jl1RoqA/q/5w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=gyx3KBng94SQXe8erLT8rp0Of57ATQAqyPOdjKgwn5vcxKQAj8YmVgS1YXCDgN1Knh/UTGHdAN0FeEB+va+JdeW7QKMZ/dGQVKGy782K1ftI0FVfTNLBktiE4sJtpoeD/jb2eaObgfosc0guxDiJhbu9NjpoKhDt3a+ZAsCBVT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dqif9PHh; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s44uHB23"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c2055573c8cso453406266b.3
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 04:38:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dqif9PHh"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5b2b92065ffso2983308e87.1
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 04:43:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786966715; x=1787571515; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1786967001; x=1787571801; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ntKnsiwJpy1kfM4krSauxn8fNlU0qOy7OW+x+qrciSM=;
-        b=s44uHB23bXSYWN0xx10dqEHph/LjPUrRii7//mfyy5wBJ+Q/1srCESAifTk1gMXe3j
-         3HrKsRDf6D9Or73ouvozCxigIr+DT0cALYXZ0dDj452Hz3RV3DQoSe/a0YMN1R0EiibA
-         WqpjsMIV6hcJ6r8WfUiAH7AL7PERWTBWIOP1In4lnTckO7IVdYBrG1U/PDWMq2LsRDEh
-         Y37jxUde3lzXqxigugp0YM5wzh3TU7Ojr/FGbjujI8et0Gmc25V8TGgeBISxqVjwz1d5
-         Lz7cKpdTzuf1dXEFmVhhRToLjK2+isMFJqnqo4LA3TQKfsOwdfvkdiISjD17q0MSz60m
-         xW1Q==
+        bh=b6OMi1IqNUrs5qkhXZCHNpckPTiNqfFRI2wV9B5mW3o=;
+        b=dqif9PHhOo6cNfwcR2c4I91a3a+La3/EWt2HdIASFCluWz0R26IhVJ6fECFGM0icAx
+         YhemFBlcJDtyiMxiPk+6rnZKqR8Rq3tUeA2zFephgcauoYuEw852y/LhSiEjN/DKjJyK
+         gSrPZE5C7dLJyAQlaKu14fkmGm6LHjemE6jXxmwBXlv1gsyUjMKKtrzebdUz3m4vgg7C
+         Y0y4iI+kHrFWCeB3vUjFqQH+62SWM9ueJKS8ga2chlo1u2/cuVbvNqHGbjsKzRGIQvHM
+         eKYoh1TEzNtjk1CrAr6MM6Yp41XLBRwhYUVaBX0cQC0XsiWJqRFd9LOtkKxi0Vm00ZQz
+         6RrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786966715; x=1787571515;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ntKnsiwJpy1kfM4krSauxn8fNlU0qOy7OW+x+qrciSM=;
-        b=X41/E2HZ0HQrkf6rlQjEZbcXGsBIABTuTE/LoPSPoHIACWsz7HK+FjHJ2+ozaZxJbS
-         Px8gplHCqeHPCoJwQS4s5LCvWDIa3nPqwWXqanU1UaXpmhY/xaxrvpHCDFQht98Hx0an
-         bo5lV0ePqQJ3RitHnhrq2kqADPub2L2UdItq0Prrrt7V4L4w+/y8kn5XiYzrSbKXAU3U
-         yD0Oyl1aqdQK4f3UIhI5wsgPsNEvwXuEbHlzzdjW99wlkKgsEjJ6n48bbge7DGFRGz0c
-         AK4/53Ea6L1SS1ypCMx4PqQ+rUCP8cigKPZ8CFARQ7p/+Jgl/NI+WNHuaQsisR8hNykc
-         IlQQ==
-X-Gm-Message-State: AOJu0Yz4QAv1XZaswp6R2vgNDXfhNuS338HvpTvLMd/eESc2fl+yvOQP
-	jCpASDVoZwaxPE8SnRwE3htkZeHBV7/pbxiGriloIbnYpzHMgVtuC3tY
-X-Gm-Gg: AR+sD13HDyZwQ1agcm/HL4JjXthluueCNZJ3wHq7UeGz7e+TuOF3V8mrqQjaR0Q7pSK
-	QNR70b2dSzOeDXm9kJOxmuD2xO1vwXHSB0vZ+tGMXQWap0Mlda4HTt2aJ1v6YcSlSmOG8xIXjF6
-	JQNuvmmc/xMlNhpGyEg6ss6dZaMWBPtLjN9XuUE58vdnGXpuo0Q6Etosb50ogvxHPzLqs/65eQM
-	kqpmNOQKB6bT519NCuNIFXnJTeyyiZHbyO/9ka09xGP9+8xOBjBb8LdHqLZ3Z5ejzDKLxx0hzre
-	nGZ+ivzSsUsk6aBZiq222SonsZ5POl3BjTi0WnxKGv1IzbqpZLH8LE0yyrGgm+KFFEClUXQV3W6
-	Vw9PZ3icxscaMw3mQXcMbRKzh/qjvucqhjtzC3EHVQQqnlp3uBA19bQdj2MkkpUJrVLGIit7HoI
-	RsXEFZXXC/73k4oOKwHYycCNhrg9pd0kGhCXmmDq0S3AJC6qGwx6WtVr9ms1vkuKCsCkvR1pbj+
-	O/9DWAxMyKCAuSx6fZN+O8VN0RHoS8VBQgCKyCPqW+00qJ4XaSqAc4Mp+7kOEwL9Y5OjkQNv1hZ
-	F89Db+r197wrQWhisqtjcE2LyjnDpYvTiCj1IdCKmXlS7d1y3Fhx/NA0W8jsWS7RuAiDl1iJOU/
-	O/06lFNV7a3MTzcWN1Ylfi424bK0FS+/8IfNE+rsYxOdj3qkAIUYaFUhb0Qd4giRp3EmsLX4IVJ
-	IedA8h9CjbsAGpP1AJsHzl14NWRRPQv0nFvBF/s23QBGaWsmEnvezwbQPxjAMDCaXMK8CER8CvC
-	/9fdm371cB0zERkDA==
-X-Received: by 2002:a17:907:7b9f:b0:c20:23fb:bb05 with SMTP id a640c23a62f3a-c212a26d65cmr1152187466b.15.1786966715187;
-        Mon, 17 Aug 2026 04:38:35 -0700 (PDT)
-Received: from cs-280612103108-default.europe-west4-a.c.i2f7e30109524dc12-tp.internal (249.139.91.34.bc.googleusercontent.com. [34.91.139.249])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c217feb99d4sm40879666b.22.2026.08.17.04.38.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2026 04:38:34 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: add patchwork link to iio entry
-Date: Mon, 17 Aug 2026 11:37:23 +0000
-Message-ID: <20260817113738.1324-1-joshua.crofts1@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20251104; t=1786967001; x=1787571801;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=b6OMi1IqNUrs5qkhXZCHNpckPTiNqfFRI2wV9B5mW3o=;
+        b=V7vwyc+CPFJmzFZj+mr/52j6LMBJ84M04cejMB3OC1Itsq+aL6Zz9tzWm6mJNEU3ik
+         R+dVuRc8hqSzWq5+YeIQA3cdQF7egLcUEkVe1MKT6wv8x1IEUlbSX64m/WPhIb+mlBUR
+         E4qDmyFbe4l+dpgnS/R3FaUncPv2KhNwcZd+iGkkmZTiCZ+uSozx2uCJDpnoCDdPfZtJ
+         ttzvINFQ99TT/muxbog7VGgqvMN6r40y79UTJqCA8TxycOrwHdORl/u6qq7PZZiiKxWd
+         O0WXGrbtiVTmYTgOZbbMrjrdRV5KDLegRUW1t2FvVxwELAAkaHNb1bCqFDjd+jEyC4v0
+         80Pg==
+X-Forwarded-Encrypted: i=1; AHgh+RrxjzjTA/XzCto3sieQQAh0WxHWMV1cO7GViOUamuINxaegNK7/IftCt2JrDKfIRtU9kfVrwJgj27o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxOfRoQSLepUJHKmu6/cR2Q4ZMsV81Xjlw0P6URvRHQjvwT6pNW
+	AO39g7TmgQ6BylvPMLOeXTfRrGLzfar300Uj6YZZK7m8r0aB0ncP+Kkb
+X-Gm-Gg: AR+sD10KZWn8Cv4HczY8MGwXcqXngNRYxeLSNyo4XZwb06MJLVV1BaGbljfXxas3Hlt
+	0Q5XRpGtQzLAH3I5nzc7V83yzzxWALAE9F1bro5CtGXbBde/WFcW5Exua1lGZdue9ZD1vADs5OG
+	N9dCmczVKMCmiznhoQ5twYo0ac0rx4vz2TV8lToai/cFqH0YV5gT/TQrUhlhm67beJDY0s/cV1Y
+	ACfYcWsvJ12I1OCQHHlUypO3rol3/LYN7ENFT/Ihw/GsoBAk6O3fFxrStrnSfbFocfl1v0U7Avx
+	14i/MX2HF33z8s9Lu2Zh7P+gIpmh6PPGDtKYbwahw+sdgIlPM7vZIXSY5dW1977TMZ7ZxnnFnpc
+	lNlNKHZMBB/DyHMsyJ53XIdGg8cMLrLK0GOBYEuWPLbAS+KzrLJT6qZaEDQUAryX0jWxSPA/H6o
+	XQhfuRaHnS4A0FHWkLG16zMPms7/Be2XVA6yeB+5GY2LzbyxkYmi2TdzLm8EvI8XX0AHhVJneUs
+	RbCgjaoH1ETHbuuduaxlASOnzjOhleAhFwtq6I0M64/
+X-Received: by 2002:a05:6512:6892:b0:5ae:bf45:e3be with SMTP id 2adb3069b0e04-5b45916afe7mr1885655e87.21.1786967001285;
+        Mon, 17 Aug 2026 04:43:21 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b46cfa0e69sm330552e87.23.2026.08.17.04.43.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Aug 2026 04:43:19 -0700 (PDT)
+Message-ID: <0498393a-1313-4781-8afc-6dab918233b6@gmail.com>
+Date: Mon, 17 Aug 2026 14:43:18 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 12/12] iio: accel: kionix-kx022a: Fix IPOL macro name
+To: Jonathan Cameron <jic23@kernel.org>,
+ Matti Vaittinen <matti.vaittinen@linux.dev>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+ 0012-iio-accel-kx022a-Fix-IPOL-macro-name.patch@mva-rohm,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+ Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
+ =?UTF-8?Q?Topi_Sonkaj=C3=A4rvi?= <sonkajarvi@hotmail.com>
+References: <cover.1786347811.git.mazziesaccount@gmail.com>
+ <c26c2741ca11adf7a089c094d8648f4ec6cbab54.1786347811.git.mazziesaccount@gmail.com>
+ <20260817025351.5d3baf14@jic23-huawei>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20260817025351.5d3baf14@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The IIO subsystem entry in MAINTAINERS is missing the link to the IIO
-patchwork system, making its existence lesser known.
+On 17/08/2026 04:54, Jonathan Cameron wrote:
+> On Mon, 10 Aug 2026 10:55:25 +0300
+> Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
+> 
+>> From: Matti Vaittinen <mazziesaccount@gmail.com>
+>>
+>> The "interrupt polarity high" -macro for KX022A variant is defined as:
+>> However, the KX022A_MASK_IPOL1 is not defined anywhere, so actually
+>> using the KX022A_IPOL_HIGH would produce a compile error.
+>>
+>> Fix the define by using correct mask.
+>>
+>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+>> Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
+>>
+>> ---
+>> It appears the KX022A_IPOL_HIGH is unused as the IRQ is currently,
+>> unconditionally set level low in kx022a_prepare_irq_pin(). The KX022A
+>> hardware would support other configurations though. So, another
+>> potential fix would be removing the define altogether. I decided to
+>> leave the define there, as having it will allow users who need different
+>> configuration to simply change the KX022A_IPOL_LOW to KX022A_IPOL_HIGH,
+>> which is kind of a "easy to try" thing.
+> 
+> Handling interrupt polarity options at the device end is typically a
+> 'feature' rather than a must have given in most cases we don't have sharing
+> going on and these days interrupt controllers can cope with most types
+> of input.  If anyone needs it they can propose support.
 
-Add the missing link.
+I take this as a "please, drop the unused define rather than fix it".
 
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+> Note I've never been happy with how we do this when we do support it
+> because the argument for letting DT set the polarity is there may be
+> not gates or similar in the path so the driver can't know, yet if we
+> read the type to set the polarity at the driver end we are saying we
+> do know there aren't any such not gate (trick for level shifting on
+> the cheap). I haven't figured out a better binding.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8014b9f82..57d592c27 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12612,6 +12612,7 @@ R:	Nuno Sá <nuno.sa@analog.com>
- R:	Andy Shevchenko <andy@kernel.org>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
-+Q:	https://patchwork.kernel.org/project/linux-iio/list/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
- F:	Documentation/ABI/testing/configfs-iio*
- F:	Documentation/ABI/testing/sysfs-bus-iio*
+I was more thinking of people who do downstream projects than a proper 
+upstream support including nice mechanism to select appropriate 
+polarity. It's quite easy to experiment (and carry a downstream patch) 
+with one-line define change. Especially so when defines are already there.
+
+Yours,
+	-- Matti
+
 -- 
-2.47.3
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
+~~ When things go utterly wrong vim users can always type :help! ~~
