@@ -1,49 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 489B933262B;
-	Tue, 18 Aug 2026 02:01:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987613AAF42;
+	Tue, 18 Aug 2026 02:03:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787018473; cv=none; b=CsTWWKZGzFI/e1ChU5wj4VPCtvnVA8bPGFQSn/IO+PJgj52AF/lEQTtdA/GXsc0lhE1yjbAK6GY7KlBYDxTMldvyNz/3o4UNxtX6fDjNDl1/0oboUe15d/8BhR6hIy6uyFA5pDDWsLZRkykBNzJ1uhgdzGAwPRUiqCvf5p2X6Es=
+	t=1787018619; cv=none; b=kl1QAOxcCY9uu2XlgW/BSFrqFnrcyiQZi+SXwsKLRWcRmIMDkCw/n9AFPGfwUgr2c9QattqblZk0bqFW3lJ9aVjJktDO52Ag7O2/E0ye9rYWV4kjwHxnRDy7TNupA3ARPmq5CW82cDXKUMxv8x6ct6+iX2UyMayel7kc257DNUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787018473; c=relaxed/simple;
-	bh=O+3e8rmOPehZMs0EKl3SCK5CsjJ7+7A11taQY3shiFc=;
+	s=arc-20240116; t=1787018619; c=relaxed/simple;
+	bh=90lMGZXyvcIhgMn1UFFjyqKpo08ba7VLxaEcBIGCskM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uy9N7Jg28ICPeypyi/LX0byBJF99bkqti/cBxlB2g3bt91w65xsU60NvutzbWfx42yC+IXEA6/A5awL5N5h13sWiSTG2tqWVMg9cmVWn7MrOwNnfbgWXJlsgVB5BfZDNVhvWBoOvLOMA1rnUvkQoBhYjgMPrfVo6LNlSvvouUVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CL5rZirL; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KLGG00RajzTzCFNdfm2LxNePD29gCJKHg5Ti8JnDR945UPtF68rvWTLi0Jn1NUeXim4JSab6j7sMdAj+QybGilkYkzcyWSdeot8z2JD1/C/2n/k8g7M9t1jPpYUy5ypvxj6GiEKd9EggwRopQJOtI87NcxFsg/rv03iF3Us0GtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=El+VWeaz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CL5rZirL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B783A1F000E9;
-	Tue, 18 Aug 2026 02:01:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="El+VWeaz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C62041F000E9;
+	Tue, 18 Aug 2026 02:03:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787018468;
-	bh=u17WxwJqKdR72csOPdW6d6pAW4/Yjd4RKtw3iLLADWU=;
+	s=k20260515; t=1787018616;
+	bh=SBhkfAAthfbaHIZydma87FUH4CZZVfaJC3R7WBc9SJE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=CL5rZirLhjrdVK8eDdfSrgG6B058Wm8QBkvVm3U937RjI/Bhrmq8D9LyhsOoNqSOs
-	 +XBvkjkijuN6YALrNeod9pO7B7WbJaOCz5hkvb3OTMtcPy9L63rfvnnZl/vw+lIgYs
-	 IsQD+IHLeqmdtFn9bBXUJLBaFDdO+vTu16qBd2Y01j0hTX2DgsPwrI8SdmO61Tzwt9
-	 7drT7KcuS0PF9ds46b2EZzlDX2Ig5YQM+1gSiykvr9QFZ3Fzjm3xs39qoliDEfeoIV
-	 uWhdcNBq+jjiJOTK83srTDwvsx8CagYrZx9Gg/sq68rWB2IBMKoiDx3ZViQgyseypG
-	 uQ6BkTnPvXN3A==
-Date: Tue, 18 Aug 2026 03:01:03 +0100
+	b=El+VWeazO6JGicCrX89GDXP4r22xutsmLwgn4Szi+iKa5PhcwrELYOIrdDACHnlcl
+	 rF3HNCTiKdm9pQ2EO89E/lhOVgC8FCjRhb5xNFGV/8B5X3tj/aeo7MiGT2HXOJZa7u
+	 qez7qMZxh9Hp6l7lg6Wa0bBu4iaHndHwfOMmVGlD17qmy1SPXzepKAD+KyqerH9cSV
+	 mvQNC43qmLPAJEshTecGoBov/8RrVtoopuKwZe1R4mfdImwxzNTi3K+3B3TpVYeEpQ
+	 tFK/RRuJvxIemwM3B3lCbLx/czIi4oeJ2hCWQP/seJGa29RDV6AOCbySRr3wpkrsCa
+	 0knFAlnTqVZXg==
+Date: Tue, 18 Aug 2026 03:03:30 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Matti Vaittinen <mazziesaccount@gmail.com>
 Cc: Matti Vaittinen <matti.vaittinen@linux.dev>, Matti Vaittinen
- <matti.vaittinen@fi.rohmeurope.com>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>, Mehdi
- Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>, Topi
- =?UTF-8?B?U29ua2Fqw6Rydmk=?= <sonkajarvi@hotmail.com>
-Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
- initialization
-Message-ID: <20260818030103.41e598fc@jic23-huawei>
-In-Reply-To: <a6ea43ab-964a-4667-924f-50efb86dd73c@gmail.com>
+ <matti.vaittinen@fi.rohmeurope.com>,
+ 0012-iio-accel-kx022a-Fix-IPOL-macro-name.patch@mva-rohm, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Javier Carrasco
+ <javier.carrasco.cruz@gmail.com>, Mehdi Djait <mehdi.djait.k@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Kalle Niemi
+ <kaleposti@gmail.com>, Topi =?UTF-8?B?U29ua2Fqw6Rydmk=?=
+ <sonkajarvi@hotmail.com>
+Subject: Re: [PATCH 12/12] iio: accel: kionix-kx022a: Fix IPOL macro name
+Message-ID: <20260818030330.62158406@jic23-huawei>
+In-Reply-To: <0498393a-1313-4781-8afc-6dab918233b6@gmail.com>
 References: <cover.1786347811.git.mazziesaccount@gmail.com>
-	<7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
-	<20260817021252.5ef32a57@jic23-huawei>
-	<a6ea43ab-964a-4667-924f-50efb86dd73c@gmail.com>
+	<c26c2741ca11adf7a089c094d8648f4ec6cbab54.1786347811.git.mazziesaccount@gmail.com>
+	<20260817025351.5d3baf14@jic23-huawei>
+	<0498393a-1313-4781-8afc-6dab918233b6@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,71 +55,62 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 17 Aug 2026 08:51:46 +0300
+On Mon, 17 Aug 2026 14:43:18 +0300
 Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-> On 17/08/2026 04:12, Jonathan Cameron wrote:
-> > On Mon, 10 Aug 2026 10:53:07 +0300
+> On 17/08/2026 04:54, Jonathan Cameron wrote:
+> > On Mon, 10 Aug 2026 10:55:25 +0300
 > > Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
 > >   
 > >> From: Matti Vaittinen <mazziesaccount@gmail.com>
 > >>
-> >> The BM1390 tries to initialize the AVE_NUM to 110b at the start-up. The
-> >> field location is not taken into account, and value is written unsifted.
-> >> This causes the AVE_NUM to be initialized to zero.
+> >> The "interrupt polarity high" -macro for KX022A variant is defined as:
+> >> However, the KX022A_MASK_IPOL1 is not defined anywhere, so actually
+> >> using the KX022A_IPOL_HIGH would produce a compile error.
 > >>
-> >> Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
+> >> Fix the define by using correct mask.
 > >>
 > >> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> >> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
-> >> ---
-> >>   drivers/iio/pressure/rohm-bm1390.c | 4 +++-
-> >>   1 file changed, 3 insertions(+), 1 deletion(-)
+> >> Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
 > >>
-> >> diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
-> >> index d00d7ed54cb1..29454570f257 100644
-> >> --- a/drivers/iio/pressure/rohm-bm1390.c
-> >> +++ b/drivers/iio/pressure/rohm-bm1390.c
-> >> @@ -479,6 +479,7 @@ static const struct iio_info bm1390_info = {
-> >>   
-> >>   static int bm1390_chip_init(struct bm1390_data *data)
-> >>   {
-> >> +	u8 regval;
-> >>   	int ret;
-> >>   
-> >>   	ret = regmap_write_bits(data->regmap, BM1390_REG_POWER,
-> >> @@ -512,8 +513,9 @@ static int bm1390_chip_init(struct bm1390_data *data)
-> >>   	 * Default to use IIR filter in "middle" mode. Also the AVE_NUM must
-> >>   	 * be fixed when IIR is in use.
-> >>   	 */
-> >> +	regval = FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
-> >>   	ret = regmap_update_bits(data->regmap, BM1390_REG_MODE_CTRL,
-> >> -				 BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
-> >> +				 BM1390_MASK_AVE_NUM,  
-> > 				 FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM));
+> >> ---
+> >> It appears the KX022A_IPOL_HIGH is unused as the IRQ is currently,
+> >> unconditionally set level low in kx022a_prepare_irq_pin(). The KX022A
+> >> hardware would support other configurations though. So, another
+> >> potential fix would be removing the define altogether. I decided to
+> >> leave the define there, as having it will allow users who need different
+> >> configuration to simply change the KX022A_IPOL_LOW to KX022A_IPOL_HIGH,
+> >> which is kind of a "easy to try" thing.  
 > > 
-> > If respining I would drop the local variable and just go a bit long on the line.
-> > I like the mask to be clearly visible in both parameters and a local variable
-> > prevents that. Fine if the line is really long, but it's only about 83 chars here.  
+> > Handling interrupt polarity options at the device end is typically a
+> > 'feature' rather than a must have given in most cases we don't have sharing
+> > going on and these days interrupt controllers can cope with most types
+> > of input.  If anyone needs it they can propose support.  
 > 
-> I am not going to insist - but I will explain my view - which will sound 
-> like insisting XD
-> 
-> For me it is always a tad harder to read code when function or macro 
-> "calls" are done inside a parameter list. Hence I like a local variable 
-> here. I do 100% agree with you that mask (and sometimes raw numbers) 
-> should be visible in code - and not hidden into variables / defines. 
-> Still, in this case, the mask is assigned to the variable right above 
-> the line it gets used. So, I could argue the mask is still pretty 
-> visible, and FIELD_PREP() is called on it's own line and not inside the 
-> regmap_update_bits() parameter list - which is more readable for me.
-> 
-> Well, if you feel strongly about the variable - then I can ditch it. 83 
-> chars is still okay(ish) - even on my "old eyes, big font and 3 
-> terminals in parallel" -display setup ;)
-I don't care enough to insist :)
+> I take this as a "please, drop the unused define rather than fix it".
 
-J
+Nope. I'm fine with fixing the define being there (fixed).
+This was more of a comment on whether we should 'fix' whether we 
+ignored the flag from firmware or not.
+
+> 
+> > Note I've never been happy with how we do this when we do support it
+> > because the argument for letting DT set the polarity is there may be
+> > not gates or similar in the path so the driver can't know, yet if we
+> > read the type to set the polarity at the driver end we are saying we
+> > do know there aren't any such not gate (trick for level shifting on
+> > the cheap). I haven't figured out a better binding.  
+> 
+> I was more thinking of people who do downstream projects than a proper 
+> upstream support including nice mechanism to select appropriate 
+> polarity. It's quite easy to experiment (and carry a downstream patch) 
+> with one-line define change. Especially so when defines are already there.
+
+I'd rather we support them properly if they actually need it.
+Ideal case they'd ask even for a downstream project and at that time
+we can add support - via the ugly path or maybe something better.
+
+Jonathan
 > 
 > Yours,
 > 	-- Matti
