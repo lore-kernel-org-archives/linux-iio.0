@@ -1,157 +1,122 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13D732F8E82
-	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 07:22:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0058F33E360
+	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 07:28:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787037775; cv=none; b=o3gDGJRgsDe2EU9B1s5EWXo/jwvkOgutgzwl7KydQ+i6eH61iLKcqJdc7+u+tXfWUc4Dq0O/8VjoJqKCQrOBOhThRcJaKFQEKqpw9AOvfT4a03fdLDJeKYBGxx8z2olOFhAtceHOXFTPRoMwKB4AdvIVNicN7sJTkrJPeZrknl0=
+	t=1787038093; cv=none; b=lgqLnWOC/CRyPFvv61iy4rDyeqLJqx0daJYfiMIrYTaIzdPHc3AUMLB+1HoxbdzG1Mu7MziMXsTAM4XHGamU4LJqEf7KQfuepTGDrDfQht3EBmKnfD3iBvyIgmXebkJyufcjlw6vREjRb8LoLlFwVPE86rpqDuU9lgSrj7VTuBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787037775; c=relaxed/simple;
-	bh=NMmCASi+YcbAUsvQEOoHJR1ejq8y1LA0sWgEQLZ1jlM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OSL54P8VlYvYZm7vvaLPLgHGZ3Ig/4uarS57NoQu95wUbK/8AEyUqI1QHCfM0TGBFIuv5tpn86uBhX17KYK0/Ff4JXQNm0KjjDVC+4wtN2+PM7Sh8/zV8Uw/03Qjkb1IeRdoTMxr/ftu4myNndoGRAkHwR61ON8uhokAjtT8mdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KX8EqFDi; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787038093; c=relaxed/simple;
+	bh=llI1eYDiE1+44pcJabFhew7U9QxDwmAqAUb32p9WxAY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gWJwQH0jGzuWFoVjGY247XyH0329jZuG/KiTNyi6V6lqL0AToMos9zrQTlhDqNDTfa9Yj4qlPNDJNJNl0NU5Q00Mcdvlcd6DdNkRbeIu9gf5IoOlaZSxOyCA6V9Ms58AxFR9UgIazrzUxObyjly6J4wpY6btLe4epqh+geEiQCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=huaqin.corp-partner.google.com; spf=pass smtp.mailfrom=huaqin.corp-partner.google.com; dkim=pass (2048-bit key) header.d=huaqin-corp-partner-google-com.20251104.gappssmtp.com header.i=@huaqin-corp-partner-google-com.20251104.gappssmtp.com header.b=NTbCVQSD; arc=none smtp.client-ip=209.85.216.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=huaqin.corp-partner.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaqin.corp-partner.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KX8EqFDi"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4995b0343c1so40129575e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 00:22:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=huaqin-corp-partner-google-com.20251104.gappssmtp.com header.i=@huaqin-corp-partner-google-com.20251104.gappssmtp.com header.b="NTbCVQSD"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-38ea87caafeso3336191a91.3
+        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 00:28:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787037772; x=1787642572; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=NMmCASi+YcbAUsvQEOoHJR1ejq8y1LA0sWgEQLZ1jlM=;
-        b=KX8EqFDi/aLe5ySddIx3EM+cQj8eEXEkWetiWvZ2SzAG0S8uIj51qvaMERtzIX9u/7
-         My/vzGx88gXkgt+r1TJHIIeHW331b5GN9vQvsSDw/LqLf4+E+5nbHrs7YbqKmmDZcbS/
-         MYASVfMQ+Qya5fBPNWXng1vhH5Je8vLDpMyYXREpYkiOtTAX2LUaed/n5x+kxDWj/JeV
-         ZkhNr6MQuCkY1C0CJmW8mbpU3CKrW54nRp7wbSUEZuHS9bXYvQwbvb2vcXGeNOhhpxMs
-         0Q3M1HQNj3oVFD+FMT7ZXoHPHQTm0UTCKA6W+8IPiRkjLzk1JXpXEb/53SvbL04CHnB0
-         lWbw==
+        d=huaqin-corp-partner-google-com.20251104.gappssmtp.com; s=20251104; t=1787038091; x=1787642891; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=i/J6livk/VLSut+74toCa5+NkTdeXoYOz8nw8KIzNek=;
+        b=NTbCVQSD7q3EZJhYjmEdN7PkWwHf/yLZ2dkzGxM+Wk/8ar6nAYvfdi1z4Qe0Z5GNdL
+         8a7V4H4WQ0q153QA9uCTI9le3witxiNSfmDoyXAE4ebcw4H50nYxk74IaJQaej8KqBIj
+         SvAAUqvGDOCrKH3xoPvMkX4oNnEJxb8Isg/kI7CQ4gEXwO/dBHkLatdyJo58xgedTFDY
+         qEeP7CeUYns7o5InGDwKdUkqSlJTjG7aEPL9PgPqZAOip4Lv9uefj6HWJpzUAgEdwYEO
+         7pnlfIm5rNe8/kh9x5MYyp5QOAJtyqGxozx+cCX0OWQdS+LB+qCYuCeXQtutbY6hCCGZ
+         ePuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787037772; x=1787642572;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=NMmCASi+YcbAUsvQEOoHJR1ejq8y1LA0sWgEQLZ1jlM=;
-        b=OaXH589iSalcb+ZXARPzr3vQF2xV4HilQOJdXhHKOvPZb+vHla5Pe4yvm785Lbjm2y
-         ugCF3q80Iw2ehvlZduQMOXe40eCQ8L9HlWGQZ4aidXFOiEfqW3cGZjukFUgxf8mARGLm
-         X7v+PV3i3XCdB6Cl85wx++ZcaaUuAtNELptsQnMl0u24rzcc3PLgXvzOMElXEgvLgFdt
-         /JasitouFDk0kYkpNL3rO9QC+8t4VowEHO7pHl12q8KMbkoy+UXImvobgcVSfuIrQCFU
-         lHobfnnLevyTSAKRqA/qHMOcUguRUSuLsvH5lvjiJ12SDdhXP/GFKmSnEmMtOiae2uEM
-         Pj5A==
-X-Gm-Message-State: AOJu0Yyrn4aozDiC9Hcw1Wg1qRBgADePNcNtI9P+aa1BsHrsC+1NnFWX
-	QMMTLb9ybIeb9h+3K2NIQul4qUSWXVuWNfCjjAmZ+V9ADrrttN3iqKoBHjhzPPyYdx0kQQ==
-X-Gm-Gg: AR+sD13Bp79oqHQxS32hiYrzyE53w+HNyQf097Rt8LwlCnTaYvre7RhYv+/L2S3imz6
-	ZfjnHoOVs9R3Po5xfZGfh7YqmugWD0ZIvZySpxUKAsoQKkcqajrfU4/CmUPd9IPken8wTq9coH/
-	eCtkKkx7v2kPxl0VSCg96ZjfJiUx+LgWVC0zpK/jHvFd+56OnM2zbjlX8Sd26+hymrFbxMvbgJh
-	okct6dqGYFPIcjFBhGWIOffgC3fgOS5lTZQhA1sb5oYUrWHc2LVqJADt6vnoXGFc1OEeHw1GaPk
-	6L5lZ9D+5z+wlfIJ9zE9+qQOiJxGCugjekl7nKRvSw9MYJbQcTiB4Bue1C8Nbt7KTvuVEtr39wb
-	pJUwD/L9/loGH1XWmWc47jPFBH+w6ucceQC0GLhre9plsnOT5PdonqorsUAlOqswvbhH1g0piZH
-	5dRoO7jS/wEUkJPh9USLYxckGVH2DINcifrDjpIf10KJ6ik6Isj+D3J5X75CIBXMLEvYf7ZzzUc
-	QV61FXjCmRoOA2HpocfkCR36NuNTr2zWd4LTc+l/Ii1cSUe+ZPVKK01uf6oDo0A2OeTaXxIzbtU
-	1/KhnyJrF7yjCt+JPWZQxRqJLuos/VGqOB6OLLJ2xbYrpoZ856HxBfOrO0e9WXzisomu3vYBqse
-	uQKhgAoYmyhjswQNh0q5t/wHOcYS5pit296xq+tQ+LUxK//TzKg+iM+CXRhK1My/CLfTodA==
-X-Received: by 2002:a05:600c:5613:b0:493:c47f:3c55 with SMTP id 5b1f17b1804b1-49987937672mr337181375e9.5.1787037772126;
-        Tue, 18 Aug 2026 00:22:52 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482a5a3b660sm9695455f8f.15.2026.08.18.00.22.51
+        d=1e100.net; s=20251104; t=1787038091; x=1787642891;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=i/J6livk/VLSut+74toCa5+NkTdeXoYOz8nw8KIzNek=;
+        b=ILpszqwquPYqV0Ls8VGxRR2mDkg2ZWWWQ9Q57uaHKrkovbaFTWKEH9Dv1UB7oS6+BV
+         JI3puEn7xFUGXhAuZdWbOJ0Ij9rGBlsqU3GgAkljk5x579FEKq2iAOUNBF3zuTy8UCzI
+         /WLpAyJ56KCrbrtxEpdUA1PvoDjm6Tdc/zgb0UHr3Ag08P1Fv5SGroNOm5MmDDHbKgwX
+         +c//Sh+DanerebPaDMirW+ScCchYIGTyDdqulAjcrX+DcpyrHYm168ZKTapaTxKfEbM1
+         XQrDAac9Wl0jrlI0kb04tjISARWCCemt5jzwNcmhmbJwifMBC9hRDrjrrvStjAG1F7RS
+         l6EQ==
+X-Forwarded-Encrypted: i=1; AHgh+RroyVem0MoZ4Jp/lPMioKxX0uOmvbI0s1NAgQNYXvlh1lqFTdNFxXhg+gwpe26DfkXfJC6jlq+kmBs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy3Y4/H8sLLdeQYr0jcReLk4lCiNA291DWbJE6tzskd8p3j6pFc
+	h0xErDoo3ZVFKWOONtw5AIkyhMvgHku4Cy6mxy50ELx7PINA4jcQIzYPBYd0w9IYhg8=
+X-Gm-Gg: AR+sD139YWp/t4Shv0Zz5TLxKJ0/gkOmumJKomYi48aKpLohkP+BZcSWHn6dSuMN27Y
+	oYp87BdCbzTD9V8FHJgxXTZ/mWKcI5+j/36jBNa7+7nXtW5AxeBmClMyp1gZ953th/JgBGykZm3
+	9VwH49+/qdPCplALXrHRhNfokTQJJ3j1c1WvLKtRnQyWlxri191dC9fZGhgKlJoVvUZ+0GCMmin
+	loJYtrgrbS3TzjUU0yp6QxSYmpMaJpDavSDma8S9TJv0LQDjWQRTfK+Sv92bWmv5+ew7ksfcNtp
+	ZmJbs7LZXib6XRyqvCeFZeNZLbC4UtZgLb1CvEqBhhQCBAOJbewkknowRxlY6vSaQq4gbNOX5ZK
+	7skjWEnLbJsoZ6lIFiMT/fYxqpsDuJri+4iLxNKajGBIU+5cUwKSg2+0eykwD1ua4qmkTWjLvfy
+	gh8w8OTUm5HVAdhanEwHDYTvdmhgixK7Mpvdd4uUfyYoPd6wiEopcUaFIcqhB25nJshYdv7ofRc
+	SaZBGbFSoKZKrA6VhkwIydeX9ntB2AGD09N4Fc9LHlMbThNAdVWaw0=
+X-Received: by 2002:a17:90b:4b01:b0:38f:240d:b857 with SMTP id 98e67ed59e1d1-3933b714d4dmr29278418a91.2.1787038091235;
+        Tue, 18 Aug 2026 00:28:11 -0700 (PDT)
+Received: from lucianna-LOQ-15AHP11.huaqin.com ([103.117.77.121])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3954d38bd51sm5146630a91.12.2026.08.18.00.28.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2026 00:22:52 -0700 (PDT)
-Date: Tue, 18 Aug 2026 09:22:40 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: "Maxwell Doose" <maxwell@maxwelld.cc>
-Cc: <linux-iio@vger.kernel.org>, <jic23@kernel.org>, <andy@kernel.org>,
- <dlechner@baylibre.com>, <nuno.sa@analog.com>
-Subject: Re: [RFC] Maintainer entry profile/contributor guide for IIO
-Message-ID: <20260818092240.000061f2@gmail.com>
-In-Reply-To: <DKRG0P23P5NA.171S6RGSLSI3W@maxwelld.cc>
-References: <20260817111825.000063f6@gmail.com>
-	<DKRG0P23P5NA.171S6RGSLSI3W@maxwelld.cc>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Tue, 18 Aug 2026 00:28:10 -0700 (PDT)
+From: Zhang Jie <zhangjie14@huaqin.corp-partner.google.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: gwendal@chromium.org,
+	swboyd@chromium.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Zhang Jie <zhangjie14@huaqin.corp-partner.google.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: proximity: sx9324: Correct proximity channel resolution
+Date: Tue, 18 Aug 2026 15:28:03 +0800
+Message-ID: <20260818072803.463864-1-zhangjie14@huaqin.corp-partner.google.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, 17 Aug 2026 13:50:29 -0500
-"Maxwell Doose" <maxwell@maxwelld.cc> wrote:
+The proximity channels were previously defined with 12 realbits.
+However, PROXDIFF is read from RegDiffMsb (0x65) and RegDiffLsb
+(0x66). The SX9324 datasheet assigns bits 7:0 of each register to
+PROXDIFF and documents it as a signed two's-complement value
+(Revision 3, Section 8, Table 8, page 43). In contrast, RegOffsetMsb
+explicitly marks bits 7:6 as reserved. Thus, PROXDIFF is a 16-bit
+signed value.
 
-> On Mon Aug 17, 2026 at 4:18 AM CDT
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
->=20
-> > Hi all,
-> >
-> > I was browsing lore and checked out the ksummit mailing list, where the
-> > topic about guiding new contributors arose [1]. New contributors tend to
-> > make the same mistakes when sending patches, causing reviewers to point
-> > these out all the time over and over again. For IIO, this is definitely=
- the
-> > case (I myself send an email telling people not to send a v2 in reply t=
-o a
-> > v1 several times a week). Other subsystems have a "Maintainer entry pro=
-file"
-> > that contains subsystem-specific process info (DAMON for example [2]) a=
-nd=20
-> > (sometimes even [3]) a document describing the code style of the subsys=
-tem
-> > (this would be a great place where to mention things like not using
-> > kernel.h in new drivers etc.). I'm happy to create both of the documents
-> > but it's always great to hear other people's ideas!=20
-> > =20
->=20
-> Took a look at [1] and it looks like these are issues across multiple
-> mailing lists so maybe we should add these to the main
-> submitting-patches documentation? And then for other IIO-specific things
-> we can put those in a maintainer entry profile.
+With realbits = 12, sx_common_read_proximity() uses bit 11 as the
+sign bit in sign_extend32(), causing samples outside the 12-bit
+signed range to wrap into the [-2048, 2047] range.
 
-Fair, the "don't reply with a v2 to a v1" comment was a bit off considering
-I was mainly talking about IIO specific documentation, however having a cen=
-tral
-document (or documents) of sorts for the IIO code style and process is a ni=
-ce
-thing to have, I'm sure even the most seasoned reviewers forget stuff occas=
-ionally.
+Correct the realbits value to 16 to accurately reflect the hardware.
 
->=20
-> > Second of all, the idea of having a bot that would automatically detect=
- new
-> > contributors (i.e. the email they're submitting the patch with doesn't =
-show
-> > up in `git log --author`) and send an email reminding them of the basic=
- rules
-> > (while also referring to the entry profile mentioned above) sounds like=
- a
-> > great idea, but of course hosting and maintaining are pain points.
-> > =20
->=20
-> Hm...this one is more difficult. I guess a good first question to ask
-> would be "can this be hosted on kernel.org infastructure?" But maybe we
-> can also ask Greg KH about how he does his automated bot.
+Tested on an SX9324-based device: a phase 0 DIFF readback of 0x7fff
+was reported as -1 before this change and as 32767 afterward.
 
-=46rom what I gathered, kernel.org doesn't really provide infrastructure for =
-this
-type of stuff :( If you look at [1] you see that netdev got overloaded with=
- patches
-so they made their own bot for this exact purpose. One could just spin up a
-Docker container that periodically pulls from lore using lei and runs a git=
- log
-with the author's email against mainline/testing/togreg.
+Fixes: 4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Zhang Jie <zhangjie14@huaqin.corp-partner.google.com>
+---
+ drivers/iio/proximity/sx9324.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I believe it was David who originally proposed an IIO bot [1], primarily fo=
-r code
-inspection.
+diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+index 36c45d101336..de6176fd8d47 100644
+--- a/drivers/iio/proximity/sx9324.c
++++ b/drivers/iio/proximity/sx9324.c
+@@ -223,7 +223,7 @@ static const struct iio_chan_spec_ext_info sx9324_channel_ext_info[] = {
+ 	.scan_index = idx,					 \
+ 	.scan_type = {						 \
+ 		.sign = 's',					 \
+-		.realbits = 12,					 \
++		.realbits = 16,					 \
+ 		.storagebits = 16,				 \
+ 		.endianness = IIO_BE,				 \
+ 	},							 \
+-- 
+2.53.0
 
-[1] https://lore.kernel.org/all/4742ea18-f3df-46dd-aad4-18d1e5f03f7f@baylib=
-re.com/
-
---=20
-Kind regards,
-Joshua Crofts
