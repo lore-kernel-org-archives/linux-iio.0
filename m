@@ -1,118 +1,111 @@
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45CDB135A53
-	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 00:31:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0A3A1474CC
+	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 01:06:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787013110; cv=none; b=czI1Gbg40yrvgmuwrxWzxTIQmJs7ISBcTy3vH65j6+fu5UsFP3MNCUBXLLfOr1pf5cLOosulDihfTCRvXKASAGX8Sln3dHXbmqxNCwpc4igUiDguUAR+x62+uDXnd7J5B0CFWuc1Bqph/4Z4U41XYZ/CE/xjpLmnpuzTvaVDZks=
+	t=1787015204; cv=none; b=aUuFq2g9ajwsEh6t4iFRyPrcWWYj/E/em4S3zA5uRfMdovKtxVATkSkVkHEqdr7caipg+k4Jlmsb2iW179iGWuluepmPSKy3VW9iJmtjv8lphFMu9HSbByjoSxQnCgjdO9/hVABEkOHpG15Z1g71K3tKMheBC6JGplVG0NRTpPs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787013110; c=relaxed/simple;
-	bh=h1d6f5af3IhJ0FXnY1x1XMDRUk8/hQkA8E9L1vt7noU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Mr/TvaISCXrp7WzeC0nK9OY5JLDrlHJFE/z2S9QyabDCAGNFoIKobNjqRoWwFEbj/bRAZd8OudKXb4go1QH52wXuQ99Ua/XG64BYrBhtBUG3gOvgTLfH3gl6jxBl/8dLVPct5B3D/ipCnYZVaMDLXcVNwCRpGvH0k/eLmN3SSg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=KpPl3fVc; arc=none smtp.client-ip=209.85.160.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1787015204; c=relaxed/simple;
+	bh=eSPFm40DT82J9f9OZEaNKoqzMUgt02iaejJx5gfUYWM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hceS5GN2uy3e1PGiOdTojP9RIAZU5lDn8JzRrdqznqcpHQoOIXQZKnKhZiEDSpWAxbT7gwwC1f131YDdjNBKweOfIql3d0E+TlLod4OTUz9OFiuvclkviBsr751NKfueeTGaRynNkutSd9EonviTs1+DrQoLnP0PT8gUD2yVNl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ArWaCT2g; arc=none smtp.client-ip=209.85.221.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="KpPl3fVc"
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-448b0ff4a57so3721139fac.2
-        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 17:31:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ArWaCT2g"
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-5bfaa014978so1571466e0c.3
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2026 18:06:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1787013107; x=1787617907; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=68Kd4jn0n+scs+Bd1klRzYSaGtVCxQevZ2K9sSqiLVo=;
-        b=KpPl3fVcpxjhVXo8cDrIB8w2frbtdW1udWv7U2M7rEhT3mZv28SLcOJj2arVSfJkNO
-         JQIVupwus1jE1SI/TRx85bjRZXBaBVuqOuGddkVx+8NSFma3xGz5UCtheZSCNGH+wud7
-         bK8JKbRoxPBwRrQWvHEtGGkxtuDEHF43Qe7j4xirHt2Ptss2sYlWC/6PoqoYjXaYoBvt
-         W6ZT+O5r220QPSOOwlgihfJ4NyO3wv1cmfUoN7y+9O9+UqWaWbQERC+wphbYMASYeUBG
-         wkPTJHwoaIdb81nLnC6AtxxZ8UgRAZGyODXaPW2N84h1Hgj5DN9tJMoVzhX0Fk41jNWm
-         mIxg==
+        d=gmail.com; s=20251104; t=1787015202; x=1787620002; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=S0NWw8TWJUBoUoRaTT3xU902CIURU9VCpckKgBzcPno=;
+        b=ArWaCT2gCpZ1uOzJNI9yxUy2XsfLMBF1WQYCRT25DnT4Kdv+1PF3+pi8oB4v+cqNW0
+         9M1s6boW/XotDHrS/cdjACswsZRr3/JMp8nHgeeZT6rZPdsxo+qmUHfX7l13OFaOlZxY
+         MYBzxawj/nP07BI8uw6+J8H708ODe89/WGII9TuIq8O0dOzbqVvPuZi74wZGn2kZw0Dv
+         NTKRKy6ebcGZ24jfmtXqWKkyOflnLyjbFCB/IKGQ5wZIOdNRfNnQRPMvtn92NUrLO9NX
+         uTyMsT7fyadpVl7QVE5PO+Ha8wfcznEekC/KBtHRKe1EF3qjvGIr8qITqSVc5fee4LaS
+         MA7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787013107; x=1787617907;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=68Kd4jn0n+scs+Bd1klRzYSaGtVCxQevZ2K9sSqiLVo=;
-        b=I2Q/02Cb2ClokEJVM6f38C6TgGM43TRNSNhddHDce4Liu0OoHVrC7zDFYJpsgY7XGJ
-         jWpAvc+AnQ8VYo1qz2bQHdrXwFB27ZUnJoG6dX9FFzxnWxNn6Y14mGxQYfdSIXq+Rclj
-         Y09ONmmmUZViJMrIl41heRqNgrtwV2IZ+mws4Xhthg3hVpt2cMutsB5l/xmjamHhSHoq
-         iuB+Wkfh7ThJAc7nbjXB94DfdEUj9XZe6RhzVRqC2ROZgYtlFbHZ4D/6UDXzgWlKRNMV
-         76LW3IJNaLL8TXiqPHnY32kLbWo5UrfZgOsjnEbwIdEXPB0md5Wd7h5Ser282twBlpkj
-         oraQ==
-X-Forwarded-Encrypted: i=1; AHgh+RotX17VyuX8iROXpN4lry/oY9gAIExj//i2UEhwArrte9s1/gHEvy/hHHowmiZz2muFocuk8sgXrBw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfhPlBHSpLhZh2y5KjEUVGokbwFAPRvCoaxbGqnV/ZvKfHDr8j
-	23kgeWcYnUk8NZASWlH0meBIxTXJkEFfCCWl0YaCWJoj7z8niookHvFoSunCrOEGUUI=
-X-Gm-Gg: AR+sD12HUwsgpbgCZh1K9U7q3NSbfMfKwr7EIowUzN/4aspIr4l9euBuEJA2fXUyt0p
-	jL//czxx9zPMFYJqvnM60j1yh31SdT60EHK9Zdp4yaIXsyvhbyiehva2DtbYzAgIWiK4HgmzTKv
-	DW5pxo3NzJ/Bpz/5mxWsyyXgTnVuCCF1QbcD2M/Uvs1DBibeSA6vu4QQe0qLf30yh99vw69zyY2
-	Hr7ewbTEfZanV0ZOf32dYXCvQATEfMptKacl7nyDbn9avRyJHTXoQpIaG9gR2l5JZTEFssjG2Th
-	gB1n30+icasOfxtbf6VxBBEOBwO6CyNpbnJl+Ek/V8oj5asrTcOV59qwNu3uTpU/q2gVKApNfvf
-	OFpuSJGZT4PJoLcRYfCsKh6te3uQnbO+z6irKIB6yErQ5kjXoyA8M6SxOH2dmnuAb8+fadpcNrf
-	Gha11aVcaj/wIVk2PpGXyjrn2lTtb/Vinf+wSsenhC3zgQPE2pCron+u+93HKHkD5+R0qVJoDsh
-	uZkCmXT1r/+BC+W+yuGiNLWaVYDAraZomYn1hl8yaKTI7OwNIQ=
-X-Received: by 2002:a05:6808:159c:b0:4b2:8da1:3be4 with SMTP id 5614622812f47-4b28da13c71mr7022681b6e.9.1787013107052;
-        Mon, 17 Aug 2026 17:31:47 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:7777:83a7:41ea:5906? ([2600:8803:e7e4:500:7777:83a7:41ea:5906])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4b2906a3edesm2241478b6e.0.2026.08.17.17.31.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2026 17:31:46 -0700 (PDT)
-Message-ID: <cb1937e9-c2fa-4d8d-bd95-f53423d88077@baylibre.com>
-Date: Mon, 17 Aug 2026 19:31:45 -0500
+        d=1e100.net; s=20251104; t=1787015202; x=1787620002;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=S0NWw8TWJUBoUoRaTT3xU902CIURU9VCpckKgBzcPno=;
+        b=lkVJ3+hc0FL/2gLhbKUs5EDw3wmgnjb1bet4pomh/o0XdHm285i0uNcX8Z71o/0cIA
+         j1qZOwqYti2EZAnmc9yV3pjsFjAUTTb6vN2KSNnOB5Jcuwom0nuNeyHIip19VOTAzCrW
+         Rvg6UTTkfjEsQhDNagEa8zobmVvP6tf0evCgPIww7JA7YUUDxcgjqE1LMxOWdyz7EJjd
+         EpX2K4Rk1zjB4fbMCIHrTEqj26lt0GtTt4L5MSPFtUUdqb+FoVgBAtLwlPfGMgmXAjQA
+         ID/ZMrOSnZxeRb8hCM2ZbmCe02SshZ/HW1oEI7rRhbWDxplKq5IkF/EeR8o/Kt8gt/rP
+         Ux6g==
+X-Forwarded-Encrypted: i=1; AHgh+RomO9PTUBkCRdqU9+xyh2CDcvW7CTmCLMIe9vJ8g9wMVWRopAkehbNjRuuq+QrV9wxmEQgX/rMI/fQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzMV7fOqThYRAqiFNayti8Gpkw11X4WjW8MQ93qQZ5s0uqzVu8v
+	iI77z+S1rq2oh6/4pbaxWIc1BvXxAFgzkZCgQUbErimpZ+MMTd5ONri9
+X-Gm-Gg: AR+sD13Tg08Rac/WOFoOS91slPIyNEHzYTBLnjJ4id/OwcM3N9/kl/rLGn+ON95x3zC
+	08TYvtMQab+t6Q2DxyMH8Y5aPGNyV0Q7Qp8UHDicpg9Qpmp46Ng6mIYcxKkXZTaZrxzXhv1dxcP
+	EyGWd1WJBGV8Wiu+fe2Gz8vpuvaIpxVghLdw5Bdu13JwVy+fWMT4/lHe+3CZm7wlZgoRV/7VrW6
+	TRFkkWQVpy6wRzWH2+aXO9ZA13jofy9bBers/wt3t+7m8QcFXhLJrCSEDT/ukpLXjAT5mBIXHF3
+	DgSu+Hoq3ZegCbY9tl4slNI47ZzrRp0BSAItR2Jj03JZJU6g3+zFiUN1rABv4+cIJm3HiHidwkN
+	9Kbqeap3oToqytAM0pMIO4GfDFx21+ZzxN6Fuy/OAu+Hv8ttu83vT8igeJwkso7142o4KcgCnih
+	3vW6Mt4XgsZlQtqRHntqpS95Vtic2mwBVQZR4GFPdy2zWNlnjIYWonZtgKTlxuY+q77TR3
+X-Received: by 2002:a05:6122:50d:b0:573:a779:62cf with SMTP id 71dfb90a1353d-5c5ce7ed595mr1017290e0c.7.1787015201662;
+        Mon, 17 Aug 2026 18:06:41 -0700 (PDT)
+Received: from localhost ([2804:30c:97d:e800:9454:1179:18df:ab33])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c5c7684cb7sm2331580e0c.8.2026.08.17.18.06.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Aug 2026 18:06:40 -0700 (PDT)
+Date: Mon, 17 Aug 2026 22:07:19 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: =?iso-8859-1?Q?Nicol=E1s?= Antinori <nico.antinori.7@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+	Brigham Campbell <me@brighamcampbell.com>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Jori Koolstra <jkoolstra@xs4all.nl>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Shuah Khan <skhan@linuxfoundation.org>, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v3 2/2] iio: humidity: am2315: add support for am2320
+Message-ID: <aoOwR6JMOYPCn4PW@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1786725567.git.nico.antinori.7@gmail.com>
+ <83c8a41607ed07285a84dba8ed10a954226076b4.1786725567.git.nico.antinori.7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] Maintainer entry profile/contributor guide for IIO
-To: Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
- jic23@kernel.org, andy@kernel.org, nuno.sa@analog.com
-References: <20260817111825.000063f6@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260817111825.000063f6@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <83c8a41607ed07285a84dba8ed10a954226076b4.1786725567.git.nico.antinori.7@gmail.com>
 
-On 8/17/26 4:18 AM, Joshua Crofts wrote:
-> Hi all,
+On 08/14, Nicolás Antinori wrote:
+> The AM2320 is fully compatible with the AM2315 sensor in terms of I2C
+> communication protocol and measurement conversions.
 > 
-> I was browsing lore and checked out the ksummit mailing list, where the
-> topic about guiding new contributors arose [1]. New contributors tend to
-> make the same mistakes when sending patches, causing reviewers to point
-> these out all the time over and over again. For IIO, this is definitely the
-> case (I myself send an email telling people not to send a v2 in reply to a
-> v1 several times a week). Other subsystems have a "Maintainer entry profile"
-> that contains subsystem-specific process info (DAMON for example [2]) and 
-> (sometimes even [3]) a document describing the code style of the subsystem
-> (this would be a great place where to mention things like not using
-> kernel.h in new drivers etc.). I'm happy to create both of the documents
-> but it's always great to hear other people's ideas! 
+> Add the "am2320" entry to the i2c_device_id table and create
+> of_device_id table.
+> 
+> Signed-off-by: Nicolás Antinori <nico.antinori.7@gmail.com>
+> ---
+Some optional suggestions for the commit message:
 
-I think there are plenty of new contributor (to the kernel) guides out there.
-People just don't read them. So I don't think we need another. Nothing wrong
-with trying to make the existing guides more clear/easy to understand though.
+The AM2320 design is fully compatible with AM2315 in terms of I2C
+communication protocol and measurement conversions.
 
-A subsystem doc that has our code style quirks and idioms would be helpful
-though as I don't think that has every been written down in a single place.
-Especially useful now since AI reviewers will read it even if humans don't.
+Add the "am2320" entry to the i2c_device_id table and register a
+of_device_id table to match against devices declared in device tree.
 
-> 
-> Second of all, the idea of having a bot that would automatically detect new
-> contributors (i.e. the email they're submitting the patch with doesn't show
-> up in `git log --author`) and send an email reminding them of the basic rules
-> (while also referring to the entry profile mentioned above) sounds like a
-> great idea, but of course hosting and maintaining are pain points.
-> 
-> Please let me know what you think of the above ideas!
-> 
-> [1] https://lore.kernel.org/ksummit/87y0ekm9nw.fsf@trenco.lwn.net/
-> [2] https://github.com/torvalds/linux/blob/master/Documentation/mm/damon/maintainer-profile.rst
-> [3] https://github.com/torvalds/linux/blob/master/Documentation/hwmon/submitting-patches.rst
-> 
 
+I see nothing else to improve besides what Andy already mentioned.
+With those sorted out,
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
