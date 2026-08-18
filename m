@@ -1,108 +1,293 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 500B035959
-	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 15:41:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D6D3A5438;
+	Tue, 18 Aug 2026 15:44:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787067701; cv=none; b=cDK8iAgoMazK5PruDsuYnc61BzesWWIFevZFl4dGlD1Ixsuq13LX0CjmeWI3G20YM1c+gVDz2iWvIQKao84+sZ/crFx285hIahvBXDwKD0SrJMOrRzUPLyeoToGhf/BQv9CadyISLmQJqgDqwHQphtQMldQdtOxU8hplZwvJBt4=
+	t=1787067882; cv=none; b=suv5CxZMy2ciJYKmVfx4sBYP/qcKPYgWD5rOtiKdkb09mkt++KXtwJ95eYkc9uoqjuT379o4anQdwCzJtGikhsl6XJ44rGw1f7fj4aS6eCsVuhA6z5/PSn9cFMbRoQCIvUqkyTpYXY5z600+DDvSTvUiJsmma7vyxZqIYrn8UJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787067701; c=relaxed/simple;
-	bh=eDFzL+tYtYMYYZGsZcDZMDCJSCuvu2IeifwfVInrCQc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JFUuZgcY/NAeFTVWY9TU0pQ3KNX7vtrvjqY2ceN3TBEy3XcXTl7lRmPeSJNC1sCf2+ItUAkgSFPxx/bcHKj70J2lsRdCzOATPR03SnAl7zepErIMiz55OFwh3Bjn9AbhqebJ2CPWQvGXkjwX4dnse6en+R76fQ82qyVqGj7JIOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b4qVpyTr; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787067882; c=relaxed/simple;
+	bh=kaZ/DCQFfukjqftzjjC/g3BE8SKxSNAEYhy6sSyxpbY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FIsVCwMKbW7KNpJi9uFC533zcaI6GYgW9+cJ8vIhVPK7kvg1YZkVQNBEAm4aX/V+eKCnlSezu0H/kdVBBMm/1QwWOEEczw0ky8bP6DppWDhhkrUVT3z6fu5kDS4AvDY4t25Wfdlb1RYxpUPo4O5B4+vFIg8vRP46/rh5391kf9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EyT63NIG; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b4qVpyTr"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4998590d392so49820235e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 08:41:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787067698; x=1787672498; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=eDFzL+tYtYMYYZGsZcDZMDCJSCuvu2IeifwfVInrCQc=;
-        b=b4qVpyTrnPL3gGNf7HT//GTcirMXv3b9CTB5uIPdevdQMALwi4rPfXU4U9kqwDByU9
-         0Ob7Uz7TBEY9e4y+89aRaqODd74qIaYhI++NEKkYCvVXFWTrbd6uuc+l5RvB9bbPs8p9
-         HzFj9arHQchrYYzBYZ1vd8QTavDbu6ZrX6kQkqmPCyEYqTldHCVNCUPouvyrTX7XldhE
-         dVN31qOiekzH10N8BNXRIt0pX33BLzgs4e9Xi80k9riifj7/Y8xvUC0Ab8xU846l8qB/
-         hyFDGBpvm7YyA5SWgbrSLRS09jSl6z8sry++3q/6mbHVvZFK42k6q9eeYWp50TxGwOeJ
-         17Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787067698; x=1787672498;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=eDFzL+tYtYMYYZGsZcDZMDCJSCuvu2IeifwfVInrCQc=;
-        b=GSll4aa0WGqHexTZJ/ScKVgWwFhRgs3s9HZXIGj4rnGE1AYGZaQqgTyAKvt1hRIpx2
-         QlpqA9sN3N3BZCDDDSD8K8GA8qN2glorV36kn4NT89bbp+6ul87aHz4hU9E5hUWVM3oX
-         ZeibYvRofRax4zoJsH60xUY2FzlFl0kZd75rxZ+YReKtira9uVEVTRt91oop80nGg1OE
-         4iJzggAGWoPz8SkD4mRnp2VuDrY0pS+Ws/uvqt+DpEvLoqaXLHZtw0sjOBtZU9f+qO5d
-         v0dsfFKApHRIeLhaYvmqcEwqAHS52JFybFmILm+IkCBfAqbb592yXoj99g5ThRiZ6p1q
-         jpxA==
-X-Forwarded-Encrypted: i=1; AHgh+RqVw6tweSRMHvBezmo/kjnH8GAMMb8E8uCp6b2koAhoOjepDNgxQYBzuxCNqoBqXjtblHaZj4ZSAAA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwHMLCoB5mLZKsyiH3yI0QbEcEdv8rkU2l8/HZkSOQtHMKbr7aA
-	3EG/Zc/W8mLM/hwvHJfBucW5PBAFaPd0llnAkLhY0S840k4e2501hLbA
-X-Gm-Gg: AR+sD12nLLcmX+1HjRSxYs6aNQbeAiHnBLMvPpGVKvbF+FtYreUnRrIdb51sdZjHTlc
-	sAhmmOoz7ijU6bCQQsslNXTN9efwrsXKW2zKKyqOj4YOzU2fChpg0P/cZOXL89dPlg5n8e6j9wk
-	IxUuEaXUpVZzUz6gLdunQ1SJlFDuvXWgpH+oLhklA4OHHrU0hVyaVHB19HK44e2nWJoP/VjJ43+
-	jJv7nbVGgAWYgND/vZ5VfGy3NOFNW4dPdalyAO8CGffHkzZosyM5yTZ6UB0AbMt+1z9w6n4Fwfs
-	AXHtGhI+9wCO0pgp3a6K8/bPUZ2EVSZed9KeLIsz0v3MfgQlAymkWhdxYGINf6cJy7vYGb/sGsm
-	QgG6bMZ14ZtTlzI9TeBrVfCJnMFpWue/S8xkcxLyjC8gXFX0mZhQJAJ1K/GbrOhN63/QwB/H4iT
-	CJ2R2TF4EoytEWvo8nR8QKpRYpYf2UBXs74r0KKJBEQWHTt6twCiQZCJbRCsG3gntimH5O2xtye
-	5HqSv7rnOOIMS3RdgK0uSpttDWR2A/V63dZi13jojG4
-X-Received: by 2002:a05:600c:1d0c:b0:493:f140:c3fb with SMTP id 5b1f17b1804b1-4999fb3953emr157757745e9.7.1787067698131;
-        Tue, 18 Aug 2026 08:41:38 -0700 (PDT)
-Received: from MacBookPro ([2001:8a0:6c97:6700:51db:1c3:6be8:694c])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49996188217sm576560375e9.13.2026.08.18.08.41.36
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 18 Aug 2026 08:41:37 -0700 (PDT)
-From: Gabriel Rondon <grondon@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	andy@kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	"Nuno =?utf-8?q?S=C3=A1?=" <nuno.sa@analog.com>,
-	Stepan Ionichev <sozdayvek@gmail.com>,
-	Maxwell Doose <m32285159@gmail.com>,
-	Yash Suthar <yashsuthar983@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/3] iio: accel: bmc150: use guard(mutex) for mutex handling
-Date: Tue, 18 Aug 2026 16:41:35 +0100
-Message-ID: <20260818154135.3324-1-grondon@gmail.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <aoMrJvd4oSj0HgN4@ashevche-desk.local>
-References: 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EyT63NIG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787067881; x=1818603881;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kaZ/DCQFfukjqftzjjC/g3BE8SKxSNAEYhy6sSyxpbY=;
+  b=EyT63NIG5dF9LcwUJEU7j5wFJMiBVIAYG0g5frsIXQ0YWHnlLZsHzbBD
+   yFzOeaxaErKY8A98xB0zp7qczR35b9MIXOMHYxqe0agIzMx0k8jbSfNrA
+   4DMOQ0NhNR4ayu5URawbJcJas4GbCNobHRouNjsrvgOj9imrGzEk7nXS0
+   Qr6hgxxZ9cLj6a6iBxk6eG6k0nHgJ0vlfGfUUP9+eee3N0WgJykB65JM+
+   kI3j6P/1pkEJKQY52FEYzhw1jrTbUNZ2ZkCKTD1Zecrx7G+EcJPdrWLoc
+   9AZkmC8nKtQVqWCJo456COhCt/k4mYvOGiJj+yPz6IMt9uhITXiwNjZus
+   Q==;
+X-CSE-ConnectionGUID: CvkKyoGzQ6Klxuq06KZfMw==
+X-CSE-MsgGUID: eyYCNwqlSKaqfc7sPKH+vQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="91435161"
+X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
+   d="scan'208";a="91435161"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 08:44:40 -0700
+X-CSE-ConnectionGUID: S6wBh/QaTYqnxVViTraP0g==
+X-CSE-MsgGUID: /7Sg5fy8QfS51mBLlSdbzw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
+   d="scan'208";a="263532406"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 08:44:36 -0700
+Date: Tue, 18 Aug 2026 18:44:33 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
+	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, andy@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, siratul.islam@linux.dev,
+	u.kleine-koenig@baylibre.com, linux@roeck-us.net,
+	joshua.crofts1@gmail.com, ciprian.hegbeli@analog.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <aoR94S2qknBVQrT3@ashevche-desk.local>
+References: <20260818142928.8244-1-stefan.popa@analog.com>
+ <20260818142928.8244-3-stefan.popa@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260818142928.8244-3-stefan.popa@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 17, 2026 at 06:39:18PM +0300, Andy Shevchenko wrote:
-> Not directly related to this change, but even in the original code what is
-> protected here by the mutex? data->scan.channels?
+On Tue, Aug 18, 2026 at 05:29:28PM +0300, Stefan Popa wrote:
+> The MAX40080 is a bidirectional current-sense amplifier with an
+> integrated 12-bit ADC and an I2C/SMBus interface. It measures the
+> voltage across an external shunt resistor and the input bus voltage,
+> storing the results in an internal FIFO.
+> 
+> Add a direct-mode IIO driver exposing the current and voltage channels
+> with raw, scale and hardware-gain attributes, a configurable
+> oversampling (digital averaging) ratio, and PEC-protected register
+> access. The current scale is derived from the shunt resistor value
+> described in the device tree.
+> 
+> The driver operates in single-measurement mode: each raw read triggers
+> an on-demand conversion via SMBus Quick Command and returns a matched
+> current/voltage pair. This avoids the latency and complexity of the
+> continuous FIFO mode while ensuring each read reflects the current
+> state. The two selectable current-sense ranges are exposed through
+> scale/scale_available.
+> 
+> Continuous FIFO buffering, threshold events and the alert interrupt are
+> intentionally left out of this initial submission and may be added
+> later.
 
-Agreed it is out of scope for this cleanup, so I left the scope unchanged.
+...
 
-Honest answer: not much that is obvious. data->scan.channels does not need
-it, since the triggered handler is the only writer and the core serializes
-it. The accel one-shot read is already gated with -EBUSY while buffering, so
-bmc150_accel_get_axis cannot race the handler. What is left sharing
-data->mutex and still reachable during capture is the temperature read, the
-bandwidth get/set and scale set, and the event config. But since the handler
-is a single regmap_bulk_read and regmap already serializes the bus, it is not
-clear the driver mutex guards a real invariant here, and it may well be
-vestigial.
+>  endmenu
+> +
 
-Dropping it is a behavioral change worth its own patch and testing rather
-than something to fold into a lock-syntax cleanup. Happy to look into that
-separately.
+Wrong placement for a new entry.
 
-Thanks,
-Gabriel
+> +config MAX40080
+> +	tristate "Analog Devices MAX40080 Current Sense Amplifier"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the Analog Devices MAX40080
+> +	  bidirectional current-sense amplifier with a 12-bit ADC and an I2C
+> +	  interface.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called max40080.
+
+...
+
+> obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+>  obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
+>  xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+>  obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
+> +obj-$(CONFIG_MAX40080) += max40080.o
+
+Why is not ordered?
+
+...
+
++ array_size.h
+
+I think I repeated this three times already.
+
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/i2c.h>
+> +#include <linux/types.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/math64.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/property.h>
+> +#include <linux/unaligned.h>
+> +#include <linux/units.h>
+
+...
+
+> +static int max40080_read_iv_once(struct max40080_state *st, u32 *iv)
+> +{
+> +	u8 buf[4];
+
+Can this be __le32?
+
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_i2c_block_data(st->client, MAX40080_REG_IV,
+> +					    sizeof(buf), buf);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*iv = get_unaligned_le32(buf);
+
+In that case le32_to_cpu() from asm/byteorder.h may be used.
+
+> +	return 0;
+> +}
+
+...
+
+> +static void max40080_calc_current_scale(struct max40080_state *st)
+> +{
+> +	u64 numerator, denominator;
+> +	u32 rem;
+> +
+> +	for (unsigned int i = 0; i < ARRAY_SIZE(max40080_csa_gain); i++) {
+> +		numerator = 1ULL * MAX40080_INTER_VREF_mV * NANO * MICRO;
+> +		denominator = 1ULL * BIT(MAX40080_ADC_RES_BITS) * max40080_csa_gain[i] *
+
+Btw, this 1ULL * BIT() can be replaced with BIT_ULL().
+
+> +			      st->shunt_resistor_uOhm;
+> +		numerator = div64_u64(numerator, denominator);
+> +		st->current_scale[i][0] = div_u64_rem(numerator, NANO, &rem);
+> +		st->current_scale[i][1] = rem;
+> +	}
+> +}
+
+...
+
+> +static const struct iio_chan_spec max40080_channels[] = {
+> +	{
+> +		.type = IIO_CURRENT,
+> +		.indexed = 1,
+
+> +		.channel = 0,
+
+No need
+
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +		.info_mask_shared_by_all_available =
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	},
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.indexed = 1,
+
+> +		.channel = 0,
+
+Same, it's default.
+
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +		.info_mask_shared_by_all_available =
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +	},
+> +};
+
+...
+
+> +static int max40080_probe(struct i2c_client *client)
+> +{
+> +	const char *propname = "shunt-resistor-micro-ohms";
+
+It's better to split and use when it's required.
+
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct max40080_state *st;
+> +	int ret;
+> +
+> +	/*
+> +	 * The device powers up with PEC enabled (CFG POR = 0x0060) and rejects
+> +	 * unprotected transactions, so PEC support is mandatory, along with word
+> +	 * access, the I2C block read used for the current/voltage pair, and the
+> +	 * Quick Command used to trigger a conversion.
+> +	 */
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_WORD_DATA |
+> +				     I2C_FUNC_SMBUS_I2C_BLOCK |
+> +				     I2C_FUNC_SMBUS_QUICK |
+> +				     I2C_FUNC_SMBUS_PEC))
+> +		return -EOPNOTSUPP;
+> +
+> +	client->flags |= I2C_CLIENT_PEC;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->client = client;
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+
+	propname = "shunt-resistor-micro-ohms";
+
+> +	ret = device_property_read_u32(dev, propname, &st->shunt_resistor_uOhm);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "can't read %s\n", propname);
+> +	if (!st->shunt_resistor_uOhm)
+
+> +		return dev_err_probe(dev, -EINVAL, "%s must be non-zero\n",
+> +				     propname);
+
+I would dare to put this on a single line.
+
+> +	max40080_calc_current_scale(st);
+> +
+> +	/* Defaults: 50 mV range, no averaging. */
+> +	st->range = MAX40080_CFG_RANGE_50mV;
+> +	st->oversampling_ratio = 1;
+> +
+> +	indio_dev->name = "max40080";
+> +	indio_dev->info = &max40080_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max40080_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max40080_channels);
+> +
+> +	ret = max40080_init(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
