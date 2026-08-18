@@ -1,112 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4E5A423EA2;
-	Tue, 18 Aug 2026 08:26:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1CB367B87
+	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 08:27:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787041616; cv=none; b=mMqLKQBWNytxT5DsboPIsyBdiUx+ZDb67H1xk/GZbdp4xheAcB0Z/dD1wa9HxfbTlvziWI/J5B1OYAYgC2bsHAEKRmbsaDaDJ8jkX6NDZ1zBSUxsVcgAiB/6ceccNH7m76uI3xefVMKz0BMpRDBbYq2tvY3fNhCx4SOM5If+lVU=
+	t=1787041652; cv=none; b=Slj9HSyJltsF9f0Y3e37S/e1d1lK4i/goeKaodhSvyoJ32ahZxEePSe8WJ5OpBsjlhD5JuWQw+vlT6Wfp4N1IsJzkmmCUQjERJok6nuVs+PLttaufF3QcDhDyei4EgBY7rWkL0svMTjE7DL7bLnCsyjbTPlUoxnQzA9qGPpLtuY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787041616; c=relaxed/simple;
-	bh=4phCkJfenRg107fZkQ7iErF8Bl7JZhhxA3UMBCXdsDY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bavtO4DsUUfXSCh0GqsF9gggPjf7r534yigBwhull4JbIocPfdtWwmNLH08rPnQd9A4aEAQ5lggnbjn+wc4UuXsOAv3pE9BnxFX8h5Wmt9+9RW0R2PW2Unj7nRpT4agQnecTttcHu3f3tWLw+FHJ0VYsobBrc/v/gHNc7KuhVZs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yk8utEmC; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787041652; c=relaxed/simple;
+	bh=JDzjZcLP71KCvagkMKD84MYXhOgKomjguCW9GMyB0bI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pw7XyV1cluhPVDCbJL5JDbXb8uFiDQLvJXoWkuh6VHpG1tMq93yFCik5a0MQjAB2fV4hANi4Iqwx/d7lcEPgYg1VPcyBTZ3Blj114OCxVfCoY6EfixL7BlcUlwHx6vydpWulPdP4iU7N70V8DIEh6ogHwJQJafkQ7o2YqnjILJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rjz7IUyF; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yk8utEmC"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8D4181F000E9;
-	Tue, 18 Aug 2026 08:26:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787041615;
-	bh=4phCkJfenRg107fZkQ7iErF8Bl7JZhhxA3UMBCXdsDY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Yk8utEmCxy96+toKCErkoYApQaMdiPS/mCchSNuianQYv5m27/NqvByr5wIHg/m/V
-	 JYPws0OalIunJ4Yd2Snp/HnkIw1rSMOTd/6QctDhGAOp0jvQrHwF0n9PaeAGt00qC0
-	 saa1+8NO9+GG/Co8K7GGanrbgXB+dSdO7Oxcz2iFPdZC6CEgC3Yj9aPfTOcd+dIN8Z
-	 +LT3Vfdjc4SKL6Lbp/+x2xuv4GH2gVaRlGE3hHt8WEvPCMdOBXAxXd0WAG3L93H+O5
-	 nZwX4r8hyUboRXsOUUNS71jbX+QUFn7K0le4nTVH+Oymi6Gwb5Ng2kBuVnesHYQesU
-	 PTDG5N+c0BpDA==
-Date: Tue, 18 Aug 2026 10:26:52 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Linus Walleij <linusw@kernel.org>
-Cc: Eliav Farber <farbere@amazon.com>, rafael@kernel.org, 
-	tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com, mchehab@kernel.org, 
-	xueshuai@linux.alibaba.com, lenb@kernel.org, laurent.pinchart@ideasonboard.com, 
-	brgl@kernel.org, orsonzhai@gmail.com, baolin.wang@linux.alibaba.com, 
-	zhang.lyra@gmail.com, jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, dmitry.torokhov@gmail.com, hansg@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, W_Armin@gmx.de, fabio.m.de.francesco@linux.intel.com, 
-	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, 
-	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org, saket.dumbre@intel.com, 
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, acpica-devel@lists.linux.dev
-Subject: Re: [PATCH v5 01/13] notifier: add device-managed registration APIs
-Message-ID: <aoQWOsPeyU9o3Ahn@monoceros>
-References: <20260816060648.4030-1-farbere@amazon.com>
- <20260816060648.4030-2-farbere@amazon.com>
- <aoFgF2E4p4DqYLGG@monoceros>
- <CAD++jLk+MMH=-ifdSs=Vm4G9RO5-yVs8NLUb4AE1wYH5FQrmjg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rjz7IUyF"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-476a130c138so4500261f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 01:27:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787041649; x=1787646449; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=uuK5mDxMiFBjBjKQm/Fiu5kzFGUEM5srIwSUyEqNmyc=;
+        b=rjz7IUyFe10YkUwvNbaJibLuM/n/edgAhlGlK7mAklD2GLJyMyksM0Rl8ZatP4sJCM
+         fbOXoj1hyejD7L+u9KX9607IO5foOZ4+1/rGIuv9pDmNG7dL0XvYBgBFsq1AGJ3DE+VA
+         e3i+Cc3EybrdP4wcrbb1ck1h998kyNxCyPtUn97XIhXiDDUM3CuoI7wCennaDu2IveTU
+         KBbf5025J+uU8aRH8EiWLlJB1mMdODlwwVxcGA0lLChDGdxhblYbfOYBKJ1Xhg2iLS8Y
+         6cw+kfgSRKMumnbm6BkxOJG+YtSKJzE9IuXwABB6syRr9cPIPsozu/9ii3aphEa7QRtu
+         17aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787041649; x=1787646449;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=uuK5mDxMiFBjBjKQm/Fiu5kzFGUEM5srIwSUyEqNmyc=;
+        b=B3q0zZ7ogOaNrbCmKQ5VZSSoABVz3OmV1WdJTj0jmOFDSUFensOZdIGE4Rz0ly3ziO
+         P39WvVxL0vkNTBmKhYz3mLU2nyeJ1hQvo7X78AX01KErQ7Xh2DZJFm8D4kL0wPvOxIGL
+         wsYgXsndlWqgzk+oDPJrA2iIqXfd5gR30WI6ORuNSvrXkRZp2yc3gTtOHu/PguFnmn5e
+         kYJOmUyIkwRGSql0AgSRdBRHfYaDQtYOgNCMsSdJxa9q1qlWXAA1pzkGV8sfFWH779/q
+         QFT1d+cxsBvUPPIHW/NSuDwa5loD8WW9xH64UmhuP02RXQYG25Nkt0yGTI0g0NhSoIbN
+         X4CQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpBJIpimumMT3dPJhmcmD4Y7LT5zqHcDX7Hs0v2ndiNGzBFX1ffI6Nut/gNFmefRbiovl7aBNN39Ys=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywxk1UW7Ut0MNeHqOnV/ZzQBBG3wdFy+TGEAfl0PsWrNivX7e0B
+	ZQAMlNyEPetClUk6MdTjBQzc3iQOhMC++3hBcDitIaWVLCpvICbuBPvq
+X-Gm-Gg: AR+sD13HBBxiIOQQwigEvSU9bQkibVvbLROExUzsVC+euCv8i+RGYqMGILQgsPiGlrV
+	0Ay8M8wTqxeFUCZZx/WO9dtQEjhGKZccPjhR6m+lp7cehAu7HQFzCdVFHp1hsuXBsZow2C8l7zQ
+	Md4vFwo850IAAa08Z5vdSIhqtoRKYv52pXUqENFjdI6C7DMTcr9QJ/i+bf2guclUdS9EL/OfQUx
+	TB8qHtP36B0ydNl1iZURPjG8RqXHQkMO20gA+hqb0sji4+gko4PfAuudcPxo2XyY8VBbB+0+DsH
+	HNEDBvJRPO47FH8b1+wnpy8NKuGK7YLRPUy0spDlV0ubnPqAfKVaUSJEhOm318DZOQi1szzgQGz
+	4bQy+6bAIUOtwxYJNP3FN6YsijurDsEHXu0mXXagl/HV+P65FjGho/jqP5e+DpeALcyzrai2FHC
+	Oj8Jp+2rR6OQUhBrpsEorl+Q2SupNU5Mx2yl4OO3wu1AMXiJtcTVXrj0gmQhzg8ZYv8DBRb+1RS
+	GjkgxI0AypxA10GNFbXx7qBW183aWzcBWK1m6iDMxEctxc/EKEkjycMYz+q1VeKNTc=
+X-Received: by 2002:a5d:5e85:0:b0:47f:91eb:342 with SMTP id ffacd0b85a97d-4816071addfmr48543973f8f.13.1787041648823;
+        Tue, 18 Aug 2026 01:27:28 -0700 (PDT)
+Received: from [172.24.138.145] (ipservice-092-208-247-184.092.208.pools.vodafone-ip.de. [92.208.247.184])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482a5a3b51asm10172929f8f.11.2026.08.18.01.27.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Aug 2026 01:27:28 -0700 (PDT)
+Message-ID: <6f2b715e-f62b-4b6e-9605-23d6978b6cbb@gmail.com>
+Date: Tue, 18 Aug 2026 10:27:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="atk2on2uarby33p4"
-Content-Disposition: inline
-In-Reply-To: <CAD++jLk+MMH=-ifdSs=Vm4G9RO5-yVs8NLUb4AE1wYH5FQrmjg@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 01/14] dt-bindings: iio: adc: Add AD7768
+To: Jonathan Cameron <jic23@kernel.org>,
+ Janani Sunil <janani.sunil@analog.com>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>
+References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
+ <20260813-ad7768-driver-v3-1-cb554399ad26@analog.com>
+ <20260816192409.145df670@jic23-huawei>
+Content-Language: en-US
+From: Janani Sunil <jananisunil.dev@gmail.com>
+In-Reply-To: <20260816192409.145df670@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
---atk2on2uarby33p4
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v5 01/13] notifier: add device-managed registration APIs
-MIME-Version: 1.0
+On 8/16/26 20:24, Jonathan Cameron wrote:
+> On Thu, 13 Aug 2026 15:56:54 +0200
+> Janani Sunil <janani.sunil@analog.com> wrote:
+>
+>> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
+>> simultaneous sampling ADCs.
+>>
+>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+>> ---
+>>   .../devicetree/bindings/iio/adc/adi,ad7768.yaml    | 338 +++++++++++++++++++++
+>>   MAINTAINERS                                        |   7 +
+>>   2 files changed, 345 insertions(+)
+>>
+...
+>> +  adi,data-lines-number:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>> +    enum: [1, 2, 4, 8]
+>> +    description:
+>> +      Number of DOUTx lines used for the high-speed data output interface
+>> +      (distinct from the SPI control interface). AD7768 supports 1, 2, or 8
+>> +      lines; AD7768-4 supports 1 or 4 lines. Defaults to the maximum number
+>> +      of lines for the selected variant if omitted.
+> The default statement is a bit hidden and I'm not sure useful as it's not
+> an obvious default.  Maybe drop that and make this a required property?
 
-Hello Linus,
+This property was required in v1. It was changed to optional in v2 following a suggestion to use the highest number of data lines as the default.
 
-On Mon, Aug 17, 2026 at 02:10:13PM +0200, Linus Walleij wrote:
-> On Sun, Aug 16, 2026 at 9:04=E2=80=AFAM Uwe Kleine-K=C3=B6nig <ukleinek@k=
-ernel.org> wrote:
->=20
-> > I suggested to add "Must be called in process context." to the kdoc for
-> > devm_atomic_notifier_chain_register() as this is a relevant difference
-> > to atomic_notifier_chain_register() and create an immutable branch for
-> > it as a base for subsystems to apply their follow-up patches. I'd wait
-> > till Wednesday for concerns and review tags to tickle in.
->=20
-> I think this is a good approach, but we are in the merge window,
-> don't you wanna wait for v7.3-rc1 and create the immutable branch
-> based on that?
-
-My thought was to base on v7.2, and then consider the topic done for me.
-=20
-> (But Bartosz will be the one pulling the immutable branch...)
-
-It shouldn't make a difference for him if the branch's base is v7.2 or
-v7.3-rc1, still more given that there are no changes staged in next to
-the affected files (`git log v7.2..next/master --
-include/linux/notifier.h kernel/notifier.c`).
-
-Best regards
-Uwe
-
---atk2on2uarby33p4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqEF0QACgkQj4D7WH0S
-/k6+ewf/TQPKKAWHFqB2guxJQb4tJtqqrt9CfxNlHgpRy98IQr+Wzsclp/2b55PD
-+Vt8rK1QzYpoCbHNgn48yp+ZwOgUgZLGuFt1oOMJuz4TML4VoRQW/KQBjYb8RH6h
-bZwXKf20jhh0jcWWdq+Oloo7khDa3AfPjzRMezSt63HtWnFWyDBFmk+Hpj2iK5wV
-ydEynNxomqrfrzujN4nShzkby6/nearXk+4xXCvj02C50nfaHCtzBWc07ic2TP90
-xDPXfb0bl2EHmQ7jRNKDBne2D3J7gm+NVDzSblze4JXAuRSbDl51QXnnQ49Me8pn
-JJE4fMKe0QjKuFoPX4pzR1Up39HZcg==
-=T8Ew
------END PGP SIGNATURE-----
-
---atk2on2uarby33p4--
