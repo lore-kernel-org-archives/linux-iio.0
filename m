@@ -1,96 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20A39366546;
-	Tue, 18 Aug 2026 15:31:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 500B035959
+	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 15:41:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787067068; cv=none; b=eLAKZXwcy5YvTdWCByROC7s0zwPkfFskQhfvpF/Xkvear/hIAbC268F1BtdlBUD878/a9rmGyaQyQPSACi6e1T1Han18gvaCLgYMKkGqP8oJRMKFF9OJergh7Nq8R32qhHorvMnbYgL2usJW/Xo9QtTHbiWsW6K6/TOtI5nALWc=
+	t=1787067701; cv=none; b=cDK8iAgoMazK5PruDsuYnc61BzesWWIFevZFl4dGlD1Ixsuq13LX0CjmeWI3G20YM1c+gVDz2iWvIQKao84+sZ/crFx285hIahvBXDwKD0SrJMOrRzUPLyeoToGhf/BQv9CadyISLmQJqgDqwHQphtQMldQdtOxU8hplZwvJBt4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787067068; c=relaxed/simple;
-	bh=epCAGgKuBDq0HrFhBJVZp0QbkYQWKQTK24KVjDqB9XU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PdOauP+9rQqDzLrXXoEXWqJP2Fvd528CyRN6LZSttS9hsjOqjZA6OMwzNKFkEDUsCMYbHd8EAPru9Mh9qqpJ2dMx+D09HwzAvOrMEqQ/CwZGcwEUXnwE1fHPC7tZVn0J65BZ0fb31iZ0fIxe+e4tErY08stI9qHw2MzW1ONVO6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HjGn9Tvd; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1787067701; c=relaxed/simple;
+	bh=eDFzL+tYtYMYYZGsZcDZMDCJSCuvu2IeifwfVInrCQc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=JFUuZgcY/NAeFTVWY9TU0pQ3KNX7vtrvjqY2ceN3TBEy3XcXTl7lRmPeSJNC1sCf2+ItUAkgSFPxx/bcHKj70J2lsRdCzOATPR03SnAl7zepErIMiz55OFwh3Bjn9AbhqebJ2CPWQvGXkjwX4dnse6en+R76fQ82qyVqGj7JIOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b4qVpyTr; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HjGn9Tvd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787067067; x=1818603067;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=epCAGgKuBDq0HrFhBJVZp0QbkYQWKQTK24KVjDqB9XU=;
-  b=HjGn9TvdqNKvz8G61sT9gp0ba+PP5ZsxA5VNZCFzHPwQ77BF2O443pNp
-   PYJiK4n6MZV4DWQjRYoyRms8Bf+GHbpY6qd66yhYdLPSIj93sQKUKaWOT
-   31y47mOmAUi2uPvPat71Qwznc6YpQUp+6M00dN4T3EeHST6EmL8lQcDe2
-   Xy0uI7aF1SWyHRrtOf6wYLCEStp2ZqxR8U47j2cvc2D/vN7r0IUSxJ1mf
-   IBCHM7AnKRm3z80x/Mtjwsu2ygTIsOEA8LFRQ4Pjy+M82JI08BZ5nG9R0
-   0X0/Nc46AXLNK5q/LAe1HsatZvAOeaMmIIdJuCh03ZafQn2G5H2YRjn14
-   Q==;
-X-CSE-ConnectionGUID: aYINyOgkT3GYDUIydiJOxw==
-X-CSE-MsgGUID: l+9y6lqGQ4uIcfzxS/heCQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="97900191"
-X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
-   d="scan'208";a="97900191"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 08:31:06 -0700
-X-CSE-ConnectionGUID: hSkeBypWRFmC+PZgKDzHWw==
-X-CSE-MsgGUID: 4i/kZgIcQeSzg9f1t2Yklw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
-   d="scan'208";a="261050892"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 08:31:03 -0700
-Date: Tue, 18 Aug 2026 18:31:01 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Runyu Xiao <runyu.xiao@seu.edu.cn>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	Jianhao Xu <jianhao.xu@seu.edu.cn>
-Subject: Re: [PATCH] iio: admv1013: initialize callback mutex before
- registering notifier
-Message-ID: <aoR6tWAewJiVxOBS@ashevche-desk.local>
-References: <20260818142811.2264343-1-runyu.xiao@seu.edu.cn>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b4qVpyTr"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4998590d392so49820235e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 08:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787067698; x=1787672498; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=eDFzL+tYtYMYYZGsZcDZMDCJSCuvu2IeifwfVInrCQc=;
+        b=b4qVpyTrnPL3gGNf7HT//GTcirMXv3b9CTB5uIPdevdQMALwi4rPfXU4U9kqwDByU9
+         0Ob7Uz7TBEY9e4y+89aRaqODd74qIaYhI++NEKkYCvVXFWTrbd6uuc+l5RvB9bbPs8p9
+         HzFj9arHQchrYYzBYZ1vd8QTavDbu6ZrX6kQkqmPCyEYqTldHCVNCUPouvyrTX7XldhE
+         dVN31qOiekzH10N8BNXRIt0pX33BLzgs4e9Xi80k9riifj7/Y8xvUC0Ab8xU846l8qB/
+         hyFDGBpvm7YyA5SWgbrSLRS09jSl6z8sry++3q/6mbHVvZFK42k6q9eeYWp50TxGwOeJ
+         17Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787067698; x=1787672498;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=eDFzL+tYtYMYYZGsZcDZMDCJSCuvu2IeifwfVInrCQc=;
+        b=GSll4aa0WGqHexTZJ/ScKVgWwFhRgs3s9HZXIGj4rnGE1AYGZaQqgTyAKvt1hRIpx2
+         QlpqA9sN3N3BZCDDDSD8K8GA8qN2glorV36kn4NT89bbp+6ul87aHz4hU9E5hUWVM3oX
+         ZeibYvRofRax4zoJsH60xUY2FzlFl0kZd75rxZ+YReKtira9uVEVTRt91oop80nGg1OE
+         4iJzggAGWoPz8SkD4mRnp2VuDrY0pS+Ws/uvqt+DpEvLoqaXLHZtw0sjOBtZU9f+qO5d
+         v0dsfFKApHRIeLhaYvmqcEwqAHS52JFybFmILm+IkCBfAqbb592yXoj99g5ThRiZ6p1q
+         jpxA==
+X-Forwarded-Encrypted: i=1; AHgh+RqVw6tweSRMHvBezmo/kjnH8GAMMb8E8uCp6b2koAhoOjepDNgxQYBzuxCNqoBqXjtblHaZj4ZSAAA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwHMLCoB5mLZKsyiH3yI0QbEcEdv8rkU2l8/HZkSOQtHMKbr7aA
+	3EG/Zc/W8mLM/hwvHJfBucW5PBAFaPd0llnAkLhY0S840k4e2501hLbA
+X-Gm-Gg: AR+sD12nLLcmX+1HjRSxYs6aNQbeAiHnBLMvPpGVKvbF+FtYreUnRrIdb51sdZjHTlc
+	sAhmmOoz7ijU6bCQQsslNXTN9efwrsXKW2zKKyqOj4YOzU2fChpg0P/cZOXL89dPlg5n8e6j9wk
+	IxUuEaXUpVZzUz6gLdunQ1SJlFDuvXWgpH+oLhklA4OHHrU0hVyaVHB19HK44e2nWJoP/VjJ43+
+	jJv7nbVGgAWYgND/vZ5VfGy3NOFNW4dPdalyAO8CGffHkzZosyM5yTZ6UB0AbMt+1z9w6n4Fwfs
+	AXHtGhI+9wCO0pgp3a6K8/bPUZ2EVSZed9KeLIsz0v3MfgQlAymkWhdxYGINf6cJy7vYGb/sGsm
+	QgG6bMZ14ZtTlzI9TeBrVfCJnMFpWue/S8xkcxLyjC8gXFX0mZhQJAJ1K/GbrOhN63/QwB/H4iT
+	CJ2R2TF4EoytEWvo8nR8QKpRYpYf2UBXs74r0KKJBEQWHTt6twCiQZCJbRCsG3gntimH5O2xtye
+	5HqSv7rnOOIMS3RdgK0uSpttDWR2A/V63dZi13jojG4
+X-Received: by 2002:a05:600c:1d0c:b0:493:f140:c3fb with SMTP id 5b1f17b1804b1-4999fb3953emr157757745e9.7.1787067698131;
+        Tue, 18 Aug 2026 08:41:38 -0700 (PDT)
+Received: from MacBookPro ([2001:8a0:6c97:6700:51db:1c3:6be8:694c])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49996188217sm576560375e9.13.2026.08.18.08.41.36
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 18 Aug 2026 08:41:37 -0700 (PDT)
+From: Gabriel Rondon <grondon@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	andy@kernel.org,
+	David Lechner <dlechner@baylibre.com>,
+	"Nuno =?utf-8?q?S=C3=A1?=" <nuno.sa@analog.com>,
+	Stepan Ionichev <sozdayvek@gmail.com>,
+	Maxwell Doose <m32285159@gmail.com>,
+	Yash Suthar <yashsuthar983@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] iio: accel: bmc150: use guard(mutex) for mutex handling
+Date: Tue, 18 Aug 2026 16:41:35 +0100
+Message-ID: <20260818154135.3324-1-grondon@gmail.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <aoMrJvd4oSj0HgN4@ashevche-desk.local>
+References: 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260818142811.2264343-1-runyu.xiao@seu.edu.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Aug 18, 2026 at 10:28:11PM +0800, Runyu Xiao wrote:
-> admv1013_probe() registers a clock notifier whose callback takes
-> st->lock on POST_RATE_CHANGE. Initialize the mutex before
-> devm_clk_notifier_register() so the callback cannot observe an
-> uninitialized lock during probe.
+On Mon, Aug 17, 2026 at 06:39:18PM +0300, Andy Shevchenko wrote:
+> Not directly related to this change, but even in the original code what is
+> protected here by the mutex? data->scan.channels?
 
-...
+Agreed it is out of scope for this cleanup, so I left the scope unchanged.
 
->  	st->nb.notifier_call = admv1013_freq_change;
+Honest answer: not much that is obvious. data->scan.channels does not need
+it, since the triggered handler is the only writer and the core serializes
+it. The accel one-shot read is already gated with -EBUSY while buffering, so
+bmc150_accel_get_axis cannot race the handler. What is left sharing
+data->mutex and still reachable during capture is the temperature read, the
+bandwidth get/set and scale set, and the event config. But since the handler
+is a single regmap_bulk_read and regmap already serializes the bus, it is not
+clear the driver mutex guards a real invariant here, and it may well be
+vestigial.
 
-> +	mutex_init(&st->lock);
-> +
+Dropping it is a behavioral change worth its own patch and testing rather
+than something to fold into a lock-syntax cleanup. Happy to look into that
+separately.
 
-Make it also to be devm_mutex_init().
-
->  	ret = devm_clk_notifier_register(&spi->dev, st->clkin, &st->nb);
->  	if (ret)
->  		return ret;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Gabriel
