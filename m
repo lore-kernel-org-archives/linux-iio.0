@@ -1,125 +1,92 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1CB367B87
-	for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 08:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5053B8407;
+	Tue, 18 Aug 2026 08:33:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787041652; cv=none; b=Slj9HSyJltsF9f0Y3e37S/e1d1lK4i/goeKaodhSvyoJ32ahZxEePSe8WJ5OpBsjlhD5JuWQw+vlT6Wfp4N1IsJzkmmCUQjERJok6nuVs+PLttaufF3QcDhDyei4EgBY7rWkL0svMTjE7DL7bLnCsyjbTPlUoxnQzA9qGPpLtuY=
+	t=1787041990; cv=none; b=sgtXqEJym3z8oDnZuoRgh2s0tBx1rBlTFe4v3X3JsBaeo9fMbUTrNNDOcoz26gfWiFbkC4ce/t4lyYKkVJc1FjnTIA61jhD6LmElnuPq4ILyVHpvYFLPkP9+yVSlaqIR9PnZzh4oLha0NNkP7XSISI3L6Gy2zJ/AIlXtVT5Gn6o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787041652; c=relaxed/simple;
-	bh=JDzjZcLP71KCvagkMKD84MYXhOgKomjguCW9GMyB0bI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pw7XyV1cluhPVDCbJL5JDbXb8uFiDQLvJXoWkuh6VHpG1tMq93yFCik5a0MQjAB2fV4hANi4Iqwx/d7lcEPgYg1VPcyBTZ3Blj114OCxVfCoY6EfixL7BlcUlwHx6vydpWulPdP4iU7N70V8DIEh6ogHwJQJafkQ7o2YqnjILJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rjz7IUyF; arc=none smtp.client-ip=209.85.221.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787041990; c=relaxed/simple;
+	bh=XPEbWap0oVR7Y4vc6jobs3LnzyNKVduFtizSUnop1k0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=D0n4CH8G2EkkGuAUYcfrJYTMxz358UK8Uca+SE/S7PmDFPlSZO5P75InMOd2TwmcbrhuQMrhQkhUX1h2K8Tg3M3fIunbjauegYcnoH5F67K9tm+8eY9Vz4cotzuEoax+8lCSrcN4mkgj/11F3d5j/LL76/7I6zQFxyyHwUx33/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fHMXph4j; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rjz7IUyF"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-476a130c138so4500261f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 01:27:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787041649; x=1787646449; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=uuK5mDxMiFBjBjKQm/Fiu5kzFGUEM5srIwSUyEqNmyc=;
-        b=rjz7IUyFe10YkUwvNbaJibLuM/n/edgAhlGlK7mAklD2GLJyMyksM0Rl8ZatP4sJCM
-         fbOXoj1hyejD7L+u9KX9607IO5foOZ4+1/rGIuv9pDmNG7dL0XvYBgBFsq1AGJ3DE+VA
-         e3i+Cc3EybrdP4wcrbb1ck1h998kyNxCyPtUn97XIhXiDDUM3CuoI7wCennaDu2IveTU
-         KBbf5025J+uU8aRH8EiWLlJB1mMdODlwwVxcGA0lLChDGdxhblYbfOYBKJ1Xhg2iLS8Y
-         6cw+kfgSRKMumnbm6BkxOJG+YtSKJzE9IuXwABB6syRr9cPIPsozu/9ii3aphEa7QRtu
-         17aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787041649; x=1787646449;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=uuK5mDxMiFBjBjKQm/Fiu5kzFGUEM5srIwSUyEqNmyc=;
-        b=B3q0zZ7ogOaNrbCmKQ5VZSSoABVz3OmV1WdJTj0jmOFDSUFensOZdIGE4Rz0ly3ziO
-         P39WvVxL0vkNTBmKhYz3mLU2nyeJ1hQvo7X78AX01KErQ7Xh2DZJFm8D4kL0wPvOxIGL
-         wsYgXsndlWqgzk+oDPJrA2iIqXfd5gR30WI6ORuNSvrXkRZp2yc3gTtOHu/PguFnmn5e
-         kYJOmUyIkwRGSql0AgSRdBRHfYaDQtYOgNCMsSdJxa9q1qlWXAA1pzkGV8sfFWH779/q
-         QFT1d+cxsBvUPPIHW/NSuDwa5loD8WW9xH64UmhuP02RXQYG25Nkt0yGTI0g0NhSoIbN
-         X4CQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpBJIpimumMT3dPJhmcmD4Y7LT5zqHcDX7Hs0v2ndiNGzBFX1ffI6Nut/gNFmefRbiovl7aBNN39Ys=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywxk1UW7Ut0MNeHqOnV/ZzQBBG3wdFy+TGEAfl0PsWrNivX7e0B
-	ZQAMlNyEPetClUk6MdTjBQzc3iQOhMC++3hBcDitIaWVLCpvICbuBPvq
-X-Gm-Gg: AR+sD13HBBxiIOQQwigEvSU9bQkibVvbLROExUzsVC+euCv8i+RGYqMGILQgsPiGlrV
-	0Ay8M8wTqxeFUCZZx/WO9dtQEjhGKZccPjhR6m+lp7cehAu7HQFzCdVFHp1hsuXBsZow2C8l7zQ
-	Md4vFwo850IAAa08Z5vdSIhqtoRKYv52pXUqENFjdI6C7DMTcr9QJ/i+bf2guclUdS9EL/OfQUx
-	TB8qHtP36B0ydNl1iZURPjG8RqXHQkMO20gA+hqb0sji4+gko4PfAuudcPxo2XyY8VBbB+0+DsH
-	HNEDBvJRPO47FH8b1+wnpy8NKuGK7YLRPUy0spDlV0ubnPqAfKVaUSJEhOm318DZOQi1szzgQGz
-	4bQy+6bAIUOtwxYJNP3FN6YsijurDsEHXu0mXXagl/HV+P65FjGho/jqP5e+DpeALcyzrai2FHC
-	Oj8Jp+2rR6OQUhBrpsEorl+Q2SupNU5Mx2yl4OO3wu1AMXiJtcTVXrj0gmQhzg8ZYv8DBRb+1RS
-	GjkgxI0AypxA10GNFbXx7qBW183aWzcBWK1m6iDMxEctxc/EKEkjycMYz+q1VeKNTc=
-X-Received: by 2002:a5d:5e85:0:b0:47f:91eb:342 with SMTP id ffacd0b85a97d-4816071addfmr48543973f8f.13.1787041648823;
-        Tue, 18 Aug 2026 01:27:28 -0700 (PDT)
-Received: from [172.24.138.145] (ipservice-092-208-247-184.092.208.pools.vodafone-ip.de. [92.208.247.184])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482a5a3b51asm10172929f8f.11.2026.08.18.01.27.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Aug 2026 01:27:28 -0700 (PDT)
-Message-ID: <6f2b715e-f62b-4b6e-9605-23d6978b6cbb@gmail.com>
-Date: Tue, 18 Aug 2026 10:27:26 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fHMXph4j"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787041989; x=1818577989;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XPEbWap0oVR7Y4vc6jobs3LnzyNKVduFtizSUnop1k0=;
+  b=fHMXph4j52RX8nB7UOT7nxtBGjqpnwKEhYojntdLYDAbh3ooeYcdKgsG
+   tvaSAyVwecxjqEKJkfizvdNI54Gj18wZrkKXZ5Pa4g0EY4w9FQMXhOuNu
+   6NQtSviI8ppys93v8KBGwDeCFkvRwdza9II/ehnK3RuQE4QZdowZcG/Rw
+   F6LUq5NjEOU4rwAhY245Bh8a7jwvYIbWy2vLNu4a3+UiPIAWzXqgZ8wwP
+   szTHRIEi7i77gEA/yv/33nmZC3VC9QT6T9HY3NNWhToo0TbHGSEU28ZXX
+   5apw9cuY+V80xYGP89aV8Jsb74hF7arJvyBL8SAC7b9arpprtCO9QRSBg
+   Q==;
+X-CSE-ConnectionGUID: y+RP4d2gS3KY/IaZlDSvaQ==
+X-CSE-MsgGUID: dyj2PbmLRBmgMKxVN0Cy9Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11878"; a="91397728"
+X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
+   d="scan'208";a="91397728"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 01:33:08 -0700
+X-CSE-ConnectionGUID: PiXHqqYyT3GIuZqOvEnxcg==
+X-CSE-MsgGUID: rlID4nelQlKAJ1CABWxnag==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
+   d="scan'208";a="261877057"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 01:33:04 -0700
+Date: Tue, 18 Aug 2026 11:33:01 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Cc: Michael.Hennerich@analog.com, andy@kernel.org, conor+dt@kernel.org,
+	devicetree@vger.kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	krzk+dt@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com, nuno.sa@analog.com,
+	robh@kernel.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v4 6/6] iio: dac: ad5504: support scale via
+ output-range-microvolt property
+Message-ID: <aoQYvbzXtp7FEPNo@ashevche-desk.local>
+References: <aoP8DQitMiLOSOor@ashevche-desk.local>
+ <20260818082347.13382-1-0rayn.dev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 01/14] dt-bindings: iio: adc: Add AD7768
-To: Jonathan Cameron <jic23@kernel.org>,
- Janani Sunil <janani.sunil@analog.com>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <u.kleine-koenig@baylibre.com>
-References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
- <20260813-ad7768-driver-v3-1-cb554399ad26@analog.com>
- <20260816192409.145df670@jic23-huawei>
-Content-Language: en-US
-From: Janani Sunil <jananisunil.dev@gmail.com>
-In-Reply-To: <20260816192409.145df670@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260818082347.13382-1-0rayn.dev@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
+On Tue, Aug 18, 2026 at 04:23:47AM -0400, Taha Ed-Dafili wrote:
+> On Mon, Aug 18, 2026 at 06:30:00AM +0300, Andy Shevchenko wrote:
 
-On 8/16/26 20:24, Jonathan Cameron wrote:
-> On Thu, 13 Aug 2026 15:56:54 +0200
-> Janani Sunil <janani.sunil@analog.com> wrote:
->
->> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
->> simultaneous sampling ADCs.
->>
->> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
->> ---
->>   .../devicetree/bindings/iio/adc/adi,ad7768.yaml    | 338 +++++++++++++++++++++
->>   MAINTAINERS                                        |   7 +
->>   2 files changed, 345 insertions(+)
->>
 ...
->> +  adi,data-lines-number:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    enum: [1, 2, 4, 8]
->> +    description:
->> +      Number of DOUTx lines used for the high-speed data output interface
->> +      (distinct from the SPI control interface). AD7768 supports 1, 2, or 8
->> +      lines; AD7768-4 supports 1 or 4 lines. Defaults to the maximum number
->> +      of lines for the selected variant if omitted.
-> The default statement is a bit hidden and I'm not sure useful as it's not
-> an obvious default.  Maybe drop that and make this a required property?
 
-This property was required in v1. It was changed to optional in v2 following a suggestion to use the highest number of data lines as the default.
+> > So, the change from 1000 to MILLI is in the line that is changed
+> > again in this patch. So, no need to change it earlier. And again, it
+> > should be (MICRO / MILLI).
+> 
+> I started the code with a bare / 1000, then replaced it with MILLI
+> thinking it was the more readable form. I wasn't aware of the
+> (MICRO / MILLI) idiom for expressing unit conversions explicitly.
+> Will fix in v5 and drop the intermediate change from patch 5.
+
+Since you want to get a millivolts from microvolts the 1000 is semantically
+(MICRO / MILLI).
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
