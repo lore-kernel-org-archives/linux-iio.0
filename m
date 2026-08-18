@@ -1,54 +1,56 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D15344036;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E456837882E;
 	Tue, 18 Aug 2026 14:30:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787063435; cv=none; b=FVUGfBxzaRCutp9ywi84hP/oKJgoZFZTWSUImYDiSo7w7LS0M1EVOb2g+g57hFBDrhHqE3LXM8+R+lrG3ugRoeC2Bv7A7QRyxEtMu0JJVbIuwHwe7ML4rKRWfWDWEnRXo79mp+24VzRQVvOtUCkd62G/RIvEoSzDwvWUrHvMfvI=
+	t=1787063435; cv=none; b=LD7X1WPhzp/Ex4bbW8Qmknqyqq71NxbNKa5MnqndpxPLXnKMmvmn3Hi9eUBENknhdOX1dyE/saihApnJoTrrdTI5CWu1QBUqMLlxm1+Mf3tqPKu/oh9bUNIFOQM2mpan0PmJynL/GGFpvDI6dccig5zMhxb5eLCUbK20838B8Zc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1787063435; c=relaxed/simple;
-	bh=fO/MiFbu4zSk/lgoEdvFya3ZQKWOZs1K++KiLGbjg1M=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ex9/Fm38Dxd0fqNw2dqd6q7rGjl2yLD5W0bEOa0k6IvPjXNcT4J9lBzzu1E2vwISlpC/An3nmvgbe//B2OMRBY2oo7hndnAaneeSaHwXNypPIr4kshgBS75AfQ5EMriw7XQXJdZT7wzf1DYtH99ucsTqF4tV5RVadbW6W2Gro8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=dgmIKbP/; arc=none smtp.client-ip=148.163.135.77
+	bh=OEDTheWwHAMV5h6e8q1Io2U8jVFQMucC02eas7jS+bA=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=N2u16eR5qmYFw3ToxwC38YmXr/1wzNxWyQD+ATm4bvnCjTpH1rM30qzk1NI0gJqJ8LM1k5Cbf6A2krhNtEDUQEBmavnnyJC2u/ZYMCebOeLP8vsKE6J9RTTCtqTSS4dlOqMm5f5YYsoHO48j2oizqdwYaF+4K/JNrCl7M+isVxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zNGY89pC; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="dgmIKbP/"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zNGY89pC"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67IDuGAn3121330;
-	Tue, 18 Aug 2026 10:29:53 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67IDuGrU3121321;
+	Tue, 18 Aug 2026 10:29:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=/rmFhWS8vQ5cZ3A4X9ZGRZ6Cxsp
-	5+ds/tmqDScuEvaY=; b=dgmIKbP/CS56fAFEoZx3mYxRveafED2slc6MhDQkIzE
-	A1W9KJEPkG11U10UNWpJG+x9tmuK/pNndTrYsPlYQ29ZbTy54oCcYFl1E+7xo+C2
-	i7gzj6k145fojTD+s9n3In2rHtJbNM/yWRf6E4uOqEMjvbzpW5l84ITQcWbhGHb7
-	viz3zzjb8ESI/OrPe0x3xZPIRsg95Trbv9OY9f8yDhjUBzEChhA87qWoccdCKUED
-	PsXxAhUIlVutzefvMas2ZKZ2vK14U5yGzUm/VhR1WaA2o90rvL4ONRMrgCdh9CAO
-	SDrEWHaUC3AMZVeBIqPOB9I0fZohV6v/Ft/8/1gHBtQ==
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=XvhJk
+	JO5kA2wKTCrjbJC3vVu3eoMVx9zG/wFUBePGAo=; b=zNGY89pC4NWCCBEbke+fO
+	gXGP9skXmtm3zwWnf9ZfSMv5CSTiaMlFPmfzbWJZ4PbGbzqTe2JHjRGf/dv34jWA
+	MTTA9C6WdfTKlXw97im6lr6IVs87tMTHmzEZ8hXtvjHdHeGBWYOFwnWXxjfpCalX
+	kEbg3WGhZB48bn2/ogOzregQewGd8XN+qVP7m8Ku0dOW/PqehbXpW1dskwUESbbO
+	7QdgOV6JQKvfKCogtyBEnDrOvJX5bbO68e8mnwWN1fKWxDeiKH9MpztPxncicIqB
+	rIMYNO5/oz7PVP1tIAkU8uQ5+uWJCz3PArXMl3meVbTMHidEJ0PVl7xepnJYixA9
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g4nr21aj1-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g4nr21aj5-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Aug 2026 10:29:53 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67IETqnu035908
+	Tue, 18 Aug 2026 10:29:55 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67IETsYA035931
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 18 Aug 2026 10:29:52 -0400
+	Tue, 18 Aug 2026 10:29:54 -0400
 Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Tue, 18 Aug 2026 10:29:51 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ 15.2.1748.37; Tue, 18 Aug 2026 10:29:54 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
  ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Tue, 18 Aug 2026 10:29:51 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 18 Aug 2026 10:29:51 -0400
+ 15.2.1748.37; Tue, 18 Aug 2026 10:29:54 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Tue, 18 Aug 2026 10:29:54 -0400
 Received: from HYB-JRXo5UEs61B.ad.analog.com ([10.66.6.190])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67IETZOu015349;
-	Tue, 18 Aug 2026 10:29:37 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67IETZOv015349;
+	Tue, 18 Aug 2026 10:29:47 -0400
 From: Stefan Popa <stefan.popa@analog.com>
 To: <linux-iio@vger.kernel.org>
 CC: <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
@@ -58,10 +60,12 @@ CC: <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <linux@roeck-us.net>, <joshua.crofts1@gmail.com>,
         <ciprian.hegbeli@analog.com>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Stefan Popa <stefan.popa@analog.com>
-Subject: [PATCH v7 0/2] iio: adc: add MAX40080 current-sense amplifier driver
-Date: Tue, 18 Aug 2026 17:29:26 +0300
-Message-ID: <20260818142928.8244-1-stefan.popa@analog.com>
+Subject: [PATCH v7 1/2] dt-bindings: iio: adc: add adi,max40080
+Date: Tue, 18 Aug 2026 17:29:27 +0300
+Message-ID: <20260818142928.8244-2-stefan.popa@analog.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260818142928.8244-1-stefan.popa@analog.com>
+References: <20260818142928.8244-1-stefan.popa@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,24 +75,25 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE4MDEwNyBTYWx0ZWRfX4A9FudJF9LIo
- 78kOJjidl/wNDTVo7Pj11IowVraWQJRzpFYiKRWbXlXFWHrDnrHexpbfFQWPC7WSfU26GIttaGB
- TCpu5rFvd32OKoSbHY8CVoBh1M/3C0jbNUHBIaE+TtS//8VljZIiHeA4Trujm1TJ3CJIbYBaPhg
- IFflg9Kds/6E1q4Ijas12RtJJsqcYO1DH4EDfwhIa1U2ED/uf/S3UxI4Whn1zVp8JfhH8y8dvzz
- Kjnb+sb4cuR50QQusu8CW663FN/0E/h0b4DZCw/qebw0KNkvO+cujyeXF+qBB31pdLwdqXoIpIS
- NtVq11T7wDUto8ZmM9lac+2GF7b0IHBpHkRedC2lZSMs8Xj+8ykli+3xzsxt1Dh5OwM+CJOP+hO
- Q24WVdN+kDuWv7RNJzgtJoninqKW/h3o5QmOQfBH6IhamS5ad+eDseJBXHo3Rcun5pFlKPlwa7v
- Vl5Lw3Yy5RSFf9IE0pg==
-X-Proofpoint-GUID: eV-QQRg7uSx_ikoHf4eFJYdP6R0USGdR
-X-Authority-Analysis: v=2.4 cv=B7CJFutM c=1 sm=1 tr=0 ts=6a846c61 cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE4MDEwNyBTYWx0ZWRfX0tnmJ60M9y1h
+ PaY3OInEsQC8/VV9KO3OG0xDzflT0S6VMV3P/bnzElTIs2pUajiibSTD0Mq3uNol2Wdhljlw7bC
+ m0iNnNbMbBd9RfahWVw7d4XoCu6AB10HLxo1p8YQ+oVo90OsxSc6C8bit+7BsOK0aQW4d3vzAH9
+ 7AFyIda1sG5SpRsN9L/HftJGtf4C9pS01jOYeruMcgCZg9NAQPAQ+kV25C1/5b478n0HIRm9aw4
+ UKRmO+O0fu345hPQNeAtr89fq4t9yy/s/7qBOnyTS3rz2k6I1C1eUUcBnVxDFOkBBGhwvO5DG+C
+ 5eRqLr40YkwvQ6yRqnPvxqvkm+k8vZsYrjlUKLQhtF/n6YdxZfEEiEPGPbnokfylunVJTE2k24T
+ Gr6F+PFcgFc7uJ0OneKcDZZGOAhD/58Rvmf61PXA9naKTHjr3xKJt+CPzvUFTvSOlkaWGImN0BE
+ N+j4vJXT5DBr3a17cPA==
+X-Proofpoint-GUID: XDTi_CGp_S5907oyfL_XqybH5H6-3Z57
+X-Authority-Analysis: v=2.4 cv=B7CJFutM c=1 sm=1 tr=0 ts=6a846c63 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8
- a=YosFZmRKdi6gkAz3PX0A:9
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE4MDEwNyBTYWx0ZWRfXxodcGJcwkrnM
- oXkacXlIE5BZvloKfBa6aRHY1rjxEoT5CbOPAs7lmEs+xaJno82Wc2BbFMtSN5fHM8ruGT86hfp
- CMq4R3wYJf4rA1uM7ILS9PHYsQ5Xc+yVyiSV9ZhOWcg9z557tcoJ
-X-Proofpoint-ORIG-GUID: eV-QQRg7uSx_ikoHf4eFJYdP6R0USGdR
+ a=Z0pTeXoby7EwIRygza74:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
+ a=P-IC7800AAAA:8 a=Svqhk2N__qMwEp2CcvoA:9 a=sptkURWiP4Gy88Gu7hUp:22
+ a=d3PnA9EDa4IxuAV0gXij:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE4MDEwNyBTYWx0ZWRfXwhaClbzwc6k7
+ UcV4dskGsK5Eo7+vdP6vkAYhSTc3HAQ6J9CHTl0tesGZ5CaVS13OVzty37/gWpVOpq4xHI2vRNR
+ RP+pSpNLtP5oMgpUufwAXMiJiSc2esdYebYHL8eYZh19aic2E3ts
+X-Proofpoint-ORIG-GUID: XDTi_CGp_S5907oyfL_XqybH5H6-3Z57
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-18_02,2026-08-18_01,2025-10-01_01
@@ -98,93 +103,106 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608180107
 
-This series adds support for the MAX40080, a bidirectional current-sense
-amplifier with an integrated 12-bit ADC.
+Add device tree bindings for the Analog Devices MAX40080 bidirectional
+current-sense amplifier with a 12-bit ADC and an I2C/SMBus interface.
 
-The driver is placed in IIO rather than hwmon because:
-  - IIO's scale/raw model naturally exposes the selectable gain ranges and
-    lets userspace apply the correct scale per range.
-  - Buffered capture support is planned for a follow-up series -- each
-    conversion returns a matched current+voltage pair, which maps cleanly
-    to IIO's buffered/triggered model.
-
-Changes since v6:
-  - Add types.h include (Andy).
-  - Remove dead code: i2c_smbus_read_i2c_block_data can't return partial
-    reads, so remove the ret != sizeof(buf) check (David).
-  - Remove dead code: iv variable initialization not needed as
-    max40080_read_iv always writes to *iv before returning (David).
-
-Changes since v5:
-  - Fix datasheet URL format in binding -- use stable link without /en/
-    path component (Jonathan, Siratul).
-  - Use 'adi' compatible prefix instead of 'maxim' -- MAX40080 is an ADI
-    product (Conor).
-  - Split MAINTAINERS into binding and driver patches (Siratul).
-  - Add datasheet link in driver header comment (Siratul).
-  - Fix comment style: capital first letter + period (Siratul).
-  - Fix register defines: add register name prefix (CFG_, FIFO_CFG_, IV_)
-    and use designated initializers for csa_gain array (Jonathan).
-  - Define MAX40080_ADC_RES_BITS and use BIT() for shift (Jonathan).
-  - Use lowercase 'mV' in defines (Siratul).
-  - Use C99 loop variable declarations (Siratul).
-  - Remove braces from single-statement if blocks (Siratul).
-  - Declaration and initialization in same statement (Siratul).
-  - Use IIO_VAL_FRACTIONAL_LOG2 for voltage scale (Jonathan).
-  - Remove unused i2c_set_clientdata call (Jonathan).
-  - Use defines instead of magic numbers for range default (Jonathan).
-
-Changes since v4:
-  - Initialize tmp = 0 in max40080_read_iv() before read_poll_timeout to
-    avoid using potentially uninitialized value in the condition check
-    (Sashiko, Jonathan).
-  - Simplify max40080_get_oversampling_ratio() to use cached value instead
-    of reading from the device (Jonathan).
-  - Remove DMA-safe buffer from struct -- I2C layer already bounces data
-    internally for i2c_smbus_* calls (Jonathan).
-  - Make shunt-resistor-micro-ohms required in DT binding. The default
-    1 Ohm was arbitrary and rarely correct for real hardware (Jonathan).
-  - Remove PM ops entirely. Having only resume without suspend was flagged
-    as "papering over" possible power loss issues (Jonathan).
-  - Remove the {} scope around propname, declare it at function top (Andy).
-  - Remove mod_devicetable.h include -- i2c.h provides necessary types
-    (Jonathan).
-
-Changes since v3:
-  - Removed all regmap usage -- regmap doesn't support SMBus PEC or Quick
-    Command, both required by this device (Nuno).
-  - Fixed locking: max40080_update_bits() now takes the lock internally,
-    and callers update cached state after the call returns (Nuno).
-  - Consistent comment style: capital first letter + period (Andy).
-  - Use propname variable to deduplicate "shunt-resistor-micro-ohms" (Andy).
-  - Return IIO_VAL_* inline instead of break + return pattern (Nuno).
-
-Changes since v2:
-  - Added shunt-resistor-micro-ohms DT property with default value.
-  - Use single-shot mode with SMBus Quick Command trigger for correlated
-    current/voltage reads.
-  - Precompute current scale per range at probe time.
-
-Link: https://lore.kernel.org/linux-iio/20260730131738.822405-1-stefan.popa@analog.com/ [v6]
-Link: https://lore.kernel.org/linux-iio/20260723065036.2683075-1-stefan.popa@analog.com/ [v5]
-Link: https://lore.kernel.org/linux-iio/20260717123852.1140893-1-stefan.popa@analog.com/ [v4]
-Link: https://lore.kernel.org/linux-iio/20260715063652.368501-1-stefan.popa@analog.com/ [v3]
-Link: https://lore.kernel.org/linux-iio/20260713120226.90303-1-stefan.popa@analog.com/ [v2]
-Link: https://lore.kernel.org/linux-iio/20260703102941.1141341-1-stefan.popa@analog.com/ [v1]
-
-Stefan Popa (2):
-  dt-bindings: iio: adc: add adi,max40080
-  iio: adc: add MAX40080 current-sense amplifier driver
-
- .../bindings/iio/adc/adi,max40080.yaml        |  65 ++
- MAINTAINERS                                   |   9 +
- drivers/iio/adc/Kconfig                       |  11 +
- drivers/iio/adc/Makefile                      |   1 +
- drivers/iio/adc/max40080.c                    | 572 ++++++++++++++++++
- 5 files changed, 658 insertions(+)
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+ .../bindings/iio/adc/adi,max40080.yaml        | 65 +++++++++++++++++++
+ MAINTAINERS                                   |  8 +++
+ 2 files changed, 73 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,max40080.yaml
- create mode 100644 drivers/iio/adc/max40080.c
 
---
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,max40080.yaml b/Documentation/devicetree/bindings/iio/adc/adi,max40080.yaml
+new file mode 100644
+index 0000000000000..b0ec9159a2939
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,max40080.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,max40080.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices MAX40080 bidirectional current-sense amplifier
++
++maintainers:
++  - Ciprian Hegbeli <ciprian.hegbeli@analog.com>
++  - Stefan Popa <stefan.popa@analog.com>
++
++description: |
++  The MAX40080 is a high-precision, bidirectional current-sense amplifier with
++  an integrated 12-bit ADC and an I2C/SMBus interface. It measures the voltage
++  across an external shunt resistor and the input bus voltage, and stores the
++  results in an internal FIFO.
++
++  Datasheet:
++    https://www.analog.com/max40080
++
++properties:
++  compatible:
++    const: adi,max40080
++
++  reg:
++    maxItems: 1
++
++  "#io-channel-cells":
++    const: 1
++
++  vdd-supply:
++    description: Power supply for the device.
++
++  interrupts:
++    maxItems: 1
++    description: ALERT_ output for overcurrent/undervoltage threshold events.
++
++  shunt-resistor-micro-ohms:
++    description:
++      Value of the current-sense shunt resistor connected between the RS+ and
++      RS- inputs. Used to scale the reported current.
++
++required:
++  - compatible
++  - reg
++  - shunt-resistor-micro-ohms
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@20 {
++            compatible = "adi,max40080";
++            reg = <0x20>;
++            #io-channel-cells = <1>;
++            vdd-supply = <&vdd>;
++            shunt-resistor-micro-ohms = <100000>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e087673237636..c1e5afa42de2e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15513,6 +15513,14 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ F:	drivers/iio/temperature/max30208.c
+ 
++MAXIM MAX40080 CURRENT SENSE AMPLIFIER DRIVER
++M:	Ciprian Hegbeli <ciprian.hegbeli@analog.com>
++M:	Stefan Popa <stefan.popa@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/adi,max40080.yaml
++
+ MAXIM MAX7360 KEYPAD LED MFD DRIVER
+ M:	Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
+ S:	Maintained
+-- 
 2.53.0
 
