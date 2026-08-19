@@ -1,106 +1,114 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94ADE3D75A0
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 08:25:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F126A268690;
+	Wed, 19 Aug 2026 08:26:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787127928; cv=none; b=P4Daz1FECLp9PHJ/cWVZOYkDfB55jyWOFXF+xCtEzUrxiIN5rJfK9J5jGpvdxEdm9iIfJIBq4Pp8Q4H8KDuwwTttptrdSPN66Lw8igfD0g0HJhAa/Tm7ZttaoOn1cReKl2f/4RowQWFIptYmQY9reIraOEsHnBunZ7apcsDA81c=
+	t=1787127999; cv=none; b=M+h3Ek56EEstb9UHOEq23cbRQOiF72fRRZlO4J6Dx8XBq82nRuafJLELzyFBeA4DD0pnpMz0B2vKs1PRSiiGO2Eyywsb2dB93iuKURiBMQogt1xadZawdGI4kijdsfLGdQXNZu3ZOip75hciD4aXka0hDGHvGbRAleL3KB9u5/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787127928; c=relaxed/simple;
-	bh=0qlzCb4XxZoTqc5bYz7C/qbvFkt8AJhYaLM0S1vbpJM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Cdhd1+BHMuOWpYkoa81/i8a/LKueajhhSZFfEynwUmz7JYwry5OSa2EYQb2cndYDigV4SdTLW91Jg98gH3+zHNsuxynnbTilVcYB8c3eE2zyZeGoDE6M1KLuogPiLLftTi5S1qNJUwWS7wdtlro8YT89khGPMp+pUmYcgyUtzxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P0CDUU7F; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787127999; c=relaxed/simple;
+	bh=bO0ewF/jIRKJTr9iDTrKWMW4tzf/dxjocgc8x+d5how=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=p65mwQzzHxWYYrz8fpeilUBkS53dULTx5f86zZjQ3O4/V7vnc9DY5cXoSmMt3vM13a9L2lfVFiSdwxhDkqS/PkY5RviM7RANm/1d9xfGC3pefC2nSDnwMCygnngf42tqNunbMRb5A0C7jBTduP3tOUUDS71TXBPJH5eXbfqNtGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=ZFZkRNgT; arc=none smtp.client-ip=109.224.244.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P0CDUU7F"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-4813ea321cdso1243993f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 01:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787127926; x=1787732726; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=SAG4QBgBLWT2fC9Hd/KCO+unr0wXvjoWFWHd+CcrkoI=;
-        b=P0CDUU7FSSbrlU8oZBMcHRoPK/YNkjwtpkql39OYb8U8tb6i0jad1i+9n4xPS1XPDw
-         akMDen2kFC86hYgFq4lP6dao9a7vD5S02D6Ay8KNsso/YOKrLUb0wUXgpu6uk8DBMdfH
-         FpA0LcURRd14KgGmSx4KwugiOwmEZAFaIFzIb+SVWBp/FYhhTkpDwufmcQ/CGxeq3rMI
-         JvEMhOUvPUW1Guag33K64UkQlmqVbdVeHcZpc8ygRfdIC89L7wDirHPf6mSOT+INvq8M
-         GV4nnA7ISZcsjx1DglVZUd3kNpoXONpt38D/UgbPC1bmRd8OODyWcRaGvd2eD/x/Ragb
-         VmNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787127926; x=1787732726;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=SAG4QBgBLWT2fC9Hd/KCO+unr0wXvjoWFWHd+CcrkoI=;
-        b=hF87ls5tJ7KybqZSK4QneVyJL7kdmNj+KiYt1mwOVOtUoZ/1p0TLaEQXVOb7dZPelc
-         vgOaJZP4k06Vpa6yLkOOROlvwFM8lOIxGxvo9ha41ZJ/d4dQc4Ug5SBPlJ86U7vBdqSV
-         F2ZXnaxJylNc7eTlHPFc+XwoEJrfhtKoS2xxKuwmKxmgjoGqQEYe5yHl3nuK0C+ssgBi
-         PxYTY2sdoarvstuj/D0v9Lb03TUyXQOokVW49jkBeqziw6CSxPEqpRENwhMhypdtUFfs
-         svmBzXhOzPLO3tXr9BbFa8juKTyAAVT7479sMQoDvee1WG+oLLs5fyUSrRary9WcW8em
-         /72Q==
-X-Forwarded-Encrypted: i=1; AHgh+Ro7hnU4qhSVsn5rs66WIgHyPcfvzaYLULKs4K0k+tTz/LNFJ2E/ciEkzSjIPGmORgldiN5l2PHUJPM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZ0mXU4JRFAcsF8zoGaPM+P/nHzMt1lpP0p93yKkZ4h/AEhy1r
-	dQPC/CyiwahAi2aNtTR4M535IYxnjCaRHEX9oYzJTFiLsiTbbg5tyMmB
-X-Gm-Gg: AR+sD11Tx0HRwT5wPuSjlfmlMIilHu1fyKvoKZliklha/RqfzOKKEumdejv6rdwN6Wk
-	7pIsiVHJF0/pMV87qvp/jXmMfV60pnA9sZYgCSFUM10sflJ/J9gFLKfr+48KeHH9PNTMOzvijvp
-	jB/4Y2KXfUi8jdAB9fVmvASNmETd1Kze44GOmQ+NjkNxxdhA/jU4kJORERszljyLBYv8M34XsMS
-	bquhd7XFkmScwBdf7CZrYglP8DQp7FN+PuDQvAlHlI1Fuz2CptLY79cSfeND9xmNPIIVeGKDWAz
-	SW3LYkzECj2J2XHE1Z0NuKrcDoTNYF3UKkGbtjwu8DZ9ZeJG9c670blv3RpYlSyxVJ7Av4xlsJr
-	JVDSm8Up2Y0RnoA0xHTe01O+0Lr8Ukx4n2YaGsOdtHBqM3STezC6YgGmtvulP6AfJrOSHMONAYh
-	5vqYbcPFIKcaW0qe7vXDNlvcPJMBjk9Tikggg1MRgfcKMvp13lFXAybLHSPq6G2sdESn5L5DQBM
-	Mc1wwm1wDnVcELI+3KFlv+vbQxvOOYXQkD60qebaeITqCd0rTvc5RT8/UlSJw5L7gEIZGil4N2N
-	rteqSP6r8pzQLbpY8b6z6Rd+wKxsh0KI5H3qAwBbLqdPkEqPKiR/NVQbkRZK3EoPsUM8O9b2uDa
-	JBDGd5sh12Oh5k4SudqIPzjZdhhozzokbwx/tPp9WM6g20OUX0DQCHPW90JjTY+QUKCsP+w==
-X-Received: by 2002:a05:600c:3f10:b0:493:f783:c46a with SMTP id 5b1f17b1804b1-499aa0f306fmr50702575e9.6.1787127925636;
-        Wed, 19 Aug 2026 01:25:25 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499aa0d6721sm59079895e9.11.2026.08.19.01.25.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2026 01:25:25 -0700 (PDT)
-Date: Wed, 19 Aug 2026 10:25:23 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger
- <martink@posteo.de>, Sean Nyekjaer <sean@geanix.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Martin Kepplinger
- <martin.kepplinger@theobroma-systems.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v5 6/6] iio: accel: mma8452: Reuse existing dev
- pointer in mma8452_probe()
-Message-ID: <20260819102523.00006d40@gmail.com>
-In-Reply-To: <20260819-mma8452-open-drain-v5-6-d8aa590d7c36@geanix.com>
-References: <20260819-mma8452-open-drain-v5-0-d8aa590d7c36@geanix.com>
-	<20260819-mma8452-open-drain-v5-6-d8aa590d7c36@geanix.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="ZFZkRNgT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail; t=1787127995; x=1787387195;
+	bh=DVwi+Qh+lytsk5HukjGP7UMSRtjZj7WP40TTQz79Nzw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=ZFZkRNgThxyKLmxLhbcIMv+WsqqsTlYbArGAvBLpIFaY8jTpD7XIiwPJMPD+GOFB4
+	 FlkvwCuWB2nSmdlHFPFoSCKHG822vOxDafYScQiSUAtFW0iF7PfUoPaudUiRpSVs5l
+	 jJ8GPT8XVlmqcsChnYpfp2LupI1f8ROWpO5bClYWC3vuHvd5o/kU+cQUYh9ayNd6kU
+	 n1JD588LpuXDGrMcKQ5m0P2B9cqoHtb6d7hPZAs2vzRnlQZzwxoYNH1t+ZNYhPadoe
+	 ArrxrBZI0RFLe/QV/PgocFXH86GJ+xEnChXJMlK4q8aEPJ6WnLbKmrn832U8uAHgvM
+	 lgrZKwLG6gn/A==
+X-Pm-Submission-Id: 4hQ05y1sQYz2SchF
+From: Esben Haabendal <esben@geanix.com>
+To: "Jonathan Cameron" <jic23@kernel.org>
+Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
+ <robh@kernel.org>,  "Krzysztof Kozlowski" <krzk+dt@kernel.org>,  "Conor
+ Dooley" <conor+dt@kernel.org>,  "Martin Kepplinger" <martink@posteo.de>,
+  "Sean Nyekjaer" <sean@geanix.com>,  "David Lechner"
+ <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+  "Andy Shevchenko"
+ <andy@kernel.org>,  "Martin Kepplinger"
+ <martin.kepplinger@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
+  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>,  "Joshua
+ Crofts" <joshua.crofts1@gmail.com>,  "Andy Shevchenko"
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v4 2/6] iio: accel: mma8452: Optimize struct mm8452_data
+ member orders
+In-Reply-To: <20260819023233.03d79181@jic23-huawei> (Jonathan Cameron's
+	message of "Wed, 19 Aug 2026 02:32:33 +0100")
+References: <20260812-mma8452-open-drain-v4-0-bfca15d02b59@geanix.com>
+	<20260812-mma8452-open-drain-v4-2-bfca15d02b59@geanix.com>
+	<41zbnT5tdPvKMFjNwqTi18KkdWe7Lyw2tPRSixVZ-8cH1LJwnQRi78CowVB5NP6sD_iVSoTEMBevXuRCaDTpXA==@protonmail.internalid>
+	<20260815051356.4dac350e@jic23-huawei> <87tsosk6zt.fsf@geanix.com>
+	<qXFhLuDWkwGjQMtFJ4aqj9CMDDSMQQBvg29Nt5yY8DTpUfVr_ZMuw9ZbTUzgTPq6waMSQUozZh5Y4UhJiJnQGg==@protonmail.internalid>
+	<20260819023233.03d79181@jic23-huawei>
+Date: Wed, 19 Aug 2026 10:26:28 +0200
+Message-ID: <878q621por.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On Wed, 19 Aug 2026 10:15:33 +0200
-Esben Haabendal <esben@geanix.com> wrote:
+"Jonathan Cameron" <jic23@kernel.org> writes:
 
-> In commit 32a5c04d4575 ("iio: accel: mma8452: Use dev_err_probe()") the
-> struct device * pointer was assigned to local variable dev, so we can just
-> as well reuse that throughout the function for sligthly more readable code.
-> 
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> ---
+> On Mon, 17 Aug 2026 19:10:46 +0200
+> Esben Haabendal <esben@geanix.com> wrote:
+>
+>> "Jonathan Cameron" <jic23@kernel.org> writes:
+>>
+>> > On Wed, 12 Aug 2026 16:30:33 +0200
+>> > Esben Haabendal <esben@geanix.com> wrote:
+>> >
+>> >> Reorder struct mma8452_data members to avoid holes.
+>> > Trivial but sashiko pointed out mm[a]_8452 in the title.
+>> > I'll tidy that up if nothing significant comes up.
+>> >
+>> > Interestingly Sashiko also thinks it found a deadlock.
+>> > Given you are working with this driver if you have time could
+>> > you take a look at that.
+>> >
+>> > https://sashiko.dev/#/patchset/20260812-mma8452-open-drain-v4-0-bfca15d02b59%40geanix.com
+>> >
+>> > I'm rather surprised to see the lock taken in the runtime
+>> > pm suspend callback. It is probably there to close a race
+>> > where the device is being suspended and the sampling
+>> > frequency is being written.  I'm not immediately sure what
+>> > the best way to fix it is. One thing that would work is to
+>> > do pm_runtime_get* to raise the reference counter and stop
+>> > there being any chance of an autosuspend.
+>>
+>> The mma8452_change_config() function is grabbing &data->lock, and is
+>> forcing chip in stand mode while applying change. This needs to be
+>> synchronized with mma8452_runtime_suspend() switching to standby mode,
+>> to avoid a race condition where mma8452_change_config() would end up
+>> undoing the change made by runtime PM, due to it keeping the old state
+>> in is_active local variable. So far it makes sense.
+>>
+>> But I don't see the reason for mma8452_read_raw(IIO_CHAN_INFO_RAW)
+>> grabbing the lock for the call to mma8452_read(). And when
+>> mma8452_trigger_handler() calls mma8452_read() it does so without
+>> data->lock held.
+>>
+>> So maybe we we can simply drop the &data->lock from mma8452_read_raw()?
+>>
+> That does look safe to do to me as well. Everything used is
+> either reference counted (runtime pm in particular) or local variables
+> so there doesn't seem to be any reason to take the lock for it.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+I can add a patch with this change if another revision is needed, or
+will send it separately otherwise.
 
--- 
-Kind regards,
-Joshua Crofts
+/Esben
