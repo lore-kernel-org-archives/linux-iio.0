@@ -1,61 +1,36 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BB483D0C07;
-	Wed, 19 Aug 2026 07:19:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF7A2E06ED
+	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 07:46:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787123977; cv=none; b=iXHdDAtkYANY6FjNjJ79HifUf5tMOstC4fkx5VbJxuwhNq22tCL+X4zCCKjSfhfkpVH4roBb8/r376DHOnXosKHXMQ7s6n8HTZi3yaOXwH4n3Ru6m+RkgU61l3SzyXUVyBNRuUsN3QPWQpJ0tuTBEQ3ehfwZWjEevXuuWGpapPg=
+	t=1787125596; cv=none; b=q4jm5RZF/5ujK7qAHCpSU6IyTvmM2+mkrjqwe+0MXw6jDrmIes6GXvxClbSQZRixJfiSEhcK/WhvAaSGqc162XiwckxYhHz4ZevF0gd8p/K/1z35ftAZCOllhjXjdilBJ279lWfFOxaxe479tqDKZJ53QY4vSnZlWv2dODKhVT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787123977; c=relaxed/simple;
-	bh=0LHSfQrJ0hE8SAWt/bJ2lltily29zhoRIQldeqI12Bo=;
+	s=arc-20240116; t=1787125596; c=relaxed/simple;
+	bh=Y0kkXbx+2mZMPMht5x4+xxdz5JCC3f4mU6oyQNd1tyo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oliZIIti/RfxZRPCs+jZvyGmqsj5i/yJUjyFxCN2w++eq5xarQ4zN6GUz6vDAElYZ+EZB2vtVz3KPdzp5Nsblr9r8hZhxkUBO8ie4iu/nXfrS6cVumMbJ/dVlpR/QEFRzlR8QfShHfq8+loyw/+Gy+0Av3WBRWmlCUcNsRIl/EA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CPXA935w; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=h5M09JYHw4n/e4udQDWRyWY2S/KHDyVg80Us0sDSQlO5vIXP/nzkvTLVhf6OgEJJc/Otn2Buth/68/y2QkvGofV9VRSVVoOpnHgYE+iyiU45XxOsjEFzukmaEYtddHiMOpgzSFUHHYw81sgmeHUf0bQm2gyObH7C5Rf6e3qXpoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=F6RobUH8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CPXA935w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787123976; x=1818659976;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0LHSfQrJ0hE8SAWt/bJ2lltily29zhoRIQldeqI12Bo=;
-  b=CPXA935w8mGbtIfn/TAE21Ljzdau4KfxuOiu6KyrkBO8studgnb0BEoe
-   z+QUWodck1qG/KHP5qIkjUygVYritJqbBXQyu7nA+8HDBZp3m3X56qtzJ
-   o1/+41NpePOo9Lp01DoWF+NLad+mysaLHTdsE0mc5hpsxs0f2olMUX9ZP
-   Vj/v4adxy3KHf7Rgu9TlpIs9UeUdoPYa4B2CfqZTuYvf2LfINLqInc++Z
-   yE4FZNjN+Bx42rvox+urG4mlf69JoMqkvIU78osw3DIopqoKs+d6hlljP
-   6LBUSidyhKZmZTC+1efQHnMdxlFwtc9b36iKUztPEhVWWNg3aRCPLXQzS
-   A==;
-X-CSE-ConnectionGUID: V9ulcl4tRBOH7zjdSscraw==
-X-CSE-MsgGUID: q15s23j7S/2N/+Q2H/xOEw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="90147933"
-X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="90147933"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 00:19:35 -0700
-X-CSE-ConnectionGUID: G9zFhxtATVyIB/9kFt8KGA==
-X-CSE-MsgGUID: kqw+WNQWTcuWYA109+MCTQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="269732926"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.106])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 00:19:32 -0700
-Date: Wed, 19 Aug 2026 10:19:29 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Gabriel Rondon <grondon@gmail.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] iio: accel: kionix-kx022a: unify staging buffer
- and convert to iio_push_to_buffers_with_ts()
-Message-ID: <aoVZASgQc8itDIyI@ashevche-desk.local>
-References: <20260818215122.52715-1-grondon@gmail.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="F6RobUH8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56B9A1F000E9;
+	Wed, 19 Aug 2026 07:46:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1787125594;
+	bh=3/uvODQAnz02VHyPGtt46v1MBxPXw2ZkATE04+Ok0hA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=F6RobUH8ikP9EUq2d9u6mSzGnVf8yEUSuiqTiWGmNvQVrH/C/xQp730HLZ0Ju7ZJL
+	 JhkmadmhTSrHgJcPF0Aq2JS1g2PVuPDgU51q7lnijcNhjJ682suiiFl45DBkVxmPaL
+	 vJLMKYSz2WSywp/1B+3UmGGJ474ImK8SU/yDNEhs=
+Date: Wed, 19 Aug 2026 09:44:13 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PULL v2] IIO: Fixes for 7.2 set 2 (probably now for merge
+ window)
+Message-ID: <2026081904-domelike-suffix-19ef@gregkh>
+References: <20260807235501.68268be2@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,28 +39,13 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260818215122.52715-1-grondon@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260807235501.68268be2@jic23-huawei>
 
-On Tue, Aug 18, 2026 at 10:51:20PM +0100, Gabriel Rondon wrote:
-> v1 was a single patch converting the two push sites to
-> iio_push_to_buffers_with_ts(). Reviewing it, Jonathan pointed out that
-> the driver carries two separate staging areas holding the same thing
-> (buffer[8] and the scan struct), and asked to fold the cleanup into this
-> set.
+On Fri, Aug 07, 2026 at 11:55:01PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 3585cfd4563731a8ae406b32807613c667c2b887:
 > 
-> So v2 is a two-patch series: patch 1 drops the redundant buffer and
-> routes the one-shot read and the triggered handler through scan, and
-> patch 2 does the deprecated-API conversion, now with a single buffer to
-> push at both sites.
+>   Merge tag 'iio-fixes-for-7.2a' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-linus (2026-07-09 07:44:06 +0200)
 
-Good job!
-Assuming my comments are being addressed,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Sorry for the delay, now pulled and pushed out.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+greg k-h
