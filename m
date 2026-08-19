@@ -1,51 +1,52 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 813CE2EEE7E;
-	Wed, 19 Aug 2026 12:41:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8B62EEE8A;
+	Wed, 19 Aug 2026 12:41:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787143291; cv=none; b=FGxNr9P2PAOKdVaHki/bnsQwROj/11HAvHOeFxJbknsNGQnKb3x+3FfnHz3X9ChPkuyPgVaN5E+DMrP4Z2G5hNL3Bl40gwtY1qjyNlb1lp2Xewpx8dGqERArLhEE1ba/OJqipBmrvMAzYLirzJQmn5TBS+/DH3TbXe9M4FVzZhM=
+	t=1787143297; cv=none; b=uOvBds2H0NjEz5bxC/E7sez+BEoqcpODYZwvkWH0YxD8qZVzelOxqJS0J2IBs8rbVImYMhYJjrVnZa7rpNuUhbW7UusqcC3SCWQDxzSl/vde2x7msd48zyOW1K38Fa6W4KmFs6MngEzneinqJjE0ZeA9oEBuNKk/eLFHYBic2qw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787143291; c=relaxed/simple;
-	bh=myXQh1iDIpKn5R9LdBkXRvRACG8jMDaWnk1Wh8OpgZc=;
+	s=arc-20240116; t=1787143297; c=relaxed/simple;
+	bh=W674xamuV0WmeN+VxlUQBnHXaJW2tCINb/xh5XaazKg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=mudPt5tznGMKZOBHHhpmMBbosYgviSBqD4tnPZyhHfIu3+tLe5m+mBqqnPNugicTgICwcvrRwtNm6EVWjdPoz4dwQR7s8AEShblOUBA4M1noLxMVjj1L5zIXLOz+7V4whZ9FEo2wBfRQx2uu4iOsULGn9czzdZEKsmQGqOVHAdc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=IEX/9+kI; arc=none smtp.client-ip=68.232.154.123
+	 In-Reply-To:To:CC; b=KJ35hvXSHA/sOycn/iuTw56wMG5SDhLjrsYVbQdg8vvSxTG4ctn7R0+jORFOmAjyzFArk92d0+VT3RUL7EXi9DOltlIbp1HHa2Jyoc2+R6K6DVNgs/6uQL0x98AYBaPoeiDii+lDAoyyEF9hSt/ZRZyD0JVkZpVw0Vv++xOZEcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=rySOw2+J; arc=none smtp.client-ip=68.232.153.233
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="IEX/9+kI"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="rySOw2+J"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1787143289; x=1818679289;
+  t=1787143295; x=1818679295;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=myXQh1iDIpKn5R9LdBkXRvRACG8jMDaWnk1Wh8OpgZc=;
-  b=IEX/9+kII4A1AxwmtUDESsLZgiAkORTFhNVQ0DPJ6nFOTztu/7Ir64f9
-   Mtu3G0B20fuRfo4pI+syU/tlR3G9ATejGWZkyyBAMlEOZTx+CqUFuKbSm
-   CdXcC7y7jJhY6CrWqIn8v2TTvXVQqzkKXmt4WcftREk9qztERoG4K/KbS
-   2SUOXGrFRTSlaV9FdSrJ3SFEaIoL1pRyhzRa/i6dqhVsSxkDd4+81PU4o
-   sJtunkeW4WC12NQDnGusayHofGC+lQet/Jlx8wtlwKCBVg79w4CHlEgSH
-   lvTmskdrnivGsuWAu/TGf9JRyHE3r8TaLFw0zVXeIriG1LK86HYP9ndqO
-   g==;
-X-CSE-ConnectionGUID: e7MM+NI3TZ63TLrJHWrzAQ==
-X-CSE-MsgGUID: y8BXwQGfT6ijnG3IWjE/tQ==
+  bh=W674xamuV0WmeN+VxlUQBnHXaJW2tCINb/xh5XaazKg=;
+  b=rySOw2+JtrlPZe3FZCVPFS+8yFIohPAOyCNhjaxTOgksUClMMtIQwkUT
+   68uwkHwClHAlBkLCYwvDnJwSXhh6F/3z0wOx/Dw+SCFhMJxK48h3+GB37
+   O2kIjOvjBNU5n6vRQcRdnr53QJIImIEITYYWJc7NVq4R80ruoe/aid27o
+   +sGOwOIKBFUafmwqnFqowvipQwbSN6DH/tcG22UbREAOXM95om7/AbncD
+   QYPTdKbDhwNrNikbzHiJlDkM3+LMIZ/6AnCVZG7qKAHLPfFQWoBoIDI17
+   R46HQVFj+6EITXYBrjTx6BXh3ljdT39FA+nCYm9km+FuInygzZA49fWN/
+   w==;
+X-CSE-ConnectionGUID: TCwentTOQU64GGQFvC1Oxg==
+X-CSE-MsgGUID: hRBdKH4AQ8qkc4JPkr36ZQ==
 X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="61462193"
+   d="scan'208";a="72095625"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 05:41:29 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 05:41:32 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
  chn-vm-ex3.mchp-main.com (10.10.87.32) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.45; Wed, 19 Aug 2026 05:41:28 -0700
+ 15.2.2562.45; Wed, 19 Aug 2026 05:41:31 -0700
 Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Wed, 19 Aug 2026 05:41:26 -0700
+ Transport; Wed, 19 Aug 2026 05:41:29 -0700
 From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Wed, 19 Aug 2026 15:41:10 +0300
-Subject: [PATCH v4 6/9] iio: dac: mcp47feb02: rename command mask define
+Date: Wed, 19 Aug 2026 15:41:11 +0300
+Subject: [PATCH v4 7/9] iio: dac: mcp47feb02: refactor MCP47FEB02 I2C
+ driver into two modules
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -54,7 +55,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260819-mcp47feb02_refactor-v4-6-beb2aa3bfd09@microchip.com>
+Message-ID: <20260819-mcp47feb02_refactor-v4-7-beb2aa3bfd09@microchip.com>
 References: <20260819-mcp47feb02_refactor-v4-0-beb2aa3bfd09@microchip.com>
 In-Reply-To: <20260819-mcp47feb02_refactor-v4-0-beb2aa3bfd09@microchip.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -64,56 +65,755 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787143269; l=1903;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787143269; l=29650;
  i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=myXQh1iDIpKn5R9LdBkXRvRACG8jMDaWnk1Wh8OpgZc=;
- b=W1vPxxOE5SV0bVas88xxn+RIAPlPPqFYHFyZ6WGCmB9n3fwKOtEtx49o1lVQwYuEwa9O7DGcG
- 5j66jpK40tbCfwiX7wYhEjzimjkelqKqK6bnVsgfzB+l7iw8oQn7e0D
+ bh=W674xamuV0WmeN+VxlUQBnHXaJW2tCINb/xh5XaazKg=;
+ b=vVT48KSfA5rBvDWxpJIO583hHMGq8zm4BnzgiakDymANS5tTjmCjjffei69L4orgchI8YiYzn
+ yi7hBx3V6gmAyc9hB4OpBMfrPIJPDSG+3+00zwV7JD9AIhSBZYWTAAE
 X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
  pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-Use 2 new defines to select the corresponding bits for each channel in VREF
-and Power Down registers instead of the initial define without a meaningful
-name.
+Prepare the driver for the bus-specific code by refactoring into separate
+files. The renamed file will contain the common DAC functionality shared by
+the MCP47FxBy1/2/4/8 I2C and MCP48FxBy1/2/4/8 SPI drivers. The MCP47FEB02
+driver was refactored into two modules: mcp47feb02-core.c and
+mcp47feb02-i2c.c in order to prepare the support for SPI MCP48FxBy1/2/4/8
+DAC family on top of the current implementation.
 
 Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 ---
- drivers/iio/dac/mcp47feb02.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ MAINTAINERS                                        |   4 +-
+ drivers/iio/dac/Kconfig                            |  10 +-
+ drivers/iio/dac/Makefile                           |   3 +-
+ .../iio/dac/{mcp47feb02.c => mcp47feb02-core.c}    | 327 ++-------------------
+ drivers/iio/dac/mcp47feb02-i2c.c                   | 145 +++++++++
+ drivers/iio/dac/mcp47feb02.h                       |  46 +++
+ 6 files changed, 227 insertions(+), 308 deletions(-)
 
-diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-index 6f084eb71240b475bf85763139ecfafc006da83d..8ca67c4021a86a6d5034495c1dbb18772ada354b 100644
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6b4560681b51cfabf0b0e98fd89b69d8c527228b..fc87609865f26a9f484edc42058f7df659a0fa4f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16118,7 +16118,9 @@ M:	Ariana Lazar <ariana.lazar@microchip.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ F:	Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
+-F:	drivers/iio/dac/mcp47feb02.c
++F:	drivers/iio/dac/mcp47feb02-core.c
++F:	drivers/iio/dac/mcp47feb02-i2c.c
++F:	drivers/iio/dac/mcp47feb02.h
+ 
+ MCP4821 DAC DRIVER
+ M:	Anshul Dalal <anshulusr@gmail.com>
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 657c68e75542e47ad5603165bcbc3660e90c6450..cc10d43ffd1e89bbf945ef89ea5af0abe1a91084 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -550,8 +550,13 @@ config MCP4728
+ 	  will be called mcp4728.
+ 
+ config MCP47FEB02
+-	tristate "MCP47F(E/V)B01/02/04/08/11/12/14/18/21/22/24/28 DAC driver"
++	tristate
++
++config MCP47FEB02_I2C
++	tristate "MCP47F(E/V)B01/02/04/08/11/12/14/18/21/22/24/28 I2C DAC driver"
+ 	depends on I2C
++	select REGMAP_I2C
++	select MCP47FEB02
+ 	help
+ 	  Say yes here if you want to build the driver for the Microchip:
+ 	  - 8-bit DAC:
+@@ -567,7 +572,8 @@ config MCP47FEB02
+ 	  (DAC) with I2C interface.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+-	  will be called mcp47feb02.
++	  will be called mcp47feb02_i2c and you will also get
++	  mcp47feb02_core for the core module.
+ 
+ config MCP4821
+ 	tristate "MCP4801/02/11/12/21/22 DAC driver"
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 0034317984985035f7987a744899924bfd4612e3..28c8646a987cff1ac4d693fe86898d66c901d5bd 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -54,7 +54,8 @@ obj-$(CONFIG_MAX5522) += max5522.o
+ obj-$(CONFIG_MAX5821) += max5821.o
+ obj-$(CONFIG_MCP4725) += mcp4725.o
+ obj-$(CONFIG_MCP4728) += mcp4728.o
+-obj-$(CONFIG_MCP47FEB02) += mcp47feb02.o
++obj-$(CONFIG_MCP47FEB02) += mcp47feb02-core.o
++obj-$(CONFIG_MCP47FEB02_I2C) += mcp47feb02-i2c.o
+ obj-$(CONFIG_MCP4821) += mcp4821.o
+ obj-$(CONFIG_MCP4922) += mcp4922.o
+ obj-$(CONFIG_STM32_DAC_CORE) += stm32-dac-core.o
+diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02-core.c
+similarity index 73%
+rename from drivers/iio/dac/mcp47feb02.c
+rename to drivers/iio/dac/mcp47feb02-core.c
+index 8ca67c4021a86a6d5034495c1dbb18772ada354b..8bee01a82367371a590c9a7f23a18a1e8d1fe3ca 100644
 --- a/drivers/iio/dac/mcp47feb02.c
-+++ b/drivers/iio/dac/mcp47feb02.c
-@@ -34,8 +34,9 @@
++++ b/drivers/iio/dac/mcp47feb02-core.c
+@@ -1,8 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ /*
+- * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface
++ * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C and SPI interface
+  *
+- * Copyright (C) 2025 Microchip Technology Inc. and its subsidiaries
++ * Copyright (C) 2025-2026 Microchip Technology Inc. and its subsidiaries
+  *
+  * Author: Ariana Lazar <ariana.lazar@microchip.com>
+  *
+@@ -17,12 +17,10 @@
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+ #include <linux/err.h>
+-#include <linux/i2c.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/kstrtox.h>
+ #include <linux/module.h>
+-#include <linux/mod_devicetable.h>
+ #include <linux/mutex.h>
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+@@ -31,6 +29,8 @@
+ #include <linux/types.h>
+ #include <linux/units.h>
+ 
++#include "mcp47feb02.h"
++
  /* Register addresses must be left shifted with 3 positions in order to append command mask */
  #define MCP47FEB02_DAC0_REG_ADDR			0x00
  #define MCP47FEB02_VREF_REG_ADDR			0x40
-+#define MCP47FEB02_GET_VREF_MODE(reg, ch)		(((reg) >> (2 * (ch))) & GENMASK(1, 0))
- #define MCP47FEB02_POWER_DOWN_REG_ADDR			0x48
--#define MCP47FEB02_DAC_CTRL_MASK			GENMASK(1, 0)
-+#define MCP47FEB02_GET_POWER_DOWN_MODE(reg, ch)		(((reg) >> (2 * (ch))) & GENMASK(1, 0))
+@@ -88,220 +88,12 @@ enum mcp47feb02_gain_bit_mode {
+ 	MCP47FEB02_GAIN_BIT_X2 = 1,
+ };
  
- #define MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR		0x50
- #define MCP47FEB02_GAIN_BIT_MASK			BIT(0)
-@@ -1026,7 +1027,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
+-static const char * const mcp47feb02_powerdown_modes[] = {
++const char * const mcp47feb02_powerdown_modes[] = {
+ 	"1kohm_to_gnd",
+ 	"100kohm_to_gnd",
+ 	"open_circuit",
+ };
+ 
+-/**
+- * struct mcp47feb02_features - chip specific data
+- * @name: device name
+- * @phys_channels: number of hardware channels
+- * @resolution: DAC resolution
+- * @have_ext_vref1: does the hardware have an the second external voltage reference?
+- * @have_eeprom: does the hardware have an internal eeprom?
+- */
+-struct mcp47feb02_features {
+-	const char *name;
+-	unsigned int phys_channels;
+-	unsigned int resolution;
+-	bool have_ext_vref1;
+-	bool have_eeprom;
+-};
+-
+-static const struct mcp47feb02_features mcp47feb01_chip_features = {
+-	.name = "mcp47feb01",
+-	.phys_channels = 1,
+-	.resolution = 8,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb02_chip_features = {
+-	.name = "mcp47feb02",
+-	.phys_channels = 2,
+-	.resolution = 8,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb04_chip_features = {
+-	.name = "mcp47feb04",
+-	.phys_channels = 4,
+-	.resolution = 8,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb08_chip_features = {
+-	.name = "mcp47feb08",
+-	.phys_channels = 8,
+-	.resolution = 8,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb11_chip_features = {
+-	.name = "mcp47feb11",
+-	.phys_channels = 1,
+-	.resolution = 10,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb12_chip_features = {
+-	.name = "mcp47feb12",
+-	.phys_channels = 2,
+-	.resolution = 10,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb14_chip_features = {
+-	.name = "mcp47feb14",
+-	.phys_channels = 4,
+-	.resolution = 10,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb18_chip_features = {
+-	.name = "mcp47feb18",
+-	.phys_channels = 8,
+-	.resolution = 10,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb21_chip_features = {
+-	.name = "mcp47feb21",
+-	.phys_channels = 1,
+-	.resolution = 12,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb22_chip_features = {
+-	.name = "mcp47feb22",
+-	.phys_channels = 2,
+-	.resolution = 12,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb24_chip_features = {
+-	.name = "mcp47feb24",
+-	.phys_channels = 4,
+-	.resolution = 12,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47feb28_chip_features = {
+-	.name = "mcp47feb28",
+-	.phys_channels = 8,
+-	.resolution = 12,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = true,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb01_chip_features = {
+-	.name = "mcp47fvb01",
+-	.phys_channels = 1,
+-	.resolution = 8,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb02_chip_features = {
+-	.name = "mcp47fvb02",
+-	.phys_channels = 2,
+-	.resolution = 8,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb04_chip_features = {
+-	.name = "mcp47fvb04",
+-	.phys_channels = 4,
+-	.resolution = 8,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb08_chip_features = {
+-	.name = "mcp47fvb08",
+-	.phys_channels = 8,
+-	.resolution = 8,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb11_chip_features = {
+-	.name = "mcp47fvb11",
+-	.phys_channels = 1,
+-	.resolution = 10,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb12_chip_features = {
+-	.name = "mcp47fvb12",
+-	.phys_channels = 2,
+-	.resolution = 10,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb14_chip_features = {
+-	.name = "mcp47fvb14",
+-	.phys_channels = 4,
+-	.resolution = 10,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb18_chip_features = {
+-	.name = "mcp47fvb18",
+-	.phys_channels = 8,
+-	.resolution = 10,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb21_chip_features = {
+-	.name = "mcp47fvb21",
+-	.phys_channels = 1,
+-	.resolution = 12,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb22_chip_features = {
+-	.name = "mcp47fvb22",
+-	.phys_channels = 2,
+-	.resolution = 12,
+-	.have_ext_vref1 = false,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb24_chip_features = {
+-	.name = "mcp47fvb24",
+-	.phys_channels = 4,
+-	.resolution = 12,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = false,
+-};
+-
+-static const struct mcp47feb02_features mcp47fvb28_chip_features = {
+-	.name = "mcp47fvb28",
+-	.phys_channels = 8,
+-	.resolution = 12,
+-	.have_ext_vref1 = true,
+-	.have_eeprom = false,
+-};
+-
+ /**
+  * struct mcp47feb02_channel_data - channel configuration
+  * @ref_mode: chosen voltage for reference
+@@ -382,7 +174,7 @@ static const struct regmap_access_table mcp47feb02_volatile_table = {
+ 	.n_yes_ranges = ARRAY_SIZE(mcp47feb02_volatile_ranges),
+ };
+ 
+-static const struct regmap_config mcp47feb02_regmap_config = {
++const struct regmap_config mcp47feb02_regmap_config = {
+ 	.name = "mcp47feb02_regmap",
+ 	.reg_bits = 8,
+ 	.val_bits = 16,
+@@ -394,6 +186,7 @@ static const struct regmap_config mcp47feb02_regmap_config = {
+ 	.cache_type = REGCACHE_MAPLE,
+ 	.val_format_endian = REGMAP_ENDIAN_BIG,
+ };
++EXPORT_SYMBOL_NS_GPL(mcp47feb02_regmap_config, "IIO_MCP47FEB02");
+ 
+ /* For devices that doesn't have nonvolatile memory */
+ static const struct regmap_range mcp47fvb02_readable_ranges[] = {
+@@ -424,7 +217,7 @@ static const struct regmap_access_table mcp47fvb02_volatile_table = {
+ 	.n_yes_ranges = ARRAY_SIZE(mcp47fvb02_volatile_ranges),
+ };
+ 
+-static const struct regmap_config mcp47fvb02_regmap_config = {
++const struct regmap_config mcp47fvb02_regmap_config = {
+ 	.name = "mcp47fvb02_regmap",
+ 	.reg_bits = 8,
+ 	.val_bits = 16,
+@@ -436,6 +229,7 @@ static const struct regmap_config mcp47fvb02_regmap_config = {
+ 	.cache_type = REGCACHE_MAPLE,
+ 	.val_format_endian = REGMAP_ENDIAN_BIG,
+ };
++EXPORT_SYMBOL_NS_GPL(mcp47fvb02_regmap_config, "IIO_MCP47FEB02");
+ 
+ static int mcp47feb02_write_to_eeprom(struct mcp47feb02_data *data, unsigned int reg,
+ 				      unsigned int val)
+@@ -446,8 +240,6 @@ static int mcp47feb02_write_to_eeprom(struct mcp47feb02_data *data, unsigned int
+ 	 * Wait until the currently occurring EEPROM Write Cycle is completed.
+ 	 * Only serial commands to the volatile memory are allowed.
+ 	 */
+-	guard(mutex)(&data->lock);
+-
+ 	ret = regmap_read_poll_timeout(data->regmap, MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR,
+ 				       eewa_val,
+ 				       !(eewa_val & MCP47FEB02_GAIN_BIT_STATUS_EEWA_MASK),
+@@ -473,6 +265,8 @@ static ssize_t store_eeprom_store(struct device *dev, struct device_attribute *a
+ 	if (!state)
+ 		return len;
+ 
++	guard(mutex)(&data->lock);
++
+ 	/*
+ 	 * Verify DAC Wiper and DAC Configuration are unlocked. If both are disabled,
+ 	 * writing to EEPROM is available.
+@@ -579,18 +373,17 @@ static int mcp47feb02_resume(struct device *dev)
+ 	guard(mutex)(&data->lock);
+ 
+ 	for_each_set_bit(ch, &data->active_channels_mask, data->phys_channels) {
+-		u8 pd_mode;
+ 		int ret;
+ 
+ 		data->chdata[ch].powerdown = false;
+-		pd_mode = data->chdata[ch].powerdown_mode + 1;
+ 
+ 		ret = regmap_write(data->regmap, REG_ADDR(ch), data->chdata[ch].dac_data);
+ 		if (ret)
  			return ret;
- 		data->chdata[i].dac_data = dac_val;
  
--		data->chdata[i].ref_mode = (vref_ch >> (2 * i)) & MCP47FEB02_DAC_CTRL_MASK;
-+		data->chdata[i].ref_mode = MCP47FEB02_GET_VREF_MODE(vref_ch, i);
- 		data->chdata[i].use_2x_gain = (gain_ch & DAC_GAIN_MASK(i)) ? 1 : 0;
+ 		ret = regmap_update_bits(data->regmap, MCP47FEB02_VREF_REG_ADDR,
+-					 DAC_CTRL_MASK(ch), DAC_CTRL_VAL(ch, pd_mode));
++					 DAC_CTRL_MASK(ch),
++					 DAC_CTRL_VAL(ch, data->chdata[ch].ref_mode));
+ 		if (ret)
+ 			return ret;
  
- 		/*
-@@ -1070,7 +1071,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
- 			break;
- 		}
+@@ -668,7 +461,7 @@ static ssize_t mcp47feb02_write_powerdown(struct iio_dev *indio_dev, uintptr_t p
+ 	return len;
+ }
  
--		pd_tmp = (pd_ch >> (2 * i)) & MCP47FEB02_DAC_CTRL_MASK;
-+		pd_tmp = MCP47FEB02_GET_POWER_DOWN_MODE(pd_ch, i);
- 		data->chdata[i].powerdown_mode = pd_tmp ? (pd_tmp - 1) : pd_tmp;
- 		data->chdata[i].powerdown = !!(data->chdata[i].powerdown_mode);
- 	}
+-static DEFINE_SIMPLE_DEV_PM_OPS(mcp47feb02_pm_ops, mcp47feb02_suspend, mcp47feb02_resume);
++EXPORT_SIMPLE_DEV_PM_OPS(mcp47feb02_pm_ops, mcp47feb02_suspend, mcp47feb02_resume);
+ 
+ static const struct iio_enum mcp47febxx_powerdown_mode_enum = {
+ 	.items = mcp47feb02_powerdown_modes,
+@@ -1096,10 +889,10 @@ static int mcp47feb02_init_ch_scales(struct mcp47feb02_data *data, int vdd_uV,
+ 	return 0;
+ }
+ 
+-static int mcp47feb02_probe(struct i2c_client *client)
++int mcp47feb02_common_probe(const struct mcp47feb02_features *chip_features,
++			    struct regmap *regmap)
+ {
+-	const struct mcp47feb02_features *chip_features;
+-	struct device *dev = &client->dev;
++	struct device *dev = regmap_get_device(regmap);
+ 	struct mcp47feb02_data *data;
+ 	struct iio_dev *indio_dev;
+ 	int vref1_uV, vref_uV, vdd_uV, ret;
+@@ -1108,22 +901,16 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	data = iio_priv(indio_dev);
+-	chip_features = i2c_get_match_data(client);
+-	if (!chip_features)
+-		return -EINVAL;
++	dev_set_drvdata(dev, indio_dev);
+ 
++	data = iio_priv(indio_dev);
+ 	data->chip_features = chip_features;
++	data->regmap = regmap;
+ 
+-	if (chip_features->have_eeprom) {
+-		data->regmap = devm_regmap_init_i2c(client, &mcp47feb02_regmap_config);
++	if (chip_features->have_eeprom)
+ 		indio_dev->info = &mcp47feb02_info;
+-	} else {
+-		data->regmap = devm_regmap_init_i2c(client, &mcp47fvb02_regmap_config);
++	else
+ 		indio_dev->info = &mcp47fvb02_info;
+-	}
+-	if (IS_ERR(data->regmap))
+-		return dev_err_probe(dev, PTR_ERR(data->regmap), "Error initializing i2c regmap\n");
+ 
+ 	indio_dev->name = chip_features->name;
+ 
+@@ -1180,75 +967,7 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+-
+-static const struct i2c_device_id mcp47feb02_id[] = {
+-	{ .name = "mcp47feb01", .driver_data = (kernel_ulong_t)&mcp47feb01_chip_features },
+-	{ .name = "mcp47feb02", .driver_data = (kernel_ulong_t)&mcp47feb02_chip_features },
+-	{ .name = "mcp47feb04", .driver_data = (kernel_ulong_t)&mcp47feb04_chip_features },
+-	{ .name = "mcp47feb08", .driver_data = (kernel_ulong_t)&mcp47feb08_chip_features },
+-	{ .name = "mcp47feb11", .driver_data = (kernel_ulong_t)&mcp47feb11_chip_features },
+-	{ .name = "mcp47feb12", .driver_data = (kernel_ulong_t)&mcp47feb12_chip_features },
+-	{ .name = "mcp47feb14", .driver_data = (kernel_ulong_t)&mcp47feb14_chip_features },
+-	{ .name = "mcp47feb18", .driver_data = (kernel_ulong_t)&mcp47feb18_chip_features },
+-	{ .name = "mcp47feb21", .driver_data = (kernel_ulong_t)&mcp47feb21_chip_features },
+-	{ .name = "mcp47feb22", .driver_data = (kernel_ulong_t)&mcp47feb22_chip_features },
+-	{ .name = "mcp47feb24", .driver_data = (kernel_ulong_t)&mcp47feb24_chip_features },
+-	{ .name = "mcp47feb28", .driver_data = (kernel_ulong_t)&mcp47feb28_chip_features },
+-	{ .name = "mcp47fvb01", .driver_data = (kernel_ulong_t)&mcp47fvb01_chip_features },
+-	{ .name = "mcp47fvb02", .driver_data = (kernel_ulong_t)&mcp47fvb02_chip_features },
+-	{ .name = "mcp47fvb04", .driver_data = (kernel_ulong_t)&mcp47fvb04_chip_features },
+-	{ .name = "mcp47fvb08", .driver_data = (kernel_ulong_t)&mcp47fvb08_chip_features },
+-	{ .name = "mcp47fvb11", .driver_data = (kernel_ulong_t)&mcp47fvb11_chip_features },
+-	{ .name = "mcp47fvb12", .driver_data = (kernel_ulong_t)&mcp47fvb12_chip_features },
+-	{ .name = "mcp47fvb14", .driver_data = (kernel_ulong_t)&mcp47fvb14_chip_features },
+-	{ .name = "mcp47fvb18", .driver_data = (kernel_ulong_t)&mcp47fvb18_chip_features },
+-	{ .name = "mcp47fvb21", .driver_data = (kernel_ulong_t)&mcp47fvb21_chip_features },
+-	{ .name = "mcp47fvb22", .driver_data = (kernel_ulong_t)&mcp47fvb22_chip_features },
+-	{ .name = "mcp47fvb24", .driver_data = (kernel_ulong_t)&mcp47fvb24_chip_features },
+-	{ .name = "mcp47fvb28", .driver_data = (kernel_ulong_t)&mcp47fvb28_chip_features },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, mcp47feb02_id);
+-
+-static const struct of_device_id mcp47feb02_of_match[] = {
+-	{ .compatible = "microchip,mcp47feb01", .data = &mcp47feb01_chip_features },
+-	{ .compatible = "microchip,mcp47feb02", .data = &mcp47feb02_chip_features },
+-	{ .compatible = "microchip,mcp47feb04", .data = &mcp47feb04_chip_features },
+-	{ .compatible = "microchip,mcp47feb08", .data = &mcp47feb08_chip_features },
+-	{ .compatible = "microchip,mcp47feb11", .data = &mcp47feb11_chip_features },
+-	{ .compatible = "microchip,mcp47feb12", .data = &mcp47feb12_chip_features },
+-	{ .compatible = "microchip,mcp47feb14", .data = &mcp47feb14_chip_features },
+-	{ .compatible = "microchip,mcp47feb18", .data = &mcp47feb18_chip_features },
+-	{ .compatible = "microchip,mcp47feb21", .data = &mcp47feb21_chip_features },
+-	{ .compatible = "microchip,mcp47feb22", .data = &mcp47feb22_chip_features },
+-	{ .compatible = "microchip,mcp47feb24", .data = &mcp47feb24_chip_features },
+-	{ .compatible = "microchip,mcp47feb28", .data = &mcp47feb28_chip_features },
+-	{ .compatible = "microchip,mcp47fvb01", .data = &mcp47fvb01_chip_features },
+-	{ .compatible = "microchip,mcp47fvb02", .data = &mcp47fvb02_chip_features },
+-	{ .compatible = "microchip,mcp47fvb04", .data = &mcp47fvb04_chip_features },
+-	{ .compatible = "microchip,mcp47fvb08", .data = &mcp47fvb08_chip_features },
+-	{ .compatible = "microchip,mcp47fvb11", .data = &mcp47fvb11_chip_features },
+-	{ .compatible = "microchip,mcp47fvb12", .data = &mcp47fvb12_chip_features },
+-	{ .compatible = "microchip,mcp47fvb14",	.data = &mcp47fvb14_chip_features },
+-	{ .compatible = "microchip,mcp47fvb18", .data = &mcp47fvb18_chip_features },
+-	{ .compatible = "microchip,mcp47fvb21", .data = &mcp47fvb21_chip_features },
+-	{ .compatible = "microchip,mcp47fvb22", .data = &mcp47fvb22_chip_features },
+-	{ .compatible = "microchip,mcp47fvb24", .data = &mcp47fvb24_chip_features },
+-	{ .compatible = "microchip,mcp47fvb28", .data = &mcp47fvb28_chip_features },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(of, mcp47feb02_of_match);
+-
+-static struct i2c_driver mcp47feb02_driver = {
+-	.driver = {
+-		.name	= "mcp47feb02",
+-		.of_match_table = mcp47feb02_of_match,
+-		.pm	= pm_sleep_ptr(&mcp47feb02_pm_ops),
+-	},
+-	.probe		= mcp47feb02_probe,
+-	.id_table	= mcp47feb02_id,
+-};
+-module_i2c_driver(mcp47feb02_driver);
++EXPORT_SYMBOL_NS(mcp47feb02_common_probe, "IIO_MCP47FEB02");
+ 
+ MODULE_AUTHOR("Ariana Lazar <ariana.lazar@microchip.com>");
+ MODULE_DESCRIPTION("IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface");
+diff --git a/drivers/iio/dac/mcp47feb02-i2c.c b/drivers/iio/dac/mcp47feb02-i2c.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..7e49503e3abc91225b6ede89fdab03f5ca3799f3
+--- /dev/null
++++ b/drivers/iio/dac/mcp47feb02-i2c.c
+@@ -0,0 +1,145 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface
++ *
++ * Copyright (C) 2025-2026 Microchip Technology Inc. and its subsidiaries
++ *
++ * Author: Ariana Lazar <ariana.lazar@microchip.com>
++ *
++ * Datasheet links for devices with I2C interface:
++ * [MCP47FEBxx] https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005375A.pdf
++ * [MCP47FVBxx] https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005405A.pdf
++ * [MCP47FxBx4/8] https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP47FXBX48-Data-Sheet-DS200006368A.pdf
++ */
++#include <linux/dev_printk.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/pm.h>
++#include <linux/regmap.h>
++#include <linux/types.h>
++
++#include "mcp47feb02.h"
++
++/* Parts with EEPROM memory */
++MCP47FEB02_CHIP_INFO(mcp47feb01, 1, 8,  false, true);
++MCP47FEB02_CHIP_INFO(mcp47feb02, 2, 8,  false, true);
++MCP47FEB02_CHIP_INFO(mcp47feb04, 4, 8,  true,  true);
++MCP47FEB02_CHIP_INFO(mcp47feb08, 8, 8,  true,  true);
++MCP47FEB02_CHIP_INFO(mcp47feb11, 1, 10, false, true);
++MCP47FEB02_CHIP_INFO(mcp47feb12, 2, 10, false, true);
++MCP47FEB02_CHIP_INFO(mcp47feb14, 4, 10, true,  true);
++MCP47FEB02_CHIP_INFO(mcp47feb18, 8, 10, true,  true);
++MCP47FEB02_CHIP_INFO(mcp47feb21, 1, 12, false, true);
++MCP47FEB02_CHIP_INFO(mcp47feb22, 2, 12, false, true);
++MCP47FEB02_CHIP_INFO(mcp47feb24, 4, 12, true,  true);
++MCP47FEB02_CHIP_INFO(mcp47feb28, 8, 12, true,  true);
++
++/* Parts without EEPROM memory */
++MCP47FEB02_CHIP_INFO(mcp47fvb01, 1, 8,  false, false);
++MCP47FEB02_CHIP_INFO(mcp47fvb02, 2, 8,  false, false);
++MCP47FEB02_CHIP_INFO(mcp47fvb04, 4, 8,  true,  false);
++MCP47FEB02_CHIP_INFO(mcp47fvb08, 8, 8,  true,  false);
++MCP47FEB02_CHIP_INFO(mcp47fvb11, 1, 10, false, false);
++MCP47FEB02_CHIP_INFO(mcp47fvb12, 2, 10, false, false);
++MCP47FEB02_CHIP_INFO(mcp47fvb14, 4, 10, true,  false);
++MCP47FEB02_CHIP_INFO(mcp47fvb18, 8, 10, true,  false);
++MCP47FEB02_CHIP_INFO(mcp47fvb21, 1, 12, false, false);
++MCP47FEB02_CHIP_INFO(mcp47fvb22, 2, 12, false, false);
++MCP47FEB02_CHIP_INFO(mcp47fvb24, 4, 12, true,  false);
++MCP47FEB02_CHIP_INFO(mcp47fvb28, 8, 12, true,  false);
++
++static int mcp47feb02_i2c_probe(struct i2c_client *client)
++{
++	const struct mcp47feb02_features *chip_features;
++	struct device *dev = &client->dev;
++	struct regmap *regmap;
++
++	chip_features = i2c_get_match_data(client);
++	if (!chip_features)
++		return dev_err_probe(dev, -ENODEV, "No I2C device found\n");
++
++	if (chip_features->have_eeprom)
++		regmap = devm_regmap_init_i2c(client, &mcp47feb02_regmap_config);
++	else
++		regmap = devm_regmap_init_i2c(client, &mcp47fvb02_regmap_config);
++
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "Error initializing I2C regmap\n");
++
++	return mcp47feb02_common_probe(chip_features, regmap);
++}
++
++static const struct i2c_device_id mcp47feb02_i2c_id[] = {
++	{ .name = "mcp47feb01", .driver_data = (kernel_ulong_t)&mcp47feb01_chip_features },
++	{ .name = "mcp47feb02", .driver_data = (kernel_ulong_t)&mcp47feb02_chip_features },
++	{ .name = "mcp47feb04", .driver_data = (kernel_ulong_t)&mcp47feb04_chip_features },
++	{ .name = "mcp47feb08", .driver_data = (kernel_ulong_t)&mcp47feb08_chip_features },
++	{ .name = "mcp47feb11", .driver_data = (kernel_ulong_t)&mcp47feb11_chip_features },
++	{ .name = "mcp47feb12", .driver_data = (kernel_ulong_t)&mcp47feb12_chip_features },
++	{ .name = "mcp47feb14", .driver_data = (kernel_ulong_t)&mcp47feb14_chip_features },
++	{ .name = "mcp47feb18", .driver_data = (kernel_ulong_t)&mcp47feb18_chip_features },
++	{ .name = "mcp47feb21", .driver_data = (kernel_ulong_t)&mcp47feb21_chip_features },
++	{ .name = "mcp47feb22", .driver_data = (kernel_ulong_t)&mcp47feb22_chip_features },
++	{ .name = "mcp47feb24", .driver_data = (kernel_ulong_t)&mcp47feb24_chip_features },
++	{ .name = "mcp47feb28", .driver_data = (kernel_ulong_t)&mcp47feb28_chip_features },
++	{ .name = "mcp47fvb01", .driver_data = (kernel_ulong_t)&mcp47fvb01_chip_features },
++	{ .name = "mcp47fvb02", .driver_data = (kernel_ulong_t)&mcp47fvb02_chip_features },
++	{ .name = "mcp47fvb04", .driver_data = (kernel_ulong_t)&mcp47fvb04_chip_features },
++	{ .name = "mcp47fvb08", .driver_data = (kernel_ulong_t)&mcp47fvb08_chip_features },
++	{ .name = "mcp47fvb11", .driver_data = (kernel_ulong_t)&mcp47fvb11_chip_features },
++	{ .name = "mcp47fvb12", .driver_data = (kernel_ulong_t)&mcp47fvb12_chip_features },
++	{ .name = "mcp47fvb14", .driver_data = (kernel_ulong_t)&mcp47fvb14_chip_features },
++	{ .name = "mcp47fvb18", .driver_data = (kernel_ulong_t)&mcp47fvb18_chip_features },
++	{ .name = "mcp47fvb21", .driver_data = (kernel_ulong_t)&mcp47fvb21_chip_features },
++	{ .name = "mcp47fvb22", .driver_data = (kernel_ulong_t)&mcp47fvb22_chip_features },
++	{ .name = "mcp47fvb24", .driver_data = (kernel_ulong_t)&mcp47fvb24_chip_features },
++	{ .name = "mcp47fvb28", .driver_data = (kernel_ulong_t)&mcp47fvb28_chip_features },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, mcp47feb02_i2c_id);
++
++static const struct of_device_id mcp47feb02_of_i2c_match[] = {
++	{ .compatible = "microchip,mcp47feb01", .data = &mcp47feb01_chip_features },
++	{ .compatible = "microchip,mcp47feb02", .data = &mcp47feb02_chip_features },
++	{ .compatible = "microchip,mcp47feb04", .data = &mcp47feb04_chip_features },
++	{ .compatible = "microchip,mcp47feb08", .data = &mcp47feb08_chip_features },
++	{ .compatible = "microchip,mcp47feb11", .data = &mcp47feb11_chip_features },
++	{ .compatible = "microchip,mcp47feb12", .data = &mcp47feb12_chip_features },
++	{ .compatible = "microchip,mcp47feb14", .data = &mcp47feb14_chip_features },
++	{ .compatible = "microchip,mcp47feb18", .data = &mcp47feb18_chip_features },
++	{ .compatible = "microchip,mcp47feb21", .data = &mcp47feb21_chip_features },
++	{ .compatible = "microchip,mcp47feb22", .data = &mcp47feb22_chip_features },
++	{ .compatible = "microchip,mcp47feb24", .data = &mcp47feb24_chip_features },
++	{ .compatible = "microchip,mcp47feb28", .data = &mcp47feb28_chip_features },
++	{ .compatible = "microchip,mcp47fvb01", .data = &mcp47fvb01_chip_features },
++	{ .compatible = "microchip,mcp47fvb02", .data = &mcp47fvb02_chip_features },
++	{ .compatible = "microchip,mcp47fvb04", .data = &mcp47fvb04_chip_features },
++	{ .compatible = "microchip,mcp47fvb08", .data = &mcp47fvb08_chip_features },
++	{ .compatible = "microchip,mcp47fvb11", .data = &mcp47fvb11_chip_features },
++	{ .compatible = "microchip,mcp47fvb12", .data = &mcp47fvb12_chip_features },
++	{ .compatible = "microchip,mcp47fvb14",	.data = &mcp47fvb14_chip_features },
++	{ .compatible = "microchip,mcp47fvb18", .data = &mcp47fvb18_chip_features },
++	{ .compatible = "microchip,mcp47fvb21", .data = &mcp47fvb21_chip_features },
++	{ .compatible = "microchip,mcp47fvb22", .data = &mcp47fvb22_chip_features },
++	{ .compatible = "microchip,mcp47fvb24", .data = &mcp47fvb24_chip_features },
++	{ .compatible = "microchip,mcp47fvb28", .data = &mcp47fvb28_chip_features },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, mcp47feb02_of_i2c_match);
++
++static struct i2c_driver mcp47feb02_i2c_driver = {
++	.driver = {
++		.name = "mcp47feb02",
++		.of_match_table = mcp47feb02_of_i2c_match,
++		.pm = pm_sleep_ptr(&mcp47feb02_pm_ops),
++	},
++	.probe = mcp47feb02_i2c_probe,
++	.id_table = mcp47feb02_i2c_id,
++};
++module_i2c_driver(mcp47feb02_i2c_driver);
++
++MODULE_AUTHOR("Ariana Lazar <ariana.lazar@microchip.com>");
++MODULE_DESCRIPTION("IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("IIO_MCP47FEB02");
+diff --git a/drivers/iio/dac/mcp47feb02.h b/drivers/iio/dac/mcp47feb02.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..64620c865871254f5db373f951ffad3b9c273f29
+--- /dev/null
++++ b/drivers/iio/dac/mcp47feb02.h
+@@ -0,0 +1,46 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++#ifndef __DRIVERS_IIO_DAC_MCP47FEB02_H__
++#define __DRIVERS_IIO_DAC_MCP47FEB02_H__
++
++#include <linux/pm.h>
++#include <linux/types.h>
++
++extern const char * const mcp47feb02_powerdown_modes[];
++
++/* Macro used for generating chip features structures */
++#define MCP47FEB02_CHIP_INFO(_name, _channels, _res, _vref1, _eeprom) \
++static const struct mcp47feb02_features _name##_chip_features = { \
++	.name = #_name, \
++	.phys_channels = _channels, \
++	.resolution = _res, \
++	.have_ext_vref1 = _vref1, \
++	.have_eeprom = _eeprom, \
++}
++
++/**
++ * struct mcp47feb02_features - chip specific data
++ * @name: device name
++ * @phys_channels: number of hardware channels
++ * @resolution: DAC resolution
++ * @have_ext_vref1: does the hardware have an the second external voltage reference?
++ * @have_eeprom: does the hardware have an internal eeprom?
++ */
++struct mcp47feb02_features {
++	const char *name;
++	unsigned int phys_channels;
++	unsigned int resolution;
++	bool have_ext_vref1;
++	bool have_eeprom;
++};
++
++extern const struct regmap_config mcp47feb02_regmap_config;
++extern const struct regmap_config mcp47fvb02_regmap_config;
++
++/* Properties shared by I2C and SPI families */
++int mcp47feb02_common_probe(const struct mcp47feb02_features *chip_features,
++			    struct regmap *regmap);
++
++extern const struct dev_pm_ops mcp47feb02_pm_ops;
++
++#endif /* __DRIVERS_IIO_DAC_MCP47FEB02_H__ */
++
 
 -- 
 2.43.0
