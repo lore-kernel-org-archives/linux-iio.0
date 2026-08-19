@@ -1,62 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52FB03C988E;
-	Wed, 19 Aug 2026 07:17:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECCC63D0C07;
+	Wed, 19 Aug 2026 07:18:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787123861; cv=none; b=DuYWS1gWsdVJPvVC6C0MDLNUYecyfaTuoDgdxay0Fh/a3mr8O8vPH1eI2me0YHu/zbuiSXse5wE8ZEtDAmrB87NHtDZueo2KslTxFarld0jkcwVtvmAjWNrqE0W3CQFP2/Th+zO0hgvoFcCWCzzhnntVRxxeHcSfJrGeM2vkSDg=
+	t=1787123932; cv=none; b=n3GheuZlaU73uGMSjvJxCEZTve8gEKG54iox0c96r4ZE7gIyiY3Kc0MREtyINn5gQOQ+RlALUxLfWu1EA35ZDC4qJq4UxHgDYMGU97XeaIJWmNvHBrPEBTCmsDxgDd7Dv1mLvNkcMcaBOidfNKet0XOt3nhS36KdTAE0vHibUV8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787123861; c=relaxed/simple;
-	bh=EvexI16MC86FdiTScYMs/Pc3+JYGqctJY+Rc3l9hyJo=;
+	s=arc-20240116; t=1787123932; c=relaxed/simple;
+	bh=+SldjJXxIn/tVCxPBUkMPJ5Rt4uUW9yqVy0ODOkjykY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WS5mIRlNtKeZqLFxhv3GgPg0NGerIsIjwXTGkPsf8iHBYmhELGO9A6MqngWEAfnnCrcYUS/75gOSoW8Lspn3fde2EA6eRyylqGSzcGIscFuh6d8YCCQp2vFZyzzYIVZClQqFpj3AVrQNIibgK0296ictgNtKIfJegJHZdGqu6lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XRCZ2mNf; arc=none smtp.client-ip=192.198.163.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=TRj/lK16/uvT+zYk5gUpr4+SIdnYnnXCaKpTMr1GTSxQfxRoW4F/HoSK1lZcXTYwXDCBOt8TwpjC2RPzEBOAn1e/0hvh5LY+FLPImGag/b2MxuwDtiRXRx9QdL+0R8Mr5Y3NO0aOj3nimEt3vFvtJF8BsYN5hEtmJN8uO813Sfs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IsNhoklb; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XRCZ2mNf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IsNhoklb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787123858; x=1818659858;
+  t=1787123930; x=1818659930;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EvexI16MC86FdiTScYMs/Pc3+JYGqctJY+Rc3l9hyJo=;
-  b=XRCZ2mNfRum7A1LTRHdIXF9foOO4sX7H5SYwdNTB8n5FFdLtEjBNPgQe
-   7lheerHeymDN0FAbl/pGG+sJPHEqM2W9QSPq6xI2qdA0O8ymjnL+ViQ43
-   iMakPxfziQBmwwfxl6jKbxUju88i7j4ZU1QdWE4R9osuzXeON+WVAmXyb
-   UwuqIKIKBB4Duj1/FP7ptBorPoWvuCDIR/9/kpzQZOxLlEPwvNg05804D
-   6qBdgRg/xXsXwQ3t4MgTPcYWEcdTzgtiE3cmQhmZmDoh4QkIm0JQH+wJQ
-   jks15pPM6Yx2XPOvYEGlCHzlU0bFAq7vAjiGbnKqH4Tskl7xI55VXjrT8
-   g==;
-X-CSE-ConnectionGUID: GAbB5pz3S6Wc7CEnF22+JA==
-X-CSE-MsgGUID: 91f3/pGYQ02auF+U1Zfy9A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="98987453"
+  bh=+SldjJXxIn/tVCxPBUkMPJ5Rt4uUW9yqVy0ODOkjykY=;
+  b=IsNhoklbdJaDaT7Kr+AYZ2s5BVTD3ytRRoYOgllyLIJmxLNQnIKuffX3
+   jJ835pewMSsif+Xv24ywP4E0PNwJQJoJHpt/j5Y0H8f21+4q4H8CvbG0R
+   N5O0FgBg6Eok7ek3ws/rwHYECDG4gdyjwD3bnNwxycLMp3AhHI/YPYh9k
+   Lb+47vvYGMeKhBM+Tr65l6XLS3AdMZnYcutRdAZFcBxl2OkYpw3Yt81X5
+   aJYvicr3Ocx432UJ9p+YJz0f+ql/zBxvY/r43xEbup9qF0eNmQv0h+MHx
+   vy5bOyDnwxmjo905YZHNtbv6+pV2Y51KSNwvO/v0eBW+VvSKango0EOjF
+   A==;
+X-CSE-ConnectionGUID: r2znhPOuQRiUNWAD9KQTbg==
+X-CSE-MsgGUID: uS+uFYfHQLWzlGBaNt/S8w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="87485159"
 X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="98987453"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 00:17:37 -0700
-X-CSE-ConnectionGUID: D+NYrBpCTUqd2abGjqGlVg==
-X-CSE-MsgGUID: +RaaCnOOR7ik72Md1mzy/A==
+   d="scan'208";a="87485159"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 00:18:49 -0700
+X-CSE-ConnectionGUID: 7CvtSbWDT5y27WoJ4DUI1Q==
+X-CSE-MsgGUID: yN3CNYiMQEKg+uSL1hkFcg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="261702471"
+   d="scan'208";a="288972734"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.106])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 00:17:35 -0700
-Date: Wed, 19 Aug 2026 10:17:33 +0300
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 00:18:47 -0700
+Date: Wed, 19 Aug 2026 10:18:44 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Gabriel Rondon <grondon@gmail.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Gabriel Rondon <grondon@gmail.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: accel: kionix-kx022a: use scan struct for
- one-shot and trigger reads
-Message-ID: <aoVYjc1ZRTj0OvTc@ashevche-desk.local>
+Subject: Re: [PATCH v2 0/2] iio: accel: kionix-kx022a: unify staging buffer
+ and convert to iio_push_to_buffers_with_ts()
+Message-ID: <aoVY1NpKxKskuUC1@ashevche-desk.local>
 References: <20260818215122.52715-1-grondon@gmail.com>
- <20260818215122.52715-2-grondon@gmail.com>
+ <20260819010900.7728cff8@jic23-huawei>
+ <a23c2959-5c05-4018-9ac8-7c87e563d1c8@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,53 +65,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260818215122.52715-2-grondon@gmail.com>
+In-Reply-To: <a23c2959-5c05-4018-9ac8-7c87e563d1c8@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Aug 18, 2026 at 10:51:21PM +0100, Gabriel Rondon wrote:
-> The driver kept two separate staging areas that hold the same thing:
-> buffer[8], a DMA-aligned area used by the one-shot read in
-> kx022a_get_axis() and by the triggered handler, and the scan struct,
-> used by the FIFO flush path. Both are three __le16 channels plus room
-> for the timestamp.
+On Wed, Aug 19, 2026 at 08:15:40AM +0300, Matti Vaittinen wrote:
+> On 19/08/2026 03:09, Jonathan Cameron wrote:
+> > On Tue, 18 Aug 2026 22:51:20 +0100
+> > Gabriel Rondon <grondon@gmail.com> wrote:
+> > 
+> > > v1 was a single patch converting the two push sites to
+> > > iio_push_to_buffers_with_ts(). Reviewing it, Jonathan pointed out that
+> > > the driver carries two separate staging areas holding the same thing
+> > > (buffer[8] and the scan struct), and asked to fold the cleanup into this
+> > > set.
+> > > 
+> > > So v2 is a two-patch series: patch 1 drops the redundant buffer and
+> > > routes the one-shot read and the triggered handler through scan, and
+> > > patch 2 does the deprecated-API conversion, now with a single buffer to
+> > > push at both sites.
+> > > 
+> > > Changes in v2:
+> > > - New patch 1: drop buffer[8], use scan for the one-shot read and the
+> > >    triggered handler, move IIO_DMA_MINALIGN onto scan (Jonathan)
+> > > - Patch 2 now pushes data->scan at both sites instead of data->buffer
+> > > 
+> > Nice.  All looks good to me, so I'll queue it up.
+> > 
+> > Applied to the testing branch of iio.git which will be rebased on rc1 once
+> > available.
+> > 
+> > Note that there is plenty of time for additional feedback, tags or indeed
+> > me to drop it again if someone spots something I missed.
 > 
-> Drop buffer and route the one-shot read and the triggered handler
-> through scan.channels, so the driver has a single staging area. Move the
-> IIO_DMA_MINALIGN alignment onto scan, since it now backs the regmap bulk
-> reads that buffer used to.
-> 
-> No functional change. get_axis() only runs via read_raw() under
-> iio_device_claim_direct(), so it cannot run while the triggered buffer is
-> active, and the triggered handler only runs while it is; the two never
-> touch scan concurrently, exactly as they previously shared buffer.
+> Ah, Jonathan was quick and efficient :)
+> I'll drop my comments to 'nits' in order to not generate more work for
 
-...
+And I, in the opposite, insist on mine against patch 1 as I consider that that
+makes code easier to read and follow.
 
-> static int kx022a_get_axis(struct kx022a_data *data,
-
->  {
-
-I would rather do this
-
-	__le16 *buf = &data->scan.channels[0];
-
->  	int ret;
->  
-> -	ret = regmap_bulk_read(data->regmap, chan->address, &data->buffer[0],
-> -			       sizeof(__le16));
-> +	ret = regmap_bulk_read(data->regmap, chan->address,
-> +			       &data->scan.channels[0], sizeof(__le16));
-
-	ret = regmap_bulk_read(data->regmap, chan->address, buf, sizeof(*buf));
-
->  	if (ret)
->  		return ret;
->  
-> -	*val = (s16)le16_to_cpu(data->buffer[0]);
-> +	*val = (s16)le16_to_cpu(data->scan.channels[0]);
-
-	*val = (s16)le16_to_cpup(buf);
+> Jonathan. Hence, acting on my comments is not required.
 
 -- 
 With Best Regards,
