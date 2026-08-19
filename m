@@ -1,111 +1,107 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B9E3446A6
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 20:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26E33672AE
+	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 20:54:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787171866; cv=none; b=bqnJeU1re05Gc8BYpX8YGpxDOimqPiHta+6p8hl4PIe7bq8hCSsFLnV9ag/xEJM153r2F2m4AN1lUcopyrDSjAhALsnGclGcVQDNQRFZVO198tk0vyMg/WGGl8c6cH02xi4MXPwUUYZP0fdM5hpMHAj3sX8uHKDaIM81wduHvB4=
+	t=1787172880; cv=none; b=WMr7TviCBdDdAserufyTCpIkmqiF4J2URP2ygPjLiOhdW1srvJ8vw9ZCtve6QpBuaBadnlVoHbqgbfQGp0XIQCZc0w1OYU8IOq6j3CUnDHpcuHnb49Z6zkIQyLm+2AKT3iFA3JNeOkPBnEQwSkwiNQ2C+ar/QrC3UG+EzxJMYVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787171866; c=relaxed/simple;
-	bh=uToOyf/ES533DOfgWtk4VhwEH90KHBccxnpEcS/Chrw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Uf8Z6blUj4LAObg/zjXSL+JmAjoRmAe+f4WzT7RMCOim/ZnuE3wWV1/R49KmnwHfaRlYm/RsJuvY8ENNoa36gMoVPcTQapuXP9Ro+Ahjxkw72ezKCgqMcgqyUGBw+P7e/Fm5XUwBjS2+Wz6i0V2fnTNita60qIzTIyrsVFw3EIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MnP1s7/J; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787172880; c=relaxed/simple;
+	bh=VMt3E467MJcn9Jj3C/rRMxu/icVnXceWcDD60wF+YkE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GmPFzQM/bj9U7V1FQBMvrFGQcd0ImuJD0y/Oi1T2Jsss6nA7Mzjrar6+TgMEotl49CxiQ6fobMycDfhpPu3GBQG0Hp63hbTOq6CwYJsl+4PTUpWhU365DCefX75v0b4g3AEgeZHvav4PEFQgtjIZtAwvjOgFT3g5W0bndDbqp0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DsoX6spZ; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MnP1s7/J"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a3819e8be8so814396a12.0
-        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 13:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787171863; x=1787776663; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PcyBHwH+6uHNvA8WjjMW8g7Vm+W/8j/2VjtnxxOdiR0=;
-        b=MnP1s7/JGbTgJEU3LCbQoK6HgT3D36lD9SwICvMUIekBE8W4R6chI6oijmIFwBor0e
-         jBwEy0y65VvujjlGkHos6BNdy8fco7lfzFybYZSqdNDBDcJrx6kuTa6xffQVt5TsC2Ac
-         l3N7E9Q6AdlCJqLujgbPC7EXC5lHGfRuULuVeAkoB9Qdo5ixkho0+pi2SQEDbEXHEMGb
-         iZVkyUdfsBRVMuckaUZs7+xJMHeoDsNDGywHayaqGDv8eIQi41nQoxOOHaZHcSejElLo
-         gScc6SWUymwj3bsfJeCfCEUoOHHe4Ez/MXzRwM4jNGuUOSw5DBeRXkVmYM0xkkxDEJPR
-         jaHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787171863; x=1787776663;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=PcyBHwH+6uHNvA8WjjMW8g7Vm+W/8j/2VjtnxxOdiR0=;
-        b=ocBPL9gZj2NHmqGpeRq0EDwzAq4dAWkcy5D4C1MlmmzCnE/hrCbeplpChuFKu5TMV2
-         7DZQq/jqC+KD4QUMK3WAnwtAXxfmLZt6J+QgPfwJ8CtRKDpwckVAHDBnizxdmqWezQ47
-         rT5CaWHXjqGv8TnXMihlNeEsx71Qe6WyUUrQBehO93LW8lx1NTRO7qHb6aPDjVQ/jhwL
-         aLjGF2BXYdrZTMsblLOU1Y/E3+8jmun5jIjNXhwuUO+VtzO3LY6VWZMNg8qhElh/k1rs
-         8cvhvNEy7ye4kybITBB8fbwgBuDCOB32M5A++C9cAR6WX3skyyKO/2lITAIlosjWsVSr
-         QdhA==
-X-Gm-Message-State: AFuF++nOOyiM7gdnDr7AuarGO/4E/KVwy6I7Zi0M8dotakm8zPnY2BZh
-	OaiT07QvuBVyg7G2SRUEG3RGtWYYITOdw+9L11SaFalyUqYp9u9oSGE+
-X-Gm-Gg: AR+sD13egTd+zi5+pONqZlqp+ZHG5eRztOoDmaXvZUtcgIy9BdwZgPP/YkBqkqPMr5R
-	KuTT15af6nnePHAsjlIZ0+OclDNhBPLrLMPqMSC25atIf0N/3eyTTBnn3Sojk3RSDIiC42BwB/t
-	giDWdCIPA3/ZnJmlTHrA+AgyC5//zh5XGNXGWfFNZ3QcDmA9VmgjclZjWSYR8PDFJnvcGwpooM0
-	0KwwYr8JMawluwbTdhsGVfftdlliTv/v3LL+dzvbA2SjhnrdrrZpDwGYJmT+8pHFX73cSgqB1Fn
-	XdnfC8tIi0hBEeNSiB0z8Bh+Z0hKgJ9zyhQK2WSlicCVgMY8nRqm+p8qHBg0DCs0HzQD87HU5i5
-	ngGN9Jg4EQ/ZpaJUj3jWzVIwIAcrCecHKNL76wsYxGRTI1odvB97elJp0giC5AvusMXPFGNcdVJ
-	X1U3l0xh5qXbefL8PrcQPiYL9ue0YgRCDwASOkWvL6ZiPO0AOfaGO/7q12Yb+n7j8TAFovWbsk1
-	vo=
-X-Received: by 2002:a05:6402:8c4:b0:695:4916:b97c with SMTP id 4fb4d7f45d1cf-6a41133589dmr840635a12.8.1787171863213;
-        Wed, 19 Aug 2026 13:37:43 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.194.47])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a3ff158e82sm1408070a12.16.2026.08.19.13.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2026 13:37:42 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DsoX6spZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787172878; x=1818708878;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=VMt3E467MJcn9Jj3C/rRMxu/icVnXceWcDD60wF+YkE=;
+  b=DsoX6spZMpWQaQ0wdYJVAIuAaVtYyaFAWeISVMEZFOiXXjcubSaiGlWB
+   ictg1SJPfaE7tNoOHW8nRUPhm+Sooyttxt+KTJ6Dced71z6rSytTMia02
+   l6bB2Ldwbj27gLivSadyraN4lYFbPuRkL58q4hjQW3b+UG+X+jPzeNLht
+   T9bAzmg5fC/ts8ggx0PNyxAjIWnweYBFHvZzQ76Swbej1Du3r1+eGte4i
+   2ACkzxWdOsSNqAElI+m2WRRE6fgZ49WDVvDKXcdxRAbyoP50U0Z0s35x6
+   Fk5lmHtTFqt3bKidX4uyqOmiBbuTqmsoxJJIdpM5S0M96s1to3EoD93Pf
+   A==;
+X-CSE-ConnectionGUID: ZAuRhTGbTHGX+/HDdSENdQ==
+X-CSE-MsgGUID: DUveF/98ScegI7y/Jl2ARQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11880"; a="86654244"
+X-IronPort-AV: E=Sophos;i="6.25,232,1779174000"; 
+   d="scan'208";a="86654244"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 13:54:37 -0700
+X-CSE-ConnectionGUID: QJYaPQrdQU2sErENVRTtGQ==
+X-CSE-MsgGUID: cLsKAyBfQvOSliNDStLw9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,232,1779174000"; 
+   d="scan'208";a="295581449"
+Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 13:54:34 -0700
+Date: Wed, 19 Aug 2026 23:54:31 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH] iio: proximity: vcnl3020: fix ISR bitmask check in IRQ handler
-Date: Wed, 19 Aug 2026 21:37:33 +0100
-Message-ID: <20260819203733.12730-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+Subject: Re: [PATCH] iio: buffer-dmaengine: fix sg entry iteration when
+ building dma_vecs
+Message-ID: <aoYYB5ANWI6GILER@ashevche-desk.local>
+References: <20260818-iio-buffer-dmabuf-iommu-fic-v1-1-4ff1e44a5073@analog.com>
+ <20260819014104.56bd4157@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260819014104.56bd4157@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-In vcnl3020_handle_irq_thread(), the status register (VCNL_ISR) was
-incorrectly checked against VCNL_ICR_THRES_EN (BIT(1)), which is a bit
-mask intended for the Interrupt Control Register (VCNL_PS_ICR).
+On Wed, Aug 19, 2026 at 01:41:04AM +0100, Jonathan Cameron wrote:
+> On Tue, 18 Aug 2026 17:45:29 +0100
+> Nuno Sá <nuno.sa@analog.com> wrote:
 
-Because BIT(1) in the ISR register corresponds only to VCNL_INT_TH_LOW,
-any high-threshold interrupt (VCNL_INT_TH_HI, BIT(0)) occurring on its own
-resulted in the handler returning IRQ_NONE and ignoring the event.
+...
 
-Fix this by checking the ISR value against both valid status bits:
-VCNL_INT_TH_HI and VCNL_INT_TH_LOW.
+> >  		sgl = block->sg_table->sgl;
+> > -		nents = sg_nents_for_len(sgl, block->bytes_used);
+> > -		if (nents < 0)
+> > -			return nents;
+> > +		nents = sg_nents_for_dma(sgl, block->sg_table->nents, max_size);
+> 
+> So this fun function will generally give us the number of sgl entries, but not
+> quite always. It will give us how many chunks of up to max_size fit into
+> a particularly large entry.
 
-Fixes: 3363fbbe19e5 ("iio: proximity: vcnl3020: add periodic mode")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
- drivers/iio/proximity/vcnl3020.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It gives the number of SG entries needed for the case if each of them will
+satisfy the limit. Whatever following code does, it may allocate a new SG
+list based on the number returned by this function and resplit.
 
-diff --git a/drivers/iio/proximity/vcnl3020.c b/drivers/iio/proximity/vcnl3020.c
-index 7f417372566a..d4ad06f8f366 100644
---- a/drivers/iio/proximity/vcnl3020.c
-+++ b/drivers/iio/proximity/vcnl3020.c
-@@ -584,7 +584,7 @@ static irqreturn_t vcnl3020_handle_irq_thread(int irq, void *p)
- 		return IRQ_HANDLED;
- 	}
- 
--	if (!(isr & VCNL_ICR_THRES_EN))
-+	if (!(isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW)))
- 		return IRQ_NONE;
- 
- 	iio_push_event(indio_dev,
+> > -		for (i = 0; i < nents; i++) {
+> > +		for (i = 0; i < nents && len_total; i++) {
+> So this needs to be more clever as we aren't just iterating entrees and filling
+> them in, some of them could at least in theory be too big to fit
+> in a single vec - hence you need to do a loop in here that sets
+> multiple entries if that occurs.
+> 
+> If that can't happen for some other reason then I think you can 
+> just use block->sgtable->nents instead of the more complex call above.
+
+Perhaps sg_split() is what people are looking for in this case?
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
