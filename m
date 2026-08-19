@@ -1,64 +1,64 @@
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com [209.85.222.53])
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56E47388E43
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 20:58:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB9E382283
+	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 20:58:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787173089; cv=none; b=rlr7YMkPbMPT5mHRccps8bQzLj1hCPCwzti3g2upvsj2+PbXvbi1vAnKUuA/sCABfhmblDAHZlENPIOztjfDTrsTxksy6RrqGJ8oEH+WqdT2G2nAv6XKL5M038C7F4mYfOAlRAfzc467DB3DzUb0vGK9HI1CxIIfujjqClEboNQ=
+	t=1787173095; cv=none; b=WxbgXy5KfVv46V1PMggb6B1P05Iv8WxNaz9GvI6RYQyDeIdCcDlGrdCXf4odxKUXO92sJLCj99Pj3D7H6v6itxW8o2UxvnR2KdkrWiqbrlZWWGu41pkslKXAYktVlJOirIkfC3ujEqZnY57SKL3ifpYkl/zFkufrkvd/eM8rneA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787173089; c=relaxed/simple;
-	bh=VWRz7lckxRcd4cXpSu6pW5+eqN+XGzez1DeahohpRfA=;
+	s=arc-20240116; t=1787173095; c=relaxed/simple;
+	bh=4yOAcHCi9um0K8UTl3s2TjwG/mb+CyVD7wWEW1YbriM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=GBomhXXuZR/YulCwj1M6XBstZzIl4z4zTbb/rvSyilzJNc4MjdgmN+Ji32r8rwxpGFhvxZ12TBjF+LFWNtdnqC9IkirdrdngnskE0PHPiFg5oOa9+UkBcOvxb8YtYCXVOSaBAwe+LxSi7KeKHILQ9p2dGMhqWiqorfFMvrtafxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nmDnk2Et; arc=none smtp.client-ip=209.85.222.53
+	 MIME-Version; b=Lij24Eh+PDsI6IjPsol6KeFk4dfIvS2CwzREt8EsEvrfWZD0gxD3GLMgAcP45lrN1pHl1vVj2SH6Qxmhvj+I0ZVa5ux0X7St79lnWtB3zkZFAa5iRJ8SmgcrKEJsECB/nWNpbDx2lGHSGemGcyzH9lLdT033f4XNeyRuRYQ07sU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PwzrVC2y; arc=none smtp.client-ip=209.85.222.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nmDnk2Et"
-Received: by mail-ua1-f53.google.com with SMTP id a1e0cc1a2514c-966e7380109so1148131241.3
-        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 13:58:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PwzrVC2y"
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-977168e4f3dso1166204241.0
+        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 13:58:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787173087; x=1787777887; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787173093; x=1787777893; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=YEb/XcRzZMGFqqe/Z3DOazNhxu8ChafO/d8R+t1b82A=;
-        b=nmDnk2EtRy9lekyxf8fqdCOCz4sVW0Hr+OxX9WzzH3jmAoYaMUYGDnyIqii92xcxcT
-         bU0fNTo3z7yWFCH56fXcwSPLXty1Vg6okiWtAiNZbpAQf2Gtcxu7WdI1A0JdrAJZK4GM
-         vHczd7OTCQdVzadYHF/A2ym00Q8owsxzH4XUxTyA2jSCg3HDvRdf5PSBNrxMnLcXgGa7
-         TwD+sYaB9rFEwZ0Z0Qivpbp1em6v5cwL0VKGxVD+5nnOa3MsWZeD1HQWOZEpRqtr0+0F
-         VQyeik5XDGshGCA57luGMqG4+lag6hKFqPZaCl1GxwnqX2yUHw6qwVG4q7RiNNltBYEU
-         fKYA==
+        bh=58Z3XVoKaJQbEkvkG1Y4mEaTnnepGYJ8EOpBbp+pok0=;
+        b=PwzrVC2ykJqMgE40Hyig/XgBOkPYDjTnj8dtEm37E1jXxZXNd7sbDbetMUBj6Q1LZ6
+         clqwpbGpzlOsGoMperUzIIFmCF22go3RFWBYhrd0SEVc1D5FsdGu6HrC9E1s1LC8zJ4r
+         rNfWYVvY1/8Nv9qblWD7HSydOfWx38KVqpHzK4XyLP5ez7rFnvbJIfLnAYYslmCCm87B
+         UJAuwr9+LD9sPwNvlvVmz3b3b49rAi5MaATk2E4PGhPzOW6meMMmcZuKyh03hMNN+ZPr
+         FExCbUji6kAKFM/6yBlH693pDdsKofwqLRJQdE2iyBWyJCex8dUsegy+uxyumLk3wPX9
+         rl/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787173087; x=1787777887;
+        d=1e100.net; s=20251104; t=1787173093; x=1787777893;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YEb/XcRzZMGFqqe/Z3DOazNhxu8ChafO/d8R+t1b82A=;
-        b=GhcEmQc0FbXCTsALIUXfAJ1afLb4PH+frNuK3YT9QhmMRfSympfl3T7WtXimqdqqlZ
-         ud4FMAoee+XlDo4W35YpGlXF1wF9D3JPmacTlHJ+5tSzIgXfM+qAEyQ2e3ou5dM23QJO
-         v9t6XGwis/yRoSm0ptVhoeD4OSRtqvbhkY9XZ4c3yZcJMJR3MvZa9rsQJcBx82xuQiYm
-         Xye/ffGk9yPcrf1++WcV6YGNcpkbOURi2ecc6xwaq2WaoGUIcZrNlLGJPAMCQ71/7afU
-         IsxCwu8bQQ9LwXIILLzQ/4qbqdSISCCDpr3oPTjxjzgVUAjnQhJc3w57wknPzcFtqtKm
-         rc5Q==
-X-Forwarded-Encrypted: i=1; AHgh+Rr3X+QV2wKzt5GJN0ONR20xKXfPOjfQJ5HSmn8g4qmM9NwJl0xfAhvo4DtZ0bNsgoTv7J4CwA4J0a4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxdybKYghVKKMnPRtH9kbslx0SQ4VEK49jL1rnHwzLfFpPOpjEv
-	bEB9MLyScOzxxD6wtKvKak9tFVsTfCpcBGBElKvb8ydxs9KxwuSE1BxI
-X-Gm-Gg: AR+sD12P2+idpSIrsJEWJCA08JtgCOuf/lI83KHksu2Td1TbhP8BVUrG8CCFxkmYBaX
-	4EFYCFlkKZKwoZwSFczG1IDm5mqXWZgJ0Ng3wJqjnMg8NTAMMPBzUVWBDGG8aCOTGkxNiwaHIti
-	yEb8AzgAX3XCgoxVdkKG5B/s4sAR7LMrI+lm6XH4DNHF4JgTONdRWfnyuZH/tcLNqDKPaz0bkwq
-	+Qc/2eYEkl/RbMZZji18aOq6Li8Da01I4qGK5KZa+fkXqkCDzEtDcLsKNDxrZi/NIYE6xQcCTJH
-	knO33NT4k3J8zbbCIrRnm0MXrlw8avLZB42DeYrgo1GkQuWqbC2+fI8utEUvgL8dBQM8n+wnUKP
-	WcWwRpqPosjv7j431p2P+VE6Z5SwumjyLqFXEqlXNtxlAdhsYjjXTt1QXZIXBqMEr4VVbOFiL23
-	k3s2jmoEZbg1roS8jEhwJvqbuuJ/avaWV9Q2Z+I5ffjUceKJwpe7fOqPEBaL+og2G8YefRG1TMr
-	Hc7sjdIymSqvZlRcRRzWk5+1Y4VT1B7JAVahH790mQ=
-X-Received: by 2002:a05:6102:a52:b0:778:f972:32eb with SMTP id ada2fe7eead31-778f9723986mr859098137.12.1787173087170;
-        Wed, 19 Aug 2026 13:58:07 -0700 (PDT)
+        bh=58Z3XVoKaJQbEkvkG1Y4mEaTnnepGYJ8EOpBbp+pok0=;
+        b=jvlACQ4SAJJbU1R8Jp1eLF01UYFtCoVQcqZy/PeRsLn9DEC+Ne4SEUZCEt+Ou2fOFF
+         dSwtH6CWgacPD4Br9ulsMtpRnVbv7E6LZ9ZVNIG1paP4oejlmJxrN0w22o2JV8yH439i
+         QRgKmDcZ8L1O/hFIAWtigtAGUkCR8Aj5wneFRQ+dl2H1eJhPeuqbVjEUYza1+odUrNI6
+         2tzddLyXHZ3Qz0ljsnpxnlE66dafy5UiA1py8+QFWkumtlhHBq+QkYwaQ7CSHE8S5vgm
+         l1pfqTJ5nP2/OKEOOrTK94kErkKKETliCVJ6Pq3wFu/mNb36v+XnvWe2WDhpMD3hrlsY
+         qGwQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoAmFeTauGXOcavWpwh1Gz//WJK/Bqrkf19J88jsKI+G6EoG/RB27O3JYjZ5dTkvCkrfs7GOrQdbMo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBmvJrW6thCrTU7CDWER8OL5C7M1QYxGvgNHvjzh3KjMcOdGXZ
+	GR/LOd2u80dvG6afFAOC0440Q5qkd+nTBHRP55iPH2mP84cQnAHNMuIn
+X-Gm-Gg: AR+sD10Ix5bjnuFrTjFPf1/Do0MoJStSpMhn3FxbWVBauydQy8ji7Z0JNA6C4/rozRf
+	GKLGbyQaQwDY+nQnqhRyNygw0uP8qrBzEdDjuhUNeyyANCoWdibUp3f8yFXHxm0cp0Df7a8bUfz
+	PM8diCahvh0WE/ripX+lWi4Ioo/hbPs9eC8oYUnIsK5YPf76iNNcPWZc54W2i6oz6o5GvE8RxzR
+	xqMmx6XUjxti8itm0j5juNq9+SdS2JIBSMwIiNOzznYFVX+1YzL7ZOjGOxux7405o+5CP8yNiLM
+	ilaF+Ma8nMK6fUuWFlAo+ChyAEReuvxj0sluQpCc2lffiPvhh51zu8GTTNx1eri1zxPppldDyV1
+	+pybEG1XxEGy7zZhFc8j8CHWCbLES94BNL9yY/6I4myj++Bm+zXsWnmiXGToJA3FadyyYRzDIrm
+	H+ekG0dxDvQT0ArrdIUPTBmzn4BJus79C9YRsJgYxzqLDjEhX0N3gaumrnxsQ+4K0hBLNehCTsI
+	00gjKCqxTvde+mKHhfxBrThhdUkeRAJYPdT8PVtTxHV
+X-Received: by 2002:a05:6102:6ce:b0:738:fd01:5b60 with SMTP id ada2fe7eead31-777f897904amr3350181137.3.1787173092636;
+        Wed, 19 Aug 2026 13:58:12 -0700 (PDT)
 Received: from localhost.localdomain ([2804:14d:4c64:82a2:3443:53b2:2e07:b3bf])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-777ddc844besm3616259137.11.2026.08.19.13.58.01
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-777ddc844besm3616259137.11.2026.08.19.13.58.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2026 13:58:06 -0700 (PDT)
+        Wed, 19 Aug 2026 13:58:11 -0700 (PDT)
 From: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
 To: jic23@kernel.org,
 	dlechner@baylibre.com,
@@ -73,9 +73,9 @@ Cc: ~lkcamp/patches@lists.sr.ht,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 1/2] dt-bindings: iio: proximity: move LIDAR-Lite v2 out of trivial-devices
-Date: Wed, 19 Aug 2026 17:55:17 -0300
-Message-ID: <20260819205751.166030-2-rodrigo.gobbi.7@gmail.com>
+Subject: [PATCH v6 2/2] dt-bindings: iio: proximity: document LIDAR-Lite v3 fallback compatible
+Date: Wed, 19 Aug 2026 17:55:18 -0300
+Message-ID: <20260819205751.166030-3-rodrigo.gobbi.7@gmail.com>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <20260819205751.166030-1-rodrigo.gobbi.7@gmail.com>
 References: <20260819205751.166030-1-rodrigo.gobbi.7@gmail.com>
@@ -87,115 +87,73 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The PulsedLight LIDAR-Lite v2 is currently described as a trivial device,
-but it is not one: besides the I2C interface it exposes a power-enable
-pin and a mode-control pin.
+PulsedLight was acquired by Garmin, who now sells the LIDAR-Lite v3.
+It is pin-compatible with the v2, and the driver already matches it
+directly: commit b257c1a45e99 ("iio: pulsedlight-lidar-lite-v2: add
+lidar-lite-v3 property") added a "grmn,lidar-lite-v3" of_device_id
+entry.
 
-The mode-control pin can trigger acquisitions and report the measured
-distance through a PWM signal, entirely bypassing I2C. That usage is
-bidirectional and non-cyclic, so it doesn't map onto any existing
-binding for describing pin behaviour, and is intentionally left
-undocumented here. The same pin can, however, also be used as a plain
-status output while I2C remains the active interface, which is
-described through the new interrupts property.
-
-Move the device to a dedicated binding file and document the
-power-enable, power-supply and interrupt properties that
-trivial-devices.yaml has no way to express.
+Document it with "pulsedlight,lidar-lite-v2" as a fallback compatible.
 
 Signed-off-by: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Acked-by: Matt Ranostay <matt@ranostay.sg>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 ---
- .../proximity/pulsedlight,lidar-lite-v2.yaml  | 65 +++++++++++++++++++
- .../devicetree/bindings/trivial-devices.yaml  |  2 -
- 2 files changed, 65 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
+ .../proximity/pulsedlight,lidar-lite-v2.yaml   | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml b/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
-new file mode 100644
-index 000000000000..491960bb3a0e
---- /dev/null
+index 491960bb3a0e..dd739319b9eb 100644
+--- a/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
 +++ b/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
-@@ -0,0 +1,65 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/pulsedlight,lidar-lite-v2.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Pulsedlight LIDAR-Lite v2 range-finding sensor
-+
-+maintainers:
-+  - Matt Ranostay <matt@ranostay.sg>
-+  - Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-+
-+description: |
-+  This binding covers the I2C interface of the Pulsedlight LIDAR-Lite v2
-+  laser rangefinder.
-+
-+  Besides I2C, the mode control pin can also trigger acquisitions and
-+  report the measured distance through a PWM signal, without using I2C
-+  at all. That usage is bidirectional and non-cyclic, and is not
-+  described by this binding. The same pin can also be used, while I2C
-+  remains the active interface, as a plain status output signalling
-+  when an acquisition has completed.
-+
-+  Datasheet:
-+    https://github.com/PulsedLight3D/LIDAR-Lite-Documentation/blob/master/Docs/LIDAR-Lite-v2-Docs.pdf
-+
-+properties:
-+  compatible:
-+    const: pulsedlight,lidar-lite-v2
-+
-+  reg:
-+    maxItems: 1
-+
-+  powerdown-gpios:
-+    description: GPIO that can be driven low to shut off power to the device.
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+  interrupts:
-+    description:
-+      Mode control pin used as a status output, driven while the device is
-+      busy performing an acquisition. Can be used to signal completion
-+      instead of polling over I2C.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        lidar@62 {
-+            compatible = "pulsedlight,lidar-lite-v2";
-+            reg = <0x62>;
-+            vdd-supply = <&vdd_5v0>;
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index 2de8eb09cb7d..6a7ee45842e3 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -400,8 +400,6 @@ properties:
-           - onnn,adt7462
-             # 48-Lane, 12-Port PCI Express Gen 2 (5.0 GT/s) Switch
-           - plx,pex8648
--            # Pulsedlight LIDAR range-finding sensor
--          - pulsedlight,lidar-lite-v2
-             # Renesas HS3001 Temperature and Relative Humidity Sensors
-           - renesas,hs3001
-             # Renesas ISL29501 time-of-flight sensor
+@@ -4,15 +4,15 @@
+ $id: http://devicetree.org/schemas/iio/proximity/pulsedlight,lidar-lite-v2.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Pulsedlight LIDAR-Lite v2 range-finding sensor
++title: Pulsedlight/Garmin LIDAR-Lite range-finding sensors
+ 
+ maintainers:
+   - Matt Ranostay <matt@ranostay.sg>
+   - Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
+ 
+ description: |
+-  This binding covers the I2C interface of the Pulsedlight LIDAR-Lite v2
+-  laser rangefinder.
++  This binding covers the I2C interface of the Pulsedlight/Garmin
++  LIDAR-Lite v2 and v3 laser rangefinders.
+ 
+   Besides I2C, the mode control pin can also trigger acquisitions and
+   report the measured distance through a PWM signal, without using I2C
+@@ -21,12 +21,18 @@ description: |
+   remains the active interface, as a plain status output signalling
+   when an acquisition has completed.
+ 
+-  Datasheet:
++  Datasheets:
++    https://static.garmin.com/pumac/LIDAR_Lite_v3_Operation_Manual_and_Technical_Specifications.pdf
+     https://github.com/PulsedLight3D/LIDAR-Lite-Documentation/blob/master/Docs/LIDAR-Lite-v2-Docs.pdf
+ 
+ properties:
+   compatible:
+-    const: pulsedlight,lidar-lite-v2
++    oneOf:
++      - items:
++          - enum:
++              - grmn,lidar-lite-v3
++          - const: pulsedlight,lidar-lite-v2
++      - const: pulsedlight,lidar-lite-v2
+ 
+   reg:
+     maxItems: 1
+@@ -57,7 +63,7 @@ examples:
+         #address-cells = <1>;
+         #size-cells = <0>;
+         lidar@62 {
+-            compatible = "pulsedlight,lidar-lite-v2";
++            compatible = "grmn,lidar-lite-v3", "pulsedlight,lidar-lite-v2";
+             reg = <0x62>;
+             vdd-supply = <&vdd_5v0>;
+         };
 -- 
 2.48.1
 
