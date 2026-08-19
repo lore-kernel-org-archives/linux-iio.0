@@ -1,152 +1,102 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AC8415B94
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 19:41:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 561833C37B3
+	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 20:14:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787168518; cv=none; b=H2w2rA5/s/OFJCAV7LMSK19tDscT/TEmnJPRkAg3P6cuU+4GGuY1Ig7YrYER7rsmi4MurGwKO1EOoW9jJOTPSyboYZ2+os2ZM6Zr1WLFZIu7fyW0wc4QWrmKT1WRAvhZCL0nfEoq/s8jX3zBeXa8zC9KV52uD3GbSUytw3XkwYg=
+	t=1787170447; cv=none; b=rYmRBTW/57gGUy9SXLkeLVLjgYKkS+jU6f8IKm/MzItNj8Hu84Mno1QLI0t3hPD6HDsFdap5U1uASzYjo5HTr7tmmUo73pwqL6kk66S8EuBe09afXruxpKOcvlZxHrkVQbl+kaqvZJ0yLyBNecHuJ6r/PXIw1SUdsee5Cz+4qWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787168518; c=relaxed/simple;
-	bh=LgB1q6UxSStE6Znlt1iXGT3opxdZpJBfexhJpaFVDJY=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:From:Subject:Cc:
-	 References:In-Reply-To; b=bllOIG/blObJtd0GW9dicTw0xhnP6I4XtkpIwslFD9sxtemK4vNR+eJQxN5Dn7b35SoXmvTm/mTIG56/DEayMtAqdhKjrIIKg07svkgo84JjoMhr3a4km0MudY8oCCncpHquh6DcB0m8+FIenX9HebE4aea9bIQptG/jRsf4Klk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZYSEssDw; arc=none smtp.client-ip=209.85.128.50
+	s=arc-20240116; t=1787170447; c=relaxed/simple;
+	bh=ekLJaAFQq89WG4IF/a6svefiMwp9oXl7meItJaYNTig=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=EisRPHC5iMxd4CBtJM0gKiPZN9J/VOwT/XFyp2lHDHdoEMa2hs5ne9y0nVesDriE9l6uxDwGbJC6EbZg1TbZV+F9D7R2vEOm4XBLuofv2nKxJvk31+16EdzVwyyo0a443aQdXEfrax0+T4JaqL/9xAz4Tb43Il4LAeTiR9B9fIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o5d8fbgG; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZYSEssDw"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-499acf0fb55so7274285e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 12:41:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o5d8fbgG"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-47362928f65so1347037f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 13:14:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787168515; x=1787773315; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:subject:from:to:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=NXsEvTFlD66FPV8xQ5q49z6ovIp9exG33G5/qekFx78=;
-        b=ZYSEssDwx3Yks7DkleWz0K/hp4ColH9nxRO5XrgddYPwJC800hTJcsiXUKgZQUqKWH
-         G98zyMdBs/ufGgwQNJb3KigBGQ6JFl4bBnhqeskhEd35V3yv2mCHP0G803YvcrkSAq/r
-         4vCGekgjkhmaitbztvAhmZgv7COoj6VXeiaA1R3Tzc3Aon6djwiTZoM03qfcVryxTGhP
-         pFGGQQcEf8y4Z1IcOoLk6Ncg+V4eIT8qiIH+u6E9g6r+gmrdWS15Y2nvK1v7nCntMAV+
-         NetCP2tB0PYGEJD/mYDCIS7eYLYyTnHlmzPj5P6QmX1cJEcCrrRavn8LCeUtaOkjUY70
-         LXCw==
+        d=gmail.com; s=20251104; t=1787170443; x=1787775243; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ekLJaAFQq89WG4IF/a6svefiMwp9oXl7meItJaYNTig=;
+        b=o5d8fbgGU0guZe+PO4DDCtUg+39SEYXH4k/XT/VBVkJdlm+1JL6s+jWLzliQJZC6u3
+         lk9fcIhvnkQcUtXbVKkWJH+TWxFD85sbQE712JEFsuDElyFFs8MQq4IpIrQ8eRa3Zq5L
+         z3QQSoCB/WB2ZDdpVgMP2yvtC8DK5TLmbgh4ZL0d1/7sfDfeDOPvQMXJqMuU8TyPXKz4
+         yWN37MVxJAHIO6OZUPjsrvDxSqN3P4y7ycU5Rdipb6mAFlajJ6fgVS2yG+N+vTEhqQq9
+         3KzJ9tiNSlXmIpNpHA3AXsyOls2h1GfvN5sZ8mBHNk5lTwyKSR8Gfkz3J+vJ6bqRav++
+         tveA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787168515; x=1787773315;
-        h=in-reply-to:references:cc:subject:from:to:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=NXsEvTFlD66FPV8xQ5q49z6ovIp9exG33G5/qekFx78=;
-        b=AFWfjhBCbH45TrWmt2pxFo0cx9j0wznu/yO6OvlBLII43mDKtA9vAKHYx7BHjxITh+
-         e/BLeKiO/m0TrwZS8ypiIz4WZkHFrru7E+VLQKb/bS6JFXjlssezl/0JVe/o5SudQYoh
-         mQWjl5Jb6R3vrfrePRFHD6WcisegWEbUIZCSeKLGbTtQg3rT8Q+4Un85yX8n+gofzOw9
-         sWjfx5dVKMq3T7WFYVNgHcg+IyXkIlJxffFWawmdg4KaihsyrOJD5glNKHaK0qNhFC4u
-         VLIumpoue1RkpJPVwxJ6eo0VS7SUO8Yu84WKbX6uIWBZk5y6FRx1xLHFidFn/WHadU0q
-         +tqg==
-X-Forwarded-Encrypted: i=1; AHgh+RozUmL8nF/p8XcHUq5ox5s1PxEHLwn55QULjBaFfqa7g8NNHOVujWKIMDV+ZyywQ9MPsDcuxWr6Pp4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YygwMdnTmJi0xKKUVKlVmlT3DxtUHRL2P1ibz28kDoctLZt6JC8
-	e6+/wzvAlJr6omxKwCFvJwtkSOIYEzQJemQeUSPEfuT5FMuOrSKEiYXZ
-X-Gm-Gg: AR+sD11L1tuFi8vSZnshZ4r0Csxd4osUL0DQUDU1jR3dRaU/CMvKGz/+Kq0Cqq52j4L
-	e05dCJ77CTkkdVVQBQFhTxNrKmrp45TiLMATyCZbVqZrZSijVGHFIlI4+brxAgRRNwbPpZBvbOR
-	B5BtS0oCz9mej0lBTUecarLFdht+sS0P+wMVyj//xgoGQB6H4VWo8PIAD0Y3t2lnU9yxalOxMO/
-	XE5JmaED6A4ShETP4HFlKKuZ/QHDo/bNMmNx/0G0vEbOChhYyfnLlT7QMTmOuoG8JU+TRI+Lsnb
-	CKcoJoT9UCEv8yglR09pBca5ZwNLSM1tGIeXCppXZwooOjJM1KuKP+elZSc4aC0HeO2H/+zP+QM
-	ypPVn/AVZJNycesW74LZL3KAuuY3aIc/1dgy7OzA4DWDgm88kvxXYupWbWZkggagcBqa5qFfsVO
-	vbWcK1wqedcKaOJUc47Egp50I7E0bcgMTmoBvgNjvlrD+bCYCPY0sVu3nmclfOb4T5RqmQcM830
-	+8=
-X-Received: by 2002:a05:600c:470a:b0:499:a4d1:d7d9 with SMTP id 5b1f17b1804b1-499aa1b03c0mr125031515e9.9.1787168515089;
-        Wed, 19 Aug 2026 12:41:55 -0700 (PDT)
-Received: from localhost ([2001:4bb8:17a:e1ae:bb46:a0a7:bc2f:9020])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499aa0fd728sm118454165e9.3.2026.08.19.12.41.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2026 12:41:54 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1787170443; x=1787775243;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ekLJaAFQq89WG4IF/a6svefiMwp9oXl7meItJaYNTig=;
+        b=jMiFf5TWm5eDQ+z9fVl2sLrUvjnit/sT9uUPDn2T4ZwkX7Cc9JWpLjNNmwDmR2VLP1
+         5alnUKiXnjkSHbue7zzQcW8sd25RjYGpH/S1vWfwoR306COFIi//N50qFYc8BAQzNFQC
+         RI+UWQWxoAjy1MOANwpUCpNpQ0lsP7pVDs/nzf/mwCqCTBO1sc8vq1S7hy48TVSpD3B9
+         Xs5Ubp4f8xe7TBqHOj0z4Ittf1krajEU+JKdOjiskJa1PyVUyabm5WqW2wDCohEQFsqU
+         Q7t3YuHKtoR58FXPwfUs728hbyUUAoqUJfdf6BdnNqoL9jwmC0Nfyy1czRs6Ms0gDf3N
+         jR9A==
+X-Forwarded-Encrypted: i=1; AHgh+Ro0ez5pfmq+D/m7FdlIy9BWQ4M0Ibr3qEN05IcUo8M1aSgHjoKlQSvGD0asESVjtRBKql4kA3zIVKk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzcKVU4EEvAP9XdJ7w5qRrMee96fYsNDZDm+ZCvqjIXnZOFJHkK
+	qjfyE+QdFcLRjG2WKK2OCDHJbVbSOeenPBB7IW7ki0pIhyEE9K6FWrjR
+X-Gm-Gg: AR+sD10ClqwpTDyJRqOJnJIGckJScHOiqesfdm2Ahi0zN3/mDYcsf52Kmi+0N8Q5eSv
+	344mDZxfAjmwlc4QVB08W8BFX5emo9Fdi0Ex0VOJkngvNl82URqegokV785DJDEb6NxIPkn6OMQ
+	c+pNWCr13Ffu11nu7tsMFTMgYkgaBszEay6TdgohrcFBSlrPk2zWJjIFZkpvc1XiAj4zz8mPYAG
+	GCbeLDbkqCpZUGtZshiHL17ZsmIc/hlK0fRT82GdGZK2A6DMHIxFh7F4VeTkWdz9mAjgIZXey1/
+	AE1vygXuUwD94dRdVud57yikokERsGc82v3D9kEb1k3bTHSZ6cAL1ViPBjY7/cKPXp+o2UAkWiB
+	8b2ECCUqFHNFd3vKhDV4aemPDJ+CocuUiBRVfUPJyTHC8qzlWqm73vd985Jez7SkEBMrbqHp51V
+	G9c/ZgzNzMPCaa0ZyI0Qm7Ffd/bXim3O6jRiv+GAo0Jfstm6F1QL/CRaeM5Bw43rdsKFfxBVgRV
+	O0xe4muHqfa
+X-Received: by 2002:a05:600c:3485:b0:499:a685:c10 with SMTP id 5b1f17b1804b1-499aa19a3b8mr150233035e9.4.1787170443145;
+        Wed, 19 Aug 2026 13:14:03 -0700 (PDT)
+Received: from fedora ([105.74.74.204])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499aa0d6721sm110815365e9.11.2026.08.19.13.14.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Aug 2026 13:14:02 -0700 (PDT)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: andriy.shevchenko@intel.com
+Cc: 0rayn.dev@gmail.com,
+	Michael.Hennerich@analog.com,
+	andy@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	dlechner@baylibre.com,
+	jic23@kernel.org,
+	krzk+dt@kernel.org,
+	lars@metafoo.de,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux@analog.com,
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH v4 3/6] iio: dac: ad5504: remove legacy platform data support
+Date: Wed, 19 Aug 2026 16:13:52 -0400
+Message-ID: <20260819201352.72054-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <aoWt52LMj5nviqAVe3O@ashevche-desk.local>
+References: <aoWt52LMj5nviqAVe3O@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 19 Aug 2026 21:41:51 +0200
-Message-Id: <DKT6D3WGKJNT.3C9TI16LYV4IZ@gmail.com>
-To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Javier Carrasco"
- <javier.carrasco.cruz@gmail.com>
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-Subject: Re: [PATCH v7 4/4] iio: light: veml6031x00: add support for events
- and trigger
-Cc: "Jonathan Cameron" <jic23@kernel.org>, "Lars-Peter Clausen"
- <lars@metafoo.de>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
-References: <20260818-veml6031x00-v7-0-2b0de0f20edf@gmail.com>
- <20260818-veml6031x00-v7-4-2b0de0f20edf@gmail.com>
- <aoRltgy0AYZ_Vcum@ashevche-desk.local>
- <DKS790BEXVON.1FP9LQUPNTYDE@gmail.com>
- <aoU0JSmv7FWGW_Ms@ashevche-desk.local>
- <DKT4WS5CVP2V.2FWDOOOHIL3XS@gmail.com>
- <aoX78syq62cEs3hi@ashevche-desk.local>
-In-Reply-To: <aoX78syq62cEs3hi@ashevche-desk.local>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Wed Aug 19, 2026 at 8:54 PM CEST, Andy Shevchenko wrote:
-> On Wed, Aug 19, 2026 at 08:33:30PM +0200, Javier Carrasco wrote:
->> On Wed Aug 19, 2026 at 6:42 AM CEST, Andy Shevchenko wrote:
->> > On Tue, Aug 18, 2026 at 06:10:51PM +0200, Javier Carrasco wrote:
->> >> On Tue Aug 18, 2026 at 4:01 PM CEST, Andy Shevchenko wrote:
->
-> ...
->
->> >> >> +	ret =3D pm_runtime_get_if_active(dev);
->> >> >> +	if (ret <=3D 0)
->> >> >
->> >> > < 0 seems too much to me. If there is disabled runtime PM (and supp=
-osedly
->> >> > device is always on) this prevents from getting events.
->> >>
->> >> I am not sure if I get this. A reference is unconditionally acquired
->> >> when events are enabled as well as in buffer_preenable, and also in t=
-he
->> >> probe before interrupts are enabled. Runtime PM should be active at t=
-his
->> >> point. If not, the interrupt should not come from the device, even if=
- it
->> >> was on (e.g. before autosuspend kicks in). But maybe I am missing
->> >>  something?
->> >
->> > The device maybe in these states here:
->> > - powered off (by runtime PM) ret =3D=3D 0
->> > - powered on (by some previous activity) ret > 0
->> > - always on (PM is disabled by user space, for example) ret < 0
->> >
->> > Are you telling that the third case is impossible? (Note that autosusp=
-end in
->> > this case is irrelevant.)
->>
->> I followed the execution paths and the third case seems to be impossible=
-.
->
-> Thanks for checking this!
->
->> Setting power/control to "on" calls pm_runtime_forbid()[1], which sets
->> runtime_auto to false and increments the usage counter. Note that it doe=
-s
->> not update disable_depth, which is the variable that pm_runtime_disable(=
-)
->> updates and what pm_runtime_get_if_active() checks to return -EINVAL if
->> runtime PM is disabled. Therefore, pm_runtime_get_if_active() should
->> return a positive value under this configuration.
->
-> Would it be possible to have negative value at all from
-> pm_runtime_get_if_active() here?
+> But this is still a runtime bisectability issue.
+> Not critical most likely, but still...
 
-That is not possible with pm_runtime_get_if_active() in this case: it is
-just a wrapper around pm_runtime_get_conditional() with ign_usage_count
-set to true, and therefore, the only path that could return a value other
-than -EINVAL, 0, or 1 through the return value of atomic_inc_not_zero()
-cannot be reached.
+I see your point. My plan for v5 is to reorder: introduce the ACPI/DT
+fork first, then remove pdata on top of it. That way the -ENODEV case
+is already handled by the ACPI fork when pdata is removed. What do you
+think of this approach?
 
-Best regards,
-Javier
+Best Regards,
+Taha Ed-dafili
