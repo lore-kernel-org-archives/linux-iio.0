@@ -1,126 +1,120 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 806FB30D418
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 05:15:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1122D35C1A9;
+	Wed, 19 Aug 2026 06:51:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787116547; cv=none; b=gWR3mpi6Cpu2MEBg9UdpjziaYCcfOj0c+iKWumuVZPCxJs0QjbXGBCCkqOu4myLNJirGHLsvXGeC1M9qhMukBJ+o3VR2zw30ETMO/P6o+REgUY/Y0hUTm19PNftIGzC+neAlu6SHWp4XlUmjML2ALaBI+zw+mVAklbJn9/EksCc=
+	t=1787122271; cv=none; b=khwpVIQ5zPIj+Cq2FHtwtnnvt0qFeO3QDo6HNO+yy3YikMQ0KVhpdH6rOl9+cor/1ZtXCJkTVKnHcVxxTYbNEZ4EsCnN2E1EpcXUstv6KpXKXjbclC2NET8Qby8ItwWnWbvunwEOxRuw4uTkahNHhsqptNMBuOEPtkPk+/iHI2w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787116547; c=relaxed/simple;
-	bh=UnkQv4kM8XuF78pBN3xPMkNYBRkSeUVmasVSJMrCfG0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hWODlzv1RA7Y0RoTio9S5Xz/VEPUzWy9/bzoONx7Lf4QNafRwUF2L1C0TQ7RZl552P/27V6Dpl/9bkslyCjl4+jjNZlW1frBzlagFcHjKTcbULlRamuoj17/4fRZpQJDBgA+OAgabb2nXVT0wgL/ndFHX98sH4cPvvwXa8DK894=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EIc0Nxig; arc=none smtp.client-ip=209.85.167.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787122271; c=relaxed/simple;
+	bh=kJp8TFu+JRNAhAkCPHLWxHH70xVm6+y+izJn/pddPKs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JCSXobA5ljhxjjEeTUhvGtz1wKx2996lrlQcivN6g9mzUgtbllE3oYH1/cBoM1f8dYVndcH9eZ7ylPVxeO+4vfqTUrpJzNF/uDoSqWm5cPpYRyBomRpng2dMGyb3JSBRhWatzrmymqVLEaqmfo0K3Fc0JT0dojekQ2upMLRPdsg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=G25c7ayu; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EIc0Nxig"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5b01146b205so522100e87.2
-        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2026 22:15:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787116542; x=1787721342; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ynNMYlH2iVBR0QbDnzi1NN26jmaCTIwuPqyidD2cakg=;
-        b=EIc0NxigAM02ibD75En1iIiNf/FzO+ek9XWYQrLu3J/MVi7fyJUos1jAcJ5yTqnTT8
-         dZjE3K3io4L+dqjNa/GqJOpCA/1ILme3Z1GUEBoikfEXCPFZz/4skKR8wPITSqb8QqoL
-         qS7fmvjrl98pQczmY0mMdn9SonU+WRvEhQQZ7RB8V7NCEwDqk0Fbc3FOAq2ONsVMEv6p
-         HhPHiMGvTTl//vRttrlTf1xVlsv6N/c1rNFO0Xy5Gt349HvwElGOIlUFsmSMG0WKYF80
-         gh/GbjGpzrqnFCHTf0eqWG4nMYRbxmbKSQNNR76J1YeK2TmUoUkXwUvK8faYvh/hG/rL
-         MxXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787116542; x=1787721342;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ynNMYlH2iVBR0QbDnzi1NN26jmaCTIwuPqyidD2cakg=;
-        b=SeMb8Q9TZOWRzbkLvbY+jGY3V8dm+7MeKqynuHdox4i0QQiWP8EeRJZb8YBDva/lp+
-         Id9iUqEGDMy75KWcqfH49yzagC1SBSDLMU3jaJpg16E2e1NeIcGvZouPlVB0EDWAS22U
-         /dBUkA/AnYMC/dvTjnN7dTCCDH5eNpnkNPrKKF6XG1q+vClqwnjSdPo2qMMEH+2IfoYQ
-         ko1T+nxIX4ysGuLI0JD8vGe4IZXoUVayq2xAK+NQIG9kLLBM/kgFwDFuIf5tNGCM4K92
-         oxAelOyDB40cSjXvH3rkSmmn+Fvpti4Igofthq4xcuOwg69o2p5KI000LFRwNGNT5kD5
-         4C8g==
-X-Forwarded-Encrypted: i=1; AHgh+RpHTUlwoDyFpcIzgmhbTqC4SBrLj7JoycJyjCV4zhV4uQzTBfvbXvcJVTAK4/iKRR/eY8IZ1P6xojA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxpcmHHdIywi8k8XeCx9dZP/3PAHqMgNi3ZVyRbsJYvek/Ufpd1
-	IYTrlD0e744hknwDTwhs9DUGP07dlLXQn5aARcy5aI/BW5mytv+uFGan
-X-Gm-Gg: AR+sD10Mpuq7zT4GgW+TltcsuJpYfznENrbwIiZcKu+scDVITNf0gFG5RpuwpZc1pcK
-	RFfzAmwvZYJhJXZUsvVIPaM8Qbsrd5iG6AkZ/yrTMANnLu2BmzYqi4AVS5uBH9+Bxc2Tlrug7WI
-	10Ee00/LTpfR1WKC9Q/0ilKg0Q9tPfHDtrGwZ6rGUypegJOKmXRMD0ukGnZGcmBGFglo9aovj8/
-	GZXq/9FpMZG1iLGzBjiRcgYbxUxPYCLq18hxG1JoVBl5PWMZWUI7zmBWEP9uCfqFA7mtmeQzZN2
-	bDiAgFLisvKnC3ENADeqB7Jold2r1aTg162RiOONNTaHKd68SHFCw+FoHy7OBzpLBTtR9NH4VfL
-	nO6vNRejcTL1TCaM6ZRWKMPfCfKORA0HkHmqZob0+d8IZcSEOoIzFs95bpwbLhKCfF3dOeEZD3T
-	j5WQGw7zj3IP3mE/3JKJ5pvZKpcp2N+mFk0aYffGUBo8yicAiYWdTpAuvLqKt/SNYWubzEvXLeu
-	qKdWLw+SYgGmooXqMJ+g6jXLafu5Dfj/mhPWYQO2zoAlnRtzeksdDg=
-X-Received: by 2002:a05:6512:3b1f:b0:5b2:f426:9c67 with SMTP id 2adb3069b0e04-5b478bd8b93mr488499e87.19.1787116541862;
-        Tue, 18 Aug 2026 22:15:41 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a18a8e8579sm1510551fa.0.2026.08.18.22.15.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Aug 2026 22:15:40 -0700 (PDT)
-Message-ID: <a23c2959-5c05-4018-9ac8-7c87e563d1c8@gmail.com>
-Date: Wed, 19 Aug 2026 08:15:40 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G25c7ayu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787122270; x=1818658270;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kJp8TFu+JRNAhAkCPHLWxHH70xVm6+y+izJn/pddPKs=;
+  b=G25c7ayu9T0/1sMSg9Gfs7A/MVY1ntePti2f36OmMejqb4TDm44PMJom
+   rTfikVqiDIMjsIdz45cH5SPSmMXWNiMIaJALH5uLqylEnvnDjzyiogji1
+   uuuaEZKU3NuN642d782i5cTUCiGcspLWv6Ov0kYkNFJE2ESh3/avDqsKv
+   8OTjm8XsmaVMk/r22BSgyA0q8DBjeuMx8XU6ylTBJJNpKw31la6iw5f1h
+   A3WYybo3jD2YLwFmg9YBt4s8MTiX/bGgZDvJuDAsqBxgB33szYQGQ+tP0
+   KXWqvAOA5GXaQvDyDL1Ne851mdZ0lw6YKhG3RNb3q7QzIi+NVImvWGj1M
+   w==;
+X-CSE-ConnectionGUID: wjuBvBvESw+8nnmeYWUF/A==
+X-CSE-MsgGUID: cZClWK/STZ+XVJmx2cX9sw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="87542111"
+X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
+   d="scan'208";a="87542111"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 23:51:10 -0700
+X-CSE-ConnectionGUID: DsJl3UMARvCpwnwsDJXk4Q==
+X-CSE-MsgGUID: 7hVlIwkHSOy4ITL5gcAgew==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
+   d="scan'208";a="265488694"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.106])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 23:51:05 -0700
+Date: Wed, 19 Aug 2026 09:51:03 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stefan Popa <stefan.popa@analog.com>, linux-iio@vger.kernel.org,
+	lars@metafoo.de, Michael.Hennerich@analog.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, siratul.islam@linux.dev,
+	u.kleine-koenig@baylibre.com, linux@roeck-us.net,
+	joshua.crofts1@gmail.com, ciprian.hegbeli@analog.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <aoVSVy60_U2mNEjv@ashevche-desk.local>
+References: <20260818142928.8244-1-stefan.popa@analog.com>
+ <20260818142928.8244-3-stefan.popa@analog.com>
+ <aoR94S2qknBVQrT3@ashevche-desk.local>
+ <20260818171953.4dd76b83@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/2] iio: accel: kionix-kx022a: unify staging buffer
- and convert to iio_push_to_buffers_with_ts()
-To: Jonathan Cameron <jic23@kernel.org>, Gabriel Rondon <grondon@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260818215122.52715-1-grondon@gmail.com>
- <20260819010900.7728cff8@jic23-huawei>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20260819010900.7728cff8@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260818171953.4dd76b83@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 19/08/2026 03:09, Jonathan Cameron wrote:
-> On Tue, 18 Aug 2026 22:51:20 +0100
-> Gabriel Rondon <grondon@gmail.com> wrote:
-> 
->> v1 was a single patch converting the two push sites to
->> iio_push_to_buffers_with_ts(). Reviewing it, Jonathan pointed out that
->> the driver carries two separate staging areas holding the same thing
->> (buffer[8] and the scan struct), and asked to fold the cleanup into this
->> set.
->>
->> So v2 is a two-patch series: patch 1 drops the redundant buffer and
->> routes the one-shot read and the triggered handler through scan, and
->> patch 2 does the deprecated-API conversion, now with a single buffer to
->> push at both sites.
->>
->> Changes in v2:
->> - New patch 1: drop buffer[8], use scan for the one-shot read and the
->>    triggered handler, move IIO_DMA_MINALIGN onto scan (Jonathan)
->> - Patch 2 now pushes data->scan at both sites instead of data->buffer
->>
-> Nice.  All looks good to me, so I'll queue it up.
-> 
-> Applied to the testing branch of iio.git which will be rebased on rc1 once
-> available.
-> 
-> Note that there is plenty of time for additional feedback, tags or indeed
-> me to drop it again if someone spots something I missed.
+On Tue, Aug 18, 2026 at 05:19:53PM +0100, Jonathan Cameron wrote:
 
-Ah, Jonathan was quick and efficient :)
-I'll drop my comments to 'nits' in order to not generate more work for 
-Jonathan. Hence, acting on my comments is not required.
+...
 
--- Matti
+> > > +static const struct iio_chan_spec max40080_channels[] = {
+> > > +	{
+> > > +		.type = IIO_CURRENT,
+> > > +		.indexed = 1,  
+> > 
+> > > +		.channel = 0,  
+> > 
+> > No need
+> 
+> True, but I'd keep it because it is paired with indexed and looking
+> for both together is common.
+
+No objections then!
+
+> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> > > +				      BIT(IIO_CHAN_INFO_SCALE),
+> > > +		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
+> > > +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> > > +		.info_mask_shared_by_all_available =
+> > > +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> > > +	},
+> > > +	{
+> > > +		.type = IIO_VOLTAGE,
+> > > +		.indexed = 1,  
+> > 
+> > > +		.channel = 0,  
+> > 
+> > Same, it's default.
+> > 
+> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> > > +				      BIT(IIO_CHAN_INFO_SCALE),
+> > > +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> > > +		.info_mask_shared_by_all_available =
+> > > +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> > > +	},
+> > > +};  
 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+With Best Regards,
+Andy Shevchenko
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+
