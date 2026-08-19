@@ -1,84 +1,73 @@
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB9E382283
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 20:58:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B473436C9D0
+	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 21:08:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787173095; cv=none; b=WxbgXy5KfVv46V1PMggb6B1P05Iv8WxNaz9GvI6RYQyDeIdCcDlGrdCXf4odxKUXO92sJLCj99Pj3D7H6v6itxW8o2UxvnR2KdkrWiqbrlZWWGu41pkslKXAYktVlJOirIkfC3ujEqZnY57SKL3ifpYkl/zFkufrkvd/eM8rneA=
+	t=1787173718; cv=none; b=aIsfXQmzZ3UAaf5ocJKUUiXzZw7vPEoNJ2ctAntELxqHwCQXzGEReSw/79+StKZVfWTUDfJwASRxwCIxM+mZC3BgIcTBz9WtkHawE45u0Azq9issjFC35OrOAZwFpeywXJUVSsILmNHDL8Ml+JiXT1Dpl6MchR68FiHCQ26SyXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787173095; c=relaxed/simple;
-	bh=4yOAcHCi9um0K8UTl3s2TjwG/mb+CyVD7wWEW1YbriM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Lij24Eh+PDsI6IjPsol6KeFk4dfIvS2CwzREt8EsEvrfWZD0gxD3GLMgAcP45lrN1pHl1vVj2SH6Qxmhvj+I0ZVa5ux0X7St79lnWtB3zkZFAa5iRJ8SmgcrKEJsECB/nWNpbDx2lGHSGemGcyzH9lLdT033f4XNeyRuRYQ07sU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PwzrVC2y; arc=none smtp.client-ip=209.85.222.48
+	s=arc-20240116; t=1787173718; c=relaxed/simple;
+	bh=N9oyXLy0WiaRfZjfgg1R/AboGwKo8XSCOjqtwgTEGt8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uqYRMW+RiPv4XrpKdXl8XpqyAUlaJnR7Ra+3zgIShvLPWDqOfRRQKsvlWfqIKWNdzrcw4AZOuwgwp+x8Cg5kjuJ0/X8aEqSsDnvB7fST4jHycnaF545HZPrmYFOCmlpWHrrOpdWLdHELWR95reHjKFj3X4wI/NJUky4QBWMaRtc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ri3PjD4S; arc=none smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PwzrVC2y"
-Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-977168e4f3dso1166204241.0
-        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 13:58:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ri3PjD4S"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c15d47266baso160487266b.3
+        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 14:08:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787173093; x=1787777893; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=58Z3XVoKaJQbEkvkG1Y4mEaTnnepGYJ8EOpBbp+pok0=;
-        b=PwzrVC2ykJqMgE40Hyig/XgBOkPYDjTnj8dtEm37E1jXxZXNd7sbDbetMUBj6Q1LZ6
-         clqwpbGpzlOsGoMperUzIIFmCF22go3RFWBYhrd0SEVc1D5FsdGu6HrC9E1s1LC8zJ4r
-         rNfWYVvY1/8Nv9qblWD7HSydOfWx38KVqpHzK4XyLP5ez7rFnvbJIfLnAYYslmCCm87B
-         UJAuwr9+LD9sPwNvlvVmz3b3b49rAi5MaATk2E4PGhPzOW6meMMmcZuKyh03hMNN+ZPr
-         FExCbUji6kAKFM/6yBlH693pDdsKofwqLRJQdE2iyBWyJCex8dUsegy+uxyumLk3wPX9
-         rl/A==
+        d=gmail.com; s=20251104; t=1787173715; x=1787778515; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=cwbjjKC3COcea0mQY+gH2Wfh4IpOMKpPVpX8d5q721A=;
+        b=ri3PjD4SKNyv3cydU5FyXQVJz9T/9UMMPX7GOBrXcDhv7I5e3lXEbh+VCi3TTTWAAB
+         ifqvE/SF5fGnb2p/vaeZtvA6gShI3fjdP8jZ8vHkCZI0e5/ixoIO471A5skLT2MnFtCo
+         85Xw7tNn1eX0v0j3HzivxPAB8U+Q4p5GAc9i50TzRT+ib/CHl3oKdq0Itbp8xU1Md7rA
+         O2yguIaUlQeiXpsYaNVuvtMD0/uVUjaLHjZag4eYuVKaxrWTp5q9Ume1npdM+Z2ZJEyj
+         emwtnk1gMKkXe/5PmEnXkZxgz5TZTp7CFTW/9fORByx2UbLRyY3yTGqiPcL+Ei/rIzhs
+         p+jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787173093; x=1787777893;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=58Z3XVoKaJQbEkvkG1Y4mEaTnnepGYJ8EOpBbp+pok0=;
-        b=jvlACQ4SAJJbU1R8Jp1eLF01UYFtCoVQcqZy/PeRsLn9DEC+Ne4SEUZCEt+Ou2fOFF
-         dSwtH6CWgacPD4Br9ulsMtpRnVbv7E6LZ9ZVNIG1paP4oejlmJxrN0w22o2JV8yH439i
-         QRgKmDcZ8L1O/hFIAWtigtAGUkCR8Aj5wneFRQ+dl2H1eJhPeuqbVjEUYza1+odUrNI6
-         2tzddLyXHZ3Qz0ljsnpxnlE66dafy5UiA1py8+QFWkumtlhHBq+QkYwaQ7CSHE8S5vgm
-         l1pfqTJ5nP2/OKEOOrTK94kErkKKETliCVJ6Pq3wFu/mNb36v+XnvWe2WDhpMD3hrlsY
-         qGwQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoAmFeTauGXOcavWpwh1Gz//WJK/Bqrkf19J88jsKI+G6EoG/RB27O3JYjZ5dTkvCkrfs7GOrQdbMo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxBmvJrW6thCrTU7CDWER8OL5C7M1QYxGvgNHvjzh3KjMcOdGXZ
-	GR/LOd2u80dvG6afFAOC0440Q5qkd+nTBHRP55iPH2mP84cQnAHNMuIn
-X-Gm-Gg: AR+sD10Ix5bjnuFrTjFPf1/Do0MoJStSpMhn3FxbWVBauydQy8ji7Z0JNA6C4/rozRf
-	GKLGbyQaQwDY+nQnqhRyNygw0uP8qrBzEdDjuhUNeyyANCoWdibUp3f8yFXHxm0cp0Df7a8bUfz
-	PM8diCahvh0WE/ripX+lWi4Ioo/hbPs9eC8oYUnIsK5YPf76iNNcPWZc54W2i6oz6o5GvE8RxzR
-	xqMmx6XUjxti8itm0j5juNq9+SdS2JIBSMwIiNOzznYFVX+1YzL7ZOjGOxux7405o+5CP8yNiLM
-	ilaF+Ma8nMK6fUuWFlAo+ChyAEReuvxj0sluQpCc2lffiPvhh51zu8GTTNx1eri1zxPppldDyV1
-	+pybEG1XxEGy7zZhFc8j8CHWCbLES94BNL9yY/6I4myj++Bm+zXsWnmiXGToJA3FadyyYRzDIrm
-	H+ekG0dxDvQT0ArrdIUPTBmzn4BJus79C9YRsJgYxzqLDjEhX0N3gaumrnxsQ+4K0hBLNehCTsI
-	00gjKCqxTvde+mKHhfxBrThhdUkeRAJYPdT8PVtTxHV
-X-Received: by 2002:a05:6102:6ce:b0:738:fd01:5b60 with SMTP id ada2fe7eead31-777f897904amr3350181137.3.1787173092636;
-        Wed, 19 Aug 2026 13:58:12 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14d:4c64:82a2:3443:53b2:2e07:b3bf])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-777ddc844besm3616259137.11.2026.08.19.13.58.07
+        d=1e100.net; s=20251104; t=1787173715; x=1787778515;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=cwbjjKC3COcea0mQY+gH2Wfh4IpOMKpPVpX8d5q721A=;
+        b=RX5tpYfbgU7qtyqiXhPgT0a/23TGauHiaoPfTXPDhsaSWMlhVo0vcBzIzQ+bAWam9z
+         f3QO8E9Lzd030IDDEoL/WthaPMoRjVCzNnIhwtjNyiiK1Gto1D3qo8xKf1fSRFsK8xF1
+         8hBdhFsOmZEMblR9+r/3xqMh8BpYZMp4RXEUnQCpXM+jtyyEhdzov8ruMl+W02q6UgRm
+         K7n6hLpujBlK9pHF6FTc2yhFQlbC/y8XdShIw/IrwtB8Cnj3k+zA91m3HMSsfIGfsZ9v
+         pOrI3L+73XJYYpnw42p189CRJLO45b34kEXrdY2zC6QJJFeHUqMjaw3mbacHZHWw4JJ5
+         uYQQ==
+X-Gm-Message-State: AOJu0Yz7nCM007XhX8DQRH3+yvXU0l+klqZPL9gM2/lgzQic4YJtzuiw
+	euYwjiQnpCkuhvwtRmlis4e7IjZDkHMnSOHTAQTANnnlAO15GIhM02xe
+X-Gm-Gg: AR+sD135eEiJoSvhsjyh+1wQfg2HGtVQFD4miyEh2YSPmIu4BHvUVak41Xwp7XGTCWx
+	hCKSlQqJwWTdHVWw04VGkmqJist6f3uO9yGXebtYP3bdh8L1PXBAnHEX1X8fH862GHzXhX33qBF
+	1+HRBXT5uSDrdJKq4NjwzcnQ4w032igpwf1zz//JR8vXIfPhGu/zhPwtPhG5ejgc5+xTbH9aJFm
+	EZw9PK3XoE7wuOSpSqI9W5+MLWFXsqA+Rylq3952V4ekc5hnM/0cPHLlRXFXz9hVW0xV4Btv35n
+	VHSofNgcG8T9MB0Ve9dtZZF9iQOwnH7ZtJuGSlgqKqyLzDAipF0InWHW2q8jBOrTJHh+fd9TI4I
+	5gWj+depkLjJSc+odl+FOcNpbSc7m05slB9zVHBR3ZycWB7UVnBf1W3J2s/VyksRhHSjakQ90fN
+	svWXOpiCPCA3/q6peRF4GIsCZRbu98npE4LoLPJrEK0wCh689KRqFJYtecYVt8lR/KeuH2jl2ym
+	RtVdtTBgK4zPw==
+X-Received: by 2002:a17:906:4793:b0:c21:94f7:7ab with SMTP id a640c23a62f3a-c242e364b30mr485022466b.12.1787173714788;
+        Wed, 19 Aug 2026 14:08:34 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.194.47])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c243c27771csm121374466b.62.2026.08.19.14.08.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2026 13:58:11 -0700 (PDT)
-From: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	matt@ranostay.sg
-Cc: ~lkcamp/patches@lists.sr.ht,
-	linux-kernel-mentees@lists.linux.dev,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 2/2] dt-bindings: iio: proximity: document LIDAR-Lite v3 fallback compatible
-Date: Wed, 19 Aug 2026 17:55:18 -0300
-Message-ID: <20260819205751.166030-3-rodrigo.gobbi.7@gmail.com>
-X-Mailer: git-send-email 2.48.1
-In-Reply-To: <20260819205751.166030-1-rodrigo.gobbi.7@gmail.com>
-References: <20260819205751.166030-1-rodrigo.gobbi.7@gmail.com>
+        Wed, 19 Aug 2026 14:08:33 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH] iio: proximity: aw96103: Fix early return in IRQ handler loop
+Date: Wed, 19 Aug 2026 22:08:26 +0100
+Message-ID: <20260819210826.14395-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,73 +76,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-PulsedLight was acquired by Garmin, who now sells the LIDAR-Lite v3.
-It is pin-compatible with the v2, and the driver already matches it
-directly: commit b257c1a45e99 ("iio: pulsedlight-lidar-lite-v2: add
-lidar-lite-v3 property") added a "grmn,lidar-lite-v3" of_device_id
-entry.
+When an unrecognized proximity status is encountered in aw96103_irq(),
+the default case executes a return IRQ_HANDLED. Because this happens
+inside the loop over the device's channels, any remaining channels are
+left unhandled, causing missed events and stale IRQ status.
 
-Document it with "pulsedlight,lidar-lite-v2" as a fallback compatible.
+Replace the return IRQ_HANDLED statement in the default case with
+continue to ensure all channels are processed even if one has an
+unexpected status value.
 
-Signed-off-by: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
 ---
- .../proximity/pulsedlight,lidar-lite-v2.yaml   | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/iio/proximity/aw96103.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml b/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
-index 491960bb3a0e..dd739319b9eb 100644
---- a/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
-+++ b/Documentation/devicetree/bindings/iio/proximity/pulsedlight,lidar-lite-v2.yaml
-@@ -4,15 +4,15 @@
- $id: http://devicetree.org/schemas/iio/proximity/pulsedlight,lidar-lite-v2.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Pulsedlight LIDAR-Lite v2 range-finding sensor
-+title: Pulsedlight/Garmin LIDAR-Lite range-finding sensors
- 
- maintainers:
-   - Matt Ranostay <matt@ranostay.sg>
-   - Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
- 
- description: |
--  This binding covers the I2C interface of the Pulsedlight LIDAR-Lite v2
--  laser rangefinder.
-+  This binding covers the I2C interface of the Pulsedlight/Garmin
-+  LIDAR-Lite v2 and v3 laser rangefinders.
- 
-   Besides I2C, the mode control pin can also trigger acquisitions and
-   report the measured distance through a PWM signal, without using I2C
-@@ -21,12 +21,18 @@ description: |
-   remains the active interface, as a plain status output signalling
-   when an acquisition has completed.
- 
--  Datasheet:
-+  Datasheets:
-+    https://static.garmin.com/pumac/LIDAR_Lite_v3_Operation_Manual_and_Technical_Specifications.pdf
-     https://github.com/PulsedLight3D/LIDAR-Lite-Documentation/blob/master/Docs/LIDAR-Lite-v2-Docs.pdf
- 
- properties:
-   compatible:
--    const: pulsedlight,lidar-lite-v2
-+    oneOf:
-+      - items:
-+          - enum:
-+              - grmn,lidar-lite-v3
-+          - const: pulsedlight,lidar-lite-v2
-+      - const: pulsedlight,lidar-lite-v2
- 
-   reg:
-     maxItems: 1
-@@ -57,7 +63,7 @@ examples:
-         #address-cells = <1>;
-         #size-cells = <0>;
-         lidar@62 {
--            compatible = "pulsedlight,lidar-lite-v2";
-+            compatible = "grmn,lidar-lite-v3", "pulsedlight,lidar-lite-v2";
-             reg = <0x62>;
-             vdd-supply = <&vdd_5v0>;
-         };
+diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
+index 8fbb755dcae0..b1f36a51d56f 100644
+--- a/drivers/iio/proximity/aw96103.c
++++ b/drivers/iio/proximity/aw96103.c
+@@ -669,7 +669,7 @@ static irqreturn_t aw96103_irq(int irq, void *data)
+ 				       iio_get_time_ns(indio_dev));
+ 			break;
+ 		default:
+-			return IRQ_HANDLED;
++			continue;
+ 		}
+ 		aw96103->channels_arr[i].old_irq_status = curr_status;
+ 	}
 -- 
-2.48.1
+2.43.0
 
