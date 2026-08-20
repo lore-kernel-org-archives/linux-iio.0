@@ -1,63 +1,65 @@
-Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05A513546EB
-	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 14:32:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA9663546EB
+	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 14:32:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787236348; cv=none; b=Ss41FiBe5RU+NxvRsRPgEgyVW5BUm0UuXLEqbNLKNZ2Tmo9tTZiy30szqBa/fFIW0DYuSmGjQcpDGtj2tdfWiY7yrn8YrqkBUDUEmluucQlyaaaSAZ8prE+l6tSJNrcPypqhqZGwjvvqgwR38EWCMivGgnm8eMycKmr0wna+ftY=
+	t=1787236354; cv=none; b=mrumbpH6FJdfNVeiHGaSe+19+dFjIHy/6rF7+LrBvJehsJ1fezfnU17kTlCFZRMf05/BLl5aJ1736zqonz8JhO1ts/agDUevzUMNR+EnoRQRFgViw4cVxs/9XuZ58UVM97PNtiGwQEi3W8qUkz2riyXF++nld7UKwqZq9MVCuVU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787236348; c=relaxed/simple;
-	bh=oIAsE/e03p+TOGVzlvCWR9X1duR52+pknj+r+YshhDw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=j2+ltVCS227o6hmvxca1blcC2Y35B81FP22DJPzmETKPKtLGV9jibuQNfvq3VM4rRanmQJZDHNoOiQeoG/E4okh/aLVpDQkiGB6g4fUnv5G1vQcdMdQGMDZYgQ8hnyaJBM3M14awrl1dl+tVQ1igk9PmU54Nlbij0jzXkW93UuE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ip0itOWo; arc=none smtp.client-ip=209.85.221.174
+	s=arc-20240116; t=1787236354; c=relaxed/simple;
+	bh=a5RakhIEYhfE5aUZzebBLZ1wAm/eAbhVK1uouFMH8eY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IUKbUt4fHkZTKQofqiJGxDzh/ucAypeIsvpsYeF9rUdp3BHmn02JhmYj4pTKCjccePqbNtGDrNlh6PS6LbqXt87nS2g7t65gB3jfa7FDPSjkWWWJqW/bInewzu2V7netvqdAMiI9qzwOTUCzS/RbujLzo+/ofKUZXW1sNAu8i6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IE5Soujw; arc=none smtp.client-ip=209.85.221.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ip0itOWo"
-Received: by mail-vk1-f174.google.com with SMTP id 71dfb90a1353d-5c2c0e261aeso903677e0c.0
-        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 07:32:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IE5Soujw"
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-5c2c46a428eso1767129e0c.2
+        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 07:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787236346; x=1787841146; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=/gm+SgYfIRbiDZdeJlutFSVssEPZa9jM7xptJ+k84VM=;
-        b=Ip0itOWod8TCkDrqG38gr6Tgg0TpQLNhkdKubId/Q5wbGUtbJ4ujrAerpC52sHXwb0
-         tR+565KV45tSQjbpgvTxwdUXcmdY9KxWalH7cA3I/OpCla85lcJGhNbrb4bMzzAKmY09
-         YASSKTGjGtq9BLfRWcqOx3vsaULH0QcP5i671CHT2L8FUh4qiirNuekvLDq/pcnK1/ZL
-         sH1wFDS6RwszBDeX7fWcgNBpxtRN0aWwhYEyctlcLJOI+4znbnqe89hDcky3cRqhUt/r
-         7F6RuLlwGyL4nHo75G3h5mwKmfQ2LOFVFGEsLzV210eZIeOXIvoi1bo/IfiipWrZi3Yj
-         k32Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787236346; x=1787841146;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1787236352; x=1787841152; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=/gm+SgYfIRbiDZdeJlutFSVssEPZa9jM7xptJ+k84VM=;
-        b=kt+w5/Tap9H3FihWcxuwboPk2m1ZrDVshtyfN4HpphWIoGY9dur+rzQYzQ3X8wWLqF
-         S7p3F1fffFqwqCQTpVthya10+P/5/wt+hJpnX1nL1gMjDcu0FGAGc+tUIZtffK5Hgcha
-         dtYPuxNfzAfGAYYHRxcdNLbnRDJcGDs1AsDuCfkEt1FqFGM8SLdOTDvPrutiVIyrWPl0
-         0Mncla6iWzkJd3Ce8Asd+pcsDh4VvD1q2Of7XTBLr8zuh4bFZLfSz/8nhzBktkcbeuQ6
-         36yw6s4s7ChCsFS+nsx7M6uIcutNV8rb5jKByGtXFL6yG6RTGqSJpDu486ILGAgzylQl
-         f9fg==
-X-Forwarded-Encrypted: i=1; AHgh+Rq9B0L07mzYUbcjTo9RINvVJgZeay/sIyU2wcR9l3aPGoG7/BqlEdcFcav+Uioa3yHC10UYenRtCkU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCrDZd9HhvGKqGlpphxj14dr9iI5XdFB5q0kqVwn5b6W8z48S2
-	8+IBkhHZRfwTqbSx88fqaXF5qDA/Vu4J1B7JRf/HLDkzUxaglKDVvSo=
-X-Gm-Gg: AR+sD13POV4+xHgV48MiEJQCjQ2vhi4tq+1tPlMIeOYpN+M3iooieEc3JVSOSvKRlCH
-	a3Ed3w+aGaUhwnNaR37+hUMD2ZNQ9I0gmM33rSmMrDGZ5oat6QxJcP3aEPoqtEkatoezywkayo8
-	0dmIl3qtdmxbjowPDTNBfudivBRFUrVPsddp5qnYEHQUDk106W3sDvN5SncQVpYFreecX6zxhNK
-	qeqi/Snx4/2NSvq+4LsCXB98jmrarjl1m+lYQILt907/WIVRJXwEVebD7ifG5/c3+2xkc+2qW3P
-	UmBrbYUheJ/PrWl242l+bkwhX6HxTqQWHXdYY+HkS/I8/gUjD/lmqPGNPkPqINjy11gJZeeTY1l
-	EZsbnNPDD3Ry6esz3OgWRO12ACgqKTX6KE6bOb/Jx6XaSmbzmhYJTNQuWnoFa6GZ3oF/34F1avC
-	Nj2OORzllpUMKm0zP7c09tiOlBQPsSajxeZH3Xv1fSWn5R89VlIpUYDa0gZZi7Nh8ZHE6KsKRo7
-	trgePfh66a/TXT4LMeC+naiBwOaHxSMvSowdTMP
-X-Received: by 2002:a05:6122:3129:b0:5c5:ac11:9731 with SMTP id 71dfb90a1353d-5c5e3e4c415mr4869914e0c.8.1787236345866;
-        Thu, 20 Aug 2026 07:32:25 -0700 (PDT)
+        bh=T85RHS8VejstyEgBz1/jasjfhA3Et8B7A5u7SqIabRM=;
+        b=IE5Soujwbit64cJH/D5E1UTwfDu4hmr4bT9iuGr+HbIYHtxVcdH+x4WMFNzFVS0kDA
+         JokQGCtc8h6cS1rJ1ASXfyBGLxKUmD3VlIIv2fHCq68s42OHT8ZFYxD3X50/9lxLAV8t
+         5VpO8DXkQkDxgD3cqHJJ4khwFMFynaWQfwyJ1q2GA8iWMIRIQuJdme3mow/0vsCFGH6/
+         sBd7GG9K1fI1pq2cqhAj11lBr+/l7JQM/x+FQlMXU6QjMmF5WDT8JpEOT+zE3L1bW8IG
+         +cBIJBAxSFAyycQfxLM8fnLZnOT9zEJJo+mUBwZAW3qbJ+G4kTdAiRRIbP4Jpc2+Dw1E
+         i0Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787236352; x=1787841152;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=T85RHS8VejstyEgBz1/jasjfhA3Et8B7A5u7SqIabRM=;
+        b=OAw+3yHnF3/576A68UYNVBoynA2Xs5uz2coKuOUT0PtRgoYLFPo0rI5wjbbyFMrrVL
+         UPzgnouVJvYrY8tUI9Y0P/FwfJ448KqReeA0pCL+pxyYoMehBvGhWgkmmaUA1RLWOnut
+         SfnuID8mB+3xMbRM/AiflB0+WCRniozF8xexVLMd2BPPEhVwdh6i2RXMOP0QXTPDe49g
+         2H2rS1q306dPSm924Zt6VSOcv41arhF+3gzonf1zAMkGYSMJLO61fztYRte7nQOdVXPh
+         NL65jriUgkm3wMtNIQzquw9T9ZY8dZBdLJbJK7xCD5df3gB+80BVjCOLt1JMAjI3Jot1
+         gTRQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqKypmwL0ZGVbB1FGQwMjyVEJ7NCuHGH0z9DW53hwvS9nr8Fa7mTTOZAdAa2rehpYnmdl4Q+hf2sdQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy9p66yPjZcCE9B7zgGsS4fUV2+Bav4P759y33KkYvbHnOWUhu8
+	Dj+xMFL6MAktLyg3pmvnx8qBRQ+hunXzfrrf6B2Te1926/eyjilKaMY=
+X-Gm-Gg: AR+sD11Ipu5WKYK91LDuOunVXxWbn72lTIJXbu/OqnAhn7nQ83FS8VFd2FrlgfcEJRj
+	z7oMyBc+0qaqPYlBQ7jVWLwCbfDvu9/kQ/OX2+BqgBr2ngGeA0IR43MFX1w6pDh/Gb8vI6kZBNE
+	SmKjEMbY/nT/vqGa/Itgf8uSYDrjVzGarNtImRZ//q/Sm+TeqDj9ZXHe0dCu8q0Su/R1LEYcNN7
+	XuDk01Y57M8UHgUhy9PJOY3wyQAbWh917bjLmZNHPwNCThwWd84sQlcWQkb4T7H9J8zfVkQ/Be4
+	wvNnzOipGLFe5NpXyjFc6dr8F7KI586WF4K7rlYNn2WMadOE+rd4JZ6WIv6+pjrFxPLMYl+p6s/
+	JGF5o0ikzWvWzni2X9ZTVlS9HkN86unT4/01LJlcU00DvdS3mZcXEP68krraaEg2P88NOPAtBZZ
+	mBtMEY0gM1Q04Vmr8wI5vTywlKFnLQn2c4qzbAmxBxPOW5728ypUyhgfBm6SlKxSNtwZG5g4NmG
+	O3dhxL+Joa7BfriQDFOPUp/8+qHcoecAdCwmvfY
+X-Received: by 2002:a05:6122:3a16:b0:5bf:8c77:e89a with SMTP id 71dfb90a1353d-5c5e3de4dcemr5807238e0c.2.1787236351791;
+        Thu, 20 Aug 2026 07:32:31 -0700 (PDT)
 Received: from localhost.localdomain ([186.158.238.108])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c5e25e3459sm6393922e0c.4.2026.08.20.07.32.21
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c5e25e3459sm6393922e0c.4.2026.08.20.07.32.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Aug 2026 07:32:25 -0700 (PDT)
+        Thu, 20 Aug 2026 07:32:31 -0700 (PDT)
 From: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>,
@@ -74,11 +76,14 @@ Cc: =?UTF-8?q?Nicol=C3=A1s=20Antinori?= <nico.antinori.7@gmail.com>,
 	devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH v4 0/2] add support for Aosong AM2320
-Date: Thu, 20 Aug 2026 11:31:08 -0300
-Message-ID: <cover.1786973355.git.nico.antinori.7@gmail.com>
+	linux-kernel-mentees@lists.linux.dev,
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH v4 1/2] dt-bindings: trivial-devices: add Aosong AM2315 and AM2320 chips
+Date: Thu, 20 Aug 2026 11:31:09 -0300
+Message-ID: <355f97d79939b0fee740f91e0d4a74b484639092.1786973355.git.nico.antinori.7@gmail.com>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <cover.1786973355.git.nico.antinori.7@gmail.com>
+References: <cover.1786973355.git.nico.antinori.7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -88,50 +93,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The AM2320 is fully compatible with the AM2315 sensor in terms of I2C
-communication protocol and measurement conversions.
+Aosong AM2315 and AM2320 are temperature and humidity sensors that do
+not require configuration.
 
-This patch series adds am2320 to the i2c_device_id table, creates
-of_device_id table and adds both am2315 and am2320 to
-trivial-devices.yml dt bindings.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Nicolás Antinori <nico.antinori.7@gmail.com>
+---
+ Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-v4:
-- Addressed minor styling issues in driver's C code pointed by Andy Shevchenko
-  (carried "Reviewed-by: Andy Shevchenko <...> from v3)
-- Adapted commit message pointed by Marcelo Schmitt (carried
-  "Reviewed-by: Marcelo Schmitt <...>" from v3)
-- Carried Acked-by: "Krzysztof Kozlowski <...>: from v3 dt-bindings patch
-  since bindings patch did not change.
-
-Note: I carried tags from v3 because reviewers declared the tag after
-pointing things that were resolved in v4 (and the dt-bindings one
-because the patch did not change from v3 to v4). If this is a mistake
-please let me know.
-
-v3: [3]
-- Added "aosong,am2315" and "aosong,am2320" to trivial-devices.yml.
-- Added of_device_id table.
-- Replaced using a constant for driver's name with chip_info struct.
-- Separated code changes and dt-bindings changes in two commits.
-
-v2: [2]
- - Generalized KConfig description text.
-
-v1: [1]
-
-[1] https://lore.kernel.org/all/20260805183733.1000550-1-nico.antinori.7@gmail.com/T/#u
-[2] https://lore.kernel.org/all/20260810183337.451812-1-nico.antinori.7@gmail.com/T/#u
-[3] https://lore.kernel.org/all/cover.1786725567.git.nico.antinori.7@gmail.com/
-
-Nicolás Antinori (2):
-  dt-bindings: trivial-devices: add Aosong AM2315 and AM2320 chips
-  iio: humidity: am2315: add support for am2320
-
- .../devicetree/bindings/trivial-devices.yaml  |  2 ++
- drivers/iio/humidity/Kconfig                  |  8 +++--
- drivers/iio/humidity/am2315.c                 | 34 ++++++++++++++++---
- 3 files changed, 36 insertions(+), 8 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 435c4baab436..92b757579eef 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -62,6 +62,8 @@ properties:
+             # Aosong temperature & humidity sensors with I2C interface
+           - aosong,aht10
+           - aosong,aht20
++          - aosong,am2315
++          - aosong,am2320
+           - aosong,dht20
+             # Arduino microcontroller interface over SPI on UnoQ board
+           - arduino,unoq-mcu
 --
 2.47.3
 
