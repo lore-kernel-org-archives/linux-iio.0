@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B1D3803DD;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 658F5362138;
 	Thu, 20 Aug 2026 19:02:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787252564; cv=none; b=XDBERQthiUfw6GqGXaWsq9QxGb6xxxvFfWM8kxRx9R93+jmlr/05ehgHg4YgfIiG6HeqIjSsEURT6gDqIwUOH1v8fATFzo8SqdCvi6036eJ/gU2OxeLwnz3kXyo67zZV5QHo7+OF/7MgurKX6Ruc0XLF73+NAUtvZqYW2E0/p1U=
+	t=1787252564; cv=none; b=dwyYUFRfN0UrDhwDHzTjmIsJ8evrfzHauRs8QjLrJi/xYAb7ErJH0xT9tmza6SSPaqTxpchvRTTlog7rmYraJv07MzwEDUrfpxUSC14yGb9AAd0iK6S0XhhYVyPatGX3hWNPdquoLdrxsPrzu0bD3yn+pc/9nna3XnhNSFoWKWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1787252564; c=relaxed/simple;
-	bh=rDMx9sIWGeeq9a56wl+tBY6uR9IDxUaz0FHi+kPxOxI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sr2L3lH8T8uNFV2TzcDAY+74CkjsTGmlW1wQoV2HF2t1wOho/6FtXkrdwVTha3/pGewT3DybHL7LX3hGBXYzGc2fE2FK5MkoTPJaTzAUyCw0ajNNcEfjxIw8JPtLZ3AUOgnbLEXsQ3qiVsNGRMZ66XOdOYivhMWdXewXboFYkSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C7nQ4VMl; arc=none smtp.client-ip=10.30.226.201
+	bh=lrkb5DHW4nekBm62Ptn6gdrtseZG3P/khBB49osjqIk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Yg9d7WnUHL553wZFVV+ZGEfwi5/HjZK5iFnJwUJCuiksl/tz3i4yff8nMAFYEN4ogcsqsAM6fmxXQ6rOAFeCFslkBEZqWkOX/HYJQKsNFID34p794OhEoLRfW9hOEdDu0Xi8GiHfygIu7q/hipcukyxcUurwGiK/ir19iuMnNzY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GKbvGYBH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C7nQ4VMl"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 239A5C2BCFB;
-	Thu, 20 Aug 2026 19:02:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GKbvGYBH"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E77D1C2BCB3;
+	Thu, 20 Aug 2026 19:02:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1787252564;
-	bh=rDMx9sIWGeeq9a56wl+tBY6uR9IDxUaz0FHi+kPxOxI=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=C7nQ4VMlin0xstnLLrqY+9czwaNE3oQvpSY7uzH/bSxJzExeJVnZTyzml4hoTbjHK
-	 YT7+O1M78z166OIaKNvqUdMCVMWEjKZvMHW8bWhF3IIV7QCo8xlStTsSGxF3St0JB5
-	 kEi80RrxWuUBxY/+KuIB7TCLMhkYeldP9MoXSh4y7Q8Nu2CRh1pSQrByF/DIX9l649
-	 4Q0Z+X0lE1aYVCvKI292jit0cZ3ihZ2C+6IRKWtU9YJMyJ9hEhsiyn69vglPljq3AA
-	 MxRhq3uhjJCGPKsw1Jl9zMnbbLB2NkRH6RgorEsLZIlqfcPBitd3eMwKnn045CGvLq
-	 EDvPx2K9M0hJg==
+	bh=lrkb5DHW4nekBm62Ptn6gdrtseZG3P/khBB49osjqIk=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=GKbvGYBHFY+WyD3RxUEYPAxwtOn7iABJqbh7RV1gZHw7ff3sNfmzPU8q0aLXMtyZW
+	 Pale+rheFUVhYMTrT5wz1R88D0duJFncaKeU4ws1StYDP5NHbqTsJ7G2LnP4ZcfDH5
+	 f32Jbh5Y0fExkTrKoHvyDSwzPUavMfY7+V7TtU80dF9pJ5iZQuu5pPjerN3FlSeL9D
+	 pSANOaZ1PslwocQekmDJjGsFpDJUq3TidZOjaHR2BK2WZiS8NCYZ7l/gBNCyxHjiw0
+	 tygLTR0hDIeXycNbE5/5873VNjsQFkYactb7hBdl+2LDqvS/6qGqvfuKERLVdZyMGc
+	 MrQa3Rysojgow==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0967AC5DF81;
-	Thu, 20 Aug 2026 19:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C30AEC5DF86;
+	Thu, 20 Aug 2026 19:02:43 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Thu, 20 Aug 2026 21:02:39 +0200
-Subject: [PATCH 3/4] iio: imu: inv_icm42600: simplify watermark computation
- by using gcd
+Subject: [PATCH 0/4] inv_icm42600 driver enhancements
+Date: Thu, 20 Aug 2026 21:02:36 +0200
+Message-Id: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,9 +40,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260820-inv-icm42600-enhacements-v1-3-075a881db557@tdk.com>
-References: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
-In-Reply-To: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
+X-B4-Tracking: v=1; b=H4sIAExPh2oC/yXMQQrCQAxG4auUrA1kioyjVxEXdfxrIzTKpC1C6
+ d0ddfkt3lvJURROp2algkVdn1YRdg3lobM7WG/V1Eob5SBHVltY87ivFIYNXcYIm5wDBCEh9ik
+ mqvmroNf3b32+/O3z9YE8fX+0bR+r9bR5fAAAAA==
+X-Change-ID: 20260709-inv-icm42600-enhacements-1e0e18e6f868
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -53,11 +53,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787252562; l=4645;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787252562; l=1371;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=bwjlmqmiKOXuuvGZcZK9+89VfoFOSDBn/75xuRvm4m8=;
- b=HCkBJxq7pHZwLvEyJrwdC5vX29IfILXzM2Lw+kKIyONM+hwKEgDpkfX192Z+LZoEFC2Fi029d
- a785lHuNu7jAacpP18AeH70iUoEhtnnTUenqcdNCf29gCGc0vHI0nYG
+ bh=lrkb5DHW4nekBm62Ptn6gdrtseZG3P/khBB49osjqIk=;
+ b=z2r01HbY7zKX1LD8h1H8bd6vdUs1Q9v5pDWgsZlihr0aSoKmfN7NY7fMlBq5t2eexTsxiwfn+
+ p1mb8TdnTPIApzKDAPfzDAyjME0nJREF58RrUjpr04xhqIUppZPqd85
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -65,101 +65,36 @@ X-Endpoint-Received: by B4 Relay for
 X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Reply-To: jean-baptiste.maneyrol@tdk.com
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+This series add enhancements patches to inv_icm42600 driver.
 
-The watermark computation was in fact resulting in computing the gcd
-of the latencies when both sensors are on. Gcd is required because
-of the IIO buffer watermark. We need to use a divider of IIO buffer
-watermark, otherwise we will overflow the requested watermark.
-
-Move to use gcd and update documentation accordingly.
+It includes:
+1. Move of MEMS stabilization sleep before FIFO configuration to avoid
+   pushing incorrect data.
+2. Use a fixed FIFO frame of 16 bits to avoid a bug of dynamic FIFO
+   configuration changed triggered by the sleep move.
+3. Simplify watermark computation using gcd.
+4. Enhance support of high frequency streaming by avoiding read of FIFO
+   count for watermark interrupt.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 47 ++++++++++------------
- 1 file changed, 21 insertions(+), 26 deletions(-)
+Jean-Baptiste Maneyrol (4):
+      iio: imu: inv_icm42600: sleep before enabling FIFO data
+      iio: imu: inv_icm42600: use 2 sensors fixed packet size of 16 bytes
+      iio: imu: inv_icm42600: simplify watermark computation by using gcd
+      iio: imu: inv_icm42600: do not read FIFO count for watermark it
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-index 043ae9deee65..1428f18408ce 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-@@ -5,6 +5,7 @@
- 
- #include <linux/delay.h>
- #include <linux/device.h>
-+#include <linux/gcd.h>
- #include <linux/kernel.h>
- #include <linux/minmax.h>
- #include <linux/mutex.h>
-@@ -172,15 +173,14 @@ static unsigned int inv_icm42600_wm_truncate(unsigned int watermark,
-  *
-  * FIFO watermark threshold is computed based on the required watermark values
-  * set for gyro and accel sensors. Since watermark is all about acceptable data
-- * latency, use the smallest setting between the 2. It means choosing the
-- * smallest latency but this is not as simple as choosing the smallest watermark
-- * value. Latency depends on watermark and ODR. It requires several steps:
-- * 1) compute gyro and accel latencies and choose the smallest value.
-- * 2) adapt the chosen latency so that it is a multiple of both gyro and accel
-- *    ones. Otherwise it is possible that you don't meet a requirement. (for
-- *    example with gyro @100Hz wm 4 and accel @100Hz with wm 6, choosing the
-- *    value of 4 will not meet accel latency requirement because 6 is not a
-- *    multiple of 4. You need to use the value 2.)
-+ * latency, we should need to use the smallest latency value. But it is not as
-+ * simple as choosing the smallest watermark value. Latency depends on watermark
-+ * and ODR and IIO buffer watermark adds another requirement. The required steps:
-+ * 1) compute gyro and accel periods and latencies
-+ * 2) Use the smallest period and the gcd of the latencies. Gcd is required
-+ *    because of the IIO buffer watermark that will prevent send of data if not
-+ *    crossed. Thus accel and gyro watermarks must be a multiple of the watermark
-+ *    value. Computing the gcd gives us the biggest value that meets this criteria.
-  * 3) Since all periods are multiple of each others, watermark is computed by
-  *    dividing this computed latency by the smallest period, which corresponds
-  *    to the FIFO frequency. Beware that this is only true because we are not
-@@ -190,7 +190,7 @@ int inv_icm42600_buffer_update_watermark(struct inv_icm42600_state *st)
- {
- 	size_t packet_size, wm_size;
- 	unsigned int wm_gyro, wm_accel, watermark;
--	u32 period_gyro, period_accel;
-+	u32 period_gyro, period_accel, period;
- 	u32 latency_gyro, latency_accel, latency;
- 	bool restore;
- 	__le16 raw_wm;
-@@ -218,22 +218,17 @@ int inv_icm42600_buffer_update_watermark(struct inv_icm42600_state *st)
- 		watermark = wm_gyro;
- 		st->fifo.watermark.eff_gyro = wm_gyro;
- 	} else {
--		/* compute the smallest latency that is a multiple of both */
--		if (latency_gyro <= latency_accel)
--			latency = latency_gyro - (latency_accel % latency_gyro);
--		else
--			latency = latency_accel - (latency_gyro % latency_accel);
--		/* all this works because periods are multiple of each others */
--		watermark = latency / min(period_gyro, period_accel);
--		if (watermark < 1)
--			watermark = 1;
--		/* update effective watermark */
--		st->fifo.watermark.eff_gyro = latency / period_gyro;
--		if (st->fifo.watermark.eff_gyro < 1)
--			st->fifo.watermark.eff_gyro = 1;
--		st->fifo.watermark.eff_accel = latency / period_accel;
--		if (st->fifo.watermark.eff_accel < 1)
--			st->fifo.watermark.eff_accel = 1;
-+		/*
-+		 * In case of both accel and gyro enabled, we need to use the
-+		 * shortest period and the gcd of the latencies. Gcd is required
-+		 * because of the IIO buffer watermark that will prevent data
-+		 * sending if we are not crossing the watermark level.
-+		 */
-+		period = min(period_gyro, period_accel);
-+		latency = gcd(latency_gyro, latency_accel);
-+		watermark = max(latency / period, 1);
-+		st->fifo.watermark.eff_gyro = max(latency / period_gyro, 1);
-+		st->fifo.watermark.eff_accel = max(latency / period_accel, 1);
- 	}
- 
- 	/* compute watermark value in bytes */
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h        |   4 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  |  12 ++-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 109 +++++++++------------
+ drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   |  12 ++-
+ 4 files changed, 62 insertions(+), 75 deletions(-)
+---
+base-commit: 53c022f51fbe540fffee2121ce9ed3e15266c9a4
+change-id: 20260709-inv-icm42600-enhacements-1e0e18e6f868
 
--- 
-2.55.0
+Best regards,
+--  
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
 
