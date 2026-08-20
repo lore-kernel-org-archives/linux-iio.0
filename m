@@ -1,139 +1,137 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F75B38AC9A
-	for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 21:23:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42310222580;
+	Thu, 20 Aug 2026 00:57:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787174589; cv=none; b=i3WfKi6wDUnGtHau45BxrNA00w2ou2AGERJRR11rED3LWb6nQhO7PHbkmkKwSaw33aSeHCe36+IUJOjY7EoSFQ5SLMGEdnkvCIQIpWptlyMtcuTneC2JKTZ0+YLkAwyJ8I8tab7iLlImZeN2OtXaoC6JPOCc7IIJAngsjPto81Q=
+	t=1787187478; cv=none; b=boezAXzy0MveS0yqKpT2KWOIpNjwxoHzT5lysVt5d5T7wP8V6uftQH8pSomsdMRnjL8ZbWw/hg9OwBEBHUghlm4qEzkiveEwAS5HUhDC+emn77/OdOhWR4UpWPQlF6ABYeNP3dLbj8naWr2stGnZCKQD1XS2BQQcAFE1ysoi/2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787174589; c=relaxed/simple;
-	bh=e86+tyxRdQKzE4t52ZefcteM0bRE88sbIL68NZYIiAc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RsG7see9xh4vFMPOEkpq5f7hAncNTl60tXeJppN0XA04yf+2mOq1gj3cEkzAq/LS9NDZJQijM72biVJ+zvEooIu8zAKkTjoa0BHr0jnvoXn14a3C2i9O7Oxo1cAVNjI/M0+Lmp7mXaXst0r44Wp2UAbEfY5hWBdKAI94ohDUdb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UNzU2lCM; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=JCKAFLrZ; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1787187478; c=relaxed/simple;
+	bh=iTsBM+zhifhEVy/t0k8fQnDrJ8UkQPci75ZvDiDEHog=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aQwOpwMP+K8RNXqP3eK9GHNPHQXN5hn5WYFpJl5/QNyxIPjccsHjLNnGehkUgmj4rlXLkvWyD59ttXIwn/X/8MtbVhdUYWbyjhLiyWR60atiBr/2Q+Uwt4fJJzc/k2E3EVoaaod3PkhM7ld0NZZa3NH0NTiWEro3Mp94BM/PyMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ofqoOZxY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UNzU2lCM";
-	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="JCKAFLrZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1787174587;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Y2Nq6oWt/A+GglsE2R04tSZrXRfphvvWNtrnE+gHf8s=;
-	b=UNzU2lCM8vGP/ynJu6UYWXGCk6w7dVDtbXs2Ew1fNbDLkeCPOIhcDCATa02P4Lr/I9uPYs
-	JYUM4xPAGMT8/QeMWtuONz+/MZ83Pyg4nQUPdIILyPPeqtCkhUNLjXCpQYeKCRx+4tbu/d
-	NxY/KmvxMtzjxg6jPMx4fJpI+bNtpyc=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-689-ZqLQYtkKPa2qcaU_VH3i6w-1; Wed, 19 Aug 2026 17:23:06 -0400
-X-MC-Unique: ZqLQYtkKPa2qcaU_VH3i6w-1
-X-Mimecast-MFC-AGG-ID: ZqLQYtkKPa2qcaU_VH3i6w_1787174586
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-9083b049f73so19732576d6.1
-        for <linux-iio@vger.kernel.org>; Wed, 19 Aug 2026 14:23:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=redhat.com; s=google; t=1787174586; x=1787779386; darn=vger.kernel.org;
-        h=user-agent:in-reply-to:content-disposition:content-type
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=Y2Nq6oWt/A+GglsE2R04tSZrXRfphvvWNtrnE+gHf8s=;
-        b=JCKAFLrZWsJlDyDL0n3WLYXT63egpUnZ+e9sB2o8Cu52PYgoPA+qrgX0HMk/lPmuhg
-         kcZ+OnAOPFAPoYKI9SfWNtt/wNFfb/l1B6Qdpjt9TXkwa43DK7+RdPkfUnPYcbSp4trw
-         Y17ETv81mfJFnM6opMhSYQfXk50NGBWU+qwk2peJLmDw+Ewga6+okxmFUof/ZIMerVvb
-         1M+0Hzo+ltWLG+vER+nwoKKVNLyJN8Nnj9uBk8EtwVn/j5vuBSOg0S9tvxz0J4D9NJmo
-         mhM/RptbedIlUzfhAEYhLCvT3YX9QmZVBkAYg7TGMhcQn3/sfMzWQIBbnVAkWKY11f4X
-         qF+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787174586; x=1787779386;
-        h=user-agent:in-reply-to:content-disposition:content-type
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Y2Nq6oWt/A+GglsE2R04tSZrXRfphvvWNtrnE+gHf8s=;
-        b=aJYgD7O7CFW/npF2tvKWgLD0o2U/ubg7i4xsUTAlQjz0bCNFY9qxaOvnLYE6GlGAwG
-         w26tMtBDArDppVIhgHq3S+5D0h28kP9E48w0EJM953PxpU4RPtTeXPW2988wxF/Vz6HB
-         Xf498zJIp/l+fYJ+8MDrhJLN+mirZiQfe9TjuWPT70QMF2RGkkg/VW1SsHSPlGv5VP8M
-         11NZYith3d7a7eDPv+XUadf1JNRDGDF1n9f4JSE98Ov0NAtWFxNuxxO2kjjKIyE198ho
-         0V08syxSnbi3YssMQHRbLZbk6HbIRtr9B4k4JOSaWOnvB+TwjXOIgoyDHoktx7U8OhEr
-         cbWQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqdxOtc413QZ65PP8H3EIJMeGp55rhun1GbsqhvAc0e4XlsaIulCClBnfjKFfQAWJlFJ0HaBwUBu4U=@vger.kernel.org
-X-Gm-Message-State: AFuF++m7h4ROc+obdyxzI8uNwT/TVV22OFEY8cDz8Qsk9HvwWOaB0jym
-	3aIdkugM0nUoHtDmCgkb/fLiSqMxaEEUzvaCQ98j8pQFMxKLAOuBK8ADoglOrnY9OSOvs+LEQA/
-	IXxZIDogWJSLWWDe/Y/Mx3UKKAj/J0qPu8awcssze/d5oiWK2PfnMBOu4uGLhig==
-X-Gm-Gg: AR+sD13o6DIsaXgbf4PmzpusIa2WfarTePpEsWBXPw8YeqHldCe2JRBcGFzXKdCa4Lu
-	VabuDimQ0cQE2oY+R0T5tNvEq9JYFhmm9oSiDNsefh8GV98AvO+RGFf8+GgAkUiU8OduEZ3PgWu
-	MTO0th3S3iv4M/MfSQ35I/u7FebuBT027ed+7cP0hqXwn+dfDT9/5cA3OYv9jx5Nsn5RvHk7dzV
-	DAWueDAx7C5bxoUQMIakbAYVgmpmxYLWQQHxdnOhgy3Qz/O+aIJpQcpKqr9Yw2W06caGRDP8ZnZ
-	bCOY0SuaUU392s00RAhcP73LXZavm8lTccGk2OvR8YQh9s9Qffjj173E6Uv6pE4jGZ2u04cGzpq
-	vHVngZHeMIIF7RXmRkkkchBRnF71vlbQKW/c=
-X-Received: by 2002:a05:6214:260f:b0:90a:804a:968e with SMTP id 6a1803df08f44-90c5eb8132fmr77665636d6.32.1787174585748;
-        Wed, 19 Aug 2026 14:23:05 -0700 (PDT)
-X-Received: by 2002:a05:6214:260f:b0:90a:804a:968e with SMTP id 6a1803df08f44-90c5eb8132fmr77665056d6.32.1787174585342;
-        Wed, 19 Aug 2026 14:23:05 -0700 (PDT)
-Received: from redhat.com (c-73-183-53-213.hsd1.pa.comcast.net. [73.183.53.213])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-90c5f2a1139sm23455876d6.34.2026.08.19.14.23.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2026 14:23:04 -0700 (PDT)
-Date: Wed, 19 Aug 2026 17:23:02 -0400
-From: Brian Masney <bmasney@redhat.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Tero Kristo <kristo@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-	Brian Masney <bmasney+clk@redhat.com>,
-	Jerome Brunet <jbrunet+clk@baylibre.com>,
-	Nobuhiro Iwamatsu <nobuhiro.iwamatsu.x90@mail.toshiba>,
-	Nuno Sa <nuno.sa@analog.com>, Guenter Roeck <linux@roeck-us.net>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Sunny Luo <sunny.luo@amlogic.com>,
-	Xianwei Zhao <xianwei.zhao@amlogic.com>,
-	Mark Brown <broonie@kernel.org>, Kees Cook <kees@kernel.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-hwmon@vger.kernel.org, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org,
-	linux-spi@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH treewide 5/5] spi: amlogic-spisg: Make sure clk_init_data
- is fully initialized
-Message-ID: <aoYetnpb5fu2M9u6@redhat.com>
-References: <cover.1787165329.git.geert+renesas@glider.be>
- <9fb35ae0aedb7a6db0db6c78a8193c7602dd9d44.1787165329.git.geert+renesas@glider.be>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ofqoOZxY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2B5F1F000E9;
+	Thu, 20 Aug 2026 00:57:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787187476;
+	bh=kM+T5YFvyzkuB+A5pR6vF4uBLMNV4q+o0hL9s8uGv3Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ofqoOZxYl/yJsfKnHokgkeX/MUBBZ9ajy+sguL3jaYm57T/dsYfO/jueRn7X/FOq5
+	 SrIkwOe41UVGfOptOdPxC/IQXsW0WoCNzRYD7FC+W7jj0hpUmFcNZkYeflEzoLGc8M
+	 pVzSG5U7CedgtouGuc2Hfhnm5Bm5ds3wJ3IpMJk7UpbVLf9jtfLl4UEwP0qwe4KZqB
+	 Q71ZsOSpyhcGtML7e9GnCubdoPNIdJmL/bblzeLRaL5CuQIX78x/Zb6MGtUbMxGOUZ
+	 YLREmwHcQrkSnERdUHld+n2XFK4xv4Xw81u31BpfaKB6N4XFOepfHWZ9+WNNjoklMv
+	 ckdSrAt1d2LFA==
+Date: Thu, 20 Aug 2026 01:57:53 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Janani Sunil <jananisunil.dev@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Janani Sunil
+ <janani.sunil@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Philipp Zabel <p.zabel@pengutronix.de>, Linus
+ Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
+Message-ID: <20260820015753.4faee677@jic23-huawei>
+In-Reply-To: <9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
+References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
+	<20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
+	<36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+	<9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9fb35ae0aedb7a6db0db6c78a8193c7602dd9d44.1787165329.git.geert+renesas@glider.be>
-User-Agent: Mutt/2.4.0 (2026-06-19)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Aug 19, 2026 at 09:05:19PM +0200, Geert Uytterhoeven wrote:
-> The clk_init_data structure contains several mutually-exclusive members
-> for different methods to specify the possible parents of a clock,
-> prompting drivers to initialize only the members they need.  However,
-> not initializing all members may cause subtle issues, which are only
-> exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
-> enabled.
-> 
-> aml_spisg_clk_init() fills in init.parent_data, and assumes that
-> init.parent_names is NULL.  However, the latter in uninitialized, and
-> thus may cause a crash.
-> 
-> Make sure all members are fully initialized, to fix such bugs, and to
-> avoid future breakage when converting drivers to a different method for
-> specifying the parents.
-> 
-> Fixes: cef9991e04aed330 ("spi: Add Amlogic SPISG driver")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Mon, 20 Jul 2026 16:00:26 +0200
+Janani Sunil <jananisunil.dev@gmail.com> wrote:
 
-Reviewed-by: Brian Masney <bmasney@redhat.com>
+> On 7/9/26 17:43, David Lechner wrote:
+> > On 7/9/26 3:50 AM, Janani Sunil wrote:  
+> >> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
+> >> simultaneous sampling ADC
+> >>
+> >> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> >> ---
+> >>   
+> >>
+> >> +
+> >> +  adi,power-mode:
+> >> +    $ref: /schemas/types.yaml#/definitions/string
+> >> +    enum:
+> >> +      - low
+> >> +      - median
+> >> +      - fast
+> >> +    description:
+> >> +      Power mode selection.  
+> > Unless there are pins that control this, it seems like it should be
+> > left up to the driver to decide how to set this.
+> >
+> > In this case, it looks like the power mode also influences sample rate
+> > which is normally something controlled at runtime.  
+> 
+> Hi David,
+> 
+> The reason we'd like to retain power mode control is that certain ODRs 
+> are supported across all three power modes (low/median/fast), and the 
+> RMS noise and power consumption differ significantly between them at the 
+> same ODR.
+> 
+> The higher the power mode, the better the noise performance, but power 
+> consumption nearly doubles for every ~3 dB improvement in dynamic range. 
+> Silently selecting one power mode in the driver would remove a 
+> meaningful hardware tradeoff from the user.
+> 
+> We'd like to propose the following instead:
+> - Remove adi,power-mode from the DT as suggested.
+> - Expose power mode as a per-device sysfs attribute.
+> - in_voltage<N>_sampling_frequency_available dynamically reflects only 
+> the ODRs valid for the currently selected power mode.
+> 
+> This keeps the DT clean while still giving the user explicit control 
+> over the noise versus power trade off. Would this approach be acceptable?
+> 
+
+The challenge here is simple: How does userspace know what a power mode
+means?  Everyone wants low power and low noise and the trade of between
+the two tends to be invisible.  If we add a control it also becomes
+hard to do a best effort - give them something sensible - control based
+on what they want. Users understand the ability to sample at different max
+frequencies for example. There are ways to do this like always requiring
+'auto' as an option for a power control but they are also rather nasty.
+
+Whilst I see that it is reasonably complex to move from 'low / medium / high'
+we need to try really hard to map that to something numeric and well defined.
+I think it came up earlier in the discussion - there is a clearly stated
+set of recommendations for a  mapping from fmod to power mode. I lost
+track of whether we had reasons to not try and build an interface
+around that.  Even though modulator frequency is a little obscure, if it
+is consistently defined across manufacturers and parts and the trade offs
+around how it is chosen are well understood that might be something that
+would make a better ABI?
+
+Jonathan
+
+
+
+
+> Thanks,
+> Jan
+> 
+> 
+> 
 
