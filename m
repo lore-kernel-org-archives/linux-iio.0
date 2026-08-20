@@ -1,245 +1,120 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DCE38D402;
-	Thu, 20 Aug 2026 18:13:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B16E238F249;
+	Thu, 20 Aug 2026 18:53:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787249621; cv=none; b=N4XflxnFfio1hV4cakI5NacKw/M1WYMV1yb3coqiytuB4arK1tfOrD2ha4RE9VFI2lPb4PnkZqWIMzx+NIgDtFLlaBCmt5EYhkhIxXs3zEzR/ljJr6v0aXKE+bJSiFk3j7JKFHLq59zY2+O2odX0e0sIldY2X36ShVJFRFEHRJk=
+	t=1787252027; cv=none; b=rm7Y4DjqnrpWt9GUtIvdRHQaPVonpJ+zG1Vjb3ghE0X6tnhU9AbmoNAerSEmLQiBdIRBWoPRDDlhw27K0MoTFC8xE5KBv80H4PhCxDODpVdJEiKRudWlfMzBKrNNdexoYlHY++pQ1bXD7nRvMkekhRJiuofMCDHxt92aPnFj+EE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787249621; c=relaxed/simple;
-	bh=ILAlAk/fQng0Ui/pz1uS2DHdyds9RPVGbNZbF2/IuUo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bugpHyS/11vb8xEPORTEQWYbAILzppIAqg2A+smZkkVjMsrY9DP637+3vcW4Dw3fahBCDokA3/UnoR84RyIQ1+q0g4aTTgjR7e09zJIRlV9mtlisLaVvqmdMi3fi6e2/03aZ7Wc9dMJRQymyBOTMA/25gw6gYLFR+zc6dCorJ64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZIkjggBi; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787252027; c=relaxed/simple;
+	bh=T4O6Ytd+oVjquoKgE7hf+vP7Dh6bPlJfF2fa2COS54M=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=Dj9GnINFDRy68XUdR0/ezzELKPAO8zGln/jeXz+fUurkZ9G/QEV3q3qjhW9a19vtGVaohkNi6EBtsC1RE46OaE/NKSQslWqfg7lnGrn7RnTeTIVr0JkxffDXtc5VndEr2+WKtlPE1Mnpw/eQF0pCNvNQ7+w6M7Im2x5Ad4VErOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H0NP1aHU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZIkjggBi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E311F000E9;
-	Thu, 20 Aug 2026 18:13:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H0NP1aHU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 490B21F000E9;
+	Thu, 20 Aug 2026 18:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787249619;
-	bh=2AUCdM/qgP+/RZltQocOTsJDjsXqlcQ7EGSaSr0M1vY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZIkjggBi4v1q+gWSHr7v4xwRltPAOsIuA6rgScDJZqB5T2pnIfRcHTbYJ0EzAGCgo
-	 ARLSYlejfUaiy5GIGXNFICFoq+SVlwL6vQZdQVrEsIaE8MumNcEKfhDSFY9ElBt2Hq
-	 2Jd8WmZSc2rQ0zOeRITV5jFW3pz+D9gjcP/FqIKpE/hITK41RBDRgnR4yrON0btzA9
-	 mpBev9OW6J4kO57/I5fvl5MQQy26Q15KLbGb8BKpV+Bpqm5pJ/fNCryyJL9MyQAnJ7
-	 7zMCMEMNqXcnvdcsgZ0U473u2975zCu+ahyLwGDNl7FKPTbFd20VA2hCv8Ls9jtkDb
-	 vStuf5xgKhjUg==
-Date: Thu, 20 Aug 2026 19:13:35 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Louis Adamian <adamianlouis@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/5] dt-bindings: iio: pressure: Add MS5637
-Message-ID: <20260820-affection-opacity-7f6531562b88@spud>
-References: <20260820141224.23730-1-adamianlouis@gmail.com>
- <20260820141224.23730-4-adamianlouis@gmail.com>
+	s=k20260515; t=1787252026;
+	bh=j4+HEzu84tHiUAZOxRhDjFI/ug5GzBnvn/WLzOcpkyY=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date;
+	b=H0NP1aHU1Kw2CsPh2H8BLbi6yqq5B182IUlX89TgqPSaIxveE5Jr3xi/Qcs3m7Xbd
+	 Y/befz+dDSuMEw7cndcbClLTwxPwc7YMS+Vi8jIm9FtAqL3cw54XFz7L5DBWi3jfUE
+	 VrLuxAHW68PsF4lFUW7glviay0Vqno/Hsk28QJhgmyIzPusNpwE7QnGXQ1kXqITIZd
+	 OpolHzWzmiPZELFdVHuOc73iCDT/vmumH2CHy4zYLFJtx5hsqWVO+H6JB998UjdRTA
+	 Og3YldTWRaRSDHc7iJubIDoaPP5HJp+E6InQYoqeywDSj3o7EzcgG1aOAPxnFpFT5g
+	 dA666zqlo005A==
+From: Mark Brown <broonie@kernel.org>
+To: Tero Kristo <kristo@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
+ Brian Masney <bmasney+clk@redhat.com>, 
+ Jerome Brunet <jbrunet+clk@baylibre.com>, 
+ Nobuhiro Iwamatsu <nobuhiro.iwamatsu.x90@mail.toshiba>, 
+ Nuno Sa <nuno.sa@analog.com>, Guenter Roeck <linux@roeck-us.net>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Antoniu Miclaus <antoniu.miclaus@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Sunny Luo <sunny.luo@amlogic.com>, 
+ Xianwei Zhao <xianwei.zhao@amlogic.com>, Kees Cook <kees@kernel.org>, 
+ Kevin Hilman <khilman@baylibre.com>, 
+ Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-hwmon@vger.kernel.org, linux@analog.com, linux-iio@vger.kernel.org, 
+ linux-amlogic@lists.infradead.org, linux-spi@vger.kernel.org, 
+ linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <cover.1787165329.git.geert+renesas@glider.be>
+References: <cover.1787165329.git.geert+renesas@glider.be>
+Subject: Re: (subset) [PATCH treewide 0/5] clk: Make sure clk_init_data is
+ fully initialized (part 1)
+Message-Id: <178722791204.89147.8075686338925258822.b4-ty@b4>
+Date: Thu, 20 Aug 2026 13:11:52 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="mH9foQAtx56LUlHg"
-Content-Disposition: inline
-In-Reply-To: <20260820141224.23730-4-adamianlouis@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.17-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1882; i=broonie@kernel.org;
+ h=from:subject:message-id; bh=T4O6Ytd+oVjquoKgE7hf+vP7Dh6bPlJfF2fa2COS54M=;
+ b=owEBbAGT/pANAwAKASTWi3JdVIfQAcsmYgBqh00yfuqNALH6N3AXS+G0HCah2fOyCOhjzME7f
+ KNnVXeAwAOJATIEAAEKAB0WIQSt5miqZ1cYtZ/in+ok1otyXVSH0AUCaodNMgAKCRAk1otyXVSH
+ 0AShB/dhLJEEeXKrFQP9gPrIolmzi20NN0M7zC8KH9y3aa0HDRIJ7TvS+Mlng+fdUJET/6Z7YdN
+ WwL1wHIjh3EU33JMDcZr5roVJlS2GMOtkapj/U0/KKGaNeIjzv4dfTSJHfNsGJzAEbsAl1DJOG2
+ EL9hRt5A6Bm6qkLavFafXoAOgXgTNPvroZfhwTUzkSICx+buDnmQ0FulKgO8h9wYKRMOsrRfyLO
+ 0vz7DyM9o2N/dZFZc+ioL0Zr6TqUFedhtZO+ICe+0AauztCGPgGqinrzsgRgm+I8INFJZoPOmt3
+ Ua3StNsCFMpgq0hNzFgNCUVp74ea+Y3GiTcnrWUWzMbP5B8=
+X-Developer-Key: i=broonie@kernel.org; a=openpgp;
+ fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
 
---mH9foQAtx56LUlHg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, 19 Aug 2026 21:05:14 +0200, Geert Uytterhoeven wrote:
+> clk: Make sure clk_init_data is fully initialized (part 1)
+> 
+> 	Hi all,
+> 
+> The clk_init_data structure contains three mutually-exclusive members
+> for different methods to specify the possible parents of a clock,
+> prompting drivers to initialize only the members they need.  When commit
+> fc0c209c147f35ed ("clk: Allow parents to be specified without string
+> names") added the last two methods, this was done in a
+> backwards-compatible way, using a priority-based scheme:
+>   - .name, .ops, .num_parents, and .flags must always be initialized,
+>   - if .num_parents is non-zero, .parent_names must be initialized,
+>       - if .parent_names is NULL, .parent_data must be initialized,
+> 	  - if .parent_data is NULL, .parent_hws must be initialized
+> 	    and valid.
+> 
+> [...]
 
-On Thu, Aug 20, 2026 at 10:12:18AM -0400, Louis Adamian wrote:
-> Create meas,ms5637 devicetree binding and move existing devices from
-> trivial-devices.yaml. Explicit compatible strings are added for the
-> different sub-variants because each requires different constants for the
-> second-order temperature compensation formulas. Previously, the driver
-> exposed the generic compatibles for the ms5637, MS5803, MS5805
-> and MS5837 families and applied the MS5637-02BA compensation to all of
-> them. To preserve the DT ABI the existing compatibles are retained and
-> mapped to the -02BA variant of each family (ms5637-02ba, ms5803-02ba,
-> ms5837-02ba).
->=20
-> Signed-off-by: Louis Adamian <adamianlouis@gmail.com>
+Applied to
 
-Firstly, please CC everyone on all the mails - or at least all the dt
-maintainers on all mails, so we don't have to go look at the context on
-lore.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-7.3
 
-Additionally, lore didn't even get your cover letter:
-https://lore.kernel.org/all/20260820141224.23730-1-adamianlouis@gmail.com/
+Thanks!
 
-The patch itself seems okay. You could probably have made the
-ms5637-02ba fall back to the ms5637, but that's more a matter of taste I
-think than a technical thing.
+[5/5] spi: amlogic-spisg: Make sure clk_init_data is fully initialized
+      https://git.kernel.org/broonie/spi/c/b2702908ee23
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
 Thanks,
-Conor.
+Mark
 
-> ---
->  .../bindings/iio/pressure/meas,ms5637.yaml    | 93 +++++++++++++++++++
->  .../devicetree/bindings/trivial-devices.yaml  | 10 --
->  2 files changed, 93 insertions(+), 10 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/pressure/meas,m=
-s5637.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.y=
-aml b/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
-> new file mode 100644
-> index 000000000000..befd81d1907b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
-> @@ -0,0 +1,93 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/pressure/meas,ms5637.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +title: Measurement Specialties ms5637 and similar pressure sensors
-> +
-> +maintainers:
-> +  - Louis Adamian <adamianlouis@gmail.com>
-> +
-> +description:
-> +  Measurement Specialties pressure and temperature sensors. The MS5803
-> +  family supports both I2C and SPI interfaces. All other variants are I2=
-C only.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - meas,ms5637-02ba
-> +          - meas,ms5637-30ba
-> +          - meas,ms5803-01ba
-> +          - meas,ms5803-02ba
-> +          - meas,ms5803-05ba
-> +          - meas,ms5803-14ba
-> +          - meas,ms5803-30ba
-> +          - meas,ms5805
-> +          - meas,ms5837-02ba
-> +          - meas,ms5837-30ba
-> +          - meas,ms8607-temppressure
-> +      # These generic compatible strings do not identify the sub-variant=
-s of
-> +      # the part. They are retained so that existing device trees contin=
-ue
-> +      # to bind, and each is treated as the -02BA variant of its family.
-> +      - enum:
-> +          - meas,ms5637
-> +          - meas,ms5803
-> +          - meas,ms5837
-> +        deprecated: true
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vdd-supply:
-> +    description: Regulator that provides power to the sensor
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - meas,ms5803
-> +              - meas,ms5803-01ba
-> +              - meas,ms5803-02ba
-> +              - meas,ms5803-05ba
-> +              - meas,ms5803-14ba
-> +              - meas,ms5803-30ba
-> +    then:
-> +      $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +      properties:
-> +        spi-max-frequency:
-> +          maximum: 20000000
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        pressure@76 {
-> +            compatible =3D "meas,ms5637-02ba";
-> +            reg =3D <0x76>;
-> +            vdd-supply =3D <&vcc_3v3>;
-> +        };
-> +    };
-> +  - |
-> +    spi {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        pressure@0 {
-> +            compatible =3D "meas,ms5803-14ba";
-> +            reg =3D <0>;
-> +            vdd-supply =3D <&vcc_3v3>;
-> +            spi-max-frequency =3D <20000000>;
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Doc=
-umentation/devicetree/bindings/trivial-devices.yaml
-> index 435c4baab436..2671040e8802 100644
-> --- a/Documentation/devicetree/bindings/trivial-devices.yaml
-> +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-> @@ -240,18 +240,8 @@ properties:
->            - meas,htu21
->              # Measurement Specialities I2C temperature and humidity sens=
-or
->            - meas,htu31
-> -            # Measurement Specialities I2C pressure and temperature sens=
-or
-> -          - meas,ms5637
-> -            # Measurement Specialities I2C pressure and temperature sens=
-or
-> -          - meas,ms5803
-> -            # Measurement Specialities I2C pressure and temperature sens=
-or
-> -          - meas,ms5805
-> -            # Measurement Specialities I2C pressure and temperature sens=
-or
-> -          - meas,ms5837
->              # Measurement Specialities temp and humidity part of ms8607 =
-device
->            - meas,ms8607-humidity
-> -            # Measurement Specialities temp and pressure part of ms8607 =
-device
-> -          - meas,ms8607-temppressure
->              # Measurement Specialties temperature sensor
->            - meas,tsys01
->              # MEMSIC magnetometer
-> --=20
-> 2.55.0
->=20
-
---mH9foQAtx56LUlHg
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaodDzwAKCRB4tDGHoIJi
-0vGSAQCMCkYvN8Witjjv2FF1iKVX1LBegECqHTH0lemOoU6IHQD/VFWCxfhor4Py
-sR9nUIrTZaBhXBmJV9LDJoct/pw1fQQ=
-=den8
------END PGP SIGNATURE-----
-
---mH9foQAtx56LUlHg--
