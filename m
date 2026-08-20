@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 658F5362138;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 659F137755C;
 	Thu, 20 Aug 2026 19:02:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787252564; cv=none; b=dwyYUFRfN0UrDhwDHzTjmIsJ8evrfzHauRs8QjLrJi/xYAb7ErJH0xT9tmza6SSPaqTxpchvRTTlog7rmYraJv07MzwEDUrfpxUSC14yGb9AAd0iK6S0XhhYVyPatGX3hWNPdquoLdrxsPrzu0bD3yn+pc/9nna3XnhNSFoWKWQ=
+	t=1787252564; cv=none; b=EInccX+BMaj1EvZ74tYXAavEqFWmiUOZsngySW0zd0/hF8Iz9YWzZWk4/WtHdsTZMe1xanqjHJubl27NZRb5JENZuytsyzCZGN60hK3kxNBp5ptLfyDITvaccEBPthEVXCcHOFHuvlzEisvwQtztqMil9MlfF4KfvAuXQKqE5Vo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1787252564; c=relaxed/simple;
-	bh=lrkb5DHW4nekBm62Ptn6gdrtseZG3P/khBB49osjqIk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Yg9d7WnUHL553wZFVV+ZGEfwi5/HjZK5iFnJwUJCuiksl/tz3i4yff8nMAFYEN4ogcsqsAM6fmxXQ6rOAFeCFslkBEZqWkOX/HYJQKsNFID34p794OhEoLRfW9hOEdDu0Xi8GiHfygIu7q/hipcukyxcUurwGiK/ir19iuMnNzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GKbvGYBH; arc=none smtp.client-ip=10.30.226.201
+	bh=2vZsEikX46Hh1gkMPLahRa9HT0GsukkRkYSsHhSU7qY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=j5T2MlRPrneKUekTeCFlwoBohFXpdfKENitspaPbu4q0npbBmbgTh0vuXD355NznNgxdAzpZ6kqExhxvq+V0pacry7XTh1B33H6QFPyK6fq0veL+Q+noABUSfQ/wq0ks3j4BVEABlOZZUmCCYXR9yVu5hnEV2IojlOtE5iLwzCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mtdCGLWO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GKbvGYBH"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E77D1C2BCB3;
-	Thu, 20 Aug 2026 19:02:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mtdCGLWO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 13065C2BCFA;
+	Thu, 20 Aug 2026 19:02:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1787252564;
-	bh=lrkb5DHW4nekBm62Ptn6gdrtseZG3P/khBB49osjqIk=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=GKbvGYBHFY+WyD3RxUEYPAxwtOn7iABJqbh7RV1gZHw7ff3sNfmzPU8q0aLXMtyZW
-	 Pale+rheFUVhYMTrT5wz1R88D0duJFncaKeU4ws1StYDP5NHbqTsJ7G2LnP4ZcfDH5
-	 f32Jbh5Y0fExkTrKoHvyDSwzPUavMfY7+V7TtU80dF9pJ5iZQuu5pPjerN3FlSeL9D
-	 pSANOaZ1PslwocQekmDJjGsFpDJUq3TidZOjaHR2BK2WZiS8NCYZ7l/gBNCyxHjiw0
-	 tygLTR0hDIeXycNbE5/5873VNjsQFkYactb7hBdl+2LDqvS/6qGqvfuKERLVdZyMGc
-	 MrQa3Rysojgow==
+	bh=2vZsEikX46Hh1gkMPLahRa9HT0GsukkRkYSsHhSU7qY=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=mtdCGLWObYJfdou1XWz5uBDLWvXo3U/pbvlu1IuKN+YSVCp/hJw8tUTGovOXnH+wC
+	 /XkQuZwodm+zRF+hNkbKGqRexNxDm2sMu9H42SYXLvvkTUzlcMEutPdik0p3gK6oP8
+	 GrdLC893wQEEZA59LwkWzGJCSPdremCsMBkxybIfhsBd+sOZcAntP+kBE6pHjXhGVR
+	 dy9QgTfUXzqWxER/dplIiYfAJa/vmrRt7UQUTjOO6+wxQ+XWp0A3VxaCfuBL56L7aQ
+	 nlV5b97Zmm2ZkJSEOupQWJY0OhDoEbc48OYq67+8pznAyYoVcHHBitggOBimWtuZjt
+	 thks5ZTzDrmMg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C30AEC5DF86;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8328C5DF89;
 	Thu, 20 Aug 2026 19:02:43 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Subject: [PATCH 0/4] inv_icm42600 driver enhancements
-Date: Thu, 20 Aug 2026 21:02:36 +0200
-Message-Id: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
+Date: Thu, 20 Aug 2026 21:02:38 +0200
+Subject: [PATCH 2/4] iio: imu: inv_icm42600: use 2 sensors fixed packet
+ size of 16 bytes
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAExPh2oC/yXMQQrCQAxG4auUrA1kioyjVxEXdfxrIzTKpC1C6
- d0ddfkt3lvJURROp2algkVdn1YRdg3lobM7WG/V1Eob5SBHVltY87ivFIYNXcYIm5wDBCEh9ik
- mqvmroNf3b32+/O3z9YE8fX+0bR+r9bR5fAAAAA==
-X-Change-ID: 20260709-inv-icm42600-enhacements-1e0e18e6f868
+Message-Id: <20260820-inv-icm42600-enhacements-v1-2-075a881db557@tdk.com>
+References: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
+In-Reply-To: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -53,11 +53,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787252562; l=1371;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787252562; l=3920;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=lrkb5DHW4nekBm62Ptn6gdrtseZG3P/khBB49osjqIk=;
- b=z2r01HbY7zKX1LD8h1H8bd6vdUs1Q9v5pDWgsZlihr0aSoKmfN7NY7fMlBq5t2eexTsxiwfn+
- p1mb8TdnTPIApzKDAPfzDAyjME0nJREF58RrUjpr04xhqIUppZPqd85
+ bh=EM8dhUPdXrhxOAegwezQFHC3UihVboFJF7OdXrMFA5w=;
+ b=cb3+gFMTyJ9T/aVpre8TyXbP8V33mN8QMyJebry/eQ9/d8DRKSQVFBEeZafxKHiQVPEaLGwOg
+ iuny1DBElSMDlw7ePd5pPuVkaZE5Iz7U0zWpjWMx6ZWk7hHfKApRXv7
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -65,36 +65,102 @@ X-Endpoint-Received: by B4 Relay for
 X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Reply-To: jean-baptiste.maneyrol@tdk.com
 
-This series add enhancements patches to inv_icm42600 driver.
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-It includes:
-1. Move of MEMS stabilization sleep before FIFO configuration to avoid
-   pushing incorrect data.
-2. Use a fixed FIFO frame of 16 bits to avoid a bug of dynamic FIFO
-   configuration changed triggered by the sleep move.
-3. Simplify watermark computation using gcd.
-4. Enhance support of high frequency streaming by avoiding read of FIFO
-   count for watermark interrupt.
+Sometimes dynamic switch between 1 sensor frame to 2 sensors frame is
+not working when there are too much frames already in the FIFO. By
+moving accel/gyro on sleep before turning FIFO on, we are storing many
+FIFO frames before updating the frame format hitting the bug everytime.
+
+Fix that by always using the 2 sensors frame of 16 bytes. Also update
+the hwfifo max watermark reported.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
-Jean-Baptiste Maneyrol (4):
-      iio: imu: inv_icm42600: sleep before enabling FIFO data
-      iio: imu: inv_icm42600: use 2 sensors fixed packet size of 16 bytes
-      iio: imu: inv_icm42600: simplify watermark computation by using gcd
-      iio: imu: inv_icm42600: do not read FIFO count for watermark it
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h        |  4 +--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 31 +++++++---------------
+ 2 files changed, 11 insertions(+), 24 deletions(-)
 
- drivers/iio/imu/inv_icm42600/inv_icm42600.h        |   4 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  |  12 ++-
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 109 +++++++++------------
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   |  12 ++-
- 4 files changed, 62 insertions(+), 75 deletions(-)
----
-base-commit: 53c022f51fbe540fffee2121ce9ed3e15266c9a4
-change-id: 20260709-inv-icm42600-enhacements-1e0e18e6f868
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index b55d993f0264..f6c7c84c7e45 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -356,8 +356,8 @@ struct inv_icm42600_sensor_state {
+ 		cpu_to_le16((_wm) & GENMASK(11, 0))
+ /* FIFO is 2048 bytes, let 12 samples for reading latency */
+ #define INV_ICM42600_FIFO_WATERMARK_MAX			(2048 - 12 * 16)
+-/* INV_ICM42600_FIFO_WATERMARK_MAX / 8 = 232 */
+-#define INV_ICM42600_FIFO_WATERMARK_MAX_SAMPLES		232
++/* INV_ICM42600_FIFO_WATERMARK_MAX / 16 = 116 */
++#define INV_ICM42600_FIFO_WATERMARK_MAX_SAMPLES		116
+ 
+ #define INV_ICM42600_REG_INT_CONFIG1			0x0064
+ #define INV_ICM42600_INT_CONFIG1_TPULSE_DURATION	BIT(6)
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+index 998d312f7bde..043ae9deee65 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+@@ -131,13 +131,13 @@ int inv_icm42600_buffer_set_fifo_en(struct inv_icm42600_state *st,
+ 		INV_ICM42600_FIFO_CONFIG1_GYRO_EN |
+ 		INV_ICM42600_FIFO_CONFIG1_ACCEL_EN;
+ 
+-	val = 0;
+-	if (fifo_en & INV_ICM42600_SENSOR_GYRO)
+-		val |= INV_ICM42600_FIFO_CONFIG1_GYRO_EN;
+-	if (fifo_en & INV_ICM42600_SENSOR_ACCEL)
+-		val |= INV_ICM42600_FIFO_CONFIG1_ACCEL_EN;
+-	if (fifo_en & INV_ICM42600_SENSOR_TEMP)
+-		val |= INV_ICM42600_FIFO_CONFIG1_TEMP_EN;
++	/* always enable/disable all bits for allowing dynamic transitions */
++	if (fifo_en)
++		val = INV_ICM42600_FIFO_CONFIG1_TEMP_EN |
++		      INV_ICM42600_FIFO_CONFIG1_GYRO_EN |
++		      INV_ICM42600_FIFO_CONFIG1_ACCEL_EN;
++	else
++		val = 0;
+ 
+ 	ret = regmap_update_bits(st->map, INV_ICM42600_REG_FIFO_CONFIG1, mask, val);
+ 	if (ret)
+@@ -149,19 +149,6 @@ int inv_icm42600_buffer_set_fifo_en(struct inv_icm42600_state *st,
+ 	return 0;
+ }
+ 
+-static size_t inv_icm42600_get_packet_size(unsigned int fifo_en)
+-{
+-	size_t packet_size;
+-
+-	if ((fifo_en & INV_ICM42600_SENSOR_GYRO) &&
+-	    (fifo_en & INV_ICM42600_SENSOR_ACCEL))
+-		packet_size = INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
+-	else
+-		packet_size = INV_ICM42600_FIFO_1SENSOR_PACKET_SIZE;
+-
+-	return packet_size;
+-}
+-
+ static unsigned int inv_icm42600_wm_truncate(unsigned int watermark,
+ 					     size_t packet_size)
+ {
+@@ -209,7 +196,7 @@ int inv_icm42600_buffer_update_watermark(struct inv_icm42600_state *st)
+ 	__le16 raw_wm;
+ 	int ret;
+ 
+-	packet_size = inv_icm42600_get_packet_size(st->fifo.en);
++	packet_size = INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
+ 
+ 	/* compute sensors latency, depending on sensor watermark and odr */
+ 	wm_gyro = inv_icm42600_wm_truncate(st->fifo.watermark.gyro, packet_size);
+@@ -495,7 +482,7 @@ int inv_icm42600_buffer_fifo_read(struct inv_icm42600_state *st,
+ 	/* compute maximum FIFO read size (watermark for max = 0 interrupt case) */
+ 	if (max == 0)
+ 		max = st->fifo.watermark.value;
+-	max_count = max * inv_icm42600_get_packet_size(st->fifo.en);
++	max_count = max * INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
+ 
+ 	/* read FIFO count value */
+ 	raw_fifo_count = (__be16 *)st->buffer;
 
-Best regards,
---  
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+-- 
+2.55.0
 
 
