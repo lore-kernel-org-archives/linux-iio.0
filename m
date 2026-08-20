@@ -1,75 +1,78 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
+Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32D5476040
-	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 14:15:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 473F4476054
+	for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 14:15:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787235305; cv=none; b=TnDgOpWtgXoAmK8ZENaWEIER+mLsykmHlackUQxj+KTyEAGRyKkFATlRC2fIvfTseyl/86qjvGP5zpVFkFM5Ygylb4mwHStnEoSIkkvgKAnEg7YktbRjX+Bv1BjuvQITk+gQSSeXzXNyNjh72KmsodWnlOXSCC1eQ3Qm8vovHXY=
+	t=1787235307; cv=none; b=TQN5Uqzlx+3/FoZDXyT1onWohUGU+a3XfzP5sPzpME5Uu3PfWCrNLkCXf18nVuFZSduHzOkCOCyuy2m1fetPzkGIxEuSHw66itrsJouyWLAMPBQ1n7Oel3X9zbSbgl+zmsBa7Nikw7iP4Wc0bwtbU5TsDC1c9J0bAqNLFo7Gznc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787235305; c=relaxed/simple;
-	bh=vaUt2WngZvej8rMhw+20QIRLHh5i07s/h72XHZcc7m8=;
+	s=arc-20240116; t=1787235307; c=relaxed/simple;
+	bh=fobC2ACicWUtS4EVSoqMhRTIFqc8DCROa+NXAsIN2vI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RrdMyP5sq4ydt2+dkZHTCUMTUwD6XzLif98rUH1hX9O57FTYfl7R+XN0tWijvCqykv5dIgnv8x9ZfLF5kWDZpfawtciuHIvG/DJsiQKQ+Yux3y12WCDcsA8tlJNvXDk7Eu4YgA30X2wjDXBXP3k0bylheU8awj2vRQO0WYWFelM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ponazmE2; arc=none smtp.client-ip=209.85.222.176
+	 MIME-Version; b=P8JoMSqrcHVXZvEyObNgvKDpURww042q8bTMZHHQipWE0wiNcdCVFeuybhTBR8GIJiZNE4PTtvKID0EMFpPENGORxJ2HzI3Z6H0mFPwPfTs5GgoO1Bsyrl/li7OXYTGaS3B5YHHIGByc9RYAFh9boNKcy6oPrPoU6dJEOMUT6iQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QXn0RS2P; arc=none smtp.client-ip=209.85.222.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ponazmE2"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-936623c6dd3so65682085a.0
-        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 07:15:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QXn0RS2P"
+Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-92e85499ffbso185780985a.0
+        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 07:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787235301; x=1787840101; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787235304; x=1787840104; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=V4byyIVDC8xrDqBbbdyyVfs3GYKxJM8abcStoyFq/yk=;
-        b=ponazmE2+gT8sYyxLidZt7UeS1Oo81EGiT77CeVDHmdVp4LT3NWq8RwjxQwC51KDU1
-         gZzW7kuts8W3ywk3Hb2m7KAGy1kSYTb3vALbybSpkI28wJUkcn0jGGFrCGdbcPReI378
-         xNOvNpR2w638Z+uGWSDF/AYHCWq1CmCi4xIRtrmnYdjHsBFzTaHPOZpXAkOgLDdC1eob
-         B/2ugUUhSBkLv/L9mBlf4s5jEUzVjlfukDCyYi0xHgtSDd16C+r+uWQzTmUAEpWcqYYR
-         aMr820+we21kqbVEx+ZLh9FLPqDfvJoYX43n+sr359YTMRazHn5pN/drZ8LSIRfshFbH
-         xFRg==
+        bh=bch+lsxb6oZsNgL15N5/ZS8mmmvNTFFa+M0d0DpA7ME=;
+        b=QXn0RS2PCOFOrsLRE/OZv2eLHpn4vLr8gRa6TfY+fVZwZq6kGgW3cm/xs4AWRu5gwF
+         8J6wYET9B5GZ5ja40UwmernE4Ywe0w65Yl2dQlUiiz0T55PvnZaUH0zTDmAWClo/YNOs
+         wpo/5uPm4r0d3+Wd83xbilW9hAdjbJUy68ETBhmkg5QLWo5FNOi+iOGxBmp9Ie7DJ0Hn
+         LC99lIH67F8ULz+lcTBlSxQJHxtytch54ArSPW9d7IebjNXEelHdgoRjEFf0CQsGOelx
+         apMKG5Onj0QVlZKtSUGgINEOqXEeKegkojuw3EllCOdCSF4PiCRAvxXoAq8JmJ90UD0i
+         4Hbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787235301; x=1787840101;
+        d=1e100.net; s=20251104; t=1787235304; x=1787840104;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=V4byyIVDC8xrDqBbbdyyVfs3GYKxJM8abcStoyFq/yk=;
-        b=GbkxZoSEy/sU300LYMioVteAe+geqjaSdRT48QqlCFDSAZqhE/HB0GsB/vZo1wmWaL
-         BSDbaK6YsqZkpLSf2xXjVUQ3HekOgiA0x2c6f45bRVxhHCeqdAGt//+jHY2CAZ//n576
-         6YmVNztw/BBDjvxq19XSuB20GaLV8yRpSbLcWvn4aRC2qOBHKaVlEblg/ZoLz/++ZbeU
-         sw9A4oRc0at00EIY2ygV2YN/vTPPCBkJv8o+VENzZ2vKrr3I1yj+tqdQa83INMao727L
-         lVuQrrYGvugFOGldp0ykfHH8PO6Vw85yO/sCps1PPu1Tjj0Bq+6dIZ3wPgHajXCTaAFJ
-         YGmQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rpjoo58hGnARNpNfuML2hafteNJi7Prs46gC6p4GMA1lXh+WedKFqT05q1mZqtvoo5PtJKyn4vKxzM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxPRXkNVo2XZ3mdndV1i9YPXjLbjKg3IZcf91ZphnyVsKUWqdxz
-	b2MTck8H8UawfDI9n0cvBv78r3uH4J44eMkGqCY2M4UVfc9zFhfrWlvs
-X-Gm-Gg: AR+sD10vB4iYt9efmdzsPgYahzmlnrdiHk1Oj8i2BXdHmyMV5On/bOC6lHEUXRk6s2R
-	8dqDVuqVV6UvqWadmUSGnrJ37C6Ud5EqLkaFNtplzQok2GkLanEAwqiHRP5Vim1FDKHVPk47Rdd
-	obh2cI81aeuTUxl7G9/9OKHlpNuMhcB3isSku5c/QZbJHmvH3juj0NKHesPelEaprVL5RngoZDd
-	//u7hswJgR1HhfNMMCwwRls6sgvJKfHnFiTGQI0Xu+zJh7AbM1bv/NNlZf+BIyFJ7RNvn790sAT
-	R/qZekaoSyjVPtLZclaDh6M14Wuo4jJy+4J20/iwzw2ewt5lMHeCXePPxET81ytxOU2R6IwkeB7
-	D+HlCurHrHZ0UZzqVzee3/SzqdAYqponQH7RzkWobzZxml4PYrTDOGd4m5IJQ/RgJxnpBLs4WJc
-	FyggWxQm/oBzjDVwVxiD+nQuOHoVkRLVPNbMdedTETehPtn0MUa5RvK68fwkXLDlQLTAUeaCLeO
-	A==
-X-Received: by 2002:a05:620a:3942:b0:915:e8fc:1396 with SMTP id af79cd13be357-9372844ddcemr697466785a.13.1787235301379;
-        Thu, 20 Aug 2026 07:15:01 -0700 (PDT)
+        bh=bch+lsxb6oZsNgL15N5/ZS8mmmvNTFFa+M0d0DpA7ME=;
+        b=Ri8UnBc0Eeya8mFaYPhzzsxP1yyMHB424vDWesOGOHCktTP+A8neV8ga92sYm/jfNI
+         L2Uhm27UpIJMZgIv+Ei17juwu1llAE69paXNOS0TvszrBIOGPcBbcZMAvG9PDEivuh+r
+         3ZM2I8FWa+Vx17K9Zo0U/oF3g/XleSljvDGqjNTYZHVnfNBOPuCDKmilgkRezkYD4Pr5
+         d1/HWHMjUVjYWkL8J9q75MCXodOK17fKnig+WMlihnxwYmZLMHgdr9UZanVOJWjWQ+CZ
+         kq33vJgElW//nIuORVbxDlnJo/xUg4zSRgM8D8vZIdfcaDYiFukH3IHMGOTAPdh1Qdlg
+         N3iQ==
+X-Gm-Message-State: AOJu0YwMQCsXnW/YOwrhcmw2GkzArmNWUhn90488E7Yl0UauSDoK2i51
+	4qYkrK4VNjtFxqITJs0fzwDDSB7PvhrP4dXtfxpu/aSdRXRY4Z1TLuaz
+X-Gm-Gg: AR+sD12HwdAtdCIEFZ9MqaWOczmWll2RGjxTAqdeQeymXWklIJL+eO2z4B+L//9IPGp
+	lFGyc1qcSPAsPpk83T8Unj6xwKR8Mh9nTP6sXmPtXi4VD2HM5zu6wIPUQD3AN4Fjsl3WTc6XLeh
+	aC/tnJvF0MrdxLgC5baJx2n706B3uFA/QE6M4pff0NvL3SWXqC3d20Dcj8t/hLEvSe48B3TU3P7
+	8k+2vXX/htnOXAX43mKQfe0awog8bA/Km/L09GqPbfn+GI0NtUWH0xavg1cF02B/YTjBRs1cDh8
+	ZcL2eYjoL3qY88lzMI/nkfpB0QTk+2JibIjjl4uh+SPiIiAXFVdQdZQhIjlr/GcovbgkFckRQrQ
+	fb6Trs8d5sT9eIg+0wyWcC6/ERgXKXKRbU2aJWD/cTXzro8eoW3bvcugBMudaaSD2QZJTuNrPZa
+	C6fAudTW9NdGXTrBe8CCbWweh5FyW0WvWySwpAFo1dVDd4Pjdp2opHE9lABzse2xc2iXhQ7xbwY
+	w==
+X-Received: by 2002:a05:620a:630b:10b0:937:2760:deb9 with SMTP id af79cd13be357-9372760e7a1mr619301185a.23.1787235303958;
+        Thu, 20 Aug 2026 07:15:03 -0700 (PDT)
 Received: from louisarchdesktop ([2601:184:417f:5ad5:c570:9008:5a2b:8db7])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9372059de87sm372738085a.47.2026.08.20.07.15.00
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9372059de87sm372738085a.47.2026.08.20.07.15.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Aug 2026 07:15:01 -0700 (PDT)
+        Thu, 20 Aug 2026 07:15:03 -0700 (PDT)
 From: Louis Adamian <adamianlouis@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: Louis Adamian <adamianlouis@gmail.com>,
-	linux-iio@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Louis Adamian <adamianlouis@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/5] iio: pressure: ms5637: Move device data struct to header
-Date: Thu, 20 Aug 2026 10:12:17 -0400
-Message-ID: <20260820141224.23730-3-adamianlouis@gmail.com>
+Subject: [PATCH v3 3/5] dt-bindings: iio: pressure: Add MS5637
+Date: Thu, 20 Aug 2026 10:12:18 -0400
+Message-ID: <20260820141224.23730-4-adamianlouis@gmail.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260820141224.23730-1-adamianlouis@gmail.com>
 References: <20260820141224.23730-1-adamianlouis@gmail.com>
@@ -81,110 +84,145 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ms_tp_dev duplicated the hw pointer already in ms_tp_data. This stores a
-pointer to ms_tp_data instead which requires moving the struct
-definition from ms5637.c to ms_sensors_i2c.h.
-
-No functional change intended
+Create meas,ms5637 devicetree binding and move existing devices from
+trivial-devices.yaml. Explicit compatible strings are added for the
+different sub-variants because each requires different constants for the
+second-order temperature compensation formulas. Previously, the driver
+exposed the generic compatibles for the ms5637, MS5803, MS5805
+and MS5837 families and applied the MS5637-02BA compensation to all of
+them. To preserve the DT ABI the existing compatibles are retained and
+mapped to the -02BA variant of each family (ms5637-02ba, ms5803-02ba,
+ms5837-02ba).
 
 Signed-off-by: Louis Adamian <adamianlouis@gmail.com>
 ---
- drivers/iio/common/ms_sensors/ms_sensors_i2c.c |  4 ++--
- drivers/iio/common/ms_sensors/ms_sensors_i2c.h | 13 ++++++++++++-
- drivers/iio/pressure/ms5637.c                  |  9 ++-------
- 3 files changed, 16 insertions(+), 10 deletions(-)
+ .../bindings/iio/pressure/meas,ms5637.yaml    | 93 +++++++++++++++++++
+ .../devicetree/bindings/trivial-devices.yaml  | 10 --
+ 2 files changed, 93 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
 
-diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-index 1960a2ce82a8..f9dc7c7468c1 100644
---- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-+++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-@@ -579,7 +579,7 @@ int ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data)
- 	int i, ret;
- 	bool valid;
- 
--	for (i = 0; i < dev_data->hw->prom_len; i++) {
-+	for (i = 0; i < dev_data->data->hw->prom_len; i++) {
- 		ret = ms_sensors_read_prom_word(
- 			dev_data->client,
- 			MS_SENSORS_TP_PROM_READ + (i << 1),
-@@ -589,7 +589,7 @@ int ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data)
- 			return ret;
- 	}
- 
--	if (dev_data->hw->prom_len == 8)
-+	if (dev_data->data->hw->prom_len == 8)
- 		valid = ms_sensors_tp_crc_valid_128(dev_data->prom);
- 	else
- 		valid = ms_sensors_tp_crc_valid_112(dev_data->prom);
-diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.h b/drivers/iio/common/ms_sensors/ms_sensors_i2c.h
-index f15b973f27c6..d9898098c066 100644
---- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.h
-+++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.h
-@@ -35,6 +35,16 @@ struct ms_tp_hw_data {
- 	u8 max_res_index;
- };
- 
-+/**
-+ * struct ms_tp_data - Temperature/Pressure sensor data
-+ * @name: Device name
-+ * @hw: Sensor hardware data
-+ */
-+struct ms_tp_data {
-+	const char *name;
-+	const struct ms_tp_hw_data *hw;
-+};
+diff --git a/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml b/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
+new file mode 100644
+index 000000000000..befd81d1907b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
+@@ -0,0 +1,93 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/pressure/meas,ms5637.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++title: Measurement Specialties ms5637 and similar pressure sensors
 +
- /**
-  * struct ms_tp_dev - Temperature/Pressure sensor device structure
-  * @client:	i2c client
-@@ -42,11 +52,12 @@ struct ms_tp_hw_data {
-  * @prom:	array of PROM coefficients used for conversion. Added element
-  *              for CRC computation
-  * @res_index:	index to selected sensor resolution
-+ * @data:	Temperature/Pressure sensor data
-  */
- struct ms_tp_dev {
- 	struct i2c_client *client;
- 	struct mutex lock;
--	const struct ms_tp_hw_data *hw;
-+	const struct ms_tp_data *data;
- 	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
- 	u8 res_index;
- };
-diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-index 4f9f556bd123..6009d87f3d4c 100644
---- a/drivers/iio/pressure/ms5637.c
-+++ b/drivers/iio/pressure/ms5637.c
-@@ -29,11 +29,6 @@
- 
- #include "../common/ms_sensors/ms_sensors_i2c.h"
- 
--struct ms_tp_data {
--	const char *name;
--	const struct ms_tp_hw_data *hw;
--};
--
- static const int ms5637_samp_freq[6] = { 960, 480, 240, 120, 60, 30 };
- 
- static ssize_t ms5637_show_samp_freq(struct device *dev, struct device_attribute *attr, char *buf)
-@@ -42,7 +37,7 @@ static ssize_t ms5637_show_samp_freq(struct device *dev, struct device_attribute
- 	struct ms_tp_dev *dev_data = iio_priv(indio_dev);
- 	int i, len = 0;
- 
--	for (i = 0; i <= dev_data->hw->max_res_index; i++)
-+	for (i = 0; i <= dev_data->data->hw->max_res_index; i++)
- 		len += sysfs_emit_at(buf, len, "%u ", ms5637_samp_freq[i]);
- 	sysfs_emit_at(buf, len - 1, "\n");
- 
-@@ -168,7 +163,7 @@ static int ms5637_probe(struct i2c_client *client)
- 	dev_data = iio_priv(indio_dev);
- 	dev_data->client = client;
- 	dev_data->res_index = data->hw->max_res_index;
--	dev_data->hw = data->hw;
-+	dev_data->data = data;
- 	mutex_init(&dev_data->lock);
- 
- 	indio_dev->info = &ms5637_info;
++maintainers:
++  - Louis Adamian <adamianlouis@gmail.com>
++
++description:
++  Measurement Specialties pressure and temperature sensors. The MS5803
++  family supports both I2C and SPI interfaces. All other variants are I2C only.
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - meas,ms5637-02ba
++          - meas,ms5637-30ba
++          - meas,ms5803-01ba
++          - meas,ms5803-02ba
++          - meas,ms5803-05ba
++          - meas,ms5803-14ba
++          - meas,ms5803-30ba
++          - meas,ms5805
++          - meas,ms5837-02ba
++          - meas,ms5837-30ba
++          - meas,ms8607-temppressure
++      # These generic compatible strings do not identify the sub-variants of
++      # the part. They are retained so that existing device trees continue
++      # to bind, and each is treated as the -02BA variant of its family.
++      - enum:
++          - meas,ms5637
++          - meas,ms5803
++          - meas,ms5837
++        deprecated: true
++
++  reg:
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - meas,ms5803
++              - meas,ms5803-01ba
++              - meas,ms5803-02ba
++              - meas,ms5803-05ba
++              - meas,ms5803-14ba
++              - meas,ms5803-30ba
++    then:
++      $ref: /schemas/spi/spi-peripheral-props.yaml#
++      properties:
++        spi-max-frequency:
++          maximum: 20000000
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pressure@76 {
++            compatible = "meas,ms5637-02ba";
++            reg = <0x76>;
++            vdd-supply = <&vcc_3v3>;
++        };
++    };
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pressure@0 {
++            compatible = "meas,ms5803-14ba";
++            reg = <0>;
++            vdd-supply = <&vcc_3v3>;
++            spi-max-frequency = <20000000>;
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 435c4baab436..2671040e8802 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -240,18 +240,8 @@ properties:
+           - meas,htu21
+             # Measurement Specialities I2C temperature and humidity sensor
+           - meas,htu31
+-            # Measurement Specialities I2C pressure and temperature sensor
+-          - meas,ms5637
+-            # Measurement Specialities I2C pressure and temperature sensor
+-          - meas,ms5803
+-            # Measurement Specialities I2C pressure and temperature sensor
+-          - meas,ms5805
+-            # Measurement Specialities I2C pressure and temperature sensor
+-          - meas,ms5837
+             # Measurement Specialities temp and humidity part of ms8607 device
+           - meas,ms8607-humidity
+-            # Measurement Specialities temp and pressure part of ms8607 device
+-          - meas,ms8607-temppressure
+             # Measurement Specialties temperature sensor
+           - meas,tsys01
+             # MEMSIC magnetometer
 -- 
 2.55.0
 
