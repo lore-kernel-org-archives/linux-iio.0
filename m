@@ -1,129 +1,133 @@
-Received: from mail.zlab.su (mail.zlab.su [109.73.193.145])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA0BD36729C;
-	Fri, 21 Aug 2026 09:30:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.73.193.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3C053DDAED;
+	Fri, 21 Aug 2026 09:46:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787304614; cv=none; b=DSInWbVzHygr+i6gIUEwWLDpS1n+1KZ6rwDOAqDxAAg/cV1NS2ZIHZkCDLqB4ab/A2R4KEAEi+3i3X1oW001M7RIDCH3COiop6jfOq102yTBoPNmsSBFkRAbUczalweTfziEdVTcCNhfWGbsbee60SE7OB54Tp48eBrD9wfr0VY=
+	t=1787305630; cv=none; b=TlZE3bnH9toNAkQ3XWYZrF0pSkNfKCCSE12sAAfSacZTNyBKPQB5wHUBTcFKqk5vGlUswQIa6/gtvpOEIEMD4COioYhduNMdzc/7M41DfORIfBznXAQxLof7T1qFCAG40HS0uwXIieT3dKUuHyCt7Umx7oFPTLIsod8MZ+/XCJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787304614; c=relaxed/simple;
-	bh=2BlwCIRPj878eYNyHhUDHzHUc9xUQe10Kfy/KIZKvHQ=;
-	h=From:In-Reply-To:Content-Type:References:Date:Cc:To:MIME-Version:
-	 Message-ID:Subject; b=pgE2RagrNn6ODboqVWbIpJSdJoXQHX9fo5djz9WobtxudoO62aYO2mKr4T8LpVxjD1KSnFJX99ljCCDMAR9RJZtG1wao6SysufQq83PuWACsQIidQDFa1aVrpon+DV79leIG/tmEpdJOksjy/7Yb9APGLBkpKi5let5T6a5Dg/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zlab.su; spf=pass smtp.mailfrom=zlab.su; dkim=pass (2048-bit key) header.d=zlab.su header.i=@zlab.su header.b=m/RN7abP; arc=none smtp.client-ip=109.73.193.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zlab.su
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zlab.su
+	s=arc-20240116; t=1787305630; c=relaxed/simple;
+	bh=t8v2/ogFndfgh8m90+gQPp4REVawnYyCxxkJjTJIox8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JQqbI61dO5pm4+lQshPUkIG23DppzruDdXElAsHY4W/rIs72aqL+5sVR+VdbScewChCfHUkpAl8HVKsP12tufnDWXHM3t3Cju4xgEg0Grq4BsVi+atmVrRAbSTgiSB2LyngXVXnDSxarvHX/fln0VJL75WpU/V2VLEHgfFwaZDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GlCLy6Hv; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zlab.su header.i=@zlab.su header.b="m/RN7abP"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPA id 466D7C03D9;
-	Fri, 21 Aug 2026 12:30:00 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zlab.su; s=dkim;
-	t=1787304604; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=+UDivxkzUWm8jCVEzWimvw5QQQKBgJN2rUad2RA1A+g=;
-	b=m/RN7abP1i3juYX1BEYCFHZNhP77sGhYzJVe8mgEF64OgNjrVjZ0IqEvVloMx/3LYZqf33
-	W4K8qbuJDw/so2cdCrFwUZLx7HHFFbsD3ZimrzGHNn+qOpX4EcOTWijB6xp2vIbYA810dg
-	OSu7DAgJOpLaDBZKzIm+xZDDaYreq+ztL7PEP9/3kkOJTYUp3U+l7uwgQfZqUnP34TcnoP
-	ejXETsBjhFWPaYLidqzETMu4IIvEgzWj6DcvFspAPNBJ5wQpLvwqDav9tfjns/xp6rYLeu
-	4ai+Mu+s0S9ctAK0wc7tVE00o5NyRPGPc3Rli3PIj0BX8PJrc+XXrOgCnLYCRQ==
-From: "Vladislav Leonov" <vlad@zlab.su>
-In-Reply-To: <20260821-bouncy-sticky-dalmatian-4f72c2@quoll>
-Content-Type: text/plain; charset="utf-8"
-References: <20260816113636.33635-1-vlad@zlab.su> <20260821-bouncy-sticky-dalmatian-4f72c2@quoll>
-Date: Fri, 21 Aug 2026 12:30:00 +0300
-Cc: "Jonathan Cameron" <jic23@kernel.org>, "Heiko Stuebner" <heiko@sntech.de>, "Andy Shevchenko" <andy@kernel.org>, "David Lechner" <dlechner@baylibre.com>, "Conor Dooley" <conor+dt@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Rob Herring" <robh@kernel.org>, "Jonas Karlman" <jonas@kwiboo.se>, "Simon Glass" <sjg@chromium.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, =?utf-8?q?=D0=92=D0=BB=D0=B0=D0=B4=D0=B8=D1=81=D0=BB=D0=B0=D0=B2_=D0=9B=D0=B5=D0=BE=D0=BD=D0=BE=D0=B2?= <vlad@zlab.su>
-To: "Krzysztof Kozlowski" <krzk@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GlCLy6Hv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787305625; x=1818841625;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t8v2/ogFndfgh8m90+gQPp4REVawnYyCxxkJjTJIox8=;
+  b=GlCLy6HvH/L09TDE8dUxKne6kVld2IpAeUx6PYNggY7nLcD7HRdeeuFr
+   DrpLW6jTPy4vniat6jhFr8HCRBlXL5uO6nhsDXDZalX9Eo6RsfpleK5hN
+   BEMMXFgwPPrtB9VvfP9YSw7/4MjUFS0Z4BX1OdaJo18X8bO/tlHQOvTK5
+   7QqGVqvcRiv6kX6FaLr8/zV44X2HYM4dKGIMU6tkgvkHl/zTBajVyaE9p
+   ZU/cKio0N/10Gy1p7rszTi4lQNtUvZKOrGLSNrHt/IFuwG6eDcoBct466
+   ig5ug2/2jGRlIzNM908r74HUWk//ZAy5uc/T1obkD0XtLRadvR7GxQeah
+   g==;
+X-CSE-ConnectionGUID: 0jHhaKYwTYCwNr5d8yq9mg==
+X-CSE-MsgGUID: YjBIosrnTxq1OM7mVbpZDQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11881"; a="87621798"
+X-IronPort-AV: E=Sophos;i="6.25,234,1779174000"; 
+   d="scan'208";a="87621798"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 02:46:55 -0700
+X-CSE-ConnectionGUID: YY5c0jAQQ7CiuzwVDXO3EQ==
+X-CSE-MsgGUID: ++tW1p51QbGSL2QypOxziw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,234,1779174000"; 
+   d="scan'208";a="270114138"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.241])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 02:46:49 -0700
+Date: Fri, 21 Aug 2026 12:46:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Mark Brown <broonie@kernel.org>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Marcus Folkesson <marcus.folkesson@gmail.com>,
+	Kent Gustavsson <kent@minoris.se>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Daire McNamara <daire.mcnamara@microchip.com>,
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	Janani Sunil <jan.sun97@gmail.com>, linux-spi@vger.kernel.org,
+	Kent Gustavsson <nedo80@gmail.com>, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v9 3/3] iio: dac: Add AD5529R DAC driver support
+Message-ID: <aogehm5B7hoqmnKo@ashevche-desk.local>
+References: <20260820-ad5529r-driver-v9-0-ba62e0b2a816@analog.com>
+ <20260820-ad5529r-driver-v9-3-ba62e0b2a816@analog.com>
+ <20260821024503.592fabc1@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <9425cd59-7b78-7e0e-5d7f-aaff876ce8d6@zlab.su>
-Subject: =?utf-8?q?Re=3A?= [PATCH] =?utf-8?q?dt-bindings=3A?==?utf-8?q?_iio=3A?=
- =?utf-8?q?_adc=3A?==?utf-8?q?_rockchip-saradc=3A?= Fix RV1106 compatible
-User-Agent: SOGoMail 5.12.8
-Content-Transfer-Encoding: quoted-printable
-X-Last-TLS-Session-Version: None
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260821024503.592fabc1@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Friday, August 21, 2026 10:27 MSK, Krzysztof Kozlowski <krzk@kernel.=
-org> wrote:
+On Fri, Aug 21, 2026 at 02:45:03AM +0100, Jonathan Cameron wrote:
+> On Thu, 20 Aug 2026 09:08:23 +0200
+> Janani Sunil <janani.sunil@analog.com> wrote:
+> 
+> > Add support for AD5529R 16-channel, 12/16 bit Digital to Analog Converter
+> > from Analog Devices.
+> > 
+> > The device communicates over SPI and supports per-channel output range
+> > configuration. An optional external 4.096V reference can be used in
+> > place of the internal reference.
 
-> On Sun, Aug 16, 2026 at 02:36:36PM +0300, Vladislav Leonov wrote:
-> > rockchip,rv1106-saradc was folded into the fallback enum together
-> > with rockchip,rk3576-saradc, falling back to rockchip,rk3588-saradc=
-.
-> > The two IP blocks are not equivalent, though: per the RV1106 TRM v0=
-.3,
-> > chapter 20 (SAR-ADC), RV1106 only has 2 channels at 10-bit resoluti=
-on,
-> > versus 8 channels at 12-bit on RK3588. Documenting it as falling ba=
-ck
-> > to rk3588-saradc allows device trees that would bind against the wr=
-ong
-> > channel table and report an incorrect voltage scale.
-> >=20
-> > Remove rockchip,rv1106-saradc from the RK3588 fallback enum and giv=
-e
-> > it its own standalone compatible entry, matching the dedicated matc=
-h
-> > table entry added by the driver patch.
-> >=20
-> > Fixes: bdba14f6122c ("dt-bindings: iio: adc: rockchip-saradc: Add R=
-V1106 compatible")
-> > Link: https://lore.kernel.org/all/20260810090826.146758-1-vlad@zlab=
-.su
-> > Signed-off-by: Vladislav Leonov <vlad@zlab.su>
-> > ---
-> >  .../devicetree/bindings/iio/adc/rockchip-saradc.yaml         | 5 +=
-+---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-sar=
-adc.yaml b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.ya=
-ml
-> > index f0551d665916..dc56855527b8 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yam=
-l
-> > +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yam=
-l
-> > @@ -22,9 +22,7 @@ properties:
-> >        - const: rockchip,rk3562-saradc
-> >        - const: rockchip,rk3588-saradc
-> >        - items:
-> > -          - enum:
-> > -              - rockchip,rk3576-saradc
-> > -              - rockchip,rv1106-saradc
-> > +          - const: rockchip,rk3576-saradc
-> >            - const: rockchip,rk3588-saradc
-> >        - items:
-> >            - enum:
-> > @@ -35,6 +33,7 @@ properties:
-> >                - rockchip,rv1108-saradc
-> >                - rockchip,rv1126-saradc
-> >            - const: rockchip,rk3399-saradc
-> > +      - const: rockchip,rv1106-saradc
->=20
-> So this goes to an enum with all the other single-entries.
->=20
-> Anyway, where is a driver binding to above compatible (see DT submitt=
-ing
-> patches). git grep on a week old next gave me nothing.
->=20
-> Best regards,
-> Krzysztof
->=20
+> Sashiko calls out that dependency should be on CONFIG_SPI.
+> 
+> I didn't check it's reasoning but I believe the conclusion is correct.
+> If that's all that comes up, I can tweak whilst applying.
 
-Hi Krzysztof,
+Interestingly we have the following statistics (might be a few cases missing):
 
-I will combine it into a single enum in v2.
+$ git grep -n 'depends on.*[[:space:]\(]SPI_MASTER' | wc -l
+156
+$ git grep -n 'depends on.*[[:space:]\(]SPI\([^_]*\)\?$' | wc -l
+299
 
-The driver patch adding this compatible has been sent but is not merged=
- yet:
-Link: https://lore.kernel.org/all/20260810090826.146758-1-vlad@zlab.su
+But reading the Kconfig I tend to agree that what we need is SPI_MASTER.
+SPI might be enabled for SPI_SLAVE only, would it mean we have a usable
+HW on such a configuration / platform?
 
---=20
-Regards,
-Vladislav
+> Looks good to me, but I'll leave it on list for a little longer
+> as we aren't in a rush and others may well want to review.
+
+...
+
+> > +config AD5529R
+> > +	tristate "Analog Devices AD5529R High Voltage DAC driver"
+> > +	depends on SPI_MASTER
+> 
+> depends on SPI
+> 
+> > +	select REGMAP_SPI
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
