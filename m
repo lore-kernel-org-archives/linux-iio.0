@@ -1,60 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98CAF3998AF;
-	Fri, 21 Aug 2026 23:30:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75C53603DB;
+	Fri, 21 Aug 2026 23:31:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787355017; cv=none; b=lYtPHvdSBerJy1lXQ4sJ3PI3+Why03QR9NoOpFNhoFPCoZi6hEPEjB4ba8uoqA1Zu/tecubCvvAwsqICmGpntiCzAKj0MyRAdsvRhGnj60H9Zz+bo5z2ZKOdA6fI2mG6bntJtFg19bBXTkH6FOLdXBt9SL8pd5GfE4PJwb2HW5A=
+	t=1787355113; cv=none; b=j4NbqLsNwjA70YYhwi9PrAb2YH7wlsnrNmd1GuPVdJ5QknHYfdfLcmQuhY43Z5zNe7qraP9TITVa/24S4ktjfnOM8Qrlq7IeryR0PibI/QaYtV6yawJMjTqesxtwXDV7yYvpjfZWdu7b+u7i0U1aOZbnFNY241xhikuYpNyQv3s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787355017; c=relaxed/simple;
-	bh=MdK9rRHNyWJYLFRZyYYiCTN2IYQprF7r183bLLMS4j8=;
+	s=arc-20240116; t=1787355113; c=relaxed/simple;
+	bh=j5UpYRHlqi7sh0mnbdgsDL/S7j546To1ben8m5Rsn0w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mvrf6oaq8Ee4Imo2FQZXOXA3t80FUWya3CxAt9ccJxsKVOfKWRc2IUv3NqjGGnz5IhSwxZzQzEbAyEhTf/dnyqMi7mFiQotx2+adm650zuvJfrsY+p3/g9Ncc3PKZ8r53obXTjJycBAOfleXS9Ri+BDXYgAipv3EyDVkvgDlSL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jo+ZWh2I; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LMgunbKgq+lAAxF+9uWxkX8lCC8Z60sXrsYbwkT00MU1OOpS9TeI+NQWVmg66mDW79gp7qQu6ES3kMEahIxOAvVox5X3ckfAQpsRg7xtHRY1kU0Z7UCeGd+arA+dzCqUgGWlWYuuWUfPDZfbxnLH48AaVd1EIAyml0gP2jiEz1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lVdz7RXm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jo+ZWh2I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41C6C1F000E9;
-	Fri, 21 Aug 2026 23:30:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lVdz7RXm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B8A1F000E9;
+	Fri, 21 Aug 2026 23:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787355015;
-	bh=Ibh9L+fRKuXLx86P55NwGkzi3Fg5cFtJydY7cjyAm4U=;
+	s=k20260515; t=1787355111;
+	bh=rCp/jY0222VSJZl4mUd75jNTGtXAjtUuGODwa389Jvw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Jo+ZWh2IV9lEA2k8h5u9hhVtzVtqeQMYpiAwi0wYMxp9rY8L5Zm1ua8zPZU6/AfJd
-	 U5y5D+P05QhZHqjBUPUSIWd0K5UWiVwOE/6GjJSC7zNEF4lfD9n3I8ikLLTtyxQoOn
-	 +Q6+WHXCBSaqZ2hzn85nku/MM+T7cLQtKVk8j79hdKDKOFDVkdZLn9hk5FUH32AxE7
-	 1I3BaJUWZqublQzewv/De7vZ8c6QLKgdIgITgA6sSpPUyFS9N+xRPcbJb7yiCK8FDm
-	 UMfkpQAOu/RjFiLRXwEKB+QRX+scE2lOrdhPSIAo7Q0FelLBYFFxNbdlLqNH0uYaaC
-	 gQmfSVGVsY2kQ==
-Date: Sat, 22 Aug 2026 00:30:08 +0100
+	b=lVdz7RXmwiQxPdZ8EpKvdYh2XjQbhfGvMiNoylnXHdUp5+SMOfmIGPpOQXsg/s6OQ
+	 xFWDueT4IHRgyucqkHqPnlIubMTFt0l/oq9d8ibunWANUwVO3Irr9JdC1WK0oLFEQo
+	 h9tNuFkpjpIvwfnuD4UO9yxghLDkcu3F8q5DtGikMBjPvUI8huPeoydGar+TBfd4bR
+	 dtkpJTh1vCmdq1+I554k1hJbfPycvx8xmMMG7EVsmErQQbBPAOyRHvLEtLTAwj07U2
+	 EK/AhCwaoJGx0v8uWWcdsYLvsuTX5iAXdn2rvUPAe6sCUe0EPUvSldhRHvNHm//8yn
+	 yULw49NT/Gd9w==
+Date: Sat, 22 Aug 2026 00:31:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+To: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
- <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
- Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
- <kamal.wadhwa@oss.qualcomm.com>, Anjelique Melendez
- <anjelique.melendez@oss.qualcomm.com>, Manaf Meethalavalappu Pallikunhi
- <manaf.pallikunhi@oss.qualcomm.com>, Priyansh Jain
- <priyansh.jain@oss.qualcomm.com>
-Subject: Re: [PATCH 2/7] iio: adc: qcom-spmi-adc5-gen3: Add support for QCOM
- PMIC5 Gen4 ADC
-Message-ID: <20260822003008.0d13144d@jic23-huawei>
-In-Reply-To: <04990044-45b3-45ca-9e39-925d5bbe62e2@oss.qualcomm.com>
-References: <20260731-pmic5_gen4_adc-v1-0-9c49b2eea6f9@oss.qualcomm.com>
-	<20260731-pmic5_gen4_adc-v1-2-9c49b2eea6f9@oss.qualcomm.com>
-	<20260803011400.1fb6c93a@jic23-huawei>
-	<a98d90bd-aa9d-4af3-aa54-3a34300070d4@oss.qualcomm.com>
-	<20260807001822.31f7c137@jic23-huawei>
-	<f2b2f590-de3e-4f10-b883-92845f59412d@oss.qualcomm.com>
-	<20260815030830.24fc732f@jic23-huawei>
-	<04990044-45b3-45ca-9e39-925d5bbe62e2@oss.qualcomm.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, shuaijie wang
+ <wangshuaijie@awinic.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: aw96103: validate firmware data length
+Message-ID: <20260822003146.4962e329@jic23-huawei>
+In-Reply-To: <20260802192134.32a0349d@jic23-huawei>
+References: <20260801193700.57457-1-acharyalaxman8848@gmail.com>
+	<20260802192134.32a0349d@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -65,128 +48,121 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 21 Aug 2026 10:24:39 +0530
-Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+On Sun, 2 Aug 2026 19:21:34 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Hi Jonathan,
+> On Sun,  2 Aug 2026 01:22:00 +0545
+> Laxman Acharya Padhya <acharyalaxman8848@gmail.com> wrote:
 > 
-> On 8/15/2026 7:38 AM, Jonathan Cameron wrote:
-> > On Fri, 7 Aug 2026 13:37:02 +0530
-> > Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
-> >   
-> >> Hi Jonathan,
-> >>
-> >> On 8/7/2026 4:48 AM, Jonathan Cameron wrote:  
-> >>> On Thu, 6 Aug 2026 16:22:16 +0530
-> >>> Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
-> >>>     
-> >>>> Hi Jonathan,
-> >>>>
-> >>>> On 8/3/2026 5:44 AM, Jonathan Cameron wrote:    
-> >>>>> On Fri, 31 Jul 2026 23:36:15 +0530
-> >>>>> Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
-> >>>>>       
-> >>>>>> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made
-> >>>>>> for improved performance, mostly at the hardware level.
-> >>>>>>
-> >>>>>> One significant software change is that ratiometric conversion resolution
-> >>>>>> has been increased from 14 bits to 16 bits, so the maximum value of
-> >>>>>> these measurements needs to be updated for Gen4. Add a new scaling
-> >>>>>> function for thermistor channels which use this type of conversion.
-> >>>>>>
-> >>>>>> In the latest PMIC arbiter version (v8), there can be up to 4 buses
-> >>>>>> under the PMIC arbiter and 32 PMICs under each bus. In order to
-> >>>>>> support communication between ADC on the master PMIC and ADCs on any
-> >>>>>> of the other PMICs, a field of width 2 bits is added for bus index
-> >>>>>> and the bits for SID are extended from 4 to 5 bits, in the SID
-> >>>>>> register. Add support for this.
-> >>>>>>
-> >>>>>> In addition, it is possible that the master PMIC has ADC of one generation
-> >>>>>> and it needs to communicate with another PMIC with ADC of a different
-> >>>>>> generation.      
-> >>>>>
-> >>>>> "Possible" sounds a bit hypothetical.  Can we state this actually happens
-> >>>>> on some devices?      
-> >>>>
-> >>>> Considering existing upstream platforms, this is applicable for SM8750. I'll
-> >>>> mention this in the next version of the series.    
-> >>>
-> >>> What happens on that platform today?  Wrong values?  Should this be treated
-> >>> as a fix rather than a feature?     
-> >>
-> >> There is no issue on that platform right now as ADC channels needing this
-> >> support are not added yet. SM8750 board files only include pmk8550.dtsi, which
-> >> has the top-level Gen3 ADC peripheral and some ADC channels on the same PMIC.
-> >> Gen4 support would be needed only when PMIH0108 ADC channels are added.  
+> > The firmware parser reads a length from the binary header and then uses
+> > it to walk six-byte register/value entries. A truncated firmware image
+> > can make the parser read beyond the copied firmware buffer. A value
+> > smaller than the four-byte count field also underflows, producing a very
+> > large length.
 > > 
-> > I guess chances of anyone running an older kernel that the device tree on
-> > that device is low as other critical stuff won't be supported?
+> > Read the little-endian field with get_unaligned_le32(), as previously
+> > proposed by David Lechner. Validate the header size, reject an
+> > underflowed length, ensure the resulting payload is contained in the
+> > firmware image, and require it to contain whole register/value entries.
 > > 
-> > If there is something easy to point to for that, add a note to the patch
-> > description as it justifies this not being a fix.
-> >   
-> 
-> Sorry, I did not fully understand your concern here. Are you asking if
-> SM8750 runs on any older kernels and the lack of Gen4 ADC support may be an
-> issue there?
-> This would not happen - let me try explaining with some more details.
-> 
-> DT support for SM8750 has been present since kernel version 6.14. At that
-> time, it included pmk8550.dtsi, but this file did not have an ADC peripheral
-> at the time.
-> 
-> The Gen3 ADC peripheral was added in pmk8550.dtsi very recently in this series
-> from Neil Armstrong: https://lore.kernel.org/all/20260721-topic-sm8x50-adc5-gen3-v6-0-a507f4a1e537@linaro.org/,
-> and I see this series is present only in linux-next right now.
-> 
-> With this change applied, the ADC peripheral with 3 channels of
-> PMK8550 alone (which is Gen3) would appear for SM8750. This
-> would work as its functionality is fully supported by the existing
-> Gen3 driver.
-> 
-> Gen4 support is needed only when we add full ADC support for SM8750,
-> meaning when we add channels under all its other PMICs (PMIH0108
-> specifically as it's Gen4.).
-> 
-> Would it work if I mention in the commit message that SM8750, added from
-> kernel 6.14 without ADC support initially, would need this mixed-generation
-> support, but only once we add the full ADC support (for all its PMICs)?
+> > Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
+> > Link: https://lore.kernel.org/r/20260314-iio-proximity-aw96103-fix-firmware-read-v1-1-c74fe9ccd82b@baylibre.com
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>  
+> Looks fine to me, but I'll leave it on list a little while so others
+> have time to take a look, ideally including Shuaijie Wang
 
-In the ideal world we would assume no coupling between device tree seen
-on a board and the kernel with which a device tree was pushed out.  For
-many devices the delivery path is independent.
+Long enough - applied to the fixes-togreg branch of iio.git.
 
-As such we might well see a dt with the new property and a kernel that
-predates it's introduction.  If there is another reason such a kernel
-will simply not boot on that board, then that would be a valid argument
-why we can skip striving for the ideal.  Similarly if the driver
-would not bind for some other reason.  If either of those is the case then
-add a comment to the patch to say so.
+Note, I'll be rebasing on rc1 before sending this out so there is
+still time for additional feedback.
 
-Otherwise, I'd like to see the extra property dt patch (arguably a fix
-but not critical to mark it as such) + a patch for the driver support
-for the new property (also arguably a fix).
-
-That would cover the older driver and decision on whether to backport
-that could then be made (or left to downstream users).
-
-On top of that then build the new compatible support.
-
-Superficially this looks to me like a bit of minor patch reorg so
-I think it is worth doing even if we don't expect to ever run into the
-theoretical problems form a miss match!
-
-Thanks
+Thanks,
 
 Jonathan
 
 > 
-> Thanks,
-> Jishnu
+> Thanks
 > 
+> Jonathan
 > 
-> > Thanks,
+> > ---
+> >  drivers/iio/proximity/aw96103.c | 30 ++++++++++++++++++++++++------
+> >  1 file changed, 24 insertions(+), 6 deletions(-)
 > > 
-> > Jonathan  
+> > diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
+> > index 8fbb755dc..8352d51e5 100644
+> > --- a/drivers/iio/proximity/aw96103.c
+> > +++ b/drivers/iio/proximity/aw96103.c
+> > @@ -24,6 +24,7 @@
+> >  #define AW96103_BIN_VALID_DATA_OFFSET		64
+> >  #define AW96103_BIN_DATA_LEN_OFFSET		16
+> >  #define AW96103_BIN_DATA_REG_NUM_SIZE		4
+> > +#define AW96103_BIN_REG_SIZE			6
+> >  #define AW96103_BIN_CHIP_TYPE_SIZE		8
+> >  #define AW96103_BIN_CHIP_TYPE_OFFSET		24
+> >  
+> > @@ -229,14 +230,27 @@ static const struct aw_chip_info aw_chip_info_tbl[] = {
+> >  	},
+> >  };
+> >  
+> > -static void aw96103_parsing_bin_file(struct aw_bin *bin)
+> > +static int aw96103_parsing_bin_file(struct aw_bin *bin)
+> >  {
+> > +	u32 data_len;
+> > +
+> > +	if (bin->len < AW96103_BIN_VALID_DATA_OFFSET)
+> > +		return -EINVAL;
+> > +
+> > +	data_len = get_unaligned_le32(bin->data + AW96103_BIN_DATA_LEN_OFFSET);
+> > +	if (data_len < AW96103_BIN_DATA_REG_NUM_SIZE)
+> > +		return -EINVAL;
+> > +
+> > +	bin->valid_data_len = data_len - AW96103_BIN_DATA_REG_NUM_SIZE;
+> > +	if (bin->valid_data_len > bin->len - AW96103_BIN_VALID_DATA_OFFSET ||
+> > +	    bin->valid_data_len % AW96103_BIN_REG_SIZE)
+> > +		return -EINVAL;
+> > +
+> >  	bin->valid_data_addr = AW96103_BIN_VALID_DATA_OFFSET;
+> > -	bin->valid_data_len =
+> > -		*(unsigned int *)(bin->data + AW96103_BIN_DATA_LEN_OFFSET) -
+> > -		AW96103_BIN_DATA_REG_NUM_SIZE;
+> >  	memcpy(bin->chip_type, bin->data + AW96103_BIN_CHIP_TYPE_OFFSET,
+> >  	       AW96103_BIN_CHIP_TYPE_SIZE);
+> > +
+> > +	return 0;
+> >  }
+> >  
+> >  static const struct regmap_config aw96103_regmap_confg = {
+> > @@ -500,7 +514,7 @@ static int aw96103_bin_valid_loaded(struct aw96103 *aw96103,
+> >  	int ret;
+> >  
+> >  	for (i = 0; i < aw_bin_data_s->valid_data_len;
+> > -	     i += 6, start_addr += 6) {
+> > +	     i += AW96103_BIN_REG_SIZE, start_addr += AW96103_BIN_REG_SIZE) {
+> >  		reg_addr = get_unaligned_le16(aw_bin_data_s->data + start_addr);
+> >  		reg_data = get_unaligned_le32(aw_bin_data_s->data +
+> >  					      start_addr + 2);
+> > @@ -550,6 +564,8 @@ static int aw96103_para_loaded(struct aw96103 *aw96103)
+> >  static int aw96103_cfg_all_loaded(const struct firmware *cont,
+> >  				  struct aw96103 *aw96103)
+> >  {
+> > +	int ret;
+> > +
+> >  	if (!cont)
+> >  		return -EINVAL;
+> >  
+> > @@ -561,7 +577,9 @@ static int aw96103_cfg_all_loaded(const struct firmware *cont,
+> >  	aw_bin->len = cont->size;
+> >  	memcpy(aw_bin->data, cont->data, cont->size);
+> >  	release_firmware(cont);
+> > -	aw96103_parsing_bin_file(aw_bin);
+> > +	ret = aw96103_parsing_bin_file(aw_bin);
+> > +	if (ret)
+> > +		return ret;
+> >  
+> >  	return aw96103_bin_valid_loaded(aw96103, aw_bin);
+> >  }  
+> 
 > 
 
