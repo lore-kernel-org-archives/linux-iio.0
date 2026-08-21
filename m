@@ -1,43 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5891A262D;
-	Fri, 21 Aug 2026 01:01:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A5C30567F;
+	Fri, 21 Aug 2026 01:06:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787274089; cv=none; b=S7edZSBXYvGLiQKabxX2XlXIpy1xYzodThFw/YbsC9/8wjd5Rfo87Ys5Mh9nsrXDLYTaVe2HMzs6d8wxvB2jx121JXs9zFKEnRM32mf0yxeKq8iXANlO5rRfX3AzedPlkKNDCUd/6lFotb8rzIhWQGCosOXzbWAYscDv3eaJKBQ=
+	t=1787274361; cv=none; b=dxbmgeyjIv66FydWJkl6bFeFOtw0fwFniytV92EZ89xjuo0kkK3jXSmgMpC/ZbKthQs4VYsU9L3/nl8cfzLV2IaGvtOLL7v6UDk3Tu9TtFmkBU0uRICE2ZQtmjdAZB3NWSyI0PqIfWmYlbsYlhsG0oOivVPDS35zaojNoYF3EY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787274089; c=relaxed/simple;
-	bh=zc2EEruKEeMuof6lIdlFGgvrmpPI31gFAeQAHOTK6dI=;
+	s=arc-20240116; t=1787274361; c=relaxed/simple;
+	bh=udaryJUcp8UdssJGzhUZGUIih5Ea0c9CzGIQRVHV+qc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SapP4cg580uiv+niyvlF6RrsizaOeaeiiJfgMU1QEVsfp3+N62fVYUxsC+2gCMeN85BWwmPSpLy9Cq7TJ8Ehe9dMbcvnceO4iJD9Gxq4u9tFHHM7xnHIYSEFjAwUA47Bbd6OtevaI47Qef2DbtG6RRjClgrqBUTRC7yII6KYD5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gFLnwqya; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=jxFfLnSTf+jCwUQMaz5kp7J40NmNEl8C3Od5zpU2CDmGutJORj1QLrjP6vuDC23IvMINrFoySXwebw8Z+o2icORJT2NEDaXk5hd+bnZqPKizksH61gItwWF9ShWwxyLX2N3pskyms68zfleWSqH2sh35gQz6v8WADXtW8QmCt4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iriXPoLn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gFLnwqya"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 160781F000E9;
-	Fri, 21 Aug 2026 01:01:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iriXPoLn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727E01F000E9;
+	Fri, 21 Aug 2026 01:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787274088;
-	bh=39ogNTuvFSpDXYDC6NVXih1kOy1idmujErwRlsoi/FU=;
+	s=k20260515; t=1787274359;
+	bh=qhLLGEoOi7ada+Zo30jFrSFyWDbuv7FW4DzLZkTkVuA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gFLnwqyaiLonaSqw+xQsYo1PgzH6xxjlrTXcSJoY23gUpaBptXVrFZBZx8ysHv7wP
-	 NCnS1r4tN/l+zcGheX4AICpxYIxFVE78F1FKuOYINNxWqjflUPXvoXrcC8uCt/Xcln
-	 m7Sr2Zx7p2iNWCNKX0relxoH+XOXfZXovCazFkLHFWkgUov6Q0uJLM9Z4/RvHWG+wW
-	 U6HKY0Yy+DGwYen3r1KQPjNKSII76UFI28ZlOsxYZwrTBgNIKtjIx0/qWwjKUTrS+9
-	 EdAIVUTbs66UyM3Zi9W/vOnJtkBE/JvWaJhK0mcM9RqPoteLQljunND870y81e9Fzy
-	 qLcoJqeafuGHw==
-Date: Fri, 21 Aug 2026 02:01:22 +0100
+	b=iriXPoLnQuYwNjI8VN9Sx9CkTHr4WMQ9p4pbtDlHOBBMOVY15Z1LI+77NdI0K9WXB
+	 G4Ar6dc6z5lqdjCW54bewNOE5gEfS7dezsxYbHEZHh0CFnRGrnU9521nNi+8NFuQgy
+	 UPQZMuoX+kxwgPTlcT37bQh6E/Ixx20ORPiVNddFD7t9P6r1pDUe6pl+mIjyZRErcK
+	 r31ZKg+4JiNYyD7wgNc2ooEkYmgEyAWrs3ZLC3kd0TSJIlpe9oUIL6b84wrr9vpI32
+	 NXKcJb+vP68KFuo76mQ8pgg0PvWb217P3j39WWN64uFevScDFq10fyRx+wsrq02JSf
+	 8ePk8Gp+bnXvA==
+Date: Fri, 21 Aug 2026 02:05:54 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Louis Adamian <adamianlouis@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/5] iio: pressure: ms5637: Add per-variant
- compensation
-Message-ID: <20260821020122.1c2cc7dc@jic23-huawei>
-In-Reply-To: <20260820141224.23730-6-adamianlouis@gmail.com>
-References: <20260820141224.23730-1-adamianlouis@gmail.com>
-	<20260820141224.23730-6-adamianlouis@gmail.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Brian Masney
+ <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: frequency: adf4377: Fully initialize
+ clk_init_data and clk_parent_data
+Message-ID: <20260821020554.23fa7d19@jic23-huawei>
+In-Reply-To: <ae48ed1dc6b1ad9e10cad0d9df28d9fab213f653.1787216909.git.geert+renesas@glider.be>
+References: <ae48ed1dc6b1ad9e10cad0d9df28d9fab213f653.1787216909.git.geert+renesas@glider.be>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,76 +51,64 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 20 Aug 2026 10:12:20 -0400
-Louis Adamian <adamianlouis@gmail.com> wrote:
+On Thu, 20 Aug 2026 11:19:52 +0200
+Geert Uytterhoeven <geert+renesas@glider.be> wrote:
 
-> Previously, all sensors used the compensation for the MS5637-02BA. Add
-> correct temperature compensation for MS5637-30BA, MS5803-01BA,
-> MS5803-02BA, MS5803-05BA, MS5803-14BA, MS5803-30BA, MS5805, MS5837-02BA
-> and MS5837-30BA.
+> The clk_init_data structure contains several mutually-exclusive members
+> for different methods to specify the possible parents of a clock,
+> prompting drivers to initialize only the members they need.  However,
+> not initializing all members may cause subtle issues, which are only
+> exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
+> enabled.
 > 
-> The deprecated meas,ms5803, meas,ms5637 and meas,ms5837 compatibles
-> resolve to the -02BA variants. This changes the values that meas,ms5803
-> and meas,ms5837 report.
+> adf4377_clk_register() fills in init.parent_data, and assumes that
+> init.parent_names is NULL.  However, the latter is uninitialized, and
+> thus may cause a crash.
 > 
-> meas,ms5805 now uses its own constants, correcting its readings. MS8607
-> gets its own constants struct. The values match the MS5637-02BA ones it
-> previously shared, so its readings are unchanged.
+> Similarly, adf4377_clk_register() fills in only parent_data.fw_name,
+> leaving other members of the clk_parent_data structure uninitialized.
 > 
-> Signed-off-by: Louis Adamian <adamianlouis@gmail.com>
-
-For this one Sashiko raises a valid concern.  The ABI is changing for
-those deprecated choices.  To avoid that will require a slightly 
-annoying dance with extra copies of the data to keep the old name.
-
-One other question below.
-
+> Make sure all members are fully initialized, to fix such bugs, and to
+> avoid future breakage when converting drivers to a different method for
+> specifying the parents.
+> 
+> Fixes: 60e5448ddbec2dc2 ("iio: frequency: adf4377: add clk provider support")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
->  drivers/iio/pressure/ms5637.c | 376 ++++++++++++++++++++++++++++++++--
->  1 file changed, 360 insertions(+), 16 deletions(-)
+Dropped v1 and picked this up, marking it for stable and tweaking a little
+to add spaces { } 
+That's an IIO specific style choice.
+
+Thanks
+
+Jonathan
+
+> Compile-tested only.
 > 
-> diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-> index 359f3a8e79b2..81b87b79e011 100644
-> --- a/drivers/iio/pressure/ms5637.c
-> +++ b/drivers/iio/pressure/ms5637.c
-
-
-> +/*
-> + * MS5805-02BA01 compensation constants
-> + * Datasheet: https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5805-02BA01&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=MS580502BA01-50
-> + * Pages: 8-9
-> + * Sections: Pressure and Temperature Calculation, Second Order Temperature Compensation
-> + */
-> +static const struct ms_tp_comp_consts ms5805_consts = {
-> +	.press_scale = 1000,
-> +	.high_t2_multiplier = 0,
-> +	.high_t2_shift = 0,
-> +	.high_off2_multiplier = 0,
-> +	.high_off2_shift = 0,
-> +	.low_t2_multiplier = 11,
-> +	.low_t2_shift = 35,
-> +	.low_off2_multiplier = 31,
-> +	.low_off2_shift = 3,
-> +	.low_sens2_multiplier = 63,
-> +	.low_sens2_shift = 5,
-> +	.vlow_off2_multiplier = 0,
-> +	.vlow_sens2_multiplier = 0,
-> +	.has_vhigh_temp = false,
-> +	.off_t1_shift = 17,
-> +	.off_shift = 6,
-> +	.sens_t1_shift = 16,
-> +	.sens_shift = 7,
-> +	.press_sens_shift = 21,
-> +	.press_shift = 15,
->  };
+> v2:
+>   - Extract from series "[PATCH treewide 0/5] clk: Make sure
+>     clk_init_data is fully initialized (part 1)"
+>     (https://lore.kernel.org/cover.1787165329.git.geert+renesas@glider.be),
+>   - Fully initialize clk_parent_data too, as pointed out by Sashiko.
+> ---
+>  drivers/iio/frequency/adf4377.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
+> index 4dd19a9aa9943c57..b8c31665857c5201 100644
+> --- a/drivers/iio/frequency/adf4377.c
+> +++ b/drivers/iio/frequency/adf4377.c
+> @@ -988,10 +988,10 @@ static const struct clk_ops adf4377_clk_ops = {
 >  
->  static const struct ms_tp_data ms5805_data = {
->  	.name = "ms5805",
->  	.hw = &ms5637_hw_data,
-> -	.comp_consts = &ms5637_02_consts,
-> +	.comp_consts = &ms5805_consts,
-
-Is this change actually a fix?
-
-> +};
+>  static int adf4377_clk_register(struct adf4377_state *st)
+>  {
+> +	struct clk_parent_data parent_data = {};
+>  	struct spi_device *spi = st->spi;
+>  	struct device *dev = &spi->dev;
+> -	struct clk_init_data init;
+> -	struct clk_parent_data parent_data;
+> +	struct clk_init_data init = {};
+>  	int ret;
+>  
+>  	if (!device_property_present(dev, "#clock-cells"))
 
