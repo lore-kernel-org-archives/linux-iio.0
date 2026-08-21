@@ -1,161 +1,107 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F04D35674F
-	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 01:45:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E39FB34DCCD;
+	Fri, 21 Aug 2026 01:51:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787276717; cv=none; b=fHv9EEX+7yA0srPD/f1gBZ+5uOFYUg2ZRB9hQBfzl8xpMJ3isl+0yiy32q134nrZE+f+M5yNjvAFamrVT6TUPZrPytN47ny3naQ5FDb1y297Stl4qdn4xPeRVGYmz5YEOHoikmtn3gMMl0SDFV7inwOeza3N5QX1aKbPtzwT9rM=
+	t=1787277074; cv=none; b=KphLPeZkS/ezWjc7wIR+HMjtUqbt8SvyBTohcokC22mOSsDiv1z2PiXPpB0Emhm8bH7kU6dCFfAO/bRcENu5iSfay3Ld7zVUGGczbBzXYPzPsrgQD1+Vsj5v4glt0rcAOVtgMN/uVN0KnfQNq7zmgXQRYXTZkiKiPtT4nz78rtk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787276717; c=relaxed/simple;
-	bh=sbAF0uqvlZvxsWfWk0SRP6ojJ7r9s4RDxyKqD93t8TE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CW6/UIItZaO03yz80qlmZMGg0b2GvcoEm1Hye0zNKCKLPUVTIT+gNDBE2idgtrI1U6x0FK+iclCHhMro2n1xAHToDUE736memN/TxPg1VpC/ATgBhF0k0YeWeq+e920yol5vaH1EtxHJKOXXz3RG2omXdOeD+0fHbB50NPShBMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pmC9t3+b; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787277074; c=relaxed/simple;
+	bh=4P6Hg0lYppW1y1uK7ZrF9StMejO5kWNUvyRAIAbJIkY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JIwWenL8jmc61adc6hJWMCDKXMErBbK5e4tpNKyyOSYA59CWzyVoNE0cvu1cuFREG1ZZDRnihbb8/J3oqr0u2GvnfyWjpZhtfO9z5+llPO84SnmftsSJQEUXrgBSUIZpgcwcE4DCM2uSAd19RthZ0g8HIA8eCXOauYfr8FdMDSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cJVVlEQJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pmC9t3+b"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2d530328efbso4735725ad.0
-        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 18:45:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787276714; x=1787881514; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=xZttsssqOMabZj0EkbaAGqT7Bp9lWTkosvKZrWr3/hA=;
-        b=pmC9t3+bT0bqnR6np42scxFfcv5Xq4CZjksmEi++FNeBJOzffmohe72bAygpdrTJkD
-         zky/zB5v3+fasBu4hFeP+qeZKPlQ91KfGP37hbyi2NmjrspQx3gEAVajmu3CWunZZmtU
-         Da1IPdHG+VzT46MjfBB8EQDsC4WfkL/uulqwTr/VnEkswfpg/LRLAZVQpPlPtqQx7oe0
-         ErTyvw8Fb7eAvPEsxENP2OG5wcdeXgMjx1e5Yid2gh/m3LEK30J6fY7FnRE+jZpb7SPu
-         MaUWPyUzqoCJ7T5h0Lt0O2MYW8jOCR1JFdXW4eGSFz3le3Xwh4H9JHzb+Pr/HNX1niRg
-         9whw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787276714; x=1787881514;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=xZttsssqOMabZj0EkbaAGqT7Bp9lWTkosvKZrWr3/hA=;
-        b=J5bpMzjnSDB+dcQpjd6O56z91kzgeMz/ACHlSUrhhibwFPiO9WHuvF4bMC/PilCcHt
-         h3RIUA5kYnAar56T2zKkXAQhbcL1MUWKDzIKkuuayx5dj1lG7P0WhZDbzLTVclBYUaeP
-         5GqgITRXIznmeTfUgPPo/fC5OHagYM6tPzy1vGL9uCmY8BmoEI8Nb+Yi+ws4S74sTsrp
-         M0AKgmbVCI0JvneO7vcMfl1GM3RAMToG6a+zoSkWEQSG3y+PUpgRHlwZjXn4IUOmh8yX
-         zhhLP6E17dTGxrlzsxnxwPr2ysmvlXNTAFgTAEIP6eLgBrxfuFqZOMOOvaQ5zol5s65Z
-         f3nA==
-X-Forwarded-Encrypted: i=1; AHgh+RpB80pMBADxzhtatwYcAb/lfv3IT1kjwGLSpg8ENgz4oAboiAh8ZJZ4U0vDZMCwYkQVB+Dc8rnvht8=@vger.kernel.org
-X-Gm-Message-State: AFuF++mMJi1WXf5cZlGMXD0/x+EOpEsERw4DzM2eb/waN/Nww8dnGT9k
-	ir2ybCSVPFSOcY8EkTOGB0VBLm2NowYZgQYojFJ6iPXCdfIMlrs/NRk=
-X-Gm-Gg: AR+sD13pv7pJVYOQhNYHuuqLeeA651A17ybG+i8xUXVGv5jKFiSfrjEv5fFk1IkdSuv
-	mB1FXJ7GKL7+6dQFfdnbBry7GaeFPXfVjm78QItCgjKwlk19tUrDIdb9ML4C6rt074fE8+Jrg04
-	Nm5ZL9kduuuV2dPLDEKnWUz6m7ru45XDFNQi/QOC0IgNF7UfPtbxcdXugAhPHbO9628suTJ/lz0
-	WVLLojHP2bxe+TkmxG/ExQJyH/84+7xo0VMDY7jaWqxbSyj39xYDOQKA3L4BfBGma2aB22+zq6s
-	LZ9y5WdWQmagJ4z2eUMX+wuYj71x9zjRRow7a+irV/PnseHZKIEL5IDYgiOJ3C671/PnMD5C7MP
-	+o5vju07LphTVRZUK7P7COXfM9mRtU1EhbZz3CkX3Ecc00MqBN4UfHMIPwxM8F3dg/l9vrnB9A0
-	MdctHSAr7sxu7Odn3S5ilTt3W24WSLLIHixgu1g3bzXK7AqdbHtajHgUL3aXEiwrUCbLYCBWLyy
-	Q==
-X-Received: by 2002:a17:902:ce08:b0:2cc:9179:32e with SMTP id d9443c01a7336-2d64afe9569mr53845135ad.10.1787276714031;
-        Thu, 20 Aug 2026 18:45:14 -0700 (PDT)
-Received: from DL2XHKPB4.dl.net ([103.63.104.162])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d62e3cced8sm12727335ad.75.2026.08.20.18.45.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Aug 2026 18:45:13 -0700 (PDT)
-From: Triet Hoang <triet.hoang.dev@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	bleung@chromium.org,
-	groeck@chromium.org,
-	linux-iio@vger.kernel.org,
-	chrome-platform@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Triet Hoang <triet.hoang.dev@gmail.com>
-Subject: [PATCH] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
-Date: Fri, 21 Aug 2026 08:44:54 +0700
-Message-ID: <20260821014454.15960-1-triet.hoang.dev@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cJVVlEQJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D8DA1F000E9;
+	Fri, 21 Aug 2026 01:51:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787277072;
+	bh=tGVDCqoa4y3n4kLVwNMULhjqCUA6KLa+MCUMGI70yUs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=cJVVlEQJNbb6njOpnaIanmbBv2VSmW9plsfGePcUWASCBY0jVLw7xLMtpFmjQpLAd
+	 Przu61OvyjEkh0hjx0KEOeTspETMGlZOCm9RjYpBVqKEPscPumCymtWC79KJSsho3R
+	 d9hEBIvrqgTD+Rdgplh/auewvQMAsW8yiRAhEdil+McAr6arw3A1JzjIqtMoZrTo+2
+	 eTRbkD6fSEnonr8OwHoGd9aGDuvSDbhT004o8dWweQb6iR+q9QvPDeQ5OYyj31snPf
+	 uCfQuWnrNQwjyAbyaGaxWAK/Uv+jNriwvbgQqpdUQkXwEaiPBNjc+xUhgXtNhQMlBT
+	 kpG13jNPVWzPg==
+Date: Fri, 21 Aug 2026 02:51:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Linkai Gong <gonglinkai@kylinos.cn>
+Cc: Remi Buisson <remi.buisson@tdk.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_icm45600: clamp FIFO packet count to
+ buffer size
+Message-ID: <20260821025105.4739d76b@jic23-huawei>
+In-Reply-To: <20260820070208.3891851-1-gonglinkai@kylinos.cn>
+References: <20260820070208.3891851-1-gonglinkai@kylinos.cn>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Convert the deprecated SIMPLE_DEV_PM_OPS
-to DEFINE_SIMPLE_DEV_PM_OPS and pm_sleep_ptr().
+On Thu, 20 Aug 2026 15:02:08 +0800
+Linkai Gong <gonglinkai@kylinos.cn> wrote:
 
-This lets us drop the __maybe_unused annotations
-from the resume callbacks, and reduces kernel size
-in case CONFIG_PM or CONFIG_PM_SLEEP is disabled.
+> The IRQ path calls inv_icm45600_buffer_fifo_read(st, 0), so the raw
+> 16-bit FIFO count sizes the read into st->fifo.data (8K). Cap the
+> packet count so the transfer cannot exceed that buffer.
+> 
+> Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Linkai Gong <gonglinkai@kylinos.cn>
 
-Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
----
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 2 +-
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 4 ++--
- drivers/iio/light/cros_ec_light_prox.c                    | 2 +-
- drivers/iio/pressure/cros_ec_baro.c                       | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+I believe this is fixed in the iio tree (and shortly upstream), though
+in a slightly different way.
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index b971f8b646be..551b86236abc 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -311,7 +311,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
- static struct platform_driver cros_ec_sensors_platform_driver = {
- 	.driver = {
- 		.name	= "cros-ec-sensors",
--		.pm	= &cros_ec_sensors_pm_ops,
-+		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
- 	},
- 	.probe		= cros_ec_sensors_probe,
- 	.id_table	= cros_ec_sensors_ids,
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index 5133755c2ea6..7d09f7c7d35c 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -862,7 +862,7 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
- }
- EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
- 
--static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
-+static int cros_ec_sensors_resume(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-@@ -879,7 +879,7 @@ static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
- 	return ret;
- }
- 
--SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
-+DEFINE_SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
- EXPORT_SYMBOL_GPL(cros_ec_sensors_pm_ops);
- 
- MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
-diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
-index 7ab565b1fb9f..b1c92de7922a 100644
---- a/drivers/iio/light/cros_ec_light_prox.c
-+++ b/drivers/iio/light/cros_ec_light_prox.c
-@@ -249,7 +249,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
- static struct platform_driver cros_ec_light_prox_platform_driver = {
- 	.driver = {
- 		.name	= "cros-ec-light-prox",
--		.pm	= &cros_ec_sensors_pm_ops,
-+		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
- 	},
- 	.probe		= cros_ec_light_prox_probe,
- 	.id_table	= cros_ec_light_prox_ids,
-diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-index 6a567b6075d9..e4bc4df48d01 100644
---- a/drivers/iio/pressure/cros_ec_baro.c
-+++ b/drivers/iio/pressure/cros_ec_baro.c
-@@ -192,7 +192,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
- static struct platform_driver cros_ec_baro_platform_driver = {
- 	.driver = {
- 		.name	= "cros-ec-baro",
--		.pm	= &cros_ec_sensors_pm_ops,
-+		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
- 	},
- 	.probe		= cros_ec_baro_probe,
- 	.id_table	= cros_ec_baro_ids,
--- 
-2.53.0
+Fwiw I don't consider these fixes because the hardware doesn't return
+out of range values - rather they are hardening against a potential problem.
+
+A few other things inline.
+
+
+> ---
+>  drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+> index 2b9ea317385c..62e9e138bc89 100644
+> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+> @@ -419,8 +419,10 @@ int inv_icm45600_buffer_fifo_read(struct inv_icm45600_state *st,
+>  	fifo_nb = le16_to_cpup(raw_fifo_count);
+>  	if (fifo_nb == 0)
+>  		return 0;
+> -	if (max > 0 && fifo_nb > max)
+> -		fifo_nb = max;
+> +	if (max > 0)
+> +		fifo_nb = min(fifo_nb, (size_t)max);
+
+This looks like an unrelated change. min is pretty flexible on inputs anyway
+so perhaps this is fine without that cast.
+
+> +	fifo_nb = min_t(size_t, fifo_nb,
+> +			INV_ICM45600_FIFO_SIZE_MAX / packet_size);
+
+Why is min_t needed?  It very rarely is given how min handles mixed types.
+
+Maybe I'm missing something here but I'm not going to chase
+it down given we already have a fix in place
+
+Thanks,
+
+Jonathan
+
+
+>  
+>  	/* Try to read all FIFO data in internal buffer. */
+>  	st->fifo.count = fifo_nb * packet_size;
 
