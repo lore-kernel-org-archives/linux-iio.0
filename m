@@ -1,105 +1,139 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C33393624D9
-	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 16:03:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DF212DA768;
+	Fri, 21 Aug 2026 18:08:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787328229; cv=none; b=QTWGK253s6ICYATYo3rWkwiTUySNo7lKguTwdn+WfmvzYVwOgGljmhOSJSUeisTN+SZbRuDj1FQ3F6FeNkNBHaCqijnCjeVgnpKhLApHF2iSp4TbZWjEWD/geQydwOQ+kw5BPlOzsDy6D6ylg6rw3sMYe75dNvao3gfwEbaI03s=
+	t=1787335698; cv=none; b=ilIhFDpw3GnX1zqU6ht0hGAjLGBOMyw3ZfziDkoNdM9ZSB9UpQFImQgwLpDe8T0UzIKlK1RvYzweBI/CTNjAQOq7Bhd9G/QIi59v1Mjtse/3sQUgbljlx95AmLO+PLhdgc9C+pdWRQkw5kbfbgvg/N4c8XkS/HWZ0hNSVcmnxO8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787328229; c=relaxed/simple;
-	bh=Vy2ZJZNGMyLbLm8dFlgEUCw1Cwow/lz5sQ+qvQJvgcI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cHKDymBtfnTTZIZWgUvNS+++2rrbEgNOukUo0B2fBcfv5RXvkglbMVqSUccxSLe9hVQNQPrNCPFA67T6gdCquQUR6DFGRwTsB0zbxWcUjr5YQjfekHMu/IH8v+dPxvoKtRtgFHLeUVtJ145UFmrb3tz8rMx9unHx1Dswcpok530=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OJ7OmMj+; arc=none smtp.client-ip=209.85.128.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1787335698; c=relaxed/simple;
+	bh=EpuRcNeKWs2jtosGDHzsVHUH8iVRd/v8Ir8Xwf66k+s=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fknwV7eTPkR7Tg111xp6bh0oLc6xZUKwVETXbsNl0Efm5VvrlNacub66uQIcRrLnh88W0JNTB0DF3GvEpv6m8duGwF6KIcjyt+Cc5LJofyctQ4zk39VQPXD6z1qms5d5b1b+Kme1RWm+twePINewtw8Tsyk+AmspzLRwrHjVIJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=UpAD+bd/; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OJ7OmMj+"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-836c8bdac50so17605267b3.0
-        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 09:03:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1787328226; x=1787933026; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ckvBWrFSwcLwwa+ubcnnacuUkv4EVV++6zpuDA54lvA=;
-        b=OJ7OmMj+EAbSu0oTl47nKYBVpapK9/AWe/U1/QD84QD2sWRiKCL+hm6dBPrdGSg7bX
-         H+6W/i3bQuq9/om83syVlmGVDRiPTw1yX3SB4p65mPtayK1CILJ/KwRy0PTiItDoxgR1
-         F7rr/IkXfr7sPYLC0kEgFcjWhpJL0W4eBL3Jq1fH1gsN4X/hy23BN9vBm+iBT034rEj9
-         pR5iRY7ladre+ZWrvYxcv0c1QPSXVMC94A8rkmEU7tnsfKYGZiZBjHVVdsZCxXJ/mRpO
-         +gPi2T4ILRU6RtFMvOV43uoESnBV/XHeGVNXcTN0rMvwdq4eiBt0x4Igj+ZZV7nMLrrl
-         zwWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787328226; x=1787933026;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ckvBWrFSwcLwwa+ubcnnacuUkv4EVV++6zpuDA54lvA=;
-        b=huX1u5Y6giN2bk0aFlCVneeDr39uCpehG+A3ccBULXMjDE0YyObRkJzEfnZ5qjaCDS
-         VcEGuKDn4Me8waBfh7H2eFhp8Ev9OBqNyR9mSwLha+RLkTrCKV/u38XpLVyX+3QoybGX
-         Ttt6l8gJcx0b5lHgogBPNOaIZuzyOQ4j5w0WJ5NTHe3UO8/RwGBjxRp/xxCa/o8y/qQS
-         zmu1y2S2cTB0IAeD6rWzX89h4Ck58OK9m2okhYYWdDfvkyGXpmX5WSpgTeG91jPtC7vd
-         3M5aZto1LyDjTzrHyXkS3gLQemyiNL69Qjif0SYa3ONSP87IJ6i6esJqLNiWyR8aQlu0
-         +SjA==
-X-Forwarded-Encrypted: i=1; AHgh+RolLBuQ7kt+mjFO0WypEA+l+i5bdhU468/oKdK+788kMPB3eqzbfydofIUf1LRvE8I05CRT/X186Xk=@vger.kernel.org
-X-Gm-Message-State: AFuF++nm0IbJjze4Yt8CGXv+kps115E2rKJmn2dyUM2mmQmiPSE4rcg1
-	8eZdgOCB6Pij4Tr34goQHTU9+WRvXLBsNnwTQsr+DZP3Z51VhhJcdYWauP2JzsU9tXU=
-X-Gm-Gg: AR+sD13sz/HGf0Pd6/Iy2spgEg83S9v/mF7xz8DFB9qVRlsLR0YzMEai7i4kOyRblh5
-	ITQXLndSoQDRcpZxSppbrvQ0kk/2OYi6Mx9+OcpqfIcAEUrdbT3cZUpKCe7PckTul0c0YH8MSy7
-	bsQGZAdU3f1XE52+SUjxKShks21CTFfkk1pqy/qjLTWrr2lt5RQb3dTAiM1NEQND7kAeEXG+BsI
-	Ohv9DpzAYA8Qjb1kufoI+8MWz/YQekbtt3Y8LTNw11faNDd5F1XJLTHhh9RSL4EjEI0si7B61fj
-	8Ee5HORmuTqc918mKl2XnpaSoRI7u00/rSo6ombmCLoLblHjtqLXopuCy+NgXFBNL3lyq4HcdK3
-	7+DXKVQ1Bv6O5YuDhm0X7DyaIynsAbUmRgHo0RG4qErqlzUfGSwLD3ZePQaniekz0o1cSFBH/0E
-	6X3hp/XEMn3O0VVJcxIQ5N5lT24kE9w4XqZocNP4U2rcKVnaDHNfillL8e3KAOvCeVM4bVxEjmp
-	Lo1lfUEJknf4/rJCrC7QT8jJrKT9uHwt/iPnV4HJA==
-X-Received: by 2002:a05:690c:b96:b0:806:b6ab:a410 with SMTP id 00721157ae682-849ea4fa374mr34419257b3.0.1787328225648;
-        Fri, 21 Aug 2026 09:03:45 -0700 (PDT)
-Received: from [192.168.1.169] (ip98-183-112-25.ok.ok.cox.net. [98.183.112.25])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-845195560e1sm44559037b3.46.2026.08.21.09.03.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Aug 2026 09:03:45 -0700 (PDT)
-Message-ID: <699419a2-31ab-4379-b11f-c77e9e6a750c@baylibre.com>
-Date: Fri, 21 Aug 2026 11:03:43 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="UpAD+bd/"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67LI4JGe3253703;
+	Fri, 21 Aug 2026 14:08:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=TihZS9sXHf8Pcg/gyqzk+5OJ0Ih
+	JH+7Fuh4cT4bIhiI=; b=UpAD+bd/VMVY6amKTgqEWyRMaRzkilGFVwqoCtjhcQE
+	F/VoXJ99U92WYOTEqH+paVWUlRZt5bXh5mqOH9qyRUcrJmaHE9eD4bq39TYmGdv0
+	QwZln7qjSS7Rw8tz3rppBHtdvLOuJbmhjq2XGWn+DzysDuEqzGYQzSwnen5aD3vt
+	pD4RFobSjRD6tcPa2wo7ps3jxSexrvd3PGWaYkZu/PIfn4cx3gyoA3NXdIk5UWKK
+	wpwHnBwOiEdlxeYS4c0BdfzEaJX5PmzLQSIzndqbmWVBf+EkO8sLWJ+vQN7BzjNb
+	5g6ePUwRlorExY/08MkdbNLUKq3TDAFWji+BdLZw83w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4g6rga8qru-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Aug 2026 14:08:12 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67LI8BQb064931
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 21 Aug 2026 14:08:11 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 21 Aug
+ 2026 14:08:11 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 21 Aug 2026 14:08:11 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.223.86])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67LI80fK032181;
+	Fri, 21 Aug 2026 14:08:02 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>,
+        Antoniu Miclaus
+	<antoniu.miclaus@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux@analog.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 0/4] iio: accel: adxl367: add INT2 interrupt pin support
+Date: Fri, 21 Aug 2026 21:07:49 +0300
+Message-ID: <20260821180753.4633-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 04/14] iio: adc: adi-axi-adc: Add support for CRC
-To: Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-References: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
- <20260821-ad7768-driver-v4-4-bb8fbd06d4eb@analog.com>
-From: David Lechner <dlechner@baylibre.com>
-Content-Language: en-US
-In-Reply-To: <20260821-ad7768-driver-v4-4-bb8fbd06d4eb@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: G7DrPL2g_jS71LPHl0pTIHkUTbfIdUW_
+X-Proofpoint-GUID: G7DrPL2g_jS71LPHl0pTIHkUTbfIdUW_
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDE0MyBTYWx0ZWRfX+SGOslq2FMrF
+ 4kYNRDJKKlK11G8p+Flrh3DODYSGVWw/31+EkoPPyOQq9i/m484kWcdd78tWu72Z7sFra8TNzly
+ P3mnquozqjlAfchx7qQj+QS+Y+fAzaqciJvg+TLeqoZPGr6YyAXI
+X-Authority-Analysis: v=2.4 cv=fcCdDUQF c=1 sm=1 tr=0 ts=6a88940c cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=bGhLtI4Elc35aERHuvsA:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDE0MyBTYWx0ZWRfX1aQmuyS5AHtJ
+ yzVm7iAl9e0iny0j+nhWJrlFvaLd9tbVxA1bBJvAL/ESLmv1IJEScc+LK8y/Ea2kviKJYFn+awj
+ 63AeAgRPo45Ts6AhUqIuSrqZH1t5nuA4pU+R2ODO0KFq7o+UqXAT8lhx2k2gdZOPXqPsGPCGY0I
+ zHkgUYUguPFNTji6oMVKzKbmqGYLY9HsMb9haut4uCgrIADxvtQ8gbAA3xqxuVeUyaXWe6nXwQW
+ +2BR9EYHUQd0lMz5ekV7xI5zblgNBw56hqiQ2dBL1uvV90U+GsqbTSF1gjjGE6sX8Zfuld6qlUM
+ x8kaZwrPgx4zqhPvwcsSgij519mLCzTAVJvPmqyZFaPCKp1EFwxGRHpO25U6RfsMK+legS/0OtH
+ rtr/sp1+uzVYLyAYtS28ellPXVdW9etzVZ94e3HApDiEwUnEwQMyuzZUKl0L2qWlBZ8UwIJCZpL
+ CeKsJT0GcMWQQ+JhyaQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-21_06,2026-08-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 clxscore=1015 impostorscore=0 priorityscore=1501 adultscore=0
+ phishscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608210143
+
+The ADXL367 exposes two independent interrupt output pins, INT1 and INT2,
+each with its own event mapping register. The driver has always hardcoded
+INT1, so a board that routes only INT2 to the host never receives
+interrupts. This series lets the driver pick the interrupt map register
+based on the interrupt-names device tree property.
+
+v3 addresses review feedback on the driver patch: the interrupt number
+returned by fwnode_irq_get_byname() is now used for the request, so the
+requested line always matches the routed INTMAP register even if the
+interrupts are listed in an unexpected order. A precursor patch converts
+the existing regmap_update_bits(..., en ? mask : 0) helpers to
+regmap_assign_bits() as suggested during review.
+
+Changes in v3:
+- New precursor patch converting the boolean regmap_update_bits() helpers
+  to regmap_assign_bits().
+- Use the fwnode_irq_get_byname() interrupt number for
+  devm_request_threaded_irq() in the INT2 patch.
+- Rebased on the latest togreg/testing.
+
+Antoniu Miclaus (4):
+  dt-bindings: iio: update unreachable maintainer entries
+  dt-bindings: iio: accel: adi,adxl367: add interrupt-names
+  iio: accel: adxl367: use regmap_assign_bits()
+  iio: accel: adxl367: add support for INT2 interrupt pin
+
+ .../bindings/iio/accel/adi,adxl367.yaml       | 13 ++++-
+ .../bindings/iio/adc/adi,ad4130.yaml          |  3 +-
+ .../bindings/iio/addac/adi,ad74115.yaml       |  3 +-
+ .../bindings/iio/addac/adi,ad74413r.yaml      |  3 +-
+ MAINTAINERS                                   |  4 ++
+ drivers/iio/accel/adxl367.c                   | 47 +++++++++++++++----
+ 6 files changed, 60 insertions(+), 13 deletions(-)
 
 
-
-On 8/21/26 9:06 AM, Janani Sunil wrote:
-> Add support for enabling and disabling Cyclic Redundancy Check (CRC)
-> processing in the AXI ADC backend. CRC provides data integrity verification
-> for high-speed ADC data streams, ensuring reliable data transfer between
-> the ADC frontend and backend processing systems.
-> 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
-Reviewed-by: David Lechner <dlechner@baylibre.com>
+base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
+-- 
+2.43.0
 
