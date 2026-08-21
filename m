@@ -1,109 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA562366061;
-	Fri, 21 Aug 2026 11:15:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DDB1481656
+	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 11:20:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787310907; cv=none; b=CSoWozPfU8mobgJFSLnSu9nAYDMtXbfJRBhWl6u6cUPv7pu/f8qkzVQn2isgQVNB87t3JY2HTU8UXFE3Kttzy4KMEefXrBZgQohTPyMwd4D2aufwnDBhNxSIRPmbAzD+N5fSuAYdoUMD1bqWslw/VGW/VQ+/MkhXjeefaCGf5tY=
+	t=1787311229; cv=none; b=mcEVQiJH9eTYY3BTrt7OcotGEV2v1OIxuAzdB5pOqBkLBD5BiyFKS8tHuG9nnLR7Xj8iI/onB2BeaVc2p9kqUZf88jCA2iurmxUsBGpVmqq4t/Po16lBxdoO7QVeC7r49PQU6A528BNxn+jGQwa3c1ZA5kgU8q04BBQP+ypuei8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787310907; c=relaxed/simple;
-	bh=Jbk3H6AprfRJXcRLMYeislUkk12A7dPXQjqEeDw3Ogo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WWAeiKTFwg0bX+7RmkY3DcbQkxyOWsFVDuEtAsiMZy9KUVu4MBFK6VGWns4mc8mYJ9L2UkkbRWPoFgvaOhN30RJ7Eb6GHew5Suw7LTfNC1Li0kZLS3nRkaCSj+Xn+FATjxeAdmne8LL3El2NBz5GEWks+OruHqEGX5RZNncInsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SreETIQa; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1787311229; c=relaxed/simple;
+	bh=zl+lcKVUwTw2hdXwH5M71fIohjQYAkHgT2vGYk8sVcI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fzd+bsR4kHGrmJSWImh5yihNSrLHNoRw3X+75uwGT6H7E/qDEj/sp7eJWxAPosCnzzgcUj17+2ZPl4PQCEP0z1MmZj0tabViMnyLaZmQyyviAT8eeA92NPP6Z8ZzvEhIkcf3KHGkIcZoDAZsiQAmAyKUdrh73lkJa+YTPHll4Ko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kQWQ6tUB; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SreETIQa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787310906; x=1818846906;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Jbk3H6AprfRJXcRLMYeislUkk12A7dPXQjqEeDw3Ogo=;
-  b=SreETIQaj7p12abiGBAnqjRT26Ex1+a09wsq4OE9Ft1XtP2eouMhLlao
-   hOAKHJ0NjzmFKJg81dpGpE9aAqRjKa0IDdPzcfD+I0/A5WFKU2wB9miJ+
-   7qyG6V2YMkU95cl/1D3+gPtRVfjjuDnGu1guKvqTr671YAoYk7xuqnDsu
-   8PfpZnl3jxyaRK4DzsSKq83QVfOEl0ffcUPexrvwT1OzdAwACm9tdgY19
-   d1N0EquJp60uCkVXyXB6joxi+1Sp3uZpV8XjATMgXC5aSkjzWagZXo3ai
-   HVIi/ObAbv9ebBZC9YHCAPYYIzx3an5JyjJ1s4hcl5pLuSSaxb0AkVeGt
-   Q==;
-X-CSE-ConnectionGUID: 2C2Bp/c+TMebgAE5M6YHZw==
-X-CSE-MsgGUID: zsQh678tRl6s3gktF93McQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11881"; a="87776718"
-X-IronPort-AV: E=Sophos;i="6.25,235,1779174000"; 
-   d="scan'208";a="87776718"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 04:15:06 -0700
-X-CSE-ConnectionGUID: hCjq5o6RSC2sHlaolrLJ/A==
-X-CSE-MsgGUID: xs40E4+RTteTNRZCN/RhTQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,235,1779174000"; 
-   d="scan'208";a="289847310"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.241])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 04:15:03 -0700
-Date: Fri, 21 Aug 2026 14:15:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: jean-baptiste.maneyrol@tdk.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: Re: [PATCH 1/4] iio: imu: inv_icm42600: sleep before enabling FIFO
- data
-Message-ID: <aogzNOaeOHQ732oP@ashevche-desk.local>
-References: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
- <20260820-inv-icm42600-enhacements-v1-1-075a881db557@tdk.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kQWQ6tUB"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6a0a4a28cbdso1721302a12.3
+        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 04:20:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787311225; x=1787916025; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=S/G4kA1oa42FAHTTSOZ1rtStYiGFk+bZCYLupm5QyS4=;
+        b=kQWQ6tUBcIJF+jcb8qBZ4bN8IhgFxCytsHiQhSFZ6JQl9diuPrQMs0AkPOqXf1+Bre
+         f0lCpasDgnu9OJHvG3a7u1lhbAXTMUahPAkbfKCJrL6mbvrjligoFL0fLY9E5usjvPgN
+         XoLFfecTEVAhDjYf7LciWsJ4ViKEjRkYbQEvFESoU2Vv+pCARd2MW3xM1iDUUhtqwf43
+         eJK2J/CfdlpaAFuhAJVRk7g9bpDa5B2J7UmSZ30hqTerMMXmPmj9e1+dZ5SMmkGsgCrm
+         /dKOSVtbvMAGwsEDNSsnqrHjHGTMLJhy5+0llLqgHMeuajHJ/msruKh8P9JX2ITXlXIf
+         4bxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787311225; x=1787916025;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=S/G4kA1oa42FAHTTSOZ1rtStYiGFk+bZCYLupm5QyS4=;
+        b=XkWY81XSGCOrUpsgDwGr1Wg920Ftj3eEE/RIjwiX/bLlpBd5ZvS3aSle1LOfebgqjH
+         dMLzbzGuu6ZlMhz+JAV7sjSzH2jHgh8zJDswakYsQDrELpCciStCnxyQUlew7C+bvN74
+         QEtAptReQJIuCPNl30axiqyMX78RW3n+h3New+2cihM5fiLooc07Qg87mqnMelh1Rw0H
+         vWP1xyiT88qgy5BndSeqPzqpILzfvf1gxkWge8clcvHMmPZl+MWQJCTdlT27LGV8GiDW
+         cUMFpvgKCOoTpT1ZWr8JetpoZT/cVYg+b5lqxhj1zRP7i0P43gk8+9+BOLvcjzjmRKjj
+         f8DQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrSO6yzwUMsP6iwxR0aXZ+sosCJwGFfHUMJKZKuQsAmS37pxXRwDs8WZD2Arc92piN7obN2V94Q/lc=@vger.kernel.org
+X-Gm-Message-State: AFuF++mb9lh2SN6shi0ADSLao/O5RGXmLsOUpchsAOxkAIRc+MbL5EAq
+	FXhXDkoUFDvcDvyLeHbXeqBADsFhx3Cb/DR+M395GpqJWSqvL+/6zzhRWbU9FJv8hqI=
+X-Gm-Gg: AR+sD12vXgeUjXtFiKOFXGfW+QuNst8Wm0Qvj2vVgm0LNSpvLiBfd2U+fPtahY9SGok
+	3ALSef0dwsqYYvT6fc6Zi2FRC01IujheKjbEkXtCa5RQqf74oXooTi8ClYodAIZYk8vHTTuhkW1
+	gRbj+n1xyQzh44+4hnCJm3LlzM866s7xJHPuV0+Ozdu0eL0OAV1zpJFb/SHnX+skJz/2r8rIZKe
+	2Ct12DaYganuAvF+oX6J2hDCs85zLImwLF9yvY8lrpX1VhmjRmz44zRigQ9txS/4xOUVZ2st1lG
+	GIB7oE5r6dN0KoLph8lTk5G22ptFu8tgYDl5uvrnYk9B4sNK+5AeZ/N9MXbTiZdfQAAb6O3cet7
+	ktg6fZ78eNl1FkILf5KF5qky+rce+5rKLZK8m+T4oEQ9PNCdryoHZVqYwQPP/RCw4EoX54ino96
+	fheSBPdgR4xEP2LtcvftAbCfSvVvLF3uBCi562a+xdwQitdWelhcnS+auFg/JUzhc/mEeUT2kf0
+	2mB9PDsmujS9rG74o//ajb35/B5U9lIiJpSb7EdU/JtZCOzHYIm7ht12h8UIDnoLm0rU5J8tA7Q
+	/UuD2x6IVX6fXogg4ukPe7PvEbZAC9hCTLEvjZ1amhEIAsm6SfpZJf6HXbOEvrfhuHNrYwI/CYk
+	PNHraCVJtlpZaFqXH5aJOIQ6oZotKvuspihInfq9CSKorJA00JcSf6yMljJhEXk4qdR5jvaI3iU
+	fKXpTk6w==
+X-Received: by 2002:a05:6402:380f:b0:6a3:9e00:8ed2 with SMTP id 4fb4d7f45d1cf-6a42f27795amr6505598a12.16.1787311225089;
+        Fri, 21 Aug 2026 04:20:25 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a3ff1780c9sm5978930a12.28.2026.08.21.04.20.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Aug 2026 04:20:24 -0700 (PDT)
+Date: Fri, 21 Aug 2026 13:20:21 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ skhan@linuxfoundation.org, linux@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 3/6] iio: dac: ad5504: separate ACPI and DT paths
+Message-ID: <20260821132021.00000d2c@gmail.com>
+In-Reply-To: <20260821102452.37407-4-0rayn.dev@gmail.com>
+References: <20260821102452.37407-1-0rayn.dev@gmail.com>
+	<20260821102452.37407-4-0rayn.dev@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260820-inv-icm42600-enhacements-v1-1-075a881db557@tdk.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Aug 20, 2026 at 09:02:37PM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
+On Fri, 21 Aug 2026 06:24:45 -0400
+Taha Ed-Dafili <0rayn.dev@gmail.com> wrote:
+> @@ -285,16 +292,20 @@ static int ad5504_probe(struct spi_device *spi)
+>  
+>  	st = iio_priv(indio_dev);
+>  
+> -	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+> -	if (ret < 0 && ret != -ENODEV)
+> -		return ret;
+> -	if (ret == -ENODEV) {
+> -		if (pdata->vref_mv)
+> -			st->vref_mv = pdata->vref_mv;
+> -		else
+> -			dev_warn(dev, "reference voltage unspecified\n");
+> +	if (is_acpi_device_node(dev_fwnode(dev))) {
+> +		st->vref_mv = AD5504_VREF_ACPI_DEFAULT_mV;
+>  	} else {
+> -		st->vref_mv = ret / 1000;
+> +		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+> +		if (ret < 0 && ret != -ENODEV)
+> +			return ret;
+> +		if (ret == -ENODEV) {
+> +			if (pdata->vref_mv)
+> +				st->vref_mv = pdata->vref_mv;
+> +			else
+> +				dev_warn(dev, "reference voltage unspecified\n");
+> +		} else {
+> +			st->vref_mv = ret / 1000;
 
-> When turning accel or gyro on, a sleep is required for letting the
-> mechanical part stabilize before reporting correct data. Do the sleep
-> before enabling FIFO data to prevent push of incorrect data. This is
-> required if the FIFO is already on because a sensor is already running.
-
-...
-
-> +	/* sleep maximum required time */
-> +	sleep = max(sleep_accel, sleep_temp);
-> +	if (sleep) {
-> +		mutex_unlock(&st->lock);
-> +		msleep(sleep);
-> +		mutex_lock(&st->lock);
-> +	}
-
-Doesn't sounds correct. Here it breaks the atomicity. Is it a problem?
-(Imagine a few CPUs doing something with this driver, is any other thread may
- intervene the flow here?)
-
-...
-
-> +	/* sleep maximum required time */
-> +	sleep = max(sleep_gyro, sleep_temp);
-> +	if (sleep) {
-> +		mutex_unlock(&st->lock);
-> +		msleep(sleep);
-> +		mutex_lock(&st->lock);
-> +	}
-
-Ditto.
+ret / (MICRO / MILLI)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Kind regards,
+Joshua Crofts
