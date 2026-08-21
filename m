@@ -1,133 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CEBC352027;
-	Fri, 21 Aug 2026 01:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F04D35674F
+	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 01:45:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787276713; cv=none; b=TlZ4H5LlFR+f9x1SHEhwHYLwPMOu25ApMu7yyx7mpTgfjD4MFzBK7ZSCYNqgEwPfaHNYJ3fO1gm8ixhlrlxzUgQmPhhBbPF+MdmMwNjp9A4a8ZJhgJj49DM9wSZqSUnvJx8ckPCfojXEvVboHXnWcPzbRZoK/lpRlTNsvIlDT98=
+	t=1787276717; cv=none; b=fHv9EEX+7yA0srPD/f1gBZ+5uOFYUg2ZRB9hQBfzl8xpMJ3isl+0yiy32q134nrZE+f+M5yNjvAFamrVT6TUPZrPytN47ny3naQ5FDb1y297Stl4qdn4xPeRVGYmz5YEOHoikmtn3gMMl0SDFV7inwOeza3N5QX1aKbPtzwT9rM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787276713; c=relaxed/simple;
-	bh=PXiw9K4AFbnDESdurcXExOBFyKCXQyrWUDtldgXv7/w=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oiHu6oapdtO4SLwkUe9YDS6r9amhf8FNVbg59cWKcqWYJrxTpBLZkAmoWKmohiS7h+uZcDQsqpLBWce+bFN7YJNrZCJW2mXFujLuSAPRLTmQobHc7jKtca/V9AKuA5afnmVb2Y8HfC2WywOUS4CkkjjbrgOPwsLwARfJO2k9a6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EMcY7emr; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787276717; c=relaxed/simple;
+	bh=sbAF0uqvlZvxsWfWk0SRP6ojJ7r9s4RDxyKqD93t8TE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CW6/UIItZaO03yz80qlmZMGg0b2GvcoEm1Hye0zNKCKLPUVTIT+gNDBE2idgtrI1U6x0FK+iclCHhMro2n1xAHToDUE736memN/TxPg1VpC/ATgBhF0k0YeWeq+e920yol5vaH1EtxHJKOXXz3RG2omXdOeD+0fHbB50NPShBMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pmC9t3+b; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EMcY7emr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56E931F000E9;
-	Fri, 21 Aug 2026 01:45:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787276711;
-	bh=EytWCRbUnZTggNNvhZbYX0Ci1gaj4r9l+nuPXwpNRxU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=EMcY7emrBcx15ZBTZ9TyK2MNPtpanSb+MnUMIopeyZQcYhyTLsHpuigLAJUQwo7FM
-	 F2qdP4ym5yj4H2OkwR74YGulydlBbmWsQbisAo1Lg073q9qvTFNJEuWkEd8sF6dRcI
-	 aAbONeH74vvBPwUG9wQ35Hn9CASAEdCPaNeKDFK4ePSCHBpS1MIcBGXndg/5mFBzIp
-	 Lw6phJWkQVCzV8Nju3i6P9k5kWuQSSDHOAO8iQ5IPyyldY5t5AyZsvsfZInb/YxX2T
-	 8/athXNG1bCGTDhb5o6JEiYSli5CjGCrrwB5diUDx8ggSJbPvu7sFTTIyLQJ+1dnjZ
-	 4HFIUzpC5lyVQ==
-Date: Fri, 21 Aug 2026 02:45:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, "Jonathan Corbet" <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Marius
- Cristea <marius.cristea@microchip.com>, "Marcus Folkesson"
- <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, Conor
- Dooley <conor.dooley@microchip.com>, Daire McNamara
- <daire.mcnamara@microchip.com>, Paul Walmsley <pjw@kernel.org>, "Palmer
- Dabbelt" <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- "Alexandre Ghiti" <alex@ghiti.fr>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, Janani Sunil <jan.sun97@gmail.com>,
- <linux-spi@vger.kernel.org>, Kent Gustavsson <nedo80@gmail.com>,
- <linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH v9 3/3] iio: dac: Add AD5529R DAC driver support
-Message-ID: <20260821024503.592fabc1@jic23-huawei>
-In-Reply-To: <20260820-ad5529r-driver-v9-3-ba62e0b2a816@analog.com>
-References: <20260820-ad5529r-driver-v9-0-ba62e0b2a816@analog.com>
-	<20260820-ad5529r-driver-v9-3-ba62e0b2a816@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pmC9t3+b"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2d530328efbso4735725ad.0
+        for <linux-iio@vger.kernel.org>; Thu, 20 Aug 2026 18:45:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787276714; x=1787881514; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=xZttsssqOMabZj0EkbaAGqT7Bp9lWTkosvKZrWr3/hA=;
+        b=pmC9t3+bT0bqnR6np42scxFfcv5Xq4CZjksmEi++FNeBJOzffmohe72bAygpdrTJkD
+         zky/zB5v3+fasBu4hFeP+qeZKPlQ91KfGP37hbyi2NmjrspQx3gEAVajmu3CWunZZmtU
+         Da1IPdHG+VzT46MjfBB8EQDsC4WfkL/uulqwTr/VnEkswfpg/LRLAZVQpPlPtqQx7oe0
+         ErTyvw8Fb7eAvPEsxENP2OG5wcdeXgMjx1e5Yid2gh/m3LEK30J6fY7FnRE+jZpb7SPu
+         MaUWPyUzqoCJ7T5h0Lt0O2MYW8jOCR1JFdXW4eGSFz3le3Xwh4H9JHzb+Pr/HNX1niRg
+         9whw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787276714; x=1787881514;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=xZttsssqOMabZj0EkbaAGqT7Bp9lWTkosvKZrWr3/hA=;
+        b=J5bpMzjnSDB+dcQpjd6O56z91kzgeMz/ACHlSUrhhibwFPiO9WHuvF4bMC/PilCcHt
+         h3RIUA5kYnAar56T2zKkXAQhbcL1MUWKDzIKkuuayx5dj1lG7P0WhZDbzLTVclBYUaeP
+         5GqgITRXIznmeTfUgPPo/fC5OHagYM6tPzy1vGL9uCmY8BmoEI8Nb+Yi+ws4S74sTsrp
+         M0AKgmbVCI0JvneO7vcMfl1GM3RAMToG6a+zoSkWEQSG3y+PUpgRHlwZjXn4IUOmh8yX
+         zhhLP6E17dTGxrlzsxnxwPr2ysmvlXNTAFgTAEIP6eLgBrxfuFqZOMOOvaQ5zol5s65Z
+         f3nA==
+X-Forwarded-Encrypted: i=1; AHgh+RpB80pMBADxzhtatwYcAb/lfv3IT1kjwGLSpg8ENgz4oAboiAh8ZJZ4U0vDZMCwYkQVB+Dc8rnvht8=@vger.kernel.org
+X-Gm-Message-State: AFuF++mMJi1WXf5cZlGMXD0/x+EOpEsERw4DzM2eb/waN/Nww8dnGT9k
+	ir2ybCSVPFSOcY8EkTOGB0VBLm2NowYZgQYojFJ6iPXCdfIMlrs/NRk=
+X-Gm-Gg: AR+sD13pv7pJVYOQhNYHuuqLeeA651A17ybG+i8xUXVGv5jKFiSfrjEv5fFk1IkdSuv
+	mB1FXJ7GKL7+6dQFfdnbBry7GaeFPXfVjm78QItCgjKwlk19tUrDIdb9ML4C6rt074fE8+Jrg04
+	Nm5ZL9kduuuV2dPLDEKnWUz6m7ru45XDFNQi/QOC0IgNF7UfPtbxcdXugAhPHbO9628suTJ/lz0
+	WVLLojHP2bxe+TkmxG/ExQJyH/84+7xo0VMDY7jaWqxbSyj39xYDOQKA3L4BfBGma2aB22+zq6s
+	LZ9y5WdWQmagJ4z2eUMX+wuYj71x9zjRRow7a+irV/PnseHZKIEL5IDYgiOJ3C671/PnMD5C7MP
+	+o5vju07LphTVRZUK7P7COXfM9mRtU1EhbZz3CkX3Ecc00MqBN4UfHMIPwxM8F3dg/l9vrnB9A0
+	MdctHSAr7sxu7Odn3S5ilTt3W24WSLLIHixgu1g3bzXK7AqdbHtajHgUL3aXEiwrUCbLYCBWLyy
+	Q==
+X-Received: by 2002:a17:902:ce08:b0:2cc:9179:32e with SMTP id d9443c01a7336-2d64afe9569mr53845135ad.10.1787276714031;
+        Thu, 20 Aug 2026 18:45:14 -0700 (PDT)
+Received: from DL2XHKPB4.dl.net ([103.63.104.162])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d62e3cced8sm12727335ad.75.2026.08.20.18.45.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Aug 2026 18:45:13 -0700 (PDT)
+From: Triet Hoang <triet.hoang.dev@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	bleung@chromium.org,
+	groeck@chromium.org,
+	linux-iio@vger.kernel.org,
+	chrome-platform@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Triet Hoang <triet.hoang.dev@gmail.com>
+Subject: [PATCH] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
+Date: Fri, 21 Aug 2026 08:44:54 +0700
+Message-ID: <20260821014454.15960-1-triet.hoang.dev@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 20 Aug 2026 09:08:23 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+Convert the deprecated SIMPLE_DEV_PM_OPS
+to DEFINE_SIMPLE_DEV_PM_OPS and pm_sleep_ptr().
 
-> Add support for AD5529R 16-channel, 12/16 bit Digital to Analog Converter
-> from Analog Devices.
-> 
-> The device communicates over SPI and supports per-channel output range
-> configuration. An optional external 4.096V reference can be used in
-> place of the internal reference.
-> 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-Sashiko calls out that dependency should be on CONFIG_SPI.
+This lets us drop the __maybe_unused annotations
+from the resume callbacks, and reduces kernel size
+in case CONFIG_PM or CONFIG_PM_SLEEP is disabled.
 
-I didn't check it's reasoning but I believe the conclusion is correct.
-If that's all that comes up, I can tweak whilst applying.
+Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
+---
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 2 +-
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 4 ++--
+ drivers/iio/light/cros_ec_light_prox.c                    | 2 +-
+ drivers/iio/pressure/cros_ec_baro.c                       | 2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-Looks good to me, but I'll leave it on list for a little longer
-as we aren't in a rush and others may well want to review.
-
-Thanks,
-
-Jonathan
-
-> ---
->  MAINTAINERS               |   1 +
->  drivers/iio/dac/Kconfig   |  16 ++
->  drivers/iio/dac/Makefile  |   1 +
->  drivers/iio/dac/ad5529r.c | 538 ++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 556 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 320e84765ce6..143714e27d51 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1513,6 +1513,7 @@ L:	linux-iio@vger.kernel.org
->  S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-> +F:	drivers/iio/dac/ad5529r.c
->  
->  ANALOG DEVICES INC AD5706R DRIVER
->  M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 657c68e75542..6a7109f42f2a 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -134,6 +134,22 @@ config AD5449
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5449.
->  
-> +config AD5529R
-> +	tristate "Analog Devices AD5529R High Voltage DAC driver"
-> +	depends on SPI_MASTER
-
-depends on SPI
-
-> +	select REGMAP_SPI
-> +	help
-> +	  Say yes here to build support for Analog Devices AD5529R 16-Channel,
-> +	  12-Bit/16-Bit, 40V High Voltage Precision Digital to Analog Converter.
-> +
-> +	  The device features multiple output voltage ranges from -20V to +20V,
-> +	  built-in 4.096V voltage reference, and digital functions including
-> +	  toggle, dither, and ramp modes. Supports both 12-bit and 16-bit
-> +	  resolution variants.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ad5529r.
-> +
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index b971f8b646be..551b86236abc 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -311,7 +311,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
+ static struct platform_driver cros_ec_sensors_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-sensors",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_sensors_probe,
+ 	.id_table	= cros_ec_sensors_ids,
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index 5133755c2ea6..7d09f7c7d35c 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -862,7 +862,7 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
+ 
+-static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
++static int cros_ec_sensors_resume(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+@@ -879,7 +879,7 @@ static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
+ 	return ret;
+ }
+ 
+-SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
++DEFINE_SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_pm_ops);
+ 
+ MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index 7ab565b1fb9f..b1c92de7922a 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -249,7 +249,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
+ static struct platform_driver cros_ec_light_prox_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-light-prox",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_light_prox_probe,
+ 	.id_table	= cros_ec_light_prox_ids,
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index 6a567b6075d9..e4bc4df48d01 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -192,7 +192,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
+ static struct platform_driver cros_ec_baro_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-baro",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_baro_probe,
+ 	.id_table	= cros_ec_baro_ids,
+-- 
+2.53.0
 
