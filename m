@@ -1,43 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75C53603DB;
-	Fri, 21 Aug 2026 23:31:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9411E7C18
+	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 23:35:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787355113; cv=none; b=j4NbqLsNwjA70YYhwi9PrAb2YH7wlsnrNmd1GuPVdJ5QknHYfdfLcmQuhY43Z5zNe7qraP9TITVa/24S4ktjfnOM8Qrlq7IeryR0PibI/QaYtV6yawJMjTqesxtwXDV7yYvpjfZWdu7b+u7i0U1aOZbnFNY241xhikuYpNyQv3s=
+	t=1787355309; cv=none; b=DuphumBtGZ938UkJqRm2qyksg5wxoGBC0OLRiklUsdwqJSRI+3Hv3hrR6+VNzdJOtkdMbAQdg2HTHhUKw/SYnC4EKdpZIyT2NdLk3AERXPyaIkKdCJeTa5DaiNCIHsmcsqBdwCLEHlP18qnJHz6lO3jb6M5Ka/KgX6NcRpuKHRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787355113; c=relaxed/simple;
-	bh=j5UpYRHlqi7sh0mnbdgsDL/S7j546To1ben8m5Rsn0w=;
+	s=arc-20240116; t=1787355309; c=relaxed/simple;
+	bh=oxeN1sIW6UDRahugO74vDrxYsJuaqgIS7VhHVd8289Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LMgunbKgq+lAAxF+9uWxkX8lCC8Z60sXrsYbwkT00MU1OOpS9TeI+NQWVmg66mDW79gp7qQu6ES3kMEahIxOAvVox5X3ckfAQpsRg7xtHRY1kU0Z7UCeGd+arA+dzCqUgGWlWYuuWUfPDZfbxnLH48AaVd1EIAyml0gP2jiEz1A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lVdz7RXm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Tqbemm0ZYPtblzmkA5hTq9hQzoIcYHh4MiXnV+Oeke9GCzX7XxdCs4mnubLfdu8qo4ZT1GKuhQaET2QjCJd4xgxXHI5VouD4USS3LS3AWKVtwasx3yiXw7q9nO6QDOfeuWOU3QGvdT/TLx21Cz3eHmHwMhXsnqTIDNuRs9jmh1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nV58QJNJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lVdz7RXm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B8A1F000E9;
-	Fri, 21 Aug 2026 23:31:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nV58QJNJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94B561F000E9;
+	Fri, 21 Aug 2026 23:35:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787355111;
-	bh=rCp/jY0222VSJZl4mUd75jNTGtXAjtUuGODwa389Jvw=;
+	s=k20260515; t=1787355307;
+	bh=risqopzzbL5dyHIytLaW9nalXpHSu6dIgaQsnI6V6pM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=lVdz7RXmwiQxPdZ8EpKvdYh2XjQbhfGvMiNoylnXHdUp5+SMOfmIGPpOQXsg/s6OQ
-	 xFWDueT4IHRgyucqkHqPnlIubMTFt0l/oq9d8ibunWANUwVO3Irr9JdC1WK0oLFEQo
-	 h9tNuFkpjpIvwfnuD4UO9yxghLDkcu3F8q5DtGikMBjPvUI8huPeoydGar+TBfd4bR
-	 dtkpJTh1vCmdq1+I554k1hJbfPycvx8xmMMG7EVsmErQQbBPAOyRHvLEtLTAwj07U2
-	 EK/AhCwaoJGx0v8uWWcdsYLvsuTX5iAXdn2rvUPAe6sCUe0EPUvSldhRHvNHm//8yn
-	 yULw49NT/Gd9w==
-Date: Sat, 22 Aug 2026 00:31:46 +0100
+	b=nV58QJNJJKNGyoXz2mfjCSumrRqZFmw1P4QfxrKQkUixFM4i+c4l9V81R1Un5rwdE
+	 cX3+R21RZlbt4jewOH/NAc6wRjPnMeWJSyzt55mtRapdJrvzOgylq2CLsJynsPn5Nf
+	 iRQsCa7eDNjJVobeAXyin2AlTV8PUtfZmqWd88lrsLrCtsDUSaaDwOxjaRKKVtmFRA
+	 AH7qT2JWyBB3Kr+2ctO2e0xuw3si2YbIa4YEIlrDUdqZNl8ogcrxfRFfja2pct4nkd
+	 p0zx5jAQD65Q6Wbjbd3k2pw/CO6MTBu6WAXRdzfDZDIXLjG6+4kiwYmF/hZGwnZEBG
+	 Y8r4eOq9r+6mQ==
+Date: Sat, 22 Aug 2026 00:35:02 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, shuaijie wang
- <wangshuaijie@awinic.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: aw96103: validate firmware data length
-Message-ID: <20260822003146.4962e329@jic23-huawei>
-In-Reply-To: <20260802192134.32a0349d@jic23-huawei>
-References: <20260801193700.57457-1-acharyalaxman8848@gmail.com>
-	<20260802192134.32a0349d@jic23-huawei>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, Jinseob Kim <kimjinseob88@gmail.com>, Joshua
+ Crofts <joshua.crofts1@gmail.com>, Sanjay Chitroda
+ <sanjayembeddedse@gmail.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ sashiko-bot@kernel.org, Jonathan Cameron
+ <jonathan.cameron@oss.qualcomm.com>
+Subject: Re: [PATCH v2] iio: buffer: Ensure bounce buffer used for unaligned
+ case is zeroed.
+Message-ID: <20260822003502.79b9207d@jic23-huawei>
+In-Reply-To: <anr6TMSfdmjQk3Oa@ashevche-desk.local>
+References: <20260803012224.219493-1-jic23@kernel.org>
+	<anr6TMSfdmjQk3Oa@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,121 +51,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 2 Aug 2026 19:21:34 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue, 11 Aug 2026 13:32:44 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Sun,  2 Aug 2026 01:22:00 +0545
-> Laxman Acharya Padhya <acharyalaxman8848@gmail.com> wrote:
+> On Mon, Aug 03, 2026 at 02:22:24AM +0100, Jonathan Cameron wrote:
 > 
-> > The firmware parser reads a length from the binary header and then uses
-> > it to walk six-byte register/value entries. A truncated firmware image
-> > can make the parser read beyond the copied firmware buffer. A value
-> > smaller than the four-byte count field also underflows, producing a very
-> > large length.
-> > 
-> > Read the little-endian field with get_unaligned_le32(), as previously
-> > proposed by David Lechner. Validate the header size, reject an
-> > underflowed length, ensure the resulting payload is contained in the
-> > firmware image, and require it to contain whole register/value entries.
-> > 
-> > Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
-> > Link: https://lore.kernel.org/r/20260314-iio-proximity-aw96103-fix-firmware-read-v1-1-c74fe9ccd82b@baylibre.com
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>  
-> Looks fine to me, but I'll leave it on list a little while so others
-> have time to take a look, ideally including Shuaijie Wang
-
-Long enough - applied to the fixes-togreg branch of iio.git.
-
-Note, I'll be rebasing on rc1 before sending this out so there is
-still time for additional feedback.
-
-Thanks,
-
-Jonathan
-
+> > iio_push_to_buffers_with_ts_unaligned() leaks uninitialized heap memory
+> > to userspace if the data passed in is not a multiple of 8 bytes and the
+> > timestamp is enabled. Specify __GFP_ZERO for the devm_krealloc()
+> > to ensure any extra space is cleared.  
 > 
-> Thanks
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/proximity/aw96103.c | 30 ++++++++++++++++++++++++------
-> >  1 file changed, 24 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
-> > index 8fbb755dc..8352d51e5 100644
-> > --- a/drivers/iio/proximity/aw96103.c
-> > +++ b/drivers/iio/proximity/aw96103.c
-> > @@ -24,6 +24,7 @@
-> >  #define AW96103_BIN_VALID_DATA_OFFSET		64
-> >  #define AW96103_BIN_DATA_LEN_OFFSET		16
-> >  #define AW96103_BIN_DATA_REG_NUM_SIZE		4
-> > +#define AW96103_BIN_REG_SIZE			6
-> >  #define AW96103_BIN_CHIP_TYPE_SIZE		8
-> >  #define AW96103_BIN_CHIP_TYPE_OFFSET		24
-> >  
-> > @@ -229,14 +230,27 @@ static const struct aw_chip_info aw_chip_info_tbl[] = {
-> >  	},
-> >  };
-> >  
-> > -static void aw96103_parsing_bin_file(struct aw_bin *bin)
-> > +static int aw96103_parsing_bin_file(struct aw_bin *bin)
-> >  {
-> > +	u32 data_len;
-> > +
-> > +	if (bin->len < AW96103_BIN_VALID_DATA_OFFSET)
-> > +		return -EINVAL;
-> > +
-> > +	data_len = get_unaligned_le32(bin->data + AW96103_BIN_DATA_LEN_OFFSET);
-> > +	if (data_len < AW96103_BIN_DATA_REG_NUM_SIZE)
-> > +		return -EINVAL;
-> > +
-> > +	bin->valid_data_len = data_len - AW96103_BIN_DATA_REG_NUM_SIZE;
-> > +	if (bin->valid_data_len > bin->len - AW96103_BIN_VALID_DATA_OFFSET ||
-> > +	    bin->valid_data_len % AW96103_BIN_REG_SIZE)
-> > +		return -EINVAL;
-> > +
-> >  	bin->valid_data_addr = AW96103_BIN_VALID_DATA_OFFSET;
-> > -	bin->valid_data_len =
-> > -		*(unsigned int *)(bin->data + AW96103_BIN_DATA_LEN_OFFSET) -
-> > -		AW96103_BIN_DATA_REG_NUM_SIZE;
-> >  	memcpy(bin->chip_type, bin->data + AW96103_BIN_CHIP_TYPE_OFFSET,
-> >  	       AW96103_BIN_CHIP_TYPE_SIZE);
-> > +
-> > +	return 0;
-> >  }
-> >  
-> >  static const struct regmap_config aw96103_regmap_confg = {
-> > @@ -500,7 +514,7 @@ static int aw96103_bin_valid_loaded(struct aw96103 *aw96103,
-> >  	int ret;
-> >  
-> >  	for (i = 0; i < aw_bin_data_s->valid_data_len;
-> > -	     i += 6, start_addr += 6) {
-> > +	     i += AW96103_BIN_REG_SIZE, start_addr += AW96103_BIN_REG_SIZE) {
-> >  		reg_addr = get_unaligned_le16(aw_bin_data_s->data + start_addr);
-> >  		reg_data = get_unaligned_le32(aw_bin_data_s->data +
-> >  					      start_addr + 2);
-> > @@ -550,6 +564,8 @@ static int aw96103_para_loaded(struct aw96103 *aw96103)
-> >  static int aw96103_cfg_all_loaded(const struct firmware *cont,
-> >  				  struct aw96103 *aw96103)
-> >  {
-> > +	int ret;
-> > +
-> >  	if (!cont)
-> >  		return -EINVAL;
-> >  
-> > @@ -561,7 +577,9 @@ static int aw96103_cfg_all_loaded(const struct firmware *cont,
-> >  	aw_bin->len = cont->size;
-> >  	memcpy(aw_bin->data, cont->data, cont->size);
-> >  	release_firmware(cont);
-> > -	aw96103_parsing_bin_file(aw_bin);
-> > +	ret = aw96103_parsing_bin_file(aw_bin);
-> > +	if (ret)
-> > +		return ret;
-> >  
-> >  	return aw96103_bin_valid_loaded(aw96103, aw_bin);
-> >  }  
-> 
-> 
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
+Usual stuff about rebasing on rc1 etc apply
+
+J
