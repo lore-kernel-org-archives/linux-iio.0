@@ -1,110 +1,109 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C59B947CA60
-	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 11:03:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA562366061;
+	Fri, 21 Aug 2026 11:15:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787310238; cv=none; b=YN7GOJzZzhTw4XV5vPp3LFK3EdAEwwmPGMOwBiqNG+t3QVblfSqGf5fdP1oFkCZVMWQz0hUB0HZg+b/E7OllOGKC1BOOs0geHoOcRjsq19eoQMnF6UVIRRWkQudX5LKydupNzFjASUsj/385JLERW4lVx/p2RavnVyX7iz8/GKs=
+	t=1787310907; cv=none; b=CSoWozPfU8mobgJFSLnSu9nAYDMtXbfJRBhWl6u6cUPv7pu/f8qkzVQn2isgQVNB87t3JY2HTU8UXFE3Kttzy4KMEefXrBZgQohTPyMwd4D2aufwnDBhNxSIRPmbAzD+N5fSuAYdoUMD1bqWslw/VGW/VQ+/MkhXjeefaCGf5tY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787310238; c=relaxed/simple;
-	bh=B38wB0vUMdlZRx2N7kf9ZWst50Iqp8nsPF5uH+lKrGg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=E7QbIuW14lYhoa/+zw0AWF6kMcjW0MT+jNsorMgYJG/1hiXNSsQyGDl1cWoTecFKQA7nNlLIA16Fz5I9uNf1VKi3te2DKhYVL9ji1xD9HLjURQ2aKAvW1wOXoRwreoyVIZ2zU57cj3RVNIHxZCRrpkoH9ctL8rhHzjLU4w5FZaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F61Za3s+; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787310907; c=relaxed/simple;
+	bh=Jbk3H6AprfRJXcRLMYeislUkk12A7dPXQjqEeDw3Ogo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WWAeiKTFwg0bX+7RmkY3DcbQkxyOWsFVDuEtAsiMZy9KUVu4MBFK6VGWns4mc8mYJ9L2UkkbRWPoFgvaOhN30RJ7Eb6GHew5Suw7LTfNC1Li0kZLS3nRkaCSj+Xn+FATjxeAdmne8LL3El2NBz5GEWks+OruHqEGX5RZNncInsg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SreETIQa; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F61Za3s+"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-c15cd3fd760so108981866b.2
-        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 04:03:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787310234; x=1787915034; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=pJu78dGyTk0n73zePooVLlpbfkvwvlQMnvrMH6WIan0=;
-        b=F61Za3s+8rXlDe0ZAz+ukvDz7sBbHNEQrRAtwigWg/ZnmLRyJN2gByduRRnOOXO7OP
-         y6k1ftCxt91+kw1+yiftNs+wCPLjXWxaWTFGNRsTy7DJzilA/D00xUZCba2KZ9TXQ97M
-         5kLmw8jInGX8qoYrhqlXr0YnxBwojWp2IHNRzcDHzXTxowFA1jOmkQj/EbzS1VMy1zJb
-         HcTb5lXEpp7xhxEKb6x1/zJ9oFX1H3wlXoGBHyD/gIo/QqLpdZaxs7eQl+w435xtO8tP
-         buOc/2fNGTvMTJqfB0GU6tNkKbDH7LCJr/6wo+pNllDMB6vMYJ0jMPjuE6yxnZRx+gJZ
-         EgnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787310234; x=1787915034;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=pJu78dGyTk0n73zePooVLlpbfkvwvlQMnvrMH6WIan0=;
-        b=FQBcDK2VqhN3rZ9kqcEP9uGuonRUTlHttloNVncD/KUo3exi2fNkVEkUywWfNoVqck
-         Z6W50xWZ1FvODU+Wh5m1/Wyz/UbB3EHid20ZuWPxsPzYxLQSkZ5WrlDOR1UihjrCQnN2
-         lbdRUxLxoQ5KgtDMOllIwRlU9fYp/9oSBnX78OBAkgZ6yvk8tOIkeaj51DXJw5NoLr2M
-         MFYjm65BJ3CuxM3p20nAGmb8FGOJPnHr2xy8Q7mMDQP3T5tMYKj1bsyES+9BcuUwdCz3
-         egOGzwzzwMcgB/pmsvG27NsK3MMzrgADhGzdiRq6SecuNrJVNsz/oyFeO+WYq9awKZ0k
-         rB3A==
-X-Forwarded-Encrypted: i=1; AHgh+Rprt6kZ+e9H+IIeHPoIPZGaLBc/NY899G/cyiudxhnGQBWPw+Gonxbb97Our0/WVmPhUukEv+6BTH4=@vger.kernel.org
-X-Gm-Message-State: AFuF++kSBMgH8HFavsSPGdWQVTMghtj7JZlr4ez6yA4QNjLxG8tm6bOd
-	X2Nf76BPholI9iaWn1EWwy913CifNs8bgYwFfxH6S6Zin/03zQk/uDEu
-X-Gm-Gg: AR+sD13xqMTFuuC9h3UJl6AcwmTA+Yexp4/agrVTvwIoLgPh91NvG5nju+miOdblAQT
-	cuyLU6K2mXiCMP7YzlLesZgxpaUrN52wyxoPm0lxJYts8BqXqPpryHx9/J25tdXC9qmS/EPZEWs
-	uNbcPUS4k7BTzMv32mCD2GU6uyMCHgMOcHAEbT9SGnqphKGksC1TTPmqIskTmnIrJHw59E+CBCd
-	FADEJHIHmnewOgl1XLLX88O4EXjHloR30ske+xqjLJF3hNXoLg5gE+txdXy7K2kl8IC2T4MQi1P
-	GPO6ehyltaJ+tpxWjKOPTICTOVG5bIN29VuOO7ddIbyvjjVfojlcBemB+Ynz955IZSbpA+MFtyS
-	64HSW/fnXIXbHCR0vQsHcBHKTOhBT9iBPDQ16Pkpm8yfR4mvHzL0YSBMGfMpdWev50HKAs7YVPF
-	q02bu9iE2vyrcTItBi47OTBd4Y9p/+Fil6L8b2hRDTzcU9unr/ymN1RcobRihJlMO5HrRYCGi+G
-	oYMpkKVBow5OVI4HGnIO4lknTvfUKyEAagai3B++ojZ7bDnVxKyPPTwJSj1qj1wY7aRMssCVCe2
-	eFD7Ge3KMW1DgZhbIlbvTYvoXz5jAEyzCRXOMYd98c7dB31ql1GSfbogBzKCD5JfFoqvcwPFiA9
-	OqfT1RIQLN+uah3HjjqpOebzLuGUpLSxf+ufsTqdwgNJyzYpsU1/qX0Hr+XD71HC0LfYkVw==
-X-Received: by 2002:a17:907:e1c5:10b0:c24:6445:d19 with SMTP id a640c23a62f3a-c246a7120d4mr413937166b.17.1787310234188;
-        Fri, 21 Aug 2026 04:03:54 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2458b58a50sm456656866b.26.2026.08.21.04.03.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2026 04:03:53 -0700 (PDT)
-Date: Fri, 21 Aug 2026 13:03:51 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Michael Hennerich
- <Michael.Hennerich@analog.com>, linux-iio@vger.kernel.org,
- linux@analog.com, linux-clk@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: adc: meson-saradc: Make sure clk_init_data is
- fully initialized
-Message-ID: <20260821130351.000052a0@gmail.com>
-In-Reply-To: <7470364f0d70b6e9c06fd094768cfa91c7784d42.1787240005.git.geert+renesas@glider.be>
-References: <cover.1787240005.git.geert+renesas@glider.be>
-	<7470364f0d70b6e9c06fd094768cfa91c7784d42.1787240005.git.geert+renesas@glider.be>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SreETIQa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787310906; x=1818846906;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Jbk3H6AprfRJXcRLMYeislUkk12A7dPXQjqEeDw3Ogo=;
+  b=SreETIQaj7p12abiGBAnqjRT26Ex1+a09wsq4OE9Ft1XtP2eouMhLlao
+   hOAKHJ0NjzmFKJg81dpGpE9aAqRjKa0IDdPzcfD+I0/A5WFKU2wB9miJ+
+   7qyG6V2YMkU95cl/1D3+gPtRVfjjuDnGu1guKvqTr671YAoYk7xuqnDsu
+   8PfpZnl3jxyaRK4DzsSKq83QVfOEl0ffcUPexrvwT1OzdAwACm9tdgY19
+   d1N0EquJp60uCkVXyXB6joxi+1Sp3uZpV8XjATMgXC5aSkjzWagZXo3ai
+   HVIi/ObAbv9ebBZC9YHCAPYYIzx3an5JyjJ1s4hcl5pLuSSaxb0AkVeGt
+   Q==;
+X-CSE-ConnectionGUID: 2C2Bp/c+TMebgAE5M6YHZw==
+X-CSE-MsgGUID: zsQh678tRl6s3gktF93McQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11881"; a="87776718"
+X-IronPort-AV: E=Sophos;i="6.25,235,1779174000"; 
+   d="scan'208";a="87776718"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 04:15:06 -0700
+X-CSE-ConnectionGUID: hCjq5o6RSC2sHlaolrLJ/A==
+X-CSE-MsgGUID: xs40E4+RTteTNRZCN/RhTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,235,1779174000"; 
+   d="scan'208";a="289847310"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.241])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 04:15:03 -0700
+Date: Fri, 21 Aug 2026 14:15:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: jean-baptiste.maneyrol@tdk.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: Re: [PATCH 1/4] iio: imu: inv_icm42600: sleep before enabling FIFO
+ data
+Message-ID: <aogzNOaeOHQ732oP@ashevche-desk.local>
+References: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
+ <20260820-inv-icm42600-enhacements-v1-1-075a881db557@tdk.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260820-inv-icm42600-enhacements-v1-1-075a881db557@tdk.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, 21 Aug 2026 12:04:06 +0200
-Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+On Thu, Aug 20, 2026 at 09:02:37PM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
 
-> The clk_init_data structure contains several mutually-exclusive members
-> for different methods to specify the possible parents of a clock,
-> prompting drivers to initialize only the members they need.  However,
-> not initializing all members may cause subtle issues, which are only
-> exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
-> enabled.
-> 
-> Make sure all members are fully initialized, to avoid such bugs, and to
-> prevent future breakage when converting drivers to a different method
-> for specifying the parents.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
+> When turning accel or gyro on, a sleep is required for letting the
+> mechanical part stabilize before reporting correct data. Do the sleep
+> before enabling FIFO data to prevent push of incorrect data. This is
+> required if the FIFO is already on because a sensor is already running.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+...
+
+> +	/* sleep maximum required time */
+> +	sleep = max(sleep_accel, sleep_temp);
+> +	if (sleep) {
+> +		mutex_unlock(&st->lock);
+> +		msleep(sleep);
+> +		mutex_lock(&st->lock);
+> +	}
+
+Doesn't sounds correct. Here it breaks the atomicity. Is it a problem?
+(Imagine a few CPUs doing something with this driver, is any other thread may
+ intervene the flow here?)
+
+...
+
+> +	/* sleep maximum required time */
+> +	sleep = max(sleep_gyro, sleep_temp);
+> +	if (sleep) {
+> +		mutex_unlock(&st->lock);
+> +		msleep(sleep);
+> +		mutex_lock(&st->lock);
+> +	}
+
+Ditto.
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
