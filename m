@@ -1,45 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE68388873;
-	Fri, 21 Aug 2026 23:37:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 251F7390998;
+	Fri, 21 Aug 2026 23:56:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787355424; cv=none; b=dzbAFgglZr4VqaUaUQ1S2q/LR0WaCZL+p2hwH0V+oa540BbOo4vYfFEgWEd7LX7SgYlTFmYkXUgO05g5EHvoY93twhwd75KKSj3MUXjzy2oxT7hYGoBQ9+kVd8zE1ZHVy34X9sqshQtC7K3Hud93iIOJZMNZAeKCHlr1gme82Xs=
+	t=1787356608; cv=none; b=dfDZXCKYHPnYdgTV4EKZBi6t5T2N2qfkwz35lJfx5X+oi1GX3lYnatFReSaaw8Gw9X/ABIsTbFWFYWHDe6zXWcaX9TZwPZqFzpYq9nyxwu1xfmPzQu8RrAFMBCd5jOaR/smQpHMZtSXWpSrC1CWaENqa5gmQUJTUjV130pNsDKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787355424; c=relaxed/simple;
-	bh=m5q74RqLvaYaSxFUIjS6oRfZsXvQh8h2gvEZZA8x3/8=;
+	s=arc-20240116; t=1787356608; c=relaxed/simple;
+	bh=/ZZaHPJH1breKjbJyIPSbsojn9eFmqLhxvzfttSZ5Ys=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=M7oW8Fh2sl2frftvzj+ygXHmlhxf0dOdSllvU0b+0FJVzquz5mqm/SqjaO29SZOYv3TB6zt4YTak/HcwORzwKweCaFPyhVlGrc8DEVC6FlRwa20ERbG7VuWH3MxE6mFYEmDMHhw9bL3E92DdukyK/kTUTJlgeDvs9DI/6KbgI9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h38Q+32S; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=k+LY0Drzm0CqSdfQQyqJRV0rMfuSWznclVbPwzDETMLx3sAooX8bzjhIiMC46XnPV205Z9fnwbXH0mOzEb++aQv42AtM1VPnhkCiS+hwx6IFZneRUNJjmztE9zSYA0efxiwN3mDqjsWaCrZSnHztsgfa5W0iVkOqUZgdel7s1xU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dATDvDme; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h38Q+32S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B17B1F00A3A;
-	Fri, 21 Aug 2026 23:37:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dATDvDme"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262F91F000E9;
+	Fri, 21 Aug 2026 23:56:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787355421;
-	bh=5V+eDhsR1l7gTGXw7zOCDC0m5/sh2YoqmdcVnpCZQgM=;
+	s=k20260515; t=1787356605;
+	bh=IN1zS/DZj8U8f8gQQwP/X03x7w86btnpkE/R1mcRfk8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=h38Q+32ShgEFW6b9POQWwnB6vfv8kstTsH7+rsl0ZxCgsAAImPzvnHvCLlHL0QCfN
-	 veKWjwInFjanmdb1/cOWNmjJNm3zYV1JKisFNLL2v1ta4R07B1/6xZmn3Q+XRgOTNw
-	 SI8QANa+07C3R/L9wBffnkbBlFPV3winnEYG/9Y7A/Sw1AcDEnrUy5z4N7mnkj1fMv
-	 dwCcjzjtKEo+auWxvDFS75TMvFvxd4x0KDdVKRzXNCPdftx1gEVT3e0SHVYqw3xccX
-	 TzneA9HV0l8hNzmXNo6JDkequ4C9ASDpX3ZtNrQbf9q1PE8PMQvTjVM9A1mF/AGGpT
-	 6L6gAlQ/EF7WQ==
-Date: Sat, 22 Aug 2026 00:36:56 +0100
+	b=dATDvDmelHBCX0M/N8Yc7x7iS5Bdt7iU5+yV3EXLSo3j/EOEyn8h6NmWvifImrAaB
+	 w3o1xT7pOb9cfaMlIV7R4Pm6OuYzcFF77vLdoxH/FUbjx2la7/SVj7dpmDgflqZXyE
+	 oPtM9EOlyPe036Ajn4Lcx+J6wYufBRd47VS6EEuFDJQVgUB/Qd+ZyFr91fHHo8g7KI
+	 E7+j/hAm3j9SjyQ8nU0nRp+7ZhMb+NZGpQ6ezWK/bzz34TM+LV6uiZ3WLeROm7jRKz
+	 1oP0bfJ+kEFzOZE6+kE77PvPAqnFk4YxMeTLglLlXSfFueeVXDaLz0RbnTsyFoyx6h
+	 Ufslxi5aNXpmw==
+Date: Sat, 22 Aug 2026 00:56:39 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Cc: Fan Wu <fanwu01@zju.edu.cn>, dlechner@baylibre.com, nuno.sa@analog.com,
- michal.simek@amd.com, conall.ogriofa@amd.com, bgolaszewski@baylibre.com,
- DileepKumar.Nagavarapu@amd.com, linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: free IRQ before cancelling
- the unmask worker on unbind
-Message-ID: <20260822003656.4cd11afe@jic23-huawei>
-In-Reply-To: <c87bd58e-2c23-467e-8ae2-8398052ee8d5@amd.com>
-References: <20260803080343.467906-1-fanwu01@zju.edu.cn>
-	<c87bd58e-2c23-467e-8ae2-8398052ee8d5@amd.com>
+To: Fan Wu <fanwu01@zju.edu.cn>
+Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: gp2ap020a00f: use iio_trigger_poll_nested()
+Message-ID: <20260822005639.539ccf9f@jic23-huawei>
+In-Reply-To: <20260817024023.291319-1-fanwu01@zju.edu.cn>
+References: <20260816184602.2dd023f6@jic23-huawei>
+	<20260817024023.291319-1-fanwu01@zju.edu.cn>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,73 +46,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 10 Aug 2026 23:27:37 +0530
-Sai Krishna Potthuri <sai.krishna.potthuri@amd.com> wrote:
+On Mon, 17 Aug 2026 02:40:23 +0000
+Fan Wu <fanwu01@zju.edu.cn> wrote:
 
-> On 8/3/2026 1:33 PM, Fan Wu wrote:
-> > The ZYNQ XADC alarm IRQ handler queues zynq_unmask_work via
-> > schedule_delayed_work(); that work is cleared by a devm callback.
-> > Register the devm callback before devm_request_irq() so the devres LIFO
-> > teardown frees the IRQ first, ensuring the handler can no longer queue
-> > work by the time the workqueue is cleared. Otherwise the handler could
-> > re-arm the work and run it after the xadc structure has been freed.
-> > 
-> > This issue was found by an in-house static analysis tool.
-> > 
-> > Fixes: 2a9685d1a3b7 ("iio: adc: xilinx: use more devres helpers and remove remove()")
-> > Cc: stable@vger.kernel.org
-> > Assisted-by: Codex:gpt-5.6
-> > Reviewed-by: David Lechner <dlechner@baylibre.com>
-> > Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>  
+
+> The threaded IRQ handler queues an irq_work only so that
+> iio_trigger_poll() can run from a hardirq-like context.  The driver's
+
+A lot of spaces before that The!
+
+> own buffer consumer does not need that context: the only thing a
+> standard IIO pollfunc top half does is store a timestamp in
+
+Call out what function is.  It isn't obviously a 'standard' even
+though there is only one that anyone actually uses.
+
+> pf->timestamp, and deferring through the per-CPU irq_work queue moves
+> that timestamp further away from the actual event.
+
+This should mention in passing the possibility that this trigger is
+being used to trigger capture on another device that is relying on
+that pollfunc timestamp.  Then add something about that being considered
+unlikely because there are few uses for synchronising data capture
+between a light sensor and any other sensors.  Something like
+
+"Whilst in theory there can be other consumers of this trigger relying on
+ the pollfunc top half running, given this is a light sensor those are
+ considered unlikely to exist in practice."
+
+
+
 > 
-> Reviewed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> The device IRQ handler is already threaded, so call
+> iio_trigger_poll_nested() directly from
+> gp2ap020a00f_thresh_event_handler() and drop the irq_work, its
+> callback, its init and the irq_work_sync() drains added by the
+> preceding use-after-free fix.
+
+We don't need all this detail in the commit description. Something like
+"
+Switch from irq_work to direct call of iio_trigger_poll_nested().
+Remove now unnecessary irq_work related infrastructure and ensure a
+local time stamp is acquired.
+"
+Covers the key stuff from this paragraph and the next.
+
 > 
+> As the trigger is now dispatched via handle_nested_irq(), a consumer's
+> top half no longer runs and its threaded handler executes
+> synchronously in this device's IRQ thread.  For consumers still using
+> iio_pollfunc_store_time() this means pf->timestamp is no longer
+> populated; a consumer that needs a timestamp should take it locally,
+> as this driver now does in gp2ap020a00f_trigger_handler().
+This hints at the possibility of other consumers - I'd call that out
+above.
+> 
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Assisted-by: Codex:gpt-5.6
+> Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
 
-Applied to the fixes-togreg branch of iio.git.
+> ---
 
-I'll be rebasing that on rc1 once available.
+Down here add a note on the dependency so I don't forget about it!
 
-Thanks,
+Patch looks good to me. For v2, don't reply to the earlier patches.
+That can rapidly get very confusing, so for IIO (and most / possibly
+all of the rest of the kernel) separate threads preferred. Ideally
+include a link instead to earlier versions as part of the change log.
+
+Thanks for tidying this up!
 
 Jonathan
-
-> Regards
-> Sai Krishna
-> 
-> 
-> > ---
-> > 
-> > Changes in v2: shorten the commit message and replace the multi-line code
-> > comment with a one-line note, per review feedback from Jonathan Cameron.
-> > The devm registration reorder (the fix) is unchanged; David Lechner's
-> > Reviewed-by was obtained on v1.
-> > 
-> >   drivers/iio/adc/xilinx-xadc-core.c | 9 +++++----
-> >   1 file changed, 5 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-> > --- a/drivers/iio/adc/xilinx-xadc-core.c
-> > +++ b/drivers/iio/adc/xilinx-xadc-core.c
-> > @@ -1395,13 +1395,14 @@ static int xadc_probe(struct platform_device *pdev)
-> >   	}
-> > 
-> >   	if (irq > 0) {
-> > -		ret = devm_request_irq(dev, irq, xadc->ops->interrupt_handler,
-> > -				       0, dev_name(dev), indio_dev);
-> > +		/* Clear out any work queued by the interrupt */
-> > +		ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
-> > +					       &xadc->zynq_unmask_work);
-> >   		if (ret)
-> >   			return ret;
-> > 
-> > -		ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
-> > -					       &xadc->zynq_unmask_work);
-> > +		ret = devm_request_irq(dev, irq, xadc->ops->interrupt_handler,
-> > +				       0, dev_name(dev), indio_dev);
-> >   		if (ret)
-> >   			return ret;
-> >   	}
-> > --
-> > 2.43.0  
-> 
-
