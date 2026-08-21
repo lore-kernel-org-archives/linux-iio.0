@@ -1,155 +1,159 @@
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CFDE3AFCE4
-	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 10:22:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0513B2D0D
+	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 10:25:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787307773; cv=none; b=lvwNd6skQumUjSu+ekGl71TaFxedKJhzmH0oqP7nQ6KKHpC6zPksBw7lge91O9qywUfj1qOago9RvuWqWAEXdoxOEH3Sse3xPLJbEJmylWq2jglRJ3m1oGQvBGvuwzFzZ0txOTAahOXZobWpokJbFDU/U8wRfzIbhebUDNOShyg=
+	t=1787307913; cv=none; b=tO2VFu+fP9+yHWM83YCRLxvMQFN66phKzBnACcn1q93PGgnufpRzvfnLJKVtVbv+4cMIoV8I+vyI9s5LMTZLWPLNv2peskABEzQqnBjBBBGe9jlvbT3grBrzzf4WUU/KtIIWbSu+m4zNhR6+QXEy33ry2lxP53KcoZGEIykiRQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787307773; c=relaxed/simple;
-	bh=TajKrkP7iAilCm/Wf9qOw7yL7OS5AMPI8Bf5cDTLAK4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 Cc:Content-Type; b=DAKz1wviM/BjHvSDmRN+cTnCEr6EWBBbLtXr18hxhXhw6qAeWZ+bZ8qRRHrvrEqTrsZn7Q7p2TkC73iTuX7kwNgpR7PMlS7aljyqojfKq9zM57YnvbcwdYAXFDSnn4qWbmMOdF2RzUretlGhDMKmL41vAOV9PHRpFvBP4fGHy8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	s=arc-20240116; t=1787307913; c=relaxed/simple;
+	bh=bCAUpvYrDhZGAqlZRsCLa6zMXwegXdwEKisQrAJhwwc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LmIz1hysMxudqjHnKcHmfXLfRBuFySTyP7HtlCHQCfJZcaq+gQ6UVWru2cg1dMuQ4h9vF3OJ0L9Zio0WI/KUBqykyPs72f+Jt9G6Pp+fahZbifa0BoAlABvyCvTmroWVS+pFDcSqaETSH1GSosHjico/irOzOgUNq9k/OZq0zn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=grDXpu8J; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-5c2ae02f69eso705214e0c.2
-        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 03:22:45 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="grDXpu8J"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4957eefd361so5366875e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 03:25:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787307904; x=1787912704; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wE5XUorKDUJRScv0y8L+tE9Vdt20ZNkSxUGx1M2ZEFs=;
+        b=grDXpu8JDgbqbgmONsZq+Z68DE6Gi+CCJj8hUehY5NQs7SvVflE5P2mOmd1FlF9mIJ
+         UIj94zucARZuhT5tX6rmSTYJTw0+LlaNsa6d48nUbWn+kq0jK3q8LOrBOn18XELmi4iH
+         oQZK7Rdezf3FlNSZCm44SSwuM93IBg2MjGWg1Gti7eyTWWwVW0lVFSrGGRC/YjCrNdzp
+         ZeDIhTES0zJumPPD5awkxlpMfQIjIhfVhSWIld8ktAHEzNq31SNmnmq2viPuWf6/NQLV
+         zEYlYttynzWv4FOFQkhap543NGZcioFkots1KFM5XiuHssttkAmBDkDf+ZyoXZIb33kH
+         lEaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787307761; x=1787912561;
-        h=content-type:cc:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=NZ9qFWwtyy0CyLFBazZArycje1mFKlJigB1GC39CAP0=;
-        b=ELq/lJf3ahC++xnN0UQLVBytdHTFQAyYza1mTAoPyz2qF0+orgHGisT4T2LSWXQR/+
-         29V4KsQWFbbLdExhtBETYNQHPIsh+qMmJENuE9+5lMq0W87A46UEAw8uhFsJEMoDahLz
-         hDYQWwZgNon4hCIglzzzQF3wnIa+FvGJo54vbBLVv0TmusGwMGsyQXYK/ktvbZiKo0Dn
-         xGNBnLow2bOMSxxIW8OTWAoTXTrDb0BIt6JVpj139x712zXTcBdqSe1Y92+OJ9YF/n8G
-         1P4JTlexJ3eDbK5BAUEGjEbu3xKAljdVvlJiRYAZc6oW1KY5bUkWVBx8RtKW6lrsV/Ey
-         Q2Cg==
-X-Forwarded-Encrypted: i=1; AHgh+RoIEBMlGi2YItw3GXXDTaP0+NF2ESLdaBxrw9cMI4gYSBF37+7Crok/w6Dam8uA4IvDWVBc+z9Mi0A=@vger.kernel.org
-X-Gm-Message-State: AFuF++ntnHX1G30hJO5acN/O14oMax2QbNVz9mJUVVGpEGGgL6Y8Vojv
-	etYcMkVx5/eA+djcSzLZpqydGT5+Q99TTLLa6tgMBqc/ysd5hBx1P+uG49wk5bsW
-X-Gm-Gg: AR+sD10EMk45Zj7HqoyTWvxl8DDMNngJVyFSfdv06Kz+sVdeobIDUeJ9WxHFOqCj5Zx
-	VjR8WaPUttIGYqlQQq5LhVJ/7y28yBxl0ds9UY+ieipYlNnuYmfYSfWnUxPKRSX6vIT9KDkrdVm
-	P35aULHlGsOP1WFtjerpvsKAV40PnSPNyYcKFz0YD0w12MJTCKDYR6m9kyCbta+MsegVYUVQZ1L
-	IO1c0lItDvhoxn5Pug8eWllMDH8eQAw2fpp3zh2dPvitNYCZs1S8eUw1rNLNnf2qGN3WfeEaD9m
-	eP1dweBtUwO1gn3jrxlKqMnC3QEJ3nTzVp+11RSoKlIq6rNLsXEEfxHKS/XATBdSG2Pa3fYN7jV
-	Ap45J6736iR4oVRYmYKcA7A6TA1BJvuD7Ho/uqTk7mD74JhwrZ9ykoYaMWJaEXHOn50w9iU+7dm
-	DuC2SMMCLbcT2m3ZfvZHdlEUWXl83e9v4eYNPteOgilvkzTpGwqIb15RdJGOHSOXoBhizsmXmjZ
-	qytuzmm5DHyic1rZIhiOmgHjQ==
-X-Received: by 2002:a05:6123:142:b0:5bf:5edc:9aa0 with SMTP id 71dfb90a1353d-5c5ff765aa0mr2422907e0c.7.1787307761059;
-        Fri, 21 Aug 2026 03:22:41 -0700 (PDT)
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c5e2837fa0sm8346350e0c.17.2026.08.21.03.22.40
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Aug 2026 03:22:40 -0700 (PDT)
-Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-7475a4f8b05so439280137.1
-        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 03:22:40 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rp0TEyAPWS+AE68LDfEAv6EeScxQbDfZGhjY4Bi/VRlionEAbRw66gHf1amzsMU+IWdzWShev+OzQw=@vger.kernel.org
-X-Received: by 2002:a05:6102:a54:b0:74f:4162:3f58 with SMTP id
- ada2fe7eead31-77a634443c4mt4162123137.6.1787307416387; Fri, 21 Aug 2026
- 03:16:56 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1787307904; x=1787912704;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wE5XUorKDUJRScv0y8L+tE9Vdt20ZNkSxUGx1M2ZEFs=;
+        b=ULwPFnhCpEgb9TbPIbiXGk2cAbQ723lpV2gybtKbj1O5qw8jrZQCgcegUgB6w+eOMz
+         Y+f3T8XGp0fQeldMiNL+3EVsMhlhM9lYdwJKl6OIUcWmLc6AmkrzGLv9tEVZo3yepCWV
+         viJj43UP/ICCrzoGDUkLcytvVJXHIfNUqffuhys9Y9prrZSXYM/5dPh8UvQ5Jk0J8BSc
+         xsMrZdSUGGJv5GkAUxK3EQDHOXwWMj2aAhT46SqPcocdMtpNLNk7KZ16yNmnkPQyn81q
+         S7MHORqKYGE/G0V5u6FCwD1m3ME/7DNjDlAK+qJsScXQ8iN8fEbaJkrKIHjx6zTEBqfF
+         do+Q==
+X-Forwarded-Encrypted: i=1; AHgh+RpdafVWCZEZ+6gZ1/f4MxuV5sU5viPXQrnYseqc9b0atAxwp4F8Ssh7skIPgythcbL0MSn/bHaqirY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxNYA/v7Gr0yfyV/MxixiE+tF53uuMBmKV2kbYUB8WPP77vPOl8
+	FjpnkRCra8ahBGBjpvCQPWJ8KjnuApENppEc+f+Mgq1ykEAnA6+TVReM
+X-Gm-Gg: AR+sD12avQQOnpYfTjFw8L1nFjbBFduYu9jsKumnHc9KRiZjn/UZmWdu51sYNtUf23P
+	eAWesGBUPGYKyFSk8TKLZCD33JttgKfASqZk+6d8sNZBkJ2B5VCkXG7wKBnJaSzNC8dlbNMDtYi
+	032B1vF4Hb0Ws9p1hCrG7apD6r3RNYpjr2WuQSZXEcDXpCbZti8kgBarxYZ9ONJ3GACfkItmrp2
+	6jMxxsl5TNnSCuHpz9vJULEvkuvLKtmj4kCEFUsokQPr3MRRjdDHWojgWfgOh5G5ZTkwbOKA5PH
+	X4e90Kp2XxN8B2cAWgJ8wY3n5rlb0zQC57WnXWaVP2oJj4ZmterpI0yQ50JIRAfdcVcICb4Kdjn
+	LlNVvC10H1jsj+TObDKEwi95x0/xaW+54vUEeGjSnrsJ7PBwr8Y7crZDwmkQIP+tD6b1kg3MsAp
+	UO2gio6vmDO93+HVR+Dp6phli6zd2k48wNLtrcnMo82IHfqkP+zkYrSEgCNLHPaLeleLrjmBS6J
+	ZNQ2HnFkr6sRIM=
+X-Received: by 2002:a05:600c:4704:b0:499:9069:c2c9 with SMTP id 5b1f17b1804b1-499b84613fcmr69079535e9.11.1787307904031;
+        Fri, 21 Aug 2026 03:25:04 -0700 (PDT)
+Received: from fedora ([105.74.130.192])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499b9ba5139sm11663155e9.2.2026.08.21.03.25.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Aug 2026 03:25:03 -0700 (PDT)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: jic23@kernel.org,
+	lars@metafoo.de
+Cc: Michael.Hennerich@analog.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	skhan@linuxfoundation.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Taha Ed-Dafili <0rayn.dev@gmail.com>
+Subject: [PATCH v5 0/6] iio: dac: ad5504: bindings, cleanups, locking, and scale fixes
+Date: Fri, 21 Aug 2026 06:24:42 -0400
+Message-ID: <20260821102452.37407-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1787165329.git.geert+renesas@glider.be>
-In-Reply-To: <cover.1787165329.git.geert+renesas@glider.be>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 21 Aug 2026 12:16:44 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXaxV9K8=yQ3KU-V2dV-eFqFqMR9WDyt2RVKADLS51Dcg@mail.gmail.com>
-X-Gm-Features: AcwNN1XMP476J77X05DStUZ6YHTKoquM1cTbXZSuVIS6ygsja8ReRo486qzyWdY
-Message-ID: <CAMuHMdXaxV9K8=yQ3KU-V2dV-eFqFqMR9WDyt2RVKADLS51Dcg@mail.gmail.com>
-Subject: Re: [PATCH treewide 0/5] clk: Make sure clk_init_data is fully
- initialized (part 1)
-Cc: Tero Kristo <kristo@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
-	Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>, 
-	Nobuhiro Iwamatsu <nobuhiro.iwamatsu.x90@mail.toshiba>, Nuno Sa <nuno.sa@analog.com>, 
-	Guenter Roeck <linux@roeck-us.net>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Antoniu Miclaus <antoniu.miclaus@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Sunny Luo <sunny.luo@amlogic.com>, Xianwei Zhao <xianwei.zhao@amlogic.com>, 
-	Mark Brown <broonie@kernel.org>, Kees Cook <kees@kernel.org>, 
-	Kevin Hilman <khilman@baylibre.com>, 
-	Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>, linux-omap@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org, 
-	linux@analog.com, linux-iio@vger.kernel.org, 
-	linux-amlogic@lists.infradead.org, linux-spi@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, 19 Aug 2026 at 21:05, Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> The clk_init_data structure contains three mutually-exclusive members
-> for different methods to specify the possible parents of a clock,
-> prompting drivers to initialize only the members they need.  When commit
-> fc0c209c147f35ed ("clk: Allow parents to be specified without string
-> names") added the last two methods, this was done in a
-> backwards-compatible way, using a priority-based scheme:
->   - .name, .ops, .num_parents, and .flags must always be initialized,
->   - if .num_parents is non-zero, .parent_names must be initialized,
->       - if .parent_names is NULL, .parent_data must be initialized,
->           - if .parent_data is NULL, .parent_hws must be initialized
->             and valid.
->
-> However, not initializing all members may cause subtle issues, which are
-> only exposed when CONFIG_INIT_STACK_ALL_PATTERN or
-> CONFIG_INIT_STACK_NONE is enabled.
->
-> Hence this series makes sure all members are fully initialized, to fix
-> such bugs, and to avoid future breakage when converting drivers to a
-> different method for specifying the parents.
->
-> This (small) series is part 1, and fixes all cases that I identified to
-> be real bugs:
->   - The first patch fixes a crash I saw on BeagleBone Black,
->   - The other patches are only compile-tested.
-> All patches in this series can be applied independently.
->
-> Part 2 will be much larger (touching 185 files), and will fix the
-> remaining cases that are currently harmless.
+Jonathan Cameron applied patches 2 (sort headers alphabetically) and 4
+(introduce local dev pointer) from v3 directly to iio/testing. This
+series rebases on top of that state and does not re-send those
+patches.
 
-FTR, I split part two in 13 subparts, per subsystem:
-  - "[PATCH 0/2] ARM/soc: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787239869.git.geert+renesas@glider.be>
-  - "[PATCH 0/3] ASoC: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787239902.git.geert+renesas@glider.be>
-  - "[PATCH 00/45] clk: Make sure clk_init_data is fully initialized (part two)"
-    https://lore.kernel.org/cover.1787239813.git.geert+renesas@glider.be>
-  - "[PATCH 0/2] drm: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787239944.git.geert+renesas@glider.be>
-  - "[PATCH] i2c: bcm2835: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/9f82f37e6d6c069cd44326bcd5e5a2a8069a13a9.1787239980.git.geert+renesas@glider.be>
-  - "[PATCH 0/2] iio: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787240005.git.geert+renesas@glider.be>
-  - "[PATCH 0/3] media: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787240035.git.geert+renesas@glider.be>
-  - "[PATCH] MIPS: Alchemy: clock: Make sure clk_init_data is fully"
-    https://lore.kernel.org/3610b51df642abb1fbb39f5bd93fddea43f8f164.1787240060.git.geert+renesas@glider.be>
-  - "[PATCH 0/2] mmc: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787240090.git.geert+renesas@glider.be>
-  - "[PATCH net-next 0/3] net: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787240118.git.geert+renesas@glider.be>
-  - "[PATCH] peci: controller: aspeed: Make sure clk_init_data is fully"
-    https://lore.kernel.org/48aa77c45e109f78ccd806bc3b7bf380c5bc5e71.1787240145.git.geert+renesas@glider.be>
-  - "[PATCH 0/2] phy: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787240165.git.geert+renesas@glider.be>
-  - "[PATCH 0/5] rtc: Make sure clk_init_data is fully initialized"
-    https://lore.kernel.org/cover.1787241693.git.geert+renesas@glider.be>
+This v5 series addresses feedback from the v4 review by Jonathan
+Cameron, Andy Shevchenko and Uwe Kleine-König:
 
-Gr{oetje,eeting}s,
+* Drop <linux/mod_devicetable.h> — now covered by spi.h (Andy, Uwe)
+* Add blank lines after all guard() call sites (Andy)
+* Rename macro to AD5504_VREF_ACPI_DEFAULT_mV (Andy)
+* Switch to is_acpi_device_node(dev_fwnode(dev)) (Andy)
+* Use (MICRO / MILLI) for microvolt-to-millivolt conversions (Andy)
+* Trim all commit messages (Andy, Jonathan)
+* Reorder ACPI/DT separation before pdata removal to avoid an
+  intermediate commit that hard-fails probe on regulator-less
+  systems (issue raised by Andy)
 
-                        Geert
+Testing:
+Re-verified on ARM64 Raspberry Pi 5 (BCM2712) using a custom Device
+Tree overlay on spi10, without physical AD5504 hardware. All test
+cases from v4 pass unchanged with the v5 code:
+
+60V path (output-range-microvolt = <0 60000000>):
+$ cat /sys/bus/iio/devices/iio:device0/out_voltage_scale
+14.648437500  (60000 mV / 4096)
+
+30V path (output-range-microvolt = <0 30000000>):
+$ cat /sys/bus/iio/devices/iio:device0/out_voltage_scale
+7.324218750   (30000 mV / 4096)
+
+Invalid range (output-range-microvolt = <0 70000000>):
+[   94.762850] ad5504 spi10.0: error -EINVAL: Invalid output-range-microvolt
+[   94.762857] ad5504 spi10.0: probe with driver ad5504 failed with error -22
+
+Backward compatibility (no output-range-microvolt, vcc-supply = 60V):
+$ cat /sys/bus/iio/devices/iio:device0/out_voltage_scale
+14.648437500  (60000 mV / 4096 via regulator fallback)
+
+Powerdown sysfs read/write and powerdown mode switching (20kohm_to_gnd,
+three_state) verified on all four channels without errors.
+
+Previous versions:
+v4: https://lore.kernel.org/linux-iio/20260817211118.21833-1-0rayn.dev@gmail.com/
+v3: https://lore.kernel.org/linux-iio/20260509142047.30302-1-0rayn.dev@gmail.com/
+v2: https://lore.kernel.org/linux-iio/20260310174835.24209-1-0rayn.dev@gmail.com/
+v1: https://lore.kernel.org/linux-iio/20260212181955.42724-1-0rayn.dev@gmail.com/
+
+Thank you to Jonathan Cameron, David Lechner, Andy Shevchenko, Nuno Sá,
+Krzysztof Kozlowski, Conor Dooley and Uwe Kleine-König for the
+continued reviews.
+
+Taha Ed-Dafili (6):
+  dt-bindings: iio: dac: ad5504: add output-range and missing gpios
+  iio: dac: ad5504: Align headers with IWYU principle
+  iio: dac: ad5504: separate ACPI and DT paths
+  iio: dac: ad5504: remove legacy platform data support
+  iio: dac: ad5504: introduce local lock to protect state and spi
+    transfers
+  iio: dac: ad5504: support scale via output-range-microvolt property
+
+ .../bindings/iio/dac/adi,ad5504.yaml          | 39 ++++++++-
+ drivers/iio/dac/ad5504.c                      | 82 +++++++++++++++----
+ include/linux/iio/dac/ad5504.h                | 15 ----
+ 3 files changed, 103 insertions(+), 33 deletions(-)
+ delete mode 100644 include/linux/iio/dac/ad5504.h
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.55.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
