@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90D3F34A78E;
-	Fri, 21 Aug 2026 02:47:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5316352C5B;
+	Fri, 21 Aug 2026 03:03:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787280476; cv=none; b=tcrVCtohZ8x41d4WM6U9faIUgvBTi7H4FVrKwLs7VBs+wSvMtjYOL5OhEaQHP/q01US8a/Pnb0q4XtCu9hB+ae7Yev8OYpdSjXDdw6Mf+fPWXOjoAr6e6GBr4kfDs+GYlgEtxRo0tJvYbj4/ckhcWO3O0qTnYTzK2YlNLnYMako=
+	t=1787281412; cv=none; b=LXl9IXWMMiLTC9kEtpxmRKh5aO2jIMBTSgJxyW/M/T3BMVMspWNIRk/9YAGGkkSaTwDE1GDVnK9iBbzDsi+e6R7j2d6lgwwmtELGXLGtSRuO8B2PhdRdIjX+wClSsxyzY7tfkTHn4MiEbnim+dusLI25HwnQAwFww7zmvbm9Hdc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787280476; c=relaxed/simple;
-	bh=cLMvOab7VCT935nwNYZArRxMbEGpQZ+qA8E03/h4q+I=;
+	s=arc-20240116; t=1787281412; c=relaxed/simple;
+	bh=eQPR8yeLkebYYyf1ebT+uB4vrThIpOQ5PP4n6th7bFc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SvInAqNpd/B2tzhgT+IISBvgd/i8p/wW8B8faoxbLCS3A8LVXo6K8xmw8UxpJUitpkprT4PbgM426wrwtXvTF5UlFmVqKznM6Ol/Aq1RyQlck/Br6hofIbNjnz1fv/N1ueBFQM16LjtS4LZ0Ap2WHMtjwoPe5WAF5hvvgjp3QSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G70x7bJT; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LwmK8SIqkj8gMMSrmCliMVT2j043J3mbcKhHeQWkStK/iBo7sl/9WUL5CkyMRHXci1immVy66KeXpJHaH1x5k5rkLCHGaZfKWOO6bqpMn2+zi63S7MilFztGwyYsUUPXkoOqkiF/r2RQ5yCzYw0k94vL5AYP9ZQs/nLNVOBFEf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WNx7vNbB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G70x7bJT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D2E1F000E9;
-	Fri, 21 Aug 2026 02:47:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WNx7vNbB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 411751F000E9;
+	Fri, 21 Aug 2026 03:03:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787280475;
-	bh=HhDcVF3YLSOQzbVQVYStJysYCm3wmpe/klfl+CQCWDs=;
+	s=k20260515; t=1787281410;
+	bh=wkAXRc77UaQs7Z+zl3fDecTnghTKWwHH9OjKWmqCO4o=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=G70x7bJTIC5v+ArcUEmwyt1GpL7g4bmijl5SmaJsJDyk2VpsvFj10yBWRI62VVtiU
-	 Kd4RYGplUN7QW94JCdeocc6NRZMGNq1ipzYLXre3JaUBOJfZdC/djuX+KCI/QJP+pI
-	 w7a0vfSwOIw4iYGwF7EE0RdCr4vTVtvw1K2Pu5sn5HNMrnPOdd/sEWrE61c61GTU38
-	 Hqk0yGbZ0UHwx/2YP6l78L3osktij8fka+hQOxafuX3w4sVBP2RD4v7sQ7g01zbF8L
-	 izxavCk3om2TLNyvODAeoUUxvWxVvY5DxZxA9KCpbxlv600wyzVIsqvbj9AVS239nj
-	 TVlJ5IfE5zoRw==
-Date: Fri, 21 Aug 2026 03:47:48 +0100
+	b=WNx7vNbByNanhXw2sJlzk1ggRYrmXvHaFzUowjQcYpEb+ibdE9iqPdHZ7T9RY83zg
+	 5WMs6gPF3+5pbjj5krurgH0yoXCIfBrbmozEmYn6AIyfpGYX+OTdTtvVTAyIf1IMHF
+	 wGbF0iY7PzkxGgj9xQNXG4iYsSYf2XR6nR166F81Bn5VX1AXvO7l2562MM/pRNBy2O
+	 uB7GDQpIMvoHv70b3i9RQ0hPyJ00o/u9Z/tB8lwcGFYSb+hO34Dmqm+3jYaPex8qeI
+	 VMgD2x3XeJYJsR3mudnzy/lu2lLVn68oQpf5vC9PjDHQRr+1A/07hml1p+b+NM1anr
+	 eMT/VHMdc+9VA==
+Date: Fri, 21 Aug 2026 04:03:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Jinseob Kim <kimjinseob88@gmail.com>
 Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
@@ -35,11 +35,11 @@ Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
  julianbraha@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
  conor+dt@kernel.org, grondon@gmail.com, devicetree@vger.kernel.org,
  corbet@lwn.net, skhan@linuxfoundation.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v8 4/5] iio: osf: add authenticated stream parser
-Message-ID: <20260821034748.5049aca0@jic23-huawei>
-In-Reply-To: <20260820050608.5440-5-kimjinseob88@gmail.com>
+Subject: Re: [PATCH v8 5/5] iio: osf: add UART IIO driver
+Message-ID: <20260821040324.14cbac9a@jic23-huawei>
+In-Reply-To: <20260820050608.5440-6-kimjinseob88@gmail.com>
 References: <20260820050608.5440-1-kimjinseob88@gmail.com>
-	<20260820050608.5440-5-kimjinseob88@gmail.com>
+	<20260820050608.5440-6-kimjinseob88@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,126 +50,135 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 20 Aug 2026 14:06:07 +0900
+On Thu, 20 Aug 2026 14:06:08 +0900
 Jinseob Kim <kimjinseob88@gmail.com> wrote:
 
-> Add a UART byte-stream parser for Open Sensor Fusion frames.
+> Add the Open Sensor Fusion serdev transport, driver core, and IIO
+> registration path as one complete driver patch.
 > 
-> The parser searches for the OSF0 wire magic, keeps partial frames
-> buffered, checks header length and payload bounds, and passes complete
-> candidate frames to a registered frame callback.
+> The driver enables the required vcc regulator, receives OSF frames over
+> UART, registers IIO devices from capability reports, supports direct raw
+> reads from the latest sample cache, and pushes buffered samples into
+> software kfifo buffers.
+
+Too much info.  We definitely don't need mention it turns on the power
+or that the data goes standard paths.
+
 > 
-> Candidates rejected before authentication drop only the current head
-> byte before resynchronizing, so a corrupted unauthenticated payload length
-> cannot make the parser skip later valid frames. CRC-valid authenticated
-> frames are consumed in full and classified as handled, ignored, or
-> rejected.
+> Wire the stream parser frame callback to the OSF core, use final Kconfig
+> and Makefile contents from the start, check iio_buffer_enabled() before
+> pushing samples, and use zero-initialized scan storage with explicit
+> timestamp alignment.
 > 
-> Use a direct callback member with an opaque context and keep explicit
-> statistics for authenticated outcomes and framing failures.
+> Classify authenticated application outcomes as handled, ignored, or
+> rejected so the parser consumes every CRC-valid frame in full. Decode
+> capability entries structurally, skip unsupported entries individually,
+> and register the supported entries from the same report. Allocate latest
+> sample cache slots only for sensors with registered IIO devices.
+> 
+> Deliver sensor samples to IIO before committing the latest-sample
+> cache, so a frame rejected by the registered channel layout or buffer
+> path cannot change direct-read state or the last accepted sequence.
+> Add focused KUnit coverage for rejected, valid, ignored, and malformed
+> sample paths and cache-slot exhaustion.
 > 
 > Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
 
-One really trivial thing inline.  Please check to see if other areas
-of code alignment would benefit from a bit of a reorg.
+A couple of minor things inline. 
 
-> diff --git a/drivers/iio/opensensorfusion/osf_stream.c b/drivers/iio/opensensorfusion/osf_stream.c
+Thanks,
+
+Jonathan
+
+> diff --git a/drivers/iio/opensensorfusion/osf_iio.c b/drivers/iio/opensensorfusion/osf_iio.c
 > new file mode 100644
-> index 000000000000..7ce45e631648
+> index 000000000000..56030b4d6a9f
 > --- /dev/null
-> +++ b/drivers/iio/opensensorfusion/osf_stream.c
+> +++ b/drivers/iio/opensensorfusion/osf_iio.c
+> @@ -0,0 +1,304 @@
+
 ...
 
 > +
-> +static int osf_stream_process(struct osf_stream *stream)
-> +{
-> +	size_t discarded;
-> +	size_t frame_len;
-> +	u32 payload_len;
-> +	int frame_result;
-> +	int first_err = 0;
-> +
-> +	while (stream->len) {
-> +		discarded = osf_stream_discard_to_magic(stream);
-> +		if (discarded) {
-> +			stream->stats.bad_magic_resyncs++;
-> +			stream->stats.dropped_bytes += discarded;
-> +			if (!first_err)
-> +				first_err = -EPROTO;
-> +		}
-> +
-> +		if (!stream->len)
-> +			break;
-> +
-> +		if (stream->len < OSF_FRAME_HEADER_LEN)
-> +			break;
-> +
-> +		if (get_unaligned_le16(stream->buf + 6) != OSF_FRAME_HEADER_LEN) {
-> +			stream->stats.dropped_bytes++;
-> +			osf_stream_drop_invalid_head(stream);
-> +			if (!first_err)
-> +				first_err = -EPROTO;
-> +			continue;
-> +		}
-> +
-> +		payload_len = get_unaligned_le32(stream->buf + 10);
-> +		if (payload_len > OSF_STREAM_MAX_PAYLOAD_LEN) {
-> +			stream->stats.dropped_bytes++;
-> +			osf_stream_drop_invalid_head(stream);
-> +			if (!first_err)
-> +				first_err = -EMSGSIZE;
-> +			continue;
-> +		}
-> +
-> +		frame_len = OSF_FRAME_HEADER_LEN + payload_len + OSF_FRAME_CRC_LEN;
-> +		if (stream->len < frame_len)
-> +			break;
-> +
-> +		frame_result = stream->receive_frame(stream->frame_context,
-> +					     stream->buf, frame_len);
-
-Align after (
-
-> +		if (frame_result < 0) {
-> +			if (frame_result == -EBADMSG)
-> +				stream->stats.bad_crc_frames++;
-> +
-> +			/*
-> +			 * Decoding failed before the frame was authenticated;
-> +			 * payload_len is still untrusted. Drop only the current
-> +			 * head and resynchronize.
-> +			 */
-> +			stream->stats.dropped_bytes++;
-> +			osf_stream_drop_invalid_head(stream);
-> +			if (!first_err)
-> +				first_err = frame_result;
-> +			continue;
-> +		}
-> +
-> +		/* Count exactly one outcome for every authenticated frame. */
-> +		stream->stats.authenticated_frames++;
-> +		switch (frame_result) {
-> +		case OSF_STREAM_FRAME_HANDLED:
-> +			stream->stats.handled_frames++;
-> +			break;
-> +		case OSF_STREAM_FRAME_IGNORED:
-> +			stream->stats.ignored_frames++;
-> +			break;
-> +		case OSF_STREAM_FRAME_REJECTED:
-> +			stream->stats.rejected_frames++;
-> +			break;
-> +		default:
-> +			/*
-> +			 * Preserve the authenticated boundary without scanning the
-> +			 * payload for another magic value.
-> +			 */
-> +			stream->stats.rejected_frames++;
-> +			if (!first_err)
-> +				first_err = -EPROTO;
-> +			break;
-> +		}
-> +		osf_stream_discard(stream, frame_len);
+> +#define OSF_MOD_CHAN(_type, _mod, _idx)                         \
+> +	{                                                               \
+> +		.type = (_type),                                           \
+> +		.modified = 1,                                             \
+> +		.channel2 = (_mod),                                        \
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),              \
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),      \
+> +		.scan_index = (_idx),                                      \
+> +		.scan_type = {                                             \
+> +			.sign = 's',                                         \
+> +			.realbits = 32,                                      \
+> +			.storagebits = 32,                                   \
+> +			.endianness = IIO_CPU,                               \
+> +		},                                                        \
 > +	}
 > +
-> +	return first_err;
+> +#define OSF_CHAN(_type, _idx)                                     \
+> +	{                                                               \
+> +		.type = (_type),                                           \
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),              \
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),      \
+> +		.scan_index = (_idx),                                      \
+> +		.scan_type = {                                             \
+> +			.sign = 's',                                         \
+> +			.realbits = 32,                                      \
+> +			.storagebits = 32,                                   \
+> +			.endianness = IIO_CPU,                               \
+> +		},                                                        \
+> +	}
+
+Tidy up the \ as there doesn't seem to be any standard arrangement going on here.
+
+> +int osf_iio_push_sample(struct iio_dev *indio_dev, const s32 *values,
+> +			u16 channel_count)
+> +{
+> +	struct osf_iio_state *state = iio_priv(indio_dev);
+> +	s64 timestamp;
+> +
+> +	if (channel_count != state->spec->channel_count)
+> +		return -EPROTO;
+> +
+> +	if (!iio_buffer_enabled(indio_dev))
+> +		return 0;
+> +
+> +	timestamp = iio_get_time_ns(indio_dev);
+> +
+> +	switch (channel_count) {
+> +	case 1: {
+> +		struct osf_iio_scan_1axis scan = { };
+
+Similar to below - you might as well initialize the one value.
+
+> +
+> +		scan.value = values[0];
+> +		return iio_push_to_buffers_with_ts(indio_dev, &scan,
+> +						       sizeof(scan), timestamp);
+
+Check for bits of alignment of code that have become wrong over time.
+
+> +	}
+> +	case 3: {
+> +		struct osf_iio_scan_3axis scan = { };
+> +
+> +		scan.values[0] = values[0];
+> +		scan.values[1] = values[1];
+> +		scan.values[2] = values[2];
+
+Might as well do
+		struct osf_iio_scan_3axis scan = {
+			.values[0] = values[0],
+			.values[1] = values[1],
+			.values[2] = values[2],
+		};
+Similar for other cases.
+
+> +		return iio_push_to_buffers_with_ts(indio_dev, &scan,
+> +						       sizeof(scan), timestamp);
+> +	}
+> +	default:
+> +		return -EPROTO;
+> +	}
 > +}
