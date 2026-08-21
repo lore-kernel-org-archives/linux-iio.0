@@ -1,46 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 404452459E1;
-	Fri, 21 Aug 2026 00:32:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 137B6175A9C;
+	Fri, 21 Aug 2026 00:41:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787272379; cv=none; b=iN4rCoiZaSmuj0OKQFnHQlf6De4sR3oNHzdedlyAtabc16aa7x216waPGppoq3++l187J/Cm2xOyTDe4Y/fC810kHPm040LnSWZzD7wAOX5ZwwPguNsu9TmF8ZzUglHHmKGRZ9P0rTMs69iSzgUOhr5EVB9AxkwylHqnZnu5BLE=
+	t=1787272915; cv=none; b=ZAacVhFizJST7Hc50Zc70oHiAv+nptrd6WuI1lrWDdhzCMksowM39w7hZBpB+1ohbVeAmTRouQX+5HoWIN+8uZmbNu53OBNNrI7ikD6fnmCNdo0golFIV9z1exifkAIKO4seB1G4OkqZj27K4lNHBw5/j1fqKHP3bk038h1LeXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787272379; c=relaxed/simple;
-	bh=AsuP0tdjtF/OpVJlFzB04+bbqaeTc1ZIOr72+Q0lFPU=;
+	s=arc-20240116; t=1787272915; c=relaxed/simple;
+	bh=5BC+9R0TvKxxjgeQBxQkOubrWwFVKhMtGh0QHpuOCXo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RGGRIli1fGL+CAT6U9OlinX6sOYC1W9REEUSWn3qfe1GdupMwTmmRwRjVqaTUs0jhWdv31Lcpp8KBa38077QIK31dmkZzEjApfXo2dC/NUZbHCDu6WgNpBLal0cw6mvw81/UjzxpHYv8M6ATDnu9AgGzYEI57TEzvgRlVnHIU2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aLittfi1; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=p29MECQ5s86Hyv6tfT6zgjWts3t0JN4HU2ATSPi/1s+yuO7GdauIa/ty29DvRu7MlCrXYTF5z5gjvVZZWTzvsYGahpHlGB2BTU+LfmKpJn+JYhgnk0vMbAMtPCaenOsiTnzu+pa9immRsj1EuxlOKKGQc3hB4CV+DgCB37yGlKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lKCritH5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aLittfi1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB0F1F000E9;
-	Fri, 21 Aug 2026 00:32:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lKCritH5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209861F000E9;
+	Fri, 21 Aug 2026 00:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787272377;
-	bh=zg9oINipA4FX3wa+zkJJwtEkBHtkeUWyF4E8ozdOFpw=;
+	s=k20260515; t=1787272913;
+	bh=Ur+Aw3yJ1DjcnVpNNfD4tzrU1RqRb5jL/K7wPuZkqLU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aLittfi1ZZnayZQ2odyVRvdUx10klVJuBXRhTZcRUPCf4V+hBYHsHSNV6yK5YYWuI
-	 8oHpmFP+oyM3/qddponpPTZBsyqns89NJXGhRRuTEItTizhnloQhoiClb6cFtSjMsj
-	 1kvR8n2H3BDOb1U6ZtM5IjAAW/lCvCcnWePJK2EQPaV7fLkdLBjrni3u2ltPstqJ1w
-	 D6gybWaKNa3Zb88dzcmw0OcclRTdiqKo6zD1SgfvFdtTqu8n0Vp8aUfI2dODF/qIAp
-	 5YGlHVHp6KyRy9X1FJitf9MAbn1lKt3XvCj+H22wewVq24iXLyB+CVTNAeUOKXMpZl
-	 H3qqbD9tfDKxg==
-Date: Fri, 21 Aug 2026 01:32:51 +0100
+	b=lKCritH55cE8n880p+F/5nDp23fpYoh56frNhQbN09JG0NqhO2o9XgL+9ox2SFRyD
+	 qLRlE4yPVtIYbylJrT3uxB4zfaz1UmSR2tIsZTNJoMuTmcPfhw7t4vpnq7LOuggibt
+	 qTVde/DeNKCX1//P/HRxXSViQvjXSfY0Tb36GCKb4LiFc4WTt8ibDj1Z7M5PQllqTH
+	 PQ1qEB9NfyY4jM4Ugr/w+uDr/DKAfgIR567EIqemTA9pk+2RUB5CyCH7yO6AcZxSk8
+	 nXBkIRvuGF+DldI4V4Y52z8Z51hstJFLsCohouLduN+uNag5eOlDapLFkckyPplTVM
+	 APhNU1fcUKWSQ==
+Date: Fri, 21 Aug 2026 01:41:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?Tmljb2zDoXM=?= Antinori <nico.antinori.7@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, Brigham Campbell
- <me@brighamcampbell.com>, Conor Dooley <conor+dt@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Jori Koolstra <jkoolstra@xs4all.nl>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Marcelo Schmitt
- <marcelo.schmitt1@gmail.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Rob Herring <robh@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>,
- devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH v4 0/2] add support for Aosong AM2320
-Message-ID: <20260821013251.74a96b46@jic23-huawei>
-In-Reply-To: <cover.1786973355.git.nico.antinori.7@gmail.com>
-References: <cover.1786973355.git.nico.antinori.7@gmail.com>
+To: Louis Adamian <adamianlouis@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/5] iio: pressure: ms5637: Add missing ms5803 I2C
+ device ID
+Message-ID: <20260821014148.691bb65f@jic23-huawei>
+In-Reply-To: <20260820141224.23730-2-adamianlouis@gmail.com>
+References: <20260820141224.23730-1-adamianlouis@gmail.com>
+	<20260820141224.23730-2-adamianlouis@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,74 +47,48 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 20 Aug 2026 11:31:08 -0300
-Nicol=C3=A1s Antinori <nico.antinori.7@gmail.com> wrote:
+On Thu, 20 Aug 2026 10:12:16 -0400
+Louis Adamian <adamianlouis@gmail.com> wrote:
 
-> The AM2320 is fully compatible with the AM2315 sensor in terms of I2C
-> communication protocol and measurement conversions.
->=20
-> This patch series adds am2320 to the i2c_device_id table, creates
-> of_device_id table and adds both am2315 and am2320 to
-> trivial-devices.yml dt bindings.
+> meas,ms5803 is in the OF match table with no corresponding entry in
+> ms5637_id.
+> 
+> Fixes: 649ef114a0a0 ("iio:pressure:ms5637: add ms5803 support")
 
-Hi Nicol=C3=A1s,
+Hi Louis,
 
-Applied to the testing branch of iio.git.  I'll rebase that on rc1 once that
-is available and push out as the togreg branch that linux-next picks up.
+What is the result of this entry not being there?   We need
+a reason that this is a fix rather than simply a cleanup / consistency
+improvement.
 
+> Signed-off-by: Louis Adamian <adamianlouis@gmail.com>
 
->=20
-> v4:
-> - Addressed minor styling issues in driver's C code pointed by Andy Shevc=
-henko
->   (carried "Reviewed-by: Andy Shevchenko <...> from v3)
-> - Adapted commit message pointed by Marcelo Schmitt (carried
->   "Reviewed-by: Marcelo Schmitt <...>" from v3)
-> - Carried Acked-by: "Krzysztof Kozlowski <...>: from v3 dt-bindings patch
->   since bindings patch did not change.
->=20
-> Note: I carried tags from v3 because reviewers declared the tag after
-> pointing things that were resolved in v4 (and the dt-bindings one
-> because the patch did not change from v3 to v4). If this is a mistake
-> please let me know.
-You got it right.
+Please make sure that a series has a cover letter in future
+--cover-letter to git will provide you with one to fill in.
 
-Thanks
+The rest of the thread will end up in reply to that. Brings the
+advantage of a place to provide a short overview of what the whole series is up
+to; somewhere for comments; and a useful name in tools like patchwork.
 
-Jonathan
+Otherwise this looks good to me.
 
->=20
-> v3: [3]
-> - Added "aosong,am2315" and "aosong,am2320" to trivial-devices.yml.
-> - Added of_device_id table.
-> - Replaced using a constant for driver's name with chip_info struct.
-> - Separated code changes and dt-bindings changes in two commits.
->=20
-> v2: [2]
->  - Generalized KConfig description text.
->=20
-> v1: [1]
->=20
-> [1] https://lore.kernel.org/all/20260805183733.1000550-1-nico.antinori.7@=
-gmail.com/T/#u
-> [2] https://lore.kernel.org/all/20260810183337.451812-1-nico.antinori.7@g=
-mail.com/T/#u
-> [3] https://lore.kernel.org/all/cover.1786725567.git.nico.antinori.7@gmai=
-l.com/
->=20
-> Nicol=C3=A1s Antinori (2):
->   dt-bindings: trivial-devices: add Aosong AM2315 and AM2320 chips
->   iio: humidity: am2315: add support for am2320
->=20
->  .../devicetree/bindings/trivial-devices.yaml  |  2 ++
->  drivers/iio/humidity/Kconfig                  |  8 +++--
->  drivers/iio/humidity/am2315.c                 | 34 ++++++++++++++++---
->  3 files changed, 36 insertions(+), 8 deletions(-)
->=20
-> --
-> 2.47.3
->=20
+> ---
+>  drivers/iio/pressure/ms5637.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
+> index be8921644558..4f9f556bd123 100644
+> --- a/drivers/iio/pressure/ms5637.c
+> +++ b/drivers/iio/pressure/ms5637.c
+> @@ -215,6 +215,7 @@ static const struct ms_tp_data ms8607_data = {
+>  
+>  static const struct i2c_device_id ms5637_id[] = {
+>  	{ .name = "ms5637", .driver_data = (kernel_ulong_t)&ms5637_data },
+> +	{ .name = "ms5803", .driver_data = (kernel_ulong_t)&ms5803_data },
+>  	{ .name = "ms5805", .driver_data = (kernel_ulong_t)&ms5805_data },
+>  	{ .name = "ms5837", .driver_data = (kernel_ulong_t)&ms5837_data },
+>  	{ .name = "ms8607-temppressure", .driver_data = (kernel_ulong_t)&ms8607_data },
 
