@@ -1,46 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A5C30567F;
-	Fri, 21 Aug 2026 01:06:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F87E30BF70;
+	Fri, 21 Aug 2026 01:25:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787274361; cv=none; b=dxbmgeyjIv66FydWJkl6bFeFOtw0fwFniytV92EZ89xjuo0kkK3jXSmgMpC/ZbKthQs4VYsU9L3/nl8cfzLV2IaGvtOLL7v6UDk3Tu9TtFmkBU0uRICE2ZQtmjdAZB3NWSyI0PqIfWmYlbsYlhsG0oOivVPDS35zaojNoYF3EY4=
+	t=1787275559; cv=none; b=CF7xKhXVfAWwk8Bx4vqIPtgXO4DQGk1AB2MsdnVjMD/EiOshgDBQ3Jh3JkQ55e7FQk1CxGb6q6S1RnlqIOTInUz0vYd6hfYfDPhb0GYcflBOWvMi31/y47/qpwaqcyoMTsEQBS49kpoBqpTWwFvnZtxA+k2q4c9/o8gufOF6MDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787274361; c=relaxed/simple;
-	bh=udaryJUcp8UdssJGzhUZGUIih5Ea0c9CzGIQRVHV+qc=;
+	s=arc-20240116; t=1787275559; c=relaxed/simple;
+	bh=Wz9K9pqBrnDai0amQ/RAivfRwmhMwP6x3ULWyXgZJWY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jxFfLnSTf+jCwUQMaz5kp7J40NmNEl8C3Od5zpU2CDmGutJORj1QLrjP6vuDC23IvMINrFoySXwebw8Z+o2icORJT2NEDaXk5hd+bnZqPKizksH61gItwWF9ShWwxyLX2N3pskyms68zfleWSqH2sh35gQz6v8WADXtW8QmCt4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iriXPoLn; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=jADd+OL87pot8ZiOLlHULpGntT/VxH0Fm7/wp6VrPu0IZjnBZMCaO5aFKwX4QRKtj2BRGZKTDFFWj4dXNG5KDr4VZYNqYoyCnNi+Orps1fge2Gteb2dfves+NXUElxllfrwkDBZSQVGoz35LdPz71wS3AGEGQNCalKJMFx12HfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FoXcFVSv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iriXPoLn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727E01F000E9;
-	Fri, 21 Aug 2026 01:05:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FoXcFVSv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 076DC1F000E9;
+	Fri, 21 Aug 2026 01:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787274359;
-	bh=qhLLGEoOi7ada+Zo30jFrSFyWDbuv7FW4DzLZkTkVuA=;
+	s=k20260515; t=1787275558;
+	bh=SmnmX+PqbBgqoJffPOXB8suUIBO4rYdm04b3kswIdxs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=iriXPoLnQuYwNjI8VN9Sx9CkTHr4WMQ9p4pbtDlHOBBMOVY15Z1LI+77NdI0K9WXB
-	 G4Ar6dc6z5lqdjCW54bewNOE5gEfS7dezsxYbHEZHh0CFnRGrnU9521nNi+8NFuQgy
-	 UPQZMuoX+kxwgPTlcT37bQh6E/Ixx20ORPiVNddFD7t9P6r1pDUe6pl+mIjyZRErcK
-	 r31ZKg+4JiNYyD7wgNc2ooEkYmgEyAWrs3ZLC3kd0TSJIlpe9oUIL6b84wrr9vpI32
-	 NXKcJb+vP68KFuo76mQ8pgg0PvWb217P3j39WWN64uFevScDFq10fyRx+wsrq02JSf
-	 8ePk8Gp+bnXvA==
-Date: Fri, 21 Aug 2026 02:05:54 +0100
+	b=FoXcFVSvqM82kaOXaOy7ncKDIzEyueipyJu558trjDSI52I5Pwtf899UsPLA8ip6A
+	 a3AYwKc4oTOJCYy0E1QBwIc2vLvoTQNv/Epp4YZ+38f4Oaotv2yqsnRbL+CRw3jiA6
+	 8QF0s8psao220PFIFOG6lxL2ahfmKbhSSep2vxRGg6iGg9Gs/J03ZaFuMK80mvWOFA
+	 iYO96ushqNlOPY4q3sWWVl4LI5kydq8gJiaf5DrniCfM1ZlCjJfHs3u31CIzoxLotn
+	 0EKOnuskr4l0oTDVRzC8G9uhw8xLDNviWEzfZA9JHlBlJaWrEIa8gRdX0QVP1NcSoG
+	 CY1qfeHz0Il8A==
+Date: Fri, 21 Aug 2026 02:25:54 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Brian Masney
- <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: frequency: adf4377: Fully initialize
- clk_init_data and clk_parent_data
-Message-ID: <20260821020554.23fa7d19@jic23-huawei>
-In-Reply-To: <ae48ed1dc6b1ad9e10cad0d9df28d9fab213f653.1787216909.git.geert+renesas@glider.be>
-References: <ae48ed1dc6b1ad9e10cad0d9df28d9fab213f653.1787216909.git.geert+renesas@glider.be>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+ <broonie@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v6 0/2] iio: adc: Add support for Texas Instruments
+ ADS112C04
+Message-ID: <20260821022554.5382aa7b@jic23-huawei>
+In-Reply-To: <20260820-ti-ads112c04-driver-v6-0-0e8f0aacce9b@gmail.com>
+References: <20260820-ti-ads112c04-driver-v6-0-0e8f0aacce9b@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,64 +51,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 20 Aug 2026 11:19:52 +0200
-Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+On Thu, 20 Aug 2026 15:51:50 +0800
+Kyle Hsieh <kylehsieh1995@gmail.com> wrote:
 
-> The clk_init_data structure contains several mutually-exclusive members
-> for different methods to specify the possible parents of a clock,
-> prompting drivers to initialize only the members they need.  However,
-> not initializing all members may cause subtle issues, which are only
-> exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
-> enabled.
+> This patch series introduces support for the Texas Instruments ADS112C04
+> Analog-to-Digital Converters.
 > 
-> adf4377_clk_register() fills in init.parent_data, and assumes that
-> init.parent_names is NULL.  However, the latter is uninitialized, and
-> thus may cause a crash.
+> The ADS112C04 (16-bit) is precision, low-power, delta-sigma ADCs with
+> an I2C interface. They feature a flexible input multiplexer supporting
+> single-ended and differential measurements, a programmable gain amplifier,
+> and an internal voltage reference.
 > 
-> Similarly, adf4377_clk_register() fills in only parent_data.fw_name,
-> leaving other members of the clk_parent_data structure uninitialized.
+> Note: While this chip shares similarities with the ADS112C14 (currently 
+> being upstreamed by David Lechner), the register maps and feature sets 
+> are sufficiently different to warrant a separate driver. However, the
+> DT bindings and channel parsing logic have been aligned with the
+> ADS112C14 conventions.
 > 
-> Make sure all members are fully initialized, to fix such bugs, and to
-> avoid future breakage when converting drivers to a different method for
-> specifying the parents.
+> This initial submission provides a minimal feature set (single-shot 
+> conversions and basic DRDY interrupt) covering current use cases.
 > 
-> Fixes: 60e5448ddbec2dc2 ("iio: frequency: adf4377: add clk provider support")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-Dropped v1 and picked this up, marking it for stable and tweaking a little
-to add spaces { } 
-That's an IIO specific style choice.
+> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
 
-Thanks
+Sashiko had some feedback on the interrupt - if you are respinning for
+other reasons it might be good to add a comment in the dt-binding about
+it being an edge interrupt. From a quick look at the datasheet a level
+interrupt would not make much sense.
+
+https://sashiko.dev/#/patchset/20260820-ti-ads112c04-driver-v6-0-0e8f0aacce9b%40gmail.com
+
+Other than that, looks good to me.  You've had a lot of review from
+others though so I'll leave it on list for a little while in case
+any one wants to take a final look and perhaps give tags.
+
+Thanks,
 
 Jonathan
-
-> Compile-tested only.
-> 
-> v2:
->   - Extract from series "[PATCH treewide 0/5] clk: Make sure
->     clk_init_data is fully initialized (part 1)"
->     (https://lore.kernel.org/cover.1787165329.git.geert+renesas@glider.be),
->   - Fully initialize clk_parent_data too, as pointed out by Sashiko.
-> ---
->  drivers/iio/frequency/adf4377.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
-> index 4dd19a9aa9943c57..b8c31665857c5201 100644
-> --- a/drivers/iio/frequency/adf4377.c
-> +++ b/drivers/iio/frequency/adf4377.c
-> @@ -988,10 +988,10 @@ static const struct clk_ops adf4377_clk_ops = {
->  
->  static int adf4377_clk_register(struct adf4377_state *st)
->  {
-> +	struct clk_parent_data parent_data = {};
->  	struct spi_device *spi = st->spi;
->  	struct device *dev = &spi->dev;
-> -	struct clk_init_data init;
-> -	struct clk_parent_data parent_data;
-> +	struct clk_init_data init = {};
->  	int ret;
->  
->  	if (!device_property_present(dev, "#clock-cells"))
-
