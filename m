@@ -1,59 +1,55 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7F34C9012;
-	Fri, 21 Aug 2026 14:09:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E5374C9012;
+	Fri, 21 Aug 2026 14:09:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787321351; cv=none; b=OfQWpbjt9aV4qiK58vfgJN9ySXmNHwdiidmQeMNG+hsp2T504Ap9o0RWKhk1F3B+HjrU9ZtfE3akb6XGvg9zmoq9W7PSvIzYnYr+CnYnh7yY/FTGFauW3NOqDC1Syw/+suQ/OVTuindFs5jIK3abqh1WEehR/S/BDiL3Ly0wt/U=
+	t=1787321357; cv=none; b=HalqWWpQCsAQhcT4L69+NtKHRKmpyo6cSiirT1Broz479C+8UoOTVLdjEbQByqetQ4g4hdmYEUxSputGS715sJ7QmS7HTBI5vceeJyynURkpHEB/dQHWO0zJsffvNMw0CCBxHyOjPy1r21CSK9k43vHQgRzi5QXyk6TvYJqu4s4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787321351; c=relaxed/simple;
-	bh=q/TL1NVykNjMWtW8Lil45SStrRj/mHgaltCNPIn4ZwY=;
+	s=arc-20240116; t=1787321357; c=relaxed/simple;
+	bh=UWjfRpF9pXaGZ5ZOGZnipUeHQFkQthkgUSV1eOik/cA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=WSErvYV1p8xu/gG80NkoBvNvZmHjMLtl5xBH+omwSFuZVhps38K5IqV+b8H//OKdFh0tTubUUBz/n1MPjjsfz/R0aijxn2lpyJQGtP5nByP/OXl8Kth1eiipmH2w5cehpkLp8fMaitQIpBRa//Ziz6O8JS5A0uE6Ff0mluperYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=YnG81hS1; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=NAdZZZQaROfVqAbd0ZEjHgnnW1BpWhKIRgBYsbKaTCK+a07Mncz83cZpv/+Y5yWyrOYB9jTjVUZb7Hvf2llUdgqGoq1NdqUXm0kbGvbWwHv69VoE91mwLrci+VdeFLJ0n5BdUAlbP3oLMdY1hyXgeNPWsbXy9cFXGsiZ2TJXBiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=pAXRlz42; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="YnG81hS1"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="pAXRlz42"
 Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67LCpc803388113;
-	Fri, 21 Aug 2026 10:09:00 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67LCpcM83388116;
+	Fri, 21 Aug 2026 10:09:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Qpx3q
-	YvaMm1KudADebGzqocYcokF+jNaFsu81vWJCR8=; b=YnG81hS1Wk2Pzdc8/adCy
-	W59dtn81jBxqRTkMCZj1RZKDEtXBB9M8pqXj1Cgzvuq3Sg8eBueXCiHEAz1d/w9G
-	pIOhCEDP9JAYvtmnwZ7ACdnQEaOFv5hV9XBL0V/JvXPfairkQi3XExaM7OK+bDyy
-	p9cqAhP8MnxA81f6pfA/VJqGWvMg59Xy9KkMjAsSxvvybSUpG1mm1va6fZwDRsG0
-	P6Nr0iGY6ym7Z78nYn+Hj/iC6IgQHTunIdvo8enFwGUZ0laVy3MzeDBwMRw9Hket
-	fKLbLPgu8+iWrATAGNrP/qpOBY+j8U5ydOXxGt4QNAOBYU/hgnacnhsICJvkHbXt
-	A==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=DGdKt
+	Lv2P/QbCjQmq0w/yz5ydx2HCpxArBzmoGDstjk=; b=pAXRlz42dBzBxEUz6Nwdz
+	NiHCrXIXPl69vYvauTmCqCanse7euLuc284Zz2BrWgYUROm9eBSZF8zqQ0bv43Mb
+	b9FW4t78GiXmMhmjbmzoQbiDRHD/TczDeVjFWKGHKXVxxXHobZMKGYv8wMfKcXe3
+	DDSKfAP4OzR6jdMl4FRwioHCoj0ntN1JHn+/+QdgTsqevVmmOE7+hZVna5HjfME+
+	SALcLnPptSoip7WbTqV1KHdKCaFME68iaG9lcgPYe30qXSQTxUrsb0P+960xLluQ
+	xyEwyXVtDQCpHR6ZOnpcaMvqeZ5lJoAuPOcuywdkT9XdlUN1Kgw0zCGaZTeuno8A
+	w==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g66m6m0jy-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g66m6m0kp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Aug 2026 10:09:00 -0400 (EDT)
+	Fri, 21 Aug 2026 10:09:06 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67LE8xDm033079
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67LE95Xf033152
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 21 Aug 2026 10:08:59 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 21 Aug 2026 10:08:58 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 21 Aug 2026 10:08:59 -0400
+	Fri, 21 Aug 2026 10:09:05 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 21 Aug
+ 2026 10:09:05 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 21 Aug 2026 10:08:58 -0400
+ Transport; Fri, 21 Aug 2026 10:09:05 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.223.174])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67LE7Kkw024319;
-	Fri, 21 Aug 2026 10:08:49 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67LE7Kkx024319;
+	Fri, 21 Aug 2026 10:08:55 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Fri, 21 Aug 2026 16:07:06 +0200
-Subject: [PATCH v4 13/14] gpio: ad7768: Add AD7768 GPIO auxiliary driver
+Date: Fri, 21 Aug 2026 16:07:07 +0200
+Subject: [PATCH v4 14/14] Documentation: iio: Add AD7768 Documentation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,21 +57,21 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260821-ad7768-driver-v4-13-bb8fbd06d4eb@analog.com>
+Content-Transfer-Encoding: 8bit
+Message-ID: <20260821-ad7768-driver-v4-14-bb8fbd06d4eb@analog.com>
 References: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
 In-Reply-To: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, "Rob
- Herring" <robh@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Conor
- Dooley" <conor+dt@kernel.org>,
+        Conor
+ Dooley <conor+dt@kernel.org>,
         Olivier Moysan <olivier.moysan@foss.st.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Linus Walleij <linusw@kernel.org>,
@@ -91,32 +87,32 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
 	<u.kleine-koenig@baylibre.com>,
         Janani Sunil <janani.sunil@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787321240; l=5816;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787321240; l=10333;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=q/TL1NVykNjMWtW8Lil45SStrRj/mHgaltCNPIn4ZwY=;
- b=5AXU9WabCGasZuJk6dmDzqrw96Q0IOwIIkctTJ5Sc950hIHI5mxoRIix7ubgm8UkG1ud3xOwf
- PtPU35YgE+WAMpRzBq4eaEHAuyFh5nuMGhwHgEO1x1WuRRYOM3w2BCt
+ bh=UWjfRpF9pXaGZ5ZOGZnipUeHQFkQthkgUSV1eOik/cA=;
+ b=SnDLuTOK4xlUNsW+sJNFzjHbdpsSHDakMm1Oo7JdsuNAGaW89Id2orweSpkx27Hee5lAPIdkI
+ F2L2fCdtN8oBSagnY5kYZ4MIzp59wXs4Z7TY3A3UQmMY9icxK2KKyCU
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDEwOSBTYWx0ZWRfX6anSvWIlT5Fz
- QDI57XWUW8GMmFHjePx18AkGRd2lyEOBfkzhDCfXX/SVBRX1lir6YqvY9WfdaNgAZ3W7DIVcf/D
- QEmtMi3fHXPkg8VUn9u7E10rr3kUOQoDrpwKsNKf2sJmmieEZCrA
-X-Proofpoint-ORIG-GUID: x8QRgIsPt2eDyWCFGqJ1XNwxpX88OiAG
-X-Proofpoint-GUID: x8QRgIsPt2eDyWCFGqJ1XNwxpX88OiAG
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDEwOSBTYWx0ZWRfXwlQWt5hRHH6d
- 1sawBqx9MS9hTtziPDfboHcThKmRyOtXW69PZ3nXLeExdVTbb2MTN8iI+jR5g4ysz2sP2phey2q
- h6zJJslEFglv6M08hBIrAKTLuXewA647i8CSB8yuNfbYUwxpuIrb4cQcFMm8QUPea4Ho4F/QcFV
- rPW7qLXQSrDNVoV08FtPQN8KP2yZc2hqvWYidaO/Fye9dXSBrEYdMfW43wOadm0XnyTTBGSy4+2
- 6JRA3wdY2gDkxy1eNwalLM1+4tSFvrJwx7hoQIvGMwosqbmzUQWJjVT9D5aHq4ChrnnRoJbq5GE
- /gQtSApPXZJqkjn7aKu0uQ1HKnUeA/3rH+S8yJvKKnZIYN4w9qaz/+f228u+mraBwUbp7FSQdQ+
- nMK+BPZrQb+pDmKsjdJvqsFjxSOE05MXr+Ru0vpW0BKDggl/gwqC/xYCYYrriNyuEKaPBZNnhpR
- HOPQL5RuE9vk6J5e6Rg==
-X-Authority-Analysis: v=2.4 cv=baVbluPB c=1 sm=1 tr=0 ts=6a885bfc cx=c_pps
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDEwOSBTYWx0ZWRfX2vdvXazeoaGT
+ 13pAmNfDPIHV5Gvr5ytnYLM9tFPQrS8DicOityka0JhUShSI5dVqErK9BKbQLa7XHNrVVfuPndx
+ t8yapOHjgfte90tLsa6GEj+0FF6LnYbip3jnO6Uf9NGFAOb+fH8d
+X-Proofpoint-ORIG-GUID: zqLqgun-JFtkTkpM4g1dQILhd1u_NCKI
+X-Proofpoint-GUID: zqLqgun-JFtkTkpM4g1dQILhd1u_NCKI
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDEwOSBTYWx0ZWRfX/JRioZMkpgVx
+ BSrin99DSsii0A5x3wzKP+rqH51NyUaU4HyVvFETb3BUNxTaaFb3uo7T+/86dM7A0XsI9RsiUOf
+ 6p/rJwx21gfzzBRLdM2NHJF9jbS0oXU7Y/17I3Tx1WR/Ra4z8bw7Ws8jIqGID0YXARK/JNowIiM
+ qnqjheqVmQj29qFiQSJ+sP3l2rCVOnBACyvTLyMQm0+8LeZVqDvM17siBxlUkOFCGHE6lItXzjE
+ U80+nTupAd7n1qS3f6rFkM7rPaeMiNBpzqJAyaJUtGtJOAAmXVIzcEKc67xGn5j0CMzWxdrdw3w
+ vbgkVwIUCSqLaPWJraXf0fZse+WvLi8eApjR1U4/MPDNI8Uaw3VmL+Tt8orImYl5uGf4xXBxU5z
+ cTA3eKVooJiQnT1tSh1Xtcc6z9Ym/qO0XB+vo6ybaIHQcDtKGyueJa7cqLWdfCAeY9v1vTTgE6Q
+ PS86bSqUMlTRLoFQmWA==
+X-Authority-Analysis: v=2.4 cv=baVbluPB c=1 sm=1 tr=0 ts=6a885c02 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
  a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
- a=VwQbUJbxAAAA:8 a=DyYY1DdFIiypQHwlAEwA:9 a=QEXdDO2ut3YA:10
+ a=VwQbUJbxAAAA:8 a=zZ-fWJg24byqPpz8oLwA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-21_04,2026-08-21_02,2025-10-01_01
@@ -127,194 +123,304 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
  definitions=main-2608210109
 
-The AD7768 provides five GPIOs controlled through registers shared
-with the parent IIO device. Register an auxiliary gpio-regmap driver
-and use the parent device for runtime PM.
-
-The device has separate input-state and output-latch registers. Add a
-reg_mask_xlate() callback that checks the line direction and reads the
-programmed output latch for output lines while retaining input-state
-reads for input lines.
+Add driver documentation for AD7768.
 
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- MAINTAINERS                |   1 +
- drivers/gpio/Kconfig       |  12 +++++
- drivers/gpio/Makefile      |   1 +
- drivers/gpio/gpio-ad7768.c | 118 +++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 132 insertions(+)
+ Documentation/iio/ad7768.rst | 259 +++++++++++++++++++++++++++++++++++++++++++
+ Documentation/iio/index.rst  |   1 +
+ MAINTAINERS                  |   1 +
+ 3 files changed, 261 insertions(+)
 
+diff --git a/Documentation/iio/ad7768.rst b/Documentation/iio/ad7768.rst
+new file mode 100644
+index 000000000000..a5d7daf37b7d
+--- /dev/null
++++ b/Documentation/iio/ad7768.rst
+@@ -0,0 +1,259 @@
++.. SPDX-License-Identifier: GPL-2.0-only
++
++=============
++AD7768 driver
++=============
++
++ADC driver for Analog Devices Inc. AD7768 and AD7768-4 devices. The module name
++is ``ad7768``.
++
++Supported devices
++=================
++
++The following chips are supported by this driver:
++
++* `AD7768 <https://www.analog.com/en/products/ad7768.html>`_ -
++  8-channel, 24-bit simultaneous sampling ADC
++* `AD7768-4 <https://www.analog.com/en/products/ad7768-4.html>`_ -
++  4-channel, 24-bit simultaneous sampling ADC
++
++Supported features
++==================
++
++Clock sources
++-------------
++
++The master clock source is selected using the ``clock-names`` device tree
++property:
++
++* ``mclk`` selects a CMOS clock on XTAL2/MCLK. CLK_SEL must be low and XTAL1
++  must be connected to DGND.
++* ``xtal`` selects a crystal connected between XTAL1 and XTAL2. CLK_SEL must
++  be high. The driver drives FILTER/GPIO4 high and keeps channel 4 on the
++  AD7768 or channel 2 on the AD7768-4 enabled to maintain crystal excitation.
++* ``lvds`` selects a differential clock on XTAL1 and XTAL2. CLK_SEL must be
++  high. The driver drives FILTER/GPIO4 low before enabling the LVDS input.
++
++GPIO4 is reserved when ``xtal`` or ``lvds`` is selected.
++
++Power modes
++-----------
++
++The AD7768 family supports three power and performance modes:
++
++* **Low power mode** - Optimized for lowest power consumption
++* **Median mode** - Balanced power and performance
++* **Fast mode** - Highest performance with maximum sampling rates
++
++The driver initializes the device in fast mode and uses the maximum fast-mode
++output data rate as the default sampling frequency.
++
++When buffered capture starts, the driver selects the lowest-noise mode that can
++produce the requested output data rates for all enabled channels. Where output
++data rates overlap, fast mode is preferred over median mode, and median mode is
++preferred over low power mode. This prioritizes the lower RMS noise and higher
++dynamic range offered by a faster mode at the same output data rate.
++
++Data output configuration
++-------------------------
++
++The devices support flexible serial data output configurations:
++
++AD7768 data lines
++^^^^^^^^^^^^^^^^^
++
++* 1 data line (DOUT0) - Standard single-lane output
++* 2 data lines (DOUT0, DOUT1) - Dual-lane output for higher throughput
++* 8 data lines (DOUT0-DOUT7) - Maximum throughput, one line per channel
++
++AD7768-4 data lines
++^^^^^^^^^^^^^^^^^^^
++
++* 1 data line (DOUT0) - Standard single-lane output
++* 4 data lines (DOUT0-DOUT3) - Maximum throughput, one line per channel
++
++The number of data lines can be configured via the ``adi,data-lines-number``
++device tree property. If omitted, the driver uses the maximum supported by the
++selected variant: eight lines for AD7768 and four lines for AD7768-4.
++
++Channel configuration
++---------------------
++
++Each channel can be individually configured with:
++
++Channel modes
++^^^^^^^^^^^^^
++
++* **Mode A** - First set of filter and decimation settings
++* **Mode B** - Second set of filter and decimation settings
++
++The hardware provides two mode profiles (A and B), each holding one
++(frequency, filter) combination. When buffered capture is started,
++enabled channels are grouped by their configured (frequency, filter)
++pair. Up to two distinct groups are supported; the driver automatically
++assigns each group to a mode slot and programs the hardware accordingly.
++
++Precharge and reference buffers
++^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++
++Per-channel buffer control for optimal signal integrity:
++
++* Positive input precharge buffer (``adi,prechargebuf-pos-enable``)
++* Negative input precharge buffer (``adi,prechargebuf-neg-enable``)
++* Positive reference buffer (``adi,refbuf-pos-enable``)
++* Negative reference buffer (``adi,refbuf-neg-enable``)
++
++Common mode voltage
++-------------------
++
++The VCM pin provides a buffered common-mode voltage output used to bias
++the analog inputs. The driver exposes this as a standard voltage regulator
++provider under a ``regulators`` subnode in the device tree. Supported
++output voltage levels are:
++
++* (AVDD1 - AVSS) / 2 - Mid-supply (hardware default), reported as half the
++  voltage provided by ``avdd1-supply``
++* 1,650,000 µV - 1.65V
++* 2,500,000 µV - 2.5V
++* 2,140,000 µV - 2.14V
++
++The regulator can be enabled and disabled at runtime using the standard
++regulator framework interfaces.
++
++The VCM circuitry is associated with channel 0. When VCM is used externally,
++``channel@0`` must be present in the device tree and channel 0 must remain
++enabled in the active scan mask. Placing channel 0 in standby disables the VCM
++output.
++
++Filter types
++------------
++
++Two digital filter types are available:
++
++* **Wideband** - Optimized for wide bandwidth applications
++* **Sinc5** - Fifth-order sinc filter for high rejection of out-of-band noise
++
++IIO backend support
++-------------------
++
++The driver integrates with IIO backends (e.g., AXI ADC) for high-speed data
++capture and DMA operations. Features include:
++
++* Automatic channel enable/disable based on scan mask
++* CRC on data interface. CRC replaces the header every 4th output sample.
++* High-throughput buffered data acquisition
++
++GPIO controller
++---------------
++
++The AD7768 includes a 5-pin GPIO controller for auxiliary digital I/O
++operations. The GPIO pins can be configured as inputs or outputs.
++
++GPIO4 is reserved when a crystal or LVDS master clock is used. GPIO0 through
++GPIO3 remain available in these configurations.
++
++Device attributes
++=================
++
++The following IIO attributes are available for each enabled channel:
++
++Sampling frequency
++------------------
++
++.. list-table::
++   :header-rows: 1
++   :widths: 40 60
++
++   * - Attribute
++     - Description
++   * - ``in_voltage<N>_sampling_frequency``
++     - Requested sampling frequency in Hz for channel N. Enabled channels are
++       grouped into up to two profiles at capture time.
++   * - ``in_voltage<N>_sampling_frequency_available``
++     - Available sampling frequencies in Hz for channel N across all power
++       modes, based on the master clock frequency. Buffer setup fails if no
++       single power mode supports the frequencies requested by all enabled
++       channels.
++
++Filter configuration
++---------------------
++
++.. list-table::
++   :header-rows: 1
++   :widths: 40 60
++
++   * - Attribute
++     - Description
++   * - ``in_voltage<N>_filter_type``
++     - Requested filter type for channel N: "wideband" or "sinc5". It is
++       grouped with sampling frequency at capture time.
++   * - ``in_voltage<N>_filter_type_available``
++     - Available filter types for channel N: "wideband sinc5".
++
++Per-channel calibration
++-----------------------
++
++.. list-table::
++   :header-rows: 1
++   :widths: 40 60
++
++   * - Attribute
++     - Description
++   * - ``in_voltage<N>_calibbias``
++     - Raw unsigned 24-bit channel offset register value.
++   * - ``in_voltage<N>_calibscale``
++     - Raw unsigned 24-bit channel gain register value.
++   * - ``in_voltage<N>_convdelay``
++     - Per-channel conversion delay. The driver exposes the sync phase offset
++       value in seconds with picosecond precision. Resolution and valid range
++       depend on the decimation ratio in use (see datasheet
++       Table 32).
++
++Device buffers
++==============
++
++This driver supports IIO buffered data acquisition through IIO backends.
++When used with compatible backends like the AXI ADC, it provides:
++
++* High-speed simultaneous sampling across all enabled channels
++* Hardware-driven data capture
++* DMA-based data transfer for minimal CPU overhead
++* CRC error detection
++
++See :doc:`iio_devbuf` for more information about IIO device buffers.
++
++Example usage
++=============
++
++.. code-block:: bash
++
++	# Read current sampling frequency for channel 0
++	cat /sys/bus/iio/devices/iio:device0/in_voltage0_sampling_frequency
++
++	# Update sampling frequency for channel 0
++	echo 8000 > /sys/bus/iio/devices/iio:device0/in_voltage0_sampling_frequency
++
++	# Read current filter type for channel 0
++	cat /sys/bus/iio/devices/iio:device0/in_voltage0_filter_type
++
++	# List available filter types for channel 0
++	cat /sys/bus/iio/devices/iio:device0/in_voltage0_filter_type_available
++
++	# Update filter type for channel 0 to wideband
++	echo wideband > /sys/bus/iio/devices/iio:device0/in_voltage0_filter_type
++
++	# Buffer setup fails if enabled channels request more than two distinct
++	# (sampling frequency, filter type) combinations.
++
++	# Read calibration scale for channel 0
++	cat /sys/bus/iio/devices/iio:device0/in_voltage0_calibscale
++
++	# Read conversion delay for channel 0
++	cat /sys/bus/iio/devices/iio:device0/in_voltage0_convdelay
++
++
++Unimplemented features
++======================
++
++* CRC message every 16 samples (CRC_SEL configuration) - currently only
++  supports CRC every 4 samples
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index b02b879b053a..73c58cec7620 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -29,6 +29,7 @@ Industrial I/O Kernel Drivers
+    ad7380
+    ad7606
+    ad7625
++   ad7768
+    ad7944
+    ade9000
+    adf41513
 diff --git a/MAINTAINERS b/MAINTAINERS
-index dc94e7803a7c..3de7ebcc4ee7 100644
+index 3de7ebcc4ee7..b93c77d3a4c3 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -1639,6 +1639,7 @@ L:	linux-iio@vger.kernel.org
  S:	Supported
  W:	https://ez.analog.com/linux-software-drivers
  F:	Documentation/devicetree/bindings/iio/adc/adi,ad7768.yaml
-+F:	drivers/gpio/gpio-ad7768.c
++F:	Documentation/iio/ad7768.rst
+ F:	drivers/gpio/gpio-ad7768.c
  F:	drivers/iio/adc/ad7768.c
  
- ANALOG DEVICES INC AD7780 DRIVER
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 28cf6d2e83c2..85cb0c82a823 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -1796,6 +1796,18 @@ endmenu
- menu "Auxiliary Bus GPIO drivers"
- 	depends on AUXILIARY_BUS
- 
-+config GPIO_AD7768
-+	tristate "Analog Devices AD7768 GPIO support"
-+	depends on AD7768
-+	depends on GPIOLIB
-+	select GPIO_REGMAP
-+	help
-+	  Say yes here to expose the AD7768 utility pins as GPIOs when the
-+	  device tree node is marked as a GPIO controller.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called gpio-ad7768.
-+
- config GPIO_LTC4283
- 	tristate "Analog Devices LTC4283 GPIO support"
- 	depends on SENSORS_LTC4283
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index 4d0e900402fc..d2921963efc7 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -27,6 +27,7 @@ obj-$(CONFIG_GPIO_104_IDI_48)		+= gpio-104-idi-48.o
- obj-$(CONFIG_GPIO_104_IDIO_16)		+= gpio-104-idio-16.o
- obj-$(CONFIG_GPIO_74X164)		+= gpio-74x164.o
- obj-$(CONFIG_GPIO_74XX_MMIO)		+= gpio-74xx-mmio.o
-+obj-$(CONFIG_GPIO_AD7768)		+= gpio-ad7768.o
- obj-$(CONFIG_GPIO_ADNP)			+= gpio-adnp.o
- obj-$(CONFIG_GPIO_ADP5520)		+= gpio-adp5520.o
- obj-$(CONFIG_GPIO_ADP5585)		+= gpio-adp5585.o
-diff --git a/drivers/gpio/gpio-ad7768.c b/drivers/gpio/gpio-ad7768.c
-new file mode 100644
-index 000000000000..710739e33dff
---- /dev/null
-+++ b/drivers/gpio/gpio-ad7768.c
-@@ -0,0 +1,118 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Analog Devices AD7768 GPIO auxiliary driver
-+ *
-+ * Copyright 2026 Analog Devices Inc.
-+ */
-+
-+#include <linux/auxiliary_bus.h>
-+#include <linux/bitmap.h>
-+#include <linux/bits.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/gpio/regmap.h>
-+#include <linux/module.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+
-+#define AD7768_REG_GPIO_CONTROL		0x0E
-+#define   AD7768_GPIO_UGPIO_ENABLE	BIT(7)
-+
-+#define AD7768_REG_GPIO_WRITE		0x0F
-+#define AD7768_REG_GPIO_READ		0x10
-+
-+#define AD7768_NUM_GPIOS		5
-+
-+static int ad7768_gpio_init_valid_mask(struct gpio_chip *gc,
-+				       unsigned long *valid_mask,
-+				       unsigned int ngpios)
-+{
-+	unsigned long *mask = dev_get_platdata(gc->parent);
-+
-+	bitmap_copy(valid_mask, mask, ngpios);
-+
-+	return 0;
-+}
-+
-+static int ad7768_gpio_reg_mask_xlate(struct gpio_regmap *gpio,
-+				      unsigned int base, unsigned int offset,
-+				      unsigned int *reg, unsigned int *mask)
-+{
-+	struct regmap *regmap = gpio_regmap_get_drvdata(gpio);
-+	int ret;
-+
-+	*reg = base;
-+	*mask = BIT(offset);
-+
-+	if (base != AD7768_REG_GPIO_READ)
-+		return 0;
-+
-+	/*
-+	 * AD7768 has separate input-state and output-latch registers. For an
-+	 * output line, report the programmed value from the output latch;
-+	 * input lines continue to use the input-state register.
-+	 */
-+	ret = regmap_test_bits(regmap, AD7768_REG_GPIO_CONTROL, *mask);
-+	if (ret < 0)
-+		return ret;
-+	if (ret)
-+		*reg = AD7768_REG_GPIO_WRITE;
-+
-+	return 0;
-+}
-+
-+static int ad7768_gpio_probe(struct auxiliary_device *adev,
-+			     const struct auxiliary_device_id *id)
-+{
-+	struct device *parent = adev->dev.parent;
-+	struct gpio_regmap_config config = {
-+		.parent = &adev->dev,
-+		.label = dev_name(parent),
-+		.ngpio = AD7768_NUM_GPIOS,
-+		.reg_dat_base = AD7768_REG_GPIO_READ,
-+		.reg_set_base = AD7768_REG_GPIO_WRITE,
-+		.reg_dir_out_base = AD7768_REG_GPIO_CONTROL,
-+		.pm_dev = parent,
-+		.reg_mask_xlate = ad7768_gpio_reg_mask_xlate,
-+		.init_valid_mask = ad7768_gpio_init_valid_mask,
-+	};
-+	struct gpio_regmap *gpio;
-+	struct regmap *map;
-+	int ret;
-+
-+	map = dev_get_regmap(parent, NULL);
-+	if (!map)
-+		return -ENODEV;
-+
-+	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(parent, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_set_bits(map, AD7768_REG_GPIO_CONTROL, AD7768_GPIO_UGPIO_ENABLE);
-+	if (ret)
-+		return ret;
-+
-+	config.regmap = map;
-+	config.drvdata = map;
-+
-+	gpio = devm_gpio_regmap_register(&adev->dev, &config);
-+	return PTR_ERR_OR_ZERO(gpio);
-+}
-+
-+static const struct auxiliary_device_id ad7768_gpio_ids[] = {
-+	{ .name = "ad7768.gpio" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(auxiliary, ad7768_gpio_ids);
-+
-+static struct auxiliary_driver ad7768_gpio_driver = {
-+	.probe = ad7768_gpio_probe,
-+	.id_table = ad7768_gpio_ids,
-+};
-+module_auxiliary_driver(ad7768_gpio_driver);
-+
-+MODULE_AUTHOR("Janani Sunil <janani.sunil@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD7768 GPIO auxiliary driver");
-+MODULE_LICENSE("GPL");
 
 -- 
 2.43.0
