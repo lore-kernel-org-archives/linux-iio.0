@@ -1,19 +1,19 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C849441021;
-	Fri, 21 Aug 2026 10:04:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5FC73D952D;
+	Fri, 21 Aug 2026 10:04:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787306664; cv=none; b=Od8c8xWoC0AOdmqWZYfafRCWbK/FfGD/HaoeiXL8YDvGg3tykWr9wGlmMV5hnGRPjfSAWt73TG4dcaz+T69UH0IlxNdbsS5pQDqJnGoTqxg9x/RPHlF2CAGRoOYhAIGzv92rFldZzTM41Wm1TvopAQlbnQMfPvRFjMmALsaUsyo=
+	t=1787306669; cv=none; b=amdBfGCNbbj8DkCkICT6oRfjLzmsURSiVxOLZo/kCyFwdUG1BsWkO0OVKRHvDI96rTHdXmuAukAJ0y2Z4P81TmTXkZmcvQ63EMhHmUVPTfWQLAXSt4dPjhB1FqxV6v+r5F8tsrXoyxWgy1nTfWHBdhZCESMuWfRnf9dJPnD05Os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787306664; c=relaxed/simple;
-	bh=iZ3IHs2Lvi8ZrtBzrxkUukWL4HhUYLJhBJ5T6Z9Bp6o=;
+	s=arc-20240116; t=1787306669; c=relaxed/simple;
+	bh=WWm1xuY0hGHBT6giAZ4LDCkztIgcorN1wa3PjyMroC8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nOlKBzqZ1pxghUut+oCgOeww6iNCrWEVdt5R25eBO5ptWRk040Qh+IMbNhB+tNsYChd7mec24CaSdc0QMnF82AiQLLlx7xGeHSNqNWr1EAfFk0yuS83I3uAwA0rVXqOExmEG6TH6cAAZ3kgcsW6Prt2HsG375551YOYayBN0D/k=
+	 MIME-Version; b=VGX/IAUiXatPQIAg8MsWNi//FLtF1aSYzmEWvdmoOcT5PAdvYwj0lwRCwO7k0Q1LrVoDav6GVJfp+p/9ch859lXe38OcehfhZ+vJUEuJLbjs3Li0K2haA1YfZMntqUGhC2a5KXEKxTX9/nSTA1j2hrg0YQvY8RHjydeMWTTVxE0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B2731F00A3D;
-	Fri, 21 Aug 2026 10:04:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 907011F00A3E;
+	Fri, 21 Aug 2026 10:04:15 +0000 (UTC)
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -24,9 +24,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux@analog.com,
 	linux-clk@vger.kernel.org,
 	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 1/2] iio: adc: meson-saradc: Make sure clk_init_data is fully initialized
-Date: Fri, 21 Aug 2026 12:04:06 +0200
-Message-ID: <7470364f0d70b6e9c06fd094768cfa91c7784d42.1787240005.git.geert+renesas@glider.be>
+Subject: [PATCH 2/2] iio: frequency: adf4350: Make sure clk_init_data is fully initialized
+Date: Fri, 21 Aug 2026 12:04:07 +0200
+Message-ID: <a9cbab64882734e7b198eb4f341dc8908d5cc394.1787240005.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1787240005.git.geert+renesas@glider.be>
 References: <cover.1787240005.git.geert+renesas@glider.be>
@@ -53,22 +53,22 @@ Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
 Compile-tested only.
 ---
- drivers/iio/adc/meson_saradc.c | 2 +-
+ drivers/iio/frequency/adf4350.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 000e39ca5c624eb6..7b89e2ecd0248b3a 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -739,7 +739,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index 315317d6eec412f6..2e1f55d652cb14e6 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -461,7 +461,7 @@ static const struct clk_ops adf4350_clk_ops = {
+ static int adf4350_clk_register(struct adf4350_state *st)
  {
- 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
- 	struct device *dev = indio_dev->dev.parent;
+ 	struct spi_device *spi = st->spi;
 -	struct clk_init_data init;
 +	struct clk_init_data init = {};
- 	const char *clk_parents[1];
- 
- 	init.name = devm_kasprintf(dev, GFP_KERNEL, "%s#adc_div", dev_name(dev));
+ 	struct clk *clk;
+ 	const char *parent_name;
+ 	int ret;
 -- 
 2.43.0
 
