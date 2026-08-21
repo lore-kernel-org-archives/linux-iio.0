@@ -1,100 +1,116 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 043043CCFC4
-	for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 14:06:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E6C33D6D6;
+	Fri, 21 Aug 2026 14:07:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787321195; cv=none; b=RfswHWaEikoc+DXQmDsr7SAzIK5Gy14IX/vXojV/fp2ATZWYfwsObD6tzN5a5CwksNmS2xnzNVPEdb7ea/wZ78p4bLDKgI36rcMzfqK6W1LFYsxGXhn8K4oSp0GjwJSuTLpj161MqkqBqtMtsaGX8LEty0+UuueIEKEZePGhnZw=
+	t=1787321242; cv=none; b=kjZOgjamGuyQyhMyqf1CStcg2f+am6tZOCRI7UiQpiXeotRR2vwrw/2GzPRutlbRpTHKc3TQcZfPG8S/L+oHYVc7Nsn6iPiq5gaWYv/6c29Z9RbQ8hwC4GHpdTTG+LxSbUutmi0ryzv2bsQ747TRm4fPVIVpglFyEbVfV5Ci1yk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787321195; c=relaxed/simple;
-	bh=c0PiqgIwyXsHVxSOFYpXESPwhADDQ6iLCQhy0T9Oy4k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MQooK/RtStTXL3CveD6g4xk07FXHr6yqK9MyLRZflJZmhRuWCT/jAZVxGdiLtYR4RXxgvKra9/7qYRZU6xGtBp5tL5wvVXaRq6TUHw04PsGYTXvEGH0A4KwM1f+tvGX8Igr0QNWiUdYMLdDuW3TRdExnLXA6i9qJmJYtjxUrM9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G5LuzzTb; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787321242; c=relaxed/simple;
+	bh=GjecpBH1xTn94qIZgQWgjmpZwS1YB4z2vSwqNMDIB9s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IcmZwmWFwWeKZJf6pjzoUHaLcvrh9Cdk5CUFFNeVn0LkxdwBwN9n2o3O1yleF5YZ8u0Qd03PNoeLxfPwt53w/1XqAmD5kxE7TRvAOXvip3hI59A/v54j/511+og8Y4odwtG/FN0wfPiOm9e1mQDKtXmZ07VSDTOr92LUM4lDIuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bKBS6jEV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G5LuzzTb"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-47fe89fb333so542569f8f.3
-        for <linux-iio@vger.kernel.org>; Fri, 21 Aug 2026 07:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787321192; x=1787925992; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=d7bviOHsEyw4FvUw51zgLynA5i0Xr3L8YzOxn7FOuxA=;
-        b=G5LuzzTbnEKQonUZ1qxlXpOlnIrzPUIVBhcujt26CsSXGV4mLEb84GlPEtIBu4vj3+
-         k3+XmeT+qbvoKusnV2wvhf07QfNdVfgRbG4rgP7eSKBV6vJxqwCy7tgwgbzLTOhCf+zZ
-         lAo4Lxuhd1d3boRSKwfixGXcej5E2owM7Hq/dVC6brZ6KGIiX42hSnbtOxwKNAOwjMMr
-         +Ivgd6bT4GBsD3Bb+EJFtriihsFZSLu52greSMZIOU61xqoMduFNUJplvCU2ApcIwCws
-         S9SGYCXr9JdYtd5fvNlkvFjD9FpNPCYYngprscy/CitPb78l4kvJQB3vhcSUPNuZUOKX
-         3wFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787321192; x=1787925992;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=d7bviOHsEyw4FvUw51zgLynA5i0Xr3L8YzOxn7FOuxA=;
-        b=EdzOVs3CSVacufSD1UlroXNsnSlP0OzNhnmL+5ZwiU3teI6XEnHrGeSf+/MnKW1TiH
-         0+Q0LU1ynETaMhEDKw+pUE/4uI5dGpYYZ5i8fyYSvLhyFe6V+BEafdT5xj7zvuttQJL1
-         mOwang9RksFKfOGVZRBCgYxQEdZEWBij3q7WBSpmux8dtYS9lxm2b+CG7J9EIM+9V1fR
-         VEUIgkBwpUe1MlAjSBa92yqABugwQTlvYL/yS2SEBGGLEGZOmF7l17o9X9SLX9w34pj1
-         lcp+S30YWRnqA4DRA1NjRfOpXyFpF4QRyMnIKn2kMBzIz1UO5GWqMxIF0/lLKJsPL5l/
-         UObw==
-X-Forwarded-Encrypted: i=1; AHgh+RrFLxRTlkgsxLBCRjw1OTrSmS/6PWm2NYRbptr2xPBt6/KKBiCNjr8izgtPmBmFaLMxtvOoGEmvo18=@vger.kernel.org
-X-Gm-Message-State: AFuF++kemiTU+OU65no4N8EMu/saq3XE1ANZVchVIxnW7irnqk4jiAyw
-	5qAzNCLzPDUs2tvemGSvlehjC3p4N7EJsoEF1jPcSF8yz/B1DWfPMjJ1
-X-Gm-Gg: AR+sD13U8pigK7mVM/Ixfm2qtf/g3pZZfFwIVGaCewwRxuXcmcTj5clvgmVuvNmVjKm
-	TZjPMFtnOFidvGQo4dXLLRqvjk6TiioI599EuNGgd20psE7KwwbFTElPGH1UpbmOXCJ2ggu8KCz
-	ax0HYsRQdv1DvPOr0F8Vb1NyH46VMjoeFCaMRfuPGUuU8ZOH5PN1M7UTZEiDQWDiXlLxxoYYCA5
-	dPRyWYZufzKzEi7Urwl1wBMEJn2+Tz4yeBEAH1IQwp0sETydzlqHa7c+BVouQ1OuxQOMZe0Qvz/
-	HDqXVJS1U146tN/uyOU8eMHipdjeQnlADgcwjIGZREuK0SPiWmPOk1C1HaMNHHEAZa08GBantM6
-	WOsYr/xYUjRxZivOqdS4MU8TeApWnwYnYI1A6zyFrC20HSicwkWljIaQnMIyTE2pKTbk9bbtEto
-	zkAUqrR2uqie8ZkDbhK8c1Ap8t335i1JaYCBcLkWtexiXlZNAUIyCFR3hiUQZ+Lv+dKEc5UKSsY
-	tOVfVxVbWXBN7g6mipuN1JW1uPaXHjglMA=
-X-Received: by 2002:a05:6000:41e5:b0:47f:7b75:9dfe with SMTP id ffacd0b85a97d-482c0b5bf92mr10755617f8f.8.1787321155770;
-        Fri, 21 Aug 2026 07:05:55 -0700 (PDT)
-Received: from MacBookPro ([2001:8a0:6c97:6700:9816:5963:8c6d:ec64])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482b14c3775sm15106964f8f.26.2026.08.21.07.05.54
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 21 Aug 2026 07:05:55 -0700 (PDT)
-From: Gabriel Rondon <grondon@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nishant Malpani <nish.malpani25@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] iio: gyro: convert to iio_push_to_buffers_with_ts()
-Date: Fri, 21 Aug 2026 15:05:50 +0100
-Message-ID: <20260821140553.80246-1-grondon@gmail.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bKBS6jEV"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 3D2841F00A3A;
+	Fri, 21 Aug 2026 14:07:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787321240;
+	bh=IeSQymyuwP8rOsJyZKQXQI2AMDhLlQ28DVhVHVPw+0A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=bKBS6jEVw6/sSA2BHkrWFKGb21GeWSyTGNm57uKVKZqRRDPbk0Jmq2CuW1l0mqT3R
+	 ofKqQRg8aoLhWupvC3fZtYHMn6qjHEm/U3mmgCt+QNtqaHG/f+wGDbKbPQDleKikPP
+	 M3YTMU+1w3mHaO/tFvtTYg+zw8vyHLbbhDasghfQXpk9NhCZFKxC/LFsK2gSLm4lsi
+	 U7qe+c8hckUGSu8y0f9Zf6kEA1D4pXx4E6zGXCcOJnsjeUIMZfRW/P4qkpp5PQba5c
+	 7wvvuGRMXBT/Y6Np1UHsD6WGyLQpF6RdDr/stvO84r/6RacKVD9C63eB4cnmDOeTc2
+	 Y0IQhHJa7JGmQ==
+Date: Fri, 21 Aug 2026 16:07:18 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Bartosz Golaszewski <brgl@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Kees Cook <kees@kernel.org>, Armin Wolf <W_Armin@gmx.de>, 
+	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Cc: Eliav Farber <farbere@amazon.com>, tony.luck@intel.com, bp@alien8.de, 
+	guohanjun@huawei.com, mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
+	laurent.pinchart@ideasonboard.com, linusw@kernel.org, orsonzhai@gmail.com, 
+	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, fabio.m.de.francesco@linux.intel.com, kaihengf@nvidia.com, 
+	ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, paulmck@kernel.org, 
+	frederic@kernel.org, saket.dumbre@intel.com, linux-acpi@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+	acpica-devel@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>
+Subject: [GIT PULL] Base commit for
+ devm_{atomic,blocking}_notifier_chain_register()
+Message-ID: <aohZHuN68wIyaxWy@monoceros>
+References: <20260816060648.4030-1-farbere@amazon.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="qmfh2vthygwjdtsx"
+Content-Disposition: inline
+In-Reply-To: <20260816060648.4030-1-farbere@amazon.com>
 
-Convert the gyro drivers that still use the deprecated
-iio_push_to_buffers_with_timestamp() to iio_push_to_buffers_with_ts(),
-which takes and checks the destination buffer size.
 
-Each pushes a struct with an aligned_s64 timestamp, so the change is
-passing sizeof() of that buffer at the push site. No functional change.
+--qmfh2vthygwjdtsx
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: [GIT PULL] Base commit for
+ devm_{atomic,blocking}_notifier_chain_register()
+MIME-Version: 1.0
 
-Gabriel Rondon (3):
-  iio: gyro: adxrs290: use iio_push_to_buffers_with_ts()
-  iio: gyro: bmg160: use iio_push_to_buffers_with_ts()
-  iio: gyro: itg3200: use iio_push_to_buffers_with_ts()
+Hello,
 
- drivers/iio/gyro/adxrs290.c       | 4 ++--
- drivers/iio/gyro/bmg160_core.c    | 4 ++--
- drivers/iio/gyro/itg3200_buffer.c | 3 ++-
- 3 files changed, 6 insertions(+), 5 deletions(-)
+On Sun, Aug 16, 2026 at 06:05:59AM +0000, Eliav Farber wrote:
+> Many drivers repeat the same boilerplate when registering notifiers with
+> device lifetime:
+>=20
+>   1. Register the notifier with *_notifier_chain_register()
+>   2. Check for error
+>   3. Register a devm action to unregister on teardown
+>   4. Implement a per-driver static unregister callback
+>=20
+> This series adds devm_atomic_notifier_chain_register() and
+> devm_blocking_notifier_chain_register() that automatically unregister
+> the notifier when the device is unbound, then converts 11 drivers to use
+> them.
 
--- 
-2.50.1 (Apple Git-155)
+I applied the first patch on top of v7.2 for you to merge into your
+subsystem trees as base for applying the patch(es) from this series that
+should go via your tree.
 
+Find it at
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux.git tags/d=
+evm_notifier_chain_register-for-7.3
+
+This tag only contains this single commit e38b9eda475f ("notifier: add
+device-managed registration APIs"). I intend to include it in my PR for
+v7.3-rc1, feel free to do the same.
+
+Best regards
+Uwe
+
+--qmfh2vthygwjdtsx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqIW5MACgkQj4D7WH0S
+/k52lQf/SSaOWkSYXKMtLPhk2tniUdDRYaQQKqCM8eM7DNAYMQ5ny4RwcPBa2HPx
+kCeG2UF9tQ00N0UP7yOClWXul0KviSa6sc7/9IQHJrg7Irl6KGpEU78U9KBlzhbX
+8qXTKxd37NjyBiNtSgMrDOWk1kM2L0t3ZI05sFohC9iwBzBnMlZ7HMFDmEX5F2EJ
+bUmPO4bgSbIltqDIBHmIJbU9Z/4qtNjlnS//NuyvLc8bxe/eFT+TBaX1EMB+GEqx
+J/NJlI5kzXTVpxqqBaLQprxG5+PgmFLucMLIhUJWCXU/6PeitD1+nd96cXei6Xfx
+dE6APgTbM4m0zIOzE2+7vOOf9+kvMQ==
+=rDi/
+-----END PGP SIGNATURE-----
+
+--qmfh2vthygwjdtsx--
