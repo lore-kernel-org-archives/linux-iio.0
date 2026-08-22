@@ -1,104 +1,136 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7D963803CF
-	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 08:17:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E02C370AC8
+	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 08:59:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787386655; cv=none; b=NBayANEHfoCxK41XHiIPDd+PXjkQ0u2qlUO6o0Bjb7ng64HrF0eBiapYwxWGQXJzMELy7m4ehs87Ej0bZDrPD/iPyh4lGfFT922AlgDvWHiFiA+iCOAXKSQkfZfjDVZRM6cmbTgJqH+xPymmlk/8DU7A600e/jfN4I3LCQo91A4=
+	t=1787389143; cv=none; b=uhw2/qmuWM0JLhkSgaU7sfQtTuFnf2n1p2gOAcErxmf/nJnCnP8WKzsldDySGNjjneY+Eomgb2f4UyiFfrP7ySkC1hyNLpE/ZJMkTfJIFhT0eETeP2TI247NtaHUDsIc/b9Sri7aOPgoxYA+3DgXO4wgbMDoqfHGb+NZ5dpGgqs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787386655; c=relaxed/simple;
-	bh=UyKxg/OrY1NTQJ/hzfVkpY38iioftx2ea0uczqSQn+Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WihWePTcp7Qr8oObvX/IxS8uwsYHnIMrK16iEvZfxmXnoVxurraMAXTs2V9hBw3wW5vio2oeEa27xbNJWIhuNNgZsfb+eYxv753i6+Q+AH/xxNiwOEMvtxhyOErg0JkOfzJJJ4HkgRUiRg0Yj+mJk2bKRaeYujV5nEraTHKxDJg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dwBY8j5B; arc=none smtp.client-ip=209.85.218.47
+	s=arc-20240116; t=1787389143; c=relaxed/simple;
+	bh=W779wj4mHSsllfXyzqDdo2yZBI6PkocPY2PxiztL+mY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=E4VyA0qJBesrc0umR4wT9qNmCHWcOv4gYV3MCG9G6Hsme5RTEesFid4LuRkaoohaFQbfmxE4PU87TYBQx1Stlc9QcxrpxerPiev3gwZQhymjzoefy1kqBjLTG8d6DxEhK2hPU3ModtGo1jBbiBaEA6YqgimiWpsuG6skMu3ZLw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jh6EYLUo; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dwBY8j5B"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c20e70a0962so269239866b.2
-        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 01:17:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jh6EYLUo"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-49557167508so1998385e9.1
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 01:59:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787386652; x=1787991452; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ZBoB9ptiqxQTzqJj9v8b4ETyoimSYERkDLiGVDY6vjU=;
-        b=dwBY8j5BxBTmRkbbkXGvDFL6b62z/KZfLwqlNLiQkmrpNyR+HaIo1ff7gOiRD9IiIh
-         +3JphImZuYUReims+sbFIPi0gFLpmj47C5C2IYwngKx/jQx0g+fgeaxJamIYOClwx3M3
-         RygezbS//DwiDSpVYXBJdcvHB/T15XdKUk0C24cJCDw/w75fBcAy4TozqxiErhgG8Nug
-         M0XXg94G3/GvhqqDnGecJZNsXZAnNbN5dJGYH4RCKXQf9XnPiVf1hIVz7xboIInOMbHO
-         Mn6T3GuSrnsn89HtFEbww1GWU53dQj2pWJsePXoeoL8CX+YhyNtviCDZ8c0yo4wypVhF
-         9L3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787386652; x=1787991452;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1787389140; x=1787993940; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ZBoB9ptiqxQTzqJj9v8b4ETyoimSYERkDLiGVDY6vjU=;
-        b=Ft2pLkpRlGO6fMiaUb7rYgKnRt1ngSjCW4Z1lU1WiLBHpVg1RgXXrSV5DXFdin07mC
-         2RrZjRlAuuaelz1D1wOqrnZtc/+aiHsR3nhrm7dixGJOO+90XrMlZyppJ/gQeCL8hc7l
-         o+Eg8ARtD4SFNTA0LZMgE3g5r4Pk7F9m6E0ClJ0Ub6h0M/6MEJREfvm/llvMFbNep98N
-         fqRQVdIApr8ld82GpMWh+Gf9YAiHUXACRVOC9ESR1eDPHovkkiU+aPetlw6Vzb5RqP/3
-         EJR0kkc3einIDIjLWiri0g5YHzpYyVfC5oY+MeUlNSDXMvX29voRbYP1HrLsYCkHOl7O
-         uAVQ==
-X-Gm-Message-State: AFuF++k3h05781rioKCAByTzJih35CTSHnJag82qGglfk7EPsJl7hBD/
-	zlbWb6BZKObP3py09IioACE0DfjcyUSVyxt7UwxF2KwfU1qm71N1RGmt
-X-Gm-Gg: AR+sD13UQbPOyk4GJ0sWzcQe4L19cEjcM2A0Yg+XoFT/1aTjnlUnw/wOXNJLmiEoeAS
-	vomfKQDzgN2s0Jo7Y1dvP5LRQZB/d2s7tGkhCwFH5cduL7EQAMwofQRVdLfeFC3Jm0HDdjguw8T
-	M4YPx1ubhdGsP5PTrbUXExY5T1LsLqQKBi8MoTaz5DBPwoc0DA+7iMykJsGpEI6qaDCTURaNk81
-	rtiiTiuIFG/1Gz4oF9mF1HN/IiNOp7Rs0HKRJ6zBwMYxW3O4v50eABRYjuTZcRg/JifeABigTSV
-	egM0vylebpM/YwFOKHkKFdycPUwyJB9Fp+dpVQZF+X32IKIFrw1GHRf05FO71ZH5Bz9y4pS/GG8
-	ztMNCRaHA3iGwTuApRRkv82NI3ZqH2lKRiBysGbjc4XdrlcUNDPw7/8t5Br3V0yPwWzu3c9yKqg
-	duhziS90xgbhH9Prw5kwDDBXHybB5uBH5Jkqu8Hx7a4wuT5RRO0bvVMYu3s+yW2wsSLCl9oyn3K
-	H/vd679o1FZXZTH11ri4qNAsUPMaFoZTfNNJPCiRcjKJ17cQk0veiqt5tgAZ5E1XctXKgp+/+AR
-	86E7RTEN7eQE/fMSJY68ZtEdA9BEd9hij6oFVohzUHhQgrGOFQBxzdnNXZXFksGTXSMV9wPZB+3
-	mDOefk+YWlfD6mFFqCapO
-X-Received: by 2002:a17:906:81d8:b0:c16:12ff:dc93 with SMTP id a640c23a62f3a-c246a6ca584mr1096820666b.18.1787386651869;
-        Sat, 22 Aug 2026 01:17:31 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2496296b8bsm196582666b.16.2026.08.22.01.17.31
+        bh=WWg7QwAg3+JgYt2P6ZQJVJ6LXE55gmzN7FLka57N1Pc=;
+        b=Jh6EYLUoMDF2kytgYdHpirVTRqJeGqSBek6bLlnNfYOaK8xbjAePcUOlcLlCEdrG/O
+         4yl4ylKvk2Ns0Xs4tVDls7jwLl/QVmhCidN4jNWlJ+UngHgm9l8h9INR3HlihovVLr/j
+         MbnSWxxIwUyZMJNPupsxKaPT6MNLxrQB7YsGSC2j77jwU/9wzab3kfOcnX9dWZmA4bd/
+         MYR6O/Q7E8f2cf3OTLOqmQB/3guJrdBjPePrfUYVcJwSvD8Z3RBV/fBrJeFodBSnc0Q5
+         vCizSINdaTmwVrQKrX0KCw0b6xKQEYG7kdNPVfg4EbBUJ6LWgkoRiEVGMBmdy3yhZEQJ
+         FTuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787389140; x=1787993940;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=WWg7QwAg3+JgYt2P6ZQJVJ6LXE55gmzN7FLka57N1Pc=;
+        b=fyE2jvVLxg4poxh3gNKWAoYOFSKtgo98zUKjkMJISf/I0VIm8aN/b/kj5wcVHVSaLQ
+         1tIi+9CCtvyG+W6+3vipQloejs6vGUc1gzWobCFz2aXWzFQfuXHR/qTLuPp3PhUJQIR4
+         Pj89nAlVM1SgyLTjqKU2iJAzDU7SDFrMfFrpuPLZBm1XlMfp4D9edKuBOy1hChtxKavI
+         J5S1BIWO1A3vZxY2QtI2237GXyB+flCLx+DJxHaGx2Pq2Dd6PEHJhQaLrzQZX2RGHgZ0
+         Rf2c+lKIx3g5vY8zUEn8Qh5yrM0xBv6Z9/SA1bhs5bsGFmtQ/OUsPX3NIAQi8pr8Gmty
+         NsMw==
+X-Forwarded-Encrypted: i=1; AHgh+RqZWq5qu3FBQbI8vMxiAclAJfLyK6D2pDH5vBmPKC167IB7wL26jvzztIklK1DP04/Gw0EOlM+0vws=@vger.kernel.org
+X-Gm-Message-State: AFuF++nYQ9nVt2F9FfPGH5OMJXj37ZVgsJCRwIsx81vcPxslpykw31Uq
+	VLpDZ7X6cybdFs8KekdBP3HorMJMR1/wbZJgcFxnf1Wv3AjksYHdvsZ1
+X-Gm-Gg: AR+sD12uBaReuvLeX5qMjr3z6BMyx0nH7Qto4g+oMIx3Cwq/P3J62dWdHcG9sC+qAI3
+	m7zNRs4ojIb/37VGger5Le/RrZaQFPYB6+hBI3SgF413tzee90z7X1KXheC9tSAIqSAiy3cxefd
+	JA2tk8UfHCSlXOcQnleDc3aIGJCczoTABR7kk6SeDKdffecJqNxGEHY5foTANajzQ8gDBGu2tbS
+	FgDYakYGStqCuvkh98Yqz5Y/+9kwa1MHb1BW0iN99ycid0kV7HGfJcSlgw+7rFy66vWjAqOY1iA
+	kCm/KrLqakDUyUoAVHL8ZjWABPGLGDacaVaGavTXMIwCwjb4xW9yrz/1qW1BIhBqPcZAnpEeBFD
+	BJHqRs5E3b2pSc2X1OQeDW+7AFnld94s5Iqqnga/MSiaV0gCwPi7+YaBQVTWvMnVGmmXqrP18y0
+	NoWR4Cb9Wb6/Be8FP0qjl5EY3R4uID8yN5Er97cC1T/FUGvpSOOilMioi6o+u1+6zQP97bhod/g
+	4AhS+fCgNA=
+X-Received: by 2002:a05:600c:46cb:b0:499:a277:e8b5 with SMTP id 5b1f17b1804b1-499b82d2865mr143740845e9.3.1787389140327;
+        Sat, 22 Aug 2026 01:59:00 -0700 (PDT)
+Received: from fedora ([105.74.72.30])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499c359b9fcsm13596635e9.9.2026.08.22.01.58.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Aug 2026 01:17:31 -0700 (PDT)
-Date: Sat, 22 Aug 2026 10:17:30 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Crt Mori <cmo@melexis.com>, Puranjay Mohan
- <puranjay@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/14] iio: temperature: make headers conform to IWYU
-Message-ID: <20260822101730.24b93e62@systembl0wer>
-In-Reply-To: <20260822-kernel-header-removal-v1-0-ee31b124be11@gmail.com>
-References: <20260822-kernel-header-removal-v1-0-ee31b124be11@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+        Sat, 22 Aug 2026 01:58:59 -0700 (PDT)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: jic23@kernel.org,
+	lars@metafoo.de
+Cc: Michael.Hennerich@analog.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	skhan@linuxfoundation.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Taha Ed-Dafili <0rayn.dev@gmail.com>
+Subject: [PATCH v6 0/6] iio: dac: ad5504: bindings, cleanups, locking, and scale fixes
+Date: Sat, 22 Aug 2026 04:56:47 -0400
+Message-ID: <20260822085850.17527-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Sat, 22 Aug 2026 10:02:27 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+Jonathan Cameron applied patches 2 (sort headers alphabetically) and 4
+(introduce local dev pointer) from v3 directly to iio/testing. This
+series rebases on top of that state and does not re-send those
+patches.
 
-> This series removes any instances of kernel.h in the temperature/
-> subdirectory and cleans up the headers in order to improve readability
-> and enforce IYWU instead of relying on transitive dependencies during
-> the build process.
-> 
-> I had Gemini generate a summary (a bit more verbose) of changed headers
-> under the --- in each IWYU patch to improve the review process.
-> 
-> This is part of an ongoing effort to remove kernel.h entirely from IIO.
-> 
+This v6 series addresses one remaining item from the v5 review by
+Andy Shevchenko:
 
-Okay, initial Sashiko review came back and I've missed a couple more
-headers... will have to send a v2.
+* In ad5504_write_dac_powerdown(), move guard(mutex) to after
+  kstrtobool() since input parsing does not touch shared state and
+  does not need to be under the lock (Andy)
+
+Testing:
+No functional change from v5. This only narrows the critical section
+in one sysfs write path. Re-verified on ARM64 Raspberry Pi 5 (BCM2712):
+powerdown sysfs read/write and powerdown mode switching (20kohm_to_gnd,
+three_state) verified on all four channels without errors.
+
+Previous versions:
+v5: https://lore.kernel.org/linux-iio/20260821102255.36705-1-0rayn.dev@gmail.com/
+v4: https://lore.kernel.org/linux-iio/20260817211118.21833-1-0rayn.dev@gmail.com/
+v3: https://lore.kernel.org/linux-iio/20260509142047.30302-1-0rayn.dev@gmail.com/
+v2: https://lore.kernel.org/linux-iio/20260310174835.24209-1-0rayn.dev@gmail.com/
+v1: https://lore.kernel.org/linux-iio/20260212181955.42724-1-0rayn.dev@gmail.com/
+
+Thank you to Jonathan Cameron, David Lechner, Andy Shevchenko, Nuno Sá,
+Krzysztof Kozlowski, Conor Dooley, Uwe Kleine-König, and Joshua Crofts
+for the continued reviews.
+
+Taha Ed-Dafili (6):
+  dt-bindings: iio: dac: ad5504: add output-range and missing gpios
+  iio: dac: ad5504: Align headers with IWYU principle
+  iio: dac: ad5504: separate ACPI and DT paths
+  iio: dac: ad5504: remove legacy platform data support
+  iio: dac: ad5504: introduce local lock to protect state and spi
+    transfers
+  iio: dac: ad5504: support scale via output-range-microvolt property
+
+ .../bindings/iio/dac/adi,ad5504.yaml          | 39 ++++++++-
+ drivers/iio/dac/ad5504.c                      | 82 +++++++++++++++----
+ include/linux/iio/dac/ad5504.h                | 15 ----
+ 3 files changed, 103 insertions(+), 33 deletions(-)
+ delete mode 100644 include/linux/iio/dac/ad5504.h
 
 -- 
-Kind regards,
-Joshua Crofts
+2.55.0
+
