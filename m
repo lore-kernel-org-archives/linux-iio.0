@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FABB2C032E;
-	Sat, 22 Aug 2026 21:47:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE64F37E2EE;
+	Sat, 22 Aug 2026 21:55:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787435255; cv=none; b=HxzRxhMqC312pZNwqUXWGNRyZyeW9GAt4vMYjtgIz2jd8kFxU4B12Iri8/9A7FxoTp3c9PD5pTzi1Hn2K8fo2Y62vT+2yqt+/bXEmahRIGqaabzgJXZA7m2XPFgMXwhB13lbXOem+Xi08yqadI3eDvBmgBWrRR4lst+rvRj8sAE=
+	t=1787435760; cv=none; b=b8gwvUW2gkoRGt5erbJPx6ovO0vdKg5eMfYug5j5b82d9ot2++BeIDUOHt+SngsriKuFu+itpE7f+x8t2YKCLj+2RywkBZpALsfZr4kIg/5kOu2z5afJwZd29hLDzJd2iNFFfUiFAQQflQByu0Q9byZY1HtmC4Ia3rQEok2teWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787435255; c=relaxed/simple;
-	bh=0PscWDful/z0+x6Xx0tcPS2138CdAUk0LUA/1+tvGbU=;
+	s=arc-20240116; t=1787435760; c=relaxed/simple;
+	bh=QoU2uojzCaepY3mq9/oAzpRjccpQG+T1o2is5hBq9Bo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=koVg6+/M3XKvou9o/exIkXpBJTMZvAOLPVlQoX+qizCemjVBIbLrm/aVtm5t1Eca+fu+tjf0q26l2myrn3pojblBsXp3UXbGaQGV9eb0n4Kuscqjmc7p9mPyAJQ73hxaekZRygIwlhrXY77IWm+aS29VYr8u93niqkf/pEIAGSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HPEsihU5; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=a372/xIs8dvxiCdICjNW44QAdVQiX6Y2HWCQwia/NDBanEvyNk1zNQAzXbIQzClnQdETWqS//pi7ujdN16DKw79CIfzXeq/x86oKV4jH3RfpwfJeYIyow8ylDyZ9/ok9UB2b5DlE6vragYU9/U6zE4hqTSnOKlol1GeltKlfpOw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CL8X9ssa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HPEsihU5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C5D1F000E9;
-	Sat, 22 Aug 2026 21:47:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CL8X9ssa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6526A1F000E9;
+	Sat, 22 Aug 2026 21:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787435254;
-	bh=j+zqmz8r3ZMflVKR0F/V7SX589Xsk0Iag0Ks27uUKYE=;
+	s=k20260515; t=1787435758;
+	bh=/3yifFywdCNpI7vIXFjsnCMF3wXJGkA4SAevNdiCqL0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HPEsihU5W6o8Ow7A5VaDmoDZ3M0Sz6xP+YlZmqK8wKbX8z7c4ANXziefH0uvRKyF3
-	 CcT0nKu01fZ5gorH9WVY+rIEAQyhJFLttzmEnCjL+Khwpj3FJzFnR6IDr4JyIKRQwt
-	 2F45/dBVSdONBllzOLqKRsYZpYj6yPgFtcTEoZNR4fEzfWxMWWM5AjTLt1SMI2ka+p
-	 O+twPxG0Ca9xqUKHFgPwxZ+nAhlTyCEvMMhj9UjMR1FPUfMhDS2lKn44wfI6VZUn0k
-	 mwTolU8p7NMbZZpgGe8GwatPqQGF6zgwxwVsuU0Psm9dL65d8oq+zYTaLkNWUCusEI
-	 xl3lttvGx86/w==
-Date: Sat, 22 Aug 2026 22:47:29 +0100
+	b=CL8X9ssaiHX6ePnpHCPFwynmXd3Vb+TsH0RKgBZW/w2kcz9uMScrSmtd9EDm3V/8d
+	 DeT8gOEcpevwTB5pVRvHGgfaLuOtMfR524OTsMHmZWXwo22AG7goOVStRiiS2pVVN2
+	 ITEZQrLlvLB0Q4tvC2sZeXa8zlXu7blbgrVWZ/S/jJ6YegJweuoArE1nXjsnuzVLyx
+	 QTBMFBluXUkgefXGVKecWGBdASo5S+ZsEZH9lQ1ET3Dl82WVkbH0jQlrUu0vN9spZg
+	 FTm1x3fG+0XKXBh9RT7Y6ZMrbWd5gX23svdpiubutG1GZW+05DpTuDnax/AIOjc7nP
+	 T+peq9fJRLAIA==
+Date: Sat, 22 Aug 2026 22:55:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arka Mondal <arkamondalofficial@gmail.com>
-Cc: Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
- andriy.shevchenko@intel.com, dlechner@baylibre.com,
- rohitsarkar5398@gmail.com, venkat.prashanth2498@gmail.com,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] iio: adis: fix unprotected debugfs reads
-Message-ID: <20260822224729.1d9c09c0@jic23-huawei>
-In-Reply-To: <20260815182726.11796-1-arkamondalofficial@gmail.com>
-References: <20260815182726.11796-1-arkamondalofficial@gmail.com>
+To: Yash Suthar <yashsuthar983@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ andriy.shevchenko@intel.com, grondon@gmail.com, linusw@kernel.org,
+ hexlabsecurity@proton.me, sakari.ailus@linux.intel.com,
+ srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: accel: bmc150: use aligned scan buffer for
+ both trigger and fifo
+Message-ID: <20260822225552.0c66a6b7@jic23-huawei>
+In-Reply-To: <20260815175728.99541-2-yashsuthar983@gmail.com>
+References: <20260815175728.99541-1-yashsuthar983@gmail.com>
+	<20260815175728.99541-2-yashsuthar983@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,55 +50,75 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 16 Aug 2026 03:27:23 +0900
-Arka Mondal <arkamondalofficial@gmail.com> wrote:
+On Sat, 15 Aug 2026 23:27:26 +0530
+Yash Suthar <yashsuthar983@gmail.com> wrote:
 
-> Four open coded file operations in three ADIS drivers are passed to
-> debugfs_create_file_unsafe(). None of them call debugfs_file_get(), so
-> debugfs_remove_recursive() does not wait for a read in progress and
-> unbind frees the iio_dev underneath it.
+> Drop buffer as duplicate and s16 is not correct we needed __le16 as little
+> endian, keep scan at the end of the bmc150_accel_data struct with
+> IIO_DMA_MINALIGN, and use it for both paths.
 > 
-> Andy Shevchenko <andriy.shevchenko@intel.com> asked on v1 whether these
-> could use DEFINE_DEBUGFS_ATTRIBUTE() instead. They cannot, as it formats
-> a single u64, and these handlers print up to four registers, e.g.
-> "%.4x%.4x%.4x-%.4x" in adis16136. Converting them would change what the
-> files return.
+> Fixes: bd7fe5b71918 ("iio: accel: BMC150 accel support")
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c |  4 ++--
+>  drivers/iio/accel/bmc150-accel.h      | 14 +++++---------
+>  2 files changed, 7 insertions(+), 11 deletions(-)
 > 
-> adis16475 and adis16550 already split this way, using
-> debugfs_create_file() for their open coded firmware files and
-> debugfs_create_file_unsafe() only for the DEFINE_DEBUGFS_ATTRIBUTE ones.
-> This does the same for adis16480, adis16400 and adis16136.
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index dc8a6285cf3d..89a475ef9a9b 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -1191,12 +1191,12 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+>  
+>  	mutex_lock(&data->mutex);
+>  	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_REG_XOUT_L,
+> -			       data->buffer, AXIS_MAX * 2);
+> +			       data->scan.channels, AXIS_MAX * 2);
 
-This all makes sense to me, so I've queued this on the fixes-togreg
-branch of iio.git and marked them for stable.  Note that branch will be
-rebased on rc1 once available.  As such I don't really mind rebasing
-it for tags or any feedback that comes in.
+Even nicer if you replace AXIS_MAX * 2 with sizeof(data->scan.channels)
+and also drop the AXIS_MAX definition as no longer used.
 
-Thanks
 
-Jonathan
-
-> 
-> Compile tested only; no ADIS hardware available.
-> 
-> Changes since v1:
-> 1. patch 2: changelog rewritten to explain why serial_number cannot use
->    DEFINE_DEBUGFS_ATTRIBUTE(). Code unchanged.
-> 2. patches 1 and 3: unchanged, Reviewed-by added.
-> 
-> Link to v1:
-> https://lore.kernel.org/r/20260814090728.965922-1-arkamondalofficial@gmail.com
-> 
-> Arka Mondal (3):
->   iio: imu: adis16480: fix unprotected debugfs reads
->   iio: imu: adis16400: fix unprotected debugfs reads
->   iio: gyro: adis16136: fix unprotected debugfs reads
-> 
->  drivers/iio/gyro/adis16136.c | 2 +-
->  drivers/iio/imu/adis16400.c  | 2 +-
->  drivers/iio/imu/adis16480.c  | 4 ++--
->  3 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> 
-> base-commit: 3d6d817622b0a9721e3cc404df3469171582be13
+>  	mutex_unlock(&data->mutex);
+>  	if (ret < 0)
+>  		goto err_read;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
+>  					   pf->timestamp);
+>  err_read:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+> index e8f26198359f..9deff256aed5 100644
+> --- a/drivers/iio/accel/bmc150-accel.h
+> +++ b/drivers/iio/accel/bmc150-accel.h
+> @@ -64,15 +64,6 @@ struct bmc150_accel_data {
+>  	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+>  	struct mutex mutex;
+>  	u8 fifo_mode, watermark;
+> -	s16 buffer[8];
+> -	/*
+> -	 * Ensure there is sufficient space and correct alignment for
+> -	 * the timestamp if enabled
+> -	 */
+> -	struct {
+> -		__le16 channels[3];
+> -		aligned_s64 ts;
+> -	} scan;
+>  	u8 bw_bits;
+>  	u32 slope_dur;
+>  	u32 slope_thres;
+> @@ -85,6 +76,11 @@ struct bmc150_accel_data {
+>  	void (*resume_callback)(struct device *dev);
+>  	struct delayed_work resume_work;
+>  	struct iio_mount_matrix orientation;
+> +	/* Ensure correct alignment of timestamp and DMA safety */
+> +	struct {
+> +		__le16 channels[3];
+> +		aligned_s64 ts;
+> +	} scan __aligned(IIO_DMA_MINALIGN);
+>  };
+>  
+>  int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
 
