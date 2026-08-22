@@ -1,45 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B69C284B2F;
-	Sat, 22 Aug 2026 01:40:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0BA175A9C;
+	Sat, 22 Aug 2026 01:45:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787362806; cv=none; b=FqLM5G80DCh2y3cHuXux4Pqim8r8VcydlI+b9lpXMbFfMh0DRz9z+ErbmwLx5LBtXJ8uACbdfH1s73Vg1qjsHmamVQv7Xz8Ply+S1BFKdbQqcJmIXmxKhVbf/Oux/sVVyNsU6fswyLTGLZ1LpPUgMwmGTVT0Fu0vk3/BgmNpomA=
+	t=1787363157; cv=none; b=jJMWMXQXR2bWlUzUbeDg2OB1iUuLr9/2Zl5X/a4Iyz0n2XRPZrNyUYGeLTD0wI+9Bs2EyqiO9XwjyMcRo61f+6xPuMCHrrKxOOr9RD5CKTvh90wkdU61pgkC2wU4acj1yryrYAMzAUZiWTi0aOXIKVasSpVUFgL3l0b1I1n/AMY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787362806; c=relaxed/simple;
-	bh=KTgpU9/8zh8wApa/SPdOT4w3OESsMoV7DtdiPjQbrXY=;
+	s=arc-20240116; t=1787363157; c=relaxed/simple;
+	bh=saY9HDmPbM5AjK3I9l+p+9tDa6BvEBwCvKttGcpSN+c=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dPBcRK4rs0l8oLLHso/Lca6q8xE4pAY5sQFmME83yAtvR6cJT1H1FW3Tf9cU5aQSDBUfZXQu+zgq1r4bj6DKzMDRHU8/CPph2WN1lNqq2wEn7dCOgLhb2e5qWYMie4Cmh4aCMY26oc5gs3hmSLHznyfBsN0VwhuGr658ddmcfKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kaw98fmm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=PrDb/mpvshnhnXnGYJ0QYP9IROIG+V0Q/SusQv528ntUsSWVMoFL2MlIGLkCNMDgATCC2S5EZpn374YQpfKUvSuj/9oHm7zLA2tR1Qn+S1a9+uej8LaGSd1+c2ZpVIlorJ71/Fw7mlRYdVUl0dRFabmQmRTfkYkZYM4p/LqwnCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UnD7PNuc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kaw98fmm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 064421F000E9;
-	Sat, 22 Aug 2026 01:40:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UnD7PNuc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A59D71F000E9;
+	Sat, 22 Aug 2026 01:45:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787362804;
-	bh=5GTMKh9J6oce0GKOv9wCZNoicYsfUpE1mImuA2CZKBA=;
+	s=k20260515; t=1787363155;
+	bh=aHl4AIXsgT0RxAd6Okv+/NzPPlDg2No0M78aNfSQzyM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Kaw98fmmXekhLrjzv/RNlHoWF8NgZvXdzQhdtNikJB5rd70RQX7ibCw26EZtpWvVV
-	 yxBuv6is02ixN4JmPE3MFUjdKg4rYiBzCfdavYrtrwV/O1vQcbIY2YPucm7pIKSQn2
-	 CUfmniAR1GCPfBfRF98EZwzQFufAz6TgGQMa9v8fnNSyqXJmSK0cHvm6sszXPFHzuA
-	 HXPx1Ph3gBP9PIQ+GCgiO9m9DOMa/+t4qY1abGuNmALzjWUrQ6SM7tqrZlEeZUTDpQ
-	 ABeLXaY6CfH3BZXkvVWzccARRmdKoPHdKY3yFIBF7INSHGKeu3eICCTz8HLzyqW7F8
-	 issEFEaXgb8mA==
-Date: Sat, 22 Aug 2026 02:39:59 +0100
+	b=UnD7PNucuvv9T8OLHQyT/fm9g1zenXuOiTBWLHjhDXFjRNjaBb+79shFNEkaFL4xM
+	 X0xIuL0Ocwbmd6xPCxb6CPHrySHQOKnPiuACwkoPSlrk3lwi5rjnuFuoBL/zhA+dKP
+	 faVWf0SHh9tJ96fthoZsgXyga0F1K58MrX74nFBsuOSWT9cWrgW0gvlahICX3BE1fd
+	 MZq23OXhQnhKuxanlY/Hrcvx6Y/n22V1gcI3+PkBoNzBoLdPUQLILA6hUpvT2En03X
+	 q5KYsaEP8AX4UQk0PJUhnnOfd1Qr61bImHmk85z4WJdmgzdnd9keGNWgjo61LWgrUM
+	 omycsAVWIRwRg==
+Date: Sat, 22 Aug 2026 02:45:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: phucduc.bui@gmail.com
-Cc: David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com, Chen Wang
- <chen.wang@linux.dev>, Inochi Amaoto <inochiama@gmail.com>, Takashi
- Sakamoto <o-takashi@sakamocchi.jp>, u.kleine-koenig@baylibre.com, Danilo
- Krummrich <dakr@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- linux-iio@vger.kernel.org, sophgo@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: sophgo-saradc: Handle errors from optional
- IRQ lookup
-Message-ID: <20260822023959.4319f0c3@jic23-huawei>
-In-Reply-To: <20260813074810.27574-1-phucduc.bui@gmail.com>
-References: <20260813074810.27574-1-phucduc.bui@gmail.com>
+To: Janani Sunil <jananisunil.dev@gmail.com>
+Cc: Janani Sunil <janani.sunil@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Philipp Zabel <p.zabel@pengutronix.de>, Linus
+ Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Michael Walle <mwalle@kernel.org>, linux@analog.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v3 01/14] dt-bindings: iio: adc: Add AD7768
+Message-ID: <20260822024548.5a6e1d7c@jic23-huawei>
+In-Reply-To: <6f2b715e-f62b-4b6e-9605-23d6978b6cbb@gmail.com>
+References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
+	<20260813-ad7768-driver-v3-1-cb554399ad26@analog.com>
+	<20260816192409.145df670@jic23-huawei>
+	<6f2b715e-f62b-4b6e-9605-23d6978b6cbb@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,45 +59,38 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 14:48:10 +0700
-phucduc.bui@gmail.com wrote:
+On Tue, 18 Aug 2026 10:27:26 +0200
+Janani Sunil <jananisunil.dev@gmail.com> wrote:
 
-> From: bui duc phuc <phucduc.bui@gmail.com>
+> On 8/16/26 20:24, Jonathan Cameron wrote:
+> > On Thu, 13 Aug 2026 15:56:54 +0200
+> > Janani Sunil <janani.sunil@analog.com> wrote:
+> >  
+> >> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
+> >> simultaneous sampling ADCs.
+> >>
+> >> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> >> ---
+> >>   .../devicetree/bindings/iio/adc/adi,ad7768.yaml    | 338 +++++++++++++++++++++
+> >>   MAINTAINERS                                        |   7 +
+> >>   2 files changed, 345 insertions(+)
+> >>  
+> ...
+> >> +  adi,data-lines-number:
+> >> +    $ref: /schemas/types.yaml#/definitions/uint32
+> >> +    enum: [1, 2, 4, 8]
+> >> +    description:
+> >> +      Number of DOUTx lines used for the high-speed data output interface
+> >> +      (distinct from the SPI control interface). AD7768 supports 1, 2, or 8
+> >> +      lines; AD7768-4 supports 1 or 4 lines. Defaults to the maximum number
+> >> +      of lines for the selected variant if omitted.  
+> > The default statement is a bit hidden and I'm not sure useful as it's not
+> > an obvious default.  Maybe drop that and make this a required property?  
 > 
-> platform_get_irq_optional() returns a positive IRQ number on success or
-> a negative error code on failure. For an optional IRQ, -ENXIO indicates
-> that no optional IRQ is available. Other errors, such as -EPROBE_DEFER
-> and -EINVAL, should be propagated so that the caller can handle them
-> appropriately.
-
-That function is very much undocumented other than not printing a
-message when it returns an error.  However I think you analysis is
-correct.
-
-I'm not going to rush this is because it is not known to have
-been a problem in the wild (only odd loading orders should have
-caused deferal).
-
-
+> This property was required in v1. It was changed to optional in v2 following a suggestion to use the highest number of data lines as the default.
 > 
-> Propagate negative errors other than -ENXIO.
-> 
-> Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
-> ---
->  drivers/iio/adc/sophgo-cv1800b-adc.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/sophgo-cv1800b-adc.c b/drivers/iio/adc/sophgo-cv1800b-adc.c
-> index bdc3e1326a9a..c6eed09acfcd 100644
-> --- a/drivers/iio/adc/sophgo-cv1800b-adc.c
-> +++ b/drivers/iio/adc/sophgo-cv1800b-adc.c
-> @@ -182,6 +182,8 @@ static int cv1800b_adc_probe(struct platform_device *pdev)
->  		return PTR_ERR(saradc->regs);
->  
->  	saradc->irq = platform_get_irq_optional(pdev, 0);
-> +	if (saradc->irq < 0 && saradc->irq != -ENXIO)
-> +		return saradc->irq;
->  	if (saradc->irq > 0) {
->  		init_completion(&saradc->completion);
->  		ret = devm_request_irq(dev, saradc->irq,
+
+Ah fair enough I guess.
+
+Jonathan
 
