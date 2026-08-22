@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D4F482D4;
-	Sat, 22 Aug 2026 02:20:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1DE61A9F8C;
+	Sat, 22 Aug 2026 02:22:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787365220; cv=none; b=c3HcFlrd0gBNwFGGsie1Zi1+avICWq6mGtjOOAuetQd/9wEGvfKxyVjmcUmKRUo4BfSE83F0WowwxHRqqXz8gMtR1I12Fr6a2t/O8mKdqUbQJpRRbUgz6yaG1bj98ZT4ekoxWbH2C6AFSa/35HMHAniNuWcrWxHq+zb4I1HrI9I=
+	t=1787365350; cv=none; b=Y49ATQSUx/T+SgeBiMvQSr3IUSccAsYkEixbV/HkF1eZ3W+aRGegA/yhmI3sQz/lb8olv9jmm3IaTlMQi/LxTECakmFSbQqiSb8iweyByHEzq7yiHuglRrwvzIOxBoJiuniooPdnVcZ01ClS8kCHwB7FW7QZTkrOTpEaX1QU8+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787365220; c=relaxed/simple;
-	bh=pDpzKPhy5CyB5AjMrUbmxWXMKOjC0SfvwPv59aYoB6U=;
+	s=arc-20240116; t=1787365350; c=relaxed/simple;
+	bh=EW5Rvqu61xUHUHtvRaYJZTHx+uRUDtm5MDy5SQuRAhI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EHJ1RjIhOKC0ZesagCYS+xWbx88PmVkJvVpOBCKIHEwE7fgWaUpf/vJIEsKjS/9m74WH0sMh/1fmHZAzSMe6dQJi+mxgcX/S+cP3OxQ4ywmCKsuHvsR58tkEPz67PEkDLQVXOdZ6tuNoqYV7V6gN2u9pTAcEoHFuNU+IFryfjXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YDQQS3CS; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=YHRuC+7KFUq84SQwIkZGCLYyhxK1iZwE6HF1PmJPPC+OubLSdTVU7/bLAJCNpuOyGorfJtbaGlhF7pCY0EVm8x6Lop5IZ1oHpqxUpuleTc2AG2qOGtRMaH5bEJccYUkbUOTBSsSJBEyGupOlkFJv2S1qiwWTi4Zp927pe0bE0uI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FBCe+fg7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YDQQS3CS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 148F51F000E9;
-	Sat, 22 Aug 2026 02:20:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FBCe+fg7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C451F000E9;
+	Sat, 22 Aug 2026 02:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787365218;
-	bh=tjB82S784fbDMFRoh33no+EsSh9WbPRsDDhxA31zn28=;
+	s=k20260515; t=1787365349;
+	bh=Xb6rTgt+uFNgFwc4HCFfSYnrbiscVhoaKefqv3sJWXY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=YDQQS3CSCVdh8gZ+8ojU7s99nBfzGGRoKGvx/CI1w6LGRzrDWOLa4zrwHdMQ4XBT/
-	 nleZb33kTIsLif99POzuCWE1jsRUgiU6CMhMuaxG9vktb3zU98FeDUS08jEDDHAQ8G
-	 ycCfVPqjMAzFzQbV+gII1nOt5zpW4CXGyNjDOp86GVdQcIcqvj/OhIoJqdgGxCJggD
-	 cLHZJ0vpUwlA1e56oiCXJ/belqD0zA2zTvh7Gmg4G5wx52iwDQv1mnvYEe4A1ijnKy
-	 85i0Vqy8xnm4yQ4J5kiqD0BfYeTOUvnWkRWL7oOVX6PLAeQRlR4kv1LrzageMK8o+w
-	 7YqXyR9228sHw==
-Date: Sat, 22 Aug 2026 03:20:14 +0100
+	b=FBCe+fg7Gqq3Paj6qq9aPuCE4bwPEMIlRpEB5FmSWWjnYjXIVINQomBrJmGgqoyRS
+	 I1bwRtyB5H5k+3QnQ0rKnCiYO1zsuzTGUVaPuE7Jz7oGNrDxC9hJUQVW59O1wEzI3/
+	 kXkyb9I5Ag1tvWq4oqzgHpygqFCusZm/4eq3a2LjcHacYYzriAbiqXw3wipBPU7/GE
+	 PqvMbPwBj/SE8hazqLbr9QWQTVABRB5yUKx9ffscZOh2Nxx6Hd1yZKGpnUQ4FGWuJr
+	 3f7bvFj2JHiJsx1RfliEQ+yVkgSB013lukhf91yaHGLuf7ODf7rlyF2KMGWC9G7/oW
+	 t9jEqXf7snZkA==
+Date: Sat, 22 Aug 2026 03:22:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
- marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v10 1/2] iio: adc: ltc2378: Add support for LTC2338-18
-Message-ID: <20260822032014.3d4607dd@jic23-huawei>
-In-Reply-To: <aoK4FXvkPT45RsIV@ashevche-desk.local>
-References: <cover.1786661484.git.marcelo.schmitt@analog.com>
-	<8b0d2e34163b85634266be3b9dd8f76697c89bd2.1786661484.git.marcelo.schmitt@analog.com>
-	<aoK4FXvkPT45RsIV@ashevche-desk.local>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
+ <dlechner@baylibre.com>, <andy@kernel.org>, <marcelo.schmitt1@gmail.com>
+Subject: Re: [PATCH v10 2/2] iio: ABI: Encourage differential voltage ABI
+ usage
+Message-ID: <20260822032224.2dbb88b2@jic23-huawei>
+In-Reply-To: <5760e0d12184eb0d7cf6fec34ad4b6da2d8669e0.1786662010.git.marcelo.schmitt@analog.com>
+References: <cover.1786662010.git.marcelo.schmitt@analog.com>
+	<5760e0d12184eb0d7cf6fec34ad4b6da2d8669e0.1786662010.git.marcelo.schmitt@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,42 +48,77 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 17 Aug 2026 10:28:21 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Thu, 13 Aug 2026 20:05:33 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-> On Thu, Aug 13, 2026 at 08:05:07PM -0300, Marcelo Schmitt wrote:
-> > LTC2338-18 is similar to LTC2378-18, differentiating from the already
-> > supported part mainly on the embedment of an internal voltage reference and
-> > addition of a resistor divider network connected to the input signal path.
-> > Extend the device driver, handling the internal reference and input signal
-> > attenuation, enabling it to also support LTC2338-18.  
+> So far, parts that could only do differential voltage measurements were
+> only required to have a consistent labeling of their channels by complying
+> either to voltageY or to voltageY-voltageZ ABI. Over time, code maintainers
+> came to the conclusion that the voltageY-voltageZ ABI is better suited for
+> differential-only chips as it provides a simple indication to users that
+> the channels measure the difference of two inputs.
 > 
-> LGTM now,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Ah. I applied the earlier version fixing up at least comments it seems.
-(Not that I've completely forgotten doing so!)
+> Adjust the ABI documentation to recommend using the voltageY-voltageZ ABI
+> for chips that do only differential voltage measurements.
+> 
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Hi Marcelo,
 
-Can you please check if there is anything different we can handle
-as a follow on patch?
+I applied earlier version I think. Please send a diff on top.
 
-Thanks,
+Too much floating around at the moment so I'm sorry to say
+I'm loosing track even with tools to help me!
 
 Jonathan
 
+> ---
+> Change log v9 -> v10:
+> - Mention the possibility of having same index for diff channels (e.g. voltageX-voltageX)
+>   in ABI doc.
 > 
-> ...
+> After looking at a few other chips I'm not sure either about having
+> voltageX-voltageX in the docs. I worry voltageX-voltageX might not provide a
+> clear unambiguous indication of channel properties. Nevertheless, mentioned that
+> possibility as a special case.
 > 
-> > -	case IIO_CHAN_INFO_SCALE:
-> > +	case IIO_CHAN_INFO_SCALE: {
-> > +		struct u32_fract fract = st->info->internal_div;  
+> For chips that have configurable inputs such that both differential and
+> non-differential readings are separately available (current ABI usage),
+> voltageX-voltageX can mean both ADC ends connected to the same physical input
+> pins (e.g. AIN3 and AIN3, CH3 and CH3, V3 and V3 ...).  That seems to not make
+> much sense for most parts. Though, there are corner cases where the same input
+> number is used to configure both ADC ends (e.g. to access a temperature sensor
+> through an embedded multiplexer).
 > 
-> + blank line
+> For chips that can only do differential measurements, voltageX-voltageX would
+> mean the positive and negative inputs of a differential channel to have the same
+> index (e.g. IN3+ and IN3-, AI3P and AI3N, AIN3+ and AIN3-, etc). The ABI is the
+> same, but the meaning would be different. Even though we have the left-most
+> index for the positive end and right-most for the negative end, that's not
+> enough to fully tell how a channel works.
 > 
-> >  		*val = st->ref_uV / MILLI;
-> > +		if (fract.numerator && fract.denominator)
-> > +			*val = mult_frac(*val, fract.numerator, fract.denominator);  
 > 
-> He-he, I have a local patch to add mult_fract() macro for this kind of cases :-)
-> Perhaps need to submit it at some point...
+>  Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 > 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 5cc2e82c4997..bb17105650ab 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -162,10 +162,12 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Raw (unscaled) differential voltage measurement equivalent to
+>  		channel Y - channel Z where these channel numbers apply to the
+> -		physically equivalent inputs when non differential readings are
+> -		separately available. In differential only parts, then all that
+> -		is required is a consistent labeling.  Units after application
+> -		of scale and offset are millivolts.
+> +		physically equivalent inputs when non-differential readings are
+> +		separately available. Even though differential-only parts had
+> +		been merely required to have consistent channel labeling, this
+> +		ABI is preferred over the non-differential one for those chips.
+> +		Special configurations may have the same index for both Y and Z.
+> +		Units after application of scale and offset are millivolts.
+>  
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_rms_raw
+>  KernelVersion:	6.18
 
