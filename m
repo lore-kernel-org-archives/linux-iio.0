@@ -1,48 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A67AD19C54E;
-	Sat, 22 Aug 2026 00:21:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 532E57260D;
+	Sat, 22 Aug 2026 00:38:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787358091; cv=none; b=mFqWie+m+14rripvFOu3B0W7HKaaQrjtLHE/OidZH8fLIZy5R72OBARMJ+2gsDgoIKOdnxpH4UllcXBgEyHwZaoaJwZwTjRk6QePR2nUaMAU1SxwmJnuaST0R8wSjkFFFp6KYh5ticpf2PQAyr4YgKWyLRy4leXN0mrdbqz1sxc=
+	t=1787359107; cv=none; b=acEQBiYUT8//P1JWPlCgCLgB4taRDxlK9qIMLt8iPFxE5rfiq0y8gHn1BHoqLkbkdFMAzGKgzqeE1is+JQFNcQ71hm5wdVx/jhVuHj/swasGMRnFQMKqOYQ1ah4MA0nlyeLLfE0c+gffab5MMzyPy+G9eaMgCFW2pdIBk8pQ++Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787358091; c=relaxed/simple;
-	bh=MBB4Y7LLYNDjY8KGDb1XT+5RpjW0wmIV6xyJxflWm5o=;
+	s=arc-20240116; t=1787359107; c=relaxed/simple;
+	bh=3UaETsBFsp634QA5VZ+KBBbu8CzzxJLzDMDU0mEVmH8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R7A1gaBFRtnR4+EIoSLI92GZ5VgAaMpcjWFerSrhexupgmnK+t8ywYZRwwTT3vMfPbE0XxAA+vMk1QHxkviscSQ3qKWVOIMyhAFErL8AMsDEq9bT3RjSVKMelcseMFUKfda9H5x0Kl+zIqhvcOxQLQX5ZeySu5OSIJMIt0Ru340=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X+rB8+Ua; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=pnsQRJyunzD6XIfIusM5aZ5haA6y5BrNK6JnnuXMrqu8xLEQ3VPsciv3r5p0d6SZemvis3PrfbczClKPqfLhkScxUOPG+Bmho1WiWrc1mmRA4Ga/fIuCZ+97Rpt3qGHhEgOA0zqKMLN3niq14iyUIsJq6Y3XdHShumF6DzhXz68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y192+lBu; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X+rB8+Ua"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D1C41F000E9;
-	Sat, 22 Aug 2026 00:21:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y192+lBu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A28301F000E9;
+	Sat, 22 Aug 2026 00:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787358090;
-	bh=4HRXDBwdtlKnJ05J03V1SL20yum1NoWsJSQHstsQI4o=;
+	s=k20260515; t=1787359106;
+	bh=BgtjeTZgSi0up8YUuZDJ55vv3CYMYTAStQdkwQY7sGY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=X+rB8+UaZDAQW/1yEidX7VIBoU8IjneINmjE+eEmSFjea6wSX2MTq2rwIEbo7kZ8D
-	 RXgTWOJvNL4fwK6bc8WJPOpBhgMEckLmZYbhtuveKYz+0NtZ/RIU8jrHJsFRKE+DTu
-	 GRrfWpF2CTy+qxwDFcUarsqVZnEcgsYh6g7KjZ6mWV4GXFFE6mt+THBLe2C5eVu2pa
-	 6hGoiaf6JWUP+NW4ZvjLsx19eeLbclRPrHkIQRrYbugaEh4p/4J7Ts6NXggXnuwNnz
-	 eoNfRm5t9xBobkbT3SNxSk5bSjML80I294vuyh96MI4UGJ1g1U1Yebsh07tT/fNsvN
-	 0yFa8gkTYI1AA==
-Date: Sat, 22 Aug 2026 01:21:25 +0100
+	b=Y192+lBuoA2/5b4nM40AmB9MYYi4YOBKhfYga1kSJOJPo00Qqeg72WcJ2vVle71ov
+	 Y/MI1Tp3QgZGXIkluIdhLMR4WcYRihfODN1Lqjg0CQs/wx0e22sNPGQC1wrXanlzdC
+	 MFkZRPJKH+Kf60Nf3xZAmY6HFjNsGcxC6pr1vLyfDUBs8g2c/9r8KumacTv68YS3Vk
+	 8utB1yvsjVqqZ9ImgbXJlrlpPLYL+r9PZAIFJk8Ly/2OW78/Xxe8MHiPvrToJjH5oo
+	 KmXUXKqTZYnwSBX5wZbsrfTEPa7NBkc08lvQ8F7MfVuV/NpJi5i/+ct9oIRD5SQTsD
+	 BalW/O1aag7wA==
+Date: Sat, 22 Aug 2026 01:38:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Shengzhuo Wei <me@cherr.cc>, Ramona Gradinariu
- <ramona.gradinariu@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Marcelo Schmitt
- <marcelo.schmitt@analog.com>, linux@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: accel: adxl367: reject out-of-range FIFO
- entry count
-Message-ID: <20260822012125.2330b7e7@jic23-huawei>
-In-Reply-To: <anwqC4tczcdnmF1u@ashevche-desk.local>
-References: <20260812-adxl-fifo-v2-0-86bea20faf1c@cherr.cc>
-	<20260812-adxl-fifo-v2-2-86bea20faf1c@cherr.cc>
-	<anwqC4tczcdnmF1u@ashevche-desk.local>
+Cc: Archit Anant <architanant5@gmail.com>, dlechner@baylibre.com,
+ andy@kernel.org, nuno.sa@analog.com, u.kleine-koenig@baylibre.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/8] iio: adc: ti-ads1015: fix PM leak on probe
+ failure
+Message-ID: <20260822013823.28b0a1e1@jic23-huawei>
+In-Reply-To: <an2FkBoJNRCaeAkk@ashevche-desk.local>
+References: <20260812164433.23011-1-architanant5@gmail.com>
+	<20260812164433.23011-3-architanant5@gmail.com>
+	<an2FkBoJNRCaeAkk@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,57 +49,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 12 Aug 2026 11:08:43 +0300
+On Thu, 13 Aug 2026 11:51:28 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Wed, Aug 12, 2026 at 03:58:50PM +0800, Shengzhuo Wei wrote:
-> > The FIFO entry count reported by the device can be as large as 1023
-> > (the low byte plus the low two bits of the high byte), but fifo_buf[]
-> > only has room for ADXL367_FIFO_SIZE (512) entries.
-> > adxl367_push_fifo_data() passes the reported count straight to the FIFO
-> > read, so a count above ADXL367_FIFO_SIZE overflows fifo_buf, a heap
-> > out-of-bounds write of up to 1022 bytes into adjacent memory.
+> On Wed, Aug 12, 2026 at 10:14:27PM +0530, Archit Anant wrote:
+> > If iio_device_register() fails during probe(), the runtime PM
+> > subsystem is left enabled. This leads to a resource leak upon failure.
 > > 
-> > Rather than clamp the count and silently drop the excess, abort the
-> > read: a count beyond the FIFO size means the device is returning
-> > garbage, so the data cannot be trusted. The message is ratelimited
-> > because a stuck device can raise the IRQ repeatedly.  
+> > Add the missing pm_runtime_disable() and pm_runtime_set_suspended()
+> > calls to the probe() error path to ensure proper cleanup.  
 > 
-> Aren't they already were discussed in linux-iio@ mailing list earlier?
+> > Reported-by: Jonathan Cameron <jic23@kernel.org>  
 > 
-> ...
+> Was it public email?
 > 
-> > +		dev_err_ratelimited(st->dev,
-> > +				    "FIFO entry count %u exceeds FIFO size %lu\n",
-> > +				    fifo_entries,
-> > +				    (unsigned long)ADXL367_FIFO_SIZE);  
+> > Link: https://lore.kernel.org/linux-iio/20260718225515.7e49a458@jic23-huawei/  
 > 
-> In majority of the explicit castings when printing a message they are wrong or
-> unneeded. Use correct format specifiers to begin with.
-Even more odd when it's casting the number 512 to a long unsigned.
+> Ah, this should be Closes: tag instead of Link.
+> 
 
-Applied both patches, this one with:
+I never checked but this is already fixed in the iio tree and
+the relevant devm rework done.  :(  So much going on at the moment
+in IIO I didn't recall this one at all!
 
-diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
-index 67b317eec035..a597fee61105 100644
---- a/drivers/iio/accel/adxl367.c
-+++ b/drivers/iio/accel/adxl367.c
-@@ -789,9 +789,8 @@ static bool adxl367_push_fifo_data(struct iio_dev *indio_dev, u8 status,
- 
-        if (fifo_entries > ADXL367_FIFO_SIZE) {
-                dev_err_ratelimited(st->dev,
--                                   "FIFO entry count %u exceeds FIFO size %lu\n",
--                                   fifo_entries,
--                                   (unsigned long)ADXL367_FIFO_SIZE);
-+                                   "FIFO entry count %u exceeds FIFO size %u\n",
-+                                   fifo_entries, ADXL367_FIFO_SIZE);
-                return true;
-        }
- 
+https://lore.kernel.org/all/20260529183708.17819-1-sozdayvek@gmail.com/
 
-tweak
+Please rebase the remainder of the series.
 
 Jonathan
-
-> 
 
