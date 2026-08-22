@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1DE61A9F8C;
-	Sat, 22 Aug 2026 02:22:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66AB22E6CA6;
+	Sat, 22 Aug 2026 02:25:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787365350; cv=none; b=Y49ATQSUx/T+SgeBiMvQSr3IUSccAsYkEixbV/HkF1eZ3W+aRGegA/yhmI3sQz/lb8olv9jmm3IaTlMQi/LxTECakmFSbQqiSb8iweyByHEzq7yiHuglRrwvzIOxBoJiuniooPdnVcZ01ClS8kCHwB7FW7QZTkrOTpEaX1QU8+Q=
+	t=1787365557; cv=none; b=S6+Y4Q9tIW8QdySS55Atb4GM86TTecAE9h0sm5TJ570m2FvF0Y00XXfLYYLBbk7d26AonTM/Wj1JFiGuuiRw1WkfFBSCjGWmpnRqXrhbJkqVok336+/bAMxFsxgdHUTbol81vZSPpIx+4p7l/xXRCNXobXAWZ/S5R4z+pz1egrM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787365350; c=relaxed/simple;
-	bh=EW5Rvqu61xUHUHtvRaYJZTHx+uRUDtm5MDy5SQuRAhI=;
+	s=arc-20240116; t=1787365557; c=relaxed/simple;
+	bh=aCzhTjA7GA38+VpuTyRof1qlLJD4M4Z6XnJFC3rqjn0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YHRuC+7KFUq84SQwIkZGCLYyhxK1iZwE6HF1PmJPPC+OubLSdTVU7/bLAJCNpuOyGorfJtbaGlhF7pCY0EVm8x6Lop5IZ1oHpqxUpuleTc2AG2qOGtRMaH5bEJccYUkbUOTBSsSJBEyGupOlkFJv2S1qiwWTi4Zp927pe0bE0uI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FBCe+fg7; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=HUFz9WkFMDlqoncImBlzuT5Rk73R517EsJeIqip21niEDeKqqvCGHvWO71FLUcj6wcjK5gGcwZZE3xZ51cev1Jbkf+VqbbNNU/9R/vMNA4aKCE6EHoyVUg21u56O/UJ0GhZAMiCA+RAXPdqxy1MWEpY4Dvd7f+goQw7zK9nd4B0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l1vcgXtv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FBCe+fg7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C451F000E9;
-	Sat, 22 Aug 2026 02:22:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l1vcgXtv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7576C1F000E9;
+	Sat, 22 Aug 2026 02:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787365349;
-	bh=Xb6rTgt+uFNgFwc4HCFfSYnrbiscVhoaKefqv3sJWXY=;
+	s=k20260515; t=1787365555;
+	bh=ZzSrLhNyS0p2DYV9gUZiG+QHvjtTCgPo5OC0GCJBZ3o=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FBCe+fg7Gqq3Paj6qq9aPuCE4bwPEMIlRpEB5FmSWWjnYjXIVINQomBrJmGgqoyRS
-	 I1bwRtyB5H5k+3QnQ0rKnCiYO1zsuzTGUVaPuE7Jz7oGNrDxC9hJUQVW59O1wEzI3/
-	 kXkyb9I5Ag1tvWq4oqzgHpygqFCusZm/4eq3a2LjcHacYYzriAbiqXw3wipBPU7/GE
-	 PqvMbPwBj/SE8hazqLbr9QWQTVABRB5yUKx9ffscZOh2Nxx6Hd1yZKGpnUQ4FGWuJr
-	 3f7bvFj2JHiJsx1RfliEQ+yVkgSB013lukhf91yaHGLuf7ODf7rlyF2KMGWC9G7/oW
-	 t9jEqXf7snZkA==
-Date: Sat, 22 Aug 2026 03:22:24 +0100
+	b=l1vcgXtvo4VBtnE3mPbb3ZERL2zpV/dakxnS8m/fR16zTZCz4x8QaQoIlPsTIMPS9
+	 Q0O2QoJvVW4tXUSuqufeQYkXEi5qmUUyDtgM5KqxVxkCdqtcqwzfnY4Qu3XdYpW7l2
+	 IojjTpg8VaOQGt3DScE7cljeUGlLThrlAUJll6Gdg4ty8iapwOEzC82A4JswCp3Kut
+	 OaaYy+AOAAyUG0UZYhEkdeQU4XS6xH0DJAz4B1ZHRUrsjcBjvb2bUzzKXEbnQ/Cc9X
+	 CJ0W5KCayFs/KE/s374P2+6UIsXUzMBbklspy6tEqGLOkiWSSLaHMHBll+catbBsUx
+	 Uqy97tcYGWrMA==
+Date: Sat, 22 Aug 2026 03:25:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
- <dlechner@baylibre.com>, <andy@kernel.org>, <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v10 2/2] iio: ABI: Encourage differential voltage ABI
- usage
-Message-ID: <20260822032224.2dbb88b2@jic23-huawei>
-In-Reply-To: <5760e0d12184eb0d7cf6fec34ad4b6da2d8669e0.1786662010.git.marcelo.schmitt@analog.com>
-References: <cover.1786662010.git.marcelo.schmitt@analog.com>
-	<5760e0d12184eb0d7cf6fec34ad4b6da2d8669e0.1786662010.git.marcelo.schmitt@analog.com>
+To: Tsz Shan Chan <tsz.chan.dev@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Tsz Shan Chan
+ <tchan@jacques.com.au>
+Subject: Re: [PATCH v2 2/2] iio: light: vcnl4000: add shared IRQ support
+Message-ID: <20260822032550.31a0fa9e@jic23-huawei>
+In-Reply-To: <20260814-vcnl4000-v2-2-9b771290cc1d@jacques.com.au>
+References: <20260814-vcnl4000-v2-0-9b771290cc1d@jacques.com.au>
+	<20260814-vcnl4000-v2-2-9b771290cc1d@jacques.com.au>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,77 +48,83 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 20:05:33 -0300
-Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+On Fri, 14 Aug 2026 14:30:43 +1000
+Tsz Shan Chan <tsz.chan.dev@gmail.com> wrote:
 
-> So far, parts that could only do differential voltage measurements were
-> only required to have a consistent labeling of their channels by complying
-> either to voltageY or to voltageY-voltageZ ABI. Over time, code maintainers
-> came to the conclusion that the voltageY-voltageZ ABI is better suited for
-> differential-only chips as it provides a simple indication to users that
-> the channels measure the difference of two inputs.
-> 
-> Adjust the ABI documentation to recommend using the voltageY-voltageZ ABI
-> for chips that do only differential voltage measurements.
-> 
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Hi Marcelo,
+> The INT output of vcnl4010/4020 and vcnl4040/4200 is open drain active
+> low which can be shared with other devices.
+> Add IRQF_SHARED and switch the trigger type from IRQF_TRIGGER_FALLING to
+> IRQF_TRIGGER_LOW. Edge triggering can miss interrupts on a shared line.
+Fairly low risk change but I guess we'll see.
 
-I applied earlier version I think. Please send a diff on top.
+It used to be annoyingly common for interrupt controllers to support
+only edge based interrupts, but hopefully that silliness is a thing
+of the past.
 
-Too much floating around at the moment so I'm sorry to say
-I'm loosing track even with tools to help me!
+So crossed fingers, I'll apply this and see if we get anyone shouting.
+I think we'll get away with it
+
+Thanks,
 
 Jonathan
 
+> 
+> Return IRQ_NONE from the irq handler when read fails or when none of the
+> interrupt source bits handled by the driver are set. This prevents
+> claiming interrupts from other devices on a shared line.
+> 
+> Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
 > ---
-> Change log v9 -> v10:
-> - Mention the possibility of having same index for diff channels (e.g. voltageX-voltageX)
->   in ABI doc.
+>  drivers/iio/light/vcnl4000.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
 > 
-> After looking at a few other chips I'm not sure either about having
-> voltageX-voltageX in the docs. I worry voltageX-voltageX might not provide a
-> clear unambiguous indication of channel properties. Nevertheless, mentioned that
-> possibility as a special case.
-> 
-> For chips that have configurable inputs such that both differential and
-> non-differential readings are separately available (current ABI usage),
-> voltageX-voltageX can mean both ADC ends connected to the same physical input
-> pins (e.g. AIN3 and AIN3, CH3 and CH3, V3 and V3 ...).  That seems to not make
-> much sense for most parts. Though, there are corner cases where the same input
-> number is used to configure both ADC ends (e.g. to access a temperature sensor
-> through an embedded multiplexer).
-> 
-> For chips that can only do differential measurements, voltageX-voltageX would
-> mean the positive and negative inputs of a differential channel to have the same
-> index (e.g. IN3+ and IN3-, AI3P and AI3N, AIN3+ and AIN3-, etc). The ABI is the
-> same, but the meaning would be different. Even though we have the left-most
-> index for the positive end and right-most for the negative end, that's not
-> enough to fully tell how a channel works.
-> 
-> 
->  Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 5cc2e82c4997..bb17105650ab 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -162,10 +162,12 @@ Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Raw (unscaled) differential voltage measurement equivalent to
->  		channel Y - channel Z where these channel numbers apply to the
-> -		physically equivalent inputs when non differential readings are
-> -		separately available. In differential only parts, then all that
-> -		is required is a consistent labeling.  Units after application
-> -		of scale and offset are millivolts.
-> +		physically equivalent inputs when non-differential readings are
-> +		separately available. Even though differential-only parts had
-> +		been merely required to have consistent channel labeling, this
-> +		ABI is preferred over the non-differential one for those chips.
-> +		Special configurations may have the same index for both Y and Z.
-> +		Units after application of scale and offset are millivolts.
+> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+> index 663e623da833..8a723eaadbb6 100644
+> --- a/drivers/iio/light/vcnl4000.c
+> +++ b/drivers/iio/light/vcnl4000.c
+> @@ -1470,7 +1470,11 @@ static irqreturn_t vcnl4040_irq_thread(int irq, void *p)
 >  
->  What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_rms_raw
->  KernelVersion:	6.18
+>  	ret = i2c_smbus_read_word_data(data->client, data->chip_spec->int_reg);
+>  	if (ret < 0)
+> -		return IRQ_HANDLED;
+> +		return IRQ_NONE;
+> +
+> +	if (!(ret & (VCNL4040_PS_IF_CLOSE | VCNL4040_PS_IF_AWAY |
+> +		     VCNL4040_ALS_FALLING | VCNL4040_ALS_RISING)))
+> +		return IRQ_NONE;
+>  
+>  	if (ret & VCNL4040_PS_IF_CLOSE) {
+>  		iio_push_event(indio_dev,
+> @@ -1526,7 +1530,10 @@ static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
+>  
+>  	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
+>  	if (ret < 0)
+> -		goto end;
+> +		return IRQ_NONE;
+> +
+> +	if (!(ret & (VCNL4010_INT_THR | VCNL4010_INT_DRDY)))
+> +		return IRQ_NONE;
+>  
+>  	isr = ret;
+>  
+> @@ -1558,7 +1565,6 @@ static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
+>  	if (isr & VCNL4010_INT_DRDY && iio_buffer_enabled(indio_dev))
+>  		iio_trigger_poll_nested(indio_dev->trig);
+>  
+> -end:
+>  	return IRQ_HANDLED;
+>  }
+>  
+> @@ -1981,8 +1987,8 @@ static int vcnl4000_probe(struct i2c_client *client)
+>  	if (client->irq && data->chip_spec->irq_thread) {
+>  		ret = devm_request_threaded_irq(dev, client->irq, NULL,
+>  						data->chip_spec->irq_thread,
+> -						IRQF_TRIGGER_FALLING |
+> -						IRQF_ONESHOT,
+> +						IRQF_TRIGGER_LOW |
+> +						IRQF_ONESHOT | IRQF_SHARED,
+>  						"vcnl4000_irq",
+>  						indio_dev);
+>  		if (ret < 0)
+> 
 
