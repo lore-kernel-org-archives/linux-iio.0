@@ -1,81 +1,80 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A7AB31F98A
-	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 08:05:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E5BF394785
+	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 08:08:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787385926; cv=none; b=U0kNbjcW8REU/7Q8uC057uyupzz0/1ZIK0FEiPRp7RDGWTUjUOUgc5jjZm7Ebk2n1JBlCPuznQhlpAT977a+BSTv7IS/HoYQCWYkq+89Rl0bxtlqgsZnezeMxmS0YTEuK5YN6j/1BAVNQBsfaDMCVAHNGv3NiQJON4O3x1UQJ80=
+	t=1787386107; cv=none; b=jWQZfDZuUfgMPY+3d1HMQm41l6fa1zT9Wjwp91XBZEKUiuc/UTFGM6L6vRbCuJouqhUZiTEXNEgxs+oapM1k1jmnfZ6Oo0o+AAbqIiY9PwgC4q5NYD0wWgYsBFJhvDReYUjBOdX9Ntup7Evxr0uvlgm3YRUZvrpZtZq9mx8Yw8U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787385926; c=relaxed/simple;
-	bh=GoX7oXsNlvzStweykm47aboyQ60NH9edt6IeKqqks8E=;
+	s=arc-20240116; t=1787386107; c=relaxed/simple;
+	bh=wqmQ16BAqy86KFYeJLtEnDMdkphx8CsFzjaDh5ONv+0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ib8LXi1qTawWhHYVm0VATCASKAo7x/zVzRsjQwFeccrWdqX/0xxS4zCH7bnOxTBfbY0IoJdNWGBPU6ZygKOt+lBzwzD2JoEKU3ddic97qmdAlfgOQemDJ2TL9fhSo0Pg2ICsPU7rjfJ1G/zIOifH7Gvmv4P7emQrPRvLphUb/es=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VKIugR7V; arc=none smtp.client-ip=209.85.218.42
+	 MIME-Version:Content-Type; b=VFjVw24eCIyqq1vn6YyiRCM3kunvOwjm119bjhPqf7mc6zo17Q4HK79o99kbGN2WppfEK+9PSpT+NZsZkhWYp9i6SRUl45wk7tfdtySV40liuC/k+hyzfgIG6GRjpIxsh9xIQqx+x1aNLrA/N+czllBdKUsMPauVVVTkmK/MecY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FU/JqV1F; arc=none smtp.client-ip=209.85.208.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VKIugR7V"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c214321dc32so355155966b.0
-        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 01:05:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FU/JqV1F"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6a15d54ac95so3244819a12.0
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 01:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787385923; x=1787990723; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787386104; x=1787990904; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=/DwAn7P/v0Ku0NHmQViUiZ0vUb0YJHt5XOnacRA78dQ=;
-        b=VKIugR7V+4gwnMXtknTMpF/VDmEbFk/tyXGhtimqn9gYFNjchvwp1sWT1vSo0l9xg3
-         Htz+SW1vfEI+2iYZjaLPqzEWt4Rg/OYU3Cz0Qe2sBPU3J+NjrElg85vBrc0VQYH0gW3X
-         kf6BCgCnW1OMKHVeLQ/l7M+d0IThN48zxF2tBSiQoIlNzYw5zyqjq6eOdeT6H5f93ZFO
-         VVAyK9yTT+YBOUlOh36LPm3Zit4mw+cKW3LMJLanioka2rOim+4c8RiqaDwh7ODFvfMp
-         yNnPclcs9YRyc7k4bEthrT5/OGULgxSwilVTz0qVMrabsI0f4UBRJrpiGqEXMh1RAziX
-         hILw==
+        bh=gIM9PtSc7DDddvJO+LR6IiAnlyIuGLagxq0nTtp4UGM=;
+        b=FU/JqV1FRV9tY+Yn7qAH7oGHpQo5TFLvPmQtcdHpF58ySScNNR0n/aFEQ5APd5WnBz
+         6ibONB+vA1L2HZyjCtykBoXM4FVh+mxKcLoEIBlf0CwOLieEdvZnhEJYYUxX4Py8aPkk
+         G1sOBBmS9Lz8oi2aVudnObBOFi1tUIovnJJlbW65PQaWwMjTvZbRkLEAzOLtOmYyA0cF
+         pb2sx1LBr3ljml8nf6F65Au1XUCy1SwZpjaslf85QtD7Fde8ym+1BOO5TuaC+ZB6nGL9
+         JcGw5Pk34pEwjSVAHf5JtPw1nWkrZf/aABGBKmYxRrxfc1pLCfW2zNCr3YiNSN9O3ewl
+         1Jfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787385923; x=1787990723;
+        d=1e100.net; s=20251104; t=1787386104; x=1787990904;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=/DwAn7P/v0Ku0NHmQViUiZ0vUb0YJHt5XOnacRA78dQ=;
-        b=HhmN1BqP+jrO7gK7pbIl/W+o3TS7G0jcfJsYVamYkLQEFRgJ34yayPL7oSOLRba9bh
-         sbI0xAQKqJNYPZDr06LiMFUOO2pn70DUEwa0Kf9yUoyooKDg91wwXFGmvEjoXRQ1OKqX
-         TCr247Lg4eRAwXk/5FeirPHcLrErpeFdV1rmxJgTkAikRcgQKEcKg8eqrhpetg96UTo0
-         lVAaOwhIFCfzNeouMnxshWaUTduxKfHfyG5mWb/09i1DpHgImR6yBqOEMDreswlPji5V
-         OvJrTAYpAd+AjFSCNVwMNI42IfYtc7KhMMW6hv76TzJLDxkr3+9f1KwJqsID0bP695qL
-         dGSg==
-X-Forwarded-Encrypted: i=1; AHgh+Rr719xLpIa9T/GwY9ONGacoHrjJAOzOxnIQvCUGp/eF0LEXDF1c5YB6hco7+53ljbVpPACnx44Nf5c=@vger.kernel.org
-X-Gm-Message-State: AFuF++kwIQ/z2j2OcoexhapVnQHI0yUA/F5gIW0BJp4y/azYdFHa8gPV
-	a7yDCuTXqKUINGsgdscB2iL60vIPa78Z3olWvuy5sbSseNGHVEee1S2t
-X-Gm-Gg: AR+sD112U62oQybKsQ3f6/HZt9QFMBco/KPixDucdtnGFHSYfuPfWjlysAMmj2CM7JZ
-	bSso83NeTByB177nxNyLTY6fEyYby6+k99kRu4dwAcRAE6tfMx2GUpjc84D/mizsPWzYll5YSue
-	tGqfmC/j0y11Vc7iC06eM5jzBNcu2438w5s0WgoXV+SNFVxo53KXWcleSnmZQaPDncAACNBnL8t
-	+oLvdc/o4X57QvG8dgOKldnYTmu4silug5axwtPmX2eXEWisqeBpGWz3fOUNGpT3kH+mFo8vawR
-	dsEPrIp4IkAax2OSfxTTXAtzr3GnLrcoiyhrcCHGvE+IWouzF6Cx8lvOqujZ1noIlLTVNt1pixP
-	azIgrCUQZJf44ZnVupcgQZ2rRVJ9b0CoTEQlqmzH17wdDMWs4TZE2Jz2XeztSEIwzSMxoQOFosQ
-	VP475YUdlSkSowuO8Rz9I5iCbvjB7lbekIUC8pdbqFk6sGE6+/JOq9xS3PsfBYgsVmix/Uk1Khl
-	V94ShYckfQypDW5JyI68GTNBB1EGLI6KOlrLHL0VjvbIoLJvG0+IMtCSCscLkz5Zy1QChKkxE+z
-	87W90vBRinoSwguDwUurxQcpztp6GhdpIFwRe5clnOvX8bQTjdT9rfAS7mrNVmQw4v+D8opd1PH
-	+U3RLwDvS6aMLUtBZ/I8r
-X-Received: by 2002:a17:906:f246:b0:c21:61a6:8821 with SMTP id a640c23a62f3a-c246a6cd384mr1064458066b.23.1787385923217;
-        Sat, 22 Aug 2026 01:05:23 -0700 (PDT)
+        bh=gIM9PtSc7DDddvJO+LR6IiAnlyIuGLagxq0nTtp4UGM=;
+        b=k3/SthsyhuW8AXBvzkXlsRiPLIPvOH+q9W7UcytZ2zXjkDZTIoLmDhEoP0azowv+4U
+         UnOdbphGHX4nLFHDpb3tKV1yL4QszAijpbVMJgAqHID+5YtkT4BhBIcf4S3xyiyAJ8QJ
+         Z3IbBfmmv6OtB7dglkoYG9Em1fjxrwu6WWp2EWwA7yiR8U0avAz/BhTnWxgHqAZrGyIi
+         Jt+lWQEZXOZS7j3ewkTLskN7KqErYQNDjvPq/vof1uiOXYJ1iNwqXwJWl+mqiCQdJZi9
+         0i8bawUO42tYxiETjgDeTh50z539zJGO/BPLoW/vaz8kIxpdphCTf/bqvMwamiexy8H3
+         2E+w==
+X-Forwarded-Encrypted: i=1; AHgh+Rpn7RqFdKkWMVoh7MaLKd8qmO9g2xVyKojW0VliRW3mNzVdVdPmfC+Hr6j/0vM8g5whX74iKWXDWV0=@vger.kernel.org
+X-Gm-Message-State: AFuF++lEChgjFXCRfKGaA3aEKmTuzf6CNBTy/Y6wwUfwMyJJh6It00fp
+	eLl9JXcpKY4GNAmh2QykSJOuKiPrawT0ih6qXOuwBo2lLsilCyaOdYWX
+X-Gm-Gg: AR+sD108GmUSO39258hBqH3petaD8kxE7D5yR4qtea92AEsmN+4mAunVor9xiUH7T2P
+	lHE4mZdYeT+FPtA1oxp9TxpS7AyenqsH3FPFSiMhi1McQLf/oujz4imqQrlHeulDJdeCXpIrcXI
+	N27aE6nUNoeIW41JHhZcX7CXSblkrUwC9nXzynxhZKggoLwR3EgqXj9J8Ip1SRiztEdgr9894kU
+	9LSmBWZ2BB/1QxbhcEmqa8jebWcuMvJgCBH86sXmCc+uK4TsrQXPuN2Qgsbp/tZ72CXfLO1alZs
+	zXjbQZNGi8jcN139EGy+bX+E8Mza4nd4Cp3Zow6emPcY3Y2hmtj9SA3Ln8WWgU6yFzbZ57bGlSE
+	0aDw0ocaErZLq2sUEcABuwHykBKgkk31ZytqWgpbtdxvaKyhSbGtYaxcOtV8QkAO0gJj99AfGdl
+	exq2G6iUDysDXdc2HI1mzDzHOcp08jtZAUl9Doli9NZzS5Z/55BmdBE6vOK3N+AHRm2cRPzwWoe
+	KJJelJNjTLRDeKWqHHsTIJnVpRmjW7JMfwVyILsSUNHm8aGh7hbWcK91kbN8we+Pq2sc+IrswfP
+	QoL/NDU+6cU0wdsR5q/Hcn+WGuX6AvEzUjWKVQOeEAKvGmI4EVyeBOtyMq7HEXEbSzAJH1eApJW
+	iI3l/3FAn5gxq53X3RwBf
+X-Received: by 2002:a05:6402:434a:b0:6a3:691a:9d82 with SMTP id 4fb4d7f45d1cf-6a582af951cmr4955201a12.3.1787386103677;
+        Sat, 22 Aug 2026 01:08:23 -0700 (PDT)
 Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c24967459aesm190788566b.48.2026.08.22.01.05.22
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a3ff178289sm10954557a12.30.2026.08.22.01.08.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Aug 2026 01:05:23 -0700 (PDT)
-Date: Sat, 22 Aug 2026 10:05:20 +0200
+        Sat, 22 Aug 2026 01:08:23 -0700 (PDT)
+Date: Sat, 22 Aug 2026 10:08:22 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Karl Mehltretter <kmehltretter@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Antoniu
- Miclaus <antoniu.miclaus@analog.com>, Ramona Gradinariu
- <ramona.gradinariu@analog.com>, linux-iio@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] docs: iio: Correct ADXL380 filter descriptions
-Message-ID: <20260822100520.5b8d56fd@systembl0wer>
-In-Reply-To: <20260822073653.54545-1-kmehltretter@gmail.com>
-References: <20260822073653.54545-1-kmehltretter@gmail.com>
+To: Salah Triki <salah.triki@gmail.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Esteban Blanc <eblanc@baylibre.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad4030: fix invalid oversampling_ratio
+ validation
+Message-ID: <20260822100822.2a4725d4@systembl0wer>
+In-Reply-To: <20260822021935.17058-1-salah.triki@gmail.com>
+References: <20260822021935.17058-1-salah.triki@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -86,43 +85,52 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 22 Aug 2026 09:36:53 +0200
-Karl Mehltretter <kmehltretter@gmail.com> wrote:
+On Sat, 22 Aug 2026 03:19:35 +0100
+Salah Triki <salah.triki@gmail.com> wrote:
 
-> The high-pass attributes were described as low-pass filters and vice
-> versa. Correct all four descriptions.
+> ad4030_set_avg_frame_len() computes avg_log2 = ilog2(avg_val) before
+> validating avg_val, and the subsequent range check only rejects
+> negative values or values above the maximum supported OSR. It does
+> not reject avg_val == 0, nor values that are not exact powers of 2.
 > 
-> Fixes: b6a097a9af00 ("docs: iio: add documentation for adxl380 driver")
-> Assisted-by: Codex:gpt-5.6-sol
-> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+> - avg_val == 0 passes the check (0 is not < 0 and not > max), so
+>   ilog2(0) is called with an undefined/garbage result.
+> 
+> - Non-power-of-2 values (e.g. avg_val == 3) also pass the check and
+>   silently get rounded down by ilog2() to the nearest lower power of
+>   2, so userspace can write a value to the oversampling_ratio sysfs
+>   attribute that does not match what actually gets programmed into
+>   hardware, without any error being reported.
+> 
+> Only powers of 2 in [1, 65536] are valid OSR values, as listed in
+> ad4030_average_modes[]. Validate avg_val fully before computing its
+> log2, using is_power_of_2() and requiring avg_val > 0.
+> 
+> Fixes: 949abd1ca5a4 ("iio: adc: ad4030: add averaging support")
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
 > ---
->  Documentation/iio/adxl380.rst | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  drivers/iio/adc/ad4030.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/iio/adxl380.rst b/Documentation/iio/adxl380.rst
-> index 654d4c0e84a19..a1c249dc2e51c 100644
-> --- a/Documentation/iio/adxl380.rst
-> +++ b/Documentation/iio/adxl380.rst
-> @@ -39,13 +39,13 @@ specific device folder path ``/sys/bus/iio/devices/iio:deviceX``.
->  +---------------------------------------------------+----------------------------------------------------------+
->  | in_accel_scale                                    | Scale for the accelerometer channels.                    |
->  +---------------------------------------------------+----------------------------------------------------------+
-> -| in_accel_filter_high_pass_3db_frequency           | Low pass filter bandwidth.                               |
-> +| in_accel_filter_high_pass_3db_frequency           | High pass filter bandwidth.                              |
->  +---------------------------------------------------+----------------------------------------------------------+
-> -| in_accel_filter_high_pass_3db_frequency_available | Available low pass filter bandwidth configurations.      |
-> +| in_accel_filter_high_pass_3db_frequency_available | Available high pass filter bandwidth configurations.     |
->  +---------------------------------------------------+----------------------------------------------------------+
-> -| in_accel_filter_low_pass_3db_frequency            | High pass filter bandwidth.                              |
-> +| in_accel_filter_low_pass_3db_frequency            | Low pass filter bandwidth.                               |
->  +---------------------------------------------------+----------------------------------------------------------+
-> -| in_accel_filter_low_pass_3db_frequency_available  | Available high pass filter bandwidth configurations.     |
-> +| in_accel_filter_low_pass_3db_frequency_available  | Available low pass filter bandwidth configurations.      |
->  +---------------------------------------------------+----------------------------------------------------------+
->  | in_accel_x_calibbias                              | Calibration offset for the X-axis accelerometer channel. |
->  +---------------------------------------------------+----------------------------------------------------------+
+> diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+> index 9c5f19321e3b..93d9f143cc91 100644
+> --- a/drivers/iio/adc/ad4030.c
+> +++ b/drivers/iio/adc/ad4030.c
+> @@ -751,9 +751,11 @@ static int ad4030_set_avg_frame_len(struct iio_dev *dev, int avg_val)
+>  	int freq_hz;
+>  	int ret;
+>  
+> -	if (avg_val < 0 || avg_val > ad4030_average_modes[last_avg_idx])
+> +	if (avg_val <= 0 || avg_val > ad4030_average_modes[last_avg_idx] || !is_power_of_2(avg_val))
+>  		return -EINVAL;
+>  
+> +	avg_log2 = ilog2(avg_val);
+> +
+>  	if (st->offload_trigger) {
+>  		/*
+>  		 * The sample averaging and sampling frequency configurations
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+This seems correct. How was this found? By reading the code or some tool/LLM?
 
 -- 
 Kind regards,
