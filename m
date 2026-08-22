@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66AB22E6CA6;
-	Sat, 22 Aug 2026 02:25:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684D13093CF;
+	Sat, 22 Aug 2026 02:30:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787365557; cv=none; b=S6+Y4Q9tIW8QdySS55Atb4GM86TTecAE9h0sm5TJ570m2FvF0Y00XXfLYYLBbk7d26AonTM/Wj1JFiGuuiRw1WkfFBSCjGWmpnRqXrhbJkqVok336+/bAMxFsxgdHUTbol81vZSPpIx+4p7l/xXRCNXobXAWZ/S5R4z+pz1egrM=
+	t=1787365804; cv=none; b=N4zorI3WHzLGdNR7VHMdEpNlgE4Row384SP53gf41+Vv4jtHzA/yo0iAou7vWhbqr4OTMiZfZmDA7jAFkSY7gc/+wRV41mww/xVCvu9CZ8C4fuNGPvkattW4ykaLFPCOmkaPPmOTGt9hhbqVy7mtEBSG+IfsigraatNBf0JJ4rE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787365557; c=relaxed/simple;
-	bh=aCzhTjA7GA38+VpuTyRof1qlLJD4M4Z6XnJFC3rqjn0=;
+	s=arc-20240116; t=1787365804; c=relaxed/simple;
+	bh=+Xf2JttNZz1iQicBNtxFuW0/0ot0Hs7waU+xUCehz4s=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HUFz9WkFMDlqoncImBlzuT5Rk73R517EsJeIqip21niEDeKqqvCGHvWO71FLUcj6wcjK5gGcwZZE3xZ51cev1Jbkf+VqbbNNU/9R/vMNA4aKCE6EHoyVUg21u56O/UJ0GhZAMiCA+RAXPdqxy1MWEpY4Dvd7f+goQw7zK9nd4B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l1vcgXtv; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=n5ttEBtWPDTJg0EbexakjX5DLfXwFNOxM6R7vVh0CjC0ataO42DNbp5r1npVfidYLHaMQj+4oO2RlkOsoILWiKY4ClWbQ0dFPEUiYxkXiaOEJWfE6irIDghYTob26SwCR7eS8q6+CYr8Q/PpRKqrHKmyAiBtoTY1q7OqM+4vkQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PJBZpZuV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l1vcgXtv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7576C1F000E9;
-	Sat, 22 Aug 2026 02:25:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PJBZpZuV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1BA81F000E9;
+	Sat, 22 Aug 2026 02:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787365555;
-	bh=ZzSrLhNyS0p2DYV9gUZiG+QHvjtTCgPo5OC0GCJBZ3o=;
+	s=k20260515; t=1787365803;
+	bh=1O9wIJGkabF2WSu9mbg3kmSQ31EGwqG0dpLjdbNl3Ag=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=l1vcgXtvo4VBtnE3mPbb3ZERL2zpV/dakxnS8m/fR16zTZCz4x8QaQoIlPsTIMPS9
-	 Q0O2QoJvVW4tXUSuqufeQYkXEi5qmUUyDtgM5KqxVxkCdqtcqwzfnY4Qu3XdYpW7l2
-	 IojjTpg8VaOQGt3DScE7cljeUGlLThrlAUJll6Gdg4ty8iapwOEzC82A4JswCp3Kut
-	 OaaYy+AOAAyUG0UZYhEkdeQU4XS6xH0DJAz4B1ZHRUrsjcBjvb2bUzzKXEbnQ/Cc9X
-	 CJ0W5KCayFs/KE/s374P2+6UIsXUzMBbklspy6tEqGLOkiWSSLaHMHBll+catbBsUx
-	 Uqy97tcYGWrMA==
-Date: Sat, 22 Aug 2026 03:25:50 +0100
+	b=PJBZpZuVS7shzbeewaZwVh9LR9bn/AQcz1MPgIJG5/A7oqWgKcxtkJDleFgdzumt1
+	 aPef1+WKrkEwHjsIUWKtueJufP7S8YC1pL4G8bUcN0PHV0JNnRIbr75RTvFq1dPgCe
+	 2bkvM1skgHbDP/X+B6ImH1EM/+mci2yIBzgdQDjUHzZOvaPnbc/ymVMyhoIHTme9Vd
+	 YnWpZLe8DlwH1BdzGF0MmuQWOoS0ih7uWfsXCtC2IxD3MAXSezukKkdS6X7BzwJNjh
+	 rOvQTkLv1yMQjrv4KQA4M9cREvYNpkI0QgyJWdDmNa5MimFUi+NX0LSShm1avq3LOk
+	 zBvpoAeF+7Hmw==
+Date: Sat, 22 Aug 2026 03:29:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Tsz Shan Chan
- <tchan@jacques.com.au>
-Subject: Re: [PATCH v2 2/2] iio: light: vcnl4000: add shared IRQ support
-Message-ID: <20260822032550.31a0fa9e@jic23-huawei>
-In-Reply-To: <20260814-vcnl4000-v2-2-9b771290cc1d@jacques.com.au>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Tsz Shan Chan <tsz.chan.dev@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Tsz Shan Chan <tchan@jacques.com.au>
+Subject: Re: [PATCH v2 0/2] iio: light: vcnl4000: support shared IRQs
+Message-ID: <20260822032957.15e3f3cc@jic23-huawei>
+In-Reply-To: <aoLorPM301oeipKz@ashevche-desk.local>
 References: <20260814-vcnl4000-v2-0-9b771290cc1d@jacques.com.au>
-	<20260814-vcnl4000-v2-2-9b771290cc1d@jacques.com.au>
+	<aoLorPM301oeipKz@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,83 +48,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 14 Aug 2026 14:30:43 +1000
-Tsz Shan Chan <tsz.chan.dev@gmail.com> wrote:
+On Mon, 17 Aug 2026 13:55:40 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> The INT output of vcnl4010/4020 and vcnl4040/4200 is open drain active
-> low which can be shared with other devices.
-> Add IRQF_SHARED and switch the trigger type from IRQF_TRIGGER_FALLING to
-> IRQF_TRIGGER_LOW. Edge triggering can miss interrupts on a shared line.
-Fairly low risk change but I guess we'll see.
+> On Fri, Aug 14, 2026 at 02:30:41PM +1000, Tsz Shan Chan wrote:
+> > This series contains two changes for the vcnl4000 driver.
+> > 
+> > Patch 1 makes .num_channels match .channels for vcnl4200. vcnl4040 and
+> > vcnl4000 channel arrays have the same size, so no functional change.
+> > 
+> > Patch 2 adds shared IRQ support. It changes the trigger type from
+> > falling edge to low level and adds IRQF_SHARED. The IRQ handlers return
+> > IRQ_NONE when the device did not generate the interrupt.  
+> 
+> LGTM,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+See sashiko
+https://sashiko.dev/#/patchset/20260814-vcnl4000-v2-0-9b771290cc1d%40jacques.com.au
 
-It used to be annoyingly common for interrupt controllers to support
-only edge based interrupts, but hopefully that silliness is a thing
-of the past.
+It might be wrong and there isn't a race condition that ends you
+with that condition of stuck level interrupt.  If so just reply here to explain why.
 
-So crossed fingers, I'll apply this and see if we get anyone shouting.
-I think we'll get away with it
+The one about even disabling is a common issue - the IIO core has
+not explicit tracking of what events are enabled so it is up to the
+driver to quiesce anything necessary on the path down. I didn't look closely
+at these reports though so they may or may not be correct!
 
 Thanks,
 
 Jonathan
-
-> 
-> Return IRQ_NONE from the irq handler when read fails or when none of the
-> interrupt source bits handled by the driver are set. This prevents
-> claiming interrupts from other devices on a shared line.
-> 
-> Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
-> ---
->  drivers/iio/light/vcnl4000.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index 663e623da833..8a723eaadbb6 100644
-> --- a/drivers/iio/light/vcnl4000.c
-> +++ b/drivers/iio/light/vcnl4000.c
-> @@ -1470,7 +1470,11 @@ static irqreturn_t vcnl4040_irq_thread(int irq, void *p)
->  
->  	ret = i2c_smbus_read_word_data(data->client, data->chip_spec->int_reg);
->  	if (ret < 0)
-> -		return IRQ_HANDLED;
-> +		return IRQ_NONE;
-> +
-> +	if (!(ret & (VCNL4040_PS_IF_CLOSE | VCNL4040_PS_IF_AWAY |
-> +		     VCNL4040_ALS_FALLING | VCNL4040_ALS_RISING)))
-> +		return IRQ_NONE;
->  
->  	if (ret & VCNL4040_PS_IF_CLOSE) {
->  		iio_push_event(indio_dev,
-> @@ -1526,7 +1530,10 @@ static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
->  
->  	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
->  	if (ret < 0)
-> -		goto end;
-> +		return IRQ_NONE;
-> +
-> +	if (!(ret & (VCNL4010_INT_THR | VCNL4010_INT_DRDY)))
-> +		return IRQ_NONE;
->  
->  	isr = ret;
->  
-> @@ -1558,7 +1565,6 @@ static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
->  	if (isr & VCNL4010_INT_DRDY && iio_buffer_enabled(indio_dev))
->  		iio_trigger_poll_nested(indio_dev->trig);
->  
-> -end:
->  	return IRQ_HANDLED;
->  }
->  
-> @@ -1981,8 +1987,8 @@ static int vcnl4000_probe(struct i2c_client *client)
->  	if (client->irq && data->chip_spec->irq_thread) {
->  		ret = devm_request_threaded_irq(dev, client->irq, NULL,
->  						data->chip_spec->irq_thread,
-> -						IRQF_TRIGGER_FALLING |
-> -						IRQF_ONESHOT,
-> +						IRQF_TRIGGER_LOW |
-> +						IRQF_ONESHOT | IRQF_SHARED,
->  						"vcnl4000_irq",
->  						indio_dev);
->  		if (ret < 0)
-> 
-
