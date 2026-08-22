@@ -1,44 +1,56 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 532E57260D;
-	Sat, 22 Aug 2026 00:38:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A77C9171B1;
+	Sat, 22 Aug 2026 00:42:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787359107; cv=none; b=acEQBiYUT8//P1JWPlCgCLgB4taRDxlK9qIMLt8iPFxE5rfiq0y8gHn1BHoqLkbkdFMAzGKgzqeE1is+JQFNcQ71hm5wdVx/jhVuHj/swasGMRnFQMKqOYQ1ah4MA0nlyeLLfE0c+gffab5MMzyPy+G9eaMgCFW2pdIBk8pQ++Q=
+	t=1787359370; cv=none; b=lElSDcXDy/3wSwyygPVmKrvNcTZo0Iyk1ym/1hlBS5OCfTEAWg/QWyUZBS9YKrq8S2r00Qhcc2Jl81usmUMQ+qxVxSoewC16d0GXjvyNbzFHxayawIFtwa3xJDnfZbQL+yIldNWigYvvTTknJRM+RY7Z3qp+ahXkbtuhq2P/SlE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787359107; c=relaxed/simple;
-	bh=3UaETsBFsp634QA5VZ+KBBbu8CzzxJLzDMDU0mEVmH8=;
+	s=arc-20240116; t=1787359370; c=relaxed/simple;
+	bh=cB2yfiyt3nUGrn/6CUkJYYkDPmWcHK28H64t6g+xa0M=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pnsQRJyunzD6XIfIusM5aZ5haA6y5BrNK6JnnuXMrqu8xLEQ3VPsciv3r5p0d6SZemvis3PrfbczClKPqfLhkScxUOPG+Bmho1WiWrc1mmRA4Ga/fIuCZ+97Rpt3qGHhEgOA0zqKMLN3niq14iyUIsJq6Y3XdHShumF6DzhXz68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y192+lBu; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=grTc/ILZiCdtONeH5Ykaagf/gpJbnBSfZG7fbG+ffuSv8XW8YQaCizerOkuEzd1DkZARlHmcoinb0/So4i1DXYWkNnVJwtj21NkzoOtWWk6pN7qucNKjopcPHbQ70Gb57Sgep20CmFiwV7CTfYO6aIz0rhlWmvJTbggOBzr4Y7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C2KyJcer; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y192+lBu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A28301F000E9;
-	Sat, 22 Aug 2026 00:38:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C2KyJcer"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B40801F000E9;
+	Sat, 22 Aug 2026 00:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787359106;
-	bh=BgtjeTZgSi0up8YUuZDJ55vv3CYMYTAStQdkwQY7sGY=;
+	s=k20260515; t=1787359369;
+	bh=7SoicxjxVmgP9bW3/fWqsrW7UzceM0XpjA/yty4A4qs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Y192+lBuoA2/5b4nM40AmB9MYYi4YOBKhfYga1kSJOJPo00Qqeg72WcJ2vVle71ov
-	 Y/MI1Tp3QgZGXIkluIdhLMR4WcYRihfODN1Lqjg0CQs/wx0e22sNPGQC1wrXanlzdC
-	 MFkZRPJKH+Kf60Nf3xZAmY6HFjNsGcxC6pr1vLyfDUBs8g2c/9r8KumacTv68YS3Vk
-	 8utB1yvsjVqqZ9ImgbXJlrlpPLYL+r9PZAIFJk8Ly/2OW78/Xxe8MHiPvrToJjH5oo
-	 KmXUXKqTZYnwSBX5wZbsrfTEPa7NBkc08lvQ8F7MfVuV/NpJi5i/+ct9oIRD5SQTsD
-	 BalW/O1aag7wA==
-Date: Sat, 22 Aug 2026 01:38:23 +0100
+	b=C2KyJcero7oZJR5OLICvxBkNd5rLYQh4WZi7EPoSklDVQzcbmnXjWP+W4Bz5e+6I1
+	 tvcBrEJBQ/tPA6o9OcLpVdMCP75zLbEt0+fDFCeqXbg6Isb0wlbk/9DjBp311I5s5r
+	 vIFNV1CNFDINgX7zjMsRl80TV5u7SNAtP7180hwMeCTFlTm1Rezp0ZgYM75c2FtUQJ
+	 AqYQHYtt1fe0vhMprEC2MLz67qn7FxSRiF0vc3E9bRmqI06zkkAiu4neAflQU3DC6Y
+	 gxxk8yfIBxasi3QhoHt3fD5le8GcRenQj/M93Q8uMOZ8GI3LDBBEtYgOOlyyY3NkCK
+	 C+wIs3wzDb6vQ==
+Date: Sat, 22 Aug 2026 01:42:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Archit Anant <architanant5@gmail.com>, dlechner@baylibre.com,
- andy@kernel.org, nuno.sa@analog.com, u.kleine-koenig@baylibre.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/8] iio: adc: ti-ads1015: fix PM leak on probe
- failure
-Message-ID: <20260822013823.28b0a1e1@jic23-huawei>
-In-Reply-To: <an2FkBoJNRCaeAkk@ashevche-desk.local>
-References: <20260812164433.23011-1-architanant5@gmail.com>
-	<20260812164433.23011-3-architanant5@gmail.com>
-	<an2FkBoJNRCaeAkk@ashevche-desk.local>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: "Maxwell Doose" <maxwell@maxwelld.cc>, "Andy Shevchenko"
+ <andriy.shevchenko@linux.intel.com>, "Andy Shevchenko"
+ <andy.shevchenko@gmail.com>, "Sakari Ailus" <sakari.ailus@linux.intel.com>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Marius
+ Cristea" <marius.cristea@microchip.com>, "David Lechner"
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, "Tomasz Duszynski" <tduszyns@gmail.com>,
+ "Jean-Baptiste Maneyrol" <jean-baptiste.maneyrol@tdk.com>
+Subject: Re: [PATCH v1 1/4] iio: light: Unshadow error codes in ->store()
+Message-ID: <20260822014243.2d854b50@jic23-huawei>
+In-Reply-To: <20260818161115.000067a4@gmail.com>
+References: <20260813071912.2465208-1-andriy.shevchenko@linux.intel.com>
+	<20260813071912.2465208-2-andriy.shevchenko@linux.intel.com>
+	<DKO09O8T0FGE.2WMX1VNQN5C7J@maxwelld.cc>
+	<CAHp75VdDgBcieBdd9q2u75oFCu+w5tAF_L3YNHV5Ra5biHxcsg@mail.gmail.com>
+	<DKOBND0GKI21.2843OFKP0KR40@maxwelld.cc>
+	<an7OSM04kiviu9xL@ashevche-desk.local>
+	<CALoEA-xkxGY9sTeTR3cXgzadp+Uuk3MZh21ubD82kyijo4NN8g@mail.gmail.com>
+	<an7W8VKXrIKzl9xt@ashevche-desk.local>
+	<20260817035414.496912f4@jic23-huawei>
+	<DKRGHVP0FO9A.1VS4B0R21J97C@maxwelld.cc>
+	<20260818161115.000067a4@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,32 +61,55 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 13 Aug 2026 11:51:28 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 18 Aug 2026 16:11:15 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> On Wed, Aug 12, 2026 at 10:14:27PM +0530, Archit Anant wrote:
-> > If iio_device_register() fails during probe(), the runtime PM
-> > subsystem is left enabled. This leads to a resource leak upon failure.
+> On Mon, 17 Aug 2026 14:12:56 -0500
+> "Maxwell Doose" <maxwell@maxwelld.cc> wrote:
+> 
+> ...
+> 
+> > > Absolutely. One patch per driver for this and not more than 10 ish
+> > > drivers in a series or out for review at a tiem.  This stuff is still quite
+> > > tricky to review, even with details on why each header change below the ---
+> > >
+> > > Also precursor patches for any significant reordering to put them in alphabetical
+> > > + block for IIO headers just to make it easier to read the patch that cleans
+> > > up what is included.
+> > >
+> > > I've done some of these as have many others. It's worthy work but slow to
+> > > do!  I'd suggest we leave it as a newbie task, but it requires more understanding
+> > > than typical for one of those - so if you want to take it on (probably take
+> > > a year or more to finish given review bandwidth!) then that would be most
+> > > welcome.
+> > >    
 > > 
-> > Add the missing pm_runtime_disable() and pm_runtime_set_suspended()
-> > calls to the probe() error path to ensure proper cleanup.  
+> > What we ought to do is start by removing all of the kernel.h inclusions
+> > and then we can go into each individual driver and do IWYU on them. Not
+> > sure if we want all of the IWYU stuff (including kernel.h removal)
+> > rolled up into one patch per driver or if we want to split patches into
+> > kernel.h removal and then IWYU (hopefully this time I can get iwyu-tool
+> > setup so it won't be *as* gruelling). Or in the case of we leave it as a
+> > newbie task maybe we just add it to the TODO (since this is probably one
+> > of those things that happens over time when we revisit drivers).  
 > 
-> > Reported-by: Jonathan Cameron <jic23@kernel.org>  
+> Well, removing kernel.h is essentially IWYU, as we have to include the actual
+> used headers we were pulling in transitively. It should definitely be a task
+> for newcomers, nevertheless as Jonathan says it's not exactly easy to do from
+> the get go (and automating it with iwyu-tool can also be a headache). Also,
+> I've had a pretty good experience with AI when it comes to verifying headers.
 > 
-> Was it public email?
-> 
-> > Link: https://lore.kernel.org/linux-iio/20260718225515.7e49a458@jic23-huawei/  
-> 
-> Ah, this should be Closes: tag instead of Link.
-> 
+> I'll probably send a series removing it from some sensor type subdirectory,
+> just to get the ball rolling?
 
-I never checked but this is already fixed in the iio tree and
-the relevant devm rework done.  :(  So much going on at the moment
-in IIO I didn't recall this one at all!
+Definitely need to include the kernel.h removal as part of iwyu, otherwise
+we may well run into random build issues.
 
-https://lore.kernel.org/all/20260529183708.17819-1-sozdayvek@gmail.com/
-
-Please rebase the remainder of the series.
+Yes, a series - one per driver for a specific sensor type directory would be
+a good starting point.  Split the bigger ones up into multiple series to
+keep the numbers manageable.
 
 Jonathan
+
+> 
 
