@@ -1,64 +1,64 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7153C38887E
-	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 08:59:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646943939DE
+	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 08:59:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787389146; cv=none; b=Lwzpj25SjMrSWlHXYyLN//L/HyHu87z49OtlgKn2n1n7CWHAKvjbpG7CUeWvfDxxXkkSQDS4Q/lt0xM/pJZ/EXcMVgqDwdx06tkrOtWx3+Cm1GeVzJxst1KF+5SIi+A2FJqM0ASNHDRvW+CbslgSIW9iWFbdd/e5eGW0vAyuQiQ=
+	t=1787389148; cv=none; b=Mkj6eKbXMlaoRZmhROhBiJAFU8NqNFSRq+cQaWhwQ56jPxbsUQAR4PbUTMaCmpK5OAs1gsjpoRpEtgiPm4db1WfwPtPlViIUj2vNAaVZ+fh1/63SyyVl4sItxbmQRanWFVjI96HLTOAQE5dFf6L045D/HhZsfLN9bmMTLzzwGWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787389146; c=relaxed/simple;
-	bh=9gxlDRHqhuwt8FJ/CwukjTyzdPv7n6MCBFsd7dAHKR8=;
+	s=arc-20240116; t=1787389148; c=relaxed/simple;
+	bh=FQ4fyjXp2OqEnkYHwsfz+TTm/oRpClpjq1D/SX+fetU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BVcqDNSvmNsOq2TR23jTMqzCLTCmRBnEhaF+cj5b0Y+rF6UWHRkkIScDdqpAsilq9kGIbjG5sT/LWXXkcaBBAq2JubOLuCVU5sSpB8Yqxyd0jPYDdfoWSmyms8H/Ou4eKPrJmYcL8jjVFkUun39WKZQzyHDdE5sf1a1imJdBZ0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WtURsgPa; arc=none smtp.client-ip=209.85.128.50
+	 MIME-Version; b=UJQDW+c1MKIcBmk+6p3I545qYAM0OKXBiDEx6aK2x3gnVpr/INtZjSf7Y8g8Dn1STwXWamHwmAWtK9/axDf/3567BLZ1wwYCqWLyREpCaVjJO9MV9NQsDpmpWfXIiigbjNh/tPFZcW12bxLC6Q13m6vENKyGXW8VHb75v0yZR0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qTZ29IQy; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WtURsgPa"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-49954b88fffso14776235e9.0
-        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 01:59:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qTZ29IQy"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4998b5a63e2so14587125e9.1
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 01:59:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787389143; x=1787993943; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787389145; x=1787993945; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Ht5SF4+wx6Jf8JH+OLs35dYBN3IVS35rx1u5RktbmkM=;
-        b=WtURsgPaY7dhFpQaoptaa5Gesp/20CvJpu5EiY2YfqTjvY6RxSy6el1MtxFSZws2Jo
-         ODXcnLClj5KTue1lU4jRD19KEBDeY7U7X5fGn42fihQXeYsupxEuCxEDXDLX2hw4/5Uw
-         ypnUKFweZyvSj8NDHS2j7cJzyWaG5mDOlzGhDqaXpX4zDh4tHFSRdEOvhFdElL8WkgsH
-         LBR7rlkywUBlSWEsUNrsJ4SycwatjxqQFkenrw47tVlrmOv2HYeXet43WPYx69a6qRWI
-         Lc2oguj8OWu9s7fONVt2ezLR0rOu4ZM2h3MMGC9ZbL9X2xm5GH6CCyOa92V2oCU7Rjn9
-         5UZg==
+        bh=cXCIKeHXfMN8TRcCWZhE+maVe8/ByjaTIx/Ywm2GTsw=;
+        b=qTZ29IQyr6WAfQFmLVuB30Z/tcSUD7tVXaK7wntNOvG6urwOXQpqzu56OYxdJ8fT3T
+         ZENgOfjon76VE3iWgBQpnevOkUHRiJb5VpqpFvgLlFIgZBvjL7ifrj8x5nEWDhaYgTYW
+         5uc3EocqbrSV/8BVkRXOK19qx0OjiZequFGrHv8qSyMm+eepD2hAsW/ObThzu7uJhElX
+         tUs7u9pD0YdKbqqHRs3RaLyytUrsSs2o2llzZAlTtKn+EwXdt62Qx4nuIj4A3fU27UEg
+         sbQzr2WG+443fExtiLF5XfIbV3MZZNdBR36wcWUgX5PQrYi8N5DGW5Lj6qpVQbVPsBMG
+         yjRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787389143; x=1787993943;
+        d=1e100.net; s=20251104; t=1787389145; x=1787993945;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Ht5SF4+wx6Jf8JH+OLs35dYBN3IVS35rx1u5RktbmkM=;
-        b=VZpMUtHzfw5iobO2UdhoPMsFkfRefB08qlgrpINTWAredQoSxh9pgZZICr4nHkq7+z
-         DMr983ZHAasoCkfcla0ZaNbQpigXTQBXN/vO5Hc9/ZGGftC/vR50d80T9MXEV2vMyo5Y
-         ahLBzxOU7z56N6VZ+e4Yx9LP2aGA+pQeB5JHnGK3unQuWYeDjGPfSFhzG+DaYdoNtj/b
-         MGZnO46qop1LPiyFCo+Pnk0eVLw22mnDdvw585i55SNJNv4+tQSILXukP5qV8NWokysU
-         qupGegB3kglbENW1iV4WCYiUTzew9b8GyIXcr9iJ5WYeCwUJ9UImk/ji0/nT/t0PR0tU
-         EvbA==
-X-Forwarded-Encrypted: i=1; AHgh+RpsaJ0G8/XofaPP+KnyGmPWr/sjqWlkLzhz/Y7up42JyQDZpbV+ZHTtklkoYRPe8Ii16MfYYQvp1RQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++nMreHBYMHuGBWkJj2uGWCoSB5oh4GJVClk7CrXKTlFTPBPqNbI
-	8xk1A1R3VRMAzbVItHsL1e8aztVy/bv7Gj7WCJl119wargmrrbxmRpeu
-X-Gm-Gg: AR+sD116Yq1qh4vFSjp54TR0zb0tSbpr/4ZavNXCzut3zXrsNE651njLkJE9BI6xWPv
-	0zSBgE/DWtfooCTJadFF4m0B+QiwAtUuYMghmZk26h2nNLM07T1+6Ex+bDwtC+EGeq/mbZkksy6
-	0mKhZL6sGeBIy7Jc4V+e1XrfMr7Lrq/OJfSzt2dVLM0IAzcGYXOQ/RhNKoO8c+YMKfBoeEVoCIN
-	wnsXQ1sXhE1tCSte5/XtckDnp8wJsX/5skOXUGpkDoAhp0VicEKY9fmuvTdWoqdFjPGHYlUs/mk
-	C+a5YJ49vBkC//k5TqGS8rW6sBm7oGn3kO1NUHqqFXo3MsYYtsnXx781Mpt7q5z0NWEKOzBn5La
-	tONTuhpBD/mWv9RtK5MbWee92tN+9eS6vWeLrBcqUJqarUC5gbZBhaDBkL7XN99ttQEwyIEtcoa
-	G2IXxYmu7uRnipInI3GcjNAvla8eGFiQVhKGuXF6Bhuqac/b9UGZsaVal/KOyJNMUDm2pKJKuhC
-	tteQCFs+pU=
-X-Received: by 2002:a05:600c:3111:b0:495:7888:281c with SMTP id 5b1f17b1804b1-499c1772dd5mr39257375e9.0.1787389142531;
-        Sat, 22 Aug 2026 01:59:02 -0700 (PDT)
+        bh=cXCIKeHXfMN8TRcCWZhE+maVe8/ByjaTIx/Ywm2GTsw=;
+        b=HelEb8aWY3QQXfmUhpEP5jIrjrb0L9LzZ2q343joHFtST21pl6UMNCG20PiKbfSSVr
+         Uc2e4+DNBn6dXWAcfDxBdauaR/JsHeoAYA7DoeZKTqygoIbCp4lUcGjrRTNUe/I9fM+d
+         PWPEoFh+N4xtUrJZOo78EfI7wo8SSeMaCdk1K9UDihuCmrhWUsOP1msvaDzkg1HYAjJh
+         QSVIT3GLrTx55jhJaUKDcQ3c/YkyRAHuScLHKpmHYFv2YW58huiRhkX5jZrfDJChf8Tn
+         aA4UnzArmJR0hGeKZkYw+5WPd4i8VLsqZHcDMBrMxIS+Q0+4o6+HBEFRGgIqceEksLIK
+         exZg==
+X-Forwarded-Encrypted: i=1; AHgh+RrhFvQApQT55QxXqF3XABY7NGtqT0cYiqHpm9xGZCJQ0SY02rn4C7HCyJv1Eh1VT+Dp5qutiPgsN+4=@vger.kernel.org
+X-Gm-Message-State: AFuF++kj1fR+LY/KMgywFczFzDlUZUHIJvX0pvc7pq5np4X7rcOv50uC
+	WZB82PMl59ivLiRpPjYYc2vTivqlEDIaYRQx7d91UuRtK1OxdiCG2iWw
+X-Gm-Gg: AR+sD12SJp2/HFyGY2usNJHUy0Jq9DRS74hv2FF+Easjk4zEOAk7QmtwZHWucrfRf4v
+	wexIjyxOOXZ5xTDJGUfhwztOfCzEiUQaOKBgAdC8829g48ImuTq9tLPzwktCEVEI3E5e51G1xK9
+	mnHDUcPMh9TyzhhcmfqcS3knRTbusDBGvGE1uF3Xlo/5Pg80lda2PgWFnBbX0xAf24uRTfa/UH0
+	eS9jGIC5lCJ2T/HrC/4vvSnDv7mt2DRAtOlmn9K/y6AEyjeTpGXYerCm0cne3+53+dhDI8VKzON
+	u8VWo4cbiKUAf0UIwOX5R2bSWEUyrsMOCaRK4uRhlsQ5/y3Ga65qYQ6vkc1QZGwI7EngbtlMp2x
+	wlZ6IQBF4tM84D6+NesldgHF2ZJ9Ghbx3f64o0V3zzfFehYE+oEw+c4EDlpKb1uQJYQqQ7QcBpF
+	UdYu1FEVpsrG21jEcl7IBRGVECUzrkQivav6vm+O6iQMpClkpAMrwRXb1oesGOiGYy3lGLs54SZ
+	wrej6PIgfg=
+X-Received: by 2002:a05:600c:530f:b0:499:51f0:a9b2 with SMTP id 5b1f17b1804b1-499b82f3d1dmr168825025e9.1.1787389144645;
+        Sat, 22 Aug 2026 01:59:04 -0700 (PDT)
 Received: from fedora ([105.74.72.30])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499c359b9fcsm13596635e9.9.2026.08.22.01.59.00
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499c359b9fcsm13596635e9.9.2026.08.22.01.59.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Aug 2026 01:59:02 -0700 (PDT)
+        Sat, 22 Aug 2026 01:59:04 -0700 (PDT)
 From: Taha Ed-Dafili <0rayn.dev@gmail.com>
 To: jic23@kernel.org,
 	lars@metafoo.de
@@ -74,11 +74,10 @@ Cc: Michael.Hennerich@analog.com,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Taha Ed-Dafili <0rayn.dev@gmail.com>,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v6 1/6] dt-bindings: iio: dac: ad5504: add output-range and missing gpios
-Date: Sat, 22 Aug 2026 04:56:48 -0400
-Message-ID: <20260822085850.17527-2-0rayn.dev@gmail.com>
+	Taha Ed-Dafili <0rayn.dev@gmail.com>
+Subject: [PATCH v6 2/6] iio: dac: ad5504: Align headers with IWYU principle
+Date: Sat, 22 Aug 2026 04:56:49 -0400
+Message-ID: <20260822085850.17527-3-0rayn.dev@gmail.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260822085850.17527-1-0rayn.dev@gmail.com>
 References: <20260822085850.17527-1-0rayn.dev@gmail.com>
@@ -90,95 +89,60 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The AD5504 output range (0-30V or 0-60V) is determined by the R_SEL pin.
+Update the header inclusions to follow the IWYU principle and ensure
+they are sorted alphabetically:
 
-Use standard output-range-microvolt and range-sel-gpios properties to
-describe the hardware configuration of the R_SEL pin. Ensure mutual
-exclusivity using the not/required logic. Additionally, add missing
-vlogic-supply, clr-gpios, ldac-gpios and datasheet links, and provide
-a complete usage example.
+- Remove <linux/fs.h>, <linux/slab.h>, and <linux/kernel.h> as they
+  are unused. The driver relies on devm_ managed allocations, so slab
+  is not required.
+- Replace <linux/bitops.h> with <linux/bits.h> as only the BIT() and
+  GENMASK() macros are used.
+- Add <linux/errno.h> and <linux/types.h> for error codes and data types.
+- Add <asm/byteorder.h> for cpu_to_be16().
+- Add <linux/array_size.h> for ARRAY_SIZE().
+- Add <linux/kstrtox.h> for string to integer conversions.
+- Replaced <linux/device.h> with <linux/dev_printk.h>
 
 Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- .../bindings/iio/dac/adi,ad5504.yaml          | 39 ++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+ drivers/iio/dac/ad5504.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
-index 9c2c038683b4..e0123dceaa33 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
-@@ -10,8 +10,10 @@ maintainers:
-   - Lars-Peter Clausen <lars@metafoo.de>
-   - Jonathan Cameron <jic23@kernel.org>
+diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+index ad1a74678cf2..5c9c66b04154 100644
+--- a/drivers/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -5,22 +5,25 @@
+  * Copyright 2011 Analog Devices Inc.
+  */
  
--description:
-+description: |
-   High voltage (up to 60V) DACs with temperature sensor alarm function
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5504.pdf
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5501.pdf
+-#include <linux/bitops.h>
+-#include <linux/device.h>
+-#include <linux/fs.h>
++#include <linux/array_size.h>
++#include <linux/bits.h>
++#include <linux/dev_printk.h>
++#include <linux/errno.h>
+ #include <linux/interrupt.h>
+-#include <linux/kernel.h>
++#include <linux/kstrtox.h>
+ #include <linux/module.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/slab.h>
+ #include <linux/spi/spi.h>
+ #include <linux/sysfs.h>
++#include <linux/types.h>
  
- properties:
-   compatible:
-@@ -27,6 +29,29 @@ properties:
-     maxItems: 1
+ #include <linux/iio/dac/ad5504.h>
+ #include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
  
-   vcc-supply: true
-+  vlogic-supply: true
++#include <asm/byteorder.h>
 +
-+  output-range-microvolt:
-+    description: |
-+      Specify the channel output full scale range. The R_SEL pin
-+      determines if the range is 0-30V or 0-60V.
-+    items:
-+      - const: 0
-+      - enum: [30000000, 60000000]
-+    default: [0, 60000000]
-+
-+  range-sel-gpios:
-+    description:
-+      GPIO connected to the R_SEL pin to select the output voltage range.
-+    maxItems: 1
-+
-+  clr-gpios:
-+    description: GPIO that controls the /CLR pin (active low).
-+    maxItems: 1
-+
-+  ldac-gpios:
-+    description: GPIO that controls the /LDAC pin (active low).
-+    maxItems: 1
- 
- additionalProperties: false
- 
-@@ -34,9 +59,17 @@ required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - not:
-+      required:
-+        - range-sel-gpios
-+        - output-range-microvolt
-+
- examples:
-   - |
-     #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+
-     spi {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -45,6 +78,10 @@ examples:
-             compatible = "adi,ad5504";
-             vcc-supply = <&dac_vcc>;
-             interrupts = <55 IRQ_TYPE_EDGE_FALLING>;
-+
-+            output-range-microvolt = <0 60000000>;
-+            clr-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
-+            ldac-gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
-         };
-     };
- ...
+ #define AD5504_RES_MASK			GENMASK(11, 0)
+ #define AD5504_CMD_READ			BIT(15)
+ #define AD5504_CMD_WRITE		0
 -- 
 2.55.0
 
