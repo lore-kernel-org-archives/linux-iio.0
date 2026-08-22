@@ -1,37 +1,67 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4BF171B1;
-	Sat, 22 Aug 2026 18:19:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 214A52D7DC6
+	for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 18:20:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787422755; cv=none; b=OgvlvqGDlNZDBRBMoVPgue+f8V35aZXy5ivg6yZCksueWaD4NIPB1fJo8tl/DBHOglMTlv9QuMjnbblCb48cQKPuX/4VBgaFMkMY+7G58f5DEaQ/tQ1bmdomtv/yYpcEx+U2ZdfsSgIG7dPvlE0+lBWiJARyb0Cdv7wTPUYT6ng=
+	t=1787422850; cv=none; b=V5sLtZZmOfbrFV68wF3WAm4Ov0A6ly5JclGlxjreRC7wOdpo7hcKD8xFSio7L3hqorl3K+0vZjg1MB54BB2lNSECD7Ph37wd9RLvfWzkR+SpWPBtej8W5u+zKixgrkLrAQKNc7cvWqSZ3TInryLNrZVPTbvAheiPa0AEFsbwB/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787422755; c=relaxed/simple;
-	bh=IEYgSlGBnDDYz7I78VepGc27Kxxw+G4uS+TnoU7hQZY=;
+	s=arc-20240116; t=1787422850; c=relaxed/simple;
+	bh=yAd7mVfoTBbWlzpS260BpQ70itHd8Zbdwg1YAKphL9w=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KD/U5vO0wjYc/IEmbWNFj7Kl27hD+Iu0lfvOGqVL3X9Ds03Uae4ODnP7y0Oc64eKilR/3bYBRCsmwYrgKf1IR1+wFlU9zAYMq4RKW9PPo1bdFS7mBWMg0zRXyLWIp8EgGxzoS3TPXuxGV1QG2zoTvAlF8/YEuu40FdMOej1sVTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=B8BEFVfk; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	 In-Reply-To:Content-Type; b=W+Yt/K4vF/2OXtdKBG30VuNaTNk3KhEeSzy0Hd/uanLsoyomiN2zWljDiK7fE+sePd9U3J8PsTNUH/NiZPVjF9WKn3rAjmyElUkAYRr/b8YBZ2QToXaW1+70nftcYD0RFEermhIVeSUu7h0G185Y4E6xA3DYzthmdtx/oM+DzUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=QtdB0DiS; arc=none smtp.client-ip=209.85.210.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="B8BEFVfk"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=5NyI3Iu7oOAbcFVPtEns5aDFxu7HjafPsajI1mxsec4=; b=B8BEFVfk8PSXpae7Ctxu11gf96
-	48DXWLJUIqVjGZU5cCONrFEGxLfKyTXi52XqjIdp75zc2SwAo2DCRRuJK46XUis6+2ERruwtIIJGC
-	rKuT6Wj+owXZyILfO/VonTMCP+BQDYrzNjIZBPUbxeuxAHQHMR1GZUWFxoNplbUGuWaVeKmB+UNAu
-	C4kXXmtPk6ABiLg6AlhFFUcT1/ANuSWuQZXgubVgURVcq+pkvnn2iksIIqwQQEq9m9uHzOeBIJ//R
-	cy1gaKpA0lv30WcMA4B374Mz8KlHTCmwWwt0WkYP3WvODxzECqhNQfJQXoYJYL95IfU7LjpR0o/Ox
-	xGIzMgJg==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wxqJC-0000000EiHs-1a6u;
-	Sat, 22 Aug 2026 18:19:10 +0000
-Message-ID: <1c0ea889-3a06-4691-a759-0cff624ccc92@infradead.org>
-Date: Sat, 22 Aug 2026 11:19:09 -0700
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="QtdB0DiS"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-7f3ff92cf4aso2197816a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 11:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1787422846; x=1788027646; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=NQNhgPr9yKeFxbuFf8eNz2imAjAUqFj9cvzQCXV9ESs=;
+        b=QtdB0DiSzSVUfDZCjXeD9nEncE0SZ5qIlVFYDFNoIKJMeSlyjWcPg0ucyxPo3DZVfe
+         KWr9do1iFWeblA8KhMWJhLkdGx9CRogPHU0ozgglmnUOIVeb5R46lIkrYHyTPPwsOGuk
+         YuWsFh6BHdy4j+60yDKckvtXR8jZBd6fvuyE6wBAdTn97A/+FZUZoa7JgoZRX3ShyHCE
+         ampOQ+wdbk0/QkRE1sroDVPXNvMRdcik0MtGDAqZC8OwQf8/VKeqEaNnEgFaPDK13xYS
+         6TgEpgRA7wIJUvlbgbJbVOSeI0sROy66nSR1OuHh8VJqOl5cdJmJSLxO2W7uYAfpgk3j
+         8W0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787422846; x=1788027646;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=NQNhgPr9yKeFxbuFf8eNz2imAjAUqFj9cvzQCXV9ESs=;
+        b=XpfeL2LD18IKUeGvZM3NIPREq83gdnwLGGRZEI+CSw32JUTDORVPon3dG16Bfwh85O
+         CgwzB8GLNylNu5gWCTPpMuMKuTIa6sfyporMQHQRyT8DMZxeXLKrH34BD1qkvdaoA2wy
+         rTeyD3aKAQ92/xGTX1i0izhQJncNj5VP/dUbLdENHdhYdd+jduXNX49lQtYVJDc8obGR
+         To84Mz4hx2VP5NvtcHylU/w/GKxXUZRJN0S7upBu7Fep1hQJB01I2ylReSluH2LMdV3T
+         Y8txpCoryfY7xGXa8JSqYOnLDNTmo146+R0wbnvR1wPPW+89aklBTrBTS7x4nISW0wQn
+         Smwg==
+X-Forwarded-Encrypted: i=1; AHgh+Rq/l3RrmQQ9R/XOfAL9nsAMTqpGmUh3ie/sdBRyLnIMf+R/GMfkrXIZUeQtSJABXfhZfAn1YcpTEuk=@vger.kernel.org
+X-Gm-Message-State: AFuF++kfdZtfQ8yfbfWfc3HM7C6UenGh11i7kGxErnQKr+9k3Ek7wUqO
+	aRaxUbE6qefK1MMzw8X3bzTb9qkFLKvqEllwLz+qUnrGG/ee2Kj7z+Tvbqqid5Vganc=
+X-Gm-Gg: AR+sD12l2TaSkd+0IWoXEBbmUvsVHNeHYOppnNyArrUrAyHvopjsj1U7aSg0Pur+Lmj
+	LOlRHFq1+76WADXycUBj85W/l764MU3y1rNyYslIyMcuFz1UMtmSk0Hydhd5hGgeqhafOx7X0l6
+	SgzivAaxdE1evMMOtqUN19SnhMgce2OfMl8Th2xp3VB5GUhOayTJ1X4zo8++9I/RYfNphfVSZZO
+	1PvJeQzEh5BUHeA1/Qn6u6HyXEGYE3tPsq1WHQ7qLBDO+ubuAQyTP81+ojV8f/MrOMJfDvON29n
+	W/Htp3XT65+q6zrVBwhc3x36Y7ExdVPOIkFtws7lDRLanSL6+2LHX4xgILLwpXo/aAX/1oRQKRQ
+	/xALpgKla64/Cyxpz10g41A4kYBwtmWx5cUwg8uOSr0/sJ11hnKrwzZRrdBSNbxYOM52nUwCN9g
+	T27CHu9Sf+YCncZClwpp+mz49cAo+x+dfy+Kz7uoB+wvMrviXhHZqdtzHj25tOSFJrvyohzCD1I
+	OWRPGt9Y60ORsszLHYGxQNMCeoBFxWmOkBg1xU=
+X-Received: by 2002:a05:6830:83a3:b0:7dc:dbe4:3f21 with SMTP id 46e09a7af769-7f461349073mr19255634a34.1.1787422846094;
+        Sat, 22 Aug 2026 11:20:46 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:e0ca:316a:4629:d835? ([2600:8803:e7e4:500:e0ca:316a:4629:d835])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f43fe7065csm10638335a34.1.2026.08.22.11.20.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Aug 2026 11:20:45 -0700 (PDT)
+Message-ID: <f35aea7d-0844-426e-ac81-d5b156b60e4a@baylibre.com>
+Date: Sat, 22 Aug 2026 13:20:44 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,92 +69,115 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] docs: iio: Correct ADXL380 filter descriptions
-To: David Lechner <dlechner@baylibre.com>,
- Karl Mehltretter <kmehltretter@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Ramona Gradinariu <ramona.gradinariu@analog.com>, linux-iio@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260822073653.54545-1-kmehltretter@gmail.com>
- <a1eb791e-64b5-4602-8b5f-afe1ac15b7db@infradead.org>
- <32545533-b792-41a9-91e0-5353112cbb62@baylibre.com>
+Subject: Re: [PATCH v6 1/6] dt-bindings: iio: dac: ad5504: add output-range
+ and missing gpios
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>, jic23@kernel.org, lars@metafoo.de
+Cc: Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, nuno.sa@analog.com, andy@kernel.org,
+ skhan@linuxfoundation.org, linux@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Conor Dooley <conor.dooley@microchip.com>
+References: <20260822085850.17527-1-0rayn.dev@gmail.com>
+ <20260822085850.17527-2-0rayn.dev@gmail.com>
+From: David Lechner <dlechner@baylibre.com>
 Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <32545533-b792-41a9-91e0-5353112cbb62@baylibre.com>
+In-Reply-To: <20260822085850.17527-2-0rayn.dev@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-
-
-On 8/22/26 11:07 AM, David Lechner wrote:
-> On 8/22/26 12:00 PM, Randy Dunlap wrote:
->> Hi,
->>
->> On 8/22/26 12:36 AM, Karl Mehltretter wrote:
->>> The high-pass attributes were described as low-pass filters and vice
->>> versa. Correct all four descriptions.
->>>
->>> Fixes: b6a097a9af00 ("docs: iio: add documentation for adxl380 driver")
->>> Assisted-by: Codex:gpt-5.6-sol
->>> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
->>> ---
->>>  Documentation/iio/adxl380.rst | 8 ++++----
->>>  1 file changed, 4 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/Documentation/iio/adxl380.rst b/Documentation/iio/adxl380.rst
->>> index 654d4c0e84a19..a1c249dc2e51c 100644
->>> --- a/Documentation/iio/adxl380.rst
->>> +++ b/Documentation/iio/adxl380.rst
->>> @@ -39,13 +39,13 @@ specific device folder path ``/sys/bus/iio/devices/iio:deviceX``.
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>>  | in_accel_scale                                    | Scale for the accelerometer channels.                    |
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>> -| in_accel_filter_high_pass_3db_frequency           | Low pass filter bandwidth.                               |
->>> +| in_accel_filter_high_pass_3db_frequency           | High pass filter bandwidth.                              |
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>> -| in_accel_filter_high_pass_3db_frequency_available | Available low pass filter bandwidth configurations.      |
->>> +| in_accel_filter_high_pass_3db_frequency_available | Available high pass filter bandwidth configurations.     |
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>> -| in_accel_filter_low_pass_3db_frequency            | High pass filter bandwidth.                              |
->>> +| in_accel_filter_low_pass_3db_frequency            | Low pass filter bandwidth.                               |
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>> -| in_accel_filter_low_pass_3db_frequency_available  | Available high pass filter bandwidth configurations.     |
->>> +| in_accel_filter_low_pass_3db_frequency_available  | Available low pass filter bandwidth configurations.      |
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>>  | in_accel_x_calibbias                              | Calibration offset for the X-axis accelerometer channel. |
->>>  +---------------------------------------------------+----------------------------------------------------------+
->>
->> These changes LGTM. Thanks.
->>
->> Although I am a bit confused. When I look at the adxl380 driver,
->> I don't see any of these device attributes.
->> The attributes with these names are in other drivers/iio/accel/
->> drivers: bma180.c, mma8452.c, and sca3000.c
->> Can someone try to explain this, please?
->> thanks.
->>
+On 8/22/26 3:56 AM, Taha Ed-Dafili wrote:
+> The AD5504 output range (0-30V or 0-60V) is determined by the R_SEL pin.
 > 
-> The attributes come from:
+> Use standard output-range-microvolt and range-sel-gpios properties to
+> describe the hardware configuration of the R_SEL pin. Ensure mutual
+> exclusivity using the not/required logic. Additionally, add missing
+> vlogic-supply, clr-gpios, ldac-gpios and datasheet links, and provide
+> a complete usage example.
 > 
-> 	.info_mask_shared_by_type =					\
-> 		BIT(IIO_CHAN_INFO_SCALE) |				\
-> 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |	\
-> 		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),	\
-> 	.info_mask_shared_by_type_available =				\
-> 		BIT(IIO_CHAN_INFO_SCALE) |				\
-> 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |	\
-> 		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),	\
+> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  .../bindings/iio/dac/adi,ad5504.yaml          | 39 ++++++++++++++++++-
+>  1 file changed, 38 insertions(+), 1 deletion(-)
 > 
-> in adxl380.c
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> index 9c2c038683b4..e0123dceaa33 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> @@ -10,8 +10,10 @@ maintainers:
+>    - Lars-Peter Clausen <lars@metafoo.de>
+>    - Jonathan Cameron <jic23@kernel.org>
+>  
+> -description:
+> +description: |
+>    High voltage (up to 60V) DACs with temperature sensor alarm function
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5504.pdf
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5501.pdf
+>  
+>  properties:
+>    compatible:
+> @@ -27,6 +29,29 @@ properties:
+>      maxItems: 1
+>  
+>    vcc-supply: true
+> +  vlogic-supply: true
+> +
+> +  output-range-microvolt:
+> +    description: |
+> +      Specify the channel output full scale range. The R_SEL pin
+> +      determines if the range is 0-30V or 0-60V.
+> +    items:
+> +      - const: 0
+> +      - enum: [30000000, 60000000]
+> +    default: [0, 60000000]
+> +
+> +  range-sel-gpios:
+> +    description:
+> +      GPIO connected to the R_SEL pin to select the output voltage range.
+> +    maxItems: 1
+> +
+> +  clr-gpios:
 
-Thanks, David.
+This is one that is starting to emerge as a common name, so I would call
+it clear-gpios instead to match the same name on chips with a similar
+function.
 
-for the patch:
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
+> +    description: GPIO that controls the /CLR pin (active low).
+> +    maxItems: 1
+> +
+> +  ldac-gpios:
+> +    description: GPIO that controls the /LDAC pin (active low).
+> +    maxItems: 1
+>  
+>  additionalProperties: false
+>  
+> @@ -34,9 +59,17 @@ required:
+>    - compatible
+>    - reg
+>  
+> +allOf:
+> +  - not:
+> +      required:
+> +        - range-sel-gpios
+> +        - output-range-microvolt
+> +
+>  examples:
+>    - |
+>      #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+>      spi {
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> @@ -45,6 +78,10 @@ examples:
+>              compatible = "adi,ad5504";
+>              vcc-supply = <&dac_vcc>;
+>              interrupts = <55 IRQ_TYPE_EDGE_FALLING>;
+> +
+> +            output-range-microvolt = <0 60000000>;
+> +            clr-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+> +            ldac-gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
+>          };
+>      };
+>  ...
 
--- 
-~Randy
