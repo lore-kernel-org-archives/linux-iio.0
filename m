@@ -1,129 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EB80493633;
-	Sun, 23 Aug 2026 01:45:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02AAF1A23A6
+	for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 04:09:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787449527; cv=none; b=Yt/TsGDXLHg9GZuDCx7uXa3HIlh4AbEr8RTA8n9jreYqFlgxbLCPxJqKG4T6cChQIRwjdaXqKtVbhsoA7HmHDpWXl9leVCN3s9uk6EyRyGwlztTNUnjz65yoEbSGyalwq1nKWgOga8gs64boECp/3d0tx39v/xmffHwyJoH/Vl4=
+	t=1787458177; cv=none; b=bup5XJLzAnrMVl9fsk+i+tgyNv60Q9Cdc07EXpvmPk171SqDNBaGF+IVB6tAoT9FT6NG0oVIIPxywgkx8qFV//NzW01sGXsZmP5yxk2nAm0BndeZNr3ufNcbg896W403hzPz7XhW17FtU5cFx2QFDmx+0OIujCWczsNlpQb4pn4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787449527; c=relaxed/simple;
-	bh=zYZGc1vkqbwQkIWt+/eSDfR1QodCXeEx48GIk2cQ3OI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Xo8xUonRjm7EntpEpNBVg3VtQq9t3aLXzgzCTK7mpH5C9mKM2qLK530R7fhCTtTR9qSjV2AhPnDKGKTzBW7kXETN8k1umpVkAxVRcECydVbuckk3gDLIAoMCvc2lJ+OVQ75niviezcKbyJ1jVsaLQUvKV9doIggc7PhC7LrbNRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dxkAbQlo; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787458177; c=relaxed/simple;
+	bh=FN4axVCvWeOGI9QQ+GARbmaIW+DTWB7UwVfBjwyccdQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DZWB1CmSAAVyfa4A97kd4jQvPE4pfyVW5N8qXTz4LBx9fliQFsDTc63naZ24+Q/JnRCHYLFdd2ncYWpY1mMQuCGujUQ6zRIGijoAA5Gd65USrkNnpuERvCTnajUHWjzX2XR0QXY8W9E1jy1/xQmuCFcVOTd+/1N0udwtFKAtDRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ggvOxLSO; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dxkAbQlo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D26C31F000E9;
-	Sun, 23 Aug 2026 01:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787449525;
-	bh=TXMCHlIVfpqQkSeP/b3tc25WGhv/E3FlDQil0NC/ZnY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dxkAbQlou+MMIDmO2dDrV0XLBr1j/S3mDEh9R5VXoUw9ACRs4dvBZ5fH9+ii7Odzj
-	 Jvg0gRjBGWAn70h6mmPQ5OBQllDWtN+fR6BPu+sezOM3S2xM1Aje7kCun8sJZGAwcg
-	 SWNYJDhTUxomPl6VBe83FtLRB+E/N6KYX7Z0VMjIwZ+uVe/KTddZ8bwpnqfHkj7VpK
-	 Qlx3YkhgiYX4O4mR401XJBHplxtWWvLADYiEDKl6+NqciTuF5HcGbvTk1lQLn80hXM
-	 M5zdsnIeNj+eAZmbLzzq5Opam4AZ22IEGYN/wIveZ97eN9CWquik0oypCH+hHxF3j7
-	 1rZ5kj+DMUPxg==
-Date: Sun, 23 Aug 2026 02:45:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Janani Sunil <janani.sunil@analog.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Olivier
- Moysan <olivier.moysan@foss.st.com>, Philipp Zabel
- <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>, Bartosz
- Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, jananisunil.dev@gmail.com, Uwe =?UTF-8?B?S2xl?=
- =?UTF-8?B?aW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v4 02/14] dt-bindings: iio: adc: Add AD7768
-Message-ID: <20260823024518.2c75733c@jic23-huawei>
-In-Reply-To: <718f6ead-d1c0-4dc6-82e4-cac49cc73bd6@baylibre.com>
-References: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
-	<20260821-ad7768-driver-v4-2-bb8fbd06d4eb@analog.com>
-	<718f6ead-d1c0-4dc6-82e4-cac49cc73bd6@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ggvOxLSO"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c2055573c8cso347127466b.3
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 21:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787458174; x=1788062974; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=OFUI86o2y1mtgXhwS0nsFHdUGTMiw8ONk/CuNvr2P5k=;
+        b=ggvOxLSOf5ZHE1K/eiDxFGyxRqKY36C52AvUk+ZvLZkoua+O43i9y4+aTMCD58Kk69
+         pNfs4qbwKYuve+rtvHKMAebU9SQfNEf//ERalwarnAZSTR55Joe2RavWMtVkuvSKIurF
+         VLT9nRzWrcUS3jjzjTVAK4w6JMhtRx5en7f8VjmouIZ3NrbVDAory/T/evt2vjaCcyo+
+         09t9C3pJKfpEUcuYFZF2uui1X2somf1XPL8GvqBikE6KMbaTX1+41PqYgnsNbZ9/x8Gp
+         OLsAJRZS10O3Sm1sBd/JM6utEGRDxedJj+5x4h2enNykCe9RvUgeeNPjwwRfg13JDQQ/
+         myog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787458174; x=1788062974;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=OFUI86o2y1mtgXhwS0nsFHdUGTMiw8ONk/CuNvr2P5k=;
+        b=CnWUxHtpMxOsKZWkMH0unHH8xcmYbof0Rn8Wrt8Au9721eAOVSXBHTtRJE50hlWOyu
+         veCx5OrDlFD9H9OGdjbOZlS/XnsD1eHfo+z3FoYxcWredaEdPQgMp4ayM7B+Y4RdbZNL
+         7POqbWmsCxx+jqTnrtnI4ZEVDLxUxiFgFiFbEb8MV0JfrzsPjcjsnurS+/Q8KH1+WTsk
+         omBvgrfTJmKg/32FRc2VEdAZ0K1GhmGpxXLh7MJJMjMBMgq48sxztYyf5JUTnJuwh+mY
+         XzbJF4diMbtcAeaT9TMrOiz+nMZAZSrFZQW5yYZNC2dNoCMBr1JFQ6nQ3e1Qshuy78DO
+         vwhA==
+X-Gm-Message-State: AFuF++mCu9HdHxcTX4CR/JfEAb4lq3B3iWuzcr+XozFdboQJ1t1BS1Pe
+	5CAnT/oX7Chlq1fNWbylTADru/bvD0EJgHqlf4ksUfjy932LuQWgmOun
+X-Gm-Gg: AR+sD10VPXu63QR1En0R24g3nivPXZfLMakeWm4IbatbahQgccXMRxHklkq2u8RxO0K
+	JMCiVzHmAVzz23UhTOG24QPUHnerwtq5jeR27cooyCrYAxByK363x31goqlJgS9YH4VcLRrXzEX
+	hhcNdLG5fZGhwzRQpitUD32R+q7xiYFJHWV26AJgP/NHyufIwiZF6dwS1tJMSEEugxqW+H0CDJj
+	R/mUuN8LcqwOWVK+0dZ2DTTyiNkcJ9uA298IHX5hP6puDu+BHtwRCs4iACpmLH/ySSjuJUy5bzr
+	iYFk0TxgUJVq3ctIj19+e2o4fxlpflXd9xnDi5ngnzZwEcCO2Ty4oHLeNmZiLY2GqdTj59bp+D1
+	ZEPoh8/gXME4ofHUIhe2bRYdDwCe2BfK475EaZG09DH0/stYWR5egihvG4Wj/i+6KZt8rsgluDU
+	0QrjHT9X9u1YWK8DD3JCCUVUlWMd4lEBVNqjXIiOhpAv+mhykHhDls+58JDw0F11y/IeZxmyPq1
+	nw+U1szk0bdew==
+X-Received: by 2002:a17:907:3d42:b0:c12:6632:e7f0 with SMTP id a640c23a62f3a-c2492797eb0mr1068784566b.24.1787458173881;
+        Sat, 22 Aug 2026 21:09:33 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.129.19])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c249629929dsm601433166b.23.2026.08.22.21.09.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Aug 2026 21:09:32 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Wang Shuaijie <wangshuaijie@awinic.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v2] iio: proximity: aw96103: Fix early return in IRQ handler loop
+Date: Sun, 23 Aug 2026 05:09:25 +0100
+Message-ID: <20260823040926.23860-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+When an unrecognized proximity status is encountered in aw96103_irq(),
+the default case executes a return IRQ_HANDLED. Because this happens
+inside the loop over the device's channels, any remaining channels are
+left unhandled, causing missed events and stale IRQ status.
 
-> > +  ref2p-supply:
-> > +    description:
-> > +      Positive reference input supply for REF2+. The voltage range is from
-> > +      (AVSS + 1 V) to AVDD1. Together, REF2+ and REF2- must provide a
-> > +      differential reference voltage from 1 V to |AVDD1 - AVSS|. This
-> > +      reference is used by channels 4 to 7 on the AD7768 and channels 2 and 3
-> > +      on the AD7768-4.
-> > +
-> > +  ref2n-supply:
-> > +    description:
-> > +      Negative reference input supply for REF2-. The voltage range is from
-> > +      AVSS to (AVDD1 - 1 V).  
-> 
-> For all of the supplies, I don't think we need to repeat so much of what the
-> datasheet says. It is getting quite noisy and makes it hard to see the parts
-> of the description that are actually relevant to how the devicetree is to be
-> interpreted. (includes VCM as well)
+Replace the return IRQ_HANDLED statement in the default case with
+continue to ensure all channels are processed even if one has an
+unexpected status value.
 
-Agreed.  Keep anything about how being present / not present may matter.
-Pretty much anything else isn't really that interesting.
-Sometimes
-	xxx-supply: true
+This issue was found via code inspection.
 
-is enough.
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+Changes since v1:
+-Remove Fixes tag as this is hardening rather than a fix for a real-world bug.
+-Mention in commit message that the issue was identified through code reading.
 
-> 
-> > +
-> > +  reset-gpios:
-> > +    maxItems: 1
-> > +    description: GPIO connected to the active-low RESET pin
-> > +
-> > +  start-gpios:
-> > +    maxItems: 1
-> > +    description:
-> > +      GPIO connected to the START pin. An active-low pulse on this pin
-> > +      synchronizes the device to other AD7768 devices. When not used, this
-> > +      pin must be tied to a logic high level through a pull-up resistor.
-> > +      When used, SYNC_OUT must be wired back to SYNC_IN on all devices in
-> > +      the synchronization chain.
-> > +
-> > +  sync-in-gpios:
-> > +    maxItems: 1
-> > +    description:
-> > +      GPIO connected to the SYNC_IN pin. Receives the synchronization pulse
-> > +      generated on SYNC_OUT in response to a START pulse. Must be synchronous
-> > +      to the MCLK clock domain. In multi-device or daisy-chained systems,
-> > +      two successive synchronization pulses must be applied to guarantee all
-> > +      ADCs are synchronized.
-> > +
-> > +  sync-out-gpios:  
-> 
-> Unusual to have an output pin connected to a GPIO. Usually this would be an
-> interrupt or trigger-sources.
-> 
-> > +    maxItems: 1
-> > +    description:
-> > +      GPIO connected to the SYNC_OUT pin. Outputs a synchronization pulse
-> > +      synchronous to MCLK in response to a START pulse or SPI_SYNC command.
-> > +      In single-device configurations this pin must be wired back to SYNC_IN.
-> > +      In multi-device configurations it can be routed to the SYNC_IN pins of
-> > +      all devices in the chain.  
-> 
-> Although this description makes it sounds like the SYNC_OUT pin is only ever
-> wired to SYNC_IN. So wouldn't be described here at all.
+ drivers/iio/proximity/aw96103.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-We don't have a particularly good way to say "this hardware controlled pin
-is wired from this ADC to this second ADC"  As you note though GPIO doesn't
-work for that.
+diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
+index 8fbb755dcae0..b1f36a51d56f 100644
+--- a/drivers/iio/proximity/aw96103.c
++++ b/drivers/iio/proximity/aw96103.c
+@@ -669,7 +669,7 @@ static irqreturn_t aw96103_irq(int irq, void *data)
+ 				       iio_get_time_ns(indio_dev));
+ 			break;
+ 		default:
+-			return IRQ_HANDLED;
++			continue;
+ 		}
+ 		aw96103->channels_arr[i].old_irq_status = curr_status;
+ 	}
+-- 
+2.43.0
 
