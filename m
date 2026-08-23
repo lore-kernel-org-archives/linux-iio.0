@@ -1,127 +1,185 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 750DA2765D7
-	for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 18:29:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941D32F5A0E;
+	Sun, 23 Aug 2026 18:43:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787509778; cv=none; b=qLArQgYNiAYgdJFd0PBS3nZMYyRprcququXEvUTteFys+MavCA6vAx2bCH0VLtR/LTARMhKKz8lV/lDeWuupC31W0HL4zwZ+R9Hp5tyO2NdvwPK5PBOOlcBJ42/sGtq7b80Ujn3c8CH9YuXvLjAPIORt1lKlmqGyP0UXdO6/568=
+	t=1787510611; cv=none; b=UrT7myF8PjMWWtmIYBzy4/ht4nJS6YoZ9NAw7oglUSXRf3WXZvRvOYQSULTRXxjPAWSXqeYVag90Y673vxIJdzQLqNp9hhU++ShxVOaa2vENvGdZQxjtKbkxQA5x5RrXp72qBaoD1V8Gvj9wi2mnsiRiphX74MSgcJGGuFs+4Zc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787509778; c=relaxed/simple;
-	bh=R8Hc6noLelEsApZK5qb9i50lk78dKe0CiyLEReg9/Dw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=h7OocIhRYoUURo2USHkfio/K7M2JNKQ+EspvC25v9pFUAB7YAzNwfbE1hOEkNTghTOZs5lG/ZnxOK0HEIrmxwQ3xBG7gn+5x5H41qa0/eKiGyxVQ3atbnDZk3JBjEcB1aIIxXyhgRIuZGycu6Wd1lrB+bkPyMwyNykt3TeS+s9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=f/ffq9No; arc=none smtp.client-ip=209.85.160.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1787510611; c=relaxed/simple;
+	bh=F/0IxxTubYrnRSlv4gfPerrQlzABasMCwPTfocAF4Vg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QQUYXrELUdq5NfdMl9gbwD4bQ+8yLI39/Z8LTuW3dQS/oCok5vFupT18DHVwpTS9nvUkX9aU8bkVmgIaYLRVN6tPiYveYBnG/Oe89P2Uh41oOVA2hEzl15iJ2oqOrZttbzqJpByP+K1Vj8okXeKWqpKOkQKOFYoEtQBEs91dDs4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YvuX9MLP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="f/ffq9No"
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-446f87b6de1so3995530fac.3
-        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 11:29:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1787509775; x=1788114575; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PwVbbct/Lw3Ar4yPDA0xTDROCNpyH8W4YF+42txm7ro=;
-        b=f/ffq9NoWAvVBf4MgPsOPuMH42NJkKKGD36sXvTHsJ6iyIFFI7CmCaLEGzJORLgQcc
-         akYMmIOv5BXBdSSn87uQepSjZd3efj2460yRKaPJacn4QV2L5VjGo4ijF8dq5X11E1ub
-         52H/JIJiAe2i+J29CauXZfpL9X1Hh5TI3DGFmT83QvHR7QGXQqLoTs3Kb+7cnNiSAfi3
-         7l43vNiLm691oeJLjIAuIKCu5N59IIqlJ102NrpzEc/r/URrxF2g/Gjh2ccKBPjUzuNs
-         s84U8gW+nkxOeURgAi7Q1+vcZvkj3lHMyHQX2iUJ+YvFK9xEeATM3lUCNeI63Ggd9gY9
-         8PSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787509775; x=1788114575;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=PwVbbct/Lw3Ar4yPDA0xTDROCNpyH8W4YF+42txm7ro=;
-        b=odCFuMNpP/bsggQfAIT5H5qPfYkiNRSnnyqqTVOBmSmYWbIsfSNoFVHIPP02kK2BY+
-         S5df47due22OAwOX6XF/8yx4Z6nkXi2uq2tNeCc23rDK8lN3yMXEz9kqjkplK0nNcyVk
-         Ojd2CRTzTRLewL74FTOA+PRUUSCrWfXchmjzryUgcbqLZwHDAc+5AHtPLxG/G4UensjI
-         hrzNRy8PtRFC32joiDYrgMwErDjKzp3GVZv9wYDuFEYd0I0OHilbqsGehswwLTl82XvS
-         dfiiwYYKBmaOzKIbLUhfPvg7QuFKAbmNs8UWZ8sEt+1uylTXanqXKm4CLMWGXSFU/yam
-         Fhjg==
-X-Forwarded-Encrypted: i=1; AHgh+RoM3JeK4ETvFoSNgnv2tBnfeYvBQxg+J20cuiZ9OiflXM3JiGA63JH1HE8bQNak6kUxdecTgkpN870=@vger.kernel.org
-X-Gm-Message-State: AFuF++l8DrnuYJXSUXc6qTDYgiw4+M0zUp8TX/yt8/NKPzpg1o1i/8En
-	PNAQVxQrPukdHNyINCciNE705tK10/RH6KTg6WRG9p3aX2JoeYn2yYpiHj4pZxq47CQ=
-X-Gm-Gg: AR+sD105zqSqGfHDsuQnThdi3RA2MrYWEDQ2FlP+ypUnIFQQu6OntsP1u8S/ldjQNlx
-	2I/pJfMghDJU81xCmWmlLe0Yl60jhZXfoh4pQQZHGAzhULTV7TwdkTNSaS4V2akp/L2e8IF7n/e
-	MY4RxfAvUXrpOGASUrhlRRKZt6g64ItroX2jCcyUMKzH9365Mi9m8zgV6Q2pC+DsINHc/BpR/0y
-	+KNyx6Yx97wwZy6qkg9kYkG1hbj2PrBO9mWy+BXTszNiKJFJt3zobxdqHkYQgUSn2pmoqp+50Og
-	oTwsiy+YutvSLuDL0zItOtwU02TqWQAFRCHM5RE86f0uCcoKvjhjN7J+Bi76k1XudeG6Gco4i99
-	e+F6ofC3JN4A1WbN9RKQLKD40RMNiuFMkfFeXOdSmR7gzWSBIMX+SEIjE2sbIiKDzmw8Ag1yVhW
-	L0TtdJ/9BUF4nngw1WdbAr4I5cPZ7/SvYbIhl9DoXJqJiZC3Ltlfm4H7TyIyS7MkxclCrvXjsXB
-	nHdclAUrFfU1q6xSpTKBR+PWEx1qjVsP254owU=
-X-Received: by 2002:a05:6820:151a:b0:6a1:47ad:d18e with SMTP id 006d021491bc7-6b159199686mr21356582eaf.2.1787509775218;
-        Sun, 23 Aug 2026 11:29:35 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e427:2c2b:7b9e:e073? ([2600:8803:e7e4:500:e427:2c2b:7b9e:e073])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4638352cba7sm3481549fac.13.2026.08.23.11.29.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 23 Aug 2026 11:29:33 -0700 (PDT)
-Message-ID: <0b03fc0f-8032-47b2-ac97-f2d93c1c5bdf@baylibre.com>
-Date: Sun, 23 Aug 2026 13:29:32 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YvuX9MLP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C98E1F000E9;
+	Sun, 23 Aug 2026 18:43:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787510610;
+	bh=YqI22uGvdfnR/Qu5d8p67OCqfiR7qjGSt3BD5ak2LUc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=YvuX9MLPBkuFoReuwOJVGjgqyaQNz5njfJ+QjCbsdSRyLKg5niFN3Oix4XRRMwMud
+	 kvjrCSah0+1XnoQW4Cy6yPnPa8tTYbZDVLnp271YTYv+h3khAzI1fdPZ8jofB0MiU2
+	 bgwmal0Tlm7usweyOy6njK4lFJ0EMlOUPRAKC8jXuQ59siWXsUBGwk/OTiMU22EuoE
+	 RZRrX/yjCJAPUNdKv1/SSr5LA7UgWS0o7+EV/WgAfV5kkppR69FS5dwR+ZjnXFjuRx
+	 1Yy7XTKoUnSu6I+80WMJLtLizWt3f+LdCKMlzgqMut7gDZ74dpAAVlgHzItHITjzKt
+	 K6ti2mm9CkCLQ==
+Date: Sun, 23 Aug 2026 19:43:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Marcelo Schmitt
+ <marcelo.schmitt@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org, linux@analog.com,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] iio: accel: adxl367: add support for INT2
+ interrupt pin
+Message-ID: <20260823194324.3f805ed6@jic23-huawei>
+In-Reply-To: <8283770e-4c42-4d7c-adf7-7597288c9712@baylibre.com>
+References: <20260821180753.4633-1-antoniu.miclaus@analog.com>
+	<20260821180753.4633-5-antoniu.miclaus@analog.com>
+	<8283770e-4c42-4d7c-adf7-7597288c9712@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: adc: ad4030: fix invalid oversampling_ratio
- validation
-To: Salah Triki <salah.triki@gmail.com>,
- Michael Hennerich <michael.hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux@analog.com, linux-kernel@vger.kernel.org
-References: <20260823045205.25554-1-salah.triki@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260823045205.25554-1-salah.triki@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 8/22/26 11:52 PM, Salah Triki wrote:
-> ad4030_set_avg_frame_len() computes avg_log2 = ilog2(avg_val) before
-> validating avg_val, and the subsequent range check only rejects
-> negative values or values above the maximum supported OSR. It does
-> not reject avg_val == 0, nor values that are not exact powers of 2.
-> 
-> - avg_val == 0 passes the check (0 is not < 0 and not > max), so
->   ilog2(0) is called with an undefined/garbage result.
-> 
-> - Non-power-of-2 values (e.g. avg_val == 3) also pass the check and
->   silently get rounded down by ilog2() to the nearest lower power of
->   2, so userspace can write a value to the oversampling_ratio sysfs
->   attribute that does not match what actually gets programmed into
->   hardware, without any error being reported.
-> 
-> Only powers of 2 in [1, 65536] are valid OSR values, as listed in
-> ad4030_average_modes[]. Validate avg_val fully before computing its
-> log2, using is_power_of_2() and requiring avg_val > 0.
 
-There is no rule in IIO that says we can't round values when writing
-attributes. Users are expected to read the attribute after writing to
-see what actually took effect. So this patch doesn't seem justified.
+
+...
+
+> > +static int adxl367_set_int_map_reg(struct adxl367_state *st, int irq)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = fwnode_irq_get_byname(dev_fwnode(st->dev), "INT1");
+> > +	if (ret == -EPROBE_DEFER)
+> > +		return ret;
+
+There is only one return value that means the value wasn't there, -ENODATA
+
+For other values we'd ideally return the error.  Bit ugly but something like
+
+	if (ret < 0) {
+		if (ret != -ENODATA)
+			return ret;
+	} else {
+		st->int_map_reg = ADXL367_REG_INT1_MAP;
+		return ret;
+	}
+
+
+
+> > +	if (ret > 0) {
+> > +		st->int_map_reg = ADXL367_REG_INT1_MAP;
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret = fwnode_irq_get_byname(dev_fwnode(st->dev), "INT2");
+> > +	if (ret == -EPROBE_DEFER)
+> > +		return ret;
+> > +	if (ret > 0) {
+> > +		st->int_map_reg = ADXL367_REG_INT2_MAP;
+> > +		return ret;
+> > +	}
+> > +
+> > +	/* No interrupt-names: default to INT1 for backwards compatibility. */
+> > +	st->int_map_reg = ADXL367_REG_INT1_MAP;
+> > +	return irq;  
+> 
+> I guess this works, but it seems like trial and error rather than being
+> purposeful. 
+> 
+> Could probably do something like this too:
+> 
+> 	if (device_property_present("interrupt-names")) {
+> 		ret = device_property_match_string(st->dev, "interrupt-names",
+> 						   "INT2");
+> 		if (ret < 0)
+> 			return ret;
+If we get -ENODATA this exits - but that just means we didn't find the property
+(the docs aren't great for these functions - could do with improving if anyone
+has time!)
 
 > 
-> This issue was identified with assistance from Claude AI and manually
-> verified against the code.
-> 
-> Fixes: 949abd1ca5a4 ("iio: adc: ad4030: add averaging support")
+> 		/* If INT2 is at index 0, use it, otherwise use INT1. */
 
-Actually, this could break existing users that depend on the current
-behavior. It certainly doesn't fix anything.
+As you suggest below, an explicit INT1 match would be better.  Also why do we care about
+the index being 0. We just need to provide irq to map_reg for an irq.
 
-> Signed-off-by: Salah Triki <salah.triki@gmail.com>
-> ---
-> Changes since v1:
->    - Added note stating the issue was identified with assistance from
->    Claude AI and verified manually.
->    - Removed initialization of avg_log2 at declaration.
+> 		st->int_map_reg = ret ? ADXL367_REG_INT2_MAP : ADXL367_REG_INT1_MAP;
+> 	} else {
+> 		/* No interrupt-names: default to INT1 for backwards compatibility. */
+> 		st->int_map_reg = ADXL367_REG_INT1_MAP;
+> 	}
 > 
->  drivers/iio/adc/ad4030.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
+> 	ret = fwnode_irq_get_byname(dev_fwnode(st->dev),
+> 				    st->int_map_reg == ADXL367_REG_INT1_MAP ?
+> 				    "INT1" : "INT2");
+> 
+> 
+> (Could use device_property_match_property_string() instead if we want to
+> return error on invalid values instead of assuming INT1.)
+
+Whilst I see your point about trying and failing being a bit ugly that is
+how we normally handle optional irqs and I think the code flow ends up
+simpler than trying to be more clever. 
+
+I wouldn't mind a helper that lets us find any random irq from a set of
+provided names providing us the index and the irq number				
+	const char *irq_names[] = { "INT1", "INT2 };
+	int index = 0;
+	
+	ret = fwnode_irq_get_byname_from_array(dev_fwnode(st->dev),
+					       irq_names, ARRAY_SIZE(irq_names),
+					       &index);
+	if (ret < 0) {
+		if (ret == -ENODATA) {
+			/* Default to INT1 for backwards compat */
+			st->int_map_reg = ADXL367_REG_INT1_MAP;
+			return irq;
+		}
+		return ret;
+	}
+
+	st->int_map_reg = index ? ADXL367_REG_INT2_MAP : ADXL367_REG_INT1_MAP;
+
+	return ret;				
+
+
+I haven't checked but such a helper should I think be pretty useful across
+a range of IIO drivers and probably beyond.
+
+Obviously that pushes the style of code choice into the helper though so
+the above discussion on what is the better choice continues..
+
+Jonathan.
+> 
+> > +}
+> > +
+> >  int adxl367_probe(struct device *dev, const struct adxl367_ops *ops,
+> >  		  void *context, struct regmap *regmap, int irq)
+> >  {
+> > @@ -1479,6 +1508,11 @@ int adxl367_probe(struct device *dev, const struct adxl367_ops *ops,
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > +	ret = adxl367_set_int_map_reg(st, irq);
+> > +	if (ret < 0)
+> > +		return dev_err_probe(st->dev, ret, "Failed to get interrupt\n");
+> > +	irq = ret;
+> > +
+> >  	ret = devm_request_threaded_irq(st->dev, irq, NULL,
+> >  					adxl367_irq_handler, IRQF_ONESHOT,
+> >  					indio_dev->name, indio_dev);  
+> 
+
