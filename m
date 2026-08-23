@@ -1,48 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9869235975;
-	Sun, 23 Aug 2026 01:13:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1C4426A0A7;
+	Sun, 23 Aug 2026 01:19:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787447630; cv=none; b=bKvtJLyxYy2+Lo9K3FpFaI3ZfRbV6YKl7t9kXnqQExktceelZG11sVdgK5SK3f/4SAu5mCwINNZZFUdUcH22/bqJLiINigMrUi6fHgr0iaxt3vHQuqpqyWFrAI6NV+gnt8trYavsO4TWk+J1VC9WL0azC3OsWfeWKicvUQQhizI=
+	t=1787447941; cv=none; b=Kfhx8IKvxdsbB0AZu5Vh2yHv68nIlxNXaMzgOrjXWbLYzk1wdSx4yHi/g7Li8Zopm+ShJZeEwFcVl7FpiPGsoxtqK4459xlEzFucNmHtWt6nfhFlPByCi+Xpq+KpqPYX/i01MYiENbMydLnSyhbGacG+a0Y14yQ9Kyj0fFRYhRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787447630; c=relaxed/simple;
-	bh=MxhmQkt+HsJw3BIqtR4cvNp0ztd0d/xH6cmHp379Azo=;
+	s=arc-20240116; t=1787447941; c=relaxed/simple;
+	bh=02yDEM1j4MXomiOVVPxUVPuKJjeaRS3im4AKKFSsS9w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QBfdEQWrVF8EJKkKp/eGNkYKlaUIab0qUJEimVkqDmqe3r5EIdIcd8RRu3TrPJKokN5cE1nsL7zM47CAxvMykEKDh6VMNHRTRo5obw4411yb3zIVP9GAY1DdgcKiJsScGwMMlc227MWYylrNhvybiJOMtZS/hYiry9zl8D/85gE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SPng9N1p; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Sft28t8//dZxi06ZdQiqzb924fR0EuRyCD4FNuCHpg8yRqFapDh27uAQo1F7Sn++aXmajluB7kkBPLewlS2YgWDQw0YgsKcewsdkUR+jWXiGFoPhjSlMmxWMKa/e0QmnM7VN9ca0UsotWDwLHEbi8a0QecGqivLmJOgJXs2TjKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UTEs5gAG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SPng9N1p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3021F000E9;
-	Sun, 23 Aug 2026 01:13:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UTEs5gAG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5661F000E9;
+	Sun, 23 Aug 2026 01:18:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787447629;
-	bh=j91BtLvWSBR6dvgmtb9YHG09xL+6riHADjvzhuRVzUQ=;
+	s=k20260515; t=1787447940;
+	bh=wYOO3CdXvlKH8yVkpzLpoijLGnZCZnfLRzL6voEADEE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=SPng9N1p/vB5myfjMiS4BUf4qTvr6b0tUDJUtF2F2Vca+eOm7kbsq/LxBtmxmAdIl
-	 x42cif0goIcdaqVMcLgPhMcd0Mj1PXWhOUuGTq0xdXhhF72RlCwxeraauohgmku49x
-	 ZmoMkfyhThezEJ9uZ/inv2pCRnqHniCP6g7tFgRyWealeT/4zejuay0hhEAn3rzahn
-	 ymJ5XCvG+gh51R3/AHuTU7AsKvGIfNU2i2jYjvrc7fbJAkqY47FTFL4plI4tij2R5v
-	 hU0QDJb0jDtBWlu1MrtHlyBL2aiv21rwezbufERjoBYqf3K9h369KTslBMBdzfmPb5
-	 hZaEmVU/45U6g==
-Date: Sun, 23 Aug 2026 02:13:44 +0100
+	b=UTEs5gAGJ65bHpjOaoJxhKcFb2ljuqFUS0FdIutyYBxX5LTKMLuBvjmCFkT9awPfo
+	 CzXMY50mGUQYLI7Xg/fvLTAwAnlMA+KNURNHyLJXVUGE0jwo4Q90RxkTGb2ukr/pG3
+	 0Iou8ZA0m2xcr/6Pr57+OPshU+RAJvYAbqMVcwldSVrPLOrVxGj2EWqYqIbUh0WqG5
+	 gd1RXeHTPN2Vv8PwngR/NVoyPvMVx8miRIKGfZ+NyIBAjNjjJ1HTkE8WRNmQdjl50s
+	 4I53KYLd29u2ptbQTGJQLJuJfxQjaIaLnzyknfO1X4pBp/6OAVWZNHK8vvzQ/Ev1u7
+	 geg2coOY6GYow==
+Date: Sun, 23 Aug 2026 02:18:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/4] iio: imu: inv_icm42600: do not read FIFO count for
- watermark it
-Message-ID: <20260823021344.7758fc04@jic23-huawei>
-In-Reply-To: <BE1P281MB14260708607A9D4819C4145FCEA32@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-References: <20260820-inv-icm42600-enhacements-v1-0-075a881db557@tdk.com>
-	<20260820-inv-icm42600-enhacements-v1-4-075a881db557@tdk.com>
-	<20260821012809.169b0b8b@jic23-huawei>
-	<BE1P281MB14260708607A9D4819C4145FCEA32@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, linux-iio@vger.kernel.org,
+ linux@analog.com, linux-clk@vger.kernel.org
+Subject: Re: [PATCH 0/2] iio: Make sure clk_init_data is fully initialized
+Message-ID: <20260823021855.6f49bfcf@jic23-huawei>
+In-Reply-To: <cover.1787240005.git.geert+renesas@glider.be>
+References: <cover.1787240005.git.geert+renesas@glider.be>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,158 +44,55 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 21 Aug 2026 13:09:49 +0000
-Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com> wrote:
+On Fri, 21 Aug 2026 12:04:05 +0200
+Geert Uytterhoeven <geert+renesas@glider.be> wrote:
 
-> >
-> >
-> >________________________________________
-> >From: Jonathan Cameron <jic23@kernel.org>
-> >Sent: Friday, August 21, 2026 02:28
-> >To: Jean-Baptiste Maneyrol via B4 Relay
-> >Cc: Jean-Baptiste Maneyrol; David Lechner; Nuno S=C3=A1; Andy Shevchenko=
-; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Jean-Baptiste Ma=
-neyrol
-> >Subject: Re: [PATCH 4/4] iio: imu: inv_icm42600: do not read FIFO count =
-for watermark it
-> >
-> >On Thu, 20 Aug 2026 21:=E2=80=8A02:=E2=80=8A40 +0200 Jean-Baptiste Maney=
-rol via B4 Relay <devnull+jean-baptiste.=E2=80=8Amaneyrol.=E2=80=8Atdk.=E2=
-=80=8Acom@=E2=80=8Akernel.=E2=80=8Aorg> wrote: > From: Jean-Baptiste Maneyr=
-ol <jean-baptiste.=E2=80=8Amaneyrol@=E2=80=8Atdk.=E2=80=8Acom> > > Optimize=
- data reading
-> >ZjQcmQRYFpfptBannerStart
-> >This Message Is From an External Sender
-> >This message came from outside your organization.
-> >
-> >ZjQcmQRYFpfptBannerEnd
-> >
-> >On Thu, 20 Aug 2026 21:02:40 +0200
-> >Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.=
-com@kernel.org> wrote:
-> > =20
-> >> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> >>
-> >> Optimize data reading for high frequencies by not reading FIFO
-> >> count in case of watermark interrupt. We already know there is
-> >> watermark samples in the FIFO and we need to not read more than
-> >> watermark samples for timestamping mechanism. Let's just read FIFO
-> >> data directly without reading FIFO count in this case. =20
-> >
-> >Just to check
-> >
-> >Level interrupt?  Or one that will definitely get triggered again?
-> >
-> >The thinking on reading as much as possible is that for some devices
-> >we need to be very sure we drained them past the threshold or we
-> >don't get a fresh interrupt.  So if the threshold is set low (say 1)
-> >it could easily reach 2 before we get to handling the interrupt.
-> >Races are nasty anyway with those devices anyway but reading as
-> >much as possible helped.
-> >
-> >Do you have data on it being worth skipping the read? If we are
-> >at high frequencies I'd assume it is more useful to read more than
-> >the minimum just to reduce how often we read the fifo at all.
-> >
-> >Jonathan =20
->=20
-> Hello Jonathan,
->=20
-> because of our specific timestamp mechanism, we cannot read as much as we=
- can.
-> It was already the case before this patch; we were limiting FIFO read to =
-watermark.
-> It is required to preserve the timing between the watermark interrupts th=
-at
-> we are using to compute time elapsed in the chip frame.
->=20
-> Here it is only an optimization to avoid reading the FIFO count register.
-> Because we know we have at least watermark data since the interrupt occur=
-red,
-> and we cannot read more otherwise we would break the timing between 2 int=
-errupts.
->=20
-> With this optimization, I'm able for example to stream data at 1kHz using=
- I2C. Otherwise
-> it is not possible on my test platform.
+> 	Hi all,
+> 
+> The clk_init_data structure contains several mutually-exclusive members
+> for different methods to specify the possible parents of a clock,
+> prompting drivers to initialize only the members they need.  However,
+> not initializing all members may cause subtle issues, which are only
+> exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
+> enabled.
+> 
+> Hence this series aims to make sure all members are fully initialized,
+> to avoid such bugs, and to prevent future breakage when converting
+> drivers to a different method for specifying the parents.
+> 
+> Part One[1] fixed all cases that I identified to be real bugs, in
+> response to a crash I saw on BeagleBone Black.
+> 
+> This series is the IIO subpart of Part Two, which fixes remaining cases
+> that are currently harmless.  These are still fragile, and may cause
+> future breakage when converting drivers to a different method for
+> specifying the parents.
+> 
+> Thanks for your comments!
+> 
+> [1] "[PATCH treewide 0/5] clk: Make sure clk_init_data is fully
+>      initialized (part 1)"
+>     https://lore.kernel.org/cover.1787165329.git.geert+renesas@glider.be
 
-This is good. Capture a little more in the commit message about only reading
-this amount anyway and that you know there is always at least this amount.
+Applied to the testing branch of iio.git.
 
-Thanks for the detailed and really clear responses btw.
+I made a trivial tweak from {} to { } to follow the style we are trying
+to stick to for these in IIO.
+
+Thanks,
 
 Jonathan
 
->=20
-> Hope I'm clear enough here.
->=20
-> Thanks,
-> JB
->=20
-> >
-> > =20
-> >>
-> >> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> >> ---
-> >>  drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 33 ++++++++++---=
----------
-> >>  1 file changed, 15 insertions(+), 18 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/driv=
-ers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-> >> index 1428f18408ce..1410096f6e6d 100644
-> >> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-> >> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-> >> @@ -474,24 +474,21 @@ int inv_icm42600_buffer_fifo_read(struct inv_icm=
-42600_state *st,
-> >>       st->fifo.nb.accel =3D 0;
-> >>       st->fifo.nb.total =3D 0;
-> >>
-> >> -     /* compute maximum FIFO read size (watermark for max =3D 0 inter=
-rupt case) */
-> >> -     if (max =3D=3D 0)
-> >> -             max =3D st->fifo.watermark.value;
-> >> -     max_count =3D max * INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
-> >> -
-> >> -     /* read FIFO count value */
-> >> -     raw_fifo_count =3D (__be16 *)st->buffer;
-> >> -     ret =3D regmap_bulk_read(st->map, INV_ICM42600_REG_FIFO_COUNT,
-> >> -                            raw_fifo_count, sizeof(*raw_fifo_count));
-> >> -     if (ret)
-> >> -             return ret;
-> >> -     st->fifo.count =3D be16_to_cpup(raw_fifo_count);
-> >> -
-> >> -     /* check and clamp FIFO count value */
-> >> -     if (st->fifo.count =3D=3D 0)
-> >> -             return 0;
-> >> -     if (st->fifo.count > max_count)
-> >> -             st->fifo.count =3D max_count;
-> >> +     /* read watermark samples for interrupt case (max =3D 0) or read=
- FIFO count */
-> >> +     if (max =3D=3D 0) {
-> >> +             st->fifo.count =3D st->fifo.watermark.value *
-> >> +                              INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
-> >> +     } else {
-> >> +             raw_fifo_count =3D (__be16 *)st->buffer;
-> >> +             ret =3D regmap_bulk_read(st->map, INV_ICM42600_REG_FIFO_=
-COUNT,
-> >> +                                     raw_fifo_count, sizeof(*raw_fifo=
-_count));
-> >> +             if (ret)
-> >> +                     return ret;
-> >> +             max_count =3D max * INV_ICM42600_FIFO_2SENSORS_PACKET_SI=
-ZE;
-> >> +             st->fifo.count =3D min(be16_to_cpup(raw_fifo_count), max=
-_count);
-> >> +             if (st->fifo.count =3D=3D 0)
-> >> +                     return 0;
-> >> +     }
-> >>
-> >>       /* read all FIFO data in internal buffer */
-> >>       ret =3D regmap_noinc_read(st->map, INV_ICM42600_REG_FIFO_DATA,
-> >> =20
->  =20
+> 
+> Geert Uytterhoeven (2):
+>   iio: adc: meson-saradc: Make sure clk_init_data is fully initialized
+>   iio: frequency: adf4350: Make sure clk_init_data is fully initialized
+> 
+>  drivers/iio/adc/meson_saradc.c  | 2 +-
+>  drivers/iio/frequency/adf4350.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
 
