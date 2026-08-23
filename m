@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1C4426A0A7;
-	Sun, 23 Aug 2026 01:19:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49DA51A23A6;
+	Sun, 23 Aug 2026 01:21:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787447941; cv=none; b=Kfhx8IKvxdsbB0AZu5Vh2yHv68nIlxNXaMzgOrjXWbLYzk1wdSx4yHi/g7Li8Zopm+ShJZeEwFcVl7FpiPGsoxtqK4459xlEzFucNmHtWt6nfhFlPByCi+Xpq+KpqPYX/i01MYiENbMydLnSyhbGacG+a0Y14yQ9Kyj0fFRYhRw=
+	t=1787448116; cv=none; b=YvlacD4SDM/GEO7RgIjWm7v1cfCwCgT/dLeS9UONqU6N9nfHts2bJY7RdwohnI11cktnSYlgsw+OwgbSM2fmmsy8eq+oqXbOQMfhydIRwz+W+H7pVlJL58JGpH4KE7zAGcdMaWiY+2PFh0TgS8Vok+PjI2wMJEN+ezzSInPVTCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787447941; c=relaxed/simple;
-	bh=02yDEM1j4MXomiOVVPxUVPuKJjeaRS3im4AKKFSsS9w=;
+	s=arc-20240116; t=1787448116; c=relaxed/simple;
+	bh=IPbS25TpnnnuM0WguuYholjWOM1J6+8IUvO1N79FBko=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Sft28t8//dZxi06ZdQiqzb924fR0EuRyCD4FNuCHpg8yRqFapDh27uAQo1F7Sn++aXmajluB7kkBPLewlS2YgWDQw0YgsKcewsdkUR+jWXiGFoPhjSlMmxWMKa/e0QmnM7VN9ca0UsotWDwLHEbi8a0QecGqivLmJOgJXs2TjKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UTEs5gAG; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=G1iVePAxUA1iymBobV02DCNNK2Ru9wF9nUKjeGxR7liJOOu8DvtdfEDdATd2xdja/RBlYBU6e/uj3WgT8zAVb8npFGDentj3c1/ptwZrqKTMJH+0VcXrZsFZPIJANTQYVGlG6QJi2jKsMjfslY3eFICutcGM++7zSVnXjdDFczc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KxzQUJ+i; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UTEs5gAG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5661F000E9;
-	Sun, 23 Aug 2026 01:18:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KxzQUJ+i"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59F01F000E9;
+	Sun, 23 Aug 2026 01:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787447940;
-	bh=wYOO3CdXvlKH8yVkpzLpoijLGnZCZnfLRzL6voEADEE=;
+	s=k20260515; t=1787448115;
+	bh=Vu5/3ShycdDYCBSFKCIHRmm4kKeuJYxrfnp7DodCBQM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=UTEs5gAGJ65bHpjOaoJxhKcFb2ljuqFUS0FdIutyYBxX5LTKMLuBvjmCFkT9awPfo
-	 CzXMY50mGUQYLI7Xg/fvLTAwAnlMA+KNURNHyLJXVUGE0jwo4Q90RxkTGb2ukr/pG3
-	 0Iou8ZA0m2xcr/6Pr57+OPshU+RAJvYAbqMVcwldSVrPLOrVxGj2EWqYqIbUh0WqG5
-	 gd1RXeHTPN2Vv8PwngR/NVoyPvMVx8miRIKGfZ+NyIBAjNjjJ1HTkE8WRNmQdjl50s
-	 4I53KYLd29u2ptbQTGJQLJuJfxQjaIaLnzyknfO1X4pBp/6OAVWZNHK8vvzQ/Ev1u7
-	 geg2coOY6GYow==
-Date: Sun, 23 Aug 2026 02:18:55 +0100
+	b=KxzQUJ+i76GTwZd5XQSeJuMOMfilm+orRTk998NHlru9CIReWVufDN5h4DxAjnNnc
+	 NH4mhQEoRAHVaNns3NBx+xnnyGiq2pgU3gtuaTaS2lEB/USnLrpHBoX8WFf+TKNo1r
+	 5tUJrCspbdOPW7Lp75qqWD1VAzM0u0adaTlrwdHUZDA84riLiLvSRDUWEeSfpkmpQ0
+	 rFHDuFwj6Tk42OJnvB8vJl8Sb/TlveOLdTyU9g5FM2j7Yg+tLet63C+1mgFKZzkA9R
+	 EMI9lmlD2gpRLMw2VP5r2lfLsR1dNfvx72jceEMqkajDChEnafY568qo/ctJgtyWw2
+	 Vb7HGdjivio+Q==
+Date: Sun, 23 Aug 2026 02:21:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Michael Hennerich
- <Michael.Hennerich@analog.com>, linux-iio@vger.kernel.org,
- linux@analog.com, linux-clk@vger.kernel.org
-Subject: Re: [PATCH 0/2] iio: Make sure clk_init_data is fully initialized
-Message-ID: <20260823021855.6f49bfcf@jic23-huawei>
-In-Reply-To: <cover.1787240005.git.geert+renesas@glider.be>
-References: <cover.1787240005.git.geert+renesas@glider.be>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Cc: andriy.shevchenko@intel.com, Michael.Hennerich@analog.com,
+ andy@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
+ dlechner@baylibre.com, krzk+dt@kernel.org, lars@metafoo.de,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux@analog.com,
+ nuno.sa@analog.com, robh@kernel.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v5 5/6] iio: dac: ad5504: introduce local lock to
+ protect state and spi transfers
+Message-ID: <20260823022151.4ded2f22@jic23-huawei>
+In-Reply-To: <20260821140546.96474-1-0rayn.dev@gmail.com>
+References: <aohTG8UxkmHSUzzh@ashevche-desk.local>
+	<20260821140546.96474-1-0rayn.dev@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,52 +50,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 21 Aug 2026 12:04:05 +0200
-Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+On Fri, 21 Aug 2026 10:05:46 -0400
+Taha Ed-Dafili <0rayn.dev@gmail.com> wrote:
 
-> 	Hi all,
+> > This part is not needed to be under the mutex. So, first convert the
+> > input, then acquire the lock.  
 > 
-> The clk_init_data structure contains several mutually-exclusive members
-> for different methods to specify the possible parents of a clock,
-> prompting drivers to initialize only the members they need.  However,
-> not initializing all members may cause subtle issues, which are only
-> exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
-> enabled.
+> Good point, will fix in v6. Sending tomorrow to leave a bit of room
+> for any other feedback on the series.
 > 
-> Hence this series aims to make sure all members are fully initialized,
-> to avoid such bugs, and to prevent future breakage when converting
-> drivers to a different method for specifying the parents.
-> 
-> Part One[1] fixed all cases that I identified to be real bugs, in
-> response to a crash I saw on BeagleBone Black.
-> 
-> This series is the IIO subpart of Part Two, which fixes remaining cases
-> that are currently harmless.  These are still fragile, and may cause
-> future breakage when converting drivers to a different method for
-> specifying the parents.
-> 
-> Thanks for your comments!
-> 
-> [1] "[PATCH treewide 0/5] clk: Make sure clk_init_data is fully
->      initialized (part 1)"
->     https://lore.kernel.org/cover.1787165329.git.geert+renesas@glider.be
 
-Applied to the testing branch of iio.git.
+Even at v6, 1 day is a bit quick!  I'd not mind so much if we weren't
+at the end of the cycle when nothing is going upstream quickly anyway.
 
-I made a trivial tweak from {} to { } to follow the style we are trying
-to stick to for these in IIO.
-
-Thanks,
+Next time please wait at least a few days.
 
 Jonathan
 
-> 
-> Geert Uytterhoeven (2):
->   iio: adc: meson-saradc: Make sure clk_init_data is fully initialized
->   iio: frequency: adf4350: Make sure clk_init_data is fully initialized
-> 
->  drivers/iio/adc/meson_saradc.c  | 2 +-
->  drivers/iio/frequency/adf4350.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
+> Best Regards,
+> Taha Ed-Dafili
+
 
