@@ -1,69 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-2uec-a89.jellyfish.systems (out-2uec-a89.jellyfish.systems [63.250.43.89])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387D0493654;
-	Sun, 23 Aug 2026 00:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B3B4306746
+	for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 00:54:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=63.250.43.89
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787446267; cv=none; b=DqGYmHAnWVX9pDwandzdD7sGm5+iO7uDQbPejYE6ibNr8azkWdewufRIuH5UvB3IS9eEhnVXgHfP72F2Y0hcuu/UEeHgE6XYYvI32mFqD0z4eiuw68V5jlXs0cGy4juLlitJQrB36DfckknPeYwCvxPGM2AusMSUxWF15K6+KzE=
+	t=1787446512; cv=none; b=eMfCCAM3sjVEGGCGm5s+6PIi+I8qdtxsU4zpyvwNd3beyeJ6q4lc+Rpz39RnnctrSG4JilXwca9YV4pdP0zv9bJ6sAgakuaFVe4pR3209B1PsYXwvfyhTT3OQZWjI8+wUyluT3YyDf9IMZRY6fhWHEDCtUt2i87Q6IajkNoihh4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787446267; c=relaxed/simple;
-	bh=+QlTFb8cMfc/OK5Z4qCUYQr5XCWnEkEPKqH8+KBsNpY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RKSDPY2X9KObCmkI2KmImFvfJSGn9k5cJkUYZK4iFbeRu0w1FjOWC69qB/YKL8e/oZwkD49aym0WuqtYzbKPdLcFMYmTa3mZ+igcF9C/tuzyRNtDnqR4qGObaHXpkOIa+g6OUGLXByDDataKJRxP12tJyysWVV1R3Csz89n14xg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NKWM+uH6; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NKWM+uH6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CADF1F000E9;
-	Sun, 23 Aug 2026 00:51:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787446265;
-	bh=va1x5CTVjllfWhBzZzKLjqK8OdH8fsdFKbjrDXWyuP0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NKWM+uH6OOJEOHO87p7rzj2x1GC+z3bYbd3a16Gcy4k6c1789W73s1BBErlYTsx2Y
-	 FXR9qj87xCpnfSRbHELg3pSGRW0aVSiLJc6kc6ZLU7zBzZFbJowWyVp7yotOsLzw6u
-	 mbJ0JEth3kkpj06MZ/6SvT4ob+gRIulWuoGbQ7vtm5YIN1S+aYr3Cj4JjrkPUMuLEO
-	 U33kimAL/mrWt2i9qzCKtabE3pd6KeMX3Hn+I00MWwU9PDlw1mXEb+RMX8wdBn+yqU
-	 0remvZmp1V383+5qg7/A3Yg2lj/TPVTiH8djfTbYpcit2jcj3ST2dUxMVsiPBzlP3q
-	 Rbg5Hg2uOgYcQ==
-Date: Sun, 23 Aug 2026 01:51:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Ariana Lazar <ariana.lazar@microchip.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/9] iio: dac: mcp47feb02: initialize dac_data field
- in channel data struct at probe
-Message-ID: <20260823015100.74b6f615@jic23-huawei>
-In-Reply-To: <aoW657jDvmMiOsaX@ashevche-desk.local>
-References: <20260819-mcp47feb02_refactor-v4-0-beb2aa3bfd09@microchip.com>
-	<20260819-mcp47feb02_refactor-v4-1-beb2aa3bfd09@microchip.com>
-	<aoW657jDvmMiOsaX@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1787446512; c=relaxed/simple;
+	bh=SxZs0TJQm02I5QajaGKaSLCF9zExMU4iJ4Nbjpo/Lls=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=HziAUnnAKnaJn0cfNdUOeCsDyhqUZYDoMGzTkgxUX6aXYiu2KCH03DTHIkjfuiHOwo7CfIgCFtojS7H08jNdGqJyZJacyekP3NOUksBGcRPv4krmr+ZXM+Bp1J10LRkLIqhWkamlavUz5aUJoVl3RC+nOHpjh3YFS0p4CUZT65M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=63.250.43.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
+Received: from mail.privateemail.com (unknown [87.215.145.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.privateemail.com (Postfix) with ESMTPSA id 4hSFQN6pt3z8sWP;
+	Sun, 23 Aug 2026 00:33:32 +0000 (UTC)
+From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Luca Weiss <luca.weiss@fairphone.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/3] iio: imu: inv_icm42600: sort device id tables numerically
+Date: Sun, 23 Aug 2026 02:33:18 +0200
+Message-ID: <20260823003320.62192-2-jorijnvdgraaf@catcrafts.net>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260823003320.62192-1-jorijnvdgraaf@catcrafts.net>
+References: <20260823003320.62192-1-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Envelope-From: jorijnvdgraaf@catcrafts.net
 
-On Wed, 19 Aug 2026 17:17:11 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+The I2C, SPI and OF device id tables list the parts in the chip enum's
+declaration order, which is neither numeric nor alphabetical. Sort the
+entries numerically by part number so new entries have an unambiguous
+position.
 
-> On Wed, Aug 19, 2026 at 03:41:05PM +0300, Ariana Lazar wrote:
-> > Read DAC value register to initialize corresponding field in channel_data
-> > struct when the module is inserted.  
-> 
-> Since we have a cache enabled for regmap, can we rather read back initial HW
-> values at the probe time for all non-volatile or precise registers?
-> 
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Link: https://lore.kernel.org/all/20260724012505.02029e51@jic23-huawei/
+Assisted-by: Claude:claude-fable-5
+Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+---
+No changes in v5.
 
-That should indeed be explored.  This is also missing any description of 'why'
-this needs to be read and cached at all.
+ drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c | 16 ++++++++--------
+ drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c | 16 ++++++++--------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-Jonathan
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+index 28552d2db91d..e44ed6dcde02 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+@@ -77,10 +77,10 @@ static const struct i2c_device_id inv_icm42600_id[] = {
+ 	{ .name = "icm42600", .driver_data = INV_CHIP_ICM42600 },
+ 	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
+ 	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
+-	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+ 	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
+-	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+ 	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
++	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
++	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, inv_icm42600_id);
+@@ -95,18 +95,18 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
+ 	}, {
+ 		.compatible = "invensense,icm42605",
+ 		.data = (void *)INV_CHIP_ICM42605,
+-	}, {
+-		.compatible = "invensense,icm42686",
+-		.data = (void *)INV_CHIP_ICM42686,
+ 	}, {
+ 		.compatible = "invensense,icm42622",
+ 		.data = (void *)INV_CHIP_ICM42622,
+-	}, {
+-		.compatible = "invensense,icm42688",
+-		.data = (void *)INV_CHIP_ICM42688,
+ 	}, {
+ 		.compatible = "invensense,icm42631",
+ 		.data = (void *)INV_CHIP_ICM42631,
++	}, {
++		.compatible = "invensense,icm42686",
++		.data = (void *)INV_CHIP_ICM42686,
++	}, {
++		.compatible = "invensense,icm42688",
++		.data = (void *)INV_CHIP_ICM42688,
+ 	},
+ 	{ }
+ };
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+index faf743bc6444..3e2f4eb42e97 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+@@ -74,10 +74,10 @@ static const struct spi_device_id inv_icm42600_id[] = {
+ 	{ .name = "icm42600", .driver_data = INV_CHIP_ICM42600 },
+ 	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
+ 	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
+-	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+ 	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
+-	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+ 	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
++	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
++	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, inv_icm42600_id);
+@@ -92,18 +92,18 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
+ 	}, {
+ 		.compatible = "invensense,icm42605",
+ 		.data = (void *)INV_CHIP_ICM42605,
+-	}, {
+-		.compatible = "invensense,icm42686",
+-		.data = (void *)INV_CHIP_ICM42686,
+ 	}, {
+ 		.compatible = "invensense,icm42622",
+ 		.data = (void *)INV_CHIP_ICM42622,
+-	}, {
+-		.compatible = "invensense,icm42688",
+-		.data = (void *)INV_CHIP_ICM42688,
+ 	}, {
+ 		.compatible = "invensense,icm42631",
+ 		.data = (void *)INV_CHIP_ICM42631,
++	}, {
++		.compatible = "invensense,icm42686",
++		.data = (void *)INV_CHIP_ICM42686,
++	}, {
++		.compatible = "invensense,icm42688",
++		.data = (void *)INV_CHIP_ICM42688,
+ 	},
+ 	{ }
+ };
+-- 
+2.55.0
+
