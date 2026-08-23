@@ -1,216 +1,277 @@
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B216F1DFF0
-	for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 00:06:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FEFE49363C
+	for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 00:16:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787443572; cv=none; b=MLVxiaPGdoDZGIOgibU9t8fLVVPR/rsmnFS8xZtTUiTMKW6jLaftLSfTqkhif5dgDrZS4NxW8KRSoMyTmnx/pPCqoLf9WXgckMIou+UUFOORRrITa8qyFgMuL+xguZsr7q9843UJ4idiJzgzMGza0Lj4LtNj8UpGd2T2ZH5BKoo=
+	t=1787444184; cv=none; b=TClglTGbAHiuJYfj5UaypBbSh51y9FQuVDPvTEY51827cAlQiSuSeg+ZxnMTs+JRiESvKn2HhVpcOdexh9LRxmhgzrQMBk1u4vzNxkNNvqOrZNMOcpE9REZIulLVEA86wbqHggEVnHqvy+St1dCZvklCMOx1kiu3jLFkqk7ybtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787443572; c=relaxed/simple;
-	bh=hMUtzbQ/rbYUAnm2d4IyxCBoXWNCdFwKKOOb6WzqX7g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=G0a9PLv8RyCJ+NpX8JcnzOCW6JCRkVDaBYEvFVU78dLcSTjXNxgWtVwU06zPGCzKynQFAqWfUdBGd1BYgbY4CODQWRVrnNQejeUzIXvTkI2SXSU85V7B+Gv8IQnCdpSZzdUA6szqJsVJJejN2nc098mjBlFlEJ2n49dGPfNYl7I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=cg4qdTlA; arc=none smtp.client-ip=209.85.160.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1787444184; c=relaxed/simple;
+	bh=bUeZgEYj+7Qcs4FFf4YrK3zjW0OyEWwWvQRbu8tfXkc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mbt6BfLhiFM8IVxLB2rg8drvNV3fdop7nuG2gyaVuIj+RCMDSdlM/FdtnbwH7YeHQHDnGcWJJ07IH+GW7BaUYklfd8EW9cc078FMdaeNRvdFmBlkIhLwDpKqT+vwB0afnaJgDaNyXhR52tq5kq74Hho84CvQh/OA9t7S5oh6DXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J1lEj0/t; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="cg4qdTlA"
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-448b69cfc6dso2153657fac.3
-        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2026 17:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1787443568; x=1788048368; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Q7sEtYo5SjbZ2yoLbudIWXFLOzKlgfbvUciYXGTISHo=;
-        b=cg4qdTlAmorswVm5Wxmy2FcMur74z4KrKL1QNO0x14K2S80X85U1KYzDuT+krKBHXG
-         cpzlhD/usytkvevw0dJ9Le2dkaZK1h3DXTukNf1KpCg+HZ+X7qVQezTrd9M7OOaNLZYW
-         gsErODNLu3raJkC7QgkfTy8gWHqAlRiU2Dsd4jCP/XDz/skTpO/hBMm4k5gvJgYyyrvz
-         iH8HtKqHsxDBCTYp0wf+/C1bXa6plQkfCpmaChQe4FFgFlxlfgjFkuxHNnKz9r4JGMDs
-         MxyCyjmuAtSiqb0TuZKBFxjh7LpumsVHSLafX8c7UTowlUt7n4xHuCbDYKWLeMdIEHGD
-         gpCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787443568; x=1788048368;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Q7sEtYo5SjbZ2yoLbudIWXFLOzKlgfbvUciYXGTISHo=;
-        b=GnOGl3JhBDBgVJ2+CU8hjwRTPKpwLpK6QO24lx1+0Q4xqdVpzG6sdt6yR95FmOeyvw
-         Yg9nhwQQCeywVeSxV2EIgKfUcz2aeS5QxfaWAdDAEd1pscsoODTmLT5LuPB4F1nCHuqL
-         bU6OCKcuiTm6vWGPVGsn/GnSsRSR9r24L0bK0fx7VLJPrkTCffNIR5RkZIck9hwJMR+Z
-         SYAMSGAb6iovu3+/+OKQvqifemjUMD87pAPh6TDwA/zBoeRytHkiE4WcFCV7K6WVEESN
-         jXksTsHu9yCSPo8vmEjADolKF9ZvmEIx4EBknhxAGf/vGeNyQTpjXX4qGz4C3GKbk2L8
-         Kp7A==
-X-Gm-Message-State: AFuF++lMXfnpDIkHc3SwqqPzNZ5eb15qaL2nGmnuz5bkmxFJvoWfghvX
-	J/xv6I0+XgxJdHhf66VxZhY9ZC8b0k9+gv1Vw3/Ixb7Lhl/JPmYcwHRQ9KbTPI+QEDA=
-X-Gm-Gg: AR+sD132Fc4W+Z5Zm/9/pkemoOpdEp/dMxKSzNt69Zf1mcC8N58wLObDvmJaZnOgdgc
-	zGedc/FqrsGvp8vYCCGm0nKc0C/INJBcmSxmVqpfVgIxFPJfrEnpvG/mm9LdgNg5JCB/Xo0IV6l
-	pfJPLqC8GREwGqCysu+UbGDkRe8vtQGCVNsl9k+UdevMfxFVB129A3KkqNl7Q8lJLEy22DkroZ5
-	aGcx2mdhQY/SpENLLjSZiS/hcC+LLDTRQf6alu4ICIhv/j1ou8Y92sNk7+hGeJy/y/uZVfGecF4
-	H9bErASLQ/Sv/IKYlvTHkyeIlfwkF+Ekbk4up0mHcTm1oaHQ5glhg6OcLX80jzxdBgux1NO5Fln
-	WBq5AvGq9Yt3tJLFNvmwrB+E8JPGDJojLUGStP8+AkL16zmtWdIlLMUpepXPVgFSIC8Pvf54odS
-	Fg3Lu4czh/a5ScD41KjogTHMEuV9cAzGvyN6BkHkNdr88M9hS8n+wy42TkHVmS3rjF4Fl7pb9p6
-	9cje9IU8jVaYkUGn34qbq0fG1GmSP4Xwwu1GOs=
-X-Received: by 2002:a05:6870:808a:b0:448:d78b:17d0 with SMTP id 586e51a60fabf-4635140d27cmr16499461fac.13.1787443568496;
-        Sat, 22 Aug 2026 17:06:08 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e0ca:316a:4629:d835? ([2600:8803:e7e4:500:e0ca:316a:4629:d835])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-463834af0absm2460516fac.12.2026.08.22.17.06.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 22 Aug 2026 17:06:07 -0700 (PDT)
-Message-ID: <1b0af12a-0653-4a14-9c0b-4948eab9a4cf@baylibre.com>
-Date: Sat, 22 Aug 2026 19:06:05 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J1lEj0/t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF4B1F000E9;
+	Sun, 23 Aug 2026 00:16:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787444182;
+	bh=Pq+LWn66xxwbkmU07fVCZADNXlmlYR+X2VxfzgEzCEw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=J1lEj0/tzaZ2IxU0hybcvPEEz5u1OZbEvkLAuaBo/K2CeeZIzlxnsk3mASLdjy8DV
+	 oK6vUCl3FUtm4XZFzy4VuOpFtIDGjcrxmuYQwwuk7lXq+zvHo59MeZKLf6catwD2wk
+	 1TudsXJ9Oe09UA5wD/tijK7PSwudRHzyL2FDakoiEkw6d8qtPfedFuLCRVSglnfIi6
+	 Hnawl6EykqsagKJ+31OzRyUAL6YOCNY2ZzDiOeV4mlrpyyvsoO8C3R072P8lJCuwfu
+	 M+Si6LzOzrbG0rRiVY+Byrbt6uyLq0SAmPauZEwhZpUHKYZVL58mqhkJaUXAbKjVjp
+	 j+rFLDMpAom5A==
+Date: Sun, 23 Aug 2026 01:16:18 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: buffer-dmaengine: fix sg entry iteration when
+ building dma_vecs
+Message-ID: <20260823011618.2176b016@jic23-huawei>
+In-Reply-To: <aoV32knWqL6s4xjF@nsa>
+References: <20260818-iio-buffer-dmabuf-iommu-fic-v1-1-4ff1e44a5073@analog.com>
+	<20260819014104.56bd4157@jic23-huawei>
+	<aoV32knWqL6s4xjF@nsa>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/2] iio: adc: ti-ads112c04: Add support for TI
- ADS112C04
-To: Kyle Hsieh <kylehsieh1995@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260820-ti-ads112c04-driver-v6-0-0e8f0aacce9b@gmail.com>
- <20260820-ti-ads112c04-driver-v6-2-0e8f0aacce9b@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260820-ti-ads112c04-driver-v6-2-0e8f0aacce9b@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 8/20/26 2:51 AM, Kyle Hsieh wrote:
-> Add IIO driver support for the Texas Instruments ADS112C04 (16-bit)
-> delta-sigma ADCs.
-> 
+On Wed, 19 Aug 2026 11:16:22 +0100
+Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-...
+> On Wed, Aug 19, 2026 at 01:41:04AM +0100, Jonathan Cameron wrote:
+> > On Tue, 18 Aug 2026 17:45:29 +0100
+> > Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+> >  =20
+> > > From: Michael Hennerich <michael.hennerich@analog.com>
+> > >=20
+> > > iio_dmaengine_buffer_submit_block() counts scatterlist entries with
+> > > sg_nents_for_len(), which walks the CPU-side lengths (sg->length), but
+> > > then consumes the DMA-side fields (sg_dma_address()/sg_dma_len()).
+> > > After dma_map_sgtable() the two views may differ: an IOMMU can coales=
+ce
+> > > the mapping so that only the first sgt->nents entries carry valid DMA
+> > > addresses, with nents < orig_nents.
+> > >=20
+> > > On x86 with an IOMMU enabled, a DMABUF block backed by two 1 MiB
+> > > system-heap chunks maps to a single 2 MiB IOVA range. The CPU-side
+> > > count is 2, so the loop reads one entry past the mapped set and emits=
+ a
+> > > garbage vec ({addr =3D ~0, len =3D 0}). The DMA engine driver rejects=
+ the
+> > > vec array (prep returns NULL), the fence is signalled with -ENOMEM,
+> > > which a userspace poller cannot observe, and the block is left in
+> > > ACTIVE state so every further enqueue of it fails with -EBUSY. The
+> > > visible symptom is a stream of zero-filled blocks followed by a wedged
+> > > buffer.
+> > >=20
+> > > Platforms without an IOMMU never hit this because nents =3D=3D orig_n=
+ents.
+> > >=20
+> > > Size the vec array with sg_nents_for_dma(), which walks the DMA-mapped
+> > > view and accounts for max-length splitting, and stop the fill loop on=
+ce
+> > > bytes_used is covered - which is allowed to be smaller than the block
+> > > size - passing the reduced count to dmaengine_prep_peripheral_dma_vec=
+().
+> > >=20
+> > > Assisted-by: Claude:claude-fable-5
+> > > Fixes: 7a86d469983a ("iio: buffer-dmaengine: Support new DMABUF based=
+ userspace API")
+> > > Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> > > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com> =20
+> >=20
+> > There are some gremlins nearby in this code...
+> > In the else just of this context seems max_size is computed again
+> > having been done just above the code seen here.
+> >=20
+> > Unless I'm missing something that should be cleaned up as well. =20
+>=20
+> Oh yes! Something I already noticed a couple of times but never sent the
+> patch right away so I kept forgetting about it.
+> >=20
+> > Been a while since I got my head into the scatterlist
+> > stuff, so I might have it wrong below, but I don't think what
+> > you have here actually works if the merging of entries is
+> > larger than the max dma entry the hardware supports.
+> >  =20
+>=20
+> In theory might not be a bug but I'm not sure it's a claim we can fully
+> take as guarantee.
+>=20
+> >  =20
+> > > ---
+> > > Note the Signed-off-by is just because I'm carrying Michael's patch!
+> > > ---
+> > >  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 16 ++++++++++++=
+----
+> > >  1 file changed, 12 insertions(+), 4 deletions(-)
+> > >=20
+> > > diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/dri=
+vers/iio/buffer/industrialio-buffer-dmaengine.c
+> > > index ecc02a427b92..bece45381c8c 100644
+> > > --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> > > +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> > > @@ -104,10 +104,16 @@ static int iio_dmaengine_buffer_submit_block(st=
+ruct iio_dma_buffer_queue *queue,
+> > >  	if (block->sg_table) {
+> > >  		unsigned long flags;
+> > > =20
+> > > +		/*
+> > > +		 * Use the DMA-mapped view of the sg_table: after mapping
+> > > +		 * (e.g. through an IOMMU) the DMA entries (sgt->nents) can be
+> > > +		 * fewer than the CPU entries, and sg_dma_address()/sg_dma_len()
+> > > +		 * are only valid for the first sgt->nents entries. Counting
+> > > +		 * with sg_nents_for_len() (CPU lengths) walks past them and
+> > > +		 * hands garbage vecs to the DMA engine. =20
+> >=20
+> > This feels like too much info after the fix is in place.  Talking about=
+ other
+> > stuff that would be wrong is rather unusual.
+> > =20
+>=20
+> Oh well, I guess LLM over commenting as usual.
+>=20
+> > > +		 */
+> > >  		sgl =3D block->sg_table->sgl;
+> > > -		nents =3D sg_nents_for_len(sgl, block->bytes_used);
+> > > -		if (nents < 0)
+> > > -			return nents;
+> > > +		nents =3D sg_nents_for_dma(sgl, block->sg_table->nents, max_size);=
+ =20
+> >=20
+> > So this fun function will generally give us the number of sgl entries, =
+but not
+> > quite always. It will give us how many chunks of up to max_size fit into
+> > a particularly large entry.
+> >  =20
+> > > =20
+> > >  		vecs =3D kmalloc_array(nents, sizeof(*vecs), GFP_ATOMIC);
+> > >  		if (!vecs)
+> > > @@ -115,7 +121,7 @@ static int iio_dmaengine_buffer_submit_block(stru=
+ct iio_dma_buffer_queue *queue,
+> > > =20
+> > >  		len_total =3D block->bytes_used;
+> > > =20
+> > > -		for (i =3D 0; i < nents; i++) {
+> > > +		for (i =3D 0; i < nents && len_total; i++) { =20
+> > So this needs to be more clever as we aren't just iterating entrees and=
+ filling
+> > them in, some of them could at least in theory be too big to fit
+> > in a single vec - hence you need to do a loop in here that sets
+> > multiple entries if that occurs. =20
+>=20
+> I see! But I think that merging means that we end up with more nents
+> (sg_nents_for_len()) entries than DMA ones which was the issue we had
+> because we were left with vecs with invalid addresses and 0 sized.
 
-> +static int ads112c04_parse_channels(struct iio_dev *indio_dev,
-> +				    bool *need_avdd_ref, bool *need_ext_ref)
-> +{
-> +	struct device *dev = indio_dev->dev.parent;
-> +	struct ads112c04_state *st = iio_priv(indio_dev);
-> +	struct iio_chan_spec *channels;
-> +	u32 num_channels, pair[2], channel;
-> +	unsigned int i;
-> +	int ret;
-> +
-> +	num_channels = device_get_named_child_node_count(dev, "channel");
-> +	if (!num_channels)
-> +		return dev_err_probe(dev, -EINVAL, "no channel subnodes found\n");
-> +
-> +	if (num_channels > ADS112C04_MAX_CHANNELS)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "num of channel nodes exceeds %d\n",
-> +				     ADS112C04_MAX_CHANNELS);
-> +
-> +	channels = devm_kcalloc(dev, num_channels, sizeof(*channels), GFP_KERNEL);
-> +	if (!channels)
-> +		return -ENOMEM;
-> +
-> +	st->vref_source = devm_kcalloc(dev, num_channels,
-> +				       sizeof(*st->vref_source), GFP_KERNEL);
-> +	if (!st->vref_source)
-> +		return -ENOMEM;
-> +
-> +	i = 0;
-> +	device_for_each_named_child_node_scoped(dev, child, "channel") {
-> +		const char *sp = "single-channel", *dp = "diff-channels";
+You can end up with a smaller set of DMA mappings than the CPU ones that
+were typically pushed in.  That covers what happens in the IOMMU.
+However those can be 'big' and so your DMA engines own ability to handle
+a particular size of contiguous block may be the problem and result in
+you needing more entrees on the hardware side of things.
 
-What does the "p" mean? I would make the names the same as the string,
-e.g. sc, dc, or s_chan, d_chan since they are used quite far from here.
+> The other
+> way around should not happen on the IOMMU path at least given the assumpt=
+ion
+> that a single sg  entry must not be bigger than max_len [1].
+Hmm - do I understand this right - is the question: If you original CPU side
+mappings (the input scatter gather list entries) are less than max_len byte=
+s each
+then can we end up with a large set of entries for the DMA Engine after
+the merge then split?  If so I think I think the answer is no (as long
+as no other constraints like alignment make a mess for us - I gave
+up trying to reason those out on a bit of paper).
 
-> +		struct iio_chan_spec *spec = &channels[i];
-> +
-> +		if (fwnode_property_present(child, "excitation-channels"))
-> +			return dev_err_probe(dev, -EOPNOTSUPP,
-> +					     "excitation-channels is not supported yet\n");
-> +
-> +		st->vref_source[i] = ADS112C04_VREF_SOURCE_INTERNAL;
-> +
-> +		if (fwnode_property_present(child, "reference-sources")) {
+> I think in theory
+> that can actually happen (if we end using a dma provider defaulting to 64=
+K and=20
+> cma dma_bufs) but maybe we can argue that's not our problem? Given
+> the assumptions of course.
+>=20
+> But even if we somehow reach this path with sg_dma_address > max_size
+> and end up stuffing all of it in say, vec[0], the DMA controller should
+> also care to make sure it splits each vec if it exceeds the descriptor
+> max size. That's what both users of (ADI axi_dmac being one them)
+> .device_prep_peripheral_dma_vec() are doing today. But yes, I agree that
+> might be a bold assumption.
 
-ads112c04_parse_vref_source() already calls fwnode_property_present(child, "reference-sources")
-and returns ADS112C04_VREF_SOURCE_INTERNAL as default, so we are duplicating that
-logic here. Either drop the helper or drop the extra code here.
+Then why we are we passing in max_size to the function to work out
+how many entrees?  If splits are handled elsewhere we don't need that
+limit.
 
-> +			ret = ads112c04_parse_vref_source(child);
-> +			if (ret < 0)
-> +				return dev_err_probe(dev, ret,
-> +						     "invalid reference-sources value\n");
-> +
-> +			st->vref_source[i] = ret;
-> +		}
-> +
-> +		if (st->vref_source[i] == ADS112C04_VREF_SOURCE_EXTERNAL)
-> +			*need_ext_ref = true;
+>=20
+> >=20
+> > If that can't happen for some other reason then I think you can=20
+> > just use block->sgtable->nents instead of the more complex call above.
+> >  =20
+>=20
+> I was the one suggesting the other call because it seemed what we
+> actually wanted but I'm fine with just using the above. I'm more tempted
+> to keep it simple and use 'block->sgtable->nents' rather than jumping in
+> a more complex subloop without clear evidence we really need it.
+> Thoughts?
 
-Can just assign these directly:
+If they are split below this layer then indeed we don't need the call
+and can use the number DMA entries.
 
-		*need_ext_ref = st->vref_source[i] == ADS112C04_VREF_SOURCE_EXTERNAL;
+>=20
+> As a fun side note this also made visible another subtle issue. Given
+> that submitting a block might only happen when enabling the buffer (so
+> async to enqueueing it) when we hit this issue, we get -ENOMEM and
+> and go ahead  to wake up poll(). But AFAIK, we can't really propagate
+> the error code up to userspace so userspace wakes up just to get
+> garbage and thinking everything is fine. Easy way out would be to treat
+> this as and hard error and return error when enabling the buffer. But
+> that also raises the question that other blocks might have been properly
+> submitted though. Not really sure how to handle this but anyways a problem
+> for another day :)
 
-> +		if (st->vref_source[i] == ADS112C04_VREF_SOURCE_AVDD)
-> +			*need_avdd_ref = true;
-> +
+Hmm. It is always tricky to cleanly surface errors when we get a problem
+somewhere random in DMA.  No idea off the top of my head on how to solve
+this case.
 
-...
+Jonathan
 
-> +
-> +		i++;
-> +	}
-> +
-> +	indio_dev->channels = channels;
-> +	indio_dev->num_channels = i;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads112c04_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct ads112c04_state *st;
-> +	struct reset_control *reset;
-> +	bool need_avdd_ref = false, need_ext_ref = false;
-> +	int ret;
-> +
+>=20
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/c=
+ommit/?id=3Dab2cbeb0ed301a9f0460078e91b09f39958212ef
+>=20
+> - Nuno S=C3=A1
+>=20
+> > >  			vecs[i].addr =3D sg_dma_address(sgl);
+> > >  			vecs[i].len =3D min(sg_dma_len(sgl), len_total);
+> > >  			len_total -=3D vecs[i].len;
+> > > @@ -133,6 +139,8 @@ static int iio_dmaengine_buffer_submit_block(stru=
+ct iio_dma_buffer_queue *queue,
+> > >  		 * before it can run, so always set the EOT flag.
+> > >  		 */
+> > >  		flags |=3D DMA_PREP_LOAD_EOT;
+> > > +		nents =3D i;
+> > > +
+> > >  		desc =3D dmaengine_prep_peripheral_dma_vec(dmaengine_buffer->chan,
+> > >  							 vecs, nents, dma_dir,
+> > >  							 flags);
+> > >=20
+> > > ---
+> > > base-commit: b756b143e5391151e577ae645b1378a43f93c2f5
+> > > change-id: 20260818-iio-buffer-dmabuf-iommu-fic-1b281f15e5a4
+> > > --
+> > >=20
+> > > Thanks!
+> > > - Nuno S=C3=A1
+> > >  =20
+> >  =20
 
-...
-
-> +	/* Datasheet: POR releases ~500us after supplies are stable */
-> +	fsleep(500);
-> +
-> +	reset = devm_reset_control_get_optional_exclusive(dev, NULL);
-> +	if (IS_ERR(reset))
-> +		return dev_err_probe(dev, PTR_ERR(reset), "failed to get reset\n");
-> +
-> +	if (reset) {
-
-I'm pretty sure devm_reset_control_get_optional_exclusive() already asserts
-the reset. So the way this is usally implemented is that we get (assert)
-the rest, then wait chip-specific time (usually a few microsonds) then
-reset_control_deassert().
-
-I don't see any other IIO drivers that are using reset_control_reset().
-(And I think a lot might be calling reset_control_assert() unnecissaraly.)
-
-> +		ret = reset_control_reset(reset);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret, "failed to reset device\n");
-> +	} else {
-> +		ret = ads112c04_write_cmd(client, ADS112C04_CMD_RESET);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-
-If it wasn't for the duplicate code, I might have said good enough. :-)
