@@ -1,196 +1,127 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C123031B833;
-	Sun, 23 Aug 2026 18:21:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 750DA2765D7
+	for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 18:29:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787509268; cv=none; b=Gn9GTDP3fKIeHb59S9RqIq9a4+MFv0CSR8+hng6ML3VK0CxN1iwbnPaypitFfY8kjL4ODiwax41LHGo2KSXmFKx1c5Arxh3XKEICq7oZ+SSLWL4GxHhXbp7LTUDJLvC65GaFUIzIfNtC9J6irg1UbDp3OVf96pgNB6kRf9kYJN4=
+	t=1787509778; cv=none; b=qLArQgYNiAYgdJFd0PBS3nZMYyRprcququXEvUTteFys+MavCA6vAx2bCH0VLtR/LTARMhKKz8lV/lDeWuupC31W0HL4zwZ+R9Hp5tyO2NdvwPK5PBOOlcBJ42/sGtq7b80Ujn3c8CH9YuXvLjAPIORt1lKlmqGyP0UXdO6/568=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787509268; c=relaxed/simple;
-	bh=GudjkPt7/Nacc/20fVPngjCroYOL897rtUGJVF1sYqw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IPZxTSiRtA6zV2lZO5QHk6fBfLe+ZoshGH0AMvmvbK7VBAwziN6aIekwRfomzp57jr66FbYRBmZpMLIty5LCI/EnPltSkh1f1CVKjlgStd1jymR7Zj92oGfK3YxqzbZht+7ZMNUnylAVVSHCAdxSLMfWhhqjMFLIOAmirR2vSrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KUKOg0EE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787509778; c=relaxed/simple;
+	bh=R8Hc6noLelEsApZK5qb9i50lk78dKe0CiyLEReg9/Dw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=h7OocIhRYoUURo2USHkfio/K7M2JNKQ+EspvC25v9pFUAB7YAzNwfbE1hOEkNTghTOZs5lG/ZnxOK0HEIrmxwQ3xBG7gn+5x5H41qa0/eKiGyxVQ3atbnDZk3JBjEcB1aIIxXyhgRIuZGycu6Wd1lrB+bkPyMwyNykt3TeS+s9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=f/ffq9No; arc=none smtp.client-ip=209.85.160.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KUKOg0EE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5998F1F000E9;
-	Sun, 23 Aug 2026 18:21:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787509266;
-	bh=I83NLMghjnd+W9LOC4Z71vlf/Nf6GdAj8lnl0GDOTr8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KUKOg0EE4wLZkSUIhamieiMgWO5E6DSUGO1TD/pVFk5QIthKW0qEYnc2/5xL1PICm
-	 NF3jJonAdCgF7lt/dEcZ1rlLSXNdPjILkW+t7++1scjhBsg7rzGEiFs1uh0SglJash
-	 4H6bwyABWForYPlfQl8Iyj+VuT/ISvoZOEmclqVXogoCEoYvtixCq5/AzZC4Ma0A03
-	 kxXFfKslNkQ2zxmZxOrqc53sSSYFHa5umTEW2NBd6yJXpnAK4AdAH1S9DjP8bNt8M7
-	 +uEoB+lF/irAeX+YAsEbKtv6eJi1W9xCI2EU5eOPWqXAKlt6gJEQnB5p1S5NlkuFmJ
-	 4CyC+VBOJnEVQ==
-Date: Sun, 23 Aug 2026 19:21:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Fan Wu <fanwu01@zju.edu.cn>
-Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: light: gp2ap020a00f: use
- iio_trigger_poll_nested()
-Message-ID: <20260823192101.3991611e@jic23-huawei>
-In-Reply-To: <20260822024654.315309-1-fanwu01@zju.edu.cn>
-References: <20260822024654.315309-1-fanwu01@zju.edu.cn>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="f/ffq9No"
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-446f87b6de1so3995530fac.3
+        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 11:29:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1787509775; x=1788114575; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PwVbbct/Lw3Ar4yPDA0xTDROCNpyH8W4YF+42txm7ro=;
+        b=f/ffq9NoWAvVBf4MgPsOPuMH42NJkKKGD36sXvTHsJ6iyIFFI7CmCaLEGzJORLgQcc
+         akYMmIOv5BXBdSSn87uQepSjZd3efj2460yRKaPJacn4QV2L5VjGo4ijF8dq5X11E1ub
+         52H/JIJiAe2i+J29CauXZfpL9X1Hh5TI3DGFmT83QvHR7QGXQqLoTs3Kb+7cnNiSAfi3
+         7l43vNiLm691oeJLjIAuIKCu5N59IIqlJ102NrpzEc/r/URrxF2g/Gjh2ccKBPjUzuNs
+         s84U8gW+nkxOeURgAi7Q1+vcZvkj3lHMyHQX2iUJ+YvFK9xEeATM3lUCNeI63Ggd9gY9
+         8PSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787509775; x=1788114575;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=PwVbbct/Lw3Ar4yPDA0xTDROCNpyH8W4YF+42txm7ro=;
+        b=odCFuMNpP/bsggQfAIT5H5qPfYkiNRSnnyqqTVOBmSmYWbIsfSNoFVHIPP02kK2BY+
+         S5df47due22OAwOX6XF/8yx4Z6nkXi2uq2tNeCc23rDK8lN3yMXEz9kqjkplK0nNcyVk
+         Ojd2CRTzTRLewL74FTOA+PRUUSCrWfXchmjzryUgcbqLZwHDAc+5AHtPLxG/G4UensjI
+         hrzNRy8PtRFC32joiDYrgMwErDjKzp3GVZv9wYDuFEYd0I0OHilbqsGehswwLTl82XvS
+         dfiiwYYKBmaOzKIbLUhfPvg7QuFKAbmNs8UWZ8sEt+1uylTXanqXKm4CLMWGXSFU/yam
+         Fhjg==
+X-Forwarded-Encrypted: i=1; AHgh+RoM3JeK4ETvFoSNgnv2tBnfeYvBQxg+J20cuiZ9OiflXM3JiGA63JH1HE8bQNak6kUxdecTgkpN870=@vger.kernel.org
+X-Gm-Message-State: AFuF++l8DrnuYJXSUXc6qTDYgiw4+M0zUp8TX/yt8/NKPzpg1o1i/8En
+	PNAQVxQrPukdHNyINCciNE705tK10/RH6KTg6WRG9p3aX2JoeYn2yYpiHj4pZxq47CQ=
+X-Gm-Gg: AR+sD105zqSqGfHDsuQnThdi3RA2MrYWEDQ2FlP+ypUnIFQQu6OntsP1u8S/ldjQNlx
+	2I/pJfMghDJU81xCmWmlLe0Yl60jhZXfoh4pQQZHGAzhULTV7TwdkTNSaS4V2akp/L2e8IF7n/e
+	MY4RxfAvUXrpOGASUrhlRRKZt6g64ItroX2jCcyUMKzH9365Mi9m8zgV6Q2pC+DsINHc/BpR/0y
+	+KNyx6Yx97wwZy6qkg9kYkG1hbj2PrBO9mWy+BXTszNiKJFJt3zobxdqHkYQgUSn2pmoqp+50Og
+	oTwsiy+YutvSLuDL0zItOtwU02TqWQAFRCHM5RE86f0uCcoKvjhjN7J+Bi76k1XudeG6Gco4i99
+	e+F6ofC3JN4A1WbN9RKQLKD40RMNiuFMkfFeXOdSmR7gzWSBIMX+SEIjE2sbIiKDzmw8Ag1yVhW
+	L0TtdJ/9BUF4nngw1WdbAr4I5cPZ7/SvYbIhl9DoXJqJiZC3Ltlfm4H7TyIyS7MkxclCrvXjsXB
+	nHdclAUrFfU1q6xSpTKBR+PWEx1qjVsP254owU=
+X-Received: by 2002:a05:6820:151a:b0:6a1:47ad:d18e with SMTP id 006d021491bc7-6b159199686mr21356582eaf.2.1787509775218;
+        Sun, 23 Aug 2026 11:29:35 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:e427:2c2b:7b9e:e073? ([2600:8803:e7e4:500:e427:2c2b:7b9e:e073])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4638352cba7sm3481549fac.13.2026.08.23.11.29.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 23 Aug 2026 11:29:33 -0700 (PDT)
+Message-ID: <0b03fc0f-8032-47b2-ac97-f2d93c1c5bdf@baylibre.com>
+Date: Sun, 23 Aug 2026 13:29:32 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: adc: ad4030: fix invalid oversampling_ratio
+ validation
+To: Salah Triki <salah.triki@gmail.com>,
+ Michael Hennerich <michael.hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux@analog.com, linux-kernel@vger.kernel.org
+References: <20260823045205.25554-1-salah.triki@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260823045205.25554-1-salah.triki@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Sat, 22 Aug 2026 02:46:54 +0000
-Fan Wu <fanwu01@zju.edu.cn> wrote:
-
-> The threaded IRQ handler queues an irq_work only so that
-> iio_trigger_poll() can run from a hardirq-like context. The driver's
-> own buffer consumer does not need that context: the only thing the
-> pollfunc top half, iio_pollfunc_store_time(), does is store a timestamp
-> in pf->timestamp, and deferring through the per-CPU irq_work queue
-> moves that timestamp further away from the actual event. Whilst in
-> theory there can be other consumers of this trigger relying on the
-> pollfunc top half running, given this is a light sensor those are
-> considered unlikely to exist in practice.
+On 8/22/26 11:52 PM, Salah Triki wrote:
+> ad4030_set_avg_frame_len() computes avg_log2 = ilog2(avg_val) before
+> validating avg_val, and the subsequent range check only rejects
+> negative values or values above the maximum supported OSR. It does
+> not reject avg_val == 0, nor values that are not exact powers of 2.
 > 
-> Switch from irq_work to direct call of iio_trigger_poll_nested().
-> Remove now unnecessary irq_work related infrastructure and ensure a
-> local time stamp is acquired.
+> - avg_val == 0 passes the check (0 is not < 0 and not > max), so
+>   ilog2(0) is called with an undefined/garbage result.
 > 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Assisted-by: Codex:gpt-5.6
-> Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
-Thanks.  This looks good to me, but will need to wait for the fix
-to being upstream and for me to merge an rc into the main togreg
-branch of iio.git.  So at least a few weeks, maybe longer.
+> - Non-power-of-2 values (e.g. avg_val == 3) also pass the check and
+>   silently get rounded down by ilog2() to the nearest lower power of
+>   2, so userspace can write a value to the oversampling_ratio sysfs
+>   attribute that does not match what actually gets programmed into
+>   hardware, without any error being reported.
+> 
+> Only powers of 2 in [1, 65536] are valid OSR values, as listed in
+> ad4030_average_modes[]. Validate avg_val fully before computing its
+> log2, using is_power_of_2() and requiring avg_val > 0.
 
-Thanks,
+There is no rule in IIO that says we can't round values when writing
+attributes. Users are expected to read the attribute after writing to
+see what actually took effect. So this patch doesn't seem justified.
 
-Jonathan
+> 
+> This issue was identified with assistance from Claude AI and manually
+> verified against the code.
+> 
+> Fixes: 949abd1ca5a4 ("iio: adc: ad4030: add averaging support")
 
+Actually, this could break existing users that depend on the current
+behavior. It certainly doesn't fix anything.
+
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
 > ---
-> Applies on top of "iio: light: gp2ap020a00f: drain irq_work after
-> free_irq" in the fixes-togreg branch of iio.git; this drops the
-> irq_work_sync() drains that patch added.
+> Changes since v1:
+>    - Added note stating the issue was identified with assistance from
+>    Claude AI and verified manually.
+>    - Removed initialization of avg_log2 at declaration.
 > 
-> v2:
->   - commit message rework only, per maintainer review; code unchanged.
-> v1: https://lore.kernel.org/linux-iio/20260817024023.291319-1-fanwu01@zju.edu.cn/
+>  drivers/iio/adc/ad4030.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> ---
->  drivers/iio/light/gp2ap020a00f.c | 27 ++++++++-------------------
->  1 file changed, 8 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-> index 330d597..00164fd 100644
-> --- a/drivers/iio/light/gp2ap020a00f.c
-> +++ b/drivers/iio/light/gp2ap020a00f.c
-> @@ -37,7 +37,6 @@
->  #include <linux/i2c.h>
->  #include <linux/interrupt.h>
->  #include <linux/irq.h>
-> -#include <linux/irq_work.h>
->  #include <linux/minmax.h>
->  #include <linux/module.h>
->  #include <linux/mod_devicetable.h>
-> @@ -245,7 +244,6 @@ struct gp2ap020a00f_data {
->  	struct iio_trigger *trig;
->  	struct regmap *regmap;
->  	unsigned int thresh_val[4];
-> -	struct irq_work work;
->  	wait_queue_head_t data_ready_queue;
->  };
->  
-> @@ -802,14 +800,6 @@ static void gp2ap020a00f_output_to_lux(struct gp2ap020a00f_data *data,
->  		*output_val *= 16;
->  }
->  
-> -static void gp2ap020a00f_iio_trigger_work(struct irq_work *work)
-> -{
-> -	struct gp2ap020a00f_data *data =
-> -		container_of(work, struct gp2ap020a00f_data, work);
-> -
-> -	iio_trigger_poll(data->trig);
-> -}
-> -
->  static irqreturn_t gp2ap020a00f_prox_sensing_handler(int irq, void *data)
->  {
->  	struct iio_dev *indio_dev = data;
-> @@ -932,8 +922,7 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
->  	if (test_bit(GP2AP020A00F_FLAG_ALS_CLEAR_TRIGGER, &priv->flags) ||
->  	    test_bit(GP2AP020A00F_FLAG_ALS_IR_TRIGGER, &priv->flags) ||
->  	    test_bit(GP2AP020A00F_FLAG_PROX_TRIGGER, &priv->flags))
-> -		/* This fires off the trigger. */
-> -		irq_work_queue(&priv->work);
-> +		iio_trigger_poll_nested(priv->trig);
->  
->  done:
->  	return IRQ_HANDLED;
-> @@ -944,9 +933,12 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
->  	struct iio_poll_func *pf = data;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct gp2ap020a00f_data *priv = iio_priv(indio_dev);
-> +	s64 timestamp;
->  	size_t d_size = 0;
->  	int i, out_val, ret;
->  
-> +	timestamp = iio_get_time_ns(indio_dev);
-> +
->  	iio_for_each_active_channel(indio_dev, i) {
->  		ret = regmap_bulk_read(priv->regmap, GP2AP020A00F_DATA_REG(i),
->  				       &priv->buffer[d_size], 2);
-> @@ -964,7 +956,7 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
->  		}
->  	}
->  
-> -	iio_push_to_buffers_with_timestamp(indio_dev, priv->buffer, pf->timestamp);
-> +	iio_push_to_buffers_with_timestamp(indio_dev, priv->buffer, timestamp);
->  done:
->  	iio_trigger_notify_done(indio_dev->trig);
->  
-> @@ -1455,8 +1447,9 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
->  	/* Allocate buffer */
-> -	err = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> -		&gp2ap020a00f_trigger_handler, &gp2ap020a00f_buffer_setup_ops);
-> +	err = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 &gp2ap020a00f_trigger_handler,
-> +					 &gp2ap020a00f_buffer_setup_ops);
->  	if (err < 0)
->  		goto error_regulator_disable;
->  
-> @@ -1480,8 +1473,6 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
->  		goto error_uninit_buffer;
->  	}
->  
-> -	init_irq_work(&data->work, gp2ap020a00f_iio_trigger_work);
-> -
->  	err = iio_trigger_register(data->trig);
->  	if (err < 0) {
->  		dev_err(dev, "Failed to register iio trigger.\n");
-> @@ -1498,7 +1489,6 @@ error_trigger_unregister:
->  	iio_trigger_unregister(data->trig);
->  error_free_irq:
->  	free_irq(client->irq, indio_dev);
-> -	irq_work_sync(&data->work);
->  error_uninit_buffer:
->  	iio_triggered_buffer_cleanup(indio_dev);
->  error_regulator_disable:
-> @@ -1521,7 +1511,6 @@ static void gp2ap020a00f_remove(struct i2c_client *client)
->  	iio_device_unregister(indio_dev);
->  	iio_trigger_unregister(data->trig);
->  	free_irq(client->irq, indio_dev);
-> -	irq_work_sync(&data->work);
->  	iio_triggered_buffer_cleanup(indio_dev);
->  	regulator_disable(data->vled_reg);
->  }
-> 
-> 
-
