@@ -1,54 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7657C15C14F;
-	Sun, 23 Aug 2026 22:17:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C07902798F8;
+	Sun, 23 Aug 2026 22:20:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787523422; cv=none; b=aaPWbuTVSKABJttae7QmUhGis6nKVDXOQ3HdM3gd5+j8v/zu5DUVlSdmO+FuncfyLV4H0l4GbDX0Is5diKJ6pM19GhhFJGphAAoHpLrDW4WecpPwxaocPCyvd4yBYu9Fgs4ej+KHPA3OvIXIncf/ce8pBmB3XbTa8tpSG2oBumM=
+	t=1787523622; cv=none; b=k4HD5jn5frc3tD8JrusbYeXJuVvA7UKbz401f/ADL8Ai3Efra8Y8G16oVNsJGpv6MshXeVu1W1nkB5hNpC4UifcDn90K90pc2Je6g3FsFgDp8y6CRkD6+bYeD5AekcE24zdchgqrwHo7OFOWM5wKEq/g1e7p9IMBM/71kemSpZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787523422; c=relaxed/simple;
-	bh=gT86V4rgwFjsx2k8iOk+OTfu+wC2GjYvWjgjus6H6Kg=;
+	s=arc-20240116; t=1787523622; c=relaxed/simple;
+	bh=ecaY7Cn/nK2TpS39eeXykNbyyUmTp11m2bcB8FINFeY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=orocOrDzgOcp6KR+R7Uure0RDZ00/kFihVOAUM4jqM2ZLYt7rZYPnHQkPHaVFbwZW285iqkHX69cTDjeUEqtszouB8lb5HQzV3LwM1Qiw7Atz0cDsU/hm1VP3QZGrq+WR+8iv+dhffoOVLq+tWi+Ucu11Rq/xLzYcHavxn2F2ec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ok8kbt8/; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Bl0DuJf6r7hXaEnWMOnoDJJrF+vtZR2s7TpsO11mTsc7U3s1BGnbHrkXf0G0qlay2gW8eE+N9/bJYNKgtw67scmoghElE2CM/HdJK6mW6+DUusLTGn8EQ24EFkw/2GC6eMvSmXm/2hTx+vGrKFmRgQATCx6kDSt9ClGNAu/smNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bbn3GVIf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ok8kbt8/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3449F1F000E9;
-	Sun, 23 Aug 2026 22:16:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bbn3GVIf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 459961F000E9;
+	Sun, 23 Aug 2026 22:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787523421;
-	bh=jJJ2+Gz5QjAkIcUUBf9XCCvJOyKr1cALXVDkrgWjuqM=;
+	s=k20260515; t=1787523621;
+	bh=qqiRFwf4uT2MeXy+VYXwG9Y2wJXiqkdT9gKM8WnSxg0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ok8kbt8/vFqF1DTo6U4wJzIRSMpucDhR7YV82YFNZQeScYBeFafmctipoKsIftOc4
-	 L7tb2wbou0xKKOaIGFwIQigPQM2sZqaHdx1sVMWVJvoHu7ZB/cTJXFSA9vB2bQceD0
-	 RUrSjSOmOkjBgMDXYHY3hTxy48AFRQTYed2iUtsBl08uPsiyuuhv8gg18CW57zH2/H
-	 2iQ8HBDLp91WggLRXuWSFZ1clr7BQBCFY5i9PgXDI9Z+VcHGU28VNAR7XHZGaX9ucc
-	 rCWjwopQfw0hV+ZDLQs4idEy1D0nnGrSIKI/mi3KtLl3acVg4CarG9y69w4xHf+1tM
-	 L/DhHlCaQISbA==
-Date: Sun, 23 Aug 2026 23:16:54 +0100
+	b=Bbn3GVIfQsj2yWCyLMn2KQmbVdV2cQxWPucDNdUmpN1enb8D7wF0aw3ZFdNJ4RhEa
+	 vokmVMtK4D60H6Y/WUkaDF1r9z+EBvI+Cbt5a1RzKrpjhwQbREc8CY6v+u1O1X/ddc
+	 TICYmZhMPWXY6B6mfSaSSXczWb+xEjfsCRtT0ywSyjSPuwPvBlsdo2ieFfe6Jb5Non
+	 PR7NVS5JckXFx/vATaK221Aedru2jK6eEDC+O7h+/2v4rAeIs9zNYbyqADVrKDEscA
+	 EBZ+u8dCVqR9UI8ZMQaIOdb73mvDPqRDw9cHil5N+SPQulZajgSTzNhpC5edofpowu
+	 UlpAWCeuDpRQw==
+Date: Sun, 23 Aug 2026 23:20:18 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-Cc: "Sa, Nuno" <Nuno.Sa@analog.com>, "Hennerich, Michael"
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
- "Schmitt, Marcelo" <Marcelo.Schmitt@analog.com>, "Marques, Jorge"
- <Jorge.Marques@analog.com>, Salih Erim <salih.erim@amd.com>, Matti
- Vaittinen <mazziesaccount@gmail.com>, Jishnu Prakash
- <jishnu.prakash@oss.qualcomm.com>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, linux <linux@analog.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v2 0/4] iio: adc: ade9000: add support for ADE9078
-Message-ID: <20260823231654.7e4ad595@jic23-huawei>
-In-Reply-To: <20260805174548.4668a844@jic23-huawei>
-References: <20260731082951.1228-1-antoniu.miclaus@analog.com>
-	<20260802024406.6147807e@jic23-huawei>
-	<CY2PR03MB64993328B3E165CF124F5EF35F9BD32@CY2PR03MB649933.namprd03.prod.outlook.com>
-	<20260805174548.4668a844@jic23-huawei>
+To: "David Lechner (TI)" <dlechner@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Chris Hall <c-hall@ti.com>, Patrick Edwards
+ <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] iio: adc: ti-ads112c14: add burnout current support
+Message-ID: <20260823232018.6fad4bbd@jic23-huawei>
+In-Reply-To: <20260727030822.3766f628@jic23-huawei>
+References: <20260724-iio-adc-ti-ads112c14-burnout-v1-0-f0204cecbe3a@baylibre.com>
+	<20260727030822.3766f628@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -59,101 +48,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 5 Aug 2026 17:45:48 +0100
+On Mon, 27 Jul 2026 03:08:22 +0100
 Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Wed, 5 Aug 2026 11:45:37 +0000
-> "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
+> On Fri, 24 Jul 2026 15:49:16 -0500
+> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
 > 
-> > Hi Jonathan,
-> >   
-> > > -----Original Message-----
-> > > From: Jonathan Cameron <jic23@kernel.org>
-> > > Sent: Sunday, August 2, 2026 4:44 AM
-> > > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> > > Cc: Sa, Nuno <Nuno.Sa@analog.com>; Hennerich, Michael
-> > > <Michael.Hennerich@analog.com>; David Lechner <dlechner@baylibre.com>;
-> > > Rob Herring <robh@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>;
-> > > Conor Dooley <conor+dt@kernel.org>; Jonathan Corbet <corbet@lwn.net>;
-> > > Shuah Khan <skhan@linuxfoundation.org>; Sabau, Radu bogdan
-> > > <Radu.Sabau@analog.com>; Schmitt, Marcelo
-> > > <Marcelo.Schmitt@analog.com>; Marques, Jorge
-> > > <Jorge.Marques@analog.com>; Salih Erim <salih.erim@amd.com>; Matti
-> > > Vaittinen <mazziesaccount@gmail.com>; Jishnu Prakash
-> > > <jishnu.prakash@oss.qualcomm.com>; linux-iio@vger.kernel.org; linux
-> > > <linux@analog.com>; devicetree@vger.kernel.org; linux-
-> > > kernel@vger.kernel.org; linux-doc@vger.kernel.org
-> > > Subject: Re: [PATCH v2 0/4] iio: adc: ade9000: add support for ADE9078
-> > > 
-> > > [External]
-> > > 
-> > > On Fri, 31 Jul 2026 11:29:46 +0300
-> > > Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
-> > >     
-> > > > The ADE9078 is a polyphase energy metering device from the same family as
-> > > > the ADE9000 and is register compatible with it. The main differences
-> > > > relevant to the driver are the absence of the on-chip dip/swell detection,
-> > > > a lower maximum SPI clock (10 MHz), and slightly different full-scale ADC
-> > > > codes.    
-> > > 
-> > > This looks fine to me, but will need to sit on list until the dt maintainers
-> > > have gotten to it.  Sashiko did call out some possible preexisting issues
-> > > in the driver.  I haven't looked at them, but if you have some time, it may
-> > > be worth a look the power vs interrupt registration one smells plausible.
-> > >     
-> > Want me to send the fixes in a separate patch or within this series?  
+> > The TI ADS112C14 ADC has a feature to enable a "burnout" current when
+> > taking a measurement. This can be used to detect open/short circuit
+> > conditions of a connected sensor. However, enabling this affects the
+> > accuracy of the reading. So we add a custom "burnoutraw" attribute for
+> > this. This works like the standard raw attribute to do a direct read
+> > but does so with the burnout current enabled.
+> > 
+> > If this sounds familiar, it is because we discussed this on a similar
+> > chip recently [1]. And this is why I put the ABI docs in a common ADC
+> > file rather than one specific to this chip.
+> > 
+> > [1]: https://lore.kernel.org/linux-iio/20260622110223.7e854dde@jic23-huawei/
+> > 
+> > Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>  
 > 
-> Separate should be fine for any preexisting issues.  I'm not going to
-> hold this series up waiting for them (assuming we get the dt ack - it's
-> listed on their patchwork as Needs Ack so no one has gotten to it yet).
-> https://patchwork.kernel.org/project/devicetree/patch/20260731082951.1228-3-antoniu.miclaus@analog.com/
+> Seems fine to me, but given it is new ABI, I'd like some more eyes on the documentation
+> patch in particular.
 
-Applied this series to the testing branch of iio.git.  Expecting to see
-patches dealing with any of the Sashiko found prexisting issues on top.
+Seems no interest in this from others. I've no idea what this was on top
+of so please rebase or resend alongside those other series.
 
-Thanks,
+All I know is it doesn't apply to my tree  - which isn't that surprising
+given all the series around for this driver!
 
 Jonathan
 
 > 
+> Thanks
+> 
 > Jonathan
 > 
-> >   
-> > > https://urldefense.com/v3/__https://sashiko.dev/*/patchset/20260731082
-> > > 951.1228-1-
-> > > antoniu.miclaus*40analog.com__;IyU!!A3Ni8CS0y2Y!78esTjrnDgvdH9h_Pruv
-> > > IpxZPJggP6_ge3-ecPnYKxN8b32xrwH3oUABtFHCRmEGtnicycd5eqRTn7EkeQ$    
-> > > >
-> > > > This series adds support for the ADE9078 to the existing ade9000 driver.
-> > > > It first refactors the driver to move the part-specific values (device
-> > > > name, channel table, and full-scale codes) into a chip_info structure
-> > > > retrieved via device match data, then adds the new device tree compatible
-> > > > and the ADE9078 support itself, and finally updates the documentation.
-> > > >
-> > > > Changes in v2:
-> > > > - move the "respective datasheets" comment wording to avoid churn.
-> > > > - use a generic Kconfig title and list the supported parts.
-> > > > - duplicate the RMS voltage macro instead of a shared base macro.
-> > > >
-> > > > v1: https://urldefense.com/v3/__https://lore.kernel.org/linux-    
-> > > iio/__;!!A3Ni8CS0y2Y!78esTjrnDgvdH9h_PruvIpxZPJggP6_ge3-
-> > > ecPnYKxN8b32xrwH3oUABtFHCRmEGtnicycd5eqTALKwajg$ <FILL-IN-v1-
-> > > MESSAGE-ID>/    
-> > > >
-> > > > Antoniu Miclaus (4):
-> > > >   iio: adc: ade9000: introduce chip_info structure
-> > > >   dt-bindings: iio: adc: adi,ade9000: add adi,ade9078 compatible
-> > > >   iio: adc: ade9000: add support for ADE9078
-> > > >   docs: iio: ade9000: document ADE9078 support
-> > > >
-> > > >  .../bindings/iio/adc/adi,ade9000.yaml         |  30 ++-
-> > > >  Documentation/iio/ade9000.rst                 |  28 +--
-> > > >  drivers/iio/adc/Kconfig                       |  16 +-
-> > > >  drivers/iio/adc/ade9000.c                     | 180 ++++++++++++------
-> > > >  4 files changed, 175 insertions(+), 79 deletions(-)
-> > > >
-> > > >
-> > > > base-commit: 0b5e142ced4bcf20532da051934bd694d1bbd470    
+> > ---
+> > David Lechner (TI) (2):
+> >       iio: adc: ti-ads112c14: add burnout current support
+> >       iio: ABI: add sysfs attribute for _burnoutraw
+> > 
+> >  Documentation/ABI/testing/sysfs-bus-iio-adc |   9 ++
+> >  drivers/iio/adc/ti-ads112c14.c              | 126 ++++++++++++++++++++++++++--
+> >  2 files changed, 126 insertions(+), 9 deletions(-)
+> > ---
+> > base-commit: 0b5e142ced4bcf20532da051934bd694d1bbd470
+> > change-id: 20260724-iio-adc-ti-ads112c14-burnout-184304669165
+> > prerequisite-change-id: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3:v2
+> > prerequisite-patch-id: 8723aa599dcf5b836fb81cf1efb6c9096bf60b7a
+> > prerequisite-patch-id: 12754335ccf210bcdeaa8a5d60b2280618d50993
+> > prerequisite-change-id: 20260724-iio-adc-ti-ads112c14-continuous-mode-dd1580754609:v1
+> > prerequisite-patch-id: 8723aa599dcf5b836fb81cf1efb6c9096bf60b7a
+> > prerequisite-patch-id: 12754335ccf210bcdeaa8a5d60b2280618d50993
+> > prerequisite-patch-id: ed5d4c1628ef60ed542339fe5fb490383ee8074f
+> > prerequisite-patch-id: b92f5609fcf39e958e78b4dd74c3d323ebb6a161
+> > 
+> > Best regards,
+> > --  
+> > David Lechner (TI) <dlechner@baylibre.com>
 > >   
 > 
 > 
