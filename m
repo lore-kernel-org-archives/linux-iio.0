@@ -1,154 +1,138 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A52D434FF62
-	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 04:29:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787545758; cv=none; b=Plb57g/+RYsULm6RZ8cQQGdwgnU2FeO0u7/aiZRwANx4WzP5AhrIkvw6X4dC3D84Z0IQgunFjzETsV700Iq2jJGzIVEItWpIOkuh6HUK5VCky++ybHizjkCrTrtWVl2RKC0iW2ZxQ8f39uRJDTewoehsdoSrUwpST7FkfzdtJRc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787545758; c=relaxed/simple;
-	bh=/twcXd/0jnN1w7iBOi6bjaZoEfhTahZyVkwOHTmRjlA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GoKMxSK69+S85aE7Od1HAz1oo7HcDipoTye/4fP+PA9rhgGNhM8e6KWd3Q6JXolNrDdcU2uoIuPmhkXr3NipdFSZly5T4T+JLy4qg/4/rZ4xC6SER4rQsejRNB+pJCzmxztz7ilG+UQLsstrz4EtQ4mzgB+guR9srvu+tM4YUps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S0QPcaBR; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC41E36492A
+	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 04:54:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787547267; cv=pass; b=pmOFTKhKiNDOIcQiqRNnngWPN4DOLDSlc2D07aJ770LCZMLXH04gOn8/lZ//dzlW/YbhRe55ZFea14j0qdcDFX/XV7Roen3sIJ8HC/iaMovq8HLbIF4WVWhIxUkWEjW5iT38Q27Rw6BMRnKAjW8TepVgeBNXs/3xX+7NKyXUZeo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787547267; c=relaxed/simple;
+	bh=Bcnn8Vmty/GcGctEE1P8q+rqVlrltOSbbpnc4q4ZUow=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nA7TSsupzvGKkv+QaR3CNkzWvVLrINgKJePjsf1Vd+b8UBnQuSTnMh9oTtqrezq0KvRNgumFwOTxqPkdb8jhU4aYl6Ji7+gmYkr6Ez0L7OmYhaTgvPNh8rjPZS0ygeXXYluilx1Mdt9xNelfLWxPGkCB4RJXq6wxK3rXeNxJLLU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i+taexyY; arc=pass smtp.client-ip=74.125.224.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S0QPcaBR"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c15e592da74so420029966b.1
-        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 21:29:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i+taexyY"
+Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-66c7e3a2332so1925184d50.2
+        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 21:54:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787547265; cv=none;
+        d=google.com; s=arc-20260327;
+        b=aLNYy+J3+elEb4dgr8QXi7cf98AujMsO7/pLm8daSEpcg0L5qyiauBlHIF2+GENyU2
+         Srmgkm0xRKbA7ghvauK4aEKGRz4Pe2XNvDb5BMW6YDMZDHF/Bota1mpDGH34QDVom4Hh
+         OjovAhx57oQviI5cRxocC6Xz8FQvBG5raonT0iv9MzwRypvr7PtD1fwmb4RtxEhvAoFc
+         GUgxhVxX4Ywr1xX2scOZcgRHm/zZU7vNYkOQVfJ3u5CpXwrkeOJL86WjuhXq2k4Oqvd5
+         K2Lw4weLsPZevM0hKH63aL1JjoBfZdTTSXc7b8VWSynIbSy/KG3WQ+Nn21xuZ4t2B7T5
+         7lFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=r4VU3Zu1fSpYqSGxLy8G29EIP/30+UoepZnhZkdQQu8=;
+        fh=CsK5EW8G0hbVxH30SZRhI+OdZ1LkPEcTisKHf1V5GsA=;
+        b=eUDBk6Iok1ds4QJ4/m2ow2o4dM3nRuChs49UDOK5GBNZHQInKbY7M/HiZ4I2HdOWb6
+         OMTkbsGP76Eoce5jGv0WJEkzu1bHq7vb1jrkO9GfrmJ2LcDIX/w7fama0nSOfbMLCHUe
+         B27bzHAS+7wlSaqPyTvgTXeiFLkEUY867jQiLa8C2jFCbyenrNYYrmBn1H2Nz2ugmpID
+         kHCt33WgQ/l0X0/OVPIML6ESHc4DkcntlV35ete/2wiOvT5Ityh+Ho5h12dQ5v1Y07k3
+         mpEPllRI58pAL7qRp46lhYunq645OqLQ0M9K0nzVxngZcgTnBoI8dn+ki2V0OdCnTDjn
+         A2SQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787545755; x=1788150555; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=4wjW91PO26FkPNJiludhbBOV42kX0uUO5r1dlsyzrGo=;
-        b=S0QPcaBRKDiR5ab1fQu2nQnbsxjoBoFZwNoPbbG4GItnuzed6tfAZe23s0NOmBL0Is
-         tTElZle0fjFnwggXC7IfU83uplg+ZKrRweQiCj5zHaH99ABHGE7yYUFz/dd5QBIKLaX7
-         U/5XUTnrBomsKdsq+IJHTuAw8c4Uxp7WtvcEZ6f9kSdaOpOcF9xDjzf6+6gCesm5/aZ/
-         wMHo8swxdyElBOOGjpeURr6/8vOCtaMoIeySn/vbeWXneQmyWNfErKrud2B/moW2ejwA
-         2JmeeiJi17rZiHBy+yFePuLEoxS5+8RFIAD2XkLTr5T1srh/FvYNKgUcBYW1H68Oj8p8
-         ChSQ==
+        d=gmail.com; s=20251104; t=1787547265; x=1788152065; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=r4VU3Zu1fSpYqSGxLy8G29EIP/30+UoepZnhZkdQQu8=;
+        b=i+taexyY7EbvTkTikYwDQrOCa5NjjehO6GGILAGdNKBsuAgEUsQMrvI5TzZoVPsbAd
+         4MS3aGe5fJq9E5H7ZUEN6gs25H85c3JaOwnUv42uFdHQxqj7E/FfC16SmunfYBHjLypk
+         1yFjY2t9IRmBfQayMy0CRvZ6xVM2uBUGnMlyvC4eSyTl8jfnGfJ8TvGjZaYoexttgX1n
+         RZHoL+EJQ037oquhsmrY3YYu76cECjaOMj5T1NBp9N/R3af9YN5qxM2gPenOkOQ8/7pf
+         7iD8HlBVTfriBgyd93iAhJSFIzxixmlAkq9TrN6d+OXd0gO1sgFOei4ozmsyDS7PZfuK
+         AJkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787545755; x=1788150555;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=4wjW91PO26FkPNJiludhbBOV42kX0uUO5r1dlsyzrGo=;
-        b=WECwO1tzVzJW8cZipNHht0/NyU3t5xqz4fa+CtAeaTqirS8ONen9WHrchPiV5j4avM
-         TFiVQdqjFsrBxgL02zO1ClK+ItlhBYu1gHDe9GfMO8b5gXvPzuulAD/aUQmhG/MiiR/s
-         WK/gdYKTlwqobLtP7zz7hj7fF/kVo17n3on+ApqyKef7Xo2nvy1Xtgdc6maeiMJlYyUR
-         SaOcB8doa7CKAF8W8rQG9/jUVOBta9K8yaLs7Yq2GBO8VTy8RYFEX4xOwWq4WI1wBDa6
-         q8IfwAGO/wFIhakVi1F2up3eS4V3ETe5ghzodwQc0wOFjNmiZJyGgDaFDbZEGKxVX6xW
-         +EwA==
-X-Gm-Message-State: AFuF++lUb8a2QWFEpYYO725csM6QpSM5F+egfQYZLx4CDk6Hyqcuq3MC
-	mYg6fpHyH5cQU9+sqzedNUUDaQCpuZo+wtDsHA0PmLrxALEqbcm9C5aR
-X-Gm-Gg: AR+sD12Ocz/2WHLbo2RiVIHpxceTp5dnbAwAs1o3+CKy6QtH+2hrH8+IKVhq1IIWu8A
-	TEUy2h2dMzgtJHgyJRKNBgrn1GpHYJ9JM/RPUkO0AJIdkCkb0gwbjdc3HhgJZT3Gs53Zf1oJ/7a
-	MTvXon+WkUikpD05YL0fW6bZNVPZ5HAJ/ImsYSusfOdkN782+PK4r2UmgfXjfDe2doGqWY+k7KI
-	QDUwNwNZnY9xG8FXPTO5YCdFWSsN3M165GOR/zSGg06Ofoh2peggL8qYriwDT/gRinqxQTGOK3y
-	vSkhgQo33NKxpbkaat+IuXpCyQjFagu/x5mRl+G8Gwm54Ut1GdKEu/DucMLP/E9oF/ymwg4hJzC
-	ZCfQPc6SnXtDThlk4lleiYH4zeFIF8YItUgwQckXJdDGm8eAPliZh5YaRfaiB0e5ODFji0J3VL2
-	UgSiCySGZZUf/gN8cimO782La1pBHu2Y5GQV26ZblLwO2fyC5GswM8Qmc3XOkBPzjsGBmHp/jIS
-	g==
-X-Received: by 2002:a17:907:8908:b0:c21:35d0:f435 with SMTP id a640c23a62f3a-c24924db408mr1804770966b.10.1787545754823;
-        Sun, 23 Aug 2026 21:29:14 -0700 (PDT)
-Received: from localhost.localdomain ([196.235.128.6])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2496296b8bsm973011466b.16.2026.08.23.21.29.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Aug 2026 21:29:14 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v2] iio: proximity: vcnl3020: fix ISR bitmask check in IRQ handler
-Date: Mon, 24 Aug 2026 05:29:07 +0100
-Message-ID: <20260824042908.8887-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20251104; t=1787547265; x=1788152065;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=r4VU3Zu1fSpYqSGxLy8G29EIP/30+UoepZnhZkdQQu8=;
+        b=Jhq4Nv+DTAdPHQBlr1k5lXJS+RXPbGd8L9D5Ya184CL2ITecrDk036a1r/HoFAlm7y
+         e6p32fcKYMjIzPda19Yvx8IJ+qZ/Z1Z6ZW8vBuaKvzuZ9pTptt6SsdoVfHdhsUwH1KkK
+         iQSDd9N9M+t/QySIMvhPI2vgxuttWl9lUWg2/+eGQWsaagj2kOgKmkix2fW00O4cxa0X
+         XrRo4JS9qGjWdZxS6hOcY6rGACabJk6ny+RDxLyFd9eUAp3nAdnB3xqiYw08BBCvWUho
+         NrJCQRWcaqxyXCr6TY9SfTxeKyADpQZQyoJ9wv6NTfLnuqBaDp4xfoWCwxT1GKyJ/ovx
+         VZ+w==
+X-Forwarded-Encrypted: i=1; AHgh+RoEmse3uLTYsm02V8zacgiYY8v8pO/tfDKIp1N2NgPaYkk7Z5BQvpsHZ6LM5XUlcudpu8uSVvjSu18=@vger.kernel.org
+X-Gm-Message-State: AFuF++kdEafaUV8o3wCYq6oNC9sEWtpUnD/uDhwSQJ8ZEfI9esSqum7E
+	1OAZMb3cid6n12jQrTLU+EL1/W0YhKC8OSNAzn4yguI6zxv85m90/fPdIvgCpdV7j9NC0ZR2meN
+	ghLoBLk3TAnX0hU/d1IwDbKMuU5VaWrg=
+X-Gm-Gg: AR+sD12g/0NIADUrn//Olo8tOYpuZTqkYj2M7cMktxJk0iS+wb6iSXqoykjU4WawOQc
+	avR+C4kFxQ7co4P2sXg03eU6HrHhpaUvIMjHzZa/K40FlPuIcSO0Qithecb+xCP0W/p1TNw0oXZ
+	FbuK686jKNTGS2IzgK5MOWvq3GlRSWgDsNwLWalrNm1mbJdhlhZ6QpWP9AW0FYmnUR2i+vgJHk6
+	q0c41Zk0q79PoyCdvBqHL/YxR4vjo/MB77CoRQUi/tHYVsFk4uIResdGBLOVxe854mSR1rL69hL
+	q0fx+c3RP1T3Wt4NWDFDUyYMZiZbxXg5uXfA2kkO+GYYItdP4CH5CmwVgfXjm+NWEm7uapZeaPT
+	j4lG/w7IALAuYrkl5jm+HTvgjkPul20Cf4oo=
+X-Received: by 2002:a05:690e:13ca:b0:66d:9e5:5949 with SMTP id
+ 956f58d0204a3-66d09e559dbmr709349d50.49.1787547264677; Sun, 23 Aug 2026
+ 21:54:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260812164433.23011-1-architanant5@gmail.com>
+ <20260812164433.23011-3-architanant5@gmail.com> <an2FkBoJNRCaeAkk@ashevche-desk.local>
+ <20260822013823.28b0a1e1@jic23-huawei>
+In-Reply-To: <20260822013823.28b0a1e1@jic23-huawei>
+From: Archit Anant <architanant5@gmail.com>
+Date: Mon, 24 Aug 2026 10:24:13 +0530
+X-Gm-Features: AcwNN1Wii8pRmgEIacw3ovA1EX2GE8dAzpYk9wmvZdWIzbnhxwJ7SV1LKfhJbsk
+Message-ID: <CADJHxWB-NkBE62aviCNA3O+d_RcO=fecvenxa1K+3cEpH5MpeA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/8] iio: adc: ti-ads1015: fix PM leak on probe failure
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, dlechner@baylibre.com, andy@kernel.org, 
+	nuno.sa@analog.com, u.kleine-koenig@baylibre.com, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The threaded IRQ handler contained multiple issues in handling interrupt
-events and clearing status flags:
+On Sat, Aug 22, 2026 at 6:08=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Thu, 13 Aug 2026 11:51:28 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+>
+> > On Wed, Aug 12, 2026 at 10:14:27PM +0530, Archit Anant wrote:
+> > > If iio_device_register() fails during probe(), the runtime PM
+> > > subsystem is left enabled. This leads to a resource leak upon failure=
+.
+> > >
+> > > Add the missing pm_runtime_disable() and pm_runtime_set_suspended()
+> > > calls to the probe() error path to ensure proper cleanup.
+> >
+> > > Reported-by: Jonathan Cameron <jic23@kernel.org>
+> >
+> > Was it public email?
+> >
+> > > Link: https://lore.kernel.org/linux-iio/20260718225515.7e49a458@jic23=
+-huawei/
+> >
+> > Ah, this should be Closes: tag instead of Link.
+> >
+>
+> I never checked but this is already fixed in the iio tree and
+> the relevant devm rework done.  :(  So much going on at the moment
+> in IIO I didn't recall this one at all!
+>
+> https://lore.kernel.org/all/20260529183708.17819-1-sozdayvek@gmail.com/
+>
+> Please rebase the remainder of the series.
 
-1. ISR bit check: The handler incorrectly checked the Interrupt Status
-   Register (VCNL_ISR) against VCNL_ICR_THRES_EN (BIT(1)), which is a
-   bitmask meant for the Control Register (VCNL_PS_ICR). In VCNL_ISR,
-   BIT(1) corresponds only to low-threshold interrupts. A high-threshold
-   interrupt (VCNL_INT_TH_HI, BIT(0)) on its own was completely ignored and
-   returned IRQ_NONE.
+Oh, I missed that as well, nvm. I'll rebase the rest!
 
-2. Event direction & channel index: The handler unconditionally pushed a
-   RISING event code on channel index 1. The driver only registers a single
-   proximity channel (index 0), and low-threshold interrupts should be
-   reported with IIO_EV_DIR_FALLING.
-
-3. ISR clearing: The write-back to acknowledge the interrupt only preserved
-   BIT(1) instead of masking against both valid status bits.
-
-Fix this by checking both VCNL_INT_TH_HI and VCNL_INT_TH_LOW bits in
-VCNL_ISR, pushing separate IIO events with the correct direction and
-channel index (0), and properly clearing handled status bits.
-
-Fixes: 3363fbbe19e5 ("iio: proximity: vcnl3020: add periodic mode")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
-Changes since v1:
-  - Extended the patch to fix additional bugs found in vcnl3020_handle_irq_thread():
-    - Corrected event directions (RISING for high threshold, FALLING for low threshold).
-    - Fixed channel index from 1 to 0 (matching single proximity channel).
-    - Corrected ISR W1C clear logic for both HI and LOW bits.
-  - Updated commit message to detail all IRQ handler fixes.
-
- drivers/iio/proximity/vcnl3020.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/proximity/vcnl3020.c b/drivers/iio/proximity/vcnl3020.c
-index 7f417372566a..d0b8f429999f 100644
---- a/drivers/iio/proximity/vcnl3020.c
-+++ b/drivers/iio/proximity/vcnl3020.c
-@@ -584,16 +584,26 @@ static irqreturn_t vcnl3020_handle_irq_thread(int irq, void *p)
- 		return IRQ_HANDLED;
- 	}
- 
--	if (!(isr & VCNL_ICR_THRES_EN))
-+	if (!(isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW)))
- 		return IRQ_NONE;
- 
--	iio_push_event(indio_dev,
--		       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
--				            IIO_EV_TYPE_THRESH,
--				            IIO_EV_DIR_RISING),
--		       iio_get_time_ns(indio_dev));
-+	if (isr & VCNL_INT_TH_HI) {
-+		iio_push_event(indio_dev,
-+			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-+						    IIO_EV_TYPE_THRESH,
-+						    IIO_EV_DIR_RISING),
-+			       iio_get_time_ns(indio_dev));
-+	}
-+
-+	if (isr & VCNL_INT_TH_LOW) {
-+		iio_push_event(indio_dev,
-+			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-+						    IIO_EV_TYPE_THRESH,
-+						    IIO_EV_DIR_FALLING),
-+			       iio_get_time_ns(indio_dev));
-+	}
- 
--	rc = regmap_write(data->regmap, VCNL_ISR, isr & VCNL_ICR_THRES_EN);
-+	rc = regmap_write(data->regmap, VCNL_ISR, isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW));
- 	if (rc)
- 		dev_err(data->dev, "Error (%d) writing in reg (0x%x)\n",
- 			rc, VCNL_ISR);
--- 
-2.43.0
-
+--=20
+Sincerely,
+Archit Anant
