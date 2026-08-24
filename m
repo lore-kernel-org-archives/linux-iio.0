@@ -1,74 +1,61 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA59C18DB01;
-	Mon, 24 Aug 2026 08:13:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1819D25B0AB;
+	Mon, 24 Aug 2026 08:21:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787559231; cv=none; b=XDwxnDhbnywbJMmA767qsg1LO+NH7IRqAGa3FbyILHYsn64U0iCauN0Xw9dvNrhGY6X7mX+tWTmNH++vRr16GGxCU0PnxjJ7Xtm3vSh8oVraP/8L8iu9cOu4ytJDA6mw/tsq4uRIojUEgdIcMzMnczS6s8ndI2myiD+aNdh0FQE=
+	t=1787559708; cv=none; b=bhn0oH8vDf7e6Yh8KAE1XQrYF7vLCuNL+vz6LnoghcT+jgFBDj8zaHxvCbjmtDb3pWFEQC0D0naX3jgjR47MHqX3kVJS8fiT/ib0iGjIarE67g7SdYrofaC0qZzrcm7A8UVpWwbJ+xsXorRxtLBR6/sNB2U8uutU2sDafJbQgmU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787559231; c=relaxed/simple;
-	bh=28tdcNeYvivqfO6xmJCs3eQvMTf7EWGHzRJJZsjamd0=;
+	s=arc-20240116; t=1787559708; c=relaxed/simple;
+	bh=W9uC+BhGExm8dFaDifeqaFlddL2qK+tpEVo8bgE2jkE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oSz20zDbQRMpLxWQDQl6bj8R7Jj8JB/v7nq4r/m/T4E8OQmoh+GlpiMVdVm0uHJbvOkY1Rlz1//kGjehdEZ2IrcZqHd1PyRY/+PwZnqgqh1JjggzKCIZj0koWMdMK9rKKMd8ZofwXaA6PsOU+gmFOi8Zm+OLjIl5w1pnRRMwEQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MDItu8eq; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=QC8zgcg/tFFZmFq9FLi+In7Lk/wednd/A+v2SCxXSmimbV01i1XRmHEinWlsn3TFWrw9BCxOYJByhtIvfytNmfG31S1NebW4uBtK0zgOTnOT1VgZZiwSuxU3+v/lvUdEMY8X/BkpAG5byEA7h5ONO7iPr2cTDV2X654nEHXcom8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zzb2xxNR; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MDItu8eq"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zzb2xxNR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787559230; x=1819095230;
+  t=1787559706; x=1819095706;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=28tdcNeYvivqfO6xmJCs3eQvMTf7EWGHzRJJZsjamd0=;
-  b=MDItu8eqZgxNg0K32gVYOof0GEcNswvu+FDJJMUEZfc2ETr4t9QKOxFd
-   GfDyqBoZazd/9SlS5+rbjPnfrvNGkP1zbxhMs1PSgfC+iSkhKCVHjCVeS
-   VSyvZ/p6z1HTOojqrd1Z0tP/8Odmf8zR242Vd+QWJmaLcLFnEfQySrotn
-   IpDC/pIg4qXYbndhL5g1L8Lf3d1k80+N+kvnQP+W6BqEJiB7mN8zJVhrQ
-   ukSvWAvMLZwOuCUi9LpuKGQOuyW8BZWPGluYc4cJ9dugbpcZPeXNwdfkp
-   z/LE/KeEFQnee2lnxnLrq97q54bWDZeGpvIq/55L87a5WVhj3GjjG96E/
-   g==;
-X-CSE-ConnectionGUID: q8YICUUMR4SVgMjSdZcWgg==
-X-CSE-MsgGUID: Fd0ezUfCQdmyBcXDOMYEag==
-X-IronPort-AV: E=McAfee;i="6800,10657,11884"; a="87769170"
+  bh=W9uC+BhGExm8dFaDifeqaFlddL2qK+tpEVo8bgE2jkE=;
+  b=Zzb2xxNRGG0s1mkwz/bW2/VsiqC1296hMqJrUG0Lk9HBFJct/AstC1Xx
+   a8ETNVvCs6xu9QCrnpIFdZTJki2CIdXjMdQkOChINrvnOqOFp0MuoDhRu
+   e5YWQ2BXv15AYh0xsGUjQ3SrOQpolmlc8+VBojCWtrXHW8H/PP8hgNRlp
+   yx1n8S/sj2UwfK1nMYJro5VxNEn3dEtORYrLfSEo/fuCd5pYEm1J0xvB6
+   fC/QntKybNFK3vWvmZNRv725tJDUHnoOSihH0exIYZyHGF6wAIq+vvyc9
+   eaW/jqZPTlkz7xsv2Qsyu2K62e6f2x65npJDXIkQSgNE9iNYObEfeuCYV
+   w==;
+X-CSE-ConnectionGUID: xfJxprWRTse5jSiAIBOFoA==
+X-CSE-MsgGUID: RfET+2qrRmmHx+HE/NPrsg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11884"; a="87769825"
 X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
-   d="scan'208";a="87769170"
+   d="scan'208";a="87769825"
 Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:13:49 -0700
-X-CSE-ConnectionGUID: NYnPaUjXT9K2smj8J4yUxQ==
-X-CSE-MsgGUID: ig49bFpbSOKtqUFni+Zl3A==
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:21:45 -0700
+X-CSE-ConnectionGUID: CXL8CaiOQ3WO1iEeAXht0w==
+X-CSE-MsgGUID: c9hPF+R0RuaSQi/nTm5rzA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
-   d="scan'208";a="264316491"
+   d="scan'208";a="264320203"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.130])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:13:44 -0700
-Date: Mon, 24 Aug 2026 11:13:41 +0300
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:21:42 -0700
+Date: Mon, 24 Aug 2026 11:21:40 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Janani Sunil <janani.sunil@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Michael Walle <mwalle@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v4 13/14] gpio: ad7768: Add AD7768 GPIO auxiliary driver
-Message-ID: <aov9NcmRhx3XgJpl@ashevche-desk.local>
-References: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
- <20260821-ad7768-driver-v4-13-bb8fbd06d4eb@analog.com>
- <20260823203947.3ecdc448@jic23-huawei>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v10 1/2] iio: adc: ltc2378: Add support for LTC2338-18
+Message-ID: <aov_FNNX2-TWheQc@ashevche-desk.local>
+References: <cover.1786661484.git.marcelo.schmitt@analog.com>
+ <8b0d2e34163b85634266be3b9dd8f76697c89bd2.1786661484.git.marcelo.schmitt@analog.com>
+ <aoK4FXvkPT45RsIV@ashevche-desk.local>
+ <20260822032014.3d4607dd@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,84 +64,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260823203947.3ecdc448@jic23-huawei>
+In-Reply-To: <20260822032014.3d4607dd@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Aug 23, 2026 at 08:39:47PM +0100, Jonathan Cameron wrote:
-> On Fri, 21 Aug 2026 16:07:06 +0200
-> Janani Sunil <janani.sunil@analog.com> wrote:
-> 
-> > The AD7768 provides five GPIOs controlled through registers shared
-> > with the parent IIO device. Register an auxiliary gpio-regmap driver
-> > and use the parent device for runtime PM.
+On Sat, Aug 22, 2026 at 03:20:14AM +0100, Jonathan Cameron wrote:
+> On Mon, 17 Aug 2026 10:28:21 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Thu, Aug 13, 2026 at 08:05:07PM -0300, Marcelo Schmitt wrote:
+> > > LTC2338-18 is similar to LTC2378-18, differentiating from the already
+> > > supported part mainly on the embedment of an internal voltage reference and
+> > > addition of a resistor divider network connected to the input signal path.
+> > > Extend the device driver, handling the internal reference and input signal
+> > > attenuation, enabling it to also support LTC2338-18.  
 > > 
-> > The device has separate input-state and output-latch registers. Add a
-> > reg_mask_xlate() callback that checks the line direction and reads the
-> > programmed output latch for output lines while retaining input-state
-> > reads for input lines.
-
-...
-
-> > +static int ad7768_gpio_probe(struct auxiliary_device *adev,
-> > +			     const struct auxiliary_device_id *id)
-> > +{
-> > +	struct device *parent = adev->dev.parent;
-> > +	struct gpio_regmap_config config = {
-> > +		.parent = &adev->dev,
-> > +		.label = dev_name(parent),
-> > +		.ngpio = AD7768_NUM_GPIOS,
-> > +		.reg_dat_base = AD7768_REG_GPIO_READ,
-> > +		.reg_set_base = AD7768_REG_GPIO_WRITE,
-> > +		.reg_dir_out_base = AD7768_REG_GPIO_CONTROL,
-> > +		.pm_dev = parent,
-> > +		.reg_mask_xlate = ad7768_gpio_reg_mask_xlate,
-> > +		.init_valid_mask = ad7768_gpio_init_valid_mask,
-> > +	};
-> > +	struct gpio_regmap *gpio;
-> > +	struct regmap *map;
-> > +	int ret;
-
-> > +	map = dev_get_regmap(parent, NULL);
-> > +	if (!map)
-> > +		return -ENODEV;
-
-
-^^^^
-
-> > +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(parent, pm);
-> > +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = regmap_set_bits(map, AD7768_REG_GPIO_CONTROL, AD7768_GPIO_UGPIO_ENABLE);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	config.regmap = map;
-> > +	config.drvdata = map;
+> > LGTM now,
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Ah. I applied the earlier version fixing up at least comments it seems.
+> (Not that I've completely forgotten doing so!)
 > 
-> Why not do all this in one place rather than init then later
-> modify?
+> Can you please check if there is anything different we can handle
+> as a follow on patch?
 
-See above the answer :-)
-
-...
-
-> > +	gpio = devm_gpio_regmap_register(&adev->dev, &config);
-> > +	return PTR_ERR_OR_ZERO(gpio);
-> Could do
-> 	return PTR_ERR_OR_ZERO(devm_gpio_regmap_register(&adev->dev, &config));
-> 
-> Though maybe it looses some readability?
-
-Fine with me. Taking into account my previous suggestion (in another reply)
-
-	return PTR_ERR_OR_ZERO(devm_gpio_regmap_register(dev, &config));
-
-which bumps readability back to track a bit.
-
-> > +}
+Hmm... Are you asking me doing this? I would delegate this to Marcelo.
+If we forget something, I don't think it would be a big deal. I just have
+almost no time for this.
 
 -- 
 With Best Regards,
