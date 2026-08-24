@@ -1,138 +1,132 @@
-Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC41E36492A
-	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 04:54:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787547267; cv=pass; b=pmOFTKhKiNDOIcQiqRNnngWPN4DOLDSlc2D07aJ770LCZMLXH04gOn8/lZ//dzlW/YbhRe55ZFea14j0qdcDFX/XV7Roen3sIJ8HC/iaMovq8HLbIF4WVWhIxUkWEjW5iT38Q27Rw6BMRnKAjW8TepVgeBNXs/3xX+7NKyXUZeo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787547267; c=relaxed/simple;
-	bh=Bcnn8Vmty/GcGctEE1P8q+rqVlrltOSbbpnc4q4ZUow=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nA7TSsupzvGKkv+QaR3CNkzWvVLrINgKJePjsf1Vd+b8UBnQuSTnMh9oTtqrezq0KvRNgumFwOTxqPkdb8jhU4aYl6Ji7+gmYkr6Ez0L7OmYhaTgvPNh8rjPZS0ygeXXYluilx1Mdt9xNelfLWxPGkCB4RJXq6wxK3rXeNxJLLU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i+taexyY; arc=pass smtp.client-ip=74.125.224.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB28E2571A0
+	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 05:10:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787548236; cv=none; b=RSUNQCGVdAR7SgG5kYMhSVLw/WWkW8tV3Bn88unGC8aWAsCH3GQNdwdkzw4xT0hU3BmmHLbeG+DsxRWoJYiPorwP0EPunrhAPqIEUJz5PBP/hGOumcEbNhYB8IMWn7vgTQXUA5d32JP0yGvmGY0+nez12aoskL3VPfCtZ/Fvf6U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787548236; c=relaxed/simple;
+	bh=Sl8hsTtzr30BYZs9Th5FE7uJDLO3mbuSpjTIcGSKiiU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PSgy6IhyI5TnJ+6ssa3XDbAD0eP9Pgb+X0woRxuyQVzDDO1mpm9hfNj/61Gkv1gTMLs4tG9xhIadh/PLyqwnklZyBCf+X5Ds2PzOoNunh5/ulr7MhSXp+Oa66RDbIK/gVkNqH1YVwDar00es3B6FEugpwSHmnab6hX6G32G51gM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Mo3S8eww; arc=none smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i+taexyY"
-Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-66c7e3a2332so1925184d50.2
-        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 21:54:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787547265; cv=none;
-        d=google.com; s=arc-20260327;
-        b=aLNYy+J3+elEb4dgr8QXi7cf98AujMsO7/pLm8daSEpcg0L5qyiauBlHIF2+GENyU2
-         Srmgkm0xRKbA7ghvauK4aEKGRz4Pe2XNvDb5BMW6YDMZDHF/Bota1mpDGH34QDVom4Hh
-         OjovAhx57oQviI5cRxocC6Xz8FQvBG5raonT0iv9MzwRypvr7PtD1fwmb4RtxEhvAoFc
-         GUgxhVxX4Ywr1xX2scOZcgRHm/zZU7vNYkOQVfJ3u5CpXwrkeOJL86WjuhXq2k4Oqvd5
-         K2Lw4weLsPZevM0hKH63aL1JjoBfZdTTSXc7b8VWSynIbSy/KG3WQ+Nn21xuZ4t2B7T5
-         7lFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=r4VU3Zu1fSpYqSGxLy8G29EIP/30+UoepZnhZkdQQu8=;
-        fh=CsK5EW8G0hbVxH30SZRhI+OdZ1LkPEcTisKHf1V5GsA=;
-        b=eUDBk6Iok1ds4QJ4/m2ow2o4dM3nRuChs49UDOK5GBNZHQInKbY7M/HiZ4I2HdOWb6
-         OMTkbsGP76Eoce5jGv0WJEkzu1bHq7vb1jrkO9GfrmJ2LcDIX/w7fama0nSOfbMLCHUe
-         B27bzHAS+7wlSaqPyTvgTXeiFLkEUY867jQiLa8C2jFCbyenrNYYrmBn1H2Nz2ugmpID
-         kHCt33WgQ/l0X0/OVPIML6ESHc4DkcntlV35ete/2wiOvT5Ityh+Ho5h12dQ5v1Y07k3
-         mpEPllRI58pAL7qRp46lhYunq645OqLQ0M9K0nzVxngZcgTnBoI8dn+ki2V0OdCnTDjn
-         A2SQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Mo3S8eww"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-69c600f76ccso5009139a12.0
+        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 22:10:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787547265; x=1788152065; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=r4VU3Zu1fSpYqSGxLy8G29EIP/30+UoepZnhZkdQQu8=;
-        b=i+taexyY7EbvTkTikYwDQrOCa5NjjehO6GGILAGdNKBsuAgEUsQMrvI5TzZoVPsbAd
-         4MS3aGe5fJq9E5H7ZUEN6gs25H85c3JaOwnUv42uFdHQxqj7E/FfC16SmunfYBHjLypk
-         1yFjY2t9IRmBfQayMy0CRvZ6xVM2uBUGnMlyvC4eSyTl8jfnGfJ8TvGjZaYoexttgX1n
-         RZHoL+EJQ037oquhsmrY3YYu76cECjaOMj5T1NBp9N/R3af9YN5qxM2gPenOkOQ8/7pf
-         7iD8HlBVTfriBgyd93iAhJSFIzxixmlAkq9TrN6d+OXd0gO1sgFOei4ozmsyDS7PZfuK
-         AJkQ==
+        d=gmail.com; s=20251104; t=1787548233; x=1788153033; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=a2mb2wp2mxRyAYJrylsfWvc15BoZBNUQjhivf2ccdLc=;
+        b=Mo3S8eww78cyKU4MnLXwmFKqBG2Cx92J/YfGJAJ62B0vHa5CUUGUflj1s/sxJRFPpP
+         wpGKPJvyBwakGFw3PX1p5ZHXZ4g+9uFV5ie0uet6v0vuAHH70LSvMF+9F3wyTmbTBkGO
+         5tT2b9Ktfc7QxTEy33eeWRxsRQyHV2KCQmBY0JWnz4uio/lZrN/HfCr+/CbXi6FcHgre
+         lk9uiTIPQNn5So8i3PnZDizQISRedSCeFEz0C26f0u5BbWDRQoX+0HNbHL6wD3VXcv6b
+         8mtEjngr7Znb0f7XFH4Mw8X0VsjrJlttckdKSyI3HWxPYo7hj9xdDDTpAAGu38xHnS8E
+         mm0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787547265; x=1788152065;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=r4VU3Zu1fSpYqSGxLy8G29EIP/30+UoepZnhZkdQQu8=;
-        b=Jhq4Nv+DTAdPHQBlr1k5lXJS+RXPbGd8L9D5Ya184CL2ITecrDk036a1r/HoFAlm7y
-         e6p32fcKYMjIzPda19Yvx8IJ+qZ/Z1Z6ZW8vBuaKvzuZ9pTptt6SsdoVfHdhsUwH1KkK
-         iQSDd9N9M+t/QySIMvhPI2vgxuttWl9lUWg2/+eGQWsaagj2kOgKmkix2fW00O4cxa0X
-         XrRo4JS9qGjWdZxS6hOcY6rGACabJk6ny+RDxLyFd9eUAp3nAdnB3xqiYw08BBCvWUho
-         NrJCQRWcaqxyXCr6TY9SfTxeKyADpQZQyoJ9wv6NTfLnuqBaDp4xfoWCwxT1GKyJ/ovx
-         VZ+w==
-X-Forwarded-Encrypted: i=1; AHgh+RoEmse3uLTYsm02V8zacgiYY8v8pO/tfDKIp1N2NgPaYkk7Z5BQvpsHZ6LM5XUlcudpu8uSVvjSu18=@vger.kernel.org
-X-Gm-Message-State: AFuF++kdEafaUV8o3wCYq6oNC9sEWtpUnD/uDhwSQJ8ZEfI9esSqum7E
-	1OAZMb3cid6n12jQrTLU+EL1/W0YhKC8OSNAzn4yguI6zxv85m90/fPdIvgCpdV7j9NC0ZR2meN
-	ghLoBLk3TAnX0hU/d1IwDbKMuU5VaWrg=
-X-Gm-Gg: AR+sD12g/0NIADUrn//Olo8tOYpuZTqkYj2M7cMktxJk0iS+wb6iSXqoykjU4WawOQc
-	avR+C4kFxQ7co4P2sXg03eU6HrHhpaUvIMjHzZa/K40FlPuIcSO0Qithecb+xCP0W/p1TNw0oXZ
-	FbuK686jKNTGS2IzgK5MOWvq3GlRSWgDsNwLWalrNm1mbJdhlhZ6QpWP9AW0FYmnUR2i+vgJHk6
-	q0c41Zk0q79PoyCdvBqHL/YxR4vjo/MB77CoRQUi/tHYVsFk4uIResdGBLOVxe854mSR1rL69hL
-	q0fx+c3RP1T3Wt4NWDFDUyYMZiZbxXg5uXfA2kkO+GYYItdP4CH5CmwVgfXjm+NWEm7uapZeaPT
-	j4lG/w7IALAuYrkl5jm+HTvgjkPul20Cf4oo=
-X-Received: by 2002:a05:690e:13ca:b0:66d:9e5:5949 with SMTP id
- 956f58d0204a3-66d09e559dbmr709349d50.49.1787547264677; Sun, 23 Aug 2026
- 21:54:24 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1787548233; x=1788153033;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=a2mb2wp2mxRyAYJrylsfWvc15BoZBNUQjhivf2ccdLc=;
+        b=jsSgqQDKjNuaS7Dheb495oQkqHId4VFFpdx5c5TM+272lcxtQBQ6orTqLkktBSzMyJ
+         yNbkSBQGHFe7Y43MAUIjoFVvYIIjo/YalZWxskQJV/emIezr7rvMprQLBVJw8eEDIPfP
+         2ZPHX+Yi9/l7NSf7mvHC6urtexFqwFR/C34Uk5vL3GNk6Tx6SZO233cyc6nqlMcJNuCr
+         jTfxmgTomIMjip6suomi66aMtVkzrczoSiE31zJKu2n34qj8IneArOHuGF+dTd3rn6jL
+         FgWay0LURkq/i/+ySFIYNy8NtDIlESL5lfpx4NA+DMvLSF0A1nRoMXDxBApJpmF0SZSI
+         Zp9w==
+X-Forwarded-Encrypted: i=1; AHgh+RolGm8cfpJbRRDlLJwmE+MEhbJ4+8Ohm4BHpdIa+WkMj+XBt+WcjydobhEvuOPzZ8HP1DGuZNBFA3E=@vger.kernel.org
+X-Gm-Message-State: AFuF++kaBWvbDVGEF0crHJqOTdIVA+bbfeiaKu336zCC9wyZAVnyndqM
+	XwLiKnOPS95NZ5Taat+BYocgcxXbRjNUBwuFSbecx9EtOWQYZeenUgGI
+X-Gm-Gg: AR+sD13tdTQ64F2JIbmiGXecRbCeNJ/qh9kwLCVarkJeTPBd8HgAjT+USZYCAO5PxsW
+	PFkcAcdSSwOpkjkwXedo3PSuEptj5fvwOrBh/5xgqCgFP7+TdUGu9AEOdRsvlLf0e2Q+lbAy5/S
+	JLWLPvMBF+ubf/JpreeR9dnBvfmp59m4jPfPVG2Pi95mu7fBfrMTrIeDDbMvCQZDHYRc3Yg0K01
+	7BHNJCoU9uaXBhbYU3lvGcmbFfdTurQHBaw6dCr746z0uD1Pmv6ICzM9WAiUddGLll3c7opBOd4
+	+JsAnSW3MehmznGS/T6zqOgWvMVAdIu/wUpWCA8/IYRMb3Buk8/8Pk5/m2KeKp4tlgeiBT2Pfhb
+	n6bEuIRRjqHP4+e38jN+SCcoGTwlPsDJm6N+3vp35LJr+QjgWYIsBSM3wsMeAkUMP/3AI1K97jg
+	pHt1YuO6M83/85ePh7ARSmNw+OZGGM89VWOWTLpTV06mLihP4Z8btKwmpv/uB4jnxZsk1l8ag3N
+	w==
+X-Received: by 2002:a17:906:f049:b0:c1c:4db0:8314 with SMTP id a640c23a62f3a-c246a60c26cmr2384011666b.13.1787548232725;
+        Sun, 23 Aug 2026 22:10:32 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.128.6])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c249606bd05sm1008487866b.2.2026.08.23.22.10.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Aug 2026 22:10:31 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v3] iio: adc: ad4030: fix invalid oversampling_ratio validation
+Date: Mon, 24 Aug 2026 06:10:26 +0100
+Message-ID: <20260824051026.11049-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260812164433.23011-1-architanant5@gmail.com>
- <20260812164433.23011-3-architanant5@gmail.com> <an2FkBoJNRCaeAkk@ashevche-desk.local>
- <20260822013823.28b0a1e1@jic23-huawei>
-In-Reply-To: <20260822013823.28b0a1e1@jic23-huawei>
-From: Archit Anant <architanant5@gmail.com>
-Date: Mon, 24 Aug 2026 10:24:13 +0530
-X-Gm-Features: AcwNN1Wii8pRmgEIacw3ovA1EX2GE8dAzpYk9wmvZdWIzbnhxwJ7SV1LKfhJbsk
-Message-ID: <CADJHxWB-NkBE62aviCNA3O+d_RcO=fecvenxa1K+3cEpH5MpeA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/8] iio: adc: ti-ads1015: fix PM leak on probe failure
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, dlechner@baylibre.com, andy@kernel.org, 
-	nuno.sa@analog.com, u.kleine-koenig@baylibre.com, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, Aug 22, 2026 at 6:08=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Thu, 13 Aug 2026 11:51:28 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->
-> > On Wed, Aug 12, 2026 at 10:14:27PM +0530, Archit Anant wrote:
-> > > If iio_device_register() fails during probe(), the runtime PM
-> > > subsystem is left enabled. This leads to a resource leak upon failure=
-.
-> > >
-> > > Add the missing pm_runtime_disable() and pm_runtime_set_suspended()
-> > > calls to the probe() error path to ensure proper cleanup.
-> >
-> > > Reported-by: Jonathan Cameron <jic23@kernel.org>
-> >
-> > Was it public email?
-> >
-> > > Link: https://lore.kernel.org/linux-iio/20260718225515.7e49a458@jic23=
--huawei/
-> >
-> > Ah, this should be Closes: tag instead of Link.
-> >
->
-> I never checked but this is already fixed in the iio tree and
-> the relevant devm rework done.  :(  So much going on at the moment
-> in IIO I didn't recall this one at all!
->
-> https://lore.kernel.org/all/20260529183708.17819-1-sozdayvek@gmail.com/
->
-> Please rebase the remainder of the series.
+ad4030_set_avg_frame_len() computes avg_log2 = ilog2(avg_val) before
+validating avg_val. The existing check (avg_val < 0) allows avg_val == 0
+to pass through, resulting in ilog2(0) being called with undefined/garbage
+behavior.
 
-Oh, I missed that as well, nvm. I'll rebase the rest!
+Reject non-positive values (avg_val <= 0) before computing log2.
 
---=20
-Sincerely,
-Archit Anant
+This issue was identified with assistance from Claude AI and manually
+verified against the code.
+
+Fixes: 949abd1ca5a4 ("iio: adc: ad4030: add averaging support")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+Changes in v3:
+   - Dropped the !is_power_of_2() check to preserve standard IIO attribute
+   rounding behavior, per feedback from David Lechner and Jonathan Cameron.
+
+Changes since v1:
+   - Added note stating the issue was identified with assistance from
+   Claude AI and verified manually.
+   - Removed initialization of avg_log2 at declaration.
+
+ drivers/iio/adc/ad4030.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+index 9c5f19321e3b..5a5e69dfb5d4 100644
+--- a/drivers/iio/adc/ad4030.c
++++ b/drivers/iio/adc/ad4030.c
+@@ -746,14 +746,16 @@ static int ad4030_set_chan_calibbias(struct iio_dev *indio_dev,
+ static int ad4030_set_avg_frame_len(struct iio_dev *dev, int avg_val)
+ {
+ 	struct ad4030_state *st = iio_priv(dev);
+-	unsigned int avg_log2 = ilog2(avg_val);
++	unsigned int avg_log2;
+ 	unsigned int last_avg_idx = ARRAY_SIZE(ad4030_average_modes) - 1;
+ 	int freq_hz;
+ 	int ret;
+ 
+-	if (avg_val < 0 || avg_val > ad4030_average_modes[last_avg_idx])
++	if (avg_val <= 0 || avg_val > ad4030_average_modes[last_avg_idx])
+ 		return -EINVAL;
+ 
++	avg_log2 = ilog2(avg_val);
++
+ 	if (st->offload_trigger) {
+ 		/*
+ 		 * The sample averaging and sampling frequency configurations
+-- 
+2.43.0
+
