@@ -1,74 +1,93 @@
-Received: from mx1.white.stw.pengutronix.de (mx1.white.stw.pengutronix.de [185.203.200.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 733AA4582FE;
-	Mon, 24 Aug 2026 14:45:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.200.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC05B43BDA8;
+	Mon, 24 Aug 2026 14:48:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787582710; cv=none; b=cirqKQvY2nNBOoJOjqo98ksxIQnAGONFPH9nbEVkDGFnET+wo53osezRlniCFFLuEdGL7lIAvsc3gNenzxSiKrPqbUb4m2eZoH6C5rbf3AySpDNu+DTWpUgPZ5owuPF6CUp7D9nTMOuL5BlEml7heKozNsZyghnPQ672d47bnFs=
+	t=1787582900; cv=none; b=AlctbSPye2w/fZIQ9rxjrmBdhLQ/aHPI4XPrMTJ1ACfH6+q07AVlpVNybPXcKV4QGI1fHdQvgrn2fp2mcx43tKqKhMO68XMsYglKxzHLhVp8OtnpdWa026a+aY6t+7Qt4Ga7VmBbpF46rpA2bRJITxfzkaGmIEMwvsNFEqNDy1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787582710; c=relaxed/simple;
-	bh=hLAGFYEYc8NaVpMg4EPPTMwlzlST3ntxnVnzT57vTb8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=uO2uPlPdkw/98DRPDWoSau97/r2lNbtZAJ1EdYrx6BHOzWLxJu6KpIrC8BmmHV1OJ0VwJuxF+o1M6WuH+w35GS2TFREIDRyQ3DHTMl5tiVsGg+bRUXjBRa8lbwvT2+ITbLgQbaCs8926ERGmmGU8bWWAUe2SddhtCzdUNjob+Tg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.200.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from [IPv6:2a0a:edc0:0:900:1d::4e] (lupine.office.stw.pengutronix.de [IPv6:2a0a:edc0:0:900:1d::4e])
-	(Authenticated sender: pza@pengutronix.de)
-	by mx1.white.stw.pengutronix.de (Postfix) with ESMTPSA id 5872E201917;
-	Mon, 24 Aug 2026 16:45:01 +0200 (CEST)
-Message-ID: <31aa140058fde422c12e34fe926e7df01ba448df.camel@pengutronix.de>
-Subject: Re: [PATCH v3 05/14] iio: adc: Add AD7768 and AD7768-4 core support
-From: Philipp Zabel <p.zabel@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>, Janani Sunil
- <janani.sunil@analog.com>
-Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich	
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>,  Conor Dooley <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>, Linus Walleij	
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet
-	 <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Michael Walle	
- <mwalle@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
- jananisunil.dev@gmail.com,  Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=	
- <u.kleine-koenig@baylibre.com>
-Date: Mon, 24 Aug 2026 16:45:01 +0200
-In-Reply-To: <20260816201049.480143e1@jic23-huawei>
-References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
-		<20260813-ad7768-driver-v3-5-cb554399ad26@analog.com>
-	 <20260816201049.480143e1@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2-0+deb13u1 
+	s=arc-20240116; t=1787582900; c=relaxed/simple;
+	bh=aqOa6XtW+aFZB3MhqJktHgQ8+c2E+S4uwzwmAua27uo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lGWd6MR5d72zHIJqtXeLROLybpVyYFgr4uxfyuIQuUKb3L8cruc1wFvS/FO3JwMVvdzW7VGWDG64EHkWh/boghTUVwBJmkjlglkf9pOKcyQ6fDl8Ta+8jlWMaGrS31Q9f8/U/2t8jeG5Ux/irjmncAatKlniiTgnMByk+Ahigko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AHC8NBnD; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AHC8NBnD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787582897; x=1819118897;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aqOa6XtW+aFZB3MhqJktHgQ8+c2E+S4uwzwmAua27uo=;
+  b=AHC8NBnDi7N2ymSgukz+K42ufIEzu6x4LWNYnUmLypy392nMIJiOov+0
+   pD5b6+OZGiy9IdqEWoguluOiU5KB0B4BIcGFKIVdzLsZXD45ACfTQ77pS
+   x0aofYoDXPW1fOk9nGNkp5vlqlDSoQE84PTFYOhVKnyjEuu+haaM8SdF3
+   o8eR7H1irPFO6r1S2uMSO282eCGo4uPO0fgnV9na9vvVRV6uwa+vkJyfQ
+   oJlzMXi/C1mVHeYsbsRuBfbvsdWEim4nBaaMGhc5TGwudKq3NDyD+/uQa
+   gwY3uEexXN6BxBmyYAyh8CPtqi4lI5ddEBQrVBVCYj51JMkdE3SbZcdn4
+   g==;
+X-CSE-ConnectionGUID: GAJoFOL0Qee+Uf/cnVLbQA==
+X-CSE-MsgGUID: ecpl+EO2SeyGiteeRcFSsQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11885"; a="88160955"
+X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
+   d="scan'208";a="88160955"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 07:48:16 -0700
+X-CSE-ConnectionGUID: XyyS3nDLTGCB+rrrjCKjSw==
+X-CSE-MsgGUID: pcMT6CqRSxu5+5mgBFnFDg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
+   d="scan'208";a="267588099"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.130])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 07:48:13 -0700
+Date: Mon, 24 Aug 2026 17:48:11 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Rishab Madhugiri <rishab.madhugiri@gmail.com>, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: core: Avoid BUG() on invalid clock types
+Message-ID: <aoxZq7sc4ndMG-V8@ashevche-desk.local>
+References: <20260823222502.30764-1-rishab.madhugiri@gmail.com>
+ <aowVI_n7s0VAmN3D@ashevche-desk.local>
+ <20260824120503.00003500@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260824120503.00003500@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On So, 2026-08-16 at 20:10 +0100, Jonathan Cameron wrote:
-> On Thu, 13 Aug 2026 15:56:58 +0200
-> Janani Sunil <janani.sunil@analog.com> wrote:
-[...]
-> > +static int ad7768_reset(struct ad7768_state *st)
-> > +{
-> > +	struct reset_control *reset_ctrl;
-> > +	unsigned long reset_low_us;
-> > +	unsigned long mclk;
-> > +	int ret;
-> > +
-> > +	reset_ctrl =3D devm_reset_control_get_optional_exclusive(regmap_get_d=
-evice(st->regmap),
->=20
-> Probably use a local variable for struct device *dev =3D regmap_get_devic=
-e(st->regmap);
-> to reduce line length.
+On Mon, Aug 24, 2026 at 12:05:03PM +0200, Joshua Crofts wrote:
+> On Mon, 24 Aug 2026 12:55:47 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> 
+> > On Sun, Aug 23, 2026 at 10:25:02PM +0000, Rishab Madhugiri wrote:
+> > > Replace deprecated use of BUG() in default switch cases of
+> > > iio_get_time_ns() and current_timestamp_clock_show() with
+> > > WARN_ONCE() and return correct fallback or error codes.  
+> > 
+> > Why?!
+> 
+> Because BUG() and BUG_ON() shouldn't be used anymore, no? Linus himself
+> said that he hates the macros.
 
-Or just pass dev into ad7768_reset() as an additional parameter.
+Why? Please, study the case. As for the above change, there are two questions
+(at least):
+- Why BUG() is deprecated? Where is it stated?
+- What will WARN*() gain us here? (Note some specific kernel command line
+  parameter that may convert WARN to BUG)
 
-regards
-Philipp
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
