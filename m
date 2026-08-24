@@ -1,102 +1,94 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E3FC40EB9D;
-	Mon, 24 Aug 2026 12:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B48AD40EBA8;
+	Mon, 24 Aug 2026 12:52:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787574744; cv=none; b=k7E56OKCAp7s1kBUUd5b7PZJmzJp3+XEL2JJvP9bOA67LgT1lf8KecpzuJjzOWsQRF3CyY05BFdBcmsdVVFAGBL+vZhtgHRTK/tgO7H7cD69EP7IFVZWuro+CUCiaJgPSRWh4BJE4VMm8vdJ4ewoNeHHBIgF3J/2kCpnn13Ivyw=
+	t=1787575945; cv=none; b=Pcv3Rj8KftwAmq+UgUPIHE/R77fwvYFW217k7YMKxWNsrQWR/QWr5WCkTe9NeM147z9t5C4qjWttzQJSFru7lCi5iTew3DYUOIktrumRbwMaBtRT9+rpm6UKK4vML6u6oOoL7pp7p6sjh30brGv4WneFjFGacpCnKtpj0JgFTcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787574744; c=relaxed/simple;
-	bh=xqykfgQ/Du2x0MColCr3mSkreHTtjHJZeMPbzY7rz3s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uOtNB9eTqNeDWvnvtsIlZoPD1J4Bhcz6tL/80df7RMOoD4V51THAujhBZOOwpMNW2x+4Er6b8KSNx9eb1YbCjH0jlLgne3GOtU0rW5bVi6onEwzQ3EIKfMrd4775fAW2d9WEUJw3k0I79RV1uLTKpZ2g79dS8KfOB3fpPpLaAfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UJXweq83; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UJXweq83"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDA41F000E9;
-	Mon, 24 Aug 2026 12:32:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787574743;
-	bh=KMJxfROyeX/B2GqRjh1mfOkUFpYLar3s1zAHNwZtK7g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=UJXweq83t1pXhNa7H6yP1Yzs4ULPPvZoM6+r8QZ6UrXAqyqvqqCeUZC6gxbSX0NIa
-	 8fxwRqbws+sIYIRRjVsUm1D8xnnGM/YwcMZewvEDAZW2zNKiWStDNPMtpSISFthFDh
-	 nJaQREFvGeq71jZfSosM4wswgPmrdOy1ddS6f5qoK6Ip56RkGYYB3aIL1oUhYqVUAs
-	 fODFeCUxV+Si7wznHrUvc+CbhTfMrKRf9G6JKF3JA0hU/OfyNUR9jtcfNecyqucYUq
-	 HvRXGcXy7wPpdqj5/jEyJ8Fdhek+EYsR6Bfdx0Zc94fW3gYkDa7HBzTF921tX36z+v
-	 I70YRwBwab9VQ==
-Received: from johan by xi.lan with local (Exim 4.99.4)
-	(envelope-from <johan@kernel.org>)
-	id 1wyTqe-00000001nAw-22Ti;
-	Mon, 24 Aug 2026 14:32:20 +0200
-Date: Mon, 24 Aug 2026 14:32:20 +0200
-From: Johan Hovold <johan@kernel.org>
+	s=arc-20240116; t=1787575945; c=relaxed/simple;
+	bh=RHfBJQvUmRRrjA4Sl3o6osk1PrMdBZxJVzxqJOVnliU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=O9IujCaVQ4oTHBgY8jtdssYkyS36A6i4uS7DugqFiPw7fylGENlyI6DUFmRaup8DUzp/UMdpRBbJuI4zPrXODTXhXObS8beTF48vizPqcJtW9e6Syw+3EQSPwjJvDLay0DvFYSuWreBLHsOCJB5t95tDeDXnMCm8tNkm8NFFEGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: a2879dfe9fba11f19a56ed5b684f684d-20260824
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:1ca0a853-6c81-41b5-a108-06a015ade9f0,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:7db8b62,CLOUDID:6073d24401ac398f1b2b2f87925aa8e0,BulkI
+	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50,EDM:-3,IP:n
+	il,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LE
+	S:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: a2879dfe9fba11f19a56ed5b684f684d-20260824
+X-User: lilinmao@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 90146487; Mon, 24 Aug 2026 20:52:16 +0800
+From: Linmao Li <lilinmao@kylinos.cn>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Guangshuo Li <lgs201920130244@gmail.com>,
-	Andreas Klinger <ak@it-klinger.de>,
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: srf04: fix runtime PM autosuspend cleanup
-Message-ID: <aow51Nk-cet9qaUQ@hovoldconsulting.com>
-References: <20260807141938.2491195-1-lgs201920130244@gmail.com>
- <aoQGR8uSXXmOxnWI@hovoldconsulting.com>
- <20260822010809.04404b4e@jic23-huawei>
+	Andy Shevchenko <andy@kernel.org>,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Linmao Li <lilinmao@kylinos.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: adc: ade9000: fix NULL pointer dereference in clkout registration
+Date: Mon, 24 Aug 2026 20:52:10 +0800
+Message-Id: <20260824125210.1644319-1-lilinmao@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260822010809.04404b4e@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Aug 22, 2026 at 01:08:09AM +0100, Jonathan Cameron wrote:
-> On Tue, 18 Aug 2026 09:14:15 +0200
-> Johan Hovold <johan@kernel.org> wrote:
-> 
-> > On Fri, Aug 07, 2026 at 10:19:37PM +0800, Guangshuo Li wrote:
-> > > srf04_probe() calls pm_runtime_use_autosuspend() when the optional
-> > > power GPIO is present, but srf04_remove() does not call the matching
-> > > pm_runtime_dont_use_autosuspend() before disabling runtime PM.
-> > > 
-> > > The runtime PM documentation requires pm_runtime_use_autosuspend() to
-> > > be balanced with pm_runtime_dont_use_autosuspend() when the driver is
-> > > removed. Failing to do so can leave the autosuspend usage state
-> > > unbalanced and may result in a usage_count leak when the autosuspend
-> > > delay is negative.  
-> > 
-> > I believe the term "leak" here is misleading as the usage count would be
-> > dropped again when the user re-enables autosuspend through sysfs, right?
-> 
-> A user has no reason to do that under normal circumstances.
+ade9000_setup_clkout() passes NULL as the register address when
+registering a divider clock. During clock registration, the common
+clock framework calls clk_divider_recalc_rate(), which dereferences
+the address through readl(). As a result, probing an ADE9000 configured
+as a clock provider with an external input clock crashes.
 
-This issue only arises when a (privileged) user *does* exactly that in
-order to disable autosuspend by writing a negative timeout value through
-sysfs. And the reference then taken is dropped when the user later
-undoes the operation through sysfs.
+CLKOUT passes CLKIN through without changing its rate. Register it as
+a 1:1 fixed-factor clock, which does not require register access.
 
-So there is no usage count leak here.
+Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+---
+ drivers/iio/adc/ade9000.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> So whilst that might work it is rather non user friendly to the extent
-> I think I'd consider it a bug that should be fixed.  Backport or not
-> is a different question.
+diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+index e57e24b6acdf7..4e96cc37fbedf 100644
+--- a/drivers/iio/adc/ade9000.c
++++ b/drivers/iio/adc/ade9000.c
+@@ -1647,8 +1647,9 @@ static int ade9000_setup_clkout(struct device *dev, struct ade9000_state *st)
+ 		return 0;
+ 
+ 	/* CLKOUT passes through CLKIN with divider of 1 */
+-	clkout_hw = devm_clk_hw_register_divider(dev, "clkout", __clk_get_name(st->clkin),
+-						 CLK_SET_RATE_PARENT, NULL, 0, 1, 0, NULL);
++	clkout_hw = devm_clk_hw_register_fixed_factor(dev, "clkout",
++						      __clk_get_name(st->clkin),
++						      CLK_SET_RATE_PARENT, 1, 1);
+ 	if (IS_ERR(clkout_hw))
+ 		return dev_err_probe(dev, PTR_ERR(clkout_hw), "Failed to register clkout");
+ 
 
-What is leaking is the autosuspend setting, but the implication of that
-is generally not even noticeable. Remember that this only happens when
-root unbinds a driver. And in almost every case, it is the same driver
-that will later be rebound.
+base-commit: 6b9f23b5460818aaf199dda90210d5fc08d66c8f
+-- 
+2.25.1
 
-I guess you can try to come up with a situation where a different driver
-is later bound which does not use autosuspend, but here we are very much
-in hypothetical corner-of-a-corner-case territory which is not relevant
-for stable.
-
-> > That said, drivers should clean up after themselves so disabling
-> > autosuspend is still the right to do. But it's more of a cleanup than a
-> > fix (and does not need to be backported).
-
-Johan
