@@ -1,54 +1,73 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72CBA2D0C94;
-	Mon, 24 Aug 2026 03:55:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A52D434FF62
+	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 04:29:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787543748; cv=none; b=fOf3GIyQgODNRDONtbkTxEOhpZ/wO/4GqHZHVwvq9RPr5SjIiOM/HA13ZHa8wCddBf62I9Pfd/B4FK4nogb4B58n84ITgRd2dDYuQmmSGkRO0IfOBhiBoTN2570oz73tsav57UOgVqXpFoWCzC6GaM4hw/0cOjd2G9/FC+QsTJY=
+	t=1787545758; cv=none; b=Plb57g/+RYsULm6RZ8cQQGdwgnU2FeO0u7/aiZRwANx4WzP5AhrIkvw6X4dC3D84Z0IQgunFjzETsV700Iq2jJGzIVEItWpIOkuh6HUK5VCky++ybHizjkCrTrtWVl2RKC0iW2ZxQ8f39uRJDTewoehsdoSrUwpST7FkfzdtJRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787543748; c=relaxed/simple;
-	bh=1iENJhbpG5MvHzF945gJgShLpNBxgiVIsYOE/gnOzJM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=tUJ2ng8L7u/fz3auJHrK8nf8/uLu9YPRqrRdxBpubHJhJ20bB5+pi48LCCArogxgUbp9NbrEghLta4VpUGXzDRSUk8ShQGUf1ZjsqQgT39JPIVbrsvOYcI57QUFBC/gvVTSQxPYPakZet5gWT7gQU96QOnuGwcexkoxGpBsZ8yY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: ab44522a9f6f11f19a56ed5b684f684d-20260824
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:db6883d2-0ee6-4357-99f5-8f589c641f4c,IP:0,U
-	RL:0,TC:0,Content:-25,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTI
-	ON:release,TS:0
-X-CID-META: VersionHash:7db8b62,CLOUDID:fe9fc01c64acc551ba6ed3efc7afe70a,BulkI
-	D:nil,BulkQuantity:0,SF:81|82|102|136|850|865|898,TC:nil,Content:0|15|50,E
-	DM:5|-100,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0
-	,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: ab44522a9f6f11f19a56ed5b684f684d-20260824
-X-User: lilinmao@kylinos.cn
-Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 1307589699; Mon, 24 Aug 2026 11:55:38 +0800
-From: Linmao Li <lilinmao@kylinos.cn>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Chris Morgan <macromorgan@hotmail.com>,
+	s=arc-20240116; t=1787545758; c=relaxed/simple;
+	bh=/twcXd/0jnN1w7iBOi6bjaZoEfhTahZyVkwOHTmRjlA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GoKMxSK69+S85aE7Od1HAz1oo7HcDipoTye/4fP+PA9rhgGNhM8e6KWd3Q6JXolNrDdcU2uoIuPmhkXr3NipdFSZly5T4T+JLy4qg/4/rZ4xC6SER4rQsejRNB+pJCzmxztz7ilG+UQLsstrz4EtQ4mzgB+guR9srvu+tM4YUps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S0QPcaBR; arc=none smtp.client-ip=209.85.218.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S0QPcaBR"
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c15e592da74so420029966b.1
+        for <linux-iio@vger.kernel.org>; Sun, 23 Aug 2026 21:29:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787545755; x=1788150555; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=4wjW91PO26FkPNJiludhbBOV42kX0uUO5r1dlsyzrGo=;
+        b=S0QPcaBRKDiR5ab1fQu2nQnbsxjoBoFZwNoPbbG4GItnuzed6tfAZe23s0NOmBL0Is
+         tTElZle0fjFnwggXC7IfU83uplg+ZKrRweQiCj5zHaH99ABHGE7yYUFz/dd5QBIKLaX7
+         U/5XUTnrBomsKdsq+IJHTuAw8c4Uxp7WtvcEZ6f9kSdaOpOcF9xDjzf6+6gCesm5/aZ/
+         wMHo8swxdyElBOOGjpeURr6/8vOCtaMoIeySn/vbeWXneQmyWNfErKrud2B/moW2ejwA
+         2JmeeiJi17rZiHBy+yFePuLEoxS5+8RFIAD2XkLTr5T1srh/FvYNKgUcBYW1H68Oj8p8
+         ChSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787545755; x=1788150555;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4wjW91PO26FkPNJiludhbBOV42kX0uUO5r1dlsyzrGo=;
+        b=WECwO1tzVzJW8cZipNHht0/NyU3t5xqz4fa+CtAeaTqirS8ONen9WHrchPiV5j4avM
+         TFiVQdqjFsrBxgL02zO1ClK+ItlhBYu1gHDe9GfMO8b5gXvPzuulAD/aUQmhG/MiiR/s
+         WK/gdYKTlwqobLtP7zz7hj7fF/kVo17n3on+ApqyKef7Xo2nvy1Xtgdc6maeiMJlYyUR
+         SaOcB8doa7CKAF8W8rQG9/jUVOBta9K8yaLs7Yq2GBO8VTy8RYFEX4xOwWq4WI1wBDa6
+         q8IfwAGO/wFIhakVi1F2up3eS4V3ETe5ghzodwQc0wOFjNmiZJyGgDaFDbZEGKxVX6xW
+         +EwA==
+X-Gm-Message-State: AFuF++lUb8a2QWFEpYYO725csM6QpSM5F+egfQYZLx4CDk6Hyqcuq3MC
+	mYg6fpHyH5cQU9+sqzedNUUDaQCpuZo+wtDsHA0PmLrxALEqbcm9C5aR
+X-Gm-Gg: AR+sD12Ocz/2WHLbo2RiVIHpxceTp5dnbAwAs1o3+CKy6QtH+2hrH8+IKVhq1IIWu8A
+	TEUy2h2dMzgtJHgyJRKNBgrn1GpHYJ9JM/RPUkO0AJIdkCkb0gwbjdc3HhgJZT3Gs53Zf1oJ/7a
+	MTvXon+WkUikpD05YL0fW6bZNVPZ5HAJ/ImsYSusfOdkN782+PK4r2UmgfXjfDe2doGqWY+k7KI
+	QDUwNwNZnY9xG8FXPTO5YCdFWSsN3M165GOR/zSGg06Ofoh2peggL8qYriwDT/gRinqxQTGOK3y
+	vSkhgQo33NKxpbkaat+IuXpCyQjFagu/x5mRl+G8Gwm54Ut1GdKEu/DucMLP/E9oF/ymwg4hJzC
+	ZCfQPc6SnXtDThlk4lleiYH4zeFIF8YItUgwQckXJdDGm8eAPliZh5YaRfaiB0e5ODFji0J3VL2
+	UgSiCySGZZUf/gN8cimO782La1pBHu2Y5GQV26ZblLwO2fyC5GswM8Qmc3XOkBPzjsGBmHp/jIS
+	g==
+X-Received: by 2002:a17:907:8908:b0:c21:35d0:f435 with SMTP id a640c23a62f3a-c24924db408mr1804770966b.10.1787545754823;
+        Sun, 23 Aug 2026 21:29:14 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.128.6])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2496296b8bsm973011466b.16.2026.08.23.21.29.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Aug 2026 21:29:14 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Linmao Li <lilinmao@kylinos.cn>
-Subject: [PATCH togreg v4 2/2] iio: imu: inv_icm42607: restore runtime PM on system resume errors
-Date: Mon, 24 Aug 2026 11:55:31 +0800
-Message-Id: <20260824035531.141429-3-lilinmao@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20260824035531.141429-1-lilinmao@kylinos.cn>
-References: <20260824035531.141429-1-lilinmao@kylinos.cn>
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v2] iio: proximity: vcnl3020: fix ISR bitmask check in IRQ handler
+Date: Mon, 24 Aug 2026 05:29:07 +0100
+Message-ID: <20260824042908.8887-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,73 +76,79 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-pm_runtime_force_suspend() leaves runtime PM disabled after it succeeds and
-expects pm_runtime_force_resume() to restore runtime PM management during
-system resume.
+The threaded IRQ handler contained multiple issues in handling interrupt
+events and clearing status flags:
 
-The resume callback returns early if enabling the vddio regulator or
-synchronizing the register cache fails, skipping the matching
-pm_runtime_force_resume() call. Runtime PM consequently remains disabled
-after the system has resumed, so runtime autosuspend can no longer turn off
-sensors enabled afterward.
+1. ISR bit check: The handler incorrectly checked the Interrupt Status
+   Register (VCNL_ISR) against VCNL_ICR_THRES_EN (BIT(1)), which is a
+   bitmask meant for the Control Register (VCNL_PS_ICR). In VCNL_ISR,
+   BIT(1) corresponds only to low-threshold interrupts. A high-threshold
+   interrupt (VCNL_INT_TH_HI, BIT(0)) on its own was completely ignored and
+   returned IRQ_NONE.
 
-Call pm_runtime_force_resume() on both error paths. Keep the first error as
-the return value and report a runtime PM restore failure separately.
+2. Event direction & channel index: The handler unconditionally pushed a
+   RISING event code on channel index 1. The driver only registers a single
+   proximity channel (index 0), and low-threshold interrupts should be
+   reported with IIO_EV_DIR_FALLING.
 
-Fixes: 3007c1530f96 ("iio: imu: inv_icm42607: Add PM support for icm42607")
-Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+3. ISR clearing: The write-back to acknowledge the interrupt only preserved
+   BIT(1) instead of masking against both valid status bits.
+
+Fix this by checking both VCNL_INT_TH_HI and VCNL_INT_TH_LOW bits in
+VCNL_ISR, pushing separate IIO events with the correct direction and
+channel index (0), and properly clearing handled status bits.
+
+Fixes: 3363fbbe19e5 ("iio: proximity: vcnl3020: add periodic mode")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
 ---
-Unchanged since v3.
+Changes since v1:
+  - Extended the patch to fix additional bugs found in vcnl3020_handle_irq_thread():
+    - Corrected event directions (RISING for high threshold, FALLING for low threshold).
+    - Fixed channel index from 1 to 0 (matching single proximity channel).
+    - Corrected ISR W1C clear logic for both HI and LOW bits.
+  - Updated commit message to detail all IRQ handler fixes.
 
-This was found by code inspection.  No ICM-42607 hardware or
-fault-injection setup was available.
+ drivers/iio/proximity/vcnl3020.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
- .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 23 +++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-index 0da362967f63b..f4ef75da22c76 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-@@ -664,9 +664,8 @@ static int inv_icm42607_suspend(struct device *dev)
- 	return 0;
- }
+diff --git a/drivers/iio/proximity/vcnl3020.c b/drivers/iio/proximity/vcnl3020.c
+index 7f417372566a..d0b8f429999f 100644
+--- a/drivers/iio/proximity/vcnl3020.c
++++ b/drivers/iio/proximity/vcnl3020.c
+@@ -584,16 +584,26 @@ static irqreturn_t vcnl3020_handle_irq_thread(int irq, void *p)
+ 		return IRQ_HANDLED;
+ 	}
  
--static int inv_icm42607_resume(struct device *dev)
-+static int inv_icm42607_resume_core(struct inv_icm42607_state *st)
- {
--	struct inv_icm42607_state *st = dev_get_drvdata(dev);
- 	int ret;
+-	if (!(isr & VCNL_ICR_THRES_EN))
++	if (!(isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW)))
+ 		return IRQ_NONE;
  
- 	ret = inv_icm42607_enable_vddio_reg(st);
-@@ -675,9 +674,25 @@ static int inv_icm42607_resume(struct device *dev)
- 
- 	/* Sync the regcache again after regulator shutdown. */
- 	regcache_mark_dirty(st->map);
--	ret = regcache_sync(st->map);
--	if (ret)
+-	iio_push_event(indio_dev,
+-		       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
+-				            IIO_EV_TYPE_THRESH,
+-				            IIO_EV_DIR_RISING),
+-		       iio_get_time_ns(indio_dev));
++	if (isr & VCNL_INT_TH_HI) {
++		iio_push_event(indio_dev,
++			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_RISING),
++			       iio_get_time_ns(indio_dev));
++	}
 +
-+	return regcache_sync(st->map);
-+}
-+
-+static int inv_icm42607_resume(struct device *dev)
-+{
-+	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = inv_icm42607_resume_core(st);
-+	if (ret) {
-+		int rc;
-+
-+		rc = pm_runtime_force_resume(dev);
-+		if (rc)
-+			dev_warn(dev, "Failed to restore runtime PM state: %d\n", rc);
-+
- 		return ret;
++	if (isr & VCNL_INT_TH_LOW) {
++		iio_push_event(indio_dev,
++			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_FALLING),
++			       iio_get_time_ns(indio_dev));
 +	}
  
- 	return pm_runtime_force_resume(dev);
- }
+-	rc = regmap_write(data->regmap, VCNL_ISR, isr & VCNL_ICR_THRES_EN);
++	rc = regmap_write(data->regmap, VCNL_ISR, isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW));
+ 	if (rc)
+ 		dev_err(data->dev, "Error (%d) writing in reg (0x%x)\n",
+ 			rc, VCNL_ISR);
 -- 
-2.25.1
+2.43.0
 
