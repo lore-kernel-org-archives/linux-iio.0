@@ -1,134 +1,113 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAD1036A033
-	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 15:06:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787584002; cv=pass; b=FgLenzDAxILrOuLLoOCAy7DGN8b+z2l4ksPYGZOmzMihqule81sgTZIDwJKMMoU0kqsQ6lTo83iP/3PmieXUTBxA4OaSy3suFtvSl8b91QbyLFjnk6U0NoqaeMwHWtIeKCJ/Ip2x8LWN7nkwm7Hn0q4hav2YdGJNMjuC9bajt+w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787584002; c=relaxed/simple;
-	bh=naIq0ZpmGxBdoTfDsurltwtaOqacNnDJ7BlEOCQ+980=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gv1I65a353hwbeqWWoY5HrXyzXwd+FoPLJl1Xg8Mczg0MRyLe8Ax9GeCerinDp/az5r1L7vvxZ55boKHT4HookrmXSzqtrJkY2y0hmnQNeKbFnsK08wsSgkrppO59SBnhYh76MhgR+H0lQgNIdoE9lLNHIIt05H5unh3Fvf+BGA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=seWWnFYy; arc=pass smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0CDD36F91B;
+	Mon, 24 Aug 2026 15:06:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787584018; cv=none; b=L+RyImYmZ8spZPtoINXz7bWFBaoC7XBaQkN2qsH0PAYkv+89X8iV8N0tDznCNuIFA4HkS1UyLGD9abb2+VT20mOOk1ccLYgxYYCbSBqoujSjl9QTgGU3sg6BH7uFllr1mVupq2rRltVHgNbaj1LwNDNpBuoqrNY9jrcj0/HmA2o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787584018; c=relaxed/simple;
+	bh=yKUnYbg/8SK/30O7cmDvkg9NK7A9m6n/C5vk+v6dJaA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=K2tNztccTFnLMtsnM/ZUD7yCZGqi0yqJfjF0juGwYIYwP404otnwknEoU7U6R/03dEVFsPfmu+8qN9e29v1YKjRUl2ry5OQqyEnU58I9i/5aPrH+u2llsEBkhagXut0NgEWSzghFhq6Vnb+VHqAVKC6k8qHFXxoWJyrBxghPVzs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ewS9Wosn; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="seWWnFYy"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-47f904e80eeso1355844f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 08:06:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787583999; cv=none;
-        d=google.com; s=arc-20260327;
-        b=BCE64kxgPvcMfQ21A6efcfqx+eiJDjcQsIsVE2YAbbFQUE+KvltC+7G6iXn9WVWbsd
-         AVoSjZFKoto0c7sZsyrlLovXeRmJoykzg6t5MunerohQsnv9+bPOyQHyJ12lyS38J0mB
-         gZHgggkC8EFP06GOAV3VALd3nMUvgeBtDHq5TVjbEpD50UTdcHDSDkG6yvoWXunEEC/M
-         pdy/rFNnIWPHDQH8PalDY+U6z9mfY+rF6vupPtofw/aLgNHgebRmQjemOWQsu0pODkFZ
-         Xr3oFRNZjnTfD8aqlOvQV/brl2rtt7VTwXiKRcS463ZYZR4mscWV7aUMLFAeEI1BEEZQ
-         1fHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=wWKW6FAqvXyfKJK93X1IXADKoVVutdhRp1q1BW0OB64=;
-        fh=GeG1VcUOXbszgSNn/jJE/OTeWvZF+qU2zWAGGAad5ro=;
-        b=YBytg2siMBRxCDyXs5/+VV0sMPE8RxvwdDZZDr0/4H9h4SVpgz7d0wniBEh6xho3Ad
-         uNdzOepjZDOQ82WYRKFA5YbIc8fBgi2McNVX8LGQGKI5u79jIYGE1kODeA5BImf5r5WW
-         2aXyJfA9CPNjQnrnlJw9J2WKXhoE0YCH+pWZ9LYTMHEP/HCVNnvwVmp/1BXTcPajCOrX
-         VhdVJPeuD/4QoYm0HbStEjgF8wLeUObMrTbulTA1ld35qOOmuX2sqtqS5QLMCKjzjLOp
-         7FpPOJPxUJ1yy/C6c9RuivNSnup3pNjSUTAG/rrwCFefbADIoIQY5gb03SrhISbhRm4w
-         /WKQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787583999; x=1788188799; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wWKW6FAqvXyfKJK93X1IXADKoVVutdhRp1q1BW0OB64=;
-        b=seWWnFYy9jVU9gKGTufivjTVyd8T1CIwfmhJwpf80CqzzfMll+H1sroSl/zEky7NTa
-         TgJ57FMfoUcTaMM8uigL3dEQu2gFIUrn69y31qqK2U/IBFGhR+RnhNRMrkPrIfbqCeY5
-         S4N7nCQPY0F9mt8QQHuhVPKCRVHngRcdADDtLHy6A3U4cjybQW4z2T8a9JBOp2ZOzoY5
-         WG3jYxCkqFdA7s6Exjg/EW+w2WhQ9j+DCtDu4jk6pqjw0EWf2fyGuSxn9WnXG75HmdG2
-         +/Hv57JXty4B/ROmB3zMSz1u2G5vrbPQMw9G/b1dJkHltQDoS/YZMU3vt/EmXtXH8uIB
-         bc5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787583999; x=1788188799;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=wWKW6FAqvXyfKJK93X1IXADKoVVutdhRp1q1BW0OB64=;
-        b=EE+uw7y+XaDrbNjuE+fpBdjwnhdJEo+gc480+H7XsHyACGf/nNePAHAQDJ1RCRu8pE
-         uCwqXr3wgSmTR1QMwpjQZSujlZlA5NW49gTYesDQ6oSLRNei/NgaAiyzuwAJ2PxhGaqP
-         3pMzsIWu1uKNVckRH2OGviSt+Q32MGTqk0EeUDhP5mudwHYPDZF5wDFcTOpApN7p3Afs
-         3s7l9jhQCEm95/7b2OU7HsG8IA/Jmr/gLTvUfMYXQT03yNN6J9R4L5qTJrCpEJROjoGb
-         IYrr0G4BfxirxPrj1NatVIajMZuqXWucU20b9KVP0zfb2iOJgQMc+vHvKooE/o0XxpK4
-         4Dzw==
-X-Forwarded-Encrypted: i=1; AHgh+RoCHDdQxS8pPHZmQOCxU9s9d0y/nm43OLkUw+MExhJ+XtMluQL6LZc/7eCxD5PmXFjYc8PX66Rib8w=@vger.kernel.org
-X-Gm-Message-State: AFuF++mFrnArLs3QU/MNhVwi1qB6l/qi3joS37uI4CwurbQ8y3f4zZF4
-	K5+V4eKfUr3H2p/SU4QbTRVOuplJVE54kDQYCX8dOMSipqwSJ5rmw5R8gqc1VF1K53BfOmtfdtq
-	KgkVcAKRBNbCcbWqrePeOlmQbJkzJ1OUtCTofjNo=
-X-Gm-Gg: AR+sD11TakWXZuJ3U+V7OadIe1UGqn+FlSy5eXeZCb6MB02QcA5LfJnFQWPCzFpwhZv
-	i3USTtLbU1fVu56WXIb73JUCVgmeP2wNfkR9hR5tg1dtksdEPLWVJoLmfkpHiwOfACbVgLEEzmJ
-	Z+guY6HYfeK7BBGoXYY2FVrlKmyt6VJlV8vl4XWpXj9uc//iv/OzsaEYtSR3jBm1xct/S7genTq
-	tCvxLwuxgzkhTqAFfuz93auzFw8+Sc0QwHIR3C5FSsE98ElGWcAqTPn2UR/bXzwU4wMn2kOI0oH
-	No168WfW4t4DwtYeStxnhPf5xdDvchfNABS/eMi8zpAOwEPYf60ZY6xnUwyjTO5lrejArZ48sVa
-	lZFgpYOj3zP21UDuE4bW9yNxZqQYpD0Bzaigbc5GA2CJEuADJVlQdx8thtf7fpshwXqaMQcqRbZ
-	MQS17MxLHS+Ij6akvCdAbhNFM0bzGI/Bi8Dqrtll+Mf1w3LqQ1f+fUyczc/8T7Zqbu5mVyPjrEL
-	sDoJY09WLg1i8ocNJI4APC94RGLnmcu+901VGkE+1bJV44eMEM=
-X-Received: by 2002:a5d:64c6:0:b0:47f:8f8f:db74 with SMTP id
- ffacd0b85a97d-482c0b87e35mr34299470f8f.12.1787583999042; Mon, 24 Aug 2026
- 08:06:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ewS9Wosn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787584018; x=1819120018;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yKUnYbg/8SK/30O7cmDvkg9NK7A9m6n/C5vk+v6dJaA=;
+  b=ewS9WosnODLF/VYBuEmrVNHfBF4C6eO93400sJFcaNO6+Myfw0CNbDIx
+   RlY6pochOBvvre9SDjI7MpsNUmUvAUa67APtn6P5P6EAAusWzTk3T/Ol1
+   hX0o3D896WprwB7CRNnm8FG6Vvv7Ze/OUg4ASf+HIvmWe1UnUMarsOEqy
+   TCC3WPVW6FGi1PQq8jGRvV1PjEj4d6XciYNM7roy4i416EIgRovbZAtsj
+   SnsU5M0M2yxYX4h9QkcbcdhtiOLR7V/+zIi2TKg4r00hV3Ek2ZfVC6M7c
+   hdGfVKHuj212Dy52y73n/KSogfBDzSFXx1ODDWZMFbUIsZfq6TrQQHP8g
+   w==;
+X-CSE-ConnectionGUID: MIBa/CrrSSasyrCDepUOhQ==
+X-CSE-MsgGUID: r/yeLOQ4T2W7G19Yfi0kXQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11885"; a="88051817"
+X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
+   d="scan'208";a="88051817"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 08:06:57 -0700
+X-CSE-ConnectionGUID: +O3VUrxiRTKEzR8XNqG2Sw==
+X-CSE-MsgGUID: tE2pJXz3QTetpGJ5NTAsyA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
+   d="scan'208";a="271235995"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.130])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 08:06:50 -0700
+Date: Mon, 24 Aug 2026 18:06:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Janani Sunil <janani.sunil@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Michael Walle <mwalle@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v3 05/14] iio: adc: Add AD7768 and AD7768-4 core support
+Message-ID: <aoxeCDspYo_jaBhx@ashevche-desk.local>
+References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
+ <20260813-ad7768-driver-v3-5-cb554399ad26@analog.com>
+ <20260816201049.480143e1@jic23-huawei>
+ <31aa140058fde422c12e34fe926e7df01ba448df.camel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260823222502.30764-1-rishab.madhugiri@gmail.com>
- <aowVI_n7s0VAmN3D@ashevche-desk.local> <20260824120503.00003500@gmail.com> <aoxZq7sc4ndMG-V8@ashevche-desk.local>
-In-Reply-To: <aoxZq7sc4ndMG-V8@ashevche-desk.local>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 24 Aug 2026 17:06:24 +0200
-X-Gm-Features: AcwNN1XjJBxJVRN1y0m0Rn6S2Uglxf9je2RDYLXmmtpPcmML3_1kmW4yvA34SU0
-Message-ID: <CALoEA-w8RMArm=STmnaGJJdyHpR7V-58uFz4m9U74aDe+QJe6Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: core: Avoid BUG() on invalid clock types
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Rishab Madhugiri <rishab.madhugiri@gmail.com>, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <31aa140058fde422c12e34fe926e7df01ba448df.camel@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 24 Aug 2026 at 16:48, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Mon, Aug 24, 2026 at 12:05:03PM +0200, Joshua Crofts wrote:
-> > On Mon, 24 Aug 2026 12:55:47 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >
-> > > On Sun, Aug 23, 2026 at 10:25:02PM +0000, Rishab Madhugiri wrote:
-> > > > Replace deprecated use of BUG() in default switch cases of
-> > > > iio_get_time_ns() and current_timestamp_clock_show() with
-> > > > WARN_ONCE() and return correct fallback or error codes.
-> > >
-> > > Why?!
-> >
-> > Because BUG() and BUG_ON() shouldn't be used anymore, no? Linus himself
-> > said that he hates the macros.
->
-> Why? Please, study the case. As for the above change, there are two questions
-> (at least):
-> - Why BUG() is deprecated? Where is it stated?
+On Mon, Aug 24, 2026 at 04:45:01PM +0200, Philipp Zabel wrote:
+> On So, 2026-08-16 at 20:10 +0100, Jonathan Cameron wrote:
+> > On Thu, 13 Aug 2026 15:56:58 +0200
+> > Janani Sunil <janani.sunil@analog.com> wrote:
 
-https://docs.kernel.org/process/deprecated.html?hl=en-GB#bug-and-bug-on
+[...]
 
-> - What will WARN*() gain us here? (Note some specific kernel command line
->   parameter that may convert WARN to BUG)
+> > > +static int ad7768_reset(struct ad7768_state *st)
+> > > +{
+> > > +	struct reset_control *reset_ctrl;
+> > > +	unsigned long reset_low_us;
+> > > +	unsigned long mclk;
+> > > +	int ret;
+> > > +
+> > > +	reset_ctrl = devm_reset_control_get_optional_exclusive(regmap_get_device(st->regmap),
+> > 
+> > Probably use a local variable for struct device *dev = regmap_get_device(st->regmap);
+> > to reduce line length.
+> 
+> Or just pass dev into ad7768_reset() as an additional parameter.
 
-As Jonathan mentioned earlier, the original BUG() was there to prevent the
-compiler from complaining that all possible values weren't handled. So BUG()
-or WARN*() here is a placeholder. Just removing the BUG() call should be
-valid since it's impossible to hit(?)
+It might make code be less understandable as this function is not something
+like devm_*(). I slightly prefer my suggestion over this one.
 
---
-Kind regards,
-Joshua Crofts
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
