@@ -1,189 +1,92 @@
 Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F8C01A6816;
-	Mon, 24 Aug 2026 03:15:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D3B3161A1;
+	Mon, 24 Aug 2026 03:55:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787541353; cv=none; b=u/vU0eBKtVRyh51aOjTPsCA4cOpA4jzuQllY/O2jd3N7p6TKFVtwBbkEaehhVf74mPZRLJ0Rjbn/fnHroNcns3nmvYOriIY0Hh1axUBmZGFPo+VKAaKnGlPm4DVk/zGbCLSVCLBCVeeFSYZd8rESQJC2aeS/mOoMFlxQrpzDfJQ=
+	t=1787543747; cv=none; b=eK42r3HJHlEsZistB7wWn49BJA+50C+AbA8ckHviwntPLmaDAMapkCtfifM/UBuJwISqJa0K51Y13smwdaH8W/01WQx8PtLuyFiU46LqaUyIQYFcUKAhkDPuxWV4LIgyYw+grJgu9o52rsiVZ8i5xrvyZEaw/T+hR8YdvvBjxtg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787541353; c=relaxed/simple;
-	bh=ng443l8ddRzotGSvxuhFlL6g7EVBbVM5HgZDwD2TcWA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hUKitgFTQHK3+TL/WB7Hi+zxSpoawyS60FDOptAsKCQjb0tNmSbK4jaANl9I3T6unYilAuwnLkzsIYagXdXtkwBsLHANTzQEAxO6ZqZKDbG4uDzxraBdhCoOLnhud6ZZfNVzWyFzZeDJIMWTdJyP00M5lBajLzGBgR5goaqBkRM=
+	s=arc-20240116; t=1787543747; c=relaxed/simple;
+	bh=bX1KCzAoyE1JUG3NiFQ0Z96txw2W5NWWSJyM0if0ItQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=IFiH59uUzOijop/0X3JQU/n13hbb6IT69qPA8/uonfTLpHE+wpQ3fnbrYhstWO5L2TMha/J2e98oAkqc5PVw4qDdXh935VcYXlIAz9At6AXwviiG841N5h0sheX3vxC1m7WN4+Uxa9byXWthncQxXVgSib7QhysN4GlV0HNHfZc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 169380609f6a11f19a56ed5b684f684d-20260824
+X-UUID: a9601d229f6f11f19a56ed5b684f684d-20260824
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:4187a57a-eeb5-4792-8e98-3873209256f0,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:7db8b62,CLOUDID:a6b5119c2e692b6ce2037accb6bd60ac,BulkI
-	D:nil,BulkQuantity:0,SF:80|81|82|83|102|136|865|898,TC:nil,Content:0|15|52
-	,EDM:-3|-100,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OS
-	I:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-O-INFO: VERSION:1.3.19,REQID:8bd83afb-288e-4c55-9ed2-3888799fb6ae,IP:0,U
+	RL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:25
+X-CID-META: VersionHash:7db8b62,CLOUDID:2c31c025ac352c2d11dcb4689d3c03cd,BulkI
+	D:nil,BulkQuantity:0,SF:102|136|850|865|898,TC:nil,Content:0|15|50,EDM:5|-
+	100,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
+	,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
 X-CID-BVR: 2,SSN|SDN
 X-CID-BAS: 2,SSN|SDN,0,_
 X-CID-FACTOR: TF_CID_SPAM_SNR
 X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 169380609f6a11f19a56ed5b684f684d-20260824
+X-UUID: a9601d229f6f11f19a56ed5b684f684d-20260824
 X-User: lilinmao@kylinos.cn
-Received: from [10.0.2.15] [(10.44.16.150)] by mailgw.kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
 	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_128_GCM_SHA256 128/128)
-	with ESMTP id 1852031418; Mon, 24 Aug 2026 11:15:41 +0800
-Message-ID: <cfc66816-b8ca-4ed6-bf48-d4ab17249bb0@kylinos.cn>
-Date: Mon, 24 Aug 2026 11:15:38 +0800
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 539606431; Mon, 24 Aug 2026 11:55:35 +0800
+From: Linmao Li <lilinmao@kylinos.cn>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Linmao Li <lilinmao@kylinos.cn>
+Subject: [PATCH togreg v4 0/2] iio: imu: inv_icm42607: fix PM error handling
+Date: Mon, 24 Aug 2026 11:55:29 +0800
+Message-Id: <20260824035531.141429-1-lilinmao@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH togreg v3 1/2] iio: imu: inv_icm42607: propagate runtime
- suspend errors
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Chris Morgan <macromorgan@hotmail.com>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260811020345.950137-1-lilinmao@kylinos.cn>
- <20260811103301.1157404-1-lilinmao@kylinos.cn>
- <20260811103301.1157404-2-lilinmao@kylinos.cn>
- <20260815215028.784c7579@jic23-huawei>
- <51769a1a-8d28-4224-9b36-06b04282db74@kylinos.cn>
- <20260824012059.0a38fe2b@jic23-huawei>
-From: Linmao Li <lilinmao@kylinos.cn>
-In-Reply-To: <20260824012059.0a38fe2b@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+The recently queued ICM-42607 PM support has two error paths that can leave
+the PM core's state inconsistent with the device.
 
-在 2026/8/24 8:20, Jonathan Cameron 写道:
-> On Mon, 17 Aug 2026 17:32:43 +0800
-> Linmao Li <lilinmao@kylinos.cn> wrote:
->
->> 在 2026/8/16 4:52, Jonathan Cameron 写道:
->>> On Tue, 11 Aug 2026 18:33:00 +0800
->>> Linmao Li <lilinmao@kylinos.cn> wrote:
->>>   
->>>> The runtime suspend callback always returns success even when updating
->>>> PWR_MGMT0 fails. The PM core can then mark the device suspended while one
->>>> or both sensors remain enabled.
->>>>
->>>> The sibling ICM-42600 driver propagates the corresponding
->>>> inv_icm42600_set_pwr_mgmt0() failure from its runtime suspend callback.
->>>> Make ICM-42607 follow the same behavior by returning the sensor shutdown
->>>> error. Keep a void wrapper for the managed teardown action, where errors
->>>> can only be logged.
->>> What is the practical affect of a sensor remaining enabled?  Bit of
->>> power loss or something more significant?  This info matter when deciding
->>> if we should rush this in during the rc phase, or wait for the next
->>> merge window.
->> As far as I can tell, the practical effect is additional power
->> consumption while the device is idle.  I found no corruption path, but I
->> have no ICM-42607 hardware to reproduce the failure or measure the
->> current.
->>
->> It does not necessarily persist indefinitely.  If the PWR_MGMT0 write
->> fails, regmap may contain the requested OFF state while the hardware
->> remains ON.  A later sensor read requests an enabled mode, so
->> inv_icm42607_set_pwr_mgmt0() retries the write instead of taking its
->> "no change" return.  If the bus error was transient, the cache and
->> hardware are then resynchronized.
-> Please capture some of that for the commit description for v2.
-I need to correct one detail there.  For the I2C and SPI regmap paths
-this driver uses, defer_caching is enabled, and _regmap_raw_write_impl()
-drops the affected cache entry when the bus write fails.  So the failure
-does not normally leave a cached OFF value.
+Patch 1 propagates sensor shutdown failures from runtime suspend.  Patch 2
+ensures that system resume restores runtime PM management on both of its
+error paths, so that a failed resume does not leave runtime PM disabled for
+good.
 
-The conclusion is unchanged, but the mechanism is different: a later
-access misses in the cache, so regmap_read() reads PWR_MGMT0 from the
-hardware again.  If the bus error was transient, the driver then sees
-the actual state and can restore the requested mode if necessary.
+Changes since v3:
+- Patch 1: commit message expanded with the practical effect of the current
+  behaviour, the cost of propagating the error, and a description of the
+  recovery path that does not assume a particular regmap bus
+  implementation.  No code change.
+- Patch 2: unchanged.
 
-I will use the corrected explanation in the next revision.  Sorry for
-the confusion.
+Neither patch was reproduced on hardware; both were found by code
+inspection.  They were compile-tested with W=1 and checked with smatch.
+
+Whether patch 1 is worth making is still a fair question - it trades a
+possible idle power leak that may be cleared by a later successful access
+for a runtime PM error state that needs an explicit reset.  The commit
+message spells that out; happy to drop it if you would rather not take
+that trade.
+
+Linmao Li (2):
+  iio: imu: inv_icm42607: propagate runtime suspend errors
+  iio: imu: inv_icm42607: restore runtime PM on system resume errors
+
+ .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 38 ++++++++++++++-----
+ 1 file changed, 29 insertions(+), 9 deletions(-)
 
 
-Thanks,
-Linmao
->
->> I also noticed a cost to this patch: returning an error such as -EIO from
->> .runtime_suspend() makes the PM core set power.runtime_error. Subsequent
->> reads then fail in PM_RUNTIME_ACQUIRE_AUTOSUSPEND() before any sensor
->> register is accessed, until the PM status is reset.  A successful system
->> suspend may clear that state.
->>
->> The patch therefore trades a logged idle power leak that may recover on
->> a later access for a potentially sticky runtime-PM failure.  Since this
->> was found by inspection only, I would not rush it into the rc phase.  I
->> would rather revisit the error handling and target the next merge window.
->>
-> That is fair enough.
->
-> J
->> Linmao
->>
->>> Jonathan
->>>
->>>   
->>>> Fixes: 3007c1530f96 ("iio: imu: inv_icm42607: Add PM support for icm42607")
->>>> Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
->>>> ---
->>>> Unchanged since v1.
->>>>
->>>>    drivers/iio/imu/inv_icm42607/inv_icm42607_core.c | 15 ++++++++++-----
->>>>    1 file changed, 10 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
->>>> index 190e998f7b8ef..0da362967f63b 100644
->>>> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
->>>> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
->>>> @@ -537,9 +537,8 @@ static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
->>>>    	return 0;
->>>>    }
->>>>    
->>>> -static void inv_icm42607_sensors_off(void *_data)
->>>> +static int inv_icm42607_sensors_off(struct inv_icm42607_state *st)
->>>>    {
->>>> -	struct inv_icm42607_state *st = _data;
->>>>    	const struct device *dev = regmap_get_device(st->map);
->>>>    	int ret;
->>>>    
->>>> @@ -552,6 +551,13 @@ static void inv_icm42607_sensors_off(void *_data)
->>>>    					 st->conf.accel.mode);
->>>>    	if (ret)
->>>>    		dev_err(dev, "Unable to turn off sensors\n");
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +static void inv_icm42607_sensors_off_action(void *data)
->>>> +{
->>>> +	inv_icm42607_sensors_off(data);
->>>>    }
->>>>    
->>>>    static void inv_icm42607_disable_vddio_reg(void *_data)
->>>> @@ -619,7 +625,7 @@ int inv_icm42607_core_probe(struct regmap *regmap,
->>>>    	 * Ensure if sensors get turned on at some point, they're turned off
->>>>    	 * as part of teardown.
->>>>    	 */
->>>> -	ret = devm_add_action_or_reset(dev, inv_icm42607_sensors_off, st);
->>>> +	ret = devm_add_action_or_reset(dev, inv_icm42607_sensors_off_action, st);
->>>>    	if (ret)
->>>>    		return ret;
->>>>    
->>>> @@ -688,8 +694,7 @@ static int inv_icm42607_runtime_suspend(struct device *dev)
->>>>    	 * however the tradeoff is that an unused sensor won't be
->>>>    	 * turned off until the entire chip is no longer in use.
->>>>    	 */
->>>> -	inv_icm42607_sensors_off(st);
->>>> -	return 0;
->>>> +	return inv_icm42607_sensors_off(st);
->>>>    }
->>>>    
->>>>    EXPORT_NS_GPL_DEV_PM_OPS(inv_icm42607_pm_ops, IIO_ICM42607) = {
+base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
+-- 
+2.25.1
+
