@@ -1,89 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35AE035E1D5;
-	Mon, 24 Aug 2026 15:32:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACCD2377EBA;
+	Mon, 24 Aug 2026 16:38:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787585578; cv=none; b=NezL+ETvaGozUe9DfoZ6OchEAeLeQeYxH21rm/hovxEMW3hlgVWsYrOcQ7xd5jm3LjbN+5L/NrT0R1Tx2kYpqYcBmFMdk52UvE8vfWA9GZ8bPShZpp5JSgFMCFmwkTm3gldbUpnRbuekh0Tpa60wQWMc9bq+umUqPWNjCoz8OQU=
+	t=1787589502; cv=none; b=aF5WiE7AXRGF3LYAz674jdB7w092E0hcYLs/YCIxZJR2XtUBp49KZQropIK7qDwgS6vOvdqjZeTNFPB9aLwKDGhlPfL0PssQZV65wEHAE01dw0Y8iZmo6KBRA4uKow2fcXVBnK7Pb359yqR6arUpnb4QffWmMNIJfVg7lEG898k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787585578; c=relaxed/simple;
-	bh=OfARlw9nsXER7L4K7sbe5xbl4bur1xzTIEX0rdw1c/8=;
+	s=arc-20240116; t=1787589502; c=relaxed/simple;
+	bh=hU/sAaDPsIpBC9ELNG+LmYrzgz9drI9Eq5U9BN9RNqg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ff/JLr7CiFvHDCiKLKhvi8BcQmDYG0KROOJQnJMqbj02lE18oVG/yXS6z/x+2QbNJtHV1zYo0et94ZZM2pnmZ+27ELUUH7w/ySHxDkdhH6Tj7olHA9dR5qN95f+yYQ8Bv4et9h2nOpvu6KTc6CRdnGVkWnRMfdU5sn8QXVC6xvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fXbQ/urL; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=fYQxXdPcLZIbuEhkKTiw+xyztAY8e378VEKhj8KoSZDlO0AO+gL3WhQaAoCz8GTdU/Igz4A9pfhfXkDQKPjisCjexl7NiAVffhm2zSZuEL5lyd/NxwlRKmtJZ7V1A563TDmd33P+TTklcKm/qOlbIUZ5uMYZAz6fQ0ejuJ6KfeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EsM4Ydpl; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fXbQ/urL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787585577; x=1819121577;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OfARlw9nsXER7L4K7sbe5xbl4bur1xzTIEX0rdw1c/8=;
-  b=fXbQ/urLMiR16nw2rO55UQanli2EujscsbdVvStC3znMzSD7Xp4x8nHF
-   9L/1/Rsgy6FzlzwQ1wzbvrgDAhBg4bYs2dYr+xV8uW44DzdL74sixNxKs
-   63OCM91eZjDUyVdw9glMmPAWMWra4gog2OPcDhNfyd1cg+4JSsWaUQOeN
-   ID7uN8JDs01Ni+8JnfrF4yByJ+i+RXiMNHn3MyBoDFCWE8SnjNm7TNBmL
-   rXP7/cMIrvh84BnwlmdH+9uinMy/5HYQIO8Z1s/cDtdTA+Cq1a0QouCz3
-   lFlWqzxiXPx3leAF7/X42PMYUgsoD5DRHiPEEkkj+r/n+pOSAbiFH53Bp
-   w==;
-X-CSE-ConnectionGUID: ftGiKVauTRCt8tqU5/3cvQ==
-X-CSE-MsgGUID: q8/XZT6MSQS+tc32++fDew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11885"; a="87807258"
-X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
-   d="scan'208";a="87807258"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 08:32:56 -0700
-X-CSE-ConnectionGUID: nvDKjNIMTpWJ37d4vql8ag==
-X-CSE-MsgGUID: oNACP2q2QeOAyQPivu96Sg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
-   d="scan'208";a="305253632"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.130])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 08:32:54 -0700
-Date: Mon, 24 Aug 2026 18:32:51 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: jean-baptiste.maneyrol@tdk.com
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EsM4Ydpl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 671411F000E9;
+	Mon, 24 Aug 2026 16:38:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787589501;
+	bh=hU/sAaDPsIpBC9ELNG+LmYrzgz9drI9Eq5U9BN9RNqg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=EsM4YdpljELnLq4M3bqm+LzeHXGbZfpBbcJSUgKgKT5Uuoqd/05qECBNXX7y7tXxj
+	 FDN6HAIuv5Gc7uamPFnW+ScrHewsrKs1BgfP0XtSXgTwloCjz1eiibxkls4hi+dp7h
+	 uekuqZ4LCprijk2CLdIAXP9udp+pE0diu4nhksdbVjOwwMx5Yd2EkeqVN4epYU+d8G
+	 0IccpOD4/tdj1urrQg72J3ww/hy+INz8Wbm7PUIY1aQaVS2ak1wIU+QIBbHMOhlK/j
+	 KfRabMlem8zOFuFx0Ct+5weRG/5Z0lbJSnzzZF/j2CaqEmlz3pA7SrO/CLmJ3SgN1y
+	 IeQjNf/dMd2rw==
+Date: Mon, 24 Aug 2026 17:38:16 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Vladislav Leonov <vlad@zlab.su>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iio: inv_sensors: fix estimated value larger than
- interrupt timestamp
-Message-ID: <aoxkI3SV4IGumncy@ashevche-desk.local>
-References: <20260824-iio-common-inv-sensors-fix-estimated-use-v1-1-6e93506e7e93@tdk.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Simon Glass <sjg@chromium.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] dt-bindings: iio: adc: rockchip-saradc: Fix
+ RV1106 compatible
+Message-ID: <20260824-scorer-propose-d216e0a8833b@spud>
+References: <20260823122039.20831-1-vlad@zlab.su>
+ <20260823122039.20831-4-vlad@zlab.su>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="AgFl4ZJM4/qIhC3X"
+Content-Disposition: inline
+In-Reply-To: <20260823122039.20831-4-vlad@zlab.su>
+
+--AgFl4ZJM4/qIhC3X
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260824-iio-common-inv-sensors-fix-estimated-use-v1-1-6e93506e7e93@tdk.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 24, 2026 at 05:16:58PM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-> When interrupt timestamp interval is not valid, we use an estimated value
-> that can in rare case be bigger than the interrupt timestamp. This is
-> obviously wrong, so better use interrupt timestamp in this case.
+--AgFl4ZJM4/qIhC3X
+Content-Type: application/pgp-signature; name=signature.asc
 
-...
+-----BEGIN PGP SIGNATURE-----
 
-> -		ts->period = ts->mult * ts->chip_period.val;
-> +		ts->period = min(ts->mult * ts->chip_period.val, period);
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaoxzeAAKCRB4tDGHoIJi
+0ka9AP4+tXIZZ5tZdpAPr7WKI6H6HKkBxPFC6eIG4WKmPx86pgEAydAX9weYsZg7
+V7OR8TKYqLBSjTQX3a///yGD62FMAw4=
+=1r9h
+-----END PGP SIGNATURE-----
 
-It's u32 * u32, how is this guaranteed to be always under the u32 result?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--AgFl4ZJM4/qIhC3X--
