@@ -1,207 +1,230 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011036.outbound.protection.outlook.com [52.101.65.36])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD343F0773;
-	Mon, 24 Aug 2026 09:38:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.36
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787564316; cv=fail; b=j5wsKK2yBQSd1PTo50tIyegWUkkk9fJwIEkB25F+RAUQmS/QaBW5maa5QKHKU1TMAprxrmc1C5eJDL9ijXcv4NHCsMABoZh/5mNx7078jvd32I7YLjZVGQ8STetgOelJFnvseRZKV0nLWSmdVOrVbR24qwxLn1vTn4r18fH+IYA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787564316; c=relaxed/simple;
-	bh=aJU8ukRttjdi9lbZOoxf4JtgKywrmmHwrbb5pelXFtE=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=O7MPYfRWgGh+6J8+CO7NiXTfcm1mdjwLK3NjYjSd99EserIHNYD3qg76XnWiVdXVj6Zl27NFAygaGYCVfyDG+OIg/OtjIpRCrJfjsMKQKEJFd1Gowfdx45flh9vPNRq8jy+zwZVJfwPv37DIMeRDJddBfwT3upPePjP5nkBeXT0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=gmIwZo0q; arc=fail smtp.client-ip=52.101.65.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E81D3515CD;
+	Mon, 24 Aug 2026 09:54:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787565263; cv=none; b=Rbfh9a578cmu4KpEMfCdHDgLAeLqSajGwECA2zt4dvgph47wKjW+XREQMrGSvW9zV8ocUfmdZ/E8Xn2Cso1VLTi+Uyd1MyChSbIANrxY77y5bSljmc6k8eonvHw9OSfdbueHe6tqkRAm2fnS1mVwdLn/TJvRBAW4uu7WmcYTlXI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787565263; c=relaxed/simple;
+	bh=mbMbRMfNqvAsWAoKe2zPVrwdkGENE8wTO9cLvQmmDlg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WZQuOQ6zPlbzvzP7UNOvqntG/ZPMVkFmToGzwcVPU/OPGOTj+cs/BJI4pVmZP8val8vZSNfj40q/O5zKulzt4ymAlHC30PigKX6LBzRv33MgMtjrmJ7Gkjg/c8mg1AAGsyxsCu8ksqTL5LcfXZwFe4XfsKDxa3z+9POWouXj5kY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LyFOX8mj; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="gmIwZo0q"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AfqkWJ/amiWshvcrD28ciYmsyhlm2s93NNfmdtcYih9miI1oLyuRnxFpd/K1xcRnvCgdckBoktWQ849rnPZwCiu24Xs+o0vJryMG3/VdDJGeTFX0shAJx2rAd51dHOasujdzNb1tj8lcgV8NVE83cqigkK5AAZ49QypOqixf/sKUiDMY+wSEbgrZSGnUlzRM+Bp3D8t4YTifF9o6qBpND8vE5iFZgrscZNxSj6q4mDDsyrMwmXrGmPxHw81Zb87cuV61WIRAZPk5rSMxSOmF8h/uhIBGjMZpgMa7QOuEbOULe5DT3z0ecpw5cbbibdV+HfF8JBcU9fhPEi1gXYmCkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aJU8ukRttjdi9lbZOoxf4JtgKywrmmHwrbb5pelXFtE=;
- b=DPB3HSHuTfjmPaMvp0pVJ0usvfxx15Wh+nZ6LcnXp3WzXlTqtnlxvVjOSn8qZHfadum1MSklq9i2Hx01cLHPPSXhR4QZpvvhHGgxB5vYmYvHxFI/ZF8brbC2xop0JBU3eOAB6rht+JqvI0mpr1Obncc734BKDAIjmCg91b3H8LdmopCiYqxDBOo9hOrE6RtbMQOCL3GuMcwSd+Ug2tzJbKBrANTGBMZj1V8etLStx9rZmrnra4Ilxg8XP/Rw2qvOkEy+8/kaSy8kp8A6FxBuNSn5qtBD7YctwDkBewClXmJJYEZpgUqz9ztB45NThjpsgGm4veuTpCwQDwa1E1E9ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
- dkim=pass header.d=axis.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aJU8ukRttjdi9lbZOoxf4JtgKywrmmHwrbb5pelXFtE=;
- b=gmIwZo0qgx0Y0E8GoqOvS5iHk1LwNCVZXGIFtrS+VTiI/dweLK1WQcL15yS1UV1GHI/ot9G5liFNuVWPlxWeQInChSXY2uW/yyEM4OoqWx6oyRjbK+H2edh29AwS9D0ew+d9Uu4q2PJrpR+t/qs9AQEspJBh5RNMOUmlBIOiD0Y=
-Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
- (2603:10a6:10:43a::19) by GVXPR02MB11604.eurprd02.prod.outlook.com
- (2603:10a6:150:326::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Mon, 24 Aug
- 2026 09:38:26 +0000
-Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
- ([fe80::7510:e8c3:db37:47ff]) by DB3PR0202MB9129.eurprd02.prod.outlook.com
- ([fe80::7510:e8c3:db37:47ff%4]) with mapi id 15.21.0339.012; Mon, 24 Aug 2026
- 09:38:26 +0000
-From: Kanak Shilledar <Kanak.Shilledar@axis.com>
-To: "dlechner@baylibre.com" <dlechner@baylibre.com>, "nuno.sa@analog.com"
-	<nuno.sa@analog.com>, "Jean-Baptiste.Maneyrol@tdk.com"
-	<Jean-Baptiste.Maneyrol@tdk.com>, "robh@kernel.org" <robh@kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>, "andy@kernel.org" <andy@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>, "conor+dt@kernel.org"
-	<conor+dt@kernel.org>, Henrik Grimler <Henrik.Grimler@axis.com>
-CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Kernel
-	<Kernel@axis.com>
-Subject: Re: [PATCH v2 0/3] Add driver for Invensense ICM42370P accelerometer
-Thread-Topic: [PATCH v2 0/3] Add driver for Invensense ICM42370P accelerometer
-Thread-Index: AQHdKx765lvaKnsrHkSCQy5bP8bVVranGGuAgAXp9AA=
-Date: Mon, 24 Aug 2026 09:38:25 +0000
-Message-ID: <05bd4082e24ab94e43cb86d4981e0b9f63ac0036.camel@axis.com>
-References: <20260813-b4-inv_icm42370p-v2-0-11aedfdf76d3@axis.com>
-	 <BE1P281MB1426653200EC50B0266FE345CEA42@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-In-Reply-To:
- <BE1P281MB1426653200EC50B0266FE345CEA42@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axis.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB3PR0202MB9129:EE_|GVXPR02MB11604:EE_
-x-ms-office365-filtering-correlation-id: bd21eb48-4cbe-4118-8b76-08df01c37268
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|6049299003|23010399003|366016|1800799024|7416014|376014|56012099006|10067099003|3023799007|18002099003|22082099003|11063799006|4143699003|38070700021|4053099003;
-x-microsoft-antispam-message-info:
- 2rOCZ9FtNgMBAGmyiglifRX7K+Fwtf7iB/y4xh8z3TC+Qd8tNS5z2PnEyYn8FVhUvB62YuNyGt8Y0nWfHvg/3USgkLZhMqAPwv69co2FGpDV2L1MkrbXCFeTwZWvJrg7wlzDQ2irHZWAIbAl9GKndjS1Vc0PIN4Zx1YJIGUFyKGu6MzC/mEjLAqdeEuUjKZmIcZHahjDDtL+84TVIsgQc8RLBHdGymNKZl2KO3qbwmat1Tl5TPqXTN5U13pSSRZKw/YWGhqJhcr/c0fAJQ7Y5h7iXUfyOPlDwMaqNnuTBv47uqEevyG/zDju8ghLWbsex19TBuv8mi8sDVr4JJDGeFCwMU+ZSipfqwmvJLtZ91jZCVHV200B/4SKdg9H8iugEJr5dgmV7Mc2IrXU1ckQFbUKb0ltHBtJ9umdVR3JDK5p4c+WEJZOd2pcBLFY6CSOSRVJI3411XjIvQuZsa2EOdkil54O2zTe13kNUzMTiYmkuPOiyDON/U4kLubBQ4l4+S4oQ2tSNKeJdknZvdeQ083D3hs7Fit3PhRQK2U3KBCa8ANbqgnkvD08cuaTMk9FiwBbbM+6Y81RSJdt7sbpXiVPG2w0eGsfgYRSCzZy5eLxYhDkpKSc0AogHZBK+qK6aGrujxA/h+kuoQuExN6P4qXvJojf5Bl4zSfHD+SMIrp4r6z6j6EvPwL5kGVCSvn0RPbZvr2Sk3aX4Ue3BAGXY9nI0SipExqXoEKVAy4QcVU=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(6049299003)(23010399003)(366016)(1800799024)(7416014)(376014)(56012099006)(10067099003)(3023799007)(18002099003)(22082099003)(11063799006)(4143699003)(38070700021)(4053099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?NDNEc3FFSHFwS3lUVnQ4OHlia2gwbEV3OVJxdkZ4eUc2Ymo1VHJXaStNb2RC?=
- =?utf-8?B?by9YN3dWMlRNK0RJUjBiYkI3YzhlQXQ1SldFUHY2SmFHZHlzeHBBZXdVTVdi?=
- =?utf-8?B?ODVYWW1ra2JSRGF0QXYvb1l0NEdQSDgyaThNcTNwaUFoazBRaGZMQVQrREZE?=
- =?utf-8?B?clpjZVFwNzNlOHM1TVgwU0dLZVJhRGtOS2NPMFRCY3h1MVZSVHlOcitQK3FK?=
- =?utf-8?B?bHhUYzhYQVlyVlJlMUFLMzZvTUdHR0RPYWsvUjQrRWxEOFlSNFVhSnM3RE56?=
- =?utf-8?B?dkdBVDJ6RmtESlltTW9OcnZ0K2VWSDdSU3N3REwzYXZCdVk2enpHdytOR2g0?=
- =?utf-8?B?SlcxUUJmRk9rU2VDY082RW0xbW5lMStVTU93aWxDQVdHNXcwY1BsdElKWk9z?=
- =?utf-8?B?V3A1akVQS1o3WEZMMnRNQlRpVWtzVUtmdEtFYWlFWWtBbUk3YkFZaUljOGk0?=
- =?utf-8?B?eUFVeG1xY2hZa0FoMm85MHkzZzh4SG82S3UrVVlCRE8zSk1ubDJ4SmVGMGhm?=
- =?utf-8?B?ZDV6cnhQQ0E3L3NQS3F0LytSdDZGUDhCczlSNDhCZ1RucFBLdDkvZ1BFTVZt?=
- =?utf-8?B?ejA4cVlybWhMTzN6YVgvT0RsZkU5ZGxTWDI1K2JDYms5dUM2a2lKdWN3RmV1?=
- =?utf-8?B?cnZtNHhzVFJsR3Z3TE90aDg1Vy9uVkFLMlh2cnVvMmNQc1JmSUFlY003UDJQ?=
- =?utf-8?B?VHdOa2UwVTd5dDM3UXo3N0NYNG82TDdtMmVNbWV6L3lHOEhnMVE0STgzYnRp?=
- =?utf-8?B?MnoxbmU5eUw5MHhxNkF1MWd1YXlGVklyVEJRMkxXVDZFVW9lRGdUSWx2T1B1?=
- =?utf-8?B?VW9xRVZYcW5FT0lONS9tZmUwT3JBckpyOTIvN0pyd3l0YTlkRVhQc1R2eFBR?=
- =?utf-8?B?YkNqalhJbVd3RDVBWmJzUU5QZEZudmRGYS9jalZkdEpBM2dFTzZGUCsvWUZK?=
- =?utf-8?B?eHJFRllqSXZKOHNwWTlKRUpYa1RDeEdOUkhvVWNMMkRoSzFVVzNwR3BRYXFv?=
- =?utf-8?B?QlorM0ZtZGVzTWN1Tzc4K0V1c3pUNXFCVW4xdTFKUy9ja2NGcUZzY0xDRnNy?=
- =?utf-8?B?Vmp1b1c0b1QyRlh1YndEK1ZDdFhzZU80eWpOaDN5dHk4ekQyejhwTkVZeGtO?=
- =?utf-8?B?YjlvdkFTV1RDRkY2cy9QRnJFc3BpOVpvT0pqZE9McmZlQ3dTWmdhbW5yTGN3?=
- =?utf-8?B?Zlppb1RxUkl0d2x1SE44YXFqYUFuNnc2QWppOHM0RUR5NHVHYVJSbzNYdTUr?=
- =?utf-8?B?VTd4NzYrOS9QTE81dXlIdVhGZ0NvWDJ1emdhMStBbVpGa3VvZjlFVnBLWk1v?=
- =?utf-8?B?UjdUemV5ZjQveXQ2NmxHTHBJbzliNitGVWt2QjNVZW9WN1dtbjRRMjhoL1di?=
- =?utf-8?B?blRqL0RYL2M4eEVCbnRSUkh3eW05VllWNHVIR1M0YlVOSCtsWitsU2NvQmN0?=
- =?utf-8?B?RCs4U29BZ2s4SXNUTldwUVI3b1VTaWM1RWFkVll4VEl5TkV3cVZic3NoSlFS?=
- =?utf-8?B?eDBDcU5PQklRZlorSW1JK05WL2ZwRjdTSm9HWEhHZjNvakZ0OEFHWWo4NGpN?=
- =?utf-8?B?b01STXI1eE1GeW5xdVNibU1uTDg0YTB3elllajh2cVltNDRBTVgrZHoxNjNi?=
- =?utf-8?B?Y1dXb2ZvY3FuNStJNDZHZDlheUZ5L0ovdXc2N3dmUHlIN0RLZDNBdTJ4SExK?=
- =?utf-8?B?dUIzNTBON0hJdWxDZkkwVVF5MTE3YXhPaW9MNmRqa09PQVMrTzE5WHlJQlk3?=
- =?utf-8?B?M0FOMmd1a0tadXk3VXVmTWpFcmNVS05CazhMK2hMLzBsRnBKWWRVSUw0azIz?=
- =?utf-8?B?MlNqTDUybnJCUUhTVUVuNlNvQ0N1RWYzNEFpMTBBbkRseTdoaVJBWHI1dXBy?=
- =?utf-8?B?ak5CUlVOZUEwWEROcExFMXNiMkpYelBHNnpqUmRKSHlYdWJodFVEdmhUUTVD?=
- =?utf-8?B?Zk03dC94bjRHaTA0TDYyMWs1T1QyNy96aTRVZnVjMytEUWNCai9QZnN1M1po?=
- =?utf-8?B?Slo1b3BPclBncUR5bW9mcklENDFDSDZleFZuNEZ3emlvOHoraW5UTU4xblB3?=
- =?utf-8?B?SlM3TDNteHl4NlhXTkJkSkVjWGd0cXJnNDdCZ2FueTZXUmxmNFJmS0JiRXB3?=
- =?utf-8?B?UzkzUmtINC9ERUNkMGJCZkgvMHRWM1hreGFPMlNsNk1XaVpZSUJOZFh4a2py?=
- =?utf-8?B?VHJRWHRVd1R0QmpLeFVoOWlEc3lpdHdsVDRZTmJxU2U1b244ZGEzc3VvZWls?=
- =?utf-8?B?L2I5MVR4K2wxVWNCUmcwS1VnTWNFUGF4ZzVDQUhaU3NBMkNPN2tSbGtDTk1q?=
- =?utf-8?B?RWt4aGtxN1BiNTlIOHJ0a1l3dlV6N0RvZi96QzNLSXUyRkNkUVlKUT09?=
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="=-YzhQb6BRQwv2A+XPR8m6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LyFOX8mj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787565261; x=1819101261;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mbMbRMfNqvAsWAoKe2zPVrwdkGENE8wTO9cLvQmmDlg=;
+  b=LyFOX8mj3wev8DL99RIUvAL4goQpQ1hMQmCpCfOo9BEZqNbV8Mq0O08D
+   VVo0dU+JKyGli+ukzPlAqfZYI/wkhbsHagO5HvQW7D2FRVhKQ0lCp/wrB
+   sEK6Yh45ac7VjjUr/KWl8eXuABSeu6ziL7khd9cdTMv/2Oq8nZ5NYp1NA
+   aZBeaieWDv2PaoZITcd8BrpBrhkmQVJYHHdNPuz9WE89RhLZbMtgl7VIX
+   oaB14VifbYGZSJVi10XtVKzK5wImM8GfO3n5qa72+6DG17Z1zJpjr6YNP
+   j9N0fmrSGEz8VYSPvkf5yg/gEjziEEc+6cuU2fAAioOo9+kUakX6V2xKp
+   Q==;
+X-CSE-ConnectionGUID: uq718OfITkKc8SZxu5sKYQ==
+X-CSE-MsgGUID: qcRXpTPCRvis+3QnGyzI5Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11884"; a="87882432"
+X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
+   d="scan'208";a="87882432"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 02:54:13 -0700
+X-CSE-ConnectionGUID: rHae4vIMTN6ygNFScXxgig==
+X-CSE-MsgGUID: AeMSxCbyT669lP+dt5gkIA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
+   d="scan'208";a="265185476"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.130])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 02:54:10 -0700
+Date: Mon, 24 Aug 2026 12:54:07 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/2] iio: adc: ti-ads112c04: Add support for TI
+ ADS112C04
+Message-ID: <aowUv2J5jFM7UEDb@ashevche-desk.local>
+References: <20260824-ti-ads112c04-driver-v7-0-6b3c9c87d0e4@gmail.com>
+ <20260824-ti-ads112c04-driver-v7-2-6b3c9c87d0e4@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB3PR0202MB9129.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd21eb48-4cbe-4118-8b76-08df01c37268
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2026 09:38:25.9341
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: G+9GVOD+BdjvWlid9Wp1LjZ9a70mQby/cTDnv11chX7HeRUEM8OiIP/f2Xz8ihLm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR02MB11604
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260824-ti-ads112c04-driver-v7-2-6b3c9c87d0e4@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
---=-YzhQb6BRQwv2A+XPR8m6
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Mon, Aug 24, 2026 at 04:49:39PM +0800, Kyle Hsieh wrote:
+> Add IIO driver support for the Texas Instruments ADS112C04 (16-bit)
+> delta-sigma ADCs.
+> 
+> The driver implements:
+> - Single-shot conversions using the IIO raw read interface.
+> - Dynamic parsing of single-ended and differential channels from
+>   device tree child nodes.
+> - Hardware interrupt support via the DRDY pin, falling back to
+>   software polling if no IRQ is provided.
+> - Per-channel reference source selection (internal 2.048V, external
+>   REFP/REFN, or AVDD) via the reference-sources device tree property.
+>   refn-supply is not yet supported.
+> - Hardware reset via the reset controller framework, falling back to
+>   the RESET command when no reset controller is present.
 
-Hi Jean-Baptiste,
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-On Thu, 2026-08-20 at 15:19 +0000, Jean-Baptiste Maneyrol wrote:
-> >=20
-> > ________________________________________
-> > From: Kanak Shilledar <kanak.shilledar@axis.com>
-> > Sent: Thursday, August 13, 2026 14:26
-> > To: Jonathan Cameron; David Lechner; Nuno S=C3=A1; Andy Shevchenko; Rob
-> > Herring; Krzysztof Kozlowski; Conor Dooley; Henrik Grimler; Jean-
-> > Baptiste Maneyrol
-> > Cc: linux-iio@vger.kernel.org; devicetree@vger.kernel.org;
-> > linux-kernel@vger.kernel.org; kernel@axis.com; Kanak Shilledar
-> > Subject: [PATCH v2 0/3] Add driver for Invensense ICM42370P
-> > accelerometer
-> >=20
-> > Invensense ICM42370P is a high performance MEMS MotionTracking 3-
-> > axis accelerometer. It supports I2C, I3C and SPI protocols. It has
-> > a 2.=E2=80=8A25kB FIFO and two programmable interrupts with support for
->=20
-> Hello Kanak,
->=20
-> ICM-42370-P is completely similar to ICM-42607, except that it is
-> accelerometer
-> only. There is no need to write a completely new driver, you can add
-> support
-> of ICM-42370-P inside the existing inv_icm42607 driver.
->=20
-> inv_icm42607 driver is lacking a lot of functionalities, like buffer
-> support.
-> It explains why there is no support for MREG registers.
->=20
-> I recommend you add first basic support of ICM-42370-P inside
-> existing inv_icm42607
-> driver, and then add new functionalities like buffer support in this
-> driver.
-> There is really no need to write a new driver here. For MREG
-> registers support, you
-> can have a look inside inv_icm45600 that is using the same mechanism.
->=20
-> Thanks,
-> JB
+...
 
-Thanks for going through the code. I didn't notice the ICM42607 in the
-mailing list. I will add support for ICM42370 to that driver instead of
-creating a new driver. I will have a patchset for basic support and
-then incremental patches for implementing more features (like buffer).
+> +static int ads112c04_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct ads112c04_state *st;
+> +	struct reset_control *reset;
+> +	bool need_avdd_ref = false, need_ext_ref = false;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->client = client;
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	init_completion(&st->completion);
+> +
+> +	indio_dev->name = "ads112c04";
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &ads112c04_info;
+> +
+> +	/* Forward compatibility checks for unimplemented DT properties */
+> +	if (device_property_present(dev, "refn-supply") ||
+> +	    device_property_present(dev, "ti,refp-refn-resistor-ohms"))
+> +		return dev_err_probe(dev, -EOPNOTSUPP,
+> +				     "refn-supply and external resistors are not supported yet\n");
+> +
+> +	ret = ads112c04_parse_channels(indio_dev, &need_avdd_ref, &need_ext_ref);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (need_avdd_ref) {
+> +		ret = devm_regulator_get_enable_read_voltage(dev, "avdd");
+> +		if (ret < 0)
+> +			return dev_err_probe(dev, ret, "failed to get avdd voltage\n");
+> +
+> +		st->avdd_mV = ret / (MICRO / MILLI);
+> +	} else {
+> +		ret = devm_regulator_get_enable(dev, "avdd");
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "failed to get avdd regulator\n");
+> +	}
+> +
+> +	ret = devm_regulator_get_enable(dev, "dvdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to get dvdd regulator\n");
+> +
+> +	if (device_property_present(dev, "refp-supply")) {
+> +		ret = devm_regulator_get_enable_read_voltage(dev, "refp");
+> +		if (ret < 0)
+> +			return dev_err_probe(dev, ret, "failed to get refp voltage\n");
+> +
+> +		st->ext_ref_mV = ret / (MICRO / MILLI);
+> +	}
+> +
+> +	if (need_ext_ref && !st->ext_ref_mV)
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "external reference measurements require refp-supply\n");
+> +
+> +	/* Datasheet: POR releases ~500us after supplies are stable */
+> +	fsleep(500);
+> +
+> +	reset = devm_reset_control_get_optional_exclusive(dev, NULL);
+> +	if (IS_ERR(reset))
+> +		return dev_err_probe(dev, PTR_ERR(reset), "failed to get reset\n");
+> +
+> +	if (reset) {
+> +		/* Datasheet: tw(RSL), the RESET low pulse, is 250ns minimum */
+> +		fsleep(1);
+> +
+> +		ret = reset_control_deassert(reset);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "failed to deassert reset\n");
+> +	} else {
+> +		ret = ads112c04_write_cmd(client, ADS112C04_CMD_RESET);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	/* Datasheet: td(RSSTA) is 100ns minimum after the RESET rising edge */
+> +	fsleep(1);
 
-Thanks and Regards,
-Kanak Shilledar
+Perhaps simply ndelay(100) ?
+
+> +	/*
+> +	 * Initialize CONFIG0 with all fields explicit: gain of 1 with the PGA
+> +	 * bypassed, which allows full-scale single-ended measurements. The MUX
+> +	 * field is updated per channel before each conversion.
+> +	 */
+> +	st->config0 = FIELD_PREP(ADS112C04_CONF0_MUX,
+> +				 ADS112C04_CONF0_MUX_AIN0_AIN1) |
+> +		      FIELD_PREP(ADS112C04_CONF0_GAIN,
+> +				 ADS112C04_CONF0_GAIN_X1) |
+> +		      ADS112C04_CONF0_PGA_BYPASS;
+> +
+> +	ret = ads112c04_write_reg(client, ADS112C04_REG_CONFIG0, st->config0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->config1 = FIELD_PREP(ADS112C04_CONF1_DR,
+> +				 ADS112C04_CONF1_DR_20SPS) |
+> +		      FIELD_PREP(ADS112C04_CONF1_MODE,
+> +				 ADS112C04_CONF1_MODE_NORMAL) |
+> +		      FIELD_PREP(ADS112C04_CONF1_CM,
+> +				 ADS112C04_CONF1_CM_SINGLE_SHOT) |
+> +		      FIELD_PREP(ADS112C04_CONF1_VREF,
+> +				 ADS112C04_CONF1_VREF_INTERNAL) |
+> +		      FIELD_PREP(ADS112C04_CONF1_TS,
+> +				 ADS112C04_CONF1_TS_DISABLED);
+> +
+> +	ret = ads112c04_write_reg(client, ADS112C04_REG_CONFIG1, st->config1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (client->irq > 0) {
+> +		ret = devm_request_irq(dev, client->irq, ads112c04_irq_handler, 0,
+> +				       indio_dev->name, indio_dev);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---=-YzhQb6BRQwv2A+XPR8m6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRZbIB7R61KYt5yWsuslrbqDH4eIAUCaowREAAKCRCslrbqDH4e
-IMG2AP9QSn81O6+TISP0Kxj18CozIDNq4Uo+es8w81V7HiLpZAD/TrqK0rZkqZxt
-Vn2DdtwPJS70HlUHuzPH2ueEdUi7dAM=
-=zJDr
------END PGP SIGNATURE-----
-
---=-YzhQb6BRQwv2A+XPR8m6--
