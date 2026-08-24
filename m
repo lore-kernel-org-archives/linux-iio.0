@@ -1,63 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A71E372ED7;
-	Mon, 24 Aug 2026 08:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C4393AAF7A;
+	Mon, 24 Aug 2026 08:29:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787560039; cv=none; b=KjLbqhUnRb/7vzsj5igKirI/nQBvpHuwKNgQyvelR90wUvQWNYTTS4Z7ebwgO3mzvQWHUhR6YklUqdLaszMtbetu08nv7zXEsAkvVUwe9Gu9Decf87auhjrrWsnrJrlkJtuXHYlodw+hUsZkEMd56zPFF0Q30+N1dRVYjHW5E4s=
+	t=1787560181; cv=none; b=CoZcTt+ejDoQa0Y/TL40s420acZ8o3iXJiZezxkJ4Ux5Bio+7l7Ca5iwqsqgu0ArxrFsuHPVuCFJdQoI1MhMagzOlzv4TQKnTAAiui1RQtXvHUgbWjgMURy4vTAUMEDIoK19zHxlymo6CBeb+Lx5t5CGcNN2ef5fQjliEDgAt/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787560039; c=relaxed/simple;
-	bh=rsOHpy3VkSI19bIvi656wZloP/q0x5cM0tz3hJCSp/Y=;
+	s=arc-20240116; t=1787560181; c=relaxed/simple;
+	bh=VppoN4a/N2pQKyEWXBcqbkSC7iG/3u4igmX7UfMxAjE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YxOlcUZMd+WM4/SYaAmaqjOOrOa3dm9fjyx9OOD9CA6PeHo/Ts6O2UPhAaA3Jb13rMXT3KO+PnSlQxOBeuzow2YvQs6BJFQSsVgvgC11Mqd+X0KAeLP2DPJg/mDWbmAXh659OL5+Gj7SgwA1RHQiRLWPx/nUsynL4HYtyUx3IAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=G1N1rd5g; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=ELlMJ3SfwFBkkBBQ5Rzomdp6UzbXYSMne/jfBT7b0Qgo0PD6leW3gIzgzQgy6sFej4IRwk6n7zywWJ10Fsnfvjh0vNHh2xrlsLK46//1tSARPN3aoKVbY25dh33CXrw/gs3zpLrTyO/hSiVFut+EcNNwUCHn9MLwYYauN6YzjZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jXe7mfLe; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G1N1rd5g"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jXe7mfLe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787560037; x=1819096037;
+  t=1787560178; x=1819096178;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=rsOHpy3VkSI19bIvi656wZloP/q0x5cM0tz3hJCSp/Y=;
-  b=G1N1rd5gDFHmZF2a1ykQdaswzJ5yt33I5hapZJsWWNySqiKbj1y27fxV
-   E/7TVLidj8vKZbTXbPG3qkyGKOsXAvsVHdtJDikDo9nQKaz6CEkVpEjFR
-   3XOUuMtWwbTONfBPn9VhWEY7tMpAyBG/pX1aLURNL5vchelEikUagPhn8
-   sDhwOb0gPGiVMhSVG0S8/BJD9dz8bTSVnTUUvfB95SjIoubfs8zs6/hPC
-   ae+84wnWLXPHPX5Tt7bUePv2RNOoa2pHtY7yfyRqQdeBSCQldqWFy6SGD
-   WV53BDfuWPRpKMppBiTcZXEZwmtDLYHY3RjkaSkcctMHQDMqaNu/MWYxr
-   w==;
-X-CSE-ConnectionGUID: n3wVZnjHTl2cwC0THqLFjg==
-X-CSE-MsgGUID: d+CgDTckQI6kSOs4HwbwMw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11884"; a="91819652"
+  bh=VppoN4a/N2pQKyEWXBcqbkSC7iG/3u4igmX7UfMxAjE=;
+  b=jXe7mfLefsOU0hqRYJJxACRxFVxWGiggO9eYn6iyTRudkU3ZkwfnnHAs
+   afQRJQoY0z72BVrIVtkqPiX65EB/ihCem86bT2tam//GVFPqzaH64VlZr
+   vQHIkPKmMqge5hJvC+gt9B61oI0IVzxEmOTtDCIanGqI8IagjYOrN5Xdc
+   WkyhyNFB6o1NpUYxy1YuIt08RGZuGsshaFxA6XouPOZub6X2DbLUiH6za
+   knTzgBtGjxutCpnf5s54pSOPhsCmV1XvG5u56to2V4Vl+Khkhtvi0Y8Yr
+   ShkCPCWJWmNz0DLiFUGMBvjhxPuQSPflIqiVytkACwWXQIYC84TB1LPLK
+   Q==;
+X-CSE-ConnectionGUID: 0ZGo+ZMpQ2+ysfwfcf/iNw==
+X-CSE-MsgGUID: 3HBSKCBcT5q0BVcHtpDxXg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11884"; a="88024372"
 X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
-   d="scan'208";a="91819652"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:27:16 -0700
-X-CSE-ConnectionGUID: RBJjBVQkRouvvWWUuaXAfg==
-X-CSE-MsgGUID: SpmE1tdWRWyOfk0BS7Qghg==
+   d="scan'208";a="88024372"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:29:34 -0700
+X-CSE-ConnectionGUID: 9hzQGmujTm66zrDOYrGpRA==
+X-CSE-MsgGUID: M48RuCIHR8aH9QC4c27SaA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,240,1779174000"; 
-   d="scan'208";a="266416975"
+   d="scan'208";a="305139704"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.130])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:27:14 -0700
-Date: Mon, 24 Aug 2026 11:27:12 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2026 01:29:32 -0700
+Date: Mon, 24 Aug 2026 11:29:29 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Crt Mori <cmo@melexis.com>,
-	Puranjay Mohan <puranjay@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/14] iio: temperature: ltc2983: make headers conform to
- IWYU
-Message-ID: <aowAYN7j8_UXkxQD@ashevche-desk.local>
-References: <20260822-kernel-header-removal-v1-0-ee31b124be11@gmail.com>
- <20260822-kernel-header-removal-v1-4-ee31b124be11@gmail.com>
- <20260823185219.222c7990@jic23-huawei>
+Cc: Arka Mondal <arkamondalofficial@gmail.com>, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, venkat.prashanth2498@gmail.com,
+	rohitsarkar5398@gmail.com, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: imu: adis16400: fix unprotected debugfs reads
+Message-ID: <aowA6WnmgpZwdl6z@ashevche-desk.local>
+References: <20260814090728.965922-1-arkamondalofficial@gmail.com>
+ <20260814090728.965922-2-arkamondalofficial@gmail.com>
+ <aoAmduhNrHoJdmn7@ashevche-desk.local>
+ <20260822223753.21b1b417@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,23 +65,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260823185219.222c7990@jic23-huawei>
+In-Reply-To: <20260822223753.21b1b417@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Aug 23, 2026 at 06:52:19PM +0100, Jonathan Cameron wrote:
-> On Sat, 22 Aug 2026 10:02:31 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
-
-...
-
-> > +#include <asm/div64.h>
+On Sat, Aug 22, 2026 at 10:37:53PM +0100, Jonathan Cameron wrote:
+> On Sat, 15 Aug 2026 11:42:30 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > 
-> I think we normally use linux/math64.h for that one.
+> > On Fri, Aug 14, 2026 at 06:07:27PM +0900, Arka Mondal wrote:
+> > > The serial_number file operations are open coded and never call
+> > > debugfs_file_get(), which debugfs_create_file_unsafe() requires.
+> > > debugfs_remove_recursive() therefore does not wait for a read in
+> > > progress, and unbind frees the iio_dev underneath it.
+> > > 
+> > > Use debugfs_create_file() instead.  
+> > 
+> > Have you read the code? Have you read the commit message of the "culprit"
+> > commit?
+> > 
+> > NAK. Please, revisit all your patches and be careful next time.
+> > 
+> FWIW it is curious that the original patch didn't touch the serial number
+> declaration whilst touching the other two.  Superficially that looks
+> like an omission we missed in review.
 
-Right, the rule of thumb is to prefer linux/*.h over asm/*.h in the C files
-like mere drivers.
-
+I see, yes, it some strange case of missing piece during review.
 
 -- 
 With Best Regards,
