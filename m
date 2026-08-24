@@ -1,94 +1,74 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mx1.white.stw.pengutronix.de (mx1.white.stw.pengutronix.de [185.203.200.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B48AD40EBA8;
-	Mon, 24 Aug 2026 12:52:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 733AA4582FE;
+	Mon, 24 Aug 2026 14:45:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.200.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787575945; cv=none; b=Pcv3Rj8KftwAmq+UgUPIHE/R77fwvYFW217k7YMKxWNsrQWR/QWr5WCkTe9NeM147z9t5C4qjWttzQJSFru7lCi5iTew3DYUOIktrumRbwMaBtRT9+rpm6UKK4vML6u6oOoL7pp7p6sjh30brGv4WneFjFGacpCnKtpj0JgFTcE=
+	t=1787582710; cv=none; b=cirqKQvY2nNBOoJOjqo98ksxIQnAGONFPH9nbEVkDGFnET+wo53osezRlniCFFLuEdGL7lIAvsc3gNenzxSiKrPqbUb4m2eZoH6C5rbf3AySpDNu+DTWpUgPZ5owuPF6CUp7D9nTMOuL5BlEml7heKozNsZyghnPQ672d47bnFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787575945; c=relaxed/simple;
-	bh=RHfBJQvUmRRrjA4Sl3o6osk1PrMdBZxJVzxqJOVnliU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=O9IujCaVQ4oTHBgY8jtdssYkyS36A6i4uS7DugqFiPw7fylGENlyI6DUFmRaup8DUzp/UMdpRBbJuI4zPrXODTXhXObS8beTF48vizPqcJtW9e6Syw+3EQSPwjJvDLay0DvFYSuWreBLHsOCJB5t95tDeDXnMCm8tNkm8NFFEGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: a2879dfe9fba11f19a56ed5b684f684d-20260824
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:1ca0a853-6c81-41b5-a108-06a015ade9f0,IP:0,U
-	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:-5
-X-CID-META: VersionHash:7db8b62,CLOUDID:6073d24401ac398f1b2b2f87925aa8e0,BulkI
-	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50,EDM:-3,IP:n
-	il,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LE
-	S:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: a2879dfe9fba11f19a56ed5b684f684d-20260824
-X-User: lilinmao@kylinos.cn
-Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 90146487; Mon, 24 Aug 2026 20:52:16 +0800
-From: Linmao Li <lilinmao@kylinos.cn>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Linmao Li <lilinmao@kylinos.cn>,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: adc: ade9000: fix NULL pointer dereference in clkout registration
-Date: Mon, 24 Aug 2026 20:52:10 +0800
-Message-Id: <20260824125210.1644319-1-lilinmao@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1787582710; c=relaxed/simple;
+	bh=hLAGFYEYc8NaVpMg4EPPTMwlzlST3ntxnVnzT57vTb8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=uO2uPlPdkw/98DRPDWoSau97/r2lNbtZAJ1EdYrx6BHOzWLxJu6KpIrC8BmmHV1OJ0VwJuxF+o1M6WuH+w35GS2TFREIDRyQ3DHTMl5tiVsGg+bRUXjBRa8lbwvT2+ITbLgQbaCs8926ERGmmGU8bWWAUe2SddhtCzdUNjob+Tg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.200.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from [IPv6:2a0a:edc0:0:900:1d::4e] (lupine.office.stw.pengutronix.de [IPv6:2a0a:edc0:0:900:1d::4e])
+	(Authenticated sender: pza@pengutronix.de)
+	by mx1.white.stw.pengutronix.de (Postfix) with ESMTPSA id 5872E201917;
+	Mon, 24 Aug 2026 16:45:01 +0200 (CEST)
+Message-ID: <31aa140058fde422c12e34fe926e7df01ba448df.camel@pengutronix.de>
+Subject: Re: [PATCH v3 05/14] iio: adc: Add AD7768 and AD7768-4 core support
+From: Philipp Zabel <p.zabel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>, Janani Sunil
+ <janani.sunil@analog.com>
+Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich	
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,  Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>, Linus Walleij	
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet
+	 <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Michael Walle	
+ <mwalle@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
+ jananisunil.dev@gmail.com,  Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=	
+ <u.kleine-koenig@baylibre.com>
+Date: Mon, 24 Aug 2026 16:45:01 +0200
+In-Reply-To: <20260816201049.480143e1@jic23-huawei>
+References: <20260813-ad7768-driver-v3-0-cb554399ad26@analog.com>
+		<20260813-ad7768-driver-v3-5-cb554399ad26@analog.com>
+	 <20260816201049.480143e1@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2-0+deb13u1 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-ade9000_setup_clkout() passes NULL as the register address when
-registering a divider clock. During clock registration, the common
-clock framework calls clk_divider_recalc_rate(), which dereferences
-the address through readl(). As a result, probing an ADE9000 configured
-as a clock provider with an external input clock crashes.
+On So, 2026-08-16 at 20:10 +0100, Jonathan Cameron wrote:
+> On Thu, 13 Aug 2026 15:56:58 +0200
+> Janani Sunil <janani.sunil@analog.com> wrote:
+[...]
+> > +static int ad7768_reset(struct ad7768_state *st)
+> > +{
+> > +	struct reset_control *reset_ctrl;
+> > +	unsigned long reset_low_us;
+> > +	unsigned long mclk;
+> > +	int ret;
+> > +
+> > +	reset_ctrl =3D devm_reset_control_get_optional_exclusive(regmap_get_d=
+evice(st->regmap),
+>=20
+> Probably use a local variable for struct device *dev =3D regmap_get_devic=
+e(st->regmap);
+> to reduce line length.
 
-CLKOUT passes CLKIN through without changing its rate. Register it as
-a 1:1 fixed-factor clock, which does not require register access.
+Or just pass dev into ad7768_reset() as an additional parameter.
 
-Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
----
- drivers/iio/adc/ade9000.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-index e57e24b6acdf7..4e96cc37fbedf 100644
---- a/drivers/iio/adc/ade9000.c
-+++ b/drivers/iio/adc/ade9000.c
-@@ -1647,8 +1647,9 @@ static int ade9000_setup_clkout(struct device *dev, struct ade9000_state *st)
- 		return 0;
- 
- 	/* CLKOUT passes through CLKIN with divider of 1 */
--	clkout_hw = devm_clk_hw_register_divider(dev, "clkout", __clk_get_name(st->clkin),
--						 CLK_SET_RATE_PARENT, NULL, 0, 1, 0, NULL);
-+	clkout_hw = devm_clk_hw_register_fixed_factor(dev, "clkout",
-+						      __clk_get_name(st->clkin),
-+						      CLK_SET_RATE_PARENT, 1, 1);
- 	if (IS_ERR(clkout_hw))
- 		return dev_err_probe(dev, PTR_ERR(clkout_hw), "Failed to register clkout");
- 
-
-base-commit: 6b9f23b5460818aaf199dda90210d5fc08d66c8f
--- 
-2.25.1
-
+regards
+Philipp
