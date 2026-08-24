@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 172E041A4E0;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E12419FD2;
 	Mon, 24 Aug 2026 12:31:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787574697; cv=none; b=QQIT1leth4ECHCW6itZDJmZ7f+cwXfftR6mbIqlgR36CJYZk0PKAVqZGyLkAzeWpDl7Wuph38ttNgbJZJzI6SfPt8jOSz0xg0lf+/ZVMHu9lQ/vd+eS6zCpw89og4740SXe8IY0OLBydQPhuWDsEJQ8jZxT0xHN/uHlLX8lYcqI=
+	t=1787574697; cv=none; b=jDxImEN2jey6RNYuhxEJpt93mGYOJR8uoPTTRqjQmcHgqbiMURbJg7CzzI1BHGQYMdF9WgERiywDwAZJO/E0hTq3OwfQnKOtIZqrmJ8Zq+5gkXAiRqWQG0IXGCqGWgW4q8TNyiEIhv1DV1xRQlY4HnQ9T8WfNchGI9m6RpJSfCM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1787574697; c=relaxed/simple;
-	bh=QCU6ybMTej+JbME3Y8uLe9x6qDs9WyhgQ4MpAnIADYE=;
+	bh=HXue9k6IGMoL9cs3zdJLOVXFVMKEHYebO+iwEOkq7l4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qSdANgQ0+0H4RUzgq0nOELzU5ojL/AKOhIkxpJmeQu4pS0mUJrQTXoHBn60pJfPC5KX1ypFAed8YqDRoVppwVvATAWj2mJsw31fD7ttyn8/jeDCM1DHZnx0K0xhDH56zRN4hZTsYKcrNiV68byl1lOlquv0zMHvTlanIqNfn8eU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JSAKU9O0; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=eE56kK/9UIJAtRWnyRr2BU9W+Ax2xZQGxzzM8bc9PVXMjOtFPoEBEqmDwV4etO8vZcQgUya4Hn5I8r0Z5pVYbzGwN826Zv2H/AWYeZF91o10O24/EE5NJDP51N0iTlnBiGGk1Mp/L08rQ10KqYsfFF5AJEMOKIQw2X+ptKZwysY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vNxgjI29; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JSAKU9O0"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B6733C19425;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vNxgjI29"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DF307C2BCFF;
 	Mon, 24 Aug 2026 12:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1787574696;
-	bh=QCU6ybMTej+JbME3Y8uLe9x6qDs9WyhgQ4MpAnIADYE=;
+	bh=HXue9k6IGMoL9cs3zdJLOVXFVMKEHYebO+iwEOkq7l4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=JSAKU9O0PYj2L9UswmdTyeHUe6VP+grUTODEFiSgQpsH2MWAlmEt+t3dRj7Ho+eqH
-	 hO8+CabebB6YYuhLYDJAhGR8YZSNQRjv5UZGRVHq9FYiUwEqUrpMFCYBg4XHEX93kS
-	 55GpY737IBPA5SFTIs4NlCxprisXWxkkO7BTubm/JIAyuIUPcEpDEmi66t4OVJsTl4
-	 vBEgYp2Gor9aaspEipf+iamB6L0pV4AilEq2vxo6rUEUfShYZrxHDw78YS4GmWPaOx
-	 XSUdm/WjBjquEALweMrTymVm1SmhEn5rqPbk1txrmR8s4qNqEf0CcByFyYgrNlDAjF
-	 WilT474CiyErg==
+	b=vNxgjI29kyE94mqpZ/T9diRZJiu2pB9WDShGmEN2+agR+VVFIVNTPsIJqFYg4S4zX
+	 oJJ/poWn2V0FWru62csIe4SN8xLV0yTviZzjWMnXnycycGJT7CyS4VGULVHXoRAYcO
+	 Rm541Sb1gs3GvG+vu06xSTt8flDHFCKCeJ80ptBIJnXy/m0nqhDQKtTRfAE0wyzMFW
+	 AbbtKJ0t2N92JNcmiprNncbDILKic00pn0b19qsqZVS04xU0G8iAnNcay7YHs6bomW
+	 JHumbHiVG/WgFhxblzq5sr/klAZSWoDOOLYsuWlDDxYkoaLrNqJ+IcssWoEjtRUeH/
+	 RID040JlS1kAw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C93C5DF9B;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C88CCC61DB4;
 	Mon, 24 Aug 2026 12:31:36 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Mon, 24 Aug 2026 14:30:07 +0200
-Subject: [PATCH v2 1/4] iio: imu: inv_icm42600: sleep before enabling FIFO
- data
+Date: Mon, 24 Aug 2026 14:30:10 +0200
+Subject: [PATCH v2 4/4] iio: imu: inv_icm42600: do not read FIFO count for
+ watermark it
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260824-inv-icm42600-enhacements-v2-1-0040837fde12@tdk.com>
+Message-Id: <20260824-inv-icm42600-enhacements-v2-4-0040837fde12@tdk.com>
 References: <20260824-inv-icm42600-enhacements-v2-0-0040837fde12@tdk.com>
 In-Reply-To: <20260824-inv-icm42600-enhacements-v2-0-0040837fde12@tdk.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -53,11 +53,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787574695; l=2859;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787574695; l=2389;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=zSqZCZXt3vQQXgixrfVXug/hYSEOSR96v8Z7vTJ9wTQ=;
- b=YJI9IgVr8hcnwMOHHh5Mq6YLB3CiZwlm/1i0qFSAmX87D4SUtvpmbaHw78JA9s9WhfUNQ1gv/
- fVubuloT/ijCO6YdWQ4kzQXDBgoCbMFZF+BTAc9p340DysdDNxuvVWQ
+ bh=Zm48u8KCXMBBkgQlt9czWfmZZ/N82LVph63qdI2PIO8=;
+ b=azF5mX7dKXNNp3nyza0VdYJVC4Oo+5WI61bcFnkrbd8vQqx9RXLHAvJHwZNqLy/Cc6VyU3Rzg
+ XNt//0Z58zdD/qh5KWJkNhPxeAZvO4kk2m2Gv5D+Asl/GXhsrXBNWtx
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -67,85 +67,64 @@ Reply-To: jean-baptiste.maneyrol@tdk.com
 
 From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-When turning accel or gyro on, a sleep is required for letting the
-mechanical part stabilize before reporting correct data. Move the
-sleep before enabling FIFO data to prevent push of incorrect data.
+Optimize data reading for high frequencies by not reading FIFO
+count in case of watermark interrupt.
 
-We need to unlock the driver mutex while sleeping to not block data
-of the other sensor if it is running. There is no possible race here
-because we are already under IIO mode mutex locked since it is a
-IIO buffer callback.
+We cannot already read more than watermark samples because of the
+timestamping mechanism. It is required to not perturb the timing
+between the watermark interrupts. Since we also know there is at
+least watermark samples in the FIFO, let's just read these watermark
+FIFO samples directly without reading FIFO count in this case.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c | 16 ++++++++++++----
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 16 ++++++++++++----
- 2 files changed, 24 insertions(+), 8 deletions(-)
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 33 ++++++++++------------
+ 1 file changed, 15 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-index 4b0e3cd8a506..3197081a808a 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-@@ -254,15 +254,23 @@ static int inv_icm42600_accel_update_scan_mode(struct iio_dev *indio_dev,
- 		fifo_en |= INV_ICM42600_SENSOR_ACCEL;
- 	}
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+index b1a43ca610c4..ded45dfe46a2 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+@@ -477,24 +477,21 @@ int inv_icm42600_buffer_fifo_read(struct inv_icm42600_state *st,
+ 	st->fifo.nb.accel = 0;
+ 	st->fifo.nb.total = 0;
  
-+	/*
-+	 * Sleep maximum stabilization time before enabling data in FIFO.
-+	 * We need to release the driver lock to not block gyro data processing.
-+	 * There is no possible race here since we are under IIO mutex locked.
-+	 */
-+	sleep = max(sleep_accel, sleep_temp);
-+	if (sleep) {
-+		mutex_unlock(&st->lock);
-+		msleep(sleep);
-+		mutex_lock(&st->lock);
+-	/* compute maximum FIFO read size (watermark for max = 0 interrupt case) */
+-	if (max == 0)
+-		max = st->fifo.watermark.value;
+-	max_count = max * INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
+-
+-	/* read FIFO count value */
+-	raw_fifo_count = (__be16 *)st->buffer;
+-	ret = regmap_bulk_read(st->map, INV_ICM42600_REG_FIFO_COUNT,
+-			       raw_fifo_count, sizeof(*raw_fifo_count));
+-	if (ret)
+-		return ret;
+-	st->fifo.count = be16_to_cpup(raw_fifo_count);
+-
+-	/* check and clamp FIFO count value */
+-	if (st->fifo.count == 0)
+-		return 0;
+-	if (st->fifo.count > max_count)
+-		st->fifo.count = max_count;
++	/* read watermark samples for interrupt case (max = 0) or read FIFO count */
++	if (max == 0) {
++		st->fifo.count = st->fifo.watermark.value *
++				 INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
++	} else {
++		raw_fifo_count = (__be16 *)st->buffer;
++		ret = regmap_bulk_read(st->map, INV_ICM42600_REG_FIFO_COUNT,
++					raw_fifo_count, sizeof(*raw_fifo_count));
++		if (ret)
++			return ret;
++		max_count = max * INV_ICM42600_FIFO_2SENSORS_PACKET_SIZE;
++		st->fifo.count = min(be16_to_cpup(raw_fifo_count), max_count);
++		if (st->fifo.count == 0)
++			return 0;
 +	}
-+
- 	/* update data FIFO write */
- 	ret = inv_icm42600_buffer_set_fifo_en(st, fifo_en | st->fifo.en);
  
- out_unlock:
- 	mutex_unlock(&st->lock);
--	/* sleep maximum required time */
--	sleep = max(sleep_accel, sleep_temp);
--	if (sleep)
--		msleep(sleep);
- 	return ret;
- }
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-index 253bf571439d..9de5c383665f 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -126,15 +126,23 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
- 		fifo_en |= INV_ICM42600_SENSOR_GYRO;
- 	}
- 
-+	/*
-+	 * Sleep maximum stabilization time before enabling data in FIFO.
-+	 * We need to release the driver lock to not block accel data processing.
-+	 * There is no possible race here since we are under IIO mutex locked.
-+	 */
-+	sleep = max(sleep_gyro, sleep_temp);
-+	if (sleep) {
-+		mutex_unlock(&st->lock);
-+		msleep(sleep);
-+		mutex_lock(&st->lock);
-+	}
-+
- 	/* update data FIFO write */
- 	ret = inv_icm42600_buffer_set_fifo_en(st, fifo_en | st->fifo.en);
- 
- out_unlock:
- 	mutex_unlock(&st->lock);
--	/* sleep maximum required time */
--	sleep = max(sleep_gyro, sleep_temp);
--	if (sleep)
--		msleep(sleep);
- 	return ret;
- }
- 
+ 	/* read all FIFO data in internal buffer */
+ 	ret = regmap_noinc_read(st->map, INV_ICM42600_REG_FIFO_DATA,
 
 -- 
 2.55.0
