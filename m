@@ -1,171 +1,98 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1B51412BE7
-	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 12:14:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A04D416855
+	for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 12:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787573683; cv=none; b=kGjhULpOq+XaWitSJBX3ozz4qHTk8xQEXePeaEBdu6nbQ5sWgeaeXMxAPs4Sa3IbBOVlFAMuXvCdPdJyVHlJ41QtBXxufJ3yGMlCqW/nIc4H0dmjNE1lreDgCSVrW3r2BzkZ8sTPV3eK6eY5fiEblMIHlkPiGK54Tq//Q6R0yM4=
+	t=1787573953; cv=none; b=LfoKLCrBcFO59PbBS4eKgE5dvnd7t3bVzyawj2bTa+SZlD/TMJQ/Uq7WZ3u/sleDA6uCnXhrLESW19r+9+w6VfqFl3hLxO3xpK6YArWvdIwIMHj/vYxODp/JuoZfF/pfuDpzl5a2Uh0jjdPsM3P0RsEFzt0oGHUau7GRVltTXqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787573683; c=relaxed/simple;
-	bh=eiBo1yduJHaXAj53sijSuIC7kmal8T2Qf0O1edtX+Zc=;
+	s=arc-20240116; t=1787573953; c=relaxed/simple;
+	bh=oEmVoTqNwL4oExAHfGENpNbS+QESXn4HTPfAL2vKifQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hlQwIavEj7fTPYnTFfebB/lzmgfLSJ6FwgUydcRUdQenJXjxKLq9/v+7CJL9a44VCcr1Xi872BEl/vxwsjiKso+5TYPi8JCQwINiybFjN35l9cP+6jJscntvHcmmz9dDmFYEISCS+ibAHrx10wHZ11Zw1nDVJYwi3pfskXSSs58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ak5bNc39; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=H9LXvbn78VIO9HWnvMFVqu9jjmBoaLQbZh7uxTHGsdpmdM7Nj66dUwIJ7JS9j466mDxD/Gjd7KRwmaRZuhM6wohs31k2DMQ420iXYSoe4Go9nmWfmAi0NcFRDs0XN3w31PQLsFGum8OnbKnxusKUkcaK29g55KRD6hNRNW0b//k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bXFQrC4P; arc=none smtp.client-ip=209.85.221.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ak5bNc39"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6a15d54ac95so5876891a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 05:14:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bXFQrC4P"
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-5c56dbc3a51so1064008e0c.0
+        for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 05:19:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1787573679; x=1788178479; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787573951; x=1788178751; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=IJ2S2NN5RmqVB8PHkfxAhd8Zl5dVEhVpefrqaDYB2O0=;
-        b=ak5bNc396c9nI3LQikLj+knbykk1XtzUDJ7bNWAGhrX5w0pfWO1C37kPAJRwdUtj1h
-         sslNEKNO3hPYWl3Yb1w8pXlcDevqqR+63cfLaN6ZokSWN0SD+XGGtZgcdYCNFwOJMEWD
-         KNVew/vQPLsMyNHNeCFgy/GebeEhhSusKESZsjs+wE23sAwvrhMMNhONhjI6xgXgrucb
-         M0/PfaLb0QNn7gqGmuf1HomtPB8ek16E6xIjCnhGZaATooZZnf3eUIIH3ClON7Y8F2b+
-         7QSmXVMODEK3WeYqOVQKw5SFuxYZhD2cNkK6uewInDHJMil0PEr/XeCJG54jGm7wjX8Q
-         +KDw==
+        bh=ActAKE3l7zo8+sdxPLWIoLXyxVVzOQ3YeANx3kA/65I=;
+        b=bXFQrC4P7+uh7hya8oThpKVsciD4eO9zwqJPj16X3t5CxJRW/dpJuR3AJAxU6v9Z4E
+         8zsIVuAQkgo1EMRqqsEFHEwuJeHGH5QaBhE+ki/QcBgEd+jfjOKlNCcMwOzZFLXlb18w
+         AnaekO/hekdU8er4PavV43otomWwRV3sBEmSkU0vWG+JehkT9Wcv3mGYVYoW9O/ePx54
+         aMRn9nyOe9PvS2HR5X4fOhom7TW95AAnLXi7O46jhiVZAjA8AtwCCENd4dcH0b5KdTna
+         Q6tdjsgOOMMGsgAOxpPn+wx0LdJM56i9S8vPLXioa1iqN7QN1gHvHkPpiEU44DaOaRud
+         4GPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787573679; x=1788178479;
+        d=1e100.net; s=20251104; t=1787573951; x=1788178751;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=IJ2S2NN5RmqVB8PHkfxAhd8Zl5dVEhVpefrqaDYB2O0=;
-        b=nZhbUKPe33kOyCVE27g8d94fk7vCgXaG6+I1ll92QcJUaHdOAdHXHCRsKKq77Bvahz
-         5vQuWH+JUk7lJXSykg5P6FYaInnl33ruV8P5vBSH/gho7rxZpJjduOQn01VhvmST7avL
-         uXDVd7dp/IwSlFUKzJoObfvuKW2CfBYQpSjP44Tm+VVnzh6Xmnq+cq7awJvFU2y2n6y5
-         KR2c+yAtHrpZeInP56SXx6k03jyrYNJ8uhLAG7wnrOqVF69cR70whs5xcqVxy4Xlb92g
-         eJvPME7WoSdELbEVfhD1GsJ8j1OG7z6oS9xvUVV+gPwHwAHZw1S9k0VM5a1nOZvdZ4Xl
-         0IBg==
-X-Forwarded-Encrypted: i=1; AHgh+RoBf62RKS3rt1gnqux40vANpmV9by+7me9nmwlvMSUmat/kihzckh4U9x7LGQc0anRjrDTX2l6ld6Y=@vger.kernel.org
-X-Gm-Message-State: AFuF++lNITb4Wn3xprLqzMJ3D7nglXPU1FKzWcyJWaDy4Ms73MFO5bcL
-	GI6LIPuxJGU/mBLL5QClGddfkVQo3F7pdXylFd47hraES3w+Ae7N9WfMQvj7612Q238=
-X-Gm-Gg: AR+sD12zSo+WKySBy79Xfxd11BTBI89jynpSlSacnKC//LQSBgYvStLb5LgnUdulOwY
-	Pi1mPPY8YzHbEi0y2h0cOBDy5P3gaXFoE9/P5bCKRrw5+5KqiKVAA8fILin352sCfFimr/Tad3z
-	l8JcfNZfaOnXek/2/aVBlBq+GdwVexa4/u5RJQCbytg6vZta7o8vTanAKMC5r88QMP6YxgPkixC
-	r2n5Lrp1MAJFwAC9/hz/MW8UbyaJcTIyNMTlQgVhEtnccUlE363pgb6fRBd5DGf86k6Ng3P8HBC
-	xMPYmm8Ox3o0Ml81UULp42YCSwXQVweOqeqMswcdqKOVEK8Qn99bdc3w8tjoCa3wx2kgO4IzBRb
-	L3MXaNGBSrk/u85U8H+cR21PC/s8xj4P3UCUJTWGvzavIm/UPh7Y17NtucGpApApMdNT56cSWNf
-	e32BbbLRrBHs31tDOAat0hpiYw2W6k44UJEnFi9Yo3+Ke1MMgOOcS9rq198pF//K2JZTayk9pAh
-	6LGyuEiXt0arHvIN3McMYRC6FVgCITD0BX2myOSuWYMOkWaK8R2
-X-Received: by 2002:a05:6402:2b98:b0:6a3:6d6d:2296 with SMTP id 4fb4d7f45d1cf-6a582b0cfe9mr21318328a12.5.1787573679054;
-        Mon, 24 Aug 2026 05:14:39 -0700 (PDT)
-Received: from localhost (p200300f65f19a904efa8a94b704adaa2.dip0.t-ipconnect.de. [2003:f6:5f19:a904:efa8:a94b:704a:daa2])
-        by smtp.gmail.com with UTF8SMTPSA id 4fb4d7f45d1cf-6a59e00129fsm10155492a12.1.2026.08.24.05.14.38
+        bh=ActAKE3l7zo8+sdxPLWIoLXyxVVzOQ3YeANx3kA/65I=;
+        b=kHECU8kSE2xRx72mEAHsJoHzQDP5scIGz5B6NgXn4cJYXyS+7rjhfb2MbBqjLtkhWA
+         viwQB2kjFNMk0kuPrwAPk6pJ4Yp7wNHawVe1IbMMDnH5ZEHO5f5hANwrhxqG2UFoXEBA
+         tR9m6SRY6PEKwRJZvMAFhzeqlDZEdA7k38YFyurfweFbbJeSxnYo2oh3nk56nGkChZpN
+         sPvYRd7vNdlhq3tDqkn3jYJlFOu28zTcxCRVZ5BBgaGgXrLocl2/NI4jANmQl2I6ermB
+         bFmjP9eDZFdvxS8tLr9/Xk1KrWTEYaBUAEQ3uQ9F+KK+AwLefm6NFBrJ2DHfuhZ303QB
+         8J2g==
+X-Forwarded-Encrypted: i=1; AHgh+RrkDGxKdHfnLB5uqtAriMqCPOtpYugi4ZFlxjWcCfxeonVPQmyTQ7PUzMhacEZb2iNJapSv3UOnucE=@vger.kernel.org
+X-Gm-Message-State: AFuF++mRlA0QqPS58rx/V/5sGJ7qEWSCx49aMT0qzMel9ZEimhcCn5b9
+	Ltbzic1jdgPkxMAGf9vPbdPyfUuo2SKsx9/Ra5hXXBFiELsGkv+r3Z7/
+X-Gm-Gg: AR+sD10z2qlAMf955sUiEKH2QKj/V0OYDAhPMoAJRK5awxUHsM2wkOvK2slNdejIlQs
+	iU5x4Yv6uEQ8tkCDnFtXoiyX5gXn0fIILWI7mRClBSk4mJ/cbKwNRxQfXio9S1FrXVgi7+wfbGk
+	lIRTyxi0bnVtGUlAOv2AMrMgB0mFSB2Xvfs9GV6SyyifJCnNFqa5v1S0pedPcxqTTR8L0r8LfiF
+	dyD6EaJntn84MARLbIoUhAj5ynEWTsnjTYVI6o0/a7UMGuIu11YctWlCtMeQ1NeON+49Sh0SVtQ
+	923y3tC/EN+nfabr/XwSjLBT3tBn/W0sk11lZB3deLZk7paoJ1rmqDdXlJQd0RyLLNht8FBrx44
+	30R5u2I7CASp5nPitJDrCcYXOOvO1weJyOZ1AwrTTKqve38NtmMpMNYuuVxLiUG1uW8yt2hTAs2
+	vM3+5ic1apTeAcpYrKUODcqxshf9p10+meUVoA056mtzPuRVlsgD/OI9aGCGilqFTJ1WCu
+X-Received: by 2002:a05:6122:6610:b0:5a1:fbbd:6bd0 with SMTP id 71dfb90a1353d-5c5ff803054mr10905050e0c.5.1787573951106;
+        Mon, 24 Aug 2026 05:19:11 -0700 (PDT)
+Received: from localhost ([2804:30c:97d:e800:9454:1179:18df:ab33])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97c8db56329sm4847385241.3.2026.08.24.05.19.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2026 05:14:38 -0700 (PDT)
-Date: Mon, 24 Aug 2026 14:14:37 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
-Cc: Sudeep Holla <sudeep.holla@kernel.org>, 
-	Cristian Marussi <cristian.marussi@arm.com>, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nsc@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
-	arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	Hans de Goede <johannes.goede@oss.qualcomm.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Brian Masney <bmasney@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Viresh Kumar <viresh.kumar@linaro.org>, Frank Li <Frank.Li@nxp.com>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, Guenter Roeck <linux@roeck-us.net>, 
-	Jyoti Bhayana <jbhayana@google.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
-	Ulf Hansson <ulfh@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Mark Brown <broonie@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, 
-	imx@lists.linux.dev, linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-input@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] module: add SCMI device table alias support
-Message-ID: <aowz8Tcf-ZvVf38m@monoceros>
-References: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
- <20260618-scmi-modalias-v2-1-8c7547c1be21@oss.qualcomm.com>
+        Mon, 24 Aug 2026 05:19:10 -0700 (PDT)
+Date: Mon, 24 Aug 2026 09:19:52 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	linux@analog.com, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] iio: accel: adxl367: use regmap_assign_bits()
+Message-ID: <aow26IMc3tpgzI7r@debian-BULLSEYE-live-builder-AMD64>
+References: <20260821180753.4633-1-antoniu.miclaus@analog.com>
+ <20260821180753.4633-4-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="2dhawfj2mm2jx7wk"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260618-scmi-modalias-v2-1-8c7547c1be21@oss.qualcomm.com>
+In-Reply-To: <20260821180753.4633-4-antoniu.miclaus@analog.com>
 
-
---2dhawfj2mm2jx7wk
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 1/2] module: add SCMI device table alias support
-MIME-Version: 1.0
-
-Hello,
-
-On Thu, Jun 18, 2026 at 03:56:34PM +0000, Bjorn Andersson wrote:
-> diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_deviceta=
-ble.h
-> index 3b0c9a251a2e..769382f2eadd 100644
-> --- a/include/linux/mod_devicetable.h
-> +++ b/include/linux/mod_devicetable.h
-> @@ -473,6 +473,17 @@ struct rpmsg_device_id {
->  	kernel_ulong_t driver_data;
->  };
-> =20
-> +/* scmi */
-> +
-> +#define SCMI_NAME_SIZE		32
-> +#define SCMI_MODULE_PREFIX	"scmi:"
-> +
-> +struct scmi_device_id {
-> +	__u8 protocol_id;
-> +	char name[SCMI_NAME_SIZE];
-> +	kernel_ulong_t driver_data;
-> +};
-> +
-
-Note this won't apply since commit ad428f5811bd ("mod_devicetable.h:
-Split into per subsystem headers"). Please create a header below
-include/device-id for scmi similar to what was done in ad428f5811bd.
-(And don't add an #include for it to mod_devicetable.h, but to the
-modpost program only.)
-
-Also please only add a driver_data member if you need it. And if you do,
-consider using
-
-	union {
-		kernel_ulong_t driver_data;
-		const void *driver_data_ptr;
-	};
-
-instead of a plain kernel_ulong_t driver_data member. I'm working (less
-than part-time) on changing the existing device-id members accordingly.
-
-See e.g.
-https://lore.kernel.org/all/cover.1780048925.git.u.kleine-koenig@baylibre.c=
-om
-for an extended rationale.
-
-Best regards
-Uwe
-
---2dhawfj2mm2jx7wk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqMNaoACgkQj4D7WH0S
-/k4jGgf/c9brV06dZI0ixNsgSDxInOAAwxzw0Va6pEilBFWeD/1x8NZxQxIb86eu
-ERFi9ET7K8J1CkEXpSDumSzKSUdfMylIEURvojgjfnQEsYGjKUB3lgyc6ZMvZJE8
-KVGIQQhfXJzgdOen9ivFrmp13avoOEZecODfflOtBiCVBT9yqo9G8cB98iPlfN0n
-/20yUKuCi9BVxfitySRFAt3h5YGf8mWqJYyRGszONcDeatlQ3hYxcZRc6nWohvA6
-Pj79A4QISdBE4jbZiuZ4B7Tqk88TXQ1mLTCo6WZ0jaoWxESWjauNoBJPyj55WW4m
-FOrbj1Kew7KV7tsLQ07HGfCNIJuI9A==
-=DfdU
------END PGP SIGNATURE-----
-
---2dhawfj2mm2jx7wk--
+On 08/21, Antoniu Miclaus wrote:
+> Several helpers set or clear a fixed set of bits based on a boolean using
+> the regmap_update_bits(reg, mask, en ? mask : 0) idiom. Replace these with
+> regmap_assign_bits(), which expresses the same intent more concisely.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
