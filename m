@@ -1,78 +1,80 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12A4F317145
-	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 09:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A74A83DE430
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 09:42:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787650804; cv=none; b=diShTxqRHEgygRAvUKyaiEmBxuE3OKCdxBnfLBSxoUnNe/WC+s8qnEvNe7zuVx56UyeMeTdeAXEmP89F5BzYl09Ih3458vsKC7trThfuuQeb86qxeLiRdUf86+a7VAYu5KgUA020mzYg5HdaUMOULHQyfB1PYBzPr+DdW5ww1+Q=
+	t=1787650936; cv=none; b=O/rstwopBsvm4xcXdof7N25FQgK5/vGb3NhgTZfWD0HGxQs1NquGmkmXvTbLbNuWJn5+efcFzfZHMTywuf91+vu62n1050aNSpi6bKsxcicT/8tBBHaHQuJX2DHWSWT7x5aZyIY4qziL1p//GuWTA7hHeiev4bx+RwpaFAqLUqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787650804; c=relaxed/simple;
-	bh=9wJZiSmpJkaWQYC5Sfiwp3fgYQo5ibADA/Ym5bAdoUg=;
+	s=arc-20240116; t=1787650936; c=relaxed/simple;
+	bh=sgkUUUofKk4XRaG+J0UMLKLbX06fVhxE4SnsPsEWBwQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Q9HfyDJAZYZKPFewuBkRt6cQsLJFi/7NbTpEHFTlfw4bKWejMZkS/YDE/S5H5hs2McSQgALny1VHih24+xqq6j00dkmuti5tvmko5Jwc3KhDH48CR0eIvtM1BlZ2hKn82MHsVAkBLDCI+6jFyhButL+r0ZiCppL8/KRyCuicyz4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YogIfKM+; arc=none smtp.client-ip=209.85.218.45
+	 MIME-Version:Content-Type; b=ak9kc+Sh5cuSqTm46FH8yYitKzlm8Au+AsIlqoXYs8lMeifI0GTCBG3Hw3FTLJWLAXpyQgMieHrPSrcEpA7oKrjKtGC7r61e3IhHv7F5lJng+4bVsbkpxE/JF2HlUu8a7NrRTNf64YnQde8dCwNDyH7CVLR/xpdL5Rh7rxMytm4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FmQGZPhS; arc=none smtp.client-ip=209.85.208.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YogIfKM+"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-c2022323c37so709711166b.0
-        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 02:40:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FmQGZPhS"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6a0794669a6so8683520a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 02:42:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787650800; x=1788255600; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787650933; x=1788255733; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=9wJZiSmpJkaWQYC5Sfiwp3fgYQo5ibADA/Ym5bAdoUg=;
-        b=YogIfKM+15Dzg2YCI254Q2GLk2kXGzirtzYQyX7r32WqgLDsFvASSJ0KwNHLyeGUkI
-         sJFL3A3Al+tFUmD5bckn7MQJ7q12QTc5rfaQ6hb7UGVUs1BF1GMbMX8g25cl/bW5pFHr
-         c8j44xqc2Gugl+zkTa7cuBjT+NNo+923pppSHuuI1CmjUlw3f5qJhrk4vZ4S6e1+wm6a
-         zG9KhPOI3t/YNiz65IQTSdwGnx0xOTsGL07TQEeAPHrRiLondHcWwdDd1siEoX8YMwaQ
-         BY/tJudSR/KIs5uCT6mWjRx3/UO6r9uXWuQhsnWDahmlh+kIhGD1386BLsf93B/lkH0U
-         RwGw==
+        bh=JK28XhYIm59KeOaoUdt1w0lQmpTjtM9MMAoGURUqk6s=;
+        b=FmQGZPhS5g/mhWXLq4Yyp4k992G/aCCeLUypev7dMdCNXS7813F0oKJjTD3w/fXOSC
+         Fi/Vxrbun8aSaJePSeHAScAcNJro1eHBhCSf3g61Ww9xcGhgN/rwh7OLOe2Y38KtYYu2
+         WFmxhW6x502vAhY2xzJg7L9mhgFRjeIDC8MC4sLdM52EnnziRZ0rmPI4HelFctq3DRWK
+         iVZ2qn5xf85K1YOh7Z0sK3lsH25bPfUMG7j9yShEC2kdyQFWllzY2+fhwf1cYa9IkGHc
+         oCdxPIUhvqM6C+gt9QBbCR3HqyDAQkZ1fJ79Tlznn7nwYDp5uJ+MBSLxKaIgO/SXZVVs
+         uHoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787650800; x=1788255600;
+        d=1e100.net; s=20251104; t=1787650933; x=1788255733;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=9wJZiSmpJkaWQYC5Sfiwp3fgYQo5ibADA/Ym5bAdoUg=;
-        b=hExA4Ps7H6vEyvGPaEzEH3JThUXixYAMI+WNEeUsJG0EZ/d32BkEnx6p1hQ3HtL/K5
-         eAdjW6HqLSpiYFG2epgfvmHzviz3Os0m820F2e1zG3hJHpph8zUQ+fN0LDry6Q6a2tmN
-         zdkTvaL/3SrFrBRCWIBwtmsNO0TPOhEF0YQRS0PFvwWunLZvgJNbQp4kVmx1ADSVElWq
-         isChSZcPbWmC0KuOEcOddSGW0MvFpMpkKx0ecQY8o+UPPE1FxWiTQV4VYfHCwNRMYxA+
-         zarnSOhXtNzNLJOlMUTFgiLsOMsVlDjX8sc8vcREmzCv2AQL/vPuOn/W6antwEtOHDpp
-         6cwQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpheDcf55oj+q+SG40c7RCE8mri5NqyvYOJ42GyTT9Z5A2+c/kHtsO3c0qdc6pLNAeczAc5LQPi73w=@vger.kernel.org
-X-Gm-Message-State: AFuF++mlK7Xl/0UpgbLn5Xwtq04L0P+A5fxnQtmBHDvKT8UfitfQtp90
-	c/Gi4So3xxBQ4YkYXN1v58nY6FYsfKOeV/NaNl0BcXwK0V9441AnABg5
-X-Gm-Gg: AR+sD129AT5NmnF860zjHh6UNz4R64aWoSN+pdsR39VqyG8w9zzvscZdI9Gl6p0sYiT
-	GcDO5ypIMrwAUBpwKoZ/wcTmf4xGd2syMwFSz13gTUY5SGYz0VL9lGsgw+/NTOCr+Ogw6g+IsNk
-	SSKoOogbl2/DA1dfGh63KSpK4qM0ldr7OqUYq6SdZg6xjTVRpt216nAfe0g84gJUncF1hkqkm2t
-	AMAFmHUXF+80v0/4vHoEKBedxO7ORNYtxlQcO922k9jU9j1DswiAnEQBDSsGHymnrudiXb1sbkq
-	JjWdqTfIPevrH27UuDQoh34ddYOM5CckyZExRtav2NaNmc9dJo/gUCJKGGfdurKziiNkG8ZSwdE
-	buM4Kmk7Jx9rtxTcYT16+a/HhwZM5qX4GOATGLOxk0XvxJvIb1Wn3wazhMxvTgu2KBBJf9VwydE
-	5d9P9rdeLC7OcwCOQrgH8t8PNBfxvABOw1zo5Z5RftD4aqvWTMgtp8B0x7vAugOyQg7zPv+ouuz
-	V7aLA/mQ5D6uDoDuaTcMrLJdl6XOxrv1/PoFf+X7kx/p1tw4id2kIckVt7r4LTIvluAI2AIXhX5
-	3TsfDmcni7S0vahVyqm8i0vfiy5svO7nKf4fKkaB5ioiGPS2VZrnSoTveOj+4/0MiJDwPZJRfg2
-	96JovjAjABIf4/nE5kR82JJROuUG7z35m1rsw0CMTgiuLkwJ4ig1fxsTChYwOmM9JqrCKxA==
-X-Received: by 2002:a17:907:7241:b0:c16:6a42:c7d6 with SMTP id a640c23a62f3a-c24e589b49dmr532567266b.9.1787650800013;
-        Tue, 25 Aug 2026 02:40:00 -0700 (PDT)
+        bh=JK28XhYIm59KeOaoUdt1w0lQmpTjtM9MMAoGURUqk6s=;
+        b=PVPMXz5PBmgVr6onaM5UgBQl75/g6pXWLQH8vkZSy1lNMSYw1s5psge7qKveur/CJz
+         hp3fZP3ygOsZE4oouwER5IU3WiW3y68/Pq0G72uDwyJbLL95n6DQpzX3qZsvM6RncUyf
+         dxCkMFUr0BMlYgMSzaoZqM/u1lI3dlYDBHjOp8oqnn/MUCZqTdfEzOp4xb+0+fUgHhSm
+         exHpMVNK9CqzFM5FXrcZQ7t9kyWrvVvKIPKkYhk18GheC12ugd05wwPD+ZDHOnZ1pDTJ
+         MGj3ifrPs0gV4uQYNH0quPkqxwmwNc3sa4PUfxlXwh1rFSaypnpABTKIcaqAOVa/+N56
+         aIIw==
+X-Forwarded-Encrypted: i=1; AHgh+Rrf1aIufjf+OKbh3QydDUVINVdlmYI+xCo/E78ByWu7MbXNVKmyME2VWpWQVhsWUZ29reuaHAjYAlw=@vger.kernel.org
+X-Gm-Message-State: AFuF++koGeMEbobFGrtFgEMTuzOsJd2Jw/1W1svXl5YObh8ThYKOV33k
+	WFS+2KXyxrzu5kkGY58hIgbud82HVgsDOoH5Lly9jCfaTnFzcwYipTsX
+X-Gm-Gg: AR+sD13kziX2C6uKhewgw5VIZDvTgCvevmXRCPMWdYLQsGaxpuxqrc8MtDfXQ2rcz0u
+	YFAXbS1Flg66CoWCfzLlw4Ng3Ep1pJTBKHfq0+CJ9uZAetq7edSz945wF2hjE2K+6NA3sNGVEZT
+	F42AwHeqeQv8/8ULU+sVp9T8j1TLNRiTs8dcUmptGvqJ1yo6gLhKJ6FalNClEgMmIlfm1cfA+8t
+	sa1LLOAvg7bZlYnxyPlrj/IXKOSpVtCr1MjYsc9la8FyhqoQ3EhIBga8I1kJYONjucr4JEySBQ6
+	Zeqstk4CSO4nQEgwsqGAC/bkOSC70Prs+lIN8WIRKuZj7U2BsuaYyFeqUAoa3KBO9Bb3EIKShZt
+	9VcYW72EJ9aKXZSu6oQVHPi+Jqschfn64D0+/CNRU0DKVazCOzfq17BIf0vbcRuj9h0KAAXri4b
+	GN279i3TOAe5Ae37MSlaB0KIprCkuT0LuqUFZ+AWO+DYRw1YDCGybwwmzl6FiAz2l/TWVfRY4vT
+	cxHKik9dCr66yohrcqdgBdtAwYWLstyRkWYYGy5i9TogTj7/gOENAMs/nWCVfQdsdeR6WfIM+bz
+	O+XBHanBPpP6FXJLkqqpxd7N56q6DrYt1MVAqsGhjmufDPcU6huIDJB88sEQ1+UNk39pRvZWcfB
+	yepKNWhs0gEmJOordY2CnTAb8iJc+MKQ/ZX2+CENEgq4QtwdgCjIsWeBoAsAe6G6mEfR4lg==
+X-Received: by 2002:a05:6402:2788:b0:6a4:32c0:3e93 with SMTP id 4fb4d7f45d1cf-6a582b78320mr27645092a12.13.1787650932802;
+        Tue, 25 Aug 2026 02:42:12 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2496297189sm1641420266b.22.2026.08.25.02.39.59
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59e2d8ae9sm13858381a12.28.2026.08.25.02.42.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 02:39:59 -0700 (PDT)
-Date: Tue, 25 Aug 2026 11:39:58 +0200
+        Tue, 25 Aug 2026 02:42:12 -0700 (PDT)
+Date: Tue, 25 Aug 2026 11:42:11 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Yang Zi <2959243019@qq.com>
-Cc: lorenzo@kernel.org, jic23@kernel.org, linux-iio@vger.kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: humidity: hts221: fix division by zero in
- calibration data parsing
-Message-ID: <20260825113958.000038b8@gmail.com>
-In-Reply-To: <tencent_0F43B1BC41CE4066DA52B7B25FBC04C41A09@qq.com>
-References: <tencent_0F43B1BC41CE4066DA52B7B25FBC04C41A09@qq.com>
+To: Triet Hoang <triet.hoang.dev@gmail.com>
+Cc: andy@kernel.org, bleung@chromium.org, chrome-platform@lists.linux.dev,
+ dlechner@baylibre.com, groeck@chromium.org, jic23@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ nuno.sa@analog.com, Tzung-Bi Shih <tzungbi@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v3] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
+Message-ID: <20260825114211.00007c1e@gmail.com>
+In-Reply-To: <20260825093524.285443-1-triet.hoang.dev@gmail.com>
+References: <20260821014454.15960-1-triet.hoang.dev@gmail.com>
+	<20260825093524.285443-1-triet.hoang.dev@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -80,66 +82,34 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 25 Aug 2026 17:21:10 +0800
-Yang Zi <2959243019@qq.com> wrote:
+On Tue, 25 Aug 2026 16:35:24 +0700
+Triet Hoang <triet.hoang.dev@gmail.com> wrote:
 
-> hts221_parse_temp_caldata() and hts221_parse_rh_caldata() compute the
-> sensor slope as ((cal_y1 - cal_y0) * 8000) / (cal_x1 - cal_x0). If the
-> device reports cal_x1 =3D=3D cal_x0 the division causes a divide-by-zero
-> error.
->=20
-> Return -EINVAL when cal_x1 =3D=3D cal_x0 in both functions before perform=
-ing
-> the division.
->=20
-> Signed-off-by: Yang Zi <2959243019@qq.com>
+> Convert deprecated SIMPLE_DEV_PM_OPS() to DEFINE_SIMPLE_DEV_PM_OPS()
+> and pm_sleep_ptr().
+> 
+> This lets us drop the __maybe_unused annotations from the resume callback.
+> This is a straightforward cleanup with no functional change intended.
+> 
+> Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
+> Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > ---
-> diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/ht=
-s221_core.c
-> index bfeb0a60d3af..7d1f04951d8b 100644
-> --- a/drivers/iio/humidity/hts221_core.c
-> +++ b/drivers/iio/humidity/hts221_core.c
-> @@ -288,6 +288,9 @@ static int hts221_parse_temp_caldata(struct hts221_hw=
- *hw)
-> =A0 =A0 =A0 =A0 =A0return err;
-> =A0 =A0 =A0cal_x1 =3D le16_to_cpu(val);
-> =A0
-> +=A0 =A0 if (cal_x1 =3D=3D cal_x0)
-> +=A0 =A0 =A0 =A0 return -EINVAL;
-> +
-> =A0 =A0 =A0slope =3D &hw->sensors[HTS221_SENSOR_T].slope;
-> =A0 =A0 =A0b_gen =3D &hw->sensors[HTS221_SENSOR_T].b_gen;
-> =A0
-> @@ -327,6 +330,9 @@ static int hts221_parse_rh_caldata(struct hts221_hw *=
-hw)
-> =A0 =A0 =A0 =A0 =A0return err;
-> =A0 =A0 =A0cal_x1 =3D le16_to_cpu(val);
-> =A0
-> +=A0 =A0 if (cal_x1 =3D=3D cal_x0)
-> +=A0 =A0 =A0 =A0 return -EINVAL;
-> +
-> =A0 =A0 =A0slope =3D &hw->sensors[HTS221_SENSOR_H].slope;
-> =A0 =A0 =A0b_gen =3D &hw->sensors[HTS221_SENSOR_H].b_gen;
-> =A0
->=20
->=20
+> Changes in v2:
+> - Use EXPORT_GPL_SIMPLE_DEV_PM_OPS for cros_ec_sensors_pm_ops
+> - Wrap to 75 ish chars for commit messages.
+> Changes in v3:
+> - Update commit message based on feedback from v2, and added Reviewed-by tags.
+> ---
 
-This definitely needs a Fixes: tag, otherwise LGTM.
+Please don't send a new version as a reply to the previous version, it can
+break tooling like b4. Additionally, please wait at least 24 hours before
+sending a new version.
 
-Feel free to carry my review tag.
-
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
-PS, a bit of process info: I noticed Sashiko (sashiko.dev) failed to apply =
-your
-patches. To prevent this from happening in the future, please use the `--ba=
-se` flag
-when running `git format-patch` to specify which commit it should be applie=
-d onto.
-
---=20
+-- 
 Kind regards,
 Joshua Crofts
