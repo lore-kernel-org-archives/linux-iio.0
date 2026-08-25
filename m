@@ -1,121 +1,95 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7674964F
-	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 03:22:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01B13E0C57
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 08:28:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787628144; cv=none; b=JMdqlNbXRi9NkeUgi2Zd7h9e/AcMRRzmSq0hNcZLE9HN6vGhUDg+ZSQHEnAupf/DqexzLhA9r4TsgtChloAQbcEAZx7/K476ZkFB2jtiW9WFr3cjW4BOPYQ7sJm6whKV+glVoaePvNNPv2FiU8O8kL5CTP/bk1IHLIpIrIHCXII=
+	t=1787646488; cv=none; b=tbMrkQGwGuilUWtkauAq//XC7efKSzki0aObBBbId8ZnyMtgQfUHpi7R4SMVnj7wfZ5OeNfOOzWZeRgONOpDvstynTTz8ogSbaKWSP1Q7Ea6YrAKz3QYZqFTTgQhnRimuUwhbXHmD5HM+2dVNcO7dACkP0e00C2ZZ4eG6Bo48+0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787628144; c=relaxed/simple;
-	bh=c/dP8fSq+fJ4vk9t+6Oy//xE3tuRe686RF7qdma6lQM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HW62OY+zn2UcGW4vabRNHpO5rzFPl9DozMF+8cdvAaYOA/mxHAAIuzjuHi7N3mNiC+RsdxVlhXTWAy2zNeYDTKARJPdacAyDOFtwEY/ZnV2Z5pkJwzpeN+df3ea0b+R+rl4QvWHKPqOopbOXSlFtGdFxT6pksGa4+nu2nBI28UQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W0z5ihpH; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787646488; c=relaxed/simple;
+	bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=EcAvmg5kRkLMOsyoSBRaB+GlC0Mp+rLcFuR1cqGxBLabvS0Dlu6t3kfoA7/QTYyInm2kL5ePmj7ifQUgY5p+e2OGNkU/emw2casiPomAMUfFHYXBuQjJOM7x5KC0Z7zlXMIBGFI7FypTON9c5BXv7Ruaohiyw5B/QFq8rRzsFUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=zKSEyeMZ; arc=none smtp.client-ip=109.224.244.107
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W0z5ihpH"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2cf6d65d8a7so51265205ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 20:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787628142; x=1788232942; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=yUjpxw8jaXO6xHW35u2c9GeSegB5FH1o9dfJXtFGBdE=;
-        b=W0z5ihpHW64IrVxy7r8J20HpGFtlB6iXLZZ40dNKWxOJ8LrxiiwuPECGMfqZNoO4Yt
-         TqVjGn3tSerAb11GSVHE5fVyp6Y4gkchaCIyz6Mh3hygSoEkp4KlXMW149fc5DnUKbkx
-         97wIY4xGqUnu3fs8HZmqWmFfpgGSTS1Z2H4WNyKXJCVu6QKwZcYMVyI3SWXzfvOdTqAM
-         iE//0t44ArlX+jPPZzOHebt2vUhoyNleWMFm6hbryT6ECRKg81kmaeD1HXNvN2OYl8vP
-         NCVTGWOV4VkG6Lm8li0TpsgIPLAPSZxMWdLoS5SUCTLcgPOj5SuY8fU5D8RGDSWHWmop
-         r8rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787628142; x=1788232942;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=yUjpxw8jaXO6xHW35u2c9GeSegB5FH1o9dfJXtFGBdE=;
-        b=fBVoGiScsug+OriXxQBzSgGqWs4E+hxS2buqkVm53NtNaqGvEcaffoRsKkXHFy/JpZ
-         5GTTsQaH5DAQyRpiQGAro1g7FGyfRJT4HwOZEzoE8b5oKo9YlhMcPQTk/nDXEaL+yGsB
-         JirEnpOJDmILebdgfJvzUbwYCMRa2lEvuqCn4KmdDF1st8ZHWLb+iL+pSK+CcIGaHToQ
-         ycV9lSMBn9HjWJ4q7hosOAsKB9dz7bEQVrHEes2SGPP/fGbrlCW9HAvL+G4dvisOUAbv
-         RzAJiWcHkzst42vmHXQzp8GBwP6BK+/2DkpgGyM018NNBwyDWnkwbxH/hXKpuKcyeQe6
-         2u1w==
-X-Forwarded-Encrypted: i=1; AHgh+RpkH8nUuYYjTWaGjbH44ExUTn3eKErtT2WY07csHRCKHlqF1PXD98RirsV/PRcJPL/tPD7AlwnAFUc=@vger.kernel.org
-X-Gm-Message-State: AFuF++mO4Gcv2ppHzBcEGMB/6+EtqC1qeLrBgXmFZ3LrEgs2pgSVbLcn
-	tEAoBXCZ+hG8xl0K0xx4RYMw70ec3A5SP/3ahcn9xzd+XaiGIbsKmFp4
-X-Gm-Gg: AR+sD12uQuKzUl70nXFlBE7i9fXAQHdr+QedsqtzAgd8JNOQfIR+oYiyXoZ1LDRizbR
-	9UkrKtkXR0HBEybJ8c2T3heIRqHqSZuT4dB9Djl0h5j9i3KfltJsZO5KVVRT4AO6avR2ocKD9bw
-	l7XrwhQRLBVzU+RX7VRFEcq2wIK27wltsJXGizhZEvl8jWXfmmikcbT1hJJfOOZd+V5EcdibhO9
-	yO7v8jvFc3daFJ7ycjzJVv91maaYBRTEk6tjZA8NyJFmIduz2eRiCmFcWTsX0weUGE+LQK0VAo/
-	MZHzIK6oaYGda/sXUfa7u4KU9Dwm0WT2ld52qjByUwwWUo5sZkzfvlA2yqMdNSiab+gliWIBAr0
-	deHVjctJSFNwWLMXWVdqWrV4owjHNJhqIkFSXrP0aom1ctxtNGTFppTxqFC+wVEpWcOHMHVa2Gi
-	6ie4Ot8XFyB5bBgC/S1/EeM9Wz40zt9TSry7sIqJQLel5AvSsG1ldj5Fa+LTR+xc8=
-X-Received: by 2002:a17:903:b0c:b0:2ca:4f33:e86f with SMTP id d9443c01a7336-2d6dccc2aacmr73091975ad.12.1787628142180;
-        Mon, 24 Aug 2026 20:22:22 -0700 (PDT)
-Received: from localhost ([115.70.157.242])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d6768e9ebbsm23291575ad.80.2026.08.24.20.22.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2026 20:22:21 -0700 (PDT)
-Date: Tue, 25 Aug 2026 13:22:13 +1000
-From: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Tsz Shan Chan <tchan@jacques.com.au>
-Subject: Re: [PATCH v2 2/2] iio: light: vcnl4000: add shared IRQ support
-Message-ID: <ao0FKRhOyiIqhvr-@fedora-1>
-References: <20260814-vcnl4000-v2-0-9b771290cc1d@jacques.com.au>
- <20260814-vcnl4000-v2-2-9b771290cc1d@jacques.com.au>
- <20260822032550.31a0fa9e@jic23-huawei>
- <aov_uhPCcno0YJTe@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="zKSEyeMZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail; t=1787646476; x=1787905676;
+	bh=sNcmNScEhpmF/4cOJIi/n2ntDi0iE/3WYicZo1sq86I=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=zKSEyeMZC9ALIqcj+oNJ7WEDEIFwZ57dLI2pz7DlKjeDyg5cMDiPbnll0i5VOuwx0
+	 SgmeskI7Txdt/o8FvscFGd8eG7+IvYzZ0yyQLXCSNkeAAa9V/z8pZGwmV6jN4H2+I+
+	 ww1bAPCdyXB+lNv9+M8VBH+yb0+kpryO+z2DjGujCX7INfRZL0Hz/NatFHwsntONGo
+	 8QtR7w5ArweRWBQBa2nCl/TWf0dE8fBh91fSQ8wpz8r+la8HjfHtFPKm3lnMFPzaZV
+	 Azi1FUaq5moWerNT+00olHOWGJLSizgsjhOFwGzXBgYf79A+m/SuG4SmD7yN1dOW1I
+	 P12UuIG4/JsjA==
+X-Pm-Submission-Id: 4hTgrq1gvwz2Sd57
+From: Esben Haabendal <esben@geanix.com>
+Date: Tue, 25 Aug 2026 10:27:39 +0200
+Subject: [PATCH v6 1/9] dt-bindings: iio: accel: mma8452: Add
+ drive-open-drain
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aov_uhPCcno0YJTe@ashevche-desk.local>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260825-mma8452-open-drain-v6-1-9b252804ee80@geanix.com>
+References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
+In-Reply-To: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, 
+ Sean Nyekjaer <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, 
+ Christoph Muellner <christoph.muellner@theobroma-systems.com>
+Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787646470; l=1037;
+ i=esben@geanix.com; s=20240523; h=from:subject:message-id;
+ bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+ b=IzU8EMotoIYwcAYrT69KS1JNYlR4P5lOx3HMAa25p7BK6i8vvrqFcjJ6yP3Je3/az9jxNEOAO
+ 4FIMFc3IiZ1BacypX57zwYv9k3KzXJV7d7DR+AItoUfF7KI7dPbbVTH
+X-Developer-Key: i=esben@geanix.com; a=ed25519;
+ pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-On Mon, Aug 24, 2026 at 11:24:26AM +0300, Andy Shevchenko wrote:
-> On Sat, Aug 22, 2026 at 03:25:50AM +0100, Jonathan Cameron wrote:
-> > On Fri, 14 Aug 2026 14:30:43 +1000
-> > Tsz Shan Chan <tsz.chan.dev@gmail.com> wrote:
-> 
-> > > The INT output of vcnl4010/4020 and vcnl4040/4200 is open drain active
-> > > low which can be shared with other devices.
-> > > Add IRQF_SHARED and switch the trigger type from IRQF_TRIGGER_FALLING to
-> > > IRQF_TRIGGER_LOW. Edge triggering can miss interrupts on a shared line.
-> > Fairly low risk change but I guess we'll see.
-> > 
-> > It used to be annoyingly common for interrupt controllers to support
-> > only edge based interrupts, but hopefully that silliness is a thing
-> > of the past.
-> > 
-> > So crossed fingers, I'll apply this and see if we get anyone shouting.
-> > I think we'll get away with it
-> 
-> In another thread somebody mentioned a type of the signal that HW generates.
-> Having OD output doesn't prevent HW to behave like it does edge interrupts,
-> id est generating a pulse instead of keeping the level until it gets acked.
-> With that being said, I would ask the datasheet citation to clarify the case.
-> 
+Add new boolean to configure selected interrupt pin to open drain instead
+of the default push-pull mode.
 
-vcnl4010/4020 datasheet, Page 11 Table 15 Notes:
-  "Once an interrupt is generated the corresponding status bit goes to 1
-  and stays there unless it is cleared by writing a 1 in the
-  corresponding bit. The int pad will be pulled down while at least one
-  of the status bit is 1."
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+---
+ Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-vcnl4040/4200 datasheet, Page 13 Section Interrupt Flag:
-  "INT_Flag represents all of the interrupt trigger statuses for ALS and
-  PS. If any of these flags trigger from "0" to "1", the INT pin will be
-  pulled low. Once the host reads INT_Flag register, all the flags are
-  cleared (reset to "0"), and the INT pin is reset to high."
+diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
+index b0dd2b4e116a..20701aa725d0 100644
+--- a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
+@@ -39,6 +39,12 @@ properties:
+     minItems: 1
+     maxItems: 2
+ 
++  drive-open-drain:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: the interrupt line will be configured as open drain, which is
++      useful if several sensors share the same interrupt line. (This binding is
++      taken from pinctrl.)
++
+   vdd-supply: true
+   vddio-supply: true
+ 
 
-The interrupt is latched. The line stays low until the driver clears it.
+-- 
+2.55.0
+
