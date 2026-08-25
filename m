@@ -1,69 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F80270EDF;
-	Tue, 25 Aug 2026 10:51:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390E630B509;
+	Tue, 25 Aug 2026 11:00:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787655112; cv=none; b=V9/euRPPX3RcDFlhM2VN+JVqr+uQTSdp4eAB3L8FpF/0c5M3/OHKCFHTL1xTvpw0oRbmKsbkcpY2+3zoVt07zB+inToQy4zwmyRxhIRXGLHdJof/HmydREodKHtVr/1/UUgL8mHQ+2T0SyGANYYoWhFnv72ek1N1IENo90J9nFs=
+	t=1787655633; cv=none; b=PgX47swX3o9VJOnEnn4gJkoAcCEQCN7hWb10PxNltSf+kH5VswJzBsUYVXdfwTQyrrewQZJhWaMDpJ14xwZ+A/Hc21vEa/vjclrNQ1ZkKXV9JxwYR3PFyOWSc+CIjIOFV/w2A5++njA4IFTFYgQqmf9TpgybKgMiwXuAHmpH//g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787655112; c=relaxed/simple;
-	bh=9kna8nDOBhWk5hX832NGzLBQ8hrjrgGPdH1gaKKXmXw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HdiEH+ZAGlP+ySvfuXoSpfNBEQkA0BrnczAIN3/YDe0p1U6RAWv63t8FjVN0ochcV4mAL0v4im+rwcp0yjl6C0OGKepawiNhMtzRovs7PWh9CRJiG3aCh/NYC6o8u8hbgMXn3pMnLgDCrGDrS9BVWCDu64geHAECV7KQAG0vUKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C9ALWvPH; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787655633; c=relaxed/simple;
+	bh=hlQaic0F0CxMkHX0OwjEl1Bx+fB1Q/isL2/ynDVBG14=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=c7/pzLMm8RXFn5wfa4o/wWIpXhSZDPniLqvScaJADuPxx8A0G/WhgB038sNX46aZcaTT9gJEetAdvmVYwxxIdXz7y2BM2qcBtK22g1HaqfZmcRoDyp7Ss8OuhnZm0CERK5md3LfGvIjJwZr4yNdWy2377lf9prHCBUb2INoBNj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=L8bibeUi; arc=none smtp.client-ip=79.135.106.111
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C9ALWvPH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579711F000E9;
-	Tue, 25 Aug 2026 10:51:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787655111;
-	bh=QMGrDAIOtWZCBXMiOnfGRTif1AzEmPldqj6TN+byTSE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=C9ALWvPHvCMRPNBYNTEWGi7BwLDGbGge4g4Eysjrp36sekpgcIRiLHIjAD5oy3ji6
-	 KlwjR0aY4kMo0xiKQQxivw4r/x6YzPo2U7n/g30bhaJTQL/oqfyzIIO0+bLxBdWd0m
-	 GMjv/Fm/m6xBB2zYwgPwhzBbZYgv3f1a7e9yGbX7hboJBVzJ3XZVoIkIqRpnCF2FAv
-	 aYXSiJPbnEHgCkq6EP9MtEedv6ifKCo4cuNy1PFqP9jIPg3g7jikSwUxALgGkkG5E0
-	 BGV3YIz+6MMNZm1XjhVDX1zsjTc1sNxzc6u7eyEW6zPQ35cS2FJcznEcCNZhW24iAA
-	 mQWh2DDmjLBlA==
-Date: Tue, 25 Aug 2026 10:51:47 +0000
-From: Tzung-Bi Shih <tzungbi@kernel.org>
-To: Triet Hoang <triet.hoang.dev@gmail.com>
-Cc: andy@kernel.org, bleung@chromium.org, chrome-platform@lists.linux.dev,
-	dlechner@baylibre.com, groeck@chromium.org, jic23@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com, Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v3] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
-Message-ID: <ao1zwz5VBQkHvYQK@google.com>
-References: <20260821014454.15960-1-triet.hoang.dev@gmail.com>
- <20260825093524.285443-1-triet.hoang.dev@gmail.com>
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="L8bibeUi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail; t=1787655624; x=1787914824;
+	bh=el0ckJyITQBcyMzLRk7pDSGAYgyQePG9Nu8b8f3Hh54=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=L8bibeUicnFFoDCPHx8kwWFRlY/pG6kDuqTvEXdB37ZJiZI4x6KW9TC7DBaax+LVi
+	 pSsWW+wCMfWftkbz4E0TgzVB7sWl9sw+fF9jhGSmhQ9L8SQt1r6nqcyAaiNisXG8Mk
+	 jw9xjbbrKTH9DZctHwtQF3o/wXmXmzfjc26amaS/VWUph0ce3D5702J7XWyu9wZEns
+	 DArRD/AGutSPrzdBwfVyW0C6y6gVHNlEJvD9C0H5hOCPHPDWV1itBv5+Uba7BMeI/M
+	 hIrDuaWvxcH5rV9lWeZsCgzG/jh5p+tvgKBlM3+cL15km6IDbirRWpcnXsEbTwbMGG
+	 TMe124eunRXWQ==
+X-Pm-Submission-Id: 4hTlDk67C3z1DDXK
+From: Esben Haabendal <esben@geanix.com>
+To: "Joshua Crofts" <joshua.crofts1@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen"
+ <lars@metafoo.de>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
+  "Martin Kepplinger" <martink@posteo.de>,  "Sean Nyekjaer"
+ <sean@geanix.com>,  "David Lechner" <dlechner@baylibre.com>,  Nuno
+ =?utf-8?Q?S=C3=A1?=
+ <nuno.sa@analog.com>,  "Andy Shevchenko" <andy@kernel.org>,  "Martin
+ Kepplinger" <martin.kepplinger@theobroma-systems.com>,  "Christoph
+ Muellner" <christoph.muellner@theobroma-systems.com>,
+  <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
+  <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 9/9] iio: accel: mma8452: Use proper error code when
+ missing device model
+In-Reply-To: <20260825122301.0000531e@gmail.com> (Joshua Crofts's message of
+	"Tue, 25 Aug 2026 12:23:01 +0200")
+References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
+	<20260825-mma8452-open-drain-v6-9-9b252804ee80@geanix.com>
+	<HmXmDujS0IYQxlEIiTAGIiTIpioZlDO_L3bIBEBj8FWdbzyRSs2EnMSbymREOsD07x_zeOkYuPGdpgRl5Wewog==@protonmail.internalid>
+	<20260825122301.0000531e@gmail.com>
+Date: Tue, 25 Aug 2026 13:00:21 +0200
+Message-ID: <87fr02o46y.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260825093524.285443-1-triet.hoang.dev@gmail.com>
+Content-Type: text/plain
 
-On Tue, Aug 25, 2026 at 04:35:24PM +0700, Triet Hoang wrote:
-> Convert deprecated SIMPLE_DEV_PM_OPS() to DEFINE_SIMPLE_DEV_PM_OPS()
-> and pm_sleep_ptr().
+"Joshua Crofts" <joshua.crofts1@gmail.com> writes:
 
-My comments from v2 haven't been addressed here.
+> On Tue, 25 Aug 2026 10:27:47 +0200
+> Esben Haabendal <esben@geanix.com> wrote:
+>
+>> The device is there, but we don't have data describing how to use it.
+>
+> A bit of a weird commit message IMO,
 
-> 
-> This lets us drop the __maybe_unused annotations from the resume callback.
-> This is a straightforward cleanup with no functional change intended.
-> 
-> Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
-> Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+:)
 
-Neither Jonathan nor Andy have provided their Reviewed-by tags yet.  You
-can't include them unless they explicitly provide them on the mailing list.
+> I'd do
+>
+> Switch -ENODEV error on i2c_get_match_data() failure to -ENODATA to
+> satisfy the IIO coding style. (but this is only my opinion).
 
-My Reviewed-by tag from v2 was conditional on my comments being addressed.
-Please drop it for now until they are resolved.
+Sounds good to me. I will update for next version, if needed. But feel
+free to make the change when merging.
+
+/Esben
+
+> (We recently had a few conversations about -ENODEV vs. -ENODATA and
+> while there are a lot of uses of -ENODEV in IIO they should be replaced
+> with -ENODATA when checking *_get_match_data() results).
+>
+>>
+>> Signed-off-by: Esben Haabendal <esben@geanix.com>
+>> ---
+>>  drivers/iio/accel/mma8452.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index 4a1eb196589a..42e3371cdb1d 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -1595,7 +1595,7 @@ static int mma8452_probe(struct i2c_client *client)
+>>
+>>  	data->chip_info = i2c_get_match_data(client);
+>>  	if (!data->chip_info)
+>> -		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
+>> +		return dev_err_probe(dev, -ENODATA, "unknown device model\n");
+>>
+>>  	ret = iio_read_mount_matrix(dev, &data->orientation);
+>>  	if (ret)
+>>
+>
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+>
+> --
+> Kind regards,
+> Joshua Crofts
