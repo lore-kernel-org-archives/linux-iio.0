@@ -1,107 +1,121 @@
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39EB725A640
-	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 02:32:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7674964F
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 03:22:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787625143; cv=none; b=BFfMuiqteqec9WGFbN7M9CL8PGd3QspysUjm60ez3rfwuBWe54L3AuEZCXdVTKo0Z7sZQQzGda3a6cS68kfysqa338xSCEmqlgsSL+ucHWYM3W+60c1MVR/j7qAAVJLwLpU/bMaRTC7NrKCyUTVe8Kt6D6DGoCG92tIMGDiE24c=
+	t=1787628144; cv=none; b=JMdqlNbXRi9NkeUgi2Zd7h9e/AcMRRzmSq0hNcZLE9HN6vGhUDg+ZSQHEnAupf/DqexzLhA9r4TsgtChloAQbcEAZx7/K476ZkFB2jtiW9WFr3cjW4BOPYQ7sJm6whKV+glVoaePvNNPv2FiU8O8kL5CTP/bk1IHLIpIrIHCXII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787625143; c=relaxed/simple;
-	bh=hZkRUfAojg3eoNr8a0Rp4cL09Bvzpc2kCYAeV8McbU4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VLSF3cGfVoCJPW8F1/woQnR0sZUViU9H/QvZmIIyW39sW2SSVcHYWwUMqOZgLD6+k2OKEThu5qVTzdZMuVyw5TG9c3qmRLNWiZh+BhgiiM2V5VEnmyPJyyorCX638M4grXPsv4BXJEA5j0pbMlxxSmDYYbs/b2lWAA/EsTke7mE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LNDLOL5o; arc=none smtp.client-ip=209.85.215.177
+	s=arc-20240116; t=1787628144; c=relaxed/simple;
+	bh=c/dP8fSq+fJ4vk9t+6Oy//xE3tuRe686RF7qdma6lQM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HW62OY+zn2UcGW4vabRNHpO5rzFPl9DozMF+8cdvAaYOA/mxHAAIuzjuHi7N3mNiC+RsdxVlhXTWAy2zNeYDTKARJPdacAyDOFtwEY/ZnV2Z5pkJwzpeN+df3ea0b+R+rl4QvWHKPqOopbOXSlFtGdFxT6pksGa4+nu2nBI28UQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W0z5ihpH; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LNDLOL5o"
-Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-cbb8b54fcf8so4113254a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 19:32:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W0z5ihpH"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2cf6d65d8a7so51265205ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 24 Aug 2026 20:22:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787625141; x=1788229941; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=VLkQ5gc0U0wdnCVZK4qJPIUaaZupYGShMqc57SGVIns=;
-        b=LNDLOL5of6X5jT67RdTaHuABZ0L/LBqs6gSVT0xbFOHY/X+axAbJBXgpQXwnREFm8Z
-         5/QWCZh4L8iKN+afvHveTq6ZcNw6Knlqw8Br4bPJavLK6xnLPSbDVeEayoR8bGbS36Oa
-         XMvbt32X6EnyTT8Oin83W2W4XJJ39CVhbE87k7VlMkYEM4eE+lqNnfOOs7wikraQ6UFX
-         +upqxxO8IUmS9d40E26Mfi0edhqxuLsPSvMN1bFY+DNFL4SvWDU8PGz4UJsQPrFK7JOT
-         SsTlYz2v4z/0p8HllH/P0O+eC+UInu7QQR4qG1C+fjgyjjqHuaARikrEx8asYoWfrLuX
-         anxQ==
+        d=gmail.com; s=20251104; t=1787628142; x=1788232942; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=yUjpxw8jaXO6xHW35u2c9GeSegB5FH1o9dfJXtFGBdE=;
+        b=W0z5ihpHW64IrVxy7r8J20HpGFtlB6iXLZZ40dNKWxOJ8LrxiiwuPECGMfqZNoO4Yt
+         TqVjGn3tSerAb11GSVHE5fVyp6Y4gkchaCIyz6Mh3hygSoEkp4KlXMW149fc5DnUKbkx
+         97wIY4xGqUnu3fs8HZmqWmFfpgGSTS1Z2H4WNyKXJCVu6QKwZcYMVyI3SWXzfvOdTqAM
+         iE//0t44ArlX+jPPZzOHebt2vUhoyNleWMFm6hbryT6ECRKg81kmaeD1HXNvN2OYl8vP
+         NCVTGWOV4VkG6Lm8li0TpsgIPLAPSZxMWdLoS5SUCTLcgPOj5SuY8fU5D8RGDSWHWmop
+         r8rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787625141; x=1788229941;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=VLkQ5gc0U0wdnCVZK4qJPIUaaZupYGShMqc57SGVIns=;
-        b=KKS4vvFPAHxH+d0ifM046RS7mRg6QJZDzum3U3BRs44EZUpcO0r58IqD+rO/f6NakT
-         yCzb6XZ+ouno4ZxRzgvKG80oHiuaQOcdGMZFXWkBO0q62Laj76MvzTi1JPObvgl8Xlgu
-         7m6SmSkUJg3sVZSMBxobOy+cSS2IWirTSUm3SPYDTQPmRzJzRXSeHNGwvLBS2rCgRQbG
-         rQtwIbSom4AmAtRYoaQzDJ30vYLqvC4cBFYzKyBSmG5/ghUW7wFartWYThvkpaUMuw9a
-         zx7dAPC1rZhKHyr13MsX8xUsRccVbLUgmSdblIKKseCIEG/knENyR94QGFc3BsqEXsnF
-         wnxw==
-X-Forwarded-Encrypted: i=1; AHgh+Rpvy8aLbBPyoygeMx/FTzqvAVBlJVbe1JZW+Tkmsck1KWpUgnq+WaWdrgxN5S0R5jBKZ+TC6LOiz7I=@vger.kernel.org
-X-Gm-Message-State: AFuF++mSp2VWbvqlFblMtN8ASOddL5009ie8GWcanfFeI8/HqAZlLVHw
-	6Nd5iiyo2FipiT8IFkcvFLnvCMv6G0xeTXwIJJROy8RrWgMYvllaM0o=
-X-Gm-Gg: AR+sD10qH9G6iCKB7urvtc5h+HcVotPFiW4NTnU+J/qsSl+5uUxxSmsW9o7f6xaQJIe
-	EBJ2XNetOTwEom5mm9pf30+1IAhJiuX5VSuiNWNMwy6aQSYbjhJaZopZTmsK71mz5OHYQREEoZb
-	3IzWaZeO6hbVNqEzYU77LNdUqSUNdytSqmC3AylaowcLAPatZCvjRqVXEbXfBKXwXmVYhVRzlaC
-	c5FJFXSOLATLC4s/p9Y3wkQdPRB4abFe10lpa5+nVau8Q7ejqVkcLLV8wXEbaADH6aa63AxXla7
-	aKEikKpeXJy8JMzYcQcz27xpdpCj09fZguAdL6Ky0t4LgN6Ul/0rCAnxd5Nk3o7hUKDwYMbjHDM
-	OUCQmdOY5ChPTNzzsWyjEhc/iH3PO3j389sD5g/gGQnhGTBV32nLmggJAvT7hlOM5UCZnu2wzOU
-	GFIbgotn8sge04MsBYhlG19pQRzSqfgBM4DGJ/QjTE/sdM3jRMZIlj3Ld7fXk44uyu8SlXbS4td
-	Q==
-X-Received: by 2002:a17:90b:1d83:b0:380:9f17:6df3 with SMTP id 98e67ed59e1d1-395c3367376mr51215702a91.4.1787625141490;
-        Mon, 24 Aug 2026 19:32:21 -0700 (PDT)
-Received: from DL2XHKPB4.dl.net ([103.63.104.162])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-396420ad8b7sm657259a91.0.2026.08.24.19.32.18
+        d=1e100.net; s=20251104; t=1787628142; x=1788232942;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=yUjpxw8jaXO6xHW35u2c9GeSegB5FH1o9dfJXtFGBdE=;
+        b=fBVoGiScsug+OriXxQBzSgGqWs4E+hxS2buqkVm53NtNaqGvEcaffoRsKkXHFy/JpZ
+         5GTTsQaH5DAQyRpiQGAro1g7FGyfRJT4HwOZEzoE8b5oKo9YlhMcPQTk/nDXEaL+yGsB
+         JirEnpOJDmILebdgfJvzUbwYCMRa2lEvuqCn4KmdDF1st8ZHWLb+iL+pSK+CcIGaHToQ
+         ycV9lSMBn9HjWJ4q7hosOAsKB9dz7bEQVrHEes2SGPP/fGbrlCW9HAvL+G4dvisOUAbv
+         RzAJiWcHkzst42vmHXQzp8GBwP6BK+/2DkpgGyM018NNBwyDWnkwbxH/hXKpuKcyeQe6
+         2u1w==
+X-Forwarded-Encrypted: i=1; AHgh+RpkH8nUuYYjTWaGjbH44ExUTn3eKErtT2WY07csHRCKHlqF1PXD98RirsV/PRcJPL/tPD7AlwnAFUc=@vger.kernel.org
+X-Gm-Message-State: AFuF++mO4Gcv2ppHzBcEGMB/6+EtqC1qeLrBgXmFZ3LrEgs2pgSVbLcn
+	tEAoBXCZ+hG8xl0K0xx4RYMw70ec3A5SP/3ahcn9xzd+XaiGIbsKmFp4
+X-Gm-Gg: AR+sD12uQuKzUl70nXFlBE7i9fXAQHdr+QedsqtzAgd8JNOQfIR+oYiyXoZ1LDRizbR
+	9UkrKtkXR0HBEybJ8c2T3heIRqHqSZuT4dB9Djl0h5j9i3KfltJsZO5KVVRT4AO6avR2ocKD9bw
+	l7XrwhQRLBVzU+RX7VRFEcq2wIK27wltsJXGizhZEvl8jWXfmmikcbT1hJJfOOZd+V5EcdibhO9
+	yO7v8jvFc3daFJ7ycjzJVv91maaYBRTEk6tjZA8NyJFmIduz2eRiCmFcWTsX0weUGE+LQK0VAo/
+	MZHzIK6oaYGda/sXUfa7u4KU9Dwm0WT2ld52qjByUwwWUo5sZkzfvlA2yqMdNSiab+gliWIBAr0
+	deHVjctJSFNwWLMXWVdqWrV4owjHNJhqIkFSXrP0aom1ctxtNGTFppTxqFC+wVEpWcOHMHVa2Gi
+	6ie4Ot8XFyB5bBgC/S1/EeM9Wz40zt9TSry7sIqJQLel5AvSsG1ldj5Fa+LTR+xc8=
+X-Received: by 2002:a17:903:b0c:b0:2ca:4f33:e86f with SMTP id d9443c01a7336-2d6dccc2aacmr73091975ad.12.1787628142180;
+        Mon, 24 Aug 2026 20:22:22 -0700 (PDT)
+Received: from localhost ([115.70.157.242])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d6768e9ebbsm23291575ad.80.2026.08.24.20.22.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2026 19:32:21 -0700 (PDT)
-From: Triet Hoang <triet.hoang.dev@gmail.com>
-X-Google-Original-From: Triet Hoang <triet.hoang@datalogic.com>
-To: tzungbi@kernel.org
-Cc: andy@kernel.org,
-	bleung@chromium.org,
-	chrome-platform@lists.linux.dev,
-	dlechner@baylibre.com,
-	groeck@chromium.org,
-	jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com,
-	triet.hoang.dev@gmail.com
-Subject: Re: [PATCH v2] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
-Date: Tue, 25 Aug 2026 09:32:16 +0700
-Message-ID: <20260825023216.43373-1-triet.hoang@datalogic.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <aoz1VN62zEuKPePl@google.com>
-References: <aoz1VN62zEuKPePl@google.com>
+        Mon, 24 Aug 2026 20:22:21 -0700 (PDT)
+Date: Tue, 25 Aug 2026 13:22:13 +1000
+From: Tsz Shan Chan <tsz.chan.dev@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Tsz Shan Chan <tchan@jacques.com.au>
+Subject: Re: [PATCH v2 2/2] iio: light: vcnl4000: add shared IRQ support
+Message-ID: <ao0FKRhOyiIqhvr-@fedora-1>
+References: <20260814-vcnl4000-v2-0-9b771290cc1d@jacques.com.au>
+ <20260814-vcnl4000-v2-2-9b771290cc1d@jacques.com.au>
+ <20260822032550.31a0fa9e@jic23-huawei>
+ <aov_uhPCcno0YJTe@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aov_uhPCcno0YJTe@ashevche-desk.local>
 
-On Tue, 25 Aug 2026 01:52:20 +0000, Tzung-Bi Shih wrote:
-
-> This needs to update accordingly: SIMPLE_DEV_PM_OPS() + EXPORT_SYMBOL_GPL()
-> -> EXPORT_GPL_SIMPLE_DEV_PM_OPS().
+On Mon, Aug 24, 2026 at 11:24:26AM +0300, Andy Shevchenko wrote:
+> On Sat, Aug 22, 2026 at 03:25:50AM +0100, Jonathan Cameron wrote:
+> > On Fri, 14 Aug 2026 14:30:43 +1000
+> > Tsz Shan Chan <tsz.chan.dev@gmail.com> wrote:
 > 
+> > > The INT output of vcnl4010/4020 and vcnl4040/4200 is open drain active
+> > > low which can be shared with other devices.
+> > > Add IRQF_SHARED and switch the trigger type from IRQF_TRIGGER_FALLING to
+> > > IRQF_TRIGGER_LOW. Edge triggering can miss interrupts on a shared line.
+> > Fairly low risk change but I guess we'll see.
 > > 
-> > This lets us drop the __maybe_unused annotations from the resume callbacks,
-> > and reduces kernel size when CONFIG_PM or CONFIG_PM_SLEEP is disabled.
+> > It used to be annoyingly common for interrupt controllers to support
+> > only edge based interrupts, but hopefully that silliness is a thing
+> > of the past.
 > > 
-> > Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
+> > So crossed fingers, I'll apply this and see if we get anyone shouting.
+> > I think we'll get away with it
 > 
-> With a nit in the commit message,
-> Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> In another thread somebody mentioned a type of the signal that HW generates.
+> Having OD output doesn't prevent HW to behave like it does edge interrupts,
+> id est generating a pulse instead of keeping the level until it gets acked.
+> With that being said, I would ask the datasheet citation to clarify the case.
+> 
 
-Thanks for your review. Should I send the v3 to update this?
-Or maintainer will 'amend' the commit message when apply patch.
+vcnl4010/4020 datasheet, Page 11 Table 15 Notes:
+  "Once an interrupt is generated the corresponding status bit goes to 1
+  and stays there unless it is cleared by writing a 1 in the
+  corresponding bit. The int pad will be pulled down while at least one
+  of the status bit is 1."
 
-Regards,
-Triet
+vcnl4040/4200 datasheet, Page 13 Section Interrupt Flag:
+  "INT_Flag represents all of the interrupt trigger statuses for ALS and
+  PS. If any of these flags trigger from "0" to "1", the INT pin will be
+  pulled low. Once the host reads INT_Flag register, all the flags are
+  cleared (reset to "0"), and the INT pin is reset to high."
+
+The interrupt is latched. The line stays low until the driver clears it.
