@@ -1,132 +1,137 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187433E49CA
-	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 10:23:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB5713FAE19
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 10:43:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787653386; cv=none; b=awublv4ktbdEg4jTFvC3h5y6QiBeH81kWROUc8QRUlCEEGTR6g6xKI9sxCsyk79sm09fR2aphsPkRGXoU4uAyVk1H9mn8Dua3odYWdmInZikFhk+XPH0rm3CUll6MMJ6GlmJUiAMk7hgqg00y2JLLaeVe5jE3SjjaBJo/gqrqF0=
+	t=1787654634; cv=none; b=H47saKDyJ+DH6QEaJJgQ7mN8O8VBYCrRLKGnhwPYJcp71mPrbzg72o4BuF6UnKCoXZj92J2H02O8dS/6G7rxf6raGEPtXJVpEES4kkY7NQ6izr9ZIXVUxQifbcrGq4HRf/qhx0E3gw3BzbHL9J9tr30yc7rTqEXZfmUaU/XrOy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787653386; c=relaxed/simple;
-	bh=5x+8HPjpXqhgvYAk50e7uP9DNSJ3/TXNvQ39Lw8wTOA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nOhxVaTiRNPolWRns4LmDu7COeKwj0cNZ7a7O+pkqYLj4tHYoYAPaK+sZiuMsN1EMn2y1bXtUV6xVQWSMsr/05PHWifi1FdCTgUEf/5SDLrYeCwPCxuztuM5GfTp/Hegtqzav43IweGZMjwJ/inRHoNihii6Qum/8wYZa0bP5Ss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BpjovjF1; arc=none smtp.client-ip=209.85.218.43
+	s=arc-20240116; t=1787654634; c=relaxed/simple;
+	bh=QFInQJXondlUA70nRR+VYLFa+WvVwFUjN0rN7mFQJiQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=o2TBvwSDtZfuDTWmfaDuWoMJ3qjuzfwafpUcLt09vL9J2CMcldReLqk1FlIrf1rdPK4/7jPvWxlDFYNfHDeULX8/Ndb6B7aiQA513V1dx7SM8D4X2fj9xMTWS0KCGJpUcYjJfHWOAF+W5QakSVcYYTmFQkwkYgCuDvNcOfh6ri8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a/Wc1RY5; arc=none smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BpjovjF1"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c197e7e4e94so800613166b.2
-        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 03:23:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a/Wc1RY5"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c214e625259so692937766b.2
+        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 03:43:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787653383; x=1788258183; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Y4eJ3nmbGLFNyyQbwsnCHRPDBdQQucCu/IaTUqHFSaw=;
-        b=BpjovjF1Xth5CIN/kg9NWMefP342vj56Wmri29jTjypi3oN9gohT2xRfn0jmxvnvwG
-         3YWSt+B6dBGZrKcxdAzbV+GdxHTVww59xm4vVqUodQNwHmmZfRNrNxr3rMJw1qQOgvKX
-         4eD2MMS7aXeE0C86gxlRl7qnXiIscgN3U9CR8FvwPwLPuC3qg/T/8yQD6P/3MAujZRRY
-         F1o1KzbbVmNN1y+hRyClVRq3t6OG+QKkGbQuWC4afWRtCs2IuD1Lw/CBeDZ/JKVTGOuK
-         bsZzQdNC614HUST1LLsycYOrFDfXKZnXF6NF2Fd1pz/XnXSe4xdDTnNfAoHJrRFXTEzI
-         54vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787653383; x=1788258183;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1787654631; x=1788259431; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Y4eJ3nmbGLFNyyQbwsnCHRPDBdQQucCu/IaTUqHFSaw=;
-        b=cNF120TWwmzECQ3bFxSZqmE1lMw6/ZBh/NkofJF2lVaz372t92E5P7oFsSCe28JxbC
-         Q+5T69g604uJbErvxNWgrQo+8tzeAN7UzHNocfxbWmyYSMOTllzRk1pKDCQrN85fWoh1
-         w4nuXOA+SqwRxWeVtajSc/BNNBlLyRFb6vHHK1lxt46KAdyP/55BdAAXLZrbH+kkrApV
-         ZC/PAzNMkFVi7MmOpDOo3p2RAymBD0XIMgNDfassT02y+Zbbw/BDvsuGwFz4JA/FTAYt
-         JGH6vbp78HeVcYJ9pb+iB46wL5oICjN+CyF/s9cdHuzrXFPApOxK6/sbU7qchTBzYJdf
-         xXzg==
-X-Forwarded-Encrypted: i=1; AHgh+RrMgNM34qc5xl3E/hiph61roiYqjazHuhR0ItEqCDws9y+C9eK3+PjEbMwL/qS5aynHSMuCJKc/yLM=@vger.kernel.org
-X-Gm-Message-State: AFuF++nghUeyntdwuS4r4LVYonFj+AAUjXQMa3O/0IzepMxsenaEVqNX
-	vrzzNviU/Ugg1sxGWHe/TkEPhpFpj5xhF2nAAA+5rKZEyDZ/K39kGMJ3Qv1x1QlZ+2EM2A==
-X-Gm-Gg: AR+sD10lRG5kHR4zT/kVEBz6v3roLlSxf8NRu4T3FkSsTrmVRn5TW33NW6KN8glff6s
-	HJCjTbFGtR8dxv0S+6+y9dO/TF6Q32kJjo5kQf6bm9eE52nmCk2dHDtHhT1qs5hG5C2LBGvCMXk
-	LizjTFFiKz/IXtT2zxNlh4DxyYObDfoDZr704bzmblzSBoQdE9gNjIoo3LLDrJs9S94CcZT1kym
-	HnS4vvZ6WnJyJnc7TcxhzPaohD289RRJRbans0lOZPC/6xWhknx8y2ZPhIDazY1LA/WpX6DFUa1
-	svMqyD9lCfF+4Xi1ONFyy6WQmG3r8Kwun1ob6wJzoRHKB3Y9GXxeeEgctcbsyObhz/Us0CwH2bS
-	DMgqwV4rkmwa+ACDIsq4B2QC+OZi1ERk2/S1QQO/O8HauiGfjxx+RKtZ8/ooQh8hN93RGYABZ65
-	eCodp1pAVQZXDfgx2VTdmlQC3R46V4LHWjeo7CRPfgNCYfSHUjRNizKsmMXiCJFBZVVoAOKwU+j
-	cb6sCYnxxdM5etRUjJ+ETcZa9lbF15+fpTwMdIefZHmUCCoqhJeh1Ti8EHAX9O7B8JBmkmwQGkc
-	Vlf4JTntAsbQG8bQSsqXq+/arSkYRZ3bmML3zs4IJml10GEOeCbugZK4EgvbtqdM38DYsH0NWO7
-	k6Cw4sgKWk4CUOdK39i3yReQnwaTK4kmEkNVSMxWwWuOHIVQTtc6p1ZsWj0jIs08s5cEqEiY=
-X-Received: by 2002:a17:907:a089:b0:c21:450d:cd88 with SMTP id a640c23a62f3a-c24924b8000mr2775291266b.6.1787653383180;
-        Tue, 25 Aug 2026 03:23:03 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c24966f6b48sm1773503266b.33.2026.08.25.03.23.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 03:23:03 -0700 (PDT)
-Date: Tue, 25 Aug 2026 12:23:01 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger
- <martink@posteo.de>, Sean Nyekjaer <sean@geanix.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Martin Kepplinger
- <martin.kepplinger@theobroma-systems.com>, Christoph Muellner
- <christoph.muellner@theobroma-systems.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 9/9] iio: accel: mma8452: Use proper error code when
- missing device model
-Message-ID: <20260825122301.0000531e@gmail.com>
-In-Reply-To: <20260825-mma8452-open-drain-v6-9-9b252804ee80@geanix.com>
-References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
-	<20260825-mma8452-open-drain-v6-9-9b252804ee80@geanix.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        bh=UviVHg4iRcsv0fdKQmMFuzXb6W/9vw8IV+1dqwY6Nl4=;
+        b=a/Wc1RY5XNJNyi9xtalA395JKQG+d/KRFLbhD3MT26pBIykJU04GXtl4wMSgGelycJ
+         zAS6WKB3joeIIDyOe4rCBaxAPG7DIrUOuh/85cYs6Ksp/0l16Slw7xqde576FqGeINxH
+         w6cxm3yK090PL466jRpAbgXTzZuvmv5bXfKrJbDPhTKl8Xd3/i8KyoDSy8jQl8MdzRDr
+         nw2SpeA6Iza/3I/5fojrkDdUffa95lLQoJRf/hrx1YdEqpGTczUm/suVmYMnVu+Z9H4v
+         ecciR3KkNTFvhSLlkRgd1oi1se5GyGJvs2YkvWiRyC1lbw0FPrJ3YfffAx5968bVjzAv
+         Zeag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787654631; x=1788259431;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=UviVHg4iRcsv0fdKQmMFuzXb6W/9vw8IV+1dqwY6Nl4=;
+        b=NkBEMaeiwn892Wjj0mn2HQ902LXdxW25cPwwCewvPggN2fokQ+9zY/bJ++WvJQWo/K
+         qU3TV4HTGodMYEAA2HwePZNbkJKj7lqW+ltg2/vXUJRnfe/8HvdF6rkOFz7QvxG4i9+z
+         w+OjUMnffz7Gr0VZlHPl4C58k1X7KyjRTwcZ+5R6PC2jzqPcZgjWxh1rfWy2NA5SkXXV
+         fHP7WKRYhwT2yUx9qB7NSTE0XmlxSg0x+plQDbwzfiaEtJU7XAyiFpPBOxlBIx316eMG
+         8UgKu8V5flN/dhnO4cXWUN7nKYCyWgdhwPqu5kH4G3oRw5hiCMPUfDxmuB3EDyRQuLI7
+         w+cg==
+X-Forwarded-Encrypted: i=1; AHgh+Rp3UV+V00sMRj9fAPXwN44TrBwuhY2oFptWIBCMI6GRNRE03Oc838mgkMFe/PkYTAt4ebNeZzHFWv4=@vger.kernel.org
+X-Gm-Message-State: AFuF++nti3mpWqo8VRqkR+zC3jSQj3t2saGoaGtrreQFokJN9Sng15Te
+	hUEJFEOEw/OwU71SdRuOQksO5MqS2puYzw1dW50jrk4W5mwmGc+naJcS
+X-Gm-Gg: AR+sD10EVPlN2rxy38m3tlO7mEZfc2AKnq4sHIpL7+QNw2cyQ95UOvCLz8u8XNDlm9R
+	4+NqZxQxQPycGyRMmANgWRs/APFhyJc5eFZR28QfBgbihwSrcOBR5G12J+JQ9J1c7BdainupMWT
+	vVM1cfDCwvP7qX0ZFjQJUNhv8qgRvK2sGe8OIroJedcJZ5trpq79E9Dm3LPA+7DNEs+8GJyoHU2
+	5GIKInmqXRqTZ+4IS/FCI42krVhmswD7VDNvawjMIy8QTiMUBJ3RkizQo2+osWKh5sMLIW4abKQ
+	TFR37GlUhp4F6DiaOdkzR5/7hlQCScMjFxZM7y+ozb8Es6qwnkhFNt66zWUj1rc6YbrxF634DXg
+	F5mmZQ27Mc7KHTXulwgMjSX1+f81lQA2CO2M3rbH2c0NkHe9sNDRW8PVPsvhtQLz1FIUHI5iEzu
+	BfckKjdxL7gJQXcuVdjsddmWEJdvsdhPIsZbsU5TyNG+BHqIjLJXI5fB09qxSD8VOdjfrqEQKqx
+	PcXv3tef4ZFgvQ1b6B5N6+HHqbgkDGXCVHbG1uLmQ0FBEIyC0Mmv474
+X-Received: by 2002:a17:907:8995:b0:c24:4128:c19d with SMTP id a640c23a62f3a-c24e584dc37mr540823866b.4.1787654630510;
+        Tue, 25 Aug 2026 03:43:50 -0700 (PDT)
+Received: from [172.24.138.145] (dynamic-176-007-058-112.176.7.pool.telefonica.de. [176.7.58.112])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59e1d741asm13240282a12.27.2026.08.25.03.43.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Aug 2026 03:43:50 -0700 (PDT)
+Message-ID: <79c44439-86a3-4eba-bd6f-44423c59c17d@gmail.com>
+Date: Tue, 25 Aug 2026 12:43:47 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 05/14] iio: adc: Add AD7768 and AD7768-4 core support
+To: David Lechner <dlechner@baylibre.com>,
+ Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>
+References: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
+ <20260821-ad7768-driver-v4-5-bb8fbd06d4eb@analog.com>
+ <10d575af-2a2c-484b-82b0-0a00de1c50be@baylibre.com>
+Content-Language: en-US
+From: Janani Sunil <jananisunil.dev@gmail.com>
+In-Reply-To: <10d575af-2a2c-484b-82b0-0a00de1c50be@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Tue, 25 Aug 2026 10:27:47 +0200
-Esben Haabendal <esben@geanix.com> wrote:
 
-> The device is there, but we don't have data describing how to use it.
+On 8/22/26 19:30, David Lechner wrote:
+>
+> On 8/21/26 9:06 AM, Janani Sunil wrote:
+>> Add core support for the AD7768 and AD7768-4 simultaneous sampling ADCs.
+>> Configure supplies, clock and reset, use a custom regmap bus for the SPI
+>> protocol, and parse the enabled channels and input buffer settings from
+>> devicetree.
+>>
+>> Connect the converter to an IIO backend for buffered capture with CRC,
+>> provide a fixed safe wideband sampling configuration and add runtime
+>> power management.
+>>
+>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+>> ---
+...
+>> +static int ad7768_regmap_read(void *context, const void *reg_buf,
+>> +			      size_t reg_size, void *val_buf, size_t val_size)
+>> +{
+>> +	struct ad7768_state *st = spi_get_drvdata(context);
+>> +	struct spi_device *spi = context;
+>> +	struct spi_transfer t[] = {
+>> +		{
+>> +			.tx_buf = &st->d16,
+>> +			.len = sizeof(st->d16),
+>> +			.cs_change = 1,
+>> +		}, {
+>> +			/*
+>> +			 * Register responses are delayed by one CS frame. While
+>> +			 * receiving the response to this read, the device also
+>> +			 * decodes another command on SDI. Repeat the read
+>> +			 * command to avoid sending an unspecified dummy
+>> +			 * command.
+> Could this have unintended concequences? E.g. register writes that have
+> size-effects, like reset or clearing status registers.
 
-A bit of a weird commit message IMO, I'd do
+Repeating the command cannot trigger reset or other write side effects. The device also does not have any read-to-clear registers.
 
-Switch -ENODEV error on i2c_get_match_data() failure to -ENODATA to
-satisfy the IIO coding style. (but this is only my opinion).
+Thanks,
+Jan
 
-(We recently had a few conversations about -ENODEV vs. -ENODATA and
-while there are a lot of uses of -ENODEV in IIO they should be replaced
-with -ENODATA when checking *_get_match_data() results).
-
-> 
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> ---
->  drivers/iio/accel/mma8452.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 4a1eb196589a..42e3371cdb1d 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -1595,7 +1595,7 @@ static int mma8452_probe(struct i2c_client *client)
->  
->  	data->chip_info = i2c_get_match_data(client);
->  	if (!data->chip_info)
-> -		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
-> +		return dev_err_probe(dev, -ENODATA, "unknown device model\n");
->  
->  	ret = iio_read_mount_matrix(dev, &data->orientation);
->  	if (ret)
-> 
-
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
--- 
-Kind regards,
-Joshua Crofts
