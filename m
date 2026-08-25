@@ -1,122 +1,177 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E833B3EEAF2
-	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 09:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C05453F3277
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 09:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787650122; cv=none; b=o+cZ0x7ksie5XqUpPkpmwQgxQUNGSpQNrdFUdZiY73aYl1Bk/vPbcJNGGyxbdnCTwDvTLBEfzLM3d0yXU0H7Qbc39HayS7pWdo5dUCp7AA7jjAqGVL7umNgLDhla8zbtcvtYqUMt47NnbZH5rf9YyizOJ/t+qcqKzH4xd7mK0uY=
+	t=1787650564; cv=none; b=MDIELzr9QpdKXYWTQ1eYDqy5jyi17cNXd7QYA/iAvXi3oHLrz6YYjOLmXri8wtaKnq0IA40duXxCpMIhVwE4KKRB28u3siqPcLT/gVX3CPAtwRmPinugjXDN+/b8KH7HDpNIuoZMsHVfb4vRN0pXvKlieHGtZVopTMsXJHzIHhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787650122; c=relaxed/simple;
-	bh=IjtiIO5zyV292J44z/H7H3qXyCobExFnOKttFC3Znhw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kbTL9kMNFRpp9okxj2idb6lcyh9M8CpzdUw2C24DgzJUDG6KSI2/W4qh9r8osBy21Le5wULr3jjCr3hHkeXj5paKYlqFqA86To6kl8+CKQ4b3AgkBHVNqtK1C725yxB0gJ/vcwsDOlY6LGMn8npIkBja0sU+2o1LLFrLMYRtUa8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qNWjSsGl; arc=none smtp.client-ip=209.85.208.45
+	s=arc-20240116; t=1787650564; c=relaxed/simple;
+	bh=Gvcvg7qvN+e+3AHxDv4nYpJTCVFO4SL2dt4x3hWWHWM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=W3LoaAxuNwenpzxFNrTa+qIbYAqQOCNPkTTKQp3zDUrzzmhwTvbkCD2MekHint+hVra98BLBBB7j9ySLXNOZbEWWFYLFZUcqCniQ9dS7Ci78RyReZwy9FiOtD5Uq70sh/1ACw4PPs8ZGV8slMi/LP/l08TZvk+yZq8CsWoy7vus=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=damR6YOy; arc=none smtp.client-ip=209.85.216.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qNWjSsGl"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a10d02ff43so8820464a12.0
-        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 02:28:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="damR6YOy"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-38759bcd877so5656972a91.2
+        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 02:36:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787650119; x=1788254919; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=IjtiIO5zyV292J44z/H7H3qXyCobExFnOKttFC3Znhw=;
-        b=qNWjSsGlMG9jLW8JJobGdYlBnM82ON+URjcRiK1X3ai3g+9uXjKa0SzW46xXetm5kt
-         xIkbk3YxAoIJbRRufo7TrIGAP6ziydytaO2TGsqVKyFcVuOBUjgkxFs+1kkpV2fMPFSU
-         bfc0HdqxrFf8+IR+Un3iSEOUDjDLHpoyfKGX+SkQeMUFA008A/63uVID66DiBaroM3aN
-         osPBZP6Ooze5owQ2xWFtsZm6f5ABBSnjPUcR9PNwNOtKc1uSJF+earUYaG03CPAYK2r+
-         QAO3uPVqR8J5vX1eY4MEcb5AuT/XcNuuh5XjfU+ZnsD5vbO/c1jAZaKCiKtdO2WtQ7ka
-         Yl1Q==
+        d=gmail.com; s=20251104; t=1787650562; x=1788255362; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=vgglv4QiDBkUh6JReI7gmaCGhqMs03Wj/b9NbtyBBs4=;
+        b=damR6YOyKwChCxwlDSPhynpuMSjTiMCP1fF67FkQ3FavG2ViQBoN8diKKyRx9zXTBr
+         evIibJePzefhRAAy5aycsd5GBxHYgMi/VUDcpM5rWrDM5SA5bpIyq5ZJg+DeI4I+7y/X
+         bVAkDPdFOI6SwEPA/gnKc4aikInQ4PQSTkTRL6L6spLJQRtHx2etpu5HAvFjDYE3hoE1
+         z+5sM6Ejb1C6l2mYmYoMwNkRovI7FeZw6zuOnaJYDyHtGhY5PEs2LOgng8m/8BV9IyAo
+         nhA1g9gTamSo5JetHGwBRLrx4i9CDdz4qdILKTkAuThOpYW+TXumLwKJXyGlxrt4KA4W
+         kSSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787650119; x=1788254919;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=IjtiIO5zyV292J44z/H7H3qXyCobExFnOKttFC3Znhw=;
-        b=OLEmG+Zr7Csosu2R2y4y9ML3I/yTBc07efYwpwY2Wn4CUMDQsn7ip1VI9QQ7CRKxN2
-         i+FPHXLIO+uOdpksbjp7qJeHI9rWEQgba2LTUJn5/rIip+73thQrlzDSJIGLp4G0yKuf
-         lCfzqoVu/Z5P9traxBNK4QGLn/JIXr/30x5SsWRwvW7uo63ezzlfhHTbUQiXS4FHawPl
-         IuQ99rIkA3oenPOgOfzWfLYOzasfZjlHkCj4KyFIY8n/psbLnC0CN0ILSRYbcDhPEWtL
-         hXTzRoKVGXVvRaO1soWeS7vN4OIrEFLXrjHig16jJBxIzuOw2MpHVPrSN5ZIIWxROCdk
-         K5IA==
-X-Forwarded-Encrypted: i=1; AHgh+RoV9+NUdMfDzvE7eXkv/YiQAB7nkBd2g6F2tXbjmXYHqxMVj1zvZ0UBH0MKM8tKy4JLKVTX4PA7qsY=@vger.kernel.org
-X-Gm-Message-State: AFuF++lq89BGJrTByy3GDuCbxIRxLWVDZYCZSbt+4oXZU5Hw3PRiLkY1
-	k4cxBROs0Mqyk3AoefXf1I3dIhujm5R96mxmxnrsYg31yzF8rj45gBpu
-X-Gm-Gg: AR+sD13bcliLnmMgbVJHvHuQXK1keDoKhg8v7n1wwiRsCrFrnifBok9cO47Zw5QAV6z
-	cMR/5i55yHSqXQ65Hj81yFnYovS17Wr6TFoFqqNLINTeR5fi5ZddlWM6EuRUkq202R/F+fS3W7f
-	vU1Y4nHUH0/LF+yt6bCyivyJAUoy3W2xRpWDvCoSOQcmMQa6XXL6BnfbV/A2pxW64nCgho+KGZS
-	Pa/2mARLsQPPNfSwJBqjsw+sZY/I0usGQii01CBJQ0oR30w/f9KQkJoFw+OoITtNwFT0QuGzrsu
-	e19GcZ1VX8Zp3ZqR4EjZeaZGoeu+K25i5AHh+xaA+62b3A2nZCnUBLm8V7m/Xp4WcATQB4ZYHW6
-	36UBhCR1EPckXH9PstFrCpm4Af7QEMPWScjmyasVvsr3Sv+MHIH4fAksfk9BqIH/DzdsDed6rS/
-	iU6S7WEotys+s5E2sMGZceG5Yy2VnBHPPu7cP/8AoekTn0DrJHR/jaoYHI64Y2cykbZ55V/SEF/
-	20stetYbr90rCeQ3AbnChgJKX5slo8XIvD0tI4VXZitaOCIbXz34Msah8YTf7kVD3pml0fJ2sWd
-	nv1V7z1/qGg6aG/AAU8ENcbkYgLArYOn6kFWSuyWeZGFn/2pMwSe7YR0C0O/ngIgHjYZK9QlozL
-	gjbgJ25uCG4xBd/5g1PPnkd0qwEL0NjZTYT37urng0qIwRkS12vkccpGHDiXXxUuj6uNz7IHYF9
-	txghEI
-X-Received: by 2002:a05:6402:a517:10b0:6a5:d401:b575 with SMTP id 4fb4d7f45d1cf-6a5d401b704mr1526747a12.7.1787650118910;
-        Tue, 25 Aug 2026 02:28:38 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59e0126edsm14409246a12.7.2026.08.25.02.28.37
+        d=1e100.net; s=20251104; t=1787650562; x=1788255362;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=vgglv4QiDBkUh6JReI7gmaCGhqMs03Wj/b9NbtyBBs4=;
+        b=fNc714GeGjNe0Heniisnoa/yn9FOIVXj9GdBweZX05HCwaDSxyyrwv14RPTcrLkUH6
+         WvXh3Q7ZbzGE9qzRwiVl5sqfSYeJC+0bSScP3q4SSGVgZUNsac+QbbFeLwli1vEbYmb2
+         1P2qakxNyGsYlacPSaC+L9I8i2jS/UD0neBLfNKO/T5OUT2LQ9pOTyEfEGkQu4YRDkrd
+         eTUPHtOf0dXBwTygmG2duVZWYgNZqRObXlYt8DNrukY3xbsqv8BB/WAGPlN1vybH8/Z2
+         PLcg+hr26mVt6wYIT5AetiNXW6rQS2QwF1ZKPgJlmsjfZJ+5yPOgtah2cJbVE4V7m0ol
+         d15A==
+X-Forwarded-Encrypted: i=1; AHgh+RpC0xKE5Pi41OByyknrrJ9FvIHFIdpI8sOitM0BlFAGW6UoYeaxCvbn023P9jRg72kRQYlQeqDZWrc=@vger.kernel.org
+X-Gm-Message-State: AFuF++lPzafMcvRToaIALY7fIBQwup7Mz6ld18tNFHxvDz/IFKmF09Lx
+	FARW9uo1cabvV9qVmfDoN2MmThReAo4EfIlOE3V/ifb2xn0eLsosobE=
+X-Gm-Gg: AR+sD13PynzJB5MDZq70IyWaQ0hSFB+NZO5nZ/6UXQ/Svf7NeyFH84VYK05yVAHUE0x
+	OlCK/elbTAwrMVj9ECJkG8mga/Qc9yzp1jjmbXhmODjAFzAyFmfNaXwZrRJrSZK19s4pQ9GyzPo
+	KviDpDdNCxxqm1cjX4BS3I4QjjafRsX5RaKxN/sqhW6umRpa+e69Tuxx5Py0Wco1sQ5ZI3eaMkp
+	vgvXoJ1q0G1+UBV6YgmSFplSsoUQ6eEGKT8hEg8aEtYfz0KsCLsNLan0EOc8rAfFVZWQzoc1xtV
+	PMg16H7BpI2IwpZqTy2fGHZSJLgzVR9/EVXnnn9WDji+UJwtn23/ka69JjM+L/HbSkALf3EiVsb
+	YSPQzfDxIKWGOrc0jRmAT9Pq1/ivbZa6F+mLpjHIepZC3PaRzYu5fBqf7m0Hbl89ILTuTiiTSBq
+	/xDc3DTyzeNkA+s7V3bgboBxNNxivoA3e38pEMQ8z7/E7Hl3sz8e1OfRTwAjSZh5PUxOCUQqQOk
+	w==
+X-Received: by 2002:a17:90a:c50:b0:396:4729:43fa with SMTP id 98e67ed59e1d1-3964729461amr7294256a91.0.1787650561947;
+        Tue, 25 Aug 2026 02:36:01 -0700 (PDT)
+Received: from DL2XHKPB4.dl.net ([103.63.104.162])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-396425d286fsm960551a91.2.2026.08.25.02.35.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2026 02:28:38 -0700 (PDT)
-Date: Tue, 25 Aug 2026 11:28:36 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Yang Zi <2959243019@qq.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, u.kleine-koenig@baylibre.com,
- dakr@kernel.org, o-takashi@sakamocchi.jp, email@sirat.me,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: sx9310: fix NULL pointer dereference in
- sx9310_check_whoami
-Message-ID: <20260825112836.00002aef@gmail.com>
-In-Reply-To: <tencent_1936AF0C31F45000EFB7B38019EFD4A06C07@qq.com>
-References: <tencent_1936AF0C31F45000EFB7B38019EFD4A06C07@qq.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Tue, 25 Aug 2026 02:36:01 -0700 (PDT)
+From: Triet Hoang <triet.hoang.dev@gmail.com>
+To: triet.hoang.dev@gmail.com
+Cc: andy@kernel.org,
+	bleung@chromium.org,
+	chrome-platform@lists.linux.dev,
+	dlechner@baylibre.com,
+	groeck@chromium.org,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com,
+	Tzung-Bi Shih <tzungbi@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v3] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
+Date: Tue, 25 Aug 2026 16:35:24 +0700
+Message-ID: <20260825093524.285443-1-triet.hoang.dev@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260821014454.15960-1-triet.hoang.dev@gmail.com>
+References: <20260821014454.15960-1-triet.hoang.dev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, 25 Aug 2026 17:18:01 +0800
-Yang Zi <2959243019@qq.com> wrote:
+Convert deprecated SIMPLE_DEV_PM_OPS() to DEFINE_SIMPLE_DEV_PM_OPS()
+and pm_sleep_ptr().
 
-> device_get_match_data() can return NULL, e.g. when the device is matched
-> through the I2C device ID table rather than the OF/ACPI match tables. In
-> that case sx9310_check_whoami() dereferences a NULL pointer when reading
-> ddata->whoami.
->=20
-> Return -ENODEV if no match data is found to avoid the NULL pointer
-> dereference.
->=20
-> Signed-off-by: Yang Zi <2959243019@qq.com>
-> ---
-> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx931=
-0.c
-> index 79ba46d8a0aa..305b41f2847d 100644
-> --- a/drivers/iio/proximity/sx9310.c
-> +++ b/drivers/iio/proximity/sx9310.c
-> @@ -892,6 +892,8 @@ static int sx9310_check_whoami(struct device *dev,
-> =A0 =A0 =A0 =A0 =A0return ret;
-> =A0
-> =A0 =A0 =A0ddata =3D device_get_match_data(dev);
-> +=A0 =A0 if (!ddata)
-> +=A0 =A0 =A0 =A0 return -ENODEV;
+This lets us drop the __maybe_unused annotations from the resume callback.
+This is a straightforward cleanup with no functional change intended.
 
--ENODATA is preferred in IIO.
+Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+---
+Changes in v2:
+- Use EXPORT_GPL_SIMPLE_DEV_PM_OPS for cros_ec_sensors_pm_ops
+- Wrap to 75 ish chars for commit messages.
+Changes in v3:
+- Update commit message based on feedback from v2, and added Reviewed-by tags.
+---
 
-Also looking at the cc list, no need to add addresses that have "commit_sig=
-ner"
-next to them when running get_maintainer.pl, just maintainers, reviewers and
-mailing lists.
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 2 +-
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 5 ++---
+ drivers/iio/light/cros_ec_light_prox.c                    | 2 +-
+ drivers/iio/pressure/cros_ec_baro.c                       | 2 +-
+ 4 files changed, 5 insertions(+), 6 deletions(-)
 
---=20
-Kind regards,
-Joshua Crofts
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index b971f8b646be..551b86236abc 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -311,7 +311,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
+ static struct platform_driver cros_ec_sensors_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-sensors",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_sensors_probe,
+ 	.id_table	= cros_ec_sensors_ids,
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index 5133755c2ea6..d03e40c91582 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -862,7 +862,7 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
+ 
+-static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
++static int cros_ec_sensors_resume(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+@@ -879,8 +879,7 @@ static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
+ 	return ret;
+ }
+ 
+-SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
+-EXPORT_SYMBOL_GPL(cros_ec_sensors_pm_ops);
++EXPORT_GPL_SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
+ 
+ MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index 7ab565b1fb9f..b1c92de7922a 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -249,7 +249,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
+ static struct platform_driver cros_ec_light_prox_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-light-prox",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_light_prox_probe,
+ 	.id_table	= cros_ec_light_prox_ids,
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index 6a567b6075d9..e4bc4df48d01 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -192,7 +192,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
+ static struct platform_driver cros_ec_baro_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-baro",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_baro_probe,
+ 	.id_table	= cros_ec_baro_ids,
+-- 
+2.53.0
+
