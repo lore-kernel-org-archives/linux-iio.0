@@ -1,113 +1,196 @@
-Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390E630B509;
-	Tue, 25 Aug 2026 11:00:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB1942123E
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 13:17:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787655633; cv=none; b=PgX47swX3o9VJOnEnn4gJkoAcCEQCN7hWb10PxNltSf+kH5VswJzBsUYVXdfwTQyrrewQZJhWaMDpJ14xwZ+A/Hc21vEa/vjclrNQ1ZkKXV9JxwYR3PFyOWSc+CIjIOFV/w2A5++njA4IFTFYgQqmf9TpgybKgMiwXuAHmpH//g=
+	t=1787663855; cv=none; b=T3jvgdN1ZsSgDJv3tnELGXJJYApRfV9BQes1PmE/eKiU+USUBWE61ra4zp6UPHIm7iGAVh8tHWOH7ZKhqrHDdUDrxLkWpfGQ0o9xsYjYm8rD66vjE7V7aePfcspKABvwYTazECf3S21DJOey+rUkJ0o4ktvtBtGVgtha2lWI2Dg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787655633; c=relaxed/simple;
-	bh=hlQaic0F0CxMkHX0OwjEl1Bx+fB1Q/isL2/ynDVBG14=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=c7/pzLMm8RXFn5wfa4o/wWIpXhSZDPniLqvScaJADuPxx8A0G/WhgB038sNX46aZcaTT9gJEetAdvmVYwxxIdXz7y2BM2qcBtK22g1HaqfZmcRoDyp7Ss8OuhnZm0CERK5md3LfGvIjJwZr4yNdWy2377lf9prHCBUb2INoBNj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=L8bibeUi; arc=none smtp.client-ip=79.135.106.111
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1787663855; c=relaxed/simple;
+	bh=pt9eezPeCUT7V+HzJqfo0KBN0/mjD+4aoP/HdGr69OY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cB/KJgqtLY0BX4lLzIQM6jz3ZH68m/qdaawy08Ewla6xnYVBaCIAJfcaQ++EENy6Yi6OPwIDRVB81LuupkFIy0YtbNAqGu91lZEZZ405Pxk8cTaPHTWu+DGA+vSwySrQBUZhWiZ2dFtr/uYXlFVMlvn29Yqkldzy0Axf00uGQ6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B+9zZUpR; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="L8bibeUi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1787655624; x=1787914824;
-	bh=el0ckJyITQBcyMzLRk7pDSGAYgyQePG9Nu8b8f3Hh54=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=L8bibeUicnFFoDCPHx8kwWFRlY/pG6kDuqTvEXdB37ZJiZI4x6KW9TC7DBaax+LVi
-	 pSsWW+wCMfWftkbz4E0TgzVB7sWl9sw+fF9jhGSmhQ9L8SQt1r6nqcyAaiNisXG8Mk
-	 jw9xjbbrKTH9DZctHwtQF3o/wXmXmzfjc26amaS/VWUph0ce3D5702J7XWyu9wZEns
-	 DArRD/AGutSPrzdBwfVyW0C6y6gVHNlEJvD9C0H5hOCPHPDWV1itBv5+Uba7BMeI/M
-	 hIrDuaWvxcH5rV9lWeZsCgzG/jh5p+tvgKBlM3+cL15km6IDbirRWpcnXsEbTwbMGG
-	 TMe124eunRXWQ==
-X-Pm-Submission-Id: 4hTlDk67C3z1DDXK
-From: Esben Haabendal <esben@geanix.com>
-To: "Joshua Crofts" <joshua.crofts1@gmail.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen"
- <lars@metafoo.de>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
-  "Martin Kepplinger" <martink@posteo.de>,  "Sean Nyekjaer"
- <sean@geanix.com>,  "David Lechner" <dlechner@baylibre.com>,  Nuno
- =?utf-8?Q?S=C3=A1?=
- <nuno.sa@analog.com>,  "Andy Shevchenko" <andy@kernel.org>,  "Martin
- Kepplinger" <martin.kepplinger@theobroma-systems.com>,  "Christoph
- Muellner" <christoph.muellner@theobroma-systems.com>,
-  <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 9/9] iio: accel: mma8452: Use proper error code when
- missing device model
-In-Reply-To: <20260825122301.0000531e@gmail.com> (Joshua Crofts's message of
-	"Tue, 25 Aug 2026 12:23:01 +0200")
-References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
-	<20260825-mma8452-open-drain-v6-9-9b252804ee80@geanix.com>
-	<HmXmDujS0IYQxlEIiTAGIiTIpioZlDO_L3bIBEBj8FWdbzyRSs2EnMSbymREOsD07x_zeOkYuPGdpgRl5Wewog==@protonmail.internalid>
-	<20260825122301.0000531e@gmail.com>
-Date: Tue, 25 Aug 2026 13:00:21 +0200
-Message-ID: <87fr02o46y.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B+9zZUpR"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-49954b88fffso37736405e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 06:17:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787663852; x=1788268652; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=py3ROtb3vVj5APnhYCyw+k54KDsBa1cNIVxX44uQqJI=;
+        b=B+9zZUpR3Zb/yz7F/XWKWBZtBgL6JzX5Givc21cs4Up+fFxlb8U5Q5QANZAu1k1qt7
+         d61UH4CzBQ+r71aPtnq4+97krk8SPK+/YgiRiHb15ZV/G4Bke5s7OYutnw1yw6RTNfy9
+         Rt5srqaP+9EXv7zbMoAQTcTFYnlAlH02qokI4xo4bGmVMyRES6y9pBeJ67nuOvq75byE
+         pzvG/uNOqv3u2wFxDoQmLcjwK4hpEMSZR2cvekRuLEaG3Y4Yvkcg5QY4vcUwWofpBVCe
+         94uZihdjF1/ix97ht17quY3uqeL5I/7Nm213Rty8ioY6arxDir/QqLH3wXKEvsv71XFq
+         jObA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787663852; x=1788268652;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=py3ROtb3vVj5APnhYCyw+k54KDsBa1cNIVxX44uQqJI=;
+        b=TGhEqChLeDkK4Gys65uZq0yqSgzHpvOrfDBFoSKCUOUxX539e6E8CSQG2/L3W+X8aI
+         up/uFWnlSpdK5gaCL7tOPjzsdMJ9tBOTWFYMBD2M257+lb3eEFmSoTllc7E20DalXrDy
+         o6FgakX9scFK5Y2Ow7q3RhQ+ZdUYyNIB6ACCUnQkAzDTvkk0yKbJYxD3RBgMoYFLBUrT
+         aaYZ5ZiZXjYpngTOWONrjl7iEusgmvW8atCxu5ekDsm8kMV5P54uLgFSt1rv78LNqjrs
+         l0M4AN199IXrpxLH9Y7miNaEQjHOhTwJMpiriyFwx8E/IYIezdynJzz2Criaa+E1WkHo
+         nLMA==
+X-Forwarded-Encrypted: i=1; AHgh+RoZBNi6X9/XzV3Kbt0E1Akw0ZCDhI8Zc/zoSr/NqiUE9sd7FbZlnJvMcfaPPRzaWARfvmXSm23yqFQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++lxUow5M93cGZIpbhqkf0+9XZDs9ZEZj1IX+wXvS1Hae1KQTy+v
+	/hrs79ZFRtry/jZuXI9SJIyrtkFHXx0qhMyAjcP1ZMfSS56RqhwS0yYq
+X-Gm-Gg: AR+sD12vJM0wuiWfppYLFbDg+XekquHzfcelq1w7AlirwDVC1JamGi4TBAokyRXtIDa
+	QCefnvIKy8VyVOLgXvS1JoD1ruRAZawsX88pb9rqiF8k+dpUYYx98V6OwgqYCTcZfoFdAvHXgsh
+	UOWluQxeI2NtJijSQP4apzcTxoB+01jdeU1w5IHczgiefLs/qcrxMBNroiukY2JBoSsfJrb+gx1
+	Vhm5ZaoNezncNsqtCU3yEf/iQ/hYAb7lxx9KM0tgwaENPBgrN81EzCyH30GgBMULuLQBvz6zpaB
+	q/fUSMEizfvrVwoR70NQ+iDZxWLLOLEJBfZnhtA1ekmuD0FxUK2MOzoKCZKw2Z+fo3c2Otc+xSO
+	7nGlrX3eAn9KWnUCEVdHcuY4+RrDzPGeTZl8RhaYUmuxT6hv5aj8Ign7wguKvb2nElOYBt36OPm
+	d9HyTe2AQzhQ63I9tlFcrfDz8xT6qkDTiEAO0XyFsdeMKFnMTDWlQTtcAZQSWf5/im51wfG1ZQ4
+	pFSs+10xkNao4VTQe/RiWcvgihD94zld5AeAzyJHSoTOS1kXn8h6du4
+X-Received: by 2002:a05:600c:3111:b0:495:7888:281c with SMTP id 5b1f17b1804b1-499c1772dd5mr302953505e9.0.1787663851572;
+        Tue, 25 Aug 2026 06:17:31 -0700 (PDT)
+Received: from [172.24.138.145] (dynamic-176-007-058-112.176.7.pool.telefonica.de. [176.7.58.112])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499d5d72d36sm23411535e9.3.2026.08.25.06.17.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Aug 2026 06:17:31 -0700 (PDT)
+Message-ID: <9e7edec5-578d-48e0-b253-e50cf848236e@gmail.com>
+Date: Tue, 25 Aug 2026 15:17:14 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 08/14] iio: adc: ad7768: Add per-channel conversion
+ delay
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Janani Sunil <janani.sunil@analog.com>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>
+References: <20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com>
+ <20260821-ad7768-driver-v4-8-bb8fbd06d4eb@analog.com>
+ <aovua1sy4sm6RmSt@ashevche-desk.local>
+Content-Language: en-US
+From: Janani Sunil <jananisunil.dev@gmail.com>
+In-Reply-To: <aovua1sy4sm6RmSt@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-"Joshua Crofts" <joshua.crofts1@gmail.com> writes:
 
-> On Tue, 25 Aug 2026 10:27:47 +0200
-> Esben Haabendal <esben@geanix.com> wrote:
->
->> The device is there, but we don't have data describing how to use it.
->
-> A bit of a weird commit message IMO,
-
-:)
-
-> I'd do
->
-> Switch -ENODEV error on i2c_get_match_data() failure to -ENODATA to
-> satisfy the IIO coding style. (but this is only my opinion).
-
-Sounds good to me. I will update for next version, if needed. But feel
-free to make the change when merging.
-
-/Esben
-
-> (We recently had a few conversations about -ENODEV vs. -ENODATA and
-> while there are a lot of uses of -ENODEV in IIO they should be replaced
-> with -ENODATA when checking *_get_match_data() results).
->
+On 8/24/26 09:10, Andy Shevchenko wrote:
+> On Fri, Aug 21, 2026 at 04:07:01PM +0200, Janani Sunil wrote:
+>> Expose the per-channel synchronization phase offset through the IIO
+>> conversion-delay attribute.
 >>
->> Signed-off-by: Esben Haabendal <esben@geanix.com>
->> ---
->>  drivers/iio/accel/mma8452.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index 4a1eb196589a..42e3371cdb1d 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -1595,7 +1595,7 @@ static int mma8452_probe(struct i2c_client *client)
->>
->>  	data->chip_info = i2c_get_match_data(client);
->>  	if (!data->chip_info)
->> -		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
->> +		return dev_err_probe(dev, -ENODATA, "unknown device model\n");
->>
->>  	ret = iio_read_mount_matrix(dev, &data->orientation);
->>  	if (ret)
->>
+>> Derive the delay resolution from MCLK, power mode and decimation rate.
+>> Validate the requested delay and program the corresponding phase
+>> register when applying the active channel configuration.
+> ...
 >
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+>> +static int ad7768_get_convdelay_params(struct ad7768_state *st, unsigned int ch,
+>> +				       struct ad7768_convdelay_params *params)
+>> +{
+>> +	struct ad7768_freq_config f_cfg;
+>> +	unsigned int dec_rate;
+>> +	unsigned int mclk_div;
+>> +	unsigned int mult;
+>> +	u64 mclk;
+>> +	int ret;
+>> +
+>> +	ret = ad7768_get_freq_cfg(st, st->ch_freq[ch], &f_cfg);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	dec_rate = ad7768_dec_rate[f_cfg.dec_rate];
+>> +	switch (dec_rate) {
+>> +	case 32:
+>> +		params->shift = 3;
+>> +		params->max_raw = 31;
+>> +		mult = 1;
+>> +		break;
+>> +	case 64:
+>> +		params->shift = 2;
+>> +		params->max_raw = 63;
+>> +		mult = 1;
+>> +		break;
+>> +	case 128:
+>> +		params->shift = 1;
+>> +		params->max_raw = 127;
+>> +		mult = 1;
+>> +		break;
+>> +	case 256:
+>> +		params->shift = 0;
+>> +		params->max_raw = 255;
+>> +		mult = 1;
+>> +		break;
+>> +	case 512:
+>> +		params->shift = 0;
+>> +		params->max_raw = 255;
+>> +		mult = 2;
+>> +		break;
+>> +	case 1024:
+>> +		params->shift = 0;
+>> +		params->max_raw = 255;
+>> +		mult = 4;
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+> So, this is just a bit twiddling of the dec_rate.
 >
-> --
-> Kind regards,
-> Joshua Crofts
+> Can be written like
+>
+> 	/* Optional, perhaps shouldn't appear */
+> 	if (!dec_rate)
+> 		return -EINVAL;
+>
+> 	/* Same? What does table allow to have? */
+> 	if (!is_power_of_two(dec_rate))
+> 		return -EINVAL;
+>
+> 	mult = ilog2(dec_rate);
+> 	if (mult > 10) {
+> 		return -EINVAL;
+> 	} else if (mult > 8) {
+> 		params->shift = 0;
+> 		params->max_raw = 255;
+> 		mult = BIT(mult - 8);
+> 	} else if (mult > 5) {
+> 		params->shift = 8 - mult;
+> 		params->max_raw = dec_rate - 1;
+> 		mult = 1;
+> 	} else {
+> 		return -EINVAL;
+> 	}
+>
+> TBH, I don't know which looks easier to read. It all depends on what datasheet
+> says about these parameters and multiplier and what the table allows to have.
+>
+I kept the explicit switch case because it the device supports only the 6 discrete decimation ratios listed in the table 32.
+The switch directly mirrors the phase resolution, number of steps and register bit mappings from that table, which I find easier to verify against the datasheet.
+
+The arithmetic version is more compact, but the proposed conditions would reject the valid x32 case because ilog2(32) is 5. A corrected arithmetic version would be functionally equivalent, but I do not think it improves the readability here.
+
+Regards,
+Jan
+
