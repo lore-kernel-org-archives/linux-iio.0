@@ -1,37 +1,37 @@
-Received: from mail-106112.protonmail.ch (mail-106112.protonmail.ch [79.135.106.112])
+Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789E03E1200
-	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 08:28:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE4383E171F
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 08:28:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787646505; cv=none; b=Vxi9zNZHeTIXypYAcnhS6+Mw1vYjzfu/A5XOsIzjoX76K5r6l8127DjKd+Ag+O6hXkh/Ubpp8oxsIdZyvDjJDZznU8Cc/+CUT3WjgaL+cQBegIbD1evGeCjctXeFv0Z0po40ftKZNsA3JLWu9MmCq6s+xbpKfXGOint+keKl9x8=
+	t=1787646500; cv=none; b=tlVXW8AcBtk8DQm505cp5zh1w9dpeyLQXTDL2iewmC9cVMBAUf8yJXO6CcZnzbEaJOlKup07+9zKexdponUPplrpYKI5lHBDrApDjlymy+a8T6cfNFLYeHOZb1VGNhF+6JWm1Yls6Kdh+g7j7UuLb86TrKiX+U336mYNvkiHXI4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787646505; c=relaxed/simple;
-	bh=CQt4VpK/gUFi5hSBjRzPqWtP7oV7ZZDzAs8aCFm4k/Y=;
+	s=arc-20240116; t=1787646500; c=relaxed/simple;
+	bh=J6CKXdotQJvIeF+neKbCAV4H2dOi46lSn607hWnvJHo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GiblI3p3jfFaVOfP2xmkoBHbh4QD4t9iW2fHo9WqzUJh4ev8u1GqAR68KuppUku9cNTCAItckEubW6F5/yImzA+kChYSpMTq82sDZjxP2Xagbi5kWwE1txARGv/geCRnxvSzwSi7LPlXZLkRO5u4SMmtutk5QQgQeBW+WiO0RQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=ZJDDTq/b; arc=none smtp.client-ip=79.135.106.112
+	 In-Reply-To:To:Cc; b=Yq5/aDgnBLKTDO2YC5eJ1GlYLmA3vxAe/8y9SBd69WcSL9WWXvFFFaoOCkKId+stzwh56qNb8Diqf3UwPkXI3GopqI1EA697Elz4WX423ycIAK3xrNJ7oAD0VKkoaLUI5f4d6xRZ+n1Z8sNzYuw0zLHxT5D47XBDogV+EpyiAMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=vHowW50z; arc=none smtp.client-ip=109.224.244.107
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="ZJDDTq/b"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="vHowW50z"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1787646489; x=1787905689;
-	bh=d5ddm8RHR5lDiVqtBd299JMtTIifk4yTFA/MF5oUCJc=;
+	s=protonmail; t=1787646493; x=1787905693;
+	bh=EarRR+97sPOUmJYkWqPaFQKiuHmjI0O2lNgzU7W0Ogc=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=ZJDDTq/bORQlpb61aVxIqc905jK6ACLFORP69RjuaiRj1f3SbtzHXX+fqj/FGz//v
-	 aLOG51d7EOYpnqJrikkYN5ArvM/w5s0rbrYt/ZGHqzZpQqvHrHfn9N0HpP+CFDANqk
-	 dV2uTYjY+byuLW3f2y1XhAbjHnpOZIacBwbLvhO9nj24+H5vDeJNtEyiZunbhz8mNb
-	 WVcPL0cZnvmYDBL4jPvmfiVEqUYLdAsreF3UPltuc/OPGqAamrKV0J88uwcJJ8q+DQ
-	 tjdOnhDgfX9o7Pc1lZ2pgOSRrnk3r3DZ9SO5c8OsjHM7/UPOUrM3WeEv2rm3tJeKg+
-	 88npcZ1NODoqw==
-X-Pm-Submission-Id: 4hTgs50jlpz1DF71
+	b=vHowW50zwAULbZXsjftw84vpOWwQh8MzFtD+ckcMhBh8S340nLUcXYOF2DQ5Yg3U1
+	 e2YphIVUM9i7Bvo3OxmECcBf/ew1G9UVow5iOTvm9vKUBWtCUi9C1JcL4YPLJYLUas
+	 UkfinK+92xzxdGvSkIt7v19ynmaYxxH70iiazKefsYKPaUKzq1YxXEDKcgCR0sd13j
+	 wJPe42qgUOukgjczEj8jfpRPiZ3rmZBzN3ZDbSAHm+M4yVCdatAp25IXnsJTVQ/Y/s
+	 cC4jaqFWKnEFzAan3ArtqunLe9VIIVBF5zCWnovhJJWAExmRlQ9zZIWcMS3eEou1U3
+	 OudfLERGMSzvg==
+X-Pm-Submission-Id: 4hTgs80mXkz2Schg
 From: Esben Haabendal <esben@geanix.com>
-Date: Tue, 25 Aug 2026 10:27:45 +0200
-Subject: [PATCH v6 7/9] iio: accel: mma8452: Drop unneeded lock acquire on
- read
+Date: Tue, 25 Aug 2026 10:27:47 +0200
+Subject: [PATCH v6 9/9] iio: accel: mma8452: Use proper error code when
+ missing device model
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260825-mma8452-open-drain-v6-7-9b252804ee80@geanix.com>
+Message-Id: <20260825-mma8452-open-drain-v6-9-9b252804ee80@geanix.com>
 References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
 In-Reply-To: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -55,37 +55,34 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787646470; l=798;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787646471; l=771;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=CQt4VpK/gUFi5hSBjRzPqWtP7oV7ZZDzAs8aCFm4k/Y=;
- b=dkMez87xduDXmHM4peUonBDf/y8dUJ39W59T1qDDI+esuebzXFADHYw7vEKjewKCkZWyxMki7
- 9V6Ziyu+mXSD+WvrieI81pjbjLYmNAQvS/R3UGaxQ1kxbO7Q6G85KOY
+ bh=J6CKXdotQJvIeF+neKbCAV4H2dOi46lSn607hWnvJHo=;
+ b=NOF4eK62RTqiBQZ+qlLgEeH8D2SjUD4JILDi3yeONx0IBLUt6t0SorwASxs8J1XzaWg2x1OtA
+ cxKDa5mlKIKBGo5c5v30UiQkRdNl5RstPWtTFp8LonZVQy31FwXxafK
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-There is no need to acquire data->lock when calling mma8452_read(), and
-dropping that makes it less likely to end up in an AB-BA deadlock
-situation.
+The device is there, but we don't have data describing how to use it.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/accel/mma8452.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/iio/accel/mma8452.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 7ef1a9a91c31..9ae2c3e60576 100644
+index 4a1eb196589a..42e3371cdb1d 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -504,9 +504,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 		if (!iio_device_claim_direct(indio_dev))
- 			return -EBUSY;
+@@ -1595,7 +1595,7 @@ static int mma8452_probe(struct i2c_client *client)
  
--		mutex_lock(&data->lock);
- 		ret = mma8452_read(data, buffer);
--		mutex_unlock(&data->lock);
- 		iio_device_release_direct(indio_dev);
- 		if (ret < 0)
- 			return ret;
+ 	data->chip_info = i2c_get_match_data(client);
+ 	if (!data->chip_info)
+-		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
++		return dev_err_probe(dev, -ENODATA, "unknown device model\n");
+ 
+ 	ret = iio_read_mount_matrix(dev, &data->orientation);
+ 	if (ret)
 
 -- 
 2.55.0
