@@ -1,91 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from out203-205-221-236.mail.qq.com (out203-205-221-236.mail.qq.com [203.205.221.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675A73C3F4F;
-	Tue, 25 Aug 2026 09:15:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D764DF76;
+	Tue, 25 Aug 2026 09:18:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.236
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787649341; cv=none; b=DCDo7m/ts38mE5szDkUWfWHFtarUawVADagvNQTGk1JFxQtfDuT4SNbrBqJak2JPkAYCf58NsCP9SatkMJa+25AzXuU8ilZ5yRKlajMxRLDUCHSZIDT4XBH8sC2BkDOnsEHwAOsvGtmlyMH4F6Hf3ZFtlGutDVSpch45NTjQm24=
+	t=1787649491; cv=none; b=a4q56QWKr8hHIe0UWJwkOGHoUNg430XHJvJJ87o/XcEEIKW9AcegFCbPR/+KDlmC2IH5RqHEkW+q7fMV3pFGvmUb/uJAvUndGn1JXMH4BdaW1bcRAP/cjKVrzU8mhI63HEuqrYVlok+WT2IO9y6/Vpe/8iYc4MgLFP7RcM6LSTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787649341; c=relaxed/simple;
-	bh=dSq6DscDPtommE3+vdvnVdTgj7SgpisyhbX/9sVAI3w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ueeFoyzziZVBEsAF98nskPRJcXvtZtpIiUDJhqkdSBXsBKAYGi1QLCx9lcKWCz7YYwn1vSC+W8/RuZKG/ED6TaC8ycbNtTamRUAqbSD3h8g5TsjeHCzAxyrWrCAqk/5645mEmOzm0jz8MGvL6h42uoFiMn2NR2qOKBAAEKAvXLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YmeXYTKU; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1787649491; c=relaxed/simple;
+	bh=GT5SeKb+HsHIJGzWA2pmC6XOH6mlU5iYaqRX1onb5D4=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=MykGwSZ8KVNo/hETAlK1NqdP5jIAnd86wjOnMD/sIWN8bG1dQqJurw/G/LyKxzEYQY2JnvFz2ruxFqWvDeq5z7BFAqi0bR0aKQFPM9UK8gxyThplZ5b+mbtct/U6FDZD2v+8ypbC3c6GGRy4Eb2wtka7l9DueI80J/SZyf89i1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=Xy7Pbq40; arc=none smtp.client-ip=203.205.221.236
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YmeXYTKU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787649339; x=1819185339;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dSq6DscDPtommE3+vdvnVdTgj7SgpisyhbX/9sVAI3w=;
-  b=YmeXYTKUu9CZBAT/hhYHr8LZk8akmwKDJfLX7piBdeUHgkJXGsQ5U2CU
-   H7ZBYMKyL/TAoymM7prwHFRLiMMEEMjqPeolHNnlVy9SdQFOGy+Qtk6pS
-   1vqTo3LFMAlEOHqDvecD9giVEv255IpKqMhtA8aKPXxTgS/j8NLyPR3Tz
-   gHlG3fMiHDKcRfGrMS8lyr78gaIXKabf6fUkaojYnprUYSTAea4SWejUk
-   /mkaUj5AsamNPqJN/lCMfF4nUnkxBiwR4m8Z+/fI/BGjC0U4OcsYG1eMd
-   hp5z+eTQrDdmtbUEdM6+saBj1b/PucJydkGovH8mFnu7uGjtsV6ggLOo3
-   w==;
-X-CSE-ConnectionGUID: OdDpXXMnRtWg9pAebhUNuA==
-X-CSE-MsgGUID: ErjlY3+0TA+KyOHTF/gNFg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11885"; a="99458627"
-X-IronPort-AV: E=Sophos;i="6.25,242,1779174000"; 
-   d="scan'208";a="99458627"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 02:15:39 -0700
-X-CSE-ConnectionGUID: HXglNIiKQ+yyyBR1us6MJg==
-X-CSE-MsgGUID: sjSuxlviSjShVoh1zNKIkQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,242,1779174000"; 
-   d="scan'208";a="270700987"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.59])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 02:15:36 -0700
-Date: Tue, 25 Aug 2026 12:15:33 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Triet Hoang <triet.hoang.dev@gmail.com>
-Cc: tzungbi@kernel.org, andy@kernel.org, bleung@chromium.org,
-	chrome-platform@lists.linux.dev, dlechner@baylibre.com,
-	groeck@chromium.org, jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, nuno.sa@analog.com
-Subject: Re: [PATCH v2] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
-Message-ID: <ao1dNcjFaiIfKp2i@ashevche-desk.local>
-References: <aoz1VN62zEuKPePl@google.com>
- <20260825023216.43373-1-triet.hoang@datalogic.com>
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="Xy7Pbq40"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1787649485; bh=GT5SeKb+HsHIJGzWA2pmC6XOH6mlU5iYaqRX1onb5D4=;
+	h=Date:To:Cc:From:Subject;
+	b=Xy7Pbq40fVUqrmZq69BaVm3NIRx66cUqXt+YsV5uKscv9xXbQScqoUTKXZW/+i+EJ
+	 ziCpXVouxsGVBi6EiIsmOMrfN6ls00PkvyeL8l73bTv91pTnx0IhsQtO0WmmDZ4iEK
+	 KancErfbohAVPN8y01f0BmeVA5B6eVll4YrF0nss=
+Received: from [192.168.255.10] ([111.206.145.19])
+	by newxmesmtplogicsvrszc56-0.qq.com (NewEsmtp) with SMTP
+	id 483062B6; Tue, 25 Aug 2026 17:18:03 +0800
+X-QQ-mid: xmsmtpt1787649483t8w0yzphn
+Message-ID: <tencent_1936AF0C31F45000EFB7B38019EFD4A06C07@qq.com>
+X-QQ-XMAILINFO: MllZffuBkEb5GFR44GyuddH1JdyAz7RXapcXHesUca8XdLArsGFxyAW9ST/QnE
+	 d2G6idShpJzPvh/NJ+UBzTAAnns0O6y7Zz/JjjD16dzEruV9pFc/klozBmV2ioM3n99i65gWEjwB
+	 jbOy8XLV7fhUS0eTmzyrebDEazdmozuUHVlWkumhDSRWiv1bVTDIEFiTDoDiwmFNtLQaWk8z653b
+	 pWHxuhB4YxruVgiZAsEKPf6l5WyQxepZ5ma5gkg9z7R3MR+lGMQlZG5tTrK7gh3ayadaKgI9X+aF
+	 X/qbVsk4jgoez/u2VhU+sPRZqzX+O1HyCeUDi5SBgi/GniR8zvDcQ63DAdcQtafEBpIox+4fEhKs
+	 5+6fLgI9r03hrSy+ob334X5CVdDcnzhIdRTFtlJBm6C6ik/saFOFILrGYavLCPjWFY2qKnNfyAFA
+	 iaH9rgG87ESPkU7dqsxD24zA+jXZdyTzcKpW3VU3j2TrVcQfQlFFn57QnYQs+DGsm7+fm7f9GyT/
+	 koef+0jgt9UIyI/ShOUxahgBHTjryz+4FP3vAp0qjMzzGw16jJ1Phr45OTA5ymQ9PGvcTXm8UGpH
+	 OfKnvTipEqH3r/3E0VLzmxJEG46s9F3PT8w0ppEQ0ooZaCyd/yu1MBiPpLmN4raVIdSX2cPFNB5E
+	 cj7rge3jQzk4oSPEEpTSMFunjZKqGn6Slwpr8+iRaVSeF6BK+gwDZxWLiiV5TUb446Ct13x9hyz1
+	 ZT7VP87rjSos8JM0yQz9cMYsQthDfX0TN59weimKj1TdbmpRWEA4UC12Tktw6WonGhQNrT0IMwPK
+	 CPuYRnnS6gOvR3Ou5391smXVb0pSjEf3AhTPie965GZBYGRDrRc+c7sEl/5gjj1knqKpI1qWBzXy
+	 FESKPCLBQHAOy2ffP4vqGnGs1dp/0Em5JVnlrvFHR30aJZ7A3foioznW+LpnHj6Mmv0mFELKFVof
+	 KhdSp9+hr4zp9GAyFo8TyP5REz4z358G35ASLPBqSC2EH5K0DYDGVWZQOQIU/H1s7tQQCGrVWp6T
+	 +V9hMhVTuySp5j4s+rVWhenUj6C59PWpCWvWjoS+Og/D8a0YI87DYduNEXkIooazAF8Ch/+bME7w
+	 WfEfoorA1R9WvW2pL9Hiw0C12+zw==
+X-QQ-XMRINFO: Nq+8W0+stu50tPAe92KXseR0ZZmBTk3gLg==
+X-OQ-MSGID: <8304e60c-a80e-4f4d-898d-55cca7f2b00b@qq.com>
+Date: Tue, 25 Aug 2026 17:18:01 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260825023216.43373-1-triet.hoang@datalogic.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ u.kleine-koenig@baylibre.com, dakr@kernel.org, o-takashi@sakamocchi.jp,
+ email@sirat.me, linux-kernel@vger.kernel.org
+From: Yang Zi <2959243019@qq.com>
+Subject: [PATCH] iio: proximity: sx9310: fix NULL pointer dereference in
+ sx9310_check_whoami
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, Aug 25, 2026 at 09:32:16AM +0700, Triet Hoang wrote:
-> On Tue, 25 Aug 2026 01:52:20 +0000, Tzung-Bi Shih wrote:
-> 
-> > This needs to update accordingly: SIMPLE_DEV_PM_OPS() + EXPORT_SYMBOL_GPL()
-> > -> EXPORT_GPL_SIMPLE_DEV_PM_OPS().
-> > 
-> > > This lets us drop the __maybe_unused annotations from the resume callbacks,
-> > > and reduces kernel size when CONFIG_PM or CONFIG_PM_SLEEP is disabled.
-> > 
-> > With a nit in the commit message,
-> > Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> 
-> Thanks for your review. Should I send the v3 to update this?
-> Or maintainer will 'amend' the commit message when apply patch.
+device_get_match_data() can return NULL, e.g. when the device is matched
+through the I2C device ID table rather than the OF/ACPI match tables. In
+that case sx9310_check_whoami() dereferences a NULL pointer when reading
+ddata->whoami.
 
-Taking into account that I gave also comments (and we have plenty of time),
-please v3.
+Return -ENODEV if no match data is found to avoid the NULL pointer
+dereference.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Signed-off-by: Yang Zi <2959243019@qq.com>
+---
+diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+index 79ba46d8a0aa..305b41f2847d 100644
+--- a/drivers/iio/proximity/sx9310.c
++++ b/drivers/iio/proximity/sx9310.c
+@@ -892,6 +892,8 @@ static int sx9310_check_whoami(struct device *dev,
+         return ret;
+ 
+     ddata = device_get_match_data(dev);
++    if (!ddata)
++        return -ENODEV;
+     if (ddata->whoami != whoami)
+         return -ENODEV;
+ 
 
 
