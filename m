@@ -1,150 +1,113 @@
-Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF99472536;
-	Tue, 25 Aug 2026 14:06:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9046B332EC1
+	for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 17:22:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787666804; cv=none; b=Zr01nX4nopTmU3U8WgHVnCQ+uyKpNywl3j0F8YooQ5grwWCtGrNCw3dOf/3ziUT9FmIrzFM1iGI/fkKrEm1fkorI4TLhTD76nLfD5Y9Dn9MdsFeXI/99JFwwN6Yq329X5/vV4xeTWHQYiVi0DNXIYyZrDV+5hBLVz+RJVS8Rdhc=
+	t=1787678550; cv=none; b=nPPUGKhe5g79ssRA/xhDKhFqsoFQh0bzP6idNKT5Ih1MJumfAmeGz1+9MsR9h1UubQOsvR7Li3n6gWSIYrUbinmvyQYJNfskv10WajtShejJ63apmJAonVPtXn4jVID8p9diEyIOx8aKiwhzqH5EFIdIMeGHXIEOHomFQLsaEWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787666804; c=relaxed/simple;
-	bh=llIRgW8lssJoZ1hfTQVgPcev9enwEVrNP654+rDsX5A=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JATW0/a6+Rj5ua+MGTh+1ss0047lJqnQwun7dhFyynIoUTZfXS6FO+auUsooWdu2dQbbpGANZSrT54WeW8VLhKpCQ4cxzaq5Db7pCyDrOt4nzWOo9SJHZIChYYEogua22xVVdzQEiT0vyhLwuIYko/7kltWSng1D5x1SVBCTA8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=sAPJDjGl; arc=none smtp.client-ip=79.135.106.111
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1787678550; c=relaxed/simple;
+	bh=nVzGJxY4bXetZ0xxkC/uaAJPaakwNOHhLjneZwt1NOo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YIiXK5f7Evi3DicA+IblYjM7yxBrD4+08+WjMXLJ6peAXqhl4mRwM2a0uwzu212P+OUY8mP82ai8a0ARZQDawFjp7qOJNZWlRFheZ+tslS2P8GatMZeeizOViPuSkXCp6GGD8w5LjFDkqONfQPE9orFavrhBFm80xzFFrcPLiuM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gPyIwzha; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="sAPJDjGl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1787666795; x=1787925995;
-	bh=QlTHPnu67ifR9TI0uL5aQfa0ravENtMsauZqM5BDC44=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=sAPJDjGljNTHFZCI9E8LHc2OqbJvEwR6Ii72KTDpfTWlw4VEftCfm3vjcBjbdR+ba
-	 56Nho+B33/P4ttSu0zbRQdjdbi3ODT+n+LGeNCRYK5rHpL4bAo8gVEq7H5mFAXoYsW
-	 ZYeXec48k7W8phpXzTVxt4v8ubdXg4IixKs8yg11HE9GJLTWdcykW3WTOZIZ72Q3XW
-	 yHWbwAjx7cwyj64FbSiYEJkrUG7798OO3aT6Dcd61Yo9HeQyiqW3eyZCqoUrtykRuv
-	 ZWvk2hFUPo+VfyiOfNMpgvJvhkBQVWGGEDRxrWuaMDurbmcuw7f37nokxB8jpiNFSP
-	 6ic6UYxZYJqYw==
-X-Pm-Submission-Id: 4hTqMY3LHPz1DF6y
-From: Esben Haabendal <esben@geanix.com>
-To: "Joshua Crofts" <joshua.crofts1@gmail.com>
-Cc: <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,  "Jonathan
- Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen" <lars@metafoo.de>,
-  "Rob Herring" <robh@kernel.org>,  "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,  "Martin
- Kepplinger" <martink@posteo.de>,  "Sean Nyekjaer" <sean@geanix.com>,
-  "David Lechner" <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?=
- <nuno.sa@analog.com>,
-  "Andy Shevchenko" <andy@kernel.org>,  "Martin Kepplinger"
- <martin.kepplinger@theobroma-systems.com>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 7/9] iio: accel: mma8452: Drop unneeded lock acquire
- on read
-In-Reply-To: <20260825154449.00002f6f@gmail.com> (Joshua Crofts's message of
-	"Tue, 25 Aug 2026 15:44:49 +0200")
-References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
-	<20260825-mma8452-open-drain-v6-7-9b252804ee80@geanix.com>
-	<UFc9cC1VeohKw6lxQ8uulsfj9wJ_OqGUgGPTUnTX-zssKZ97aEC0Xi9nsAxv-tcf2DP5e85ElFZ8wPgxwG8l3g==@protonmail.internalid>
-	<20260825121704.00004ed3@gmail.com> <87y0dumiga.fsf@geanix.com>
-	<2m3zXurwen7GRVSaBnDu6bY31Gn7dFzO2UEoU4bRNxCGCR86DTyGq-CMmmeEh-U7AcCWC6eBjjFbZSGNltSwWg==@protonmail.internalid>
-	<20260825154449.00002f6f@gmail.com>
-Date: Tue, 25 Aug 2026 16:06:32 +0200
-Message-ID: <87pkz6mh07.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gPyIwzha"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2caed617615so1052435ad.3
+        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 10:22:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787678549; x=1788283349; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=smb+eC3dhHT61c6tdVhm6kuxDMtS75d/UQ8YVvsOsKE=;
+        b=gPyIwzhaENP4vfd+7OuP+mTyXdiOYWWrteEhZU09rOdxHQcFNq45mIpYI1Hwza+rg9
+         CVWXcufcphdxwn3lWfapHf5sZk1eoqIm1vv2hp4OVS0MU9ps/WchNSHxebtd/yTkWkmE
+         bjT96pV51dScSKpVTAMraqUMClJjrRovkWnPug8Kb0P5UghXN9Sz4fogzSG2KNRGkh1F
+         2GxHGXJnSsl/HU4yprVYW8H6ntJDCZ+1dTP2D3+qsFCMymLWTlRsZ0EFAWt58dHy+Vzf
+         lYLdEG4j7n07MRO8SJLhUtNtp0M5+Ek4SRmziwyDoGLkcRg+hyweygrI1+GScL4WN7MF
+         +Q0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787678549; x=1788283349;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=smb+eC3dhHT61c6tdVhm6kuxDMtS75d/UQ8YVvsOsKE=;
+        b=HxvIPOb2XlJcrsLrVbjFrCqlD8ujCK5oYQ3Uj7LiDgpDqF2npoSXIfR1g0mC9OEVch
+         Gci5Vic0mgPIdOfowf1zEoGKUFLGBkkcbu98CKfRzMJrtJ+b5BjjnVziQqpKIc1CTkMQ
+         o+kSjgfrNcFODoSH9O+bmLcKFGrBH8e014Kq9e4j/y2FtHH5rYbDjXtqYFP6OOBozgmB
+         PejbeT+pne/QBvuSsNYc6CiwiGEV6Sspeuya8wgQl2x6M6MKm/hSeJ/hRelLXo/3+DKg
+         jk9qjH0felMz6LkWbNKanE+oIqEl1F6m+Hpx6QaFD75rIF/CrBBxkZfXfX97Z1br1Nrz
+         xWvw==
+X-Forwarded-Encrypted: i=1; AHgh+Rp4xrhl7+8D62pdEiA4/ig0WgmBppKalQCPGZFNLH5T2iSeGv+oQjCeI6DWpUPvtDOm4BwtDMFdDVc=@vger.kernel.org
+X-Gm-Message-State: AFuF++ki8vbt38K7WNJtx8Y2L0T4mhVKPKGwdZ7rcdTGFDh7EVtH06hK
+	hJ4/u9adEV2XCaNyTA039YK6HOVICoPLPsW8+T08ZsnQfUo5kolgjfi8obXFQrqWwjg=
+X-Gm-Gg: AR+sD108ugYqeJbjeBu6jmGVHZLE2UGIN/vbQSSwtNHiZ2sfKDGwdG6LLNbXEbaZpPI
+	/fbffFtfgJgaXE+8I+B2gl0Cxx+6LV7Tye4519yvJljJ9hl/dxLHjelbO8hE54jZqClWcFuCpWR
+	Kl65DuUaX0DRvxmekD+1/RzkII3f1r9wKkDbzWm0SSbYhF3i8TCgn/r91zXLpKgEyOiigu5IZK6
+	14nBucylSkhT3HDD1QRygxvdMAulmM5c9fZlKhl0v79UkNBRwibmXLq9AM20Y6CyXZQa1WFlyE+
+	2sgJUXHUsTORS7VNitf0ujQdNZIJfSn1syYh8csngAyuSJ0ZglfAtHWjGm75HfARBv7iJov9gKY
+	i8B7mL54mNkg36Z4/pXiGJahItE14sLTudpSUGgd0kWxap97dki70h4iffCb7r4qG6eCkYuz/mP
+	s7RcsN/oTWJB9K4iHXjbdv6jljzyrkmf2Tvbwjlu8bGzqO6JbU0FUPXMEKi2A=
+X-Received: by 2002:a17:903:a90:b0:2c0:a555:80d6 with SMTP id d9443c01a7336-2d670b60ceemr551159465ad.2.1787678548700;
+        Tue, 25 Aug 2026 10:22:28 -0700 (PDT)
+Received: from ubuntu.. ([2405:201:8026:213e:7ed1:605d:3bd6:fefb])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3283d8d208csm327637eec.23.2026.08.25.10.22.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2026 10:22:28 -0700 (PDT)
+From: mdshahid03@gmail.com
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	bcm-kernel-feedback-list@broadcom.com,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Mohammad Shahid <mdshahid03@gmail.com>
+Subject: [PATCH v1 0/3] iio: adc: bcm_iproc_adc: Convert to devm-managed resources
+Date: Tue, 25 Aug 2026 22:51:52 +0530
+Message-ID: <20260825172155.250484-1-mdshahid03@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-"Joshua Crofts" <joshua.crofts1@gmail.com> writes:
+From: Mohammad Shahid <mdshahid03@gmail.com>
 
-> On Tue, 25 Aug 2026 15:35:17 +0200
-> Esben Haabendal <esben@geanix.com> wrote:
->
->> "Joshua Crofts" <joshua.crofts1@gmail.com> writes:
->>
->> > On Tue, 25 Aug 2026 10:27:45 +0200
->> > Esben Haabendal <esben@geanix.com> wrote:
->> >
->> >> There is no need to acquire data->lock when calling mma8452_read(), and
->> >> dropping that makes it less likely to end up in an AB-BA deadlock
->> >> situation.
->> >>
->> >> Signed-off-by: Esben Haabendal <esben@geanix.com>
->> >> ---
->> >>  drivers/iio/accel/mma8452.c | 2 --
->> >>  1 file changed, 2 deletions(-)
->> >>
->> >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> >> index 7ef1a9a91c31..9ae2c3e60576 100644
->> >> --- a/drivers/iio/accel/mma8452.c
->> >> +++ b/drivers/iio/accel/mma8452.c
->> >> @@ -504,9 +504,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->> >>  		if (!iio_device_claim_direct(indio_dev))
->> >>  			return -EBUSY;
->> >>
->> >> -		mutex_lock(&data->lock);
->> >>  		ret = mma8452_read(data, buffer);
->> >> -		mutex_unlock(&data->lock);
->> >>  		iio_device_release_direct(indio_dev);
->> >>  		if (ret < 0)
->> >>  			return ret;
->> >>
->> >
->> > Sashiko has something to say and I tend to agree at the moment:
->> >
->> > Could removing this lock expose mma8452_read() to race conditions with PM
->> > auto-suspend and event configuration?
->>
->> Yes. I tend to agree as well.
->>
->> > mma8452_read() can be interrupted by the PM auto-suspend worker, which puts
->> > the device in STANDBY and disables regulators while mma8452_drdy() is actively
->> > polling over I2C. This can lead to I/O timeouts or errors.
->>
->> Yes, and causing pain for other I2C devices on same bus :(
->>
->> > Additionally, concurrent sysfs writes to event configurations invoke
->> > mma8452_change_config(), which puts the hardware into STANDBY to modify
->> > registers. The Standby transition flushes the hardware FIFO. If this occurs
->> > between the mma8452_drdy() check and the i2c_smbus_read_i2c_block_data() in
->> > mma8452_read(), the block read will fetch flushed or stale data.
->>
->> Argh. Yet another level of trouble.
->>
->> Maybe we should extend the use of data->lock instead. Holding it
->> 1. whenever doing read-modify-write actions
->> 2. while holding the device in standby mode for changing registers
->> 3. while doing suspend/resume
->>
->> I was just adding support for a open-drain mode irq sharing you know.
->> While sashiko-bot definitely is catching lots of valid problems, and
->> fixing them is a good thing, this is starting to feel like I opened
->> Pandoras box by touching this driver :D
->>
->> I will try to wrap up a patch with the above described extended usage of
->> data->lock, but hope we can find a way to get the irq sharing and open
->> drain mode support merged, without necessarily having to fixing all and every
->> possible existing bugs as a pre-condition, but maybe delay some work to
->> later work.
->>
->
-> If they're pre-existing conditions then it's not required to fix those in the
-> same patch series, you can come back to it another time or someone else can fix
-> those.
+This series is a follow-up to the previously submitted probe cleanup
+series for bcm_iproc_adc, which is already present in iio/testing.
 
-Great. I have created a local mma8452-next branch where I will continue
-the work on some of these issues.
+As discussed with Jonathan, this series continues the cleanup
+with a few additional driver cleanups and devm-managed resource
+management.
 
-> Nevertheless this is an issue that will be caused directly by this patch if
-> applied. If your only goal is to add support for open-drain irq sharing, you
-> can probably just drop this for the time being and just focus on that.
+Patch 1 sorts the driver headers alphabetically.
 
-I will drop this particular patch for this series, and work on a proper
-fix for all these race conditions in my mma8452-next branch.
+Patch 2 replaces the manual ADC and clock cleanup with
+devm_add_action_or_reset(), allowing the probe cleanup labels and
+manual cleanup in remove() to be removed.
 
-/Esben
+Patch 3 converts mutex initialization to devm_mutex_init().
+
+---
+Mohammad Shahid (3):
+  iio: adc: bcm_iproc_adc: sort headers alphabetically
+  iio: adc: bcm_iproc_adc: use devm_add_action_or_reset()
+  iio: adc: bcm_iproc_adc: use devm-managed mutex initialization
+
+ drivers/iio/adc/bcm_iproc_adc.c | 51 +++++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 19 deletions(-)
+
+
+base-commit: 560c1aa128cafb238f460826abf43bc8b83aa0a6
+-- 
+2.43.0
+
