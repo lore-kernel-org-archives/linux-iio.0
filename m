@@ -1,136 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-2z4y-a131.jellyfish.systems (out-2z4y-a131.jellyfish.systems [198.54.127.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9D4035E93B;
-	Wed, 26 Aug 2026 16:04:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2023470EA2
+	for <linux-iio@vger.kernel.org>; Wed, 26 Aug 2026 17:54:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787760285; cv=none; b=A3VUexClCjhFQFLj1J0JklPNPhcSqESqnkRGwFK0NA98h0zoFSOL4QMTNWTkFjYquIqzT3Ty1/EUjTIqAY8lHYcuEVnGqB4kLZMHZ81tXAmdGxeHQUdka8hdn67wc6eDUbGGvi0LmJmyKKkUcA8uwJmFfAaN+GfB6ChFZUX2CVQ=
+	t=1787766893; cv=none; b=gRoYWvRVgv53HyOKhSjMHsaGumDmi9VE7XO17xPNVUxvxTfFdRwPT1oxthfAPK9E7pKYlGDbvDMpzcYN6KCOAem6bTh+EOvc0EXjhj+XXFaHvlBXFuEgBxC9xT6wnbP/tpz1Usm3eOCSguAyjbTwZy61eud5+9i1BmTfHtMod1g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787760285; c=relaxed/simple;
-	bh=J3HAsU1KwO4mqDetIrd6P/XZ/1/GwfDOnfmgJD5u77Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qmtjKeYUu25SkhnSg0O3h9qfVjfOqKy8ywci0tHldXekayiWCIBmR2hgaFDd/XgepWw/STl7J20xy6qY/TAGwVZ97ncnMgDDqolXWhtr1FO/yqOwQLZkJaqWWc0XxXB9DYlbyXeomvUUx1zXfF8way7J1sc/gSKbtVbxOIqIw1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oXIEkoWy; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oXIEkoWy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 187B41F000E9;
-	Wed, 26 Aug 2026 16:04:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787760282;
-	bh=Y8nG5Q59DmZU2W8YTNmb9FicIVaa2DhnYG0xPHeq4QM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=oXIEkoWyhVF9O0ycvD4nLcJ11qe08oUKMmfsiwjwiio2a2VH9xvNqubdjmcmWTP9Y
-	 Bht9x/Wh39srsO4PB1OUiOIMYnQJNw1rxz0UhlitqScVm4QP2xUmeqyFmxvbmD6H6M
-	 kt9kyXF+EC9RJcq8TMqglLQPNm6bdQ06SQqHx1Z9z3r8g8FxbaFGdkeBT5grkeoVpo
-	 Wjh0jIhz6u6ZhOyO3gaXtFcf/O1sDe316jbE8/QJ2LREUwww1zshVu3Tz7Y4W0Xi4Z
-	 4Ij1967veWkgHclJ/mMqCWTw7xLAV0C+J/wS/qReNpbtyGnhlW1ipRQRU3rbwe9iB3
-	 imPHWJcoQmQfw==
-Date: Wed, 26 Aug 2026 17:04:28 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Mike Leach <mike.leach@arm.com>,
-	James Clark <james.clark@linaro.org>, Leo Yan <leo.yan@arm.com>,
+	s=arc-20240116; t=1787766893; c=relaxed/simple;
+	bh=VPUFYZdlVAElE2+W6elbLSSYV2hb0wdMXIzDEaxaPHY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=EYSf2QaBnE3Kgp8gMyfDkFFo8JT4JPSDfQYOnHs+6V84mUC0t/dE1SjMiOLzqp5gmKXZV5A2UXhtevqK2OA85enASrDckA7qqwmMffQEWdYdknjCTgtvyxONnfI9wMtrMEqDQIg3guZAf3RYdH1w9aaRRtgt7v2nKVIneHv/tEI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
+Received: from mail.privateemail.com (unknown [87.215.145.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.privateemail.com (Postfix) with ESMTPSA id 4hVXMv4jwzz8sWS;
+	Wed, 26 Aug 2026 17:54:19 +0000 (UTC)
+From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Andrzej Hajda <andrzej.hajda@intel.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Robert Foss <rfoss@kernel.org>,
-	Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-	Jonas Karlman <jonas@kwiboo.se>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Luca Ceresoli <luca.ceresoli@bootlin.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Michal Simek <michal.simek@amd.com>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Mirela Rabulea <mirela.rabulea@nxp.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Lee Jones <lee@kernel.org>,
-	Xiaowei Song <songxiaowei@hisilicon.com>,
-	Binghui Wang <wangbinghui@hisilicon.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Dvorkin Dmitry <dvorkin@tibbo.com>, Wells Lu <wellslutw@gmail.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-	=?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
-	Mark Brown <broonie@kernel.org>, Joel Stanley <joel@jms.id.au>,
-	Andrew Jeffery <andrew@codeconstruct.com.au>,
-	Ryan Chen <ryan_chen@aspeedtech.com>,
-	Billy Tsai <billy_tsai@aspeedtech.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Boris Brezillon <bbrezillon@kernel.org>, info@mocean-labs.com,
-	Olof Johansson <olof@lixom.net>,
-	Shree Ramamoorthy <s-ramamoorthy@ti.com>,
-	coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	imx@lists.linux.dev, linux-media@vger.kernel.org,
-	mfd@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-	openbmc@lists.ozlabs.org, linux-spi@vger.kernel.org,
-	linux-pm@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop redundant white-space around values in
- <>
-Message-ID: <20260826-frequent-parchment-b8baeeafd583@spud>
-References: <20260826102044.142986-2-krzysztof.kozlowski@oss.qualcomm.com>
+	devicetree@vger.kernel.org,
+	Kees Cook <kees@kernel.org>,
+	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Luca Weiss <luca.weiss@fairphone.com>,
+	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v2 1/5] iio: light: stk3310: lower-case the i2c device ID names
+Date: Wed, 26 Aug 2026 19:54:05 +0200
+Message-ID: <20260826175409.326131-2-jorijnvdgraaf@catcrafts.net>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
+References: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="P8HG2tUakdLhQuVM"
-Content-Disposition: inline
-In-Reply-To: <20260826102044.142986-2-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Transfer-Encoding: 8bit
+X-Envelope-From: jorijnvdgraaf@catcrafts.net
 
---P8HG2tUakdLhQuVM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The i2c device IDs were introduced in capitals, mirroring the ACPI
+_HID entries added by the same commit be9e6229d676 ("iio: light: Add
+support for Sensortek STK3310"); at that point the driver enumerated
+through ACPI only, with no OF table and no i2c module alias export.
+ACPI _HIDs have their own naming rules; i2c device names
+conventionally use the lower-case part name, matching the devicetree
+compatible suffix.
 
-On Wed, Aug 26, 2026 at 12:20:45PM +0200, Krzysztof Kozlowski wrote:
-> Correct a few white-space issues around <>, which will be flagged by
-> dt-check-style.  No functional changes.
+The spelling is visible: a client instantiated through the i2c sysfs
+interface under the lower-case name taken from a compatible string
+binds through the OF table's name fallback, but has no firmware node,
+so i2c_match_id() is the only way for it to reach driver match data,
+and its string comparison is case-sensitive, so the capitals can never
+match. Lower-case the names so such clients match the id table, and
+receive the per-chip match data a subsequent change attaches to it.
 
-Tool seems pretty useful!
+The module aliases follow the rename (i2c:STK3310 becomes
+i2c:stk3310), and a sysfs client instantiated under a capitals name no
+longer binds.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Assisted-by: Claude:claude-fable-5
+Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+---
+ drivers/iio/light/stk3310.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
->=20
-> ---
->=20
-> Rob, Can you take it directly?
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 7c8a1d2b2ed0..5b5b6812edc7 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -766,10 +766,10 @@ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
+ 				stk3310_resume);
+ 
+ static const struct i2c_device_id stk3310_i2c_id[] = {
+-	{ .name = "STK3013" },
+-	{ .name = "STK3310" },
+-	{ .name = "STK3311" },
+-	{ .name = "STK3335" },
++	{ .name = "stk3013" },
++	{ .name = "stk3310" },
++	{ .name = "stk3311" },
++	{ .name = "stk3335" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
+-- 
+2.55.0
 
---P8HG2tUakdLhQuVM
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCao8OjAAKCRB4tDGHoIJi
-0tqoAP9QAMmXPklodIMJgwkYAyiHY6wJXbsca2yegWqjDpaZ8gEAzCaVWA0HkeeD
-+jnyIqHP/qOtLch52tvPYIHhTjCRRQ8=
-=3be7
------END PGP SIGNATURE-----
-
---P8HG2tUakdLhQuVM--
