@@ -1,100 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03931361DDC;
-	Wed, 26 Aug 2026 08:26:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEA933B636A;
+	Wed, 26 Aug 2026 08:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787732822; cv=none; b=MQUsdztVWBbynaHWYISNK0QY2fBuV8ssnpgQvJmpZ1oZecuAXCsVNcAjClUvov0eDNf2uIUFp9Zh8eCbmKaGyRZn/fDd9lF5PeYlSgp7eL6BXlAwHwGMeSBU5OC3eCHt6xebC0q2ZV7fq9xM6p0dlA1aoir3PhrHQi/CAaFS92E=
+	t=1787733135; cv=none; b=Wq+IaSXSJEoogtuCr9bLTmbBJLQTct9L1WhPUTBTUc8dzYJXRyLkv5zcU6P1sWzAHoSNa5k0CHr/XAR+vb7IcaN4trFzPCIDbRX6aLvEqnbIiKKqIUa2dgvBc3EHoAV9F5P9NXIK5TOx8HlpbLPjhSf6FwT+nww6ZAlQHdpbB/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787732822; c=relaxed/simple;
-	bh=DjG1oq7SnqRdBe8jkPiEySnDuQMRC2HVO2VHS57Nhcg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n/it2Hf52hQIJroqrw2DJ/W9+PLCRSmz2NtOfjo/W7a2n81+8XoIFnAgEW29DDtLm74movYq/QTrERrzChR6hjhAcoje1+W2Dvsg+zXBK+nYPvrWLlq3vVwXdgXdzPFnDhFW8zw8dFBLXuHCHNu2lidBnoieGGpzqTk0gEEhdAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AN/avrT9; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AN/avrT9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787732813; x=1819268813;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DjG1oq7SnqRdBe8jkPiEySnDuQMRC2HVO2VHS57Nhcg=;
-  b=AN/avrT9opIk0M+3z/8rgKdo0/1TcFCl+WIrgdk1V90DzH472Fbi/1nL
-   JT1DonvWpnyCRGoBLseVwP3tH29AMipulTf4dBNiMrZsB8V2stiRrwWgF
-   vUE0qJSKvBj6q9VOiOtkF5HDaTlZ5rrZqoUo+lJwCOe6eqDGhCNMliuCH
-   UM4KM1AnjRVyAsNmocDepbgQPWA7CLr4VOmsjn7Xk90/9en7eIdCgR3Wg
-   h+9ZfBmkKte0m2Mp/crJIg+Z/pCeKNF4X3+HVpeLHvvICtsSEoCvK20kK
-   DIBC9rBhcjz4mJCUs0U23OKa+j+JgTH1rBc5MoTrNklvg7H6t2MFEcWPl
-   A==;
-X-CSE-ConnectionGUID: 4ctie9qLTJOU48GFOS0OLg==
-X-CSE-MsgGUID: iuJA1WPSSuqgBtDO9FACdA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="92025821"
-X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
-   d="scan'208";a="92025821"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 01:26:46 -0700
-X-CSE-ConnectionGUID: eyUnDHdPSLK0+ojSgWQ8EQ==
-X-CSE-MsgGUID: Rk9WNzlvRhuTPNK+gKAvEg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
-   d="scan'208";a="261382198"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 01:26:43 -0700
-Date: Wed, 26 Aug 2026 11:26:41 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: mdshahid03@gmail.com, Jonathan Cameron <jic23@kernel.org>,
+	s=arc-20240116; t=1787733135; c=relaxed/simple;
+	bh=WS8VIN+ctujznSJU27WbA+Pfn26My8hSuse7hxkZmzg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=c7bwh51IYmgv2X+BRb6mda6c4euNlY4KSr6lteb0EcGlAuhs7GuoKKPmKsH52bMRD4kcQT4hhfrquacBeWUpvlcYY07gj6X+QFCSVULA79N7h6kW4lI0L5kAe10x82m5QXl9jK5U8OyTuvINgGYYtMDlgXWtNgQsaOZAwewWoNE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 9d9b50d2a12811f19a56ed5b684f684d-20260826
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:1fe527d4-a48a-431e-b3a5-312d20939439,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:7db8b62,CLOUDID:ac3a470db1ee798009eb4f1d796c0482,BulkI
+	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50,EDM:-3,IP:n
+	il,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LE
+	S:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 9d9b50d2a12811f19a56ed5b684f684d-20260826
+X-User: lilinmao@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 312569427; Wed, 26 Aug 2026 16:32:04 +0800
+From: Linmao Li <lilinmao@kylinos.cn>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	bcm-kernel-feedback-list@broadcom.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/3] iio: adc: bcm_iproc_adc: sort headers
- alphabetically
-Message-ID: <ao6jQaJc9FokuK6A@ashevche-desk.local>
-References: <20260825172155.250484-1-mdshahid03@gmail.com>
- <20260825172155.250484-2-mdshahid03@gmail.com>
- <ao5dVuReF1Q63ccU@debian-BULLSEYE-live-builder-AMD64>
+	Andy Shevchenko <andy@kernel.org>,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Linmao Li <lilinmao@kylinos.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] iio: adc: ade9000: fix NULL pointer dereference in clkout registration
+Date: Wed, 26 Aug 2026 16:31:56 +0800
+Message-Id: <20260826083156.2287106-1-lilinmao@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ao5dVuReF1Q63ccU@debian-BULLSEYE-live-builder-AMD64>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Wed, Aug 26, 2026 at 12:28:22AM -0300, Marcelo Schmitt wrote:
-> On 08/25, mdshahid03@gmail.com wrote:
+ade9000_setup_clkout() passes NULL as the register address when
+registering a divider clock. During clock registration, the common
+clock framework calls clk_divider_recalc_rate(), which dereferences
+the address through readl(). As a result, probing an ADE9000 configured
+as a clock provider with an external input clock crashes.
 
-...
+CLKOUT passes CLKIN through without changing its rate. Register it as
+a 1:1 fixed-factor clock, which does not require register access.
 
-> The sorting looks okay to me. Though, there are some includes missing and a
-> couple of them that don't seem to be needed (delay.h and io.h). Either in
-> replacement of this patch or as a follow on extra patch (not sure how maintainers
-> would like to have it in this case),
+This change does not affect the configuration using the internal clock,
+for which the driver does not register a clock provider.
 
-Too many lines to sort, hence separate patch:
-- sort
-- apply IWYU
+Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+---
+Changes in v2:
+- Clarify that the configuration using the internal clock is unaffected.
 
-> it would be nice to also update the include list according to
-> include-what-you-use principles.
+ drivers/iio/adc/ade9000.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> If you decide to work on the update to make it iwyu compliant, it may be
-> helpful to set an IIO tailored mapping file such as the one shared by Jonathan
-> a while ago.
-> https://lore.kernel.org/linux-iio/20250629194336.34a03946@jic23-huawei/
+diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+index e57e24b6acdf7..4e96cc37fbedf 100644
+--- a/drivers/iio/adc/ade9000.c
++++ b/drivers/iio/adc/ade9000.c
+@@ -1647,8 +1647,9 @@ static int ade9000_setup_clkout(struct device *dev, struct ade9000_state *st)
+ 		return 0;
+ 
+ 	/* CLKOUT passes through CLKIN with divider of 1 */
+-	clkout_hw = devm_clk_hw_register_divider(dev, "clkout", __clk_get_name(st->clkin),
+-						 CLK_SET_RATE_PARENT, NULL, 0, 1, 0, NULL);
++	clkout_hw = devm_clk_hw_register_fixed_factor(dev, "clkout",
++						      __clk_get_name(st->clkin),
++						      CLK_SET_RATE_PARENT, 1, 1);
+ 	if (IS_ERR(clkout_hw))
+ 		return dev_err_probe(dev, PTR_ERR(clkout_hw), "Failed to register clkout");
+ 
 
+base-commit: 6b9f23b5460818aaf199dda90210d5fc08d66c8f
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+2.25.1
