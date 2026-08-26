@@ -1,90 +1,132 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3825B282F17;
-	Wed, 26 Aug 2026 02:24:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23EC9245020
+	for <linux-iio@vger.kernel.org>; Wed, 26 Aug 2026 03:27:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787711077; cv=none; b=a8AIt05OomEih1vvAQP4/1J9o22iKSh5KCRGHnTSaduErCCSpYrs+jmDkYYJqXgww6kUgTwxOycjyQ7lyT3tIQjFi4+g8DY5FIdrN8ciCXXAgz1tgvg0Tgf88XYu5lDvxJBko/ZCRCi9LVp69Sv+3Kh6cVNc6S+qzO5HOvDe1bM=
+	t=1787714864; cv=none; b=T7K5NBEm5jcozZvvbeQs1+vupqdvfQTQv23YM4vQnzjjDBcuPjlJN7oESuXYqzxKMAcvLy5rKwyt9CZMS0+35JSDPYSCELuFMw7FWwialOm3pTyGljuX8Cn6AakFAKczAq+HX+rbJ2uhtAJ0jPPqrfPVcOjdhZ1ZxKZzyp+Kc+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787711077; c=relaxed/simple;
-	bh=14b0stW5jhQNnGgUU9Q3PBXBuFCEKtHBlLnHB0hlj4s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=udeyrSzRoTerH7Tlm6+0fQtNAw8M7+VFfRsggKtHikFqSFZ3qPoRenJMLtjeFDxndKd4668SlI13yLfHvf71HGf51yHiv6AZEaIfLadFzExcYt8tHNRWsto4wj0JF2HP74X3fc3PjdlfBjR9f+ehcEgY+cx2kLB9P1COUwJJHL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 400493a8a0f511f19a56ed5b684f684d-20260826
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:4e685729-2c37-48f1-a137-09bd151f7d3c,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:7db8b62,CLOUDID:007a68245441e193de880e54a407ae3f,BulkI
-	D:nil,BulkQuantity:0,SF:80|81|82|83|102|865|898,TC:nil,Content:0|15|52,EDM
-	:-3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
-	,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 400493a8a0f511f19a56ed5b684f684d-20260826
-X-User: lilinmao@kylinos.cn
-Received: from [10.0.2.15] [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_128_GCM_SHA256 128/128)
-	with ESMTP id 1637893290; Wed, 26 Aug 2026 10:24:22 +0800
-Message-ID: <d8d17463-cde2-47a0-9e18-ffa5d8cab52b@kylinos.cn>
-Date: Wed, 26 Aug 2026 10:24:18 +0800
+	s=arc-20240116; t=1787714864; c=relaxed/simple;
+	bh=apy7rp0KkyJekeLRg0/LbfQacv3/tKBpXuMOv5a0FoE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bryxzvsatze5x1wRLv867ZY2ZkZXgRAPGqDpymiB+5Ld2dVDh/vAU3NUr7bZrm6GYK7n3FNZN6GSc0OKQuph8hYyJZ+JwaOq+SrQ1PqNEo36ZzN3Q4y9PArQGDFRonhed/TttuGaBvdd86vL1Hl8GbmEL5Mjg8Y5mHORi8hHC0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ABTd0Smh; arc=none smtp.client-ip=209.85.222.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ABTd0Smh"
+Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-97c940ef65cso276341241.2
+        for <linux-iio@vger.kernel.org>; Tue, 25 Aug 2026 20:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787714861; x=1788319661; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=1qWanT6gYm3HAacbnAtggJfeeI5p5/Qpb1KAGvhVW4U=;
+        b=ABTd0SmhhYOMflYY1GGdHxD1wdCpP2LP9Flp8xNbatyjWX4os5Av9mE8SQUwHiVnW8
+         QkhNP588rNxobK7tzzsIfeRwPq40FIqreCx2fuIjgXlBzY5z8zV64VCSF1AdKJ436zXs
+         uHGHjchW3MIL6hUmQ7Qkz8oPMmxOZi5nHBKxEVkziv4B+817fjNFslMHp6ew3+iAQv4V
+         +zfXEqMvMPFCaytkkRTOo8f558478Khz3RzeqFjm7iSibHZNbRFQuNDHH3zCN4cPLQY2
+         VfTdxaYJJ1pUDSnHbcXejRdOJLzuSG74M8RuSNbXQvclxT8ofrBepbwiIupojOGN5MJy
+         O+FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787714861; x=1788319661;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1qWanT6gYm3HAacbnAtggJfeeI5p5/Qpb1KAGvhVW4U=;
+        b=sXBQYkan+p+HJHvjpOHVa2x8Itl+APVD2JcyAQTLfsEIqBacgqU9lYCFMv+0IGqecd
+         bIONhpREcETKJ9IFLZ0WLZsFOnn0mEucV/LLAScx6lxvmlvuMx4DjDaHjfL9Q6aklSvP
+         CU7QudGSsS+teWdFygataq4Z9swzIumCij+S2JjvcXP7t8+JMaxZBXLLK6V5hhO8eFUA
+         IkgbFkafUDknmFtGfSbtEr3SH8pBFVRq275drozpFYRwN2K9JQyoM14IPrS+dXuITLMp
+         rPFouWhAiqSSV6kIjv/7mHs3l7lFf7O+JcVKkCin+oY5t6IEr3IjtQmXZqZDUDsX8/Bx
+         9RzQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqVGhiUwrRSFEyMa9Hxa3+8g0ls5nFVSpF+xQTBKnvMtcdL2FxhQaTb9Dq/zue15cNPLfgpZXk1QqA=@vger.kernel.org
+X-Gm-Message-State: AFuF++lSSvrHIMi2/OhqHfwIpDLxsvarB6dbq0X8HMm/pRTEeN06NIje
+	+AkpMEYb5LtV1OFKTLUwXkzaivug6B8KFN79wcoMF1z6fhD33O9YA9f86t26zA==
+X-Gm-Gg: AR+sD13tpv1MorscqqVUDuTzdqamH7CApKPJkt5foRuQy08gyhW/GSTowAePNc0w0zR
+	5zyBh/h5VDzHXhISKy9vAp8fU1RUxVyCYdy3ICmXPveJQbOk4BAeaBXqrSReWZdKw+Tu7mVjc23
+	UNoQs+d5ThmMbUgEWFa5FWZTikbXWVfkICoWERD3U67UjIfPydXUGVDTFCCaLwpLuGh/Q545qMv
+	Kd2pMR+IxlH8LsmiPmuJ0bH4ozYag9aYf4o6S0qBuJ85ee0pCN6+K/DmPDn3368ioHm//l7ziHx
+	C/ASuvvEcGmLqEJ+y+gnTvUePog08Uzzx+xwd90dnNdFO2yZEvGyixReXiAooMv6sba61storWR
+	5CtQesQ22Lvwxtf7eGC8p87txPSPnvXkRNdq60Ky+MPEMlQIptz0ylLGdxhuIGbnC2Kw0UXzh9S
+	lC/PFSIy4N8xY00teun0GljV+W9+G0j4Ther+cQ4lDUwUScr6yZX+PiqTZBcyVXiao5PL+
+X-Received: by 2002:a05:6102:2924:b0:77a:ce37:9884 with SMTP id ada2fe7eead31-782c2d07c5fmr1413440137.14.1787714860922;
+        Tue, 25 Aug 2026 20:27:40 -0700 (PDT)
+Received: from localhost ([2804:30c:97d:e800:9454:1179:18df:ab33])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-783081c3988sm665463137.11.2026.08.25.20.27.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2026 20:27:39 -0700 (PDT)
+Date: Wed, 26 Aug 2026 00:28:22 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: mdshahid03@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	bcm-kernel-feedback-list@broadcom.com, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/3] iio: adc: bcm_iproc_adc: sort headers
+ alphabetically
+Message-ID: <ao5dVuReF1Q63ccU@debian-BULLSEYE-live-builder-AMD64>
+References: <20260825172155.250484-1-mdshahid03@gmail.com>
+ <20260825172155.250484-2-mdshahid03@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: ade9000: fix NULL pointer dereference in clkout
- registration
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, David Lechner <dlechner@baylibre.com>,
- Andy Shevchenko <andy@kernel.org>, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20260824125210.1644319-1-lilinmao@kylinos.cn>
- <aoxecT3hNa-M3UMn@ashevche-desk.local>
-From: Linmao Li <lilinmao@kylinos.cn>
-In-Reply-To: <aoxecT3hNa-M3UMn@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260825172155.250484-2-mdshahid03@gmail.com>
 
+Hello Mohammad,
 
-在 2026/8/24 23:08, Andy Shevchenko 写道:
-> On Mon, Aug 24, 2026 at 08:52:10PM +0800, Linmao Li wrote:
->> ade9000_setup_clkout() passes NULL as the register address when
->> registering a divider clock. During clock registration, the common
->> clock framework calls clk_divider_recalc_rate(), which dereferences
->> the address through readl(). As a result, probing an ADE9000 configured
->> as a clock provider with an external input clock crashes.
->>
->> CLKOUT passes CLKIN through without changing its rate. Register it as
->> a 1:1 fixed-factor clock, which does not require register access.
-> Do you have HW to test? What will be the result for the internal clock case?
-No, unfortunately I do not have access to the hardware, so this is
-based on code inspection only.
+On 08/25, mdshahid03@gmail.com wrote:
+> From: Mohammad Shahid <mdshahid03@gmail.com>
+> 
+> Sort the Linux kernel headers alphabetically to improve consistency
+> and make the include list easier to maintain.
+> 
+> Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+> ---
+>  drivers/iio/adc/bcm_iproc_adc.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+> index ab66b97d2f04..e46e3761993a 100644
+> --- a/drivers/iio/adc/bcm_iproc_adc.c
+> +++ b/drivers/iio/adc/bcm_iproc_adc.c
+> @@ -3,14 +3,14 @@
+>   * Copyright 2016 Broadcom
+>   */
+>  
+> -#include <linux/module.h>
+> -#include <linux/io.h>
+>  #include <linux/clk.h>
+> -#include <linux/mfd/syscon.h>
+> -#include <linux/regmap.h>
+>  #include <linux/delay.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/mfd/syscon.h>
+> +#include <linux/module.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+>  
+>  #include <linux/iio/iio.h>
 
-For the crystal oscillator case, the device tree does not provide a
-clocks property. devm_clk_get_optional_enabled() therefore returns
-NULL, and ade9000_setup_clkout() returns here:
+The sorting looks okay to me. Though, there are some includes missing and a
+couple of them that don't seem to be needed (delay.h and io.h). Either in
+replacement of this patch or as a follow on extra patch (not sure how maintainers
+would like to have it in this case), it would be nice to also update the include
+list according to include-what-you-use principles.
 
-         if (!device_property_present(dev, "#clock-cells") || !st->clkin)
-                 return 0;
-
-No clock provider is registered in that case. This behavior is
-unchanged by the patch. The modified registration path is reached only
-when an external input clock is present and the device is configured as
-a clock provider.
-
-Thanks,
-Linmao
->
+If you decide to work on the update to make it iwyu compliant, it may be
+helpful to set an IIO tailored mapping file such as the one shared by Jonathan
+a while ago.
+https://lore.kernel.org/linux-iio/20250629194336.34a03946@jic23-huawei/
