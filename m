@@ -1,47 +1,74 @@
-Received: from out-2z4y-a139.jellyfish.systems (out-2z4y-a139.jellyfish.systems [198.54.127.139])
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB41347142B
-	for <linux-iio@vger.kernel.org>; Wed, 26 Aug 2026 18:07:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56CE32E764D
+	for <linux-iio@vger.kernel.org>; Wed, 26 Aug 2026 21:31:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787767670; cv=none; b=ohXEoW5vGSSH3DqQj6DkyJDdE2r+kBvvye0MyD3QFffnEUvb5aMQn+IWin6wpvdRkQ+ujF4g/8NEu8+RO4rM6H0dplsmuQRRQ1V6AYdMKbNR0q4T2lkHg7sk8m487guo4vvfieZpokkdIIdEE6FEdmLWrhED4pev+Eir7MM5jTc=
+	t=1787779916; cv=none; b=UuoIJounrcxPwGw1yKTrjF8DW9g88G69Trxdn/0lj6kRppM+t0zn77EXRKX6haFKhjE2muKXyn6+uBgc1Z7sf8auM3roUBUZQjvJNk98AiVEgMb79zqRkuGuSpE54VotIXisGxpYQ6L+ZiMbv92/4mLDqbAcgppCQYJdr4XSZxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787767670; c=relaxed/simple;
-	bh=nJdQI8BEZEemf2xtWVmqcjOljCyAezykSB2m5Eya7Mc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bKGiur8KrZeTL6/SUSA9kbXRZ2j2kSoSJWsRY3xN5Hz5n04O7+EHrH/V0ODzOKpNIn4dnoyTE0tlsSsqvLSzkVrnzs2U+W4PpI69y7z6lBGvhVyokdtz90ci4pgulY4adc3F4ibBtOEj+Afaw7FBjEyE0XQFwuabV6kSEh8kPOQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from mail.privateemail.com (unknown [87.215.145.39])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.privateemail.com (Postfix) with ESMTPSA id 4hVXN82YGrz8sWP;
-	Wed, 26 Aug 2026 17:54:32 +0000 (UTC)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	Kees Cook <kees@kernel.org>,
-	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org,
+	s=arc-20240116; t=1787779916; c=relaxed/simple;
+	bh=SNPzm5JdOhbwwM8EqeYbuS4iFwsKT5z6aGCH26wH+Bs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rIK8RWtxM17tUAuGyd4Wj/3rWiOAU0N93bO/n+mJH1KRokbMZQ6ePszcimsdlOkilKwGOxFV3bel2oV8yFThck38paLxVOpDlv4EM0WjGTWkaDIhezOyC3YXsHhqFR1IjHv1AUjBcwrmQcR713QTaqfgNIKcr2gd/2Xsc5/ZsdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CL6DNxxP; arc=none smtp.client-ip=209.85.215.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CL6DNxxP"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cc1cbb64a1fso985561a12.1
+        for <linux-iio@vger.kernel.org>; Wed, 26 Aug 2026 14:31:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787779915; x=1788384715; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Vo+9nPRwdIVHjPr+RVsyNENB5+Bs0JcZeloNo7tg6D8=;
+        b=CL6DNxxP5yZJ7d+DLAizHLHLRz4RlCJMIwGxlKZwG4Sa2IJ949jD8rychNJiQ3XlIf
+         jtUkB+Y54jEQN8N9A/gU9X2H34SfaZ7GWA7M1oWhV9CfxpkbRTFJVhX0V8vD0ormaokN
+         U5zeorSnpeRmRbytKYo73/b1s0u8k4bVaxERC4FGmQMopNxf/oBiso37MvipqdKxzxdz
+         cGEeLJVQ4xgHCtcapoleYJd2kILT8Jl2+W/ixGFAUz+2yoTGFyM+m/CYHDF2jjlpXOgd
+         /FfHPe3sIZaaALMxrYtkIAEazy1eN8HHl+/TVITAVFbKnZbxyuBs5YaN/JZXaHhQ0Ygt
+         erAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787779915; x=1788384715;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Vo+9nPRwdIVHjPr+RVsyNENB5+Bs0JcZeloNo7tg6D8=;
+        b=QUSw+jYos7JN2t3qNnj7dZAB/Pkx5GHfB/yAWcCmsNBC8rZRrlqchh66IlU6THWWK4
+         4rFueG0Y5IL04UD9ll8qwhDt1zZcqi0MJVmFWD3kZAHyuOLld6xyiw4W/8qGlRS+1pXH
+         nXc8UuXXuh5QHFsddXCAZMA47Sqm7/v27b5MCx9hMeGn25swxhf/q/XPx6T4FBWmRuCI
+         tFknJt5vpNe+SF0LSFiHI3NZ/3G4Zdcjl8NX2y876TYdDXVOT3LthKouhjpG55YfIDwM
+         ynplrvYybtRzjW9cNgBwm9TjC8spvf5nOzOXBoUs8eSts6S1Mv+osL8QoI6LGrmwiBBG
+         1shw==
+X-Forwarded-Encrypted: i=1; AHgh+RpKVAPYHfTxwWOCEpMki0dOpyzfnXU39TeCtyXWlsE6VFLZAc78C3UvoEZMnhi/EDDyEVnQsjCpEt0=@vger.kernel.org
+X-Gm-Message-State: AFuF++nUWr/DA5uIvWgEIvGOFRZZB91jHFRJ9ElMrbX1bEaAjJT08sgk
+	mOzFXauXYXH48FPc4eTqvbIw3ET+njgaokgvesMs0VfR8EyDHdNXC2WfU7G3jzFX
+X-Gm-Gg: AR+sD13qUlk3FSWj+cvkTZZ1AEeH9OhqsChn9HSVVOcaBnLOtJPW3fdu89PCTyIuYsV
+	2mSf2PGSUg675rsv0MBYQfFsimjQ0AnFfQuOFY2+UPuk4lxcMXpN7uTZjEDhDwcxnrQEEBJIVx+
+	kC+XjZdhwsrYWCe2wDzJ8oD79DhShvvZQ19oW7cTZQ0bWqE5AXRk9MeTvS6dGd+UkWfg8PcC2qj
+	7842foxx/78C1sQveKyywB8Q18CnV6tVLYNO53CGnzB8++7bXcCTxej0eqVMlh6NchU+oO/bFLl
+	l1yq7qJ4eo4fdM+XspISyahYXE2i3jssOnE6+lYFayAAyzota10tvVuLBk89ZLwR1OCOuKu62sg
+	hTKTthZpHlFhWU9Vk8kVN7kSJBkWw0rDqr3pLm37PBcz9/CGtsqZI2CDmTPY26Yibayf4h474/A
+	Cci/iVpPoOfN1w3UpDhR3jZiO+lcS1JTphtbSSRFXrHcTfMtWq5UMKDxlgnGnKnGlB/i9oh2l4s
+	8i2iO1FkK+a/ekNrntnr9KdWkJs3GptDxMJx+TdNqc+rA==
+X-Received: by 2002:a17:90b:1e46:b0:38e:5964:97a8 with SMTP id 98e67ed59e1d1-3966d8d6220mr17244323a91.16.1787779914570;
+        Wed, 26 Aug 2026 14:31:54 -0700 (PDT)
+Received: from ubuntu-vm.. (c-73-189-122-63.hsd1.ca.comcast.net. [73.189.122.63])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-141a905b959sm10291147c88.13.2026.08.26.14.31.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2026 14:31:54 -0700 (PDT)
+From: Rishab Madhugiri <rishab.madhugiri@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Subject: [PATCH v2 4/5] iio: light: stk3310: add per-chip match data
-Date: Wed, 26 Aug 2026 19:54:08 +0200
-Message-ID: <20260826175409.326131-5-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
-References: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
+	Rishab Madhugiri <rishab.madhugiri@gmail.com>
+Subject: [PATCH v2] iio: core: Replace BUG() with WARN_ON_ONCE() and error return
+Date: Wed, 26 Aug 2026 21:31:40 +0000
+Message-ID: <20260826213140.37437-1-rishab.madhugiri@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -49,174 +76,54 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Envelope-From: jorijnvdgraaf@catcrafts.net
 
-Introduce a chip_info structure carrying the device name and channel
-specification, attach it to every i2c, OF and ACPI table entry, and
-let probe take it from the match data, failing when there is none.
-Every firmware bind path carries match data, and with the id names in
-lower case a client instantiated through the sysfs new_device
-interface under a compatible-derived name receives it through the id
-table. The shared channel definitions move into macros.
+As documented in Documentation/process/deprecated.rst, the
+use of BUG() and BUG_ON() should be avoided as they could
+cause a complete system crash, preventing further debugging.
 
-The ACPI table entries change to named initializers, matching the
-other id tables.
+In iio_get_time_ns() and current_timestamp_clock_show(), the
+clock type is already validated against supported clock
+types prior to these calls, making the default switch
+branches expected to be unreachable. Replace these with
+WARN_ON_ONCE(1) followed by an error return to avoid a
+crash and to log the highly unexpected condition.
 
-This is a preparatory change for a variant that provides more channels
-than the existing parts. No functional change for firmware-described
-devices; a sysfs client under a name that binds without matching any
-id entry (the full compatible string) now fails probe with an error
-instead of probing as an stk3310.
-
-Assisted-by: Claude:claude-fable-5
-Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Signed-off-by: Rishab Madhugiri <rishab.madhugiri@gmail.com>
 ---
- drivers/iio/light/stk3310.c | 95 ++++++++++++++++++++++++-------------
- 1 file changed, 61 insertions(+), 34 deletions(-)
+v2:
+ - Use WARN_ON_ONCE(1) instead of WARN_ONCE() with string message as suggested
+   by Jonathan Cameron.
+ - Reference Documentation/process/deprecated.rst and clarify unreachability
+   of default branches and reasoning for using WARN family over BUG family 
+   in commit message as per Andy Shevchenko's feedback.
 
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index 156888969366..d632e6447f06 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -181,26 +181,48 @@ static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
- 	{ }
- };
+ drivers/iio/industrialio-core.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 767a7794624a..819a864d1136 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -341,7 +341,8 @@ s64 iio_get_time_ns(const struct iio_dev *indio_dev)
+ 	case CLOCK_TAI:
+ 		return ktime_get_clocktai_ns();
+ 	default:
+-		BUG();
++		WARN_ON_ONCE(1);
++		return 0;
+ 	}
+ }
+ EXPORT_SYMBOL(iio_get_time_ns);
+@@ -1518,7 +1519,8 @@ static ssize_t current_timestamp_clock_show(struct device *dev,
+ 	case CLOCK_TAI:
+ 		break;
+ 	default:
+-		BUG();
++		WARN_ON_ONCE(1);
++		return -EINVAL;
+ 	}
  
-+#define STK3310_LIGHT_CHANNEL {				\
-+	.type = IIO_LIGHT,				\
-+	.address = STK3310_REG_ALS_DATA_MSB,		\
-+	.info_mask_separate =				\
-+		BIT(IIO_CHAN_INFO_RAW) |		\
-+		BIT(IIO_CHAN_INFO_SCALE) |		\
-+		BIT(IIO_CHAN_INFO_INT_TIME),		\
-+}
-+
-+#define STK3310_PROXIMITY_CHANNEL {			\
-+	.type = IIO_PROXIMITY,				\
-+	.address = STK3310_REG_PS_DATA_MSB,		\
-+	.info_mask_separate =				\
-+		BIT(IIO_CHAN_INFO_RAW) |		\
-+		BIT(IIO_CHAN_INFO_SCALE) |		\
-+		BIT(IIO_CHAN_INFO_INT_TIME),		\
-+	.event_spec = stk3310_events,			\
-+	.num_event_specs = ARRAY_SIZE(stk3310_events),	\
-+	.ext_info = stk3310_ext_info,			\
-+}
-+
- static const struct iio_chan_spec stk3310_channels[] = {
--	{
--		.type = IIO_LIGHT,
--		.address = STK3310_REG_ALS_DATA_MSB,
--		.info_mask_separate =
--			BIT(IIO_CHAN_INFO_RAW) |
--			BIT(IIO_CHAN_INFO_SCALE) |
--			BIT(IIO_CHAN_INFO_INT_TIME),
--	},
--	{
--		.type = IIO_PROXIMITY,
--		.address = STK3310_REG_PS_DATA_MSB,
--		.info_mask_separate =
--			BIT(IIO_CHAN_INFO_RAW) |
--			BIT(IIO_CHAN_INFO_SCALE) |
--			BIT(IIO_CHAN_INFO_INT_TIME),
--		.event_spec = stk3310_events,
--		.num_event_specs = ARRAY_SIZE(stk3310_events),
--		.ext_info = stk3310_ext_info,
--	}
-+	STK3310_LIGHT_CHANNEL,
-+	STK3310_PROXIMITY_CHANNEL,
-+};
-+
-+/**
-+ * struct stk3310_chip_info - chip-specific data
-+ * @name: device name reported to the IIO core
-+ * @channels: channel specification
-+ * @num_channels: number of channels
-+ */
-+struct stk3310_chip_info {
-+	const char			*name;
-+	const struct iio_chan_spec	*channels __counted_by_ptr(num_channels);
-+	unsigned int			num_channels;
-+};
-+
-+static const struct stk3310_chip_info stk3310_chip_info = {
-+	.name = STK3310_DRIVER_NAME,
-+	.channels = stk3310_channels,
-+	.num_channels = ARRAY_SIZE(stk3310_channels),
- };
- 
- static IIO_CONST_ATTR(in_illuminance_scale_available, STK3310_SCALE_AVAILABLE);
-@@ -632,10 +654,16 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
- 
- static int stk3310_probe(struct i2c_client *client)
- {
-+	const struct stk3310_chip_info *chip_info;
- 	int ret;
- 	struct iio_dev *indio_dev;
- 	struct stk3310_data *data;
- 
-+	chip_info = i2c_get_match_data(client);
-+	if (!chip_info)
-+		return dev_err_probe(&client->dev, -ENODEV,
-+				     "missing driver data\n");
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -654,10 +682,10 @@ static int stk3310_probe(struct i2c_client *client)
- 		return ret;
- 
- 	indio_dev->info = &stk3310_info;
--	indio_dev->name = STK3310_DRIVER_NAME;
-+	indio_dev->name = chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = stk3310_channels;
--	indio_dev->num_channels = ARRAY_SIZE(stk3310_channels);
-+	indio_dev->channels = chip_info->channels;
-+	indio_dev->num_channels = chip_info->num_channels;
- 
- 	ret = stk3310_init(indio_dev);
- 	if (ret < 0)
-@@ -763,28 +791,27 @@ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
- 				stk3310_resume);
- 
- static const struct i2c_device_id stk3310_i2c_id[] = {
--	{ .name = "stk3013" },
--	{ .name = "stk3310" },
--	{ .name = "stk3311" },
--	{ .name = "stk3335" },
-+	{ .name = "stk3013", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
-+	{ .name = "stk3310", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
-+	{ .name = "stk3311", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
-+	{ .name = "stk3335", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
- 
- static const struct acpi_device_id stk3310_acpi_id[] = {
--	{"STK3013", 0},
--	{"STK3310", 0},
--	{"STK3311", 0},
-+	{ .id = "STK3013", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
-+	{ .id = "STK3310", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
-+	{ .id = "STK3311", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
- 	{ }
- };
--
- MODULE_DEVICE_TABLE(acpi, stk3310_acpi_id);
- 
- static const struct of_device_id stk3310_of_match[] = {
--	{ .compatible = "sensortek,stk3013", },
--	{ .compatible = "sensortek,stk3310", },
--	{ .compatible = "sensortek,stk3311", },
--	{ .compatible = "sensortek,stk3335", },
-+	{ .compatible = "sensortek,stk3013", .data = &stk3310_chip_info },
-+	{ .compatible = "sensortek,stk3310", .data = &stk3310_chip_info },
-+	{ .compatible = "sensortek,stk3311", .data = &stk3310_chip_info },
-+	{ .compatible = "sensortek,stk3335", .data = &stk3310_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, stk3310_of_match);
+ 	return sysfs_emit(buf, "%s\n", clock_names[clk]);
 -- 
-2.55.0
+2.43.0
 
