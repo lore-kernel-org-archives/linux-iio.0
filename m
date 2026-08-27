@@ -1,60 +1,58 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 136B3363083;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4FFA3537E8;
 	Thu, 27 Aug 2026 07:36:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787816164; cv=none; b=OfL593A0smLFleD3sSkqw/O9eQzkAbBLdVpN99ratIXT9LrEQ4dfERWLEHqrr7P5F4RmnGkINvwWWybKe3mAs+55xvR8bAGqvSmGMwUKuMNg+spClYv5LsE7ArVpWRmok5Duk6bhwfmTaex4w7nrdXLSAoHQVQNL2d50datAjIs=
+	t=1787816165; cv=none; b=rm7Fh1ysz2nyosLUPVbrjmA9xdHU/W+r/iyhJvJmwn0m1NtHYeee2/HlVwJOeJ2FGfjNgc5dKurBmI9uwoxj1J0cEYtcKDJcY1DMRI6HQpFzE18GZRgaj6Ww7YLc5hrP6XsA6KTnSv6mrx1rJoHhwSIivPV8yup0uPI6OgiuZUQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787816164; c=relaxed/simple;
-	bh=ZKN1B2gZYBwuyNnxocxDDBrNCih2O5jweGLmrMvotJQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=YsKxcWpziQukmirtUfdUTphpPpAS5KQt3s8kP/nXoBOWa9K58tTBKNVa9iEiOkQHB5c7xSBS/edZRnFGra97LT2ZRrcwvoW9/fWs9+S2ayKdqzyRkQc+ytmcWkgnBVYY5B1B7ukPJLlVzEpf69BEwm+evOPI63SGjHCzx3Cz9qc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=PuDH3Fgy; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1787816165; c=relaxed/simple;
+	bh=m8Id4n27ur8Z/Z9jaMm+BG1qzSBY3o7UabomtjO+5Io=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=ALrJ1upskwO6R5TRWnxYartRNUnjcZFp4m5Z9NeK2enbPxVjcQTmq8B2oMmE/QzouzwBqNcby+NhuvLa4koikYlSj2bM0/64HXI+cBe1bORkjfiMItTwUQ04FHYeJQsD4Y8JYTm+dtCEfJDrZ8Q4VzX5uWl3+DoGsacmSCLLdNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=S358DXY8; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="PuDH3Fgy"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67R6PKNI2769927;
-	Thu, 27 Aug 2026 03:35:27 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="S358DXY8"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67R6PLkC2470807;
+	Thu, 27 Aug 2026 03:35:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=c8Rp8
-	EOzkyMI8boZQTY40lparKG2slm87g2a/+q88n0=; b=PuDH3FgyU8vSzMgOZX2Y0
-	cHTintKCSA12FIhJ8E5lGpwtAO+7IXhKMSE2XS9eYzFBAFIFwWS9w9d8ULFT2AQY
-	EPaTSCwUO/IS/DE/1HfdyC3YyxFkTnfZSZZT9He1Mt7I4fhrGtG8UhmjjdyEgANA
-	CxvICRsa5w9PEF/XCYZ+EUsgB0vscCxu/+IuDYm+cqSsip9aLxdHW2jIdHqSHej2
-	MBZ5CpZwq628qkqR0++5GOoYyJR+HJkpSO6nDdvHqAY0q9C+nw5WBTPICNDudLrR
-	q7Y+Bt4jjgnbgCuHkVtoFTAzRWS/CBpO6WGrolB17PTMzeTtyN+DRRhvv2BMX7VE
-	A==
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=ZafOIczskT3jUMDs4NeXb6R8eEU
+	lIM5918JMOji2K3c=; b=S358DXY8s2rn7Yf7p89YpkCMCKH6VZiYCAOx1LgPJ4x
+	PD+fVxksvaYN6Kh83yuwA4lh5pxRt6nx3ARuPr8CIFWU8UQvBrJh+YVHtHgQjo0n
+	O7CN/n3DW7lV7yHb01qt458OiqxR8gVg/25SmHHsJXIEBAqZwFr9la3pJmQJ2UXs
+	yrTE/JN+82HwhkqSJECqwifuvJNelTkr80Kjg/m4Xshasacee0ZTJUcgrjYJFhjk
+	Q0xMye4UjuDMS2z1l908bUDNwo1/nV2VGtoYbP5bIRsNLpK9Yd3JYqTgvVGHbHW6
+	Dv7YXxcp93+EViPt/IA6xXQ0qDZsc1oM/VpyGzsfTgA==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4g963pupdp-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ga1m0v5vu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 27 Aug 2026 03:35:27 -0400 (EDT)
+	Thu, 27 Aug 2026 03:35:22 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67R7ZQ81015141
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67R7ZK8P015123
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 27 Aug 2026 03:35:26 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+	Thu, 27 Aug 2026 03:35:20 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
  ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 27 Aug 2026 03:35:25 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ 15.2.1748.37; Thu, 27 Aug 2026 03:35:20 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 27 Aug 2026 03:35:25 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 27 Aug 2026 03:35:25 -0400
+ 15.2.1748.37; Thu, 27 Aug 2026 03:35:20 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 27 Aug 2026 03:35:20 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.223.174])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67R7Yroo011772;
-	Thu, 27 Aug 2026 03:35:15 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67R7Yron011772;
+	Thu, 27 Aug 2026 03:34:55 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Thu, 27 Aug 2026 09:34:46 +0200
-Subject: [PATCH v10 1/3] spi: dt-bindings: Add spi-device-addr peripheral
- property
+Subject: [PATCH v10 0/3] iio: dac: Add support for AD5529R DAC
+Date: Thu, 27 Aug 2026 09:34:45 +0200
+Message-ID: <20260827-ad5529r-driver-v10-0-38f2be07b824@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,9 +61,13 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-ID: <20260827-ad5529r-driver-v10-1-38f2be07b824@analog.com>
-References: <20260827-ad5529r-driver-v10-0-38f2be07b824@analog.com>
-In-Reply-To: <20260827-ad5529r-driver-v10-0-38f2be07b824@analog.com>
+X-B4-Tracking: v=1; b=H4sIAJXoj2oC/3XRzWrDMAwH8FcpPi9Dkm3Z2WnvMXZw/NEatqY4I
+ 2yUvvucXpohdhIS/P6S8VUtudW8qJfDVbW81qXO594gPB1UPIXzMQ819YEiIAYLbgjJWhrbkFp
+ dcxs88zSl5NmkrDq6tFzq9z3x7b33p7p8ze3nvmDFbfpv1IoDDJMxDEXHXstrOIeP+fgc50+1Z
+ a2091546j5rtMYge5uc8HrncRRed0/sIjiNIbAX3jw8g/Rm89lEINImYBDePrwDFN5u9yfwbgT
+ IbEh43nm0wnP3saTip7HYnLXwbueJhHfdO+cxJmdCclZ4//Ae5H5//z/sCcWyJvn+cecJhB83H
+ 5gyTBQ88h9/u91+AW28zZyuAgAA
+X-Change-ID: 20260507-ad5529r-driver-866bbdd864de
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
@@ -105,75 +107,243 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Janani Sunil
 	<janani.sunil@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787816093; l=1442;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787816093; l=9985;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=ZKN1B2gZYBwuyNnxocxDDBrNCih2O5jweGLmrMvotJQ=;
- b=IZRbWAbXqG/TRJNMABwCNtxNbZapal+ZyJDbLC1opUGm9jhZuYyWKmyJJUjlVBLq1APcaTqXl
- xZBaxnHFMCzBT8S1BFUGhttWlsW1dxFaFauF/0voU6QdTFVp8HV0y4G
+ bh=m8Id4n27ur8Z/Z9jaMm+BG1qzSBY3o7UabomtjO+5Io=;
+ b=kUph20atPr3lBJ7ejS2M5ugDiSHLN/gsvcJtwkkJu0jS4jTZlsiznGAQM28ThUsHvdg4R+0jW
+ ljGshMo3rYmBIobMoaAGWIPJlxVY/mCvw19H62PIzNYVql8bzz4y2Jf
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODI3MDA2MSBTYWx0ZWRfX4Hd7zt0Z6oov
- G7LwT+7SAn6yK5UcZ+6xTV5CshpCwWeFaBBS34Ra80mLCk6+vtrFwBV6upwSp/wcE3Qnwro8axS
- KBHW+8cLBL7xU5qKhpMAiYYXcW9iQNQWzoanvG8IF5BU9gZ483WI
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI3MDA2MSBTYWx0ZWRfX0Qgo7PAXYOWL
- 8GOL7uZc/720pUuGNLMpZj0Bi375KOvRSTqN/lE+VatXs2/kBL59zIirewtcnJuIsSJT/CN8dD/
- thuDQ+UMtJaAzqObpYQtX8nqHqgePi7AiOrresgro2PkkG2TpjvHpuj+FRIpA4B7YpiJYMDm7wm
- PBnzggP8tAvoAfwYuIAj8VZ5zaHC2caft2hPNu+v9utINCgMobBrYztWVnAZAqKORU517MskmVa
- hmUrZyuE3ZpftygkGj5q1/9O4cFvXkfgPRO+QE2e5An81tHLJc5j/E3zbUuTyRDhzmcxiT3k/mP
- QqqR3gklYadUKfFrPBer1CHFkgX2exdUjKkTL62xbUMQqZ134WF8gKuh1hx6Wm+FyskcfjYbVBw
- TW86kxo37joR7DXfXAX5OE7YJUlLMnI9U7NrMCIu1/C83Y/k1IRXyseebV0tddtoKzVhPRpnj8Q
- g1AMnlQmW4LJx38tOBw==
-X-Proofpoint-GUID: zrUg4agh5wTfD4kyFf1AkZso6reSFg6j
-X-Proofpoint-ORIG-GUID: zrUg4agh5wTfD4kyFf1AkZso6reSFg6j
-X-Authority-Analysis: v=2.4 cv=GNc41ONK c=1 sm=1 tr=0 ts=6a8fe8bf cx=c_pps
+X-Proofpoint-GUID: qxLBQro-hyaadei2FSIsBbMVn_lwjw6G
+X-Authority-Analysis: v=2.4 cv=NtLhtcdJ c=1 sm=1 tr=0 ts=6a8fe8ba cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8
- a=XYAwZIGsAAAA:8 a=pGLkceISAAAA:8 a=p7DZuduEnTu05McJuzUA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=E8ToXWR_bxluHZ7gmE-Z:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=VwQbUJbxAAAA:8
+ a=gAnH3GRIAAAA:8 a=IWTvGB1dTFcGZpCuenYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: qxLBQro-hyaadei2FSIsBbMVn_lwjw6G
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI3MDA2MSBTYWx0ZWRfX/WvVHbYkPx6d
+ ksULKaFX3S1ZVB6RKLjH+uEpGw5bdHGHLmosBgxoe2oopQ39NMS5E9eOeImkQ9wxWueYzxa9Wh9
+ 6AX5HMhSu54GR9JrrzWHqb0koRPkvw0YjPl3eSE7a2i88VaTV0RUHLn43MY6OLBMHLhbv5LiUwZ
+ 4FgOK0NLu0jwaAUFc1Kzlniec4iru1Nyn4kkA0DlETB8QfP1kTaX1JqJ38iNOMjmXOyMY+FFsAy
+ ZhLF8QbKQXIKK6BGxiPuerJ7WvVvPiRLUopYIE1yL1hDHu59CUFV0kBuQCXMVxlEUKoe0boYwat
+ 3RwEusYcmZOanIW2lgtCCUcyxGT06R+rC2u+XuHBmxLJsmzZtlZQTM0sqfgfp0omZ+8O4VwXE1M
+ jlLiFrsEtM+9PJKcwLZInEgh1h+Fg6hZVtTmWgUz5jzNcQSnnueDhN7XLA3B0/msZtk05evnPBU
+ w6394fN1nUzdMmkQ/Cw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODI3MDA2MSBTYWx0ZWRfX9Xh+PXMUNZt2
+ FaUlJJZISIH7HTU/QFagYBTsMBwszFNA7OUQ7J33vYk88Wk3Tx6fQQXzEBPAdPsLAwlwvbZQbA2
+ yIf2wvI5G93KMRPxXtZwsO8NctlEQRjNLaS/pFGJXF+nV1MMu0tL
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-27_03,2026-08-26_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 suspectscore=0 priorityscore=1501 clxscore=1015 spamscore=0
- adultscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0 phishscore=0
+ malwarescore=0 spamscore=0 bulkscore=0 priorityscore=1501 phishscore=0
+ impostorscore=0 adultscore=0 suspectscore=0 clxscore=1015 lowpriorityscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608270061
 
-Some SPI devices support sharing a single chip select across multiple
-physical chips by encoding a device address in the SPI frame itself.
-Add the generic spi-device-addr property for describing these hardware
-addresses. The property is placed on the SPI peripheral node and may
-contain multiple addresses.
+This patch series adds support for Analog Devices AD5529R, a 16 channel
+16 and 12 bit voltage Digital-to-Analog Converter (DAC) with integrated
+precision reference. The AD5529R operates from both unipolar and
+bipolar supplies. The device communicates via SPI interface.
 
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+**Device Overview:**
+The AD5529R features 16 independent DAC channels, with 16 or 12 bit
+resolution, allowing independently programmable output ranges. The
+internal 4.096V precision reference sets the accuracy of the output
+voltage.
+
+The device can encode a hardware address in its SPI command frame,
+allowing up to 4 devices to share a single chip select. This series
+introduces a generic spi-device-addr property for describing this type
+of addressing.
+
+**Features Implemented:**
+- Support for AD5529R 12-bit and 16-bit variants via device match data.
+- Support for a single DAC device using any hardware address between 0
+  and 3.
+- Reset support via reset controller framework.
+- Dual regmap configuration to handle 8 and 16 bit registers.
+- Per-channel output range configuration from devicetree.
+- Optional external reference and bipolar supply handling.
+
+**Patch Summary:**
+1. Add the generic spi-device-addr SPI peripheral property.
+2. AD5529R binding documentation with channel configuration.
+3. Implement AD5529R IIO DAC Driver with regmap support.
+
+**Testing:**
+The driver was compiled and tested on the EVAL-AD5529R-ARDZ using a
+coraZ7 with a mainline v7.0 kernel.
+
+**Driver Rationale:**
+AD5529R introduces:
+1. A unique register layout
+2. Mixed 8-bit and 16-bit register accesses
+3. Hardware specific features like function generators, multi-die
+hotpath registers etc.
+
+The device warrants its own driver due to these fundamental
+architectural differences, that would require substantial changes to
+existing drivers without providing reusable benefits. The standalone
+driver also allows future extensions for related devices in the same
+family.
+
+**Not Implemented in this Series:**
+The binding includes generic, peripheral level device addressing needed for
+multi-device support using a shared CS, but the driver presently
+supports only a single device.
+
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+Changes in v10:
+- Rename output range enum constants from *_NEGxV_xV to *_MxV_xV.
+- Drop the spi pointer from struct ad5529r_state.
+- Derive the struct device from the 8-bit regmap in ad5529r_reset()
+- Rename span_mv to span_mV.
+- Return -ECHRNG instead of -EINVAL when the channel count exceeds
+  the maximum.
+- Reorder local variables in ad5529r_probe() into reverse Christmas tree
+  order.
+- Drop the now-redundant st->spi assignment; the spi parameter is
+  already reused directly for both regmap_init_spi() calls.
+- Scope the VSS supply loop variable with for (unsigned int i = ...)
+  instead of a separate declaration.
+- Use BIT() when calculating the bipolar IIO offset.
+- Link to v9: https://lore.kernel.org/r/20260820-ad5529r-driver-v9-0-ba62e0b2a816@analog.com
 
-diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-index 880a9f624566..4894196c8f9c 100644
---- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-@@ -142,6 +142,13 @@ properties:
-     minItems: 2
-     maxItems: 4
- 
-+  spi-device-addr:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description:
-+      Device addresses used when multiple peripherals share a single chip
-+      select. The array allows one logical peripheral to comprise multiple
-+      physical devices, with one address per physical device.
-+
-   st,spi-midi-ns:
-     deprecated: true
-     description: |
+Changes in v9:
+- Add a 10 ms delay after power-up before the first SPI transaction.
+- Document why the fixed scale applies when using an external reference.
+- Reflow the AD5529R Kconfig help text to 80 columns.
+- Link to v8: https://lore.kernel.org/r/20260805-ad5529r-driver-v8-0-b41781f5632a@analog.com
 
+Changes in v8:
+- Rename the AD5529R supply properties to match the datasheet supply
+  names.
+- Describe and enable all four positive and four negative high-voltage
+  supplies.
+- Reject duplicate channel nodes and configurations with too many
+  channels.
+- Add the required 20 ns delay between reset assertion and deassertion.
+- Add a macro to represent the number of channels.
+- Return -ENODATA when device cannot be identified.
+- Clarify that spi-device-addr contains one address per physical device.
+- Drop the Microchip binding and driver changes from the series.
+- Drop brackets around scalar spi-device-addr defaults.
+- Simplify the regmap_assign_bits() reference selection value.
+- Link to v7: https://lore.kernel.org/r/20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com
+
+Changes in v7:
+- Drop #include <linux/mod_devicetable.h>
+- Add comment on minimum HW reset low width.
+- Flip the vref regulator error check.
+- Clarify why spi-device-addr is an array, with one address per physical
+  device sharing a chip select.
+- Add default addresses for mcp3564 and mcp3911 bindings.
+- Initialize AD5529R regmap configurations locally using designated
+  initializers.
+- Update "Patch Summary" section in the cover letter.
+- Link to v6: https://lore.kernel.org/r/20260715-ad5529r-driver-v6-0-cfdf8b9f5ee3@analog.com
+
+Changes in v6:
+- Rename spi,device-addr to spi-device-addr and define it as an array at
+  peripheral node level.
+- Fix the SPI binding patch subject prefix to use "spi: dt-bindings:".
+- Add spi-device-addr to the MCP3564 and MCP3911 bindings.
+- Deprecate the existing Microchip-specific device-address properties.
+- Replace adi,output-range-microvolt with output-range-microvolt.
+- Move AD5529R device addressing from channel nodes to the peripheral
+  node.
+- Include linux/types.h
+- Honour non-zero hardware address in the AD5529R driver.
+- Dynamically expose only the channels described by devicetree and
+  remove unused scan type definitions.
+- Use explicit reset assertion and deassertion as the GPIO reset
+  controller does not implement reset_control_reset().
+- Use the MICRO and MILLI unit constants when matching output ranges.
+-  Simplify optional reference regulator handling and remove the
+   external reference comment.
+- Simplify error messages and stick to 80 col.
+- Link to v5: https://lore.kernel.org/r/20260701-ad5529r-driver-v5-0-ed087900e642@analog.com
+
+Changes in v5:
+- Move register bitfield definitions next to their parent register
+  addresses.
+- Remove spurious extra indent.
+- Rename ad5529r_output_ranges_mv[] to ad5529r_output_ranges_mV[].
+- Remove extra parentheses in regmap_reg_range() for the readback range.
+- Use reset_control_reset() instead of reset_control_deassert().
+- Use 10 * USEC_PER_MSEC instead of a bare 10000 in fsleep().
+- Use fwnode_property_present() to explicitly guard the optional property.
+- Rewrite external_vref detection using explicit if/else.
+- Follow reverse christmas tree variable declaration order.
+- Improve invalid channel error message to include the maximum.
+- Add a new spi property to include the SPI device address.
+- Update ad5529r devicetree binding to allow more than 16 channels to include multiple DACs.
+- Update cover letter to add a mention about the multi device support.
+- Update driver commit message to describe the device further.
+- Link to v4: https://lore.kernel.org/r/20260609-ad5529r-driver-v4-0-2e4c02234a1a@analog.com
+
+Changes in v4:
+- Fix DT child-node regex for hexadecimal channel addresses.
+- Wrap long DT binding description lines.
+- Simplify optional `vref-supply` and `hvss-supply` handling.
+- Update REF_SEL programming for optional external reference use.
+- Clean up range parsing and error messages.
+- Simplify debugfs register access by calling regmap helpers directly.
+- Add clarifying comments for reset settling time and RAW reads from `DAC_INPUT_A`.
+- Remove an unused vref regulator pointer and an include.
+- Rename the REF_SEL bit define and clean up small driver details.
+- Toggle pins defined as PWM pins, instead of GPIOs
+- Update cover letter to sync up latest changes.
+- Link to v3: https://lore.kernel.org/r/20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com
+
+Changes in v3:
+- Split into adi,ad5529r-16 and adi,ad5529r-12 device tree compatibles
+- Add DT-based output range configuration via adi,output-range-microvolt
+- Expand DT binding: vref-supply, clear/tg GPIOs, interrupts, muxout
+- Correct power supply voltage specifications as per datasheet
+- Reduce SPI frequency limit to 25MHz as per datasheet specs
+- Switch to autoincrement addressing mode, remove +1 register offsets
+- Use DT match data instead of device ID detection for fallback support
+- Implement dynamic scale/offset calculation per configured channel range
+- Added explicit val_format_endian and reg_stride for 16-bit regmap bus
+- Code cleanup: alphabetical includes, ARRAY_SIZE(), unused defines
+- Minor: .sign→.format field, simplify read/write order, optional hvss-supply
+- Remove redundant driver documentation ad5529r.rst
+- Link to v2: https://lore.kernel.org/r/20260508-ad5529r-driver-v2-0-e315441685d7@analog.com
+
+Changes in v2:
+- Fix IIO scale to use millivolts per ABI requirement
+- Fix documentation voltage calculations (2.5V not 2.048V)
+- Fix bipolar ranges in documentation (±5V, ±10V, ±15V, ±20V)
+- Fix alphabetical ordering in documentation index
+- Add missing newline to documentation file
+- Fix scale units description (millivolts not microvolts)
+- Include a section for driver rationale in the cover letter
+- Reword contents in cover letter 12/16 bit generic->variant
+- Add dependency array for spi-cpha and spi-cpol properties
+- Link to v1: https://lore.kernel.org/r/20260507-ad5529r-driver-v1-0-b4460f3cb44f@analog.com
+
+---
+Janani Sunil (3):
+      spi: dt-bindings: Add spi-device-addr peripheral property
+      dt-bindings: iio: dac: Add AD5529R
+      iio: dac: Add AD5529R DAC driver support
+
+ .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   | 254 ++++++++++
+ .../bindings/spi/spi-peripheral-props.yaml         |   7 +
+ MAINTAINERS                                        |   8 +
+ drivers/iio/dac/Kconfig                            |  16 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/ad5529r.c                          | 536 +++++++++++++++++++++
+ 6 files changed, 822 insertions(+)
+---
+base-commit: 93df88612859e8e19dec93c69d563b4b73e9bd4b
+change-id: 20260507-ad5529r-driver-866bbdd864de
+
+Best regards,
 -- 
-2.43.0
+Janani Sunil <janani.sunil@analog.com>
 
