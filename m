@@ -1,89 +1,103 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 663542D5926;
-	Thu, 27 Aug 2026 06:41:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A2EF2E7F25;
+	Thu, 27 Aug 2026 06:45:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787812879; cv=none; b=Ss5Tor7CO+1lvusXgu19AAHE+1OrFlPQLpSuSPbbSerp7Ft+3yyIkg+fuWtbpBYvRZ6cYwhWkq6X+6fNSGZqrN7PZlYiFGUs5cGk1d1UmLSCf10JFr1D1ChDTrZzVwXzdkdbcQbGkB6Abd2jHgn2HBGuHxxjK1BTDHjEU1ZUee8=
+	t=1787813143; cv=none; b=QoHD95QXwyn6h74C3u8Zdh1B4YhKxLoGkuq4iP77P0GAmPgwXhGsjTgmLQ9T+RI4t8fpowUFdneFJsiUaF/p9b8uInt0s17+NoaQTKR/btN08mKwnr3cZr5XEC8winmomHZz9XEb8rDrQ5/TXUoIeETpbQCWICxY0Wq+bAQtl2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787812879; c=relaxed/simple;
-	bh=92AMRd5fSTaimx3s0XBX+AxH3laOwBEtzOBiZL1vS/s=;
+	s=arc-20240116; t=1787813143; c=relaxed/simple;
+	bh=r81i8jSaf5Zs6ob6azdt/DA70BWIBkn2ltg30YjO330=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Iyjmqh+wtP/cxEN3yMK7j3Klc4hNy8pd7ehIvyNId/U8ukABMd0MVu3WY4ZN6ajl6oDKWyudRmV2irMH21/ZT0sYHoFCkQp01iWIYJCn4tzcmYgRNMb5zn/WMf14q2z5ZgFcZzKdaxFGyTxM6ecwazNygnfpY9Uwa/SU5HDaV9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j7fUqXe1; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=bYA7KrtWX2H3fAF0FuaOi69hNVj77FQKtyWiGbl1H5SH4/FLrDSHwsOqv6dSVLZZCmPltPHo+MC2guh2oJfKsKrDYGUCXPNPNoS+lx2V4Wm7MW2BgvpSFEOQHvwWRAIAfskbBNQggCZDG4/fvuhd+qeENTqnxiTurhOr2pELocA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CGO51eyA; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j7fUqXe1"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CGO51eyA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787812877; x=1819348877;
+  t=1787813141; x=1819349141;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=92AMRd5fSTaimx3s0XBX+AxH3laOwBEtzOBiZL1vS/s=;
-  b=j7fUqXe1fKxwq8kkSl23Pyz/grwtizOyGlECmlzxP10eUf2kQgTZgLVq
-   yna/ywN2BL+kVwC4zRk0IXU5TiLyyIXXpBm2aJsbTpXYHcOJri6fvqWms
-   LbD8zIsnDtWGkRN+MVSZSQ6VT/cxlqEwcehVFsZxVbhMqJR6lZYd0J+qt
-   O4XYgn2uLAsnNJcZDnQuOyHPRieCtfFIzr0tIwVWcFhqOHPBqkiK1vblH
-   oByEfxE3YDunHYP9ekP2HIFuLEWR3oMxCr+eDOqvWxeV5dkxYteUeaO/u
-   5oLvY1BlmM6NlZ8K8U2fMxU9IiFKyRQpBQylToyRcx9GN8ftNwMnmuWco
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=r81i8jSaf5Zs6ob6azdt/DA70BWIBkn2ltg30YjO330=;
+  b=CGO51eyAGE269KWvG/vKRL8GQgdXAhb9mQloDFrU+hUWKGl9CEa4eO/u
+   33hC47NJ7Lr87rvQxNunGzpsj6xVxYAWLaVPykpSUAbd4iC7D/OZQVZsI
+   TlbJMDvv2dWuPI8i2rXa09oYFOi3Rv+b+YaAN/mum37qEHkRsFFIkFTmv
+   BST5fqix4I6Rl8g1OeEwKH4zbo5B2Eb/KNt2sxp59Ms20Y39RGfI9TiQ1
+   gSsvYsYu8DRpkbV1lleO0VtKMtW1q4ZaoYnTxZ/6cUuWnwybugEppjtc6
+   LSZLgQ6u+MRx18c4exk8tHyOPC0a106S2NLVKK8htnPblAbcWl3UxrfFr
    A==;
-X-CSE-ConnectionGUID: Z44NERSNRSW7rYrLfPrDFQ==
-X-CSE-MsgGUID: h/LL+vP4S5qmEpnmZe3OVg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11887"; a="88360695"
+X-CSE-ConnectionGUID: prMTnFodStaPYhNdpH5+9A==
+X-CSE-MsgGUID: Pu11SQ0RSxCQLVPtGNgzSA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11887"; a="88361158"
 X-IronPort-AV: E=Sophos;i="6.25,246,1779174000"; 
-   d="scan'208";a="88360695"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:41:16 -0700
-X-CSE-ConnectionGUID: 2S8yh1VhSF6cpVoEXa7cFQ==
-X-CSE-MsgGUID: CxdoPa/CT2aDKwmPNeK1TQ==
+   d="scan'208";a="88361158"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:45:34 -0700
+X-CSE-ConnectionGUID: Dn/Q9CMgSW+VHgUnCFwqog==
+X-CSE-MsgGUID: N1629AFNTa+aYhqKHy6dGA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,246,1779174000"; 
-   d="scan'208";a="266000944"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.125])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:41:14 -0700
-Date: Thu, 27 Aug 2026 09:41:12 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:45:30 -0700
+Date: Thu, 27 Aug 2026 09:45:28 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rishab Madhugiri <rishab.madhugiri@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: core: Replace BUG() with WARN_ON_ONCE() and
- error return
-Message-ID: <ao_cCHTp9kKfOV-U@ashevche-desk.local>
-References: <20260826213140.37437-1-rishab.madhugiri@gmail.com>
+To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+	Kees Cook <kees@kernel.org>,
+	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Luca Weiss <luca.weiss@fairphone.com>
+Subject: Re: [PATCH v2 1/5] iio: light: stk3310: lower-case the i2c device ID
+ names
+Message-ID: <ao_dCDDpw6eBIFhN@ashevche-desk.local>
+References: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
+ <20260826175409.326131-2-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260826213140.37437-1-rishab.madhugiri@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260826175409.326131-2-jorijnvdgraaf@catcrafts.net>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Aug 26, 2026 at 09:31:40PM +0000, Rishab Madhugiri wrote:
-> As documented in Documentation/process/deprecated.rst, the
-> use of BUG() and BUG_ON() should be avoided as they could
-> cause a complete system crash, preventing further debugging.
+On Wed, Aug 26, 2026 at 07:54:05PM +0200, Jorijn van der Graaf wrote:
+> The i2c device IDs were introduced in capitals, mirroring the ACPI
+> _HID entries added by the same commit be9e6229d676 ("iio: light: Add
+> support for Sensortek STK3310"); at that point the driver enumerated
+> through ACPI only, with no OF table and no i2c module alias export.
+> ACPI _HIDs have their own naming rules; i2c device names
+> conventionally use the lower-case part name, matching the devicetree
+> compatible suffix.
+> 
+> The spelling is visible: a client instantiated through the i2c sysfs
+> interface under the lower-case name taken from a compatible string
+> binds through the OF table's name fallback, but has no firmware node,
+> so i2c_match_id() is the only way for it to reach driver match data,
+> and its string comparison is case-sensitive, so the capitals can never
+> match. Lower-case the names so such clients match the id table, and
+> receive the per-chip match data a subsequent change attaches to it.
+> 
+> The module aliases follow the rename (i2c:STK3310 becomes
+> i2c:stk3310), and a sysfs client instantiated under a capitals name no
+> longer binds.
 
-Right, but deprecation doesn't mean the _old_ existing code must be immediately
-changed. I leave it to Jonathan, but I see no value in this change except
-the unneeded churn. If we ever want to drop BUG(), it should be done tree wide.
-Hence no tag given.
-
-> In iio_get_time_ns() and current_timestamp_clock_show(), the
-> clock type is already validated against supported clock
-> types prior to these calls, making the default switch
-> branches expected to be unreachable. Replace these with
-> WARN_ON_ONCE(1) followed by an error return to avoid a
-> crash and to log the highly unexpected condition.
-
-There is like 10+ character space on each line, the commit message shouldn't
-be that condensed.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+with all responsibility for the theoretically possible breakages
+of the weird setups. But I strongly believe that no one is using
+capital letters for I²C instantiation of this driver as it was
+submitted for ACPI use and followed by DT support.
 
 -- 
 With Best Regards,
