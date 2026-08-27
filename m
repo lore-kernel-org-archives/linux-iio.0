@@ -1,140 +1,136 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050FE3CF05D
-	for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 22:25:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787869514; cv=pass; b=WyxV2dpgGKrPZ+l861KRuQvuTSMcJkX2yBY5VB2vBJBGgJEZuHHOITMKiLO+vEYDq/TgdkDNllZSHad+rE9VtLb4H4f6cJ//jbsTPpbIYk0pUxI7nvtRZM+3YI4b5Dpkq6ehi4zl4YNaEaSLupzUtMy/2T1SesnzkqXqinBMppY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787869514; c=relaxed/simple;
-	bh=/E1qm0j3abWKQXo6pZVeXLBEXmyK9cxZP8Mn4Y8KCu4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tO+XFaG6BplhsOok77htASEEa/4RCTf1raECkP6NO81orQGwS1Q5I4IlyT73mhDgY+ls9kxf9AO4+9xcFLAZ/NH5x+2a3vVXVpC7eO47a2ut/FCEe0CgNkzmSZ7SpyhYfBhQ0LlaEeVRlkvAUqkpGx4ipHWXiM70BX2Kli0ufaU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rlg/BSlY; arc=pass smtp.client-ip=209.85.160.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7213CF20A
+	for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 22:27:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787869655; cv=none; b=JMGisVYqr0BLwdXjOKxTaXjEtrBB9Uf0tKqEG+fBE64wGRT2NYZq3UQPXiNH8fu4uyUQXY9S8yRIoj8IIaxvn+WdnLcQsuOUNy7WKc2thXt4FWujCpdQ8DWpW3qx9keSts96Vqrfr0cgrPsrKhITuWjko3K59lvwbu2Zn7SJ2uo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787869655; c=relaxed/simple;
+	bh=KK5wwKYdmpiqZuHKhQ/895QfuAy9l5rfkrVu6CKJNjE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WvTb+pPVR/j2Q5Kbm5q0zEr/Xk9L/erdqB2sCd/4YQCuWQ741NYa9+wARFXJK3JEdH07jgw/jaS4ohD1no175mrbNxNCUOZQWncw+ZjCtB7Y9aOyJO616Jgr1eSqc8rjfYli8xujOQz5yzleNl3Px/ybOzMZ1rwrTJH9PUKxlU4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Vm6OAapS; arc=none smtp.client-ip=209.85.160.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rlg/BSlY"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-4518ad44e83so508878fac.0
-        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 15:25:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787869504; cv=none;
-        d=google.com; s=arc-20260327;
-        b=W1J70sSAYmMWw6fmT3ISlJ26fON8iPXnfe5ImCGv6mfLR6F6fCzN/ZdzhyIX3YCTTj
-         HjkVr6EzE60++rA4UgIeonEn9rNWpgLrodgyuEG5FzndW38vvxzZVH1PvgBLcQK81SbS
-         l8Zg9odpCYlriOk6VyzwWa1/u/nNlfzRQuu9w2eOImSsuBGFCQjfnmcVwtUqMPNZMlpQ
-         l3gS/7PlufNU72kCwzzFHvB7lTyF0g0KMqMNgAEKy1s82dYKh1haXJ/Ob1j82xJJF/zB
-         MfB3yfp/FRmZStpk0imAHfIvWCe9M4PTeH+zsb51KvRAKOTuoCyd4lufRZ/KXLrWo8k/
-         BgNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=u8HPimuwgbeLD9+T7JiRFwzxuWXrmdfq6VOgvHXgXYU=;
-        fh=IQIyD20VTglCxAvp01ks5VZaMiV3wdyHwRLzqh3Rmas=;
-        b=S+SswfOzzdA5ie8UEZUnKdxCgG3REW5NQe8y+g6CmYPpu2T1T4y3ZGqJxPeLwrb6g0
-         Pj0B2HwjKtTJU+HlGA5dt3OxXzWvc4WGr6JOcVQRdeERnk1mxngH4w3bDSKfl+GnqGI2
-         ktLxO7bryirGOIVsa7mjJM1LIwAvzIHo2+ottnSTdJ8qWtnylpKLna1y68AURS+3NEXp
-         W0xqCPBMAtFDb/A0J5syoqv2hfM7sFUYWCCpDlCa2oXRwn43tdju7CCwXc3IlY80EOLU
-         D1B8D9Xy7JUpoeGokmd0MWUVJIQBJebkw8VSudwF2I++y9setzT03na0JsgBslcgblAJ
-         4Uxw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Vm6OAapS"
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-44cf70de986so142129fac.0
+        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 15:27:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787869504; x=1788474304; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=u8HPimuwgbeLD9+T7JiRFwzxuWXrmdfq6VOgvHXgXYU=;
-        b=Rlg/BSlY/gpTlLV7z2nbfF+KLA2KWCj5YHmSGCZSjOxwxTyh5HF827bvPva0z3RfGy
-         sVqLCwYDr8gLFOZy2pUzGUNNKlm5tmG5DpHrZH3RAMRbhGSoG3eidZrGrQgpCjVbvcqN
-         Dj5b9rmiEbGFH/Qnsc0vlb89j7xwtUrQf1KuIjSqFjg3VFMMOiHpW5y6f/no7nYwRmjE
-         q3d5Pc69UjGMNoW6iBFYtzZCK08SgqFhW6lVU9ygLoFDec4uNC0s8+KMm9iX9TA75nKZ
-         oZaB4qhEedfMwPcwsrf2b4upCBZeek3ePgKCT2hXqXwTxjU88fW32SRdPm1hC57Snm6H
-         YtWg==
+        d=baylibre.com; s=google; t=1787869648; x=1788474448; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=j3a4OCom4f4+u6zoLwVfnSDf3nEPs11dIFGC+l4WRG0=;
+        b=Vm6OAapSZqUs3DEP/Y4+C9R+tHHp7iPrzslI5Eu7GFYuW4Cu6iV+3/b7ZoD+oX1WbM
+         4+Gm5Y7mPozFG02rTB9M+QwhQAaaHIZHXY7ObYoqS9Agn1XVOwrh6MH5BycdI/0a0LI1
+         Mi8bevsFNzSdXL6DldyrLkDJ3Vti+TfvHKXnL4pVEXpg2CnX/eoE5uLvIl7EW08Qe0EI
+         kpqB3Gw9YAGQXcYYCjhhav38agpv7ug1uJeDD47Tjc2VM728CGWvQ7vLYx9jb7i2ocWE
+         HMDswWB8qBDXFqgY4cyQYBgqzWju2q5B9A4s69H0P03eWhUo+Q37SRz7PHulcWgt9ROL
+         VLnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787869504; x=1788474304;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=u8HPimuwgbeLD9+T7JiRFwzxuWXrmdfq6VOgvHXgXYU=;
-        b=rJFBc2yFEjH8LByGm3pOEA20GfQkVgzDOqbeemyDV9LOmrvIgjBKyRMH7rCnrAaBLg
-         K4RwOvD3Bj8a55C6No42/mA+puRR9RYn/B5QgnAkIR+Qh1fIpvhYIlORqSbFqFuXS1JQ
-         2MpMIrqaGbKYHd0Xy0sZw8cMLf9SKzW0VYVIWxbPTxAm7E3QEDRSCAmy58nM9t49t3e8
-         lBO/QuegY0ZD10B5nrwCL2rBKu2Q1YqhcY9R5kw3zQpzIdvtRsoCBO8Z/NypsbPBbPIm
-         76G+iRAmDqrvxUQIvitXWT2h03ZoyyqVmVpr/lLyK65q9fCfyRX18ERSiSnvodMwSsgx
-         6KMA==
-X-Forwarded-Encrypted: i=1; AHgh+RoswTfB8cNnyvLtIqkKVVYxnFKmSHg6Dhp+rD5utz7SVpjo6DznSjYbGhpYF9IpqlGaiADPJSNTcj8=@vger.kernel.org
-X-Gm-Message-State: AFuF++npTD8xr66j3KrDAw8MPW+HGCZTwBDsGLE0Bu5dYVNzhKgmvFdj
-	+32rctgwpgKKXTzKRG2nw5cVNcpA8+MdJaJfo0H0oouomBxhv0SONIJXAEWcW8AlAf9o+do6GXk
-	OfR9+wJgFw4UUhQ5FDIemwDgSwFh4KYk=
-X-Gm-Gg: AR+sD1092bZfwkubJc/RMl5ZFYN6MWHd0OetzC3TXjIJeIw8o4YF7crNglYRsKjIEb0
-	iEjlpGSbpTq/pV8jNgcA43p67jljehs45mih53eO4kwp2Sap/qulvK9SZgyA4w9scoEgPvCWchl
-	IQFCBw+C90zCGIWsEEZvAnkSu3jlk4HTz5cEuzvhSgYjFW+ju86vRZG5xWc7OuWqa4VZGViMNRv
-	1jboOvpB35ZLxIBqcDwWmTui9SxcHqTQN+aVrAlUBS2hiV3n4DMSjJ3FYi+TqFwd2CaoFJWP+sv
-	dAN0q+uco9ewbLRNHWwesXB/ND3XM8J8y6J+XyzWZpdUxvyEbbvb75Zv1J+MOl88oAhtK8guar5
-	bYRpZagiTeSc=
-X-Received: by 2002:a05:6808:c1e8:b0:4b3:3e1:4999 with SMTP id
- 5614622812f47-4b398434703mr2911222b6e.15.1787869503851; Thu, 27 Aug 2026
- 15:25:03 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1787869648; x=1788474448;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=j3a4OCom4f4+u6zoLwVfnSDf3nEPs11dIFGC+l4WRG0=;
+        b=KTsXHQ7I5LtvkF+APp/wF0ZwQIspsowqpSA8wnD9ktYYW9CfenApysJWI0l15TO9aN
+         qixvaKOKfWJZ17eQXOXof7m4Bd2inlE/nHxhE4R5LM78wiYWzRINDeKWgtyCGPhnsEQb
+         SzsWeKxvldf/h4aIL7/TtqK7XgSR8lwp89QxzMdLrXnAXhb59mgLaLcSazD7fvcESMnu
+         F0hOa3kLkOWK4KGRQojAPgsQX40WQNJTSQ3nigFdy1oukZuxKi4lOiXOWdlcQi90KE+X
+         Zq21H+0FyMe5L/AtuYKwS8i6QtyY9d10nThduUEXp9uLXoJ6D7x1IFQ7rsmvge6Ev+4N
+         Q7hA==
+X-Forwarded-Encrypted: i=1; AHgh+Rqkp6WbaTSJ+dKLyWcpIALPzVk1VevDL+jjCwCnh8kLL7SKL4qnASwIhOlXBk/kZnRhZc57rdAvRc4=@vger.kernel.org
+X-Gm-Message-State: AFuF++m8fm8NOMnGb8fjdwrpHcNC1osALqwJJEwYRtgBBsCwox1b1u5w
+	irvcsxZ5t8hn2bY+kVZjZQxRJdazhYQGdo9YRW2Jme0g50LnQvOi1m2I0y0lrd1X5S0=
+X-Gm-Gg: AR+sD10Ez9d8J61IDLeYJls4hJ4og9nkWX7+0StXgzMjkin1HhzeDad7uB/Bk6TXmNv
+	fL7lXv1P5hGHQZI9YAaUzye8L604JVF+1h3xv1AyIsibP5nMKlq5lLHQZYOR7RWW5iMtbfB/jce
+	Dm2GqyTOTxDBIuHlkrkB0A152KSkU5P7BYZPfDicX1Fp+Ah+S/cjYyeYpQ6kFb2uUmaE5PwBN0D
+	mR3KxDNM3z3aORX/7kZZKi+TfRLAImIeOdiJRBJ1WKVFcPrPPJKd6wq+hh/Z6vrZihApWN0Hd9V
+	/RrVp3iII2mMDgscpG848MqAZAxmiteE8Wgh450q0BCEi29GHZsqN0bs6f6iwta52fXvwYKIkup
+	x+8V3sbMLbcOcEubQBOppFFEUrOSLuhH68+TgYNUjOwPFUfybQyWK8lYcNltyd7Yeu5EkzgEjtV
+	7lz/3JI1bxHJP3WaHQj0sbhE8duYX31KivdwJu43MHj5eqsXQ7w2v/XwZk2xELgvUAYSDJdpQ8N
+	FlN
+X-Received: by 2002:a05:6870:e184:b0:45e:edc5:f464 with SMTP id 586e51a60fabf-468352c3460mr2950734fac.2.1787869648030;
+        Thu, 27 Aug 2026 15:27:28 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:d288:6f77:e285:6925])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-46736444b99sm3336392fac.3.2026.08.27.15.27.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Aug 2026 15:27:26 -0700 (PDT)
+From: "David Lechner (TI)" <dlechner@baylibre.com>
+Subject: [PATCH v2 0/2] iio: adc: ti-ads112c14: add burnout current support
+Date: Thu, 27 Aug 2026 17:27:01 -0500
+Message-Id: <20260827-iio-adc-ti-ads112c14-burnout-v2-0-00a1fab9e2d1@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260826213140.37437-1-rishab.madhugiri@gmail.com> <ao_cCHTp9kKfOV-U@ashevche-desk.local>
-In-Reply-To: <ao_cCHTp9kKfOV-U@ashevche-desk.local>
-From: Rishab M <rishab.madhugiri@gmail.com>
-Date: Thu, 27 Aug 2026 15:24:52 -0700
-X-Gm-Features: AcwNN1V1VmnOS3aWyFnmKIS-D0GyiW-IwL_nYHb8pdkGVa2FiKvsmCJoIXlfs5w
-Message-ID: <CANc32tPtHyJdg-PJa0iZHcqX4WDtMFikZFD+4aO96B1+zmf0_Q@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: core: Replace BUG() with WARN_ON_ONCE() and error return
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42Qy2rDMBBFf8VoXdWSLDuJV/mPkIUek2RKLbV6m
+ Ibgf+/YKXRXuhouXM650oNlSAiZjc2DJZgxYwwU1EvD3M2EK3D0lJkSahA7pTli5MY7XpBOllI
+ 5qbmtKcRauNzrTuhhOMihZ4T4SHDBrw1/Oj9zrvYNXFmZP40En5W85Vn71dKKP6UuhoKhxpr5F
+ D1w72W/F7teD+Iwzt1KtyYD9aYJy9jQltwmmCKZWiK2dAlwZeuyG+YS0337h1luQ/735FlywS9
+ CCe3AWejM0Zr7O9oEryRm52VZvgEKwJkgZQEAAA==
+X-Change-ID: 20260724-iio-adc-ti-ads112c14-burnout-184304669165
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
+ Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
+X-Mailer: b4 0.17-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1745; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=KK5wwKYdmpiqZuHKhQ/895QfuAy9l5rfkrVu6CKJNjE=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqkLm4Fz2mHtHyWQ0XBc2Qmj/qjJh3TPk1P8TtK
+ miB43F87G2JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCapC5uAAKCRDCzCAB/wGP
+ wN8SB/9p+4CvlDjcxefSHjG+EDisTQf2XHYH+MGad2FjQNiA/7AUnbPHRbHFYtkRXRjDODYO8tE
+ IdCXHESBTof23jrih1RstxGrO3ttvCpgk0YCF/56bpILOvSrVXbaED9T+i/9ZdeuXy5tgnyLpX3
+ Tamt8RU1yF6F8gklEpzRYRD6vrgKMpl2AURQvkB7is/QT/VAJvpQ4PKRJkiok101zrg6CjHVftk
+ t1NEKsUjcryUI4FJGUHwNf0JVpMMz6kug8l9b1Cava++6/4wizNfx4nlEz35suGDxpUpjsMCcyt
+ D1ou8XsLYCBL2j9A0PWSUrkHG9gpZyVORbWHgssRYte/+6VO
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Thanks for the feedback.  I totally understand the perspective on code chur=
-n
-versus making tree wide cleanups, and I will let Jonathan make the final ca=
-ll
-on whether this is suitable.  I've also noted the wrapping width feedback f=
-or
-commit messages in the future.
+The TI ADS112C14 ADC has a feature to enable a "burnout" current when
+taking a measurement. This can be used to detect open/short circuit
+conditions of a connected sensor. However, enabling this affects the
+accuracy of the reading. So we add a custom "burnoutraw" attribute for
+this. This works like the standard raw attribute to do a direct read
+but does so with the burnout current enabled.
 
-Best,
-Rishab
+If this sounds familiar, it is because we discussed this on a similar
+chip recently [1]. And this is why I put the ABI docs in a common ADC
+file rather than one specific to this chip.
 
-On Wed, Aug 26, 2026 at 11:41=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Wed, Aug 26, 2026 at 09:31:40PM +0000, Rishab Madhugiri wrote:
-> > As documented in Documentation/process/deprecated.rst, the
-> > use of BUG() and BUG_ON() should be avoided as they could
-> > cause a complete system crash, preventing further debugging.
->
-> Right, but deprecation doesn't mean the _old_ existing code must be immed=
-iately
-> changed. I leave it to Jonathan, but I see no value in this change except
-> the unneeded churn. If we ever want to drop BUG(), it should be done tree=
- wide.
-> Hence no tag given.
->
-> > In iio_get_time_ns() and current_timestamp_clock_show(), the
-> > clock type is already validated against supported clock
-> > types prior to these calls, making the default switch
-> > branches expected to be unreachable. Replace these with
-> > WARN_ON_ONCE(1) followed by an error return to avoid a
-> > crash and to log the highly unexpected condition.
->
-> There is like 10+ character space on each line, the commit message should=
-n't
-> be that condensed.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+[1]: https://lore.kernel.org/linux-iio/20260622110223.7e854dde@jic23-huawei/
+
+Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+---
+Changes in v2:
+- Rebased on "[PATCH v4 0/3] iio: adc: ti-ads112c14: continuous mode support"
+- Link to v1: https://patch.msgid.link/20260724-iio-adc-ti-ads112c14-burnout-v1-0-f0204cecbe3a@baylibre.com
+
+---
+David Lechner (TI) (2):
+      iio: adc: ti-ads112c14: add burnout current support
+      iio: ABI: add sysfs attribute for _burnoutraw
+
+ Documentation/ABI/testing/sysfs-bus-iio-adc |   9 ++
+ drivers/iio/adc/ti-ads112c14.c              | 126 ++++++++++++++++++++++++++--
+ 2 files changed, 126 insertions(+), 9 deletions(-)
+---
+base-commit: 22359083a9e74d538ce383d5c0ee30cc20182187
+change-id: 20260724-iio-adc-ti-ads112c14-burnout-184304669165
+prerequisite-change-id: 20260724-iio-adc-ti-ads112c14-continuous-mode-dd1580754609:v3
+prerequisite-patch-id: 0be96266a72458a63f7da7ca876d87cdf5769a8b
+prerequisite-patch-id: 32ba48fd5eacaee60d50a0272557859cc9ea83ca
+prerequisite-patch-id: c1eb09689bd5f259ea0110cbbfb3fa76689bdb04
+
+Best regards,
+--  
+David Lechner (TI) <dlechner@baylibre.com>
+
