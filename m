@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA8C2931F7;
-	Thu, 27 Aug 2026 06:52:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68205347500;
+	Thu, 27 Aug 2026 06:57:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787813527; cv=none; b=rgA9lSmzAD3urD0/tC3Z95wQPMQ6PmySDWH0N91V2uI8Zina+NfkOmKBdmMIknCRTkX7lZeX6owkdYG6jpErM4zZT8zuj+mzAajxo80XGcS5SbgtlobJ2rrtyXZNdoThvwEGnqZbBp4IOKfW7gkonIU1/hvuhAMZCJi417v9P1Y=
+	t=1787813852; cv=none; b=oC0hOafuDJf4d8OQRCQsFtGwMiiYuV7OlvcDWb8xCxopICGw7OMaqE2ZTdyTWjMfBODXA6TG6WNgY7wsW9PGlPem9nwGFxqrNrWJUV7FzRCH6Sf9KIUR4FVTa08W66CQa2cLU6l7h4QVBRkD37ZJtfEqFl5vJaj/nh04/bVoLT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787813527; c=relaxed/simple;
-	bh=Na/ROnshIIC7Ymj9ORTdoVUpVfDNpNInqCOmdYyqPCM=;
+	s=arc-20240116; t=1787813852; c=relaxed/simple;
+	bh=7QL0BDgHCFmRkHSyBe5whoh8fLCC31vux4EyoGOoBHs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dEQBuprUzPHSBG1uAwus97ohbUsE90kKy1TMU2ORC7F4dr49CnfoAdVvewvzAFdrHorue9GRKRKla0hhji+0IO9Wa8lHedyPAJQq1GS40w303G6/UhC6N31FSAGiu8rHP+2ngkptP7W0zii40Xa91FkYrLSP9RW9nqfRDhSR5qs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=O1/flhaR; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=jYr1jJnHOLWnALlNpRkC3OVPbmKax4+RJv9DqYv8htiO8CYGKO34OYVzPTow4rLxaUFXuxOChOT5HtX7BYD5VIw4AvrNx/Pl+Ahh/muppFK8ltFO6Fh8M+pKF78GueRLchkGlVeLI5784w0XoEAXiC8+lkTrgzC7oD0XZQQM5yI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oDLfzpZb; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="O1/flhaR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oDLfzpZb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787813526; x=1819349526;
+  t=1787813851; x=1819349851;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Na/ROnshIIC7Ymj9ORTdoVUpVfDNpNInqCOmdYyqPCM=;
-  b=O1/flhaRtgiDQhKH+YmZLrCYAEZ/RMrqWqjmdMccI1xg6/Bk6NVefyiF
-   uYx1721gBPnM8Z4vmXfSRAeTQhoIR16RQHGBkV23/GzZgzk1ulEavpNnU
-   Q/f9x9xST++VMO+bBo5QyPqmR9NRs+75LfgyUZQivVnhhPEx9PwAXrRuz
-   sOo5xrw+BHMvpUlifDmOPNxafbjttdpc9IrCnbpBw8vhitDvkqrSlkOjI
-   sgf+8hRrUP1Cf4oQZJ8bScMpLXi+WCGsZK9GtroEz56JHhr51oM+tosP+
-   sAxXbGGq6lb5UWjz3m8R1RNqDjB89H1pf8AL9SCQJDzUg26XlwxYDJWkA
-   w==;
-X-CSE-ConnectionGUID: c3UTZg85SBKCiEjrM7dGsQ==
-X-CSE-MsgGUID: mau84kfaSk2nFQdGcRNnAg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11887"; a="88226919"
+  bh=7QL0BDgHCFmRkHSyBe5whoh8fLCC31vux4EyoGOoBHs=;
+  b=oDLfzpZbMC3Mk7GW8U/dfuhqk/tcYXPBtkZM/FI1kQ/OVb/QC/EyuVRn
+   9gXGCPdiTCExsmrcKpZRjiIkqbH/QyFW6dDz4UNKF72rZ/fa6555NTiSg
+   tFboGPPqXzSf9XBan7tUar1WXJvXJaDWo3Ic8JQkdkqiYCf8QCco5/I2R
+   llJwWjoQuuTM+YCmMpo8S2hGU/xSXzkxaBzmmdkH1EGpMKGvnFlsLCN0w
+   wfOM/4cgcsfn728UkI/8RVqJH8953uv32aG25C151tNfRy9lmFb6eKOCJ
+   aCSbmH3r1AjTO8FnNddu/xWbsYuRvUugUkKNgddt7Ua3sjg4thJJokfCU
+   A==;
+X-CSE-ConnectionGUID: DjesV1tzRmKcZljstpIKNQ==
+X-CSE-MsgGUID: WkmjZl9pQXujXBz3lShgZQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11887"; a="113840844"
 X-IronPort-AV: E=Sophos;i="6.25,246,1779174000"; 
-   d="scan'208";a="88226919"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:52:06 -0700
-X-CSE-ConnectionGUID: mV4cFKuQS4KvIS4o7BhN/Q==
-X-CSE-MsgGUID: Ul6eYNBkRdupSKjNYvphYw==
+   d="scan'208";a="113840844"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:57:30 -0700
+X-CSE-ConnectionGUID: OZK5ic2qTYGPXWhItKDl1g==
+X-CSE-MsgGUID: AsxHDvN9RO2A15cQTGc75w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,246,1779174000"; 
-   d="scan'208";a="292629661"
+   d="scan'208";a="271593593"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:52:03 -0700
-Date: Thu, 27 Aug 2026 09:52:00 +0300
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 23:57:27 -0700
+Date: Thu, 27 Aug 2026 09:57:25 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Yash Suthar <yashsuthar983@gmail.com>
 Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
@@ -51,10 +51,11 @@ Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
 	hexlabsecurity@proton.me, sakari.ailus@linux.intel.com,
 	srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] iio: accel: bmc150: DMA-safe buffers and use
- iio_push_to_buffers_with_ts()
-Message-ID: <ao_ekPy1t26dmVDt@ashevche-desk.local>
+Subject: Re: [PATCH v3 1/3] iio: accel: bmc150: use aligned scan buffer for
+ both trigger and fifo
+Message-ID: <ao_f1XfoFd2ihO1I@ashevche-desk.local>
 References: <20260825085156.212042-1-yashsuthar983@gmail.com>
+ <20260825085156.212042-2-yashsuthar983@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,35 +64,45 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260825085156.212042-1-yashsuthar983@gmail.com>
+In-Reply-To: <20260825085156.212042-2-yashsuthar983@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Aug 25, 2026 at 02:21:53PM +0530, Yash Suthar wrote:
-> The trigger path used a plain s16 buffer while the FIFO path already had
-> a properly typed scan member (__le16 + aligned timestamp). Those two
-> buffers did the same job, and s16 does not represent little-endian data.
-> Drop the duplicate, keep scan at the end of struct bmc150_accel_data with
-> IIO_DMA_MINALIGN, and use it for both the trigger and FIFO paths.
+On Tue, Aug 25, 2026 at 02:21:54PM +0530, Yash Suthar wrote:
+> Drop buffer as duplicate and s16 is not correct we needed __le16 as little
+> endian, keep scan at the end of the bmc150_accel_data struct with
+> IIO_DMA_MINALIGN, and use it for both paths.
 > 
-> The FIFO and read_raw buffers are passed to regmap bulk/raw reads, which
-> is not DMA-safe. Move them into struct bmc150_accel_data after the aligned
-> scan buffer. Because all buffers are serialized by data->mutex, placing
-> them after scan ensures DMA safety without needing separate alignment.
-> 
-> Finally, replace the deprecated iio_push_to_buffers_with_timestamp() with
-> iio_push_to_buffers_with_ts() so the push sites pass an explicit buffer
-> size.
-> 
-> This supersedes the earlier standalone patches:
-> Link: https://lore.kernel.org/linux-iio/20260808220236.421832-1-yashsuthar983@gmail.com/
-> Link: https://lore.kernel.org/linux-iio/20260809111303.496393-1-yashsuthar983@gmail.com/
+> In trigger handle, replaced AXIS_MAX with sizeof(data->scan.channels).
+> Additionally, ensure mutex is held across both read and push to get
+> DMA safety for the scan buffer.
 
-In this case it's better not to use Link: tag. `b4` can't distinguish them from
-the important ones.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-> Link to v1: https://lore.kernel.org/all/20260814101845.301769-1-yashsuthar983@gmail.com/
-> Link to v2: https://lore.kernel.org/linux-iio/20260815175728.99541-1-yashsuthar983@gmail.com/
+...
+
+>  	mutex_lock(&data->mutex);
+>  	ret = regmap_bulk_read(data->regmap, BMC150_ACCEL_REG_XOUT_L,
+> -			       data->buffer, AXIS_MAX * 2);
+> -	mutex_unlock(&data->mutex);
+
+> +			       data->scan.channels,
+> +			       sizeof(data->scan.channels));
+
+I would put this on a single line (it is 81 characters only).
+
+>  	if (ret < 0)
+>  		goto err_read;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
+>  					   pf->timestamp);
+
+I would put this on a single line (it is 82 characters only).
+
+>  err_read:
+> +	mutex_unlock(&data->mutex);
+>  	iio_trigger_notify_done(indio_dev->trig);
 
 -- 
 With Best Regards,
