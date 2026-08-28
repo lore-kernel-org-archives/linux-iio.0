@@ -1,59 +1,58 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56153326939;
-	Fri, 28 Aug 2026 15:31:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C84D836E49B;
+	Fri, 28 Aug 2026 15:31:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787931087; cv=none; b=TWZELV8fT7eIzS+CiqmIHApms0BmBn2sKZ6YqCuCP25Tssw5gHphqGbMSmCbKiDmciAu/gnEJ9pvuFMFP0Q6WzAuEzrsEckxh3jSU2Eshg+XPGtohdkq8phF0+XfxsdXlwwDdwZlDXdRvj41laQZkXZ2U9tE3G6QHkNxe0OGjio=
+	t=1787931091; cv=none; b=r9n+jN66/uNXE2KIMOX3gmlPxSInpdlU69llsLDnp8dZwsDW4oF2+AA9Vlqan8cbSAu7fgGVEMb/UNN+4GUbw42b0bkpFNL+BzI8kqryRTPUzrigB780snoBv+nkTjmWqSh9pQur4WGpqTqpS1+OiIuqNl7b8CWRRTfNhLGqhN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787931087; c=relaxed/simple;
-	bh=mZNshZ2DF3Cq/clesktt8V0NLsjiEp7ta73E0bmPx4k=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=qSp7cgck6mZwvlZ0Vn2Adz5wQLygy5zT0Q6GoQqt1GIedYbf/AjOzl0/7Msw1puMOrPSayUFaQmT2C7zZYOD+qEXxZsRK3+c9eQe7fTY/8eLnSfWM7BZnkbtpIJMHkiQTF1p8BRla0eCSQRRd1Fr6svi/2+0Uf+oJaJkDeYUzCo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=fj2uCTNz; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1787931091; c=relaxed/simple;
+	bh=bK9+CgU88TdBApZPilFEoSEZrUtHbFgQeIgsnPGCMd8=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=ZuzUdhcLvvXInBTzGJj78pbZLOIJYm/2r7jQ7KnRtdcCCOUyRpxBxouDUDIz+B4zrv67Tl3xfCq2XOHbErx8bWnGQzX/HsAGgXcNW3eoX0YIHbHTzPe3xCOOvR0tjC59vbDry/Zhc7OLUpBH21/pkxH+6AUzGK4/iDy9cVxTFiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=pFv/qRVy; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="fj2uCTNz"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67SDWBtN2263104;
-	Fri, 28 Aug 2026 11:31:14 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="pFv/qRVy"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67SDVeiN1142216;
+	Fri, 28 Aug 2026 11:30:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=843iR
-	cQVnnOZ1HzUXooDp2n0f3xcdvcd0+SdtNLP/MI=; b=fj2uCTNzq0e+sjvg7TGiD
-	n65x4iSz6wZIhOUrZpvHaFE93ftOhgkkrLDDhOAsVXmcXpLp5eGdIYSPMenBRDz4
-	ghFLHGLJA2xbCy75sruR8QOgRQsaklaLkJ38k37L+cn+GQqdbwu+Wjfqu0AxlS5B
-	gtLmG0HAyMIPFoXz5Oh5TmOX1diizxU2Vvx/NpVH/+Cg7ddt7f98PUnELNJyz5v4
-	ntUov1cDMfN0t4SwHOZ15XzOIJCGnH9XV3Q5+4I9SHJjavQIY9M8sNFOcWU4sqdS
-	AgUWqwApElCC39n7qWbxI/hgZ6cu5ebCogyafKRIdY9idenfKkhqxIBNwTCdX5OA
-	g==
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=UBTbV6V1nD0HthIqpRV8FzjjT5f
+	AfFWHCvoz8MyIf08=; b=pFv/qRVyBRTYNBlyn8C3e3J1j26LJ8pYmpQUyDxKcvn
+	2PO6f24ffa+87boOJCaBqZtDQItnp/uUVFk6wz1dTYnIQHTq46kMIv9XAyhqOhQP
+	Tn+MDfaTZj1Bf6JLJVoank8NUBIU9aPpzNGBwBxAZzl46xEmtS/JuESzLKwaVsgg
+	3moQz154XfsA7Db9tWal6+4th183wyukqgL55mEHuhKnWnof5TgyWUfe/zo81VZK
+	x6bs1rUxqfHUZmOl5enwq4i8q2yAwdcgZh/dpzuovWI4t/OS8smij9QBOtiPSKCg
+	jYBMheIbYDvJnyE4NWuHnIb1koogk/VPCW8sKVERCWQ==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gajxhyd41-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gaj3cqj3t-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 28 Aug 2026 11:31:14 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67SFVCwX012997
+	Fri, 28 Aug 2026 11:30:55 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67SFUs4r012831
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 28 Aug 2026 11:31:12 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+	Fri, 28 Aug 2026 11:30:54 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 28 Aug 2026 11:31:11 -0400
+ 15.2.1748.37; Fri, 28 Aug 2026 11:30:53 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 28 Aug 2026 11:31:11 -0400
+ 15.2.1748.37; Fri, 28 Aug 2026 11:30:53 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 28 Aug 2026 11:31:11 -0400
+ Transport; Fri, 28 Aug 2026 11:30:53 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.223.174])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67SFUY3k031424;
-	Fri, 28 Aug 2026 11:31:05 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67SFUY3f031424;
+	Fri, 28 Aug 2026 11:30:36 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Fri, 28 Aug 2026 17:30:28 +0200
-Subject: [PATCH v5 05/20] iio: adc: Add AD7768 and AD7768-4 core support
+Subject: [PATCH v5 00/20] iio: adc: Add AD7768/AD7768-4 ADC driver support
+Date: Fri, 28 Aug 2026 17:30:23 +0200
+Message-ID: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,9 +61,12 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260828-ad7768-driver-v5-5-e33ca6f841a2@analog.com>
-References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
-In-Reply-To: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+X-B4-Tracking: v=1; b=H4sIAI+pkWoC/2XMy2rDMBCF4VcJWldhZizJVld9j9CFLuNEkNpFL
+ iIl+N2jGEIcZ3kOfP9VTJwTT+JzdxWZS5rSONShP3YinNxwZJli3YKADLTQSRfb1nQy5lQ4S4Q
+ QUZM1gUBU85u5T5eld/iu+5SmvzH/L/mC9/dRsptSQQlSKUa0qo/WuC83uPN43IfxR9xThZ68A
+ 7PlVDlQ64JmckbhG29WHJstbyoPXmvVWOsimTeuVpxwy1Xl3ne9j2CiYv/C53m+AQUS/dpoAQA
+ A
+X-Change-ID: 20260708-ad7768-driver-10cd15296c20
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
@@ -89,1090 +91,290 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
         <jananisunil.dev@gmail.com>,
         =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
 	<u.kleine-koenig@baylibre.com>,
-        Janani Sunil <janani.sunil@analog.com>
+        Janani Sunil <janani.sunil@analog.com>,
+        "Andy
+ Shevchenko" <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787931034; l=30375;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787931034; l=12857;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=mZNshZ2DF3Cq/clesktt8V0NLsjiEp7ta73E0bmPx4k=;
- b=UWC5DsbzgRjxaWgFoH03kvbidvIm75nn9zmCt9weBDhXv/izR9iJ2kFpvvza07KTdMnr9liXj
- G7um9JEgQ82A6w8zMy3+IGMGsz7eBhr1GSOT8Op1Y/RDVMt5Csdmt/H
+ bh=bK9+CgU88TdBApZPilFEoSEZrUtHbFgQeIgsnPGCMd8=;
+ b=NbrU/Ky5ODzG9Iqa/OIUd+utFuKagkkiqsFq93omEnPXT55U0Y2Y8I3hQmEGU7CISQYMvK6qa
+ WZmbixmLVNTA0WOC40m/EHt3kzang0ozeWcyZC0Qa/hKibeC+L/jB3D
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODI4MDEzNSBTYWx0ZWRfXwbZiKbKzdhsh
- XyAP0dtWu9+OejVzAeuSRHqeR0v8ATfCTtZmTuwLs7evixpyv+G29c5juYu0d1uUBw5W/SVEiWe
- pnMfXd7IAyQTLMz1LzrBPKWXf5SruYw7SvDbV3lw2hhlaule4wmM
-X-Proofpoint-ORIG-GUID: jtx71MvLs1XTKVgBkWull2nWEZ0vFvZQ
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI4MDEzNSBTYWx0ZWRfXxN+tVO78R2w2
- qu89QMdXnIiISnVXQOyefF4WgzfsHNKZgLqf8C+yLhDyHbGd2x13zadDRil+2HATeiQirE+mmvU
- tSGd4MM4+HZELGiVrxZfs19iDXSya/uWfCfR9Vyht3Az32VqLT1x82uP5Plnw5uBjAAOzJPYI2b
- X+OGfeb1OW9ZVpOyBuGTgyB01bRf1Pj7hPIwvBYDVgHJDyy6jYA1dhvYrq0iYUuZK+4wvrMBOy0
- yW1XXdsnlNS5I9GE8KxUKYDtXRI/6N9PdyqZ3Cc+ALKuTi/QzpM65ksX4AUsnFxpmDs00TeAGyH
- G8le/v09vhlBoBmZolM2UWI4ZP51i90E5id2SaUbi09IKn2WtGYeZqh1j/5ugA8aEFWGkbiGJwS
- w8NUwX0PpHpo+7I+D9QL0GweM3gPAv9NfaEiuCOUog7v3EGq/MB7dw6UaJwCtetLPpSMjw585y4
- QvY4MbfuKuY46D8PZLg==
-X-Proofpoint-GUID: jtx71MvLs1XTKVgBkWull2nWEZ0vFvZQ
-X-Authority-Analysis: v=2.4 cv=Oqt/DS/t c=1 sm=1 tr=0 ts=6a91a9c2 cx=c_pps
+X-Proofpoint-GUID: PL01sM_UCX6zZHnxYxPxz03n7ODlWWge
+X-Authority-Analysis: v=2.4 cv=erHvCIpX c=1 sm=1 tr=0 ts=6a91a9af cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8
- a=VwQbUJbxAAAA:8 a=-XxakrEtRxtUKgC0F-AA:9 a=QEXdDO2ut3YA:10
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8
+ a=VwQbUJbxAAAA:8 a=-cqUal-B65fNb7vokoEA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: PL01sM_UCX6zZHnxYxPxz03n7ODlWWge
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI4MDEzNSBTYWx0ZWRfXxItRH+jJoHJG
+ BACj5d5ZyQj0RDSVHBzBPOu27aWMJk9BafQw80vAIVNyr4KP7HRDuOGnVw8qlvzmZaHofRaJ0Fk
+ A7tqtwg++Ow/ga9niJxlYUEPfjP2bWLKmW6a6YOwbMnb3m97RyhbIa767oZ9HwNEGYgFZpeMFr0
+ jzoAo0hd86HvECGNlzePTgYDHYVC2FUNaSWx3DQIbR76s8v5zXYcGR0Y3ivC96BfXjmdoDEsWG+
+ MUhFlbBgdfg9DSnQSrrSbQ0XwRmFS6WhOF6z9V9oBo0zAPnxIX8K+JyUEGu/ge9TJ3vO2UQDtLx
+ 8nTSwGM2wPM3/nVhT8crEAAr93/Z2SP2UqrEnAS2bLyVgAW/AaFhcMIqBcaOXRfV5hw1W8FWpxX
+ Bf2pyepCUBKlU+XFfqLFhosxdKX/G2mcQ51A0MQDwpZnLoUvi7bO1XErNUWD/rZPFKS9qKz5IPZ
+ U6JGrs0CiRnvtorKUHw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODI4MDEzNSBTYWx0ZWRfX4GoRydohLBX4
+ eWm7qQyhYrJn2OQh90arNz9x7pVaFhLPwJ3IR2QbjNb31TmpUoQHYEfMWOsfQWxa10863LCsYfh
+ iPEVldSiPYhvJrrqpK6gktDHGFnAO1O0sNNUIUUsuewIs6DRpGCG
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-08-28_04,2026-08-27_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 phishscore=0 malwarescore=0 adultscore=0
- priorityscore=1501 lowpriorityscore=0 bulkscore=0 spamscore=0 suspectscore=0
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 spamscore=0
+ suspectscore=0 malwarescore=0 adultscore=0 clxscore=1011 impostorscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608280135
 
-Add core support for the AD7768 and AD7768-4 simultaneous sampling ADCs.
-Configure supplies, clock and reset, use a custom regmap bus for the SPI
-protocol, and parse the enabled channels and input buffer settings from
-devicetree.
+Add support for Analog Devices AD7768 and AD7768-4, 24-bit simultaneous
+sampling Sigma-Delta ADCs with automatic power mode selection.
 
-Connect the converter to an IIO backend for buffered capture with CRC,
-provide a fixed safe wideband sampling configuration and add runtime
-power management.
+Datasheet:
+https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-ad7768-4.pdf
+
+**Device Overview:**
+The AD7768 is an 8-channel, 24-bit simultaneous sampling ADC. The
+AD7768-4 is a 4-channel variant. Both support configurable power modes,
+programmable decimation filters, and a high-speed serial interface with
+1, 2, 4, or 8 data output lines. Per-channel offset, gain, and phase
+calibration registers are available.
+
+**Features Implemented:**
+- Support for AD7768 (8-channel) and AD7768-4 (4-channel) via device
+  match data.
+- Automatic low-noise power mode selection (fast, median, low power)
+  with associated decimation rate and output data rate tables.
+- Per-channel offset, gain, and conversion delay via IIO attributes.
+- SPI communication with custom regmap bus for the device's protocol.
+- IIO backend integration with adi-axi-adc for high-speed data capture.
+- CRC data integrity verification over the serial interface.
+- GPIO auxiliary driver to expose the 5 on-chip GPIO pins.
+- VCM common-mode output exposed through the regulator framework, with
+  runtime PM management while the output is enabled.
+
+**Patch Summary:**
+1. Initialize the AXI ADC state mutex.
+2. Add the AD7768 and AD7768-4 devicetree binding.
+3. Add the IIO backend CRC operation.
+4. Implement CRC control in the AXI ADC backend.
+5. Add core AD7768 and AD7768-4 capture support.
+6. Validate the master clock rate.
+7. Add the power-mode configuration helper.
+8. Derive output data rates and the data-clock divider.
+9. Configure enabled channels across two sampling profiles.
+10. Expose per-channel sampling-frequency controls.
+11. Expose per-channel filter controls.
+12. Wait for active digital filters to settle.
+13. Add per-channel offset and gain calibration controls.
+14. Add per-channel conversion delay.
+15. Expose the VCM output through the regulator framework.
+16. Register the GPIO auxiliary device from the parent driver.
+17. Use regmap_test_bits() for single-bit gpio-regmap reads.
+18. Add optional runtime PM support to gpio-regmap.
+19. Add the AD7768 GPIO auxiliary driver.
+20. Add driver documentation.
+
+**Testing:**
+The driver was compiled and tested on the EVAL-AD7768FMCZ using a
+Zedboard with a mainline kernel.
+
+**Driver Rationale:**
+The AD7768/AD7768-4 warrants its own driver due to several
+device-specific characteristics:
+
+1. A custom SPI framing protocol: register reads and writes use 16-bit
+   frames with embedded read/write bits and register address fields,
+   requiring a custom regmap bus implementation rather than the standard
+   SPI regmap backend.
+
+2. A coupled power mode / sample rate model: available output data rates
+   are not a flat list but depend on the active power mode (fast, median,
+   low power), each with its own set of valid decimation rates. This
+   relationship must be managed in the driver.
+
+3. Simultaneous sampling across all channels with per-channel calibration
+   registers (24-bit offset, gain, and phase) that are laid out
+   differently between the 8-channel AD7768 and the 4-channel AD7768-4,
+   requiring device-specific register mapping.
+
+4. IIO backend integration for high-speed data capture via adi-axi-adc,
+   including CRC data integrity verification over the serial interface.
+
+5. On-chip GPIO: 5 general-purpose I/O pins exposed via an auxiliary bus
+   driver, sharing the parent's regmap and runtime PM.
 
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- MAINTAINERS              |   1 +
- drivers/iio/adc/Kconfig  |  14 +
- drivers/iio/adc/Makefile |   1 +
- drivers/iio/adc/ad7768.c | 974 +++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 990 insertions(+)
+Changes in v5:
+- Split configurable sampling support into focused patches for clock
+  validation, power-mode setup, output-rate derivation, channel profiles,
+  sampling-frequency controls, filter controls, and filter settling.
+- Read the positive and negative reference supply voltages and report the
+  resulting differential IIO scale for each channel group.
+- Allow grounded REF1- and REF2- inputs to omit their regulator supplies,
+  treating absent negative reference supplies as 0 V.
+- Document the per-channel IIO scale attribute.
+- Require a named master clock, remove the default clock source, and
+  clarify why the LVDS clock is enabled only after device configuration.
+- Clarify the clock-source, supply, and VCM descriptions in the
+  Devicetree binding, and drop the unused sync-out-gpios property.
+- Simplify scan-mask handling, register-range checks, channel parsing,
+  reset timing, probe initialization, and error reporting.
+- Use the exact 1.66 ms reset start-up delay and standard time-unit
+  constants for fixed delays.
+- Avoid runtime-PM references for cached IIO attributes and acquire them
+  locally for calibration register accesses.
+- Use regmap_assign_bits() for single-bit assignments and sizeof() for
+  calibration byte-array transfers.
+- Rework gpio-regmap runtime-PM guards and synchronize the pm_dev member
+  and kernel-doc ordering.
+- Simplify the AD7768 GPIO auxiliary driver's includes and probe setup,
+  and drop its cross-tree MAINTAINERS update.
+- Note that the AXI ADC mutex fix is already queued in the IIO fixes tree.
+- Link to v4: https://lore.kernel.org/r/20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d667a0411f28..dc94e7803a7c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1639,6 +1639,7 @@ L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad7768.yaml
-+F:	drivers/iio/adc/ad7768.c
- 
- ANALOG DEVICES INC AD7780 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index d1b198cb8a80..48bb108382b5 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -429,6 +429,20 @@ config AD7766
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called ad7766.
- 
-+config AD7768
-+	tristate "Analog Devices AD7768/AD7768-4 ADC driver"
-+	depends on SPI
-+	depends on REGULATOR || COMPILE_TEST
-+	select IIO_BUFFER
-+	select IIO_BACKEND
-+	select REGMAP
-+	help
-+	  Say yes here to build support for Analog Devices AD7768 and AD7768-4
-+	  SPI analog to digital converters.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called ad7768.
-+
- config AD7768_1
- 	tristate "Analog Devices AD7768-1 ADC driver"
- 	depends on SPI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 0f90b75577ff..3e896c8aa7c3 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -39,6 +39,7 @@ obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
- obj-$(CONFIG_AD7606) += ad7606.o
- obj-$(CONFIG_AD7625) += ad7625.o
- obj-$(CONFIG_AD7766) += ad7766.o
-+obj-$(CONFIG_AD7768) += ad7768.o
- obj-$(CONFIG_AD7768_1) += ad7768-1.o
- obj-$(CONFIG_AD7779) += ad7779.o
- obj-$(CONFIG_AD7780) += ad7780.o
-diff --git a/drivers/iio/adc/ad7768.c b/drivers/iio/adc/ad7768.c
-new file mode 100644
-index 000000000000..cb84bb344aef
---- /dev/null
-+++ b/drivers/iio/adc/ad7768.c
-@@ -0,0 +1,974 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Analog Devices AD7768 ADC driver
-+ *
-+ * Copyright 2018-2026 Analog Devices Inc.
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/math.h>
-+#include <linux/minmax.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
-+#include <linux/spi/spi.h>
-+#include <linux/time.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/backend.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/types.h>
-+
-+#define AD7768_REG_CH_STANDBY				0x00
-+
-+#define AD7768_REG_CH_MODE(x)				(0x01 + (x))
-+#define   AD7768_CH_MODE_FILTER_TYPE_MSK		BIT(3)
-+#define     AD7768_CH_MODE_FILTER_TYPE_WIDEBAND		0x0
-+#define   AD7768_CH_MODE_DEC_RATE_MSK			GENMASK(2, 0)
-+#define     AD7768_CH_MODE_DEC_RATE_64			0x1
-+
-+#define AD7768_REG_CH_MODE_SEL				0x03
-+
-+#define AD7768_REG_POWER_MODE				0x04
-+#define   AD7768_SLEEP_MODE_MSK				BIT(7)
-+#define   AD7768_POWER_MODE_POWER_MODE_MSK		GENMASK(5, 4)
-+#define     AD7768_POWER_MODE_POWER_MODE_FAST		0x3
-+#define   AD7768_POWER_MODE_LVDS_ENABLE			BIT(3)
-+#define   AD7768_POWER_MODE_MCLK_DIV_MSK		GENMASK(1, 0)
-+
-+#define AD7768_REG_DATA_CONTROL				0x06
-+#define   AD7768_DATA_CONTROL_SPI_RESET_1		0x03
-+#define   AD7768_DATA_CONTROL_SPI_RESET_2		0x02
-+#define   AD7768_DATA_CONTROL_SPI_SYNC			BIT(7)
-+
-+#define AD7768_REG_INTERFACE_CFG			0x07
-+#define   AD7768_INTERFACE_CFG_CRC_SELECT_MSK		GENMASK(3, 2)
-+#define     AD7768_INTERFACE_CFG_CRC_SELECT_4		0x1
-+#define   AD7768_INTERFACE_CFG_DCLK_DIV_MSK		GENMASK(1, 0)
-+#define     AD7768_INTERFACE_CFG_DCLK_DIV(x)		(4 - ffs(x))
-+
-+#define AD7768_REG_REV_ID				0x0A
-+#define   AD7768_REV_ID_VAL				0x06
-+
-+#define AD7768_REG_GPIO_CONTROL				0x0E
-+#define   AD7768_GPIO_UGPIO_ENABLE			BIT(7)
-+#define   AD7768_GPIO4_OUTPUT_ENABLE			BIT(4)
-+
-+#define AD7768_REG_GPIO_WRITE				0x0F
-+
-+#define AD7768_REG_PRECHARGE_BUF1			0x11
-+#define AD7768_REG_PRECHARGE_BUF2			0x12
-+#define   AD7768_PREBUF_POS_EN(ch)			BIT((ch) * 2)
-+#define   AD7768_PREBUF_NEG_EN(ch)			BIT(((ch) * 2) + 1)
-+
-+#define AD7768_REG_REFP_BUF				0x13
-+#define AD7768_REG_REFN_BUF				0x14
-+
-+#define AD7768_REG_OFFSET_BASE				0x1E
-+#define AD7768_REG_GAIN_BASE				0x36
-+#define AD7768_REG_PHASE_BASE				0x4E
-+#define AD7768_REG_OFFSET(ch) \
-+	(AD7768_REG_OFFSET_BASE + (3 * (ch)))
-+#define AD7768_REG_GAIN(ch) \
-+	(AD7768_REG_GAIN_BASE + (3 * (ch)))
-+#define AD7768_REG_PHASE(ch) \
-+	((AD7768_REG_PHASE_BASE + (ch)))
-+#define __AD7768_4_REG_MAP(ch) \
-+	((ch) < 2 ? (ch) : ((ch) + 2))
-+#define AD7768_4_REG_OFFSET(ch) \
-+	(AD7768_REG_OFFSET_BASE + (3 * __AD7768_4_REG_MAP(ch)))
-+#define AD7768_4_REG_GAIN(ch) \
-+	(AD7768_REG_GAIN_BASE + (3 * __AD7768_4_REG_MAP(ch)))
-+#define AD7768_4_REG_PHASE(ch) \
-+	(AD7768_REG_PHASE_BASE + __AD7768_4_REG_MAP(ch))
-+
-+#define AD7768_REG_DIAGNOSTIC_RX			0x56
-+
-+#define AD7768_REG_CHOP_CTRL				0x59
-+
-+#define AD7768_SPI_READ_CMD				BIT(15)
-+#define AD7768_SPI_REG_MASK				GENMASK(14, 8)
-+#define AD7768_SPI_DATA_MASK				GENMASK(7, 0)
-+
-+#define AD7768_MAX_CHANNEL				8
-+
-+enum ad7768_clock_source {
-+	AD7768_CLOCK_SOURCE_MCLK,
-+	AD7768_CLOCK_SOURCE_XTAL,
-+	AD7768_CLOCK_SOURCE_LVDS,
-+};
-+
-+struct ad7768_precharge_config {
-+	bool prebufp_en;
-+	bool prebufn_en;
-+	bool refbufp;
-+	bool refbufn;
-+};
-+
-+struct ad7768_chip_info {
-+	const char *name;
-+	unsigned int num_channels;
-+	const struct regmap_config *regmap_config;
-+	const unsigned int *available_datalines;
-+	unsigned int num_datalines;
-+	const u8 *chan_map;
-+	u8 prebuf_split;
-+};
-+
-+struct ad7768_state {
-+	struct regmap *regmap;
-+	/* Protects device register access and configuration. */
-+	struct mutex lock;
-+	struct clk *mclk;
-+	unsigned int datalines;
-+	enum ad7768_clock_source clock_source;
-+	const struct ad7768_chip_info *chip_info;
-+	struct iio_backend *back;
-+	unsigned int vref_uV[2];
-+
-+	__be16 d16 __aligned(IIO_DMA_MINALIGN);
-+};
-+
-+static const unsigned int ad7768_available_datalines[] = {
-+	1, 2, 8,
-+};
-+
-+static const unsigned int ad7768_4_available_datalines[] = {
-+	1, 4,
-+};
-+
-+static const u8 ad7768_chan_map[] = {
-+	0, 1, 2, 3, 4, 5, 6, 7,
-+};
-+
-+static const u8 ad7768_4_chan_map[] = {
-+	0, 1, 4, 5,
-+};
-+
-+static const char * const ad7768_supply_names[] = {
-+	"avdd2", "iovdd",
-+};
-+
-+static const char * const ad7768_vref_supply_names[][2] = {
-+	{ "ref1p", "ref1n" },
-+	{ "ref2p", "ref2n" },
-+};
-+
-+static const char * const ad7768_clock_names[] = {
-+	[AD7768_CLOCK_SOURCE_MCLK] = "mclk",
-+	[AD7768_CLOCK_SOURCE_XTAL] = "xtal",
-+	[AD7768_CLOCK_SOURCE_LVDS] = "lvds",
-+};
-+
-+static u8 ad7768_channel_mask(const struct ad7768_state *st, u8 ch)
-+{
-+	return BIT(st->chip_info->chan_map[ch]);
-+}
-+
-+static u8 ad7768_all_standby_mask(const struct ad7768_state *st)
-+{
-+	return GENMASK(st->chip_info->num_channels - 1, 0);
-+}
-+
-+static u8 ad7768_precharge_buf1_mask(const struct ad7768_state *st, u16 val)
-+{
-+	return val & GENMASK(st->chip_info->prebuf_split - 1, 0);
-+}
-+
-+static u8 ad7768_precharge_buf2_mask(const struct ad7768_state *st, u16 val)
-+{
-+	return (val >> st->chip_info->prebuf_split) &
-+	       GENMASK(st->chip_info->prebuf_split - 1, 0);
-+}
-+
-+static int ad7768_regmap_read(void *context, const void *reg_buf,
-+			      size_t reg_size, void *val_buf, size_t val_size)
-+{
-+	struct ad7768_state *st = spi_get_drvdata(context);
-+	struct spi_device *spi = context;
-+	struct spi_transfer t[] = {
-+		{
-+			.tx_buf = &st->d16,
-+			.len = sizeof(st->d16),
-+			.cs_change = 1,
-+		}, {
-+			/*
-+			 * Register responses are delayed by one CS frame. While
-+			 * receiving the response to this read, the device also
-+			 * decodes another command on SDI. Repeat the read
-+			 * command to avoid sending an unspecified dummy
-+			 * command.
-+			 */
-+			.tx_buf = &st->d16,
-+			.rx_buf = &st->d16,
-+			.len = sizeof(st->d16),
-+		},
-+	};
-+	u8 *data_val = val_buf;
-+	unsigned int reg;
-+	int ret;
-+
-+	reg = *(const u8 *)reg_buf;
-+
-+	st->d16 = be16_replace_bits(cpu_to_be16(AD7768_SPI_READ_CMD), reg,
-+				    AD7768_SPI_REG_MASK);
-+
-+	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
-+	if (ret)
-+		return ret;
-+
-+	*data_val = be16_get_bits(st->d16, AD7768_SPI_DATA_MASK);
-+
-+	return 0;
-+}
-+
-+static int ad7768_regmap_write(void *context, const void *data, size_t count)
-+{
-+	struct spi_device *spi = context;
-+
-+	return spi_write(spi, data, count);
-+}
-+
-+static const struct regmap_bus ad7768_regmap_bus = {
-+	.read = ad7768_regmap_read,
-+	.write = ad7768_regmap_write,
-+	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
-+	.val_format_endian_default = REGMAP_ENDIAN_BIG,
-+};
-+
-+static bool ad7768_readable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case AD7768_REG_CH_STANDBY ... AD7768_REG_REV_ID:
-+	case AD7768_REG_GPIO_CONTROL ... AD7768_REG_REFN_BUF:
-+	case AD7768_REG_OFFSET(0) ... AD7768_REG_OFFSET(7) + 2:
-+	case AD7768_REG_GAIN(0) ... AD7768_REG_GAIN(7) + 2:
-+	case AD7768_REG_PHASE(0) ... AD7768_REG_PHASE(7):
-+	case AD7768_REG_DIAGNOSTIC_RX ... AD7768_REG_CHOP_CTRL:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static bool ad7768_4_readable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case AD7768_REG_CH_STANDBY ... AD7768_REG_REV_ID:
-+	case AD7768_REG_GPIO_CONTROL ... AD7768_REG_REFN_BUF:
-+	case AD7768_4_REG_OFFSET(0) ... AD7768_4_REG_OFFSET(1) + 2:
-+	case AD7768_4_REG_OFFSET(2) ... AD7768_4_REG_OFFSET(3) + 2:
-+	case AD7768_4_REG_GAIN(0) ... AD7768_4_REG_GAIN(1) + 2:
-+	case AD7768_4_REG_GAIN(2) ... AD7768_4_REG_GAIN(3) + 2:
-+	case AD7768_4_REG_PHASE(0) ... AD7768_4_REG_PHASE(1):
-+	case AD7768_4_REG_PHASE(2) ... AD7768_4_REG_PHASE(3):
-+	case AD7768_REG_DIAGNOSTIC_RX ... AD7768_REG_CHOP_CTRL:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct regmap_config ad7768_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = AD7768_REG_CHOP_CTRL,
-+	.use_single_read = true,
-+	.use_single_write = true,
-+	.readable_reg = ad7768_readable_reg,
-+};
-+
-+static const struct regmap_config ad7768_4_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = AD7768_REG_CHOP_CTRL,
-+	.use_single_read = true,
-+	.use_single_write = true,
-+	.readable_reg = ad7768_4_readable_reg,
-+};
-+
-+static int ad7768_reg_access(struct iio_dev *indio_dev,
-+			     unsigned int reg,
-+			     unsigned int writeval,
-+			     unsigned int *readval)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(regmap_get_device(st->regmap), pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	if (readval)
-+		return regmap_read(st->regmap, reg, readval);
-+
-+	return regmap_write(st->regmap, reg, writeval);
-+}
-+
-+static int ad7768_sync(struct ad7768_state *st)
-+{
-+	int ret;
-+
-+	ret = regmap_clear_bits(st->regmap, AD7768_REG_DATA_CONTROL,
-+				AD7768_DATA_CONTROL_SPI_SYNC);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_set_bits(st->regmap, AD7768_REG_DATA_CONTROL,
-+			       AD7768_DATA_CONTROL_SPI_SYNC);
-+}
-+
-+static int ad7768_update_scan_mode(struct iio_dev *indio_dev,
-+				   const unsigned long *scan_mask)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	unsigned long channel_mask;
-+	unsigned long standby_mask;
-+	int ret;
-+
-+	channel_mask = ad7768_all_standby_mask(st);
-+	standby_mask = channel_mask & ~*scan_mask;
-+
-+	/*
-+	 * Crystal excitation requires channel 4 on AD7768 or channel 2 on
-+	 * AD7768-4 to remain active.
-+	 */
-+	if (st->clock_source == AD7768_CLOCK_SOURCE_XTAL)
-+		standby_mask &= ~BIT(st->chip_info->num_channels / 2);
-+
-+	ret = regmap_update_bits(st->regmap, AD7768_REG_CH_STANDBY,
-+				 channel_mask, standby_mask);
-+	if (ret)
-+		return ret;
-+
-+	for (unsigned int c = 0; c < st->chip_info->num_channels; c++) {
-+		if (test_bit(c, scan_mask))
-+			ret = iio_backend_chan_enable(st->back, c);
-+		else
-+			ret = iio_backend_chan_disable(st->back, c);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct ad7768_chip_info ad7768_chip_info = {
-+	.name = "ad7768",
-+	.num_channels = 8,
-+	.regmap_config = &ad7768_regmap_config,
-+	.available_datalines = ad7768_available_datalines,
-+	.num_datalines = ARRAY_SIZE(ad7768_available_datalines),
-+	.chan_map = ad7768_chan_map,
-+	.prebuf_split = 8,
-+};
-+
-+static const struct ad7768_chip_info ad7768_4_chip_info = {
-+	.name = "ad7768-4",
-+	.num_channels = 4,
-+	.regmap_config = &ad7768_4_regmap_config,
-+	.available_datalines = ad7768_4_available_datalines,
-+	.num_datalines = ARRAY_SIZE(ad7768_4_available_datalines),
-+	.chan_map = ad7768_4_chan_map,
-+	.prebuf_split = 4,
-+};
-+
-+static int ad7768_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+
-+	return pm_runtime_resume_and_get(regmap_get_device(st->regmap));
-+}
-+
-+static int ad7768_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+
-+	pm_runtime_put_autosuspend(regmap_get_device(st->regmap));
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops ad7768_buffer_ops = {
-+	.preenable = ad7768_buffer_preenable,
-+	.postdisable = ad7768_buffer_postdisable,
-+};
-+
-+static int ad7768_read_raw(struct iio_dev *indio_dev,
-+			   const struct iio_chan_spec *chan,
-+			   int *val, int *val2, long info)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	unsigned int vref_idx;
-+
-+	if (info != IIO_CHAN_INFO_SCALE)
-+		return -EINVAL;
-+
-+	vref_idx = chan->channel >= st->chip_info->num_channels / 2;
-+	*val = 2 * st->vref_uV[vref_idx] / 1000;
-+	*val2 = chan->scan_type.realbits;
-+
-+	return IIO_VAL_FRACTIONAL_LOG2;
-+}
-+
-+static const struct iio_info ad7768_info = {
-+	.debugfs_reg_access = ad7768_reg_access,
-+	.read_raw = ad7768_read_raw,
-+	.update_scan_mode = ad7768_update_scan_mode,
-+};
-+
-+static int ad7768_configure_precharge_buffers(struct iio_dev *indio_dev,
-+					      struct ad7768_precharge_config *precharge_cfg)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	u8 prebuf1_val, prebuf2_val;
-+	u16 prebuf_mask = 0;
-+	u8 refbufp_val = 0;
-+	u8 refbufn_val = 0;
-+	int ret;
-+
-+	for (u8 ch = 0; ch < indio_dev->num_channels; ch++) {
-+		u8 channel = indio_dev->channels[ch].channel;
-+
-+		if (precharge_cfg[channel].prebufp_en)
-+			prebuf_mask |= AD7768_PREBUF_POS_EN(channel);
-+
-+		if (precharge_cfg[channel].prebufn_en)
-+			prebuf_mask |= AD7768_PREBUF_NEG_EN(channel);
-+
-+		if (precharge_cfg[channel].refbufp)
-+			refbufp_val |= ad7768_channel_mask(st, channel);
-+
-+		if (precharge_cfg[channel].refbufn)
-+			refbufn_val |= ad7768_channel_mask(st, channel);
-+	}
-+
-+	prebuf1_val = ad7768_precharge_buf1_mask(st, ~prebuf_mask);
-+	prebuf2_val = ad7768_precharge_buf2_mask(st, ~prebuf_mask);
-+
-+	ret = regmap_write(st->regmap, AD7768_REG_PRECHARGE_BUF1, prebuf1_val);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD7768_REG_PRECHARGE_BUF2, prebuf2_val);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD7768_REG_REFP_BUF, refbufp_val);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(st->regmap, AD7768_REG_REFN_BUF, refbufn_val);
-+}
-+
-+static int ad7768_configure_capture(struct ad7768_state *st)
-+{
-+	unsigned int dclk_div_reg;
-+	unsigned int mode_config;
-+	unsigned int dclk_div;
-+	int ret;
-+
-+	ret = regmap_update_bits(st->regmap, AD7768_REG_POWER_MODE,
-+				 AD7768_POWER_MODE_POWER_MODE_MSK |
-+				 AD7768_POWER_MODE_MCLK_DIV_MSK,
-+				 FIELD_PREP(AD7768_POWER_MODE_POWER_MODE_MSK,
-+					    AD7768_POWER_MODE_POWER_MODE_FAST) |
-+				 FIELD_PREP(AD7768_POWER_MODE_MCLK_DIV_MSK,
-+					    AD7768_POWER_MODE_POWER_MODE_FAST));
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Start with the wideband filter and a decimation rate of 64. This
-+	 * supports every valid data-line configuration at the maximum MCLK.
-+	 */
-+	mode_config = FIELD_PREP(AD7768_CH_MODE_FILTER_TYPE_MSK,
-+				 AD7768_CH_MODE_FILTER_TYPE_WIDEBAND);
-+	mode_config |= FIELD_PREP(AD7768_CH_MODE_DEC_RATE_MSK,
-+				  AD7768_CH_MODE_DEC_RATE_64);
-+	ret = regmap_update_bits(st->regmap, AD7768_REG_CH_MODE(0),
-+				 AD7768_CH_MODE_FILTER_TYPE_MSK |
-+				 AD7768_CH_MODE_DEC_RATE_MSK,
-+				 mode_config);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD7768_REG_CH_MODE_SEL, 0);
-+	if (ret)
-+		return ret;
-+
-+	dclk_div = 8 * st->datalines / st->chip_info->num_channels;
-+	dclk_div_reg = AD7768_INTERFACE_CFG_DCLK_DIV(dclk_div);
-+	ret = regmap_update_bits(st->regmap, AD7768_REG_INTERFACE_CFG,
-+				 AD7768_INTERFACE_CFG_DCLK_DIV_MSK,
-+				 FIELD_PREP(AD7768_INTERFACE_CFG_DCLK_DIV_MSK,
-+					    dclk_div_reg));
-+	if (ret)
-+		return ret;
-+
-+	return ad7768_sync(st);
-+}
-+
-+static int ad7768_parse_config(struct iio_dev *indio_dev,
-+			       struct device *dev)
-+{
-+	struct ad7768_precharge_config precharge_cfg[AD7768_MAX_CHANNEL] = { };
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	const unsigned int *available_datalines;
-+	bool datalines_valid = false;
-+	struct iio_chan_spec *chan;
-+	unsigned int num_channels;
-+	unsigned int standby_mask;
-+	unsigned int len;
-+	int chan_idx = 0;
-+	int ret;
-+
-+	num_channels = 0;
-+	device_for_each_named_child_node_scoped(dev, child, "channel")
-+		num_channels++;
-+
-+	if (!num_channels || num_channels > st->chip_info->num_channels)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid number of channels\n");
-+
-+	chan = devm_kcalloc(indio_dev->dev.parent, num_channels,
-+			    sizeof(*chan), GFP_KERNEL);
-+	if (!chan)
-+		return -ENOMEM;
-+
-+	indio_dev->channels = chan;
-+	indio_dev->num_channels = num_channels;
-+
-+	standby_mask = ad7768_all_standby_mask(st);
-+
-+	/*
-+	 * Crystal excitation requires channel 4 on AD7768 or channel 2 on
-+	 * AD7768-4 to remain active.
-+	 */
-+	if (st->clock_source == AD7768_CLOCK_SOURCE_XTAL)
-+		standby_mask &= ~BIT(st->chip_info->num_channels / 2);
-+
-+	ret = regmap_write(st->regmap, AD7768_REG_CH_STANDBY, standby_mask);
-+	if (ret)
-+		return ret;
-+
-+	device_for_each_named_child_node_scoped(dev, child, "channel") {
-+		u32 channel;
-+
-+		ret = fwnode_property_read_u32(child, "reg", &channel);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to parse reg of %pfwP\n",
-+					     child);
-+
-+		if (channel >= st->chip_info->num_channels)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "Invalid channel %u in firmware\n",
-+					     channel);
-+
-+		ret = regmap_clear_bits(st->regmap, AD7768_REG_CH_STANDBY,
-+					BIT(channel));
-+		if (ret)
-+			return ret;
-+
-+		precharge_cfg[channel].prebufp_en =
-+			fwnode_property_read_bool(child,
-+						  "adi,prechargebuf-pos-enable");
-+		precharge_cfg[channel].prebufn_en =
-+			fwnode_property_read_bool(child,
-+						  "adi,prechargebuf-neg-enable");
-+		precharge_cfg[channel].refbufp =
-+			fwnode_property_read_bool(child,
-+						  "adi,refbuf-pos-enable");
-+		precharge_cfg[channel].refbufn =
-+			fwnode_property_read_bool(child,
-+						  "adi,refbuf-neg-enable");
-+
-+		chan[chan_idx] = (struct iio_chan_spec) {
-+			.type = IIO_VOLTAGE,
-+			.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),
-+			.indexed = 1,
-+			.channel = channel,
-+			.scan_index = channel,
-+			.scan_type = {
-+				.sign = 's',
-+				.realbits = 24,
-+				.storagebits = 32,
-+			},
-+		};
-+		chan_idx++;
-+	}
-+
-+	ret = ad7768_configure_precharge_buffers(indio_dev, precharge_cfg);
-+	if (ret)
-+		return ret;
-+
-+	available_datalines = st->chip_info->available_datalines;
-+	len = st->chip_info->num_datalines;
-+	st->datalines = available_datalines[len - 1];
-+	ret = device_property_read_u32(dev, "adi,data-lines-number",
-+				       &st->datalines);
-+	if (ret && ret != -EINVAL)
-+		return dev_err_probe(dev, ret,
-+				     "Invalid %s property\n",
-+				     "adi,data-lines-number");
-+
-+	for (unsigned int i = 0; i < len; i++) {
-+		if (available_datalines[i] == st->datalines) {
-+			datalines_valid = true;
-+			break;
-+		}
-+	}
-+
-+	if (!datalines_valid)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid data-lines-number %d for %s\n",
-+				     st->datalines, st->chip_info->name);
-+
-+	return ad7768_configure_capture(st);
-+}
-+
-+static int ad7768_reset(struct ad7768_state *st)
-+{
-+	struct device *dev = regmap_get_device(st->regmap);
-+	struct reset_control *reset_ctrl;
-+	unsigned long reset_low_us;
-+	unsigned long mclk;
-+	int ret;
-+
-+	reset_ctrl = devm_reset_control_get_optional_exclusive(dev, NULL);
-+	if (IS_ERR(reset_ctrl))
-+		return PTR_ERR(reset_ctrl);
-+
-+	if (reset_ctrl) {
-+		mclk = clk_get_rate(st->mclk);
-+		if (!mclk)
-+			return -EINVAL;
-+
-+		/*
-+		 * Minimum RESET low pulse width: 2 x tMCLK
-+		 * (datasheet Table 1).
-+		 */
-+		reset_low_us = DIV_ROUND_UP_ULL(2ULL * USEC_PER_SEC, mclk);
-+
-+		ret = reset_control_assert(reset_ctrl);
-+		if (ret)
-+			return ret;
-+
-+		fsleep(max(1UL, reset_low_us));
-+
-+		ret = reset_control_deassert(reset_ctrl);
-+		if (ret)
-+			return ret;
-+	} else {
-+		ret = regmap_write(st->regmap, AD7768_REG_DATA_CONTROL,
-+				   AD7768_DATA_CONTROL_SPI_RESET_1);
-+		if (ret)
-+			return ret;
-+
-+		ret = regmap_write(st->regmap, AD7768_REG_DATA_CONTROL,
-+				   AD7768_DATA_CONTROL_SPI_RESET_2);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* ADC start-up time after reset: 1.66 ms max (datasheet Table 1) */
-+	fsleep(1660);
-+
-+	return 0;
-+}
-+
-+static void ad7768_disable_clk(void *clk)
-+{
-+	clk_disable_unprepare(clk);
-+}
-+
-+static int ad7768_configure_xtal_clock(struct ad7768_state *st)
-+{
-+	int ret;
-+
-+	ret = regmap_set_bits(st->regmap, AD7768_REG_GPIO_WRITE, BIT(4));
-+	if (ret)
-+		return ret;
-+
-+	return regmap_set_bits(st->regmap, AD7768_REG_GPIO_CONTROL,
-+			       AD7768_GPIO_UGPIO_ENABLE |
-+			       AD7768_GPIO4_OUTPUT_ENABLE);
-+}
-+
-+static int ad7768_enable_lvds_clock(struct ad7768_state *st)
-+{
-+	struct device *dev = regmap_get_device(st->regmap);
-+	int ret;
-+
-+	ret = regmap_clear_bits(st->regmap, AD7768_REG_GPIO_WRITE, BIT(4));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_set_bits(st->regmap, AD7768_REG_GPIO_CONTROL,
-+			      AD7768_GPIO_UGPIO_ENABLE |
-+			      AD7768_GPIO4_OUTPUT_ENABLE);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_set_bits(st->regmap, AD7768_REG_POWER_MODE,
-+			      AD7768_POWER_MODE_LVDS_ENABLE);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_prepare_enable(st->mclk);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(dev, ad7768_disable_clk, st->mclk);
-+}
-+
-+static int ad7768_get_enable_vref(struct device *dev, unsigned int index)
-+{
-+	const char * const *supply = ad7768_vref_supply_names[index];
-+	int refp_uV;
-+	int refn_uV;
-+
-+	refp_uV = devm_regulator_get_enable_read_voltage(dev, supply[0]);
-+	if (refp_uV < 0)
-+		return dev_err_probe(dev, refp_uV,
-+				     "Failed to get %s supply voltage\n", supply[0]);
-+
-+	refn_uV = devm_regulator_get_enable_read_voltage(dev, supply[1]);
-+	if (refn_uV == -ENODEV)
-+		refn_uV = 0;
-+	else if (refn_uV < 0)
-+		return dev_err_probe(dev, refn_uV,
-+				     "Failed to get %s supply voltage\n", supply[1]);
-+
-+	if (refp_uV <= refn_uV)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid reference %u voltage\n", index + 1);
-+
-+	return refp_uV - refn_uV;
-+}
-+
-+static int ad7768_probe(struct spi_device *spi)
-+{
-+	unsigned int spi_readback, rev_id;
-+	struct device *dev = &spi->dev;
-+	struct iio_dev *indio_dev;
-+	struct ad7768_state *st;
-+	const char *clock_name;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	spi_set_drvdata(spi, st);
-+
-+	ret = devm_mutex_init(dev, &st->lock);
-+	if (ret)
-+		return ret;
-+
-+	st->chip_info = spi_get_device_match_data(spi);
-+	if (!st->chip_info)
-+		return dev_err_probe(dev, -ENODEV,
-+				     "Failed to get match data\n");
-+
-+	ret = devm_regulator_get_enable_optional(dev, "avss");
-+	if (ret < 0 && ret != -ENODEV)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable AVSS supply\n");
-+
-+	ret = devm_regulator_get_enable(dev, "avdd1");
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable AVDD1 supply\n");
-+
-+	ret = devm_regulator_bulk_get_enable(dev,
-+					     ARRAY_SIZE(ad7768_supply_names),
-+					     ad7768_supply_names);
-+	if (ret)
-+		return ret;
-+
-+	for (unsigned int i = 0;
-+	     i < ARRAY_SIZE(ad7768_vref_supply_names); i++) {
-+		ret = ad7768_get_enable_vref(dev, i);
-+		if (ret < 0)
-+			return ret;
-+
-+		st->vref_uV[i] = ret;
-+	}
-+
-+	ret = device_property_match_property_string(dev, "clock-names",
-+						    ad7768_clock_names,
-+						    ARRAY_SIZE(ad7768_clock_names));
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "Invalid clock source\n");
-+
-+	st->clock_source = ret;
-+	clock_name = ad7768_clock_names[st->clock_source];
-+
-+	/*
-+	 * The device must start on its internal clock. Keep the LVDS clock
-+	 * disabled until GPIO4 is driven low and the LVDS input is enabled in
-+	 * the power mode register.
-+	 */
-+	if (st->clock_source == AD7768_CLOCK_SOURCE_LVDS)
-+		st->mclk = devm_clk_get(dev, clock_name);
-+	else
-+		st->mclk = devm_clk_get_enabled(dev, clock_name);
-+
-+	if (IS_ERR(st->mclk))
-+		return dev_err_probe(dev, PTR_ERR(st->mclk),
-+				     "Failed to get master clock\n");
-+
-+	st->regmap = devm_regmap_init(dev, &ad7768_regmap_bus, spi,
-+				      st->chip_info->regmap_config);
-+	if (IS_ERR(st->regmap))
-+		return PTR_ERR(st->regmap);
-+
-+	ret = ad7768_reset(st);
-+	if (ret)
-+		return ret;
-+
-+	/* Discard the reset response with a dummy SPI register read. */
-+	ret = regmap_read(st->regmap, AD7768_REG_REV_ID, &spi_readback);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(st->regmap, AD7768_REG_REV_ID, &rev_id);
-+	if (ret)
-+		return ret;
-+
-+	if (rev_id != AD7768_REV_ID_VAL)
-+		dev_info(dev, "Unexpected revision ID 0x%02x\n", rev_id);
-+
-+	if (st->clock_source == AD7768_CLOCK_SOURCE_XTAL) {
-+		ret = ad7768_configure_xtal_clock(st);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to configure crystal clock\n");
-+	} else if (st->clock_source == AD7768_CLOCK_SOURCE_LVDS) {
-+		ret = ad7768_enable_lvds_clock(st);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to enable LVDS clock\n");
-+	}
-+
-+	ret = ad7768_parse_config(indio_dev, dev);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Hardware supports CRC every 4 or 16 samples; the backend supports only
-+	 * 4-sample CRC.
-+	 */
-+	ret = regmap_update_bits(st->regmap, AD7768_REG_INTERFACE_CFG,
-+				 AD7768_INTERFACE_CFG_CRC_SELECT_MSK,
-+				 FIELD_PREP(AD7768_INTERFACE_CFG_CRC_SELECT_MSK,
-+					    AD7768_INTERFACE_CFG_CRC_SELECT_4));
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = st->chip_info->name;
-+	indio_dev->info = &ad7768_info;
-+	indio_dev->setup_ops = &ad7768_buffer_ops;
-+
-+	st->back = devm_iio_backend_get(dev, NULL);
-+	if (IS_ERR(st->back))
-+		return PTR_ERR(st->back);
-+
-+	ret = devm_iio_backend_request_buffer(dev, st->back, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_backend_num_lanes_set(st->back, st->datalines);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_backend_crc_enable(st->back);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_iio_backend_enable(dev, st->back);
-+	if (ret)
-+		return ret;
-+
-+	pm_runtime_set_autosuspend_delay(dev, 2000);
-+	pm_runtime_use_autosuspend(dev);
-+	ret = devm_pm_runtime_set_active_enabled(dev);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static int ad7768_runtime_suspend(struct device *dev)
-+{
-+	struct ad7768_state *st = dev_get_drvdata(dev);
-+
-+	return regmap_set_bits(st->regmap, AD7768_REG_POWER_MODE,
-+			       AD7768_SLEEP_MODE_MSK);
-+}
-+
-+static int ad7768_runtime_resume(struct device *dev)
-+{
-+	struct ad7768_state *st = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = regmap_clear_bits(st->regmap, AD7768_REG_POWER_MODE,
-+				AD7768_SLEEP_MODE_MSK);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * The datasheet does not specify a wake-up time. Allow 20 ms for the
-+	 * ADC and digital clocks to restart.
-+	 */
-+	fsleep(20 * USEC_PER_MSEC);
-+
-+	return 0;
-+}
-+
-+static DEFINE_RUNTIME_DEV_PM_OPS(ad7768_pm_ops, ad7768_runtime_suspend,
-+				 ad7768_runtime_resume, NULL);
-+
-+static const struct of_device_id ad7768_of_match[] = {
-+	{ .compatible = "adi,ad7768", .data = &ad7768_chip_info },
-+	{ .compatible = "adi,ad7768-4", .data = &ad7768_4_chip_info },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ad7768_of_match);
-+
-+static const struct spi_device_id ad7768_spi_id[] = {
-+	{ "ad7768", (kernel_ulong_t)&ad7768_chip_info },
-+	{ "ad7768-4", (kernel_ulong_t)&ad7768_4_chip_info },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ad7768_spi_id);
-+
-+static struct spi_driver ad7768_driver = {
-+	.probe = ad7768_probe,
-+	.driver = {
-+		.name = "ad7768",
-+		.of_match_table = ad7768_of_match,
-+		.pm = pm_ptr(&ad7768_pm_ops),
-+	},
-+	.id_table = ad7768_spi_id,
-+};
-+module_spi_driver(ad7768_driver);
-+
-+MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
-+MODULE_AUTHOR("Janani Sunil <janani.sunil@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD7768 ADC driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("IIO_BACKEND");
+Changes in v4:
+- Move the AXI ADC mutex initialization fix to the start of the series.
+- Clarify the IIO backend CRC documentation for input and output paths.
+- Add explicit MCLK, crystal, and LVDS clock-source handling and
+  sequencing.
+- Keep the required channel active for crystal excitation.
+- Configure FILTER/GPIO4 for crystal and LVDS clock sources and reserve
+  it from GPIO consumers while it is used for clock selection.
+- Make AVSS optional.
+- Validate MCLK, crystal, and LVDS clock rates against datasheet limits.
+- Split each differential reference into positive and negative supplies.
+- Correct AD7768-4 standby and channel-mode bit handling.
+- Program the AD7768-4 channel mode-enable bits correctly.
+- Use unshifted register values and FIELD_PREP() consistently.
+- Use regmap single-bit helpers where appropriate.
+- Use scoped runtime-PM guards and scoped loop variables.
+- Use for_each_set_bit() and named channel-child iteration.
+- Remove the redundant initial autosuspend request.
+- Document the validated 20 ms wake-up delay.
+- Make REGULATOR mandatory when VCM regulator support is introduced.
+- Add feature dependencies and includes in their respective patches.
+- Convert gpio-regmap runtime-PM handling to cleanup guards.
+- Use active-only PM references for gpio-regmap operations.
+- Mark GPIO chips using runtime PM as sleep-capable.
+- Simplify the AD7768 GPIO auxiliary driver.
+- Clean up IIO and kernel coding-style issues across the series.
+- Drop the redundant Devicetree example.
+- Update the link to the latest Rev. D datasheet, update table
+  references.
+- Address the remaining binding description comments.
+- Link to v3: https://lore.kernel.org/r/20260813-ad7768-driver-v3-0-cb554399ad26@analog.com
 
+Changes in v3:
+- Split the IIO driver into core support and focused patches for sampling
+  modes, calibration, conversion delay, VCM, and GPIO registration.
+- Split AXI ADC mutex initialization into a separate preparatory patch.
+- Use PSEC_PER_SEC, explicit frequency units, unsigned frequency storage,
+  32-bit divider arithmetic, and rounddown_pow_of_two().
+- Use endian helpers and bulk regmap operations for calibration transfers,
+  while retaining single-register writes for the custom SPI protocol.
+- Validate the MCLK rate during probe and reject a zero computed DCLK rate.
+- Remove redundant SPI and channel-template state, regmap_attach_dev(),
+  unused includes, and a forward declaration, unused chn_mode assignment.
+- Move regulators additionalProperties and drop redundant GPIO
+  dependencies from the Devicetree binding.
+- Split the gpio-regmap changes and add the regmap_test_bits() conversion
+  as a separate cleanup.
+- Limit the generic gpio-regmap extension to optional runtime PM support.
+- Use an AD7768 reg_mask_xlate() callback to select the output latch for
+  output GPIOs and document why it is required.
+- Use regmap_test_bits() when reading the VCM enable state.
+- Use descriptive runtime PM cleanup labels and verify structure layout
+  with pahole.
+- Set the VCM regulator's regulators_node so constraints from the nested
+  vcm-output node are parsed.
+- Mark gpio-regmap GPIO chips as sleep-capable when a runtime PM device is
+  configured.
+- Reword the conversion-delay and buffered-capture documentation to
+  clarify their operation.
+- Link to v2: https://lore.kernel.org/r/20260806-ad7768-driver-v2-0-027ac5e2a641@analog.com
+
+Changes in v2:
+- Renamed and expanded supply descriptions, split reference to
+  ref1-supply and ref2-supply.
+- Added START and synchronization signal descriptions.
+- Added variant-specific channel and data-line validation.
+- Made adi,data-lines-number optional, defaulting to the maximum.
+- Renamed the precharge and reference-buffer properties, removed channel
+  mode and power mode properties.
+- Exposed the VCM output through the regulator framework and updated
+  documentation accordingly.
+- Improved runtime PM initialization and requested initial autosuspend
+  after probe.
+- Automatically assigned channels to two hardware mode profiles.
+- Selected the lowest noise compatible power mode when ODR ranges overlap.
+- Replaced the raw phase attribute with the standard conversion-delay
+  attribute.
+- Added filter-settling delays based on the selected filter and ODR.
+- Fixed AD7768-4 register and channel-bit mapping, including standby,
+  calibration, phase, precharge and reference-buffer handling.
+- Added direct-mode protection around runtime channel configuration.
+- Added calibration register range validation and documented
+  calibration values as raw unsigned 24-bit values.
+- Added the required reset pulse delay derived from MCLK.
+- Added a generic GPIO-regmap patch providing runtime-PM integration
+  and separate output-register readback.
+- Converted the AD7768 GPIO auxiliary driver to use gpio-regmap.
+- Documented that AXI ADC CRC control bit 8 is common to the AXI ADC
+  cores.
+- Added the missing AXI ADC mutex initialization.
+- Expanded the driver documentation to describe dynamic channel
+  grouping, power-mode selection, VCM regulation and conversion delay.
+- Link to v1: https://lore.kernel.org/r/20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com
+
+---
+Janani Sunil (20):
+      iio: adc: adi-axi-adc: Initialize state mutex
+      dt-bindings: iio: adc: Add AD7768
+      iio: backend: Add support for CRC
+      iio: adc: adi-axi-adc: Add support for CRC
+      iio: adc: Add AD7768 and AD7768-4 core support
+      iio: adc: ad7768: Validate master clock rate
+      iio: adc: ad7768: Add power mode helper
+      iio: adc: ad7768: Derive output data rates
+      iio: adc: ad7768: Configure channel sampling profiles
+      iio: adc: ad7768: Add sampling frequency controls
+      iio: adc: ad7768: Add per-channel filter controls
+      iio: adc: ad7768: Wait for digital filters to settle
+      iio: adc: ad7768: Add calibration controls
+      iio: adc: ad7768: Add per-channel conversion delay
+      iio: adc: ad7768: Add VCM regulator support
+      iio: adc: ad7768: Register GPIO auxiliary device
+      gpio: regmap: Use regmap_test_bits() for single bit reads
+      gpio: regmap: Add optional runtime PM support
+      gpio: ad7768: Add AD7768 GPIO auxiliary driver
+      Documentation: iio: Add AD7768 Documentation
+
+ .../devicetree/bindings/iio/adc/adi,ad7768.yaml    |  270 +++
+ Documentation/iio/ad7768.rst                       |  273 +++
+ Documentation/iio/index.rst                        |    1 +
+ MAINTAINERS                                        |    9 +
+ drivers/gpio/Kconfig                               |   12 +
+ drivers/gpio/Makefile                              |    1 +
+ drivers/gpio/gpio-ad7768.c                         |  118 ++
+ drivers/gpio/gpio-regmap.c                         |   87 +-
+ drivers/iio/adc/Kconfig                            |   15 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/ad7768.c                           | 1872 ++++++++++++++++++++
+ drivers/iio/adc/adi-axi-adc.c                      |   25 +
+ drivers/iio/industrialio-backend.c                 |   33 +
+ include/linux/gpio/regmap.h                        |    2 +
+ include/linux/iio/backend.h                        |    6 +
+ 15 files changed, 2713 insertions(+), 12 deletions(-)
+---
+base-commit: b75697ef53e435d894833dad2a8c2fa882cb9b19
+change-id: 20260708-ad7768-driver-10cd15296c20
+
+Best regards,
 -- 
-2.43.0
+Janani Sunil <janani.sunil@analog.com>
 
