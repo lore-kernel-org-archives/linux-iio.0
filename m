@@ -1,68 +1,68 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D703BD65A
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 09:46:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90D693F86F2
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 09:51:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787910390; cv=none; b=XEjGPUIYv8dHcbctuoSH3H/fcnx+UQ2iah0C6dYU9dZcxF47cRfZlrCMi7mVsPpPvfhgvSoaCdOE+la0HLMaKxskSUfcjscNFioC4L7gzZ7ItulWRczLtfoMF09hCHCB0OUiEcBBlECkJKETt1ehfzL2w0RSHjC5S4Nu84FBxd8=
+	t=1787910688; cv=none; b=O9DiauJURdRQfqjVbIobRROcDikAvQ7xI/i+iDM2RYQNh0pYOnz+ilzk9lAwcihUGzHpdLu2+eAmmrM+zziEhx/P9ECr6RTJippeYQG+Pms2ID/R2I70eV8YBh0RaIB9o6HkO44WGtvhFYnZ2Oap5V4uTVVo6cKaDRZumFAuYk4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787910390; c=relaxed/simple;
-	bh=Uf6ldwilcJEaPDe7MOC/blE6zw7sKZkBqZq+x81xo3k=;
+	s=arc-20240116; t=1787910688; c=relaxed/simple;
+	bh=YgKf8rPNlAy6eEsUqC5wwHsyqREJn1lfAA/Svf3ion4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QU2z3QqhsFfyHoKiyGHpX8VvZo+CQhkZBOH89IqNPgqMFmvbLs1NnYzyeSL0qy9MP6iu3OP0Jbcis5wlIayBzaAgaArIdNzLMfWx53plPCNs2qeCpwItttutgi8e1w6FQ37E+Vok4QMepYIzjGs0vFmFFS0dcLXmGVCtPvFniF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mj1Hdoi9; arc=none smtp.client-ip=209.85.167.43
+	 In-Reply-To:Content-Type; b=kAXJrYsN9z37lbwZsBCLqy9YMhTikVil3FAToPY8+d1PonYYpAKEMyGxcjlAdqv4FnHGEZ+u3a+pNNGOTeYW6ecZPq4hTh+5JMvsNeKVVhEqdfqyqNkbqijHBbZrwZyPLDLG+0Lbic7+/DDAn3q7Z4c4meIUaxGT6YlyE6Q+9BQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i3g6+0hr; arc=none smtp.client-ip=209.85.167.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mj1Hdoi9"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5b159850b16so796835e87.3
-        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 02:46:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i3g6+0hr"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5b568dae0e8so1012545e87.0
+        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 02:51:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787910386; x=1788515186; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787910680; x=1788515480; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=XEaU4Vf2pUTQUtqKK4E9Z2UzMvc6WXT0v5g5IP0is00=;
-        b=mj1Hdoi9X8IjqXSGKApdm2NHvJCopqj05VIAhzv1PxZf+3f7AQJdDrPruM6QuJAPaE
-         JGWOFjE1kOXrp4Yv4Q3fnlV1YBSYdgmtYsg/EXOdzCxTfegbguiCrVjL1OMXGVKM21vf
-         B0ruzYUT6MitKdGq2Xev8+2a5cBgFRWC0khLx/s6RBvoK3alt1n2GCMVI9XhISFAWLin
-         xKLqKggXuwgkPVODgsw7gw47mkSWYmjN8sVJv9jcTfUmihaR8Fq6ywLaPl0f+guixsCm
-         Y9CVNTO0PBpNuuKTpLd8mUoL6gMqc/HSRVaPVckGakPPV9oG18Xfr3mIyUP9QpL6aXP+
-         XqWQ==
+        bh=jfr71wsqB8wCC6pMhB0diEVUU4Ylze5fQF263Bs69OM=;
+        b=i3g6+0hr1EvHYn5xNRb02X9IuQLnRQbUnycJ+NxR8CsB9xSLQp4Q78Sj+2FspFVgtJ
+         XfrkgI+5WuzPeNKO7k+SEY93yVELXV3kiPyvwsnUXssidCBq4x1Oa1RHCMJ5/21zhK+e
+         Tx3PYg59YbKT/84naDZmDPKPmVdCsNueI6Gr1z/bFvuNelh0M8TZSYLGKEOEmSyI8FGE
+         HoFeFg26oecP632Uc4bvWqBvCUFeCNV5AJ5H/VhH4XASJpmcXnQ6p8wurGar7ectiMoN
+         rQZHcSxfOetnrTxCloD91WQU2sC8lYUKI8ZAZOkD7qM2rn007xsSEHNjacv/rH5OXRbp
+         Ec1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787910386; x=1788515186;
+        d=1e100.net; s=20251104; t=1787910680; x=1788515480;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=XEaU4Vf2pUTQUtqKK4E9Z2UzMvc6WXT0v5g5IP0is00=;
-        b=G2a3MH5cbMy6xEtlfdn2QiLtkyzC2Dxxusl5oEmJby/UyVkv50Jw4+0OBMh4jDmi4N
-         9M7I09BwGBT/u539nKD+oO7+NqUdehR21nOdDKBgL/KeqcysEQLywVfIibhwrrqhgMWD
-         k4EdIWKupCLnT13sKHQA6uo1T8Sj0HtXaK3/1Jfx+gXiF8RLV+kf2O1ttu7fW/AnOPBB
-         18hbzvoOZIknEUJeIqQ8jWdBp2hMLrKKuSh5XK6vNSRdylYxOSVCrbHqrCWJKzRlq1tR
-         RgHB8L09sTOi/c6kzFhrdyDQCZ8ZcivGdVvymRiTOFpV0b/lNCMm1+hLmQVqR7+wbaZR
-         KRCQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpE0to9DnZZtv98LudC22FSENF73F8E4VPTl78XfaHFkliPll7VuMMHEPHnLirI05CZGwMf3SxDxQM=@vger.kernel.org
-X-Gm-Message-State: AFuF++k94XXPHABuGcWSkGp62pTEOViSKcdY/1g1Q3ol60Fwy3ccIJYo
-	KrEZKHViKztfZyQWxDgMC+1iEDAQpjwKBhC5A77tbPzn4L1tr9mNTQ+c
-X-Gm-Gg: AR+sD11XcLG0Y470cGaAxBaKDsuQH7pWMJ7k1l0jRmeINDRY8f0857rSY+8vc+WULzs
-	YoufCAV/ag8tifzHhYHYPPem4IqoefB8dh7TlUrz1uh3wMIE8I+oPngPm9ksbqjZJ7AlzvkuALp
-	Ak9t/Fu2U+B1YgCouBFGfWQ9pGL4UK6xOjgA/sl7/nvjXFo+hnrSq5+ch3YxrSQBBpB0neSkm9x
-	DeSF1/1z2fO7GCUK8U7cJfC3ShJ0EtSanCsb4DK7tzfRIMSTrbQlaezCGFvrd7enk/L/IUyU7+A
-	1JtNjnD3DzWLEvC4dfnlsmsqHXayEjn4Nj6FFqIv/4c4yl+Fth0NJgNxoYOFQvvf5v06xm3KkYn
-	3zKW4zVEnPjGGIiugdi4rrjtMC+Xw9aadaBHSHApToaSSiCk0EaZBTzmnDSThgj7Rz9sdX1wLh7
-	DWbuPK0ZQ7QlEkhZ0fw4DFv0nzXxHE8A4DXX9IXaZulBsyE6aN1U4T8SgIs9kSgm2BSKdS0bEvI
-	D9knpzbACSYW93QPEiBCtmHb17K+Xt8WGYOaAAbxxJl
-X-Received: by 2002:a05:6512:400c:b0:5b0:165f:17fd with SMTP id 2adb3069b0e04-5b5e68ec97dmr1491553e87.14.1787910386137;
-        Fri, 28 Aug 2026 02:46:26 -0700 (PDT)
+        bh=jfr71wsqB8wCC6pMhB0diEVUU4Ylze5fQF263Bs69OM=;
+        b=XFqlGgulMAWK/I/WxbcBvis6xCZRpvYSSHB/mgJPL2CNrvEXfmzqzMg5YMJY/hZFW2
+         n5n929BRk4kuYp6Q6nlmmfSApjM0oX1SZnZOT9txfOTKw9tZxYW1VQeHA4hG05LhYpXf
+         tTQgLTQjq7zpNHtn/80EpmlyBmaEe5sPxZ1Es5SQXSnkTDF6EKqjRlAGbScUh7aJPbZ1
+         pQf1QSYgcs4mCj1PetsUcCSvhxoOGjUnP9c4wIbgbqZF+camJDCIUIl79QRgvGqOL8Xs
+         Twq4T7Mx83/J2QU5a0j1gS9/U2lJtGj6nafz0Zg7+VNPQkdf9MwfrfERq///zUbbYiTY
+         b2Ig==
+X-Forwarded-Encrypted: i=1; AHgh+RqwQFFEYDSqPq7ye72wJRPlehT/qbrO96ioAknCgM5Ga9h9BL99kc103RFC6pBfuDbouOJIJemQTV0=@vger.kernel.org
+X-Gm-Message-State: AFuF++mlh3QyXKmX7sTL9EpZclZuKt20/4Duvn8POfDw2jsbCXdEZrmx
+	Dp2H0O7aT1VWAm8YSoB0oIod6iDVzAxE1wZh+marlSlskhqnABiTbRoL
+X-Gm-Gg: AR+sD12ZNx5p7PAXLjrs2qQjet3Mb+TQ5ZcQp5RkjhPkmp12aeJYIw7KmZZOwOl1YjP
+	jAiKZ25DTFIYa5Batp9YMCXwGpfn/IumMNq0F/Ol3JmoHGmj54LUhDtR9bONGVA9sRQg3U0h824
+	7CfR9j19+paY1GShUm/J0fCjOM3xhma8Za2IHlIAjQ+5KGyR0si1zdhvuZDScv0UEPjzaov825e
+	hNAsk8wQ+Cuj029jFoJK3jUXFNK7j9avo2WMQ1KtGaCXZjhynHknZPWtqkfNgwvb7ztQOPGR4mD
+	dpn6f6297yarg92WWTsb9Yt04vqq6w88MUtmOmP7U/dInkrcWGItTpN4DYQEtr5pFvMqvLI4dqr
+	k68GF7F2Vz2l7usTzvaSS9IM1oZZlRtEiBNXM0juXurePank03rrCsGJe7ziH26HZAQH0IM222g
+	ev0QwO518VhOnpFiPkObNNimfsrsxRMxbbe6tfuCvlGD8sUvxgMpMhOac13vhT2v5UIWgw65uL8
+	mEKPmijPm/MqjaUkskW55hInwPQ4Qq/TYKBnEksFHJr
+X-Received: by 2002:a05:6512:224a:b0:5ae:befc:97a7 with SMTP id 2adb3069b0e04-5b5e68ec53amr1749105e87.13.1787910679358;
+        Fri, 28 Aug 2026 02:51:19 -0700 (PDT)
 Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a305386b60sm1797241fa.7.2026.08.28.02.46.24
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b5e89c5e2dsm290343e87.1.2026.08.28.02.51.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Aug 2026 02:46:25 -0700 (PDT)
-Message-ID: <5d274bfb-2570-4336-af16-60640550e6c9@gmail.com>
-Date: Fri, 28 Aug 2026 12:46:24 +0300
+        Fri, 28 Aug 2026 02:51:18 -0700 (PDT)
+Message-ID: <1dd22b2e-80d5-40aa-b275-e8089601e093@gmail.com>
+Date: Fri, 28 Aug 2026 12:51:17 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,8 +70,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/4] iio: light: rohm-bu27034: Fix infinite delay on
- error
+Subject: Re: [PATCH v2 3/4] iio: accel: kionix-kx022a: Prevent memory leak and
+ fix state
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
  Matti Vaittinen <matti.vaittinen@linux.dev>,
@@ -80,70 +80,91 @@ Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
  Andy Shevchenko <andy@kernel.org>, Mehdi Djait <mehdi.djait.k@gmail.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <cover.1787901813.git.mazziesaccount@gmail.com>
- <7f0d8efb3578cd4f23a7c70fa4a8f7a967c9df8e.1787901813.git.mazziesaccount@gmail.com>
- <apE-gauHWlJO8-5X@ashevche-desk.local>
+ <9e4453fcc00df6ec988207df8916226d18aecb20.1787901813.git.mazziesaccount@gmail.com>
+ <apE_RZJu37iMuWnJ@ashevche-desk.local>
 Content-Language: en-US, en-AU, en-GB, en-BW
 From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <apE-gauHWlJO8-5X@ashevche-desk.local>
+In-Reply-To: <apE_RZJu37iMuWnJ@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 28/08/2026 10:53, Andy Shevchenko wrote:
-> On Fri, Aug 28, 2026 at 10:40:36AM +0300, Matti Vaittinen wrote:
+On 28/08/2026 10:56, Andy Shevchenko wrote:
+> On Fri, Aug 28, 2026 at 10:40:51AM +0300, Matti Vaittinen wrote:
 > 
->> When reading an integration-time fails, the code will use error code to
->> compute the sleep time.
+>> The driver allocates memory for samples at buffer enable path. If regmap
+>> operation fails in the kx022a_fifo_enable() at the buffer enable path, the
+>> allocated memory is never freed. Furthermore, the state information and
+>> previous hardware configuration(s) aren't undone, potentially leaving
+>> WMI interrupts and buffers enabled, or driver state flags wrong.
 >>
->> Fix this by using the smallest integration time as a default if
->> reading fails.
+>> Free the memory and revert the hardware configuration and state flags on
+>> error path.
 > 
 > ...
 > 
->>   	wait_ms = bu27034_get_int_time(data);
+>> static int kx022a_fifo_enable(struct kx022a_data *data)
+> 
+> With
+> 
+> 	struct regmap *map = data->regmap;
+> 
+>>   	guard(mutex)(&data->mutex);
+>>   	ret = __kx022a_turn_on_off(data, false);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto err_free_out;
+>>   
+>>   	/* Update watermark to HW */
+>>   	ret = kx022a_fifo_set_wmi(data);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto err_wmi_out;
+>>   
+>>   	/* Enable buffer */
+>>   	ret = regmap_set_bits(data->regmap, data->chip_info->buf_cntl2,
+>>   			      KX022A_MASK_BUF_EN);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto err_wmi_out;
+>>   
+>>   	data->state |= KX022A_STATE_FIFO;
+>>   	ret = regmap_set_bits(data->regmap, data->ien_reg,
+>>   			      KX022A_MASK_WMI);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto err_buf_en_out;
+>>   
+>> -	return __kx022a_turn_on_off(data, true);
+>> +	ret = __kx022a_turn_on_off(data, true);
+>> +	if (ret)
+>> +		goto err_on_out;
 >> +
->> +	/*
->> +	 * If reading the integration time fails, default to the minimum so we
->> +	 * don't lose samples. This may waste CPU cycles, but as a hardening
->> +	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
->> +	 */
->> +	if (wait_ms < 0)
->> +		wait_ms = BU27034_INT_TIME_US_MIN;
+>> +	return ret;
 >> +
->>   	wait_ms /= 1000;
+>> +err_on_out:
+>> +	regmap_clear_bits(data->regmap, data->ien_reg,
+>> +			  KX022A_MASK_WMI);
 > 
-> With the above being open coded the _ms feels not right.
-> I would expect the TIME_MIN to be in MS from the start
-> (and for the consistency's sake with the below) and having
-> all this to be written like
+> in particular this will be
 > 
-> 	ret = bu27034_get_int_time(data);
-> 	if (ret < 0)
-> 		wait_ms = _MS_MIN;
-> 	else
-> 		wait_ms = ret / USEC_PER_MSEC;
+> 	regmap_clear_bits(map, data->ien_reg, KX022A_MASK_WMI);
 > 
->>   	wait_ms -= BU27034_MEAS_WAIT_PREMATURE_MS;
+>> +err_buf_en_out:
+>> +	regmap_clear_bits(data->regmap, data->chip_info->buf_cntl2,
+>> +			  KX022A_MASK_BUF_EN);
+> 
+> 	regmap_clear_bits(map, data->chip_info->buf_cntl2, KX022A_MASK_BUF_EN);
+> 
+> Which saves a single line, and the followup may shorten the existing code even
+> more.
 
-I don't like using 'ret' there.
+As far as I can see, the driver is consistently using the 'data->regmap' 
+everywhere. Using 'map' just in one function would raise question if it 
+is different regmap from every other place.
 
-At first glance, the
-ret = bu27034_get_int_time(data);
-
-looks like ret is containing just the success status. Furthermore,
- > 		wait_ms = ret / USEC_PER_MSEC;
-
-forces one to go back and see WTF the 'ret' is (even if just couple of 
-lines - but this is not an improvement, using ret is obfuscation).
-
-I could change this to:
-
-wait_ms = bu27034_get_int_time(data) / USEC_PER_MSEC;
-if (wait_ms < BU27034_INT_TIME_MIN_MS)
-                 wait_ms = BU27034_INT_TIME_MIN_MS;
-
-(but for me this feels like unnecessary bikeshedding than anything else.)
-
-Well, I'll change this if I respin.
+I am 100% Ok with anyone changing the data->regmap to 'map' throughout 
+the whole driver in order to cut the amount of lines - but it is not 
+something to be done in a bugfix commit.
 
 Yours,
 	-- Matti
