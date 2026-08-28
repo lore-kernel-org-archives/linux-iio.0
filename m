@@ -1,121 +1,104 @@
-Received: from mta0.migadu.com (out-39.mta0.migadu.com [91.218.175.39])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D13F3D955B
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 07:41:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.39
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E255637BE96;
+	Fri, 28 Aug 2026 07:47:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787902884; cv=none; b=A+1DHmgriZRpgiz7UP5sI9Zz5npiHL+Gd8GgedVbKme0R9vThGNPUlk2ElOgaR96MtOXWIk+KiiLk7dFak+vB8ZKFKFxtuhCUZiOzCjQ2ferWzQ7FIV/AQ0kviBajZK30a6ukD+dXgen+30L/Vg5AhSgRmZyVuIsMEDkmMdYHA8=
+	t=1787903238; cv=none; b=kdoH8pbqhkUmx/gaowBbnJgTfhyEqVn1YHlRaO+UhoQ17v7tkb1FP/Zj3J5zjVSOPXv3WU/WXepT/qQaOc4zQfit3qoB2slNdCZvouc7fQWn0Ual0KkLkvSQYaCZiEHmsds9n5k3BxReUnQPKhB5TWjWiSGoU3q93KfVGuXv1gY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787902884; c=relaxed/simple;
-	bh=lxQwDZUBPKMiN4rKy7Wx4GnvGH6bw5PgAm6OjTB5zS8=;
+	s=arc-20240116; t=1787903238; c=relaxed/simple;
+	bh=ltotGOTs2BMOp85uieWLNxHajEwqVVaPPrqp4omhHnE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Fgy8fLjWZ35Zou6rgFcIUWlWa6eJ7oj3FPlNsH1sCxcVrR1GHW5MquWXOI9Fq3QMHtbcMrDrurmndq+C6KDD1nN6itKWkUk1oC3PJxp2+N31a6vI3tmgl8qQAV28i+kn7mK5RClbJ6ISxXmUnje3srJulQRH2eYdlgdlsk4K/II=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=NV9r7Nis; arc=none smtp.client-ip=91.218.175.39
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	 Content-Type:Content-Disposition:In-Reply-To; b=BAHR3ezbE6260D36ABMonaR5h8ai2PGUtn5HV4DhvURW8RWJRCPwPhKRc7HIwSUkitGJHlcLV+TUdf2SoO+bC0EUxmEkmbY3m2AB0fBwnOSZ2Ek+sZefyLEF7VB1dQ326FZWp8UcKxOlLh4XUMSHug5E7vl5z/+StH2JQuEDRi8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BSaaUtA8; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="NV9r7Nis"
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=lxQwDZUBPKMiN4rKy7Wx4GnvGH6bw5PgAm6OjTB5zS8=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1787902880; v=1; x=1788507680;
- b=NV9r7NisaxEkdQNNWw5FX5n9PzcMgTFIRk+J6U6K3rsuSXGqWRXaWnD+rhcytjBe/MD3q1qw
- 79vwv4DCN+mW3sx5QQLxyj4zoJIVgXYSCAdtISXDla8AeXp/51tRggljqKNRhhCF9R9z3uYzz9x
- Xdtmqi0mq6VlmefaoyFXbTV4=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by mta12.migadu.com with ESMTPS id 52cc6e5ea10533eb;
-	Fri, 28 Aug 2026 07:41:20 +0000
-X-Mizu-Trace-ID: 52cc6e5ea10533eb
-X-Migadu-Flow: FLOW_OUT
-Date: Fri, 28 Aug 2026 10:41:15 +0300
-From: Matti Vaittinen <matti.vaittinen@linux.dev>
-To: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-	Matti Vaittinen <matti.vaittinen@linux.dev>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BSaaUtA8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787903237; x=1819439237;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ltotGOTs2BMOp85uieWLNxHajEwqVVaPPrqp4omhHnE=;
+  b=BSaaUtA8M0WyUJ767xCIWi2IEpSi4P/oJNE6AGdY9aT3e+O9E4Z8LgzD
+   xlteRlVRz1fK1O0HLxJPP5K6Axgn0uDW/3bRlZOtXCVT6r77WYnConYpv
+   1ZVCpSu9uv8JP8kGf+OvfoAKuednZfSBCw7R0VR2FdSZdCOEkNFEXMeD6
+   XKkDwk4ZFH0ZL1k57Hjg2F00rFlG9cGwCx8lctZlMKn9+OiCNymXX2IVt
+   iJjvfy987jQbDN4t7SYysKXusUPHKaYWo4uAZ6GA5hDL93cZFK6l5ieWM
+   nCj3YiFX0JVtI2Pbvul1saGHG23jf69ZWpwUnYgML8OcnQ8nZuDK648++
+   w==;
+X-CSE-ConnectionGUID: lg2qlb4dTFSe1Y1nJQIqeg==
+X-CSE-MsgGUID: ApJIKPq0R4qoddRwMH4ePA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11888"; a="88614747"
+X-IronPort-AV: E=Sophos;i="6.25,248,1779174000"; 
+   d="scan'208";a="88614747"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 00:47:16 -0700
+X-CSE-ConnectionGUID: okIO/AGwQGizEfaecB6fLg==
+X-CSE-MsgGUID: /wbvwY1VQNWxEVQRXRJ2Lw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,248,1779174000"; 
+   d="scan'208";a="263804291"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.34])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 00:47:14 -0700
+Date: Fri, 28 Aug 2026 10:47:11 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chang Yu <marcus.yu.56@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Anshul Dalal <anshulusr@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] iio: accel: kionix-kx022a: Fix IPOL macro name
-Message-ID: <c2ecaac02c39ebe9a409f642b3cfc0969ac0b3b7.1787901813.git.mazziesaccount@gmail.com>
-Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
-References: <cover.1787901813.git.mazziesaccount@gmail.com>
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: ltr390: Remove stale TODOs
+Message-ID: <apE8_yrAGt__Nl9N@ashevche-desk.local>
+References: <apE0dwvpW6Yl8yzz@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="0hs/Mw2K0VOgxflI"
-Content-Disposition: inline
-In-Reply-To: <cover.1787901813.git.mazziesaccount@gmail.com>
-
---0hs/Mw2K0VOgxflI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <apE0dwvpW6Yl8yzz@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-=46rom: Matti Vaittinen <mazziesaccount@gmail.com>
+On Fri, Aug 28, 2026 at 12:10:47AM -0700, Chang Yu wrote:
+> Remove stale TODOs from ltr390.c. All features have already been
+> implemented by Abhash Jha<abhashkumarjha123@gmail.com>'s patches:
+> 
+> Configurable gain and resoluion: commit 13fad2607dad ("iio: light:
 
-The "interrupt polarity high"-macro for KX022A variant is defined as:
-"#define KX022A_MASK_IPOL KX022A_MASK_IPOL1"
+Misspelled 'resolution'.
 
-However, the KX022A_MASK_IPOL1 is not defined anywhere, so actually
-using the KX022A_IPOL_HIGH would produce a compile error.
+> ltr390: Add configurable gain and resolution") 
 
-Fix the define by using correct mask.
+Here is trailing white space. Also you can do it in a way
 
-Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Reviewed-by: Mehdi Djait <mehdi.djait@linux.intel.com>
+ [1] Configurable gain and resolution
+ [2] Suspend/resume support
+ [3] Support for reading the ALS
+ [4] Interrupt support
 
----
-Revision history:
-v1 =3D> v2:
- - Fixed the commit message where line: "#define KX022A_MASK_IPOL
-   KX022A_MASK_IPOL1" was lost, as git treated it as a comment :)
- - Moved Fixes before SOB
----
- drivers/iio/accel/kionix-kx022a.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Link: https://git.kernel.org/torvalds/c/13fad2607dad [1]
+Link: https://git.kernel.org/torvalds/c/288ce72fb5fc [2]
+Link: https://git.kernel.org/torvalds/c/14e0d914a855 [3]
+Link: https://git.kernel.org/torvalds/c/7ca4b8957066 [4]
 
-diff --git a/drivers/iio/accel/kionix-kx022a.h b/drivers/iio/accel/kionix-k=
-x022a.h
-index 0ed54f584223..a2d122c1e234 100644
---- a/drivers/iio/accel/kionix-kx022a.h
-+++ b/drivers/iio/accel/kionix-kx022a.h
-@@ -65,7 +65,7 @@
- #define KX022A_MASK_IEN		BIT(5)
- #define KX022A_MASK_IPOL	BIT(4)
- #define KX022A_IPOL_LOW		0
--#define KX022A_IPOL_HIGH	KX022A_MASK_IPOL1
-+#define KX022A_IPOL_HIGH	KX022A_MASK_IPOL
- #define KX022A_MASK_ITYP	BIT(3)
- #define KX022A_ITYP_PULSE	KX022A_MASK_ITYP
- #define KX022A_ITYP_LEVEL	0
---=20
-2.55.0
+> Suspend/resume support: commit 288ce72fb5fc ("iio: light: ltr390:
+> Suspend and Resume support")
+> 
+> Support for reading the ALS: commit 14e0d914a855 ("iio: light: ltr390:
+> Add ALS channel and support for gain and resolution")
+> 
+> Interrupt support: commit 7ca4b8957066 ("iio: light: ltr390: Interrupts
+> and threshold event support")
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---0hs/Mw2K0VOgxflI
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmqRO5sACgkQeFA3/03a
-ocXcdwf9H+X03uz+kSa/2wDaPaP5+zmcu+pfvOrlMAbjuoshbCtfbWk6F8SDfCoT
-ZNnUOPAacDrCjaIYTjIaYXCAo4hy3hJgdaevaMWhEeq0QYcbrM5gQ2VXahuFCrp5
-TeRDncKi7N+sM6zuQwubGrqUDwa/Zrb6eskiR0FciUq2AISk2bY94S9kLit90VVM
-jDlEhuho4fTsbWqH3DsdYsI9/lkRgxukvS+tmXetB+Ba/iZA71d+flmxq8nWkl5e
-fOPGsW4s4mSWW68xL6YZwZiNiJTgLMeuHgHgOYR04J3jjYV3vIOzkhNnM/lD+Ch1
-spM+dOfifcs/qQIYUziCWDEr8eOf3g==
-=dyl7
------END PGP SIGNATURE-----
-
---0hs/Mw2K0VOgxflI--
