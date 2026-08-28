@@ -1,121 +1,127 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9FB3AE6E4
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 08:13:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787904841; cv=none; b=V58IdGyig7T0vbagtqa0iayFxbrlCwyU8ANJzCHKhVeHNuIJx1xqj5HmazO9l2AayvCGIe6EXS3ybSSZJ4ZwP2NPeB8crIhC0pSfxPKb65mFW3L6EzrOd1fqYFCyV8LBJnfEP6NsBuP85Rt83NO5dogX7zE0a84DuIg8d/shvgs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787904841; c=relaxed/simple;
-	bh=d6l+02HOG6dBou7Igto/xXG7YXvFDdwm/IWzpa4cwM4=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=nVlQXLj94NUp9HUDGUSW1ZBf4AdXIbL4pcMqaJZklFFBQtDFEohy73h1jD816HBUhMV/SIDXwYKfbpWEhGcotn8ZTtWdEFubmTqtq2XaoagwTkZVpjuTEDomtBDWool09fzv/EAJpnW8Gjoqb8d1d2BOS3D2+jgAz0VDqZfP93Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dGhdJiun; arc=none smtp.client-ip=209.85.128.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50913B5310
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 08:20:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787905229; cv=pass; b=AseOQktNrykQdggg34RmBxSEU8tezhrbmykFzcoTvJLpy/sKkC1FmlkYHUWFpDbu9r6B/R7YrTUaS1Bk/MMwFslr6sC1Uk/um0a/ckTgjIpAbYLy+sLsuO94BkMjNGdRUeYUWh52sx1CCxIIRcNVx2rrSgMiqDDUOdm8KpnLpHQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787905229; c=relaxed/simple;
+	bh=0k16NvqGLpEZuwKFNrchs/B0fFA7CkRTfrBlgsWVXpE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=p/Eo4FWqYrkPxc3WpgptZdrdX4eGd+01iNPHP6RNkeZqp4n5L7h2QU/b79aiBHUb5O3Dx+HkGfc0b7DEkHLZiEGCo7pWfbIoY56iDx2AZXqKkqBQbZsh3/RSf+vWm42FZ+iS3ySKP7AmNYYrvEVxy4tu2x/k4tP+nIFCJvrQwXA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TzmcyZ3P; arc=pass smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dGhdJiun"
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-81ecf499af9so7239917b3.1
-        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 01:13:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TzmcyZ3P"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c20ce3c118aso139463266b.0
+        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 01:20:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787905226; cv=none;
+        d=google.com; s=arc-20260327;
+        b=sY+Y92BZmDO9UBgvHkq1YW+Vh1N8UVal5EvsOOx+qmMJLXJ4h99yXZDrcDRTQU3N9y
+         Wjs5iOAm2mdRLbHwKMT3TJTnQV1BHpixLIztrKaY3sVl/q6QxjTQ8q7znTfx+XE0vZCk
+         DGT9KCt/XIl/ejSSsphCRgtC4ndPcTT99jjgAr0LpB1c8VrSZQQBjMvP7x6yaB2Ev5L5
+         q8EdSgANSIns8fRc7nqoDTCm+G/5eXAwO4JI1/IK/V26joaLaIdsXwiOaU1EfMRUJ+1n
+         mLPwUvmCVsKDi5Y8Dt6DL24TnQXaK4vA6spEcwKRyfQ32QirNvYGmtQMylw+c4ZYU7rc
+         S1Xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=0k16NvqGLpEZuwKFNrchs/B0fFA7CkRTfrBlgsWVXpE=;
+        fh=hGZlkon1lNEv7Q1bPSiC7yo/8RnOZI16qrXlu6tVxWc=;
+        b=nXALHkmH0Zmh2ghv8p54AYkKc4yMD5BeBkw2samOP6YeMjEMIbgc02DhDl+0kKtXLp
+         gwvgcMoQlGpYcvQWuu4aGlyzVgktHtMwoREH4H8vKQtiIDxx0trlBOPq5ZrWA9aKyK7+
+         Zx/Fcd3nPK5hfibKMLVmBBhV+pdOlOm+y2bRVqTcKSDgpUQ6Tna22EpIlraMq8LDVoHf
+         d4Dqo9e0B+RslXGT/8fkH4+9CcuIScjc95NGE2FfNGOPeGUKaDPlkZlA3tIbGS3AYV4E
+         mHmVaRtu78jFmGQPQFMROb0vUezGwWXr6KpVxexD8mTjMQlclDq7H6zG3Q8Igbz4lJz7
+         h5mA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787904839; x=1788509639; darn=vger.kernel.org;
-        h=content-disposition:content-type:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=fRjn9sqCurrAA+15m/FlRgC4mPrIiDCg2DZ2ej6eFxk=;
-        b=dGhdJiundlN4ym6FA5W5tjAySdwoAdFZKNVyxXGEu4tB2a1GYyjXV+8TY/VI+BPyED
-         cqLJWsXJABWso8mK+W5edqmiJnFN8reXHnwpOQGYjUIFlA18Y09aMvTKTNYfXw33QjlY
-         yEGVUIzFRedAopWrSehjd94O72mjdrnZKKSTULOrxM36BEWqNewYVCMMeSyJ9mK4bu8N
-         fLOnkWC2IH4TncwPgcJPWDo6opl/PnRmziYMbhomSVUcbn6gp8D4AZDvsZchTcUxGd0z
-         7hxuB3PPU/BR9j72VxbNsXjv7vm2xzrHRSL3+wXJcTX/YUVjAqN1ojwkvABWgUQibLUm
-         Mx4g==
+        d=gmail.com; s=20251104; t=1787905226; x=1788510026; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=0k16NvqGLpEZuwKFNrchs/B0fFA7CkRTfrBlgsWVXpE=;
+        b=TzmcyZ3PMHnMOggBiaeFsOAlYM5lI9hnGnRmqqparAPzIBiOBxB8NtPg4CvbpQUkwu
+         8a6Jv0YpmGCVENqH0HJ9BV6tGSCWfB/Y5C7qAAV4ZSxO2M3P3PdnmbraaVIVCMgeh/7f
+         n++C1/YCZ9O13MM6eItW2aoLmLWGYjPrQB/Ut/D6vp2eoo7zO8wW6xtCb7ky929tdSwD
+         y4EVq4UBQEi4GxO5G+3vOXqoj1tdCyVYKA578Y/VhtM2f6VefBggs/Z3duGNDqJAt73o
+         7SvbTR6kqtvbrEegskq3AOC2xCfht/lShgABMR1bR74zqMUSGH+kG4jFuyZbGutFP58b
+         T8yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787904839; x=1788509639;
-        h=content-disposition:content-type:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=fRjn9sqCurrAA+15m/FlRgC4mPrIiDCg2DZ2ej6eFxk=;
-        b=ea01bn71CRsrNqMjZ50AswU8tVIP2g68OUI4EAy51GqW/M7SeMcO9xxpNxkMJz9i12
-         xQ0j/McpPo4e05z3htKvURFFY2miptCAJLZapeXvPKHhq09992hVd/JHV6FuRNG2n8HM
-         xyuJle5WQROE8+ippPCLeqoV829PZgC/+fEGj2T3xPicBNOU8ZMXqFNTwi5nvNwk7vFJ
-         GjoIAQQLh5AwhZP7N8AQFR8cgEbNUOhLIqFzM02eZcFecycYke0BfQ2KAtjXISDFP3rP
-         dQY9L1CiC+Q79Gd+uRyYYST2qJYKf+cobUdoofc1jjO32FC+OsfjWAAxiHA6lfKUfP/1
-         ymCA==
-X-Forwarded-Encrypted: i=1; AHgh+RqwLcGVKq+3DQNWi4EQqDHG2uOyKSaT7T4+4I2FGUu+v3PV0LQj5PRclDQwn6wxXhIGn9NRedED0lw=@vger.kernel.org
-X-Gm-Message-State: AFuF++myWPQSZPFKmd74dcEv5WZGG4xOE80MTfvgRIk8fsBbWcsTuYEK
-	xITgjoOr8LcrNcxV4f4IGTiTZhCngfShWMi3m9vME0Bu39rhun6a/Eps
-X-Gm-Gg: AR+sD10oTQQjWQwpLEVjVkFiCGni1fhP0onaWutpirRUV782a1ZciRDfQ2iHMcph9TW
-	u+3IWRq10eqPLqmSv075uCAijLk1ikrljeBesEv4SJNzoeo48nLlMofgVwYduSV/8mAso/1ZuK9
-	KZizW1Xh3AELyXPLANNodB8OfVuCD2p0+vxWtMAh3gMaL23dOdMr+LbXBpv5w6nJMClyyCPVpvz
-	JjVYOW7FO9cVdGb+qxu3djgVy87ydA2Y5GZQg/JfmIlJTILodPqV0WHEf4hqfvUy+atG5v3vDrF
-	8xyKf7gUJzitPIRI97OnVuelmqIgm3E7lOGDdPP7ZOfivzfVKw2vX0VCOb6AcnHAiILxPo//96D
-	A3dzsVDz4h/eWjGJKI2m+4st8S3qyCaZb+JGrQvfcg0ylRR8u4cNMgY0la5IFnH3d8iJRB+eAwK
-	YGJ3TFVHE9m20U+1giJJXGLMV5sxfI2etp523WDBROVnoOWwPwQgEjQg==
-X-Received: by 2002:a05:690c:6a0a:b0:809:ae5:1d2f with SMTP id 00721157ae682-85d6743fc80mr22309757b3.9.1787904838711;
-        Fri, 28 Aug 2026 01:13:58 -0700 (PDT)
-Received: from gmail.com ([2600:1700:5431:250::3e])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e5f7dfaf3sm3374987b3.22.2026.08.28.01.13.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2026 01:13:57 -0700 (PDT)
-Date: Fri, 28 Aug 2026 01:13:54 -0700
-From: Chang Yu <marcus.yu.56@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>, Chang Yu <marcus.yu.56@gmail.com>
-Cc: Anshul Dalal <anshulusr@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: light: ltr390: Remove stale TODOs
-Message-ID: <apFDQhk9TUoLnEZt@gmail.com>
+        d=1e100.net; s=20251104; t=1787905226; x=1788510026;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0k16NvqGLpEZuwKFNrchs/B0fFA7CkRTfrBlgsWVXpE=;
+        b=ixTdy/wvAzl02GS7B1RhvMpW8InQvvauXdOSVw/CLAjXxdNznV8m+su3T/BAG1dAcu
+         Wkbz6Rp8mvXCQsk2mxfrgkreWlQ37k8ezEkhoKrm1H8910la4U38Rwlt8XHxxccfPN2i
+         tbAS//xVoJxqDf/1DskMFdILZsWOVUGG046N7kVOeW7QTYyxFJ48itPo1NAZbrW5UM6i
+         IilQLEY4CHJIBOEyrfziZfzDWlRw1NRjl9Zfy3+/CYhnAMj1QEaWcffNGBIX2yGsV0jl
+         DpFYMoInxLUqDXzjysqnkC02PDuQdcX1Kjd8T5xrrfe2NgM4hl+6u4MsquGHAALPzxdl
+         XFTQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpLBEHe7C52cbFYab/V15hpyGZGcxxKzDNc1Obh7QeKXX0YTgXoe/MvLD+4a+sCPySHCd3EklwHSVk=@vger.kernel.org
+X-Gm-Message-State: AFuF++nuTZhJoWOZtOGBdQdkHhcXzegfXmAjZxEl7iIuVehCNNx09A+I
+	nxIor6gSskRLCweVlLxdvdzUJ6E/A1RyY+QCct8k6tlx1ntVLCBxFqP7d5UhMELBg11T2ljusfi
+	Me1kM9DpxF1XwA5QOsPX4dt31cjxpoA4=
+X-Gm-Gg: AR+sD10HbwPw3rYfUMscZOHc8BAhNeMu7eeNByLM8rYQPupnkJJiZ1SjA2HJsg8/u0u
+	H+A31N3jcdS9vU1HqlgTxPnJyv9WZ47jE9JzQS+xZ+hGSpGSEtpSfdxscwssj5AGLIXFQf1vHpN
+	9jxMlEBcznH/84wdjG7R3x6PCQgLtYrSmPn39Lpfilx0Uh6xClQzL5ihcietD8IpVvFht883QQh
+	n/DP/DCr/ocJ8tyqRlzL8flu3xYS+RU8dw37bgfM6X2I7nUxEKBXSSHAV0Mo1QtY8LmudbkMUb/
+	4XJ5ppBdP1Ej8+87PiKvAf/AyXINvn1xWwe12w94IAw/k4QiDcXj4lINJXOO/TxT9HYJfC67UjV
+	0wiibebT1+qsm4fLb2bjLu7BiVJyv7c40121m+yoEgeu2BdHK4bLeSl0ftAfiA79AC5i9UyB5IS
+	OneQvX6DbL198oZ2Nou7/NvjH6xi9vFg==
+X-Received: by 2002:a17:907:97c2:b0:c12:3cbf:9f6d with SMTP id
+ a640c23a62f3a-c2553438ad5mr349187966b.1.1787905225763; Fri, 28 Aug 2026
+ 01:20:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <apFDQhk9TUoLnEZt@gmail.com>
+In-Reply-To: <apFDQhk9TUoLnEZt@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 28 Aug 2026 11:19:46 +0300
+X-Gm-Features: AcwNN1WCy68cjgOouN7IuXcolh-9Cy6oFOkAh1sFEBI3mJFOpc2cfdjaVoJZHws
+Message-ID: <CAHp75Vd=0pPVFRrMOiioaCnZS11=nKNe9op7J0xeuafOzqV5=A@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: light: ltr390: Remove stale TODOs
+To: Chang Yu <marcus.yu.56@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Anshul Dalal <anshulusr@gmail.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Remove stale TODOs from ltr390.c. All features have already been
-implemented by Abhash Jha<abhashkumarjha123@gmail.com>'s patches:
+On Fri, Aug 28, 2026 at 11:14=E2=80=AFAM Chang Yu <marcus.yu.56@gmail.com> =
+wrote:
+>
+> Remove stale TODOs from ltr390.c. All features have already been
+> implemented by Abhash Jha<abhashkumarjha123@gmail.com>'s patches:
+>
+> [1] Configurable gain and resolution
+> [2] Suspend/resume support
+> [3] Support for reading the ALS
+> [4] Interrupt support
+>
+> Link: https://git.kernel.org/torvalds/c/13fad2607dad [1]
+> Link: https://git.kernel.org/torvalds/c/288ce72fb5fc [2]
+> Link: https://git.kernel.org/torvalds/c/14e0d914a855 [3]
+> Link: https://git.kernel.org/torvalds/c/7ca4b8957066 [4]
+>
 
-[1] Configurable gain and resolution
-[2] Suspend/resume support
-[3] Support for reading the ALS
-[4] Interrupt support
+Link is the official tag, no blank line is supposed to be here. But no
+need to resend anymore, for this patch I hope Jonathan will make a
+necessary tweak whilst applying.
 
-Link: https://git.kernel.org/torvalds/c/13fad2607dad [1]
-Link: https://git.kernel.org/torvalds/c/288ce72fb5fc [2]
-Link: https://git.kernel.org/torvalds/c/14e0d914a855 [3]
-Link: https://git.kernel.org/torvalds/c/7ca4b8957066 [4]
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
 
-Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
----
-
-Changes since v3:
-  * Reformatted commit links.
-
- drivers/iio/light/ltr390.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/iio/light/ltr390.c b/drivers/iio/light/ltr390.c
-index bc031f2c3141..f1bb066248e6 100644
---- a/drivers/iio/light/ltr390.c
-+++ b/drivers/iio/light/ltr390.c
-@@ -10,12 +10,6 @@
-  *
-  * Datasheet:
-  *   https://optoelectronics.liteon.com/upload/download/DS86-2015-0004/LTR-390UV_Final_%20DS_V1%201.pdf
-- *
-- * TODO:
-- *   - Support for configurable gain and resolution
-- *   - Sensor suspend/resume support
-- *   - Add support for reading the ALS
-- *   - Interrupt support
-  */
- 
- #include <linux/bitfield.h>
--- 
-2.55.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
