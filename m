@@ -1,122 +1,91 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CB993DC4D3
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 07:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13DF53D75A1;
+	Fri, 28 Aug 2026 07:11:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787901054; cv=none; b=Gaq5ErDtAKt23SS2NurtzSa8/iKa37TpxzYo5x4SUNY4zo5GeCQ0NXKlAciCBYfATAJTexEqhW4i9wv/BM1KvvyQ2zdNkw7icd62THPDGUiPpRSCuPyU18EpCTP0dpAomBKmufw0sJoMvB/vtlVuDkteJIFNJbCjgf2XTGF9Pbc=
+	t=1787901118; cv=none; b=BPjWhVr8hlSgNkRWrgAEuUHj4AKjq918erasfNAipmlKxfFLuJjY9rYbJC4NAIg/JxWvck3xHdH/N+vyQyWg7RympxgZaGwoNmD+2LMgaiEQKiHoxabD/RWzDS/kI78SIhWf5yfCzFesOAlnjz0p92hn6v6uMkDKOPRDzlnh4tc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787901054; c=relaxed/simple;
-	bh=hYDzKjnNqxYmY1OnMOzHzkHQhcAoDevwky7lPWZ82tM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Bnxm1JHQon5T6uWjibSJrhCfHVern+pSlm+H4hXYvtXsDIKzLhhsWP2DBuMZ87+rS7HW6hKsPm5xiywXYIKOMaHTbRIHIBmMgp8oS7c4W8z1sp3/TbmAoMTho2zt58E/mTnqReEoYKpJYsJnqyoQLZ+BEAwVO3OjDkKyC1e0+yQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jMsrKb0d; arc=none smtp.client-ip=209.85.128.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787901118; c=relaxed/simple;
+	bh=WH6HUKOJyc/1kdlg30NyFlCwLK93F6ellUzmS+nTvYY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dQ/48cEOtOJ0GHKimUlj6fDwylTdzwaG9lLZX3VixpXvhIIaWaeNDRDFR/+4lbdCNqTQUdLEEMMklzhc9K2OsKNeDtKOfsHmFgLOBSrKhjv0khZzDDbEdF11NArupHDGKDV+hEYx+ebRIpo/h16ZB9WxRv/ZXCPTAffkIM5ieQE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=CPz9pgei; arc=none smtp.client-ip=117.135.210.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jMsrKb0d"
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-81ecf499af9so6764797b3.1
-        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 00:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787901050; x=1788505850; darn=vger.kernel.org;
-        h=content-disposition:content-type:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=8mfhcIqIfHWd8sNFxoHf1vs2muwYwCiSdxw0D5clLVA=;
-        b=jMsrKb0d6hPuD2NtTKmwZIGLGWM+A2GPNM8bwtlNRRsq+P2j9EeTHePMla7SiM8nrn
-         KCc7+/ZSk72RzNe/8xkqMLkp0M12MuunGMgenKWDC3hiMIh8cDX89+Ilqf+680um/0yl
-         p+NnKNOVFUn/c4jKNJzL/Ct/AJsodN9HkeC69HA3uS4f24JGmQ47A+h6+Run2DWIfd6m
-         CwBVHd0G70Bj1+63YblW+7w3xjHKOgI+ZZO02DxVVyzb2KD+qLbqicZMoqY1Hg5qJozt
-         BbVqPEph8FBwKL3V5zRKtUKfp48wPI0k1JlWVasWRet7UzAQa9dNFMzpSxBqJOVmYIX6
-         YDKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787901050; x=1788505850;
-        h=content-disposition:content-type:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=8mfhcIqIfHWd8sNFxoHf1vs2muwYwCiSdxw0D5clLVA=;
-        b=A44dMPpPPgkwFZwe73vNnMgESk5G7yOvDKr1avq/Vd3pvM2JJzirNfVPWaxbTKr2fn
-         UAGWJHPhzciNZT0xD4ZcUfyaJhjNyyX7ia2Z9UxYaIxllQqjf2k7nkyb7pGOYOBgI8qs
-         8HxRY99Yf622LIop84n0+2cR7A8QTeL5ZlZiv06ptqz0ZguZKIH2YHUImBAkuq4A/5mL
-         NEJR2PpJxwu+pJt2ImM72XzRfac06lOYFiGmlt4RfUZ0z2b9mPrViNMXzDW57q4siIaC
-         5aBKgC8fl7e1tANCr6vDmmleq/e1+Nenc3Q7VppOzVpNdXb5FelFsdU191gWSeJ2H9ER
-         R9gw==
-X-Forwarded-Encrypted: i=1; AHgh+RqfwOqNGk/ymwoIRkeVE/kixBDpqDPO2UqLts/ngRX+Z2XRJOR0e4qXQLc/f6f5ONPxJ7r+lqv6pY0=@vger.kernel.org
-X-Gm-Message-State: AFuF++kBmlfwObL31YpnZudBAwF8oSjpfCq7unxkmNdIaSxIpU1UEe1u
-	r6tQmV2804RRzYDKWWVVikPNxEjQd2MfkQhnKNWC1IEw+ev3JeJMYgQfjoDwYZT0Dx4=
-X-Gm-Gg: AR+sD10ORUGoO4xEa4MJ38l7RCDISXbFxq9VFx2n2U5ZFMNK0M5wPgWMB3U9cMSncDb
-	kXHD1vXbJrJB+3XeXakOlrpiVGZBzMTaJitXJYBIh+QjcJgKgQhubA748yyuKmXcQ47e+SqPsCl
-	g6f13eEX3C+D+VqSfWo7SYsU25OPYkeq3+6NcMuwBNXVE3i1JZZ29QoYidUibN5+zosy4gKZ7Ai
-	osQWKOKF/k5hL6KCXOH/0pLGQrY/cjSZM0LcmBjXMOOfgj2tB2J3Qw4hAp7pxRUjPjGaVfw9d40
-	Oi8KSg/JKxOsCi5guJ3giTTALNj3SyMcHXFvdVooj7X5rW07hzLOG87Cfy/eFVOJ50XZTugKk+u
-	eUTr4x4F92OlF+SExa8cvTLquzhtWQkLhpNRAbMt/bs9ZtiUMHAXyhdQu4oVcen9rHY1F+lhc1C
-	WfZgdhIajHI9LxKmoO6pt9mMowk7i4aQ95zfesSRKwBGPg
-X-Received: by 2002:a05:690c:e3c2:b0:816:b469:cd12 with SMTP id 00721157ae682-85d6743f652mr23133277b3.8.1787901050397;
-        Fri, 28 Aug 2026 00:10:50 -0700 (PDT)
-Received: from gmail.com ([2600:1700:5431:250::3e])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e677606aesm2859147b3.45.2026.08.28.00.10.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2026 00:10:49 -0700 (PDT)
-Date: Fri, 28 Aug 2026 00:10:47 -0700
-From: Chang Yu <marcus.yu.56@gmail.com>
-To: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>
-Cc: Anshul Dalal <anshulusr@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: light: ltr390: Remove stale TODOs
-Message-ID: <apE0dwvpW6Yl8yzz@gmail.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="CPz9pgei"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=+X
+	P+8l8cvCc8tLH+FwndoPU8YAhmQXz8pIkvMr6QsuM=; b=CPz9pgeiXqz4nsuhJ7
+	pO5WhLB+zqyAV99Q51BVEYQmzupOgFDXVFzmjBoKj7wJpKAZrtTGKn5wvTr8EjMT
+	jD/Z+cy0Aq4y2IMIvGkIq9iQMZCgNMVy+TS3ftqHO24/5gW3DHxIgWHPGlrCRs9x
+	xMyRSTtOENhN5UVCQeR7OnTT8=
+Received: from localhost.localdomain (unknown [])
+	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wCXP9qcNJFqzBfuSQ--.13812S2;
+	Fri, 28 Aug 2026 15:11:25 +0800 (CST)
+From: "Li Youhong" <dayou5941@163.com>
+To: biju.das.jz@bp.renesas.com,
+	wbg@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Li Youhong <liyouhong@kylinos.cn>
+Subject: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable() return value
+Date: Fri, 28 Aug 2026 15:11:23 +0800
+Message-Id: <20260828071123.179670-1-dayou5941@163.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wCXP9qcNJFqzBfuSQ--.13812S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJrWxGF4UKr18Aw4xGr13CFg_yoW8Jw4DpF
+	48ta1FyrW8XrZ7Ka17JrWqqFyYqa1SkFW3J340gayDZ3Z8Aryvqa4ktFyIva1ktryvkF43
+	Kw17XFy8CF1UZr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UPHUkUUUUU=
+X-CM-SenderInfo: 5gd103ivzuiqqrwthudrp/xtbC3h4z4WqRNJ4lVwAA3x
 
-Remove stale TODOs from ltr390.c. All features have already been
-implemented by Abhash Jha<abhashkumarjha123@gmail.com>'s patches:
+From: Li Youhong <liyouhong@kylinos.cn>
 
-Configurable gain and resoluion: commit 13fad2607dad ("iio: light:
-ltr390: Add configurable gain and resolution") 
+The driver ignored clk_prepare_enable() failures during probe and
+runtime resume.  Propagate the error so probe does not continue with
+the clock disabled and resume does not report success falsely.
 
-Suspend/resume support: commit 288ce72fb5fc ("iio: light: ltr390:
-Suspend and Resume support")
-
-Support for reading the ALS: commit 14e0d914a855 ("iio: light: ltr390:
-Add ALS channel and support for gain and resolution")
-
-Interrupt support: commit 7ca4b8957066 ("iio: light: ltr390: Interrupts
-and threshold event support")
-
-Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
 ---
+ drivers/counter/rz-mtu3-cnt.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Changes since v2:
-  * Added commit hashes for each implemented feature.
-
- drivers/iio/light/ltr390.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/iio/light/ltr390.c b/drivers/iio/light/ltr390.c
-index bc031f2c3141..f1bb066248e6 100644
---- a/drivers/iio/light/ltr390.c
-+++ b/drivers/iio/light/ltr390.c
-@@ -10,12 +10,6 @@
-  *
-  * Datasheet:
-  *   https://optoelectronics.liteon.com/upload/download/DS86-2015-0004/LTR-390UV_Final_%20DS_V1%201.pdf
-- *
-- * TODO:
-- *   - Support for configurable gain and resolution
-- *   - Sensor suspend/resume support
-- *   - Add support for reading the ALS
-- *   - Interrupt support
-  */
+diff --git a/drivers/counter/rz-mtu3-cnt.c b/drivers/counter/rz-mtu3-cnt.c
+index 7bfb6979193c..6f746cf598c0 100644
+--- a/drivers/counter/rz-mtu3-cnt.c
++++ b/drivers/counter/rz-mtu3-cnt.c
+@@ -817,9 +817,7 @@ static int rz_mtu3_cnt_pm_runtime_resume(struct device *dev)
+ {
+ 	struct clk *const clk = dev_get_drvdata(dev);
  
- #include <linux/bitfield.h>
+-	clk_prepare_enable(clk);
+-
+-	return 0;
++	return clk_prepare_enable(clk);
+ }
+ 
+ static DEFINE_RUNTIME_DEV_PM_OPS(rz_mtu3_cnt_pm_ops,
+@@ -861,7 +859,10 @@ static int rz_mtu3_cnt_probe(struct platform_device *pdev)
+ 
+ 	mutex_init(&priv->lock);
+ 	platform_set_drvdata(pdev, priv->clk);
+-	clk_prepare_enable(priv->clk);
++	ret = clk_prepare_enable(priv->clk);
++	if (ret)
++		return ret;
++
+ 	pm_runtime_set_active(&pdev->dev);
+ 	pm_runtime_enable(&pdev->dev);
+ 	ret = devm_add_action_or_reset(&pdev->dev, rz_mtu3_cnt_pm_disable, dev);
 -- 
-2.55.0
+2.25.1
 
