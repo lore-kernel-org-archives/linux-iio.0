@@ -1,35 +1,35 @@
-Received: from mta1.migadu.com (out-53.mta1.migadu.com [95.215.58.53])
+Received: from mta1.migadu.com (out-59.mta1.migadu.com [95.215.58.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F7893C1400
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 07:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B53813C1400
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 07:40:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.59
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787902830; cv=none; b=SofwsgZ//a/03QqYB9mqnyVPpxN3ETFGBb7oMe0iKUliYAInO4tz5HHwAsjJtClyq9kAZ3++8QOYxlry879RozWBUsn1cciL7Io7s5tSOm6srLwOWWaLYlM2iPFF3GViCpI/tYGTaZo0CNyqyc5PFGvsLhtK1MzGAplPaUo5sbc=
+	t=1787902848; cv=none; b=aQMZiPwGBGMohTnAcwj9MPtlVx5Gsi+8ZFIYs32Dfui7oLb9gSxWeUtW0tQbu3i3e9LmEzfg3kGUxxwQ4JGUyxbhwF23oB+rMdy/9UpLDf5/oMNTLFo1elumo7d97RwgBY49j/TTynT91Bw+ktJ/Wl3MllLoVPTgIsI5caCq/D8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787902830; c=relaxed/simple;
-	bh=WiHmKiduUpKlnP5Po+j7XyvB9JPEn6BsDP5e1SZg/Wo=;
+	s=arc-20240116; t=1787902848; c=relaxed/simple;
+	bh=CWanOnGG+UyjZ4ed1HNy/1QZ5KYEbVCpitfQSakJMhw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V+0FyisJQUMdJSHd2b/otEp9fokssc1RmhqrpTFzS2/uYXyPTdq4ZkwYLJNpCjNvozhckDTjFpcbJ4gEqMc/6OlYvE2IZhcmaCMmfs3N9lsDnciDnqyhSWkHHkilzY7EpKzIC2OL8R1RBv8VPacuz770x3ZyOf1HlYTOPRPXyXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=PnibB2CA; arc=none smtp.client-ip=95.215.58.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=fmmAMRlvhmhhR913LZj6Te22Xl6HceFv5vwie3I0CcW8nrVgEm6BwIUpprdojE8zekSx9qUqJLoJ0APJW51HYqyS8+0T29bLkL8RYuLDKhTyPcrRifdt8Hu4f8EPSZ5yr/vfmSlZF9hKBGLKpdPuhG0wQ3+hzhINqalDWwgn5k0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=uI3TkJZc; arc=none smtp.client-ip=95.215.58.59
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="PnibB2CA"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="uI3TkJZc"
 X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=WiHmKiduUpKlnP5Po+j7XyvB9JPEn6BsDP5e1SZg/Wo=;
+DKIM-Signature: a=rsa-sha256; bh=CWanOnGG+UyjZ4ed1HNy/1QZ5KYEbVCpitfQSakJMhw=;
  c=simple/simple; d=linux.dev;
  h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1787902827; v=1; x=1788507627;
- b=PnibB2CA8LZMNHDRYeFs6XBkoOj4LJ5hSJ3avR6N2kzXZFn69JZwO8cQAw067hGMj7MjoBbl
- 7o7OXB/JM8zyI8RcMapmzlXwgEzEFqAmksDUOW4xWZ4Zeq5ILprIT5Zg1QWsWza7Q4IauJTMczt
- 6AStfBx14vk/Hl7jc7mez7vI=
+ t=1787902844; v=1; x=1788507644;
+ b=uI3TkJZcR5HgbFgaXAES8+amdOkqZu7PjdIwVBSNfbm4LeqCzEIzNxct/kh7cnEqGlptZvse
+ dvxJVn9TIxtja678znWWRR5JVJqU2RmuM/w1HOcaAMlq7YsfOdEJuSlhgx5+X9YMeZpJQJ1aVCN
+ B39aG8OMBzsQ9JBsKEW0UiJ8=
 X-Envelope-To: linux-iio@vger.kernel.org
-Received: by mta10.migadu.com with ESMTPS id e770f2a1a4a2e097;
-	Fri, 28 Aug 2026 07:40:26 +0000
-X-Mizu-Trace-ID: e770f2a1a4a2e097
+Received: by mta11.migadu.com with ESMTPS id 87aaefbaeb70aad9;
+	Fri, 28 Aug 2026 07:40:44 +0000
+X-Mizu-Trace-ID: 87aaefbaeb70aad9
 X-Migadu-Flow: FLOW_OUT
-Date: Fri, 28 Aug 2026 10:40:18 +0300
+Date: Fri, 28 Aug 2026 10:40:36 +0300
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
@@ -41,8 +41,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/4] iio: pressure: rohm-bm1390: Fix AVE_NUM initialization
-Message-ID: <78db4d1cf1d63f6533d519e28059b981f98e5239.1787901813.git.mazziesaccount@gmail.com>
+Subject: [PATCH v2 2/4] iio: light: rohm-bu27034: Fix infinite delay on error
+Message-ID: <7f0d8efb3578cd4f23a7c70fa4a8f7a967c9df8e.1787901813.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1787901813.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -52,75 +52,82 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="KXP85shw15DLAuOJ"
+	protocol="application/pgp-signature"; boundary="iPlJb4LuCnClPMEz"
 Content-Disposition: inline
 In-Reply-To: <cover.1787901813.git.mazziesaccount@gmail.com>
 
---KXP85shw15DLAuOJ
+--iPlJb4LuCnClPMEz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The BM1390 tries to initialize the AVE_NUM to 110b at the start-up. The
-field location is not taken into account, and value is written unsifted.
-This causes the AVE_NUM to be initialized to zero.
+When reading an integration-time fails, the code will use error code to
+compute the sleep time.
 
-Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
+Fix this by using the smallest integration time as a default if
+reading fails.
 
-Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
+Fixes: e52afbd61039 ("iio: light: ROHM BU27034 Ambient Light Sensor")
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
 
 ---
-I believe this was already applied to Jonathan's 'testing' branch. I
-didn't find that from public IIO repository though, so spinning it here
-just for the sake of the completeness.
+Revision history:
+v1 =3D> v2:
+ - Moved Fixes before SOB
+ - Clarified units for the smallest integration time as suggested by Andy
 ---
- drivers/iio/pressure/rohm-bm1390.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/light/rohm-bu27034.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm=
--bm1390.c
-index d00d7ed54cb1..29454570f257 100644
---- a/drivers/iio/pressure/rohm-bm1390.c
-+++ b/drivers/iio/pressure/rohm-bm1390.c
-@@ -479,6 +479,7 @@ static const struct iio_info bm1390_info =3D {
+diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27=
+034.c
+index f9a421618406..cb2afddc75f6 100644
+--- a/drivers/iio/light/rohm-bu27034.c
++++ b/drivers/iio/light/rohm-bu27034.c
+@@ -137,6 +137,7 @@ static const struct iio_gain_sel_pair bu27034_gains[] =
+=3D {
+ #define BU27034_MEAS_MODE_200MS		2
+ #define BU27034_MEAS_MODE_400MS		4
 =20
- static int bm1390_chip_init(struct bm1390_data *data)
- {
-+	u8 regval;
- 	int ret;
++#define BU27034_INT_TIME_US_MIN (55 * USEC_PER_MSEC)
+ static const struct iio_itime_sel_mul bu27034_itimes[] =3D {
+ 	GAIN_SCALE_ITIME_US(400000, BU27034_MEAS_MODE_400MS, 8),
+ 	GAIN_SCALE_ITIME_US(200000, BU27034_MEAS_MODE_200MS, 4),
+@@ -1162,6 +1163,15 @@ static int bu27034_buffer_thread(void *arg)
+ 	data =3D iio_priv(idev);
 =20
- 	ret =3D regmap_write_bits(data->regmap, BM1390_REG_POWER,
-@@ -512,8 +513,9 @@ static int bm1390_chip_init(struct bm1390_data *data)
- 	 * Default to use IIR filter in "middle" mode. Also the AVE_NUM must
- 	 * be fixed when IIR is in use.
- 	 */
-+	regval =3D FIELD_PREP(BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
- 	ret =3D regmap_update_bits(data->regmap, BM1390_REG_MODE_CTRL,
--				 BM1390_MASK_AVE_NUM, BM1390_IIR_AVE_NUM);
-+				 BM1390_MASK_AVE_NUM, regval);
- 	if (ret)
- 		return ret;
+ 	wait_ms =3D bu27034_get_int_time(data);
++
++	/*
++	 * If reading the integration time fails, default to the minimum so we
++	 * don't lose samples. This may waste CPU cycles, but as a hardening
++	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
++	 */
++	if (wait_ms < 0)
++		wait_ms =3D BU27034_INT_TIME_US_MIN;
++
+ 	wait_ms /=3D 1000;
 =20
+ 	wait_ms -=3D BU27034_MEAS_WAIT_PREMATURE_MS;
 --=20
 2.55.0
 
 
---KXP85shw15DLAuOJ
+--iPlJb4LuCnClPMEz
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmqRO2IACgkQeFA3/03a
-ocUgAQf8CprQW87BeQOSYHeD0fIHQjf5nlgVHDgY4164H+HMjQ3C2PkgQcxQlj89
-l5FC8iJ4DVxcvl+ImABmqQu6bx4hHYzhjXVHC1zTSYRdkdwChFdV/GRXInNywb1g
-8Y2dxhhqGVslwCXkbj1xI6v4qi5FK7PPrnJAHtwdG7GISjf+aGYvEUJ1cWeGnuRq
-H7qkwl98ODTblEZiNSv2OGFZMXSWSoMtSVOqgZBDN0Fy/I6ew1uZmrY+3gRRxk31
-QBNuycCJi9dI4yib2sDiN8fp42iF+hrQ+TQEmRcbMzdkoIQ0uOjcJw5koWlKUUVW
-QY9Y0o15UF4qNuRKpfPPnN3XM2XrAA==
-=n0Xu
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmqRO3QACgkQeFA3/03a
+ocWprwgAuMW+8SNHkdRXkBD2VPg+Vc/UYBgwtxBoLA9zia1FuMgwyslAaLb42L67
+O3tsgKScB0y6RZ2gIBFw+d0Jpd8/3vTrRa3ai12ueHzAbqUJu+EtXZnKFPRKCrJQ
+pmcEFhwPaDeDdkuEMPmk+9gFE9CgZuKYbCc6tAZFQ1Y1MAjO9C4Y/SVHp7E+MH+3
+FJlATNWkjaUc0Mb4XufFR8B+enfBliNt2Y0lyyHsNbWUy0+/4do5nDiWMN0JjVXh
+F5xc5g/xYRTDBTjT4JkRv71tUpjFXzaZkHsLzXO2s3TBAbYksIkgvAmemR2PFbqS
+rqX9OY7PdsnyDuFNHKuz0tZyT7ordQ==
+=bbX1
 -----END PGP SIGNATURE-----
 
---KXP85shw15DLAuOJ--
+--iPlJb4LuCnClPMEz--
