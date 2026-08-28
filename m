@@ -1,112 +1,69 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0091939656C
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 09:25:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787909109; cv=pass; b=s0PU9I2sQi1VorAWuP1WHeJ/JT9+KJETsE4yYdk3qFRWLew8tsCJGBuaSkbyaEZOboGGVFBfV4ym4AEATCvBN3EwAKWOFr7JR0e6gj/Dp2mBJ4a2MKkNXNOjx6kM1HGWpuIl7JEpAujXYlVJnTUmn9aRPlDZKMNmR7VshW65DWM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787909109; c=relaxed/simple;
-	bh=dz0SOWNhcfrldhH+lMj9uKn/k/LmiSfJchEiB6WaWBU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DnnSRWJb++3oCcCnWq6Tf+H6mNXaQbz9ozTTg4vgsjEptUBRdGyiyfH5VWInTb5rJd5XnqxZP/i2bSs2r8VVHrC5xAC1v7H2YdUoQy/y3xuqU0jNvuG6FzLWsuy1uSZpB1x0ZIiwHEPRmNBghWkvC4t1E+h8t3OEb6WxQabNqvM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AYBzgulp; arc=pass smtp.client-ip=209.85.210.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8495F3AB26A;
+	Fri, 28 Aug 2026 09:33:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787909598; cv=none; b=ojN4Aeq86Hb/C/yrgIUqqCE5ZU5LcGIWTFmNUfn2+Uq1rR3m2Bj1Twuv+HKVD+/Fy5zRMQXvzVq61OEGZYqLtAPVAc2AsPyZNOHbhTGNjCnNuLUt6pNwZ9koqxAOUftLlvZqAcRU/3ywc/f+BIIvibNT8h3vQ19npkKZgMiaHuI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787909598; c=relaxed/simple;
+	bh=ZIr2Om7HJVvvAwPSuCzQVLpbjbzCkAHbgG06l0WUFi4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=C0ZMNfp9WaC4x3m1O3RLEnrJrkEtDsIdQaC1FRJVnCg8HC+RYnElAEhXO05pRhiWX/J+7gNQr2xXEfgatcK+jrQl7LnIkfpyGoz/wOglGgXxA+gNMPO6DIyEumuZHCM/IIUicLPVf+onvfHqXGlZNGWRQaaHb3d3ofeunSGKbZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=LekAQvzP; arc=none smtp.client-ip=220.197.31.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AYBzgulp"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7e9ef94c0e2so725115a34.3
-        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 02:25:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787909106; cv=none;
-        d=google.com; s=arc-20260327;
-        b=f3VNKtZa6anpS76BGUPgQBuIGeFcdiFH4Msg0vxiAJpBir30nI4XoGWH+bQHBuvDGS
-         c9xqmm0YOxuc5R/15bPA4CGV7+IWKWGThU/nZLMo0qvltUD46VxtMtN8Rb1pFLKxqDRE
-         Rd3dehbtAn012Uu74crKXX403mjmS++qOKc+wwpIXT+MJfDzM1wTcXompnnT0oM0XRyy
-         Kzh1Vahinmsejon0I0dMLbI52lTVRoordUbclIEk+mi4gKgT03wvAKKFML0VcT9goocL
-         h+PVLnj7os3FqGtB0ZFJp+sCU+MH2u3suFUrUt95/ILP4SFFli8EcGQRXnex6jxvE6LV
-         p5AA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=Imb5kMkVgWrmaN3qHbaWEYz34ASz+yu7tv+BXjiGe0o=;
-        fh=5Wl1GCQDdqbj1JYdinewTI/JMEscXPC/S8yYJGrxTwY=;
-        b=I0k5ayvAbZMq9XCG4HwTks42ElNX9DRYOYKPESAZ8F8CWSfovxGmPtjvpGLZJZYmVp
-         9P1EGzKa1sDQzclteO7bXJ+E0ri2A9p0EFKDfdcgeNFDGQ1vp5Gh4yeM1FDDyN/ZGkn8
-         uoi1SG2J0ExnNhuVmzACdTXyUw7cYCZ09pM9pGrpFbcKgCURE77QztYpz3qLmF14RBUy
-         SXjFY9HnnA/CoMRsRKuuqCUell7hyajydY77X8NGIo8JiNwTPdBWULWbeZT0gQITjhyt
-         wYmpEzPeQTAzkzBh1L9LsPiRC+NADOhydL8sGAhOVy+CdrcIRacjdCi5DAC6ausEHGSe
-         Cy3w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787909106; x=1788513906; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Imb5kMkVgWrmaN3qHbaWEYz34ASz+yu7tv+BXjiGe0o=;
-        b=AYBzgulp9ecpmQCDbBTFfCGl/YnPDMNurviBK52WHAMse5QI01cXuXLjQZlOdlyzDE
-         LsCykAm4i96Mw03BZysGG5m9QwgElgOiXnSQHX2O1aWwCvcyqrk74l+4lVUmz47DQscV
-         72hodPvc3L0rMsn8vPXUmsMMKH+ycEx0/+t+7AKuN192f3OBqABQMF+AQFonIiABoIqU
-         I5lL/ihjurtqe20jPs37aCGUuM8EdBc03C77PMh48Zs8grbmqmhtV7tmFbTeu41ne4E3
-         WtZJAkCq2eFP+jVKw3w0iHIA25L3k5mhCf32T0pK/zuGiRLh5157zUDE1OupmbfR53vr
-         jrTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787909106; x=1788513906;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=Imb5kMkVgWrmaN3qHbaWEYz34ASz+yu7tv+BXjiGe0o=;
-        b=anCI9LYw6GNZZtg7zlq58u3WqKFQE3SfFz00TJIq2oK5mUtlFtPZZhXMhdcEQOgpE9
-         ONwc5IMmGH2IWiMX7Qf0YVeNGZ86X4y8oH+U96CaoRuppbatOxMGluzfqyOd3FVZnZ0U
-         HpH1MUznxvIUzJK/J8I9PcasWG/FUAgk5HRGnAn0SeCnCU5Ntd0B/js5/BdMih5ifPAX
-         U5y0hZ08LNm5WvtcOEgimQt5DuGsxIyzdeYsnYW15NmkquTJZMVpbBjQqt8xAqc1C5aK
-         m+0IDEmYQ9hK5wL/7/LJm/SECOUjfeUJE5xgDLVJwlpdj4uStDZxXBVjd7GK3s3Keia2
-         /SQA==
-X-Forwarded-Encrypted: i=1; AHgh+RopCTcdHApgJqnmhoMAr8Qj3/MGQ5MPG42N3AupkBvuEe5dCQH5iZmgoLWPcuuvos0ZXpuu7mMZ0Qs=@vger.kernel.org
-X-Gm-Message-State: AFuF++n9GnCMgSgjzQYQ7/bWdYog8EJ9jJy0PkO5b+Y5JmFzwasA0a9i
-	9MiNh3DE5y+dx42XaN9wqqUjKVmJipWQKz+KtJvp4VjumoBw+37CfNHyBKLkk0vLctNpyiuXLVS
-	gI3hjam9EV5ST3vhO7PYkr94cnwDxGok=
-X-Gm-Gg: AR+sD10IePdDPMvHZ9J9tNRPUBCgzXwIf0XVpdRJRvbTmRJzGb/dbRmvg2qiSt4JN3R
-	l3CmQaaIBxxJhltvZyezBQ9ZQgdXIMHnYfZJUSmCVEnXWEMEqreBivpixG8TNQUEUA++4OLKlK8
-	C77YD0W7dSrCJ3MY8D9t990/agd+gGznPSRmTA2Fo2zz3HFgKf661+KTpW7TkYBtfvmxq3Rt5lY
-	iRT9hvs+iQTlGuF2p3rIXt2PkJbOcrw7qLGLG43XAEH/hYWMZpA4jpCaVSY9AdK50URuZRqI+EP
-	W2iJ2nx86zkjANpY2OSGe9AYKtZX0dCdqgm1mYc3if4Mb2vrYCSrur8gLdo3g3y9j9AtAEO9aXu
-	VjwU5INd+tL2q/p8tRuHOKHskcpS//r59KlU=
-X-Received: by 2002:a05:6830:67f8:b0:7dc:e37b:b5d3 with SMTP id
- 46e09a7af769-7f4f227d276mr8198335a34.7.1787909105673; Fri, 28 Aug 2026
- 02:25:05 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="LekAQvzP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=ZIr2Om7HJVvvAwPSuCzQVLpbjbzCkAHbgG06l0WUFi4=; b=L
+	ekAQvzPXK6LprzbHFOlq1dRywsiDpEWm0BPjygGx99GYKQOFU8+fbagHHtvGazkk
+	VYiSK4ZxyY8BcF9j7uYD6d0fyIvVQsJW91oiytQc61oVxXtaJfhG1WvnWlRbzaxz
+	3Fjl9i1ogPLkrDlNUK5NRk6K5a7o0mT86qgFewsXjY=
+Received: from dayou5941$163.com ( [116.128.244.169] ) by
+ ajax-webmail-wmsvr-40-130 (Coremail) ; Fri, 28 Aug 2026 17:32:46 +0800
+ (CST)
+Date: Fri, 28 Aug 2026 17:32:46 +0800 (CST)
+From: =?GBK?B?wO7T07roIA==?= <dayou5941@163.com>
+To: "Vidhu Sarwal" <vidhu.linux@gmail.com>
+Cc: biju.das.jz@bp.renesas.com, wbg@kernel.org, linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	"Li Youhong" <liyouhong@kylinos.cn>
+Subject: Re:Re: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable()
+ return value
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
+ 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
+In-Reply-To: <CAFqz8L+TjFmnKpJtChJA6c3O0TJv_O=A9Lb5bdzbVQTeFHg8BA@mail.gmail.com>
+References: <20260828071123.179670-1-dayou5941@163.com>
+ <CAFqz8L+TjFmnKpJtChJA6c3O0TJv_O=A9Lb5bdzbVQTeFHg8BA@mail.gmail.com>
+X-NTES-SC: AL_Qu2TBfWbtk0t4CmfYukckk4Wjug8Wcexufwj34NTc8EFpinq+jErTER6EHzs186+LQq9mj6bTCRhw8FrWKZAvA6LFiMGZm71vtG80idAwQ==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260828071123.179670-1-dayou5941@163.com>
-In-Reply-To: <20260828071123.179670-1-dayou5941@163.com>
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-Date: Fri, 28 Aug 2026 14:54:54 +0530
-X-Gm-Features: AcwNN1US7WSfZ25oq7-XBcJ8hx7fgmGhS9ze9BWZ_-55L1Fbw-jjvhmGdcF6m5U
-Message-ID: <CAFqz8L+TjFmnKpJtChJA6c3O0TJv_O=A9Lb5bdzbVQTeFHg8BA@mail.gmail.com>
-Subject: Re: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable() return value
-To: Li Youhong <dayou5941@163.com>
-Cc: biju.das.jz@bp.renesas.com, wbg@kernel.org, linux-iio@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, Li Youhong <liyouhong@kylinos.cn>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <4455217d.77da.1a047b6f209.Coremail.dayou5941@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:gigvCgD3t+y_VZFqIOM6AA--.124W
+X-CM-SenderInfo: 5gd103ivzuiqqrwthudrp/xtbC+h+DMmqRVb-wBQAA3w
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-On Fri, Aug 28, 2026 at 12:46 PM Li Youhong <dayou5941@163.com> wrote:
->
-> From: Li Youhong <liyouhong@kylinos.cn>
->
-> The driver ignored clk_prepare_enable() failures during probe and
-> runtime resume.  Propagate the error so probe does not continue with
-> the clock disabled and resume does not report success falsely.
->
-> Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
-> ---
-
-This is a bug fix, so I think it should carry a Fixes: tag. Both call
-sites look like they date back to the original driver.
-
-Thanks,
-Vidhu
+CgoKCgoKCgoKCgoKCgoKCgpBdCAyMDI2LTA4LTI4IDE3OjI0OjU0LCAiVmlkaHUgU2Fyd2FsIiA8
+dmlkaHUubGludXhAZ21haWwuY29tPiB3cm90ZToKPk9uIEZyaSwgQXVnIDI4LCAyMDI2IGF0IDEy
+OjQ2IFBNIExpIFlvdWhvbmcgPGRheW91NTk0MUAxNjMuY29tPiB3cm90ZToKPj4KPj4gRnJvbTog
+TGkgWW91aG9uZyA8bGl5b3Vob25nQGt5bGlub3MuY24+Cj4+Cj4+IFRoZSBkcml2ZXIgaWdub3Jl
+ZCBjbGtfcHJlcGFyZV9lbmFibGUoKSBmYWlsdXJlcyBkdXJpbmcgcHJvYmUgYW5kCj4+IHJ1bnRp
+bWUgcmVzdW1lLiAgUHJvcGFnYXRlIHRoZSBlcnJvciBzbyBwcm9iZSBkb2VzIG5vdCBjb250aW51
+ZSB3aXRoCj4+IHRoZSBjbG9jayBkaXNhYmxlZCBhbmQgcmVzdW1lIGRvZXMgbm90IHJlcG9ydCBz
+dWNjZXNzIGZhbHNlbHkuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IExpIFlvdWhvbmcgPGxpeW91aG9u
+Z0BreWxpbm9zLmNuPgo+PiAtLS0KPgo+VGhpcyBpcyBhIGJ1ZyBmaXgsIHNvIEkgdGhpbmsgaXQg
+c2hvdWxkIGNhcnJ5IGEgRml4ZXM6IHRhZy4gQm90aCBjYWxsCj5zaXRlcyBsb29rIGxpa2UgdGhl
+eSBkYXRlIGJhY2sgdG8gdGhlIG9yaWdpbmFsIGRyaXZlci4KPgo+VGhhbmtzLAoKPlZpZGh1CgoK
+VGhhbmtzIGZvciB0aGUgcmV2aWV3LiBJJ2xsIGFkZCBhIEZpeGVzOiB0YWcgYW5kIHNlbmQgYSB2
+Mi4KClRoYW5rc6OsCkxpIFlvdWhvbmc=
