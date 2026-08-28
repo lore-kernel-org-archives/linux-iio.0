@@ -1,35 +1,35 @@
-Received: from mta0.migadu.com (out-33.mta0.migadu.com [91.218.175.33])
+Received: from mta0.migadu.com (out-39.mta0.migadu.com [91.218.175.39])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A64B3B47CD
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 07:41:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D13F3D955B
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 07:41:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.39
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787902864; cv=none; b=MH6KFVRw0yKzfVrVL3RBX6YMnHefSVZtC+xe6ki57r0rWdySWjuwQx6XMfLkdX3vduA6wpa7YQ2TR3tOgVTaq/A0o1D3m5MRGIWhlilqYJOjBEsbNgjrDmi9iFJh1ddvf3d7kS7J7SIXAwj8LcLeka3AMS5twFTnS3/RDZADOFc=
+	t=1787902884; cv=none; b=A+1DHmgriZRpgiz7UP5sI9Zz5npiHL+Gd8GgedVbKme0R9vThGNPUlk2ElOgaR96MtOXWIk+KiiLk7dFak+vB8ZKFKFxtuhCUZiOzCjQ2ferWzQ7FIV/AQ0kviBajZK30a6ukD+dXgen+30L/Vg5AhSgRmZyVuIsMEDkmMdYHA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787902864; c=relaxed/simple;
-	bh=XYnOlZNecNU7j2jhNiOFeWbXe/IQi0ASVyCFakZh0vc=;
+	s=arc-20240116; t=1787902884; c=relaxed/simple;
+	bh=lxQwDZUBPKMiN4rKy7Wx4GnvGH6bw5PgAm6OjTB5zS8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Eceu9ela0Uahoyr3xPTCB8QEt94dGr3hpeREmCPNg/FVf7jmN7XLo4VNirbXtMa+Va7L4E04PGlmAgbKEn3sNUYYN+7MS7uHY+svR0wJeDKKfkqTrxflKMhofADdf5Rhf9k8zKIIXIad6AvZleuY5M1BUbVAx8wUDeRMCcmU680=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=OJkK/Qvm; arc=none smtp.client-ip=91.218.175.33
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fgy8fLjWZ35Zou6rgFcIUWlWa6eJ7oj3FPlNsH1sCxcVrR1GHW5MquWXOI9Fq3QMHtbcMrDrurmndq+C6KDD1nN6itKWkUk1oC3PJxp2+N31a6vI3tmgl8qQAV28i+kn7mK5RClbJ6ISxXmUnje3srJulQRH2eYdlgdlsk4K/II=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=NV9r7Nis; arc=none smtp.client-ip=91.218.175.39
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="OJkK/Qvm"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="NV9r7Nis"
 X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=XYnOlZNecNU7j2jhNiOFeWbXe/IQi0ASVyCFakZh0vc=;
+DKIM-Signature: a=rsa-sha256; bh=lxQwDZUBPKMiN4rKy7Wx4GnvGH6bw5PgAm6OjTB5zS8=;
  c=simple/simple; d=linux.dev;
  h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1787902861; v=1; x=1788507661;
- b=OJkK/Qvmo2RhRJM42FQR3G4/1ZGzX/8In6c8hDGAvaIYK+l3tA0NhE2VUXDf3Wr7mp3bzN93
- J3vTsF6arhsdU4rSDehW8YdOqGoxVBl5EpEv+gZ8GWyQ23UPmAAZLuw4OyTZYS7GqSwZzKVilzU
- DXYllHonK+VX3JvXgvwkVHXw=
+ t=1787902880; v=1; x=1788507680;
+ b=NV9r7NisaxEkdQNNWw5FX5n9PzcMgTFIRk+J6U6K3rsuSXGqWRXaWnD+rhcytjBe/MD3q1qw
+ 79vwv4DCN+mW3sx5QQLxyj4zoJIVgXYSCAdtISXDla8AeXp/51tRggljqKNRhhCF9R9z3uYzz9x
+ Xdtmqi0mq6VlmefaoyFXbTV4=
 X-Envelope-To: linux-iio@vger.kernel.org
-Received: by mta11.migadu.com with ESMTPS id 793fdaa71214d916;
-	Fri, 28 Aug 2026 07:41:01 +0000
-X-Mizu-Trace-ID: 793fdaa71214d916
+Received: by mta12.migadu.com with ESMTPS id 52cc6e5ea10533eb;
+	Fri, 28 Aug 2026 07:41:20 +0000
+X-Mizu-Trace-ID: 52cc6e5ea10533eb
 X-Migadu-Flow: FLOW_OUT
-Date: Fri, 28 Aug 2026 10:40:51 +0300
+Date: Fri, 28 Aug 2026 10:41:15 +0300
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
@@ -41,9 +41,8 @@ Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/4] iio: accel: kionix-kx022a: Prevent memory leak and
- fix state
-Message-ID: <9e4453fcc00df6ec988207df8916226d18aecb20.1787901813.git.mazziesaccount@gmail.com>
+Subject: [PATCH v2 4/4] iio: accel: kionix-kx022a: Fix IPOL macro name
+Message-ID: <c2ecaac02c39ebe9a409f642b3cfc0969ac0b3b7.1787901813.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 References: <cover.1787901813.git.mazziesaccount@gmail.com>
 Precedence: bulk
@@ -53,113 +52,70 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Ris3llGW6/HBkn17"
+	protocol="application/pgp-signature"; boundary="0hs/Mw2K0VOgxflI"
 Content-Disposition: inline
 In-Reply-To: <cover.1787901813.git.mazziesaccount@gmail.com>
 
---Ris3llGW6/HBkn17
+--0hs/Mw2K0VOgxflI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 =46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The driver allocates memory for samples at buffer enable path. If regmap
-operation fails in the kx022a_fifo_enable() at the buffer enable path, the
-allocated memory is never freed. Furthermore, the state information and
-previous hardware configuration(s) aren't undone, potentially leaving
-WMI interrupts and buffers enabled, or driver state flags wrong.
+The "interrupt polarity high"-macro for KX022A variant is defined as:
+"#define KX022A_MASK_IPOL KX022A_MASK_IPOL1"
 
-Free the memory and revert the hardware configuration and state flags on
-error path.
+However, the KX022A_MASK_IPOL1 is not defined anywhere, so actually
+using the KX022A_IPOL_HIGH would produce a compile error.
 
-Fixes: e7123a4dfcd7 ("iio: accel: kionix-kx022a: Refactor driver and add ch=
-ip_info structure")
+Fix the define by using correct mask.
+
+Fixes: 7c1d1677b322 ("iio: accel: Support Kionix/ROHM KX022A accelerometer")
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
 Reviewed-by: Mehdi Djait <mehdi.djait@linux.intel.com>
 
 ---
 Revision history:
 v1 =3D> v2:
- - Fix unwinding the fifo enabling
- - Move Fixes before the SOB.
+ - Fixed the commit message where line: "#define KX022A_MASK_IPOL
+   KX022A_MASK_IPOL1" was lost, as git treated it as a comment :)
+ - Moved Fixes before SOB
 ---
- drivers/iio/accel/kionix-kx022a.c | 28 +++++++++++++++++++++++-----
- 1 file changed, 23 insertions(+), 5 deletions(-)
+ drivers/iio/accel/kionix-kx022a.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-k=
-x022a.c
-index 8a13f78aeab0..fa94bc0fd8cf 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-@@ -980,26 +980,44 @@ static int kx022a_fifo_enable(struct kx022a_data *dat=
-a)
- 	guard(mutex)(&data->mutex);
- 	ret =3D __kx022a_turn_on_off(data, false);
- 	if (ret)
--		return ret;
-+		goto err_free_out;
-=20
- 	/* Update watermark to HW */
- 	ret =3D kx022a_fifo_set_wmi(data);
- 	if (ret)
--		return ret;
-+		goto err_wmi_out;
-=20
- 	/* Enable buffer */
- 	ret =3D regmap_set_bits(data->regmap, data->chip_info->buf_cntl2,
- 			      KX022A_MASK_BUF_EN);
- 	if (ret)
--		return ret;
-+		goto err_wmi_out;
-=20
- 	data->state |=3D KX022A_STATE_FIFO;
- 	ret =3D regmap_set_bits(data->regmap, data->ien_reg,
- 			      KX022A_MASK_WMI);
- 	if (ret)
--		return ret;
-+		goto err_buf_en_out;
-=20
--	return __kx022a_turn_on_off(data, true);
-+	ret =3D __kx022a_turn_on_off(data, true);
-+	if (ret)
-+		goto err_on_out;
-+
-+	return ret;
-+
-+err_on_out:
-+	regmap_clear_bits(data->regmap, data->ien_reg,
-+			  KX022A_MASK_WMI);
-+err_buf_en_out:
-+	regmap_clear_bits(data->regmap, data->chip_info->buf_cntl2,
-+			  KX022A_MASK_BUF_EN);
-+	data->state &=3D ~KX022A_STATE_FIFO;
-+err_wmi_out:
-+	__kx022a_turn_on_off(data, true);
-+err_free_out:
-+	kfree(data->fifo_buffer);
-+
-+	return ret;
- }
-=20
- static int kx022a_buffer_postenable(struct iio_dev *idev)
+diff --git a/drivers/iio/accel/kionix-kx022a.h b/drivers/iio/accel/kionix-k=
+x022a.h
+index 0ed54f584223..a2d122c1e234 100644
+--- a/drivers/iio/accel/kionix-kx022a.h
++++ b/drivers/iio/accel/kionix-kx022a.h
+@@ -65,7 +65,7 @@
+ #define KX022A_MASK_IEN		BIT(5)
+ #define KX022A_MASK_IPOL	BIT(4)
+ #define KX022A_IPOL_LOW		0
+-#define KX022A_IPOL_HIGH	KX022A_MASK_IPOL1
++#define KX022A_IPOL_HIGH	KX022A_MASK_IPOL
+ #define KX022A_MASK_ITYP	BIT(3)
+ #define KX022A_ITYP_PULSE	KX022A_MASK_ITYP
+ #define KX022A_ITYP_LEVEL	0
 --=20
 2.55.0
 
 
---Ris3llGW6/HBkn17
+--0hs/Mw2K0VOgxflI
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmqRO4MACgkQeFA3/03a
-ocWihAf/Visbz6MOtiAwoNQaAWLhvKgXKE7aDu8W6zNRAGycFiU2TKW4cvMzkUpS
-UIMkHym+MdtqGr2mkb2qj4IObYZfJO1Otyw8V6+luSc982pnjiTnCkG57Ah9GxFj
-O0Ug1HsRO0ZkABSFvsku4sLrp3QvFsfbGWxZiWzEaox2Jrc3yNMwh6YjzzyQdaFK
-l+otvT5389vCwwcEuk89wLSPUrnUdgFDbyJRD7xPm33vypAdHmFRCKHikYp4FOiB
-evOOYgAL0PfVHT+/FEGqDiG/Bg66BzsSDYnKM2gr/lf8vdNxJTzMfj+Dn7ItVCXi
-Y8UwZ/HZ4EecKcRekBsG5/Ye0Gab7A==
-=pbN6
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmqRO5sACgkQeFA3/03a
+ocXcdwf9H+X03uz+kSa/2wDaPaP5+zmcu+pfvOrlMAbjuoshbCtfbWk6F8SDfCoT
+ZNnUOPAacDrCjaIYTjIaYXCAo4hy3hJgdaevaMWhEeq0QYcbrM5gQ2VXahuFCrp5
+TeRDncKi7N+sM6zuQwubGrqUDwa/Zrb6eskiR0FciUq2AISk2bY94S9kLit90VVM
+jDlEhuho4fTsbWqH3DsdYsI9/lkRgxukvS+tmXetB+Ba/iZA71d+flmxq8nWkl5e
+fOPGsW4s4mSWW68xL6YZwZiNiJTgLMeuHgHgOYR04J3jjYV3vIOzkhNnM/lD+Ch1
+spM+dOfifcs/qQIYUziCWDEr8eOf3g==
+=dyl7
 -----END PGP SIGNATURE-----
 
---Ris3llGW6/HBkn17--
+--0hs/Mw2K0VOgxflI--
