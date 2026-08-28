@@ -1,122 +1,173 @@
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87AE3D3339
-	for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 22:27:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59DE7313E1B
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 02:14:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787869663; cv=none; b=dZPySi1127wN+7bcq6tCEnqpuU6emasBNU2P9SzKbDJ8TO9yCEgkBhX6CPmNvpapkWbd2o5UOn6U++fGzp6070Ksiq2p/06yROE62wZ6CdMhJNsfD72pZR/1A1Rn1k9ETSre7J1bCMP+yz0bWLPuHJrkIJb64dWJG/+irjbUfow=
+	t=1787883272; cv=none; b=e0J9C2IoYuLiA4lTXmbKpTmiWyrLOgwE63iojMvV2zk4LhydfJ07fQFYBOZ5zqGYb+7AWKKSkxA6ADmK/Ery0st1Q28+6RLYq+zF75XLPLtqmePqhJ8jmJ4qkvQxJJXaUlQ2b+5UWJRnCHdVYiEmI3iPVqDMcVdEhgy41VWpKAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787869663; c=relaxed/simple;
-	bh=+6NzsAXpxpUyYVYr7CrkYkFkcEajA1+j6cXX/jJG7dM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=VXypZpmNZiCXffrL8FelPpQXBbpxVqccjAl23/jnKepQV1PZ4Wu1r/nAh7B0y5FP9N+DisKNQbv/CFdbhrTFkY9UVKDqjFsxQCj1RWOXa9AnXpvBiGM2/7tasRacDEHnuwiS8E4nz8H52WqPM7adAvQLlC9hpDt5El8IZLn70hg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=nu3Fial1; arc=none smtp.client-ip=209.85.160.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1787883272; c=relaxed/simple;
+	bh=jxTqiB5pvknMxWIZCebGTM+LY2HU4BCM81AYzWN0suM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=L/pN4W3VO/Wgv7qT7Zt80gtcUnK+qvpN/0BVbRQg88o9S9FKzOSpbIimP3/OaDhI61MGk1Q7FP0oImHNUhDN6grSCeK7LL30d7Xef9tBezuvTZ18kK/53fDkaS4uZ9Da51Y3/kLgatIq1Rlj3itFhXc+/HjaLY3NLLwKsa6TZ6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=imm+a3M7; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="nu3Fial1"
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-459281bc13bso394687fac.2
-        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 15:27:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="imm+a3M7"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2caea3f742bso8997945ad.0
+        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 19:14:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1787869652; x=1788474452; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=SDKoS7M6FWotXuFa/jW1tR0/zPrDl09a09em6cgDMYE=;
-        b=nu3Fial1vggozbYaYq+p5EC4h4ifTPeUhRsAHdQXtlxfO2tvnY5S18FeL11RX+C+D8
-         WJrmFfWIHSQYNb5A5Elvxgzzoq+PN4E/+e6ohKKHF8qwjAu6ndwOso47vwvCXt9bk9Ux
-         3YPjUI9ZZw4bBpxAcxAJqZPn5WZ3ZU8LJ2pJACxrNzsUMsrAOV4UNyXXNB67Yw/6+uKx
-         /a9vJMaePjFWH+4XzAywsfA0bI1ExfqPsxcj5r4ZezSz2jZ3FnaNu8sgQCf+3cb9i6Em
-         04vW9mBuuMFb/S9Al14x0aNfLjt9nI9H4DFBFRoEFKIhO2nIhi8n1bhgccOAipnTvClb
-         ZCaQ==
+        d=gmail.com; s=20251104; t=1787883270; x=1788488070; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=CsbJC9GZmokgjHFLchvU7C0YDsWFwymb0mCZdNSKvYg=;
+        b=imm+a3M7UFBJFld5bn2l0yfgNwMOaYlXNs/3vFgr13YzlTVZ2wfDzHycwpKBWcyg02
+         QLsgGJYQRzsc6B31Af2qXPKXOhAPrPaN3rxm8PBtubNhZs93KqNgTr2I8d2zcg8h9fEn
+         z1Zg4qO5QioOwjxCBJNDQt+ThHXhMHamPLAjMWM/iY99+plm/vu6ub5UNs7I5WsM8nTt
+         hW/pMrHGVeDafGrGYDkEZrXRs3Q8fMyJO02hwqEuhL+gAwvyPXVOFVDZXxD+ez4WWvNO
+         4f26reqf0mGZtCoBSr3z7x6Ix7mcUfQcApPOLMqe2OVdEUx+Fs0yApuIk80KAVA9CYam
+         Dlrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787869652; x=1788474452;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=SDKoS7M6FWotXuFa/jW1tR0/zPrDl09a09em6cgDMYE=;
-        b=P5njZUcfRmjtDnW2CEFl2OXpA50U0KtMCyAp41qa4wK9CiGPBGwh/hS1O0R4UgUqsu
-         x6s8YQkb0gQFa+s9pOG02xQzZbMTL2S8YU4dTCC/Tr3lQuL0zf4NnT0BJsYMFEl1XrKR
-         tZm3lAnjq1SiB84vOB5l2vpaQumpCI7k7QwpGSA9KVyw+3kgGUhJy53HgTZRsj7VRyEY
-         6qYz5As6X6tXI5HDwboUEnh00/YoTAtpq4t5uMNZAw0jvh9VnJSkT++2ZoPbC+bKw2t7
-         EmJ3UE/L7sSrzpI4OdP9gK6g/f0XVqW1ddK/Uwl9KBAPWrY/mmPpeui9oD2h5ZuzDnvA
-         iyPw==
-X-Forwarded-Encrypted: i=1; AHgh+Rr2jzizAKHUVzm4W+A4N531nyrER7ht/ZMdLYvbRNiWg9qEd8JIQtxdNU12VyzoW/RkGeHUjxnlRXA=@vger.kernel.org
-X-Gm-Message-State: AFuF++nA+SWYQ/Sqf07yo0KvJzl64iQ8+G573qhTcTZmMhvxJ8DgWszJ
-	w43rxFNRWrkrBeGYSdqfMbdFHdo0g5ZAu6zjyRu8rMy5Ys0XPDvIVFfCfLXpxIuGI1o=
-X-Gm-Gg: AR+sD10JPbEFh25IE0VM8b1gJtWmtgos+X908XYIS01GpJPEerZImsZLJFOu7Tc++GM
-	FtLohCvw2YncjJE0DTAOAxK8ooUelw5SBr97/ib/wL3sA7aAsnTPxiZVUcN/VCc8AoaO3e06iLX
-	OJF8ivkoAoqIxvYwxNV1NMMi5Gti1Gh3cIkO8lxDXkqAQ7IfeSDaTIGS424K6b4I7iyaryiXTAE
-	F4zjGmZGc3HKD5COhHF9rbxm9P3y3Ljqfd0W2xCgy/u2SdDzCTGR5v/y93Pqei0B1y/DltNXI5x
-	9JGjH8Fhmr58MtMqbJeYMPCqc8ghfGXttnQOBL5ZyRen5ccLucH9BYwSy+lGPwEDOyMo+yBnE87
-	n/cI5eBpW2r1yliIVqIuLDDvYGYuBwq0U5joClCaPKxjptLG/8ccwRR/cLhSVBRlHXe1PfYqS6u
-	ECOFwwEmMGqdhuFdoQmnenDHXHjXGqmII/qE/YcMUbRNbICdy60tw1pZxadv0iwmYS9Q==
-X-Received: by 2002:a05:6870:b2d3:b0:447:4e49:37e2 with SMTP id 586e51a60fabf-46837782b60mr3021180fac.13.1787869652003;
-        Thu, 27 Aug 2026 15:27:32 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:d288:6f77:e285:6925])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-46736444b99sm3336392fac.3.2026.08.27.15.27.30
+        d=1e100.net; s=20251104; t=1787883270; x=1788488070;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CsbJC9GZmokgjHFLchvU7C0YDsWFwymb0mCZdNSKvYg=;
+        b=GkOaPs3Iw5uDX6A8tFV6S/yZHRjBhxR/VpUjDPbwszyQOy9w/djE45CRrXVCa7wQ7w
+         InaOuJC8zkio5BrBmDNK3M+oGMUza+tK4jKyDy77HH4P2SUp1a6KTPCSCaW68exMIIcM
+         NT2CghO3IXm9Gc2frQUrX4l4koE2IYChwt+u1sld81NptmyHUdtMFgS6dItw3BR9PL4x
+         N3raKVEMfNs7jPkRhdmy5kUqTFX119mQli3+oXDQ9pWQjPvrmQ+i4FA9TSGI61qBdX1c
+         Fp0TMoLPGZxGSySUG9Or4Dlr9iZuF+RRS93oF8zsFHPBAFVAPOG55lHiNhCiHJ5rozs5
+         R96g==
+X-Forwarded-Encrypted: i=1; AHgh+Rod/k5UCcsK/fqYaLp6RgtR5vnpYoJWOH1uowFO2QVzdAHtPd6LqP7DJmvqZecKML8HSPasna+oxyk=@vger.kernel.org
+X-Gm-Message-State: AFuF++nKEMBhYveIsoPhCyErQgavztQMxjP/ivRe3u8cv4l5b0wMTsVu
+	GBBJNFFCcGa3pGrogFtke8S23auz7jXL6Tasi7uzDoAFER0YktHvYXg=
+X-Gm-Gg: AR+sD10n3PUCt8461i47tdIBIYlxSMBnh4OgL/4RKOhfMdW1noM+kRvk/jwpInxrJaM
+	6CHG3XkqOjr6xd2qCPjL4zXHSTbu9hb4+QlmvLH4bGZXg04BV8DMtXwJoCTiIowF64du1nMy/Rx
+	zjiCTNPkKA75oiN2oS1PS3U7GxW1CIhjlb+IQjGlnswh1YnZo1ig6nKewpjSWi3R/mVovJ5iKqo
+	5WxCFvCTwJ94ifdkYZ9QRKYdgh9+WeIILgEaXLEamgbTU2A+844J5pPhhFYn5uGYTgsCjSteF/3
+	Gadi97wlZ5dhF1JuI3ie6ndC0f8wDVk02RBQiQLM3HOcCIX3AzmuBmFGrOy9n/IBGpFCAZMFI8Q
+	trlct/AIJHFeqJp3JLokCxJXuh86L5uTWcGxNdPIuVirWzRpNsVHp+hKzZ1iRxHtBHA+KJ11RDp
+	UF1n8g3e8ABkTSq0JsgRisBjFu9vAODWxAcoL+Ply+3A/IsCSvlAl/Qb4gWTP/PQpOkOEVwAGc
+X-Received: by 2002:a17:90b:3ec3:b0:37f:e177:f58 with SMTP id 98e67ed59e1d1-396d0ebd7eemr5881409a91.9.1787883270506;
+        Thu, 27 Aug 2026 19:14:30 -0700 (PDT)
+Received: from DL2XHKPB4.dl.net ([113.185.111.3])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3286fa400c8sm586799eec.30.2026.08.27.19.14.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 15:27:30 -0700 (PDT)
-From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Thu, 27 Aug 2026 17:27:03 -0500
-Subject: [PATCH v2 2/2] iio: ABI: add sysfs attribute for _burnoutraw
+        Thu, 27 Aug 2026 19:14:29 -0700 (PDT)
+From: Triet Hoang <triet.hoang.dev@gmail.com>
+To: andriy.shevchenko@intel.com
+Cc: andy@kernel.org,
+	bleung@chromium.org,
+	chrome-platform@lists.linux.dev,
+	dlechner@baylibre.com,
+	groeck@chromium.org,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com,
+	tzungbi@kernel.org,
+	Triet Hoang <triet.hoang.dev@gmail.com>
+Subject: [PATCH v4] iio: cros_ec: Convert to DEFINE_SIMPLE_DEV_PM_OPS()
+Date: Fri, 28 Aug 2026 09:13:49 +0700
+Message-ID: <20260828021350.1666063-1-triet.hoang.dev@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260827-iio-adc-ti-ads112c14-burnout-v2-2-00a1fab9e2d1@baylibre.com>
-References: <20260827-iio-adc-ti-ads112c14-burnout-v2-0-00a1fab9e2d1@baylibre.com>
-In-Reply-To: <20260827-iio-adc-ti-ads112c14-burnout-v2-0-00a1fab9e2d1@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
- Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
-X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1104; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=+6NzsAXpxpUyYVYr7CrkYkFkcEajA1+j6cXX/jJG7dM=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqkLnGmxf+CrV5k1AlvvJi8t46iy3xM2Sfrm6T7
- 5/6V5r8qdmJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCapC5xgAKCRDCzCAB/wGP
- wK0XB/9iUk+UGF5DSBenOyxqCbqnLobSCsEfm2xuQtEwAwBtnBRLUGJHvoqGIK0x01faaTCiZjh
- daqbamjp3CgItjaDoqyz4+RpU4W1MiRSCBFD7OAe7EUlxgh5Z1jGLP9jwxIyrOo9u9fNPIn+FWj
- QoAmckzNGKtVBpnHAkRGrUwiMXPP0m3xSEnVhRCt0RbHVBndP2Mvq8HlWe9NmMtf/rCGxpXJHv2
- iwey3z7PgdwbrEU0kSn3mrIa3VwHSIuC/AvrZSF0Ial+wcoZIwgbxu78LphnDOuD8M6dCiLdGK9
- tlIOTpgEj3dsMF2fxf0iCcf1J67HLjnKxlhuRmR1XxWHoR60
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Transfer-Encoding: 8bit
 
-Add a new _burnoutraw attribute to the IIO ADC ABI. This is likely only
-applicable to ADCs (but is seen on multiple chips and vendors) so it
-gets its own file instead of being added to the main IIO ABI file.
+Convert deprecated SIMPLE_DEV_PM_OPS() to DEFINE_SIMPLE_DEV_PM_OPS()
+and pm_sleep_ptr(). Also replace SIMPLE_DEV_PM_OPS() + EXPORT_SYMBOL_GPL()
+with EXPORT_GPL_SIMPLE_DEV_PM_OPS().
 
-Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+This allows us to drop the __maybe_unused annotations from the resume callback.
+This is a straightforward cleanup with no functional change intended.
+
+Signed-off-by: Triet Hoang <triet.hoang.dev@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio-adc | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Changes in v2:
+- Use EXPORT_GPL_SIMPLE_DEV_PM_OPS for cros_ec_sensors_pm_ops
+- Wrap to 75 ish chars for commit messages.
+Changes in v3:
+- Update commit message based on feedback from v2, and added Reviewed-by tags.
+Changes in v4:
+- Remove the "Reviewed-by" tags.
+- Address EXPORT_GPL_SIMPLE_DEV_PM_OPS() usage in cros_ec_sensors_core.c.
+---
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc b/Documentation/ABI/testing/sysfs-bus-iio-adc
-new file mode 100644
-index 000000000000..d45f0a4eb18e
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-adc
-@@ -0,0 +1,9 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_resistanceY_burnoutraw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_burnoutraw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_burnoutraw
-+KernelVersion:	7.3
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw value from channel Y read using a single conversion with
-+		the channel burnout current enabled. This is typically used
-+		for diagnostic purposes to detect an open or shorted input.
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 2 +-
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 5 ++---
+ drivers/iio/light/cros_ec_light_prox.c                    | 2 +-
+ drivers/iio/pressure/cros_ec_baro.c                       | 2 +-
+ 4 files changed, 5 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index b971f8b646be..551b86236abc 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -311,7 +311,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
+ static struct platform_driver cros_ec_sensors_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-sensors",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_sensors_probe,
+ 	.id_table	= cros_ec_sensors_ids,
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index 5133755c2ea6..d03e40c91582 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -862,7 +862,7 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
+ 
+-static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
++static int cros_ec_sensors_resume(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+@@ -879,8 +879,7 @@ static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
+ 	return ret;
+ }
+ 
+-SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
+-EXPORT_SYMBOL_GPL(cros_ec_sensors_pm_ops);
++EXPORT_GPL_SIMPLE_DEV_PM_OPS(cros_ec_sensors_pm_ops, NULL, cros_ec_sensors_resume);
+ 
+ MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index 7ab565b1fb9f..b1c92de7922a 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -249,7 +249,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
+ static struct platform_driver cros_ec_light_prox_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-light-prox",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_light_prox_probe,
+ 	.id_table	= cros_ec_light_prox_ids,
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index 6a567b6075d9..e4bc4df48d01 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -192,7 +192,7 @@ MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
+ static struct platform_driver cros_ec_baro_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-baro",
+-		.pm	= &cros_ec_sensors_pm_ops,
++		.pm	= pm_sleep_ptr(&cros_ec_sensors_pm_ops),
+ 	},
+ 	.probe		= cros_ec_baro_probe,
+ 	.id_table	= cros_ec_baro_ids,
 -- 
-2.43.0
+2.53.0
 
