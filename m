@@ -1,157 +1,160 @@
-Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011062.outbound.protection.outlook.com [52.101.125.62])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE60C4746B7;
-	Fri, 28 Aug 2026 15:01:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.125.62
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787929310; cv=fail; b=BTe64jzvycF3fs2kSxnQC1l3nO+LzfcSfPAqARj2RY9ranMwwHUdroKlHgd7htacFyoHcu2Pf6TY1eVesMn5O5OdEjGp/AjdjQRaU9i26bs+GM+dGMMWs4AveH0tyjpPiNc4ZT4i5eo6Oi1hx2sH7e+A/9018Nd0HticoId6tFo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787929310; c=relaxed/simple;
-	bh=qhJfL9ywqUS2u1L+mgZ1PbO801mkFH82tI/av3svtyU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=P/KTZsG1FIY3xFor4uf2Ri1Rx6xvFyAhTpX2aI8i4HGZfLSWfKsbhwQ0F8YIKV9/4pJA0xnf+e2+57lCDekWGx6HUH1/tavob9KNPPJ3pHnyT5B0BfVbOBJHRDoffCE6Ey03u0R31Dx0VyaT77vFhdFr1fToqeVq/kNhw0dqiwo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=izHiofc3; arc=fail smtp.client-ip=52.101.125.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBD22326939;
+	Fri, 28 Aug 2026 15:31:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787931071; cv=none; b=mrnaDl+1Qb76bbNUMkR879gTYkxrkssgN+8/FxV4FSXiC3d6qF58YhontI+Vq1N7ZE0c2XOBYZqfPI+q0fgd9zAE6fSr5s9mqBPu+bKRuj32pQlk7foaHWroHv7E+reuqSnfS9cj6/TXcsK1cLSImMIqXn7B8fEx3tQcIs91ZZk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787931071; c=relaxed/simple;
+	bh=ve7OXVMFVFw2xFHjlWoene6tb7Ty6JXZOSYOaiwxrLM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=tw0f2zt4SSCHmbYaY5Q/NUYe7SeB3Fbcw1Fs4ZwOACM/ls+kzIfRV65BFXCbassgjBi7K2xkxJ0zzw8FlDK92FZMeUfi1+g3zOWidDP/VxKRrgg2RVErw1m3SX++39i3t5++157L2dw332GxQwaY7IKtKU6NnT95aSoQZ22E0HA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=RjO/C7Fy; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="izHiofc3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=h6guTz2XdECwipyjDsIOVpHMvBodFGnf4Bi7DtkzawS9/bAo7PDEggyUQU4254eCTZ2xiHrIP5p0zl9812KIb3VaJpOsL8HP73u5rjCQ9ba4K9ELaBVJ6zGtyaqP4eh9LeyKfqSbtcWfnW9C/N2yGMLYWzXD9alK2tHA50IIqsvrUJZ6OC+xMTiKNmkjYUNSqlkYXxvClrKZYB2LtnGweY4EkqMqt3qAmKerk4Naq2uF9C4RicFbqoZBu16fGCuRMROfY2IFJ0kKyxOlGvxHkriR3yWPsNlgvlcpxhWX/LSRGJfc5mZ1HUki5yi7L4423q0RZdf+VIFMn/rLppwAfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UpRk999ug27BIfB19CrWOgpoiw5g4tvs5euo+DO8+Qk=;
- b=lZTR4HW1FSJlC3aQwY5f56EWuqQxnjbyaEG6kHqXjB3rCHpHIMJi5JZwZMfnx4NnNy6huwlGI2jp3pEJwwanoB/zXQmll9WouyJG9qDJHzs6hN8O41gCgRIZ88eRuUW+anA77YvgvMslUaBDUPsQTKtzTGzSedqS3kkAlK4lLooUtruB7M+Oztn+Gq0y7OrEfRLmQIEMY3veFFV+639dsoO3oJWGGRVSef2PbrO6j6NHVblhACbaz6rJQ5fIgOtJBEgFTVmg07vUHM56ns17C3lUSPRtXEnflUtem7xjTCegYBVX6Mt6jJF6KjCFFk5z6x+2fwk+aANcu3v36KEhtQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 8.62.32.50) smtp.rcpttodomain=analog.com smtp.mailfrom=renesas.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=renesas.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UpRk999ug27BIfB19CrWOgpoiw5g4tvs5euo+DO8+Qk=;
- b=izHiofc3mKpPKRgZoCFIWI+bHaqLEZNlkZFlQ5Q2ByUg74uXS0vNGPx0L3bP7bTAt9d75Yto/oE5VLuOcTVwQOshzE+mciBotcpQTKkSsoin/PKBZv1e0/MFV2qd5d1C0lsjl1j+awspTwaBJmE58RsG7SzzzkDY9w0/WouBL3M=
-Received: from OSTP286CA0001.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:223::9)
- by TY4PR01MB17211.jpnprd01.prod.outlook.com (2603:1096:405:333::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.11; Fri, 28 Aug
- 2026 15:01:40 +0000
-Received: from OS1PEPF0000D20E.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:604:223:cafe::42) by OSTP286CA0001.outlook.office365.com
- (2603:1096:604:223::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.360.11 via Frontend Transport; Fri,
- 28 Aug 2026 15:01:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 8.62.32.50)
- smtp.mailfrom=renesas.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=renesas.com;
-Received-SPF: Pass (protection.outlook.com: domain of renesas.com designates
- 8.62.32.50 as permitted sender) receiver=protection.outlook.com;
- client-ip=8.62.32.50; helo=ejcrelay004p.adwin.renesas.com; pr=E
-Received: from ejcrelay004p.adwin.renesas.com (8.62.32.50) by
- OS1PEPF0000D20E.mail.protection.outlook.com (10.167.240.37) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.382.8
- via Frontend Transport; Fri, 28 Aug 2026 15:01:40 +0000
-Received: from demon-pc (REE-0055761.adwin.renesas.com [10.226.92.7])
-	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id AE13030001E6;
-	Sat, 29 Aug 2026 00:01:35 +0900 (JST)
-From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Subject: [PATCH 9/9] arm64: dts: renesas: r9a09g087: Wire up DMA support for ADC
-Date: Fri, 28 Aug 2026 17:59:42 +0300
-Message-ID: <20260828145943.2077589-10-cosmin-gabriel.tanislav.xa@renesas.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260828145943.2077589-1-cosmin-gabriel.tanislav.xa@renesas.com>
-References: <20260828145943.2077589-1-cosmin-gabriel.tanislav.xa@renesas.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="RjO/C7Fy"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67SDVgvR1142294;
+	Fri, 28 Aug 2026 11:30:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=NDlT5
+	gWP/1+ftO/1MnwMDib5N9jKL2+bqbtj1iGL1Fk=; b=RjO/C7Fyk9GNWiF3VolYF
+	HU+sWvZbE4aqPvcPOziun5prEXduig09bOh/BWFVFCaJ8d/A4ngnOawLp+nOZD4p
+	qP8cuoEDsMS+VXYZFS3jODGFjKGUZZAzzA7msXQZscEt6XMlKKPtghIMVTBHRG85
+	E0pJBcxm/20PnmwDhpaGMRGooLV12lQ1QNzPdbzD6nHsa2708Oqy+hjnErrkcGcp
+	IZdJVVhG5uD45HZDi+Tb5qOzDlGEygFlf4sSs25YaqxQ+qvaC1XOTGIOcOiuI6dY
+	grgXJcqCDTVaEZvLkBe3dc4yhJxHkhBpGcTZOIpMAmsh5M4Xw/yo5JsKgQoG0ZGI
+	g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gaj3cqj4b-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 28 Aug 2026 11:30:58 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67SFUv9o012855
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 28 Aug 2026 11:30:57 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 28 Aug 2026 11:30:57 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 28 Aug 2026 11:30:56 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 28 Aug 2026 11:30:56 -0400
+Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.223.174])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67SFUY3g031424;
+	Fri, 28 Aug 2026 11:30:51 -0400
+From: Janani Sunil <janani.sunil@analog.com>
+Date: Fri, 28 Aug 2026 17:30:24 +0200
+Subject: [PATCH v5 01/20] iio: adc: adi-axi-adc: Initialize state mutex
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OS1PEPF0000D20E:EE_|TY4PR01MB17211:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 01691fe5-0ff5-4caa-a832-08df051543fa
-X-LD-Processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|82310400026|36860700016|7416014|1800799024|376014|10067099003|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	3FmBCBzPDS9tNrs8IUtdxI6eDxjFCZAfHq6BCha8gr2FQMcGbZ1y8TyXjnu8mOrxXkK3RJIo4he+1w5XsKEoXmcooi3X+YE4JB90gqx/kLswEDkgnk/Oe+OM2hA8gagv0VgX8yVeMnAqNiMcorFaUCBvhE/2FMSHKV4ZmMMKjB99VjWW5O7W+Y7GBxzgdP0CwMQrffWc7CUDJRIkWt7SnOTZKlVXRFueCbh88Bvf+cC4txpoEu2P2uOn+q0MHWYQevVBB1mgzRefFr3ABRKL04ir39BFNLT74lW1fyta9wd+KvBk7EawmgXBfZTJnEgVv5zCq/UD+P3/3YRsFgnTpUIppBLyVEAKNyBf+ClKRhzqH8sSarJdMmmfosF5b1FCJaqrr2JIvG0HnpROFjL6TeFHXVlSSNSlwpQuKfkZ2zxUzLr1ahZ0yh9prkx6Hhby3iquqmM1OZGqe1dxVMRq5oAuyQaiComp/JxwcEaERp6yAJEcW5ZLeSy8jZE0KTVR6q+uo6wM8b3uHKcDHNtLqEluoegL6y9DDSaicXbDJi2BTPlfYcujGTPlk9k/ZNawb7qAeObnkcFkt9Cb7Y1F1ZEwWfkI817bNW9jTlJjPEB93SjDsgchx2pRtmm357mPs2Jf3RKgozIK7tXFZS3ZRa3A5Kg9QIRMwyCuT6EASpmGNOfmGEl7DBQNXcxeRjodm8q+YTEkLPxRltnNSCB9MQ==
-X-Forefront-Antispam-Report:
-	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(36860700016)(7416014)(1800799024)(376014)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	N3pVX4S/Px/1KUttcXct3+Qd5+6xlGPbDJtAVzDFzJNAAieVDbCRhK6/4weoV8poibZmWmCx6nRK2PFZ/nuxgS6+hrmkJtc3VGe1eNyeNgoVlxZ6ladjutbmhlCwM1hNeuWgkadDWwfcHwQpLacu+dym7D2px6FFtUI0zXL047xzwqaz7Q7WrqajRtAtmi4hd+TFfCOaJ58aMPrn9TTbLYV3XPbik/0SZIGGDsVs2JddNT9qNhu8wFGHBCPW+fJ9tIjDf8w7/1sQaXE6J9GsBNfCKovaobWp+6tQGGjJi0xHz+jalvFZbmBb6jLSv0GgQyu6gR8vmAJ/ROT3ZO0x6fdv5JFGHD7WhdIjN7InvL4PaQ6OiETu93F/h2GNwoACu08syzgdmc7NothFBsRILkPzy+JAVHUVzHvVSXoo9u6TmAk7dGkdOC9LE/IqzmXE
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2026 15:01:40.2219
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 01691fe5-0ff5-4caa-a832-08df051543fa
-X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=53d82571-da19-47e4-9cb4-625a166a4a2a;Ip=[8.62.32.50];Helo=[ejcrelay004p.adwin.renesas.com]
-X-MS-Exchange-CrossTenant-AuthSource: OS1PEPF0000D20E.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB17211
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20260828-ad7768-driver-v5-1-e33ca6f841a2@analog.com>
+References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+In-Reply-To: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David
+ Lechner" <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, "Rob
+ Herring" <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Conor
+ Dooley" <conor+dt@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linusw@kernel.org>,
+        Bartosz Golaszewski <brgl@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Michael Walle <mwalle@kernel.org>
+CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <jananisunil.dev@gmail.com>,
+        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@baylibre.com>,
+        Janani Sunil <janani.sunil@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787931034; l=1021;
+ i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
+ bh=ve7OXVMFVFw2xFHjlWoene6tb7Ty6JXZOSYOaiwxrLM=;
+ b=7s4G5ZsT3SdTk5ffaMyzvjH6tEmYXyhp0XumQ4VY5T1RoBviowI+KzXS3Nam+3maJ5l10I82g
+ qTNiMK41uYhBeGOwSHtjL1CEo2cNYrZYBWUE4AhRtQ9xmlyHubGcF1F
+X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
+ pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: yP0h9tgD11Qx_XxciJiVLDOiwodT6ih0
+X-Authority-Analysis: v=2.4 cv=erHvCIpX c=1 sm=1 tr=0 ts=6a91a9b2 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8
+ a=_ljTvifiVFBlT2kRk7cA:9 a=QEXdDO2ut3YA:10 a=zZCYzV9kfG8A:10
+X-Proofpoint-ORIG-GUID: yP0h9tgD11Qx_XxciJiVLDOiwodT6ih0
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI4MDEzNSBTYWx0ZWRfX9PmqXWoxJ/Eo
+ Y49/FKnGLKOt+vsa3DqVDy5uOebUuDOr60k69uB1CbsG7JHoeUH1OjC97BAeUizSHNfuyz3vTEJ
+ YC9a0pETB27S4j1X9hcjmRVnyMXp8zz784BkzhsuDKN9JuWmKfPhWfIKTOgjxQurQfu4ofZAdb8
+ 5j0/flSY//ZNowk8apgFAAgGC5XS0+h9xiueFfKOIK7Hqss0qLrw6AT/sjT7eMVyeJkI365SEdP
+ BT8tQple77v3E4wMKNvrCKneVG82HLQrRxXkSiFmRJR+9Maz/87Eo0gJjxIjxmG7TqHtjibjoGu
+ a2iW7n15fYRaS8E2bCesJ78banTX15DhkFPR5aJfk13u9lXwXwBNeiF7d07gm7ybdUjc1eoeRn6
+ nWuAAcfqvRGE470yGGaKMYZD1qsqUJ0jXyPhyOGRIL4k4rUGIQatEExjGZOZ+3V/5WJ3XF/ikjF
+ ck4SmCcBg6j7x+VsCPw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODI4MDEzNSBTYWx0ZWRfX/vjYhUc5wheX
+ wN7M34h3DfIlX3DGj0XEq3ScS/1E/DOt1wFhP1++9pN15DUoZ5L15GFrKcaQouS54/t821txIZF
+ QdPbWYuUAZTYdd4NQkhzykBwqPFA4Uuq85EeSrxJJGLRlVrfA9ad
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-28_04,2026-08-27_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 spamscore=0
+ suspectscore=0 malwarescore=0 adultscore=0 clxscore=1015 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608280135
 
-RZ/N2H (R9A09G087) has three DMA controllers that can be used by
-peripherals like the ADC to offload data transfers from the CPU.
+The AXI ADC register access paths serialize transactions with st->lock,
+but probe does not initialize it. Initialize the mutex before registering
+the backend.
 
-Wire up the DMA channels for the ADC peripherals.
-
-Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Fixes: 7ecb8ee5c93b ("iio: adc: adi-axi-adc: support digital interface calibration")
+Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- arch/arm64/boot/dts/renesas/r9a09g087.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+This patch is already queued in the IIO fixes-togreg branch as commit
+040c2514b25b ("iio: adc: adi-axi-adc: Initialize state mutex").
+---
+ drivers/iio/adc/adi-axi-adc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
-index 57ac38df3e51..9e8c6610f0da 100644
---- a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
-@@ -1238,6 +1238,8 @@ adc0: adc@90014000 {
- 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
- 				 <&cpg CPG_MOD 206>;
- 			clock-names = "adclk", "pclk";
-+			dmas = <&dmac0 0x26ba>, <&dmac1 0x26ba>, <&dmac2 0x26ba>;
-+			dma-names = "rx", "rx", "rx";
- 			power-domains = <&cpg>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -1260,6 +1262,8 @@ adc1: adc@90014400 {
- 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
- 				 <&cpg CPG_MOD 207>;
- 			clock-names = "adclk", "pclk";
-+			dmas = <&dmac0 0x26bf>, <&dmac1 0x26bf>, <&dmac2 0x26bf>;
-+			dma-names = "rx", "rx", "rx";
- 			power-domains = <&cpg>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -1282,6 +1286,8 @@ adc2: adc@80008000 {
- 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
- 				 <&cpg CPG_MOD 225>;
- 			clock-names = "adclk", "pclk";
-+			dmas = <&dmac0 0x26c4>, <&dmac1 0x26c4>, <&dmac2 0x26c4>;
-+			dma-names = "rx", "rx", "rx";
- 			power-domains = <&cpg>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 26b9c75bd4d8..b5e59b1871b6 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -684,6 +684,10 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
+ 	if (!st)
+ 		return -ENOMEM;
+ 
++	ret = devm_mutex_init(dev, &st->lock);
++	if (ret)
++		return ret;
++
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+
 -- 
-2.55.0
+2.43.0
 
