@@ -1,137 +1,95 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from aye.cherry.relay.mailchannels.net (aye.cherry.relay.mailchannels.net [23.83.223.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AC522BE03C;
-	Fri, 28 Aug 2026 11:01:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFB42435537
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 11:30:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=23.83.223.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787914920; cv=none; b=uNrH17J1CIGedlZmS4USKBh/xGDm6CpDtDUnWXHDGcxjA8bK6Fp/ZP+C48siEg25rjfOUgM0riInSUZa6DkMpb+03GArujh23oa3NtXI6jEl1T7P/UiboO8pBOCxwIB3lu837EsK+YgJnKIpu8v79e1hbZsmzPRncDAc+/LlyrU=
+	t=1787916624; cv=none; b=LMv8uZ7gLJ+aO+3ci5YcypBJciUxu0FWdTa96wGZVu5VcNnqGCPYrceLxOVDbcH75+FZLWqAzlQBPxqXksLZJ97ppjgGfXsB6zcXKjxWX/e3lkOWFLCm5QrCpQnHQ+00nPGF7GRglu8K/l0iSw3g5odUtUjC6nF00jiiiOcX50o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787914920; c=relaxed/simple;
-	bh=kfVFRkJOl4hr3UPH6L9mgcgVAqYIe9s+sXYvbOSaaE8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ok2WO+1EgnV+ps+6W5295CFItPUPt0z7Do+SECggY92O9j/Vnje+ojOJx/31U44MOXJN2f5QluhVlT5hfTVGgYi6SWK6K/IGt/b9n7UkAaqeiOXdxiB1KI2JDqzXxHp9dX0zjAsINH2MyJ9p/qsCU1M87j4dv0/9J2oOR8vmNRM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jacqH2nn; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1787916624; c=relaxed/simple;
+	bh=JaouZ2JFyD6mM5cLBRbJpXpzUQ6r1jPNxEQkP+RtYJ4=;
+	h=Message-ID:From:To:Subject:Date:MIME-Version:Content-Type; b=ZduYHvEQ0X6IJmyIaHBuAO2KOv9aQvkZQJxUmXSmamsgLvvrV/YY1aHxyt9qXdcv3G86nYFibJgyacmrr05kOsyKGvAloi+SyiiSMhLtAoAllJXcL+T+axn+PNpUlmy3koCMQyepUhir0yLhoaU/5LJIRaGMojGdbARvbNa/KCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kamsoft.co; spf=pass smtp.mailfrom=kamsoft.co; dkim=pass (2048-bit key) header.d=kamsoft.co header.i=@kamsoft.co header.b=uXvu64NR; arc=none smtp.client-ip=23.83.223.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kamsoft.co
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kamsoft.co
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jacqH2nn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787914918; x=1819450918;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kfVFRkJOl4hr3UPH6L9mgcgVAqYIe9s+sXYvbOSaaE8=;
-  b=jacqH2nnUyA0X5ma3Tgz2rKRCYe+Rnn3GBFUCWmvobrU9SV1QWnrNg5D
-   GCCGTTmlQLCT56mvA9cLctBDDy58GWj9eJ9JOKc9Qf0u1B8EpsQGyWZM4
-   FU5nS5i3W1kA+fI8hZc4l753a+VtHhk6MBOwwOp5dLoch3KLdTubhI88v
-   ZNdUVmaG2UO3ot7BGkHxdEhrBpHJlQXKRW49rufIzbU+RpWb5iCNtmITE
-   vzhGYnD4Cytw0j+5YBwt77PxnvgoijBFB9FzeufIk9uQ5QLYg3HK2bn8a
-   dlUy13ddjGdCMJJgdAhaYsRezMwRJADubnBUpgkAEVl2Fyd80ntgSke98
-   g==;
-X-CSE-ConnectionGUID: fh90GXMVTVCrMg0rmrHZXA==
-X-CSE-MsgGUID: uSQo/TNPSuGPSfueUJMtUg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11888"; a="88447547"
-X-IronPort-AV: E=Sophos;i="6.25,248,1779174000"; 
-   d="scan'208";a="88447547"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 04:01:52 -0700
-X-CSE-ConnectionGUID: qfDlHEAiS2CFU1XYg2Xxmw==
-X-CSE-MsgGUID: 3newLZMSQ8ulAbIuXJbfkg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,248,1779174000"; 
-   d="scan'208";a="266318457"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.34])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 04:01:49 -0700
-Date: Fri, 28 Aug 2026 14:01:46 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-	Matti Vaittinen <matti.vaittinen@linux.dev>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: light: rohm-bu27034: Fix infinite delay on
- error
-Message-ID: <apFqmjGZKQ-qW7L7@ashevche-desk.local>
-References: <cover.1787901813.git.mazziesaccount@gmail.com>
- <7f0d8efb3578cd4f23a7c70fa4a8f7a967c9df8e.1787901813.git.mazziesaccount@gmail.com>
- <apE-gauHWlJO8-5X@ashevche-desk.local>
- <5d274bfb-2570-4336-af16-60640550e6c9@gmail.com>
+	dkim=pass (2048-bit key) header.d=kamsoft.co header.i=@kamsoft.co header.b="uXvu64NR"
+X-Sender-Id: altushostbv|x-authuser|syed.kamal@kamsoft.co
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 1E0417E0F7B
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 10:14:47 +0000 (UTC)
+Received: from brand.servercompany.business (trex-green-9.trex.outbound.svc.cluster.local [100.96.233.231])
+	(Authenticated sender: altushostbv)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 90C867E30D0
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 10:14:42 +0000 (UTC)
+X-Sender-Id: altushostbv|x-authuser|syed.kamal@kamsoft.co
+X-MC-Relay: Dedicated
+X-MailChannels-SenderId: altushostbv|x-authuser|syed.kamal@kamsoft.co
+X-MailChannels-Auth-Id: altushostbv
+X-Reaction-Industry: 4e5a7ba40e066121_1787912087026_1549335611
+X-MC-Loop-Signature: 1787912087026:3436913790
+X-MC-Ingress-Time: 1787912087026
+Received: from brand.servercompany.business (brand.servercompany.business
+ [213.5.70.61])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.233.231 (trex/8.0.2);
+	Fri, 28 Aug 2026 10:14:47 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kamsoft.co;
+	s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:Subject
+	:To:From:Reply-To:Message-ID:Sender:Cc:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=3KtT+N/eXBToDN+5cWsikTbo1/dS3/appzk+JSTNkh8=; b=uXvu64NRAU8MoqE9Ogfra5SZcw
+	yYIc2jd0KFhBHoXpg5DWDCB8dZrwuwSg/MRPUqntgvGE1+JcgCsZJuyn5H9XNsldLdneN6E5/MONK
+	LNGvfgtQS9/J2R8Qu51WMP8VDr++s/J/3izqpHeZXC5M4HbXgNcxlF01xy6U3LiTVrKWxEdgohuiC
+	2UsHwDJO8m3OcExFPNW9iAwJM6JNuaMIJHYXSVRV0QbWuu94/h+66HiORF9e1A+unmgFj7WpKx8T5
+	eIlOO2NN8JT5UCLBbFDbYPIJ0EJqA2b7GPuNmd/9xhJ7nV8VmOaYYGQBOeTQrP0ZL6Dth8njjK3H0
+	aT3bC6Yg==;
+Received: from [185.184.171.186] (port=53220 helo=eoysrli)
+	by brand.servercompany.business with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.99.5)
+	(envelope-from <syed.kamal@kamsoft.co>)
+	id 1wztbd-0000000EOKn-15tX
+	for linux-iio@vger.kernel.org;
+	Fri, 28 Aug 2026 06:14:40 -0400
+Message-ID: <a7dc973cc86f7b70576d248f7eba918d532ee7@kamsoft.co>
+Reply-To: =?utf-8?B?0JTQsNGG0LrQviDQntC70LXQutGB0LDQvdC00YAg0K7RgNGW0LnQvtCy0Lg=?=
+	=?utf-8?B?0Yc=?= <kahc@vimk.com.ua>
+From: =?utf-8?B?0JTQsNGG0LrQviDQntC70LXQutGB0LDQvdC00YAg0K7RgNGW0LnQvtCy0Lg=?=
+	=?utf-8?B?0Yc=?= <syed.kamal@kamsoft.co>
+To: linux-iio@vger.kernel.org
+Subject: =?utf-8?B?0J/RgNC+0YHQuNC80L4g0JLQsNGBINGC0LXRgNC80ZbQvdC+0LLQviDQvQ==?=
+	=?utf-8?B?0LDQsdGA0LDRgtC4INC90LDRgSwg0L7RgdC60ZbQu9GM0LrQuCDQt9Cy4oCZ?=
+	=?utf-8?B?0Y/Qt9C+0Log0ZbQtyDQktCw0LzQuCDQstGW0LTRgdGD0YLQvdGW0LkuIA==?=
+	=?utf-8?B?IA==?=
+Date: Fri, 28 Aug 2026 13:14:39 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d274bfb-2570-4336-af16-60640550e6c9@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-AuthUser: syed.kamal@kamsoft.co
 
-On Fri, Aug 28, 2026 at 12:46:24PM +0300, Matti Vaittinen wrote:
-> On 28/08/2026 10:53, Andy Shevchenko wrote:
-> > On Fri, Aug 28, 2026 at 10:40:36AM +0300, Matti Vaittinen wrote:
+=D0=94=D0=BE=D0=B1=D1=80=D0=B8=D0=B9 =D0=B4=D0=B5=D0=BD=D1=8C,  =D0=BC=D0=
+=B8 =D0=BD=D0=B5 =D0=BC=D0=BE=D0=B6=D0=B5=D0=BC=D0=BE =D0=B4=D0=BE=D0=B4=D0=
+=B7=D0=B2=D0=BE=D0=BD=D0=B8=D1=82=D0=B8=D1=81=D1=8F =D0=B4=D0=BE =D0=92=D0=
+=B0=D1=81, =D1=82=D0=BE=D0=BC=D1=83 =D0=BF=D1=80=D0=BE=D1=88=D1=83 =D0=9D=
+=D0=95=D0=92=D0=86=D0=94=D0=9A=D0=9B=D0=90=D0=94=D0=9D=D0=9E =D0=BF=D0=B5=
+=D1=80=D0=B5=D0=B4=D0=B7=D0=B2=D0=BE=D0=BD=D0=B8=D1=82=D0=B8 =D0=BC=D0=B5=
+=D0=BD=D1=96 =D0=B7=D0=B0 =D0=BD=D0=BE=D0=BC=D0=B5=D1=80=D0=BE=D0=BC (073=
+) 641-73-44.
 
+=D0=97 =D0=BF=D0=BE=D0=B2=D0=B0=D0=B3=D0=BE=D1=8E,
+=D0=9F=D0=BE=D0=BD=D0=BE=D0=BC=D0=B0=D1=80=D0=B5=D0=BD=D0=BA=D0=BE =D0=92=
+=D1=96=D1=82=D0=B0=D0=BB=D1=96=D0=B9 =D0=9E=D0=BB=D0=B5=D0=BA=D1=81=D0=B0=
+=D0=BD=D0=B4=D1=80=D0=BE=D0=B2=D0=B8=D1=87
+(067) 995-08-92
+(073) 641-73-44
 
-...
-
-> > >   	wait_ms = bu27034_get_int_time(data);
-> > > +
-> > > +	/*
-> > > +	 * If reading the integration time fails, default to the minimum so we
-> > > +	 * don't lose samples. This may waste CPU cycles, but as a hardening
-> > > +	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
-> > > +	 */
-> > > +	if (wait_ms < 0)
-> > > +		wait_ms = BU27034_INT_TIME_US_MIN;
-> > > +
-> > >   	wait_ms /= 1000;
-> > 
-> > With the above being open coded the _ms feels not right.
-> > I would expect the TIME_MIN to be in MS from the start
-> > (and for the consistency's sake with the below) and having
-> > all this to be written like
-> > 
-> > 	ret = bu27034_get_int_time(data);
-> > 	if (ret < 0)
-> > 		wait_ms = _MS_MIN;
-> > 	else
-> > 		wait_ms = ret / USEC_PER_MSEC;
-> > 
-> > >   	wait_ms -= BU27034_MEAS_WAIT_PREMATURE_MS;
-> 
-> I don't like using 'ret' there.
-> 
-> At first glance, the
-> ret = bu27034_get_int_time(data);
-> 
-> looks like ret is containing just the success status. Furthermore,
-> > 		wait_ms = ret / USEC_PER_MSEC;
-> 
-> forces one to go back and see WTF the 'ret' is (even if just couple of lines
-> - but this is not an improvement, using ret is obfuscation).
-> 
-> I could change this to:
-
-I suggested without knowing the possible ranges of the returned value.
-
-> wait_ms = bu27034_get_int_time(data) / USEC_PER_MSEC;
-> if (wait_ms < BU27034_INT_TIME_MIN_MS)
->                 wait_ms = BU27034_INT_TIME_MIN_MS;
-
-This looks sane to me and  removes the confusion I was talking about.
-
-> (but for me this feels like unnecessary bikeshedding than anything else.)
-> 
-> Well, I'll change this if I respin.
-
--- 
-With Best Regards,
-Andy Shevchenko
 
 
