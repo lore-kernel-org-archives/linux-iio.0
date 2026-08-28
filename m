@@ -1,68 +1,68 @@
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
+Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33A4C3CB56D
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 06:38:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8F413CF030
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 06:38:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787899131; cv=none; b=qgRhXc0CD8zAZkhPxD8JWpuz/1eI1ejTNgeqDZLpVUf5wKcFgK52dLHRsBuCoWGh0Z0X4fkM6qt+aXjFLogLe1UEIGb5DevwozWZzx/q88Hx/75anffH2H1w3tulbOPZFrW+EPaTEC7CtWpSFP6wlgGgIbvGuwgXSLSh1zO1HH4=
+	t=1787899132; cv=none; b=YxFD30C3kyMWsNgYZa6A6LT8MsHdYICQ75cXW2wyjEhINrzzBFmKALutb9BonzxJPHSTfmNmPkp/OQejd1Oa+kKYtykLL6q1UHxgQrKBWdUUlp5N7iIqIV1rs8ERHmXKeaxaRETw5Yh+lDV6VdSPcd+3HVVcGRdQD4bVVsPDhR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787899131; c=relaxed/simple;
-	bh=DDo13wwLlYbjGc+vmoTMKrXc8Q3Ay18o6BblG/u9PbA=;
+	s=arc-20240116; t=1787899132; c=relaxed/simple;
+	bh=6aZMjagHvcH24IcCEzk87Oit7nVKdoCQ6sPY4en+24w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KrQNkIMBXkt/yoUN09zLR1LhGRjANFacms9Zq7pQ5rsve+hTh6flqgsnc6shRKzudqZ2OPvvPVf4ISUt/fRIsUVmPRuLCq2PfstxuK11PegWZDMF+lO1hrenpGh+33k9Oo6BJuQpP0cE9zUekCgMfwaBxvW0jpF/tTpOAZiwK3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZbOHUpAT; arc=none smtp.client-ip=209.85.221.173
+	 In-Reply-To:To:Cc; b=TSrb58qa6JGeGaAMgcuQg90fR8QyLur1SFJ5+Lvz76ac/LAWW2KjRN7XpioGxkboQcdVGyM1orCoIrLhb19eE3CGCZ824oWD3jEg8XHmmP2cUri2IGM51CbLzBP09qXx3xlUkv+mz6+Nm3M0s/flgzuOZYNObjdXHYbhRlIq2Mo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mnVp+Nmj; arc=none smtp.client-ip=209.85.217.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZbOHUpAT"
-Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5c652293bcdso701744e0c.1
-        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 23:38:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mnVp+Nmj"
+Received: by mail-vs1-f41.google.com with SMTP id ada2fe7eead31-75e2905c09aso99400137.2
+        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 23:38:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787899123; x=1788503923; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787899127; x=1788503927; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=jbHEcSo0Yi8Hel90njrfpBZZr+GuK02w+zwFa8IkLTQ=;
-        b=ZbOHUpATu0ftaVFshrVS57VUljA2YRwYwmDV0pRbt/Kq2vThwN1lZMjiQ1tUX/fAvL
-         2SUKmdvNAKq99hyfaYhPFtMqy2h/yAJqEOY38kWtXyc4jXMxNInpPhdvDm9KrkVuuy/n
-         7XwKhaiUHPplzuH56CNuZzfRooB/UxjE0pYAreHp5poom+WVHDa2r5Nf/p4SKfDugn23
-         H/TumWQtjxHsWjcsFaDpFQ84sZ07mgmpXxZc+M804oohlLq7ZTNjVeVCtlD4WCHgKt/X
-         49Lj7jdPZkAnmLGduHIepBcUzf+mcVMfY0AgoEpawwd6CLAGLOoWTZE/3y9orD3gz3vI
-         QITg==
+        bh=QHv5wdzqoT+8+ip3D8MQsdcFxzRbRYsfhtpZnwwMeCw=;
+        b=mnVp+NmjzqXJ1adMbmQBmRqob7ECNbcU9ZgVWz8tp8aHCW/8I/9Mzf/tqZ6oqxg5Z0
+         BOA0PpQvSqQqhcVWAbE2YG2i9yxXJnyivjg796g7RVAtfk/r5uTw2rLxUKIFWsqoIi0z
+         X0KfRO2o0F+VwF4pCUYlNSHOdYrjkjfkBBpE89RGhpURjbcHwHeCGV76Ah+nAYL3a7c2
+         0eslY+2FqI0Vq3sSCdrwGiTF7T4A11SXnlBYbeXiO1innTSDHYKU2CInf4oTYloIj0Zi
+         jEEFPr0MLfZKsvABf41vdcskVGPJEBJjvIS8IxRoFuUGu5WUcpnqqHTMrKK6V3sY5sbR
+         m8Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787899123; x=1788503923;
+        d=1e100.net; s=20251104; t=1787899127; x=1788503927;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=jbHEcSo0Yi8Hel90njrfpBZZr+GuK02w+zwFa8IkLTQ=;
-        b=XLoxWjRTemi/sNWbyKPSSAO48u9EVWPbX7paK942Ckgqr3quafBH/Ll1PrVnwHwXJU
-         Wcndzk3p/H3RQrgMFpNVj2ge4yg+dX74AHzfkj6ojCb1XqOM8Sxg86vHITC24+YhCigf
-         lXF2UznCFY7P7yw3VH2b2Xb74NHRDSVbkY+DokT22BdgabLBX0wU2SDqzCKDKvYzR1mt
-         SPcFayjVyi1WKSN8N34z7NTAECOwJwxttdffwVWwpRFlayvunU8BbI7+ol3wZ7LGBDXR
-         ZU3H8B3BkSU4hnkOcES9e6z5ApbwNFVujFfCLrHLhG66FUNEFND1gApUuXDLBEPGeGU+
-         wUrQ==
-X-Forwarded-Encrypted: i=1; AHgh+RojajAk6BwAZfCvSKatCZ/381r3swTvP6iZhyr2lbI79Ov0GEt5vK7lJo1I0F1tAvftIozwJBqYJAo=@vger.kernel.org
-X-Gm-Message-State: AFuF++lJoYxaMjUGm7lEOfNMbehrsnoY/ulZPvoTvv49fwiZCZpaXLUa
-	8bpEPiWXKQIEP0XINxkbCN6Kg0XVHkztdUQ+Bh9Ek1xXsmYUg5RhYtzH
-X-Gm-Gg: AR+sD11G89Szt601ImU+a0DVXNeliuDYOz6nKd2paeovCIgpSnY/OCgZzefzJbEoBBy
-	eV1z8OepKGDOawXUqVckgEQ9DJoDfg0heE1XctBCgXJMzPO7HKnPHQ35VAAzc1gg+yFyYtiDkIh
-	bKjA/iuCnkTKwrQ7y4IGHy+uQAgxDv22GJ1N/nZ4sNd3w6tHxZqqrKSRRaRTV4GzqidBKNvIYCS
-	2Rv3NRn3JP20n7ZhXBtLkYQgxV2ssLf3JCCBSAjSv44f/0hh6qP3vaj2lU2grlpu96jxWArV56X
-	qOzdv8/bWjweRyFFYIGoUkNkKEebe4OHDmJWWLgh8fevDQdC4k0haD9MYrzDVUX9nJYgdB/G2Yx
-	PaHgGGergrUyHok1MaKwPhXAbTYwkK3RuB63DTHfa83Q875UkXtJnrU9BLiNAWrUxTpcCfGDLJt
-	mx+y8OpSqnQPAQ473ssezsGa+QfprAfgr3ROB/rjD6sVwuoQl9CrruphudzaiayNAL
-X-Received: by 2002:a05:6122:9001:b0:5c6:7f44:b001 with SMTP id 71dfb90a1353d-5c680967056mr2104219e0c.0.1787899122940;
-        Thu, 27 Aug 2026 23:38:42 -0700 (PDT)
+        bh=QHv5wdzqoT+8+ip3D8MQsdcFxzRbRYsfhtpZnwwMeCw=;
+        b=Z8wyj7hYgzFMcaVeNEWbgqGhi/etVm3wdjd4Y6eLzUyXjDCkWErzydXDJkaHLAn2PM
+         /9u0NbomvJb9JuSC4Svhs709EWnRwOejcCV2VF6YFUNzn9oViC5mCJb+mjFYbzJMl9lT
+         Lxd8/nt2p/9VOxIyw7ehb02Sce/k9RZAVCcpxhdIR3/py2DJ5Zlekl5pcIuyIcMpuDfe
+         uw/pflULlXbXLasS/h5k57ct3yuuuqSqIhiJ8hLraR8xmLhRmE7n5eLdWBsBR85aDU+R
+         jhGCr0yBh5d+HUp4+7QPgwDnDvTU/ztJ4+FEI3wNPzd+Yrrpkjq25sQNsDOpk0GQyUcV
+         QMug==
+X-Forwarded-Encrypted: i=1; AHgh+RrG5mgS3ZEs5TBN1Mi1o7ZfU1yEtdlkRHbNyuT4IdGXYwsMCVSqYaPRyt7gYM41tInIJmSfN0jmU9w=@vger.kernel.org
+X-Gm-Message-State: AFuF++kzIkYQCnj0wNKUjMNv2qHrdvjrtGi5R+DPtUYp+MrnMUbfOKRf
+	GV1CMOnMdlGpLIxlBhh9Y7k313/Xvkvw9GemIKEwUnwqMHtTwnLO2Bsa
+X-Gm-Gg: AR+sD11gN4BRJX4QUv5nBgvqb8cOlPEYGDSqaX3xJG/WsjNL1c970vajCQkrWDookyR
+	Itvelf+woHKAE1XESVWFN71u4h3NCxloiaOOWgihV+NorCmg+JinaoeJ3kHrGnYI6Wzu6QUL5yc
+	zXL16zHE9EzT1Mpw8qjszalzYr4AslFjzFazXv9Ri8KmXm7kT8CYFuo9HO9vUFlOSTw79Q8w3Gf
+	MSl/bwXuZ8yR25z9Hj3zeb7ytURHgDHF/2fYgyCsWEzhmqDXz2g1cXYmvXBTH2b7FlE8ASDt2o5
+	ww8NVXJ6zLm8ZLu0+MGVFvPn38/nWzP8obTOyi33ZAUiUhGncss2GPAV28TvpCRqRlIfNsooaVF
+	OYw83+Uxl5An3hM717k1qvymU+ZmL3O7vpe/acvoSyyv6LOlTXBtpUW5+yrCfzm569WPl7s5RR6
+	sgI7vxXL1A5huHHCTGWOwelBuR6DJxwTn3qA0OVWKFsdbawmOgbihFMAZITt3IFav3cQ==
+X-Received: by 2002:a05:6102:2907:b0:782:de7b:eead with SMTP id ada2fe7eead31-785962b3b4fmr1260614137.1.1787899126966;
+        Thu, 27 Aug 2026 23:38:46 -0700 (PDT)
 Received: from [192.168.100.153] ([2800:bf0:61:1127:ab87:5602:531c:8dfb])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97e849d8494sm454195241.1.2026.08.27.23.38.41
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97e849d8494sm454195241.1.2026.08.27.23.38.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 23:38:42 -0700 (PDT)
+        Thu, 27 Aug 2026 23:38:46 -0700 (PDT)
 From: Kurt Borja <kuurtb@gmail.com>
-Date: Fri, 28 Aug 2026 01:38:17 -0500
-Subject: [PATCH v4 02/10] dt-bindings: iio: adc: support the TI ADS126x ADC
- family
+Date: Fri, 28 Aug 2026 01:38:19 -0500
+Subject: [PATCH v4 04/10] iio: adc: ti-ads1262: support per-channel
+ sampling frequency
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,8 +70,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260828-ads126x-v4-2-1dc27e9c0260@gmail.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260828-ads126x-v4-4-1dc27e9c0260@gmail.com>
 References: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
 In-Reply-To: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
 To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
@@ -81,432 +81,406 @@ Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=12770; i=kuurtb@gmail.com;
- h=from:subject:message-id; bh=DDo13wwLlYbjGc+vmoTMKrXc8Q3Ay18o6BblG/u9PbA=;
- b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkTdd7sqJ1hvVd+1nN9pvPXmsoEpA4vq/xzR2pPcXxtk
- ejaP+xLO0pZGMS4GGTFFFnaExZ9exSV99bvQOh9mDmsTCBDGLg4BWAi75cz/E9T1Amct+/um/lu
- 6/rVc99f6DZyDvyZf/FRz0u21+6WfncZ/uk/61i/tlA6QFqx6ib32VcKOx/p7H30feWHyXwpsy7
- UpHACAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=12017; i=kuurtb@gmail.com;
+ h=from:subject:message-id; bh=6aZMjagHvcH24IcCEzk87Oit7nVKdoCQ6sPY4en+24w=;
+ b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkTdd7c3/dxzckUQcMH02dZsKxo98m/ps/wmIH1crC5f
+ CJLqe3JjlIWBjEuBlkxRZb2hEXfHkXlvfU7EHofZg4rE8gQBi5OAZjImWxGhiMhAneeKc9aVMMS
+ yq35XfGm7X2X1h8x1k3blKSFuWc83MbIsHX5TDb5w1eZnd4nbAx+9WpBQO3HrM8tF19sm6UR733
+ iJTcA
 X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
  fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
-The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
-integrated PGA, internal reference, excitation and burn-out current
-sources for sensor biasing and diagnostics. The ADS1263 is compatible
-with ADS1262, but includes a second auxiliary ADC (ADC2) to perform main
-channel (ADC1) cross-checking measurements, system background
-measurements, or temperature compensation of the primary sensor.
-
-Both parts can configure per-channel voltage reference source,
-excitation current sources (IDAC), plus input and IDAC chopping for
-offset and IDAC mismatch cancellation. This lets the device drive and
-ratiometrically measure RTDs and other resistive sensors.
+Add per-channel sampling frequency support. The "available" attribute is
+assigned per-channel too, in order to eventually support per-filter
+availability.
 
 Signed-off-by: Kurt Borja <kuurtb@gmail.com>
 ---
- .../devicetree/bindings/iio/adc/ti,ads1262.yaml    | 376 +++++++++++++++++++++
- MAINTAINERS                                        |   6 +
- 2 files changed, 382 insertions(+)
+ drivers/iio/adc/ti-ads1262.c | 233 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 228 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml
-new file mode 100644
-index 000000000000..7e26572388e4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml
-@@ -0,0 +1,376 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/ti,ads1262.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TI ADS1262/ADS1263 analog to digital converter
-+
-+maintainers:
-+  - Kurt Borja <kuurtb@gmail.com>
-+
-+description: |
-+  The ADS1262 and ADS1263 are 38.4-kSPS, delta-sigma (ΔΣ) ADCs with an
-+  integrated PGA, reference, and internal fault monitors. The ADS1263 integrates
-+  an auxiliary, 24-bit, ΔΣ ADC intended for background measurements.
-+
-+  Datasheets:
-+    - ADS126x: https://www.ti.com/lit/ds/symlink/ads1262.pdf
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: ti,ads1262
-+      - items:
-+          - const: ti,ads1263
-+          - const: ti,ads1262
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+  spi-max-frequency:
-+    maximum: 8000000
-+
-+  spi-cpha: true
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 2
-+    description: Data ready (DRDY) interrupt lines.
-+
-+  interrupt-names:
-+    description:
-+      The data ready (DRDY) signal has two independent interrupt lines. A
-+      dedicated DRDY pin and a pin shared with the serial interface MISO pin,
-+      which is called DOUT/DRDY.
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      enum: [drdy, doutdrdy]
-+
-+  start-gpios:
-+    description: Start conversion control.
-+    maxItems: 1
-+
-+  reset-gpios:
-+    maxItems: 1
-+
-+  dvdd-supply:
-+    description: Digital power supply.
-+
-+  avdd-supply:
-+    description:
-+      Analog power supply. In bipolar supply configurations, the reported
-+      voltage should be in reference to DGND.
-+
-+  avss-supply:
-+    description:
-+      Negative analog power supply for bipolar configurations. AVSS can only be
-+      at or below the ground reference (DGND). If not described, AVSS is assumed
-+      to be connected to ground (0V).
-+
-+  clocks:
-+    maxItems: 1
-+
-+  '#io-channel-cells':
-+    minimum: 1
-+    maximum: 2
-+    description: |
-+      The first cell selects the channel by its reg. The second cell selects
-+      between the main ADC (ADC1) and the auxiliary ADC (ADC2) as follows:
-+        0: ADC1
-+        1: ADC2
-+
-+  '#gpio-cells':
-+    const: 2
-+
-+  gpio-controller: true
-+
-+  regulators:
-+    type: object
-+    description:
-+      List of regulators provided by this chip.
-+
-+    properties:
-+      vbias:
-+        $ref: /schemas/regulator/regulator.yaml#
-+        type: object
-+        description:
-+          Level-shift voltage output on the AINCOM pin. Its output is the
-+          mid-voltage of the analog supply, (AVDD + AVSS) / 2, and is used to
-+          shift floating sensors to within the ADC input range.
-+        unevaluatedProperties: false
-+
-+      refout:
-+        $ref: /schemas/regulator/regulator.yaml#
-+        type: object
-+        description:
-+          Buffered internal voltage reference output on the REFOUT pin.
-+        unevaluatedProperties: false
-+
-+    additionalProperties: false
-+
-+patternProperties:
-+  "^ain([0-9]|com)-supply$":
-+    description:
-+      Common-mode voltage supply connected to AIN<N> or AINCOM.
-+
-+  "^refp[1-3]-supply$":
-+    description:
-+      Positive voltage reference connected to REFP1 (AIN0), REFP2 (AIN2) or
-+      REFP3 (AIN4). If this regulator is not described and a channel selects
-+      it as a reference source, then it's assumed to be connected to ground
-+      (0V).
-+
-+  "^refn[1-3]-supply$":
-+    description:
-+      Negative voltage reference connected to REFN1 (AIN1), REFN2 (AIN3) or
-+      REFN3 (AIN5). If this regulator is not described and a channel selects
-+      it as a reference source, then it's assumed to be connected to ground
-+      (0V).
-+
-+  "^ti,refp[1-3]-refn[1-3]-resistor-ohms$":
-+    description:
-+      Magnitude of the external reference resistor connected between REFP<N>
-+      and REFN<M>. In ratiometric configurations, such as RTD measurements, the
-+      IDAC excitation current returns through this resistor, generating the
-+      reference voltage for the conversion.
-+
-+  "^channel@[0-9a-f]+$":
-+    $ref: /schemas/iio/adc/adc.yaml#
-+    unevaluatedProperties: false
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      single-channel:
-+        minimum: 0
-+        maximum: 10
-+
-+      common-mode-channel:
-+        minimum: 0
-+        maximum: 10
-+        default: 10
-+
-+      diff-channels:
-+        items:
-+          minimum: 0
-+          maximum: 10
-+
-+      input-chopping: true
-+
-+      reference-sources:
-+        minItems: 2
-+        description:
-+          Indicates the reference sources for this channel. The first and second
-+          items are the positive (REFP) and negative (REFN) sources of the main
-+          ADC (ADC1). The third item is the reference source of the secondary
-+          ADC (ADC2) and must always have a positive differential voltage.
-+        items:
-+          - enum: [internal-p, refp1, refp2, refp3, avdd]
-+          - enum: [internal-n, refn1, refn2, refn3, avss]
-+          - enum: [internal, refp1-refn1, refp2-refn2, refp3-refn3, avdd-avss]
-+
-+      ti,reference-reversal:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          Indicates that the ADC1 (this has no effect on ADC2) reference voltage
-+          for this channel has negative polarity and thus should be internally
-+          reversed.
-+
-+      excitation-channels:
-+        minItems: 1
-+        maxItems: 2
-+        description:
-+          Selects the pins for the IDAC sources from 0 (AIN0) to 10 (AINCOM).
-+          The first value corresponds to IDAC1 and the second to IDAC2.
-+        items:
-+          minimum: 0
-+          maximum: 10
-+
-+      excitation-current-nanoamp:
-+        minItems: 1
-+        maxItems: 2
-+        description:
-+          The first value corresponds to IDAC1 and the second to IDAC2.
-+        items:
-+          enum: [50000, 100000, 250000, 500000, 750000, 1000000, 1500000,
-+                 2000000, 2500000, 3000000]
-+
-+      excitation-current-chopping: true
-+
-+      burn-out-current-nanoamp:
-+        description:
-+          Selects current magnitude for the sensor bias current source.
-+        enum: [500, 2000, 10000, 50000, 200000]
-+
-+      ti,burn-out-resistor:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          Instead of a fixed current, the sensor bias (burn-out) current source
-+          can be pulled using an internal 10 MΩ resistor.
-+
-+      ti,burn-out-polarity:
-+        $ref: /schemas/types.yaml#/definitions/string
-+        description:
-+          The sensor bias can be configured to either pull-up or pull-down mode.
-+          In pull-up mode, the current flows into the positive input and flows
-+          out of the negative input. In pull-down mode, the polarities are
-+          reversed.
-+        enum: [pull-up, pull-down]
-+        default: pull-up
-+
-+    dependencies:
-+      excitation-channels: [excitation-current-nanoamp]
-+      excitation-current-nanoamp: [excitation-channels]
-+      burn-out-current-nanoamp:
-+        not:
-+          required:
-+            - ti,burn-out-resistor
-+
-+    required:
-+      - reg
-+
-+    allOf:
-+      - if:
-+          properties:
-+            excitation-channels:
-+              maxItems: 1
-+          required:
-+            - excitation-channels
-+        then:
-+          properties:
-+            excitation-current-nanoamp:
-+              maxItems: 1
-+        else:
-+          properties:
-+            excitation-current-nanoamp:
-+              minItems: 2
-+
-+    oneOf:
-+      - required: [single-channel]
-+      - required: [diff-channels]
-+
-+dependencies:
-+  interrupts: [interrupt-names]
-+  interrupts-extended: [interrupt-names]
-+
-+required:
-+  - compatible
-+  - reg
-+  - spi-cpha
-+  - avdd-supply
-+  - dvdd-supply
-+  - '#address-cells'
-+  - '#size-cells'
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,ads1263
-+    then:
-+      properties:
-+        '#io-channel-cells':
-+          minimum: 1
-+          maximum: 2
-+      patternProperties:
-+        "^channel@[0-9]+$":
-+          properties:
-+            reference-sources:
-+              minItems: 3
-+              maxItems: 3
-+              default: [internal-p, internal-n, internal]
-+    else:
-+      properties:
-+        '#io-channel-cells':
-+          const: 1
-+      patternProperties:
-+        "^channel@[0-9]+$":
-+          properties:
-+            reference-sources:
-+              minItems: 2
-+              maxItems: 2
-+              default: [internal-p, internal-n]
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "ti,ads1262";
-+            reg = <0>;
-+            spi-max-frequency = <8000000>;
-+            spi-cpha;
-+            avdd-supply = <&avdd>;
-+            dvdd-supply = <&dvdd>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            interrupts-extended = <&gpio 0 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-names = "drdy";
-+
-+            /* Typical common mode voltage configuration */
-+            aincom-supply = <&ads1262_vbias>;
-+
-+            regulators {
-+                ads1262_vbias: vbias { };
-+            };
-+
-+            channel@0 {
-+                reg = <0>;
-+                single-channel = <0>;
-+                /* The VBIAS is enabled on pin 10 (AINCOM) */
-+                common-mode-channel = <10>;
-+            };
-+        };
-+    };
-+
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "ti,ads1263", "ti,ads1262";
-+            reg = <0>;
-+            spi-max-frequency = <8000000>;
-+            spi-cpha;
-+            avdd-supply = <&avdd>;
-+            dvdd-supply = <&dvdd>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            interrupts-extended = <&gpio 0 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-names = "drdy";
-+
-+            ti,refp2-refn2-resistor-ohms = <3520>;
-+
-+            channel@0 {
-+                reg = <0>;
-+                diff-channels = <4 5>;
-+                reference-sources = "refp2", "refn2", "refp2-refn2";
-+                excitation-channels = <1 6>;
-+                excitation-current-nanoamp = <500000 500000>;
-+            };
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f3be900e5b9d..7593e33c5346 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -27019,6 +27019,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/adc/ti,ads1018.yaml
- F:	drivers/iio/adc/ti-ads1018.c
+diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
+index d919144c23cb..86ea9b6232d8 100644
+--- a/drivers/iio/adc/ti-ads1262.c
++++ b/drivers/iio/adc/ti-ads1262.c
+@@ -25,6 +25,7 @@
+ #include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
+ #include <linux/types.h>
++#include <linux/units.h>
  
-+TI ADS1262 ADC DRIVER
-+M:	Kurt Borja <kuurtb@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml
+ #include <asm/byteorder.h>
+ 
+@@ -99,6 +100,7 @@
+ #define     ADS1262_DR_14400_SPS		  13
+ #define     ADS1262_DR_19200_SPS		  14
+ #define     ADS1262_DR_38400_SPS		  15
++#define     ADS1262_DR_COUNT			  (ADS1262_DR_38400_SPS + 1)
+ 
+ #define ADS1262_INPMUX_REG			0x06
+ #define   ADS1262_INPMUX_MUXP_MASK		GENMASK(7, 4)
+@@ -166,6 +168,7 @@
+ #define ADS1262_POWER_TRANS_USECS		65536
+ 
+ #define ADS1262_NOMINAL_CLK_RATE		7372800
++#define ADS1262_MODULATOR_DIV			8
+ 
+ #define ADS1262_FW_CHANNEL_COUNT		16
+ #define ADS1262_MON_CHANNEL_COUNT		4
+@@ -174,10 +177,17 @@
+ 
+ #define ADS1262_ADC1_RESOLUTION			32
+ 
++struct ads1262_channel {
++	u8 data_rate;
++	u8 filter;
++};
 +
- TI ADS7924 ADC DRIVER
- M:	Hugo Villeneuve <hvilleneuve@dimonoff.com>
- L:	linux-iio@vger.kernel.org
+ struct ads1262 {
+ 	struct spi_device *spi;
+ 	struct regmap *regmap;
+ 	struct gpio_desc *start_gpiod;
++	size_t num_channels;
++	struct ads1262_channel *channels;
+ 	/* protects concurrent SPI transfers */
+ 	struct mutex xfer_lock;
+ 	/* protects channel state */
+@@ -185,6 +195,8 @@ struct ads1262 {
+ 	struct completion drdy;
+ 	unsigned long clk_rate;
+ 	u8 dev_id;
++	int sampling_freq_table[ADS1262_DR_COUNT][2];
++	int sampling_freq_fir[ADS1262_DR_16_6_SPS + 1][2];
+ };
+ 
+ static const char * const ads1262_device_id_to_name[] = {
+@@ -204,7 +216,9 @@ static const struct iio_chan_spec ads1262_monitor_chan_specs[] = {
+ 			.storagebits = 32,
+ 			.endianness = IIO_BE,
+ 		},
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ 	{
+ 		.type = IIO_VOLTAGE,
+@@ -218,7 +232,9 @@ static const struct iio_chan_spec ads1262_monitor_chan_specs[] = {
+ 			.storagebits = 32,
+ 			.endianness = IIO_BE,
+ 		},
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ 	{
+ 		.type = IIO_VOLTAGE,
+@@ -232,7 +248,9 @@ static const struct iio_chan_spec ads1262_monitor_chan_specs[] = {
+ 			.storagebits = 32,
+ 			.endianness = IIO_BE,
+ 		},
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ 	{
+ 		.type = IIO_VOLTAGE,
+@@ -247,10 +265,66 @@ static const struct iio_chan_spec ads1262_monitor_chan_specs[] = {
+ 			.storagebits = 32,
+ 			.endianness = IIO_BE,
+ 		},
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 	},
+ };
+ 
++static const struct ads1262_channel ads1262_default_channel = {
++	.data_rate = ADS1262_DR_20_SPS,
++	.filter = ADS1262_FILTER_FIR,
++};
++
++static const u32 ads1262_mod_decimator_a[] = {
++	[ADS1262_DR_2_5_SPS]	= 64,
++	[ADS1262_DR_5_SPS]	= 64,
++	[ADS1262_DR_10_SPS]	= 64,
++	[ADS1262_DR_16_6_SPS]	= 64,
++	[ADS1262_DR_20_SPS]	= 64,
++	[ADS1262_DR_50_SPS]	= 64,
++	[ADS1262_DR_60_SPS]	= 64,
++	[ADS1262_DR_100_SPS]	= 64,
++	[ADS1262_DR_400_SPS]	= 64,
++	[ADS1262_DR_1200_SPS]	= 64,
++	[ADS1262_DR_2400_SPS]	= 64,
++	[ADS1262_DR_4800_SPS]	= 64,
++	[ADS1262_DR_7200_SPS]	= 64,
++	[ADS1262_DR_14400_SPS]	= 64,
++	[ADS1262_DR_19200_SPS]	= 48,
++	[ADS1262_DR_38400_SPS]	= 24,
++};
++
++static const u32 ads1262_mod_decimator_b[] = {
++	[ADS1262_DR_2_5_SPS]	= 5760,
++	[ADS1262_DR_5_SPS]	= 2880,
++	[ADS1262_DR_10_SPS]	= 1440,
++	[ADS1262_DR_16_6_SPS]	= 864,
++	[ADS1262_DR_20_SPS]	= 720,
++	[ADS1262_DR_50_SPS]	= 288,
++	[ADS1262_DR_60_SPS]	= 240,
++	[ADS1262_DR_100_SPS]	= 144,
++	[ADS1262_DR_400_SPS]	= 36,
++	[ADS1262_DR_1200_SPS]	= 12,
++	[ADS1262_DR_2400_SPS]	= 6,
++	[ADS1262_DR_4800_SPS]	= 3,
++	[ADS1262_DR_7200_SPS]	= 2,
++	[ADS1262_DR_14400_SPS]	= 1,
++	[ADS1262_DR_19200_SPS]	= 1,
++	[ADS1262_DR_38400_SPS]	= 1,
++};
++
++static int ads1262_find_two(const int (*array)[2], size_t num_elements, int val,
++			    int val2)
++{
++	for (unsigned int i = 0; i < num_elements; i++) {
++		if (val == array[i][0] && val2 == array[i][1])
++			return i;
++	}
++
++	return -EINVAL;
++}
++
+ static int ads1262_dev_send_cmd(struct ads1262 *st, u8 opcode)
+ {
+ 	guard(mutex)(&st->xfer_lock);
+@@ -375,9 +449,18 @@ static int ads1262_wait_for_conversion(struct ads1262 *st)
+ static int ads1262_channel_enable(struct ads1262 *st,
+ 				  const struct iio_chan_spec *spec)
+ {
++	struct ads1262_channel *chan = &st->channels[spec->scan_index];
++	int ret;
++
+ 	guard(mutex)(&st->xfer_lock);
+ 	guard(mutex)(&st->chan_lock);
+ 
++	ret = regmap_update_bits(st->regmap, ADS1262_MODE2_REG,
++				 ADS1262_MODE2_DR_MASK,
++				 FIELD_PREP(ADS1262_MODE2_DR_MASK, chan->data_rate));
++	if (ret)
++		return ret;
++
+ 	return regmap_update_bits(st->regmap, ADS1262_INPMUX_REG,
+ 				  ADS1262_INPMUX_MUXN_MASK |
+ 				  ADS1262_INPMUX_MUXP_MASK,
+@@ -429,6 +512,8 @@ static int ads1262_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan, int *val,
+ 			    int *val2, long mask)
+ {
++	struct ads1262 *st = iio_priv(indio_dev);
++	struct ads1262_channel *chan_data = &st->channels[chan->scan_index];
+ 	__be32 raw;
+ 	int ret;
+ 
+@@ -441,6 +526,83 @@ static int ads1262_read_raw(struct iio_dev *indio_dev,
+ 
+ 		return IIO_VAL_INT;
+ 
++	case IIO_CHAN_INFO_SAMP_FREQ: {
++		guard(mutex)(&st->chan_lock);
++
++		*val = st->sampling_freq_table[chan_data->data_rate][0];
++		*val2 = st->sampling_freq_table[chan_data->data_rate][1];
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int ads1262_read_avail(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan, const int **vals,
++			      int *type, int *length, long mask)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++	struct ads1262_channel *chan_data = &st->channels[chan->scan_index];
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*type = IIO_VAL_INT_PLUS_MICRO;
++
++		switch (chan_data->filter) {
++		case ADS1262_FILTER_FIR:
++			*vals = (const int *)st->sampling_freq_fir;
++			*length = ARRAY_SIZE(st->sampling_freq_fir) * 2;
++			return IIO_AVAIL_LIST;
++		default:
++			return -EOPNOTSUPP;
++		}
++
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int ads1262_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int val,
++			     int val2, long mask)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++	struct ads1262_channel *chan_data = &st->channels[chan->scan_index];
++	int ret;
++
++	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++	if (IIO_DEV_ACQUIRE_FAILED(claim))
++		return -EBUSY;
++
++	guard(mutex)(&st->chan_lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		switch (chan_data->filter) {
++		case ADS1262_FILTER_FIR:
++			ret = ads1262_find_two(st->sampling_freq_fir,
++					       ARRAY_SIZE(st->sampling_freq_fir),
++					       val, val2);
++			if (ret < 0)
++				return ret;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		ret = ads1262_find_two(st->sampling_freq_table,
++				       ARRAY_SIZE(st->sampling_freq_table),
++				       val, val2);
++		if (ret < 0)
++			return ret;
++
++		chan_data->data_rate = ret;
++
++		return 0;
++
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -479,6 +641,8 @@ static int ads1262_fwnode_xlate(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info ads1262_iio_info = {
+ 	.read_raw = ads1262_read_raw,
++	.read_avail = ads1262_read_avail,
++	.write_raw = ads1262_write_raw,
+ 	.debugfs_reg_access = ads1262_debugfs_reg_access,
+ 	.fwnode_xlate = ads1262_fwnode_xlate,
+ };
+@@ -697,6 +861,49 @@ static const struct regmap_bus ads1262_regmap_bus = {
+ 	.max_raw_write = ADS1262_REGMAP_WRITE_SZ,
+ };
+ 
++static void ads1262_populate_samp_freqs(struct ads1262 *st)
++{
++	u64 freq_Hz, freq_uHz;
++	u32 freq_rem;
++
++	for (unsigned int i = 0; i < ARRAY_SIZE(st->sampling_freq_table); i++) {
++		freq_uHz = div_u64(mul_u32_u32(st->clk_rate, MICRO),
++				   ADS1262_MODULATOR_DIV *
++				   ads1262_mod_decimator_a[i] *
++				   ads1262_mod_decimator_b[i]);
++		freq_Hz = div_u64_rem(freq_uHz, MICRO, &freq_rem);
++
++		st->sampling_freq_table[i][0] = (int)freq_Hz;
++		st->sampling_freq_table[i][1] = (int)freq_rem;
++	}
++
++	for (unsigned int i = 0; i < ARRAY_SIZE(st->sampling_freq_fir); i++) {
++		/*
++		 * The FIR filter does not support the 16.6 SPS data rate so it
++		 * gets mapped to 20 SPS instead.
++		 */
++		switch (i) {
++		case ADS1262_DR_2_5_SPS ... ADS1262_DR_10_SPS:
++			st->sampling_freq_fir[i][0] = st->sampling_freq_table[i][0];
++			st->sampling_freq_fir[i][1] = st->sampling_freq_table[i][1];
++			break;
++		case ADS1262_DR_16_6_SPS:
++			st->sampling_freq_fir[i][0] = st->sampling_freq_table[ADS1262_DR_20_SPS][0];
++			st->sampling_freq_fir[i][1] = st->sampling_freq_table[ADS1262_DR_20_SPS][1];
++			break;
++		}
++	}
++}
++
++static int ads1262_populate_tables(struct iio_dev *indio_dev)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++
++	ads1262_populate_samp_freqs(st);
++
++	return 0;
++}
++
+ static int ads1262_parse_channel_node(struct ads1262 *st,
+ 				      struct iio_chan_spec *spec,
+ 				      struct fwnode_handle *node)
+@@ -763,8 +970,15 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+ 	if (!chan_specs)
+ 		return -ENOMEM;
+ 
++	st->num_channels = num_fw_channels + ADS1262_MON_CHANNEL_COUNT;
++	st->channels = devm_kcalloc(dev, st->num_channels, sizeof(*st->channels),
++				    GFP_KERNEL);
++	if (!st->channels)
++		return -ENOMEM;
++
+ 	device_for_each_named_child_node_scoped(dev, node, "channel") {
+ 		struct iio_chan_spec *spec = &chan_specs[i];
++		struct ads1262_channel *chan = &st->channels[i];
+ 
+ 		ret = fwnode_property_read_u32(node, "reg", &reg);
+ 		if (ret)
+@@ -772,6 +986,8 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+ 		if (reg >= ADS1262_MONITOR_ADDR_OFFSET)
+ 			return dev_err_probe(dev, -EINVAL, "%pfwP: reg out of range\n", node);
+ 
++		*chan = (struct ads1262_channel)ads1262_default_channel;
++
+ 		ret = ads1262_parse_channel_node(st, spec, node);
+ 		if (ret)
+ 			return ret;
+@@ -786,7 +1002,9 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+ 			.storagebits = 32,
+ 			.endianness = IIO_BE,
+ 		};
+-		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++					   BIT(IIO_CHAN_INFO_SAMP_FREQ);
++		spec->info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ);
+ 
+ 		i++;
+ 	}
+@@ -795,6 +1013,7 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+ 	       sizeof(ads1262_monitor_chan_specs));
+ 
+ 	for (unsigned int mon = 0; mon < ADS1262_MON_CHANNEL_COUNT; mon++) {
++		st->channels[i] = (struct ads1262_channel)ads1262_default_channel;
+ 		chan_specs[i].scan_index = i;
+ 		i++;
+ 	}
+@@ -890,6 +1109,10 @@ static int ads1262_spi_probe(struct spi_device *spi)
+ 
+ 	indio_dev->name = ads1262_device_id_to_name[st->dev_id];
+ 
++	ret = ads1262_populate_tables(indio_dev);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * REVISIT: This chip has software polling capabilities, which could be
+ 	 * used to stop depending on the DRDY signal.
 
 -- 
 2.55.0
