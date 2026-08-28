@@ -1,67 +1,68 @@
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49])
+Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com [209.85.222.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 397A13CF68E
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 06:38:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13A6A3D093C
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 06:38:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787899136; cv=none; b=XYXx/N8uGPt1+x9DyCb54RmgWqWZ2mfk2EBzuOrJfXEHDQD+/NVe5pStKUiOGzxee4wW8WL0RhigCWgWepIF7B/5MEOdvhHijOZ2rkKjDHLJyoR5MxNeZkQrc99JElZrk3dFSHw8boMek5XF69uVofhXPB9HBu7JFrM3S7rjtBo=
+	t=1787899139; cv=none; b=qFMC4M/L+OEPGLR7ru+wKM4cf2FT9ZP5Ldf8s8/5G2IH5LgzHAWObrnbmbmGOz/8AAX2axqSW7XB/9hkOhr1DhKQTq5VjjGhuXdZUy7dhXTQw5y+9I6F+x5VHHayAlKWwwxqIU08ZdJyhvAzNanN7NqJpZOH9+cc+6FeWPhgo5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787899136; c=relaxed/simple;
-	bh=JuqZvTQwb5rkp+99vgWNtC19RzZ4Hw4K1sqB6JYbqnM=;
+	s=arc-20240116; t=1787899139; c=relaxed/simple;
+	bh=TMHFl5L/alFHgu3VeMCweylXc4tFsdHYF8XBRmES1Hk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FhBD63BZ8ZamlzgQxyXxH1+KAXqkMs6UTCQIgic+PN62RWVMK4B03P+PeOURH/rmX7Z1Y9G1pdqwm8CKoobDm0CMD0N75i4x+YuZOWNomjmSAK8AYMlreqJOkiz3pAlBwyLCeweYKeULsvcouF2mLDKFqm8144ovCC8tMutcTMM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cWRtayY5; arc=none smtp.client-ip=209.85.217.49
+	 In-Reply-To:To:Cc; b=rmPNJQfJUmD7P+XEoPBR5WBbaPpvdXqBESawoepmqv3rGHFfwyu0z/jOttVK7hCcCJmXHZQ0WMbYZicj7xItU2Y+uV3WxvEUA8/6L+KF7Zy0zXVWJ0Dzyx8/BJf2tM8mVF2yHgCpX0qJB9BZNzz/T1hz3YlJzVhhJuPELKZkKhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YkpH2jx2; arc=none smtp.client-ip=209.85.222.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cWRtayY5"
-Received: by mail-vs1-f49.google.com with SMTP id ada2fe7eead31-7564b7a9490so1419836137.1
-        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 23:38:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YkpH2jx2"
+Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-9690c99c917so274926241.2
+        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 23:38:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787899133; x=1788503933; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1787899135; x=1788503935; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=D+O09DWKYxbpMQbMh4vwOBWFTUZ3w5vfYeuNgWL21cE=;
-        b=cWRtayY5XW0FuGQv2wrde3RB2fcQsNgLzRl9qSekf9wsdbGiybTGwp2m3M7wz56gbc
-         +8lxZeJvr1LmOxWdj7W72+TYWrsmkeEkXYR8Pz5qqVKsGt8qAQ0g41SIv+B5CMAREcsC
-         LO2EUjcT+rmADJUjDJuDT1tQ+iuC1e4exFO4oRkGHQRCm9Agf/hs3SHkhYgSOViqbavs
-         tVL56dEL+ndSbtGD+rI0s5Ubn4fduCCd1KpAKQEffsrlZgr37ViZSChqwi/TNpRWC76W
-         DxMnoa8k/mK+PNv9e3nPrRVIM2KhHYgLkv2Jtv0O2icwkf9eN0AOfCbHd8KVIMuDKRYQ
-         o8pg==
+        bh=XsfiQ/UpYrylb/xt1NWt3tkBeV1xOu5S1pAOKlyMNac=;
+        b=YkpH2jx2WUPEK2FUQ76rBHBHzkB3GGooxRO0p6pK3VlvN+H3lY7Q3lcFYjEb8bu44v
+         BT2VCiazsE3wqBe+PnOgHdKTwGotFLg7YCU6MgIP/2rQak0h6BEMQl2olGYyj6f3e2Wh
+         SeoqgAk85IbI4yqv99ejMgUxZrjpHJbwOs9ZAqiDJtG2cAVJLn8dPwQH0cWwfhyo+YQS
+         mTth4Cm4gK0m3WeOxthZprUpWSARZuEWPOp7FMGdodGKppabrwDmkVrNZJuh8FEW3ApE
+         FG/D/v2A8fb9eaKMxynHgT6QSqQAARPBO/EGwkfbFc/CTiAw+UxnR8rgF9FldbPaEt0T
+         K1hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787899133; x=1788503933;
+        d=1e100.net; s=20251104; t=1787899135; x=1788503935;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=D+O09DWKYxbpMQbMh4vwOBWFTUZ3w5vfYeuNgWL21cE=;
-        b=n6B9D5vfjrb417ch1E9Yp0kSk5eXskemWjc70wHbzvcI9GYgi0D9GhUsVhL6hoVEek
-         hOD5j3q0lpqHDYmRXTHKQgvHsRhg+UXM4eU4T79EzSDnRhqjmX6MIL6+CJro/bFvXYAN
-         kFepSy5agDiu4aHxf+bAds3W0Qa/4LCg/HkvlEPHV2wH+mPkztDiMuHeuzZV83zZz0HR
-         I1N1X3wzCO1AjEm/M0NTlZcdvZFu1I7DI6XPQkSZgahahOgaShQKvZmvZjJU5WETXbJl
-         GwMTHUYBG6E/JhijOSOGsMbQ8yqYBWUY/NkR8Vte1NbUKOI6dmAhLDRTLHL/K1/rKRW1
-         jGAA==
-X-Forwarded-Encrypted: i=1; AHgh+Ro+YjutTxOgIQBvq5nPwHcPkgsS8KuIb3qTB3/udY56MrlXmBMpUs1jaL/FYSlDCH7QyaYz2x1Uxbo=@vger.kernel.org
-X-Gm-Message-State: AFuF++mKvGUML2aXeAPOi09Mmw+P2hytPQbKZjSRX/rbQ6FYGPPXPBjl
-	TEES8liPVSjJnwhfgQqqtPHEKxaXo+h+yk9esxBmZptnPVbWlQ13iLLE
-X-Gm-Gg: AR+sD12m+gSaHIqQS/+tU6Th4fe+EftcA5FMYvguESvJwRIsn9T3j6nc9FVBLeOzs5K
-	Uj1M/7jWDK/CaB2taq54EgQn69hCz3eszLQfB0rkpO2dwQ/twuKddo5SC05GK8tc13niEyk7pAK
-	NuRyFuE8h967m+x03n1XVFrnhSX2dcDHh5T+M5ZXrKHc7/sJ5k0oACli0oITgq8jfhi/gEplrO4
-	b1GJZXCR3kyag4teLEoxsS2103TvkzLMEw0ZP3jRteMdGUSUL8TDcJADx1E6a3uP2zGFx5Z8Lm3
-	vx/oUFUA85FXkI2Q/ph/nyoIezmGRLz7srLOMa0Xk+XDcHCc6NLsgCRnWeqnQUWRnLIhYZkhrvo
-	AMJSGpHQZgxNYggiBsCUvWPYx7m44t49haGhOtA7CUQr69O+e/Z2kin8TsqwnvsGAPEcpSPlJML
-	3HGU7NBpEEOYvJ1Qh5S2A8jgugaHHqJLxBdmbC7x0Nc1awHjErE+4ti8mAECUe0+4n
-X-Received: by 2002:a05:6102:2253:b0:783:c17c:e7de with SMTP id ada2fe7eead31-7841d55ca7bmr2285358137.9.1787899132930;
-        Thu, 27 Aug 2026 23:38:52 -0700 (PDT)
+        bh=XsfiQ/UpYrylb/xt1NWt3tkBeV1xOu5S1pAOKlyMNac=;
+        b=O5QmS44EZlYlIJdPpwdcrSSxwMNQUE+ugHVP+1UStWT4eTc1WOZdPCGfVxMJrsyYMM
+         u5CsuwYT7U+cefs1wFpCwaaHVDvvRtx7GFZ0rjkjhr9rPwOIz+9b4jkMgQG26aXAAFkt
+         B5erysVAxxA/BnIEoiJzK1jb/KLVSSmo8nMqhzD4XcN8zUGIQArggBazxMPUB3s/pzvg
+         Git/kG+gWwTEd2NDWPergJyk2uBwr8L7iuM45/JdSGFYozfiZFcbcVehyT+C8R9BOhzY
+         RbG07q3Yq4BsOy8sv3z0GU+LBwTKwU1TWBO4MkasmCcNtzmGRBbtzNoHo03ZN8MzRZ+y
+         KqhQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoegS9yhBHGzurA9lT+LCOFdAEeP86iSoZwSiphFTXCm7HN0OBCYRsrmPknzJN/J6Uxzg7/a/ocLNY=@vger.kernel.org
+X-Gm-Message-State: AFuF++kOadLqttawB6WI4IYD8DspmP/QWSeILwjquYE1gk2/pkltPDrV
+	KKIhGbDTrV4rfIcVByaN6dhptu/nuiwUQla/bU7ffewbM6TFLawXIRL8
+X-Gm-Gg: AR+sD11D8fOs25LuEKE/x5aGNAJEbizRyQGs3FTlWWgufVOfMaakPNqDZYyE+lG3ri4
+	U74Ez3VN6e/MWw79fFdk3gHhxDuf9IxH5PeiP8XMUprVwP3hF+2yGVPujl2khjnpP6baXJdil3g
+	cJ0H3ss3wXUVdNJw7fs8RJeBSI+Fw/uYgM4jDchGOqeIwDJwleESCCW8/8rHTr5X9HgEOLfevow
+	XNHwHDqBkd8suk97DSk1NVJ6uODPy9tb7Z97wYETjUIA6sin+AWCV5echrG/e7hN8CqodBXFBan
+	8HP8tkN9ZtWbW/3g10x5BlDkP+OmiS23npZsEyKHQb8KnPzxmlPpRpvjM6UhWGw0NaVt7facjb/
+	I3JC+ZFv7yBBXxUV+rWyOfI8wpTx8ZiNv4Td6kcyoOl1shatq5RpvqQpk5zLKk8qdjr9XVPZbOy
+	AHFB3CVjg7TKZuva2y/2WJa9gs0ruOfN1nk+9I0yTQpLtBnu/UXd7gmluNmBAfR8Bw
+X-Received: by 2002:a05:6102:5128:b0:780:7e65:f0ab with SMTP id ada2fe7eead31-7859822155fmr1205317137.1.1787899134840;
+        Thu, 27 Aug 2026 23:38:54 -0700 (PDT)
 Received: from [192.168.100.153] ([2800:bf0:61:1127:ab87:5602:531c:8dfb])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97e849d8494sm454195241.1.2026.08.27.23.38.51
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97e849d8494sm454195241.1.2026.08.27.23.38.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 23:38:52 -0700 (PDT)
+        Thu, 27 Aug 2026 23:38:54 -0700 (PDT)
 From: Kurt Borja <kuurtb@gmail.com>
-Date: Fri, 28 Aug 2026 01:38:22 -0500
-Subject: [PATCH v4 07/10] iio: adc: ti-ads1262: support excitation currents
+Date: Fri, 28 Aug 2026 01:38:23 -0500
+Subject: [PATCH v4 08/10] iio: adc: ti-ads1262: support triggered buffer
+ sampling
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260828-ads126x-v4-7-1dc27e9c0260@gmail.com>
+Message-Id: <20260828-ads126x-v4-8-1dc27e9c0260@gmail.com>
 References: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
 In-Reply-To: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
 To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
@@ -80,181 +81,405 @@ Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5946; i=kuurtb@gmail.com;
- h=from:subject:message-id; bh=JuqZvTQwb5rkp+99vgWNtC19RzZ4Hw4K1sqB6JYbqnM=;
- b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkTdd4Iif9g33q1KEyX462RTdbPQ06M9q2HxEMUvRX5t
- ZN+Wlh1lLIwiHExyIopsrQnLPr2KCrvrd+B0Pswc1iZQIYwcHEKwES2BjEyPGz9nKU2+63d4UkN
- zx8pzYiLn9C8nc3FvHra1htPsnnF7BgZpgYVn1DgzuYM/mOuciBwY/e9u0HGX6ft5hKVmpBWEu3
- GBgA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=12103; i=kuurtb@gmail.com;
+ h=from:subject:message-id; bh=TMHFl5L/alFHgu3VeMCweylXc4tFsdHYF8XBRmES1Hk=;
+ b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkTdd7s10k9Nkf2uOexEwlWfGe0a16aP3p0qql5oc5lh
+ WDXecIvOkpZGMS4GGTFFFnaExZ9exSV99bvQOh9mDmsTCBDGLg4BWAi3DmMDNf4nsiedMkw1hN+
+ /eflptx/Z5gXz335rFex0Hv2oZ82V+8z/I/InVq5qiMkslVon+yzJRnpXKel95h0qLxy593F7NE
+ eyAUA
 X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
  fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
-Support the two IDAC excitation current sources. Each channel can route
-its IDAC1/IDAC2 outputs to a pin via the "excitation-channels" property
-and select a magnitude via "excitation-current-nanoamp".
+Add triggered buffer support and a data-ready (DRDY) hardware trigger.
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Kurt Borja <kuurtb@gmail.com>
 ---
- drivers/iio/adc/ti-ads1262.c | 87 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 84 insertions(+), 3 deletions(-)
+ drivers/iio/adc/Kconfig      |   2 +
+ drivers/iio/adc/ti-ads1262.c | 305 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 307 insertions(+)
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index e51ce42bce94..2b60ade01e90 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -1864,6 +1864,8 @@ config TI_ADS1262
+ 	tristate "Texas Instruments ADS1262"
+ 	depends on SPI
+ 	select REGMAP
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  If you say yes here you get support for Texas Instruments ADS1262 and
+ 	  ADS1263 ADC chips.
 diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
-index 4d38da092001..04566d00d7cb 100644
+index 04566d00d7cb..3f6d34a08b29 100644
 --- a/drivers/iio/adc/ti-ads1262.c
 +++ b/drivers/iio/adc/ti-ads1262.c
-@@ -198,12 +198,15 @@
- struct ads1262_channel {
- 	u8 data_rate;
- 	u8 filter;
-+	u8 idac_mux[2];
-+	u8 idac_mag[2];
- 	u8 gain;
- 	u8 ref_p;
- 	u8 ref_n;
- 	bool ref_reversal;
- 	bool is_resistance;
- 	bool input_chop;
-+	bool idac_chop;
- 	size_t num_scales;
- 	int scales[ADS1262_GAIN_COUNT][2];
- };
-@@ -315,6 +318,7 @@ static const struct iio_chan_spec ads1262_monitor_chan_specs[] = {
- static const struct ads1262_channel ads1262_default_channel = {
- 	.data_rate = ADS1262_DR_20_SPS,
- 	.filter = ADS1262_FILTER_FIR,
-+	.idac_mux = { ADS1262_IDACMUX_NO_CONN, ADS1262_IDACMUX_NO_CONN },
+@@ -33,6 +33,9 @@
+ #include <asm/byteorder.h>
+ 
+ #include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #define ADS1262_OPCODE_NOP			0x00
+ #define ADS1262_OPCODE_RESET			0x06
+@@ -191,6 +194,7 @@
+ #define ADS1262_MON_CHANNEL_COUNT		4
+ #define ADS1262_EXT_REF_COUNT			3
+ #define ADS1262_REGMAP_WRITE_SZ			8
++#define ADS1262_SPI_XFER_SZ			13
+ #define ADS1262_MONITOR_ADDR_OFFSET		100
+ 
+ #define ADS1262_ADC1_RESOLUTION			32
+@@ -214,6 +218,7 @@ struct ads1262_channel {
+ struct ads1262 {
+ 	struct spi_device *spi;
+ 	struct regmap *regmap;
++	struct iio_trigger *trig;
+ 	struct gpio_desc *start_gpiod;
+ 	struct regulator *avdd_supply;
+ 	struct regulator *avss_supply;
+@@ -224,6 +229,8 @@ struct ads1262 {
+ 	/* protects channel state */
+ 	struct mutex chan_lock;
+ 	struct completion drdy;
++	struct spi_message msg;
++	struct spi_transfer xfer;
+ 	unsigned long clk_rate;
+ 	u8 dev_id;
+ 	bool bipolar_supply;
+@@ -232,6 +239,11 @@ struct ads1262 {
+ 	u32 rref_ohms[ADS1262_EXT_REF_COUNT][ADS1262_EXT_REF_COUNT];
+ 	int refp_uV[ADS1262_EXT_REF_COUNT];
+ 	int refn_uV[ADS1262_EXT_REF_COUNT];
++	IIO_DECLARE_BUFFER_WITH_TS(__be32, scan_buffer,
++				   ADS1262_FW_CHANNEL_COUNT +
++				   ADS1262_MON_CHANNEL_COUNT);
++	u8 tx[ADS1262_SPI_XFER_SZ] __aligned(IIO_DMA_MINALIGN);
++	u8 rx[ADS1262_SPI_XFER_SZ];
  };
  
- static const u32 ads1262_mod_decimator_a[] = {
-@@ -373,6 +377,21 @@ static const char * const ads1262_ref_sources_neg[] = {
- 	NULL
+ static const char * const ads1262_device_id_to_name[] = {
+@@ -837,10 +849,284 @@ static const struct iio_info ads1262_iio_info = {
+ 	.fwnode_xlate = ads1262_fwnode_xlate,
  };
  
-+static const u32 ads1262_idac_mags_nA[] = {
-+	0, 50000, 100000, 250000, 500000, 750000, 1000000, 1500000,	/* 0..7 */
-+	2000000, 2500000, 3000000					/* 8..10 */
-+};
-+
-+static int ads1262_find_one(const u32 *array, size_t num_elements, u32 val)
++static int ads1262_buffer_postenable_mult(struct iio_dev *indio_dev)
 +{
-+	for (unsigned int i = 0; i < num_elements; i++) {
-+		if (val == array[i])
-+			return i;
-+	}
++	struct ads1262 *st = iio_priv(indio_dev);
 +
-+	return -EINVAL;
++	/*
++	 * When multiple channels are selected, we use a single transfer to both
++	 * enable channels, start and then read conversions with a full-duplex
++	 * optimized method. The transfer buffer holds up to four contiguous
++	 * commands: two register write commands, and start and stop commands if
++	 * no START GPIO is provided.
++	 *
++	 * The buffer is arranged as follows:
++	 *
++	 *     byte 0-1: write protocol header
++	 *     byte 2-5: MODE0, MODE1, MODE2, INPMUX register data
++	 *     byte 6-7: write protocol header
++	 *     byte 8-10: IDACMUX, IDACMAG, REFMUX register data
++	 *     byte 11: START1 command
++	 *     byte 12: STOP1 command
++	 */
++	if (st->start_gpiod)
++		st->xfer.len = 11;
++	else
++		st->xfer.len = 13;
++
++	static_assert(13 <= ADS1262_SPI_XFER_SZ);
++
++	return spi_optimize_message(st->spi, &st->msg);
 +}
 +
- static int ads1262_find_two(const int (*array)[2], size_t num_elements, int val,
- 			    int val2)
- {
-@@ -522,8 +541,10 @@ static int ads1262_channel_enable(struct ads1262 *st,
- 
- 	ret = regmap_update_bits(st->regmap, ADS1262_MODE0_REG,
- 				 ADS1262_MODE0_INPUT_CHOP_MASK |
-+				 ADS1262_MODE0_IDAC_CHOP_MASK |
- 				 ADS1262_MODE0_REFREV_MASK,
- 				 FIELD_PREP(ADS1262_MODE0_INPUT_CHOP_MASK, chan->input_chop) |
-+				 FIELD_PREP(ADS1262_MODE0_IDAC_CHOP_MASK, chan->idac_chop) |
- 				 FIELD_PREP(ADS1262_MODE0_REFREV_MASK, chan->ref_reversal));
- 	if (ret)
- 		return ret;
-@@ -544,6 +565,22 @@ static int ads1262_channel_enable(struct ads1262 *st,
- 	if (ret)
- 		return ret;
- 
-+	ret = regmap_update_bits(st->regmap, ADS1262_IDACMUX_REG,
-+				 ADS1262_IDACMUX_MUX1_MASK |
-+				 ADS1262_IDACMUX_MUX2_MASK,
-+				 FIELD_PREP(ADS1262_IDACMUX_MUX1_MASK, chan->idac_mux[0]) |
-+				 FIELD_PREP(ADS1262_IDACMUX_MUX2_MASK, chan->idac_mux[1]));
++static int ads1262_buffer_postenable_one(struct iio_dev *indio_dev)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++	unsigned long i;
++	int ret;
++
++	i = find_first_bit(indio_dev->active_scan_mask,
++			   iio_get_masklength(indio_dev));
++	ret = ads1262_channel_enable(st, &indio_dev->channels[i]);
 +	if (ret)
 +		return ret;
 +
-+	ret = regmap_update_bits(st->regmap, ADS1262_IDACMAG_REG,
-+				 ADS1262_IDACMAG_MAG1_MASK |
-+				 ADS1262_IDACMAG_MAG2_MASK,
-+				 FIELD_PREP(ADS1262_IDACMAG_MAG1_MASK, chan->idac_mag[0]) |
-+				 FIELD_PREP(ADS1262_IDACMAG_MAG2_MASK, chan->idac_mag[1]));
++	ret = ads1262_set_runmode(st, ADS1262_RUNMODE_CONTINUOUS);
 +	if (ret)
 +		return ret;
 +
- 	return regmap_update_bits(st->regmap, ADS1262_REFMUX_REG,
- 				  ADS1262_REFMUX_RMUXN_MASK |
- 				  ADS1262_REFMUX_RMUXP_MASK,
-@@ -578,7 +615,7 @@ static int ads1262_channel_read(struct iio_dev *indio_dev,
- 	 * CONTINUOUS mode and briefly starting and stopping conversions to
- 	 * achieve the same effect (Section 9.4.1.2).
- 	 */
--	if (chan->input_chop)
-+	if (chan->input_chop || chan->idac_chop)
- 		runmode = ADS1262_RUNMODE_CONTINUOUS;
- 	else
- 		runmode = ADS1262_RUNMODE_PULSE;
-@@ -1288,8 +1325,8 @@ static int ads1262_parse_channel_node(struct ads1262 *st,
- 	struct device *dev = &st->spi->dev;
- 	const char *sources[2];
- 	char name[sizeof("ti,refpN-refnM-resistor-ohms")];
--	u32 pins[2];
--	int ret;
-+	u32 pins[2], mags[2];
-+	int count, ret;
- 
- 	if (fwnode_property_present(node, "single-channel")) {
- 		ret = fwnode_property_read_u32(node, "single-channel", &pins[0]);
-@@ -1356,7 +1393,51 @@ static int ads1262_parse_channel_node(struct ads1262 *st,
- 		}
- 	}
- 
-+	if (fwnode_property_present(node, "excitation-channels")) {
-+		count = fwnode_property_count_u32(node, "excitation-channels");
-+		if (count < 0)
-+			return dev_err_probe(dev, count,
-+					     "%pfwP: failed to count excitation-channels\n", node);
++	static_assert(5 <= ADS1262_SPI_XFER_SZ);
 +
-+		pins[0] = ADS1262_IDACMUX_NO_CONN;
-+		pins[1] = ADS1262_IDACMUX_NO_CONN;
-+		ret = fwnode_property_read_u32_array(node, "excitation-channels",
-+						     pins, min(count, ARRAY_SIZE(pins)));
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "%pfwP: failed to read excitation-channels\n", node);
-+		if (pins[0] > ADS1262_IDACMUX_NO_CONN || pins[1] > ADS1262_IDACMUX_NO_CONN)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "%pfwP: excitation-channels not in range\n", node);
-+		chan->idac_mux[0] = pins[0];
-+		chan->idac_mux[1] = pins[1];
++	st->xfer.len = 5;
++	memset(st->tx, 0, st->xfer.len);
++	/*
++	 * When only one channel is selected, we can't really avoid concurrent
++	 * device activity from happening between the DRDY signal and data
++	 * retrieval, thus we read by command. The transfer buffer holds the
++	 * command (RDATA1) plus the 4 conversion bytes (5 bytes total).
++	 */
++	st->tx[0] = ADS1262_OPCODE_RDATA1;
 +
-+		mags[0] = 0;
-+		mags[1] = 0;
-+		ret = fwnode_property_read_u32_array(node, "excitation-current-nanoamp",
-+						     mags, min(count, ARRAY_SIZE(mags)));
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "%pfwP: failed to read excitation-current-nanoamp\n",
-+					     node);
++	ret = spi_optimize_message(st->spi, &st->msg);
++	if (ret)
++		return ret;
 +
-+		ret = ads1262_find_one(ads1262_idac_mags_nA,
-+				       ARRAY_SIZE(ads1262_idac_mags_nA), mags[0]);
-+		if (ret < 0)
-+			return dev_err_probe(dev, ret,
-+					     "%pfwP: invalid excitation-current-nanoamp\n", node);
-+		chan->idac_mag[0] = ret;
-+
-+		ret = ads1262_find_one(ads1262_idac_mags_nA,
-+				       ARRAY_SIZE(ads1262_idac_mags_nA), mags[1]);
-+		if (ret < 0)
-+			return dev_err_probe(dev, ret,
-+					     "%pfwP: invalid excitation-current-nanoamp\n", node);
-+		chan->idac_mag[1] = ret;
++	ret = ads1262_dev_start(st);
++	if (ret) {
++		spi_unoptimize_message(&st->msg);
++		return ret;
 +	}
 +
- 	chan->input_chop = fwnode_property_read_bool(node, "input-chopping");
-+	chan->idac_chop = fwnode_property_read_bool(node, "excitation-current-chopping");
- 	chan->ref_reversal = fwnode_property_read_bool(node, "ti,reference-reversal");
++	return 0;
++}
++
++static int ads1262_buffer_postenable(struct iio_dev *indio_dev)
++{
++	int ret;
++
++	if (iio_validate_scan_mask_onehot(indio_dev,
++					  indio_dev->active_scan_mask))
++		ret = ads1262_buffer_postenable_one(indio_dev);
++	else
++		ret = ads1262_buffer_postenable_mult(indio_dev);
++
++	return ret;
++}
++
++static int ads1262_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++
++	if (iio_validate_scan_mask_onehot(indio_dev,
++					  indio_dev->active_scan_mask)) {
++		ads1262_dev_stop(st);
++	} else {
++		regcache_drop_region(st->regmap, ADS1262_MODE0_REG,
++				     ADS1262_INPMUX_REG);
++		regcache_drop_region(st->regmap, ADS1262_IDACMUX_REG,
++				     ADS1262_REFMUX_REG);
++	}
++
++	spi_unoptimize_message(&st->msg);
++
++	return 0;
++}
++
++static bool ads1262_validate_scan_mask(struct iio_dev *indio_dev,
++				       const unsigned long *scan_mask)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++
++	if (st->trig && indio_dev->trig == st->trig)
++		return iio_validate_scan_mask_onehot(indio_dev, scan_mask);
++
++	return true;
++}
++
++static const struct iio_buffer_setup_ops ads1262_buffer_ops = {
++	.postenable = ads1262_buffer_postenable,
++	.predisable = ads1262_buffer_predisable,
++	.validate_scan_mask = ads1262_validate_scan_mask,
++};
++
++static void ads1262_channel_prep_tx(struct ads1262 *st,
++				    const struct iio_chan_spec *spec)
++{
++	struct ads1262_channel *chan = &st->channels[spec->scan_index];
++	u8 runmode;
++
++	guard(mutex)(&st->chan_lock);
++
++	/*
++	 * Input chopping and IDAC rotation modes require the continuous
++	 * conversion mode.
++	 *
++	 * This condition only matters when we have an START GPIO, in which case
++	 * the pulse mode is preferred for its predictability: one conversion
++	 * per rising edge. Briefly pulsing the START GPIO (4 uS) should have
++	 * the same effect almost every time, unless the pulse lasts more than
++	 * ~208 uS, which should be rare even if the task is preempted.
++	 *
++	 * If we rely solely on conversion control commands, both modes are
++	 * equivalent because START1 and STOP1 commands are send contiguously on
++	 * the same transfer.
++	 */
++	if (chan->input_chop || chan->idac_chop)
++		runmode = ADS1262_RUNMODE_CONTINUOUS;
++	else
++		runmode = ADS1262_RUNMODE_PULSE;
++
++	st->tx[0] = ADS1262_MODE0_REG | ADS1262_OPCODE_WREG;
++	st->tx[1] = ADS1262_INPMUX_REG - ADS1262_MODE0_REG;
++	st->tx[2] = FIELD_PREP(ADS1262_MODE0_INPUT_CHOP_MASK, chan->input_chop) |
++		    FIELD_PREP(ADS1262_MODE0_IDAC_CHOP_MASK, chan->idac_chop) |
++		    FIELD_PREP(ADS1262_MODE0_RUNMODE_MASK, runmode) |
++		    FIELD_PREP(ADS1262_MODE0_REFREV_MASK, chan->ref_reversal);
++	st->tx[3] = FIELD_PREP(ADS1262_MODE1_FILTER_MASK, chan->filter);
++	st->tx[4] = FIELD_PREP(ADS1262_MODE2_DR_MASK, chan->data_rate) |
++		    FIELD_PREP(ADS1262_MODE2_GAIN_MASK, chan->gain);
++	st->tx[5] = FIELD_PREP(ADS1262_INPMUX_MUXP_MASK, spec->channel) |
++		    FIELD_PREP(ADS1262_INPMUX_MUXN_MASK, spec->channel2);
++
++	st->tx[6] = ADS1262_IDACMUX_REG | ADS1262_OPCODE_WREG;
++	st->tx[7] = ADS1262_REFMUX_REG - ADS1262_IDACMUX_REG;
++	st->tx[8] = FIELD_PREP(ADS1262_IDACMUX_MUX1_MASK, chan->idac_mux[0]) |
++		    FIELD_PREP(ADS1262_IDACMUX_MUX2_MASK, chan->idac_mux[1]);
++	st->tx[9] = FIELD_PREP(ADS1262_IDACMAG_MAG1_MASK, chan->idac_mag[0]) |
++		    FIELD_PREP(ADS1262_IDACMAG_MAG2_MASK, chan->idac_mag[1]);
++	st->tx[10] = FIELD_PREP(ADS1262_REFMUX_RMUXP_MASK, chan->ref_p) |
++		     FIELD_PREP(ADS1262_REFMUX_RMUXN_MASK, chan->ref_n);
++
++	/*
++	 * If we have an START GPIO, the transfer length is 11 so these last two
++	 * bytes are ignored.
++	 */
++	st->tx[11] = ADS1262_OPCODE_START1;
++	st->tx[12] = ADS1262_OPCODE_STOP1;
++}
++
++static int ads1262_fill_buffer_mult(struct iio_dev *indio_dev)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++	unsigned int chan;
++	int i = -1;
++	int ret;
++
++	/*
++	 * This routine enables and reads channels in a full-duplex fashion.
++	 *
++	 * When a channel is enabled, the previous conversion is clocked out of
++	 * the shift data register on the same transfer (Section 9.4.7.1). This
++	 * allows for low latency software sequencing but forbids any
++	 * communication with the chip in-between or data corruption may occur,
++	 * hence the need to take the xfer_lock for the whole operation.
++	 */
++	guard(mutex)(&st->xfer_lock);
++
++	iio_for_each_active_channel(indio_dev, chan) {
++		ads1262_channel_prep_tx(st, &indio_dev->channels[chan]);
++
++		reinit_completion(&st->drdy);
++
++		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
++
++		if (st->start_gpiod) {
++			gpiod_set_value_cansleep(st->start_gpiod, 1);
++			fsleep(4);
++			gpiod_set_value_cansleep(st->start_gpiod, 0);
++		}
++
++		if (i > -1)
++			memcpy(&st->scan_buffer[i], st->rx, sizeof(st->scan_buffer[i]));
++		i++;
++
++		ret = ads1262_wait_for_conversion(st);
++		if (ret)
++			return ret;
++	}
++
++	memset(st->tx, 0, st->xfer.len);
++	ret = spi_sync(st->spi, &st->msg);
++	if (ret)
++		return ret;
++
++	memcpy(&st->scan_buffer[i], st->rx, sizeof(st->scan_buffer[i]));
++
++	return 0;
++}
++
++static int ads1262_fill_buffer_one(struct iio_dev *indio_dev)
++{
++	struct ads1262 *st = iio_priv(indio_dev);
++	int ret;
++
++	guard(mutex)(&st->xfer_lock);
++
++	ret = spi_sync(st->spi, &st->msg);
++	if (ret)
++		return ret;
++
++	/* In command mode the conversion data is found at offset 1 */
++	memcpy(st->scan_buffer, &st->rx[1], sizeof(*st->scan_buffer));
++
++	return 0;
++}
++
++static irqreturn_t ads1262_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ads1262 *st = iio_priv(indio_dev);
++	s64 ts = pf->timestamp;
++	unsigned int weight;
++	int ret;
++
++	weight = bitmap_weight(indio_dev->active_scan_mask,
++			       iio_get_masklength(indio_dev));
++
++	if (weight == 1)
++		ret = ads1262_fill_buffer_one(indio_dev);
++	else
++		ret = ads1262_fill_buffer_mult(indio_dev);
++	if (ret)
++		goto out_notify_done;
++
++	iio_push_to_buffers_with_ts(indio_dev, st->scan_buffer,
++				    sizeof(st->scan_buffer), ts);
++
++out_notify_done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
+ static irqreturn_t ads1262_irq_handler(int irq, void *dev_id)
+ {
+ 	struct ads1262 *st = dev_id;
  
- 	return 0;
++	iio_trigger_poll(st->trig);
+ 	complete(&st->drdy);
+ 
+ 	return IRQ_HANDLED;
+@@ -1609,6 +1895,9 @@ static int ads1262_spi_probe(struct spi_device *spi)
+ 	st = iio_priv(indio_dev);
+ 	st->spi = spi;
+ 	init_completion(&st->drdy);
++	st->xfer.tx_buf = st->tx;
++	st->xfer.rx_buf = st->rx;
++	spi_message_init_with_transfers(&st->msg, &st->xfer, 1);
+ 
+ 	ret = devm_mutex_init(dev, &st->chan_lock);
+ 	if (ret)
+@@ -1654,6 +1943,22 @@ static int ads1262_spi_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      iio_pollfunc_store_time,
++					      ads1262_trigger_handler,
++					      &ads1262_buffer_ops);
++	if (ret)
++		return ret;
++
++	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d-drdy", indio_dev->name,
++					  iio_device_id(indio_dev));
++	if (!st->trig)
++		return -ENOMEM;
++	iio_trigger_set_drvdata(st->trig, st);
++	ret = devm_iio_trigger_register(dev, st->trig);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * REVISIT: This chip has software polling capabilities, which could be
+ 	 * used to stop depending on the DRDY signal.
 
 -- 
 2.55.0
