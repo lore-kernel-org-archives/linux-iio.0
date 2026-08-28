@@ -1,218 +1,128 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011068.outbound.protection.outlook.com [52.101.70.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 067C044CF4A;
-	Fri, 28 Aug 2026 12:40:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787920828; cv=fail; b=qmqOtCv9TK5LzERsPjiOz3QzpkJSUFAhQEN3D4f6TZyzVQTBDfPrTZrzKZsSkjso+XcDYt9sVu5SbPW7jtW6A65rhRe6cx5Za2gSB2Tq1O6MsTobkJmbJoQZLx+WhoDvWJWrZUJ5hzH1zYRIVpgr9Z86+VxKZ8lyEGz4J13Ffzw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787920828; c=relaxed/simple;
-	bh=WzCNX7c+iNTpbBXBJ0HDykZMHPkm+0DVmrgo+4u9Mpk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=l2eztl9o7VscRlC5vIcuWu03eH6PcXRVRDf88CzTEtUv792kYJHaKbydz9yO8S/pMbWqgMbZ0BE7o38VKPxM+Akkm2jrNLVnUGhald8zjXjJr+OiBU2wLjxPkCLw6eunGBq8AV5vFXv8roYyYl9IHgz2CaEtAzNkTYWGx+zMpvQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=MP7XZ9uL; arc=fail smtp.client-ip=52.101.70.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE41E4503E8
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 13:06:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787922413; cv=none; b=CfcXMBwfwL+uCrUFDvt33+/E7vQpgUCwg3vWHJqDfwpwQ9FXrtfPMS5DawTrNrBqvVGDn/YkeNctAoOxbujOpr2I446HwSumRuXcwfCoR7fk31fCDi8DB4QGbkVM9u04QMwhQXczfuTIWDe/UzRFd+tYKdX1vmbg1aVPSqPaFXo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787922413; c=relaxed/simple;
+	bh=9HEjywerj9dI1DMv8TmODXVCvgIjH29ELxBcAtzoHqM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=tjJZHwgKUSe2XkOvyFGziDVGs8YBdj+gYpgdLrprexCGHZ4DfNvgqRrLBMtl1KmcQx9CDi5IwpwdsQeGNpUhDjP8ESRHHautjP9s4d1fsKgq+sSnv1Cbkk3gMKK3sQxKl0pXnBsEZsbUe+6lJmRXeToDNPgOK1AX4VMtoduucHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nv+FsJm2; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="MP7XZ9uL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aAYU/BE/r33NZ/tkFeRiMvz9ZEfiWk7LL+vmsKMIYE83SEMx/hCiT2Wf/A9GBQ91k4+a5YqNmYjSotSyOJlTu0i4AX/ENOrjrdlwKhbteAQRAx6BggtR46M6Ul0rBkt9l6O0fGKgX/gQuSA6CcO8RYNaDUyUZvxgqADqLvsMkK2URPzR/R8ocswysbAXzDbQoADwZGtOGdsi9XiemmRN0zeKIaorJMla0wUTrHLt+E9+PJWnwjw6ct/w56dXjYxyU6baL2ayi7s27H3nluEjRPITl9+8zZkzl6nUZqeo1kdSG/XLRdIcd+/3SjkwgnsU3m9ps9cbdpB/zgiSVc1jew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u4Fxhss1JNO6PqQ5GDL5VDo+3QTXlZiRgvpe3nB6hcQ=;
- b=ChzHvw33FjdZeq3c1z6RYBxWy3yo7Os4wscGzEUzVPCvKGBSIeprjFPvHQgXh/6TbGzFsrIDWxZVD86nCKhcQiw/mlvKN0ffWcUaSACCVpfT5bQexMgotdrmnKUUQcK4lhKTMHHQFja9ws5xz8LwdsENduNZSDTrJE2GidCtn87qp2XDYyDZ46TMeXUpsVDVHQ+8iEtZ0jROmC/0yBO/0ar0xeDde35TNq+EFwNQom1QEuuNWui54PHrvm0t01UwpiQs2aUdQCUWRDRKGpMRP717aw9/RRxX07y1amFKFFXo4dzDt6xmOGq8iKJTOC4hW6dPAYG0eP2X6W05Bzp3BA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 164.130.1.59) smtp.rcpttodomain=analog.com smtp.mailfrom=foss.st.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=foss.st.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u4Fxhss1JNO6PqQ5GDL5VDo+3QTXlZiRgvpe3nB6hcQ=;
- b=MP7XZ9uLp42Lihru4RhE+3luBpzLkM4RpMlC9oSLCnASDEhZXX7BN7N+Zoh6zHSW18t1CHBUAmTYq0skL8xs6B3Whu59QG7kDHRd0/uPr5GT6PC3QNcqUWeBRhxNVOhNGIQ0AB1M5FrKJsnUqX8S9Ud/yvBMkvGnP7gQYOhcXXFHqYRRMskURwdifUYZdhzJUFGKJeIYetgE+HBy3jlWfgT38qMsiNinROgKolZmb5E0/bDD5aM8ead4CKNFXTfUpdSl5pWy6hJFn+8zKrkmjLBIUIyBg7RN9foocIyiS3kfOlyVTVs/bNwygSUdvLfZDWON6rAgu2Xltn0k6zrFdA==
-Received: from DUZPR01CA0002.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:3c3::8) by GV1PR10MB9159.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:150:1d6::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.10; Fri, 28 Aug
- 2026 12:40:08 +0000
-Received: from DU2PEPF00028D11.eurprd03.prod.outlook.com
- (2603:10a6:10:3c3:cafe::43) by DUZPR01CA0002.outlook.office365.com
- (2603:10a6:10:3c3::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.360.10 via Frontend Transport; Fri,
- 28 Aug 2026 12:40:08 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 164.130.1.59)
- smtp.mailfrom=foss.st.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=foss.st.com;
-Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
- designate 164.130.1.59 as permitted sender) receiver=protection.outlook.com;
- client-ip=164.130.1.59; helo=smtpO365.st.com;
-Received: from smtpO365.st.com (164.130.1.59) by
- DU2PEPF00028D11.mail.protection.outlook.com (10.167.242.25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.360.3 via Frontend Transport; Fri, 28 Aug 2026 12:40:07 +0000
-Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpo365.st.com
- (10.250.44.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Fri, 28 Aug
- 2026 14:46:02 +0200
-Received: from [10.48.87.20] (10.48.87.20) by STKDAG1NODE2.st.com
- (10.75.128.133) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Fri, 28 Aug
- 2026 14:40:06 +0200
-Message-ID: <286d173b-4fd4-475c-bc49-eb0c9047ca2f@foss.st.com>
-Date: Fri, 28 Aug 2026 14:40:05 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nv+FsJm2"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49b0dbfbf7bso6334655e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 06:06:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787922409; x=1788527209; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=OSe5hUo+anN+B3supDKWk8oyF7C/bYQ978Bx8sQdufY=;
+        b=nv+FsJm2Xny0Kz2h5URMPSe+TQtqERGUG3F/y2he0ggZJClP1DOkIb20WnsmG9lxl6
+         UZ0kCMBQmk88yz/ijX/7GYgZIEOCXisRbpWGCDF/TT8c+ksWVzz0iqbjRGbkjdg5PQ3l
+         AfjSSO88PRIr7dPa9flydD5M0JF+5c+lTpx63DC3eW411nscK3BcpFp9fa0t6AWpfOqQ
+         AkcXACFHLTCiEcWq0Tc6eUtaA+8DgpENaiQKUBsKSPY9EVEnVqAtjtlUpWgxAnKxq6ER
+         9VzwcoJqkVlXOfSMwW+5ZnOwLd5DoHKzIowr5U6sTC/xVzWZmes9EfJBUv3xG1pEDMuQ
+         pIiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787922409; x=1788527209;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=OSe5hUo+anN+B3supDKWk8oyF7C/bYQ978Bx8sQdufY=;
+        b=sZvuQt4nNCkGANDxTJTyRtvxCU+/oNdJoCudJERgxEEfOCdSexz0M9dznvZ5qCSf30
+         yDl7P80k+THHuTL3RcE7TmHsSS9KjVs7kOgYBWWaExl9ld0hqIO0Bm5ZvW5a2s+7QZLs
+         LVmz459MMAj39TCNgPtKhnOCrMcQecRuEux4rjL037BW7sDX6l50wdBh/Mch68NS7rFW
+         1V0IJhXocX5NhdHHhXMBgSGliRdA226DOW+oVTM91gYony8tBEres1ZJCjhaGLmDTp3I
+         pN8CIILafugiRwO9hcPYwOZmA3IRLCaqi53s/tFhsmP+yApXreGiDhLpVDp/rim1AQWg
+         md0g==
+X-Forwarded-Encrypted: i=1; AHgh+RpD2a1FlUAxXWv18jp2KBG+mA6AoiKz986P3jDXhTOlq4UcZnTuXzkiqUNqOxAMPoZ81i+kDTMXk3I=@vger.kernel.org
+X-Gm-Message-State: AFuF++lU43YeYx6BbMoHRd/FXHuoA+qOMgKUtoZr1S6bQW/h2eUpoTv3
+	x3Uo3jEHNTSLere1getaE1TfbBOTo7LNaEeV5eR7JSwKNsVIvxqz9eig
+X-Gm-Gg: AR+sD10IgJJcjPDqxF5yEGaIWDaf/sc+f3AbLc00Y4l1QaW+0xZ9Shf6Z+M0XQ6KXnj
+	oS42n42v7LRqxYyUbN5GsvQbTqUPeLJy4kVc2BZedK4xDUnvcFw+qP4Y2VjPNe5OG8dEn7Bbd4h
+	kMx3siKOFO78TXETUHgsXXmWt9+JRFJD2Yh+LvPuZ2NIw5b2sOu7U4Pof4hPz3SimjZotafW4l3
+	POV5VCLRdE8+n395PfvQBCt/V324I3QWxnL5HyyCqm3HBuurX3O6oHAhLLPxspPKyt9WgVyaiR2
+	r0lRK0jfqfa7mQz5W1dEz14sn8JPsrenrMWadjjHNIwUmLZNUBwELINAjgLmFq1Q9l41wVuGYth
+	xLH0od1fjWd3e1rY3tWX2N3JdtR4zXas3iJiMbQE1SozCN52M23JNgSXDDCpcpDH7fP7iBtEbPZ
+	LIxuB+SZ/LAPetX8p1QFm7d1UUz7LBRa0zARu1fcL4sh6qRBxUF/W3UD6I771LUsqqG21sHd8wF
+	Zl+6G/R6XGBFBN4dcBOeQd87qqx3z2g6J5zmJ5t5zfz18rBuvnhLhvNknSFGBRSpAun2jJDu0Mi
+	QQeRaDruJ75+wt1HmgxT0IPyiaXTnbt2jddt1f1jlHfOBeL/968BAjDyVzjjobLxOjDMcvTS76D
+	HWsNQC1hoCzhyNDSVJ57aSlVr98wttcUYwUynCU6vCvczd7I6WMjnzeZuwZUwwAjlW5ZTvTo=
+X-Received: by 2002:a05:600c:4715:b0:499:cd34:f7c with SMTP id 5b1f17b1804b1-49b91c26a01mr97741555e9.5.1787922408578;
+        Fri, 28 Aug 2026 06:06:48 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b9500c7cfsm53999285e9.11.2026.08.28.06.06.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Aug 2026 06:06:47 -0700 (PDT)
+Date: Fri, 28 Aug 2026 15:06:44 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Akhila Kavi <akavi@axiado.com>, Prasad Bolisetty
+ <pbolisetty@axiado.com>, Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Harshit
+ Shah <hshah@axiado.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org, Conor Dooley
+ <conor.dooley@microchip.com>
+Subject: Re: [PATCH v6 0/2] iio: adc: Add Axiado SARADC driver
+Message-ID: <20260828150644.00005d5c@gmail.com>
+In-Reply-To: <20260828-axiado-ax3000-ax3005-saradc-v6-0-4cea467e4167@axiado.com>
+References: <20260828-axiado-ax3000-ax3005-saradc-v6-0-4cea467e4167@axiado.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/9] dmaengine: stm32-dma3: Use bus width capability
- helpers
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-	<dmaengine@vger.kernel.org>, <linux-iio@vger.kernel.org>
-CC: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, "Lars-Peter
- Clausen" <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Frank Li
-	<Frank.Li@nxp.com>, "moderated list:ARM/STM32 ARCHITECTURE"
-	<linux-stm32@st-md-mailman.stormreply.com>
-References: <20260810-dmaengine-support-wider-dma-masks-v2-0-1f7b798d035f@analog.com>
- <20260810-dmaengine-support-wider-dma-masks-v2-5-1f7b798d035f@analog.com>
-Content-Language: en-US
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
-In-Reply-To: <20260810-dmaengine-support-wider-dma-masks-v2-5-1f7b798d035f@analog.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
- (10.75.128.133)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU2PEPF00028D11:EE_|GV1PR10MB9159:EE_
-X-MS-Office365-Filtering-Correlation-Id: a5c8d909-fb48-4a82-e5ab-08df05017de4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|1800799024|7416014|376014|10067099003|6133799003|22082099003|18002099003|11063799006|5023799004|4143699003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	zcLLKFOQX2ZN7cOddsMMz/dTZhXuVzpOXVyyR0zHqvVBTjA4GKdBNaYTaYV+xRpJrYYzmJSqd7uVvuLKi2rXw516sf0Z7rUiiHf4YhrerkMectsIc0pej8T/NLyq+ZUukrcccNOO8tBPUkYbfdp7cYxAMbOb/gokcBOkAKVATxDYF/tWqtk6/wCp+XNYpy1CrfkeUkvLZiRKn4ZQ0/uIMVenymRX1Ji9WpxmTDfy1OQ0WEAIKIlcK5fyH3JSUBNMTltWpDwbMpkjnIyK7OVWzWcEpVh676itVzc6IhdQNaqx2ZM+BL7a/l4O6MzG7p7mYw8+eAAajmMfgkrdrTnCaFDo60AYRYyCQkuQofR754u0UQcCQAtlWTBNlIUHlrbkIUXKekyfBUfZQztcFULCjpM3DEXGjVmkG1YcEq0+eCswqVM3sUEmxIHpbR3SvTcy0aJ0itS4lwj6HyY2NJ+ScxfNxRaI1SzHwr6OCD93h98tc8VKD8OII6xm0jAiHo/sEzKLaa3u7HtRBpcchGmw2A/0L2eMsD1sFPyf8rCYE8VKjjpLbY/tl2lxiNSx9/zlADI/8fFkRNeHUTfkyhn8MxzIosDrfUe+PsFWtzOQkntidSgp9nsUICeLbyiUg1Tb8BtbJbqolQ6UGkm46CtKJG7h9DvCwkahhe8Jt9hkV9ONO8mkQaI30Su3Ev6UgQWElcaYLnTMIq6zo8Yl+Wy6YA==
-X-Forefront-Antispam-Report:
-	CIP:164.130.1.59;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(1800799024)(7416014)(376014)(10067099003)(6133799003)(22082099003)(18002099003)(11063799006)(5023799004)(4143699003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	lHfCEB4ER9RaS+4TJ+kd2POrxgPlRMOKCmfURBYrxcHSN8Nx2zWb1K170US1dPRkNICbfy+Yos0eze5m+hwh16q9ydYElyQpDbHvFbNgZWnQBaTCszAi9gn2Z5Tq2M7v93cxdFsJATa9aQnK/vxs5JyTs5WhxQkMQdsKqfy39FmDiSICmCeBzeXRDjPIoV33HZAIXRcIb2QWfC5bYXCdI5zAVwP3IlKKoSnIlB6iOfeeT3mKYoKuZ1ROFDefKT42nOcfSjXmUmYcM2lD1LnugvH56+6EKbCvETsLs73hLqYMYTwwj8Rv1UsaCmlhlpB36YulyU9HX7zklMXcVbRvJqkdJRNhbc6aw59cJLv5jShiEyPr+p3FU4FdgDItc/6OxsbR5W5PtnaEzrHGgZ3TcwXMT1BE5j5QGlIE6tBIRn+UlOX4p1NBOAug9/2/OWe0
-X-OriginatorOrg: foss.st.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2026 12:40:07.4026
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5c8d909-fb48-4a82-e5ab-08df05017de4
-X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.59];Helo=[smtpO365.st.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU2PEPF00028D11.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB9159
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Nuno,
+On Fri, 28 Aug 2026 05:28:27 -0700
+Petar Stepanovic <pstepanovic@axiado.com> wrote:
 
-Thanks for the update to the stm32-dma3 driver. It's good to see that it 
-helps demonstrate the dma_slave_caps_clear_xxx API.
-
-For future patches touching STM32-related drivers, please CC the 
-linux-stm32 mailing list, as this one went unnoticed on our side.
-
-On 8/10/26 17:06, Nuno Sá wrote:
-> Advertise the controller-wide bus width capabilities through the new
-> dma_set_src_bus_widths() and dma_set_dst_bus_widths() helpers.
+> This series adds support for the SAR ADC controller found on Axiado
+> AX3000 and AX3005 SoCs.
 > 
-> Also update the per-channel capability callback to clear unsupported
-> widths through the dma_slave_caps helpers so the bitmap and
-> transitional legacy fields stay in sync.
+> A new driver is needed because this SAR ADC controller is a SoC-specific
+> hardware block used on Axiado SoCs. It has its own register layout,
+> channel enable handling, conversion control, and data readout sequence,
+> and it does not match any existing upstream IIO ADC driver.
 > 
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+> AX3000 provides sixteen input channels, while AX3005 provides eight
+> input channels. The driver uses SoC match data to select the number of
+> available channels for each compatible.
+> 
+> The driver supports single-shot voltage reads through the IIO subsystem
+> and uses the reference voltage regulator for scale calculation.
+> 
+> The datasheet is not publicly available. Public high-level product
+> information is available at:
+> 
+>   https://axiado.com/products/#AX3080
+> 
+> The register definitions and programming sequence used by this driver
+> are based on Axiado internal SoC documentation.
+> 
+> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
 > ---
->   drivers/dma/stm32/stm32-dma3.c | 32 ++++++++++++++++++++------------
->   1 file changed, 20 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/dma/stm32/stm32-dma3.c b/drivers/dma/stm32/stm32-dma3.c
-> index 4724e7fa0008..f0781fb1b66f 100644
-> --- a/drivers/dma/stm32/stm32-dma3.c
-> +++ b/drivers/dma/stm32/stm32-dma3.c
-> @@ -1469,14 +1469,14 @@ static void stm32_dma3_caps(struct dma_chan *c, struct dma_slave_caps *caps)
->   
->   	if (!chan->fifo_size) {
->   		caps->max_burst = 0;
-> -		caps->src_addr_widths &= ~BIT(DMA_SLAVE_BUSWIDTH_8_BYTES);
-> -		caps->dst_addr_widths &= ~BIT(DMA_SLAVE_BUSWIDTH_8_BYTES);
-> +		dma_slave_caps_clear_src_width(caps, DMA_SLAVE_BUSWIDTH_8_BYTES);
-> +		dma_slave_caps_clear_dst_width(caps, DMA_SLAVE_BUSWIDTH_8_BYTES);
->   	} else {
->   		/* Burst transfer should not exceed half of the fifo size */
->   		caps->max_burst = chan->max_burst;
->   		if (caps->max_burst < DMA_SLAVE_BUSWIDTH_8_BYTES) {
-> -			caps->src_addr_widths &= ~BIT(DMA_SLAVE_BUSWIDTH_8_BYTES);
-> -			caps->dst_addr_widths &= ~BIT(DMA_SLAVE_BUSWIDTH_8_BYTES);
-> +			dma_slave_caps_clear_src_width(caps, DMA_SLAVE_BUSWIDTH_8_BYTES);
-> +			dma_slave_caps_clear_dst_width(caps, DMA_SLAVE_BUSWIDTH_8_BYTES);
->   		}
->   	}
->   }
-> @@ -1737,6 +1737,12 @@ static int stm32_dma3_probe(struct platform_device *pdev)
->   	u32 master_ports, chan_reserved, i, verr;
->   	u64 hwcfgr;
->   	int ret;
-> +	enum dma_slave_buswidth stm32_dma3_buswidths[] = {
-> +		DMA_SLAVE_BUSWIDTH_1_BYTE,
-> +		DMA_SLAVE_BUSWIDTH_2_BYTES,
-> +		DMA_SLAVE_BUSWIDTH_4_BYTES,
-> +		DMA_SLAVE_BUSWIDTH_8_BYTES,
-> +	};
->   
 
-I'm not fond of having this large block after the "shortest" declaration 
-(reversed christmas tree order), and since it is not a global variable, 
-I think you can remove the `stm32_dma3` prefix.
+You didn't have to send a new version, Jonathan tweaked the commit and
+applied it:
 
-By removing the `stm32_dma3` prefix, you could place it after the struct 
-declarations, below struct dma_device *dma_dev;
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=839dc31a0c6508354b18d09a9e5aa5d8f4c05860
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=205f4aeaae3148848c153a0d98a6f604b39aba7c
 
->   	ddata = devm_kzalloc(&pdev->dev, sizeof(*ddata), GFP_KERNEL);
->   	if (!ddata)
-> @@ -1775,14 +1781,16 @@ static int stm32_dma3_probe(struct platform_device *pdev)
->   	 * channel, and can only access address at even boundaries, multiple of the buswidth.
->   	 */
->   	dma_dev->copy_align = DMAENGINE_ALIGN_8_BYTES;
-> -	dma_dev->src_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) |
-> -				   BIT(DMA_SLAVE_BUSWIDTH_2_BYTES) |
-> -				   BIT(DMA_SLAVE_BUSWIDTH_4_BYTES) |
-> -				   BIT(DMA_SLAVE_BUSWIDTH_8_BYTES);
-> -	dma_dev->dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) |
-> -				   BIT(DMA_SLAVE_BUSWIDTH_2_BYTES) |
-> -				   BIT(DMA_SLAVE_BUSWIDTH_4_BYTES) |
-> -				   BIT(DMA_SLAVE_BUSWIDTH_8_BYTES);
-> +	ret = dma_set_src_bus_widths(dma_dev, stm32_dma3_buswidths,
-> +				     ARRAY_SIZE(stm32_dma3_buswidths));
-
-By using `buswidths` instead of `stm32_dma3_buswidths`, this can fit on 
-a single line.
-
-> +	if (ret)
-> +		goto err_clk_disable;
-> +
-> +	ret = dma_set_dst_bus_widths(dma_dev, stm32_dma3_buswidths,
-> +				     ARRAY_SIZE(stm32_dma3_buswidths));
-
-Ditto
-
-> +	if (ret)
-> +		goto err_clk_disable;
-> +
->   	dma_dev->directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV) | BIT(DMA_MEM_TO_MEM);
->   
->   	dma_dev->descriptor_reuse = true;
-> 
-
-Regards,
-Amelie
+-- 
+Kind regards,
+Joshua Crofts
