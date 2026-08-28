@@ -1,182 +1,156 @@
-Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010049.outbound.protection.outlook.com [52.101.228.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3D4374E67;
-	Fri, 28 Aug 2026 09:43:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787910195; cv=fail; b=pU9gnH5uKUvr/ev5T/3+bnRMB/bC964SDAiyzYzJN/YfQgf3Q+vULp70XcvT/amKCy9/p2ip+YzuMZ76S5/dKEo5aT96zJuWl8EoG8nT3vnudxDAQJrvLBQ0/x5uT1Qrv+kvX3O4OhQrI9aqkQfLl5KQB+7F+TezlBBUWeGHo2g=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787910195; c=relaxed/simple;
-	bh=vuwByGvhuT8Q34Ao6o+8OxxFgPYoXfabLneCONDyLCQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=G3C56E1EOl70Rj9RvFGWCwt6Q3ze4qrSRQr4pSjpiXdvqVkjYj1IizxEiKT0WqnEYiAXw2Qrvw/RhI6t73PVcjXcP73mRgPMLj7Lz7Izq2fu0zpPdnexu7yPkZZ4BZQurKgHmm4nMXsvRq7MbND3pSxkyERIpjc8WSG5rJWbQXA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=Hdk9tvlX; arc=fail smtp.client-ip=52.101.228.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D703BD65A
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 09:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787910390; cv=none; b=XEjGPUIYv8dHcbctuoSH3H/fcnx+UQ2iah0C6dYU9dZcxF47cRfZlrCMi7mVsPpPvfhgvSoaCdOE+la0HLMaKxskSUfcjscNFioC4L7gzZ7ItulWRczLtfoMF09hCHCB0OUiEcBBlECkJKETt1ehfzL2w0RSHjC5S4Nu84FBxd8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787910390; c=relaxed/simple;
+	bh=Uf6ldwilcJEaPDe7MOC/blE6zw7sKZkBqZq+x81xo3k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QU2z3QqhsFfyHoKiyGHpX8VvZo+CQhkZBOH89IqNPgqMFmvbLs1NnYzyeSL0qy9MP6iu3OP0Jbcis5wlIayBzaAgaArIdNzLMfWx53plPCNs2qeCpwItttutgi8e1w6FQ37E+Vok4QMepYIzjGs0vFmFFS0dcLXmGVCtPvFniF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mj1Hdoi9; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="Hdk9tvlX"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WsaqbdI+VcMnXsBzgtVUMRRfgL0EMMeCQ4r1a9yDRoECs57KrzgxLIchxm+5QYEck/O1CiX/o1JSE5smVrS+JtsUfrXCVEcxlSiD6gIRsSzMd6tmGAqT7pp3JgmfPdur6na2iyBmaGh1G4ZwkL1vyQ1ZBSzdBMaybCqrt7QabUxHWgGvqwdzwsh1C+sbOJ7jvRyWHjvLSxWPmnP0C3YBkFKpxLWwDHcY9NbU509xUW6czsBZq+rNG0ecMN2rmEe0KoCcsSK26MbvZZTLNeO7qu2Tb5ZMQKNEnLqcYW55Hw846xd+yLvw7O1csEaJGalMphM890pXBgoPFL8/FX0udQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DH45T02ZbYg+NANXqfaBM1G0fVtzRwdcUlmQ/PgLjuI=;
- b=ymvAQaDU+t8b3hbXqYmcgHzyF7Hbp3n5hgd6vFkZ+wRMQs8t6N40/mnwzUzgTKR2rk8L9C85XAqY/tkD6V1DpQJAu7s9N+/U1Ez5zZCbqiPJKRy9bu9r6eZV5k0Ltx9dExuy0DUzXOXik4L7vjzVqMvZv+mP28dryToz+GYFL3QOqRzCsrxmnG5i5Qjuet1jryVPwLamOzXzw/SZvum4DpLHw3VU6RtP+qhVtWQHCcriNT8n/M4H0QhGcjxHXZkVjbMno3MsYekThO+QDBs8sNLIO+C1uRKVGVa1RZHH+H1ZAsA4sLCxqn03ll1WwGfMjFwGHc4e04YocLEoKE0vYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DH45T02ZbYg+NANXqfaBM1G0fVtzRwdcUlmQ/PgLjuI=;
- b=Hdk9tvlXViwOX33ma1tUBpBRtPlJ9m5B6rDw+JqhJcQ8kVTFjHLwajedhVyTcQ9VVsRwQeerOoFh6rmR+8yTzmjV6e2TX3vLR1+vegLZMgvFG2ZHpGNReW3QkMEz2XKvOEazqrwz2oQ9rb4RP6OV/0q1XvO0CL38SjuJPR3/1iY=
-Received: from TYCPR01MB11332.jpnprd01.prod.outlook.com (2603:1096:400:3c0::7)
- by TY1PR01MB10723.jpnprd01.prod.outlook.com (2603:1096:400:31c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.10; Fri, 28 Aug
- 2026 09:43:10 +0000
-Received: from TYCPR01MB11332.jpnprd01.prod.outlook.com
- ([fe80::2511:10cd:e497:4d97]) by TYCPR01MB11332.jpnprd01.prod.outlook.com
- ([fe80::2511:10cd:e497:4d97%6]) with mapi id 15.21.0360.008; Fri, 28 Aug 2026
- 09:43:10 +0000
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: Biju Das <biju.das.jz@bp.renesas.com>, Li Youhong <dayou5941@163.com>,
-	"wbg@kernel.org" <wbg@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, Li
- Youhong <liyouhong@kylinos.cn>
-Subject: RE: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable() return
- value
-Thread-Topic: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable() return
- value
-Thread-Index: AQHdNrx3kQjs4CnEf0iwe1oHyY4MsLazMssQgAACyUA=
-Date: Fri, 28 Aug 2026 09:43:10 +0000
-Message-ID:
- <TYCPR01MB11332985B47AC5410D4D02F1286AC2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-References: <20260828071123.179670-1-dayou5941@163.com>
- <TYCPR01MB11332D67B5121D22F05E2CAEE86AC2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-In-Reply-To:
- <TYCPR01MB11332D67B5121D22F05E2CAEE86AC2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYCPR01MB11332:EE_|TY1PR01MB10723:EE_
-x-ms-office365-filtering-correlation-id: 0bae56f1-cff5-4d18-f462-08df04e8c5ac
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|366016|1800799024|23010399003|11063799006|10067099003|22082099003|18002099003|4143699003|56012099006|38070700021;
-x-microsoft-antispam-message-info:
- B8x4EYBBtMs9O6PaaNx46SvVLlkFer2lhUNs5qyt2xP5PFM2gvFUSkytC2ji/poDx4a5cQi9fmKetarOK5K/S79NKg7j1S4ZjVFMWegzmecZ4fwfoent/XiMu7xWCFyW+Wu8m+3adjD2ruomwpYhRDZFRO2hjJ/YvHv0EBwH8FWVIMaLC8aQCiYI2NTKZ4OEh/t5L4vVv2GPPLB77b4JaQY/Pl0Hy29wcoedrRSwl/NE5awJxFfcTUBAW0cN9pKGWZHIM5842FSibAyeB9k+J6eYnMymr23JS91zqGTB8PCNUeodCYf7lPlryBg29cPyrUEvMpRKTZw2j8Jjc5AOmSdyt+4k02lE4FvcMsFpSjlYlTv88QNENN6tAvhUDE0z4ZYseU40dXfW0d5vb1tZzExZnZbFXqqtBHs2FW1dNsACQOMEBXx7F8qZQlLEI/K1KpHghgYWS7hlg5fwqRIKA8KI7YTRXq8thhI6rkAtuCjEFXq+Fl36MDBXtQgFFlkP0dcWvAbzkwVUd4YwaLiILNtKShYiWjc746pmoCEH93G35eMBC0fhSQ2/lInd0U4x2/TeSJyY75tREqsnaNqyY0RJlh0WXktljAJi/P4/bjKx3JhFLDcF2jNBxfoS4S1WkTLEJTXSnzKzE85zcLTMusqmWv2DXgIOGXmYhW0NQ89vzwAi/z8oGSku+nqvR5saOsVo9lcIp3bxCZ8rPWpFimwTG3T0ZNJOwuDhjqh7aZ0=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB11332.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(23010399003)(11063799006)(10067099003)(22082099003)(18002099003)(4143699003)(56012099006)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?eK0gLz3KBhYtMxmM7ITmKL6JP3L2vImVZQPpOry6f6C30pZo/kDkTqnXfdFi?=
- =?us-ascii?Q?sgp0nR0pucpcAqKbU8E6VWlvR7Sq8m9poy+b1u0j7Pj9/OBinwABmQOT8bC0?=
- =?us-ascii?Q?kxRXP8OKLAC9v0GA/HzcUZnCZTNnAtVmNw16HWQfz7tULhpaaQOIAR9ATu70?=
- =?us-ascii?Q?3MeswF/AoFqvX6q/7mxQhIA27eaDi4Pp2bRy6C+4+42kQBzGyijEsFHUkwK2?=
- =?us-ascii?Q?XFk2/vEkXVGa91mzpo+HhXMnmQTny0Teh0YNJrlBfj3q7/ySatT4+imVbWsF?=
- =?us-ascii?Q?GQIs5FI8J14vR3v6f7yud1sG1qoXqUPcpbM0nyXRb2HAgMBytAMtOzxGCrwj?=
- =?us-ascii?Q?zmSZWaz4qi11MfVVvxqr84Y3mxzNHzwAZc7SBgR0Fb86kbbVLu+nYTqsfLrY?=
- =?us-ascii?Q?PGCZVu3aGHHeT+pC+Lke8t58oGpyAXiQ5rBI+7x82Ji/GIgJ7h2QchfAEkdy?=
- =?us-ascii?Q?uWJd9Qtz1Q90eXMaA4cjVmSpl+aQ15bZOrTyIbBEcwBGKnG7THJD2rb4PJ0W?=
- =?us-ascii?Q?2mEdSKdQB3tdEV/ytGFXQtH89msEjiJLHAZMv52C3W8is1XVjaVz463m2S92?=
- =?us-ascii?Q?t2V4XJVbLDkaY6Kwzh9EKcanMixj/yjmcU+1Rh5I5xbSYqsYqZzRMQeOJa8L?=
- =?us-ascii?Q?eQmJuRMCWP+YCCBgi5musJOwEiv97ueiKyFlTkJGjZ0ECiaK5F1mtQ2BXgbX?=
- =?us-ascii?Q?WaQG0Le3Rgp6Mplk5JQslnRtrmUOxdCY9nPpvUZH22aMcNAiAJdnyY3LnD25?=
- =?us-ascii?Q?i+TG0fQeNJtSJ7KUbKMIWIE9OjnEWj7jbQfnSwX/YY/KiD8nEuGAfjkqOOtC?=
- =?us-ascii?Q?yE1CLUUeRlTYJMldjpGQ2OBr8ynv74I5ksEf9hnaBWQ0QeK/StAOSsJ0ZiYT?=
- =?us-ascii?Q?aJi50sWglMfymPqDjLAMwQc179B+tkYV17h+XNsR3DnBjdxTlkVlAlfd5Kv0?=
- =?us-ascii?Q?oJE+lN+/b9pCXdAfD/qT3Jt0SRKgw02dsrKc7XqpZ/y+7mTpT0CDqB5bsse6?=
- =?us-ascii?Q?d7kw+uXGfD7MIz7x488Rb8RQSx06QJc5DqFal2SIbp6aUDwlGOMk0Mrf5rkp?=
- =?us-ascii?Q?beSbTJd0MpZSCRAZykg+xymQPQKn+irkml5KBViLUVYR2RTJxPcv+xSPk07N?=
- =?us-ascii?Q?JkN/wZhlYSPY8fp41Qdm4zVqQqk2mYwwiE9oSU92eyDH9fiUOgAl7rUO9CES?=
- =?us-ascii?Q?2vDKD0p8PBZ0CCIDhq5YcwdssM4UsUAJ1RiwQuq8lKKgMEa7odEpft0iw4+c?=
- =?us-ascii?Q?D6rHC2atLbQFMEXL53e4uBMbDFo/QTN4R3835plQtGeTzJjClgNTCRROh1Cy?=
- =?us-ascii?Q?kaRPG1zk6W0+00mPYz799XLB3OYGCfV0eq8kJ3XtTkPQkkVRPrssFKY5hZiO?=
- =?us-ascii?Q?fhZs5Fh7A+yc4/VR5PMdYRPQkM8zlWLaUOD3lpy4YTlc7fARqVmMGR6do/ln?=
- =?us-ascii?Q?SUxyaiG0frZPMIpf2xVQd/UF4NWyqTuiSb7u4g0iZC2j6b55AnxIN3bpOLzV?=
- =?us-ascii?Q?ZvW11PyQGnBty49HVTVQtXH1GeU8njhmZLhLybzgQDUq1EZE9Vu83PnMJNyg?=
- =?us-ascii?Q?AXWxor4o6TVTg9KWcu7ield+EraqCF1a4Gy/Je3SlJhXkZmndn1AEskuqPrE?=
- =?us-ascii?Q?phd0ksDTEx3wVydAOh2XPP/sAAraddADX2h1YMY/opxuX+NXsSivAD1aFvkA?=
- =?us-ascii?Q?pvvAnzP/ewDMDEmLz+qLxlu7o4Qb1RbDg6o6myLy6zMmWDZDQahj/oF+XtPm?=
- =?us-ascii?Q?Yi0xoJsfyw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mj1Hdoi9"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5b159850b16so796835e87.3
+        for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 02:46:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787910386; x=1788515186; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XEaU4Vf2pUTQUtqKK4E9Z2UzMvc6WXT0v5g5IP0is00=;
+        b=mj1Hdoi9X8IjqXSGKApdm2NHvJCopqj05VIAhzv1PxZf+3f7AQJdDrPruM6QuJAPaE
+         JGWOFjE1kOXrp4Yv4Q3fnlV1YBSYdgmtYsg/EXOdzCxTfegbguiCrVjL1OMXGVKM21vf
+         B0ruzYUT6MitKdGq2Xev8+2a5cBgFRWC0khLx/s6RBvoK3alt1n2GCMVI9XhISFAWLin
+         xKLqKggXuwgkPVODgsw7gw47mkSWYmjN8sVJv9jcTfUmihaR8Fq6ywLaPl0f+guixsCm
+         Y9CVNTO0PBpNuuKTpLd8mUoL6gMqc/HSRVaPVckGakPPV9oG18Xfr3mIyUP9QpL6aXP+
+         XqWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787910386; x=1788515186;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=XEaU4Vf2pUTQUtqKK4E9Z2UzMvc6WXT0v5g5IP0is00=;
+        b=G2a3MH5cbMy6xEtlfdn2QiLtkyzC2Dxxusl5oEmJby/UyVkv50Jw4+0OBMh4jDmi4N
+         9M7I09BwGBT/u539nKD+oO7+NqUdehR21nOdDKBgL/KeqcysEQLywVfIibhwrrqhgMWD
+         k4EdIWKupCLnT13sKHQA6uo1T8Sj0HtXaK3/1Jfx+gXiF8RLV+kf2O1ttu7fW/AnOPBB
+         18hbzvoOZIknEUJeIqQ8jWdBp2hMLrKKuSh5XK6vNSRdylYxOSVCrbHqrCWJKzRlq1tR
+         RgHB8L09sTOi/c6kzFhrdyDQCZ8ZcivGdVvymRiTOFpV0b/lNCMm1+hLmQVqR7+wbaZR
+         KRCQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpE0to9DnZZtv98LudC22FSENF73F8E4VPTl78XfaHFkliPll7VuMMHEPHnLirI05CZGwMf3SxDxQM=@vger.kernel.org
+X-Gm-Message-State: AFuF++k94XXPHABuGcWSkGp62pTEOViSKcdY/1g1Q3ol60Fwy3ccIJYo
+	KrEZKHViKztfZyQWxDgMC+1iEDAQpjwKBhC5A77tbPzn4L1tr9mNTQ+c
+X-Gm-Gg: AR+sD11XcLG0Y470cGaAxBaKDsuQH7pWMJ7k1l0jRmeINDRY8f0857rSY+8vc+WULzs
+	YoufCAV/ag8tifzHhYHYPPem4IqoefB8dh7TlUrz1uh3wMIE8I+oPngPm9ksbqjZJ7AlzvkuALp
+	Ak9t/Fu2U+B1YgCouBFGfWQ9pGL4UK6xOjgA/sl7/nvjXFo+hnrSq5+ch3YxrSQBBpB0neSkm9x
+	DeSF1/1z2fO7GCUK8U7cJfC3ShJ0EtSanCsb4DK7tzfRIMSTrbQlaezCGFvrd7enk/L/IUyU7+A
+	1JtNjnD3DzWLEvC4dfnlsmsqHXayEjn4Nj6FFqIv/4c4yl+Fth0NJgNxoYOFQvvf5v06xm3KkYn
+	3zKW4zVEnPjGGIiugdi4rrjtMC+Xw9aadaBHSHApToaSSiCk0EaZBTzmnDSThgj7Rz9sdX1wLh7
+	DWbuPK0ZQ7QlEkhZ0fw4DFv0nzXxHE8A4DXX9IXaZulBsyE6aN1U4T8SgIs9kSgm2BSKdS0bEvI
+	D9knpzbACSYW93QPEiBCtmHb17K+Xt8WGYOaAAbxxJl
+X-Received: by 2002:a05:6512:400c:b0:5b0:165f:17fd with SMTP id 2adb3069b0e04-5b5e68ec97dmr1491553e87.14.1787910386137;
+        Fri, 28 Aug 2026 02:46:26 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a305386b60sm1797241fa.7.2026.08.28.02.46.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Aug 2026 02:46:25 -0700 (PDT)
+Message-ID: <5d274bfb-2570-4336-af16-60640550e6c9@gmail.com>
+Date: Fri, 28 Aug 2026 12:46:24 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB11332.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bae56f1-cff5-4d18-f462-08df04e8c5ac
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Aug 2026 09:43:10.4916
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 63Ht3mzK/2c15Ta1xR7OM2F1R54WTewzNukRAVLoj7xe0xkjehNw91wsD2s6VchE2vL3urgrzlJBBBRznM+NPSH4yFMOshbS6dWO6DzM3rw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY1PR01MB10723
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/4] iio: light: rohm-bu27034: Fix infinite delay on
+ error
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+ Matti Vaittinen <matti.vaittinen@linux.dev>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Mehdi Djait <mehdi.djait.k@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1787901813.git.mazziesaccount@gmail.com>
+ <7f0d8efb3578cd4f23a7c70fa4a8f7a967c9df8e.1787901813.git.mazziesaccount@gmail.com>
+ <apE-gauHWlJO8-5X@ashevche-desk.local>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <apE-gauHWlJO8-5X@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 28/08/2026 10:53, Andy Shevchenko wrote:
+> On Fri, Aug 28, 2026 at 10:40:36AM +0300, Matti Vaittinen wrote:
+> 
+>> When reading an integration-time fails, the code will use error code to
+>> compute the sleep time.
+>>
+>> Fix this by using the smallest integration time as a default if
+>> reading fails.
+> 
+> ...
+> 
+>>   	wait_ms = bu27034_get_int_time(data);
+>> +
+>> +	/*
+>> +	 * If reading the integration time fails, default to the minimum so we
+>> +	 * don't lose samples. This may waste CPU cycles, but as a hardening
+>> +	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
+>> +	 */
+>> +	if (wait_ms < 0)
+>> +		wait_ms = BU27034_INT_TIME_US_MIN;
+>> +
+>>   	wait_ms /= 1000;
+> 
+> With the above being open coded the _ms feels not right.
+> I would expect the TIME_MIN to be in MS from the start
+> (and for the consistency's sake with the below) and having
+> all this to be written like
+> 
+> 	ret = bu27034_get_int_time(data);
+> 	if (ret < 0)
+> 		wait_ms = _MS_MIN;
+> 	else
+> 		wait_ms = ret / USEC_PER_MSEC;
+> 
+>>   	wait_ms -= BU27034_MEAS_WAIT_PREMATURE_MS;
 
+I don't like using 'ret' there.
 
-> -----Original Message-----
-> From: Biju Das <biju.das.jz@bp.renesas.com>
-> Sent: 28 August 2026 10:39
-> To: Li Youhong <dayou5941@163.com>; wbg@kernel.org
-> Cc: linux-iio@vger.kernel.org; linux-renesas-soc@vger.kernel.org; Li Youh=
-ong <liyouhong@kylinos.cn>
-> Subject: RE: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable() ret=
-urn value
->=20
-> Hi Li Youhong,
->=20
-> Thanks for the patch.
->=20
-> > -----Original Message-----
-> > From: Li Youhong <dayou5941@163.com>
-> > Sent: 28 August 2026 08:11
-> > Subject: [PATCH] counter: rz-mtu3-cnt: check clk_prepare_enable()
-> > return value
-> >
-> > From: Li Youhong <liyouhong@kylinos.cn>
-> >
-> > The driver ignored clk_prepare_enable() failures during probe and
-> > runtime resume.  Propagate the error so probe does not continue with th=
-e clock disabled and resume does
-> not report success falsely.
-> >
-> > Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
-> > ---
-> >  drivers/counter/rz-mtu3-cnt.c | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/counter/rz-mtu3-cnt.c
-> > b/drivers/counter/rz-mtu3-cnt.c index
-> > 7bfb6979193c..6f746cf598c0 100644
-> > --- a/drivers/counter/rz-mtu3-cnt.c
-> > +++ b/drivers/counter/rz-mtu3-cnt.c
-> > @@ -817,9 +817,7 @@ static int rz_mtu3_cnt_pm_runtime_resume(struct dev=
-ice *dev)  {
-> >  	struct clk *const clk =3D dev_get_drvdata(dev);
-> >
-> > -	clk_prepare_enable(clk);
-> > -
-> > -	return 0;
-> > +	return clk_prepare_enable(clk);
->=20
-> Maybe also add similar error check in disable() for Completeness.
+At first glance, the
+ret = bu27034_get_int_time(data);
 
-Oops ignore me, disable is void function
+looks like ret is containing just the success status. Furthermore,
+ > 		wait_ms = ret / USEC_PER_MSEC;
 
-Cheers,
-Biju
+forces one to go back and see WTF the 'ret' is (even if just couple of 
+lines - but this is not an improvement, using ret is obfuscation).
+
+I could change this to:
+
+wait_ms = bu27034_get_int_time(data) / USEC_PER_MSEC;
+if (wait_ms < BU27034_INT_TIME_MIN_MS)
+                 wait_ms = BU27034_INT_TIME_MIN_MS;
+
+(but for me this feels like unnecessary bikeshedding than anything else.)
+
+Well, I'll change this if I respin.
+
+Yours,
+	-- Matti
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
