@@ -1,82 +1,73 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DC1E231A23
-	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 04:17:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C1BD3AAF5D
+	for <linux-iio@vger.kernel.org>; Fri, 28 Aug 2026 04:18:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787890652; cv=none; b=Mfd9/uqLqr4WRUGTblZX9HHRHjCvVgGFMc/+dnR0fOjqGYHvbrJZNMSHJRxN9GvH6eNfByaaIpkOnlZ9P/bh3zZxWJt2sMOOd0XPeRVkMoj0WEb7iaudoSar2/IzE/PfRmnzYDvRoV3Wtgntquq5YVA/MvkH4c2l0wm2pulgrRM=
+	t=1787890741; cv=none; b=e+H5HhMYmVOAFJ3DDcLGLLLsDeSEYoJvJsHoPJpjvOhQMlBjQfDPyvFnw3kjmlzcRS3xn5Gjn91Z205jyL/V7WxwJ2XXi+q2mMUddtPyEf8FtI/pGwD45R8sf/WhagB4uEdRbf9IXucqnglE3BaC40bnaT4bq6R18wxzR/dBrfg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787890652; c=relaxed/simple;
-	bh=pTqidcm3PAu7POfuygrHb1YbhgmYvPuj7LrPfVSm1kM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s5qomQi2DfSLC/t0iK3ydTvk9vciHdJIhJudy5QjVKmonT6RTf6fNITX1K8a6WjLCiNTYOEU+avzsAxvxiUVFRgznIl0VV5sWUH5DZqORs62odoz9xfmdyb4nrA/FO7BHIXtKt970lLyGxKrHfXzK67kclG6Hr7mEWWUL8WVs/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xa4MbNqS; arc=none smtp.client-ip=209.85.215.180
+	s=arc-20240116; t=1787890741; c=relaxed/simple;
+	bh=j86OQDFxzsnUmkLPHGpPchrsoAKvG3d9PSwJppDgo3s=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=QZhHG439F63V4AWVeRRbhegMvwA26XWwydX7z5PYO7r7HcX2OQKLz2lu0/1FocOL0BB/vCVQbUv2aqkz1vuEUpwjNYvpmFqZr/d9pfuVX6KuvsBZtM7Y3iGdmV5Wv3FGkepXuW3/1mMMpOiXLaND2+xMzI67P5NK2wc3bU2zytc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NL23KvXr; arc=none smtp.client-ip=209.85.128.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xa4MbNqS"
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-cc1cf287ef8so394424a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 21:17:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NL23KvXr"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-8588583a7c3so7523237b3.2
+        for <linux-iio@vger.kernel.org>; Thu, 27 Aug 2026 21:18:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787890651; x=1788495451; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=gO0v4/V9YgV4PqtgQrf2yHSlli7ph+LMnJojXZKVqJY=;
-        b=Xa4MbNqSKvXsKGW4bSdxAvYMg9nGINKU8AszGNhh4DjiKGYa4B6pzt1jb1agr1QebN
-         feSOZsIzZFkt8dftkzdyLZgRnCRKc9YEJcHAaSPQ29BCiW4aMWBwT5Q0/Tm1lsp4HYNH
-         d8dFA/9+tKqKGKvdDYkPw+mcLBqGoVh6TV9op0Lo5CVzXp3ApdHKw/YatDtFWiXVtWJ5
-         1GZ4pBzPwn77WdE/+qmfApJbIDwHCDjGPlmJvYY2tPQOI33bv7bMlaxgGj2gzrdA1M+5
-         XW8gamS5pbjXcVrp8zK3K4SfLy7YtF0aLFd5sEFVnlk6PTDIYMUpwMijx1E+Nm3b5hdN
-         8tDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787890651; x=1788495451;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1787890737; x=1788495537; darn=vger.kernel.org;
+        h=content-disposition:content-type:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=gO0v4/V9YgV4PqtgQrf2yHSlli7ph+LMnJojXZKVqJY=;
-        b=Kqsm6kUwsgRagzH6BOSwvleoATVBdNF9rJrgp0aDvGxDJfM1ok8JA5wnBODXzVVTEh
-         Jj1WghBKG21K0x5W5lq9tCEwcF1WLRrjZ3tQLgATz21kfLoDHTU6Y8mWoIgdTEkt24LQ
-         J9AxMEIzw+2tLuqh4GWP74T210yL1x7AVcjemz75h5YWlChAZVvPDu5vF0cg8FVhZPCw
-         K5AEi80/Hp4V3+eUx3Y2rbyKDW5WeF5vm5pZnKv4pGuVo9wp/7KWXadD7J6hWpjsuXlr
-         JNaQGG0OSiDlyG6qLoWijF0/5ys6dYqHvGqv6LikU8ybAVpXkW0N8xxbiiT9XnroxjcI
-         wA0A==
-X-Forwarded-Encrypted: i=1; AHgh+RrZM9o5+eguDYE//3s7fdg2R5W7ZTIXjpMW/+gJYsKzM0Re0zj695cBn+KekVdoqJabRbgoVoNFepM=@vger.kernel.org
-X-Gm-Message-State: AFuF++lBrJovi+2g5H3ULM2wms+GneoQZJ5sOtk9AfzSEq2MOyKqe6ZL
-	pLKjrV16iyiDh63Pv2W08r/d3tT6JsC0aHBbl337lzkmolnpQiTqc4hV
-X-Gm-Gg: AR+sD13NdnG5D0oE2E0h12ZNJWCAeGhBR8an0Eqna9AON9FXmALdmYFBxDpSmupi8Do
-	NGxn+PQLKVPGwmAt5o3UrKnBV6washn22Gsm9pNw7jd5ymjXztnAsH+c99UrW/ZdAF4bVkQFyG1
-	H43fWHinXVJ5eshP/R63+Hplrj5iTFwZWnT2vjnUdzFIcv+HFZWkz+NeZXdNSGLXe3uTV9y3zeE
-	vD3OKy6t0htvS7rxQrnGX1erNexXNOnKdpSLXyKf4A/g5psAw+flFx8zKAyaR/vZnFDAmgBHsAl
-	05VmmczDgZ3OkgoDKsgeJG2a7ssL/uHHRLZKDm49iln9G+q1vAUiQWdT6vZYnxVzT3OD1Cqh/ii
-	2gjPxtGZRbD7sY8YZqW2v3uK0OSB5L32FUm7PLs7Kc/IvT2Ckzd+1GbpjOxvgrtOyQtESGlbTaS
-	BH1jebFFyVMM3r7SXaNy/JGYYueYApXmePV96je4zHgVQ/YPIt/JaXBtjXetd88kSMyG0xnw==
-X-Received: by 2002:a17:90a:dfd0:b0:38e:b400:a860 with SMTP id 98e67ed59e1d1-396d0fccf78mr8786188a91.13.1787890650739;
-        Thu, 27 Aug 2026 21:17:30 -0700 (PDT)
-Received: from localhost ([2804:30c:97d:e800:9454:1179:18df:ab33])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-142e0d1b38esm1896535c88.3.2026.08.27.21.17.29
+        bh=1ERMTQqT5F5rXKk3SlayPMFRLzf69YOJVKWPJxXCY8k=;
+        b=NL23KvXreSFFnyiilKeoFrhP9ffzu6URKEXtJG4a9gaaOyJ1Y8deIu1V1/kjZTYOgU
+         bQcP0pJCjiHlWTdrWoOMIiAmKgGslTykoB4AmO+CvL4EG7UFKixQuuMwmZABRLg452Qn
+         3AZx1HgudAsl11+QrgvW7QtlZlwZFxIQ/DHymP3ckWaBBmmrcUf2xCqxOeb13QMU9ci1
+         LLCU6MkZQGOgU2u49Geo5hCnAQn7lx5DgR7BeN/Yq9wQzElNCJ+dX6Oil5m/jKBM0DkF
+         7jW3fYDHL5R+HoYcfOS9df4+4gW1vJKefUttiZ8c6KwC2BXabHb2D74XOGl+Ij5xKMFg
+         ifBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787890737; x=1788495537;
+        h=content-disposition:content-type:mime-version:message-id:subject:cc
+         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=1ERMTQqT5F5rXKk3SlayPMFRLzf69YOJVKWPJxXCY8k=;
+        b=kpT+I4Ht0fDs/flq/VEJ9NokYMDA7CoVYh8vv/BwXe2mXaqB6q3jaeg8c4FDnkDlnN
+         lWhpIHvBA9Wb3b7FZeLJ0o7fQB68qFQ3FO7yQlJQAAahQ6XLJJapxyIBx/8C2R4zioq9
+         te6/h2dihtNeP3dp2Gje+0IU+yZ5rfjCG+6Vf2PpxHKpYPcmwC9b9/CceCaQWFhvQ2k5
+         zNAMQQX+PcdcQ/zgvJi53A6AxhXWxj5uVOGy89ktPizF9LuQ50rareQV/Tv2r8CH6BTN
+         047/EvyDkI/uAA/XHOERNeXrYdOPUSnvkzDUWHyIg4la1Ra6OfCx3o/HxPG+rKL1ADoS
+         O/DA==
+X-Forwarded-Encrypted: i=1; AHgh+Rraj3hx9++l4QtO674nV41c/tSRg6NjAeUx2Q8XRAlLV4ezartX7adrDn76QGTG1DvfCgzdRAdJetU=@vger.kernel.org
+X-Gm-Message-State: AFuF++nbvJktJlYHiqSZyaBnu5PYdBFOa1MQP89+Xfs6yEJsMX8uiDZm
+	8NwG74z09yYAbEyaXGx3QVxrTleM/qetSGkqgycVw3AQgkq1EdC042+W
+X-Gm-Gg: AR+sD10vxGgcLgZ+6gxOE04kKRDi8oS/1hUqBwujnX4T1UvNErQfUuT6x2JRYWhWPAa
+	FsDJ7MpvQpqdVDVzPqJ6tjTCyzQOrpVXFkB5NyzML3+at/Ti2Nf9Duzzl778NL9WBXcPMx9a9w0
+	4s9QDTYJzo8IA4bDBhQ6Yi0Yv+3D0zRGQuLWpG1g0vA5xn7sPRTjpndu+R5NWxdKQdkPjQYorgf
+	je/z7QwH3QIFIEWXrImyUKN4snNWDH8eL4V6lXaB3li32ZVv7I2zdXejOhVrI/qO9YqJQ9/J4UW
+	yBeWnKkzsuJwTaNfc2lBfgK5IUYUTf94JJnR0257v+Ml5Kgc02XY3S44t6Ei8ZaZmZP/ly+xZuG
+	jW9d+RartvDjOArVjj1la39ulQNe/+LoxuFOOpxzXwr3LYKE1lb5WPEpfAiXutItLWEFG67Nhr7
+	W9BZnwd2eRfKDjYr2AbdEZ3Ea6RnJhNvz4GMztgthpA9g=
+X-Received: by 2002:a05:690e:262c:b0:66d:1210:422a with SMTP id 956f58d0204a3-66e4c6d46b4mr786092d50.26.1787890737488;
+        Thu, 27 Aug 2026 21:18:57 -0700 (PDT)
+Received: from gmail.com ([2600:1700:5431:250::3e])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66e4ed163bcsm285033d50.16.2026.08.27.21.18.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 21:17:30 -0700 (PDT)
-Date: Fri, 28 Aug 2026 01:18:18 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Thu, 27 Aug 2026 21:18:56 -0700 (PDT)
+Date: Thu, 27 Aug 2026 21:18:54 -0700
+From: Chang Yu <marcus.yu.56@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, Chang Yu <marcus.yu.56@gmail.com>
+Cc: Anshul Dalal <anshulusr@gmail.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	Kees Cook <kees@kernel.org>,
-	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Luca Weiss <luca.weiss@fairphone.com>
-Subject: Re: [PATCH v2 5/5] iio: light: stk3310: support the Sensortek
- STK36C61
-Message-ID: <apEMCqQXyj1tAMoP@debian-BULLSEYE-live-builder-AMD64>
-References: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
- <20260826175409.326131-6-jorijnvdgraaf@catcrafts.net>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: ltr390: Remove stale TODOs
+Message-ID: <apEMLlURRBCmtBsZ@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,108 +76,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260826175409.326131-6-jorijnvdgraaf@catcrafts.net>
 
-Hello Jorijn, few questions inline.
+Remove stale TODOs from ltr390.c. All features have already been implemented by
+Abhash Jha<abhashkumarjha123@gmail.com>'s patches.
 
-On 08/26, Jorijn van der Graaf wrote:
-> The Sensortek STK36C61 is a 3-in-1 ambient light / proximity / RGB
-> colour sensor (chip ID 0x95) found in the Fairphone 6. Its register
-> interface is compatible with the feature set this driver uses: the
-> STATE/FLAG bit layout, the data and threshold registers and the gain
-> and integration-time fields, verified on that device (the ALS and
-> proximity readings scale with their gain and integration-time fields,
-> thresholds written through the event interface read back from the
-> chip, and the FLAG near/far bit crosses with them). Add its chip ID to
-> the known-ID list and the device table entries.
-> 
-...
-> 
-> Assisted-by: Claude:claude-fable-5
-> Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-> ---
-...
-> @@ -417,10 +459,10 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  		mutex_unlock(&data->lock);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_INT_TIME:
-> -		if (chan->type == IIO_LIGHT)
-> -			ret = regmap_field_read(data->reg_als_it, &index);
-> -		else
-> +		if (chan->type == IIO_PROXIMITY)
->  			ret = regmap_field_read(data->reg_ps_it, &index);
-> +		else
-> +			ret = regmap_field_read(data->reg_als_it, &index);
-The above seems unnecessary. Why changing the comparison from IIO_LIGHT to IIO_PROXIMITY?
-After the proposed update we would have the integration time for both light and
-intensity channels being read from the same register field?
+Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+---
+ drivers/iio/light/ltr390.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
->  		if (ret < 0)
->  			return ret;
->  
-> @@ -428,10 +470,12 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  		*val2 = stk3310_it_table[index][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SCALE:
-> -		if (chan->type == IIO_LIGHT)
-> -			ret = regmap_field_read(data->reg_als_gain, &index);
-> -		else
-> +		if (chan->type == IIO_PROXIMITY)
->  			ret = regmap_field_read(data->reg_ps_gain, &index);
-> +		else if (chan->channel2 == IIO_MOD_LIGHT_CLEAR)
-> +			ret = regmap_field_read(data->reg_clear_gain, &index);
-> +		else
-> +			ret = regmap_field_read(data->reg_als_gain, &index);
-Similar question here. What do we accomplish by comparing to proximity instead
-of light? Is the gain info the same for light and intensity red/green/blue channels?
+diff --git a/drivers/iio/light/ltr390.c b/drivers/iio/light/ltr390.c
+index bc031f2c3141..f1bb066248e6 100644
+--- a/drivers/iio/light/ltr390.c
++++ b/drivers/iio/light/ltr390.c
+@@ -10,12 +10,6 @@
+  *
+  * Datasheet:
+  *   https://optoelectronics.liteon.com/upload/download/DS86-2015-0004/LTR-390UV_Final_%20DS_V1%201.pdf
+- *
+- * TODO:
+- *   - Support for configurable gain and resolution
+- *   - Sensor suspend/resume support
+- *   - Add support for reading the ALS
+- *   - Interrupt support
+  */
+ 
+ #include <linux/bitfield.h>
+-- 
+2.55.0
 
->  		if (ret < 0)
->  			return ret;
->  
-> @@ -451,7 +495,8 @@ static int stk3310_write_raw(struct iio_dev *indio_dev,
->  	int index;
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  
-> -	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY &&
-> +	    chan->type != IIO_INTENSITY)
->  		return -EINVAL;
->  
->  	switch (mask) {
-> @@ -462,10 +507,10 @@ static int stk3310_write_raw(struct iio_dev *indio_dev,
->  		if (index < 0)
->  			return -EINVAL;
->  		mutex_lock(&data->lock);
-> -		if (chan->type == IIO_LIGHT)
-> -			ret = regmap_field_write(data->reg_als_it, index);
-> -		else
-> +		if (chan->type == IIO_PROXIMITY)
->  			ret = regmap_field_write(data->reg_ps_it, index);
-> +		else
-> +			ret = regmap_field_write(data->reg_als_it, index);
-Same pattern, same questions.
-
->  		if (ret < 0)
->  			dev_err(&data->client->dev,
->  				"sensor configuration failed\n");
-> @@ -479,10 +524,12 @@ static int stk3310_write_raw(struct iio_dev *indio_dev,
->  		if (index < 0)
->  			return -EINVAL;
->  		mutex_lock(&data->lock);
-> -		if (chan->type == IIO_LIGHT)
-> -			ret = regmap_field_write(data->reg_als_gain, index);
-> -		else
-> +		if (chan->type == IIO_PROXIMITY)
->  			ret = regmap_field_write(data->reg_ps_gain, index);
-> +		else if (chan->channel2 == IIO_MOD_LIGHT_CLEAR)
-> +			ret = regmap_field_write(data->reg_clear_gain, index);
-> +		else
-> +			ret = regmap_field_write(data->reg_als_gain, index);
-And here.
-
->  		if (ret < 0)
->  			dev_err(&data->client->dev,
->  				"sensor configuration failed\n");
-
-With best regards,
-Marcelo
