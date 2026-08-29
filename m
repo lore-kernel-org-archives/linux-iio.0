@@ -1,82 +1,54 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 407F12C3245
-	for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 18:10:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC5443B47CD;
+	Sat, 29 Aug 2026 18:20:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788027004; cv=none; b=q6vJZU16PQL4O5+ZSUimKJLYTeVUZlGruDkZmOv3pv5B6Wgo2yp6ybS3oWhYd7rCOTu2qeBzwOeUl+y9jzGhSBd4QRO4gYB2Ois7faCxDjzlnder6T/dQbmYnZLgA7igpcEbTdN8ASpwoRKPChz/xR6mSjAiApWxypY06epCCoA=
+	t=1788027604; cv=none; b=CsPbLBegdZM32Wr2X1syxIjUBLUrkeR6INFdWDJ5soGrryndpx5UcdNZRBf0A0PRhoduFErv1Gs2hPxopk6oQUZw0BLeaGHhs2yB5XDXDkXt28usIo3qqZ5E+wL3G9tAMyOLp7qF8GKaHFHxltBNErm7aFPQV89y4XdSDM5D74c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788027004; c=relaxed/simple;
-	bh=vVU0OpClUIp4f1XeMs9HBap3ZS/7JuhoLDquig3Yxwo=;
+	s=arc-20240116; t=1788027604; c=relaxed/simple;
+	bh=aDthw+klUlFrAHBVWpJb63/nRyWnWEz+h4Ug65DBDTs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XQ0QNj7hD/Z9exzW69+fnf008XDpfU7v8XwbZT8PBwAqNZZOCQWqJIHs1xn4XiiILFOMY3A21JosgpsDnt0jWbFUXRs+eLy0R6Y4P8H5newD49A1JQZH7GlodP9WgphvIsqL/NT5vaZl9QnTGT4Xo7Pthf4oJ8qiGVUcivyLsL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xgk6TesK; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 MIME-Version:Content-Type; b=SzrHx3T7QdyVzMF5XFSCZKmY2gd8hYGCzI854K8l9CsxZl2QeYSeN7w25ltnFbX9M3D6+YJ/sLMHhLD7PtKuy+8sFolMCammZIieaeQ3vol3y7DCr29SoN5uG2/rkGEyutdA0aarsvbAZj19a4vfJQhTwb6CRAh6L7+UivZ5jVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ji+okeIa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xgk6TesK"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-482f9309813so1258607f8f.1
-        for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 11:10:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788027001; x=1788631801; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2iPoRSblvqH1fQl98XO+rNc9dHksM216Rwuk/S3Z3OA=;
-        b=Xgk6TesKfwz0MGd0ZB/kfwgg0y+gXFP6gX13VcMMk+w2+o3sBZmrq0/zq70sw0Nnjf
-         vkmBPsllUrG7LL5JqJtqWThYpPOLrOQ23UhvP4cRnLz7tJ6gJzl57L/sDJNrUezMzTRL
-         Uuf6BNwbwihV21NffAKEQSyUd/CttAZJ+FPo17vU7eEqOI+zlpt2yBAo0WOUqsHdNw8i
-         IKxnyYehgGSoHratszRrz5DfIYqGI9OugipnNayNpvKjPGC7c9VJkmgJ+yNLcfCE4OyR
-         ld+SEm2RkcFBylIyy7R90aYLT3psctU0+MR0P6/CvVWmNX+X2OxKnlyCakD9Ba4AZYdH
-         jgZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788027001; x=1788631801;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=2iPoRSblvqH1fQl98XO+rNc9dHksM216Rwuk/S3Z3OA=;
-        b=a6GqUgG54hEC3uOGwL67J1RUGaWYZ2XNr9Ki79N7tp2Ncc4ihosswrG7FdvJKkG3F3
-         MBfImDVv1C8SPXuYDLSgLRx8q5hceuSKuRgLkfus9M6RuE/7zXXKopS0HYE/Lb0B6BHn
-         +k+bRB1hIVKSovcAoQGHK7TVVBWU2HLL+woochsXXZ4M2ABzHhZ8RWT4WmeCZmuEPqQB
-         whfJDcM4pSVmnyKmVU+taklc1afAbvCsE1RhPhMvJ1YIo4ARzj+4iWRH1wrWYYMeSjHZ
-         pfQ8AX4IQeU98iOTjDD7KCvG8ii9hU9ZyQcRmULhAU4fedV0j8orS9i1ZR3nFC9ni9gv
-         64KQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzbGKXigC4NYsc5EhcbDt3RIulTSXcmCb7cfr7yMygfZofGEcH/R6XfpfMzGn0tMFGoREop6gAxXZc=@vger.kernel.org
-X-Gm-Message-State: AFuF++nr9zCxYKrar1ABLB45+iaymP/azUBY+t94UZjezjcltdfNS14C
-	d7f+zSLcaAprVeiUlQ43zzQ27u5hRj8bVsFHr0ia3ROzIG9CSPW63V1j
-X-Gm-Gg: AYBFou2xXlFau81sjRSh+Mx0yMB5QuwprwWy2fd+ODwgRGBlp8dO6BCOY3SSP8Bj0Ku
-	pSU5QpJXJ9QjAu9rxHaIN+s4BCaAUWYsBBDvnn/PXSFCo92ZYvi3RZr/4ABEYevhWJlbWc1UGoL
-	4IpXC/PMjwkTDrQ1oLH6r4b8lVUWU103cnSfN1MheAFfqtoGMq0yuqHPwVnxQhBroXC83GrDYQ5
-	wn9lWboVyDlhr705m8sM3M5RZON5MPzL3H7apZpADm5WA9phzs6b5FUMlwofBVUy5Mgk1IvWDbL
-	jct87PFQoFCTC4AgArXEJhK3/+LTyRXOJNkMPDSQ+gO8GCEEJAKXNbY/QEJKqttxBc2rXTDrXnt
-	EcG1WjMsfDEJi1UEs01YfbcHS8oskCO2mXoSGMhriwzkIYrxbHQEY5r1RUkx94aPKX6os0UufSM
-	auI7Uvz7dDiIxEWDy+vULCBlHCBTFrdWrNEkV5CzTA1E2+vVI/n2Vkrm2o2TezNhN5kiaJWRvPN
-	2nM5XhQgljBJLSTafGVUGwwQSVnXeAAeulNeqWZayIaUHLsz5RIvNLKvCUB3SaPkCA+CCJ8WTt2
-	sGqEgez9wqwn27z2JTpLgzxr3Uro2fooxoTEZ9uQPZKqVimXD/P8KZr0+mCfh7fW++rmwKo17lH
-	lbvHesjngE/OD1ChvThU5
-X-Received: by 2002:a05:6000:2510:b0:483:ca4a:6b9d with SMTP id ffacd0b85a97d-483ca4a6d9cmr8743130f8f.20.1788027001191;
-        Sat, 29 Aug 2026 11:10:01 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482fbb32ce2sm12442751f8f.33.2026.08.29.11.10.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Aug 2026 11:10:01 -0700 (PDT)
-Date: Sat, 29 Aug 2026 20:09:59 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Crt Mori
- <cmo@melexis.com>, Puranjay Mohan <puranjay@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 09/11] iio: temperature: tsys01: make headers conform
- to IWYU
-Message-ID: <20260829200959.09e58aac@systembl0wer>
-In-Reply-To: <178802625991.2637008.10673317877221890998.b4-review@b4>
-References: <20260829-kernel-header-removal-v2-0-c67739d5dedf@gmail.com>
-	<20260829-kernel-header-removal-v2-9-c67739d5dedf@gmail.com>
-	<178802625991.2637008.10673317877221890998.b4-review@b4>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ji+okeIa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EAEC1F000E9;
+	Sat, 29 Aug 2026 18:19:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788027600;
+	bh=2m+w6kX81ZJlZopXoWgvGQ7ixn52IRcN/jOsMcSny2o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ji+okeIaCJvrDWsEXiKFyJ/uei71ioQ1XKD6OTbxFcv0dNo2ad4PTMLnndFaaCNeE
+	 N3upzQaiF2GOPujY+MgSAbyOCWVOHY0D99c9R64tw0+rACETL8aP9LfB2oMrWz92Qk
+	 YhCcjeZY4TPhr+JC3y9MwSTREERISIKfKAlYpzsCSVIFMbxLnLXfVWN/7kD3aPszjV
+	 MUV2ydg3qI/mR3wVTG+Q58T84ZMYWl+P6UiKiSm18qA8VqKxF+jKzBmtL1F27hQ0ap
+	 Li9sC34f5lhq8HPSGdIJdjg+jA1NydbnPTQcp76qXS3THMbd96FRgfW651VSx3B7EN
+	 5m76x0jjTGijg==
+Date: Sat, 29 Aug 2026 19:19:54 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, "Rob Herring" <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>, Philipp
+ Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
+ <linux@analog.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+ <jananisunil.dev@gmail.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <u.kleine-koenig@baylibre.com>, "Andy Shevchenko"
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v5 00/20] iio: adc: Add AD7768/AD7768-4 ADC driver
+ support
+Message-ID: <20260829191954.7a5f1875@jic23-huawei>
+In-Reply-To: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -86,75 +58,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 29 Aug 2026 18:57:39 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+> ---
+> base-commit: b75697ef53e435d894833dad2a8c2fa882cb9b19
 
-> > Remove the catch-all kernel.h header, add missing headers and remove  
-> 
-> Seems some fixups in wrong patch as tmp117 stuff in here.
-> 
-> Sashiko shouted about that.
+Where is this commit?  I tried the various IIO trees, GPIO and linux-next.
+None of them seem to have it.  That means automated tooling is failing
+to apply this including sashiko (and I'm starting to use b4 review which
+has similar problems)  Please fix up and send a v6.
 
-Yeah, must've been half asleep when I was squashing commits.
+Choices for base - and say in text which it is as well as the
+commit id.
 
-> 
-> > unused headers.
-> > 
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> >
-> > diff --git a/drivers/iio/temperature/tmp117.c b/drivers/iio/temperature/tmp117.c
-> > index 25bc98e64e48..96252627613f 100644
-> > --- a/drivers/iio/temperature/tmp117.c
-> > +++ b/drivers/iio/temperature/tmp117.c
-> > @@ -12,13 +12,12 @@
-> >  #include <linux/array_size.h>
-> >  #include <linux/bitops.h>
-> >  #include <linux/delay.h>
-> > -#include <linux/dev_printk.h>
-> > +#include <linux/device.h>
-> >  #include <linux/err.h>
-> >  #include <linux/i2c.h>
-> >  #include <linux/limits.h>
-> >  #include <linux/minmax.h>
-> >  #include <linux/module.h>
-> > -#include <linux/property.h>
-> >  #include <linux/regulator/consumer.h>
-> >  #include <linux/types.h>
-> >  
-> > diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
-> > index 14de67ee8be7..3c1f5b6ac156 100644
-> > --- a/drivers/iio/temperature/tsys01.c
-> > +++ b/drivers/iio/temperature/tsys01.c
-> > @@ -8,12 +8,14 @@
-> >   *  http://www.meas-spec.com/downloads/TSYS01_Digital_Temperature_Sensor.pdf
-> >   */
-> >  
-> > -#include <linux/device.h>  
-> 
->  | sashiko.dev <sashiko@sashiko.dev>:
->  |
->  | [Severity: Low]
->  | Does removing <linux/device.h> contradict the Include What You Use principles
->  | mentioned in the commit message?
->  |
->  | Looking at tsys01_probe(), it directly dereferences struct device and struct
->  | device_driver:
->  |
->  | tsys01_probe() {
->  |     ...
->  |     indio_dev->name = dev->driver->name;
-> 
-> Looks valid to me.
-> 
->  |     ...
->  | }
-> 
-> Jonathan
-> 
+Latest mainline release
+rc1 of the new release - occasionally rcX but then you must call that out
+with reasons
 
-Yep, all Sashiko issues addressed in my series locally, but I'll let this
-sit for a while before resending.
+These first two are the strong preference.
 
--- 
-Kind regards,
-Joshua Crofts
+An immutable branch that others have created to allow some cross subsystem
+work in a single cycle.
+
+togreg branch of iio.git - but call that out and say why.
+
+Anyhow, given I have a long queue today and this base commit thing has
+been going on for a few cycles (as seen by sashiko not reviewing it)
+I'm going to give v5 a skip and wait for v6.
+
+Jonathan
+
+> change-id: 20260708-ad7768-driver-10cd15296c20
+> 
+> Best regards,
+
