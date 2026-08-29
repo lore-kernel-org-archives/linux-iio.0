@@ -1,68 +1,70 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86E063B27C7
-	for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 16:26:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 462E83BB116
+	for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 16:26:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788020769; cv=none; b=ghY6k+gR3Ot9i6RmijK55YmVD82WsqW2qiBtwPdrP66SMKs0ZyZUtTMJBdPnvfkMd/DwWLz6hTIc2Xyd7P1QD+KmM6w3Ibz+p+jcF7A0blceqRjus3LkXTANPcwqbs5oshK9UD2HGTK7CFks507jRKULaUzk28n57kxd2V9AZ3A=
+	t=1788020770; cv=none; b=hKee4qIR4hCq0byzsGBr594+JrC46c/7J3DIvfusTCU/LdtKK1HERN0XWgmKfxxgFOeQ5bejH4ORNM2b6abTwEz6Hp44mV/Slmqtq/CWgssvNeCj2Hs9DnZFecPJIQD8R44WymDcGzq8h1rxS9L+RXUgxIjmFfy2vd3NTSEpS/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788020769; c=relaxed/simple;
-	bh=JRj39m44UG7x7nuL83AF6glKV07IjewUYbAQNaqM7lk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=JLO5lRfXpmn6DF9dTuGpdJu6uqOQ2QOgdjlCeBJhn7MUommH8jmqCK1A0+lSIiJx+5/gmJ56J6jhT6RLi79INZKZBbWpPKTB732QsZtogAm0+YabJk1xGzDjm3mFTkRS+XzvJc9OSWS5vGAxpUknTgEHjt+q3SwBBxlAocbo5eE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dY50TZ9E; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1788020770; c=relaxed/simple;
+	bh=VvbFU0orbGq5GXqsfJRwdLZgjt+B5oLCdGxqVHcumTw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=GakunQArrJaklaaHHwGkHhGOb0logdolrJbX3Dh4lULF9GENWN1wk7b6m9yNXroHMaUfxIdVYorRxZjWWK15fakj0KDUnoTvTRFpHp3isx6vJRS8fYgTxJS/hB9CQ9z6vmFPui2b+lh4bhOq1wVTRS4NfMO8QQoTTOj8yNNurAA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ojlh9iKN; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dY50TZ9E"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4953e04ef16so19580885e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 09:26:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ojlh9iKN"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4953e04ef16so19580965e9.2
+        for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 09:26:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788020765; x=1788625565; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=qCJSMZoS0QNd9wZ2SP5uBlAyYhJin6wW0R5sadc6nCw=;
-        b=dY50TZ9E7jYtz27W5ZSHELio0WReBYA6z4GXq+H75nIN1LmsF98GKgA7QdYs4nE/me
-         pDW5u5q8BipNXYnDEDokRQFVCfsCEkjOmGSlMO3XoqKvAv6FeVHSF3/RI/i6gcPnA5HK
-         XhTS3yH/GqjC2u6LDmZgKoaC5tIrmg+qqKwAy+I1/lIBVeOBgwxAMemI6tfJ7eShyZ1C
-         dyPQzoqqnoJs4Tj9GqKMVcl8qswKv07320v/zC4Cf+Ix1/xwj8g/QilaFTBAjB68yqaF
-         vPQsAlzAK+KisroZje1xoIgp0HM+GpD97CA6u1bCuo9xc+nHNGfZnyxi281MIx8ezTnU
-         J9dA==
+        d=gmail.com; s=20251104; t=1788020766; x=1788625566; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=riHBGvJnWFIgnSmmlcRlU+TLt6jZpAQGsDXIjBsIX48=;
+        b=Ojlh9iKNOZUgbzdOohBjAVXJgBPLREvcY8D4u9XqBk/6OqaEGAzMwszuKyQg74h/ht
+         APAqa83MdYoKkx+NEs7uHVOHWVQaR+5gLWi2Qsd7O4rI7BPN3fThT5JIwlyi8GHsvJGD
+         l8HPAMqFM4/MkfgOZGCtzrWBRMIS/XG+8RiYxxgX2549GIOiHCBvwSMXuTP0HgQjl5FN
+         ssuPbOvtXqsQbWPLueu/IbXNQibFt9aV6ajzwyBxXjR9npdnZwCDVsc2Ev/MK4+5WEXE
+         j3GbT5njsWvCjPxo8nSem1wpP5/yfUX3Ijd/dA583BDGnJ6Gr8bfPe0AfAaXs0vraESg
+         RBsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788020765; x=1788625565;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=qCJSMZoS0QNd9wZ2SP5uBlAyYhJin6wW0R5sadc6nCw=;
-        b=CdcAr64eVaXuXNzj3Q1eyrkoLLk9ZvJrli4YE3LV8zrB9QKFNCNLxAFkHp5Uk/+xGT
-         9udZaDKMbK0xH3lweiuJoD/y8vsAc2Px+3itvUK8+H6c6KkE9/Cw9J6AmGbiqz/x5Swg
-         yYcZw8MIXP1cCXm+NSQ+K1aNQc2+l8VBfrPwdWpl0cye6zJBuRVa3CyGhHnTRcbIaaK9
-         2TArIaDaDb1pJYJPMtSGbmYEGKh/g2kTnp7rLG/pNwAkhZncXKnUIk7w108KY6sJe7RC
-         gHhZRJGRjvhnxbGiY0Zkdnfr/EhOcmjPTT9ZZ14BAYVkZYgKow45jIjPUVpJ04xd9lsd
-         gkOA==
-X-Gm-Message-State: AFuF++miLXr+w9A9/w3FicW0xvxwFtg2MLusHDq2GZGQG5haNdoYidj4
-	e5E/mC9+UMVP8XjGxBCukAPbsJC+7W52M65THFaBWoPG7MTe6QIef0N0
-X-Gm-Gg: AR+sD13Y+8NE6gwB5E94nf/TiK+s3z9GjrRDcPaFosJ0rrmAe0MGN+ch4/MjWO3gaXQ
-	EoIIb1+YcQRSYfVpdm0Gv3fPh9khcpvEjf2y1dVwc98jNOo3bmeuIPmyqjOaIrCR1K9AjHBbrVP
-	qfVRE1OxA/scX2EB1RcqGRM9ekZhIO67s+zqyDhRKzDsyizI7GtCWaw9bCk9I2lErBUM4v+PFV/
-	OLi8sl2cKTKoAkw0QfyZ58glnR+4NBNvMmDFS/QVWKIuQHYxmGOZyd0RAKcx0qURkmaqqN2WqQA
-	nDJXiwI/EcLzeGArvRTj5Wb+hDUM3MX+zZ4V0HVw4TR+7dhpfqpNr4nH8DhRq1PspeUS/Nb/t+W
-	gnYU0ir9ipyjKI0LU/Dz2onCdmvnyEwRydBc/9cw9KH6Z6TKzqc7+Z0J0JXe/cyscgVGT3rD6eQ
-	GO1jCxu6mTal/GvxjA3QhUB7s8rgK9M/FWezJ1QDt3vM/x2qEEfNIOE3cF968og7sTlwPGOb0SY
-	jVertp6CHfba2tUzlBPPra45LpS63/xCLN8n0hW8OgUXcaSd8IEE1zYbgwnehfa+zCITSJkt7OW
-	fenQ+DYCrB9LIUIIdqJHFyCUR5QJYve/N4Gk/IBPkflL950CyvdP95prrL39dqjh6LogbiyWOel
-	nKotPzopNob505kJF3TfyRRt8
-X-Received: by 2002:a05:600c:3b20:b0:499:8704:242c with SMTP id 5b1f17b1804b1-49b91bd78cdmr189918175e9.0.1788020765322;
-        Sat, 29 Aug 2026 09:26:05 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1788020766; x=1788625566;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=riHBGvJnWFIgnSmmlcRlU+TLt6jZpAQGsDXIjBsIX48=;
+        b=bbXHaVqQ607miE2b3gBkRB9UhjpIk8WiiLgoHfHUJOEdYei0RPXfs3BMC1RMN8ws/Z
+         Q7LR8uPTQsXn6jV7UUZRKLodXV32A9716C8x+yseJ4UsEZHxeQdij4w0/t0LUqHKgYj/
+         VvAnPmrBw8B6j86K4heddzkecAj3pvU8Ji1ozJbottxZ0jIq27QYJpmhyDe90uZQd07R
+         bdog3GR0tHkDnGp4Y3pNAB6F//B6izOD8D2q2BFwsh4WKsuVXIdf7aQAXxgXKq89FdqK
+         Ibx++7MoVMOk0Z8IdZ6lI9NvKdfMBsDze58obO0Hs2YUQcliVN0ZTdC3/OacJQIbbCeg
+         178A==
+X-Gm-Message-State: AFuF++lRAz5DMHWDWlCk8SWw695UgrFwi6mylnLJ24MKKwyTHCYfC1SY
+	KXQXP3PH65Qdq4SZZP3caNzKcPR/iyzzPZd3g15A+MB0dj+qWbrv4dnE
+X-Gm-Gg: AR+sD13uU/4jfNNYmePGgS36iuwiTJUQ577QxdV9CFSu8gIzZJte0aLRNslHG5TpowT
+	HoFdPrASfYzCK2dRJz4G6VW8K9njhxV9bYUwn3r7rzKHHYU+xNyqMDmUz+4IlbsXimSN9UvECpx
+	8oxjncnKjBMw0QZy93QGHCx4rwKezMKSw+d5vPHWzfZcjTYEF+LjmFzonUix4BNpPuHm4AaQoOo
+	yGrK79H4iDz3JsYoVP7WiJanW5wEIeFF/dIr46GSB5kmhN5YmIQ/sB12pFSCEjIEOVr+1vMuyyd
+	O0Cf6cVGKWjTNigQm5PuR5WaEmS8J337Jug5AgC17opfAMa8+K+AKSdfMWW7QIk2i8Zgjz55W7O
+	nVu++rXGxb8gMceSxkPlz6F98TqmmUzRiXjRXHZRzzY9GDvBqb0o0EDMWZK+obanEV5mKPqdRkd
+	OtKvIhAm6RjPJcL1vIVw4bZ/dFpbCisbuwR4psW7gpQyPgdPxj2xupI17rZSGx/XXc3z0a7/rC7
+	Ly3RxXvaC0LiJmDx7B12fi8w6xhw0/35eJFowSABtLIG4dKaZj3kVG1p9OgfBH/1TkVbDs7WpCy
+	pHN4BW3KpP60zi1DNuJTP1WeLSFBGdotDhWOVE4YW6PYgqQAx1BMBX3orvjmoET7QIil53GfdBo
+	Lacsg1bcuOD8JrmeUTLpYkVvYrg==
+X-Received: by 2002:a05:600c:34d2:b0:49c:cbad:1c44 with SMTP id 5b1f17b1804b1-49ccbad1cf1mr101316995e9.6.1788020766117;
+        Sat, 29 Aug 2026 09:26:06 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b92679be5sm137861705e9.3.2026.08.29.09.26.04
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b92679be5sm137861705e9.3.2026.08.29.09.26.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Aug 2026 09:26:04 -0700 (PDT)
+        Sat, 29 Aug 2026 09:26:05 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Subject: [PATCH v2 00/11] iio: temperature: make headers conform to IWYU
-Date: Sat, 29 Aug 2026 18:25:57 +0200
-Message-Id: <20260829-kernel-header-removal-v2-0-c67739d5dedf@gmail.com>
+Date: Sat, 29 Aug 2026 18:25:58 +0200
+Subject: [PATCH v2 01/11] iio: temperature: iqs620at-temp: make headers
+ conform to IWYU
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,11 +73,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WNyw6CMBBFf4XM2jFMfQCu/A/DotABJgI1U9NoC
- P9uJXHp8pzknrtAYBUOcMkWUI4SxM8JzC6DdrBzzyguMZjcnPPSEN5ZZx5xYOtYUXny0Y7oqhN
- 3jqrCFSWk7UO5k9fWvdWJBwlPr+/tJtLX/ormTzES5sh8oIbMsWGiaz9ZGfetn6Be1/UDlXWqO
- roAAAA=
-X-Change-ID: 20260821-kernel-header-removal-d95efd197d78
+Message-Id: <20260829-kernel-header-removal-v2-1-c67739d5dedf@gmail.com>
+References: <20260829-kernel-header-removal-v2-0-c67739d5dedf@gmail.com>
+In-Reply-To: <20260829-kernel-header-removal-v2-0-c67739d5dedf@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -84,60 +84,60 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788020764; l=2113;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788020764; l=1382;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=JRj39m44UG7x7nuL83AF6glKV07IjewUYbAQNaqM7lk=;
- b=hR/2meirejwqk7Aum4g7w7kis+9c0lVjbw0i7GaYrzwy+BIaUw6lXx4kOmrmf2Na2JOM31Vup
- RuVl9jONATBAbzxenstawDr+1hGf5cDVG6osRsZQqd2YpnHwGYlRxVA
+ bh=VvbFU0orbGq5GXqsfJRwdLZgjt+B5oLCdGxqVHcumTw=;
+ b=AiTMY5GdSteZUcLB1xTHEg8sc7VLvWP1T3Xo7eB+Yghlh9Mk1Nd1+KHGocOaYVPuinSaBUO2j
+ IS4SeczG5JiBC8UPDpBjo0e4vJ2xH26dDBWyhGipQSpjy5Cp6m1IJQJ
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-This series removes any instances of kernel.h in the temperature/
-subdirectory and cleans up the headers in order to improve readability
-and enforce IYWU instead of relying on transitive dependencies during
-the build process.
+Remove the catch-all kernel.h header and add the missing headers to
+enforce IWYU.
 
-I had Gemini generate a summary (a bit more verbose) of changed headers
-under the --- in each IWYU patch to improve the review process.
-
-This is part of an ongoing effort to remove kernel.h entirely from IIO.
+Additionally, separate the IIO specific header from the generic
+<linux/*> headers.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-Changes in v2:
-- Add missing headers pointed out by Sashiko.
-- Swap <asm/div64.h> for <linux/math64.h> (Jonathan, Andy).
-- Squash small reordering patches with iwyu changes.
-- Link to v1: https://lore.kernel.org/r/20260822-kernel-header-removal-v1-0-ee31b124be11@gmail.com
-
+Header changes explained:
+Added:
+- <asm/byteorder.h>: for endianness helpers
+- <linux/array_size.h>: for ARRAY_SIZE()
+- <linux/bits.h>: for GENMASK() and BIT() macros
+- <linux/types.h>: for fixed-width integer types (u8, u16, etc.)
+Removed:
+- <linux/kernel.h>: catch-all header no longer needed
 ---
-Joshua Crofts (11):
-      iio: temperature: iqs620at-temp: make headers conform to IWYU
-      iio: temperature: ltc2983: reorder headers
-      iio: temperature: ltc2983: make headers conform to IWYU
-      iio: temperature: mlx90632: make headers conform to IWYU
-      iio: temperature: mlx90635: make headers conform to IWYU
-      iio: temperature: tmp117: sort headers alphabetically
-      iio: temperature: tmp117: make headers conform to IWYU
-      iio: temperature: tsys01: reorder headers
-      iio: temperature: tsys01: make headers conform to IWYU
-      iio: temperature: tsys02d: reorder headers
-      iio: temperature: tsys02d: make headers conform to IWYU
+ drivers/iio/temperature/iqs620at-temp.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
- drivers/iio/temperature/iqs620at-temp.c |  9 +++++++--
- drivers/iio/temperature/ltc2983.c       | 15 +++++++++++----
- drivers/iio/temperature/mlx90632.c      | 10 +++++++---
- drivers/iio/temperature/mlx90635.c      | 11 +++++++----
- drivers/iio/temperature/tmp117.c        | 10 +++++-----
- drivers/iio/temperature/tsys01.c        | 16 ++++++++++------
- drivers/iio/temperature/tsys02d.c       | 11 ++++++++---
- 7 files changed, 55 insertions(+), 27 deletions(-)
----
-base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
-change-id: 20260821-kernel-header-removal-d95efd197d78
+diff --git a/drivers/iio/temperature/iqs620at-temp.c b/drivers/iio/temperature/iqs620at-temp.c
+index e2f878d57af7..3a3b1f256585 100644
+--- a/drivers/iio/temperature/iqs620at-temp.c
++++ b/drivers/iio/temperature/iqs620at-temp.c
+@@ -5,13 +5,18 @@
+  * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
+  */
+ 
++#include <linux/array_size.h>
++#include <linux/bits.h>
+ #include <linux/device.h>
+-#include <linux/iio/iio.h>
+-#include <linux/kernel.h>
+ #include <linux/mfd/iqs62x.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
++#include <linux/types.h>
++
++#include <asm/byteorder.h>
++
++#include <linux/iio/iio.h>
+ 
+ #define IQS620_TEMP_UI_OUT			0x1A
+ 
 
-Best regards,
 -- 
-Kind regards,
-Joshua Crofts
+2.55.0
 
