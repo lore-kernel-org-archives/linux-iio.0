@@ -1,153 +1,137 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97A1415F1F
-	for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 16:26:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 514AD3AB496
+	for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 16:34:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788020784; cv=none; b=Ra6Eoo3gcuIVjiloIZeh0n8yVWx0QeHQaz+AxaBuyGO7tJSoF9YJaMnLNusMRn5P/4ZUw8gFS3F1iDof5k5KUScmaFb0Kh0oMR3SCildrNzoXup6d+wEXn9eL1h54GLXemhL5duz9fspt7cMrlpmwSGMbXLbTAlzbL4e6qNZ698=
+	t=1788021288; cv=none; b=G5NNWm+46QKZpC6TC0vOSPVcAzvnRewlfTE81TemT6/DcDYfVZQkSbxMBOsx0ridZns2B+0a+rBdkekA93sd25gUNBHk0+2SmliS7B05t30KlOBsHzRaf1wbI8cwB+fW9hz0+QKJ1xT9D/F4wuConVbGMV84y596tQzv1/ZpCGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788020784; c=relaxed/simple;
-	bh=sQVJMp3C2+a4ti+a7qwKMOTUI8kXgqbTgt5wFTn5j2s=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ciD3t6BXnpkeTPVC4zbim22iA6e4iPLOl9Imf6jycVXdJE2GoeRU9u6FmIxglB+unIppn2aL5hS9CMj0IzA4MMUCGX0G8s+JFRKswF+fLg6tqA816E2utuupLycF0xPbFZbdSst+kDB1kH136/X5zeCxAnQMxASHK8KYLCjeHJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E45fgCy4; arc=none smtp.client-ip=209.85.128.53
+	s=arc-20240116; t=1788021288; c=relaxed/simple;
+	bh=hVExYRrLgPRcRJFEdHlm/lR6vy7PMGHxSW/wkJhOTjQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=okrsE9CMelu6iXS+qRHZCD1gyEm3EVnROs0M5YKBPKigWYWk3x8bZrBjUEM+nmzbdnLe44JzsDMpr058XPqH/hQamnWFmATalYWfksPngxexYhHooidWr/NFBMd1CMrxcRaqONuKettxoAWKeZgf7VuY47ulDheJ31zkS+yCsPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uu5klKV5; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E45fgCy4"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-49a97714f5dso14827015e9.0
-        for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 09:26:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uu5klKV5"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-49554ebb87dso25845275e9.3
+        for <linux-iio@vger.kernel.org>; Sat, 29 Aug 2026 09:34:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788020773; x=1788625573; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=37NQ1+thP2Lwc8BjlF3YW6iY09VuBpxsUD1pSnN03YY=;
-        b=E45fgCy4JYJ2S2A13Ute6L/t7dv10Mjz8O2SopdR06602fNo+kJ+7L3Kn8edASIt9H
-         1o0urLvSr1aV8r68KeX1rdtXyVkU0mWDmZXUDtUldm030M9fAguxbJeKnkCFaXdHdrCT
-         VUTFqyawcFoduB3H6vPnsQkl7FoKRqDe+gRDa3SL5gWKWpQQ9ByY/BRaSuH7IW+5JD2i
-         fJgSWYxP66rOuAu1bdZmVUWG24XJRTpT7cthvuZl0Evled7J3oySAXDi5l6R2eaO29fR
-         NCkv4FwMT+KPgyGioEuDg64dlU66QKbCAMYIwewNC+aVrUjK4MbxOnAFvQJOJNh1QD1Z
-         dSWw==
+        d=gmail.com; s=20251104; t=1788021285; x=1788626085; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=nZEugiUgDUntzd2j7JleFMnc4ZUpEg9vc3iXITyX7q0=;
+        b=Uu5klKV5qRiu0hAyYLvZsWq0BQJXiyHuZ2mECKoz9frWtMCj2jJX3CpZbUi73pgaEr
+         bhYsYciWlfDjYc+qqJwBt1sAD9dMnXXEahIlMcW6aNgwZW/dSJF38YapjvHM/ba1vQRN
+         rTdGPyfgh8sV3tjPDRYSuZphr43YiM/0mkmBQqRLMPFVJftosQGM5SCzECaI9q/pJpX0
+         t5ymyLIu10geK7rW3k1QgDT0iyastsz7TrXymwtwlrr0MtZkE6zBUB/ZuS0DqQtypE/A
+         MWyLnapuY2rh+MI9UPH+uUEJmwWfGBFC9NjBD735wT+8UySN2LDGNNE7Ch31BK3XhAJo
+         pK2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788020773; x=1788625573;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20251104; t=1788021285; x=1788626085;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=37NQ1+thP2Lwc8BjlF3YW6iY09VuBpxsUD1pSnN03YY=;
-        b=iE6MarK81+zU6odcatNT7S/0zI37stld6GUZJ02EXi0Un8Q78xOMrQsufuabLE5EB8
-         j2RZ1T3MxRc38PTD/Y9X7zahpFFSJ5Oy0o0gmFs5JHic/hfi+4D6JF57+j1Nhe3Nx+/f
-         r6kgQ2EH70QCWCa8re/a/JtfObGiU2F7FXXao908etXn/DOs6StBayOkcocCBMOK0fp6
-         mdwGmNd85/9500newIF6P43byXvuNr+iEpimnqu1dJg52yGxxO1pcZ+oiG73+VYEWuID
-         Af2nfrVpJkXi2fqETLAJnzJkz1csFaLJ85sM/PvmDAedj2Xs7rtj2YzChriqWy74n/Ym
-         M3KA==
-X-Gm-Message-State: AFuF++kxusPWYV6xeW8ggYi2fnLENMtrwM9ZHIpA4MUkp/NkzIf6yBgm
-	IoQpzyvIgep++bNjxhui22Rf2Lx/ucY8WqHKkT6wEGQ6SboSsZQEOHPC
-X-Gm-Gg: AR+sD13XgW0E+upzgA5BC0tyxIGM9lxHZ03ZuaHzcwf9rvbjY48AggXbF6RlJOjJL+h
-	S2mQLhP5846ghlr2ttLTToIsMcJjAPRJXmXLJGSCkjnk997NdFGOIczZx40Use6YmJQXsWeNG+v
-	SWpx+xZ3vtb2t1VhL+Vy70dSe1nUGE5DP1KKRPKSLFJYSRwZ2El+zhBvHlhyb0w12jrYX6EWmvq
-	tHy/xOQfIIvTwv1OExnZRLEakhKpEGnJqqVsKBj4Q0V2Z4THYteJTKrPVIjWPAoS6cIrBEstLhv
-	4DDgxKMdNfuu1QroLMe/GA0un4t4gh3g8AG1lneexUFw4rXcKKVpoBEDmM0FGOpO0P2mU5BJupU
-	eTAAUTo2i2tg1Ya7E1rfQrKlRVD+q1Sjty8EiNnMrsLIgh1QIkjgZ/UVp6/TDc+ugi7Cy2x+7gi
-	a2aaEKBz8Ij7/vNpgV9Dgrai7MX683hDorZ7XdieAeehr3XhypMTTY/iQDFxmXnO9qBjOdqpS5j
-	2reKTpKGb7WiAT69wBqZksPlg3mEmTWZrSEZ0WhSayZj6q5a1/XEpoK/ks0Oxr+7rG6c595RSk4
-	4yS5elbIgwAu46APdseIgzG7WWbzV1R0zDRFqVsj1yNQSSVdLjHk8v8x8ZF/o118iTrTFol3PKP
-	+bIlIYcsjxXLLCnuOw5j2bP1wDdxWuelc078=
-X-Received: by 2002:a05:600c:8b86:b0:493:f5bf:4dc6 with SMTP id 5b1f17b1804b1-49b91c2777emr259876155e9.7.1788020772776;
-        Sat, 29 Aug 2026 09:26:12 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b92679be5sm137861705e9.3.2026.08.29.09.26.12
+        bh=nZEugiUgDUntzd2j7JleFMnc4ZUpEg9vc3iXITyX7q0=;
+        b=J/TLKJM8tNbHYUr/K8SO9TY/ARjARc1HBTxQV54GVKgX2/YWmyQUHYZK0F9C1bwORD
+         BVCOyvGI2nsKwLdeNytOFGV/0/xSGP+K5zxx0ijL8QrU/2hweh9oPrf68D1xv1z4c/AS
+         VDtsQXWRe/+swjg2IR+0191cbw0g9KqBajvrkVAm6OmNHhYqEr98qJJd8FZBiYi+bUyx
+         oZ0jufeZItbQo1u6mMRhniZlYlw4gcqHVW5Gpiq578PuKYSXmiPlpxwNdoHYPT2bDjru
+         sOpoBDKy2NnfuddO7prCKzpZ6MTYerIUfFLIVxyeYb4BkT+zNAHzpHmZPPvXLfNbU1n/
+         qYEw==
+X-Forwarded-Encrypted: i=1; AHgh+Rra1iUCe/2fcA08C8fm0bZTO5jVNuBc3v+E+xjFa5X5K6UpGzmMzKLmufTzoYB6OHsh1piJsg9PqsU=@vger.kernel.org
+X-Gm-Message-State: AFuF++mmEAvlgpwktK6WvYDxQk8lgX57QpfM+95u1eT/CERKuRsXKXsj
+	Ozosi78KHLdyAaF9QEk66oaVXSzzmAsX+a2mSTp9qLdWn/8XIRnMHePd
+X-Gm-Gg: AR+sD105CiTaquzoQz7IukWlyO45ep+dA614cnMWx5g4s96ZKrbMrL2/fTHTMOMGGz9
+	ZhgY1vZgxoTcKrwnY0ZJkTGKskj6SGP/vBsxT1lXMdXAHSHu8VCQA2LTreeTOoYFRefBWXBiSfO
+	VoqK9Moee2KpuY1AlZRKFoVA/tTEIXmHFiu1OTO4VBxs4p86EXtjY6h1BXO8FOQI+nPbgiTONZC
+	ik/071Wh1AoM/Il8V2sojWToX+mOZp/jhCCLuF/6g09TOv4t9u2cI2vReaiekuc5DOnDdN0pTDK
+	MXfbPlDb6GwtfYd/aG+Bphw4dRvMnHD1af2vDciWRNjTNBd3ja8CYG9ep6oIWfakNO2x65E9tkS
+	8C6GR/icTtgdUA2lucv03ifmsioOyo8vc8cNVJXOnoyXozfHS6K5JZ8PB2qrJiAza2cX4gFQK2m
+	rvqlURu6t+7avQaWouzesPmcI3qTC40Wl3QysIzQCd7O+6vJxY5ER9zdoZCDcdBcpEZsfMmfMMD
+	UR4FCK90wIUgOAU4v24Vggj8A7xrPyxfZ6mW59psVef1E9lNagdQxmkwC60Did9rGU3/rKeHqqA
+	1BpFmhIdYkc//1pL8PBjGZx/VMLmGq6tYOP4Kpquq3PnGLsXq5yc5WQqMsFPSsIBUalNVof4mfu
+	WEn8hcgZ0dBj3f5n47lLR
+X-Received: by 2002:a05:600c:c08b:b0:49b:9202:6f80 with SMTP id 5b1f17b1804b1-49b92027118mr191962305e9.6.1788021285069;
+        Sat, 29 Aug 2026 09:34:45 -0700 (PDT)
+Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b4e2c1af7sm233169495e9.15.2026.08.29.09.34.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Aug 2026 09:26:12 -0700 (PDT)
+        Sat, 29 Aug 2026 09:34:44 -0700 (PDT)
+Date: Sat, 29 Aug 2026 18:34:43 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sat, 29 Aug 2026 18:26:08 +0200
-Subject: [PATCH v2 11/11] iio: temperature: tsys02d: make headers conform
- to IWYU
+To: Cong Nguyen <congnt264@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Matt Ranostay
+ <mranostay@gmail.com>, Andy Shevchenko <andy@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: pulsedlight: fix iio_device left
+ registered on PM setup failure
+Message-ID: <20260829183443.3b5ac19f@systembl0wer>
+In-Reply-To: <20260828105909.2425439-1-congnt264@gmail.com>
+References: <20260828105909.2425439-1-congnt264@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260829-kernel-header-removal-v2-11-c67739d5dedf@gmail.com>
-References: <20260829-kernel-header-removal-v2-0-c67739d5dedf@gmail.com>
-In-Reply-To: <20260829-kernel-header-removal-v2-0-c67739d5dedf@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Crt Mori <cmo@melexis.com>, 
- Puranjay Mohan <puranjay@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788020764; l=1873;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=sQVJMp3C2+a4ti+a7qwKMOTUI8kXgqbTgt5wFTn5j2s=;
- b=PDDTE3Ssmq27mEZddwEE7tj0c4EuQj5HRH2JegwaoBBBOj3IUVxhfhK4J376cavbir2b459rP
- hz9V/vF1eBPCLtlJC++UIqVKOpVI4fKZ7XJfCnX1BGjsXhhMRHuzLUg
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Remove the catch-all kernel.h header, add missing headers and remove
-unused headers.
+On Fri, 28 Aug 2026 17:59:09 +0700
+Cong Nguyen <congnt264@gmail.com> wrote:
 
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
-Header changes explained:
-Added:
-- <linux/array_size.h>: for ARRAY_SIZE()
-- <linux/bits.h>: for GENMASK() and BIT() macros
-- <linux/i2c.h>: for i2c_client and i2c_device_id
-- <linux/mutex.h>: for struct mutex and mutex_lock/unlock
-- <linux/sysfs.h>: for sysfs API
-- <linux/types.h>: for fixed-width integer types (u8, u16, etc.)
-Removed:
-- <linux/init.h>: not directly used in this driver
-- <linux/kernel.h>: catch-all header no longer needed
----
- drivers/iio/temperature/ltc2983.c | 1 -
- drivers/iio/temperature/tsys02d.c | 8 ++++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+> pm_runtime_set_active() failing in probe() jumps to error_unreg_buffer,
+> which only calls iio_triggered_buffer_cleanup() -- it does not undo the
+> iio_device_register() that already succeeded a few lines above. probe()
+> then returns the error, the devm-managed indio_dev is freed, but the
+> iio core still has it registered: the sysfs/chardev nodes stay live and
+> point at freed memory.
+> 
+> Add an error_unreg_dev label that unregisters the iio device before
+> falling through to the existing buffer cleanup, mirroring the teardown
+> order already used in lidar_remove().
+> 
+> Fixes: 4ac4e086fd8c ("iio: pulsedlight-lidar-lite: add runtime PM")
+> Assisted-by: Claude:claude-opus-4
+> Signed-off-by: Cong Nguyen <congnt264@gmail.com>
+> ---
+>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> index 400477b4c740..8a9ee21f2bf6 100644
+> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+> @@ -294,12 +294,14 @@ static int lidar_probe(struct i2c_client *client)
+>  
+>  	ret = pm_runtime_set_active(&client->dev);
+>  	if (ret)
+> -		goto error_unreg_buffer;
+> +		goto error_unreg_dev;
+>  	pm_runtime_enable(&client->dev);
+>  	pm_runtime_idle(&client->dev);
+>  
+>  	return 0;
 
-diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index b8deb9aa9d48..6c4de6854683 100644
---- a/drivers/iio/temperature/ltc2983.c
-+++ b/drivers/iio/temperature/ltc2983.c
-@@ -11,7 +11,6 @@
- #include <linux/bitops.h>
- #include <linux/completion.h>
- #include <linux/container_of.h>
--#include <linux/dev_printk.h>
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
-diff --git a/drivers/iio/temperature/tsys02d.c b/drivers/iio/temperature/tsys02d.c
-index 377e27b45fdd..4946d0b14632 100644
---- a/drivers/iio/temperature/tsys02d.c
-+++ b/drivers/iio/temperature/tsys02d.c
-@@ -10,11 +10,15 @@
-  *  http://www.meas-spec.com/downloads/Digital_Sensor_TSYS02D.pdf
-  */
- 
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
- #include <linux/device.h>
--#include <linux/init.h>
--#include <linux/kernel.h>
-+#include <linux/i2c.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/stat.h>
-+#include <linux/sysfs.h>
-+#include <linux/types.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+Hmm, you should just return iio_device_register() here instead of 0,
+as that should always be the last function called in any *_probe()
+function.
+
+No need to add a new label then.
+
+> +error_unreg_dev:
+> +	iio_device_unregister(indio_dev);
+>  error_unreg_buffer:
+>  	iio_triggered_buffer_cleanup(indio_dev);
+>  
 
 -- 
-2.55.0
-
+Kind regards,
+Joshua Crofts
