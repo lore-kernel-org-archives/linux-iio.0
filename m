@@ -1,123 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2E8F1E51E0;
-	Sun, 30 Aug 2026 07:12:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D34025C818
+	for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 09:32:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788073972; cv=none; b=KS4i3MXmW1EuKB2W1UIrPclWS/yZRoACzFGGaboMqjOzXxdOaHuHXgKUUYufqtgRF5/zVw5gZV4dgtIID8lWvIVrZ4prtAKPlgutT5YxYe5pQo9XjaQlxjY3cCs9YRGohLeDCx9JW9Q180rkJwrplgudDQy2QaM5TefttNwEH1s=
+	t=1788082340; cv=none; b=Y+KzKBC27Nmp/T7t5gZn1Rv7oLOhAZP2/5vI3DSssyn92JrZRtMMOwHSOtJseV+PEqX0ck3LK/wkqtnZWYfiI65feo2JYADbcNSRAju7jCm1U7ZPaVshGcRRhza/hRaeokRQisgNBeH1znBjEoPdSWrATjxZthiNomIJpk+nnnk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788073972; c=relaxed/simple;
-	bh=iazp0KDG9XO8tNOtwqgDz8WtQg1nj0t2IAFOstoA9/k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=imnDZDI2wVDGegc1//0w6dwi2oUDIrgWtc54S21w5W3cAXeJJ0Cez6n5aSWLOZZnpTUQzmNac20Ju2cmRUAxIcG1/RAKgc78tmUeS3Kk0gPNpkk+N0z05Sln/buk3SrVfdljFdtPcCGDyEdwwLtEAFEJ2JFvRi3lmbpb/K3lDf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZNkYkutc; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1788082340; c=relaxed/simple;
+	bh=dLTflUZhWO3k4/Rm9ZG0yWNmYzlAYv2sf6OvtYCp+v4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hTegTSXfjIcSaSOb56ZaRRSXzoFuB3Wmo/s/6ozvBspyRUrHrCxjrqSd7nI2YjbyzQ3cuFRHfEaSDel5Q5pyG/kzPs6cLjz/RDdcVcyfzXJQX9bNEVAMXHePTifWM6iNonJYuKipTIiUYYQiGsCJ92aQqhh1rrjDRKRIq/k/wzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q6jjHk5t; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZNkYkutc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788073969; x=1819609969;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iazp0KDG9XO8tNOtwqgDz8WtQg1nj0t2IAFOstoA9/k=;
-  b=ZNkYkutcT5Ppb/vmRYPAY43wadBKyCzBA0BL+1jFoou941l6jkqFI5fe
-   b5syLEVT2eKqJW3OD/AKDZhAE0a0DE8hjPL55YySNY1ZkiZfkAZ42N/8v
-   l+/b4wHTGF1A9cuQxeYNNUK/sZbT4cbxoJeC6JD/5v49HeGrODMUSyz5H
-   goRBI2jx6LsmtmHmlWSg/bgKRYhxyhsXh55Lh3xC6C/qkYZavol9OoKrM
-   Lzum2Tq+ofOEJUfuTLdt3i21JYgmUrvF2hSyRPqW5lHgkLNe5HjirzYea
-   pZQmXkiLeZ8t7KZWZ3AmKQtP42Lm7PsmjA7SqIRLyAfCRvSpbBGU8dHgg
-   g==;
-X-CSE-ConnectionGUID: hi67F+nyTOe78bFGqoNR1w==
-X-CSE-MsgGUID: QC/cj4nkRUC/ghDIpFajZg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11890"; a="92200426"
-X-IronPort-AV: E=Sophos;i="6.25,251,1779174000"; 
-   d="scan'208";a="92200426"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 00:12:49 -0700
-X-CSE-ConnectionGUID: IxVKxOtaSNCL6aggQofF+A==
-X-CSE-MsgGUID: 2Ag3hX7cRYC1ynJibEgjHg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,251,1779174000"; 
-   d="scan'208";a="262412193"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.243])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 00:12:44 -0700
-Date: Sun, 30 Aug 2026 10:12:41 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Janani Sunil <janani.sunil@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Michael Walle <mwalle@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v5 00/20] iio: adc: Add AD7768/AD7768-4 ADC driver support
-Message-ID: <apPX6ZeomgPd4WPU@ashevche-desk.local>
-References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
- <20260829191954.7a5f1875@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q6jjHk5t"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5b5e18f0439so1971058e87.2
+        for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 02:32:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788082337; x=1788687137; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=+ZJhRwyLAW0jsfUB61doEJc+nQrzQWlaMJNzh2taQBY=;
+        b=q6jjHk5tjBi2KfNZiphxGu4V+MHzvp2OA4cMZPn6mxe9NHLhBuXIAVPrY3wOoY2BGj
+         Eno+5z0BTjnkl+oNx5IWzzpUccjOqQT9VLDraWFwDxDv3JWoWsyLva7RYaMhNkazunWC
+         SnO3x+Gt9HbaYgg+UQTjkUYfSmriXvli0alVElQcmzXfKarStxL1/Dx5W7JdbCqbb0li
+         Lbwv7HYkWWFBgDxcGfyKcfPr0ftM5nvDyRpnHWcffPmM7T4RVC6EOX0yM0bHLAbRe8Tk
+         Bu+TfZ8sAlRGV3uLT9ZrKViTmRD3ise4UqTSfq3q1dPu+fxYRBaZ3T1HHpI/pKM5TngZ
+         2jrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788082337; x=1788687137;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=+ZJhRwyLAW0jsfUB61doEJc+nQrzQWlaMJNzh2taQBY=;
+        b=QK/tTrc/a1Pr8PZSIsWSw8rVP1Hx/j9y7EnHgvHIIio/i4ykW+ZXjylFU8Byruf1lJ
+         78XRnT8yu8y13NJtHb8pv480J0vIJyt/yFDbo092LX8AsVvvRhfWV8wJt3FEqdTeZz/m
+         NjpSjbO0YT9uPpB47XYTTATgBgcUbr/fF9lWubsAJjDk8ow7m/dhezh+ZrP+F1IkcFv2
+         v06Hudjpa2NxhLLFoG+fAFhJLQ4sMmUp4aeUkBtx8z7pyU9NP2umfBxVXjYVbGRSfoni
+         A++9fjah3sO7ynaawxZMdMsRjw/7IvY648KenGeIIArlMEaimnqWvyYjGUlOLtrM9RfA
+         WWTg==
+X-Forwarded-Encrypted: i=1; AKwUvBxSrIsnwd2Dtjs3wnoICQEPf/8VksZBoFfa332KJkxgT+VsL3ut4W2TO12VMgglJMTVSRhMDtl3eRQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++kDo8VLTUTM1hxQjXu/MWq9VX0+ChZKtBOj+PuUXshn/qacrdwP
+	jjdjzkvi/CehyNMzLYD4NSmDRK3davUQciQKWoDwH+hKFL179ijE8Oi7SzCPaow9
+X-Gm-Gg: AYBFou0ldUHj4vm5iZQUXbTpFNO4wFEE4Hc2DAQVnDTt5vfdYxuGBb/wDOBz0FSZDId
+	Y4ne4mkKvCErEEoJTt7w2VLWy3rOEhd/8LhBAbRmLvhQNp+eUTbVOQLtBFHiDz5xMM7SRyUppX2
+	cmNPlSa7EvExMEu7KmvXSuESCCduy7NEQuBrR5FPQrPyJFeZbi06lkRMOSXGHLqS9Lpcvnlgi5F
+	raurdfxyGvL5QV9aeLrkStTiPiQXaha601lieZoYXJ/Cm8N/VBlGDl2uA+gsWpeIjT+C2ruvEpk
+	ye2nJVVmXd1xKWiovo18GKa1iFeKI8NT7GMngzGChEyHk5xxFDlvwqA45arKMp9PnnYFvv2xp88
+	HfMxHAvpvapGzA9L5RGKKSCHolAyIwkh/38nwUu5XL2aEia1N6IqijNbZbLvRSwqAxm1GqETrqU
+	X2Uxftg1T2iM1XGSIF6Hia5Yrpwf9todJWqf9JSO8a6dZHBs+y8FMn2kIDkCo9uODGSitgJg7L6
+	oWgf+QMelbBY+3WdlmiM6XmewKr4+A9iYlbhD6+KL6s
+X-Received: by 2002:a05:6512:3d8e:b0:5b2:9f7a:29aa with SMTP id 2adb3069b0e04-5b5e68489ffmr5726157e87.0.1788082336658;
+        Sun, 30 Aug 2026 02:32:16 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b5e89d60ddsm1513610e87.31.2026.08.30.02.32.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Aug 2026 02:32:16 -0700 (PDT)
+Message-ID: <0d808de2-090b-4a7a-8f72-2cb657406ee3@gmail.com>
+Date: Sun, 30 Aug 2026 12:32:13 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260829191954.7a5f1875@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/4] iio: light: rohm-bu27034: Fix infinite delay on
+ error
+To: Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+ Matti Vaittinen <matti.vaittinen@linux.dev>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <cover.1787901813.git.mazziesaccount@gmail.com>
+ <7f0d8efb3578cd4f23a7c70fa4a8f7a967c9df8e.1787901813.git.mazziesaccount@gmail.com>
+ <apE-gauHWlJO8-5X@ashevche-desk.local>
+ <5d274bfb-2570-4336-af16-60640550e6c9@gmail.com>
+ <apFqmjGZKQ-qW7L7@ashevche-desk.local> <20260830021626.025397c8@jic23-huawei>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20260830021626.025397c8@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Aug 29, 2026 at 07:19:54PM +0100, Jonathan Cameron wrote:
-> > ---
-> > base-commit: b75697ef53e435d894833dad2a8c2fa882cb9b19
+On 30/08/2026 04:16, Jonathan Cameron wrote:
+> On Fri, 28 Aug 2026 14:01:46 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > 
-> Where is this commit?  I tried the various IIO trees, GPIO and linux-next.
-> None of them seem to have it.  That means automated tooling is failing
-> to apply this including sashiko (and I'm starting to use b4 review which
-> has similar problems)  Please fix up and send a v6.
-
-> Choices for base - and say in text which it is as well as the
-> commit id.
-
-Hmm... I usually find the text is redundant, especially in the case like this
-where it may add ambiguity. If, say, text refers to vX.Y-rcZ and base can't
-be found, this will rise even more questions (at least to me). Having the only
-one source of info helps (in my opinion). And in the case like this it's simply
-wrong base and we see it immediately without any text description required.
-
-> Latest mainline release
-> rc1 of the new release - occasionally rcX but then you must call that out
-> with reasons
+>> On Fri, Aug 28, 2026 at 12:46:24PM +0300, Matti Vaittinen wrote:
+>>> On 28/08/2026 10:53, Andy Shevchenko wrote:
+>>>> On Fri, Aug 28, 2026 at 10:40:36AM +0300, Matti Vaittinen wrote:
+>>
+>>
+>> ...
+>>
+>>>>>    	wait_ms = bu27034_get_int_time(data);
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * If reading the integration time fails, default to the minimum so we
+>>>>> +	 * don't lose samples. This may waste CPU cycles, but as a hardening
+>>>>> +	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
+>>>>> +	 */
+>>>>> +	if (wait_ms < 0)
+>>>>> +		wait_ms = BU27034_INT_TIME_US_MIN;
+>>>>> +
+>>>>>    	wait_ms /= 1000;
+>>>>
+>>>> With the above being open coded the _ms feels not right.
+>>>> I would expect the TIME_MIN to be in MS from the start
+>>>> (and for the consistency's sake with the below) and having
+>>>> all this to be written like
+>>>>
+>>>> 	ret = bu27034_get_int_time(data);
+>>>> 	if (ret < 0)
+>>>> 		wait_ms = _MS_MIN;
+>>>> 	else
+>>>> 		wait_ms = ret / USEC_PER_MSEC;
+>>>>    
+>>>>>    	wait_ms -= BU27034_MEAS_WAIT_PREMATURE_MS;
+>>>
+>>> I don't like using 'ret' there.
+>>>
+>>> At first glance, the
+>>> ret = bu27034_get_int_time(data);
+>>>
+>>> looks like ret is containing just the success status. Furthermore,
+>>>> 		wait_ms = ret / USEC_PER_MSEC;
+>>>
+>>> forces one to go back and see WTF the 'ret' is (even if just couple of lines
+>>> - but this is not an improvement, using ret is obfuscation).
+>>>
+>>> I could change this to:
+>>
+>> I suggested without knowing the possible ranges of the returned value.
+>>
+>>> wait_ms = bu27034_get_int_time(data) / USEC_PER_MSEC;
+>>> if (wait_ms < BU27034_INT_TIME_MIN_MS)
+>>>                  wait_ms = BU27034_INT_TIME_MIN_MS;
+>>
+>> This looks sane to me and  removes the confusion I was talking about.
 > 
-> These first two are the strong preference.
+> Except that wait_ms can be negative due to a read error and that is obscure
+> by what now looks like
+> 	wait_ms = max(wait_ms, BU27034_INT_TIME_MIN_MS);
+> so ensuring we clamp an out of range value.
+
+Which, in this case, is perfectly fine because it does not matter what 
+the cause of the failure is. There is no need to distinguish between 
+read error and 'returned value is below the minimum time' - in both 
+cases we just use the minimum time.
+
+> I'd just go a touch further and split return value and parameter
+> + provide a default.
 > 
-> An immutable branch that others have created to allow some cross subsystem
-> work in a single cycle.
+> wait_us = BU27034_INT_TIME_US;
+> ret = bu27034_get_int_time(data, &wait_us);
+> if (ret)
+> 	dev_warn(dev, "Failed to read int time, muddling on\n");
+I do both agree and disagree. This is not the first time when I am 
+pondering if a "getter API" should only return an error, and fill the 
+desired output in location pointed by a parameter (your suggestion here).
 
-> togreg branch of iio.git - but call that out and say why.
+In many cases it is simpler in the calling site to just use the return 
+value, and error handling can still be reliably done when all legitimate 
+values are positive (in this case, also greater than minimum). Using the 
+pointer argument for value retrieval typically brings potential issues 
+with value initialization if call is unsuccessful.
 
-I agree that for the special cases the text might be needed to explain
-the choice of the (non-standard) base.
+Hence, I am often using this "dual meaning" for return value (negative 
+error code or positive valid value) in cases, where all successful 
+values are guaranteed to be positive.
 
-> Anyhow, given I have a long queue today and this base commit thing has
-> been going on for a few cycles (as seen by sashiko not reviewing it)
-> I'm going to give v5 a skip and wait for v6.
+I would definitely favour your suggested signature if retrieved value 
+could be negative, or was a pointer. I have never liked the IS_ERR() and 
+others - but check:
+if "value < allowed minimum" and decision "then, something is wrong - 
+use default" is really quite clear to me.
+
+Yours,
+	-- Matti
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-
+~~ When things go utterly wrong vim users can always type :help! ~~
