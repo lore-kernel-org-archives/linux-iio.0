@@ -1,82 +1,75 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003113C09EC
-	for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 17:10:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F03641DDC35
+	for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 18:54:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788109850; cv=none; b=GZBEVSw1ztPrgKh3hltLDYLhkkRTU5iH5mmVp9HhhUZwI3/6drFMEbL05tC91bDw1hJSLEj9r09V41iTFtTHCPDIRBY/h/Cly5y8odZIqljXaiUa9PDJKf2MUM7F7qBt/XYpDna5WV6H0N/7AEQCKliWZn5BYZEUzSHuc85JSLw=
+	t=1788116046; cv=none; b=s2CShb6fa5HSK4pq5zvH9IjHH22y+2VVZMh1xU1Aa0GtVw5uGgYnxdYCEFPrHMRzHqdOusvb9FHDrEnqUqFcxgt6f/hfHuqKEiUf4fnOaKb6Yz7Vzmp5Lt2dcXjJDUCKt2oi1FWi6WQDNSs5xn72IUgLC9m+SCmmkIdVgzsepuY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788109850; c=relaxed/simple;
-	bh=sy8BZryh+VKv74VP8uHYb984yUyfJh7wIVMGurHwjnI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=H8ekQggh/3NmEzhODltZSzMc6Qk9TNqAI+D3oIRiAtnfIW44TLtONKJqydAbwiWJKPurJ4iLwE2NMdv3ygltgaJMpJ0b9b9eQ6mqCpylKPuuNigfOTEWaW9jH8McEMBjg696JsHBz6MDI/8llRYJMKdpu2yHAy7QqZXUg6vj0cw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IHgtMmR1; arc=none smtp.client-ip=209.85.216.54
+	s=arc-20240116; t=1788116046; c=relaxed/simple;
+	bh=G9R9x1h3gOGXHwUQ7Jm3JXDD+c+UzZ2B8yR3B763DB8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=COPocXGCT7onTQ0/lT9JtXX1Xv019b8SbUAPZWP2A/MKczpjSz5CIlnoet74iIUTaTEWjPmInflO+Yi6PsuNY1T68PkPsRoIQ2D28/5d0iH168DZK1DeSczb/rBj+EukWlcrsH339Wrzbjn+TUrmI8VJYzeMXelxHNR/gzzDzb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yjnd7Q+a; arc=none smtp.client-ip=209.85.215.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IHgtMmR1"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-39647aa9d52so2617823a91.0
-        for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 10:10:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yjnd7Q+a"
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-ca7c1176317so2309847a12.1
+        for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 11:54:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788109847; x=1788714647; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=+GRZL0uxq37pp9qHzlDeSvEEyunsmZeKfcXgUqg4T+M=;
-        b=IHgtMmR1e28ozTFPzIVA2Feyxf74vjQZouzJ+OZZNKEKAOWUxNkH39HPj4o2TYl0Pv
-         OWMyiLgUQJYCwNpjDPSum+bszpMkZqgv2YPPbx/BEDrIeFa9VRp+Fd7ahkdcCGoY8uE1
-         Gr0Tk+08W/Y7hWonPnBuwpEDSyM21a21bg2GjUfs/Ne7b0DtKmPENb+iX96hrxfL+Dom
-         X/1n75ZvQYRqPsH/jGTcBoq2F5vfUdXfOUdZ8UMhv5YgssMwsnJVRdG0XAYlXBYgHC4+
-         T30rytVKcephGN/CJlju0cY5U3ln3tY/Jita2GmDhejeFPD6JtQ0e+6zt2HCl4rEgFP/
-         G+8w==
+        d=gmail.com; s=20251104; t=1788116044; x=1788720844; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=7cyfTkCtPn7AmqDEgml00QrDyZ+ySqvSEbLoL9i0Ys0=;
+        b=Yjnd7Q+alUPmzEQ/ckHpHxn8p2icg/iH+V3YXgJlXv7K3CF8DCY7Z5xxZ9sHBpsC8s
+         h0y4ZgLcwZUHX2F1EmREFpmJgo5vDyfaCwOc+jCBAroZo6ea4GGEj+HH4BZMhElTJcGC
+         QK2UR2KtVa2v2ANmD65z0ZafA3Vla7hcJghZqQqGB61EQpmHZeR6OR71VJzw9GF3chkE
+         Yn+Sw2egbkIhZo8vlJuJiDYrEnKpm8CjwVmugWKGfBpJnFhqYrvYhYXYFETtQZasWjho
+         nQfGRN5k4Hc3XQIwV9AdMOY+ja8w7O4FVjm6Iy4eHqXahuxEoPU2hNxffvMSOXdxIlcH
+         Myvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788109847; x=1788714647;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=+GRZL0uxq37pp9qHzlDeSvEEyunsmZeKfcXgUqg4T+M=;
-        b=ZgMa+0vdJWVdoKrLuseIH3Oi08gSIsYXh5sEVWtkkxjHOlmENnCfIf2Bt/gE8/tQ3h
-         og1h95PakS+4rzf8UOjmulDPmxpw+OppB9F5xTExu1aK73ijxAjMYO08dCnNitP8UgFT
-         4gPPjT62FHrnJeL6jss0JKEhsdhngdmIKkCGaUAVUdDQkVwcIz6lF0fziG3HLlJ/tjdT
-         HVd7htWNeiuIGHoSEBmb/5fAA1rC2n5WgmwSWwOEKiGhRAgHdzneNzHitQYtcxeE3k2D
-         uX+IRgNeIbKdmnGLqWc2jZ6USeiPiLUO2xphtgvbxNAEYsVIZZmaxnuhCvsSYOyl6fxQ
-         wtpA==
-X-Forwarded-Encrypted: i=1; AKwUvBysds6MwJ5R/xJmba3XiN9+8wgze7WC6kTxRw5S1s2hwvnqTFXS0nFAp43fxdW0hci7z2aG/rIjHBI=@vger.kernel.org
-X-Gm-Message-State: AFuF++kjo7I5frYnEevBJ51R540UXVMkY1KB9hpf6YJSfh0yoAE3AcS9
-	ZeDLP5Dq9dy1yAzUPeKY5Rw/ndAiaiLPJGaGjUy4l3ojx83pUZcV2q54
-X-Gm-Gg: AYBFou3s9Yhm3+a9PUM19vlApzi4hpNkf83Jm6YQqWVLQ51T09JtY5oYTadn7uYsmdJ
-	LPsB18+rSSsId8KuQAfzcxCzVJyDZUpZQm9eOdjNzypp/cSShD95cyWCoClnvYTVL0qJJFCte5U
-	8pgTqFf0vjTE3k88CSyw8vy3p4gDnlw1O/YdTD6eWfOD4OI+SxyoHktiNxHNiSqDSjD5YbnlgZP
-	qAmcqBT091fCpsjTD2pcThCGyyipLJ9l5/1TliRCvU0iUHhQ8ObAj8Jjxj3OGSG4ZOiTl9BTsc4
-	aoGjRuwn0XqEV4W1HEHYshYpOeDl3sY0Z6OcjZb2gjyQQrp0U76zYpNOu6OQ8p0T6Zs7/QrDTkC
-	DxaTIppK27ILk3nAVN5EaHz2Se4nIKThzTOva5uDb9qs/cN2qdiM0LvjWedMlUAIRWq/E9Qt2cR
-	QmvcKQnpFdc9m5pY0nRdpkl5A13F+XomhfmY9aUNgZZiZRUpEbHfa1RqORag==
-X-Received: by 2002:a17:90a:ec87:b0:390:84db:888e with SMTP id 98e67ed59e1d1-398da62a9f1mr2503612a91.7.1788109846855;
-        Sun, 30 Aug 2026 10:10:46 -0700 (PDT)
-Received: from ubuntu.. ([2405:201:8026:213e:88d5:45ce:40e:490f])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-396b0fcfa3asm17047101a91.6.2026.08.30.10.10.40
+        d=1e100.net; s=20251104; t=1788116044; x=1788720844;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7cyfTkCtPn7AmqDEgml00QrDyZ+ySqvSEbLoL9i0Ys0=;
+        b=fAKQ9lOp8WtWa9QKiBtFuZFEV+zHZZFxenpCJZ01sv5TpTJtz6HnvQz22ULHYXFnB2
+         5QBKfJpmbqpukd7HYtnsySTr79VTR6zI/9CCn6kCKwsb46uJ9WzVzdANo4IL2qfS1ZCf
+         65lIOLMQih7/Oevsr3z3MDmC7L+ZwvZ8OSB+Xf5Lh0uhCAk1h6VZY6ue0UKsWCk2jOmP
+         XPRt0bN4ZRCA3APHu/DraAMmft4tNq4qZeso+wcXKBW9wk+ZjPoOnYyzXnfuRyZSKGWD
+         kQpUOMeQWvkebWnlpqOnaBmmyRPI8+YJ2zi9hi4x+6fM+3prsg/Z13/k1xS90jB/+TBN
+         MpzA==
+X-Forwarded-Encrypted: i=1; AHgh+RpgNV7vzxb71wpwZCJsYsWhUd+tUVAO4nEtDfAZsqnqK4SdV4PLefnhImBTRfw8jxu4Acz/nPO4jOE=@vger.kernel.org
+X-Gm-Message-State: AFuF++lgPNgliz7RGCrooUSyBlc/Yl4YXCafiTjGfMhiVvewkTV6p4gq
+	iZmmvrERz/Dfm1QeJj/tMF91/6NbiZaieb22PZk1azZvVbSsN+tY4Kk=
+X-Gm-Gg: AR+sD10u9VluCD0QX+CRPhIGMLOFjWdXXuGwO9+kcka6dHbqxuYiUZlw2Y1sEMQYymd
+	tYN1ZYCQXCFfkSbOZw8Y4I1tHe884hHoQgztuuflpnp6nRp+6Lp/HaRpurQm1uYObRok03/p0SY
+	Lbi2dYXEq1yWjOvcZbvim+X+bVjayzzSQXNZbpKp2jMMFNj4zYZ5yFGi+J9TmV6PVLbq2+FdM1U
+	EwKj6J/hs+ogMKmkDyBKb7uA2KN2PxkzEX6yRIah1ybGBdOLoI6TYO9aAsexflU+cFW4oTTSok7
+	J8r7S5ULmsB1jc6l4vqgxwrvG3EMJ+gyjHvJjbP3tK++xnV+iraU42MRfBSWlTWK+VOmaAYxryz
+	1N5NHLOnM8D1+krZm0k6BaYO5cx/H7AUTkl6qJPeD1HSz+VI/puKV7I4lw79Oenv2t+mkKyTaZB
+	F5Gr4Id0Y5DFDuF9pYJr8cp3ga5duFydjbIIFupYkpenk47ZSTOEthAkqKneZX4DKgaaJeELe0F
+	g==
+X-Received: by 2002:a05:6a21:7a9c:b0:3d3:ae0f:5269 with SMTP id adf61e73a8af0-3d3ae0f5ee0mr20393866637.21.1788116044242;
+        Sun, 30 Aug 2026 11:54:04 -0700 (PDT)
+Received: from ydg-Zenbook-14-UM3406GA ([2001:2d8:6496:3266:4625:ebf0:e422:3504])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cc1f36e8ee6sm3030170a12.26.2026.08.30.11.54.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Aug 2026 10:10:46 -0700 (PDT)
-From: mdshahid03@gmail.com
+        Sun, 30 Aug 2026 11:54:03 -0700 (PDT)
+From: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	bcm-kernel-feedback-list@broadcom.com,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
 	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	Mohammad Shahid <mdshahid03@gmail.com>
-Subject: [PATCH v2 5/5] iio: adc: bcm_iproc_adc: use devm_iio_device_register()
-Date: Sun, 30 Aug 2026 22:39:18 +0530
-Message-ID: <20260830170919.470974-6-mdshahid03@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260830170919.470974-1-mdshahid03@gmail.com>
-References: <20260830170919.470974-1-mdshahid03@gmail.com>
+	Donggeun Yoo <donggeunyoo.kernel@gmail.com>
+Subject: [PATCH v2] iio: light: vcnl4000: use sysfs_emit() for near_level
+Date: Mon, 31 Aug 2026 03:53:45 +0900
+Message-ID: <20260830185345.2209268-1-donggeunyoo.kernel@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,54 +78,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Mohammad Shahid <mdshahid03@gmail.com>
+Use sysfs_emit() instead of sprintf() for writing to the sysfs
+output buffer. sysfs_emit() is aware of the buffer's PAGE_SIZE
+limit and is the preferred helper for sysfs callbacks.
 
-Use `devm_iio_device_register()` to automatically unregister the IIO
-device when the device is detached.
-
-This removes the manual `iio_device_unregister()` call and makes the
-`iproc_adc_remove()` callback unnecessary.
-
-Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+Signed-off-by: Donggeun Yoo <donggeunyoo.kernel@gmail.com>
 ---
- drivers/iio/adc/bcm_iproc_adc.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+v1 -> v2: Add #include <linux/sysfs.h> for sysfs_emit() instead of
+relying on transitive includes. (Suggested by Joshua Crofts)
 
-diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index 11f2bc12c19a..38a153d6fc70 100644
---- a/drivers/iio/adc/bcm_iproc_adc.c
-+++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -570,7 +570,7 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 	indio_dev->channels = iproc_adc_iio_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(iproc_adc_iio_channels);
+v1: https://lore.kernel.org/linux-iio/20260830054237.2147950-1-donggeunyoo.kernel@gmail.com/
+
+ drivers/iio/light/vcnl4000.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 336468d59ea7..911f8d1c74d4 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -26,6 +26,7 @@
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/sysfs.h>
+ #include <linux/units.h>
  
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(dev, indio_dev);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "iio_device_register failed\n");
+ #include <linux/iio/buffer.h>
+@@ -1504,7 +1505,7 @@ static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
+ {
+ 	struct vcnl4000_data *data = iio_priv(indio_dev);
  
-@@ -578,13 +578,6 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
+-	return sprintf(buf, "%u\n", data->near_level);
++	return sysfs_emit(buf, "%u\n", data->near_level);
  }
  
--static void iproc_adc_remove(struct platform_device *pdev)
--{
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--
--	iio_device_unregister(indio_dev);
--}
--
- static const struct of_device_id iproc_adc_of_match[] = {
- 	{.compatible = "brcm,iproc-static-adc", },
- 	{ }
-@@ -593,7 +586,6 @@ MODULE_DEVICE_TABLE(of, iproc_adc_of_match);
- 
- static struct platform_driver iproc_adc_driver = {
- 	.probe = iproc_adc_probe,
--	.remove = iproc_adc_remove,
- 	.driver = {
- 		.name = "iproc-static-adc",
- 		.of_match_table = iproc_adc_of_match,
+ static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
+
+base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
 -- 
-2.43.0
+2.53.0
 
