@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C1D528C5B1;
-	Sun, 30 Aug 2026 23:53:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E9312E7396;
+	Sun, 30 Aug 2026 23:57:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788134005; cv=none; b=htX0qpZyWMcFiOMTwkIztnZZaDVJldtbiUXZaXu0goQOthTDxotSgn9GfcEP49kEjBqovrzXxyTCnU4CirmrA8zCHVFxXsVYAYbqQAitc6dbN0XfX4h3Ucn1PlxxHVtOg9urhJGt5n2/NtPjS27flzprEB/upO7Ya7uVDNTAxH4=
+	t=1788134256; cv=none; b=JrhXwML7M89iKrLCxz7dWLoIaO26gk5HzEBXn1K6ixVUvJt4VbjjlYBny1sYVJyQh0Ko4l/uYgU6fmrT/+PnRhs3bTeU+HXizeHUv/jrgHcFm/XzKxWKEELvUbQCkSH39eGjlsuAOjaS7gom3c7uNliA8WEOFy7+dnIEKi/ls7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788134005; c=relaxed/simple;
-	bh=AgjI3O4F+GubT2JSQCY8Tpl0l3FNASSfQaXUdw4rbuY=;
+	s=arc-20240116; t=1788134256; c=relaxed/simple;
+	bh=u6uVkbROqgEmpkePXpsow92Di9+pPZesG4KZe0CvZP0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=heHEaPNQq5ImooiyZVOmAlqgXGMx1QyCTglwyn+SrwIviR7eKL9EnVvmEJrXYCq2WHAwPVJOu+Foc9bzMeP3f85yFLWZqz90UANP7AAHY3XyCaOk3k+e1m5ME+zRjlYPtANyK87VIra2xjrOWBH7Q+sY9I5vct2TAPy03/n5rAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cy1bWdma; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rQw+s/k6d6iFAYshTb5IdNCZ+9IudGieH1PEWW0UDHNqHHNEwCPJ0yM5p+gmrWPDGuHtTBM1zSTJ0pTukc5IU8uEpU7RLkiZ3u3LVXIV2U1/rZhcIUNLQpZMHwnxPzJIGYIrLYyWGlg1Q9c1tZx3821vmNcVwg7UVjs0Fy/FvPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IpnmjXXO; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cy1bWdma"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED00E1F000E9;
-	Sun, 30 Aug 2026 23:53:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IpnmjXXO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5209A1F000E9;
+	Sun, 30 Aug 2026 23:57:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788134004;
-	bh=ldpcUbAWpGoUTXYsH8TqTNY0l9FCJaJkj70LvsUK7wM=;
+	s=k20260515; t=1788134255;
+	bh=ZK5RX3djCBeW83wImVahZU6spUvB3gHUKmlbJ6W1v0s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Cy1bWdmaNA1Z0aY0ArkK40kYsap+W135sn35yRmmBcCLq98pm4LUeEHfEeVUzCvhZ
-	 WoJjPrpZZnOygPq9GjjuEW/D3zq/3U14mlbURSXxuAYhYymmGmTaPVXedbsT8Y9rVP
-	 1fB0irasgk9moHOYu5MtX32VLo8+d0+AdrampQXaeO8Xq7Y3MpHkt8CNIlFF6RBlYB
-	 hh9Uax+2aaPkGEmhnXgCec12xCQ7g41E8K51g0l8Wjg1UKjPNSXxf/MA9/qoTSVtzQ
-	 WUqchdGPx7YyKR50+Iv38JGayCohdKy8HNE2dI1hF2eAWkLus4BZgYBWG09vEP/pv+
-	 oQy9m0ItxGZVA==
-Date: Mon, 31 Aug 2026 00:53:17 +0100
+	b=IpnmjXXOXbWKrOtujXOtuS25+aMIMguPd8OtT1hduYwLN4Jg+KgokhvK8uTlBlHPu
+	 ZLldHjJtKWPqkGPe2yiNLyNjSZEWNXTd5hnreRkovyY1Fsi7wpYn6kZHLQx+x7wx7s
+	 jcuaMv06o+SQXnexDboQdOQN9L9tGX6OiBE+5HmaF2+Oz4WQg72nY0qI9OOdGxfMrL
+	 GRqp+6mWrf29sL+1mRr8lrGBtsxEDpo5gzctld3z7Fu9KZ64MFzO60Om5eZ5gO2fgI
+	 22UCrOnmqSs59G8BYpk7OnWw8VtxXrFx3fwLxXiY1sJd3rojwtudOM0EGazhbQD8Hh
+	 iXYTsVyWC1Oug==
+Date: Mon, 31 Aug 2026 00:57:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>,
- <linux@analog.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: ad4080: allow debugfs register access to both
- channels
-Message-ID: <20260831005317.41cf75a1@jic23-huawei>
-In-Reply-To: <20260826111613.14218-1-antoniu.miclaus@analog.com>
-References: <20260826111613.14218-1-antoniu.miclaus@analog.com>
+To: Linmao Li <lilinmao@kylinos.cn>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ade9000: fix NULL pointer dereference in
+ clkout registration
+Message-ID: <20260831005728.4c2b80b9@jic23-huawei>
+In-Reply-To: <20260826083156.2287106-1-lilinmao@kylinos.cn>
+References: <20260826083156.2287106-1-lilinmao@kylinos.cn>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,26 +49,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 26 Aug 2026 14:16:13 +0300
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Wed, 26 Aug 2026 16:31:56 +0800
+Linmao Li <lilinmao@kylinos.cn> wrote:
 
-> The dual-channel parts (AD4880/AD4883/AD4884) are built from two
-> independent ADC dies, each with its own SPI chip select and register
-> map. They are presented as a single IIO device because the FPGA
-> interleaves both dies into one DMA stream, so only one direct_reg_access
-> debugfs file is created and it can only reach channel A's regmap. Channel
-> B's registers are therefore inaccessible, which blocks bring-up and
-> debugging of the second die.
+> ade9000_setup_clkout() passes NULL as the register address when
+> registering a divider clock. During clock registration, the common
+> clock framework calls clk_divider_recalc_rate(), which dereferences
+> the address through readl(). As a result, probing an ADE9000 configured
+> as a clock provider with an external input clock crashes.
 > 
-> Select the target die through the debugfs register address: the low 8
-> bits are the register offset and the upper bits are the channel index
-> (0x0nn selects channel A, 0x1nn channel B). A read returns the real
-> register value of the selected die and each die is addressed
-> independently; single-channel parts only accept channel 0.
+> CLKOUT passes CLKIN through without changing its rate. Register it as
+> a 1:1 fixed-factor clock, which does not require register access.
 > 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Applied to the testing branch of iio.git
+> This change does not affect the configuration using the internal clock,
+> for which the driver does not register a clock provider.
+> 
+> Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
 
-thanks,
+Looking for a tag from Antoniu for this one.
 
-Jonathan
+> ---
+> Changes in v2:
+> - Clarify that the configuration using the internal clock is unaffected.
+> 
+>  drivers/iio/adc/ade9000.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+> index e57e24b6acdf7..4e96cc37fbedf 100644
+> --- a/drivers/iio/adc/ade9000.c
+> +++ b/drivers/iio/adc/ade9000.c
+> @@ -1647,8 +1647,9 @@ static int ade9000_setup_clkout(struct device *dev, struct ade9000_state *st)
+>  		return 0;
+>  
+>  	/* CLKOUT passes through CLKIN with divider of 1 */
+> -	clkout_hw = devm_clk_hw_register_divider(dev, "clkout", __clk_get_name(st->clkin),
+> -						 CLK_SET_RATE_PARENT, NULL, 0, 1, 0, NULL);
+> +	clkout_hw = devm_clk_hw_register_fixed_factor(dev, "clkout",
+> +						      __clk_get_name(st->clkin),
+> +						      CLK_SET_RATE_PARENT, 1, 1);
+>  	if (IS_ERR(clkout_hw))
+>  		return dev_err_probe(dev, PTR_ERR(clkout_hw), "Failed to register clkout");
+>  
+> 
+> base-commit: 6b9f23b5460818aaf199dda90210d5fc08d66c8f
+
