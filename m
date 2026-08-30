@@ -1,44 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F8623D7FF;
-	Sun, 30 Aug 2026 23:35:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99837242D9B;
+	Sun, 30 Aug 2026 23:48:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788132916; cv=none; b=gYSzgsiC62CJ90PxBD4frqIE6BwuTsMDgiQe9XiZyex0EIIsWdfNFbBOct9sZwMr/C4Y+8toflvEUwfsH5mQSZzrMCj9r7yG20+hfxqosQRKcqzw6Fn7ycsfxaoBCvizQ3Wj/zf5YJnCRjozcV6PStrcHCZWnnMXOdIN2dV5AaQ=
+	t=1788133722; cv=none; b=G+SkDHJMLORI1604ayIXWOPIBebpqQM2OHJ+mWDh/3MX1S9686l52KMelPk10iagjnE1w5VXAYFJEHwgImN2M7KiiH6l9J9pGE9gAUc8RanFrk13fSV7Qh1nC52arBlmf/z2u1LDbxj/cSvKd/U1eT1t8xnPkPRJEf2kBf/+kUQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788132916; c=relaxed/simple;
-	bh=LBShqt0xPCqxxE1LaZQdL3gMiw0xbKNiZIoVt3PLeYA=;
+	s=arc-20240116; t=1788133722; c=relaxed/simple;
+	bh=GcbGA9JYdBBBGqKEus3i6V0Fog/Z3w6buBjf28Sw1xg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Wx9Q83qPNU3y+K9nQ6d5S2xIvjbXsD/etyQa9UYsA/1q8XRbKbJ3roy1HNZeQ/M2lNSHC+krTblUWq+IQKOS04Cmi6vL7WCI+QZoSCjJh9XWDPArgVSeJWfs1AnwgyRDAZw2Q51bue4SPccK9byPU8pg7PXwmmYXn+gRhJmyj5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q9oxy5PK; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=kYZqWKfn1mOT501MQgWp7aEBzClzYnyz7K/ZhtyalfkLhuX0ZD8r2mJNgydN+NbwUZncjaWmGfWcRs5jglR2N+yeIKUxVo2SaNR8dw4k9nncZ4EOvv+41ilFPliPpqzwpsmeWup9185XOnkg4fh0W4RhqwS3N55nmpP7g5Yp6zs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g+lJzqRs; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q9oxy5PK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27AF71F000E9;
-	Sun, 30 Aug 2026 23:35:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g+lJzqRs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB4C81F000E9;
+	Sun, 30 Aug 2026 23:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788132914;
-	bh=g2kf2DhCJC2zDOkOvPHPx9cq0nusW2H5hRVt9faL9fA=;
+	s=k20260515; t=1788133721;
+	bh=PcO0U45IrwGYg9QXoz22ey3QRhX6/6WwzaaCcty5J8Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Q9oxy5PK3aNtbjuABpxiYb7RqluwRMydJSJxwDlWAX3PV/IAWEDwOPnsEwd2foYpM
-	 r0e7aAvF9N+aAvEvRkAnqnuiqMVcB5fLBpfG07Hf3NI7u4f4QmbY/HuhYtFpBJXU4K
-	 /8GC3Zi01sxWpZ3kFrDsdDHFrvXWLQhrjwTqCyOZe+N54/PPT7yaDAab3JyvRkw/Lw
-	 tm2jsLZBZfadVKgU1hF6NNNny94mO0u9Boehp49fl5ACd+Rz+4RQ1ZuPsjQSpxhpK3
-	 XvzdiAjpeWp65kdR4s8PrFm7+38pO/yerA9MNw/x8DvFKJ515VZrSsj/9+D9ZhZXU3
-	 paOBpp/E2es/w==
-Date: Mon, 31 Aug 2026 00:35:09 +0100
+	b=g+lJzqRsy0KUPUwU2bqb4dtlgiZFTYQjo+vXkFM9A1x8beeCtdzzGFfw0U/+WTkv2
+	 3DEYZZkyxazpMiePZxbvoEywVhGke3JFtbTQn3aYYDVcWtBoIdGTKuQtmQ9E0RbQxn
+	 emh+WlFn5u4EXoREZerqcuJHnd8m+LEF5nab0Wxp3tiH8giJH6T8+yWckwPQgFWCHc
+	 ZwE2saepbBPXu1aQXgL/8GTueKOgicsOYLgjnK6LvM+YfRYTLL5qclDPkFlmiaVuOn
+	 XKIo1OUzVmS0Ky3/K6aU3CZk4ZM+sDpl2CalkrDDJFHpVY8mghHvxfM3B01bwJkbBS
+	 hqkGk0go+Grtg==
+Date: Mon, 31 Aug 2026 00:48:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rishab M <rishab.madhugiri@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: core: Replace BUG() with WARN_ON_ONCE() and
- error return
-Message-ID: <20260831003509.4fb38052@jic23-huawei>
-In-Reply-To: <CANc32tPtHyJdg-PJa0iZHcqX4WDtMFikZFD+4aO96B1+zmf0_Q@mail.gmail.com>
-References: <20260826213140.37437-1-rishab.madhugiri@gmail.com>
-	<ao_cCHTp9kKfOV-U@ashevche-desk.local>
-	<CANc32tPtHyJdg-PJa0iZHcqX4WDtMFikZFD+4aO96B1+zmf0_Q@mail.gmail.com>
+To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, Kees Cook
+ <kees@kernel.org>, "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+ linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org, Luca Weiss
+ <luca.weiss@fairphone.com>
+Subject: Re: [PATCH v2 0/5] iio: light: stk3310: per-chip match data and
+ STK36C61 support
+Message-ID: <20260831004837.406a1108@jic23-huawei>
+In-Reply-To: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
+References: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,65 +48,64 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 27 Aug 2026 15:24:52 -0700
-Rishab M <rishab.madhugiri@gmail.com> wrote:
+On Wed, 26 Aug 2026 19:54:04 +0200
+Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net> wrote:
 
-> Thanks for the feedback.  I totally understand the perspective on code ch=
-urn
-> versus making tree wide cleanups, and I will let Jonathan make the final =
-call
-> on whether this is suitable.  I've also noted the wrapping width feedback=
- for
-> commit messages in the future.
->=20
-Please comment inline.
-
-Anyhow, I have applied this but mostly because it is easier for cases like
-this to do so than to reply to a series of folk proposing the change.
-
-Slightly rubbish reason, but meh, too many patches floating around and this
-is a harmless way to potentially cut that down a little in the longer term.
+> The Sensortek STK36C61 is a 3-in-1 ambient light / proximity / RGB
+> colour sensor whose register interface is compatible with the stk3310
+> across the ALS and proximity data, threshold, gain and
+> integration-time registers this driver uses. The part name comes from
+> the Fairphone 6 manual, which lists the component as "3IN1 ALPS/RGB
+> sensor/STK36C61". There is no public datasheet; the layout was probed
+> on the device: chip ID 0x95, the stk3310 STATE/FLAG bit layout, data
+> and threshold registers, gain steps that scale the ALS reading
+> accordingly, and an RGBC data block directly after the ALS data.
+> 
+> Since v1 the colour block's controls were located, confirming
+> Jonathan's guess on v1's patch 3 that they sit in a register we had
+> not found: the STK37660 datasheet, a documented sibling with the same
+> data register layout, places a clear-channel gain field in a GAINCTRL
+> register at 0x4E, split from the RGB gain in ALSCTRL, and stepping it
+> on the STK36C61 multiplies the clear count by ~4 per step while the
+> other channels hold still. The STK36C61 patch therefore now exposes
+> scale and integration time on the colour channels.
+> 
+> Tested on a Fairphone 6 running a 7.2-based tree: this series'
+> stk3310.c, byte-identical, built as a module against that tree (the
+> i2c core files the binding behaviour depends on are identical between
+> the trees). Verified there: DT boot instantiation, the colour
+> scale/integration-time interface, and the sysfs name behaviours this
+> series changes: a lower-case name selects the full profile through
+> the id table, capitals no longer bind, and a full-compatible-string
+> client now fails probe with the missing-driver-data error. A board
+> DTS node using the new compatible follows separately via
+> linux-arm-msm.
+> 
+> Changes in v2:
+> - new first patch lower-casing the i2c device ID names (Andy), and
+>   probe now fails on missing match data instead of falling back to
+>   the stk3310 profile (Andy)
+> - new precursor patch moving the data registers into the channel
+>   .address field (Jonathan), split out of the match-data patch; the
+>   bulk read gains a regmap local variable (Andy)
+> - the ACPI table entries use named initializers (Jonathan)
+> - the STK36C61 patch exposes scale and integration time on the colour
+>   channels (Jonathan's suggestion on v1 patch 3; the clear-gain
+>   register located via the STK37660 datasheet and verified on the
+>   device). With those branches of read_raw now handling the intensity
+>   channels, the ret = -EINVAL single-exit form promised on the v1
+>   thread (Andy) has no unreachable branch left to apply to
+> - picked up Krzysztof's Reviewed-by on the binding patch
+> 
+> v1: https://lore.kernel.org/all/20260810110423.41697-1-jorijnvdgraaf@catcrafts.net/
+> 
+FWIW I took another look through and with those small things Andy raised
+tidied up (including a more concise commit message for the final patch) this
+looks good to go to me.
 
 Thanks,
 
 Jonathan
-
-> Best,
-> Rishab
->=20
-> On Wed, Aug 26, 2026 at 11:41=E2=80=AFPM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> >
-> > On Wed, Aug 26, 2026 at 09:31:40PM +0000, Rishab Madhugiri wrote: =20
-> > > As documented in Documentation/process/deprecated.rst, the
-> > > use of BUG() and BUG_ON() should be avoided as they could
-> > > cause a complete system crash, preventing further debugging. =20
-> >
-> > Right, but deprecation doesn't mean the _old_ existing code must be imm=
-ediately
-> > changed. I leave it to Jonathan, but I see no value in this change exce=
-pt
-> > the unneeded churn. If we ever want to drop BUG(), it should be done tr=
-ee wide.
-> > Hence no tag given.
-> > =20
-> > > In iio_get_time_ns() and current_timestamp_clock_show(), the
-> > > clock type is already validated against supported clock
-> > > types prior to these calls, making the default switch
-> > > branches expected to be unreachable. Replace these with
-> > > WARN_ON_ONCE(1) followed by an error return to avoid a
-> > > crash and to log the highly unexpected condition. =20
-> >
-> > There is like 10+ character space on each line, the commit message shou=
-ldn't
-> > be that condensed.
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> > =20
-
