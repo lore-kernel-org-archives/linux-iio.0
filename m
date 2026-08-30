@@ -1,118 +1,96 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C743A5E97
-	for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 09:33:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09FA2264612;
+	Sun, 30 Aug 2026 13:42:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788082402; cv=none; b=iUWtpOQ35RV1Lqrvdh0Js1FKudtpRfMrGsONrGkGYMR8AljNC1tU1k6KH8xxhAc1MpV5ITu5Es6DhRooDDapsfo+YvlKPGZHbKR/xAlqA54GuAp5oqOdPqQTbxbTv0ERe+XXnSnNBRuisMkFFcssMZ5WaZMdzgilXLGP0/CaJ/4=
+	t=1788097366; cv=none; b=SIGXW2f9XSOW82Tm+bJJ4RytfR9/FBc0Hom6q5EmxMEDVC3cqQ92CPz2HMumKAJofPqRTHJkqxGTep7vmEfZ8dwfWtm9qJzRvRyz/18kx4gh1BKvHKu4ghvb1ZiTu2QICErKuAk3u4/YUtI6zOA5UI7SCu27tTwga6O59LTGdCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788082402; c=relaxed/simple;
-	bh=/DKnhV0MmVJPWDzTPG3icFO2F50OI3OFtVu85d9jTUI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HmVchgdn30sRv9RmO1cavcBTy6wu+BhYgFhmrghprWR/giLeUhxO8RAAOyCetVEnwPK/trsY3PjWbnSdkIg8gtpfKdFfhFrp+4OA8CLV0ifC96Vwej8kE3wgCU4Ed1GmlOCKGT2yd6kuxdzYKcTnj9iWlcCVBgk/jF3uBo+W10k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hEJsZqkR; arc=none smtp.client-ip=209.85.167.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hEJsZqkR"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5aec201b582so2947158e87.1
-        for <linux-iio@vger.kernel.org>; Sun, 30 Aug 2026 02:33:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788082399; x=1788687199; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mA3g2yHDcdRcBYbXDsH8zS7Qjtttirgrx3DJv7xsWNs=;
-        b=hEJsZqkRaf97G+Lauk+gTXTBDrIqCAOrGe1skn+JGmhIzeChV2icg3HwQm+780Wo9T
-         Kk4R7LZHboDevYCcVO1zoeqItVK0ZduMCiyJQB0pPFg+gGUtlG8QHJsK6yRF/oCtzvOM
-         kXHvxyuMJWY31mnPbs3mcub2216ppx+X3Fkj63UbD5eMWAxRhyPJRFak2h9BTUc1pgUx
-         cCWxhwt4jMElWSm/t2rMt5Cb2P47a7sTDSW/Z+TMqtSIRs0EzTl9YfKBW89bfK+XOuZO
-         i25gL3AXLboIl54f/7nSu/TVeMqrKHA2eLifmIJeoZobAKBACR/KoUvDW0Rf1eKJG5DC
-         eQRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788082399; x=1788687199;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=mA3g2yHDcdRcBYbXDsH8zS7Qjtttirgrx3DJv7xsWNs=;
-        b=GObKyknfG6aOsuJ0fq8hmdee+/CcKKMN8j7bCKA2nHa18+0j2HiU/oHIW/e9Dx7CZD
-         wxVIer9XacvDe11M39uRqw+RbzIT/j0mJZdHKOa/q+ZWsvu5iunxJQGUg/3+b1NNeGkP
-         pNUqgBKXV6bpIPTBQLtCkbwA61v+5b07AhmJ6G5ufo2MfeFVuKQYXDuOWxudmVrGyZwe
-         UBxFDnscdGd+CI2oDr02xg+pAfPRn9ueZX5+7Yva6ZFgem6V1ULujMFa6WSFwE+DzGt4
-         AexsLnFK0AOyAZFrKQa5JTz4+jNBdBYqEZlsWJc9aXuKu4Ze6MkGy75GCsWiReo+L4Gu
-         Jvsg==
-X-Forwarded-Encrypted: i=1; AKwUvBwTJSWIE9dDyYIH6NGbPaeFu8md5dA8IAY806gXszLSC9LQrsmoGRktk+7WIX5yVFblGV+d2ZxhJbM=@vger.kernel.org
-X-Gm-Message-State: AFuF++l7bweAXT+JxQCpvAV9kDGoqhvgDhs4o2n29AXBSduvTSlnXcg+
-	ck9ijCpR02HyZhUL1quux2h5vWF7TXGf0imcGETHAwYmDkVKecDZCs/y
-X-Gm-Gg: AYBFou2FN/1azWuJxJvlMBCd6XbGExe8fibuIqK37YgbTY1snqm/jmt3wOLq0hvUGkY
-	8EiAdLeyAGs1ki/A5n4dawcIQe4RJSM8tL8tBFPZY9KJrdfcfbQBor5gdnOs/Vx6iBnQGsRC6X4
-	4eH87Pmpt6Yo2gWjdKWVP9BzPTF5HmWXlkCSvY6qllMACMn76PFESwqgQzuG+pMoqR1uiY5qHWQ
-	WV2t2wsPYwUYDHSOX208aPzUAwgcriI9fmcKd1VvhFuViR3X7XXxuVmX4Mhsm30UVxcYIHnp8go
-	VhzbR9QyXnA3RYFAfPuTBxg7MnDyNros88edYtzrjtr4n3C4xb0qGP58hxL1z5C5sKoAQrIg+s0
-	PR59h01n8OqVud0EtvaoH78omgScpxu5WCFuP4/zOXacg8ch8iEXmg0vS6CHv3jYuMYsW3aSb6m
-	otoLjA+beKMpRyYw+Eaub3zB4azXQPV9dlhcITgkf2AIKM55f//quxZgQfS4VAR2IFbaH9QjiXS
-	Sw+THb3jvmfeIOCvH8qRmYQQJt2tQHB9xfZ0rZI2JlI
-X-Received: by 2002:a05:6512:2396:b0:5b4:5f6b:d43e with SMTP id 2adb3069b0e04-5b5e68d9e4bmr5364758e87.14.1788082398764;
-        Sun, 30 Aug 2026 02:33:18 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b5e89c5ad9sm1477182e87.7.2026.08.30.02.33.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 30 Aug 2026 02:33:18 -0700 (PDT)
-Message-ID: <ab8f1a0c-0666-4b7f-884a-55f9f26a1ac6@gmail.com>
-Date: Sun, 30 Aug 2026 12:33:17 +0300
+	s=arc-20240116; t=1788097366; c=relaxed/simple;
+	bh=1x3XoWUSFTA/RTpvtqRuX9LS14pvjW/d0xCBH5LVEYg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ntyLotpybTv9Sf3uQ3yKEhSqboJqUk1KnkWjI1d607TiKDBRiC6MMCXC+GnyJEDe44uz3ptE8vKxrAKHzuYLsyer15wSt2pMoUCtrkuvn3HCn/TeWjj/I/QYZrWHdmioQvkmE5aT380MJXLQimnic5UkFjvk2xn6yaGPG45CkQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost.localdomain (unknown [111.196.241.250])
+	by APP-03 (Coremail) with SMTP id rQCowADn8T9FM5RqqUGbBg--.17102S2;
+	Sun, 30 Aug 2026 21:42:29 +0800 (CST)
+From: Pengpeng Hou <pengpeng@iscas.ac.cn>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Ryan Chen <ryan_chen@aspeedtech.com>,
+	Billy Tsai <billy_tsai@aspeedtech.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: aspeed: propagate reset deassert errors
+Date: Sun, 30 Aug 2026 21:42:27 +0800
+Message-ID: <20260830134227.9085-1-pengpeng@iscas.ac.cn>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] iio: accel: kionix-kx022a: Prevent memory leak and
- fix state
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- Matti Vaittinen <matti.vaittinen@linux.dev>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <cover.1787901813.git.mazziesaccount@gmail.com>
- <9e4453fcc00df6ec988207df8916226d18aecb20.1787901813.git.mazziesaccount@gmail.com>
- <178805296127.2788519.3966625158499254314.b4-review@b4>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <178805296127.2788519.3966625158499254314.b4-review@b4>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:rQCowADn8T9FM5RqqUGbBg--.17102S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtw48WF1DKFy3WF47ur4rZrb_yoWkuFcE9r
+	48WFZrWrnxCrZ0kw1jyw1fZrZY9FyDuFyvk3Wjvr43KFyUXrWDAryDuFWYvw1Uurs2v343
+	AF1q9rWfA3sxGjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUba8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+	Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+	0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+	2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+	Y2ka0xkIwI1lc7CjxVAaw2AFwI0_Jw0_GFyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x
+	0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2
+	zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_JFI_Gr
+	1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWU
+	CwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcS
+	sGvfC2KfnxnUUI43ZEXa7VUbo5l5UUUUU==
+X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
 
-On 30/08/2026 04:22, Jonathan Cameron wrote:
->> The driver allocates memory for samples at buffer enable path. If regmap
->> operation fails in the kx022a_fifo_enable() at the buffer enable path, the
->> allocated memory is never freed. Furthermore, the state information and
->> previous hardware configuration(s) aren't undone, potentially leaving
->> WMI interrupts and buffers enabled, or driver state flags wrong.
->>
->> Free the memory and revert the hardware configuration and state flags on
->> error path.
->>
->> Fixes: e7123a4dfcd7 ("iio: accel: kionix-kx022a: Refactor driver and add chip_info structure")
->> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
->> Reviewed-by: Mehdi Djait <mehdi.djait@linux.intel.com>
-> 
-> I'm not happy with the label naming.  It had me very confused!
+aspeed_adc_probe() continues to register ADC resources after deasserting
+the shared reset, even if the reset controller reports a failure.
 
-Hmm. I suppose it could be more consistent :) Thanks.
+A failed deassertion leaves the hardware unavailable, so stop probing
+before
+installing the cleanup action and enabling the ADC.
 
-Yours,
-	-- Matti
+Fixes: edf7550a1f93 ("iio: adc: aspeed: Deassert reset in probe")
+Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+---
+ drivers/iio/adc/aspeed_adc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 6169ce28261e1..452c30cf04f28 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -585,7 +585,9 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, PTR_ERR(data->rst),
+ 				     "invalid or missing reset controller device tree entry");
+ 
+-	reset_control_deassert(data->rst);
++	ret = reset_control_deassert(data->rst);
++	if (ret)
++		return ret;
+ 
+ 	ret = devm_add_action_or_reset(dev, aspeed_adc_reset_assert, data->rst);
+ 	if (ret)
 
+base-commit: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+2.50.1
 
-~~ When things go utterly wrong vim users can always type :help! ~~
