@@ -1,158 +1,143 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AEEB1C84A0;
-	Sun, 30 Aug 2026 01:23:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D95145A1F;
+	Sun, 30 Aug 2026 01:36:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788052984; cv=none; b=UbBKT3pMpB88/+Rq5FnStBPXRREJV97ZJBmflDqMbmXS5vN0tg0fcq1R9JlCdNERuC9eL4xTk1zh0ZzEh9gn6RfTzT/wqCEIek0NtlE7iDKWvML4rL7CX1tRGYVHmLa0yHaN2ZSe4YeEvOsV67F+bM+PSMwB+t1MpUbk5VrS07U=
+	t=1788053786; cv=none; b=AFVyTQDf3HGtS9LyLKFJbQ48ZN0yV0McrB/TDneJ9ULGzt6oOMtjpmKW7MnrBvZGVEVtFIGEr+YGL+M1DkNwfMytgUwTxo6++Qsk1q8lKUHwk+F6Vnc5R1SUBjcWTc2QbEvQHr2FVj540C+puT0ImW6yJIIDIyrRpqIgAim17Fg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788052984; c=relaxed/simple;
-	bh=RI+5wU5EtiUTV9CiTX6RS490GxlRGloS8lilxk43vr8=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=ItWDE/rqiQzQ+dA3S5KsRZCMa5F3YjcqRdPvWUDqviZATB/VbXpn3vdszaUYtn9+Be00ea3uo2uBUUBGP2hqzKO3BXE94OK9rq17LbIaczENUitqV5W9SeL2sBfpLhviTKLZo+QU7nDy6wJ76voMgBu8sinv2jM9NyRhPJKEhYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YlBCetkP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788053786; c=relaxed/simple;
+	bh=Vv5i4jqd6MRM17DD001GHFOxW0HC9j2oP47qPtvKzqs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k7gSP41bmruORh6peMZ7epOlFaT+8VddwDIjiqd2+fcBqFzAvn1PFCFwkqkyTxQlMwzSIkAntIhMTZiCow7YZWrCpL+F+xZbxZyhmde10jemzdaUs/n/lpZ+rutbNRn+UUZjsNsjhEPMNMz3AnDk6dSqkqEbkKe/TnFbV6eJrF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ajeeDKkF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YlBCetkP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E8001F000E9;
-	Sun, 30 Aug 2026 01:23:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ajeeDKkF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59E621F000E9;
+	Sun, 30 Aug 2026 01:36:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788052983;
-	bh=chZALl9SReI0x7zfIHUauZgPEoTl2J93muIW1PYESZU=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=YlBCetkPFpkLNvCwksktJm7Wg8blq4HBsYz/qeB2ke++5gYne7G/k+1klQyVk3GLG
-	 eUFCx1p0v0Qgtj1qcbCrlXpY/+fyF+nQCoWRg3iIBzOTCY8r626o+Q2YbAIp5cfphO
-	 woYybqu05sk0W2uuXV89MB5tNOXj29Oi529L2WggKPI0AY6FoKQWSxg3mdNbHEi8Hq
-	 q8jh5IHfNW79H6WQq16eaAEkJkrYlWbZob5Q912sKYSwajbujfQLvzAgQVA1uX4L5m
-	 pDGTW9jIPWhJuIyzL4FWaPn/q9XssKEDhA4UVtYTCwn/6N2gmNXSz6WaEtTh4Fp8pd
-	 bFw41T48YUSsA==
+	s=k20260515; t=1788053785;
+	bh=UdmgjnbDZPNvfBySictjfkzf6a9ms2p598rmvEHmvDI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ajeeDKkFTHUkYeU6OUd2Y/Bsb8ZguFW2xSfmR0ZW0QsQM6JuCly6ue7X0nCi4l/FF
+	 ZEspahW+S4hrguSsm/BJ9fFvMVjaawYRXsaX/2vSk3sL9P7IDv0SgQ1bv1GMfYhxOV
+	 yhxaFQDGSjxJUjcSty3xQIMqNnuRDk4QvRjrK6zWDtn+xQQ446YGNE378rZkPqQdry
+	 bdnuazHauQRhJWdHE0Qszdz3arw4bW8OEQ+5Stht1NZApC/vZoxTxUMk8CSAh6TEEz
+	 P1tp7MT2qyeeQEhlSJxOeoREE02QaHPT/HVuFGzZKHyimFw+5Yjw9sb7c3oD+suLFJ
+	 TLd7lru748j4g==
+Date: Sun, 30 Aug 2026 02:36:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Kurt Borja <kuurtb@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 04/10] iio: adc: ti-ads1262: support per-channel
+ sampling frequency
+Message-ID: <20260830023619.654d1bbe@jic23-huawei>
+In-Reply-To: <20260828-ads126x-v4-4-1dc27e9c0260@gmail.com>
+References: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
+	<20260828-ads126x-v4-4-1dc27e9c0260@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 3/4] iio: accel: kionix-kx022a: Prevent memory leak
- and fix state
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, 
- Matti Vaittinen <matti.vaittinen@linux.dev>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Mehdi Djait <mehdi.djait.k@gmail.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <9e4453fcc00df6ec988207df8916226d18aecb20.1787901813.git.mazziesaccount@gmail.com>
-References: <cover.1787901813.git.mazziesaccount@gmail.com>
- <9e4453fcc00df6ec988207df8916226d18aecb20.1787901813.git.mazziesaccount@gmail.com>
-Date: Sun, 30 Aug 2026 02:22:41 +0100
-Message-Id: <178805296127.2788519.3966625158499254314.b4-review@b4>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2772;
- i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=RI+5wU5EtiUTV9CiTX6RS490GxlRGloS8lilxk43vr8=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqk4XjZmedrW/AcUDV8OCkE9v6XMagfj0yMmBvO
- lAfieUi/bWJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCapOF4xEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiHnkEACvXGdgwtgiDzlCsoAS+on19i+5vJ/GAZBQ+BrHYGa4vlj
- Yf7l/eqo9r0CtZc8sMXprvvrdojDQijO7LCbYKA0d5rJVdSN0lAgkgwu7bHb++MXeypEm0tTZoE
- 6F1OZ8C/P4dzuaK5QAhxuVpVsc3maR7h6WxnxLwbMDi6/Mr1O/hUtjGBydKSPBZtgpRlqpvENyV
- QUKF9nuyoEX/sTYVGQgcwinpufPb5B55jlvWWoVuymTN5N9l4I/carbVZdLWb4AFLizqPSwPw9X
- CitAt6CalyezIp/OFhwko3R3AxWSXd9GFOAQ1P1EHpI63kClBU9+cpLRlcur+PF8dhJ1N30m5BO
- Rq9SghzEcGdkNO2FCiTx0ysuO4ipzumhSTXxvNejlkbAn52V8JmajJSpX47lZqvD6Z2UrjfHkm2
- O0DBsYSJF+ytBqsHxIauesPGAi6dECv8zxI24mLQXl4GAc4F40EXDSZQwQou8FuLhoHgWqt3HCB
- d7r8nmw9DEqVykajwitWecZ3b6SY8nuNsyGAp+b2JKNmzZRUn0/Ko24iyj1zPXeofVSiqGpLF2z
- ugRfhMZL3/biMYbBPdnwBnjmDG/W1dHwvm5wP+5SSoEl92NezPniLhTpRKefwLdLDzVq9g7P9yP
- PnyDhrH73BsHpMUwRNXpmdqBPQwvd2UrBcKjhig==
-X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
- fpr=6E2966B387840652912681B154853499C4F41688
 
-> The driver allocates memory for samples at buffer enable path. If regmap
-> operation fails in the kx022a_fifo_enable() at the buffer enable path, the
-> allocated memory is never freed. Furthermore, the state information and
-> previous hardware configuration(s) aren't undone, potentially leaving
-> WMI interrupts and buffers enabled, or driver state flags wrong.
+On Fri, 28 Aug 2026 01:38:19 -0500
+Kurt Borja <kuurtb@gmail.com> wrote:
+
+> Add per-channel sampling frequency support. The "available" attribute is
+> assigned per-channel too, in order to eventually support per-filter
+> availability.
 > 
-> Free the memory and revert the hardware configuration and state flags on
-> error path.
-> 
-> Fixes: e7123a4dfcd7 ("iio: accel: kionix-kx022a: Refactor driver and add chip_info structure")
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> Reviewed-by: Mehdi Djait <mehdi.djait@linux.intel.com>
+> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+A build issue below.
 
-I'm not happy with the label naming.  It had me very confused!
-
->
-> diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
-> index 02dd1db7a646..42bac6d724a0 100644
-> --- a/drivers/iio/accel/kionix-kx022a.c
-> +++ b/drivers/iio/accel/kionix-kx022a.c
-> @@ -980,26 +980,44 @@ static int kx022a_fifo_enable(struct kx022a_data *data)
->  	guard(mutex)(&data->mutex);
->  	ret = __kx022a_turn_on_off(data, false);
->  	if (ret)
-> -		return ret;
-> +		goto err_free_out;
-Label naming wise - this one is talking about what needs doing (works for me!)
+>  };
 >  
->  	/* Update watermark to HW */
->  	ret = kx022a_fifo_set_wmi(data);
->  	if (ret)
-> -		return ret;
-> +		goto err_wmi_out;
+> +static const struct ads1262_channel ads1262_default_channel = {
+> +	.data_rate = ADS1262_DR_20_SPS,
+> +	.filter = ADS1262_FILTER_FIR,
+> +};
 
-This one is talkign about why we went there.  For consistency would
-need to be something about turning off not this.
+See below - this probably wants to be a slightly more complex define.
 
+
+
+> @@ -763,8 +970,15 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+>  	if (!chan_specs)
+>  		return -ENOMEM;
 >  
->  	/* Enable buffer */
->  	ret = regmap_set_bits(data->regmap, data->chip_info->buf_cntl2,
->  			      KX022A_MASK_BUF_EN);
->  	if (ret)
-> -		return ret;
-> +		goto err_wmi_out;
-
-This I'd kind of expect to undo the set wmi but it doesn't...
-
+> +	st->num_channels = num_fw_channels + ADS1262_MON_CHANNEL_COUNT;
+> +	st->channels = devm_kcalloc(dev, st->num_channels, sizeof(*st->channels),
+> +				    GFP_KERNEL);
+> +	if (!st->channels)
+> +		return -ENOMEM;
+> +
+>  	device_for_each_named_child_node_scoped(dev, node, "channel") {
+>  		struct iio_chan_spec *spec = &chan_specs[i];
+> +		struct ads1262_channel *chan = &st->channels[i];
 >  
->  	data->state |= KX022A_STATE_FIFO;
->  	ret = regmap_set_bits(data->regmap, data->ien_reg,
->  			      KX022A_MASK_WMI);
->  	if (ret)
-> -		return ret;
-> +		goto err_buf_en_out;
-
-This one is back to what we are undoing (good).
-
+>  		ret = fwnode_property_read_u32(node, "reg", &reg);
+>  		if (ret)
+> @@ -772,6 +986,8 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+>  		if (reg >= ADS1262_MONITOR_ADDR_OFFSET)
+>  			return dev_err_probe(dev, -EINVAL, "%pfwP: reg out of range\n", node);
 >  
-> -	return __kx022a_turn_on_off(data, true);
-> +	ret = __kx022a_turn_on_off(data, true);
+> +		*chan = (struct ads1262_channel)ads1262_default_channel;
+
+This is giving me a build warning:
+
+drivers/iio/adc/ti-ads1262.c:1913:26: warning: cast to non-scalar
+drivers/iio/adc/ti-ads1262.c:1913:26: warning: cast from non-scalar
+
+So we can't do this... Hmm. It's pretty simply. Use a define for
+the default channel with the (struct adds1262_channel)
+and that should work for us.
+
+> +
+>  		ret = ads1262_parse_channel_node(st, spec, node);
+>  		if (ret)
+>  			return ret;
+> @@ -786,7 +1002,9 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+>  			.storagebits = 32,
+>  			.endianness = IIO_BE,
+>  		};
+> -		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +					   BIT(IIO_CHAN_INFO_SAMP_FREQ);
+> +		spec->info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ);
+>  
+>  		i++;
+>  	}
+> @@ -795,6 +1013,7 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
+>  	       sizeof(ads1262_monitor_chan_specs));
+>  
+>  	for (unsigned int mon = 0; mon < ADS1262_MON_CHANNEL_COUNT; mon++) {
+> +		st->channels[i] = (struct ads1262_channel)ads1262_default_channel;
+Same here - a define would allow this to work rather than giving build
+problems as it currently does.
+
+>  		chan_specs[i].scan_index = i;
+>  		i++;
+>  	}
+> @@ -890,6 +1109,10 @@ static int ads1262_spi_probe(struct spi_device *spi)
+>  
+>  	indio_dev->name = ads1262_device_id_to_name[st->dev_id];
+>  
+> +	ret = ads1262_populate_tables(indio_dev);
 > +	if (ret)
-> +		goto err_on_out;
-
-This is another where we came form, not where we are going to.
-
+> +		return ret;
 > +
-> +	return ret;
-> +
-> +err_on_out:
-> +	regmap_clear_bits(data->regmap, data->ien_reg,
-> +			  KX022A_MASK_WMI);
-> +err_buf_en_out:
-> +	regmap_clear_bits(data->regmap, data->chip_info->buf_cntl2,
-> +			  KX022A_MASK_BUF_EN);
-> +	data->state &= ~KX022A_STATE_FIFO;
-> +err_wmi_out:
-> +	__kx022a_turn_on_off(data, true);
-> +err_free_out:
-> +	kfree(data->fifo_buffer);
-> +
-> +	return ret;
->  }
->  
->  static int kx022a_buffer_postenable(struct iio_dev *idev)
-Thanks,
+>  	/*
+>  	 * REVISIT: This chip has software polling capabilities, which could be
+>  	 * used to stop depending on the DRDY signal.
+> 
 
--- 
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
