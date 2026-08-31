@@ -1,73 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61BD92EEE76;
-	Mon, 31 Aug 2026 07:16:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 553B6242D9B;
+	Mon, 31 Aug 2026 07:39:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788160566; cv=none; b=UB99powuRapZP/ej42auNaupbqtsiac6ak+ChPfrsX3bXyERuUI2S8vJZmY7LALMZdnj3pvcTchLF3EFGDWcmo8g9jqKX07L5Aoa3bh/bNxVob4eQDnP17qwM0/EPlm6J83PzUor637Q9TrIW4p0nKAgpxuHcetTjaaX1XdNrqQ=
+	t=1788161961; cv=none; b=knndsQy6d3A+HvL7HsJ8JS5zSjgQelIxBKEVpIra62hCb7Tz6xJ4pnrUQzZXUQT/3qZZqwkktpLTVDt4q//GBAPC+nCWx9txevwWL1FAnU2oo76oPJULETlMBooXrbAvAPnZftcun2Efxjm59K5QA0tmdo9Yzi3NqwFOgAOoRvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788160566; c=relaxed/simple;
-	bh=FEEOhqT1jhBCGXUBQc12nCGYVYm14SMV7KmyjFkYVQQ=;
+	s=arc-20240116; t=1788161961; c=relaxed/simple;
+	bh=4aV+uNocUPu6ad3MUH6dQ4ZhLN5HpItl7d4/3/78rlI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HY6QnLxG1Wb5enQlAj3+rt5RzYEgoGzzkn0RfYaB2xiRRgNwGZw0uxnH++YiltHvbc8/Xu2RL3ZQayhrOzeSvfIWii2sD91H3JTweorR7XQyT1iJaGaeBr3+sruglBn3sda4Uc21nKjaH6YiTZnm5Uqs4KFo6oYxVvtq219M2SY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QAUJ8I2w; arc=none smtp.client-ip=192.198.163.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=iRr6YB7mQmIXkAGyPqHhMORH6CMsu1mAnxnOuiPIbggks2b7mNcKQXfxYrpdwJRBzFNiwpRL10gVWoe4CCpSN85PIAv/r0P7Gq/w7+xyL/A3Wam9QoKfF1ikDpPXEwGbk2WiyPcLi/KCiKURB36cr/ZDHv1AM4LXcKIx+N0uxow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mhRBBZIM; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QAUJ8I2w"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mhRBBZIM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788160564; x=1819696564;
+  t=1788161959; x=1819697959;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=FEEOhqT1jhBCGXUBQc12nCGYVYm14SMV7KmyjFkYVQQ=;
-  b=QAUJ8I2wKeeEFvZioBIK+jhvSQNJ7yFaZEdirRQODqP3Bav5x+xIUMvJ
-   dckQrlmC27893Qe6ROc2PmYezeM8btoQwGM6Ic+3DHT/HEyAOCDyogOGF
-   +WEaQL9wZcUC5AB9nX11ymMg+3fxGHU1EVdCXy0yJ9asxhRCaS7+E6JwV
-   b7KtKBfv09Wo13qgu29DJThFUJSspaG0ZOvMAwELjNKhTgZB2MuDRk2AG
-   PtNLP0sOND7IXdZblQDGkzwXAR2uz6+nfzb0ilBuxwusdc7J2xd/T02Q8
-   lWCGgqG2BU4e8x/6K32GRC5zU1DHTS3/qZXAzOGeH4LNgPQi3rA/UGiJr
-   Q==;
-X-CSE-ConnectionGUID: yNEPvPbSTuex96f43allLw==
-X-CSE-MsgGUID: ND/iqhxhQdWYsus3Pq81VQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="88683405"
+  bh=4aV+uNocUPu6ad3MUH6dQ4ZhLN5HpItl7d4/3/78rlI=;
+  b=mhRBBZIM105OYCJz4FfGRemw90jDi5KnNxiuUb4I6xuosoSwGEqhuJuX
+   gY1a0V3UIzBX4ZronnCTQrIqNaQCNynvGmbsEixXEewqUk1Pl08P+Qvu1
+   K8ATL2Z+mGMLJCGO0SR54tlHRw4BADeQwp0ViUhs80jCO3AhYF3QwsJLr
+   9xa7YQ4I7l94CA9SDsI5gJ6xgEjSAarBYCAdcUjt/4IY+qSzCtaupb+QV
+   EFYe+RS1/uA7D7uhDaDNq1hPDOprDTaaLiLvFAoJWma3XV3sTaQdoihGV
+   sZ7UItYVwXYfw1AzkQFVBENkJ7P2lB5xsTY02jE2iwks8Du6ZHJJkbEFJ
+   A==;
+X-CSE-ConnectionGUID: +nKOMRCmSda0zy3ANYGIGQ==
+X-CSE-MsgGUID: Yc0dp/3lRjSq1hhzdtp90g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="105935986"
 X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
-   d="scan'208";a="88683405"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 00:16:00 -0700
-X-CSE-ConnectionGUID: 6vVeQbW1RVOGXtXRXiJ6hg==
-X-CSE-MsgGUID: x8KVMbJQTRuQncui4MLdSg==
+   d="scan'208";a="105935986"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 00:39:19 -0700
+X-CSE-ConnectionGUID: Rd5aCz1uRAyziFJ0rCElqw==
+X-CSE-MsgGUID: rc5eIhJjRay0KONvkcGa3g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
-   d="scan'208";a="264433045"
+   d="scan'208";a="266915404"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 00:15:54 -0700
-Date: Mon, 31 Aug 2026 10:15:52 +0300
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 00:39:16 -0700
+Date: Mon, 31 Aug 2026 10:39:13 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Kim Seer Paller <kimseer.paller@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Michael Walle <mwalle@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v5 18/20] gpio: regmap: Add optional runtime PM support
-Message-ID: <apUqKHhrxDLcz5l8@ashevche-desk.local>
-References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
- <20260828-ad7768-driver-v5-18-e33ca6f841a2@analog.com>
+	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 4/4] iio: dac: ad3530r: add support for AD5710R/AD5711R
+Message-ID: <apUvod3OC6IcGcK1@ashevche-desk.local>
+References: <20260829-iio-ad5710r-upstream-v4-0-8af3121c7d21@analog.com>
+ <20260829-iio-ad5710r-upstream-v4-4-8af3121c7d21@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,59 +69,110 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260828-ad7768-driver-v5-18-e33ca6f841a2@analog.com>
+In-Reply-To: <20260829-iio-ad5710r-upstream-v4-4-8af3121c7d21@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Aug 28, 2026 at 05:30:41PM +0200, Janani Sunil wrote:
-> Some gpio-regmap consumers share their regmap with a parent device that
-> may be runtime suspended. GPIO register accesses must resume that device
-> first.
+On Sat, Aug 29, 2026 at 01:59:23PM +0800, Kim Seer Paller wrote:
+> Add support for the AD5710R/AD5711R, 8-channel 16-/12-bit configurable
+> IDAC/VDAC parts. They share the AD3530R register map and access model,
+> so fold them into this driver.
 > 
-> Add an optional pm_dev field and acquire it before register translation
-> or access. Release it using runtime autosuspend after each operation.
-> Keep the device active across the complete direction-output sequence and
-> propagate failure when setting the initial output value.
-
-LGTM now,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
-In case you need a new version, check a nit-pick below.
+> Each channel is configured as voltage or current output from its DT
+> channel@N node via adi,ch-func, building the iio_chan_spec dynamically.
+> Voltage channels enable VMODE_EN and report the reference-derived scale,
+> current channels report the 50 mA internal Iref scale. The powerdown
+> mode is read-only and derived from the channel's configured type.
 
 ...
 
-> struct gpio_regmap {
+> +static int ad3530r_parse_channel_cfg(struct iio_dev *indio_dev)
+> +{
+> +	struct ad3530r_state *st = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	struct iio_chan_spec *channels;
+> +	unsigned int num_chan, i;
+> +	int ret;
+> +	u32 reg;
+> +
+> +	num_chan = device_get_child_node_count(dev);
+> +	if (!num_chan)
+> +		return dev_err_probe(dev, -ENOENT, "No channels configured\n");
+> +
+> +	channels = devm_kcalloc(dev, num_chan, sizeof(*channels), GFP_KERNEL);
+> +	if (!channels)
+> +		return -ENOMEM;
+> +
+> +	i = 0;
+> +	device_for_each_child_node_scoped(dev, child) {
+> +		unsigned int mode_reg, mode_mask, ch_func;
+> +		enum iio_chan_type chan_type;
+> +
+> +		ret = fwnode_property_read_u32(child, "reg", &reg);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Failed to read reg property of %pfwP\n",
+> +					     child);
+> +
+> +		if (reg >= st->chip_info->num_channels)
+> +			return dev_err_probe(dev, -EINVAL,
 
->  	struct device *parent;
->  	struct regmap *regmap;
->  	struct gpio_chip gpio_chip;
-> +	struct device *pm_dev;
+-ECHRNG
 
-Perhaps move this one line up to be consistent with the below...
-
-	struct device *parent;
-	struct regmap *regmap;
-	struct device *pm_dev;
-// Also add a blank line here
-	struct gpio_chip gpio_chip;
-
->  	int reg_stride;
->  	int ngpio_per_reg;
-
->  };
+> +					     "reg out of range in %pfwP\n",
+> +					     child);
+> +
+> +		ret = fwnode_property_read_u32(child, "adi,ch-func", &ch_func);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Missing adi,ch-func property for %pfwP\n",
+> +					     child);
+> +
+> +		switch (ch_func) {
+> +		case CH_FUNC_VOLTAGE_OUTPUT:
+> +			ret = regmap_set_bits(st->regmap, AD5710R_CHN_VMODE_EN,
+> +					      AD5710R_CHN_VMODE_EN_BIT(reg));
+> +			if (ret)
+> +				return dev_err_probe(dev, ret,
+> +						     "Failed to set voltage output for %pfwP\n",
+> +						     child);
+> +
+> +			chan_type = IIO_VOLTAGE;
+> +			break;
+> +		case CH_FUNC_CURRENT_OUTPUT:
+> +			chan_type = IIO_CURRENT;
+> +			break;
+> +		default:
+> +			return dev_err_probe(dev, -EINVAL,
+> +					     "Invalid adi,ch-func %u for %pfwP\n",
+> +					     ch_func, child);
+> +		}
+> +
+> +		channels[i] = ad5710r_channels[reg];
+> +		channels[i].type = chan_type;
+> +		i++;
+> +
+> +		ad5710r_get_op_mode_reg(reg, &mode_reg, &mode_mask);
+> +
+> +		/* Enable the channel in normal operation mode */
+> +		ret = regmap_update_bits(st->regmap, mode_reg, mode_mask,
+> +					 field_prep(mode_mask, AD3530R_NORMAL_OP));
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Failed to set normal operating mode for %pfwP\n",
+> +					     child);
+> +	}
+> +
+> +	indio_dev->channels = channels;
+> +	indio_dev->num_channels = num_chan;
+> +
+> +	return 0;
+> +}
 
 ...
 
->  struct gpio_regmap_config {
->  	struct device *parent;
->  	struct regmap *regmap;
-> +	struct device *pm_dev;
-
-^^^
-
->  	struct fwnode_handle *fwnode;
->  
->  	const char *label;
+And in case you are not using --histogram diff algo when preparing patches,
+better to start using it. It might make patches more readable (for review).
 
 -- 
 With Best Regards,
