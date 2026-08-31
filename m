@@ -1,162 +1,126 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C29893D75DE;
-	Mon, 31 Aug 2026 08:32:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FD6B3B47C3;
+	Mon, 31 Aug 2026 08:33:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788165139; cv=none; b=ScIrQrKYhzWglgvzhq0REAYDA9PZLuaDx39pFGJMpBh/f0LHRI9Q/EtThImQWQbLCDXAbKNuhLE/eZVXf2H4Ik5KGIJYqOgTI/7PtLf4yo1Q+COC5Tbtib4KyvctNKtfQjr1FGbRithYfC0Yph5sUktmaaLUeHOdIgGiTURn5No=
+	t=1788165191; cv=none; b=At4wiM7gtva7x/9KtSK1LrI1x02J09vIWJPQA52l88GPao2c3NMnD90YlsNQIOK53wU3/07rSrGV+UfzFiBgSTgycoy1a/EjtO2F5JfEcDMk+JVQnK53sJDwt7fzGxF6Hy5gR6sNPDXDW6cJULl1jhOfQ8ZJaeLRWXOyMLcMFZg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788165139; c=relaxed/simple;
-	bh=8chXnPTh+YYN3UnADczBjsuEGQesOWKAnbBAlyZdv3A=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JTQG2X/qblInT1iBw8yETSjVXX0Of6Oqf+lcBNFTsCG0/G2anMrZ4jn2kLMMBdleRi4tVnEEGndjQeLEXKkYUtl+L3LN79+bF69AtNEv3bsrWwiDCP849YKDsKCmrRGsSZHNjwbBgpWv0ioJEG4LCgHuf+UV71shmvucKGGJ5mI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=AaBdilT5; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1788165191; c=relaxed/simple;
+	bh=Uq4241EsA0PKRZZAWyvoZUDsLxH7MI06dMLaEaBQlTI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i7ektFaqM7JJsgHCU9jhWzHIpb0lFwbnnLblcYkKmcXr+pQLkSkoZljumEVFwUu/CjAdvglJitAwr8gbwcoZ6ocp4PbULOz//RmkA/s02xS4wMkeoICPusD09A/6l9aKHafQY4iD1PixYtNXSD6b+RuSXDYO5HXXuRqTLWFNS3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U8I2RJnE; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="AaBdilT5"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67V82Vqe627921;
-	Mon, 31 Aug 2026 04:31:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=UO72W
-	HAYcAB60qLu7mcZziCXvA31dDax0umZEkb8WiU=; b=AaBdilT5dd8xQrv0J8J28
-	+Jsi8tfk8q16suSGxmhtojL+uL9z+ehf5evzt4s0yaLm72X95NGwfaijpaExNeLq
-	A2UoPi+pvDnuFVx7VggZZWriTPdKOL1w0Y+gyyqKXY3xmoygWWbzK7c3WsL+0hhS
-	ZqaADGmNEhrQtwXNvrAFFe77NFmUulMLDS9qkmOlWxjqagg1IKuAcepie3Q+IUYu
-	mJuDR/QlFmOrQGdXf9le6HAmBfat6BrWJ+WGI+/DKwNvGQ81djSp1BOjJz1dQIBn
-	EsysyZBSnqFwLqF82u+c25rP44Fhkqzxjl9pZnur13vgSrNn+++57SavhnTWGBPL
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gbvb2pky3-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 31 Aug 2026 04:31:50 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 67V8VnI6012506
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 31 Aug 2026 04:31:49 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 31 Aug 2026 04:31:49 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 31 Aug 2026 04:31:49 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 31 Aug 2026 04:31:49 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.222])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 67V8VVah006721;
-	Mon, 31 Aug 2026 04:31:43 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>,
-        Antoniu Miclaus
-	<antoniu.miclaus@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux@analog.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 2/4] dt-bindings: iio: accel: adi,adxl367: add interrupt-names
-Date: Mon, 31 Aug 2026 11:31:20 +0300
-Message-ID: <20260831083122.3486-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260831083122.3486-1-antoniu.miclaus@analog.com>
-References: <20260831083122.3486-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U8I2RJnE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788165190; x=1819701190;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Uq4241EsA0PKRZZAWyvoZUDsLxH7MI06dMLaEaBQlTI=;
+  b=U8I2RJnEsRbacMymh6BVsLhwZUxRD9Yw24qGtNp6yotbPbOSczIACWEa
+   dIhB32G6BgL48aW7qPsRY3/A5Udnpnqav64yhXUZKlQOstdl00ZzCKJ2F
+   aDqRmcEYSQ/+edCCalT4coD/NqxyvWVkdvznMMDVXRD6DpnFtX5otsqpw
+   JurAGXtYShkv7S5OEp+UwxdEdsHuGszhiCrX6DBkD4dmphtddjuk7oEaq
+   z+dfd5AdSRKkyuPshiJ7QvcOl6ZtULWMrlPPsWy1AYjnYYkgtpBr75ILA
+   iElpBBOjYfUivbel2LkPqXbvIRESzUdwEgh5B765oY5GegqN7YOjPuq3t
+   A==;
+X-CSE-ConnectionGUID: R994BBOoRb2YMoa76DwYZQ==
+X-CSE-MsgGUID: 69zTD9mFR+CkSFWChRkSTQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="88616444"
+X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
+   d="scan'208";a="88616444"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:33:09 -0700
+X-CSE-ConnectionGUID: JaLojC+ZS/eT2NkbectFIg==
+X-CSE-MsgGUID: S/iTBAxITFu4OdrqVMOkeA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
+   d="scan'208";a="298648034"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:33:03 -0700
+Date: Mon, 31 Aug 2026 11:33:01 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Michael Walle <mwalle@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v5 16/20] iio: adc: ad7768: Register GPIO auxiliary device
+Message-ID: <apU8PRtI8HoC_waj@ashevche-desk.local>
+References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+ <20260828-ad7768-driver-v5-16-e33ca6f841a2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODMxMDA3MiBTYWx0ZWRfX7ryaDjOtsh+w
- wun+FSaa2GIOigZScvsW76q1jfdk6ajqFcqoK9qOz0TnmSVfc2gG+joQ1Dk7La8N7tcdw4MHcfY
- xz4C9Xx+1qZGbI7eZ8bAU2LMrab5FjbIX7ZtjLKfOgYF6DBoGQCu
-X-Authority-Analysis: v=2.4 cv=QopuG1yd c=1 sm=1 tr=0 ts=6a953bf7 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
- a=U76RtYCq33gtdKK1WSkA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODMxMDA3MiBTYWx0ZWRfXzJ17+HZdMPO8
- vAW6P3rc/63lgab/r1cJr+AvOxNuFxFOf4L/bRNDBRpsqkbD7s6PlvGI8gGnE+aBc1Tyl67Y1/X
- 9fwas9A83zZf7nj42l8K0Q0lQI/DY4It7OVDE8dCX41Hd6z3b4+twevxem7fPcR6H6LmDjRgBvF
- OXAEwGLAWgUTELy2g487K52Ey1KkE45i1w32LTABpIJTVsVNid3y9/T6Qj4QUSFo4SAkD5nGnvy
- NgJtGqYR4A64KPWo1KY0Bjqya/9/zgjuW+CfDM3ywlRbT5Ga+btdtqlr+7xkWxuT/WG/BWuTrp/
- paF3THeWbW5ElBPcOgxjGC4kyZX5iPiCsNv49WvqB/R9LXXnRkbdJP74r8rUmeSfqHDhm53W9vi
- n4IdUro717Fgaoi8LzsseibEmuV1zX71w+RLMLYlapyXa66ZMTKl2HQt+hxk1Xx4DaeSzCjVOiY
- l9fN7HOusRVqSMA9PBA==
-X-Proofpoint-GUID: -ifo6E11ZO_V6yzwXG0wBndTJNt4SIGh
-X-Proofpoint-ORIG-GUID: -ifo6E11ZO_V6yzwXG0wBndTJNt4SIGh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-31_03,2026-08-27_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 suspectscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- malwarescore=0 spamscore=0 clxscore=1015 impostorscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608310072
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260828-ad7768-driver-v5-16-e33ca6f841a2@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The ADXL367 has two independent interrupt output pins, INT1 and INT2,
-either of which may be wired to the host. Allow the interrupt line that
-is connected to be described by adding an optional interrupt-names
-property accepting "INT1" and/or "INT2", and permit a second interrupt
-entry. interrupt-names is kept optional so existing device trees that
-only specify a bare interrupts property remain valid.
+On Fri, Aug 28, 2026 at 05:30:39PM +0200, Janani Sunil wrote:
+> Register an auxiliary device when the AD7768 is described as a GPIO
+> controller. This allows the GPIO driver to share the parent regmap and
+> runtime power-management state.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
----
-Changes in v4:
-- No changes.
+...
 
- .../devicetree/bindings/iio/accel/adi,adxl367.yaml    | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+> +static int ad7768_gpio_adev_init(struct ad7768_state *st)
+> +{
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	struct spi_device *spi = to_spi_device(dev);
+> +	struct auxiliary_device *adev;
+> +	int id;
+> +
+> +	if (!device_property_read_bool(dev, "gpio-controller"))
+> +		return 0;
+> +
+> +	st->gpio_valid_mask = GENMASK(AD7768_NUM_GPIOS - 1, 0);
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-index 29689bc38b90..115170eac058 100644
---- a/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-@@ -33,7 +33,14 @@ properties:
-     maxItems: 1
- 
-   interrupts:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    minItems: 1
-+    items:
-+      - enum: [INT1, INT2]
-+      - const: INT2
- 
-   vdd-supply: true
-   vddio-supply: true
-@@ -61,6 +68,7 @@ examples:
-         reg = <0x53>;
-         interrupt-parent = <&gpio>;
-         interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+        interrupt-names = "INT1";
-       };
-     };
-   - |
-@@ -76,5 +84,6 @@ examples:
-         spi-max-frequency = <1000000>;
-         interrupt-parent = <&gpio>;
-         interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+        interrupt-names = "INT1";
-       };
-     };
+Can we use the one that is in the GPIOLIB (associated with struct gpio_chip)
+instead?
+
+> +	if (st->clock_source != AD7768_CLOCK_SOURCE_MCLK)
+> +		st->gpio_valid_mask &= ~BIT(4);
+> +
+> +	/*
+> +	 * Use the SPI bus number and chip select to derive a stable per-device
+> +	 * ID.
+> +	 */
+> +	id = (spi->controller->bus_num << 8) | spi_get_chipselect(spi, 0);
+> +	adev = __devm_auxiliary_device_create(dev, KBUILD_MODNAME, "gpio",
+> +					      &st->gpio_valid_mask, id);
+> +	if (!adev)
+> +		return dev_err_probe(dev, -ENODEV,
+> +				     "Failed to create GPIO auxiliary device\n");
+> +
+> +	return 0;
+> +}
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
