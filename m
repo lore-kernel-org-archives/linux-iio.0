@@ -1,109 +1,109 @@
-Received: from out-2z4y-a149.jellyfish.systems (out-2z4y-a149.jellyfish.systems [198.54.127.149])
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B381C45561A
-	for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 16:27:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.149
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DC334446EC
+	for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 16:28:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788193630; cv=none; b=V6U4Wlb7Flg3vIKaajyGqDtrGNh5ftnaU72ACDdu1kJxuokUQH2Zqi95aPIXfebOsUprqJwLPalsl/9+u/n+0oWmQq2lB6YF9MsvpLaiKNMy/4c6pn9n0JhbryhmFSUie63UA0RU+QbwN+V4D66T4Wj95/RFzJda2g0HBNbFTlw=
+	t=1788193737; cv=none; b=Mu4COcw7+gK0m1Jf4KbwyugbzSzPrFaVflcIb+/4duuSdEYczJym7uVjD/Ftd96x6fr7YFsl4xdkF86Z5iEsy/roXSF7z/29iKmTPDBPo81JbUrVPFCJDDAf9MQ9Z5RMdagyHgEjMEq83gBefB+kai8KRUcEvrvSz9HPwdAAQ2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788193630; c=relaxed/simple;
-	bh=KzPvc7CmYgesOOtbeUQCIr7Dh7m2v5p9kHcd+JzBsd0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uBlPBqpqByQOM5aTK3awKCMsLTwYUFN6yTvPvC92QefeRbWNu6lb6jvPCvcxXoPsnmZuJCcZocym/5LecaIa8gwAVMCGqNEAVc70A+KHzKtdjRqsHEgSqBf/MmMlAy9Mab//lQUUU97qSwakMSqIB0yCbKa+w4KyaFOulhCtSyQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev; spf=pass smtp.mailfrom=gurudas.dev; dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b=e3PXBqEb; arc=none smtp.client-ip=198.54.127.149
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gurudas.dev
+	s=arc-20240116; t=1788193737; c=relaxed/simple;
+	bh=RBFdUe9Lqu+3E6HjxM/7EycY+o+q4NHjhQ/1rLOnzpg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=D+1ZyzPGXNWvrOwx9Y3LfQQlB1RuQYb8Xa8NVtoxBiaRb11OnVp3e8MmYJ3Saxg2QAi2RM7zL0dOCMEvy9h9snjDqD65krh0PVaBirujuW3kU9Shxk8QA4pk2OqpxMD8GLUpSe3saER6c1qWZgjo43lNcdCxkvEsr0VJGnQHwH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=cVvUotV8; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b="e3PXBqEb"
-Received: from [192.168.1.106] (107-194-158-19.lightspeed.sntcca.sbcglobal.net [107.194.158.19])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.spacemail.com (Postfix) with ESMTPSA id 4hYZBq15Ydz2xBB;
-	Mon, 31 Aug 2026 16:26:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gurudas.dev;
-	s=spacemail; t=1788193620;
-	bh=5tddOBd7dVOrv6zV3NixClhiHGTuWK8xZ1nqIYt6MhI=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=e3PXBqEb4ZqVUXQJGU2eTcPPA0CkCRq4xZEoBpXKC8I+bhiR3zLjmvaB9Twwj3yGd
-	 8betetBYBRoGR34YiDYpxq8nv0e4bK5cldjD8BjCqwEPyRvTaqhclH3HJHXWSOhNcG
-	 FU80g0bvo6fdQ4y0wQzxBDS6cQtWEts3jYDV/AO/tdcvHhIDO9nklnP7xHhhyvor+m
-	 BduTvHXZUydH0sbaud2yVtVzaoJNfDHHjuG2MQYnDkpRp6UJ1rXW0/RKG9CgQTetra
-	 LzX6iIaXT2tlnZGnZJJq+aVqaCCQVe761Z1FYOw8CapwVzyv9J0sYV7kWUCD2oUGRM
-	 KU1VmUhzrOOeQ==
-From: Guru Das Srinagesh <linux@gurudas.dev>
-Date: Mon, 31 Aug 2026 09:26:30 -0700
-Subject: [PATCH v3 3/3] iio: imu: bmi270: Use in_range_inclusive() in
- bmi270_write_event_value()
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="cVvUotV8"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7ec1e9d3359so2999706a34.0
+        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 09:28:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1788193733; x=1788798533; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=EWqZKH5cJQNgKE7le/WSTlw6Pq/lpoqP4enPlKSIv4U=;
+        b=cVvUotV8t4gHLwPbNl0AUFJniJl4drCTxW8s4qKnZo1uH3AAeYJUdaXa/UJ7PKWJDW
+         BsMSX4oZSvkeYOV1uGuG5uGLAUNkWyXd+YSO2pSdd7ubXsew9Sj3iJz3Gqza6nDTSRAT
+         dCe7YRWtgVLXl6sBVuC4+m442YektGGfoVDjXTwRuXSv/4SbZlYeNKtNhRymIWVoyu01
+         w7HO8z/FeUaC188xu/bD+3XqmcGYoRLzFNOPL8bA/qPY7518k/EibzWdoSP31TFVMUSV
+         sKUyEHk7VBx0Poh8QW/t0oAWdAM0jTEjS5pLmW52UcEcar6kx/ACFPI5b/rKMKbTGBld
+         +rYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788193733; x=1788798533;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EWqZKH5cJQNgKE7le/WSTlw6Pq/lpoqP4enPlKSIv4U=;
+        b=STP/VAo+039MfkY+dfCpGi9hmMIdh/iM1C4wci2H3SuMR7d8Zzo6dTH0ZTHvZev8o4
+         yhqFdwR+vIeSH1IgXdNU7Pn0x6dLc8aV4zwtBneTFxW0R414+5zSzqOmdP/0jLwQwZYx
+         nMyHtwnA4VAdNizcpkKhC0o2xzOtQXY+SwKt7oZXPb6IvpaSrQ+bf/02oDKbEuj1sf27
+         CPupdv3XW740R1bPtN6ZTgccBOFCvyUTk6wh3kczSRi4bjFl7ZDyb2fevAMxUSLDu+kM
+         1LlB5e1N6tgLaCpifUHKPyntXNlrmX5Tsm0wbqFbaUQTN+HziZ4W73lNQZJdrIceGEaN
+         IJyg==
+X-Gm-Message-State: AFuF++mHP2A0/+m8WNDVfOHCWVX8pqT7j1oDERxaAZeON7vtDI/I6k13
+	f7rzPN7BUf/RFk6OZansgadhlfVOEKIXV5RjbREmKH7p+taAxYhnrIKptd5zkDnEh1o=
+X-Gm-Gg: AR+sD11ND4DHdygRIji0TEb4oz6zJJvTDERm7P6Ui2BBhOmeSamFnUUu0hR3Hc8DjWT
+	UFtIHwWTRNHoKvf9MoUEVWoyKbb3rHBga90tdz86igenVUo+t7EJnTnQWRQWtvg3wy093O8KByd
+	JK6bhawGdBDqhO0/YpmA6fmICGl2dWZX73NtrE1OY8rm2+LDpraa2b2CrUpQpaoNrTG0ZJ1MU4g
+	iQGSRuHe7MBb4d0X9/TqbF6mlrj6KTxLB/Poer/zNAfHVGDZj+jJG38UGoOHcmxldVgNOo7gKL8
+	foBns42JAJLR35crnRc+zIDOujjd32GN8s1yhNmmPsXdR7WRHOEreKm7Wnnn3dTJEZjLhUTOSbb
+	k0FsrAhd6Zmrm+W/6+deH7WTDW05JLqm7M/LbmPp5LHIroL+fWV4DHE1uSptD7LgmpDyczQqHNh
+	r4BgN/y3PiAn9qkvthSIHpws4xOwAffGGavF8/KkkByPzerfoQLY9zSjPzwtUYHWfhQnEqNK+HH
+	NwhR6SnUXA/eSInJm5D4+oHenPkz6o0sm6n
+X-Received: by 2002:a05:6830:208a:b0:7f6:705b:ffe7 with SMTP id 46e09a7af769-7f687bcaa4cmr1802418a34.14.1788193733045;
+        Mon, 31 Aug 2026 09:28:53 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:778b:da9:a8a1:bc78? ([2600:8803:e7e4:500:778b:da9:a8a1:bc78])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f4fa96cd7csm8181194a34.14.2026.08.31.09.28.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Aug 2026 09:28:52 -0700 (PDT)
+Message-ID: <268eb714-2849-4ebb-9f9d-9607fcce3358@baylibre.com>
+Date: Mon, 31 Aug 2026 11:28:51 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 2/2] iio: adc: ti-ads112c04: Add support for TI
+ ADS112C04
+To: Kyle Hsieh <kylehsieh1995@gmail.com>, Jonathan Cameron
+ <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260824-ti-ads112c04-driver-v7-0-6b3c9c87d0e4@gmail.com>
+ <20260824-ti-ads112c04-driver-v7-2-6b3c9c87d0e4@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260824-ti-ads112c04-driver-v7-2-6b3c9c87d0e4@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260831-minmax-in-range-incl-v3-3-30444a2fd2a5@gurudas.dev>
-References: <20260831-minmax-in-range-incl-v3-0-30444a2fd2a5@gurudas.dev>
-In-Reply-To: <20260831-minmax-in-range-incl-v3-0-30444a2fd2a5@gurudas.dev>
-To: Alex Lanzano <lanzano.alex@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
- Andrew Morton <akpm@linux-foundation.org>, 
- Gustavo Silva <gustavograzs@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- Guru Das Srinagesh <linux@gurudas.dev>
-X-Mailer: b4 0.15.2
-X-Envelope-From: linux@gurudas.dev
 
-Replace the three "in_range(val, 0, MAX + 1)" checks with the new
-in_range_inclusive() helper, expressing each as the inclusive [0, MAX]
-range it actually validates.
-
-No functional changes are introduced by this change because @min <= @max
-in the inclusive range in both signed and unsigned readings and hence
-the check correctly continues to hold and is unchanged in behaviour.
-
-Assisted-by: Claude-Code:claude-sonnet-5
-Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
----
- drivers/iio/imu/bmi270/bmi270_core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/imu/bmi270/bmi270_core.c b/drivers/iio/imu/bmi270/bmi270_core.c
-index 2ad230788532..7f386a615b39 100644
---- a/drivers/iio/imu/bmi270/bmi270_core.c
-+++ b/drivers/iio/imu/bmi270/bmi270_core.c
-@@ -1132,7 +1132,7 @@ static int bmi270_write_event_value(struct iio_dev *indio_dev,
- 	guard(mutex)(&data->mutex);
- 
- 	if (type == IIO_EV_TYPE_CHANGE) {
--		if (!in_range(val, 0, BMI270_STEP_COUNTER_MAX + 1))
-+		if (!in_range_inclusive(val, 0, BMI270_STEP_COUNTER_MAX))
- 			return -EINVAL;
- 
- 		raw = val / BMI270_STEP_COUNTER_FACTOR;
-@@ -1152,7 +1152,7 @@ static int bmi270_write_event_value(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 
--		if (!in_range(val, 0, (BMI270_G_MICRO_M_S_2 / uscale) + 1))
-+		if (!in_range_inclusive(val, 0, BMI270_G_MICRO_M_S_2 / uscale))
- 			return -EINVAL;
- 
- 		tmp = (u64)val * BMI270_MOTION_THRES_FULL_SCALE * uscale;
-@@ -1161,7 +1161,7 @@ static int bmi270_write_event_value(struct iio_dev *indio_dev,
- 		regval = FIELD_PREP(BMI270_FEAT_MOTION_THRESHOLD_MSK, raw);
- 		return bmi270_update_feature_reg(data, reg, mask, regval);
- 	case IIO_EV_INFO_PERIOD:
--		if (!in_range(val, 0, BMI270_MOTION_DURAT_MAX + 1))
-+		if (!in_range_inclusive(val, 0, BMI270_MOTION_DURAT_MAX))
- 			return -EINVAL;
- 
- 		raw = BMI270_INT_MICRO_TO_RAW(val, val2,
-
--- 
-2.55.0
+On 8/24/26 3:49 AM, Kyle Hsieh wrote:
+> Add IIO driver support for the Texas Instruments ADS112C04 (16-bit)
+> delta-sigma ADCs.
+> 
+> The driver implements:
+> - Single-shot conversions using the IIO raw read interface.
+> - Dynamic parsing of single-ended and differential channels from
+>   device tree child nodes.
+> - Hardware interrupt support via the DRDY pin, falling back to
+>   software polling if no IRQ is provided.
+> - Per-channel reference source selection (internal 2.048V, external
+>   REFP/REFN, or AVDD) via the reference-sources device tree property.
+>   refn-supply is not yet supported.
+> - Hardware reset via the reset controller framework, falling back to
+>   the RESET command when no reset controller is present.
+> 
+> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+> ---
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 
