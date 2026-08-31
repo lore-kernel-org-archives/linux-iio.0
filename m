@@ -1,126 +1,140 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from out-2z4y-a139.jellyfish.systems (out-2z4y-a139.jellyfish.systems [198.54.127.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5E641A551;
-	Mon, 31 Aug 2026 16:24:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D44419305
+	for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 16:27:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788193453; cv=none; b=n4BLY3vSomAHveksZ/cCzG7+q/eAv4FPw5INLVZK2B4h5h+DrcGcacBaK/tLF/06hFag1AHqB0d2OjqZdGnVHCSz7VZ5hzhdfntr8MGpZntZlHdRjJUJjYu8+AWs/3QyeIqDyjooSG2ZgLMr2y1Wv6vJFgSU1ZY2TeWWuJLBlIc=
+	t=1788193625; cv=none; b=R9P+NaB481hWnZBMJTC8u7kpXODl6u9/URb18GHpQoeF+zgcgaeA6eRIQxApWFyWGBzJ8EBb+Db+emLKmgHeDGGEiEp+FZRLcDhT0/ES43GzuMUg/rmDRKcoNW2k1wCClzA8lnWzIdKjgGOj/aOzHl0keTeQJy3Z3AJ6KYNwPOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788193453; c=relaxed/simple;
-	bh=/w623wBQkABc5+t0xwYrUv6rI0oWlcbDgaEedLQYnfQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o1vrXdNLyGg+nzu/Ay+83U2nNmbolULt+mE5Z9bby5GL6DXiPUJ1EW3YRRiD2REJbYYNGcebgOfgHcHnBERDydD4iXZZESyoYcf5xL3A++7wv/26ix5auDbv6vRYsG8MI8T2IJ/PHtSa5oBCqPZCKrarsVJut3YnaF6jn2FDFd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KyU/UxBj; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788193625; c=relaxed/simple;
+	bh=J8Zr2NgwqfdyKxmCz+NhIrRV/35jxbRPe0OXJTalUYA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=URXAiOh5d82MPuxQMkUWmXFcgVvt5LlAjW2f/Zy7fry4vnvl5r98CvIoMC3oIf/ZXNRq7571mc+U3jetaeXvEUxzQxN/p8n92tocwGRyscPBYOjmKrLHrdRBkru9YHdnfzS1hkwtA3FKd/aB5TXCodkTJZPCkkglMdhaNUpXZKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev; spf=pass smtp.mailfrom=gurudas.dev; dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b=nHLWsnaJ; arc=none smtp.client-ip=198.54.127.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gurudas.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gurudas.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KyU/UxBj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E3561F000E9;
-	Mon, 31 Aug 2026 16:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788193452;
-	bh=rg9iFiy/P5Gzx3wegX3cahRTxdCoNO1WoYkvR0YeYKs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=KyU/UxBj03GcvRe9UOzurXo0xwD1Kuk/uQKNcRep16T4qljYFmHxl9l35tmxRGFSW
-	 GlsG/02qRtotKZ5Dn9znesNPH23fCyo1QyRxNhEi7mNgUAj9I6e7ZamzznM6tXlMQD
-	 anVnpvr3AdP0amfrKWB5ssqqPlvGT4+Rv9w3/l8goH+i00LePXqyxaIoeN0Fkgi5cJ
-	 8wAx1Wadlci1WlfPVx9XGb7cDB6CahAyzPmrZk8+zVYh6ZlKEfPp04rE4V7EyFJNkT
-	 58th7bDDgahLbkWAcDT86adMJ1Ns3I1K6/7l2iYQDTbbxzL135cfgCf13dEdvjyxEp
-	 rCEUmtmRVQIiw==
-Date: Mon, 31 Aug 2026 17:24:08 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 02/10] dt-bindings: iio: adc: support the TI ADS126x
- ADC family
-Message-ID: <20260831-elude-steadfast-b8017ee226d0@spud>
-References: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
- <20260828-ads126x-v4-2-1dc27e9c0260@gmail.com>
- <20260828-cartel-willow-9592e4e8b912@spud>
- <20260830025743.70dc65e4@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gurudas.dev header.i=@gurudas.dev header.b="nHLWsnaJ"
+Received: from [192.168.1.106] (107-194-158-19.lightspeed.sntcca.sbcglobal.net [107.194.158.19])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.spacemail.com (Postfix) with ESMTPSA id 4hYZBl3SPJz2xB0;
+	Mon, 31 Aug 2026 16:26:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gurudas.dev;
+	s=spacemail; t=1788193615;
+	bh=ltpBQcv0XzcU/cQV4/iIcH6lXi0I1q8OzRgtj3oQgco=;
+	h=From:Subject:Date:To:Cc:From;
+	b=nHLWsnaJJoFcRwAlwLl5D8n3ST3FiNV23ac+oQObjvmk3YpEqZL9yqxnV+Ftw4EBv
+	 LaEtRM+rWwpblTqsCJAHdyP74tlrHJfVXptWb1IFDb9vrNkkbCu2prSDOVqOv/g4p6
+	 abV585afN23+QE14iPvTDnOpX1At3TS0VAgE2CbSrt1kdjw0uCzHAJA+21WRRHb9rW
+	 Br42b0m5jB37XD084PO0KHO0TB/19s6phkE0c+qvAi93U36GsMjrdWf1zvN6EvwcLm
+	 KNm2XcNaLfrRAFh9WR97RM0iuUPPid6Y6oufw5QHQpOLvaKwpi71/7BlQIFo7hUXP6
+	 HDu9HTjoP8fvQ==
+From: Guru Das Srinagesh <linux@gurudas.dev>
+Subject: [PATCH v3 0/3] Introduce in_range_incl() inclusive range check
+ macro
+Date: Mon, 31 Aug 2026 09:26:27 -0700
+Message-Id: <20260831-minmax-in-range-incl-v3-0-30444a2fd2a5@gurudas.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="V048FjMaoPN4PMOh"
-Content-Disposition: inline
-In-Reply-To: <20260830025743.70dc65e4@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNQQ6CMBBFr0K6tgYGacWV9zAuSjuFGi2mhQZDu
+ LstbHRhXL7Mn/dm4tEZ9OSUzcRhMN70NkK5y4jshG2RGhWZQA4sPxYVfRj7EBM1lrrtbOWdCqg
+ kHKBBxhmJr0+H2kyr9nLd2I/NDeWQXGnRGT/07rV2Q5F2fxKhoDkVvNJc1QJrwHM7ulEJv1cYS
+ IoE+NSwHxqIGs6Y5iVXijX6W7MsyxsGkSf6EwEAAA==
+X-Change-ID: 20260815-minmax-in-range-incl-a25c242be676
+To: Alex Lanzano <lanzano.alex@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ Gustavo Silva <gustavograzs@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ Guru Das Srinagesh <linux@gurudas.dev>
+X-Mailer: b4 0.15.2
+X-Envelope-From: linux@gurudas.dev
 
---V048FjMaoPN4PMOh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Extend the existing in_range() API to provide a user-friendly inclusive
+range check and add one illustrative in-tree example of its use.
 
-On Sun, Aug 30, 2026 at 02:57:43AM +0100, Jonathan Cameron wrote:
-> > > +
-> > > +  clocks:
-> > > +    maxItems: 1 =20
-> >=20
-> > clock doesn't appear mandatory, what does it do?
-> >=20
-> > > +
-> > > +  '#io-channel-cells':
-> > > +    minimum: 1
-> > > +    maximum: 2 =20
-> >=20
-> > What's the use case for actually setting this as a single cell? Kinda
-> > confused by it.
->=20
-> Part dependent, but I think we should just make them both take the two
-> parameters and have the value of one of those fixed to 0 for some parts.
-> Probably easier to understand that way at least.
+The in_range() API lends itself easily to callers who care about a
+half-open range, but has no straightforward equivalent for callers that
+want to check for an inclusive range. Such callers have to resort to
+this pattern:
 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,ads1263
-+    then:
-+      properties:
-+        '#io-channel-cells':
-+          minimum: 1
-+          maximum: 2
+	in_range(val, start, (end - start + 1))
 
-This in particular is what I question. Two different devices having
-different cells is fine, this one device allowing both? Nah. It should
-be fixed to 2. The ads1262 should probably have it fixed to 1, as the
-driver already does.
+which is quite clunky and easy to mess up. Examples of such callers:
 
->=20
-> >=20
-> > Otherwise, quite frankly, the binding is too complicated for me! I'll
-> > have to leave it up to the IIO folks to cover whether what's being done
-> > is sane.
->=20
-> I'm rely on David to take a look :)
->=20
-> To me it looks mostly fine but a few odd corners where I'm not sure
-> how things are supposed to work.
->=20
-> Jonathan
->=20
-> >=20
-> > Cheers,
-> > Conor.
-> >=20
+- fs/btrfs/extent-io-tree.c hand-computes the inclusive check by
+  passing "state->end - state->start + 1" as in_range()'s len argument.
+- drivers/md/dm-raid.c has its own file-local __within_range(v, min, max)
+  helper, independently invented, with almost a dozen call sites in
+  that one file.
+- drivers/iio/imu/bmi270/bmi270_core.c has three "in_range(val, 0,
+  MAX + 1)" checks in bmi270_write_event_value(), computing the +1 by
+  hand for the same reason.
 
---V048FjMaoPN4PMOh
-Content-Type: application/pgp-signature; name=signature.asc
+This series converts only bmi270_core.c as a first step, as an exemplar
+for the usage of the new API. Note that similar conversions in other
+call sites are not drop-in replacements and have to be reviewed
+carefully to ensure the behaviour of the check does not change.
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Guru Das Srinagesh <linux@gurudas.dev>
+---
+Changes in v3:
+- (Matthew) Go back to in_range() approach which was earlier incorrectly
+  abandoned in v2 to avoid the overflow problem with v1's plain wrapper of
+  in_range() with len = (max - min + 1)
+- (Andy) Add Kunit test for in_range_inclusive() covering both u32 and
+  u64 test cases. Tested with:
+  ./tools/testing/kunit/kunit.py run --arch=x86_64 "in_range*"
+- (Andy) Added return value kernel-doc description
+- in_range_inclusive() deliberately does not add a BUILD_BUG_ON for
+  @min > @max nor a signedness check in keeping with the in_range() example.
+- AI assistance (Claude, sashiko using Claude CLI as backend) was used
+  to improve precision in kernel-doc description, refining test cases
+  and adding more test case classes.
+- Rebased to v7.2
+- Link to v2: https://patch.msgid.link/20260816-minmax-in-range-incl-v2-0-766f737dd6bf@gurudas.dev
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapWqqAAKCRB4tDGHoIJi
-0r/nAQCL4EiB0v39AnBgsiiFn/oi0tW3kJUHAfStcOb7BDKWywD9FqsK6hfleJEY
-CzCS041SjBYVb2A+KByeqdF6Z5xw3AI=
-=lbHe
------END PGP SIGNATURE-----
+Changes in v2:
+- (Andrew) Rename in_range_incl() to in_range_inclusive()
+- Wholly incorrect approach abandoning in_range()
 
---V048FjMaoPN4PMOh--
+Link to v1: https://patch.msgid.link/20260815-minmax-in-range-incl-v1-0-a75f7d9ae92e@gurudas.dev
+
+To: Alex Lanzano <lanzano.alex@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+
+---
+Guru Das Srinagesh (3):
+      minmax: Add in_range_inclusive() for inclusive range checks
+      lib/tests: Add in_range_inclusive() KUnit test
+      iio: imu: bmi270: Use in_range_inclusive() in bmi270_write_event_value()
+
+ drivers/iio/imu/bmi270/bmi270_core.c |   6 +-
+ include/linux/minmax.h               |  39 ++++++
+ lib/Kconfig.debug                    |  18 +++
+ lib/tests/Makefile                   |   1 +
+ lib/tests/in_range_inclusive_kunit.c | 249 +++++++++++++++++++++++++++++++++++
+ 5 files changed, 310 insertions(+), 3 deletions(-)
+---
+base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+change-id: 20260815-minmax-in-range-incl-a25c242be676
+
+Best regards,
+--  
+Guru Das Srinagesh <linux@gurudas.dev>
+
