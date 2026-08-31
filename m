@@ -1,170 +1,112 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80E795474F;
-	Mon, 31 Aug 2026 00:34:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1927DE571;
+	Mon, 31 Aug 2026 00:42:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788136472; cv=none; b=Jx2qgWK20Y6FhoLtTtSiWdulYt+q/Q/T0fLpqojw/t83IwJzOBMs01t3dEtK+ma4TQ9Al4AUNOZOfaVyqmqd5JKTHNunffTdiJljq05HtZSEVi6hgD3/zlQBw0KJUH98+Y+Dh5ItzJN0KTrNTH8D1FjNvGsf5Q49DSGqr0+kb7g=
+	t=1788136921; cv=none; b=ZFKd5CANgxDWueE5Dg4cP3QoHDbJbfShZuKqOEFYVE7J0syC1538QgOCS0lroAsqZ6mfYNJEprmvaBIGSh6cD3W0rQwx6cBkoLci19YO/X4XxwgtIJ8aEHPhcXu48q6f+tsTPt/el4cHFFBGNFuhdLcc7qulHhgNITKKz5HMcno=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788136472; c=relaxed/simple;
-	bh=Tke5RRhMkx2z9Owf+XSmPcsgWzXm10uR9/fbtCkG/sQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AhpbTm7EC7dY+tbBHmtp3rGhv3GRo2adWeCsseyu9YT6iXId6hg5fLeMJHwftyFZAAO0jQjRJGuFhQqlnknisG3iIPUBfzGwAztkjQmITQ/FGgU9wcywuM9R7L7EdN1ID/DYi+um/eMYl7/gyBPwfaG42iHtGUTjfaB2aDdumUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=akFmQt2O; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788136921; c=relaxed/simple;
+	bh=Va2nVMvF4tdrSfcTdmGWvv6ZdBLUhrd9nazicKWzj6o=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=stQKuwTSuqU2Jq6lw4AxKbR8Rql/BAco5zr2tvuuUrerCUPoBsHBMEW8CJcvbLqpFGzG1fi/f8oDjFNg2TWboIChy9NJiagAh15PhG5YYtDNmtOghYcO/f56B0hkRCJbWF9OsfGugF2Zcy9m2shfUYHBubLPgGK1MfaLu4JpD5c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M/ktwCnq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="akFmQt2O"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF011F000E9;
-	Mon, 31 Aug 2026 00:34:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M/ktwCnq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A86CF1F000E9;
+	Mon, 31 Aug 2026 00:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788136471;
-	bh=vdyuWGBxj3YiYnZRxx774ND34vHiztWK0k0V7hdpqQo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=akFmQt2OXVzikINqVpW29P4sbgKZ284EJfWtlKhwGZfpjbOGqxWfRQOnwaJmlzFjS
-	 Dgw0EA9f6BusFQHerY5VIHaENUu2rN3r+NliphR0n98SjZt3mcgfAYBEQAGI26sz5H
-	 VWc4UQtl05UgAktSJ9U1jA5NI2Qrt3zXus7SrWwajfeaYDeH4Q5zTeA4KLmI8ulIGE
-	 3UPgPrFx+vdJ4DtRu3ko2rlT5GM0pV2ZgaKvH6wS/juhKRwepHml2DJnlx1DLQqOEQ
-	 cEMyODGXfg4ky8/9CCOwb0djx8CvAgiiLppFUVcQJoHn3zO+NqN1kNe/7Y+IN1EUHT
-	 Np0jRrdk9jsAQ==
-Date: Mon, 31 Aug 2026 01:34:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Esben Haabendal <esben@geanix.com>
-Cc: "Joshua Crofts" <joshua.crofts1@gmail.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, "Lars-Peter Clausen" <lars@metafoo.de>, "Rob
- Herring" <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>, "Martin Kepplinger"
- <martink@posteo.de>, "Sean Nyekjaer" <sean@geanix.com>, "David Lechner"
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, "Martin Kepplinger"
- <martin.kepplinger@theobroma-systems.com>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 7/9] iio: accel: mma8452: Drop unneeded lock acquire
- on read
-Message-ID: <20260831013425.7803ce1c@jic23-huawei>
-In-Reply-To: <87pkz6mh07.fsf@geanix.com>
-References: <20260825-mma8452-open-drain-v6-0-9b252804ee80@geanix.com>
-	<20260825-mma8452-open-drain-v6-7-9b252804ee80@geanix.com>
-	<UFc9cC1VeohKw6lxQ8uulsfj9wJ_OqGUgGPTUnTX-zssKZ97aEC0Xi9nsAxv-tcf2DP5e85ElFZ8wPgxwG8l3g==@protonmail.internalid>
-	<20260825121704.00004ed3@gmail.com>
-	<87y0dumiga.fsf@geanix.com>
-	<2m3zXurwen7GRVSaBnDu6bY31Gn7dFzO2UEoU4bRNxCGCR86DTyGq-CMmmeEh-U7AcCWC6eBjjFbZSGNltSwWg==@protonmail.internalid>
-	<20260825154449.00002f6f@gmail.com>
-	<87pkz6mh07.fsf@geanix.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1788136919;
+	bh=OLOC2S+02tg6JAR36TaW4fxJhC3mIL2wPvhEoBNhqvY=;
+	h=Subject:From:To:Cc:In-Reply-To:References:Date;
+	b=M/ktwCnq1UxuL7TL4qCoxqGLHXcCfguwsMXygm3xLLRDvB0O2ds5zrFVQV4iGRHaz
+	 Nhln/XTw7IhmUqW9saowdouhuGxKcdhdeCOeMAJrSgbH2TzFbSOBaNa9NyBdn0bKo1
+	 NTJ+sFQn7y6dOhlfnI5D0VV0Ez0kIgPflVWW0+N5OTcr7WtB9EHggg/vtTSLpoHsGn
+	 A466N9LKXS1daiQEUKEePDQ38JbGje0ZiumCUA8oyRdf21lKbomd8cHhDGJenyH3v1
+	 /WWKM9mD51w/M/1aQRROT7LS7YBL3lrhKKGhY6BtHtN7g1IJcqli+tAbq1W2IJAtDS
+	 2n/5ZuJj99a4A==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v6 4/6] iio: pressure: dps310: add triggered buffer
+ support
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Rupesh Majhi <zoone.rupert@gmail.com>, 
+ Andy Shevchenko <andy@kernel.org>, Bill Wendling <morbo@google.com>, 
+ David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>, 
+ Joel Stanley <joel@jms.id.au>, Jonathan Cameron <jic23@kernel.org>, 
+ Justin Stitt <justinstitt@google.com>, 
+ Nathan Chancellor <nathan@kernel.org>, 
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+In-Reply-To: <ao1bBFkLXIIgNl49@ashevche-desk.local>
+References: <20260824201203.396651-1-zoone.rupert@gmail.com>
+ <20260824201203.396651-5-zoone.rupert@gmail.com>
+ <ao1bBFkLXIIgNl49@ashevche-desk.local>
+Date: Mon, 31 Aug 2026 01:41:46 +0100
+Message-Id: <178813690647.2788519.5367342639957476343.b4-reply@b4>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1342;
+ i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
+ bh=Va2nVMvF4tdrSfcTdmGWvv6ZdBLUhrd9nazicKWzj6o=;
+ b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqlM3KnrVra9pc7LX4upS85Jp9VQQ/zTrvwfBSy
+ L07L3nuKEaJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCapTNyhEcamljMjNAa2Vy
+ bmVsLm9yZwAKCRBUhTSZxPQWiI/kD/0UyHuKncW8WGzqfXSq1YmGqgew/WEyW4OclcFSO/cez4Z
+ JX4m7jNf1XJviqh/MsQXqU70GQvZwuVY+C+4RGXcKOHFR17+PBjPdRKsqCOXLyyVMZlYyTElpmT
+ apOcNrpMGT9Qq3yATqbswE4eqwLTNyAY62mRt6oGZYtiV4Tl9F+tnY6hLUfLVuzorqSD1sP+lgf
+ Lm7xSSN5vJKdfa9vqD4kFuh9rBavL4aPlX4VkpMz50nkkfihdN5UUya2ezieTbgsVg4ulRiSH8N
+ auqviDH7cvwzokLRZRFWh+uCuwVRuPvNVdZQJeDUIysA84Qyapy5Osf9iAttVwTXZJYVbehOIiT
+ XjFEWPmilb+QXoGYLK2f3XamV3kOjtN6oLyJRDpOnVjJcs4AxLVCXIj2x+SYxxpECQj9P+EdiQh
+ 70hEFQSCUsTF021qHJH2sh/BAgqRYvNi+77dcZu+Ax1DSY1Om71L5WpG1v2PUAzgsdLBUD/ZRgK
+ e4rWjZteZTlgfxb1IwDGDveC5H8pnd8DAPFHKZoNbe9erUfBXYpl4PgR+GNA0hEm1iXcweyGRrL
+ Qxo4wridei15pFU0GVlAiioLSnoSYPXUXPTJbtqlaVHCbgVJ3aEI1OS3aYQFjvjHm9M9MNEIjmL
+ Dy6VX0tnw/4vwGOMdtwxrE+c4Prx+HC9RHlCnog==
+X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
+ fpr=6E2966B387840652912681B154853499C4F41688
 
-On Tue, 25 Aug 2026 16:06:32 +0200
-Esben Haabendal <esben@geanix.com> wrote:
-
-> "Joshua Crofts" <joshua.crofts1@gmail.com> writes:
+On 2026-08-25 12:06:12+03:00, Andy Shevchenko wrote:
+> On Mon, Aug 24, 2026 at 11:12:01PM +0300, Rupesh Majhi wrote:
 > 
-> > On Tue, 25 Aug 2026 15:35:17 +0200
-> > Esben Haabendal <esben@geanix.com> wrote:
-> >  
-> >> "Joshua Crofts" <joshua.crofts1@gmail.com> writes:
-> >>  
-> >> > On Tue, 25 Aug 2026 10:27:45 +0200
-> >> > Esben Haabendal <esben@geanix.com> wrote:
-> >> >  
-> >> >> There is no need to acquire data->lock when calling mma8452_read(), and
-> >> >> dropping that makes it less likely to end up in an AB-BA deadlock
-> >> >> situation.
-> >> >>
-> >> >> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> >> >> ---
-> >> >>  drivers/iio/accel/mma8452.c | 2 --
-> >> >>  1 file changed, 2 deletions(-)
-> >> >>
-> >> >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> >> >> index 7ef1a9a91c31..9ae2c3e60576 100644
-> >> >> --- a/drivers/iio/accel/mma8452.c
-> >> >> +++ b/drivers/iio/accel/mma8452.c
-> >> >> @@ -504,9 +504,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
-> >> >>  		if (!iio_device_claim_direct(indio_dev))
-> >> >>  			return -EBUSY;
-> >> >>
-> >> >> -		mutex_lock(&data->lock);
-> >> >>  		ret = mma8452_read(data, buffer);
-> >> >> -		mutex_unlock(&data->lock);
-> >> >>  		iio_device_release_direct(indio_dev);
-> >> >>  		if (ret < 0)
-> >> >>  			return ret;
-> >> >>  
-> >> >
-> >> > Sashiko has something to say and I tend to agree at the moment:
-> >> >
-> >> > Could removing this lock expose mma8452_read() to race conditions with PM
-> >> > auto-suspend and event configuration?  
-> >>
-> >> Yes. I tend to agree as well.
-> >>  
-> >> > mma8452_read() can be interrupted by the PM auto-suspend worker, which puts
-> >> > the device in STANDBY and disables regulators while mma8452_drdy() is actively
-> >> > polling over I2C. This can lead to I/O timeouts or errors.  
-> >>
-> >> Yes, and causing pain for other I2C devices on same bus :(
-> >>  
-> >> > Additionally, concurrent sysfs writes to event configurations invoke
-> >> > mma8452_change_config(), which puts the hardware into STANDBY to modify
-> >> > registers. The Standby transition flushes the hardware FIFO. If this occurs
-> >> > between the mma8452_drdy() check and the i2c_smbus_read_i2c_block_data() in
-> >> > mma8452_read(), the block read will fetch flushed or stale data.  
-> >>
-> >> Argh. Yet another level of trouble.
-> >>
-> >> Maybe we should extend the use of data->lock instead. Holding it
-> >> 1. whenever doing read-modify-write actions
-> >> 2. while holding the device in standby mode for changing registers
-> >> 3. while doing suspend/resume
-> >>
-> >> I was just adding support for a open-drain mode irq sharing you know.
-> >> While sashiko-bot definitely is catching lots of valid problems, and
-> >> fixing them is a good thing, this is starting to feel like I opened
-> >> Pandoras box by touching this driver :D
-> >>
-> >> I will try to wrap up a patch with the above described extended usage of
-> >> data->lock, but hope we can find a way to get the irq sharing and open
-> >> drain mode support merged, without necessarily having to fixing all and every
-> >> possible existing bugs as a pre-condition, but maybe delay some work to
-> >> later work.
-> >>  
-> >
-> > If they're pre-existing conditions then it's not required to fix those in the
-> > same patch series, you can come back to it another time or someone else can fix
-> > those.  
+> > Add a triggered buffer in order to capture continuously on both channels
+> > instead of one sysfs read at a time.
+> > 
+> > Raw register value is not useful on its own, pressure has to go through
+> > the compensation polynomial and needs a temperature reading. Report raw
+> > in Pa with 1/1000 scale to keep full resolution in the buffer without
+> > changing what the existing processed attribute reports.
+> > 
+> > Raw and processed reads return -EBUSY while buffer is on, so does any
+> > reconfiguration.
 > 
-> Great. I have created a local mma8452-next branch where I will continue
-> the work on some of these issues.
-
-Great. It is absolutely fine to postpone (or indeed ignore completely) reports
-from sashiko that are on preexisting issues.  That even applies when I point
-them out or suggest maybe you take a look!  I don't mind folk saying
-they are too busy!  I know I am which is why I try to talk others into doing
-this stuff ;)
-
+> ...
 > 
-> > Nevertheless this is an issue that will be caused directly by this patch if
-> > applied. If your only goal is to add support for open-drain irq sharing, you
-> > can probably just drop this for the time being and just focus on that.  
+> > +struct dps310_scan {
+> > +	s32 channels[2];
+> > +	aligned_s64 ts;
+> > +};
 > 
-> I will drop this particular patch for this series, and work on a proper
-> fix for all these race conditions in my mma8452-next branch.
+> Wondering if using macro here would make sense...
+Hi Andy,
 
-Excellent!
+Do you mean introducing a new one or using the buffer ones?  I'd
+rather keep explicit structures where possible.  They are much easier
+to reead as they make the data layout explicit, including the holes
+(as long as folk remember their c structure alignments!)
+- no holes here obviously!
 
-I'll wait on a fresh shorter version of this series then get that queued
-up to give an upstream base for further work.
-
-Thanks,
+We only introduced the IIO_BUFFER macros to cover the cases we
+can't represent as a structure because the timestamp moves
+around as the number of channels enabled changes.  Necessary
+trick to reduce the size of the kfifos.
 
 Jonathan
 
-> 
-> /Esben
 
