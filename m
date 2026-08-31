@@ -1,43 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 420AD2D73B6;
-	Mon, 31 Aug 2026 01:27:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD9E25B08E;
+	Mon, 31 Aug 2026 01:56:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788139675; cv=none; b=BmAvur2u3QoUKkkOhg+3q87ilJzXDcQAYT64iWBqgdlxx9iAfrpq8I8I027deb/CNkU4FgvDUMXGhhcJl6N7aDSovOvSoUO2L+8qRwxZjnolmIMfw/0bvG0kSGhL1lVvZC8iKkSUjkbF93j6lCCJlXeHIHEnMgkdJutetD6I7Y8=
+	t=1788141363; cv=none; b=RZEnCEoft9Jw5oPqRxz9+SHWGlUEmGA0PnLyioyeTne4JRJPqctZEJAUU6akpMuysXsWrgDhPWpF39qSo2ue6FarllKgxLkylbLGvnuu9Gjv7DrevodrroEuR24BmO5EtmQGZMpc0f0SrfGVhMJPqtbp8bm7ujM/OMTGGs/eBqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788139675; c=relaxed/simple;
-	bh=wpVhZ9dfQc6zN+U+o3HTprq9GFbXabEfjOSo9wdLW7Q=;
+	s=arc-20240116; t=1788141363; c=relaxed/simple;
+	bh=5oCtvhjiLCDgFPxNRXtmbEObahRGY7imzQ3jP0kf8sQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pTZbkt6zQ4Fb2PQI2e2Qzr3HmNMocPweyXxrpMJYNjo7VAVpD5zdxf6pFFMFmBAeOmGZG7t+V538qV/I20nH8f17cQiKnB4cHHAEcL963QY6lgE26XeS1Zqg9iGwC/CPcaTJNA6GJQn5X06ycBoszkfS1JwnBxfTK4k/Z1/MpdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=enVYugWQ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ijtNTKLOGi183NrbmQ/Ewy+eyuK1e80+iNp2Dm20s0vyZ8D+gx8tWJL8FBN404AwLRZNKuqU84hb35XwTWLJbqwWA1Q527bw3nT4eHpc3bEAqYOYbcJjcZyXQBtEkm0N/wdSO34JFgg1UGblyfSVnPLDMdaJ8RK2naJeMpfRK8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YdMwuCqq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="enVYugWQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1831A1F000E9;
-	Mon, 31 Aug 2026 01:27:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YdMwuCqq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D5C81F000E9;
+	Mon, 31 Aug 2026 01:56:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788139673;
-	bh=CsMF/MwrXn5D+z4CCMhvyxIpj7dLU68Gxw0tmBoqPjo=;
+	s=k20260515; t=1788141361;
+	bh=hyqp9QN9fSv18RFAzbc+q3w72fkLkoZKcSxhRSYFTxg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=enVYugWQlH+lv8TPvhH/LIHVCuLVyzhYCrJhW+bQiorUX/qfdA2j4Zv1aRDnKOvIn
-	 42tgYzGe/jyub+iczkOJOEoQbqadqyC21EnE8isVg5J0ZLJjJxEO94tbpVhsof0L43
-	 YleWvshJW2mscntBaFV4GF11I0A4xAvvhVhAhOIQ1sCWUL5M2TraQ5j+XIOAhVQ5RW
-	 H9HaMTsoXrBZfSitROi3Zs/i410j+XRZ2JUjPVKL418sfltmbXNaOo025ccVwnF1zH
-	 J/50++i4CHyol0vZ5XU+m0EyA/1Xy7JjrKfqOxQMgYETxRPwG/CfMol49nYor9HM83
-	 zUS+b7d4t/P4Q==
-Date: Mon, 31 Aug 2026 02:27:48 +0100
+	b=YdMwuCqqwUisYtwUM5fF3XW2e4TtD4hkWV9wmKO11GpaUanKVaGDARcc9K6Ln3whx
+	 6Lr82lRmy4nqX+0JYqus0stf91cTOH1r9rDIgL65ns9yRXnTEV8oWJ63w3tjMIAIM8
+	 EAPuIUtfVh/RzNaMuCkx9z4EAA51mkG/e+cR0LdnF9e8vei3jR7b3JiOJQO/LkdqJN
+	 xmHJVnqHTtFUAHnJNJ8oQiVhV7U76fxRrnTr+olOYw39zbHQ+gehNtK3oBBd12Y13h
+	 ervhrfmdfGFogjwSEYNDLS05khQxm8UHWRZ3KYmZslXYlvWbrYzmN+WZ+e1ltJNsE4
+	 6rwqezb768v3Q==
+Date: Mon, 31 Aug 2026 02:55:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: Re: [PATCH v2 0/4] inv_icm42600 driver enhancements
-Message-ID: <20260831022748.5b02e7b3@jic23-huawei>
-In-Reply-To: <20260824-inv-icm42600-enhacements-v2-0-0040837fde12@tdk.com>
-References: <20260824-inv-icm42600-enhacements-v2-0-0040837fde12@tdk.com>
+To: Vladislav Leonov <vlad@zlab.su>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Joshua Crofts
+ <joshua.crofts1@gmail.com>, Simon Glass <sjg@chromium.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] Fix RV1106 SAR-ADC support
+Message-ID: <20260831025557.6ee7c42e@jic23-huawei>
+In-Reply-To: <20260823122039.20831-1-vlad@zlab.su>
+References: <20260823122039.20831-1-vlad@zlab.su>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,78 +48,48 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 24 Aug 2026 14:30:06 +0200
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com=
-@kernel.org> wrote:
+On Sun, 23 Aug 2026 15:20:31 +0300
+Vladislav Leonov <vlad@zlab.su> wrote:
 
-> This series add enhancements patches to inv_icm42600 driver.
->=20
-> It includes:
-> 1. Move of MEMS stabilization sleep before FIFO configuration to avoid
->    pushing incorrect data.
-> 2. Use a fixed FIFO frame of 16 bits to avoid a bug of dynamic FIFO
->    configuration changed triggered by the sleep move.
-> 3. Simplify watermark computation using gcd.
-> 4. Enhance support of high frequency streaming by avoiding read of FIFO
->    count for watermark interrupt.
->=20
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Whilst sashiko did have quite a lot to say I 'think' they are all fine.
-However, please do take a look and if you disagree then shout.
+> This series fixes the support for the RV1106 SAR-ADC in the
+> rockchip_saradc driver and its device tree bindings.
 
-https://sashiko.dev/#/patchset/20260824-inv-icm42600-enhacements-v2-0-00408=
-37fde12%40tdk.com
+I debated how to apply this.  Technically patch 3 is a fix, 2 is an enabler
+and 1 is also a fix, but one for something that we just effectively patched
+out from running in patch 3.
 
-It may well be there are things in there that should be patches on top anyw=
-ay.
-I think all but 1 were things it even thought were preexisting issues.
+So in the end I'm thinking take this the slow path for next cycle.  Shout
+if anyone thinks this should go in during the -RCs and whether all 3
+should do so or just patches 2 and 3 (leaving us without driver support for
+now).
 
-Anyhow applied to the testing branch of iio.git which i just rebased
-on rc1.
+Applied to the testing branch of iio.git
 
 Thanks,
 
 Jonathan
 
-
-> ---
+> 
 > Changes in v2:
-> - Add commentaries for easing understanding of changes.
-> - Reword commit messages with better explanations.
-> - Link to v1: https://patch.msgid.link/20260820-inv-icm42600-enhacements-=
-v1-0-075a881db557@tdk.com
->=20
-> To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> To: Jonathan Cameron <jic23@kernel.org>
-> To: David Lechner <dlechner@baylibre.com>
-> To: Nuno S=C3=A1 <nuno.sa@analog.com>
-> To: Andy Shevchenko <andy@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
->=20
-> ---
-> Jean-Baptiste Maneyrol (4):
->       iio: imu: inv_icm42600: sleep before enabling FIFO data
->       iio: imu: inv_icm42600: use 2 sensors fixed packet size of 16 bytes
->       iio: imu: inv_icm42600: simplify watermark computation by using GCD
->       iio: imu: inv_icm42600: do not read FIFO count for watermark it
->=20
->  drivers/iio/imu/inv_icm42600/inv_icm42600.h        |   4 +-
->  drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  |  16 ++-
->  drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 112 +++++++++------=
-------
->  drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   |  16 ++-
->  4 files changed, 73 insertions(+), 75 deletions(-)
-> ---
-> base-commit: 53c022f51fbe540fffee2121ce9ed3e15266c9a4
-> change-id: 20260709-inv-icm42600-enhacements-1e0e18e6f868
->=20
-> Best regards,
-> -- =20
-> Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
->=20
->=20
+> - Combined the driver patch and the dt-binding fix into a series, as
+>   requested by Jonathan.
+> - Introduced a new patch (2/3) to group single-entries into an enum list,
+>   as suggested by Krzysztof.
+> - Added missing Suggested-by tag to the patch 3/3
+> - rockchip,rv1106-saradc compatible moved from the
+>   single-entry to enum list in the patch 3/3
+> 
+> Vladislav Leonov (3):
+>   iio: adc: rockchip_saradc: Add support for RV1106
+>   dt-bindings: iio: adc: rockchip-saradc: Group single-entries into an
+>     enum list
+>   dt-bindings: iio: adc: rockchip-saradc: Fix RV1106 compatible
+> 
+>  .../bindings/iio/adc/rockchip-saradc.yaml      | 18 +++++++++---------
+>  drivers/iio/adc/rockchip_saradc.c              | 16 ++++++++++++++++
+>  2 files changed, 25 insertions(+), 9 deletions(-)
+> 
 
