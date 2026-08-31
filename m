@@ -1,76 +1,117 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A87D03C09EA;
-	Mon, 31 Aug 2026 05:44:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA89938237F;
+	Mon, 31 Aug 2026 06:57:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788155083; cv=none; b=u8V02ZT492T13NTxFpmeS+TfX1J4SczB53j5+1tFsPqnC54f5Htby3WKwoVnQaBZIlneg0ffTld/YfBZGXQW9EkWazHCDYvM25oPPOwNqevVVJmoQFu8YTleLZMVqpNf530inxq1W5x4qsLQ9HiIhMWtZYyB1s7MS7zWfofn/6E=
+	t=1788159478; cv=none; b=rYDNWTnACn2fQBOdAXBdWeU6a3vxIaB1bLHuZSPINjWzFp68uSU3mb1N1WsOM9tYqmdbfKkBfRQeLNbyh/4dNl9JF3Sihz8LH1kR/Rov38/h5bKzw6wMZK5mdsatJz33qSfqiexb9Pojpki+sPqU9LUBYsqXpR/P/47+mNg+auY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788155083; c=relaxed/simple;
-	bh=whhlhW45YrV1ZZ0Lpvp2ksAfeLFYbZeMUfRzQgh8pdo=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=TODJVI50HYxe77dKesYz+p8SCSf0bIQZpk8rg/OQEw7qtRxFD12T74FR0Kj/xAQhAvGKjcnllQKt3C5WYe1P9NI4w0P18L3UG9AEZHEK6k3cVWsSnpgyEZEdnq7sovq0eJmZk/u2aIuGRaKZiF43CCauXBInVUoVDv2w0yPJaM0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=L4heFgj2; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1788159478; c=relaxed/simple;
+	bh=LmvD3JiC/xB5iW/v5VHf0t0gZZwGDSVtsR2NuCRY0zY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UGrBkkh+ayZzH86i8D8EoNOARdVzL2fLUz0Q0WUT7MY9Gnvi+0rbamH2zCkA+j8E8qP7KBGEvw5b3fxIavcEBOxWC9ps4LwJqQ3n5WyyTte6QE2SCBxw7npxpDjutC773n7PF78LmKwyl3YM70lQDm6IvjyTV+SxNnJiHc7jfEk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NcXi70i/; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="L4heFgj2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=85
-	PVWAYF456dtbQQdKApPzYdVbSLPm9X8lNgK3ZJTI0=; b=L4heFgj2f0zT4HEIR/
-	vs8X+DYzL281g7l5wz2E+lv//2J1K+6PYWL/Kmj96UzsjocXYlkBMh/pxyoVp4Jn
-	PneSOhipo+BxhrgsIc/tq41Etn7Ub+AqcP0lkukC6/fCwCtth+BovAMJfPDTnL9L
-	PSD2Ps4/GulIQMoJP0E8o+P58=
-Received: from localhost.localdomain (unknown [])
-	by gzsmtp3 (Coremail) with SMTP id PigvCgD3nxWrFJVqhT4sQA--.61087S2;
-	Mon, 31 Aug 2026 13:44:12 +0800 (CST)
-From: "Li Youhong" <dayou5941@163.com>
-To: biju.das.jz@bp.renesas.com,
-	wbg@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Li Youhong <liyouhong@kylinos.cn>
-Subject: [PATCH v2 0/3] counter: rz-mtu3-cnt: check clock and runtime PM errors
-Date: Mon, 31 Aug 2026 13:44:04 +0800
-Message-Id: <20260831054407.1695146-1-dayou5941@163.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NcXi70i/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788159475; x=1819695475;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LmvD3JiC/xB5iW/v5VHf0t0gZZwGDSVtsR2NuCRY0zY=;
+  b=NcXi70i/fGBYSNvqDraYUUm3pwLJsS4+8S8qe+Y0i/PjwWkbcgDRoD06
+   AaxVNn0QBdl6GpYhVJHMdtnAQTGDf+qq9qMrruorik4yw8NKwmBAoB0D0
+   YodIZau+bepExRavs7DiITSfqXzC6+OHiiEDo508AOIXasLRF65JHOWiL
+   Ezz0jeEfYMvCcvSEI7ytbyk/Qbra7m0spWnRWc3I+Lj+iXMMuKIxEtpCB
+   JND1E4n07iVeVbzlV1bWr0eLQnt/o1SSX63GznOzx1Id2Pjl8UJJicl/m
+   jhMg70W7zOWIDXpgKmISVdnqOqNOS9Mqn66IzGWy0ER19Otn+9TYRRTcq
+   Q==;
+X-CSE-ConnectionGUID: kqvLWLGWSpmIom73FuljUw==
+X-CSE-MsgGUID: 4w+rZBiHS8SLQWjSxVn9yQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="114094121"
+X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
+   d="scan'208";a="114094121"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 23:57:52 -0700
+X-CSE-ConnectionGUID: O7Uuuot3RsC1rdmoEBxO1g==
+X-CSE-MsgGUID: Bxbbq+7pRKuQC34f/h3RDA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
+   d="scan'208";a="266137786"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 23:57:49 -0700
+Date: Mon, 31 Aug 2026 09:57:47 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Yash Suthar <yashsuthar983@gmail.com>, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, grondon@gmail.com,
+	linusw@kernel.org, hexlabsecurity@proton.me,
+	sakari.ailus@linux.intel.com, srinivas.pandruvada@linux.intel.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] iio: accel: bmc150: use DMA-safe buffers for
+ regmap bulk reads
+Message-ID: <apUl63M931lQDdGu@ashevche-desk.local>
+References: <20260825085156.212042-1-yashsuthar983@gmail.com>
+ <20260825085156.212042-3-yashsuthar983@gmail.com>
+ <ao_hr-0BelQWI27t@ashevche-desk.local>
+ <20260831012450.3382868c@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PigvCgD3nxWrFJVqhT4sQA--.61087S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtr15ury5tw4DtF17Jr48Crg_yoWfKwc_C3
-	98Xa43Xr4FgF4kua9rt3W5XrWrKrW8Wry8XayqvryfCr1ayw1DGr4UGr9IvwnrXwn8AF1D
-	tw48ZF1fZr1qkjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8aNt7UUUUU==
-X-CM-SenderInfo: 5gd103ivzuiqqrwthudrp/xtbC3Qww3mqVFKwH4wAA3c
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260831012450.3382868c@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Li Youhong <liyouhong@kylinos.cn>
+On Mon, Aug 31, 2026 at 01:24:50AM +0100, Jonathan Cameron wrote:
+> On Thu, 27 Aug 2026 10:05:19 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Tue, Aug 25, 2026 at 02:21:55PM +0530, Yash Suthar wrote:
 
-v1 checked only clk_prepare_enable() in probe/resume. Reviewers asked
-to also handle pm_runtime_set_active() and all pm_runtime_get_sync()
-call sites. Split into three patches, including a follow-up for a
-pre-existing runtime PM usage leak on counter init failure.
+...
 
-Changes v1->v2
-Link to v1: https://lore.kernel.org/all/20260828071123.179670-1-dayou5941@163.com/
-- Also check pm_runtime_set_active() in probe
-- Check pm_runtime_get_sync() everywhere
-- New patch: put runtime PM ref if counter init fails after get
+> > >  		j = 0;
+> > >  		iio_for_each_active_channel(indio_dev, bit)
+> > > -			memcpy(&data->scan.channels[j++], &buffer[i * 3 + bit],
+> > > +			memcpy(&data->scan.channels[j++],
+> > > +			       &data->fifo_buff[i * 3 + bit],
+> > >  			       sizeof(data->scan.channels[0]));  
+> > 
+> > While this works, I find a bit confusing usage of [j++] and [0] together.
+> > 
+> > IIUC the below is an equivalent
+> > 
+> > 		iio_for_each_active_channel(indio_dev, bit) {
+> > 			__le16 *val = &data->scan.channels[j++];
+> > 
+> > 			memcpy(val, &data->fifo_buff[i * 3 + bit], sizeof(val));
+> > 		}
+> 
+> This bit I fully agree with. Much more readable.
+> > 
+> > and if go further we may use asm/byteorder.h macros instead of plain memcpy().
+> > 
+> Here I'm lost.  We are just moving little endian values around.
+> 
+> For that matter if it is a single value, why can't see just assign it?
+> 
+> 		iio_for_each_active_channel(indio_dev, bit)
+> 			data->scan.channels[j++] = data->fifo_buf[i * 3 + bit];
 
-
-Li Youhong (3):
-  counter: rz-mtu3-cnt: check clk_prepare_enable() and
-    pm_runtime_set_active()
-  counter: rz-mtu3-cnt: check pm_runtime_get_sync() return values
-  counter: rz-mtu3-cnt: put runtime PM ref if counter init fails
-
- drivers/counter/rz-mtu3-cnt.c | 119 +++++++++++++++++++++++++++-------
- 1 file changed, 94 insertions(+), 25 deletions(-)
+It depends on the alignment. I haven't checked the assignee and the source
+for that.  That's why I mentioned byteorder.h (and implying also unaligned.h)
+for the cases like put_unaligned_le16(le16_to_cpup(val)). If both sides are
+aligned, then yours suggestion will work.
 
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
