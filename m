@@ -1,101 +1,176 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACC83CF95E;
-	Mon, 31 Aug 2026 08:17:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9513D3CEB;
+	Mon, 31 Aug 2026 08:18:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788164263; cv=none; b=VZlGwLIV5P13R7eLNh4giI/+XrZM7GvxWiMfFmx/UCMUgzW6oKp5OlC7+uJqe1YmuaN4mWSDLBs6wz1Nz8azVldp2oO1WgatL9QUtjp4kWrxU2Yl0cRcTIEIwAE3EFRaN5E7UiVlTT6tkRC+g7PLpuzVQuz7cdJBeNf4N0sexX4=
+	t=1788164318; cv=none; b=mUK7xbzq59qIZKHOuriOKI1pL9OBkR8TJduUNauTYAiopDbxNpPL4fnXbpL8hY8ZrKnquuggdntWoYteFSsrj5D5Igv7HnT824h57BJDRlqMz0bHzmT0v/rVricVQxwX7vFUvw7XoOIfqJSSbfnEnsgUYGkUp2XplEgZ3f9gW3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788164263; c=relaxed/simple;
-	bh=2ycgMH4YJMa6HV8tboy5Bk6EQZIJW3yQvgGMEFF97pI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iihyLc+5hSpBWkQQeuMPAYlRlP+MYxRCjUTO+P2g9LW1fE+jk1+yHM/i2Fp7ghcQzrc477egzc6tnHkR5lxwHJhXEjIDHQMqroqCTcJdk4MKO28NA6B0JVgC4o2yOrWtmLTRrgkJaiEWlUBMyF1CteyMPfzck1lt4ZL2QHEoH8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=yRaPNrA4; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	s=arc-20240116; t=1788164318; c=relaxed/simple;
+	bh=CW0y3GMC50f3xERbCKaWuwboYCDhm1mjfqgBlsAIx1Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=imcX8XxcGIFxwoybHbvyBcdmVjzy5TSgo7uH7Pnjgw+5alxJQ/YT+vUUPG5z2FBnRhU02oiGY561oHngnS7zOQwHKNftKHiqBhjeinAGIO5Vx/raU6cG79v2m6bgf3XYiDakJhtRZfKkjf7cPdEHqBUbd2v8aPO5dKMcIXAsMZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BCi01Ysg; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="yRaPNrA4"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
-	bh=n0oCvf1fmqu014f3i21FkaEwfd+AIiy8ZD6OncmIF9c=; b=yRaPNrA40oj+waTkRbZd89GD0o
-	cvG0YR6TeYkX7+4FfW2Ezf3DW6rE7R4cMPwZznSoqLmfjEfRgAV3q2rQ8ccyoPyGFDRCV4QnHpZ4w
-	7xn6fQ6RcmtGCFmh8LaZCFQpfeZszWx1Weo2wNddolJ/6A5BRbJGypZ4UDSgfGNl2A3JlNrCGxaJW
-	/Q83tn31R+EVlmNmZ4BSkP3oeC/hopDgCUf/9hu68Bd/Lno1vSOwLRXKecKu8ZfhCUGKod+bWPxCw
-	7exQzTwKOpXFbW6BNefw6sEbQDJLDIHm5p8i2kfdwBcnKtRz55qhSbo8vvhsS1c439pPQ33WyXXle
-	WRCvGs5w==;
-From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
-To: Vladislav Leonov <vlad@zlab.su>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Joshua Crofts <joshua.crofts1@gmail.com>, Simon Glass <sjg@chromium.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] Fix RV1106 SAR-ADC support
-Date: Mon, 31 Aug 2026 10:17:17 +0200
-Message-ID: <5330090.ejJDZkT8p0@diego>
-In-Reply-To: <20260831025557.6ee7c42e@jic23-huawei>
-References:
- <20260823122039.20831-1-vlad@zlab.su> <20260831025557.6ee7c42e@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BCi01Ysg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788164316; x=1819700316;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CW0y3GMC50f3xERbCKaWuwboYCDhm1mjfqgBlsAIx1Y=;
+  b=BCi01YsgnZ0UT6Zpb3sQzH+WsX0EsXSU5z6SqmlU+AFWTCgGiLtiQNt/
+   u0xXS/3oHYcCMxg7UOzkI+GwMVzORXJUcl1J/4v23A3rrGKJ+cl+haRLb
+   TuFMaoePZKXhX4au+jacI7wqy+euQuwyDViD3mMTB2AQf9S2SjSloRsbj
+   UgpWCxahlWlwGz3M69rHo4tF7o6/HZlsNhZGS6e52Gm+gWBQzmVjl0L1G
+   8u6XOxDVc5iHs7xYXsNixnXFFECcZFzkfSVXRBZmoFgLycxawv3xjvvRG
+   /9hJ1r2vma2lo6TXu97DqjP5SQxqE7FurBpguenhjO1X8dDv9afBephBo
+   Q==;
+X-CSE-ConnectionGUID: WdR7F+0NRyqAAA45/cNnOQ==
+X-CSE-MsgGUID: BnESkLs+R12MGZ5Nrhh93Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="92252095"
+X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
+   d="scan'208";a="92252095"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:18:35 -0700
+X-CSE-ConnectionGUID: OXOY43HIQ/6ZT7LXUZPSiw==
+X-CSE-MsgGUID: WexrKJwfQDS9neIQCYZW+w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
+   d="scan'208";a="268175789"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:18:31 -0700
+Date: Mon, 31 Aug 2026 11:18:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Michael Walle <mwalle@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v5 09/20] iio: adc: ad7768: Configure channel sampling
+ profiles
+Message-ID: <apU41FobKLE4c6Mi@ashevche-desk.local>
+References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
+ <20260828-ad7768-driver-v5-9-e33ca6f841a2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260828-ad7768-driver-v5-9-e33ca6f841a2@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Jonathan,
+On Fri, Aug 28, 2026 at 05:30:32PM +0200, Janani Sunil wrote:
+> At buffered capture setup, select the fastest compatible power mode for
+> the enabled channel rates. Group channels into the two hardware mode
+> profiles and program their decimation, mode selection, and data clock.
 
-Am Montag, 31. August 2026, 03:55:57 Mitteleurop=C3=A4ische Sommerzeit schr=
-ieb Jonathan Cameron:
-> On Sun, 23 Aug 2026 15:20:31 +0300
-> Vladislav Leonov <vlad@zlab.su> wrote:
->=20
-> > This series fixes the support for the RV1106 SAR-ADC in the
-> > rockchip_saradc driver and its device tree bindings.
->=20
-> I debated how to apply this.  Technically patch 3 is a fix, 2 is an enabl=
-er
-> and 1 is also a fix, but one for something that we just effectively patch=
-ed
-> out from running in patch 3.
->=20
-> So in the end I'm thinking take this the slow path for next cycle.  Shout
-> if anyone thinks this should go in during the -RCs and whether all 3
-> should do so or just patches 2 and 3 (leaving us without driver support f=
-or
-> now).
->=20
-> Applied to the testing branch of iio.git
+...
 
-I guess I should shout then ;-) .
+> +static int ad7768_set_lowest_noise_mode(struct ad7768_state *st,
+> +					const unsigned long *scan_mask)
+> +{
+> +	/*
+> +	 * The output data rate ranges overlap between the power modes. At a
+> +	 * common ODR, the faster mode has lower noise, so prefer the fastest
+> +	 * mode that supports every enabled channel.
+> +	 */
+> +	for (unsigned int mode_idx = ARRAY_SIZE(ad7768_power_modes);
+> +	     mode_idx-- > 0;) {
 
-DT-Binding patches are sort of independent of the driver change and
-are considered API which should not change after the fact.
+This is rather unusual pattern, better to have this as simple as
 
-Our DTs (but also ones possibly contained in firmware somewhere) are
-validated against the binding and it seems the correct compartible goes
-from=20
-    "rockchip,rv1106-saradc", " rockchip,rk3588-saradc"
-to
-    "rockchip,rv1106-saradc"
+	unsigned int mode_idx = ARRAY_SIZE(ad7768_power_modes);
 
-As the fixed commit is part of 7.3-rc1, I guess it would be nice to
-have patches 2+3 in 7.3 and patch 1 can wait for 7.4 .
+	while (mode_idx --) {
 
-We don't need the driver support (dt-nodes just doesn't bind to
-anything), but it would be nice to not proliferate the wrong binding in
-an actual release.
+> +		bool supported = true;
+> +		unsigned int channel;
+> +
+> +		for_each_set_bit(channel, scan_mask,
+> +				 st->chip_info->num_channels) {
+> +			if (!ad7768_find_freq_config(st, mode_idx,
+> +						     st->ch_freq[channel])) {
+> +				supported = false;
+> +				break;
+> +			}
+> +		}
+> +
+> +		if (supported)
+> +			return ad7768_set_power_mode(st, mode_idx);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
 
+...
 
-my 2ct :-)
-Heiko
+> +static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
+> +				      const unsigned long *scan_mask)
+>  {
+> +	unsigned int mode_freq[AD7768_NUM_CHANNEL_MODES] = { };
+> +	bool mode_used[AD7768_NUM_CHANNEL_MODES] = { };
+>  	struct ad7768_state *st = iio_priv(indio_dev);
+> +	struct device *dev = indio_dev->dev.parent;
+>  	unsigned long channel_mask;
+>  	unsigned long standby_mask;
+> +	unsigned int max_freq = 0;
 
+Split assignment, also see below.
+
+> +	unsigned int c;
+>  	int ret;
+
+...
+
+	max_freq = 0;
+
+> +	for (unsigned int mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
+> +		if (!mode_used[mode])
+> +			continue;
+> +
+> +		ret = ad7768_set_mode_decimation(st, mode_freq[mode], mode);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_clear_bits(st->regmap, AD7768_REG_CH_MODE(mode),
+> +					AD7768_CH_MODE_FILTER_TYPE_MSK);
+> +		if (ret)
+> +			return ret;
+> +
+> +		max_freq = max(max_freq, mode_freq[mode]);
+> +	}
+> +
+> +	ret = ad7768_set_clk_divs(st, max_freq);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return ad7768_sync(st);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
