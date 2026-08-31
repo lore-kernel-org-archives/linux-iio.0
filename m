@@ -1,37 +1,37 @@
-Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
+Received: from mail-244106.protonmail.ch (mail-244106.protonmail.ch [109.224.244.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BD0D3F4DCF;
-	Mon, 31 Aug 2026 12:17:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C403F7875;
+	Mon, 31 Aug 2026 12:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788178652; cv=none; b=ZPw+1HiQvIutblx9vf1vQklBJfBNVTuZcRTEy56XwMt8rh0JSxAxpZ49AJSmGbnhYvrPifE1AmwMrS6iu4TvUKY7h3vYdiJcBzG1/ujqynMr8FvgC6DQzQLL1qyUUT2dOcKRrLyyNHGOPnLllkF9El+/UJCCMUF5Z7od+AsJ0ds=
+	t=1788178655; cv=none; b=o7Ps4lOgZoLdlb1LKUwokWoFZReFDO8UHVMKO9mdnTSeD6TKmqTICvLlukUsBoF5s4jy630mwwOGnNW2Cou1oYJ5V5ner+bETS5eum4bDn2gR4y5agvS1uQt1harnUV1svd1MF+BYzH4rZUrQNn6cOnuAHEHxU1kKVIH7hlMAho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788178652; c=relaxed/simple;
-	bh=34Br3bh4ES15KWd8ZuqEaj+uBXJutTdfjD/RifG+LSA=;
+	s=arc-20240116; t=1788178655; c=relaxed/simple;
+	bh=CS53ZPElD2pCg3MB4FFjE1OQDuKtvLdjWU48Z8ZzjXU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=lIbTpUjDni9SDneeJsAbxV+UXpjr/k5Uh22RnNyKnuV3OmcztCl/CgnZepwV/n/359niQkrlamfR2lt564wLCC8lbV9QkUKRSm7lGUMH5zfdObdG2TFD/wzpkH+ae5zEbiZLLZyrT5yUmFs++mTJvzVGkOJq1lbmHyVW410NjYQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=BxGOxzDi; arc=none smtp.client-ip=185.70.43.172
+	 In-Reply-To:To:Cc; b=dInx/1SavK6lOAt7Q9H9ZdJP/JK0u/kI6dQRUFak9kxc2BmJsdkvNNjGsNBWexNbq9RA44H9+Bz1aVyKGthCUZy+cl50ALt9flahRDt201AFEgSr8VJjB7q1Ss5nytEnCxaiyuiCggwYqKsmVXPAy5zTta3DIQdIm3KyLMVb7mY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=qVczcVvh; arc=none smtp.client-ip=109.224.244.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="BxGOxzDi"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="qVczcVvh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1788178645; x=1788437845;
-	bh=YxvbCdJglJ60chOji4ihckHLdAxqWh2Hg3ol4lFeN4E=;
+	s=protonmail; t=1788178647; x=1788437847;
+	bh=p9myFx9OVWkclsSuoFjNAFjmqmthOR41LTlOtA/N7Yc=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=BxGOxzDiJSCvaH3OYuctoX0gbqxvArS5+pdAc7CwR0vJhbflhpbMSjdElRAhD90DC
-	 pJtGFT8y5+lA61AC+FverMm3nwuZ9UyAQEi7njXerfbr5eJdiAK/Q1KdX1y+Z79rL1
-	 mCYa4BNlJv4s+AmCdN6zL148AZx+m8InBn+6csF1V4kgO7pCB+4HYOZVr1P9q5pKLc
-	 8IaFPY9kvFYsJT66R3qJxw86ukQOwKxwITTs0IMgkVSwConR12zZepIiPaZM7gBsJW
-	 ESHF3os65oj/hGBTFlXGwfrU2Dl/N65GTSoaHKqdx8OE749HpYLWz/XzOB7VOwF2WK
-	 NFRlg36q0RvjQ==
-X-Pm-Submission-Id: 4hYSfq3bdkz1DFFv
+	b=qVczcVvhJpcV/AVO5xk9FqqnLsAvTb5m0PQMGlfd49k81XFqSXzBfix+Zq4b2U4CF
+	 f6gZ4Flvn7NW8VPISpN3JTLbYZwHvnXMvor7/upO/NDYpTqiDYrmN/Winip3ndFfeH
+	 utNmebgzbqLbt9WQGcAJw0RWwbSH6gUUID43aw7bXPBNB/4K0gl7QKhKgXX+subo7d
+	 BcoDKsFFj+kzDI5f2WRRzdWJrhtt0LTLjH54YxbG6IyQMrvW2L9AqU0ifp0WimYtAk
+	 CFDoeyNKI/n+hNCbAYqVBlF1ReMNLJ05HNwfkh+uPjkQUZGejzgOuAcBLBV3SZnqjp
+	 O0I59/T2AnV3g==
+X-Pm-Submission-Id: 4hYSfs6QCmz1DF6s
 From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 31 Aug 2026 14:17:09 +0200
-Subject: [PATCH v7 6/8] iio: accel: mma8452: Reuse existing dev pointer in
- mma8452_probe()
+Date: Mon, 31 Aug 2026 14:17:10 +0200
+Subject: [PATCH v7 7/8] iio: accel: mma8452: Fix use-after-free bug in
+ error error path
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260831-mma8452-open-drain-v7-6-22946812c928@geanix.com>
+Message-Id: <20260831-mma8452-open-drain-v7-7-22946812c928@geanix.com>
 References: <20260831-mma8452-open-drain-v7-0-22946812c928@geanix.com>
 In-Reply-To: <20260831-mma8452-open-drain-v7-0-22946812c928@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -54,126 +54,50 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Christoph Muellner <christoph.muellner@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
+ stable@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788178627; l=4085;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788178627; l=1149;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=34Br3bh4ES15KWd8ZuqEaj+uBXJutTdfjD/RifG+LSA=;
- b=l1OYfqKXSAz8przx9oJ+ZHD5BiPXhxmCjtzWhOb7PROI6wDqp9M3+fShvlgZXyHpfC4qToTs+
- ovCvlPB6xlpC2UIO0a/oCwVBrXrwSQpFicPUZJ1uMJtW89ynIiIkTIC
+ bh=CS53ZPElD2pCg3MB4FFjE1OQDuKtvLdjWU48Z8ZzjXU=;
+ b=/b/04Cv24bEp1TyXOi6gF+r+ikAX4njrf37TsPrFcKerP4W8hKhbgwN1RCKYWXSL2ZFLwdkyD
+ wG9QDTF8OvpDi6ugJykJjCSdQ97T0+E6UaHIoupzBbulY7LNVqOeuzp
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-In commit 32a5c04d4575 ("iio: accel: mma8452: Use dev_err_probe()") the
-struct device * pointer was assigned to local variable dev, so we can just
-as well reuse that throughout the function for sligthly more readable code.
+If mma8452_probe() fails in iio_device_register() or later, we could end up
+with runtime suspend callback being called with a now freed device pointer.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Fixes: 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
+Cc: stable@vger.kernel.org
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/accel/mma8452.c | 34 ++++++++++++++++------------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ drivers/iio/accel/mma8452.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 2ba6e2c44cb9..bf56ebd6e091 100644
+index bf56ebd6e091..9619b200fa5a 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -1587,7 +1587,7 @@ static int mma8452_probe(struct i2c_client *client)
- 	struct iio_dev *indio_dev;
- 	int ret;
- 
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-@@ -1597,21 +1597,20 @@ static int mma8452_probe(struct i2c_client *client)
- 
- 	data->chip_info = i2c_get_match_data(client);
- 	if (!data->chip_info)
--		return dev_err_probe(&client->dev, -ENODEV,
--				     "unknown device model\n");
-+		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
- 
--	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	ret = iio_read_mount_matrix(dev, &data->orientation);
- 	if (ret)
- 		return ret;
- 
--	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
-+	data->vdd_reg = devm_regulator_get(dev, "vdd");
- 	if (IS_ERR(data->vdd_reg))
--		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_reg),
-+		return dev_err_probe(dev, PTR_ERR(data->vdd_reg),
- 				     "failed to get VDD regulator!\n");
- 
--	data->vddio_reg = devm_regulator_get(&client->dev, "vddio");
-+	data->vddio_reg = devm_regulator_get(dev, "vddio");
- 	if (IS_ERR(data->vddio_reg))
--		return dev_err_probe(&client->dev, PTR_ERR(data->vddio_reg),
-+		return dev_err_probe(dev, PTR_ERR(data->vddio_reg),
- 				     "failed to get VDDIO regulator!\n");
- 
- 	ret = regulator_enable(data->vdd_reg);
-@@ -1643,7 +1642,7 @@ static int mma8452_probe(struct i2c_client *client)
- 		goto disable_regulators;
- 	}
- 
--	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
-+	dev_info(dev, "registering %s accelerometer; ID 0x%x\n",
- 		 data->chip_info->name, data->chip_info->chip_id);
- 
- 	i2c_set_clientdata(client, indio_dev);
-@@ -1676,10 +1675,10 @@ static int mma8452_probe(struct i2c_client *client)
- 	if (client->irq) {
- 		int irq2;
- 
--		irq2 = fwnode_irq_get_byname(dev_fwnode(&client->dev), "INT2");
-+		irq2 = fwnode_irq_get_byname(dev_fwnode(dev), "INT2");
- 
- 		if (irq2 == client->irq) {
--			dev_dbg(&client->dev, "using interrupt line INT2\n");
-+			dev_dbg(dev, "using interrupt line INT2\n");
- 		} else {
- 			ret = i2c_smbus_write_byte_data(client,
- 							MMA8452_CTRL_REG5,
-@@ -1687,7 +1686,7 @@ static int mma8452_probe(struct i2c_client *client)
- 			if (ret < 0)
- 				goto disable_regulators;
- 
--			dev_dbg(&client->dev, "using interrupt line INT1\n");
-+			dev_dbg(dev, "using interrupt line INT1\n");
- 		}
- 
- 		ret = i2c_smbus_write_byte_data(client,
-@@ -1736,14 +1735,13 @@ static int mma8452_probe(struct i2c_client *client)
- 			goto buffer_cleanup;
- 	}
- 
--	ret = pm_runtime_set_active(&client->dev);
-+	ret = pm_runtime_set_active(dev);
- 	if (ret < 0)
- 		goto free_irq;
- 
--	pm_runtime_enable(&client->dev);
--	pm_runtime_set_autosuspend_delay(&client->dev,
--					 MMA8452_AUTO_SUSPEND_DELAY_MS);
--	pm_runtime_use_autosuspend(&client->dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_set_autosuspend_delay(dev, MMA8452_AUTO_SUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
+@@ -1745,7 +1745,7 @@ static int mma8452_probe(struct i2c_client *client)
  
  	ret = iio_device_register(indio_dev);
  	if (ret < 0)
-@@ -1810,7 +1808,7 @@ static int mma8452_runtime_suspend(struct device *dev)
- 	ret = mma8452_standby(data);
- 	mutex_unlock(&data->lock);
- 	if (ret < 0) {
--		dev_err(&data->client->dev, "powering off device failed\n");
-+		dev_err(dev, "powering off device failed\n");
- 		return -EAGAIN;
- 	}
+-		goto free_irq;
++		goto runtime_suspend;
  
+ 	ret = mma8452_set_freefall_mode(data, false);
+ 	if (ret < 0)
+@@ -1756,6 +1756,10 @@ static int mma8452_probe(struct i2c_client *client)
+ unregister_device:
+ 	iio_device_unregister(indio_dev);
+ 
++runtime_suspend:
++	pm_runtime_disable(dev);
++	pm_runtime_set_suspended(dev);
++
+ free_irq:
+ 	if (client->irq)
+ 		free_irq(client->irq, indio_dev);
 
 -- 
 2.55.0
