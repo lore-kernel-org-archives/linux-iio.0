@@ -1,101 +1,109 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7E32BE02C
-	for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 13:07:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C23FE319851
+	for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 13:09:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788181632; cv=none; b=NiJ/vVzBR9g81iMt112XJ7d4Go3xNV/3nokqaG4771HWk2M0goU+wC+sIjq9On+L+O6eShs6rivcPRgEcnw3x4ewIzBy+ATSW3LblaIz/GCWoqfuyhhz908z2eEEN7QYQZppBDe5tvA2TftFbgDxlBXQCSZCz3u5MraVeSAJtKU=
+	t=1788181766; cv=none; b=vFCvNmQ56Soz2m4Kerccz+CnpxvCIT64yeulKzf72oUIq4fnHoR6ehSuGEV+K65M+33loLd5fRZpTaR3g7QO43POvZYwK7sLgOa8zmSEvyNFsslS7O3Aeje9DFutYhisyOZu7LDUFc12EFeTXPziclm5U9koWyQ46chHOWINi5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788181632; c=relaxed/simple;
-	bh=2rPejXcedJKCMo8/yB/7E15DR/CbLvfiEl5cvaXdWWA=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=D4OUZopQwWK+Ud0XYfn97WCNtiF0hJHmieb8J5lX6KB8dXgIrCtcGgdlBPaGLzInk7qPpVIyIEc6XzEUlSWl7EbhOnzuKLAYTtY3j2KBS+v1ZoJfRgWH8RYO+JwhhcsmYFkfB08vWg6yQ4jia/YO1o/Sga4LAq5cvGJUaRIRD1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eGR3KZQD; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1788181766; c=relaxed/simple;
+	bh=wEk/CSduIDy3y77BOhVW/7T7N3x8NruFyaCJSoC/otQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jIzup/LEKVsBOmJtO9IsNXmZfSG4PCwV157k3Phk9nV7fKG94A/MJrGHbsa4ulq7Ir+2k2RhiTErLM0zsCb0ZgQ2WxyntTshRZF5x1N3xYZxouYyUZdSiLio/0tbkaNYCN7ltWxJxpVqJvxlRTYfuW/3cMwp5jrqz1KunxCbOIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l1lS+LTN; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eGR3KZQD"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-49b0d78a801so26723455e9.2
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 06:07:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l1lS+LTN"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-49b0dbfbf7bso24799055e9.2
+        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 06:09:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788181629; x=1788786429; darn=vger.kernel.org;
-        h=in-reply-to:references:from:to:cc:subject:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=2rPejXcedJKCMo8/yB/7E15DR/CbLvfiEl5cvaXdWWA=;
-        b=eGR3KZQDHhZy+xEWHVvuPHnOapxuFIxX9oewskArZMr56KToVmqI6s67vg3yp4PXwO
-         L3MdwSt7qtx0Ey7coZjOnaXxCASvNOMi3HZV60amCeIzUdgyhVUBbCMy8sKKHABfIDCo
-         H954YMp1Y+myo/YQXyhjFWhPZbuUtbkjQbPKBATYRXGb53ust2qGONxO9ezqparBNl4c
-         2aHWoHP8J87imRlEPzFX7Mf5qskCv2RszofqpA8DE84ailLqTTzZCOyAkdzBqmvT5y92
-         BLyX5VqDIImmCrFl93D/iq3ePZ1bThL30mjNUQxpwkRMeh/G1yQIvstF8/eecnpIQ+/J
-         UdVA==
+        d=gmail.com; s=20251104; t=1788181763; x=1788786563; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=AMImnaz5ozXUWY8puoivAmaKF1Q7q8KDEeU/7MhVTEE=;
+        b=l1lS+LTNsFDonqNbTGDKjYk4QZMzAuRXQWM4G1flipAOiMQhzkXUphzj2fu1E/vj36
+         ar1Vi2xwGaogpdY5tDzRCaqL0hjv3rZxCFpp9MOhQGLE58fGpFIrx6AQSnFzEGhzk3IF
+         k7a0gN2dWvtpse4JHSRNLuTnspQ33EpyOSuCA+CWKdZvSTfc3ADQ/Q7GUiO+ishSW5/+
+         zSAvFHDLFwzgH5FFfGIvHhpHIET1dlcNwgkvMbu6ccHXjjwwhGDm5puVkat1xxOfvNGz
+         TpQ+EIY0ntVt7FoFrSW40oPng5nBvHKKbChQPckjxfJ807RiG6lplufxQlUY2FPyoMWl
+         wtgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788181629; x=1788786429;
-        h=in-reply-to:references:from:to:cc:subject:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1788181763; x=1788786563;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=2rPejXcedJKCMo8/yB/7E15DR/CbLvfiEl5cvaXdWWA=;
-        b=GZZBWsagOkkw2dZX8xZq51oO7IGjkC8YIjorl4lQGhfTckGwxtLxRS8pTR7paxJiiE
-         1n6S6zfHNB5ZfogiL3MTclTWLgzfB9ya8qZR2Z3+R7vD2pLO7w5JO0yw5q5173yaJY/K
-         zI226GZ2RVbPMgsvbNIx3xT3EorCEEqnsFW0/6zlRPAlO1vemugTux3lACIiyN5r5qp6
-         S0HnHZ77hoX2BmJeBAVu5CFo6FQ4jAUQSWL+QESTMa5gfJVV/l2urCmDAo4MVfdzJfFu
-         aDtBufO2IyzNHVvuJMVkCWu3yifCi9LYCcedgLNGE90zFLvQuMQIPAAaRgzpk/ZEjHY0
-         SuyQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpdVN6ff0KfgPAZCGQUX/Ek3HkUKmVzXpzlcfF9lj898hTM//abT7T+/O0P97zBcP+bIA8BwNZZVp8=@vger.kernel.org
-X-Gm-Message-State: AFuF++m0IQfkPWutpPHsUW3nhns/2kRQJBrzIOgsrKcCzaIaBfwWWHeQ
-	vRAfuZIFio5otN15ob/5FO+LLmCMvTrLtrWsxZpZ2FzI1M3zFNmIuVkQ
-X-Gm-Gg: AR+sD12yOaZepgGXdCUDI8Naz2lhE6UrPSipYzwVsVePDpbhVREUZhkVJAfi2rBhvCE
-	tToOUk8ASnoSmWieIZqrEIVx9w+mWKZqHARK9nw+9oNDDk/Ii2m7xFKh1uzOzW/SGexh9ejfU84
-	0QNfpuNpc7UWHn9flWOVzNkGEUzfPryhMDgazmYv7pPpzV0MQ5eKbJTZ4RWlxdzL+RlcWaUuwpk
-	Djmpij5FIpR77EZ1DWiNzF8rd1hzIl2xRVV+pqAYMOJWe82rbLwg9JvkCxxE2v5GVRSPfdAo3sF
-	hNZEQsyQ9IlLGjrn7cy6GpnizFM1JNBlMauGUSNyqIwnvi6FKjFswlPC0JslivASYcMEMs3dBV5
-	qLd/UA9nAul/8PeSbLDoslp5C2Kit1dGk97c/jn3o6CP7gapl4J140FqdOiuit5yTbQwkOkdy44
-	UHEoI1UJQOMOIQPVHnkQbgMgo0HxfbdXgBlxWDBkF9ROpero+g2iCPkXjImLXZEoOnlDWM6gcW
-X-Received: by 2002:a05:600c:4e44:b0:49c:dca2:ac47 with SMTP id 5b1f17b1804b1-49cdca2ac80mr75225e9.2.1788181628351;
-        Mon, 31 Aug 2026 06:07:08 -0700 (PDT)
-Received: from localhost ([2001:4bb8:128:b749:8793:c76d:302:4caa])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cd775dae8sm128195985e9.9.2026.08.31.06.07.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Aug 2026 06:07:07 -0700 (PDT)
+        bh=AMImnaz5ozXUWY8puoivAmaKF1Q7q8KDEeU/7MhVTEE=;
+        b=mxVvX6xPfCrVL+omIUpiJfNhSt1VKPXT51NiUUB1NKpqLPUCc/5D//9YG5UMII3O7J
+         S+BboyZVCfknX0hsjeCtexGER9HTPmiJzZrhP0LnIXCxx9npOAE1RENhqaH7nWrtq1ri
+         9nWN9Y6ZKMRbvtUqGuLZundLxdOxIJbcxFu5c16HyzdjPhDERUwhVi+uWFR2fD1512i+
+         ndlHgZyHgodsWK3nUWmZUv9aZ3YHSA0Iejb+fuww1l0GxOKvIRuc2m3pbzZYsLPuWD5c
+         WBrJO3rImhqy+846W25mgVkdUykGdLG7xGwUm2/q7KoxVwD5MTNVEJxMFi9w2xHWzIUC
+         Aouw==
+X-Forwarded-Encrypted: i=1; AHgh+RpE9zY8k70nmkWlALEcvrxLriKh2j8gh3gl6SizCDGwyxrLERkDcZjm7F7wZazRoxa54d53DAfE6Cc=@vger.kernel.org
+X-Gm-Message-State: AFuF++mN7qxAP/dkkANnrbloKpqUMTruLpKW4j1mpufh530LemtrjRG4
+	f3CSPLFfEtbZFiJU5Wa9zHfWqd4/A5yXOjaul3Yh43hm7ts+py2FePQG
+X-Gm-Gg: AR+sD132felf4kj5t4xACuArlsAt/hyma+ZjTw3ULcprW4ik/7DPZFOo00QW2reg9rS
+	nXytNGf0mNT4Eaeu9Lnn6uUqDcnab4L1uPJsFhuNAuyuT9Bf8yHmO/amKnwtBDmbp5kxnFXP8QW
+	Fddkzscz+i9xUkl0SYRynddwRH1CnGhm6PaGREuIvdcbPI4/wB0q553Al5GScvV7u+RqGwHhGgb
+	IrTlq4zgYREUP/yeVHO0e7LCYusY7jND/4LuLL/UKH8In1v7gf3rrRk9ndsntrVprrOCCZ6EUY5
+	5ExDp3+Lt6tCVJ0tKBQk3UC4X8+alDXF82sN2G5Tw4LOtOHmbkaM1rbd1iBNGJ4CgksfjyR0DCE
+	R20cWZWygkkqnUJnuU9yL4esgy+N0B4RG9McqEDjhz9N+5BT5UsiiKbRlK5XZoNeuiL4CUdI1qT
+	8KQZTJ5SBSR43aNXK16oIerH32HXjKa2U/nKkj3LFekHQs1hKO4fjq+U7SrcaeV62brjRhvdyvU
+	SVjj4ygFfB2IGYejDsSD6eqnwi7NXxeDjxBSTM6XCXzImD1bU/xWbubr5CTjwK/QojRVQpNerJ6
+	tXxUoOKo4QLGv+W9pWmmX0JHB13VL9KlxsUACL71v2nQ4xnaeVOKQiCpv1F0zEmqSIj5td+ugMq
+	WRh1Ay1gF4hN9nLJ/WyQIzCXHWCMuXnzbgxdL0ANgeWqVyuP/HhR05aXzaNndE25GJZfBMQ==
+X-Received: by 2002:a05:600c:3542:b0:499:a5c8:c6f3 with SMTP id 5b1f17b1804b1-49cdc422c19mr9272375e9.3.1788181762855;
+        Mon, 31 Aug 2026 06:09:22 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49b94dc0f57sm318698485e9.2.2026.08.31.06.09.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Aug 2026 06:09:22 -0700 (PDT)
+Date: Mon, 31 Aug 2026 15:09:19 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Esben Haabendal <esben@geanix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger
+ <martink@posteo.de>, Sean Nyekjaer <sean@geanix.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Martin Kepplinger
+ <martin.kepplinger@theobroma-systems.com>, Christoph Muellner
+ <christoph.muellner@theobroma-systems.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v7 7/8] iio: accel: mma8452: Fix use-after-free bug in
+ error error path
+Message-ID: <20260831150919.000048d7@gmail.com>
+In-Reply-To: <20260831-mma8452-open-drain-v7-7-22946812c928@geanix.com>
+References: <20260831-mma8452-open-drain-v7-0-22946812c928@geanix.com>
+	<20260831-mma8452-open-drain-v7-7-22946812c928@geanix.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 31 Aug 2026 15:07:06 +0200
-Message-Id: <DL35HECJMI8L.2J440RRGS0HNB@gmail.com>
-Subject: Re: [PATCH] iio: rename stale IIO_DEV_ACQUIRE_ERR reference to
- IIO_DEV_ACQUIRE_FAILED
-Cc: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>, "Jonathan Cameron"
- <jic23@kernel.org>, "David Lechner" <dlechner@baylibre.com>,
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-To: "Joshua Crofts" <joshua.crofts1@gmail.com>, "Andy Shevchenko"
- <andriy.shevchenko@intel.com>
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
-References: <20260831-doc_acquire_failed-v1-1-3c8e59c07d18@gmail.com>
- <apVp6vRQmyPi4EQH@ashevche-desk.local> <20260831143004.00007913@gmail.com>
-In-Reply-To: <20260831143004.00007913@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon Aug 31, 2026 at 2:30 PM CEST, Joshua Crofts wrote:
-> On Mon, 31 Aug 2026 14:47:54 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->
->> On Mon, Aug 31, 2026 at 12:09:09PM +0200, Javier Carrasco wrote:
->> > Update the kernel-doc reference left over from an earlier revision
->> > of the series, before the macro was renamed to IIO_DEV_ACQUIRE_FAILED(=
-).
->>
->> I would argue that it might be good to be backported, but who reads docu=
-mentation?
->
-> Only LLMs these days...
+On Mon, 31 Aug 2026 14:17:10 +0200
+Esben Haabendal <esben@geanix.com> wrote:
 
-And at least one human ;)
+> If mma8452_probe() fails in iio_device_register() or later, we could end up
+> with runtime suspend callback being called with a now freed device pointer.
+> 
+> Fixes: 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> ---
+
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
+-- 
+Kind regards,
+Joshua Crofts
