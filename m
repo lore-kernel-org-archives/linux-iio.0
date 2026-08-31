@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9513D3CEB;
-	Mon, 31 Aug 2026 08:18:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8D5F3D091C;
+	Mon, 31 Aug 2026 08:24:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788164318; cv=none; b=mUK7xbzq59qIZKHOuriOKI1pL9OBkR8TJduUNauTYAiopDbxNpPL4fnXbpL8hY8ZrKnquuggdntWoYteFSsrj5D5Igv7HnT824h57BJDRlqMz0bHzmT0v/rVricVQxwX7vFUvw7XoOIfqJSSbfnEnsgUYGkUp2XplEgZ3f9gW3M=
+	t=1788164653; cv=none; b=RFI0QNuUq/txbKC3AKAWuZOlpw6087AAnVcqBcbXsz8C1TB8KG2BL40gyCyAaIxaFwnb5bq/7TKQ5KzDkHpHQp2aErLa8D/a1mOWUoyIGuuvh31UQoo55TuWzLlW4eX502DOL7FROagq53OwroAICBbzJyTd9MwHj1wKZF8W4cA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788164318; c=relaxed/simple;
-	bh=CW0y3GMC50f3xERbCKaWuwboYCDhm1mjfqgBlsAIx1Y=;
+	s=arc-20240116; t=1788164653; c=relaxed/simple;
+	bh=vgA3zpqNaTzLvT/+D3MNTEM59DfrWMBlkVBIFr1Re4c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=imcX8XxcGIFxwoybHbvyBcdmVjzy5TSgo7uH7Pnjgw+5alxJQ/YT+vUUPG5z2FBnRhU02oiGY561oHngnS7zOQwHKNftKHiqBhjeinAGIO5Vx/raU6cG79v2m6bgf3XYiDakJhtRZfKkjf7cPdEHqBUbd2v8aPO5dKMcIXAsMZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BCi01Ysg; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=kM9ZjxmVrqs1eAsZAwP/YLPswD+CyNFVUxnN/ah3FMcZEZfm+Q3DqxtbIN5WQwu2OimaVuCFT3Su0WIpp4p3LY5MHk5tq5Fl0I8AleS0szkU16ZerV9TBj0Nxznphv8Wj391hX5PMOXQUWozfZ/vUnKxvDFa8cIVXkCIsaIa4XY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qa75MHf4; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BCi01Ysg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qa75MHf4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788164316; x=1819700316;
+  t=1788164651; x=1819700651;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=CW0y3GMC50f3xERbCKaWuwboYCDhm1mjfqgBlsAIx1Y=;
-  b=BCi01YsgnZ0UT6Zpb3sQzH+WsX0EsXSU5z6SqmlU+AFWTCgGiLtiQNt/
-   u0xXS/3oHYcCMxg7UOzkI+GwMVzORXJUcl1J/4v23A3rrGKJ+cl+haRLb
-   TuFMaoePZKXhX4au+jacI7wqy+euQuwyDViD3mMTB2AQf9S2SjSloRsbj
-   UgpWCxahlWlwGz3M69rHo4tF7o6/HZlsNhZGS6e52Gm+gWBQzmVjl0L1G
-   8u6XOxDVc5iHs7xYXsNixnXFFECcZFzkfSVXRBZmoFgLycxawv3xjvvRG
-   /9hJ1r2vma2lo6TXu97DqjP5SQxqE7FurBpguenhjO1X8dDv9afBephBo
-   Q==;
-X-CSE-ConnectionGUID: WdR7F+0NRyqAAA45/cNnOQ==
-X-CSE-MsgGUID: BnESkLs+R12MGZ5Nrhh93Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="92252095"
+  bh=vgA3zpqNaTzLvT/+D3MNTEM59DfrWMBlkVBIFr1Re4c=;
+  b=Qa75MHf4ydiVmq0j+GJs879SNA75mCMDSTulRmH1/Ms4RSCSzEbJWglX
+   62XUow4rxJ5SEZr9bRwFM3MkQU3Nazvg2k1x9JQYlYrkoacPANsy3J3IR
+   0x36lm5cfYnGc7cOz3GOPc9s6oMHZzIby+y3cUk4IjNXqWhMtPiwr0Mm7
+   VCqJHBFP5YUe1exPz4xxb6oe3587swSYaFWod/colYsjGa4TSXPEzBgg7
+   yITJCJ8GdsJKqAXNN7z7KGXXRtV6SZ907cj231eGgO9JQdk2DuoeFPuIj
+   SJcanQi/i3HFYouSN+ADrJYM8j8zgUHPdGcAooYtwVCL93HwX5HOT2iQf
+   w==;
+X-CSE-ConnectionGUID: zszTgySAT1Se2dIzh+147g==
+X-CSE-MsgGUID: uLTcED3NTQ+8KABw6pGOdg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11891"; a="100077419"
 X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
-   d="scan'208";a="92252095"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:18:35 -0700
-X-CSE-ConnectionGUID: OXOY43HIQ/6ZT7LXUZPSiw==
-X-CSE-MsgGUID: WexrKJwfQDS9neIQCYZW+w==
+   d="scan'208";a="100077419"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:24:09 -0700
+X-CSE-ConnectionGUID: FS3IHPnBQ6OOHmv2xdIRhg==
+X-CSE-MsgGUID: ljHjJm2GQteKdQYSYayz0w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,252,1779174000"; 
-   d="scan'208";a="268175789"
+   d="scan'208";a="265491212"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:18:31 -0700
-Date: Mon, 31 Aug 2026 11:18:28 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2026 01:24:03 -0700
+Date: Mon, 31 Aug 2026 11:24:00 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Janani Sunil <janani.sunil@analog.com>
 Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
@@ -64,11 +64,11 @@ Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
 	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
 	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH v5 09/20] iio: adc: ad7768: Configure channel sampling
- profiles
-Message-ID: <apU41FobKLE4c6Mi@ashevche-desk.local>
+Subject: Re: [PATCH v5 10/20] iio: adc: ad7768: Add sampling frequency
+ controls
+Message-ID: <apU6IJiecn_0xQQs@ashevche-desk.local>
 References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
- <20260828-ad7768-driver-v5-9-e33ca6f841a2@analog.com>
+ <20260828-ad7768-driver-v5-10-e33ca6f841a2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,96 +77,61 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260828-ad7768-driver-v5-9-e33ca6f841a2@analog.com>
+In-Reply-To: <20260828-ad7768-driver-v5-10-e33ca6f841a2@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Aug 28, 2026 at 05:30:32PM +0200, Janani Sunil wrote:
-> At buffered capture setup, select the fastest compatible power mode for
-> the enabled channel rates. Group channels into the two hardware mode
-> profiles and program their decimation, mode selection, and data clock.
+On Fri, Aug 28, 2026 at 05:30:33PM +0200, Janani Sunil wrote:
+> Expose the requested sampling frequency and available rates for each
+> channel. Validate requests against the rates supported by the power mode
+> tables and apply them when buffered capture starts.
 
 ...
 
-> +static int ad7768_set_lowest_noise_mode(struct ad7768_state *st,
-> +					const unsigned long *scan_mask)
-> +{
-> +	/*
-> +	 * The output data rate ranges overlap between the power modes. At a
-> +	 * common ODR, the faster mode has lower noise, so prefer the fastest
-> +	 * mode that supports every enabled channel.
-> +	 */
-> +	for (unsigned int mode_idx = ARRAY_SIZE(ad7768_power_modes);
-> +	     mode_idx-- > 0;) {
+> struct ad7768_state {
 
-This is rather unusual pattern, better to have this as simple as
+>  	unsigned int power_mode_idx;
+>  	const struct ad7768_chip_info *chip_info;
+>  	struct ad7768_avail_freq avail_freq[ARRAY_SIZE(ad7768_power_modes)];
+> +	unsigned int n_freqs;
+> +	int freqs[AD7768_MAX_FREQS];
+>  	unsigned int ch_freq[AD7768_MAX_CHANNEL];
+>  	struct iio_backend *back;
+>  	unsigned int vref_uV[2];
 
-	unsigned int mode_idx = ARRAY_SIZE(ad7768_power_modes);
+Just double check with `pahole` that this is optimal layout.
 
-	while (mode_idx --) {
-
-> +		bool supported = true;
-> +		unsigned int channel;
-> +
-> +		for_each_set_bit(channel, scan_mask,
-> +				 st->chip_info->num_channels) {
-> +			if (!ad7768_find_freq_config(st, mode_idx,
-> +						     st->ch_freq[channel])) {
-> +				supported = false;
-> +				break;
-> +			}
-> +		}
-> +
-> +		if (supported)
-> +			return ad7768_set_power_mode(st, mode_idx);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
+>  };
 
 ...
 
-> +static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
-> +				      const unsigned long *scan_mask)
 >  {
-> +	unsigned int mode_freq[AD7768_NUM_CHANNEL_MODES] = { };
-> +	bool mode_used[AD7768_NUM_CHANNEL_MODES] = { };
 >  	struct ad7768_state *st = iio_priv(indio_dev);
-> +	struct device *dev = indio_dev->dev.parent;
->  	unsigned long channel_mask;
->  	unsigned long standby_mask;
-> +	unsigned int max_freq = 0;
-
-Split assignment, also see below.
-
-> +	unsigned int c;
->  	int ret;
-
-...
-
-	max_freq = 0;
-
-> +	for (unsigned int mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
-> +		if (!mode_used[mode])
-> +			continue;
+> -	unsigned int vref_idx;
+>  
+> -	if (info != IIO_CHAN_INFO_SCALE)
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE: {
+> +		unsigned int vref_idx;
 > +
-> +		ret = ad7768_set_mode_decimation(st, mode_freq[mode], mode);
-> +		if (ret)
-> +			return ret;
+> +		vref_idx = chan->channel >= st->chip_info->num_channels / 2;
+> +		*val = 2 * st->vref_uV[vref_idx] / 1000;
+
+1000 --> (MICRO / MILLI)
+
+> +		*val2 = chan->scan_type.realbits;
 > +
-> +		ret = regmap_clear_bits(st->regmap, AD7768_REG_CH_MODE(mode),
-> +					AD7768_CH_MODE_FILTER_TYPE_MSK);
-> +		if (ret)
-> +			return ret;
-> +
-> +		max_freq = max(max_freq, mode_freq[mode]);
+> +		return IIO_VAL_FRACTIONAL_LOG2;
 > +	}
+> +	case IIO_CHAN_INFO_SAMP_FREQ: {
+> +		guard(mutex)(&st->lock);
+> +		*val = st->ch_freq[chan->channel];
 > +
-> +	ret = ad7768_set_clk_divs(st, max_freq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ad7768_sync(st);
+> +		return IIO_VAL_INT;
+> +	}
+> +	default:
+> +		return -EINVAL;
+> +	}
 > +}
 
 -- 
