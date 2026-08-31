@@ -1,70 +1,69 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 382D03AA4ED
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E038D39CCFA
 	for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 21:13:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788210835; cv=none; b=TUtq3eo9fPZRYTLcdZvqs1sx1Lcwlv2qW4Q/BDt3YxkUg3j/FJkbPbn36YKJYssb7rI2wuLS7UXpcnRY9JP94sZ6WSSyxQb35t1q+t1vY+BeDLGJWWOJWrW5rBi6soLlOaezebIA06Q3gDGP2zUiCrrhc/f0kQT72dhrHaTGpwg=
+	t=1788210835; cv=none; b=UC5M6vZ3ZyXyede5/ZqXuLlXZnFip2ZRjJ1adMWI8UGqlt/ndX+jyd8ImWvRGXWYKFNv7GNVZe9RqMhZdif1u+jgxo4lytU43J22/FcFFjDQz42pp3t5QXdGQOPW2OY3tFJOnskjrc/Vy2nyHjd5I+JFQk5FtAPe5opK1uDHCQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1788210835; c=relaxed/simple;
-	bh=zlCbSMvrlfeCqiNJjQxZkS1vJbSrxoS9NwpBsjGk91A=;
+	bh=c1kpDXLLAzdZm5rs2ETbE/7TO3I2DSL19IHJCzFyRZI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=S7Zh45Fs1LG+O6dp2IFR7Tzy5X4ZwYOYrBYJvmskUW8zdMR08X2hPt4ekc6b08PW0697A3jF2R6EwLcfAsaCnudgqUzAKnIbdm/si0edSIzzxC+16y5azpoWc1pxhMoXL5zgxuKmiePCNBbimaT2ORlgFI+vnYqsBmH46mb7CIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YChxMGwu; arc=none smtp.client-ip=209.85.128.53
+	 In-Reply-To:To:Cc; b=XLvjE5tZ1821dx8Upeb6L6qFuAG3oqfQYgnpmp+GrBy1jt0xChh2uY0y9dskyMlbaD/9mhozzamaIi0pu1WIYav9YLIyD3f5Lw34fD3lD7k9RZBFtQUuu7KUq7GMbA27SbzBSzBwVROPxRPv7ooTnrnf3iLyA1n/bEMBS/63ctg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nXWSjwf1; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YChxMGwu"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-49cca4ffdcfso1361935e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 14:13:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nXWSjwf1"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-498028b3d5eso45896985e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2026 14:13:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788210831; x=1788815631; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788210832; x=1788815632; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=YZoIiBSeFcsiK0IdQaOjt017+Ix1aMSbciAf6wb0bRI=;
-        b=YChxMGwu1GrTaT4pmemXyK1RMCf5IvJuWbjNmMVjKSVY0hTnto8eHOITfY0A9s+w8l
-         uCSaLW1AeXyOnT+SmQO8IeKQyVBs4trYWJRAXHHY+2Uj6FaJevLoZlEgmNblJpWVH/dJ
-         9XpYBTSVz6jWv2zCOx3wJFLuBmznlmB8ndweiHiePzayv/xRONlZpzyvL+pO0XvCJAIb
-         +0D0rMZsWgfwu79sqvGpVjaB4SbMQo0i13Wswx4OMXvZyhpbHBhiwQfqfw473UudbL66
-         oalg3nLihYIowRVQLgH/P/pUXzVdn+05fIQUV5kS/j7rT1Z8qXyR1W7xHTl7G7uLRdkX
-         /juA==
+        bh=XKzkLe41uuu5Pw2n4p3dvsG3NzOD2toE69Y9PiVCR9A=;
+        b=nXWSjwf1Pe+QzVmgqXnvx4/2Fk5Hp+41P10kd4zaUKvX+SHGXATDour8IvfhD/IB6s
+         fwroRok09w/MNgNT9duDvII/bKzoH8t2ODHv9Xsq7KDsysEXqNliuIYak33sELzBp24j
+         4AVuiQzLlUR4aHb0uBwZDtT8O8/tvjnHDRupg3rkSyFdU7Wbdo1oU/NUqhy4B6OC+jmE
+         +Hkn1sC0J8VgGCDOnChkQZB7PkQWkvXRss9vuYq7wn0/Vnvlikeu/TxKuDKpOzf8JWlf
+         H8cm46THE+z5JSfSHZT7loGAKrR7rNjWx70dDT+mYpE6UduVoS23XpkxYNJH02yMYd6p
+         WlIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788210831; x=1788815631;
+        d=1e100.net; s=20251104; t=1788210832; x=1788815632;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=YZoIiBSeFcsiK0IdQaOjt017+Ix1aMSbciAf6wb0bRI=;
-        b=NaLLGt3kBfV0bZ9lhp0bkAitjD9MnopX9R0hhMMQKq0zuv9zvrDiwV0Q/ndNroWQjb
-         z5l2Zg2yVyTtrkrqrX7TWT/7h51HIt4kN8Dr1yRkPgv4H6IPlpy4jOcNkds1HKbyzyrQ
-         LhbB/Cs0OBCklulLZLJYZo78ooHAsXaei9v1KsRttUZuXYaVNW7Mf5jGfHMwPCjnSm4j
-         T2hD38HPUiDnP55S93F+tYONFDEMS3RNeCMUycdkgAYmCl68MPmbe/dxR8hRm7Os3XR/
-         5m+B28o9yqUA5/8Zh4Y9hIIZneHLvatYk4ym56YmI3grUOoJxIlG/fzLTzFOQLkSN7ZK
-         WmCw==
-X-Gm-Message-State: AFuF++nGBdprSs24e8VDIDWduUZDBLkfeXYlX7S34gDLowzIlV8nmnPK
-	qL94nX/TShE8s8WpaYXaHSzwCi8NNW2dQZt6k9Q6J30p5PYhSBw+3qmN
-X-Gm-Gg: AR+sD123gT+GpaesKC0loequiipGx9gzFAIutrEvDdeJapE3UpA2pY2vck5IVTHEgSz
-	bVuRW8Pnk+BDrm43jjHr4QH7ZyPJrNc5qixrDzDfp/7rCDNa8rLjjEQnFOyeXBLpgRqwVJtHDNC
-	v6pHWaZo37MmyujLHNbG4K4hPw9nUp4nUDRD5hIAZVCDSFrNyVK2ZBLdAnIyyEoDbg5sipqKbXT
-	7FwNBpmL2Fsxfg+BtkVrLCdS4oHFaCR+PjUKtZPEG1nzbKxoUJJj4kjqedc1UGaZljtG7fas2fQ
-	BkneliRkgzTgJarYN4BlAv+GLDlG1Bb3pDraDn0A1ETkaP4Cfh79UB0oD8YwlK714n6669IvagC
-	wuZXXCBBoeVbnaK9D/o4OpcnMuD1k0BLM2Gxl2Bjk8v2YB/EkYpriJcOz1uVBqwDp1+PVnWPFIE
-	FIwqyNCO1Kz2t+jGaKdm5Jt42CrfRohZg2NC0vSMqC5H2y2aftgKkP+US5dHyCll27xypiTl5zH
-	Sz2EY/GQPnBHkvFbokxmXOynI4Q0Pu53HagPBibyKuoNnKQsZrgesv0oRRl72E9DNfdZ6esMBjO
-	fonsR0YirnbyNX/Exf5A9ZnxkGT2Xw8RlLNhaxOfjwwDQakKsIUQFGWgbCioTdt59DuqJVOBCm5
-	rS3/gqBC6ynwaij7Jz0EG6FR5
-X-Received: by 2002:a05:600c:8b42:b0:496:c93d:e2f with SMTP id 5b1f17b1804b1-49b91c57d64mr469951045e9.15.1788210831303;
+        bh=XKzkLe41uuu5Pw2n4p3dvsG3NzOD2toE69Y9PiVCR9A=;
+        b=Kg8sSNMTpqP0UfAeNxLdQZQuunzffWX3fm+VX4vxMGDNVkjmxNx5DIurcHr8lkatEc
+         Nfx7vQYLd4vf6R1P2cs8cI9D0i1t+V1DzNrXiYiTmyvaaga/j3AHlSJ9MldKt8BXnr/u
+         uFk2UMe4bOVAxn0Ahif5pY2QALV5Fm4qmXLXCap6n0DEV0fMYjr4PM0fDqklKOSJuDQl
+         TU/E8hl/u44qvLxkZWG+zH3oZQkZtZ2TTL8lM6mIPhUA0tZWZb4T1uakRqcYE3kFxOXh
+         gQ/Y+w8Bb6BZ6v86LGjLlohxS9Np8l8/at89QUBg0woEgBIeyuBf11rowEz1nZGadaLE
+         x3XQ==
+X-Gm-Message-State: AFuF++kPAQ/hslGQOJVnQdbU96WA6uX0K+f9EjzVBvfWw7Uwe8KWg42h
+	do1mnRkLyQ6NSEobjmGXNLDzWv8ZcM2gbB1Pb3UMBp5bHx5/oX1Z/F52
+X-Gm-Gg: AR+sD13RwvmQ5VC4iCqjpcC7uZ8B3x1LFb0O7pzPQtAaHUAESfEP+XlA2UAnhqdinn2
+	4WHWX/HdV9/iqlq62R+RjKtENjDzDQig3GIBEHnRGGNB6z8hirCEA0vgoKcSJn/7hJcz9qKQQg4
+	2r4K/paOpBD8w1WD0xSxziWGNT39cX6B9PqWkaarvaw8i/yJtiElVJ5sf3qNoYx3v/OBgCmZBLQ
+	eqo0SpSQ0w6mLTBzyxQo/zMDcr5ZkpIRINQilrfPNbgTMR/8zlEPTwXGNXGfhmT9lo1vmFTlHqC
+	Aaw08UDizsaI/8jBUHtC+P4aMVVMZiUqbjS6M7FFlTjfvuP/HIRzi1grYrrmI7gRfUVad62wFy2
+	3/ivUAYqyq1ved2HzDsvmW4ey3U6B3vl8SHDxhqAnKyo3O+gsX8OeD5spsCZDaxB8+Idjx2ubyg
+	IMy+MF0o53YoaBscRbCI8fj8OIwSM9nCnOnpCCSyf/5TPpMydd/uzSwhOHCRYDfkSXIprlbdxxj
+	3jspU1YJs5C7WB2mNX2kWIfa9/chmNNTASlgUaQhmx5fhp48tj/rLtYYmjtbOOWbKPIjFPxDY4a
+	llnZ3zuVi7N5zjVTn+qX6xmkkK4FMuG5O9cUb/FbjFx9aXLyoPFGHxEwQ0MCmnMGGJGjb6DiVdZ
+	Hcv1cb53/LMbn7pELgpjcFgo4
+X-Received: by 2002:a05:600c:3584:b0:49c:dada:30b7 with SMTP id 5b1f17b1804b1-49cdada30e1mr69494335e9.2.1788210831846;
         Mon, 31 Aug 2026 14:13:51 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cdce1754csm17695925e9.10.2026.08.31.14.13.50
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cdce1754csm17695925e9.10.2026.08.31.14.13.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2026 14:13:50 -0700 (PDT)
+        Mon, 31 Aug 2026 14:13:51 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 31 Aug 2026 23:13:39 +0200
-Subject: [PATCH v2 09/11] iio: temperature: tsys01: make headers conform to
- IWYU
+Date: Mon, 31 Aug 2026 23:13:40 +0200
+Subject: [PATCH v2 10/11] iio: temperature: tsys02d: reorder headers
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,7 +72,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260831-kernel-header-removal-v2-9-b92b580ef5eb@gmail.com>
+Message-Id: <20260831-kernel-header-removal-v2-10-b92b580ef5eb@gmail.com>
 References: <20260831-kernel-header-removal-v2-0-b92b580ef5eb@gmail.com>
 In-Reply-To: <20260831-kernel-header-removal-v2-0-b92b580ef5eb@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -84,60 +83,43 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788210819; l=1547;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788210819; l=842;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=zlCbSMvrlfeCqiNJjQxZkS1vJbSrxoS9NwpBsjGk91A=;
- b=oTABnNaL1RNH5TgvGZY7KHvLgvYQ0l5Qw182/IOVyeYvlMg1T3sj50D5/+XwHBXL9+op2YLK9
- 1fqt9Lkj46OB2X25o2HezW37n2wCmgK4Owfz7u2UgpnbC6A7n/SPTKE
+ bh=c1kpDXLLAzdZm5rs2ETbE/7TO3I2DSL19IHJCzFyRZI=;
+ b=/9T0HwT2kFNaIK5SxjBYoSNF4M4fJ0efFXJu9yZX4lr3Iv2RiwO4bP03Dc1illoS3q6eFB4Rd
+ XZymG4VHGU6AgaEiPmRVWvPZLN1dRZiVyJocbctFdLobZCUPouIRnUP
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Remove the catch-all kernel.h header, add missing headers and remove
-unused headers.
+Sort the headers alphabetically and group the IIO specific headers
+separately.
+
+No functional change.
 
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-Header changes explained:
-Added:
-- <linux/array_size.h>: for ARRAY_SIZE()
-- <linux/bits.h>: for BIT()
-- <linux/device.h>: for struct device
-- <linux/i2c.h>: for i2c_client and i2c_device_id
-- <linux/math64.h>: for div64 functions
-- <linux/sprintf.h>: for sprintf functions
-- <linux/types.h>: for fixed-width integer types (u8, u16, etc.)
-Removed:
-- <linux/init.h>: not directly used in this driver
-- <linux/kernel.h>: catch-all header no longer needed
-- <linux/property.h>: not directly used in this driver
-- <linux/stat.h>: not directly used in this driver
----
- drivers/iio/temperature/tsys01.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/iio/temperature/tsys02d.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
-index 14de67ee8be7..b19b4a3ef038 100644
---- a/drivers/iio/temperature/tsys01.c
-+++ b/drivers/iio/temperature/tsys01.c
-@@ -8,12 +8,15 @@
-  *  http://www.meas-spec.com/downloads/TSYS01_Digital_Temperature_Sensor.pdf
+diff --git a/drivers/iio/temperature/tsys02d.c b/drivers/iio/temperature/tsys02d.c
+index 3ef72347456e..377e27b45fdd 100644
+--- a/drivers/iio/temperature/tsys02d.c
++++ b/drivers/iio/temperature/tsys02d.c
+@@ -10,11 +10,12 @@
+  *  http://www.meas-spec.com/downloads/Digital_Sensor_TSYS02D.pdf
   */
  
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
- #include <linux/device.h>
 -#include <linux/init.h>
--#include <linux/kernel.h>
-+#include <linux/i2c.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
+ #include <linux/device.h>
++#include <linux/init.h>
+ #include <linux/kernel.h>
 -#include <linux/stat.h>
-+#include <linux/sprintf.h>
-+#include <linux/types.h>
- 
+ #include <linux/module.h>
++#include <linux/stat.h>
++
  #include <linux/iio/iio.h>
  #include <linux/iio/sysfs.h>
+ 
 
 -- 
 2.55.0
