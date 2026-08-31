@@ -1,42 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA134766AB;
-	Mon, 31 Aug 2026 13:35:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9334D2ECF;
+	Mon, 31 Aug 2026 13:39:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788183336; cv=none; b=f0bUixa3HT2+FK1GB7Z2vi1+w4CoyYxD4Z36wLbp06o48BhOFhzFlqIkLtCPY+7Dhu62UgFnOT2gnuD2tUO8lC+nijD2uaX3XlQi0acsXbc+zvu7SIyhKKR8GSzgHsAAJl1eFmtJWgDDFxjqzqlr66utXl8NX3JqeTq/FfaQKxs=
+	t=1788183552; cv=none; b=Pu89KUdWFloH5PYaoFI/ylcVnOT6WxHM1D9QLA9yM7Bsfyk1fV1WjOrUD5Af2tFJm10938LPOq/5/Ia6/2ZIjUuXyI+xCWEaEqLfRurVqhzkE5hWNIsmgjYH/YkYRTkFIdWQIJUw/9pOUvL8TPF9h8h6TlRMJ0lNsmgjp5tUoWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788183336; c=relaxed/simple;
-	bh=Ji3iuCbt85ZOnV7oyha6glxbxHK50IsmotDAdsBlp3Q=;
+	s=arc-20240116; t=1788183552; c=relaxed/simple;
+	bh=0XsVvKqzClDxE3pPtdVUtM3v+FIpI7sz7HeXr7yHpNg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oALOHXaQnb3FlLYPxttEyvsVBL9rBf63MXoHaCa/1vgWt0FC2iHnyc5VDlxWrDEBgZcSv6oP7g3E4Q+TQF4bwAy0zHY1e72BHpgj0SiqBCiYJdfKkH5C922dSu/AosN3NOEFHZqqMoYPm70+GnaWMXEqWKFtNujzgfAlknjb+mw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dMCwncYk; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=kgXXnKs492tMYj/sqzEpinjUIPWOxZbA9H2vjt+QAXbmFUKlpldidNW6Wx1uKeaS0NckI9F8rsTDTVuI/dm762lSdkwj1z/FoUHYeMH95zWExPBPMjdXpvCULsbZfw7cuYEhVorfs44cumer3qQhQsLaDKdjTcoIk5AUmn0F+C4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MubOgp/p; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dMCwncYk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2F571F00A3E;
-	Mon, 31 Aug 2026 13:35:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MubOgp/p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4C11F000E9;
+	Mon, 31 Aug 2026 13:39:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788183334;
-	bh=dyqWhSF0HVROorFdmbzrMiaIDT7tFT1lvgaoCfGYIDE=;
+	s=k20260515; t=1788183549;
+	bh=ubcilX10XsCkRyDH2cvUO4AwIqCV8LoAk71EABItaLk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=dMCwncYkoez6m149pRqUKZvocUcqSDoZJRlovyFAsLUTaw0FCsV6Vi31y1zzZ3mBQ
-	 ZREMpcpw917V4z94t1lyqBZL/psIk0UxIOVfc1ckK6gJY28+UNbZkGmVAN44lI46F9
-	 j4H2G21mXFfg3Eo+zZg09HHvkl1YIhMz3giRGt+MWxQ6XC9ViPWrjo/k2ZQ3z7ynDR
-	 6XP9OvQXidj4kGiPzrY8S+2z7sDsWcwFjauxpwL8lt8QFLtAkoMWGXBn7P5WM3oLQ0
-	 gKCQr26XCO1Kk8uXHiqeAwP0HcC+55WjlfmZo6ce7z74Ix8moMTflupehQRUti2uIe
-	 da8FABIVDr/pg==
+	b=MubOgp/pAPreaCavnkA9WQ2Abg7vtAxupQl5+LoqYyboi3q8i6uxyRAIWVb09qHWH
+	 V6oo6VvkMujO0LhGkSzX6Ys+PqA20NJInzvoJbfC2chNJeO1HXbcF8eTFqHsUYkplb
+	 EatZNkugiRQQf3OXcGuTUzNH7eehD0KTOFsF+1u6shKANozxq+RZR1DnD/ScF8rHkc
+	 Lpy/rs6sAv1cboRFDU6SrjAFuhi4ALGoZF3YKNpG/1JQSSpN7CdKi29ZPD+gh2XgpV
+	 uMCmIjHwizXGZj/6MJocJuwZYVjdU/S/u7z8NmyqLJD1VFmDW0hWrBJiz5y3nlvEOC
+	 huCK2Ayz4h0Nw==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>,
+Cc: Miao Li <limiao@kylinos.cn>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-5.10] iio: accel: mma8452: switch to non-devm request_threaded_irq()
-Date: Mon, 31 Aug 2026 09:21:54 -0400
-Message-ID: <20260831133314.4125787-86-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.18-6.1] iio: light: stk3310: Deal with the ps interrupt issue in PM
+Date: Mon, 31 Aug 2026 09:23:11 -0400
+Message-ID: <20260831133314.4125787-163-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260831133314.4125787-1-sashal@kernel.org>
 References: <20260831133314.4125787-1-sashal@kernel.org>
@@ -52,18 +52,23 @@ X-stable-base: Linux 6.18.48
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+From: Miao Li <limiao@kylinos.cn>
 
-[ Upstream commit 0a6726ec20cd4c0101f2de0ca485a11676224dea ]
+[ Upstream commit 9c1d639e90cf42f5c1401f91f38ffd89af6dd970 ]
 
-Avoid using devm_request_threaded_irq() as the driver requires explicit
-error-handling path(s). Using devm_* API together with goto-based
-unwinding breaks the expected LIFO resource release model.
+On the Inspur HS326 laptop(which integrated with HiSilicon M900
+processor), if the STK3311-X chip's PS interrupt is configured
+in "Recommended interrupt mode", the interrupt cannot be triggered
+normally after waking from suspend or hibernation.
 
-Add explicit IRQ cleanup in the driver teardown paths to follow kernel
-resource management conventions.
+In this case, neither disabling and re-enabling the interrupt nor
+resetting the PS threshold register can restore the interrupt to
+normal operation.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+If the interrupt is disabled in suspend() then reset the PS threshold
+register and enable the interrupt in resume(). This resolves the issue.
+
+Signed-off-by: Miao Li <limiao@kylinos.cn>
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
@@ -74,43 +79,38 @@ LLM Generated explanations, may be completely bogus:
 
 **Step 1.1 — Subject line**
 
-Record: `[iio: accel: mma8452]` `[switch]` — Replace
-`devm_request_threaded_irq()` with manual `request_threaded_irq()` and
-explicit `free_irq()` in probe error and remove paths.
+Record: `[iio: light: stk3310]` `[Deal with]` — PM workaround for
+proximity-sensor (PS) interrupt handling across suspend/resume.
 
 **Step 1.2 — Tags**
 
 Record:
-- **Fixes:** — none
-- **Reported-by:** — none
-- **Tested-by:** — none
-- **Reviewed-by:** — none
-- **Acked-by:** — none
-- **Link:** — none
-- **Cc: stable:** — none (expected for manual review)
-- **Signed-off-by:** Sanjay Chitroda (author), Jonathan Cameron (IIO
+- **Signed-off-by:** Miao Li `<limiao@kylinos.cn>` (author)
+- **Signed-off-by:** Jonathan Cameron `<jic23@kernel.org>` (IIO
   maintainer)
-
-Notable: no fuzzer report, no user bug report, no explicit stable
-nomination. Maintainer sign-off is present.
+- No `Fixes:`, `Reported-by:`, `Tested-by:`, `Reviewed-by:`, `Acked-
+  by:`, `Link:`, or `Cc: stable@vger.kernel.org` tags (expected for
+  manual review)
 
 **Step 1.3 — Body analysis**
 
 Record:
-- **Bug:** `devm_request_threaded_irq()` combined with manual
-  `goto`-based probe unwind breaks devm’s LIFO release model; IRQ stays
-  registered while driver manually tears down buffer/trigger/other
-  resources.
-- **Symptom:** Interrupt handler can run during manual teardown (probe
-  failure or `remove()`), accessing structures being destroyed.
-- **Root cause:** devm releases IRQ only after probe returns or after
-  `remove()` completes, but the driver manually cleans up
-  buffer/trigger/regulators before that point.
+- **Bug:** On Inspur HS326 (HiSilicon M900) with STK3311-X, PS
+  interrupts in "Recommended interrupt mode" stop firing after
+  suspend/hibernation.
+- **Symptom:** Proximity threshold interrupts never resume; userspace
+  cannot get proximity events after wake.
+- **Root cause (author):** Standby-only PM is insufficient; the chip
+  needs PS interrupt disabled before suspend, PS threshold registers
+  rewritten, and interrupt re-enabled on resume.
+- **Versions:** Not specified in the message; hardware-specific report.
 
 **Step 1.4 — Hidden bug fix?**
 
-Record: **Yes.** Despite “switch”/“conventions” wording, this is a real
-teardown-order bug fix, not style-only cleanup.
+Record: **Yes.** Although not labeled "fix", this is a real
+suspend/resume functional bug. It also tightens error handling in
+`stk3310_write_event()`, `stk3310_write_event_config()`, and
+`stk3310_init()` (explicit error returns and state tracking).
 
 ---
 
@@ -119,47 +119,48 @@ teardown-order bug fix, not style-only cleanup.
 **Step 2.1 — Inventory**
 
 Record:
-- **File:** `drivers/iio/accel/mma8452.c` (+12 / −7)
-- **Functions:** `mma8452_probe()`, `mma8452_remove()`
-- **Scope:** Single-file surgical fix
+- **File:** `drivers/iio/light/stk3310.c` — ~69 insertions, ~7 deletions
+- **Functions modified:** `stk3310_write_event()`,
+  `stk3310_write_event_config()`, `stk3310_init()`, `stk3310_suspend()`,
+  `stk3310_resume()`
+- **Struct modified:** `stk3310_data` (+`ps_int_enabled`, `ps_thdl`,
+  `ps_thdh`)
+- **Scope:** Single-file, surgical driver PM fix
 
 **Step 2.2 — Code flow changes**
 
 Record:
-- **Hunk 1 (probe IRQ registration):** `devm_request_threaded_irq()` →
-  `request_threaded_irq()` — IRQ no longer tied to devm.
-- **Hunk 2 (probe error paths):** After IRQ registration,
-  `pm_runtime_set_active()` / `iio_device_register()` failures now `goto
-  free_irq` instead of `goto buffer_cleanup`.
-- **Hunk 3 (new `free_irq:` label):** Calls `free_irq(client->irq,
-  indio_dev)` before `buffer_cleanup`.
-- **Hunk 4 (`remove()`):** Adds explicit `free_irq()` before
-  `iio_triggered_buffer_cleanup()`.
-
-**Before → after on probe failure after IRQ setup:**
-- Before: IRQ remains active through `buffer_cleanup` /
-  `trigger_cleanup`
-- After: IRQ freed first, then buffer/trigger cleanup
-
-**Before → after on `remove()`:**
-- Before: IRQ active for entire `remove()`; devm frees only after
-  `remove()` returns
-- After: IRQ freed before buffer/trigger teardown
+- **`stk3310_write_event()`:** Before: wrote threshold register,
+  returned error code without tracking. After: tracks
+  `ps_thdl`/`ps_thdh` in software on successful writes.
+- **`stk3310_write_event_config()`:** Before: wrote interrupt enable,
+  returned `ret`. After: tracks `ps_int_enabled`, explicit unlock+return
+  on error.
+- **`stk3310_init()`:** Before: enabled PS interrupt, returned `ret`
+  (could be non-zero on success path confusion). After: sets
+  `ps_int_enabled=true`, `ps_thdh=STK3310_PS_MAX_VAL`, returns 0 on
+  success.
+- **`stk3310_suspend()`:** Before: only `stk3310_set_state(STANDBY)`.
+  After: disables PS interrupt first if enabled, then standby.
+- **`stk3310_resume()`:** Before: only restored ALS/PS enable state.
+  After: restores state, rewrites threshold registers from cached
+  values, re-enables PS interrupt.
 
 **Step 2.3 — Bug mechanism**
 
-Record: **Category:** teardown race / potential UAF in interrupt
-context.
-
-`mma8452_interrupt()` (lines 1053–1083) can call
-`iio_trigger_poll_nested(indio_dev->trig)` and `iio_push_event()`. With
-devm, IRQ stays live while `iio_triggered_buffer_cleanup()` and
-`mma8452_trigger_cleanup()` run in probe error and remove paths.
+Record: **Hardware PM quirk / incomplete PM restore (category h).** The
+driver's suspend/resume since 2015 only toggled sensor standby/enable
+bits. It did not manage PS interrupt configuration or threshold
+registers across PM cycles. On STK3311-X (Inspur HS326), this leaves the
+interrupt path broken after wake.
 
 **Step 2.4 — Fix quality**
 
-Record: Fix is minimal, obviously correct, and matches standard non-devm
-IRQ pattern. Low regression risk; no API changes.
+Record: **Obviously correct** for the described hardware issue. Minimal
+state cache mirrors what userspace/driver already configured. Low
+regression risk: operations are gated on `ps_int_enabled` and non-
+default threshold values. No new APIs, no locking changes beyond clearer
+error-path unlock in `write_event_config()`.
 
 ---
 
@@ -167,33 +168,35 @@ IRQ pattern. Low regression risk; no API changes.
 
 **Step 3.1 — Blame**
 
-Record: `devm_request_threaded_irq()` introduced in `28e3427824ccc8`
-(2015-06-01, “iio: mma8452: Basic support for transient events”). Bug
-present since v4.1 era; definitely present in this 6.18.y tree.
+Record: Suspend/resume introduced in `be9e6229d67696` ("iio: light: Add
+support for Sensortek STK3310", 2015-04-27). The incomplete PM behavior
+has been present since driver introduction. Present in this tree at
+lines 671–692.
 
 **Step 3.2 — Fixes: tag**
 
-Record: N/A — no Fixes: tag.
+Record: **N/A** — no `Fixes:` tag.
 
 **Step 3.3 — Related file history**
 
-Record: Part of v3 series “iio: accel: mma8452: improve coding style, pm
-and resource cleanup” (10 patches). Sibling patch `5bdff291d20c3`
-(“handle I2C read error(s)”) **is already in this tree** as stable
-commit `1cddef80a180a`. IRQ fix (`0a6726ec20cd4`) is **not** in this
-tree.
+Record: Recent `stk3310.c` changes in this tree are cleanups
+(`7804363d596a8` simplify write_event_config, `a50f537002096` stk3013
+support, chip-ID relaxations). No prior fix for this PM interrupt issue.
+Fix is **standalone** (patch 1/3 of v4 series; patches 2/3 are style
+cleanups only).
 
 **Step 3.4 — Author context**
 
-Record: Sanjay Chitroda; Jonathan Cameron committed. Same author has
-another teardown fix already backported here: `04a4d98222109`
-(“ssp_sensors: cancel delayed work_refresh on remove”).
+Record: Miao Li is not a frequent stk3310 contributor in this tree.
+Jonathan Cameron (IIO maintainer) Signed-off-by on upstream commit
+`9c1d639e90cf4`.
 
 **Step 3.5 — Dependencies**
 
-Record: **Standalone.** Does not depend on other series patches
-(codestyle/header-sort patches are independent). `git apply --check` on
-current tree: **clean apply**.
+Record: **None.** Self-contained. Upstream commit `9c1d639e90cf4`
+(2026-05-31) applies cleanly to current HEAD (`git apply --check`
+succeeded). Not yet in HEAD (`v6.18.44`); present on `autosel` branch as
+backport candidate `b0cd7204e0d7f`.
 
 ---
 
@@ -201,28 +204,37 @@ current tree: **clean apply**.
 
 **Step 4.1 — Original discussion**
 
-Record: `b4 dig -c 0a6726ec20cd4` → [PATCH v3 02/10](https://patch.msgid
-.link/20260505174640.3998281-3-sanjayembedded@gmail.com). Series v2 and
-v3 found. Lore fetch blocked by bot protection; could not read thread
-replies.
+Record: `b4 dig -c 9c1d639e90cf4` matched v4 submission:
+- https://patch.msgid.link/20260504030408.105762-2-limiao870622@163.com
+- Series revisions: v1 (2026-04-27) → v2 → v3 → v4 (2026-05-04, 3-patch
+  series)
+- Applied version is latest v4 patch 1/3
 
 **Step 4.2 — Reviewers**
 
-Record: `b4 dig -w` — CC’d: `jic23@kernel.org`, `linux-
-iio@vger.kernel.org`, and other IIO maintainers/reviewers.
+Record: `b4 dig -w` CC'd Jonathan Cameron (`jic23@kernel.org`), Andy
+Shevchenko, linux-iio, linux-kernel. Jonathan Cameron Signed-off-by on
+merged commit confirms maintainer acceptance. No explicit stable
+nomination found in fetched lore pages (lore.kernel.org blocked by bot
+protection; lkml.iu.edu provided patch content only).
 
-**Step 4.3 — Bug reports**
+**Step 4.3 — Bug report**
 
-Record: None found.
+Record: Hardware-specific report from author on Inspur HS326 / HiSilicon
+M900. No syzbot, bugzilla, or multi-user Reported-by tags. Severity from
+reporter: proximity interrupts permanently broken after suspend until
+reboot.
 
 **Step 4.4 — Series context**
 
-Record: 10-patch series; this is patch 02/10. I2C read-error fix from
-same series already backported to 6.18.y; IRQ fix was not.
+Record: v4 0/3 cover describes patch 1 as the interrupt fix; patches 2/3
+are `uint32_t`→`u32`/padding and `sizeof()` cleanups — **not required**
+for the bug fix.
 
 **Step 4.5 — Stable list**
 
-Record: UNVERIFIED — lore stable search inaccessible.
+Record: **Not searched successfully** on lore stable list (bot
+protection). No evidence found against backport.
 
 ---
 
@@ -230,29 +242,39 @@ Record: UNVERIFIED — lore stable search inaccessible.
 
 **Step 5.1 — Key functions**
 
-Record: `mma8452_probe()`, `mma8452_remove()`, `mma8452_interrupt()`
+Record: `stk3310_suspend()`, `stk3310_resume()`,
+`stk3310_write_event()`, `stk3310_write_event_config()`,
+`stk3310_init()`, IRQ path `stk3310_irq_event_handler()`.
 
 **Step 5.2 — Callers**
 
-Record: `mma8452_probe()` — I2C driver probe during device enumeration.
-`mma8452_remove()` — device unbind/module unload. `mma8452_interrupt()`
-— hardware IRQ thread.
+Record:
+- `stk3310_suspend/resume` — called via `DEFINE_SIMPLE_DEV_PM_OPS` on
+  system suspend/resume (common laptop path).
+- `stk3310_write_event/write_event_config` — IIO userspace ioctl/event
+  interface (`stk3310_info` ops table).
+- `stk3310_init` — called from `stk3310_probe()` during device
+  enumeration.
 
-**Step 5.3 — Callees in interrupt path**
+**Step 5.3 — Callees**
 
-Record: `i2c_smbus_read_byte_data()`, `iio_trigger_poll_nested()`,
-`iio_push_event()` — all touch live IIO/trigger state.
+Record: `regmap_field_write()`, `regmap_bulk_write()`,
+`stk3310_set_state()` — standard regmap/I2C register access, no exotic
+dependencies.
 
 **Step 5.4 — Reachability**
 
-Record: Triggered when `client->irq` is non-zero (interrupt-capable
-board config). Probe error path reachable on `iio_device_register()`
-failure etc. Remove path runs on every unbind/unload.
+Record: Triggered on every system suspend/resume cycle on machines with
+STK3310/STK3311 and IRQ wired (`client->irq > 0` in probe). Userspace
+proximity event consumers are affected. Not a syscall crash path, but a
+common PM path on affected laptops.
 
 **Step 5.5 — Similar patterns**
 
-Record: Same devm+goto anti-pattern exists in other IIO drivers; this
-fix is driver-specific.
+Record: Other IIO light drivers in this tree implement suspend/resume
+state preservation (e.g., `ltr501`, `cm3232`, `al3010`). The stk3310
+driver was missing interrupt/threshold restore — an outlier compared to
+peers.
 
 ---
 
@@ -261,33 +283,37 @@ fix is driver-specific.
 **Step 6.1 — Buggy code present?**
 
 Record: **Yes.** Local tree is **Linux 6.18.44** (`git describe HEAD` →
-`v6.18.44`). `drivers/iio/accel/mma8452.c` still uses
-`devm_request_threaded_irq()` at line 1685 with `goto buffer_cleanup` on
-later failures; `remove()` has no `free_irq()`.
+`v6.18.44`). Current `stk3310_suspend()` only calls
+`stk3310_set_state(STANDBY)`; `stk3310_resume()` only restores ALS/PS
+enable bits. No `ps_int_enabled`/`ps_thdl`/`ps_thdh` fields exist. Bug
+present since driver introduction (2015).
 
 **Step 6.2 — Backport complications**
 
-Record: **Clean apply** verified with `git apply --check`. No conflicts
-expected.
+Record: **Clean apply expected.** `git show 9c1d639e90cf4 --
+drivers/iio/light/stk3310.c | git apply --check` succeeded on HEAD. No
+conflicting recent PM refactors in this file.
 
 **Step 6.3 — Related fixes already present?**
 
-Record: `1cddef80a180a` (I2C read error propagation) is present. IRQ
-teardown fix is **not** present.
+Record: **No.** `git log --grep` found no prior stk3310 PM interrupt fix
+in this tree. Grep confirms `ps_int_enabled` absent.
 
 ---
 
-## Phase 7: Subsystem Context
+## Phase 7: Subsystem and Maintainer Context
 
 **Step 7.1 — Subsystem**
 
-Record: `drivers/iio/accel/` — IIO accelerometer driver. **Criticality:
-PERIPHERAL** (hardware-specific, not core kernel).
+Record: **drivers/iio/light** — IIO ambient-light/proximity sensor
+driver. Criticality: **PERIPHERAL** (hardware-specific), but
+suspend/resume is a core laptop PM concern for affected machines.
 
 **Step 7.2 — Activity**
 
-Record: Moderately active; several accel driver fixes backported to
-6.18.y recently.
+Record: IIO light subsystem actively maintained in 6.18.y (recent fixes
+for si1133 races, opt3001 timeout, veml6030 events, etc.). stk3310
+itself had minor cleanups but no PM fixes.
 
 ---
 
@@ -295,184 +321,272 @@ Record: Moderately active; several accel driver fixes backported to
 
 **Step 8.1 — Who is affected**
 
-Record: Systems with Freescale/NXP MMA8452-family accelerometer on I2C
-**and** IRQ line configured (embedded/phone-class boards). Config-
-dependent (`CONFIG_MMA8452` or module).
+Record: Users of hardware with STK3310/STK3311/STK3311-X proximity
+sensor and IRQ configured — specifically reported on Inspur HS326
+(HiSilicon M900). Config-dependent: `CONFIG_STK3310` + device present +
+IRQ > 0.
 
 **Step 8.2 — Trigger conditions**
 
-Record:
-- **Probe failure** after IRQ registration (e.g. `iio_device_register()`
-  OOM) — uncommon
-- **Driver remove/unbind** with IRQ configured and hardware generating
-  interrupts — more realistic
-- Unprivileged users cannot directly trigger; requires device
-  presence/removal
+Record: System suspend or hibernation, then resume. **Common** on
+laptops. Unprivileged users can trigger via standard PM. Not a race —
+deterministic hardware PM bug.
 
 **Step 8.3 — Failure mode severity**
 
-Record: IRQ handler may access buffer/trigger/device state during
-teardown → possible kernel oops/UAF in interrupt context. **Severity:
-HIGH** (crash potential), but **low likelihood** (narrow race window, no
-reports in ~11 years).
+Record: Proximity sensor interrupts stop working after resume; ALS may
+still function. No kernel oops, deadlock, or data corruption. Userspace
+proximity-dependent features (screen blanking during calls,
+lid/proximity policies) break until reboot. **Severity: MEDIUM**
+(functional regression on PM path, not CRITICAL crash).
 
 **Step 8.4 — Risk-benefit**
 
 Record:
-- **Benefit:** Prevents teardown race on probe error and remove; correct
-  resource ordering
-- **Risk:** Very low (12-line, localized change)
-- **Ratio:** Moderate benefit, very low risk
+- **Benefit:** Restores proximity interrupt functionality after suspend
+  on affected hardware; low user count but 100% reproducible on those
+  machines.
+- **Risk:** Very low — ~70 lines, single driver, gated operations,
+  maintainer-reviewed.
+- **Ratio:** Favorable for stable — classic hardware PM quirk/workaround
+  pattern.
 
 ---
 
 ## Phase 9: Final Synthesis
 
-**Step 9.1 — Evidence**
+**Step 9.1 — Evidence summary**
 
-**FOR:**
-- Real bug: IRQ active during manual teardown in probe error and remove
-  paths
-- Interrupt handler touches IIO buffer/trigger state that is being
-  destroyed
-- Small, surgical, maintainer-committed fix
-- Applies cleanly to 6.18.y
-- Bug present since 2015 in this driver
-- Same author’s teardown fixes have been backported to this tree before
+**FOR backport:**
+- Real, reproducible hardware bug on production laptop (Inspur HS326)
+- Suspend/resume PM quirk — established stable category
+- Small, self-contained, maintainer Signed-off-by
+- Driver and buggy code exist in 6.18.44 since 2015
+- Applies cleanly to this tree
+- Standalone (no series dependencies)
 
-**AGAINST:**
-- No crash reports, syzbot, or Fixes: tag
-- Peripheral driver; only IRQ-enabled MMA8452 hardware
-- Bug latent ~11 years without reported incidents
-- Stable already took sibling I2C-read fix from same series but not this
-  one
-- Framed as resource-management correctness rather than demonstrated
-  crash
+**AGAINST backport:**
+- Not crash/security/corruption/deadlock
+- Narrow hardware scope (STK3311-X on specific platforms)
+- Long-standing bug (not a recent regression)
+- No syzbot or multi-user reports
 
-**UNRESOLVED:**
-- Lore thread review comments inaccessible
-- No confirmation of real-world crash reproduction
+**Unresolved:** No explicit `Cc: stable` or reviewer stable nomination
+found; full lore review thread not readable due to bot protection.
 
 **Step 9.2 — Stable rules checklist**
 
-1. Obviously correct and tested? **PASS** — logic is sound; no Tested-by
-   but maintainer committed
-2. Fixes a real bug? **PASS** — verified teardown ordering bug in code
-3. Important issue? **PASS (borderline)** — crash/UAF potential on
-   remove, but unreported and hardware-specific
-4. Small and contained? **PASS** — 19 lines, one file
-5. No new features/APIs? **PASS**
-6. Can apply to local tree? **PASS** — verified clean apply
+| Criterion | Result |
+|-----------|--------|
+| 1. Obviously correct and tested? | **PASS** — clear PM sequence,
+maintainer SOB, hardware-verified |
+| 2. Fixes real bug affecting users? | **PASS** — proximity interrupts
+broken after suspend on real hardware |
+| 3. Important issue? | **PASS (borderline)** — functional PM regression
+on laptops, not crash-level |
+| 4. Small and contained? | **PASS** — one file, ~76 lines |
+| 5. No new features/APIs? | **PASS** — internal state tracking for
+existing functionality |
+| 6. Applies to local tree? | **PASS** — verified clean apply to 6.18.44
+|
 
-**Step 9.3 — Exception categories**
+**Step 9.3 — Exception category**
 
-Record: None (not quirk/DT/build/docs).
+Record: **Hardware quirk/workaround** for suspend/resume on STK3311-X —
+fits the stable exception for device-specific PM workarounds.
 
 **Step 9.4 — Decision rationale**
 
-This is a legitimate teardown-order bug: with
-`devm_request_threaded_irq()`, the IRQ remains registered while
-`mma8452_remove()` and probe error paths manually destroy the triggered
-buffer and trigger that `mma8452_interrupt()` uses. The fix is minimal,
-correct, and applies cleanly to 6.18.44. Severity is borderline for
-stable — no reported crashes, niche hardware — but the failure mode
-(oops/UAF in IRQ context during driver removal) meets the conservative
-stable bar for teardown races, especially given very low backport risk.
+This commit fixes a real suspend/resume hardware interaction bug in a
+driver that has been in stable kernels since v4.1. While the failure
+mode is functional rather than a kernel crash, proximity sensor
+interrupts are user-visible and the bug triggers on every suspend cycle
+on affected laptops. The fix is small, maintainer-approved, applies
+cleanly to Linux 6.18.44, and follows the established pattern of
+backporting driver PM quirks for real hardware.
 
 ---
 
 ## Verification
 
-- [Phase 1] `git show 0a6726ec20cd4 --format=fuller`: parsed message,
-  tags, no Fixes/Reported-by
-- [Phase 2] `git show 0a6726ec20cd4`: confirmed +12/−7 diff in
-  probe/remove
-- [Phase 2] Read `mma8452_interrupt()` at lines 1053–1083: handler uses
-  trigger/events during teardown
-- [Phase 3] `git blame -L 1680,1720`: devm IRQ from `28e3427824ccc8`
-  (2015)
-- [Phase 3] `git log all-next -- drivers/iio/accel/mma8452.c`: found
-  commit `0a6726ec20cd4`, series context
-- [Phase 3] `git show 1cddef80a180a`: sibling I2C fix already in stable
-  6.18.y
-- [Phase 3] `git apply --check` on patch: clean apply to HEAD
-- [Phase 4] `b4 dig -c 0a6726ec20cd4`: lore URL found
-- [Phase 4] `b4 dig -c 0a6726ec20cd4 -a`: v2/v3 series revisions found
-- [Phase 4] `b4 dig -c 0a6726ec20cd4 -w`: maintainers CC’d
-- [Phase 4] WebFetch lore URL: **FAILED** (bot protection)
-- [Phase 5] Grep/read `mma8452.c`: confirmed interrupt →
-  `iio_trigger_poll_nested()` / `iio_push_event()`
-- [Phase 6] `git describe HEAD`: v6.18.44
-- [Phase 6] Grep `devm_request_threaded_irq` in tree: still present (bug
-  not fixed)
-- [Phase 6] `git branch --contains 0a6726ec20cd4`: not in stable branch
-- [Phase 7] `git log -20 -- drivers/iio/accel/`: subsystem activity
-  assessed
-- [Phase 8] Read probe/remove error paths: confirmed `goto
-  buffer_cleanup` with active IRQ before fix
+- [Phase 1] Parsed commit message and tags from user-provided diff and
+  `git show 9c1d639e90cf4`
+- [Phase 2] Diff analysis: 1 file, 5 functions, PM state-tracking +
+  suspend/resume sequence
+- [Phase 3] `git blame -L 671,692`: suspend/resume from `be9e6229d67696`
+  (2015-04-27)
+- [Phase 3] `git log --oneline -20 -- drivers/iio/light/stk3310.c`: no
+  prior PM interrupt fix
+- [Phase 3] `git show 9c1d639e90cf4`: upstream commit dated 2026-05-31,
+  Jonathan Cameron SOB
+- [Phase 3] `git merge-base --is-ancestor b0cd7204e0d7f HEAD` → not
+  ancestor; fix not in HEAD
+- [Phase 4] `b4 dig -c 9c1d639e90cf4`: lore URL found, v1–v4 revisions
+- [Phase 4] `b4 dig -c 9c1d639e90cf4 -w`: jic23@kernel.org CC'd
+- [Phase 4] `b4 dig -c 9c1d639e90cf4 -a`: v4 is latest, patch 1/3 is the
+  fix
+- [Phase 4] lkml.iu.edu: fetched v4 cover and patch 1/3 content
+- [Phase 5] Read `stk3310.c`: PM ops, IRQ probe path, IIO event ops
+  confirmed
+- [Phase 5] `iio_device_alloc()` uses `kzalloc()` — `ps_thdl` defaults
+  to 0 verified
+- [Phase 6] `git describe HEAD` → v6.18.44; `make kernelversion` →
+  6.18.44
+- [Phase 6] Grep: no `ps_int_enabled` in current tree — buggy code
+  present, fix absent
+- [Phase 6] `git show 9c1d639e90cf4 -- drivers/iio/light/stk3310.c | git
+  apply --check` → clean apply
+- [Phase 8] Failure mode: proximity interrupts dead after resume,
+  severity MEDIUM
+- UNVERIFIED: Full lore review thread replies (bot protection on
+  lore.kernel.org/patch.msgid.link)
+- UNVERIFIED: Whether Jonathan Cameron explicitly nominated for stable
+  in list replies
 
 **YES**
 
- drivers/iio/accel/mma8452.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/iio/light/stk3310.c | 76 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 69 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index cefc7cf4bd835..279a9b3648860 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1682,18 +1682,16 @@ static int mma8452_probe(struct i2c_client *client)
- 		goto trigger_cleanup;
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index a75a83594a7ee..3be6934218866 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -117,6 +117,9 @@ struct stk3310_data {
+ 	struct mutex lock;
+ 	bool als_enabled;
+ 	bool ps_enabled;
++	bool ps_int_enabled;
++	uint32_t ps_thdl;
++	uint32_t ps_thdh;
+ 	uint32_t ps_near_level;
+ 	u64 timestamp;
+ 	struct regmap *regmap;
+@@ -296,10 +299,17 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
  
- 	if (client->irq) {
--		ret = devm_request_threaded_irq(&client->dev,
--						client->irq,
--						NULL, mma8452_interrupt,
--						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
--						client->name, indio_dev);
-+		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
-+					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-+					   client->name, indio_dev);
- 		if (ret)
- 			goto buffer_cleanup;
- 	}
+ 	buf = cpu_to_be16(val);
+ 	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to set PS threshold!\n");
++		return ret;
++	}
  
- 	ret = pm_runtime_set_active(&client->dev);
- 	if (ret < 0)
--		goto buffer_cleanup;
-+		goto free_irq;
- 
- 	pm_runtime_enable(&client->dev);
- 	pm_runtime_set_autosuspend_delay(&client->dev,
-@@ -1702,7 +1700,7 @@ static int mma8452_probe(struct i2c_client *client)
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto buffer_cleanup;
-+		goto free_irq;
- 
- 	ret = mma8452_set_freefall_mode(data, false);
- 	if (ret < 0)
-@@ -1713,6 +1711,10 @@ static int mma8452_probe(struct i2c_client *client)
- unregister_device:
- 	iio_device_unregister(indio_dev);
- 
-+free_irq:
-+	if (client->irq)
-+		free_irq(client->irq, indio_dev);
+-	return ret;
++	if (reg == STK3310_REG_THDH_PS)
++		data->ps_thdh = val;
++	else
++		data->ps_thdl = val;
 +
- buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
++	return 0;
+ }
  
-@@ -1738,6 +1740,9 @@ static void mma8452_remove(struct i2c_client *client)
- 	pm_runtime_disable(&client->dev);
- 	pm_runtime_set_suspended(&client->dev);
- 
-+	if (client->irq)
-+		free_irq(client->irq, indio_dev);
+ static int stk3310_read_event_config(struct iio_dev *indio_dev,
+@@ -331,11 +341,17 @@ static int stk3310_write_event_config(struct iio_dev *indio_dev,
+ 	/* Set INT_PS value */
+ 	mutex_lock(&data->lock);
+ 	ret = regmap_field_write(data->reg_int_ps, state);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to set interrupt mode\n");
++		mutex_unlock(&data->lock);
++		return ret;
++	}
 +
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	mma8452_trigger_cleanup(indio_dev);
- 	mma8452_standby(iio_priv(indio_dev));
++	data->ps_int_enabled = state;
++
+ 	mutex_unlock(&data->lock);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static int stk3310_read_raw(struct iio_dev *indio_dev,
+@@ -504,10 +520,15 @@ static int stk3310_init(struct iio_dev *indio_dev)
+ 
+ 	/* Enable PS interrupts */
+ 	ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to enable interrupts!\n");
++		return ret;
++	}
+ 
+-	return ret;
++	data->ps_int_enabled = true;
++	data->ps_thdh = STK3310_PS_MAX_VAL;
++
++	return 0;
+ }
+ 
+ static bool stk3310_is_volatile_reg(struct device *dev, unsigned int reg)
+@@ -671,9 +692,18 @@ static void stk3310_remove(struct i2c_client *client)
+ static int stk3310_suspend(struct device *dev)
+ {
+ 	struct stk3310_data *data;
++	int ret;
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 
++	if (data->ps_int_enabled) {
++		ret = regmap_field_write(data->reg_int_ps, 0x0);
++		if (ret < 0) {
++			dev_err(dev, "failed to disable ps int at suspend.\n");
++			return ret;
++		}
++	}
++
+ 	return stk3310_set_state(data, STK3310_STATE_STANDBY);
+ }
+ 
+@@ -681,6 +711,8 @@ static int stk3310_resume(struct device *dev)
+ {
+ 	u8 state = 0;
+ 	struct stk3310_data *data;
++	__be16 buf;
++	int ret;
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 	if (data->ps_enabled)
+@@ -688,7 +720,37 @@ static int stk3310_resume(struct device *dev)
+ 	if (data->als_enabled)
+ 		state |= STK3310_STATE_EN_ALS;
+ 
+-	return stk3310_set_state(data, state);
++	ret = stk3310_set_state(data, state);
++	if (ret < 0)
++		return ret;
++
++	if (data->ps_thdl != 0x0) {
++		buf = cpu_to_be16(data->ps_thdl);
++		ret = regmap_bulk_write(data->regmap, STK3310_REG_THDL_PS, &buf, 2);
++		if (ret < 0) {
++			dev_err(dev, "failed to set reg THDL_PS at resume.\n");
++			return ret;
++		}
++	}
++
++	if (data->ps_thdh != STK3310_PS_MAX_VAL) {
++		buf = cpu_to_be16(data->ps_thdh);
++		ret = regmap_bulk_write(data->regmap, STK3310_REG_THDH_PS, &buf, 2);
++		if (ret < 0) {
++			dev_err(dev, "failed to set reg THDH_PS at resume.\n");
++			return ret;
++		}
++	}
++
++	if (data->ps_int_enabled) {
++		ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
++		if (ret < 0) {
++			dev_err(dev, "failed to enable ps int at resume.\n");
++			return ret;
++		}
++	}
++
++	return 0;
+ }
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
 -- 
 2.53.0
 
