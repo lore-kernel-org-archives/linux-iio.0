@@ -1,134 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6CA415B8F;
-	Tue,  1 Sep 2026 07:13:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772C242DA5B;
+	Tue,  1 Sep 2026 07:18:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788246811; cv=none; b=eH7VSi57XpBSTpwV2xD533TJc1PhSRMmy1pxFQEh6TzCwrnqcfxeah1vzH4+7Q9HPSHdeRiqyk1VNwvLvqZFKU0atcm9/tXn7qu5Yb8XiQI7VELWoX6iWMWuvIE0am2L9X6jYrcPpZEXYuFv3itnUa6tL2tFQCU+LbTEk5oKRLA=
+	t=1788247108; cv=none; b=VepHvcTXTuHkatixsS9oNuvTEg3kStcpUb8ja2fStobLxaeYc82itOHEVNVy57AutNqO8UOo4I2hXXkPmFh2w4/gkvXLX+/Q5OX4IrsMpk7EZRXqPuxeGGFnJEe3UT7BMJ2+s0P6DHfFTNp3tNNA7rhwDNg1Z3qsL8yCY37vGwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788246811; c=relaxed/simple;
-	bh=lIbuJ1Tvy1SNjfie8kslSdQan8pkxnFTsDJhFrNDajw=;
+	s=arc-20240116; t=1788247108; c=relaxed/simple;
+	bh=nQ1Txs5VtWwa3LV7R5SsGLj9IbDYJQeJmmceT7DdqFA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mhgC9IOr5RzZozqwBrBYEfplw1ct8FsYmZSYvjKiwen+tQ8i503/a+hAhPV9KqsJQd78VCtWQWHeO6m06nB69ICHn85GpS4znINkN4UBlSepR86KVcbVR3mqCw2Q4VmO76Tiq0mHNwezVuq3H3OEYs9H+kKMtGaTFgsVIkZNW/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TGpyXamx; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=qG4kkrbhn27nFyjaNCQIu5Rk2yMsuo5kJ8hVNku+GxG1znn8ouDK+YxVreqbjnMscplbBIDuCO1KXusnJZZ6hya2UkwfnwcNGqyXppkEApu2YiUqytQivah+FUhr/nMPvL9COm1wWX96LI+lQ8tHEkRpf0auU6xnYgqyD4ueZNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m70veq3G; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TGpyXamx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m70veq3G"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788246809; x=1819782809;
+  t=1788247105; x=1819783105;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lIbuJ1Tvy1SNjfie8kslSdQan8pkxnFTsDJhFrNDajw=;
-  b=TGpyXamxqi75H0g++JYFBUULrxQgzxpV+VGlqHV00VZS+EgCAe/d+5JI
-   dOvpx8ENvLzG8FGFzevUpiAjCmkaKvX3K+t8YMbLFGATMF8I0F7yH2BjE
-   1hKsH6gdVzLP5ThEupVu392K9ddeU4jU2lt+dzf7ALjtXFMmfJlktHff7
-   2eSib1tt3bzmbm8qfn8kxc9JHQYASJYcjIEb7XLCg7wrG1Tt6pDfTQETr
-   wzupvFPfpPgbl2+ijVyHYFChs4qgwn7xPU3hINycXCfvhPCfleY5soJGG
-   GzkHjvIaIdJDUwhUHfpJxHbgfklLg48yOGaI8zZOFP7TkWE6AsOhwcoYj
-   g==;
-X-CSE-ConnectionGUID: 5x/9YsshRbindCqX2CSojQ==
-X-CSE-MsgGUID: 8u126HA6SW2fpp0kOcNB0w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11892"; a="88592464"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=nQ1Txs5VtWwa3LV7R5SsGLj9IbDYJQeJmmceT7DdqFA=;
+  b=m70veq3GFbthuqwztB3F4+K393V4Ic5LeNXDRCt51YvQhraiADg8c9T5
+   Fd1BnTJzfcIZNKZ1ajpg0TAZMyTgc9d2EVlMmCrkENG3RC3DSQBQY3flX
+   nZ6jN+cT9DApQhU8aORD51EXbsSTJn8GAa4r+bFXJi+9jrYmG0/ue36UU
+   7l7Gj5WooRcGtHGzoy2tVjqyG+4W35ReMOxXWGhnBS/ZyHyviVm199133
+   eKYu4UYnUgJxnOTIKLYmQeFZkh4ZL8g5bmwIUrHr8oEhOpYsTkJehkMUB
+   OFqQByLTtdMNlC30Q/AyUETdwzxodwd3I3VL7mnp71Oc70BlwDXO6uiJ7
+   Q==;
+X-CSE-ConnectionGUID: 3PCgXjNwTfygnIp9UBh83w==
+X-CSE-MsgGUID: n/FwF+MlT9iODPKvAb/4gg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11892"; a="92534044"
 X-IronPort-AV: E=Sophos;i="6.25,255,1779174000"; 
-   d="scan'208";a="88592464"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 00:13:25 -0700
-X-CSE-ConnectionGUID: xdSXeKOYTdatfy05Sqk8rQ==
-X-CSE-MsgGUID: f7k/mDcfR4SH8WALBQSsVg==
+   d="scan'208";a="92534044"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 00:18:24 -0700
+X-CSE-ConnectionGUID: 6fQWQPLNTsGsO9NeARB8fA==
+X-CSE-MsgGUID: KiNiqfY8RJGBKkD+8I7ZhA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,255,1779174000"; 
-   d="scan'208";a="268480641"
+   d="scan'208";a="292513211"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.222])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 00:13:21 -0700
-Date: Tue, 1 Sep 2026 10:13:18 +0300
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 00:18:20 -0700
+Date: Tue, 1 Sep 2026 10:18:17 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Martin Kepplinger <martink@posteo.de>,
-	Sean Nyekjaer <sean@geanix.com>,
+To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
-	Christoph Muellner <christoph.muellner@theobroma-systems.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 4/8] iio: accel: mma8452: Support interrupt sharing
-Message-ID: <apZ7DpgQM6v7JbcS@ashevche-desk.local>
-References: <20260831-mma8452-open-drain-v7-0-22946812c928@geanix.com>
- <20260831-mma8452-open-drain-v7-4-22946812c928@geanix.com>
- <Ncm871ICTmFO0dGlJCPws8DbZwRNawMZGh74FyRieKxOU9C35zNksyV7FWkx97CU50ky9hYms5spg6SF8rATTQ==@protonmail.internalid>
- <apWIJfGoQLtDV4IB@ashevche-desk.local>
- <87ik4quwhh.fsf@geanix.com>
+	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v3 1/9] dmaengine: Support bus widths of 32 bytes and
+ above
+Message-ID: <apZ8OSzG7bEpQylL@ashevche-desk.local>
+References: <20260831-dmaengine-support-wider-dma-masks-v3-0-507d97496f2d@analog.com>
+ <20260831-dmaengine-support-wider-dma-masks-v3-1-507d97496f2d@analog.com>
+ <apWFa4BFoAL2AhG3@ashevche-desk.local>
+ <apWjMBvGA6yo_nCZ@nsa>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87ik4quwhh.fsf@geanix.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <apWjMBvGA6yo_nCZ@nsa>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 31, 2026 at 05:43:06PM +0200, Esben Haabendal wrote:
-> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> > On Mon, Aug 31, 2026 at 02:17:07PM +0200, Esben Haabendal wrote:
+On Mon, Aug 31, 2026 at 04:56:18PM +0100, Nuno Sá wrote:
+> On Mon, Aug 31, 2026 at 04:45:15PM +0300, Andy Shevchenko wrote:
+> > On Mon, Aug 31, 2026 at 12:46:38PM +0100, Nuno Sá wrote:
 
 ...
 
-> >> +	WRITE_ONCE(data->suspended, false);
-> >> +
-> >>  	ret = mma8452_active(data);
-> >>  	if (ret < 0)
-> >>  		goto runtime_resume_failed;
-> >
-> >>  	return 0;
-> >>
-> >>  runtime_resume_failed:
-> >> +	WRITE_ONCE(data->suspended, true);
-> >>  	regulator_disable(data->vddio_reg);
-> >>  	regulator_disable(data->vdd_reg);
-> >
-> > But with this, what's the point in having WRITE_ONCE()? It can be read
-> > just in the middle as true and be immediately changed afterwards. It
-> > may be that I am missing something, but I think WRITE_ONCE() should be
-> > done once in this function.
+> > >  F:	drivers/dma/
+> > >  F:	include/dt-bindings/dma/
+> > >  F:	include/linux/dma/
+> > > +F:	include/linux/dma/engine/
+> > >  F:	include/linux/dmaengine.h
+> > >  F:	include/linux/of_dma.h
+> > 
+> > Unneeded, previous entry includes recursively.
 > 
-> Yes, there does look like there is still a race condition after adding
-> this data->suspended flag. An irq handler could just have read
-> data->suspended, gotten false, and thereafter proceeeded with handling
-> the irq, and then we write data->suspended=true and the irq handler
-> would just continue with accessing the device, even though we are now
-> (if possible) powering down the device.
+> Checkpatch complains so I guess we assume it's a tool issue?
+
+Can you confirm that without this line get_maintainer.pl works? If it does,
+then the problem is in checkpatch.pl (false positive).
+
+...
+
+> > It's possible to split this patch to two:
+> > - move the existing type into a new types.h header
+> > - add support for the new API
 > 
-> I did go through all the pre-existing runtime pm and other race
-> condition issues raised by sashiko-bot during this review, and worked
-> through it all. The result is a quite a bit larger than what I would
-> like to add on top of this series. Among other things, it converts the
-> driver to use regmap for accessing the i2c registers, and after various
-> fixes the data->suspended flag is removed again.
-> 
-> So I am a bit hesitant to pull all those changes into this series, the
-> combined series would blow up quite a bit. But if required, I guess I
-> can do that, although I fear that it will not make reviewing easier to
-> mix things more than maybe needed.
+> Yeah I thought about that but this still looked simple enough to go
+> together but I can split in the next version.
 
-Personally I would go with it, or as a compromise, publish somewhere in Git
-(like on GitHub) and share the link to the repo (in a format that one can run
-with `git fetch ...`).
-
-> Could we find a way to merge this series first in some way, or should I
-> post a new version with all the other fixes added on top?
-
-It's a Q to Jonathan.
+I think the split is needed as it makes better view on the changes
+(and accompanying justifications in the commit messages).
 
 -- 
 With Best Regards,
