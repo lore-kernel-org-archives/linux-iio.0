@@ -1,211 +1,137 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1861366042
-	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 07:11:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6CA415B8F;
+	Tue,  1 Sep 2026 07:13:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788246721; cv=none; b=JHtapgP4bdYQ72AkeMON3O1oEhTrwsB4Z/hTUw6WsA+X/aPXZ4JMd8iptC2pHS5Hy/Zxv+BBPXpTUqqobkNRA3e/disnTzrzbvsxpiSBjvNt7Twy/6w1QH4+gFEQYRYO/vUugWtvHcQap89oMCm7Hx2gj7LYzskyp5r9zu1DIUk=
+	t=1788246811; cv=none; b=eH7VSi57XpBSTpwV2xD533TJc1PhSRMmy1pxFQEh6TzCwrnqcfxeah1vzH4+7Q9HPSHdeRiqyk1VNwvLvqZFKU0atcm9/tXn7qu5Yb8XiQI7VELWoX6iWMWuvIE0am2L9X6jYrcPpZEXYuFv3itnUa6tL2tFQCU+LbTEk5oKRLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788246721; c=relaxed/simple;
-	bh=IJV+cJcfZdPXEq3nWzfJc7AtEYY8y/J55FvImPI05W8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=NuYRV930SY5q3UEnez+Ar7rw/ut9zPOKKOUpdI7Ch6CBETYvvOddChmsI0NYAF9S9XzxZhT6KJw84Ks0frPB0Cipp+Uq/m4yptaTM5IvMpTL2qLkuFobBySk2uOpZsrnwloij2B96HhqGKiQZlgQJNWe1EJQKZHgWv0KgzFSqOQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QEagW3rK; arc=none smtp.client-ip=209.85.208.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788246811; c=relaxed/simple;
+	bh=lIbuJ1Tvy1SNjfie8kslSdQan8pkxnFTsDJhFrNDajw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mhgC9IOr5RzZozqwBrBYEfplw1ct8FsYmZSYvjKiwen+tQ8i503/a+hAhPV9KqsJQd78VCtWQWHeO6m06nB69ICHn85GpS4znINkN4UBlSepR86KVcbVR3mqCw2Q4VmO76Tiq0mHNwezVuq3H3OEYs9H+kKMtGaTFgsVIkZNW/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TGpyXamx; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QEagW3rK"
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-3a20d12211bso8450181fa.0
-        for <linux-iio@vger.kernel.org>; Tue, 01 Sep 2026 00:11:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788246718; x=1788851518; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:content-type
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=D+CSScneE3PY8jH7ppTyN3wkhx3v10vl4wTiv7mZ0VM=;
-        b=QEagW3rKPA2MVmiM5LCKWzP1ZFMhY8EJ+qSs9OdLhVg3L8QbE+ceEqACa8JyJoTc0R
-         OWsgAfQTjq6m/UT4Ltj1XmfGEexCni1ABarf5p8kFaOuNGxX5/SBAndwmVvDBeBbhnNE
-         rahDEjV6FuK3Q4DhRd2fE1gUWI1mSv+xqbO0ZRyNtm9qu/LZC8X2ytdQSnncNTajRRmR
-         38Oy62iEp0e+E4EtIT6YB1jbiox6TwMm5lhjrrfnyWlpEzBlV841HG8J8IV7Algh1TfM
-         fRgu/C8j0lnxayecL58eX7jpJEhxSIarowEVwinO6uOt0GHl38u9wqmdqeVQ0+me4dus
-         WQFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788246718; x=1788851518;
-        h=mime-version:user-agent:content-transfer-encoding:content-type
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=D+CSScneE3PY8jH7ppTyN3wkhx3v10vl4wTiv7mZ0VM=;
-        b=JTgKtJkDrLo2NhN0LOQKY2WKY1fSVMyU7VuxvtrmD5aATplpvjY79Ea2gthpkh/Xwj
-         gRcrzPQi0bEVDAu/8E1pfdA/HV7WBW8oo9K8tQFrP6OizHa7RygG8nE7iBUxQ+msQfvG
-         vfEabRdZsi4SCI5qAZ967rhwz0eDrt6VGGHJy2XyaDEUAq/qCtAMlJeus7t8OmC71Yu5
-         5kZol1/LTMZ2nffhuNVUX5stidyHfHssQ+bVAq7Ga4ZT2D3zVjPNN8EGMreFONBaB7tb
-         To67WQNtdHkdiEO+NazEGXVxEr2xGluXyrOAPZoBWIRguU66p2veHREJOc0yyzNZ/2xe
-         bNLA==
-X-Forwarded-Encrypted: i=1; AKwUvBwTRYnnrAWduvfnv38WlEgUus66KDv5XSnWJY7C2vyzCn6iaqI6nJx5I727KnI0EjxARqDor9mx1rk=@vger.kernel.org
-X-Gm-Message-State: AFuF++krgGPFKX9IAPUzJ8BoOtS8HiheDksSg4sMgkBXTNXReXF9QnsJ
-	DVBZWNxbtucXHmmaOuPa7ObicOvFa6LfT5zPChjod2I+3tO03YnumQRTDChReUoT
-X-Gm-Gg: AYBFou0yE1gTtKVeS3Tkkz6gYXt6cGs9A2jlszOg4/YSDZ2EPA+/2pcBVsW8XhInCyl
-	YvS9P/7XC3IGRpj7fvUX2Mw6bgvgogzyipI6b6s7ny/Zuvlt7x7HDb3/OfayUG113t7X0nXwpEL
-	MM/pJRAKpJmvg1a9UJsJTc9xZaGT7XmHFVNGzEc0mXXOdXAE2S2uig584ziBZqOFGe98uBwJcgB
-	JxTsqkbN/iWViFFuqmh4TZclcTolHU+QH4OcYNFpvKJShnnOglnA/nwIHl+Almnr5XOIJn85+s5
-	s6CfpHxLU+XczuBSxa62aRmLVVIpW1umU5O/PYPK5kQd60w47+gIPJDKFSvrTZPO5KU/OTzWfBg
-	Id6pakdTjNTgJuKyiN0M32nDjvRqUJgDFp5XsmyG7doghcgclqQPFc2sdv1oaHNjugowV7ZaV7s
-	9Fk69FqqglDqXm2vbCiC9hvjl/4aK/SmCIJEAM3oKebeRWaLPv6LoJGlQbAHvwW4Q=
-X-Received: by 2002:a05:651c:a201:10b0:3a3:3fa3:25a6 with SMTP id 38308e7fff4ca-3a33fa3324cmr3629011fa.3.1788246717606;
-        Tue, 01 Sep 2026 00:11:57 -0700 (PDT)
-Received: from [192.168.1.161] ([81.200.11.252])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b5e89c5c9asm2754562e87.11.2026.09.01.00.11.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 00:11:57 -0700 (PDT)
-Message-ID: <5951b1195537558a5e93cfd44bd24fe56d446f81.camel@gmail.com>
-Subject: Re: [PATCH v2] iio: proximity: vcnl3020: fix ISR bitmask check in
- IRQ handler
-From: Ivan Mikhaylov <fr0st61te@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Salah Triki <salah.triki@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
-	 <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Tue, 01 Sep 2026 10:11:56 +0300
-In-Reply-To: <20260901022731.10771244@jic23-huawei>
-References: <20260824042908.8887-1-salah.triki@gmail.com>
-	 <20260901022731.10771244@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.0 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TGpyXamx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788246809; x=1819782809;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lIbuJ1Tvy1SNjfie8kslSdQan8pkxnFTsDJhFrNDajw=;
+  b=TGpyXamxqi75H0g++JYFBUULrxQgzxpV+VGlqHV00VZS+EgCAe/d+5JI
+   dOvpx8ENvLzG8FGFzevUpiAjCmkaKvX3K+t8YMbLFGATMF8I0F7yH2BjE
+   1hKsH6gdVzLP5ThEupVu392K9ddeU4jU2lt+dzf7ALjtXFMmfJlktHff7
+   2eSib1tt3bzmbm8qfn8kxc9JHQYASJYcjIEb7XLCg7wrG1Tt6pDfTQETr
+   wzupvFPfpPgbl2+ijVyHYFChs4qgwn7xPU3hINycXCfvhPCfleY5soJGG
+   GzkHjvIaIdJDUwhUHfpJxHbgfklLg48yOGaI8zZOFP7TkWE6AsOhwcoYj
+   g==;
+X-CSE-ConnectionGUID: 5x/9YsshRbindCqX2CSojQ==
+X-CSE-MsgGUID: 8u126HA6SW2fpp0kOcNB0w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11892"; a="88592464"
+X-IronPort-AV: E=Sophos;i="6.25,255,1779174000"; 
+   d="scan'208";a="88592464"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 00:13:25 -0700
+X-CSE-ConnectionGUID: xdSXeKOYTdatfy05Sqk8rQ==
+X-CSE-MsgGUID: f7k/mDcfR4SH8WALBQSsVg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,255,1779174000"; 
+   d="scan'208";a="268480641"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.222])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 00:13:21 -0700
+Date: Tue, 1 Sep 2026 10:13:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Esben Haabendal <esben@geanix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Martin Kepplinger <martink@posteo.de>,
+	Sean Nyekjaer <sean@geanix.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
+	Christoph Muellner <christoph.muellner@theobroma-systems.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 4/8] iio: accel: mma8452: Support interrupt sharing
+Message-ID: <apZ7DpgQM6v7JbcS@ashevche-desk.local>
+References: <20260831-mma8452-open-drain-v7-0-22946812c928@geanix.com>
+ <20260831-mma8452-open-drain-v7-4-22946812c928@geanix.com>
+ <Ncm871ICTmFO0dGlJCPws8DbZwRNawMZGh74FyRieKxOU9C35zNksyV7FWkx97CU50ky9hYms5spg6SF8rATTQ==@protonmail.internalid>
+ <apWIJfGoQLtDV4IB@ashevche-desk.local>
+ <87ik4quwhh.fsf@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ik4quwhh.fsf@geanix.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 2026-09-01 at 02:27 +0100, Jonathan Cameron wrote:
-> On Mon, 24 Aug 2026 05:29:07 +0100
-> Salah Triki <salah.triki@gmail.com> wrote:
->=20
-> > The threaded IRQ handler contained multiple issues in handling
-> > interrupt
-> > events and clearing status flags:
-> >=20
-> > 1. ISR bit check: The handler incorrectly checked the Interrupt
-> > Status
-> > =C2=A0=C2=A0 Register (VCNL_ISR) against VCNL_ICR_THRES_EN (BIT(1)), wh=
-ich is
-> > a
-> > =C2=A0=C2=A0 bitmask meant for the Control Register (VCNL_PS_ICR). In
-> > VCNL_ISR,
-> > =C2=A0=C2=A0 BIT(1) corresponds only to low-threshold interrupts. A hig=
-h-
-> > threshold
-> > =C2=A0=C2=A0 interrupt (VCNL_INT_TH_HI, BIT(0)) on its own was complete=
-ly
-> > ignored and
-> > =C2=A0=C2=A0 returned IRQ_NONE.
-> >=20
-> > 2. Event direction & channel index: The handler unconditionally
-> > pushed a
-> > =C2=A0=C2=A0 RISING event code on channel index 1. The driver only regi=
-sters
-> > a single
-> > =C2=A0=C2=A0 proximity channel (index 0), and low-threshold interrupts =
-should
-> > be
-> > =C2=A0=C2=A0 reported with IIO_EV_DIR_FALLING.
-> >=20
-> > 3. ISR clearing: The write-back to acknowledge the interrupt only
-> > preserved
-> > =C2=A0=C2=A0 BIT(1) instead of masking against both valid status bits.
-> >=20
-> > Fix this by checking both VCNL_INT_TH_HI and VCNL_INT_TH_LOW bits
-> > in
-> > VCNL_ISR, pushing separate IIO events with the correct direction
-> > and
-> > channel index (0), and properly clearing handled status bits.
-> >=20
-> > Fixes: 3363fbbe19e5 ("iio: proximity: vcnl3020: add periodic mode")
-> > Signed-off-by: Salah Triki <salah.triki@gmail.com>
->=20
-> Trying an active address that is hopefully the same Ivan!
->=20
-> This looks fine to me, but I'd ideally like input from Ivan.
->=20
-> Jonathan
->=20
-> > ---
-> > Changes since v1:
-> > =C2=A0 - Extended the patch to fix additional bugs found in
-> > vcnl3020_handle_irq_thread():
-> > =C2=A0=C2=A0=C2=A0 - Corrected event directions (RISING for high thresh=
-old,
-> > FALLING for low threshold).
-> > =C2=A0=C2=A0=C2=A0 - Fixed channel index from 1 to 0 (matching single p=
-roximity
-> > channel).
-> > =C2=A0=C2=A0=C2=A0 - Corrected ISR W1C clear logic for both HI and LOW =
-bits.
-> > =C2=A0 - Updated commit message to detail all IRQ handler fixes.
-> >=20
-> > =C2=A0drivers/iio/proximity/vcnl3020.c | 24 +++++++++++++++++-------
-> > =C2=A01 file changed, 17 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/proximity/vcnl3020.c
-> > b/drivers/iio/proximity/vcnl3020.c
-> > index 7f417372566a..d0b8f429999f 100644
-> > --- a/drivers/iio/proximity/vcnl3020.c
-> > +++ b/drivers/iio/proximity/vcnl3020.c
-> > @@ -584,16 +584,26 @@ static irqreturn_t
-> > vcnl3020_handle_irq_thread(int irq, void *p)
-> > =C2=A0		return IRQ_HANDLED;
-> > =C2=A0	}
-> > =C2=A0
-> > -	if (!(isr & VCNL_ICR_THRES_EN))
-> > +	if (!(isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW)))
-> > =C2=A0		return IRQ_NONE;
-> > =C2=A0
-> > -	iio_push_event(indio_dev,
-> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IIO_UNMOD_EVENT_CODE(IIO_PROXIM=
-ITY, 1,
-> > -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- IIO_EV_TYPE_THRESH,
-> > -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- IIO_EV_DIR_RISING),
-> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_time_ns(indio_dev));
-> > +	if (isr & VCNL_INT_TH_HI) {
-> > +		iio_push_event(indio_dev,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IIO_UNMOD_EVENT_CODE(IIO_PROXI=
-MITY,
-> > 0,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_TYPE_THRESH,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_DIR_RISING),
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_time_ns(indio_dev));
-> > +	}
-> > +
-> > +	if (isr & VCNL_INT_TH_LOW) {
-> > +		iio_push_event(indio_dev,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IIO_UNMOD_EVENT_CODE(IIO_PROXI=
-MITY,
-> > 0,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_TYPE_THRESH,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_DIR_FALLING),
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_time_ns(indio_dev));
-> > +	}
-> > =C2=A0
-> > -	rc =3D regmap_write(data->regmap, VCNL_ISR, isr &
-> > VCNL_ICR_THRES_EN);
-> > +	rc =3D regmap_write(data->regmap, VCNL_ISR, isr &
-> > (VCNL_INT_TH_HI | VCNL_INT_TH_LOW));
-> > =C2=A0	if (rc)
-> > =C2=A0		dev_err(data->dev, "Error (%d) writing in reg
-> > (0x%x)\n",
-> > =C2=A0			rc, VCNL_ISR);
+On Mon, Aug 31, 2026 at 05:43:06PM +0200, Esben Haabendal wrote:
+> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
+> > On Mon, Aug 31, 2026 at 02:17:07PM +0200, Esben Haabendal wrote:
 
-Jonathan, thanks for pinging me, yes, address still same, I'll check
-patch until end of the week.
+...
 
-Thanks.
+> >> +	WRITE_ONCE(data->suspended, false);
+> >> +
+> >>  	ret = mma8452_active(data);
+> >>  	if (ret < 0)
+> >>  		goto runtime_resume_failed;
+> >
+> >>  	return 0;
+> >>
+> >>  runtime_resume_failed:
+> >> +	WRITE_ONCE(data->suspended, true);
+> >>  	regulator_disable(data->vddio_reg);
+> >>  	regulator_disable(data->vdd_reg);
+> >
+> > But with this, what's the point in having WRITE_ONCE()? It can be read
+> > just in the middle as true and be immediately changed afterwards. It
+> > may be that I am missing something, but I think WRITE_ONCE() should be
+> > done once in this function.
+> 
+> Yes, there does look like there is still a race condition after adding
+> this data->suspended flag. An irq handler could just have read
+> data->suspended, gotten false, and thereafter proceeeded with handling
+> the irq, and then we write data->suspended=true and the irq handler
+> would just continue with accessing the device, even though we are now
+> (if possible) powering down the device.
+> 
+> I did go through all the pre-existing runtime pm and other race
+> condition issues raised by sashiko-bot during this review, and worked
+> through it all. The result is a quite a bit larger than what I would
+> like to add on top of this series. Among other things, it converts the
+> driver to use regmap for accessing the i2c registers, and after various
+> fixes the data->suspended flag is removed again.
+> 
+> So I am a bit hesitant to pull all those changes into this series, the
+> combined series would blow up quite a bit. But if required, I guess I
+> can do that, although I fear that it will not make reviewing easier to
+> mix things more than maybe needed.
+
+Personally I would go with it, or as a compromise, publish somewhere in Git
+(like on GitHub) and share the link to the repo (in a format that one can run
+with `git fetch ...`).
+
+> Could we find a way to merge this series first in some way, or should I
+> post a new version with all the other fixes added on top?
+
+It's a Q to Jonathan.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
