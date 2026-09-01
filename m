@@ -1,53 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2C4E43E4A2;
-	Tue,  1 Sep 2026 15:44:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EE9641DDE3;
+	Tue,  1 Sep 2026 16:00:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788277453; cv=none; b=Oz3+xcgUszSknJJwrBFwcMknRjnHoPWECE8xE5tgnfL8cRzBizjdA09NHLLJyCuwESXf+T96ES4IoSIqONrGYjHdDDN7xVd+V/x12A49U/nXL7hNqPARHNY43YgNnWo0TdBChT9s1sVhMbX5QHIEEJsmFVl9NjTay/ruTJGOaZ4=
+	t=1788278439; cv=none; b=m5VMIY38PEFr0pn/Rq9uupWv6CtX5gkYObyS4bpXujLfPQfQN/5DKstJVxTSUfVChG3Jn66Y+abp+FagZYUFQgl7/08DEN0qXcI/CxiaqF7+Fv4k3CBjg95LcUXw6XRuyis+ZybrqpwjS8LiAskOLcrmvymAnI8AeGJhbsXpF8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788277453; c=relaxed/simple;
-	bh=jJeAjAzSXqJMGv+Xwis555DWb1EkiBV/ikq/XqgToSk=;
+	s=arc-20240116; t=1788278439; c=relaxed/simple;
+	bh=CxI83XN8I4lxseIe9nw0DK8+BxHfKlymmUuLO1j6vBg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I02s63ajKDRlVQcyGJvtHTv3J1SSkorlXOqY8n7EgvUwerDKNxsJ8+NqrE7gFDO3CgWeoJCdigtGlYu13pjWJSfAIbFWWUlC5LyscQ+FBmhbgAih6QvO6M9Yatvgb7t9N5w4LJUabnpyuiK3QJCkdO1Dmi9QqFY5+aFtNVcwgwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g9V+tqOG; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=kWX4v2LbLLMHpek2kN+DcU+ymJwhCyzGMzJg6Gj0Eh/nkcNqoFiUDxNw880wwX+p4uV/fgScdC+dgFE+UDQUmYZ062ceYHYEPQjjnxnPOOQ+Pv5LkxobXlrYhEccLaS6fifQx+vu9dQ31yXOwFQvAJftGnGVUAOyluNebZk4VqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gjnxvUqS; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g9V+tqOG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BFC31F000E9;
-	Tue,  1 Sep 2026 15:44:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gjnxvUqS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7B4E1F000E9;
+	Tue,  1 Sep 2026 16:00:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788277451;
-	bh=pzqa6Cmokg/fkJYMIhCcVeUP7klHo3a5uK6Co/3lh4k=;
+	s=k20260515; t=1788278437;
+	bh=TIKv8E8evR5d2hcE9sikzBcAxzkD4wFQ4y3I6MsdiEQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=g9V+tqOGIu9yJXCNqUhe93hyux1yft+yoYSFj6jAQXHgYpqcMyHjgXisqsl2CS/MD
-	 ZSc9Sw0gD/IkVE/IGGMQSmXaOMMzijR82Cn7kO/RiYakUKMh7UzmmZPYCu3kXuJ5km
-	 2oFjvYpFtZ/7g8fOOck5MPq78AqZDjyhWgjvXDDqLmBHW+x5ry/Q2jNtOPuq7iqXzf
-	 a6TCjlTSPuY09sFVutwM8509X7o8Mf92Wad61Q4hTnIZEXP48YnYI6l2TY1uPGyF0L
-	 jMV9Ssyj3S5MTI1vQvCMONMxpJ78Wv4A3LYv2Qo9riXeXUbtTKswByF7qjhvsivotG
-	 tqZSnp6zw36bQ==
-Date: Tue, 1 Sep 2026 16:44:03 +0100
+	b=gjnxvUqSqjuy2nPxq+927DQFz0WTfTK8ZJFUQ+LAuXJbyIm/Rf38BAfYpn0JfIxTX
+	 cE+ZgPgwgyBbl/trP/XJCVCuykdIuhW8CMh4YS6bVsKvnSc69Vi6DvxB6+sINWKps7
+	 NBVps23evqJOnZxe2b/BYCcu1JH7fTkOMUpLHfrPyIQ7ytmz53o+NbIc8FVYV/NqDK
+	 P4ujEtGNRdg8n0ZjPaOhkdT3xm9jAK3ob9QrFLKMOZv88yFf9G2fQF7H9EvEIpzBP3
+	 kQ9h0qtfYgHcDoR/zMKz8i4KhOjknTxj+9WIyUV0szHF4pQoOlDAW2bURauLTx9Ljx
+	 vh2yf4WWvqJ+A==
+Date: Tue, 1 Sep 2026 17:00:32 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Bartosz Golaszewski <brgl@kernel.org>
-Cc: Janani Sunil <janani.sunil@analog.com>, linux@analog.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, jananisunil.dev@gmail.com, Uwe =?UTF-8?B?S2xl?=
- =?UTF-8?B?aW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>, Andy
- Shevchenko <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Olivier Moysan
- <olivier.moysan@foss.st.com>, Philipp Zabel <p.zabel@pengutronix.de>, Linus
- Walleij <linusw@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>
-Subject: Re: [PATCH v5 00/20] iio: adc: Add AD7768/AD7768-4 ADC driver
- support
-Message-ID: <20260901164403.58580dcd@jic23-huawei>
-In-Reply-To: <CAMRc=MdLmCqSfxtwQcv+gHVpAUV7hJB8UQRF_aE8i60wf6mVbg@mail.gmail.com>
-References: <20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com>
-	<CAMRc=MdLmCqSfxtwQcv+gHVpAUV7hJB8UQRF_aE8i60wf6mVbg@mail.gmail.com>
+To: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
+Cc: "Joshua Crofts" <joshua.crofts1@gmail.com>, "Andy Shevchenko"
+ <andriy.shevchenko@intel.com>, "David Lechner" <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: rename stale IIO_DEV_ACQUIRE_ERR reference to
+ IIO_DEV_ACQUIRE_FAILED
+Message-ID: <20260901170032.3980bd42@jic23-huawei>
+In-Reply-To: <DL35HECJMI8L.2J440RRGS0HNB@gmail.com>
+References: <20260831-doc_acquire_failed-v1-1-3c8e59c07d18@gmail.com>
+	<apVp6vRQmyPi4EQH@ashevche-desk.local>
+	<20260831143004.00007913@gmail.com>
+	<DL35HECJMI8L.2J440RRGS0HNB@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -58,71 +52,26 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 1 Sep 2026 01:32:45 -0700
-Bartosz Golaszewski <brgl@kernel.org> wrote:
+On Mon, 31 Aug 2026 15:07:06 +0200
+"Javier Carrasco" <javier.carrasco.cruz@gmail.com> wrote:
 
-> On Fri, 28 Aug 2026 17:30:23 +0200, Janani Sunil <janani.sunil@analog.com> said:
-> > Add support for Analog Devices AD7768 and AD7768-4, 24-bit simultaneous
-> > sampling Sigma-Delta ADCs with automatic power mode selection.
+> On Mon Aug 31, 2026 at 2:30 PM CEST, Joshua Crofts wrote:
+> > On Mon, 31 Aug 2026 14:47:54 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> >  
+> >> On Mon, Aug 31, 2026 at 12:09:09PM +0200, Javier Carrasco wrote:  
+> >> > Update the kernel-doc reference left over from an earlier revision
+> >> > of the series, before the macro was renamed to IIO_DEV_ACQUIRE_FAILED().  
+> >>
+> >> I would argue that it might be good to be backported, but who reads documentation?  
 > >
-> > Datasheet:
-> > https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-ad7768-4.pdf
-> >
-> > **Device Overview:**
-> > The AD7768 is an 8-channel, 24-bit simultaneous sampling ADC. The
-> > AD7768-4 is a 4-channel variant. Both support configurable power modes,
-> > programmable decimation filters, and a high-speed serial interface with
-> > 1, 2, 4, or 8 data output lines. Per-channel offset, gain, and phase
-> > calibration registers are available.
-> >
-> > **Features Implemented:**
-> > - Support for AD7768 (8-channel) and AD7768-4 (4-channel) via device
-> >   match data.
-> > - Automatic low-noise power mode selection (fast, median, low power)
-> >   with associated decimation rate and output data rate tables.
-> > - Per-channel offset, gain, and conversion delay via IIO attributes.
-> > - SPI communication with custom regmap bus for the device's protocol.
-> > - IIO backend integration with adi-axi-adc for high-speed data capture.
-> > - CRC data integrity verification over the serial interface.
-> > - GPIO auxiliary driver to expose the 5 on-chip GPIO pins.
-> > - VCM common-mode output exposed through the regulator framework, with
-> >   runtime PM management while the output is enabled.
-> >
-> > **Patch Summary:**
-> > 1. Initialize the AXI ADC state mutex.
-> > 2. Add the AD7768 and AD7768-4 devicetree binding.
-> > 3. Add the IIO backend CRC operation.
-> > 4. Implement CRC control in the AXI ADC backend.
-> > 5. Add core AD7768 and AD7768-4 capture support.
-> > 6. Validate the master clock rate.
-> > 7. Add the power-mode configuration helper.
-> > 8. Derive output data rates and the data-clock divider.
-> > 9. Configure enabled channels across two sampling profiles.
-> > 10. Expose per-channel sampling-frequency controls.
-> > 11. Expose per-channel filter controls.
-> > 12. Wait for active digital filters to settle.
-> > 13. Add per-channel offset and gain calibration controls.
-> > 14. Add per-channel conversion delay.
-> > 15. Expose the VCM output through the regulator framework.
-> > 16. Register the GPIO auxiliary device from the parent driver.
-> > 17. Use regmap_test_bits() for single-bit gpio-regmap reads.
-> > 18. Add optional runtime PM support to gpio-regmap.
-> > 19. Add the AD7768 GPIO auxiliary driver.
-> > 20. Add driver documentation.  
+> > Only LLMs these days...  
 > 
-> What is the merge strategy here between iio and GPIO trees? Can patches
-> 17-18 go through an immutable branch in the GPIO tree that would be merged
-> into the iio tree?
+> And at least one human ;)
 
-I don't think there is any coupling between those and the rest of the
-series.  Janani can you confirm if these two patches can go via GPIO
-whilst the rest go via IIO (without the GPIO patches)?
+Applied.  Not backported as at least to humans it should be easy to figure out
+what it should be once grep doesn't find any instances of _FAILED() form.
 
-Obviously the GPIO driver won't ever bind to anything until the two come
-together but build tests etc should be fine.
+Thanks
 
 Jonathan
-
-> 
-> Bart
-
