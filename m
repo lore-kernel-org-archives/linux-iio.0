@@ -1,59 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C479B38F934;
-	Tue,  1 Sep 2026 01:38:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91FFD30AD1A;
+	Tue,  1 Sep 2026 01:51:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788226696; cv=none; b=UAwZtCSI6vOuN/f1uObMjnQUNtYCFYk882UbEaBHPu443tQ3g6TfaziDENSmz3c0IVIjw+Lc/Jm9RhiWdeGzSesXVOSy2AyHNgrqXwFnilLNlnda+gdQorQijhIc40W7isFe/Vp2cVhCCV5sIf84eAmQFwhclrJzSpjb9RbbDo0=
+	t=1788227559; cv=none; b=l4BtsTqxE9qK1gjD6M4tSJaPHc9ZlOKwls0ycEjyAKHtAg9otiviRyDU1yULYeeCOuItMoXmbfhmZY0caqHYiZPU2OVwZZR6HZyZQMDYY2ZwDTB2zrSHfzUVy48fld/Wq24F7fYB05rGpiYh1IO3odROA2q4ISOzvypQ0EopAU8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788226696; c=relaxed/simple;
-	bh=Kd0aQb2iW9hJJk5GOwilOGsnDa4JsdghPXrfBvtR52c=;
+	s=arc-20240116; t=1788227559; c=relaxed/simple;
+	bh=3UmUw4nrHT0b5+MbAUoqh1gXuodJ9SwsPV2gcSiDF8k=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WErbryyAc3jm1dy1E9J+3w1fKO2Ceq298aKVfCL3FBufdtbYBk5QeRbyCqcQCvXbNrLzg9C5KVdFuN97aq7Uz+3yQ46bJfuvyVQdhiTlCgFvBw2Wml8rHeJQZHk6mJyjp4JuqoQTC7x8l7wqDSGDtIb4qR3+m8U5NP1HaO7CTHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NcdeswUl; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=NiGl/DbWbRgbWnmx+SLrV1Mpe1iiBfzwLlaRlEA7k709hIZRuvxmAhc2tZ+KXqoaFc53AKN1/VcIlMfGFgpmQ3BGXwXR0JCnQBZAlL647mNgevb7i2zA1q0AJmue4mFNtHMNTWspGw7s5DAswN/7fSaE3NvCkq+kYF5qRwruxx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QfSjujZ4; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NcdeswUl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA8071F000E9;
-	Tue,  1 Sep 2026 01:38:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QfSjujZ4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 613401F000E9;
+	Tue,  1 Sep 2026 01:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788226691;
-	bh=BrIiRFWtczkZQEdzjQfU9/6RPpw/i2QrGgvd2I+VXzs=;
+	s=k20260515; t=1788227513;
+	bh=Lwc3lYlmp2C91be++pQikaqh89mSmcIEr02veu+yVs4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NcdeswUltGsBhID6VXv/iVFj1j2VSDPdMjVwIMYNjhwk+qAL2m3Tij7x+6lPct52V
-	 SylHxgblCs1CbxzFhF8XlDug85XelzDJLFy160Rku11eEmBe4+WC1r0gtgBDo1wjCW
-	 x5qSDPmUVvrCjoVld7nDbuS42ebeC00QMNv1qn16e+WtUR1+ChiHq7xFlpOgtbKd/O
-	 sSaVkW2mE0F0U1nSRH8GojV62Ia0ow3GVB1GI1z/udq+g0gbx0k71n75x4279cw3VA
-	 AtYvM7tXgXg2RalTE7wO6M0MVuN2EAL7i8HzPqKURD42lhfpD0WTcaiA3Cc4XdE4xq
-	 GnBZ7Ep70PC3w==
-Date: Tue, 1 Sep 2026 02:38:05 +0100
+	b=QfSjujZ43jw6tCx9bZOQPZhv65v8QSSlWkdwig6y8nRxLO9wFDD3d2pRylMCMAeu7
+	 GT9CCadeKa3ddsJpnvcuJsFaB2+T8v6RVUToKwWI3tNK/OoAxoVv0vpsWtFeeoMIYW
+	 AYRBHHILGE96ryOG71sahMcd5ExJjkWnQWPmZH7dhRk5I3z3JzJ11lqleb2cuikw96
+	 YHtnKUmxmT193gs89/ddR+keviT1wPiTyB22hYD2Mzlb4MF0OdFJJGrblt796no43V
+	 eh1qDZENIZWjvOy6KMsMGrRtidpnzVJSaMXPMwwP4N54SXV3udVlg5v0KzZsDZX8pP
+	 sESYom469snsA==
+Date: Tue, 1 Sep 2026 02:51:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Janani Sunil <janani.sunil@analog.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan
- Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Mark Brown
- <broonie@kernel.org>, Marius Cristea <marius.cristea@microchip.com>, Marcus
- Folkesson <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
- Conor Dooley <conor.dooley@microchip.com>, Daire McNamara
- <daire.mcnamara@microchip.com>, Paul Walmsley <pjw@kernel.org>, Palmer
- Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Alexandre
- Ghiti <alex@ghiti.fr>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
- linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>,
- linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v10 3/3] iio: dac: Add AD5529R DAC driver support
-Message-ID: <20260901023805.20abc542@jic23-huawei>
-In-Reply-To: <apUo4afCh5LhUqIO@ashevche-desk.local>
-References: <20260827-ad5529r-driver-v10-0-38f2be07b824@analog.com>
-	<20260827-ad5529r-driver-v10-3-38f2be07b824@analog.com>
-	<ao_z9QTJC_q8gH0v@ashevche-desk.local>
-	<178813177252.2788519.10940489053707901297.b4-reply@b4>
-	<apUo4afCh5LhUqIO@ashevche-desk.local>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Chris Hall <c-hall@ti.com>, Patrick Edwards
+ <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] iio: adc: ti-ads112c14: add continuous mode
+ support
+Message-ID: <20260901025147.583b3f61@jic23-huawei>
+In-Reply-To: <9576dc33-f622-4578-9dff-526046ff0689@baylibre.com>
+References: <20260827-iio-adc-ti-ads112c14-continuous-mode-v4-0-1e51a6e20a69@baylibre.com>
+	<20260827-iio-adc-ti-ads112c14-continuous-mode-v4-3-1e51a6e20a69@baylibre.com>
+	<178812363490.2788519.7648614173312615575.b4-review@b4>
+	<9576dc33-f622-4578-9dff-526046ff0689@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -64,46 +51,174 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 31 Aug 2026 10:10:25 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 31 Aug 2026 16:31:13 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> On Mon, Aug 31, 2026 at 12:16:12AM +0100, Jonathan Cameron wrote:
-> 
-> ...
-> 
-> > > > +	device_for_each_child_node_scoped(dev, child) {
-> > > > +		if (st->num_channels == ARRAY_SIZE(st->channels))
-> > > > +			return dev_err_probe(dev, -ECHRNG, "Too many channels\n");  
-> > > 
-> > > Okay, this actually better to be ENOSPC
-> > >   
-> > > > +		ret = fwnode_property_read_u32(child, "reg", &ch);
-> > > > +		if (ret)
-> > > > +			return dev_err_probe(dev, ret,
-> > > > +					     "Missing reg property in channel node\n");
-> > > > +
-> > > > +		if (ch >= AD5529R_MAX_CHANNELS)
-> > > > +			return dev_err_probe(dev, -EINVAL,  
-> > > 
-> > > and ECHRNG is here.  
+> On 8/30/26 4:00 PM, Jonathan Cameron wrote:
+> >> Add support for continuous mode in the TI ADS112C14 ADC driver. In this
+> >> mode the ADC itself is starting each conversion, so we add a trigger
+> >> based on the DRDY interrupt to read each sample. This mode is also
+> >> limited in that only one channel can be enabled at a time since the
+> >> chip does not have a sequencer or simultaneous sampling capability.
+> >> Continuous mode will only be used when this new trigger is the current
+> >> trigger.
+> >>
+> >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>  
+> > Sashiko caught some interesting things in this one.
 > > 
-> > That one is getting rather creative even though I guess the description
-> > does fit rather well.  So I don't object, but also feel -EINVAL is
-> > probably good enough for an invalid property value.  
+> > See inline.
+> >   
+> >>
+> >> diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
+> >> index 23f15be303fb..878764deffc5 100644
+> >> --- a/drivers/iio/adc/ti-ads112c14.c
+> >> +++ b/drivers/iio/adc/ti-ads112c14.c
+> >> @@ -9,6 +9,7 @@
+> >>   */
+> >>  
+> >>  #include <linux/bitfield.h>
+> >> +#include <linux/bitmap.h>
+> >>  #include <linux/cleanup.h>
+> >>  #include <linux/completion.h>
+> >>  #include <linux/crc8.h>
+> >> @@ -18,6 +19,7 @@
+> >>  #include <linux/i2c.h>
+> >>  #include <linux/iio/buffer.h>
+> >>  #include <linux/iio/iio.h>
+> >> +#include <linux/iio/trigger.h>
+> >>  #include <linux/iio/trigger_consumer.h>
+> >>  #include <linux/iio/triggered_buffer.h>
+> >>  #include <linux/interrupt.h>
+> >> @@ -257,6 +259,7 @@ struct ads112c14_measurement {
+> >>  struct ads112c14_data {
+> >>  	const struct ads112c14_chip_info *chip_info;
+> >>  	struct regmap *regmap;
+> >> +	struct iio_trigger *drdy_trig;
+> >>  	/* Synchronizes access to register value fields. */
+> >>  	struct mutex lock;
+> >>  	int drdy_irq;
+> >> @@ -280,11 +283,18 @@ static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
+> >>  	struct iio_dev *indio_dev = private;
+> >>  	struct ads112c14_data *data = iio_priv(indio_dev);
+> >>  
+> >> -	complete(&data->drdy_completion);
+> >> +	if (indio_dev->trig && iio_trigger_using_own(indio_dev))  
+> > 
+> > 
+> > This indeed needs more guarding given we hit these interrupts for
+> > a normal read (to get to the completion)
+> > 
+> > 
+> > Likewise seems valid.  
 > 
-> But missing property message propagates the fwnode return code (which will be
-> EINVAL IIRC). So the above is not about missing property, it's about wrong
-> channel. Note, I have checked uses of ECHRNG in the kernel, and many of them
-> are fine with the suggested one.
+> I figured it didn't need guarding since we are claiming direct mode. The
+> trigger can't be assigned until buffer mode is claimed. and we can't
+> switch to buffer mode if direct mode is claimed.
+> 
 
-Fair enough and works for me.  We can add this to the list of things
-to tidy up if we happen to be touching other code that deals with
-wrong channel numbers.  Not something we want to generate churn though
-unless there are far fewer instances of this than I think there are!
+Hmm. Is indio_dev->trig guarded enough? Some of the set paths
+are fine because they are things the driver calls directly. The one
+that I think is a problem is current_trigger_store().  
 
-Jonathan
+That has some protections to stop the indio_dev->trig being changed
+whilst we are in buffered mode (those looks suspiciously like the
+have a time of check time of use bug though maybe a harmless one).
+Anyhow, that's not relevant here as we care about the not in buffered
+mode.  For that there is no guarding.  Maybe we can just claim
+direct mode in there (which closes the toctou issue as well)?
+
+It seems unlikely anyone will do a claim_direct in the validation
+or set_trigger_state callbacks.  Would have to check that carefully
+though.
 
 > 
-> > > > +					     "Channel %u exceeds maximum 15\n",  
+> >   
+> >> +		iio_trigger_poll(data->drdy_trig);
+> >> +	else
+> >> +		complete(&data->drdy_completion);
+> >>  
+> >>  	return IRQ_HANDLED;
+> >>  }  
+> > 
+> > ...
+> >   
+> >>  static irqreturn_t ads112c14_trigger_handler(int irq, void *private)
+> >>  {
+> >>  	struct iio_poll_func *pf = private;
+> >> @@ -961,6 +984,26 @@ static irqreturn_t ads112c14_trigger_handler(int irq, void *private)
+> >>  	u32 i;
+> >>  	int ret;
+> >>  
+> >> +	if (iio_trigger_using_own(indio_dev)) {  
+> > 
+> >  | sashiko.dev <sashiko@sashiko.dev>:
+> >  |
+> >  | [Severity: High]
+> >  | Will this check incorrectly enable continuous mode processing for any
+> >  | external trigger that belongs to its own device?
+> >  |
+> >  | If a user assigns an external trigger that sets its attached_own_device
+> >  | property to true, iio_trigger_using_own() will evaluate to true. Could this
+> >  | misroute the interrupt handler into assuming continuous mode when it should
+> >  | not?
+> >  |
+> >  | via: https://sashiko.dev/#/message/20260827-iio-adc-ti-ads112c14-continuous-mode-v4-3-1e51a6e20a69@baylibre.com
+> > 
+> > I think this is triggered by the more complex handling you have
+> > to detect use of the dataready trigger below.  There is only one trigger
+> > currently so they end up the same, but perhaps we should make the handling
+> > more similar?  
 > 
+> I'll just create our own local flag instead of relying on IIO internals.
+
+That would be safer.
+
+> 
+> >   
+> >> +		const struct iio_chan_spec *chan;
+> >> +
+> >> +		chan = ads112c14_first_active_channel(indio_dev);
+> >> +		if (!chan)
+> >> +			goto out;
+> >> +
+> >> +		ret = ads112c14_scan_read(data, (u8 *)&data->scan[0]);  
+> > 
+> >  | sashiko.dev <sashiko@sashiko.dev>:
+> >  |
+> >  | [Severity: High]
+> >  | This is a pre-existing issue, but is there a missing length check in the
+> >  | underlying I2C block read that leaves stack memory partially uninitialized?
+> >  |
+> >  | If i2c_smbus_read_i2c_block_data() (called by ads112c14_scan_read()) returns
+> >  | a positive value smaller than the requested length, the condition if (ret < 0)
+> >  | fails to catch the short read. Does this leak uninitialized stack memory to
+> >  | userspace when data->scan is later pushed to the IIO buffers?
+> >  |
+> >  | via: https://sashiko.dev/#/message/20260827-iio-adc-ti-ads112c14-continuous-mode-v4-3-1e51a6e20a69@baylibre.com
+> > 
+> > I haven't chased this one through - but in a similar example in a review
+> > I did yesterday I suggested just initializing the memory anyway
+> > so we don't have to care one way or the other.  
+> 
+> This uses i2c_smbus_xfer() in the end which returns 0 or negative error.
+> No partial reads. So I don't see how we could be leaking.
+Ok. Probably fine.  I still need to get back to that related i2c set that
+makes the handling more expected.
+> 
+> >   
+> >> +		if (ret) {
+> >> +			dev_err_once(indio_dev->dev.parent,
+> >> +				     "failed to read channel %d: %pe; additional errors will be suppressed\n",
+> >> +				     chan->channel, ERR_PTR(ret));
+> >> +			goto out;
+> >> +		}
+> >> +
+> >> +		iio_push_to_buffers_with_ts(indio_dev, data->scan,
+> >> +					    sizeof(data->scan), pf->timestamp);
+> >> +		goto out;
+> >> +	}
+> >> +
+> >>  	iio_for_each_active_channel(indio_dev, i) {
+> >>  		const struct iio_chan_spec *chan = &indio_dev->channels[i];
+> >>    
 
