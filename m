@@ -1,24 +1,25 @@
-Received: from out-2z4y-a154.jellyfish.systems (out-2z4y-a154.jellyfish.systems [198.54.127.154])
+Received: from out-zbxj-a74.jellyfish.systems (out-zbxj-a74.jellyfish.systems [198.54.127.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 469BD37E5C1
-	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 00:51:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49E2B37E5DF
+	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 00:52:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788223913; cv=none; b=ufXHFSLRLaRFQLjuiqxwiRsfWLrQe7s01nonwBvgjuP8C8VTp8xYA08DO2pK85neEuff/FPAKsEEbTDOFn7SH/eVfpsg5ugQjXGAXGBu0jwbeAZvzXYly1yoDJpEPhEcX6sLDauR/+XtcByPOnxYWWMsunDipxqAJ6NzZWNVe4w=
+	t=1788223926; cv=none; b=aSZQFmLIgOTauW8HPT2CFRATB+S/pqjuEqohq2JIhhOSN29ICvXbJOYOEnuPrLX0o4Yryk5g8o28EnQPhzTjcdaoXIZ60NqUzFBa6DxMf12sHKF9wv0PrOw53N42Ye955xn1uDaL5rSxZEpuuOPoO7mmaZua5LHajb6K2U80mME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788223913; c=relaxed/simple;
-	bh=pDHNs5tzOnSgGhVMJwsbSK33nJ4lCp8YGpCMQIp8Z88=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SukIplAoIlXD0qhoxNtKDBbkmrts9jxB0u0kTFn3KgbjDGI+13Iy2AfYqS/KO4+x35iQQmByJXuPJrzP157YgfmX7XjpSduD7VaLmFnWauOizEEg34NjRnp8Wc02W1JQQzCyYUT2vuEW3bG2SVH4ktWwa4DSlBjWbRgQ8HLgbpk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.154
+	s=arc-20240116; t=1788223926; c=relaxed/simple;
+	bh=YyfYeRHPE5iyL2SILMlfMezha+RGEWGYlmgJuT5nyiY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=DlXnl7i22dxsd/1zj8XSKWgysTMQlxhn6gm7uMe0ttSZeumRwis/FQPTd/vUDRVQsrlN2oLLBMm+Fw0q437U41Zyr2dBdEL8MDxONOpeq0lwYco32HwYGD8R6YT6wMEF63HiYiIdUbT8dqePAlGtbxKs9/FeKPybaHgMjlMxmHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
 Received: from mail.privateemail.com (unknown [87.215.145.39])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.privateemail.com (Postfix) with ESMTPSA id 4hYnP53ZSnz2x9C;
-	Tue, 01 Sep 2026 00:51:37 +0000 (UTC)
+	by mail.privateemail.com (Postfix) with ESMTPSA id 4hYnPQ0sHGz2x9C;
+	Tue, 01 Sep 2026 00:51:53 +0000 (UTC)
 From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
 To: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org
@@ -37,10 +38,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Luca Weiss <luca.weiss@fairphone.com>,
 	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
 	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Subject: [PATCH v3 0/5] iio: light: stk3310: per-chip match data and STK36C61 support
-Date: Tue,  1 Sep 2026 02:51:09 +0200
-Message-ID: <20260901005114.203062-1-jorijnvdgraaf@catcrafts.net>
+Subject: [PATCH v3 4/5] iio: light: stk3310: add per-chip match data
+Date: Tue,  1 Sep 2026 02:51:13 +0200
+Message-ID: <20260901005114.203062-5-jorijnvdgraaf@catcrafts.net>
 X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260901005114.203062-1-jorijnvdgraaf@catcrafts.net>
+References: <20260901005114.203062-1-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,90 +53,173 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Envelope-From: jorijnvdgraaf@catcrafts.net
 
-The Sensortek STK36C61 is a 3-in-1 ambient light / proximity / RGB
-colour sensor whose register interface is compatible with the stk3310
-across the ALS and proximity data, threshold, gain and
-integration-time registers this driver uses. The part name comes from
-the Fairphone 6 manual, which lists the component as "3IN1 ALPS/RGB
-sensor/STK36C61". The layout was probed on the device: chip ID 0x95,
-the stk3310 STATE/FLAG bit layout, data and threshold registers
-(thresholds written through the event interface read back from the
-chip, and the FLAG near/far bit crosses with them), gain and
-integration-time fields the ALS and proximity readings scale with,
-and an RGBC data block directly after the ALS data, the red, green
-and blue assignments each confirmed by the matching channel
-dominating under the matching illumination and clear by its broadband
-response.
+Introduce a chip_info structure carrying the device name and channel
+specification, attach it to every i2c, OF and ACPI table entry, and
+let probe take it from the match data, failing when there is none.
+Every firmware bind path carries match data, and with the id names in
+lower case a client instantiated through the sysfs new_device
+interface under the compatible's lower-case suffix receives it
+through the id table. The shared channel definitions move into
+macros.
 
-The colour controls: R, G and B share the illuminance channel's gain.
-Clear is gained by its own field in a GAINCTRL register at 0x4E,
-originally located via the datasheet of the STK37660 (a documented
-sibling with the same data register layout) and verified on the
-device: stepping it multiplies the clear count by ~4 per step while
-the other channels hold still. The STK36C61 patch exposes scale and
-integration time on the colour channels.
+The ACPI table entries change to named initializers, matching the
+other id tables.
 
-A public datasheet exists: the STK36C61-A preliminary datasheet,
-version 0.9, hosted by LCSC [1]. It agrees with the device on the
-colour-engine layout (RGBC data at 0x15-0x1C, the clear gain in
-GAINCTRL 0x4E, the shared RGB-gain and integration-time fields in
-ALSCTRL1), but it documents the -A variant and gives the product ID
-as 0x93 where this part reports 0x95. Luca Weiss reports a newer
-revision (0.9.2) gives 0x95 and different mLux-per-count figures for
-the ALSCTRL1 gain settings. I could not find a published copy of
-that revision.
-
-Tested on a Fairphone 6 running a 7.2-based tree: this series'
-stk3310.c, byte-identical, built as a module against that tree (the
-i2c core files the binding behaviour depends on are identical between
-the trees). Verified there: DT boot instantiation, the colour
-scale/integration-time interface, and the sysfs name behaviours this
-series changes: a lower-case name reaches the id table's match data,
-capitals no longer bind, and a full-compatible-string client now
-fails probe with the missing-driver-data error. A board DTS node
-using the new compatible follows separately via linux-arm-msm.
-
-Patch 5 carries no Datasheet: tag since the sheet at [1] is a
-preliminary for the -A variant: the published revision's product ID
-mismatches this part's, the register map omits the ALS data
-registers, and the later revision disagrees on the mLux-per-count
-figures. I am unable to find specifics for the Datasheet: tag,
-whether it must be the exact sheet for the part or if a "good
-enough" sheet is accepted.
-
-Changes in v3:
-- patch 4: drop the tab alignment of the chip_info members, take the
-  probe failure through a struct device local, and return -ENODATA
-  instead of -ENODEV on missing match data, commit message
-  wording tightened (Andy)
-- patch 5: commit message squeezed to the point, the verification and
-  colour-assignment detail moved into this letter, the scale
-  rationale trimmed to its load-bearing constraint (Andy, Jonathan)
-- cover letter: the "no public datasheet" claim corrected (Marcelo)
-- picked up Andy's Reviewed-by on patches 1 and 3
-
-v2: https://lore.kernel.org/all/20260826175409.326131-1-jorijnvdgraaf@catcrafts.net/
-v1: https://lore.kernel.org/all/20260810110423.41697-1-jorijnvdgraaf@catcrafts.net/
-
-[1] https://www.lcsc.com/datasheet/C49230205.pdf
+This is a preparatory change for a variant that provides more channels
+than the existing parts. No functional change for firmware-described
+devices. A sysfs client under a name that binds without matching any
+id entry (the full compatible string) now fails probe with an error
+instead of probing as an stk3310.
 
 Assisted-by: Claude:claude-fable-5
 Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+---
+ drivers/iio/light/stk3310.c | 95 ++++++++++++++++++++++++-------------
+ 1 file changed, 61 insertions(+), 34 deletions(-)
 
-Jorijn van der Graaf (5):
-  iio: light: stk3310: lower-case the i2c device ID names
-  dt-bindings: iio: light: stk33xx: document the Sensortek STK36C61
-  iio: light: stk3310: move the data registers into the channel address
-  iio: light: stk3310: add per-chip match data
-  iio: light: stk3310: support the Sensortek STK36C61
-
- Documentation/ABI/testing/sysfs-bus-iio       |   1 +
- .../bindings/iio/light/stk33xx.yaml           |   9 +-
- drivers/iio/light/stk3310.c                   | 203 +++++++++++++-----
- 3 files changed, 156 insertions(+), 57 deletions(-)
-
-
-base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 156888969366..f5782a1e19bb 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -181,26 +181,48 @@ static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
+ 	{ }
+ };
+ 
++#define STK3310_LIGHT_CHANNEL {				\
++	.type = IIO_LIGHT,				\
++	.address = STK3310_REG_ALS_DATA_MSB,		\
++	.info_mask_separate =				\
++		BIT(IIO_CHAN_INFO_RAW) |		\
++		BIT(IIO_CHAN_INFO_SCALE) |		\
++		BIT(IIO_CHAN_INFO_INT_TIME),		\
++}
++
++#define STK3310_PROXIMITY_CHANNEL {			\
++	.type = IIO_PROXIMITY,				\
++	.address = STK3310_REG_PS_DATA_MSB,		\
++	.info_mask_separate =				\
++		BIT(IIO_CHAN_INFO_RAW) |		\
++		BIT(IIO_CHAN_INFO_SCALE) |		\
++		BIT(IIO_CHAN_INFO_INT_TIME),		\
++	.event_spec = stk3310_events,			\
++	.num_event_specs = ARRAY_SIZE(stk3310_events),	\
++	.ext_info = stk3310_ext_info,			\
++}
++
+ static const struct iio_chan_spec stk3310_channels[] = {
+-	{
+-		.type = IIO_LIGHT,
+-		.address = STK3310_REG_ALS_DATA_MSB,
+-		.info_mask_separate =
+-			BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_SCALE) |
+-			BIT(IIO_CHAN_INFO_INT_TIME),
+-	},
+-	{
+-		.type = IIO_PROXIMITY,
+-		.address = STK3310_REG_PS_DATA_MSB,
+-		.info_mask_separate =
+-			BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_SCALE) |
+-			BIT(IIO_CHAN_INFO_INT_TIME),
+-		.event_spec = stk3310_events,
+-		.num_event_specs = ARRAY_SIZE(stk3310_events),
+-		.ext_info = stk3310_ext_info,
+-	}
++	STK3310_LIGHT_CHANNEL,
++	STK3310_PROXIMITY_CHANNEL,
++};
++
++/**
++ * struct stk3310_chip_info - chip-specific data
++ * @name: device name reported to the IIO core
++ * @channels: channel specification
++ * @num_channels: number of channels
++ */
++struct stk3310_chip_info {
++	const char *name;
++	const struct iio_chan_spec *channels __counted_by_ptr(num_channels);
++	unsigned int num_channels;
++};
++
++static const struct stk3310_chip_info stk3310_chip_info = {
++	.name = STK3310_DRIVER_NAME,
++	.channels = stk3310_channels,
++	.num_channels = ARRAY_SIZE(stk3310_channels),
+ };
+ 
+ static IIO_CONST_ATTR(in_illuminance_scale_available, STK3310_SCALE_AVAILABLE);
+@@ -632,10 +654,16 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
+ 
+ static int stk3310_probe(struct i2c_client *client)
+ {
++	const struct stk3310_chip_info *chip_info;
++	struct device *dev = &client->dev;
+ 	int ret;
+ 	struct iio_dev *indio_dev;
+ 	struct stk3310_data *data;
+ 
++	chip_info = i2c_get_match_data(client);
++	if (!chip_info)
++		return dev_err_probe(dev, -ENODATA, "missing driver data\n");
++
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -654,10 +682,10 @@ static int stk3310_probe(struct i2c_client *client)
+ 		return ret;
+ 
+ 	indio_dev->info = &stk3310_info;
+-	indio_dev->name = STK3310_DRIVER_NAME;
++	indio_dev->name = chip_info->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = stk3310_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(stk3310_channels);
++	indio_dev->channels = chip_info->channels;
++	indio_dev->num_channels = chip_info->num_channels;
+ 
+ 	ret = stk3310_init(indio_dev);
+ 	if (ret < 0)
+@@ -763,28 +791,27 @@ static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
+ 				stk3310_resume);
+ 
+ static const struct i2c_device_id stk3310_i2c_id[] = {
+-	{ .name = "stk3013" },
+-	{ .name = "stk3310" },
+-	{ .name = "stk3311" },
+-	{ .name = "stk3335" },
++	{ .name = "stk3013", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
++	{ .name = "stk3310", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
++	{ .name = "stk3311", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
++	{ .name = "stk3335", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
+ 
+ static const struct acpi_device_id stk3310_acpi_id[] = {
+-	{"STK3013", 0},
+-	{"STK3310", 0},
+-	{"STK3311", 0},
++	{ .id = "STK3013", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
++	{ .id = "STK3310", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
++	{ .id = "STK3311", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
+ 	{ }
+ };
+-
+ MODULE_DEVICE_TABLE(acpi, stk3310_acpi_id);
+ 
+ static const struct of_device_id stk3310_of_match[] = {
+-	{ .compatible = "sensortek,stk3013", },
+-	{ .compatible = "sensortek,stk3310", },
+-	{ .compatible = "sensortek,stk3311", },
+-	{ .compatible = "sensortek,stk3335", },
++	{ .compatible = "sensortek,stk3013", .data = &stk3310_chip_info },
++	{ .compatible = "sensortek,stk3310", .data = &stk3310_chip_info },
++	{ .compatible = "sensortek,stk3311", .data = &stk3310_chip_info },
++	{ .compatible = "sensortek,stk3335", .data = &stk3310_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, stk3310_of_match);
 -- 
 2.55.0
 
