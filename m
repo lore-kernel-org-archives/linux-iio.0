@@ -1,51 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D1C381E86;
-	Tue,  1 Sep 2026 17:45:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA754494829;
+	Tue,  1 Sep 2026 18:05:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788284757; cv=none; b=NFjEI6aquEOKEF5kyXbBz/1F44kmxM7nkmzPSviVwAmDAsb1Lr59SgawDiFK7hg8oNQVNFZWhyBP53z2qsbNTLhPB7kE9HxtgIb8I1YZXxxv8D6geoRSSAdOlKI8zG3YyamXIWMeDLBt9cemZGo6pvMSIwzjyUb2gTeEGwDoAhs=
+	t=1788285910; cv=none; b=rhEOCqjvMleweKCWB1aEehB5xbV1PK3/DYqnyfQImP3VNuKpc7ea9I4ttBFdT8vSnEh8QPazdJWKSsbWnSSOs9tj0S+S9LHkBtrnBGPzwg4eW8orks9IUPhqUWMjW5Djy0AqB7d+7Q5joB+P/4DIG9px7zYlzavz2yC4KfH+9Qk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788284757; c=relaxed/simple;
-	bh=VlqLdlBjZsCvP/SqKVD99VktAZVRkGdOgEx2DPutAzU=;
+	s=arc-20240116; t=1788285910; c=relaxed/simple;
+	bh=iWGNiDS8ZCSgb2W9PN+r8+jRy+ytgHRSpAHm+4BsZDs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O+gFk7CZIkLuzx+n/mqf7dkyz5a+cnCGcy9V2Nh67SKMw+9vsC7/Gki4z2x4dxeQQsZnLtrXEhu8MvzzhhQAnuGINdXEEtpDn2FfvBXpS5NW4PZ1aF8MbDqDeH4MezSVEPMsEKnB6a8aNNZiU0hCG5mvprC2MhzC884vOcMMwzA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FA9Qe+NK; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=HUyYpb43VaBV3beIK2JCyeNaU01yesZI7saX0wVxeniPI/jaI+X3WMauW5grbEd3XrQGxZzB09o6xn1D2/L/SmYkiK0mgTxXO3GnIsy9DB1hdna44gjqFYxqwFrLBA/aYsuzvsdlNG2EQfkDpX4PoLwTRW3aupKUSapbclq8yqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JUxnMkoA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FA9Qe+NK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C421F000E9;
-	Tue,  1 Sep 2026 17:45:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JUxnMkoA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 355231F000E9;
+	Tue,  1 Sep 2026 18:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788284756;
-	bh=4+eJ05EYcYl/X2yON9wDovfRwDxzooILuabJR+fv504=;
+	s=k20260515; t=1788285909;
+	bh=BBpsF2dg6Vi508P3YPVHwpdk4fG6Hs4x5J/YjvAMH3E=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=FA9Qe+NKBzwV2u9DBHwCoi2qbJ7p+OGK99XCzVkgTp+iNI2c9W0zblSyg2YsiPzXA
-	 7ty+yQuHNqJ59bIOoCRwBqhYEE8NcGJ0TUhosW9pBlJiksVEHMN0/zsf16ut6ooR5d
-	 6//Wphdjg2D+0JT18E3o2sWkVP/wD67HJmqREaibeyswOZAsppBxZX5rhFj12NMXbD
-	 DKsd/UdQxKDARz8Fov6BLqJsDMDoISnEKaN/AI6MvGpOeH0R6GOQkt0fEBPqCb1+nQ
-	 aDrnYVAHvDG4Cyf4/v/Kn1AI/pFLF5Pl1sEKCI05SFkO6b68GDdIEYO7+9I9Lj1S9o
-	 ne4Wf6zYQc0fw==
-Date: Tue, 1 Sep 2026 18:45:51 +0100
+	b=JUxnMkoAN0LATLcDRxh1ClGduoMWsqrBcLKwxGnCVCOl7Fq0hTCeoylSJqS0C7tDl
+	 8kcxAynyY6czTIht1Q01S4LJkfFRNOvQSkEq++5Refek8Bl0aJE+9A2mBbaAaeTAh9
+	 69x94vXVmayPJg6OGLes8i4YLvGxCKNLzaTxQPikm/qvKVDlSL1/Ey87NGueG00HNj
+	 9scvlxenR9g9dvOZH8qqhXf9hZ3Wk3KsAhVCgh0xVPTDwF6byD1Z2/n9+qDGU37eSl
+	 TrLmQtXqeLTd2Sl9uBE1J2amEFcN2eBqRD4B/7UT9Ux3ikX8le3OvO9uzNWx4fD/Kl
+	 xZ2G+1xBxzB6g==
+Date: Tue, 1 Sep 2026 19:05:04 +0100
 From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Kim Seer Paller <kimseer.paller@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 2/4] dt-bindings: iio: dac: add adi,ad5710r.yaml
-Message-ID: <20260901-audacious-brigade-dafd881edf34@spud>
-References: <20260829-iio-ad5710r-upstream-v4-0-8af3121c7d21@analog.com>
- <20260829-iio-ad5710r-upstream-v4-2-8af3121c7d21@analog.com>
- <20260831-singer-reimburse-defba31848bc@spud>
- <20260901041408.06d3f7ac@jic23-huawei>
+To: Shehryar Ahmad <shehryar.amd@gmail.com>
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, gregkh@linuxfoundation.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	linux@analog.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+	devicetree@vger.kernel.org, marcelo.schmitt1@gmail.com,
+	danascape@gmail.com
+Subject: Re: [PATCH 3/3] dt-bindings: iio: accel: adi,adis16201: add
+ adis16203 compatible
+Message-ID: <20260901-ambitious-eloquent-7dcb297a9e6a@spud>
+References: <20260831184201.34416-1-shehryar.amd@gmail.com>
+ <20260831184201.34416-4-shehryar.amd@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,57 +48,83 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="wU39Wj9gfRz4w7fM"
+	protocol="application/pgp-signature"; boundary="ZZpjyQTJecju7TVT"
 Content-Disposition: inline
-In-Reply-To: <20260901041408.06d3f7ac@jic23-huawei>
+In-Reply-To: <20260831184201.34416-4-shehryar.amd@gmail.com>
 
---wU39Wj9gfRz4w7fM
+--ZZpjyQTJecju7TVT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 01, 2026 at 04:14:08AM +0100, Jonathan Cameron wrote:
+On Mon, Aug 31, 2026 at 11:42:01PM +0500, Shehryar Ahmad wrote:
+> The ADIS16203 has the same external interface as the already documented
+> ADIS16201/ADIS16209, for the properties covered by this binding
+> (compatible/reg, the DIO-based interrupt pin, and VDD supply), verified
+> by datasheets Table 5, Pin Function Descriptions, in the respective
+> Analog Devices datasheets. Some Auxiliary pins differ (e.g. adis16209
+> marks a few pins DNC where adis16201/adis16203 use them as AUX COM), but
+> these are not represented in this binding.  Add adis16203 to the
+> existing enum rather than creating a separate file.
 >=20
-> Hi Conor,
->=20
-> > > +  adi,range-double:
-> > > +    description:
-> > > +      Configure the output range for all channels. If the property i=
-s present,
-> > > +      the output will range from 0V to 2 x Vref. If the property is =
-not present,
-> > > +      the output will range from 0V to Vref. =20
-> >=20
-> > What was the rationale provided for this not being a userspace control?
-> >=20
-> Jumping in as I happen to read this...
->=20
-> For DACs we often do it in kernel as potentially there is a circuit depen=
-dent aspect.
-> In extreme case leading to the bad kind of smoke. Normally it is covered =
-by an
-> output-range pair, but can't do that here as it is relative to vref (which
-> we have no way of knowing in the binding).=20
->=20
-> For input devices it is always a userspace thing to control.
+> Signed-off-by: Shehryar Ahmad <shehryar.amd@gmail.com>
+> ---
+> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
-I thought it'd actually be the opposite, with the assumption that output
-devices would default to being off and so there wouldn't be smoke
-production.
-If you say it's normal, then fine :)
+Why is this below the --- line (IOW it won't appear when the patch is
+applied)?
 
 >=20
-> > > +    type: boolean
+> Previously reviewed at:
+> https://lore.kernel.org/all/20260812043506.456ced6d@jic23-huawei/
+>=20
+>  .../devicetree/bindings/iio/accel/adi,adis16201.yaml        | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.ya=
+ml b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
+> index b6ba7ad1a..3ce5fb1be 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
+> +++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
+> @@ -4,21 +4,23 @@
+>  $id: http://devicetree.org/schemas/iio/accel/adi,adis16201.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> =20
+> -title: ADIS16201 Dual Axis Inclinometer and similar
+> +title: ADIS16201 Inclinometer and similar
+> =20
+>  maintainers:
+>    - Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> =20
+>  description: |
+> -  Two similar parts from external interface point of view.
+> +  Three similar parts from external interface point of view.
+>    SPI interface.
+>      https://www.analog.com/en/products/adis16201.html
+> +    https://www.analog.com/en/products/adis16203.html
+>      https://www.analog.com/en/products/adis16209.html
+> =20
+>  properties:
+>    compatible:
+>      enum:
+>        - adi,adis16201
+> +      - adi,adis16203
+>        - adi,adis16209
+> =20
+>    reg:
+> --=20
+> 2.43.0
+>=20
 
---wU39Wj9gfRz4w7fM
+--ZZpjyQTJecju7TVT
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapcPTwAKCRB4tDGHoIJi
-0kP+AP9FLNmXu8h5joF37v4O3WSNVbtZXoqJzJfCv0IwhsfoSwD/W8RyALsvb/OD
-lkLDGV0JeqYl3S9qxvTJxhH/eYyc0QI=
-=G+oK
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapcT0AAKCRB4tDGHoIJi
+0tvPAP45Wmq5LZYcSkWoAbFDkgmxpROzXFrfYtlKu2EXOWtePgEA/BVpsZIUconw
+AZI0y8fAA+PuagsZaCPFfFJ6nILeDAk=
+=Ft30
 -----END PGP SIGNATURE-----
 
---wU39Wj9gfRz4w7fM--
+--ZZpjyQTJecju7TVT--
