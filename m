@@ -1,130 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA754494829;
-	Tue,  1 Sep 2026 18:05:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CCE448C8D9
+	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 18:43:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788285910; cv=none; b=rhEOCqjvMleweKCWB1aEehB5xbV1PK3/DYqnyfQImP3VNuKpc7ea9I4ttBFdT8vSnEh8QPazdJWKSsbWnSSOs9tj0S+S9LHkBtrnBGPzwg4eW8orks9IUPhqUWMjW5Djy0AqB7d+7Q5joB+P/4DIG9px7zYlzavz2yC4KfH+9Qk=
+	t=1788288190; cv=none; b=UHd+qe9wzyTfrIv/JKa3gjYeAIVBLyL/B46eZHEATIrFP+3m9HCm8NvR2VTpXamv2qL4oUKrZJkaB+Kc52uldd49WD0LKQ/fuqIezRjHfi7AcmgLI7Agcgh6WMeSqyhMMFj/TF2dazkJPDyqc0UKJ+pW8kY+gucJ/x3W8poI7BI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788285910; c=relaxed/simple;
-	bh=iWGNiDS8ZCSgb2W9PN+r8+jRy+ytgHRSpAHm+4BsZDs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HUyYpb43VaBV3beIK2JCyeNaU01yesZI7saX0wVxeniPI/jaI+X3WMauW5grbEd3XrQGxZzB09o6xn1D2/L/SmYkiK0mgTxXO3GnIsy9DB1hdna44gjqFYxqwFrLBA/aYsuzvsdlNG2EQfkDpX4PoLwTRW3aupKUSapbclq8yqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JUxnMkoA; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788288190; c=relaxed/simple;
+	bh=Nr5B9X/EA/TPHrdPqN5lYHsqf+HIQ0e6gSRt/7NYRVE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TN4iaStb2/MR7+RXAW6Hlb88b3xAU8mi08NDZq0UZTcrBCxXC/HEJP4m4WXubYWp6n12vXfZEkJ1QUwm0bzEJXMEOm8dB/tzGgJPOMk4kKK5vq84GvUAvkMedStVu7KLn1dbRQdQuLEmNsePPBzsUgbCQWS6P4WkIccNnPJ1hko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dxJrSd+n; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JUxnMkoA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 355231F000E9;
-	Tue,  1 Sep 2026 18:05:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788285909;
-	bh=BBpsF2dg6Vi508P3YPVHwpdk4fG6Hs4x5J/YjvAMH3E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=JUxnMkoAN0LATLcDRxh1ClGduoMWsqrBcLKwxGnCVCOl7Fq0hTCeoylSJqS0C7tDl
-	 8kcxAynyY6czTIht1Q01S4LJkfFRNOvQSkEq++5Refek8Bl0aJE+9A2mBbaAaeTAh9
-	 69x94vXVmayPJg6OGLes8i4YLvGxCKNLzaTxQPikm/qvKVDlSL1/Ey87NGueG00HNj
-	 9scvlxenR9g9dvOZH8qqhXf9hZ3Wk3KsAhVCgh0xVPTDwF6byD1Z2/n9+qDGU37eSl
-	 TrLmQtXqeLTd2Sl9uBE1J2amEFcN2eBqRD4B/7UT9Ux3ikX8le3OvO9uzNWx4fD/Kl
-	 xZ2G+1xBxzB6g==
-Date: Tue, 1 Sep 2026 19:05:04 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Shehryar Ahmad <shehryar.amd@gmail.com>
-Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
-	dlechner@baylibre.com, andy@kernel.org, gregkh@linuxfoundation.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-	devicetree@vger.kernel.org, marcelo.schmitt1@gmail.com,
-	danascape@gmail.com
-Subject: Re: [PATCH 3/3] dt-bindings: iio: accel: adi,adis16201: add
- adis16203 compatible
-Message-ID: <20260901-ambitious-eloquent-7dcb297a9e6a@spud>
-References: <20260831184201.34416-1-shehryar.amd@gmail.com>
- <20260831184201.34416-4-shehryar.amd@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dxJrSd+n"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-49557167508so1187045e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 01 Sep 2026 11:43:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788288187; x=1788892987; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=gzeE/hU4D9bblLATFtWOwYmE1vpCRHRwseWHzl1OrOs=;
+        b=dxJrSd+nCz1zSAvEg62OoeSgSIIoQ7VPBbdx1S63Ph3i/xebLfQdCsbjhnGyEUOIq3
+         k0MyhHtUXoKPCCaWLi8jPm5TXnj5pHiboRpI54UJpW0GIAYSAh5slXJSf4HJeHAyqR+d
+         p+mNx/QLVYJOelGxBtghwuMCx3BOZ4VZWFUBwL7rM4IfKUJw0iKEXduJxnc7ggpuNT7n
+         yjKav6Esuyz7qQvcoqPkWpLD/bnsyoAcENOhNm9qQlsLpFYFB4orU2jzGow7OPzj24CN
+         1S2DR540+rrZwGhP6kBiBO23RGLs3T7AffCEVtcV1CM39pS8Blxpswq4Zgj6MiKQ0qz6
+         gykg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788288187; x=1788892987;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=gzeE/hU4D9bblLATFtWOwYmE1vpCRHRwseWHzl1OrOs=;
+        b=Zc6c6S6ewkujhyAyA072NKib4MuPOK2rK/vfQr2lKFxKlAuTx5jyGiL62TDwggra4r
+         grASrBXKfhe/1iMCoDJCMk45AtgxFdtpOUaqKTAaEawL0RlGo6XOrc2l+qaqi/4Sewy4
+         udM+os5ZDZQS/gmggCHZFtOBzmR48nlphwV8cAaSuLw857NR7cN8TwYQsHN9alIlQlL9
+         eMVJtC2EHIbVBasVosS68VZvnU73i0+9fCywmWW0w61FKto8JfSxgAI0de/+HlZC2q+0
+         ErDdPxhHhpR/3ATIiOIZOctzdQjps5CvgNH2Nt33wqQdlk7zaAuOfrrsVj2DdehcJQvH
+         hkVg==
+X-Forwarded-Encrypted: i=1; AHgh+RoYPERFQPSg2hY5Y4Wx7eWSwXdJvumSPWfa/NDc+h3SrBaNZJRaL1ZwJ+PlDRhtP+GBxVqx+oTgE40=@vger.kernel.org
+X-Gm-Message-State: AFuF++mTOKDqvpklcrCDV7QnRAlvdgkwrDroYAArg+ygFeb/GjizirTb
+	WYwKs0MFjcPkDSa+f+EzaSC605tX63SfKoBb5qHTNzJdxKlE7MjPbmFP
+X-Gm-Gg: AR+sD11IFco4BT8rxYg5tXzaXL2ifT92UnaDFSIqj65ngx9bKr5GuOjn+Ql0TltO6zX
+	ZMoyGAMbrufOJl8Ru8jxhTT/r7/CnobWsKEiwTYXJRCWog38AVBhxV4DKaqHAQKAe26TN/4V/I6
+	OAkuXHBwz0mCL7PGB9B9lPjR5nwNuayKRF42pEKdsYhDFotRKdxBpCCbZ3nvkj3Xr01/qmhzUpQ
+	is92BRzj651bVqZebTfWWIUb8fWNlnASUv7yAhrWQjXRPfgdfJPr4vwBI/4450MuSDKB1D2Dr5e
+	rfGuTfQNkHFczgaDh7+pZptOhmyhWk3UZEWFyIrGGNG6LKCZEQg40V80AJwchTbfebD38kJMnb6
+	uC77ZRUXFuiraJinUUtd3C4vRPTjblgOywtagMmji92wv4or466i462nd7q0vg7uRtlCIOpZM2l
+	8RoEKKvuHjsx/X95UH50ED64GbUasjcW1apIz1EW/qRUHM8YQTPZBCmePr4IHObKHk12i2hc3Og
+	NzOtYQS2QiPuk01LkmYhrp21RYmZP/5n9hj
+X-Received: by 2002:a05:600c:64c6:b0:495:52a5:8829 with SMTP id 5b1f17b1804b1-49cdc558470mr204496575e9.11.1788288187157;
+        Tue, 01 Sep 2026 11:43:07 -0700 (PDT)
+Received: from flaviu-Aspire-E5-572G.. ([5.15.67.216])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48448ed30c0sm822987f8f.24.2026.09.01.11.43.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Sep 2026 11:43:06 -0700 (PDT)
+From: Flaviu Nistor <flaviu.nistor@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Flaviu Nistor <flaviu.nistor@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iio: adc: ti,ads1015: Add label property
+Date: Tue,  1 Sep 2026 21:43:01 +0300
+Message-ID: <20260901184302.8127-1-flaviu.nistor@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ZZpjyQTJecju7TVT"
-Content-Disposition: inline
-In-Reply-To: <20260831184201.34416-4-shehryar.amd@gmail.com>
+Content-Transfer-Encoding: 8bit
 
---ZZpjyQTJecju7TVT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add support for an optional label property per channel similar to other adc
+chips. This allows assigning distinct names for each channel which can
+match the schematic signal name.
 
-On Mon, Aug 31, 2026 at 11:42:01PM +0500, Shehryar Ahmad wrote:
-> The ADIS16203 has the same external interface as the already documented
-> ADIS16201/ADIS16209, for the properties covered by this binding
-> (compatible/reg, the DIO-based interrupt pin, and VDD supply), verified
-> by datasheets Table 5, Pin Function Descriptions, in the respective
-> Analog Devices datasheets. Some Auxiliary pins differ (e.g. adis16209
-> marks a few pins DNC where adis16201/adis16203 use them as AUX COM), but
-> these are not represented in this binding.  Add adis16203 to the
-> existing enum rather than creating a separate file.
->=20
-> Signed-off-by: Shehryar Ahmad <shehryar.amd@gmail.com>
-> ---
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
+---
+ Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Why is this below the --- line (IOW it won't appear when the patch is
-applied)?
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+index 718f633c6e04..777a75c21d7f 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+@@ -66,6 +66,11 @@ patternProperties:
+           - minimum: 0
+             maximum: 7
+ 
++      label:
++        $ref: /schemas/types.yaml#/definitions/string
++        description:
++          A descriptive name for this channel, like "vcc_ram" or "CH3".
++
+       ti,gain:
+         $ref: /schemas/types.yaml#/definitions/uint32
+         minimum: 0
+@@ -125,6 +130,7 @@ examples:
+                 reg = <4>;
+                 ti,gain = <3>;
+                 ti,datarate = <5>;
++                label = "CH3";
+             };
+         };
+     };
+-- 
+2.34.1
 
->=20
-> Previously reviewed at:
-> https://lore.kernel.org/all/20260812043506.456ced6d@jic23-huawei/
->=20
->  .../devicetree/bindings/iio/accel/adi,adis16201.yaml        | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.ya=
-ml b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-> index b6ba7ad1a..3ce5fb1be 100644
-> --- a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-> +++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-> @@ -4,21 +4,23 @@
->  $id: http://devicetree.org/schemas/iio/accel/adi,adis16201.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: ADIS16201 Dual Axis Inclinometer and similar
-> +title: ADIS16201 Inclinometer and similar
-> =20
->  maintainers:
->    - Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> =20
->  description: |
-> -  Two similar parts from external interface point of view.
-> +  Three similar parts from external interface point of view.
->    SPI interface.
->      https://www.analog.com/en/products/adis16201.html
-> +    https://www.analog.com/en/products/adis16203.html
->      https://www.analog.com/en/products/adis16209.html
-> =20
->  properties:
->    compatible:
->      enum:
->        - adi,adis16201
-> +      - adi,adis16203
->        - adi,adis16209
-> =20
->    reg:
-> --=20
-> 2.43.0
->=20
-
---ZZpjyQTJecju7TVT
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapcT0AAKCRB4tDGHoIJi
-0tvPAP45Wmq5LZYcSkWoAbFDkgmxpROzXFrfYtlKu2EXOWtePgEA/BVpsZIUconw
-AZI0y8fAA+PuagsZaCPFfFJ6nILeDAk=
-=Ft30
------END PGP SIGNATURE-----
-
---ZZpjyQTJecju7TVT--
