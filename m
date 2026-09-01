@@ -1,170 +1,218 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01DA49EC62
-	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 18:43:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E85FA4A2616
+	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 20:19:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788288193; cv=none; b=CuEGh27t+OxRMQLX80CMjBjyBXo3ZuDRcSRVGDOmyTbhPPkhEwc2TZPCRONWBlMqeeKbfBsElZbfSKQ7+PIOOzLmDrGrrGD7sWqPetljDxxbXQyH11NqDB7uGEM9QAHopoHXopbUMF4Ow6oMyaYMph+4BfH74ad6p3SFzgHfvCs=
+	t=1788293998; cv=none; b=CNPfLkE49ogFSRdgTjzfN7gP7DILObOIBrpNCArR4QeBGa/bmyRNj3k2e00MZY0/XvYmqn81rXE5ZiSn6syxhzU4Adzk3lYeiGaa7mshhMc10qWmgzst4/aq6qNFGx1EXpu7aAJFaD8529SswBIcUsAnEI78ju0zvCyQr0Qo26A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788288193; c=relaxed/simple;
-	bh=DH57RPYRxChSY8YwQPpl6oapIsXNooDhZSIJodJcGq4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WgDq8Wye9x8+KVphwOFMfjX5Vl3nyqR4rDCEVUWHtATeI93yb+k+5HjDL8dEuSs1Jy5hIk/vH+V/T7eKVBEFwQqw1TuY2y3YT7PQdZC4BhlLTE69kiDFVQKFtbhCwGuYAOED/w+OPQCPCjgsiyOvpxSXb1PqWZrssDUhstsNz30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SWX7agq2; arc=none smtp.client-ip=209.85.128.42
+	s=arc-20240116; t=1788293998; c=relaxed/simple;
+	bh=2vrFX13Q2xq55tR6vY0ajYJCi8sf6gwHFJWZQ6UfzJ8=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=QullNherKSEhciN2FeZmVPsdNQJOeh1GZ2+fTbOdnqjojC00VMnLzY2eOR5Ohkey8/C+/BzUGTTjHls6trXlKQPuXkQ12i6S61LCQXD02r/tCJH1FCId5iFzBZ1g8SkqC+okGUxnDpKXLx8hZSV7XreJ/lqcVr38bWskMN2dLlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H7mDJHT/; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SWX7agq2"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4998b5a63e2so1166875e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 01 Sep 2026 11:43:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H7mDJHT/"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-47f633e6058so317099f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 01 Sep 2026 13:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788288190; x=1788892990; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=b6o11zFnIa7BvYQwN2OAtZDkmujzqm33bgxkL6mWOBE=;
-        b=SWX7agq27EZvnAh0cz8UVwpkbgc1eFQC5+gjkdeML39MC7RT3rO3KlAbOA6hlH8r3X
-         fh4Yvfnfox4ZgqmnXmLJ4ePbVHkDK77h+5daB3XE0SxWVG7tQuZ3saRju4goa8lwINPK
-         dxcLNNU+9QAvQ6SdsA9KBy7/yDB5a6smtDAXHRxIrT3zo+RZrGqFdW0+FAKZegyMJjd6
-         ZmUMU7JBDVY+X19Clf/HFXUdrpqBlYZlYvNL2ZOiLp/Ix8ovC3mQAULNDmivU4kLTJ83
-         9MTds8Btn0GgH+IzcceVno0GLpJdrLpX1HANzoU4H+hQXFH3WAcXJdrTWgbjWZVCuoJz
-         RfcQ==
+        d=gmail.com; s=20251104; t=1788293994; x=1788898794; darn=vger.kernel.org;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=c8CVgkVR/XaIisVA7GQ1DF+bXEJ2xiWA/zkss4Eq01g=;
+        b=H7mDJHT/KVo1jUK92WOINddIcKwLmvJr1y+45djUSrnwqroiDoMcro6RC9jBRJN0Up
+         wOZ1FMNN4UNt5KMNAWLDLx1CtvUPRHGwTdKppjrWOKtGo9W+IrhkefpWR0wTKL6oC0JB
+         MVT9atCmpGqWRv+J4XNTzN+6aUIjXC9TRwrB8sa62APtxG2e4TvyqDDZCd9G/hA7to+C
+         m7l6rHxfz5UF6zqcuzUcco8E0PPfa0ud4r4RSYADD9KYt2q8UcFVG2uUw1a/lDGrMBlz
+         I5ulqXaH1Gz9qXQWmkq/xNWSiP2KhuMWhLul2Uni6611VsAhgh6vwy7TUOVwYky9GmHV
+         kfRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788288190; x=1788892990;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=b6o11zFnIa7BvYQwN2OAtZDkmujzqm33bgxkL6mWOBE=;
-        b=s/yK0D1az6U7+V/Gn8k37oJD7hY+9UerN6pj4zddaPniKsF6HL/1PTpv45pJJ4ZViC
-         O0BUPT0hS9+yb77czPNCbamwXTxGobQPQQpbAfscB9TZ6Cfh/VhC98FYmkWX0eCA5UdV
-         1Y6XTX1t3JrhXj6/I69oNdYJEgFqWqecDyqVTBJOg06MxfCpZsf5Cx7ZoUFmPsCWMGcL
-         +aF53QLNY5cF2cOyrnYfYCgDAuXYLbXjw9YTwxDpOOiYwzAb1zFlPn6aadUvGbz/WUGD
-         7bJoQZ9vbcXLUALxB34nJm7qaWjYO5htP3+gEV8DwD+VRbcQ6SdPfbuuhQA0moQbGCox
-         mRsA==
-X-Forwarded-Encrypted: i=1; AHgh+RqHibK/KirsRntJaCKYOsX3L20Maj83roG25mUPcmYrhgIzghlPWhf9VzOFPAUZyfcao6x+PvCk3kI=@vger.kernel.org
-X-Gm-Message-State: AFuF++mEgeMQdS1iXoliJ/fBZtf82NcUPtnqM8V6IttnsR5qubdKBCBy
-	PZxpgc3ehKrM7qK0Q27Fi5ttSas8tIYRF8+wghY3hKlHTOhN96m3WxrC
-X-Gm-Gg: AR+sD129Z28hAykzTgqKkRwJxXTfmIav/jDKI1ufCu0oxLnkJRxfyEs5JytRSTwi29s
-	h/d0rULD+zkYUdMQ4KOPoQ2pQGxSwp+jVjW45Ej31+uYSX2ceI04JaZKEfwXuzYohOt8g0/z3q5
-	07WbGfa1KagGXVAiouiwBfiiUI6nUFu9EU4Ad/tTb1ZuNoBew2de4wsWRpb7SJVxq0im7uXunt/
-	GDn5Ht0ZTdFfSq5Bd6lm5laIs4HbRCCHPHqoOPtLhMVnLFl26PvcULAiWmngAPVJjB9ZnhvmBIv
-	VMTQkojS0gfKhhHEb0vvgT1xGXkFuTIU4ZHR45LTR50cba6HItDFpD2kAnaf2nsg6cn/2rf2iHr
-	5Q0LCpMGKAv7DCodWjt2yB3HtT+cCv8ED3VKLyk0VijPHraqT/E2va7gLoNvQeN2+zVq0TjFe21
-	ZLI+FMaDjc7zk6YLegwdT3jaMDaoiMICuamj3ctACWVcg2RUVvUkaRvcA/0v81cAM9UREhIr9D2
-	ZeRBsMoLMfTIYUXkM87hQuajUqJ1L/X0bfj
-X-Received: by 2002:a05:600c:1c0a:b0:499:51f0:a9b2 with SMTP id 5b1f17b1804b1-49b91c1dd3fmr585852285e9.1.1788288189974;
-        Tue, 01 Sep 2026 11:43:09 -0700 (PDT)
-Received: from flaviu-Aspire-E5-572G.. ([5.15.67.216])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48448ed30c0sm822987f8f.24.2026.09.01.11.43.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 11:43:09 -0700 (PDT)
-From: Flaviu Nistor <flaviu.nistor@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Daniel Baluta <daniel.baluta@nxp.com>
-Cc: Flaviu Nistor <flaviu.nistor@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH 2/2] iio: adc: ti-ads1015: Add support for label
-Date: Tue,  1 Sep 2026 21:43:02 +0300
-Message-ID: <20260901184302.8127-2-flaviu.nistor@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260901184302.8127-1-flaviu.nistor@gmail.com>
-References: <20260901184302.8127-1-flaviu.nistor@gmail.com>
+        d=1e100.net; s=20251104; t=1788293994; x=1788898794;
+        h=in-reply-to:references:from:to:cc:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=c8CVgkVR/XaIisVA7GQ1DF+bXEJ2xiWA/zkss4Eq01g=;
+        b=LxAikj+wHJjp7VJ0lqvCoMhYdgsjXQ7+NRalP95MhMWaZ15IIseF6QODxnOYtDTHdD
+         mVcRQ08WfIwrhaWhNW0rxn2UiqObgZhF4UU+38Yh45QWCfa0lRadX70Ciq+vEXW52x5p
+         p/Xb5EH6lrIQxrgI7AM78vqstEscrnmBVrGatKF2Q5c2FVVOJFkX2H7F4jWgSTqpfUde
+         8iXRH67YjzlJFmJDmzC8tJ6svTYtFN+uVRYu6ApSXUDIsAThGvYXguGfLnYAcDHdFiwy
+         2oozdCe9BG7KdLDvU7HJ2dwaReB38oLIhYwIc42j5Z7m2flAR1JpMz10CODPozfHciSD
+         8tiA==
+X-Gm-Message-State: AFuF++mx62AnQnyL3vGWZDtsCmZ1PeQ4ehuxNpgUq7DcW4UuQ/dvVdGB
+	NxnA3gQxINPBDWTBzG02IoIXKJ0FZ3nJ9DxOczE4XvcVCXE81PJqxvXq
+X-Gm-Gg: AR+sD10fybZiLKaDcdWZw3DV6slxBnmbwD2ZcVSt2M4yNdXx4qNXPDsh1Gjn+uQSKWQ
+	zrwp046JXtPkqkM1RGC1NP6BsqpwfsKtsGfwNJp0uc95LIpeAlaDRtnV2FB3BQ0gZ10x3l4gVCP
+	VWoYZEXaYzSfJjDFpaoeaa/Xg8JY3gmWa7PkPLKGlc1RsfnnWviCwkztinFXpwJLL0rdZPGcH7S
+	Nduv4vJWelHimizJ2mXlUt87snjOyHd4KEeYK3fQh8aiO6yaOMQSe3J6JyrlBVuN1V59v+mpcSP
+	0tA7T5aLuV6752h7nmtzEImdm9oEIvETrAo0PNPSXgd6kPxNwHon3dMT4e+g6GfeF1y3pbKXUEh
+	D8yrY9iQ9wFdKrKw9eT96yifL5dRQnIiTxpaHyCJVUEkJ7tiXtFjBF9yoAVyyQjiOgnGJogqUCa
+	hOX5UoKHUXiQnyb65nmaJBzGONToeCwVZcnNHeZcY1Oe1msJlbqGz5V8hChI8ktphL3ErhYPIl
+X-Received: by 2002:a05:600c:3113:b0:49b:924e:9a28 with SMTP id 5b1f17b1804b1-49ce58163aemr2032655e9.1.1788293993799;
+        Tue, 01 Sep 2026 13:19:53 -0700 (PDT)
+Received: from localhost ([2001:4bb8:16d:f647:967c:bbf0:49e2:fbf])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cdce10148sm89545935e9.5.2026.09.01.13.19.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Sep 2026 13:19:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 01 Sep 2026 22:19:51 +0200
+Message-Id: <DL49BADYC1U8.2N2F6YW5ZR5S2@gmail.com>
+Subject: Re: [PATCH v8 4/4] iio: light: veml6031x00: add support for events
+ and trigger
+Cc: <linux-iio@vger.kernel.org>
+To: <sashiko-reviews@lists.linux.dev>, "Javier Carrasco"
+ <javier.carrasco.cruz@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>
+From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
+X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
+References: <20260901-veml6031x00-v8-0-532cb4f2168a@gmail.com>
+ <20260901-veml6031x00-v8-4-532cb4f2168a@gmail.com>
+ <20260901132208.EE64C1F000E9@smtp.kernel.org>
+In-Reply-To: <20260901132208.EE64C1F000E9@smtp.kernel.org>
 
-Add support for label sysfs attribute similar to other adc devices. This is
-particularly useful because the label can match the schematic signal name,
-identifying channel voltages easier if label is defined via device tree.
+On Tue Sep 1, 2026 at 3:22 PM CEST, sashiko-bot wrote:
+> Thank you for your contribution! Sashiko AI review found 3 potential issu=
+e(s) to consider:
+> - [High] Use-After-Free of iio->pollfunc in IRQ handler during device unb=
+ind or probe failure.
+> - [Medium] Unintended I2C read of configuration register when pushing tim=
+estamp to buffer
+> - [Medium] The interrupt_users counter can permanently underflow during e=
+rror recovery, breaking hardware interrupt control.
+> --
+>
+> commit c87f3d48e1ee614fc184995b816c8f8679a6b774
+> Author: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+>
+> iio: light: veml6031x00: add support for events and trigger
+>
+> The device provides a shared interrupt line to notify events and data rea=
+dy.
+> Add support for configurations with and without an interrupt line, provid=
+ing
+> events and trigger support when an interrupt line is available.
+>
+>> diff --git a/drivers/iio/light/veml6031x00.c b/drivers/iio/light/veml603=
+1x00.c
+>> index 3d5a27a0baaed..7bd7975eb1a76 100644
+>> --- a/drivers/iio/light/veml6031x00.c
+>> +++ b/drivers/iio/light/veml6031x00.c
+> [ ... ]
+>> +static irqreturn_t veml6031x00_irq(int irq, void *private)
+>> +{
+> [ ... ]
+>> +	if (trigger_poll) {
+>> +		iio->pollfunc->timestamp =3D timestamp;
+>> +		iio_trigger_poll_nested(data->trig);
+>> +	}
+>> +
+>> +	pm_runtime_put(dev);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>
+> [Severity: High]
+> Could this lead to a use-after-free of the pollfunc during device unbind =
+or
+> if probe fails?
+>
+> Because the IRQ is requested via devres inside veml6031x00_init_iiodev()
+> before the triggered buffer is set up in veml6031x00_probe(), devres will
+> tear down the buffer (and free iio->pollfunc) before freeing the IRQ. If =
+an
+> interrupt fires during this teardown window, the IRQ thread could be
+> preempted and then dereference the freed iio->pollfunc here.
+>
+> Would it be safer to ensure devm_iio_triggered_buffer_setup() is called
+> before the IRQ is requested?
+>
 
-Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
----
- drivers/iio/adc/ti-ads1015.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+I will register the IRQ right after calling
+devm_iio_triggered_buffer_setup(), removing it from
+veml6031x00_init_iiodev(). It was there not to check i2c->irq twice,
+because that is also necessary to properly initialize the IIO device
+with the right data, but it is true that the tear down is not clean at
+the moment.
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 0fbfa4e499aa..399a3322732d 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -233,6 +233,7 @@ static const struct iio_event_spec ads1015_events[] = {
- struct ads1015_channel_data {
- 	unsigned int pga;
- 	unsigned int data_rate;
-+	const char *label;
- };
- 
- struct ads1015_thresh_data {
-@@ -586,6 +587,22 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
- 	}
+> [ ... ]
+>> +static int __veml6031x00_set_trigger_state(struct veml6031x00_data *dat=
+a, bool state)
+>> +	__must_hold(&data->irq_lock)
+>> +{
+> [ ... ]
+>> +	data->trig_en =3D state;
+>> +
+>> +	return 0;
+>> +
+>> +clear_interrupt:
+>> +	veml6031x00_set_interrupt(data, !state);
+>> +
+>> +	return ret;
+>> +}
+>
+> [Severity: Medium]
+> Can data->interrupt_users permanently underflow here during error recover=
+y?
+>
+> If an I2C error occurs in __veml6031x00_set_trigger_state() while disabli=
+ng
+> the trigger, this error recovery path calls veml6031x00_set_interrupt() t=
+o
+> revert the counter, but fails to update the software state (data->trig_en=
+).
+>
+> If a subsequent successful disable happens later, the counter will be
+> decremented again, potentially underflowing to UINT_MAX and silently skip=
+ping
+> all future hardware writes.
+>
+> [ ... ]
+
+That is not true because the error path will *increment* the counter to
+re-enable the IRQ and keept it consistent with data->trig_en. If an I2C
+operation fails, the trigger will stay enabled in the device registers,
+and therefore data-trig_en should stay enabled.
+
+I tested it by adding some hacks to force that situation, and what may
+actually happen is that if *on top* of that failure, the I2C operation
+in veml6031x00_set_interrupt() also fails, interrupt_users will be
+decremented (as it should, because the interrupt could not be
+re-enabled), and *then* a second call to disable the trigger will set
+interrupt_users to UINT_MAX.
+
+Although this is very unlikely, the fix seems to be trivial:
+
+ if (state) {
+ 	data->interrupt_users++;
+ 	if (data->interrupt_users > 1)
+ 		return 0;
+ } else {
+ 	+	if (!data->interrupt_users)
+ 	+		return 0;
+
+ 	data->interrupt_users--;
+ 	if (data->interrupt_users > 0)
+ 		return 0;
  }
- 
-+static int ads1015_read_label(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan, char *label)
-+{
-+	struct ads1015_data *data = iio_priv(indio_dev);
-+	const char *name = data->channel_data[chan->address].label;
-+
-+	/*
-+	 * Avoid printing "(null)" in the console in case label property
-+	 * is missing for the channel.
-+	 */
-+	if (!name)
-+		name = "";
-+
-+	return sysfs_emit(label, "%s\n", name);
-+}
-+
- static int ads1015_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan, int val,
- 			     int val2, long mask)
-@@ -843,6 +860,7 @@ static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
- static const struct iio_info ads1015_info = {
- 	.read_avail	= ads1015_read_avail,
- 	.read_raw	= ads1015_read_raw,
-+	.read_label	= ads1015_read_label,
- 	.write_raw	= ads1015_write_raw,
- 	.read_event_value = ads1015_read_event,
- 	.write_event_value = ads1015_write_event,
-@@ -853,6 +871,7 @@ static const struct iio_info ads1015_info = {
- static const struct iio_info tla2024_info = {
- 	.read_avail	= ads1015_read_avail,
- 	.read_raw	= ads1015_read_raw,
-+	.read_label	= ads1015_read_label,
- 	.write_raw	= ads1015_write_raw,
- };
- 
-@@ -862,6 +881,7 @@ static int ads1015_client_get_channels_config(struct i2c_client *client)
- 	struct ads1015_data *data = iio_priv(indio_dev);
- 	struct device *dev = &client->dev;
- 	int i = -1;
-+	const char *label;
- 
- 	device_for_each_child_node_scoped(dev, node) {
- 		u32 pval;
-@@ -897,6 +917,9 @@ static int ads1015_client_get_channels_config(struct i2c_client *client)
- 			}
- 		}
- 
-+		if (!fwnode_property_read_string(node, "label", &label))
-+			data->channel_data[channel].label = label;
-+
- 		data->channel_data[channel].pga = pga;
- 		data->channel_data[channel].data_rate = data_rate;
- 
--- 
-2.34.1
 
+Note that this fix is not a hack to just get rid of reaching UINT_MAX, it
+reflects the fact that the previous failed operations lead to a disabled
+interrupt and an enabled trigger in the hardware, and there is no need
+to act on the interrupt again when trying to disable the trigger a
+second time.
+
+I will add it for V9 after testing it with some hacks to force that
+scenario.
+
+Best regards,
+Javier
