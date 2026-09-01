@@ -1,118 +1,70 @@
-Received: from out-2z4y-a139.jellyfish.systems (out-2z4y-a139.jellyfish.systems [198.54.127.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66B6D35E1BC
-	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 00:57:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6FB3ACA4E;
+	Tue,  1 Sep 2026 01:06:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788224231; cv=none; b=FfgXHAb4GYNciXHMtR6N6twsKXSUZIyRlXsEE6DAUCfYuYoAAarObT70AKg9Uj0fdx1X65VB00iKNmUSE57PSjszZt30VyyyceGGOGLt1pbE5OHOVxw5xITsKL3J8B0b400mQJpf+1tSEp7fVI3xG3m1oXeKm5LNFIdFGwrxWUs=
+	t=1788224807; cv=none; b=jO8nW9fYD6EaRiA8wOVZzfM8Buy33ME9HgHKUTg0dOQpIM82EC7MceM9bQ0G+PXAOFBi9PfU0tRAqXUR/OKPvkK1IZ1CpvzgXZWiatAvsUw8f9sbL8jXUZA1/yP7FrK+vuzCx98fpZQSF+HDfi1Yd70n2HOnw/iqTtMA1zcScdk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788224231; c=relaxed/simple;
-	bh=ha+GSqVutmNsSLuP2U30alE19dKw12fjlDVUlAH1fhE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=q7zpTywjaaZBvcHxJnTKe4Wxlr8GlLegyRozOHcct5tukzqIf1mdZCh6hZjRiFALe6F5vHd6KD0ru3xf7H7xmss2WpeDcWIh/f78+M6YAL394KaccrWLRzsMmrKlVL79IVvquCpkPOQn4ksRYmsAc+o7vSsbHQnIvfuYAmZ+VOw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from mail.privateemail.com (unknown [87.215.145.39])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.privateemail.com (Postfix) with ESMTPSA id 4hYnPK5LBRz2x9H;
-	Tue, 01 Sep 2026 00:51:49 +0000 (UTC)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	Kees Cook <kees@kernel.org>,
-	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Subject: [PATCH v3 3/5] iio: light: stk3310: move the data registers into the channel address
-Date: Tue,  1 Sep 2026 02:51:12 +0200
-Message-ID: <20260901005114.203062-4-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260901005114.203062-1-jorijnvdgraaf@catcrafts.net>
-References: <20260901005114.203062-1-jorijnvdgraaf@catcrafts.net>
+	s=arc-20240116; t=1788224807; c=relaxed/simple;
+	bh=NdoRwJddN+5U4RMlKEG2tveRo36XrUNk/hB4imxFJhg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FhKzp23+OcBXGDWdBK2SPnOuphTUtVZvKBbV895Er+icLImsMU6vWchInMAeSyiD5HbPjUzkBzN5LqB+act8stcS5eqWN63X4MB15ztrFgmmIQ+FDYDdW/BOcG9LbfDtkRE81aBQFTaUL58y3bQGsK3VJIR2GcZzYAvVJw78gGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LZ0hUKHT; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LZ0hUKHT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F071F000E9;
+	Tue,  1 Sep 2026 01:06:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788224805;
+	bh=NdoRwJddN+5U4RMlKEG2tveRo36XrUNk/hB4imxFJhg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=LZ0hUKHTzLvrcgJPMAR0Urtk2gNjy79WAW8DSbJeLMu8JCFJyqQV0Pxe/wGMcOHMD
+	 KWnCgHtqFrxmGS2bOcsv90sFfFDD1ha4d+kjePk9EcCzrfrNxOWB4eeaxWWe3aCZTp
+	 do1nQS5luh9hxwqjiBghUQb03EUwOPnMScvQxhFRhXz9DSkulnbvuXfAWkJvKV/2dR
+	 KmgXwgCiD4CxJYX5gLcpWDFlxGmQAMZvMjcvWj7/dLtbGFK2uQ4WxiyxLGucSXUE7J
+	 6b3RPCS08VQ67H29lbFnR/Amu0ianoU3NYWL+db+GIfC0AAygUrDJuX2waztrA4zK2
+	 L0Hp4TW0OsaRw==
+Date: Tue, 1 Sep 2026 02:06:40 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>, <linux@analog.com>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 0/4] iio: accel: adxl367: add INT2 interrupt pin
+ support
+Message-ID: <20260901020640.4baf035a@jic23-huawei>
+In-Reply-To: <20260821180753.4633-1-antoniu.miclaus@analog.com>
+References: <20260821180753.4633-1-antoniu.miclaus@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Envelope-From: jorijnvdgraaf@catcrafts.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The RAW read selects its data register with a per-channel-type branch.
-Record each channel's data register in its .address field and read
-from there, so adding a channel does not grow the branch.
+On Fri, 21 Aug 2026 21:07:49 +0300
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Assisted-by: Claude:claude-fable-5
-Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
----
- drivers/iio/light/stk3310.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+> The ADXL367 exposes two independent interrupt output pins, INT1 and INT2,
+> each with its own event mapping register. The driver has always hardcoded
+> INT1, so a board that routes only INT2 to the host never receives
+> interrupts. This series lets the driver pick the interrupt map register
+> based on the interrupt-names device tree property.
 
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index 5b5b6812edc7..156888969366 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -184,6 +184,7 @@ static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
- static const struct iio_chan_spec stk3310_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
-+		.address = STK3310_REG_ALS_DATA_MSB,
- 		.info_mask_separate =
- 			BIT(IIO_CHAN_INFO_RAW) |
- 			BIT(IIO_CHAN_INFO_SCALE) |
-@@ -191,6 +192,7 @@ static const struct iio_chan_spec stk3310_channels[] = {
- 	},
- 	{
- 		.type = IIO_PROXIMITY,
-+		.address = STK3310_REG_PS_DATA_MSB,
- 		.info_mask_separate =
- 			BIT(IIO_CHAN_INFO_RAW) |
- 			BIT(IIO_CHAN_INFO_SCALE) |
-@@ -370,25 +372,20 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long mask)
- {
--	u8 reg;
- 	__be16 buf;
- 	int ret;
- 	unsigned int index;
- 	struct stk3310_data *data = iio_priv(indio_dev);
- 	struct i2c_client *client = data->client;
-+	struct regmap *map = data->regmap;
- 
- 	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
- 		return -EINVAL;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (chan->type == IIO_LIGHT)
--			reg = STK3310_REG_ALS_DATA_MSB;
--		else
--			reg = STK3310_REG_PS_DATA_MSB;
--
- 		mutex_lock(&data->lock);
--		ret = regmap_bulk_read(data->regmap, reg, &buf, sizeof(buf));
-+		ret = regmap_bulk_read(map, chan->address, &buf, sizeof(buf));
- 		if (ret < 0) {
- 			dev_err(&client->dev, "register read failed\n");
- 			mutex_unlock(&data->lock);
--- 
-2.55.0
+Whilst the discussion has perhaps not ended on patch 4, I'm going to take
+the view that something will probably change and mark this one
+as changes requested in patchwork.
 
+That doesn't stop me applying it as is - if the discussion heads that way -
+but reduces the headache I get when I see how many things are
+waiting for decisions.
+
+Jonathan
