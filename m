@@ -1,47 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCEA537FF75;
-	Tue,  1 Sep 2026 03:14:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 570AB1E1DF0;
+	Tue,  1 Sep 2026 03:16:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788232456; cv=none; b=hHDBVO/VLjhA9v1Dt+SeIzKyqWq8nksJHR1PWPHXG5G3S03asNPKEKHP9xyyhHgoI+I/R6mYd1iIgA0KleV04MH4+gg277rZtnaTSG4I0PKTnRpR/fnfBJikJQo4ClWFNuPWNuQjrHqtik9C9AaJhoJevXD3pZwvvrjmLf0WmG0=
+	t=1788232571; cv=none; b=S5oxBCpvA89c54fFFYr2cwPU9wl74iXsfWmJnS7kzXHX9trkn4oM4jYZHMBaaKAYZ3FMsdKn3AcUm1DReeem7elDLTqqe5Lk7ehzf/diTdZcm1aY/3HgHPbZiDTbQlpgr9pgHPihP+pKjqgOpKmyUqsVGVlUJBb98vZ6p9hNzRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788232456; c=relaxed/simple;
-	bh=oY/ukphlPJsURIssq+vozSKvhjlA3sxbRaRiMtynKRQ=;
+	s=arc-20240116; t=1788232571; c=relaxed/simple;
+	bh=lzJo3/KB4L8BSyvP+5QAIfXzxRglLEpG+KC98DQTTXg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SYmITYK8IbDNJfeF8QAKtJdFVskAkuIIOx2ReSUs4qH8ixdJLCYq5LoM3tcJtSGfsb8WF7bfiMJdG4eUxCwgN3W4PsYmZmUFPBfTWVXjsUZnTETZwpN1s0TJ1z/8jJqmrMTBEw604X25M9frlvYt5/Va8ZmhLb/l0vyYtXIdC68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DzvqJwYP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=G7fRnFH4roxJxAF4CfnKhpIe5D3ApG5Z/Dt6KLKbjTnvwDwNswQOFR/Kejjf9o5/NCxwMgLW5HkdwWU6QWbNShpp8yfQIgBBMl0IEGZOfA4E4vSfAg8TY6WyRadK1hEDcl0DsmR2sKQK7RwAQfdsSc2u9Y3cKHe8RY8Q3ZiA09c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nTyAbdp2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DzvqJwYP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B2091F00A3D;
-	Tue,  1 Sep 2026 03:14:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nTyAbdp2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 997FB1F000E9;
+	Tue,  1 Sep 2026 03:16:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788232455;
-	bh=dvfWGLzb8Pdt8TTkF8zZwPxENDKjrWspo4VG/ViH9+s=;
+	s=k20260515; t=1788232570;
+	bh=Mz+07mICPoRLK08jztHD58aBq0D+ziKWII3djAJ2Nwg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DzvqJwYPDYKYXxyMKozyxoRRuUhXVwc7HEDtHV6pqt8DoxNdkvGffD3qFpnbUfOd5
-	 N1jqFTYdXr58mYPvYMwCbs670glcJQN6DTfJWE9As5wu0LraqWhYDDnLMCL0Z/7nhR
-	 RR1ERDlpwrMliLeozQg+vQBpqROfpAEEQwtUtx/QuSXMA1wJCbKqPUo3wBQgIs2esS
-	 5Ib/KAVCIsr96eYedYDOltr8xIYe3ry+T2XH6Q7nrYGpPw+PRpNXvVsNAWTict8O/M
-	 hIai2LG4iSYRMBe+CmKO6ulvJpsXB+Xguy0IubJo8BFUduLrKwLf1PxlXQgOUfde4C
-	 +ZkuE5FyPXfTg==
-Date: Tue, 1 Sep 2026 04:14:08 +0100
+	b=nTyAbdp2lsxTPw1V0ikCo5Q+30kQ6UYxW2uAhhGfEYpArIZ2CfpDUdgAJv4pdLmu5
+	 GLAS7U/Oe7pUX6SnLbvYntiGAutdOdY3CLoj5tXayWTpRpqo7+HspOjZ2txuf2SqJO
+	 fMn6Old+kvY2+sovrQ+ajp+oNxTtY1qdnW6CfTtPa9JO6BsUuw6NERHws91uMO2fy9
+	 LQOqqwy8vwVRhfgh/KtpB/zXPbaiS2BheyRuCLF55z3NpICUFmrtqTiTsmCSHqNz6H
+	 vUtrjMr/kMeu41fJLlICH3v4R+hk9BmyWDn2NG4uC/p1qwGFcI3amK435jdxDxrSZP
+	 56UjwpuG4d03Q==
+Date: Tue, 1 Sep 2026 04:16:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Kim Seer Paller <kimseer.paller@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 2/4] dt-bindings: iio: dac: add adi,ad5710r.yaml
-Message-ID: <20260901041408.06d3f7ac@jic23-huawei>
-In-Reply-To: <20260831-singer-reimburse-defba31848bc@spud>
-References: <20260829-iio-ad5710r-upstream-v4-0-8af3121c7d21@analog.com>
-	<20260829-iio-ad5710r-upstream-v4-2-8af3121c7d21@analog.com>
-	<20260831-singer-reimburse-defba31848bc@spud>
+To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc: mdshahid03@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] iio: adc: bcm_iproc_adc: fix include
+ dependencies
+Message-ID: <20260901041604.5729b0e1@jic23-huawei>
+In-Reply-To: <apY4GY-0_XMSfE9B@debian-BULLSEYE-live-builder-AMD64>
+References: <20260830170919.470974-1-mdshahid03@gmail.com>
+	<20260830170919.470974-3-mdshahid03@gmail.com>
+	<apY4GY-0_XMSfE9B@debian-BULLSEYE-live-builder-AMD64>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,24 +51,59 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+On Mon, 31 Aug 2026 23:27:37 -0300
+Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-Hi Conor,
-
-> > +  adi,range-double:
-> > +    description:
-> > +      Configure the output range for all channels. If the property is present,
-> > +      the output will range from 0V to 2 x Vref. If the property is not present,
-> > +      the output will range from 0V to Vref.  
+> On 08/30, mdshahid03@gmail.com wrote:
+> > From: Mohammad Shahid <mdshahid03@gmail.com>
+> > 
+> > Add the headers required directly by the driver for completion and
+> > mutex APIs.
+> > 
+> > Remove the unused `linux/io.h` header now that register access is
+> > handled through regmap APIs.
+> > 
+> > Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+> > ---
+> >  drivers/iio/adc/bcm_iproc_adc.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+> > index e46e3761993a..2b59819c4ca4 100644
+> > --- a/drivers/iio/adc/bcm_iproc_adc.c
+> > +++ b/drivers/iio/adc/bcm_iproc_adc.c
+> > @@ -4,11 +4,12 @@
+> >   */
+> >  
+> >  #include <linux/clk.h>
+> > +#include <linux/completion.h>
+> >  #include <linux/delay.h>
+> >  #include <linux/interrupt.h>
+> > -#include <linux/io.h>
+> >  #include <linux/mfd/syscon.h>
+> >  #include <linux/module.h>
+> > +#include <linux/mutex.h>
+> >  #include <linux/platform_device.h>
+> >  #include <linux/regmap.h>  
 > 
-> What was the rationale provided for this not being a userspace control?
+> I think that's okay. Though, if you go for a v3, you may also add 
+> #include <linux/bits.h>
+> #include <linux/types.h>
+> #include <linux/array_size.h>
+
+These 3 are good.
+
+> #include <linux/device-id/of.h>
+
+Generally now assumed to be from appropriate bus header.
+
+> #include <linux/iio/types.h>
+
+Assumed to be via iio.h. I can't really remember why it is a separate header :(
+
+
+> which mostly completes the list of includes iwyu tool reports to be missing.
 > 
-Jumping in as I happen to read this...
+> With best regards,
+> Marcelo
 
-For DACs we often do it in kernel as potentially there is a circuit dependent aspect.
-In extreme case leading to the bad kind of smoke. Normally it is covered by an
-output-range pair, but can't do that here as it is relative to vref (which
-we have no way of knowing in the binding). 
-
-For input devices it is always a userspace thing to control.
-
-> > +    type: boolean
