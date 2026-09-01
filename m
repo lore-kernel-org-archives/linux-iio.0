@@ -1,84 +1,116 @@
-Received: from out-93wp-a20.jellyfish.systems (out-93wp-a20.jellyfish.systems [104.207.68.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 258A9430CD3
-	for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2026 02:55:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=104.207.68.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 439FA4119E5;
+	Tue,  1 Sep 2026 03:01:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788231324; cv=none; b=IJX/eL9P34OJzDUI3TNJpC+XwrTLyBtAECgaiU8Kzz+MoiChsbaE/rOxVj6mw8jy4ucip4kc5PncqR0TaNwH5FROjcb9NwJWc9YZRPFSNtEn2KgLPCzlmWOB0FzwML8AAIPk6HtjhddvYidGQdhoav1r77Wo+ksctK48N3RZWMY=
+	t=1788231722; cv=none; b=ptu5mby48ILChaRdWqfCcoqpksIOIj+OES+r717cbx9voB+/MDdL4ONyS4xg0n3jB0sGuzPvsnZ3fMzUUp33n4LC32y0eBeCQ28MeE8CLvlVWF0JMrce8XIIqBP/BknlwGE8VLLg56HyRRcOaqbU/cLPs4dmUylBWI876r61y6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788231324; c=relaxed/simple;
-	bh=2Db92YQxRxEw73LT1zTO7HWVubeMGWOaqBYNfy0Tldc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Jnu/RGYDP4gS+PVxajFhE34rnB31VC+f3hi1mJOpbyTrPILxWdlhz8/oqlWBooOS9StjtcjQbSeKzRXWNG3fodyFvXH2SiDJHEwp5/o0kyiHaEj6SxrbtikLngBCLa9o0a8ZSTGFYTTbEbwZeGD13cZrj4ZedWR+/Z1s+SW+RmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=104.207.68.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from mail.privateemail.com (unknown [87.215.145.39])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.privateemail.com (Postfix) with ESMTPSA id 4hYr7d4pxyz2x9B;
-	Tue, 01 Sep 2026 02:55:09 +0000 (UTC)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Luca Weiss <luca.weiss@fairphone.com>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: light: stk3310: support the Sensortek STK36C61
-Date: Tue,  1 Sep 2026 04:55:02 +0200
-Message-ID: <20260901025502.231703-1-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <apYqUv_uuqZlhtOh@debian-BULLSEYE-live-builder-AMD64>
-References: <20260826175409.326131-1-jorijnvdgraaf@catcrafts.net> <20260826175409.326131-6-jorijnvdgraaf@catcrafts.net> <apEMCqQXyj1tAMoP@debian-BULLSEYE-live-builder-AMD64> <20260828154705.11962-1-jorijnvdgraaf@catcrafts.net> <apRGQVfPKWHvE2Ct@debian-BULLSEYE-live-builder-AMD64> <20260830201950.63838-1-jorijnvdgraaf@catcrafts.net> <DL2YT4S4U7C4.2CPGBR94G01FD@fairphone.com> <apYiYnlM-agfG9he@debian-BULLSEYE-live-builder-AMD64> <apYqUv_uuqZlhtOh@debian-BULLSEYE-live-builder-AMD64>
+	s=arc-20240116; t=1788231722; c=relaxed/simple;
+	bh=Sm4dyiUxS2inup09HhJdgSya9QU60DLWwOfASA9awpA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=r820UakYb8efhxkLx2oOKfQRKGjpQfaEgTnNXq7N0aY/2NWVaAOlTF3YK1A1w0yI51LhX96MMgAUgs+m59j9oFHVQFbpw2fO8i2+8G4O+CeOiL5KW3hIz+EXEHo9nTk+HKO9pJq8TNYhP8x9GBPpmJzQqJErbIFEmBUULMoGTZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VgkVclOn; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VgkVclOn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 650A11F000E9;
+	Tue,  1 Sep 2026 03:01:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788231717;
+	bh=lGqX5A+ldPU+bBU/2ehh9RDbSoAXfA8C2PmzwkzeDVk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=VgkVclOn3NYKxL/t48kWZaIiWJpug12HMYCvW6lzSeiUg31MhCZ9c8MLrj3ltFW2g
+	 eJ9tkviz1qnL3rIF3LS1FixjZ2BpUkrlQc6JZwsCTc/ngGNIi65tKxsCnjfbtgHmdh
+	 SvL5nMNmxbGAILOSV+gjz0x+8JF4JEnovM0CDYWkYKyj6nPaxyxvRXZqflI24WDOM4
+	 3Aw5uQulohaRCPY/gbQcm8IES3au6SQnJICgmQTjCq9W+L4l+iWTxpzCF27VyYsv+5
+	 nHZMlzOKefC0eI1KZgwELY8y7wkNVut2zjj3fz4wNO8cBbg4qndxmUSz4mIPxrhqLh
+	 NNK8bLJPEAtoQ==
+Date: Tue, 1 Sep 2026 04:01:51 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Conor Dooley <conor@kernel.org>
+Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 02/10] dt-bindings: iio: adc: support the TI ADS126x
+ ADC family
+Message-ID: <20260901040151.67a3c90b@jic23-huawei>
+In-Reply-To: <20260831-elude-steadfast-b8017ee226d0@spud>
+References: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
+	<20260828-ads126x-v4-2-1dc27e9c0260@gmail.com>
+	<20260828-cartel-willow-9592e4e8b912@spud>
+	<20260830025743.70dc65e4@jic23-huawei>
+	<20260831-elude-steadfast-b8017ee226d0@spud>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Envelope-From: jorijnvdgraaf@catcrafts.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 31, 2026 at 10:28:50PM -0300, Marcelo Schmitt wrote:
-> Never mind, I completely missed the point of it having a preliminary datasheet.
-> It might be sensible to try to estimate if the final version will keep the same
-> name and PDT_ID.
+On Mon, 31 Aug 2026 17:24:08 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-On the name: the Fairphone 6 repair document's block diagram labels
-the part "3IN1 ALPS/RGB sensor/STK36C61", without the A ([1], page
-107), while the LCSC and JLCPCB listings carry the -A name. The
-diagram is provenance rather than proof because the same page
-misrenders two other part names and I have not read the package
-marking itself.
+> On Sun, Aug 30, 2026 at 02:57:43AM +0100, Jonathan Cameron wrote:
+> > > > +
+> > > > +  clocks:
+> > > > +    maxItems: 1    
+> > > 
+> > > clock doesn't appear mandatory, what does it do?
+> > >   
+> > > > +
+> > > > +  '#io-channel-cells':
+> > > > +    minimum: 1
+> > > > +    maximum: 2    
+> > > 
+> > > What's the use case for actually setting this as a single cell? Kinda
+> > > confused by it.  
+> > 
+> > Part dependent, but I think we should just make them both take the two
+> > parameters and have the value of one of those fixed to 0 for some parts.
+> > Probably easier to understand that way at least.  
+> 
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: ti,ads1263
+> +    then:
+> +      properties:
+> +        '#io-channel-cells':
+> +          minimum: 1
+> +          maximum: 2
+> 
+> This in particular is what I question. Two different devices having
+> different cells is fine, this one device allowing both? Nah. It should
+> be fixed to 2. The ads1262 should probably have it fixed to 1, as the
+> driver already does.
 
-The driver name would follow the existing family convention either
-way: this driver already binds the four STK3311 variants (STK3311,
--A, -S34, -X), each with its own chip ID in stk3310_chip_ids, under
-the single name "stk3311".
+Ah. I missed that chunk!  Thanks
 
-On the ID: the published sheet says 0x93, Luca's 0.9.2 revision says
-0x95, and the part in the phone reads 0x95. stk3310_chip_ids is a
-flat accept-list, so if a final sheet moved the ID again it would be
-added alongside, not swapped.
+J
+> 
+> >   
+> > > 
+> > > Otherwise, quite frankly, the binding is too complicated for me! I'll
+> > > have to leave it up to the IIO folks to cover whether what's being done
+> > > is sane.  
+> > 
+> > I'm rely on David to take a look :)
+> > 
+> > To me it looks mostly fine but a few odd corners where I'm not sure
+> > how things are supposed to work.
+> > 
+> > Jonathan
+> >   
+> > > 
+> > > Cheers,
+> > > Conor.
+> > >   
 
-Luca, can you confirm which part is actually in the device, the
-STK36C61 or the STK36C61-A?
-
-[1] https://www.fairphone.com/wp-content/uploads/2025/08/Fairphone-Gen.-6_-Information-on-how-to-repair-dispose-of-and-recycle-EN-NL-FR-DE.pdf
-
-Thanks,
-Jorijn
