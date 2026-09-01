@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98B8338B7B0;
-	Tue,  1 Sep 2026 01:22:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8642C3644C1;
+	Tue,  1 Sep 2026 01:27:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788225769; cv=none; b=lctX4eMn/woNofN7lpSt6LZSuJ50vENaKraChxqh+yYPQHN9227sJk0tOcjyfvId1Mo82yf0C219dSOQL6/Ww7JilGNU7qaMugRT0P15Ui8qTcR3vRgRXqyJi37FmMcpZP0LwpGkWfzlwukwB1TeFa1JTKNBT9d87e4i+XUps9k=
+	t=1788226058; cv=none; b=Xlzctpa+Sb4eNGy2ht486kTg6/3isXNZqsoaq+mdaK1sfYs75VC1lNOVcvpiGluq3ANV8g/n5BqhDYb2hkPWJoxVTa0fm/TF2ftSHQKEY8CkwQ2+toxL7fV0re2lMwSyYIW560WZtgg5jWxPHEh3VgSDMLjeHGWorO64iMMFJEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788225769; c=relaxed/simple;
-	bh=tF6XOUtrejWT8EVMO6Zhhxe2yMTRVHw+PEJ14jV4VTk=;
+	s=arc-20240116; t=1788226058; c=relaxed/simple;
+	bh=dPUbXtUpVQce6L2rkl6gdMyl272vjbuTIlA2WBa/9WA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WMbS+wu7sbscO7Qc5qH7xzfQ0s3v9b/o8CgOrJtj1ILVxNi/ANnyFJ3llm/AlxdXeAx8vlS6fN5cEC+bjuiTVMDdO9YjwK2/nPTq+fIdA4c5DL3jmPUgQakrTvVM08d2DPK+F5q5UIKCPrd47nc22lDseXBg+p53RTwzx11UvkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q1Wi6buP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Y2vih+8BSlm8FD4H+Ec9i93cl+AhIhphHWyuZDrtsK667zXl/H4stl2S6TCbHK32SpvHH1Lk3szDXxW2/klyL9uetmcPD6z1N8ZowLzCdxFhBtHKcIQWave2lcufgEm7VaMuM99XW8QoC1EaYY9EVvgXW/s3yGfSfZ4hH2bz64w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fk2/XIob; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q1Wi6buP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51FB41F000E9;
-	Tue,  1 Sep 2026 01:22:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fk2/XIob"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099061F000E9;
+	Tue,  1 Sep 2026 01:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788225767;
-	bh=Kuh0diH350mmX0hoYzwyiO/Y2NDLAM9orSUchM0wV3M=;
+	s=k20260515; t=1788226057;
+	bh=KPTGYcc6tMbGzBHV2jLq7SJqWpOtKGZN6srs/Q+RVnI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Q1Wi6buPedWm8HByLDmLbcu4csEQvPZMqp5ucvJrDGM3AMJxzthOIIXR6rNngB6vE
-	 D0v0SXyi+yVCW5nMVbFX+E8NOh14uZ1LaxjmaKLht3q8PyYCLzuw9JMj7whXzvLQJD
-	 L4xyl+miV7XIpkCEssbxPMasHDagfPlJsvy6moXO4lX8jDWFmMm3qDf/l+LEYn0Ja8
-	 U+CdxPW9Ovgz8opakfAtrbPxtyh+tOa9hELGx7RveHHU0k/RL/yc8HUA7klmmbBLht
-	 nRftAa1MpV+g2U8uHythJVlFSzJ00m2QBS3PAoMnY42/zkIV5Z4DHHBCRRxgXuUcAf
-	 jqC0bouXZljBQ==
-Date: Tue, 1 Sep 2026 02:22:43 +0100
+	b=Fk2/XIobZKW8sRkFW1kPdrfApTUbiFTyD551HFxfyDbD+kBCWdM5fredYCy/3tZOQ
+	 TVUDWb6dsxKVQACOPfcw1pNmR2fftDE8Sg4ZShBLm9viZNWqx5zFQm1eLpR1q3pu7c
+	 pbjRv21KjyethzkVlzMLOGLc/EXD2NBZhGKZMT9EFeD3qAsjB59J83mBbHgyAB3MVO
+	 jY5wT8p4nsi3NO5leoVmvo9n79rosYGKYLXzR/7AmU5Ci/ouXP5Lraod1YI7a99mcu
+	 bkf7l2Q8/e+0hKYicq3v0ei+8r9xy1gjU5c8znl0ImIJ5mMm0fYELex2PwNXlLcq2T
+	 vcr9SxclDyK8w==
+Date: Tue, 1 Sep 2026 02:27:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Linmao Li <lilinmao@kylinos.cn>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Chris Morgan
- <macromorgan@hotmail.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH togreg v4 0/2] iio: imu: inv_icm42607: fix PM error
- handling
-Message-ID: <20260901022243.740760aa@jic23-huawei>
-In-Reply-To: <20260824035531.141429-1-lilinmao@kylinos.cn>
-References: <20260824035531.141429-1-lilinmao@kylinos.cn>
+To: Salah Triki <salah.triki@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Ivan Mikhaylov
+ <fr0st61te@gmail.com>
+Subject: Re: [PATCH v2] iio: proximity: vcnl3020: fix ISR bitmask check in
+ IRQ handler
+Message-ID: <20260901022731.10771244@jic23-huawei>
+In-Reply-To: <20260824042908.8887-1-salah.triki@gmail.com>
+References: <20260824042908.8887-1-salah.triki@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,50 +48,87 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 24 Aug 2026 11:55:29 +0800
-Linmao Li <lilinmao@kylinos.cn> wrote:
+On Mon, 24 Aug 2026 05:29:07 +0100
+Salah Triki <salah.triki@gmail.com> wrote:
 
-> The recently queued ICM-42607 PM support has two error paths that can leave
-> the PM core's state inconsistent with the device.
+> The threaded IRQ handler contained multiple issues in handling interrupt
+> events and clearing status flags:
 > 
-> Patch 1 propagates sensor shutdown failures from runtime suspend.  Patch 2
-> ensures that system resume restores runtime PM management on both of its
-> error paths, so that a failed resume does not leave runtime PM disabled for
-> good.
+> 1. ISR bit check: The handler incorrectly checked the Interrupt Status
+>    Register (VCNL_ISR) against VCNL_ICR_THRES_EN (BIT(1)), which is a
+>    bitmask meant for the Control Register (VCNL_PS_ICR). In VCNL_ISR,
+>    BIT(1) corresponds only to low-threshold interrupts. A high-threshold
+>    interrupt (VCNL_INT_TH_HI, BIT(0)) on its own was completely ignored and
+>    returned IRQ_NONE.
+> 
+> 2. Event direction & channel index: The handler unconditionally pushed a
+>    RISING event code on channel index 1. The driver only registers a single
+>    proximity channel (index 0), and low-threshold interrupts should be
+>    reported with IIO_EV_DIR_FALLING.
+> 
+> 3. ISR clearing: The write-back to acknowledge the interrupt only preserved
+>    BIT(1) instead of masking against both valid status bits.
+> 
+> Fix this by checking both VCNL_INT_TH_HI and VCNL_INT_TH_LOW bits in
+> VCNL_ISR, pushing separate IIO events with the correct direction and
+> channel index (0), and properly clearing handled status bits.
+> 
+> Fixes: 3363fbbe19e5 ("iio: proximity: vcnl3020: add periodic mode")
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
 
-These look fine to me, but I want input from Chris (and ideally some sanity
-check testing) before picking them up.  The dead chicken test that they
-don't active break operation when we don't see errors is probably enough
-given the analysis seems fine to me for what happens on error.
+Trying an active address that is hopefully the same Ivan!
 
-Thanks,
+This looks fine to me, but I'd ideally like input from Ivan.
 
 Jonathan
 
+> ---
+> Changes since v1:
+>   - Extended the patch to fix additional bugs found in vcnl3020_handle_irq_thread():
+>     - Corrected event directions (RISING for high threshold, FALLING for low threshold).
+>     - Fixed channel index from 1 to 0 (matching single proximity channel).
+>     - Corrected ISR W1C clear logic for both HI and LOW bits.
+>   - Updated commit message to detail all IRQ handler fixes.
 > 
-> Changes since v3:
-> - Patch 1: commit message expanded with the practical effect of the current
->   behaviour, the cost of propagating the error, and a description of the
->   recovery path that does not assume a particular regmap bus
->   implementation.  No code change.
-> - Patch 2: unchanged.
+>  drivers/iio/proximity/vcnl3020.c | 24 +++++++++++++++++-------
+>  1 file changed, 17 insertions(+), 7 deletions(-)
 > 
-> Neither patch was reproduced on hardware; both were found by code
-> inspection.  They were compile-tested with W=1 and checked with smatch.
-> 
-> Whether patch 1 is worth making is still a fair question - it trades a
-> possible idle power leak that may be cleared by a later successful access
-> for a runtime PM error state that needs an explicit reset.  The commit
-> message spells that out; happy to drop it if you would rather not take
-> that trade.
-> 
-> Linmao Li (2):
->   iio: imu: inv_icm42607: propagate runtime suspend errors
->   iio: imu: inv_icm42607: restore runtime PM on system resume errors
-> 
->  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 38 ++++++++++++++-----
->  1 file changed, 29 insertions(+), 9 deletions(-)
-> 
-> 
-> base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425
+> diff --git a/drivers/iio/proximity/vcnl3020.c b/drivers/iio/proximity/vcnl3020.c
+> index 7f417372566a..d0b8f429999f 100644
+> --- a/drivers/iio/proximity/vcnl3020.c
+> +++ b/drivers/iio/proximity/vcnl3020.c
+> @@ -584,16 +584,26 @@ static irqreturn_t vcnl3020_handle_irq_thread(int irq, void *p)
+>  		return IRQ_HANDLED;
+>  	}
+>  
+> -	if (!(isr & VCNL_ICR_THRES_EN))
+> +	if (!(isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW)))
+>  		return IRQ_NONE;
+>  
+> -	iio_push_event(indio_dev,
+> -		       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
+> -				            IIO_EV_TYPE_THRESH,
+> -				            IIO_EV_DIR_RISING),
+> -		       iio_get_time_ns(indio_dev));
+> +	if (isr & VCNL_INT_TH_HI) {
+> +		iio_push_event(indio_dev,
+> +			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
+> +						    IIO_EV_TYPE_THRESH,
+> +						    IIO_EV_DIR_RISING),
+> +			       iio_get_time_ns(indio_dev));
+> +	}
+> +
+> +	if (isr & VCNL_INT_TH_LOW) {
+> +		iio_push_event(indio_dev,
+> +			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
+> +						    IIO_EV_TYPE_THRESH,
+> +						    IIO_EV_DIR_FALLING),
+> +			       iio_get_time_ns(indio_dev));
+> +	}
+>  
+> -	rc = regmap_write(data->regmap, VCNL_ISR, isr & VCNL_ICR_THRES_EN);
+> +	rc = regmap_write(data->regmap, VCNL_ISR, isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW));
+>  	if (rc)
+>  		dev_err(data->dev, "Error (%d) writing in reg (0x%x)\n",
+>  			rc, VCNL_ISR);
 
