@@ -1,278 +1,131 @@
-Received: from mta1.migadu.com (out-102.mta1.migadu.com [95.215.58.102])
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC5FE3E7150
-	for <linux-iio@vger.kernel.org>; Wed,  2 Sep 2026 08:48:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.102
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 399454052DC
+	for <linux-iio@vger.kernel.org>; Wed,  2 Sep 2026 08:49:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788338938; cv=none; b=bjujze9ch14fFkV4Tr05B1uQE+QbX9KylzFAnwRkcARQ1+rhgBocb+dTsjAkKcICeQ+SmKbJ9olSWxX7a1xEloE/GpeD9iWw0v0Q8RLSKLRKOerUDC+657/MEcEGZAxithxCQ37n1xEF3yKf17VYtGWRRxMjhVlex+eltlf5rNc=
+	t=1788338945; cv=none; b=DGDDmssw/SBc1KwGu1YJchQdvWgy2zoLqVZtYdmtrbimXxcz4raGQmJmOeHdv8ttZDQHUVYUPVbl1eAvFmbpueH4+tHmZspzn0eMJ6qdurYAUhC3gkJ7ri8VeosaC8wfQ+QAIq46C5/rlif0hBVYgMlqcC5oojm1TT6KcquJJBc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788338938; c=relaxed/simple;
-	bh=QXx9mFoUJC8ulhUiCe0BLwO8FCobVwePgiwThut3sT0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ScHyKQPefkYd270QrB2NJgx+GaimbY9Aa0A2Xgt5EDVmko+M/2fwNB9SdD1R4PkaLbbJVbjyUr80Oj0+TnT988ExAo/cWPtiLDpNV63od7W2mh3paiUiF5NDY7MmOOPwslsFPLjtEQayG6RnrbrLhavZhnCK8/SLaqA1tcaOdLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=ENPvW02t; arc=none smtp.client-ip=95.215.58.102
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1788338945; c=relaxed/simple;
+	bh=ss5xROj8OM3lYj+pqG6TTIF5SBt62U9/oUBoQLswgBg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DJcLdouSrLZX8/r0GKTwvGCSoHCSS13quafEaWTGEGhS+YtYygeP1tAnnsGnDVadkhsLlVCz0si+xYRjaE5j3BbEer5E/bJZJHb15OlsA9B+UiArhZLj936sGHyC1zhXomuvpr+VvOoyFbroKF1JJu78uvo1pztbvGvUTj0C+CM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FRGhUyVe; arc=none smtp.client-ip=209.85.208.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="ENPvW02t"
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=QXx9mFoUJC8ulhUiCe0BLwO8FCobVwePgiwThut3sT0=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1788338934; v=1; x=1788943734;
- b=ENPvW02tKLM4gGwS9TAuxocHzREJNJSI7pFTATOTWW7LSpmqRBWZrx//PdwqrMFSRcF4rk62
- UH/xG9Aslm26WV4KiieicPdsSe9sV3hTe0mN1EC76UUrsncqTuqYAnaISvyla3/5k7SkkOA2QDS
- GygpCKNZ/VHJik4OAQNMG8eM=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by mta10.migadu.com with ESMTPS id f91dbd0a606b14d3;
-	Wed, 02 Sep 2026 08:48:54 +0000
-X-Mizu-Trace-ID: f91dbd0a606b14d3
-X-Migadu-Flow: FLOW_OUT
-Date: Wed, 2 Sep 2026 11:48:46 +0300
-From: Matti Vaittinen <matti.vaittinen@linux.dev>
-To: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-	Matti Vaittinen <matti.vaittinen@linux.dev>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/3] iio: light: rohm-bu27034: Fix infinite delay on error
-Message-ID: <c8a41d775b7b83c87bd58cc7ea3e4a88160d2d2d.1788336588.git.mazziesaccount@gmail.com>
-Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
-References: <cover.1788336588.git.mazziesaccount@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FRGhUyVe"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6a0794669a6so1456418a12.2
+        for <linux-iio@vger.kernel.org>; Wed, 02 Sep 2026 01:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788338942; x=1788943742; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=f7aqc1YiIFFi2S/7+a4K7uWSUn18PjZkaszy4zjXDoY=;
+        b=FRGhUyVeZHhqIQy7V+2OH9vwODwXTRs47UnHugrTgp+LSOzcThFqsRm2bSfBJMwhBk
+         199eI9nSLNaLiHNvQEMwpmT0gpKbAzwHhN7wqzLBlykqSHwCMXCrF6cXhYR3fiC0tX72
+         2J9XYkRWq68ZDFW4+MxdKrdDPS2FRzLnZuskT7IirKoyI8ysnZNo46D72xxdOyz5EDnD
+         0H3JcRfYn/vmWl59ZTXEHfOeLzzb4ELjTwLPeyyKnk7w8uBlCJtOSvytm6rAy+1f6Xe7
+         VxRrKYJrF4GcM2ZVCIp+gNMeEUCF4h7Wpu5MCZhU6mYcXgR5UdXplfMT1J+mZOP9DuVa
+         AjSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788338942; x=1788943742;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=f7aqc1YiIFFi2S/7+a4K7uWSUn18PjZkaszy4zjXDoY=;
+        b=XYMVPEtrtbEHhvltu0/MIdmmfaohuvU5tMX1UpRY3WDNnhpPt20QRrDEx+amK5jhxT
+         jXjUZJfBCwTqpSGNgG7Mb7y/3F4Tlc54MpwSWwhXT6Z+pyALRDiEe5Cjc0FgE/IlFGgS
+         yHVL99OPEUdpdHf/EKLE0IPTjxuRnyLWTQjPgvMG1DYeniYYBBc0GXQ5T3e+khNJSLHD
+         wm0zo5n/Ao+ih1JgdlbUuv2nQAj7ESjBTXHexMTZuJIK50Vbp5hcbeFzSpV6K8Pap3uD
+         J/NGTs9tWnxDdJlEKpG+q41m7XjtaXpUoBcxs4zkn+NDv0jmpXtTPLdZOh8a3PJBoJu+
+         xxHw==
+X-Forwarded-Encrypted: i=1; AKwUvBxEGRR4fk6pfi0Fh6J8/I7zpZEZviKWhAeCkb3yXqqmDH+T/E0rGL3U0PmAgNSNn7xpMLqmcPZVfMk=@vger.kernel.org
+X-Gm-Message-State: AFuF++kVNUhShbI1Evj9kV2SVRMJ4r7VVJpQ+zTu46YRtacQchJJTGwY
+	/Tsjd78d0CWqSiNypDHwK2QxRmx87AU73X4nAq//fIoVecOypk3INa1z
+X-Gm-Gg: AYBFou1e2vqxHl41AYfkMCh5PDzsc3eLkG0XZnp8EZK7FDSE+We6THkY24ou59AMrPz
+	EliK35h5V+0N7J1+r5RRPqMagynAbe2qZYnLQFC9+VyII8wVxT0+dLawj/gy2ztz4g/70G8/dKK
+	a/ouORWN/UDuVB8/X+CuU/6eUDxjIFKWsLPpASf/lXkmFw1XeqWksoffkW1t73nsDHG1kMZXfYB
+	+6/51I12r3Wd+Zrir3v2etWNG7aCnyUXQJwBKB228SUAzLJspzgGiDGLCI1P7UePsTbYt2M4+MA
+	6jW0fAp40VBei0g2iKWClHoJlMK3/QmpDmxTFvjf9Jx0ztmhMl4pqA8a++bDzTb3uv4c/NKXvtF
+	AeaK9cl7VE1kPEv+0aAqwRRWw9f17kglV/dXUY1qzyu2W+ZQTtwOELIxB/zvLFe2QrKSPbf3pYE
+	cLR03GWvV8Lfsv2VV2FVRMKT42OF7bZJAnSQPZfhrLkhw//VvNO0zVUrOhFdYjw/nVqyS0wrn4i
+	KkIKFX5b/23mbFROlhedIfl3w==
+X-Received: by 2002:a05:6402:21d4:b0:6a3:f63a:4997 with SMTP id 4fb4d7f45d1cf-6a682567131mr2048216a12.3.1788338942157;
+        Wed, 02 Sep 2026 01:49:02 -0700 (PDT)
+Received: from [172.24.138.145] ([137.71.226.102])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a67f895f29sm764636a12.2.2026.09.02.01.48.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Sep 2026 01:49:01 -0700 (PDT)
+Message-ID: <0c5a657d-e134-49a7-b2cd-82f293685cb7@gmail.com>
+Date: Wed, 2 Sep 2026 10:48:58 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="n2rkCrTUGVjlzaNU"
-Content-Disposition: inline
-In-Reply-To: <cover.1788336588.git.mazziesaccount@gmail.com>
-
---n2rkCrTUGVjlzaNU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-=46rom: Matti Vaittinen <mazziesaccount@gmail.com>
-
-When reading an integration-time fails, the code will use error code to
-compute the sleep time.
-
-Fix this by using the smallest integration time as a default if
-reading fails.
-
-Fixes: e52afbd61039 ("iio: light: ROHM BU27034 Ambient Light Sensor")
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-
----
-
-I am not happy how intrusive this patch is for a fix. I really believe
-what I suggested in discussion:
-
-wait_ms =3D bu27034_get_int_time(data) / USEC_PER_MSEC;
-if (wait_ms < BU27034_INT_TIME_MIN_MS)
-                 wait_ms =3D BU27034_INT_TIME_MIN_MS;
-
-https://lore.kernel.org/all/5d274bfb-2570-4336-af16-60640550e6c9@gmail.com/
-
-would be better as a fix. Well, if this is what reviewers prefer, then I
-can live with it.
-
-Revision history:
-v2 =3D> v3:
- - Changed the signature of the measurement time getter as suggested by
-   Jonathan.
-v1 =3D> v2:
- - Moved Fixes before SOB
- - Clarified units for the smallest integration time as suggested by Andy
----
- drivers/iio/light/rohm-bu27034.c | 60 +++++++++++++++++++-------------
- 1 file changed, 36 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/iio/light/rohm-bu27034.c b/drivers/iio/light/rohm-bu27=
-034.c
-index 28d111ac8c0a..9c7c7e118cbb 100644
---- a/drivers/iio/light/rohm-bu27034.c
-+++ b/drivers/iio/light/rohm-bu27034.c
-@@ -137,6 +137,7 @@ static const struct iio_gain_sel_pair bu27034_gains[] =
-=3D {
- #define BU27034_MEAS_MODE_200MS		2
- #define BU27034_MEAS_MODE_400MS		4
-=20
-+#define BU27034_INT_TIME_US_MIN (55 * USEC_PER_MSEC)
- static const struct iio_itime_sel_mul bu27034_itimes[] =3D {
- 	GAIN_SCALE_ITIME_US(400000, BU27034_MEAS_MODE_400MS, 8),
- 	GAIN_SCALE_ITIME_US(200000, BU27034_MEAS_MODE_200MS, 4),
-@@ -296,7 +297,7 @@ static int bu27034_get_gain(struct bu27034_data *data, =
-int chan, int *gain)
- 	return 0;
- }
-=20
--static int bu27034_get_int_time(struct bu27034_data *data)
-+static int bu27034_get_int_time(struct bu27034_data *data, int *itime)
- {
- 	int ret, sel;
-=20
-@@ -304,24 +305,30 @@ static int bu27034_get_int_time(struct bu27034_data *=
-data)
- 	if (ret)
- 		return ret;
-=20
--	return iio_gts_find_int_time_by_sel(&data->gts,
--					    sel & BU27034_MASK_MEAS_MODE);
-+	ret =3D iio_gts_find_int_time_by_sel(&data->gts,
-+					   sel & BU27034_MASK_MEAS_MODE);
-+	if (ret < 0)
-+		return ret;
-+
-+	*itime =3D ret;
-+
-+	return 0;
- }
-=20
- static int _bu27034_get_scale(struct bu27034_data *data, int channel, int =
-*val,
- 			      int *val2)
- {
--	int gain, ret;
-+	int gain, itime, ret;
-=20
- 	ret =3D bu27034_get_gain(data, channel, &gain);
- 	if (ret)
- 		return ret;
-=20
--	ret =3D bu27034_get_int_time(data);
--	if (ret < 0)
-+	ret =3D bu27034_get_int_time(data, &itime);
-+	if (ret)
- 		return ret;
-=20
--	return iio_gts_get_scale(&data->gts, gain, ret, val, val2);
-+	return iio_gts_get_scale(&data->gts, gain, itime, val, val2);
- }
-=20
- static int bu27034_get_scale(struct bu27034_data *data, int channel, int *=
-val,
-@@ -397,12 +404,10 @@ static int bu27034_try_set_int_time(struct bu27034_da=
-ta *data, int time_us)
- 	int ret, int_time_old, i;
-=20
- 	guard(mutex)(&data->mutex);
--	ret =3D bu27034_get_int_time(data);
--	if (ret < 0)
-+	ret =3D bu27034_get_int_time(data, &int_time_old);
-+	if (ret)
- 		return ret;
-=20
--	int_time_old =3D ret;
--
- 	if (!iio_gts_valid_time(&data->gts, time_us)) {
- 		dev_err(data->dev, "Unsupported integration time %u\n",
- 			time_us);
-@@ -841,7 +846,7 @@ static int bu27034_meas_set(struct bu27034_data *data, =
-bool en)
- static int bu27034_get_single_result(struct bu27034_data *data, int chan,
- 				     int *val)
- {
--	int ret;
-+	int ret, itime;
-=20
- 	if (chan < BU27034_CHAN_DATA0 || chan > BU27034_CHAN_DATA1)
- 		return -EINVAL;
-@@ -850,11 +855,11 @@ static int bu27034_get_single_result(struct bu27034_d=
-ata *data, int chan,
- 	if (ret)
- 		return ret;
-=20
--	ret =3D bu27034_get_int_time(data);
--	if (ret < 0)
-+	ret =3D bu27034_get_int_time(data, &itime);
-+	if (ret)
- 		return ret;
-=20
--	msleep(ret / 1000);
-+	msleep(itime / 1000);
-=20
- 	return bu27034_read_result(data, chan, val);
- }
-@@ -904,12 +909,10 @@ static int bu27034_calc_mlux(struct bu27034_data *dat=
-a, __le16 *res, int *val)
- 	if (ret)
- 		return ret;
-=20
--	ret =3D bu27034_get_int_time(data);
--	if (ret < 0)
-+	ret =3D bu27034_get_int_time(data, &meastime);
-+	if (ret)
- 		return ret;
-=20
--	meastime =3D ret;
--
- 	d1_d0_ratio_scaled =3D (unsigned int)ch1 * (unsigned int)gain0 * 100;
- 	helper64 =3D (u64)ch1 * (u64)gain0 * 100LLU;
-=20
-@@ -970,9 +973,9 @@ static int bu27034_read_raw(struct iio_dev *idev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_INT_TIME:
- 		*val =3D 0;
--		*val2 =3D bu27034_get_int_time(data);
--		if (*val2 < 0)
--			return *val2;
-+		ret =3D bu27034_get_int_time(data, val2);
-+		if (ret)
-+			return ret;
-=20
- 		return IIO_VAL_INT_PLUS_MICRO;
-=20
-@@ -1157,11 +1160,20 @@ static int bu27034_buffer_thread(void *arg)
- {
- 	struct iio_dev *idev =3D arg;
- 	struct bu27034_data *data;
--	int wait_ms;
-+	int wait_ms, ret;
-=20
- 	data =3D iio_priv(idev);
-=20
--	wait_ms =3D bu27034_get_int_time(data);
-+	/*
-+	 * If reading the integration time fails, default to the minimum so we
-+	 * don't lose samples. This may waste CPU cycles, but as a hardening
-+	 * against theoretical, once-in-a-blue-moon error, this should be Ok.
-+	 */
-+	wait_ms =3D BU27034_INT_TIME_US_MIN;
-+	ret =3D bu27034_get_int_time(data, &wait_ms);
-+	if (ret)
-+		dev_warn(data->dev, "Failed to get integration time\n");
-+
- 	wait_ms /=3D 1000;
-=20
- 	wait_ms -=3D BU27034_MEAS_WAIT_PREMATURE_MS;
---=20
-2.55.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 3/3] iio: dac: Add AD5529R DAC driver support
+To: Jonathan Cameron <jic23@kernel.org>,
+ Janani Sunil <janani.sunil@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Mark Brown <broonie@kernel.org>,
+ Marius Cristea <marius.cristea@microchip.com>,
+ Marcus Folkesson <marcus.folkesson@gmail.com>,
+ Kent Gustavsson <kent@minoris.se>, Conor Dooley
+ <conor.dooley@microchip.com>, Daire McNamara <daire.mcnamara@microchip.com>,
+ Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>,
+ linux-riscv@lists.infradead.org
+References: <20260827-ad5529r-driver-v10-0-38f2be07b824@analog.com>
+ <20260827-ad5529r-driver-v10-3-38f2be07b824@analog.com>
+ <178813261957.2788519.4929586195765891569.b4-review@b4>
+Content-Language: en-US
+From: Janani Sunil <jan.sun97@gmail.com>
+In-Reply-To: <178813261957.2788519.4929586195765891569.b4-review@b4>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
---n2rkCrTUGVjlzaNU
-Content-Type: application/pgp-signature; name=signature.asc
+On 8/31/26 01:30, Jonathan Cameron wrote:
+>>   
+>> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+>> index 992f8930f95c..8dc644522b1e 100644
+>> --- a/drivers/iio/dac/Makefile
+>> +++ b/drivers/iio/dac/Makefile
+>> @@ -18,6 +18,7 @@ obj-$(CONFIG_AD5446) += ad5446.o
+>>   obj-$(CONFIG_AD5446_SPI) += ad5446-spi.o
+>>   obj-$(CONFIG_AD5446_I2C) += ad5446-i2c.o
+>>   obj-$(CONFIG_AD5449) += ad5449.o
+>> +obj-$(CONFIG_AD5529R) += ad5529r.o
+>>   obj-$(CONFIG_AD5592R_BASE) += ad5592r-base.o
+>>   obj-$(CONFIG_AD5592R) += ad5592r.o
+>>   obj-$(CONFIG_AD5593R) += ad5593r.o
+>> diff --git a/drivers/iio/dac/ad5529r.c b/drivers/iio/dac/ad5529r.c
+>> new file mode 100644
+>> index 000000000000..52601cbf28d5
+>> --- /dev/null
+>> +++ b/drivers/iio/dac/ad5529r.c
+>> @@ -0,0 +1,536 @@
+> Why do we need those outer () ?
+>
+> ...
 
------BEGIN PGP SIGNATURE-----
+The outer parenthesis are required by checkpatch for macros with complex values. The same pattern is also used by AD3552R_CH_DAC() in drivers/iio/dac/ad3552r.c
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmqX4u4ACgkQeFA3/03a
-ocXsjgf+NZlr0Jj9ZksqzZVh+Y7R9Z7S9rVpb51l3d2Eap7SEQ8EsUmw85hQBgXa
-n+RnmPdzzS+z9XNofh1YcZ7H+yTnZipgLt80OlLj108YGhFFh1dGT7DaYAENvaLy
-q62ckLmULqbtCAVk5/oX1PckanhOz0eafYNMaio0fHjSQL7CLN15kVhgICAAXKBZ
-FwNNnIScYPzYcDo8Z4g7gUgtF/Wc4gv0bDo3hT6lNPaFhT6YjHt9f/SyZN0g5l2R
-ZOMMFKAy3+PB8pE3Fs9owxZLyKSd/mAJsbUisvmYBongKhZX+Yq8lEqhq63rRJAd
-2qRPHqkIuOFZII0aGrOyqlsMEPTnVg==
-=Uprp
------END PGP SIGNATURE-----
+-Jan
 
---n2rkCrTUGVjlzaNU--
