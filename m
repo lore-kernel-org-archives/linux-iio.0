@@ -1,144 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CC80511E6F;
-	Thu,  3 Sep 2026 19:37:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788464242; cv=none; b=QuHbFT99eSF+lRybxDkmY2ioSOK9NApW8k3Eg8blb2vSaAsVza/su+nPk5+xlX/BCtKOwUgNQcVk/vchXbTSHFGTwvMeXvogvh0VAafjEdxvRgoI4wV7JarmNAfQm9yLIlAiw8BDGYlag59D6D1Ix4pA8lXbk9uyO87g/VWUSnw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788464242; c=relaxed/simple;
-	bh=rGTB/itmqwEZSAvCeCcxIqgOm5URRbEnVgHmYN5B5rI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=LT3fEhoRtEZk0YcB8kQ/mISIu6Jh4ofM1K9SW6IFV/ngba+ONFwFtstu/cAPu1Ab8LsPosv4DuJX7vAJYC/lmpUWCv0WjrvYUeP4Sot3ncu4KXh3M3AzKFX3IfdExiuqzUzbJqfn3hU/7F5cAy7SR4osIE9+CzxC5PMGOxAlEpk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EFOCNA6m; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBD394756CD
+	for <linux-iio@vger.kernel.org>; Thu,  3 Sep 2026 20:04:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788465898; cv=pass; b=V1Bq/HufmIH+rsj56jeWxHU/ZHzq8tOzLtDcfYIes9kAWI0Yu+7+f0TsLB9qj816DOjja84VUmmlLYbWDYW+Dz5O3varx2+0afrlxFtXYxYfoEqojN7+nvIdWVfCBxwjyRA9395zArZr9Jtf/lVHgMlHP1E07OXkuf38O26MtkA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788465898; c=relaxed/simple;
+	bh=jOv4AdZM/sxSh2PLGWFXcdhUFav4H7IQM0rmmuYkKh8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lc2FIAn9XT/6S92Prolz5/oF9BWw6maxwGVN68h1ZAC4n/oEgfuInRVYWJgGiO2m4hUEPDyrGRSe4Q46C8Cz82oyuJf/0tnt7Ym/3Zn+ygL8zJ8FeMyzQvDwZkWae9LBV02n84E1nSsd09TGNqaSZpB/IeaqKGSvm6YOTnD3DXg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eH1Vz1HF; arc=pass smtp.client-ip=209.85.216.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EFOCNA6m"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 927EDC2BCB8;
-	Thu,  3 Sep 2026 19:37:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1788464240;
-	bh=rGTB/itmqwEZSAvCeCcxIqgOm5URRbEnVgHmYN5B5rI=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=EFOCNA6mKyEBH/hiGZBXa7gua3O+B7jvv5sd7s+O9zBUB+sArSM9LJHgX/+Ta+N4i
-	 ZDNtdb7qbNaWdUVm7Mrsq/3l9YoR6oOpsQCb2s3QsA6vDg9GnwAV7ntMlixc4i/gCC
-	 /pN0sBoR79LYg84dsONjqLjzlx2Jul28Lkq9j5kfNJpSfARc14at+5I0nd28yd3NCV
-	 iRK8EzEhkBAUc+seRnF2JDvJRJBqpwmBwfAZhlxpYzGgo/fPFy3q4z1NnukzZ9qRdX
-	 EqRSV5F0SUJItoVVAp5EpSvCyHqEFVk+EOXrGHhzu+n+vEE1KcMAZ9aoGJlhNymlkK
-	 80XeFadxygGmQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9C7C624D7;
-	Thu,  3 Sep 2026 19:37:20 +0000 (UTC)
-From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Thu, 03 Sep 2026 21:37:13 +0200
-Subject: [PATCH] iio: imu: inv_icm42600: fix odr change not caught in
- certain cases
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eH1Vz1HF"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-395cf2535acso266341a91.1
+        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 13:04:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788465887; cv=none;
+        d=google.com; s=arc-20260327;
+        b=h5A2Bx/+MmTdKillxwDzzZVCUjMZtBx2juCjNRKzzUYRZC+6/ig2saVwuQttL4BpaU
+         GWX3tX9UY9gMegphtWIb49bXX6IaW7BuyoQmYmYM6T7fsKgjyxNDxu6SCzc7HaNISihB
+         x9vvJ2wcEFA86xJ83Wp/rUqzgypJpba6jG115Oy2SxGMJK2HaW44xZycjSGqtydEIGx5
+         81KW+lAJOf1/S1uzz3nsBhfFtHZa+zQefNPhjuU54pisXk/AE9eT6ahvEQuXDRxaKM5M
+         xqwcIaR+Sdv5UURZ8uXVfP6do9M80ZDIxJhI+XGM4AnL25D002rhMPuNCx5uOnCLDgUp
+         kubA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=jOv4AdZM/sxSh2PLGWFXcdhUFav4H7IQM0rmmuYkKh8=;
+        fh=FeB4B0wlg7deUb4sxfVV0kfKT1tnaeYpwCbqaOlVIec=;
+        b=ZV5Gz5cN5DbY/E3JcF6XIK1BTZe/d6FPimAFuG21he3USby1mzW4HdReHuWszoC7j0
+         DmBBkqkPeWTB6zmKYJ9Prsh/RJS2Ci0Na0XdN0XsVtwJv0+Gc4CWForhgv/FxDWazgCo
+         b9Ix/zT9JxTLFm1Tt6LNP76XcVLjRtRWCoFH8AnfP+UJakRZBv9stH+yYFEvYIrJpMfz
+         bBHXNM8f4TinE09iN02OHPMCyW007mwu4gxPgVvHlzKUhlZasAnBdjHZOljVqH885k96
+         jzP4syOW52uUxAXwTF06uV0ZgIbpvUos6uELQqo6TjolSNq4+fGiRPZrp911PYHbDMFp
+         Yzlg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788465887; x=1789070687; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=jOv4AdZM/sxSh2PLGWFXcdhUFav4H7IQM0rmmuYkKh8=;
+        b=eH1Vz1HF1tFDsSRF+gHl4jsxzipFdAYQOcLQnYu0ZSW5epYSwc5//alxCISaGMZ82v
+         wO5QTHLxtY3viUDvRJZ4UnYr9cmZ2izAy7kVvNfixs6ndRi6IMmVzzrRY9+5e/xRvhgQ
+         C5e9HQkCTxj14XJAiCDLiWoIxzS/rv83EJn8cNzIreAOin6sLL/JeQNkWPIqJ6SCT2qp
+         gYdZJGWZlST3zcjNmovIgFo+tpc8v0S84JYBS9LLjYW2jq8lDB1lq542MChjtYukGF7O
+         r0p1JX5ff4/eMrJiWgcFhizDQLOCXum8Qxu7+Vf/ngfUmdldb7MYFFM7o/qvJA4VzmXg
+         gP4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788465887; x=1789070687;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=jOv4AdZM/sxSh2PLGWFXcdhUFav4H7IQM0rmmuYkKh8=;
+        b=J3nBL5yOpSJGTv0c5njYDguR5+Q7eCSL56XHy9LEFkli6Hbm+4CnXGgY7sXMcE4r/g
+         LC3Gz6HZuVkenysI6snKhCvG6zWb41WZ6eggPsIc9MHqtJ435E2IFKHCgHj+NLCvpOtA
+         y9aLTS9uqSnTqMmSL9A3dWty2DhOrqxR1tDRxCKuekOvzwfUxxGPKxDD+nmj80qhY9le
+         bPutB8tK+n0ni24Fg/qioWk6Un18v0Lj2wQk/QcKbcpvQBLu0Ro2lADvSfiq3/AJvEVU
+         VXSPSngH7IqQPIf3XUywJyYhjqdxBbS3yKh8NxFAem3HAgUcYfjaQawYg9yOPmHABklT
+         cGMQ==
+X-Gm-Message-State: AFuF++nvOtwIcTgGpYD6352j02tRfh/CJJmqHaMRzeAdpwD4C5fGEmZd
+	2WaH4wc2A1tY/zl/+SF3cpOuBfU/fPWWgcUqmviFZdlSwIww7JHlPcBMl0ihByhrLYk0hp/RJqr
+	mecJJbHrUCTGVWkOX1pejKH6iEdpMGEg=
+X-Gm-Gg: AYBFou0byjEmjVOhA5gm1CqB4pq7wz9ezY5kRqUpEX8SM2WBZMsXpraA6X7kXs0hwu1
+	9P0JZmxd+IvNXTJ6NdlljmyOdlOWA5hCXpEo5BT2+GKQ8fQ/JY7R6qqm0HeJxOl4auuK25WZz1d
+	0pIsd4PCqSb5hZ3bKtUz3vKg22nGyeIyzIXbZ1jUqe+8m7BZBcTpjVZKTk7EwmQ1ZDtG9LGzMmX
+	UnJditZNQ6Z/+PYwyxdd+kodx6mQ23JEc8HyuQ8yt6QkT34iMVvnD1iyOiPXvOGrNT33tnVartz
+	MI+hFU/2FnuP+fLKi/XevKUmcBo+PwHWjC3r6O8BM4Gv
+X-Received: by 2002:a17:90b:4490:b0:38e:42f5:d096 with SMTP id
+ 98e67ed59e1d1-39b279ad968mr247148a91.0.1788465887300; Thu, 03 Sep 2026
+ 13:04:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260903-iio-imu-inv-icm42600-fix-odr-change-never-caught-v1-1-029c5f1cbce2@tdk.com>
-X-B4-Tracking: v=1; b=H4sIAGjMmWoC/y2NwQqDMBBEf0X23IU0tYr9leIhJquuYFISEwriv
- 3fbenzDzLwdEkWmBI9qh0iFEwcvcL1UYGfjJ0J2wqCVblSnbsgckNeM7AuyXWuJFY78xuAinhN
- PhQRMnuYNB9foutV346gFuX1FkvpP+ez/nPKwkN2+HjiOD6/NEpOUAAAA
-X-Change-ID: 20260903-iio-imu-inv-icm42600-fix-odr-change-never-caught-bd624725ade7
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788464239; l=2940;
- i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=m60S/Iw6rtSEbJaApo5jUI0iF3VazngX65yETOcKHwE=;
- b=w9aaIbjDwjHyWh2vnYmdg7uSe/Z5FtSOJUuNtoDF944JZ7VLjbzR5zlMVdP5tnpRYSzShiv5R
- +pdmEs+el5vAuIShf+0fdu1LFJ0Ik6SZJe0qKkWiulg7tZuj16H8296
-X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
- pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
-X-Endpoint-Received: by B4 Relay for
- jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
-X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Reply-To: jean-baptiste.maneyrol@tdk.com
+References: <20260804192840.29121-1-jakubszczudlo40@gmail.com>
+ <anocR1F6uCdh4e1V@ashevche-desk.local> <CA+gq5JgkegYTNKD1dPcWRp9sYXoMDfa9O4=B2azROy3QuTszpw@mail.gmail.com>
+In-Reply-To: <CA+gq5JgkegYTNKD1dPcWRp9sYXoMDfa9O4=B2azROy3QuTszpw@mail.gmail.com>
+From: =?UTF-8?Q?Jakub_Szczud=C5=82o?= <jakubszczudlo40@gmail.com>
+Date: Thu, 3 Sep 2026 22:04:38 +0200
+X-Gm-Features: AcwNN1Vm8_ZpCnd10IaLPFM9kTjtcoDvTkAZD_zAraYSV69m1vixkZprKotZWi0
+Message-ID: <CA+gq5Jj=bMQBFr+DBZcA5TUPYC5omEh1T-A8MP3VpOJ7XRmf-A@mail.gmail.com>
+Subject: Re: [PATCH v9 0/3] iio: adc: ti-ads1100: Add support for TI ADS1110
+ to ti-ads1100 driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, marcelo.schmitt@analog.com, 
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	mike.looijmans@topic.nl, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, jorge.marques@analog.com, 
+	antoniu.miclaus@analog.com, mazziesaccount@gmail.com, 
+	jishnu.prakash@oss.qualcomm.com, duje@dujemihanovic.xyz, wens@kernel.org, 
+	sakari.ailus@linux.intel.com, linusw@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> > LGTM now,
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> >
+> > A few minor comments that Jonathan hopefully may tweak whilst applying.
 
-When using both accel and gyro with different frequencies, the ODR
-change flag in the FIFO header can be sometime in a packet with
-invalid data. Since we are ignoring these packets, we miss the ODR
-change and any further change are blocked until sensor is turned off.
-
-Fix this by moving the packet data validity check after the ODR change
-flag check.
-
-Fixes: ec74ae9fd37c ("iio: imu: inv_icm42600: add accurate timestamping")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
----
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c | 8 ++++----
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-index 3197081a808a..65d29de8ecf9 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-@@ -1235,15 +1235,15 @@ int inv_icm42600_accel_parse_fifo(struct iio_dev *indio_dev)
- 		if (size <= 0)
- 			return size;
- 
--		/* skip packet if no accel data or data is invalid */
--		if (accel == NULL || !inv_icm42600_fifo_is_data_valid(accel))
--			continue;
--
- 		/* update odr */
- 		if (odr & INV_ICM42600_SENSOR_ACCEL)
- 			inv_sensors_timestamp_apply_odr(ts, st->fifo.period,
- 							st->fifo.nb.total, no);
- 
-+		/* skip packet if no accel data or data is invalid */
-+		if (accel == NULL || !inv_icm42600_fifo_is_data_valid(accel))
-+			continue;
-+
- 		memcpy(&buffer.accel, accel, sizeof(buffer.accel));
- 		/* convert 8 bits FIFO temperature in high resolution format */
- 		buffer.temp = temp ? (*temp * 64) : 0;
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-index 9de5c383665f..4e20d61d897b 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -816,15 +816,15 @@ int inv_icm42600_gyro_parse_fifo(struct iio_dev *indio_dev)
- 		if (size <= 0)
- 			return size;
- 
--		/* skip packet if no gyro data or data is invalid */
--		if (gyro == NULL || !inv_icm42600_fifo_is_data_valid(gyro))
--			continue;
--
- 		/* update odr */
- 		if (odr & INV_ICM42600_SENSOR_GYRO)
- 			inv_sensors_timestamp_apply_odr(ts, st->fifo.period,
- 							st->fifo.nb.total, no);
- 
-+		/* skip packet if no gyro data or data is invalid */
-+		if (gyro == NULL || !inv_icm42600_fifo_is_data_valid(gyro))
-+			continue;
-+
- 		memcpy(&buffer.gyro, gyro, sizeof(buffer.gyro));
- 		/* convert 8 bits FIFO temperature in high resolution format */
- 		buffer.temp = temp ? (*temp * 64) : 0;
-
----
-base-commit: 183f05a300eab41e4578337eac59335730dfebf9
-change-id: 20260903-iio-imu-inv-icm42600-fix-odr-change-never-caught-bd624725ade7
+Hi Jonathan,
+can you check this patch version? Should I resend it with fixes?
 
 Best regards,
---  
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-
-
+Jakub Szczud=C5=82o
