@@ -1,138 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DB422B2D7;
-	Thu,  3 Sep 2026 18:14:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 247383D967F;
+	Thu,  3 Sep 2026 19:04:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788459262; cv=none; b=JQ/u6NHqlvCw5+hGMgxBEInvXMZIrqnTd2E2Q61kDz0DRYFVkAiKtxYp16hM668ZsCjDnETGlh/HuXYsCg8uwRLnxVi5QXI9WxyvgFtg6wDKIvLJ4VoWpNzO5xAF6O0WIGTDz70YLWJ9RIpxRUWd+8rbZ70rsTyOphM/alxeaVY=
+	t=1788462256; cv=none; b=NNsmVTC54bo6aWhM3iqCsFuPa2t12AiZSTYdAb9JkWqRZnh29Rkgf9tDCa3u/mGUUJpleoQT3f69N0mezJQsdwNFQ55RHbXCMvgWMmsY9qp13zNaf2aXB2hC4JsSXXwQsW3wV0dMv1AWUaqvcd/BxiEityfWfdKSYx0nL2yIJHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788459262; c=relaxed/simple;
-	bh=oa0ct9XZCNukubHIRgbt0r+Y2sziCh0Wo3Xum7WgN88=;
+	s=arc-20240116; t=1788462256; c=relaxed/simple;
+	bh=/DcY3GIMjuNpJdqiErGiqA7clOZM3xb6leblrclnTC0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kt0Fef1jVhCSOx466ojsM8znSJY0YsXFoLHhfsU4hbR3M2kuJgohBCuEGqHUVM6b2G5Cwz7LOPJZCBubpzAJslnVW2tJWuC3Af+Uxdbrd2iiQD4lxh4kbxTEnQ7Lvyi8hwWaR7Sf7qgFlqx0oshqgjPZ7d8YF2fZIqm71ouEPzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PF72g4q6; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=DpgLo1OUrcHUCBx4CZRiXbKkj9XbhJYHiiHIOx7zJkUEC1LJN4AZ+qMjzr05WuiPjgfzcjvs9WjVDqsye9kWfpemnxFipcAX6Lw6FntdNZEM9ELYii5KE+7XN+RPL4cqiXDqKjc1lyz8Tkac6Kd6lsMPlPYUM59PThYoyUzCCK8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PMkQTu/0; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PF72g4q6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0273E1F000E9;
-	Thu,  3 Sep 2026 18:14:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788459261;
-	bh=Bh0mPHUgTTVEBXhgzuscT6xYffFu4fD+871JIrDIYIk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PF72g4q6JWcB45KHIC2mcejgthJR/2Is1fK2QPnr+Rjxq8I++1WXYFQqa1KNyvw1V
-	 703MgAYo5AdIgkRJbcUJrM7xhHbUa2GBkG4EUXAkbBZWt92GfC7UYZYf5F/cGxeK1M
-	 TG4YuMJh9bRMTeEREIGHhw0ho33HEyLO81Vw8h1uC7wI2xWUJos0VvJ/m7ZwuY3N89
-	 ijCNmlsZUK/5ELnIYKvOuBQxjCBM+ttSnmCe+G/8hk1JsM0jCxLuU8wnSWbaum4SnC
-	 1dRhXvVus+eOJo81DYX/o1d9hBExuwlwWhINq3Cet3UXFuUAhRQQwv5Hg9k4P4fl98
-	 zhXbQeUzyMx5g==
-Date: Thu, 3 Sep 2026 19:14:15 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com, jic23@kernel.org,
-	nuno.sa@analog.com, dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v1 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI
- connection mode
-Message-ID: <20260903-liquefy-prologue-9ec914cccf04@spud>
-References: <cover.1788368334.git.marcelo.schmitt@analog.com>
- <d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PMkQTu/0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788462249; x=1819998249;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/DcY3GIMjuNpJdqiErGiqA7clOZM3xb6leblrclnTC0=;
+  b=PMkQTu/0sBNLfGhI2IKfjFmfLM4U+kZMYaNh5fQGd8igMiTcYBThdHRt
+   eRZqdvu/Q6QMA6pcE/eRi5oOopbYHlrscRZKYIRQMn4iBUXpxg+UePTI1
+   acdSame8ttND2uixA6p0jrSHPKBm/eY/h5AWFej4Zs80XerMHJU23cwa5
+   lM+5Kppgp6JbCab+PC4Dlw4TJbl/Hugt5+6c2N7mwZBwPC13Gb1/bqCI+
+   9e5VR8U3GKZFxokG0mr2VXqk69n3YPCDvqkajtL47v1wj8qh2vuzxWOZD
+   +zpzKL9hg4wt2U47R/+z+ysrSLwHuTmz64ZjOBJD6ZYEHZRmV3LJbDzU2
+   g==;
+X-CSE-ConnectionGUID: 9EnQIlmPTnS4b2c8l6PArw==
+X-CSE-MsgGUID: hyhWeeifRdad/Q6OozAsNw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11895"; a="88835002"
+X-IronPort-AV: E=Sophos;i="6.25,260,1779174000"; 
+   d="scan'208";a="88835002"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 12:04:01 -0700
+X-CSE-ConnectionGUID: ghhwwhHbSEq30dkHDHEuXA==
+X-CSE-MsgGUID: 3fXPb4WhTDO6Ccjt1lVZVg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,260,1779174000"; 
+   d="scan'208";a="293323479"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.28])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 12:03:58 -0700
+Date: Thu, 3 Sep 2026 22:03:55 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Flaviu Nistor <flaviu.nistor@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	Daniel Baluta <daniel.baluta@nxp.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads1015: Add support for label
+Message-ID: <apnEm92_E1_Axhvz@ashevche-desk.local>
+References: <apkRJ8T-X-HoNiDB@ashevche-desk.local>
+ <20260903151627.5011-1-flaviu.nistor@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="YN3b9okDwst2Quk2"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260903151627.5011-1-flaviu.nistor@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
---YN3b9okDwst2Quk2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Thu, Sep 03, 2026 at 06:16:27PM +0300, Flaviu Nistor wrote:
+> On Thu, Sep 3, 2026 at 9:18 AM, Andy Shevchenko wrote:
 
-On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote:
-> Document how AD4134 chips are connected to the host SPI controller
-> according to different wiring configurations.
->=20
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> ---
->  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++++++
->  1 file changed, 22 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/=
-Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> index ea6d7e026419..d843c02a394a 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> @@ -131,6 +131,28 @@ properties:
->      enum: [ free-running, gated ]
->      default: gated
-> =20
-> +  adi,spi-mode:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
-> +    description: |
-> +      This property indicates the SPI wiring configuration.
-> +
-> +      When this property is omitted, it is assumed that the device is us=
-ing
-> +      'no-cs' wiring. When this property is present, it indicates that t=
-he
-> +      device is using one of the following wiring configurations:
+...
 
-"default: no-cs" and drop the text about the default, but there's some
-pretty interesting comments from Sashiko about #daisy-chained-devices
-(used for ad7944), although I'm not sure how that'd work for the
-two-channel-chain case.
+> Since the iio core exposes in sysfs the in_volatagex_label
+> for all channels, there are 3 situations:
 
-I'd also really appreciate a dts example for a system
-with one-channel-chain or two-channel-chain looks, given the second
-device may require different supplies etc. I have no impression in my
-head of how the dt would be constructed, so I'd like to see wht you have
-in mind.
+> 3. The channel is not defined in the dts (in_voltagex_label is still visible
+> in the sysfs), and reading the label will cause "(null)\n" to be printed in
+> the console (as indicated also by Sashiko boot), since the default "" value
+> is not assigned during device_for_each_child_node_scoped(). I think this is
+> not an issue since is just the way sysfs_emit() handles an NULL string.
 
-> +
-> +      * no-cs: The datasheet calls this "minimum I/O mode". In this mode=
-, the CS
-> +        line is not used (tied to GND).
-> +      * 4-wire: Specifies a conventional SPI wiring configuration.
-> +      * one-channel-chain: In this mode, the DOUT0 line of one chip is c=
-onnected
-> +        to DOUT2 of the next chip upstream in the chain. Only the data i=
-nterface
-> +        of the upmost device in the stream is in direct connection with =
-the
-> +        digital host.
-> +      * two-channel-chain: In this mode, the DOUT0 and DOUT1 lines of on=
-e chip
-> +        are respectively connected to DOUT2 and DOUT3 of the next chip u=
-pstream
-> +        in the chain. Only the data interface of the upmost device in th=
-e stream
-> +        is in direct connection with the digital host.
-> +
->  required:
->    - compatible
->    - reg
-> --=20
-> 2.53.0
->=20
+Is this current state of affairs?
 
---YN3b9okDwst2Quk2
-Content-Type: application/pgp-signature; name=signature.asc
+If so, the patch must not change that — it's an ABI now and (null) is valid
+response from the user space point of view.
 
------BEGIN PGP SIGNATURE-----
+> What would you prefer? Any further suggestions?
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapm49wAKCRB4tDGHoIJi
-0jNvAP9YzNPJ9J8T3La72HqlFhTFOeKrAe6S2QhHwteDSeRXyQD/S5O+rT5wxBa3
-5PRRjkM42VOd7KsKeVnu3HboUElTSAI=
-=Dxen
------END PGP SIGNATURE-----
+-- 
+With Best Regards,
+Andy Shevchenko
 
---YN3b9okDwst2Quk2--
+
