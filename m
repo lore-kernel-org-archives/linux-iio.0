@@ -1,108 +1,188 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7BAD39E194;
-	Thu,  3 Sep 2026 08:07:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A538442FD4
+	for <linux-iio@vger.kernel.org>; Thu,  3 Sep 2026 08:38:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788422871; cv=none; b=rPz+FaosQQkLvL6PqemHZ3wr/97zmNM7ox/OdCd5CJuFZU6v4m43mg1Vp9szXEPDirHVL0eH7XuS9CzANvZubfHebHMAyTGwfmxVsXKk86hrqY6I4t2GSzb3hppbzQkRkYaFQKvW1/CvPq6Czh0XTY22DS/2Cz5SP9Hzyg0v1+Q=
+	t=1788424687; cv=none; b=OOQM4Rkgx9XJ/gx6+JjSyiZJa1OtMtrvT2r0IyDZHlxR0yncbEADb8/z0xmqNXxrAQAVijsUFQLuQy8CwhDaOHNPjcXPOLdoMAd03xmCTzva2/cYLwrk99GQrJGcEkaqM5xzbVYQIrwaK2nxuhxVC8312TMJXLpubkm13ZoWvr8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788422871; c=relaxed/simple;
-	bh=tl94v/kxShdZK3zvG9vIF0WMAdOmxrv+DzQXDc0ZyT8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JsYFPH6DSiIFkokBcOXz1t28/iqt4lQ5i2Aui790fr+3nDgI7BIWkumSgdPrwS7r94DDlixuf4u2/a7y2KzK5guRfq5gskthUkoLeMC+MKNUS0zkzYdVT9i1PCtc8e2ecUgZDzCHnFoXpFbggY8SNKOosjK4wLHSu5aAe/zOGSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J/FMOBem; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1788424687; c=relaxed/simple;
+	bh=kd86lPABYUrJ2jIXZLk3eCNkAgPOzCHoZEsmhQR1t/s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ziq+z7ERofkT5BsuXufha5O0R93u6Y3Wvh63DTxQrZE6joai9ZKjUUXo7aK8o47V8Yrl8xP9bY1bPhiH074lWfYf/xixqAL5jFgVAG9Ks+w9jGEr83NTNa9Xm1Hjfeo0g3hFhOqPrR+zRsMgb1ZHV4mWyCEuxxKlhboThXdipU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=OQftr52o; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=N35LXwgf; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J/FMOBem"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788422869; x=1819958869;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tl94v/kxShdZK3zvG9vIF0WMAdOmxrv+DzQXDc0ZyT8=;
-  b=J/FMOBemktB83OSIoWvmNpm8UJPajz5wV4PJlEgLo3slS0+qLaqKoyBS
-   zDSUN7S6T0VgdOCWfg5m+CTVFs8Sl6NYDC5ovYkFr2l7h9gfJAqqrD1w8
-   Fd/0gUH0mOLthN5wOjuTiZ5h2PxP6oXRuA4jINZQ8T4h2qNBG1VjepILj
-   CAGwCnNDu4JvrzQSmwwIzhwZMD4lvw33YpW7SRIhWYHyqidg/VHaDyTDb
-   6bXAbcIDAUvVheVKwkaSpyAupc4lagnixi5kBCoyRKy6U9e9RbPffctRO
-   B59eetRFHrNYPV0zhG+bLgEM9vV9ymGfX19B1JU5LUqpi+UsWYqI/nxC7
-   Q==;
-X-CSE-ConnectionGUID: w9WmhHesRgKnl+Dnw3nJkg==
-X-CSE-MsgGUID: FL5tVZ9PRpOyXAmzELjoHA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11894"; a="88772833"
-X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
-   d="scan'208";a="88772833"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 01:07:48 -0700
-X-CSE-ConnectionGUID: IKxNo846QyehnPh49HBZqA==
-X-CSE-MsgGUID: 0cccgDR9Q3Wp3cBo5uPgMw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
-   d="scan'208";a="273149027"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.28])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 01:07:45 -0700
-Date: Thu, 3 Sep 2026 11:07:43 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Tsz Shan Chan <tchan@jacques.com.au>
-Subject: Re: [PATCH v3 5/5] iio: light: vcnl4000: add shared IRQ support
-Message-ID: <apkqz3LJcfSy9Ak2@ashevche-desk.local>
-References: <20260903-vcnl4000-v3-0-5e69c2e715a8@jacques.com.au>
- <20260903-vcnl4000-v3-5-5e69c2e715a8@jacques.com.au>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="OQftr52o";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="N35LXwgf"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6837Lqp64124030
+	for <linux-iio@vger.kernel.org>; Thu, 3 Sep 2026 08:38:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	g6u7H5xBFCRTUQgMYXpbZseEbBuryIsCQSRuaipZfXc=; b=OQftr52o2pwDje5h
+	WUSgzCIRpnF7ZczcOeXvdhGrbNJ506hVOibxNxRj2sn2FhgsbVevHPArRSH6vLeW
+	QF7G2ntOASJuc78K4Dc88+nBzVpzXsQjO7XKBHCmBTyNDoBo5YXywwkIoDyVoECU
+	ahJ7ammqJDYfxh3ZdUcYOp0QZ9uL6oJkU+zH+4IxFcmU6wqyfgsWkE/cjsb69Ax8
+	kjaD/zk9S5BAFsB1lC/5W+I+NGHFHGRZEFDgV0ttIC+KYnxhtRWIWNMUluCoastm
+	5dln6Zy2CT8z3FigaOHsuVnqPr/EKDFKzvSFFRj7sDkT1pJqDyamH0iSZD/vHPDf
+	C+ReOw==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gf4ekg9vb-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 08:38:05 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-93821883e26so54014785a.2
+        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 01:38:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1788424685; x=1789029485; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=g6u7H5xBFCRTUQgMYXpbZseEbBuryIsCQSRuaipZfXc=;
+        b=N35LXwgf7o2h4EdGSDhdxxC1Tw187r+jmL00Z+CDFjHdI8teAtJR6yGA942eT9cBGI
+         1MCKeHjKg/XNx+Bg8yQi4A7iIXFy/fORZ2ac1rBDw5KiFNKVw6fHUQ/k0Tzkqt3pj6Uv
+         WREhtp6SmW8dRzVjwzvpvkHk3gC0MOngf6QgLscr+Im+OBqMLTyOtmKDQ35xBQv2O6lW
+         44b6TKM2ZfsEt7ecH/PhPrYVjdfWAdB2xTG6+qU14mKnXbLxLOJv1CHyUMUVGCWKhhyl
+         6hnkBEN7aLtjnF36MoBlkiMS8EO6K9wnXkWeUeHXwlrofzAw+HHPUovGJ39vKvjnpTgW
+         bc5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788424685; x=1789029485;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=g6u7H5xBFCRTUQgMYXpbZseEbBuryIsCQSRuaipZfXc=;
+        b=rLHyohtZDJmtt2W8qfquQDU4fzXfPB+OsvsLfFbbwFJL3vplrCXZ3qxtCHPBpGUY/6
+         PA5EKSiPqGUrL8419QftSvxCX9t46K3bJpbn+xFuUstVS312p0E0gY4C8Lo5rFi+MNDH
+         J8RUutAJqgEdPeqBLkhpN7AxUs1ORkPP4P/mYiHffMxIjXWift0n+yqiYgf1/wP9GDt9
+         TcFcHvPhHkJ3MS6CDxGUHa0DdJmfa6VQHIyVkol4o0lNMOcQRreyHGmglQlnPPJ3K8eS
+         //byIDSH8ZY//xKYRwgjMMG6t/RpN3UyPIfzopFdYwRm/XRYypG/PIfL8puGFiKBT66L
+         Rs7g==
+X-Gm-Message-State: AFuF++mLVm3qCMcRnuaxa173YnidzZDC9kbSLezmy/OHaps+LsCR6LVN
+	XnkipgtFBLLZKnHqg8baoKMzq4gl9i5kBbzFb2FbEKGee0e/gye0fUoiirTa7CkkANEZHr27GTF
+	7Bx0r9jgJzh1pBJDBClzT3TtqURxx7tI0h6crpjpwslT/yaSme+q9R/Ks4bHrKhI=
+X-Gm-Gg: AYBFou1VYSpsi9ZvJ95EsjUCpFu5KprSpoJQhgrSEwZdiV+xtMtVb8Kf7XbWit5nGPD
+	eIHcAnIdS7Jn0ogJ35MLLJ43TKNvjFvG7fUv3Ak/YT7iD6MKnYR/TzLiYXZlCArMbOFHscj2rmK
+	g89I4kDtYLT/T7y8GiLLDViEMI+16C2RXX/ob3Pdoue2IH4aApMcQLuJMAuRgVrGAfQV/xvE7O2
+	rmKwDKqI91e8F+jSnqr5URFjFfxGJAw5HEx+RRT7YDcKoAZqW9Z402F0swoOrJEPMES1RRuD2it
+	IhLGs5/7zjNaauSk3Bx+YXYRNn5SWS2MgZSNuc7WUzksEfKZuV/aQtntjtuq6IVo5Di6Kz6cNqP
+	PWPyuJ6KT27OuVmyie/kKZw==
+X-Received: by 2002:a05:620a:640f:b0:939:17ec:8a81 with SMTP id af79cd13be357-93960f8a9afmr776712685a.3.1788424684625;
+        Thu, 03 Sep 2026 01:38:04 -0700 (PDT)
+X-Received: by 2002:a05:620a:640f:b0:939:17ec:8a81 with SMTP id af79cd13be357-93960f8a9afmr776708685a.3.1788424684116;
+        Thu, 03 Sep 2026 01:38:04 -0700 (PDT)
+Received: from [192.168.202.12] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c25f41735ecsm64908166b.19.2026.09.03.01.38.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2026 01:38:03 -0700 (PDT)
+Message-ID: <4cd975ee-6d63-46dd-93ef-7c6ac1931837@oss.qualcomm.com>
+Date: Thu, 3 Sep 2026 10:38:00 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260903-vcnl4000-v3-5-5e69c2e715a8@jacques.com.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/7] arm64: dts: qcom: pmk8850: Add ADC5 Gen4 peripheral
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>, Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
+        Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
+        Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>,
+        Priyansh Jain <priyansh.jain@oss.qualcomm.com>
+References: <20260731-pmic5_gen4_adc-v1-0-9c49b2eea6f9@oss.qualcomm.com>
+ <20260731-pmic5_gen4_adc-v1-5-9c49b2eea6f9@oss.qualcomm.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20260731-pmic5_gen4_adc-v1-5-9c49b2eea6f9@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: 7uslpPlv0ZX24ibrb7fKnyqH-f25Z5kc
+X-Proofpoint-GUID: 7uslpPlv0ZX24ibrb7fKnyqH-f25Z5kc
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTAzMDA3NCBTYWx0ZWRfX0O4+9uxwRIiT
+ +bPuY3xQ2lqaziYHd6ASbY3RYEFwB3nAI7eP8dH8YH/ekEcSlzRN808j7UjrhS3o0qAAGC3HU64
+ FP/wfQPR+beVXmmYxP47s5hDTexh9AbvtOwYyFWsyMd90RYGkCcpeL7pMqxx88VtIjWGjmqETCq
+ ljnbOiC8zVz95iEGokby/bKCtarZsXK7jly0+C0cZGNX17FoF48IS2DlRoimrthx2aHS59FkIIe
+ /+7pS0mIEShRjWq2sZ9ZFIzBCbDezzEkmEyBEU6cg09PLzkj60k6Xqptd34QCEbeQmpha/fDi/H
+ Si0CHZUeOk3CrFDXu+jQoup7I4jg5STfrui4843sxvbm74QvRdkG4EGzyeVlMglr5TXuS/VlOSc
+ Wg+hZYm+jDKoCB9eAJ+zsEXmeCrNfIqRSWAyAMrHHCOzvLY/gg4v50o36ZWJGTlw0afzob8rAqX
+ M4xCNkqE1zR6A0GkiPQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTAzMDA3NCBTYWx0ZWRfXy0iCuyhK9aNc
+ pMWy0VxTFEC/LwATE4DDKb5cboWdzZdQ65ifY1VI487ZExtdfPzebFvOVZ8PKnixzWSOFQCFRGO
+ hTAQpUMKa14GVUCr0lEmUlr74lCyWnY=
+X-Authority-Analysis: v=2.4 cv=PKc/P/qC c=1 sm=1 tr=0 ts=6a9931ed cx=c_pps
+ a=HLyN3IcIa5EE8TELMZ618Q==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
+ a=EUspDBNiAAAA:8 a=eQlnLCDwCofjbIFrPS4A:9 a=QEXdDO2ut3YA:10
+ a=bTQJ7kPSJx9SKPbeHEYW:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-03_02,2026-09-02_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 adultscore=0 bulkscore=0 clxscore=1011 phishscore=0
+ suspectscore=0 priorityscore=1501 spamscore=0 impostorscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2609030074
 
-On Thu, Sep 03, 2026 at 02:53:50PM +1000, Tsz Shan Chan wrote:
-> Change the interrupt trigger to IRQF_TRIGGER_LOW and add IRQF_SHARED to
-> allow the sensor to share an interrupt line.
+On 7/31/26 8:06 PM, Jishnu Prakash wrote:
+> PMK8850 has an ADC5 Gen4 peripheral that acts as the master ADC for
+> the platform, communicating with ADC peripherals on other PMICs on the
+> system. Add the ADC peripheral node with PMK8850 die_temp and
+> xo_therm channel nodes under it initially.
 > 
-> Return IRQ_NONE from the irq handler when read fails or when none of the
-> interrupt source bits handled by the driver are set. This prevents
-> claiming interrupts from other devices on a shared line.
+> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+> ---
+>  arch/arm64/boot/dts/qcom/pmk8850.dtsi | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
 > 
-> The datasheets confirm that the INT pin is open drain active low, and
-> the interrupts are latched:
-> - vcnl4010/4020: The INT pin is open drain. It is pulled low
->   while a status bit is 1, and it stays low until the driver writes
->   a 1 to clear it.
-> - vcnl4040/4200: The INT pin is pulled low when a flag triggers. It
->   resets to high only after the driver reads the INT_Flag register.
+> diff --git a/arch/arm64/boot/dts/qcom/pmk8850.dtsi b/arch/arm64/boot/dts/qcom/pmk8850.dtsi
+> index c7ba72fd48bc..44d1d1957f8a 100644
+> --- a/arch/arm64/boot/dts/qcom/pmk8850.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/pmk8850.dtsi
+> @@ -7,6 +7,7 @@
+>  #include <dt-bindings/input/linux-event-codes.h>
+>  #include <dt-bindings/interrupt-controller/irq.h>
+>  #include <dt-bindings/spmi/spmi.h>
+> +#include "qcom-adc5-gen4.h"
+>  
+>  &spmi_bus0 {
+>  	pmic@0 {
+> @@ -45,6 +46,30 @@ pmk8850_gpios: gpio@b800 {
+>  			#interrupt-cells = <2>;
+>  		};
+>  
+> +		pmk8850_vadc: adc@9000 {
+> +			compatible = "qcom,spmi-adc5-gen4";
+> +			reg = <0x9000>, <0x9100>;
 
-...
+nit: one a line would be perfect
 
->  		ret = devm_request_threaded_irq(dev, client->irq, NULL,
->  						data->chip_spec->irq_thread,
-> -						IRQF_TRIGGER_FALLING |
-> -						IRQF_ONESHOT,
-> +						IRQF_TRIGGER_LOW |
-> +						IRQF_ONESHOT | IRQF_SHARED,
->  						"vcnl4000_irq",
->  						indio_dev);
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-This will require to have other drivers be in the same settings to share this
-interrupt line. Which means that the cases when we have active-high setting
-in one device in DT and 'fake' one in another (assuming a NOT gate is added
-on the PCB), this won't work. In another driver this was split to issue a warning
-and use default trigger if and only if it's not provided by the firmware.
+Konrad
 
+P.S. can we also add some more channels that look like they would
+be present on all 8850 installations, e.g. offset-ref, vref-1.25
+etc.?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Konrad
