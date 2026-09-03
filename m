@@ -1,65 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDAB3DD533;
-	Thu,  3 Sep 2026 06:18:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D3B73CB90A;
+	Thu,  3 Sep 2026 06:22:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788416320; cv=none; b=KsK55kppk9SAblLoa+cYub9qT4TfJhq5mObJ9itIaJJFu6w+YhnhpdmH3s0z5rYxshEydSfPcOTU2uVwC+NX+mjM0IWuCvgupKu3vrye/mpX//4jdI95PdaHRPKnmBRO0JFbpewy8Oh3tzP76hL157f9Z0f9Fi/APJ6zPZ6CwCQ=
+	t=1788416575; cv=none; b=Gv9KvAbGT4re06B7OJUio52DCv+b5dopCVd/762rMEhqsTe9fs2nZ82DAwDRG/j/ACgjvVIKzvEnOuoAqUnUZBut2rk8EuFvoNUlz+uEPntDWIPWhsVWOwExupnKo3VxuQ1m94gTiggDGa3SCsPQ97QdBibRFvkpkggJx+YViys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788416320; c=relaxed/simple;
-	bh=mpft1NnwMVq1t5m6FqgL2KE/iQcOvbcNiKDdqOq2htg=;
+	s=arc-20240116; t=1788416575; c=relaxed/simple;
+	bh=59ix3QFGUTTfXXlWlM5VJlIV0wiWTBUYF1LiPPudgzY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I1ACy7vf+6JK4rkXkrd+KVQZf/rSXW89iklt/9MyxPVLkh7dxO3FTcgu+Ua652pH4eMHrB5tkMf1dXVLpus2ZxhijwFgWELQLwysWtBuRMssU8mu8ZRNnJOXkNBL2oXQgXLkpji4QHS8jr2r7PNS/fNj19x8wg2wLhsfx3KIdHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OeX4HiEo; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=HTym2u/potme2U1B2I1+qSZ/4kz8WIk+scfCwZxRGwS+J1WKpxIvu2KTbYSu3KCmabI/+VmM3kL1c/LfamPM6MMkf8ECzhxAdPvxT8Yh/w4HEBWDjPSHZx43vV4lF0ulQieymZXr/LomANU/MVm7aGdadFDaUrK/4Yfxj5Iow68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bjqg89bo; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OeX4HiEo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bjqg89bo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788416319; x=1819952319;
+  t=1788416573; x=1819952573;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=mpft1NnwMVq1t5m6FqgL2KE/iQcOvbcNiKDdqOq2htg=;
-  b=OeX4HiEoHl5PwmQt9MCqtzIs82xmYXll08SKfPcy81e+RNV1iL3pcGFP
-   XeiThOgfvJQ2cGNzVsbnEOFt6b3kACUqbbD7rUmedMBi/HVHeuAzyA9hI
-   /GjjmWr9sCuItca73gg5bmfkJVKexr58Vmh3L9z/zS2vAxhfYLnZKQu50
-   RrWESRBtlkXvHSk97kiDBNhDAQG2LASbYpttGEypbioynXqiaj5YYny08
-   uPMjAZnzINu5N0XxqZmzhia+wstoCWRaHLbqegy38dk+CUeQOYuGxR6Qv
-   bIf3r84/zyQCMobR4zwCVzqlpN9Ijg8BNwn3RLG4h5wwtiUbo5jBaQCmX
+  bh=59ix3QFGUTTfXXlWlM5VJlIV0wiWTBUYF1LiPPudgzY=;
+  b=Bjqg89boBCtZ9A9sJ6XRVeZJDzNv67fNTyVLWc+pH6CMoF6TVwpNdomP
+   yjowozkFDqSxjeaPwl4HbeNJu0C0n3NdWNIJDM8MWQWWrWAG0mX92mNZh
+   qa0XoJ4JaF7fst4dYzX47t3OmZpluD5A2g8B8tS+kp3zAFIrhyS2FUuY+
+   4jwfsmOFJj3yvmRMYVqlOP8LhBw9dnuI/OSHuRCivx0A5hoV8Nw9WT27L
+   rfB/D2OSD3+A3rjxwx9xJJH0kiK1ZDXn3Z+T06CkHkHM6JFIqzggl75Co
+   RMj0nFe2zdqIqwJVWnHDibLbP2vs1rd7Bgazbyz/G+nyeKIww/CYP6+9F
    Q==;
-X-CSE-ConnectionGUID: msWbhw8QTQuX+syH1909ig==
-X-CSE-MsgGUID: Zi/4pw1HTfK+HGXviu8k3Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11894"; a="92705480"
+X-CSE-ConnectionGUID: UCytBYRyRIaXpAnwXuC+yQ==
+X-CSE-MsgGUID: PaVm4p2pQXyRo/JNIwMMkg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11894"; a="106406701"
 X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
-   d="scan'208";a="92705480"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 23:18:20 -0700
-X-CSE-ConnectionGUID: 38Bw4+YVRE2OE0iv/qoExQ==
-X-CSE-MsgGUID: Iuc2Jm7ZTxuGC3iEosd2Gw==
+   d="scan'208";a="106406701"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 23:22:52 -0700
+X-CSE-ConnectionGUID: eGdfNlSlSyOqx6QlxLqQ/g==
+X-CSE-MsgGUID: Z5FyE2Z9Syq2BVJ9LIhTwQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
-   d="scan'208";a="268292423"
+   d="scan'208";a="263450736"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.28])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 23:18:17 -0700
-Date: Thu, 3 Sep 2026 09:18:15 +0300
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 23:22:49 -0700
+Date: Thu, 3 Sep 2026 09:22:46 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Flaviu Nistor <flaviu.nistor@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	Daniel Baluta <daniel.baluta@nxp.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads1015: Add support for label
-Message-ID: <apkRJ8T-X-HoNiDB@ashevche-desk.local>
-References: <20260902172230.5234-1-flaviu.nistor@gmail.com>
- <20260902172230.5234-2-flaviu.nistor@gmail.com>
- <cf9a0918-3e06-4532-8e72-ccc4d417e6b2@baylibre.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com, jic23@kernel.org,
+	nuno.sa@analog.com, dlechner@baylibre.com, andy@kernel.org,
+	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org,
+	marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v1 01/13] iio: Fix typo in vendor name
+Message-ID: <apkSNlQuQkjdNKvx@ashevche-desk.local>
+References: <cover.1788368334.git.marcelo.schmitt@analog.com>
+ <e508718734a06f005704051b8bc3d3d7a1a3b48d.1788368334.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,37 +64,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cf9a0918-3e06-4532-8e72-ccc4d417e6b2@baylibre.com>
+In-Reply-To: <e508718734a06f005704051b8bc3d3d7a1a3b48d.1788368334.git.marcelo.schmitt@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Sep 02, 2026 at 01:37:45PM -0500, David Lechner wrote:
-> On 9/2/26 12:22 PM, Flaviu Nistor wrote:
+On Wed, Sep 02, 2026 at 02:21:34PM -0300, Marcelo Schmitt wrote:
+
+> ---
+> Now
+> find drivers/iio/ -type f | xargs grep -i "Analog Device "
+> finds no leftover occurrence of such typo.
+> 
+> Also,
+> grep -nrIi drivers/iio/ -e "Analog Device" | wc -l
+> and
+> grep -nrIi drivers/iio/ -e "Analog Devices" | wc -l
+> both count the same number of lines.
+
+Why not `git grep ...`?
 
 ...
 
-> > +		if (fwnode_property_present(node, "label")) {
-> > +			ret = fwnode_property_read_string(node, "label", &label);
-> > +			if (ret) {
-> > +				dev_err(dev, "invalid label on %pfw\n", node);
-> > +				return ret;
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-				return dev_err_probe(...);
+But you also want to fix possessive suffix usage
 
-> > +			}
-> > +			data->channel_data[channel].label = label;
-> > +		} else {
-> > +			data->channel_data[channel].label = "";
-> 
-> I think the normal way to do this is to return -EINVAL on channels with no
-> label rather than an empty string.
+$ git grep -n 'Analog Device[^s]'
 
-
-In this case the whole dance with property_present is not required.
-(What you are saying sounds like label is mandatory property, but
- how the old DT will work that have no such property?)
-
-> > +		}
+Documentation/iio/ade9000.rst:7:This driver supports Analog Device's ADE9000 and ADE9078 energy measurement
+Documentation/iio/adis16475.rst:7:This driver supports Analog Device's IMUs on SPI bus.
+Documentation/iio/adis16480.rst:7:This driver supports Analog Device's IMUs on SPI bus.
+Documentation/iio/adis16550.rst:7:This driver supports Analog Device's IMUs on SPI bus.
+Documentation/iio/adxl313.rst:7:This driver supports Analog Device's ADXL313 on SPI/I2C bus.
+Documentation/iio/adxl345.rst:7:This driver supports Analog Device's ADXL345/375 on SPI/I2C bus.
+Documentation/iio/adxl380.rst:7:This driver supports Analog Device's ADXL380/382 on SPI/I2C bus.
+drivers/iio/adc/Kconfig:108:    tristate "Analog Device AD4130 ADC Driver"
+drivers/iio/adc/Kconfig:124:    tristate "Analog Device AD4134 ADC Driver"
+drivers/iio/adc/Kconfig:136:    tristate "Analog Device AD4170-4 ADC Driver"
+drivers/iio/adc/Kconfig:167:    tristate "Analog Device AD4695 ADC Driver"
+drivers/iio/adc/Kconfig:182:    tristate "Analog Device AD4851 DAS Driver"
+drivers/iio/adc/Kconfig:350:    tristate "Analog Device AD7405 ADC Driver"
+drivers/iio/dac/ad3552r.c:699:MODULE_DESCRIPTION("Analog Device AD3552R DAC");
 
 -- 
 With Best Regards,
