@@ -1,263 +1,152 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8764B46C4BC;
-	Thu,  3 Sep 2026 09:07:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6E84963BB
+	for <linux-iio@vger.kernel.org>; Thu,  3 Sep 2026 11:44:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788426474; cv=none; b=aRAjaoEVT9mCKWD8F0bgJPo7Rlk0OCyGEYBQcSsbGXX60TmKBV/Dx4NOElWs+NDj+oEoNi+NGMYxyZrThm5AXBnRzwJ3BkLhFfVRtxzvjd+D2QhlU9ZtvDuCwzqlb1ullAOTo5HReK/Ph5M8bYOvr1t7c5h9qyV3OPrHKHUz/U4=
+	t=1788435859; cv=none; b=Lv4CKCiBCCmluZDMUrSCPto5BpmtnLur7GIp28NqXDD3gHYRYH9GXVt0hWcuyonDlv+b/Ig8II7wl4LnwwH6dYd1gpBw33/oZpRUgZMZK37J2hXWZXUPo0JW8VqsXbBmBG8Byy3VbALbSSRi472GRPzz9CiP/RRZZk1Fk/Q7KcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788426474; c=relaxed/simple;
-	bh=GLaDM+VJfQfwgiKpJJsFrelSgOFiazkjlrRGAWuQK6Y=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=vEztwcgBQNDKjB7cHbhgj2SD4e8HrYiHw2QylurNigfY68U7ecilOLmm+IAdzf0VEZXcGxnwNf3wpbeg6MjGNriGJQo0XQnGunivSSC/IcjXDwA9eRsnd+kLlwGhP0Qfr1PTv022ZvTqImVWQDGlMYzJmzwuAxkF0WjlWD2WNOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=h7Popa4h; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1788435859; c=relaxed/simple;
+	bh=SYTHgoh5s1ttZLs07spkIpQXvDG9wpe9InvqSJ/tVRg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=uENHJsGzO8mzoCJn4dhjqiU/JqzR2MXCcPyjjckx0YNxZ3AMt7g0JE3Yo0egTogoyPCK+9IlK5UxN4QRgdJk9Hw3+6kzlDmxrw7wFu3mFZEaaVs1dd8cOs0jD8WjIkSNmgkHhw0fqSsO8gEMIJCZyURIYvctIJmqPV4CgutEoGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y0lfYSpD; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="h7Popa4h"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=/x
-	3LZutVf8rsfPBIeWPOT9s57JUCZgmU+cSnQzWgaXI=; b=h7Popa4h+rzCGVkNLY
-	VpIpc+urKDLMApZqjIO85MR76JD+XJxoZYFsIuIFV7n55PYSh4DkR6WmL2vJYSLJ
-	rxh0nyCPBfFdbXMqLgcWQjJBNLe6Lri2Y16gFORHjqR8SC/GUwzpgKv2FtU2zVcU
-	HHbgPQ3PxALgGwl5vZCPn40po=
-Received: from localhost.localdomain (unknown [])
-	by gzga-smtp-mtada-g1-4 (Coremail) with SMTP id _____wCH097JOJlqWQVtAQ--.56878S4;
-	Thu, 03 Sep 2026 17:07:24 +0800 (CST)
-From: "Li Youhong" <dayou5941@163.com>
-To: biju.das.jz@bp.renesas.com,
-	wbg@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Li Youhong <liyouhong@kylinos.cn>
-Subject: [PATCH v3 2/3] counter: rz-mtu3-cnt: check pm_runtime_resume_and_get() return values
-Date: Thu,  3 Sep 2026 17:07:18 +0800
-Message-Id: <20260903090719.3498955-3-dayou5941@163.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20260903090719.3498955-1-dayou5941@163.com>
-References: <20260903090719.3498955-1-dayou5941@163.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y0lfYSpD"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49cdc81f40eso16146075e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 04:44:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788435851; x=1789040651; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JIXTKgGl3+GsVlj7Ecpw9Kv3oxNqHNNZVPdXkZxB+yc=;
+        b=Y0lfYSpD1gIPCxu/PFT7pFzfckUlPPiMKjE2eg7v81G/r8kSAJPmFzXujrSyqqhZ/z
+         v7pWPtd/Pc4AjB5a7YQ8ii43GHPbU4CtEKlPlrC3fCf4sWUHKmx43+2UR1ivC2XwwNF2
+         ORIJXEzKusJX9dKIYXq1yg7uKuFeAp5+dkYBaZDpE1FI54KsFVW1DLm8AYQirF4Nu/vO
+         gFgUAPHJ0fsL0bpS/awUuT8y/3Um9Hhva0Kix9lWx4zqbfh4au2dieskKxjo7tsNb+8W
+         NwsJI+1fm10Vuz+I00GvG8aZMpKvWcFRuAyEraqXFSaABRKikiWmQ3eIav7tYtevDKv3
+         QJIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788435851; x=1789040651;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=JIXTKgGl3+GsVlj7Ecpw9Kv3oxNqHNNZVPdXkZxB+yc=;
+        b=tQ7sMJH2CrPewCm6KzIrhUjaPq8oWgnFNQn2pWVgNsG3luucrZCNzC+q6PNdY2KNSU
+         b74QNp+HiVlmW/rbXpK5as+sbaWGS+gdPxgfAR5kegECLNupM08kwDcxKgcVCgKkquJM
+         nOZD7ROzVQdcXq+PgXwL9sZEFjas2dDjGorX6yMwO7YV8SoiDLVlfJruPUvLVXL1iF7F
+         ishehvPUxyngaliDYCU1wYdxvMEDRZ6je2AXmBE0mMohzDaqSrbAsFHeseenE44d94cO
+         sRrpqZetu38KTWtTBNtGJ56srpvYggimkKuRUe3LclKjwd6+sPiGdepd9t8jeZYL2COY
+         Cm5Q==
+X-Forwarded-Encrypted: i=1; AKwUvBziaWNS1CxHKbK98EK8SURmB0lZ5lbS7EwhYoABTXvppvQ1CoVhpbsCV/WEv016wmRpNquZ5p7/8x4=@vger.kernel.org
+X-Gm-Message-State: AFuF++k/3QkXyT5jLX9R8nXdT6FBT9tbs50oL2+VmBM2FfzTry3hcTBS
+	ORHnmxUPFx0vv5ti+OIUzLvqvhgxpHwYrqpBbJKuJpe089DsYq2OsZ5L
+X-Gm-Gg: AYBFou0n0cVASIBa396j+Ze47At89SLE35brWS4PEGKm9rhJm61076FTANbfwwWPdDU
+	PV7wBKtYBZk1t+CVHPnf3fKJBbNUr5C678LCv7zys4kEEws+Ya71fEaCzNBHvizvOWA33l/SYc1
+	UWbdvINA+VS7obtt5I57LHR0DwXFwZwc7baeAfoBISXx/VsqOlkU4/wL4+7VAcV/1dKCURGhQfe
+	3O0SzHL6odmWzN6Xnot8jSmKQbhdjiNK/CC77vEGcFybZsGsZpC8Ryf4BXaybszNpJ6cC/PmsON
+	rDnlaVulMY4YCYYjOf5ceVRRnRAPlsQc/qCWY+A+6iOvXncpxz/OLT07pQ/x701npqbYHNoTP5K
+	oc+XAjsVRXBRAjIZet3Hq+HM8kaWt9oXmznqBSipxalaSc1oagmlsr+pGn1nXESuhxFyxdwsx0s
+	WCJLpiDODNzZo3snlX1aUJIl32yY7aMAhY5LTxCk2MMZ4eEbCigwgxvAFjXbEMl/lxQf9WBrHmw
+	HoDVe/32GqCViBf
+X-Received: by 2002:a05:600c:3e0a:b0:499:a277:e8b5 with SMTP id 5b1f17b1804b1-49ce5810b5dmr259425575e9.3.1788435850729;
+        Thu, 03 Sep 2026 04:44:10 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.147.117])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cee60d8a6sm64541785e9.10.2026.09.03.04.44.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Sep 2026 04:44:07 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v5] iio: adc: ad4030: fix invalid oversampling_ratio validation
+Date: Thu,  3 Sep 2026 12:43:09 +0100
+Message-ID: <20260903114337.63541-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wCH097JOJlqWQVtAQ--.56878S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW3AryUuFWUGw4fGF1fKrW7urg_yoW7CFy3pF
-	13KFW7tFW8Xr4kCrZ7twnrXr9Y93ySyFy3GFyrt3Z7AF1IkF1Yqw1DWFWjgFn5Cr95AFyj
-	qw4Ygay3CF1Yqr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j70edUUUUU=
-X-CM-SenderInfo: 5gd103ivzuiqqrwthudrp/xtbC3QxC8GqZOMzyVQAA3D
 
-From: Li Youhong <liyouhong@kylinos.cn>
+In ad4030_set_avg_frame_len(), the logarithm is calculated before input
+validation. Passing zero or negative values leads to an undefined result
+from ilog2().
 
-The driver ignored runtime PM get failures and continued with register
-accesses after a failed resume. Switch all call sites to
-pm_runtime_resume_and_get() and propagate errors to the caller. That
-API already drops the usage count on failure, so the explicit
-pm_runtime_put_noidle() pairing used with pm_runtime_get_sync() is
-unnecessary.
+Validate that the input is strictly positive prior to computing its
+logarithm.
 
-Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter driver")
-Suggested-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
+Fixes: 949abd1ca5a4 ("iio: adc: ad4030: add averaging support")
+Assisted-by: Claude:claude-sonnet-5
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
 ---
---- a/drivers/counter/rz-mtu3-cnt.c
-+++ b/drivers/counter/rz-mtu3-cnt.c
-@@ -102,22 +102,25 @@
- 	return &priv->ch[ch_id];
- }
- 
--static bool rz_mtu3_is_counter_invalid(struct counter_device *counter, int id)
-+static int rz_mtu3_validate_counter(struct counter_device *counter, int id)
+Changes in v5:
+  - Split validation into two distinct checks with explanatory comments
+  (per Andy Shevchenko and Nuno Sá).
+  - Used 'avg_val < 1' to explicitly reject invalid values for ilog2()
+  (per Andy Shevchenko and Nuno Sá).
+  - Tightened commit log description.
+
+Changes in v4:
+  - Reordered local variables to enforce strict reversed Christmas tree layout
+  (per Andy Shevchenko).
+  - Rephrased commit log in plain English without C-specific terms
+  (per Andy Shevchenko).
+  - Converted AI assistance note into a formal Assisted-by tag
+  (per Andy Shevchenko).
+
+Changes in v3:
+  - Dropped the !is_power_of_2() check to preserve standard IIO attribute
+   rounding behavior, per feedback from David Lechner and Jonathan Cameron.
+
+Changes in v2:
+  - Added note stating the issue was identified with assistance from
+  Claude AI and verified manually.
+  - Removed initialization of avg_log2 at declaration.
+
+ drivers/iio/adc/ad4030.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+index 9c5f19321e3b..f1499b4792b5 100644
+--- a/drivers/iio/adc/ad4030.c
++++ b/drivers/iio/adc/ad4030.c
+@@ -746,14 +746,21 @@ static int ad4030_set_chan_calibbias(struct iio_dev *indio_dev,
+ static int ad4030_set_avg_frame_len(struct iio_dev *dev, int avg_val)
  {
- 	struct rz_mtu3_cnt *const priv = counter_priv(counter);
- 	unsigned long tmdr;
-+	int ret;
+ 	struct ad4030_state *st = iio_priv(dev);
+-	unsigned int avg_log2 = ilog2(avg_val);
+ 	unsigned int last_avg_idx = ARRAY_SIZE(ad4030_average_modes) - 1;
++	unsigned int avg_log2;
+ 	int freq_hz;
+ 	int ret;
  
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0)
-+		return ret;
- 	tmdr = rz_mtu3_shared_reg_read(priv->ch, RZ_MTU3_TMDR3);
- 	pm_runtime_put(counter->parent);
- 
- 	if (id == RZ_MTU3_32_BIT_CH && test_bit(RZ_MTU3_TMDR3_LWA, &tmdr))
--		return false;
-+		return 0;
- 
- 	if (id != RZ_MTU3_32_BIT_CH && !test_bit(RZ_MTU3_TMDR3_LWA, &tmdr))
--		return false;
-+		return 0;
- 
--	return true;
-+	return -EBUSY;
- }
- 
- static int rz_mtu3_lock_if_counter_is_valid(struct counter_device *counter,
-@@ -125,6 +128,8 @@
- 					    struct rz_mtu3_cnt *const priv,
- 					    int id)
- {
-+	int ret;
+-	if (avg_val < 0 || avg_val > ad4030_average_modes[last_avg_idx])
++	/* Reject unsupported modes */
++	if (avg_val > ad4030_average_modes[last_avg_idx])
++		return -EINVAL;
 +
- 	mutex_lock(&priv->lock);
- 
- 	if (ch->is_busy && !priv->count_is_enabled[id]) {
-@@ -132,9 +137,10 @@
++	/* Avoid invalid values for logarithm since it's undefined */
++	if (avg_val < 1)
  		return -EINVAL;
- 	}
  
--	if (rz_mtu3_is_counter_invalid(counter, id)) {
-+	ret = rz_mtu3_validate_counter(counter, id);
-+	if (ret) {
- 		mutex_unlock(&priv->lock);
--		return -EBUSY;
-+		return ret;
- 	}
- 
- 	return 0;
-@@ -165,7 +171,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	if (count->id == RZ_MTU3_32_BIT_CH)
- 		*val = rz_mtu3_32bit_ch_read(ch, RZ_MTU3_TCNTLW);
- 	else
-@@ -187,7 +197,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	if (count->id == RZ_MTU3_32_BIT_CH)
- 		rz_mtu3_32bit_ch_write(ch, RZ_MTU3_TCNTLW, val);
- 	else
-@@ -203,8 +217,11 @@
- 					      enum counter_function *function)
- {
- 	u8 timer_mode;
-+	int ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0)
-+		return ret;
- 	timer_mode = rz_mtu3_8bit_ch_read(ch, RZ_MTU3_TMDR1);
- 	pm_runtime_put(counter->parent);
- 
-@@ -279,7 +296,11 @@
- 		return -EINVAL;
- 	}
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, timer_mode);
- 	pm_runtime_put(counter->parent);
- 	mutex_unlock(&priv->lock);
-@@ -300,7 +321,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	tsr = rz_mtu3_8bit_ch_read(ch, RZ_MTU3_TSR);
- 	pm_runtime_put(counter->parent);
- 
-@@ -377,7 +402,11 @@
- 		return -EINVAL;
- 	}
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	if (count->id == RZ_MTU3_32_BIT_CH)
- 		rz_mtu3_32bit_ch_write(ch, RZ_MTU3_TGRALW, ceiling);
- 	else
-@@ -504,7 +533,9 @@
- 		goto exit;
- 
- 	if (enable) {
--		pm_runtime_get_sync(counter->parent);
-+		ret = pm_runtime_resume_and_get(counter->parent);
-+		if (ret < 0)
-+			goto exit;
- 		ret = rz_mtu3_initialize_counter(counter, count->id);
- 		if (ret == 0)
- 			priv->count_is_enabled[count->id] = true;
-@@ -543,7 +574,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	tmdr = rz_mtu3_shared_reg_read(priv->ch, RZ_MTU3_TMDR3);
- 	pm_runtime_put(counter->parent);
- 	*cascade_enable = test_bit(RZ_MTU3_TMDR3_LWA, &tmdr);
-@@ -562,7 +597,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	rz_mtu3_shared_reg_update_bit(priv->ch, RZ_MTU3_TMDR3,
- 				      RZ_MTU3_TMDR3_LWA, cascade_enable);
- 	pm_runtime_put(counter->parent);
-@@ -582,7 +621,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	tmdr = rz_mtu3_shared_reg_read(priv->ch, RZ_MTU3_TMDR3);
- 	pm_runtime_put(counter->parent);
- 	*ext_input_phase_clock_select = test_bit(RZ_MTU3_TMDR3_PHCKSEL, &tmdr);
-@@ -601,7 +644,11 @@
- 	if (ret)
- 		return ret;
- 
--	pm_runtime_get_sync(counter->parent);
-+	ret = pm_runtime_resume_and_get(counter->parent);
-+	if (ret < 0) {
-+		mutex_unlock(&priv->lock);
-+		return ret;
-+	}
- 	rz_mtu3_shared_reg_update_bit(priv->ch, RZ_MTU3_TMDR3,
- 				      RZ_MTU3_TMDR3_PHCKSEL,
- 				      ext_input_phase_clock_select);
++	avg_log2 = ilog2(avg_val);
++
+ 	if (st->offload_trigger) {
+ 		/*
+ 		 * The sample averaging and sampling frequency configurations
+-- 
+2.43.0
 
