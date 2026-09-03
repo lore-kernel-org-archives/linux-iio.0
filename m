@@ -1,62 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0B53E5EFA;
-	Thu,  3 Sep 2026 07:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 012F83CB572
+	for <linux-iio@vger.kernel.org>; Thu,  3 Sep 2026 07:02:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788418824; cv=none; b=mYoXa3JPXzOcg4MerVSYKy4qRY9iPzOP6VtnFgjo7xVhx1UOWVLRqdeOOw2k2UmflG7XIrk1jHZnZMCLZm8tnleva5xHR1606dSre3n7NQWBhROXnXAnM52sjR3m1d9rlIOvDgCdfj6GH08zFpzprTSN0GE3yDMSo8LYZkmKs5c=
+	t=1788418932; cv=none; b=FEboqnAKHEv1ZVuRNRtudtWChK2TDIK7aKUhj1w0ywZ7nMMQ+weIX538NMMLHCeCCDpoWIsjeG++aIHLW+PufkTZGDyU4H6sloihsp7siOHq8o/Im3TiwHFiePoy4wShDr3z9EvMpUtSWwE9ZDFnmnkgoaqdxLXsY4RoREpBnTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788418824; c=relaxed/simple;
-	bh=QOYufKxH+f3YmteiwiPOwFOBIKX7A7dTy+IgOo6PyDI=;
+	s=arc-20240116; t=1788418932; c=relaxed/simple;
+	bh=URiiWCSYW0GjTxFe0It1760y7ZZo93z00xWsGdIXJ5o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CfzhRWS2G2m5hcDep71rcshvs7I5vqgufcNmqU68WDgwRtknv3zJOj0WIngldHCqSFaqMj8NMisC/TBBgf8r5ru7BS8wdS9YzEM7KZKlMIm4hF6wCxz4f+Wit8iYVK1vk35eBZrGJMP7Pxsk88JsWVFvFM/VRr8DqozkzJhFQx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fMQAqH82; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=bWPGF2/hcWY0Z0gjjHnrh70v7Z7xAHj0pux+bi5mO3lA0ffAswShJ5RJQ5Rk4X2mI+U7rPsVqQfboAdrk0a3sILZjZL6m42V4N9Gy98qFz0aM8nRzTip0mT3qNiPFD121OJ7l+mBT6KSqdvhyllH+F78IGbKjXSz3eYZ4p0O/CE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fwpwk+Af; arc=none smtp.client-ip=209.85.216.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fMQAqH82"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788418823; x=1819954823;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QOYufKxH+f3YmteiwiPOwFOBIKX7A7dTy+IgOo6PyDI=;
-  b=fMQAqH82Wyc3CCC5ab1dEYKRgiOSrdK9wnBY1YIYdRqb4lYImet92gjo
-   OcRwRmRYqB3zh4FpUVpDAs9XYtZ+JJBBSA/+RGsHELMWJAdfWZrjsLHpM
-   +fvah+G7oFtrB3/QudHVnSOHy61+c+FKEXCzBR/DxhDSDjpQtcpWgGwP4
-   tWzawJ0cI/qOF3eo0zJaQbOuZUojY/QlVvgSc+tjxwz7ywFx0B/QOhdLr
-   4i7d4J73HgBvS4++iOITAyWiZyRy8y5pMVT/70CQ3KHp7mbc2q0wt2nDy
-   xjNt34SIw1FU/kTZKJbPHHNCWT/FEVTvN1Nb8bblC1rcgwabiLTUUQqWI
-   g==;
-X-CSE-ConnectionGUID: twhwRkbYQlq1Y9ZfkCEJYQ==
-X-CSE-MsgGUID: NsUtAu5aTMaVvtZ9H9GqdQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11894"; a="111663389"
-X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
-   d="scan'208";a="111663389"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 00:00:22 -0700
-X-CSE-ConnectionGUID: GDejSu/6T5GxuGFpNnwcmw==
-X-CSE-MsgGUID: 8O6qrlUKSkeMsw66MPn5jg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
-   d="scan'208";a="267874393"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.28])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2026 00:00:19 -0700
-Date: Thu, 3 Sep 2026 10:00:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com, jic23@kernel.org,
-	nuno.sa@analog.com, dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v1 12/13] iio: adc: ad4134: Support high-speed data
- capture
-Message-ID: <apkbAMQ0J2_wJRTv@ashevche-desk.local>
-References: <cover.1788368334.git.marcelo.schmitt@analog.com>
- <53d79eed25795db5076d7c591f6dd8cf4feedfec.1788368334.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fwpwk+Af"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-398b3d66515so2584963a91.0
+        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 00:02:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788418929; x=1789023729; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=WQWNPytw1GI5Bz7KWMVobnDn5jK6I/E1tnjkaIqtCQI=;
+        b=Fwpwk+Af00Ygg/YnI1dO+pv59/fFkuMvNM5X6m9U06WKRnWNnKS+2bRXHSN0UUBiow
+         tS6F15Ny7neuSncGdwpLseDCUIASSVZufeCZdkjmoFjaJfJHBfxzNqPYwzEeB5EtbUHE
+         f5Ut7w15/TmZpKbfET9nAL10KPgH1dYnPMqolAx1LHIKKQYg7/kAHJ4IsgPsZ3/CNDBs
+         gp2C3yDseussGd9y13b1vwgVuGPIYvseuXOTiGjjYk/BgiB+kSMdy8Zp1q8Fcix2f2Xq
+         FUVfXcP1A/N2L6C7IGvYDUrQ6HIb4daqPMIaN5iiDjfG/o0CQ8XbVDIVKPw1X7CcpOkF
+         JJFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788418929; x=1789023729;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WQWNPytw1GI5Bz7KWMVobnDn5jK6I/E1tnjkaIqtCQI=;
+        b=BPksPkDdTRQRVQPw60SjYtZz81ct0/ZepzW0Xv+/dZeNeGAcH/J3k7sg9v5gTN8Fy7
+         Qq6DeMZE77snmW9Los0GabiYPGCOiHsGZq6/z9KsIENyXy0+v7YtRf+qffLGlBWTkjD3
+         bE143GN9whC2ER72V/cG+wSxwEUnY6Ow7bjhWmGh18EjlLYEmSQh02mTq9l81VxoWo4I
+         MhATAYhtkN4gxnJAi8x/ad3fKMa+yNV8oBkFdRsJOqhmesEeFFSh+Aw3w2v7p6whhDLc
+         j37i/hFpRJf97kGRxXHF+Lo/32J/HYLAHsmaWylzSbxDWD4R2yaC2tVp3m1Ans7nmXEJ
+         UVYw==
+X-Forwarded-Encrypted: i=1; AKwUvByRJvQ3uUmw3/Qo0zOoVYam+XVOYWEThWC0oqSchDc9VG7of2om5L32IIx0P9J85jkP3g7TqRfrfi8=@vger.kernel.org
+X-Gm-Message-State: AFuF++nWsDxbyluciLD+wzjeze+D8iUu9y1bb021RyxG+HiaI6hUro2S
+	vaqjvROEO/3ifNMrieCKCBDoeKJEbXDSEzTRY/O8slFMSMHSo4TXcF66
+X-Gm-Gg: AYBFou23PzkvxcfYz2qUvGlwIITyz6+gpyGeyaxZTAnKrWXJwH3ayNpdYUbGxfM6GW9
+	/j8LXlNG/UEPQJ7jXshYilqqnYRghkp0MdI/Tk65K8+PDBWJ6iorVR7nLXOK8vrDKpxH//+L109
+	osRYSxS+3wyzf9bBnoAgFVjnXq93N3WTDbmZO25r19+9UGWw86Uyyrz7fGdf8l5Yfc43a0Mp7yW
+	3XRwhp4gBkkWb3e1ftBlzAA7/60YmE34K9WFqq7A7LJ9D8KJ13YmqBSZs0zTQsC8OurbOAh6p5B
+	KT+t9J3mDC6NE+jVTJwgmVX9HASdE9J7Za78G/8Xwuo/rLH4N1U4UbXLw1Mt6v2e0R3QPv3qh4a
+	Qn7G5yMoLepywFZSfrBT02Mrbrrn0RCEoVhRfudl8s5SVNwRMhNH2c6hs3v7a8eWJOWnua6btp7
+	4Cvi2JxkzOhB469ZlSeslIX9iHTs8Wy2QT3nxlTHAok6cVh7Mvyv4wxIootSCyRmjTnazCTliJx
+	UJdUlU8QxNR2zM3JS+GBw==
+X-Received: by 2002:a17:90b:33c4:b0:38e:9045:bac0 with SMTP id 98e67ed59e1d1-39aedf644damr13780688a91.5.1788418928606;
+        Thu, 03 Sep 2026 00:02:08 -0700 (PDT)
+Received: from localhost (115-70-157-242.ip4.superloop.au. [115.70.157.242])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b0832b85bsm3439567a91.4.2026.09.03.00.02.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Sep 2026 00:02:08 -0700 (PDT)
+Date: Thu, 3 Sep 2026 17:02:04 +1000
+From: Tsz Shan Chan <tsz.chan.dev@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Tsz Shan Chan <tchan@jacques.com.au>
+Subject: Re: [PATCH] iio: light: apds9306: fix default sampling frequency
+ definition
+Message-ID: <apkag8drdFFofWFT@fedora-1>
+References: <20260903-apds9306-v1-1-3f892aa4f156@jacques.com.au>
+ <apkWlzZZIIzVDz4C@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,172 +80,29 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <53d79eed25795db5076d7c591f6dd8cf4feedfec.1788368334.git.marcelo.schmitt@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <apkWlzZZIIzVDz4C@ashevche-desk.local>
 
-On Wed, Sep 02, 2026 at 02:25:26PM -0300, Marcelo Schmitt wrote:
-> Make use of SPI transfer offloading to speed up data capture, enabling data
-> acquisition at faster sample rates (up to 1.496 MSPS).
+On Thu, Sep 03, 2026 at 09:41:27AM +0300, Andy Shevchenko wrote:
+> On Thu, Sep 03, 2026 at 03:38:47PM +1000, Tsz Shan Chan wrote:
+> > APDS9306_SAMP_FREQ_10HZ is defined as 0.
+> > 
+> > According to the datasheet (page 11, ALS_MEAS_RATE), bits[2:0] set the
+> 
+> Can you add a Datasheet link? (Or at least the version and name)
+> 
+> > measurement rate:
+> > - 000: 25ms  (40Hz)
+> > - 001: 20ms  (20Hz)
+> > - 010: 100ms (10Hz)
+> > 
+> > Change APDS9306_SAMP_FREQ_10HZ from 0 to 2 to write the correct value
+> > for 10Hz.
+> 
+> > Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+> > 
+> > Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
+> 
+> No blank lines in the tag block (at the end of the commit message).
 
-...
-
-> +static int ad4134_update_conversion_rate(struct ad4134_state *st,
-> +					 unsigned int freq_Hz)
-> +{
-> +	struct spi_offload_trigger_config config = st->offload_trigger_config;
-> +	struct pwm_waveform odr_wf = { };
-> +	u64 offload_period_ns;
-> +	u64 offload_offset_ns;
-> +	u64 odr_high_time_ns;
-> +	unsigned int count;
-> +	u64 target = 10;
-
-Split assignment and move it closer to its first user.
-
-> +	int ret;
-> +
-> +	if (!in_range(freq_Hz, AD4134_MIN_ODR_FREQ_HZ, AD4134_MAX_ODR_FREQ_HZ))
-> +		return -ERANGE;
-> +
-> +	odr_wf.period_length_ns = DIV_ROUND_UP_ULL(NSEC_PER_SEC, freq_Hz);
-> +	/*
-> +	 * Set the PWM duty cycle to keep ODR high for at least minimum required
-> +	 * time. If the rounded PWM's value is less than the minimum required,
-> +	 * increase the target value by 10 and attempt to round the waveform
-> +	 * again, until the minimum (or try count limit) is reached.
-> +	 */
-> +	odr_high_time_ns = div64_ul(6ULL * NSEC_PER_SEC, st->sys_clk_hz);
-
-	target = 0;
-
-> +	count = 100;
-> +	do {
-
-		target += 10; /* Increment by PWM duty cycle period */
-
-> +		odr_wf.duty_length_ns = target;
-> +		ret = pwm_round_waveform_might_sleep(st->odr_pwm, &odr_wf);
-> +		if (ret)
-> +			return ret;
-
-> +		target += 10; /* Increment by PWM duty cycle period */
-
-In the above way I think it clarifies the initial setting to 10.
-
-Shouldn't be target named as target_ns? Can we use odr_wf.duty_length_ns
-directly?
-
-> +	} while (count-- && odr_wf.duty_length_ns < odr_high_time_ns);
-> +
-> +	/* Check the minimum ODR high time is met */
-> +	if (odr_wf.duty_length_ns < odr_high_time_ns)
-> +		return -EDOM;
-> +
-> +	if (odr_wf.period_length_ns < 2 * odr_high_time_ns)
-> +		return -EDOM;
-> +
-> +	/*
-> +	 * Configure SPI offload PWM trigger.
-> +	 * For gated DCLK, the minimum required time between ODR rising edge
-> +	 * and DCLK rising edge is the sum of ODR high time and ODR falling
-> +	 * edge to DCLK rising edge time. Delay the offload trigger for at least
-> +	 * that amount of time so the ADC sample data will be available when the
-> +	 * SPI transfer begin.
-> +	 *
-> +	 * Use the same period as ODR PWM to avoid timing issues.
-> +	 * Convert back from period to frequency for the SPI offload API.
-> +	 */
-> +	offload_period_ns = odr_wf.period_length_ns;
-> +	config.periodic.frequency_hz = DIV_ROUND_UP_ULL(HZ_PER_GHZ, offload_period_ns);
-> +	offload_offset_ns = odr_high_time_ns + AD4134_DCLK_RISING_OFFSET_NS;
-> +	count = 100;
-> +	do {
-> +		config.periodic.offset_ns = offload_offset_ns;
-> +		ret = spi_offload_trigger_validate(st->offload_trigger, &config);
-> +		if (ret)
-> +			return ret;
-> +
-> +		offload_offset_ns += 10;
-
-Does this need the similar comment as per above?
-
-> +	} while (count-- && config.periodic.offset_ns < odr_high_time_ns +
-> +							AD4134_DCLK_RISING_OFFSET_NS);
-> +
-> +	/* Check the minimum ODR to DCLK delay is met */
-> +	if (config.periodic.offset_ns < odr_high_time_ns + AD4134_DCLK_RISING_OFFSET_NS)
-> +		return -EDOM;
-> +
-> +	/* Check the PWM periods remain the same */
-> +	offload_period_ns = DIV_ROUND_UP_ULL(HZ_PER_GHZ, config.periodic.frequency_hz);
-> +	if (odr_wf.period_length_ns != offload_period_ns)
-> +		return -EDOM;
-> +
-> +	ret = pwm_set_waveform_might_sleep(st->odr_pwm, &odr_wf, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->offload_trigger_config = config;
-> +	st->odr_wf = odr_wf;
-> +	st->odr_hz = DIV_ROUND_UP_ULL(NSEC_PER_SEC, odr_wf.period_length_ns);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int ad4134_offload_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad4134_state *st = iio_priv(indio_dev);
-> +	int ret, ret2;
-
-These ret2:s in the cases of _set_register_() can be named accordingly.
-
-> +	if (st->spi_mode == AD4134_SPI_MODE_4_WIRE) {
-> +		ret = ad4134_set_sample_access(st);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	ad4134_prepare_offload_msg(indio_dev);
-> +	st->msg.offload = st->offload;
-> +	ret = spi_optimize_message(st->spi, &st->msg);
-> +	if (ret)
-> +		goto out_set_register_input;
-> +
-> +	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
-> +					 &st->offload_trigger_config);
-> +	if (ret)
-> +		goto out_unoptimize;
-> +
-> +	return 0;
-> +
-> +out_unoptimize:
-> +	spi_unoptimize_message(&st->msg);
-> +
-> +out_set_register_input:
-> +	ret2 = ad4134_set_register_access(st);
-> +	if (ret2)
-> +		dev_err(&st->spi->dev, "reg input select error: %d\n", ret2);
-> +
-> +	return ret;
-> +}
-
-...
-
-> +/* The chip converts and outputs all 4 channels on each sample request */
-> +static const unsigned long ad4134_scan_masks[] = {
-> +	GENMASK(3, 0),
-
-IIRC Jonathan wants to see this as BIT(x) | BIT(y) | ... to clarify that each
-bit is semantically independent.
-
-> +	0
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+I'll add the datasheet link and remove the blank line in v2 commit
+message. Thanks.
