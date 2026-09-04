@@ -1,212 +1,194 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50C843803D3
-	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 19:55:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26CD838398E
+	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 20:47:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788551747; cv=none; b=mTqakl1irqFZiD5tCzIQYphE03JUzwS8rsJQ1K7x4YTtc2u2li7DIeEjWxKR+tpNpvRTgrJHesx89waX5bJJ5R3PMGgQfnv0PaMvSWvaO8akdpwNowpm9PkJbyEK5/SH+Qa/dX3nXHD4Z9Gy6JKZAyGK1D79CdUu4HrVf8obbEA=
+	t=1788554829; cv=none; b=DFBUsACpospREJehpZxowxSZp2bhmwGsUt8jKNmj2cysxRE0VxxBAD+7/MgFMRcTSzdnbnbOuzhwYhO16w+xiIAv8ElI3WnF+f/GoXk3wUEQDCFbR96rH307kO6SL6ImPqcUJnc5v/wvWp3+w6B4x0Z/ePf77nHAsIrrxFNVdJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788551747; c=relaxed/simple;
-	bh=Fm256tq91TUWQaafWZns8i3ZkfJXNlZQWe3ZJ2PDkCI=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=LUfNLC8FGPdjxzzuotJF03WyFjSnk7MEqD8p+D8N+E9Oq4uH69D5tp5gIOTR2kJn47hyoB9OMwq1Az5zVuIzavyxZzRCq9mKyC4o8IdziK2g+iv8MeUzzdLNiYIcXZiPrqhUxOLMSunPezvxbv7hCEHn3+dpJu2XzV7KsaRff7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Oi3G98MY; arc=none smtp.client-ip=209.85.208.175
+	s=arc-20240116; t=1788554829; c=relaxed/simple;
+	bh=VqRTI1vSnxqFnngxsPxK1C9AC5MxqlqL7Rry6uCm37k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l1zMfKvMc8g3ip3hBt0FA9ypLqV4ILXdt4YdDYCRkAvG7hnm0aypjiC5tMHrVlVhbrN/yo3MMLR6AX7P9duZlAGHjtxV8TBYlSKiIhUy5Dp7ZdiBCY/Y8xZClZHfktjNg7LIZJouX5Hdk1lJ3OpSba9FgWqO5VYuC9lR8/V0XgQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XlFNGKSo; arc=none smtp.client-ip=209.85.128.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oi3G98MY"
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-3a1a3bb6c5dso12623131fa.2
-        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 12:55:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XlFNGKSo"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-866e57f63a3so18575587b3.3
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 13:47:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788551743; x=1789156543; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:content-type
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=l7n4A+uF147D/0NDMH7dKmo2I1pASLVpG/KlQAymluM=;
-        b=Oi3G98MYKvUMVLZkuRP292oTmr5pDEQga/DNqSDy5Ejv81EUNJR9YJZ6fz+IoX9bkB
-         jH580iXxuowgOUjKitUAWsEkGYygJzjUI86BFvOqEjXIBrXBG/CAE6CueMNB1bkhq1yS
-         RW4pLxQsw7ak9gQd1U9rm/jJPFwYWM/ekHjDOA8UOuK3vOaYZ6MDEygWZnOroUdlY91j
-         ZJHJkMinceL8UiRtFGsFhG7coQfPk4aip812qghpvCZd8F+/+QjoBed4T3j90FefUcun
-         m/w2GLUepsTS239JyUC9zQo+GnrArU1vNXSqL2pKSlFlevdqEi9Ym3AO2HtrIqVOElMt
-         CaHw==
+        d=gmail.com; s=20251104; t=1788554824; x=1789159624; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=bt1HqSrLvYKEai7M5FJi0Yxz+CgX3DRE2Qu0CFMj0Ww=;
+        b=XlFNGKSoL562DbhqLVPpHZYqOT4tW40WxfEqRe2KEMUaK7u47t8iprHFOWdz+dbRxP
+         UqI7INtC1nEW/VOIzAtzsda7amhpZJ7mmphJuedYgVDQo3f53AxD60eAYtq7lbVEur/5
+         sE38ansDBhn9tDeARp+F1n3Rn+scZJEU119PAzy9gXiNxZ+DmAYhfHEL+ToBzNGsBJ+9
+         JsClHSyoWU3HDPPZW5aIjDTzaxprMwKGzomgmbD6HSMEkckpXJZdP7HG727ZTkvxxZQs
+         fLyKLhhn/RtDDq+v218tAyyq2cT/phKnq7IQ2DNpXJLovXi0+18hczXWa/NnHUmaRTg2
+         ujpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788551743; x=1789156543;
-        h=mime-version:user-agent:content-transfer-encoding:content-type
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+        d=1e100.net; s=20251104; t=1788554824; x=1789159624;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=l7n4A+uF147D/0NDMH7dKmo2I1pASLVpG/KlQAymluM=;
-        b=dtdLFuQTYfj7c8Q372qyW/PsEPZ+jgN5942eek0N8os2O8+pdSAI4xKIMx4eaDXaH4
-         u02f03dw5kQv/vEAsrBOxOXCIb807TzhywL0b+LdviEjuXY95AjKQyO16oIqu5Jc8zFM
-         8NC2Kd9BVSrSX17Fm2BCCqNCWKBNBA90A+Baff4YkGc+5LsqqaW+7YNHGoqiZji4ggLK
-         +ANLfg5j3BAnOkdK4RzJjFECA2t7stJtf83C135XqdkVDVe2vKCJucHpQcOwtF2ZSrI+
-         y/hH9sbKSs6dpdsykWkQ9yvIdeju4002M4B0xD629RkOj0yWyCV8QfknQ1KBfCwiJxmX
-         UKqg==
-X-Forwarded-Encrypted: i=1; AKwUvBxCz2zX3NY976CUJGayjCGNVuJxclkuWubvMYwmbh7affOw7J1F16JjQzpnMqZHHkCGiL7YIpvvOKU=@vger.kernel.org
-X-Gm-Message-State: AFuF++n5hkhZIC++sd1xN0THHcpFnjz7SzAaAMPAZvLX+YBQMQ2SxEZf
-	AX6FNEvgfTlJoZqD0h5JdDwdBKTWPDjQ+ZaRTkSA4vShslW9FoVAPyDk
-X-Gm-Gg: AYBFou2OFx4pxuuVRmPiY8w1V5+9aZ14fqvHtmyND4h+AKLY6Mr0qqlm6627fhUawZj
-	zpxRSGJ/T8/essRyZ+5RLC0VWQZvBTK6t60XzlnI+aX1hxKhqVMlzHWXxSEYxm+3xfJ1Sb5HJ+u
-	9l7AvSAawHiCvQGa4hLfedunmBtTm7PFFt8rD0iyNxPlXP5J7sVwVjGE+vd2tYXuayzHWAENUL6
-	uJ1gdKm14NoDKSOwbeV2yRb8mThxPkkDXTc52J04jWFhsWdqrJYeLm+2mAfwLoUv/ikgkvecDgD
-	0kG1GgbXbG3V8OYQZS7dlZNfJ/GKBE7rL3jkPUtKUhYGoiQvY3Ze1Zv0VpT8ytA6xtEwlxo4PIu
-	+LP23mVnB0A6yU8fFC4XuspgpFOXbD8PzeB8HDN8H/pJ6ImPdJ6YinbDIgEJF3etqybSnflTEH/
-	N3K+4Gb6oPwjM1YQ2L/Kv0ZwTCY6gGw6BcNrxa0we5IJkhG29Iw7A8+sYqlK2k7MA=
-X-Received: by 2002:a2e:bc09:0:b0:3a3:7680:67f4 with SMTP id 38308e7fff4ca-3a37680699dmr6294231fa.19.1788551742967;
-        Fri, 04 Sep 2026 12:55:42 -0700 (PDT)
-Received: from [192.168.1.161] ([81.200.11.252])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a3705cf03bsm8447591fa.36.2026.09.04.12.55.41
+        bh=bt1HqSrLvYKEai7M5FJi0Yxz+CgX3DRE2Qu0CFMj0Ww=;
+        b=YsJVHrYXf8oBmO7jIC9uIcFBzulU/QMArCuA6Iwz0eXKMYXGupGzGn2e0Dh5vfdoNg
+         cTEb++7jDUr5l97bcpXid4VnwH/ssLbUWeTLYe3o9UhaYq0u8SWI2bKuNX1Dy+fJMuA5
+         h7hF1uN0KfiVeOHdNtz1ViVo/AuLkPjyQ5zJ8ZxiB/ar7Dn1kG6iTDybPHcQM26FjUlK
+         OQJkLaXtgZE6Vx9HinK2M5PEYrGc3aE0aqj4k9SCVyqt5EQfI+DoYddclQOCfVQ1b/u5
+         MPyzX1nbXINSwjM7gULUsWf55YPCDpxPh5kiEhSuF0fg8MO3H/IvTISqKjTsDL+4s9eV
+         nTUQ==
+X-Forwarded-Encrypted: i=1; AKwUvByabLhy7CCa5wbyxKSVMfOi73d+rcrm9fXO6pm5Zyi9GAr30UqJSG9XgdqYPn3XZ0uVjyCJb8+J6hk=@vger.kernel.org
+X-Gm-Message-State: AFuF++k3TZjZv/lKp1kKB6d5A5ucAs7bFPuhJNoJ2laF8vb8Xym6W2cM
+	371RkrRusvWCbs98+ayIAcJY9py4VNON62pnO43y96DYuUSIsQNzy/H1
+X-Gm-Gg: AYBFou2/YloNCh7Vy/SAHLGwNoresdjA97q/bxKuUE7YCKbHE5QiUMQGxKLL+/kCx+l
+	PfO11alXwKqund6hSZY7rK713ASwxn0R1bNHH9m63anDSxeLKnc0+lBlh9HZRFrr6qVvj2xG/SK
+	DzKI8Af2+6d1ZV9OrtdNY28WOa/D3rizJcFLlT+hy3la5VtS2LbBEftFNbFJ6BgNlb/Fq7DYYQ+
+	pgce6e/f+Z3/uqXCQ89pDyPdNpiKC/tijSEYEQGNAcoAYqAn3DFaEK9KyVBjjxlgbCeEy9VRRXy
+	VM4gYQ9pQBXR+Sp4M3OxmUKYtbNQ9TLi9iO8zREf613f9RyS/bmvuOgTwSe6I2V0FfJnNNmaNxl
+	XXkK2KVxlEPtdvCK0SYzcowBYi4Q97MVSzpQ/hCHiM+BUCUMoi2f+crfbcoSyi6aEr2Qsy56e1T
+	lJjKQOQW6VcdICB4zO/dlQhYz0nTC/BBkOs1VL2vDQTcn3awXldkKXeRNRUx3IM2EHPtpx
+X-Received: by 2002:a05:690c:5310:b0:873:5ddf:d865 with SMTP id 00721157ae682-8735ddfdac0mr10268087b3.48.1788554823272;
+        Fri, 04 Sep 2026 13:47:03 -0700 (PDT)
+Received: from localhost ([2804:30c:94d:7300:da0f:c2c1:1aa6:43da])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8714a0ae915sm26231117b3.24.2026.09.04.13.47.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2026 12:55:42 -0700 (PDT)
-Message-ID: <980e6203d73cd05429ff0bcf48c192356e349616.camel@gmail.com>
-Subject: Re: [PATCH v2] iio: proximity: vcnl3020: fix ISR bitmask check in
- IRQ handler
-From: Ivan Mikhaylov <fr0st61te@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Salah Triki <salah.triki@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
-	 <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Fri, 04 Sep 2026 22:55:41 +0300
-In-Reply-To: <20260901022731.10771244@jic23-huawei>
-References: <20260824042908.8887-1-salah.triki@gmail.com>
-	 <20260901022731.10771244@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.0 
+        Fri, 04 Sep 2026 13:47:02 -0700 (PDT)
+Date: Fri, 4 Sep 2026 17:47:56 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux@analog.com, jic23@kernel.org, nuno.sa@analog.com,
+	dlechner@baylibre.com, andy@kernel.org,
+	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org
+Subject: Re: [PATCH v1 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI
+ connection mode
+Message-ID: <apsufKf-EOvTfpwf@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1788368334.git.marcelo.schmitt@analog.com>
+ <d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
+ <20260903-liquefy-prologue-9ec914cccf04@spud>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260903-liquefy-prologue-9ec914cccf04@spud>
 
-On Tue, 2026-09-01 at 02:27 +0100, Jonathan Cameron wrote:
-> On Mon, 24 Aug 2026 05:29:07 +0100
-> Salah Triki <salah.triki@gmail.com> wrote:
->=20
-> > The threaded IRQ handler contained multiple issues in handling
-> > interrupt
-> > events and clearing status flags:
-> >=20
-> > 1. ISR bit check: The handler incorrectly checked the Interrupt
-> > Status
-> > =C2=A0=C2=A0 Register (VCNL_ISR) against VCNL_ICR_THRES_EN (BIT(1)), wh=
-ich is
-> > a
-> > =C2=A0=C2=A0 bitmask meant for the Control Register (VCNL_PS_ICR). In
-> > VCNL_ISR,
-> > =C2=A0=C2=A0 BIT(1) corresponds only to low-threshold interrupts. A hig=
-h-
-> > threshold
-> > =C2=A0=C2=A0 interrupt (VCNL_INT_TH_HI, BIT(0)) on its own was complete=
-ly
-> > ignored and
-> > =C2=A0=C2=A0 returned IRQ_NONE.
-> >=20
-> > 2. Event direction & channel index: The handler unconditionally
-> > pushed a
-> > =C2=A0=C2=A0 RISING event code on channel index 1. The driver only regi=
-sters
-> > a single
-> > =C2=A0=C2=A0 proximity channel (index 0), and low-threshold interrupts =
-should
-> > be
-> > =C2=A0=C2=A0 reported with IIO_EV_DIR_FALLING.
-> >=20
-> > 3. ISR clearing: The write-back to acknowledge the interrupt only
-> > preserved
-> > =C2=A0=C2=A0 BIT(1) instead of masking against both valid status bits.
-> >=20
-> > Fix this by checking both VCNL_INT_TH_HI and VCNL_INT_TH_LOW bits
-> > in
-> > VCNL_ISR, pushing separate IIO events with the correct direction
-> > and
-> > channel index (0), and properly clearing handled status bits.
-> >=20
-> > Fixes: 3363fbbe19e5 ("iio: proximity: vcnl3020: add periodic mode")
-> > Signed-off-by: Salah Triki <salah.triki@gmail.com>
->=20
-> Trying an active address that is hopefully the same Ivan!
->=20
-> This looks fine to me, but I'd ideally like input from Ivan.
->=20
-> Jonathan
->=20
+On 09/03, Conor Dooley wrote:
+> On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote:
+> > Document how AD4134 chips are connected to the host SPI controller
+> > according to different wiring configurations.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 > > ---
-> > Changes since v1:
-> > =C2=A0 - Extended the patch to fix additional bugs found in
-> > vcnl3020_handle_irq_thread():
-> > =C2=A0=C2=A0=C2=A0 - Corrected event directions (RISING for high thresh=
-old,
-> > FALLING for low threshold).
-> > =C2=A0=C2=A0=C2=A0 - Fixed channel index from 1 to 0 (matching single p=
-roximity
-> > channel).
-> > =C2=A0=C2=A0=C2=A0 - Corrected ISR W1C clear logic for both HI and LOW =
-bits.
-> > =C2=A0 - Updated commit message to detail all IRQ handler fixes.
-> >=20
-> > =C2=A0drivers/iio/proximity/vcnl3020.c | 24 +++++++++++++++++-------
-> > =C2=A01 file changed, 17 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/proximity/vcnl3020.c
-> > b/drivers/iio/proximity/vcnl3020.c
-> > index 7f417372566a..d0b8f429999f 100644
-> > --- a/drivers/iio/proximity/vcnl3020.c
-> > +++ b/drivers/iio/proximity/vcnl3020.c
-> > @@ -584,16 +584,26 @@ static irqreturn_t
-> > vcnl3020_handle_irq_thread(int irq, void *p)
-> > =C2=A0		return IRQ_HANDLED;
-> > =C2=A0	}
-> > =C2=A0
-> > -	if (!(isr & VCNL_ICR_THRES_EN))
-> > +	if (!(isr & (VCNL_INT_TH_HI | VCNL_INT_TH_LOW)))
-> > =C2=A0		return IRQ_NONE;
-> > =C2=A0
-> > -	iio_push_event(indio_dev,
-> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IIO_UNMOD_EVENT_CODE(IIO_PROXIM=
-ITY, 1,
-> > -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- IIO_EV_TYPE_THRESH,
-> > -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- IIO_EV_DIR_RISING),
-> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_time_ns(indio_dev));
-> > +	if (isr & VCNL_INT_TH_HI) {
-> > +		iio_push_event(indio_dev,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IIO_UNMOD_EVENT_CODE(IIO_PROXI=
-MITY,
-> > 0,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_TYPE_THRESH,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_DIR_RISING),
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_time_ns(indio_dev));
-> > +	}
+> >  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++++++
+> >  1 file changed, 22 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > index ea6d7e026419..d843c02a394a 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > @@ -131,6 +131,28 @@ properties:
+> >      enum: [ free-running, gated ]
+> >      default: gated
+> >  
+> > +  adi,spi-mode:
+> > +    $ref: /schemas/types.yaml#/definitions/string
+> > +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
+> > +    description: |
+> > +      This property indicates the SPI wiring configuration.
 > > +
-> > +	if (isr & VCNL_INT_TH_LOW) {
-> > +		iio_push_event(indio_dev,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IIO_UNMOD_EVENT_CODE(IIO_PROXI=
-MITY,
-> > 0,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_TYPE_THRESH,
-> > +						=C2=A0=C2=A0=C2=A0
-> > IIO_EV_DIR_FALLING),
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_time_ns(indio_dev));
-> > +	}
-> > =C2=A0
-> > -	rc =3D regmap_write(data->regmap, VCNL_ISR, isr &
-> > VCNL_ICR_THRES_EN);
-> > +	rc =3D regmap_write(data->regmap, VCNL_ISR, isr &
-> > (VCNL_INT_TH_HI | VCNL_INT_TH_LOW));
-> > =C2=A0	if (rc)
-> > =C2=A0		dev_err(data->dev, "Error (%d) writing in reg
-> > (0x%x)\n",
-> > =C2=A0			rc, VCNL_ISR);
+> > +      When this property is omitted, it is assumed that the device is using
+> > +      'no-cs' wiring. When this property is present, it indicates that the
+> > +      device is using one of the following wiring configurations:
+> 
+...
+> I'd also really appreciate a dts example for a system
+> with one-channel-chain or two-channel-chain looks, given the second
+> device may require different supplies etc. I have no impression in my
+> head of how the dt would be constructed, so I'd like to see wht you have
+> in mind.
 
-Yeap, definitely mixed ISR/ICR values there for ISR. Now it looks fine.
+I've added the daisy-chain modes for completeness. It has the same semantics of
+ad7944 (daisy-)chain, despite the wiring being different. It looks like the
+supplies for the chained devices are simply assumed to be there (unless I'm
+missing something?). Though, now that I'm checking how to configure AD4134
+for daisy-chain, I'm not sure how we could set them in dt. For 3 devices,
+we would have
 
-Reviewed-by: Ivan Mikhaylov <fr0st61te@gmail.com>
+    spi {
+        ...
+        adc@0 {
+            compatible = "adi,ad4134";
+            reg = <0>;
+            spi-rx-bus-width = <1>, <1>; /* 2 lanes of 1 bit each */
 
-Thanks.
+            <supplies, clock, and other properties ...> 
+
+            #daisy-chained-devices = <2>;
+
+            adi,spi-mode = "4-wire";
+        };
+    };
+
+But, the peripheral needs a register write to set the DOUT lines to 2-line
+daisy-chain and it doesn't seem to have register access propagation. So, we
+would need
+
+    spi {
+        ...
+        adc@0 {
+            compatible = "adi,ad4134";
+            spi-rx-bus-width = <1>, <1>; /* 2 lanes of 1 bit each */
+
+            <supplies, clock, and other properties ...> 
+
+            #daisy-chained-devices = <2>;
+
+            adi,spi-mode = "4-wire";
+        };
+        adc@1 {
+            compatible = "adi,ad4134";
+            <supplies, clock, and other properties ...> 
+
+            adi,spi-mode = "4-wire";
+        };
+        adc@2 {
+            compatible = "adi,ad4134";
+            <supplies, clock, and other properties ...> 
+
+            adi,spi-mode = "4-wire";
+        };
+    };
+with adc@1 and adc@2 only set for register access. Even if not a dt-doc issue,
+that might (probably) lead to interface issues. The top of the daisy-chain may
+want to read from the other ADCs, but those could also be requested by IIO sysfs
+operations.
+
+> 
+> > +
+> > +      * no-cs: The datasheet calls this "minimum I/O mode". In this mode, the CS
+> > +        line is not used (tied to GND).
+> > +      * 4-wire: Specifies a conventional SPI wiring configuration.
+> > +      * one-channel-chain: In this mode, the DOUT0 line of one chip is connected
+> > +        to DOUT2 of the next chip upstream in the chain. Only the data interface
+> > +        of the upmost device in the stream is in direct connection with the
+> > +        digital host.
+> > +      * two-channel-chain: In this mode, the DOUT0 and DOUT1 lines of one chip
+> > +        are respectively connected to DOUT2 and DOUT3 of the next chip upstream
+> > +        in the chain. Only the data interface of the upmost device in the stream
+> > +        is in direct connection with the digital host.
+> > +
+
+With best regards,
+Marcelo
