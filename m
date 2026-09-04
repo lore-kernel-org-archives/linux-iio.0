@@ -1,82 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5F8A35C6B7;
-	Fri,  4 Sep 2026 03:22:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9B93C9898
+	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 07:21:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788492141; cv=none; b=DjKaMyuPJCGqjGeLLmekbAu19XhFWZO6pTdDiFeEhlaZpKeKn742H7vnIXOwnrN3kemOhQVmm5iSEcum5UUkQG6yZX4m8PhsFAFl8qv6Hx/1tye8KxGzdnHbN8EgIqsYwcVKWBijiKUs057gEL8HqWb3ukP4AC+2z+etfQPVWw0=
+	t=1788506472; cv=none; b=mTucarbbRjo6y1XRoyI7ajOu0GvWirZ3dnZ4yufunbGtc61encAH5GEAl/mgbLGXZI2H8FqhZskWcXWVfSRE8CXwNUea6fmhBoyD0mdL68rJk4LG9FYmSWZ3Jf/FIN6TsZGLWOkT0fJK0HPf/QpwC97ez4gdVi/CfjZZwMaizoc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788492141; c=relaxed/simple;
-	bh=hflFMy0m+NrbRs+d0IOTC491PlYNN3w+6B+45RmK+4s=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bjyaaF0e5Yxo8P/hKJeJNwCCImgsOzO25/3alnNJodToo1dirEARXO7AhQ84Dz03qGYjmNItym7ljdFVlqJZNgww2enidytGvLP4eK8VEIUImopqeQoSzgBxWPJYDkueAtRKUwCRBcfxXdRxC+ZJjtnhzXQRCiEs5EUCwfIVYAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ap5vLwxT; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788506472; c=relaxed/simple;
+	bh=UwLSgQbz7RoEH80f5bvWG4dCeE7RGNOVRopS57wkUnw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=XjqL8WYTjBVYI44+YLy+tqvMm+DdhlClX6I5zGLJGI9TQR46DDtDzk6yyqbVnJhMG8hzKQnkAyI4rjnr6QtsZML4sb5Tbkb9YNOP675XwJo6nK7FgC7O1VmQvx/qq5lCS0Y9SFdjQI0NmpfsA+5lxTT0gGr3Xp+aPyy8iHDt8ng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rgfb9tJq; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ap5vLwxT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0FB41F00A3D;
-	Fri,  4 Sep 2026 03:22:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788492140;
-	bh=kGPh25OHgaIHIG20SM6/WxXLbE9R2XBwIwJT6RI/ATk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ap5vLwxTxfBU9RJlju9XJg7jcEJWFL8/3qMPyJ7crfZjRvyHSQXVcf7DaqV0jrX2a
-	 AlV8Bz+OnsMZG9CyBwOkqyfYcqLiDS2ZZOdJDHqUfhOZ4/H7ilplFdl6EJoT2069Lo
-	 uX1CPLG/1Xz7VVJSJEcjhn2vDuNubVWF6FyDKZGudjCegBOAX+hafzA8K7IDBLXGns
-	 UZ3RDaYJY8guuoW3muYBXOzMQ5RgzfIANcyaAi+4ZDgzEzpTQH7R08ZDkCAwga04Rn
-	 KwV5J1Md38Ffvoe9cuzl0AwsG7XoT7A5vfQHnpeJO2oxnpM4Y65hRsSK/MCFQm8uH/
-	 5ytKErki0vtBw==
-Date: Fri, 4 Sep 2026 04:22:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Akshat Chandra <notmissinge@gmail.com>, linux-iio@vger.kernel.org, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: add SGP41 driver
-Message-ID: <20260904042215.0e21cf29@jic23-huawei>
-In-Reply-To: <20260831232157.27037a5e@systembl0wer>
-References: <20260831151235.64076-1-notmissinge@gmail.com>
-	<20260831232157.27037a5e@systembl0wer>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rgfb9tJq"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6a5ded53570so815611a12.3
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 00:21:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788506468; x=1789111268; darn=vger.kernel.org;
+        h=content-type:mime-version:message-id:date:references:in-reply-to
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=opFmoZ7sP1gwLTl3u0ejO3xLoNddPlcYhTGSYay7Utw=;
+        b=Rgfb9tJqwVl2BjZ1c1ZWTAoYrHN3IUo5McdznRNHzQxb71hxuwIp9Q4SR7y71CO0xd
+         HPP3UMToXahNjIjblQhowM8bL8/axQVGJrEvcJWlsSW/j0Qg07EPCZ+c06nmuFDnM89K
+         LhXJ9AsklM+l8bu00O6TDJaN54dYVT82XVBpY/s20rsRX1SJ8OaHrAldSOT0uQ1m9Z67
+         fSBWEwCLg5PCmOmJVjuBIbnxTLRiib76w480laVXsLOS1ktNT+a4lzi+0mSaH9f+qrNZ
+         yHvI3SaFMNrCu5KY4ymx9LRTSuazK2nLZO/IJ1mFPBBFoE7bKHyZa6ld9+VEmDi01k+H
+         0dHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788506468; x=1789111268;
+        h=content-type:mime-version:message-id:date:references:in-reply-to
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=opFmoZ7sP1gwLTl3u0ejO3xLoNddPlcYhTGSYay7Utw=;
+        b=HVZXgucWOHTRQ7Emsn63QIpBrF97QfQQuo+dSf89m0Ala0lgIVC3Xj8Wvz2hFHk1z8
+         ZJiYBoeo6tCxm0NSovx+Oq8ru79K5SIdp8dTvjgYnbMGvYu1cBdcfgwSCZgjAnJ9jF1B
+         IBNNFzT8Zq6oa4ev/a+09tXHuijiYUtYoNZGmVQu+Cs0nw39l8o+HuRI3esIUMYxcWtf
+         2vnFukc6PTYfYhj6To0AJ76wUqmbiBhgxRrLioUh7BUjRKpszSgQIjIKJvoJZUxzm/Z3
+         ZTsxLNiZ7PNsYcbNad7MpJX662HoCKUkuhKBp5GLjcPYTcxZ6yfKE777FwJKHT404aq1
+         gT/A==
+X-Forwarded-Encrypted: i=1; AKwUvBwiV5wJOuEhvQjWO71NqSf1pvmMLWjUOnmyuhlt8KdBvLKtgci9Qk97P9VYXwOYHwiTJn99cXcFbAo=@vger.kernel.org
+X-Gm-Message-State: AFuF++nDnUc9Xr2r7/80lKzQVI7wp6A0kyNbUT99baydXS5bnU2LFgRV
+	UpfZVKjEfpKTXHMiTNi2/WIx1DY8wyqMkFDbKJkK/xhTXpV6eMXLG3RP
+X-Gm-Gg: AYBFou0nn7gHoSafGq+K1+ZoGXzm3w5T0zrnX16UeMGKjy9pdxettyRdCmaDRX4rlN/
+	xW0iQm6TUzz+UvYkRiNx161tigNkN4Rahj6Mo9OB2iLip12D3BzyNNjbGvdGD8g0tH8X/+9Gc4v
+	/9ebV9FJuP7cx4zYo+YtHuOHuJWLpU7ks54UqaJzN20FpitTIgscAwfyIl2LI/sdkHzqQy/Q6L2
+	XSMYFC1p9vmctfazW1LDmE+ILj+CaK0Yq33m8uB+6l/o08NclpT85ffda7qkr+tLNbjFThG0M1G
+	co/6s7JKSC7499LFJ7/xie1ALVT9DWm2mzC5nQ/clDFfJdxGYnuqloozx7aAv0MAlAjHPOGKQrP
+	cRejCBdP1aRRx7tHIK50bfTibrKGTPDDKbu3Ur3QRFsijttF57NMYtNnJFy7vVRfiHL64HAZOS5
+	c/686bAVOcTgVotvUDzN3jW5bxzkZm+Lhy858z3Ec=
+X-Received: by 2002:a05:6402:46c3:b0:6a7:ee54:f89f with SMTP id 4fb4d7f45d1cf-6a7ee5500d8mr400014a12.35.1788506468052;
+        Fri, 04 Sep 2026 00:21:08 -0700 (PDT)
+Received: from localhost ([2a02:8071:50c5:5c0::48d4])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a7e6bf5072sm711137a12.28.2026.09.04.00.21.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2026 00:21:07 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+To: Li Youhong <dayou5941@163.com>, jic23@kernel.org
+Cc: maxwell@maxwelld.cc, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, Li Youhong
+ <liyouhong@kylinos.cn>
+Subject: Re: [PATCH] iio: flow: slf3s: disable regulator if measurement
+ restart fails
+In-Reply-To: <20260901025010.356735-1-dayou5941@163.com>
+References: <20260901025010.356735-1-dayou5941@163.com>
+Date: Fri, 04 Sep 2026 09:21:06 +0200
+Message-ID: <87ld9hwkgt.fsf@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On Mon, 31 Aug 2026 23:21:57 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On 2026-09-01 10:50, Li Youhong wrote:
 
-> On Mon, 31 Aug 2026 20:42:35 +0530
-> Akshat Chandra <notmissinge@gmail.com> wrote:
-> 
-> > Signed-off-by: Akshat Chandra <notmissinge@gmail.com>
-> > ---
-> >  .../devicetree/bindings/trivial-devices.yaml  |   2 +
-> >  drivers/iio/chemical/Kconfig                  |  11 +
-> >  drivers/iio/chemical/Makefile                 |   1 +
-> >  drivers/iio/chemical/sgp41.c                  | 384 ++++++++++++++++++
-> >  4 files changed, 398 insertions(+)
-> >  create mode 100644 drivers/iio/chemical/sgp41.c
-> >   
-> 
-> Not only you're missing a commit message, you're also missing a
-> MAINTAINERS entry and a dt-bindings entry! Please fix this!
-> (Note, the dt-bindings and MAINTAINERS entry should go together
-> in one patch, preferrably first in the series).
-> 
+> From: Li Youhong <liyouhong@kylinos.cn>
+>
+> slf3s_resume() enables the vdd regulator and then starts continuous
+> measurement. If slf3s_start_meas() fails, resume returns an error
+> while leaving the regulator enabled. Disable vdd on that path so a
+> failed resume does not leave the supply on.
+>
+> Fixes: d240b0b8a1ce ("iio: flow: add Sensirion SLF3S liquid flow sensor driver")
+> Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
+> ---
+>  drivers/iio/flow/slf3s.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/flow/slf3s.c b/drivers/iio/flow/slf3s.c
+> index dfa7c1409045..9b63ceb3768a 100644
+> --- a/drivers/iio/flow/slf3s.c
+> +++ b/drivers/iio/flow/slf3s.c
+> @@ -487,7 +487,11 @@ static int slf3s_resume(struct device *dev)
+>  
+>  	fsleep(SLF3S_POWER_UP_DELAY_US);
+>  
+> -	return slf3s_start_meas(sf, sf->medium);
+> +	ret = slf3s_start_meas(sf, sf->medium);
+> +	if (ret)
+> +		regulator_disable(sf->vdd);
+> +
+> +	return ret;
+>  }
+>  
+>  static DEFINE_SIMPLE_DEV_PM_OPS(slf3s_pm_ops, slf3s_suspend, slf3s_resume);
+> -- 
+> 2.25.1
 
-Whilst it should be a separate patch, the route here to use
-trivial-devices might make sense.  Only thing that might be
-worth documenting would be vdd-supply.
+Fixes the unbalanced regulator refcount across resume retries, as                             described.
 
-I'm would be looking for description in the cover letter of how this
-is different from, and not suited to extension of another drive
-such as the sgp40 (obviously there are more channels on one than
-the other so it isn't trivial!)
-
-Jonathan
+Reviewed-by: Wadim Mueller <wafgo01@gmail.com>
