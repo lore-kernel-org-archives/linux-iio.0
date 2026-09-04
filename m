@@ -1,55 +1,55 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7306F4AA572;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72FAB4AA41F;
 	Fri,  4 Sep 2026 14:16:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788531370; cv=none; b=sXEgsL2XGVZADRn7v+AwongHM/iDzIMR5/H+sVifiXsK/6ijdcSSePHUGDbqx0vUImgKs/PQ5QWy4/gPtD70kDXpkrsUlf6X9bWdxgNwQ+JedKawCVIv3JiPtVkIXrnlhDHmc9qTh7wFAjcAWQ0sgwA4+hsRD6lcZlBjPCgq76U=
+	t=1788531370; cv=none; b=mr5dG0K0h0/2H+tnWtj+5g2Ph36QGM6oDwyU5MKAoh7AsypxLGbZaSJY5M7A5PRO5W12vlw4p5VIlb0Q0CKuTt8bCi4ztY2wIYCSmLjlxGLEsiND1g+pzYfQp9vQ3EmAm4DrFVOHo9qDiTeD1WBUhu1gsTw+mu3E7v0ZuhT8kNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1788531370; c=relaxed/simple;
-	bh=6snwAoSaSMSIrb7vkif6gG8ygaB+m/IQ+HJUUbD7nqs=;
+	bh=9U3ZkBZOT0Bl66QSM9ctgUcEGlj948n+eirxEEksq7c=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=Eu4Nxy5F4O42hEMi/huBhKhaR9GBpVqqhRJ8iMf4tWyv5py3DeqU0JEOIv9bOBLLzWgtFCnbrPyduwniMvac9PMXy0SiuVNlBeY3uT99n4AH6KWXZODXDR7/p2mIqpZ4ZohvGH5OADqtt4LRplnTjK5uBubhLKXzJqBd8KxPYyg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xOHIsG7t; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=Suzhvg/ppol1m7ZiV2piJEzs1+9bwB3c5Z0bXXlnZqEtCEezHaZWXpI2JJ/7LeL+QzJo+xtyucW1N3/Ak7yQqXYXPWD+x3So9DKdy+yNR4pNwIIr5qKGFvbGvFXVPep/vZ/jHthQPQfHkxzSHbFg2XtEJmFgkRSe0OUZmR5SV8Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=f5526oXG; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xOHIsG7t"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 684Dg8YC4068329;
-	Fri, 4 Sep 2026 10:15:45 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="f5526oXG"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 684Dhmxr553936;
+	Fri, 4 Sep 2026 10:15:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=JxUUs
-	cpwEoHfk2b/DN2S3584MTU+WVnn0om9S5iPrOI=; b=xOHIsG7tu9LBInoTsnUf6
-	ph75M06tPid2yBGW899ZIteITLIH3wovjUG+OLMHZBQ3hatrjUmWbhpHv1sFbJby
-	dewQXRSAuGWIc+padKdgI7bJZU9Fk16jJ09MnP+2X/H0XUFOVytzMkqkwINduHG4
-	GXbq9qdlktjIXvlyeUTXP6jWeM5x/Q+xQeBX7xBR5jkBpcfWjwwyGsZIidhfNVlJ
-	C9I8HeH7LneT7iOmiLmTLthXUS+JRWV9KKdL1XzLui/eOmQ0GgwYrJoe+fFqxRDh
-	YRlu/pDJ84isZk4Oq5dvuH1Zqddqu77eDEKSMEdnwa7hGNDJobR+u6YmzzBafhov
-	w==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=/fLlw
+	wIH4FuW6mKbSN23ldhiq5zEMnS/TMI1O212qdc=; b=f5526oXG6EJle7UOjsMez
+	KvnVUPou7rP0/pIVT2jdRliDM9SMJw2RSOPRiMHThBsOu3ZikTFpjfvIuu9o3pwd
+	Apax/LxGMDNA1wPWYPSxFzyz+GqPaNKkzjwbuawqUGm13mDwbduaZ6pj5z1SRU8J
+	/ZOlfp5eg06Pcs6YpfjadRWOnoapfd2cGFgEj3VLQwcrOMxGtXzHMv/IR7d7ZGOM
+	enYuC2WYHptluxrocuwYL+Q04oTF3qwhmmssqeWbaIoo3YY/KeHnVA0Ts4/jGt33
+	q3Vjq5JYNTQJZ3r8vScPrld4fM9QB8OjE3e8JEfh4E1CK3jy4PawV/7v+MbXWQPh
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gfxaw0d1q-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gffk4vh80-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Sep 2026 10:15:45 -0400 (EDT)
+	Fri, 04 Sep 2026 10:15:38 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 684EFi4u036133
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 684EFbSf036118
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 4 Sep 2026 10:15:44 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+	Fri, 4 Sep 2026 10:15:37 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 4 Sep
- 2026 10:15:43 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 4 Sep 2026 10:15:43 -0400
+ 2026 10:15:37 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 4 Sep 2026 10:15:37 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.225.204])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 684EF2dA026210;
-	Fri, 4 Sep 2026 10:15:36 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 684EF2d8026210;
+	Fri, 4 Sep 2026 10:15:29 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Fri, 4 Sep 2026 16:14:58 +0200
-Subject: [PATCH v6 06/17] iio: adc: ad7768: Validate master clock rate
+Date: Fri, 4 Sep 2026 16:14:56 +0200
+Subject: [PATCH v6 04/17] iio: adc: adi-axi-adc: Add support for CRC
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260904-ad7768-driver-v6-6-e4378f946bfb@analog.com>
+Message-ID: <20260904-ad7768-driver-v6-4-e4378f946bfb@analog.com>
 References: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
 In-Reply-To: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
@@ -89,99 +89,99 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
         Janani Sunil <janani.sunil@analog.com>,
         Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788531302; l=1994;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788531302; l=2263;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=6snwAoSaSMSIrb7vkif6gG8ygaB+m/IQ+HJUUbD7nqs=;
- b=mu3Jbvv/RGzDstJSRmzD6WeWRBO+VIn1rK7iqFS5q8U0/4YEH97rLCVXSgxsTFlyUMTx4ZYKe
- dPll8KGlXfuC3q4Nrz685DRKPhsRbxhwunrSWs6yibvH4rbqrN4KcuU
+ bh=9U3ZkBZOT0Bl66QSM9ctgUcEGlj948n+eirxEEksq7c=;
+ b=JTytGVTAP+DGgA9mrKH0rF9x4PJ3iN0nN+IcOXiDRmTTf4uRXcxtlvaOljvwemMbCo7isjC9/
+ gHcL4+E3XFHB2QtLeyQIqWIfnr0iGpruJZkditGT0G+FcIVzNYOzHlQ
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=UNnt2ify c=1 sm=1 tr=0 ts=6a9ad291 cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX78XZGTKPPgRj
+ 1JCo34Z1ug7IYXo9sJKhGpg9Jey3L8/pFsO+V4rrHAqhyGqY+eMMHCH5XH4E543+NfirZ+QzpoY
+ ephlh/d0AHego/P2sLsRmOiKJ+p2ULLCs//g0OpibUsRc2PK6uWOqEjIcv576UC+QO7c4xhKozD
+ 77yKYNW+CqgqYXYhj2fpR3Dt1he5lewGqdh+VxAwXPJLbrvfM6I4Jom527WCbTAJIUKMnI8JhFz
+ Kh2jgG4G3jUsVBrEBY5n+w48IaX0pTIPo7ooCf7DNNwgDZiooUBl4VdglOINB4f/fLOzcMODsHo
+ ebocXyddJmmVB9ey9wWYgZHHuPy3CE5UBVOi5wFoIthrsF9qPPijlTlslqGhpeSAQMsSTKtRLMe
+ XtveATK4F1vrarFMnroP8FrHgs8/NR23ukDpjdrVAgghK0Cce4/szGEOLAbup6kzfURIWyu46I1
+ YZwIUyzdPxbRwXEpAsA==
+X-Authority-Analysis: v=2.4 cv=QI1YgALL c=1 sm=1 tr=0 ts=6a9ad28a cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
- a=FJaljikgz40-E1eqKLcA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX9KWzJLL7kprj
- C99XNdWwOl/oSRl9fQjKvcZmIpPgCUSlMqdB4eOTQaDi2Nl3VzHeODUBvD3DvbQFNEcvWBHGVC9
- uqn/f8EjjL8ZNHjgKxBtKsPw843zR3uat4QsQen4ovFkqblQjheS
-X-Proofpoint-GUID: p1WHGcGttgCoy-L-809KN0NBBECpt7G8
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX/50Sw/KVOYqy
- ZDBB9chle76J4FcSLxInplhHItqlK3hlAEO0ZtxUf5fo6tjMcyLUtlfEwwcEwvUQfFaoSNj4tD1
- Pw5UC/50Vcj2oSrm6qm501WVfR+uxwtIFgl0r/naTaOWvoUMVqaLzij2xwJ2uy5qENJr0qWJAnj
- W+Pngp9COEmzFtibyQQ65zg9aCncZT12ynmhrEwsGBli370vDu9TvmWUnoFxwIKPRl1WbjG8aeD
- MtozYzAM0BbxgmiIg+czyABKY0lDS56SAvEnkb1HxALqdVVfdxxMUgACosssDYrSFuTT0qMhzd4
- lMmJckng63Pw5haSEhNi0R/QiOrAq5hX5ote7mzhw9CuUQ+GyhtWwJIr0GEnsXzNsxAOXOowier
- /qAURaar9JOMAdMVP1R/QZmOGXVzQYdxMZ3puYIE/8ManElqFN+Dr/0VzdGFsZO5x+VLHwcjsRi
- YNKhNf8xGiRhLy7q4gA==
-X-Proofpoint-ORIG-GUID: p1WHGcGttgCoy-L-809KN0NBBECpt7G8
+ a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=IpJZQVW2AAAA:8
+ a=gAnH3GRIAAAA:8 a=xcMXqGzQfnDy9uQaBxsA:9 a=QEXdDO2ut3YA:10
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-GUID: czhBAHbvlRP7L0_-CSIHKKKEwiy7Yem1
+X-Proofpoint-ORIG-GUID: czhBAHbvlRP7L0_-CSIHKKKEwiy7Yem1
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX6+jKE69o3L+F
+ /RCT2qPK9TzDkiHmOWuuF2vAI7iVrxAbI5n1je4f7aHm1W4UjgW59hyQ2oXPaHwZImvdnOLWZk6
+ +XPTHixyX5pPIN6MsREafW/ySWwRL1wz7CIXixIRyV+zTXWYVJxB
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-04_04,2026-09-03_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 spamscore=0
- bulkscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0 adultscore=0
+ clxscore=1011 spamscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
+ priorityscore=1501 suspectscore=0 impostorscore=0 bulkscore=0 adultscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2609040130
 
-Reject master clock rates outside the limits specified by the device.
-External CMOS and LVDS clocks support 1.15 MHz to 34 MHz, while a
-crystal requires 8 MHz to 34 MHz.
+Add support for enabling and disabling Cyclic Redundancy Check (CRC)
+processing in the AXI ADC backend. CRC provides data integrity verification
+for high-speed ADC data streams, ensuring reliable data transfer between
+the ADC frontend and backend processing systems.
 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- drivers/iio/adc/ad7768.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/iio/adc/adi-axi-adc.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7768.c b/drivers/iio/adc/ad7768.c
-index c80056a9edd8..707f3ae70a95 100644
---- a/drivers/iio/adc/ad7768.c
-+++ b/drivers/iio/adc/ad7768.c
-@@ -95,6 +95,9 @@
- #define AD7768_SPI_REG_MASK				GENMASK(14, 8)
- #define AD7768_SPI_DATA_MASK				GENMASK(7, 0)
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index fc7cc92b35f0..8b7c45d51dbe 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -47,6 +47,9 @@
+ #define    ADI_AXI_ADC_CTRL_DDR_EDGESEL_MASK	BIT(1)
  
-+#define AD7768_MIN_MCLK_FREQ_HZ				(1150 * HZ_PER_KHZ)
-+#define AD7768_MIN_XTAL_FREQ_HZ				(8 * HZ_PER_MHZ)
-+#define AD7768_MAX_MCLK_FREQ_HZ				(34 * HZ_PER_MHZ)
- #define AD7768_MAX_CHANNEL				8
- 
- enum ad7768_clock_source {
-@@ -777,6 +780,23 @@ static int ad7768_get_enable_vref(struct device *dev, unsigned int index)
- 	return refp_uV - refn_uV;
+ #define ADI_AXI_ADC_REG_CNTRL_3			0x004c
++/* Bit 8 is common to all AXI ADC cores; bits 7-0 are per-HDL-project. */
++#define    ADI_AXI_ADC_CNTRL_3_CRC_EN_MASK	BIT(8)
++
+ #define   AXI_AD485X_CNTRL_3_OS_EN_MSK		BIT(2)
+ #define   AXI_AD485X_CNTRL_3_PACKET_FORMAT_MSK	GENMASK(1, 0)
+ #define   AXI_AD485X_PACKET_FORMAT_20BIT	0x0
+@@ -596,6 +599,22 @@ static int axi_adc_reg_access(struct iio_backend *back, unsigned int reg,
+ 	return regmap_write(st->regmap, reg, writeval);
  }
  
-+static int ad7768_validate_mclk_rate(struct device *dev,
-+				     const struct ad7768_state *st)
++static int axi_adc_crc_enable(struct iio_backend *back)
 +{
-+	unsigned long min_rate = AD7768_MIN_MCLK_FREQ_HZ;
-+	unsigned long rate = clk_get_rate(st->mclk);
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
 +
-+	if (st->clock_source == AD7768_CLOCK_SOURCE_XTAL)
-+		min_rate = AD7768_MIN_XTAL_FREQ_HZ;
-+
-+	if (rate < min_rate || rate > AD7768_MAX_MCLK_FREQ_HZ)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "MCLK rate %lu Hz outside %lu-%lu Hz\n",
-+				     rate, min_rate, AD7768_MAX_MCLK_FREQ_HZ);
-+
-+	return 0;
++	return regmap_set_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
++			       ADI_AXI_ADC_CNTRL_3_CRC_EN_MASK);
 +}
 +
- static int ad7768_probe(struct spi_device *spi)
- {
- 	unsigned int spi_readback, rev_id;
-@@ -852,6 +872,10 @@ static int ad7768_probe(struct spi_device *spi)
- 		return dev_err_probe(dev, PTR_ERR(st->mclk),
- 				     "Failed to get master clock\n");
- 
-+	ret = ad7768_validate_mclk_rate(dev, st);
-+	if (ret)
-+		return ret;
++static int axi_adc_crc_disable(struct iio_backend *back)
++{
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
 +
- 	st->regmap = devm_regmap_init(dev, &ad7768_regmap_bus, spi,
- 				      st->chip_info->regmap_config);
- 	if (IS_ERR(st->regmap))
++	return regmap_clear_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
++				 ADI_AXI_ADC_CNTRL_3_CRC_EN_MASK);
++}
++
+ static const struct regmap_config axi_adc_regmap_config = {
+ 	.val_bits = 32,
+ 	.reg_bits = 32,
+@@ -644,6 +663,8 @@ static const struct iio_backend_ops adi_axi_adc_ops = {
+ 	.num_lanes_set = axi_adc_num_lanes_set,
+ 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
+ 	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
++	.crc_enable = axi_adc_crc_enable,
++	.crc_disable = axi_adc_crc_disable,
+ };
+ 
+ static const struct iio_backend_info adi_axi_adc_generic = {
 
 -- 
 2.43.0
