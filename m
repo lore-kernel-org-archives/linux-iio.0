@@ -1,105 +1,94 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A52E550C294
-	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 16:51:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F11143FBB72;
+	Fri,  4 Sep 2026 17:09:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788540713; cv=none; b=hZZA1Yf9yeMQ4ZRzaHVDrBA1wYVWZ0Ji5GrdROWko84Ymkg6a4A+vtz2VkJ5Z8iu4V4yOI4cPHWNcBt0lKMrL3Gi0pAz1BJLoeGSw4t98ONw6BzgMZ5b33jywPDiVpiNLC1cTMGAHC5lNP380Vrsby9HdSttVKoP2QKLyI5FbZk=
+	t=1788541746; cv=none; b=CIoRYhZYojwUqIP316seS0x5GSivPhdBtLAbh4kwtzP47ThKwh1RV6KONOY8m50hn2/vFqf0za76WdooqWp1P9SR9Rgwv2mf9GNokGxNVnU/iFeyPmYylrMPUCc3Cc6oTtlPxGq67iIy7ZapllNIz7VOOSl5+4JV3Qz51E6QTy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788540713; c=relaxed/simple;
-	bh=wr06q1j6egQgLlwJ2GcTDS7dH7wTNEsRtN9Wo3hJNDw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KbJJt6hk8xw/AlCHYwc+nyGFVYr1P9qF1ntQeFm2H+L55kWB0vHZiGK1g7jHdOOcU8Rz7zhgy00mtf1eDp2osgjHEoLL1rIMLNyTEeK2uMnoORjXKTOde3k1GAjSCPieELiUvEqwhZ5uMweYcKd1rZySIu3W/4q32joXVc8Okmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NBMtbdre; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788541746; c=relaxed/simple;
+	bh=lw4DXJTdVx4Gw7xWT95Xd6jIdq8p5U3vIlWYtOL68C8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J8zWHEDJZYF0LY7tKqSuG8YDTy76NccJdDtDqzJlVFEtG99MXIvZitv9SUqdp273bHTIIks/119NWVPeiE8+bssqkSVGPZ7pIT9Ind5s58VtEEaq6V3FaU8BtzwDROe7cNZxXASB5wyaAF6KyvX63/3xN/uFVBwkg1E7j0j+c1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XsskS7Tj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NBMtbdre"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2d8fd3b729dso11061365ad.1
-        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 09:51:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788540711; x=1789145511; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=rGHMxZ3rFuySAWzmDjUwEnKK4209RW925xasnyoZmGw=;
-        b=NBMtbdrena5Kic+XrW1tI6FUkeEHVfc8f8pVOg5Yn+eLBw+wf2+eoRrMf8mH7MJtmF
-         dYi2sSbiXbtay1fbPqQUnFcEhX1PPCHLKAbO0LcN3j/Y1qMMXe68Enp+T0SO8s06yCJb
-         JAcZUv7LEQdTnalxdm5lUNBZr/NuDb4niwv3g1DY5LGoS8YJhpfpwnzZ3OFsOGP1c0BL
-         TBVxugIg+5pulhayoMfC1Sc+ohNGER6o9FG9gbzPjVEMd8/EoMfGA7FcGGMTVMOmxbyt
-         FSnghaZXBwDT8UsEYU2luDHjbh1gcs+u2gjDpRupQspHdHBZVDKlGQTCVT1EQ6wKLeBa
-         XHrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788540711; x=1789145511;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=rGHMxZ3rFuySAWzmDjUwEnKK4209RW925xasnyoZmGw=;
-        b=iZN9OItHnGkl+gU6zam1O+SpeK99Jr8yOjf9i5viuwutQ4cAbMhOgY3Im276XWta/1
-         1l94vZZoiyUDqnYt91+aNxtF404dZwAWZBQs/Uv8oPWUyZ0Inf1D933hd8h+CbS4vuzv
-         o+IX0ukIetK97I+UceojRaB3jF6BSkeeek7F8ER8iLeHqLKFmS8FeWKVkhqqmpsX/OTJ
-         k1eP/DeRZ33njHRKZz5a5R23h34cn60+o8rv3Ab28UObvQq/hdKv4hu/VC8Zdt5S3ow4
-         +vjfbuwO+Oo5hBNuXQKTxMCAnkdNOTX7OtGgepelp+H+/7ScZEGmmvEHS7JUrDSm1vPQ
-         ml6w==
-X-Forwarded-Encrypted: i=1; AKwUvBxt7QfHIX0Ae92Mv2oWRZiu8NYVQjZeC1750Pg5ZMSv+e/D0UutLSpP3D8CISqOEuFXCo+L9NuWRHQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++mzMtVZBSvfasKT1bjZ7640nsW2QjmOSmRurWdwwCRrDlrkQciP
-	ZRgjt7mc9waHkAlmHY28YXCOTfSbvC7DyFijuu7Rm0IP+Iq4f4/vlbmU
-X-Gm-Gg: AYBFou3mS9AUJsX3XLDLR7kCBUNTb5iTE0GJuPy+47cdEIJY4mR0Eyhphx2ITqiEUQN
-	UW0r24mplcQZ1kBvaHQKwiew5cjnnDFgp8zoYEsgT08UDc0X9RE25fuwFmIm/TsR3BdV3jMg5UZ
-	0YBwNIjppCoE+UGqOVd+CjwDmibnidu9gnMp+TNAHV/s9x7Gq54PVbGgvJ9/wBaW1t3lTbnSuoZ
-	qxv2Au96gHbO2b6KgdCpIiw3K9l4aJ3NAtUDY0H7JsWcx5KvoKx33IziUCK7diKNm26fvw2DzMX
-	OEgcABzYP4GjUDGmQICL4GFfxTNJXDzSn7zSmndC7jHIu0JIKFkwZeSNfMdMT/g9KvK2iOxOxHx
-	3wgn1yA7s39a1mZGi3aUqK7Pmcv8mVe/kMnRXKzJxjHKOzx5YjYgJv1G1s2JpaM19B3jAqfqcJF
-	5859MUiAZcSqHWhH5xCWfOy9+a7+seB2XQziL4yuc1crjGlW5+hnoyOjUBr2nsdC9scqE1Okf6J
-	G8mLrBNypk0XWop0BATkyrQbToGt4n8q9xbDpF1fS7kmyOk9BEdG5+wyNn/LrlqK0Z3heDIcdNC
-	RMMtGl9J8L8=
-X-Received: by 2002:a17:90b:4b0c:b0:37f:fdc8:71b4 with SMTP id 98e67ed59e1d1-39b26121f6cmr11436269a91.2.1788540710785;
-        Fri, 04 Sep 2026 09:51:50 -0700 (PDT)
-Received: from workstation ([2401:4900:8902:9774:f2e9:38cc:6b1d:1764])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3339b6036fcsm8463943eec.20.2026.09.04.09.51.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2026 09:51:50 -0700 (PDT)
-From: Amiitesh TSP <tspamiitesh@gmail.com>
-To: jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	tspamiitesh@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] docs: fix typos in drivers/staging/iio
-Date: Fri,  4 Sep 2026 22:21:15 +0530
-Message-ID: <20260904165115.228990-1-tspamiitesh@gmail.com>
-X-Mailer: git-send-email 2.55.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XsskS7Tj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 167AB1F00A3D;
+	Fri,  4 Sep 2026 17:08:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788541744;
+	bh=lw4DXJTdVx4Gw7xWT95Xd6jIdq8p5U3vIlWYtOL68C8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=XsskS7TjzEjfQ8V3UyMObmX+B8AsWFxFvKpg0pwsEJYOvXQlgkXxUnIYcJxKKKEbI
+	 zmbfjSr6vud0Ss5CpXECCmyFiI/XxOaRzBNYyvQiL3ySvvZ2NFpQH/2DTs0y+qnAoW
+	 YAbZsVsxVSB/omLVQiVPfGAC1LysLgb91jFLYwnjt3owxNZLNQCcL3T8QD9q7Oap4c
+	 p93/EEjUG2Vvmnn1iVdJ5E+gRtUU9yW68UgeYcVqqqfjMYu0NbfN5R/CoyN1etNsvP
+	 7bIH++6cZAvsDo6LuIHkAnaXcvSYzG+l0Qv6LVkjhoBhVDCdSas7p5rcXEitfA443s
+	 87kfktHQpLIgw==
+Date: Fri, 4 Sep 2026 18:08:58 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Michael Walle <mwalle@kernel.org>,
+	Randy Dunlap <rdunlap@infradead.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v6 02/17] dt-bindings: iio: adc: Add AD7768
+Message-ID: <20260904-unified-tyke-bc1b8f9d4d3a@spud>
+References: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
+ <20260904-ad7768-driver-v6-2-e4378f946bfb@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="BVdepgrbK4Hrr/oe"
+Content-Disposition: inline
+In-Reply-To: <20260904-ad7768-driver-v6-2-e4378f946bfb@analog.com>
 
-Fix typo error in iio staging documentation from none zero to non-zero
+--BVdepgrbK4Hrr/oe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Amiitesh TSP <tspamiitesh@gmail.com>
----
- drivers/staging/iio/Documentation/sysfs-bus-iio-adc-ad7280a | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, Sep 04, 2026 at 04:14:54PM +0200, Janani Sunil wrote:
+> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
+> simultaneous sampling ADCs.
+>=20
+> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-adc-ad7280a b/drivers/staging/iio/Documentation/sysfs-bus-iio-adc-ad7280a
-index 863d3856718a..d19db00acd1d 100644
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio-adc-ad7280a
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-adc-ad7280a
-@@ -4,7 +4,7 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Writing 1 enables the cell balance output switch corresponding
- 		to input Y. Writing 0 disables it. If the inY-inZ_balance_timer
--		is set to a none zero value, the corresponding switch will
-+		is set to a non-zero value, the corresponding switch will
- 		enable for the programmed amount of time, before it
- 		automatically disables.
- 
--- 
-2.55.0
+One more binding that the nuances of are probably beyond me, but David
+and Jonathan appear okay with judging from previous iterations.
 
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
+
+--BVdepgrbK4Hrr/oe
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHQEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapr7KQAKCRB4tDGHoIJi
+0jYPAPiwchvAdt4TRq/YwxhKFvfwb60afzexZoOFqptcIXeiAQDxZvo1BVSfwJuq
+6E37fGonWHIoluMbkgDar6ifwoKhAA==
+=4wNq
+-----END PGP SIGNATURE-----
+
+--BVdepgrbK4Hrr/oe--
