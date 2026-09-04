@@ -1,79 +1,70 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fuchsia.ash.relay.mailchannels.net (fuchsia.ash.relay.mailchannels.net [23.83.222.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2DE14908C7
-	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 12:38:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EE69488237;
+	Fri,  4 Sep 2026 12:51:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=23.83.222.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788525533; cv=none; b=bbzpcPYRKs5gVxlIt3TIly++5wmhODVsxhqlH3F78gsUJuSDPB6u75/JlDuJcPe/tYNiPNpnKDO9LFZAq/HdMeDBxvRpA6NFJjdsI629y2vmmPCxybo2zaBweML6emVyNa87GgmUJeV5ZkEi/mmhlPME/tcd/2XqvBa0PqRL0u0=
+	t=1788526277; cv=none; b=J9iKN7XdQhyNYApW0TYwAiwr38KQ4g3NEU+/CAbBePQxI87dRjUZqYt31dP4UaEn2GvCQ4BY7Q+NuZAlgIWObgKIf5w+5MlKcVqWrwJXpD/PT3qPwg6NCMW+mWec4aH/WEWSH5ymprJU0TQm2h547tK31x8jIIcKvruiBT7JHQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788525533; c=relaxed/simple;
-	bh=g7NoS6ItxIGS2czWYih8v2M2HKgwLHdxDoGS2gvncFw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=plg6FvMaSOSj7uGqnzip59lQKGf6nkVIc8EzMBjah/g5aBHXn6LkkY1hdtk0If4i7cBuloS2KqJL77td2zJS+wFynmHMIH5DlQ3vqWOO+jLMxXFJjKEhXUfByw69OnziJEOP+GTN9xHshLnt1RGVcfjn0T15gUqo5e0i8r+utsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SaslRoiv; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788526277; c=relaxed/simple;
+	bh=9drcvL3fh4EMFv/DH218MKHZCJhadIOxFhozHd73JOw=;
+	h=From:To:Cc:Subject:Message-ID:In-Reply-To:References:MIME-Version:
+	 Content-Type:Date; b=gPGa6R3fNnRTI51aCST/tAm9n8clU1MgTFIy84d4Slxa9DqePl7hH2173m5IZg+IliYhx+lWLESZNBRDF+e+N12/2ZvCUAPVlZ6rpfYzkr6eOjvwzqVZnTUFGP0OFJ06m/+LB4TQnn4s9dXmgu3uOP1YQLMoY90dsDvyXH+El7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tunakilic.com; spf=pass smtp.mailfrom=tunakilic.com; dkim=pass (2048-bit key) header.d=tunakilic.com header.i=@tunakilic.com header.b=ZxDm+mlQ; arc=none smtp.client-ip=23.83.222.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tunakilic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tunakilic.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SaslRoiv"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49b0eab380eso8326945e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 05:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788525530; x=1789130330; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=G4DYlh2I6RnjE99fsWSxZQSaKzcVINVi/U+pJerpuOc=;
-        b=SaslRoiv2+RUqgBCTRUB4iw1S2XFdmXstCu+f4evLUT0aR+YdtWtoDux+RYkT/UAY/
-         ffizGuELka+1KFdW25JT80ZGqHSJT31Y2Bfk8CedlcB8Q/BYPtR2qraLXrTG1Cu+A3oS
-         YfiVNsNBzm0eMZWCa5HN522DrB0VCCUkX0H7XiQqpAbEreqwIp/jhEkg5f+ecwTWZv50
-         YI2Q9dzirtIrZsHAj+mJVECpt2kEGo8IIv2rOSdZU54Z5pIDcANKPwcBxy7Ggr1ULIsk
-         rBYlIX8N2z+BCwc9T/g4lqTHe0tZ4ZUgD8HtySZxcMJ8GwY7ABFu8s0zVq7d+mqDuG01
-         zm6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788525530; x=1789130330;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=G4DYlh2I6RnjE99fsWSxZQSaKzcVINVi/U+pJerpuOc=;
-        b=NhLXR9kOBZPqtLsjkym2tWvad7FtEeDqya1Qc5EGl0BwV12FASfaJJi3BBXF2srQym
-         crgFcuquHtDhqiS+t2gX8ItVzcTod55l5DGVw1JwtQfbNSzevNRHZsP9PwNycg7lcLsA
-         og/CXzVUvEG4kXjXvcYh7cUIgFy9tW7nQGExg0/CYK0adBGYh8F3XJzVY7l5OXy6C+Ot
-         RIGP6HdZyXaAQZvOtFPuSeqZejyzTkRfLHoUEWOz3bDC7xxX608mmJKWyrnJeNGovpbP
-         SbHCqPjMIGzDqcnRAl2Wmy76ArL2bVf99srD+ZDpSGk58gmt8hm+UODqpIIyWKX6jTMV
-         F8fg==
-X-Forwarded-Encrypted: i=1; AKwUvBzfnvLQ6tEA/U3v+3DzlImuSJQOOiMUMiHzxLcRO7uNTh3/HA6uKYRpZBsrSm+4qWntdwrwM6VXh0k=@vger.kernel.org
-X-Gm-Message-State: AFuF++lMi76mPwbtRVWOVZHjO/irlzgy7em/R5DPTxWbQ9zCpJKCASC6
-	Wg0ZsJgULcIEPuATqRF/1u3CjEug3BmEp1q1OaGG6LJqIkMiUql+kRlt
-X-Gm-Gg: AYBFou1knf2YI3z/GbN8i9C6Ewctv2Py90dnGJIxiOHMGS59xvfT3v1BO3GosoprkGq
-	amvCy2/ZqqanEx8PgSTsKh6XdAxP3huWTzZt1p1gem/UvjhOTMll7H9yqlM6/y236a88qPxi+jz
-	BEJFCgb1uUFuX5m3jMVqw4HCwQ5yCtlUU/UbhKnxzdYSAq1OkZYLuyC8/DiSAxnW0mjl7Ol65dr
-	yr30UehUDUO5P1ubSZzjdjIGg489oaXTgDj2iqKCgCFSE3Kiz0bsyQHMep6kkXwBeSIsCP/K+2u
-	EBfvUfQNEU2ObXYfw/Vdah0JiyIw5gvWeB1Ix2ItjEwHc7C3kVJVte+cvMiBiY5VOLdMA/aMzT/
-	5rAmIQcQY6k1Uu2kTBCkPQMi+F9yHYnpfdbyJXOomwH7YA5bPi41mSosyLYkJKmhzavWa6USreF
-	dKZldmhU3+p9JwosqusPGVKvblqg6tCjm7F9wSrziQqsn/4Qn0ALKflOUO8p2eSwx9DlhK3uRbs
-	7z18WZj82dkV0bedcETzlHdRWCoxx1CQ4ag+M/su0GTiP5aK60B+6JjC8aEyvB5j70MQ+ZPhcfn
-	wWKVI87M+5M15DGrV2MUsuYGkzCt/B3cpwY+WEyWdtl6HxBpagPiv+8uHGYK7VUJ3tpHIJyqNwp
-	e244HCmrMUgVnwbX+gEWAP7rZks2PrqKqSZQf0E6mPfukItcQLe+3t6a8GwSRexJigGBBZg==
-X-Received: by 2002:a05:600d:8497:10b0:49c:f13e:e4f with SMTP id 5b1f17b1804b1-49cf891bce9mr30914215e9.12.1788525529833;
-        Fri, 04 Sep 2026 05:38:49 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf75ce49esm117105705e9.1.2026.09.04.05.38.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2026 05:38:49 -0700 (PDT)
-Date: Fri, 4 Sep 2026 14:38:48 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Tuna =?UTF-8?Q?K=C4=B1l=C4=B1=C3=A7?= <tuna@tunakilic.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=tunakilic.com header.i=@tunakilic.com header.b="ZxDm+mlQ"
+X-Sender-Id: hostingeremail|x-authuser|tuna@tunakilic.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 7F3D4461903;
+	Fri, 04 Sep 2026 12:51:08 +0000 (UTC)
+Received: from de-fra-smtpout4.hostinger.io (100-98-23-243.trex-nlb.outbound.svc.cluster.local [100.98.23.243])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id E6639461AD6;
+	Fri, 04 Sep 2026 12:51:06 +0000 (UTC)
+X-Sender-Id: hostingeremail|x-authuser|tuna@tunakilic.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|tuna@tunakilic.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Snatch-Irritate: 669564620e22f1b2_1788526268322_3904756084
+X-MC-Loop-Signature: 1788526268322:576418007
+X-MC-Ingress-Time: 1788526268322
+Received: from de-fra-smtpout4.hostinger.io (de-fra-smtpout4.hostinger.io
+ [148.222.55.14])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.98.23.243 (trex/8.0.2);
+	Fri, 04 Sep 2026 12:51:08 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tunakilic.com;
+	s=hostingermail-a; t=1788526265;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9drcvL3fh4EMFv/DH218MKHZCJhadIOxFhozHd73JOw=;
+	b=ZxDm+mlQdKbsxhZgldPzyoifiLXAyXY6YZkhVwQ6fIFHrGm2jRJgFjlYMMWP1QL9NP8JsB
+	k0NOUoGGJmyQNkqePuLSZBLV0D2T0rSkA/fqenXxZqZoDv8cGr9o1VBj+Je0UBbOyjUJuy
+	nbD2e4zG/H9uza34fc4bqdO4Ns7VZBjfIvqPiYGGBPcWXUNmNuff7vAVk5UC2ChQBnNPqp
+	f3rBM10ukRQSJcSAEWGXcRJ36a2nLtZcPRusKVv0/NHEz1oGttiQH6sxuM87RIDlc/kVuH
+	HOkvSRluQFwloIFw92ftDgiQbITOkZuB3CnGAjx+ciiTMwE0ExQP0+XsGgQ/AQ==
+Received: from tuna (unknown [IPv6:2a02:e0:7474:c000:e0e7:b2f0:b492:96fe])
+	(Authenticated sender: tuna@tunakilic.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4hbxCr3Dt6z3xbW;
+	Fri,  4 Sep 2026 12:51:04 +0000 (UTC)
+From: =?UTF-8?q?Tuna=20K=C4=B1l=C4=B1=C3=A7?= <tuna@tunakilic.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: dac: mcp47a1: Allow full-scale output
-Message-ID: <20260904143848.00000d7d@gmail.com>
-In-Reply-To: <20260904122513.175298-1-tuna@tunakilic.com>
-References: <20260904122513.175298-1-tuna@tunakilic.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+Message-ID: <20260904125100.185128-1-tuna@tunakilic.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260904143848.00000d7d@gmail.com>
+References: <20260904122513.175298-1-tuna@tunakilic.com> <20260904143848.00000d7d@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,34 +72,22 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Date: Fri,  4 Sep 2026 12:51:04 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=ALriHGRn c=1 sm=1 tr=0 ts=6a9abeb9 a=g35c8EtFT/OoTG0W9QvO+g==:617 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=M51BFTxLslgA:10 a=pGLkceISAAAA:8 a=G1-InoR-YX8NLvKGzpIA:9 a=QEXdDO2ut3YA:10
+X-CM-Envelope: MS4xfBZiKsz/ZEozMMYAkeFCdAykZXhOeMNJxxgcE69NVVL94mOtyy93RWX4WdeDAU6OgD5TpIjUv11v0X1pXlHYSRjvXEc1dkXmeLjA6Spi+lBdouelIqIQ 9cKxWpPe82fN0YqZ3dqN6mbISfoC8Yb6BEwd1L5jCkQlt6n7Tyfr954W/TUMtrp4hyclsXUuf4tVEPjNuDiGfssA6MOXatpZKmBPy9kpmg8rUBXISAMk5D2r Q09fMkdm8TH5Dn2dp6ZzQxq7F2KavQoPyxzZVQQN1iiCtIwHVAE/AuRhRp210iDd6hIrjMOvMVktOSPcOtUyCFg76L7rGzoALTPVVx2ge6zLhuODXgcPuGKk c6PjpzhjoqiL4bKHeC5FUPmdOego101v8yjc/9fsKu9W9aiBjQVmtSOZhqpRWT6wcRmwjzKPKss6Zss4e9xuqcdPyb8/Ow==
+X-AuthUser: tuna@tunakilic.com
 
-Hi Tuna,
+On Fri, Sep 4, 2026 at 2:38 PM Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+> Can I ask how this was found? Manual code analysis or AI?
 
-Thanks for the patch!
+I noticed it while reviewing the driver's range handling and then
+compared it with the MCP47A1 datasheet. AI was used as an aid during
+the analysis, but I manually verified the datasheet values, in_range()
+semantics, and the final patch before sending it.
 
-On Fri,  4 Sep 2026 12:25:17 +0000 (UTC)
-Tuna K=C4=B1l=C4=B1=C3=A7 <tuna@tunakilic.com> wrote:
+I don't have MCP47A1 hardware available, so the testing was limited to
+build and static checks.
 
-> The MCP47A1 has 64 resistors but exposes 65 wiper positions. The valid
-> DAC codes are 0 through 64, and code 64 selects VREF.
->=20
-> The driver currently advertises 0 through 63 and uses 64 as the length
-> argument to in_range(), which also rejects 64. Therefore userspace
-> cannot select full-scale output.
->=20
-> Advertise code 64 and make validation cover all 65 codes. Keep 64 as
-> the scale denominator because the output voltage is VREF multiplied by
-> the code and divided by 64.
->=20
-> Fixes: 350d1fb9204b ("iio: dac: mcp47a1: add support for new device")
-> Signed-off-by: Tuna K=C4=B1l=C4=B1=C3=A7 <tuna@tunakilic.com>
-> ---
-
-This makes sense, I must've misread the datasheet...
-
-Can I ask how this was found? Manual code analysis or AI?
-
---=20
-Kind regards,
-Joshua Crofts
+Thanks,
+Tuna
