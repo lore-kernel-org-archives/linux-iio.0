@@ -1,86 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 881764EE876;
-	Fri,  4 Sep 2026 15:21:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 952BB4EE84E
+	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 15:22:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788535307; cv=none; b=LOTtC1uE3LzDRRmO1GeTpwQzuZjRu94DZyx4Ddkwr2wbvCnYohikETg19Pypn3sn/BGdLn4P2FLoVRVBKyBLL5Mq82W7S77dtBh2/ETffo9J43c6G9TAW4+6EQHcRFgps51CxLY6jCyGkbYfNa0ahecav2wbvch22TEypo767gg=
+	t=1788535357; cv=none; b=pBclgmLsWed+xAIOFqynV8hdg+ZD0u4ivSFD107FOS25RNeeFQoqVMO79Kn21ElerO9MOczdcBnr3B4SCs4qRdHnla877NopKoqYtLbJNPVLlia3l9J2dO1bVfp50hAh2cgKwLNEmkYtxa++EKYePzzj4v32rZ+HAxOdFsvr72E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788535307; c=relaxed/simple;
-	bh=eGlB7yFUGI3DR0HpEmQu+AVYOpHxAZwmTj2EKLbuGxU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gVeR81qtSVXeeAWg5Wfsi07ACJz3hBO67CelN6/GU32kHHErJhYnReU5OYl3Gal7M+aGAWGH5Hbz0Pq74TAFel7Tu7o4FerBBOO5hBwecPoJ7Bc8tmurZeeDJsJ2NYGNkgLp45FLGeBFRHcHKORuh0s6htIO2b1DWKdydiygFiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J+XIaGvx; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788535357; c=relaxed/simple;
+	bh=M4+ki+Py0psA74hqxlO+alXPMyKGmPPSW1IzTNtzjz8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=dlImw+cI5limC+YEuZxmP/OD4LtEXG4yUQRnWOtopsWJssB/FytuBelE9CHdXSZTpyKRs9758cGmkaHfXbA4Awd2HvtVBhnLDzfwvoNWd2hVo9ZVLXd3s2plnwhhVDO5oAm9OfcL6mm/tBV1iYwcNo/CigEK+cA+PPlPHuyISS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tm057xqo; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J+XIaGvx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A528A1F00A3D;
-	Fri,  4 Sep 2026 15:21:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788535306;
-	bh=eGlB7yFUGI3DR0HpEmQu+AVYOpHxAZwmTj2EKLbuGxU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=J+XIaGvxGVl0wotOP8ToO+WmTGs7y9jEuN1GmiBa9ArH74BcXqO6jVnlw0E/fngw9
-	 QS6ioN62wVUq619JOYkO5nrMweUOu/OmEAnBdhoTh5ecXYSyXSR52IW4J0fQPayRDY
-	 aJ/d+sKsznBo+AEsPA0xKVkppUe0OYxN1zp0RKyWsdVFhkxb5/NnXcK2lxfbB7Bqn4
-	 +TmSHoi++QBJtrUIQLRRJbadYKJprOKWR+Zrvz0f0wSo9iH2wgLILQG3Jqg7pMlJ0O
-	 5W6QcgXIzzP5QQ9fW3MECHueKJJu1T5Np3mdGLOFRXAgWgJY8Wye2mPQp7H+50k5U2
-	 f3TTm76+hTX1Q==
-Date: Fri, 4 Sep 2026 16:21:41 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Kim Seer Paller <kimseer.paller@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 2/4] dt-bindings: iio: dac: add adi,ad5710r.yaml
-Message-ID: <20260904-deception-nail-5cdb195e16af@spud>
-References: <20260904-iio-ad5710r-upstream-v5-0-76f985b7d0ee@analog.com>
- <20260904-iio-ad5710r-upstream-v5-2-76f985b7d0ee@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tm057xqo"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48431648f33so1564549f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 08:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788535354; x=1789140154; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Vs3gmdekTNn5iwIXejCrVVf7IaQmTpkBLLWvv7YBNgA=;
+        b=Tm057xqowst/FOp+M6pHPuoCOsg6pACoXsuk3E0X4A3bgKnOEJFnva3s9XNMXZ21OB
+         HLtbqVYEgIu5kcqVstEqO5r0FzO/3/V8GK4usvIAu0J8zx4E57pBUaiV6ZoqsxkWKknB
+         pnT1jrlUINt4m/2R6CxyIW5iIyRCJbxvb3rw9sgRrZJmnVnDTiBSRT9XZSHvI1zXUqsR
+         0GXazLlcuoqNcHRr7riB49FdUK60lmJnEqWq1SQgtNZlprc0mOKd4g6+Qmm8CwIPij9a
+         JUyJU13fjyQl2GZ8FDLIj0iBleyZzwZCzTAyO1N2C82bhWx/6KZLwYxK5eXNC3hAVpvR
+         KkXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788535354; x=1789140154;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Vs3gmdekTNn5iwIXejCrVVf7IaQmTpkBLLWvv7YBNgA=;
+        b=HnDlHQzpsNssIRuLZKBBSeqVoXOMEgbowJ17cHr+vGvjbI2ehPf5FBw2DI1gjytfja
+         c26m2RqM81/olfxN7KV0PlFXrQL6YWk2lQaLPrV+/TrKMlvgRqtYb0Y+7ZnyAQ9UPE9X
+         5q9uCetZAEWJTMqjdNZWS+CDl21CULbeHhNi28LyKQFGbcPwmKNifKzRjqrwlxlxK5+i
+         GA8MolXIxBgFTVMCl8bunD7q+bzY4ABxa/8D7N8LbrcyyVMAkzRF6mciLs0fFL2ZpBU2
+         JCpXmEqCU6tm6VYN+MZzajjvQlgxP4ixpo2fxnOndkUskICTVlS4/ooQuQ6pTJbsCA5I
+         35hQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwW2D1sZ/yxcZF3Z3aTXYe34GcxrjQwLi1+DFDiefe1oJF6+cEhCrDhoGB+ZALZnpsAYB1TAc2rphk=@vger.kernel.org
+X-Gm-Message-State: AFuF++kzNkZn9f9aZgV0Mvr0+PbWC+7ijBHxdHyrMeppeXAgHV3WObRj
+	wCbqTMpDbINcNndNv+8GoGmvQfiw1xY15oXKaWu6Y3z9TiuImCPjyoVx
+X-Gm-Gg: AYBFou3S2LbXsWbjwwEQbMq0gGK94md4hxfagIZHHPYUcBBQfRvV4+If1iZaADy3EYP
+	YM0DXY2OWmvK+LXMm04/WtmQ/ybTlhcUxgSOgfcFyJgfrEU8ESOpKTYfdU7fF31yVHZ5Rtu/dDQ
+	olRzN5FgR5gQQKLnTtvUKuwgMgxwAaon+PdhhcPUSkhL8dqjBGmGirHoPqetbHASXgVOewVOwAe
+	zGsY5V+SoaOZVpT7HfWH/WwF5+uG+6/1NcS11uLbJkFeXb6OrhdND+7NLhcnGj9W6UlfBRRRFIk
+	8k8Nnb/LLpP3APpxriXoLq0OX166NM5Jgbg/vLypiWLGghUlZ/T1GLLQRpWF1EOl3H2PLqsIruD
+	4MtOt/2VhVxGLXtyhERRy2o9sGy88B+O8UPhlR4ZI+7O/Z5DjO2lqZJsEbnI88gT7XzPBY9ivHN
+	k9Tv1J1mIfr32hH0GQvzJA//qVhLvVtW/KuL7eHqsTpzrQzrEapXFrphi6M/tfdo9JnwTZLJ0yd
+	PT9BbuJ5NRELS5V5RPY9i08fRm5PL3vVUKRB/tyGCQL3HOxy1jmXt5MXHZZDzEpyKujqbtkaGHN
+	sbsAuDSoorBKAaBe98O/lHgl0hCh7GfR8+5RqBKb9fSSEDYXee+Eo6R5R8EFvpshs3dW46iSNd2
+	CC8WCSL1fQrvIUBGiIV0yP8ZawPi29rzLALMbGXDcdgQ52TpmOKPvwF55+7F6J83TcxTvm1YQhr
+	BZ6UXsk/5VSXIjQhty
+X-Received: by 2002:a05:600c:871b:b0:49b:4eb6:6ffd with SMTP id 5b1f17b1804b1-49cf82cbac2mr58224775e9.5.1788535353501;
+        Fri, 04 Sep 2026 08:22:33 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf7740d44sm160442515e9.15.2026.09.04.08.22.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2026 08:22:33 -0700 (PDT)
+Date: Fri, 4 Sep 2026 17:22:31 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Hemanth Selam <hemanth.selam@gmail.com>
+Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Mariel Tinaco <Mariel.Tinaco@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, Matti Vaittinen
+ <mazziesaccount@gmail.com>, linux-kernel@vger.kernel.org, linux@analog.com,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: fix typos in comments
+Message-ID: <20260904172231.00004b28@gmail.com>
+In-Reply-To: <20260904121628.25537-1-hemanth.selam@gmail.com>
+References: <20260904121628.25537-1-hemanth.selam@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="qVxjmn6vo5iWmdhO"
-Content-Disposition: inline
-In-Reply-To: <20260904-iio-ad5710r-upstream-v5-2-76f985b7d0ee@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
---qVxjmn6vo5iWmdhO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri,  4 Sep 2026 17:46:25 +0530
+Hemanth Selam <hemanth.selam@gmail.com> wrote:
 
-On Fri, Sep 04, 2026 at 04:35:25PM +0800, Kim Seer Paller wrote:
-> Add device tree bindings for the Analog Devices AD5710R/AD5711R
-> 8-channel 12-/16-bit Configurable IDAC/VDAC.
->=20
-> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+> Fix typos in comments, reported by scripts/checkpatch.pl using the
+> misspelling list in scripts/spelling.txt.  Only touches comments, no code
+> changes.
+> 
+> Assisted-by: Cursor:claude-opus-5
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+FYI, the process now is to just add 'Assisted-by: LLM' as to prevent
+free advertising in commit messages.
 
-Thanks,
-Conor.
+> Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
+> ---
 
---qVxjmn6vo5iWmdhO
-Content-Type: application/pgp-signature; name=signature.asc
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapriBQAKCRB4tDGHoIJi
-0qFOAP9baEu6mLbczGM915fgrLtYJnByb6YRCrbTJJ2G3AoqwwEAwjw6idHnQ7ny
-Mjurcbg51JYpANOwqvEaj/qgfZzJmwc=
-=wZSk
------END PGP SIGNATURE-----
-
---qVxjmn6vo5iWmdhO--
+-- 
+Kind regards,
+Joshua Crofts
