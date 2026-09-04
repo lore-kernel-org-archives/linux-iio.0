@@ -1,69 +1,68 @@
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1943143C076
-	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 22:11:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B114743BDD2
+	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 22:11:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788559878; cv=none; b=BB3IWzYhgvMxB9sCuwAGeEAk4ASI7i4hRmLXNb7Qlk6qXp62JXEn4hwR+izGnCm3gDnAnuU46Z+4UV+/hTaxxvlj0NaZOMrhnBQbtdwV5JG0sE7s9f6Eihn6mrJHn5cX9RAk9/97gOQHhnrlP8mGA1jCklYQgTbmqzhy9/nUheM=
+	t=1788559878; cv=none; b=diwt6I8dUu9QX/TV+eByxGR5yS4e5zOe5JRQDq5vgqT2zofCUGU1X3if5SnxXEiTre+YXQJMUl73LpjK2qlx3zCNt3oVAtXTxUExOV7vQP1J+g9VrkcaL+Xhq8DZJyNaI1ctOdMGYXZMLHRflfr4/BcvNXBpWRJ56mtHyA0xOOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1788559878; c=relaxed/simple;
-	bh=0jleKfSV4x8zSuizbp6O6ni4ujngh47YqjL22y19AbA=;
+	bh=NDSDpivYarXePwTSDpiVgkViP53hrWoSMytekojHNS0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=q8GLU3IxNzHyyOJl5NCOuLfGPAecrnJxt9pCyeGcAJEsYp2lWNXPbHWBAror3sxcCzz9+UCXnff4uZffd4Z1LDmFq8ooIfCNSe37nTYI2G+xn4LKR9z1ee5O5Z/qrLAmyAsNp1XBU0f2L2JrXHomRl89CFBBNIRRFdsPjX47/Lg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=DQNwjgXn; arc=none smtp.client-ip=209.85.167.182
+	 In-Reply-To:To:Cc; b=bfssB2F5lERGuoljyHfuvyeNKQslzDFdCokqVjqJ+hkvOBiy/QIwUHvYYS2TH9gRfl+QGE2RAY9+ODT/UiSetCGEtwJ4zCqzclH1LEedyW06M04LXDiRdvN3n0zOT63eSaCJBlWxhk55iUWbFalYLTdQSGmGg2hnE2KRh3Lcps4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=PRp0911S; arc=none smtp.client-ip=209.85.167.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="DQNwjgXn"
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-4a4cb36ae00so1377114b6e.0
-        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 15:11:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="PRp0911S"
+Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-4b39befc6a8so954940b6e.1
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 15:11:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1788559874; x=1789164674; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1788559872; x=1789164672; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=cEY7r8lduCT2nc4feVvWUral7NtsjaDfgRTqImYybck=;
-        b=DQNwjgXnWiOtFHlMl8xLZa4sXlaR7kUJdO/pYZhI2KuGZCaHKhVxwyTpJ4bPeiiIJc
-         jpyBdnaj19jWe422z9wwDb7Si8PcG29KDJzg79MX8RLejXsVYo+DQfHh1zxHZbVKfTnF
-         vwk09ktfuArRrGSkW7r+QG0AfM/7xAnuMMXtkH/qUd9Psx2HK1iY2dExM0G5uHgRA/CB
-         3S03+HBdVoor9lAhqDy0sVAyY0ry8Z3QR1guJPWxE7059O9PBwBtHAMAAFtskmrZ9Kql
-         mEtpIqYum9Errv8o0PPtKL71cgZ491gslO2CkT11NLEITIkQsXWo+T3uj7jlGPj961DJ
-         L9iw==
+        bh=iNTRuf05CTvv6ajYQ262DYaZCyLOnZ0DLR4E2AczWeM=;
+        b=PRp0911SBDp2kxwkv+WsdWmSzo37wbt1NscB1lRCuBjwGLpMum+yRi4xZdIYA+bE6e
+         /x+0Sj8hBHWnWgxsXpzbMTu+CEaLRJrlVuWZkmfOuvAv8ZljFhjVeAhOcIhnlsGqmuMy
+         k/IfIKmueBOWFRrWdWT5uyjP5v0I8XcF//oZoChbS7PZ2SWZQzYeUVjo30TidQop1EKo
+         wMPqGkNysBfXcE0VMR98kU9e9R56cum86tGXtgDJw6VcS2mQuUrmiGQT8qh/KdYm2Y9Q
+         PqzLI7ZT1M2ud2jC6VasX96h3ECGIacYesLoDhpGxGwisxIfvAulHfMovA0BYjkm8f0t
+         oczw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788559874; x=1789164674;
+        d=1e100.net; s=20251104; t=1788559872; x=1789164672;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=cEY7r8lduCT2nc4feVvWUral7NtsjaDfgRTqImYybck=;
-        b=K/dakXV/OuwdBL5tA4lxzA+GXq1bf7OjpDy1r0W8uL63ZHFoN8mlSLH+UgGMptWzQU
-         NbONPPrLM03C3kBaOWkctgGrNruwdbbEW7tZkcOpSiWVqweQrZxjD6fK5owxylRpnsd7
-         UdqjWdxC8NdKmhPNDd86qoigphjds8Qb4uvvboiokWKQZhJWguiE5dSX/RKtBLaPPnDr
-         E9l9jTEvjVx1zsQtFleeBPs4JdlZW1IpnnC9P3QvRUg9Oq+URXzZnEWPVYwgLd69DCbD
-         ZAhAXrfkAoS4t1anEkAsjWCy3p0mPrBqiJ+yy4FcpggZQEc2sy2MNxAK6xh818SW4gTS
-         twQw==
-X-Forwarded-Encrypted: i=1; AKwUvBzaD9hymzGUVSxzSCCJT7M47/LhbZiUW3m/Um3GNJmTDI1zfvKMdoa+VZlzhU/GD2zr881WTI+w3Og=@vger.kernel.org
-X-Gm-Message-State: AFuF++nib/O4dUhTNzMxf3XOoGeWv4iF3mMWcwRnWoEwveciDy+icZH9
-	L1up4OOKj6/12gODPu54MMYLj447sz2499eQHR2XcM8RB+6Ewthw7a8Wo0xyYVPV6Pg=
-X-Gm-Gg: AYBFou2YFqegMrsaA6gKtGQPZGox6aVcMrZ3gMcQmWZu7G57XJUNk0RBQ/Muh5CML1w
-	iNz/wknPqKAz9nPMSbT2HEHAElexiiWGbSH7UyFrrooKhvGi2aGPHHqHJHd+qQQl9CYyEDvKHs+
-	u/g+IU3Poyb5dGr7oMial1azmlZg+3n9z8YLZLXKzN8KRQmifWW3P+NkrqFZI1USivwW3OtqZFZ
-	mQXb7YHAfngvn2ASnspG3jRpEWfiBPJcJpQEEEnv1FDXrTLApRBqkxD3Cb3jDgtVMy8OdkkKmOE
-	wLSttbUiXz9oqRw6pfKnHCpUtZ8i5XnnRXpWJmlgBDY9jKAcNazvbj5ID+lVxdhxgntmK5IT5sP
-	AmFB++3sqvF5F3eT2jSOntdUzAWLXevvCst4qraVI/29H7W6buiFLscpBPp1f9ZDFwPH8LAW9GT
-	d2jF+bdToigbUmA63e4FDzuCAxts4JBJ4CVUrdusEdD/jriYyCZzGVGxHAmvUTG9gYIe88sTX6S
-	vZJ
-X-Received: by 2002:a05:6808:c165:b0:4ab:2c58:4514 with SMTP id 5614622812f47-4b95c5ba1f8mr6679914b6e.0.1788559873783;
-        Fri, 04 Sep 2026 15:11:13 -0700 (PDT)
+        bh=iNTRuf05CTvv6ajYQ262DYaZCyLOnZ0DLR4E2AczWeM=;
+        b=W4K1al2OT3a/wK8UzSp4NyK5OHS9a/6A+YZOykRvkXDLyFpK8YsGl1oJ0t+hw2T59/
+         xZL2H8jFLMSsKuH/4HFuZ9OQUhuXKqxUrvuNqzZpwt19SfR1TOn1ZpL7tIBRckCEKgRA
+         hKkyiBg51LB9DXGHCpCVA7CJsUpWj1t/2NlCeMlWi8rHLEb/ihEKbJ9E/HnwkFEbb5FH
+         lPhNLLew5k9EJ0HoFA2MSHFtluNrR1X9N8LfdwvFFi6dkcnqSnhw+7V5dt2viZWtNjCO
+         +6U9k0R/I/RLKXb74GCPSVz3KQOWqGHA8HEs002yinyYv05vpiY6JMSVnx7l9Z5L8Qu3
+         ezvg==
+X-Forwarded-Encrypted: i=1; AKwUvBwc/gfcY6jpPPQTLiMAiJTW3atC4Z5fy0sAult9GmIXVcx8+7tb/6A/m9kOdNBVnk9H6oqrqyBXR30=@vger.kernel.org
+X-Gm-Message-State: AFuF++l/a4jv3RLSu3MSjDjsK8aINq1V+deP5rBCgr28GIIbzr7ppzt5
+	xflO3Yzv9oGUNGMBMEdznUQjvm8jMAbLSC69RCQCvCgMQ7n5Mc5Nm1ILCHO270U4vEo=
+X-Gm-Gg: AYBFou1cCAHJnpxD4EINp2RdSFLu/eeaY7LdFIi6MXXMOkYZWNN60gPgr5jDLNjQRA9
+	fbDeXMMGuMgZAl1yt5JAgCkh8rstjy5+QuU/mNLkdwE4/pREv6KDYx2ITEKbd56P1QUEiV8BOpI
+	7KpJtV6RRXqMFSlL21AN/WwY+YgiIOyvU0KPQoFWSwxncY2gBg4qou/nrKvA148BIgboYpn/ou7
+	4zq6uZ+Lfg5ceBTj1QHqpcxh3Zhl5wiy7mcbvbyt0Ll0DpSOJ+3WawzY1QEUZJmRQzaKz+xSD+2
+	+sQhQT2J4IkjVtasHEKVz5v/LgU6anpAG33731bpWd/cXGyh+oL84mtmLYPkXzQNObuukgf9b9A
+	2Rf7w28/tlnbjin3XM52KlWOMwM7iT3MEcWbg7+zEgL5S6A1T6pFxkdg7cFdqt+ZnwAaQg0TQFm
+	ipCJEDKT/YJhxV5HKBb3kMaOD6pAHU9ncTJ5Pnr5VGxMGhl0Ga8Ka/Xrd/m0h/V1kXeQ==
+X-Received: by 2002:a05:6808:bd0:b0:495:f85b:38c0 with SMTP id 5614622812f47-4b9622bd05amr6970721b6e.12.1788559871881;
+        Fri, 04 Sep 2026 15:11:11 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:4324:3ccf:e2bf:d545])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4b970d1ff95sm3187113b6e.6.2026.09.04.15.11.12
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4b970d1ff95sm3187113b6e.6.2026.09.04.15.11.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2026 15:11:13 -0700 (PDT)
+        Fri, 04 Sep 2026 15:11:11 -0700 (PDT)
 From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Fri, 04 Sep 2026 17:09:47 -0500
-Subject: [PATCH v2 02/10] iio: adc: ti-ads112c14: create data read helper
- functions
+Date: Fri, 04 Sep 2026 17:09:46 -0500
+Subject: [PATCH v2 01/10] iio: adc: ti-ads112c14: add DRDY interrupt
+ support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260904-iio-adc-ti-ads112c14-filter-support-v2-2-f86592360658@baylibre.com>
+Message-Id: <20260904-iio-adc-ti-ads112c14-filter-support-v2-1-f86592360658@baylibre.com>
 References: <20260904-iio-adc-ti-ads112c14-filter-support-v2-0-f86592360658@baylibre.com>
 In-Reply-To: <20260904-iio-adc-ti-ads112c14-filter-support-v2-0-f86592360658@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -82,102 +81,202 @@ Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
  Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2657; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=0jleKfSV4x8zSuizbp6O6ni4ujngh47YqjL22y19AbA=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqm0G+ncKbLAltqxDm3KwBMxwEmv5L7xt+NEwPP
- hm0vKE0HWaJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaptBvgAKCRDCzCAB/wGP
- wKtHB/9lhh+sMAjNSzNihwUyAb9ZCOTVvJicjbzhuEClzuyeeer3Ys2JKgOUF+pVcE7q6MucRPp
- NCcGra1aWi3a5qxRr0BdOdB/EhNgihlAExslS3GLSYgt9nKAl7uDawQD3i5XZ2AZBexBVS6UfIb
- gQlXFbruTs1rWpIqCe9D3+8L7gnFxMMFmwzYd3Fj7hq6djaetTz1QhHIubrUkkcv8LdOHlMmbB7
- jEReskh7EJZchTf7rltywUYMNNfway4LFO+05OhEyTnovw42GKNIL+1lZ8wwKr1t51Ksfd8ht0Q
- 9//egdNS/S8YxozxeA+RRQyfu2te2QOztRXFhbIw5a3cANmn
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6047; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=NDSDpivYarXePwTSDpiVgkViP53hrWoSMytekojHNS0=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqm0G3M+uBhqsEPf5gJgli+9VzwuNxMeOriZst5
+ X025WDRUWeJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaptBtwAKCRDCzCAB/wGP
+ wBGAB/4msLmdoxHeNkgTAbnuYoIAdb817nGdND14bB7D4VccDAJpcnLVZ5eiD8BIFcDB/hABGeA
+ v/8lTz/NV/yN+JI2rrTtHC0yQLLEk4PuPas7e5AkQj+LkOVcYUbQqFIDemKFoRN6XvYTpN+U+PT
+ uPg7ij3j0G7xqtA7AWZbIsWlj9R33CrM9mZCJBjyCexmE6h+EM82TxPsLEAhtNupqOdizRAOOI5
+ oTmlqTOMeWfr0ypaAQ1qsKCmqADqgzHn0ljIed+BlWKK94t8Axmz2y8Hj3tNyoENu+dIYq1CxE/
+ 9acUC3nvKLWDYx7IXuC0Wm8eBeX5RjRn7wGTx930vet3nT4u
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Refactor a few bits of code into helper functions. These will be reused
-when continuous mode support is added in a later patch.
+Add handling for the DRDY interrupt to wait for data ready events rather
+than polling (only when it is wired up).
 
 Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
- drivers/iio/adc/ti-ads112c14.c | 51 +++++++++++++++++++++++++-----------------
- 1 file changed, 31 insertions(+), 20 deletions(-)
+
+Small note: the hard-coded 100 ms timeout will be replaced in a future
+series with a dynamic value, so I didn't bother with a macro or comments
+to explain why the value was chosen.
+
+And passing indio_dev instead of data to irq is intentional as it will
+be used in the next patch.
+---
+ drivers/iio/adc/ti-ads112c14.c | 100 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 90 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-index 63b819339788..23f15be303fb 100644
+index 60eab4852ba2..63b819339788 100644
 --- a/drivers/iio/adc/ti-ads112c14.c
 +++ b/drivers/iio/adc/ti-ads112c14.c
-@@ -601,6 +601,32 @@ static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/cleanup.h>
++#include <linux/completion.h>
+ #include <linux/crc8.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+@@ -19,6 +20,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
++#include <linux/interrupt.h>
+ #include <linux/math64.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+@@ -117,9 +119,15 @@
+ #define   ADS112C14_GPIO_CFG_GPIO2_CFG			GENMASK(5, 4)
+ #define   ADS112C14_GPIO_CFG_GPIO1_CFG			GENMASK(3, 2)
+ #define   ADS112C14_GPIO_CFG_GPIO0_CFG			GENMASK(1, 0)
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_DISABLED	  0
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_INPUT		  1
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_PUSH_PULL  2
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_OPEN_DRAIN 3
+ 
+ #define ADS112C14_REG_GPIO_DATA_OUTPUT			0x0C
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC		BIT(7)
++#define     ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC_DAT_OUT  0
++#define     ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC_DRDY	  1
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO2_SRC		BIT(6)
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO3_DAT_OUT	BIT(3)
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO2_DAT_OUT	BIT(2)
+@@ -251,6 +259,8 @@ struct ads112c14_data {
+ 	struct regmap *regmap;
+ 	/* Synchronizes access to register value fields. */
+ 	struct mutex lock;
++	int drdy_irq;
++	struct completion drdy_completion;
+ 	bool i2c_crc_enabled;
+ 	u32 avdd_uV;
+ 	u32 ext_ref_uV;
+@@ -265,6 +275,16 @@ struct ads112c14_data {
+ 						 ARRAY_SIZE(ads112c14_sys_mon_channels));
+ };
+ 
++static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct ads112c14_data *data = iio_priv(indio_dev);
++
++	complete(&data->drdy_completion);
++
++	return IRQ_HANDLED;
++}
++
+ static bool ads112c14_writeable_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+@@ -581,12 +601,45 @@ static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
  	return 0;
  }
  
-+static int ads112c14_prepare_channel(struct ads112c14_data *data,
-+				     const struct iio_chan_spec *chan)
++static int ads112c14_wait_for_conversion_irq(struct ads112c14_data *data)
 +{
-+	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE)
-+		return ads112c14_prepare_measurement_channel(data, chan);
-+
-+	return ads112c14_prepare_sys_mon_channel(data, chan);
-+}
-+
-+static int ads112c14_scan_read(struct ads112c14_data *data, u8 *buf)
-+{
-+	struct i2c_client *client = to_i2c_client(regmap_get_device(data->regmap));
++	unsigned long remaining;
 +	int ret;
-+	u8 len;
 +
-+	len = BITS_TO_BYTES(data->chip_info->resolution_bits);
-+	if (data->i2c_crc_enabled)
-+		len += 1;
++	reinit_completion(&data->drdy_completion);
 +
-+	ret = i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA, len, buf);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int ads112c14_wait_for_conversion_irq(struct ads112c14_data *data)
- {
- 	unsigned long remaining;
-@@ -644,15 +670,9 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
- 
- 	guard(mutex)(&data->lock);
- 
--	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
--		ret = ads112c14_prepare_measurement_channel(data, chan);
--		if (ret)
--			return ret;
--	} else {
--		ret = ads112c14_prepare_sys_mon_channel(data, chan);
--		if (ret)
--			return ret;
--	}
-+	ret = ads112c14_prepare_channel(data, chan);
++	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
++			   ADS112C14_CONVERSION_CTRL_START);
 +	if (ret)
 +		return ret;
++
++	remaining = wait_for_completion_timeout(&data->drdy_completion,
++						msecs_to_jiffies(100));
++
++	return remaining ? 0 : -ETIMEDOUT;
++}
++
++static int ads112c14_wait_for_conversion_poll(struct ads112c14_data *data)
++{
++	u32 reg_val;
++	int ret;
++
++	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
++			   ADS112C14_CONVERSION_CTRL_START);
++	if (ret)
++		return ret;
++
++	return regmap_read_poll_timeout(data->regmap,
++					ADS112C14_REG_STATUS_MSB, reg_val,
++					FIELD_GET(ADS112C14_STATUS_MSB_DRDY, reg_val),
++					1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
++}
++
+ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 				       const struct iio_chan_spec *chan,
+ 				       u8 *buf, bool for_scan)
+ {
+ 	struct i2c_client *client = to_i2c_client(regmap_get_device(data->regmap));
+-	u32 reg_val;
+ 	int ret;
  
- 	if (data->drdy_irq)
- 		ret = ads112c14_wait_for_conversion_irq(data);
-@@ -667,17 +687,8 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
- 	 * with CRC errors, but rather leave it to userspace to decide what to
- 	 * do.
- 	 */
--	if (for_scan) {
--		u8 len = BITS_TO_BYTES(data->chip_info->resolution_bits) +
--			 (data->i2c_crc_enabled ? 1 : 0);
--
--		ret = i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA,
--						    len, buf);
--		if (ret < 0)
--			return ret;
--
--		return 0;
--	}
-+	if (for_scan)
-+		return ads112c14_scan_read(data, buf);
+ 	guard(mutex)(&data->lock);
+@@ -601,15 +654,10 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 			return ret;
+ 	}
  
- 	return ads112c14_i2c_read_bytes(client, ADS112C14_CMD_RDATA, buf,
- 					BITS_TO_BYTES(data->chip_info->resolution_bits),
+-	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
+-			   ADS112C14_CONVERSION_CTRL_START);
+-	if (ret)
+-		return ret;
+-
+-	ret = regmap_read_poll_timeout(data->regmap,
+-				       ADS112C14_REG_STATUS_MSB, reg_val,
+-				       FIELD_GET(ADS112C14_STATUS_MSB_DRDY, reg_val),
+-				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
++	if (data->drdy_irq)
++		ret = ads112c14_wait_for_conversion_irq(data);
++	else
++		ret = ads112c14_wait_for_conversion_poll(data);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1391,6 +1439,38 @@ static int ads112c14_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return ret;
+ 
++	if (device_property_present(dev, "interrupt-names")) {
++		data->drdy_irq = fwnode_irq_get_byname(dev_fwnode(dev), "drdy");
++		if (data->drdy_irq < 0)
++			return dev_err_probe(dev, data->drdy_irq,
++					     "failed to get drdy interrupt\n");
++
++		/*
++		 * REVISIT: would probably need to implement a pin controller in
++		 * order to support open drain option here.
++		 */
++		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
++					 ADS112C14_GPIO_CFG_GPIO3_CFG,
++					 FIELD_PREP(ADS112C14_GPIO_CFG_GPIO3_CFG,
++						    ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_PUSH_PULL));
++		if (ret)
++			return ret;
++
++		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_DATA_OUTPUT,
++					 ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC,
++					 FIELD_PREP(ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC,
++						    ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC_DRDY));
++		if (ret)
++			return ret;
++
++		init_completion(&data->drdy_completion);
++
++		ret = devm_request_irq(dev, data->drdy_irq, ads112c14_drdy_irq_handler,
++				       0, dev_name(dev), indio_dev);
++		if (ret)
++			return ret;
++	}
++
+ 	ads112c14_populate_tables(data);
+ 
+ 	indio_dev->name = info->name;
 
 -- 
 2.43.0
