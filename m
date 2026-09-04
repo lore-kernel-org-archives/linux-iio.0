@@ -1,55 +1,59 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72FAB4AA41F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72EE04AA1FD;
 	Fri,  4 Sep 2026 14:16:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788531370; cv=none; b=mr5dG0K0h0/2H+tnWtj+5g2Ph36QGM6oDwyU5MKAoh7AsypxLGbZaSJY5M7A5PRO5W12vlw4p5VIlb0Q0CKuTt8bCi4ztY2wIYCSmLjlxGLEsiND1g+pzYfQp9vQ3EmAm4DrFVOHo9qDiTeD1WBUhu1gsTw+mu3E7v0ZuhT8kNs=
+	t=1788531370; cv=none; b=riIluDm2kMURpgZzfTbFDSaXoqoJoi8cxsrQ/BZL1KbgDPAyAVW7snBOM/oOGxYygPrpaR1iEUh/TkaRyKrWg9ykOTskdaZbKTu87er3vtljU56nVyri9SAvHJtgFoHtAoqjrvbW7kpzFYY2ZrsvP5maWrAlJcsENE1DQXgfets=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1788531370; c=relaxed/simple;
-	bh=9U3ZkBZOT0Bl66QSM9ctgUcEGlj948n+eirxEEksq7c=;
+	bh=h8rpUQCVfSyFWZ0W5MDo7rp1yKN/O8pCD8GN49kfEBA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=Suzhvg/ppol1m7ZiV2piJEzs1+9bwB3c5Z0bXXlnZqEtCEezHaZWXpI2JJ/7LeL+QzJo+xtyucW1N3/Ak7yQqXYXPWD+x3So9DKdy+yNR4pNwIIr5qKGFvbGvFXVPep/vZ/jHthQPQfHkxzSHbFg2XtEJmFgkRSe0OUZmR5SV8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=f5526oXG; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=GFU5vhJmUws0PjdajPUuqniIhhw3DJm0MOODRYmuwTPBdaVCncCh4VFl/cxfPS4CgVczHs/WGEtAvoJmDAMsNBB2H83pRiJw8UiVANJN1QBkFt8VbYe82sqjfldTWOJ0IKmJJZc3NFzujS95UHPLEBVq+q+O33TAys0PCTEDgfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=PKROlPJF; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="f5526oXG"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 684Dhmxr553936;
-	Fri, 4 Sep 2026 10:15:38 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="PKROlPJF"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 684DgAwG4068362;
+	Fri, 4 Sep 2026 10:15:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=/fLlw
-	wIH4FuW6mKbSN23ldhiq5zEMnS/TMI1O212qdc=; b=f5526oXG6EJle7UOjsMez
-	KvnVUPou7rP0/pIVT2jdRliDM9SMJw2RSOPRiMHThBsOu3ZikTFpjfvIuu9o3pwd
-	Apax/LxGMDNA1wPWYPSxFzyz+GqPaNKkzjwbuawqUGm13mDwbduaZ6pj5z1SRU8J
-	/ZOlfp5eg06Pcs6YpfjadRWOnoapfd2cGFgEj3VLQwcrOMxGtXzHMv/IR7d7ZGOM
-	enYuC2WYHptluxrocuwYL+Q04oTF3qwhmmssqeWbaIoo3YY/KeHnVA0Ts4/jGt33
-	q3Vjq5JYNTQJZ3r8vScPrld4fM9QB8OjE3e8JEfh4E1CK3jy4PawV/7v+MbXWQPh
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=HaZi5
+	4XuvSGwwXAOvLRMGXBSqS/rduiS4tFlnN5D9gU=; b=PKROlPJF62tCdG6B5D5ry
+	3fZXWolMvlgK77Tko8EUuEsnMVuxwZV3CJqs5s4K1U3XZ3bQc12HXP8poAsmKq0+
+	0cBsAPpKKr2IkJ3FY4RfbQF6yFAWour/xPrUxKMw4+25qG5esJMcCJ3LY5qASegb
+	gWiobB0ETM79hUPtlIrpbmeEEEw9M7wfpz6F8MuqelxsAqf/+rPx6GzoioOi67Wn
+	LCdawP6wH2DWLTPwpPgW3vOvjb+F+f0x3DMVkP4hsth0e+m/zwme0zzSEcdAQqap
+	+GLaZXHAPgIMJLskwQaxU3TGiZubwUdjMIJdf1mB1n20BPBOK/9WYUQWyLgv38V2
 	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gffk4vh80-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gfxaw0d10-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Sep 2026 10:15:38 -0400 (EDT)
+	Fri, 04 Sep 2026 10:15:34 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 684EFbSf036118
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 684EFX00036089
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 4 Sep 2026 10:15:37 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 4 Sep
- 2026 10:15:37 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 4 Sep 2026 10:15:37 -0400
+	Fri, 4 Sep 2026 10:15:33 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 4 Sep 2026 10:15:33 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 4 Sep 2026 10:15:33 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 4 Sep 2026 10:15:33 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.225.204])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 684EF2d8026210;
-	Fri, 4 Sep 2026 10:15:29 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 684EF2d7026210;
+	Fri, 4 Sep 2026 10:15:25 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Fri, 4 Sep 2026 16:14:56 +0200
-Subject: [PATCH v6 04/17] iio: adc: adi-axi-adc: Add support for CRC
+Date: Fri, 4 Sep 2026 16:14:55 +0200
+Subject: [PATCH v6 03/17] iio: backend: Add support for CRC
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,20 +62,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260904-ad7768-driver-v6-4-e4378f946bfb@analog.com>
+Message-ID: <20260904-ad7768-driver-v6-3-e4378f946bfb@analog.com>
 References: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
 In-Reply-To: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>,
+        "David
+ Lechner" <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, "Rob
+ Herring" <robh@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor
- Dooley <conor+dt@kernel.org>,
+        "Conor
+ Dooley" <conor+dt@kernel.org>,
         Olivier Moysan <olivier.moysan@foss.st.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Linus Walleij <linusw@kernel.org>,
@@ -89,99 +93,129 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
         Janani Sunil <janani.sunil@analog.com>,
         Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788531302; l=2263;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788531302; l=3821;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=9U3ZkBZOT0Bl66QSM9ctgUcEGlj948n+eirxEEksq7c=;
- b=JTytGVTAP+DGgA9mrKH0rF9x4PJ3iN0nN+IcOXiDRmTTf4uRXcxtlvaOljvwemMbCo7isjC9/
- gHcL4+E3XFHB2QtLeyQIqWIfnr0iGpruJZkditGT0G+FcIVzNYOzHlQ
+ bh=h8rpUQCVfSyFWZ0W5MDo7rp1yKN/O8pCD8GN49kfEBA=;
+ b=Mk6ckZYWB39iSmLEJwqqXI3ILY63rGgLg9O3xNtaCuYcT8lsuejFRJXH54wVfR30FQQxo4v6A
+ YkyI0zKHrCcC3VT799uVmBH13hO/VVwSBvFeHqZtw82rqiZfuxrE0S/
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX78XZGTKPPgRj
- 1JCo34Z1ug7IYXo9sJKhGpg9Jey3L8/pFsO+V4rrHAqhyGqY+eMMHCH5XH4E543+NfirZ+QzpoY
- ephlh/d0AHego/P2sLsRmOiKJ+p2ULLCs//g0OpibUsRc2PK6uWOqEjIcv576UC+QO7c4xhKozD
- 77yKYNW+CqgqYXYhj2fpR3Dt1he5lewGqdh+VxAwXPJLbrvfM6I4Jom527WCbTAJIUKMnI8JhFz
- Kh2jgG4G3jUsVBrEBY5n+w48IaX0pTIPo7ooCf7DNNwgDZiooUBl4VdglOINB4f/fLOzcMODsHo
- ebocXyddJmmVB9ey9wWYgZHHuPy3CE5UBVOi5wFoIthrsF9qPPijlTlslqGhpeSAQMsSTKtRLMe
- XtveATK4F1vrarFMnroP8FrHgs8/NR23ukDpjdrVAgghK0Cce4/szGEOLAbup6kzfURIWyu46I1
- YZwIUyzdPxbRwXEpAsA==
-X-Authority-Analysis: v=2.4 cv=QI1YgALL c=1 sm=1 tr=0 ts=6a9ad28a cx=c_pps
+X-Authority-Analysis: v=2.4 cv=UNnt2ify c=1 sm=1 tr=0 ts=6a9ad287 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=IpJZQVW2AAAA:8
- a=gAnH3GRIAAAA:8 a=xcMXqGzQfnDy9uQaBxsA:9 a=QEXdDO2ut3YA:10
+ a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=IpJZQVW2AAAA:8
+ a=gAnH3GRIAAAA:8 a=O6R5dNVUA00TSld12QQA:9 a=QEXdDO2ut3YA:10
  a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-GUID: czhBAHbvlRP7L0_-CSIHKKKEwiy7Yem1
-X-Proofpoint-ORIG-GUID: czhBAHbvlRP7L0_-CSIHKKKEwiy7Yem1
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX6+jKE69o3L+F
- /RCT2qPK9TzDkiHmOWuuF2vAI7iVrxAbI5n1je4f7aHm1W4UjgW59hyQ2oXPaHwZImvdnOLWZk6
- +XPTHixyX5pPIN6MsREafW/ySWwRL1wz7CIXixIRyV+zTXWYVJxB
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX663kqn8iP79d
+ ul+F89dIoh7/zFGjmba7XZCvHTcCj2SxbMyQxjLs4aEgRRQ0L3dIZUyl8qxh+vGfwUwpjX1SS1M
+ BpVyBzuKp/pe3csSkLGWKcXuVS1ik1LRbZDbKhca/HL7zYtdfAS+
+X-Proofpoint-GUID: VfuxKIQGZD7oj41wVpPAzmsZb_2-D1-b
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA0MDEzMCBTYWx0ZWRfX8Go+W+sjQsHv
+ poD35MAxCoQhnpIAwZb5l83vHLXQy/8KaCK5wX5TGWrgIybO6YSmU4qcTVDM6QBMYdGibRVQyMd
+ Iv4GfvAm0ndWvCHoC3lbuWATWcTyYwXWUU8v1GblQBI9dIGNP4UOknX8apX3gYq4N6+1IwMj1pu
+ 0iXOCzst1YsU8u1W7o+tH0fEzPLqRilVNvKbCCXwHOoGh6YbOjV1A/kilQIBRA7Jdd2aCdEPIzO
+ TvLFUoFKTzZJ+mMF+5eYAZEtAB7gKw/29PS+jz9+CUmo/VNWzeZ4AUjD/SQznxVBFNYJhiz2wbG
+ UTfjgyYjYRffg2ZE/ze/EZJwmhMNODHV/TxKHCbx1u7cSXtMaZzru87bbTwXiNTH3qqYz99VmXx
+ NNpD0ysPq5a3gGZuksx+4wM5F4YIxazuvUmVC9a5X/bCxaEg4VNPBophtKcmmf3IAJgZ1LYkQ83
+ S7PHTH5boLspPI89AgA==
+X-Proofpoint-ORIG-GUID: VfuxKIQGZD7oj41wVpPAzmsZb_2-D1-b
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-04_04,2026-09-03_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1011 spamscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
- priorityscore=1501 suspectscore=0 impostorscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 malwarescore=0 clxscore=1011 priorityscore=1501 spamscore=0
+ bulkscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0 adultscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2609040130
 
-Add support for enabling and disabling Cyclic Redundancy Check (CRC)
-processing in the AXI ADC backend. CRC provides data integrity verification
-for high-speed ADC data streams, ensuring reliable data transfer between
-the ADC frontend and backend processing systems.
+Add a backend operation to enable or disable direction-specific CRC
+handling. On input data paths, the backend handles CRC data generated by
+the frontend. On output data paths, the backend generates CRC data for
+the frontend to verify.
 
 Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- drivers/iio/adc/adi-axi-adc.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/iio/industrialio-backend.c | 33 +++++++++++++++++++++++++++++++++
+ include/linux/iio/backend.h        |  6 ++++++
+ 2 files changed, 39 insertions(+)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index fc7cc92b35f0..8b7c45d51dbe 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -47,6 +47,9 @@
- #define    ADI_AXI_ADC_CTRL_DDR_EDGESEL_MASK	BIT(1)
- 
- #define ADI_AXI_ADC_REG_CNTRL_3			0x004c
-+/* Bit 8 is common to all AXI ADC cores; bits 7-0 are per-HDL-project. */
-+#define    ADI_AXI_ADC_CNTRL_3_CRC_EN_MASK	BIT(8)
-+
- #define   AXI_AD485X_CNTRL_3_OS_EN_MSK		BIT(2)
- #define   AXI_AD485X_CNTRL_3_PACKET_FORMAT_MSK	GENMASK(1, 0)
- #define   AXI_AD485X_PACKET_FORMAT_20BIT	0x0
-@@ -596,6 +599,22 @@ static int axi_adc_reg_access(struct iio_backend *back, unsigned int reg,
- 	return regmap_write(st->regmap, reg, writeval);
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index f7a4be8ec320..fbf5c39d7655 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -886,6 +886,39 @@ int iio_backend_num_lanes_set(struct iio_backend *back, unsigned int num_lanes)
  }
+ EXPORT_SYMBOL_NS_GPL(iio_backend_num_lanes_set, "IIO_BACKEND");
  
-+static int axi_adc_crc_enable(struct iio_backend *back)
++/**
++ * iio_backend_crc_enable - Enable CRC handling
++ * @back: Backend device
++ *
++ * On input data paths, enable backend handling of CRC data generated by the
++ * frontend. On output data paths, enable the backend to generate CRC data for
++ * the frontend to verify.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_crc_enable(struct iio_backend *back)
 +{
-+	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
-+
-+	return regmap_set_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
-+			       ADI_AXI_ADC_CNTRL_3_CRC_EN_MASK);
++	return iio_backend_op_call(back, crc_enable);
 +}
++EXPORT_SYMBOL_NS_GPL(iio_backend_crc_enable, "IIO_BACKEND");
 +
-+static int axi_adc_crc_disable(struct iio_backend *back)
++/**
++ * iio_backend_crc_disable - Disable CRC handling
++ * @back: Backend device
++ *
++ * On input data paths, disable backend handling of CRC data generated by the
++ * frontend. On output data paths, disable CRC generation by the backend.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int iio_backend_crc_disable(struct iio_backend *back)
 +{
-+	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
-+
-+	return regmap_clear_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
-+				 ADI_AXI_ADC_CNTRL_3_CRC_EN_MASK);
++	return iio_backend_op_call(back, crc_disable);
 +}
++EXPORT_SYMBOL_NS_GPL(iio_backend_crc_disable, "IIO_BACKEND");
 +
- static const struct regmap_config axi_adc_regmap_config = {
- 	.val_bits = 32,
- 	.reg_bits = 32,
-@@ -644,6 +663,8 @@ static const struct iio_backend_ops adi_axi_adc_ops = {
- 	.num_lanes_set = axi_adc_num_lanes_set,
- 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
- 	.debugfs_print_chan_status = iio_backend_debugfs_ptr(axi_adc_debugfs_print_chan_status),
-+	.crc_enable = axi_adc_crc_enable,
-+	.crc_disable = axi_adc_crc_disable,
- };
- 
- static const struct iio_backend_info adi_axi_adc_generic = {
+ /**
+  * iio_backend_ddr_enable - Enable interface DDR (Double Data Rate) mode
+  * @back: Backend device
+diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
+index 3f95ed1fdf9e..9c16b695a602 100644
+--- a/include/linux/iio/backend.h
++++ b/include/linux/iio/backend.h
+@@ -133,6 +133,8 @@ enum iio_backend_capabilities {
+  * @filter_type_set: Set filter type.
+  * @interface_data_align: Perform the data alignment process.
+  * @num_lanes_set: Set the number of lanes enabled.
++ * @crc_enable: Enable direction-specific CRC handling.
++ * @crc_disable: Disable direction-specific CRC handling.
+  * @ddr_enable: Enable interface DDR (Double Data Rate) mode.
+  * @ddr_disable: Disable interface DDR (Double Data Rate) mode.
+  * @data_stream_enable: Enable data stream.
+@@ -189,6 +191,8 @@ struct iio_backend_ops {
+ 			       enum iio_backend_filter_type type);
+ 	int (*interface_data_align)(struct iio_backend *back, u32 timeout_us);
+ 	int (*num_lanes_set)(struct iio_backend *back, unsigned int num_lanes);
++	int (*crc_enable)(struct iio_backend *back);
++	int (*crc_disable)(struct iio_backend *back);
+ 	int (*ddr_enable)(struct iio_backend *back);
+ 	int (*ddr_disable)(struct iio_backend *back);
+ 	int (*data_stream_enable)(struct iio_backend *back);
+@@ -237,6 +241,8 @@ int iio_backend_filter_type_set(struct iio_backend *back,
+ 				enum iio_backend_filter_type type);
+ int iio_backend_interface_data_align(struct iio_backend *back, u32 timeout_us);
+ int iio_backend_num_lanes_set(struct iio_backend *back, unsigned int num_lanes);
++int iio_backend_crc_enable(struct iio_backend *back);
++int iio_backend_crc_disable(struct iio_backend *back);
+ int iio_backend_ddr_enable(struct iio_backend *back);
+ int iio_backend_ddr_disable(struct iio_backend *back);
+ int iio_backend_data_stream_enable(struct iio_backend *back);
 
 -- 
 2.43.0
