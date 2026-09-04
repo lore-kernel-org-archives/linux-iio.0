@@ -1,214 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F5B411A1C;
-	Fri,  4 Sep 2026 18:55:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 666373BCD3D
+	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 19:24:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788548107; cv=none; b=NfPngyZjKp2n9yLQcQWDeqTPWUzrNGtK7elWGb8x3H1WPi+GGcO2haRV2K6DKDG3WJiQw3U0jEhtn8y+tgqQqxgnMhWEbhNRWX/rk+Qu9UyRg0XINAMVozWhe7BtLs1wxdEfPBCVFqaLqsKujPzj79KXdpWRy53oUFlIb4/6bTg=
+	t=1788549879; cv=none; b=UdFHReOhhYUAauUKDtLWvtv8Bw0u8y7bj/dGjeuqYbFjUtDQ6qFfqpTOjD3+rxxTidJBQFmYLC6BldZ3x/3m4EZ53pgiLQiDik7hliEHN4vPVtdfh2v8Y4Iw4QQwIABt3h3RaEG4J1tbrzqBGcitotOb5L60ZrsgI299oD6mSio=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788548107; c=relaxed/simple;
-	bh=YjE58b0ZQoCsKs3WbBeJHJ5kI3Nan8my01/Dme4uBIg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=r+FCIbAQHkKaZKDYffVtroLuyWQw0JaLzSluH+XwODqWKJhqVgIiPOSVHMuA7rz2ytwkn1OFjF7H0y4BODCydcdTZY0wmHEWpFLJyPU1scuilvx3rB+MJaEglQJ582AiXU74OLr4OuMDvcRe3SJEe/F+hlKWoZXbrrrLgkRCUo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cbD6OZg5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788549879; c=relaxed/simple;
+	bh=1TLp0mcpPztPjUtMwMwh25MNgjqQzYvogl/T02HTuZo=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=TitGc175n5pWK6xNFFB2NeF5+Gglg1DIvAKmY0WbAcQvTlJDrcMeWVfCDOD7KahwCglbRqFNY9OQnVrs6xhZKoHC2Zc+k0Qjtm+2YuWjabmZpRPWgKKnlv822g4aSAbKF3dWJ2rKPKVACFg+ldmZzmeRDWYLUMazAupOmebhMhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cFBf0gMs; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cbD6OZg5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4271F00A3D;
-	Fri,  4 Sep 2026 18:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788548105;
-	bh=nFbGTsXI67KgKHCEe+rbAoubPtZFCm8gC57qcqknLEU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cbD6OZg5gbHrVfAIRpkYsrXZhEIM7y63VxcBd7JxgiKyoeCoLYRo44W6NhJKQ/3Ai
-	 icAdPmuBVU4h8b7QHe8zJ0UFvN7pxC7MGO5ccG9w8j7yWcuZ8KfVBeH9NopDuZWYQv
-	 UKqniwOMIv+RXdRtaIsHIX1n7faaSOGI5pxmRDDUM5vGP0xFdXQpe21BmpWT8e5h7Y
-	 k6qP5CNiRJl47tXVpO2GNlt+ypPnuCHbTIE1YmqtyyC3ZJaY/4iZMTqEbWy37ISEM7
-	 zbSSg3iJC7c5kUEsvfREmfoWuoednUbtXsrbmwxZscarOhEeD6CWWgtyE/7rf4QeZY
-	 XTMjzJ5ak8uzw==
-Date: Fri, 4 Sep 2026 19:54:59 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-Cc: "Schmitt, Marcelo" <Marcelo.Schmitt@analog.com>, "Sa, Nuno"
- <Nuno.Sa@analog.com>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, linux <linux@analog.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 4/4] iio: accel: adxl367: add support for INT2
- interrupt pin
-Message-ID: <20260904195459.536526cf@jic23-huawei>
-In-Reply-To: <CY2PR03MB64993393CCFED1EB17231DC6B69BB52@CY2PR03MB649933.namprd03.prod.outlook.com>
-References: <20260831083122.3486-1-antoniu.miclaus@analog.com>
-	<20260831083122.3486-5-antoniu.miclaus@analog.com>
-	<178828084760.2788519.15283878760227392025.b4-review@b4>
-	<CY2PR03MB64993393CCFED1EB17231DC6B69BB52@CY2PR03MB649933.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cFBf0gMs"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c2529b3139fso170347466b.3
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 12:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788549875; x=1789154675; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=x6+3E6XdBlMMWEsp4l0QEjnTRS+wXP5LKYWHqQew038=;
+        b=cFBf0gMshOXE5g2gwE3/Mej9hTYqE9sjQIMtcy92CvVZxak4tmPey9EUBEf5jFUsxo
+         kGdazRo5qaErqx/YIFn/g/kvPKHYEA1GSc3QZGP3vGyU1iLZYpJ/wyO+pBidmRBgbUK8
+         HU1RAUy1NkVBcIt0Wf4q0hWD2ffVtUz7BLVP8asCZrZ+cB4gyn39R+aZGOh/+DXWGbkM
+         U0JqP3plXnXU3xCywyE6sIWYr+R3AgehC6U0+S1DjV7rHk9pz/ZtCOyF6qPEd5fVreo7
+         OoCzLqAtl8gPrXhLD5JoMf831KiJllQIadEQCzFuKTXlkz6ODZwPISuSQIG+u3TElHFe
+         5OZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788549875; x=1789154675;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=x6+3E6XdBlMMWEsp4l0QEjnTRS+wXP5LKYWHqQew038=;
+        b=DYHSAHSlWQiL7kOXuyERDIeZGhr3b4phtcv8Ojiyz6zAp7HDco5Jqhox/1F0EEWMyG
+         yEweCv3s23scgf8aFGXKtu7MnpzpKSPYud4y3JKdVHVWpHi2E7Z14ycgsf2sbMEQZs6Q
+         VmZvkUQAUZHaiAjhu536+ZT6DfFc6pF1npz7f5Spj/aVA6aAjnvwrWuyilVOMCWuFqcm
+         LPd3SmAQi9lXoMttG2DMgup8HVyaQBAjN9qifKBrXeBbPmSnTc+RdN3xU/0k6quJS+Hi
+         tlpOAXHmgImUrzCXg30MwTqQ7xmRWS6jeXzCAETft+sXZkXUYTszDH6pU8vSi4Uk110+
+         g9ZA==
+X-Forwarded-Encrypted: i=1; AKwUvByxT7kd1uYR9l3924CjG+hmBWMgPMvgXgUa5JXhGBUhZ6EYFLjsKLVeugPD0H1mQzutv7j0255HqA0=@vger.kernel.org
+X-Gm-Message-State: AFuF++m+uzXi2RbOorxnIfAmNzDWqyGuFMom3jujd3rmZ3PqQWSFU6FI
+	ksMQ0kKc6d7wO16YV1fEAz/80CMYuHV0UcXwm2RnQqu40JZW/7XMYln0
+X-Gm-Gg: AYBFou14hJQddfKpCWx1LtwFBGzlExXjAJ969OBm/htgYzJJhEBBnw1OXDmyhf1Q3zD
+	Kl7AxW2xSXZEAbXszZyrdNg0uXcJziBkT916Y8JhogQiS7DM668XjxqfHu0ozYe+uRwx2bj4kV7
+	+cF03CULewWdJPStWLDc5YGgWjNVqfrMDSekGPvvZ9EXPegJC278fe3aibQ+78Krp1voOnIXPk6
+	e+q/Gr76WlONx3rUfxqSR1V6aOYnPDRplu47spCvoOLl3TeRUns8dmCJ2BvKwC5UNlFILj5T+vX
+	t6IR70Q/bw4sBLXvQsI0iwfGl/uwAduBd/64oYVxeOUHUTZjQ1wlcV0mNxenHg81k5l6ACLTpH8
+	xvOAT93PTzdQAAmjgA80sqS3SIV//JuBw1hTnx5ckMdw4a+WheNgcBX+VrgOgp7ty72F6tRo2Ck
+	4mHnnc9C7pRGcwv2TOJ7ppveVNX5Kxs4kmP+uXKwQ=
+X-Received: by 2002:a17:907:3f98:b0:c26:19e3:e988 with SMTP id a640c23a62f3a-c2619e3ef32mr205513766b.40.1788549875549;
+        Fri, 04 Sep 2026 12:24:35 -0700 (PDT)
+Received: from localhost ([2a02:8071:50c5:5c0::48d4])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c260d5bb9a9sm141698766b.55.2026.09.04.12.24.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2026 12:24:35 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+Subject: [PATCH 0/2] iio: flow: slf3s: fix and test the vdd supply balance
+Date: Fri, 04 Sep 2026 21:24:24 +0200
+Message-Id: <20260904-iio-slf3s-pm-regulator-kunit-v1-0-5ea61e6d6db2@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MQQqDQAwAwK9Izg1EVxT7FenBalaDdlcSLYL4d
+ xePc5kTjFXY4J2doPwXkxgS8lcG/dSFkVGGZCioqKihEkUi2uKd4fpD5XFfui0qznuQDUvHTHX
+ zdZUnSMWq7OV4+vZzXTdLe+rKbgAAAA==
+X-Change-ID: 20260904-iio-slf3s-pm-regulator-kunit-43ee079b36f0
+To: Maxwell Doose <maxwell@maxwelld.cc>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Li Youhong <dayou5941@163.com>, Li Youhong <liyouhong@kylinos.cn>, 
+ Brendan Higgins <brendan.higgins@linux.dev>, David Gow <david@davidgow.net>, 
+ Rae Moar <raemoar63@gmail.com>, linux-kselftest@vger.kernel.org, 
+ kunit-dev@googlegroups.com, Wadim Mueller <wafgo01@gmail.com>
+X-Mailer: b4 0.14.3
 
-On Fri, 4 Sep 2026 09:14:53 +0000
-"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
+Li Youhong reported that slf3s_resume() leaves vdd enabled when the
+measurement restart fails [1].  The report is right, but the patch and
+my own Reviewed-by on it were both too narrow.
 
-> --
-> Antoniu Micl=C4=83u=C5=9F
->=20
-> > -----Original Message-----
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Tuesday, September 1, 2026 7:41 PM
-> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> > Cc: Schmitt, Marcelo <Marcelo.Schmitt@analog.com>; Sa, Nuno
-> > <Nuno.Sa@analog.com>; Hennerich, Michael
-> > <Michael.Hennerich@analog.com>; Jonathan Cameron <jic23@kernel.org>;
-> > David Lechner <dlechner@baylibre.com>; Rob Herring <robh@kernel.org>;
-> > Krzysztof Kozlowski <krzk+dt@kernel.org>; Conor Dooley
-> > <conor+dt@kernel.org>; linux-iio@vger.kernel.org; linux <linux@analog.c=
-om>;
-> > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH v4 4/4] iio: accel: adxl367: add support for INT2 i=
-nterrupt
-> > pin
-> >  =20
-> > > The ADXL367 provides two independent interrupt output pins, INT1 and
-> > > INT2, each with its own event mapping register (INTMAP1_LOWER at 0x2A
-> > > and INTMAP2_LOWER at 0x2B) sharing an identical bit layout. Until now
-> > > the driver hardcoded INT1 for all interrupt mappings, so a board that
-> > > routes only INT2 to the host could never receive activity, inactivity
-> > > or FIFO watermark interrupts.
-> > >
-> > > Determine the connected pin from the interrupt-names device tree
-> > > property using fwnode_irq_get_byname(), and route the interrupt
-> > > mappings to the matching register. Use the interrupt number returned =
-by
-> > > the lookup for devm_request_threaded_irq() so the requested line alwa=
-ys
-> > > matches the routed INTMAP register, regardless of the order in which =
-the
-> > > interrupts are listed. When no interrupt-names are present, default to
-> > > INT1 and the bus-provided interrupt to preserve the existing behaviou=
-r.
-> > >
-> > > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > > =20
-> >=20
-> > One follow on thing to look at via sashiko.
-> >=20
-> > Otherwise, this looks good to me, but given the active discussion on pr=
-evious
-> > version I'm not going to pick this up until plenty of time has passed
-> > or tags have been given. =20
->=20
-> Ok, I will send a new version addressing also the sashiko issue in a foll=
-ow up patch.
+Andy asked whether the regulator refcount can go sideways here.  It
+cannot.  device_suspend() sets power.is_suspended only when the callback
+returned 0, and device_resume() returns before the callback when the
+flag is clear.  So the two alternate and the count stays in {0, 1}.
+Please drop my Reviewed-by, the reasoning in it is wrong.
 
-No need for a new version of these - I'll pick them up now.  Just send a new
-patch on top.  That might break sashiko though, so you could send these + t=
-he
-new patch as new version - just stick 'applied' or something like that in t=
-he patch
-titles so no one spends time reviewing them.
+Three things do go wrong though:
 
-Applied to the testing branch of iio.git
+ - resume enables vdd, start_meas() fails, the supply stays on.
 
-Thanks,
+ - the part is then powered but idle, so it NACKs the stop command.
+   suspend() returns early on that error and never disables vdd, so the
+   system cannot suspend any more until rebind.  This one hurts most.
 
-Jonathan
+ - if regulator_enable() fails in resume, the next suspend disables a
+   supply that was never enabled: "unbalanced disables" in the regulator
+   core, and -EIO.  Unbind hits the same case.
 
->=20
-> >  =20
-> > > diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
-> > > index b4e8dc6d6a5c..9b47e66c49ea 100644
-> > > --- a/drivers/iio/accel/adxl367.c
-> > > +++ b/drivers/iio/accel/adxl367.c =20
-> >  =20
-> > > @@ -1430,6 +1434,36 @@ static int adxl367_setup(struct adxl367_state =
-=20
-> > *st) =20
-> > >  	return adxl367_set_measure_en(st, true);
-> > >  }
-> > >
-> > > +static int adxl367_set_int_map_reg(struct adxl367_state *st, int irq)
-> > > +{
-> > > +	int ret;
-> > > +
-> > > +	/*
-> > > +	 * Route the mappings to whichever of INT1/INT2 is named in the
-> > > +	 * interrupt-names property. -EINVAL (property absent) and - =20
-> > ENODATA =20
-> > > +	 * (name not listed) are not errors; anything else is.
-> > > +	 */
-> > > +	ret =3D fwnode_irq_get_byname(dev_fwnode(st->dev), "INT1");
-> > > +	if (ret > 0) {
-> > > +		st->int_map_reg =3D ADXL367_REG_INT1_MAP;
-> > > +		return ret;
-> > > +	}
-> > > +	if (ret !=3D -ENODATA && ret !=3D -EINVAL)
-> > > +		return ret;
-> > > +
-> > > +	ret =3D fwnode_irq_get_byname(dev_fwnode(st->dev), "INT2");
-> > > +	if (ret > 0) {
-> > > +		st->int_map_reg =3D ADXL367_REG_INT2_MAP;
-> > > +		return ret;
-> > > +	}
-> > > +	if (ret !=3D -ENODATA && ret !=3D -EINVAL)
-> > > +		return ret;
-> > > +
-> > > +	/* No INT1/INT2 named: default to INT1 and the bus interrupt. */
-> > > +	st->int_map_reg =3D ADXL367_REG_INT1_MAP;
-> > > +	return irq; =20
-> >=20
-> > I'd like to explore the helper idea for this, but it can be a separate
-> > series when someone has the time.
-> >  =20
-> > > +}
-> > > +
-> > >  int adxl367_probe(struct device *dev, const struct adxl367_ops *ops,
-> > >  		  void *context, struct regmap *regmap, int irq)
-> > >  {
-> > > @@ -1486,6 +1520,11 @@ int adxl367_probe(struct device *dev, const =20
-> > struct adxl367_ops *ops, =20
-> > >  	if (ret)
-> > >  		return ret;
-> > > =20
-> >=20
-> > [Severity: Medium]
-> > Since fwnode_irq_get_byname() inside adxl367_set_int_map_reg() can retu=
-rn
-> > -EPROBE_DEFER if the interrupt controller is not yet ready, will placin=
-g this
-> > lookup after adxl367_setup() cause repeated boot delays and leave the d=
-evice
-> > powered up on deferral?
-> >=20
-> > Looking at adxl367_probe(), it resets the hardware, sleeps for 15ms, an=
-d calls
-> > adxl367_setup() which powers up the device into measurement mode.
-> >=20
-> > If adxl367_set_int_map_reg() then returns -EPROBE_DEFER, the probe abor=
-ts
-> > without an error cleanup path to power down the device.
-> >=20
-> > Could this software resource acquisition be performed before the hardwa=
-re
-> > interaction to avoid unnecessary boot stalls and power leaks during pro=
-be
-> > deferral?
-> >=20
-> > -
-> >=20
-> > This obviously isn't new, but it might make sense to turn the device
-> > off at least.
-> >=20
-> > Can be a follow up patch.
-> >=20
-> > --
-> > Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> =20
+The original patch fixes the first one only.
+
+Patch 1 tracks the supply state and drives enable/disable from it.
+Patch 2 adds KUnit tests with a fake i2c adapter and a counting
+regulator, so no hardware is needed:
+
+  ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/iio/flow
+
+Four of the eight tests fail without patch 1.
+
+[1] https://lore.kernel.org/linux-iio/20260901025010.356735-1-dayou5941@163.com/
+
+Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+---
+Wadim Mueller (2):
+      iio: flow: slf3s: keep the vdd supply balanced across suspend/resume
+      iio: flow: slf3s: add KUnit tests for the PM regulator balance
+
+ MAINTAINERS                    |   2 +
+ drivers/iio/flow/.kunitconfig  |   6 +
+ drivers/iio/flow/Kconfig       |  15 +
+ drivers/iio/flow/Makefile      |   1 +
+ drivers/iio/flow/slf3s-kunit.c | 734 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iio/flow/slf3s.c       |  35 +-
+ 6 files changed, 787 insertions(+), 6 deletions(-)
+---
+base-commit: bc35965f6940a9bf834d54187b6088b8eb09206d
+change-id: 20260904-iio-slf3s-pm-regulator-kunit-43ee079b36f0
+
+Best regards,
+-- 
+Wadim Mueller <wafgo01@gmail.com>
 
