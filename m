@@ -1,109 +1,137 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E84BD175A68
-	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 01:18:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B99936B93E
+	for <linux-iio@vger.kernel.org>; Fri,  4 Sep 2026 01:20:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788484707; cv=none; b=AfTBDbo75Xv7+Lms1YFCCcTBQPN+YbkgUbcKjKPWqD8Cqft3SQep3T3KGCPj/4c+ZN6jgbp9+Il9b+yyCC33YdsgvdEgNMqL5PJ8uyOfQOpP3CnT+2hstC+pH/kiJFODzNIPH0YjXNbvk5vLrqIRuUqaeD9Y7OtEvPmLswyWviU=
+	t=1788484814; cv=none; b=c6+VLATDb2L4t1bePUYUJyvCl42ovv2Bz8QGZ0mYCBtS9J3BBdxh1QgdI3qeRzNd9HAIvZvbQ9mGm91nI69Kr1t6ES1+IwJBHU2PwGnZkki09Hl3fcEnmGEC887lpGPpb5wWp1UXDzcPLswd0MzCVotSxjXms/R4DzrNUXb4Wm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788484707; c=relaxed/simple;
-	bh=gYbVwSamD5AxEVCquK+e+L4qZKQ7NpCzRyjlH8wqBBQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z3gglX4qNrTT7YT3R1q40bgPn40DckbUS7hpm3MvzD+g05NlQBbfLrWYNPuE226Ul2op+KbWHPyKJdHZ3laNmCqRdSg56Hmpd/I0TERE2fJia94gGTwpnaHvPHtE3dxQyvZnDxjeGQCY67eeEWgPBBq72ArBh8t33e7MVjVF6OY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qNSA4oBk; arc=none smtp.client-ip=209.85.216.44
+	s=arc-20240116; t=1788484814; c=relaxed/simple;
+	bh=e4653IP/trF4uBg0DR7xcpti6kLMuWqCSiHaFgMw+Lg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=W6P/W9XJn3sSnAd6Qwy+ASpUwj3o+nLwWz82VYhzXaqGr9qlvomuus8QsqLIJxCnYswQLyAHOZOlJrk8sOOlGEW7ThpFV9PJ05ArPd4529XFi1THCMp0YRo2YdgdUsm3K8fzuE7fUOm8EhWcUNFLMCSpVH/wyrAC2Vm+aIZy3yA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iQcIOYtG; arc=none smtp.client-ip=209.85.216.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qNSA4oBk"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-398b3c37877so476847a91.0
-        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 18:18:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iQcIOYtG"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-39b2ad862bdso133463a91.2
+        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2026 18:20:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788484705; x=1789089505; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ULiSgzHfmvT7NB3kNetHvVNjR8ABCL+iHYfHXbGS15U=;
-        b=qNSA4oBkkT+z7ZyacpXcv0gp5hXmjwda9aLkDK7eRWo+DseCIcdqHuL/9J/L6EZ+4p
-         do9RApq+Bhj3jQWCgwovCZaxU4ZZNf+G/snycs1G4gfCGc7aZ6IJ5/G3rvTmByz1R6rj
-         WYaEZd/Uh7/PH/8t0VbzgAPtKu7LIlflXWK3kPbS9cNXQifT2Gfz8dn1O9ZOTWc179Oa
-         yIWPCJ33+KAlxlSlA2slrLj4yII9+tcYwlijdhPxHQvhOPePVDiLLNuSSWS1quCbnx3V
-         kkLZpmJsn5POvG3xZRN+ljhMP0iwqpCcVpnwy4TfWfRE+Ye0Jf6t8ZsCbFlzGaXcEUkz
-         sFng==
+        d=gmail.com; s=20251104; t=1788484808; x=1789089608; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=D4Os4KnbXoc/aK/y8zUHh1cLpQDSR2C+747U1B3xOdc=;
+        b=iQcIOYtGDCoOKaob+PcF60eogfyIpn9hh95Wib+6GWPpx41TKLlYXq8o3BxdhoC7LT
+         mX1TyBt+h6np9uvMmriXDvabaUkBI1JJLAMJwRwk5RHLtX23l6gApeDIhd1TD+4Tj6TY
+         dv+2HHz29BY3TqHO3Mar7qn/NTtH2z+guwXfO8Ux+uNvOaJuBMBivbSovfcvdwaL+IfR
+         duC5XSP06uYZ4xFjivUdg679JmPdXavQhDAgxpSY7qeCe8UrwjNzgnc5/iZitzEAedLY
+         YohPWQaYru9fKDBOyuu5CWlpf7QocxcYDpa0eF+eeW7J6ND2F9w3sOzWsn9CzycjgBCf
+         vKlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788484705; x=1789089505;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ULiSgzHfmvT7NB3kNetHvVNjR8ABCL+iHYfHXbGS15U=;
-        b=BE97ypzSxmP0aOJg6U4LiVr/NGEFno3fBGX2Uk1RLn3eVX3siYrntc6MnuywRMrFc5
-         jq5vOjYXFAS3KCEmTdzTQhWTrw2GLS8p8Up50mOHOF4UMx97U5axXH3yvc4QRKsah7sG
-         NzVSMVr4x1vvdwbgsTmqWm9DWR+I+pLztYRLjp72zJRFKn7WsB7bzuKq0xuUvKZ57G6J
-         eWHNHWbCAuw012zgmtC3RSsmaSWKJ8vZsCtwTn4DXENt8AVml832pDa8tj/IhuwsBCUu
-         Op9LWIFNS/bGrPSk0+PgpZ/C2i4VdwibWTdwELtLmV+ftFSSZihKBoVO+2xkIm8w6Xf9
-         vynA==
-X-Forwarded-Encrypted: i=1; AKwUvBzbTW+GFbTBiOecUp67QErqBb7qxLTJaHb7FEBj3P8dKlgZS479tpnHUzmm1ivWZ426X5yMAJROBeE=@vger.kernel.org
-X-Gm-Message-State: AFuF++lxvy1js9n4Z7QY5LMD73M6hGAciZe01rhLmkFNPJd69n3AaTRW
-	Gs8/F9g7utGNz/xM9E+WeruwBlfiVa22+fKH4fwU1NmDkT2If5e1Rig/
-X-Gm-Gg: AYBFou1TE7MZTu7/mP7SYvxEnbeyECVmu8E7GDq1mPn0gkCx3NNASc/8nmLZZhVxfzy
-	7rquf+WeTk3CyBZFU2jas4mfKbyHv9dL0E+BZbhn/vvJu0rJYFCfmDqu+CLwKCkzdDlrkZR6+52
-	5IVwNDAkiXUJiI5kKHEO5ZfXRcCmx9Pv8SIZ/xKqWLrp8ktFvESkkm+sHdNa7j4vrALv9sDEGbY
-	TjiMQ51pUSV8a3kCZyR/LPCCJTtmFAO5d/t4W0tp7blM0tUuEPM4M3WP8HbEPVMWGXcisEkiDRp
-	WOssvfN/76BhPJ9wkBgVZiWvrAbPycJba1dpQ7muXAhJbBJ/KaQcv2GVIcWpLGFOeDj2kLVcfCW
-	zRj5B23U89KznCAC6pSAtq2SDVJcPN41P++0CNuUCMCRXcuTVN2aQQ2PYqFwGBk8Wdqo9aeO3VJ
-	MiU/X7dSfh5WtqHYiHuq6bzxSzunig1DKrBQF93tp7rYqQu8/aZDs7xtUvkIkP
-X-Received: by 2002:a17:90b:1dc3:b0:398:d6f4:c61a with SMTP id 98e67ed59e1d1-39b26207ee4mr3987950a91.17.1788484705186;
-        Thu, 03 Sep 2026 18:18:25 -0700 (PDT)
-Received: from localhost ([115.70.157.242])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b08ca63b3sm7852282a91.11.2026.09.03.18.18.24
+        d=1e100.net; s=20251104; t=1788484808; x=1789089608;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=D4Os4KnbXoc/aK/y8zUHh1cLpQDSR2C+747U1B3xOdc=;
+        b=UejePyrkSae41b5NPvVvb5iQSnP2WYQ3/pFsd2VIDLw93MUQGrIEv+ve6jZQ1EfWze
+         YJfLZ95SJjosaNdd7i8hGNSFyRv4KsuIO683bPdvglUVGJFqAPOb9YPdYN2u0KRUFMCo
+         VONlhaskPL+4aoDV2TMZyADqboG2rWtRsk7cOHql0NwH2ucMv24jAJWTNyUznRYvxRO4
+         ws4h1TPR9ZibZ4jWLgOXpfRj61Dj2f9RbprrOsn1NhUj3EClxiEuzqVSXIB0x163K4G+
+         3RpRIQhtStTiGA/IwXSjwk1Yoe5RR/OWN8ejr7PXVI+YpnH6ViMBOpCFEq1PuLV/ybJo
+         V72Q==
+X-Gm-Message-State: AFuF++kXiQTjH0sfA0GuWpWq4pesHNBL5fxHmXf3islbws2RlNjdU6kw
+	WwgvnrmBzCCmAjdpENj5iGDeWou7q18h0Q0p96BMR0xTpAJZx7uk0m3E
+X-Gm-Gg: AYBFou2jvnuNWtPorlRZoq+84yhuLcZOYGrCKK8otn2ckTGqqqp4V+CuvLIkh96uAcf
+	24F2CY075kyF+630MU6Oc4Sb3I0JEmMSWdUa2zV69QDkOTdVIGsd0Q6Xh+PDrFkVTHwSANZqN0W
+	/k/A47RWwyh9B9+O7oJs1m8a/YZw0w3H4KzXnAgFvJPrGbYNn6bEZ1+eX0wxON3XYH09vI6bkeJ
+	t7R9vBUCI/W+4s/gSpA1A2e5t618UNC4TM6E0nm5Uj7Gqh/7tSIfS+a1ovcsvFn6kko403Q4DBb
+	7u4iYIHXBpuvtyheVu6/1IU7m+o6H1143uq0AAPFRP+t+pe4Ue5f9OoRFOhRfW/PQ5Dioydcqiw
+	UWIu91ybOJCGrphuM2LLQFil5tR1iChJKU4xQUx581fk1JeVxKM5qqPwpgNyjMxDccIxZT6mtaz
+	Fg1el10IPdjV6z5VlNNEEEgU/54HpVMxLAlsI9St9A3FnZ0+tLxB/vAjgU56EyDmZDEQ==
+X-Received: by 2002:a17:90b:5790:b0:398:9bd5:4910 with SMTP id 98e67ed59e1d1-39b2624f0ffmr3999853a91.23.1788484808487;
+        Thu, 03 Sep 2026 18:20:08 -0700 (PDT)
+Received: from [192.168.20.42] ([115.70.157.242])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b08bcc060sm8992418a91.3.2026.09.03.18.20.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2026 18:18:24 -0700 (PDT)
-Date: Fri, 4 Sep 2026 11:18:17 +1000
+        Thu, 03 Sep 2026 18:20:08 -0700 (PDT)
 From: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Tsz Shan Chan <tchan@jacques.com.au>
-Subject: Re: [PATCH v2] iio: light: apds9306: fix default sampling frequency
+X-Google-Original-From: Tsz Shan Chan <tchan@jacques.com.au>
+Date: Fri, 04 Sep 2026 11:19:48 +1000
+Subject: [PATCH v3] iio: light: apds9306: fix default sampling frequency
  definition
-Message-ID: <apoYIkJGtnX8O0kN@fedora-1>
-References: <20260903-apds9306-v2-1-e8673986ae56@jacques.com.au>
- <apkmS32q9UI-qQw1@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <apkmS32q9UI-qQw1@ashevche-desk.local>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260904-apds9306-v3-1-4f668393c2ae@jacques.com.au>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WMyw6CMBBFf4XM2pI+oFBX/odxMcAgNZFiK42G8
+ O8W1rg8N/ecBQJ5SwHO2QKeog3WjQnUKYN2wPFOzHaJQXKpueGK4dQFo7hmDXUNVk1VUGkg3Sd
+ Pvf3sqest8WDD2/nvXo5iWw8iUTDBVF8biVj0otSXB7avmULeumeOM2ylKP/ZMtlU60qZWiMd2
+ Ou6/gBAD3864wAAAA==
+X-Change-ID: 20260903-apds9306-bedba7b74e59
+To: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>, 
+ Tsz Shan Chan <tchan@jacques.com.au>
+X-Mailer: b4 0.14.3
 
-On Thu, Sep 03, 2026 at 10:48:27AM +0300, Andy Shevchenko wrote:
-> On Thu, Sep 03, 2026 at 05:05:35PM +1000, Tsz Shan Chan wrote:
-> > APDS9306_SAMP_FREQ_10HZ is defined as 0.
-> > 
-> > According to the datasheet (Broadcom AV02-4755EN,
-> > https://docs.broadcom.com/doc/AV02-4755EN, page 11, ALS_MEAS_RATE),
-> 
-> Make it a tag
-> 
-> > bits[2:0] set the measurement rate:
-> > - 000: 25ms  (40Hz)
-> > - 001: 20ms  (20Hz)
-> > - 010: 100ms (10Hz)
-> > 
-> > Change APDS9306_SAMP_FREQ_10HZ from 0 to 2 to write the correct value
-> > for 10Hz.
-> 
-> Datasheet: $URL
-> 
-> > Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
-> > Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
-> 
-> With that being addressed,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+APDS9306_SAMP_FREQ_10HZ is defined as 0.
 
-Will fix it in v3. Thanks
+According to the datasheet (Broadcom AV02-4755EN, page 11,
+ALS_MEAS_RATE), bits[2:0] set the measurement rate:
+- 000: 25ms  (40Hz)
+- 001: 20ms  (20Hz)
+- 010: 100ms (10Hz)
+
+Change APDS9306_SAMP_FREQ_10HZ from 0 to 2 to write the correct value
+for 10Hz.
+
+Datasheet: https://docs.broadcom.com/doc/AV02-4755EN
+Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
+---
+Changes in v3:
+- Move datasheet URL to datasheet tag in the commit message
+- Link to v2: https://lore.kernel.org/r/20260903-apds9306-v2-1-e8673986ae56@jacques.com.au
+
+Changes in v2:
+- Add datasheet link to commit message
+- Remove blank line in the tag block
+- Link to v1: https://lore.kernel.org/r/20260903-apds9306-v1-1-3f892aa4f156@jacques.com.au
+---
+ drivers/iio/light/apds9306.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
+index f681b02e4922..7dd41136734f 100644
+--- a/drivers/iio/light/apds9306.c
++++ b/drivers/iio/light/apds9306.c
+@@ -61,7 +61,7 @@
+ #define APDS9306_NUM_REPEAT_RATES	7
+ #define APDS9306_INT_SRC_CLEAR	0
+ #define APDS9306_INT_SRC_ALS	1
+-#define APDS9306_SAMP_FREQ_10HZ	0
++#define APDS9306_SAMP_FREQ_10HZ	2
+ 
+ /**
+  * struct part_id_gts_multiplier - Part no. and corresponding gts multiplier
+
+---
+base-commit: 940de590b839f71d6dc846160534bf202401b8b7
+change-id: 20260903-apds9306-bedba7b74e59
+
+Best regards,
+-- 
+Tsz Shan Chan <tchan@jacques.com.au>
+
