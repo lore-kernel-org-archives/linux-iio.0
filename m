@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F8E37C0FD;
-	Sat,  5 Sep 2026 01:13:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8A6D245020;
+	Sat,  5 Sep 2026 01:31:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788570817; cv=none; b=L0VHxBt4ZUzkqpSoyMFHIcPndDW1IhltmkGNOnlUq+ncli5RKyqRRIehE5S8m6+OEopki4HWbJ5WfyqmtSdONVJ+TzbkskGcV7XU57r7PJNujWoupgoAH+sDTBev6wZDDOPnXJt+Q0HsuKLDIwJWp9cBUGsoGxyer9btbL1xSqc=
+	t=1788571914; cv=none; b=g/zjO5qBjFdb0CZeuGRcrUZXVRLB4x3yrPU3nVtrM8PhK1w9sY/IIxLqQRwvWw9KoGyvgHloGy795dF69NiVLV3XhTQOqYKfQO5baFCL0HcACVYJNwoJ9ncHmC5d5qYRly4aPmqI0V4D2PJPi1kGbVi3uqt94bGOA8gtGk0hdxQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788570817; c=relaxed/simple;
-	bh=dnDgREOsIu5gsLEIgA21mvtCTdYSfSaHQ2v1OoLdUEo=;
+	s=arc-20240116; t=1788571914; c=relaxed/simple;
+	bh=dQ+iMzGQujr1wMp3y+oQef4ll45dw99ZPy0bdSro3j8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jhL5uZLHqgAY9LqoZte845H455wad5VjJ973xTUW8FgiAa9gaS7xhLuh+BxIf0a5A6aTs15BhBlMUmtVVi+BCYFFgNUUxvbQC3tb1Q974J8p0ZFdSPspN/mozpDmnFpvuJZRYPtCdCUDAz2dVdBTMhSaitzDCfjue/8y4nR6YO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f3/ccAQa; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KAVQens3zlLVbxOvnlY6FN4OjNXmJjTwtcSoLrDJrnuDcYUo4hsQyRlYX5qrKeLlk+gBUkYCnIjqpIm4jANWJ73kJMO2NrxWq+pXz4Lgloz5dEhMzk1mb9zzGW91AB8NONw297nTbY/i+sRWyOK7wNEE6kAO2lmwCXueQoDutcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TvPyPeXb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f3/ccAQa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CE281F00A3D;
-	Sat,  5 Sep 2026 01:13:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TvPyPeXb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C419F1F00A3D;
+	Sat,  5 Sep 2026 01:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788570816;
-	bh=7ZOcGQ+was0TtjEfcbmEVy67dZ/1OlBNFQ+Jrh265c8=;
+	s=k20260515; t=1788571912;
+	bh=1dIzkHmMftwvydeIU/+1JhlMCWhKPntxvGcUwLCu+H4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=f3/ccAQagFEY2UrWtyHgUKsXmMxvV8zE0CHX4KYG6LmF3a8zQ6bCmbjmTU+HcaN5p
-	 Xw9vMriIHme+p1GToXsF0/KFj9UZWPeyTuV6vnN/l35igQHS/HgtzbjcamBTk5O72V
-	 CRR2vDkZ+a+MoIHOWZrNwEWyFM9zwOpEFlAIRCQcU31CeJWe74AZRK8IHTbfW3Mcw+
-	 xRxJxkCxgUKSqUNt3tl0V1DqKaDBPx6rbymNTNVqsKht/eUZjlygrpyozVxC82GpQt
-	 ztBI7jFH5twVHAKq9/YVKxlVCC/ibBxxHw6yhZB7tU1WVars+BfmlcOdCgX5B3jAE3
-	 Nk/GJhJOWINqw==
-Date: Sat, 5 Sep 2026 02:13:30 +0100
+	b=TvPyPeXb6ybBZRSdkj2vGuE+IY/eGSMyy1mal7oC09tb35q1uXD7ls7QV0yH6q6wi
+	 IEz5/RmCfKNJzRYZzEVOdScGlnNT2CylvwaBKIqSopyPpFs5x+C7Ebg7NeSsgdQtzr
+	 IywzsLmRnAOlPM8gHLwIROIfSQdjE+bBGOFn2HPaw1rLzjsS0UIvAvCrSwov5tvG9w
+	 Vuj/3Zb1zCtqTmYPX+v0Du59YnHuSXXaxlRhRkyJVqGTnBrWWYalcfJt9hJdqbVVBI
+	 6uzbD8lVkfciK3b+gOsLTfrOZIPFOdMWUgxesK7i22vcgJh0H9r+/6f0JtdT81twZr
+	 0cUlSkwws1V4Q==
+Date: Sat, 5 Sep 2026 02:31:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Wadim Mueller <wafgo01@gmail.com>
 Cc: Maxwell Doose <maxwell@maxwelld.cc>, David Lechner
@@ -37,12 +37,12 @@ Cc: Maxwell Doose <maxwell@maxwelld.cc>, David Lechner
  <liyouhong@kylinos.cn>, Brendan Higgins <brendan.higgins@linux.dev>, David
  Gow <david@davidgow.net>, Rae Moar <raemoar63@gmail.com>,
  linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Subject: Re: [PATCH 1/2] iio: flow: slf3s: keep the vdd supply balanced
- across suspend/resume
-Message-ID: <20260905021330.2943f35e@jic23-huawei>
-In-Reply-To: <20260904-iio-slf3s-pm-regulator-kunit-v1-1-5ea61e6d6db2@gmail.com>
+Subject: Re: [PATCH 2/2] iio: flow: slf3s: add KUnit tests for the PM
+ regulator balance
+Message-ID: <20260905023147.006d181c@jic23-huawei>
+In-Reply-To: <20260904-iio-slf3s-pm-regulator-kunit-v1-2-5ea61e6d6db2@gmail.com>
 References: <20260904-iio-slf3s-pm-regulator-kunit-v1-0-5ea61e6d6db2@gmail.com>
-	<20260904-iio-slf3s-pm-regulator-kunit-v1-1-5ea61e6d6db2@gmail.com>
+	<20260904-iio-slf3s-pm-regulator-kunit-v1-2-5ea61e6d6db2@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,159 +53,88 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 04 Sep 2026 21:24:25 +0200
+On Fri, 04 Sep 2026 21:24:26 +0200
 Wadim Mueller <wafgo01@gmail.com> wrote:
 
-> slf3s_resume() enables vdd and then restarts the measurement.  When the
-> restart fails it returns an error with the supply still on, and
-> slf3s_suspend() bails out before regulator_disable() when the stop
-> command fails.  Both paths leave the driver's idea of the power state and
-> the regulator use count out of sync.
+> Bind the driver to an emulated SLF3S on a fake I2C adapter, back it with
+> a regulator whose enable and disable callbacks are counted, and check
+> that the two stay paired across suspend and resume - including the cycles
+> in which the sensor NACKs a command or the supply refuses to come up.
 > 
-> The PM core only runs the resume callback when the preceding suspend
-> callback returned 0 (device_suspend() sets power.is_suspended on success
-> only, and device_resume() bails out when it is clear), so the enable
-> count cannot climb above one.  The damage is different:
+> The suspend/resume helpers reproduce the PM core's rule that a resume
+> callback only runs after a suspend callback that returned 0, so that the
+> tests cannot construct an ordering the core never produces.  One of the
+> tests relies on it: it cycles the device ten times with rotating failure
+> injection and asserts that the driver's enable count never climbs above
+> one.
 > 
->  - After a failed restart the sensor stays powered but idle.  Every
->    following suspend then fails too, because the idle part NACKs the
->    stop command and slf3s_suspend() returns early - the system can no
->    longer suspend at all until the driver is rebound.
-
-That resume errors don't stop the state transition is rather annoying
-and leads to all this complexity being needed. Given how few
-drivers go to this level of complexity I suspect it is mostly luck
-if any recover from a failure in these callbacks.   All bets
-are pretty much off if your power supplies are returning errors
-so I guess that is kind of fair enough!
-
-> 
->  - If regulator_enable() itself fails during resume, the next suspend is
->    free to run.  Should the stop command succeed there, the driver calls
->    regulator_disable() on a supply it never enabled, which trips
->    "unbalanced disables" in the regulator core and aborts the system
->    suspend with -EIO.  The devm cleanup has the same problem on unbind.
-> 
-> Track the supply state in the driver and drive regulator_enable() and
-> regulator_disable() from that state only.  A stop command that fails no
-> longer keeps the supply on: it is cut right afterwards anyway.
-> 
-> Reported-by: Li Youhong <liyouhong@kylinos.cn>
-
-Given Li Youhong has been proposing patches for this I'd definitely like
-their input on this one.
-
-> Closes: https://lore.kernel.org/linux-iio/20260901025010.356735-1-dayou5941@163.com/
-> Fixes: d240b0b8a1ce ("iio: flow: add Sensirion SLF3S liquid flow sensor driver")
 > Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
-> ---
->  drivers/iio/flow/slf3s.c | 35 +++++++++++++++++++++++++++++------
->  1 file changed, 29 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/flow/slf3s.c b/drivers/iio/flow/slf3s.c
-> index dfa7c1409045..37f40685e9d9 100644
-> --- a/drivers/iio/flow/slf3s.c
-> +++ b/drivers/iio/flow/slf3s.c
-> @@ -110,6 +110,7 @@ static const struct slf3s_variant slf3s_variants[] = {
->   * @vdd:	supply regulator, disabled while suspended
->   * @variant:	pointer into @slf3s_variants for the detected device
->   * @medium:	currently active calibration medium
-> + * @vdd_on:	tracks whether @vdd is currently enabled by this driver
->   * @lock:	serialises the multi-step command/response exchanges
->   * @crc_table:	pre-computed CRC-8 lookup table for SLF3S_CRC8_POLY
->   */
-> @@ -118,6 +119,7 @@ struct slf3s_data {
->  	struct regulator *vdd;
->  	const struct slf3s_variant *variant;
->  	enum slf3s_medium medium;
-> +	bool vdd_on;
->  	struct mutex lock;
->  	u8 crc_table[CRC8_TABLE_SIZE];
->  };
-> @@ -382,6 +384,12 @@ static void slf3s_disable_vdd(void *data)
->  {
->  	struct slf3s_data *sf = data;
->  
-> +	guard(mutex)(&sf->lock);
-> +
-> +	if (!sf->vdd_on)
-> +		return;
-> +
-> +	sf->vdd_on = false;
->  	regulator_disable(sf->vdd);
->  }
->  
-> @@ -416,6 +424,8 @@ static int slf3s_probe(struct i2c_client *client)
->  	if (ret)
->  		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
->  
-> +	sf->vdd_on = true;
-> +
->  	ret = devm_add_action_or_reset(dev, slf3s_disable_vdd, sf);
->  	if (ret)
->  		return ret;
-> @@ -453,10 +463,8 @@ static int slf3s_probe(struct i2c_client *client)
->  }
->  
->  /*
-> - * The sensor has no low-power state of its own, so stop the measurement
-> - * and cut the supply while suspended.  Resume powers it back up, waits
-> - * out the power-up time and restarts with the medium that was active
-> - * before.
-> + * The sensor has no low-power state, so stop measuring and cut the supply.
-> + * Resume powers it up again and restarts the previous medium.
->   */
->  static int slf3s_suspend(struct device *dev)
->  {
-> @@ -466,9 +474,16 @@ static int slf3s_suspend(struct device *dev)
->  
->  	guard(mutex)(&sf->lock);
->  
-> +	/* A failed resume may have left the supply off, nothing to do then. */
-> +	if (!sf->vdd_on)
-> +		return 0;
-> +
-> +	/* The supply goes away below anyway, so a failed stop is not fatal. */
 
-Not true.  This consumer of the power supply says I don't need it any more
-so maybe if no one else is using it and the power supply even supports
-being controlled will the power turn off.  So this remains an error that
-should be reported.
+Interesting approach to testing the flows.
+I'm not sure we want to carry this level of testing for a driver in the
+tree. Would like to hear the views of others on this.
 
->  	ret = slf3s_send_cmd(sf->client, slf3s_cmd_stop_meas);
->  	if (ret)
-> -		return ret;
-> +		dev_warn(dev, "failed to stop measurement: %d\n", ret);
+There is some really nice stuff in here.  Makes me wonder if we should
+build a specific test device + driver that would hit all the widest possible
+set of corner cases that aren't device specific.  The one slightly unusual
+thing for this device is the error on telling to stop when it is already stopped.
+
+A couple of things I noted whilst taking a first look.
+I'll want to take some time when I'm a lot more awake than I am today
+to look at this closely.
+
+Thanks!
+
+Jonathan
+
+> diff --git a/drivers/iio/flow/slf3s-kunit.c b/drivers/iio/flow/slf3s-kunit.c
+> new file mode 100644
+> index 000000000000..d5e2db855838
+> --- /dev/null
+> +++ b/drivers/iio/flow/slf3s-kunit.c
+> @@ -0,0 +1,734 @@
+
+
 > +
-> +	sf->vdd_on = false;
->  
->  	return regulator_disable(sf->vdd);
+> +static void slf3s_fake_put_word(struct slf3s_fake *f, u8 *dst, u16 val)
+> +{
+> +	dst[0] = val >> 8;
+> +	dst[1] = val & 0xff;
 
-Sashiko calls out that we have no idea if this succeeds. So vdd_on
-may end up out of sync.
+Use a put_unaligned_be16() for this.
 
->  }
-> @@ -485,9 +500,17 @@ static int slf3s_resume(struct device *dev)
->  	if (ret)
->  		return ret;
->  
-> +	sf->vdd_on = true;
+> +	dst[2] = crc8(f->crc_table, dst, 2, SLF3S_TEST_CRC8_INIT);
+> +}
+> +static int slf3s_test_init(struct kunit *test)
+> +{
+> +	struct regulator_consumer_supply *supply;
+> +	struct regulator_init_data *init_data;
+> +	struct i2c_board_info info = { };
+> +	struct regulator_config config = { };
+> +	struct slf3s_test_ctx *ctx;
+> +	struct device *parent;
+> +	char *consumer;
+> +	int ret;
 > +
->  	fsleep(SLF3S_POWER_UP_DELAY_US);
->  
-> -	return slf3s_start_meas(sf, sf->medium);
-> +	ret = slf3s_start_meas(sf, sf->medium);
-> +	if (ret) {
-> +		sf->vdd_on = false;
-> +		regulator_disable(sf->vdd);
-
-This could also leave us out of sync if that disable fails.
-
-> +	}
+> +	ctx = kunit_kzalloc(test, sizeof(*ctx), GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_NULL(test, ctx);
+> +	test->priv = ctx;
 > +
-> +	return ret;
->  }
->  
->  static DEFINE_SIMPLE_DEV_PM_OPS(slf3s_pm_ops, slf3s_suspend, slf3s_resume);
-> 
+> +	/* Actions run in reverse, so destroy after the unbind takes the locks. */
+> +	mutex_init(&ctx->fake.lock);
+> +	ret = kunit_add_action_or_reset(test, slf3s_test_destroy_mutex,
+> +					&ctx->fake.lock);
+> +	KUNIT_ASSERT_EQ(test, ret, 0);
+> +
+> +	mutex_init(&ctx->reg.lock);
+> +	ret = kunit_add_action_or_reset(test, slf3s_test_destroy_mutex,
+> +					&ctx->reg.lock);
+> +	KUNIT_ASSERT_EQ(test, ret, 0);
 
+Given those are deep in the emulation which is not what we are testing, do
+we need to bother with the mutex destroy calls?  That is only there
+for some debugging of locks that isn't relevant here I think.
+
+> +
+> +	crc8_populate_msb(ctx->fake.crc_table, SLF3S_TEST_CRC8_POLY);
+> +	ctx->fake.state = SLF3S_FAKE_OFF;
