@@ -1,63 +1,63 @@
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8331E3DDAE2
-	for <linux-iio@vger.kernel.org>; Sat,  5 Sep 2026 09:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0326F1632E7
+	for <linux-iio@vger.kernel.org>; Sat,  5 Sep 2026 09:38:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788601086; cv=none; b=YtIzsYAjYfyksCSCzN9K+77fHW2VgKg4LwJijvWP199oSbXFmrgzREyJfMpD/5IS4fmaWWv9Dwx5L/lAfzVR0bHwkoxTsOHu5YM3D+dwH1Mr4v/xW+c8lLszhrlWzQWM8cVk0Ne0rBXeNKN2S1XUCusapUyhsEkM7D57bEJKvWA=
+	t=1788601094; cv=none; b=SJUZsJTDv8X2fDnJH4K5sKHpOoxx56ZsdsBG7g9Ji5nObMwmKuVg7FGBGIcOyJfVnn3ThgCe0BNImzOcj6tRYtsai662SjL1LoSiW0S5vfFQ5b7Yf8O8Vt1gb9mSMFShkpECw08+PQvQ9RQqHx5cpt1DesaQsiDg4GNGOZyGzHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788601086; c=relaxed/simple;
-	bh=vUdNV9wDoEuZJ8Vepu5sM2pMfaScmqCwYv/P2v1M6tM=;
+	s=arc-20240116; t=1788601094; c=relaxed/simple;
+	bh=/SnvANubHgj9t723fD3mWASr15hxcpq0LbaSmB4ROXA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=j1QcfaZ/ZmSJMBwVBGPxen6O1FkfLBqEwY6nhQ/doR1wHMAuUlQ7iO3IU1gtPnthGAMYOh6LgrQa5ryXpcQAvLftyJqIlEI+HLCV4I1h5+70iHPGqkNIh+OLC47X8Fn+ohyUx9oYxufV1GOZbB83RzQqYJ+j4ndB7Tx2WCOeYdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UyYOzbws; arc=none smtp.client-ip=209.85.216.42
+	 MIME-Version; b=fNuvqSR6DVpMUHktmXEiTV0kWjtdRxqtKPKDb8Ys/Vdc8RJrDv+uG7NQidyj2t2os3xzvgwe9gnXgAjzyM9mZuqQG+fCBDU+48XIfMVGVAPOlDud698e3FZneVOje942xaFaosss4+ABxrO+DFq7zxTNf6sqOXiISc69H7T6hbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qFzKWe4v; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UyYOzbws"
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-3965d3d9ab8so1325022a91.3
-        for <linux-iio@vger.kernel.org>; Sat, 05 Sep 2026 02:38:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qFzKWe4v"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2d9b60c652aso23449205ad.1
+        for <linux-iio@vger.kernel.org>; Sat, 05 Sep 2026 02:38:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788601081; x=1789205881; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788601089; x=1789205889; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=8D/ScigX6w0Ntks8tt1Z8HJ/HOkWf3QCL1/JDcSPE1w=;
-        b=UyYOzbwsGSCaUmxfD5zxhg9iyyKaMmoJ9mfMd2TwhtmnPurq/IifM9OVZRkS08d5gp
-         X0pAc+c8mS2X35TW+bcEFlMQ7NOhqJVMzMotzvSrvMuJJY0oiredyG0Rt52Sb2SoWNM4
-         3d9j0JEnUaGby+ebPsV9sC4mNX2066ftwhWpRIjxYehQsQ0EiUwoIA5WMCg+6Azf0vhm
-         jIWpRk9Oe6Og/aZCpVAgqWKT/LDXhfEd836ngZgPYeeBpiO24rpOI+Er8ck1FanZqal7
-         sMe+jTDtJLSSblA95ySWPR5PRPwG4wXi4n0dyZX0P5BW628JHv4DsjoHAiLfNW8plXI3
-         RZNg==
+        bh=FKhaAa1V6dcazyDIDdMRIu/saWb8D7tpQe+JyGNOhTA=;
+        b=qFzKWe4v6mY7w15FxyEseDpJtEZmkYtf7jV7h5U8m2y3uoq+lAEAGIq68NqHIGWoXr
+         3HJizsIOmFMWHvA6n2qyPY5rNsEUBIPQ32nOtVCUyDBQj3E6MhenCzQfQgFPRs7pFeFk
+         5B05p+ZZ7V0oTumGQn3ZRB5huy5+euDIwP0YQ9+k3XVF2P7I35Ef9OTQq18AA7tQyOaX
+         HOZBvuy9J3VNNubAu/FJWKkwBkd1LqvYiXelfyDhbOdwafEBfR5Cgiy2rLOHkQ3V0G+E
+         q6A4aJDYYulW3wmKKHFDBR5aGQESEixBI7woiO52XNbfzPo6460I9jmuNCzzzPKAW3Ec
+         l5nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788601081; x=1789205881;
+        d=1e100.net; s=20251104; t=1788601089; x=1789205889;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8D/ScigX6w0Ntks8tt1Z8HJ/HOkWf3QCL1/JDcSPE1w=;
-        b=GQ+He9xH4BS4D12k5q+G6a/8yNuIWAIUJKOc7SNKbWHsnSXYm/bEfdmzjH8icSIhUR
-         OWR5vT0mjC4/DqZJ7FhIk/Wz/pcywy2H9zjielKU97KYhxgm5XxF+4VxcLkyUOT1BKUz
-         ONQwo5uRAAx0LkTL46Pnt6P6x6Ikc8XG3S7VAFlllq/gVoMJlns86kPG9icwnCh9Pg4/
-         /i21mFAlUxFa4f5Fe5NbsTN9+zfElnOAT1KEUcXv1VAAYx9M93vvcU4pPQMMjacNXpDU
-         +HQ5Xj/NNyDUF0Q19kC3QvEbF9v3kazG98uEziDMrGDnpO41VV22ngWKpLamjHAzGkRr
-         AEbQ==
-X-Forwarded-Encrypted: i=1; AKwUvBynnJ6M5GOLL/guEq4BYrcIj74znkm9yIR8C5s8GZcNPhZWwxVE+Re0YCi3NKmc7epyQcmKenoh3Wc=@vger.kernel.org
-X-Gm-Message-State: AFuF++nLFV9K7LkxQgoMJpQHQg4e256MnfIG0PMDQs29A2f4mhCpVdBY
-	F+0AM8+b8lFP4MS7MWB4Ci4u+p0Wu3nD2ZIa4TbxmiPb9YHSl40zMyub
-X-Gm-Gg: AYBFou399d4WyQ3IxKMzpwJzVygoBFbzILFRzIOQ89MWZ/DjAw6fsyejZcyaPD3x7Mj
-	16ivzK3AjLFm/Ag6c1YdbE73PtXwaVaWzg8wGFp71TbTT7o3AC1X+fL/V3R9U+il3udbiSTAejD
-	5hDwYBle8W+SSnJ5yadZfkauh3KtrFLnNYX+9mENq43jb0TFktzMmXlWL1pCJQj01yC7htXnkg/
-	TgsbTk93eItSC+JkJBtaMjRRNHQUAja/6DhVbZB7POrAeJ2CsLoxX4ZcPRLnIb04996oxjNXXfr
-	Iy/lG2SkjpJeBv3nAwQ0mJTBSG4Aly4zFU+DFnwgPJ03V56gOuCT8nZTkH7No2ECie+1IqFR/QO
-	gM1/eURKWLpKqVnploi1SV3nZLHh6e2rtthfL821KIEMppMnVCZBKY8+qbUEzh359HzL3QX0bfu
-	WITuFmMokW8cZCIv4j2YLPB7n50QeH8+HtIaUjxFCzeURWOLl2VkPxyIhPMQ==
-X-Received: by 2002:a17:90b:3b8d:b0:398:b426:ca4b with SMTP id 98e67ed59e1d1-39b2624f10amr16533121a91.22.1788601080936;
-        Sat, 05 Sep 2026 02:38:00 -0700 (PDT)
+        bh=FKhaAa1V6dcazyDIDdMRIu/saWb8D7tpQe+JyGNOhTA=;
+        b=D/TJo9rvQCJtBhauDdfowsBRU6vTM7MfK+Z95X/POh2SugjqF+WGRMFtVdM0kUZfMY
+         BBB6O8iYaEOsNNnZ1e68FMBcgD8kSBpDsRmGA4Y+gwammMkhnuuFs2UNmElg4LXpgCUk
+         ogdssE559kLKuLZ/S/ejLsXZCK6rvAdE5Oq8Ww+DPbEVgaaW41ndHVSGaKM7m5PbHyuO
+         kefhyFB91dNIu26WWmf35KZCsscEBZmaGSJwnsUGZ0uCqCIhl6M7RqjyDufuDMdRzoYh
+         ZjNvboB8/ARfWx/CusAsaFXb0M2JKxxGjPmW2tMcDOsw8MjfVWUcZic5VGubL/XpFLQ9
+         F0Ng==
+X-Forwarded-Encrypted: i=1; AKwUvBwb9p8Ueht/5OK1DoiJ2HujRH0x7D/OxgqJ5NBmOsfd8c4u7YVbqr09j9DaKSO1GTp9L7P371tWnb0=@vger.kernel.org
+X-Gm-Message-State: AFuF++nLuVGhBmcwvSaeA8xPIeX1G1wdt6Bv4WbnGTv/U1AXjQ2w+U8b
+	4Hfp+j0i9IeZz5HBOxOQkCsXreDlvcH//IbR4dQDjaOPrCmcScgbyBhB
+X-Gm-Gg: AYBFou12Z/u+bWOuXDffTMrZ8mKnws6ijF0+8+SIPx9tGDXq0Jx5k/5dET5hioazO1S
+	wCTC8tQg9an7O4xRmcaYllQ8kAu22zmKOtqTUtZ8cEm6roEWr7QCu/JEu/WQRjUcEoZy8UhpyOL
+	Sb/qAAoTu2OCS09ERGjdIOHijVJ5W2tdb8C76XVFGSB/8LBpimqTNXffpAx/It3ffWiB3JQ0K7B
+	SLBpCfUN0by8EdL1Dig70ZEbrElLgDRdCNa36PP4g6YJQDxxIxmNAknQ9ZJ1VM8S6tdFMCKOvdn
+	Gq1LosbAfw6ePAEh1+t9VwYgX8qIG4YotG11JKN/ThkHbdqm2yvBO8a+97SUBnDuR0vzP7yFz/o
+	q81ccxVk4jbKz7yVk5vX7WLnN8m3HDAHln9eGdRvPA/rMkKJKYjc4a2eIVmxW9nlrhNitDuIMRm
+	Cfxhouz4MIa2StNLgAWDK4Ldj5ORPFXjj+wypzknKOML7VaD/Rwb3FnRIq7g==
+X-Received: by 2002:a17:90b:3d89:b0:398:9be8:ea69 with SMTP id 98e67ed59e1d1-39b262167e7mr19037767a91.22.1788601089070;
+        Sat, 05 Sep 2026 02:38:09 -0700 (PDT)
 Received: from ubuntu.. ([2405:201:8026:213e:5b5:60e7:9f67:1689])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b08d086adsm15763353a91.15.2026.09.05.02.37.56
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39b08d086adsm15763353a91.15.2026.09.05.02.38.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2026 02:38:00 -0700 (PDT)
+        Sat, 05 Sep 2026 02:38:08 -0700 (PDT)
 From: mdshahid03@gmail.com
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -70,9 +70,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Mohammad Shahid <mdshahid03@gmail.com>
-Subject: [PATCH v3 5/6] iio: adc: bcm_iproc_adc: use devm-managed mutex initialization
-Date: Sat,  5 Sep 2026 15:06:30 +0530
-Message-ID: <20260905093631.48667-6-mdshahid03@gmail.com>
+Subject: [PATCH v3 6/6] iio: adc: bcm_iproc_adc: use devm_iio_device_register()
+Date: Sat,  5 Sep 2026 15:06:31 +0530
+Message-ID: <20260905093631.48667-7-mdshahid03@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260905093631.48667-1-mdshahid03@gmail.com>
 References: <20260905093631.48667-1-mdshahid03@gmail.com>
@@ -86,29 +86,58 @@ Content-Transfer-Encoding: 8bit
 
 From: Mohammad Shahid <mdshahid03@gmail.com>
 
-Use devm_mutex_init() to tie the mutex lifetime to the device and
-improve debugging when CONFIG_DEBUG_MUTEXES is enabled.
+Use devm_iio_device_register() to automatically unregister the IIO
+device when the device is detached.
+
+This removes the manual iio_device_unregister() call and makes the
+iproc_adc_remove() callback unnecessary.
 
 Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
 ---
- drivers/iio/adc/bcm_iproc_adc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/adc/bcm_iproc_adc.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
 diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index 24fb41751e93..f4676607682b 100644
+index f4676607682b..6eae7596ac8d 100644
 --- a/drivers/iio/adc/bcm_iproc_adc.c
 +++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -526,7 +526,9 @@ static int iproc_adc_probe(struct platform_device *pdev)
+@@ -524,7 +524,6 @@ static int iproc_adc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
  	adc_priv = iio_priv(indio_dev);
- 	platform_set_drvdata(pdev, indio_dev);
+-	platform_set_drvdata(pdev, indio_dev);
  
--	mutex_init(&adc_priv->mutex);
-+	ret = devm_mutex_init(dev, &adc_priv->mutex);
-+	if (ret)
-+		return ret;
+ 	ret = devm_mutex_init(dev, &adc_priv->mutex);
+ 	if (ret)
+@@ -572,19 +571,8 @@ static int iproc_adc_probe(struct platform_device *pdev)
+ 	indio_dev->channels = iproc_adc_iio_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(iproc_adc_iio_channels);
  
- 	init_completion(&adc_priv->completion);
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		return dev_err_probe(dev, ret, "iio_device_register failed\n");
+-
+-	return 0;
+-
+-}
+-
+-static void iproc_adc_remove(struct platform_device *pdev)
+-{
+-	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	return devm_iio_device_register(dev, indio_dev);
  
+-	iio_device_unregister(indio_dev);
+ }
+ 
+ static const struct of_device_id iproc_adc_of_match[] = {
+@@ -595,7 +583,6 @@ MODULE_DEVICE_TABLE(of, iproc_adc_of_match);
+ 
+ static struct platform_driver iproc_adc_driver = {
+ 	.probe = iproc_adc_probe,
+-	.remove = iproc_adc_remove,
+ 	.driver = {
+ 		.name = "iproc-static-adc",
+ 		.of_match_table = iproc_adc_of_match,
 -- 
 2.43.0
 
