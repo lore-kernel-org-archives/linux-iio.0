@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF46E322C73;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0FAF32A3C9;
 	Sat,  5 Sep 2026 23:33:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788651238; cv=none; b=LXIZcMI/sixZsBIAy8cLPfAT58E6G+HOGuxIi8Iy3y2TpL2qQXsSELiqsJE/JlyTW5NW2siQylyBulrDOyRH5xR65pM8MALCSlK8GUkAloV59i1f3I/kDSAO8hLxGSrqCaMBfkTX7J9CG0thYA0+YfMx3uUiz6ucw5sgvjk4irU=
+	t=1788651239; cv=none; b=npZtUtJr5oxvwFMCvj8PX/H73/1XmaZJFr6yADTwRCbDmqlfUUl7VNJh+9bxotx/EqNSDKkaf9TY1KAWnt1UQF0+4/FMl4/RU5eqGEq0jAcb/16WadydT9OTKejanW2gAbDxxrRNsngJb9900tBTdpTW2uwdMOv4ZXi3607F8o0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788651238; c=relaxed/simple;
-	bh=YKT2349SLpzzR3UMHNbou8VxJZyoar4Yz08zNI18sV4=;
+	s=arc-20240116; t=1788651239; c=relaxed/simple;
+	bh=UpXeAM+Jf/QAXeSARx3oI62WMkG4vVFQLuHpHi0cfLA=;
 	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=D0QL3/ZKs4sYkAvEhRfDQRhuORqkZbd/OSiCp8WKR2VMuOGq+yskRqplaTVev98SlZE1O0ZWpvZPERwupPE4zdf0dp7aouL5THz6pB6plGXBPKlzzU+zfoJRa29haf5ryQeqCs63/O8Z9i8F79L7+E4YPjPmL1QQegcMkitC0ps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XHvyFpsv; arc=none smtp.client-ip=100.103.45.18
+	 References:Date:Message-Id; b=mUJ4qvPBmhU3RSvhCUmQ0xi2ENPXnGE38OwPufJzVG264LXf+txMifXTRs81nm6R94vbk9izCuLCdCwm3C90n2HIzC68qhyLVpsWDNXuMoAYrYlTUUMKQoEvunULbwShjW8vQaFgnbStd7WcnXFxlNG9NYBYigedjm70A9KPKZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQ3D5V6B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XHvyFpsv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DEF1F00A3F;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQ3D5V6B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD2041F00A3D;
 	Sat,  5 Sep 2026 23:33:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1788651237;
-	bh=CG/3VxsHakwAVe2Bd7TAMHtIUh1ll0tsSTB99LDCqvs=;
+	bh=N8y4+FMqCruPIO6QVXu4Ws978J75FVFZbomNnv2riqY=;
 	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=XHvyFpsv/nC6NX9MH3IwQRuM8ROU1HxxxLELhRmCnt3ESwzsakq6aRLGlwvhTlWXW
-	 ZW8CwRxV/aWxM3CsKMylh/ad239/iBHlGT3QXAL9QLiPhix9n3gDJBpqVzcqY/3oPs
-	 OkE0MQyfmbQ0hVCf6OTisNeM7/pa6EQl1r2Inet+igOuaYiUF6kdxzbbasntbXZ715
-	 GFhic1gzaTYuKVdc+Lyx/Xj/Y301PbERLLleR6uGsBJigINeZNPDPHwq5yFHsljD/n
-	 SVSI9rwBeZC3DsR6vT1l2GWCTQwiy5Rmm58A+kxY7PUhUjOMJYQxSAFw5+5g1r9MxG
-	 SI3N9wy3n7CTw==
+	b=HQ3D5V6BzZmucTMmDiwCKgyb7JXRqdR15yBPyJKHxljIgA/bIhskps0KgMn2SgUNc
+	 EuOQXTUF2rWfi+JoMwGuSriRNIcn75wh2mop7zlipSERS483yhQt4u5jKvISuoELC5
+	 n6IMyEbSiIIzYGpnKrP940emjw9/sVIIi6FsUPkrPfyDDAESbf8fmmQJ2CsYObbrEN
+	 jO7+iDSvov7hcLyFjigAyLn1QmMRX+iCEGw/GRTDwUjc7O3GaDGWv0wGiO0p3WacrR
+	 2GCjUqpq6iVXLYqdtfSlN48fJvbTiRe4Z2ZWHOAGPiOZJ0lsBYNMpDbw6aYQuOO8OQ
+	 mW3PEgwgKErWw==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -34,7 +34,8 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3 3/6] iio: adc: bcm_iproc_adc: use devm-managed clock
+Subject: Re: [PATCH v3 4/6] iio: adc: bcm_iproc_adc: use devm-managed ADC
+ cleanup
 From: Jonathan Cameron <jic23@kernel.org>
 To: mdshahid03@gmail.com
 Cc: Jonathan Cameron <jic23@kernel.org>, 
@@ -44,106 +45,113 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Scott Branden <sbranden@broadcom.com>, 
  bcm-kernel-feedback-list@broadcom.com, linux-iio@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20260905093631.48667-4-mdshahid03@gmail.com>
+In-Reply-To: <20260905093631.48667-5-mdshahid03@gmail.com>
 References: <20260905093631.48667-1-mdshahid03@gmail.com>
- <20260905093631.48667-4-mdshahid03@gmail.com>
+ <20260905093631.48667-5-mdshahid03@gmail.com>
 Date: Sun, 06 Sep 2026 00:33:40 +0100
-Message-Id: <178865122087.3402141.5403978234649905269.b4-review@b4>
+Message-Id: <178865122088.3402141.9570533772047711603.b4-review@b4>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2772;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2787;
  i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=YKT2349SLpzzR3UMHNbou8VxJZyoar4Yz08zNI18sV4=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnKbk1XXel73wFy3wumofhOB570UaAQYng60UB
- YAJgkTuwuiJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCapym5BEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiFFuD/48wMA/HTRx6bN4FNUoGd6KeTIEYLe4Vo/rOTguk8NZnLJ
- GfvjYHHOUhKm9ZFFjPZOtPWFuAOHXj11dh4hTz6ljT5KepZUrGgjbawymiDSmFvuzX0GFceQEi7
- eCAxLFHYZiNALBSPSs2ZG04pSlhHd01yqqOZgT4MlHcH/1BHLxKCNJDVR8Ut7mXpGwD9y9wI3dC
- PylVuk6jY9QpSeGfEkJ5yzlRdDZ2M084bUGjLPrGQ8SLuhQWSyriAJzejSGNSs3DMnpWofPHuLe
- yYRE3xEuSPcrpYqcDOb4g0KC0sn8yj+D+p3VHPLyyK95E5r5JE5A5TJjD1xqKDvkP2zaxJPMGh3
- moMsoGkeOLK2kMIqgAcfBl7Eg3WGJ6dyyXsObbY0TMEoXKqOKhkBanBIvCpgZgjaW5/D5RboqsZ
- uOb/NtJhBZ/ymaQvhT4oYIbnXRWxXA4ROZRdChmWysPaqHekeASZDmieOGmlSyhd/jRc7AYdDD3
- Twl83ftc5OYfA8zhi2m4AqgNx0EzLpqHyzBeP0L7cTzy/pFfb+zjY5pmXAmx7+/sAUXLwrNHF08
- uYaqVOjm6r0745f4hncrd/t+A5eoYDapTCdTY2A8TBEhLQyRY1wlp2y9EIHtyaFBZ1qIYdG1oLu
- dyyxlJ0wtMA903OFxRsaz6eQE3b6MX8793luLPA==
+ bh=UpXeAM+Jf/QAXeSARx3oI62WMkG4vVFQLuHpHi0cfLA=;
+ b=kA0DAAoBVIU0mcT0FogByyZiAGqcpuTIHIiQQYf9HWl3AEW7GsQ1ROVngUBCqO/hNdNNzh6II
+ YkCRQQAAQoALxYhBG4pZrOHhAZSkSaBsVSFNJnE9BaIBQJqnKbkERxqaWMyM0BrZXJuZWwub3Jn
+ AAoJEFSFNJnE9BaIxEsP/1PZEvTFlkqS5Lj3dq6Q1ieGatyH9o8KvPkiYzybyAf9HcH39Df+wd+
+ 1jV9XOviqd78Hvgk3WDfXHaMKvHoRzlFOUtSv0qT1/5Z9/g+2i7LVaAi+2cPUlE/n3Nt/GEFZoZ
+ opz/JOCH2B3ePM4lJXMLMm2u0Ag9sswLuSoG8ZQ83Maj6UaPGETIbOLxBgGctgLHZUQbO0Vfojh
+ yrzLXh8/AcwfgxScNtbYB2UvLzDAX+AkldPXmdavMp0ihk3rPvckq3qTPxohlGNdzS9tgsVpXQP
+ O9qZa9M37q2Jt8kk/hAHYW28ZlDxXs75g3PkijDktqZnvqKwKFCH1l+ZLVEpru4/eUsw8mkVnGS
+ OK3OApBIT45eftljLXJstQmrvQL5VhWG2w9samNBh28MeUiRYPiNdIinFdZWhAnGRFJScyGPOGw
+ 1EARQoiJ4gcH10fB4WewXDh4o+cAARDhqzuneMJMDtzxMBqbbrBgiaQYN27BRlHUgh8HLU7zMOd
+ 8IHnvO3hcXSVS7u1XnFBU8qqndx69A8v1PH3reTAS1CO4aOHjP7+TTNP5CCOEOPTasLEerLr0st
+ y1lJoLH+EGD4drttVFUFWWNFYL5hSK3QzhajQ9xsSWYB1IsSWx4RqFCxoTjBM0r9OUFPfj1iS+F
+ vFZFxX6x3KmoaCsK1iRFQt8JmANqj
 X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
  fpr=6E2966B387840652912681B154853499C4F41688
 
-> Convert the ADC clock to use devm-managed APIs to simplify
-> resource cleanup.
+> Use devm_add_action_or_reset() to disable the ADC automatically when
+> the device is detached or probe fails.
+> 
+> This removes the manual ADC cleanup from the remove and error paths
+> and ties the ADC cleanup to the device lifetime.
+
+Sashiko raised a bunch of pre existing issues whilst looking at this
+one.  As far as I'm concerned whether correct or not they are out of
+scope for this series.  Feel free to take a look if you like though
+(for a potential follow up)  Note I haven't analysed any of them -
+just noted there were a few comments - so they may or may not be correct.
+
+https://sashiko.dev/#/patchset/20260905093631.48667-1-mdshahid03%40gmail.com
+
 > 
 > Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
-
-Hi,
-
-One thing that should have been in this patch has ended up in the
-next one.  Whilst minor this just passed the level of what I'd
-normally tidy up whilst applying.  So I will be looking for a v4
-after this has had time for others to comment on v3.
-
-Breaking changes up into a series of minor changes is a bit of an
-art form and often takes a couple of passes to get perfect.  It is
-worth doing though as keeps each change nice an easy to review on
-their own.
-
-Thanks,
-
-Jonathan
-
 >
 > diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-> index e54f613d266a..3bbf814d4c8f 100644
+> index 3bbf814d4c8f..24fb41751e93 100644
 > --- a/drivers/iio/adc/bcm_iproc_adc.c
 > +++ b/drivers/iio/adc/bcm_iproc_adc.c
-> @@ -109,7 +109,6 @@ do { \
+> @@ -450,6 +450,13 @@ static void iproc_adc_disable(struct iio_dev *indio_dev)
+>  	}
+>  }
 >  
->  struct iproc_adc_priv {
->  	struct regmap *regmap;
-> -	struct clk *adc_clk;
->  	struct mutex mutex;
->  	int  irqno;
->  	int chan_val;
-> @@ -510,6 +509,7 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  	struct iproc_adc_priv *adc_priv;
->  	struct iio_dev *indio_dev = NULL;
->  	struct device *dev = &pdev->dev;
-> +	struct clk *adc_clk;
->  	int ret;
+> +static void iproc_adc_disable_action(void *data)
+> +{
+> +	struct iio_dev *indio_dev = data;
+> +
+> +	iproc_adc_disable(indio_dev);
+
+For this it is fine and more compact to do
+
+static void iproc_adc_disable_action(void *indio_dev)
+{
+	iproc_adc_disable(indio_dev);
+}
+
+Given we are going via a void * anyway, there is no additional
+type safety or particular readability advantages to having the
+intermediate given we have well known naming fo the struct iio_dev *
+
+
+> +}
+> +
+>  static int iproc_adc_read_raw(struct iio_dev *indio_dev,
+>  			  struct iio_chan_spec const *chan,
+>  			  int *val,
+> @@ -551,7 +558,11 @@ static int iproc_adc_probe(struct platform_device *pdev)
 >  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*adc_priv));
-> @@ -529,10 +529,9 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  		return dev_err_probe(dev, PTR_ERR(adc_priv->regmap),
->  				     "failed to get handle for tsc syscon\n");
->  
-> -	adc_priv->adc_clk = devm_clk_get(dev, "tsc_clk");
-> -	if (IS_ERR(adc_priv->adc_clk))
-> -		return dev_err_probe(dev, PTR_ERR(adc_priv->adc_clk),
-> -				     "failed getting clock tsc_clk\n");
-> +	adc_clk = devm_clk_get_enabled(dev, "tsc_clk");
-> +	if (IS_ERR(adc_clk))
-> +		return dev_err_probe(dev, PTR_ERR(adc_clk), "failed to enable clock\n");
->  
->  	adc_priv->irqno = platform_get_irq(pdev, 0);
->  	if (adc_priv->irqno < 0)
-> @@ -550,10 +549,6 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->  
-> -	ret = clk_prepare_enable(adc_priv->adc_clk);
-> -	if (ret)
-> -		return dev_err_probe(dev, ret, "failed to enable clock\n");
-> -
 >  	ret = iproc_adc_enable(indio_dev);
 >  	if (ret)
->  		goto err_adc_enable;
-> @@ -575,19 +570,15 @@ static int iproc_adc_probe(struct platform_device *pdev)
->  err_clk:
->  	iproc_adc_disable(indio_dev);
->  err_adc_enable:
-> -	clk_disable_unprepare(adc_priv->adc_clk);
+> -		goto err_adc_enable;
+> +		return ret;
 
-This gets tidied up in the next patch, but ideal would have been
-to replace the goto err_adc_enable;  with a return ret in this patch
-(the one that enables that change) and remove the label here.
+This change belongs in the earlier patch as none of the other changes
+in this patch have anything to do with enabling it.
+
+> +
+> +	ret = devm_add_action_or_reset(dev, iproc_adc_disable_action, indio_dev);
+> +	if (ret)
+> +		return ret;
+>  
+>  	indio_dev->name = "iproc-static-adc";
+>  	indio_dev->info = &iproc_adc_iio_info;
+> @@ -560,17 +571,11 @@ static int iproc_adc_probe(struct platform_device *pdev)
+>  	indio_dev->num_channels = ARRAY_SIZE(iproc_adc_iio_channels);
+>  
+>  	ret = iio_device_register(indio_dev);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "iio_device_register failed:err %d\n", ret);
+> -		goto err_clk;
+> -	}
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "iio_device_register failed\n");
+>  
+>  	return 0;
+>  
+> -err_clk:
+> -	iproc_adc_disable(indio_dev);
+> -err_adc_enable:
+
+This label should have gone in the earlier patch.
 
 -- 
 Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
