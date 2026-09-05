@@ -1,61 +1,63 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 209BF260580
-	for <linux-iio@vger.kernel.org>; Sat,  5 Sep 2026 05:53:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E0D372EFA
+	for <linux-iio@vger.kernel.org>; Sat,  5 Sep 2026 05:53:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788587612; cv=none; b=gmJqun8uJ9LNB3krceJEMVMLlj/HQvVvigaPWK6tZJIIL4Dl2eRmfyJRw91pmR3newItsKWG41qhfBDxRLnnxWi7fbSgj7DvRro7xfdyCrUB90O4370MyYRoHvSBc+nj1nFCIqOeM3PzJmqyo/FCEA9keIS+APdeJLjXxKhhiqY=
+	t=1788587616; cv=none; b=l4xBdXwZa1U38lNcniii04CfVl5jPSpDfh5PXSFaIUYnISDJtUJkeV63SmkQ1SRjvo39ZRcUF35EWKJJMURSvTOLXb90S9WjJbyPn0bqoWAV8XdN0auE/OiU9obAUBd8EZ+tDM+xfIe5tizszxV9IVxIqnBvhtMhUz63fGAXsxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788587612; c=relaxed/simple;
-	bh=GlvBmDe9HBgmOBC+ac7r0fb426/2Lt7xm9O3A4283o0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RQ0CsX1SwgFW92TPk/PWAEiAcfMLQPJXKQGXv/TD4bqfoUg5HnjOo5fa8nOk7obIhTEO3IHzkFFsmcCNGiXzMkjhMBL0qIm0HGTcx9NSjjC0IoMG+EcNob0E/kPcbBv42oD6y7tbhssrR4j98F3VhQez07kyJ6kF0kaDIrpaMAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SkVmpa2m; arc=none smtp.client-ip=209.85.128.177
+	s=arc-20240116; t=1788587616; c=relaxed/simple;
+	bh=2OwrC8ngY4tjaQzu5GKHL+hXuds3sFtg2SG5EfUZZGM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=VnCdB2QI6n+9nfMpSwQT5c9AcrXNZO833JF+nyqpr0Ywv7FIL1Hg03d6vj2qPTEEAbejlNh2rIh3CEWEuA82738OMe2h1e2FimRt4ZpfIj807cpv09TPv3ZIVgJjkZDwb2yVWkBpZ0h/fj7r3PxqIEKZxnFvJLoqJFMkhnnZH74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=orzkP8Ag; arc=none smtp.client-ip=209.85.128.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SkVmpa2m"
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-81ecf499af9so25413387b3.1
-        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 22:53:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="orzkP8Ag"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-86d43cdee51so22926187b3.2
+        for <linux-iio@vger.kernel.org>; Fri, 04 Sep 2026 22:53:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788587610; x=1789192410; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=VWxHomrMj47FEZcQbKS6VuVqMA7sj5V/Mt3JaM2UCHs=;
-        b=SkVmpa2mWw3yFAcmjKmKgU43/OsjiolsgG9u1Mk9XSZlBcxHP5h1bcckNLmFwmgzcY
-         NaEub8a6vRso+0voqjt5llUo6oQh8Oe8aIGOwDRrdkUCT/80HhAEK75nmy1Ux2cDeJsx
-         hq9p3iV0lR3ye+2p9MVKwc3Bae18ZDQ9Wo2klNcF5dyCtWEoc7aVcWiClkWWW9+7Oqeq
-         WxjECqQ6cEYvILA09/Z9tAlvbO7fUI34UWc9DecBITapl44Ak2sbFdvyJWPKq7c9eROq
-         9Jc0IAw7yeX+IKSTINQqCAg0v9XHnH+AD6BrQruzUbjepzg9kP6ywA5v0kyvwtv5/jvr
-         SmJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788587610; x=1789192410;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1788587614; x=1789192414; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=VWxHomrMj47FEZcQbKS6VuVqMA7sj5V/Mt3JaM2UCHs=;
-        b=pCjznBC+MjlFRVMD0kcuiDQ4IpllrYV704k8efR3FIZLOWWnALfFeC5sUhvjLqI+5A
-         DXyINdouaH2Yx5o9sVn9E5LCEDt8l5NB4gtUz2By10KWFygJrb6W38ISbwLuuKyRo3Y1
-         ehvfRwvxlgpZGuh958SFY6WdZdQ9qGmqWMqYFoGLgxZVCls9pPQ1K1vRZPV2bJBSaU6U
-         LryRJsA2eUXNXcLE+mc9AI2me/dPdZKttttuyaWRRRNshvfK2YrrUJFHPmAhI5y0LLr4
-         ITmSr/gTkAvBx33kddDw6MuEbyS8CajIwJ94BTsTQVtnpBYn1+a74T4sVhIJwh8GBecq
-         xBgw==
-X-Forwarded-Encrypted: i=1; AKwUvBz89KzVeYw3AHtDH+2OveuHuMc7D/8T8cKRgYCxn3xSU/koVXmR9vlZRjSigyBoV6aFDX6jw/WxcOE=@vger.kernel.org
-X-Gm-Message-State: AFuF++maAUpZc9k8wYQEjMSFISz7TmXZ1nEtxr2JU+eGwsCVNZCf7L5j
-	S8DwevBRLqQi7f0oZnA/TrcpjAp+0irOn/CABBgaZwGJLklz/SS4xnRm
-X-Gm-Gg: AYBFou05dISv9nTYVFMdp3Yh09YS39gjOIhoMZ/cDc8hgpR+Kj/RgqdbNO9WuGfGW87
-	ezdl/UJzkAP/wc0ZE69/6amG/ui+oPgOuKhz2maf96Swey5Xamzx1M2ubp3EA5uoO16vweAwjYO
-	1q4+0i4JtxmaFwwKvf8WPsejJsx5oWuUgz9VT5WWkUsG/xIpXQwo/r7riyaVEtpHmz8AA3Bn15q
-	cDNiy/tRkCpSlMaAwnXGZxSTDbc+fnTlp0XftFR1+yuHfISTVtFxAn10fvwHY+2i769kj9Ilg/H
-	UoOrg+7lI0ce3V2hxKL8eW60747bWddgtrfBZc+ZpNPgrpP/IGkpTa0vGgsfE4BeadFig+3V2ms
-	H0NvIhA5OXmJLLhQGDUYbHU3FkJ8bdWxY5peLuJi7BNpGxwkFiXWr2lbG7RrBa7U5ovg1knyZrO
-	XvKZVra9LzLd75CJk9stRJU8QvcFav9aYo+ceeDkLyfLH1
-X-Received: by 2002:a05:690c:660a:b0:7ff:87e1:34d1 with SMTP id 00721157ae682-87123717b32mr52875547b3.11.1788587610127;
-        Fri, 04 Sep 2026 22:53:30 -0700 (PDT)
+        bh=FiCaIn1GD6n0V382lVMeuTNtZLz4CdPIy/SmqTEx/n8=;
+        b=orzkP8AgCWPo63a5Rkz5QAuTkudN1Z4gmwHUkmUDU0P8CnnShcGfLRD3kCv0IlfnuD
+         G0Y3vtrpEYNfYxx+4JvNpztYgBn3tavKpGhcHMMof0/XmlZJy2YXprio3ttKpdhbROYT
+         NZMuk/MR8qCsRPxTg9EnjcMAqjGvaTe9xuxzl+6D42n+hxV01HMnvRt57C6RiZZOo/0h
+         GJ4Kg5/J4CZ/Ad6GQ1M2SrBzK+gOcWCUe/bmQouCXdridpFqeixsxF2+mIf6NH53GfXh
+         4Sf9Own8WNi5B1RmnZ0f7MSVuVaum/vXIMIaYIPfQJpLFAJ52u4BPIM6fcwT98uI9lMD
+         EHkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788587614; x=1789192414;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=FiCaIn1GD6n0V382lVMeuTNtZLz4CdPIy/SmqTEx/n8=;
+        b=OEp/cu7iWe1H2f0YI3MFp+l7mKsKccbSmYOBjVXFGpvBt3VyZ+4GNDPsZwiFJlVN3k
+         vSqz1I55Re4YzF6gTQGUS8wwa9fjbQsWZtb1ggYyQqtSegs2IQZPptDuD52EeOCgjp+r
+         xSkfB6qzX2bs1VifiDWnZwgiTANMDPMp48idwn2qhdsljnRa/BuUtdNw/v/qOdp/MaV4
+         en95ApiiCgWRCLn78lN10F9DP0Fxyo1VYQppZGJFsqr1BcRA6cQwTdGo5yT5uRHqWX7Y
+         wcW/8MBCZPzdgMeeA8JCuKzt/J6THS/qCWVPUgGyEU0222SImiRIfKb5bM45KF1d6tPo
+         n85w==
+X-Forwarded-Encrypted: i=1; AKwUvBwWn7HEVVGVu7Hkmp/2k2MHFzDAJtVsxQtnyIZAHbh6/bWfkiON4EBuDYAQjJ6mUJ3ZMoIbn6iVRZw=@vger.kernel.org
+X-Gm-Message-State: AFuF++nLwxjesLHuzeL7V3HYcbQZWGmxIywDjRmGv2T3M5SIq/sCY/kQ
+	T0ftX5xv8p2SnFYT9WpnPiMzo39aRdmj5pPeSjV3TNJ6WuaNZiRn50u6DjummyZzNH8=
+X-Gm-Gg: AYBFou01lk/pb9X/IAux/RMrxV6kJiN7jDsx6g6Adm7Yidfb19h+IAxbD1rL59D9Dpg
+	ZD/vQeIzjOqbAc0BtCy89btfT7PspehuMw3DpJ0DpFQfvv59i3N8akW3GMJzFODsabGWsU44usT
+	mLp+oN73dxO29+ATOlSNE6HAG+Qc1z678YVQyN9GulohAjTUg28SAYY23xgF75jmFVApMmbQ2zU
+	CscrJJ5I4tqR/APeA7im69seOtJh0kCEahEshUviVrtOzjHn8Fu+x6nU/y5YhNNfAhJP4Ei7Pb/
+	7qPWRq5CdQDIxkFsnuzwaRlw1l94ly2WNQF5qfVKANPW1z12olSfb4gq51V/IvhCHod/MUTj37X
+	RracY4Jqpf4KUxJqfxDO4pnOUiC6LXLX2CO7ee+unUMK4s8ZI48LvPxTkp1zYp57Fn0ravrBt+k
+	2pDLWSAxnz6jYO6i+CVisECt8MJgUDtfR5RYnvX1C6x78=
+X-Received: by 2002:a05:690c:4017:b0:873:5bb2:6c31 with SMTP id 00721157ae682-8735bb26ef2mr16592757b3.56.1788587614064;
+        Fri, 04 Sep 2026 22:53:34 -0700 (PDT)
 Received: from localhost ([2600:1700:5431:250::1e])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-87143ca6ddesm33717067b3.2.2026.09.04.22.53.28
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8714ab73f23sm33173687b3.33.2026.09.04.22.53.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2026 22:53:29 -0700 (PDT)
+        Fri, 04 Sep 2026 22:53:33 -0700 (PDT)
 From: Chang Yu <marcus.yu.56@gmail.com>
 To: Andy Shevchenko <andy@kernel.org>
 Cc: Chang Yu <marcus.yu.56@gmail.com>,
@@ -64,10 +66,12 @@ Cc: Chang Yu <marcus.yu.56@gmail.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] Add support for AS7343 multi-spectral sensor
-Date: Fri,  4 Sep 2026 22:53:24 -0700
-Message-ID: <cover.1788586814.git.marcus.yu.56@gmail.com>
+Subject: [PATCH 1/2] dt-bindings: iio: light: add as7343
+Date: Fri,  4 Sep 2026 22:53:25 -0700
+Message-ID: <a516f5bdfaf9a2cee9e22b80c17fb42f860afdf2.1788586814.git.marcus.yu.56@gmail.com>
 X-Mailer: git-send-email 2.55.0
+In-Reply-To: <cover.1788586814.git.marcus.yu.56@gmail.com>
+References: <cover.1788586814.git.marcus.yu.56@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,44 +80,67 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds initial support for the AMS AS7343 14-channel
-multi-spectral sensor.
+Add binding for AMS AS7343 which is a 14-channel multi-spectral sensor
+with i2c address of 0x39.
 
-The sensor has 14 optical channels (11 visible + NIR + clear +
-flicker) in total. This initial driver supports reading raw counts
-from all 12 spectral channels (11 visible + NIR) via sysfs and basic
-power management.
-
-Not yet supported:
-- Configurable integration time and gain
-- Interrupt support
-- Clear (VIS) channel and flicker detection
-
-The driver uses `extend_name` to differentiate channels, exposing
-files like in_intensity_F1_raw for channel F1, etc. via sysfs.
-
-Patch 1 adds device tree bindings.
-Patch 2 adds the driver.
-
-Testing was performed on a Raspberry Pi 4.
-
-Datasheet: [1]
-
-Link: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf [1]
-
-Chang Yu (2):
-  dt-bindings: iio: light: add as7343
-  iio: light: add AS7343 multi-spectral sensor driver
-
- .../bindings/iio/light/ams,as7343.yaml        |  46 +++
- MAINTAINERS                                   |   7 +
- drivers/iio/light/Kconfig                     |  11 +
- drivers/iio/light/Makefile                    |   1 +
- drivers/iio/light/as7343.c                    | 309 ++++++++++++++++++
- 5 files changed, 374 insertions(+)
+Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+---
+ .../bindings/iio/light/ams,as7343.yaml        | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
- create mode 100644 drivers/iio/light/as7343.c
 
+diff --git a/Documentation/devicetree/bindings/iio/light/ams,as7343.yaml b/Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
+new file mode 100644
+index 000000000000..fb996160cf8d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/ams,as7343.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: AMS AS7343 14-Channel Multi-Spectral Sensor
++
++maintainers:
++  - Chang Yu <marcus.yu.56@gmail.com>
++
++description: |
++  The AMS AS7343 is a 14-channel multi-spectral sensor with i2c address of 0x39.
++  https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
++
++properties:
++  compatible:
++    enum:
++      - ams,as7343
++
++  reg:
++    description:
++      I2C address of the device (0x39).
++    maxItems: 1
++
++  vdd-supply: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        as73211@74 {
++            compatible = "ams,as7343";
++            reg = <0x39>;
++        };
++    };
 -- 
 2.55.0
 
