@@ -1,107 +1,79 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41BB23C10A1;
-	Sun,  6 Sep 2026 03:50:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73456274670;
+	Sun,  6 Sep 2026 03:54:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788666639; cv=none; b=LQhv8HQ6C+rcOKx2lj2yASpfArvChSA3bWJpuFhFGq7uyqdpdZbKTWLdxagiLxWFGlwg0BALb9uu2HCuRv9C+x9bZ3C9FeCCcBhSrmNVkq5xDBp9OYp6wPGICcRZG58VT7hp+RNMaLqJAIKF+LbVHxX7BGurssX+yuStZDkieew=
+	t=1788666876; cv=none; b=k413AtqliCDsD8y6THr8sWXeaKOKWN8AIOwHxKAyM4RG9RHFfQfiraZfLHH7+GZpE10vvHxyhzgiDGIBnsaQTXUZE7MWPJbOdCnSIvkTWigrO+GIg1cwXC/guvz8T1jplWrzTdD8RPrbixSV7XDiFSRzEPYD+e5x8LnLbQYevpA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788666639; c=relaxed/simple;
-	bh=EtOt14Sbm9D8SJJIrrYc8zFHSSIiho6s0bOjEG5CcpQ=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=VTMhH1/a1o7pd6sBjhS4MGEzMUstIevn1QwndUpRSAWKPnBpAWJL3K36hN6x9CWPRCjE0FgJ53cZzN5YoaQEwYYcvZFzgVZ8xoZcGZ8VYrxdCLEIQLVrlNawf8Qohrwz24/qNGzCS/9uo1Ii4G4Yzihzw0EtCrlXlk12qzk9pfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nt1WAJ21; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788666876; c=relaxed/simple;
+	bh=SqqaPpywbkGFF+nDgU2ULimBfuNeb5IkAVDDivCoO5A=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QoNc5vWDAkWTziPKE417ZQ4Rh4SE079xfa6YG3MuCTIyMDiOx84zin8ofWED0EdNdDZj+GkQoIiKCoWOCuOVjBtce61GYHkS7emAtxDf94MfskWdH0Sxvr+s4S7fhnVRjp/CqV+sHwfDb8ePmgD5RAXDY6G+NgQk/kfXXjpnv0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OI18wDlg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nt1WAJ21"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B78871F0155A;
-	Sun,  6 Sep 2026 03:50:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OI18wDlg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B0B21F00A3A;
+	Sun,  6 Sep 2026 03:54:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788666632;
-	bh=2mLgf7VSppvnY3ni5Vo2XFM72n2PiOSLS7vbqcFPF24=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=Nt1WAJ21PWCEAAhbVWQyzno6vhC8FfbyKv/3VRIDXkQELRYuSnz59opzFqOKaamxu
-	 9gOpQmsMeWNws1PvKCeO5q28jOwqg8RYcnEnDP2tvpd3CCLU0K2j/WGPiIl7+KnbQx
-	 XtbmxGfVw8y4YPKr6PSPHjenFNfeC+x8wH7Y1HZ8vCbObGDF22KU5mko9uoWGzwTQt
-	 LQYKkzm0jl2TukPIkTIttYQ9ONBNcMhCtNkXNZg8fFSm0VSRUpHKkQN0NWTev1+fSC
-	 68EPhMTgr7ZXIoq1PnDzO0sDU5IZy4mMTwm4XsLKL3TsFqU4t9v0O7AJxeHCv4td+3
-	 uYiJX0do+IVyQ==
+	s=k20260515; t=1788666875;
+	bh=jIPclx7fD8rtjD2TzRmqu89RETbtSvh3t06cIpVaXXM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=OI18wDlgqy0YMyPK8x5F8A383Mg7/xdHHojj/g5nMEgP2GplOF2ABhsv3BBsOctbv
+	 s5UHdCIa/AvqFOhczCQjL6Ku7GsEbwS7LEY1egaXemIWIRC0G0aL6eTbalwV/Ml3OD
+	 1kNdR8Vejvuvwql9fS74XyKz5JaKowFp6nRD3YxPbTOEhietNVLkRZulxUTCmW7ClF
+	 YRtPN+NMBqUN8l8pO++dNhaj+ZmE5PncLR7FkF5mo6Nv+PmavykeF9F0jo7c7stbKs
+	 9Pn2Il9ExChmsFmFx3ZxGeGoFRLqlOG2535w2SWm5o6QwK5J/rtz4Ptk2tawc+lszQ
+	 9XgEDVRLaaC5g==
+Date: Sun, 6 Sep 2026 04:54:28 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Tuna =?UTF-8?B?S8SxbMSxw6c=?= <tuna@tunakilic.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: mcp47a1: Allow full-scale output
+Message-ID: <20260906045428.4f03494b@jic23-huawei>
+In-Reply-To: <20260904125100.185128-1-tuna@tunakilic.com>
+References: <20260904122513.175298-1-tuna@tunakilic.com>
+	<20260904143848.00000d7d@gmail.com>
+	<20260904125100.185128-1-tuna@tunakilic.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v6 17/17] Documentation: iio: Add AD7768 Documentation
-From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Olivier Moysan <olivier.moysan@foss.st.com>, 
- Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>, 
- Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>, 
- Randy Dunlap <rdunlap@infradead.org>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
- linux-doc@vger.kernel.org, jananisunil.dev@gmail.com, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-In-Reply-To: <20260904-ad7768-driver-v6-17-e4378f946bfb@analog.com>
-References: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
- <20260904-ad7768-driver-v6-17-e4378f946bfb@analog.com>
-Date: Sun, 06 Sep 2026 04:50:02 +0100
-Message-Id: <178866660281.3402141.14342967641787130617.b4-review@b4>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=977;
- i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=EtOt14Sbm9D8SJJIrrYc8zFHSSIiho6s0bOjEG5CcpQ=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnOL+q8JJ7MSUPclBAop+QWp09ndYj/XvU/6Nn
- sREPg9gKACJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCapzi/hEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiK5YEACADh4H86YF1XZ0UVb9BvIq8s3lOe2MEcybmPD2pzEhf4r
- 2TkPRL22a+gyi/D+qLJAmDRNlEtz3jwrHcVsePgqsTaykKLJWa9dhx+CJTvQ/PHzqPLySKv1v4O
- BHsvgMRNZ2ncleEAeTdHPgSzuf8a1an79UoSi/SE7DMcwJKIcJ8ht+n2YJwqLeokfMW5G9L3ek6
- aDRWyA7zOzVnC0NeHJSjYz8fI0rqUEnGI7yqorhMq36me927OJhJjtmjEFgW5owLLWob5rVqEDp
- FBsCN/JDb/cCExy6mHZ/QAmy2yAGBw4fJJ2nR/g+5tVuZqTfgDvpiVzjIBNkCAqoEoeq5sBn44I
- x+PqgmLYPpoJp9JDGbmQMltfUpkWQZT+SyNGDbhp5qPXrSkO5McYQfoLbKg9l7bKc/M75E09bpb
- BcZyuOLPrzUinLXELQ0KcicPC+q3Scj6ZTjA3KqIGIVo0VE0zy5d1K1Rw2ijm2p7Jc+r/9VyCcf
- XWsQeswsTwp2Qik/Vt96iiS/+8hz0e4XFkgtTpVNWsZi0MK4LJBpuSGrX2H9YGxaM3e3KBxne9R
- OOZEx3AovlLpS+Bb6jJ4anbG1xPXaBcCc8Fyt9zUmns3O/ySme9gPM5YzRazGffYooSrXgTS23I
- EqKUphSHrrKXNrXZC7qUM0KjZ29NxGbS36fH6lQ==
-X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
- fpr=6E2966B387840652912681B154853499C4F41688
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-> Add driver documentation for AD7768.
-> 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
->
-> diff --git a/Documentation/iio/ad7768.rst b/Documentation/iio/ad7768.rst
-> new file mode 100644
-> index 000000000000..49aeff27b00a
-> --- /dev/null
+On Fri,  4 Sep 2026 12:51:04 +0000 (UTC)
+Tuna K=C4=B1l=C4=B1=C3=A7 <tuna@tunakilic.com> wrote:
 
-...
+> On Fri, Sep 4, 2026 at 2:38 PM Joshua Crofts <joshua.crofts1@gmail.com> w=
+rote:
+> > Can I ask how this was found? Manual code analysis or AI? =20
+>=20
+> I noticed it while reviewing the driver's range handling and then
+> compared it with the MCP47A1 datasheet. AI was used as an aid during
+> the analysis, but I manually verified the datasheet values, in_range()
+> semantics, and the final patch before sending it.
+>=20
+If AI had anything much to do with generating the patch then
+a tag for Assisted-by: LLM is appropriate as part of the tags
+block.  Same if the bug was found via LLM.
 
-> +
-> +Channel modes
-> +^^^^^^^^^^^^^
-> +
-> +* **Mode A** - First set of filter and decimation settings
-> +* **Mode B** - Second set of filter and decimation settings
-> +
-> +The hardware provides two mode profiles (A and B), each holding one
-> +(frequency, filter) combination. When buffered capture is started,
-> +enabled channels are grouped by their configured (frequency, filter)
-> +pair. Up to two distinct groups are supported; the driver automatically
-> +assigns each group to a mode slot and programs the hardware accordingly.
+The verification is good though.
 
-Say what happens if the user tries to use more sets of settings and
-hence two groups isn't enough.
+I'll wait for tags from Joshua on this once testing is done.
 
--- 
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Jonathan
+
+> I don't have MCP47A1 hardware available, so the testing was limited to
+> build and static checks.
+>=20
+> Thanks,
+> Tuna
+
