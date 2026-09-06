@@ -1,64 +1,64 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70E703E1723
-	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 10:07:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABE533B83FE
+	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 10:07:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788689237; cv=none; b=tYn+VLKcoXFQXa2CIym+he11lQQNYxbY1pDlMhfuRm789S3YQjo4ftSKPgUJg3V+4jSOo9DY3gOwWEzW5tkQK/VYxOn7ozvgpMnmH1MS0YhzPYTuGbExSLeWUJIusQ4DDTZmHWOEK1Y3Y3DF+SqluISfy0rUnU6Xm0fpw/+5kLs=
+	t=1788689262; cv=none; b=uU3akGGnom+2AhXoSNNoquon3SNin3jbYknMl/sKpAJMz1y07vMcT0Fj9l5Z7kvDT0xawRV+5HMiPDiUeIDWeM7lGckmcTxRaiG9IlQwQyd9uehz+FAWE6JMby88C8olzQx5WLm3kMMmNLHT/f72C1ibNvtojOcTkwICSRyJ+2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788689237; c=relaxed/simple;
-	bh=zdPwZrvfJK7MzyGkqu9cVdFV8gXhIeOCnL3vxgmUvv0=;
+	s=arc-20240116; t=1788689262; c=relaxed/simple;
+	bh=RnAEc+I+Cqq4lUTdx0Q5kkcBBZ8MAk4TasWgEbgmbEc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MN2QQPEEkfdLWcYeXQo1741MtbAotQx7q9LGJ+W8itC8gBzDgniB4wmQRU0c4bxLN8eSANFyeIwy6NOonTdrCYIGnjumUOnCy+WndcMrdMuWoFL7DG/qj8TAPw6HGnspzWEyK1cqw0KnIzZjgiau4fUwSKNkfNdxRKdPJJNGDjY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lF3g+X7I; arc=none smtp.client-ip=209.85.167.53
+	 MIME-Version; b=CSVbk4X6zFrK1Yuomsn9TbZGmDrQbcqTdztWFntP1xlXaxiLEcDnpXOjk6Nb0c8IlpL3zIGYg5FfdkjSm4cIh7nWzxddakE4xnStEsIJYnS2MzhDAG//zDLaJTaULQ+ni5x++yFktAckM6wsJNn9X8jW325iHSV3wYPFQCh0OoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nwAJhsK5; arc=none smtp.client-ip=209.85.208.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lF3g+X7I"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5b28c91fba5so3105995e87.1
-        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 03:07:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nwAJhsK5"
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-39faf9e2c62so18121751fa.3
+        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 03:07:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788689233; x=1789294033; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788689258; x=1789294058; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=+3ouU/PkVGCvjpETYDZTI0h0W7DBwEzUInQxKxjqn74=;
-        b=lF3g+X7I4MJQO3LpzEx4ezUBBEPff8jVBGvMBGuxW1/NGtZgfeI5enbPFouTUHw+Zb
-         7Gnki5fWEiQR9FG38y9A8sdltFQL3MvjZfr7IPyKUVLHW7Qye00B8Cv+s4OgMH1Fp7e1
-         rP04tVMpRoctJRQSdDIHhL7U1Jfakm43Tlhy5ELsya/LFhPfFlIq8mQUu1dCIN7jVcx5
-         jpQO27gya1uZoP7aC4lISdjNFEc1D3OZamhRwS4tVtD+KEzuLJ/HEXUzJZcEz0aoBuza
-         k7uHg715p3QcvgY4OFX98cj2mqboUE7r11s0pb9JKjUFKfj8Z2r16P3gnE9VoOuLbaww
-         jKwA==
+        bh=Mv5PZ/MVDDOKzC7mTafEfq3SK5tNJ8cn62CE8cNiWXg=;
+        b=nwAJhsK5Wez74zvpOpUj/YJeAaHDQYQHYt0BZzS+u8Q5dAREwsDSHbALeHxflrAu7m
+         wN8zPE44HP2KaVpGvjW8gxhBzzv4/2j7l8rLXmT44+yH7q0qu6XHls46LLuCP1ZwefM4
+         j5DtDUHfxb8kJZxfF6Ggi1k+6js0WG0R6RPvs9mSpsf9U6Sky2jh6y7ILs4+J3ihzHbh
+         GjrjZgZuLuQCeFZNs4gA4TJ7WOkEe4caqY9hEKJpE51RsWclf2V8+h6wjwkloiRV/YWc
+         UuwUU8MT/rw004s09vW3IolddvdXA8teKIGEfo4sTdui1oTGnZMOSBuLeBeIf6oHxiSR
+         WPgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788689233; x=1789294033;
+        d=1e100.net; s=20251104; t=1788689258; x=1789294058;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=+3ouU/PkVGCvjpETYDZTI0h0W7DBwEzUInQxKxjqn74=;
-        b=OrKfiMyOHNdbelRSVtzAuewh5x234NKcHD1wPGUT/RrC65DyZqrQjh4gbUzXhY6jLZ
-         tsThCH3bBAjn7t8J69y/+DTX6/eg0CJR080lggr/tT6iZ7bYjePaeDetn7KQT7WXwZY4
-         7iiwCX9+50+egiogxBm+yb3OHh4TyTNVsZvg9pv+f5b0Mi0ixsP6I2L/7h7EF18CticL
-         T9ZH7Src4FgiZRceNt2LjvhOt+oIVaDNQLZRNqna3O0xMuDl3nhRbxsIomWsAD5D4Q9V
-         sjquqL0p2R0BBmjMcdJ16yIEBdcOBHqQLIlRdBSADgBGc1S5qiEKPCfOfbio6WT/Mzgb
-         IYgw==
-X-Forwarded-Encrypted: i=1; AKwUvByZhV7CDe9q5hFpjfeeQ++gLabklDpusnVPbUrnAuQYgwRaSpMRNrj75wSLu8evR5FzdZNLviF80LI=@vger.kernel.org
-X-Gm-Message-State: AFuF++kDCs5kicFWQzpv/f2233u39d54ygayrnoCANknWQGK9O+BkkTv
-	DjULGZ9JsYALOXAdij5GVgirJMPpsWt8mRjsxLjQxhtLso4mj/K1FSts
-X-Gm-Gg: AYBFou0f8SEjKTz42gEAsrwqd3X2a40OFFEGFbgytsgg2376L7mGz+CDMY2hEBt1FGG
-	s0BEAed7d53CJT24xkum8CV/fXcaKsNFeFFqPDUCNIIhpB8b4yMdDRfXQTzxWx6g0+q3iJILw2p
-	n+XrQB/KfsaamAv7q85BnuGNc6tIhpZsrlvYyk33SlXAjWO6rqJ0WxifAX+VKDYz49ZB9Hf6LQR
-	o7QkwPYoPUyiIQMKq+TjP6TXleukZrGzI+/L84yeBUjn5SQEFm2WqjG+cVISR59ZKyzXjWHSE6B
-	bJKToNsF8S/4c1nVcnaSVWuF8xrxsQqxqfA9XSq0yr49UNLUAImZUI6uS9Qt0X0wmZj++4O08Fp
-	y1rogVxP5MuUNhvHxmZt2XOsqH8jZ7P7uWoQQ9PWzzf3Nbau3k74XXqx80QaqZpZnZx1D4KkZqR
-	I5lyYa8CpvftwxOAL8Q3jtdrKw43nP8bj+L4diKLaX4/lx9b8Sgo8Gp5EuO3/GJNDSYrnUp2itl
-	tzWnvowmZ0afNVgJbJrfmb726rmK59m2m8MXZlPTggKhhLIAbxDOUWPb0kqkDYHaNk8CQ==
-X-Received: by 2002:a05:6512:3d02:b0:5b6:10bc:b863 with SMTP id 2adb3069b0e04-5b61768ca49mr2220492e87.17.1788689233221;
-        Sun, 06 Sep 2026 03:07:13 -0700 (PDT)
+        bh=Mv5PZ/MVDDOKzC7mTafEfq3SK5tNJ8cn62CE8cNiWXg=;
+        b=ZaR5vmC7WF+dNh2sAjBdblSTAkfN+8YdvxeW9uGELX0cpHCBuCXuMbyJnbg8LyI/sm
+         as8J4fXY4bN+8E95KkNur1sB/B69WRfA/abSCNUYajwulHphZclpKCxka17MiUqP19oZ
+         J94fIap0VSMDTAwudivPlZOTZ0yu36cfXp9NL2HseuJqZVMdIiCbIzs3mBhN3Fr/k79x
+         GOHsd6OylSRPfFc2BZEMr/AU/N2DHlwxzsX0OeIkXSI2TSrBg+3Oyh6bZylmxJZAkiEM
+         oSLRPqWjeVL8TYTwU1v7fiosrbf4OtIgEsPrlEQb6HAiI8M91E8L3FnReWBY5oglgc0i
+         h2ZQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzNxagPaoRONtmJzIhhpEiECdK0e5HT234AZ0D2j0aC8X5Ai9iCieDnfEuw1JRhfvXhajW4B3ukaSQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++l+4wwk+MAEzdrRvacw85UgC7FO9TF/CXIvhCnA9eabHT8wqG9T
+	ScFKzEfj77DGCQKiq2r1+Mc7002N3Ux7FqCIOlfZMOzMh8rI+ZVzw0BZ
+X-Gm-Gg: AYBFou1F4A2QBKs83UpAu06DbsDLtRxyPCBU8mHHQzZAVY9bQIxXDa+g3nEkiTunpeO
+	MsZKHFbiHBnv6N6Hm0HUoZ7jgXz2ftV/zPQ/MGcZ4g4Z8Z5hM7Jn0agz4AVirszLYRPx3b0FXp6
+	uhrTX5VM12vZSh5f5ntE++enGW+lZEdJyPqX+95l9vU0rWVez77mdKSN1+Hb0aEdnLnm1kB/Kl+
+	RDhSdgmm0FA0YxVKl1R8No2jJV1ZzHM9mJVBEG9xrqmDmWoyq4xBrgBNImg92sVPpkvQi7vwOGr
+	l3KFYxy6VZND8Y2dYQBYHekiMSBcP3Am/ZZA9IXiQv4uaw6i7TgADdowh3p+G6lQ2/vAvF99Ki/
+	NN2ELzDuF42NpXQYa8i9GcBu+YfMlIsPf1Vw3xirB6fq5mO84c42uRmmngAkYTXRyvf8VzAKtkT
+	K6QV7izDWqnOXwJD63n+Aii0c0PPz1NuJlXdK1iBRM4Q+jPu3TNVSrdHcZVoZBp6bahWbjTSCBD
+	dHuHsV7OokiC+naHb4ZZHKP2qm6xrsEkWcmvVkflcD5v6pFPW23xJIrIA4=
+X-Received: by 2002:a05:651c:552:b0:3a3:74b9:8a78 with SMTP id 38308e7fff4ca-3a374b98afamr15556071fa.17.1788689257905;
+        Sun, 06 Sep 2026 03:07:37 -0700 (PDT)
 Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b619820db9sm1486211e87.54.2026.09.06.03.07.10
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a3705a9b4asm21482421fa.31.2026.09.06.03.07.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 03:07:11 -0700 (PDT)
+        Sun, 06 Sep 2026 03:07:36 -0700 (PDT)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -73,12 +73,12 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	llvm@lists.linux.dev
-Subject: Re: [PATCH v6 4/6] iio: pressure: dps310: add triggered buffer support
-Date: Sun,  6 Sep 2026 13:06:53 +0300
-Message-ID: <20260906100707.435298-1-zoone.rupert@gmail.com>
+Subject: Re: [PATCH v6 5/6] iio: pressure: dps310: add hardware FIFO support
+Date: Sun,  6 Sep 2026 13:07:29 +0300
+Message-ID: <20260906100733.435411-1-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <ao1bBFkLXIIgNl49@ashevche-desk.local>
-References: <20260824201203.396651-5-zoone.rupert@gmail.com> <ao1bBFkLXIIgNl49@ashevche-desk.local>
+In-Reply-To: <ao1i3hKEpAgHLICz@ashevche-desk.local>
+References: <20260824201203.396651-6-zoone.rupert@gmail.com> <ao1i3hKEpAgHLICz@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,23 +87,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Tue, 25 Aug 2026 12:06:12 +0300
+On Tue, 25 Aug 2026 12:39:42 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Hmm... Is scoped_guard() too bad here?
+> I stopped here, I think you should understand what this code is all doing. Now
+> it's an AI mess. Split this patch to a few smaller ones each of them you understand.
 
-Jonathan asked for the plain form on this handler in the v5 review:
+v7 splits this one into three:
 
-  It isn't necessary to use guard/scoped_guard() for all locks in a
-  driver if they actually hurt readability.  I think that is the case
-  here.
+  read buffered samples from the hardware FIFO
+  derive the drain interval from the watermark
+  implement .hwfifo_flush_to_buffer()
 
-So it stays as mutex_lock/unlock with the goto. guard() is kept where the
-lock runs to the end of the function.
+The timestamp estimation goes entirely, which Jonathan asked for. With 3/6
+split as you asked, v7 is nine patches.
 
-> Side note, at some point makes sense to move from 1000 to KILO.
+Retesting on the BeagleBone turned up a bug here: the drain discards the
+compensation temperature when a batch pushes nothing, so a capture can fail
+to start at all. 4 of 6 buffer enables produced nothing in 3 s at 32 Hz
+pressure and 1 Hz temperature. Numbers in my reply to Jonathan on this
+patch.
 
-The site above it is pre-existing, so both should move together in the
-cleanup series rather than leaving one spelled each way here.
+> Can _rate:s be negative?
+
+No, both getters return BIT() of a three-bit field, so 1 to 128. Errors
+come back through the return value.
+
+> 30 * USEC_PER_MSEC
+
+Pre-existing, like the min_t(s64, ...) from July. Both are in the cleanup
+series rather than here.
 
 Rupesh
