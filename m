@@ -1,121 +1,178 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F5A33126C2
-	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 19:44:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387D8358D32
+	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 20:15:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788723865; cv=none; b=g8ZngJvMkWPAx090uWYIsnLo5HA+7mNa/zOH4K/TEuH4LQx8xOoOKYWE3C/an6VsVROvgR4Fd6mFYVMyuE1qa50Zq98Dj8Ynlc2gMpj0s0qh5mfAc2PNqeHVAr9bk868PX6es3IwG7yUKEpa34j2bbK51uQNWxp1IBvn6bqsUy0=
+	t=1788725759; cv=none; b=A124l3zRjVgwg++YQdGr9u/6CcmtihTnn/Blifg9MlR9coSZZepN98IIpxmBnAiOeQCypboDMMs2OBueRv2cEI5q+4UuG4ZpgCc7BQH0jmBnbQzbEtp9Z1Ir1/brDfF7cJY3N1IwUkC2oJqvF1snWW1L6obHcg4e137WHBaXVZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788723865; c=relaxed/simple;
-	bh=Z/QLbGZLB99eUtuXmocBvEQikv5QC/t9YyuXuQ0XXOs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FaqFzk2w9w89cd1HkncHJBuwzkgjUUH+wU0gBGvTL22GPrkvr+IPCDe9FTKABEAlO4ZJBRjB2k75woJzjigxHXZdMunM+2P3Jvc/bh1QOq7KgVzzw7keR38dv+CxCagJtb+h6U8OlZIhZVKrGxO0obB3/pIy78SeADy5yfvsrac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nJDTvZvT; arc=none smtp.client-ip=209.85.128.52
+	s=arc-20240116; t=1788725759; c=relaxed/simple;
+	bh=lVWirDgq9jhdWkcO+jSEW4AhtGfzyoSiUVzr4lC+M50=;
+	h=Content-Type:Date:Message-Id:Subject:From:To:Cc:Mime-Version:
+	 References:In-Reply-To; b=NcAMk7YuoygydLfz88dbAJp5Q50DAiSFEXh8FRshbSZVYXCvct2GxETaVa2hDijf/F7Opu0ZvmK19+hbSLrTLMxaWBZlcYYhoEQZ5g4qpwDFmY7vreE4XXQN2pc/rT4qHGd+8G/FwlxymZx4l/EAsC63pgeOSHdYYaye0bosrAI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M0zrl+Sl; arc=none smtp.client-ip=209.85.128.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nJDTvZvT"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-49b392ccaacso42371155e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 12:44:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M0zrl+Sl"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-8664769db58so9150747b3.3
+        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 13:15:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788723862; x=1789328662; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=y1git0WZ96wbt+gAecFgsUj5GK1DOjSXBKImfrfl2XU=;
-        b=nJDTvZvT1bCMBXJXlHTu6CIhUZx5BNJ7cxRi/5qKbe7/hbDNNpIrHr6Mg8jXTQlCNn
-         JWFg+4GuuwJ5ISdt1e7zP9PYR2QrSOvLftSk5f26rL2hzy0Zd4NLvvlpkW/DyD58/L0L
-         t6Y6cB+uvrChDyZ+WiXCSbm0gBdhvGFJm/Yi0GJiCztw8vUfhVkPQHc7QFRyTYc90BS0
-         Ykko0UtXO9OkYBSaukbhJebU54Ap1hMOZHLnfDGe939PRWwxFxtCIkNs8ecRGeCLk/Ar
-         I/o2WU2r57WvEp6xv8L1rD2F/+/e4DIi+9+9MHR7Qqwl6YGlk8Jnw65yRY96CeMEJvGg
-         ixVg==
+        d=gmail.com; s=20251104; t=1788725756; x=1789330556; darn=vger.kernel.org;
+        h=in-reply-to:references:content-transfer-encoding:mime-version:cc:to
+         :from:subject:message-id:date:content-type:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ukMsWPPljTo6wl4qbug5zblOIdA8wRRZhHKCz6k6Od4=;
+        b=M0zrl+Sluksgj4nocGa7aEaH1qOilQHH9T6LgLtTFck+MqnHAk6WR/m4VAq/feO86s
+         xbv8F4Aop/0wK6ICM4hfXefm9j0mZve05S+476thzeH/DnmL5868DKkpvAmwf3nbKnP3
+         WzNpW2p6Bx3vltIdj3hUUPy4HWsEjLcHeoSeiLpRd+M/F2IDOwpjkZBThfdiSJr0JX/D
+         l33AUXM/xSN6AjM/lvVQiw9xnBCEykR54UzhbIjwW1Iuo7hHbHgnF13DElG2sKB1h4ld
+         RqQJ+q5yByyYhHKYBr9SuGkD63YJscsLc6MV3yjg9S7Dv9fV16LrUDDaSKkkzVffMoXw
+         dvUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788723862; x=1789328662;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1788725756; x=1789330556;
+        h=in-reply-to:references:content-transfer-encoding:mime-version:cc:to
+         :from:subject:message-id:date:content-type:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=y1git0WZ96wbt+gAecFgsUj5GK1DOjSXBKImfrfl2XU=;
-        b=S+6iAuHaMIRhEvjar/4PCRIfzYhyWOuZbGLkIB0pwrEDG0ENG3/3W3X2l4wbxcCdPc
-         OeV1LLQVck9ApyGeSv+jdSithukRHaoweTz7tEtyMiEPF71WncdFSalIzrwlvXsX4fso
-         SHDkJZgtW+Pvy5ddmq3AbYup9VeHXFTnb2DeJtF1oi/9iSPYitFiXW+HIkfGxmuDAKXc
-         QTB6wZfzKuc7OwGY06S7n+8X7sx2AMea/DXPA2slJQ9AAqAQH3G0whROkZOYOJ3mnxwQ
-         Z7S/j5SQe9tEdz+h8kCTNtsYYW0iJQUk0Sy5hfKxnsRyWDeisOAceD6KLpwbg8rnHMj3
-         21WA==
-X-Forwarded-Encrypted: i=1; AKwUvBz2umf4JwZV8lsS56GpOrdHrlfgEANqicVnRsVj+QFlBB+4kXoKdXKy59GsBJYXAhr81u+ZBBFWfQk=@vger.kernel.org
-X-Gm-Message-State: AFuF++n4bYmSdrgBeVaW+S5RBvbORiztILEzMEVQ0huF94JpPKRejncO
-	wpUkc6AZ0Ku2WNqCp/wmYg+Zbq1ZQwcoM+4y6IDy/rBiVhfsSajjfgu1
-X-Gm-Gg: AYBFou26WIi8HZo0JVJdAWj6KOX6yjZuz8+Sl1xns3K6HQA0Xr1CROnhzXm2L8PScd4
-	ueZ+ABECCrAmbz9zPXRa+kLG4LB4nweJ+DwPOij5Q362Tze5xV0Oy8tvxpgzyg1sSGF5iR6jg4X
-	NIrV7IZbssnnHmsqtJGjixBL1Mk7EdP9HLs5mFqRZbb/+hJAV6An1CIb1TL5zs98sEtnBwRE7VY
-	0UercJYKXPjl76TazSIA0sBh60u54T+U9FL1/PWRkHGOg4+/Rhv7e0g7tKEa3huhar4y+Fge1po
-	zszTmEql6FR7Nk0i/ocdNrT6rgU6eT8rnVB+JRrvCzbwdvr92NpdooQvj/e4VoZZaFupTXZxVbg
-	/GLACMtOAPh08UMsTDKV5sB3I2Ca7+IteYtvssmJSkDUj2zw5nmrAiJUdp3EbJfsF7Jd3O+dSjF
-	DCFB+TjD4iHOWBnbWJhVzQInqR9AcC7m88yW+rXpuMNeneJm43xWCybolO86mJPP+3p+P3CubnY
-	DqUKIs5VsHw8QpwX5tnyoIg5dZtv0EEKFQvBoYZhk2E50bw5WQIaEQk4X874OU3tpHv5IMhEYZ8
-	BzKcIqyp+UF5FXFdYaZOv+iUwP2/SmkyM7ZnC/GBTFWTkA9WrAJbgEFf2cWT2BCjT8ZQ9WEfENc
-	nKvBcKUoWZ5TMBUX7S98cmg==
-X-Received: by 2002:a05:600d:113:b0:49c:d618:e341 with SMTP id 5b1f17b1804b1-49cf827b19cmr106524155e9.14.1788723862396;
-        Sun, 06 Sep 2026 12:44:22 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf7740d44sm567978165e9.15.2026.09.06.12.44.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 12:44:22 -0700 (PDT)
-Date: Sun, 6 Sep 2026 21:44:20 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Tuna =?UTF-8?B?S8SxbMSxw6c=?= <tuna@tunakilic.com>, Andy Shevchenko
- <andy@kernel.org>, David Lechner <dlechner@baylibre.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [PATCH] iio: dac: mcp47a1: Allow full-scale output
-Message-ID: <20260906214420.580dec27@systembl0wer>
-In-Reply-To: <20260906185942.595251a5@jic23-huawei>
-References: <20260906045428.4f03494b@jic23-huawei>
-	<20260906090802.1282585-1-tuna@tunakilic.com>
-	<20260906185942.595251a5@jic23-huawei>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+        bh=ukMsWPPljTo6wl4qbug5zblOIdA8wRRZhHKCz6k6Od4=;
+        b=h9eYCVQJe2Ttj3YYHuL8tk1/VyhSlco4Pu9Mdcyj6RZDfQh9QeuKTZxx1MHZeTRF5x
+         0sO34prIfElRbDRaqCaklw++9IEMVjottirCvjSDBiqbaCJNFfBK7YmcWLTwjRbcBjVz
+         Vn+/YRQnEP8ZHX+5Gz+nZzOKUCfbUcJ9ZgX1RA9/0u8zF37h8XPK0EZm6YA6M0fKHj4O
+         iuq7ePVpX9VSVYcl2AMyWsmy9q3ZkgmwyyadiTIGrPkXbMb2SIP64eFBMeGgdVS8SXIh
+         O/PdWhTIGoAkFx7/R0ifQ1ofiojZDsBz/okvZMD0NwTy9T/kkQz6r6xSv8jdAQY/HyrY
+         Pf2g==
+X-Forwarded-Encrypted: i=1; AKwUvBzmsG0Qbnex0eO7isnZDv4p8OH4H1W2YE2AORilvjonTUB2feENKVZLF//JZhP6qP0mKxmcKwo3PZE=@vger.kernel.org
+X-Gm-Message-State: AFuF++kK3CgdBRGSRhE/DoMOubhKG5YY5BeuSJQTjoPWs/KTOzuw3fg8
+	N74Ovqxt9/8URLodFzK+ZnshhYwNMko+Wdb5UOeadoJf9eKq2gwcwq/C
+X-Gm-Gg: AYBFou1GmBPAKtyEUdbjZXJM8Ac2o0GZ6DqCplo4y4VYN9Mw9tM02eh9vpYgpKH1whj
+	BryqRraQMcPtIWGhkkQ3/8IF1AYBn+HJVLN1AgvRYUU4IWFoPl+lDyguVv6f1Q8Pb2s026Ro6C7
+	dUdA96ne/mcXnoA7jiztCG/AEJp0JMyDeBDP1IMFedXZy0ccZrLafsVW/CVkSkDzniOCANfqXco
+	lTJ0jQMu3T6sVzc6fpsdlsmQWbDkQvCj5dBowS7tiyTCbIfCRPwk8VBQhPKx+UR8eCYOx426Wsc
+	s5FyhR8+UsDyNeq00ZKhiO7WgD8ohkrKdPOk1p9W3BvH6TfOPegH4rH7lWcKto8GwU9Mb6VcHfO
+	91UQT68KhgsGenAqHVtTbHNCvuh+NqOQX8f+3xr+m7nczbLAAywPDR+TV/SdyEPaHMNM/BSHdka
+	TV9BCPxTxZ5xL3c1NRaRGdf47Wk1YyhtAwClP3ZO5g4GIF+fnfp62Wm3HW7P+V0wwQK5omW7Nbd
+	pNUj9yvRgTmzC72cmyOEQ==
+X-Received: by 2002:a05:690c:4b84:b0:866:4769:d5d5 with SMTP id 00721157ae682-871221a80bemr70860997b3.4.1788725755822;
+        Sun, 06 Sep 2026 13:15:55 -0700 (PDT)
+Received: from localhost (host-190-210-193-251.iplanisp.com.ar. [190.210.193.251])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-871439c4566sm60627987b3.4.2026.09.06.13.15.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Sep 2026 13:15:55 -0700 (PDT)
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 06 Sep 2026 17:15:50 -0300
+Message-Id: <DL8ICXL9YZ52.2N7SL1NG0LV5B@gmail.com>
+Subject: Re: [PATCH v4 03/10] iio: adc: add the ti-ads1262 driver
+From: "Kurt Borja" <kuurtb@gmail.com>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Kurt Borja"
+ <kuurtb@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "David Lechner" <dlechner@baylibre.com>,
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260828-ads126x-v4-0-1dc27e9c0260@gmail.com>
+ <20260828-ads126x-v4-3-1dc27e9c0260@gmail.com>
+ <apFCNNzhPfq0T6rn@ashevche-desk.local>
+In-Reply-To: <apFCNNzhPfq0T6rn@ashevche-desk.local>
 
-On Sun, 6 Sep 2026 18:59:42 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri Aug 28, 2026 at 5:09 AM -03, Andy Shevchenko wrote:
+> On Fri, Aug 28, 2026 at 01:38:18AM -0500, Kurt Borja wrote:
+>> Add the ti-ads1262 driver with initial support for the primary ADC
+>> (ADC1). The ADS1263 auxiliary ADC (ADC2) is handled by a separate driver
+>> and interoperability considerations were taken into account.
+>>=20
+>> Various features such as accurate timeout delays, per-channel reference
+>> sources, scale, offset, settling latency, excitation currents and
+>> diagnostics are intentionally left out for future support.
+>
+> ...
+>
 
-> On Sun,  6 Sep 2026 09:08:06 +0000 (UTC)
-> Tuna K=C4=B1l=C4=B1=C3=A7 <tuna@tunakilic.com> wrote:
->=20
-> > > If AI had anything much to do with generating the patch then
-> > > a tag for Assisted-by: LLM is appropriate.   =20
-> >=20
-> > AI was only used afterwards as a sanity check for the datasheet,
-> > in_range() semantics, and the final patch. The bug and fix came from
-> > manual review. =20
-> Ah fair enough then to not add a tag.
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> >=20
-> > Thanks,
-> > Tuna =20
->=20
+...
 
-Hi all,
+>> +static int ads1262_dev_send_cmd(struct ads1262 *st, u8 opcode)
+>> +{
+>> +	guard(mutex)(&st->xfer_lock);
+>> +
+>> +	return spi_write_then_read(st->spi, &opcode, sizeof(opcode), NULL, 0);
+>> +}
+>> +
+>> +static int ads1262_dev_read_by_cmd(struct ads1262 *st, u8 cmd, __be32 *=
+val)
+>> +{
+>> +	guard(mutex)(&st->xfer_lock);
+>> +
+>> +	return spi_write_then_read(st->spi, &cmd, sizeof(cmd), val, sizeof(*va=
+l));
+>> +}
+>
+> How do these do not conflict or race with regmap SPI communication?
 
-sorry for the testing delay, did some light travelling this weekend
-and didn't have the hardware with me.
+No because the regmap interface only covers registers accesible by the
+WREG (write) and RREG (read) commands. The data holding register is
+accessed by a different command (OPCODE) RDATA1/RDATA2.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Tested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+>
+> ...
+>
+>> +static int ads1262_dev_reset(struct ads1262 *st)
+>> +{
+>> +	struct device *dev =3D &st->spi->dev;
+>> +	struct gpio_desc *reset_gpiod;
+>> +	int ret;
+>> +
+>> +	reset_gpiod =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+>> +	if (IS_ERR(reset_gpiod))
+>> +		return dev_err_probe(dev, PTR_ERR(reset_gpiod),
+>> +				     "failed to get reset GPIO\n");
+>
+>> +
+>
+> Unneeded blank line. But can you use reset-gpio driver instead?
+
+I'll look into reset-gpio. But I think it may not be worth to use it
+because it may not change much here. We'd still need to manage these
+timing constraints and we also only use this GPIO in the probe anyway.
+
+...
+
+>> +static int ads1262_parse_channel_node(struct ads1262 *st,
+>> +				      struct iio_chan_spec *spec,
+>> +				      struct fwnode_handle *node)
+>> +{
+>> +	struct device *dev =3D &st->spi->dev;
+>> +	u32 pins[2];
+>> +	int ret;
+>
+> Can this use the property names for 'single-channel' and 'diff-channels'?
+> This will deduplicate the same in a few places and reduce potential typos=
+.
+
+You mean storing the property name in a variable? Sure.
+
+...
+
+>> +	st->clk_rate =3D rate ? rate : ADS1262_NOMINAL_CLK_RATE;
+>
+> Can use Elvis.
+
+I'm not really sure what you meant here.
+
+...
+
+Thanks Andy! I'll address the rest of the comments too.
 
 --=20
-Kind regards,
-Joshua Crofts
+Thanks,
+ ~ Kurt
