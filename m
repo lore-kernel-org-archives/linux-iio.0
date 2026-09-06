@@ -1,87 +1,165 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF0B126A0A7;
-	Sat,  5 Sep 2026 23:40:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E94315746F;
+	Sun,  6 Sep 2026 00:11:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788651625; cv=none; b=MbNqGgWMpeDX7Q2XCbGDarwidrXUg9lB1KqTf8q+WCmVfuExEl0OQDCrn1/YAs48xI61sc6aivETiE+hoI+AJFCtOXHjHdJTA4CWafGrroXXgn5uRQUm0OZ3LCtl2LrtRqcLrvNI1onf6kKwkoYzAt87rAJ2z0OIwXGUcgfJxm8=
+	t=1788653511; cv=none; b=rnZmvbNYni3TgJf8yGCsFrdOQ6dnp4fGPhVCojDmm8cGJ0dSylh8pvR3oZ/epZlSNk87MxsRmK2IyZVeYfvXV1g7nePg45rfSSE49oYmQ3XE5jc3Oqi/sXBiltJ61oUTH7bhp3LYKsaURZDL2LggQZKFN4vTHnVcvhIUdFN9374=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788651625; c=relaxed/simple;
-	bh=EzM+g04VKtJs/sbBtht/tz1iD+imnoy3tcg3M1I7mVA=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=RQC7dOGJdfhhb0HSYDYCt79z2AC8YFGxHzCM0cY2CaGq0lUaiLRQlO4Mi3nQlErYQ7um+75pKnwnYGrGqfiPCogbNCSS46EkZVx1naFrmp3LosTNYGLQrUu7x3RkTkO1Yce0cu6whddqkvuhPlLRsBHugUIvXKt3IPMvc/fPOjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TBTjlUlk; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788653511; c=relaxed/simple;
+	bh=l1hkHsIy+E+8CveQ8h98HHxdF1yyMoJ1DepDtPFgWyU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=nQVU01g4KdGaIvxzpnisgVIDXxqPiWgh/vU3U6IKzPQqoZs7im2eHqHtdQH6ExnWOR21QVtWD6E9BXxI5Ua0EW8v4rQD7jc8iOY/BLEFA09f4coiotZ3LhIYJTJNB/+gRmMhccDOZmrpk+B0UCrHqyfUlGkpRjXehiMM2Tb+omI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ub4f8Ns4; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TBTjlUlk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9B01F00A3A;
-	Sat,  5 Sep 2026 23:40:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ub4f8Ns4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 567AA1F00A3A;
+	Sun,  6 Sep 2026 00:11:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788651623;
-	bh=LTPfWvt4FFNJg9koUy8BlGjHJrozzgeznIzsksiu7Ks=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=TBTjlUlk7Tlng+aVC6Q0tsFpWDqeRwDLOTz5gBiArl5QVUuPznGGwhScWGQOSjMUZ
-	 mEHojyNSG9MgGmsugd/VIIZfkwPaBBPZUDB+KyJkaDeaKkU9ukHbAoKTdKyS9okOjC
-	 gzTjTI7uifNCAL9ql6253ZMJTH71tpGof+eJnbEJ4gvxjtEwnDuJ/lpdudrQYLdRoh
-	 uEC/zgOkMy7cZf+/dedjk0dvIQbhwBgtAlwYlKL7eIz4mM8S+1mpIbpT8w09thZwEj
-	 faa8x0EQ22SyzGY/cjBZJ5fIBBxrSeuoL6c2T/IgN5DcTfUMWjoSrgfDkz7qNCiwz4
-	 Zg5n6gtZVIeCQ==
+	s=k20260515; t=1788653510;
+	bh=P1VhBhJ2SVBj84g41MZsEzrPAza2UbfNOvtzAxLUEzo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Ub4f8Ns4T6gIS8ZTlqwC7TzmChwVMjMAyFYwwZjQtbeUyWzDjZG3S5JAaxnpZoNYj
+	 PSwep+vKMbOPs2PBNTMh0U3Qpj4nI5HVqkikT5LTAmdMLXhHT1II+sEzMrGdCHfbTP
+	 8LtPiTelZvgmka1bc9Vs/SJRpBfEqz31pq6WsD5fx+c4cym06r2ZIEqicLEqyNcjW0
+	 J2JhfJSAq6LfjWieL0HTQtlNeRFnCkbfmd2snR3MafIP/6HQTugpvfSQ0OxHiY+7Ll
+	 dwR6bE16Vg/ZHQuLIWw0f7qWm3hI+SSDhgxKLmnzLrIjkhtsQ8sd3Awg2rpp/pZrnq
+	 erkf5mx7UQg2w==
+Date: Sun, 6 Sep 2026 01:11:45 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: light: add AS7343 multi-spectral sensor driver
+Message-ID: <20260906011145.4a0f4933@jic23-huawei>
+In-Reply-To: <20260905084258.350fdccb@systembl0wer>
+References: <cover.1788586814.git.marcus.yu.56@gmail.com>
+	<521c26094635bae6376d92f3cecf84c911d5a740.1788586814.git.marcus.yu.56@gmail.com>
+	<20260905084258.350fdccb@systembl0wer>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 0/2] Add support for AS7343 multi-spectral sensor
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-In-Reply-To: <apvKFENwRCFrZhDO@ashevche-desk.local>
-References: <cover.1788586814.git.marcus.yu.56@gmail.com>
- <apvKFENwRCFrZhDO@ashevche-desk.local>
-Date: Sun, 06 Sep 2026 00:40:20 +0100
-Message-Id: <178865162068.3402141.1669078775218314364.b4-reply@b4>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=621;
- i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=EzM+g04VKtJs/sbBtht/tz1iD+imnoy3tcg3M1I7mVA=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnKhmk4BDzQ+o1HPg+acphkELf71jBIRwzTwEY
- IeE4wyG/DCJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCapyoZhEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiKlJD/94QbhBDi5ywvKpRBJwKxvAZIsolkHS2CkLsehBH6kJRJF
- BQLzpiW3jPjtsNGpRDP5B97JDL0n5yU4gX89BxmrMkb53IJ1WRFTSFCdsYh6sR1XXn/Aa2P+xyq
- KtdEjgGjtaqA64yBA1oa5YK+pNNNdh9V7JIkGiyxTECnq/Vmu7UG9+JrhrvB0ioT6LbNemrVuUa
- 6Z2vSoNNlmzgADaW3CFqLu+bdgoSP4q6dsbytk6jRMu1KgKJXBEw3YdZ8OzRzUaFDOdAWheIT2w
- 6QddqLUQtUFTx8uUdVELk1MAbymTOscCLuFQmze3eRI40gy4paWcMaScZorIRFkeHbV7/v/gehZ
- zWyHKM3NWRwLgzMc2QQHpomKAPBpsqfp7LKzd9OYvZI8+xCDGPRPF1bB1WyhC0naj4x99k/mF+o
- zXI9XEU6FKjZ0mTV0fz+ehEivL8LGX+6Qgmss+7a3nS5+7WchXlVyeV1kfm8weTG5RL0b1lsfD7
- GDwdxxU7vUiqi7gp6ullJHxhucaGJSQxDjvWXSoMlQ8D1iFHX6Vtc7jZe5LtwLCkVuD+Ea7lCL3
- lUKnhqljoNSaUhRLqLnGakqg+FwiYaAmNA45fjA+i1hUMzon5lw50GJ+PY7VC6GL2U4YWFqQP3L
- V8jh7GgZRODi+2+OVryMJnGWayjgenKEMNQtBEw==
-X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
- fpr=6E2966B387840652912681B154853499C4F41688
 
-On 2026-09-05 10:51:48+03:00, Andy Shevchenko wrote:
-> On Fri, Sep 04, 2026 at 10:53:24PM -0700, Chang Yu wrote:
+On Sat, 5 Sep 2026 08:42:58 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+
+> Hi Chang,
 > 
-> ...
+> Comments inline.
 > 
-> > Datasheet: [1]
+> Josh
+> 
+> On Fri,  4 Sep 2026 22:53:26 -0700
+> Chang Yu <marcus.yu.56@gmail.com> wrote:
+> 
+> > This patch adds a driver for the AMS AS7343 14-channel multi-spectral
+> > sensor with I2C interface.
 > > 
-> > Link: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf [1]
-> 
-> This is a Datasheet link, no need to have three lines for it, just
-> 
-> Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
+> > The driver exposes 12 spectral channels (11 visible + 1 near-infrared)
+> > via the IIO sysfs interface. Each channel's raw data is provided as a
+> > 16-bit little-endian unsigned integer.
+> > 
+> > Basic power management (suspend/resume) is supported. More complex
+> > features such as interrupt support and configurable gain/integration
+> > time will be added in future patches.
+> > 
+> > Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
 
-In addition to this I'd like to see the tag in the driver commit tag
-block. That is more useful than having it in the cover letter. 
+Nice review.  A few small comments on necessity of features etc
+inline.
 
-Thanks,
+> > diff --git a/drivers/iio/light/as7343.c b/drivers/iio/light/as7343.c
+> > new file mode 100644
+> > index 000000000000..b620dd308380
+> > --- /dev/null
+> > +++ b/drivers/iio/light/as7343.c
+
+> > +	/* Need to set REG_BANK to 1 before we can access ID */
+> > +	ret = regmap_set_bits(data->regmap, AS7343_REG_CFG0,
+> > +			      AS7343_CFG0_REG_BANK);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +	/* Check device ID */  
+
+...
+
+> 
+> > +	ret = regmap_read(data->regmap, AS7343_REG_ID, &val);
+> > +	if (val != AS7343_DEVICE_ID)
+> > +		return -ENODEV;  
+> 
+> It's better to just do a dev_warn() in case of any fallback
+> devices instead of a hard return.
+
+dev_info(dev, "Unknown device ID: %x\n", val);
+
+or something like this.  In many cases a mismatch is not an error, it is a
+fallback device tree compatible being used.  This is common when a manufacturer
+issues a new device that is a refresh of an older design and so interface
+compatible but with a different device ID.
+ 
+
+...
+
+> > +
+> > +	/* Set 83.4ms integration time and x64 gain for now */  
+> 
+> Good for an initial draft, however you'll definitely have to
+> implement the write function for this to get merged into mainline.
+> Skimming the datasheet shows that there are more integration times
+> possible, not to mention that you can also set the gain etc.
+
+If there is a sensible default / initial value that works most of the time
+(short value probably to avoid saturation) then controlling this isn't
+a requirement for merge.  It's a nice to have though!
+
+...
+
+> > +
+> > +static int as7343_suspend(struct device *dev)
+> > +{
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> > +	struct as7343_data *data = iio_priv(indio_dev);
+> > +
+> > +	return regmap_clear_bits(data->regmap, AS7343_REG_ENABLE,
+> > +				 AS7343_ENABLE_SP_EN);
+> > +}
+> > +
+> > +static int as7343_resume(struct device *dev)
+> > +{
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> > +	struct as7343_data *data = iio_priv(indio_dev);
+> > +
+> > +	return regmap_set_bits(data->regmap, AS7343_REG_ENABLE,
+> > +			       AS7343_ENABLE_SP_EN);
+> > +}
+> > +  
+> 
+> You have suspend/resume functions, yet you're missing a
+> devm_pm_runtime_enable() in probe. 
+
+There is not requirement to do any specific combination of power management
+for an IIO driver because what is necessary is very dependent on the usecase
+a particular developer has. So runtime pm is a nice to have only (as is the
+suspend / resume stuff we have here).  May well make sense to use the same
+for both types (there are macros to ensure that).
+
+> Additionally, you could enable
+> the autosuspend function as well (note, you'll have to wake the
+> device before reading, there are macros that simplify this though,
+> see PM_RUNTIME_ACQUIRE_AUTOSUSPEND)
+
+All nice to haves indeed - but not strictly necessary. Many drivers
+don't go that far initially and it is fairly easy to retrofit this stuff
+if someone cares.
 
 Jonathan
-
