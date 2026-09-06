@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C1A363C48;
-	Sun,  6 Sep 2026 18:41:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1710F1DB356;
+	Sun,  6 Sep 2026 18:50:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788720091; cv=none; b=b2kVv1vJPtoXAxbCTr6mf2kAfTqNRz3SKc/QNklSzN0XiDlN/bARovNOZeMQqCcPcdWDT0KepocmPgh7OCoNR2pec2TMftBM4Yig9aTtCx8tyEdlSlDvKa395fl3XXHr7/ATG+HsKUBcv/3PQ8bsF6Ct/2f0Qg8CncmHVH+FtgA=
+	t=1788720652; cv=none; b=ACJbjR4pvy20ogy42RlDfUj4v8mjo2eVQeAtAXIuV1jf2FGTdEoR1GOJoSOlBeOvN0jnuHo0AtAo2aNiED+/RvzU1VrIR23gfGB3yLm3i6ShQSDdmhBot046IjxEINz4e7QppZIzZVPtL+v42lQoJ005GayN8NNrrDNeCisdPew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788720091; c=relaxed/simple;
-	bh=bJma6qjMkBmkrsew8txUTwbVezkKEYszB8Or3uujyq8=;
+	s=arc-20240116; t=1788720652; c=relaxed/simple;
+	bh=fkuL9lk57Fu4jgGFnpUqsspdUnoVuz7bcyAX/OlGo4Y=;
 	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=InqLZqq6/bCzVoWyDfqjI7ADMGof5x1ax/lOrrNQBTcUrnl7VpblrTBFMvHMP+V4FvpyE0BEoM0sJUcco0OkxpCNtFicZon1Rdhz1fXRFvnwmhjTwht9cellKTrM553pIexSaRLl28W9DjeKNurU3c2SBN2BAMx4MWzdA5ZdcuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SE+C2dzO; arc=none smtp.client-ip=100.103.45.18
+	 References:Date:Message-Id; b=WvBMy0tgkYM6aGDJ2ZkJNZ+u0vAG4nDe5ADnw5daZw1Sjctw5v6mgmj0DNjrqSOUSSpapWFeLJfj8QtjpZLZdOJQCa2CdcB8c/f5zChMlP72faSy3+tj7X/oP1oqWEEA079xX2zsDb/Xb2cEyC7ZNSuuNS4Mfi6qFZwvlahGc2s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kKAh8Tqk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SE+C2dzO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CFA51F00A3A;
-	Sun,  6 Sep 2026 18:41:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kKAh8Tqk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246541F00A3A;
+	Sun,  6 Sep 2026 18:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788720089;
-	bh=SNvUlsPgaM3N9GqrTTga5ripAMVFDQzMZNOl9a4uyRE=;
+	s=k20260515; t=1788720650;
+	bh=7HHAXfwc9wO/Zue/pcde5vt97DrbGS+ON9z+VUxfPtc=;
 	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=SE+C2dzOMUP2qyZyTgmTuaECGu0d5I5jjfRFVUp4mVCdarbD4zIr/veGMrRiVCY55
-	 xwRf4unPsmwuwKHYRtpZec0t0bguhbGWdaQ8yVvlen7P1SEHvZxt4HioA+9lz9TgNp
-	 SDB7DdfhWtchZLmLqhYaDABjFXYcUOs1F6UBDHdcvesthWDLc4QbrIJItHWIrkXujn
-	 8oP9Km15sPsX+igq6U5BbAnRNSVb/+bFN9Rhoj8XuVRHq3Fe5YjPwq0UPyRSEcILYl
-	 Ne3sgcTCgMiTtC/YZeiklgLA31jkEbTjXwOJ6AntVEynpQlHUiMWSk936irLcG8ATc
-	 jrvXeRLkps88A==
+	b=kKAh8TqkgTri8jBuGG+KdbvGncxJeyRRiS33InVOwFNoIslt2UGzFS+W2RjrZOjql
+	 jxN6TsrE/qs67KBF2ASCLmzTYh7N1luN58eQq5CmkU/V0RoGLS4JN85p0ILX4G8QZ9
+	 23lJHARcgxs9ND28iX0cmcgBjuhaYWYnPMeEth7qzcg5i0HEKwygSdrjYDc/TOk2xB
+	 f23ryVyxKYoKmqeAE0W/QvIB1Fv7TLR6CKYFIVu5wXODyFult5riy21Q2QIzWSiBJk
+	 bbJ3uepvc7BqkY7wrt8vYdj63hkzukap5DG3jvK514QXXAWtAcXSraIQqFP771pCjJ
+	 HoDYrH4dQvB6w==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -34,135 +34,67 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3 4/5] iio: light: vcnl4000: Add IRQ disable callback
- on cleanup
+Subject: Re: [PATCH v1 04/13] iio: adc: ad4134: Serialize single-read
+ operations
 From: Jonathan Cameron <jic23@kernel.org>
-To: Tsz Shan Chan <tsz.chan.dev@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Tsz Shan Chan <tchan@jacques.com.au>
-In-Reply-To: <20260903-vcnl4000-v3-4-5e69c2e715a8@jacques.com.au>
-References: <20260903-vcnl4000-v3-0-5e69c2e715a8@jacques.com.au>
- <20260903-vcnl4000-v3-4-5e69c2e715a8@jacques.com.au>
-Date: Sun, 06 Sep 2026 19:41:12 +0100
-Message-Id: <178872007271.3402141.14738588921320424322.b4-review@b4>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux@analog.com, 
+ jic23@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com, 
+ andy@kernel.org, Michael.Hennerich@analog.com, robh@kernel.org, 
+ krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net, 
+ skhan@linuxfoundation.org, marcelo.schmitt1@gmail.com
+In-Reply-To: <apkTRwJp50WCaipq@ashevche-desk.local>
+References: <cover.1788368334.git.marcelo.schmitt@analog.com>
+ <4e136d116b2eda46fc36f3a3ded3990972c012c4.1788368334.git.marcelo.schmitt@analog.com>
+ <apkTRwJp50WCaipq@ashevche-desk.local>
+Date: Sun, 06 Sep 2026 19:50:47 +0100
+Message-Id: <178872064714.3402141.14394353863875745387.b4-reply@b4>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3513;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=817;
  i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=bJma6qjMkBmkrsew8txUTwbVezkKEYszB8Or3uujyq8=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnbPLCQPiBFK+5VundJaRro2V7INHkyNpWLBfZ
- oXAiaXmiteJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCap2zyxEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiF7jD/wK/owkWGZmoTuv7zlhWv7ziAmrTc4SK5/oBF2tuGKe5Og
- EyOIvnUeFpLN+zjNCdMTPstG3a8SwByyvb4KoC/EmerlAJPxBmWyLqskOHa9sOFappR6Ko/Byl1
- FsvlTVVaAQ4iaZMSdCBdlDKuEXg1c6YZ/Y/jlWeBIiT2w7uYJ/RVTgycOSe5RIcBAr7E5byoHhR
- v+v7bmNvOfV/Q/tiXLGPVSLHAtOp/RK8GuAcnA2EynYF60TOLNgfa/stlEvDe1nF00pXZe1RN9c
- KRvX3KqUdVEFYoOzhFtpC0b+h+oiJU/EeZzUYJ/bOBHbQP/VfTXkHsO0u34dZJ8SWO7pgyAflhy
- ynJpbMwu65It10FzhR8HGLeDfzNtvw+jt7am87kdhX4PGIpoNIZB73Tw4FxdreW2HPBfS0NFfek
- KPm3pvUCiz5yB6PRLV2hVcqY1XHptwfiXaUz1bOVox6GrikmvsbxnP586Nrteez4FnPQM2Ysmwu
- 3e2PynFsgFdoWi3aUWubgqNVWXjHIfRhWXpS6pbrsedZSw0OgwZScyhcBBM0RdEaELQfzXOktvO
- kRikz+emjxao1qgtNKNBfeTUjrS8btl7jdVAPeliiRHreO0USUd5yAtiFlOCwIacNoPcbuZkUhn
- dbVN60RQKv5Ia2SQnQJhG7mr6q/MHIe8UqHTpDA==
+ bh=fkuL9lk57Fu4jgGFnpUqsspdUnoVuz7bcyAX/OlGo4Y=;
+ b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnbYHtNgi3u3s4ACskKtGF+oYrh6PMkz2vF/gs
+ f922DTVSrSJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCap22BxEcamljMjNAa2Vy
+ bmVsLm9yZwAKCRBUhTSZxPQWiEYVD/0Ulh/zCzlioqsoQHp+RLoFbF6YNKDA2m9SybKgfFxQb4o
+ UeiRhkDf6T8vz3lc29t0MLW7uT0JBrZloRtoVOqxnYQcPBpMAnAGHy9UWKobEjcFBMMzJWD7pjY
+ 0oZ1YKL5oRqThpTJW8P5QV373s9Ppq5/ughguoqhAi2bDlnh4/LyFQGMu3NVcpMDHvRx39zmKHw
+ ufHMYU+X4lqyAZte622PWT5oSpNTk/soTf+f6EZDzC7WkB4tR++H4Ju1DsI5S/wgxfLO1xuT4JT
+ gEOms4hfLRCoMUemupJgv2bFADXM70y9B64L6H/eoKrPOrBYeRxrqTqhc5Qn9W1ulHqFtuAmRkN
+ 8Z3v8hwQFXvZmlTA1tFiIuhdIlW/dWJTStKeqKSGPIEdm0qhNjSrqSCovQqW3bnsLqNMaHcRZYn
+ 5QXjKKV1ORGDnTkxC45XNKTdUuAp7NnvIq6Xa5G5ljzwXPDttt10+D/AQi1mUUTdHwNH+6ZTXM2
+ eBuEEA5La1fCXPwMw1JlNiIvpFTbihvFixD8p8GNtbI9TdDQsbDEbttP9fuZ8sOvVPKHSEw70Js
+ KiYhcAgAzJmXd8wG/blS6T7qh6Pt8wkUbmViJqxhiDjaOX71b3TRirLqbj+iP5VF0ADsPK3Zv3J
+ S42DKvuz8sEfVVB7fUPzOPyS5UMs1zFauObZ5/Q==
 X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
  fpr=6E2966B387840652912681B154853499C4F41688
 
-> During driver unbind, devm cleans up resources in LIFO order. The IRQ
-> handler is freed before the device is powered down. This can lead to
-> unhandled interrupts.
-
-Add more on which interrupts and whether they are race conditions
-like maybe happen for the buffer tear down, or this is actually
-disabling events (as the core can't do that).
-
-
+On 2026-09-03 09:27:19+03:00, Andy Shevchenko wrote:
+> On Wed, Sep 02, 2026 at 02:22:41PM -0300, Marcelo Schmitt wrote:
 > 
-> Register a devm action to disable interrupt explicitly after
-> devm_request_threaded_irq(), so that the interrupt is disabled before
-> the IRQ handler is freed. This prevents any unhandled interrupts.
+> > Protect single-sample read operations from going wrong if two or more of
+> > them run concurrently. Serialize the data read operation so to avoid
+> > single-sample read requests disrupting each other.
 > 
-> Add a disable_irq callback to chip info structure. This allows each chip
-> type to implement its own disable sequence.
+> ...
 > 
-> Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>
+> >  	case IIO_CHAN_INFO_RAW:
 
-There are various bits of this that look rather incorrect. Please
-take another close look at this one.
+Define the scope.
+	case IIO_CHAN_INFO_RAW: {
+Scope has a funny definition in switch statements and that can lead
+to 'entertaining' results.   Some compilers will also moan about this.
 
-Given we've had a lot of races around event disabling and device tear
-down recently it may be me need to look at adding a suitable hook
-in the core to turn them off.  Anyhow, that is a job for another day.
+> > +		guard(mutex)(&st->lock);
+> 
+> Always delimit guard()() with a blank line.
+> 
+> >  		gpiod_set_value_cansleep(st->odr_gpio, 1);
+> 
+> ...
+> 
+> With blank line added
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
->
-> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index 9f5a9dc6f87e..82ce940d3bef 100644
-> --- a/drivers/iio/light/vcnl4000.c
-> +++ b/drivers/iio/light/vcnl4000.c
-> @@ -218,6 +218,7 @@ struct vcnl4000_chip_spec {
->  	int (*measure_light)(struct vcnl4000_data *data, int *val);
->  	int (*measure_proximity)(struct vcnl4000_data *data, int *val);
->  	int (*set_power_state)(struct vcnl4000_data *data, bool on);
-> +	int (*disable_irq)(struct vcnl4000_data *data);
->  	irqreturn_t (*irq_thread)(int irq, void *priv);
->  	irqreturn_t (*trig_buffer_func)(int irq, void *priv);
->  
-> @@ -1467,6 +1468,48 @@ static int vcnl4040_write_event_config(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> +static int vcnl4010_disable_irq(struct vcnl4000_data *data)
-> +{
-> +	int ret;
-> +
-> +	guard(mutex)(&data->vcnl4000_lock);
-> +
-> +	ret = vcnl4010_stop(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
 
-Does this regsiter have anything to do with disabling the interrupt?
-I'd expect that to be somewhere in INT_CTRL.
-
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret &= VCNL4010_INT_THR | VCNL4010_INT_DRDY;
-
-This bothers me. Data ready should be turned off by the buffer disable
-that happens when the device unregiser occurs. Is that not happening
-for some reason.  The threshold is more interesting here but I'd
-generally prefer this code to be turning the event off (side effect
-being to disable that interrupt).  So
-vcln4010_config_threshold_disable() should be doing the job - possibly
-via vcl4010_config_threshold() (I haven't checked locking etc).
-
-> +	if (!ret)
-> +		return 0;
-> +
-> +	return i2c_smbus_write_byte_data(data->client, VCNL4010_ISR, ret);
-> +}
-> +
-> +static int vcnl4040_disable_irq(struct vcnl4000_data *data)
-> +{
-> +	int ret;
-> +
-> +	guard(mutex)(&data->vcnl4000_lock);
-> +
-> +	ret = vcnl4040_update_ps_int(data, VCNL4040_PS_CONF2_PS_INT, false);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = vcnl4040_update_als_int(data, VCNL4040_ALS_CONF_INT_EN, false);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_word_data(data->client, data->chip_spec->int_reg);
-
-What is this doing? Just to check, is this stuff LLM assisted? That
-read is random enough I'd not really expect to see it human generated
-code.
-
--- 
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
