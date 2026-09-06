@@ -1,81 +1,81 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE86733ADB0
-	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 14:11:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E01E3B4EA9
+	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 14:15:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788703874; cv=none; b=s1xiwrId3ODh8x8WF1EKIQxLawyHYTUSKATxaQLRVlciCc7abjKUxrnFxUEFUJ5SzBGqPkhim2fASl53iJrISt5MoAJT5Dt5Bso1EeFSr+rZLVU+YxMvavhDsiQ4WTfe3vw8Zq+y5dPmKx8ovcVvQCwAbRj4uKVNp4XOc97fs10=
+	t=1788704157; cv=none; b=HbCdcRRWSPKiADGVkQxJY9hjPk5Qxupg8MDirfhEFhq8yuSLMNMmkMfjvavkhWedE37LtS6fisAdGvyckwyqLf25DNazrp0y8bi52RS+cYhP3asxcSZRdWerGlonvPxfF7sUYwPnbHTuvrJpFI70VR6cR+Tpl68pF12vIeH/Bnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788703874; c=relaxed/simple;
-	bh=nvcJJRSUOa2J+QR8VtuE7j7k9G8B5Cpno8sTQYkYEPU=;
+	s=arc-20240116; t=1788704157; c=relaxed/simple;
+	bh=5z1XyfZy9X2PAxK1/9Yh2cUeXP9XgPJuFrK5ZQ96h4g=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WN6f9l1cG3qVnNwu7come3mVXNcmC0TlwdLheGHHnsO19QJtXlZqBD8bGJS764npSQd3Ki8yf20r9cKH5PtdEA/eeSBwgXReNZa89eNgduAhsSrvnWvNlfFrxxljjurX9am/MS6O4F/irSsel4Mrji2Xt6GnamV4Z5NN5TlRZHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Nl3KQxyd; arc=none smtp.client-ip=209.85.128.51
+	 MIME-Version:Content-Type; b=WUZFuSAy7pDH0LCH3oz5GukjoHGlcsHlcM/IH836Fg4PCD8J+gbkw9zz+NmoO34GuzwZ8pKkGlaGeOFleYxiAWbkO+ZS1HqE2Aib62MIUec0tIRUk0BgtdQgDzaGp7VbvwNZ9O1XE8BYyM1OZLI/pyq+NB8wlhMCJ80NlHF1XFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ODvUZw00; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Nl3KQxyd"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-49b8e527d63so31960925e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 07:11:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ODvUZw00"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49d036e0e99so5985815e9.1
+        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 07:15:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788703870; x=1789308670; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788704154; x=1789308954; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=f9p7U9U8tA55nei6POZ9glY9rrUZkZ5+MlV33iQ8GuQ=;
-        b=Nl3KQxydN/o6zglOTn5Un9ByvPh+xawTOcP4aiD6OMUny70dfoZsMLQoPMovzAqhoy
-         xgQPnI+9xbf33TI2CEj96Pi9JBnmXDoeb7RohGzKP6ptvuVYBJhP1Juydam0JNT75jGq
-         BDGZcZ0XJL5Ff9/d/O1lIrZr5moL5xSY8pPuVGUmxQqW+KTi1t1V9rBx35nLi0coBDiA
-         Nw8BppYsY7VMWnmfL6KLs3hUV4cyNXvwhSQ7WiQQv6/a77m8dJI3Jx76+gwKMiskN5Mu
-         Wm786GFVkVb0vkM0RVn8J9nL4Rqn33xdYOHVMTLil7ZVJAZid5S13F7whsUJeT3gI3yP
-         bNEg==
+        bh=4kWMuuXK4yTjCPbPm2zu6KDXy0eIRwL1Ztz5775GY5k=;
+        b=ODvUZw00KponDPjNPgvAQVWegLbPo47KInx6uaJ6/uVUQboAFY77nRmSw0l7r2fYvv
+         M2RiZ97xcXFE5oaytJEbWDU+oXWObrgdKz1j0rQd+LtBa2368Hm0Jqc/9JVYk9X0fRC1
+         9cixgplYj7mvGbipDLymn3WGkwnCZdUlJ7VDyDO0VGUdhRgooryBiIzPs4kJTeigXlpC
+         l6Rdkqq2cUeF4z9yQwhO1f29ELaMlJlTMq6i6QngbB7LU1RGfkuytziQYw4gItTDtbFt
+         8x/MVhrOnifCbO/dS3bCgaqrr7utSW/MoNR/krbvQJzj5wsvUT3bE3hI077I8vLY4l29
+         74SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788703870; x=1789308670;
+        d=1e100.net; s=20251104; t=1788704154; x=1789308954;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=f9p7U9U8tA55nei6POZ9glY9rrUZkZ5+MlV33iQ8GuQ=;
-        b=EkCWS4c8X4PdkqSnXnSZeKerSUyNVU4TjQucY/EVyBjv2q4TJazwQxMFRSn7W7Io60
-         D1vPWdpO8waVMA6cCHUEXvCDUQGGCxCqRpebSPZZda+TPHpXQ9lbX76FeHYd1apM8fVX
-         2wDDIbezDPRg/L3jkMfsH6ByF6WkLShZVVkTEsYEyNtAK73I9CyT08G12Puv/64e9NlR
-         0E1v1cvSuQDc+FMecV2mBDGfG1xdm3lwdtNfkS3YdZs3/rLdyAPEO0eTl5NJxr1c36YP
-         P6SAsf6M8KmlJS/ND57tQQcYtOkRXJt5Yn7wPRw9JK26qWa7qSgqWjiVq8iNo6LuD+Xt
-         0JKA==
-X-Forwarded-Encrypted: i=1; AKwUvBxfube1eRdGZg98Ou9dahCgKp4k4CMJ6kJskMJ/VUZoN7x8QJDsURIzDZukLRMy5BG/HtKYuknsbeI=@vger.kernel.org
-X-Gm-Message-State: AFuF++nq97wWlBG0oslzbjylB3Kalis7jc8Qx8rKeMjolORwxLNmFFY8
-	ugPi0FDMKbxM/hSPZdlaO/QmH5cSJA1eRxTI6FNYiwvzLuj++ltyPmtR
-X-Gm-Gg: AYBFou1CHyAle2txdTQD8ealJx8lRhccTkrajvbGZYOjaxmpIxtfIMbNK3knC+uZyjN
-	hwYY3e9Z3lBsP1uj6gIMm4gCC9e65RVJlKvrq1HpJ5dsoJff8xDttS9U/HLVhgADlEQQmGR18nB
-	A84iZhjM9Ue1etr8uR8BSMO50wkrzeIgeUr3RzBWBaoeTyaEEq0J0QE/5XNCzy15VCN6ZPPxpo7
-	APQmHZVc6AIBXSCWVtJsbzqGwvcCXDy8uCxnQFL1tj32f5O/2G2UUPOWNXy9VDrEGPiQaDrvHDu
-	SHt+KdUYsVHhg2wsIjPOjCyquwN61MUwDPGzBta4KdpCGCMy8DC/GJkfOncMNSb77GLPw8yrjAH
-	o8YYxj52j8ff4pO4E8q83HySpk0Z3tcFopUD2XKnmCZoEGtORgSzgO11P+8RXngsNB3kVGuq3Oq
-	fAsgb2t7KyvfVn6Dv4zheY8QORDNtKFD+G2J9W0Jjqg0D2vf9LjedZmgs30c0eg/zCudIUBYVUc
-	5VT0wZCRN4xa12H+zFBkPrLokYNQ9IU9Dh83xzfIa2LbtLAbowySA09SC8mPPwYJSCL1uBu/G/m
-	cEpObyyrpV67K5OS8nIl0lGlnurfTCCyEG81/evHkUMVSPH8u+akUFwMi1letRzFU6Ap/bTj2s+
-	EJHQRmSptsPCJMpG4HcoABc/MmG8Afmq//1Bsvl3V7loYCCpAqZrcSCVGGKxP02dMzAQuIfm0Fa
-	S2UH4=
-X-Received: by 2002:a05:600c:19d1:b0:49c:fc6e:8cbb with SMTP id 5b1f17b1804b1-49cfc6e8e05mr171160915e9.31.1788703869883;
-        Sun, 06 Sep 2026 07:11:09 -0700 (PDT)
+        bh=4kWMuuXK4yTjCPbPm2zu6KDXy0eIRwL1Ztz5775GY5k=;
+        b=UDaMayLjrwwqn3T6dM4J4j3p3SSW5XKZxDR5J+6o0hzksTq2MJN2HSVdj8tyKklkw6
+         pTdYfavki6MlBluSRNVOINqQWsRT1QLbYW/QU9laGlUOmWUh6xJVOw5BTuJtvO+9SBqH
+         xSRToAzPWH2TiwSQt+O5GBjJs8V7R7bbmG9HemQ7ziGbhjUsvY6TYUknTP9oe5l5KeCH
+         bSBLF5o6AUQdQYv3jTNsZ0r0Du4Ef8Uo9TuDFbh1YzVqoTfRPdr3R7Z+rI0qfqC3vxCW
+         vZ9ucjxRV800bCN18k/umy+pLSgwR2pyLDIo/W6nnBwfCKJWDJkQE+Pwk9Ohr2CKm9cp
+         EFRQ==
+X-Forwarded-Encrypted: i=1; AKwUvBw/qOe4VCoI7MAGE9A5KbvTvDjAlJojcv8ovI/HQTR3/bI7Mkbzs20VpRWsP4RFh+1cJk+1Sz0kpow=@vger.kernel.org
+X-Gm-Message-State: AFuF++nbnHy92HopomtNWQ+utY+XKE7kX3NiM+MbQN9GzXUUcDE4G557
+	KPnZXDQoouROGj5KbyOKbVrGXQtEu505hTwvlW86lhX6I5kni3X/gLz0
+X-Gm-Gg: AYBFou3EN/hVuyeDWFNM5LMu2gs8/MJ+tyxW6YUpKlTe1xA07pekcSM7SgtWDHFAXNb
+	+b3u9fXXmGHYrGDYvsaHYjD+01Sv8CXmpxDgY/ZJum4MLUilcrgNrSLLzJsa2X8tRlBYOf4DA/b
+	kvP2UhdsW5A6x6HIzv5UlvTsEF2tMqImNQKaUZbRJaI6Wd8hn+8C1y46nnZecMAoziVWbbPknCQ
+	W38S6HhTyXcixmy2jrLmIrj7vIstD6WH0t2fkBe0SS57PNjwa8j6EDQANqlkqcVJi8ww8K4cz7J
+	1a8AC1WvS1DY97kxzhScE+R2IQ7vy0VqQedga2EE3Ej+QiwQsv+GYZGmmuO3x4CYZlnA7veS6K3
+	CkpV9FnKzzm1uVVmVdxF87C55KEa2Vc6cfPXtBjh/06qGZhFdLduzZxKLLeHvcLM8r4QD1phHT3
+	UhR0aw6/9+okOPf5AwgHCGpEm9wiViXBRrAf0jnWLCbvet2lnqEACilQzgWl7Ls5bK/boTIAku8
+	zADM+5ZCVm0Yf23fM4lbhCCTHgsWIIzIjQVo2UwTlsXdEM2/j2fG/NFt9k4igZb2QjGktmlIZyu
+	JODhAOikZ6oQ6q0pzNt5o8rv75ka9xa4H0QvAA5gCtfiuz5E6rgn8LwyRPHTqKHiEmBqgyBOVlL
+	Y4Ne/qv4OCokpF+70iYNilcMYvzkpNPgcw5ZE04nOUQtKvQl1aWSwoq80XcSBDdBIqWDJ07Gkn5
+	xKQds=
+X-Received: by 2002:a05:600c:46d5:b0:49c:fc6c:be06 with SMTP id 5b1f17b1804b1-49cfc6cc142mr141792295e9.29.1788704153980;
+        Sun, 06 Sep 2026 07:15:53 -0700 (PDT)
 Received: from systembl0wer (78-80-112-223.customers.tmcz.cz. [78.80.112.223])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49ce5927b68sm330420775e9.1.2026.09.06.07.11.08
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf7740d44sm534138115e9.15.2026.09.06.07.15.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 07:11:09 -0700 (PDT)
-Date: Sun, 6 Sep 2026 16:11:05 +0200
+        Sun, 06 Sep 2026 07:15:53 -0700 (PDT)
+Date: Sun, 6 Sep 2026 16:15:29 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 Cc: gregkh@linuxfoundation.org, jic23@kernel.org, nuno.sa@analog.com,
  Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
  linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] staging: iio: adc: ad7816: Serialize SPI read
- operations
-Message-ID: <20260906161105.61ac32b7@systembl0wer>
-In-Reply-To: <20260906114049.32912-2-abdelnasserhussein11@gmail.com>
+Subject: Re: [PATCH v4 2/2] staging: iio: adc: ad7816: Use DMA-safe buffer
+ for SPI read
+Message-ID: <20260906161529.5d2c874e@systembl0wer>
+In-Reply-To: <20260906114049.32912-3-abdelnasserhussein11@gmail.com>
 References: <20260906114049.32912-1-abdelnasserhussein11@gmail.com>
-	<20260906114049.32912-2-abdelnasserhussein11@gmail.com>
+	<20260906114049.32912-3-abdelnasserhussein11@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -86,42 +86,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  6 Sep 2026 14:40:48 +0300
+On Sun,  6 Sep 2026 14:40:49 +0300
 Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-> Add a mutex to serialize SPI read operations and prevent data corruption. Used guard(mutex) and devm_mutex_init() for safer and automatic cleanup.
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7816.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
 > diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 0e32a2295990..ab80b3a889bb 100644
+> index ab80b3a889bb..e14ae805f076 100644
 > --- a/drivers/staging/iio/adc/ad7816.c
 > +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -14,6 +14,8 @@
->  #include <linux/list.h>
->  #include <linux/spi/spi.h>
->  #include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/cleanup.h>
+> @@ -52,6 +52,8 @@ struct ad7816_chip_info {
+>  	u8  oti_data[AD7816_CS_MAX + 1];
+>  	u8  channel_id;	/* 0 always be temperature */
+>  	u8  mode;
+> +	struct mutex lock; /* protect device state during SPI transfers */
+
+See my 2 replies to the previous patch. This change shouldn't be here.
+
+> +	__be16 rx_buf __aligned(IIO_DMA_MINALIGN);
+>  };
 >  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -65,7 +67,8 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
->  {
->  	struct spi_device *spi_dev = chip->spi_dev;
->  	int ret;
-> -	__be16 buf;
-> +
-> +	guard(mutex)(&chip->lock);
+>  enum ad7816_type {
+> @@ -94,13 +96,13 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+>  
+>  	gpiod_set_value(chip->rdwr_pin, 0);
+>  	gpiod_set_value(chip->rdwr_pin, 1);
+> -	ret = spi_read(spi_dev, &buf, sizeof(*data));
 
-Actually, I thought I was going crazy when this compiled, only to realize
-you added the mutex in patch 2. Compiling with only this patch applied yields
-10+ errors. Each patch must be atomic and cannot break the build, even if the
-entire applied series compiles correctly.
-
-Please revisit this.
+As well as the fact you removed buf in the first patch, causing build
+errors.
 
 -- 
 Kind regards,
