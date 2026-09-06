@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B526F382F0F;
-	Sun,  6 Sep 2026 19:15:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D5C126C02;
+	Sun,  6 Sep 2026 19:26:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788722119; cv=none; b=G80tY3elR7HUMDbvB7J+DBHgJJKE25OBLYwKFcFs/hZOQc7mj2vtx44pOJ+W9mbX+t38SnMg4SEO2QkpQnaf/0X+yGrjJgSi0lopjilVVucT1ZEYsPk/6Kesbm3jijT0kme//YXg7nTWzY4+SUwYyrXLkSL5q+el4E5GWqFGfZI=
+	t=1788722798; cv=none; b=cjsotwcZBbZzfsHr4HO07FVaG9d66LFrXfJ85I+L1ry9KJot0Eh0MXGbGwMigm/ZtzqXbTP3TbwyFcfwU47xgcZDoDb+10+TWojGiidjLoVm75hr2JEfF+/ffFxxK9BrX9DlLUL7C5qJYcc3Lj1Il7zZy1/0DeporOOVvAifobg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788722119; c=relaxed/simple;
-	bh=kxQZ3Rthv1ensPTutVlNIwSBwZoEjRotnJDyRh91HaM=;
+	s=arc-20240116; t=1788722798; c=relaxed/simple;
+	bh=US1G9RjDnKOUlxnrr3RUS8dXtFGEo68OYqCU4wRpnsw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=j5Yej4u7B1EsKhdMlWqbzpuNMwGxRMby3RHwEd9eMAKhbfxRbJEuvb4Jykb2dWZMr0wie1jQWcVN970dHz7gFJ6E1OpgdzugPDPsAF7RUIEsm+JAYvp9XZYkj5cFYk32ax1aOJGoxE8hBa+D0TTvFpnwAkA5jKXssoQO9ubeUjg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LojaOUVo; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=qV9cmteLx3KlLHJ+5k+n7YutEK5WoLwRO7UDws27nbFnDKgJ/dhfEgJl5qFYEplosaNgu+QnPG9zBkxnvgdlp9y5n5YQvGM2VbP6YmMrzT3HtNaCfUOp2cF7O05X7eW4gzFz5WyvOa0HVv+/cSfkXb7r6MIR7HV5vreKsVHFlrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hdqR4pK/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LojaOUVo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 881B01F00A3A;
-	Sun,  6 Sep 2026 19:15:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hdqR4pK/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F9991F00A3A;
+	Sun,  6 Sep 2026 19:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788722118;
-	bh=TU0T/yFo/yE1g8awt3EdtgGPNQ2JS65tA/n50gc+o2I=;
+	s=k20260515; t=1788722796;
+	bh=9ixawut2S9r983EsH04soarW6ihd+uZaRCYhJJQkJtI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LojaOUVozJ3bNO9JFrScRwnnV5zQGZVtsudtm/wgxv6iI0TvPwixwYjSt19qtBbJn
-	 LI7sSSUDldqQ8Hv9PJ2tqX5alV/J1/hfczV3/tagkaHco+mHdgM7Xue3BjXhLWU6CK
-	 TNxZ7qyYP7VlkieXIGENziD8/sVPIE5L5wVHtbtZP2iccsZeHL2SdA7ameRKwij+uo
-	 SQgpQYur9xktM8bZLRWoD2I4JJ72HraN6A+4KUxwZu5XSB+d7XVZlqU38mkzFCVLns
-	 /3KFgmeW4juFSX0Zz2N83Q1AK22J2Q8uP/uwPQreo2y2y+UaU7UvffFko6nyTH6wQT
-	 SnIRKOZcImV0A==
-Date: Sun, 6 Sep 2026 20:15:11 +0100
+	b=hdqR4pK/pr1n9cCn/iWlGWeG6wPSfoMIJE0Q8KzbLUTvVjKYBx0p/z8ExWHTTGexp
+	 b6GZccbAjMK21wcCjH/KgJk+DaqJpAot4x/0kpSsG1p9g22XBFIK28H+JiU5Ke6A7n
+	 OojvHo/H447ttUEyu9qcpQZTI+J+hyPvQJqzUweL/ARRkb+d2Zr9d/JFiet3M58Te9
+	 /LFGtzZn0CaRl0AAyuUoEEmpwW/DbMiWm27eNhOCyP6ZpZLJeyrCAWNEFQu0TZqH9A
+	 Q9prOzFweR1uzVQYmHg+/nmXcJc4Mrm8s3bBLJWU3VE3uAqxoxzDObSRLnXvm1olHx
+	 tby5Re9iTI9wg==
+Date: Sun, 6 Sep 2026 20:26:30 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc: Conor Dooley <conor@kernel.org>, Marcelo Schmitt
@@ -37,12 +37,13 @@ Cc: Conor Dooley <conor@kernel.org>, Marcelo Schmitt
  conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org
 Subject: Re: [PATCH v1 08/13] dt-bindings: iio: adc: adi,ad4134: Document
  SPI connection mode
-Message-ID: <20260906201511.7ddbd0fc@jic23-huawei>
-In-Reply-To: <apsufKf-EOvTfpwf@debian-BULLSEYE-live-builder-AMD64>
+Message-ID: <20260906202630.64d8fa75@jic23-huawei>
+In-Reply-To: <aptA9HP82-ss45JF@debian-BULLSEYE-live-builder-AMD64>
 References: <cover.1788368334.git.marcelo.schmitt@analog.com>
 	<d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
 	<20260903-liquefy-prologue-9ec914cccf04@spud>
 	<apsufKf-EOvTfpwf@debian-BULLSEYE-live-builder-AMD64>
+	<aptA9HP82-ss45JF@debian-BULLSEYE-live-builder-AMD64>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,132 +51,176 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 4 Sep 2026 17:47:56 -0300
+On Fri, 4 Sep 2026 19:06:44 -0300
 Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> On 09/03, Conor Dooley wrote:
-> > On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote:  
-> > > Document how AD4134 chips are connected to the host SPI controller
-> > > according to different wiring configurations.
-> > > 
-> > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > ---
-> > >  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++++++
-> > >  1 file changed, 22 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > index ea6d7e026419..d843c02a394a 100644
-> > > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > @@ -131,6 +131,28 @@ properties:
-> > >      enum: [ free-running, gated ]
-> > >      default: gated
-> > >  
-> > > +  adi,spi-mode:
-> > > +    $ref: /schemas/types.yaml#/definitions/string
-> > > +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
-> > > +    description: |
-> > > +      This property indicates the SPI wiring configuration.
-> > > +
-> > > +      When this property is omitted, it is assumed that the device is using
-> > > +      'no-cs' wiring. When this property is present, it indicates that the
-> > > +      device is using one of the following wiring configurations:  
-> >   
+> On 09/04, Marcelo Schmitt wrote:
+> > On 09/03, Conor Dooley wrote: =20
+> > > On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote: =20
+> > > > Document how AD4134 chips are connected to the host SPI controller
+> > > > according to different wiring configurations.
+> > > >=20
+> > > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > > ---
+> > > >  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++=
+++++
+> > > >  1 file changed, 22 insertions(+)
+> > > >=20
+> > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.y=
+aml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > > > index ea6d7e026419..d843c02a394a 100644
+> > > > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > > > @@ -131,6 +131,28 @@ properties:
+> > > >      enum: [ free-running, gated ]
+> > > >      default: gated
+> > > > =20
+> > > > +  adi,spi-mode:
+> > > > +    $ref: /schemas/types.yaml#/definitions/string
+> > > > +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
+> > > > +    description: |
+> > > > +      This property indicates the SPI wiring configuration.
+> > > > +
+> > > > +      When this property is omitted, it is assumed that the device=
+ is using
+> > > > +      'no-cs' wiring. When this property is present, it indicates =
+that the
+> > > > +      device is using one of the following wiring configurations: =
+=20
+> > ... =20
+> > > I'd also really appreciate a dts example for a system
+> > > with one-channel-chain or two-channel-chain looks, given the second
+> > > device may require different supplies etc. I have no impression in my
+> > > head of how the dt would be constructed, so I'd like to see wht you h=
+ave
+> > > in mind. =20
+> >  =20
 > ...
-> > I'd also really appreciate a dts example for a system
-> > with one-channel-chain or two-channel-chain looks, given the second
-> > device may require different supplies etc. I have no impression in my
-> > head of how the dt would be constructed, so I'd like to see wht you have
-> > in mind.  
-> 
-> I've added the daisy-chain modes for completeness. It has the same semantics of
-> ad7944 (daisy-)chain, despite the wiring being different. It looks like the
-> supplies for the chained devices are simply assumed to be there (unless I'm
-> missing something?).
+>=20
+> Realized what I said doesn't make much sense. The peripherals can all have
+> the same configuration and thus share CS, SCLK, and controller SDO. The w=
+iring
+> would be like the following
 
-I think the only cases we ever had of this in the past either used always
-on supplies or shared them.  That is a bit of an annoying limitation so if
-we can work around that it would be good.
+That mux in the middle is controlled how?
+I'd assume we still have separate chip selects and SDO/SDI shared. So I'd e=
+xpect
+those to be on one SPI bus and the data to be going into separate buses
+(maybe all that can be hidden in the backend, not sure).
 
-> Though, now that I'm checking how to configure AD4134
-> for daisy-chain, I'm not sure how we could set them in dt. For 3 devices,
-> we would have
-> 
+Or are you suggesting we are just letting all the chained devices see the
+same register writes?  That might work I guess with no ability to read any =
+register
+state back other than for first device.  If you want to do the
+mux magic below you are going to need to treat it as an SPI mux - just with
+some lines shared. That means this device ends up split into multiple device
+(even if only one ad4134 which is messy).
+
+So to me this has a simple SPI bus, potentially connected to multiple devic=
+es
+and an IIO backend that deals with DOUT0 etc and the chaining.
+
+Jonathan
+
+>=20
+> ::
+>=20
+>   +-----------------------+                               +--------------=
+---+
+>   |         AD4134        |                               | SPI Controlle=
+r  |
+>   |                       |                               |              =
+   |
+>   |                       |                               |              =
+   |
+>   | SPI interface    SCLK |<--------------------+---------| SCLK         =
+   |
+>   | for register       CS |<--------------------|-+-------| CS           =
+   |
+>   | access            SDI |<--------------------|-|-+-----| SDO          =
+   |
+>   |                   SDO |------->|=C2=AF=C2=AF=C2=AF=C2=AF\       | | |=
+     |                 |
+>   |                       |        |MUX  >------|-|-|---->| SDI0         =
+   |
+>   | Data interface  DOUT0 |------->|____/<------|-|-|---- | GPIO         =
+   |
+>   | for ADC sample  DOUT1 |---------------------|-|-|---->| SDI1         =
+   |
+>   | data read        DCLK |<-------------+------|-|-|-----| DCLK         =
+   |
+>   |                 DOUT2 |<-+           |      | | |     |              =
+   |
+>   |                 DOUT3 |<-|-+         |      | | |     |              =
+   |
+>   |                   ODR |<-|-|---------|--+   | | |  +->| Offload Trigg=
+er |
+>   +-----------------------+  | |         |  |   | | |  |  +--------------=
+---+
+>                              | |         |  |   | | |  +--| PWM1         =
+   |
+>                              | |         |  +---| | | ----| PWM0         =
+   |
+>                              | |         |  |   | | |    +---------------=
+--+
+>                              | |         |  |   | | |
+>   +-----------------------+  | |         |  |   | | |
+>   |         AD4134        |  | |         |  |   | | |
+>   |                       |  | |         |  |   | | |
+>   | SPI interface         |  | |         |  |   | | |
+>   | for register     SCLK |<-|-|---------|--|---+ | |
+>   | access             CS |<-|-|---------|--|---|-+ |
+>   |                   SDI |<-|-|---------|--|---|-|-+
+>   |                   SDO |  | |         |  |   | | |
+>   | Data interface        |  | |         |  |   | | |
+>   | for ADC sample  DOUT0 |--+ |         |  |   | | |
+>   | data read       DOUT1 |----+         |  |   | | |
+>   |                 DOUT2 |<-+           |  |   | | |
+>   |                 DOUT3 |<-|-+         |  |   | | |
+>   |                  DCLK |<-|-|---------+  |   | | |
+>   |                   ODR |<-|-|---------|--+   | | |
+>   +-----------------------+  | |         |  |   | | |
+>                              | |         |  |   | | |
+>                              | |         |  |   | | |
+>                              | |         |  |   | | |
+>   +-----------------------+  | |         |  |   | | |
+>   |         AD4134        |  | |         |  |   | | |
+>   |                       |  | |         |  |   | | |
+>   |                       |  | |         |  |   | | |
+>   | SPI interface    SCLK |<-|-|---------|--|---+ | |
+>   | for register       CS |<-|-|---------|--|-----+ |
+>   | access            SDI |<-|-|---------|--|-------+
+>   |                       |  | |         |  |
+>   | Data interface        |  | |         |  |
+>   | for ADC sample  DOUT0 |--+ |         |  |
+>   | data read       DOUT1 |----+         |  |
+>   |                 DOUT2 |              |  |
+>   |                 DOUT3 |              |  |
+>   |                  DCLK |<-------------+  |
+>   |                   ODR |<----------------+
+>   +-----------------------+
+>=20
+>=20
+> So we would set them as only one daisy-chained device.
+>=20
 >     spi {
 >         ...
 >         adc@0 {
->             compatible = "adi,ad4134";
->             reg = <0>;
->             spi-rx-bus-width = <1>, <1>; /* 2 lanes of 1 bit each */
-> 
->             <supplies, clock, and other properties ...> 
-> 
->             #daisy-chained-devices = <2>;
-> 
->             adi,spi-mode = "4-wire";
+>             compatible =3D "adi,ad4134";
+>             reg =3D <0>;
+>             spi-rx-bus-width =3D <1>, <1>; /* 2 lanes of 1 bit each */
+>=20
+>             <supplies, clock, and other properties ...>=20
+>=20
+>             #daisy-chained-devices =3D <2>;
+>=20
+>             adi,spi-mode =3D "two-channel-chain";
 >         };
 >     };
-> 
-> But, the peripheral needs a register write to set the DOUT lines to 2-line
-> daisy-chain and it doesn't seem to have register access propagation. So, we
-> would need
-
-That lack of register access propagation I think is the difference here from
-devices we have supported chaining on in the past.  To me it sounds fairly
-fundamental to any generic solution.
-
-> 
->     spi {
->         ...
->         adc@0 {
->             compatible = "adi,ad4134";
->             spi-rx-bus-width = <1>, <1>; /* 2 lanes of 1 bit each */
-> 
->             <supplies, clock, and other properties ...> 
-> 
->             #daisy-chained-devices = <2>;
-> 
->             adi,spi-mode = "4-wire";
->         };
->         adc@1 {
->             compatible = "adi,ad4134";
->             <supplies, clock, and other properties ...> 
-> 
->             adi,spi-mode = "4-wire";
->         };
->         adc@2 {
->             compatible = "adi,ad4134";
->             <supplies, clock, and other properties ...> 
-> 
->             adi,spi-mode = "4-wire";
->         };
->     };
-> with adc@1 and adc@2 only set for register access. Even if not a dt-doc issue,
-> that might (probably) lead to interface issues. The top of the daisy-chain may
-> want to read from the other ADCs, but those could also be requested by IIO sysfs
-> operations.
-
-I think this bit you rewrite in next mail so I'll ignore.
-
-> 
-> >   
-> > > +
-> > > +      * no-cs: The datasheet calls this "minimum I/O mode". In this mode, the CS
-> > > +        line is not used (tied to GND).
-> > > +      * 4-wire: Specifies a conventional SPI wiring configuration.
-> > > +      * one-channel-chain: In this mode, the DOUT0 line of one chip is connected
-> > > +        to DOUT2 of the next chip upstream in the chain. Only the data interface
-> > > +        of the upmost device in the stream is in direct connection with the
-> > > +        digital host.
-> > > +      * two-channel-chain: In this mode, the DOUT0 and DOUT1 lines of one chip
-> > > +        are respectively connected to DOUT2 and DOUT3 of the next chip upstream
-> > > +        in the chain. Only the data interface of the upmost device in the stream
-> > > +        is in direct connection with the digital host.
-> > > +  
-> 
-> With best regards,
+>=20
+> Thanks,
 > Marcelo
 
