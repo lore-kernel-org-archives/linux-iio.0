@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B45A2F6577;
-	Sun,  6 Sep 2026 17:44:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60BC31715F;
+	Sun,  6 Sep 2026 17:47:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788716644; cv=none; b=S8d6FNpX79lgq+//RNXzDwac003iFJD3yCE3mY9QBNJGHLwBvXeTEeX+butQ0lWLoeGPKjOEo2BNFe9sL0wGlZGwyIBvJIMH4jEc29YvadJcu3N6qOT9in0kjRCycCcozDj+N8+CV1XknCD/LCPgXchqKtbFEw2sZstXL87J3fA=
+	t=1788716853; cv=none; b=pvztBELIuu5f6/QMvWAHAqK5SaFK6GBSXAf6gvQJCd1K2NNN2ZmQOJCu4Ip7f6+t/L9H5Z9O0qpR4Y9F0RCsjajk3FhupbBT2+wZKaGl4ID1x4P/UBg70Dg+gjvyA8FTi4tMPhCIiffOe2NRjxEBdA60jH8skv0mz+Cwu+zD3sE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788716644; c=relaxed/simple;
-	bh=rlbNMxgTUaDD6bf687rnBUAv7HhNcMjmkhtUT52MFCg=;
+	s=arc-20240116; t=1788716853; c=relaxed/simple;
+	bh=0O0ypgaT/G2VcYjKN+21o3nWpsP/Qr/0kc23poOV1N0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PLMbxYGwOoH6MdzgKNnR5y2eOWNK3eXBdpdJcKO74TC0VLJw5H8RvEewVTGr6RNXSNdmt1BRBDl88gH+kfIVy9uH0kdafLtKe2MKoaG9Fyr2dsRsp/pEoBIi136yuN+081flajTJ8rvI9OVl6aTg6leT8ouUhgM0a9OatJbDpBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ijyORkb0; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=BhGgilVN2R3+oP8Xx0sqb7rZRJqXJDoY8N/zxYFW/h5vc57Ch4ysxWDTbqHrk0MuIVy+hURkjMbFnF90D1SjHRfqRuisIChr26FF0sTlH9d/cSZwkh9LP3vuihvrn8Fddbch+2MweDW4XQlRT8pOTgvIIRdQkuvI8mRFVKDRcnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EEwyFdly; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ijyORkb0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58F4C1F00A3A;
-	Sun,  6 Sep 2026 17:44:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EEwyFdly"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F77F1F00A3A;
+	Sun,  6 Sep 2026 17:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788716642;
-	bh=keiAoqR5rJkp+AiTZOHRWjSY4QoqdnXHZ+SJ0IPTUYg=;
+	s=k20260515; t=1788716852;
+	bh=WDqUTqfuwYGhUEA2KOT3qieNopzvD2G9zWZFnbpim1U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ijyORkb0DKNyG+v7B0dd4dcvDNSsJvsXeGJBnBsHRu5LVan2c8v/BNxuNWT0Fkbsw
-	 bBI/KQJnCMHbNhvIdpEmltPzJFsxBt+uD/7hpZNVqy7V22cIN+7tpiQ56jCWpZBoaV
-	 Q3qrt/X7nsxeu4HFxIRl+YzDK3h4Ht7S73Eb2Wnq3M8I2DHUuCtl7K23hijHMdPHr1
-	 h1UU7x2FNY6mvWqydUM0qFXftfp7qKIQWZ7AbyUILG+8VL7M8m//9WoM3Lzs9Bc7in
-	 16+MoGFpVirw90HQkmm0x04BPUdWzfSSMGC6rO5cSQ1s1mcygjdxCSVL6gyerWDM4F
-	 FdUf9q5TQl7MQ==
-Date: Sun, 6 Sep 2026 18:43:58 +0100
+	b=EEwyFdlyoWq//0zNaRP81bfg9KIfBqilTgOFPaxpxrOathjm7yXuoghcBAMdPvnc2
+	 ZsN5bgInsm2eLG5fUVahqNQcxT3ae5iS0nkOewx1K5dOf60D73zufuqLle8KktzYG+
+	 50ofzidZVCp1JXf/Zc04EBPji07w3ZV7EqXZIhQw+9/WnET6GMlnxvz/FUts5WXxqf
+	 VEoHPPjgh16LIoVKPP6kmpkzJf93QCBoDXXytIUjhV1MNwBHX5eUKXPIXhHAyENXT6
+	 kbDDAuU5nd0KkoTrsHW64oDSdHM8MoHB8Tb+hrZfcyI/WjY63Shmo0jHnJuxa/YB1q
+	 FugIbEl63W3Aw==
+Date: Sun, 6 Sep 2026 18:47:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Fabio Cesari <fabio.cesari@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Brian Masney
- <bmasney@redhat.com>, linux-iio@vger.kernel.org,
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: gregkh@linuxfoundation.org, nuno.sa@analog.com,
+ Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: isl29028: fix runtime PM reference leak on
- error paths
-Message-ID: <20260906184358.398f3f1d@jic23-huawei>
-In-Reply-To: <20260906131203.125407-1-fabio.cesari@gmail.com>
-References: <20260906131203.125407-1-fabio.cesari@gmail.com>
+Subject: Re: [PATCH v4 1/2] staging: iio: adc: ad7816: Serialize SPI read
+ operations
+Message-ID: <20260906184728.22b256d6@jic23-huawei>
+In-Reply-To: <20260906114049.32912-2-abdelnasserhussein11@gmail.com>
+References: <20260906114049.32912-1-abdelnasserhussein11@gmail.com>
+	<20260906114049.32912-2-abdelnasserhussein11@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,125 +49,56 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  6 Sep 2026 15:11:40 +0200
-Fabio Cesari <fabio.cesari@gmail.com> wrote:
+On Sun,  6 Sep 2026 14:40:48 +0300
+Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-> Both isl29028_read_raw() and isl29028_write_raw() take a runtime PM
-> reference with pm_runtime_resume_and_get() and are supposed to drop it
-> again with pm_runtime_put_autosuspend() before returning. On their error
-> paths they return directly instead, leaking the reference.
-> 
-> The usage count is then never balanced, so the device stops entering
-> autosuspend for the rest of its lifetime. The effect accumulates: every
-> failed access leaks another reference.
-> 
-> In isl29028_write_raw() this is reachable from userspace with a single
-> rejected sysfs write, for example
-> 
->   echo 200 > in_proximity_sampling_frequency
-> 
-> which is outside the accepted [1:100] range, or
-> 
->   echo 999 > in_illuminance_scale
-> 
-> which is not one of the two accepted scales. Both return -EINVAL with
-> the reference still held. In isl29028_read_raw() the leak is reached
-> when the underlying regmap access fails.
-> 
-> Drop the reference before checking the error, reusing the pm_ret
-> pattern already present in isl29028_read_raw().
-> 
-> Found by auditing IIO drivers for runtime PM acquire/release imbalances
-> with a Coccinelle semantic patch that models pm_runtime_resume_and_get()
-> and pm_runtime_put_autosuspend() along the control flow graph, flagging
-> functions that take a reference and then reach a return without dropping
-> it.
-> 
-> Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
-> Cc: stable@vger.kernel.org
-> Assisted-by: Claude:claude-opus-5 coccinelle
-> Signed-off-by: Fabio Cesari <fabio.cesari@gmail.com>
+> Add a mutex to serialize SPI read operations and prevent data corruption. Used guard(mutex) and devm_mutex_init() for safer and automatic cleanup.
+Check submitting patches, this is not well formatted.
+
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+
+Alongside the comments Joshua had I'd expect to see a description of what
+the race you are preventing is and if you are going to say things like
+data corruption, an illustration of what gets corrupted and how.
+
+Jonathan
+
 > ---
+>  drivers/staging/iio/adc/ad7816.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 > 
-> Compile-tested only: arm64 (native) and x86_64 (cross), defconfig plus
-> CONFIG_SENSORS_ISL29028=m, with gcc 15.2.0, W=1 and sparse v0.6.5-rc1:
-> no warnings. I have no isl29028 hardware, so this is untested at
-> runtime.
-> 
-> I also have a version that takes the runtime PM reference only where it
-> is needed: isl29028_write_raw() validates its arguments first, and
-> isl29028_read_raw() acquires it only for the reads that reach the
-> hardware, the sampling frequency and lux scale being cached. It also
-> stops propagating the pm_runtime_put_autosuspend() return value to
-> userspace, which fixes a second problem: with CONFIG_PM=n that call
-> returns -ENOSYS, so every read and write fails today even when the
-> access itself succeeded.
-> 
-> I kept this patch to the one bug, since the rest changes what userspace
-> sees. Happy to send that version on top once this lands, or instead of
-> this one if you would rather have it that way.
-> 
->  drivers/iio/light/isl29028.c | 14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
-> index 33deb1726689..c5146c1d9f39 100644
-> --- a/drivers/iio/light/isl29028.c
-> +++ b/drivers/iio/light/isl29028.c
-> @@ -340,7 +340,7 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index 0e32a2295990..ab80b3a889bb 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -14,6 +14,8 @@
+>  #include <linux/list.h>
+>  #include <linux/spi/spi.h>
+>  #include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/cleanup.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> @@ -65,7 +67,8 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
 >  {
->  	struct isl29028_chip *chip = iio_priv(indio_dev);
->  	struct device *dev = regmap_get_device(chip->regmap);
-> -	int ret;
-> +	int ret, pm_ret;
+>  	struct spi_device *spi_dev = chip->spi_dev;
+>  	int ret;
+> -	__be16 buf;
+> +
+> +	guard(mutex)(&chip->lock);
 >  
->  	ret = pm_runtime_resume_and_get(dev);
->  	if (ret < 0)
-> @@ -392,12 +392,11 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+>  	gpiod_set_value(chip->rdwr_pin, 1);
+>  	gpiod_set_value(chip->rdwr_pin, 0);
+> @@ -360,6 +363,10 @@ static int ad7816_probe(struct spi_device *spi_dev)
+>  		return -ENOMEM;
+>  	chip = iio_priv(indio_dev);
 >  
->  	mutex_unlock(&chip->lock);
->  
-> +	pm_ret = pm_runtime_put_autosuspend(dev);
->  	if (ret < 0)
->  		return ret;
-
-Whilst perhaps not best practice as such, it is pretty
-common to just not bother checking the return of pm_runtime_put_autosuspend()
-at least partly because of that annoying -ENOSYS result if runtime pm isn't
-enabled.  That is what happens with the ACQUIRE macros for instance.
-
-Do we have any particular reason to thing it is more likely to fail i this
-case than any other?
-
-> -
-> -	ret = pm_runtime_put_autosuspend(dev);
-> -	if (ret < 0)
-> -		return ret;
-> +	if (pm_ret < 0)
-> +		return pm_ret;
->  
->  	return 0;
->  }
-> @@ -461,15 +460,14 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
->  
->  	mutex_unlock(&chip->lock);
->  
-> -	if (ret < 0)
-> -		return ret;
-> -
->  	/**
->  	 * Preserve the ret variable if the call to
->  	 * pm_runtime_put_autosuspend() is successful so the reading
->  	 * (if applicable) is returned to user space.
->  	 */
->  	pm_ret = pm_runtime_put_autosuspend(dev);
-> +	if (ret < 0)
+> +	ret = devm_mutex_init(&spi_dev->dev, &chip->lock);
+> +	if (ret)
 > +		return ret;
->  	if (pm_ret < 0)
->  		return pm_ret;
->  
-Similar applies here.
-
-> 
-> base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+> +
+>  	chip->spi_dev = spi_dev;
+>  	for (i = 0; i <= AD7816_CS_MAX; i++)
+>  		chip->oti_data[i] = 203;
 
