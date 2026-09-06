@@ -1,121 +1,106 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABE533B83FE
-	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 10:07:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D6AA61FCE
+	for <linux-iio@vger.kernel.org>; Sun,  6 Sep 2026 11:05:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788689262; cv=none; b=uU3akGGnom+2AhXoSNNoquon3SNin3jbYknMl/sKpAJMz1y07vMcT0Fj9l5Z7kvDT0xawRV+5HMiPDiUeIDWeM7lGckmcTxRaiG9IlQwQyd9uehz+FAWE6JMby88C8olzQx5WLm3kMMmNLHT/f72C1ibNvtojOcTkwICSRyJ+2Q=
+	t=1788692721; cv=none; b=us8WwBjyAjxKS8npWBPi9goU6UuWaM4hK3bz40umBII/Fs/IbslI2WfkomC353jUT2aTVzoTPwkX2p1AE5zqhrerLMC17nevT1Nz4c3C5sizeyiWNC3kf7YuJQSOAVuKJJdreYanqiCpaZTqL7wqRR3eHlJG6h5eGLwsxE6CKQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788689262; c=relaxed/simple;
-	bh=RnAEc+I+Cqq4lUTdx0Q5kkcBBZ8MAk4TasWgEbgmbEc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CSVbk4X6zFrK1Yuomsn9TbZGmDrQbcqTdztWFntP1xlXaxiLEcDnpXOjk6Nb0c8IlpL3zIGYg5FfdkjSm4cIh7nWzxddakE4xnStEsIJYnS2MzhDAG//zDLaJTaULQ+ni5x++yFktAckM6wsJNn9X8jW325iHSV3wYPFQCh0OoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nwAJhsK5; arc=none smtp.client-ip=209.85.208.179
+	s=arc-20240116; t=1788692721; c=relaxed/simple;
+	bh=tvdFzmKtwoFDJ+q1pM6DGnbGu6Ko8qfu6YNLpfpo3h8=;
+	h=Message-ID:MIME-Version:From:To:Cc:Date:Subject:Content-Type; b=Kh/5g/U7Xk35hcio1HujtK/vBEHAyfSfUEdznedQHl2MqLvBrSh9Dd+1e5plpSh/jQNQ5eNpMY5wscm8ec2/m9cvFT4Ui0/2eXAUzVol7++7L4S+Q7RIXnv84PV50Q33r0FdJwt447KI/eaNmKv3YzcVkg2z68nYtFTBkd57R/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mnHm9ciW; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nwAJhsK5"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-39faf9e2c62so18121751fa.3
-        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 03:07:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mnHm9ciW"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2db3305f94fso12508875ad.0
+        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 04:05:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788689258; x=1789294058; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Mv5PZ/MVDDOKzC7mTafEfq3SK5tNJ8cn62CE8cNiWXg=;
-        b=nwAJhsK5Wez74zvpOpUj/YJeAaHDQYQHYt0BZzS+u8Q5dAREwsDSHbALeHxflrAu7m
-         wN8zPE44HP2KaVpGvjW8gxhBzzv4/2j7l8rLXmT44+yH7q0qu6XHls46LLuCP1ZwefM4
-         j5DtDUHfxb8kJZxfF6Ggi1k+6js0WG0R6RPvs9mSpsf9U6Sky2jh6y7ILs4+J3ihzHbh
-         GjrjZgZuLuQCeFZNs4gA4TJ7WOkEe4caqY9hEKJpE51RsWclf2V8+h6wjwkloiRV/YWc
-         UuwUU8MT/rw004s09vW3IolddvdXA8teKIGEfo4sTdui1oTGnZMOSBuLeBeIf6oHxiSR
-         WPgw==
+        d=gmail.com; s=20251104; t=1788692719; x=1789297519; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:subject:date:cc:to:from
+         :mime-version:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=w9gyLWtQLohjNP+UG4PRUGY7mDiKdRQaFAscLEnUlZM=;
+        b=mnHm9ciW1jOamz5QsHS/6Og08nilUmO0rHjnvdKkkgm3xEEeCTF7li+fBn2Gv9eTnY
+         w2dspwntaXSovpYdBP/1XopjGG0+kmrdhdLnrZPYisBCQRtEfED+DQztWeHaQcfZTbW4
+         LVj98unjzia5W68ZJfcbn9plMy1bpcLa3vtnlN+1h1Yw/+XyDWx1xg3wnIV807gQJfgF
+         WuCCOFoO6w4rbi8mBwHc4BAfAFrQRzuzatMYugUsc9nNCW5G5iVs7muayVKD6Q6CCAm2
+         iCHerp5jGrr6zAk7qF90TqjRCoOTsVxXVrSsT5+e+T4SfCdKFes87U1LcJLntnouiQ1q
+         9Bvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788689258; x=1789294058;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Mv5PZ/MVDDOKzC7mTafEfq3SK5tNJ8cn62CE8cNiWXg=;
-        b=ZaR5vmC7WF+dNh2sAjBdblSTAkfN+8YdvxeW9uGELX0cpHCBuCXuMbyJnbg8LyI/sm
-         as8J4fXY4bN+8E95KkNur1sB/B69WRfA/abSCNUYajwulHphZclpKCxka17MiUqP19oZ
-         J94fIap0VSMDTAwudivPlZOTZ0yu36cfXp9NL2HseuJqZVMdIiCbIzs3mBhN3Fr/k79x
-         GOHsd6OylSRPfFc2BZEMr/AU/N2DHlwxzsX0OeIkXSI2TSrBg+3Oyh6bZylmxJZAkiEM
-         oSLRPqWjeVL8TYTwU1v7fiosrbf4OtIgEsPrlEQb6HAiI8M91E8L3FnReWBY5oglgc0i
-         h2ZQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzNxagPaoRONtmJzIhhpEiECdK0e5HT234AZ0D2j0aC8X5Ai9iCieDnfEuw1JRhfvXhajW4B3ukaSQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++l+4wwk+MAEzdrRvacw85UgC7FO9TF/CXIvhCnA9eabHT8wqG9T
-	ScFKzEfj77DGCQKiq2r1+Mc7002N3Ux7FqCIOlfZMOzMh8rI+ZVzw0BZ
-X-Gm-Gg: AYBFou1F4A2QBKs83UpAu06DbsDLtRxyPCBU8mHHQzZAVY9bQIxXDa+g3nEkiTunpeO
-	MsZKHFbiHBnv6N6Hm0HUoZ7jgXz2ftV/zPQ/MGcZ4g4Z8Z5hM7Jn0agz4AVirszLYRPx3b0FXp6
-	uhrTX5VM12vZSh5f5ntE++enGW+lZEdJyPqX+95l9vU0rWVez77mdKSN1+Hb0aEdnLnm1kB/Kl+
-	RDhSdgmm0FA0YxVKl1R8No2jJV1ZzHM9mJVBEG9xrqmDmWoyq4xBrgBNImg92sVPpkvQi7vwOGr
-	l3KFYxy6VZND8Y2dYQBYHekiMSBcP3Am/ZZA9IXiQv4uaw6i7TgADdowh3p+G6lQ2/vAvF99Ki/
-	NN2ELzDuF42NpXQYa8i9GcBu+YfMlIsPf1Vw3xirB6fq5mO84c42uRmmngAkYTXRyvf8VzAKtkT
-	K6QV7izDWqnOXwJD63n+Aii0c0PPz1NuJlXdK1iBRM4Q+jPu3TNVSrdHcZVoZBp6bahWbjTSCBD
-	dHuHsV7OokiC+naHb4ZZHKP2qm6xrsEkWcmvVkflcD5v6pFPW23xJIrIA4=
-X-Received: by 2002:a05:651c:552:b0:3a3:74b9:8a78 with SMTP id 38308e7fff4ca-3a374b98afamr15556071fa.17.1788689257905;
-        Sun, 06 Sep 2026 03:07:37 -0700 (PDT)
-Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a3705a9b4asm21482421fa.31.2026.09.06.03.07.36
+        d=1e100.net; s=20251104; t=1788692719; x=1789297519;
+        h=content-transfer-encoding:content-type:subject:date:cc:to:from
+         :mime-version:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=w9gyLWtQLohjNP+UG4PRUGY7mDiKdRQaFAscLEnUlZM=;
+        b=jbaee/daTx6/i2bRwKGu9flrR05S17d+ZCnoh4IzEyyJ9OQuQNlJsHieufQVt65GN7
+         Pf8soUtWdxY4O9ac2DBXGf4oSgrUe3IyEDs8P+hxvIy554+KZA70a9+kqgoxLs3mXedF
+         RvvfJj9ofz/8rCTpJWPMf/Mv13XmdIfwDzN2k+kyBhY09gQFo4p6bOERLiXCOAS0cbhk
+         QA/XdpIF9Wm2RiOZGdc1a8cOy1vGXPv9ChFrZepuNyE7GZo5x8s5UGPviFi4mXd5GDh9
+         ASuYgDXeA9UREf2kDMxpEC17qziUOrrZM3kzwXfFrDufsHpa6HPQfvHW8KYp3h4RVM9g
+         UVHw==
+X-Gm-Message-State: AFuF++m/34LtDORfOoLy7/+Q7TL6Xe3c1lUz/ps3U26kO2ub9fbyiUv2
+	NG+5xAm3cOueGJBXlTcfZVCDfCBWciLHxUKqXs9Ji+7SJDM+pHyj601L
+X-Gm-Gg: AYBFou3IUDUxGS+57/tgVCqZBAaCGsdY/ne4wWjLIrdJ7u2Kx1LjwuYQj5rb+MmAA5x
+	y8yLfhXjo8kmBwAE2Uot/ibf0xGIfLCiLkuAzcp3ItVo6tJl/m5mF71nMJCxxlpxUKYYc+kXNtG
+	IUWAXVG9UCfj9TxtHKLT7Dw9d4zfkfIGWedPm5s92sGsXh7O9U5mH2ze4VUqA6V43LpU9kLQMo1
+	c6KfgL6T2EIi21o267m74rQV6lEKLxuL5AyMYxumVfNmGPkieDmAlvSDCi7tnMoQ56LyjpT5lhD
+	n/6YbanQNhi7IC+COzh4rqI5evJkg8KMctjd3w6tUCsSixGSvPIJtS0gNaYR+Ut4QULVteehClu
+	tGiUfK57PM5PEy242JidF8BVf5wPcBl2x/GmN5dToBqH7K4WC3a3g5KEWoK0jcm14LRFew1Ng33
+	AQU9Bjwm7HvlCsCu+vH8J3dZpvDgxKprWu054XGFrsiW0wRMVRSS+bnJiuItiA3fxQe47THIFl8
+	PXy8znw39KffufuKT9X2H6y6ML+XlIiGXQRyADYTydw2x97bRBaobUb5w==
+X-Received: by 2002:a17:90b:4b90:b0:38e:49c0:75a7 with SMTP id 98e67ed59e1d1-39b2610f2fbmr24009365a91.8.1788692719394;
+        Sun, 06 Sep 2026 04:05:19 -0700 (PDT)
+Received: from manush ([2406:7400:94:7a79:f149:be84:942d:9300])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1432435648esm22779262c88.5.2026.09.06.04.05.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 03:07:36 -0700 (PDT)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Bill Wendling <morbo@google.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Joel Stanley <joel@jms.id.au>,
-	Justin Stitt <justinstitt@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	llvm@lists.linux.dev
-Subject: Re: [PATCH v6 5/6] iio: pressure: dps310: add hardware FIFO support
-Date: Sun,  6 Sep 2026 13:07:29 +0300
-Message-ID: <20260906100733.435411-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <ao1i3hKEpAgHLICz@ashevche-desk.local>
-References: <20260824201203.396651-6-zoone.rupert@gmail.com> <ao1i3hKEpAgHLICz@ashevche-desk.local>
+        Sun, 06 Sep 2026 04:05:19 -0700 (PDT)
+Message-ID: <6a9d48ef.4987c784.3608f9.714a@mx.google.com>
+X-Mailer: git-send-email 2.46.2.windows.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: "Manush Prajwal" <manushprajwal555@gmail.com>
+To: sai.krishna.potthuri@amd.com, conall.ogriofa@amd.com, jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
+Date: 6 Sep 2026 16:35:18 +0530
+Subject: [PATCH] iio: adc: xilinx-ams: fix OOB read in ams_get_ext_chan()
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 25 Aug 2026 12:39:42 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+The PL external-channel "reg" property is only checked against it=
+s=0D=0Aupper bound (AMS_PL_MAX_EXT_CHANNEL + 30 =3D=3D 50), match=
+ing the=0D=0A'maximum: 50' constraint in the devicetree binding=0D=0A=
+(Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml),=
+ but=0D=0Athe binding also documents 'minimum: 20' which the driv=
+er never=0D=0Aenforces at runtime.=0D=0A=0D=0Aext_chan is compute=
+d as 'reg + AMS_PL_MAX_FIXED_CHANNEL - 30' in=0D=0Aunsigned arith=
+metic. For any reg < 20 (e.g. a hand-written or=0D=0Amalformed de=
+vicetree overlay with reg =3D <0>), this underflows to a=0D=0Ahug=
+e unsigned value, and the following=0D=0A=0D=0A	memcpy(chan, &ams=
+_pl_channels[ext_chan], sizeof(*channels));=0D=0A=0D=0Areads far =
+outside the 31-entry ams_pl_channels[] array.=0D=0A=0D=0AReject a=
+ny reg value that would produce an out-of-range ext_chan=0D=0Abef=
+ore it is used to index ams_pl_channels[], instead of relying onl=
+y=0D=0Aon the upper-bound check.=0D=0A=0D=0ASigned-off-by: Manush=
+ Prajwal <manushprajwal555@gmail.com>=0D=0A---=0D=0A drivers/iio/=
+adc/xilinx-ams.c | 5 ++++-=0D=0A 1 file changed, 4 insertions(+),=
+ 1 deletion(-)=0D=0A=0D=0Adiff --git a/drivers/iio/adc/xilinx-ams=
+.c b/drivers/iio/adc/xilinx-ams.c=0D=0Aindex 158e6133a..cd778d053=
+ 100644=0D=0A--- a/drivers/iio/adc/xilinx-ams.c=0D=0A+++ b/driver=
+s/iio/adc/xilinx-ams.c=0D=0A@@ -1154,8 +1154,11 @@ static int ams=
+_get_ext_chan(struct fwnode_handle *chan_node,=0D=0A 		if (ret ||=
+ reg > AMS_PL_MAX_EXT_CHANNEL + 30)=0D=0A 			continue;=0D=0A =0D=0A=
+-		chan =3D &channels[num_channels];=0D=0A 		ext_chan =3D reg + A=
+MS_PL_MAX_FIXED_CHANNEL - 30;=0D=0A+		if (ext_chan >=3D ARRAY_SIZ=
+E(ams_pl_channels))=0D=0A+			continue;=0D=0A+=0D=0A+		chan =3D &c=
+hannels[num_channels];=0D=0A 		memcpy(chan, &ams_pl_channels[ext_=
+chan], sizeof(*channels));=0D=0A =0D=0A 		if (fwnode_property_rea=
+d_bool(child, "xlnx,bipolar"))=0D=0A-- =0D=0A2.46.2.windows.1=0D=0A
 
-> I stopped here, I think you should understand what this code is all doing. Now
-> it's an AI mess. Split this patch to a few smaller ones each of them you understand.
-
-v7 splits this one into three:
-
-  read buffered samples from the hardware FIFO
-  derive the drain interval from the watermark
-  implement .hwfifo_flush_to_buffer()
-
-The timestamp estimation goes entirely, which Jonathan asked for. With 3/6
-split as you asked, v7 is nine patches.
-
-Retesting on the BeagleBone turned up a bug here: the drain discards the
-compensation temperature when a batch pushes nothing, so a capture can fail
-to start at all. 4 of 6 buffer enables produced nothing in 3 s at 32 Hz
-pressure and 1 Hz temperature. Numbers in my reply to Jonathan on this
-patch.
-
-> Can _rate:s be negative?
-
-No, both getters return BIT() of a three-bit field, so 1 to 128. Errors
-come back through the return value.
-
-> 30 * USEC_PER_MSEC
-
-Pre-existing, like the min_t(s64, ...) from July. Both are in the cleanup
-series rather than here.
-
-Rupesh
