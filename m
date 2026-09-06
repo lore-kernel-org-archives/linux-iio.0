@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 408E035028C;
-	Sun,  6 Sep 2026 18:06:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2B91EB1AA;
+	Sun,  6 Sep 2026 18:08:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788717964; cv=none; b=YH4d9GxsFb9TSQKrc6WgA5cgWa7Llf+eKIzKdbKjRlwZ8DwEPoA1JcUI+fCkTQBQT8+AFaxaKjeBJ9wfl6nZmtyd0Mec3U1saVYJhAFLs2KMy4HuB8aLieRdtZgpfdGaVU8qE/Lmc6VxSnlv02Ekv7hGRZwBKGPLi5EmQ2Q8ZIg=
+	t=1788718115; cv=none; b=a4KmxzdA4xj9etWNGmpMgMLNDi+CPbwKCk0PIyiDUqFyD9RNt7Jc6m7DcDyKqHAcFKjrXv9lwlHMvLIqjVldPw8Zu4zKpqFWychPcHpC621j5v58YLP3E1OYs7dfHDtG5YcANCOFKVX9gUBSyzZb+laGQFZbIvv1mdIvHIKcWGQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788717964; c=relaxed/simple;
-	bh=HzsS1xaw7cOngspNPlITimyKOflUXGk6qOxEkyPfIKI=;
+	s=arc-20240116; t=1788718115; c=relaxed/simple;
+	bh=MfFqN7lzGoHcR1gPINCpzC8RRi4pm8ZsKsCXx5WR19I=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nYBfC7T1W9fyl8BpaSGnIPyETIUApNO3vxns+3w7sFzNRdZ38bo62Mj2x3bElrL38cza9owG/AB3rNLpDlzdtpTUSzhemmGv1Bl1V9G37xFD1HQ6MzpL8rGe1uzg6YW5KFCgqO+zVq2BiaagRBSZfJr0YJHHHeAY9GQTT/rV8Yg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aStquZO1; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hgvvlucHaUFJYaBYC2MX0h4wpb8OT0aAsYHAlW6SVsMiaA2Fxxrsg8/0SWjPfwwmZJroKQ7rOo+4YLlNyDU4Y7kLiU+7CCgNM8R+JocSVs4icCQQ5kEAHdcCO3GRyvxQr0l8busAteH+ggUPzV7qoETXDOM7YFiHG3/OpPK5KhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hV4Wmgkn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aStquZO1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5347B1F00A3A;
-	Sun,  6 Sep 2026 18:06:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hV4Wmgkn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC5A1F00A3A;
+	Sun,  6 Sep 2026 18:08:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788717962;
-	bh=mIeh8YyWTrPT6nFCBHIo5ND4DVX6wkNj8tR+MZbgDB0=;
+	s=k20260515; t=1788718114;
+	bh=gSLK4hT/oaLo/dsLXdtO4EGo3FN7hnUJsF5wtt/+Ccs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aStquZO1iT7Q0WXES6RUT2ua+8k4Mi0twf71+2qkln6xKaTm1yMKQ2JP0lF8+H0iC
-	 52ywTrnh6pfwS1WrEm+od5NFVNdAFrL+iOMVMw3lspcp5O4eKrd9BSrp1JDMn+cWfG
-	 jVLE8PnexMzMdIkNBJ/qoNAT7/wY75t8KJvfMzbpZ94EWlYIibUIkYPx+YL2Tx8tT9
-	 kFNvFvWhsGkadhrfpuqLGV6rW+zBGEiA6qwOlBgRvLtEWgGH6szF1fZTcFTIq+OAgq
-	 ydqApBatm8gnxMtwmY1qTrmnfQcQH3Vfba64cWjwzOV+0UZbAn4sW9ynX7pSU/jMGd
-	 GkZf/so+WYLMA==
-Date: Sun, 6 Sep 2026 19:05:59 +0100
+	b=hV4WmgknfYVpA7MZlh4jev7JDziURv94ERutfnB1B6Vp88SP+8y/f6AwPtmMGOmgy
+	 4ty703QeK59qWPlxitGnf5kqwLtROXVkA/wHP/3cZSms+WKGN3LIwBmJZe94p/s53H
+	 GcyOQfgP+oawkA4HsgQ/pNuUpYqrScLwPjO+zP1jHlwXmJoi7lGgi7y4+I4KAwEeW1
+	 4oQzqJwCVJEigkKLRcFcr/a4XO3YbE2Fo24szXjOdeWxP5ggyEE6YdBKqkXybwX8IV
+	 vN0V3OokW0WVATd8Cy7ruiSMkRtiW3mupXZzGXkQzzN0IP/UPfhJOD4vgRgdNcISGw
+	 bEPEeEkLJgrgw==
+Date: Sun, 6 Sep 2026 19:08:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Kim Seer Paller <kimseer.paller@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux@analog.com>,
- <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 0/4] Add support for AD5710R/AD5711R DAC
-Message-ID: <20260906190559.7ca260f9@jic23-huawei>
-In-Reply-To: <20260904-iio-ad5710r-upstream-v5-0-76f985b7d0ee@analog.com>
-References: <20260904-iio-ad5710r-upstream-v5-0-76f985b7d0ee@analog.com>
+To: Jean-Baptiste Maneyrol via B4 Relay
+ <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_icm42600: fix odr change not caught in
+ certain cases
+Message-ID: <20260906190828.7d62976c@jic23-huawei>
+In-Reply-To: <20260903-iio-imu-inv-icm42600-fix-odr-change-never-caught-v1-1-029c5f1cbce2@tdk.com>
+References: <20260903-iio-imu-inv-icm42600-fix-odr-change-never-caught-v1-1-029c5f1cbce2@tdk.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,17 +50,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 4 Sep 2026 16:35:23 +0800
-Kim Seer Paller <kimseer.paller@analog.com> wrote:
+On Thu, 03 Sep 2026 21:37:13 +0200
+Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
 
-> The AD5710R (16-bit) and AD5711R (12-bit) are 8-channel, low-power,
-> configurable current/voltage output DACs with an on-chip 2.5V reference.
-> Each channel can be independently configured as a voltage output
-> (0V to VREF or 0V to 2xVREF) or a current output (0mA to 50mA).
-Series applied to the testing branch of iio.git.  If that all looks
-good I'll push out in a few days as togreg and linux-next will pick it
-up.
+> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> 
+> When using both accel and gyro with different frequencies, the ODR
+> change flag in the FIFO header can be sometime in a packet with
+> invalid data. Since we are ignoring these packets, we miss the ODR
+> change and any further change are blocked until sensor is turned off.
+> 
+> Fix this by moving the packet data validity check after the ODR change
+> flag check.
+> 
+> Fixes: ec74ae9fd37c ("iio: imu: inv_icm42600: add accurate timestamping")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-thanks
+Applied to the fixes-togreg branch of iio.git.
+
+Thanks,
 
 Jonathan
