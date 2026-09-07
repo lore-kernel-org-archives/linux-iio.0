@@ -1,110 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C77BA42FCBF;
-	Mon,  7 Sep 2026 08:00:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06A5641A909
+	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 08:22:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788768005; cv=none; b=EcbOLkvsqJKGyqhr2rhxCFtGsLFCjERdNv0iDCHuVgU5lbbVMK2LanomCykFe0RWAZMoicESISKaZ/KAJcKwW3IXLMBs3ftSR+3aq6sxxtIYoTz+4mChk3YVjkVtOg3/3UFjvtVU6YNqxsCEWkrLjyGsWfng9by4oiZptj0s3bg=
+	t=1788769350; cv=none; b=eoqLx9TqVmYlXPMH8YxsOAlhrq/hpgNJI7/2Zs61DxALJ4lYfSwoXX3P+ugrtFk3/SvZwi8vToxOOsLaJxWbdvR6JUYuhXRBNC/PaXlsJlr5xlit+QCA3FB3CAl2kf8tDNyzjBDi5jKsxZtJomYwP6Wy033+bhQ1GHAnZTCJMgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788768005; c=relaxed/simple;
-	bh=h3WFXrx2EjpSSH8EOeN7N1Vyz6XlhpwWUwi+4XpdQ70=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A3QACkOA3IVRT17+i2ptauLDqmKKpQ301T2WaSzzGwCSrXU0LNBzwfLcuM3yBq91qEYKeqb95BVtocgbKNiuktMHtoQR9JDSBpJFl1PvL8mN+Zq6jwC6PzCMEW7lonttd0Sx+CBotrSDJtnTrNl3xGKlHM+FpLtqYWtMmUMMybQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bGQKKHnq; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788769350; c=relaxed/simple;
+	bh=SzFJP0jiUiQAnyIUqADYku5K5Hz/gi3DhoMO0xBKTaM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JzfP7jcW+tKlbUou5W7tCYFUbBVGnawydpRlZkVTe4IksLbEzDQmmw4Ll/fUIUjDY9P1JlV0AA3A8jVwD23vKaAiM+8M36+skwdBJLecuC595vsYCH4Hk0TRdWVCRle+cbcOKM7vFAWTqE8bc7+p1+54lz4Ci9CbsOWoEhYB1fA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UTq9ZTN+; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bGQKKHnq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A9B01F00A3A;
-	Mon,  7 Sep 2026 08:00:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788768003;
-	bh=ynDRLViH04RclRGJqBCrPVaMpkrMgbaRYlnWLqlefjY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=bGQKKHnqP4O+gTfX49A5woF3lGv3vUkC2MpX/xd3HsEuPLEBuedU3prgqxvjyLkHc
-	 0iBifv+aY7CzKHxRDNnFj929H6+2ZE5iG5eMi062HYlz1tB8hwHAqYUkq6BQGupj+5
-	 MH8OPduqu0IVIxXrgtHqC4wHupvQ9ag+u8soB2COlwZCbMTagNEvyZ+n5Z7SjHY3yL
-	 wNP1tWhVipTbpyLr9y2vhUxKLxhBi6ID0+Egw9TZbV/JpYHWMmMucLkoFQVnmLrjto
-	 RbW0G3btRm8wIuOXErTBvvLcZx4Q6QtpEuBfgA8/B3uEjcCchpI8I6L94RhBqedmgw
-	 zNdwp8NMvi7cQ==
-Date: Mon, 7 Sep 2026 09:59:58 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, 
-	Flaviu Nistor <flaviu.nistor@gmail.com>, Andy Shevchenko <andy@kernel.org>, Nuno Sa <nuno.sa@analog.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Daniel Baluta <daniel.baluta@nxp.com>, 
-	Antoniu Miclaus <antoniu.miclaus@analog.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads1015: Add label
- property
-Message-ID: <20260907-elusive-sensible-rottweiler-0da0b4@quoll>
-References: <60dc58c6-dfe2-4377-9a73-f65cda56179c@baylibre.com>
- <20260903151939.5117-1-flaviu.nistor@gmail.com>
- <61d64649-603d-4a55-a789-babe655a2de8@baylibre.com>
- <20260905025612.09363f51@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UTq9ZTN+"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-48431648f33so3155382f8f.0
+        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 01:22:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788769347; x=1789374147; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=DsPWwpNpl6k7wrCmG7PQd50StcBQygwTK0Z6Y3sGKaY=;
+        b=UTq9ZTN+nlqcMXh7euzK5Z2NwVgkFpRojepdP0Zy9/4mIMO5W2Xr8l0XDl/6Hha5JP
+         SVdDWruXwiy/jS5DTCTKNXFrRptubY48qpYSF9c9ahA26+PKv/ZZSQQIUuiWHnDMIDKY
+         Lb6Mm3N+RxjIxFOh4s2lws3qgpbS4Lji3eS9dJx7oig679eVY5ZGVIMjSF8Ps0/Bb3So
+         VAJfQkUSAyuiOwHl1tRac0ctpo8ezzXJdR18ZO4PrWIe+L3stYV6kCuIBOX4o/NmLGQS
+         4KSE9YuIfT0k4STkLG8XlBFwLbmTka7bILEXT5ehot3Mqh2I3a6B+balKspz8F615XKc
+         dV5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788769347; x=1789374147;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=DsPWwpNpl6k7wrCmG7PQd50StcBQygwTK0Z6Y3sGKaY=;
+        b=QdnvmQMHAB1xfft+HqfAxUzXJTdSapTO30gdeOIcBxtJFhivzgEKWtJvLCxtcZkkZe
+         6gbzxF4U3SMaiOfXPJJ/WBIG45D9nOktf6WQkl142NSXCUoUQvDaxxDjXGZUIRYv4Da2
+         D4yD2oEJ35b7qYbQwrQIr0K8yLG/MlzGbE1ZQ5SdoI6T1TYJzt40SivIjJj0kBaEdT68
+         O9O+6NLLFSNdf5am88n3guDOYqsAL6uspvd3vVcP1aGGl0N3C6wwhjpflvyqR6NiEWhK
+         H9ohomCIAF273NinnfcBzvYXQ8dsGn4YhvKZDXMsxqChsRxeOLkYYAgZuqQ2ffC1Nsz3
+         SFCg==
+X-Gm-Message-State: AFuF++lwrRzyAD5nJsPpM+kuTwTU0Ygj3zSTGV9uRpirV11l5rGDDdRM
+	6FZPXUQR8spQmvmJNnbYEYQXn1K5cB+yQz3qVlWDtyTJK2BBsrUaC1Eo
+X-Gm-Gg: AYBFou0a1/cTl2vN0qgkpC+wcp7jyCNVeWJGc99yvivvqVZNZIkcyQIp8egAiJ5QLJf
+	DpsoYpe4tD2oZMHVmh7OMjE5ihkOp+AzeUiaNzu+ZKoZgYUKAyoJie1uxZhilCqV9tdkGLLNTnH
+	nkl9a82ns6OBPzxbzLrNxcZh0ijpBdk6+0ftpi2TapR/8KMCdKLFLDefzoTqxMWDJ2OasncnoPw
+	OpsGd+5KeT5KZuu/PNAQgAnZ2kM5mxnkKAr6yoMFoS+WmYDmnDc1Q7dI4pn/kz56Gv1zQd5BW1Y
+	C87i1v/Gy5xaOhFfTjTZ799S/jQW5VcRcL+J+dZH8kNIx0c5z14zpyg6Vw8djk8xGyPWR2nCE9Q
+	IGkonESFx3I+Bj70anC6HXg3DaxyeGlVoKcwc2HYEBucI4PzYy4CJBv8cCaCAwd91HmWAoyrj1E
+	kNxQfvaTCfXtTs4O4K3NpaDRx5HmepTH1Ygmk5XWzErNmq1Hb5aYP9bvY7+H/LGrs+CNueYbnD
+X-Received: by 2002:a05:600d:8497:10b0:49c:f13e:e4f with SMTP id 5b1f17b1804b1-49cf891bce9mr137013075e9.12.1788769346885;
+        Mon, 07 Sep 2026 01:22:26 -0700 (PDT)
+Received: from localhost.localdomain ([165.51.77.174])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49d04fe7f9dsm191106465e9.0.2026.09.07.01.22.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2026 01:22:25 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH] iio: temperature: tmp006: Fix endianness byte swap in trigger handler
+Date: Mon,  7 Sep 2026 09:22:15 +0100
+Message-ID: <20260907082216.52821-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260905025612.09363f51@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Sep 05, 2026 at 02:56:12AM +0100, Jonathan Cameron wrote:
-> On Thu, 3 Sep 2026 10:30:01 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
-> 
-> > On 9/3/26 10:19 AM, Flaviu Nistor wrote:
-> > > On Wed, Sep 2, 2026 at 9:31 PM, David Lechner wrote:  
-> > >> On 9/2/26 12:22 PM, Flaviu Nistor wrote:  
-> > >>> Add support for an optional label property per channel similar to other adc
-> > >>> chips. This allows assigning distinct names for each channel which can
-> > >>> match the schematic signal name.
-> > >>>
-> > >>> Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
-> > >>> ---
-> > >>>  Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++++
-> > >>>  1 file changed, 6 insertions(+)
-> > >>>
-> > >>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-> > >>> index 718f633c6e04..777a75c21d7f 100644
-> > >>> --- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-> > >>> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-> > >>> @@ -66,6 +66,11 @@ patternProperties:
-> > >>>            - minimum: 0
-> > >>>              maximum: 7
-> > >>>  
-> > >>> +      label:
-> > >>> +        $ref: /schemas/types.yaml#/definitions/string
-> > >>> +        description:
-> > >>> +          A descriptive name for this channel, like "vcc_ram" or "CH3".
-> > >>> +  
-> > >>
-> > >> Apparently this chip has quite old dt-bindings. Normally, we would have
-> > >> included adc.yaml to get this and other channel properties.
-> 
-> Quite a lot of bindings predate that generalization work :(
-> 
-> > >>
-> > >> And we would have used diff-channels and single-channel from that to
-> > >> describe which pins are associated with which channel rather than having
-> > >> a magic number for reg. And the ti,datarate looks suspicious as sampling
-> > >> frequency is usually we control at runtime.
-> > >>
-> > >> Anyway, none of that is really relevant to this patch. We'll see what
-> > >> Jonathan says about using adc.yaml here vs. adding a label property.
-> 
-> Given it's only a single property and label is pretty universal
-> I'm fine with just adding it here without the reference to adc.yaml.
-> 
-> DT binding reviewers may disagree however!
+In tmp006_trigger_handler(), i2c_smbus_read_word_data() is used to read
+the VOBJECT and TAMBIENT registers. However, the TMP006 stores register
+values in Big Endian byte order, while i2c_smbus_read_word_data() assumes
+Little Endian.
 
-Yeah, I see how adc.yaml could be used here, but then it should disallow
-"diff-channels" to be explicit, that old "reg" style is used, so maybye
-not worth the effort.
+This causes byte-swapped values to be pushed to the IIO buffer on Little
+Endian architectures, leading to corrupted sensor readings when using
+triggered buffers.
 
-Best regards,
-Krzysztof
+Fix this by switching to i2c_smbus_read_word_swapped() inside the trigger
+handler.
+
+Fixes: 91f75ccf9f03 ("iio: temperature: tmp006: add triggered buffer support")
+Assisted-by: LLM
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+ drivers/iio/temperature/tmp006.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/tmp006.c
+index d9f6449ec0d8..f3b3de0bf221 100644
+--- a/drivers/iio/temperature/tmp006.c
++++ b/drivers/iio/temperature/tmp006.c
+@@ -256,12 +256,12 @@ static irqreturn_t tmp006_trigger_handler(int irq, void *p)
+ 	} scan = { };
+ 	s32 ret;
+ 
+-	ret = i2c_smbus_read_word_data(data->client, TMP006_VOBJECT);
++	ret = i2c_smbus_read_word_swapped(data->client, TMP006_VOBJECT);
+ 	if (ret < 0)
+ 		goto err;
+ 	scan.channels[0] = ret;
+ 
+-	ret = i2c_smbus_read_word_data(data->client, TMP006_TAMBIENT);
++	ret = i2c_smbus_read_word_swapped(data->client, TMP006_TAMBIENT);
+ 	if (ret < 0)
+ 		goto err;
+ 	scan.channels[1] = ret;
+-- 
+2.43.0
 
