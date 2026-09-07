@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E48FF2DA756;
-	Mon,  7 Sep 2026 01:54:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC97E30B51F;
+	Mon,  7 Sep 2026 01:55:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788746100; cv=none; b=Um7ClgyPy4vAWHQfYjJOACAcUDkBUA09u/hb89qi7hlJIuFGQtVaocaEj5Bvf8mwP+KywqdwGPWQZPH4s1fDWsf1Q9ZmHVj3yTAMDABOfSRI7dX6hHCVQyinaxqF1r4hcxx87T87yDKMvP1rEFgZs5aZc1nnudrWbkXZNSZmKZA=
+	t=1788746102; cv=none; b=qFpSQFOxSRlz2amkq35n3mCegnf4k3yASClbgawGWjNxbH0PY68M7/yjdNo2fOlnCe5GWqs2XMr+DV3UazO/76QTK3R7f5RY4QkH/UaThZF/OE7gGtJKTlK3Q67FCJX57xPLgsGX/rYZP76J1mHarAu/32q/0x7hXCAwWuKzc8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788746100; c=relaxed/simple;
-	bh=xs2ugIzVtB58v5MdayMxyukTl8K7qiDBY1KVOp6qz34=;
+	s=arc-20240116; t=1788746102; c=relaxed/simple;
+	bh=nLbdWf9zqa4bef8ZgcrkMLYPppY4EPXwKv6FQzSqK8w=;
 	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=Q9MnjiLxi3H5La+ACvVnV+HIiwjKBBVlqQfxY1pbBjXSsbWf7LHmOB1SuHvp+HQpY6jTCJ6SOV86PG7H02JPkNWAjOwjRrUfIJZWDPDiUmE36Xfh6bzgU4H3HBN+3Pt+ncLhM9VJmUNGuFHNjmItGweci2ogMk3vQN37H8g1sBY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oxd6F7Xf; arc=none smtp.client-ip=100.103.45.18
+	 References:Date:Message-Id; b=shCfTHrdA86tRieDHpZ3MnKrjvb/TiDSg1v/eMEaWKAQg+r0w9PSlQ0man8Sb7f7ZUDi+Aig7576wRmz+NYdo7RWxHjGB/F9w3g6SXtsYDZ6wQjpBH9Jnkgh3Ck5CalYm7aBYoS60pAS+Oyix6VG87x01ugZCF0Bi9y6VH4KwFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GZLO6k1q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oxd6F7Xf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 584671F00A3E;
-	Mon,  7 Sep 2026 01:54:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GZLO6k1q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2721F1F00A3A;
+	Mon,  7 Sep 2026 01:54:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788746098;
-	bh=XbOsy+BgEoZxD2kuUcAs/xx9goR979fcjp22tui+2nU=;
+	s=k20260515; t=1788746100;
+	bh=Bwlapbk3PEkkL4sfFGALRteIzYD8cRZpb8vIaDMmlmQ=;
 	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=oxd6F7XfieWuQ1TpLzcOM4wDq/du0bRbSuMzuNogMMmxlkR2tsL+TSDhmsE7usfc/
-	 T45GEdQIq0JNoFFssVqQeoKvvOB6aoMxlyh/M0ChLu5+EutJgbYRCEakE9Y7Da6dXQ
-	 P6hASW3PbpNyx5MlwTsFB962vctp7JMV9RStXfyppC+Za86RHTE79TxHdpQBIT/29s
-	 TUWCwNxbW0A7MSunJYIkiF+hXJVDXFgCWokwl7CXWrqZ7givIESqJXux7ZKXkBWft6
-	 8ahC4yNEuGjb7fvdJLma0Tu1Wz5gvVsNcK6nVeD+u/k08hyfBZ5X2vx1uYEEp7gMW9
-	 fwAzvGpqlUgiQ==
+	b=GZLO6k1q3xT1iifxIjq5Wf/Fpm5lS4UZQY6ZjoV93BO2JP6f5/s3YQT0Zju1iVphq
+	 R7XbHKEwZ47jX1JAEQ4TYBf5QpSOctRyaMsqOYZ8+Ut0qreyLLgJXhibrCqBC9jWPt
+	 N0S9DNL1Gg7Dueb5J/UNm7+fI0fmqWzCJXnIhwdkf7jwSlve8XqXNzls8G1hocUsIY
+	 0AKomPBm6R7mFlJheu/0oAQfuiydl7ZUihesyJgePuJrRbqXZTS32X/9B+W/3gSzz+
+	 WmkCyN2Is0jx12ohvOEU5ipeOZduF3Ry/NA1Y9bhy7QQdT4hXgM8//TdhCNeq1uWWq
+	 rRkntc6sPjrEg==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -34,8 +34,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3 3/8] iio: imu: inv_icm42607: Update
- _odr_to_period_us formatting
+Subject: Re: [PATCH v3 4/8] iio: imu: inv_icm42607: Switch to little endian
 From: Jonathan Cameron <jic23@kernel.org>
 To: Kanak Shilledar <kanak.shilledar@axis.com>
 Cc: Henrik Grimler <henrik.grimler@axis.com>, 
@@ -50,65 +49,47 @@ Cc: Henrik Grimler <henrik.grimler@axis.com>,
  Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com, 
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
-In-Reply-To: <20260901-b4-inv_icm42370p-v3-3-77cc31642115@axis.com>
+In-Reply-To: <20260901-b4-inv_icm42370p-v3-4-77cc31642115@axis.com>
 References: <20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com>
- <20260901-b4-inv_icm42370p-v3-3-77cc31642115@axis.com>
+ <20260901-b4-inv_icm42370p-v3-4-77cc31642115@axis.com>
 Date: Mon, 07 Sep 2026 02:54:51 +0100
-Message-Id: <178874609181.3402141.11177384276502703798.b4-review@b4>
+Message-Id: <178874609181.3402141.4159201185317451449.b4-review@b4>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1411;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=660;
  i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=xs2ugIzVtB58v5MdayMxyukTl8K7qiDBY1KVOp6qz34=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnhluJnDkxJUW2ITZseZsa486S7TD41vfHKTdq
- UDUbJiADRqJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCap4ZbhEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiEthD/9XB8CecjGNAsEg8MA4XeJ6rFi3IEBq3S/p05lO/C0ma64
- /6elt1GjxBDcRH/ObBC3GismjT6oeLayiROvacbV+7AVQyBWJzy2QShv4xnUWqoxShx4SuygTVb
- 1aYltdHWqtlRo/sVrU/YCux4a6nWFQTwI63SWHDgxdh/BMHjCbEbwHwgtaPLDrx9Lyb7OtYsi3L
- IQ/X4z4ucqO/oJPcnBM3JvbtpyvbXpzicwRIBi77l3Wt2n9lI1dpf4aTrF0NwlaIeQU7DgRv/yo
- bockqGPtzpo7Po3NTMyOvugYPrrjgjKfCWk48M0xlQ3FuYevCr8OKUKmgaSesoRjaDUsIdOU5QY
- jKZlrGMV0VWSmfbGM+YSEArA0yh3Vas2UgVqgKOWvaKUl0YErv05/Dk1RC50IaG6ijbOxnaE9RT
- CEM99OwDhjYhenujibTSZhJNoBBZ+alZRiLvd+QbwOO4H0X7O5yww+OE/NBLbO85VNOVyCtQS36
- 9JEsEdKsJ4SiqK3ukRXRYBhTEoqwMvEGHW84SjYXuCNfFBtaYNiNTz2/aj2pba+/Yxd+QxjIrKE
- SonRdaxuqxsVsoETMeTaWpqkDTFK/nxw5yuSFWB95i7GdZ94OiyugFFqhAAloq7fzDFWDHXKChn
- BcjSv+s/JII85rjSWXmCz0EcCO+e4uNltH+Yebw==
+ bh=nLbdWf9zqa4bef8ZgcrkMLYPppY4EPXwKv6FQzSqK8w=;
+ b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnhluXVfqvJCDcOZnBmpK9BGIcXf3ErKTJ75T2
+ OiX7u2+YfmJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCap4ZbhEcamljMjNAa2Vy
+ bmVsLm9yZwAKCRBUhTSZxPQWiNPiEACJPLXCdMK4GP/JWOPT3/TN5AINZAqhXxgaoimiE/rUPMS
+ Jf8LAyMC/PFXYc0BaJdgh0EW9sAetfFGrMSa5gWA4EngWw5rOeifrzm5SUVfEub+LHgy6RuoUaJ
+ xFxJfVuWfXCc9ZyPBh8NHDLjabBbGNSETw+uMCMEgPMZgK+rhoICqmDBnkoPHIrjherUM586Pbi
+ WQ80mi7Ydrhw/hRKUmvbacnTpXsgkB715MnMJsKSFMxPssmKwvjOR1HxZ9ICBuHDHI7rdvHHkF1
+ UKmbd18On+97k04a6XlhJxTZ8JbirMGqYWOgGnhGhm5wStPqJHdFdsy9AxYWTZIjz9+wz65RqNi
+ 7aLgX2IpSpNYIj04IJRDDZfObXwCDuxa7UEaELzj9+p+SQeHwmiMEDEqKz3axTnivjEBkVO2CUa
+ z2N0fQ3GDEcrg/Rt0k8WxUH6WuDF4oqcKcvLjCQV7OQ7jHwdjEgIGWKpGiH5vUnjrcJM9+BxiMR
+ yU9BzreTU1x22SY4r8m/ybrUjZ+cIXR/SIClmTocqOKZ/+VnfsGeGW//mc8OxneOuQqohZcuJwa
+ BINve6TIMQz8YabSVg4OTSm1/lBdZhKQG0sOE4v0c4o7zEicPIZ661u3oJIOZ6y5Hl1cW1Zg+gF
+ XPcn71G/fUeZy2PmBh1vR040M7QawDuDhpO3r2w==
 X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
  fpr=6E2966B387840652912681B154853499C4F41688
 
-> Update the function formatting for the inv_icm42607_odr_to_period_us
-> function. This enhances the readability of the function and drop the
-> unnecessary comments in the array elements.
-The description doesn't mention the change I don't think is
-beneficial.  Which makes it even easier to drop that change.
+> The device supports both big and little endian formats for sensor data,
+> this is handled via the SENSOR_DATA_BIT in INTF_CONFIG0 register. The
+> default value is big-endian format.
+> 
+> Switch to little-endian as it matches the native byte order on vast
+> majority of systems and avoids unnecessary byte-swapping.
+
+This is an ABI change.  Whilst in theory they are self describing and
+no one should be assuming they are stable, in practice people do.
+
+So we need a stronger reason than it saves a few byte swaps.
+If there is nothing else leave the ABI alone.
+
 
 Thanks,
 
 Jonathan
-
-> 
-> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
->
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> index 4d51b0da1aa1..fa85cf738cc0 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> @@ -62,16 +62,16 @@ enum inv_icm42607_accel_fs {
->  /* ODR values  - Note Gyro does not support ODR less than 12.5Hz */
->  enum inv_icm42607_odr {
->  	INV_ICM42607_ODR_1600HZ = 5,
-> -	INV_ICM42607_ODR_800HZ = 6,
-> -	INV_ICM42607_ODR_400HZ = 7,
-> -	INV_ICM42607_ODR_200HZ = 8,
-> -	INV_ICM42607_ODR_100HZ = 9,
-> -	INV_ICM42607_ODR_50HZ = 10,
-> -	INV_ICM42607_ODR_25HZ = 11,
-> -	INV_ICM42607_ODR_12_5HZ = 12,
-> -	INV_ICM42607_ODR_6_25HZ_LP = 13,
-> -	INV_ICM42607_ODR_3_125HZ_LP = 14,
-> -	INV_ICM42607_ODR_1_5625HZ_LP = 15,
-
-Why?  We often put all the values when they are mapping to hardware
-register values simply because it makes them easier to compare to
-a datasheet.
 
 -- 
 Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
