@@ -1,73 +1,81 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 510523F1056
-	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 08:54:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32DDC379C22;
+	Mon,  7 Sep 2026 10:18:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788771244; cv=none; b=Wu+I9gPWGQC410l8lHO8FiP3DZDP3wHAotwKNzAk2abapWFblics5m51Pa3XfLXU14NjW8Jwuvdblm7XaHb2P4FtJio2hhyrk4eBLguyDNAD/ZOvTMeq4T1AJKdqfLs3rNL7+jr0Ia1ssKm64o1Np4jdmoeVp2cGO0QZ1KZNFyA=
+	t=1788776334; cv=none; b=r2ucGprGzmQi+jDg8dv9q1QiaJGJgAUCksV5mWGuLWPWNqD9cMvPc4D+glRTmeGZIGloR7LrUVzrt7rHBPicO59kU9UKCn8vZMKw+hQ0Zzubs9tYAsIRZpkx/kUTfqfnfI8fi/JEbNeLLXlrJRTUZlA2qk/vqWtOGJ63JR7IZ44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788771244; c=relaxed/simple;
-	bh=T6jPsbPIyqALI9NXr5wJckEJ9ruwlbMarPcMN3a0lwQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BULw+3tx3JEFPKGMiamQtBSzU+GEyP7FndSB3CmJYNgHuN7a+s9S6pOBPapht4EunpDi5j7+gs89wLVUahrQFlBdvltn48QCwRksSDOxAlAxNdgGjVbtyFXNFGmkO3kp9L5HwAxZcFVp4e8Xk71iKF8spjNBd+sg/mqehinWGf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qYXSDory; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788776334; c=relaxed/simple;
+	bh=KAyCQdJzFzjqYUOhcD0oPKc3/rJgr9YdLJM+JH1GEkA=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YP3bb1QM4SOpOh7cegTP111oGDo1we0Iu4cRgU0AOYWDFskoAu22kHBk9XZsiO10ZUaqFpH/FujGTwNNFBGQlqat/PFvc9zmlLElPsP8WbKiYvEdtbvjgLFBuwSG5WJoVgadhhhOMFeoaoMflGunhRnyQFTBeD34z4wzcXVcqHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=EIKueeFV; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qYXSDory"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-4843f205a5bso1845274f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 01:54:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788771240; x=1789376040; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=xKjRQq+ijBRhac/KlHOQ6qKwFk2CUXwuQOECe/rqC+Y=;
-        b=qYXSDory8vUVHGO7H9WArfmKJ/shitcRd73TtwHPOdqglPztH+GdoZUXbL4i8vONLN
-         j2W5FucCwf0Ek2glggr5hhrPU93nOK0dIwECTR2rycHFD0cMdw2faoaq+Zj6VXu+BC1x
-         8wb0zUwBS53XA+2iTLDaTbMaPKjBoaxmusUPxm+4bXUKwtqFnOr0a9bJPDG67aFEbZFL
-         5u6RzC8zVdpZKNpDYOEQdXl7FhrxIctkuXcFcurIUO803qJ2/BzcHZTjHw0RJtPdUWwq
-         /KndWAFcLG8jjckk5quf5lA4getHgaTeidDg8ZKnD+dJybidpStVmpazExxjOpmshKlq
-         luUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788771240; x=1789376040;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=xKjRQq+ijBRhac/KlHOQ6qKwFk2CUXwuQOECe/rqC+Y=;
-        b=NrDBnqMrOaeQ7WiDTEqGkZfwawdOb5lxcSQ87ZUzKNqFNx+LiI5HXTMm7p6YUuHGRE
-         V+0iiyj3e1UKCHzKFm8dg36iluWdEx4LZnsq2xWTbwLq/W7h3L1f9D/1TrsUgGYGY+KT
-         LonmaoUpvpoaE6NVTlFuSUpZ4fktDpgMWKwsjhTrYJ51fBN0vyHuEaLJYaan/qbXe3yn
-         A3/ROI3AzpwVyeQf/V3ik0eTbC22aVXWbOS4KTy+yXIeGhRSa4N5Uy/0dbVWU0y5fmnn
-         CFRkkSQsQUzRGibZeC6/Xr0SZnQ+CWMuQSYerbMyPcpOIGgj55tVHgFIMyQhQyeFfmJh
-         jRzQ==
-X-Gm-Message-State: AFuF++lsxpLg3QKTEfdHW9lcRlfUknFhB+XmZPX5ot+uYpBO0gLy4Egm
-	UiGMxnZWCrQ0St0gvrTpo45rGBBiWdslC183yfSpDpHE85bM8xLcLCwg
-X-Gm-Gg: AYBFou3K5EgOef6UYsOfqn8EAPLD+YA6HRyMNiPbmj0JcM6XDCHCRqWU8Htz6UC8JMG
-	+qWQB/j+iDvbjRD9YPsxJ46lYpWLNt2+gHFH7g9YP8s6/4oV7+2A5kMnnKZ8pSRsXrtZu/xgYAH
-	gn4Qy/2kUxak4NUgkYfUJTv/4S5IXHcKDbF6PDxFQfBDl2mGcjk4O2NVLIypv7NLjqyQOTE8GyA
-	z6vIKthAYNUn+EeVoadBFyATXhc5JbdLVSEwleT96IP+jzZ4J4rDijhFr+hRvHRV2fQI/zef4hR
-	nbS1vh8R4y3ZViVTyQ6W6tcgf/QF0UT+eLzjwjOkLaVSogFxNI3D0DyBAYoM5tNkPv2Wf1C8nyP
-	p5yfNQYiDzkVgEOI2AbauZKfGuXJyDdVZ2k776rUKR9Au2wJYwyMETEzQwcUkgTHvsTJV2Ufj0z
-	TEhRgQP4+YA4AVy7Kbsba+ogu1qZrqWPxoEi6KSO/BJZdntdb2sb3L1aJpVyGb/SGInA7ijurUV
-	gSFCUauPAm8
-X-Received: by 2002:a5d:5c82:0:b0:485:8a46:b3b5 with SMTP id ffacd0b85a97d-4858a46b479mr20151350f8f.29.1788771240203;
-        Mon, 07 Sep 2026 01:54:00 -0700 (PDT)
-Received: from localhost.localdomain ([165.51.77.174])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4858d2693e8sm25746158f8f.3.2026.09.07.01.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2026 01:53:59 -0700 (PDT)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH] iio: temperature: tsys02d: Fix state desynchronization on resolution write error
-Date: Mon,  7 Sep 2026 09:53:53 +0100
-Message-ID: <20260907085353.54477-1-salah.triki@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="EIKueeFV"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6879YaWL3717672;
+	Mon, 7 Sep 2026 06:18:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=3Lf7b
+	6KXiIgjWP91CS7SgdoKU3dxg9cni7R+EoNCMsw=; b=EIKueeFVSat8z2OLAvay7
+	sD84O3vmVZmTbBmine/hYoytwew2MC/tw2Rv6cPFSFOj41DBmwq8wjk+rqlZjdyR
+	tOpNaTzpb+8rhPxzjn1sNPV8zbCOj+SS2IFNNEYX2PrEyM0Y4DgDTdN15F2GhNzp
+	FAqPqtCq3Dg1NCkVEc83fOcuJ0jrt6kcdn+KsQpwcMkwNgdG1j74qAOLOS4GV36C
+	PUSRh5Sx9lIuPHsVXAM6bVbf4+aMCRo339M1geRqYZm8nMmBQkbfAA73n2wUzw89
+	zHSOPJsdDeSqfY7VfBsww2dxzxg17itTZ/wyGdFMT92Yvy4k0RUjFFDncmMxCCoY
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gh4dg4d7r-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 07 Sep 2026 06:18:28 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 687AIQo7010530
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 7 Sep 2026 06:18:26 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 7 Sep
+ 2026 06:18:26 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 7 Sep 2026 06:18:26 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.185])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 687AI3Dd007412;
+	Mon, 7 Sep 2026 06:18:21 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah
+ Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marcelo Schmitt <marcelo.schmitt@analog.com>,
+        Joshua Crofts
+	<joshua.crofts1@gmail.com>,
+        Radu Sabau <radu.sabau@analog.com>, Salih Erim
+	<salih.erim@amd.com>,
+        Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+        Jakub
+ Szczudlo <jakubszczudlo40@gmail.com>, <linux@analog.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
+CC: <stable@vger.kernel.org>
+Subject: [PATCH 1/4] iio: adc: ade9000: fix ADE9000 full-scale RMS and PCF codes
+Date: Mon, 7 Sep 2026 13:16:18 +0300
+Message-ID: <20260907101623.8730-2-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260907101623.8730-1-antoniu.miclaus@analog.com>
+References: <20260907101623.8730-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,39 +83,71 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: OgbgRtMnkzkMcjuNLIeec3qnNqlCEkPf
+X-Authority-Analysis: v=2.4 cv=f5N4wuyM c=1 sm=1 tr=0 ts=6a9e8f74 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8
+ a=ViKl6yswhRTQ_48acFcA:9
+X-Proofpoint-GUID: OgbgRtMnkzkMcjuNLIeec3qnNqlCEkPf
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA3MDExMiBTYWx0ZWRfX+clNOMwhLVoy
+ lPbL0oa4TwBnX9MaIWddV6E6/fMcTbZVrR+/BuA77cCecZL8eWZkBGN/aVXUtrhNYCceTcc/Kif
+ BvIl/GHR6V9afgTc1OZG8BxD4kjU26oUJlu3LDubdKYCtP2DaHu5
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA3MDExMiBTYWx0ZWRfX5MzV/EQumGoX
+ hqk1EfppT4dE2gaRNYYui8L/8HBy6Mkq65KhW8rDqsEKxnU4cN47F1ZhOsnQJPzadRf6w+wlX3S
+ s0HMq3m3J/+sv87epzevvgfAac2aWVaXt47EySKBogmOj8++stDnSnOd05GnTfS2a15z4xvR78Y
+ NqPribjevfh28eZpKoUYDjLcYPKPuXqnCxtokbMW3O3aYRG3vpEcVbvbS9j+Nxr7HJi42elCaLS
+ T8geM7eN/6ahoiYNgALacN7TCQNwPQymfJylwVD364IDIcssVN3Gt+gPQyluIs7WjYawkZfD6pz
+ CC/Y+8eyXFAUBLSX1GS9EdYIo6CpeBreqSlN2nVAlZeaif5CSV72nU5aau/AxPu+jP5BH6yRvuL
+ 6ecWduaEj1Nm/jB5+c2atyYrbGH1LocpvAjqKzmMRb4i+0sBkNFdg3Yu9HEpQV/PpKoihM9G716
+ fNjySh/wMHc6Hq3Uw+g==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-07_02,2026-09-07_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2609070112
 
-In tsys02d_write_raw(), dev_data->res_index is updated before checking
-the return value of ms_sensors_write_resolution(). If the hardware I2C
-write operation fails, dev_data->res_index remains updated with the
-new index despite the physical sensor remaining in its previous state.
+The ADE9000 chip_info uses full-scale codes that do not match the
+datasheet. The RMS full-scale code was set to 52866837, which is the
+ADE9078 value; per the ADE9000 datasheet the xRMS/xFRMS full-scale
+reading is 52702092. The PCF full-scale code was set to 74770000, a
+value that appears in no datasheet; the ADE9000 xI_PCF/xV_PCF full-scale
+reading is 74532013.
 
-This leads to a state desynchronization where subsequent reads via
-tsys02d_read_raw() return an incorrect sampling frequency.
+Because the IIO scale of the RMS and PCF channels is reported as
+1 / full_scale_codes, these wrong values make the affected current and
+voltage channels read about 0.3% low on real hardware. The active power
+(WATT) full-scale code was already correct and is left unchanged. These
+are the same family-A values already used by the ADE9430.
 
-Fix this by performing the I2C write first and updating dev_data->res_index
-only if ms_sensors_write_resolution() succeeds.
-
-Fixes: 53bf4d067d51 ("Add tsys02d meas-spec driver support")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
+Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/temperature/tsys02d.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ade9000.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/temperature/tsys02d.c b/drivers/iio/temperature/tsys02d.c
-index 3ef72347456e..f50426beacdd 100644
---- a/drivers/iio/temperature/tsys02d.c
-+++ b/drivers/iio/temperature/tsys02d.c
-@@ -73,8 +73,9 @@ static int tsys02d_write_raw(struct iio_dev *indio_dev,
- 		if (i < 0)
- 			return -EINVAL;
- 		mutex_lock(&dev_data->lock);
--		dev_data->res_index = i;
- 		ret = ms_sensors_write_resolution(dev_data, i);
-+		if (!ret)
-+			dev_data->res_index = i;
- 		mutex_unlock(&dev_data->lock);
+diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+index fd1362a98052..0f64bfb221da 100644
+--- a/drivers/iio/adc/ade9000.c
++++ b/drivers/iio/adc/ade9000.c
+@@ -677,9 +677,9 @@ static const struct ade9000_chip_info ade9000_chip_info = {
+ 	.name = "ade9000",
+ 	.channels = ade9000_channels,
+ 	.num_channels = ARRAY_SIZE(ade9000_channels),
+-	.rms_full_scale_codes = 52866837,
++	.rms_full_scale_codes = 52702092,
+ 	.watt_full_scale_codes = 20694066,
+-	.pcf_full_scale_codes = 74770000,
++	.pcf_full_scale_codes = 74532013,
+ };
  
- 		return ret;
+ static const struct ade9000_chip_info ade9078_chip_info = {
 -- 
 2.43.0
 
