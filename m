@@ -1,224 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB79D4CC278;
-	Mon,  7 Sep 2026 17:53:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD1683F23B5
+	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 21:00:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788803585; cv=none; b=Nh7rRHbZW1xub4E65hfDEbJ36aWPzpVq+zxE0YhSt9SKMwq0kTgNV5CKHuHvLhtHlr9XfRbYE0UYl7sD2gFA2m4IzTwzW30N7JyPAXVcVFOkfvVlFpONtVyF/JDo8gVLxB18wGjhblq3RVioaz/Q1mT7XOeXMLWNsEcSkYqM3x8=
+	t=1788814853; cv=none; b=sXKpwxQwydbNBB45ttqgls4zl6RdNVDEd8XCSpX90z7k7vZBdOHNA2S0yvMO74cJOJOPIsYeXqo1HfUgmbN/7f0OZ/fARuJo0BAcD/Bl9uBNVlVYNZLJ/vKIP+TeEkRmF43nd1mMa0WhVamnrEaXvj2g4BxpjvDNGWplJB9ORUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788803585; c=relaxed/simple;
-	bh=YEob9+3uE0LvCPS+REEuqlGCRg+gBTeNIHjJ4G7qisU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=psNlizKGiMxwnuWGvYXjMliH1sidZB5+5a6VjrfrJixQxb16kpj4cjWi3hgA/LT6NtwdLbGLrEpb34vDQQTVxe9M1Ti/gToiHQUKlUbyapVVo6zV0xbxLSsrLuwxxFZxAmGqp6fDB68eTFhFLUee7u43KOBHaryTwlg6qMFBH84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D5OrGzVy; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788814853; c=relaxed/simple;
+	bh=R3zDQ8xU2MgwP232Uwo0QTMTrPn5Pt9Q7i4NRM7VQOQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ic6/aDSx/ireFPHqSp86VKu3ih2hHb9I6vpb/6hXAbBXFOAMLoeWcUTArRNbFbz4yJjEFxPW0zH22+dT4jPgWzBDcKvkllWv6OAMTzstcwFlK+zcre20VhDhX9QJM3t1sv37O4oMvZid1g+QZmDOLkCy0eSU/aJtfq7sWbDFDKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pBGcwyHA; arc=none smtp.client-ip=74.125.224.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D5OrGzVy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC5D81F00A3A;
-	Mon,  7 Sep 2026 17:53:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788803583;
-	bh=wsVrdBjgarsPKAo/VONyLn7OmxGtz5mxqy1STU9zaAs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=D5OrGzVy0Yq32Y1hpJiX5YHiC+nmc4837JmsXJcwk+18fblx+E//BZiRxalLu7O+G
-	 K2Sqapp+JP4/WOMsqghZHCyUqE8b+dBQWIJ+HAJCxiOAUMPau7aWKJePMvOh77hohw
-	 hVHimowHRaVIVodB8fCYUygL9gkeTkB1ce27u1RTxnIn+To3tsLXi1d51rssUgjBNG
-	 2aPofYuGjH6rEuis+jTIR9WoapcGipVoL87h+QrVHlumwFElaDK/rPNCRSpJcKBs/A
-	 E86SI8rZdpt0tjwAnfygMzQyfTpCKKWpxznkm/eRPFbtSLa1492tQOkBCplzNAMgZt
-	 NIsXrT1srG2IQ==
-Date: Mon, 7 Sep 2026 18:52:59 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux@analog.com, jic23@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org
-Subject: Re: [PATCH v1 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI
- connection mode
-Message-ID: <20260907-spectator-venomous-7528abe370d8@spud>
-References: <cover.1788368334.git.marcelo.schmitt@analog.com>
- <d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
- <20260903-liquefy-prologue-9ec914cccf04@spud>
- <apsufKf-EOvTfpwf@debian-BULLSEYE-live-builder-AMD64>
- <aptA9HP82-ss45JF@debian-BULLSEYE-live-builder-AMD64>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pBGcwyHA"
+Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-66f883abfdcso3214328d50.0
+        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 14:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788814850; x=1789419650; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=gojEDyDfYLvhRqOvL4tTAlYlPBK48sUhaWTtz7U0ImA=;
+        b=pBGcwyHAElwUxdB0iRO9SdrGc43rjWWzkAwp6COw1rSbh8yOMphL9Fz6CHqfW+tk5G
+         fXnUmqiQUjHqlqiZ7OoslBkCxEVQrQ65zCNV1PebGTZvya3uC3kvJFLjo+g+3badfj/Y
+         6ozzfIFAN1qlqaDeX9TBVH+QuRAf5NpuIx/lnBzKrvKiJuKxOWlsvm1ekLtPiQ7brRRW
+         FlPt/gSK6KeAUQSOhmxHLooNlAYQbS3U6+Ew5kHJdbLuNiL3jgcb0SbPEt/7KNUnRdUS
+         54bhety5s+1wF2wQ5mHqJ5i34Qzytg7UuOWWGqBJwq0IQeS8B3HQq6h0WjrNI1uJiVLI
+         zgbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788814850; x=1789419650;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=gojEDyDfYLvhRqOvL4tTAlYlPBK48sUhaWTtz7U0ImA=;
+        b=JdmHLxIvtW8Dif42HHHB9GCejk3grb9KSRxUAevW5Gfq0IOASq/DoZN/eUA3FVoM3m
+         TkFdqpNUotYg0pH29Nl5Xphku+ZCUausvewhlY6RGTWLS7WzgLkURTwtsLg8On5Jq433
+         EC5cCa9JGiczVp0g9hYnOWJBy3PqQIly0E+QzQ86L77edZk3ShjnvoxJPv+AT1Pfhvg9
+         GyHtlKXdBHVcYFNho5EMseKPgHhl7qW9yICGN2CKqQGvBJcOv4Xx4w5wm7MjPnjSn3Xw
+         2OVQ2EOkcS3pDrBOVnJoUX+RamakBN2KNnTx/2/mSYA5j6myCZabOtF48K6inw73oXZz
+         tqIA==
+X-Forwarded-Encrypted: i=1; AKwUvByl9QTDG9k/k3IBNQg6aI2dVTIrWuahtyx7peCzJe00inf8T2b1s1zziEa2VHthpZSCRAbJaiq7VYc=@vger.kernel.org
+X-Gm-Message-State: AFuF++kKcWhuW44aSHAHlQ6rZPtFsLIaWWaCdnJy4NyBbz+g8mszbYOE
+	Mn6bcSmgcxeHFs7l2QWkvGSoZ/Fr1iI2gfJHef6n+ya2hSk3vLWEmkD+3ARN/+YXRoo=
+X-Gm-Gg: AYBFou3Fro4mVIBMAU2XbauJ8rqB6vQ1syg/9VVkBOmDZDg1IpNxG2UtJEBEKGaf8Kx
+	hFKmvn2he88At/6ZrqbqBp1P2RrW+Ib+DHTbEVyP4whsM6k++8mKS9pRpXn0m97hpJmkfgTFis4
+	gi9V9LlG3PDOGmF2AL8SRFOMZKCBq2U8N8Uh9KGMw32Ll00oVqzWPZqBnFnggxVktWKwOSjnpC+
+	dLgbuLm5cJWiD/qssvwBrbWdOLMYMf3vnFu61S6GrcApKFDBozGS7QVlBRdCEpHH9xcm0FwEnrK
+	HEK8H/XM9LbaYAxNdaaVn6bhQk90xl9ivyHqj/u2uHNHd59ixVDUma/5ouH3CtCCK+J5bqLs3uQ
+	B3C3PfI0eQApu7Dm7GJdC+jg8L9A5rWzlJSW/6NZkOFbawISff66ErVhuqqLsbS3wHhB5d/FvGt
+	K5aTkXNOHgwMQgy/l5oWN7bQAc6ZJ4sMJ7EweOQ/rCToo=
+X-Received: by 2002:a05:690e:b42:b0:66f:c1bc:4022 with SMTP id 956f58d0204a3-66fc1bc4989mr4613793d50.79.1788814849738;
+        Mon, 07 Sep 2026 14:00:49 -0700 (PDT)
+Received: from localhost ([2600:1700:5431:250::1e])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66fb47a8894sm8855998d50.1.2026.09.07.14.00.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2026 14:00:49 -0700 (PDT)
+From: Chang Yu <marcus.yu.56@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Yu <marcus.yu.56@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Shi Hao <i.shihao.999@gmail.com>,
+	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+Subject: [PATCH v2 0/2] Add support for AS7343 multi-spectral sensor
+Date: Mon,  7 Sep 2026 14:00:40 -0700
+Message-ID: <20260907210042.32552-1-marcus.yu.56@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="n6+ZSME9ltcE4Rq6"
-Content-Disposition: inline
-In-Reply-To: <aptA9HP82-ss45JF@debian-BULLSEYE-live-builder-AMD64>
+Content-Transfer-Encoding: 8bit
 
---n6+ZSME9ltcE4Rq6
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series adds initial support for the AMS AS7343 14-channel
+multi-spectral sensor.
 
-On Fri, Sep 04, 2026 at 07:06:44PM -0300, Marcelo Schmitt wrote:
-> On 09/04, Marcelo Schmitt wrote:
-> > On 09/03, Conor Dooley wrote:
-> > > On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote:
-> > > > Document how AD4134 chips are connected to the host SPI controller
-> > > > according to different wiring configurations.
-> > > >=20
-> > > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > > ---
-> > > >  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++=
-++++
-> > > >  1 file changed, 22 insertions(+)
-> > > >=20
-> > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.y=
-aml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > index ea6d7e026419..d843c02a394a 100644
-> > > > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > @@ -131,6 +131,28 @@ properties:
-> > > >      enum: [ free-running, gated ]
-> > > >      default: gated
-> > > > =20
-> > > > +  adi,spi-mode:
-> > > > +    $ref: /schemas/types.yaml#/definitions/string
-> > > > +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
-> > > > +    description: |
-> > > > +      This property indicates the SPI wiring configuration.
-> > > > +
-> > > > +      When this property is omitted, it is assumed that the device=
- is using
-> > > > +      'no-cs' wiring. When this property is present, it indicates =
-that the
-> > > > +      device is using one of the following wiring configurations:
-> > >=20
-> > ...
-> > > I'd also really appreciate a dts example for a system
-> > > with one-channel-chain or two-channel-chain looks, given the second
-> > > device may require different supplies etc. I have no impression in my
-> > > head of how the dt would be constructed, so I'd like to see wht you h=
-ave
-> > > in mind.
-> >=20
-> ...
->=20
-> Realized what I said doesn't make much sense. The peripherals can all have
-> the same configuration and thus share CS, SCLK, and controller SDO. The w=
-iring
-> would be like the following
->=20
-> ::
->=20
->   +-----------------------+                               +--------------=
----+
->   |         AD4134        |                               | SPI Controlle=
-r  |
->   |                       |                               |              =
-   |
->   |                       |                               |              =
-   |
->   | SPI interface    SCLK |<--------------------+---------| SCLK         =
-   |
->   | for register       CS |<--------------------|-+-------| CS           =
-   |
->   | access            SDI |<--------------------|-|-+-----| SDO          =
-   |
->   |                   SDO |------->|=AF=AF=AF=AF\       | | |     |      =
-           |
->   |                       |        |MUX  >------|-|-|---->| SDI0         =
-   |
->   | Data interface  DOUT0 |------->|____/<------|-|-|---- | GPIO         =
-   |
->   | for ADC sample  DOUT1 |---------------------|-|-|---->| SDI1         =
-   |
->   | data read        DCLK |<-------------+------|-|-|-----| DCLK         =
-   |
->   |                 DOUT2 |<-+           |      | | |     |              =
-   |
->   |                 DOUT3 |<-|-+         |      | | |     |              =
-   |
->   |                   ODR |<-|-|---------|--+   | | |  +->| Offload Trigg=
-er |
->   +-----------------------+  | |         |  |   | | |  |  +--------------=
----+
->                              | |         |  |   | | |  +--| PWM1         =
-   |
->                              | |         |  +---| | | ----| PWM0         =
-   |
->                              | |         |  |   | | |    +---------------=
---+
->                              | |         |  |   | | |
->   +-----------------------+  | |         |  |   | | |
->   |         AD4134        |  | |         |  |   | | |
->   |                       |  | |         |  |   | | |
->   | SPI interface         |  | |         |  |   | | |
->   | for register     SCLK |<-|-|---------|--|---+ | |
->   | access             CS |<-|-|---------|--|---|-+ |
->   |                   SDI |<-|-|---------|--|---|-|-+
->   |                   SDO |  | |         |  |   | | |
->   | Data interface        |  | |         |  |   | | |
->   | for ADC sample  DOUT0 |--+ |         |  |   | | |
->   | data read       DOUT1 |----+         |  |   | | |
->   |                 DOUT2 |<-+           |  |   | | |
->   |                 DOUT3 |<-|-+         |  |   | | |
->   |                  DCLK |<-|-|---------+  |   | | |
->   |                   ODR |<-|-|---------|--+   | | |
->   +-----------------------+  | |         |  |   | | |
->                              | |         |  |   | | |
->                              | |         |  |   | | |
->                              | |         |  |   | | |
->   +-----------------------+  | |         |  |   | | |
->   |         AD4134        |  | |         |  |   | | |
->   |                       |  | |         |  |   | | |
->   |                       |  | |         |  |   | | |
->   | SPI interface    SCLK |<-|-|---------|--|---+ | |
->   | for register       CS |<-|-|---------|--|-----+ |
->   | access            SDI |<-|-|---------|--|-------+
->   |                       |  | |         |  |
->   | Data interface        |  | |         |  |
->   | for ADC sample  DOUT0 |--+ |         |  |
->   | data read       DOUT1 |----+         |  |
->   |                 DOUT2 |              |  |
->   |                 DOUT3 |              |  |
->   |                  DCLK |<-------------+  |
->   |                   ODR |<----------------+
->   +-----------------------+
->=20
->=20
-> So we would set them as only one daisy-chained device.
->=20
->     spi {
->         ...
->         adc@0 {
->             compatible =3D "adi,ad4134";
->             reg =3D <0>;
->             spi-rx-bus-width =3D <1>, <1>; /* 2 lanes of 1 bit each */
->=20
->             <supplies, clock, and other properties ...>=20
->=20
->             #daisy-chained-devices =3D <2>;
+The sensor has 14 optical channels (11 visible + NIR + clear +
+flicker) in total. This initial driver supports reading raw counts
+from all 12 spectral channels (11 visible + NIR) via sysfs and basic
+power management.
 
-Does this property actually provide value here? I assume it does because
-otherwise you don't know how many devices there are.
+Not yet supported:
+- Configurable integration time and gain
+- Interrupt support
+- Clear (VIS) channel and flicker detection
 
->             adi,spi-mode =3D "two-channel-chain";
+Patch 1 adds device tree bindings.
+Patch 2 adds the driver.
 
-How does this interact with spi-rx-bus-width? Is the value of this
-consistent with adi,spi-mode? IOW, for adi,spi-mode =3D "one.." will there
-only ever be Dout0 connected to the host and for adi,spi-mode =3D "two.."
-will Dout1 and Dout0 both be connected?
+Testing was performed on a Raspberry Pi 4.
 
+Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
 
---n6+ZSME9ltcE4Rq6
-Content-Type: application/pgp-signature; name=signature.asc
+Changes in v2:
+  - Add the LDR, the interrupt pin, and the GPIO pin to the dt bindings.
+  - Adjust the default gain to x256 and integration time to 50.1ms as
+  recommended by the datasheet.
+  - Use read_label instead of .extend
+  - Remove all unused scan_index related constants.
 
------BEGIN PGP SIGNATURE-----
+Chang Yu (2):
+  dt-bindings: iio: light: add as7343
+  iio: light: add AS7343 multi-spectral sensor driver
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCap75+gAKCRB4tDGHoIJi
-0q5LAQDx62EY+AFAzDAtzCp1+6FnL3pZMjBjOvgyLMgEbnVt9AEA6pyQiAt0cLcL
-YrWcVVLAd0X48SealNR6jCunC56JhQM=
-=ojBZ
------END PGP SIGNATURE-----
+ .../bindings/iio/light/ams,as7343.yaml        |  69 ++++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/light/Kconfig                     |  11 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/as7343.c                    | 372 ++++++++++++++++++
+ 5 files changed, 460 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
+ create mode 100644 drivers/iio/light/as7343.c
 
---n6+ZSME9ltcE4Rq6--
+-- 
+2.55.0
+
