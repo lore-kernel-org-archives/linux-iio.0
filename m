@@ -1,79 +1,76 @@
-Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
+Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99AFE3AE199
-	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 06:36:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA4E4028E2
+	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 06:51:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788763009; cv=none; b=DfedAZCxyzKxQDTGCPXlmu6me+XPauUaqqCIOy3qwcXz6dje5DnKglFFoRQmRS9j+1sCQrOy+5+Ul+MK2Jqa3KZhFyY7GEGjym3Oc9/8XoJOo45IXd2BlOemfOXKv296bqY/Qk318GoYQLx/YeViQ4pJmeaO3ax2q6dFGjt8KpM=
+	t=1788763872; cv=none; b=CDz2L8SJfkbemMXKjvC8fHRa/c1jm/9CTkqCTrUxL9eRq67NzftXvP17i/z+/9Aa3lB1Y9tXFYfTIqRZlJGXB4pY7K8KoePvgx0ZfL4GQvyWZYgOJRrnuFC8IGiqDpwIr7ha0bxuvZLRNcJXKjuU0pyrK55wlYAJUDBxa2M13rY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788763009; c=relaxed/simple;
-	bh=g925oDHJpCLjUvom101ukrVWFkHEpx+c7c6wk313MJU=;
+	s=arc-20240116; t=1788763872; c=relaxed/simple;
+	bh=7fo7r52nEPlzNK+NJp+U1AWQPC7MthGN29osZqvPtBY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ncyxFsSlFeUN6NZvYufKR6yRWW57gOVYAs7ZTBRuFR8F/4e81dxjvNdP3BIScLdsHdzX9gzcowQ01v+m53wKLWcZAHaut3RlnBJxpJ2S+AWwIf+QaJyAl8WD90HuwtyDSbyfc/2nCebGwyZo3oMixkzPfLTUiL5BKPsXpjvybW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pWH4bzJb; arc=none smtp.client-ip=74.125.224.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=RjC81zv0h912LNznmBGVQ+zGBkztAJCS47i1l4zJ7ioypwjdqMUfliNatOGy11d1mD7SxLW9MmxiOk0bS4GnUl2swG333y2zNbXa1Ecd6aV36pr/TrWCbrIzSmKMNfx+j6hJ4EygwNDHsDpXaz77Kz45eyrd8zmBnoXdBBdl1oU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T8Bk2JHo; arc=none smtp.client-ip=74.125.224.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pWH4bzJb"
-Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-66fa10f35caso2306948d50.3
-        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 23:36:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T8Bk2JHo"
+Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-66c9995ca60so3981663d50.1
+        for <linux-iio@vger.kernel.org>; Sun, 06 Sep 2026 23:51:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788763007; x=1789367807; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788763869; x=1789368669; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=2ocoYZDUBL0oSCHSm39vxqV2yz+NMY7WJASmnMs0VSY=;
-        b=pWH4bzJbBxPmc7BFUpJGiHUmBmLRtG4y+BGUfLThl3nsCt3Ia3g7vtbIAfiMSYksKG
-         hAqvQPqIYYyXmY3LX0S5tzdRwOSKNqzclgCtRdDu6NNC/DMRwD1qscfaMrrvsFEw8H5d
-         VHl94hGYohnIwvKlI2luQFd2Zz2K40KYq6y3ma9pHrU3npqBPGSTyoW9oZqGsXseR413
-         RDxMMxwuaB9hjL5SPS/yOeaZSs3iKTMG+PEFCUnuTa/Vtu+xt6HKuCcRRKbCoKlzxQsG
-         7j9CiVvBTYQILJ757v1ZOyiT09qxsZD8cTJyqbsOhliPrnh75Z0PXCxJ53ZyuuM+eETp
-         zPiw==
+        bh=x6FgqnX2MNX4iTAsFR2V7ICidK9phwa3U3RsTiO1qRY=;
+        b=T8Bk2JHov1vdndWzDrszRgThM1JS5cJaHr37Sy3rKrJioqrWXX3JTUgvtuZ+SPZPxq
+         eLf5UCSDQ08w1DCWzHStREYDbBV+XiqXfWd9/MOc+R4rIUlv1tz7b6sgEzCEjeYKD9s4
+         nXDwhzXO1GtNXCx/yk4rsHw94+QMcJrkdJkJieKsbuztQTxTqiXMJ1iFqK8WOVht3Z9A
+         t66Ovdoxb9BqJ97aUYFtBXUf1TKEYQLMmlccKN5hJQKQt1L7OMVZSnNWcJujDzESJUaj
+         Eju8SGqSm9VTC8HtPNDovdQ6GCHVYNkjqc7dHKBQtZG8G/UN0h7Fr4AEXAsXqgeQz8lX
+         JJOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788763007; x=1789367807;
+        d=1e100.net; s=20251104; t=1788763869; x=1789368669;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=2ocoYZDUBL0oSCHSm39vxqV2yz+NMY7WJASmnMs0VSY=;
-        b=AD/29Bp8wsTqVDdmZkzkD816vtGscQvcRjdWY4RHRl732nrZNZwvq0wrtfLFZWW+2w
-         D73iT/ceimz8/JGuNFf0xhwpnfQH2KqtVwt20T3bnUeVmUX7gEoOpr+iTBcfKoJUEgWm
-         q7dO7cw+B0N2yRnPpI3Qwo/NtDuJ3WoJY1gMZ8foTfBAflNCe+JD/FQJHBWV6qNASSQ3
-         caOXVNJ4dqL2y0uDTUpRRldc0a/mytmsLL/mNggxGSVm1RkMQ7GVc5vLRonZo6diSAbv
-         F4XL5hQSIbsC18NhfuW7oaphiZAf9tLI01J+uBR9DfqmdpZm0lxYFjMQv0IeTLk9Ddiq
-         htfA==
-X-Forwarded-Encrypted: i=1; AKwUvBy1ZrOc5tYRkSI8j7f7BaG60mWkKYVvdE+mXDcPi15aEV1O58yeTxye575lmFPEpDo6R5qTceZF87s=@vger.kernel.org
-X-Gm-Message-State: AFuF++mHWyco/3fUkrOaQYg05EESQja6jtvRZCRVVyeoz93apGsIderi
-	5rAGAtfLLs/Xr4+piknSTvt0+JofN8h8R3Vvnagndoe9LgsI7Psp24EsotHHae4xkr0=
-X-Gm-Gg: AYBFou1fzIGT9Q93VZYrV1NiUIqaWvGUvDIRaw3IFBrRGN29I1eeemaf/6+BliH8lFv
-	KDc77HVDryKZGV3L42dsKUXWnFb8DmDFNi0Zhit3JwX0kazfC9fj+9cEeudhjEYEanAe9f31SwA
-	Mu5CoVzF/P2GVZE1TZSlfUbQ7TvlURF6qnjxgQBx18PUoI3vqynPAVFTGVVYHKY20HMmFMjhdBB
-	BQk1o03x5h/Zd958mr8G4XnMbU2krRmrwcmduV98VV/6Sc70ppuaUzhGSD/I0E2LC2pWZyqe0Mr
-	Ohr8rsWBfKR49zjwXrtA3uhqmSaoBlzysc+3vmAS7pqAuVZXox+EWvpGwGNqVkx6x72ECjNg1KO
-	sSqxnlqCnfAULwmoQ57uZo0M/Vw8Rj3oPXiN7EMRr1tKl7Wf1I+fCBO3UHWMcphwsRCYEBwME5W
-	FNQrB+6ScVnqcc5KKjr9egR5/Gpyopn+PutWCHL5ySvE8=
-X-Received: by 2002:a05:690e:4853:b0:66f:c1bc:4019 with SMTP id 956f58d0204a3-66fc1bc492fmr2668552d50.70.1788763006713;
-        Sun, 06 Sep 2026 23:36:46 -0700 (PDT)
+        bh=x6FgqnX2MNX4iTAsFR2V7ICidK9phwa3U3RsTiO1qRY=;
+        b=sau8kdOOor5KoCHY+UUCuS79VeTgQ11jbkDMQi8Q2/qyxVzlVcGqrYeTgWta2FGPjp
+         jc64wSL5h8boTcac4ceWyY3lN8Xtnd0vshoYzqlo+Cc+DLDYJlAHb8lzsSi7rAe7R6kr
+         IJo2M4dz1xjJkl5uxtqQG5bTQeK59ID0wkCe+rMkCA4pGN6xgezegBEBTr0yjP8zXWwT
+         bk6KL3A752LLlD9JojBAPUZmKFEJsklzMIKWgTn/1pbzpNs19sciKYnB8PdIh34VvT2P
+         fRJPkrOtAPI5yGHRHAnkPpj6uAyh1Lx89Z6xiYLnTllLJiHPRmOPLWqaEqWedTsxymBB
+         9U8A==
+X-Forwarded-Encrypted: i=1; AKwUvBzeRdEglpHLnAK8C4J8YvZikZ2d2UHrpjeTsJ/8LlHgQeNidfrdBZrDPbjauhkVf0jr28KhOdTnm+Q=@vger.kernel.org
+X-Gm-Message-State: AFuF++ldIr15gkpapRg9CPEBZNKhhCq5svRYjZLWaN6IDVdOpO7+bEns
+	sWORXj9m8QNayTmSuvw+juJ1XAOnFFBLHVc+cEZgreg2me5evMZGpaee
+X-Gm-Gg: AYBFou1dNbW0tRaul504MeOQ1MaaEOJVE4sQ3AVoV3JeOsCV0OdIjIeu3lgzKXtBMxD
+	d4KxO9EGD00P91HOFEhh1sX98FSvCFEabn2mvnSm5gg4M20w4Yd8MA0bqR/dLhFC1G8OLpJpsRI
+	EWidN8FI7ryUg9+xElrdALiIIhCOE/v9NnWamRZ840l9uLqz5Z96U/vps1AFO4xSjlT9NBdj9qn
+	Kjuzqcan+dFbggiJVdUGd/YGP2SYl3LJodZeZRE7sDdzsfiAKBqldLkVBCOJVADeyp5AntaKRzK
+	tZR21ns5tgmFMWOQ5BO7tGQO6CQsViqZN87+GNEd09VGbdA1JTm4trkMg5SUQeZaj4PMM22WMub
+	GtMYtUwGY1acPbmt0+3Rrhx666G3dYAfhLPS2j1ynXUucV9848z3z0Nag/yBxAG8dEphUcF6oFQ
+	2MmFoDIhewHM7t2tVKHwdLvZJCfAqpKDgS68ChOVnmtGWG
+X-Received: by 2002:a05:690e:191e:b0:66f:b0f7:5958 with SMTP id 956f58d0204a3-66fb6cb6334mr3919965d50.6.1788763869501;
+        Sun, 06 Sep 2026 23:51:09 -0700 (PDT)
 Received: from gmail.com ([2600:1700:5431:250::1e])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66fb48d6ea5sm7811628d50.7.2026.09.06.23.36.44
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66fb7c7e8d7sm6845562d50.14.2026.09.06.23.51.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 23:36:46 -0700 (PDT)
-Date: Sun, 6 Sep 2026 23:36:43 -0700
+        Sun, 06 Sep 2026 23:51:08 -0700 (PDT)
+Date: Sun, 6 Sep 2026 23:51:05 -0700
 From: Chang Yu <marcus.yu.56@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>,
-	Chang Yu <marcus.yu.56@gmail.com>,
-	Andy Shevchenko <andy@kernel.org>,
+Cc: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 2/2] iio: light: add AS7343 multi-spectral sensor driver
-Message-ID: <ap5be0ipNiS5lUI5@gmail.com>
+Message-ID: <ap5e2c1g4dJFh2yJ@gmail.com>
 References: <cover.1788586814.git.marcus.yu.56@gmail.com>
  <521c26094635bae6376d92f3cecf84c911d5a740.1788586814.git.marcus.yu.56@gmail.com>
- <20260905084258.350fdccb@systembl0wer>
- <20260906011145.4a0f4933@jic23-huawei>
+ <178865463956.3402141.11085158208427972814.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,94 +79,91 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260906011145.4a0f4933@jic23-huawei>
+In-Reply-To: <178865463956.3402141.11085158208427972814.b4-review@b4>
 
-Hi Jonathan and Joshua,
+Hi Jonathan,
 
-Thanks for the thorough review. Just adding some clarifying comments inline
-for what I plan to do in v2. I should be able to send over v2 within a few
-business days.
+Thanks for the thorough review. Just some clarifying comments in line. I
+should be able to send v2 over within a few business days.
 
-On Sun, Sep 06, 2026 at 01:11:45AM +0100, Jonathan Cameron wrote:
-> On Sat, 5 Sep 2026 08:42:58 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Sun, Sep 06, 2026 at 01:30:39AM +0100, Jonathan Cameron wrote:
+> > This patch adds a driver for the AMS AS7343 14-channel multi-spectral
+> > sensor with I2C interface.
+> > 
+> > The driver exposes 12 spectral channels (11 visible + 1 near-infrared)
+> > via the IIO sysfs interface. Each channel's raw data is provided as a
+> > 16-bit little-endian unsigned integer.
+> > 
+> > Basic power management (suspend/resume) is supported. More complex
+> > features such as interrupt support and configurable gain/integration
+> > time will be added in future patches.
+> > 
+> > Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+> Hi Chang Yu,
 > 
-> > Hi Chang,
-> > 
-> > Comments inline.
-> > 
-> > Josh
-> > 
-> > On Fri,  4 Sep 2026 22:53:26 -0700
-> > Chang Yu <marcus.yu.56@gmail.com> wrote:
-> > 
-> > > This patch adds a driver for the AMS AS7343 14-channel multi-spectral
-> > > sensor with I2C interface.
+> I've avoided too much duplication with Joshua's already pretty
+> thorough review so just a few additional comments inline.
+> 
+> 
+> > diff --git a/drivers/iio/light/as7343.c b/drivers/iio/light/as7343.c
+> > new file mode 100644
+> > index 000000000000..b620dd308380
+> > --- /dev/null
+> > +++ b/drivers/iio/light/as7343.c
 > 
 > ...
 > 
-> > > +
-> > > +	/* Set 83.4ms integration time and x64 gain for now */  
-> > 
-> > Good for an initial draft, however you'll definitely have to
-> > implement the write function for this to get merged into mainline.
-> > Skimming the datasheet shows that there are more integration times
-> > possible, not to mention that you can also set the gain etc.
+> > +/* AS7343 register bit masks */
+> > +#define AS7343_ENABLE_PON BIT(0)
+> > +#define AS7343_ENABLE_SP_EN BIT(1)
+> > +#define AS7343_CFG0_REG_BANK BIT(4)
+> > +#define AS7343_CFG20_AUTO_SMUX GENMASK(6, 5)
+> > +#define AS7343_CONTROL_SW_RESET BIT(3)
+> > +#define AS7343_CFG1_AGAIN GENMASK(4, 0)
+> > +
+> > +/* AS7343 settings */
+> > +#define AS7343_INT_TIME 29 /* (29 + 1) * 2.87ms = 83.4ms */
 > 
-> If there is a sensible default / initial value that works most of the time
-> (short value probably to avoid saturation) then controlling this isn't
-> a requirement for merge.  It's a nice to have though!
+> Implement this as a function to do the maths and take the input in
+> usecs.  Then you can call that with 83400 as the parameter to set the
+> default value.  Why this default?
+> 
+Annoyingly for this sensor the integration time is calculated from two
+registers: (ATIME + 1) * (ASTEP + 1) * 2.78us. For simplicity, I'll use
+define for these two values in v2 instead of a math function.
 
-I'll defer controlling integration/gain to future patches then. x256
-gain and 50.1ms integration test are the defaults recommended by the
-datasheet. It is also what adafruit uses in their arduino driver
-(https://github.com/adafruit/Adafruit_AS7343/blob/main/Adafruit_AS7343.cpp).
-They also seem to work well enough when I was testing on hardware.
-So I'll use those values in v2 for now.
+I'll adjust the default values. The defaults in v1 are just some random
+values chosen by me. In v2 I'll change them to the official recommended
+values in the datasheet (x256 gain and 50.1ms integration time). These
+are also the values used by adafruit in their arduino driver.
+(https://github.com/adafruit/Adafruit_AS7343/blob/main/Adafruit_AS7343.cpp)
 
 > 
 > ...
 > 
-> > > +
-> > > +static int as7343_suspend(struct device *dev)
-> > > +{
-> > > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > > +	struct as7343_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	return regmap_clear_bits(data->regmap, AS7343_REG_ENABLE,
-> > > +				 AS7343_ENABLE_SP_EN);
-> > > +}
-> > > +
-> > > +static int as7343_resume(struct device *dev)
-> > > +{
-> > > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > > +	struct as7343_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	return regmap_set_bits(data->regmap, AS7343_REG_ENABLE,
-> > > +			       AS7343_ENABLE_SP_EN);
-> > > +}
-> > > +  
-> > 
-> > You have suspend/resume functions, yet you're missing a
-> > devm_pm_runtime_enable() in probe. 
+> > +static const struct regmap_config as7343_regmap_config = {
+> > +	.name = "as7343",
+> > +	.reg_bits = 8,
+> > +	.val_bits = 8,
+> > +	.max_register = AS7343_REG_MAX,
+> > +	.reg_format_endian = REGMAP_ENDIAN_LITTLE,
+> > +	.val_format_endian = REGMAP_ENDIAN_LITTLE,
+> > +	.cache_type = REGCACHE_NONE,
 > 
-> There is not requirement to do any specific combination of power management
-> for an IIO driver because what is necessary is very dependent on the usecase
-> a particular developer has. So runtime pm is a nice to have only (as is the
-> suspend / resume stuff we have here).  May well make sense to use the same
-> for both types (there are macros to ensure that).
+> It is a big enough register map that it may make sense to use
+> regcache and provide all the info on what is volatile etc.
 > 
-> > Additionally, you could enable
-> > the autosuspend function as well (note, you'll have to wake the
-> > device before reading, there are macros that simplify this though,
-> > see PM_RUNTIME_ACQUIRE_AUTOSUSPEND)
-> 
-> All nice to haves indeed - but not strictly necessary. Many drivers
-> don't go that far initially and it is fairly easy to retrofit this stuff
-> if someone cares.
-> 
-I'll fix up the suspend/resume stuff per Joshua's comments. But I'll
-defer autosuspend to future patches. I'll mention this in the v2 patch as well.
+
+I'm debating whether this is worth it or not. All data registers
+are volatile. Plus ENABLE because we need power management.
+Potentially ASTEP, ATIME, CFG1 as well if we want configurable
+gain/integration test in the future. That leaves us with may be
+1 or 2 registers in the mapping that are not volatile. I'm leaning
+towards leaving this as REGCACHE_NONE for now. Let me know what you
+think.
+
+> -- 
+> Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
 Best,
 Chang
