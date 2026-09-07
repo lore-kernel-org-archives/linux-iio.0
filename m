@@ -1,67 +1,67 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E132D46C844
-	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 11:18:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A57469835
+	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 11:25:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788779883; cv=none; b=CVgYrlrV5LnFvegFX3YYx96NdVK01V6l51LMz/BY5g9/CQfWCvCuJoK0DxYMDKsYTspsg+eAoCwOLAM/lYY0FRjs2np+7ENKUnanHZgzMmq7kAiG21Qn0y2wVnmxKsZ3UxJtfaRjkHitqoRhE4JHf1jpdHfevgTjSJlYYant3DE=
+	t=1788780361; cv=none; b=hrTPxgU5FfDZ5UnEFvwl0cOFN1+V8t5uTImcvsFn4Hz5CaIY6KWNO2yq3iy+iWTMu0REsenQNUQxdPtViGmBmVvy8DFqRvDfqZHGFDdqvXds6yaPH53XOrXXZkVB0HM5x8I1nT72GVC9riby/2MK6Q0xvJazYFbOBQS8pJ1YZLc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788779883; c=relaxed/simple;
-	bh=vc/u2+6K3u9duPkyjAm1VSzu2f/ZyL4eiCIH6p0kCCM=;
+	s=arc-20240116; t=1788780361; c=relaxed/simple;
+	bh=r5w4vZHxYOow+S9w69v8p+rm/PS+NwfbtQJFBtx0rXU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=buWD3Y8AQmieodQVOJ7nKdkKZHpET8HnBUp/VBPcWQOBd93DZX1UuNep4HsohToctHGdNff3RLMpaWjUShgS4ZnvWPpOBaG79Ki7t2xlQjzD+qV8U+kdf1/EFi3pDKJIADHSbAsVd8fJTXtWwMCVdPgfri2YXa6cufS8PMzMMZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=de2MEp7Q; arc=none smtp.client-ip=209.85.128.44
+	 In-Reply-To:Content-Type; b=cr83Q6CrpkPqeP9YhN6GU2O3ZECd/2N5H+xGCx21eogN4UgsUke82OSiALqVuF9KSEM05HOBaQZ7EcUMRYtCOtd4Kz51Vj4ddDGem+KKoMhlI8+lBDCL2SMrj5prDjWw3uW9sLLdVFG0mYuZm0r4ECX73bAP0El6MTdE/PkMBdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dGXRbyn6; arc=none smtp.client-ip=209.85.218.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="de2MEp7Q"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-49b0d8bc2aaso43694125e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 04:18:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dGXRbyn6"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c252e703fa3so517827966b.3
+        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 04:25:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788779879; x=1789384679; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788780357; x=1789385157; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=kZeKG88pQvz+t3Gm/KrMtRBK71hTluhBWfm1A4t1QXw=;
-        b=de2MEp7QCbYxhT5Uaog3gIdpkYeUO0mVMVQtiCMgH5BJo4MLMu0GREGhdFYPLS2Fua
-         cxA/Pdft+yc3I+Zr3i3LCX/V9CDxAURVLJKTpP0pEGp7/pUJ2Zia5amibAXFRo7GNTIn
-         bbgNa6YiKBYgCOOx7JHcYR3sFNer6TirsXmCrtfmL1iPQx5qelkve5peqcyZ4HITw6Dw
-         QROMDiYlC8mkzpX8RO59w4qY5GWHM91SKo4XPP258xs0JXB5J+AwGxhKErj/qTtsqHKP
-         ihyTQ2cqlwiXs3QUOsRHJVWEqTRsbBPFs+VpgL9lu2dTBq+akrYPKlUZpnkEnKkvEeBT
-         4nVA==
+        bh=Rw9wEnmmRS9YsDudq+DNMbA6mN+2z8x1quln5q6huH8=;
+        b=dGXRbyn6bnkA35cdpQzhxPErEc3K4NGPNckPg7j2FBrvwy6fFBJ4tGfINGBW/DQk+y
+         m+mpZcUcjmljLaE5bE7Uocnedi5OAH3lFTLVNR9cMh6+YPxbzgY3enEf8exdmgph2x6P
+         S+Oqkakqu68hqPvr54vifo0fXXK8mU3V/lfo34me9DWhDhyc83LRyzJSYI6vf2oEmDlj
+         YR3USw0lYPv/4YprQkyCA9ulGEUzD650UO23aKhrQsM4ZJ/qLme8QdjyU7mzgNooFWDG
+         FeqIxUF7xrmlLDSZ+7eqK6M06m+RVmPYUTuz1DuWQuWLKv2gZuF8U2+C7sDUdtybH1iH
+         lM+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788779879; x=1789384679;
+        d=1e100.net; s=20251104; t=1788780357; x=1789385157;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=kZeKG88pQvz+t3Gm/KrMtRBK71hTluhBWfm1A4t1QXw=;
-        b=VgL0/wAc2mAd4uHFF3sNRf+jvi0naim3ERMXQ32MT0w2bHwnYuRFA1MHMHuuB5AfK2
-         6J9aonzNxFHBKS90vyn0gYXc2CxZtQebQp2y8DWK8WmwhibCMhDbJy9TJlMHPtOcmoHz
-         /hsgMfzWOJ+1U1BiHHwfrrNDxqRiIBli7fUL5drf6G5m6RRkTMkmTK4rPkbr97g8GCSU
-         o2NetHPKSvSfBLmLgkSPAeL7qJoTIYL/4cVzzhL8TnR6db1p765nUU8HHf+lE5cQGz0o
-         /vHQT2Z1yR6wGEvMICj7ZTJO+tNQZIYqf4MnSXF1Yz0PZ7o7QNRqwc9QI2FMEjRuvGeq
-         6fNA==
-X-Forwarded-Encrypted: i=1; AKwUvBxfLv9W3pkbedEfJ6npYPaIlJR+67Whyxnala1E3Tjp2sPi2Bv0URNIsjRXFMMfuCdUN1q5IU4HuqQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++mQ801fKnQYAcKCOIp3Rh4h4GWL52Nk7uYnTYVrt0R410nJ4RRP
-	GadiCLlZMc8+fM1QGlzQflTf9++6ucDooSH4E/Kbl2ERE76odGglFVUj
-X-Gm-Gg: AYBFou22E5QkspXqu+RZ3vkaiPFUupt/KIX7+P7SHwZJ8n5YHG6B2D7PIhYXS8nB46x
-	6i1+jfsBaJmzi9RIK1H2xpHaToB3eQHsuBnmCXqzeFpacoyuC2Mg1lcZ9fX7Q+bgVM0tdyCnFX0
-	8CXcLfe1MoUhZh0oQwKGdJyPlQ2mM8oh38/IG3/Xqd1HhIS3AkfHwqPYyU9VzPdP1g2r60/sOeq
-	sjQF3sS6ygf8YOOjLyVDXzrV9m7B+zYk7drUI6NlYA6LuTkim/pzIIYPMHyqPw7Snt5pyBuO/sh
-	YLSbyA30R1KmDD+OF/7akWTH0jr7Yns4HOuiY6NPGY4x3YgiVioFGk2qHMNyRVotZhNiF2wrsP7
-	1/qgK0+CFCcAY+oi1ZJWiQ8xvRsws/2Op/yfWxE8rHucc1zfn83ZQDfw6bZ5lQ0rAo1VdHFkKTy
-	LZ9jLXblMgij6bIjb8FpvNBn2rK3Mh/Bc6fTNApUbvElC6ft3kP2gpDDGWiPtu78bY7gYtWVte
-X-Received: by 2002:a05:600c:3e06:b0:49c:fc6c:be1b with SMTP id 5b1f17b1804b1-49cfc6cc0e9mr176101505e9.33.1788779878713;
-        Mon, 07 Sep 2026 04:17:58 -0700 (PDT)
+        bh=Rw9wEnmmRS9YsDudq+DNMbA6mN+2z8x1quln5q6huH8=;
+        b=ZOhnhdoHzTNW/iqXYjwGAS73XbGTaVug9GBcSCduzpA4P4OYmVjQyUgarUxBc+v4b6
+         N8sAVlfdQBF0CZz+mKITIXZo+gtgE5Q8punXKxpCk8RMOTzfI7OzE5YKWSCOsplgRIGX
+         tWM1KsCVjOivsXGtgn6cRrWj6DDgHuMT/bnOxz5qmTp/Xssnl34QRkAVXLlIJe8f4gLA
+         lRfrQQ/0J2DAfQR96yp6qsoj6Pp0Z5zoYZMXKanwYNUledp84RbcniXck2KPNyNU6yzT
+         2B0OF47QVqZeSOeoH1bvnRIg1+zDvIE+eqc6lOwVC69ajpLO9mD0Qi8ywRnxvQjoZSzm
+         i1Aw==
+X-Forwarded-Encrypted: i=1; AKwUvBxH+68+ljW9CL5miEeaOmHHRmEfxZIDRNzWM/VQutNqGECh+/zLiHyRKZ2G0xrRCFq+vV12lFxAwmY=@vger.kernel.org
+X-Gm-Message-State: AFuF++k3smvDMCwi8vs8Aj3yYp+M6O9mC2r/x2S/13qmiLmETnnzFhdd
+	1/hA1wrZhhr94nRF1Np6k6hUuCziG9mePOpN23PZeTDRYJGTo8k/Bey8
+X-Gm-Gg: AYBFou2QTW3g1kVUhMdMv1AEm/itNbeWs71Tgsb6gvhe8hafT+UcGLptXHDDtGIvSxk
+	8JefPcCWm8wwep+4uCdUBhO0ZO/K6oo506gxi1C7nvRF0tKffy1tuW/0cGr7DS2Mjp89pj0OQmw
+	vmyB8ZvuhK90/N14b1Byxx9+0ZW8meejTWEqzeK7xu+HnJQnBhS9z4wcJUhrPKmXhsXQbNxa3mW
+	0hF+xsuGA0vvy25uqugzwejSx02IgPnYJX+AhEjEtVY2V4bvZFI3Zab0GT1GbiBPabmGUxx44KU
+	JOfymeOZqi7GeiL77qKI0+98++qfL9rvb6xB5vW6DrUzark24E8/Zn+ps7YE7Y+3QIWMGrMYun3
+	Rh40wdKdrADbJVI3ZmiD/WWh1vRD2JdPEcrwVphr1/aeuX4uAteI23guZnQ97n/5i9YbSwGaf8s
+	Brj0Qgoh4bT8Gu/nGlA0x5JMpVAllpiRgfrfBBRyd7zqIWyRgd6Mrsg2ckB/PsCN8inDSV6Ml+
+X-Received: by 2002:a17:907:9622:b0:c21:34a3:4df9 with SMTP id a640c23a62f3a-c260c69a59cmr891010466b.3.1788780357031;
+        Mon, 07 Sep 2026 04:25:57 -0700 (PDT)
 Received: from [172.24.138.145] ([137.71.226.102])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf7736132sm296957105e9.12.2026.09.07.04.17.56
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c262f97f1a3sm285317866b.19.2026.09.07.04.25.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2026 04:17:58 -0700 (PDT)
-Message-ID: <4056ce28-cbf6-46cc-8bcf-a3db35410275@gmail.com>
-Date: Mon, 7 Sep 2026 13:17:55 +0200
+        Mon, 07 Sep 2026 04:25:56 -0700 (PDT)
+Message-ID: <21704002-3bc7-474a-9e27-dd9b7f01a4bb@gmail.com>
+Date: Mon, 7 Sep 2026 13:25:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,14 +70,14 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v6 05/17] iio: adc: Add AD7768 and AD7768-4 core support
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+To: Jonathan Cameron <jic23@kernel.org>,
  Janani Sunil <janani.sunil@analog.com>
 Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>,
  Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
  Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
  Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
@@ -88,16 +88,15 @@ Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  <u.kleine-koenig@baylibre.com>
 References: <20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com>
  <20260904-ad7768-driver-v6-5-e4378f946bfb@analog.com>
- <ap0lp5THO64olugK@ashevche-desk.local>
+ <178866660277.3402141.13365217395986099796.b4-review@b4>
 Content-Language: en-US
 From: Janani Sunil <jananisunil.dev@gmail.com>
-In-Reply-To: <ap0lp5THO64olugK@ashevche-desk.local>
+In-Reply-To: <178866660277.3402141.13365217395986099796.b4-review@b4>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
-On 9/6/26 10:34, Andy Shevchenko wrote:
-> On Fri, Sep 04, 2026 at 04:14:57PM +0200, Janani Sunil wrote:
+On 9/6/26 05:50, Jonathan Cameron wrote:
 >> Add core support for the AD7768 and AD7768-4 simultaneous sampling ADCs.
 >> Configure supplies, clock and reset, use a custom regmap bus for the SPI
 >> protocol, and parse the enabled channels and input buffer settings from
@@ -106,22 +105,37 @@ On 9/6/26 10:34, Andy Shevchenko wrote:
 >> Connect the converter to an IIO backend for buffered capture with CRC,
 >> provide a fixed safe wideband sampling configuration and add runtime
 >> power management.
+>>
+>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 > ...
 >
->> +	/*
->> +	 * DCLK(min) is ODR * channels per DOUTx * 32. With fast mode
->> +	 * (fMOD = MCLK / 4) and x64 decimation, this gives:
->> +	 * MCLK / DCLK = 8 * data lines / channels.
->> +	 */
->> +	dclk_div = 8 * st->datalines / st->chip_info->num_channels;
->> +	dclk_div_reg = AD7768_INTERFACE_CFG_DCLK_DIV(dclk_div);
-> So, this one is (4 - ffs(dclk_div)). If num_channels == 1, this will always give 0.
-> If num_channels == 2, this might give 0, 8, ... Since ffs(0) implementation is defined
-> to return 0, this will return... 0! So, tell me how this code may return
-> anything than 0?
+>> +
+>> +static int ad7768_get_enable_vref(struct device *dev, unsigned int index)
+>> +{
+>> +	const char * const *supply = ad7768_vref_supply_names[index];
+>> +	int refp_uV;
+>> +	int refn_uV;
+>> +
+>> +	refp_uV = devm_regulator_get_enable_read_voltage(dev, supply[0]);
+>> +	if (refp_uV < 0)
+>> +		return dev_err_probe(dev, refp_uV,
+>> +				     "Failed to get %s supply voltage\n", supply[0]);
+>> +
+>> +	refn_uV = devm_regulator_get_enable_read_voltage(dev, supply[1]);
+>> +	if (refn_uV == -ENODEV)
+>> +		refn_uV = 0;
+>> +	else if (refn_uV < 0)
+>> +		return dev_err_probe(dev, refn_uV,
+>> +				     "Failed to get %s supply voltage\n", supply[1]);
+>> +
+>> +	if (refp_uV <= refn_uV)
+>> +		return dev_err_probe(dev, -EINVAL,
+>> +				     "Invalid reference %u voltage\n", index + 1);
+>> +
+>> +	return refp_uV - refn_uV;
+> Do we never care about the offset inherent in where the negative sits?
 
-The st->chip_info->num_channels is fixed at either 8 (AD7768) or 4 (AD7768-4) and not the number of channels described in the firmware. The supported dataline configurations produce dclk_div of 1, 2 or 8 and register values of 3, 2 or 0.
-However, I agree that using the ffs() obscures this mapping, so I will replace it with an explicit switch over the supported divider values.
+The absolute REFx- voltage does not introduce an offset into the ADC transfer function. The datasheet defines VREF as REFx+ - REFx- and the LSB size as (2 * VREF)/2^24. Zero code remains at AINx+ - AINx- = 0.
 
 Regards,
 Jan
