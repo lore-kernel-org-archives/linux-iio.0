@@ -1,33 +1,33 @@
 Received: from mail-244108.protonmail.ch (mail-244108.protonmail.ch [109.224.244.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CC1B517BBF
-	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 16:28:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 085D5470445;
+	Mon,  7 Sep 2026 16:37:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788798514; cv=none; b=Fx286gvt9fstulvfIzNIUvWRohn20NmkGdk6RBUpZ7iAco86mq+9rNgrh/F+c5lD4R8cMzCofNGAqVw787MoQDexB0GNjbNEOk9rpRp0yn5a4FBM4v5dJ7QQdAm3K7jI20T4S7BjD1I8mqirm4yJ/A10hQ61Ln0ugIKDilv020o=
+	t=1788799022; cv=none; b=dbeVoaOSVePRoyEuAf+6+JA2/aDOZjrfNDeOA1K+GP+1XCA6Ro6ORpFYrs2Ruhv+LUHD2TgZsvkoi+YwWin+sVpdQsMPnT8bMiYJ1aoJZLVh1+d5P8cG2IF2mRO7K2FqGGBSVqTTfJ/0eL3horZQi05vr/woZEeE/z5t0LhX6js=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788798514; c=relaxed/simple;
-	bh=SgykCNQtDc/+Ij6tSBwu7t4+5/GaewaqS/8NPFi2cMY=;
+	s=arc-20240116; t=1788799022; c=relaxed/simple;
+	bh=T+cZQoxjvvdKvEz4jWQUjvixBBJodZHlypMocmDmZKA=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tBzOTX62ObLuw7nn1w00xKs7BLn96wNoUmGAnbhgR/qmHzF6Fqxg8p7B2Ln3eS4NZauK3QdRR8u05qD/SJYsl5DuMWB1dfhcBaKqc2vlDO6DF/lgnPPWpr23UM6UEz4/qpYghrF0t/mFriIrtuPuEMA9KLf43pHbyHorZ+SYW24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Row8ZZm4; arc=none smtp.client-ip=109.224.244.108
+	 MIME-Version:Content-Type; b=VzUfiv0gJk405G4rnb6a9vhMAjDUEksZi4fVuJ7VoRdNDtDrJ0sEopN37/lLylT7HEUS87X1+RaH4H7yVN+ITe1F/vKE0m4OnfGKO9DnRzlfGipn+RoP8KzkYElahVH/2yb5c+7z6ao1AN+m5OlA90qMiOmXbzwk4aARz0Zc9es=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=EZQ0J6LB; arc=none smtp.client-ip=109.224.244.108
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Row8ZZm4"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="EZQ0J6LB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1788798507; x=1789057707;
-	bh=6OjgMIJj50VZV8va4rj3JqbmUwbnL6ihDuaNaKIdDGM=;
+	s=protonmail; t=1788799018; x=1789058218;
+	bh=qXaUM0YuwV9bgSLoOldbbvDAXx7PzgYVmcb6b0j/A0M=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=Row8ZZm4EMCgSAPpLNtG1bytykN33OhMyfiluR3nSXDgOrNnkMIqV+yMMgCIwrIyL
-	 3AEnk3fh29zlTQZplNgniOovNCdgcya4QMkVcF4NKrIM/V3Dq4G2lTQuw7jRpJKkiF
-	 Ogs5Bq6Dry15q/jyYvRW/vVoTP8l1UFEtZhmWSyitVLSLQkqF2+sF4nb4livVDz/ZW
-	 DZibD5A0X7PT7kSmct7NVrv4j+JWfQbGOwOkjgJYcsORF576hi6X5674ULD92OP2by
-	 z7PydcwUMa6EGu7ht91Mj+oU9VycsicCS8o3nl3TepAdcqGr+zQkPFrqfxRSncRjmj
-	 GeMjdeZgMINUw==
-X-Pm-Submission-Id: 4hdsvF42Mqz1DF7F
+	b=EZQ0J6LB4ApWRXOrKL02IRjf0z55a9PdevcBQZQjLcihPtmh4Q4xGM/33aS6bHtpu
+	 X5GiCP/DIuBlXDHS1JuSo+affe1h7qUOCFnG0pSmGAnSHJ4dMYV8WHVb2KDmeXWT2L
+	 ig10w3RKvpdFSZEbyQKINhhBK/ZZjseMbp6X1C1vvXCNdgoOIuqvapamDZ1JHtnpX0
+	 oBlYLYrpU6tWHQ7S/ri99dICDIbNQt5nxEm6bdAxNBWiLuJdsLOEF6YYp15oG1mDWk
+	 ewQyzbqBmu8iNCDTmf5RIy9CsSDLeWqDY3NTywcRuVKUAVacSQPg15AeZ7rk35uKP9
+	 qaZ8PUHoPmqNg==
+X-Pm-Submission-Id: 4hdt5511wbz2ScWg
 From: Esben Haabendal <esben@geanix.com>
 To: "Joshua Crofts" <joshua.crofts1@gmail.com>
 Cc: "Jonathan Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen"
@@ -37,19 +37,17 @@ Cc: "Jonathan Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen"
  <sean@geanix.com>,  "David Lechner" <dlechner@baylibre.com>,  Nuno
  =?utf-8?Q?S=C3=A1?=
  <nuno.sa@analog.com>,  "Andy Shevchenko" <andy@kernel.org>,  "Martin
- Kepplinger" <martin.kepplinger@theobroma-systems.com>,  "Christoph
- Muellner" <christoph.muellner@theobroma-systems.com>,
+ Kepplinger" <martin.kepplinger@theobroma-systems.com>,
   <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
   <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 6/9] iio: accel: mma8452: Add comment block for
- struct mma8452_data
-In-Reply-To: <20260907171452.00004fc8@gmail.com>
+Subject: Re: [PATCH v8 9/9] iio: accel: mma8452: Support interrupt sharing
+In-Reply-To: <20260907171022.00007100@gmail.com>
 References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
-	<20260907-mma8452-open-drain-v8-6-c17407e22118@geanix.com>
-	<31YOKVM7iz6GWh9N-mvnk5VHc2P93CchlAdIr-K7hhDqvjulK8wced5UYHkLEn3czBuvn73NN5NdM4YellB4rQ==@protonmail.internalid>
-	<20260907171452.00004fc8@gmail.com>
-Date: Mon, 07 Sep 2026 18:28:24 +0200
-Message-ID: <87ik4h81qv.fsf@geanix.com>
+	<20260907-mma8452-open-drain-v8-9-c17407e22118@geanix.com>
+	<MzPTxQYymt0hmx-TacfSh_fIDYxz6pFiDnu5MTWC5w7AsH0QPasKb40V8t01ggjLJlDF7yzQ4E_7o_kqDvMG6w==@protonmail.internalid>
+	<20260907171022.00007100@gmail.com>
+Date: Mon, 07 Sep 2026 18:36:56 +0200
+Message-ID: <87ecf581cn.fsf@geanix.com>
 User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -61,63 +59,62 @@ Content-Type: text/plain
 
 "Joshua Crofts" <joshua.crofts1@gmail.com> writes:
 
-> On Mon, 07 Sep 2026 16:51:01 +0200
+> On Mon, 07 Sep 2026 16:51:04 +0200
 > Esben Haabendal <esben@geanix.com> wrote:
 >
->> The struct mma8452_data is central for this driver, and it makes sense to
->> have a description of the fields in it to make it easier to work with the
->> driver.
+>> Adding support for sharing interrupt line with other device requires the
+>> interrupt handler to handle runtime PM suspension properly, ignoring the
+>> irq if the device is suspended (maybe even off). And while at it, we use
+>> the PM reference to ensure we do not get suspended while processing an irq.
+>>
+>> In order to prevent the chip from raising irq while suspended (that is when
+>> using fixed regulator, where suspend just means setting the device in
+>> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
+>> then restores the value again when resuming.
+>>
+>> With that in place, it is safe to add the IRQF_SHARED flag.
+>>
+>> Keep in mind that the device by default is using push-pull for the irq pin,
+>> which might require additional hardware design to allow interrupt sharing.
 >>
 >> Signed-off-by: Esben Haabendal <esben@geanix.com>
 >> ---
->>  drivers/iio/accel/mma8452.c | 16 ++++++++++++++++
->>  1 file changed, 16 insertions(+)
->>
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index c6af68d2a297..2c1b97b77bc1 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -104,6 +104,22 @@
->>
->>  #define MMA8452_AUTO_SUSPEND_DELAY_MS		2000
->>
->> +/**
->> + * struct mma8452_data - IIO device private data structure
->> + * @client:			the I2C client object
->> + * @lock:			mutex for synchronziation of register
->> + *				read-modify-write and holding chip in STANDBY
->> + *				mode while writing to registers
 >
-> Perhaps add the word sequences after read-modify-write (that
-> could be a personal preference though)?
-
-Added for next version.
-
->> + * @orientation:		mounting matrix, flipped axis etc
+> ...
 >
-> Missing period in etc., but that's a small enough nit :)
-
-Also added :)
-
->> + * @chip_info:			chip specific data
->> + * @vdd_reg:			reference to VDD regulator
->> + * @vddio_reg:			reference to VDDIO regulator
->> + * @buffer:			triggered buffer
->> + * @sleep_val:			time in ms to sleep while waiting for drdy
->> + * @ctrl_reg1:			CTRL_REG1 register shadow value
->> + * @data_cfg:			DATA_CFG register shadow value
->> + * @open_drain:			true for irq pin in open-drain mode
->> + */
->>  struct mma8452_data {
->>  	struct i2c_client *client;
->>  	struct mutex lock;
+>> @@ -1784,29 +1796,62 @@ static void mma8452_remove(struct i2c_client *client)
+>>  #ifdef CONFIG_PM
+>>  static int mma8452_runtime_suspend(struct device *dev)
+>>  {
+>> -	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct i2c_client *client = to_i2c_client(dev);
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>>  	struct mma8452_data *data = iio_priv(indio_dev);
+>>  	int ret;
 >>
+>> -	scoped_guard(mutex, &data->lock)
+>> -		ret = mma8452_standby(data);
+>> +	guard(mutex)(&data->lock);
+>> +
 >
-> Either way, with those added in a new version or fixed up
-> by Jonathan,
->
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Hmm, this patch might benefit from breaking it into multiple patches
+> (the change from scoped_guard to guard, the local pointers etc. along
+> the fact that these aren't mentioned in the commit message), but
+> that's up to Jonathan.
 
-Thanks.
+I will try and improve the commit message. I don't think that breaking
+it up makes a lot of sense.
+
+The change from guard() to scoped_guard() is closely tied to the rest of
+the changes. At least I am not sure if it is even sane to make that
+change without the rest of this commit. It might be fine. Probably is,
+but is it worth to risk causing trouble for older kernels?
+
+Regarding the local pointers, I assume you mean the added struct
+i2c_client and struct device pointers. They are only used in the added
+code, so I don't see how I can split that out in a meaningful way.
+
+I don't mind making such changes, I just don't see what I am expected to
+do.
 
 /Esben
