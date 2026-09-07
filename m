@@ -1,37 +1,37 @@
-Received: from mail-43170.protonmail.ch (mail-43170.protonmail.ch [185.70.43.170])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 576244F799F
-	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 14:51:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7E924F797B;
+	Mon,  7 Sep 2026 14:51:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788792698; cv=none; b=ogt9b0o42HnjZJTWpupwpaTmO93rkRm9WLHu50sLxdJEDL3joI2kJZIM0wK6s1Th5RndOlml5TeqzTq2WZ4mg2ZIGEafEktUlROx8cFNKUnBrSZ0Sv001hlQjD1et72vRsg4l5F9G96K2IZrFkVdTmBALRMXu5H+KC3KKD7bzcg=
+	t=1788792699; cv=none; b=plQKxI/JxWvGhnYVndeIMQXbnLHKUAE42d+Mn//SBLWRS4MjKAX9qRXXNrNsEZBtycSfnrLWcI+KgBzoL1jJzLMs3nw/t2TsNywSXsOuFMf84vssSA015mfl6NTvcDIjXro0bj3tJG2ii97BBwTiadctgy5ewq4NzazsgVjhqks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788792698; c=relaxed/simple;
-	bh=5aHhFmRHH7hXWezUncCFq6AliuOuzN9v+On7qJIecuQ=;
+	s=arc-20240116; t=1788792699; c=relaxed/simple;
+	bh=n+2ur0mO1O06HHQSlDD4hKB9J0Qh+/SnMNMi2uaqzCw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=CV82IOHkm3PH9xw2Fj9zyzLNuXYKElBdYyUOhmRZ/Sm5YVtS78q2ESfOD+S0y6hRyfzaJo7eENY1EBv1qIdu1b9UrVE2UXTy1IRTXK+Nh2efO75/2jtS3u+HTjzY6TJHOXiJBfdmNHYKd7fIJUFr2CRq23rTGJPECZjvu7yxsQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=PqU4aRMZ; arc=none smtp.client-ip=185.70.43.170
+	 In-Reply-To:To:Cc; b=lh5wyP8O9zg7SLAI/lZ82Qspv5SX6AZsjOfrx/8u1h2VriChKDxaja8IP2rG3K5DvJhE2jiZEBR50rQ9Bzsfz92Ct/2UAFoKBXJJWQtrYhNn7Ttn1PbZZwgxss5TyUW6SP7oW6jxu8nQGpp3c8SuKupa2u0Ajau/nduKutuMpgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=d4oh+6ZV; arc=none smtp.client-ip=79.135.106.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="PqU4aRMZ"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="d4oh+6ZV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1788792675; x=1789051875;
-	bh=zOE/xhizi9/jAXNjhr878qhJ9pvevPWCdRYDdJUXczg=;
+	s=protonmail; t=1788792684; x=1789051884;
+	bh=xTI6Jpz3mbGWtyBI7AXBaUs5FytAzB58eQV9Bg7VxBk=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=PqU4aRMZZUPSE/h5PfLqlt6nHBY6QAWuP4oFzOstDeZkKTOwv4t6ch8vjUBTHE1sD
-	 57LwOI9vEKFfIK3+y3ZjC4dQR8e9Utm4GOQ3qOWXHsOQT4OP45yI+K4jImpPXVyXiS
-	 Gbrx3jw01gzvN8GxbQsW0MFctogmcojLLlr7MUktmEZBeoYKGRvJBYsch6kXH2hMjY
-	 SvpZFumEkTCzy23lKe89cn3i3Ci5NyQdKvN5tLmL57KLHkVK+39fZiTqslmoAP9Qxk
-	 gHT4yQah6LUTSxjN5JMr0DGF4WuGNDXdeOX8BFjo79BuD1TiqAcrdw+i1+hAkbe6je
-	 p5v+Ae6/YZL/A==
-X-Pm-Submission-Id: 4hdql42T6Jz1DFGT
+	b=d4oh+6ZVss81wROtlYAxfJPmpn3/syVVQPQmhCtSdWt9YXN7xUeSn1vhOcUNlNtk0
+	 L70IEU6NYNTZLuKsBQ9mXunFjQ6xNh6Vc8tG0IMefOmQo30T07qEGa2mpawo9ShG66
+	 768yoc/kmG9XOrUiciEBL+/gOzMV9ug/3gWLNPEhByVO0rq9MAPlzoAZVU3vvFwEp0
+	 +4jKxgDy1fc3MChagIKzodxRB8fAmyJEbuP4VjlzjfnihjIgAMGf9wtFGur9pLRflq
+	 9M568e5xps4I03rlhuH28cNT+hIcMsUMA8hEV0y5yPRh2ZjJ2pEg5sbvPS6i2JBgLh
+	 hdmwgz3rwoSNw==
+X-Pm-Submission-Id: 4hdqlH3v4zz1DFG2
 From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 07 Sep 2026 16:50:57 +0200
-Subject: [PATCH v8 2/9] iio: accel: mma8452: Fix use-after-free bug in
- error error path
+Date: Mon, 07 Sep 2026 16:51:01 +0200
+Subject: [PATCH v8 6/9] iio: accel: mma8452: Add comment block for struct
+ mma8452_data
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260907-mma8452-open-drain-v8-2-c17407e22118@geanix.com>
+Message-Id: <20260907-mma8452-open-drain-v8-6-c17407e22118@geanix.com>
 References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
 In-Reply-To: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -53,52 +53,52 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, 
  Christoph Muellner <christoph.muellner@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- stable@vger.kernel.org, Joshua Crofts <joshua.crofts1@gmail.com>
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788792664; l=1204;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788792664; l=1346;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=5aHhFmRHH7hXWezUncCFq6AliuOuzN9v+On7qJIecuQ=;
- b=tUwM07OBNBaUq8CnaH0j0TKVCSIhrdYPShQmZYg4zmm5bh9TUKvxco+tUDPd5d/MIGZI9wkof
- JGyzXt8o/zgD4HVnVXLiX5isbvXyIjtdQ+bItpkcRVFUykKk4lN+Udw
+ bh=n+2ur0mO1O06HHQSlDD4hKB9J0Qh+/SnMNMi2uaqzCw=;
+ b=JfPSjJTWsQask37ej3+k8IXL+OR2IxAUyDUDUs/S3x4+Isypbu3hwBzlOoQb6EbKaOjst8N8V
+ OzyP6he4qh+D2GriV3CMKZPqYmwQ2xnVeZGuWbUC3vxm/lC24V+4PHe
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-If mma8452_probe() fails in iio_device_register() or later, we could end up
-with runtime suspend callback being called with a now freed device pointer.
+The struct mma8452_data is central for this driver, and it makes sense to
+have a description of the fields in it to make it easier to work with the
+driver.
 
-Fixes: 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
-Cc: stable@vger.kernel.org
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/accel/mma8452.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/accel/mma8452.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index fe62a903f0e2..a937cbd84f30 100644
+index c6af68d2a297..2c1b97b77bc1 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -1681,7 +1681,7 @@ static int mma8452_probe(struct i2c_client *client)
+@@ -104,6 +104,22 @@
  
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto free_irq;
-+		goto runtime_suspend;
+ #define MMA8452_AUTO_SUSPEND_DELAY_MS		2000
  
- 	ret = mma8452_set_freefall_mode(data, false);
- 	if (ret < 0)
-@@ -1692,6 +1692,10 @@ static int mma8452_probe(struct i2c_client *client)
- unregister_device:
- 	iio_device_unregister(indio_dev);
- 
-+runtime_suspend:
-+	pm_runtime_disable(dev);
-+	pm_runtime_set_suspended(dev);
-+
- free_irq:
- 	if (client->irq)
- 		free_irq(client->irq, indio_dev);
++/**
++ * struct mma8452_data - IIO device private data structure
++ * @client:			the I2C client object
++ * @lock:			mutex for synchronziation of register
++ *				read-modify-write and holding chip in STANDBY
++ *				mode while writing to registers
++ * @orientation:		mounting matrix, flipped axis etc
++ * @chip_info:			chip specific data
++ * @vdd_reg:			reference to VDD regulator
++ * @vddio_reg:			reference to VDDIO regulator
++ * @buffer:			triggered buffer
++ * @sleep_val:			time in ms to sleep while waiting for drdy
++ * @ctrl_reg1:			CTRL_REG1 register shadow value
++ * @data_cfg:			DATA_CFG register shadow value
++ * @open_drain:			true for irq pin in open-drain mode
++ */
+ struct mma8452_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
 
 -- 
 2.55.0
