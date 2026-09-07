@@ -1,80 +1,85 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D7746F486
-	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 14:56:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4E084C0433
+	for <linux-iio@vger.kernel.org>; Mon,  7 Sep 2026 15:04:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788793002; cv=none; b=HgY28lvgGeHAmqjkXC0GwlckovK4Bp5LGq2m9HWCDPtufW0RqBDAMsgCzIva/KZvfv3Vfc2gR90IvESV17Ewj91ZnS/1UAL02SimRlHVbiBQuThrfHQ6BjAbEmQlGR3yPoqW8p78l4Mes3rfKrtMXZAHH4yGIa5D0iqUyvYfyak=
+	t=1788793465; cv=none; b=WZwAd6+CjygfOGRPDJr+eO7mBgXbU8NuxswkT7pGIp5QwH5rSIWo11T10cKgcly2N7Km7mGULbBQh/U4xkSLGNITbjRzCrTFEuXBlN6f0A38DKhaJRcsTRMeaWCILEBF1uknoGaoMoeuKXttus0sVa6B1ItLgIaKmtdLPm5DQLg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788793002; c=relaxed/simple;
-	bh=+J14SNkIJcgl5o5mcOmI50R/KCvTRGedgzOnLKvHaJ8=;
+	s=arc-20240116; t=1788793465; c=relaxed/simple;
+	bh=KNMVQC+0iDccEpQ+h2CPp+7RsmXBgouseN3dW7gRxc4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kpLaIULRScphQzTtBbvTtZHOdSK0/e1+y/M+vZWUh2gd8o/QdqRjiAfouXVdLc4HUYY/hUFSLFm/6YBDaAFvoAmEGTCh9xgYH5Eu8rOz4S2A8WcWnbRiZCy+7mVGTeC9918tYg4jivKmFnlE725HMTOSAPirQ9g3I8B9l+QmDRM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fgjuLR3R; arc=none smtp.client-ip=209.85.221.54
+	 MIME-Version:Content-Type; b=gJleIRZHequJQABFPHlYx1C/QpMnpQP+ewL7CZ0tFGW0BA0Vk36SqojV+bOha1P62FWT7Nz7vkBIp0C5r6MfSexrf6knL6l0WNeJrCa8/l0lp88ae21FiMJnAEHUvEOghvBYh3iR/Cu/YEylmHkRxMnBPUqeIvQ0q7ytRtRDyeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DFkNTvvL; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fgjuLR3R"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-482f9309813so3255432f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 07:56:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DFkNTvvL"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-49d0726ccc2so13997495e9.2
+        for <linux-iio@vger.kernel.org>; Mon, 07 Sep 2026 08:04:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788792999; x=1789397799; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788793462; x=1789398262; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=g48hwSF5lt99YYul2mb7fuDrefFoNQOf9CLbuEcDZMg=;
-        b=fgjuLR3Rca3kO4RlH/vo4Hb/mEb/LPfmGQ8KHUN8IHeQin5ry34aTwMnCXjP8zqAwM
-         iFssGqEepIpzvQA9N49/UqwuNGVfbXVNlrrGsnpw6NOujwjBv9zUIKux7WTSFr2KfbiQ
-         LcdLUfBrqiwF3mNFnQckkzaDSzV2wsXSylcVvkmbW2I0o4QP9qeR7wanX8Nz+cWVfGID
-         Jhfz1rNYHQYlVGPqDk9Fpr37pd5xilBAZkl78dZWZ5ij2RRZjZElVzzLZ3p2FXa3bJhl
-         0STBKQTpOQZ7D4z7snpn6LJd1Q9nZxmhDjKuKh16Wdd3B61xS9OXdHjjAk9dU2gEfU1l
-         dDLg==
+        bh=rHozVKxaETh27XlRQJCL5N6I2hRb8EdRmazGxj/Cnp0=;
+        b=DFkNTvvLtBQOQ4BuvIB68rPMSCDqbcSlk/ROkIIC8cfY719oZ0LINbejNN+Ro/3Prv
+         RYmOxJGWRosXpL+aFsIaDOoTdhuy+LJBibJ37ZIP1gyM10FsrL2czULj+LLrOEvCRE+T
+         iEzKb0mPiMPlH4p9q+tqOVPXXZ5dXSHXEKTapYlvLxBWsJdiRU49TIQ3D3JwXcwkTaog
+         rCXIBDyip6mNdcUvNFyOLdiZOAhZmhg2ONcLPP5xK5pmmCwZXVMx/w0+yoKvwEDnSOT0
+         F5ag0BHA3TcOEOdAJNUkhsuw8qmzVSujivXip5C75s8CUD5R28yJx8jEm1fqFCnPsljG
+         uoGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788792999; x=1789397799;
+        d=1e100.net; s=20251104; t=1788793462; x=1789398262;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=g48hwSF5lt99YYul2mb7fuDrefFoNQOf9CLbuEcDZMg=;
-        b=l8pthH6kIIPFI9ZuhSQxbwbYl8oenOzoUeqh/CC19TOSkrdk+QIxu9HV+STfFNqfog
-         idw2zp2UTFxoCwnSR3zft3xFaKRCGN1ZpDybaFNDN7Yh1hGOvqVNARN/H3ovsKI+ypTz
-         QkHiIArMlrSlg4olHMo2aopmpCh5b94Vjm/R4xNQgMtLNOC1ERai79SpzIR7P9PCbb/n
-         wBTA6dgC4LgBdS3ra0pq4aoMkX3lN+nSQ24ERe3u9Y8528Q7u2S/KEN9POgftbkbPeSa
-         rbvWbgJk4tnBeR5cuGzwTPWQcU2yiF/2chbOKukdn1OYKJwZIXyzd96XbL3/27pqiQGa
-         5z0Q==
-X-Forwarded-Encrypted: i=1; AKwUvBywNDDWEOFHdBzc+2hOckT7O1lCQEE4E9L70/+0FrtXaE6MEghD/kaScIAluh29B0q61+OwnNVzpio=@vger.kernel.org
-X-Gm-Message-State: AFuF++nfWesM9/L+xpMrXM8T9en8lta77dr84tILAT6SRH1PC1NaA4Dj
-	jiVTY3gEp04mio80QvgWbLiGwtcsBPgHwzgtU2AjOqWMHJOSFMSOzs9G
-X-Gm-Gg: AYBFou0/I/Vl3rWLk8ODtlnaiE9M8UlTmP85ZVLRqUpsWrXXTNQBlQmxFzjcEzLXr9G
-	mfKkx4KPCrV0+nLVaE+TuE3QI/SfTVpS/vC5C41FdDM2PW3lDEVgULtjrrPaL8dM9omPG5ae9YT
-	PO0/71s+CfC8LxAzDosRPtw80ng5HHOgXkxDP/EsGETTsyWl7ypDaY2ngfUDUUEtlubMgiBtZ6w
-	z/06cQxlNp12Rsg8FieiblouZRGhHohAF9TLNHrFrj8Fi5GkWLGAcuqlgX1Z2ULDQUrZZXn97Q2
-	w05Fftug3Ge625VCasZwIzbgi9GNVqck27FbkuATPdQEINB5ZgpRKWERnsyKDukABQfF4YZxxC2
-	QytgHyLKq6bKnwQ8wO87I6gaE/LzaMqorCrVNlHK0JR6kHOMKmVeCdaKMUeo+T0MQlIaI3B1opd
-	WGE24ZABjF8effSL7kGTwfhqrSePAaqe1u+VqaGtYFGdRPqEOXUwAERuUAP2DeKliYUsieLgG7d
-	hIbQTMs/Eeq7nit6rc8hyd7uiMQZCDqGv2ZINLfThLkXPWyX5Xpn/SBWkm2swUYGX1w1VtZd/T0
-	aQMv4DkV1RwrAVOEQBIMMv8EauQoB+GmCPEzu5WPJjERKNXj62igyRSLHhxykN9s4wccXD+i0JG
-	fqlsZ2kBcP+HEerd3jLTJiS5RBRySZTDwr+42A4qGLK2a23cSdA0AFEEZW9Lvs7jxW9FL/g==
-X-Received: by 2002:a05:600c:1914:b0:49c:ff23:a6d5 with SMTP id 5b1f17b1804b1-49cff23a70bmr191567445e9.0.1788792999098;
-        Mon, 07 Sep 2026 07:56:39 -0700 (PDT)
+        bh=rHozVKxaETh27XlRQJCL5N6I2hRb8EdRmazGxj/Cnp0=;
+        b=Y735I+PUfUQdBgaiayw+Nocox8i/y3NM+o1XD9yl8MmZD69r6E3a4MCSygC2RwHieC
+         F6wpeU2T8uu1bxbhzfjGjya2uVA9PQR9FpwrFUVrVBIHs4lY/Juuzegxbb2LSW28t4FD
+         u7zQa7WZauRlRBtXmilcplJv/lX4b57R7we3ZfM+25q1BgiGdBxcUaG3GkLH+ggoVGQ2
+         jbXw6FJtvnRkDDvtojzAcQlLAw123Hz++9eIEHcStejngRyO+18vicH+pngPO1GWclgw
+         LcLnPO2hF04WTKz6i4RK0kyRl+ewXoe3bN/nMu/cjgPZT1HLjBN94UwWtgDeodxxKvRA
+         BHfg==
+X-Forwarded-Encrypted: i=1; AKwUvBxVclp7U2DIrVjNDSQsRGsSui5268qyEq+iXmxXpCEkIXNSHkOtNRk6ksvb4etJg3SOMrD09sGJCh8=@vger.kernel.org
+X-Gm-Message-State: AFuF++kqLxfVjkDgn6C0H6A/f1ZsG+TrWwWKp/WXHQ1Q77WG4p3zHADO
+	YzEQTYJKLTmcJFJhB4EB81MSBkI+h5rkKLASReBOCl2rMLS0kME4gYzT
+X-Gm-Gg: AYBFou1EIv1M/x4RroU+qPosSdhT0q46PJoni4r9felb0YTjY894T2xrgrIECcsAYpI
+	RUly2l36q5MeE3jH8Z/LD0SYDFhLVM31XMH3Hk7U1uMYg2nQbMx3FXwiNx0UCQYUVWoqBX7UQT3
+	SCbTVWiPMmsnHriFPPGh9F6qjByAjcPnz9U5VaeQseXWGq1DNBfvvo4vf4/21z2TVDBYjIvgVUT
+	F0vk/gauKF8kHYei9nLM3KnmXp80Y6plCmJCyKHy8B7B91QSgxGCipjJU5/jPEaQYiOw8Kebwu4
+	qlW4RZkAxrfTABhzLTYoAZB1qwyWrnRZO+ssFzdpAsbQyBcPT1QSKDz450Lmxd0V9FF6iCMbRXv
+	5IAvtNYUV9JEAzUBYekyv6v587TxeAnP3y77mJhEp8snEg7U19eqJYdRwgzWQs3s8QHfqjNpZw0
+	0dNA00AvoINEnLdXknQByEcJcMP6ZH7oFU9ldGfTPl0K7fWMcM8bISHUOwOZtcbYcxK0485njjN
+	wPHsz3pJZkrg+ocGu75JYFEXQYtFaOd5cTgJy8upy7Uan4InWkZ9ApjNO5Q+nJejQtH8xvqSV/p
+	K5THUNoTQK5vzQhQad8Wx9bAXQ86VIn/dRpRTlkSWYSce0UkDn+QvMxfE+GBnFv8y2TeCeANqy0
+	vf4Q7jvJmmS948oWEViFvBZVKHkniJmLP6ceJIhu/iofGK4aHTERh4vePNisOfs/P78nFXA==
+X-Received: by 2002:a05:600c:3d92:b0:49d:726:cc9f with SMTP id 5b1f17b1804b1-49d0726cd2emr281885525e9.5.1788793461845;
+        Mon, 07 Sep 2026 08:04:21 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf755c22esm316801845e9.0.2026.09.07.07.56.38
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf7736132sm310592495e9.12.2026.09.07.08.04.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2026 07:56:38 -0700 (PDT)
-Date: Mon, 7 Sep 2026 16:56:37 +0200
+        Mon, 07 Sep 2026 08:04:21 -0700 (PDT)
+Date: Mon, 7 Sep 2026 17:04:20 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- <linux-iio@vger.kernel.org>, <linux@analog.com>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: accel: adxl367: resolve interrupt mapping before
- device setup
-Message-ID: <20260907165637.0000348b@gmail.com>
-In-Reply-To: <20260907082313.3054-1-antoniu.miclaus@analog.com>
-References: <20260907082313.3054-1-antoniu.miclaus@analog.com>
+To: Esben Haabendal <esben@geanix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger
+ <martink@posteo.de>, Sean Nyekjaer <sean@geanix.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Martin Kepplinger
+ <martin.kepplinger@theobroma-systems.com>, Christoph Muellner
+ <christoph.muellner@theobroma-systems.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 5/9] iio: accel: mma8452: Fix unintended comment
+ indent
+Message-ID: <20260907170420.00006312@gmail.com>
+In-Reply-To: <20260907-mma8452-open-drain-v8-5-c17407e22118@geanix.com>
+References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
+	<20260907-mma8452-open-drain-v8-5-c17407e22118@geanix.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -85,17 +90,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 7 Sep 2026 11:23:13 +0300
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Mon, 07 Sep 2026 16:51:00 +0200
+Esben Haabendal <esben@geanix.com> wrote:
 
-> adxl367_set_int_map_reg() uses fwnode_irq_get_byname(), which can return
-> -EPROBE_DEFER. Running it after adxl367_setup() made every deferred probe
-> repeat the reset and power the device up needlessly.
+> The extra space this block was indented with looks quite untraditional, and
+> does not align with the common style used in the kernel.
 > 
-> Move it ahead of the regulator enable and reset; the lookup only reads
-> firmware properties, so a deferral now returns before any hardware access.
-> 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
 > ---
 
 Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
