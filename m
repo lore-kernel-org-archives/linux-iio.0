@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8441B2D7BF;
-	Mon,  7 Sep 2026 01:54:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E48FF2DA756;
+	Mon,  7 Sep 2026 01:54:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788746098; cv=none; b=QWvgISAQnGPahJjM6QB+nrQkdVrRMVOvtEAGeW3N3oEvIibSnSWimlnFBohWBtkUXD9AsLvl4DdUuPnnAbdp6R5l+veisPaIikDoXCU6sTJAps3aaxfXXTl4YPYoYNea8mpqHBWXRxzm5cdfKpE/4iJh+XKfqpmqXt5ljC2fjRM=
+	t=1788746100; cv=none; b=Um7ClgyPy4vAWHQfYjJOACAcUDkBUA09u/hb89qi7hlJIuFGQtVaocaEj5Bvf8mwP+KywqdwGPWQZPH4s1fDWsf1Q9ZmHVj3yTAMDABOfSRI7dX6hHCVQyinaxqF1r4hcxx87T87yDKMvP1rEFgZs5aZc1nnudrWbkXZNSZmKZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788746098; c=relaxed/simple;
-	bh=y+sjUc32NEPDnCgrXvJq2pu4snPojuQwGsErDpHvasU=;
+	s=arc-20240116; t=1788746100; c=relaxed/simple;
+	bh=xs2ugIzVtB58v5MdayMxyukTl8K7qiDBY1KVOp6qz34=;
 	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=PyVY0iRWJghMwmBhtsv+HlPVrJgvVDzRXzkiblBTmfG8MX8A4tIENaF7Ns3i+5zeluNLvXmskYdcCrpATOgBeV1161GH8mrQ46xSkR2bIHVJdxFOBX9OhQDPUhsUTW6maD3Cbn7ydbJt5fYfOE6t+gpfV8vevasm7Lplmn5m41A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OvN/cfxJ; arc=none smtp.client-ip=100.103.45.18
+	 References:Date:Message-Id; b=Q9MnjiLxi3H5La+ACvVnV+HIiwjKBBVlqQfxY1pbBjXSsbWf7LHmOB1SuHvp+HQpY6jTCJ6SOV86PG7H02JPkNWAjOwjRrUfIJZWDPDiUmE36Xfh6bzgU4H3HBN+3Pt+ncLhM9VJmUNGuFHNjmItGweci2ogMk3vQN37H8g1sBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oxd6F7Xf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OvN/cfxJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53E7A1F00A3A;
-	Mon,  7 Sep 2026 01:54:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oxd6F7Xf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 584671F00A3E;
+	Mon,  7 Sep 2026 01:54:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788746097;
-	bh=7V6Xs9nIJ3enoH+qXaIZO6HrRvvjPahwLWNrVDZIKvA=;
+	s=k20260515; t=1788746098;
+	bh=XbOsy+BgEoZxD2kuUcAs/xx9goR979fcjp22tui+2nU=;
 	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=OvN/cfxJ/mi4QG2yEM7dIknGXpYFhhRs8fJJNQjUM8uRbCeeTQPsTrpUd8xnh1TFD
-	 waXCQKr0C7DSkpoK+qAHz3PfmaM6ZPlNQ9ZEfN0MaG+LlOibO+Ar1dMpdvST3SIc4+
-	 JR59Wg1Y21cnH6/h/g22VpJxrKs2b2REBHAxWWGgkxvH5efr6iUDQiKtcS2UwVp49x
-	 +8VA2VOYyN/M5VSfugHrUW4ZSrPrPwyX/3Z5YfyRLXqjK+S9tdd8oYxcu34GGtqa89
-	 ze4XsqdliNDRcNc0itnwmhSGOz6IG+8m6RrNU9AlVEP2gCY61o+irhmZGq4ZvH7R52
-	 55D0xuMlbIofw==
+	b=oxd6F7XfieWuQ1TpLzcOM4wDq/du0bRbSuMzuNogMMmxlkR2tsL+TSDhmsE7usfc/
+	 T45GEdQIq0JNoFFssVqQeoKvvOB6aoMxlyh/M0ChLu5+EutJgbYRCEakE9Y7Da6dXQ
+	 P6hASW3PbpNyx5MlwTsFB962vctp7JMV9RStXfyppC+Za86RHTE79TxHdpQBIT/29s
+	 TUWCwNxbW0A7MSunJYIkiF+hXJVDXFgCWokwl7CXWrqZ7givIESqJXux7ZKXkBWft6
+	 8ahC4yNEuGjb7fvdJLma0Tu1Wz5gvVsNcK6nVeD+u/k08hyfBZ5X2vx1uYEEp7gMW9
+	 fwAzvGpqlUgiQ==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -34,8 +34,8 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3 1/8] dt-bindings: Add InvenSense ICM-42370-p
- accelerometer
+Subject: Re: [PATCH v3 3/8] iio: imu: inv_icm42607: Update
+ _odr_to_period_us formatting
 From: Jonathan Cameron <jic23@kernel.org>
 To: Kanak Shilledar <kanak.shilledar@axis.com>
 Cc: Henrik Grimler <henrik.grimler@axis.com>, 
@@ -50,51 +50,65 @@ Cc: Henrik Grimler <henrik.grimler@axis.com>,
  Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com, 
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
-In-Reply-To: <20260901-b4-inv_icm42370p-v3-1-77cc31642115@axis.com>
+In-Reply-To: <20260901-b4-inv_icm42370p-v3-3-77cc31642115@axis.com>
 References: <20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com>
- <20260901-b4-inv_icm42370p-v3-1-77cc31642115@axis.com>
+ <20260901-b4-inv_icm42370p-v3-3-77cc31642115@axis.com>
 Date: Mon, 07 Sep 2026 02:54:51 +0100
-Message-Id: <178874609181.3402141.14348716380765604460.b4-review@b4>
+Message-Id: <178874609181.3402141.11177384276502703798.b4-review@b4>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=606;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1411;
  i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=y+sjUc32NEPDnCgrXvJq2pu4snPojuQwGsErDpHvasU=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnhlua2CMAKffdA3jHhE8aYJi0A9qoccooL4dJ
- xPWxtnleAaJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCap4ZbhEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiKecEACwXxd+d5HtqUlqbNat5c8Jm04e8AT18isW2TXXQO15GKo
- PSD+ZqHyGKuvpTzMW00JK08NWDxZRBbhqMl6w0nsbp0amLwMr4szvHoZ6EQ5vhFomoyfFmFvMHJ
- BR1M8bZ2XobWYD+z3XeY4h9k7Ce0WFV7Skq9TmmtMLCrHT3NKyQuWbAt1hRITpp4PGoLTKRSSd8
- pmdKztW7uB3DgGLI17SXr+A6f1bGxotT+weQp0ROlVWlatsB/Mx5EAGmw8J+ULQC9C04qv90ir/
- XnEu7gDby5Xamq2tqB+ebf4DubuKgi5vvVQ16xtlXaM4YPIgaTQ8FGe8gNlzMlFumlEzfL2PQDk
- 8biUefPULlDGgjodAy2GsU1Vfj4mut6PdJ6cO1hBfikQESO7PFQD1HhQ2/YFzkmnMMWaG6yf+Jc
- j/gcYo9vKOIRpSCztvBxCiNNfyfOjTnA4J/OYVDgioMLv8SJYZKe25eBumxjMbTOK6rPhXOSlys
- 7gio8kCvAFIbgduJW6RzxXIkKSjYCgNEONT3dXMc8qRBLOyvYpwAbVrFd0Tm+OypCDwITK70Loj
- riHuoW+ETaEZYlopwxAy/IaeppMN2Z9eIjEPkCeBsBVznDSNFageXU9GkZPZNaGgfj0znrLlPrE
- thZxrmJJ7EkqMnewurLhVO1MsXmYH68/vz64lrg==
+ bh=xs2ugIzVtB58v5MdayMxyukTl8K7qiDBY1KVOp6qz34=;
+ b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqnhluJnDkxJUW2ITZseZsa486S7TD41vfHKTdq
+ UDUbJiADRqJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCap4ZbhEcamljMjNAa2Vy
+ bmVsLm9yZwAKCRBUhTSZxPQWiEthD/9XB8CecjGNAsEg8MA4XeJ6rFi3IEBq3S/p05lO/C0ma64
+ /6elt1GjxBDcRH/ObBC3GismjT6oeLayiROvacbV+7AVQyBWJzy2QShv4xnUWqoxShx4SuygTVb
+ 1aYltdHWqtlRo/sVrU/YCux4a6nWFQTwI63SWHDgxdh/BMHjCbEbwHwgtaPLDrx9Lyb7OtYsi3L
+ IQ/X4z4ucqO/oJPcnBM3JvbtpyvbXpzicwRIBi77l3Wt2n9lI1dpf4aTrF0NwlaIeQU7DgRv/yo
+ bockqGPtzpo7Po3NTMyOvugYPrrjgjKfCWk48M0xlQ3FuYevCr8OKUKmgaSesoRjaDUsIdOU5QY
+ jKZlrGMV0VWSmfbGM+YSEArA0yh3Vas2UgVqgKOWvaKUl0YErv05/Dk1RC50IaG6ijbOxnaE9RT
+ CEM99OwDhjYhenujibTSZhJNoBBZ+alZRiLvd+QbwOO4H0X7O5yww+OE/NBLbO85VNOVyCtQS36
+ 9JEsEdKsJ4SiqK3ukRXRYBhTEoqwMvEGHW84SjYXuCNfFBtaYNiNTz2/aj2pba+/Yxd+QxjIrKE
+ SonRdaxuqxsVsoETMeTaWpqkDTFK/nxw5yuSFWB95i7GdZ94OiyugFFqhAAloq7fzDFWDHXKChn
+ BcjSv+s/JII85rjSWXmCz0EcCO+e4uNltH+Yebw==
 X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
  fpr=6E2966B387840652912681B154853499C4F41688
 
-> ICM42370P is a 3-axis accelerometer. The device can support I2C, SPI
-> and I3C. Add the supporting devicetree documentation for I2C as we
-> have only tested using I2C protocol and leave the rest for future
-> work.
-
-Sashiko correctly calls out that this needs an update given the
-spi specific properties in the binding.
-
-> 
-> The device supports VDD and VDDIO operating range of 1.71V to 3.6V.
-> 
-> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
->
-...
-
-> +  spi-cpha: true
-> +  spi-cpol: true
+> Update the function formatting for the inv_icm42607_odr_to_period_us
+> function. This enhances the readability of the function and drop the
+> unnecessary comments in the array elements.
+The description doesn't mention the change I don't think is
+beneficial.  Which makes it even easier to drop that change.
 
 Thanks,
 
 Jonathan
+
+> 
+> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
+>
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> index 4d51b0da1aa1..fa85cf738cc0 100644
+> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> @@ -62,16 +62,16 @@ enum inv_icm42607_accel_fs {
+>  /* ODR values  - Note Gyro does not support ODR less than 12.5Hz */
+>  enum inv_icm42607_odr {
+>  	INV_ICM42607_ODR_1600HZ = 5,
+> -	INV_ICM42607_ODR_800HZ = 6,
+> -	INV_ICM42607_ODR_400HZ = 7,
+> -	INV_ICM42607_ODR_200HZ = 8,
+> -	INV_ICM42607_ODR_100HZ = 9,
+> -	INV_ICM42607_ODR_50HZ = 10,
+> -	INV_ICM42607_ODR_25HZ = 11,
+> -	INV_ICM42607_ODR_12_5HZ = 12,
+> -	INV_ICM42607_ODR_6_25HZ_LP = 13,
+> -	INV_ICM42607_ODR_3_125HZ_LP = 14,
+> -	INV_ICM42607_ODR_1_5625HZ_LP = 15,
+
+Why?  We often put all the values when they are mapping to hardware
+register values simply because it makes them easier to compare to
+a datasheet.
 
 -- 
 Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
