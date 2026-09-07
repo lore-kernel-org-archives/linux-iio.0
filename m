@@ -1,44 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC49C42A165;
-	Mon,  7 Sep 2026 07:59:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C77BA42FCBF;
+	Mon,  7 Sep 2026 08:00:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788767952; cv=none; b=kbVe7TJZWy25tZ4/7AJEiTuOZTv0GQ6QbuunrGkbcLMEybpQPit6AT2ybFrLKEdLYelz2qj6552Ut87I9WiEFdb7FZSmcryZS26mf0QR38xQS1SLbhAMLMwo6QXfYHkowuoyMAIxOxSB1d/0uqToeyiFUKD5G9G7wAZxmnIjh8A=
+	t=1788768005; cv=none; b=EcbOLkvsqJKGyqhr2rhxCFtGsLFCjERdNv0iDCHuVgU5lbbVMK2LanomCykFe0RWAZMoicESISKaZ/KAJcKwW3IXLMBs3ftSR+3aq6sxxtIYoTz+4mChk3YVjkVtOg3/3UFjvtVU6YNqxsCEWkrLjyGsWfng9by4oiZptj0s3bg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788767952; c=relaxed/simple;
-	bh=GLS6PKzzcflMVySOPIMoYRwtAQD5Ist9obp72BjN+BA=;
+	s=arc-20240116; t=1788768005; c=relaxed/simple;
+	bh=h3WFXrx2EjpSSH8EOeN7N1Vyz6XlhpwWUwi+4XpdQ70=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nvbq0rDUWYqxI1scGMqcw4IgTKHv3Xn1AO3rGcWmt3P7qm6yX8mabwSMO41rire/77u15j+HfHvy4vuy7wt6kUALpNmbxqZwJ13StDjJ/RMfCxocQt+xyXzAW9IYq87cGWkdQahhSm5oibClX2m4CvHZq/mP9hFjywa84tPfkDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iXybQg6I; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=A3QACkOA3IVRT17+i2ptauLDqmKKpQ301T2WaSzzGwCSrXU0LNBzwfLcuM3yBq91qEYKeqb95BVtocgbKNiuktMHtoQR9JDSBpJFl1PvL8mN+Zq6jwC6PzCMEW7lonttd0Sx+CBotrSDJtnTrNl3xGKlHM+FpLtqYWtMmUMMybQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bGQKKHnq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iXybQg6I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3411F1F00A3A;
-	Mon,  7 Sep 2026 07:59:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bGQKKHnq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A9B01F00A3A;
+	Mon,  7 Sep 2026 08:00:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788767950;
-	bh=T7DxIBisqzWc38K3SpNkKOaaqQSRKHlATBlb+R77ZIE=;
+	s=k20260515; t=1788768003;
+	bh=ynDRLViH04RclRGJqBCrPVaMpkrMgbaRYlnWLqlefjY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iXybQg6IMzK4JX+13CZy6wsVGJ6EZW6VN32wjaYW53N/1P7ulYPKghQYyn/dyDhoe
-	 8Y1bWa2yOeYVUHReP27SRHfX/OIRNvCkUWRcNtU/ft3R56Y3117E+c3ju2BcA9gW59
-	 KY+VswYkyGHZoXM28i9TTpTR5C16ufYsnP7/X2iR9AnThdldDoE6hG7+Og4kCT7gPX
-	 vTNTbzSqkb/d35+3AiUYmI/rgtgV5O30a6o1s9os18RZDaBFkj5wwaY3mrIPuyRLfV
-	 iEOUBr8yVCA75lI10+iTRlrVLF234O1pX74jXf1m7JgRDETDoIPq/i9CfaBgZEsqqD
-	 gzQqmfshLQUWw==
-Date: Mon, 7 Sep 2026 09:59:06 +0200
+	b=bGQKKHnqP4O+gTfX49A5woF3lGv3vUkC2MpX/xd3HsEuPLEBuedU3prgqxvjyLkHc
+	 0iBifv+aY7CzKHxRDNnFj929H6+2ZE5iG5eMi062HYlz1tB8hwHAqYUkq6BQGupj+5
+	 MH8OPduqu0IVIxXrgtHqC4wHupvQ9ag+u8soB2COlwZCbMTagNEvyZ+n5Z7SjHY3yL
+	 wNP1tWhVipTbpyLr9y2vhUxKLxhBi6ID0+Egw9TZbV/JpYHWMmMucLkoFQVnmLrjto
+	 RbW0G3btRm8wIuOXErTBvvLcZx4Q6QtpEuBfgA8/B3uEjcCchpI8I6L94RhBqedmgw
+	 zNdwp8NMvi7cQ==
+Date: Mon, 7 Sep 2026 09:59:58 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Flaviu Nistor <flaviu.nistor@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Flaviu Nistor <flaviu.nistor@gmail.com>, Andy Shevchenko <andy@kernel.org>, Nuno Sa <nuno.sa@analog.com>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
 	Conor Dooley <conor+dt@kernel.org>, Daniel Baluta <daniel.baluta@nxp.com>, 
 	Antoniu Miclaus <antoniu.miclaus@analog.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-iio@vger.kernel.org
 Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads1015: Add label
  property
-Message-ID: <20260907-brawny-amorphous-marmot-342fed@quoll>
-References: <20260902172230.5234-1-flaviu.nistor@gmail.com>
+Message-ID: <20260907-elusive-sensible-rottweiler-0da0b4@quoll>
+References: <60dc58c6-dfe2-4377-9a73-f65cda56179c@baylibre.com>
+ <20260903151939.5117-1-flaviu.nistor@gmail.com>
+ <61d64649-603d-4a55-a789-babe655a2de8@baylibre.com>
+ <20260905025612.09363f51@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,19 +50,60 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260902172230.5234-1-flaviu.nistor@gmail.com>
+In-Reply-To: <20260905025612.09363f51@jic23-huawei>
 
-On Wed, Sep 02, 2026 at 08:22:29PM +0300, Flaviu Nistor wrote:
-> Add support for an optional label property per channel similar to other adc
-> chips. This allows assigning distinct names for each channel which can
-> match the schematic signal name.
+On Sat, Sep 05, 2026 at 02:56:12AM +0100, Jonathan Cameron wrote:
+> On Thu, 3 Sep 2026 10:30:01 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 > 
-> Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
-> ---
->  Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+> > On 9/3/26 10:19 AM, Flaviu Nistor wrote:
+> > > On Wed, Sep 2, 2026 at 9:31 PM, David Lechner wrote:  
+> > >> On 9/2/26 12:22 PM, Flaviu Nistor wrote:  
+> > >>> Add support for an optional label property per channel similar to other adc
+> > >>> chips. This allows assigning distinct names for each channel which can
+> > >>> match the schematic signal name.
+> > >>>
+> > >>> Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
+> > >>> ---
+> > >>>  Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++++
+> > >>>  1 file changed, 6 insertions(+)
+> > >>>
+> > >>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+> > >>> index 718f633c6e04..777a75c21d7f 100644
+> > >>> --- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+> > >>> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+> > >>> @@ -66,6 +66,11 @@ patternProperties:
+> > >>>            - minimum: 0
+> > >>>              maximum: 7
+> > >>>  
+> > >>> +      label:
+> > >>> +        $ref: /schemas/types.yaml#/definitions/string
+> > >>> +        description:
+> > >>> +          A descriptive name for this channel, like "vcc_ram" or "CH3".
+> > >>> +  
+> > >>
+> > >> Apparently this chip has quite old dt-bindings. Normally, we would have
+> > >> included adc.yaml to get this and other channel properties.
+> 
+> Quite a lot of bindings predate that generalization work :(
+> 
+> > >>
+> > >> And we would have used diff-channels and single-channel from that to
+> > >> describe which pins are associated with which channel rather than having
+> > >> a magic number for reg. And the ti,datarate looks suspicious as sampling
+> > >> frequency is usually we control at runtime.
+> > >>
+> > >> Anyway, none of that is really relevant to this patch. We'll see what
+> > >> Jonathan says about using adc.yaml here vs. adding a label property.
+> 
+> Given it's only a single property and label is pretty universal
+> I'm fine with just adding it here without the reference to adc.yaml.
+> 
+> DT binding reviewers may disagree however!
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Yeah, I see how adc.yaml could be used here, but then it should disallow
+"diff-channels" to be explicit, that old "reg" style is used, so maybye
+not worth the effort.
 
 Best regards,
 Krzysztof
