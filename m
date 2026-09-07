@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8CD5368D4C;
-	Mon,  7 Sep 2026 02:03:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB0711D416C;
+	Mon,  7 Sep 2026 02:07:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788746638; cv=none; b=axrCRfJswtw0G8H6ixamVIe1nuUFRlTQCXO7zp9OyAwNXMV0CTF6f1bLiL4dySzQwxvd+m7UfFLI/fPkWhWpqeu/BFOcToqjVp6typ2YuVADPHo3HP1iBeDR7yJ5K39NxCj1VgVx7lAYO8AceFEor+StlY/nZTXs2rANBSdYja4=
+	t=1788746877; cv=none; b=koaxfrsgZB6vRR2OA1ggqz84RK1/uC7FBWmXcYkTnrfA9v8iiItcW0J+5GqBvWciJ0NfsWVx7Q3s/s9xcASfl9gupf80eSk5NcPeiqirh2CuWEW/Sq/cGVR8fZQYy9+/ALj6tWat1XPql2d7cd0ZHH0V/Q+WqnrlWwgSNY2UlgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788746638; c=relaxed/simple;
-	bh=NH8WM5baM1sUFc/WremnkzSni49JFz1TTKdqEzfDXkE=;
+	s=arc-20240116; t=1788746877; c=relaxed/simple;
+	bh=qok1BR21gnWayIlOK39ULGwS2GuTp+1wmMxnhr2mAQg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WmEknNLil1xWJ7n5Dz0uiJlWV5ef8T72nWfJm5Ha9i2DtCX3itp309HGGHUDI6z/bn+ps+rTX0eK9qA8HpqK49oBfTv75pHsk0yyfciZIk6gLqvyHFb1/ccXi1Nzg9Bj9N/fpIv2ihm+cbk0186Fednfr4EMomqn+Zye7FTKGI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LdNs0qSq; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=RWdkbXVm+1xi3xjjUcmyH2o74zZrN6n7pzVpXQtA9oGOsEPEWh7PEEreRsL/dVkiVWTCdn9fOsBrjxDXNZfBeNjxRVPRfm+bzVlHPlK+POnOdJdMwKVKkhyQwnk7Tq2I6Azy2XQRmpXy1QzajcxoaAaB+alEyJ+Y+OdEkhlEcxM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SKRIP9Jb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LdNs0qSq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544951F00A3A;
-	Mon,  7 Sep 2026 02:03:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SKRIP9Jb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D35661F00A3A;
+	Mon,  7 Sep 2026 02:07:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788746635;
-	bh=NH8WM5baM1sUFc/WremnkzSni49JFz1TTKdqEzfDXkE=;
+	s=k20260515; t=1788746876;
+	bh=EG00Vd88X2ceT0Bq5CVAN13WMC432Kc2z4nTSdVoMp8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LdNs0qSqIVeCBfymUo4DTGwD9DYam0iSnTQvknrnNU5sYfn32aGP82zkKsagx8vtD
-	 8Ybeg+qyEt1/51PHcwWG1sfG2XAnVmC7jLuMNihjZB3ET2/4aJ0/GIEs6dah1Ymnhl
-	 foMynWOjvhaDEBGrB59CQYxlO5Ab9DhBwZG2m90UkoAVIJ6OgyzGTHYCm3ESoDUhID
-	 uJFyBMHh6EsXdPj27hE2U4QQLvbSshX7N8vZ3EEw+hGfxcZ3ShZh3zYhrResKwhzgF
-	 UTuufTOiZm2N1DmAK8eLui0/U8LfS7A4uGLiq/ldaOWsyz1lo1pfHf9wDrL5tAiwcO
-	 duUVzSgsP7yAg==
-Date: Mon, 7 Sep 2026 03:03:50 +0100
+	b=SKRIP9Jby24xroCmwClUK6rdbKEgRixdSDdZNcASbKB46RrLU/e9oa0sQ6krUT/2u
+	 p5ezloxUM+cIgKDgUKQC4jwrB50SbG4YW1RmsBE9GWQIlVKvIbGrf9GmyFtA4qKSwq
+	 7eDm3BU5MVXY9e+PzaTDBBELmJ9lWEu8o33T+9tzqpYjatEjGWey4PEBnCuLf7nVPl
+	 mplZR1TbhrybzrsQfUu5JhnJurVH6YF/rux0Isqvfu2rMVZhIjufLHeUmgHVneOdG1
+	 nYDRSEeJhryRv+XwBxL+UbzEKHM8BgPHJWzb+DYb/p1JaYwow30zBAFvxMi8HZxMW+
+	 sDi/Wbfgco+VQ==
+Date: Mon, 7 Sep 2026 03:07:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v8 0/4] iio: light: add support for veml6031x00 ALS
- series
-Message-ID: <20260907030350.5eacf496@jic23-huawei>
-In-Reply-To: <20260901-veml6031x00-v8-0-532cb4f2168a@gmail.com>
-References: <20260901-veml6031x00-v8-0-532cb4f2168a@gmail.com>
+To: Fabio Cesari <fabio.cesari@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Brian Masney
+ <bmasney@redhat.com>, Joshua Crofts <joshua.crofts1@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: isl29028: fix runtime PM reference leak on
+ error paths
+Message-ID: <20260907030751.3da628d4@jic23-huawei>
+In-Reply-To: <20260906221517.201877-1-fabio.cesari@gmail.com>
+References: <20260906131203.125407-1-fabio.cesari@gmail.com>
+	<20260906184358.398f3f1d@jic23-huawei>
+	<20260906221517.201877-1-fabio.cesari@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,18 +50,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 01 Sep 2026 15:05:45 +0200
-Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+On Mon,  7 Sep 2026 00:15:17 +0200
+Fabio Cesari <fabio.cesari@gmail.com> wrote:
 
-> These ambient light sensors with I2C interface provide two light
-> channels (ALS and IR), high/low threshold alarms with configurable
-> persistence, and a data ready signal.
-Hi Javier,
+> Hi Jonathan,
+> 
+> On Sun, 6 Sep 2026 18:43:58 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > Whilst perhaps not best practice as such, it is pretty
+> > common to just not bother checking the return of pm_runtime_put_autosuspend()
+> > at least partly because of that annoying -ENOSYS result if runtime pm isn't
+> > enabled.  That is what happens with the ACQUIRE macros for instance.
+> >
+> > Do we have any particular reason to thing it is more likely to fail i this
+> > case than any other?  
+> 
+> No reason: both functions already returned that value to userspace before the
+> patch, and I left that unchanged only because the patch was aimed at the leak.
+> It makes sense to fix it as well.
+> 
+> v2 will take the reference with PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND() in
+> both functions, as Joshua Crofts suggested, so the value goes away along with
+> the manual put.
 
-I took a quick look through and don't have anything to add.
-Hopefully that code reordering you are doing is simple and v9 will
-the one to go in!
+Why the if enabled variant?  I think that only makes sense in places that can
+be hit prior to runtime pm being up and running. Maybe that's true here.
 
-Thanks for persisting!
+> 
+> Thanks for the review. v2 follows shortly.
+> 
+> Fabio
 
-Jonathan
