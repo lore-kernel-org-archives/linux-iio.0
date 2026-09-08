@@ -1,129 +1,136 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1C47572673
-	for <linux-iio@vger.kernel.org>; Tue,  8 Sep 2026 16:29:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B81D7361951;
+	Tue,  8 Sep 2026 16:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788884996; cv=none; b=pRNZXlpMtQ3scDPuOShnGhWBPVz54tvynT9whjsJhlzDgugS4loDcVhXWJwW+NSx80POZkuC1IUCS7rcButO+WhhZSgYZKwB71YEtMrA4BMi+4cfo3cQMHUjXmGyDwJ4OOh2xwhgUKZpnkrzvyroiN954XGLr/dEKeXmZNH9pAk=
+	t=1788886534; cv=none; b=QMJGc8Q2iK5iBObb2Zq8CsyhplamjqxIG95Iq0qSswpsTlwaguf4WDV8QWU/CYuSVvncIiLuxTfD+ubCT5k8VknkHym2/6arrIodVccVdzg5kd+ZLW781bnJu9bLnq9pHCSR/UNqWC2WP0Y2ennvLiVoGwpjRhgGfLC0n65eg0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788884996; c=relaxed/simple;
-	bh=RwuYV9Sl7mHmb36wZxRTPspRiMkOGbxObIiEG/b6AVc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UgW+AUa0H8hhCGnef272i86kPtCp4/vjIzC0k8Dy2XdGG9yifGb9EU6PrNAecNKOCROupb9JmYsT9CYfDJLLjpFFXxW7MTsecsGxQMFXBHmaKzltmCRM2iJTHIjdeYB2hnzkKU7grbRWd3JiF1t02bK//IDBj3ExR8PU0LwS4Y0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iI+NeGIq; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788886534; c=relaxed/simple;
+	bh=vU6Lg8mVgH2kLihnlQaJOsrnqcEQ35BkClCyDzQd3Vo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dp9cyvOCB82NAhLn2OBUqqy8dTryStyoQqlHSZ/zjlTa17OlJpxAOTT++cfx1cN7FSM5bn/t2JRcIOwH10bSycDJ1zefmx1FQ8TAv0wpy9CE+Lorq3YRnkiyo8ugkZ5ZZuKUpWWozEhjPWLP+LbK1c9mzDHTlmPdObVPkjJvn+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=fail (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=Ye4uMFIv reason="signature verification failed"; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iI+NeGIq"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49cd77e0f95so39275515e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 08 Sep 2026 09:29:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788884992; x=1789489792; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=W1OL80AMZio9aS7yB2uFhxd88x92rOLpg7Akucp7hrI=;
-        b=iI+NeGIqExsX8Oc+DF4Cu8olO/QHCp3RYZDbADI9rOQxZ8TcL4fdOoJfnRy7ct2cLX
-         xFHto9nE0eEs5cc/WZ3KCi1vo+d9LU5R8zWLLge9L69cN+B9EBNxgcTxoLWYePaSMikD
-         A5SJTqvLyqNd/j32ZlM2cGAKNbjYj9kXv5VawcKibUIMqJbC0v84FhIvAOuNW9RE9JfH
-         2qZENa7u8BI3ouWuhLZDby0Z5kgZGI0eX9yjH45Dg1My96SmKaHmR1uVFBrQdfrH3No6
-         uDi66/MlOYZIShR/ZKZ9JO6NKr/HG2Fkoc4Wbxq15+64uVzA/0KItiG7ChWvCp3yJXNq
-         DnRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788884992; x=1789489792;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=W1OL80AMZio9aS7yB2uFhxd88x92rOLpg7Akucp7hrI=;
-        b=iqgojqY6CTvrRbIzNZrCab07HgL5+DjCjMDruoMDm5qOYdW0d0874N/M/f2f1o0llt
-         b7XmZn2n6yfcpfu4gO8JiG86rRo/H4eqSMk+iZkgDQFB2VGMezRG+C65574rkVDrBCE9
-         tQhJ2MtMjZmTjoXGdLQU8UQDgKZhPBl5G/6S4MQMauQNQSkDju9NRf7gChoibv2l8pK7
-         JUMyCZ3QnILOzQk9Q3r0PL9ldlt0gc0TKTYqvUUmxgPghNzg3u6VYrMUMq0XqhvH27Fo
-         jDxZ7tsFrzrvV134e6Bg7fTUU5di1IgvVfP5Daj56iNHC2vheuI38lE6/YwyClID9i6O
-         HSFA==
-X-Forwarded-Encrypted: i=1; AKwUvBzwpo9OELSqC8NcT6z5GZTGqDVLeDhX+PYsJNuMnMroR46pMR5MuReIPwpbhFIvGNLuufU528neNX4=@vger.kernel.org
-X-Gm-Message-State: AFuF++m4/FNCpT3cvhC9zLW/VBkL8DdE9KW5hMlyyxARjRxnQp4TwlCf
-	I2j1mzT3obOcbURM3AEhK7f5eiqkGAccEnyIpVWSe6iIkuRX+SX/eASA
-X-Gm-Gg: AYBFou3P8IPAf/IaZuxJd0+48nsFEkDgdlf+POJtH7r2PJIV/N9TazHDc5eDh0GMINc
-	CYGw9vQBRiAK+m6fnDeqEXxp6Bfti0zRy4iO8PN1VJNzZcwSRS1OGgTBlahixvS3sMD3GGpcO8Z
-	7PyTO0uU2X8QoHMNMw5z/YWUVYW3FG/h7pUS6swt6/dt4vuQZlLIdPegdDTKdcvWmCsC3UpyUFU
-	fY813oi70trBUINEPn7jTdJBwZvT3v2Z9Njr23AzJc8LrEf6tGhawis5KFA33tRZx2+8ZF3Lr4t
-	ZTZRoHcIumhgDFalLMIHEnL03LTyBVLiHUjtJzel+rWYqBLUg1M47MGrnWtpwdXxJDW9GpQudc/
-	dWbNDIz2dDrkQ3gmagEiL58lgM5PLMavdoBy6SN3Oi4ozdDM1JlCRKySIM5euqU3FCdw7olerdF
-	vmKlmGg33a0k/uDCU4KMZ63sZsQ+nhPzAdsM8cPMLheUps6G1cOa0mY9DI/OWdprfJCabV26mAm
-	GKzH/Ao6QB6vwZkgCRy9pIUc3gfrxG9iXC5g/pBbQ==
-X-Received: by 2002:a05:600c:46d1:b0:493:bd2a:93be with SMTP id 5b1f17b1804b1-49cf820c992mr311945925e9.6.1788884992168;
-        Tue, 08 Sep 2026 09:29:52 -0700 (PDT)
-Received: from flaviu-Aspire-E5-572G.. ([93.122.248.115])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cee7fec25sm571758155e9.13.2026.09.08.09.29.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2026 09:29:51 -0700 (PDT)
-From: Flaviu Nistor <flaviu.nistor@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>
+	dkim=fail reason="signature verification failed" (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="Ye4uMFIv"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 2AE2240E016C;
+	Tue,  8 Sep 2026 16:55:29 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=fail (4096-bit key)
+	reason="fail (body has been altered)" header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id YxAPGzGJBGqz; Tue,  8 Sep 2026 16:55:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1788886519; bh=6eozimjrpivccbyvOVlUavXK7iRmTgvftqA3yiD2zCE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Ye4uMFIvMeIfQkSEXtF5yP2syWq7hXfFJRMeGyGkVJZ0E/NUIC0u6zesLA8iAmyyl
+	 FxAblM2wUHR6wVmcqSECunUZJvfhx7Ex5HHcFgBXsHC6QUwM7rZJgxPVHh8B9U+GW2
+	 sBkAt6k/hsdJYx/wM2RJ/N4roCGUmHpBJV7yogLLkq8hiFAjDiPZ8wSXABT4xBL/zR
+	 J6HGhSCCvOBa5Nkm66qLcb3Xr95XjRyF/kUXTLKk+4YsIKvUpYT12+WkG75XYt7Dbh
+	 5LwJ7/vBO7IoptldpHYW1WPMnUNwUmwduhHsm0sZ36eN/rNuH2DuiKmAG55+YY9J0M
+	 7KzrazJneLCltJWQWKLAsTFGyZ+vf5wF5woLANfyNcW1j7eN0r4d0yyg/INTlqmcjx
+	 mZVJ6Y9Jn4R9yugA+JcNhglVYgqiIlqQ5qIX607fzVM/uXzaAL4iIzFgjuP5LOpqrK
+	 viasYT8ezNoqAVFI7bgnOEuMGPYNfB1fG6y4YuXSIYo/xH+zn3U/qN5YIeZNCd/p3w
+	 CChJtsnJJtdzoQGfBt9d7cZhmGUQDVJ92nTWFxU5LmviKRIwNZ8X3BJ8yLgfRVW6IY
+	 2JQO5NETS3uoqRj3oneBDTe7AdvTJj7gjlQ+rLoqBG+FfoqFA6oL0odWY3oKmcz9no
+	 m6qbFGemS3HYJAkmYznzXMoE=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6BA6340E01E1;
+	Tue,  8 Sep 2026 16:55:04 +0000 (UTC)
+Date: Tue, 8 Sep 2026 09:55:01 -0700
+From: Borislav Petkov <bp@alien8.de>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Daniel Baluta <daniel.baluta@nxp.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Flaviu Nistor <flaviu.nistor@gmail.com>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: ti-ads1015: Add support for label
-Date: Tue,  8 Sep 2026 19:29:47 +0300
-Message-ID: <20260908162947.5446-1-flaviu.nistor@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <ap_kA8laT70faM9B@ashevche-desk.local>
-References: <ap_kA8laT70faM9B@ashevche-desk.local>
+	David Laight <david.laight.linux@gmail.com>,
+	linux-iio@vger.kernel.org, Nicolas Pitre <nico@fluxnic.net>,
+	Ingo Molnar <mingo@redhat.com>,
+	Thomas Gleinxer <tglx@linutronix.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>, rodrigo.alencar@analog.com
+Subject: Re: [PATCH 0/2] x86: Use "er" asm constriant for add/sub
+Message-ID: <20260908165501.GDaqA95YQKx_IL416d@fat_crate.local>
+References: <20260803094702.3852-1-david.laight.linux@gmail.com>
+ <11o7545n-7569-3p9r-1q77-8nor8513r6n1@syhkavp.arg>
+ <20260803163955.627bdd3f@pumpkin>
+ <20260823233536.30b984ed@jic23-huawei>
+ <20260901175101.1e059ac8@jic23-huawei>
+ <20260907231444.7fa2d116@jic23-huawei>
+ <20260908033216.GAap-BwAmBqoVDUbMK@fat_crate.local>
+ <ap_cLN807bC56OBU@monoceros>
+ <20260908152127.GCaqAn9zI09T7qvMhH@fat_crate.local>
+ <aqAtRgouK7DyDlpJ@monoceros>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <aqAtRgouK7DyDlpJ@monoceros>
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 8, 2026 at 1:31 PM, Andy Shevchenko wrote:=0D
->On Mon, Sep 07, 2026 at 06:23:04PM +0300, Flaviu Nistor wrote:=0D
->> Add support for label sysfs attribute similar to other adc devices. This=
- is=0D
->> particularly useful because the label can match the schematic signal nam=
-e,=0D
->> identifying channel voltages easier if label is defined via device tree.=
-=0D
->...=0D
->=0D
->> +static int ads1015_read_label(struct iio_dev *indio_dev,=0D
->> +			      struct iio_chan_spec const *chan, char *label)=0D
->> +{=0D
->> +	struct ads1015_data *data =3D iio_priv(indio_dev);=0D
->> +	const char *name =3D data->channel_data[chan->address].label;=0D
->> +=0D
->> +	/*=0D
->> +	 * Avoid printing "(null)" in the console in case label property=0D
->> +	 * is missing for the channel, or channel is not defined.=0D
->> +	 */=0D
->> +	if (!name)=0D
->> +		name =3D chan->datasheet_name;=0D
->=0D
->Is the datasheet_name static? Can this rather be made only once=0D
->at the probe time?=0D
->=0D
-=0D
-Good point. Yes it is static, so indeed I can move it to the probe function=
-.=0D
-Will send out a v4.=0D
-=0D
-Best Regards,=0D
-Flaviu=0D
-=0D
->> +	return sysfs_emit(label, "%s\n", name);=0D
->> +}=0D
->=0D
->-- =0D
->With Best Regards,=0D
->Andy Shevchenko=0D
+On Tue, Sep 08, 2026 at 05:49:17PM +0200, Uwe Kleine-K=C3=B6nig wrote:
+> I don't see what you mean. If both the tip tree and the iio tree
+> contain the same commit (with or without a tag on it), it doesn't matte=
+r
+> who created that and when and in which repo it appeared first. The firs=
+t
+> to send it to Linus makes it new for him and all later PRs using it onl=
+y
+> introduce the follow-up commits. So if you pull Jonathan's branch you
+> still can send the branch/tag that contains it whenever you like
+> independant of when Jonathan sends out his PR.
+
+Yes, I'm going to have to merge that branch into tip now so I'd need the
+assurance from Jonathan that this branch is not going to change.
+
+Also, those patches are not tip-conform, but whatever, not that important=
+ for
+a one-time thing.
+
+What I really don't understand is, why this rush needs to happen now so t=
+hat
+we completely do a one-off on the agreed upon process and we have to do a=
+ll
+this unnecessary gymnastics?
+
+We have plenty of time.
+
+So why do we even have to debate this instead of you folks dropping this =
+and
+we merge it through tip and then everything's going the usual way?
+
+When people start merging x86 patches in their trees, when do you think t=
+he
+process will break down and we'll have to redo branches and go into a cra=
+zy
+dependency madness?
+
+We're not merging other stuff through tip without an Ack - why can't you
+adhere to the process we've all agreed upon?
+
+Yes, this can work now. Is it necessary? Absolutely not because it is
+a one-off and will get everyone involved, confused.
+
+So please do not do this in the future. If we don't react to the mail, yo=
+u can
+always ping us on IRC like other folks do.
+
+Thx.
+
+--=20
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
