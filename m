@@ -1,110 +1,97 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DE95519AE
-	for <linux-iio@vger.kernel.org>; Tue,  8 Sep 2026 13:03:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E121559C81;
+	Tue,  8 Sep 2026 15:08:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788872600; cv=none; b=I0jAlBQC+NxWOz0NmjC7k6d1LDBOlELxDXm+CMUUNkHfmajY4IkemSkjlgK82SQiPR5ZPUVkdPUbbNFeTPmS5BWifsLvRr5Bx5OKqY2R94pYMsrSXQZ/+xty+1O9KXQO3JuabJ2XK4P+Nj5fUAOxEQ4Y0h5RrS1znNehqZmC1SE=
+	t=1788880148; cv=none; b=jbx4qwGC4bfEAi6DJqmD7z3Q6v6Oxrb2dgyyVy6/Zn5V4MS68VHPj25Qx+4eGtB9i3LHskvdpO36HcBww263j6vcVKrxVT7A7Z7u+k1SAlLWuD1liy0FDgXxCPiAaaF0/DF2Ol/RCUef/Jf0gAAWaed2y62sbR+q0RvkGpQNfto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788872600; c=relaxed/simple;
-	bh=/litBUCmykqlKIXM9mqB+Ix6fkKAHYidvnz5JeC4/bk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Koq1Q+I7UbyolE0qpk5r5vQDtag0aTGJxetXt30PTFfgaO8iJNaUXKH2LnyDwYmpzRq5eZj0Yq7c4dfevTbkFTY7GOa8FwIXTiBovH/KsWlxcSw3jjQlw6zRtzGFdEQGVF28EiOR3YTyRpcB9zCeMRqU1VAgBVGDj+6cLfO2Cck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aqvrTgpA; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788880148; c=relaxed/simple;
+	bh=suDetCt/PEGpqD3P+OPNU181LrJxjMPV1YiajX/hHf0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BOGam+6Phjq3JXDX/NtuSu8PPmc3nYKhir/awE6xks9AaaohPjx74uw3Sb4h25q1xgL1lFvfTv511+bsL3aQXIBGnr1gKF80bx484Hnz0WyiNhpajLJv5dSEkJYT4ubUZEnmTd0RBmm7XYeQ8Pp5xyTVSbVPhqTnaTGEH4/PBrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bZRQe86C; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aqvrTgpA"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-499b2981a7bso50096115e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 08 Sep 2026 06:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788872595; x=1789477395; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=/litBUCmykqlKIXM9mqB+Ix6fkKAHYidvnz5JeC4/bk=;
-        b=aqvrTgpAcqZ0INMXVDRhgGYj+qryYPu19QHumQ7VoA/AnJJCIkux8bo5WzOgY9enYg
-         savjeiDfENMq9D3z903FnLln7adYaM04WUK3ecbYK7ewTpH9EKmgtSUW2MiHXRCtWUMN
-         MWfjqy7tp59ENjsGAWWuNAQDO6/E7IFCaK4WcQeXic9cGHLqMGUsfe2pIcEx7cY6Uq7N
-         /w8SiR9nDAR0cTDIiaY//+GHenOnT31lFwXunNoc1OstiqYgJGKJzf+Ku7pJrhkuTp/j
-         CzC2xobdBWOPpfiBQv+kyNnos53AtmO0Iex7NRFRm0tl0VLGdG4m0o2SGcjAMgMBv4ve
-         cihw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788872595; x=1789477395;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=/litBUCmykqlKIXM9mqB+Ix6fkKAHYidvnz5JeC4/bk=;
-        b=f+p0oK/lcb94R4xSqbn/gkykNPAsoKc695eZzgXyOF2kTtST5fdIJW5zVdT6U2dRWL
-         WrBuPOHjxdSlR8FOa5xOA2vHvfFtl5zxPJugq/ZZVwT+/PJNTOnu3iueAqsiGmWTno40
-         DTR6+hPejXJJzVAFG+QZxGGeVuEbZzb846kH+29eN8DWkHvLF3pAXwa6wIvoH9X7XaY2
-         9MmjyaRzhKooJ1CuBl3sWRy5pllsAGUQmfNRU7P+lbB5Gujn/7Wj82flIUrnE1I4WWIk
-         zCjjjtbD6hlEmbTJxpJbyXmRzc0lqpIfwz7EAUH2/oUfjf+U/WaoGDHc7r4e3/9bFQ54
-         FIlA==
-X-Forwarded-Encrypted: i=1; AKwUvBwy/+7kvbffdQ2l+0ViJ87I+DtcfGUz4GbX+eF7uSNNSeHgBDswzp+PV/lWH/0KraWiCuwhnJhzP0U=@vger.kernel.org
-X-Gm-Message-State: AFuF++mJm09RVRz6TLwxo0n/ZU2JtSMj/2NXf/mmf1hLHV++Ed2FmZBK
-	ibx21ehcGJEFZwOvGTI147Wjg+4J+n3SAVokPmBGJWtONBzC6pyDip3+5DhjaT+wOwg=
-X-Gm-Gg: AYBFou0iXntbc2gZauvUkFvEtdtth6uSuibXxtjMurw8TYse87QZccCDRjMqFuYp9zC
-	jpINP9GrBb30xy4gt63YPBQAzszVoV1bpxFN8cxA1O57xuKRXE4RznDjAzOOoq5Ia5HQlXeL06T
-	TjFa7lREYQ+acCQlKbxc0x5is3j0oe0MdTwsG2NNG7V9wuO+w7sTMUlSgyScwnoxMgsUihE2rmj
-	BuLhDfgtSEyzqJtVlCJx3wKnAHbqg1xCxqCPSDbCU+Nv+uMo6c+itrY+E9dGEQShQGXGIOLG6Sh
-	L4O6H+GQWh8umSt1CeAexGbeZED5dI4xnHr+b7XqyYzJTCuZIo88kWs5m8dmsE/mLFvzkLi2nqv
-	hDo2+r6NFzERWPycwkks/I++UTJIEI2rRgwxI58rg47m+Gcei/bfJFZNjLAD3s9i1Vivl2As736
-	yD8M7cBB5KsxSARzItdUattswJhvRAMWyP57I//DQBrsRIg8KX84atGZkTO1PhzbhI3NEaJz0tz
-	KrT84XuzAbTAZNsmHGdFQuQW+GU88TOUyesfq2sSJ+LOg1lOB0jenYO7o9wc2F3lGaERy31/9i3
-	6YdTvdKcJ6VArp/a1rT+wrcrfNHnhihjGGMxTQFNdRyxatqFWUQ3iQUYWgilDBiCwA7T3dmWVFW
-	pGAbXrFGcipUKuzMv7zdbPIHkkhsCr/RdRp/OHe+9boSodm7CjMVLDdz1D4QCOwmGpNpfZw==
-X-Received: by 2002:a05:600c:6087:b0:49c:d52e:d0ea with SMTP id 5b1f17b1804b1-49cf81e3454mr614754605e9.4.1788872594406;
-        Tue, 08 Sep 2026 06:03:14 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49d0af538d0sm255179095e9.8.2026.09.08.06.03.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2026 06:03:14 -0700 (PDT)
-Date: Tue, 8 Sep 2026 15:03:11 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Kim Seer Paller <kimseer.paller@analog.com>, Marilene Andrade Garcia
- <marilene.agarcia@gmail.com>, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: max14001: add missing MODULE_DEVICE_TABLE
- macro
-Message-ID: <20260908150311.00000da6@gmail.com>
-In-Reply-To: <CAHp75Vd-LTwJU-SvVug3MNPzFYsOQFc7qQ5AiMDjHOx8XNkHow@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bZRQe86C"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788880139; x=1820416139;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=suDetCt/PEGpqD3P+OPNU181LrJxjMPV1YiajX/hHf0=;
+  b=bZRQe86C5t+s8iuppC+Sfebk0bnp60F2LzkAoJrrd1zfvMPo6gcp1g8E
+   ePoulbJvnr7NfWDauliYbZNAZ+qaltCh3VkYNRenfmhK74oM+kDmhXFTf
+   QVOKYKkz68g4WjR+dUgLqEl2rI9xD6F37YZsBo52pf/2wpf8CBWgtGzh9
+   Hxcz7dMS3ZbsbgfYY5PWzPxzRQZtQtjeXPAvm4i/aSxuWXqKls/zALdKV
+   BJhuPCnDWFddhiZ/xP99Yt8juIyphfgSlAdZovfwDhYu0DWNv/4wzIJbg
+   eufT1h8J3WDZREoyY1zrbEfxzsml6pCTV7T+joTACqDmD942d8uWtbT6C
+   Q==;
+X-CSE-ConnectionGUID: 4TKVKjcAT+O/unYWGtceeg==
+X-CSE-MsgGUID: IjAkxXLqTBCaQ8SYO0wJBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11899"; a="92983746"
+X-IronPort-AV: E=Sophos;i="6.25,269,1779174000"; 
+   d="scan'208";a="92983746"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2026 08:08:54 -0700
+X-CSE-ConnectionGUID: 0/Nu4V/tSP68SngOGwNaKA==
+X-CSE-MsgGUID: MlMABm/hTnCSXMYQmR2Opw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,269,1779174000"; 
+   d="scan'208";a="274833375"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.92])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2026 08:08:50 -0700
+Date: Tue, 8 Sep 2026 18:08:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Kim Seer Paller <kimseer.paller@analog.com>,
+	Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: max14001: add missing MODULE_DEVICE_TABLE macro
+Message-ID: <aqAlAJEJPrglb2E_@ashevche-desk.local>
 References: <20260908114047.1360-1-joshua.crofts1@gmail.com>
-	<CAHp75Vd-LTwJU-SvVug3MNPzFYsOQFc7qQ5AiMDjHOx8XNkHow@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+ <CAHp75Vd-LTwJU-SvVug3MNPzFYsOQFc7qQ5AiMDjHOx8XNkHow@mail.gmail.com>
+ <20260908150311.00000da6@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260908150311.00000da6@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 8 Sep 2026 15:41:23 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Tue, Sep 08, 2026 at 03:03:11PM +0200, Joshua Crofts wrote:
+> On Tue, 8 Sep 2026 15:41:23 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Sep 8, 2026 at 2:41 PM Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+> > >
+> > > The MAX14001 has an SPI ID table, but is missing a MODULE_DEVICE_TABLE()
+> > > macro.  
+> > 
+> > Is this a problem?
+> 
+> For systems using devicetree, no. For legacy systems using spi_board_info and
+> this stuff, yes.
+> 
+> If you're referring to the mark for stable then I'm fine with removing it.
 
-> On Tue, Sep 8, 2026 at 2:41=E2=80=AFPM Joshua Crofts <joshua.crofts1@gmai=
-l.com> wrote:
-> >
-> > The MAX14001 has an SPI ID table, but is missing a MODULE_DEVICE_TABLE()
-> > macro. =20
->=20
-> Is this a problem?
->=20
+No, I'm trying to (implicitly) tell you that the commit message misses
+the answer to "why?".
 
-For systems using devicetree, no. For legacy systems using spi_board_info a=
-nd
-this stuff, yes.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-If you're referring to the mark for stable then I'm fine with removing it.
 
---=20
-Kind regards,
-Joshua Crofts
