@@ -1,185 +1,145 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346F4434980
-	for <linux-iio@vger.kernel.org>; Tue,  8 Sep 2026 19:21:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6ACF3A7F45;
+	Wed,  9 Sep 2026 06:19:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788895271; cv=none; b=JErQbRG9yMcDhtDp4CAYKBiySPNF3F8LR08AjyT2blBlwyCrYyy2FUyQ8JjKYOktg1eiBuTwZmYMdp82QFa4SyPvBOjtNStc8rUhUSwdgmgvaWLQrDiD2rSlGG45Aqkii21iBQK1gjNxhTZl3q9j6WbGFPWcjstC0ZqNW6gsC60=
+	t=1788934791; cv=none; b=hr399CHqtuvAVAPwNbMJfooLljacGFbpV3ajWIqIESNi1v+FYOUNxgXqObsNlNow3Lx/vdEGfx/KGIs5c+UhHjN+wIOiDkWPMPikS3W6Y8XeUKZfN2F+2bu58gatXodj7bbN+aXpb713UsCXDkR5xwYpejFRocYmrBuy3mBYff8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788895271; c=relaxed/simple;
-	bh=25uBJoo4JZ26ZIYB2cQwpWUhC8xBD8wl805UIP6bEjI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MDhtUw2kZQzR7MkfoWfChoXgVixms2kuaO1l0F0iZS5cdHs2hDdaq8MHthYmeTR6hh/ESl7twNlhssxriO+4UbqK/xQnIMlxVbC+Biel5MJqQIccFAufkJEr77ayvGiSErQJO2sem+A+bcFR8VaAO3f2e3TjXOdPAwzfyUP9idE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XXIr8EPn; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788934791; c=relaxed/simple;
+	bh=DdkhrJz088Y42mOGiZke2jPS+a0M45HsBLmGaZRwd8E=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=nysAdItxy0NsubZ+qTefvu3vvC8UhAk172wTWfGMhOqgjoEHNz/1dTFrqy1jlXQgtRcfVreINXMmRU3pO3h4eAoiheDtDdFKH3hE2mzZAvOftI8fNuhOsazqnfZC4CoPz/9nhgmkvEnuXeKPjlTPONDRNRh8Wyr8oJXAow0X3OE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=FYQ5tRg1; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XXIr8EPn"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-482e067e908so4023548f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 08 Sep 2026 12:21:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788895263; x=1789500063; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=JUDx5mN4Fxz6V+jBn6+jDa8+QAdVAQRdNH1HIZiM03M=;
-        b=XXIr8EPnJeeqMDq70m2wC6zQ3Huiwp6UKDqQt17f7yRLqTt5SJiN109hL1JxP0HIcj
-         Ck17v6VbtRwN3D9j7Tf3wmsGo569p8a0t+zzfHaZqD6RwSmnLx+mU4peczRFvKckiIe7
-         beqcPPJTMpNcNR1OPchsFD1ahnHrYi0oO9CIZIUT8Ce4g/2qBMYhT/ZpdTComMn6MLWj
-         WXA4JaJQ9pZj3k9YzPCBgXBEKXDeXFohiZI7gRPVG00snOOXWyMTR2PwVcoQ8WVJ2oCL
-         1R3QTUWa0+udDu9FkNL0IVIWMybvbTSDAJpg000zdRQNWCXczfPNBipGP17DiRz9HjIg
-         JT6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788895263; x=1789500063;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=JUDx5mN4Fxz6V+jBn6+jDa8+QAdVAQRdNH1HIZiM03M=;
-        b=KI+4pvR/OcoJnMnvP4CTHjtpENrQaSnfAYtR0JQurnPUh4lVBulCSIG65Vtw3FhLnw
-         P1orEFk00udIAHOa3KFyKAW3+y1EWDB75g85LNkZysOC0OMEqcL9ns5TSNdnBX0aAcey
-         pwRrBNYnOmXKiHYzGYj5RBpUVeVMi/BmsSFQaSQIHe5WfERvfUr33v1qsRgMezsW2DKO
-         L5b2fkza4HSV1FtR9+7MAhHjvhqkAt+Gou03q3EZtIkhOKFFkI+1APdnZE4cnn88fEN9
-         jbWRmZfVRByWzpfjjoOuxVnll+QZoEYUUqK/pXlL32asj/X46ALz/PGIKbQ35S5WDGEL
-         hXUg==
-X-Forwarded-Encrypted: i=1; AKwUvBxxs6ASjWHUtXhcmE9ymEz2TJXc5e1MNkUdiVtMZyUn1JEKgTXZ/y2GbeJD/rH2IPU/t5aD/AukFhM=@vger.kernel.org
-X-Gm-Message-State: AFuF++m0x95G3qYnZHmEDmCEYm0VMGpY5PMvqkbQM+IZ2p2DvpyFOOTz
-	rWyFPPcAnfI78DR9r5FjNcGFdr8/y2u646uQPrtmDgLPLvBi+csv3KU5xxt2s5pc
-X-Gm-Gg: AYBFou3DiMpCuJBYL6FAfwUAwBqE2TGgW1b5byISgsrxjZHU1ly2coYkrI9XgI8CUBU
-	guv8mBurlR7/eiZWteSa6QX26lU2dW1pmT7K4qbRgqyf0G48IdRoFY4wBvjh8g2UeEovmVDHa6N
-	NOkcU2ZVJsWCSciKEmR4kN8s2eAU5WmbkyPed6m2MKTytVeFGbJuwk6SQUF85uSccYJZYn4CQRq
-	G4TCN3alRVbyJmmWUUAng2OKDV0YJBXQdpALApC2GwIf4b01JzlEPHLlCR/HQM5WhDsRoiTKv+H
-	uT5Nge/aKosxy+1dmpEir/udBDDae/CkSVenBo8rR0N5X04UuVpvAG0q5of6Hky7v3U9J4FJZsL
-	D/JeXySXKWGgFbY0kC+sDw11pDdM4cjPcThYBPDPYByk2oFvKXWXGpz+yyChiCKvW4lbPtFVzS1
-	jLLW5r8MSaNBT8sIsbAUhjCKLt24brkQ2MFOkHeAB0m2CBFCIsvz978+iB0XSU0ybU95B8bGKl7
-	w9yDufo2ddlYHqAbsftlbUICjPlrK/VEIfuDm9YmA==
-X-Received: by 2002:a05:600c:3e06:b0:49d:99:1d98 with SMTP id 5b1f17b1804b1-49d00991db1mr243065025e9.9.1788895262515;
-        Tue, 08 Sep 2026 12:21:02 -0700 (PDT)
-Received: from flaviu-Aspire-E5-572G.. ([93.122.248.115])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49cf770fcf5sm407885845e9.6.2026.09.08.12.21.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2026 12:21:01 -0700 (PDT)
-From: Flaviu Nistor <flaviu.nistor@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Daniel Baluta <daniel.baluta@nxp.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Flaviu Nistor <flaviu.nistor@gmail.com>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v4 2/2] iio: adc: ti-ads1015: Add support for label
-Date: Tue,  8 Sep 2026 22:20:36 +0300
-Message-ID: <20260908192036.8503-3-flaviu.nistor@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260908192036.8503-1-flaviu.nistor@gmail.com>
-References: <20260908192036.8503-1-flaviu.nistor@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="FYQ5tRg1"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6892klNC2763506;
+	Wed, 9 Sep 2026 02:19:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=pNdgAVXDOL0BvLX0EVXIRmmMXNB
+	AiUhmNCTEzTHpCbA=; b=FYQ5tRg1wpvsZ3Fx2iCMahSBjObOL5Vv+EnV9E9U5hb
+	PBi4xPdSoVfH/vCsbCLHPz5Xva0dUhlbZA0GHt+FHK+tTvG49jNx6DI7/eIWe61K
+	RGk/f+dyYu/4MqtTxB+XccoVicy6gMPqZSBsneGsnpfis6SA1ovgat+wrq1eHAcc
+	kJ1G+9DQ1Hw9TlfSsqZ0Ur72p5jFDBTv2clakd3rz/Q/NTpv1AGcoeuDwYftIOD0
+	c5nPggyKRInPvaSM7oFrTqKzVNQIr7uMKO7jnZUbJ2dpK2KLXJ5ose+fH3nqnsg3
+	85dmcYAr8S6ZAIqz+FPoUaSyjyhq0sgloFpbAnFrbWw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gh1dc5mfx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Sep 2026 02:19:30 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6896JTcl044524
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 9 Sep 2026 02:19:29 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 9 Sep
+ 2026 02:19:29 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 9 Sep 2026 02:19:29 -0400
+Received: from 10.98.41.145 ([10.66.6.190])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6896JFq5015040;
+	Wed, 9 Sep 2026 02:19:18 -0400
+From: Kim Seer Paller <kimseer.paller@analog.com>
+Subject: [PATCH 0/2] Add support for AD3536R DAC
+Date: Wed, 9 Sep 2026 14:19:08 +0800
+Message-ID: <20260909-iio-ad3536r-upstream-v1-0-16ab930dcee3@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFz6oGoC/yXMQQ6CMBBA0auQWTtJS7WxXsW4KGWqYyKQGTAkp
+ He34PIt/t9ASZgUbs0GQl9WHocKe2ogveLwJOS+GlrTehNMQOYRY+8uzgsuk85C8YNXH1J2zpI
+ 9G6jpJJR5Pbb3x9+6dG9K8/6CUn4jwnHmeAAAAA==
+X-Change-ID: 20260909-iio-ad3536r-upstream-869cf331e140
+To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor
+ Dooley <conor+dt@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux@analog.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Kim Seer Paller
+	<kimseer.paller@analog.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788934755; l=1110;
+ i=kimseer.paller@analog.com; s=20250213; h=from:subject:message-id;
+ bh=DdkhrJz088Y42mOGiZke2jPS+a0M45HsBLmGaZRwd8E=;
+ b=BtTqivgeqgARMvyZ34ZMD6HLZ76Z5zLwhx0GAgQUlssTDStvT+ws05f7hMPkF5v+ITA753VNS
+ D88yLcVW5vlCn0syg4NGucLx/pTALGiHYwmtbfSw9Tr9y+csvQFeq6Z
+X-Developer-Key: i=kimseer.paller@analog.com; a=ed25519;
+ pk=SPXIwGLg4GFKUNfuAavY+YhSDsx+Q+NwGLceiKwm8Ac=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=XOsAjwhE c=1 sm=1 tr=0 ts=6aa0fa72 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8
+ a=74-Zdgd0EFUuAABUam4A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTA5MDA3MCBTYWx0ZWRfX9XXFDsetwgF7
+ aOzFokmIHDO90cpZOzE/D5dYGfBLPYENhT79rWkrR+FBll74JjIEVSDeJZUjC5dkNUgBPv+1yfi
+ Is9v7hU5kv8Zotm29Fj9pBc7rrWpTdN+Iw0yyBpp+TeIiVqZXhO0
+X-Proofpoint-ORIG-GUID: E449tdp78IsHttZSU5E7g9mXfX_ozvg3
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTA5MDA3MCBTYWx0ZWRfXwQr6jaX1ajHv
+ /d6WTBRghltEPb9NOdoJB4b2irrR3SdCyGSCa0/v94EoP7vGmvoCi2XKbBAcJyDhkWrXTbKoxXq
+ /kS8aQzF9BCmlfy2dbtEs6+LMq8MJFh2rOMavkCybyPVkcoijw7U2kR2xK2Gq2vfhMuv1owANMa
+ Dj8wQBuRNUqUcA6vComOMQyu9SG1QGFZM6Fj7/uxKmvv5GAitsHb1gtDoG0LzPXfHnnkIDrf0kw
+ b2Vn19GfHR2sxhb/gBmIVuP7EOSQkBtowiyMy6sJ3/uI0jqdH9/LSHG1V9fA1INSjfX+r2jydjF
+ 2AJU1wgVvauHoeDwZvs4tzFEPbZ7Pvs+4h/ScnR1lSMnRW6CvY8xtNl70MTNcjFC9aJqdCA14oS
+ ca2dPqpHuy8oYFKCB1zBNExLfDWzSCfhfi/1eukdZyjQRLl9A6Mkv/Qvj7OuZRYVK+jzif2pnQ8
+ CShmdfdwzjFIPipU1iA==
+X-Proofpoint-GUID: E449tdp78IsHttZSU5E7g9mXfX_ozvg3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-08_03,2026-09-08_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 lowpriorityscore=0 clxscore=1015 priorityscore=1501
+ malwarescore=0 bulkscore=0 phishscore=0 impostorscore=0 adultscore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2609090070
 
-Add support for label sysfs attribute similar to other ADC devices. This is
-particularly useful because the label can match the schematic signal name,
-identifying channel voltages easier if label is defined via device tree.
+The AD3536R is a 16-channel, 12-bit, buffered voltage output DAC with an
+on-chip 2.5V reference. It is the 12-bit variant of the AD3532R and
+shares the same register map, so support is folded into the existing
+ad3530r driver.
 
-Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
+This series:
+ - adds the compatible string to the ad3530r binding
+ - adds an ad3530r driver chip_info entry and SPI/OF ID table entries
+
+Datasheet:
+https://www.analog.com/media/en/technical-documentation/data-sheets/ad3532r.pdf
+
+Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
 ---
- drivers/iio/adc/ti-ads1015.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Kim Seer Paller (2):
+      dt-bindings: iio: dac: ad3530r: add AD3536R
+      iio: dac: ad3530r: add support for AD3536R
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 0fbfa4e499aa..0f9244107c6d 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -233,6 +233,7 @@ static const struct iio_event_spec ads1015_events[] = {
- struct ads1015_channel_data {
- 	unsigned int pga;
- 	unsigned int data_rate;
-+	const char *label;
- };
- 
- struct ads1015_thresh_data {
-@@ -586,6 +587,15 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int ads1015_read_label(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan, char *label)
-+{
-+	struct ads1015_data *data = iio_priv(indio_dev);
-+
-+	return sysfs_emit(label, "%s\n",
-+			  data->channel_data[chan->address].label);
-+}
-+
- static int ads1015_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan, int val,
- 			     int val2, long mask)
-@@ -843,6 +853,7 @@ static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
- static const struct iio_info ads1015_info = {
- 	.read_avail	= ads1015_read_avail,
- 	.read_raw	= ads1015_read_raw,
-+	.read_label	= ads1015_read_label,
- 	.write_raw	= ads1015_write_raw,
- 	.read_event_value = ads1015_read_event,
- 	.write_event_value = ads1015_write_event,
-@@ -853,6 +864,7 @@ static const struct iio_info ads1015_info = {
- static const struct iio_info tla2024_info = {
- 	.read_avail	= ads1015_read_avail,
- 	.read_raw	= ads1015_read_raw,
-+	.read_label	= ads1015_read_label,
- 	.write_raw	= ads1015_write_raw,
- };
- 
-@@ -861,7 +873,9 @@ static int ads1015_client_get_channels_config(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct ads1015_data *data = iio_priv(indio_dev);
- 	struct device *dev = &client->dev;
-+	const char *label;
- 	int i = -1;
-+	int ret;
- 
- 	device_for_each_child_node_scoped(dev, node) {
- 		u32 pval;
-@@ -897,6 +911,15 @@ static int ads1015_client_get_channels_config(struct i2c_client *client)
- 			}
- 		}
- 
-+		if (fwnode_property_present(node, "label")) {
-+			ret = fwnode_property_read_string(node, "label", &label);
-+			if (ret) {
-+				dev_err(dev, "invalid label on %pfw\n", node);
-+				return ret;
-+			}
-+			data->channel_data[channel].label = label;
-+		}
-+
- 		data->channel_data[channel].pga = pga;
- 		data->channel_data[channel].data_rate = data_rate;
- 
-@@ -985,6 +1008,13 @@ static int ads1015_probe(struct i2c_client *client)
- 	/* we need to keep this ABI the same as used by hwmon ADS1015 driver */
- 	ads1015_get_channels_config(client);
- 
-+	/* Channels without a label property fall back to the datasheet name */
-+	for (i = 0; i < ADS1015_CHANNELS; i++) {
-+		if (!data->channel_data[i].label)
-+			data->channel_data[i].label =
-+				indio_dev->channels[i].datasheet_name;
-+	}
-+
- 	data->regmap = devm_regmap_init_i2c(client, chip->has_comparator ?
- 					    &ads1015_regmap_config :
- 					    &tla2024_regmap_config);
--- 
-2.34.1
+ .../devicetree/bindings/iio/dac/adi,ad3530r.yaml    | 15 ++++++++-------
+ drivers/iio/dac/Kconfig                             |  1 +
+ drivers/iio/dac/ad3530r.c                           | 21 +++++++++++++++++++++
+ 3 files changed, 30 insertions(+), 7 deletions(-)
+---
+base-commit: 42a9b823307844dc9f496df67d11ec3691317c67
+change-id: 20260909-iio-ad3536r-upstream-869cf331e140
+
+Best regards,
+--  
+Kim Seer Paller <kimseer.paller@analog.com>
 
