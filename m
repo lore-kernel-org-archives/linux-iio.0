@@ -1,130 +1,290 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12C637C10D
-	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 17:27:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788974824; cv=none; b=G8npAyva9oAeAchHYqHS5nCLi7jKWKSalogYar1pHk3LwclDcvYX8v6Wvf/teV9GDl2cjrFzgsdIl0xHrQnmBAfJXhUVIJ7z4/k8va7Ant3vgQajzUsvjN6MyLxOpLhUNyL4O6Ib0Qb9j30v6vXAbpC4jq0eASfhPYAqs59o//s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788974824; c=relaxed/simple;
-	bh=SUxP5gT1ZaOy4mmgP6chw0Cr8VRY83cgnbGtN/GeIrM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LMyQ3CaPJmCZNkOB2qodaMH+vD9YsJzx47q46GV+Act0QWR/udvWtzcwtzttFmqLJaitqd6Udk1gc3D1z8L69bwqaF13y0G2rEwtk+L16cHSxMQSMHCIyfydh21Zs9s/zE2wBjpWS4gGJ1trMkRWsnY+07qvSyC1DZDNezfrQsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jI6Ly9NO; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D371B376A0C
+	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 18:57:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.171
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788980267; cv=pass; b=YnOoq/p7BFFBu7WY+Ho6xh5nJ47uxwDgqkwtZ680iFhORhTbrmaTfZLZfNNywkiiewcPIX97D6r2OUZR6Qob4jbhbX5DEOaZAOp0NVcIkxXuZGbf4pjxoBpySju7VOd+uGcneg9wBbvfdDxSFlBFKUsSToJjJP85b0+pIj/Qi3Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788980267; c=relaxed/simple;
+	bh=WbeG64AorhHsTdCsQYdSDMzovN06CfdjHTIjqvGTqSc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lA6jMgMhSk/mZ4VROaUpqu0L0LzIY0EiF71pvwPrwssNUZyQ10U18Km9wYVtCJa2W3xP0UJPCV3apmQrXDLhX/QlopIdyPs6ea4DZhAI4WV+ZScK3lH3AaRbjl5KCbCdDVhldXyKwU2A2j2P8fp+uPcGHHRsQsy1Yxbzn1gmzyc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PDKyLBwQ; arc=pass smtp.client-ip=209.85.215.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jI6Ly9NO"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-86959a6f7f6so411008b3a.2
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 10:27:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PDKyLBwQ"
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-c96c92c0980so3428703a12.3
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 11:57:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788980265; cv=none;
+        d=google.com; s=arc-20260327;
+        b=gJSJAO9Y6kllWGxRGMn95h3qBU5wsM3wE4zPNL/aD7nH+GthlV5G83RkGLZFaIRmY+
+         qACwY3M3kTD4T4D1Ix9toPdt8WRd+pUU2BQ+Tz/7O9L0U7eZ0Urt9BzBRRTyktKTTz3w
+         XZSSq3tXgkRwWxxUb9BcDd8P9h0u3rDMWCYylQMTyRsyDGzwZSeEhR5G+HopBg53ZqgB
+         pEOOOn2s/iGo9gAHQUnARpnl/n8TJ5KpyGgRVVAs7NaQjSKI5imPxLeYVIPhN7J4O705
+         gh07plGpiSNqGCHrJN43gfydix8UC6qc2UtB2Ld6ii/M1Xr9QRyPOWcmx3qp21u1OPXX
+         3YJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=/exTjUH+gs9Yy4hX5uQ5ycgwaqSVDjVmti5Tk/GIvvg=;
+        fh=e59MIBWQLBFazOpmZJjHpbrjut61xDh4Wvv4yU7J6yU=;
+        b=NTUxyIZIETy3AmP/rdzc7miE3X7BDJPG/F+Xz40+Kati7TzIcHxhWFOLT41R6QbTwF
+         p3BtFnaKaiBFj4LYgi8Huzydw96yrBLLm152wMdCfOiLcjOrVAUyLQH4lqD3MSpVmRJB
+         pGKCQylLkTf+knedVcmmNLPuYPyaRUzgOzT1KFME/nK2SMzfAEmRZI56QMeQrZlxSvzK
+         9DHCsTjUapL04r4khA7RzXBotG86/10F+FLAyZiKxDMQ8EFNVvWAhckEjAyXwAgqu/5c
+         LcHgL4nshx36vul6tKED61qJGcc4iDAxxZ+jhdkUjTVcWwhlSkfTqR3OlC2UlHr/0koh
+         0v2w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788974821; x=1789579621; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1788980265; x=1789585065; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=BxkJmMQiuFGLIVhYvP7iekSRoJyyqxrT2LFSLJP0a4Q=;
-        b=jI6Ly9NOhS1CJVDcDoKjwgjST/iQVlVpolh/hifxBJGV2nz6t+8GlFWLZ4bzANtEHt
-         /Gubm7aHSBwsXnEHDwS28/J38FGObVki5RAT4+MKtWxDxCzdeulLhOlDre6S80gl/1TC
-         7EygHVvY8rB9EzbY4vuEGBvLIXgnThM7ofFVrmOOyUnxK3+Cw8/lUB1Qrw2zcQyD28sq
-         aOwfF4Jak4nLrwlBRcrBmxMV3zq77fRSSDlQwIxXNAn/g3MvLudGjEbIzxRGELLjSs75
-         zSMaaTiP34sWBjEuq0+gSjLhjHao2DyO1AI08J/NXT1fTMGf7TSzj1Dp3m+TJmQDgi3k
-         TF6A==
+        bh=/exTjUH+gs9Yy4hX5uQ5ycgwaqSVDjVmti5Tk/GIvvg=;
+        b=PDKyLBwQ1Ltlto3n9u8zqpjedLyUi29J078n7QvqUySB/ud3zs4pyErTLxLRwYtcn8
+         LEmOkc7QFrGamNJrFpZeMHJGPsmbB+K3g77bTiX1Oh/9rquJJerEhyzjzjYkxbgrsETt
+         h61Ov8/2OFZ4CK5hKNoW2kvc2O7DeEdA+ap/kNfnPt8mM4mqmzdPu0MZa0Oyz2ebUgJX
+         iFMZXpUyEBvFaxT7E7WEL6kwmOjcOKuygqtRECO42dzGKUmIiUfPFZOyWCxI1+05YSCw
+         2oMHJeeypCfxCV0oeTneqqpg6Ln6TUg1p9mQmBvLifjzua4SLfQDa827c7u0/Mc0Iq1K
+         +Caw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788974821; x=1789579621;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1788980265; x=1789585065;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=BxkJmMQiuFGLIVhYvP7iekSRoJyyqxrT2LFSLJP0a4Q=;
-        b=ip6z9uQ1rcPbWO/Uy6Bu6iSAHUQB7qozOKRv+F3NwJorkZ/e9rpuGdBQ7yziLna3oT
-         Po4lKobbXMcjEAPe1PuTTJVZaaicYMRn5E7vaLsIZRrxF6PgVvIEcO3y7HFtxwZuqXC5
-         xkknCSE8OuVMnGgBTlSXCdIXpBUJyix5oIy0GfCCzcNkuZRxab6gyC/YQ9IIroVS7yv9
-         S/5AIbF2DV8mytqDo065hjQwAEqlEwktqxpqjRbtR13f6ZpNZ9yT66qe3Scr6wDF5lZy
-         NmUQrVWfgcDhZJK+rQTQEksoWdv5IUwkb+AJUhwuo0UlCT0Z+9llJfETJMR8eiLzDJ+Y
-         FRZA==
-X-Forwarded-Encrypted: i=1; AKwUvBxhRQ0+pv7cTc+4Rd/YvF9WzCmIinOnaTxHFQeeAe/3aAgxX2q2JwyMBmC9pjIIZPBhY5WfO40kqW4=@vger.kernel.org
-X-Gm-Message-State: AFuF++kEqGgutIJuS6naiUAefG6FECuZiQShLtGrhWVWVBnIGvAT9iGJ
-	vxSdYSdjdEtSqibdhRXVLrV7vOpssH0IDVdhsj3OiDR17RCToOm53g/j
-X-Gm-Gg: AYBFou1yWilzIkOIjr+kqRLm4UHH/Flr3wLyG4bRVJF+pH/WpMy1+rjUo9GmRynatPY
-	p0uvTgfuMkJmEGr6K4KqlQaxtgXPwfEiI115uihB8KHmr4n/OzBPd2YTA9e5xx7EgWzjQeoP6IC
-	trDYgiYgJpV+hbDPo17+k9OP5ura3E/Qo/FcxWG9Ip/wOu+w917CR+52SC67kKUwevg5+sg2Ymn
-	FO7KBjCD6uVYGb204aK+/MhWR+d5S2O3mKkSum1yOzgBMsL01tBLS97gkQrxS5sEMgfrBM0majl
-	pUpr5/ESsASx9QHFhnu8k3yMDeA+2euFFAcKzAcnxsjWB9DXqD0YxanbKqOLzosYaPEekMUY+RB
-	wbmLh4VBmlEeWnFwvghXPy/MT5p0zpLI4fjqCuvFY0Y0SuJ5FlYLiYJpYQ/tr476Uky38O9n9bZ
-	S2Rx4CcfyjgyDb2hm9xVAs/thpura4CTN/1n2sBoAL1irXxB8YZqs8U/FJdNUw3BuWnwBApkc+N
-	0uD84/xINKRt3e18Bqh/CEsGe8bdXFn+QlXvgDIgKnQRdwdynCA
-X-Received: by 2002:a05:6a21:9d84:b0:3d3:af85:eb98 with SMTP id adf61e73a8af0-3da3a16a579mr57975715637.26.1788974820346;
-        Wed, 09 Sep 2026 10:27:00 -0700 (PDT)
-Received: from google.com ([2a00:79e0:2ebe:8:2d43:5153:5c50:643e])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3339a534df1sm52422943eec.7.2026.09.09.10.26.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2026 10:26:59 -0700 (PDT)
-Date: Wed, 9 Sep 2026 10:26:55 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Guenter Roeck <linux@roeck-us.net>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Pavel Machek <pavel@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, 
-	Support Opensource <support.opensource@diasemi.com>, Sebastian Reichel <sre@kernel.org>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org, 
-	linux-doc@vger.kernel.org, linux-media@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-leds@vger.kernel.org, linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org, 
-	linux-fbdev@vger.kernel.org, linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	llvm@lists.linux.dev
-Subject: Re: [PATCH 00/14] mfd: unused driver purge
-Message-ID: <aqGWjAuGXq_JHvxk@google.com>
-References: <20260909132153.1596191-1-arnd@kernel.org>
+        bh=/exTjUH+gs9Yy4hX5uQ5ycgwaqSVDjVmti5Tk/GIvvg=;
+        b=jD5Lqh2L06/s1rXXPXUVULR1jx3kSqio8D6Ax4Dc2HYOxbSOpAl5kcRArGZKDB5/yg
+         ylbHMInMOwpsHchS9cAwT0YmLl312Ll2i8F0UBwFv3MOPvk3lsMucnhuovv7fqNp0PzL
+         6vojh6XfsnOr44c4hLqjd5IGFG3URNyghFDQEdsmswzpDP+J9H9RVENXZU6foctA57nO
+         /kyvNrbpuigx62d14MHJCqr8imgwITfdHtLinYVB1A34ZKG29G4do5vap6gzIGcDd7kH
+         yd1Xal1KsJd8WAmgLV3Yj0TAzblljI9U45wM4Q/Eec7DEhMwWLMAxoktp0A35c8L+9uS
+         vucg==
+X-Forwarded-Encrypted: i=1; AKwUvBzQ/akSF0qorE8do9/lf6E9cc56hQy7XigkADKOcnL8vCt4fqHBMqkUVcyAnLafF4U8ZWksdkuuGlw=@vger.kernel.org
+X-Gm-Message-State: AFuF++m0EFM/3/Xc6sz8It1w/yCSc7rTSXIDLPtejE0nuHfWF5CYTZoX
+	vKjH1/mQb2zpC25IEdDi4x8fG+q8LMQ1M+PA/d8ox3gLQ5LGWWexPPFO7oP8FZImUavj2Dx7SX0
+	dvQP+rv+HAiozs8vglMHMfjYsFwvaF0M=
+X-Gm-Gg: AYBFou2HIFsOD2Mn4+g2sjhjzaVwYrCX0Y6sV1vnes6varwTCpOMYjpFL03Fuh50sxv
+	YsNzEG6ueJWOMaCg1ukVGkGHVeozGKeTv9MfeUjp55KG8Ylbss7hBJiA9y1pSv0bkz7GPQpgU8Y
+	EWbBC/7x2t1iLMZcHBQ/T4CTZSSaNW8sAUUwV/xBVcnMtA3eNfROS9rSlsP4HpUMHQ6McELfhJ4
+	Zt8RAbDyJZ5HZOuRslqQUhJO9fdIv6ZcehzsmSj+GaSBYhFdKW6AigIItZKw0B/Z5MiKL7JlDl5
+	4CxMe0W5cah67yz8dNE67C9W4MMeNf4JDf8OUcsRQG1Mkh9SGapH9MUZIf/NVZnk/QIOsq1ksgv
+	BDa0AGt1fsaWmIi5jFfAQuHkM6ioFhGt00D3jKV2P
+X-Received: by 2002:a17:90b:274c:b0:398:9be9:ab92 with SMTP id
+ 98e67ed59e1d1-39b2629b27fmr57161061a91.23.1788980264796; Wed, 09 Sep 2026
+ 11:57:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260909132153.1596191-1-arnd@kernel.org>
+References: <CALMSewJPfQXRX5q4X3gJf=LT6m2FnusTM=DBiWsBqRFiyNP_Gw@mail.gmail.com>
+ <CALMSewK17jG3MXTHv4Rj+tFVriw9+tqNuAMcX4KGQGy5NQP_MQ@mail.gmail.com> <c0fb5a98-436b-42a5-8e2d-2ffdc6e53e25@infradead.org>
+In-Reply-To: <c0fb5a98-436b-42a5-8e2d-2ffdc6e53e25@infradead.org>
+From: Kim Jinseob <kimjinseob88@gmail.com>
+Date: Thu, 10 Sep 2026 03:57:32 +0900
+X-Gm-Features: AcwNN1UGFTJqKofzEk9iPH0HSBbnTV2M63ynTpBswdUwBjrcLA_4VXVSLlRRTGo
+Message-ID: <CALMSewJ2oAVBicSTNbfKU42UEwg24w4L0QNmSx5tQ0v=y9vb9Q@mail.gmail.com>
+Subject: Re: [PATCH v9 2/5] Documentation: iio: add Open Sensor Fusion driver overview
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-kernel@vger.kernel.org, 
+	joshua.crofts1@gmail.com, u.kleine-koenig@baylibre.com, julianbraha@gmail.com, 
+	corbet@lwn.net, skhan@linuxfoundation.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 09, 2026 at 03:21:37PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> As part of my cleanup of old platforms, I had a look at all drivers that
-> may have become unused because the last platform_data or DT definition
-> was removed, or because of unmet Kconfig dependencies.
-> 
-> These are all the mfd drivers I found. The first ten in the list
-> actually turned out to have been unusable long before my series, and
-> I have added explanations on how I determined this in each patch. The
-> last four patches are still in use in linux-7.3 but become unused after
-> my series [1] that I hope to get merged for 7.4.
-> 
-> Somewhat unorthodox, I took a shortcut here and remove both the mfd drivers
-> and the corresponding subsystem drivers (gpio, hwmon, iio, input, led,
-> media, power, regulator, rtc, video, watchdog, asoc) in a combined patch,
-> to simplify the interdependencies: removing just the mfd driver would
-> leave unselectable or broken drivers in other subsystems.  I also have
-> additional patches for each of the other subsystems, currently a total
-> of 300 patches, many of which still need better testing or proper
-> changelog texts.
-> 
-> Please let me know if you all think this approach is ok, or if I should
-> explode this further and turn these 14 patches into 70 individual ones
-> by splitting them per subsystem.
+Hi Randy,
 
-Sounds good to me, especially if Lee makes an immutable branch from this
-pull so we can all pull it in...
+> What email client did you use to send this patch?
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
+I used a tool that sends through the Gmail API.
 
-Thanks.
+I'll check the received raw messages to investigate the line wrapping.
 
--- 
-Dmitry
+Thanks,
+
+Jinseob
+
+
+2026=EB=85=84 9=EC=9B=94 10=EC=9D=BC (=EB=AA=A9) =EC=98=A4=EC=A0=84 1:02, R=
+andy Dunlap <rdunlap@infradead.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
+>
+> Hi,
+>
+> On 9/9/26 8:05 AM, Jinseob Kim wrote:
+> > Document the Linux IIO mapping for Open Sensor Fusion devices.
+> >
+> > The overview explains that sensor channels are discovered at runtime
+> > from mandatory capability reports. It also documents that OSF0 is a
+> > wire-format detail and that protocol_major and protocol_minor carry
+> > protocol compatibility information.
+> >
+> > Assisted-by: LLM
+> > Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+> > ---
+> >  Documentation/iio/index.rst              |  1 +
+> >  Documentation/iio/open-sensor-fusion.rst | 84 ++++++++++++++++++++++++
+> >  MAINTAINERS                              |  1 +
+> >  3 files changed, 86 insertions(+)
+> >  create mode 100644 Documentation/iio/open-sensor-fusion.rst
+> >
+>
+> What email client did you use to send this patch?
+> It is wrapping (longer) lines for you, in a way that's not good.
+> It causes malformed patches.
+> You can see it below or at
+> https://lore.kernel.org/linux-doc/CALMSewK17jG3MXTHv4Rj+tFVriw9+tqNuAMcX4=
+KGQGy5NQP_MQ@mail.gmail.com/T/#u
+>
+>
+> > diff --git a/Documentation/iio/open-sensor-fusion.rst
+> > b/Documentation/iio/open-sensor-fusion.rst
+> > new file mode 100644
+> > index 000000000000..15d41202eb66
+> > --- /dev/null
+> > +++ b/Documentation/iio/open-sensor-fusion.rst
+> > @@ -0,0 +1,84 @@
+> > +.. SPDX-License-Identifier: GPL-2.0-only
+> > +
+> > +Open Sensor Fusion
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +
+> > +Open Sensor Fusion is a sensor aggregation hub interface. The Linux II=
+O driver
+> > +receives OSF protocol frames from an attached device and registers mat=
+ching IIO
+> > +devices for the sensor classes supported by the driver. The actual sen=
+sor
+> > +channels are discovered at runtime from mandatory OSF capability repor=
+ts.
+> > +
+> > +This document is a driver-facing overview for the Linux IIO mapping. T=
+he full
+> > +wire protocol, firmware behavior, and hardware model details belong in=
+ the Open
+> > +Sensor Fusion project documentation.
+> > +
+> > +Device Model
+> > +------------
+> > +
+> > +An OSF device sends binary frames from the device to the host.
+> > Devices using the
+>
+> ^^^ Should be one line, not two.
+>
+> > +``opensensorfusion,osf`` compatible are expected to provide
+> > +``CAPABILITY_REPORT`` messages so the host can discover which sensor
+> > streams are
+>
+> Same.
+>
+> > +available. Device Tree describes the attached OSF sensor aggregation
+> > hub; it does
+>
+> Same.
+>
+> > +not enumerate the individual sensors discovered at runtime.
+> > +
+> > +The currently supported Linux subset exposes:
+> > +
+> > +* accelerometer samples as ``IIO_ACCEL`` X/Y/Z channels,
+> > +* gyroscope samples as ``IIO_ANGL_VEL`` X/Y/Z channels,
+> > +* magnetometer samples as ``IIO_MAGN`` X/Y/Z channels, and
+> > +* temperature samples as ``IIO_TEMP``.
+> > +
+> > +Protocol Scope
+> > +---------------
+> > +
+> > +The driver supports OSF protocol major version 0 for the IIO receive p=
+ath.
+> > +The current wire magic is ``OSF0``; that string is a wire-format detai=
+l and is
+> > +not the Linux driver identity. Device Tree keeps the generic
+> > +``opensensorfusion,osf`` compatible rather than naming a product such =
+as OSF
+> > +GREEN or a wire magic value.
+> > +
+> > +Protocol versioning is carried by the ``protocol_major`` and ``protoco=
+l_minor``
+> > +fields at fixed offsets in the OSF frame header. The driver currently
+> > +supports ``protocol_major`` 0. ``protocol_minor`` changes within major=
+ version
+> > +0 are intended to remain backward-compatible within the fixed header l=
+ayout.
+> > +Incompatible wire-format changes require a new ``protocol_major``. A f=
+uture
+> > +device that cannot expose compatible version discovery through that fi=
+xed
+> > +header layout would need a different Device Tree compatible.
+> > +
+> > +The Linux driver handles device-to-host frames for:
+> > +
+> > +* ``SENSOR_SAMPLE`` buffered and direct-mode sample data,
+> > +* ``CAPABILITY_REPORT`` based IIO device registration, and
+> > +* ``DEVICE_STATUS`` cache updates.
+> > +
+> > +Vendor-private message types are ignored. Command transport, calibrati=
+on
+> > +control ABI, fusion output ABI, and runtime capability removal are out=
+side the
+> > +Linux IIO receive path.
+> > +
+> > +Timestamps
+> > +----------
+> > +
+> > +OSF frames include a device-side ``timestamp_us`` field. Buffered IIO
+> > samples use
+>
+> Same.
+>
+> > +an IIO timestamp captured on the host when samples are pushed to IIO b=
+uffers.
+> > +The driver does not correlate the device timestamp with the host IIO
+> > +clock.
+> > +
+> > +Compatibility Notes
+> > +-------------------
+> > +
+> > +This overview describes the implemented receive path, not a normative =
+wire
+> > +specification. A publicly versioned specification covering reserved fi=
+elds,
+> > +extensions and physical scale units remains needed for interoperabilit=
+y review.
+> > +
+> > +The decoder requires the fixed header size and the exact payload lengt=
+hs of
+> > +known messages. It ignores unsupported protocol majors, unknown messag=
+e types
+> > +and frames with nonzero header reserved fields. Unsupported capability=
+ entries
+> > +are skipped individually; malformed known payloads are rejected. Appen=
+ding data
+> > +to an existing known message is therefore not a compatible extension f=
+or this
+> > +receiver.
+> > +
+> > +IIO scale is taken from the initial capability report and is not updat=
+ed by
+> > +sample frames. Devices must supply scales in the units required by eac=
+h IIO
+> > +channel type, including gauss for magnetometers. Historical OSF draft =
+documents
+> > +differ on reserved-field handling, trailing extensions and magnetomete=
+r units;
+> > +those drafts do not establish a canonical specification for this drive=
+r.
+>
+> There is some help for various email clients in Documentation/process/ema=
+il-clients.rst
+> that may help you (or not).
+>
+> --
+> ~Randy
+>
