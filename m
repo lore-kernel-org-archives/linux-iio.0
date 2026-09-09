@@ -1,281 +1,149 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A041E279DB6
-	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 15:16:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788967006; cv=none; b=J/WtH4b5uiB7IX7yJOwa/hZorotzTyDrdCC0G38hXA6UfR2dEogaoFOAWQLN3a7iuOe600vHbZuTcIbBBll2lzstQKCOqFQUo4FlTKx3usqoxOSL//511zhCACxCZh8/uZBua/NC67z0dwRJFLqk2CIYRhVpHVnub/+PJ4SKWUI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788967006; c=relaxed/simple;
-	bh=B7yOS7AFBCg3al6xums4bDAZ9Ty0QaL4mBmh7fVXyGE=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 758A9333730;
+	Wed,  9 Sep 2026 15:47:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=165.173.182.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788968851; cv=pass; b=Wfx8N+nS2N19V1fYofWlVzKdk/jN9XPIc9fMOQgSWD8PbO43y/L1A61VwKB2jUiyPwuGlUZz+sCs+eun3CttPPlB5xZlVyU5EWH1xjildFWcUtQRSEggTBl4X1z0e1Z3ceeMOVGFD2m9qmcRKdi1C+gea0rKFlDxv+3jC7K1BKw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788968851; c=relaxed/simple;
+	bh=6yQif5n5XRyay83f1ZHCtKwqfS7yhNH4nuo418vK98k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UtXmgN+riIBfBliVYDgToUYLpEN3mxsunX3C/ewIHbSgyOClEIrLQoyTey7VTSDLwI0GxPc27+uZgjBSMO7uU1f2J3LCtebzbloJwQY+EyH7G42zRQVY4+IWYS575NY+sw99deJI/1gjxcmYZeLgslxTsIKAHwv2iw+xDJacF4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nFGozpJ9; arc=none smtp.client-ip=209.85.215.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=VjV/pIYMb28Jc2hJkMaVGwkE8kI2vv5fZFGMSUMGEWnPEily9XNg7pmp49+C9gmA/+We3SusQ3mcnHN9wKtvJVxx0zggwuZDius99Pz+YWCtA2PFyvBDbAOppIiV6hNoD2+JYL+BABs1YoXQSCE4t+By7N9FqUQCl+OtZ3m8Kys=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b=RrRxL6K+; arc=pass smtp.client-ip=165.173.182.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nFGozpJ9"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-cc1bc88a20eso6733031a12.3
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 08:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788967003; x=1789571803; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=+mIv+3jvWNAwAJUgF1+CeaZ3tliEDl+/j1MWKvc5mi4=;
-        b=nFGozpJ9Rpai0Y5Ckt6UjRKRifvuwMcfiSWQBF3pJ+V2Ofw0nNn//phat3fpJeAh63
-         75gggud1a3Ro8Omtxbe0PfNljYT2MajXd2XLiVZwqbYrdrFhzX6bzzI5cHHjL/Mrpnke
-         TtlcN40LXbnzUq8gdWRd7f6xl+RE+o7z4jmEZokKN4TK2I7fcymnsN26IAgmycQusKcl
-         qb/VCNjFUQMKdeEnNygGcYpVVVCcwmL/YKOYWeC9wwj/yD9w2fOpbS+Y7xdUfkuk+JOe
-         VMCqBxO1sDciNNsOLnoC4KmvGYkKpySYx7skPGoiKB0IhW61Bwk7hAwK/weFgEW+e0wp
-         ngSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788967003; x=1789571803;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=+mIv+3jvWNAwAJUgF1+CeaZ3tliEDl+/j1MWKvc5mi4=;
-        b=CStXROH0awq5Cvg6/WL93UClDUv0dps+FV22lWo/6Qx7jhoqEsRcrgMP+GN4VlCiI/
-         IURqf7ygJxGPykjGxN6rydIV7Rf8oyNo/BdT4AHQpZ2O8TDvsVrlL1nyR87/HiW//MOL
-         HYO66IodjmK/6l77CvXjUuAUAIjDe5peYxoc4V0/Hjas0h91pPJcmU3/vx7ONJbJ2r2/
-         zcFld/YNRXq4zbU4wkaENzRauus3aSwAz8Ga/0KasApfUm4wFrIzVT2Pa9xqhzBGaRfE
-         Bk17KdFqyX4DJudHEFO3h1Dcwy2FoWcj+S106ZfK3Y2r9lKspAMggrGohXGLY2DVAJOa
-         pV9w==
-X-Forwarded-Encrypted: i=1; AKwUvBzXghvWPCuA1TLtyKO8625Ms/r+Qu3J++n4Yj7ONP/bQSlA1F8h9WzccPQe4npverWc4n9gurl/nho=@vger.kernel.org
-X-Gm-Message-State: AFuF++k8wpeFesjVobIAJtH4uZdTAVdlPE9VFnDJvcKF/erhpZgoSPk+
-	JlTRiwgVvH8B6VDkaNlNbBl27fN0T9QiN5lEmvuYsyJBSDeu1k34Z4wb
-X-Gm-Gg: AYBFou1PllRfztDoVxd23g8QPHyM8dd+i0swaqzcCanrjQuA1A7uyqDnCzpMfs/THMJ
-	IXxzUHXyDdL4y5lACylGTndBydyH3IdnhS9idAC20YQIPnCH8aAbfnzhRIylpLHQBi4fiQqmnht
-	fgLwW4ogiDNlbLuLS5DvWRzXDuU5oNFKF2yDKzdzdKfP0Jg2z+r5NyycsfX27m8e19JsEgRAiPO
-	nzGZfq/y4cfmVoZ/T60LwbwHFGQnMDzjs5Uw/RLe44zaoIBFsD5kRK+cndHpD3B/hejtWaNNGS/
-	jnL4JKPsEiZbB4ObSX9c/rV1Q0S1rtJSjba+RonJ1JLtiVR2XsGGlrJd+Ddxc4srbTkqxX5sbLa
-	+GnSC9xpd9NGrgIeWccJMSZG8c4QugyUWTl1lzuiZbCRYTz1vFW+wuM8LCFHTcXJkzpivP48ExN
-	I6RLi4ABmag3QHcUNS7Bgcb0awGi4YgE3C7To+LZC2DF1llN5ffFbEEO+g/V/U/+J8Y/xMSxeQO
-	ZbC6A==
-X-Received: by 2002:a17:90b:274e:b0:398:b1eb:136c with SMTP id 98e67ed59e1d1-39b2610fe62mr53548577a91.9.1788967002671;
-        Wed, 09 Sep 2026 08:16:42 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3339b123731sm42144403eec.18.2026.09.09.08.16.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2026 08:16:40 -0700 (PDT)
-Date: Wed, 9 Sep 2026 12:17:37 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Conor Dooley <conor@kernel.org>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com, nuno.sa@analog.com,
-	dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org
-Subject: Re: [PATCH v1 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI
- connection mode
-Message-ID: <aqF4kfOCKcZhDZui@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1788368334.git.marcelo.schmitt@analog.com>
- <d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
- <20260903-liquefy-prologue-9ec914cccf04@spud>
- <apsufKf-EOvTfpwf@debian-BULLSEYE-live-builder-AMD64>
- <aptA9HP82-ss45JF@debian-BULLSEYE-live-builder-AMD64>
- <20260906202630.64d8fa75@jic23-huawei>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b="RrRxL6K+"
+ARC-Seal: i=1; a=rsa-sha256; t=1788968791; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=bIP7FxCUP7PHjxh/nM4jKTnSi4O3I6PRlfBOfFxAVACnPdkG1o4ROdKc9mHAKRk9dawZAajHbag1i0Dtm5oZk73POFNeyTsIoMQdqnIex15/DdocxTTJLcvNzHv+8W2Brfrmzqd5aG+ycRGI3Kd6X4Q83AZV8i/HAccJDK0A7uQ=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1788968791; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=+2jg2ESPMMGY2dLnVmlBMJSk4zf6hyXqLuJROhsLZFs=; 
+	b=fHK0xZYkJa0EQ8iscGhXs3nCz+azjAIWs6h68cT2ql692DXJDd4uXiAI5yoxp5+3TWpg0puF6aimsbN7lur+FafMxu8awciKl9BP+tkdlvpc/mFm22kHkLG3ENAuLoHnilj1qqzm/Fi5AAKKvOLxax8bDHgaJF7386Ys1Wsq9ck=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
+	dmarc=pass header.from=<sebastian.reichel@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1788968791;
+	s=zohomail; d=collabora.com; i=sebastian.reichel@collabora.com;
+	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
+	bh=+2jg2ESPMMGY2dLnVmlBMJSk4zf6hyXqLuJROhsLZFs=;
+	b=RrRxL6K+fJgetX/zevzIf8shNUQZ64sHRap9E0npkCTqOSQIKdGw7QGQsmmT/nEh
+	MDEWBwP3A3JSNrYY6AU5UVrxINL1kX0CeJRhDr083WK6iOkhdTlz+KNgeB67XQeShiX
+	D9sDnGwGS2S6atyJx9cWGAcEY8UQgBcy05nf5uW0=
+Received: by mx.zohomail.com with SMTPS id 1788968790593167.81978655910598;
+	Wed, 9 Sep 2026 08:46:30 -0700 (PDT)
+Received: by venus (Postfix, from userid 1000)
+	id 24C93183377; Wed, 09 Sep 2026 17:46:21 +0200 (CEST)
+Date: Wed, 9 Sep 2026 17:46:21 +0200
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
+	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Pavel Machek <pavel@kernel.org>, 
+	Michael Hennerich <michael.hennerich@analog.com>, Support Opensource <support.opensource@diasemi.com>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org, 
+	linux-doc@vger.kernel.org, linux-media@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-hwmon@vger.kernel.org, patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-leds@vger.kernel.org, linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org, 
+	linux-fbdev@vger.kernel.org, linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	llvm@lists.linux.dev
+Subject: Re: [PATCH 06/14] mfd: remove unused da903x driver
+Message-ID: <aqF_GZq1C4Tv1JB9@venus>
+References: <20260909132153.1596191-1-arnd@kernel.org>
+ <20260909132153.1596191-7-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="jrej5ylckfdda26t"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260906202630.64d8fa75@jic23-huawei>
+In-Reply-To: <20260909132153.1596191-7-arnd@kernel.org>
+X-Zoho-Virus-Status: 1
+X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/288.959.6
+X-ZohoMailClient: External
 
-On 09/06, Jonathan Cameron wrote:
-> On Fri, 4 Sep 2026 19:06:44 -0300
-> Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
-> 
-> > On 09/04, Marcelo Schmitt wrote:
-> > > On 09/03, Conor Dooley wrote:  
-> > > > On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote:  
-> > > > > Document how AD4134 chips are connected to the host SPI controller
-> > > > > according to different wiring configurations.
-> > > > > 
-> > > > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > > > ---
-> > > > >  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++++++
-> > > > >  1 file changed, 22 insertions(+)
-> > > > > 
-> > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > > index ea6d7e026419..d843c02a394a 100644
-> > > > > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > > @@ -131,6 +131,28 @@ properties:
-> > > > >      enum: [ free-running, gated ]
-> > > > >      default: gated
-> > > > >  
-> > > > > +  adi,spi-mode:
-> > > > > +    $ref: /schemas/types.yaml#/definitions/string
-> > > > > +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
-> > > > > +    description: |
-> > > > > +      This property indicates the SPI wiring configuration.
-> > > > > +
-> > > > > +      When this property is omitted, it is assumed that the device is using
-> > > > > +      'no-cs' wiring. When this property is present, it indicates that the
-> > > > > +      device is using one of the following wiring configurations:  
-> > > ...  
-> > > > I'd also really appreciate a dts example for a system
-> > > > with one-channel-chain or two-channel-chain looks, given the second
-> > > > device may require different supplies etc. I have no impression in my
-> > > > head of how the dt would be constructed, so I'd like to see wht you have
-> > > > in mind.  
-> > >   
-> > ...
-> > 
-> > Realized what I said doesn't make much sense. The peripherals can all have
-> > the same configuration and thus share CS, SCLK, and controller SDO. The wiring
-> > would be like the following
-> 
-> That mux in the middle is controlled how?
 
-The mux is controlled by a GPIO. I ended up drawing the GPIO among SPI lines in the
-connection diagram but the mux controll signal is not part of the SPI controller.
+--jrej5ylckfdda26t
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 06/14] mfd: remove unused da903x driver
+MIME-Version: 1.0
 
-> I'd assume we still have separate chip selects and SDO/SDI shared. So I'd expect
-> those to be on one SPI bus and the data to be going into separate buses
-> (maybe all that can be hidden in the backend, not sure).
-> 
-> Or are you suggesting we are just letting all the chained devices see the
-> same register writes?  That might work I guess with no ability to read any register
-> state back other than for first device.
-Correct, that's the proposed configuration for daisy-chaining. Since all
-peripherals will receive the same write commands they shall all retain the same
-register configurations (except maybe for error indication registers). Reading
-from the topmost device in the chain would be enough to figure out the status
-of the other chained devices.
+Hi,
 
-> If you want to do the
-> mux magic below you are going to need to treat it as an SPI mux - just with
-> some lines shared. That means this device ends up split into multiple device
-> (even if only one ad4134 which is messy).
-You mean spi-mux.yaml/spi-mux.c? So the goal/intent would be to have one IIO
-device for each peripheral in the chain? I think that would also work. Though,
-the only device bringing ADC sample data is the topmost one so that would be
-the only one buffer capable.
+On Wed, Sep 09, 2026 at 03:21:43PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> This driver was used on a handful of ARM/PXA boards until those
+> got removed a few years ago. Without devicetree support, there is
+> no way to use them upstream.
+>=20
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  MAINTAINERS                           |   1 -
+>  drivers/input/touchscreen/Kconfig     |  13 -
+>  drivers/input/touchscreen/Makefile    |   1 -
+>  drivers/input/touchscreen/da9034-ts.c | 365 ----------------
+>  drivers/leds/Kconfig                  |   8 -
+>  drivers/leds/Makefile                 |   1 -
+>  drivers/leds/leds-da903x.c            | 145 -------
+>  drivers/mfd/Kconfig                   |  11 -
+>  drivers/mfd/Makefile                  |   2 -
+>  drivers/mfd/da903x.c                  | 565 -------------------------
+>  drivers/power/supply/Kconfig          |   7 -
+>  drivers/power/supply/Makefile         |   1 -
+>  drivers/power/supply/da9030_battery.c | 581 --------------------------
+>  drivers/regulator/Kconfig             |   8 -
+>  drivers/regulator/Makefile            |   1 -
+>  drivers/regulator/da903x-regulator.c  | 495 ----------------------
+>  drivers/video/backlight/Kconfig       |   7 -
+>  drivers/video/backlight/Makefile      |   1 -
+>  drivers/video/backlight/da903x_bl.c   | 160 -------
+>  19 files changed, 2373 deletions(-)
+>  delete mode 100644 drivers/input/touchscreen/da9034-ts.c
+>  delete mode 100644 drivers/leds/leds-da903x.c
+>  delete mode 100644 drivers/mfd/da903x.c
+>  delete mode 100644 drivers/power/supply/da9030_battery.c
+>  delete mode 100644 drivers/regulator/da903x-regulator.c
+>  delete mode 100644 drivers/video/backlight/da903x_bl.c
 
-> 
-> So to me this has a simple SPI bus, potentially connected to multiple devices
-> and an IIO backend that deals with DOUT0 etc and the chaining.
-Yeah, the benefit of having the mux is being able to connect both AD4134
-interfaces to a single bus while being able to have ADC sample data on all SDI
-lines as the diagrams in patch 13.
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-Alternatively, we could have something like
+-- Sebastian
 
-                                                              +-------------+
-  +----------------------+                                    |  DATA HOST  |
-  |       AD4134         |                                    |             |
-  |                      |                                    |             |
-  |Data interface  DOUT0 |----------------------------------->| SDI1        |
-  |for ADC data    DOUT1 |----------------------------------->| SDI2        |
-  |sample read     DOUT2 |----------------------------------->| SDI3        |
-  |                DOUT3 |----------------------------------->| SDI4        |
-  |                DCLK  |<--------------+        +---------->| CS          |
-  |                ODR   |<------------+ |        | +-------->| SCLK        |
-  |                      |             | |        | | +------>| SDO         |
-  |                      |             | |        | | | +---->| SDI         |
-  | SPI interface   CS   |<-------+    | +--------|-|-|-|-----| DCLK        |
-  | for register    SCLK |<-----+ |    |          | | | |     |             |
-  | access          SDI  |<---+ | |    |          | | | |     | TRIGGER     |
-  |                 SDO  |--+ | | |    |          | | | |     +-------------+
-  +----------------------+  | | | |    +----------|-|-|-|---------+
-                            | | | +---------------+ | | |
-                            | | +-------------------+ | |
-                            | +-----------------------+ |
-                            +---------------------------+
+--jrej5ylckfdda26t
+Content-Type: application/pgp-signature; name="signature.asc"
 
-The downside of the above is we would need an SPI_MULTI_LANE_MODE_STRIPE to read
-only from SDI1 to SDI4.
+-----BEGIN PGP SIGNATURE-----
 
-> 
-> Jonathan
-> 
-> > 
-> > ::
-> > 
-> >   +-----------------------+                               +-----------------+
-> >   |         AD4134        |                               | SPI Controller  |
-> >   |                       |                               |                 |
-> >   |                       |                               |                 |
-> >   | SPI interface    SCLK |<--------------------+---------| SCLK            |
-> >   | for register       CS |<--------------------|-+-------| CS              |
-> >   | access            SDI |<--------------------|-|-+-----| SDO             |
-> >   |                   SDO |------->|¯¯¯¯\       | | |     |                 |
-> >   |                       |        |MUX  >------|-|-|---->| SDI0            |
-> >   | Data interface  DOUT0 |------->|____/<------|-|-|---- | GPIO            |
-> >   | for ADC sample  DOUT1 |---------------------|-|-|---->| SDI1            |
-> >   | data read        DCLK |<-------------+------|-|-|-----| DCLK            |
-> >   |                 DOUT2 |<-+           |      | | |     |                 |
-> >   |                 DOUT3 |<-|-+         |      | | |     |                 |
-> >   |                   ODR |<-|-|---------|--+   | | |  +->| Offload Trigger |
-> >   +-----------------------+  | |         |  |   | | |  |  +-----------------+
-> >                              | |         |  |   | | |  +--| PWM1            |
-> >                              | |         |  +---| | | ----| PWM0            |
-> >                              | |         |  |   | | |    +-----------------+
-> >                              | |         |  |   | | |
-> >   +-----------------------+  | |         |  |   | | |
-> >   |         AD4134        |  | |         |  |   | | |
-> >   |                       |  | |         |  |   | | |
-> >   | SPI interface         |  | |         |  |   | | |
-> >   | for register     SCLK |<-|-|---------|--|---+ | |
-> >   | access             CS |<-|-|---------|--|---|-+ |
-> >   |                   SDI |<-|-|---------|--|---|-|-+
-> >   |                   SDO |  | |         |  |   | | |
-> >   | Data interface        |  | |         |  |   | | |
-> >   | for ADC sample  DOUT0 |--+ |         |  |   | | |
-> >   | data read       DOUT1 |----+         |  |   | | |
-> >   |                 DOUT2 |<-+           |  |   | | |
-> >   |                 DOUT3 |<-|-+         |  |   | | |
-> >   |                  DCLK |<-|-|---------+  |   | | |
-> >   |                   ODR |<-|-|---------|--+   | | |
-> >   +-----------------------+  | |         |  |   | | |
-> >                              | |         |  |   | | |
-> >                              | |         |  |   | | |
-> >                              | |         |  |   | | |
-> >   +-----------------------+  | |         |  |   | | |
-> >   |         AD4134        |  | |         |  |   | | |
-> >   |                       |  | |         |  |   | | |
-> >   |                       |  | |         |  |   | | |
-> >   | SPI interface    SCLK |<-|-|---------|--|---+ | |
-> >   | for register       CS |<-|-|---------|--|-----+ |
-> >   | access            SDI |<-|-|---------|--|-------+
-> >   |                       |  | |         |  |
-> >   | Data interface        |  | |         |  |
-> >   | for ADC sample  DOUT0 |--+ |         |  |
-> >   | data read       DOUT1 |----+         |  |
-> >   |                 DOUT2 |              |  |
-> >   |                 DOUT3 |              |  |
-> >   |                  DCLK |<-------------+  |
-> >   |                   ODR |<----------------+
-> >   +-----------------------+
-> > 
-> > 
-> > So we would set them as only one daisy-chained device.
-> > 
-> >     spi {
-> >         ...
-> >         adc@0 {
-> >             compatible = "adi,ad4134";
-> >             reg = <0>;
-> >             spi-rx-bus-width = <1>, <1>; /* 2 lanes of 1 bit each */
-> > 
-> >             <supplies, clock, and other properties ...> 
-> > 
-> >             #daisy-chained-devices = <2>;
-> > 
-> >             adi,spi-mode = "two-channel-chain";
-> >         };
-> >     };
-> > 
-> > Thanks,
-> > Marcelo
-> 
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmqhf0gACgkQ2O7X88g7
++ppaAhAAjamgA9v7fn8KcrThl75UZh6bOUT/5XiVqaq9zEwVJoY2fygDVmYao95K
+QhI39+RMyWRuGdnDCBrpw0eVA53PbFPc1VTm+Iw4FWehLC1skbbSwDpPLFSIZaLe
+DJlLr11UbevMyqcmNKw8yeRolbQfUbAA4leflpjAbhhEvAzotNSeIxLY3yFHNXoV
+hJsWKIRE4cFFb5bsx3qTlJFQMop9WidRYq3vdPeoGVCUW2zjROm5drG9e8Hb2dvd
+I1KgIIFgyn2WJYDlD3u0eLwYZk/YabwYv3PUfxRXIXRS3+JMzwA3ubQyoMit/SHv
+MMH4/sJdjtgUjUcnWKA9Ktle3BQgYFr80H6HHHaBoFQveCC2B/98B85Ev0wwi9Xa
+60t+RHmELFKX9TnD6o797ZxnsXxErlDhjl+UZhEKQpsQjKwBQHnV1RzX3QLFWYkv
+i16c5MyNzgDusXB4zpTBiAy/kVNKUysPwY13R8BBvr2NsQcBf9uYDTRHr/g+3Xd4
+wquTx7yb8tYLUn6cJr9jXHrSseS5TpMUu+8scdSVZBC9KSuaeRYigm5dLM0X6Zj5
+vmXaD9vlAGtPL7fv+zomhwt4Ufe51v2YGxWa8IQSEsyOG1eUO6zdfFIiajXpgBTR
+mZ6OWJdhnZ9sRSQVANNafU85fqkka6x1/ZAQvqaKPBGVE7bXzhc=
+=3btz
+-----END PGP SIGNATURE-----
+
+--jrej5ylckfdda26t--
