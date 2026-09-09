@@ -1,146 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 030B155C329
-	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 14:04:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A5EB566C73;
+	Wed,  9 Sep 2026 14:05:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788962647; cv=none; b=ppbU2Exq101NKiajL7wB/erWkhhfvIR9AXbXBS6yNznM5aYDtKFK8ny6yVTnJKCm/RTSidGmc7C27eYyuAPSM6lQJ24ku3cJKKYJJlN+G7+BJqiHwBYnlQ24Z4gWzssz5nqhDQtEksLAqWJ1iP/IGyZuxaTu/3lZ8JZfQ/iagiM=
+	t=1788962706; cv=none; b=cFM17qk+zWMG8okQAs3Vb0thLeha+y73LjLGeWj6u5+jr6A4vj0Mn9opwldgigNOmVV7KQD+ribDFliuzgiZKU/MWNnrshiCR7OrNdVyt7TVr+TKydsUrcHrMeHehZE4OocEqjjFoJWiGCAVY0Xf53YmeNiJSBhMPljPgSTCjqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788962647; c=relaxed/simple;
-	bh=flAfYKpZIwatzm6YSBJWn1WpTr7IwC7yAuIdmnA9T7Q=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RwF+qPw3o7yhsdhFq6DzcCop6cOqVFj5CKPXaTNAO+uKTF6ad4NKoU9DsaZ9XH7xiXzld6E0NcFy6bFulhyqAGjPpujGuOCF/UYJGnWoNoIGkJfKI5lcn5fGwzjf3jNe/9Dbx6dInRvf6t14p3txPigEqMOJXZ3ds+2Ab+OQbBg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f7DiDcNg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788962706; c=relaxed/simple;
+	bh=WzLzZPMN7mAi35vrn+vRGzHIt2lcUU7JxPWDYVyUTEI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oAk/wZRPi9QfSdTywEvMuKeAsKsp4I1/n+li6AgBAFT8CUPuki2U/wxpk+zt5OaVv7CpXJi9CWhzJKoONoBy8oWZ50ZYxH4IVkm99X5+lLA6OJZt8AULbSZyvMhwjrUKEzZlt+f5vDZbLGBHvbu6X7Y/q6qt8ZUkan/ACaECJAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bLBjizof; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f7DiDcNg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596B11F00A3F
-	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 14:04:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788962643;
-	bh=0qvI3Ij6pHot4GWpLZbVGJuwCMn3p13tzKFz475rd7w=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=f7DiDcNgtX0V7nhexZdovTM5uwfD8FIy1VWToiVrwFCMZWT4ep6JgIAU9A08oRbCo
-	 AN5nLWLvXgYJ0tGr6wFrfzd3rKYIkdLPqiBR0VzeQED0wp7YlqC4jeS1GMXkHG4/9n
-	 rSRsC4A/6gdv9Gv8AQI600Wb6YYCblzz9DRARCproumk9co1hoW2WRhNGkDft6Tzax
-	 PlG1ifpPiYVwdpSR8gZdxMUAGkHqzxn1Z4gwkjoqczWwZ1lp/WEsPxvp3bMaLysJ7f
-	 oDPtMmEa6U0c/+EmoOFo4is5xc/9+yX8aTqSrj5Pdxa0aAdw1d0RPb3GcrSi18mgHW
-	 RbsjrhA44gWCQ==
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-3a2e985245eso41893811fa.0
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 07:04:03 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBwQIISocKd82mnD6yyMgxcGjyk+lx+VrnRvp6wk5talaRJLcHONB1ASob1/VoqKxZFhgtPc9E+824U=@vger.kernel.org
-X-Gm-Message-State: AFuF++now9Lpw1mXptqVD9qouNep/f9mukXRWczgS2lm37bOWJj94kpr
-	insg/6bhRAuAUKzU4ttZkYdF3V/8MYE24btyZq5t4Rce2ElI2VLcvlkTeI9R/guKjaJaTkamKuy
-	ujPcyrPwF+fmr+h7OptP3xhm5jCLl/yucVtuyucHYrA==
-X-Received: by 2002:a05:651c:a103:10b0:3a4:973c:9387 with SMTP id
- 38308e7fff4ca-3a4973c96fdmr5064251fa.26.1788962641476; Wed, 09 Sep 2026
- 07:04:01 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 9 Sep 2026 07:03:58 -0700
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 9 Sep 2026 07:03:57 -0700
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260909132153.1596191-1-arnd@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bLBjizof"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788962705; x=1820498705;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WzLzZPMN7mAi35vrn+vRGzHIt2lcUU7JxPWDYVyUTEI=;
+  b=bLBjizof7jxRZdCBsjRx+Sdk2rV1jnaWkZ4YMMTnUEWfHJOMZTSaNISE
+   gTGM+pwCmdSn4O9JjKRe5yxVvY/emKHx2LzmcRc5+/+NFEx/0kfJBM7aV
+   N/a1TOzCgRUx0Jfle2Pwg9ZYW3j2N3pOkRuY3CH589i224V7fwThiuHrE
+   IHESQdcGyPLqbhyjrRv9+8PmvTU18F2jL+WVgQME7sh4jmwjTvrMzCbTk
+   mIwumbk/FOgJW4MCoiLI8NcX6rYjvoG6frY46VjxAJId7TiZfCrjYtuNc
+   2gWnikxP6GhzTtGpUutki1kUEXJr8KBkV5kTM2NEweifT3SSSIdUBVcxG
+   w==;
+X-CSE-ConnectionGUID: DM7h5nW1TxWTRkbsGyBqsw==
+X-CSE-MsgGUID: d7dVa/jWQHCY3yG9N7N8EQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="89514495"
+X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
+   d="scan'208";a="89514495"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 07:05:03 -0700
+X-CSE-ConnectionGUID: Vt1dy3sZSVGXy6tfENw/5Q==
+X-CSE-MsgGUID: 2rIUlRd6SYymIoS4LJH5qQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
+   d="scan'208";a="268750689"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.249])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 07:04:59 -0700
+Date: Wed, 9 Sep 2026 17:04:57 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Andrei Stancovici <andrei.stancovici@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Beguin <liambeguin@gmail.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] iio: adc: ltc2497: add 2x conversion speed mode
+Message-ID: <aqFniZF6CrYXnPjz@ashevche-desk.local>
+References: <20260909082755.366269-1-andrei.stancovici@analog.com>
+ <20260909082755.366269-4-andrei.stancovici@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260909132153.1596191-1-arnd@kernel.org>
-Date: Wed, 9 Sep 2026 07:03:57 -0700
-X-Gmail-Original-Message-ID: <CAMRc=MfvwcvV7yvkXz_YikGxQ8M0_ajgGA3bf==ZpT_Z46v7EA@mail.gmail.com>
-X-Gm-Features: AcwNN1US7FJNeFLdpa5M-NPN5cGI7wXmVw6SZ5lmp-9zPkwIPUzMBGaaTvwumLk
-Message-ID: <CAMRc=MfvwcvV7yvkXz_YikGxQ8M0_ajgGA3bf==ZpT_Z46v7EA@mail.gmail.com>
-Subject: Re: [PATCH 00/14] mfd: unused driver purge
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Guenter Roeck <linux@roeck-us.net>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Pavel Machek <pavel@kernel.org>, 
-	Michael Hennerich <michael.hennerich@analog.com>, 
-	Support Opensource <support.opensource@diasemi.com>, Sebastian Reichel <sre@kernel.org>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Helge Deller <deller@gmx.de>, 
-	dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org, 
-	linux-media@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, patches@opensource.cirrus.com, 
-	linux-watchdog@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-leds@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linux-rtc@vger.kernel.org, linux-fbdev@vger.kernel.org, 
-	linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	llvm@lists.linux.dev, Lee Jones <lee@kernel.org>, mfd@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260909082755.366269-4-andrei.stancovici@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 9 Sep 2026 15:21:37 +0200, Arnd Bergmann <arnd@kernel.org> said:
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> As part of my cleanup of old platforms, I had a look at all drivers that
-> may have become unused because the last platform_data or DT definition
-> was removed, or because of unmet Kconfig dependencies.
->
-> These are all the mfd drivers I found. The first ten in the list
-> actually turned out to have been unusable long before my series, and
-> I have added explanations on how I determined this in each patch. The
-> last four patches are still in use in linux-7.3 but become unused after
-> my series [1] that I hope to get merged for 7.4.
->
-> Somewhat unorthodox, I took a shortcut here and remove both the mfd drivers
-> and the corresponding subsystem drivers (gpio, hwmon, iio, input, led,
-> media, power, regulator, rtc, video, watchdog, asoc) in a combined patch,
-> to simplify the interdependencies: removing just the mfd driver would
-> leave unselectable or broken drivers in other subsystems.  I also have
-> additional patches for each of the other subsystems, currently a total
-> of 300 patches, many of which still need better testing or proper
-> changelog texts.
->
-> Please let me know if you all think this approach is ok, or if I should
-> explode this further and turn these 14 patches into 70 individual ones
-> by splitting them per subsystem.
->
-> See [2] for the current state of the overall series.
->
->      Arnd
->
-> [1] https://lore.kernel.org/lkml/20260908152808.3928630-1-arnd@kernel.org/
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=board-remove-7.3
->
-> Arnd Bergmann (14):
->   mfd: remove unused 88pm80x driver
->   mfd: remove unused rdc321x southbridge support
->   mfd: remove unused si476x driver
->   mfd: remove unused wm8400 driver
->   mfd: remove unused adp5520 driver
->   mfd: remove unused da903x driver
->   mfd: remove unused lp8788 driver
->   mfd: remove unused aat2870 driver
->   mfd: remove unused lm3533 driver
->   mfd: remove unused rc5t583 driver
->   mfd: remove unused wm8350 driver
->   mfd: remove unused mcp-sa11x0/ucb1x00 driver
->   mfd: remove unused menelaus driver
->   mfd: remove unused iPaq micro driver
->
->  .../ABI/testing/sysfs-class-backlight         |   11 -
->  Documentation/admin-guide/devices.txt         |    1 -
->  .../admin-guide/media/radio-cardlist.rst      |    1 -
->  Documentation/admin-guide/media/si476x.rst    |  160 --
->  .../admin-guide/media/v4l-drivers.rst         |    1 -
->  .../devicetree/bindings/regulator/88pm800.txt |   38 -
->  Documentation/hwmon/index.rst                 |    1 -
->  Documentation/hwmon/wm8350.rst                |   30 -
->  .../watchdog/watchdog-parameters.rst          |    7 -
->  MAINTAINERS                                   |   14 -
->  drivers/gpio/Kconfig                          |   22 -
->  drivers/gpio/Makefile                         |    3 -
->  drivers/gpio/gpio-adp5520.c                   |  169 --
->  drivers/gpio/gpio-rdc321x.c                   |  199 --
->  drivers/gpio/gpio-wm8350.c                    |  144 --
+On Wed, Sep 09, 2026 at 11:27:52AM +0300, Andrei Stancovici wrote:
+> The LTC2499 can convert at twice the output rate by disabling the offset
+> auto-calibration.  Expose it through sampling_frequency and
+> sampling_frequency_available on the voltage channels.  The part ignores
+> the setting while measuring temperature, so the temperature channel does
+> not carry the attribute.
+> 
+> The wait before a result is read is keyed on the conversion currently in
+> flight, whose duration is fixed by the mode that was active when it
+> started rather than by the mode just selected.  Otherwise the first read
+> after a 1x -> 2x switch can reprogram the part while a 1x conversion is
+> still running, which the part NACKs.
 
-For GPIO:
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+...
+
+> +LTC2497_DEFINE_CHANNELS(ltc2497core_channel_samp_freq,
+> +			BIT(IIO_CHAN_INFO_SAMP_FREQ));
+
+I believe having this on a single line is fine.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
