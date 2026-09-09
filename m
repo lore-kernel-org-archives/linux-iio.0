@@ -1,52 +1,52 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B1D58FD23;
-	Wed,  9 Sep 2026 14:19:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F4358F078;
+	Wed,  9 Sep 2026 14:19:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788963546; cv=none; b=IYt3F4G8J6Ng1CFAx+QYLmkAX4HxAO02RTpVvtgxDLYch9yFWWTgCsGBnimmsdVbnR+dbd1f7DSvXd1q7v/tzWyEMa3XRqeSC/TPD1g29ME3EjA5Jx6DJS9BqmhCOmeNHHBdcmPs3NkmSI2xvw0WNmXXgG3iwBGUbGUHdahKo8A=
+	t=1788963549; cv=none; b=gXyFRWyU1wkK1F3Ok+RBe6hErHRH6/C5h/8IxPLzGQ9+cTxsJELnraqnxtv/fIomUTMRNGDJZb9jPuYthVbqgSAeYecbFqhRr+9lRAl/1V6Db9H3ux2yFEMJfpKBuH+XE8Q0mbYtX7OfkPl5Huy0OFRNn5aY3yAoUpSFdPPC1b4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788963546; c=relaxed/simple;
-	bh=XOwHCqaD4UXNhS1G1ZWkzje/ADUwFiyB6AAxXl4VqQQ=;
+	s=arc-20240116; t=1788963549; c=relaxed/simple;
+	bh=pPXuISqpLOW+nKkX72vg+joZjaAIcuvbz7nTF3Yw0K4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=hYSHebjMPoFPQwR4+cgxD0T3RGiPAuz58gcu1xRIYxSm6MgTVnHuKmsJr6Mj68ihmcxKDwJ/PMClHYFuKrmjAmDk7KKYiUuuDncG1xxe6JtqMz+hDyit2PESRqW6Z7yn89Ml8A78xY8N3kmdG5alVcWatzBLvHoaBkWo1S7OWjk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=KNI0sT6D; arc=none smtp.client-ip=68.232.153.233
+	 In-Reply-To:To:CC; b=di9B4UoL8VUwGymYuOiIqk9381KOIQ+yo3s/on9Ceibz0mKA3QWinfU36121XGIA85sYnvrtx5EbeL+h1GrzhZ3pNh5SQpqL48I/OfBTcWdxRmuAY4ojMQ+hEIPngZu8onKpUdJRGPlt1z5sq//yu6Hu9VONGhAaEQcunT3A7oU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=TzftPFsp; arc=none smtp.client-ip=68.232.153.233
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="KNI0sT6D"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="TzftPFsp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1788963545; x=1820499545;
+  t=1788963553; x=1820499553;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=XOwHCqaD4UXNhS1G1ZWkzje/ADUwFiyB6AAxXl4VqQQ=;
-  b=KNI0sT6DrcL1GWOwbeqndHkBfnn7t/4r84PvEVF7eV1phhEyB2WpIbZf
-   oxZksbtUe3ClfhdjeK61L6ovlUCW15sQZub2v+r1C0u7Kt2Ba/Dby0wbr
-   atuQynyVpkZsaiTo9j2nH/7lHQMkT7Mz8gjyD13Zw8taZiRupopOUtL76
-   YyV0O71loOJLbwL8dngZds51D3uVe41i004RElyRTWHfmV3egfgrHI0lx
-   7ERMA7XdxuAvNTRocw6JShBQ+MAueZJlFe6bp4/XLPeZy8X/Vt/oW+Rt8
-   sE33os6EldDvFQSF65PV3Xv0Wsp+eRBwhfu4HEddC6XBBPJ+vm++yvPOl
-   Q==;
-X-CSE-ConnectionGUID: h738Jf2bRPSkE5xJg0RikA==
-X-CSE-MsgGUID: OG+cHa6vRiuQ7IkBs9Nv5A==
+  bh=pPXuISqpLOW+nKkX72vg+joZjaAIcuvbz7nTF3Yw0K4=;
+  b=TzftPFsp1JRpW4ukrmzDFtmFGvsT4TS1zxeBWzinMHI15fulysPOxLbu
+   cZTLLChVLDW1zThtd84D+gYtDaddhRXgos19TspiaAriG2XyJNSP+X0+m
+   B3tV1egjhEXMoiRubkq2iMJB/lsbxClNnNj+fCUASj3KWTfTwaMIL6l/+
+   iXjlqDLh1wJyAAZ4iziczdu2VRNK7i0xtXnes+eQ1efbXwUEWmZvD1pvf
+   T62r1C0HOCRvB8lBKPzvvmrDS1mE7DBOfdXoy7DF/E4+gBkD2Vn+tcmeY
+   Q8ycmAWVz2EZAwy0DomvXClYHme9Tq9yw4UZUDBrySKyho42SvXQAey0M
+   A==;
+X-CSE-ConnectionGUID: 8XY2ewfsT5Kqz1KH/hYuyw==
+X-CSE-MsgGUID: iKkZHcnMSkqAO7kM/7lTPA==
 X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
-   d="scan'208";a="294764002"
+   d="scan'208";a="63362244"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 09 Sep 2026 07:19:05 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 09 Sep 2026 07:19:12 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Wed, 9 Sep 2026 07:19:04 -0700
+ 15.1.2507.58; Wed, 9 Sep 2026 07:19:07 -0700
 Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Wed, 9 Sep 2026 07:19:01 -0700
+ Transport; Wed, 9 Sep 2026 07:19:04 -0700
 From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Wed, 9 Sep 2026 17:18:47 +0300
-Subject: [PATCH v5 04/10] iio: dac: mcp47feb02: Increase EEPROM Programming
- Write Cycle Time
+Date: Wed, 9 Sep 2026 17:18:48 +0300
+Subject: [PATCH v5 05/10] iio: dac: mcp47feb02: Avoid unjustified probe
+ failure on missing label
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -55,7 +55,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260909-mcp47feb02_refactor-v5-4-8b67bcab93d1@microchip.com>
+Message-ID: <20260909-mcp47feb02_refactor-v5-5-8b67bcab93d1@microchip.com>
 References: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
 In-Reply-To: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -65,45 +65,37 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788963530; l=1393;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1788963530; l=991;
  i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=XOwHCqaD4UXNhS1G1ZWkzje/ADUwFiyB6AAxXl4VqQQ=;
- b=+BlMUuIdc5yJf5HpM6zATmvHTzhmaMVwfqu+PAbsHkpJB+0+gV6yG5lNpcgGRoiMxL6BLiMlz
- DSu6tMWTd6hBd+XiB7N/06YOolg4malW1OsexzmSIss2M4//EO/Bh5B
+ bh=pPXuISqpLOW+nKkX72vg+joZjaAIcuvbz7nTF3Yw0K4=;
+ b=FH2KNx4b5+bnBVNhX11smoD3mtmLvs/ta639QWg05Fs4sE9xMzf3bOHljremg+selOw+1D8Ty
+ lEKQGfuByQHBR24BFo5xGGDY9Y1UpE2ljoN3GvihHbWD6GmhR45s162
 X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
  pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-Increase the EEPROM write polling timeout to prevent -ETIMEDOUT errors and
-incomplete nonvolatile write cycle, according to the time specified in the
-datasheets (11-16 ms).
+Fix unjustified probe failure on missing optional 'label' property by
+replacing dev_err_probe() with dev_err(). Correct %pfw usage by passing the
+child fwnode handle directly in the error message.
 
 Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 ---
- drivers/iio/dac/mcp47feb02.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/mcp47feb02.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-index 2ee981393aa1a2dc0bf65d25ab937132fe2e7bf1..53a7bf4e71c46e75dff8bb5b16c343e7552f6901 100644
+index 53a7bf4e71c46e75dff8bb5b16c343e7552f6901..6353aabfe252e322a4f0d0efe20673f7e733a7f2 100644
 --- a/drivers/iio/dac/mcp47feb02.c
 +++ b/drivers/iio/dac/mcp47feb02.c
-@@ -449,7 +449,7 @@ static int mcp47feb02_write_to_eeprom(struct mcp47feb02_data *data, unsigned int
- 	ret = regmap_read_poll_timeout(data->regmap, MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR,
- 				       eewa_val,
- 				       !(eewa_val & MCP47FEB02_GAIN_BIT_STATUS_EEWA_MASK),
--				       USEC_PER_MSEC, USEC_PER_MSEC * 5);
-+				       USEC_PER_MSEC, USEC_PER_MSEC * 1500);
- 	if (ret)
- 		return ret;
+@@ -978,8 +978,7 @@ static int mcp47feb02_parse_fw(struct iio_dev *indio_dev,
  
-@@ -509,7 +509,7 @@ static ssize_t store_eeprom_store(struct device *dev, struct device_attribute *a
+ 		ret = fwnode_property_read_string(child, "label", &data->labels[reg]);
+ 		if (ret)
+-			return dev_err_probe(dev, ret, "%pfw: invalid label\n",
+-					     fwnode_get_name(child));
++			dev_err(dev, "%pfw: invalid label\n", child);
  
- 	ret = regmap_read_poll_timeout(data->regmap, MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR, eewa_val,
- 				       !(eewa_val & MCP47FEB02_GAIN_BIT_STATUS_EEWA_MASK),
--				       USEC_PER_MSEC, USEC_PER_MSEC * 5);
-+				       USEC_PER_MSEC, USEC_PER_MSEC * 1500);
- 	if (ret)
- 		return ret;
- 
+ 		chanspec.address = reg;
+ 		chanspec.channel = reg;
 
 -- 
 2.43.0
