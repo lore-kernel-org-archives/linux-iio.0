@@ -1,290 +1,124 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99767572692;
-	Wed,  9 Sep 2026 14:19:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F5E57F745
+	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 14:22:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788963565; cv=none; b=bQihonIHj3k3g/Awog893VGbOMEcgG4ogOjODpweXewRPS3qySTPHNPezeMbZ7MqYvQDaUZH4xsehEF7zV4yiePvGJXll+rw3Rz9KrWke99ffj1OdFboZVhu7ZNAt+4xgwgfCdMwfTyMTOI0GLSBQp5CEhICx3+S0Ww0AEp5a+U=
+	t=1788963767; cv=none; b=ePafhH26Zi5PdWL9unHASjt2Mq5k57+SQKG7lQqxgWBIPoGWAimzhNu2e83UrTZtoq+SNDeiF0IyGbuIMbFzeT6ElCllfYtiAG7yL+b01rTwaYUoMwZDVyzlYSbwoR9NEFfqShQpaoQyFYKrKMtMYM2e9DcKSRSnQ6vh7yyVJZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788963565; c=relaxed/simple;
-	bh=gHrQC0pT4WPCYBiQrHsxPJcU+8ZI3XHSzBYSPRRGlME=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=rvk7pPTX9WQn81O8rfVbim3MeogZbmRk78bAM7Q9jZ3lOmw+9bGZulG+iG+7OM5XVSAgiQIAsUhsqQAj3gvOFfs9lCRLXiY+A5fyWRDLDX787gsdNJECDo1vKAkXL3VSax3Z1PX9DFX3dyqjPoHEJVUsiCLNFyPFKku/l8H6OgU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=qyTbWB70; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1788963767; c=relaxed/simple;
+	bh=K/agZdMyKcKM4PBRai2GAcUit0gR2B7Tc9oCBirO3wU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jp5Kg2RHY48D86TF/Naq6sJBUhZCfqVRF/G54nP/dI/Gu8mgMzMoVhtzl4/57uE2L7u3gFKAxLG2Wbfi3V1LyT3sGhN845EBF6Ocm8gImVnWLGLLzQfHNeZrI7fUdeoGHju2psHeH8sjYqmclG1a7n24enaV0S0ElRp0EulSit8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WU7D9nDr; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="qyTbWB70"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1788963562; x=1820499562;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=gHrQC0pT4WPCYBiQrHsxPJcU+8ZI3XHSzBYSPRRGlME=;
-  b=qyTbWB70lfWwxCMTTtXoKb3+I1bw9vhXYox4YDRHHSyW6IFqT9fCT67L
-   /ezcoMswrUx1P5Z9QvK9/udv03fKZaEh4ArjXOdu+w0+yzqUq+pL2d0nA
-   vft6hLUrjBmZ5mG52ilGD/iQrQrUeudr1wsrwFhSUiC/nA/JfRzFqiw9z
-   Gi6BvgaWxiTIvymdpPL+sNg7u95C3bOVlD0H1ABg8qcETI1UqvmPlaA8b
-   A5DpYPRZ1fmPzciTd1DPTP5nGT2O51yymnSJfeBMIZpbx0OL/kuuMvhJV
-   mPLmEZO27y+sEblg4g1xfbZpPC2IPk5CvxyTeyrHj8dGQPS3WyenkXed3
-   Q==;
-X-CSE-ConnectionGUID: RkyHt+quTuG/QkuAJ6Dhwg==
-X-CSE-MsgGUID: vI0hHk1ATh+IDBJqzTD2HQ==
-X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
-   d="scan'208";a="62449354"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 07:19:21 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex2.mchp-main.com (10.10.87.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.45; Wed, 9 Sep 2026 07:19:21 -0700
-Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Wed, 9 Sep 2026 07:19:18 -0700
-From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Wed, 9 Sep 2026 17:18:53 +0300
-Subject: [PATCH v5 10/10] iio: dac: add support for Microchip MCP48FEB02
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WU7D9nDr"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49ccfbe062eso57837355e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 07:22:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1788963764; x=1789568564; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=K/agZdMyKcKM4PBRai2GAcUit0gR2B7Tc9oCBirO3wU=;
+        b=WU7D9nDrxKuTsbXYAUUknV73kY+b1IhFbveawnYzuEKD0ST+sLNDpnewOqXUOwIVov
+         Snr+09H9KC7RqGtTKdThdyerzg4bnmSazazChVt38HmVNxUwV1iV4PQ0kMRCGwdNIYVW
+         cCsGucOHD9CQ1zRyyTefkiCbbO25/3Av16aQr/MLO7qXgN/FydjHcxr/nVTiWjnl8I78
+         UvbyfFtskq6s/aUCeoDPVDPq1reCi6EpVkvR0cCNjXn9tLSv+ZTixM8440lSw9OTd+JA
+         MY5OK5YnaHrr4IaMFaiZWtgPGLJ70EvbHvGTXKmVtASt4YKElLejvAUJrXZGGjClYPU0
+         Xk/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788963764; x=1789568564;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=K/agZdMyKcKM4PBRai2GAcUit0gR2B7Tc9oCBirO3wU=;
+        b=giPS6A8WMA8r8FYG/YESMnR6foV6FMo3LlOopp6PHptAk/+mmwXcnnespIuwR38l8E
+         +UyMiDMiNKOf0YWyEMHhZhJXZ7pmYQZFOUonKrk5DS60/IuTjGORz3rezGgujv9kd+9p
+         NndzyZ1eu94jmwtHSpYFrQYMx3uSRimNeIIzLkIWyuxxBwYbfnQoui8s+vHVHx1MW1TQ
+         Rw7z7Teor/WW4T4H9Isq0EAHnyuHVmAMR/Ikekz8SpOWv4eAB7JnZ0vvxwWlSOJeCSlf
+         VxSDkOj2XRwNfKUO5A8zGZOGr39+eBhzKBnEWhzefgS5eVYzIZxoDT06J3e/+ZsEyOf8
+         JOBw==
+X-Forwarded-Encrypted: i=1; AKwUvBz6YSjlmOz3Ht6c8tCFENxKJxJ+5HCGAruPziijxbc2Y3Faqucgwkcx6SgVgaMjSrzl9e5DqJBXb64=@vger.kernel.org
+X-Gm-Message-State: AFuF++n2Fi4xwlLgFmUoQsuushf64ro82Yi8Gk5MujLTcuNVYxPPF0OY
+	zqF3pEGQekutUjJ17lLoNbhfSLjkyCtLKkx6ErJpx1hdgGYklZbsaAiCW3Oq9/TAMEk=
+X-Gm-Gg: AYBFou0fBDOj/Z5TU/nJ0j1HzEZF329WVnn0rpZ3pZ0PWNeXrU0id/kCiYCZLU/RgZw
+	NExpyTBZE9cnhnmFQ/3OfnGD3ebukxYY4FsOWCHtb862QZ4x/P9jEdTPu7hDFoG762QDTPMpsxu
+	QbSCl5TWuIREAcnMw7QtY9WQbksifSzohCe9q1w2Nf0+0iFqHKu3ouuwVAlIJF/AQbEPs68yV6h
+	b7TZjmxWOK3WoBLt5e0KiqBMi7KHh2cSqS0tQ0+ttw9bAC8NCFKRrcaPqiIKTnEybecn9jWNrbP
+	ldL9aXUEHakGRsjj/DqqUzcKNj378duLXsP32aOVe07VjSgjxBOplYpi3HhjPFzTTZ8ehcNSTIT
+	rt37WZn284zPSbPQLNtXDmzpKYk/O4uwCSQbeeiwmBasiBxVMJf+7mRiUW/hljsRlYYa7hP4Qfi
+	ymZGlBwEnEdwNbPOXLwA425IR0lE3/HCk6dMk4ejeiElXif4arZkJNvA+kzrwWm3zHGcigFtvJ7
+	85qVCb79WcutnNvxHdq3Gy54weRBh3PC5fNQcTKjyTW80DQvokwh0bP3BRkWQ==
+X-Received: by 2002:a05:600c:3115:b0:49c:e1b5:b2bf with SMTP id 5b1f17b1804b1-49cf7f48645mr357100075e9.0.1788963764200;
+        Wed, 09 Sep 2026 07:22:44 -0700 (PDT)
+Received: from localhost (p200300f65f19a9042846e5e8b4b91e99.dip0.t-ipconnect.de. [2003:f6:5f19:a904:2846:e5e8:b4b9:1e99])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49cfd3f8192sm433887725e9.3.2026.09.09.07.22.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2026 07:22:41 -0700 (PDT)
+Date: Wed, 9 Sep 2026 16:22:39 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Guenter Roeck <linux@roeck-us.net>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: adc: add support for PAC1711
+Message-ID: <aqFrNywuzlbCPXAv@monoceros>
+References: <20260909-pac1711-v3-0-dff81003b82f@microchip.com>
+ <20260909-pac1711-v3-2-dff81003b82f@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260909-mcp47feb02_refactor-v5-10-8b67bcab93d1@microchip.com>
-References: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
-In-Reply-To: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1788963530; l=10612;
- i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=gHrQC0pT4WPCYBiQrHsxPJcU+8ZI3XHSzBYSPRRGlME=;
- b=rjClFrs7KAVjTbqTtG3eUrHoC3AaR2x4+zhqw8CRdwp5FOtdAuOkNKrd5f44b51OAidrNydiR
- LTGGcMKeXMvCGHX63iH2VXFjifJTF9QPH7ZPtcyCgJq3eWPdSe6KKci
-X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
- pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="nda6bilsfrnoksc7"
+Content-Disposition: inline
+In-Reply-To: <20260909-pac1711-v3-2-dff81003b82f@microchip.com>
 
-This is the IIO driver for Microchip MCP48FxBy1/2/4/8 series of buffered
-voltage output Digital-to-Analog Converters with nonvolatile or volatile
-memory and an SPI Interface.
 
-The families support up to 8 output channels.
+--nda6bilsfrnoksc7
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [PATCH v3 2/2] iio: adc: add support for PAC1711
+MIME-Version: 1.0
 
-The devices can be 8-bit, 10-bit and 12-bit.
+Hello,
 
-Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
----
- drivers/iio/dac/Kconfig          |  23 +++++++
- drivers/iio/dac/Makefile         |   1 +
- drivers/iio/dac/mcp47feb02-spi.c | 145 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 169 insertions(+)
+On Wed, Sep 09, 2026 at 03:23:35PM +0300, Ariana Lazar wrote:
+> +#include <linux/i2c.h>
+> [...]
+> +#include <linux/mod_devicetable.h>
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index cc10d43ffd1e89bbf945ef89ea5af0abe1a91084..d941f78f7110b185fee6f025be829bae1e4534da 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -575,6 +575,29 @@ config MCP47FEB02_I2C
- 	  will be called mcp47feb02_i2c and you will also get
- 	  mcp47feb02_core for the core module.
- 
-+config MCP47FEB02_SPI
-+	tristate "MCP48F(E/V)B01/02/04/08/11/12/14/18/21/22/24/28 SPI DAC driver"
-+	depends on SPI
-+	select REGMAP_SPI
-+	select MCP47FEB02
-+	help
-+	  Say yes here if you want to build the driver for the Microchip:
-+	  - 8-bit DAC:
-+	    MCP48FEB01, MCP48FEB02, MCP48FEB04, MCP48FEB08,
-+	    MCP48FVB01, MCP48FVB02, MCP48FVB04, MCP48FVB08
-+	  - 10-bit DAC:
-+	    MCP48FEB11, MCP48FEB12, MCP48FEB14, MCP48FEB18,
-+	    MCP48FVB11, MCP48FVB12, MCP48FVB14, MCP48FVB18
-+	  - 12-bit DAC:
-+	    MCP48FEB21, MCP48FEB22, MCP48FEB24, MCP48FEB28,
-+	    MCP48FVB21, MCP48FVB22, MCP48FVB24, MCP48FVB28
-+	  having 1 to 8 channels, 8/10/12-bit digital-to-analog converter
-+	  (DAC) with SPI interface.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called mcp47feb02_spi and you will also get
-+	  mcp47feb02_core for the core module.
-+
- config MCP4821
- 	tristate "MCP4801/02/11/12/21/22 DAC driver"
- 	depends on SPI
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 28c8646a987cff1ac4d693fe86898d66c901d5bd..9903198b934e8b66a4ea6562b662d8073ed9cc59 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -56,6 +56,7 @@ obj-$(CONFIG_MCP4725) += mcp4725.o
- obj-$(CONFIG_MCP4728) += mcp4728.o
- obj-$(CONFIG_MCP47FEB02) += mcp47feb02-core.o
- obj-$(CONFIG_MCP47FEB02_I2C) += mcp47feb02-i2c.o
-+obj-$(CONFIG_MCP47FEB02_SPI) += mcp47feb02-spi.o
- obj-$(CONFIG_MCP4821) += mcp4821.o
- obj-$(CONFIG_MCP4922) += mcp4922.o
- obj-$(CONFIG_STM32_DAC_CORE) += stm32-dac-core.o
-diff --git a/drivers/iio/dac/mcp47feb02-spi.c b/drivers/iio/dac/mcp47feb02-spi.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..0c68d7c318cb2269a9d713d3c6ec0854a576c19e
---- /dev/null
-+++ b/drivers/iio/dac/mcp47feb02-spi.c
-@@ -0,0 +1,145 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * IIO driver for MCP48FEB02 Multi-Channel DAC with SPI interface
-+ *
-+ * Copyright (C) 2025-2026 Microchip Technology Inc. and its subsidiaries
-+ *
-+ * Author: Ariana Lazar <ariana.lazar@microchip.com>
-+ *
-+ * Datasheet links for devices with SPI interface:
-+ * [MCP48FEBxx] https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005429B.pdf
-+ * [MCP48FVBxx] https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005466A.pdf
-+ * [MCP48FxBx4/8] https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP48FXBX4-8-Family-Data-Sheet-DS20006362A.pdf
-+ */
-+#include <linux/dev_printk.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/pm.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
-+#include <linux/types.h>
-+
-+#include "mcp47feb02.h"
-+
-+/* Parts with EEPROM memory */
-+MCP47FEB02_CHIP_INFO(mcp48feb01, 1, 8,  false, true);
-+MCP47FEB02_CHIP_INFO(mcp48feb02, 2, 8,  false, true);
-+MCP47FEB02_CHIP_INFO(mcp48feb04, 4, 8,  true,  true);
-+MCP47FEB02_CHIP_INFO(mcp48feb08, 8, 8,  true,  true);
-+MCP47FEB02_CHIP_INFO(mcp48feb11, 1, 10, false, true);
-+MCP47FEB02_CHIP_INFO(mcp48feb12, 2, 10, false, true);
-+MCP47FEB02_CHIP_INFO(mcp48feb14, 4, 10, true,  true);
-+MCP47FEB02_CHIP_INFO(mcp48feb18, 8, 10, true,  true);
-+MCP47FEB02_CHIP_INFO(mcp48feb21, 1, 12, false, true);
-+MCP47FEB02_CHIP_INFO(mcp48feb22, 2, 12, false, true);
-+MCP47FEB02_CHIP_INFO(mcp48feb24, 4, 12, true,  true);
-+MCP47FEB02_CHIP_INFO(mcp48feb28, 8, 12, true,  true);
-+
-+/* Parts without EEPROM memory */
-+MCP47FEB02_CHIP_INFO(mcp48fvb01, 1, 8,  false, false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb02, 2, 8,  false, false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb04, 4, 8,  true,  false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb08, 8, 8,  true,  false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb11, 1, 10, false, false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb12, 2, 10, false, false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb14, 4, 10, true,  false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb18, 8, 10, true,  false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb21, 1, 12, false, false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb22, 2, 12, false, false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb24, 4, 12, true,  false);
-+MCP47FEB02_CHIP_INFO(mcp48fvb28, 8, 12, true,  false);
-+
-+static int mcp47feb02_spi_probe(struct spi_device *spi)
-+{
-+	const struct mcp47feb02_features *chip_features;
-+	struct device *dev = &spi->dev;
-+	struct regmap *regmap;
-+
-+	chip_features = spi_get_device_match_data(spi);
-+	if (!chip_features)
-+		return dev_err_probe(dev, -ENODEV, "No SPI device found\n");
-+
-+	if (chip_features->have_eeprom)
-+		regmap = devm_regmap_init_spi(spi, &mcp47feb02_regmap_config);
-+	else
-+		regmap = devm_regmap_init_spi(spi, &mcp47fvb02_regmap_config);
-+
-+	if (IS_ERR(regmap))
-+		return dev_err_probe(dev, PTR_ERR(regmap), "Error initializing SPI regmap\n");
-+
-+	return mcp47feb02_common_probe(chip_features, regmap);
-+}
-+
-+static const struct spi_device_id mcp47feb02_spi_id[] = {
-+	{ .name = "mcp48feb01", .driver_data = (kernel_ulong_t)&mcp48feb01_chip_features },
-+	{ .name = "mcp48feb02", .driver_data = (kernel_ulong_t)&mcp48feb02_chip_features },
-+	{ .name = "mcp48feb04", .driver_data = (kernel_ulong_t)&mcp48feb04_chip_features },
-+	{ .name = "mcp48feb08", .driver_data = (kernel_ulong_t)&mcp48feb08_chip_features },
-+	{ .name = "mcp48feb11", .driver_data = (kernel_ulong_t)&mcp48feb11_chip_features },
-+	{ .name = "mcp48feb12", .driver_data = (kernel_ulong_t)&mcp48feb12_chip_features },
-+	{ .name = "mcp48feb14", .driver_data = (kernel_ulong_t)&mcp48feb14_chip_features },
-+	{ .name = "mcp48feb18", .driver_data =  (kernel_ulong_t)&mcp48feb18_chip_features },
-+	{ .name = "mcp48feb21", .driver_data = (kernel_ulong_t)&mcp48feb21_chip_features },
-+	{ .name = "mcp48feb22", .driver_data = (kernel_ulong_t)&mcp48feb22_chip_features },
-+	{ .name = "mcp48feb24", .driver_data = (kernel_ulong_t)&mcp48feb24_chip_features },
-+	{ .name = "mcp48feb28", .driver_data = (kernel_ulong_t)&mcp48feb28_chip_features },
-+	{ .name = "mcp48fvb01", .driver_data = (kernel_ulong_t)&mcp48fvb01_chip_features },
-+	{ .name = "mcp48fvb02", .driver_data = (kernel_ulong_t)&mcp48fvb02_chip_features },
-+	{ .name = "mcp48fvb04", .driver_data = (kernel_ulong_t)&mcp48fvb04_chip_features },
-+	{ .name = "mcp48fvb08", .driver_data = (kernel_ulong_t)&mcp48fvb08_chip_features },
-+	{ .name = "mcp48fvb11", .driver_data = (kernel_ulong_t)&mcp48fvb11_chip_features },
-+	{ .name = "mcp48fvb12", .driver_data = (kernel_ulong_t)&mcp48fvb12_chip_features },
-+	{ .name = "mcp48fvb14", .driver_data = (kernel_ulong_t)&mcp48fvb14_chip_features },
-+	{ .name = "mcp48fvb18", .driver_data = (kernel_ulong_t)&mcp48fvb18_chip_features },
-+	{ .name = "mcp48fvb21", .driver_data = (kernel_ulong_t)&mcp48fvb21_chip_features },
-+	{ .name = "mcp48fvb22", .driver_data = (kernel_ulong_t)&mcp48fvb22_chip_features },
-+	{ .name = "mcp48fvb24", .driver_data = (kernel_ulong_t)&mcp48fvb24_chip_features },
-+	{ .name = "mcp48fvb28", .driver_data = (kernel_ulong_t)&mcp48fvb28_chip_features },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, mcp47feb02_spi_id);
-+
-+static const struct of_device_id mcp47feb02_of_spi_match[] = {
-+	{ .compatible = "microchip,mcp48feb01", .data = &mcp48feb01_chip_features },
-+	{ .compatible = "microchip,mcp48feb02", .data = &mcp48feb02_chip_features },
-+	{ .compatible = "microchip,mcp48feb04", .data = &mcp48feb04_chip_features },
-+	{ .compatible = "microchip,mcp48feb08", .data = &mcp48feb08_chip_features },
-+	{ .compatible = "microchip,mcp48feb11", .data = &mcp48feb11_chip_features },
-+	{ .compatible = "microchip,mcp48feb12", .data = &mcp48feb12_chip_features },
-+	{ .compatible = "microchip,mcp48feb14", .data = &mcp48feb14_chip_features },
-+	{ .compatible = "microchip,mcp48feb18", .data = &mcp48feb18_chip_features },
-+	{ .compatible = "microchip,mcp48feb21", .data = &mcp48feb21_chip_features },
-+	{ .compatible = "microchip,mcp48feb22", .data = &mcp48feb22_chip_features },
-+	{ .compatible = "microchip,mcp48feb24", .data = &mcp48feb24_chip_features },
-+	{ .compatible = "microchip,mcp48feb28", .data = &mcp48feb28_chip_features },
-+	{ .compatible = "microchip,mcp48fvb01", .data = &mcp48fvb01_chip_features },
-+	{ .compatible = "microchip,mcp48fvb02", .data = &mcp48fvb02_chip_features },
-+	{ .compatible = "microchip,mcp48fvb04", .data = &mcp48fvb04_chip_features },
-+	{ .compatible = "microchip,mcp48fvb08", .data = &mcp48fvb08_chip_features },
-+	{ .compatible = "microchip,mcp48fvb11", .data = &mcp48fvb11_chip_features },
-+	{ .compatible = "microchip,mcp48fvb12", .data = &mcp48fvb12_chip_features },
-+	{ .compatible = "microchip,mcp48fvb14",	.data = &mcp48fvb14_chip_features },
-+	{ .compatible = "microchip,mcp48fvb18", .data = &mcp48fvb18_chip_features },
-+	{ .compatible = "microchip,mcp48fvb21", .data = &mcp48fvb21_chip_features },
-+	{ .compatible = "microchip,mcp48fvb22", .data = &mcp48fvb22_chip_features },
-+	{ .compatible = "microchip,mcp48fvb24", .data = &mcp48fvb24_chip_features },
-+	{ .compatible = "microchip,mcp48fvb28", .data = &mcp48fvb28_chip_features },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, mcp47feb02_of_spi_match);
-+
-+static struct spi_driver mcp47feb02_spi_driver = {
-+	.driver = {
-+		.name = "mcp47feb02",
-+		.of_match_table = mcp47feb02_of_spi_match,
-+		.pm = pm_sleep_ptr(&mcp47feb02_pm_ops),
-+	},
-+	.probe = mcp47feb02_spi_probe,
-+	.id_table = mcp47feb02_spi_id,
-+};
-+module_spi_driver(mcp47feb02_spi_driver);
-+
-+MODULE_AUTHOR("Ariana Lazar <ariana.lazar@microchip.com>");
-+MODULE_DESCRIPTION("IIO driver for MCP48FEB02 Multi-Channel DAC with SPI interface");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("IIO_MCP47FEB02");
+Please don't add new usages of <linux/mod_devicetable.h> as I'm working
+on getting rid of that header. Either rely on <linux/i2c.h> to provide
+i2c_device_id and of_device_id, or use the headers
+<linux/device-id/of.h> and <linux/device-id/i2c.h> explicitly if you
+want full iwyu.
 
--- 
-2.43.0
+Best regards
+Uwe
 
+--nda6bilsfrnoksc7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmqha6wACgkQj4D7WH0S
+/k4pBwf9HMHE6+LiElw59mvh7B50esffyJs+75+O47two8cqCFL5pIZ75C1Bhf2L
+5Avi0u8+4M9eEOSxBdZhYORLo1a0yP9gfK2nRcrcj47KYngZg7Ss7jGKIn1MNt82
+s6UFapgx5vTvRirJ1S2bFYFvIVrXlXnl1Zz8xMSrOeYTy6XwB2re8g9L02PWILWV
+67hTqAqiN8951ovK1Do14dG3FzisY5x4qVyJyo+HdI1UiVaBs3eLAlcHILGS71tE
+OrXNyW1CLi2aNUC7ozo83ZvMY29ifc1WKfiUA4rl+/HgmHV34/xw6jORCsP+17f2
+1lKL9L9TnI3HGjMzkyRepYIWqMlV1g==
+=K5yF
+-----END PGP SIGNATURE-----
+
+--nda6bilsfrnoksc7--
