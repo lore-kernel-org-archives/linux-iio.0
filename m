@@ -1,62 +1,70 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BCA57983C;
-	Wed,  9 Sep 2026 13:38:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80743559C9F;
+	Wed,  9 Sep 2026 13:44:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788961137; cv=none; b=DThJuX06aMfKa8kBxmNhfdNNKNvf0mNrh9s4Nj2XysDdsGh/otRm6e6Vj7RH+0zWUj0uSgtk8kh43NbaF4KWFNczoglIyA06PNNuon3zJB48rudEH6b5Gfa81JDLw6geY4VHwBg5J2eTEWhbJXWjZ5kNoqHRJ91N6idcHXENcwM=
+	t=1788961498; cv=none; b=el8SphKcLJLzxnPi02X/FDAMO/lHtmFCOOHe837WejzSjY8hObRiodxQIAS8yzWQkSkqj+TIhEyAoWMuV+o7+ydysjpbLuCkdrADd2b5nRAf6fVknnWUGXX4TeuJOWX1f7NYQmlB/sb/eN8SruF0O4WbJ4IIc8CGymLWkANF0V8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788961137; c=relaxed/simple;
-	bh=kkrUMnH8yv3h61tp8j6Sz+jX4436+w3k4skXWUq76J8=;
+	s=arc-20240116; t=1788961498; c=relaxed/simple;
+	bh=40KVgJMpJer2b9dHQSWw4nT3INJ2/tHV3PM8lSibty4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nb6b96Coe9OTYx9KUmCPaPKsW46HPilKv/1zN/39IPDEKfHnfxq/wfg8K2eq3kbNp43om5lNww8dNaqsodHWVeDsJO7fe+MHz2gDzbfawdBzfXkRBpfLn05YmKA9aAm053Me/qz8Jihc+ZC9h1qu0rXyuAFblCJw1xLd0NsRsos=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f4J73DNz; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=KCeVBgc0kZwLl4Xaka2J0pDl+eXx0XjhTRZLW6mWhSXdVMJJBPx4xQ7VKos51KkrURAibR9ZG1w4xctaTNP7xoztxQXixRcNOzpiD0+7iADc5sA+sN9HVKehSlqC1zBtevVtOc/EHTEIqYnZ+lD3Xt9Jp9wqV615rqPj+NPBydg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dPYFSc7z; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f4J73DNz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788961136; x=1820497136;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kkrUMnH8yv3h61tp8j6Sz+jX4436+w3k4skXWUq76J8=;
-  b=f4J73DNzuz91q6xB1pSPvRH6xzLYKN7FYZkZ2J/a0Le03xRls/6Ht2PQ
-   uny1HiOszP5/SzkphpSlOEqhvBbmAx/B+lygiSpwyPbgutAO7RBbSm+ZE
-   cEgfvgq8t8tRTWS2T/WtQ/MBLyDtYy+pTSc8OdjPdUYDUoZ5rtynTefTb
-   kVg0LIolDIbqzn8tDuy3NpaW0CamdplKL/0f4So+1wlpx8kA4ev4izeXN
-   h1/FdkQGi289+4CJzL0WEZC2nKqo6NuhGsJcoZOzMAczMS0GM+UTcrDxN
-   bBAZXGIJ6xiuCXx99UvbY3+WcLe8HNfnjC4u8W72qzzPT3Wf8elpjZC3U
-   w==;
-X-CSE-ConnectionGUID: 3SdAA8wQSRq+9OG3HS8Hmw==
-X-CSE-MsgGUID: oPqbDYC1S0GYwl0L54fZKQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="106757625"
-X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
-   d="scan'208";a="106757625"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 06:38:56 -0700
-X-CSE-ConnectionGUID: wqVtZCvYTpWk+liciHCk3A==
-X-CSE-MsgGUID: f0P5yE4hSLyEe6AC6EaKug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,270,1779174000"; 
-   d="scan'208";a="271304509"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.249])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 06:38:53 -0700
-Date: Wed, 9 Sep 2026 16:38:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Kim Seer Paller <kimseer.paller@analog.com>,
-	Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dPYFSc7z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A1BB1F00A3A;
+	Wed,  9 Sep 2026 13:44:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788961497;
+	bh=311691/uGkvvFKIwGpWDg1KsCLWCsJMoqMq4WdR/uMA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=dPYFSc7zuElgqPOrUvKFlinRxJJKwheHPvZj90jo4KmpnxV33/ufuBhrNpkTSj7xj
+	 2RyspHqXkazeIpBw80R2fnKH5h7xSTHlRroygAHqghJUHmdY3lokSSP79WG/GJiDoB
+	 oyBdDww+Ucy2ezUGrlZcwr9zvzgw4CaTeveT7WW6/oC56HlygAVyaKSTf4loP/g25/
+	 JbuxGE+JuFDJrB1jVccueZ0gS7opSWr84NdE4okUrMy+Eb+npKXAoyFyecgv0dupb+
+	 nOt/5qmgDw055SNzS9Q9wTx7telYpSpj52eSu7BEqy7RFlRlIIZ2qyITJuChYmq+Ij
+	 Bdwur7Kmdt/Pg==
+Received: from johan by xi.lan with local (Exim 4.99.4)
+	(envelope-from <johan@kernel.org>)
+	id 1x4Ibe-00000002Iwf-0E2s;
+	Wed, 09 Sep 2026 15:44:54 +0200
+Date: Wed, 9 Sep 2026 15:44:54 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: max14001: add missing MODULE_DEVICE_TABLE
- macro
-Message-ID: <aqFhagdhM4Z57eqh@ashevche-desk.local>
-References: <20260909130304.1395-1-joshua.crofts1@gmail.com>
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Pavel Machek <pavel@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Support Opensource <support.opensource@diasemi.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+	linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-sound@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, llvm@lists.linux.dev
+Subject: Re: [PATCH 09/14] mfd: remove unused lm3533 driver
+Message-ID: <aqFi1qGC2QMzMAq9@hovoldconsulting.com>
+References: <20260909132153.1596191-1-arnd@kernel.org>
+ <20260909132153.1596191-10-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,32 +73,19 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260909130304.1395-1-joshua.crofts1@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260909132153.1596191-10-arnd@kernel.org>
 
-On Wed, Sep 09, 2026 at 01:03:04PM +0000, Joshua Crofts wrote:
-> The MAX14001 has an SPI ID table, but does not export it with the
-> MODULE_DEVICE_TABLE(spi, ...) macro. Because of this, SPI-based module
-> autoloading fails on systems that don't use devicetree (e.g. via
-> spi_board_info).
+On Wed, Sep 09, 2026 at 03:21:46PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Add the missing macro to export the alias information.
-> 
-> Fixes: 59795109fa67 ("iio: adc: max14001: New driver")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
+> This driver has apparently never had any users, as it does not support
+> devicetree probing, and no lm3533_platform_data definition ever
+> existed upstream.
 
-Changelog?
+I don't believe we ever required board files to be upstreamed?
 
->  drivers/iio/adc/max14001.c | 1 +
->  1 file changed, 1 insertion(+)
+There's also on-going work to enable devicetree support for this one:
 
-Code wise LGTM.
+	https://lore.kernel.org/lkml/20260617080031.99156-1-clamor95@gmail.com/
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Johan
