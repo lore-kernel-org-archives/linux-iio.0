@@ -1,158 +1,208 @@
-Received: from flow-b6-smtp.messagingengine.com (flow-b6-smtp.messagingengine.com [202.12.124.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FF715678DE;
-	Wed,  9 Sep 2026 14:48:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.141
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788965297; cv=none; b=RMGo9DWvCLsp00USR+dE+dFy2b5Xj77efU/8oWpLId67lEP3Z0RkkIn71/Rvi+oVecrbbrfDJKBcGmfShDgE+/16c78O+UdbyXSI+XszNNvB23MSHv43llA+wTjIj2G9uiNCZOXeqGHkgrnQxqpKNNit1W4FPsDaQxZ/lTK7rXo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788965297; c=relaxed/simple;
-	bh=DANpDz5O88+3yz2h+TOOCaNSRoYS8C1lLHKO92u+I0A=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=W57J61snAqEqUH1v4fIiLCkBY7s76KBzMHT8tTaH9T0KwZ7WAR0dEk91aaih/R9tDAO5Ori0o9CSt3EGGbT+5ruSBN+93jcbokfyCzE9AlbUVcU21ra3rIhFRy1IW114gFEK+QSa6o2a9jGdVxmQAM5tRCtMXM02ScOhKgQ7u7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=edOR2XRq; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=U9oCnZzC; arc=none smtp.client-ip=202.12.124.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 263FC56B87A
+	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 15:03:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788966240; cv=pass; b=ZBqYwtHP/HHW59FjE4pkJ7a8S78ne/u1qnAqXRI9z6GUxK0764dTgAGcouKf2+YYYRof3wTbXvAZP3xHmHMj6lZdjWoMWOVZwesco9PleY3vM2KI+dL25MXvMR2YZskQfxliVs/3kLKj0/yXiMX/iBsg1oqskmJUiYHnGE7/Nrs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788966240; c=relaxed/simple;
+	bh=hkSfepIkuaA1BR2vdYKe9EUPh+zODoi/S7ln8yQ7GIQ=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=qEkkSEmsYFGEw9Ry5OFKSLspCbCb+YvMQATt5iRCIXRbd8OyjUWygLuiKt3K1qD9W863rTHGHRSn/i7dEBZAEAV4JeuHIPIVBlJ5BjjO5s4nxvApy2Q+PPUJ+8d2K4a/IDj8ocv5lH55xuc105QfdpvJapV5Py/dGNpkYy2UAqk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AAQwsDJC; arc=pass smtp.client-ip=209.85.216.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="edOR2XRq";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="U9oCnZzC"
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailflow.stl.internal (Postfix) with ESMTP id ECD971300FD5;
-	Wed,  9 Sep 2026 10:48:09 -0400 (EDT)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Wed, 09 Sep 2026 10:48:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1788965289;
-	 x=1788972489; bh=7Sf1OydxtJEVq81Rg4jscjKjaiC0B3auBQbEfBVyOBM=; b=
-	edOR2XRqt7+DfOXGudRSD6BrdL1bF5sqrn9v6EqdKgeA+/erWMgnAY42ODb+7mYO
-	vj32XTPHue5DJEyR1N28xHgCZz2al3ec0dTRgSi3sLCQDxXGe2iCq04aMBPDa3vs
-	FRc9njMaUqboKD+lh+FLEVNGEUUwUbDUmSxyTDF++nGLA6zUAIFCUhP5+FtH6E8y
-	mTQx2XHjQn+CvQWdHYW9gDF8hOt1exL51bxu3FWdWfB/M8TljmNcIY6SDPVJ95kz
-	m7qgsWILtPM7JQ60jQ6cbXC99tHUqpKMVwGW85GP8b83r76neE2Hwp0Yc8NByVsP
-	qHsZovzIFQxV0KQMh5H+vw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1788965289; x=
-	1788972489; bh=7Sf1OydxtJEVq81Rg4jscjKjaiC0B3auBQbEfBVyOBM=; b=U
-	9oCnZzCRAlpf8z0iDO4Ik36vULuiCRqOlzVIoLsbMb23ctt1HzOoQCg5oEfW7xER
-	KlRpgGsXuJ2/DBkTPwg7CKYo5sd3kyMzRsMYdgDTiK1IhZUNby5zt61BS0RVeI7L
-	ghfFn2TzAKE4UW2slNiU4mrEbMpbqRx0pL/BKh7jMKIacYFNRdoxIbQyhqykZwJi
-	CXNHr9V5jX3sMBKOBL/p0/3PqexLxdTt8mE3/xCzgZySEAXzNpC0EJ2NiyNKvWP7
-	WlT08Rbbinuf3m40vqj+Gm66+pzLzi4UzIs3B/ZPbRWXhQwmex/BNheYgdKgeQZS
-	xTlV7BeIZmtMDyWWIdJ3A==
-X-ME-Sender: <xms:oXGhagtFCVjMuSrNINj070xWbgle3zQCA6S6ZA7B0U5neaTPPvxWWg>
-    <xme:oXGhaoQbrdvXGJ6KHHH8Up4t1QabZ5lHMGI4ZS62N2jsLjDBJy47wB8OqcsIWcSi7
-    H0mlJCCatwQh_BP0ekrd7MN-vavOmW_ewRGMKW6tvTZOEv5bMDOZkXa>
-X-ME-Proxy-Cause: dmFkZTGRw7pJGNg9x4eyP9g2Oo1DXn7SBZCTc/fBE1J6f2Fvw8mIQviGvrfvBUF8Yz5cPc
-    sTJxVd20sVrcxL8FNQouu2b/qPCmDWn8NEAsnm2qXZNER3jeufoYAEcSYO1RMcO4b6r2Tu
-    zIN5rrzJeBXMlqg0gKgHNK4Po9NVJss2gjzWWwIbXYVZJW50LS3dJQkcxeJmqKm1MimBur
-    AFRfPPaNDoXwXf9HpNWtsVgaop38c5pY5A5SlYGzjelRb1rayeBd+80ZTdArTJsnnJBVt6
-    vfobAC6whIpyzO6D4Nj1gOXQFJD4y17okJ7Sa8hF7qAHpCVPWcHe/ueCHIcvje4CQJY/By
-    CMrtaSpqZNb2Fd4fbxt5mAze5P8YGyK1gZX0xN+SZNVwIPYgnxRyu26wRrW5qrJl5u90KV
-    B+KQOVgLC2bOlZgo2LvoKitv1tUnTuicSoyr5CxXbid1wctIC7ksAx/pNU6lvZULcTJVMu
-    TS4GELfWLTmFaqJS0Aw7oz3Sl5+boc4+AjOdYazYXvtZivi3ZATckKc9BHy363OMxaTXEU
-    b3Nu/Eky1cc1APwl+QlpPGSbmXyKNXg8xEtrMoT2/+e9vKjzEedKGnSZhcP+Eytd0wXsJc
-    AZgU7GHpFzELLx2O8crKw/TWK0N0qZjtrTAxsCYDC3pBtJwaF2fPdBrI1q+g
-X-ME-Proxy: <xmx:pnGhas5P8OR8G51w3IBhc_Zadvo1JjINWXdn8rSnknEOYeQmiwm8Dg>
-    <xmx:pnGhak1eOby6alFdvbuvlxs1Hk7aNl4reJxLnQ3z0VUZpsoGcthJfQ>
-    <xmx:pnGhaglx6SV68g1Luwe1v0x64snP-mzbZy-_PFfqwqAgLXqjK32Qkg>
-    <xmx:pnGhaljFV5c4XssIDTc-MH84xjzfvx0bM2cONTuzuy0wF-yajOlFrA>
-    <xmx:qXGhamkfWdroY54p64G_GajNGnPGFNQP8IgzpU369_Lv6URwwOyIorSC>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id DE08632A007E; Wed,  9 Sep 2026 10:48:01 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AAQwsDJC"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-38ea87caafeso5206120a91.3
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 08:03:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788966238; cv=none;
+        d=google.com; s=arc-20260327;
+        b=sGZQxneqe82fuZeuvM6KvDwrhkEBbNdzi8+3LVd+e1Hti8tUogES/zt86UTRdEyo1I
+         FFE4HhmBSRTcT4skxTntdTSet3dW+QiMpxb8E032S5EH1PTzPmnGgcuWyw9KZrBCS9eA
+         iGNxWPKwxjpjjs9mO41yZ3CXvYZ24vIV4zOzQZq8vLxHbpmssgveCZF2JrP3qaRzXKuj
+         K8YDbsKgUuseLFT6fBYjapKctPVgxKUe5f6/p+T4kr3zbPAwdtCK1gSSkcq6wJIp82UJ
+         4+jBQqTycUhENXpHBXT2km2ORiO6CiPjFUi+0x1tg1W+hNI8Mjir7Gba1zqjp8ipjvNE
+         6daA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=n/Z72raft7zwuNUvkj5sjKkqDryaZ+r6PhkLnJpg59s=;
+        fh=fiq40myiuH+4pQemNlG7eWGQNDzEKP1LoA2fdeIfEAM=;
+        b=DwbDE6YQtzmy9Dy1d+ILPCSF35MAIz1wZyfAQpDEjKSMbf6xTjA5xSq/s7GDNLixNN
+         Iyzn/mTohNAqzSD2dWYSHqV4kD3deO1oQQwO9KBj4qGvPLCSpNIbS72HsJcxldARR1Ri
+         5AZKuEGth1fu9HGPvgFdZLKMDCorHHS+2qbPSZ6TJ/cE829UB02Kk2dxL9aJ6re9MZ/+
+         ujiu4e/5fyORGIolpr2dOUlAn+zbFEC7nwIvCZSaPhxJn6gIMrV/gkyFddLKOr5EJltr
+         AUp9TVmdHtAz57cKiVjW37pcUgL94BCHqALIpIjQREaLeLWhBUGsd6ctF+kT+H7MGU0w
+         x1Zg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788966238; x=1789571038; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=n/Z72raft7zwuNUvkj5sjKkqDryaZ+r6PhkLnJpg59s=;
+        b=AAQwsDJC5kaAu4gV+jxSL3wLXkLgM5buuPdjIroWylnehqtK4j27HHGqHoZrS6DeWd
+         PIMS2eviEFZxyG1nB9yrglBe90SpK9LyLBKSx+NUWS3azeQumDYp3wN3x+iZGMl3KXYG
+         fhS6mBWi3s2O8YVh33aJzSO2IBSWvNH4soaiLAwI4kKM7dZ0lPhEgDSYZDUDSBuVhsmR
+         n0EvhpWxfBKEYsjnKTcOzC7S6YlVXcCcz1A8niz6xgtgR6VRtNWwN+kpV3jW7EbRIJmp
+         VDsuNCJERTyYjxROWoDnA0GQ61FBqHoJyxjkGBYIC8I+NFLb3XISxTYWMrEwsfIM3PUh
+         NRTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788966238; x=1789571038;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=n/Z72raft7zwuNUvkj5sjKkqDryaZ+r6PhkLnJpg59s=;
+        b=iyqn/x0hJMr82upB4BcStt3o+NClTpsrIOZP67tM+1glKDAY+GhM5KjyJgtasrA3tW
+         KMrm4dGIP2SgTRWddG4uxzOY8Sld4Z23KC6rc0IIF2PdRTeXvfSIljLJ6R8abrHak7IY
+         JVFTItPikYZLx7YCkWdb7fYoCCUFF5QooVLJau5FLvgR3W1hiadKtPV0icCZgFsxKZRD
+         yyi68aNdDLDVSmOeEtoDTavwKHDFsnPPn/5l9q1sWQzzI6ww6PJTIJGsp2DxAf2UAmEF
+         cuQ8hyk9wuYGnMi6oA1XqXvWbXHmby3UD0L7QVpM9RXInbMq2RJbHhksjgvIS1jDZbOM
+         r8Lw==
+X-Forwarded-Encrypted: i=1; AKwUvBxyrA2cmcOR8ZW/zv5PK0t8mWFgvqGZxssCgr/qMckaYBFQKOuNiSBw+2Nn8EKq02e3QqF5+vQ/RQo=@vger.kernel.org
+X-Gm-Message-State: AFuF++lG3HCx2fLixc264kjy6jbCOORcejfFN/T7+rb9TrJgynVI4hTc
+	z8R6/XEPYFcZ6PgPiyHPmSrLR9jk3q8Z5HU97Rg1qQ3dEAcTSq+QRvGA9fk6SW2HoBfhdRwvGjV
+	Espar+xieReXMHUt9xCrEqOfnLkTLovM=
+X-Gm-Gg: AYBFou2CoDV2bDA1G9H1JT3oAbK554t9h0iQSG9wNnGHptGqX+9vRW82GPBBZgCLKAl
+	j/n8pLwPZuiS5bNUmxY9i9vwGlQM+Es2myqDNMFJmakkZMaid/5eoxWd0CIPtOc6CbtypImNynt
+	0tcfecj5ZHt1e5WMQrQnqkhC7sD4231TpJhMkydmwIHKLsFTf4pJFfEFzwcSTUygcDjVL/pV9qd
+	iRgy4+mNs2awpx/uGM1XSPo8iN4dj07VBaaIRhIOraEIShozx5XEYKn+NYu+Hd0cuRyWEnU0elj
+	Mfv/70+6W1YD0NRag/pLs40Db1EUXl+/Vpah5gaQ8VhGHEQH3FmZvJsWWkYxHAm3PVFJfGrKc7M
+	w4TBtntlQBZVU5f+24mMXh1x8uMcdGwSW6VxKTg==
+X-Received: by 2002:a17:90b:2e52:b0:38d:ddc2:7ccb with SMTP id
+ 98e67ed59e1d1-39b260dd3efmr48184331a91.1.1788966219133; Wed, 09 Sep 2026
+ 08:03:39 -0700 (PDT)
+Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
+ Wed, 9 Sep 2026 08:03:37 -0700
+Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
+ Wed, 9 Sep 2026 08:03:37 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: APaZlxbVBos-
-Date: Wed, 09 Sep 2026 16:47:41 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Johan Hovold" <johan@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>
-Cc: "Lee Jones" <lee@kernel.org>, mfd@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- "Daniel Thompson" <danielt@kernel.org>,
- "Jingoo Han" <jingoohan1@gmail.com>,
- "Mauro Carvalho Chehab" <mchehab@kernel.org>,
- "Liam Girdwood" <lgirdwood@gmail.com>, "Mark Brown" <broonie@kernel.org>,
- "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Guenter Roeck" <linux@roeck-us.net>,
- "Linus Walleij" <linusw@kernel.org>,
- "Bartosz Golaszewski" <brgl@kernel.org>,
- "Jonathan Cameron" <jic23@kernel.org>,
- "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
- "Pavel Machek" <pavel@kernel.org>,
- "Michael Hennerich" <michael.hennerich@analog.com>,
- "Support Opensource" <support.opensource@diasemi.com>,
- "Sebastian Reichel" <sre@kernel.org>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Helge Deller" <deller@gmx.de>, dri-devel@lists.freedesktop.org,
- linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, linux-hwmon@vger.kernel.org,
- patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- linux-leds@vger.kernel.org, linux-pm@vger.kernel.org,
- linux-rtc@vger.kernel.org, linux-fbdev@vger.kernel.org,
- linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- llvm@lists.linux.dev
-Message-Id: <ac367ab8-e57e-4d2f-b1cf-abda8eb6e530@app.fastmail.com>
-In-Reply-To: <aqFi1qGC2QMzMAq9@hovoldconsulting.com>
-References: <20260909132153.1596191-1-arnd@kernel.org>
- <20260909132153.1596191-10-arnd@kernel.org>
- <aqFi1qGC2QMzMAq9@hovoldconsulting.com>
-Subject: Re: [PATCH 09/14] mfd: remove unused lm3533 driver
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+From: Jinseob Kim <kimjinseob88@gmail.com>
+Date: Wed, 9 Sep 2026 08:03:37 -0700
+X-Gm-Features: AcwNN1W19s7315aGlu8LliS1GT-z2uNC5wYBGWEEN5ram-BzdPYUuwtrZLJmSEE
+Message-ID: <CALMSewJPfQXRX5q4X3gJf=LT6m2FnusTM=DBiWsBqRFiyNP_Gw@mail.gmail.com>
+Subject: [PATCH v9 0/5] iio: add Open Sensor Fusion UART support
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-kernel@vger.kernel.org, rdunlap@infradead.org, joshua.crofts1@gmail.com, 
+	u.kleine-koenig@baylibre.com, julianbraha@gmail.com, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, 
+	corbet@lwn.net, skhan@linuxfoundation.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Sep 9, 2026, at 15:44, Johan Hovold wrote:
-> On Wed, Sep 09, 2026 at 03:21:46PM +0200, Arnd Bergmann wrote:
->> From: Arnd Bergmann <arnd@arndb.de>
->> 
->> This driver has apparently never had any users, as it does not support
->> devicetree probing, and no lm3533_platform_data definition ever
->> existed upstream.
->
-> I don't believe we ever required board files to be upstreamed?
+This series adds the Open Sensor Fusion UART receive path and IIO
+devices discovered from capability reports. It exposes accelerometer,
+gyroscope, magnetometer and temperature samples through the standard
+direct-read and software-buffer interfaces.
 
-No, but there is a general requirement that code must be usable.
+Changes since v8:
+- Configure UART at 115200 baud with flow control disabled before enabling
+  vcc. Acquire the regulator before opening UART, retain decoded early
+  capabilities, and publish IIO children only after fallible probe setup.
+  Close UART and drain receive work before releasing receive-side state.
+- Give the aligned one-axis and three-axis scan structures explicit
+  padding members so designated initialization also initializes the bytes
+  between samples and timestamps.
+- Pack selected channels into the active scan layout. Tests found that
+  forcing an XYZ producer layout could give X/Y/XY consumers a value at
+  the timestamp offset on the target IIO base. All nonempty masks remain
+  supported.
+- Quiesce pushes with a driver mutex in predisable and admit them after
+  postenable. The same mutex covers the enabled check, layout access and
+  complete push; it does not claim IIO buffer mode.
+- Keep the latest-cache rejection rules and add KUnit tests for early
+  capabilities, scan bytes/timestamps and buffer teardown.
+- Tidy macro/call alignment, shorten the driver commit message, and
+  document the actual receive-side compatibility constraints.
 
-With my series to drop almost all Arm board files, the use
-of platform_data becomes so obscure that it becomes reasonable
-to assume that any driver that requires platform_data and does
-not already have an upstream definition for it is fundamentally
-broken.
+Protocol specification remains an open review question. The accessible
+historical protocol-v0 drafts at OSF revision
+11d11eb413e6a0e861e4d45fdccadc71c5f15c48 disagree on reserved fields,
+trailing extensions and magnetometer units. They do not establish a
+versioned normative specification for this implementation. The driver
+requires exact known payload lengths and capability scales in IIO units,
+including gauss for magnetometers. Documentation now makes those
+constraints explicit. This does not establish protocol maturity or
+resolve the request for a canonical compatibility specification; feedback
+on that requirement is still needed before merge.
 
-The only platforms that still use board files now are:
+Validation:
+- GCC and Clang W=1 kernel/module builds with automatic stack
+  initialization disabled.
+- Eight OSF KUnit cases, including all 44 sensor/mask/timestamp
+  combinations, retained latest-cache regressions and controlled
+  push/disable/unregister interleavings; Clang KASAN and lockdep.
+- Before/after padding byte and generated-code checks, an auxiliary ASan
+  demux race harness, and 16 modeled probe/unwind/retry scenarios.
+- Strict checkpatch on all five patches; clean apply with matching
+  intermediate/final trees and per-patch DT, documentation and code
+  builds. GCC and Clang final links pass.
+- Fresh ARM64 Image, modules and Pi 4 DTB built from the final tree.
+- Raspberry Pi 4 with those artifacts: four IIO devices, direct RAW,
+  12-second simultaneous capture, all 44 scan combinations, 400 buffer
+  transitions, unload/reload and verified return to the stock kernel.
 
-arm/omap1
-arm/s3c
-m68k/coldfire
-mips/alchemy
-mips/bcm63xx
-mips/rb532
-mips/txx9
-sh/sh77xx
+Conor's Reviewed-by is retained on the unchanged binding. Randy's earlier
+documentation Tested-by is not carried forward because patch 2 changed.
+LLM assistance was used for the documentation, driver fixes and tests.
 
-All of these are now over 20 years old, so I don't expect anyone
-to add new board support or maintain boards for them except for
-what is already upstream.
+Based on Jonathan's IIO testing commit
+edb91bc566576f6664a3efbad6bd4205aa1d5259.
 
-> There's also on-going work to enable devicetree support for this one:
->
-> 	https://lore.kernel.org/lkml/20260617080031.99156-1-clamor95@gmail.com/
+v8: https://lore.kernel.org/linux-iio/20260820050608.5440-1-kimjinseob88@gmail.com/
 
-Ok, I've dropped this patch, thanks for pointing this one out!
+Jinseob Kim (5):
+  dt-bindings: iio: add Open Sensor Fusion device
+  Documentation: iio: add Open Sensor Fusion driver overview
+  iio: osf: add protocol decoding
+  iio: osf: add authenticated stream parser
+  iio: osf: add UART IIO driver
 
-      Arnd
+ .../bindings/iio/opensensorfusion,osf.yaml    |  52 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ Documentation/iio/index.rst                   |   1 +
+ Documentation/iio/open-sensor-fusion.rst      |  84 +++
+ MAINTAINERS                                   |   8 +
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/opensensorfusion/Kconfig          |  27 +
+ drivers/iio/opensensorfusion/Makefile         |   7 +
+ drivers/iio/opensensorfusion/osf_core.c       | 414 +++++++++++++
+ drivers/iio/opensensorfusion/osf_core.h       |  73 +++
+ drivers/iio/opensensorfusion/osf_core_test.c  | 577 ++++++++++++++++++
+ drivers/iio/opensensorfusion/osf_iio.c        | 336 ++++++++++
+ drivers/iio/opensensorfusion/osf_iio.h        |  22 +
+ drivers/iio/opensensorfusion/osf_iio_test.c   | 325 ++++++++++
+ drivers/iio/opensensorfusion/osf_protocol.c   | 224 +++++++
+ drivers/iio/opensensorfusion/osf_protocol.h   | 101 +++
+ drivers/iio/opensensorfusion/osf_serdev.c     | 162 +++++
+ drivers/iio/opensensorfusion/osf_stream.c     | 231 +++++++
+ drivers/iio/opensensorfusion/osf_stream.h     |  53 ++
+ 20 files changed, 2701 insertions(+)
+ create mode 100644
+Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
+ create mode 100644 Documentation/iio/open-sensor-fusion.rst
+ create mode 100644 drivers/iio/opensensorfusion/Kconfig
+ create mode 100644 drivers/iio/opensensorfusion/Makefile
+ create mode 100644 drivers/iio/opensensorfusion/osf_core.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_core.h
+ create mode 100644 drivers/iio/opensensorfusion/osf_core_test.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_iio.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_iio.h
+ create mode 100644 drivers/iio/opensensorfusion/osf_iio_test.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_protocol.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_protocol.h
+ create mode 100644 drivers/iio/opensensorfusion/osf_serdev.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_stream.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_stream.h
+
+
+base-commit: edb91bc566576f6664a3efbad6bd4205aa1d5259
+-- 
+2.43.0
