@@ -1,98 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC14632A3D7;
-	Wed,  9 Sep 2026 16:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12C637C10D
+	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 17:27:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788971163; cv=none; b=UNSGkoWPPYWdp2K/B6Pno/H/7OTOzCvTrNegtlLOVxVYPwTObpHFzD7To6YvXKyXLjYa0YQnQ6v2Vj/NflgA2b9i5Z8W8/ydC1wD6KRk9PnjyLxmTLfRpVYm7W8E6Bz8c9z3MPiU0tWZyHUpsIa5vNHn4JlciC43C9qX7nYXLfg=
+	t=1788974824; cv=none; b=G8npAyva9oAeAchHYqHS5nCLi7jKWKSalogYar1pHk3LwclDcvYX8v6Wvf/teV9GDl2cjrFzgsdIl0xHrQnmBAfJXhUVIJ7z4/k8va7Ant3vgQajzUsvjN6MyLxOpLhUNyL4O6Ib0Qb9j30v6vXAbpC4jq0eASfhPYAqs59o//s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788971163; c=relaxed/simple;
-	bh=3NKq4YGX31UR1KN2Vy3ZX3gElvhR5u8T7fOyKWDbqlQ=;
+	s=arc-20240116; t=1788974824; c=relaxed/simple;
+	bh=SUxP5gT1ZaOy4mmgP6chw0Cr8VRY83cgnbGtN/GeIrM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DCU7a37EwhNnNOpRrpRZAn4XEXIYWFC+npOiPSrufapUCP+274LNmABhmv+p17cTXfuWQYfIZ/YpaYGmZdFMqhXQTWOQaVQHYvuLQISfuXHWyA5GXxUY1RLF3KZ79TTKMaagVtISxIM08V0gj1B2m+zQmCv+CTALRKmaihKcgoM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jGKze1Tc; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=LMyQ3CaPJmCZNkOB2qodaMH+vD9YsJzx47q46GV+Act0QWR/udvWtzcwtzttFmqLJaitqd6Udk1gc3D1z8L69bwqaF13y0G2rEwtk+L16cHSxMQSMHCIyfydh21Zs9s/zE2wBjpWS4gGJ1trMkRWsnY+07qvSyC1DZDNezfrQsA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jI6Ly9NO; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jGKze1Tc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 494C01F000FF;
-	Wed,  9 Sep 2026 16:25:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788971162;
-	bh=+2dYsB76vpFQ4MyuvIdp1GJYHNdmsFlba8+BCXgzTOw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=jGKze1TcyqYTs4U2dq+V4MXMmozQVGKA7AdkiEznKpEX/3w/BPsZXKzfn4wL3Itcj
-	 pvm6h9DigGrf6QMU9dM6zCF5KlCl0UXLbiB5zRIPQs1d1fWPE2QOgxf7qM4oZpp1eU
-	 fGBwghSZZjApYy1yw10GtKAjnZP9+py7Um5Z6J/ppelEUdwC4EU+DEnn557BX0esXX
-	 1QwaxoS1qKcdCeSQ6vkPgo/rf0HG8g/VUK333PJirOI2fdm7rSXB/vkDvhugDuUpjN
-	 xcLlyz7hvjqGdnIbeqrve6UCqm/4+hh5gr02SgGwFPCoG8+Zw97MB2L+lTiYKOCMMF
-	 USFXdUWLoXjNA==
-Date: Wed, 9 Sep 2026 17:25:55 +0100
-From: Lee Jones <lee@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>,
-	Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
-	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v5 00/14] mfd: lm3533: convert to OF bindings, improve
- support
-Message-ID: <20260909162555.GJ2133376@google.com>
-References: <20260617080031.99156-1-clamor95@gmail.com>
- <20260702161828.GB2108533@google.com>
- <CAPVz0n2fRs=q-1dAEt2k1FJpQVK9+PMSY0BSMB7Rs3F2xDyFvw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jI6Ly9NO"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-86959a6f7f6so411008b3a.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 10:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788974821; x=1789579621; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=BxkJmMQiuFGLIVhYvP7iekSRoJyyqxrT2LFSLJP0a4Q=;
+        b=jI6Ly9NOhS1CJVDcDoKjwgjST/iQVlVpolh/hifxBJGV2nz6t+8GlFWLZ4bzANtEHt
+         /Gubm7aHSBwsXnEHDwS28/J38FGObVki5RAT4+MKtWxDxCzdeulLhOlDre6S80gl/1TC
+         7EygHVvY8rB9EzbY4vuEGBvLIXgnThM7ofFVrmOOyUnxK3+Cw8/lUB1Qrw2zcQyD28sq
+         aOwfF4Jak4nLrwlBRcrBmxMV3zq77fRSSDlQwIxXNAn/g3MvLudGjEbIzxRGELLjSs75
+         zSMaaTiP34sWBjEuq0+gSjLhjHao2DyO1AI08J/NXT1fTMGf7TSzj1Dp3m+TJmQDgi3k
+         TF6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788974821; x=1789579621;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=BxkJmMQiuFGLIVhYvP7iekSRoJyyqxrT2LFSLJP0a4Q=;
+        b=ip6z9uQ1rcPbWO/Uy6Bu6iSAHUQB7qozOKRv+F3NwJorkZ/e9rpuGdBQ7yziLna3oT
+         Po4lKobbXMcjEAPe1PuTTJVZaaicYMRn5E7vaLsIZRrxF6PgVvIEcO3y7HFtxwZuqXC5
+         xkknCSE8OuVMnGgBTlSXCdIXpBUJyix5oIy0GfCCzcNkuZRxab6gyC/YQ9IIroVS7yv9
+         S/5AIbF2DV8mytqDo065hjQwAEqlEwktqxpqjRbtR13f6ZpNZ9yT66qe3Scr6wDF5lZy
+         NmUQrVWfgcDhZJK+rQTQEksoWdv5IUwkb+AJUhwuo0UlCT0Z+9llJfETJMR8eiLzDJ+Y
+         FRZA==
+X-Forwarded-Encrypted: i=1; AKwUvBxhRQ0+pv7cTc+4Rd/YvF9WzCmIinOnaTxHFQeeAe/3aAgxX2q2JwyMBmC9pjIIZPBhY5WfO40kqW4=@vger.kernel.org
+X-Gm-Message-State: AFuF++kEqGgutIJuS6naiUAefG6FECuZiQShLtGrhWVWVBnIGvAT9iGJ
+	vxSdYSdjdEtSqibdhRXVLrV7vOpssH0IDVdhsj3OiDR17RCToOm53g/j
+X-Gm-Gg: AYBFou1yWilzIkOIjr+kqRLm4UHH/Flr3wLyG4bRVJF+pH/WpMy1+rjUo9GmRynatPY
+	p0uvTgfuMkJmEGr6K4KqlQaxtgXPwfEiI115uihB8KHmr4n/OzBPd2YTA9e5xx7EgWzjQeoP6IC
+	trDYgiYgJpV+hbDPo17+k9OP5ura3E/Qo/FcxWG9Ip/wOu+w917CR+52SC67kKUwevg5+sg2Ymn
+	FO7KBjCD6uVYGb204aK+/MhWR+d5S2O3mKkSum1yOzgBMsL01tBLS97gkQrxS5sEMgfrBM0majl
+	pUpr5/ESsASx9QHFhnu8k3yMDeA+2euFFAcKzAcnxsjWB9DXqD0YxanbKqOLzosYaPEekMUY+RB
+	wbmLh4VBmlEeWnFwvghXPy/MT5p0zpLI4fjqCuvFY0Y0SuJ5FlYLiYJpYQ/tr476Uky38O9n9bZ
+	S2Rx4CcfyjgyDb2hm9xVAs/thpura4CTN/1n2sBoAL1irXxB8YZqs8U/FJdNUw3BuWnwBApkc+N
+	0uD84/xINKRt3e18Bqh/CEsGe8bdXFn+QlXvgDIgKnQRdwdynCA
+X-Received: by 2002:a05:6a21:9d84:b0:3d3:af85:eb98 with SMTP id adf61e73a8af0-3da3a16a579mr57975715637.26.1788974820346;
+        Wed, 09 Sep 2026 10:27:00 -0700 (PDT)
+Received: from google.com ([2a00:79e0:2ebe:8:2d43:5153:5c50:643e])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3339a534df1sm52422943eec.7.2026.09.09.10.26.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2026 10:26:59 -0700 (PDT)
+Date: Wed, 9 Sep 2026 10:26:55 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
+	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	Pavel Machek <pavel@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, 
+	Support Opensource <support.opensource@diasemi.com>, Sebastian Reichel <sre@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org, 
+	linux-doc@vger.kernel.org, linux-media@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-hwmon@vger.kernel.org, patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-leds@vger.kernel.org, linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org, 
+	linux-fbdev@vger.kernel.org, linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	llvm@lists.linux.dev
+Subject: Re: [PATCH 00/14] mfd: unused driver purge
+Message-ID: <aqGWjAuGXq_JHvxk@google.com>
+References: <20260909132153.1596191-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPVz0n2fRs=q-1dAEt2k1FJpQVK9+PMSY0BSMB7Rs3F2xDyFvw@mail.gmail.com>
+In-Reply-To: <20260909132153.1596191-1-arnd@kernel.org>
 
-On Sun, 06 Sep 2026, Svyatoslav Ryhel wrote:
-
-> чт, 2 лип. 2026 р. о 19:18 Lee Jones <lee@kernel.org> пише:
-> >
-> > On Wed, 17 Jun 2026, Svyatoslav Ryhel wrote:
-> >
-> > > Convert LM3533 to OF bindings, add missing VIN supply, add support for
-> > > setting mapping mode and LED sources based on device tree.
-> > >
-> > > ---
-> > > Changes in v2:
-> > >
-> > > schema
-> > > - maximum led sources for leds set to 4
-> > > - anyOf > oneOf in ALS
-> > > - improved ALS descriptions
-> > > - adjusted example
-> > > drivers
-> > > - dropped devm convertion of irq and mfd helpers
-> > > - all als configuration moved into lm3533_als_setup
-> > > - added regulator/consumer.h
-> > > - lm3533_bl_setup set before sysfs_create_group in backlight
-> > > - added check if LVLED is valid
-> > > - LM3533_REG_OUTPUT_CONF1 > LM3533_REG_OUTPUT_CONF2 for LVLED4 and LVLED5
-> >
-> > This set looks good to me now.
-> >
-> > Let me know when you have all of the Acks and I'll merge it via MFD.
-> >
+On Wed, Sep 09, 2026 at 03:21:37PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Hello Lee! Is there any unresolved blockers for picking this patch set?
+> As part of my cleanup of old platforms, I had a look at all drivers that
+> may have become unused because the last platform_data or DT definition
+> was removed, or because of unmet Kconfig dependencies.
+> 
+> These are all the mfd drivers I found. The first ten in the list
+> actually turned out to have been unusable long before my series, and
+> I have added explanations on how I determined this in each patch. The
+> last four patches are still in use in linux-7.3 but become unused after
+> my series [1] that I hope to get merged for 7.4.
+> 
+> Somewhat unorthodox, I took a shortcut here and remove both the mfd drivers
+> and the corresponding subsystem drivers (gpio, hwmon, iio, input, led,
+> media, power, regulator, rtc, video, watchdog, asoc) in a combined patch,
+> to simplify the interdependencies: removing just the mfd driver would
+> leave unselectable or broken drivers in other subsystems.  I also have
+> additional patches for each of the other subsystems, currently a total
+> of 300 patches, many of which still need better testing or proper
+> changelog texts.
+> 
+> Please let me know if you all think this approach is ok, or if I should
+> explode this further and turn these 14 patches into 70 individual ones
+> by splitting them per subsystem.
 
-I can't see that clearly.  Please apply all of the trailers (you can
-probably make this easier on yourself by using `b4`) and submit as a
-[RESEND].
+Sounds good to me, especially if Lee makes an immutable branch from this
+pull so we can all pull it in...
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
+
+Thanks.
 
 -- 
-Lee Jones
+Dmitry
