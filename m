@@ -1,38 +1,38 @@
-Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D636549387;
-	Wed,  9 Sep 2026 13:48:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9A8D4DF4DC;
+	Wed,  9 Sep 2026 13:52:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788961722; cv=none; b=oMLtJIv1DkR0PdjZZ0sYySVsu+CL2tNzsDL+Exrk8vTvtNp9zjxm2IEXjeCRMV2ymSkzkTre6UbXD37ykEuv7g3dVgMj+zvB97EJmyA9WFBt5YBy5XCAK11MRYU5Was1sa3+33C/ryVJdmPKf2+ZvFQAU5ByXjaP14jn+Y+KJCg=
+	t=1788961923; cv=none; b=Z8TueXaLjICMKjKK1TAr4mjg3r7LHwVTtgWFEjb14O1Zae2zIdZcNwlg7cZ+Ky5n+X/PmFsjQhvwKGgUHJN2921tSupxSQQhV52wTxeb1vx4ATFYz7qiQAbAOvCmLmU3iGVig770SwBy/slyDI2Gd1FFXNYPtfJ1UP+UYsR9v9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788961722; c=relaxed/simple;
-	bh=LU0pjNZDcDRNOQh5AIrDN0NS8sO34pg2lKemqSMk6oY=;
+	s=arc-20240116; t=1788961923; c=relaxed/simple;
+	bh=pAVIrS3A7Rvp0U6cdijMHeBv+L6o6e+82vw+zmkqi7U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ji5NWm5p8dMHOqu6jt5YaGf6JdDcCP7ef8s2vO5sFKhSdiwKjAgjxT6hBS529VtiipsggbjMNa8u3R2+TFkz+eoVdWdVZucSvgKhj+KJBuz7iBsrC52BIZ5vHx/EZZryNojbRKaAoQi/GbI8x6RLtdtP5OD3Lrig5ruaCNNIOK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=e4hV0USw; arc=none smtp.client-ip=185.246.85.4
+	 Content-Type:Content-Disposition:In-Reply-To; b=nXTtbzZVIvylX3JjIJ2NZGuiVH2KMHfI1PRXKCMil1wkhn7/Lme27yf8Wu4WzS4Vc8SjBKBy+EBinWwh7LXf5r+GF2FaM4Zj95zy0XmwpXDklqRkW75u2J48dDIkvoHRl2OxJ6Vd6Mu7gX9VlDRD4AnFqMg1JViLeKwzhy5zcV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=ioCAXYPV; arc=none smtp.client-ip=185.246.84.56
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="e4hV0USw"
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ioCAXYPV"
 Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id C0ECE4E41592;
-	Wed,  9 Sep 2026 13:48:38 +0000 (UTC)
+	by smtpout-02.galae.net (Postfix) with ESMTPS id 0E6A21A1A75;
+	Wed,  9 Sep 2026 13:51:59 +0000 (UTC)
 Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 92C9460448;
-	Wed,  9 Sep 2026 13:48:38 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 60FF411C7AF7E;
-	Wed,  9 Sep 2026 15:48:24 +0200 (CEST)
+	by smtpout-01.galae.net (Postfix) with ESMTPS id CD57B60448;
+	Wed,  9 Sep 2026 13:51:58 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id A566B11C7AF8E;
+	Wed,  9 Sep 2026 15:51:49 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1788961712; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=SjNDOXDeuB2hgWmjfXk2EUyO9cutSwBc1XNCZLTUAlQ=;
-	b=e4hV0USw2592sArlmqCFVDTCozCtOc6LjMSbUDXNj5N8xWuQPilc8ETI4F3BiY8ykW8CSK
-	V7FAYn/uQfEtyQZp5rzZwuRicmERsJRGQQv+4DILDAZXhYfMKwQzHcnKX7rpvzN8QR21Dd
-	IJXcAHyZKNbstaLcijpTwXaDTSqj+PZCY0BtnIbX3ngZ+smMvutnMSpa7cW7FLgXbgiKt7
-	Mxb4rVD5vU178/mSnWvSrGdrmvEsrxcRBrkwPvmCJfF/0+8IsfxbL+gaYLQqHljWPs9+RO
-	tsTofIw6j+hBiz1+Esu6B9+hGjveoYmKfjL5g4jEgrwMNi3GO3FYOOk5CKsUag==
-Date: Wed, 9 Sep 2026 15:48:24 +0200
+	t=1788961916; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 in-reply-to:references; bh=X3TXa8ZqMQb4DnauQKRwN/9Bqzakf4XtPXYK7Pd7tsY=;
+	b=ioCAXYPVeyyJMca8ak7CEqrnzMHTUnvRr+T9Em1q2K55JSPptr9oF0sf8wq+LQEdMpFEKD
+	00Vkzm8CTC+NdwdC1gZZ9VtovHy1m5ebKW8EgpOtx8a6YUjVa/AU6YAMdmkFMBXUnNt/NX
+	09GgLdWETkP2R+00Kf9hLVtcVDO20S1blQ18HThNPki10EisBVPE0hTs6dtgpE5pofHJc8
+	YP07DdcaByF7h4IU4ii4lOqWfFZiccMDPuveULOScrip6ulVUSm+uyjN8NNdXeHizLT7vS
+	HqNPdXLA9lk7kniz17hGVcOlsGTDe8/Z24UFy3FJqS9SaDzfZNGprIAeNTOJ8A==
+Date: Wed, 9 Sep 2026 15:51:49 +0200
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 To: Arnd Bergmann <arnd@kernel.org>
 Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
@@ -62,10 +62,10 @@ Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
 	linux-rtc@vger.kernel.org, linux-fbdev@vger.kernel.org,
 	linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
 	llvm@lists.linux.dev
-Subject: Re: [PATCH 10/14] mfd: remove unused rc5t583 driver
-Message-ID: <202609091348246a76051b@mail.local>
+Subject: Re: [PATCH 13/14] mfd: remove unused menelaus driver
+Message-ID: <20260909135149e7d73952@mail.local>
 References: <20260909132153.1596191-1-arnd@kernel.org>
- <20260909132153.1596191-11-arnd@kernel.org>
+ <20260909132153.1596191-14-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,15 +74,15 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260909132153.1596191-11-arnd@kernel.org>
+In-Reply-To: <20260909132153.1596191-14-arnd@kernel.org>
 X-Last-TLS-Session-Version: TLSv1.3
 
-On 09/09/2026 15:21:47+0200, Arnd Bergmann wrote:
+On 09/09/2026 15:21:50+0200, Arnd Bergmann wrote:
 > From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Ricoh RC5T583 support was added in 2012, but no upstream code ever
-> defined the corresponding platform_data, and there is no devicetree
-> support, so this is all dead code.
+> Menelaus was a companion chip for the omap24xx platform, which has
+> been remvoed from the kernel, so now the menelaus driver is unused
+> and can be removed.
 > 
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
