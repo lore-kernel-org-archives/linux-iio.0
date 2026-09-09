@@ -1,85 +1,85 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D600C339B3D
-	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 15:05:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C113545D95
+	for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2026 15:05:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.174
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788966341; cv=pass; b=KZh6b2cL4q+UN7dJQ+uwxuU1gXHvRIUhSrXyTakUretzErzxPlixBrdL6kysUjyMj+ctp4eAX08SY1LT9/tIHf/7j8AjuerjvNZK5MKx+HICjF1aHXr4UDMBERPgVCl3Cy67PZJ9UQbcX5byYKJkFFwHFBump94htInHAFlajXg=
+	t=1788966354; cv=pass; b=LQVi9zQ9lHjY1+obY3eCcdia9neS+hg931nyi1H0jzT6VOMYVOznluQ3IwMlIpVLJATJYRDeaWZUPC0DSAyQsfNWSNuiUncuefkMRL8GrlhRnkoKRyfZd4ypC1FgZvbQjLtSKZ7Y6zcW2HGG4pTc6oR12IRTUbobQp4obf+HDWY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788966341; c=relaxed/simple;
-	bh=CdSWv/WiURR6Acy7P/4aVQQtslC45I4dSTkhDw1BvgI=;
+	s=arc-20240116; t=1788966354; c=relaxed/simple;
+	bh=Pg0OPE12vmwuWYVjsDIrUEAMoARJ9Iewm2dvzaLg3Oo=;
 	h=MIME-Version:From:In-Reply-To:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LDbXOOrNlus2SSb0FY9yoYk2UrMlDVtlYzerV2FbuyHXRaAAATUU4oH7RLT19KsDu8jVJmFlewBTNWn9jyUs0B5PuM/xooXydmL+CLswU8U4e2PiPi/B9NIloXoYv5JZzXM1RXtnGN8LhuGHrajklq1SKX6tVKJ0+QOtLWAfiJI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MffD7ozd; arc=pass smtp.client-ip=209.85.160.48
+	 To:Cc:Content-Type; b=CooIQfwjq0gUdelLD6TsKd2mbBFb2NGO8H/bw5ZcjrkBRnEm6nn/wIStxYVjZanq/q6I+Wu1rpLXV6qr1uGfS9SvOu7UekZDCRrjf0kRgZZSQFYzYMGtnsUbjt4VruLohgWQXLqY9RtMFZIPzfczuGyBxV+aNLmtTYDWgWxI1z4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oADgO/Nd; arc=pass smtp.client-ip=209.85.167.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MffD7ozd"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-43b7e186a0cso3221440fac.0
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 08:05:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788966339; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oADgO/Nd"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-4b21f09ec76so3988619b6e.0
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2026 08:05:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788966351; cv=none;
         d=google.com; s=arc-20260327;
-        b=AiBRdhyNeb8TcLcLW4TWx4xtwM44Uf0iw1iLzTJLlVgYsbUhPfibUFZ1W8FG0YGImp
-         8b86pnzZrIAMtuOqaW7l6d+JLeI/wob7AE2ji/HKcrk7eXgEl6hsLInhHe/x2japkNYh
-         qH0mfXnlOcydtDXAShzzz6gxdjy4F3psUvzfK2aXKkWRJfF9jcE2yW0EsfB6WswOElEf
-         EgDZrUssmBj1brWQNdd+AfqlTjfPriesHDWBi4UIE+vzee6lVuFeLI6UlK6L5UneZxfs
-         q64SXq1dV025r4ruqQtjr9d3QYE4+DFJDZEP2RdCFQ+3qSfzk6BJxLo26FFW/QrGeSYC
-         W47g==
+        b=mM1H++qEj2SVzi1iDAti/cvfym7NyH03FOZD0gnvsawdYbPGXILnZPjh7PHhh8OM4+
+         E/bttOfEg54+ehTyVPI0Evo714rnfB6beiae2gfutRUks8qsfFNWiwqy/1MGK54Iqh/E
+         aivZrcg7GUvLcEKupPqo8PnwnSq36Ek34zV3r4+fJt21Y163fYM9lWXOrVXo8lhZ9g6I
+         QcZDZ54eMHLAQ60AblNWzlj2YpVwfOFlhdlNjYvswGXDhbbKTLkT2ZGZWlT/g2LzbgL0
+         0es9K/bWQsc4z/HkwZXkyrmCoztA7H9fDdmq4NX8caoZmGQZunFkB2yMbu7aRN8lL8WR
+         sw0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:references:in-reply-to:from
          :mime-version:dkim-signature;
-        bh=bPifW9Smu+tKBLdTNDc9b+YeXLJbZl3BP3bUtreOS1w=;
-        fh=UN3Dj/gppJuVJlunBrzgrKJ2XPQr4cP2K/VaDprxNmQ=;
-        b=Gfi+xmD4gu9Pb/JBXEEL/iUOx7CSrdwBfmms5DiUBZSA0aKMBPa6j8zZxwuqNNVzyO
-         vNcjBLrqygvR8TJicMfa3/MDuA8inXUs40VqfvK2sNpxWdpSqdDWpv8mml0iAOyR2gPj
-         f14LeMj5Xq9KO7bG2zo1t3aIcu4P3d/0bAUkSb8PYWs341yip7aq6+tDRZFSl9+a/79W
-         v2ArcJOugWs4C7L965sQuZ4y1Eb8zp2iNq/6qfuxc1jhKNERR9w+ot64i8W4UqRyT86x
-         AtaoNCE6kInIsoF7ThfSoC+vzyzG5zOChSl5+AgoJrs8vpnLkP7QEZvI224XGr58B318
-         6dqg==;
+        bh=AyUR7S+hdqUxAtfODrKh6/6SxqzP+uIq+xymgWT62Gg=;
+        fh=JdLNBSdYsc4mqTgev70yYceFTsdd52xonAwQo0A/E7c=;
+        b=SDboNjuAa9xS42Ov0E2ilr3wOZxTKNtxO1TVrGzqpX32EZ+d7skaFqu0rGUQ2vesDr
+         SvJ2YBxCf75k95iFFZgdcr1TAaYBD4xJ5vtmzMeCcuogr5W8A3Fljwn8p0iuJyHHQoiv
+         EtNBP1EM6VY12TQiA7/JZ9IKVBTBJkFxJAahNdyC3ft7rmUgnZmRWEvj58XDQbHeXuzF
+         Jba4uEC8idx/gzT/7hf90A7GPGyeL3jusdDaRP526YWuG7D5b3xNH6H4qo3kVvlgD3uv
+         7uQ9UxxO1vHsy5tmR8g1VxRaQd49By1+cCzEmSmLhVjQm2wTib7CU5hAEe0R86FPyyky
+         06ig==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788966339; x=1789571139; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788966351; x=1789571151; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:references:in-reply-to
          :from:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=bPifW9Smu+tKBLdTNDc9b+YeXLJbZl3BP3bUtreOS1w=;
-        b=MffD7ozdMsfGj8F4DamnIZ+7kNFrlvGiu1toNtJyONjoc3+nDY9xgXfFQRt/+ou3Cn
-         T0LQE4bSPGK/mW3OcN7SL/NXMEHBcXLahoxXFiGsjUICJvxz9jv1Wf0VQAa1Ar6trJa0
-         HO5uNBADKgUgIVu8Gz3x6lrFfENkOW0r1ZSNFdZKZ77hE/QDK2OaqMWwHhdaiKbLV2kW
-         yjCTNnfsCBBvuyQOflwe7r2YaTruWLxs4CkaawZErJLiJFnd2zeUn62SrAL1hkOzcKBx
-         D7W39vBhTkjAF7SFL6vyMIbUsNJry+bILMutzBH0omCg4WibewZ0bb5XzPUeMu1Z5kHD
-         8YGg==
+        bh=AyUR7S+hdqUxAtfODrKh6/6SxqzP+uIq+xymgWT62Gg=;
+        b=oADgO/NdcS2pejRPW5QAWVZgewxMo1rNeTbDso+Oj66BCFKG9vW8ld+nRunvyqXu2h
+         TLNXPybtJBOO8aNd86PIfmIA5b9qV0Ecf57bwi+GE7wqhhxlyPcBVhOUyaYw+E95eKvk
+         AUMBdPHAy5wR9rNWG7t7qRMFoLOe5N7RXouAi/u40bBBHZ+c2joLVE8ojv+zGTt5gPPW
+         4T/JndVCnzvx18bTmqM5OfMsciWG69cAbfAU6WIiFU1/o1tOdTOP4XClvcze+YTMpTI1
+         HbuEO2JOxZ1pQhvSkoc233wjJkeUNKYxnnxee7LksDVLPEnW8/sEQO6Bz26monqR/oNQ
+         xXTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788966339; x=1789571139;
+        d=1e100.net; s=20251104; t=1788966351; x=1789571151;
         h=content-type:cc:to:subject:message-id:date:references:in-reply-to
          :from:mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=bPifW9Smu+tKBLdTNDc9b+YeXLJbZl3BP3bUtreOS1w=;
-        b=kQeBilM/IZGEgQ/hm4+yXbk+vTwEsbk/DiepcPRihytI4juCCIkYdHkE5k9VCh7hj2
-         AVCqLFphYSoEViY/GCRqZxr2X5UVXGx7Mc1VqjE5TrWFuTE6yiyKj8lo5KkAyWPMqGWS
-         nH7CERk/9AW2L+TC1sodJY3BxQoLDcBIJHWaWqPas6sYuE8qa1zeUZls137sSB2uI68i
-         BbOFYLu3iiol1CaDsyOKhuA3tlI+u4Ogn7TbmffKZ5nGcFSrhRoEhjJEoac+9KYlfMNF
-         vjNeQ2kJ3y551elZFG5ReivO6LC6GB943WWMsAEB7V57w8nuflFCKe//x7nNkrHIHqBc
-         sglg==
-X-Forwarded-Encrypted: i=1; AKwUvBz4lYyemMflpsaNPIALd8cEgwmKabXbPfJG8R68J0ITblBMr6D8BGcDDxumVP059R+6kJGj5mIGr84=@vger.kernel.org
-X-Gm-Message-State: AFuF++ngsRvJGr09pns559vt0Eh0ib2CcIa1iVy2zWHdaeuSFUX25BlN
-	RftIEDviTBSwFHsp3WCaGvvt2OU62DsJKb4rGuTmrT3WwviV4izV9QF0Icy1gV38chKUSfn/ro0
-	30O1H3NEAZc5Jq75VK4YaJ1ETnNuB2sw=
-X-Gm-Gg: AYBFou3YSZAz3tS3TXwmpbBYcIbfFWg6PVGeTa3zcnFAmGMUtvKiSd/oDTdTzkvBEea
-	G5mzN13AJ78/iYr8zBWXtQb9QC6x0I4GKoR4YaVXuwR9vMaLhgOa60B+G0/40mVLeFxZoZgazXn
-	a2ZnPy0tx8hk/8Tw8CCRoh5+m/YX4JBQbgM4lBTBt/QpLMnIUd8YhIFNtq8RWU38YH0lRnE4+sE
-	HlSGGSiNHdv4khlV5YjlCV7zyGhwmbhDoZo3lifYVAYYAzkyu1txEOFiOsZtxfQ/srfzlsp2sJF
-	55+SPAW73AcWdCsMBOzKd5BCES6GMBBLzqvGVCU2cVNcCkdtuCSeVKT0d0m2SLEjV/BuhqnmTZq
-	2ssUOQZHhIlCw0BwAzwugccGMEIk0MspGbEFT1A==
-X-Received: by 2002:a4a:e847:0:b0:6b7:46e9:9700 with SMTP id
- 006d021491bc7-6b746e9a360mr19044134eaf.48.1788966338598; Wed, 09 Sep 2026
- 08:05:38 -0700 (PDT)
+        bh=AyUR7S+hdqUxAtfODrKh6/6SxqzP+uIq+xymgWT62Gg=;
+        b=pYKDr/nMOraB52RX8T8OrFxpWBY4w6C7BxI5ypTk3U39OKsISCsookGgzjWDlQQdhg
+         UP09k7L+Hl/bRy85hgPGJ1gRMvcZGT9cCuQMLdqNAyKS0ane4tdGli/Oc8v9zmJr3Wu2
+         8wjtjncppwjvszH4qg6QMZU+1ROHlPKdlFqqPDc7Pn2E/B3bE4TmwA321u9qUEx6helQ
+         KpQnPWhItWXoELzJ/YXjny/3h/oJY3nEZa6Bx/fX2tb2IO5zINUBoq3aA941f9r9VBKt
+         qW2WSKgqDvFVOhVWXsQo8er7Dxs/Pi6qCDg7AFPuDAbjt5jdfAUW2yVzCAeTT1LpHlFR
+         oXyA==
+X-Forwarded-Encrypted: i=1; AKwUvBwgoBYjzG04YH28O7vSXN59wQ/AaQ6KNKUVB9L+pyXIfilrAvpivKRs+IfobCV9pWRuzTheW2FzAhk=@vger.kernel.org
+X-Gm-Message-State: AFuF++n+lFKSxenqFqipbAfLZzrAAhG0Z+Sjs5n+Ekaz1JsfCc3LZmjF
+	FTQKST52RMSCjyziNecBeKdZml956Rxc0YZD2ycdWPfbFPm7lqx1lknBoDMCpgpg2mLikCdZmU7
+	8aWJ1PQ/BYVv9t6eD+aFU4z7hkyTa0aA=
+X-Gm-Gg: AYBFou3yhTbMmPOEt2j9i16A8cQst4LU9I3qf8a/d9Vfi7rcEuQIRR5ua5vT3uunWOz
+	43rF72KtPjqGdKNNu2fYisC/z4Sw6bMhzwwhHQlH5t1FGU7BRKaR6UKXHoSNXhNwUOBbPd1RlhD
+	RFd1NjSMRHJ5iK4RLr8va+UhECOLLuJv9NjkvbYsJJhaImUq81GOAhURcxaCweBSLd07zR+vLLN
+	nnPhPlTA+kzjOss4LYhBVdWRDF/xthNfwOaz2btmix2utvdJ63wyzfTt6tB32eSRl1KkJo6ThRu
+	aE3vM1Rbr3N12WxdmtgJx/ez0vHZcnUQHwFcRG3jESEMzwfjoqCYWs8akym5H8z1PSc6H+84mQY
+	VSsCIxq3emC9NdFbkgMMW+UBGAXJsoeD/e3OA00cnC4sPeabn
+X-Received: by 2002:a05:6820:810a:b0:6ac:b6c0:2bf6 with SMTP id
+ 006d021491bc7-6b6fabd2f22mr20142537eaf.5.1788966351014; Wed, 09 Sep 2026
+ 08:05:51 -0700 (PDT)
 Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Wed, 9 Sep 2026 08:05:36 -0700
+ Wed, 9 Sep 2026 08:05:49 -0700
 Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Wed, 9 Sep 2026 08:05:36 -0700
+ Wed, 9 Sep 2026 08:05:49 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -89,149 +89,391 @@ MIME-Version: 1.0
 From: Jinseob Kim <kimjinseob88@gmail.com>
 In-Reply-To: <CALMSewJPfQXRX5q4X3gJf=LT6m2FnusTM=DBiWsBqRFiyNP_Gw@mail.gmail.com>
 References: <CALMSewJPfQXRX5q4X3gJf=LT6m2FnusTM=DBiWsBqRFiyNP_Gw@mail.gmail.com>
-Date: Wed, 9 Sep 2026 08:05:36 -0700
-X-Gm-Features: AcwNN1XXvx0UutbQz3C8pC-IVMf-p4wSoPFQaanIGZK3T3vTnj6LaeC92XUpPTI
-Message-ID: <CALMSewK17jG3MXTHv4Rj+tFVriw9+tqNuAMcX4KGQGy5NQP_MQ@mail.gmail.com>
-Subject: [PATCH v9 2/5] Documentation: iio: add Open Sensor Fusion driver overview
+Date: Wed, 9 Sep 2026 08:05:49 -0700
+X-Gm-Features: AcwNN1UJyoZ5NxE2b9rqL4o8eMYp7QtQzYieEg-YsNXYdTJfmBhIY59oc__BguQ
+Message-ID: <CALMSewLcwgHyTEZVKUkYBo635nr2mZopHYkJP+hnBc--jerqxA@mail.gmail.com>
+Subject: [PATCH v9 3/5] iio: osf: add protocol decoding
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
 	linux-kernel@vger.kernel.org, rdunlap@infradead.org, joshua.crofts1@gmail.com, 
-	u.kleine-koenig@baylibre.com, julianbraha@gmail.com, corbet@lwn.net, 
-	skhan@linuxfoundation.org, linux-doc@vger.kernel.org
+	u.kleine-koenig@baylibre.com, julianbraha@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 
-Document the Linux IIO mapping for Open Sensor Fusion devices.
+Add helpers for decoding Open Sensor Fusion frame headers and supported
+message payloads.
 
-The overview explains that sensor channels are discovered at runtime
-from mandatory capability reports. It also documents that OSF0 is a
-wire-format detail and that protocol_major and protocol_minor carry
-protocol compatibility information.
+The decoder validates framing, payload bounds and CRC before exposing
+decoded frame contents to the rest of the driver. Framing validation
+includes the OSF0 wire magic and fixed header length. Protocol version
+and reserved header fields are exposed to the core so authenticated-frame
+policy is handled after CRC validation.
 
-Assisted-by: LLM
+Capability entries are decoded structurally, including their flags and
+reserved fields. The core can then apply support policy without rejecting
+an entire report solely because it contains future entry values.
+
+Use explicit little-endian wire storage sizes and designated
+initializers for decoded output structures.
+
 Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
 ---
- Documentation/iio/index.rst              |  1 +
- Documentation/iio/open-sensor-fusion.rst | 84 ++++++++++++++++++++++++
- MAINTAINERS                              |  1 +
- 3 files changed, 86 insertions(+)
- create mode 100644 Documentation/iio/open-sensor-fusion.rst
+ MAINTAINERS                                 |   1 +
+ drivers/iio/opensensorfusion/osf_protocol.c | 224 ++++++++++++++++++++
+ drivers/iio/opensensorfusion/osf_protocol.h | 101 +++++++++
+ 3 files changed, 326 insertions(+)
+ create mode 100644 drivers/iio/opensensorfusion/osf_protocol.c
+ create mode 100644 drivers/iio/opensensorfusion/osf_protocol.h
 
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index b02b879b053a..c2b7963348fd 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -40,4 +40,5 @@ Industrial I/O Kernel Drivers
-    adxl345
-    bno055
-    ep93xx_adc
-+   open-sensor-fusion
-    opt4060
-diff --git a/Documentation/iio/open-sensor-fusion.rst
-b/Documentation/iio/open-sensor-fusion.rst
-new file mode 100644
-index 000000000000..15d41202eb66
---- /dev/null
-+++ b/Documentation/iio/open-sensor-fusion.rst
-@@ -0,0 +1,84 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+Open Sensor Fusion
-+==================
-+
-+Open Sensor Fusion is a sensor aggregation hub interface. The Linux IIO driver
-+receives OSF protocol frames from an attached device and registers matching IIO
-+devices for the sensor classes supported by the driver. The actual sensor
-+channels are discovered at runtime from mandatory OSF capability reports.
-+
-+This document is a driver-facing overview for the Linux IIO mapping. The full
-+wire protocol, firmware behavior, and hardware model details belong in the Open
-+Sensor Fusion project documentation.
-+
-+Device Model
-+------------
-+
-+An OSF device sends binary frames from the device to the host.
-Devices using the
-+``opensensorfusion,osf`` compatible are expected to provide
-+``CAPABILITY_REPORT`` messages so the host can discover which sensor
-streams are
-+available. Device Tree describes the attached OSF sensor aggregation
-hub; it does
-+not enumerate the individual sensors discovered at runtime.
-+
-+The currently supported Linux subset exposes:
-+
-+* accelerometer samples as ``IIO_ACCEL`` X/Y/Z channels,
-+* gyroscope samples as ``IIO_ANGL_VEL`` X/Y/Z channels,
-+* magnetometer samples as ``IIO_MAGN`` X/Y/Z channels, and
-+* temperature samples as ``IIO_TEMP``.
-+
-+Protocol Scope
-+---------------
-+
-+The driver supports OSF protocol major version 0 for the IIO receive path.
-+The current wire magic is ``OSF0``; that string is a wire-format detail and is
-+not the Linux driver identity. Device Tree keeps the generic
-+``opensensorfusion,osf`` compatible rather than naming a product such as OSF
-+GREEN or a wire magic value.
-+
-+Protocol versioning is carried by the ``protocol_major`` and ``protocol_minor``
-+fields at fixed offsets in the OSF frame header. The driver currently
-+supports ``protocol_major`` 0. ``protocol_minor`` changes within major version
-+0 are intended to remain backward-compatible within the fixed header layout.
-+Incompatible wire-format changes require a new ``protocol_major``. A future
-+device that cannot expose compatible version discovery through that fixed
-+header layout would need a different Device Tree compatible.
-+
-+The Linux driver handles device-to-host frames for:
-+
-+* ``SENSOR_SAMPLE`` buffered and direct-mode sample data,
-+* ``CAPABILITY_REPORT`` based IIO device registration, and
-+* ``DEVICE_STATUS`` cache updates.
-+
-+Vendor-private message types are ignored. Command transport, calibration
-+control ABI, fusion output ABI, and runtime capability removal are outside the
-+Linux IIO receive path.
-+
-+Timestamps
-+----------
-+
-+OSF frames include a device-side ``timestamp_us`` field. Buffered IIO
-samples use
-+an IIO timestamp captured on the host when samples are pushed to IIO buffers.
-+The driver does not correlate the device timestamp with the host IIO
-+clock.
-+
-+Compatibility Notes
-+-------------------
-+
-+This overview describes the implemented receive path, not a normative wire
-+specification. A publicly versioned specification covering reserved fields,
-+extensions and physical scale units remains needed for interoperability review.
-+
-+The decoder requires the fixed header size and the exact payload lengths of
-+known messages. It ignores unsupported protocol majors, unknown message types
-+and frames with nonzero header reserved fields. Unsupported capability entries
-+are skipped individually; malformed known payloads are rejected. Appending data
-+to an existing known message is therefore not a compatible extension for this
-+receiver.
-+
-+IIO scale is taken from the initial capability report and is not updated by
-+sample frames. Devices must supply scales in the units required by each IIO
-+channel type, including gauss for magnetometers. Historical OSF draft documents
-+differ on reserved-field handling, trailing extensions and magnetometer units;
-+those drafts do not establish a canonical specification for this driver.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index ff09899bd645..0c9c322162b2 100644
+index 0c9c322162b2..f7ead365f946 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -20515,6 +20515,7 @@ OPEN SENSOR FUSION
- M:	Jinseob Kim <kimjinseob88@gmail.com>
+@@ -20516,6 +20516,7 @@ M:	Jinseob Kim <kimjinseob88@gmail.com>
  S:	Maintained
  F:	Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-+F:	Documentation/iio/open-sensor-fusion.rst
+ F:	Documentation/iio/open-sensor-fusion.rst
++F:	drivers/iio/opensensorfusion/osf_protocol.*
  K:	opensensorfusion
 
  OPENCOMPUTE PTP CLOCK DRIVER
+diff --git a/drivers/iio/opensensorfusion/osf_protocol.c
+b/drivers/iio/opensensorfusion/osf_protocol.c
+new file mode 100644
+index 000000000000..cd7b8587f737
+--- /dev/null
++++ b/drivers/iio/opensensorfusion/osf_protocol.c
+@@ -0,0 +1,224 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/bits.h>
++#include <linux/crc32.h>
++#include <linux/errno.h>
++#include <linux/types.h>
++#include <linux/unaligned.h>
++
++#include "osf_protocol.h"
++
++#define OSF_CRC32_INIT		GENMASK(31, 0)
++#define OSF_CRC32_XOROUT	GENMASK(31, 0)
++
++static bool osf_sensor_type_valid(u16 sensor_type)
++{
++	return sensor_type >= OSF_SENSOR_ACCELEROMETER &&
++	       sensor_type <= OSF_SENSOR_PROXIMITY;
++}
++
++static u32 osf_crc32_ieee(const u8 *buf, size_t len)
++{
++	return crc32_le(OSF_CRC32_INIT, buf, len) ^ OSF_CRC32_XOROUT;
++}
++
++int osf_protocol_decode_frame(const u8 *buf, size_t len,
++			      struct osf_frame *frame, size_t *frame_len)
++{
++	u32 expected_crc;
++	u32 actual_crc;
++	u32 payload_len;
++	size_t total_len;
++
++	if (!buf || !frame || !frame_len)
++		return -EINVAL;
++
++	if (len < OSF_FRAME_MIN_LEN)
++		return -EMSGSIZE;
++
++	if (get_unaligned_le32(buf) != OSF_FRAME_MAGIC)
++		return -EPROTO;
++
++	if (get_unaligned_le16(buf + 6) != OSF_FRAME_HEADER_LEN)
++		return -EPROTO;
++
++	payload_len = get_unaligned_le32(buf + 10);
++	if (payload_len > len - OSF_FRAME_MIN_LEN)
++		return -EMSGSIZE;
++
++	total_len = OSF_FRAME_HEADER_LEN + payload_len + OSF_FRAME_CRC_LEN;
++	expected_crc = osf_crc32_ieee(buf, OSF_FRAME_HEADER_LEN + payload_len);
++	actual_crc = get_unaligned_le32(buf + OSF_FRAME_HEADER_LEN + payload_len);
++
++	if (actual_crc != expected_crc)
++		return -EBADMSG;
++
++	frame->protocol_major = buf[4];
++	frame->protocol_minor = buf[5];
++	frame->message_type = get_unaligned_le16(buf + 8);
++	frame->payload_len = payload_len;
++	frame->sequence = get_unaligned_le64(buf + 14);
++	frame->timestamp_us = get_unaligned_le64(buf + 22);
++	frame->flags = get_unaligned_le32(buf + 30);
++	frame->reserved = get_unaligned_le32(buf + 34);
++	frame->payload = buf + OSF_FRAME_HEADER_LEN;
++	frame->crc = actual_crc;
++	*frame_len = total_len;
++
++	return 0;
++}
++
++int osf_protocol_decode_sensor_sample(const struct osf_frame *frame,
++				      struct osf_sensor_sample *sample)
++{
++	u16 channel_count;
++	u16 sample_format;
++	u16 sensor_type;
++	size_t expected_len;
++	const u8 *payload;
++
++	if (!frame || !sample || !frame->payload)
++		return -EINVAL;
++
++	if (frame->message_type != OSF_MSG_SENSOR_SAMPLE)
++		return -EPROTO;
++
++	if (frame->payload_len < OSF_SENSOR_SAMPLE_BASE_LEN)
++		return -EMSGSIZE;
++
++	payload = frame->payload;
++	sensor_type = get_unaligned_le16(payload);
++	channel_count = get_unaligned_le16(payload + 4);
++	sample_format = get_unaligned_le16(payload + 6);
++
++	if (!osf_sensor_type_valid(sensor_type))
++		return -EPROTO;
++
++	if (!channel_count)
++		return -EPROTO;
++
++	if (sample_format != OSF_SAMPLE_FORMAT_S32)
++		return -EPROTO;
++
++	if (get_unaligned_le32(payload + 12))
++		return -EPROTO;
++
++	expected_len = OSF_SENSOR_SAMPLE_BASE_LEN + channel_count * sizeof(__le32);
++	if (frame->payload_len != expected_len)
++		return -EMSGSIZE;
++
++	*sample = (struct osf_sensor_sample) {
++		.sensor_type = sensor_type,
++		.sensor_index = get_unaligned_le16(payload + 2),
++		.channel_count = channel_count,
++		.sample_format = sample_format,
++		.scale_nano = get_unaligned_le32(payload + 8),
++		.samples = payload + OSF_SENSOR_SAMPLE_BASE_LEN,
++	};
++
++	return 0;
++}
++
++int osf_protocol_sensor_sample_value(const struct osf_sensor_sample *sample,
++				     u16 index, s32 *value)
++{
++	if (!sample || !sample->samples || !value)
++		return -EINVAL;
++
++	if (index >= sample->channel_count)
++		return -ERANGE;
++
++	/* Samples are little-endian two's-complement signed values. */
++	*value = get_unaligned_le32(sample->samples + index * sizeof(__le32));
++
++	return 0;
++}
++
++int osf_protocol_decode_device_status(const struct osf_frame *frame,
++				      struct osf_device_status *status)
++{
++	const u8 *payload;
++
++	if (!frame || !status || !frame->payload)
++		return -EINVAL;
++
++	if (frame->message_type != OSF_MSG_DEVICE_STATUS)
++		return -EPROTO;
++
++	if (frame->payload_len != OSF_DEVICE_STATUS_LEN)
++		return -EMSGSIZE;
++
++	payload = frame->payload;
++	if (get_unaligned_le32(payload + 16))
++		return -EPROTO;
++
++	*status = (struct osf_device_status) {
++		.uptime_s = get_unaligned_le32(payload),
++		.status_flags = get_unaligned_le32(payload + 4),
++		.error_flags = get_unaligned_le32(payload + 8),
++		.dropped_frames = get_unaligned_le32(payload + 12),
++	};
++
++	return 0;
++}
++
++int osf_protocol_decode_capability_report(const struct osf_frame *frame,
++					  struct osf_capability_report *report)
++{
++	u16 capability_count;
++	size_t expected_len;
++	const u8 *payload;
++
++	if (!frame || !report || !frame->payload)
++		return -EINVAL;
++
++	if (frame->message_type != OSF_MSG_CAPABILITY_REPORT)
++		return -EPROTO;
++
++	if (frame->payload_len < OSF_CAP_REPORT_BASE_LEN)
++		return -EMSGSIZE;
++
++	payload = frame->payload;
++	capability_count = get_unaligned_le16(payload);
++
++	if (get_unaligned_le16(payload + 2))
++		return -EPROTO;
++
++	expected_len = OSF_CAP_REPORT_BASE_LEN +
++		       capability_count * OSF_CAP_SENSOR_ENTRY_LEN;
++	if (frame->payload_len != expected_len)
++		return -EMSGSIZE;
++
++	*report = (struct osf_capability_report) {
++		.capability_count = capability_count,
++		.entries = payload + OSF_CAP_REPORT_BASE_LEN,
++	};
++
++	return 0;
++}
++
++int osf_protocol_decode_capability_entry(const struct osf_capability_report
++					 *report, u16 index,
++					 struct osf_capability_entry *entry)
++{
++	const u8 *payload;
++
++	if (!report || !report->entries || !entry)
++		return -EINVAL;
++
++	if (index >= report->capability_count)
++		return -ERANGE;
++
++	payload = report->entries + index * OSF_CAP_SENSOR_ENTRY_LEN;
++	*entry = (struct osf_capability_entry) {
++		.sensor_type = get_unaligned_le16(payload),
++		.sensor_index = get_unaligned_le16(payload + 2),
++		.channel_count = get_unaligned_le16(payload + 4),
++		.sample_format = get_unaligned_le16(payload + 6),
++		.scale_nano = get_unaligned_le32(payload + 8),
++		.flags = get_unaligned_le32(payload + 12),
++		.reserved = get_unaligned_le32(payload + 16),
++	};
++
++	return 0;
++}
+diff --git a/drivers/iio/opensensorfusion/osf_protocol.h
+b/drivers/iio/opensensorfusion/osf_protocol.h
+new file mode 100644
+index 000000000000..2b616f2d5197
+--- /dev/null
++++ b/drivers/iio/opensensorfusion/osf_protocol.h
+@@ -0,0 +1,101 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _OSF_PROTOCOL_H
++#define _OSF_PROTOCOL_H
++
++#include <linux/bits.h>
++#include <linux/types.h>
++
++#define OSF_PROTOCOL_MAJOR		0
++#define OSF_PROTOCOL_MINOR		0
++#define OSF_FRAME_HEADER_LEN		38
++#define OSF_FRAME_CRC_LEN		4
++#define OSF_FRAME_MIN_LEN		(OSF_FRAME_HEADER_LEN + OSF_FRAME_CRC_LEN)
++#define OSF_FRAME_MAGIC			0x3046534f /* "OSF0", little-endian */
++
++#define OSF_SENSOR_SAMPLE_BASE_LEN	16
++#define OSF_DEVICE_STATUS_LEN		20
++#define OSF_CAP_REPORT_BASE_LEN		4
++#define OSF_CAP_SENSOR_ENTRY_LEN		20
++#define OSF_CAPABILITY_FLAGS_MASK	GENMASK(1, 0)
++
++enum osf_message_type {
++	OSF_MSG_SENSOR_SAMPLE		= 0x0001,
++	OSF_MSG_DEVICE_STATUS		= 0x0002,
++	OSF_MSG_CAPABILITY_REPORT	= 0x0003,
++};
++
++enum osf_sensor_type {
++	OSF_SENSOR_ACCELEROMETER		= 0x0001,
++	OSF_SENSOR_GYROSCOPE		= 0x0002,
++	OSF_SENSOR_MAGNETOMETER		= 0x0003,
++	OSF_SENSOR_BAROMETER		= 0x0004,
++	OSF_SENSOR_TEMPERATURE		= 0x0005,
++	OSF_SENSOR_HUMIDITY		= 0x0006,
++	OSF_SENSOR_AMBIENT_LIGHT		= 0x0007,
++	OSF_SENSOR_PROXIMITY		= 0x0008,
++};
++
++enum osf_sample_format {
++	OSF_SAMPLE_FORMAT_S32		= 0x0001,
++};
++
++struct osf_frame {
++	u8 protocol_major;
++	u8 protocol_minor;
++	u16 message_type;
++	u32 payload_len;
++	u64 sequence;
++	u64 timestamp_us;
++	u32 flags;
++	u32 reserved;
++	/* payload points into the caller-owned frame buffer. */
++	const u8 *payload;
++	u32 crc;
++};
++
++struct osf_sensor_sample {
++	u16 sensor_type;
++	u16 sensor_index;
++	u16 channel_count;
++	u16 sample_format;
++	u32 scale_nano;
++	const u8 *samples;
++};
++
++struct osf_device_status {
++	u32 uptime_s;
++	u32 status_flags;
++	u32 error_flags;
++	u32 dropped_frames;
++};
++
++struct osf_capability_report {
++	u16 capability_count;
++	const u8 *entries;
++};
++
++struct osf_capability_entry {
++	u16 sensor_type;
++	u16 sensor_index;
++	u16 channel_count;
++	u16 sample_format;
++	u32 scale_nano;
++	u32 flags;
++	u32 reserved;
++};
++
++int osf_protocol_decode_frame(const u8 *buf, size_t len,
++			      struct osf_frame *frame, size_t *frame_len);
++int osf_protocol_decode_sensor_sample(const struct osf_frame *frame,
++				      struct osf_sensor_sample *sample);
++int osf_protocol_decode_device_status(const struct osf_frame *frame,
++				      struct osf_device_status *status);
++int osf_protocol_decode_capability_report(const struct osf_frame *frame,
++					  struct osf_capability_report *report);
++int osf_protocol_decode_capability_entry(const struct osf_capability_report
++					 *report, u16 index,
++					 struct osf_capability_entry *entry);
++int osf_protocol_sensor_sample_value(const struct osf_sensor_sample *sample,
++				     u16 index, s32 *value);
++
++#endif
 -- 
 2.43.0
