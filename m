@@ -1,55 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8418237DEB6;
-	Thu, 10 Sep 2026 03:20:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD1312E0B5C;
+	Thu, 10 Sep 2026 03:39:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789010437; cv=none; b=qH7kPm1fcNqeFaCVBEM4fq/a0VoXxa+cpNKOiJceBaQpeErZWKB7F5Lz7WrLH+8sJGP2aAzx+jE0brrdM2ak/nMifT6d2tkFR1I8Palb9wC8vi9O2APZ/cEASXGBh9G/sJuTr9GUc2fi6GwOr86xQZUudoW++khmgDBQAplAE+4=
+	t=1789011571; cv=none; b=c0cmynAzwUxBd+Gc4iniBh86Fv+qIt5PS6YEtejSg5Zh0K4JYwHaLkGoUb5kJurY/GEhe2AQWAj5QYRAr0is+GcBp8yQWR6D9Lh/BRq/awntbGCq/wg7l87dscMjfHOrvGdjom+GoaBwAdFmxu/Mo3BkQ+FXM5b5JIbWqp36fS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789010437; c=relaxed/simple;
-	bh=wLK4mIxthB3BZvo7ECLXPgPSLtaD20pir6OdlRw0VyY=;
+	s=arc-20240116; t=1789011571; c=relaxed/simple;
+	bh=9sS+RkuZwYwrv45uL15O3zgqX6YVjzII9MZXgo5icfQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A6VtGd/bd9EXvrQvfr3n4112mBRUGDRlI5rxarvy3O0A31IHOxDU1rfjdRTpXUt43BpJFw+1vV1/TTwg3LwFzPeV44XzcsvSGU8eyGMBr0YSrQ0i0tYAVUjscGf7Op2vhyHB/WAdurapVfbih3Z1W3e5OoCt0MDv1SfTPd/nt+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AA2rDpoR; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=kd2PUIyeqpHn5PlvIOgY2XOrVOZuThuE9z3UgM5BG7Tnk5C6ezmGNjBdOZi75Dnfx9undYnhNMKC+kTJBpekl0x5oYNZvy9B9GGcpSyRoUGWl3qwtKETNTAslPsKNnHS4rWULbAnFtBwvGduWi3wF5E4W/8zCq2R8ovaJ9DLGlA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EltruIxa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AA2rDpoR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D389C1F000FF;
-	Thu, 10 Sep 2026 03:20:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EltruIxa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6E6E1F000FF;
+	Thu, 10 Sep 2026 03:39:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789010436;
-	bh=2EB70JFDpzLI0s6pkD0sPoT0z4Ey0yYYBi6G0LOrZC8=;
+	s=k20260515; t=1789011570;
+	bh=OQXcNL2WuFOESavtcYnK6tzeI/Boy4mudQ7/iDdUyVc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=AA2rDpoRtm+3ufmdFn844tzBcFS6/ZdCe0Bdckhfc0pea/DdDAcB+DKL80DZmG3aw
-	 0utk5kDv+DtgXxkjQM8dzy3RfXV76m8+/ZPBNCCf09NhINacKEcKSFrPCtCF/ZbZ8T
-	 pL3+dfKGjY5RZXMMLrlXWmCShxknmDbWP59QbNVanCejj7PUsYVNedqCq9fmTm5xUH
-	 ImLGpsgOsMfb3rs4L5L44EtV99Y/IC3ShLnYsXiEi0u2L72LnOmC9TYoQ2TI30JEYN
-	 AjGJqBXRNIWkUOVxMQ0L9MQdhJzzgSgUsTKgOGzV8ei9EljbhKfC/a8B58hAzzn3Sr
-	 IIqjsllRjPE7A==
-Date: Thu, 10 Sep 2026 04:20:29 +0100
+	b=EltruIxaB2U22wpbXGpSN9RJtc0SzVxrCRFQiepqqj6euwNUjKzOgIxBC/AAdszsu
+	 WP3ojTBp1l0Ce4WrjoW/EFhBsm6K30KHZss/MorAp2gzOsiYqSPtaCzRT3eIoYuyDx
+	 7tHOFi8YyENW9VSFrWine+DuXZVyGCH0ISKPvmwV/bII1gu+f4i3je+79OjHbIJMn9
+	 rjaJwKyElV1RNIP8S8hwL6V46ciV1qxatmjBHFxwrFkexnXzamkPmuqA/QUSH/pXzW
+	 ODh8XQgq6cMZeZ5u2ZVaqU1eBc1HfDENN7FtjN2lSpWZL2gwgw+v7QkCrE5zYJRDcx
+	 IcZQY0/hVCRkg==
+Date: Thu, 10 Sep 2026 04:39:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>,
- David Laight <david.laight.linux@gmail.com>, linux-iio@vger.kernel.org,
- Nicolas Pitre <nico@fluxnic.net>, Ingo Molnar <mingo@redhat.com>, Thomas
- Gleinxer <tglx@linutronix.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Peter
- Zijlstra <peterz@infradead.org>, rodrigo.alencar@analog.com
-Subject: Re: [PATCH 0/2] x86: Use "er" asm constriant for add/sub
-Message-ID: <20260910042029.7c78f6dd@jic23-hlaptop>
-In-Reply-To: <20260908165501.GDaqA95YQKx_IL416d@fat_crate.local>
-References: <20260803094702.3852-1-david.laight.linux@gmail.com>
-	<11o7545n-7569-3p9r-1q77-8nor8513r6n1@syhkavp.arg>
-	<20260803163955.627bdd3f@pumpkin>
-	<20260823233536.30b984ed@jic23-huawei>
-	<20260901175101.1e059ac8@jic23-huawei>
-	<20260907231444.7fa2d116@jic23-huawei>
-	<20260908033216.GAap-BwAmBqoVDUbMK@fat_crate.local>
-	<ap_cLN807bC56OBU@monoceros>
-	<20260908152127.GCaqAn9zI09T7qvMhH@fat_crate.local>
-	<aqAtRgouK7DyDlpJ@monoceros>
-	<20260908165501.GDaqA95YQKx_IL416d@fat_crate.local>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Kim Seer Paller <kimseer.paller@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
+ Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 0/4] Add support for AD5710R/AD5711R DAC
+Message-ID: <20260910043925.543138d7@jic23-hlaptop>
+In-Reply-To: <ap497BPHehKLEJGT@ashevche-desk.local>
+References: <20260904-iio-ad5710r-upstream-v5-0-76f985b7d0ee@analog.com>
+	<20260906190559.7ca260f9@jic23-huawei>
+	<ap497BPHehKLEJGT@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,79 +49,29 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 8 Sep 2026 09:55:01 -0700
-Borislav Petkov <bp@alien8.de> wrote:
+On Mon, 7 Sep 2026 07:30:36 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Tue, Sep 08, 2026 at 05:49:17PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> > I don't see what you mean. If both the tip tree and the iio tree
-> > contain the same commit (with or without a tag on it), it doesn't matter
-> > who created that and when and in which repo it appeared first. The first
-> > to send it to Linus makes it new for him and all later PRs using it only
-> > introduce the follow-up commits. So if you pull Jonathan's branch you
-> > still can send the branch/tag that contains it whenever you like
-> > independant of when Jonathan sends out his PR. =20
->=20
-> Yes, I'm going to have to merge that branch into tip now so I'd need the
-> assurance from Jonathan that this branch is not going to change.
+> On Sun, Sep 06, 2026 at 07:05:59PM +0100, Jonathan Cameron wrote:
+> > On Fri, 4 Sep 2026 16:35:23 +0800
+> > Kim Seer Paller <kimseer.paller@analog.com> wrote:
+> >   
+> > > The AD5710R (16-bit) and AD5711R (12-bit) are 8-channel, low-power,
+> > > configurable current/voltage output DACs with an on-chip 2.5V reference.
+> > > Each channel can be independently configured as a voltage output
+> > > (0V to VREF or 0V to 2xVREF) or a current output (0mA to 50mA).  
+> > Series applied to the testing branch of iio.git.  If that all looks
+> > good I'll push out in a few days as togreg and linux-next will pick it
+> > up.  
+> 
+> So, still time to pick-up tags!
+Yup and done so.
 
-That's what an immutable branch means to everyone I've ever shared them
-with in the past, but sure - it wouldn't change.  Anyhow, easier solution
-below.
+Thanks,
 
->=20
-> Also, those patches are not tip-conform, but whatever, not that important=
- for
-> a one-time thing.
->=20
-> What I really don't understand is, why this rush needs to happen now so t=
-hat
-> we completely do a one-off on the agreed upon process and we have to do a=
-ll
-> this unnecessary gymnastics?
->=20
-> We have plenty of time.
->=20
-> So why do we even have to debate this instead of you folks dropping this =
-and
-> we merge it through tip and then everything's going the usual way?
->=20
-> When people start merging x86 patches in their trees, when do you think t=
-he
-> process will break down and we'll have to redo branches and go into a cra=
-zy
-> dependency madness?
->=20
-> We're not merging other stuff through tip without an Ack - why can't you
-> adhere to the process we've all agreed upon?
->=20
-> Yes, this can work now. Is it necessary? Absolutely not because it is
-> a one-off and will get everyone involved, confused.
->=20
-> So please do not do this in the future. If we don't react to the mail, yo=
-u can
-> always ping us on IRC like other folks do.
->=20
-> Thx.
-
-I've dropped the branch from IIO. That's fine because it was still being
-tested and hasn't gone out as non-rebasing yet.
-
-Next time I'll maybe find an IRC gateway and ping you on that.  I can't
-find any reference to that being your preference in the kernel docs.
-Given you have a helpful page on tip, might be worth adding a note.
-I might of course be missing it.
-
-If it goes into a reasonably early rc, I'll just merge the relevant rc
-rather than needing an immutable. If next cycle, immutable please.
-
-I started out a bit grumpy that I had to hold a non trivial series for
-a cycle because of an x86 bug (having been very happy when David
-fixed it incredibly quickly!), that got reviewed then disappeared
-down a hole and didn't look like it would ever be seen again.
-Meh, got me on a belligerent day.
-
-Jonathan
+J
+> 
 
