@@ -1,253 +1,277 @@
-Received: from mail-vs2-f12.google.com (mail-vs2-f12.google.com [74.125.227.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D134F3AB496
-	for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 22:18:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59C5049E137
+	for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 22:53:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789078690; cv=none; b=PDnrdIkTblj3flamtyQuBSwG8Ql5zRXTF8D8PCgKR9rUCerYdTYHJ0jXPMx1EpVtYYS6ckjkp3mCCP0yxacQkIQAqmiIMPrH+IeY7Vz/rDrsHgNGzoTc4nt9GKmhEXGY9lCB74S408Tq3xIUeoop7afHlp5FY6AXU/XqPTvEykQ=
+	t=1789080820; cv=none; b=iGqYL28UemgYbhP0tjr+El3M471mAvGDW0tT3HWQregvgkkoL4vs/5oJ1B/crqiOOPCWGhcUu6sd13pPddFb6V3Wd+oNgJq/TGai6YCy3+QOWv6oxrn/kavkplD1JBVUsSLjqZQ8Sq6WrL2iEctCRPo6m00lKQU36+jOpfFkK3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789078690; c=relaxed/simple;
-	bh=FpkQO46f/bUSNGTI5DtlovFLfVgBaVyf5ToZTa2Ns8g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Mu0SNEJJgcExlFJ2pDf1oFPWvowrzBM1C5+CsPqKNeFPqxEiLtQlJsuYqd33VBC+h7FhL19ji8vby69jlQaj14359SQ10f/qKqnCPAkj2C6STxbRBM0k1Zq4v6TB4HVeD+8MKfAhZOQDEwVht0hZfZ1rrYL+muZ6U10M3NkAA4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ePo1guo0; arc=none smtp.client-ip=74.125.227.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789080820; c=relaxed/simple;
+	bh=ywzAVpVd9woxyUyRNiq5qwV0q+ZG82FlOyUa1OL/WUI=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=lG/5knI2Cv9cRgytayEZa5O9E+Ssxs4rAcn17KWwvs8DkWSF8BjJts6oLh1LslJ+Nrc+C2YGs6VGEKFdhaAFOWHysVV5ne/sdsGvrNipTMNBVoLXYzq8iW43ohe79GKnivCG2WrTz43B8aHyW49FiVh33YVCTvHYTovudOq5FK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D7nJRHxq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ePo1guo0"
-Received: by mail-vs2-f12.google.com with SMTP id 71dfb90a1353d-5c7f4976d90so286126e0c.2
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 15:18:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789078688; x=1789683488; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7KhBqil+DvS5mAyeDQEIkthurB0wyhst9lKXAhOY2nc=;
-        b=ePo1guo0LEwPc3anfuRADIHK6lye/xl3JcOzV/J09RRnBfWtYh0h7BY/pXpbkkpYp0
-         IgWslCTeBffgP/fEg8JahiazBHAF273bpDrbBpBG6nFIZ1GmXw8NgRT9QtexZ55zvj64
-         lfnjLWmxTtjVw39HJ5Qq+2jUP2qRF5tzI9EZ4ruQW8W4gDJkVoUhGRsW6GFz9JzokBu8
-         72qM33gkVc3joniS0cNi+ZdTIz88Ch2lcZRR6ZQ65kuePJy0hdN6XqVU37iYtmJnurnZ
-         bHl6rFzgJjKoPqdAJSfzJ4b0OPad6s9R1Ne91NX1BxyXR4GHFMYy2HT25Jjgqu7+LKsN
-         DoJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789078688; x=1789683488;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=7KhBqil+DvS5mAyeDQEIkthurB0wyhst9lKXAhOY2nc=;
-        b=CR245xTBvMut1U1D+df9YP8jN3zV2FLXve3xAs1FxP5W9FXbuTH/rx8zzyFmVEx3iE
-         FqRrcQPr1hnxU/tGdQ6R5Srh3WpCrsSfCcfahVz3DMjTlOVaGcOJdZHzuxTo4PedTpdc
-         UhjEHGCPzTiRi5IfspEb5jQ0cjzVGUrWQWpOUnObkZrH2PZV1vUnX16e1W676gBD61a5
-         Ky3lzpP7UiUvAu+79ny1PrW8QbjXrIXa0kAMs5jgMjvhwFzDrMY5I7PN77zq40B9NQoW
-         ViooJaEs0kiVUqI//jGVAO7CNokOlzUcx0TcHYDrhhGcKRDshn7FKuk+sPp4ZLkHd96i
-         Vr/A==
-X-Forwarded-Encrypted: i=1; AKwUvByAOkPH7u0OBI3EEt6qandVCcVX/HDA6KLeuynnXndRW8mEzE6SEZXRNYgB455q2P3iH3eDjfV/CRM=@vger.kernel.org
-X-Gm-Message-State: AFuF++kQ3niuMT1OAe+0aO4zugHAwXvyZZPFrr66bjUKFNje5N+JpyIf
-	ijLPKC+Vp0EfxPVSKfKLJD0ZAbuyvhhLYEvkWX2MhbCSwldt658jO2OZ
-X-Gm-Gg: AYBFou1VT+cOjgGieCzMAWWa5uB1Gzl3KkEQFWBLtql/Git0t0HJFeRYk/hzyYrTXry
-	p1MwUZ0qk0eRUSLN9OOtdcBiI91MgqaMFxC7OSuoLNrYY08iNJfda80oUO93wbH4xOI+wEFAWqF
-	EZ3amv4t28gYS2Yo9sh4SkGAmywchsEdZhQ/wvQG59LikQkWYnxLyPEffGcYJ3ezYUgkxK058Z1
-	iwv6IHZ9ort8OZFyLB5HNOOSB+LsLMAyMqhNeMm2xCzmGC9qY5Xhwj6Qvn8go+VwNld+pWB83EB
-	BRTh40vU50jKceiooWMqn69/jWCaf4vh36ODtQ6oAmF8XoOd7ojV8Ft3pdkoG65in6aGue+aW/g
-	SLbmiX7oxUFmwA1jjl38RASdG8OQK3+e/WNLf9LmhPtRaMWLT5nr6W5QlBQTCFa9cw0FVC7CQq1
-	mEefLj5tIh8OVvH8tv4bpQBDhXJlS3CvcKphPBdunBG8QNg5Jm53l3a/Diso9bdFqkQ+UddeOAa
-	ry86g==
-X-Received: by 2002:a05:6122:3787:b0:5c6:7f44:b001 with SMTP id 71dfb90a1353d-5c845d638e3mr1353063e0c.0.1789078687632;
-        Thu, 10 Sep 2026 15:18:07 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c8470e7ef4sm827546e0c.9.2026.09.10.15.18.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2026 15:18:06 -0700 (PDT)
-Date: Thu, 10 Sep 2026 19:19:04 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Conor Dooley <conor@kernel.org>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux@analog.com, jic23@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org
-Subject: Re: [PATCH v1 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI
- connection mode
-Message-ID: <aqMs2CbWbhzCoDOB@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1788368334.git.marcelo.schmitt@analog.com>
- <d9b759d29fa8ca12b6cf083e180b2556ca4533f0.1788368334.git.marcelo.schmitt@analog.com>
- <20260903-liquefy-prologue-9ec914cccf04@spud>
- <apsufKf-EOvTfpwf@debian-BULLSEYE-live-builder-AMD64>
- <aptA9HP82-ss45JF@debian-BULLSEYE-live-builder-AMD64>
- <20260907-spectator-venomous-7528abe370d8@spud>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D7nJRHxq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9C561F000FF;
+	Thu, 10 Sep 2026 22:53:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789080818;
+	bh=ubAUsJUdX9jQ5XJ0mhQuBEarQkVu42iOcmZUpSJtThQ=;
+	h=Date:From:To:Subject;
+	b=D7nJRHxq+ioeBB0FIasIp750izQFr3yTg7q32LULw+LNVzj1sLhQUPl79LeUDBI97
+	 ZWKZPGyvQStR1xpEZbgkcUykph8wFoxdtDOWBi5n5C1gayWJxFHp8n/0s1nrGwdqSp
+	 hLSoHz11hAbWLmAqJJeAvcqvritAAeRBW4St9NAfqj8ZePL4dmkrQLlwu4cOIJeBKF
+	 e+Ik6IlTaxs2fbQwFtByz8FIwJAZr5+IsnEjgyeWe11qobfkLyBM2AiLH7r3LWct9g
+	 Fq63CPpvt+Sc8LOpslqmU6d0eS8nxENiuexWjJVjZUmL5r6fvn8C27ic0S0+9qI9KN
+	 CUOEI+yn8T8DQ==
+Date: Thu, 10 Sep 2026 23:53:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] IIO: 1st set of fixes for the 7.3 cycle
+Message-ID: <20260910235336.6673c019@jic23-hlaptop>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260907-spectator-venomous-7528abe370d8@spud>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Hello Conor, sorry for delayed reply.
+The following changes since commit cee9395acd8043be0644b25c34bfa86623f2b935:
 
-On 09/07, Conor Dooley wrote:
-> On Fri, Sep 04, 2026 at 07:06:44PM -0300, Marcelo Schmitt wrote:
-> > On 09/04, Marcelo Schmitt wrote:
-> > > On 09/03, Conor Dooley wrote:
-> > > > On Wed, Sep 02, 2026 at 02:24:02PM -0300, Marcelo Schmitt wrote:
-> > > > > Document how AD4134 chips are connected to the host SPI controller
-> > > > > according to different wiring configurations.
-> > > > > 
-> > > > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > > > ---
-> > > > >  .../bindings/iio/adc/adi,ad4134.yaml          | 22 +++++++++++++++++++
-> > > > >  1 file changed, 22 insertions(+)
-> > > > > 
-> > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > > index ea6d7e026419..d843c02a394a 100644
-> > > > > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-> > > > > @@ -131,6 +131,28 @@ properties:
-> > > > >      enum: [ free-running, gated ]
-> > > > >      default: gated
-> > > > >  
-> > > > > +  adi,spi-mode:
-> > > > > +    $ref: /schemas/types.yaml#/definitions/string
-> > > > > +    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
-> > > > > +    description: |
-> > > > > +      This property indicates the SPI wiring configuration.
-> > > > > +
-> > > > > +      When this property is omitted, it is assumed that the device is using
-> > > > > +      'no-cs' wiring. When this property is present, it indicates that the
-> > > > > +      device is using one of the following wiring configurations:
-> > > > 
-> > > ...
-> > > > I'd also really appreciate a dts example for a system
-> > > > with one-channel-chain or two-channel-chain looks, given the second
-> > > > device may require different supplies etc. I have no impression in my
-> > > > head of how the dt would be constructed, so I'd like to see wht you have
-> > > > in mind.
-> > > 
-> > ...
-> > 
-> > Realized what I said doesn't make much sense. The peripherals can all have
-> > the same configuration and thus share CS, SCLK, and controller SDO. The wiring
-> > would be like the following
-> > 
-> > ::
-> > 
-> >   +-----------------------+                               +-----------------+
-> >   |         AD4134        |                               | SPI Controller  |
-> >   |                       |                               |                 |
-> >   |                       |                               |                 |
-> >   | SPI interface    SCLK |<--------------------+---------| SCLK            |
-> >   | for register       CS |<--------------------|-+-------| CS              |
-> >   | access            SDI |<--------------------|-|-+-----| SDO             |
-> >   |                   SDO |------->|¯¯¯¯\       | | |     |                 |
-> >   |                       |        |MUX  >------|-|-|---->| SDI0            |
-> >   | Data interface  DOUT0 |------->|____/<------|-|-|---- | GPIO            |
-> >   | for ADC sample  DOUT1 |---------------------|-|-|---->| SDI1            |
-> >   | data read        DCLK |<-------------+------|-|-|-----| DCLK            |
-> >   |                 DOUT2 |<-+           |      | | |     |                 |
-> >   |                 DOUT3 |<-|-+         |      | | |     |                 |
-> >   |                   ODR |<-|-|---------|--+   | | |  +->| Offload Trigger |
-> >   +-----------------------+  | |         |  |   | | |  |  +-----------------+
-> >                              | |         |  |   | | |  +--| PWM1            |
-> >                              | |         |  +---| | | ----| PWM0            |
-> >                              | |         |  |   | | |    +-----------------+
-> >                              | |         |  |   | | |
-> >   +-----------------------+  | |         |  |   | | |
-> >   |         AD4134        |  | |         |  |   | | |
-> >   |                       |  | |         |  |   | | |
-> >   | SPI interface         |  | |         |  |   | | |
-> >   | for register     SCLK |<-|-|---------|--|---+ | |
-> >   | access             CS |<-|-|---------|--|---|-+ |
-> >   |                   SDI |<-|-|---------|--|---|-|-+
-> >   |                   SDO |  | |         |  |   | | |
-> >   | Data interface        |  | |         |  |   | | |
-> >   | for ADC sample  DOUT0 |--+ |         |  |   | | |
-> >   | data read       DOUT1 |----+         |  |   | | |
-> >   |                 DOUT2 |<-+           |  |   | | |
-> >   |                 DOUT3 |<-|-+         |  |   | | |
-> >   |                  DCLK |<-|-|---------+  |   | | |
-> >   |                   ODR |<-|-|---------|--+   | | |
-> >   +-----------------------+  | |         |  |   | | |
-> >                              | |         |  |   | | |
-> >                              | |         |  |   | | |
-> >                              | |         |  |   | | |
-> >   +-----------------------+  | |         |  |   | | |
-> >   |         AD4134        |  | |         |  |   | | |
-> >   |                       |  | |         |  |   | | |
-> >   |                       |  | |         |  |   | | |
-> >   | SPI interface    SCLK |<-|-|---------|--|---+ | |
-> >   | for register       CS |<-|-|---------|--|-----+ |
-> >   | access            SDI |<-|-|---------|--|-------+
-> >   |                       |  | |         |  |
-> >   | Data interface        |  | |         |  |
-> >   | for ADC sample  DOUT0 |--+ |         |  |
-> >   | data read       DOUT1 |----+         |  |
-> >   |                 DOUT2 |              |  |
-> >   |                 DOUT3 |              |  |
-> >   |                  DCLK |<-------------+  |
-> >   |                   ODR |<----------------+
-> >   +-----------------------+
-> > 
-> > 
-> > So we would set them as only one daisy-chained device.
-> > 
-> >     spi {
-> >         ...
-> >         adc@0 {
-> >             compatible = "adi,ad4134";
-> >             reg = <0>;
-> >             spi-rx-bus-width = <1>, <1>; /* 2 lanes of 1 bit each */
-> > 
-> >             <supplies, clock, and other properties ...> 
-> > 
-> >             #daisy-chained-devices = <2>;
-> 
-> Does this property actually provide value here? I assume it does because
-> otherwise you don't know how many devices there are.
+  Linux 7.3-rc1 (2026-08-30 13:34:40 -0700)
 
-Yes, the number of daisy-chained-devices is needed to determine how much data
-to transfer on ADC sample read. We already have some documentation in
-Documentation/devicetree/bindings/common-properties.txt
+are available in the Git repository at:
 
-> 
-> >             adi,spi-mode = "two-channel-chain";
-> 
-> How does this interact with spi-rx-bus-width? Is the value of this
-> consistent with adi,spi-mode? IOW, for adi,spi-mode = "one.." will there
-> only ever be Dout0 connected to the host and for adi,spi-mode = "two.."
-> will Dout1 and Dout0 both be connected?
+  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fi=
+xes-for-7.3a
 
-For this particular ADC design, yes.
-adi,spi-mode = "one-channel-chain" always expects spi-rx-bus-width = <1> (only DOUT0) and
-adi,spi-mode = "two-channel-chain" always expects spi-rx-bus-width = <1>, <1> (DOUT0, DOOUT1).
-Though, it is possible to have spi-rx-bus-width = <1> and
-spi-rx-bus-width = <1>, <1> in non-chained setups.
+for you to fetch changes up to 7d38af8f20239a66e90de7632a79c9425256c574:
 
-Will make the constraints explicit on v2.
-allOf:
-  ...
-  - oneOf:
-      - required: [adi,spi-mode, '#daisy-chained-devices']
-        properties:
-          adi,spi-mode:
-            const: one-channel-chain
-          spi-rx-bus-width:
-            maxItems: 1
-      - required: [adi,spi-mode, '#daisy-chained-devices']
-        properties:
-          adi,spi-mode:
-            const: two-channel-chain
-          spi-rx-bus-width:
-            minItems: 2
-            maxItems: 2
-      - properties:
-          '#daisy-chained-devices': false
+  iio: proximity: vcnl3020: fix ISR bitmask check in IRQ handler (2026-09-0=
+7 03:12:17 +0100)
 
+----------------------------------------------------------------
+IIO: 1st set of fixes for the 7.3 cycle.
 
-Best regards,
-Marcelo
+A couple of core fixes, the rest usual mix of driver issues that surfaced
+from merge window until now.
+
+core
+- buffer: Ensure that when using the iio_push_to_buffers_with_ts_unaligned()
+  that the full buffer is zeroed.
+- trigger: Cancel reenable_work() before freeing the trigger that might be
+  re-enabled.
+dma-buffer
+- Fix wrong sizing for a mapped sg_list.  If an IOMMU was using a fused
+  entry the mapping might walk off the end.
+
+adi,ade9000
+- Wait for power up before requesting interrupts.
+- Fix overlap in scan index for current and voltage channels.
+- Ensure Phase C dip event included in IRQ1 handler.
+adi,adf4377
+- Initialize all of a clk_init_data.
+adi,adis*
+- Ensure debugfs reads are finished before unbind.
+adi,axi-adc
+- Initialize mutex.
+adi,admv1013
+- Ensure mutex is intialized before notifier that might use it is
+  registered.
+- Fix wrong channel field used for read_raw.
+allwinner,sun4i
+- Drop a pm_runtime_put() when there was no get.
+- Ensure correct cleanup on driver probe fail due to any issues with
+  the thermal zone.
+aspeed,adc,
+- Don't eat reset deassert errors.
+awinic,aw96103
+- Make sure firmware length is validated rather than blindly trusting
+  it.
+bosch,bmp280
+- Fix out of bounds lookup of sampling frequency due to indexing based on
+  elements in matrix rather than just the correct dimension.
+invensense,timestamp library
+- Ensure time estimate doesn't invert wrt to current time in a corner
+  case occasionally seen.
+kionix,kx022a
+- Off by one in array boundary check.
+- Close a memory leak and state corruption in error path.
+maxim,max1363
+- Sign extend bipolar values to ensure correct reporting to userspace.
+maxim,max30102
+- Fix NULL dereference by checking there is data in the FIFO before
+  trying to do anything with it.
+microchip,mcp47a1
+- Ensure highest possible value actually settable.
+pulsed-light,lidar-lite
+- Don't leak the IIO device registration if runtime pm setup fails
+  particularly as it was being freed.
+rockchip,saradc
+- Fix wrong fallback compatible for rv1106 that lead to trying
+  to use too many channels (correct support will follow next
+  merge window)
+rohm,bd79124
+- Correct limit used for rising alarms.
+- Fix which registers related to limits are used in initialization.
+- Apply GPIO mask to allow subset of GPIOs to be toggled.
+- Add missing regmap error handling in a few places.
+- Ensures scale is read only.
+rohm,bm1390
+- Don't silently eat a data read error.
+rohm,bu27034
+- Don't silently eat error when reading gain.
+- Ensure we infinite delay doesn't happen on error.
+semtech,sx9324
+- Fix wrong proximity channel resolution.
+sharp,gp2ap020a00f
+- Make sure to drain irq_work in remove path.
+st,vl5310x
+- Ensure direct mode is claimed for read_raw avoiding corruption
+  of buffered accesses.
+vishay,vcnl3020
+- Use write bits for ISR mask and ensure right event reported.
+vti,sca3000
+- Fix up a condition check for the frequency divider.
+xilinx,xadc
+- Swap registration of cleanup of work with that of irq
+  to ensure that no irqs can cause work that has been freed
+  to be queued.
+x-powers,axp288
+- Add bias override quirk for Haier HV103H.  Fix because we
+  used to always override then moved to trusting the firmware
+  setup - which fixed some boards, but broke others.
+
+----------------------------------------------------------------
+Antoniu Miclaus (3):
+      iio: adc: ade9000: request interrupts after powering the device
+      iio: adc: ade9000: fix overlapping scan_index for current and voltage=
+ channels
+      iio: adc: ade9000: handle Phase C dip events in IRQ1 handler
+
+Arka Mondal (3):
+      iio: imu: adis16480: fix unprotected debugfs reads
+      iio: imu: adis16400: fix unprotected debugfs reads
+      iio: gyro: adis16136: fix unprotected debugfs reads
+
+Cong Nguyen (2):
+      iio: adc: max1363: sign-extend bipolar differential channel reads
+      iio: proximity: pulsedlight: fix iio_device left registered on PM set=
+up failure
+
+Donggeun Yoo (1):
+      iio: proximity: vl53l0x-i2c: claim direct mode for raw reads
+
+Fan Wu (3):
+      iio: light: gp2ap020a00f: drain irq_work after free_irq
+      iio: adc: xilinx-xadc: free IRQ before cancelling the unmask worker o=
+n unbind
+      iio: trigger: cancel reenable_work before freeing trigger
+
+Felix Gu (2):
+      iio: adc: sun4i-gpadc-iio: drop underflowing pm_runtime_put() calls
+      iio: adc: sun4i-gpadc-iio: clean up on thermal zone registration fail=
+ure
+
+Geert Uytterhoeven (1):
+      iio: frequency: adf4377: Fully initialize clk_init_data and clk_paren=
+t_data
+
+Hui Su (1):
+      iio: pressure: bmp280: fix out-of-bounds access in sampling frequency=
+ lookup
+
+Janani Sunil (1):
+      iio: adc: adi-axi-adc: Initialize state mutex
+
+Jean-Baptiste Maneyrol (1):
+      iio: inv_sensors: fix estimated value larger than interrupt timestamp
+
+Jonathan Cameron (1):
+      iio: buffer: Ensure bounce buffer used for unaligned case is zeroed.
+
+Laxman Acharya Padhya (1):
+      iio: proximity: aw96103: validate firmware data length
+
+Marco Chen (1):
+      iio: health: max30102: fix NULL dereference in interrupt handler
+
+Matti Vaittinen (10):
+      iio: adc: rohm-bd79124: Fix rising alarm
+      iio: adc: rohm-bd79124: Fix channel initialization
+      iio: adc: rohm-bd79124: Fix GPIO mask check
+      iio: adc: rohm-bd79124: Catch regmap errors at measurement start/stop
+      iio: dac: rohm-bd79703: Do not allow writing SCALE
+      iio: pressure: rohm-bm1390: Return error when read fails
+      iio: light: rohm-bu27034: Fix error return
+      iio: accel: kionix-kx022a: Fix array boundary check
+      iio: light: rohm-bu27034: Fix infinite delay on error
+      iio: accel: kionix-kx022a: Prevent memory leak and fix state
+
+Michael Hennerich (1):
+      iio: buffer-dmaengine: fix sg entry iteration when building dma_vecs
+
+Pengpeng Hou (1):
+      iio: adc: aspeed: propagate reset deassert errors
+
+Runyu Xiao (1):
+      iio: admv1013: initialize callback mutex before registering notifier
+
+Salah Triki (3):
+      iio: accel: sca3000: fix frequency divider condition check
+      iio: frequency: admv1013: fix wrong channel field used in admv1013_re=
+ad_raw()
+      iio: proximity: vcnl3020: fix ISR bitmask check in IRQ handler
+
+Tuna K=C4=B1l=C4=B1=C3=A7 (1):
+      iio: dac: mcp47a1: Allow full-scale output
+
+Vladislav Leonov (2):
+      dt-bindings: iio: adc: rockchip-saradc: Group single-entries into an =
+enum list
+      dt-bindings: iio: adc: rockchip-saradc: Fix RV1106 compatible
+
+Vladyslav Ivashchenko (1):
+      iio: adc: axp288: Add TS bias override for Haier HV103H
+
+Zhang Jie (1):
+      iio: proximity: sx9324: Correct proximity channel resolution
+
+ .../bindings/iio/adc/rockchip-saradc.yaml          | 18 +++----
+ drivers/iio/accel/kionix-kx022a.c                  | 30 ++++++++---
+ drivers/iio/accel/sca3000.c                        |  2 +-
+ drivers/iio/adc/ade9000.c                          | 31 +++++------
+ drivers/iio/adc/adi-axi-adc.c                      |  4 ++
+ drivers/iio/adc/aspeed_adc.c                       |  4 +-
+ drivers/iio/adc/axp288_adc.c                       |  8 +++
+ drivers/iio/adc/max1363.c                          |  8 +++
+ drivers/iio/adc/rohm-bd79124.c                     | 20 ++++---
+ drivers/iio/adc/sun4i-gpadc-iio.c                  | 10 ++--
+ drivers/iio/adc/xilinx-xadc-core.c                 |  9 ++--
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 16 ++++--
+ .../iio/common/inv_sensors/inv_sensors_timestamp.c | 11 ++--
+ drivers/iio/dac/mcp47a1.c                          |  4 +-
+ drivers/iio/dac/rohm-bd79703.c                     |  3 ++
+ drivers/iio/frequency/adf4377.c                    |  4 +-
+ drivers/iio/frequency/admv1013.c                   |  9 ++--
+ drivers/iio/gyro/adis16136.c                       |  2 +-
+ drivers/iio/health/max30102.c                      | 12 +++--
+ drivers/iio/imu/adis16400.c                        |  2 +-
+ drivers/iio/imu/adis16480.c                        |  4 +-
+ drivers/iio/industrialio-buffer.c                  |  3 +-
+ drivers/iio/industrialio-trigger.c                 |  2 +
+ drivers/iio/light/gp2ap020a00f.c                   |  2 +
+ drivers/iio/light/rohm-bu27034.c                   | 62 +++++++++++++-----=
+----
+ drivers/iio/pressure/bmp280-core.c                 |  2 +-
+ drivers/iio/pressure/rohm-bm1390.c                 |  2 +-
+ drivers/iio/proximity/aw96103.c                    | 30 ++++++++---
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c  |  4 +-
+ drivers/iio/proximity/sx9324.c                     |  2 +-
+ drivers/iio/proximity/vcnl3020.c                   | 24 ++++++---
+ drivers/iio/proximity/vl53l0x-i2c.c                |  3 ++
+ 32 files changed, 234 insertions(+), 113 deletions(-)
