@@ -1,47 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE96313540;
-	Thu, 10 Sep 2026 06:17:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 751313BFE50;
+	Thu, 10 Sep 2026 06:18:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789021079; cv=none; b=QfO70FKGNrvz37ewRh6FKjdCn04jWxmv/7xUSVCp5gIZ9PpIyWGq8uQQ/+7Mlb4JXt2I6+NXoPNctW7xr4HQoLOWvNS789TO4ju5YD+93mQe0F0wUojSP2e9NW9qZY11OBUSMGC2hKNiVRO2SyaGiUKRL3Df6QXIix7NR0DqNwM=
+	t=1789021140; cv=none; b=esMxGSwjUBcZCC6SAGUAAwozfoOZlRuRkNqidzyD+Z2tCTCvlr4WQs0tp82IoCh/aORTFUzTMY41d5y/9jyDX7wluf5VU8IvSxTAjgr8dcQRlwtfOzk5ciUE6HiRZzj/Ns6XL/KSUjTQDkQ4xIUCns+X1P0dp4b/8IEDryYxnOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789021079; c=relaxed/simple;
-	bh=lX2H6tJzjDaEqrU3m0VAa0Q9dPhG+eO0bVV+azleiVE=;
+	s=arc-20240116; t=1789021140; c=relaxed/simple;
+	bh=4Z2aNs/WtsBom8rfZQn9lhOGeiji611YV6/m2sscbYE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RWbfC0djJTG7KeqxY5BFsNqkWw1PS5hDXyxXszABjj6xC+unp75PZIy6RwqL1D/xD4GKXJEcvasNlEgbPLTyoHYzHsEmqcCQt+uiqUTPY+H5+BJHjrFk6b9IubMbKTR70TWTfKHuevkDpx7UDF6D4ph6T+73gMhIaIyhPVMogYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lxl/r3YK; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=koTgrMxOlsJpDvSnaDVehgfoompdDEUbVqq2Qz70ALTZ4bSCfD29Ht2rfwya1Js1pWcqOnxz78rWTvV4o7vZy++Vf5cKOTGmmuNoRGw8m9R6nxnYXftD2O9kYILkb/dg01jhB1u1IcdcBGgMRs6fK3RlGb0V5FG7/BIhytX3r24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f0NTZLM6; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lxl/r3YK"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f0NTZLM6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789021075; x=1820557075;
+  t=1789021135; x=1820557135;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=lX2H6tJzjDaEqrU3m0VAa0Q9dPhG+eO0bVV+azleiVE=;
-  b=lxl/r3YKYO3RinUSrcoqZcqpaNpAAD/QDYxZy+gJAm+H24zsjWEobY/6
-   Zf3basgE8YUZcXLp3zky4nD7ZgcAR6Rh7yB3ShMaiBD88Ng0z2AnQOC4x
-   0D0AhBVBypKmgnsh7U6Y7bTL4YpgbUxKe6cgIwmbnwWsskp/TgrH7ap6+
-   gX2JKoqRwW358+/QV8aNHVE/78/6H2MVt9d7y9sRTVq5bNEHCB2AHaLQh
-   VgQcFpYNNYDhu63YJNID3+7yAn4DeDM4YLMY7ftac8DG9Xf/MQfdXjROX
-   WrI/2cFbuC+M23rIc3k/KHqDtCkF9/k9ez1S1F9ctaPOGoVB5pArvg8kT
-   g==;
-X-CSE-ConnectionGUID: CNN/rpthT8+yvthM7R5hUg==
-X-CSE-MsgGUID: tlJV2wTMQgm5kwq6EK3LWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="88608868"
+  bh=4Z2aNs/WtsBom8rfZQn9lhOGeiji611YV6/m2sscbYE=;
+  b=f0NTZLM6gXLVWVFDFSQs3e/IaEixe18SHQOpDjHGG15mpXSZQlOpnMuA
+   ygpBdMsUXycAiE9fXgE9kll/M36b3qBwIhjs2pnSU4A3MY2urObFnhvzX
+   FervEG9SxjRVzvSf+nXxrXocLV5Kko1xVaW0hblmrhFWhjZHQgl8yZiSp
+   H9QuVsKe5+xlnYUr5ZJvOQRTHGSEhl3QYgP0+wmIeMm+77uS08s1GQ9VC
+   6/TTCIE+UDXGHif9ffk/ndH7/uXrc9kbude7sQksEGaSFG2ZVbDkAaCzS
+   R3wG1uSjWRZeM9+rgfwLj16ptxzuuPskKZfsq/UhLjpsfPTuxz/xMThBe
+   A==;
+X-CSE-ConnectionGUID: SxjPh/AWRSevctWoC/Bw+w==
+X-CSE-MsgGUID: vZNCkCGcRt+RfHG0A7OnNg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="112233692"
 X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
-   d="scan'208";a="88608868"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 23:17:43 -0700
-X-CSE-ConnectionGUID: epmyjWNyRYSN9lZUigs0JQ==
-X-CSE-MsgGUID: yLwiR/QkQIqi7FgNCAuYyQ==
+   d="scan'208";a="112233692"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 23:18:42 -0700
+X-CSE-ConnectionGUID: kRTYCzrMSQ6t2m3BddUnDg==
+X-CSE-MsgGUID: aHqKcekzSkaTybY/GMagtQ==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
+   d="scan'208";a="276778970"
 Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.177])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 23:17:39 -0700
-Date: Thu, 10 Sep 2026 09:17:36 +0300
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 23:18:39 -0700
+Date: Thu, 10 Sep 2026 09:18:37 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -51,10 +53,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 10/10] iio: dac: add support for Microchip MCP48FEB02
-Message-ID: <aqJLgJqyvKmHXDLe@ashevche-desk.local>
+Subject: Re: [PATCH v5 00/10] Refactor Microchip MCP47FEB02 I2C driver in
+ separate modules to add support for MCP48FEB02 SPI driver
+Message-ID: <aqJLvet2-6YUDYDF@ashevche-desk.local>
 References: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
- <20260909-mcp47feb02_refactor-v5-10-8b67bcab93d1@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,43 +65,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260909-mcp47feb02_refactor-v5-10-8b67bcab93d1@microchip.com>
+In-Reply-To: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Sep 09, 2026 at 05:18:53PM +0300, Ariana Lazar wrote:
-> This is the IIO driver for Microchip MCP48FxBy1/2/4/8 series of buffered
-> voltage output Digital-to-Analog Converters with nonvolatile or volatile
-> memory and an SPI Interface.
-> 
-> The families support up to 8 output channels.
-> 
-> The devices can be 8-bit, 10-bit and 12-bit.
+On Wed, Sep 09, 2026 at 05:18:43PM +0300, Ariana Lazar wrote:
+> Refactor I2C driver implementation into separate modules in order to add
+> support for SPI MCP48FxBy1/2/4/8 DAC family on top of the I2C implementation.
+> The I2C and SPI devices have the same memory map and supported
+> functionalities.
 
-...
+> ---
+> Changes in v5:
+> - improve commit messages by justifying the changes made
+> - increase polling time for EEPROM writes
+> - delete unnecessary comments and extra blank line from header file
+> - Link to v4: https://lore.kernel.org/r/20260819-mcp47feb02_refactor-v4-0-beb2aa3bfd09@microchip.com
 
-> +static int mcp47feb02_spi_probe(struct spi_device *spi)
-> +{
-> +	const struct mcp47feb02_features *chip_features;
-> +	struct device *dev = &spi->dev;
-> +	struct regmap *regmap;
-> +
-> +	chip_features = spi_get_device_match_data(spi);
-> +	if (!chip_features)
-> +		return dev_err_probe(dev, -ENODEV, "No SPI device found\n");
-
--ENODATA and fix the message accordingly.
-
-> +	if (chip_features->have_eeprom)
-> +		regmap = devm_regmap_init_spi(spi, &mcp47feb02_regmap_config);
-> +	else
-> +		regmap = devm_regmap_init_spi(spi, &mcp47fvb02_regmap_config);
-> +
-> +	if (IS_ERR(regmap))
-> +		return dev_err_probe(dev, PTR_ERR(regmap), "Error initializing SPI regmap\n");
-> +
-> +	return mcp47feb02_common_probe(chip_features, regmap);
-> +}
+I have a felling that the first few patches are actual fixes and they lack of
+Fixes tag (and possible Cc to stable@).
 
 -- 
 With Best Regards,
