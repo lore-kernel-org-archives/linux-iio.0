@@ -1,103 +1,106 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13D644BAA11;
-	Thu, 10 Sep 2026 16:09:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E17F14B4873;
+	Thu, 10 Sep 2026 16:28:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789056562; cv=none; b=gRu2qX0BUicJAB53SNVomsSSSk2kSqDVossXTfw1s0oVKU3eDASGrNXnp+h0CW90uMCnAGR5zeh5cbo7OWF6+O0gLGgPIXFG5dXlMW6S7hjHNGr/IBlQEaME0U7WmbXCQXE44sIaw70USVrRhFCYekuNEKxrBTP4T2OvV1Gg/4Y=
+	t=1789057730; cv=none; b=VDXDbBLUohOY6LDs8JqCsnAQ8tyZeylDJHtWke8mWyid8C7LiS3sUCuXfWaRNKzQ4Efq9Co8bNJahewN//R0NurpwL1r1qok8InnL80Ht6vOBMo648p2xbky6ofeUm23uE8eoMKU/i5pAxRMqOM1UxcR5lXmAZOhfYmuyTbbsiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789056562; c=relaxed/simple;
-	bh=2U+ltwTMYXVi268fLCTmLLyzR8pRlBbwry1hESU4vmY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hsTSQqNvrpH8KWRMx7CXA/dlhuj6/KXZ/ILroh2lgP5RgBFPURmOjZrvcAh2GCf89TjuRR6qp5Y7k7rSchmq8Dv+yaBhsp/15l0BJzeq13v+17sNrh6RrIY2r6T2CGz3lAr7UnbqpNri4yfjWqxWQBAWCdmARwaPs+GbFgKFd54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gjy0BHbI; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789057730; c=relaxed/simple;
+	bh=zN74qOGTs+DC1ynmbOnlbsyud3YnQUEz4BnZ9WEc1Ng=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=laZjOyleSIBgiSZWFIvmKDPRVipbyiyFe1EiY+ODCNTK4il1O53L0brjgiNXMACh+Kq+JTWHe6C9+ptbDETHZL/qprWlSyagOqL+HKBdxPrPLqHc+Itdw9T9/0uLZSnetAT+w9pOFhEgOZYpr+oKQ2DfqXYBBaFCJPDllxN9ME4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mB7+YWTv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gjy0BHbI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FBC81F000FF;
-	Thu, 10 Sep 2026 16:09:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mB7+YWTv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C8A1F000FF;
+	Thu, 10 Sep 2026 16:28:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789056560;
-	bh=whGOP8ry5KPgaWQs8fLSDE+EARpX6C5SukzqMWGdOzs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gjy0BHbIvE9M4P14oFmxBamBCvnsFWxZoEcpHVoE4CtL8F9RC3OCsF64+AezugUfz
-	 D3Z3Cx/+Fs6zl8BpxFGxWJUuN56FTKSYkh01tbhhtPcp9fqTHohEhOtbzXF7WYQuvy
-	 FBajWDxYwAAp0WA5oI6S6Wm8PNkIAyZIJHUhpYkpk2/TB9YZ7GclIKxfnR3Il0A2Qj
-	 hF56nYWC2fLMMQdOYxb1R+0TENpbDumQjS7pVAc0QXPSNZc0uQrUcFK4SfjaOtaxWt
-	 0hRgp9H3UK583qCTQMD1NA6TgcozPmPh4O8wosRNL1p+9GzK6f6oYv420bJ0fCP7UE
-	 +fnong2p8AB+g==
-Date: Thu, 10 Sep 2026 17:09:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>,
- David Laight <david.laight.linux@gmail.com>, linux-iio@vger.kernel.org,
- Nicolas Pitre <nico@fluxnic.net>, Ingo Molnar <mingo@redhat.com>, Thomas
- Gleinxer <tglx@linutronix.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Peter
- Zijlstra <peterz@infradead.org>, rodrigo.alencar@analog.com
-Subject: Re: [PATCH 0/2] x86: Use "er" asm constriant for add/sub
-Message-ID: <20260910170913.1a3ab4b2@jic23-hlaptop>
-In-Reply-To: <20260910034527.GBaqIn13O6zSuD4vak@fat_crate.local>
-References: <20260803163955.627bdd3f@pumpkin>
-	<20260823233536.30b984ed@jic23-huawei>
-	<20260901175101.1e059ac8@jic23-huawei>
-	<20260907231444.7fa2d116@jic23-huawei>
-	<20260908033216.GAap-BwAmBqoVDUbMK@fat_crate.local>
-	<ap_cLN807bC56OBU@monoceros>
-	<20260908152127.GCaqAn9zI09T7qvMhH@fat_crate.local>
-	<aqAtRgouK7DyDlpJ@monoceros>
-	<20260908165501.GDaqA95YQKx_IL416d@fat_crate.local>
-	<20260910042029.7c78f6dd@jic23-hlaptop>
-	<20260910034527.GBaqIn13O6zSuD4vak@fat_crate.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1789057728;
+	bh=rq3v6IDpCKYvcZnfGrqUurfiS216mfdDk4RHW1732TE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=mB7+YWTvTh5ZMcda+z4IaGizwwwsiLok1IBiaPGVIt6PFYVoyCqMqAkbOGsqDjtK4
+	 ra9m6kFPyyMWFiTFLAKy2EhYA6771OgGWMUe4FT4LiyhvYr83m1HJCjDa19U+YGvri
+	 cMrg1RdTuBdjb8HmGGkz9MPV9Vj5/oYK/BCtBDl5fO/u3fnbPnsZVfYPgNVbwFGT3H
+	 FSyMsi1O/sfyBcHyzhoymo17d6B9CB6Vglbmyq8Q5XRSI1BNxj65fDU4Kn91JpmEWJ
+	 N60xG0yhTqVkQU/97L+ErDfT/Wteg00jqgBQZ/5vZ2eR4ng/W3YYE44jPT4SzMNAWc
+	 FGCj1gX8XHsGQ==
+Date: Thu, 10 Sep 2026 17:28:41 +0100
+From: Lee Jones <lee@kernel.org>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>,
+	Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
+	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	mfd@lists.linux.dev, linux-fbdev@vger.kernel.org
+Subject: [GIT PULL] Immutable branch between MFD, Backlight, IIO and LEDs due
+ for the v7.4 merge window
+Message-ID: <20260910162841.GL1051768@google.com>
+References: <20260731113632.158440-1-clamor95@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260731113632.158440-1-clamor95@gmail.com>
 
-On Wed, 9 Sep 2026 20:45:27 -0700
-Borislav Petkov <bp@alien8.de> wrote:
+Enjoy!
 
-> On Thu, Sep 10, 2026 at 04:20:29AM +0100, Jonathan Cameron wrote:
-> > I've dropped the branch from IIO. That's fine because it was still being
-> > tested and hasn't gone out as non-rebasing yet.  
-> 
-> Ack, will do first thing tomorrow.
-> 
-> > Next time I'll maybe find an IRC gateway and ping you on that.  I can't
-> > find any reference to that being your preference in the kernel docs.
-> > Given you have a helpful page on tip, might be worth adding a note.
-> > I might of course be missing it.  
-> 
-> I'll send you a private note after this.
-> 
-> > If it goes into a reasonably early rc, I'll just merge the relevant rc
-> > rather than needing an immutable. If next cycle, immutable please.  
-> 
-> First one can go to Linus now, second one would go next cycle. Do you want to
-> base ontop of both?
+The following changes since commit cee9395acd8043be0644b25c34bfa86623f2b935:
 
-Only need the first patch, so I'll just pick it up by merging
-an RC once it this is upstream.
+  Linux 7.3-rc1 (2026-08-30 13:34:40 -0700)
 
-Thanks,
+are available in the Git repository at:
 
-Jonathan
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-backlight-iio-leds-v7.4
 
-> 
-> > I started out a bit grumpy that I had to hold a non trivial series for
-> > a cycle because of an x86 bug (having been very happy when David
-> > fixed it incredibly quickly!), that got reviewed then disappeared
-> > down a hole and didn't look like it would ever be seen again.
-> > Meh, got me on a belligerent day.  
-> 
-> No worries, happens to all of us.
-> 
-> Thanks!
-> 
+for you to fetch changes up to 0077e5ed836a01a0c82f23b91afdd38e42ace8b8:
 
+  video: backlight: lm3533_bl: Implement backlight_scale property (2026-09-10 15:02:16 +0100)
+
+----------------------------------------------------------------
+Immutable branch between MFD, Backlight, IIO and LEDs due for the v7.4 merge window
+
+----------------------------------------------------------------
+Svyatoslav Ryhel (13):
+      dt-bindings: leds: Document TI LM3533 LED controller
+      mfd: lm3533: Remove driver specific regmap wrappers
+      mfd: lm3533: Remove extern from shared functions in the header
+      mfd: lm3533: Pass only regmap and light sensor presence to child devices
+      iio: light: lm3533-als: Remove redundant pdata helpers
+      mfd: lm3533-core: Remove redundant pdata helpers
+      mfd: lm3533: Use dev_groups in struct device_driver
+      mfd: lm3533: Convert to use OF bindings
+      mfd: lm3533: Add support for VIN power supply
+      mfd: lm3533: Set DMA mask
+      video: backlight: lm3533_bl: Improve logic of sysfs functions
+      video: backlight: lm3533_bl: Set initial mapping mode from DT
+      video: backlight: lm3533_bl: Implement backlight_scale property
+
+ .../leds/backlight/ti,lm3533-backlight.yaml        |  69 ++++
+ .../devicetree/bindings/leds/ti,lm3533-leds.yaml   |  67 ++++
+ .../devicetree/bindings/leds/ti,lm3533.yaml        | 169 +++++++++
+ drivers/iio/light/lm3533-als.c                     | 185 +++++-----
+ drivers/leds/leds-lm3533.c                         | 121 +++----
+ drivers/mfd/lm3533-core.c                          | 386 ++++++++-------------
+ drivers/mfd/lm3533-ctrlbank.c                      |  33 +-
+ drivers/video/backlight/lm3533_bl.c                | 188 +++++-----
+ include/linux/mfd/lm3533.h                         |  77 +---
+ 9 files changed, 722 insertions(+), 573 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/backlight/ti,lm3533-backlight.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533-leds.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533.yaml
+
+-- 
+Lee Jones
