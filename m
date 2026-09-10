@@ -1,115 +1,111 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3D68383305;
-	Thu, 10 Sep 2026 03:45:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C2E3B52EF;
+	Thu, 10 Sep 2026 06:11:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789011958; cv=none; b=MSJTpy2mf/NaO3w2SLAxxwMQGVWUgeZoqCaBlsDzppBPKsL2MArZhb5HjX5bb6dsnZT1H4h5XuECtDTVStY0RyB7sHEqsLqYvX8dvWts+UWyY3PKSEidsWi41ipBTtVH/enKCxn4qWZw5jIV6jrnk6762J/aAAU5UQwW5OIo4Vs=
+	t=1789020678; cv=none; b=CBRVBzKsVSTX4tOr+aw64851Fj7wvYIM/nHuZhOgXvUn1sCGPQDsHY4v+SweVU/cFVjPVGen+AMIhhxTikeTVsyJLkABlbGd4MVw7CZ784aIoGqbLDDjQEE3Tax74R2HWwE/F3Bo/xGe/xz0SdlsF1bLqMXcgK3LNWgvQnR/pG8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789011958; c=relaxed/simple;
-	bh=pS8e2j4HOahUdcPV8ba72XPZyvYGzUGcrWKB5XBMJzI=;
+	s=arc-20240116; t=1789020678; c=relaxed/simple;
+	bh=QwNridbtN+uHeClq4a+JVROnQE83dx90utjc+3oG40c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X4kmnViSfernOG1xsAYi1QRL6IqRd1ytRhVBxGpaIKdSRjUnQw4ZL561bxZXuIEkV26TSQ2gvg/GyQVMclKBu5ipZgEkt4RxXDL1xRsw2PLub4XfWgDeTQU/8lIslW4sOihZtL05786QUbrOEGBDJDS8TlBzerZscBn9/nLJV9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=OC28JCDB; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=mCg/d2qOJlUYTfEzdKXOYEBcwVbxNfQz0p5xKLj1O7+qSO1wcDlgy08V9X5or1GyD4EjLAvhiBFpatIMgAzxTXe6PcAyna54E/R5h6KGwxI8Hczb6cgQ4ERoicjqNsxLQHwd9A2Xf7ALiyMKF8kkx9Gbc3Si0q/HURcLSMORA7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OPbOCxIJ; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="OC28JCDB"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 47FCF40E0320;
-	Thu, 10 Sep 2026 03:45:54 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id PUFBndoUYOrF; Thu, 10 Sep 2026 03:45:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1789011944; bh=dGMsuLF+fQsklJw684lX5zh9Sk/KJNJzz3GASuAfcIE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OC28JCDBltf+WoY6eBtGlRT+HH1KAO2XEw3Kh/e+u96pVU2HaMIaYPyh/Kj0jUv7m
-	 1s7ssND78ocn0QMsYzqn2K7lStLXMjFS9+97C00ZYGM1HJxAKKu4K9suhJ8gjX2EZQ
-	 ZlNdT/+3/Z4dcy0l+NO+m5BCAl2/23iu4YpVHhhKSAfJj65GX1iH2Dy2Lj+buOjRx4
-	 KsVqPYorGzWuC9ZEJeTHhYLSncwAJk7Otq6Ov9CrutGIIhjGx4ZSeYbFD1F+ImKlJN
-	 dWhUV1yf2669Fxpban97o6y0P2NiCM7/J0pGBJI4B2GMHJBje/7lfDFCUNr35BLOSZ
-	 7KAkWpPq60z/GJfPNPZnLn+avxRcAFi/peNCjYWLYtJqL2d0UcTgi1pkZP5KBJNKqk
-	 nrxun9EGr0cegPIAhnBomCKWObyVks51jkC7gPwnT3hFwd8t/SKUVCgCxLlv4Qyqy1
-	 rh8OfVCnEgnSMjKU2udZY4xHXkCN1O1XrKJzkn+IJf3Id3GRT1wA/BF38D/b1gDKKP
-	 3s3GuursSyRCzsP3c3u/rfoE/pLEp36pXn+8qSxIILZlY2q0vYZ6ZrfljU3G92PnCl
-	 BWN98YUpjNazlIM46XDZlqk0vWbrcDyOwXDzbxhg4M/FuKfJUBiXAu9ndwUA2nDZYD
-	 fDVh/lz+UiLE9J9EGerD/Igs=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id AC97340E01DD;
-	Thu, 10 Sep 2026 03:45:29 +0000 (UTC)
-Date: Wed, 9 Sep 2026 20:45:27 -0700
-From: Borislav Petkov <bp@alien8.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	David Laight <david.laight.linux@gmail.com>,
-	linux-iio@vger.kernel.org, Nicolas Pitre <nico@fluxnic.net>,
-	Ingo Molnar <mingo@redhat.com>,
-	Thomas Gleinxer <tglx@linutronix.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-	Peter Zijlstra <peterz@infradead.org>, rodrigo.alencar@analog.com
-Subject: Re: [PATCH 0/2] x86: Use "er" asm constriant for add/sub
-Message-ID: <20260910034527.GBaqIn13O6zSuD4vak@fat_crate.local>
-References: <20260803163955.627bdd3f@pumpkin>
- <20260823233536.30b984ed@jic23-huawei>
- <20260901175101.1e059ac8@jic23-huawei>
- <20260907231444.7fa2d116@jic23-huawei>
- <20260908033216.GAap-BwAmBqoVDUbMK@fat_crate.local>
- <ap_cLN807bC56OBU@monoceros>
- <20260908152127.GCaqAn9zI09T7qvMhH@fat_crate.local>
- <aqAtRgouK7DyDlpJ@monoceros>
- <20260908165501.GDaqA95YQKx_IL416d@fat_crate.local>
- <20260910042029.7c78f6dd@jic23-hlaptop>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OPbOCxIJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789020674; x=1820556674;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QwNridbtN+uHeClq4a+JVROnQE83dx90utjc+3oG40c=;
+  b=OPbOCxIJz0S6AqLUbPOGq3jLT/VWh9INCRZg05SK/bcQqWhzWQa04kA6
+   EEUDmSytBYb2ej9FwTgG+LTvbm6ovdotr+ivxxjux5Sf3Rj4p2wvETitF
+   VhVpO/g2/cV+Nc1T1ph9ovWXfVkX/g3VSDS8CM38Zh3V/hy2MUynPslzn
+   EIpAV3c08QVfZktZOc7h4asGnP4iGqupLPKxdFcGZKLDKH1pjVZTxYla2
+   jO8tJjKj0Sp0tkhslJxdUWwq7nXAyvAQjVdQKcwaacZ5dJWCKfuhN+te0
+   YhHDZLroP7Hk2FrtPH7HGDWxlCfyCP4FZrgyIEsg2Cdsh50Hyk1PSZsDr
+   w==;
+X-CSE-ConnectionGUID: nV91dn9bSN2qpXXnaiISRg==
+X-CSE-MsgGUID: ayE39PaBRlS36BozTsFF5w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="93286547"
+X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
+   d="scan'208";a="93286547"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 23:11:09 -0700
+X-CSE-ConnectionGUID: /gZHSE5NRS2DWmVQk9pBqA==
+X-CSE-MsgGUID: t4T+ut5mSA6TC3m5vQ+kdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
+   d="scan'208";a="267846085"
+Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.177])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 23:11:05 -0700
+Date: Thu, 10 Sep 2026 09:11:03 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 04/10] iio: dac: mcp47feb02: Increase EEPROM
+ Programming Write Cycle Time
+Message-ID: <aqJJ95_uvUowDbMo@ashevche-desk.local>
+References: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
+ <20260909-mcp47feb02_refactor-v5-4-8b67bcab93d1@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260910042029.7c78f6dd@jic23-hlaptop>
+In-Reply-To: <20260909-mcp47feb02_refactor-v5-4-8b67bcab93d1@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Sep 10, 2026 at 04:20:29AM +0100, Jonathan Cameron wrote:
-> I've dropped the branch from IIO. That's fine because it was still being
-> tested and hasn't gone out as non-rebasing yet.
+On Wed, Sep 09, 2026 at 05:18:47PM +0300, Ariana Lazar wrote:
+> Increase the EEPROM write polling timeout to prevent -ETIMEDOUT errors and
+> incomplete nonvolatile write cycle, according to the time specified in the
+> datasheets (11-16 ms).
 
-Ack, will do first thing tomorrow.
+...
 
-> Next time I'll maybe find an IRC gateway and ping you on that.  I can't
-> find any reference to that being your preference in the kernel docs.
-> Given you have a helpful page on tip, might be worth adding a note.
-> I might of course be missing it.
+>  	ret = regmap_read_poll_timeout(data->regmap, MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR,
+>  				       eewa_val,
+>  				       !(eewa_val & MCP47FEB02_GAIN_BIT_STATUS_EEWA_MASK),
+> -				       USEC_PER_MSEC, USEC_PER_MSEC * 5);
+> +				       USEC_PER_MSEC, USEC_PER_MSEC * 1500);
 
-I'll send you a private note after this.
+While at it, make it clearer with
 
-> If it goes into a reasonably early rc, I'll just merge the relevant rc
-> rather than needing an immutable. If next cycle, immutable please.
+				       1 * USEC_PER_MSEC, 1500 * USEC_PER_MSEC);
 
-First one can go to Linus now, second one would go next cycle. Do you want to
-base ontop of both?
+(note that some editors marks numeric constants with distinguishable colour).
 
-> I started out a bit grumpy that I had to hold a non trivial series for
-> a cycle because of an x86 bug (having been very happy when David
-> fixed it incredibly quickly!), that got reviewed then disappeared
-> down a hole and didn't look like it would ever be seen again.
-> Meh, got me on a belligerent day.
+>  	if (ret)
+>  		return ret;
 
-No worries, happens to all of us.
+...
 
-Thanks!
+>  	ret = regmap_read_poll_timeout(data->regmap, MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR, eewa_val,
+>  				       !(eewa_val & MCP47FEB02_GAIN_BIT_STATUS_EEWA_MASK),
+> -				       USEC_PER_MSEC, USEC_PER_MSEC * 5);
+> +				       USEC_PER_MSEC, USEC_PER_MSEC * 1500);
+
+Ditto.
+
+>  	if (ret)
+>  		return ret;
 
 -- 
-Regards/Gruss,
-    Boris.
+With Best Regards,
+Andy Shevchenko
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
