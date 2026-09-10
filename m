@@ -1,69 +1,68 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+Received: from mail-oi2-f12.google.com (mail-oi2-f12.google.com [74.125.231.204])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E6D342C513
-	for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 21:14:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E33F942E430
+	for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 21:14:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.204
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789074893; cv=none; b=fS4XTDcxndwcaXrLtM5fL3QyEF4qT4vvMj+pqLqnCpVHHYTyM+pOqjWRLfLMKlYPKoygD5SPnyoqZcpzVrP53Hs8C4Y5guYxTv/k0JawRgrTtIq1Q4SFyBG4WhrMFUvV84l3K47ctx4J5bzMArP+rxGiTuADsW0Hj4JSOXhUyB0=
+	t=1789074893; cv=none; b=X0kxLUnH96oZ0xRK36nyvBcoZbesdo1Q0XC3Slj1FPzKm+zPL3/BS68xk89H12CU4X845UW/aLTZugcripIrgI6RVcAXaeD22gJAQ0/1tQVpyqDorgxqcVlAXWqAwtoI822R7dLAXupTCufVJU27bg8LtVFTxhtK1VteQxLKqzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1789074893; c=relaxed/simple;
-	bh=NlAn62+1tvYuJ/QDOCCCJAGBONbgbO7UKHidEAgXFbc=;
+	bh=GJPVs2NQci4j2hQP0V6E0YPPvN8JlhkXSX7vksZ1gUg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sAGYLc/2QX2SmQ/2WNEAOFxXqfIOCs1roeGl+14m+zPavqUbLtH0RUXAtRtDimsPKrC1vPBpMl2Aw/DFvruTaF6e723gustTW2WW0rpKy7MnaJIgb1/xAXPkDzbFashGFf0iUKeoWPw9Kxt9e37wy5YwkaLtGS9r4A8TB1jQ41o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ikf71vLN; arc=none smtp.client-ip=209.85.167.180
+	 In-Reply-To:To:Cc; b=AqbOpC5cGdcF2YmLxixDOTycs1UvuF5mtHoSpvIuXVV1LrjqFpvCYs5d7mCiKXmm+x+hmr4/Jx9I+2ApndleOCU/Lkdxq5orFyvqoUDuQA9seFsUk2z7gSXyJLGyjA2smyxZAnigBXGNjBvBOICV6KXG+H5Pob2/BwtdyUFHtiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=HAFDQy7+; arc=none smtp.client-ip=74.125.231.204
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ikf71vLN"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-4b381337e1fso326636b6e.1
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 14:14:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="HAFDQy7+"
+Received: by mail-oi2-f12.google.com with SMTP id 5614622812f47-4b37a39a42dso133022b6e.0
+        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 14:14:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1789074880; x=1789679680; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1789074878; x=1789679678; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=C7TzjYhYQHl6A/Cy+Gf5z/r3vfrczkehr4YTwiho+ac=;
-        b=ikf71vLNOY+ZsmJo+7AUN6LMbMXF7RZck83AQ6B4NC4K9YQuu7gA6dlJNd/7+cSrok
-         OJvbUaNwa+MCpqy0RWGUENAk/qy2LxC3A+YNNRZNwFOGH3hR5D7N1HF9jjOFjlLpw+kV
-         QeYsqQ8FbI9sNdjVGlXG9p3NpcK/YPb+BG3DU5N67oAARlHgKz5DZYm0Q0GKGdEZG1pP
-         7JWTGJZvo/w+wA9leAnqXkj5cTQK60Ee1rk+98XZcPbuk9wqGfaEfkJnRya2u1S5n1f1
-         oXvhNxkopI9YnUF12f90gtwLS3exRTaKi2BU+ieg3MuJfwqnm/EoSurdDXu8hpdJ2wFr
-         BGKQ==
+        bh=RaUDv6jZm7IW5T2ncwIblB7pFriUxG8BMMkD58QXmUY=;
+        b=HAFDQy7+RhttkDhQlPJgllU4poo90y1uN58YjM3XrGvv5FmbuZopKLwWkZOl0vXz1T
+         3xZfUjqNL1wOVqqxH547ByzayduVw1IerrNi4P5lESH9/DijlGKArJyrbKRNzqEJjW+C
+         VUTROwa9G62wVoxbp+Te0dYsTXCpTgeZnszH8xIpzCvCI86O9IZPbmRJeOGWYFLnERL9
+         SDogtaGLAquEuqyIGsoB4m0QpmjZRYgjNDE7zM9yZfe/NKKQZGpw0VWKTAW1fApEZNz6
+         rCxCRhz6hck+LveWYjxVIhiZn58Alf5Wh9PZVrDYDwoYtHtLSK0KBdBVBdUWGcsRUqpn
+         I9TA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789074880; x=1789679680;
+        d=1e100.net; s=20251104; t=1789074878; x=1789679678;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=C7TzjYhYQHl6A/Cy+Gf5z/r3vfrczkehr4YTwiho+ac=;
-        b=HuDANPrnI9MXKU0ldXuvV3YeYgoGMvtGJd2Af/MuA8+oN3LplCYTrL8wb/uuXGWVWU
-         CWQteTyZP8U0qmmWNvk4h+4asIDAD4IoJEXHHEJ2UiczLQIRKtwPmf4ebhnTHdvMp5Rz
-         fJR3D3YEtqz6yl5BSQSWMRBNNbyJ6+lvs5Cg/WX9S1E0BLx3OAjdA6v7VVYA9F8ZPMdj
-         oroSM6J4jiasCDXJqiQhqaDcDTGGvsJ/Wj8Dc1inTRth+OvgYeqxyGE6OCmtbr8HT/4V
-         kKYl3rEN2y8qZFyL52rdY3B+dQ8Dr9GZmhHc9116cF5Q8d4YK1MXQu4KIra9sGjjtN5i
-         YxUw==
-X-Forwarded-Encrypted: i=1; AKwUvByLyEymZBTrYD6kNGzYz6rP6c/2NzYY/5e0pjTDa219fF1p0JSsJyp7hn2VcS4o7bUKqTaHP941a8M=@vger.kernel.org
-X-Gm-Message-State: AFuF++n+3HX7lliGWRg6ScXCMyICx+XGOTEGvGC2d5dxrkB+gAQeOWHd
-	lPTx+Bx84VfgeH8n+waiqhIqyukJBRtdmT9RzaEDDXGXgUcbnhtU9gMzGVlsfqZrtty4r1JWNbz
-	36OmY
-X-Gm-Gg: AYBFou3axPdTrW0WeqQRsM3I5wWu1UK6ZCYE+ywlXFen+jflnxKbe8PPEpFW8smr2Rs
-	KNqWqu3y83D2odXq+l3UFxF1TTJ/rxtMLAuzAgXpS2DXpmMJfKGwfWkHhaCFHJ9Vz4VVv5v7IcN
-	TQpnEd2JpKGhbUb5MwHeW8HBdi7wzKVLLnFfH2Aa87D5UF2ZkSGx0k2CQCT2ScYix5hqvnN740H
-	Avsakk8rbGouJiV6kNguxlSL9jmc4i+2fOAk4Gy9r0RKJcyHbnla44gZmtD/0qG97rvvnjlU2SY
-	q5qIF1Qjsk5epGeg7V6yKlqeJdSDCdE4TkW7Zb2jxN03U+AqyHfgBwdbtB8/u38zNr96LvBbjnf
-	IYHvU87qof1uG+wPaVaV/N0wRkVvcqjZrqpd6OWIqdVAzLnJJHDJQ5HT+2UjfI2zDQ5Fq0mjNMU
-	M3D3APdisJOTGKNAeMCpWuJN03PL3Dpm1Z1/7fPFr5pNRpnb8fLB/n8sb8dT1ZnDFavK6l6AwV3
-	8fn
-X-Received: by 2002:a05:6808:238c:b0:4b9:e65b:8c2c with SMTP id 5614622812f47-4c31b5c1f1dmr714570b6e.26.1789074879810;
-        Thu, 10 Sep 2026 14:14:39 -0700 (PDT)
+        bh=RaUDv6jZm7IW5T2ncwIblB7pFriUxG8BMMkD58QXmUY=;
+        b=FVaoc8u1AAj+6sAcv85TlkowKi4JCi5O8vMRdwhyPsEZioUqDDd4gxDA1mjpr88OvE
+         7XE3Nfq86XbdWu3VNqvycvamlFaOJM+waRZ1czHVy40IlIOcAXhf4aPHRqsMds/mwGm6
+         V3r9qmJgaX3KLGqNIvOy/VXJFVCKDbP9C1Vma3RBhdIfs9VNXp/DLHwgZl5Bldu3zziL
+         hISxj5W9zXP3V0CRNT6IXLUAIido6cylg5OqeE2mVYG4fA4uFX825E/4BewaNGveaWgS
+         1lBKD5F2b9mjNBGkfwRuKbJxKKvksVj9RmRoaFt8fs/7OLSBX6TzY82cOMc22La0I5eW
+         kKng==
+X-Forwarded-Encrypted: i=1; AKwUvByQ71majDuP0LkevLhFriKPb+K68D2VDjD55aRH2eCxtsKTXMptC+PFWNJU0Tz0HmMfBuoh6PglVIA=@vger.kernel.org
+X-Gm-Message-State: AFuF++mNJ/6noX/XVa/4TiVihMAZMNGliEMotD533LHMHczcuFsw8phr
+	7QwOPtMGtRvDFdqC4+c46fWjifIEKOmBMoSYM9zIdoi5861aE/USKoKWarw+NymPmcE=
+X-Gm-Gg: AYBFou0KqqNF4GDS5fjDLvVVqV/b6v6oLyz2h3CjobY9BmKCVQjkFurqCiqvO5AkFg+
+	HX1bsCEAICL5oXAeeNB3epNF3Tfq0oYGenFJ9BwVCi5HLqbCJyUPjMpvnxpZQdo2sycScaJrfHa
+	sCE8F31rHGtGO2ojoXndUz7MRHPtzEzm3ItXSw0yHkSrhXws84hdEovufdUh1PEv9tlZftcCC5F
+	Zw8HQoUcqXvtaWfgpuLIIG4EuFcVq4txGWoYV0gqCdXcw+RDo3p4sbdVnH26jvu2lly+9HNP/Wk
+	G+dWWh5nXgJWlVEubMeELTeuKKMrQ0PmqRh+mtthYhA/OLCX2oLmNpBTxlsKjWcEaQ7FBaLD4h1
+	hJeV4fr31LikAvoQzxHCQ3kbNfZaF46ihHYrlMp22xUJREKuEQfCKAjs3K0/jmZDsOoQcThIXJn
+	O1mtWAe691iiRFn/E4FF/px6dw17vDvKCWFfGinH8f5YIPXpv9eUcfiJwtH8m9hP6GyiZXG34Al
+	6fj
+X-Received: by 2002:a05:6808:2f0d:b0:4b3:5da8:1da0 with SMTP id 5614622812f47-4c3062ff672mr776765b6e.5.1789074877754;
+        Thu, 10 Sep 2026 14:14:37 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:fbf1:d0da:69e0:11a0])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4c330daa42esm347315b6e.4.2026.09.10.14.14.37
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4c330daa42esm347315b6e.4.2026.09.10.14.14.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2026 14:14:38 -0700 (PDT)
+        Thu, 10 Sep 2026 14:14:36 -0700 (PDT)
 From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Thu, 10 Sep 2026 16:13:05 -0500
-Subject: [PATCH v3 06/10] iio: adc: ti-ads112c14: support external clock
+Date: Thu, 10 Sep 2026 16:13:04 -0500
+Subject: [PATCH v3 05/10] iio: ABI: add sysfs attribute for _burnoutraw
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260910-iio-adc-ti-ads112c14-filter-support-v3-6-e5a9b27ddb1a@baylibre.com>
+Message-Id: <20260910-iio-adc-ti-ads112c14-filter-support-v3-5-e5a9b27ddb1a@baylibre.com>
 References: <20260910-iio-adc-ti-ads112c14-filter-support-v3-0-e5a9b27ddb1a@baylibre.com>
 In-Reply-To: <20260910-iio-adc-ti-ads112c14-filter-support-v3-0-e5a9b27ddb1a@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -82,125 +81,42 @@ Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
  Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3749; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=NlAn62+1tvYuJ/QDOCCCJAGBONbgbO7UKHidEAgXFbc=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqox2T+V/oKw+pUSGVkVN4NTBA02qbU78qUsHDS
- 0h0ehUYggyJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaqMdkwAKCRDCzCAB/wGP
- wAP3CACG0r7acfhY3stdbmMVZVZ3So3i1cz/ll1vDWwet/N9GWrZAjBoEephSKllfj4t0toQg4z
- GhD14J3llATl+2grz8j/K3LTQvwFfLSpnImMy4MUNWHxip21ElBPAl+TCwYbFgQioy6DH3emDFV
- 9BBgmKrTtVAZdIFbj2oM56Iv/CUi8yzj0vcSqUTc0zVkx0eQVGjkQoGueVC6mt2vbiefJZ5mx6s
- aJXtpmNpJCPBUEopGejg+duLw7fVb0nb5jUTmRIVvnh4NvL4KESHOWv0kXkN1CDwM7f7KQXg/cS
- MC8t3LUEVPgizHqmhejlO+5NDPi2R5MbNwUzjegJ/s5vwT7C
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1104; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=GJPVs2NQci4j2hQP0V6E0YPPvN8JlhkXSX7vksZ1gUg=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqox2Mm0sB7XapQX43w/pwQEiRiUGXEfKSzjCk7
+ cMX/22PIXiJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaqMdjAAKCRDCzCAB/wGP
+ wM+LB/9rV0udXgWjKDj+MCoUTl43iZuCii2tDgM2haR44hQZcLbx1Dh8IN7MLl4ymuyufWrVqss
+ V91e0kInXHrXl14MwpqBQKvgiDim7QPh6/2BPr6itnMUVydJcbTLqJbLQzCQoDTfyX3WqfwhRNT
+ caSMg1KbwYwGBT3G9E3yetKoKESpQLbg4bgcjdOQAQEM3k7R6mOs1TLzpm+ntWptPTp4KCJVKdB
+ q8ooaG3I6pKaX5aPZ1uSGpcoW1mj82xxc1jcGVOeczi6Is0wqVOKwOI8EDNFEfHIu/IpzupGKCX
+ tn9Mo2XWh3OtPGWMZyiEuhIRqIQ4lZrELNod5rr8lqFAzZ6r
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Add support for an external clock source to the TI ADS112C14 ADC driver.
-The unused fclk_Hz field is added in preparation for filter support.
+Add a new _burnoutraw attribute to the IIO ADC ABI. This is likely only
+applicable to ADCs (but is seen on multiple chips and vendors) so it
+gets its own file instead of being added to the main IIO ABI file.
 
 Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
- drivers/iio/adc/ti-ads112c14.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio-adc | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-index efea1e22d067..0e4584b4675e 100644
---- a/drivers/iio/adc/ti-ads112c14.c
-+++ b/drivers/iio/adc/ti-ads112c14.c
-@@ -11,6 +11,7 @@
- #include <linux/bitfield.h>
- #include <linux/bitmap.h>
- #include <linux/cleanup.h>
-+#include <linux/clk.h>
- #include <linux/completion.h>
- #include <linux/crc8.h>
- #include <linux/delay.h>
-@@ -82,6 +83,8 @@
- #define     ADS112C14_DEVICE_CFG_BOCS_10_uA		  3
- 
- #define   ADS112C14_DEVICE_CFG_CLK_SEL			BIT(3)
-+#define     ADS112C14_DEVICE_CFG_CLK_SEL_INTERNAL	  0
-+#define     ADS112C14_DEVICE_CFG_CLK_SEL_EXTERNAL	  1
- #define   ADS112C14_DEVICE_CFG_CONV_MODE		BIT(2)
- #define     ADS112C14_DEVICE_CFG_CONV_MODE_CONTINUOUS	  0
- #define     ADS112C14_DEVICE_CFG_CONV_MODE_SINGLE_SHOT	  1
-@@ -178,6 +181,8 @@ static const u32 ads112c14_pga_gains_x10[] = {
- 	200, 320, 500, 640, 1000, 1280, 2000, 2560,	/* 8 - 15 */
- };
- 
-+#define ADS112C14_INTERNAL_CLK_Hz 4096000
-+
- #define ADS112C14_I2C_CRC8_POLYNOMIAL 0x07
- DECLARE_CRC8_TABLE(ads112c14_crc8_table);
- 
-@@ -268,6 +273,7 @@ struct ads112c14_data {
- 	struct iio_trigger *drdy_trig;
- 	/* Synchronizes access to register value fields. */
- 	struct mutex lock;
-+	long fclk_Hz;
- 	int drdy_irq;
- 	struct completion drdy_completion;
- 	bool continuous_mode;
-@@ -1536,6 +1542,7 @@ static int ads112c14_probe(struct i2c_client *client)
- 	const struct ads112c14_chip_info *info;
- 	struct iio_dev *indio_dev;
- 	struct ads112c14_data *data;
-+	struct clk *clk;
- 	bool need_avdd_ref, need_ext_ref;
- 	u32 refp_uV = 0;
- 	u32 refn_uV = 0;
-@@ -1628,6 +1635,18 @@ static int ads112c14_probe(struct i2c_client *client)
- 		return dev_err_probe(dev, -EINVAL,
- 				     "external reference measurements require either refp-supply or ti,refp-refn-resistor-ohms property\n");
- 
-+	clk = devm_clk_get_optional_enabled(dev, NULL);
-+	if (IS_ERR(clk))
-+		return dev_err_probe(dev, PTR_ERR(clk), "failed to get clk\n");
-+
-+	if (clk) {
-+		data->fclk_Hz = clk_get_rate(clk);
-+		if (!data->fclk_Hz)
-+			return dev_err_probe(dev, -EINVAL, "clk rate is 0\n");
-+	} else {
-+		data->fclk_Hz = ADS112C14_INTERNAL_CLK_Hz;
-+	}
-+
- 	/* It takes some time for the internal reference to stabilize. */
- 	fsleep(10 * USEC_PER_MSEC);
- 
-@@ -1698,6 +1717,10 @@ static int ads112c14_probe(struct i2c_client *client)
- 			return dev_err_probe(dev, data->drdy_irq,
- 					     "failed to get drdy interrupt\n");
- 
-+		if (clk)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "cannot use both DRDY and CLK - they share the same pin\n");
-+
- 		/*
- 		 * REVISIT: would probably need to implement a pin controller in
- 		 * order to support open drain option here.
-@@ -1737,6 +1760,22 @@ static int ads112c14_probe(struct i2c_client *client)
- 			return ret;
- 	}
- 
-+	if (clk) {
-+		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
-+					 ADS112C14_GPIO_CFG_GPIO3_CFG,
-+					 FIELD_PREP(ADS112C14_GPIO_CFG_GPIO3_CFG,
-+						    ADS112C14_GPIO_CFG_GPIO_CFG_INPUT));
-+		if (ret)
-+			return ret;
-+
-+		ret = regmap_update_bits(data->regmap, ADS112C14_REG_DEVICE_CFG,
-+					 ADS112C14_DEVICE_CFG_CLK_SEL,
-+					 FIELD_PREP(ADS112C14_DEVICE_CFG_CLK_SEL,
-+						    ADS112C14_DEVICE_CFG_CLK_SEL_EXTERNAL));
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ads112c14_populate_tables(data);
- 
- 	indio_dev->name = info->name;
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc b/Documentation/ABI/testing/sysfs-bus-iio-adc
+new file mode 100644
+index 000000000000..e1309b371efb
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc
+@@ -0,0 +1,9 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_resistanceY_burnoutraw
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_burnoutraw
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_burnoutraw
++KernelVersion:	7.4
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw value from channel Y read using a single conversion with
++		the channel burnout current enabled. This is typically used
++		for diagnostic purposes to detect an open or shorted input.
 
 -- 
 2.43.0
