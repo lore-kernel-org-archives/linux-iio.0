@@ -1,27 +1,28 @@
-Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010015.outbound.protection.outlook.com [52.101.228.15])
+Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011017.outbound.protection.outlook.com [40.107.74.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2540626ED3E;
-	Thu, 10 Sep 2026 08:55:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6080F3AFD1B;
+	Thu, 10 Sep 2026 08:55:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789030544; cv=fail; b=Re5PJGHW+PT2RjGwRzbs0yu+2R5XxSxaVHpsMGjd95Wg4h6FiYJHj/Eqm54aUs6a8NHsqRA7Z167kCosbTHiFHBWpp2weR4AIn4nse0cuagFPncirLku/p7zJTdaHDLZGCG05K1QpVJSocRJ30CbRS+Cu/U9BbULP2QuQ3J7/Eg=
+	t=1789030552; cv=fail; b=liXzN4lPc39RzMrGBRWCpXSlopqclvaXXxQo5d4Eq6aXnDTSZJk0AUnEN4K1o+F6Z6c+igk3pnlgQLidF75Fm1QeO/2yR2bbNk1VoOwMpnGuRa0zqImfwoHrURUJxtMYxXoHJ6ZsgrjepMkEIp6922rO7IfOuHJ7Oi/yNgyF950=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789030544; c=relaxed/simple;
-	bh=2EMu9uzP+yqWV/31rWRvXRr5WMFTo9V0Gv5j5yt5GGI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TEO+vd70c16gRVlypVWakE2qDJPNa/IEJFDmz2GcCeff6C6aEE5WW3gAiXT7aJRO2w8wS+ho4FseoiFhyLnsPGL0JuJfRYvvRKjJp+NkJ9wAZigy1gbK+j1abKktVnGsv6YbMM6hL+6S/b1jsz16pEgYTcHgqvGlT+sPM4/gc6M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=LoQSVr/f; arc=fail smtp.client-ip=52.101.228.15
+	s=arc-20240116; t=1789030552; c=relaxed/simple;
+	bh=6HlknFV9/eZ89aaKxVP/Mevlf71JiR+1yq1jXaM11F8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Pub+f55JK/YXWFfz67zpeH7bcBdAzVxRg+MVYUtDx1i10YgdiruOuvRsMjDgSQCHlM7f8AyzWmKuwiJGUZcEG/mzlA6YtjLZv7VWVi1KjU9uvxVsnSKBUO+ptPPaUQ92Nd/LOXHtp3j4aP+oqd8rrDLJbZybhcuIFFIdV8E2ijE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=l6QtrFeg; arc=fail smtp.client-ip=40.107.74.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="LoQSVr/f"
+	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="l6QtrFeg"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=w/iax+wL4DOTaAXYnX+EjaM9Vky3PZ7WeMZHQ0ZXS8gusxJ+dqMAuHxg9mviB4fD95bmOGYPlzdurgwczPWpm++0uLWcx/gwR2rUhRAPHdCLQp6N4BcixzVaPxvXv2dAflue5NUPmPUBMGVVdLfCH2IcyTV40cMZ5OiksIKPikQO+n837m9hb2FalYYmafzFBQuev1REH2k0ecym+9zZaOqdD79mDFCL4QXjMly8hgiW5+e0i6XuAjDZ50DwmNL/29A3PVLTMKemjatxafDF4tc0UR6UlxN9K7la/Er4X4mbj1R/ceaExChSt+o26Qrgkg3sXUbGs7ym33CIVIm63A==
+ b=wR+vCmGalRoBza4T70kt6o8e77GzDa/pIz+XHS5t/W9NpcV+7j1RdWEYJfwcRA4Z5GF4UdvEUfHmWVIcoa4Ez2fZIQXPAQOL/stq5o5IeaP6r5cwIf1Vruf267RcDA6JFpae7jq1SiwJqGDL/9qZyqIoUzK+mi1QSvblkRZZxhWMLQwnbzIpp4W038R7AtJsD54kflmp5BdQ6u68RXdfIoP5yDCMalttYWq9paio79da79WHQXoYHbicHSkwXb1ro6O68i9zLXaswT+l4N/2rmHElb+wA6Nh1LF1gwwaSGJRnZDlbLnprFadJaawJGBzXs3gTEeB/RPgVCR4COyYqA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=00pYQ5WGB29yhK6YjUVR3PZPNbYqz1FovnQY+SUxlXQ=;
- b=o8h7hGMiYuNB8yju3ljr8IbGpmrt9InnVhTWQYnf1oAtZDdGiht6tonKsOnf2N8F2AAH1EyFHDgOLtBY9Ej9MaIV0mo4wVB3V5n0y5DV8IFzKiNwYaczA/UaEmGiiSGby2n4tEP5TenHDpYKDomzbMeTWmuf5IjLxruusUQ6LyM+xwPQgiH+s1F+f5xKzk3xzZkNCPSjdvq6BEeJ5wue/7QkROHKFbKW5UUcqOmiUMCsau0dk5uzenyH3VJHwSYlNgA79UAiisYvyXBdGaSfv51u2vWJBXTMaI+ARm8yYW17RxhxyED09XlfeBo7Exn6H3I1sB3bv3/q5Z2HJL8vLQ==
+ bh=1d+5E091pJ5f0JWSgbdimVAAKqhW8k9nQC9Tw/rEa2k=;
+ b=VzYJ/3k3J+nX3RUoEXz9NJXP9PrwHfJyBLNxKaX1TgmllUPuVMzAMzyFz9EShozXOmWvuFprNHtMxtMMYhuiYItbrvZ5Yu+JQBGHmXWn0x1qONMuxfW2aGuXIWdKeVn4lBi3r2MgQx78IUEPcdS+zXdHXQFZXXuGZl4X4Hln/hnwGAKI+/sXI/UGTiwfFmnPy8cFnj7M9UPbg6FGdSucDj7/MQgQbFHcbzv4Z/X7Bpw7rDBaQ6RAg9b6d7Sfqa4P+TUvXn1DSPl/8RuY/Bgn3wbj+RptGZ4uLq9L75SG5bxKMrOzxjFhYlIOQikYvzEHVZaK7h1IWpIK3JZDmXoZJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  8.62.32.50) smtp.rcpttodomain=analog.com smtp.mailfrom=renesas.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=renesas.com;
@@ -29,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=00pYQ5WGB29yhK6YjUVR3PZPNbYqz1FovnQY+SUxlXQ=;
- b=LoQSVr/fR+azPM7Cv8Jr7RjDTiTOd+/KqWAm+XLs02gHztxKyFkZ+1mOtyROWnd3duxNYweaxTCTDb5z1ZR/u4hBC0POC1OI8RJkE049idCip85YIHVtSgbnMne8gjum3NF+a7x13+sAB3HA7WjmV4g14UWY9GTE1cjJJXPVqZ0=
-Received: from TY4PR01CA0105.jpnprd01.prod.outlook.com (2603:1096:405:378::19)
- by TYCPR01MB8174.jpnprd01.prod.outlook.com (2603:1096:400:103::13) with
+ bh=1d+5E091pJ5f0JWSgbdimVAAKqhW8k9nQC9Tw/rEa2k=;
+ b=l6QtrFegiHB/c90n3POusoHTMNpFuj1EUTE/t6kihRtodLE/zYQK/V4C19wAbCFcofpejc7laK4RCP8A5+Xszyl1+8F9Fzfhwcrh2r9mpGu/8f/G09RkRGnHsv6PLxsCyOJwuncoLBF6U9t7KVDUgHg94WARk4A09aUUFpM5oLM=
+Received: from TY4P286CA0030.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:2b2::8)
+ by TYVPR01MB11170.jpnprd01.prod.outlook.com (2603:1096:400:369::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.9; Thu, 10 Sep
- 2026 08:55:36 +0000
-Received: from TY2PEPF00005622.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:405:378:cafe::5e) by TY4PR01CA0105.outlook.office365.com
- (2603:1096:405:378::19) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 08:55:44 +0000
+Received: from TYO1EPF00005023.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:2b2:cafe::5b) by TY4P286CA0030.outlook.office365.com
+ (2603:1096:405:2b2::8) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.406.9 via Frontend Transport; Thu, 10
- Sep 2026 08:55:36 +0000
+ Sep 2026 08:55:44 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 8.62.32.50)
  smtp.mailfrom=renesas.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=renesas.com;
@@ -48,12 +49,12 @@ Received-SPF: Pass (protection.outlook.com: domain of renesas.com designates
  8.62.32.50 as permitted sender) receiver=protection.outlook.com;
  client-ip=8.62.32.50; helo=ejcrelay004p.adwin.renesas.com; pr=E
 Received: from ejcrelay004p.adwin.renesas.com (8.62.32.50) by
- TY2PEPF00005622.mail.protection.outlook.com (10.167.240.53) with Microsoft
+ TYO1EPF00005023.mail.protection.outlook.com (10.167.240.20) with Microsoft
  SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.406.5
- via Frontend Transport; Thu, 10 Sep 2026 08:55:35 +0000
+ via Frontend Transport; Thu, 10 Sep 2026 08:55:43 +0000
 Received: from demon-pc (REE-0064895.adwin.renesas.com [10.226.92.160])
-	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id 58D0B3000203;
-	Thu, 10 Sep 2026 17:55:31 +0900 (JST)
+	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id 77C293000203;
+	Thu, 10 Sep 2026 17:55:39 +0900 (JST)
 From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -69,10 +70,12 @@ Cc: linux-iio@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/9] iio: adc: rzt2h: add DMA buffer support
-Date: Thu, 10 Sep 2026 11:54:21 +0300
-Message-ID: <20260910085430.3173166-1-cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH v2 1/9] iio: adc: rzt2h: remove unused struct rzt2h_adc::max_channels
+Date: Thu, 10 Sep 2026 11:54:22 +0300
+Message-ID: <20260910085430.3173166-2-cosmin-gabriel.tanislav.xa@renesas.com>
 X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260910085430.3173166-1-cosmin-gabriel.tanislav.xa@renesas.com>
+References: <20260910085430.3173166-1-cosmin-gabriel.tanislav.xa@renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,73 +85,75 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TY2PEPF00005622:EE_|TYCPR01MB8174:EE_
+X-MS-TrafficTypeDiagnostic: TYO1EPF00005023:EE_|TYVPR01MB11170:EE_
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 9e7c3a19-1f37-4d67-dd10-08df0f19475b
+X-MS-Office365-Filtering-Correlation-Id: 632a9866-4c09-4be1-459a-08df0f194c5a
 X-LD-Processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|7416014|1800799024|376014|23010399003|82310400026|921020|6133799003|10067099003|11063799006|56012099006|18002099003;
+	BCL:0;ARA:13230040|36860700016|376014|7416014|1800799024|23010399003|82310400026|11063799006|921020|10067099003|18002099003|22082099003|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	1rIpZhRz6zWWkxuc4FA1xFClWVdmr/4lj1L6ko6kpBf5nOP5ckT3IYSvW6e6yHeBXcfVWVosftRYyIn7rvFlT4C/9k1RLmLkRKyBE9O5CE4ZRoWjqFBzULB+8gjRLOzxMv5aL1JtjUse1rdnhUNoOnQKSuOrHgGBJaIV7SkBTOF5TwBjQB2H88pw4o0OjmkP14qw/bsE1CeScPRMHOlaAbsVPPV/NaAUHZKW1PTK6IDzf+MyXN+G24KHr5S1zeT9haQ3JJTb7VOnolgzcWGyiRKXKoyVO2Ci4G6J0J4UvOMcLaz3bEWbWtfzfuTgCSlECSIXWxDvblP8j4eSAEQlTCw5sX8Wnx6yFvIfWay5K3H1SRrBqvrOcgmMuSzbCELWPVt0vhtVpAAH4uD7huMBRo3QTdwDol5CZ2VbgpcYhZJAymWiyDL/dc/PdnbfykL/I/COzdUrrsMwzLS6nuuhOdA3aIAAICqgJPikyYKKqfBJuFCriTDRYo6cMXdV7FoLfkhBDL3uckWEQyOIgW7ngZs9nncxR96pFvRXTf3ggR3qfT4g4rSWhCCTAjI6ESfAHT0c/fNNFhNtWjOeeaHIZoxxhQinOclTPffmHeMWynInlDzk4nj+rkXKmIYl14M5LwF5od3jMQ1QLso5S5l+Gl/xBcyIAm6+IhN/7zJMc2t5nEu6PMBTgW1qDiEoVmPQLjLyO2dB4uGpkxgeQ84jgHAeD3sXnU4eRyzJYkxkpnEo4fuoksMQmn0EK7M7ZYdw
+	xHx2gs3xOlI+UGp/5PXJi3bDmmObDzwpBQDp1us4ae6UBJgxUtqYV6wZaQKrTR4cgF37TRGIRfmajlmzuu2qajd2mM9SE6+Z8NqHNPgs+Ap9AZIW7J7SDIWlUbXGea776ZFfVVPW1grYsPG0Ujs0770bia+79zsEotMQeywU/6tU1ihXsQPqX41dMPFk2bCppPohHQw/s9nMIoZWGHNCr7qjrKQsf02cBtDIqLeJpZwvqKe+oFebDR9x5Nu84RFrvfYX0ganHRiRVb1QUcbmB7SZQ+cX3yU5oq3IrLEOxLXnvkjABh1/w8DLWFNLvWN0/A1RBsV4ilZkLKyx8CkPjJ0Nifg1qymmM3umADs0Ex3XxkZ6reifDl4WlPjxW8jNTgjHykv5rjvpzs1V41NvxGijDSnYpHhg2R3RBfvCI4etn7hyx+bm7ccWOFV1ouqKgDwRF1kjV4OvfguBaciC4pzCluRx85XfAaF4dxpTLcM9cTUe5XR7WGmzKRZNPQZIgJ5vjqxZefU+aazH244h2maD8RfQJhTWW3puD/HeKtkLCc1wbDqjMKcAUlbOm/uZ4hxRS/LBfb9T+O+rc5H7f1gH/2pS8p36dTTMLOlXoWCOgjp1q2zFQ9+Va0X8o67O8+jwQD0j1ASlf4+FMZtJIBB6b6diqKexVWVfFBPWbx3H1RTTCLZfGdnccRx34s3eu18jRADRZPDiMHvAWMHQKo0qZGEATpzmY+WeHXH7GXe0iRAUcNtTbQHA0JqndBS/
 X-Forefront-Antispam-Report:
-	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(1800799024)(376014)(23010399003)(82310400026)(921020)(6133799003)(10067099003)(11063799006)(56012099006)(18002099003);DIR:OUT;SFP:1101;
+	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(376014)(7416014)(1800799024)(23010399003)(82310400026)(11063799006)(921020)(10067099003)(18002099003)(22082099003)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	kpWsFAg7gK+ZqQAiSkPhOnvn4gDhchYzcaCw0+hPOKgiP0vJ9f8hxeQE9sAi3T9icD9OotbM90mbo7MsHBPD3cdDwSn0tfN8187Ab1er5YsPFMlO/ls01KlYFdH07Ig/dCDbbmtZSK42gbblu1oBmGP6u2yjDAcFp58QaVIdBxecopvy+tuYt2BDatVqpBAEd+7/fBj4Gwp0N0ijTIJa4EBWgj70nq2sJQBWpOEHv+Vm5urcZ+eGAVxOIEYpet1zHOqAG7W+jQtrsP7UN1zlr8d+mRjExp6nKFERoRrc7fp2CCNyRwv/FeX8APjO/KNN+FUvwc4cKWJB/e+CchzaUW5nYDgrtoLKQm4v96pL2PnaKAqF20HrwaUs4mGf3QMqIimt33Kcts5agihPmGKexNBhn9IHVyWU7EsdhfmtXZcYS7NLkuh0Nd6qpB+uBUbx
+	/I5JO2Mo6Wz+s25p9ckVBoKKrb2wfQmadAL7FQ0sElJsE9GLeDLslyolrFdfzX5GDK1KDDlyjXQgh6J4PEggXqa1A5WDHAOXvQ6oPUueQeWqYbJRqbRKkrqwKeyiBmGlK3d8rEUM8XDeaHlbm1W1jJ3EXQBr3fW8NDf5Oc8/o56KIhX40YiSt/WnDoppugOmF6wb1FYyegaZcdbWiTbBbTR4062UQRjXLtZ8PM3nxYyWPDvJYMYkybIk/7UKASREj5ryKPwqlZCOt/2koTwacq9tPnB7eMzyGeGa8E/FJCRt7rNF0hRIf4Bxp8MxBKBIgXoEyrH6wwBrFqaFMJp6CTxYps9+nuRTb4c7mc/Ww7lO8gb1C6aXkXaTy1CRQbozGFufm2cf9KuGlgbylavNmyKS8RGrGQAIYoF9vRqtacRjXd9g9601vv8SI3VQBD1M
 X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2026 08:55:35.5202
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2026 08:55:43.8976
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e7c3a19-1f37-4d67-dd10-08df0f19475b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 632a9866-4c09-4be1-459a-08df0f194c5a
 X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=53d82571-da19-47e4-9cb4-625a166a4a2a;Ip=[8.62.32.50];Helo=[ejcrelay004p.adwin.renesas.com]
-X-MS-Exchange-CrossTenant-AuthSource: TY2PEPF00005622.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthSource: TYO1EPF00005023.JPNP286.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB8174
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYVPR01MB11170
 
-Add DMA-based buffered capture to the Renesas RZ/T2H and RZ/N2H ADC
-driver and the necessary device-tree properties. Also add a per-channel
-sampling-frequency control.
+struct rzt2h_adc::max_channels is unused, and is probably a leftover
+of the devm_iio_adc_device_alloc_chaninfo_se() conversion done after the
+initial submission. Remove it and the logic used to set it.
 
-Capture uses a cyclic DMA transfer into a non-coherent buffer. The DMA
-controller has no per-descriptor scatter-gather and each transfer needs
-to be of power-of-two width, so the transfer covers the smallest
-power-of-two-aligned group of channel registers spanning the enabled
-channels, and a consumer kthread compacts each completed period down to
-the enabled channels before handing it to the IIO core.
+Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+---
 
 V2:
- * advance period index on backlog overflow
- * add a comment describing the logic for dropping already overwritten
-   periods
- * build dma_slave_config as a compound literal
- * use the local dev instead of adc->dev in rzt2h_adc_setup_dma()
- * sync the DMA buffer to device immediately after allocation to handle
-   the zero-fill done by the CPU
- * extend the single read completion timeout to maximum possible
-   conversion time + 1 jiffy
- * pick up Conor's Acked-by
+ * no changes
 
-Cosmin Tanislav (9):
-  iio: adc: rzt2h: remove unused struct rzt2h_adc::max_channels
-  iio: adc: rzt2h: store IRQ in private state
-  iio: adc: rzt2h: store the physical address in private state
-  iio: adc: rzt2h: claim direct mode on single reads
-  iio: adc: rzt2h: implement DMA buffer support
-  iio: adc: rzt2h: expose sampling frequency
-  dt-bindings: iio: adc: renesas,r9a09g077-adc: document DMA support
-  arm64: dts: renesas: r9a09g077: Wire up DMA support for ADC
-  arm64: dts: renesas: r9a09g087: Wire up DMA support for ADC
+ drivers/iio/adc/rzt2h_adc.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
- .../iio/adc/renesas,r9a09g077-adc.yaml        |  12 +
- arch/arm64/boot/dts/renesas/r9a09g077.dtsi    |   6 +
- arch/arm64/boot/dts/renesas/r9a09g087.dtsi    |   6 +
- drivers/iio/adc/Kconfig                       |   2 +
- drivers/iio/adc/rzt2h_adc.c                   | 499 +++++++++++++++++-
- 5 files changed, 509 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/iio/adc/rzt2h_adc.c b/drivers/iio/adc/rzt2h_adc.c
+index 4e0eb02d3d14..42ff6bf2ab08 100644
+--- a/drivers/iio/adc/rzt2h_adc.c
++++ b/drivers/iio/adc/rzt2h_adc.c
+@@ -42,7 +42,6 @@ struct rzt2h_adc {
+ 
+ 	const struct iio_chan_spec *channels;
+ 	unsigned int num_channels;
+-	unsigned int max_channels;
+ };
+ 
+ static void rzt2h_adc_start(struct rzt2h_adc *adc, unsigned int conversion_type)
+@@ -190,7 +189,6 @@ static const struct iio_chan_spec rzt2h_adc_chan_template = {
+ static int rzt2h_adc_parse_properties(struct rzt2h_adc *adc)
+ {
+ 	struct iio_chan_spec *chan_array;
+-	unsigned int i;
+ 	int ret;
+ 
+ 	ret = devm_iio_adc_device_alloc_chaninfo_se(adc->dev,
+@@ -203,10 +201,6 @@ static int rzt2h_adc_parse_properties(struct rzt2h_adc *adc)
+ 	adc->num_channels = ret;
+ 	adc->channels = chan_array;
+ 
+-	for (i = 0; i < adc->num_channels; i++)
+-		if (chan_array[i].channel + 1 > adc->max_channels)
+-			adc->max_channels = chan_array[i].channel + 1;
+-
+ 	return 0;
+ }
+ 
 -- 
 2.55.0
-
