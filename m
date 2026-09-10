@@ -1,67 +1,69 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBC93AB292
-	for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 21:14:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F354B221F26
+	for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 21:14:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789074881; cv=none; b=iblbWmmw8DwjM0n3I/3aV884L0etNeS4NOBF+62BCo4JUOkqYg/a3vaxlIrOII1Av8xSK9hmxzryr4XlXyv+xm5fDcE1/4TXnv9/sgQpokHY9gEr1tZE1EUkpzDpC9mPRaJkLfSkkVuH/v+7VN02JINgBHm4KI/5xn/dfceuwWo=
+	t=1789074882; cv=none; b=JiqdlvQALvd1eXuLDWJnB5HXsspWcWZVhmmb7YEJqqhkg17YJRR/i0ln1I1Gh7/ZIexPIqcdQbtYt3SRuxjkgdigVnZPR8EdwcESHfUZ84YWAC0HU3PqSbVJmNm8idY17dcunJrHlCeGwvuBjCF5xRPjbb3f0LOoLYvWD2k2tEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789074881; c=relaxed/simple;
-	bh=2MRf0iEATe9QMwEIa9W63i8mjSRtVs8e8r/JWhbc2Nk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WfpZS7e4+6oFtxdzBG81meNzh90962gPb4cKjtBWbynA0flzwnbJUjtIEj5NpxwuPjLt5nSj+0eJikuQq8npb6Rpndzq8IdC5EWEKNJ/i25urBdr94bTNCUnrthmtYg4AuKKM45CIqTYPQ3jDww6GV3VleVP57HN979xsPJDNSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=RhtFNV5s; arc=none smtp.client-ip=209.85.167.176
+	s=arc-20240116; t=1789074882; c=relaxed/simple;
+	bh=VauWigPxn+Z06uluw3jfgiSH2uLFsBfjesGM7iHnEqM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=G7rNZ1JTZMi4hIxFkwCIKRUv0SY7s+dOUTzoBS/Z3dvCYvZQykgmPM1jaU7IlkvNQsfUqIe1weuqoGqNuvAAId1oQnEezqGlGsjbWh87+hvy8ox2a1rIgIgPsbTtlM3Xyejg547+LfJUIho52aU64bLJBgiq3qwXpS7B8JgVFGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=QOdaOJ1o; arc=none smtp.client-ip=209.85.167.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="RhtFNV5s"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-4b3a61bdf22so216325b6e.3
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 14:14:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="QOdaOJ1o"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-4b28df1f600so259162b6e.2
+        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2026 14:14:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1789074871; x=1789679671; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=/2o2KBBoY3eBbW7X60cO8yzKvW06Wsw8NjBHTGQ5Xxw=;
-        b=RhtFNV5sKqjGosuimOP3yjUKMlWVtoPUL9E8dcfzD/ZyAzr0XB0YXPXD+eyWzuQdSz
-         gIq/MMAmS43IDxi6QIUX3YIc33sijZBN3t4Kc1E13IQGh4iRD6Lx0NtJ9G6jySa6ZxYu
-         TA7GtvaxzAlrGi0B2dgSWTeLDL08ksqIxEpmqZb1/pOC3EKql52a265kIx1S5MhOE+BF
-         w5fzJtWGexsD7BccZ+YJAb7Yoj1yknY7PMS3aum0skzooa7OtG4m/A/f4SBspM4WiSo7
-         NfHtGywwoX4nvMl+qH/lzjfYiekdTH4g7CyS/7ufhE3YCa8dvRMavNsM/UX/a44awgiq
-         jjjQ==
+        d=baylibre.com; s=google; t=1789074872; x=1789679672; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=2twO4FOA5lpjNQCxYEeZuWL/IrJEo6qIPnLetgsF0Cc=;
+        b=QOdaOJ1o61lBpyuGceeXAwHeeWyCtUEuXrHcpOkeJzBWpqBrvIUEIRs9etaxk2JGRP
+         ZLY8jqrNjaJUC1koxks/IihYpU8x+Stuia4JSgHtebD+OcLw82U1eiW6n/yLxHyIdunp
+         oaY5d325Gzpwhqa1ObvC0P8eoAj2r3UJVs9Q5L4wJ3cqyMP+MNMPUulXyuVjxTpTimQM
+         xJyn9G2p5asrdbsMuY/uRSizva4tgGaBHywZ9DixxYi4RzltBvdN1m8qVWB+CMhbwtFU
+         96ELHXoYZbW/HR3icNTHcMekdsWjqIinnaxlD3TzrgLbZ7jmCSRzle3xqct3nhoGyQ2r
+         zcZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789074871; x=1789679671;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=/2o2KBBoY3eBbW7X60cO8yzKvW06Wsw8NjBHTGQ5Xxw=;
-        b=PcvRaq3tJWHaRaFtIYnqzskAJKYgDUwYj7KpxVerI93QQsIjpXQFawAf+RUCWeyr5c
-         ygr26wpu7wBSxns+Xz+i1omFdn9Lqok8D9BOW8x2K9eEWO8gWUGbn69LOAZxjZKszvRs
-         sjBESTJn/m0RyIZdYUxsEMR8sFGQx0totyMHbPwn24XHLEa6jrhly+OZw3WxCZfxSRxp
-         xiebIxK12nTM+3shkZhTa1pF0pVm1fXu+JD7F2jfqdv8aUBb+lKfAKEzyjIRxG4HHho7
-         oeyDKeD32+ME5N2f0lYzYJsdfw5Snr0vBeydzjt5VygzAG5OJLiP63V6G3cV4hwqo/qk
-         sW8w==
-X-Forwarded-Encrypted: i=1; AKwUvByl6jKdrr6h5/fknI8N7el1Ihp8ttRuxKvOYiv638Y7rH3sPNJhVLbBMyTRoae49nzCkRfVGkYqFCA=@vger.kernel.org
-X-Gm-Message-State: AFuF++lICr87k3LeUlxmg1cvTQBBUKW9BUbpkXUdE2P/ZZlViuyukf3m
-	mIsfibYsDBXZ3LSApoFZHB5hZFjvNPopX5OdMh8PW9M4VjpnPHK01Ik4WtsrQVZ/wko=
-X-Gm-Gg: AYBFou1ZvkCsDrAl25Itv/sbghZzJ1aeR9uubamqbHsCr/ARfZtKEe9C2sLW5ucx1o0
-	JSHHRh92Wey44KR5/JjOBZiSFNbxMPEo7iWqXc+Rm1iuDhljN9eV/DnlohX4mzFRQtDNr8Eui55
-	WkCUP8ZVIMK3Jvm9fDZt7MyNDBTi07pX5+7ZmBAR/waTXa7VaD5oywOYr44+GvO46JOtBFeFc8H
-	MjuO83VmHbXpRzAbEx0pOemf+EhqrElKsQaFaPR296a9LniyI8TIdPpyg1k4Nc+UhnoRRw6WZxc
-	sMjEJ/IoB2cQMcPA4LJpS/gEwwFwXCdzGDiJihidp2Y5B1KTEDuRE74z6LwDZgMk3+Z16/aEBel
-	TaSwrRbQyENcjp6uGq1tAjKKgsWyYNXz6IM2c6sTCHkYYRLmnYajsfLK4uA2TjRGSsnzlhQI+NL
-	S17sRnQ2df+aiLksEonMzfKmFqdEaeKHMd6bD6H6JorM/IcZfax6P2bCtf6FMnxrvK6EBAEzpbv
-	TAg
-X-Received: by 2002:a05:6808:3518:b0:4c3:b3e:4e72 with SMTP id 5614622812f47-4c319d4934bmr678410b6e.12.1789074871227;
-        Thu, 10 Sep 2026 14:14:31 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1789074872; x=1789679672;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=2twO4FOA5lpjNQCxYEeZuWL/IrJEo6qIPnLetgsF0Cc=;
+        b=Y1abVZGOT8RtPVJfPfgYEE3fICc+UxEg1ONA1bed5gU0fTw8K58EC1POvVkp4Nj83e
+         pa2OcZ2WTMZ6HSyLX8I08WXkIv/7VWfFfG5ynQ6AGzGYUGeoeUeZxci8Ck1DjZ0RNn9Q
+         RVaIzFPRky3i2P6O3R5tv19moWDwNRN9zNNMPSu/CMBZ3Ye68eAUDpmqU1q4A7Epcx+I
+         3TInQ+bD+stdk6W5tcVuP6wuCiePgNluLSlXfGAL5VWBl/Mor550Dc21ahaI+C3a7BZ7
+         8jeyKbqgNLhwhlNh+IY1KJRVqAVFn0zxs4ek0I2qXdxc6CUthQRgVgV9REhYj+gAWHJZ
+         9A7w==
+X-Forwarded-Encrypted: i=1; AKwUvBy/YeQyCv6xQ52174yCM6z+NuI+WGoxnjqFY4X0izgK/38kOuoXMiLfHWEb7UvqgjwtHnkuxRVc2mw=@vger.kernel.org
+X-Gm-Message-State: AFuF++mGF9WSO/gCz5uKlPe76+kR7nKwtRiN/aP0JLeXYW+QkZfsCdiF
+	/O/2ETFIB7R3L5zp7ceBNwqu8xBqUklcR+rSwDbn5Fw+HLWIoshMgpND3qhUuPYC+VM=
+X-Gm-Gg: AYBFou2EWM88YTI4Sz5r8xVcRCY+4XAoq+sZvTy1x3Uq1hQjCmDwbnoVoHQlbH9tkFu
+	aL8dl0hZFBVU1C3b0bEdGt7WFios8oXfvV7Q4zYmvUVG0VGnatVVF8AADQPLFGBEnY/lHl1R9p5
+	tdDxEt5PPKzFydNkMipJLLNpv7g8JBuv2ZmzCeSvD90RpSwadxNT2qnN+2prwc1Prr8+cwkeKlN
+	tT1ZLueXKUPa3zmtLAmUgPqyytDp9HuSs9gbao7Kn2pI/Ic/iKWTraDuPkHVS1H6TF6ElpU77IE
+	vlmmAPsOGA+g4mf7jsW/DRb+ssrInxcl8c71kdoBpblJJYXn88PndEeRPEQFCy1+Gn4d+CuI6lV
+	q1iuWD9EhOs6Ejm68cFboJ84uemCqPEnK9cTd4D3PbUQsbfruMdyPZtvSqqYlGVZz5BV9rXGjNB
+	Q7J3gZI+Xv5YyBkWjOOt83qnqjSLnNZ2dvcPyzFS7BGqSCmBNX8/cgWGlRypLQ8YDOjr7qGjqbF
+	mQf
+X-Received: by 2002:a05:6808:bc4:b0:4b5:5bfa:2698 with SMTP id 5614622812f47-4c31f29bbdamr637922b6e.20.1789074872096;
+        Thu, 10 Sep 2026 14:14:32 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:fbf1:d0da:69e0:11a0])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4c330daa42esm347315b6e.4.2026.09.10.14.14.29
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4c330daa42esm347315b6e.4.2026.09.10.14.14.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2026 14:14:30 -0700 (PDT)
+        Thu, 10 Sep 2026 14:14:31 -0700 (PDT)
 From: "David Lechner (TI)" <dlechner@baylibre.com>
-Subject: [PATCH v3 00/10] iio: adc: ti-ads112c14: add filter support
-Date: Thu, 10 Sep 2026 16:12:59 -0500
-Message-Id: <20260910-iio-adc-ti-ads112c14-filter-support-v3-0-e5a9b27ddb1a@baylibre.com>
+Date: Thu, 10 Sep 2026 16:13:00 -0500
+Subject: [PATCH v3 01/10] iio: adc: ti-ads112c14: add DRDY interrupt
+ support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,13 +71,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/5WPwW7DIBBEf8XiXGrAhto59T+qHgAvyVaxcQBbj
- SL/ezdOpUo9tafRaHffzN5YhoSQ2aG6sQQrZowTmeapYv5kpyNwHMgzJZQRnXjhiJHbwfOCJFl
- K5WXLA54LJJ6XeY6p8M5q02kRdC8CI9KcIODnnvL2/vB5cR/gyx39vZHgslB8eawxZzNwH8cRy
- 6Gi+1wnGCNNa2pQkxacjuxOO2EuMV33F1a5H/+r7Sq54O3QOCuEt0F2r85ez+gSPFP+HrGqH2w
- v2r9hFWFDZ3SvGiOM/o3dtu0LprrAwH4BAAA=
-X-Change-ID: 20260807-iio-adc-ti-ads112c14-filter-support-8a56850f590f
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260910-iio-adc-ti-ads112c14-filter-support-v3-1-e5a9b27ddb1a@baylibre.com>
+References: <20260910-iio-adc-ti-ads112c14-filter-support-v3-0-e5a9b27ddb1a@baylibre.com>
+In-Reply-To: <20260910-iio-adc-ti-ads112c14-filter-support-v3-0-e5a9b27ddb1a@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
@@ -83,216 +82,203 @@ Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
  Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=10621;
- i=dlechner@baylibre.com; h=from:subject:message-id;
- bh=2MRf0iEATe9QMwEIa9W63i8mjSRtVs8e8r/JWhbc2Nk=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqox1rdCEj0fb/c334yeA2X+gwOJEeueRugZtTa
- CgobF/iS5yJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaqMdawAKCRDCzCAB/wGP
- wJwYB/4yyHEn+pFa43yQ1oahbrFtqByHigJvdpa5QYZ+H3Q4PBQagUqh8wdem9Ogm/KP+6mvXS5
- A904rJJhtAk6BeybHHT84fqd3DftZV5bURsth34MnQcvwtRw4eKMxhVkwKKiODLxtAuKHI7NKkC
- b1fAoCycqYjIwaqAVNqAurzOSIZBVFGDeua4gyqk8XRiPYGumiJWLJ/FRxrp+qNC5GAUPmL3bks
- xwtap8HpMIJv9OLyg9e7pwOwZyxtdMyKHxoGJy2hgYUn8vTtZMH/sCDiG0U2j7if7cQjkb11xrP
- FYRsYvLr7moh9D/6K/OLxBj5NiVNOnAXYyT+Trlg3H7d20kL
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6077; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=VauWigPxn+Z06uluw3jfgiSH2uLFsBfjesGM7iHnEqM=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqox1zRAl8t0XV1k72wgNbvQnrebA7vNlJrC0Ik
+ pWNHoDHO4eJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaqMdcwAKCRDCzCAB/wGP
+ wMVBB/9CVUwz7VYQtx1gS9gLJMycRuNRg16SiZ9JTlJt2lMFkhSWu0doFPx1qwkPOsfkRDAv/3r
+ dV5bJwEOwdqHSP8UKnrUgYwrBJarm9j1iA66UoolWmqaqffRIYx7vegFYCj5186NO8hjVk4bdRp
+ E3WsDz5Zex6S68jCSCOXvRmPAqpNF+pdTN4FoLPftEL2Ry49nCD+RbQo8QxV2L+q7LHz0jBaMTF
+ fPzjvhKk/xqrfMkDWVxjN3ketu2eATUuCI92/njKCVf0zgCcAg1JOnreOwIQ/3WeatB3I/kvb+n
+ A7H1sBbxBDfB/OjWw+hJxZrEheRYyvjjveVL7IHiTEPntHPR
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-I was hoping to avoid this, but until [0] lands, sashiko doesn't know
-how to handle patch series with dependencies. So I have combined my
-three outstanding ti-ads112c14 series into a single one. It's really
-too much all at once, but this seems the best way to speed up the review
-process at the moment.
-
-[0]: https://github.com/sashiko-dev/sashiko/pull/389
-
-So we now have:
-
-* patches 1-3: "iio: adc: ti-ads112c14: continuous mode support", last
-  reviewed as v5 [1] (identical to what was sent with [2] but review
-  was done on the standalone series)
-* patches 4-5: "iio: adc: ti-ads112c14: add burnout current support",
-  last posted/reviewed as part of this bigger series [2].
-* patches 6-10: "iio: adc: ti-ads112c14: add filter support", last
-  posted as v2 [2]
-
-Apart from the changes listed below, the patches are the same as in
-those postings.
-
-[1]: https://patch.msgid.link/20260831-iio-adc-ti-ads112c14-continuous-mode-v5-0-76f80a04b94f@baylibre.com
-[2]: https://patch.msgid.link/20260904-iio-adc-ti-ads112c14-filter-support-v2-0-f86592360658@baylibre.com
-
-The rest of this cover letter describes the filter support portion.
-
-TI ADS112C14 has several features related to filtering that are all
-interconnected. And to make things more interesting, not of the register
-fields map directly to IIO attributes. So this is one of those cases
-where we need to bend the rules a bit and just document it (we've
-already discussed this a bit in the previous series for this driver and
-came to this conclusion).
-
-Here is the high-level overview:
-
-We are adding sampling_frequency, oversampling_ratio, filter_type, and
-a (new to IIO) settlingtime attribute.
-
-Since register fields have different meanings depending on filter type
-we have a quirky rule that if the filter type is sinc4 or sinc4+sinc1,
-then you need to set the oversampling ratio first in order to see the
-expected available values for the sampling frequency. For sinc4+sinc1+pf1
-it is the other way around, you have to set sampling frequency first
-in order to see the expected available oversampling ratios.
-
-In other drivers, we've opted to store the requested values for dependant
-attributes like this and pick the closest available one when actually
-starting sampling. I opted not to do that here as there is not much
-overlap between settings. And as we will see below, there are other
-reasons for being picky about sampling frequency.
-
-We also discussed in another series about a proposed settlingtime
-attribute. The conclusion was that it should be the total settling time
-delay (in seconds) before a chip takes the first sample (after any
-settings have changed). In this chip there is a DELAY field in a
-register that programs some extra delay in addition to an always present
-fixed delay. So the way the attribute will work for this chip is that
-the settlingtime_available attribute will list the range including a
-minimum value. This happens to be the always present fixed delay. So the
-difference between that and the current value of the settlingtime
-attribute will be programed as the DELAY value. It also seems that the
-fixed latency period includes the conversion time. We've just glossed
-over that for now and not subtracted that from the settlingtime
- attribute.
-
-Now, here is where things really get interesting/complicated. There are
-even more settings that affect the settling time. We defined the
-settling time as just a delay before the first sample. However, there
-are a couple of things that trigger the "first" sample. On this chip,
-the first sample only counts in continuous sampling mode. So only works
-as described when using the DRDY trigger in this driver. When using
-a generic trigger, e.g. a hrtimer trigger, single-shot sampling mode
-is used, so every sample is a "first" sample and has the settling delay
-added. This is mostly a non-issue other than it could throw people off
-that they cannot set the hrtimer frequency close to the sampling
-frequency attribute and actually get that sampling rate.
-
-And there a few other idiosyncrasies we haven't accounted for. To keep
-things simple, we've implemented settlingtime as tDELAY + tLATENCY
-(datasheet values). But this actually include the conversion time as
-well. Also, tLATENCY is longer if you are coming out of standby mode
-(this doesn't matter at this point since we didn't implement power
-management, but we wouldn't want to change it and break userspace
-later).
-
-Then there is also input chopping where the positive and negative input
-channels are swapped in the mux in the ADC on each sample. In these
-cases, every conversion requires the settling time because the mux is
-switched after every conversion. And the actual first sample has
-additional delay (presumably does two conversions). So the first sample
-takes tGC_LATENCY = 2 × (tDELAY + tLATENCY) – 12 tMOD and every sample
-after that takes tGC_DATA = tDELAY + tLATENCY – 12 tMOD. For this one,
-I have valued simplicity over accuracy in the implementation, so it is
-the same where settlingtime = tDELAY + tLATENCY and not worried about
-the 12 tMOD difference. I think it makes sense to keep settlingtime
-as a single tDELAY + tLATENCY in this case since the when the mux
-changes after each sample, the next sample is now the first sample after
-settings have changed.
-
-This sort of breaks the definition of sampling frequency though since
-in IIO, the 1 / sampling frequency is the time between each sample
-being sent over the bus. I don't really want to change how sampling
-frequency is implemented here though because the current values match
-the datasheet which can be used to infer information like where the
-notches in the filter are. The actual observed sampling rate will be
-1 / tGC_DATA.
-
-Having written all of this out now though, I'm tempted to go back and
-change the settlingtime attribute implementation to be more accurate.
-In any case, tDELAY will always be easy to infer because it is the
-current value minus the minimum value (from the _available attribute).
-Then when using input chopping one could get a reasonably accurate
-sample period by taking 1 / sampling_frequency + settlingtime.
-
-We will follow this up later with a documentation patch that explains
-all of this too.
+Add handling for the DRDY interrupt to wait for data ready events rather
+than polling (only when it is wired up).
 
 Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
-Changes in v3:
-- Patch 1 (DRDY interrupt): only require the "drdy" interrupt when it is
-  actually listed in interrupt-names, falling back to polling mode
-  otherwise instead of failing probe (the binding allows interrupt-names
-  to list only "fault").
-- Patch 3 (continuous mode): allocate and register the DRDY trigger
-  before requesting the IRQ, so devres teardown disables the interrupt
-  before freeing the trigger (avoids a possible use-after-free that
-  sashiko flagged).
-- Patch 6 (external clock): use FIELD_PREP() with named values for the
-  CLK_SEL bit instead of regmap_set_bits(). Validate that the external
-  clock's rate is non-zero.
-- Patch 7 (filter support): fix div_u64_rem() pointer-sign warnings in
-  the new ODR table code by using local u32 variables for the
-  remainder. Use unsigned int instead of u32 for the new loop indices,
-  declared locally in each loop.
-- Patch 9 (settlingtime attribute): widen the intermediate delay
-  calculation to u64 so a large requested settling time saturates
-  instead of wrapping around. Rewrap the poll-timeout call.
-- Patch 10 (settlingtime ABI): expand the commit message to explain why
-  the total settling time isn't simply the difference between the first
-  and subsequent sample times.
-- Link to v2: https://patch.msgid.link/20260904-iio-adc-ti-ads112c14-filter-support-v2-0-f86592360658@baylibre.com
 
-Changes in v2:
-- Combined the continuous mode support and burnout current support
-  series into this series (see above).
-- Rebased on the current iio/testing.
-- Bumped KernelVersion to 7.4 in the settlingtime ABI documentation so
-  that it matches the rest of the new ABI in this series.
-- Patches 1-3 (continuous mode): no changes since v5 [1].
-   - FWIW, I didn't think sashiko's comments on the IRQ were realistic.
-     This could never be used with a level interrupt. And we haven't
-     typically tried to handle spurious interrupts in the past either.
-     Everything it suggested could only happen with broken hardware or
-     excessive noise (which I suppose counts as broken hardware).
-- Patches 4-5 (burnout), changes since v2 [2]:
-  - Pass an integer rather than a boolean to FIELD_PREP() for the global
-    chop enable bit.
-  - Drop the blank line after looking up the measurement.
-  - Return the conversion error in preference to the error from turning
-    the burnout current back off.
-  - Use a local variable for the "burn-out-current-nanoamp" property
-    name.
-  - Compare against ADS112C14_DEVICE_CFG_BOCS_DISABLED explicitly
-    instead of testing for non-zero.
-  - Fix KernelVersion in the ABI docs.
-- Patches 6-10 (filter support), changes since v1 [3]:
-  - Move the driver code that was accidentally squashed into the
-    "iio: ABI: add sinc4+sinc1+pf1 filter_type" patch back to the
-    "iio: adc: ti-ads112c14: add filter support" patch where it belongs.
-  - Fixed typos in the external clock patch commit message.
-  - Added a note to the settlingtime ABI documentation that the settling
-    time can apply to more than just the first conversion.
-- Link to v1: https://patch.msgid.link/20260807-iio-adc-ti-ads112c14-filter-support-v1-0-4d3ba00caf18@baylibre.com
+Small note: the hard-coded 100 ms timeout will be replaced in a future
+series with a dynamic value, so I didn't bother with a macro or comments
+to explain why the value was chosen.
 
+And passing indio_dev instead of data to irq is intentional as it will
+be used in the next patch.
 ---
-David Lechner (TI) (10):
-      iio: adc: ti-ads112c14: add DRDY interrupt support
-      iio: adc: ti-ads112c14: create data read helper functions
-      iio: adc: ti-ads112c14: add continuous mode support
-      iio: adc: ti-ads112c14: add burnout current support
-      iio: ABI: add sysfs attribute for _burnoutraw
-      iio: adc: ti-ads112c14: support external clock
-      iio: adc: ti-ads112c14: add filter support
-      iio: ABI: add sinc4+sinc1+pf1 filter_type
-      iio: adc: ti-ads112c14: add settlingtime attribute
-      iio: ABI: add settlingtime attributes
+ drivers/iio/adc/ti-ads112c14.c | 100 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 90 insertions(+), 10 deletions(-)
 
- Documentation/ABI/testing/sysfs-bus-iio     |   27 +
- Documentation/ABI/testing/sysfs-bus-iio-adc |    9 +
- drivers/iio/adc/ti-ads112c14.c              | 1298 +++++++++++++++++++++++++--
- 3 files changed, 1275 insertions(+), 59 deletions(-)
----
-base-commit: e7c1d459e542bc4a9c57f558e8ca1b14df7a7eef
-change-id: 20260807-iio-adc-ti-ads112c14-filter-support-8a56850f590f
+diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
+index 60eab4852ba2..9058ad34bc06 100644
+--- a/drivers/iio/adc/ti-ads112c14.c
++++ b/drivers/iio/adc/ti-ads112c14.c
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/cleanup.h>
++#include <linux/completion.h>
+ #include <linux/crc8.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+@@ -19,6 +20,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
++#include <linux/interrupt.h>
+ #include <linux/math64.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+@@ -117,9 +119,15 @@
+ #define   ADS112C14_GPIO_CFG_GPIO2_CFG			GENMASK(5, 4)
+ #define   ADS112C14_GPIO_CFG_GPIO1_CFG			GENMASK(3, 2)
+ #define   ADS112C14_GPIO_CFG_GPIO0_CFG			GENMASK(1, 0)
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_DISABLED	  0
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_INPUT		  1
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_PUSH_PULL  2
++#define     ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_OPEN_DRAIN 3
+ 
+ #define ADS112C14_REG_GPIO_DATA_OUTPUT			0x0C
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC		BIT(7)
++#define     ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC_DAT_OUT  0
++#define     ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC_DRDY	  1
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO2_SRC		BIT(6)
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO3_DAT_OUT	BIT(3)
+ #define   ADS112C14_GPIO_DATA_OUTPUT_GPIO2_DAT_OUT	BIT(2)
+@@ -251,6 +259,8 @@ struct ads112c14_data {
+ 	struct regmap *regmap;
+ 	/* Synchronizes access to register value fields. */
+ 	struct mutex lock;
++	int drdy_irq;
++	struct completion drdy_completion;
+ 	bool i2c_crc_enabled;
+ 	u32 avdd_uV;
+ 	u32 ext_ref_uV;
+@@ -265,6 +275,16 @@ struct ads112c14_data {
+ 						 ARRAY_SIZE(ads112c14_sys_mon_channels));
+ };
+ 
++static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct ads112c14_data *data = iio_priv(indio_dev);
++
++	complete(&data->drdy_completion);
++
++	return IRQ_HANDLED;
++}
++
+ static bool ads112c14_writeable_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+@@ -581,12 +601,45 @@ static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
+ 	return 0;
+ }
+ 
++static int ads112c14_wait_for_conversion_irq(struct ads112c14_data *data)
++{
++	unsigned long remaining;
++	int ret;
++
++	reinit_completion(&data->drdy_completion);
++
++	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
++			   ADS112C14_CONVERSION_CTRL_START);
++	if (ret)
++		return ret;
++
++	remaining = wait_for_completion_timeout(&data->drdy_completion,
++						msecs_to_jiffies(100));
++
++	return remaining ? 0 : -ETIMEDOUT;
++}
++
++static int ads112c14_wait_for_conversion_poll(struct ads112c14_data *data)
++{
++	u32 reg_val;
++	int ret;
++
++	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
++			   ADS112C14_CONVERSION_CTRL_START);
++	if (ret)
++		return ret;
++
++	return regmap_read_poll_timeout(data->regmap,
++					ADS112C14_REG_STATUS_MSB, reg_val,
++					FIELD_GET(ADS112C14_STATUS_MSB_DRDY, reg_val),
++					1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
++}
++
+ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 				       const struct iio_chan_spec *chan,
+ 				       u8 *buf, bool for_scan)
+ {
+ 	struct i2c_client *client = to_i2c_client(regmap_get_device(data->regmap));
+-	u32 reg_val;
+ 	int ret;
+ 
+ 	guard(mutex)(&data->lock);
+@@ -601,15 +654,10 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 			return ret;
+ 	}
+ 
+-	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
+-			   ADS112C14_CONVERSION_CTRL_START);
+-	if (ret)
+-		return ret;
+-
+-	ret = regmap_read_poll_timeout(data->regmap,
+-				       ADS112C14_REG_STATUS_MSB, reg_val,
+-				       FIELD_GET(ADS112C14_STATUS_MSB_DRDY, reg_val),
+-				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
++	if (data->drdy_irq)
++		ret = ads112c14_wait_for_conversion_irq(data);
++	else
++		ret = ads112c14_wait_for_conversion_poll(data);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1391,6 +1439,38 @@ static int ads112c14_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return ret;
+ 
++	if (fwnode_property_match_string(dev_fwnode(dev), "interrupt-names", "drdy") >= 0) {
++		data->drdy_irq = fwnode_irq_get_byname(dev_fwnode(dev), "drdy");
++		if (data->drdy_irq < 0)
++			return dev_err_probe(dev, data->drdy_irq,
++					     "failed to get drdy interrupt\n");
++
++		/*
++		 * REVISIT: would probably need to implement a pin controller in
++		 * order to support open drain option here.
++		 */
++		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
++					 ADS112C14_GPIO_CFG_GPIO3_CFG,
++					 FIELD_PREP(ADS112C14_GPIO_CFG_GPIO3_CFG,
++						    ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_PUSH_PULL));
++		if (ret)
++			return ret;
++
++		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_DATA_OUTPUT,
++					 ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC,
++					 FIELD_PREP(ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC,
++						    ADS112C14_GPIO_DATA_OUTPUT_GPIO3_SRC_DRDY));
++		if (ret)
++			return ret;
++
++		init_completion(&data->drdy_completion);
++
++		ret = devm_request_irq(dev, data->drdy_irq, ads112c14_drdy_irq_handler,
++				       0, dev_name(dev), indio_dev);
++		if (ret)
++			return ret;
++	}
++
+ 	ads112c14_populate_tables(data);
+ 
+ 	indio_dev->name = info->name;
 
-Best regards,
---  
-David Lechner (TI) <dlechner@baylibre.com>
+-- 
+2.43.0
 
