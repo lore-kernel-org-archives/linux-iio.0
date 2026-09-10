@@ -1,28 +1,28 @@
-Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011017.outbound.protection.outlook.com [40.107.74.17])
+Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010040.outbound.protection.outlook.com [52.101.228.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6080F3AFD1B;
-	Thu, 10 Sep 2026 08:55:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA82B2FD69E;
+	Thu, 10 Sep 2026 08:55:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.40
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789030552; cv=fail; b=liXzN4lPc39RzMrGBRWCpXSlopqclvaXXxQo5d4Eq6aXnDTSZJk0AUnEN4K1o+F6Z6c+igk3pnlgQLidF75Fm1QeO/2yR2bbNk1VoOwMpnGuRa0zqImfwoHrURUJxtMYxXoHJ6ZsgrjepMkEIp6922rO7IfOuHJ7Oi/yNgyF950=
+	t=1789030558; cv=fail; b=D16sW3S0W4xUyj0dujtiiNeR8QvGZoLeZwDVabllPy9UwQXBcUjWvSBgKf6BcMO2oA6Dd5ul9tznslAMBCbzZ6UGN7VBoEX4oKjDHtPn03KAdxhdeQl3SttTpuwnL3RtiTQ7/z6O2LSdkW3VmUm1R1qjlB8bIZ7fjhy5kW6x5z4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789030552; c=relaxed/simple;
-	bh=6HlknFV9/eZ89aaKxVP/Mevlf71JiR+1yq1jXaM11F8=;
+	s=arc-20240116; t=1789030558; c=relaxed/simple;
+	bh=5oz6qBtnBFGfsFATIwoYF+NC6ezZ0MCmST+o5oVKqjU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Pub+f55JK/YXWFfz67zpeH7bcBdAzVxRg+MVYUtDx1i10YgdiruOuvRsMjDgSQCHlM7f8AyzWmKuwiJGUZcEG/mzlA6YtjLZv7VWVi1KjU9uvxVsnSKBUO+ptPPaUQ92Nd/LOXHtp3j4aP+oqd8rrDLJbZybhcuIFFIdV8E2ijE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=l6QtrFeg; arc=fail smtp.client-ip=40.107.74.17
+	 MIME-Version:Content-Type; b=sUoMoAnWYBS7gwmjzVHbUf1pCtiSIqfaElDZCdmTjzIYK8tAZd9NkP/VHRpETUWnSpGXAJX17/UGixHOtkH2MnoZ1c64SAnP8vXHtSHhebXHM3BKBkkg57t1I2sK2eMtVNQ2zywS8PhwNKnWlZsYU1jcbuXE+i4YVUUPIS5c6Ng=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=AClQbPFA; arc=fail smtp.client-ip=52.101.228.40
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="l6QtrFeg"
+	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="AClQbPFA"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wR+vCmGalRoBza4T70kt6o8e77GzDa/pIz+XHS5t/W9NpcV+7j1RdWEYJfwcRA4Z5GF4UdvEUfHmWVIcoa4Ez2fZIQXPAQOL/stq5o5IeaP6r5cwIf1Vruf267RcDA6JFpae7jq1SiwJqGDL/9qZyqIoUzK+mi1QSvblkRZZxhWMLQwnbzIpp4W038R7AtJsD54kflmp5BdQ6u68RXdfIoP5yDCMalttYWq9paio79da79WHQXoYHbicHSkwXb1ro6O68i9zLXaswT+l4N/2rmHElb+wA6Nh1LF1gwwaSGJRnZDlbLnprFadJaawJGBzXs3gTEeB/RPgVCR4COyYqA==
+ b=Mcz0edEjviFgac0XwZ3ZKY4+Fk1uy5zxhwbCchwJQdceeUH3Mqlgmi4Jx05OQMnUxjnMhBamXz1qfs6eDRQE1aCJ+TVT+tuNZbyDNqY5mT4wxIm6AkEAUa6zOaGLwCY0aoJnWJEvD3ycOZytjQDyUWclFXHishKIPgQCRMcUkK+w40JArrlWHTS/2ewjkDFi4GjUgPxwG2OASlBGRvRibREnpkNnxbfeyCTzHNG1mERysrP1mFwTu3njDJIV0HOG+YOmMVE55UAZ41CHVhM5mkNuG7tbdT/xDaH2aVH207PPPiyyJyRqi6DRtKufzrAxlXwGr8/bRXkhJzCrsUtV3w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1d+5E091pJ5f0JWSgbdimVAAKqhW8k9nQC9Tw/rEa2k=;
- b=VzYJ/3k3J+nX3RUoEXz9NJXP9PrwHfJyBLNxKaX1TgmllUPuVMzAMzyFz9EShozXOmWvuFprNHtMxtMMYhuiYItbrvZ5Yu+JQBGHmXWn0x1qONMuxfW2aGuXIWdKeVn4lBi3r2MgQx78IUEPcdS+zXdHXQFZXXuGZl4X4Hln/hnwGAKI+/sXI/UGTiwfFmnPy8cFnj7M9UPbg6FGdSucDj7/MQgQbFHcbzv4Z/X7Bpw7rDBaQ6RAg9b6d7Sfqa4P+TUvXn1DSPl/8RuY/Bgn3wbj+RptGZ4uLq9L75SG5bxKMrOzxjFhYlIOQikYvzEHVZaK7h1IWpIK3JZDmXoZJg==
+ bh=gazDAtl73wlMIFyxCmVMp02gnrUH1MH4ZiZSgxrSlTo=;
+ b=xOy/5TkGVY8ZZGS+PxSPBoIIhIURaFU5tKNHJA1hwgaOzLwm59dNOmkWwr9fCfDkMM//WhMTa/OZr11YQ90R1UkKMNmjUQ27N1bpx3mTM/plCUHflGbEWuptuziwpyz2c6k/gDWBshHMvUzEaAhMR/CBte9HPByteGu9cZjFBbrhr2SbtMJ4OkSjbh23BMq7rRPI8WDKQVU7yvB/egRvqJRdvLmLZfM1Zq9YhixD6PjvNB1+Cnbjve+KRFi9O3AFVRYlMPk9uzN68/nNH6I48dpumUBpCuzdPCxG8d2M5LfYionGw7lj+QseCYsbI2ORZinZKSXm1Ye9QR/CkB1R/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  8.62.32.50) smtp.rcpttodomain=analog.com smtp.mailfrom=renesas.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=renesas.com;
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1d+5E091pJ5f0JWSgbdimVAAKqhW8k9nQC9Tw/rEa2k=;
- b=l6QtrFegiHB/c90n3POusoHTMNpFuj1EUTE/t6kihRtodLE/zYQK/V4C19wAbCFcofpejc7laK4RCP8A5+Xszyl1+8F9Fzfhwcrh2r9mpGu/8f/G09RkRGnHsv6PLxsCyOJwuncoLBF6U9t7KVDUgHg94WARk4A09aUUFpM5oLM=
-Received: from TY4P286CA0030.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:2b2::8)
- by TYVPR01MB11170.jpnprd01.prod.outlook.com (2603:1096:400:369::12) with
+ bh=gazDAtl73wlMIFyxCmVMp02gnrUH1MH4ZiZSgxrSlTo=;
+ b=AClQbPFAxFg5DaqQonXgZiAAY5Xhr0re2t2VLPtfF4+J3xbGPYD/Spdu0MTiEngSCPPFEl4qNCsiMkzCOvrhR3/U95dvYNQiUZ49XCqN4Evo9IM4eSdtyT2fSooXPnZzxeQBuL1rzBgPNXM799pvKo+y901k4hIC/DVMYK6jxvw=
+Received: from TYCP286CA0367.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:79::14)
+ by TYCPR01MB18250.jpnprd01.prod.outlook.com (2603:1096:405:3ed::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.9; Thu, 10 Sep
- 2026 08:55:44 +0000
-Received: from TYO1EPF00005023.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:405:2b2:cafe::5b) by TY4P286CA0030.outlook.office365.com
- (2603:1096:405:2b2::8) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 08:55:50 +0000
+Received: from TYO1EPF00005022.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:79:cafe::77) by TYCP286CA0367.outlook.office365.com
+ (2603:1096:405:79::14) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.406.9 via Frontend Transport; Thu, 10
- Sep 2026 08:55:44 +0000
+ Sep 2026 08:55:50 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 8.62.32.50)
  smtp.mailfrom=renesas.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=renesas.com;
@@ -49,12 +49,12 @@ Received-SPF: Pass (protection.outlook.com: domain of renesas.com designates
  8.62.32.50 as permitted sender) receiver=protection.outlook.com;
  client-ip=8.62.32.50; helo=ejcrelay004p.adwin.renesas.com; pr=E
 Received: from ejcrelay004p.adwin.renesas.com (8.62.32.50) by
- TYO1EPF00005023.mail.protection.outlook.com (10.167.240.20) with Microsoft
+ TYO1EPF00005022.mail.protection.outlook.com (10.167.240.7) with Microsoft
  SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.406.5
- via Frontend Transport; Thu, 10 Sep 2026 08:55:43 +0000
+ via Frontend Transport; Thu, 10 Sep 2026 08:55:49 +0000
 Received: from demon-pc (REE-0064895.adwin.renesas.com [10.226.92.160])
-	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id 77C293000203;
-	Thu, 10 Sep 2026 17:55:39 +0900 (JST)
+	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id E488C300037A;
+	Thu, 10 Sep 2026 17:55:44 +0900 (JST)
 From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -70,9 +70,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/9] iio: adc: rzt2h: remove unused struct rzt2h_adc::max_channels
-Date: Thu, 10 Sep 2026 11:54:22 +0300
-Message-ID: <20260910085430.3173166-2-cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH v2 2/9] iio: adc: rzt2h: store IRQ in private state
+Date: Thu, 10 Sep 2026 11:54:23 +0300
+Message-ID: <20260910085430.3173166-3-cosmin-gabriel.tanislav.xa@renesas.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260910085430.3173166-1-cosmin-gabriel.tanislav.xa@renesas.com>
 References: <20260910085430.3173166-1-cosmin-gabriel.tanislav.xa@renesas.com>
@@ -85,35 +85,36 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TYO1EPF00005023:EE_|TYVPR01MB11170:EE_
+X-MS-TrafficTypeDiagnostic: TYO1EPF00005022:EE_|TYCPR01MB18250:EE_
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 632a9866-4c09-4be1-459a-08df0f194c5a
+X-MS-Office365-Filtering-Correlation-Id: 1a69b4a7-e0f8-4973-500b-08df0f194f7a
 X-LD-Processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|376014|7416014|1800799024|23010399003|82310400026|11063799006|921020|10067099003|18002099003|22082099003|56012099006;
+	BCL:0;ARA:13230040|23010399003|82310400026|1800799024|36860700016|376014|7416014|10067099003|56012099006|18002099003|22082099003|11063799006|921020;
 X-Microsoft-Antispam-Message-Info:
-	xHx2gs3xOlI+UGp/5PXJi3bDmmObDzwpBQDp1us4ae6UBJgxUtqYV6wZaQKrTR4cgF37TRGIRfmajlmzuu2qajd2mM9SE6+Z8NqHNPgs+Ap9AZIW7J7SDIWlUbXGea776ZFfVVPW1grYsPG0Ujs0770bia+79zsEotMQeywU/6tU1ihXsQPqX41dMPFk2bCppPohHQw/s9nMIoZWGHNCr7qjrKQsf02cBtDIqLeJpZwvqKe+oFebDR9x5Nu84RFrvfYX0ganHRiRVb1QUcbmB7SZQ+cX3yU5oq3IrLEOxLXnvkjABh1/w8DLWFNLvWN0/A1RBsV4ilZkLKyx8CkPjJ0Nifg1qymmM3umADs0Ex3XxkZ6reifDl4WlPjxW8jNTgjHykv5rjvpzs1V41NvxGijDSnYpHhg2R3RBfvCI4etn7hyx+bm7ccWOFV1ouqKgDwRF1kjV4OvfguBaciC4pzCluRx85XfAaF4dxpTLcM9cTUe5XR7WGmzKRZNPQZIgJ5vjqxZefU+aazH244h2maD8RfQJhTWW3puD/HeKtkLCc1wbDqjMKcAUlbOm/uZ4hxRS/LBfb9T+O+rc5H7f1gH/2pS8p36dTTMLOlXoWCOgjp1q2zFQ9+Va0X8o67O8+jwQD0j1ASlf4+FMZtJIBB6b6diqKexVWVfFBPWbx3H1RTTCLZfGdnccRx34s3eu18jRADRZPDiMHvAWMHQKo0qZGEATpzmY+WeHXH7GXe0iRAUcNtTbQHA0JqndBS/
+	ykvJ1DjH00WfJd2IZsoRX5G2/kK8L3GqwcD78inUqbnUU/Q0fulE7jsjxZsTGQzRPl1MsBdr+vqJdZLkr/F26vdqSpga+nQ2dJy6kmXV+PysQSZ39uu2vpYQJKHu1iBWdEHN5ZQFsu+uQlkoRw6vjs9andFvROvPPnmyz8o80VNTtA+1e4WwQE2h3yPCrOZkJhp/S1SEQgOxj3488Lr6FUZuOta7MzQuiytL+Ci711dpbMKsTdWTWeyzFFcsEcBSTwRRjxGUl5fAz/IQkYQ09tMcwYaZJ9lkPW9fsEW8uREkVrnpOQ/7SmMBc/7u08Z1pqJxALT06MRLliXkl/dD5k/MDCDrQY0XJ5iiG8I2Cdr0HCwKPfDXvOz6nDDy0w8mQ5KMURRh14wKU9pvu0GPSbVSm9QBMNbGqUMZ9WF4cXlstkqQXI4cO/dWwcyPuBy3Sl+izC/c6+DaL7gaeof4mkkV+ADPLsjbIBBT8m69r0NmBxHwNe/X5wfcsVfqLCaLoGWkdGyzYO0lwXsP6PoeR1l2BNSYRtS+2aIFpA1rZx1/Yw1IMfz+/OTl0e3Pvc7Kkpp0qES7aeFFpAyTTUJKFY0oNO8jevZ5LtfrRjDGR2bD7jmXCe0zJC3cfktF7umdd4Ax8ynD+I4aafJHNMtPpW5n1CDKZU2HhD4hGzMnbK+MNbjiQXIaaPQ3Xy2ZERGc9ER7dBx7+ooCIfozgc59IewQx8UC+B6fhELZvd0YZDpsarXlTtQ6pQpxGNGsTLBK
 X-Forefront-Antispam-Report:
-	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(376014)(7416014)(1800799024)(23010399003)(82310400026)(11063799006)(921020)(10067099003)(18002099003)(22082099003)(56012099006);DIR:OUT;SFP:1101;
+	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(1800799024)(36860700016)(376014)(7416014)(10067099003)(56012099006)(18002099003)(22082099003)(11063799006)(921020);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	/I5JO2Mo6Wz+s25p9ckVBoKKrb2wfQmadAL7FQ0sElJsE9GLeDLslyolrFdfzX5GDK1KDDlyjXQgh6J4PEggXqa1A5WDHAOXvQ6oPUueQeWqYbJRqbRKkrqwKeyiBmGlK3d8rEUM8XDeaHlbm1W1jJ3EXQBr3fW8NDf5Oc8/o56KIhX40YiSt/WnDoppugOmF6wb1FYyegaZcdbWiTbBbTR4062UQRjXLtZ8PM3nxYyWPDvJYMYkybIk/7UKASREj5ryKPwqlZCOt/2koTwacq9tPnB7eMzyGeGa8E/FJCRt7rNF0hRIf4Bxp8MxBKBIgXoEyrH6wwBrFqaFMJp6CTxYps9+nuRTb4c7mc/Ww7lO8gb1C6aXkXaTy1CRQbozGFufm2cf9KuGlgbylavNmyKS8RGrGQAIYoF9vRqtacRjXd9g9601vv8SI3VQBD1M
+	eWg7mbj5BrTvRCgUf2yDuhtPT+xoB+txzXkbYvLWIspy7E03cZhlFATGkODYMAHCQHi4H5Cuku1Q2QN/zWZinVF4yxuUb/ijpB960m4+qWaq/cFJ5GnJQfyz1IuHnuUbf7TWY9al7vXF0FpzYQCnzmmW9g7Rr3soPhMNCpeDyaiYXswNlnAiNLilco734uTH5H5XWQF6X1LU/C3A5mk5yhJsMXyb6dAdGcmVFMsU7eaOALWzF1WzQiLM42XcNbnI/Pk1cuvZLe00XVd7X4v8mIggKoujGmlAEmNfLL/tcuyH/RqlFvDVtSImm4JRr+xhn5dwPYXX+HtPwChFRR8qj2JUZXlVNcG0KGCng02PxeG6P4gqj+G3un8swW1cRSGFWsaTPdPnB7NVDXk6yH14wKBfJxp1vk8WxVKFtkrm2/TmR6EHXB8LgAXZ98pxg6jR
 X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2026 08:55:43.8976
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2026 08:55:49.1416
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 632a9866-4c09-4be1-459a-08df0f194c5a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a69b4a7-e0f8-4973-500b-08df0f194f7a
 X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=53d82571-da19-47e4-9cb4-625a166a4a2a;Ip=[8.62.32.50];Helo=[ejcrelay004p.adwin.renesas.com]
-X-MS-Exchange-CrossTenant-AuthSource: TYO1EPF00005023.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthSource: TYO1EPF00005022.JPNP286.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYVPR01MB11170
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB18250
 
-struct rzt2h_adc::max_channels is unused, and is probably a leftover
-of the devm_iio_adc_device_alloc_chaninfo_se() conversion done after the
-initial submission. Remove it and the logic used to set it.
+To prepare for adding support for DMA transfers, store the IRQ in
+private state to disable it while DMA is in progress. The RZ/T2H ICU
+does not mask the interrupts itself when they are being used for DMA
+transfers.
 
 Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 ---
@@ -121,39 +122,46 @@ Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 V2:
  * no changes
 
- drivers/iio/adc/rzt2h_adc.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/iio/adc/rzt2h_adc.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/adc/rzt2h_adc.c b/drivers/iio/adc/rzt2h_adc.c
-index 4e0eb02d3d14..42ff6bf2ab08 100644
+index 42ff6bf2ab08..470b16b5b9c8 100644
 --- a/drivers/iio/adc/rzt2h_adc.c
 +++ b/drivers/iio/adc/rzt2h_adc.c
-@@ -42,7 +42,6 @@ struct rzt2h_adc {
+@@ -42,6 +42,8 @@ struct rzt2h_adc {
  
  	const struct iio_chan_spec *channels;
  	unsigned int num_channels;
--	unsigned int max_channels;
++
++	int irq;
  };
  
  static void rzt2h_adc_start(struct rzt2h_adc *adc, unsigned int conversion_type)
-@@ -190,7 +189,6 @@ static const struct iio_chan_spec rzt2h_adc_chan_template = {
- static int rzt2h_adc_parse_properties(struct rzt2h_adc *adc)
- {
- 	struct iio_chan_spec *chan_array;
--	unsigned int i;
- 	int ret;
+@@ -209,7 +211,7 @@ static int rzt2h_adc_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct rzt2h_adc *adc;
+-	int ret, irq;
++	int ret;
  
- 	ret = devm_iio_adc_device_alloc_chaninfo_se(adc->dev,
-@@ -203,10 +201,6 @@ static int rzt2h_adc_parse_properties(struct rzt2h_adc *adc)
- 	adc->num_channels = ret;
- 	adc->channels = chan_array;
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*adc));
+ 	if (!indio_dev)
+@@ -239,11 +241,11 @@ static int rzt2h_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
--	for (i = 0; i < adc->num_channels; i++)
--		if (chan_array[i].channel + 1 > adc->max_channels)
--			adc->max_channels = chan_array[i].channel + 1;
--
- 	return 0;
- }
+-	irq = platform_get_irq_byname(pdev, "adi");
+-	if (irq < 0)
+-		return irq;
++	adc->irq = platform_get_irq_byname(pdev, "adi");
++	if (adc->irq < 0)
++		return adc->irq;
+ 
+-	ret = devm_request_irq(dev, irq, rzt2h_adc_isr, 0, dev_name(dev), adc);
++	ret = devm_request_irq(dev, adc->irq, rzt2h_adc_isr, 0, dev_name(dev), adc);
+ 	if (ret)
+ 		return ret;
  
 -- 
 2.55.0
