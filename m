@@ -1,88 +1,186 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 996C63DDAFB;
-	Fri, 11 Sep 2026 19:03:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1C013F927B;
+	Fri, 11 Sep 2026 21:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789153419; cv=none; b=CRRv+HYhHwoSxkI+8bxu2I++zN8La0fbyOH3Nm5QDKgNQrIbNGBwhgfx+Z88VtvRXPM4PMpNTIppMg/AlBK5JnXsjl+MyyLKVPwgI9kFtAg2T9KjL2aDHlndmIVnUnVbKnhdp443iGVe6+4M1TmH8jYjZJRK/uGbmgxCsCqjZBM=
+	t=1789161032; cv=none; b=HXgkzjxLKaO6u4811kkIu77/a+d2moPUhLR4e9cc2OaLj8gisZGi2F+xulOGEm8G1zgk7b1iPMoqwazTtGV4vM/x2IekBsLpQF3dFNCybeAdDRLvkeJsOhxBzbSHwx4TjGi2JpTaZHggiVPR6JIsTT3iBTYw8Dr2Pak37sG2uPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789153419; c=relaxed/simple;
-	bh=6YExB0jyTmBGweY+UKRM07k4sA4dJM2DsBRFReUoZe8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UahQtjJe8BpZxZIOE8za8MqOQAMeqBf4jCvcu4/jd684GqcwcKnD3Gey940XNitYzKAgVJ8u78qUCQQ7X+FrpOKkljbvzqQqdp72f+vIPeTCvxAHdgXjfbTdHYi9KNFdDMVZg+K6q/fnaA3Dx7z46rdfhY3/9mCTEufpl2ZzHKo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HhiWy4+b; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789161032; c=relaxed/simple;
+	bh=0iINUGSDQ0Mrto36jzZm49BkosYjKrXgLDl3kcWJdpM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RpzM7Hi/iC7mrP65pFvxmQbLx/dFBudGXeMAw8PxBOPjGilwETVsm2NPgHYQCR+xuifQGhcw4PtS0e/MvYY4bHaCXwFhDsoVn0ub2NYAwyM6MuqyBtVLqbV4X7qKCBg1YUK1A5ngZuel+VNSB6h5M2vTFbRSNTiDAlj/r7J7c2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XwmygFmu; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HhiWy4+b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81BF11F000FF;
-	Fri, 11 Sep 2026 19:03:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789153418;
-	bh=F3RjUg6BuSldJfwG8e3mfWUs8y6IOwurHBpLUyrxgfw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HhiWy4+bfojfapuquN5SgTuvPtAOd0+bsMlhAWSvDObNmX9/JU6gZWxxPrcniPW0k
-	 OKWlWnGhUj+alukSXvQT8FChRDeYR3T+nASX8GQu8Rq+CL6mo+2j2jms3tTnTuBRS5
-	 wkLMDyddEJeHhZziWs52lxpMQZLUG3aom6uAKm+Y/ahdBsZ7gRRmW+Z0/BU1ZDvu7n
-	 4W66RnhMkv3gsKlQsJE0+lS/Tn/ehEe+KDbOpuiI1rU7Hkmq1LjvritPA2NVKiyHOv
-	 yjuWdBT2GSbEOjblvq00fYyzJP0u3hJj59G/IhkrvugRswt6z2eyomMBXUmMwxJh+I
-	 I1vYzws2zrm+w==
-Date: Mon, 17 Aug 2026 02:15:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
- <matti.vaittinen@fi.rohmeurope.com>, Matti Vaittinen
- <matti.vaittinen@linux.dev>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>, Mehdi Djait
- <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>, Topi
- =?UTF-8?B?U29ua2Fqw6Rydmk=?= <sonkajarvi@hotmail.com>
-Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
- initialization
-Message-ID: <20260817021549.29522111@jic23-huawei>
-In-Reply-To: <anr0jtvYorFKaEXY@ashevche-desk.local>
-References: <cover.1786347811.git.mazziesaccount@gmail.com>
-	<7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
-	<anovRGxtsyJZ8cO9@ashevche-desk.local>
-	<247b0e35-f49e-4bec-abd4-4a2c3dd49a2d@gmail.com>
-	<anr0jtvYorFKaEXY@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XwmygFmu"
+Received: by linux.microsoft.com (Postfix, from userid 1223)
+	id 9116720B7166; Fri, 11 Sep 2026 14:09:48 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9116720B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1789160988;
+	bh=THnrSOejQfaU28Paks7cQy0EHvgqxbuZFWhp6Jm3Ero=;
+	h=From:To:Cc:Subject:Date:From;
+	b=XwmygFmujO2UbAZ1RmnH0Ql9C1sNKBELIeu5ztEkbxAPK7vO2PC/JBRFOb2TrqXwy
+	 pJ7Mj4mXbO5VTmCCM7QuTkga7DYPjT27bt/6Etjh68VhvYyRGLsv33uUR0UTshvubi
+	 B/NCR72QiQVEPMVPV8DlO2RBeycywq9s8yv+4Wrs=
+From: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
+To: linux-i3c@lists.infradead.org
+Cc: meaganlloyd@linux.microsoft.com,
+	alexandre.belloni@bootlin.com,
+	vitor.soares@toradex.com,
+	samagazaryan@google.com,
+	gregkh@linuxfoundation.org,
+	arnd@arndb.de,
+	boris.brezillon@collabora.com,
+	oleksandr.shulzhenko.viktorovych@intel.com,
+	tgopinath@linux.microsoft.com,
+	corbet@lwn.net,
+	skhan@linuxfoundation.org,
+	linux@roeck-us.net,
+	Frank.Li@nxp.com,
+	jorge.marques@analog.com,
+	pgaj@cadence.com,
+	wsa+renesas@sang-engineering.com,
+	tommaso.merciai.xr@bp.renesas.com,
+	nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	andy@kernel.org,
+	lorenzo@kernel.org,
+	enelsonmoore@gmail.com,
+	rppt@kernel.org,
+	pratyush@kernel.org,
+	giovanni.cabiddu@intel.com,
+	gabewhigham@gmail.com,
+	haren@linux.ibm.com,
+	pasha.tatashin@soleen.com,
+	jirislaby@kernel.org,
+	adrian.ho.yin.ng@altera.com,
+	ustc.gu@gmail.com,
+	jszhang@kernel.org,
+	adrian.hunter@intel.com,
+	akhilrajeev@nvidia.com,
+	tze.yee.ng@altera.com,
+	manikanta.guntupalli@amd.com,
+	shubhrajyoti.datta@amd.com,
+	jarkko.nikula@linux.intel.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 0/3] I3C character device driver using driver_override
+Date: Fri, 11 Sep 2026 14:09:32 -0700
+Message-ID: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
+X-Mailer: git-send-email 2.43.7
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue, 11 Aug 2026 13:08:14 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+This is a rework and revival option for Vitor Soares' I3C character
+device driver patch series from 2020 [1] that I've been exploring for a
+few months.  Recently there was a revival posted to the list [2], so I
+wanted to share this design option as well.
 
-> On Tue, Aug 11, 2026 at 12:05:47PM +0300, Matti Vaittinen wrote:
-> > On 10/08/2026 23:06, Andy Shevchenko wrote:  
-> > > On Mon, Aug 10, 2026 at 10:53:07AM +0300, Matti Vaittinen wrote:  
-> 
-> ...
-> 
-> > > > Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.  
-> > > 
-> > > Can it be FIELD_PREP_CONST()?  
-> > 
-> > Can you please elaborate why it should in this case?  
-> 
-> I'm not sure why it's not obvious, but the parameters are constants, why would
-> we need an additional check or even checks?
-> 
-Hmm.  I went and had a look as this macro turns up a fair bit.
-I'm fairly sure in the case of a pair of compile time constants
-FIELD_PREP() both performs additional checks at compile time and
-probably collapses to a constant.
-The docs for FIELD_PREP_CONST() observe it is for when
-you need it to be a constant rather than when it might be
-(even if you know it is)
+In [1] and [2], the i3cdev driver automatically attaches and detaches
+depending whether another driver has attached/not. In [1], Boris was
+suggesting we explore a more straightforward and traditional binding
+method aligning with the Linux driver model. At the time, there wasn't
+a way to auto-bind while keeping manual binding possible as they shared
+the same match() hook. Now with the new driver_override feature, the
+auto-binding of i3cdev on boot can be avoided if the i3cdev driver has
+an empty match ID table. After boot, where specialized drivers would have
+already bound, user-space can explicitly opt-in by setting the
+driver_override sysfs file with 'i3cdev' and manually binding via sysfs
+(or by simply loading the driver if it's loadable). This can also be
+easily automated with udev rules that run whenever the I3C core exposes
+a new device.
 
-So I think it's not necessarily appropriate here.
+One downside of the automatic attach/de-attach is that if a different
+driver is loaded later, the first driver could have altered something
+on the device, breaking any assumptions of the subsequent driver.
+
+My series builds on [1] through:
+0. Addressing code review feedback in [1] from Greg, Boris, and Randy.
+1. Using actual_len for accurate read response reporting. The kernel
+will report actual_len received from the core to user-space via the
+uapi i3cdev_xfer struct.
+2. Placing limits on the number of transfers and bytes in requests to
+prevent unlimited-sized transfers or kernel memory allocation
+3. Checking inputs and descriptive return codes as guard-rails
+for user-space and to ease use of the i3cdev driver
+4. Checking on MWL to ensure that we respect device limits
+5. Proper lifetime management of i3cdev_data and underlying device
+6. Addressing dangling fops in the event we have an open file descriptor
+when a device gets unbound.
+7. Fast-path locking to ensure transfers complete before a device is
+unbound.
+8. Allowing only one file descriptor per I3C device to avoid bugs
+around multiple processes interacting with the device and altering
+the device underneath the other. For example, without this, one process
+could change the device's page or address pointer register underneath
+the other process.
+9. copy_struct_from_user to ensure struct i3cdev_xfer could be extended
+in a compatible way. This is to be forward-looking towards potential
+HDR mode expansion and code reuse.
+10. Reserving the IOCTL number formally
+11. Updating the Documentation to be a syntax correct example program
+template.
+12. Preserving /dev/bus/i3c/<bus id>-<Provisional ID> naming while
+allowing sysfs path to be neatly named i3cdev-<minor>. This avoids
+repeated <bus id>-<Provisional ID> in the sysfs paths which can be
+confusing/circular-looking.
+    e.g. /sys/bus/i3c/devices/0-deadbeef001/i3cdev/0-deadbeef001 ->
+         /sys/bus/i3c/devices/0-deadbeef001/i3cdev/i3cdev-0
+13. Updating all naming references related to i3c_priv_xfer to align
+with new i3c_xfer struct
+14. Updating the MAINTAINERS file for the new pieces of code
+
+Note that i3c-tools [3] or a fork of it will need small updates:
+1. Update include/uapi/linux/i3c/i3cdev.h to match updated uapi structs
+2. In i3ctransfer.c, use actual_len for reads
+
+I've added MODULE_VERSION("1.0.0") in the i3cdev driver, so i3c-tools
+could use that to determine whether to use the old out-of-tree uapi or this one.
+
+[1] https://lore.kernel.org/linux-i3c/cover.1582069402.git.vitor.soares@synopsys.com/
+[2] https://lore.kernel.org/linux-i3c/ap_1-gFF7S821xJT@ninjato/T/#m9107c1785a4a16b1b3cb84c3269d17fac35819c8
+[3] https://github.com/vitor-soares-snps/i3c-tools
+
+Meagan Lloyd (3):
+  i3c: master: enable driver_override for I3C
+  i3c: set i3c_xfer.actual_len in controller drivers
+  i3c: add i3cdev character device module for user-space access
+
+ Documentation/userspace-api/i3c/i3cdev.rst    | 152 ++++
+ .../userspace-api/ioctl/ioctl-number.rst      |   1 +
+ MAINTAINERS                                   |   7 +
+ drivers/hwmon/lm75.c                          |   7 +-
+ drivers/hwmon/tmp108.c                        |   2 +
+ drivers/i3c/Kconfig                           |  12 +
+ drivers/i3c/Makefile                          |   1 +
+ drivers/i3c/i3cdev.c                          | 730 ++++++++++++++++++
+ drivers/i3c/master.c                          |   6 +
+ drivers/i3c/master/adi-i3c-master.c           |   5 +-
+ drivers/i3c/master/dw-i3c-master.c            |   4 +-
+ drivers/i3c/master/i3c-master-cdns.c          |   5 +-
+ drivers/i3c/master/mipi-i3c-hci/core.c        |   5 +-
+ drivers/i3c/master/renesas-i3c.c              |   3 +
+ drivers/iio/adc/ad4062.c                      |  10 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c   |   3 +
+ include/uapi/linux/i3c/i3cdev.h               |  70 ++
+ 17 files changed, 1016 insertions(+), 7 deletions(-)
+ create mode 100644 Documentation/userspace-api/i3c/i3cdev.rst
+ create mode 100644 drivers/i3c/i3cdev.c
+ create mode 100644 include/uapi/linux/i3c/i3cdev.h
 
 
+base-commit: cab40cfc9e116acd4d60f95b4b1264cab78f3803
+-- 
+2.49.0
 
