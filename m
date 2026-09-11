@@ -1,132 +1,113 @@
-Received: from mail-m155101.qiye.163.com (mail-m155101.qiye.163.com [101.71.155.101])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8A23477984;
-	Fri, 11 Sep 2026 09:20:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE57E39A80E;
+	Fri, 11 Sep 2026 09:42:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789118453; cv=none; b=uGXkMDjjswRCSY5vLOplMubku9eDcQc7QZuL2IGdLkQqZu3LgheHiDlFCaqaCy8O7NvOvT+6hONTItaB8W0eTk0yMoDJnCUjWuhY74Sdi24hH6XR4qPRJd2UaNP4MRVXLQXYMYJZm5CIKaz9w54IYRg42MZFnSzFKiRUFuepcBI=
+	t=1789119765; cv=none; b=nido7PLAPmyocEWs56B4KZ/HyaFH9Ns3GJeKXj394UPGQp90nLvN7vk4zbYA9jlFWiu6uJlG6M9Yfa/3e5NxVfuxcHXNcEftFadArFZFzWcUlgF1S9p8Cj9ofgJ/qw8VsVZ42QXM/D2VvkIyaqlXiWbUDNk3oTFYdDaJl1LxqMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789118453; c=relaxed/simple;
-	bh=UPIB83H1S/fF7CUa5yJpgwcajE9p9tTmdAFnscwfNNM=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=khHjplmACy76KM5c9Q03pDpoqmGeOCLamZSgrAAxkfI1VKfd3i1X5g4hTb401LTtDIZHjJDXt+wQVNitMWwR2RsUax4L1mzXz3JflIhQnbTyo3fgmZaaxUiigM6Hh4pWc2oAoXnvXYS7LAE4PFVTYDW5JZHLt2wl8hms5gq3MhU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tju.edu.cn; spf=pass smtp.mailfrom=tju.edu.cn; dkim=pass (1024-bit key) header.d=tju.edu.cn header.i=@tju.edu.cn header.b=P2q/hX3z; arc=none smtp.client-ip=101.71.155.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tju.edu.cn
+	s=arc-20240116; t=1789119765; c=relaxed/simple;
+	bh=WxG3rNoe+gqUM8P7w3hOznkwUqalM11LnbkjAPJv9o8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=m8m2OZ/qjARUfY+d0QGKOobmUK2FqzdSFECAmiN4FlyNULpLEDNhRUSsWqmORzJr2k94ClK3lkYXPb/3jaWUcjst5VwbhqKd9mJ6y38UXjb7MqiuVNnckWQxgKmsv1kA9VbUaO0QYvGjQi7CD81waE2cHhqVYOjk6g7/Ttvv2X4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QvH9tA7K; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=tju.edu.cn header.i=@tju.edu.cn header.b="P2q/hX3z"
-Received: from tju.edu.cn (gy-adaptive-ssl-proxy-2-entmail-virt205.gy.ntes [183.242.150.9])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 4d6a805c0;
-	Fri, 11 Sep 2026 17:20:40 +0800 (GMT+08:00)
-From: Yibo Tan <lhfff@tju.edu.cn>
-To: Jiri Kosina <jikos@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QvH9tA7K"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789119763; x=1820655763;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WxG3rNoe+gqUM8P7w3hOznkwUqalM11LnbkjAPJv9o8=;
+  b=QvH9tA7KfcALzdW0VRMYdTcoy4ehhq2njWOwVMU4gG4SU4ZCwmOXseF3
+   nQmF4jXFAgJHVLmHQH3X0ErnlF9RXgIS20WkH9hppDUWgwAAgagL6dgCZ
+   EoikXXSksUfVkSaY5jtf6KL09pv68donps+R4CRfAnyIfsc1x0o98os0Z
+   D+nDWd1/oYEkL2XKDDfQaktiv/pNiQEC8PNMJoySYQHu3uQgvgHlUzxAB
+   BjQHHUEAZl2MaDoeuMNwfAV6YM6PXssWt4y2n8Q65ZyxB8Ne5sqrUOdj8
+   Csjq+x+unnHEoCaC6PmZiHikJBCPI5LUrkWyvxanvqqWrrMh9V7xMoUD7
+   g==;
+X-CSE-ConnectionGUID: cwkYIJCzSmqc7RKkH41slw==
+X-CSE-MsgGUID: n1+XKnHoRQ6QSPNh1HLfCA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11901"; a="100243442"
+X-IronPort-AV: E=Sophos;i="6.27,97,1787036400"; 
+   d="scan'208";a="100243442"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2026 02:42:42 -0700
+X-CSE-ConnectionGUID: A92FjVxpTpKJpz4F+kMM1A==
+X-CSE-MsgGUID: EjtWWbi9TaGL7B25NRtF0Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,97,1787036400"; 
+   d="scan'208";a="272381088"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.80])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2026 02:42:39 -0700
+Date: Fri, 11 Sep 2026 12:42:37 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Yibo Tan <lhfff@tju.edu.cn>
+Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Benjamin Tissoires <bentiss@kernel.org>
-Cc: Zhang Lixu <lixu.zhang@intel.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v1] HID: sensor-hub: Fail unfinished multi-value reads on removal
-Date: Fri, 11 Sep 2026 17:20:39 +0800
-Message-Id: <20260911092039.234253-1-lhfff@tju.edu.cn>
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Zhang Lixu <lixu.zhang@intel.com>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] HID: sensor-hub: Fail unfinished multi-value reads on
+ removal
+Message-ID: <aqPNDZgMS9K6NT7d@ashevche-desk.local>
+References: <20260911092039.234253-1-lhfff@tju.edu.cn>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa08fc4e35703a1kunma104258b1d214e
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCS0pLVkxNHx5LGB8aTEJJT1YeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlKQ0hVSU9JVUpOS1VCWVdZFhoPEhUdFFlBWU9LSFVKS0lPT0
-	9LVUpLS1VLWQY+
-DKIM-Signature: a=rsa-sha256;
-	b=P2q/hX3zVfGHMwVGgVrlKS6OnOGy81gT6L/YFQocFeGZ8pYsh8ZOxxIwWCYRj1Y7fWIecOICuNwA5r+uL8GiI+nHEn12cD9H3fmECoPNQJIny4ZFrvxZME+FQZZc39AwQLRj5jBilToIMKp7r8+4aw2bvMrV6rHQDHXURQUbCe0=; c=relaxed/relaxed; s=default; d=tju.edu.cn; v=1;
-	bh=+eSqkSJf7wMK91ollarjY3EbgGLPVnUgq7Lv6PbT1Zs=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260911092039.234253-1-lhfff@tju.edu.cn>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-sensor_hub_remove() completes pending reads after stopping the HID device,
-but does not record why they completed.  A successful completion wait
-therefore returns zero even if no complete input report was received.
-Multi-value IIO callers then format their untouched automatic buffer as a
-successful result.
+On Fri, Sep 11, 2026 at 05:20:39PM +0800, Yibo Tan wrote:
+> sensor_hub_remove() completes pending reads after stopping the HID device,
+> but does not record why they completed.  A successful completion wait
+> therefore returns zero even if no complete input report was received.
+> Multi-value IIO callers then format their untouched automatic buffer as a
+> successful result.
+> 
+> With a valid four-element signed 32-bit quaternion report descriptor, an
+> unprivileged reader received all 16 bytes of the untouched buffer.  Across
+> 11 independent KASLR-enabled boots, four reads exposed exact pointers to
+> dev_rot_channels or dev_sysfs_ops.  Subtracting the matching link-time
+> symbol address recovered the kernel KASLR slide in all four cases.
+> 
+> The reader ran as UID/GID 65534 with no effective capabilities through the
+> mode-0644 IIO attribute.  The test used a privileged UHID broker to create
+> and remove the provider; it does not demonstrate unprivileged provider
+> removal.
+> 
+> Publish -ENODEV through pending.raw_size before completing an unfinished
+> multi-value request, and propagate the error after a successful wait.  A
+> fully received response already has a positive raw_size and remains
+> successful; max_raw_size is zero for the separate single-value path.
+> 
+> The Root B-only repair returned -ENODEV with no payload or kernel
+> diagnostic in 3/3 matching signed-32-bit runs.
+> 
+> A source reproducer, complete vulnerable and fixed serial logs, result
+> tables, and checksums are available at:
 
-With a valid four-element signed 32-bit quaternion report descriptor, an
-unprivileged reader received all 16 bytes of the untouched buffer.  Across
-11 independent KASLR-enabled boots, four reads exposed exact pointers to
-dev_rot_channels or dev_sysfs_ops.  Subtracting the matching link-time
-symbol address recovered the kernel KASLR slide in all four cases.
+> https://github.com/kimaiden1984-boop/linux-kernel-poc-collections/tree/main/cases/hid-sensor-quaternion-root-b-kaslr
 
-The reader ran as UID/GID 65534 with no effective capabilities through the
-mode-0644 IIO attribute.  The test used a privileged UHID broker to create
-and remove the provider; it does not demonstrate unprivileged provider
-removal.
+Make it a Link tag and add reference to the text.
 
-Publish -ENODEV through pending.raw_size before completing an unfinished
-multi-value request, and propagate the error after a successful wait.  A
-fully received response already has a positive raw_size and remains
-successful; max_raw_size is zero for the separate single-value path.
+> Fixes: f784fcea4506 ("HID: sensor-hub: Add sensor_hub_input_attr_read_values() for multi-byte reads")
+> Cc: stable@vger.kernel.org
+> Assisted-by: Codex:GPT-5
 
-The Root B-only repair returned -ENODEV with no payload or kernel
-diagnostic in 3/3 matching signed-32-bit runs.
+Assisted-by: LLM
 
-A source reproducer, complete vulnerable and fixed serial logs, result
-tables, and checksums are available at:
-
-https://github.com/kimaiden1984-boop/linux-kernel-poc-collections/tree/main/cases/hid-sensor-quaternion-root-b-kaslr
-
-Fixes: f784fcea4506 ("HID: sensor-hub: Add sensor_hub_input_attr_read_values() for multi-byte reads")
-Cc: stable@vger.kernel.org
-Assisted-by: Codex:GPT-5
-Signed-off-by: Yibo Tan <lhfff@tju.edu.cn>
----
- drivers/hid/hid-sensor-hub.c   | 7 ++++++-
- include/linux/hid-sensor-hub.h | 2 +-
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 6470a290ebfc..687f8defa2f0 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -334,6 +334,8 @@ int sensor_hub_input_attr_read_values(struct hid_sensor_hub_device *hsdev,
- 			ret = -ETIMEDOUT;
- 		else if (cycles < 0)
- 			ret = cycles;
-+		else if (hsdev->pending.raw_size < 0)
-+			ret = hsdev->pending.raw_size;
- 
- 		hsdev->pending.status = false;
- 	}
-@@ -805,8 +807,11 @@ static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
- {
- 	struct hid_sensor_hub_device *hsdev = dev->platform_data;
- 
--	if (hsdev->pending.status)
-+	if (hsdev->pending.status) {
-+		if (hsdev->pending.max_raw_size && !hsdev->pending.raw_size)
-+			hsdev->pending.raw_size = -ENODEV;
- 		complete(&hsdev->pending.ready);
-+	}
- 
- 	return 0;
- }
-diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-index ab5cc8db3fbb..4ad53304bb0b 100644
---- a/include/linux/hid-sensor-hub.h
-+++ b/include/linux/hid-sensor-hub.h
-@@ -41,7 +41,7 @@ struct hid_sensor_hub_attribute_info {
-  * @ready:		Completion synchronization data.
-  * @usage_id:		Usage id for physical device, e.g. gyro usage id.
-  * @attr_usage_id:	Usage Id of a field, e.g. X-axis for a gyro.
-- * @raw_size:		Response size for a read request.
-+ * @raw_size:		Response size or negative error for a read request.
-  * @raw_data:		Place holder for received response.
-  * @index:		Current write index into raw_data for multi-byte reads.
-  * @max_raw_size:	Total buffer size for multi-byte reads; 0 for single-value reads.
 -- 
-2.39.5
+With Best Regards,
+Andy Shevchenko
+
 
