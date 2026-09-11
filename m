@@ -1,79 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AA75431A34
-	for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2026 07:41:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF23456E1C;
+	Fri, 11 Sep 2026 07:45:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789112485; cv=none; b=K+KY04vikVR5U3YWwavuVKAweUYCSyHBb3Uw70Sl8cKTswIeuvh+QoO3LfAguU273je05kKqcebCXwl8vGdT9Ijk5BpyiVVZ9asqGqiCmCJI+3woDeIzwBArapVN6BEsOBrUGoKVC0dzcDaMRr3dxn0UnjwTjnZyLAHGWC6tcGY=
+	t=1789112757; cv=none; b=k0pxaaBmEc0Bb6FEiVOyRxV1vA2n6iTY9ZNvuJabWC5mAKf/pAis+5o4xLSPyKWui0pRCScdWD9eixOMlb+W/C9CeIuoKfUbotInzBFYQn3KW6VKFz4VamHj5dJsyz8/O1l+BTi9Yruujfzjt2i+PVyQ8Rzses4q2PHkrYInn1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789112485; c=relaxed/simple;
-	bh=NO/OF5kdS6j1QF4/t6fTKO7uogCt4Zulz2Ll0FAdBeA=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NO051i9VqPImuBHAD68AgVg/OU0ZXKDdfOnZm/wiq9P8WCDnJulHAI2B2vD0m3bQXGxNwQ6Cpc4HAPa83A4QTEh5oJV/8loLVbyjrnFlHZEX3jmbJDIAm/+RdW94U8okK8KoByZoVerDnbTYl9JX2NVuEKRJ7KXL7EA+ZznG1Rs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c5yIk1ZK; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789112757; c=relaxed/simple;
+	bh=P613Qqkim9tvF/YDkqzlliqzWipz8NQJSKUjolASpwk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ev7RDoSNc3WptDYTRF/g8Lqz6zIXThL80bfQlOn4X4Mpwfbp/SUk1UEjm14dC6vgGTqc4iCHoLTqxPc9Z+zAqiSY51nQ346xDUEEtl00H+GnoNeoR2hzOfw0TPj8zCVfqlsZE1aEnFpVIYokD2sQoBH0pLjzBpwc5ZKZzh6F3yU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=E0TlGE9e; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c5yIk1ZK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 512CD1F000FF
-	for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2026 07:41:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789112484;
-	bh=NO/OF5kdS6j1QF4/t6fTKO7uogCt4Zulz2Ll0FAdBeA=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=c5yIk1ZKQWrpT7q3tlD/FHemkJLrK2xQ6VBo/ec4kFurOeSlrzrTxfPO9eqAuR+Hl
-	 qK2A3lc5zvC/nELRwZQcTHViahP4SPrAd6jIsZOWamLOVQnit8A0TCiujvmEWRlgEw
-	 bi7UHpBk5QzSxUmZKfKdpQ/ivmaMi3ZM1elnqQPNoFSbOjkEMpxh4az/JVv5J9okjs
-	 ziPVt5QiBzjT9EdjLvKOl9+IzhkL4yzdF/eA/FSxxvQQcmyTDOqSPtgIDl7spjDnnm
-	 y01QdJ1ZQK+q+0gHE63FaXd16MAPmlFTQYv2UZisMsPW/owRW4sxdg5aDqutEQjetk
-	 uh2kpWsJt4Zyg==
-Received: by mail-lr2-f12.google.com with SMTP id 38308e7fff4ca-3a354118856so4970921fa.1
-        for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2026 00:41:24 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBwLZd0Q8TJCGBIcXSxKbT1c4aORV8Zu91a+LmLOWmteER7fOq1gLTAr2m3qkOlBs6ooo8h9zCxnV6s=@vger.kernel.org
-X-Gm-Message-State: AFuF++n45NIeF7Em4ue2HrEFXlua1b2U1l0NgsLs7QtDt9uI2g8EPjD+
-	TXAwnsViUl7eEvUwyBIljYZ2WeGUD8N8/LjEfeuznAx2/9o5bXtAImE8hxUpVSmfFGMHsH/g2T4
-	1RXAJRkbfyhBVZ6A7TG69c1VE8szs93mkcYFzNGJ5DA==
-X-Received: by 2002:a05:651c:31c6:b0:3a4:8913:a259 with SMTP id
- 38308e7fff4ca-3a5a52919e6mr2819641fa.29.1789112482986; Fri, 11 Sep 2026
- 00:41:22 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 11 Sep 2026 00:41:20 -0700
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 11 Sep 2026 00:41:20 -0700
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260910-ad7768-driver-v7-16-7f70b07627e1@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="E0TlGE9e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789112756; x=1820648756;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=P613Qqkim9tvF/YDkqzlliqzWipz8NQJSKUjolASpwk=;
+  b=E0TlGE9ewCoetNG79Ulvg6ocO5dIBeATNtUraDYNn+obW8drK8hsIYPF
+   hwSx3gy/M+qZrJBQnFvp3FJGNrbMZrQt7Jjs2LvTyP0BuotPLq5U3+9MF
+   pdTwuW5k1Xf6ehd+cmmPgXnAp4p+go8rfwWVjqxYvu6O24ym9AM5jJVLC
+   0b3U8PnIQmLtHjwRsNJD5LqWWXLHQhufsBRbwyLFaeFy6Ywc61MzNXo+S
+   KBrK9AmReYkMWU5+fcZO05mHlPVw38dwADG09K+RL2UKoHUNvb0pwDO0Z
+   YgZEu74PvMQddMo4vJmJ176zZzXb8ydQ0Sd/uBd12y1MLgp3qjx5Tt6pr
+   w==;
+X-CSE-ConnectionGUID: 0IGW2WqPQu2UyqU05JV5wQ==
+X-CSE-MsgGUID: nMCU+pUuQem1bg6yFaW1pQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11901"; a="93440933"
+X-IronPort-AV: E=Sophos;i="6.27,96,1787036400"; 
+   d="scan'208";a="93440933"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2026 00:45:55 -0700
+X-CSE-ConnectionGUID: tSCyyJeiTOqZcPiDZfekrA==
+X-CSE-MsgGUID: lj9+AHTzS82HOYdYLsMCqQ==
+X-ExtLoop1: 1
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.80])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2026 00:45:53 -0700
+Date: Fri, 11 Sep 2026 10:45:50 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	krzk+dt@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, Michael.Hennerich@analog.com, andy@kernel.org,
+	robh@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH v3 0/2] Add support for Analog Devices MAX30210
+Message-ID: <aqOxriLHqs7E6c2j@ashevche-desk.local>
+References: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
+ <cover.1789032019.git.johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260910-ad7768-driver-v7-0-7f70b07627e1@analog.com> <20260910-ad7768-driver-v7-16-7f70b07627e1@analog.com>
-Date: Fri, 11 Sep 2026 00:41:20 -0700
-X-Gmail-Original-Message-ID: <CAMRc=Mei5ZrOcW3B0mGw1woX3ws+q6t1jzR+Pv6_dKKRo7ZOvA@mail.gmail.com>
-X-Gm-Features: AcwNN1W5R2PpX2POIWzVZ_dgShbvNnsPO4gL5fI0M7B8ZSyCOdNjEzti7afKFRU
-Message-ID: <CAMRc=Mei5ZrOcW3B0mGw1woX3ws+q6t1jzR+Pv6_dKKRo7ZOvA@mail.gmail.com>
-Subject: Re: [PATCH v7 16/17] iio: adc: ad7768: Register GPIO auxiliary device
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-	Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Olivier Moysan <olivier.moysan@foss.st.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>, 
-	Randy Dunlap <rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1789032019.git.johnerasmusmari.geronimo@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, 10 Sep 2026 19:36:34 +0200, Janani Sunil <janani.sunil@analog.com> said:
-> Register an auxiliary device when the AD7768 is described as a GPIO
-> controller. This allows the GPIO driver to share the parent regmap and
-> runtime power-management state.
->
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
+On Fri, Sep 11, 2026 at 06:12:15AM +0800, John Erasmus Mari Geronimo wrote:
+> Add IIO support and device-tree bindings for the Analog Devices MAX30210
+> low-power digital temperature sensor.
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+This doesn't explain why a brand new driver is required. We have already tons
+of maxXXXX drivers in the same folder, do they not suit to host the support of
+a new device?
+
+> Changes since v2:
+> - Fix FIFO byte-count handling and sample decoding.
+> - Fix IIO debug register read/write access.
+> - Validate event threshold values and sampling-frequency register values.
+> - Return the correct sampling-frequency format and reject direct reads while
+>   buffered capture is enabled.
+> - Clean up the Kconfig entry and device-tree supply declaration.
+
+Changelog would be good to have a link to the previous version on
+lore.kernel.org.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
