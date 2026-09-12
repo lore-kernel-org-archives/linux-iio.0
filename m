@@ -1,510 +1,106 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED38372696
-	for <linux-iio@vger.kernel.org>; Sat, 12 Sep 2026 06:42:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.177
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789195365; cv=pass; b=mLG1hxbDOitja1l3aYxyfeGdUBO2PXR4VDXoCipmdm9ISB90o/IatpsmQ/zOOezgRfAuWqIC6D7JcZbm+QTIn5kIh5NpHq9STJ1X2CMLiHTH9xhTI5AFRMope+x4Sf5gc591KEPMQVmeaggeiqHEge650Gk0pZb/BWIiOJ1bHf0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789195365; c=relaxed/simple;
-	bh=tJjQDgXYqlnPmpKINoz2d/oWMTDr4BO/qDJAgzNKoVE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=f4eEJuKm/fDvx8e6wSkAxZfSahvdIxzVe3cPZ0T96+5avFyaOyAkcHpxJiTlQg4ht8L9/QrruoowVryQC4ds7Yy1tyfCKCcjLESN3ePtF8LQ1AyN+mSX3ZT1KX7Yhy1xwvLYEiDPtXiYe/sKFS8ODytSsPszFkM8vnIXWqZX1yg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nqw2uZiR; arc=pass smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C31D37DEBF;
+	Sat, 12 Sep 2026 07:57:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789199881; cv=none; b=UjR2V2rQ8vPWEOiFkMWI8gqO8nTsgT2w7LEM/onihS5RoMhS+GkCMnUmq6I3K0S/9TPWMYVB4vd8LyKt5/RFNw+u71Z3bKlyETM5C6AEuyzzRfQBQS39q1/oAb0sfIwHDK17Y54Ecve+xOLOD1Ez3Ps8eV+th85qJwX+0X1GxyQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789199881; c=relaxed/simple;
+	bh=vXC/lz8sDS7vIK7kkmOHAKB95vRwZ8MKI1dgipjQ6uY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kCNSmBw6V+voclRDN5Xh5a3hlD+2tRat/jMFoDgDuoONPuHUZZ40dHnMGFZXfDmeZF0BRsEuongK549b6/0IoSADbfvO7kzGpvp/y77NSmdYWvOIKodMag1wpkiEQfmRmpT5agi4v+OpKatVZjM4vtXhbWmyLa7VAKK+SVWgLyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ht9POEgX; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nqw2uZiR"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2dd1dcdcf95so13561455ad.1
-        for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2026 23:42:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789195361; cv=none;
-        d=google.com; s=arc-20260327;
-        b=m05LRfoKx9LNWStpWZH1AozKzIHJr/Ze5KZtdNkPA9xkYQcCyRnBXFyByxqeIQoun7
-         ikEbzW8BZ9vcn8vXZlxPkajlg1ZELdUkzpEDrvDSN1BvuebpKRX3SZbRiLjCnHJa/tYi
-         EZkDerN1Xg9sqRLOL6+R2ff9anejYvSs9KZzO9tGv+OW8lmaO1gVf3+hz9v1sc3g80eS
-         CyM38FwiIAPjaqhXiYr0qXgIYwUSBR5VpCEcxNgf/dTphnj2mUDYsREezKbjtL2VZP1+
-         r7ERi/OZ2Ks+M9c9cIqdLv/LShggZp0rw1Ichcsn//gOSlYQj2FEbPPfgA7kNZrjB4nv
-         HOLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=cIueFh+gkuoIg/zyR6m8UHNu9YPuEhQan6MTb8FOTWM=;
-        fh=iy+DlF2B1SJeLQJSQMg4pAtXwl/eonU3vsYHW2Ftl9E=;
-        b=EVALsFGuemnDRYDjiXvzM6hiphuNx2C7PKXo3okRk129D58MUiWV9K+PP7GdUV+Otg
-         153kbQL+6vznFFD61SNZGAMQi5OkVGC3nZq7MaByGkouMuywTqRxFhJwj4nairimVD+l
-         m3/GGO5Aa3aEAXbIqmmCepqhU69bbkK8619Jq+WpNF42xl31jjaWEp9nrJtpz9kQzWPd
-         R3NMWfDi+94bzgDOy7gSz/ofyHA+sOe3fUTyNtsWvq9V4mRHvYwcBz12K4dXd2FyW8U8
-         FnGC4c4wDgR6i94SmyQekxjb/TY3qLt98mix2ICr5ezhQn9xrZyfOgnOi/AK6MVyYbdu
-         OrfA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789195361; x=1789800161; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=cIueFh+gkuoIg/zyR6m8UHNu9YPuEhQan6MTb8FOTWM=;
-        b=nqw2uZiRYy9kU82/HHF9q541/rHCJ6TVpY8clukoqIDDG9bRVtESBncDRCnER89YOc
-         CpJlynGEdw1aO5LnFsuRuk4gas/Ofx92Q+jF6MYllXmpCM5mLz+PzRM4Ubhe7OHkXsme
-         H+IUZ7Md8hkcl7GiKojDWyr/EEub5WWZyj9/Xqj5zYNO8dyjkvRcSSMQ0h28Bv5rVfSr
-         tIGHFX+Myu7BamKjJdQ8MKL3un8JM5apb8Xyrw6Lih6QCfxUMPO4gRzXKeSq/YgoXL2C
-         A5eH90yPkrdNlGjFaVBo503zHm1UO0ISUiJWSQJ+Le2lKGNnpWyU/wVtMBf0bafJGDrw
-         meLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789195361; x=1789800161;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=cIueFh+gkuoIg/zyR6m8UHNu9YPuEhQan6MTb8FOTWM=;
-        b=NVi4sPCGYG+CQ8v3ijcCVdDbNt+seYwMluRTaHegyms6ygZlyOYXyYTdudIKu8I34l
-         W/jcom5nqUF1VQsx+YBnaf82h1ifDXGg/5B8eBKsc07LF9DhL68ZAhBphU33IB8UvrY9
-         Z1S1PQ5PpIvhzlcKhxrfndnCOZWMmmoB+jRzxzztsHIz5MvtRZse1x7By0Zj1ngQS3MT
-         xnTpFaIkrThs3bqgrgL0r0zPabs6TWehlGLv60DC2JxOQT9NzwttZVEiwsHQjksZMVv2
-         bhJbpVugbHyZzrbPRqHrUyETcvY8njl6Q2xv1hdbeNqOBVtrR7fIwO4yzcaTUNil5jsb
-         u07g==
-X-Forwarded-Encrypted: i=1; AKwUvByp7E9iP82BpLAhLqrMl0yaKU5DynrvazJQfnpDEQ8wJ92kcWS2A4bueM5pWDedo8XUjizrQgPtBj8=@vger.kernel.org
-X-Gm-Message-State: AFuF++k22bqU1r2+/tjPfmkhJNldExuY8Q8NrZoL7JXnIkSfYPOSn0jq
-	LDLweWZUNMuFEMD1L/oR8xLfHfpa3THq79uJfMxUgqBNAAS6VR0ODwpKcWpBefW+2dMuoZWXHj8
-	7zbDn3IrW3P04C3dmT0BXE4LcV/G2SIs=
-X-Gm-Gg: AYBFou2oGBAAWL5y8bDaRENEJXtosEK2stZ+rdJxdBUzaGK2ETf4NKaQXeO99ncjiju
-	nT6FjxRFrQ+HVXiKx1pW0C09jFWDal5mypkR61QtHFMsPph+ub1KqvfDqwquSSI4ArMSPSeqgiW
-	B1TVx+NihKBGOAfFbqL3l1G0R8+mQSR68wCDd5D/gTfPStaAiS00DMoBW3JSSezq41eswsAbmb0
-	ViOpvCrZFbn1qXBEGreIcJYL4kL2k2EI5bP7M0lGhuFGywXBURaJ67o5TE1U/9eYfHxkv98Osyk
-	53RkvqPEWhbFqsmBjUfAPw0NjtOkovD/TEif4URDVRVruRH+DZWyFI4bz1m4HDXVTx3X9zcTfZV
-	/r7ireYFUk7Gg
-X-Received: by 2002:a17:902:f092:b0:2dd:4438:4290 with SMTP id
- d9443c01a7336-2dd443843aamr24758605ad.3.1789195361107; Fri, 11 Sep 2026
- 23:42:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ht9POEgX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789199880; x=1820735880;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=vXC/lz8sDS7vIK7kkmOHAKB95vRwZ8MKI1dgipjQ6uY=;
+  b=ht9POEgXKcHmKZo7I0ktgshOt0zC1r8r/afn9pimGXd/4VFLHmLX+tTy
+   GSRIzXIz0brWxjub5auIjcg6MvwmdQkk+4ZH6CG0XwANen6hJGEKURYvj
+   U1BUy4ulD8CfZXs8N5qXjHFb0JLNFYiYz9jqxsF7KgquG/5/gikTBKANN
+   okueqA13XqqdLFB67J2JKEwQ9fQDft+IDT1848TUlc9toid6fEg1A7HOv
+   QYSX4SMTctahvViCIO6IvTJpqAnOgLlu8qrYnugk2yV4FQWtX1KtrMrva
+   Wix1vlAspb4NViYLiHqdyQOw2Rb42EVX0FbteRKSrYr52XhrlvuLfUExt
+   w==;
+X-CSE-ConnectionGUID: w6QEx3CBR3eFAVOujKjVVA==
+X-CSE-MsgGUID: d63wBIUCTDia6j95pD3LBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11902"; a="89691825"
+X-IronPort-AV: E=Sophos;i="6.27,98,1787036400"; 
+   d="scan'208";a="89691825"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2026 00:57:59 -0700
+X-CSE-ConnectionGUID: bR4opzlKQVmHrLrg7T0zlQ==
+X-CSE-MsgGUID: wAgTxgzzQDaNadMqh9H5pQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,98,1787036400"; 
+   d="scan'208";a="268851514"
+Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.230])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2026 00:57:54 -0700
+Date: Sat, 12 Sep 2026 10:57:51 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v4 01/10] dmaengine: Move enum dma_slave_buswidth to a
+ new header
+Message-ID: <aqUF_8g-DG7GB1pM@ashevche-desk.local>
+References: <20260911-dmaengine-support-wider-dma-masks-v4-0-72b8fd4cc78e@analog.com>
+ <20260911-dmaengine-support-wider-dma-masks-v4-1-72b8fd4cc78e@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
- <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
-In-Reply-To: <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Sat, 12 Sep 2026 09:42:29 +0300
-X-Gm-Features: AcwNN1UU9hydFOGImBeWBO5hjkcNCRQ2PnPzv9Tt-xAUH4b_sUlrCRdkTJ4wt_0
-Message-ID: <CAPVz0n0pBxP2J=5DN+k+ut0HRnTmsU64orXwxa19G0+WAxN-zg@mail.gmail.com>
-Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Mark Brown <broonie@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Daniel Thompson <danielt@kernel.org>, Helge Deller <deller@gmx.de>, devicetree@vger.kernel.org, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, dri-devel@lists.freedesktop.org, 
-	Jonathan Cameron <jic23@kernel.org>, Jingoo Han <jingoohan1@gmail.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Lee Jones <lee@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Linus Walleij <linusw@kernel.org>, linux-arm-kernel@lists.infradead.org, 
-	linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org, 
-	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-hwmon@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, 
-	linux-media@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linux-rtc@vger.kernel.org, linux-sound@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, 
-	linuxppc-dev@lists.ozlabs.org, llvm@lists.linux.dev, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, mfd@lists.linux.dev, 
-	Michael Hennerich <michael.hennerich@analog.com>, patches@opensource.cirrus.com, 
-	Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, 
-	Support Opensource <support.opensource@diasemi.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260911-dmaengine-support-wider-dma-masks-v4-1-72b8fd4cc78e@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-=D1=87=D1=82, 10 =D0=B2=D0=B5=D1=80. 2026=E2=80=AF=D1=80. =D0=BE 21:15 Arnd=
- Bergmann <arnd@arndb.de> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Thu, Sep 10, 2026, at 18:40, Svyatoslav Ryhel wrote:
-> > __
-> > Hello Arnd! May you please spare AAT2870 from being removed? I have a
-> > device which uses aat2870 (LG Optimus 2X P990 Tegra 2, not upstreamed
-> > yet, but in process as well) and atm I am working on converting this
-> > driver to use OF. Thank you!
->
-> Sure, I have removed this patch from my series now.
->
+On Fri, Sep 11, 2026 at 06:25:36PM +0100, Nuno Sá wrote:
+> In preparation for the bitmap based bus width capabilities, move
+> enum dma_slave_buswidth out of linux/dmaengine.h into a new
+> include/linux/dma/engine/types.h.
+> 
+> linux/dmaengine.h is included nearly everywhere, so growing it with the
+> new interface would make every one of its users pay for it. Keeping the
+> basic types in a separate header lets the new interface live next to it
+> without that cost. linux/dmaengine.h includes the new header, so its
+> users are unaffected.
+> 
+> While at it, add the missing kernel-doc for the enum members. The block
+> already opened with /**, so kernel-doc expected every member to be
+> described and warned about each one of them. Describe the UNDEFINED case
+> in particular, as its meaning depends on where the value is used.
+> 
+> No functional change intended.
 
-Thank you!
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-> > P. S. If you are planning to remove more old drivers, please CC me in
-> > since I may be interested in some additional driver upgrades for
-> > devices I own.
->
-> Please have a look at
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=3Dboar=
-d-remove-7.3
->
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Thanks, I will keep my eye on this branch.
 
-> I tried to be careful about figuring out exactly which drivers are
-> unused, but I'm sure there are still a few false positive and false
-> negative ones in there. I've added the current list of driver files below=
-,
-> let me know if you see something that shouldn't be there.
->
->      Arnd
->
-> drivers/ata/pata_icside.c
-> drivers/ata/pata_pxa.c
-> drivers/char/ds1620.c
-> drivers/char/hw_random/mxc-rnga.c
-> drivers/char/nwbutton.c
-> drivers/char/nwbutton.h
-> drivers/char/nwflash.c
-> drivers/clk/clk-axm5516.c
-> drivers/clk/clk-stm32f4.c
-> drivers/clk/clk-stm32h7.c
-> drivers/clk/imx/clk-imx31.c
-> drivers/clk/imx/clk-imxrt1050.c
-> drivers/clk/nxp/clk-lpc18xx-ccu.c
-> drivers/clk/nxp/clk-lpc18xx-cgu.c
-> drivers/clk/nxp/clk-lpc18xx-creg.c
-> drivers/clk/ti/clk-2xxx.c
-> drivers/clocksource/armv7m_systick.c
-> drivers/clocksource/mps2-timer.c
-> drivers/cpufreq/sa1110-cpufreq.c
-> drivers/dma/lpc18xx-dmamux.c
-> drivers/dma/sa11x0-dma.c
-> drivers/gpio/gpio-adp5520.c
-> drivers/gpio/gpio-htc-egpio.c
-> drivers/gpio/gpio-lpc18xx.c
-> drivers/gpio/gpio-rc5t583.c
-> drivers/gpio/gpio-rdc321x.c
-> drivers/gpio/gpio-reg.c
-> drivers/gpio/gpio-sa1100.c
-> drivers/gpio/gpio-wm8350.c
-> drivers/hwmon/ds620.c
-> drivers/hwmon/f75375s.c
-> drivers/hwmon/max1111.c
-> drivers/hwmon/max197.c
-> drivers/hwmon/wm8350-hwmon.c
-> drivers/i2c/busses/i2c-acorn.c
-> drivers/i2c/busses/i2c-axxia.c
-> drivers/i2c/busses/i2c-lpc2k.c
-> drivers/i2c/busses/i2c-stm32f4.c
-> drivers/iio/adc/ad7266.c
-> drivers/iio/adc/ad7791.c
-> drivers/iio/adc/ad7793.c
-> drivers/iio/adc/ad7887.c
-> drivers/iio/adc/lp8788_adc.c
-> drivers/iio/adc/lpc18xx_adc.c
-> drivers/iio/dac/lpc18xx_dac.c
-> drivers/iio/frequency/ad9523.c
-> drivers/input/joystick/as5011.c
-> drivers/input/keyboard/adp5520-keys.c
-> drivers/input/keyboard/ipaq-micro-keys.c
-> drivers/input/keyboard/jornada720_kbd.c
-> drivers/input/keyboard/lm8323.c
-> drivers/input/keyboard/lm8333.c
-> drivers/input/keyboard/locomokbd.c
-> drivers/input/misc/88pm80x_onkey.c
-> drivers/input/misc/ad714x-i2c.c
-> drivers/input/misc/ad714x-spi.c
-> drivers/input/misc/ad714x.c
-> drivers/input/misc/ad714x.h
-> drivers/input/misc/adxl34x-i2c.c
-> drivers/input/misc/adxl34x-spi.c
-> drivers/input/misc/adxl34x.c
-> drivers/input/misc/adxl34x.h
-> drivers/input/misc/bma150.c
-> drivers/input/misc/cma3000_d0x.c
-> drivers/input/misc/cma3000_d0x.h
-> drivers/input/misc/cma3000_d0x_i2c.c
-> drivers/input/misc/kxtj9.c
-> drivers/input/misc/max8997_haptic.c
-> drivers/input/misc/mc13783-pwrbutton.c
-> drivers/input/mouse/rpcmouse.c
-> drivers/input/serio/rpckbd.c
-> drivers/input/serio/sa1111ps2.c
-> drivers/input/touchscreen/ad7877.c
-> drivers/input/touchscreen/da9034-ts.c
-> drivers/input/touchscreen/ipaq-micro-ts.c
-> drivers/input/touchscreen/jornada720_ts.c
-> drivers/input/touchscreen/mc13783_ts.c
-> drivers/input/touchscreen/tps6507x-ts.c
-> drivers/irqchip/irq-nvic.c
-> drivers/irqchip/irq-sa11x0.c
-> drivers/irqchip/irq-stm32-exti.c
-> drivers/leds/leds-adp5520.c
-> drivers/leds/leds-bd2802.c
-> drivers/leds/leds-da903x.c
-> drivers/leds/leds-ipaq-micro.c
-> drivers/leds/leds-lm3530.c
-> drivers/leds/leds-lm3532.c
-
-LM3532 has full OF support and is functional, it just does not have
-device tree users yet. I have a device using it - Motorola Atrix 4G
-(Tegra 2 based).
-
-Here is commit removing LM3532
-https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/commit/?id=3D46=
-a6457870825d8b782d350fdc7e27c540734d41
-Here are my patches bringing up Motorola Atrix 4G support
-https://lore.kernel.org/lkml/20260721100245.444623-3-clamor95@gmail.com/
-
-> drivers/leds/leds-lm355x.c
-> drivers/leds/leds-lm3642.c
-> drivers/leds/leds-locomo.c
-> drivers/leds/leds-lp3944.c
-> drivers/leds/leds-lp8788.c
-> drivers/leds/leds-wm8350.c
-> drivers/media/i2c/ths7303.c
-> drivers/media/platform/samsung/s3c-camif/Kconfig
-> drivers/media/platform/samsung/s3c-camif/Makefile
-> drivers/media/platform/samsung/s3c-camif/camif-capture.c
-> drivers/media/platform/samsung/s3c-camif/camif-core.c
-> drivers/media/platform/samsung/s3c-camif/camif-core.h
-> drivers/media/platform/samsung/s3c-camif/camif-regs.c
-> drivers/media/platform/samsung/s3c-camif/camif-regs.h
-> drivers/media/platform/st/stm32/dma2d/dma2d-hw.c
-> drivers/media/platform/st/stm32/dma2d/dma2d-regs.h
-> drivers/media/platform/st/stm32/dma2d/dma2d.c
-> drivers/media/platform/st/stm32/dma2d/dma2d.h
-> drivers/media/radio/radio-si476x.c
-> drivers/mfd/88pm800.c
-> drivers/mfd/88pm805.c
-> drivers/mfd/88pm80x.c
-> drivers/mfd/adp5520.c
-> drivers/mfd/da903x.c
-> drivers/mfd/ipaq-micro.c
-> drivers/mfd/lp8788-irq.c
-> drivers/mfd/lp8788.c
-> drivers/mfd/mcp-core.c
-> drivers/mfd/mcp-sa11x0.c
-> drivers/mfd/menelaus.c
-> drivers/mfd/rc5t583-irq.c
-> drivers/mfd/rc5t583.c
-> drivers/mfd/rdc321x-southbridge.c
-> drivers/mfd/si476x-cmd.c
-> drivers/mfd/si476x-i2c.c
-> drivers/mfd/si476x-prop.c
-> drivers/mfd/ucb1x00-assabet.c
-> drivers/mfd/ucb1x00-core.c
-> drivers/mfd/ucb1x00-ts.c
-> drivers/mfd/wm8350-core.c
-> drivers/mfd/wm8350-gpio.c
-> drivers/mfd/wm8350-i2c.c
-> drivers/mfd/wm8350-irq.c
-> drivers/mfd/wm8350-regmap.c
-> drivers/mfd/wm8400-core.c
-> drivers/misc/bh1770glc.c
-> drivers/mtd/maps/dc21285.c
-> drivers/mtd/maps/pxa2xx-flash.c
-> drivers/mtd/maps/sa1100-flash.c
-> drivers/mtd/nand/raw/sharpsl.c
-> drivers/mtd/parsers/sharpslpart.c
-> drivers/mtd/spi-nor/controllers/Kconfig
-> drivers/mtd/spi-nor/controllers/Makefile
-> drivers/mtd/spi-nor/controllers/hisi-sfc.c
-> drivers/mtd/spi-nor/controllers/nxp-spifi.c
-> drivers/net/can/bxcan.c
-> drivers/net/ethernet/8390/etherh.c
-> drivers/net/ethernet/i825xx/ether1.c
-> drivers/net/ethernet/i825xx/ether1.h
-> drivers/net/ethernet/lantiq_etop.c
-> drivers/net/ethernet/samsung/Kconfig
-> drivers/net/ethernet/samsung/Makefile
-> drivers/net/ethernet/samsung/sxgbe/Makefile
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_common.h
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_core.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_desc.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_desc.h
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_dma.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_dma.h
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_ethtool.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_mdio.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_mtl.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_mtl.h
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_platform.c
-> drivers/net/ethernet/samsung/sxgbe/sxgbe_reg.h
-> drivers/net/ethernet/seeq/ether3.c
-> drivers/net/ethernet/seeq/ether3.h
-> drivers/net/ethernet/stmicro/stmmac/dwmac-lpc18xx.c
-> drivers/net/wireless/marvell/libertas/if_spi.c
-> drivers/net/wireless/marvell/libertas/if_spi.h
-> drivers/net/wireless/st/Kconfig
-> drivers/net/wireless/st/Makefile
-> drivers/net/wireless/st/cw1200/Kconfig
-> drivers/net/wireless/st/cw1200/Makefile
-> drivers/net/wireless/st/cw1200/bh.c
-> drivers/net/wireless/st/cw1200/bh.h
-> drivers/net/wireless/st/cw1200/cw1200.h
-> drivers/net/wireless/st/cw1200/cw1200_sdio.c
-> drivers/net/wireless/st/cw1200/cw1200_spi.c
-> drivers/net/wireless/st/cw1200/debug.c
-> drivers/net/wireless/st/cw1200/debug.h
-> drivers/net/wireless/st/cw1200/fwio.c
-> drivers/net/wireless/st/cw1200/fwio.h
-> drivers/net/wireless/st/cw1200/hwbus.h
-> drivers/net/wireless/st/cw1200/hwio.c
-> drivers/net/wireless/st/cw1200/hwio.h
-> drivers/net/wireless/st/cw1200/main.c
-> drivers/net/wireless/st/cw1200/pm.c
-> drivers/net/wireless/st/cw1200/pm.h
-> drivers/net/wireless/st/cw1200/queue.c
-> drivers/net/wireless/st/cw1200/queue.h
-> drivers/net/wireless/st/cw1200/scan.c
-> drivers/net/wireless/st/cw1200/scan.h
-> drivers/net/wireless/st/cw1200/sta.c
-> drivers/net/wireless/st/cw1200/sta.h
-> drivers/net/wireless/st/cw1200/txrx.c
-> drivers/net/wireless/st/cw1200/txrx.h
-> drivers/net/wireless/st/cw1200/wsm.c
-> drivers/net/wireless/st/cw1200/wsm.h
-> drivers/nvmem/lpc18xx_eeprom.c
-> drivers/nvmem/lpc18xx_otp.c
-> drivers/pcmcia/max1600.c
-> drivers/pcmcia/max1600.h
-> drivers/pcmcia/pxa2xx_base.c
-> drivers/pcmcia/pxa2xx_base.h
-> drivers/pcmcia/pxa2xx_sharpsl.c
-> drivers/pcmcia/sa1100_generic.c
-> drivers/pcmcia/sa1100_generic.h
-> drivers/pcmcia/sa1100_h3600.c
-> drivers/pcmcia/sa1111_generic.c
-> drivers/pcmcia/sa1111_generic.h
-> drivers/pcmcia/sa1111_jornada720.c
-> drivers/pcmcia/sa1111_neponset.c
-> drivers/pcmcia/sa11xx_base.c
-> drivers/pcmcia/sa11xx_base.h
-> drivers/pcmcia/soc_common.c
-> drivers/pcmcia/soc_common.h
-> drivers/phy/phy-lpc18xx-usb-otg.c
-> drivers/pinctrl/freescale/pinctrl-imxrt1050.c
-> drivers/pinctrl/freescale/pinctrl-imxrt1170.c
-> drivers/pinctrl/pinctrl-lpc18xx.c
-> drivers/pinctrl/stm32/pinctrl-stm32f429.c
-> drivers/pinctrl/stm32/pinctrl-stm32f469.c
-> drivers/pinctrl/stm32/pinctrl-stm32f746.c
-> drivers/pinctrl/stm32/pinctrl-stm32f769.c
-> drivers/pinctrl/stm32/pinctrl-stm32h743.c
-> drivers/power/reset/axxia-reset.c
-> drivers/power/supply/collie_battery.c
-> drivers/power/supply/da9030_battery.c
-> drivers/power/supply/ipaq_micro_battery.c
-> drivers/power/supply/lp8788-charger.c
-> drivers/power/supply/twl4030_madc_battery.c
-> drivers/power/supply/wm8350_power.c
-> drivers/pwm/pwm-lpc18xx-sct.c
-> drivers/regulator/88pm800-regulator.c
-> drivers/regulator/da903x-regulator.c
-> drivers/regulator/lp3971.c
-> drivers/regulator/lp3972.c
-> drivers/regulator/lp8788-buck.c
-> drivers/regulator/lp8788-ldo.c
-> drivers/regulator/max8649.c
-> drivers/regulator/rc5t583-regulator.c
-> drivers/regulator/wm8350-regulator.c
-> drivers/regulator/wm8400-regulator.c
-> drivers/reset/reset-lpc18xx.c
-> drivers/rtc/rtc-88pm80x.c
-> drivers/rtc/rtc-lp8788.c
-> drivers/rtc/rtc-lpc24xx.c
-> drivers/rtc/rtc-rc5t583.c
-> drivers/rtc/rtc-wm8350.c
-> drivers/scsi/arm/Kconfig
-> drivers/scsi/arm/Makefile
-> drivers/scsi/arm/acornscsi-io.S
-> drivers/scsi/arm/acornscsi.c
-> drivers/scsi/arm/acornscsi.h
-> drivers/scsi/arm/arm_scsi.h
-> drivers/scsi/arm/arxescsi.c
-> drivers/scsi/arm/cumana_1.c
-> drivers/scsi/arm/cumana_2.c
-> drivers/scsi/arm/eesox.c
-> drivers/scsi/arm/fas216.c
-> drivers/scsi/arm/fas216.h
-> drivers/scsi/arm/msgqueue.c
-> drivers/scsi/arm/msgqueue.h
-> drivers/scsi/arm/oak.c
-> drivers/scsi/arm/powertec.c
-> drivers/scsi/arm/queue.c
-> drivers/scsi/arm/queue.h
-> drivers/spi/spi-tle62x0.c
-> drivers/tty/serial/21285.c
-> drivers/tty/serial/8250/8250_acorn.c
-> drivers/tty/serial/8250/8250_lpc18xx.c
-> drivers/tty/serial/mps2-uart.c
-> drivers/tty/serial/sa1100.c
-> drivers/usb/host/ohci-sa1111.c
-> drivers/usb/host/sl811-hcd.c
-> drivers/usb/host/sl811.h
-> drivers/usb/host/sl811_cs.c
-> drivers/usb/musb/tusb6010.c
-> drivers/usb/musb/tusb6010.h
-> drivers/usb/musb/tusb6010_omap.c
-> drivers/usb/phy/phy-mv-usb.h
-> drivers/video/backlight/adp5520_bl.c
-> drivers/video/backlight/adp8860_bl.c
-> drivers/video/backlight/adp8870_bl.c
-> drivers/video/backlight/ams369fg06.c
-> drivers/video/backlight/bd6107.c
-> drivers/video/backlight/corgi_lcd.c
-> drivers/video/backlight/da903x_bl.c
-> drivers/video/backlight/ep93xx_bl.c
-> drivers/video/backlight/ipaq_micro_bl.c
-> drivers/video/backlight/jornada720_bl.c
-> drivers/video/backlight/jornada720_lcd.c
-> drivers/video/backlight/lm3639_bl.c
-> drivers/video/backlight/lms501kf03.c
-> drivers/video/backlight/locomolcd.c
-> drivers/video/backlight/lp8788_bl.c
-> drivers/video/backlight/tdo24m.c
-> drivers/video/fbdev/acornfb.c
-> drivers/video/fbdev/acornfb.h
-> drivers/video/fbdev/arcfb.c
-> drivers/video/fbdev/broadsheetfb.c
-> drivers/video/fbdev/core/fb_notify.c
-> drivers/video/fbdev/ep93xx-fb.c
-> drivers/video/fbdev/hecubafb.c
-> drivers/video/fbdev/metronomefb.c
-> drivers/video/fbdev/mmp/Kconfig
-> drivers/video/fbdev/mmp/Makefile
-> drivers/video/fbdev/mmp/core.c
-> drivers/video/fbdev/mmp/fb/Kconfig
-> drivers/video/fbdev/mmp/fb/Makefile
-> drivers/video/fbdev/mmp/fb/mmpfb.c
-> drivers/video/fbdev/mmp/fb/mmpfb.h
-> drivers/video/fbdev/mmp/hw/Kconfig
-> drivers/video/fbdev/mmp/hw/Makefile
-> drivers/video/fbdev/mmp/hw/mmp_ctrl.c
-> drivers/video/fbdev/mmp/hw/mmp_ctrl.h
-> drivers/video/fbdev/mmp/hw/mmp_spi.c
-> drivers/video/fbdev/mmp/panel/Kconfig
-> drivers/video/fbdev/mmp/panel/Makefile
-> drivers/video/fbdev/mmp/panel/tpo_tj032md01bw.c
-> drivers/video/fbdev/n411.c
-> drivers/video/fbdev/pxa168fb.c
-> drivers/video/fbdev/pxa168fb.h
-> drivers/video/fbdev/s1d13xxxfb.c
-> drivers/video/fbdev/sa1100fb.c
-> drivers/video/fbdev/sa1100fb.h
-> drivers/watchdog/lpc18xx_wdt.c
-> drivers/watchdog/rdc321x_wdt.c
-> drivers/watchdog/wdt285.c
-> drivers/watchdog/wdt977.c
-> drivers/watchdog/wm8350_wdt.c
-> sound/soc/codecs/si476x.c
-> sound/soc/codecs/wm8350.c
-> sound/soc/codecs/wm8350.h
-> sound/soc/codecs/wm8400.c
-> sound/soc/codecs/wm8400.h
-> sound/soc/pxa/pxa2xx-i2s.c
-> sound/soc/pxa/pxa2xx-i2s.h
-> sound/soc/pxa/spitz.c
-> sound/soc/ti/n810.c
-> sound/spi/Kconfig
-> sound/spi/Makefile
-> sound/spi/at73c213.c
-> sound/spi/at73c213.h
-
-Other drivers from this list seem to not be used in any of my devices.
-
-Best regards,
-Svyatoslav R.
