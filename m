@@ -1,113 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5B05478E25;
-	Sat, 12 Sep 2026 13:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2835743E07C
+	for <linux-iio@vger.kernel.org>; Sat, 12 Sep 2026 13:25:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789219338; cv=none; b=QAqoD5p4tCv9YDUgefX9y+p5Bs5Qgj3P48rr+dRzmiMOSTKBtJkWlFN+9pn/XPDE5EwA25MQrVsZnZGXWo764TTFsQMbaVXCf597g6UMgWjIoxpQ9+tkUxQhHPUkGS9AL4j5JHnfLV6M6aOK9/z4brtgRJaSkRtauLALuzQphP4=
+	t=1789219543; cv=none; b=Ik5aADnYbDosZSENI37rJvQlp1zHHXqxeZ4jOXs6YL5HfrbjHbYRziiM6xQgVw7fTm15XNaS0pF17x0Jrtfufng92NCMrEplnUnxxnQz/HZYLCk3xz8AGlUtg30mgcamKQ6uJy3+8kdDBnIaCR/RwnXtNjyvHL9bDZaGA7tPDqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789219338; c=relaxed/simple;
-	bh=BOCroOJEaN/c+qJk5JxHZ9/qarv56VFO8jjyDmUDmlY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fkBacL25niAxeyBeUkpRgiAlb9scAUEY4LPtuhTQ+vWp3OYBoGNWgFV078FPqVmRnHLQ444mETBYHW0xvUXX8U1qMohWuFaKvWSlDLgJgKJcViybNyViDor4LFTioxxqmh+T9YpoE+gb5indVTrztnfbxmpfEDnaKGhTvbXbWTI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y394gTHB; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1789219543; c=relaxed/simple;
+	bh=ra+nBxwYJ9Dt1/cxvZ0GNQZEo/hQ3YnP/tmoVkrBeEE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Xo0aAQpp7Hd6h9I0tEIKtUBPYCJnekl+O4goymEKnnKaNK5tTsfHblkihm5QBPw43mwwomO7Gg238c6b22NtWYpNy488PtNeWUO6Y2ICu9hrZF5u53bAdYM59P5pse0b2QmUb5CVJaSG92fw2/TKcGyhZ11rzZWL1b2YEAjAEXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oAQoPF2/; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y394gTHB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789219336; x=1820755336;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BOCroOJEaN/c+qJk5JxHZ9/qarv56VFO8jjyDmUDmlY=;
-  b=Y394gTHByj7QPUVqdk+jf2PIPJjxAHfJFbqZWNnCsKLEmp2ajq7w84gx
-   KXU7l3faGZzkqkOUUMwoHt0NhpPbXCGwh4a08vmcO+RVEKSOLerCFBwX1
-   tfPIsBZN9nvHirq0yNmA71Ag+heKTy5IK/SBSBsBLzP5GYZK1mUY6PhuY
-   JLqdsapHKwFfa2qdKVNkimuIWIQoA8nbVovRj7dS8A2YVCJk1ro51/kI8
-   Ap0IxRZfq23cs0DKDrjaaD7xsitEpTKrof7fd6YCLxpj2jYSxFhB0tcYD
-   ATE7QRNIiD8t/2R5h3rKpQZpBlNohjm8LUOlhpl6xiYUS/nbGyp3WjAKg
-   w==;
-X-CSE-ConnectionGUID: Y9lYbDEDRRq5I9EkNxZXlw==
-X-CSE-MsgGUID: Jqo12sXkQ6S9RkHv6bGl0g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11902"; a="100318961"
-X-IronPort-AV: E=Sophos;i="6.27,99,1787036400"; 
-   d="scan'208";a="100318961"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2026 06:22:14 -0700
-X-CSE-ConnectionGUID: B7LDMt1jQ96Kz7kW5wmCEw==
-X-CSE-MsgGUID: hFNH3Yn6Qq+pFFUYU0vguw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,99,1787036400"; 
-   d="scan'208";a="272158036"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.239])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2026 06:22:05 -0700
-Date: Sat, 12 Sep 2026 16:22:02 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-Cc: linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
-	vitor.soares@toradex.com, samagazaryan@google.com,
-	gregkh@linuxfoundation.org, arnd@arndb.de,
-	boris.brezillon@collabora.com,
-	oleksandr.shulzhenko.viktorovych@intel.com,
-	tgopinath@linux.microsoft.com, corbet@lwn.net,
-	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
-	jorge.marques@analog.com, pgaj@cadence.com,
-	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
-	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
-	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
-	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
-	haren@linux.ibm.com, pasha.tatashin@soleen.com,
-	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
-	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
-	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
-	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
-	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] i3c: master: enable driver_override for I3C
-Message-ID: <aqVR-jBabQKcsfjL@ashevche-desk.local>
-References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-2-meaganlloyd@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oAQoPF2/"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-49ccfae359fso13665405e9.3
+        for <linux-iio@vger.kernel.org>; Sat, 12 Sep 2026 06:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789219540; x=1789824340; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=kW/Q8SPmIwY6gpgjSddoHsXSzmBQy2ZAVo1h1jIxSwM=;
+        b=oAQoPF2/kB+ldjz8uIYnip6ys/PR6wNJKBtf2TSW/z60pfHQ1gcE9o/udeh/qkmL9V
+         lPNPZORklPTKfyztj9EwJ3KOC65kIn7q3TqQj+rsXFyLnQli87s0NCmjyD/4LYZpX3j8
+         Dl/Wq8iW5r7K2ktJzudxr2We1fmEw9yAt9o+Vgj8IUXaFBv1unkuzMPqQ2FY9Sp/1fH5
+         dF6Mb5RH9zOxfEm4rQMvzrPoQf9brS1c6VZS9DheOrelBgmK/KAr0XLXecL5RapGx969
+         e77GDThipwSKg/LnB58iM/PkG/uENsf1+GeZ2XLj/UsunhirA7wui+05zJ1xH/qvQ6kM
+         TllA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789219540; x=1789824340;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=kW/Q8SPmIwY6gpgjSddoHsXSzmBQy2ZAVo1h1jIxSwM=;
+        b=l5+oEnzB8DBTqfkLPaeIpC0+bqeVJYeNNSMSW7Ra9mYzflfkBXK1VT2VKWH3l6aY5b
+         VJOzKpovlbjvr2sixC1mz8Ex4vUxkMYbUIrxmiiA6ucxEa9TE0qArG7vizKqlyNDRISh
+         5BlQRbGAInnTwYvs0k/4R3ge7PYzRzveRD1xNmR5KTK2Di1OsCfbSSovWLQU0eLELm4r
+         rC0bxurtk9mGHChJjTRj0ydy6esIokQ7AnAGkfwG3HGwje+qzBcKLTn5PqlEqAVIgXW3
+         7jFuTnnAhBNzSF5jjlt89zgJiPPGigmF/9iJYtGRjNvCTAkKpHacukAIRjRZqkh2ovSV
+         Hqbg==
+X-Forwarded-Encrypted: i=1; AKwUvBxHpZCnKrZ34pJ/ManqFsg/7RWCvonBLBta9MfGdCzOaumbZkC5SWcoyCTLGudWbhSVuTks0FawmRE=@vger.kernel.org
+X-Gm-Message-State: AFuF++kmS530z9KZBvaHZkR1xRCpyE9DisIH+dfAF2Nr58j0LKXwNedB
+	aiZyTuf1sVP5eAToXLLddosjHnqRtmfyZF+/YU1/ty3k5DJFKj9yQxtu95OkzA==
+X-Gm-Gg: AYBFou2plEvQzPWYb0jXl2KpYOK5JXzh1coomAtQLQGpMryzNMIrvYa7EeVlX1S/KFC
+	XyAg7KsgsF2bmJtuhikpiMq7kuxbUimRSRJRIOX8Zif6KiraU54We6ap7RHAxExHLpfKc3cAYJa
+	1IGR2W9YczuxFyIhrUveJQSoNCVFOwJcEl5lshsHBTAmjapblo2xHn9cTDUTASSq5AG+uQMCj24
+	yXYOx2kOl5WopIGWPuzVI0IqZ7piD0kEPSBeRPuWC0uNtSI70Ojfrbl+kaRousJ3+Vvm1mduUB6
+	96mHsGfCtUCjAwrGZDlU6o6hJ835BTy6jOU5Y89dvhgGXmcDTxMQkneA4UAvTUPbv2JsVPjLaDT
+	R7GnJbZWN0dDxlYD/dMnv0GJeBgq/aovrKzPNpJs3JEyJ65mjVlFtv5W6Z6s0yOroht5JHQcH+W
+	XFuTmHRz5bxn2Gpwxqz9+gX2KtgXEszrHfzZzj0+ZgMerksgZwPgJREkU38Ee8CaBreNtZDOOQU
+	w7N7wMApv9eozJseQ==
+X-Received: by 2002:a05:600c:4714:b0:49c:c96a:d36b with SMTP id 5b1f17b1804b1-49e61988ce5mr95438225e9.12.1789219540215;
+        Sat, 12 Sep 2026 06:25:40 -0700 (PDT)
+Received: from fedora ([154.182.88.3])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-486eb33ee8bsm12684503f8f.15.2026.09.12.06.25.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Sep 2026 06:25:39 -0700 (PDT)
+From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+To: jic23@kernel.org,
+	gregkh@linuxfoundation.org,
+	nuno.sa@analog.com,
+	Michael.Hennerich@analog.com
+Cc: dlechner@baylibre.com,
+	andy@kernel.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	joshua.crofts1@gmail.com,
+	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Subject: [PATCH v6 0/3] staging: iio: adc: ad7816: Fix SPI read race condition and DMA safety
+Date: Sat, 12 Sep 2026 16:25:14 +0300
+Message-ID: <20260912132517.55686-1-abdelnasserhussein11@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260911210935.1353126-2-meaganlloyd@linux.microsoft.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Sep 11, 2026 at 02:09:33PM -0700, Meagan Lloyd wrote:
-> Opt-in to driver_override sysfs functionality for I3C subsystem.
-> 
-> Update some I3C drivers that are assuming that if their .probe is
-> invoked that the bus match function already checked the ID table. Go
-> ahead and verify in .probe that i3c_device_match_id() returns a valid
-> match before using the i3c_device_id pointer.
-> 
-> Signed-off-by: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-> Assisted-by: Claude:claude-opus-4.8 copilot
+This series addresses two separate issues in the ad7816 driver:
+1. A race condition during SPI reads where multiple threads could
+   disrupt the GPIO state.
+2. A DMA safety issue caused by using a stack-allocated buffer for
+   SPI transfers.
 
-Assisted-by: LLM
+Changes in v6:
+- Separated the alphabetical sorting of include headers into a dedicated
+  precursor patch (Patch 1).
+- Kept the mutex addition strictly focused on serializing the read
+  operations without modifying the sizeof() argument (Patch 2).
+- Moved the sizeof() argument fix to the DMA-safe buffer patch where
+  it logically belongs (Patch 3).
 
-...
+Changes in v5:
+- Split the changes into separate patches for bisectability.
+- Replaced stack buffer with a dedicated rx_buf aligned with
+  IIO_DMA_MINALIGN.
+Abdelnasser Hussein (3):
+  staging: iio: adc: ad7816: Sort headers alphabetically
+  staging: iio: adc: ad7816: Serialize SPI read operations
+  staging: iio: adc: ad7816: Use DMA-safe buffer for SPI read
 
->  drivers/hwmon/lm75.c                        |  7 ++++++-
->  drivers/hwmon/tmp108.c                      |  2 ++
->  drivers/i3c/master.c                        |  6 ++++++
->  drivers/iio/adc/ad4062.c                    | 10 ++++++++--
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c |  3 +++
-
-No, each IIO driver should have its own patch.
+ drivers/staging/iio/adc/ad7816.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.54.0
 
