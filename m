@@ -1,277 +1,138 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com [74.125.224.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93F133246ED;
-	Fri, 11 Sep 2026 23:29:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACF811E1DF0
+	for <linux-iio@vger.kernel.org>; Sat, 12 Sep 2026 01:39:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789169376; cv=none; b=feWdW11ctLoxf2Z9/4O681Uziq+r44PP0Ss+qPithqG2ecpzSLB6tg6hpjfzO5dSXFmsgDqSzmPbe4jtX19hL2gvtbzmneXbxBDB6kRVHOiGinvaC2JU4J4sdYS4JSs5+C5QyNaFQtMu5JWC7vnHx8PE8c20R/cls/bRTktyF6U=
+	t=1789177162; cv=none; b=lHYzhTE3Tb+sY4I8iCOC4qgVpkLFDlLe+z5UDO++dZT15YzTUJ4GgW/eMvhmDlm8/UfR0i0fkQJz1ObyHHm8+F906oYx86dsyOZrNoY2WbPwMQJilpxIrUF8wzO3dMePrEQ4ocBnQ1LMbBQ+ni2ujvZmx6VRYCfwX+ZoFpwJ1Xo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789169376; c=relaxed/simple;
-	bh=7lwcmw3oOfQJEkgyBkIMGhKBHj1UPW1+VFZ59Qe3eQI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Gh32qZnAvwnZL3egO9UYi2d22ok1gommVNp4oupNqTNXjih7ar2937J2pMpyp4hdStJ41kBHVMgZwuENdLlyd5hq4p13023PRposT1zCyFFmBgMfxOooqfsSy4b410k+scnmKIxWuIIjuJVxSVax9CWp9Tyq0pcyNtFh0+MC7j8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=X0L5iUHT; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1789177162; c=relaxed/simple;
+	bh=ptpKRlILh3vy2G4ftYKshvhPYqbk/M3xp8SzkyOJ56E=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Mn8+VlVdDCEbVYZ5pANjTmw5I++g440JSr26XaezWJW5b60gkn8EZAtT1fr5xXmxSGnKDZZSbxS2zOYKeHd566QmVAELcJivIBDPlqqcai7MZWruzoPFLgppnND90CCzzMRJNrI4Jsp3A6wdTh/qnQlNhS7fTcO5RBbnDbl9ktE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SOgVdFjI; arc=none smtp.client-ip=74.125.224.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="X0L5iUHT"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=tlQQvF1b+LoQVB9XRaUbbPD8hANIsVjq3TZJg8ASnTw=; b=X0L5iUHTRwYhwkzF16rcwqBBKs
-	1qga73wtg/r0iRou6O98urcmLPTKRa4esBDCXGEsnaoaxFHwdYHK4FFWaBlZM9s45MvloNU6NUNlO
-	hRUW73Vrv9bvBNYeqmD2D/O0JyKULSo1zLhtm4ih+xlHcRc5JDB8s0jaKdy7cLyqdliYHZQhxKbA9
-	cEEVhBIGuTY9h3nTuZ24zHvzQbZDPEhI/w6qOBIKBU/kFuw+M95M6qF9BY1GLYlubBeJnoqtrO0Nw
-	rPj6irzpQXFvbqdsaeOHociOw0IJvOkyLnYPyJ7N9Vyzz9NOhb25FeGl9SsoWCMriFD+11SkWccur
-	Rqli2UEw==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1x5AgH-00000000MHz-1aVp;
-	Fri, 11 Sep 2026 23:29:17 +0000
-Message-ID: <5cd22376-6921-4a2b-acba-371bcbbfa00f@infradead.org>
-Date: Fri, 11 Sep 2026 16:29:15 -0700
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SOgVdFjI"
+Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-66c70f69d3fso1736315d50.1
+        for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2026 18:39:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789177160; x=1789781960; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=i8SziI5Cbw/9BaPigJwwxI7zbv9V+0J2bjlfJq82EFc=;
+        b=SOgVdFjIKremXvtCBctMP8r3y6iYMRuDH9zg7f3oif/NmgOgQ4G05+MZEiw5+9YCmx
+         ipR/ki32tnHVEyozmrS4MJKE0icOmEcPFUvoT2iMR536z2H9NtR5wY+9+kbqc2dUkKq5
+         kBN8oRquxd3alPLjkWNVppiYPJTUbcLkejXYzUhtUlUVo1XZrMENehSJXYBSNnN0/+vY
+         g23o+NX+M5oashRo4MwsCoeHqCglu0satQI8CogvJ+X0uuOnfYy1zVHN6RXMQoKYCCvk
+         L/qjpSE7ufLjPp+U721KcNdIrXeQI8RMNAnRNLAuo/wVs7tCGzyQDCsnwAlfXEGLRbNd
+         7yJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789177160; x=1789781960;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=i8SziI5Cbw/9BaPigJwwxI7zbv9V+0J2bjlfJq82EFc=;
+        b=CrZU6QcZL84MmuTxeAbZ3O4/NGJFCYpvCxAthwtKiR+wBm/gOeG/FqQdrJy3ajf9zm
+         toiBjmdsuL2KSYWEimXWS83SLeY49O/BpXDdlCc/gKlkZUpKWoqFk6JkEFhsaCS3L/p8
+         jO+Fg55pmbI+xpNG/T7clwKoD1hzmMRceLsTwqMKXXrl1cI0mtcWEED2zpu/gCu4oyUC
+         jdVnZab+r/HylOyWSW4x9z9CrEn7qGLWb9hvteyavVojt0x8PxHK0iXh3b7/GHMr4jDW
+         AZWtMmNDTD8uJJQT4S4qfHMgq/O4pc6KFq8vPFzebMfHcwCiqhXxQbOCb3pY7fdiyjyY
+         ZKiQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwPlV3xPHFJPA/qjVjgpdaBqfEOQD8F0VJnKCGvEYYWVisKoOEG5vGSpmnf5trg17H/9557D3LP2oI=@vger.kernel.org
+X-Gm-Message-State: AFuF++m9YzIspIB7ou6fuT8s1xZcXWz/ji7qgwn0J1LLXCZVNo0U+dph
+	mWcg0pK+YssLqOWnFeljjsniS5H5uXAB80+6TEEZLCA/JBpJ+XOYdmZQ
+X-Gm-Gg: AYBFou2jAEUOM9xjuU7NFTHXt0HR+3NVG7ddOxO5yEW8/D8aKvXt6XGwtJ7253Y8TUN
+	iYxCo6IOLuq2vwqIBzXezKbJF3ZmN7EMn+taMDgfjpiuqQYxARXcNl6l0LxrrKShkNIxBe/0r4K
+	AbbcSUfRDLutmHRyM4yGp3bUBqdsXOngIcrJdddYVeHgTxu6p+7djYhlAY7NuGBD6Unz65Kc9oe
+	VCJQDXVHe2nDhF5CqE3nycms2v0AJy01GL5q8zFvW94QnvVvnMP03RctnfXpKxb542PulI/cFuZ
+	zmjFsIAmvISMMei6/0fKkbYi39NXhuiZ7eX/EmfwF0GrR4LhHq4BL8d7/TqsehAUYYDHLwaOVTs
+	SIon3tejQo4lbNeI/8tmBQT9yT5RIipsOCZKzGHQNkJK3dRzyc01Kx1ke3WBpNTtTgnAlr3k/kH
+	eYmTI9aEFq9TECLBJ0cq9hEl6rkepnmzwDXJfUNsa7lImTgSU0txl2SQ==
+X-Received: by 2002:a53:d950:0:b0:66f:c24c:98bf with SMTP id 956f58d0204a3-671246d16b1mr2103008d50.46.1789177159642;
+        Fri, 11 Sep 2026 18:39:19 -0700 (PDT)
+Received: from localhost ([2600:1700:5431:250::3e])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67125df315fsm1751757d50.9.2026.09.11.18.39.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Sep 2026 18:39:18 -0700 (PDT)
+From: Chang Yu <marcus.yu.56@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>
+Cc: Chang Yu <marcus.yu.56@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Shi Hao <i.shihao.999@gmail.com>,
+	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/2] Add support for AS7343 multi-spectral sensor
+Date: Fri, 11 Sep 2026 18:39:10 -0700
+Message-ID: <20260912013912.51887-1-marcus.yu.56@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
- user-space access
-To: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
- linux-i3c@lists.infradead.org
-Cc: alexandre.belloni@bootlin.com, vitor.soares@toradex.com,
- samagazaryan@google.com, gregkh@linuxfoundation.org, arnd@arndb.de,
- boris.brezillon@collabora.com, oleksandr.shulzhenko.viktorovych@intel.com,
- tgopinath@linux.microsoft.com, corbet@lwn.net, skhan@linuxfoundation.org,
- linux@roeck-us.net, Frank.Li@nxp.com, jorge.marques@analog.com,
- pgaj@cadence.com, wsa+renesas@sang-engineering.com,
- tommaso.merciai.xr@bp.renesas.com, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, jic23@kernel.org, dlechner@baylibre.com,
- andy@kernel.org, lorenzo@kernel.org, enelsonmoore@gmail.com,
- rppt@kernel.org, pratyush@kernel.org, giovanni.cabiddu@intel.com,
- gabewhigham@gmail.com, haren@linux.ibm.com, pasha.tatashin@soleen.com,
- jirislaby@kernel.org, adrian.ho.yin.ng@altera.com, ustc.gu@gmail.com,
- jszhang@kernel.org, adrian.hunter@intel.com, akhilrajeev@nvidia.com,
- tze.yee.ng@altera.com, manikanta.guntupalli@amd.com,
- shubhrajyoti.datta@amd.com, jarkko.nikula@linux.intel.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-hwmon@vger.kernel.org, linux@analog.com, linux-iio@vger.kernel.org
-References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+This series adds initial support for the AMS AS7343 14-channel
+multi-spectral sensor.
 
+The sensor has 14 optical channels (11 visible + NIR + clear +
+flicker) in total. This initial driver supports reading raw counts
+from all 12 spectral channels (11 visible + NIR) via sysfs and basic
+power management.
 
-On 9/11/26 2:09 PM, Meagan Lloyd wrote:
-> The i3cdev driver is a character device driver that allows user-space
-> to control and interact with I3C devices.
-> 
-> Currently, it has the ability to perform Single Data Rate (SDR)
-> transfers - basic reads/writes.
-> 
-> With the addition of sysfs driver_override, there is now a
-> straightforward and direct way to match the i3cdev driver to any i3c
-> device without stepping on the toes of more specialized drivers that are
-> loaded automatically.
-> 
-> This is accomplished by the i3cdev driver not having any entries in the
-> i3c_device_id table. After boot, simply set the driver_override to
-> "i3cdev" and bind the device manually via the sysfs bind knob. This can
-> also be automated with udev rules as well.
-> 
-> The character device interface will be exposed at:
-> /dev/bus/i3c/<bus id>-<Provisional ID>
-> 
-> Signed-off-by: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-> Assisted-by: Claude:claude-opus-4.8 copilot
-> ---
->  Documentation/userspace-api/i3c/i3cdev.rst    | 152 ++++
->  .../userspace-api/ioctl/ioctl-number.rst      |   1 +
->  MAINTAINERS                                   |   7 +
->  drivers/i3c/Kconfig                           |  12 +
->  drivers/i3c/Makefile                          |   1 +
->  drivers/i3c/i3cdev.c                          | 730 ++++++++++++++++++
->  include/uapi/linux/i3c/i3cdev.h               |  70 ++
->  7 files changed, 973 insertions(+)
->  create mode 100644 Documentation/userspace-api/i3c/i3cdev.rst
->  create mode 100644 drivers/i3c/i3cdev.c
->  create mode 100644 include/uapi/linux/i3c/i3cdev.h
-> 
-> diff --git a/Documentation/userspace-api/i3c/i3cdev.rst b/Documentation/userspace-api/i3c/i3cdev.rst
-> new file mode 100644
-> index 000000000000..ad246bf28919
-> --- /dev/null
-> +++ b/Documentation/userspace-api/i3c/i3cdev.rst
-> @@ -0,0 +1,152 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +====================
-> +I3C Device Interface
-> +====================
-> +
-> +This interface allows access to I3C devices from userspace.
-> +
-> +As I3C devices adhere to the I3C protocol, simple transfers can be accomplished
-> +using a generic driver. Currently, this interface supports private Single Data
-> +Rate (SDR) read and write transfers.
-> +
-> +The i3cdev module will not auto-bind to devices. Userspace needs to explicitly
-> +bind the device to the driver. This is to avoid interfering with the binding of
-> +specialized drivers.
-> +
-> +Once bound, a character device interface will be created at:
-> +/dev/bus/i3c/<bus id>-<Provisional ID>.
-> +
-> +====================
-> +Usage
-> +====================
-> +
-> +Any discovered I3C devices by the I3C subsystem will have device folders under /sys/bus/i3c/devices/<bus id>-<Provisional ID>.
-> +To allow binding of a device with i3cdev driver, set the driver_override:
-> +
-> +::
-> +
-> +    # echo "i3cdev" > /sys/bus/i3c/devices/<bus id>-<Provisional ID>/driver_override
-> +
-> +If the i3cdev driver is not yet loaded, load it and it will cause the driver to bind
-> +to any devices with the override in place.
-> +
-> +If the i3cdev driver is already loaded, go ahead and perform a manual bind:
-> +
-> +::
-> +
-> +    # echo "<bus id>-<Provisional ID>" > /sys/bus/i3c/drivers/i3cdev/bind
-> +
-> +Set driver override
-> +::
-> +
-> +    # echo "i3cdev" > /sys/bus/i3c/devices/0-deadbeef001/driver_override
-> +    # echo "i3cdev" > /sys/bus/i3c/devices/0-deadbeef002/driver_override
-> +
-> +Bind the device to the driver
-> +::
-> +
-> +    # echo "0-deadbeef001" > /sys/bus/i3c/drivers/i3cdev/bind
-> +    # echo "0-deadbeef002" > /sys/bus/i3c/drivers/i3cdev/bind
-> +
-> +Observe the resulting character device files under /dev/bus/i3c/
-> +::
-> +
-> +    # ls -ltr /dev/bus/i3c/
-> +    crw-------    1 root     root      235,   1 Jun 30 17:49 0-deadbeef002
-> +    crw-------    1 root     root      235,   0 Jun 30 17:49 0-deadbeef001
-> +
-> +BASIC CHARACTER DEVICE API
-> +===============================
-> +The API supports private Single Data Rate (SDR) read and write transfers.
-> +Those transaction can be achieved by the following:
-> +
-> +``read(file, buffer, sizeof(buffer))``
-> +  The standard read() operation will work as a simple transaction of private
-> +  SDR read data followed a stop.
-> +  Return the number of bytes read on success, and a negative error otherwise.
-> +
-> +``write(file, buffer, sizeof(buffer))``
-> +  The standard write() operation will work as a simple transaction of private
-> +  SDR write data followed a stop.
-> +  Return the number of bytes written on success, and a negative error otherwise.
-> +
-> +``ioctl(file, I3CDEV_XFER, struct i3cdev_xfers *xfers)``
-> +  It combines read/write transactions without a stop in between.
-> +  Return 0 on success, and a negative error otherwise.
-> +
-> +C EXAMPLE (PSEUDO CODE)
-> +=======================
-> +You need to open (and get a file descriptor) to /dev/bus/i3c/<bus id>-<Provisional ID>,
-> +do your operations (read, write, ioctl), and then close it.
-> +
-> +The following header files should be included in an I3C program::
-> +
-> +#include <fcntl.h>
-> +#include <unistd.h>
-> +#include <sys/ioctl.h>
-> +#include <i3c/i3cdev.h>
-> +#include <stdint.h>
-> +
-> +These additionally are used by this example::
-> +
-> +#include <stdlib.h>
-> +#include <assert.h>
-> +
-> +To work with an I3C device, one must call open and get a file descriptor::
-> +
-> +	int fd;
-> +
-> +	fd = open("/dev/bus/i3c/0-deadbeef001", O_RDWR);
-> +	if (fd < 0)
-> +		exit(EXIT_FAILURE);
-> +
-> +Now that the file is open, we can do some operations::
-> +
-> +	int ret;
-> +
-> +	/* Write function */
-> +	uint8_t  buf[] = {0x00, 0xde, 0xad, 0xbe, 0xef};
-> +	ret = write(fd, buf, 5);
-> +	if (ret != 5) {
-> +		/* ERROR HANDLING: I3C transaction failed */
-> +	}
-> +
-> +	/*  Read function */
-> +	ret = read(fd, buf, 4);
-> +	if (ret < 0) {
-> +		/* ERROR HANDLING: I3C transaction failed */
-> +	} else {
-> +		/* Iterate over buf[] to get the read data */
-> +	}
-> +
-> +	/* IOCTL function */
-> +	struct i3cdev_xfer xfers[2] = {0}; /* Must zero out for compatibility */
-> +	struct i3cdev_xfers xfers_metadata = { .nxfers = 2,
-> +					       .xfers = (uintptr_t) xfers,
-> +					       .xfer_size = sizeof(struct i3cdev_xfer)
-> +					     };
-> +
-> +	uint8_t tx_buf[] = {0x00, 0xde, 0xad, 0xbe, 0xef};
-> +	uint8_t rx_buf[10];
-> +
-> +	xfers[0].data = (uintptr_t) tx_buf;
-> +	xfers[0].len = 5;
-> +	xfers[0].rnw = 0;
-> +	xfers[1].data = (uintptr_t) rx_buf;
-> +	xfers[1].len = 10;
-> +	xfers[1].rnw = 1;
-> +
-> +	ret = ioctl(fd, I3CDEV_XFER, (uintptr_t) &xfers_metadata);
-> +	if (ret < 0) {
-> +		/* ERROR HANDLING: I3C transaction failed */
-> +	} else {
-> +		/* For reads, optionally verify that the response matches expectations */
-> +		assert(xfers[1].len == xfers[1].actual_len);
-> +
-> +		/* For reads, iterate through response data using xfers[i].actual_len */
-> +	}
-> +
-> +The device can be closed when the open file descriptor is no longer required::
-> +
-> +	close(fd);
-> \ No newline at end of file
+Not yet supported:
+- Configurable integration time and gain
+- Interrupt support
+- Clear (VIS) channel and flicker detection
 
-Fix the warning above, please.
-Also:
-Documentation/userspace-api/i3c/i3cdev.rst: WARNING: document isn't included in any toctree [toc.not_included]
+Patch 1 adds device tree bindings.
+Patch 2 adds the driver.
 
-add that file to the table of contents (somewhere).
+Testing was performed on a Raspberry Pi 4.
 
-thanks.
+Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
+
+Changes in v4:
+  - Fix led-max-microamp property in dt bindings.
+  - Use REGCACHE_MAPLE and add volatile table.
+  - Use PM_RUNTIME_ACQUIRE* when resuming.
+
+Changes in v3:
+  - Fix gpio description and example in dt.
+  - Only start measurements after suspend action has been registered.
+  - Add a mutex and pm_runtime_resume_and_get before reading measurements.
+
+Changes in v2:
+  - Add the LDR, the interrupt pin, and the GPIO pin to the dt bindings.
+  - Adjust the default gain to x256 and integration time to 50.1ms as
+  recommended by the datasheet.
+  - Use read_label instead of .extend
+  - Remove all unused scan_index related constants.
+
+Chang Yu (2):
+  dt-bindings: iio: light: add as7343
+  iio: light: add AS7343 multi-spectral sensor driver
+
+ .../bindings/iio/light/ams,as7343.yaml        |  72 +++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/light/Kconfig                     |  11 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/as7343.c                    | 434 ++++++++++++++++++
+ 5 files changed, 525 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
+ create mode 100644 drivers/iio/light/as7343.c
+
 -- 
-~Randy
+2.55.0
 
