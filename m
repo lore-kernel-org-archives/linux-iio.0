@@ -1,148 +1,128 @@
-Received: from flow-a7-smtp.messagingengine.com (flow-a7-smtp.messagingengine.com [103.168.172.142])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7537A30567B;
-	Sat, 12 Sep 2026 08:07:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.142
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CCF357CEC;
+	Sat, 12 Sep 2026 10:17:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789200429; cv=none; b=lfF2SRH+PEVJMN8DLp6e/0ZPUVjVGQxYKbRZHLpZhS+8d49YDwuhPu3p6yqE/ABCOR8jNwm24HgrrAPwUxs/h22tFH/eHPwpcGZcsEAgdjQjOP+rLFOhrL489tYxRX1i80m2DTYWbx3oF9vsk1dAU/w4qr0RrzuQRzzIIOKX4BI=
+	t=1789208273; cv=none; b=VF6FLUlhavRaL/l7b6/QfDYDvh0Nb4tbZPKoZnG4CRW2tfJbFqWa64KjmwF46TQMcVRKbp+qQxkPCNnA6y6jJj3aIywcEZ+KP280LRSLxW637Esueca2Szn7bf35JLBMKn8bvSo7OFJS0HlZYvf677rBIHMHWdn40CXqxjcvP2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789200429; c=relaxed/simple;
-	bh=AN84vRXniBYk4yPYM0B8PUW9uuzmgLtIuPt928IPrcM=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=XXwxybsjiqCvuAFFf/ytYxg8zErKgtV7U4POV+irYctFeLWFDFqhhCNOe1VuKxdXs71hv/t+ezlbiEh2l9Q7KqD+B6u8ER3BVCaR9R/6MLhIw81LSVr5D49qBM5O+P7mZcT7RiIVpMw+DSl+NACavLhmGEa99lm3GArU63TVVV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=Lrt/fM48; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=lxb01r0k; arc=none smtp.client-ip=103.168.172.142
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1789208273; c=relaxed/simple;
+	bh=3Hf8Eqlr+Ebp9f09GYEgMl/3B/tG67lXiBEhbgdIlso=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C1n+6kP9AyglM487ZsfIBfQCehjZiDdL46DP1+jw+CnzCSShEg2MX4ZcjARIrnD3LNVTIJHaaWTeTsAMsJrLFFpz6Blb7Xwp+uYFEI7qy1wp6rKx8/bHxmxKaCR3paPCOgmVlSOeUZsEgjoqt9pF9B4pUuLgtQZfp016O2Jn1Ow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qa+qxoGg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="Lrt/fM48";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="lxb01r0k"
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailflow.phl.internal (Postfix) with ESMTP id 0C6721380082;
-	Sat, 12 Sep 2026 04:07:02 -0400 (EDT)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Sat, 12 Sep 2026 04:07:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1789200422;
-	 x=1789207622; bh=f3qwWyqi3bNUqorYQGcKxNjQwJcXGV0fC7D1AqFX08M=; b=
-	Lrt/fM48uvxyR5iY147Dg1TLUxzhC6V9WeE9G4Nf2xS4+pkFwVgvQlPsZgX1ObsY
-	hxNwAbimSrgLpG19RfvyiSqHjWyUKu/DrU6GHqrd1Ny3X/qxb2V7PLMrwMTGxJ5J
-	hxhHSDw6DzkOfUQoTLd/xCPLr0ZkyiUbbdsArhbOLbeDBOETI9bYaulAFEdBhhYB
-	8yV92Rxc4ba4CNFpTlX1DQ8hmsjEd2RUFxoF2+d6ai2JCK/3mEz0yCBKDLCy0kT7
-	MblYeZafK+CpuQ2/h4Xvl/E08vAxOSUkiRJzXlUswU1dssfWm8A/JrDq84M4L8cU
-	2hzmROIQ1QhHapZ/aclkGQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1789200422; x=
-	1789207622; bh=f3qwWyqi3bNUqorYQGcKxNjQwJcXGV0fC7D1AqFX08M=; b=l
-	xb01r0kwHfIHCGkG23JDkVT0OR6WYaawzrtFN7BXJBAVCJeq1Uh+/e7Gg8JYmtXF
-	1LCmYWrVh+aXxK5P/aKoegaKad7yStYYhFa5ivwWliqhk6EY7BLZYTcIbQ4z6YAP
-	OgbD33qflDx3/fBJ5dTlkLlHBZs9X0dE/P17DVw8jlpi5mFAJYYwLaUHyVeXRB3f
-	CdBLMEWG4iHPdsLf2rroVuXg2vYAKidKUSvaUd82yVymPftKPUW6ojD1IN5haV6W
-	RHa8fD3MVF0wRBMz5082rQG2m7E0jTrMHkEZvxZ3XxwrNqgA6EB6PgmjTdxzlq1x
-	xsRPvrz6z+1EwtsZYC6DQ==
-X-ME-Sender: <xms:GwilaiM9DoEGXPS-5POglj3Fs3UX9dKSgEcrGATNpDMJPGNSuR9zRA>
-    <xme:GwilarxN0E-D3ujq0LTikzEohK71z4qj5L4kuPdseBnDwMgcrWtIyG72C2_JeVM5A
-    FBrlFgdq3_j6q1S6Y1dTCO0Qo2bNHyHI3LXOfX-aFV8Bj-yyr6y6g>
-X-ME-Proxy-Cause: dmFkZTEnMfHZeL1bdmK0cMv43Ykw4Ux5EmKrIdL01M3dqOuqJ2lE5s/Zf8fR7tEIJo0kPv
-    zWtV+y0PrEAHOjaSKsxSLCyqEt7BsSvRONex+NaaPtPqORZ63NRy+Js06kSKO6B4kHMOw6
-    X66YzjTgLq7T2dVQ/Wy+z0mQ4yQi6eeqwM+Ha0y0Pecb27IXKwT7AyfrUjOgPW/ax0pbxm
-    431ZmN3/a8b+CFj03gZG/0GqmMDdPzw9zIGPXhsnXYuTl1E61xnGM14GRGmIYVt0/4ruFj
-    bJzQHDqH1XLMGaU36Dad0/cx0LiIfSRIILMzpeOL+9wHlFYdYe8pNXSPkjqQSck9kl74XP
-    aCzd84oPX17C7TH8ROIK4AlY8as07h/xF1/mi69Tj3lPRbQOBi9KqgToWBN9+IbxAFo0Bl
-    O91jo3tZhjZHGmsdRT5I8CZPH49W4wppnyIMbWnJORO8mrIahMZ6pRtbPa974ykxYGKMc0
-    xa2sGvHlvvuBThI5t8oyZDRmkUDZCxhbR0R3u3jVuF2XW3z+rnrLNhMoF4j2qzzk8B1zZz
-    lJPY/WsxQGZwEdKj8dXZcU/q8nWTM5JBnCaWjr2cJoG1Wha/0dH3WyaH3eGu7Az0Ec7QPm
-    5/9iLK7Gy3Htywzk5qwWNhjRQMpdbPa/lgeqDfBz1ZWNbrYIda+j3gvZ7Xqg
-X-ME-Proxy: <xmx:IAilakYs_TJapqNKc7Bl7_t1LCTdqWksnA1ncYoY1SxGbgOkM5mR3g>
-    <xmx:IAilamUNZ9SPghoBE-fNuCRW3yvOkVXSEolaLNroFm67Oxs_i5V_HA>
-    <xmx:IAilakGOzLYoRVy5sbiYSRPFTKbqOoOKrzwo-FEclMQe4BRLcwxJkQ>
-    <xmx:IAilajCG69PBf_6_2kGV2BfXz2ckOvpTnN8WdA2x9XjMv6PH7RVuBQ>
-    <xmx:JgilasFp5Sb1z50QC1Sew28jzpy_7_aNbHZVZSIJDSN67XqZa69ERdel>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id 549A532A007E; Sat, 12 Sep 2026 04:06:51 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qa+qxoGg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C831F000FF;
+	Sat, 12 Sep 2026 10:17:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789208272;
+	bh=3Hf8Eqlr+Ebp9f09GYEgMl/3B/tG67lXiBEhbgdIlso=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Qa+qxoGghTv4oAOG7i/tSjYS4KhXAaaPb5yzEBw8nyLzYc3CVADLpMeHqc6N4Wety
+	 NzzP+m3/LbFShGAUu22jxiU2XRyTZ6IWjnHHlIPpne/k47lHvREUaZ4ThFETNyfeMK
+	 SPc9398ZBuiS3q8+Tp5jlmklxOwLeQgZvmzMmbKeR4BFMjXgTNBm2IYRrP5Sqf1Ay1
+	 LeG4UGPBngYaBeS1gsCmFVt0tBl8VDTTiyxjndiUuu2VMRki/pZ9ZjAEgkV+Yz2nj6
+	 Mc21OONP0SEvZB+Tx9yjfVtm45YepGJreCMjduVNmcdbPP0R9kr4f4lq0HHlBQ5m3n
+	 UXT4BKgIWPHMQ==
+Date: Sat, 12 Sep 2026 11:17:46 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Ariana.Lazar@microchip.com
+Cc: dlechner@baylibre.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+	nuno.sa@analog.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, robh@kernel.org, jic23@kernel.org,
+	andy@kernel.org, krzk+dt@kernel.org, linux-kernel@vger.kernel.org,
+	conor+dt@kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: adc: add support for PAC1711
+Message-ID: <aqUmxhYfDjjm7tLH@squawk>
+References: <20260909-pac1711-v3-0-dff81003b82f@microchip.com>
+ <20260909-pac1711-v3-1-dff81003b82f@microchip.com>
+ <aqKauqCxYwo8_nxM@squawk>
+ <b706814686dedc5a640970ae83e5e845589f4163.camel@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AK-jVwBtQCQR
-Date: Sat, 12 Sep 2026 10:05:45 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Svyatoslav Ryhel" <clamor95@gmail.com>
-Cc: "Arnd Bergmann" <arnd@kernel.org>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Bartosz Golaszewski" <brgl@kernel.org>,
- "Mark Brown" <broonie@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- "Daniel Thompson" <danielt@kernel.org>, "Helge Deller" <deller@gmx.de>,
- devicetree@vger.kernel.org,
- "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
- dri-devel@lists.freedesktop.org, "Jonathan Cameron" <jic23@kernel.org>,
- "Jingoo Han" <jingoohan1@gmail.com>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Lee Jones" <lee@kernel.org>,
- "Liam Girdwood" <lgirdwood@gmail.com>,
- "Linus Walleij" <linusw@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
- linux-fbdev@vger.kernel.org,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
- linux-sound@vger.kernel.org, linux-watchdog@vger.kernel.org,
- "Guenter Roeck" <linux@roeck-us.net>, linuxppc-dev@lists.ozlabs.org,
- llvm@lists.linux.dev, "Mauro Carvalho Chehab" <mchehab@kernel.org>,
- mfd@lists.linux.dev, "Michael Hennerich" <michael.hennerich@analog.com>,
- patches@opensource.cirrus.com, "Pavel Machek" <pavel@kernel.org>,
- "Rob Herring" <robh@kernel.org>, "Sebastian Reichel" <sre@kernel.org>,
- "Support Opensource" <support.opensource@diasemi.com>
-Message-Id: <937fb2c0-e910-4ab6-8599-ff5ea67fd9c3@app.fastmail.com>
-In-Reply-To: 
- <CAPVz0n0pBxP2J=5DN+k+ut0HRnTmsU64orXwxa19G0+WAxN-zg@mail.gmail.com>
-References: 
- <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
- <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
- <CAPVz0n0pBxP2J=5DN+k+ut0HRnTmsU64orXwxa19G0+WAxN-zg@mail.gmail.com>
-Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hJ3tvd1MLjv1w3cd"
+Content-Disposition: inline
+In-Reply-To: <b706814686dedc5a640970ae83e5e845589f4163.camel@microchip.com>
+
+--hJ3tvd1MLjv1w3cd
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Sep 12, 2026, at 08:42, Svyatoslav Ryhel wrote:
-> =D1=87=D1=82, 10 =D0=B2=D0=B5=D1=80. 2026=E2=80=AF=D1=80. =D0=BE 21:15=
- Arnd Bergmann <arnd@arndb.de> =D0=BF=D0=B8=D1=88=D0=B5:
+On Thu, Sep 10, 2026 at 02:52:02PM +0000, Ariana.Lazar@microchip.com wrote:
+> Hi Conor,
+>=20
+> > > +=A0 The accumulation-source property aims to specify what kind of
+> > > hardware is
+> > > +=A0 intended to be used/available for the user. There are two main
+> > > cases here:
+> > > +=A0=A0=A0 - the user wants to measure also the current/power consumed
+> > > before the
+> > > +=A0=A0=A0=A0=A0 driver insertion (e.g. from the boot to user control=
+) and if
+> > > this is a
+> > > +=A0=A0=A0=A0=A0 runtime setting, the hardware accumulator will be re=
+set by
+> > > the default
+> > > +=A0=A0=A0=A0=A0 configuration the driver starts with.
+> > > +=A0=A0=A0 - the driver does not know what type of hardware it's deal=
+ing
+> > > with. In
+> > > +=A0=A0=A0=A0=A0 case the part is monitoring the charge/discharge cur=
+rent it
+> > > does not
+> > > +=A0=A0=A0=A0=A0 make sense in user-space to change the accumulator to
+> > > calculate energy.
+> > > +=A0=A0=A0=A0=A0 Same if the hardware is intended to calculate energy=
+ it does
+> > > not make
+> > > +=A0=A0=A0=A0=A0 sense in user-space to change to Coulomb counter. Ch=
+anging
+> > > the setting
+> > > +=A0=A0=A0=A0=A0 from one mode to another will reset the hardware acc=
+umulator
+> > > inside the
+> > > +=A0=A0=A0=A0=A0 chip.
+> >=20
+> > Why is this here, rather than with the property in question or the
+> > commit message? Anything justifying the property should just be in
+> > the
+> > commit message, this doc is user facing and just should explain when
+> > and
+> > why to use it.
+> > >=20
+>=20
+> Thanks for the review. I put the explanation in the binding description
+> as suggested in the V2 review here:
+> https://lore.kernel.org/all/a73ab4e3-520e-4515-adaf-ed5ec644e5f6@baylibre=
+=2Ecom/
+>=20
+> But if it's better, I will move it in the commit message instead in V4
+> of this patch series.
 
->> drivers/leds/leds-lm3530.c
->> drivers/leds/leds-lm3532.c
->
-> LM3532 has full OF support and is functional, it just does not have
-> device tree users yet. I have a device using it - Motorola Atrix 4G
-> (Tegra 2 based).
->
-> Here is commit removing LM3532
-> https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/commit/?id=
-=3D46a6457870825d8b782d350fdc7e27c540734d41
-> Here are my patches bringing up Motorola Atrix 4G support
-> https://lore.kernel.org/lkml/20260721100245.444623-3-clamor95@gmail.co=
-m/
+Things explaining the use of the property and hinting to a user when
+they might want to set it (which this does contain) should be reworded
+to not talk about concepts like "userspace" and can be retained - but in
+the property description not the binding's main one. Things justifying
+your design that don't help the author of a dts should go in the commit
+message.
 
-Ah, perfect: this is actually one of two drivers that I independently
-noticed as a false positive while writing the commit logs, and I
-dropped the changes in the update I pushed the branch yesterday.
+--hJ3tvd1MLjv1w3cd
+Content-Type: application/pgp-signature; name=signature.asc
 
-In fact, I saw that there are three other upstream dts files using
-this driver. In general, I assumed that anything with a DT binding
-has users, with the exception of the devices inside of a removed
-SoC and a few PMIC chips that were tightly linked to a removed SoC
-from the same manufacturer.
+-----BEGIN PGP SIGNATURE-----
 
-Thanks a lot for checking the list!
+iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaqUmxgAKCRB4tDGHoIJi
+0kOYAQDwJc0OEI3xpE/J4ek3A8yK4EIKGn8E68qXS0UeS98xwQEAtDVSfB2xkPSk
+aNaJUueNn6pdwTFZIeFSiL5amcfHOAI=
+=UPu5
+-----END PGP SIGNATURE-----
 
-      Arnd
+--hJ3tvd1MLjv1w3cd--
