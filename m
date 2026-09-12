@@ -1,184 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 978A12DE702;
-	Sat, 12 Sep 2026 13:34:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C630F39061C;
+	Sat, 12 Sep 2026 22:21:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789220060; cv=none; b=MfUbBYPQBfVD6omuTyRmmqBUfY50W/YkvGoGdK9PYuafCnCT7QXd/zTy8t/34g5KxgZZ+SD80O5zP/m4a/m2gbaLV5dvAvpJZ7I13ty+Wp7DPVmh3wVCdurw8J4z3Tsv+bFV0rps+21vbBlyDJI7tF8xyFh519JpTjS7FPyTu2I=
+	t=1789251664; cv=none; b=HRLRBqlPqXYQKn/0NcNlQkpYv84aS2xuk409J784xaqmGKsfTVoAxex7+hamY3Z1mezMhEopbiTCz+kmLaBvWMBQ0RMRNyHkjQEg6uh7idme378XZ855juxaC3xPyFKWc/wIHFB3L2W9QGlub2SzXSbdCAPNJHVmg2Hx6wxZuX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789220060; c=relaxed/simple;
-	bh=uI2lCWjKinwIjNkbZnJCkiN0pNFLG9IVNnoW/AIIabA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VlXENT8511lmhw9obU32eeyCb4dzCPKG0f6HFtNxDRkcue6/hFHD+wnHxS2yAc7BmsjVd3mzPdaVDoJAd8mJMCWCylWuvDShOY+O+qQIZc66M2rUjOl/HEBhybMUWmmk7FvrT0ey3hLouxcrq27cv73bh2ARTARxa0lxdgPgXJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FU5nUZaK; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1789251664; c=relaxed/simple;
+	bh=jJN5bbmJG6+W8ZaAl9RR52OiGtP0jEKBmRMAckxoXiM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aJe6HCLeEcaYPMYTJDo6bj52O4C4tN9/S/pJQ+nuxskJRaZYMGv/KJlET++t6zOUyeerAhGe7S1q8c9iuQ3BMZPp4tgAzfaoYtqM/d2uJ+98i0Myg33FwevRkgp9GRgF1P/rzFIYzEFpyw8oWzz9UatbWIXSpAj7k4XKeWMNeXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BHhPvzDn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FU5nUZaK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789220059; x=1820756059;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uI2lCWjKinwIjNkbZnJCkiN0pNFLG9IVNnoW/AIIabA=;
-  b=FU5nUZaKX9cY4oIaRcgFuRGys9Bn/V0s7jyHgvQfMOgr+oESi/8tBZ56
-   PEvIlSuEBLSm54Pr4TOH8S2mVZe/LBJS4sjOn1Jf+5SmDD32PCCq4cOpC
-   MR+rcAYn7Hy9Q0+CZIIok+ekuAR/E1zm1yKh3pXGIb3WTLsiF2XTV9aMI
-   eqrPR5Qi1hHJeU/O/l4JEeWCg47f6dmUc9gTMZINi2AvudPdujysveAns
-   nWCHGk5EzYNTa5fIreCxEpPI1pO+j19BNQvB7Ae8Kee+8aQdVGDqo3g65
-   i/sdmWe0rDroC7PskbWDfiZiGpzMsn4/6M6SRn5BnFUENnLLeMKN8MFw4
-   Q==;
-X-CSE-ConnectionGUID: khb92MqWQUGELUVjOCbIJg==
-X-CSE-MsgGUID: qX5crewMRjW2FTIrkWJQ3A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11902"; a="101012558"
-X-IronPort-AV: E=Sophos;i="6.27,99,1787036400"; 
-   d="scan'208";a="101012558"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2026 06:34:13 -0700
-X-CSE-ConnectionGUID: 2+Td6OM1QkugSBdDOgfs5A==
-X-CSE-MsgGUID: VwpzJuGpQN2oirhn156mRg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,99,1787036400"; 
-   d="scan'208";a="275933395"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.239])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2026 06:34:03 -0700
-Date: Sat, 12 Sep 2026 16:34:01 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-Cc: linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
-	vitor.soares@toradex.com, samagazaryan@google.com,
-	gregkh@linuxfoundation.org, arnd@arndb.de,
-	boris.brezillon@collabora.com,
-	oleksandr.shulzhenko.viktorovych@intel.com,
-	tgopinath@linux.microsoft.com, corbet@lwn.net,
-	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
-	jorge.marques@analog.com, pgaj@cadence.com,
-	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
-	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
-	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
-	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
-	haren@linux.ibm.com, pasha.tatashin@soleen.com,
-	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
-	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
-	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
-	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
-	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
- user-space access
-Message-ID: <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
-References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BHhPvzDn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434821F000FF;
+	Sat, 12 Sep 2026 22:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789251662;
+	bh=A9T5TqugoZpwriYm80tITfJ7eL5e79XFR+RGRlWT3Yo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=BHhPvzDnmzwpQttZFmPMZf/UutFNeY/Degy6vahXXbV7Z6hNGc9MkvFE+rdhQJ6MU
+	 VAw3b4RYQvofx2lNTbeX4zkZRnpelNzwDei0UTSd3ZGNIs/4odMQ67B9LiiARuySxb
+	 U6BER7d7wfXohAn2tXbzGwa2wiTRgp4c4+hrPC/Fg2mvopBtYwKpfuJcqo2gQktz/i
+	 UBA340zyHxS9IBLWpHZ7ZP/iBROp/81WLbTAUh34hL3mGOOjez8TZZyGHIC4Q8vD6X
+	 SvDJPAFOvk+SgEr6vR+aGc41krBbPQbYbAOql8ew7alD2jpnrmyuGLi/805cAMk+g3
+	 S6DFuxrkx8D2Q==
+Date: Sat, 12 Sep 2026 23:20:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Arnd Bergmann" <arnd@arndb.de>
+Cc: "Svyatoslav Ryhel" <clamor95@gmail.com>, "Arnd Bergmann"
+ <arnd@kernel.org>, "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+ "Bartosz Golaszewski" <brgl@kernel.org>, "Mark Brown" <broonie@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>, "Daniel Thompson"
+ <danielt@kernel.org>, "Helge Deller" <deller@gmx.de>,
+ devicetree@vger.kernel.org, "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+ dri-devel@lists.freedesktop.org, "Jingoo Han" <jingoohan1@gmail.com>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Lee Jones" <lee@kernel.org>,
+ "Liam Girdwood" <lgirdwood@gmail.com>, "Linus Walleij" <linusw@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+ linux-fbdev@vger.kernel.org, "open list:GPIO SUBSYSTEM"
+ <linux-gpio@vger.kernel.org>, linux-hwmon@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+ linux-rtc@vger.kernel.org, linux-sound@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, "Guenter Roeck" <linux@roeck-us.net>,
+ linuxppc-dev@lists.ozlabs.org, llvm@lists.linux.dev, "Mauro Carvalho
+ Chehab" <mchehab@kernel.org>, mfd@lists.linux.dev, "Michael Hennerich"
+ <michael.hennerich@analog.com>, patches@opensource.cirrus.com, "Pavel
+ Machek" <pavel@kernel.org>, "Rob Herring" <robh@kernel.org>, "Sebastian
+ Reichel" <sre@kernel.org>, "Support Opensource"
+ <support.opensource@diasemi.com>
+Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
+Message-ID: <20260912232047.19c4cb10@jic23-hlaptop>
+In-Reply-To: <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
+References: <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
+	<11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 11, 2026 at 02:09:35PM -0700, Meagan Lloyd wrote:
-> The i3cdev driver is a character device driver that allows user-space
-> to control and interact with I3C devices.
+On Thu, 10 Sep 2026 20:14:15 +0200
+"Arnd Bergmann" <arnd@arndb.de> wrote:
 
-> Currently, it has the ability to perform Single Data Rate (SDR)
-> transfers - basic reads/writes.
+> On Thu, Sep 10, 2026, at 18:40, Svyatoslav Ryhel wrote:
+> > __ 
+> > Hello Arnd! May you please spare AAT2870 from being removed? I have a 
+> > device which uses aat2870 (LG Optimus 2X P990 Tegra 2, not upstreamed 
+> > yet, but in process as well) and atm I am working on converting this 
+> > driver to use OF. Thank you!  
 > 
-> With the addition of sysfs driver_override, there is now a
-> straightforward and direct way to match the i3cdev driver to any i3c
-> device without stepping on the toes of more specialized drivers that are
-> loaded automatically.
-
-Is it safe? Why on the earth do we need this? The commit message has not enough
-information.
-
-> This is accomplished by the i3cdev driver not having any entries in the
-> i3c_device_id table. After boot, simply set the driver_override to
-> "i3cdev" and bind the device manually via the sysfs bind knob. This can
-> also be automated with udev rules as well.
+> Sure, I have removed this patch from my series now.
 > 
-> The character device interface will be exposed at:
-> /dev/bus/i3c/<bus id>-<Provisional ID>
+> > P. S. If you are planning to remove more old drivers, please CC me in 
+> > since I may be interested in some additional driver upgrades for 
+> > devices I own.  
+> 
+> Please have a look at
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=board-remove-7.3
+> 
+> I tried to be careful about figuring out exactly which drivers are
+> unused, but I'm sure there are still a few false positive and false
+> negative ones in there. I've added the current list of driver files below,
+> let me know if you see something that shouldn't be there.
+Hi Arnd
 
-...
+For I2C and SPI at least, there doesn't need to be explicit
+device tree support as long as they have defaults when platform
+data isn't there. Those two buses will happily bind based on
+a dt-compatible and their i2c_device_id or spi_device_id tables
+for example.
 
-> +	struct i3c_xfer xfer = {
-> +		.rnw = I3C_WRITE
+So unless they fail to probe (some might?) we don't have
+a clear signal on whether they are in use via DT or not.
 
-In such cases always leave a trailing comma. It will reduce possible churn in
-the future.
+For vast majority of IIO drivers we don't have an upstream
+DTS as there is no clear motivation for anyone to upstream
+the dts for a random industrial control board or similar.
 
-> +	};
+> drivers/iio/adc/ad7266.c
+No to dropping this.
 
-...
+Has fallbacks and should bind just fine  No one ever
+bothered adding an of_device_id table because it isn't
+needed. Fine to rip out the platform data support as nothing is
+using that.
 
-> +	return !ret ? len : ret;
+This is a production part that is likely being used in new designs.
 
-My gosh, wouldn't Elvis just work naturally?
+> drivers/iio/adc/ad7791.c
+No to dropping this one.
 
-	return ret ?: len;
+I'm fine with ripping out the platform data but this again
+has defaults and may well be in use via DT. Antoniu from
+Analog was doing some cleanup on this recently so I'd guess
+they probably still at least somewhat care and some of the
+supported parts are still in production (e.g. the AD7788)
 
-...
+> drivers/iio/adc/ad7793.c
+Maybe. Analog devices ack needed.
 
-> +	for (int i = 0; i < metadata->nxfers; i++) {
+Production part but this one indeed fails to probe.  Analog
+folk, do you want to fix this one up?
 
-Why is 'i' signed?
+> drivers/iio/adc/ad7887.c
+No to dropping this.
 
-> +		ret = copy_struct_from_user(k_uxfer,
-> +					    sizeof(*k_uxfers),
-> +					    uxfer,
-> +					    metadata->xfer_size);
-> +		if (ret)
-> +			goto out_free_k_uxfers;
-> +
-> +		/* Enforce that padding must be zero */
-> +		if (memchr_inv(k_uxfer->pad, 0, sizeof(k_uxfer->pad))) {
-> +			ret = -EINVAL;
-> +			goto out_free_k_uxfers;
-> +		}
-> +
-> +		uxfer += metadata->xfer_size; /* u8 pointer so use xfer_size */
-> +		k_uxfer++;		      /* struct i3cdev_xfer pointer */
-> +	}
+Production part - should work fine with defaults in driver.
+Could like the others drop the platform data handling.
 
-...
+> drivers/iio/adc/lp8788_adc.c
+Probably
 
-> +		if (!ret)
-> +			total_bytes += i3c_xfers[i].len;
-> +		else
-> +			return ret;
+Sub driver of an MFD.  I'm fine with that going if we know
+the mfd is no longer in use.
 
-Yeah, you really need to reconsider patterns you use in the code. Here 'else'
-is redundant. Homework to understand how (#easy).
+> drivers/iio/adc/lpc18xx_adc.c
+> drivers/iio/dac/lpc18xx_dac.c
+Probably
 
-...
+Likewise these two.
 
-> +/**
-> + * print_i3c_err() - Prints the I3C error encountered during the prior
-> + * call to the core's transfer function.
-> + * @i3cdev: i3cdev_data object
-> + * @metadata: Kernel's copy of i3cdev_xfers (ioctl I3CDEV_XFER input)
-> + * @i3c_xfers: i3c_xfer array that was sent to the I3C core
+> drivers/iio/frequency/ad9523.c
+Maybe. Analog Devices ack needed.
 
-> + * Returns: void
+Fails to probe without platform data and marked not recomended
+for new designs. If we get an Ack from Analog devices folk
+I'm fine with this one going away.
 
-Huh?! Where is this coming from?
-
-> + */
-
-...
-
-Please, rely less on AI and more on the common sense and proof-reading.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Jonathan
 
