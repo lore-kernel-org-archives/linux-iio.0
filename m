@@ -1,44 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFFED3CF67F;
-	Sun, 13 Sep 2026 23:26:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27310334C39;
+	Sun, 13 Sep 2026 23:32:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789341999; cv=none; b=GCaLWsbyZN/OzJSffJKdO6bdqdyaq9cNHDcvqluKWcFe7MXHZdVK/3Ez2sB3YtxqjjrwN7LqkcWZUkACCeG1WypfPccVY62ooLOX2lcWHMgqPoRQ7mdd2h1U3aHQGn4f0YNOBLcRMhV6cV1quV15bbRdjWBkF4P7F+UPBud2hdA=
+	t=1789342349; cv=none; b=YLCrsK++2Ky69jEG6eVCCcpF8qciKzl+7pLDAjP07GcPJlLnvQG86AdSnGT2jPM4Z5JQbbgrTqCsLwLVrkvusnZTSO9IxYNf80SwLJbJKqEboCOi/nzkx4CXw5auzbavQLIggQoNJpZ/vOMh0hQWdBB5SSyMfjWIqSbRedy0Ljc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789341999; c=relaxed/simple;
-	bh=dtY8TBgXrWbyWsSbk3y3O3Mxg6EuiP5FogQZgJPpGIA=;
+	s=arc-20240116; t=1789342349; c=relaxed/simple;
+	bh=OpAyLekwhiW4ygtDd4G9l/WBcYi1nDRlWCITe8lKiJ0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=q238C/UfczsFrORnztAOvY0O3TaGJwUndn0p3Ft9+kZkeyatzgiv8pEvkDL5gW+KDkW2o6AC50R9Rs1zvcsCJS7Ab3lV15SXKo1TLMm3iyla+qtfx7bve+y33QR01UEsPTUyvt+j9L4htaJ7UVRGH87K4qh7GR74yt+9RJp2ARw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T+wpEibG; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=EGT+qtUgQEmhFaxlBSb7l/bs2FKBKU/zLzsA2IoCrMipV7M9Q8lLs81KEBKD276Hs4ddax1LUncwWk0NWYdrYAaKHG4EPc5nmgZxD9bryRlZl6bAJM/M7YMoSMkierBq7RKDks/CsLl8JUZKXd81tTq0NcY2RyosEc4gxXZ2cZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yq/+Esnj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T+wpEibG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B0C1F000FF;
-	Sun, 13 Sep 2026 23:26:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yq/+Esnj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D9A1F000FF;
+	Sun, 13 Sep 2026 23:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789341995;
-	bh=hDAg5avo8MegHSSXersE/4sp8pgFElx2n4JqLzYvoaI=;
+	s=k20260515; t=1789342347;
+	bh=Ys5iACeya2xI8St6gjTY2DbZlM+LA1KDlI0TMxzHFmg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=T+wpEibGwQ1aGjdX4jH4a3gy3Zb8tgDpBiYAkT0zAVM9eVESaU0TF5Ve91PSpd4dN
-	 d1bzB19TttLdk8OxsRDlSGrg2rSNnjRz4UcZWEwRhW6l2n3wCSNWTmcrzm0BgnSJiM
-	 yXPabRMXKN/MoeV9TYdfHC3mINZOYjmoGTRUS5mAllk/N+1TwoVQSlQpu8dUzU1AN8
-	 m4Yxq8QCneZq+Y2QNlZtJ/IYTQbNK6EPyx3oQK99Iqv6rrFch6cU1KvhOYZ1mah6Wd
-	 yQjIXnOh5CG1Ub/+sVztNAmrlYy/kMrK595Gyxq0djMtWd90+D+c4nFeW3SLr3lWdQ
-	 D/rIpwwXMNUEQ==
-Date: Mon, 14 Sep 2026 00:26:29 +0100
+	b=Yq/+EsnjsWqFqit4NdfM94Nc6t4XS9M2Go6waunVuAgXzY/CZJEWgVMBQr69jRp+L
+	 yZZojL3KpgJ3DkJYTa3Ve9Rx3f/GQ03jcsqyKdEcAJ5u0w9P+WQp6wb2+VW3JbOf9y
+	 x1vdTuYWzkXsp7MvqjKS7ghmstzBlxrAkfiDiK6B+tNwEF2N+hqlXjBnueg/TzXdjr
+	 D3n8wU3zye+0RdrYQcool22rsUIp8sQTMER5cJ6YRhdazGO1pHJt5w1+76BqPN37zj
+	 tz9HMOddiaNTO2SOMdjUtijyTPKU6tflsV9hvqQOvopAAFiMCO2aV+qnxe43digntf
+	 2aqEKYDExiWDQ==
+Date: Mon, 14 Sep 2026 00:32:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Kim Seer Paller <kimseer.paller@analog.com>
+To: Andrei Stancovici <andrei.stancovici@analog.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
  <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
  Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux@analog.com>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] Add support for AD3536R DAC
-Message-ID: <20260914002629.1d43ab98@jic23-hlaptop>
-In-Reply-To: <20260909-iio-ad3536r-upstream-v1-0-16ab930dcee3@analog.com>
-References: <20260909-iio-ad3536r-upstream-v1-0-16ab930dcee3@analog.com>
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
+ Beguin <liambeguin@gmail.com>, <linux@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 1/3] dt-bindings: iio: adc: lltc,ltc2497: add LTC2499
+ to title
+Message-ID: <20260914003221.746d6f2b@jic23-hlaptop>
+In-Reply-To: <20260909082755.366269-2-andrei.stancovici@analog.com>
+References: <20260909082755.366269-1-andrei.stancovici@analog.com>
+	<20260909082755.366269-2-andrei.stancovici@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,46 +52,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 9 Sep 2026 14:19:08 +0800
-Kim Seer Paller <kimseer.paller@analog.com> wrote:
+On Wed, 9 Sep 2026 11:27:50 +0300
+Andrei Stancovici <andrei.stancovici@analog.com> wrote:
 
-> The AD3536R is a 16-channel, 12-bit, buffered voltage output DAC with an
-> on-chip 2.5V reference. It is the 12-bit variant of the AD3532R and
-> shares the same register map, so support is folded into the existing
-> ad3530r driver.
+> The LTC2499 is already listed in the compatible enum and covered by the
+> description, but was missing from the binding title. Add it so the title
+> matches the set of devices the schema documents. No schema or property
+> change is needed.
 > 
-> This series:
->  - adds the compatible string to the ad3530r binding
->  - adds an ad3530r driver chip_info entry and SPI/OF ID table entries
-> 
-> Datasheet:
-> https://www.analog.com/media/en/technical-documentation/data-sheets/ad3532r.pdf
-> 
-> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
-
-Applied to the testing branch of iio.git so the bots can give it a shake.
-
-I took the link above and added that as a datasheet tag on patch 2.
-
-Thanks,
-
-Jonathan
-
+> Acked-by: Rob Herring (Arm) <robh@kernel.org>
+> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
 > ---
-> Kim Seer Paller (2):
->       dt-bindings: iio: dac: ad3530r: add AD3536R
->       iio: dac: ad3530r: add support for AD3536R
+> Changes in v4:
+> - No change.
 > 
->  .../devicetree/bindings/iio/dac/adi,ad3530r.yaml    | 15 ++++++++-------
->  drivers/iio/dac/Kconfig                             |  1 +
->  drivers/iio/dac/ad3530r.c                           | 21 +++++++++++++++++++++
->  3 files changed, 30 insertions(+), 7 deletions(-)
-> ---
-> base-commit: 42a9b823307844dc9f496df67d11ec3691317c67
-> change-id: 20260909-iio-ad3536r-upstream-869cf331e140
+>  Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Best regards,
-> --  
-> Kim Seer Paller <kimseer.paller@analog.com>
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> index c884b6e03767..8aa1ba0a8728 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/iio/adc/lltc,ltc2497.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: Linear Technology / Analog Devices LTC2497 and LTC2309 ADC
+> +title: Linear Technology / Analog Devices LTC2497, LTC2499 and LTC2309 ADC
+
+Sashiko correctly points out the LTC2305 is also supported but not in the title.
+Can we give up on this and just make it "LTC2497 and similar" like we tend
+to always end up doing in bindings with a large number of supported parts.
+Keep the full list for later in the doc.
+
+>  
+>  maintainers:
+>    - Michael Hennerich <michael.hennerich@analog.com>
 
