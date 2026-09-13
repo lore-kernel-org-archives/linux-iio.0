@@ -1,222 +1,125 @@
-Received: from flow-b6-smtp.messagingengine.com (flow-b6-smtp.messagingengine.com [202.12.124.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f11.google.com (mail-wr2-f11.google.com [74.125.225.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 919FF381E92;
-	Sun, 13 Sep 2026 08:34:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D98383C66
+	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 08:53:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789288443; cv=none; b=oWR60WUWAMvRCRSYlm56i48yaj+Q5RxThtk1WFeNlQYBNOZQ4bmMj29fiDqgA7UD+IFdm0r9Oo0sft4SbLBv67S521fyw+FUgj/c7S85AQK4HxHznRN/R6/NmDuZp3dCpGGhtYbDgmV9gF1wu6NerUt0XXv+LDwozkHu6PoAgAo=
+	t=1789289632; cv=none; b=E8aNdQjlMFdqhmiyEB5QFKbPOoqcPdDMIIet1TS4VDFjuXoO7KDUTZSd0hYfZTQGryfhKUGIC7p14TcP/JPF/0ekrMfQDTGC98rOk1vnJ0m35kYjnaPuqikQ7f2rQ1JRL/9LmaS1hq6RMt6DgFDMWd7JGpLsWtJ6z7ekAxZi0Cg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789288443; c=relaxed/simple;
-	bh=l21u1VfuTUk80ee1/KqRN/TTYww9xGQuE4vEMp/bBy0=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=amxxgufPOZT09XmoTHFO+Oy04bCak6y5OKiCcpfEI/2/ApcFMmsVDcFBVGj5dQzHbyueDBZ4VEz92MpXa28mc7JIpaBPVWhbLz3EiMZ9MfwJSLi5P21s7s7IsV5PahHXUricLe1B8be/e9R1ayy32BYyt6/+wBJG14+lvsuONac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=hP4uSJGU; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=nvm4EGrz; arc=none smtp.client-ip=202.12.124.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1789289632; c=relaxed/simple;
+	bh=8tYMLwTuWe8fYcGR09huCcpUaAb1MgVXwJPlzqSxY1I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SNQAeFRYbkTtsS5XtSBMQOzFP2FmNrlm/PNVWvEHrL9FFai3Xyi0BBtYcI8JF042465n0Rbgqx3ryjBr2nYlAKHHNDHNqwx0DxsgCZxTZrkZUaLdHJNhqjGsGxPMK157rBfN29TGsBUbNtNkIsBuP8ImYD3COJLfAKI17ftbakI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WTx9s3pW; arc=none smtp.client-ip=74.125.225.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="hP4uSJGU";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="nvm4EGrz"
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailflow.stl.internal (Postfix) with ESMTP id 3F049130010C;
-	Sun, 13 Sep 2026 04:33:55 -0400 (EDT)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Sun, 13 Sep 2026 04:33:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1789288434;
-	 x=1789295634; bh=FK/hgn5ztNrzJ8FzxNsGVH8sTakZzoGmnSB/QJ0ZjK4=; b=
-	hP4uSJGU4LPNyh7tNOFYiOwyUhoJjvn+rtx/gV1jNxsXli24Yj4H9OHWbSCUCOYp
-	1LmeKkR/FDUTxfeVUcR3PW6hzHXaeKbqkwhguEsHXcWXM+EqRDq6Mutivw7D6AP7
-	zxcO7/7iOjRUeRDtvmwTdGVJi91XV93oTtX2lrN8t5oAK8MveTvPjOJLHdwKGLDv
-	WDY18MwDH078GeQblDSx50OkW8RYXHIL1Py1DTJXQ6l5yXDv8UpvOCwggfr73muh
-	tjWCnmei/4Ederp7aq+6q9XhHyjG3orbvr7iO3P4pOWy80p3tGPWWzvPjFz6Xoj/
-	l/E+uRa80heywM28ZQPbng==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1789288434; x=
-	1789295634; bh=FK/hgn5ztNrzJ8FzxNsGVH8sTakZzoGmnSB/QJ0ZjK4=; b=n
-	vm4EGrz4F6jR5JXE4wigJ8Ry7JX5M0AcC921ZlsuVqc/YpoeL8SAT+tKWa33nB0T
-	ZjwnZB7JaKQBbZtda19Ii6izZqboxNE1agBJILSQAvcaL8wIdNQhGx6H6fTk7CiJ
-	9DNwc7XlhvV+mMoGxebUGze3s1kX5uyoEPunC4jlIgaJyiyTX4Sbb7UtBOpcgTkm
-	GA9daUeYKwy5LcIt5VDo8mzbeUuePrI+JBZLjzF/J2KeYkeu+nmvT4YELvXjrCdX
-	MgxF8P55rsqI0lTOj9w6JBgCin8AMz9HlCAbF/Hl/i9h5rN/siDdaojxzhTnkeU0
-	a5HBpRoQJPWwTY7SPsEjQ==
-X-ME-Sender: <xms:6V-mapGAWvvTCYmPsF0gHXxbEy2q1VIUbPN28RqMGUUZtzTOrnEvuA>
-    <xme:6V-mapLXRXStV_91mp4cNlBE7UDv4i1YnLRZiVf3ZoCTB1V3wH1kzPlEqS463DWcH
-    jBKPFdmoJWdTPPrTaq2cSmCN-or1svTLHlOTE8BeqZQDBbr6-RKxf_M>
-X-ME-Proxy-Cause: dmFkZTFlVhM1xA9XUYL3SefhQrC0hRhFkTaBBJIQ3su2kNz4MfZ3F028vj/UpSaZ9vtqdo
-    wovmypaSI/+/Azrkn02Yb8tOmVCj78ufH0HthXhTBRf6WeFoUXig393+d5/MfEq2pSRnyw
-    LvkfDeXAZA0b/j/z/1yiQhabfROQmtQB7KcVHYhL5U/1ONNfzRfrULV/TAUFjNOKXvZqHU
-    1d3D75czeqAluQHI4FwbSCqywRuOSl2dbfCEwiQwzFVuJIGYTmYp+6BhJS/cWlHc13mRMu
-    JCF4bc/fUM2PhFgmF6DfLis1vMU0ddqwu1kq89fIC1RtR0wlPT1taz0+6qP2fokAV623EC
-    7WvNLhWl3kVw2NxV4IcXin9Y98/yDUmwATW+ikygGBZJ6YYQmvcBkxJjwY6s1s0lBnkurW
-    dgFHyjPldyFsZBx8c3uSdH5l15d1REZen5gyrGPU1HE169zMMgo3KEmBEUmtacwkM75/YY
-    grwFCl6KM0Bz9faJrynux+UReF8cohlyDGeVV9rTC5y20vL4mU3p+bx1hfEaXHZ84F3XO2
-    v2UOS2mSdQ64QMhfWRfWITFHODS475vwD85qi+Wj3j/4MpFov5LCO3ZCpCX0NoG23iGgHA
-    cDtOhMrnZ/x93jpFr/xtrmhKYEtASmslgyDXrwp3akV21xiDzYSAeZt4Xing
-X-ME-Proxy: <xmx:7l-marCsxWSQh7GyHEJQeExs04vUHwGvSpX6l3ZVDsiTwMGzIFCPpg>
-    <xmx:7l-mamy6bQq8k5lrbzz61NVzb-U8lzuLCWChRPmqZFuL-W1-V1RBnA>
-    <xmx:7l-mapO3Ea7pdRgQSbEG743m78cgcMsUglEvHhQP6eVdBbbYwVXaDw>
-    <xmx:7l-matdXxH-1ltZbtCG0gBd_mR1zKSCO473ThhfLCbYY-V19IRKADw>
-    <xmx:8l-maj_96L_YD-vKCf9QRDIxzcji6jyg1fRDZfFt7ZuAErCOtrULUMr4>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id DB07132A007E; Sun, 13 Sep 2026 04:33:44 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WTx9s3pW"
+Received: by mail-wr2-f11.google.com with SMTP id ffacd0b85a97d-483960225ccso420077f8f.1
+        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 01:53:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789289629; x=1789894429; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=KSDgB+q40G0XD7B1gkgkSaOt7eTVxj8YhAlhk59D7iE=;
+        b=WTx9s3pWY47qIOcvPnHGGFCYz+nqJ8h9z/Oa3CekhHIOthQR5BbCDjzNbwgGvWZ1fI
+         mo6nSunbTUgvo7wwq2Gpk1knzjK+dWbNkKaWozaLgvDqjxmew0TfTlrGyRxTuRP4eCA0
+         L1c5vBNt8XJuvXsQghs2ogoAMpQCrjNblqTHEbyVDJamSiv0GSZkNdiCuFTWIv2OSgpB
+         HasisYFFafil2ybmgRQZIHbqnDyyIWmJsefWMIgpG/Xink/F1LwaYVmi46tM83o8dpqM
+         DKDOf+2/PlC57mLIAtbRIxl2pMIrjknHCRaNnE0mLmAJNxjupfVDHMZNIlLah1v9G+Kq
+         xk+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789289629; x=1789894429;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KSDgB+q40G0XD7B1gkgkSaOt7eTVxj8YhAlhk59D7iE=;
+        b=rp1l2Ig7K4RMgVAmwT7GFX1A1kuLvrkL0cSjs+AxcL0x/i2HgPpx+hk4MrXhUOtzbZ
+         LkrpD1idE86k31mzQJO+chW6DKmBMKwM/cLu0IGMnl6dOFajzUrYosY6UKn6PO2Hgfn8
+         5bEq7yJe0HzArl6URIzesV87suW/5ZuH9PgG8sdthQnoviuTIGDGLoUE1Fc10AIbNmue
+         g1FMG5cf6zjc5yOVOOkXlDM9bOKUfOQXMHMF4pk/6tANK3B4yjMZNRl0ECfKUZH8lCYl
+         n2VH9t6ArRKqBu/WJHi49KImp8Y6fHF2Ch9GAfobIT4lV0/x9XPT5pxJ/3HfBJeWzwqp
+         l4UA==
+X-Forwarded-Encrypted: i=1; AKwUvBzuQk4GWhaMGtcGv+K7Jrac2qo9Aq7nha7s4ZnFPFuI4xxBI4oogaGQiLAvUs12Jw0EZ1f2rI5ZatQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++n36/vtkw1JithizYsX9lb6UMLwrq7yXC7G9Hycs8kPJLR8CBmb
+	4H/oWFzeFlNoePgwqpiZlzy0/cCnbd3vQdZjSeadlt+vdNlYqLmAVhGE
+X-Gm-Gg: AYBFou2oLCBy+95zCalvxrmKx9/kNTAeQNXLe4yEFD73/JHcGClpEmfut7b9qleoCn8
+	7jepEQE+Ab5Lk0vszRngsXgHkIM9iJ+RyeF0u1wdOUZew5AAab5kJ8hfaU8VwZ3Vcmwu8CzVRiC
+	61ZXv1mJ3qisYcPDzSUBydNxWZwl1kzS0sYE5EKdkySUa2pjmleQHEtWoV1pyMiJL9HtPlfdnA1
+	Ph58QPGIIq3zlwYgp2me78oI404L4CBj0QVmaW6WuBewTDdJu0//XfFX1jHr5Ta27J2iUmg4P+c
+	ofzo1qC1BW8GPzajjsmOgu6mQLF0sGgThlulaqr50CFHhP8O4+Sumh7gxrVf0Z1VhDrMNj5mIcM
+	B6BgRhQRZFZp8n9jcXOXBa0JRuo7CyfwvjAK7EUfoE2ZYqnUe/3eDEux39ioj1qRAeE7CAQ1kdN
+	wS/ig3MPlKYnNjPfh5o5mvsSyT8iO18ED0T9S009bGZyfOSl2AMCjY7/XYdFZOQ8C8mNjywKHxs
+	lTTLHQLbahSKM+g+Ds=
+X-Received: by 2002:a05:6000:4024:b0:486:f4cf:59b2 with SMTP id ffacd0b85a97d-486f4cf59c0mr7888496f8f.4.1789289628683;
+        Sun, 13 Sep 2026 01:53:48 -0700 (PDT)
+Received: from DESKTOP-M0MLFVC.localdomain ([165.99.41.145])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-486eb32e7f5sm18228489f8f.9.2026.09.13.01.53.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Sep 2026 01:53:48 -0700 (PDT)
+From: Shehryar Ahmad <shehryar.amd@gmail.com>
+To: jic23@kernel.org
+Cc: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	gregkh@linuxfoundation.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	Shehryar Ahmad <shehryar.amd@gmail.com>
+Subject: [PATCH v2 0/6] iio: accel: merge adis16203 into mainline adis16201 and remove from staging
+Date: Sun, 13 Sep 2026 13:53:01 +0500
+Message-ID: <20260913085307.13846-1-shehryar.amd@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AK-jVwBtQCQR
-Date: Sun, 13 Sep 2026 10:33:04 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Svyatoslav Ryhel" <clamor95@gmail.com>,
- "Arnd Bergmann" <arnd@kernel.org>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Bartosz Golaszewski" <brgl@kernel.org>,
- "Mark Brown" <broonie@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- "Daniel Thompson" <danielt@kernel.org>, "Helge Deller" <deller@gmx.de>,
- devicetree@vger.kernel.org,
- "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
- dri-devel@lists.freedesktop.org, "Jingoo Han" <jingoohan1@gmail.com>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Lee Jones" <lee@kernel.org>,
- "Liam Girdwood" <lgirdwood@gmail.com>,
- "Linus Walleij" <linusw@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
- linux-fbdev@vger.kernel.org,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
- linux-sound@vger.kernel.org, linux-watchdog@vger.kernel.org,
- "Guenter Roeck" <linux@roeck-us.net>, linuxppc-dev@lists.ozlabs.org,
- llvm@lists.linux.dev, "Mauro Carvalho Chehab" <mchehab@kernel.org>,
- mfd@lists.linux.dev, "Michael Hennerich" <michael.hennerich@analog.com>,
- patches@opensource.cirrus.com, "Pavel Machek" <pavel@kernel.org>,
- "Rob Herring" <robh@kernel.org>, "Sebastian Reichel" <sre@kernel.org>,
- "Support Opensource" <support.opensource@diasemi.com>
-Message-Id: <e53ae695-99ed-4f14-855b-b922a938438c@app.fastmail.com>
-In-Reply-To: <20260912232047.19c4cb10@jic23-hlaptop>
-References: 
- <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
- <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
- <20260912232047.19c4cb10@jic23-hlaptop>
-Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sun, Sep 13, 2026, at 00:20, Jonathan Cameron wrote:
-> On Thu, 10 Sep 2026 20:14:15 +0200 "Arnd Bergmann" <arnd@arndb.de> wrote:
->> 
->> I tried to be careful about figuring out exactly which drivers are
->> unused, but I'm sure there are still a few false positive and false
->> negative ones in there. I've added the current list of driver files below,
->> let me know if you see something that shouldn't be there.
-> Hi Arnd
->
-> For I2C and SPI at least, there doesn't need to be explicit
-> device tree support as long as they have defaults when platform
-> data isn't there. Those two buses will happily bind based on
-> a dt-compatible and their i2c_device_id or spi_device_id tables
-> for example.
->
-> So unless they fail to probe (some might?) we don't have
-> a clear signal on whether they are in use via DT or not.
->
-> For vast majority of IIO drivers we don't have an upstream
-> DTS as there is no clear motivation for anyone to upstream
-> the dts for a random industrial control board or similar.
+This v2 series addresses review feedbacks on the previous attempt to
+move ADIS16203 from staging into the mainline ADIS16201 driver [1].
 
-Right, that was my general rule, if I had tried to remove
-all drivers that could plausibly probe with an external dtb
-but have no internal users, that would have easily doubled
-the 300 patches I already did.
+Key changes from v1:
+- Introduced adis16201_chip_info and adis16201_state infrastructure
+- Added SPI and OF device ID tables with proper MODULE_DEVICE_TABLE
+- Fixed adis_data stack lifetime issue in probe
+- Fixed IIO_CHAN_SOFT_TIMESTAMP index collision in adis16203_channels
 
->> drivers/iio/adc/ad7266.c
-> No to dropping this.
->
->
->> drivers/iio/adc/ad7791.c
-> No to dropping this one.
->
->> drivers/iio/adc/ad7793.c
-> Maybe. Analog devices ack needed.
->
-> Production part but this one indeed fails to probe.  Analog
-> folk, do you want to fix this one up?
->
->> drivers/iio/adc/ad7887.c
-> No to dropping this.
->
-> Production part - should work fine with defaults in driver.
-> Could like the others drop the platform data handling.
+Patches 5 and 6 carry Reviewed-by tags from prior review.
 
-This was one patch that I wasn't sure about myself (all four
-drivers together) since it looks like even when they do probe
-from dtb, the feature set would be limited without a DT
-binding, and they have been in the tree for a rather long time
-without users.
+[1] https://lore.kernel.org/all/20260831184201.34416-1-shehryar.amd@gmail.com/
 
-I've dropped the patch now. I looked at dropping the platform_data
-handling, but I think that only makes sense if we get a
-proper DT binding first.
+Shehryar Ahmad (6):
+  iio: accel: adis16201: add SPI device ID table
+  iio: accel: adis16201: add OF device ID table
+  iio: accel: adis16201: prepare driver to support additional parts
+  iio: accel: adis16201: add ADIS16203 support
+  staging: iio: accel: remove adis16203, merged into mainline adis16201
+    driver
+  dt-bindings: iio: accel: adi,adis16201: add adis16203 compatible
 
->> drivers/iio/adc/lp8788_adc.c
-> Probably
->
-> Sub driver of an MFD.  I'm fine with that going if we know
-> the mfd is no longer in use.
+ .../bindings/iio/accel/adi,adis16201.yaml     |   6 +-
+ drivers/iio/accel/Kconfig                     |   6 +-
+ drivers/iio/accel/adis16201.c                 | 123 +++++--
+ drivers/staging/iio/Kconfig                   |   1 -
+ drivers/staging/iio/Makefile                  |   1 -
+ drivers/staging/iio/accel/Kconfig             |  19 --
+ drivers/staging/iio/accel/Makefile            |   6 -
+ drivers/staging/iio/accel/adis16203.c         | 315 ------------------
+ 8 files changed, 106 insertions(+), 371 deletions(-)
+ delete mode 100644 drivers/staging/iio/accel/Kconfig
+ delete mode 100644 drivers/staging/iio/accel/Makefile
+ delete mode 100644 drivers/staging/iio/accel/adis16203.c
 
-Ok, I posted that one as
-https://lore.kernel.org/all/20260909132153.1596191-8-arnd@kernel.org/
+-- 
+2.43.0
 
-and so far, everyone agreed on removing it.
-
->> drivers/iio/adc/lpc18xx_adc.c
->> drivers/iio/dac/lpc18xx_dac.c
-> Probably
->
-> Likewise these two.
-
-Right, this one of course should follow the removal of
-CONFIG_ARCH_LPC18XX in arch/arm/
-
->> drivers/iio/frequency/ad9523.c
-> Maybe. Analog Devices ack needed.
->
-> Fails to probe without platform data and marked not recomended
-> for new designs. If we get an Ack from Analog devices folk
-> I'm fine with this one going away.
-
-This matches what I wrote in 
-https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/commit/?id=20c1515b0caec2769c0916d087326f640bfb8aab
-
-I'll keep the patch in the series and we'll see what the
-maintainers think when I post it.
-
-Thanks a lot for taking a look!
-
-I wonder if some of the older Analog drivers were only ever used
-on Blackfin. My series still removes a few more drivers outside
-of iio list that had platform_data in arch/blackfin/ until we
-removed that in 2018. These all fail to probe without
-platform_data, which means they also wouldn't work with the
-downstream adsp-sc5xx/sc8xx port or any other upstream Arm
-platform:
-
-a4bdf847e0e1 backlight: remove unused adp8860/8870 drivers
-c71829e110e9 Input: touchscreen: remove unused ad7877 driver
-b4d4ca64500b Input: misc: remove unused ad714x driver
-978426a3fe1a usb: remove unused sl811 driver
-0860c9f297c3 mfd: remove unused adp5520 driver
-
-       Arnd
