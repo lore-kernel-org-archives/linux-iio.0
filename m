@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72F0029DB64;
-	Sun, 13 Sep 2026 21:43:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3553C35F184;
+	Sun, 13 Sep 2026 21:51:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789335826; cv=none; b=IyHXA/Iky1L4Jqt9miIh8kflsr4k7QldAJ+3iRWRAdm78NhQy5Fd+Tv6p1TVSKthVecLUWLVrdf2m6yroVx1uALJfqLaPzVpk2tIxoiUMKJN7SGPZvMgh7V6McYHfegAnBmsYO6qcoObnhvbRskJh/kVjk9DRnofpgO9EppgH1E=
+	t=1789336272; cv=none; b=Rack+gA1NOSyGDM0fVwYe9lEXxCGVo8tDLvetoLzfxfUhxwFsGX/skL+A4m/GE5ogM6SKkbUXOPmtgcfQM7QpWy1wQV5tJrbPlxXohGhDKaYFY2c83rDCaBOIAxvZ3gEsQ+fglcGQY0pyVt+i2e4bvv7O0Dn9E9cgpl2CZAlrEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789335826; c=relaxed/simple;
-	bh=JIjszEbSA6ErzNHrKHBeLPcCmWcPej2aI1gqPOhCQb8=;
+	s=arc-20240116; t=1789336272; c=relaxed/simple;
+	bh=8rg2eNOTtt+zLL4lGwFAEGPEP1P8+2A8Dn6MGVVNcic=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hMuc29AjAXvgUFoKXmbtcvw9M3ia7aMz0p3BBvmg/uH/o+8a/RUK/eTvgNjLG7pVIpODGHiZ7EtKWx8vg+4T9cogYSooEWofTStT3/iPGhdOI9uBgC+Z5otSJe3Xnc/GjuYTagNdUe5EEMTeUv+gWOywarfcmOvMjRKMBPBSO5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bm/MMFkP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Whh35KE9e3jnhpytIVx70VXIrj4yWJzGLC5Y4OGT3MMgl8W40Y+F25sa2qyUTatCCAgTfSRLMXo3YAKqmlk87lN18qLJcFonTcryZVMgT2MXtxpBFDKoxwHCf4tjIcH6nQ0bd8ttCRnyinYUtpPJOLSJMKvgCSfQLJKqN4yElyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jVx2DUeA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bm/MMFkP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C571F000FF;
-	Sun, 13 Sep 2026 21:43:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jVx2DUeA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BF7F1F000FF;
+	Sun, 13 Sep 2026 21:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789335825;
-	bh=cN2MMO4oTnmKgdpYsxYvdjfCKnOBm7xsrM9v5nYbt9k=;
+	s=k20260515; t=1789336270;
+	bh=udMt21nwWf9/TleZjkb2wzEX6bNIyeF8qHE5tvvW1qA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bm/MMFkPghb4h5T2AmSGISDUKsxVcYIw9u5vTzMT7vT+hPvaD6aSJ0ZSEr2h25nGQ
-	 k+XjOs3Xq4/o+B3fDmTTWXv1DXe5+CzXSqAZEo8+zAqXigIulCx6kTgKy7rGbcSAf3
-	 RNkj+mV6lS4E7iVdB9x4ejaT+sfxmaHMpbijIoVIBZzYx8wuZajuey/acw1qulHa6e
-	 G9IUArqiqEnsJJFm7lVMQPdhw70QSU+e7YjjQa8EYVaUX6S3fqEBF77OEqg6PJtKBE
-	 2sh9igyB1TS2hmTB0t1YLZhKLUkvPlFCoO9zIIhiJec0D1jjit4Z7XN9kJe7XjYhxW
-	 +Emc4j3iVrspQ==
-Date: Sun, 13 Sep 2026 22:43:39 +0100
+	b=jVx2DUeAkPA+HHl2H+C2NWQ4j1+leNTqHynShnZ/F+ZuKWK8GpwajwAlD8KYwEBWx
+	 rcOkI/17eOULo5lpq0UcFjpKsjOc+8DIiQ8w4vLw1US8O9Z4iSwi6Tz7acT+FbXg/W
+	 6UuoU1627fip7OKvLPdecJnhl0Iwzt2Ogz13q3ajwkQ57xa9hmLD9Xf5zTKk/kkkzE
+	 HflUaMmnyT0MlypNU7Cf3sZuS/q5DgwdD64CL1OZ3sJGncfStHWVRnCqui0P58M3eM
+	 sj6BjI4jXkHKdaUE1X4QvDZ+ckwgIavOvL3PBvpZipRy+haF9CoIX1eGxAIiYFuzfU
+	 jbCspstmqFsEA==
+Date: Sun, 13 Sep 2026 22:51:08 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -34,12 +34,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, <linux-kernel@vger.kernel.org>,
  <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 02/10] iio: dac: mcp47feb02: Fix gain field
- initialization for active channels
-Message-ID: <20260913224339.490d89ba@jic23-hlaptop>
-In-Reply-To: <20260909-mcp47feb02_refactor-v5-2-8b67bcab93d1@microchip.com>
+Subject: Re: [PATCH v5 08/10] iio: dac: mcp47feb02: refactor MCP47FEB02 I2C
+ driver into two modules
+Message-ID: <20260913225108.7356ccb2@jic23-hlaptop>
+In-Reply-To: <20260909-mcp47feb02_refactor-v5-8-8b67bcab93d1@microchip.com>
 References: <20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com>
-	<20260909-mcp47feb02_refactor-v5-2-8b67bcab93d1@microchip.com>
+	<20260909-mcp47feb02_refactor-v5-8-8b67bcab93d1@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,51 +50,63 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 9 Sep 2026 17:18:45 +0300
+On Wed, 9 Sep 2026 17:18:51 +0300
 Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-> As per MCP47FXBX48 Datasheet, in the format of the Gain Control and System
-> Status Register each DAC channel has one bit to control its gain,
-> starting at bit 8, while bits 0-7 contain status or unimplemented bits.
-> 
-> The previous formula didn't initialize correctly all channels, being
-> replaced by the already defined macro used in write operations where needed
-> in the rest of the driver implementation. DAC_GAIN_MASK(i) extracts the
-> gain control bit for each active channel correctly ine one step.
+> Prepare the driver for the bus-specific code by refactoring into separate
+> files. The renamed file will contain the common DAC functionality shared by
+> the MCP47FxBy1/2/4/8 I2C and MCP48FxBy1/2/4/8 SPI drivers. The MCP47FEB02
+> driver was refactored into two modules: mcp47feb02-core.c and
+> mcp47feb02-i2c.c in order to prepare the support for SPI MCP48FxBy1/2/4/8
+> DAC family on top of the current implementation.
 > 
 > Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
-> ---
->  drivers/iio/dac/mcp47feb02.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-> index 7502959d98eab27941d58b6b961e6e3dee4222e6..bf78618ac2c896b94e494a1ce76ef5b3e520f482 100644
+
+One thing inline.
+
+> diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02-core.c
+> similarity index 73%
+> rename from drivers/iio/dac/mcp47feb02.c
+> rename to drivers/iio/dac/mcp47feb02-core.c
+> index fb66bd2664a9e6dd938eacc90547403041e258a4..4ef64a3408033501c724c7c52fd20686cc53722a 100644
 > --- a/drivers/iio/dac/mcp47feb02.c
-> +++ b/drivers/iio/dac/mcp47feb02.c
-> @@ -1017,7 +1017,6 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
->  	if (ret)
->  		return ret;
->  
-> -	gain_ch = gain_ch & MCP47FEB02_GAIN_BITS_MASK;
->  	for_each_set_bit(i, &data->active_channels_mask, data->phys_channels) {
->  		struct device *dev = regmap_get_device(data->regmap);
->  		unsigned int pd_tmp, dac_val;
-> @@ -1028,7 +1027,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
->  		data->chdata[i].dac_data = dac_val;
->  
->  		data->chdata[i].ref_mode = (vref_ch >> (2 * i)) & MCP47FEB02_DAC_CTRL_MASK;
-> -		data->chdata[i].use_2x_gain = (gain_ch >> i)  & MCP47FEB02_GAIN_BIT_MASK;
-> +		data->chdata[i].use_2x_gain = (gain_ch & DAC_GAIN_MASK(i)) ? 1 : 0;
-It's not a performance path (field_get() is a bit heavyweight!) so
-		data->chdata[i].use_2x_gain = field_get(DAC_GAIN_MASK(i), gain_ch);
-is perhaps a little more readable.
+> +++ b/drivers/iio/dac/mcp47feb02-core.c
+> @@ -1,8 +1,8 @@
+>  // SPDX-License-Identifier: GPL-2.0+
+>  /*
+> - * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface
+> + * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C and SPI interface
+>   *
+> - * Copyright (C) 2025 Microchip Technology Inc. and its subsidiaries
+> + * Copyright (C) 2025-2026 Microchip Technology Inc. and its subsidiaries
+>   *
+>   * Author: Ariana Lazar <ariana.lazar@microchip.com>
+>   *
+> @@ -16,12 +16,10 @@
+>  #include <linux/bitfield.h>
+>  #include <linux/delay.h>
+>  #include <linux/err.h>
+> -#include <linux/i2c.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/kstrtox.h>
+>  #include <linux/module.h>
+> -#include <linux/mod_devicetable.h>
+This surprised me because I thought this was no longer included
+from any drivers using i2c.  Indeed it is gone since :
+995832b2cebe "(Replace <linux/mod_devicetable.h> by more specific <linux/device-id/*.h> (c files)")
 
-I don't mind that much either way.
+Hence please rebase on 7.3-rc1. I don't think we have anything
+more recent that touches this driver and a mainline rc is an
+easy base to deal with.
 
-Jonathan
 
+>  #include <linux/mutex.h>
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+> @@ -30,6 +28,8 @@
+>  #include <linux/types.h>
+>  #include <linux/units.h>
 >  
->  		/*
->  		 * Inform the user that the current voltage reference read from the volatile
-> 
+> +#include "mcp47feb02.h"
 
