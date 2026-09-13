@@ -1,63 +1,65 @@
-Received: from mail-lr2-f12.google.com (mail-lr2-f12.google.com [74.125.230.76])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1F6139EF0B
-	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 10:48:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 737803806D5
+	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 10:48:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789296485; cv=none; b=Lg72o45h7kaHD/S8NlfSsHeX/qsnAAgDZ8nHGGSlKOwe16vQ38yIRCVY4tzxrKcoulOmboC/mtNAK51bhpmlz4VKEBzOFuvCPGN9acOMiuEABtX6Pj5c075EoxmMn89BliMk8EVcqlDVxFxuNh/v/vRvlJYydNiXskpoRLKICFE=
+	t=1789296491; cv=none; b=pyWoh4OPfevq40Kv2BWbxbixWiMplANQfsaaG6slmAj/bH5/UJ5LNBEoUuOZG3cbZ99/qo3s5mzQWiGHrYFAUUAyTGpRTbCYHQIXhSlzYFYcuwSAfyEqkCvza5Ia7AOmWKMxt0gg0MWMRB+CyR6XIT4+mWzkbj9Hl8TlRbMzOeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789296485; c=relaxed/simple;
-	bh=I2SS1VKaZwcexgFjKvIrpcNx34oWzfb8bBh+aCkByME=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k2+uJUGpKjH3ZcoWzYwTnqPGPWtUq+BbWiLZhCkb1k75sAuRLv1g0OH0zH0idU4hur/oiXiEFnGuTVhYSWVbcRxL0ikG5BzcofWQFqNRM++rW8mtaPSwfBgQpWXDgnMuz3LGveyVp74mIvNgyMZddHhye7UBWHujeKwGA/PFKdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=swwfeQ6T; arc=none smtp.client-ip=74.125.230.76
+	s=arc-20240116; t=1789296491; c=relaxed/simple;
+	bh=F12YGNngU8++lSPfjWLoCmx2bsw4chooVhiqlq6aSkk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=SYtSpV33e2VvE3pdH0qWmr91yAMC4wLRpxuaAeIxH2NY2uoX1OBVyagO9rS8sYe5nBKhS9YKhsey6MPiKs/2dugCRoz75zSF4zh0bZUXjUYRXiJDtZV5jYuxUAGT0pnKCusJzCSJiChz8Qfj/zJFuz4MW7Huw4k2L/j/Hy4FwEk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e0P6u/Ej; arc=none smtp.client-ip=209.85.167.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="swwfeQ6T"
-Received: by mail-lr2-f12.google.com with SMTP id 38308e7fff4ca-3a306a4f735so8109851fa.1
-        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 03:48:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e0P6u/Ej"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5b4afc8465eso3365119e87.2
+        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 03:48:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789296482; x=1789901282; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=/1SHbQp1AuRp6XMEOgRuT/MsuA52KJwIUZr5MmjAZl4=;
-        b=swwfeQ6TuWLgqcF2m54tghCYrbG4tAkU99m1/vrzmfgCwm5kxkf8JgW8qT6Eiwfqy0
-         bXceU1dJcuIz9aqaM7J4wn9CbEIjXdljZ6KasBkzK8VR4Z5v2kQNjhVaX2PofcpSgqK9
-         61trF4NHOzRJCWp3I7WHYcwke6XhVMTmRcZ+P8Rdk0o9N0KdO4V0ZRbfArNwUFrBxroF
-         Eo+IIZBQax2Loo4SKpRJ8SU3hJ2/BIpqkqoykonrfOCEdK+w2HYB3jn0DJyubRHuyEGX
-         41s2GKia8t5FDJu7VZnHxB0BNnqAjHOXpzgxuwJ/9Cv2xZl0D/kJQe0BxoOLI5KICBeV
-         LQJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789296482; x=1789901282;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1789296488; x=1789901288; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=/1SHbQp1AuRp6XMEOgRuT/MsuA52KJwIUZr5MmjAZl4=;
-        b=GrkhQ4b5WiRZO1MCyABMSyd9tEMKvqNfxzeEt2AM8ko9oDwJa4gnzjlOPY7JDwsKPa
-         67KIe9nSW27v6e1KnAU0lsvcVawB9NzQXTsofeaPtmm6XJeKzMya1aYBCxFqbcY2zg00
-         SqZYhr5yV+Dr83OB3rpKnNPs6BcyEBgEk3rvkLHqcppJlMTm2rUIX7bCvhHhu9Bzz+Ky
-         s/oOBk6idaNFUtGQJSTAvMrR7czKyffHdlq8F8167a+uvNeoQpiNdnngqkpqr7U3Rnpz
-         o1x8IE2mF0T3biOFmqgc9J4W8GXWBH9vi8u0MFPKR+78x+6r6DsZAoYgOcFoQCSN2Trb
-         DK6Q==
-X-Forwarded-Encrypted: i=1; AKwUvBzRBBA+zt76WA9lCuONhWdRuPMo2pYsQ+T2nZe8FHHVMqZ+Rj9a0s/22i+LV0wmxavFp4LxtK+JbJw=@vger.kernel.org
-X-Gm-Message-State: AFuF++mDB8Z1ODgs6CARGGI15UtUsqGUrLp0ebff/v6Q9AB9rZMHLy+R
-	dnKpXIHnYyOahZjANcvGZl3CJ0mDhQCNtU8066UTJ+H8CIhiba94T9dR
-X-Gm-Gg: AYBFou2tCO1DSTPvprM7jRl0l3uYGbr8aIiUBjGNx+kM75egjZ05ZMlAyjamlLrXg2Y
-	ywgoF8DY08IPm+A2Q8JdIggXZsxc5HZDHxmWEEHCHoZrzsidj4SkXOD+fzsoTZkM/ujS1AyqmJX
-	pY6+0/d07teF5b2/5kZNWTfzqzJat41YqqDDl76egS9bJNChaINZyPg3GMvHfn642nngQAHmf1z
-	/Lyf5/Sc889zWbIPFUTVnCyZony24rY6tHLXxKoJ7tz6LN8cy/3LLfITW2JJHcHIx3rPAGwEG07
-	JOjnx+v9d+VTV1p58Cb0qS5qlZHDTVBlXqRm5QFOGFzNHfv/UxJ1+4RgF+O/XGKXLb9O2arXC75
-	l7yUYwJop9BNUzUNeo/+V1WSNW6EaqMeDyetPd3WiZnTv6IRO345we/5s9eLE8IecKpkuP1JmBB
-	N5W+oy0PmE1O/HRnYymNwfVSSbxFOYgKpJdjAFxblXW4DmYeKPKKKWvRTsEvSrBL27z/a8PwdPL
-	EE4SnyshMav8XMIC8P3NhGzyDACmcLpQe6cqLnvDyNKimAzz+By8qxe8cI8458BohEv1SsLW77R
-	hqqHnANoi1gjjX59FWY=
-X-Received: by 2002:a05:6512:32c8:b0:5b4:5f6b:d43e with SMTP id 2adb3069b0e04-5b8a8ebe59bmr1156620e87.14.1789296481137;
-        Sun, 13 Sep 2026 03:48:01 -0700 (PDT)
+        bh=xdPThSAhbTSR0ZmBcNyrmtWAhkiVdoKg+0FqMkNRyls=;
+        b=e0P6u/Ejge7erZ1VMh8TQhBxYVCGQECLbSgSdtderJ5O220QcWkJ3TVOxWeq33IbBX
+         1DyGohuafSxWDXO88S80XrQXT5k1tEbKgIGQlp9dYzTMmZ3HROyPrIIajDiHy05EDK1O
+         OAmRHZZph82DpbC5NA4Go1DhKg2gBnPq4lA8HxcdfSbzF/LJWz3WLpeGMYKySyCTaMUH
+         m4Czd5sDAKL8w/1XOizcHZXfflGpwXRNvZNSW8fNfX1YHqBm4pQNP3L9jJvTopcb+DLL
+         qToLBfhgqrXugDXidiILz5qtFWw5ydY32GLOfONbDos8qALSIwaO0ip2+xmOtMxPCOdh
+         5Tbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789296488; x=1789901288;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=xdPThSAhbTSR0ZmBcNyrmtWAhkiVdoKg+0FqMkNRyls=;
+        b=AF4yQxDhvV1fSV/+oD56hxp+Ci9JqAgGaWBt7Rbxcm2lHA2nL2zy2iLXPe+kc8aueP
+         eEG5rLjdSOurP5vl75oVBZFJZG/KprMohcZBqJz3J0sZuMxlLC43OLgPwQ9QsD9r2MhJ
+         ZsXvFDW0LDp3/YqIB/npwp09LT2JX6wevaxTm3vOUu8g0EQM58A790CZSqsWA5XaPvVj
+         7jrULbuhxieFzX5fGlqjqxVwPClTLptlUOKSAJMD3kIVLD/M8+SThbsIOquHiyNUgtUu
+         O6fypyKb3S3vtVYxa4V2G3Ft+VblhaQHe0ahwnteF1kzGrGDA90bD8BQxNy6eLxUQ1wk
+         Wdlw==
+X-Forwarded-Encrypted: i=1; AKwUvBwRf9kYl1uybu9knSspRAGIigtZEhm/p23oya8NbkBlWx/EPv5tlWjbjQCKKf7nWUQtIjWXxTEI+j8=@vger.kernel.org
+X-Gm-Message-State: AFuF++nW1g1xt/QFehunapE/7ctXh1GrdKhjHWpKfJbdEsCnaQPt0lT9
+	FepB6dnUoXP9VPQDRv+3GI5z1rK+dtpHlZWfLvHyAGrJcZDFo8C3mZBF
+X-Gm-Gg: AYBFou0DDoCr7KHvQREQKAXd62FtFz7nwC/jkxPa7/zpfoB6faOiu+3PR3myowLmBBQ
+	XJhPRvsp+ofEnsSJBdBftAM1f1xdPnWkY2iEQSGY18uUzGM5VHAT0Jq4CKSMZl644CE/nVroFpq
+	QY1Rpk+uVbsO7YcHMHYPsZOw2HC5me6w9SH4bTKtBCzFDJaonlAE8gR+y9L9SbM/huN/32KDPpt
+	xBrUw5/ezTmuq/HAjUNr8gekb8Sw9FXVw3mZSvtgs05pqVgV2phNu7tqeJHTq4Mcamtb+C4NvCE
+	g5dxafqlpvafGKCPYn57GCB9+d8l/FdHBlX+UJZqSUGAICjfG2nfkoR8ZT/y5InxMclBbD9cL8u
+	g0taYbPQtGtxAyFmCr6Kt6VM/BQtTO95cYu3aVg1psdsmejCF37C8kVpJ/QcYXRQ9PzZsLLEPQt
+	PhQ2krEHl8kDP86BZlObxLKyXqooejAsBDjhUZ9w3jZ5GbbVaWqAgxT44vwnhoR5EZaAbeFth4i
+	PbSjwRf/6RnTQmE4YYPVJ71P5BE8YFu3Bz7RZDBdlj6EqiGZGboWuutk0tBDEK6atcw93jf39e8
+	wiRpw9a86EgL7YuNp2E=
+X-Received: by 2002:a05:6512:130b:b0:5b4:c00d:23f3 with SMTP id 2adb3069b0e04-5b8a02de3aamr2372765e87.14.1789296488236;
+        Sun, 13 Sep 2026 03:48:08 -0700 (PDT)
 Received: from Shofiq.home (87-92-212-6.rev.dnainternet.fi. [87.92.212.6])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8a04600a2sm1689154e87.36.2026.09.13.03.48.00
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8a04600a2sm1689154e87.36.2026.09.13.03.48.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2026 03:48:00 -0700 (PDT)
+        Sun, 13 Sep 2026 03:48:07 -0700 (PDT)
 From: Md Shofiqul Islam <shofiqtest@gmail.com>
 To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Cc: jic23@kernel.org,
@@ -75,10 +77,12 @@ Cc: jic23@kernel.org,
 	linux@analog.com,
 	linux-kernel@vger.kernel.org,
 	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH v11 0/2] iio: health: add MAX86150 ECG and PPG biosensor driver
-Date: Sun, 13 Sep 2026 13:46:54 +0300
-Message-ID: <20260913104658.230422-1-shofiqtest@gmail.com>
+Subject: [PATCH v11 1/2] dt-bindings: iio: health: add adi,max86150
+Date: Sun, 13 Sep 2026 13:46:55 +0300
+Message-ID: <20260913104658.230422-2-shofiqtest@gmail.com>
 X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260913104658.230422-1-shofiqtest@gmail.com>
+References: <20260913104658.230422-1-shofiqtest@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,101 +91,123 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add IIO support for the Analog Devices MAX86150 combined ECG and PPG
-biosensor: a devicetree binding and a driver that registers a kfifo
-buffer directly off the device's hardware FIFO (matching max30102.c
-in this directory), draining it from a threaded IRQ handler.
+Add the Device Tree binding schema for the Analog Devices MAX86150
+integrated biosensor, which combines two photoplethysmography (PPG)
+channels (Red LED and IR LED) and one electrocardiogram (ECG) channel
+in a single I2C device.
 
-Tested against i2c-stub with the expected PART_ID and FIFO bytes
-pre-seeded, covering probe (both a matching and a mismatched part
-ID), the chip_init() register programming, raw-channel decode of a
-simulated FIFO burst, and buffer enable/disable. Not yet tested
-against real MAX86150 hardware.
+The device requires four independent supply rails per the datasheet
+power tree: digital core (vdd), analog core (avdd), ECG reference
+(vref), and LED anode (leds).
 
-A kernel test robot build error reported against an intermediate,
-unsent tree state (incompatible .validate_trigger pointer type on
-iio_trigger_validate_own_device()) does not apply here: the trigger
-framework that error was in is gone in this version, replaced by the
-kfifo buffer described below.
-
-Full history of this series (v1-v10): https://lore.kernel.org/linux-iio/?q=MAX86150
-
-Changes since v10 (2026-07-17):
-- Redesigned onto a kfifo buffer instead of the hardware-trigger +
-  triggered-buffer framework, matching max30102.c in this directory
-  (Jonathan Cameron -- this was the big one: a trigger + triggered
-  buffer doesn't fit a device that just has one hardware FIFO and no
-  concept of a triggered "scan").
-- get_unaligned_be24() for the three 24-bit FIFO fields instead of
-  manual shift/or (Andy Shevchenko).
-- regmap cache added (volatile_reg() + REGCACHE_RBTREE); FIFO_DATA,
-  FIFO_WR_PTR, FIFO_RD_PTR, OVF_COUNTER and INT_STATUS1/2 stay
-  volatile (Andy Shevchenko).
-- devm_regulator_bulk_get_enable() for the four supplies instead of
-  four separate calls (Jonathan Cameron).
-- sample_period_ns expressed as NSEC_PER_SEC / 100 instead of a bare
-  10000000 (Jonathan Cameron).
-- Added a comment explaining why a part-ID mismatch is fatal here
-  instead of a warn-and-continue (Jonathan Cameron).
-- _nA / _Hz suffixes on the ADC-range and sample-rate defines; moved
-  the LED pulse amplitude comment next to the define it documents;
-  dropped two comments that just repeated what the diff/code already
-  showed (Andy Shevchenko).
-- FIELD_PREP_CONST() in place of FIELD_PREP() everywhere the operands
-  are compile-time constants (Andy Shevchenko).
-- USEC_PER_MSEC-based constants in the PPG_RDY poll timeout instead of
-  raw 1000/25000 (Andy Shevchenko).
-- max86150_do_read_raw() split into two functions (the shutdown-wrap
-  outer function and a max86150_read_raw_locked() inner one) instead
-  of a label + goto (Andy Shevchenko).
-- All three switch cases in read_raw() now `return IIO_VAL_INT;`
-  directly instead of `break;` + one shared return (Andy Shevchenko).
-- C99 initialiser for the i2c_device_id table entry (Andy Shevchenko).
-- devm_regmap_init_i2c() now runs before the regulators are enabled,
-  so the pure-software setup happens before any HW interaction (Andy
-  Shevchenko).
-- Kconfig now selects IIO_KFIFO_BUF instead of the now-unused
-  IIO_TRIGGERED_BUFFER, matching the buffer redesign above.
-- Shortened this commit message -- the implementation-detail bullet
-  list duplicated what's now in this cover letter and in the code
-  comments themselves (Andy Shevchenko).
-
-Changes since v9 (2026-07-07):
-- Rewrote the buffer implementation around devm_iio_trigger_alloc() +
-  devm_iio_triggered_buffer_setup() instead of the kfifo buffer and
-  manual postenable/predisable pair. The hard-irq handler only read
-  and cleared INT_STATUS1 before calling iio_trigger_poll(); the
-  threaded trigger handler did the FIFO drain. This relied on the
-  trigger core's own attach/detach synchronization instead of an
-  explicit iio_buffer_enabled() guard or synchronize_irq(), which the
-  old design needed to avoid a NULL active_scan_mask race on teardown
-  (Sashiko, both HIGH severity findings).
-  [NOTE: v11 above reverts this back onto a kfifo buffer per Jonathan
-  Cameron's v10 review -- a triggered buffer was the wrong tool here.]
-
-Earlier versions (v1-v8) are in the full history link above. The
-notable structural changes along the way:
-- v1->v2: split the original single combined patch into three (dt-
-  bindings, driver, MAINTAINERS entry).
-- v4->v5: renamed the devicetree compatible string from
-  "maxim,max86150" to "adi,max86150", matching the vendor prefix
-  Analog Devices actually uses upstream (Maxim was acquired by ADI).
-- v8->v9: folded the standalone MAINTAINERS patch back into the
-  driver patch, dropping the series from three patches to two.
-
-Md Shofiqul Islam (2):
-  dt-bindings: iio: health: add adi,max86150
-  iio: health: add MAX86150 ECG and PPG biosensor driver
-
- .../bindings/iio/health/adi,max86150.yaml     |  77 ++
- MAINTAINERS                                   |   7 +
- drivers/iio/health/Kconfig                    |  13 +
- drivers/iio/health/Makefile                   |   1 +
- drivers/iio/health/max86150.c                 | 658 ++++++++++++++++++
- 5 files changed, 756 insertions(+)
+Assisted-by: Claude:claude-sonnet-5
+Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+---
+ .../bindings/iio/health/adi,max86150.yaml     | 77 +++++++++++++++++++
+ MAINTAINERS                                   |  6 ++
+ 2 files changed, 83 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
- create mode 100644 drivers/iio/health/max86150.c
 
---
+diff --git a/Documentation/devicetree/bindings/iio/health/adi,max86150.yaml b/Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
+new file mode 100644
+index 000000000000..8392d08edd1b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/health/adi,max86150.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices MAX86150 ECG and PPG Biosensor
++
++maintainers:
++  - Md Shofiqul Islam <shofiqtest@gmail.com>
++
++description: |
++  The MAX86150 is an integrated biosensor SoC that combines:
++    - Two PPG (photoplethysmography) channels: Red LED and IR LED,
++      for heart rate and blood-oxygen saturation (SpO2) measurement.
++    - One ECG (electrocardiogram) channel for biopotential recording.
++
++  The device communicates over I2C at up to 400 kHz.
++
++  Datasheet:
++    https://www.analog.com/media/en/technical-documentation/data-sheets/MAX86150.pdf
++
++properties:
++  compatible:
++    const: adi,max86150
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++    description:
++      Active-low interrupt line, asserted when the 32-entry hardware
++      FIFO reaches its configurable almost-full threshold, or when a
++      new PPG sample is ready.
++
++  vdd-supply:
++    description: Digital core power supply (1.8 V).
++
++  avdd-supply:
++    description: Analog core power supply (1.8 V).
++
++  vref-supply:
++    description: ECG reference voltage supply.
++
++  leds-supply:
++    description: LED anode supply, typically 3.3 V.
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++  - avdd-supply
++  - vref-supply
++  - leds-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        heart-rate@5e {
++            compatible = "adi,max86150";
++            reg = <0x5e>;
++            interrupt-parent = <&gpio1>;
++            interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
++            vdd-supply = <&vdd_1v8>;
++            avdd-supply = <&vdd_1v8>;
++            vref-supply = <&vdd_1v8>;
++            leds-supply = <&vdd_3v3>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3115538ce829..189385966de8 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15705,6 +15705,12 @@ S:	Orphan
+ F:	Documentation/hwmon/max6650.rst
+ F:	drivers/hwmon/max6650.c
+ 
++MAX86150 ECG AND PPG BIOSENSOR DRIVER
++M:	Md Shofiqul Islam <shofiqtest@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
++
+ MAX9286 QUAD GMSL DESERIALIZER DRIVER
+ M:	Jacopo Mondi <jacopo+renesas@jmondi.org>
+ M:	Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+-- 
 2.55.0
 
