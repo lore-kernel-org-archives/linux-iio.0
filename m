@@ -1,48 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EDEE19049B;
-	Sun, 13 Sep 2026 21:58:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6937913D53C;
+	Sun, 13 Sep 2026 22:00:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789336682; cv=none; b=FY/FevdIDGs9XOaK56qUCU8Bgc2DU52u+N6eXreiHjCoQ47iTNtxDeiw9JqL6XYVqy+oEub+NetlCykcUKNTyfPSKHa7r3j+UigETRG2xojnN0cBW4TDWilizmhecjyYnVML8hX4DtmezXSR8b64UKC2PkkxWm+kWa8Xeaa5ckY=
+	t=1789336847; cv=none; b=upBeI/YNLNBD0A8eFG5NQPwxhFpVzaIg4N4Z6wBBP45QJdVbuPFxbJwkGfeCnVc8IcD7e5JYoKDx0A8AjYDydSfA8UOJL3sZ3OirJm2+8Eeo2J2pe5JPJIXQxy9cCgyk92Pg0qLGVYczxyhcdkRr4G6nZB8V0eq6AdmdCzFh3eo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789336682; c=relaxed/simple;
-	bh=QpwBlJhTECD9ZC1qVkRgG5+z8OD+fwSwbL6opAXeXj8=;
+	s=arc-20240116; t=1789336847; c=relaxed/simple;
+	bh=RLcYYaG8lMwBbmXtuh9OJJf5wNIV53Uqr9eb4tGCN6I=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OFKNIzgvHDmfQKOw7dNKxsU4b/EXdn4X6Ud4ynSswn7rrHt129vM5yBtLhZC01x8IBn2MqNNn981g73n4eQ4S4zGY5psDQJZzb711CltyquB/m7Brf8GLpP5HFqsujDS3HXm1lFv9Hz+szU16joF6myB8s0TgFXbaI37RuU40Yw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nqcRc8kd; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=md5dpJvEtVgUhnMh022GA1FVhnmAr5wAcIBGyphpgPyNhIdlROHYwoMKGjLuo2YWndaYRvIHwyaL1qzpK/oJqqRp0oeyW4XIDRl2PDETDa6wv+wTvrCaNtsVOjZLAdHWbsa/mG1QRxjmbl1oahQ/X+5X4MeaoSV60QWCGCEajcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L6HwNCXF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nqcRc8kd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D361F000FF;
-	Sun, 13 Sep 2026 21:58:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L6HwNCXF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BEBC1F000FF;
+	Sun, 13 Sep 2026 22:00:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789336681;
-	bh=HLlNiJzlDXkQ2SZXU3tFf+X3xoH8F5gK/oZBldA+BJ4=;
+	s=k20260515; t=1789336846;
+	bh=Wq0j4WMyKl+SAo7hwBKRXWgrN10qKUEShOmoMttyE/U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=nqcRc8kdMNcz8jKrbOMg9w2qyzTwXV7SC4uVvZFgX0XP8pSm0674TceKLVHRx2AP/
-	 JlNBwuGEkM0eWnOG7wjuOXxvmE1f3GpVzdpzRMPaRJRN/fcZtVHIjd6hX1i0OQb9GS
-	 xTsB7Cns8aQgibJNbDVlFIlJOMgpAbIDDj28wHxgcJowiJB9CRst6AH7r/GXuMl1We
-	 sYUY2JpU7z/aZPstlgau5U8ZY8Vuj3aUk/bG+Vmet2cyL3ZBAhFr1v3fnEN69M5Rav
-	 XF8jaRV941WrrnWZwIqPtTrRysuiSgTcW+/iV5Ik59/ms26kqLMDdDGmwGRKW6s1G5
-	 K/ILLepY6JywA==
-Date: Sun, 13 Sep 2026 22:57:59 +0100
+	b=L6HwNCXF5EzrK/pmGJYOUUnefXlkfLJ2cDWwFJCj+2T4HXmfDfd0UTIt+bBTZM+5P
+	 z7ltou4W7A2+JbgzFPfoIyjUcN7vvdSlKU06Vu6SHZ7+hLWQ42t5cI4NCcJTRgrj6C
+	 r+8nHx3yCuE/HuYuDCvZ2IffZyW7LLB15lvVLMDIQV5+12+/0Hv5TjRlp90UFxnKzd
+	 VvIMOzKV1JtvdgE2/+F2FQVlIXAv2sQhLuYTYNdNKB4WXkuQMeyKL8AQCDwoJp50fR
+	 AxPBBUOmIHi6go0Cd62lyMTaS4NfvAbHk7EgetdM0jXkvypJpwFP9oMOjKFcZMaPRM
+	 tWrEX8GDvufEw==
+Date: Sun, 13 Sep 2026 23:00:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Kim Seer Paller
- <kimseer.paller@analog.com>, Marilene Andrade Garcia
- <marilene.agarcia@gmail.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: max14001: add missing MODULE_DEVICE_TABLE
- macro
-Message-ID: <20260913225759.7627fc92@jic23-hlaptop>
-In-Reply-To: <aqFnvoGj1ZNEUlUw@ashevche-desk.local>
-References: <20260909130304.1395-1-joshua.crofts1@gmail.com>
-	<aqFhagdhM4Z57eqh@ashevche-desk.local>
-	<20260909154526.00002640@gmail.com>
-	<aqFnvoGj1ZNEUlUw@ashevche-desk.local>
+Cc: mdshahid03@gmail.com, Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/6] iio: adc: bcm_iproc_adc: convert to devm-managed
+ APIs
+Message-ID: <20260913230041.4027958c@jic23-hlaptop>
+In-Reply-To: <aqFdEiBzwIAuqVhp@ashevche-desk.local>
+References: <20260908172359.30003-1-mdshahid03@gmail.com>
+	<aqFdEiBzwIAuqVhp@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,45 +51,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 9 Sep 2026 17:05:50 +0300
+On Wed, 9 Sep 2026 16:20:18 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Wed, Sep 09, 2026 at 03:45:26PM +0200, Joshua Crofts wrote:
-> > On Wed, 9 Sep 2026 16:38:50 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >   
-> > > On Wed, Sep 09, 2026 at 01:03:04PM +0000, Joshua Crofts wrote:  
-> > > > The MAX14001 has an SPI ID table, but does not export it with the
-> > > > MODULE_DEVICE_TABLE(spi, ...) macro. Because of this, SPI-based module
-> > > > autoloading fails on systems that don't use devicetree (e.g. via
-> > > > spi_board_info).
-> > > > 
-> > > > Add the missing macro to export the alias information.
-> > > > 
-> > > > Fixes: 59795109fa67 ("iio: adc: max14001: New driver")
-> > > > Cc: <stable@vger.kernel.org>
-> > > > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > > > ---    
-> > > 
-> > > Changelog?  
-> > 
-> > God, I should start using AI to check my patches before sending.
-> > Appending below.
-> > 
-> > Changes in v2:
-> > - edit commit message (expand on module autoloading and SPI)  
+> On Tue, Sep 08, 2026 at 10:53:53PM +0530, mdshahid03@gmail.com wrote:
 > 
-> Thanks.
+> > Changes in v4:
+> > - Move the ADC enable error-path cleanup simplification into the
+> >   clock conversion patch.
+> > - Simplify the ADC devm cleanup action.
+> > - Restore the blank line after the copyright header.  
+> 
+> Cover letter is not only changelog, it also a summary of the series.
+> Patch wise LGTM,
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
 
-Applied to the testing branch of iio.git. Not rushing this
-in as for dt at least the other MODULE_DEVICE Table probably
-does the job (or the driver name fallback).
+Applied to the testing branch of iio.git for 0-day to take its
+normal look before I push out as something I'd rather not rebase.
 
-So nice to have rather than urgent
-
-thanks,
+Thanks
 
 Jonathan
-
