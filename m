@@ -1,139 +1,71 @@
-Received: from mail-wm2-f10.google.com (mail-wm2-f10.google.com [74.125.225.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD9C739A4A4
-	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 08:54:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5298221FD4;
+	Sun, 13 Sep 2026 08:59:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789289657; cv=none; b=YXdPnVhX1iibF3y4YSD3VTTetCBYAEWR70DnPNOI18SQlbuyNrrSZExMmjb5tQtiJEa7zr6mkYp3/h76NjKCwWYTSl9FZSTTkarDQ5rpVWi67fwUlNu3uPg1e10sXod3CbjobwCAOfgj1kjI5bwXzPNSqsIEloUdz4tyKpUURWM=
+	t=1789289971; cv=none; b=iZF/lel0N3b80VQAL58cZruktRSzHmOH6LsbQgDjOV2BbhpkJDvz8gQMs3QFtv1rjk8Cms1R27GcjUK4UBKzlTA77sI8gjU+k1rgO1MZxY3Va2H+iXSCwYsVBHmhE/x06AwQ6/cxrH0Jifdi3JU0j17tHEGjlRG5BwidJOPSGdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789289657; c=relaxed/simple;
-	bh=VVdY4uLEM+PSjSa4BxpP6hRuJzxXf0AWV+5KTiKJqRw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PkoQdBZzPZhq+WhV68VbJLsYg8ivu8hprb30CJCBwSF4v6ePf4SVG2VvTSZNfMUV1MgubtClX17WkJL+DUqAPUa5GVvRegbth8+qBDs5Gs6OJv0LnvHPh4MNMWRi4hSDLf8WtEWB1FFQdvbCQ7n4+jSWzy9npFv0XdkBBObdONQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m0OESqIx; arc=none smtp.client-ip=74.125.225.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789289971; c=relaxed/simple;
+	bh=30JdxxfnctuzQQcplp2ZpDOw3WNwpTTRcMdbjfo/hWM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EBXWexvqbzl7nwwVsgwEs+qty9vqtS39D/jhTsOlbdo/rgVoQ2ipVolo1BklYVv413S220kR5O7mUYIzE3BJ6Y896y1KGIwI+wr5LH0VX/RfnN6IpWtjbMNLtB3ByUm1NNZQsMTkUjh0QEznLfgEFyn0b1ivvdqczQ6qKRf3Z44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jD1z06Ma; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m0OESqIx"
-Received: by mail-wm2-f10.google.com with SMTP id 5b1f17b1804b1-49b92ccb8e0so5885435e9.1
-        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 01:54:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789289653; x=1789894453; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=3+XuV3zRF3c0btBQBa2v8yLmcPdVUtoareQ/mmTC3Tw=;
-        b=m0OESqIxqhbdNZgVZKunL/mesyu7on+gsT6fvBHAttwWN59T+NhkY6tYUqMcC1+i7l
-         Zfbr8l7oOrSrX5/M5YdGrdmEeoOSO7bI43JhWhgmCRRMMLpBdLsSJihZ2MwX3bOquUxN
-         PAJ+hvJcyIUhCnmlGLayFuGo4EjD4XxJhjujy2vovwXCXy+U314qZhIoFu5Mcqk3rSjZ
-         qUs+hOVkt1pO9XeHFblzrBER/ijgMSGFlSvIB5FzALeti/+uKTpzVU/OsYWvMSzY4Ksx
-         VZXpK7Wng97FzDFfC9KlQKofvHeSzynUpDjo7mef20ObseAAtgJu2s4ifEePBq3z6HmL
-         6GLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789289653; x=1789894453;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=3+XuV3zRF3c0btBQBa2v8yLmcPdVUtoareQ/mmTC3Tw=;
-        b=Pzn3nlWtgV1g+GrAaCYHqvabShD14i6qGbJh9XHcg8Pb9nzWLi9tO80f5KrLWYa9OW
-         mbmh6/bvENVdcO8KNk3w785kUbO0dfLLQKTxMgqOwvXmdGkjz7eMnX7bCDSm1S+NyfkZ
-         M7Lfh69uiciKhkrKq4bzxUDBkqGRHEenW7a2P+5X3Rj9gKDWgtw31QYwuGu1DWV8XBxW
-         4cEV5c/6z3d/wcl3dP0HuGyivXedwkbATfekCugYbGlYh7bgCVPsrI/YlT9gbix/XN6n
-         Sh0uAeQFCi7n4R7MXIOklAX8qaSdCxYec1lk9l8uqHB/gxs5rfS1TfZdbMz9kKaUvxIH
-         zk5Q==
-X-Forwarded-Encrypted: i=1; AKwUvBxWLsPfQYqy8Gl8HCEJ015tkm+BNw1fiRdzLadkKFtMPo+zPgCvgQ2kiIipLsYTK5oVFMwrWrIT+1o=@vger.kernel.org
-X-Gm-Message-State: AFuF++l1KGVIjrrXmyx6qDZZ+vnPdDauA0tNE+u0i9sBtWA1LuD+Xif1
-	HSIxVv+tnjEZCYAgcGWq2ChCykPEz180dfvp9n7iDUc3S5AXP54DuRcz
-X-Gm-Gg: AYBFou0JYqLIBp+sxd8lXPKAUKEtIuyHsRU5gpRCtiE+OmtiQ87OeQEndcgOoq3YgxG
-	RXiQbx0rv8FKv01NkUZ4nfOt1y3pP6wL+9iMlppHlfTq9xdfwa95l8TslgYVgltaYOWwDl3ZVCj
-	34zqX3ToyKHEjkvYx/Cv9rBZE9sMUbg1xuDZIQgubuHuORmmigpsmKE0kxp6ykcV3Nu8+jwaANf
-	XDrrjGQ2N9/J/coxfWC265rzamnI+GiWs0P7S15InHyx9XHxi2ULjzYvDTj0DMhKrY+rrqmYmSH
-	OQgif1jx0ZnIblZ+SZMZX0Hwq3t2cjtDuKAcXWggaFXMQpnFN4ydbBzUZU3R149dekXTupqzD5M
-	1/EXSTZzLkqWnLi+X4efQhb4PxMUob+fgKP1oVv1J5RvmkS1rFyCeJtyqkX69N6GCpgv6gV4B+u
-	HacVPrBJI661XNyPdi/oj2Kr/aOwMsUKXga28Qa0Br/EJhaES4eiGcbBlsKIXbjJ3+DoxndZlOo
-	O85xn/+DnTIhZdGyRM=
-X-Received: by 2002:a05:600c:1385:b0:49c:fc6e:a3d5 with SMTP id 5b1f17b1804b1-49e619bfebcmr113344775e9.20.1789289652755;
-        Sun, 13 Sep 2026 01:54:12 -0700 (PDT)
-Received: from DESKTOP-M0MLFVC.localdomain ([165.99.41.145])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-486eb32e7f5sm18228489f8f.9.2026.09.13.01.54.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2026 01:54:12 -0700 (PDT)
-From: Shehryar Ahmad <shehryar.amd@gmail.com>
-To: jic23@kernel.org
-Cc: nuno.sa@analog.com,
-	Michael.Hennerich@analog.com,
-	dlechner@baylibre.com,
-	andy@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	gregkh@linuxfoundation.org,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	Shehryar Ahmad <shehryar.amd@gmail.com>
-Subject: [PATCH v2 6/6] dt-bindings: iio: accel: adi,adis16201: add adis16203 compatible
-Date: Sun, 13 Sep 2026 13:53:07 +0500
-Message-ID: <20260913085307.13846-7-shehryar.amd@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260913085307.13846-1-shehryar.amd@gmail.com>
-References: <20260913085307.13846-1-shehryar.amd@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jD1z06Ma"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C43FB1F000FF;
+	Sun, 13 Sep 2026 08:59:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789289970;
+	bh=bkszEUJOOnT0MnAIUqUL5L1rAxWgsJ/+d9BlDF6Z3KY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=jD1z06Mawe3mX4zcWsyOZ4jmLmRi1IEv/iqtC7ClG4FScoeyM888Xc6wljaXdG4of
+	 e62L1lgJGAEpVFkt1MuKRLCp8JTlwIxPZqejm/OtX1cgw2eLgmYW+kRGxX0an9y/KG
+	 AhFsjPKfojyL1qCDWhdJzihnjhXUmwDn9c7ApYXJ3A3yDxvkOCbyzQOZd/coR50YKW
+	 8atCI5Ex1PNqUCum87wN6zyiW5CaOTztJjPtDJbwyPj6ftQpTX0bOayxecENqGsvbM
+	 rjtOvK7aw0CYI/U+s7XT+mhVsseouL8nAx4dI9aVzv2My/3Jn5IRVwyQ2Y2i83oxXg
+	 FUVPBt78LtM9Q==
+Date: Sun, 13 Sep 2026 10:59:27 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	krzk+dt@kernel.org, jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	Michael.Hennerich@analog.com, andy@kernel.org, robh@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: temperature: add ADI MAX30210
+Message-ID: <20260913-brainy-giraffe-of-climate-b9c8bc@quoll>
+References: <cover.1789032019.git.johnerasmusmari.geronimo@analog.com>
+ <f84dff4406361f180bb85e4187a64e8f9fc21b18.1789032019.git.johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f84dff4406361f180bb85e4187a64e8f9fc21b18.1789032019.git.johnerasmusmari.geronimo@analog.com>
 
-The ADIS16203 has the same external interface as the already documented
-ADIS16201/ADIS16209, for the properties covered by this binding
-(compatible/reg, the DIO-based interrupt pin, and VDD supply), verified
-by datasheets Table 5, Pin Function Descriptions, in the respective
-Analog Devices datasheets. Some Auxiliary pins differ (e.g. adis16209
-marks a few pins DNC where adis16201/adis16203 use them as AUX COM), but
-these are not represented in this binding.  Add adis16203 to the
-existing enum rather than creating a separate file.
+On Fri, Sep 11, 2026 at 06:12:16AM +0800, John Erasmus Mari Geronimo wrote:
+> Add device tree binding documentation for the Analog Devices
+> MAX30210 temperature sensor.
+> 
+> Signed-off-by: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+> ---
+>  .../iio/temperature/adi,max30210.yaml         | 61 +++++++++++++++++++
+>  MAINTAINERS                                   |  7 +++
+>  2 files changed, 68 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+> 
 
-Signed-off-by: Shehryar Ahmad <shehryar.amd@gmail.com>
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
----
- .../devicetree/bindings/iio/accel/adi,adis16201.yaml        | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Do not attach (thread) your patchsets to some other threads (unrelated
+or older versions). This buries them deep in the mailbox and might
+interfere with applying entire sets. See also:
+https://elixir.bootlin.com/linux/v6.16-rc2/source/Documentation/process/submitting-patches.rst#L830
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-index b6ba7ad1a..3ce5fb1be 100644
---- a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-@@ -4,21 +4,23 @@
- $id: http://devicetree.org/schemas/iio/accel/adi,adis16201.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: ADIS16201 Dual Axis Inclinometer and similar
-+title: ADIS16201 Inclinometer and similar
- 
- maintainers:
-   - Jonathan Cameron <Jonathan.Cameron@huawei.com>
- 
- description: |
--  Two similar parts from external interface point of view.
-+  Three similar parts from external interface point of view.
-   SPI interface.
-     https://www.analog.com/en/products/adis16201.html
-+    https://www.analog.com/en/products/adis16203.html
-     https://www.analog.com/en/products/adis16209.html
- 
- properties:
-   compatible:
-     enum:
-       - adi,adis16201
-+      - adi,adis16203
-       - adi,adis16209
- 
-   reg:
--- 
-2.43.0
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+
+Best regards,
+Krzysztof
 
