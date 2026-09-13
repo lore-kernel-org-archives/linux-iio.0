@@ -1,62 +1,56 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C630F39061C;
-	Sat, 12 Sep 2026 22:21:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8BD01A9FBD;
+	Sun, 13 Sep 2026 00:24:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789251664; cv=none; b=HRLRBqlPqXYQKn/0NcNlQkpYv84aS2xuk409J784xaqmGKsfTVoAxex7+hamY3Z1mezMhEopbiTCz+kmLaBvWMBQ0RMRNyHkjQEg6uh7idme378XZ855juxaC3xPyFKWc/wIHFB3L2W9QGlub2SzXSbdCAPNJHVmg2Hx6wxZuX0=
+	t=1789259067; cv=none; b=a0d735epVj9rzf/elSjshngpeIybkz9TFLS0ctytlYV/L9QORt9G9ca5+uKdzxZZO+qQmBJFQUMoLNPYrfGz5a40e3/yPgpp7bE5oSXLKW6rvHyox3UzJSrugKlejCOzEpK60l1yitTXwWgIoLClZ+IDXtad0+cPmvN+C+x45HA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789251664; c=relaxed/simple;
-	bh=jJN5bbmJG6+W8ZaAl9RR52OiGtP0jEKBmRMAckxoXiM=;
+	s=arc-20240116; t=1789259067; c=relaxed/simple;
+	bh=cvzD4MHZVLuOKbb1NoxjC11FDZuTEBD0KDPBQEN6q08=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aJe6HCLeEcaYPMYTJDo6bj52O4C4tN9/S/pJQ+nuxskJRaZYMGv/KJlET++t6zOUyeerAhGe7S1q8c9iuQ3BMZPp4tgAzfaoYtqM/d2uJ+98i0Myg33FwevRkgp9GRgF1P/rzFIYzEFpyw8oWzz9UatbWIXSpAj7k4XKeWMNeXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BHhPvzDn; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Abj2RmikPLF6QcvClOUav1cjIhsJcYtzxW/qrlQpln0l9bG/4j1mCxCi0cNlAs/t6/sNixe1PObmvdZcdIzRr2oKm+z4l0/fag7vZgMzI98QRuvHHxVEN79ANmkDA85uikxyAtqzOAoV/OjzeyKBdwwYOlU0+lG35agb8SjqXLE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ca8uzHRH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BHhPvzDn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434821F000FF;
-	Sat, 12 Sep 2026 22:20:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ca8uzHRH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B4A1F000FF;
+	Sun, 13 Sep 2026 00:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789251662;
-	bh=A9T5TqugoZpwriYm80tITfJ7eL5e79XFR+RGRlWT3Yo=;
+	s=k20260515; t=1789259066;
+	bh=vF7Pz5geNKTrwe6MQe3Rpj1h2B4b6zWqQLr6eJLHVsc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BHhPvzDnmzwpQttZFmPMZf/UutFNeY/Degy6vahXXbV7Z6hNGc9MkvFE+rdhQJ6MU
-	 VAw3b4RYQvofx2lNTbeX4zkZRnpelNzwDei0UTSd3ZGNIs/4odMQ67B9LiiARuySxb
-	 U6BER7d7wfXohAn2tXbzGwa2wiTRgp4c4+hrPC/Fg2mvopBtYwKpfuJcqo2gQktz/i
-	 UBA340zyHxS9IBLWpHZ7ZP/iBROp/81WLbTAUh34hL3mGOOjez8TZZyGHIC4Q8vD6X
-	 SvDJPAFOvk+SgEr6vR+aGc41krBbPQbYbAOql8ew7alD2jpnrmyuGLi/805cAMk+g3
-	 S6DFuxrkx8D2Q==
-Date: Sat, 12 Sep 2026 23:20:47 +0100
+	b=Ca8uzHRHXYg6Xhz5oSUYO2NLCSNe73W6xG4/iyI9nBowK/XeiKRRF1/tFZQa4RIcn
+	 GpmMvf26YSI29hIfkdef++czx9owykFFnUalViGOUeAMesJ4d4tGXd2rOGqzHEghib
+	 9xuTroM1DFCuN0eHBSt+Nnlj9WldRcpmv/hjZVWmGFt9j3ETiNKIy3nJYxLxjRwBPS
+	 eMQ016L1a+i+LvMAUGMPF8BfCDmIr6PPOmCgDX3bwW0bxzXCzUa8YzIPAS8tNj4xMc
+	 ezJUMgM5NosfGcU/SudNvIHmKtY9iWtUkM2nscfbr5qBa8ilA5zpZfE6tFDtEJJqiI
+	 ZLl0j9aeUVpaA==
+Date: Sun, 13 Sep 2026 01:24:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Arnd Bergmann" <arnd@arndb.de>
-Cc: "Svyatoslav Ryhel" <clamor95@gmail.com>, "Arnd Bergmann"
- <arnd@kernel.org>, "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Bartosz Golaszewski" <brgl@kernel.org>, "Mark Brown" <broonie@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>, "Daniel Thompson"
- <danielt@kernel.org>, "Helge Deller" <deller@gmx.de>,
- devicetree@vger.kernel.org, "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
- dri-devel@lists.freedesktop.org, "Jingoo Han" <jingoohan1@gmail.com>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Lee Jones" <lee@kernel.org>,
- "Liam Girdwood" <lgirdwood@gmail.com>, "Linus Walleij" <linusw@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
- linux-fbdev@vger.kernel.org, "open list:GPIO SUBSYSTEM"
- <linux-gpio@vger.kernel.org>, linux-hwmon@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
- linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
- linux-rtc@vger.kernel.org, linux-sound@vger.kernel.org,
- linux-watchdog@vger.kernel.org, "Guenter Roeck" <linux@roeck-us.net>,
- linuxppc-dev@lists.ozlabs.org, llvm@lists.linux.dev, "Mauro Carvalho
- Chehab" <mchehab@kernel.org>, mfd@lists.linux.dev, "Michael Hennerich"
- <michael.hennerich@analog.com>, patches@opensource.cirrus.com, "Pavel
- Machek" <pavel@kernel.org>, "Rob Herring" <robh@kernel.org>, "Sebastian
- Reichel" <sre@kernel.org>, "Support Opensource"
- <support.opensource@diasemi.com>
-Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
-Message-ID: <20260912232047.19c4cb10@jic23-hlaptop>
-In-Reply-To: <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
-References: <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
-	<11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
+To: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
+Cc: linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
+ vitor.soares@toradex.com, samagazaryan@google.com,
+ gregkh@linuxfoundation.org, arnd@arndb.de, boris.brezillon@collabora.com,
+ oleksandr.shulzhenko.viktorovych@intel.com, tgopinath@linux.microsoft.com,
+ corbet@lwn.net, skhan@linuxfoundation.org, linux@roeck-us.net,
+ Frank.Li@nxp.com, jorge.marques@analog.com, pgaj@cadence.com,
+ wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
+ nuno.sa@analog.com, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ andy@kernel.org, lorenzo@kernel.org, enelsonmoore@gmail.com,
+ rppt@kernel.org, pratyush@kernel.org, giovanni.cabiddu@intel.com,
+ gabewhigham@gmail.com, haren@linux.ibm.com, pasha.tatashin@soleen.com,
+ jirislaby@kernel.org, adrian.ho.yin.ng@altera.com, ustc.gu@gmail.com,
+ jszhang@kernel.org, adrian.hunter@intel.com, akhilrajeev@nvidia.com,
+ tze.yee.ng@altera.com, manikanta.guntupalli@amd.com,
+ shubhrajyoti.datta@amd.com, jarkko.nikula@linux.intel.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] i3c: master: enable driver_override for I3C
+Message-ID: <20260913012416.165c5886@jic23-hlaptop>
+In-Reply-To: <20260911210935.1353126-2-meaganlloyd@linux.microsoft.com>
+References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
+	<20260911210935.1353126-2-meaganlloyd@linux.microsoft.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -67,94 +61,95 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 10 Sep 2026 20:14:15 +0200
-"Arnd Bergmann" <arnd@arndb.de> wrote:
+On Fri, 11 Sep 2026 14:09:33 -0700
+Meagan Lloyd <meaganlloyd@linux.microsoft.com> wrote:
 
-> On Thu, Sep 10, 2026, at 18:40, Svyatoslav Ryhel wrote:
-> > __ 
-> > Hello Arnd! May you please spare AAT2870 from being removed? I have a 
-> > device which uses aat2870 (LG Optimus 2X P990 Tegra 2, not upstreamed 
-> > yet, but in process as well) and atm I am working on converting this 
-> > driver to use OF. Thank you!  
+> Opt-in to driver_override sysfs functionality for I3C subsystem.
 > 
-> Sure, I have removed this patch from my series now.
+> Update some I3C drivers that are assuming that if their .probe is
+> invoked that the bus match function already checked the ID table. Go
+> ahead and verify in .probe that i3c_device_match_id() returns a valid
+> match before using the i3c_device_id pointer.
 > 
-> > P. S. If you are planning to remove more old drivers, please CC me in 
-> > since I may be interested in some additional driver upgrades for 
-> > devices I own.  
-> 
-> Please have a look at
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=board-remove-7.3
-> 
-> I tried to be careful about figuring out exactly which drivers are
-> unused, but I'm sure there are still a few false positive and false
-> negative ones in there. I've added the current list of driver files below,
-> let me know if you see something that shouldn't be there.
-Hi Arnd
+> Signed-off-by: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
+> Assisted-by: Claude:claude-opus-4.8 copilot
 
-For I2C and SPI at least, there doesn't need to be explicit
-device tree support as long as they have defaults when platform
-data isn't there. Those two buses will happily bind based on
-a dt-compatible and their i2c_device_id or spi_device_id tables
-for example.
+Along with splitting these up as this is the sort of change that
+will sometimes need backporting in individual drivers because we are
+layering something on top, I'd look at adding some helpers to skip
+the id as that isn't much used and get the specific fields people
+want.
 
-So unless they fail to probe (some might?) we don't have
-a clear signal on whether they are in use via DT or not.
+> diff --git a/drivers/hwmon/tmp108.c b/drivers/hwmon/tmp108.c
+> index 1c4a58855e2d..98076ae8dce8 100644
+> --- a/drivers/hwmon/tmp108.c
+> +++ b/drivers/hwmon/tmp108.c
+> @@ -581,6 +581,8 @@ static int p3t1085_i3c_probe(struct i3c_device *i3cdev)
+>  				     "Failed to register i3c regmap\n");
+>  
+>  	id = i3c_device_match_id(i3cdev, p3t1085_i3c_ids);
+> +	if (!id)
+> +		return -ENODEV;
+>  
+>  	return tmp108_common_probe(dev, regmap, "p3t1085_i3c", id->data);
 
-For vast majority of IIO drivers we don't have an upstream
-DTS as there is no clear motivation for anyone to upstream
-the dts for a random industrial control board or similar.
+Similar to below, jumping directly to an i3c_device_match_data() helper
+in this series would avoid getting and id that these drivers don't
+need access to.
 
-> drivers/iio/adc/ad7266.c
-No to dropping this.
+>  }
 
-Has fallbacks and should bind just fine  No one ever
-bothered adding an of_device_id table because it isn't
-needed. Fine to rip out the platform data support as nothing is
-using that.
+> diff --git a/drivers/iio/adc/ad4062.c b/drivers/iio/adc/ad4062.c
+> index 8e5984055b15..f28b503d16eb 100644
+> --- a/drivers/iio/adc/ad4062.c
+> +++ b/drivers/iio/adc/ad4062.c
+> @@ -1482,14 +1482,20 @@ MODULE_DEVICE_TABLE(i3c, ad4062_id_table);
+>  
+>  static int ad4062_probe(struct i3c_device *i3cdev)
+>  {
+> -	const struct i3c_device_id *id = i3c_device_match_id(i3cdev, ad4062_id_table);
+> -	const struct ad4062_chip_info *chip = id->data;
+> +	const struct i3c_device_id *id;
+> +	const struct ad4062_chip_info *chip;
+>  	struct device *dev = &i3cdev->dev;
+>  	struct iio_dev *indio_dev;
+>  	struct ad4062_state *st;
+>  	bool ref_sel;
+>  	int ret;
+>  
+> +	id = i3c_device_match_id(i3cdev, ad4062_id_table);
+> +	if (!id)
+> +		return -ENODEV;
+> +
+> +	chip = id->data;
 
-This is a production part that is likely being used in new designs.
+This might be a good opportunity to introduce
 
-> drivers/iio/adc/ad7791.c
-No to dropping this one.
+i3c_device_match_data() as in many drivers we don't actually care about
+access to the id itself.
 
-I'm fine with ripping out the platform data but this again
-has defaults and may well be in use via DT. Antoniu from
-Analog was doing some cleanup on this recently so I'd guess
-they probably still at least somewhat care and some of the
-supported parts are still in production (e.g. the AD7788)
+> +
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> index cb5c5d7e1f3d..153a03e06801 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> @@ -32,6 +32,9 @@ static int st_lsm6dsx_i3c_probe(struct i3c_device *i3cdev)
+>  	struct device *dev = i3cdev_to_dev(i3cdev);
+>  	struct regmap *regmap;
+>  
 
-> drivers/iio/adc/ad7793.c
-Maybe. Analog devices ack needed.
+Please bring the assignment down to above the check so
 
-Production part but this one indeed fails to probe.  Analog
-folk, do you want to fix this one up?
+	id = i3c_device_match_id(i3cdev,st_lsm6dsx_i3c_ids);
 
-> drivers/iio/adc/ad7887.c
-No to dropping this.
-
-Production part - should work fine with defaults in driver.
-Could like the others drop the platform data handling.
-
-> drivers/iio/adc/lp8788_adc.c
-Probably
-
-Sub driver of an MFD.  I'm fine with that going if we know
-the mfd is no longer in use.
-
-> drivers/iio/adc/lpc18xx_adc.c
-> drivers/iio/dac/lpc18xx_dac.c
-Probably
-
-Likewise these two.
-
-> drivers/iio/frequency/ad9523.c
-Maybe. Analog Devices ack needed.
-
-Fails to probe without platform data and marked not recomended
-for new designs. If we get an Ack from Analog devices folk
-I'm fine with this one going away.
-
-Jonathan
+Which is what you did in the previous driver...
+> +	if (!id)
+> +		return -ENODEV;
+> +
+>  	regmap = devm_regmap_init_i3c(i3cdev, &st_lsm6dsx_i3c_regmap_config);
+>  	if (IS_ERR(regmap)) {
+>  		dev_err(dev, "Failed to register i3c regmap %ld\n", PTR_ERR(regmap));
 
