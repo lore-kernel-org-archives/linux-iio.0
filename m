@@ -1,44 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 785202765D7;
-	Sun, 13 Sep 2026 03:00:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF5033C188;
+	Sun, 13 Sep 2026 03:08:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789268401; cv=none; b=Q60IZmctLbRolQsNbEKDK5af3UH5YZTEQHJQymF/myZKxq07RIlLtTKhYY34rasHDtDX+5nT5WcD8R9AfGrgUjtkyQr53JPoVq41HFwKQv0k60ExwxppyMRZzkAk1iL/OkV/Mgi4vlm3ehJMtYyafGmRXpzQ7QBb5WshZ2TEN9M=
+	t=1789268885; cv=none; b=pMFwXOkOI7IFjmRz/Amm+tdF20B+vuj05CF5aHasCtfPcf0N4zmKLuMDAy1PJdvot2+ZHARMy7pcLgNDUGdImj9QRZRaIbvEz8fAXjnd3xPY/BMC3DU0Vq2e0BAhl4d8Qt3rHsBbmJmaNtmb5uFYtU6/qNKT9+Ys/JubwLHwsVs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789268401; c=relaxed/simple;
-	bh=nebcldvjasnNIaE8xLDrcml/O7iGT6X4/ykys5IcfuQ=;
+	s=arc-20240116; t=1789268885; c=relaxed/simple;
+	bh=3DpC5fAqPzgDVYnJ4QOP27eZciLZfkNkbE4TdtLp4gY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=H6QuXWcaCbdCYL3vRYAec+nBhqyCHD/vCFEJoArQlSSbH+OJ4WLBuYQSuaneSFsWGNO+3LBe91+rCqWpiWJd8SaIKTGJKyUDE7rSoPqIF9FZ5s5a4jkdANKoWesK3EgPVL8opNarklnUeR3FUpK3Ti1vFQDyqw8t/cD+z9HeiRY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AnNpgQFr; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=iTVnBfIzHgQMRcmBYCqnU4SdYb7aG5WYs+5w7mDgLQuyXFU8gmC0lksYJT/aOOHOO/xU/1J8FUcDm2twCgxsmQHMWQEdUwqbhL518MWVUX9FKaf/giyWdSdKT3Pl4C2x2wsyAPSt/Y5FKZ3qeP5pIvH5uIgIfcgIKQv+fw7rmno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Oaa4gO4F; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AnNpgQFr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9AD01F000FF;
-	Sun, 13 Sep 2026 02:59:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Oaa4gO4F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B21F1F000FF;
+	Sun, 13 Sep 2026 03:08:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789268400;
-	bh=45E+0rPqi4Q5EA4SZ6KErOV5kKZDAlhBMi5yePEo1ZU=;
+	s=k20260515; t=1789268883;
+	bh=QfRWUQCp+Q9jZWQdZZIZ+ZqK7VdJimPtv9TXeKqBn7g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=AnNpgQFr54Usir0fOZgHzFHteOa78dYAJSQZGu+zwZcxDdPwy5OMReLp+WpoxnvhA
-	 VRElaRBM8vEG61jZM6hw4RduYsZAx9ZjvnSjsKLzlhhY48e2iTkOwtO67eFktwM+Q+
-	 xg+9ynaGLsdQoQDlktsi7mZoNE3X1K0HtNDgzD7IKfosSI29OtWeIpkJLowmkv7gLo
-	 l+SsEt7Qaw90TR2yl2wUpK7KNNJ+7+Ix/9hR4FS8xrrztqDUDl3HvHO2SyXxNH/zPl
-	 pcY2a8wmgfudp8Bg8/oPKIeVpLV9A4dENwIqyq3SYzejppkcHgM0DRqPC3zXNbDd+3
-	 5EYFRc7Eg5c0Q==
-Date: Sun, 13 Sep 2026 03:59:57 +0100
+	b=Oaa4gO4FbG6dwppp2A3ab7SdRzilnBk/R0hmIGU3lxFZDENPF7krAMbXN5L2HPocy
+	 lKMxoA28NRQl7opHvLcrEGjHfeOajKSzxEkd2gC6kbnMWnNjxVJ7aVy3dco9+5Sbr+
+	 NkH10R8HZGA+spTvcc7HfPglHmNy5rnVRss4nnrMV0uHjeW/kU5vBtK2qz4rbVIw/H
+	 omX2decLigXEsqeSAa2CY4rlbk8JRJN6HZKTi8HJ2KADvr6HYLdg6U2sf35VtcpYMx
+	 RBKmu1Yiv7X85bxxxegZTxBrtF2aAZ3jNTuXK1zzzztb7lDlEUKNtAe5v+BX1DDxdz
+	 U8bprd4dW1pZQ==
+Date: Sun, 13 Sep 2026 04:08:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: gregkh@linuxfoundation.org, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
- linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org, joshua.crofts1@gmail.com
-Subject: Re: [PATCH v6 3/3] staging: iio: adc: ad7816: Use DMA-safe buffer
- for SPI read
-Message-ID: <20260913035957.7eb0dd2b@jic23-hlaptop>
-In-Reply-To: <20260912132517.55686-4-abdelnasserhussein11@gmail.com>
-References: <20260912132517.55686-1-abdelnasserhussein11@gmail.com>
-	<20260912132517.55686-4-abdelnasserhussein11@gmail.com>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>, Marek Vasut
+ <marex@nabladev.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+ Cheick Traore <cheick.traore-ext@st.com>, Olivier Moysan
+ <olivier.moysan@foss.st.com>
+Subject: Re: [PATCH 1/8] dt-bindings: iio: adc: stm32-adc: add support for
+ stm32mp23 and stm32mp25
+Message-ID: <20260913040801.30e07d4c@jic23-hlaptop>
+In-Reply-To: <20260911-adc-stm32mp25-v1-v1-1-cef26eecdef2@foss.st.com>
+References: <20260911-adc-stm32mp25-v1-v1-0-cef26eecdef2@foss.st.com>
+	<20260911-adc-stm32mp25-v1-v1-1-cef26eecdef2@foss.st.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,78 +55,113 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 12 Sep 2026 16:25:17 +0300
-Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
+On Fri, 11 Sep 2026 17:51:23 +0200
+Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
 
-> Stack buffers are unsafe for DMA with VMAP_STACK enabled because
-> they are not physically contiguous and can share cache lines. This
-> causes data corruption.
-
-This one has come up a few times as a false or at least misleading
-explanation.  It really doesn't have anything to do with VMAP_STACK
-as that only a most deals with pages and cachelines which matter here
-are much smaller.
-
-Any stack variable is a problem simply because we don't control the
-data layout and pretty much anything else can end up in the same
-cache line. 
-
+> Add stm32mp23 and stm32mp25 compatibles. Three ADCs can be found on
+> these SoCs, split into two blocks:
+> - ADC12 are tightly coupled (common registers).
+> - ADC3 is managed independently.
+> Each ADC is a 12-bits successive approximation analog-to-digital converter,
+> with up to 20 multiplexed channels that can be configured as single ended
+> or differential.
 > 
-> Fix this by using a dedicated rx_buf aligned with IIO_DMA_MINALIGN
-> in the device state structure to ensure cache coherency. This also
-> corrects the size argument in spi_read() to match the new buffer.
-
-Make sure you understand why this alignment marking works to ensure
-the buffer is in a cache line on it's own.
-
-However, don't do this for a single use small buffer.
-Use spi_write_then_read() (with 0 sized write) but also make
-sure you understand why that works.
-
-Jonathan
-
-
+> New property "st,adc-trigger-sel " allow to make the difference between
+> the ADCs and to apply the correct trigger configuration.
 > 
-> Fixes: 7024425db64a ("staging: iio: adc: new driver for AD7816 devices")
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> STM32 ADC may be in a power domain: allow a single 'power-domains'.
+> 
+> Restrict the last channel (19), as it is wired directly to ADC Vref+.
+> It's meaningless to have direct measurement. Internal Vref with
+> calibration data from bsec (nvmem) must be used instead e.g. vrefint.
+> Restrict deprecated properties (st,adc-channels, st,adc-diff-channels,
+> st,min-sample-time-nsecs).
+> 
+> Co-developed-by: Cheick Traore <cheick.traore-ext@st.com>
+> Signed-off-by: Cheick Traore <cheick.traore-ext@st.com>
+> Co-developed-by: Olivier Moysan <olivier.moysan@foss.st.com>
+> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+
+Hi Fabrice, all,
+
 > ---
->  drivers/staging/iio/adc/ad7816.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  .../devicetree/bindings/iio/adc/st,stm32-adc.yaml  | 106 ++++++++++++++++++---
+>  1 file changed, 94 insertions(+), 12 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index acf26c5a267a..2fd2d6796603 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -53,6 +53,7 @@ struct ad7816_chip_info {
->  	u8  channel_id;	/* 0 always be temperature */
->  	u8  mode;
->  	struct mutex lock; /* protect device state during SPI transfers */
-> +	__be16 rx_buf __aligned(IIO_DMA_MINALIGN);
->  };
+> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> index c4c4575d3fa9..0e0ceaa3d8d6 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+> @@ -23,11 +23,18 @@ maintainers:
 >  
->  enum ad7816_type {
-> @@ -68,7 +69,6 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
->  {
->  	struct spi_device *spi_dev = chip->spi_dev;
->  	int ret;
-> -	__be16 buf;
+>  properties:
+>    compatible:
+> -    enum:
+> -      - st,stm32f4-adc-core
+> -      - st,stm32h7-adc-core
+> -      - st,stm32mp1-adc-core
+> -      - st,stm32mp13-adc-core
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - st,stm32f4-adc-core
+> +              - st,stm32h7-adc-core
+> +              - st,stm32mp1-adc-core
+> +              - st,stm32mp13-adc-core
+> +      - items:
+> +          - enum:
+> +              - st,stm32mp23-adc-core
+> +              - st,stm32mp25-adc-core
+> +          - const: st,stm32-adc-core
+
+What is this?  Given these all vary in features
+why would we fallback to a generic match for
+these new compatibles?
+
+
+
+>  additionalProperties: false
 >  
->  	guard(mutex)(&chip->lock);
+>  required:
+> @@ -239,11 +276,18 @@ patternProperties:
 >  
-> @@ -96,13 +96,13 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+>      properties:
+>        compatible:
+> -        enum:
+> -          - st,stm32f4-adc
+> -          - st,stm32h7-adc
+> -          - st,stm32mp1-adc
+> -          - st,stm32mp13-adc
+> +        oneOf:
+> +          - items:
+> +              - enum:
+> +                  - st,stm32f4-adc
+> +                  - st,stm32h7-adc
+> +                  - st,stm32mp1-adc
+> +                  - st,stm32mp13-adc
+> +          - items:
+> +              - enum:
+> +                  - st,stm32mp23-adc
+> +                  - st,stm32mp25-adc
+> +              - const: st,stm32-adc
+
+Similar to above, what is this?
+
+
+> @@ -344,6 +388,12 @@ patternProperties:
+>          items:
+>            - const: vrefint
 >  
->  	gpiod_set_value(chip->rdwr_pin, 0);
->  	gpiod_set_value(chip->rdwr_pin, 1);
-> -	ret = spi_read(spi_dev, &buf, sizeof(*data));
-> +	ret = spi_read(spi_dev, &chip->rx_buf, sizeof(chip->rx_buf));
->  	if (ret < 0) {
->  		dev_err(&spi_dev->dev, "SPI data read error\n");
->  		return ret;
->  	}
->  
-> -	*data = be16_to_cpu(buf);
-> +	*data = be16_to_cpu(chip->rx_buf);
->  
->  	return ret;
->  }
+> +      st,adc-trigger-sel:
+> +        description: Selects the HW trigger configuration available on this ADC
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        enum: [0, 1]
+
+Magic value that is meaningless to see in a dts.  If they
+are effectively not compatible, give them different compatibles and
+drop this property.  I'm unconvinced this property is more
+useful than that given just how opaque the description is.
+
+
 
