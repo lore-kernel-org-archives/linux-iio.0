@@ -1,923 +1,639 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CD6A3CAE73
-	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 12:18:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EC02348C4B
+	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 12:33:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789301934; cv=none; b=TliOq4iIjUeTuby1hi6eLpqW9TDBuvlQYBFVAaqkL0VBgCyWzX8aO261ur0IMzc311zgSQrJX7Vay40cIx8k+dmCb9yccMC/PTfVdWkJ0OUSZGGJY9cfntcLQmd4jeTjsJkO7L3In+oKSWP58oA2t6VLRGCcIQiO8NX0/OzODmM=
+	t=1789302811; cv=none; b=b5x+dBxQnjH4rXATHaWMruv5tsn2pfZaxadVedTXwh8yhZT2SvkGI73PMoa7i1p1+rxfiAReqmHFOIDdA6994SK3d6zq6D8ozXat1sgKMNvo0ugCKH+GYueSOXmgaT6iq9ENwLxLfz2eNKA6uvNIENCZaPWQvXvpnZOTvax2ILA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789301934; c=relaxed/simple;
-	bh=eZrm9VgPDfvj9NnGaY/C3bGlOsNzm2Q/fr2DsEYcE3s=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=G7CalwEDU8OtIFgmxDjd43rZm+dGjG5yus6Yj7LBl3MMgTglt/9tPsSCDX+l1YJNVyW2wijfbZyljMk5pKjLQNA2x65FU6Rr40TzSiMRvkJKEiytkFpu0M76JX0enJQAJCQNWtxKOg+MlQt/y4JiHuVbdtwNuQB1GnuJOxSpNfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tbxihx3w; arc=none smtp.client-ip=74.125.225.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789302811; c=relaxed/simple;
+	bh=RDT/FtmmxZyyNNUPEXNnhj1vIFsc1L6907cBrb+t5no=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=j8tkihFJzRV4koBN/dICgDHz9kbZLgxzjFaLnlryOTZVK11w2K1PtEAWBDUP/VBulA61SNSV+WCfHtC0EnWCIHMaHveSc2FvkFNhvKr1JzQMVizTUExfzmtbGxScr4djj797zdr+b/IsmJutIJicOXDPnj/R0FMKMATfIBGvyCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ShER0QOz; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=N4FlcUvm; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tbxihx3w"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-4843f22dc83so731072f8f.1
-        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 05:18:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ShER0QOz";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="N4FlcUvm"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68DAU2WR2053458
+	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 12:33:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=wocl7fHC8i0z+n+tlMoixJLCrrcWhEe8daP
+	4QAajZFw=; b=ShER0QOzIjSdvdy+teTcv95CM/vgBrPrYMKP7927JEbjODw7dZ5
+	Otg8UC1IWmsUbJ+/pD6h7F9yMOHhe7luEMLYAvlB2IkRr1gT2xaOZscummQzb5Lb
+	c7/RtdzKtTkIP/Edck7wjsO/F7471YdmHElMVmpT74GiD8SHKqF5uHdNcIimydT/
+	52U5Wk7VmyDY2dmRpFUP6OHeRdD43LDnI9Ytp+u8dfjRvd1R0I3+BVa7VW/2pipM
+	eHqlG2BsNnYUwP59AU0Vy8pEaXsLaA8xu/T+txu6pd3kqrpxVGqrXIm760p+LMRW
+	cWR1i30CQv80LwnUcv9az+TXI7MkGFXw7tg==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gmy9dk7j2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 12:33:27 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-93a1bffc2eeso83605185a.2
+        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 05:33:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789301928; x=1789906728; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=q8szB8DqOyKitYp7jPFMXf9uh6tzDvRuFilkb29yz70=;
-        b=Tbxihx3wStb1K03OaXNqWggND5m/aUaratKs4eY9wXjtAqVCM1mo3jByzCuvT71Yqw
-         RxnGCVevMYngdGRKYich5bb2am9Wx5vG5cuxpu4FQ30WEIoiOI0KfThVYOOmX8RRTYYl
-         u+dzxyw1u7V0X4ObPYbi2roc1OvbN4yvTlVmiIfU4Bhlp5OtqujgE7mBx0HdJp5uronk
-         ogUEQbAOkrZoDXxGIXqM8B6/QygyKIciCQM/2dE3beFA9M3IXxScUHJqrgVcihhLB/ip
-         Iz+bVXEzOhFEOISznhlR6IslpW9eZhPV8mQlRdQSLedpND9NKpowv9SW2+74P3EoXEZr
-         gXLQ==
+        d=oss.qualcomm.com; s=google; t=1789302805; x=1789907605; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=wocl7fHC8i0z+n+tlMoixJLCrrcWhEe8daP4QAajZFw=;
+        b=N4FlcUvmniarKidYLaAKytvy7niogqbtIJ3VOZZ9C8dxa0eBL6SpNrMF9SKKDGrBfG
+         ZkfTp4UKV+vYfBcwTFfPCwlfdkW+k20Z/Rno46Xsa8KGSPMOIovN6txElhbMpmBl23Eq
+         D3E64taN8QzliiHuMFFW3H/yZuAUQvrQHgAqP1DPsMZoIvlbgnxbfgj3gTF3g7sNQxfs
+         mPiLuGKBC2LG08h0EHGUILts2z/ipuiXdiw9iNEk1LJUblT8zCZ2ANuVcC1Ms8BG9RwP
+         cs5fFJP2PSNOUfWDhUd398sn5YIZjOlbYMBm7iJm+3y5uCY+o7k6Jz6Aj357OfgUy2HW
+         NRRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789301928; x=1789906728;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=q8szB8DqOyKitYp7jPFMXf9uh6tzDvRuFilkb29yz70=;
-        b=ngq4G5FkgUg9C/c6m+rgFVEraRiM2goBsNTtE3EAvL7thaOOADUmDkYst1TffdqKHM
-         pTPRWRQ+r5/XQphBUZIqnB1Upknb+bgva/h7zhGlS1bqmMmRrG9yvvy+Khfv88uiv+3g
-         62GGhQEDOYrcn2F0x96ydzw1r0V9mV64Siz2rQifQ/LtMHnIyfs60udsgQ97GQ5YAXws
-         tjqV3Oqh+CAVAbz4YnFx+AgzpI+SRm0bCupmAPHPZdYtkYLBK91neHI8n2Y3DzXUeHFY
-         NChIg+uNjBm2725G8uMrhQ4CWUePZ1qLQfETpMQ3y2bT5klCM2bbmfM8OXvGc5OTK/mv
-         5lvQ==
-X-Gm-Message-State: AFuF++k5beQNTWXaAZzcZyt4+0Wb3EK8sZ5QB3tV9Jsk8Ivccu1iblQo
-	jzD3/O3aC8qJl8tevfSuEy3i3EGJbvnMi3QnfLoVS5hDVKW54tFHZDE3
-X-Gm-Gg: AYBFou38KZ7quV8GDzcYDFOsgnf0kx1Suk/tqbKRZqwXZ0pr8HkN90cKh92abHhCCSh
-	ixXEgIENH9+iOyVyyjXAcH2EKrB07orEGuo7EIThkuPDdeubGCCaVRmrKnkIPcJAZ+cq1QQ5WCb
-	+hkwOKICB5PTL2PaEHxKsex+ql9f9E1n7at64V2w0melqM57SswoH5UW8Jky2ljl2Epw4daqTiY
-	JrmjCIev0A2+auDOJBF0YL7HbsCJGoZ0ZUK7pGqz+wOkBcQd1bpbghxqJdiLmtYj26RvD/ohKPv
-	pbieLkQbpI/8+SPzrGCnraSu+5BjrA5IttYV3ztXGmcl6ielfDvyO9SMLS5sL9/Vl8AB22cwdKI
-	8zT2/LC4yOvUdGN5/wH+ViCrdwYhHpoSR1A76rgQKdRZJfgkhcdWxestuARU/eovplIFkQ0O+SZ
-	SWWy82YVQQNptXLJ+VGtI+12mss+Ob2/TvAANJU3AFVwqAQimQpY893ycG44ervDTp2WfZrj2Iu
-	x7QFehsH5rVYVw=
-X-Received: by 2002:a05:6000:402a:b0:486:f4ba:58d6 with SMTP id ffacd0b85a97d-486f6bedeb7mr5941438f8f.12.1789301927305;
-        Sun, 13 Sep 2026 05:18:47 -0700 (PDT)
-Received: from [127.0.1.1] ([2001:4bb8:107:bfd1:de2c:7b4b:8652:b761])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-486eb2ecf2esm20241141f8f.2.2026.09.13.05.18.45
+        d=1e100.net; s=20251104; t=1789302805; x=1789907605;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=wocl7fHC8i0z+n+tlMoixJLCrrcWhEe8daP4QAajZFw=;
+        b=CHqG6k7cQhtgFjmU2trDaoweV8MO5pFhu2HbvsMvkMVfFZHlptR0GVouP2DU2R7NQ9
+         Ld0QCLV9DrWXfWpkl2JbQZvogZqnh/ia9CvlcXA8LiwG6lfJP4cPS4PRMLiJDd1vKKSM
+         O622goaZELz7BwSLs8/uouyEhGHf1L4v5OZTpIN2pL72PjLweOsBgx9UGfI9WkI5/1vg
+         vjhkIknOHAuW6rYHU+7UCooeP1ZMZe0Hv/gZXoGk2dtsoRgG6oeOYwBJrhV0F6VklXAu
+         RuLBXQ15DrFth43FOZZX7YzlsFQqioYMxiMazRbKdnLHw0fT0QJwaro6i8TmhWOBm+Hl
+         vCbA==
+X-Forwarded-Encrypted: i=1; AKwUvBzlmdMxCKaljCenFOrUzfjjqUa6x/xzFQLGgGKvgOGGT0oQD1bI4BA5v+szNYlyI1arg6kL5rzuP/s=@vger.kernel.org
+X-Gm-Message-State: AFuF++kEpmimZ/o5xpRda0xsJ2UVxqTqQ9EgLNSPKpLGcATto4baoJNd
+	AoBG4PaFvvtDn6vvdRTg0VO33vlEAr0LtB2PI3c8Tz/8OenuF5Y5/CbOlU1Dsr7PpNmQ88zWaXt
+	Azdqlh4t/gGfa48BK2ZCRre/DHAhJkEgTHUqfKjA7LULsX1EIYwccHfEeVUt0uS0=
+X-Gm-Gg: AYBFou1QbvD/mP3TrpkTkeaURJRGrkZRDbhVoWQfgvE66MtmMFNFj/Krqx+vg/91oeu
+	mAzBg0oLsWF0oFECgA4sfoWGPlz8zsBPIRacJTsq5k7mbAs+9Qf7z4lQozrXENbS7eVhnrK3zjL
+	bg17CD7CG7sIiVH5aH99jKkuJpnOEZfs236kLfI/z141WJCqvQvhqF2M+AJ2FNf9esZ631PqwZh
+	6A1OBO/hVQxhK+iE54zxfPC9jesiznnPbVmwGYqd2a5oLxxnGnujPTFjwLfid2fqgudYv5rSp7r
+	yIGsyxWWwheje6YemWswI03bVzyA41uvFKhY5YOv0H7ylMQOxc8YfWkNBIH1mnHXP3iNztnbo96
+	+365WEqPn2Sre95s=
+X-Received: by 2002:a05:620a:4443:b0:936:eeab:307e with SMTP id af79cd13be357-93a0357e40fmr922453985a.9.1789302805160;
+        Sun, 13 Sep 2026 05:33:25 -0700 (PDT)
+X-Received: by 2002:a05:620a:4443:b0:936:eeab:307e with SMTP id af79cd13be357-93a0357e40fmr922450785a.9.1789302804699;
+        Sun, 13 Sep 2026 05:33:24 -0700 (PDT)
+Received: from quoll ([178.197.219.214])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-486eb35bed0sm19721747f8f.32.2026.09.13.05.33.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2026 05:18:46 -0700 (PDT)
-From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Date: Sun, 13 Sep 2026 14:18:24 +0200
-Subject: [PATCH v10 4/4] iio: light: veml6031x00: add support for events
- and trigger
+        Sun, 13 Sep 2026 05:33:23 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+        Eddie James <eajames@linux.ibm.com>,
+        Ceclan Dumitru <dumitru.ceclan@analog.com>,
+        Ramona Nechita <ramona.nechita@analog.com>,
+        Ivan Mikhaylov <fr0st61te@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Joe Sandom <joe.g.sandom@gmail.com>,
+        Brian Masney <masneyb@onstation.org>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Rishi Gupta <gupt21@gmail.com>, linux-iio@vger.kernel.org,
+        linux@analog.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH] dt-bindings: iio: Use consistent indentation in the example
+Date: Sun, 13 Sep 2026 14:33:20 +0200
+Message-ID: <20260913123319.100212-2-krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260913-veml6031x00-v10-4-adbc26c30d3d@gmail.com>
-References: <20260913-veml6031x00-v10-0-adbc26c30d3d@gmail.com>
-In-Reply-To: <20260913-veml6031x00-v10-0-adbc26c30d3d@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789301917; l=24576;
- i=javier.carrasco.cruz@gmail.com; s=20260111; h=from:subject:message-id;
- bh=eZrm9VgPDfvj9NnGaY/C3bGlOsNzm2Q/fr2DsEYcE3s=;
- b=Vqhe+v5G6R8Nb72uIY/x7/x3Pa5IL91J/n713RQWTHajvogsN4+CdjD1HZgw/1lcDRbUSJiV0
- WN9VJJTmQD+BJMIkG2dWRNvlOMV4VCMLQ62l7LS/TG9jH407ag6P7TA
-X-Developer-Key: i=javier.carrasco.cruz@gmail.com; a=ed25519;
- pk=Lge8w8xidNSf/INy7JAIbAW+Hezkp3nsBh2OjKL7lLU=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=19300; i=krzysztof.kozlowski@oss.qualcomm.com;
+ h=from:subject; bh=RDT/FtmmxZyyNNUPEXNnhj1vIFsc1L6907cBrb+t5no=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBqppgPWol163h7OVHuR/yRgILnudZ/zEiynQFXD
+ s8EClqvR1uJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCaqaYDwAKCRDBN2bmhouD
+ 11OtD/42uBkCKLNCAQWo2jPY6IWJ3S8O4xpcFgG0A/IjK7BFrAh7DIf5MGL0dQI+i3J0FMfhwF5
+ sgWfsyJi+Q7uRbCDX1nUccvd6JzE7tTWwVbiQVKc3tLFM9oAmIuNwHqV1Wjybfke3FvSMpf0E24
+ 2ZV0BcLO8suOOzfu49MvxdE9dTinedAf0oehBAJFSibkjXeqxb4/94BLSL9b/UomwwDbfnTJxRE
+ bG334Gm6wRJEMqpuEmqACdPquFHXupLnGgbkFBJSpr2rNuBMiseoj/isjEqWI8JIUFgtZk+Fq8q
+ 85LQgb7SH/hndVb3Dj2XoCvxW3C3i0grDeXqGbC2wlOP9eh1teUw627dxJmJ/uf/jjvHFJAS1TD
+ iG83Ssj6QIz516zZZaqvjuWeH1K6SMc3vx/cHh8Dbj0wZMZvMk1WuSq8YuJrT0UOWF628Gb1J59
+ rAoQPPN2XhyjTdz6R9MLTf+u6PgtWHbqx74F4UoO/gsNW1h7Sm2kio40UDwp26AW57/IgU/Hm9Q
+ 8mFOaoxKzSStT6cpm7BCcEOI7DstyaeRu09Lk1DdRl6d5pPt2/hfqlxZ2Lk22vvDHgGpv1gC4vz
+ jtv+2sK45Hf1sCIlfDqDHk6S4J4tRhwDi43lFAjLX1vR1Na6zKk82UusxUiwroc6FLuq2xGZ+fs TG81+OpuyhNUgjw==
+X-Developer-Key: i=krzysztof.kozlowski@oss.qualcomm.com; a=openpgp; fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: 8OvPMvvb51dWtWUOBteE_51fyxbMoZDc
+X-Proofpoint-ORIG-GUID: 8OvPMvvb51dWtWUOBteE_51fyxbMoZDc
+X-Authority-Analysis: v=2.4 cv=NelzRGD4 c=1 sm=1 tr=0 ts=6aa69817 cx=c_pps
+ a=HLyN3IcIa5EE8TELMZ618Q==:117 a=+bKQE0WJfmhK2875HamI0Q==:17
+ a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22 a=EUspDBNiAAAA:8
+ a=VLrvOC1cQGn0Nu_0MpAA:9 a=bTQJ7kPSJx9SKPbeHEYW:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTEzMDE3OCBTYWx0ZWRfX0un0NxLVNG/F
+ WqwhQ9UkDQitpaPGTOKkWXjW9oG7k8xJdKJmZhqdcHByXt8ax8uj3Cq+lCgkFCWv54A76wXX9ap
+ 56se4kBmHXTzignv+o4S42DNAveT2N4=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTEzMDE3OCBTYWx0ZWRfX89Mumyu0y4S4
+ QV7DzgJTc3soghzyX5g2vWbAZv6Og4RIpMq8gSKbf8bd7xt0e7E+Gd6mSbIS3OygfHY5mNTPjlw
+ 2j8RhSogy4nHAUnPd8iPoQUpNu7c4EKAb5b7YXhTOtqE+N0BZEzHUmdvOWpLBNek2nLkJL2QUIu
+ XAmw3i+DG6+0DOG4oYROJT/0ohpzk0NWonHOjXB6f0HzBvCVgWNrhcwdA9/mBIxF2p9svo7DTKO
+ Pjz6dE6BISdSJZPyxZjjdhKPjzKV48CRN37ocYymsrQtJ0RiX4TA6cnuoWCRPHdLEcdFpGrldEg
+ k6N9ZpKZfY0mlE/0jF+rI04xiy58j1oJvEjtDOKAtPEY9qmW7NbgYZoebfjc9BtgXLsB3TQxmyu
+ iCS3L4WZ1UL2jtxQEfvf1nOXHycI23qGhLxEKPt7Sd+hdNZWkrc1wzaH47qFSfbFuTbEd4OYbcS
+ nkSiXx5YoYpdoY2V34A==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-13_04,2026-09-11_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 adultscore=0 impostorscore=0 priorityscore=1501 clxscore=1015
+ spamscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609130178
 
-The device provides a shared interrupt line to notify events and
-data ready.
+Correct indentation in the examples to consistent 2- or 4-spaces
+indentation to fix dt-check-style warnings ("example 0
+[indent-consistent] indent mismatch ...").  Preferred is 4-spaces, but
+re-indenting entire example just for that is too much churn.
 
-Add support for configurations with and without an interrupt line,
-providing events and trigger support when an interrupt line is available.
-
-Reviewed-by: Andy Shevchenko <andy@kernel.org>
-Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 ---
- drivers/iio/light/veml6031x00.c | 604 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 597 insertions(+), 7 deletions(-)
+ .../bindings/iio/adc/adi,ad4080.yaml          | 36 +++++++++----------
+ .../bindings/iio/adc/adi,ad4851.yaml          |  8 ++---
+ .../bindings/iio/adc/adi,ad7173.yaml          |  2 +-
+ .../bindings/iio/adc/adi,ad7768-1.yaml        |  6 ++--
+ .../bindings/iio/adc/adi,ad7779.yaml          | 30 ++++++++--------
+ .../bindings/iio/adc/adi,ade9000.yaml         | 28 +++++++--------
+ .../bindings/iio/adc/maxim,max34408.yaml      | 28 +++++++--------
+ .../bindings/iio/adc/nxp,lpc1850-adc.yaml     |  2 +-
+ .../bindings/iio/adc/ti,ads1298.yaml          | 18 +++++-----
+ .../bindings/iio/light/adux1020.yaml          |  8 ++---
+ .../bindings/iio/light/amstaos,tsl2591.yaml   |  2 +-
+ .../bindings/iio/light/isl29018.yaml          |  6 ++--
+ .../bindings/iio/light/noa1305.yaml           |  4 +--
+ .../bindings/iio/light/stk33xx.yaml           | 10 +++---
+ .../bindings/iio/light/tsl2583.yaml           |  4 +--
+ .../bindings/iio/light/tsl2772.yaml           | 14 ++++----
+ .../bindings/iio/light/vishay,veml6030.yaml   |  8 ++---
+ .../iio/pressure/infineon,dps310.yaml         | 10 +++---
+ .../iio/proximity/vishay,vcnl3020.yaml        |  6 ++--
+ 19 files changed, 115 insertions(+), 115 deletions(-)
 
-diff --git a/drivers/iio/light/veml6031x00.c b/drivers/iio/light/veml6031x00.c
-index 3d5a27a0baae..085a6e2ff717 100644
---- a/drivers/iio/light/veml6031x00.c
-+++ b/drivers/iio/light/veml6031x00.c
-@@ -15,6 +15,7 @@
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/limits.h>
-+#include <linux/lockdep.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
-@@ -25,6 +26,9 @@
- #include <asm/byteorder.h>
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
+index db8467b98e67..354d73aa3e3d 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
+@@ -127,15 +127,15 @@ examples:
+         #size-cells = <0>;
  
- #include <linux/iio/iio.h>
-+#include <linux/iio/events.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger.h>
- #include <linux/iio/iio-gts-helper.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
-@@ -32,16 +36,28 @@
- /* Device registers */
- #define VEML6031X00_REG_CONF0       0x00
- #define VEML6031X00_REG_CONF1       0x01
-+#define VEML6031X00_REG_WH_L        0x04
-+#define VEML6031X00_REG_WH_H        0x05
-+#define VEML6031X00_REG_WL_L        0x06
-+#define VEML6031X00_REG_WL_H        0x07
- #define VEML6031X00_REG_ALS_L       0x10
- #define VEML6031X00_REG_ALS_H       0x11
- #define VEML6031X00_REG_IR_L        0x12
- #define VEML6031X00_REG_IR_H        0x13
- #define VEML6031X00_REG_ID_L        0x14
- #define VEML6031X00_REG_ID_H        0x15
-+#define VEML6031X00_REG_INT         0x17
+         adc@0 {
+-          compatible = "adi,ad4080";
+-          reg = <0>;
+-          spi-max-frequency = <10000000>;
+-          vdd33-supply = <&vdd33>;
+-          vddldo-supply = <&vddldo>;
+-          vrefin-supply = <&vrefin>;
+-          clocks = <&cnv>;
+-          clock-names = "cnv";
+-          io-backends = <&iio_backend>;
++            compatible = "adi,ad4080";
++            reg = <0>;
++            spi-max-frequency = <10000000>;
++            vdd33-supply = <&vdd33>;
++            vddldo-supply = <&vddldo>;
++            vrefin-supply = <&vrefin>;
++            clocks = <&cnv>;
++            clock-names = "cnv";
++            io-backends = <&iio_backend>;
+         };
+     };
+   - |
+@@ -144,15 +144,15 @@ examples:
+         #size-cells = <0>;
  
- /* Bit masks for specific functionality */
- #define VEML6031X00_CONF0_SD        BIT(0)
-+#define VEML6031X00_CONF0_AF_TRIG   BIT(2)
-+#define VEML6031X00_CONF0_AF        BIT(3)
- #define VEML6031X00_CONF1_IR_SD     BIT(7)
-+#define VEML6031X00_INT_TH_H        BIT(1)
-+#define VEML6031X00_INT_TH_L        BIT(2)
-+#define VEML6031X00_INT_DRDY        BIT(3)
-+#define VEML6031X00_INT_MASK \
-+	(VEML6031X00_INT_TH_L | VEML6031X00_INT_TH_H | VEML6031X00_INT_DRDY)
+         adc@0 {
+-          compatible = "adi,ad4880";
+-          reg = <0>, <1>;
+-          spi-max-frequency = <10000000>;
+-          vdd33-supply = <&vdd33>;
+-          vddldo-supply = <&vddldo>;
+-          vrefin-supply = <&vrefin>;
+-          clocks = <&cnv>;
+-          clock-names = "cnv";
+-          io-backends = <&iio_backend_cha>, <&iio_backend_chb>;
++            compatible = "adi,ad4880";
++            reg = <0>, <1>;
++            spi-max-frequency = <10000000>;
++            vdd33-supply = <&vdd33>;
++            vddldo-supply = <&vddldo>;
++            vrefin-supply = <&vrefin>;
++            clocks = <&cnv>;
++            clock-names = "cnv";
++            io-backends = <&iio_backend_cha>, <&iio_backend_chb>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
+index b107322e0ea3..49708ce0b230 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
+@@ -142,13 +142,13 @@ examples:
+             io-backends = <&iio_backend>;
  
- #define VEML6031X00_GAIN_SEL(pd_div4, gain) (((pd_div4) << 2) | (gain))
+             channel@0 {
+-              reg = <0>;
+-              diff-channels = <0 0>;
+-              bipolar;
++                reg = <0>;
++                diff-channels = <0 0>;
++                bipolar;
+             };
  
-@@ -53,8 +69,10 @@ enum veml6031x00_scan {
+             channel@1 {
+-              reg = <1>;
++                reg = <1>;
+             };
+         };
+     };
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+index 62d906e24997..e178007b9a22 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7173.yaml
+@@ -443,7 +443,7 @@ examples:
+       #address-cells = <1>;
+       #size-cells = <0>;
  
- struct veml6031x00_rf {
- 	struct regmap_field *gain;
-+	struct regmap_field *int_en;
- 	struct regmap_field *it;
- 	struct regmap_field *pd_div4;
-+	struct regmap_field *pers;
- };
+-       adc@0 {
++      adc@0 {
+         compatible = "adi,ad4111";
+         reg = <0>;
  
- struct veml6031x00_chip {
-@@ -65,6 +83,7 @@ struct veml6031x00_chip {
- struct veml6031x00_data {
- 	struct iio_gts gts;
- 	struct regmap *regmap;
-+	struct iio_trigger *trig;
- 	struct veml6031x00_rf rf;
- 	const struct veml6031x00_chip *chip;
- 	/*
-@@ -73,6 +92,14 @@ struct veml6031x00_data {
- 	 * consistent set.
- 	 */
- 	struct mutex scale_lock;
-+	/*
-+	 * Serialize access to irq enable/disable by events and trigger
-+	 * (shared line).
-+	 */
-+	struct mutex irq_lock;
-+	unsigned int interrupt_users;
-+	bool ev_en;
-+	bool trig_en;
- };
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+index dfa2d7fa9fb3..7b72d14e104c 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+@@ -238,9 +238,9 @@ examples:
+             };
  
- static const struct iio_itime_sel_mul veml6031x00_it_sel[] = {
-@@ -107,6 +134,17 @@ static const struct iio_gain_sel_pair veml6031x00_gain_sel[] = {
- 	GAIN_SCALE_GAIN(16, VEML6031X00_SEL_GAIN_2_000),
- };
+             regulators {
+-              vcm_reg: vcm-output {
+-                regulator-name = "ad7768-1-vcm";
+-              };
++                vcm_reg: vcm-output {
++                    regulator-name = "ad7768-1-vcm";
++                };
+             };
+         };
+     };
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
+index ba3f7b2bd6cf..37e25a6196e7 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
+@@ -122,14 +122,14 @@ examples:
+         #size-cells = <0>;
  
-+static IIO_CONST_ATTR(in_illuminance_thresh_either_period_available, "1 2 4 8");
-+
-+static struct attribute *veml6031x00_event_attributes[] = {
-+	&iio_const_attr_in_illuminance_thresh_either_period_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group veml6031x00_event_attr_group = {
-+	.attrs = veml6031x00_event_attributes,
-+};
-+
- /*
-  * The shutdown bits (SD and ALS_IR_SD) are in different registers, and both
-  * must be updated when changing the device power state.
-@@ -135,6 +173,23 @@ static void veml6031x00_als_shutdown_action(void *data)
- 		dev_warn(dev, "Failed to shut down device: %d\n", ret);
- }
+         adc@0 {
+-          compatible = "adi,ad7779";
+-          reg = <0>;
+-          start-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
+-          reset-gpios = <&gpio0 93 GPIO_ACTIVE_LOW>;
+-          interrupt-parent = <&intc>;
+-          interrupts = <0 56 IRQ_TYPE_LEVEL_HIGH>;
+-          interrupt-names = "adc_rdy";
+-          clocks = <&adc_clk>;
++            compatible = "adi,ad7779";
++            reg = <0>;
++            start-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
++            reset-gpios = <&gpio0 93 GPIO_ACTIVE_LOW>;
++            interrupt-parent = <&intc>;
++            interrupts = <0 56 IRQ_TYPE_LEVEL_HIGH>;
++            interrupt-names = "adc_rdy";
++            clocks = <&adc_clk>;
+         };
+     };
  
-+static const struct iio_event_spec veml6031x00_event_spec[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-+	}, {
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-+	}, {
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_EITHER,
-+		.mask_separate = BIT(IIO_EV_INFO_PERIOD) |
-+				 BIT(IIO_EV_INFO_ENABLE),
-+	},
-+};
-+
- static const struct iio_chan_spec veml6031x00_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
-@@ -169,9 +224,47 @@ static const struct iio_chan_spec veml6031x00_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(VEML6031X00_SCAN_TIMESTAMP),
- };
+@@ -140,13 +140,13 @@ examples:
+         #size-cells = <0>;
  
-+static const struct iio_chan_spec veml6031x00_channels_irq[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.address = VEML6031X00_REG_ALS_L,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_INT_TIME) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME) |
-+						BIT(IIO_CHAN_INFO_SCALE),
-+		.event_spec = veml6031x00_event_spec,
-+		.num_event_specs = ARRAY_SIZE(veml6031x00_event_spec),
-+		.scan_index = VEML6031X00_SCAN_ALS,
-+		.scan_type = {
-+			.format = IIO_SCAN_FORMAT_UNSIGNED_INT,
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	{
-+		.type = IIO_INTENSITY,
-+		.address = VEML6031X00_REG_IR_L,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_IR,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.scan_index = VEML6031X00_SCAN_IR,
-+		.scan_type = {
-+			.format = IIO_SCAN_FORMAT_UNSIGNED_INT,
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(VEML6031X00_SCAN_TIMESTAMP),
-+};
-+
- static const struct regmap_range veml6031x00_readable_ranges[] = {
- 	regmap_reg_range(VEML6031X00_REG_CONF0, VEML6031X00_REG_CONF1),
-+	regmap_reg_range(VEML6031X00_REG_WH_L, VEML6031X00_REG_WL_H),
- 	regmap_reg_range(VEML6031X00_REG_ALS_L, VEML6031X00_REG_ID_H),
-+	regmap_reg_range(VEML6031X00_REG_INT, VEML6031X00_REG_INT),
- };
+         adc@0 {
+-          compatible = "adi,ad7779";
+-          reg = <0>;
+-          start-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
+-          reset-gpios = <&gpio0 93 GPIO_ACTIVE_LOW>;
+-          clocks = <&adc_clk>;
+-          io-backends = <&iio_backend>;
+-          adi,num-lanes = <4>;
++            compatible = "adi,ad7779";
++            reg = <0>;
++            start-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
++            reset-gpios = <&gpio0 93 GPIO_ACTIVE_LOW>;
++            clocks = <&adc_clk>;
++            io-backends = <&iio_backend>;
++            adi,num-lanes = <4>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+index 1e940e8c7297..0971a29bf372 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+@@ -89,20 +89,20 @@ examples:
+     #include <dt-bindings/interrupt-controller/irq.h>
  
- static const struct regmap_access_table veml6031x00_readable_table = {
-@@ -181,6 +274,7 @@ static const struct regmap_access_table veml6031x00_readable_table = {
+     spi {
+-      #address-cells = <1>;
+-      #size-cells = <0>;
++        #address-cells = <1>;
++        #size-cells = <0>;
  
- static const struct regmap_range veml6031x00_writable_ranges[] = {
- 	regmap_reg_range(VEML6031X00_REG_CONF0, VEML6031X00_REG_CONF1),
-+	regmap_reg_range(VEML6031X00_REG_WH_L, VEML6031X00_REG_WL_H),
- };
+-      adc@0 {
+-          compatible = "adi,ade9000";
+-          reg = <0>;
+-          spi-max-frequency = <7000000>;
++        adc@0 {
++            compatible = "adi,ade9000";
++            reg = <0>;
++            spi-max-frequency = <7000000>;
  
- static const struct regmap_access_table veml6031x00_writable_table = {
-@@ -192,6 +286,7 @@ static const struct regmap_range veml6031x00_volatile_ranges[] = {
- 	/* AF_TRIG in CONF0 is volatile */
- 	regmap_reg_range(VEML6031X00_REG_CONF0, VEML6031X00_REG_CONF0),
- 	regmap_reg_range(VEML6031X00_REG_ALS_L, VEML6031X00_REG_IR_H),
-+	regmap_reg_range(VEML6031X00_REG_INT, VEML6031X00_REG_INT),
- };
+-          #clock-cells = <0>;
+-          reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+-          interrupts = <2 IRQ_TYPE_EDGE_FALLING>, <3 IRQ_TYPE_EDGE_FALLING>, <4 IRQ_TYPE_EDGE_FALLING>;
+-          interrupt-names = "irq0", "irq1", "dready";
+-          interrupt-parent = <&gpio>;
+-          clocks = <&ext_clock_24576khz>;
+-          vdd-supply = <&vdd_reg>;
+-      };
++            #clock-cells = <0>;
++            reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
++            interrupts = <2 IRQ_TYPE_EDGE_FALLING>, <3 IRQ_TYPE_EDGE_FALLING>, <4 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-names = "irq0", "irq1", "dready";
++            interrupt-parent = <&gpio>;
++            clocks = <&ext_clock_24576khz>;
++            vdd-supply = <&vdd_reg>;
++        };
+     };
+diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max34408.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max34408.yaml
+index 4cba856e8d47..bad780d1bbfb 100644
+--- a/Documentation/devicetree/bindings/iio/adc/maxim,max34408.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/maxim,max34408.yaml
+@@ -118,22 +118,22 @@ examples:
+         #size-cells = <0>;
  
- static const struct regmap_access_table veml6031x00_volatile_table = {
-@@ -199,6 +294,15 @@ static const struct regmap_access_table veml6031x00_volatile_table = {
- 	.n_yes_ranges = ARRAY_SIZE(veml6031x00_volatile_ranges),
- };
+         adc@1e {
+-              compatible = "maxim,max34409";
+-              reg = <0x1e>;
+-              powerdown-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+-              powerdown-status-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
++            compatible = "maxim,max34409";
++            reg = <0x1e>;
++            powerdown-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
++            powerdown-status-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
  
-+static const struct regmap_range veml6031x00_precious_ranges[] = {
-+	regmap_reg_range(VEML6031X00_REG_INT, VEML6031X00_REG_INT),
-+};
-+
-+static const struct regmap_access_table veml6031x00_precious_table = {
-+	.yes_ranges = veml6031x00_precious_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(veml6031x00_precious_ranges),
-+};
-+
- static const struct regmap_config veml6031x00_regmap_config = {
- 	.name = "veml6031x00_regmap",
- 	.reg_bits = 8,
-@@ -206,13 +310,20 @@ static const struct regmap_config veml6031x00_regmap_config = {
- 	.rd_table = &veml6031x00_readable_table,
- 	.wr_table = &veml6031x00_writable_table,
- 	.volatile_table = &veml6031x00_volatile_table,
--	.max_register = VEML6031X00_REG_ID_H,
-+	.precious_table = &veml6031x00_precious_table,
-+	.max_register = VEML6031X00_REG_INT,
- 	.cache_type = REGCACHE_MAPLE,
- };
+-              #address-cells = <1>;
+-              #size-cells = <0>;
++            #address-cells = <1>;
++            #size-cells = <0>;
  
-+static const struct reg_field veml6031x00_rf_int_en =
-+	REG_FIELD(VEML6031X00_REG_CONF0, 1, 1);
-+
- static const struct reg_field veml6031x00_rf_it =
- 	REG_FIELD(VEML6031X00_REG_CONF0, 4, 6);
+-              channel@0 {
+-                  reg = <0x0>;
+-                  maxim,rsense-val-micro-ohms = <5000>;
+-              };
++            channel@0 {
++                reg = <0x0>;
++                maxim,rsense-val-micro-ohms = <5000>;
++            };
  
-+static const struct reg_field veml6031x00_rf_pers =
-+	REG_FIELD(VEML6031X00_REG_CONF1, 1, 2);
-+
- static const struct reg_field veml6031x00_rf_gain =
- 	REG_FIELD(VEML6031X00_REG_CONF1, 3, 4);
+-              channel@1 {
+-                  reg = <0x1>;
+-                  maxim,rsense-val-micro-ohms = <10000>;
+-             };
++            channel@1 {
++                reg = <0x1>;
++                maxim,rsense-val-micro-ohms = <10000>;
++            };
+         };
+     };
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
+index 70b38038a080..1e2df3dd15d1 100644
+--- a/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
+@@ -56,6 +56,6 @@ examples:
+             clocks = <&ccu1 CLK_APB3_ADC0>;
+             vref-supply = <&reg_vdda>;
+             resets = <&rgu 40>;
+-         };
++        };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
+index 71f9f9b745cb..afcc683db149 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
+@@ -65,15 +65,15 @@ examples:
+         #size-cells = <0>;
  
-@@ -236,11 +347,21 @@ static int veml6031x00_regfield_init(struct veml6031x00_data *data)
- 		return PTR_ERR(rm_field);
- 	rf->it = rm_field;
+         adc@1 {
+-          reg = <1>;
+-          compatible = "ti,ads1298";
+-          label = "ads1298-1-ecg";
+-          avdd-supply = <&reg_iso_5v_a>;
+-          clocks = <&clk_ads1298>;
+-          interrupt-parent = <&gpio0>;
+-          interrupts = <78 IRQ_TYPE_EDGE_FALLING>;
+-          spi-max-frequency = <20000000>;
+-          spi-cpha;
++            reg = <1>;
++            compatible = "ti,ads1298";
++            label = "ads1298-1-ecg";
++            avdd-supply = <&reg_iso_5v_a>;
++            clocks = <&clk_ads1298>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <78 IRQ_TYPE_EDGE_FALLING>;
++            spi-max-frequency = <20000000>;
++            spi-cpha;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/adux1020.yaml b/Documentation/devicetree/bindings/iio/light/adux1020.yaml
+index d7d14f2f1c20..83abe984a1da 100644
+--- a/Documentation/devicetree/bindings/iio/light/adux1020.yaml
++++ b/Documentation/devicetree/bindings/iio/light/adux1020.yaml
+@@ -40,10 +40,10 @@ examples:
+         #size-cells = <0>;
  
-+	rm_field = devm_regmap_field_alloc(dev, map, veml6031x00_rf_int_en);
-+	if (IS_ERR(rm_field))
-+		return PTR_ERR(rm_field);
-+	rf->int_en = rm_field;
-+
- 	rm_field = devm_regmap_field_alloc(dev, map, veml6031x00_rf_pd_div4);
- 	if (IS_ERR(rm_field))
- 		return PTR_ERR(rm_field);
- 	rf->pd_div4 = rm_field;
+         adux1020@64 {
+-                compatible = "adi,adux1020";
+-                reg = <0x64>;
+-                interrupt-parent = <&msmgpio>;
+-                interrupts = <24 IRQ_TYPE_LEVEL_HIGH>;
++            compatible = "adi,adux1020";
++            reg = <0x64>;
++            interrupt-parent = <&msmgpio>;
++            interrupts = <24 IRQ_TYPE_LEVEL_HIGH>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml b/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml
+index 83b88c6a243d..512625d625a8 100644
+--- a/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml
++++ b/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml
+@@ -45,6 +45,6 @@ examples:
+             compatible = "amstaos,tsl2591";
+             reg = <0x29>;
+             interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
+-       };
++        };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+index 0ea278b07d1c..9524f0a1d195 100644
+--- a/Documentation/devicetree/bindings/iio/light/isl29018.yaml
++++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+@@ -50,9 +50,9 @@ examples:
+         #size-cells = <0>;
  
-+	rm_field = devm_regmap_field_alloc(dev, map, veml6031x00_rf_pers);
-+	if (IS_ERR(rm_field))
-+		return PTR_ERR(rm_field);
-+	rf->pers = rm_field;
-+
- 	return 0;
- }
+         sensor@44 {
+-                compatible = "isil,isl29018";
+-                reg = <0x44>;
+-                interrupts-extended = <&msmgpio 61 IRQ_TYPE_LEVEL_HIGH>;
++            compatible = "isil,isl29018";
++            reg = <0x44>;
++            interrupts-extended = <&msmgpio 61 IRQ_TYPE_LEVEL_HIGH>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/noa1305.yaml b/Documentation/devicetree/bindings/iio/light/noa1305.yaml
+index fe7bfe1adbda..e1c64c151932 100644
+--- a/Documentation/devicetree/bindings/iio/light/noa1305.yaml
++++ b/Documentation/devicetree/bindings/iio/light/noa1305.yaml
+@@ -39,8 +39,8 @@ examples:
+         #size-cells = <0>;
  
-@@ -341,6 +462,31 @@ static int veml6031x00_set_it(struct iio_dev *iio, int val, int val2)
- 	return veml6031x00_write_gain(data, gain_sel);
- }
+         light@39 {
+-                compatible = "onnn,noa1305";
+-                reg = <0x39>;
++            compatible = "onnn,noa1305";
++            reg = <0x39>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+index e4341fdced98..f071edef28cd 100644
+--- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
++++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+@@ -52,11 +52,11 @@ examples:
+         #size-cells = <0>;
  
-+static int veml6031x00_read_period(struct iio_dev *iio, int *val)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	unsigned int regval;
-+	int ret;
-+
-+	ret = regmap_field_read(data->rf.pers, &regval);
-+	if (ret)
-+		return ret;
-+
-+	*val = BIT(regval);
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int veml6031x00_write_period(struct iio_dev *iio, int val)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+
-+	if (val < 0 || val > 8 || !is_power_of_2(val))
-+		return -EINVAL;
-+
-+	return regmap_field_write(data->rf.pers, ilog2(val));
-+}
-+
- static int veml6031x00_set_scale(struct iio_dev *iio, int val, int val2)
- {
- 	struct veml6031x00_data *data = iio_priv(iio);
-@@ -395,6 +541,55 @@ static int veml6031x00_get_scale(struct veml6031x00_data *data, int *val, int *v
- 	return IIO_VAL_INT_PLUS_NANO;
- }
+         stk3310@48 {
+-                compatible = "sensortek,stk3310";
+-                reg = <0x48>;
+-                proximity-near-level = <25>;
+-                interrupt-parent = <&gpio1>;
+-                interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
++            compatible = "sensortek,stk3310";
++            reg = <0x48>;
++            proximity-near-level = <25>;
++            interrupt-parent = <&gpio1>;
++            interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.yaml b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+index 7b92ba8cbb9f..aed4ab710e46 100644
+--- a/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
++++ b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+@@ -41,8 +41,8 @@ examples:
+         #size-cells = <0>;
  
-+static int veml6031x00_read_th(struct iio_dev *iio, enum iio_event_direction dir,
-+			       int *val, int *val2)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	__le16 regval;
-+	int ret;
-+
-+	if (dir == IIO_EV_DIR_RISING)
-+		ret = regmap_bulk_read(data->regmap, VEML6031X00_REG_WH_L,
-+				       &regval, sizeof(regval));
-+	else
-+		ret = regmap_bulk_read(data->regmap, VEML6031X00_REG_WL_L,
-+				       &regval, sizeof(regval));
-+	if (ret)
-+		return ret;
-+
-+	*val = le16_to_cpu(regval);
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int veml6031x00_write_th(struct iio_dev *iio, enum iio_event_direction dir,
-+				int val, int val2)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	struct device *dev = regmap_get_device(data->regmap);
-+	__le16 regval;
-+	int ret;
-+
-+	if (val < 0 || val > U16_MAX || val2)
-+		return -EINVAL;
-+
-+	regval = cpu_to_le16(val);
-+
-+	if (dir == IIO_EV_DIR_RISING) {
-+		ret = regmap_bulk_write(data->regmap, VEML6031X00_REG_WH_L,
-+					&regval, sizeof(regval));
-+		if (ret)
-+			dev_dbg(dev, "Failed to set high threshold %d\n", ret);
-+	} else {
-+		ret = regmap_bulk_write(data->regmap, VEML6031X00_REG_WL_L,
-+					&regval, sizeof(regval));
-+		if (ret)
-+			dev_dbg(dev, "Failed to set low threshold %d\n", ret);
-+	}
-+
-+	return ret;
-+}
-+
- static int veml6031x00_single_read(struct iio_dev *iio, enum iio_chan_type type,
- 				   int *val)
- {
-@@ -509,13 +704,243 @@ static int veml6031x00_write_raw_get_fmt(struct iio_dev *indio_dev,
- 	}
- }
+         light-sensor@29 {
+-                compatible = "amstaos,tsl2581";
+-                reg = <0x29>;
++            compatible = "amstaos,tsl2581";
++            reg = <0x29>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.yaml b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
+index 9921ccaa64a0..38a3c82cb879 100644
+--- a/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
++++ b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
+@@ -74,13 +74,13 @@ examples:
+         #size-cells = <0>;
  
-+static int veml6031x00_set_interrupt(struct veml6031x00_data *data, bool state)
-+	__must_hold(&data->irq_lock)
-+{
-+	int ret;
-+
-+	lockdep_assert_held(&data->irq_lock);
-+
-+	if (state) {
-+		data->interrupt_users++;
-+		if (data->interrupt_users > 1)
-+			return 0;
-+	} else {
-+		if (!data->interrupt_users)
-+			return 0;
-+
-+		data->interrupt_users--;
-+		if (data->interrupt_users > 0)
-+			return 0;
-+	}
-+
-+	ret = regmap_field_write(data->rf.int_en, state);
-+	if (ret) {
-+		if (state)
-+			data->interrupt_users--;
-+		else
-+			data->interrupt_users++;
-+	}
-+
-+	return ret;
-+}
-+
-+static int veml6031x00_read_event_val(struct iio_dev *iio,
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_event_type type,
-+				      enum iio_event_direction dir,
-+				      enum iio_event_info info,
-+				      int *val, int *val2)
-+{
-+	switch (type) {
-+	case IIO_EV_TYPE_THRESH:
-+		if (dir == IIO_EV_DIR_EITHER && info == IIO_EV_INFO_PERIOD)
-+			return veml6031x00_read_period(iio, val);
-+
-+		return veml6031x00_read_th(iio, dir, val, val2);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int veml6031x00_write_event_val(struct iio_dev *iio,
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir,
-+				       enum iio_event_info info,
-+				       int val, int val2)
-+{
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		return veml6031x00_write_th(iio, dir, val, val2);
-+	case IIO_EV_INFO_PERIOD:
-+		return veml6031x00_write_period(iio, val);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int veml6031x00_read_event_config(struct iio_dev *iio,
-+					 const struct iio_chan_spec *chan,
-+					 enum iio_event_type type,
-+					 enum iio_event_direction dir)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+
-+	guard(mutex)(&data->irq_lock);
-+
-+	return data->ev_en;
-+}
-+
-+static int veml6031x00_event_enable(struct veml6031x00_data *data)
-+{
-+	struct device *dev = regmap_get_device(data->regmap);
-+	int ret;
-+
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = veml6031x00_set_interrupt(data, true);
-+	if (ret) {
-+		pm_runtime_put_autosuspend(dev);
-+		return ret;
-+	}
-+
-+	data->ev_en = true;
-+
-+	return 0;
-+}
-+
-+static int veml6031x00_event_disable(struct veml6031x00_data *data)
-+{
-+	struct device *dev = regmap_get_device(data->regmap);
-+	int ret;
-+
-+	ret = veml6031x00_set_interrupt(data, false);
-+	if (ret)
-+		return ret;
-+
-+	data->ev_en = false;
-+	pm_runtime_put_autosuspend(dev);
-+
-+	return 0;
-+}
-+
-+static int veml6031x00_write_event_config(struct iio_dev *iio,
-+					  const struct iio_chan_spec *chan,
-+					  enum iio_event_type type,
-+					  enum iio_event_direction dir,
-+					  bool state)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+
-+	guard(mutex)(&data->irq_lock);
-+
-+	/* avoid multiple increments/decrements from one source */
-+	if (state == data->ev_en)
-+		return 0;
-+
-+	if (state)
-+		return veml6031x00_event_enable(data);
-+
-+	return veml6031x00_event_disable(data);
-+}
-+
-+static void veml6031x00_disable_event_action(void *arg)
-+{
-+	struct veml6031x00_data *data = arg;
-+	struct device *dev = regmap_get_device(data->regmap);
-+	int ret;
-+
-+	guard(mutex)(&data->irq_lock);
-+
-+	if (!data->ev_en)
-+		return;
-+
-+	ret = veml6031x00_set_interrupt(data, false);
-+	if (ret)
-+		dev_err(dev, "Failed to disable events: %d\n", ret);
-+	else
-+		data->ev_en = false;
-+
-+	pm_runtime_put_sync(dev);
-+}
-+
- static const struct iio_info veml6031x00_info = {
- 	.read_raw = veml6031x00_read_raw,
- 	.read_avail = veml6031x00_read_avail,
- 	.write_raw = veml6031x00_write_raw,
- 	.write_raw_get_fmt = veml6031x00_write_raw_get_fmt,
-+	.read_event_value = veml6031x00_read_event_val,
-+	.write_event_value = veml6031x00_write_event_val,
-+	.read_event_config = veml6031x00_read_event_config,
-+	.write_event_config = veml6031x00_write_event_config,
-+	.event_attrs = &veml6031x00_event_attr_group,
- };
+         sensor@39 {
+-                compatible = "amstaos,tsl2772";
+-                reg = <0x39>;
+-                interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
+-                vdd-supply = <&pm8941_l17>;
+-                vddio-supply = <&pm8941_lvs1>;
+-                amstaos,proximity-diodes = <0>;
+-                led-max-microamp = <100000>;
++            compatible = "amstaos,tsl2772";
++            reg = <0x39>;
++            interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
++            vdd-supply = <&pm8941_l17>;
++            vddio-supply = <&pm8941_lvs1>;
++            amstaos,proximity-diodes = <0>;
++            led-max-microamp = <100000>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml b/Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
+index 0041e1db6838..94b3fe5cef0c 100644
+--- a/Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
++++ b/Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
+@@ -101,10 +101,10 @@ examples:
+         #size-cells = <0>;
  
-+static const struct iio_info veml6031x00_info_no_irq = {
-+	.read_raw = veml6031x00_read_raw,
-+	.read_avail = veml6031x00_read_avail,
-+	.write_raw = veml6031x00_write_raw,
-+	.write_raw_get_fmt = veml6031x00_write_raw_get_fmt,
-+};
-+
-+static irqreturn_t veml6031x00_irq(int irq, void *private)
-+{
-+	struct iio_dev *iio = private;
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	struct device *dev = regmap_get_device(data->regmap);
-+	s64 timestamp;
-+	unsigned int regval;
-+	int ret;
-+	bool trigger_poll;
-+
-+	ret = pm_runtime_get_if_active(dev);
-+	if (ret <= 0)
-+		return IRQ_NONE;
-+
-+	scoped_guard(mutex, &data->irq_lock) {
-+		ret = regmap_read(data->regmap, VEML6031X00_REG_INT, &regval);
-+		if (ret) {
-+			dev_dbg(dev, "Failed to read interrupt register %d\n", ret);
-+			pm_runtime_put(dev);
-+			return IRQ_NONE;
-+		}
-+
-+		if (!(regval & VEML6031X00_INT_MASK)) {
-+			pm_runtime_put(dev);
-+			return IRQ_NONE;
-+		}
-+
-+		timestamp = iio_get_time_ns(iio);
-+
-+		if (data->ev_en &&
-+		    (regval & (VEML6031X00_INT_TH_H | VEML6031X00_INT_TH_L))) {
-+			if (regval & VEML6031X00_INT_TH_H)
-+				iio_push_event(iio,
-+					       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-+								    IIO_EV_TYPE_THRESH,
-+								    IIO_EV_DIR_RISING),
-+					       timestamp);
-+			if (regval & VEML6031X00_INT_TH_L)
-+				iio_push_event(iio,
-+					       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-+								    IIO_EV_TYPE_THRESH,
-+								    IIO_EV_DIR_FALLING),
-+					       timestamp);
-+		}
-+
-+		trigger_poll = data->trig_en && (regval & VEML6031X00_INT_DRDY);
-+	}
-+
-+	/*
-+	 * iio_trigger_poll_nested() must be called with irq_lock released:
-+	 * it runs trig_handler() synchronously in this thread, which calls
-+	 * reenable() on completion, and that callback also takes irq_lock.
-+	 * iio_pollfunc_store_time() is not called for our own trigger, so the
-+	 * timestamp is stored here.
-+	 */
-+	if (trigger_poll) {
-+		iio->pollfunc->timestamp = timestamp;
-+		iio_trigger_poll_nested(data->trig);
-+	}
-+
-+	pm_runtime_put(dev);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int veml6031x00_buffer_preenable(struct iio_dev *iio)
- {
- 	struct veml6031x00_data *data = iio_priv(iio);
-@@ -551,11 +976,85 @@ static int veml6031x00_buffer_postdisable(struct iio_dev *iio)
- 	return 0;
- }
+         light-sensor@10 {
+-                compatible = "vishay,veml6030";
+-                reg = <0x10>;
+-                interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
+-                vdd-supply = <&vdd>;
++            compatible = "vishay,veml6030";
++            reg = <0x10>;
++            interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++            vdd-supply = <&vdd>;
+         };
+     };
+ ...
+diff --git a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+index e5d1e6c48939..1912a1b0b4ba 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
++++ b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+@@ -45,10 +45,10 @@ examples:
+         #size-cells = <0>;
  
-+static int __veml6031x00_set_trigger_state(struct veml6031x00_data *data,
-+					   bool state)
-+	__must_hold(&data->irq_lock)
-+{
-+	int ret;
-+
-+	lockdep_assert_held(&data->irq_lock);
-+
-+	ret = veml6031x00_set_interrupt(data, state);
-+	if (ret)
-+		return ret;
-+
-+	/* The AF bit must be updated before updating AF_TRIG */
-+	ret = regmap_assign_bits(data->regmap, VEML6031X00_REG_CONF0,
-+				 VEML6031X00_CONF0_AF, state);
-+	if (ret)
-+		goto disable_trigger;
-+
-+	ret = regmap_assign_bits(data->regmap, VEML6031X00_REG_CONF0,
-+				 VEML6031X00_CONF0_AF_TRIG, state);
-+	if (ret) {
-+		regmap_assign_bits(data->regmap, VEML6031X00_REG_CONF0,
-+				   VEML6031X00_CONF0_AF, false);
-+		goto disable_trigger;
-+	}
-+
-+	data->trig_en = state;
-+
-+	return 0;
-+
-+disable_trigger:
-+	data->trig_en = false;
-+	if (state)
-+		veml6031x00_set_interrupt(data, false);
-+	return ret;
-+}
-+
-+static int veml6031x00_set_trigger_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_dev *iio = iio_trigger_get_drvdata(trig);
-+	struct veml6031x00_data *data = iio_priv(iio);
-+
-+	guard(mutex)(&data->irq_lock);
-+
-+	if (state == data->trig_en)
-+		return 0;
-+
-+	return __veml6031x00_set_trigger_state(data, state);
-+}
-+
- static const struct iio_buffer_setup_ops veml6031x00_buffer_setup_ops = {
- 	.preenable = veml6031x00_buffer_preenable,
- 	.postdisable = veml6031x00_buffer_postdisable,
- };
+         dps: pressure-sensor@76 {
+-          compatible = "infineon,dps310";
+-          reg = <0x76>;
+-          #io-channel-cells = <0>;
+-          vdd-supply = <&vref1>;
+-          vddio-supply = <&vref2>;
++            compatible = "infineon,dps310";
++            reg = <0x76>;
++            #io-channel-cells = <0>;
++            vdd-supply = <&vref1>;
++            vddio-supply = <&vref2>;
+         };
+     };
+diff --git a/Documentation/devicetree/bindings/iio/proximity/vishay,vcnl3020.yaml b/Documentation/devicetree/bindings/iio/proximity/vishay,vcnl3020.yaml
+index fbd3a2e32280..f84aece886ab 100644
+--- a/Documentation/devicetree/bindings/iio/proximity/vishay,vcnl3020.yaml
++++ b/Documentation/devicetree/bindings/iio/proximity/vishay,vcnl3020.yaml
+@@ -57,8 +57,8 @@ examples:
+         #size-cells = <0>;
  
-+static void veml6031x00_trigger_reenable(struct iio_trigger *trig)
-+{
-+	struct iio_dev *iio = iio_trigger_get_drvdata(trig);
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	int ret;
-+
-+	guard(mutex)(&data->irq_lock);
-+
-+	if (!data->trig_en)
-+		return;
-+
-+	ret = regmap_assign_bits(data->regmap, VEML6031X00_REG_CONF0,
-+				 VEML6031X00_CONF0_AF_TRIG, true);
-+	if (ret)
-+		dev_err(regmap_get_device(data->regmap),
-+			"Failed to reenable trigger: %d\n", ret);
-+}
-+
-+static const struct iio_trigger_ops veml6031x00_trigger_ops = {
-+	.validate_device = iio_trigger_validate_own_device,
-+	.set_trigger_state = veml6031x00_set_trigger_state,
-+	.reenable = veml6031x00_trigger_reenable,
-+};
-+
- static irqreturn_t veml6031x00_trig_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -609,6 +1108,84 @@ static int veml6031x00_validate_part_id(struct veml6031x00_data *data)
- 	return 0;
- }
- 
-+static int veml6031x00_hw_init(struct veml6031x00_data *data)
-+{
-+	struct regmap *map = data->regmap;
-+	struct device *dev = regmap_get_device(map);
-+	unsigned int val;
-+	__le16 regval;
-+	int ret;
-+
-+	ret = regmap_assign_bits(data->regmap, VEML6031X00_REG_CONF0,
-+				 VEML6031X00_CONF0_AF | VEML6031X00_CONF0_AF_TRIG, 0);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to disable trigger\n");
-+
-+	regval = 0;
-+	ret = regmap_bulk_write(map, VEML6031X00_REG_WL_L, &regval, sizeof(regval));
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to set low threshold\n");
-+
-+	regval = cpu_to_le16(U16_MAX);
-+	ret = regmap_bulk_write(map, VEML6031X00_REG_WH_L, &regval, sizeof(regval));
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to set high threshold\n");
-+
-+	ret = regmap_field_write(data->rf.int_en, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(map, VEML6031X00_REG_INT, &val);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to clear interrupts\n");
-+
-+	return 0;
-+}
-+
-+static int veml6031x00_setup_trigger(struct iio_dev *iio)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	struct device *dev = regmap_get_device(data->regmap);
-+
-+	data->trig = devm_iio_trigger_alloc(dev, "%s-drdy%d",
-+					    iio->name, iio_device_id(iio));
-+	if (!data->trig)
-+		return -ENOMEM;
-+
-+	data->trig->ops = &veml6031x00_trigger_ops;
-+	iio_trigger_set_drvdata(data->trig, iio);
-+
-+	return devm_iio_trigger_register(dev, data->trig);
-+}
-+
-+static int veml6031x00_init_iiodev(struct i2c_client *i2c, struct iio_dev *iio)
-+{
-+	struct veml6031x00_data *data = iio_priv(iio);
-+	struct device *dev = regmap_get_device(data->regmap);
-+	int ret;
-+
-+	iio->name = data->chip->name;
-+	iio->modes = INDIO_DIRECT_MODE;
-+
-+	if (!i2c->irq) {
-+		iio->channels = veml6031x00_channels;
-+		iio->num_channels = ARRAY_SIZE(veml6031x00_channels);
-+		iio->info = &veml6031x00_info_no_irq;
-+
-+		return 0;
-+	}
-+
-+	iio->channels = veml6031x00_channels_irq;
-+	iio->num_channels = ARRAY_SIZE(veml6031x00_channels_irq);
-+	iio->info = &veml6031x00_info;
-+
-+	ret = veml6031x00_setup_trigger(iio);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(dev, veml6031x00_disable_event_action, data);
-+}
-+
- static int veml6031x00_probe(struct i2c_client *i2c)
- {
- 	struct device *dev = &i2c->dev;
-@@ -631,17 +1208,15 @@ static int veml6031x00_probe(struct i2c_client *i2c)
- 	if (ret)
- 		return ret;
- 
-+	ret = devm_mutex_init(dev, &data->irq_lock);
-+	if (ret)
-+		return ret;
-+
- 	data->regmap = devm_regmap_init_i2c(i2c, &veml6031x00_regmap_config);
- 	if (IS_ERR(data->regmap))
- 		return dev_err_probe(dev, PTR_ERR(data->regmap),
- 				     "Failed to set regmap\n");
- 
--	iio->name = data->chip->name;
--	iio->channels = veml6031x00_channels;
--	iio->num_channels = ARRAY_SIZE(veml6031x00_channels);
--	iio->modes = INDIO_DIRECT_MODE;
--	iio->info = &veml6031x00_info;
--
- 	ret = veml6031x00_regfield_init(data);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to init regfield\n");
-@@ -669,6 +1244,10 @@ static int veml6031x00_probe(struct i2c_client *i2c)
- 	if (ret)
- 		return ret;
- 
-+	ret = veml6031x00_hw_init(data);
-+	if (ret)
-+		return ret;
-+
- 	/* Max resolution = 6.9632 lx/cnt for gain = 0.125 and IT = 3.125ms */
- 	ret = devm_iio_init_iio_gts(dev, 6, 963200000,
- 				    veml6031x00_gain_sel,
-@@ -679,6 +1258,10 @@ static int veml6031x00_probe(struct i2c_client *i2c)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to init IIO GTS\n");
- 
-+	ret = veml6031x00_init_iiodev(i2c, iio);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to initialize IIO device\n");
-+
- 	ret = devm_iio_triggered_buffer_setup(dev, iio,
- 					      iio_pollfunc_store_time,
- 					      veml6031x00_trig_handler,
-@@ -686,6 +1269,13 @@ static int veml6031x00_probe(struct i2c_client *i2c)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to register triggered buffer\n");
- 
-+	if (i2c->irq) {
-+		ret = devm_request_threaded_irq(dev, i2c->irq, NULL, veml6031x00_irq,
-+						IRQF_ONESHOT, iio->name, iio);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Failed to request IRQ\n");
-+	}
-+
- 	ret = devm_iio_device_register(dev, iio);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to register IIO device\n");
-
+         proximity@13 {
+-              compatible = "vishay,vcnl3020";
+-              reg = <0x13>;
+-              vishay,led-current-microamp = <200000>;
++            compatible = "vishay,vcnl3020";
++            reg = <0x13>;
++            vishay,led-current-microamp = <200000>;
+         };
+     };
 -- 
-2.43.0
+2.53.0
 
