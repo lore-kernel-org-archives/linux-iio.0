@@ -1,47 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27310334C39;
-	Sun, 13 Sep 2026 23:32:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11365369D67;
+	Sun, 13 Sep 2026 23:38:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789342349; cv=none; b=YLCrsK++2Ky69jEG6eVCCcpF8qciKzl+7pLDAjP07GcPJlLnvQG86AdSnGT2jPM4Z5JQbbgrTqCsLwLVrkvusnZTSO9IxYNf80SwLJbJKqEboCOi/nzkx4CXw5auzbavQLIggQoNJpZ/vOMh0hQWdBB5SSyMfjWIqSbRedy0Ljc=
+	t=1789342704; cv=none; b=Noz+k8Jwuqy8UA/MrsbnOEBuyVN9X70Zo49Wi437njUnI34/Q4i3SLIuSa87UBfnZjHCOzxDCfqX5OKFZJgOkO8T72PAn93xGQH+I3B4loygHPRjhk3afIK6Don4HTS8H5A9AcECUjzcRw2OJUEI2Wc8l7+sHUL3su5LevbQRLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789342349; c=relaxed/simple;
-	bh=OpAyLekwhiW4ygtDd4G9l/WBcYi1nDRlWCITe8lKiJ0=;
+	s=arc-20240116; t=1789342704; c=relaxed/simple;
+	bh=inGaolwHloMOR3u6P73LuW5iEIIePFs7XujOh9tfzH0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EGT+qtUgQEmhFaxlBSb7l/bs2FKBKU/zLzsA2IoCrMipV7M9Q8lLs81KEBKD276Hs4ddax1LUncwWk0NWYdrYAaKHG4EPc5nmgZxD9bryRlZl6bAJM/M7YMoSMkierBq7RKDks/CsLl8JUZKXd81tTq0NcY2RyosEc4gxXZ2cZY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yq/+Esnj; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=N6IVeip2Z2lNy+o/dqFFnQ+7mSIXu3+iUv5KWmYkjYGVtWkTIwSsv1eawM9bw855KqoUbjR016U61N0/Fh54fI6esmG7glP6iJhTC+3yE1uGB73Bcn/C6f4L+Ob5i2gIIiyIfb9nTQYMy6vlAI3EikeZcyM8M3H+LAVhVg6qUeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oeRCA2CK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yq/+Esnj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D9A1F000FF;
-	Sun, 13 Sep 2026 23:32:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oeRCA2CK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC161F000FF;
+	Sun, 13 Sep 2026 23:38:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789342347;
-	bh=Ys5iACeya2xI8St6gjTY2DbZlM+LA1KDlI0TMxzHFmg=;
+	s=k20260515; t=1789342702;
+	bh=VuBPIQk1iccU5ziTydcwNOhmuNqxIHNKYNlCSb8p8Xs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Yq/+EsnjsWqFqit4NdfM94Nc6t4XS9M2Go6waunVuAgXzY/CZJEWgVMBQr69jRp+L
-	 yZZojL3KpgJ3DkJYTa3Ve9Rx3f/GQ03jcsqyKdEcAJ5u0w9P+WQp6wb2+VW3JbOf9y
-	 x1vdTuYWzkXsp7MvqjKS7ghmstzBlxrAkfiDiK6B+tNwEF2N+hqlXjBnueg/TzXdjr
-	 D3n8wU3zye+0RdrYQcool22rsUIp8sQTMER5cJ6YRhdazGO1pHJt5w1+76BqPN37zj
-	 tz9HMOddiaNTO2SOMdjUtijyTPKU6tflsV9hvqQOvopAAFiMCO2aV+qnxe43digntf
-	 2aqEKYDExiWDQ==
-Date: Mon, 14 Sep 2026 00:32:21 +0100
+	b=oeRCA2CKok6Dk5UPpDvauQJIJvlAXSxXOvzE9HXHgL7lGo/bF7oDNpXPmKD/KAW64
+	 btWMxe5oPDawAsfiyDulh96nm+OYlPNeiumxQpWr1s2eE86qY4LJbTAImTD0/bIOu3
+	 1Mz1xlETDbfvsCn8vg/THdgIA+z4eYay4g0ZZyxxGMJhjjU8d+cuOl0l2ylyGexgdk
+	 PB7ePHjJ8FTKLDH7NFP0XdP6L1323654uotp3uKA44tDoSkHXn6fT4tQvSOeXbJ/4X
+	 A1ERw+/+mpHsmUQk0g+Nqee3FDvIVunXTyqn0oddz3nb6CSiETDoVmVKDljMaE+vBc
+	 Fhyw+/aQ0+mZA==
+Date: Mon, 14 Sep 2026 00:38:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andrei Stancovici <andrei.stancovici@analog.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
- Beguin <liambeguin@gmail.com>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/3] dt-bindings: iio: adc: lltc,ltc2497: add LTC2499
- to title
-Message-ID: <20260914003221.746d6f2b@jic23-hlaptop>
-In-Reply-To: <20260909082755.366269-2-andrei.stancovici@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Andrei Stancovici <andrei.stancovici@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] iio: adc: ltc2497: add 2x conversion speed mode
+Message-ID: <20260914003817.760214ab@jic23-hlaptop>
+In-Reply-To: <aqFniZF6CrYXnPjz@ashevche-desk.local>
 References: <20260909082755.366269-1-andrei.stancovici@analog.com>
-	<20260909082755.366269-2-andrei.stancovici@analog.com>
+	<20260909082755.366269-4-andrei.stancovici@analog.com>
+	<aqFniZF6CrYXnPjz@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,40 +52,41 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 9 Sep 2026 11:27:50 +0300
-Andrei Stancovici <andrei.stancovici@analog.com> wrote:
+On Wed, 9 Sep 2026 17:04:57 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> The LTC2499 is already listed in the compatible enum and covered by the
-> description, but was missing from the binding title. Add it so the title
-> matches the set of devices the schema documents. No schema or property
-> change is needed.
+> On Wed, Sep 09, 2026 at 11:27:52AM +0300, Andrei Stancovici wrote:
+> > The LTC2499 can convert at twice the output rate by disabling the offset
+> > auto-calibration.  Expose it through sampling_frequency and
+> > sampling_frequency_available on the voltage channels.  The part ignores
+> > the setting while measuring temperature, so the temperature channel does
+> > not carry the attribute.
+> > 
+> > The wait before a result is read is keyed on the conversion currently in
+> > flight, whose duration is fixed by the mode that was active when it
+> > started rather than by the mode just selected.  Otherwise the first read
+> > after a 1x -> 2x switch can reprogram the part while a 1x conversion is
+> > still running, which the part NACKs.  
 > 
-> Acked-by: Rob Herring (Arm) <robh@kernel.org>
-> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
-> ---
-> Changes in v4:
-> - No change.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
->  Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> ...
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> index c884b6e03767..8aa1ba0a8728 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/iio/adc/lltc,ltc2497.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Linear Technology / Analog Devices LTC2497 and LTC2309 ADC
-> +title: Linear Technology / Analog Devices LTC2497, LTC2499 and LTC2309 ADC
+> > +LTC2497_DEFINE_CHANNELS(ltc2497core_channel_samp_freq,
+> > +			BIT(IIO_CHAN_INFO_SAMP_FREQ));  
+> 
+> I believe having this on a single line is fine.
+> 
+Tweaked.
 
-Sashiko correctly points out the LTC2305 is also supported but not in the title.
-Can we give up on this and just make it "LTC2497 and similar" like we tend
-to always end up doing in bindings with a large number of supported parts.
-Keep the full list for later in the doc.
+I've taken the somewhat (currently) unusual step of picking up 2 and 3, but
+not patch 1.  In the past I've always been one to pick up whatever is ready
+but since that started confusing sashiko I stopped doing so.
+Here it doesn't matter as patch 1 is independent anyway!
 
->  
->  maintainers:
->    - Michael Hennerich <michael.hennerich@analog.com>
+So patches 2 and 3 are on the testing branch of iio.git.
+
+Thanks,
+
+Jonathan
 
