@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46B433BED30;
-	Sun, 13 Sep 2026 22:24:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A6003DCD9B;
+	Sun, 13 Sep 2026 22:33:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789338290; cv=none; b=qcehWog7MWdne3QpphG2/i8XjZr8qwVTr59oG2TjLkz0RL5lZYvZHFsl9naDgWAq9RNqJGvi2h9r+UX+IFGPRceuoK5QOdTjCs7jeYTSzNCdxTn2oDmlvOTF/7bVUCpcO4IDGok09WnWTFs/1M59TmOz+Fo0/Gfjil6v+LK4bFg=
+	t=1789338828; cv=none; b=rzG4BhQGSm16C6E+FLaYPHR08AmLs+xcsFVHMci7wLNHD8gwA9tnfDGeE5Hs7Acnx9OnpXrTLsEHghdb2GNlGlVVuorc15CoHwbYyO7RcpfZDNIl///pcHkQL1i1STanteRm1kN59uVNkfQX41GONcmQ9J2lPMcAD14ezBqZPeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789338290; c=relaxed/simple;
-	bh=dI+f8O9QJj9/7Win8a1o39BX41OjU3pzeerrRwwfN3A=;
+	s=arc-20240116; t=1789338828; c=relaxed/simple;
+	bh=2gLF7Gnw1rArqxOw+bKzbeaqbXGUu2ietjorQ6xj3no=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aKqImUNgXfeeomdIjb1CIX0yekSZPniaDZKYiNKRZnkUUq6J32eWMnX+Lj73kamvU8Vwn0BZSnbRl/UXr/5JKCnTW1dBJFomqYUL9/h05sX1L5ZCiYe2eaZEQpFlcb7HBLBkUgDmm6ra3vCUaTXP2ZhFX2nRKzTnC9tiKrw313M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WV+wix6y; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=W9ohvvBYOaFjd1r4nbvB3XAWsyTMr2DffSqQZX7Zp7XDH+GJh4hONUOZPJXvFKCx3HeXeNAx7OVjdMF6ni6R9fcC/7tyYRfzSL50K8sajDaK3sZJTfXgHy0pd5Rf+2dNe4PuMaFgBWLSQRbkzL84LugsLQWoa4BbS/u23AZbbTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l5icPaet; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WV+wix6y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421261F000FF;
-	Sun, 13 Sep 2026 22:24:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l5icPaet"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 138B41F000FF;
+	Sun, 13 Sep 2026 22:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789338287;
-	bh=dI+f8O9QJj9/7Win8a1o39BX41OjU3pzeerrRwwfN3A=;
+	s=k20260515; t=1789338827;
+	bh=2gLF7Gnw1rArqxOw+bKzbeaqbXGUu2ietjorQ6xj3no=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WV+wix6ymwJdIc7z2GCEV37buhwJoWDa4+AEQ1ypSF82SQZRw9nmcPFWUF0cJaP4b
-	 zijRiY5BtkMpKUCKqTrjn1ArHbOMWtiuAHonNZQUUQtilPi79hlwZ8ToWt+FbRtZcg
-	 tErA7DAWuaa1ay2JMKx74sOoc5a7XUonx1tW8QxMgJPihFknVl737SCq44o+vxxhWd
-	 QqXxTdr0hGjrb+3kMky1q24r5JsRNaSbUHHCSAYzdvo7RO7ruzaly0QjX9DFbTaQnZ
-	 ysqpG1XqO+4TUiG6xXUiYTmgjmydGFQ0S99tOUd5MeFI2pAmu/s3xJCmVQ0YXdg4l1
-	 AuF9EdlnaVpww==
-Date: Sun, 13 Sep 2026 23:24:40 +0100
+	b=l5icPaetqwOTMda5Rg9Ym+V8tts1owdI26bp6wKiz0V/JACnj5crrJNdB2C/e0NiO
+	 ZDvQTVYDzmm+br9OLaxnCGBBPi+2vv9drig77Iq6C4HbY2uRULMnc4ZnpOLpc+uXwl
+	 d17rbpvJHqugZjVwpnvs84gwEAw/2w7FX0XIO8xn+PCv4pIqqC9OrB0na+OZvC5Z23
+	 t1Rf4yl1BlmEcMJmUBjBXmlA7hm+3D0qs/8kaeB9vxMPbYkaVTcaucNJ4NhgGIZNbw
+	 5MM5nePJUBdso7hP3wfpR+9OnKm2Qz9Y02MJIqOgbTB+a/Y4WAqeTAQlpy0yhF7zFi
+	 J7RJ27XESnv+w==
+Date: Sun, 13 Sep 2026 23:33:42 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
@@ -35,11 +35,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v9 0/4] iio: light: add support for veml6031x00 ALS
+Subject: Re: [PATCH v10 0/4] iio: light: add support for veml6031x00 ALS
  series
-Message-ID: <20260913232440.42fc1e7d@jic23-hlaptop>
-In-Reply-To: <20260907-veml6031x00-v9-0-8c93a6c66a4d@gmail.com>
-References: <20260907-veml6031x00-v9-0-8c93a6c66a4d@gmail.com>
+Message-ID: <20260913233342.2dbde277@jic23-hlaptop>
+In-Reply-To: <20260913-veml6031x00-v10-0-adbc26c30d3d@gmail.com>
+References: <20260913-veml6031x00-v10-0-adbc26c30d3d@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,19 +50,19 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 07 Sep 2026 13:48:38 +0200
+On Sun, 13 Sep 2026 14:18:20 +0200
 Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
 
 > These ambient light sensors with I2C interface provide two light
 > channels (ALS and IR), high/low threshold alarms with configurable
 > persistence, and a data ready signal.
-Small process thing.
 
-If you are going to send a new version of a series when there
-has been nothing on the list yet, please send a quick reply
-to make sure no one focuses on wrong version.
+Nice clean driver.
 
-b4 review tui caught this for me when it asked if I really wanted
-to look at an old version!
+Applied to the testing branch of iio.git to let the bots poke
+at it a little before I push it to a tree I'd rather not rebase.
+
+Thanks
 
 Jonathan
+
