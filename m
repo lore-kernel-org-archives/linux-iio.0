@@ -1,506 +1,359 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B98BE253B58;
-	Mon, 14 Sep 2026 02:59:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A111331EA0;
+	Mon, 14 Sep 2026 03:02:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789354793; cv=none; b=VQAWuCCDwkgwYNGgDHd5/0hWCMAKuZpGOvFw3K8eUN0Bhw6teYyVxo3hDUIRBAMpj3WOPQP4BHxzR66VLgvQnMvM0mcDIRgUs5R2A2OQUBM5/7V3gjdVDpG3EYWf4tH7y4gm+oTtuGaDGXDZrJnZ+gdye8KwD3pS54KmFDGerBA=
+	t=1789354969; cv=none; b=O/VEnEO55ccaFLMNzA9UQ8Z+OpE/nppGU4i62xmnC06dAyxZDbTRvbd/2UBA/xQi00SIBgiaoG/IO+LlHsY+gghpWh4ZxhbcnmTJaPFiHly90Tp6OGDALG77TCz5n5P2nCoD737Ifc3q2kC55jEfEbanvmNZ0/6l4Eh66CWAoOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789354793; c=relaxed/simple;
-	bh=j/vuMr+kvW4xhdZvDUHtBqCkmo5710zjkxCNn7/bAQ8=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=j5yqG58qtKEmrilIkSWWVbzPdENZaYFdECfiZJLBl+U1eIeLGqpl1oFPtxnod+SS2ji0kcJ5ZFHvObLenPTq/6LJT+aZxUCNvyMoEoI68ZlLkivZT+9PdxCiLvEQyZPB03i2W3eqPK4fa5RofcgammCjXOsnjq4iLC/6dYCira0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CQnLsYDr; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789354969; c=relaxed/simple;
+	bh=NM9nDS6V1Ttt3+dzjhGTktluJ5Mx9bbeWCAE1KtIFPY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NGaQT2IROu0KXwLQQrA8SMUhQ6KCe72K+Xl0/enXFwBsA9Bj66otT3TQ1OUKeY+SW2o/hPkoyZ/JRKYGhrA/umKI7AyXqfnxVxEueIXMnWbs6WmfrYGeFF3rSevrv7kaPbPHucpT0IvFv2+7JeBkU2rcxTnRwUcpf4O3H50+tdA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=nyxHER3N; arc=none smtp.client-ip=117.135.210.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CQnLsYDr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14CE91F000FF;
-	Mon, 14 Sep 2026 02:59:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789354791;
-	bh=ku0UdGsBA5pF/q1icn12RlKu3J/RM6ugjPnqqjVoc7g=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=CQnLsYDrTqfX2NgWh6AtyN677oW42Vf/oMezcW3BQ4Bo2Lz/6QHb9ek97MVCX3l1d
-	 H5tJg4O33TPiacwhrNnkgZR9mLg7Fj0oxhmYufSmUi+Ifzaf37z57hH8gDvoBzzGIP
-	 AIoXopOvCKHlb+Gqlgeek1xKV5Z1LibZsFMWrVzZL+FuYEDH7XL1NeEWbp7y63T0aI
-	 rTFr+khQwqxGHvcxy73Gwkj+sekTv+L72chWJ0XP4qpiHLI0XGJWcuNoc7CNeI6RID
-	 YTRODUfWuph6F+Yzl4YLFjGE6Fhz91cqxe7ApVF9dnriaLFzqyjp9va4TzYDAMbnL3
-	 psCULE5cVKfLg==
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="nyxHER3N"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=hW
+	f0AuAtSRuBMY7bBHxCY5GcoCoq852qX/DCCpTd/6w=; b=nyxHER3NIN1w/lY0dt
+	V7LOxAHZIxRONPY1KHGrNMuHP+5f9Mx3ZdrrfdHF68CL9XHwY59bHtzQi4XkduzU
+	aEMvXikpYEKYaorB2hY83dZg1MtF/XT0n3rAo/7kREfKfHxQBnuFL12JQjH2cfUJ
+	I+B3OJ9nfymsTntLrjx3ZNfCI=
+Received: from chaosheng-ASUS-TUF-Gaming-F16-FX607JV-FX607JV.lan (unknown [])
+	by gzsmtp1 (Coremail) with SMTP id PCgvCgBnMo7CY6dqCnIwPA--.36790S2;
+	Mon, 14 Sep 2026 11:02:27 +0800 (CST)
+From: Quchaosheng <quchaosheng000406@163.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	quchaosheng000406@163.com
+Subject: [PATCH] dt-bindings: iio: adc: xlnx,xadc: Convert to DT schema
+Date: Mon, 14 Sep 2026 11:02:26 +0800
+Message-ID: <20260914030226.437638-1-quchaosheng000406@163.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v11 2/2] iio: health: add MAX86150 ECG and PPG
- biosensor driver
-From: Jonathan Cameron <jic23@kernel.org>
-To: Md Shofiqul Islam <shofiqtest@gmail.com>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, jic23@kernel.org, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, robh@kernel.org, 
- krzk+dt@kernel.org, conor+dt@kernel.org, andriy.shevchenko@intel.com, 
- u.kleine-koenig@baylibre.com, joshua.crofts1@gmail.com, nuno.sa@analog.com, 
- Michael.Hennerich@analog.com, dlechner@baylibre.com, linux@analog.com, 
- linux-kernel@vger.kernel.org
-In-Reply-To: <20260913104658.230422-3-shofiqtest@gmail.com>
-References: <20260913104658.230422-1-shofiqtest@gmail.com>
- <20260913104658.230422-3-shofiqtest@gmail.com>
-Date: Mon, 14 Sep 2026 03:59:34 +0100
-Message-Id: <178935477415.496856.13726907933383299203.b4-review@b4>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=14617;
- i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=j/vuMr+kvW4xhdZvDUHtBqCkmo5710zjkxCNn7/bAQ8=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqp2MYSrKAPtxnXSeUceR/usmshBcCLsnXa+xq2
- fXdRx2LuJGJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCaqdjGBEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiEq+D/917FaSh76Y8gfMsSNw9zztH0uyRq3xcvSsqG0GKBe1FNe
- 1vYbbId7dK3jC9wVqbMYTKM6r5eOg0rG/+oGUHQ9bP4mJSt/HnKM/S3caICqre9FOMKyFQvJIUO
- U+RRS42B6k5VLbVGn6O1rhSHsrEd12dwRKd/p3WTMdZv3G5Lqh0GIJXOmcasq21/vx86a+YCqN0
- BYoJn0T401s4jxkytS40aYkGPqrqKGM8IUGxlGShfPdql9/0Tqq/c23Du/OcJUI5JF2XJJyYj4l
- 3GXLvk7VLJu1NUCUCOkbRNfwB1sCMvKKdHMkjUFLcgboaaUaJq15Bg00+C2SpEymAO5U8alTQsS
- slPxgHpISBWDooyG9aCJf9vKjLgiqWtAWRHkTriQrlESb1RAsEWX1Ck8HblmVglVdPGfjMSTaB3
- bfdc2D37hSINzGjoTgzchtAyC4p5Bfwjcg+oP7qUnbCpf8slx/nsVplW0JJhZn80/dpw1Y4n+2o
- WBrDGg6Lar6l2sF2Mkg43ZmvQhF08NXcJmmpIAgJ2GoIDKXxvLcZInWflS/dPPdHP4neF4hYfa1
- FHqYUJkyaqHr7e4w07kl/ekwv/bTdhgswF+e88bH/wFvggSsBdFK+k0xzNcg3Syvw3teytWUGR9
- WxORz0kRWGNpNxDT6cOGT66kn3YlLqd5RF+nZxg==
-X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
- fpr=6E2966B387840652912681B154853499C4F41688
+X-CM-TRANSID:PCgvCgBnMo7CY6dqCnIwPA--.36790S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxtw4xJF4xXry3KFy7trWDArb_yoWfCr18pF
+	ZxCa9xtrs5tF13Wayftw18Ja4jy3Z5AF1rCFyqv34UCan8GFyjvry3Ka4SvF1j9rWIya47
+	Xr1Yka429w1Duw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0JU1T5QUUUUU=
+X-CM-SenderInfo: xtxfxtprvkv0bjqqikiqw6il2tof0z/xtbC5ASOBGqnY8QamQAA3D
 
-> Add a new IIO driver for the Analog Devices MAX86150 integrated
-> biosensor, which combines two PPG optical channels (Red/IR LED) and
-> one ECG biopotential channel behind a 32-entry hardware FIFO in a
-> single I2C device.
-> 
-> The driver registers a kfifo buffer directly, matching max30102.c in
-> this directory, rather than using the trigger framework: enabling the
-> buffer powers the chip up and arms the FIFO almost-full interrupt, and
-> a single threaded IRQ handler drains the FIFO and pushes samples
-> straight to the buffer. A part-ID check on probe rejects mismatched
-> hardware before chip_init() writes any configuration blind.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Convert the Xilinx XADC and System Monitor binding from free-form text
+to DT schema.
 
-These are only appropriate markings in a patch that is doing just
-what was suggested, don't apply them to a whole driver.
+The xlnx,channels container and its channel child nodes are described as
+a nested object, so that the external channels are validated as well.
+The original text did not state that xlnx,bipolar is a boolean, but the
+driver reads it with fwnode_property_read_bool(), so it is documented as
+such.
 
-> Assisted-by: Claude:claude-sonnet-5
-> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+The driver obtains the interrupt with platform_get_irq_optional(), so
+interrupts is not listed as required even though the original text
+described it that way.
 
-End of day with me, so this isn't the most thorough of reviews, but
-a few things inline to sort out.
+The binding is placed in a file named after the compatible prefix, as it
+covers both the 7 Series XADC and the UltraScale System Monitor.
 
-Thanks,
+Signed-off-by: Quchaosheng <quchaosheng000406@163.com>
+---
+ .../bindings/iio/adc/xilinx-xadc.txt          | 141 ------------------
+ .../bindings/iio/adc/xlnx,xadc.yaml           | 123 +++++++++++++++
+ 2 files changed, 123 insertions(+), 141 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
 
-Jonathan
-
-
-> diff --git a/drivers/iio/health/max86150.c b/drivers/iio/health/max86150.c
-> new file mode 100644
-> index 000000000000..9829edaed32b
-> --- /dev/null
-> +++ b/drivers/iio/health/max86150.c
-> @@ -0,0 +1,658 @@
-
-
-
-> +/**
-> + * struct max86150_data - driver private state
-> + * @regmap:           register map for this device
-> + * @sample_period_ns: sample period in nanoseconds (set from configured rate)
-> + * @fifo_raw:         scratch buffer for regmap_noinc_read() FIFO bursts; kept
-> + *                    in struct (heap) rather than on the stack, since stack
-> + *                    memory isn't guaranteed DMA-safe (e.g. CONFIG_VMAP_STACK)
-> + *                    and some I2C host controllers DMA the read buffer
-> + * @scan:             IIO push buffer; channels[] packed per active_scan_mask
-> + */
-> +struct max86150_data {
-> +	struct regmap		*regmap;
-> +	u32			 sample_period_ns;
-> +	u8			 fifo_raw[MAX86150_SAMPLE_BYTES];
-> +	IIO_DECLARE_DMA_BUFFER_WITH_TS(s32, scan, MAX86150_NUM_SLOTS);
-
-Why does this sneed to be dma safe?
-
-> +};
-
-
-> +static bool max86150_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case MAX86150_REG_INT_STATUS1:
-> +	case MAX86150_REG_INT_STATUS2:
-> +	case MAX86150_REG_FIFO_WR_PTR:
-> +	case MAX86150_REG_OVF_COUNTER:
-> +	case MAX86150_REG_FIFO_RD_PTR:
-> +	case MAX86150_REG_FIFO_DATA:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-
-
-> +static int max86150_read_one_sample(struct max86150_data *data,
-> +				    u32 *ppg_red, u32 *ppg_ir, s32 *ecg)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_noinc_read(data->regmap, MAX86150_REG_FIFO_DATA,
-> +				data->fifo_raw, MAX86150_SAMPLE_BYTES);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*ppg_red = get_unaligned_be24(&data->fifo_raw[0]) & GENMASK(18, 0);
-> +	*ppg_ir  = get_unaligned_be24(&data->fifo_raw[3]) & GENMASK(18, 0);
-> +	*ecg = sign_extend32(get_unaligned_be24(&data->fifo_raw[6]) & GENMASK(17, 0), 17);
-
-It helps readability a little to have a blank line before simple
-sucess returns like this one.
-
-> +	return 0;
-> +}
-> +
-> +/* Does the actual work for max86150_do_read_raw(); see that function for the shutdown wrapping. */
-> +static int max86150_read_raw_locked(struct max86150_data *data,
-
-What is locked?  Direct mode is claimed and under the hood that includes
-a lock but that is an implementation detail.
-I was expecting to see a local lock in the caller but there isn't one.
-
-> +				    u32 *ppg_red, u32 *ppg_ir, s32 *ecg)
-> +{
-There are 3 layers of wrapping going on here. That seems excesive.
-
-> +	unsigned int ppg_rdy_status;
-> +	int ret;
-> +
-> +	ret = regmap_clear_bits(data->regmap, MAX86150_REG_SYS_CTRL,
-> +				MAX86150_SYS_SHDN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_WR_PTR, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_OVF_COUNTER, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_RD_PTR, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * Clear stale PPG_RDY from a previous session; reading
-> +	 * INT_STATUS1 de-asserts any pending flags so the poll
-> +	 * below waits for a genuinely new sample.
-> +	 */
-> +	ret = regmap_read(data->regmap, MAX86150_REG_INT_STATUS1,
-> +			  &ppg_rdy_status);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * Poll PPG_RDY rather than sleeping a fixed interval — the
-> +	 * internal oscillator may start slower than nominal.  25 ms
-> +	 * covers more than two 100 Hz sample periods.
-> +	 */
-> +	ret = regmap_read_poll_timeout(data->regmap,
-> +				       MAX86150_REG_INT_STATUS1,
-> +				       ppg_rdy_status,
-> +				       ppg_rdy_status & MAX86150_INT_PPG_RDY,
-> +				       USEC_PER_MSEC, 25 * USEC_PER_MSEC);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return max86150_read_one_sample(data, ppg_red, ppg_ir, ecg);
-> +}
-> + *
-> + * Take the device out of shutdown, reset the FIFO pointers, wait for the
-> + * first PPG sample, and read it back.  Always returns the device to
-> + * shutdown before returning, whether or not the read succeeded.
-> + */
-This comment isn't needed as the code is fairly obvious.
-> + static int max86150_do_read_raw(struct max86150_data *data,
-> +				u32 *ppg_red, u32 *ppg_ir, s32 *ecg)
-> +{
-> +	int ret;
-> +
-> +	ret = max86150_read_raw_locked(data, ppg_red, ppg_ir, ecg);
-> +	regmap_set_bits(data->regmap, MAX86150_REG_SYS_CTRL, MAX86150_SYS_SHDN);
-> +	return ret;
-
-We've ended up with too many layers of wrappers. Just have this
-code in the max86150_read_raw() instead of having this one.
-
-> +}
-> +
-
-
-> +
-> +static int max86150_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	struct max86150_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_INT_ENABLE1, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_set_bits(data->regmap, MAX86150_REG_SYS_CTRL,
-> +			       MAX86150_SYS_SHDN);
-
-Sashiko calls out that there maybe a race between an ongoing threaded
-handler and this. Given the threaded hander requires use of
-active_scan_masks that is a race that should be closed. The suggestion
-to disable irqs is a bad one. Instead we may need to synchronize irqs
-after this code has ensured we should see no new ones.
-That should close the race I think
-
-> +}
-
-
-
-> +/*
-> + * Threaded IRQ handler (primary=NULL): clears INT_STATUS1 to de-assert the
-> + * line, then drains every sample currently in the FIFO and pushes each one
-> + * straight to the buffer.  No trigger indirection -- enabling/disabling the
-> + * buffer is what arms/disarms the interrupt, via
-> + * max86150_buffer_postenable()/_predisable() above.  Matches the direct
-> + * kfifo pattern max30102.c uses in this same directory.
-
-What does this comment print us?  Very little that I can see that
-we can't see from the code.  It is all standard stuff for a fifo
-equiped part.
-
-> + */
-> +static irqreturn_t max86150_irq_handler(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct max86150_data *data;
-> +	s64 irq_time;
-> +	unsigned int status, wr_ptr, rd_ptr, ovf, n_avail;
-> +	u32 ppg_red, ppg_ir;
-> +	s32 ecg;
-> +	int ret;
-> +
-> +	data = iio_priv(indio_dev);
-> +	irq_time = iio_get_time_ns(indio_dev);
-> +
-> +	ret = regmap_read(data->regmap, MAX86150_REG_INT_STATUS1, &status);
-> +	if (ret || !(status & MAX86150_INT_A_FULL))
-> +		return IRQ_NONE;
-> +
-> +	ret = regmap_read(data->regmap, MAX86150_REG_FIFO_WR_PTR, &wr_ptr);
-> +	if (ret)
-> +		return IRQ_HANDLED;
-> +	ret = regmap_read(data->regmap, MAX86150_REG_FIFO_RD_PTR, &rd_ptr);
-> +	if (ret)
-> +		return IRQ_HANDLED;
-> +	ret = regmap_read(data->regmap, MAX86150_REG_OVF_COUNTER, &ovf);
-> +	if (ret)
-> +		return IRQ_HANDLED;
-> +
-> +	if (ovf > 0) {
-> +		n_avail = MAX86150_FIFO_DEPTH;
-> +	} else {
-> +		n_avail = (wr_ptr - rd_ptr) & (MAX86150_FIFO_DEPTH - 1);
-> +		/*
-> +		 * wr_ptr == rd_ptr with no overflow means either empty or
-> +		 * exactly 32 slots filled (pointer wrapped).  Since this
-> +		 * handler only runs when A_FULL fired, the FIFO must be
-> +		 * full — treat as 32 available.
-> +		 */
-> +		if (n_avail == 0)
-> +			n_avail = MAX86150_FIFO_DEPTH;
-> +	}
-> +
-> +	for (unsigned int i = 0; i < n_avail; i++) {
-> +		unsigned int j;
-> +		s64 ts;
-> +
-> +		if (ovf > 0)
-> +			ts = irq_time -
-> +			     (s64)(n_avail - 1 - i) * data->sample_period_ns;
-> +		else
-> +			ts = irq_time +
-> +			     ((s64)i - (MAX86150_FIFO_A_FULL_SAMPLES - 1)) *
-> +			     data->sample_period_ns;
-> +
-> +		ret = max86150_read_one_sample(data, &ppg_red, &ppg_ir, &ecg);
-> +		if (ret)
-> +			break;
-> +
-> +		memset(data->scan, 0, sizeof(data->scan));
-> +		j = 0;
-> +
-> +		if (test_bit(MAX86150_IDX_PPG_RED, indio_dev->active_scan_mask))
-
-These accesses to the active_scan_index are the thing that sashiko
-called out as problematic if the handling is still running as we
-exit buffered mode.
-
-I'm also not sure they are useful. If you have to read all the
-channels back from the device anyway, the core support for demuxing
-data if you set available_scan_mask is probably a better way to handle
-this.
-
-> +			data->scan[j++] = ppg_red;
-> +		if (test_bit(MAX86150_IDX_PPG_IR, indio_dev->active_scan_mask))
-> +			data->scan[j++] = ppg_ir;
-> +		if (test_bit(MAX86150_IDX_ECG, indio_dev->active_scan_mask))
-> +			data->scan[j++] = ecg;
-> +
-> +		iio_push_to_buffers_with_timestamp(indio_dev, data->scan, ts);
-
-Use the newer _with_ts() variant. This one is going away once we've
-finished converting drivers over.
-
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +/*
-> + * This is a devm_add_action_or_reset() callback, so it can't return an
-> + * error like the rest of this driver does -- dev_warn() is the only way
-> + * left to surface a failed cleanup write here.
-
-No need for the comment.  If anyone actually thinks they can add the
-returns they'll rapidly figure it out!
-
-> + */
-> +static void max86150_powerdown(void *arg)
-> +{
-> +	struct max86150_data *data = arg;
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	int ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_INT_ENABLE1, 0);
-> +	if (ret)
-> +		dev_warn(dev, "Failed to disable interrupts: %d\n", ret);
-> +
-> +	ret = regmap_set_bits(data->regmap, MAX86150_REG_SYS_CTRL,
-> +			      MAX86150_SYS_SHDN);
-> +	if (ret)
-> +		dev_warn(dev, "Failed to shut down device: %d\n", ret);
-> +}
-> +
-> +static int max86150_chip_init(struct max86150_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_SYS_CTRL,
-> +			   MAX86150_SYS_RESET);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* SYS_RESET self-clears within 1 ms (datasheet SYS_CTRL register) */
-
-So why wait 10?  We don't generally add margins as we get a bit extra
-anyway from the surounding calls and datasheets tend to be
-conservative.
-
-> +	fsleep(10 * USEC_PER_MSEC);
-> +
-> +	/*
-> +	 * FIFO_A_FULL holds (FIFO depth - samples available), i.e. how many
-> +	 * free slots remain when the interrupt should fire.
-> +	 */
-> +	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_CONFIG,
-> +			   MAX86150_FIFO_ROLLOVER_EN |
-> +			   FIELD_PREP_CONST(MAX86150_FIFO_A_FULL,
-> +					    MAX86150_FIFO_DEPTH -
-> +					    MAX86150_FIFO_A_FULL_SAMPLES));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_DCTRL1,
-> +			   FIELD_PREP_CONST(MAX86150_FIFO_FD1, MAX86150_FD_LED1) |
-> +			   FIELD_PREP_CONST(MAX86150_FIFO_FD2, MAX86150_FD_LED2));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_DCTRL2,
-> +			   FIELD_PREP_CONST(MAX86150_FIFO_FD3, MAX86150_FD_ECG) |
-> +			   FIELD_PREP_CONST(MAX86150_FIFO_FD4, MAX86150_FD_NONE));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_PPG_CONFIG1,
-> +			   FIELD_PREP_CONST(MAX86150_PPG_ADC_RGE,
-> +					    MAX86150_PPG_ADC_RGE_16384_NA) |
-> +			   FIELD_PREP_CONST(MAX86150_PPG_SR,
-> +					    MAX86150_PPG_SR_SP_100_HZ));
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* matches MAX86150_PPG_SR_SP_100_HZ above */
-> +	data->sample_period_ns = NSEC_PER_SEC / 100;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_LED1_PA,
-> +			   MAX86150_LED_PA_DEFAULT);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, MAX86150_REG_LED2_PA,
-> +			   MAX86150_LED_PA_DEFAULT);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_write(data->regmap, MAX86150_REG_SYS_CTRL,
-> +			    MAX86150_SYS_SHDN);
-> +}
-
-
-> +static int max86150_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct max86150_data *data;
-> +	unsigned int part_id;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +
-> +	data->regmap = devm_regmap_init_i2c(client, &max86150_regmap_config);
-> +	if (IS_ERR(data->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
-> +				     "Failed to init regmap\n");
-> +
-> +	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(max86150_supply_names),
-> +					     max86150_supply_names);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to enable supplies\n");
-> +
-> +	ret = regmap_read(data->regmap, MAX86150_REG_PART_ID, &part_id);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Cannot read part ID\n");
-> +
-> +	/*
-> +	 * Deliberately fatal, not a dev_warn()+continue: chip_init() below
-> +	 * writes FIFO/PPG/LED configuration blind, with no readback. A
-> +	 * mismatched part ID means either the wrong device is on this
-> +	 * address or the bus itself is faulty, and letting chip_init()
-> +	 * write to that is a worse default than refusing to bind.
-
-This doesn't align with the current thinking on device tree fallback
-compatible handling.
-
-If the firmware is wrong then people get to keep the pieces and
-so we should at most print an informational message and then
-carry on anyway.  A missmatched ID can also mean a future compatible
-part that has a different ID.
-
-Thankfully people are very careful with firmwares when there is
-any chance of the bad form of smoke emerging!
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+deleted file mode 100644
+index f42e18078..000000000
+--- a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
++++ /dev/null
+@@ -1,141 +0,0 @@
+-Xilinx XADC device driver
+-
+-This binding document describes the bindings for the Xilinx 7 Series XADC as well
+-as the UltraScale/UltraScale+ System Monitor.
+-
+-The Xilinx XADC is an ADC that can be found in the Series 7 FPGAs from Xilinx.
+-The XADC has a DRP interface for communication. Currently two different
+-frontends for the DRP interface exist. One that is only available on the ZYNQ
+-family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
+-on all series 7 platforms and is a softmacro with a AXI interface. This binding
+-document describes the bindings for both of them since the bindings are very
+-similar.
+-
+-The Xilinx System Monitor is an ADC that is found in the UltraScale and
+-UltraScale+ FPGAs from Xilinx. The System Monitor provides a DRP interface for
+-communication. Xilinx provides a standard IP core that can be used to access the
+-System Monitor through an AXI interface in the FPGA fabric. This IP core is
+-called the Xilinx System Management Wizard. This document describes the bindings
+-for this IP.
+-
+-Required properties:
+-	- compatible: Should be one of
+-		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
+-		  configuration interface to interface to the XADC hardmacro.
+-		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
+-		  interface to the XADC hardmacro.
+-		* "xlnx,system-management-wiz-1.3": When using the
+-		  Xilinx System Management Wizard fabric IP core to access the
+-		  UltraScale and UltraScale+ System Monitor.
+-	- reg: Address and length of the register set for the device
+-	- interrupts: Interrupt for the XADC control interface.
+-	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
+-	  when using the axi-xadc or the axi-system-management-wizard this must be
+-	  the clock that provides the clock to the AXI bus interface of the core.
+-
+-Optional properties:
+-	- xlnx,external-mux:
+-		* "none": No external multiplexer is used, this is the default
+-		  if the property is omitted.
+-		* "single": External multiplexer mode is used with one
+-		   multiplexer.
+-		* "dual": External multiplexer mode is used with two
+-		  multiplexers for simultaneous sampling.
+-	- xlnx,external-mux-channel: Configures which pair of pins is used to
+-	  sample data in external mux mode.
+-	  Valid values for single external multiplexer mode are:
+-		0: VP/VN
+-		1: VAUXP[0]/VAUXN[0]
+-		2: VAUXP[1]/VAUXN[1]
+-		...
+-		16: VAUXP[15]/VAUXN[15]
+-	  Valid values for dual external multiplexer mode are:
+-		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
+-		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
+-		...
+-		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
+-
+-	  This property needs to be present if the device is configured for
+-	  external multiplexer mode (either single or dual). If the device is
+-	  not using external multiplexer mode the property is ignored.
+-	- xnlx,channels: List of external channels that are connected to the ADC
+-	  Required properties:
+-		* #address-cells: Should be 1.
+-		* #size-cells: Should be 0.
+-
+-	  The child nodes of this node represent the external channels which are
+-	  connected to the ADC. If the property is no present no external
+-	  channels will be assumed to be connected.
+-
+-	  Each child node represents one channel and has the following
+-	  properties:
+-		Required properties:
+-			* reg: Pair of pins the channel is connected to.
+-				0: VP/VN
+-				1: VAUXP[0]/VAUXN[0]
+-				2: VAUXP[1]/VAUXN[1]
+-				...
+-				16: VAUXP[15]/VAUXN[15]
+-			  Note each channel number should only be used at most
+-			  once.
+-		Optional properties:
+-			* xlnx,bipolar: If set the channel is used in bipolar
+-			  mode.
+-
+-
+-Examples:
+-	xadc@f8007100 {
+-		compatible = "xlnx,zynq-xadc-1.00.a";
+-		reg = <0xf8007100 0x20>;
+-		interrupts = <0 7 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&pcap_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-			};
+-			channel@1 {
+-				reg = <1>;
+-			};
+-			channel@8 {
+-				reg = <8>;
+-			};
+-		};
+-	};
+-
+-	xadc@43200000 {
+-		compatible = "xlnx,axi-xadc-1.00.a";
+-		reg = <0x43200000 0x1000>;
+-		interrupts = <0 53 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&fpga1_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-				xlnx,bipolar;
+-			};
+-		};
+-	};
+-
+-	adc@80000000 {
+-		compatible = "xlnx,system-management-wiz-1.3";
+-		reg = <0x80000000 0x1000>;
+-		interrupts = <0 81 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&fpga1_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-				xlnx,bipolar;
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+new file mode 100644
+index 000000000..564993ae6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+@@ -0,0 +1,123 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/xlnx,xadc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Xilinx XADC and System Monitor
++
++maintainers:
++  - Jonathan Cameron <jic23@kernel.org>
++
++description:
++  The Xilinx XADC is an ADC found in the 7 Series FPGAs. It has a DRP
++  interface for communication, which can be reached either through the ZYNQ
++  device configuration interface or through the axi-xadc pcore. The Xilinx
++  System Monitor is an equivalent ADC found in the UltraScale and UltraScale+
++  FPGAs, accessed through the System Management Wizard IP core.
++
++properties:
++  compatible:
++    enum:
++      - xlnx,zynq-xadc-1.00.a
++      - xlnx,axi-xadc-1.00.a
++      - xlnx,system-management-wiz-1.3
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: Interrupt for the XADC control interface.
++    maxItems: 1
++
++  clocks:
++    description:
++      When using the ZYNQ this is the ZYNQ PCAP clock. When using the
++      axi-xadc or the axi-system-management-wizard this is the clock that
++      feeds the AXI bus interface of the core.
++    maxItems: 1
++
++  xlnx,external-mux:
++    description:
++      External multiplexer mode. When omitted no external multiplexer is
++      assumed to be used.
++    enum: [none, single, dual]
++    default: none
++
++  xlnx,external-mux-channel:
++    description:
++      Which pair of pins is used to sample data in external multiplexer mode.
++      In single mode the valid range is 0 to 16, in dual mode 1 to 8. This
++      property is required when external multiplexer mode is used and is
++      otherwise ignored.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 16
++
++  xlnx,channels:
++    description:
++      Container for the external channels connected to the ADC. When this
++      node is absent no external channels are assumed to be connected.
++    type: object
++    additionalProperties: false
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      "^channel@[0-9a-f]+$":
++        type: object
++        additionalProperties: false
++
++        properties:
++          reg:
++            description:
++              Pair of pins the channel is connected to. 0 is VP/VN and 1 to
++              16 are VAUXP/VAUXN pairs. Each channel number may be used at
++              most once.
++            maxItems: 1
++
++          xlnx,bipolar:
++            description: If set the channel is used in bipolar mode.
++            type: boolean
++
++        required:
++          - reg
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    xadc@f8007100 {
++        compatible = "xlnx,zynq-xadc-1.00.a";
++        reg = <0xf8007100 0x20>;
++        interrupts = <0 7 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-parent = <&gic>;
++        clocks = <&pcap_clk>;
++
++        xlnx,channels {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++                reg = <0>;
++            };
++
++            channel@1 {
++                reg = <1>;
++                xlnx,bipolar;
++            };
++        };
++    };
++...
 -- 
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+2.43.0
+
