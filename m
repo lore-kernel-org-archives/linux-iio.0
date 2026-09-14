@@ -1,317 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84D9232B989;
-	Mon, 14 Sep 2026 08:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36C0C38F253;
+	Mon, 14 Sep 2026 08:05:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789372826; cv=none; b=dk1wT1QNbxMRZKw36+WW5IYXhGvxpzOOLTIMKf/RdVtZh9cUdhCvADD1GT4olkr5WZ7AJwx7s85pqlmJX7G5NwX3ZAYcQg8GX3eqFEt+m1zEYCI6JM268h0EoLeiZo5ZcrW14RzB3FiTDL4dXHxJ85CnTuitzJiOzC5jMHj+MmI=
+	t=1789373110; cv=none; b=jsoDRGDI5hIyyJR+3p8Bv/SsmU9SM0jWRA1HnApsNCRhF2RbVGKRSi7fJPhDoadr4/tmUmR5rs53isMUTpw7j98+UojrqdyMoh8cDugfOIYo1x8jWTuZk6EDICRWxVh+0ea5/N+pyB6j/dKEWkvkJkGCLW9v/r51BH2NYPuDcTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789372826; c=relaxed/simple;
-	bh=9Sn76LLDRFARz/KCNhJyCKv/7XWJMa9IVHapNKGw/TU=;
+	s=arc-20240116; t=1789373110; c=relaxed/simple;
+	bh=ms02h7CsujbREPeLnaUOThPK+64TwYCRPpUsizrNp/I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KqOAHp7AQAgldZdVvvdCKCVC+TrQ10QWaY53LZM5UtEIUlSuMnoTY0zGKmHK7VlCR+c3vOCGgQpGTUeW/TYJ5MLAHhWXQuFXS6uFYz5ucs+LxfPZxC8U4zVYGtYJVPya8KusQRWQUhwHrOXNbNdFBCjlcl4Ppt/mggTbcONYYiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FwrudPih; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=rnGNlW1v5nKWiG9oIxbLs2+fzcbuIuDo4RE8pBHfpdcorErVYExgciucLIfSKXvAZ5MQuGG1HXCIt/cAOX6rqaHzbsYmvipP/LSXZY/OzO3K7hswKolkXxfZs55yaToP4LfUeCNZUlTl1JQvSyWIKNP7SqjmDqwdFp4/UFNSfgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L2TP4zHL; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FwrudPih"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L2TP4zHL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789372825; x=1820908825;
+  t=1789373109; x=1820909109;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9Sn76LLDRFARz/KCNhJyCKv/7XWJMa9IVHapNKGw/TU=;
-  b=FwrudPihN7K2/klcJdseH+q3SdFLz7Hr1F8+frQN5iOZszV/TX29UggH
-   byzorJmUYZIBiIQ7+C6etvxc7mzk6Y4SYZCbQrIPW1xUJyIwONZnjK6+F
-   95yY1+sTPY7d+fhwFcEL+zd5gPWACiL9I35DU8GcuhvHT4mKhprkHV2fa
-   +w1XbYTBrOo8JzcpmbMgDR1ZXZo6mGx/eKggylXbh9oMMvklm+dkYny/v
-   AWIg88kAfF5GoArAPoOhPMUA/+CFwd9n5n1bj2/HiP/SbZSgWqvQEkD9H
-   MuHWtnbZ66HfFsEIP/tTjCpu/xdT45sBYoEx1HzRDLWlo9Q6fYueYcj1S
-   A==;
-X-CSE-ConnectionGUID: qMe4vhmKRcmhpiO2nyGvRg==
-X-CSE-MsgGUID: S7Rzx+4+SimYc/7TOFc1vA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11904"; a="107095139"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ms02h7CsujbREPeLnaUOThPK+64TwYCRPpUsizrNp/I=;
+  b=L2TP4zHLHvmazl7NahMd9Yw7qC90RXeB5i+JSeOEeD4YBc32yljScTye
+   D7x4rC2lOcSEuOm+AxvP4xMEQcmv/zm3ExsM8YgOsJmWYFQlsz0ghZ469
+   kZSHPwoM7PwK6nyxaHMfKcem4Xn7IVUqtvDhFfv9676RQmEVCC3oE1vJr
+   k0WmcWla3L6p/Hy+N4hxzu47KFUfucbB4waiES6zpFstEp8KZdegFfC65
+   gpnQ8f99wRFmgA7DhgV8k2TBdsXORWDylpbtXlMq+y/AK7JJIhh8x7laT
+   cMdfV0+ee3Xc+8Haja2Y06OR9ObIkmSPrullglNnQxvBMw7O+Pt506r12
+   Q==;
+X-CSE-ConnectionGUID: Nu5+r8EcQuasyIvQcB+Iww==
+X-CSE-MsgGUID: XSXvpDGLSa27m3a+rnlYNA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11904"; a="100317036"
 X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
-   d="scan'208";a="107095139"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 01:00:24 -0700
-X-CSE-ConnectionGUID: F8Dbi8XtTzmsChUlk8/s5g==
-X-CSE-MsgGUID: LB7HtylyQcCR9f2GSz/REw==
+   d="scan'208";a="100317036"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 01:05:09 -0700
+X-CSE-ConnectionGUID: k/BGMQlsQ26pQ7qXoD2Low==
+X-CSE-MsgGUID: LyK3jnAQS4OvLkjyLJO+GQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
-   d="scan'208";a="271160132"
+   d="scan'208";a="268897922"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.29])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 01:00:20 -0700
-Date: Mon, 14 Sep 2026 11:00:18 +0300
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 01:05:03 -0700
+Date: Mon, 14 Sep 2026 11:05:01 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chang Yu <marcus.yu.56@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Shi Hao <i.shihao.999@gmail.com>,
-	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <aqepkmQS_p6K1Bd6@ashevche-desk.local>
-References: <20260912013912.51887-1-marcus.yu.56@gmail.com>
- <20260912013912.51887-3-marcus.yu.56@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v4 02/10] dmaengine: Support bus widths of 32 bytes and
+ above
+Message-ID: <aqeqrQU7Gtj9uGQx@ashevche-desk.local>
+References: <20260911-dmaengine-support-wider-dma-masks-v4-0-72b8fd4cc78e@analog.com>
+ <20260911-dmaengine-support-wider-dma-masks-v4-2-72b8fd4cc78e@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260912013912.51887-3-marcus.yu.56@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260911-dmaengine-support-wider-dma-masks-v4-2-72b8fd4cc78e@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Sep 11, 2026 at 06:39:12PM -0700, Chang Yu wrote:
-> Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
+On Fri, Sep 11, 2026 at 06:25:37PM +0100, Nuno Sá wrote:
+> The src_addr_widths and dst_addr_widths capability masks encode each
+> supported width as a bit whose position equals the corresponding
+> enum dma_slave_buswidth value (e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets bit
+> 4). As these masks are plain u32, widths of 32 bytes and above
+> (DMA_SLAVE_BUSWIDTH_32/64/128_BYTES map to bits 32, 64 and 128) cannot
+> be represented at all.
 > 
-> The AS7343 is a 14-channel spectral sensor featuring 11 visible
-> channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
-> flicker detection channel.
+> Introduce bitmap-based bus width capabilities that span the full enum
+> range, through a new dma_buswidth_mask_t type modeled after
+> dma_cap_mask_t. To allow DMA controller drivers to be converted
+> incrementally, the legacy dma_device u32 fields are kept alongside the
+> new masks and the core folds a legacy-only driver's u32 into the mask
+> when the device is registered, so consumers only ever have to look at
+> the mask.
 > 
-> The driver exposes 12 spectral channels (11 visible light and 1
-> near-infrared) via sysfs. Runtime PM is implemented to stop
-> measurements when the device is suspended or torn down. Power is
-> never cut (PON=1 always) to preserve register values.
+> The accessors live in a new include/linux/dma/engine/widthmask.h instead
+> of in linux/dmaengine.h, so that only their users pay for the
+> linux/bitmap.h include. They all take a dma_buswidth_mask_t, which means
+> the interface will not change once the legacy fields are dropped.
 > 
-> Future patches will add configurable gain and integration time,
-> interrupt support, buffered reads, VIS channel, and flicker
-> detection.
+> The fold is bidirectional while both representations coexist. A driver
+> that only fills in the legacy u32 gets its mask derived from it, so the
+> consumers already converted see it. A driver that only fills in the mask
+> gets its legacy u32 derived from the mask, so the consumers not
+> converted yet, which read the legacy dma_slave_caps fields, keep working.
+> 
+> On top of that, dma_get_slave_caps() derives the legacy dma_slave_caps
+> masks from the new ones when a device_caps() callback adjusted them, so
+> that a converted controller narrowing its per-channel capabilities is
+> still seen by the consumers not converted yet, while a driver adjusting
+> the legacy masks directly keeps working.
 
-...
-
-> +/*
-> + * Support for AMS AS7343 14-channel multi-spectral sensor.
-> + * (7-bit I2C slave address 0x39)
-> + *
-> + * Based on the work of:
-> + *   Christian Eggers <ceggers@arri.de> (AS73211 driver)
-> + *
-> + * Copyright (c) 2026 Chang Yu <marcus.yu.56@gmail.com>
-> + *
-> + * Datasheets:
-
-Why plural?
-
-> + *   https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
-> + *
-> + * TODO:
-> + *   - Autosuspend
-> + *   - Support for configurable gain and integration time
-> + *   - Interrupt support
-> + *   - Add support for reading the VIS channel
-> + *   - Flicker detection
-> + */
-
-...
-
-> +#define AS7343_ID				0x5a
-
-> +/* AS7343 config registers */
-> +#define AS7343_ENABLE				0x80
-
-> +#define AS7343_ATIME				0x81
-
-> +#define AS7343_ASTEP				0xd4
-
-
-> +#define AS7343_CFG0				0xbf
-> +
-> +#define AS7343_CFG1				0xc6
-
-> +#define AS7343_CFG20				0xd6
-
-> +#define AS7343_CONTROL				0xfa
-> +
-> +/* AS7343 status registers */
-> +#define AS7343_STATUS2				0x90
-> +#define AS7343_STATUS3				0x91
-> +#define AS7343_STATUS				0x93
-> +#define AS7343_ASTATUS				0x94
-> +#define AS7343_STATUS5				0xbb
-> +#define AS7343_STATUS4				0xbc
-> +#define AS7343_FD_STATUS			0xe3
-> +
-> +/* AS7343 spectral data registers */
-> +#define AS7343_DATA_FZ		0x95
-> +#define AS7343_DATA_FY		0x97
-> +#define AS7343_DATA_FXL		0x99
-> +#define AS7343_DATA_NIR		0x9b
-> +#define AS7343_DATA_F2		0xa1
-> +#define AS7343_DATA_F3		0xa3
-> +#define AS7343_DATA_F4		0xa5
-> +#define AS7343_DATA_F6		0xa7
-> +#define AS7343_DATA_F1		0xad
-> +#define AS7343_DATA_F7		0xaf
-> +#define AS7343_DATA_F8		0xb1
-> +#define AS7343_DATA_F5		0xb3
-> +#define AS7343_DATA_FD_L	0xb7
-> +#define AS7343_DATA_FD_H	0xb8
-
-> +/* AS7343 FIFO buffer data registers */
-> +#define AS7343_FIFO_LVL		0xfd
-> +#define AS7343_FDATA_L		0xfe
-> +#define AS7343_FDATA_H		0xff
-
-Please, keep indentation for the registers the same. Also would be nice to have
-them sorted by offset.
-
-...
-
-> +static int as7343_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	struct as7343_data *data = iio_priv(indio_dev);
-> +	unsigned int unused;
-> +	struct regmap *map;
-> +	struct device *dev;
-> +	__le16 result;
-> +	int ret;
-
-> +	map = data->regmap;
-> +	dev = regmap_get_device(map);
-
-Assign them directly in the definition block above.
-
-> +	PM_RUNTIME_ACQUIRE_IF_ENABLED(dev, pm);
-> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW: {
-> +		/* Wait until integration time passes for all 3 cycles. */
-> +		msleep(160);
-> +
-> +		/*
-> +		 * Reading ASTATUS latches all data registers to this read.
-> +		 * We don't care about the returned saturation/gain status for
-> +		 * now.
-> +		 */
-> +		guard(mutex)(&data->mutex);
-
-Blank line. Always make guard()() to be visible (by grouping it separately
-from the other pieces of code).
-
-> +		ret = regmap_read(map, AS7343_ASTATUS, &unused);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_bulk_read(map, chan->address,
-> +				       &result, sizeof(result));
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = le16_to_cpu(result);
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-...
-
-> +static int as7343_setup_device(struct device *dev, struct as7343_data *data)
-> +{
-> +	struct regmap *map = data->regmap;
-> +	unsigned int val;
-> +	__le16 step;
-> +	int ret;
-> +
-> +	/* Power on */
-> +	ret = regmap_set_bits(map, AS7343_ENABLE, AS7343_ENABLE_PON);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Need to set REG_BANK to 1 before we can access ID */
-> +	ret = regmap_set_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(map, AS7343_ID, &val);
-> +	if (ret)
-> +		return ret;
-
-> +	if (val != 0x81)
-> +		dev_info(dev, "Unknown device ID: %x\n", val);
-
-Wouldn't be better to define 0x81 with meaningful name?
-
-> +	ret = regmap_clear_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Configure the SMUX to readout all channels */
-> +	ret = regmap_update_bits(map, AS7343_CFG20, AS7343_CFG20_AUTO_SMUX,
-> +				 FIELD_PREP(AS7343_CFG20_AUTO_SMUX,
-> +					    AS7343_CFG20_AUTO_SMUX_READOUT_ALL));
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Set 50.1ms integration time and x256 gain for now */
-> +	step = cpu_to_le16(AS7343_ASTEP_VAL);
-> +	ret = regmap_bulk_write(map, AS7343_ASTEP, &step, sizeof(step));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(map, AS7343_ATIME, AS7343_ATIME_VAL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_update_bits(map, AS7343_CFG1, AS7343_CFG1_AGAIN,
-> +				  FIELD_PREP(AS7343_CFG1_AGAIN,
-> +					     AS7343_CFG1_AGAIN_X256));
-> +}
-
-...
-
-> +static int as7343_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct as7343_data *data = iio_priv(indio_dev);
-> +	struct regmap *map = data->regmap;
-
-> +	return regmap_clear_bits(map, AS7343_ENABLE, AS7343_ENABLE_SP_EN);
-
-Can this mess up the raw read? If so, also needs a mutex to be held.
-
-> +}
-> +
-> +static int as7343_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct as7343_data *data = iio_priv(indio_dev);
-> +	struct regmap *map = data->regmap;
-> +
-> +	return regmap_set_bits(map, AS7343_ENABLE, AS7343_ENABLE_SP_EN);
-> +}
-
-Same Q.
-
-...
-
-> +static void as7343_suspend_action(void *data)
-> +{
-> +	struct device *dev = data;
-
-Unneeded casting, can name parameter 'dev' above.
-
-> +	as7343_suspend(dev);
-> +}
+Acked-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
