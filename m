@@ -1,78 +1,79 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD5CA442B16
-	for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 11:21:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2E6544238E
+	for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 11:25:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789384866; cv=none; b=dT1pM1KCrAcohGRViAiAnXdKRFxkqs1XTCxo/upX3D9CZtry5OVnQ/Ba3j5A7WdAwvBykeorE7pD6FtkWTHZeMk4nBgezb7qWxmjirkcw/sRLIAEzaELoZaYabGFynen4o1RKJCMkO86uZxInhI6CNIex8cWp2RdwE6gfIxAZcU=
+	t=1789385102; cv=none; b=EA6vxkT52ZD2FEg7ayfS6rEFy73+lOeNucNLLs0pb5GtEbgZ7N0V57IiNsYlPOi3lJgjeHTcmY01/BlPrsKYL5NGN0cyIbH2wgWK7EJsbuB5MRE8h/1s9a2113Ev6ZW4vXRZoE5myuauG6H2d8WE2m59Edo2+Qz/L7O1UnlGe+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789384866; c=relaxed/simple;
-	bh=rq5NpiVVURxPEKHZWNKaVlsgTfHHMY+YBVtD98Pr4R4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KYWY4MU89lllC8aFKiv5SRb1CuyqDVhDiTH3+moDZazxQ1TGA5B83TdTGytdcBdGCmJ9jMtq/iTnOSwfA0Nmx8iVA1ol1/sujtkw8XABbbkoAyLojq3kVTL3wK+Jr4QCxy8EMh56glkYaQ6C8LFZ3izRflSSpgseaME7JWx5iFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JbAKtKuP; arc=none smtp.client-ip=209.85.214.179
+	s=arc-20240116; t=1789385102; c=relaxed/simple;
+	bh=m4FGhaq8a+nWJ/uaFh8Slz+kDyjA89yddHRxow0Aw0E=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ym2xdeL5T3nsnVz860b8ZVytqHtVoT87LQwbw39wLX+2kxrnQ9587UomQ9MdTzGTlRJwRYpmQGD6teSl6B7tBkpmJw3tZNxjy7fXZOvbAy7fzHNN3NSJu1k1aQ/a+fQbwXJWReN0gbdMvgP6GzCX+HrCMpqP6uJI1aiYHDkw8VY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AJRGU/SL; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JbAKtKuP"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2d942c7cc2fso29894715ad.3
-        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 04:21:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AJRGU/SL"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2cfbbdfa60bso32847055ad.3
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 04:25:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789384864; x=1789989664; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789385100; x=1789989900; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Me43ExR5DmXiMgXrmqqfo5yNv2WAFUvXbHnpJpXOxoU=;
-        b=JbAKtKuPrdBdl+o2CcieawUG7iQQCX29AvomNPyCG25El+dd2y+1W7SetawKdzMyXe
-         FOkSb06sFc/uqrBT499OH4PKEeU+Q+73PL1VjUCbO4qCSs/WWNq6+ZrpeZAIOXctU9hj
-         2S58QYLtpha70MUPxNa8JHfk0YjpQ+/ddAFlj84G1SsUKLt9sG5k1Qxi7Rc0ezOJ2GaT
-         4aCzXguHyzhnzLU2FC7ShkauHFouv+d4UODiVceiTCGr5kAMK3NGsDdyCwLpH1aC2Lbi
-         dclQg7723eUgA2+uPnVEYfoD8w+x8Kerihn+sZDKBgN3sHkq9fU2H/BTOyG4UYGPzCj9
-         oKMA==
+        bh=Ok3Mywemwoiloo46/07KIkWHT3aySpVf35ol5uj0s9I=;
+        b=AJRGU/SLIRnyupW/xdeRu8jWd2r2g98r46bAaTo7KJZB7ouy+INlQWrdjtUDClR7mg
+         RfDS8xvCPFDunyD4HQTak3d83PvjNmmhZ/JspQeJ3N6Hhc7EYhY6K5hfmF5SV6Y6f2+o
+         mOhESJ2WZXsxqwghXHz7l7QmHRvS7WAQnzoCGc6rF+JMm6Q07CIOwmj2Ozc5CBnHWg5l
+         eHMNLmG2mthgVSuoBFZvRtF54a+jTJMs7caxLdOrDry3dPV0n/nyEnl3BZmJbS/rrAyv
+         yG3KHgSvYNw1+nPeY484XI5ZTMf6PfNL/bmunPqEIzPtnScnt+G0zINJnCp5P8sZfgbr
+         yh5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789384864; x=1789989664;
+        d=1e100.net; s=20251104; t=1789385100; x=1789989900;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Me43ExR5DmXiMgXrmqqfo5yNv2WAFUvXbHnpJpXOxoU=;
-        b=LO/UVAJZ+4dIqBM98lulfQgxkbL5xPrpzjVLhmamoK5gDNtCk677Xk5X07A2KwB/6W
-         KNtC7YHJO2+d4nwczXSrDLq0ZL5G95ejxCebsGuqITsbdlw/e98GAub/jKf5uE4yybGM
-         Mh03sNi5RHBVoj0LZjJb1jAB4jBB3EiKYTvubBRqW+MznbXgtV0keAsOBrtKllkFEfrF
-         OS9edNEfjQUUPrfjMdroo/3GAzozp6dWupFa/3oeAj84K7BPe23tuqUxN+j72bgQZA3I
-         KkmKbAEzFha7s5oZMyXfqxRioC6lL/VIz7PHr2sPD8RvnBg59W7hpLTwnM15yrTDqEHW
-         X/XA==
-X-Forwarded-Encrypted: i=1; AKwUvBykXR06VED8AEqg2q+LXGVGYP/iKVREuFSsxlHMaccM0LwW2QxDWR3zq+6kyNkzm+y1Jkcr5q/bw/w=@vger.kernel.org
-X-Gm-Message-State: AFuF++lcM7JAl3wg31LNd/sWV0CYhC28nMuujBnLMgw1ej/1s4S2ClYf
-	VPpV7a5BnNkHpasZRTBzU+v/523ol3N6pR7hyI9PxX5BCOzcZFwmTdP6
-X-Gm-Gg: AYBFou3aE9fTV5edguBPaWp8UWiDuKDD0k3U94j9U/tukFIW0+PYhis4P2QSqsXRZtc
-	jQ53uJghFiJ6e7/w957Ge9egfDJq9UiO69+qZZSUfPnt26/n1qoNdiGv1F6LnLLSlHhmUxUXKtA
-	wToqYqhp13j2AuZhRyig/W/h6oUOBHoNp9RVWNapKRL+RWoXtDgfB7mMfWJKHgYdgnX1ZLHmdOm
-	0493hiA4qQiw0J21NgyE0afggUTWhOOkJXm1ZVZKvbzXO/X6ntCBvsZNrvqYtgi8At3QtfBBH41
-	TjpYG195T8EpTmiUtml4g43M28yhPBBOcoo/FgGQUuWBCafJhUS1f1dcts0TDq4mKSTNIJE7WjL
-	Q+VuzQrZ9VthZdPjbU2Hmxa2dvm7iDIZ489Fje13WxiTgvm8hhVvGRrP3hVnogPEQ0dn0z0tfAy
-	ntPhlKTBbXKmKoYGAw1fNSoUfxgxtmemsqY1UZUT0VXJcXjDu7hV/v5A==
-X-Received: by 2002:a17:902:ce88:b0:2d8:da29:da41 with SMTP id d9443c01a7336-2dd6c707c69mr42713475ad.15.1789384863573;
-        Mon, 14 Sep 2026 04:21:03 -0700 (PDT)
+        bh=Ok3Mywemwoiloo46/07KIkWHT3aySpVf35ol5uj0s9I=;
+        b=Q4fKuIRrWdYiFuQA+4Q2FMaUvQVUGCfZUVmW9ZgoUcYDytTWaTf7l6MoKV+eWpdo2Y
+         PSQQbZ1cLNVdW7U0lQaYyIaYkU+FM/WGEZXZBHSTz5+4V1e/f0uIQG5UOBgue22CH42t
+         L4v/QpA9DiNdc1vU4iFiWircZqJZYM0YNEVmt0VlkalhIBrXCXCe6IuYh2zPoI+hdE39
+         oocErIQrbsTDiPgbIy1shHvGQHGV8nPEQinD/1BquIBYkGjWXVLfsOzFCiKcCh1Ynms0
+         1UbEMtods0DhuUJYptWKAd6wC40FKtW1xt7PFey2reEhMXm9h6krGRaXIOhybsOAQaCx
+         F/pg==
+X-Forwarded-Encrypted: i=1; AKwUvBy2unmQDPYuiivmH/cRMO4wyZkRKuQa7xaBfNv+PncKJ6MzJmDzSSYFmZ1MVFsiRSTfDxuPXFoMRSo=@vger.kernel.org
+X-Gm-Message-State: AFuF++ly1pzPLwcuSi5ehxAljr30k8VdVmL2GUhffgz1fI50tcAcdVxR
+	llx0iDmBGClojo94osZt+AJnhCl3TC44v0rVdh2dA6krYvogCXakFN7O
+X-Gm-Gg: AYBFou0uE7TGNzCL80Uiiyf2Rp1jj+UD+s8aEpT/uAgK1l7vG7BVyxH2kLhxb8AruA5
+	hC7/DLATOTiHE9ic26sH2xiYFC8o4I04a6NR9EfsYxtxIWuVDKPGOM4mRAfPXikYRzm2o786Itb
+	UfhaVmnA7wjoN/LIHRn5NpsvKMj1lFCgf3shtDjM0MpqBvJpo4iW48M/wzdLFicCWWXjMeKLJYu
+	sAtNIj04gufBwawn9EvnUsNwdIsptzkVgVVHT48tJWtSdwyUBIdE12XIcMg9o2yzOG+gDQilOp5
+	NS8rft5khNNbvkWby3WL+J2AbCvqESN+Kto80VhJ4hIzpRPY0AsKaacKvAru73/lSSVXTGTEhRs
+	F8ACHC/A1cC1khpXfBNLvu7F/afkX9XgE6SZ3pE2VyGe+qmnuTtGxtkj62jRojMxa1jH4/TUKFo
+	sks3c4ltaoN3eWb5eBw91c87gVC5AL+tDnl/UIgF2i/NkL+wGbSSvvGg==
+X-Received: by 2002:a17:902:ecc6:b0:2da:eb8f:b4e4 with SMTP id d9443c01a7336-2dd6c5f3a7amr41335295ad.7.1789385100156;
+        Mon, 14 Sep 2026 04:25:00 -0700 (PDT)
 Received: from lgs.. ([2001:250:5800:1002::de93])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2dd445de320sm35512865ad.8.2026.09.14.04.20.58
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2dd69745cb5sm10810585ad.43.2026.09.14.04.24.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2026 04:21:03 -0700 (PDT)
+        Mon, 14 Sep 2026 04:24:59 -0700 (PDT)
 From: Guangshuo Li <lgs201920130244@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Siratul Islam <email@sirat.me>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Danilo Krummrich <dakr@kernel.org>,
 	Guangshuo Li <lgs201920130244@gmail.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Siratul Islam <email@sirat.me>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Pan Chuang <panchuang@vivo.com>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Vlad Dogaru <ddvlad@gmail.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: stable@vger.kernel.org
-Subject: [PATCH] iio: accel: kxcjk-1013: disable autosuspend on remove
-Date: Mon, 14 Sep 2026 19:20:53 +0800
-Message-ID: <20260914112053.1686061-1-lgs201920130244@gmail.com>
+Subject: [PATCH] iio: accel: mma9551: disable autosuspend on remove
+Date: Mon, 14 Sep 2026 19:24:47 +0800
+Message-ID: <20260914112447.1686972-1-lgs201920130244@gmail.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -82,7 +83,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-kxcjk1013_probe() enables runtime PM autosuspend with
+mma9551_probe() enables runtime PM autosuspend with
 pm_runtime_use_autosuspend(). The probe error path correctly undoes
 this setting with pm_runtime_dont_use_autosuspend(), but the normal
 remove path only disables runtime PM.
@@ -98,18 +99,18 @@ path.
 
 This issue was found by manual code inspection.
 
-Fixes: 124e1b1d0924 ("iio: accel: kxcjk-1013: support runtime pm")
+Fixes: 6da93a6710a3 ("iio: accel: mma9551: Add runtime pm support")
 Cc: stable@vger.kernel.org
 Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
 ---
- drivers/iio/accel/kxcjk-1013.c | 1 +
+ drivers/iio/accel/mma9551.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 166fb786425f..c6b030f64be1 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1547,6 +1547,7 @@ static void kxcjk1013_remove(struct i2c_client *client)
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index 7e01427fd9c4..182f488edab1 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -500,6 +500,7 @@ static void mma9551_remove(struct i2c_client *client)
  
  	iio_device_unregister(indio_dev);
  
