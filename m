@@ -1,112 +1,76 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E68843290B7;
-	Mon, 14 Sep 2026 03:05:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4F7A33F8C1;
+	Mon, 14 Sep 2026 03:16:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789355141; cv=none; b=sW+rOxDyjiBwWOwlCueYU8fDJpD2Gn+rRG3xUTVEb5GNQxPezifYUwmDjWm6s0tcWO/t0m1vtUFEyIXXMuMOx980nw/lVXS5mMhnohv9p0HigpibmibLNiiZxhvO+QT2rXJQzntd6zltZUEEhEAx5zwENK3Lg1qXIfBHA96s3n8=
+	t=1789355795; cv=none; b=h6Bv9BJC8tHMULY6HLDXUt5+6wUow9e19NkzKyedWuq5etXG89rU3ucRBkEga/vflkHwfmo0x5GmcrTt47jWxSgQXvYMy4bwcxE9cXB5vGeP8Vu0W5qKufyXS+4XRCkQpP6GCneq8TFd0sVuqo08b8Eh9eO2AhmJ64pY/dH9O0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789355141; c=relaxed/simple;
-	bh=n13pyDwfskpPV/6Nsqj65nuI1WV7YdGf7bUgnn2eeiY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OjNI0IiLyZ99aCnP9AjbykJdxTSZBtZy1Ta6dOAw8WdAC0S4Ck/pSFquPS3/5HeY//3+dZM1U06si6PR37VrU+QGktiabmt8yFIRF9gZ9uH8aVyn2UZUSmLdjJG8gyA4tRy/m6AYgUo4gCHDP0oozjdtKwS0+QX95IJ50bFxcZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YBqI6mOP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789355795; c=relaxed/simple;
+	bh=900gZFneta8CbxXyjq3iUNKtG67LQUzfzxwe+5zTEyQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=nU+4TjKOlgXPOiWXngFcVt7xaY0Kj+HgAvnTg5ClS1qLxS+OrmZprnxCgCs4jYWnB4/LdG3CSDNT5AeeNJRVKX/6zZ+IwGMzTZDkqJiTl5EL4VmA5T6Hfo1cskTvY8kze84LPnHll+yclTCjIVd1pxf68UlOzXn9WXdEMOdqiHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ARMNKRLx; arc=none smtp.client-ip=220.197.31.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YBqI6mOP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0CAF1F000FF;
-	Mon, 14 Sep 2026 03:05:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789355139;
-	bh=N1oUz0uoNHb/8XozU114yRjSi4A22ayZTk2PiMCMKbE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=YBqI6mOP0dsCdE7LawYiuV3lX0+yj0foJPVGPFrasUVvRDk23vk2ZPLyQwDwoQiOU
-	 C0Hwj8PhOmNJtB3RNwWW2pc23GYSePR30A9YFt1bx3ZWgFpgbFdnACoymN7kGZ15yX
-	 dtYrOzekRlbUyPsSGVCH1qMZ53GE1aJnMyJ3Lm8jtYFpsZfoJoe8P6kGUzxKY/EpTl
-	 gSy/2nUSE6ZeBxTPckpJtaZlMql6FAJedMiUq7oBpkaCQkRBA26il40ojSsscy1mfP
-	 rykW8zVRqX1c3DEbEy/fsX5pfO2ETY938Pl8K4peejgfUOaJUXx+mO+gp5yWVqcP2M
-	 15fbBmbqeVAEA==
-Date: Mon, 14 Sep 2026 04:05:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Linmao Li <lilinmao@kylinos.cn>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Chris Morgan
- <macromorgan@hotmail.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Kanak Shilledar
- <kanak.shilledar@axis.com>
-Subject: Re: [PATCH togreg v4 0/2] iio: imu: inv_icm42607: fix PM error
- handling
-Message-ID: <20260914040534.772a4aeb@jic23-hlaptop>
-In-Reply-To: <20260901022243.740760aa@jic23-huawei>
-References: <20260824035531.141429-1-lilinmao@kylinos.cn>
-	<20260901022243.740760aa@jic23-huawei>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ARMNKRLx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=lL
+	lOSon+WScjfHrVYYr5SI9YAeNS33xMzWvQo2vGT2U=; b=ARMNKRLxXn/Ac8B9w3
+	eAnrydCVNY8LHXO3UWpwlwmEQbAVzo5Y7cXtD3bCp0N8SDD5JlFhYOCwBr0X7SFP
+	+ljWfvskiDXO4wvj/JW72VfUVpjBhG7HV+b5tReufs+Mkw7KCYjWUhZHU976SAxd
+	NNAbRYyjw00YKnBKEy8hh2AWc=
+Received: from chaosheng-ASUS-TUF-Gaming-F16-FX607JV-FX607JV.lan (unknown [])
+	by gzga-smtp-mtada-g1-2 (Coremail) with SMTP id _____wC3naXzZqdqPy8wAg--.3423S2;
+	Mon, 14 Sep 2026 11:16:04 +0800 (CST)
+From: Quchaosheng <quchaosheng000406@163.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+	Michal Simek <michal.simek@amd.com>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	quchaosheng000406@163.com
+Subject: Re: [PATCH] dt-bindings: iio: adc: xlnx,xadc: Convert to DT schema
+Date: Mon, 14 Sep 2026 11:16:03 +0800
+Message-ID: <20260914031603.439570-1-quchaosheng000406@163.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260914030226.437638-1-quchaosheng000406@163.com>
+References: <20260914030226.437638-1-quchaosheng000406@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wC3naXzZqdqPy8wAg--.3423S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7XFy5Zw4kur1fKF4UXF1DKFg_yoW3tFbEk3
+	ykK3y5Gan3Jrs29F1UKw4DZrn5ta1fWrn5Zr15Xr1avFy0yFn8Xa98twn3ZFyrGay8KFsx
+	J3yfJFWjyrWjgjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7VU1znmtUUUUU==
+X-CM-SenderInfo: xtxfxtprvkv0bjqqikiqw6il2tof0z/xtbC4xVb0GqnZvXDxQAA3l
 
-On Tue, 1 Sep 2026 02:22:43 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Hi all,
 
-> On Mon, 24 Aug 2026 11:55:29 +0800
-> Linmao Li <lilinmao@kylinos.cn> wrote:
-> 
-> > The recently queued ICM-42607 PM support has two error paths that can leave
-> > the PM core's state inconsistent with the device.
-> > 
-> > Patch 1 propagates sensor shutdown failures from runtime suspend.  Patch 2
-> > ensures that system resume restores runtime PM management on both of its
-> > error paths, so that a failed resume does not leave runtime PM disabled for
-> > good.  
-> 
-> These look fine to me, but I want input from Chris (and ideally some sanity
-> check testing) before picking them up.  The dead chicken test that they
-> don't active break operation when we don't see errors is probably enough
-> given the analysis seems fine to me for what happens on error.
+Please disregard this patch. I have just noticed that Sai Krishna
+Potthuri already posted a conversion of this binding:
 
-Kanak, given you are looking at this driver perhaps you could take
-a look at this series as well?
+  [v2,4/4] dt-bindings: iio: adc: xlnx,axi-xadc: convert to DT schema
+  https://patchwork.kernel.org/project/linux-iio/patch/20260323074505.3853353-5-sai.krishna.potthuri@amd.com/
+
+That series is still marked as changes-requested, so the work is
+already in progress and under review. I should have checked the list
+before posting, and I apologise for the noise.
+
+I am withdrawing my patch. I have not compared the two in detail, but
+duplicating the review effort helps nobody, and his version is the one
+that has already been reviewed.
+
+Sai Krishna: if there is anything in my attempt that happens to be
+useful to you, feel free to take it without attribution.
 
 Thanks,
-
-Jonathan
-
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > Changes since v3:
-> > - Patch 1: commit message expanded with the practical effect of the current
-> >   behaviour, the cost of propagating the error, and a description of the
-> >   recovery path that does not assume a particular regmap bus
-> >   implementation.  No code change.
-> > - Patch 2: unchanged.
-> > 
-> > Neither patch was reproduced on hardware; both were found by code
-> > inspection.  They were compile-tested with W=1 and checked with smatch.
-> > 
-> > Whether patch 1 is worth making is still a fair question - it trades a
-> > possible idle power leak that may be cleared by a later successful access
-> > for a runtime PM error state that needs an explicit reset.  The commit
-> > message spells that out; happy to drop it if you would rather not take
-> > that trade.
-> > 
-> > Linmao Li (2):
-> >   iio: imu: inv_icm42607: propagate runtime suspend errors
-> >   iio: imu: inv_icm42607: restore runtime PM on system resume errors
-> > 
-> >  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 38 ++++++++++++++-----
-> >  1 file changed, 29 insertions(+), 9 deletions(-)
-> > 
-> > 
-> > base-commit: 350d1fb9204b13c5f95e511e98b8bcb47574d425  
-> 
-> 
+Quchaosheng
 
