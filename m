@@ -1,83 +1,83 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 467E949EC68
-	for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 12:50:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B04D4A33FA
+	for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 12:51:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789390236; cv=none; b=G56xb4kGDMp7REkd6ggSNT52p46s7Wq7SbaFmkZhIZhHLi7YLwj9K28NBtqO4jYY1y6syNrtjj9BXaUWRDhKT8tbLUXeIxXPCs9OPxJsx1HUs3toNOXJ8lXsHpRJNmwKWHnfkim5blomOyduQ+KJRtE3iwNASv9PvplqyhR7Bz0=
+	t=1789390284; cv=none; b=YBhcqY6vd0/wi68jniGQhsjPQkjz9ouvQg7n4JSzF5+zMvyB4sUuv9d2d27W3E8C/tO7sKq36aAYC8OwX1Po3EiUFctHiEj1ave6W60bjPTNx/di9gXFQuEMVtfTD1obSsM+yjiPq6kIovXoRJX0SqdiZHI2f3c7LetHr+w+DQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789390236; c=relaxed/simple;
-	bh=CMYe6CzVR1lQ4POVMp/udjPhXuoEKJUqjohFpdJjIHw=;
+	s=arc-20240116; t=1789390284; c=relaxed/simple;
+	bh=RUOT7D+R6XRFK6ZDB58sR8ABaVNr55aigsppqxnh9T4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MZlDvPtUFr2boLRpE4/qdyK1iXFB2FRKuov0vduV+nfkyoicQDYw7ZkBmFWMP2E7LGwHpCA2K8XabR4RLWCbQHqhx4RZ8gu/7RJWIydgd2tlO2w1HgMIYVHFjZ9hZkeMYI8BwpQr6w+1Mht2Lr2O8yufAWC6Oj3urvYEdrvQVzc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qwftJ+Wm; arc=none smtp.client-ip=209.85.221.44
+	 MIME-Version:Content-Type; b=D2UFJyubZ8LhkOeVcGrXScPvvdsYh82dvepJZ3d5eLvPlK/cgBdiMFXPfGdZ3k92s6OCqTHg3B1vNV6v5FAX9QgYaW5WXj0qyllDe1i/iFHqKrI9q2e61pBezNcKUfV0XtUrv3zftvSYhr5oD/waL0nY+oLqfWd7n/WdGpcH3vY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y00wAIrj; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qwftJ+Wm"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-485850cbac3so1742492f8f.3
-        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 05:50:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y00wAIrj"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-482dd6ee390so2595589f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 05:51:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789390232; x=1789995032; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789390281; x=1789995081; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=oFP+vIzlMYUkbBxuUWjprqiU9MvG3SgKEPUqZyew3x0=;
-        b=qwftJ+Wm2ptD7ylDhNOtdkE1Uj2os+7n04pLouNVH7M5f5Av1/kAkU2U4iYYkSeuM0
-         5/mCUGu/t++YubOarRkrTE19zplY89GpR8ngwIAWuQfJ+BIa54UI0uR8rmYiQVtgr7Tn
-         8EKmW4Fp0+VdNlxTtykwMY1tYDTEoUhbh+/nDO8LelGcz17nJlxowD72zYeUdIY5olmf
-         veHorqOWjPWNQ5DQGqvhPiimJsqCqz1YiKRaF0VriUfDhwT9iL8DQy/KymliF9GL0k1Z
-         MrN4Gvl0oyBd8O2qJK1h7J2xYLeUt+c0iAa5TU/RBhFNzn54gAn6fe/YkSEvoTtpZXs/
-         7Xlg==
+        bh=rgQC1Yl5RhRkFvfEBoKl0QIvsiqz4jd8a1ncnGvXLCI=;
+        b=Y00wAIrjzP5NyVDNPzPu1Kf6i+gtyWosj4TxHuzUwqGnwuw/GoY8Lt15Wggpq2lCd4
+         /dtmKKIWNehNh7YOCucMxSGDXYisJh8JX/CTnG8AhfzCsP621g2bprgA+zWSLsURJui5
+         iWiEavIHoudV16OSUufIfmaBxNEFrMVm4lDN6jrg4GPiyFsEdP2k3eg3vEUnKssV1K34
+         Fu3ZzFw7Ttd7qz21XjYJACIbCxgJvPW0d1Dr3+ZdSnL0Cdqc8yDwC04qGeXy1iDTm9Bm
+         EyoYljHIDK/8Aa44P6j387hELQEoHCm30v+IdsUIRAHFOF2Oe3p8v74MTQtYi5qi8Y4g
+         ETPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789390232; x=1789995032;
+        d=1e100.net; s=20251104; t=1789390281; x=1789995081;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=oFP+vIzlMYUkbBxuUWjprqiU9MvG3SgKEPUqZyew3x0=;
-        b=quRibZ2j3CqY5dqSgCqY9aE2Bn/o8JuV9DYyItQ5RraGeAKCSTK70BfwVgNxyCsnMS
-         SCriMd1h6hnCIQFTafxZIIlhUFzHUWPSXTzrUwrP3PmH4IpcxSJ951tF3RhOs8QfHIBc
-         +7Uu6KuMr4LUq2PD4f5vEQISHAtAgntm4R531rhJtq496XZ+iRAhQa2wEUInEVJIN2rC
-         DIRufaIvwtqGczo/Z7ccXSY6tZrIlPXlvNoKMyj6jv0/zaKgkGLYMXYJfJJdgGjKOz63
-         fqagQsYhsjRG7y6jXT241VjLoSQZYfwyK22lMFmPvNzSYsm/ASB8H4q2wO5jXdlxI0kt
-         oGtA==
-X-Forwarded-Encrypted: i=1; AKwUvBweNQzx+RFZtD25a3VN1UqtAWIz4rTxIv/2CBxIXnFqLyY06q38zgatJw1tuRI/KKTDOSpoYsvDhYc=@vger.kernel.org
-X-Gm-Message-State: AFuF++kMNPrRs9iN2x0ORlvrlDnOmb/0HTMXDu8tKCizwdD4eaDDxfsQ
-	vfyJK9vB9nv2O9fcawOggVbDov2Oli/fVeHwadcFfC2E+7dnl1HxJ5uy
-X-Gm-Gg: AYBFou1ypjndBA7MKaiFaoMybNLrKngR2WHubhamvoXVYHzRIuZv7gWIks/ccuWIYvB
-	/BoksdG/j5U5yhZr7ctR99EPLI6MUyAau6Mr294YlJ+jPSFiHH/1deNBxtrrXHhS1LmGaxH0LJ3
-	olsOrgjkXF49q5Dg3waOxAKC4MtnYN3Ptey8O0ejhm+iKVyxuXBs8P0ury6sjjLcc8RmdsSJTQp
-	/2p1q47Jb5E+S2i8EohfXtvMSGlzdpGVgbA53v0eoUKyEjyNFPkOIEOiUIl8/Jm93iEuEg1Txy6
-	8HLSp28YvYNdIw1yZ/TbzETNug9MODs0HaRrWeloUzqaUBr3oeM7nc1EYZOprJ0VYiVLuvk2IfG
-	XEINPNLJMB0IgZJf3Ulo+CuBk1lOSzAipMRAqEuScA4jJZ2TPe/iZLYBoECZUwCJnAOVyHLxEG3
-	3MFzxTWJN6JQAZKjFHP3doi+9kFnCr55TApv2LYKQBsLaeWpym3VL4Nv+uvX5okUGx62oTt+Vs/
-	wIDI6rmXmBAqP2Rp2Mr97UMU+3I2MZjjsq1jnoHu8U7K2hZccT3wNP5Ik7sPZcKDS6Uybvcn4Mr
-	PBTZ/jNSnKt7KvD7WPQ1S27Vxpe3uhpnpSnmwVqs12NQMLqB4W8BiuWK4uwWNpPfqUp6LI/dnwC
-	123aNMz/fxOsgOJMz1P5NY1clzMYd1OLAwIHn1t0HIdKhn1gVM1hfB2HqnqozRAxXQhWn5gnJ6b
-	o/sWJn
-X-Received: by 2002:a05:6000:220e:b0:485:8c16:a357 with SMTP id ffacd0b85a97d-48702b2ed22mr2693304f8f.47.1789390231445;
-        Mon, 14 Sep 2026 05:50:31 -0700 (PDT)
+        bh=rgQC1Yl5RhRkFvfEBoKl0QIvsiqz4jd8a1ncnGvXLCI=;
+        b=XQ9AGFjDP1rb3hHKFUpGomHcIAz4omAYVVwFSxqOlqYS1jMi3r3RREkf+p1Vh0dIhN
+         s8aaHSdBAGc6UT4DclP5ypg8uwnxvMxlwqXeWpLZ+iml6J30w3CmU3QIimEFZRxX3DD3
+         PdDnnoqKajkG/0pdKbjRiDX6KiiLo6Sruc9L7o4Pbw0iys7CMvziF1XmM5juMAPv54xy
+         et3Q9UZUBBAoffBT5s80lHOSBCoHn0GzEqiUaAd4LMmt+FaGDKw5jZocRp3v8Hcr9E5A
+         wiw2Frh+HeI2/zETBGbtg4k4/F0pYVhKBGfSJ460BCtwDbWhh2PEx0pUeEhrRtbg1JGq
+         x+SQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzh8tQA82o5eV/zFN/+2y2NjedXv19qSJGunMhiubtALpGjd7zk5SqDZ2lRzPsDWhZYYYyXrHQ4Lxk=@vger.kernel.org
+X-Gm-Message-State: AFuF++nHrtIdsGvse7LbAQmNpqH5Wb8lnDlv+S/59/Axtz0+U3B4D/1d
+	JbEnMvdBEnETxIxJlzFfcKkwX8M1VUQU7qrQdIO8GmW3Br262NwijCEO
+X-Gm-Gg: AYBFou0fN2EKKJpBhe+Y4HRq7fgKCN9qMO/Fs9Go3UJ+4WQAf/tghJGH+WwQy5yeJDy
+	P8SOAXGXcaSkXvX0ARUCScUOzpqiz86j0VRU87mrso4u7gIKeC1HcSx9EowugWK2yMxZ+718y5J
+	uFEQBp9UwC3MdgDMZcuPPwPkt2PJNpRtNNt5RQbfrEeFAdjoYHyRIsl/4Xx5oJHCiXyD5wikAjt
+	KT9FqysEBqdUA0sZXnenXqxyU7qxr5zPCtgf8HrcuJWJiI5QygSz+39d2COIpAgAx6WvVShwtxA
+	U7CwLfxOaaEe0rUflIc4EXj6HUEtMne0ccSOiY0G+nPTuJeZaRe3CRZ7CdxWYXFHxaDwzJy0+rf
+	RD/5vJYbsOz+nUaspSze6A7qK+uRuAZP5EuLoHUAT1gfAoK2nKNX3/S+QQnRr8d+SZE9WsnOv+8
+	AKbGk3S/Q2UrK9WD8JbugJr48OkAWtMcVyEtfWOHR4BT4MSFA3kljmErMCNwVHeWwoJcYDqkCNu
+	DyH45GQJhD6ATEfbGtxC0ksYDUsnm/kncwqswWQyXfhbOkKB7v2QvRxPrM4LaLoCIXnXxlFXbmN
+	H++zIdkkqZinl4wZ8vdWA03hgyuNCkVunAzE835WXcJjw+9zoC0nBgNis2/RKennx5fV01kqrmU
+	LKkltLyli4uy1MeGBGp+7cppjErN2izupFfzaabaWNOaQHDtTvcltcZkNU5vSsSTk0sZF8pnte0
+	lsF9Kc
+X-Received: by 2002:a05:600c:4f41:b0:49c:cedc:3c36 with SMTP id 5b1f17b1804b1-49e7a685a1amr32353785e9.16.1789390280541;
+        Mon, 14 Sep 2026 05:51:20 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-486eb33ea4fsm28119004f8f.21.2026.09.14.05.50.30
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49d26c1bc5fsm378995405e9.3.2026.09.14.05.51.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2026 05:50:31 -0700 (PDT)
-Date: Mon, 14 Sep 2026 14:50:21 +0200
+        Mon, 14 Sep 2026 05:51:20 -0700 (PDT)
+Date: Mon, 14 Sep 2026 14:51:18 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Guangshuo Li <lgs201920130244@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, "Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
- (The Capable Hub)" <u.kleine-koenig@baylibre.com>, Siratul Islam
- <email@sirat.me>, Pan Chuang <panchuang@vivo.com>, Irina Tirdea
- <irina.tirdea@intel.com>, Vlad Dogaru <ddvlad@gmail.com>,
+ (The Capable Hub)" <u.kleine-koenig@baylibre.com>, Danilo Krummrich
+ <dakr@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>, Pan Chuang
+ <panchuang@vivo.com>, Irina Tirdea <irina.tirdea@intel.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  stable@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: mma9551: disable autosuspend on remove
-Message-ID: <20260914145021.00006863@gmail.com>
-In-Reply-To: <20260914112447.1686972-1-lgs201920130244@gmail.com>
-References: <20260914112447.1686972-1-lgs201920130244@gmail.com>
+Subject: Re: [PATCH] iio: accel: mma9553: disable autosuspend on remove
+Message-ID: <20260914145118.00007445@gmail.com>
+In-Reply-To: <20260914113012.1688043-1-lgs201920130244@gmail.com>
+References: <20260914113012.1688043-1-lgs201920130244@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -88,10 +88,10 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 14 Sep 2026 19:24:47 +0800
+On Mon, 14 Sep 2026 19:30:12 +0800
 Guangshuo Li <lgs201920130244@gmail.com> wrote:
 
-> mma9551_probe() enables runtime PM autosuspend with
+> mma9553_probe() enables runtime PM autosuspend with
 > pm_runtime_use_autosuspend(). The probe error path correctly undoes
 > this setting with pm_runtime_dont_use_autosuspend(), but the normal
 > remove path only disables runtime PM.
@@ -107,18 +107,18 @@ Guangshuo Li <lgs201920130244@gmail.com> wrote:
 > 
 > This issue was found by manual code inspection.
 > 
-> Fixes: 6da93a6710a3 ("iio: accel: mma9551: Add runtime pm support")
+> Fixes: 40cb761306d6 ("iio: add driver for Freescale MMA9553")
 > Cc: stable@vger.kernel.org
 > Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
 > ---
->  drivers/iio/accel/mma9551.c | 1 +
+>  drivers/iio/accel/mma9553.c | 1 +
 >  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-> index 7e01427fd9c4..182f488edab1 100644
-> --- a/drivers/iio/accel/mma9551.c
-> +++ b/drivers/iio/accel/mma9551.c
-> @@ -500,6 +500,7 @@ static void mma9551_remove(struct i2c_client *client)
+> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+> index 8e7aaac89d47..5a36d415a837 100644
+> --- a/drivers/iio/accel/mma9553.c
+> +++ b/drivers/iio/accel/mma9553.c
+> @@ -1136,6 +1136,7 @@ static void mma9553_remove(struct i2c_client *client)
 >  
 >  	iio_device_unregister(indio_dev);
 >  
