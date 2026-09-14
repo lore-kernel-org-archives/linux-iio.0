@@ -1,138 +1,101 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821F1364959
-	for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 03:45:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B857330B07;
+	Mon, 14 Sep 2026 06:49:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789357523; cv=none; b=aG234fSKKWY+dFgK7WkcEvQMGrkAz0UXsaT9jcgc58fBC2A9NGoljIVodGNJsbKdxRtKjGhJluC43yrS2l82PoaCYUFOF9j4ivRrDIQ73WAEHGWxNJ4/XrN3cpH1vULSHa1YqlhRnbzhRkTBDW9GQvJ3y8wXBxeAIQXtrMrza7Q=
+	t=1789368564; cv=none; b=fBrF5uhZhG0X4qAg2E611sPv7UVr/+sSqLe13i9UmUkdOGYKDR6x/G85XFOGj8edbwCBuyA0DtwolMvND6uu2df/bsIFqaDSSXJPAyyQRDXQj+TqFc6UbiQAtTtFG7EU381nLlr0F/2nJw4GqjYgbOFLhaR/sfgL6oMVT9JH6PM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789357523; c=relaxed/simple;
-	bh=nEQvniAYjY06dN8L1spstzHJeZhroLN3mj4n6Tpd8Ks=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rwAUI6JTMEQRVCFpCvAl/pCk9gpgjEH/BDpmXbLtrpdnFksXr7jpGdNps9tBvCi5YwGwK/wDqqPc0zMC+srZuhNn7Jm8RIOkLNGMHj+c9fAnE/Oe6Frsx+WV4nDsL57Zn56pdbNzpVf8oe6t9q7DKhNqFP82EuLUYlZ1gkHHZYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZvPQeMVE; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789368564; c=relaxed/simple;
+	bh=NcFXhEBpUe7LwqVZscQRoaZb+gt7yNgo6Ufyy0d0/RQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=GmY7ypNj6+65BEU+hb4eKsdoLcZw+BaErdE7QNmBPXqpFDBomuC45jJzEQ2OL9HbGCUdO1gWOcfjbcS1Va+RGbvzAv0Kgiq0Bl3pZ8ugQ4stYYydws9MeGR0mWeni7mw3ecRO9cBMpaTkzNqXaFDKGKMbGHgFqhdbjPYRmTF5YU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=fPkoFe6v; arc=none smtp.client-ip=185.70.43.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZvPQeMVE"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-92ed3993c1eso182651385a.1
-        for <linux-iio@vger.kernel.org>; Sun, 13 Sep 2026 20:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789357519; x=1789962319; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Hx4IFiiUO6XLO/s3kNZnWsmhsivyvUzhEVkE3MQOHQ0=;
-        b=ZvPQeMVE8DjMEOHmkhr9iHf4i78JMcq/FTl0nn/tWK8ZtQMWzCskRffu44RTt+Lfyk
-         ktZQ0EGiAuAadgkoK7mBPRn1PxklCksCyuuH3fboyKDGHdOrU5Q/RJhPiVIKOnRDZ+OY
-         nqnpNh35W76+PM+O/+2XcPkCjjS28IMaiOVQG2imlAoQ6Rj6jqvAHesGJyGNHvQNPiJJ
-         8b8OqpDg2iEt6l7q0Bg7HfXIU5+hyqnZyL/RKIKaKHAJN7Vq07154DhgWFQaAWQUwSkf
-         adSJDykU8UeQthHdZs7vxIwZLyAA4fJrL2Yit8bfbbefhsA2xErkVetz0nVAtkvOm+Xk
-         ZOsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789357519; x=1789962319;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Hx4IFiiUO6XLO/s3kNZnWsmhsivyvUzhEVkE3MQOHQ0=;
-        b=Sah252VCXQWrkWjs5Mfk7ZyABDXGxaABzdcH4Q9lB7npTMh8MwmG5cRln74LooTtg2
-         oFxds8E1dD8oITcQI6xRAZLMl1qo925mCAWoQUbooSRyBTH5eZ5NWg5RL7rcbqcTazY1
-         N2W0LAIxctyzAHCT7jhEYl3WKKCV04AK+5kHouV8XGvI8toqD8C+yGLz+Lo3uTctqbjx
-         m3qnWuHiL6HrWOUzFS+qLyE2RiGt5eIu9jPnLYEdxcqD7ymFrgu9rUDbGdL1llG/65mc
-         sno0lJqPJuIDEA2INXbOhOR2jA5U+wzsbopHaDhBI3PR0piKcxXPojhhmp2vyNhspQIf
-         M32w==
-X-Forwarded-Encrypted: i=1; AKwUvBzmF+NKVx/SyGHeWXf3/h1nG3E/fHKtf8dBFq6Wbn0JpD/7zpQShtMDiKio+MOsaX2fXoOrt1J6Jt8=@vger.kernel.org
-X-Gm-Message-State: AFuF++lGXgvycS9xZO7+9eMVIBrXrIn4Kl6lltPXsWKW98mpGdhi7nVv
-	u3cAYzgY/uKwszXpVjcrjyTVowi78qf5MNGvQ5LUxNrJyig0oqwMbcqG
-X-Gm-Gg: AYBFou2oQTkguuWQuvUtmgb5bOfFdjIsrNFdawokcP0s/K535g2k0DJ7z6x47HAvERA
-	g4Bco5RGN42DPe9m6hZ+W/AVlJnfmAvd+Af7RSlspOzSpuRAqXP10Q/7/KZzRJQzXnUBKMERKyx
-	GA1BP/9WiHkXPzoGPuM+vhw7+r7UcALA7kYQJ+iD7qSa7nIVF1wdrT6rzzrpyZKhWQ2XjO9+DxM
-	I4p6n8Y/7h7dnGwUooxrQMdui9yGNNF9pMAXxOT+iWyJ/RgTYrsDXhNYJlqSbDeHpHUkPOh8pr1
-	IZQ4Mt5K3lcyVp+y6UY++ZzhsdUWLJu0AiCxHocUBDNdiFJG1vjrFWNGJaPX9pHmup25q2PUllM
-	kFYXQZT7XZo5eHZ/EwAIl+IJni/xR50hkPH1uh4/cwNSk+PsYgOQWi6hAIJeFBLq7tIKI8FuqBt
-	6tx/V1ECkoAqWApo+xBCMIVfPT5jCexSKC2oMnB55jVy4lNBHAQrLVhfQu7T62+sFKhsw3/ILS5
-	ej93zla9Iok45X+Ici24HCboqSu
-X-Received: by 2002:a05:620a:31a0:b0:939:2d77:d6a8 with SMTP id af79cd13be357-93a299eaab1mr121544585a.34.1789357519511;
-        Sun, 13 Sep 2026 20:45:19 -0700 (PDT)
-Received: from i4-l-hqh5357-03.ad.psu.edu ([130.203.139.71])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93a26921baesm104710585a.24.2026.09.13.20.45.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2026 20:45:19 -0700 (PDT)
-From: Shuangpeng Bai <shuangpeng.kernel@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Shuangpeng Bai <shuangpeng.kernel@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/3] iio: adc: ti-ads112c14: add continuous mode support
-Date: Sun, 13 Sep 2026 23:44:23 -0400
-Message-ID: <20260914034428.2165528-1-shuangpeng.kernel@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260901025147.583b3f61@jic23-huawei>
-References: <20260901025147.583b3f61@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="fPkoFe6v"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail; t=1789368549; x=1789627749;
+	bh=NcFXhEBpUe7LwqVZscQRoaZb+gt7yNgo6Ufyy0d0/RQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=fPkoFe6v45z9IQTBkbIw3ny6aSESE9DIuILn8zEgKqdl+UT0suAKF6NziVbnjq1Ju
+	 DdBttMT1c0HND3rtcv48tZ0hnNd7oSmIJ/xM3A3AZ4nXd4XU3q+C3sxBSODl5S/Usg
+	 UkIg5PNgOiuHmRXTgaTZktFwiV0yjBTkpMVXnTLVwWSOz37CmqNrW765gCoQBw3mzF
+	 j4JwEQeYHqGqY2FqUG9i7lkPIoBZaI8GItpSRwoqQZaDK6QBSI99CpBqIIbNkAydEW
+	 yKPkRCspT0E0sivAMRvSvUYvUUDZU3YClx9aTNbAyVmb8zjOQfZVNWuZU671JyRHv2
+	 xrzbkAEJYMxtQ==
+X-Pm-Submission-Id: 4hjwjZ02nZz1DFFg
+From: Esben Haabendal <esben@geanix.com>
+To: "Jonathan Cameron" <jic23@kernel.org>
+Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
+ <robh@kernel.org>,  "Krzysztof Kozlowski" <krzk+dt@kernel.org>,  "Conor
+ Dooley" <conor+dt@kernel.org>,  "Martin Kepplinger" <martink@posteo.de>,
+  "Sean Nyekjaer" <sean@geanix.com>,  "David Lechner"
+ <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+  "Andy Shevchenko"
+ <andy@kernel.org>,  "Martin Kepplinger"
+ <martin.kepplinger@theobroma-systems.com>,  "Christoph Muellner"
+ <christoph.muellner@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
+  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>,
+  <stable@vger.kernel.org>,  "Joshua Crofts" <joshua.crofts1@gmail.com>
+Subject: Re: [PATCH v8 2/9] iio: accel: mma8452: Fix use-after-free bug in
+ error error path
+In-Reply-To: <20260914000924.165405fc@jic23-hlaptop>
+References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
+	<20260907-mma8452-open-drain-v8-2-c17407e22118@geanix.com>
+	<kXI4HQkk_ZaBX-zvTfe8llVum_qJweW1i5BNOfVaTMyDMkIDEPFbdlXWyxaHin49O0t-uJE5RPyiUwydItjNjQ==@protonmail.internalid>
+	<20260914000924.165405fc@jic23-hlaptop>
+Date: Mon, 14 Sep 2026 08:49:05 +0200
+Message-ID: <877bkoqqe6.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-Hi Jonathan,
+"Jonathan Cameron" <jic23@kernel.org> writes:
 
-I took another look at current_trigger_store() following your comment
-about the possible TOCTOU there. There may also be a trigger lifetime
-issue in the attach path.
+> On Mon, 07 Sep 2026 16:50:57 +0200
+> Esben Haabendal <esben@geanix.com> wrote:
+>
+>> If mma8452_probe() fails in iio_device_register() or later, we could end up
+>> with runtime suspend callback being called with a now freed device pointer.
+>>
+>> Fixes: 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
+>> Cc: stable@vger.kernel.org
+>> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+>> Signed-off-by: Esben Haabendal <esben@geanix.com>
+>
+> Sashiko calls out some preexisting stuff that is worth a look
+> https://sashiko.dev/#/patchset/20260907-mma8452-open-drain-v8-0-c17407e22118%40geanix.com
 
-I checked mainline commit
-fd73f4a6659897191fa0d40695fe370925dd3780 (Linux 7.3-rc3).
+Yes. And I have a follow-up patch series where I try to address
+basically everything sashiko-bot has raised concerns for.
 
-The reference acquired by current_trigger_store() becomes the reference
-held by indio_dev->trig, while iio_trigger_attach_poll_func() does not
-take an additional device reference to the trigger.
+Given the rather large number of issues, and the corresponding large
+number of changes needed, I am not planning on adding them to this
+series.
 
-For example, hi8435 uses INDIO_EVENT_TRIGGERED and allows changing its
-trigger, so these stores reach attach/detach. Assume the consumer stays
-registered, initially has no trigger, and T is a sysfs trigger with no
-other users. No one writes trigger_now.
+> Why freefall mode is set after the iio_device_register() is indeed an interesting
+> question. Any idea?
 
-With two independently opened current_trigger files, the stores can run
-concurrently because kernfs only serializes each open file:
+I cannot find any good reason for doing it like that. I am moving the
+iio_device_register() call to be the last thing done in .probe() in the
+follow-up series, so that the device is fully ready before we expose
+user-space API for it.
 
-  A: select T via current_trigger_store()
-       acquire reference; indio_dev->trig = T
-       iio_trigger_attach_poll_func(T, pollfunc_event)
-         allocate pf->irq; request_threaded_irq() succeeds and returns
-         <preempt before reading trig->ops>
+> As far as it goes this patch is fine. I'm not sure about the other sashiko
+> comment about making sure the device is suspended. Given pm_runtime_set_active()
+> is called I would assume that one of the register sequences has indeed
+> turned on the device (maybe the reset?) and we should be turning it off again.
 
-  B: remove T via iio-trig-sysfs's remove_trigger
-       iio_trigger_unregister(T)
-       irq_work_sync(&t->work)
-       iio_trigger_free(T)
-     clear current_trigger with "\n"
-       oldtrig = T; indio_dev->trig = NULL
-       iio_trigger_detach_poll_func(T, pollfunc_event)
-       iio_trigger_put(T) -> iio_trig_release() -> kfree(T)
+There is quite a number of issues with runtime pm in this driver. I look
+forward to getting feedback to the changes I have made to them :)
 
-  A: resume in iio_trigger_attach_poll_func()
-       if (trig->ops && trig->ops->set_trigger_state && notinuse)
-           ^ possible UAF
-
-The consumer reference keeps T alive after removal, but B's clearing
-store can drop the last reference while A is still in attach.
-
-At the pause point the IRQ is installed, so B can detach it. T->ops is
-NULL, and free_irq() does not wait for the enclosing attach call.
-
-I have only checked this by source review and do not have a reproducer
-or KASAN trace.
-
-Does this race look possible to you?
-
-Best,
-Shuangpeng
+/Esben
