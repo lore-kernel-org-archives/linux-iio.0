@@ -1,245 +1,320 @@
-Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7953AE6E2;
-	Mon, 14 Sep 2026 07:16:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84D9232B989;
+	Mon, 14 Sep 2026 08:00:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789370166; cv=none; b=PQGmHRvbPEsTCmAdBcpeJgXsRlQfgka9/pJ1559LZ6eddgueu+Q5ch6zbbjd6Po0GQ++wqIK3Szz3gt7XRIzS7x3S0et7PkrpssWHq9tSH3oAIy3eMGSEyf+HS+qQCexDOEExPo09e6szXXYBoX/mvCl3PdR3H0mCz84y6wL60g=
+	t=1789372826; cv=none; b=dk1wT1QNbxMRZKw36+WW5IYXhGvxpzOOLTIMKf/RdVtZh9cUdhCvADD1GT4olkr5WZ7AJwx7s85pqlmJX7G5NwX3ZAYcQg8GX3eqFEt+m1zEYCI6JM268h0EoLeiZo5ZcrW14RzB3FiTDL4dXHxJ85CnTuitzJiOzC5jMHj+MmI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789370166; c=relaxed/simple;
-	bh=+9qvXNG0V3EvlwpXeMXN0075vbs75g7OZP2JSZOyNFo=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=IyY2uAdKlk/hKGS543zoUpoiZR12BJNG32YiP6+Ul4b5q7GiNRfxRsQk91PMf+be4De9o9HRrMOOhFdj7TOXN+NCtTZG7XCyzKbs7wMAr/YKBbfIdatIfLbSaiEHaOEslmqV4ChtZDX+Vukl0KKzdytgOu8JZ+mp1NN1KopfyQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=dsFXt8st; arc=none smtp.client-ip=79.135.106.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1789372826; c=relaxed/simple;
+	bh=9Sn76LLDRFARz/KCNhJyCKv/7XWJMa9IVHapNKGw/TU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KqOAHp7AQAgldZdVvvdCKCVC+TrQ10QWaY53LZM5UtEIUlSuMnoTY0zGKmHK7VlCR+c3vOCGgQpGTUeW/TYJ5MLAHhWXQuFXS6uFYz5ucs+LxfPZxC8U4zVYGtYJVPya8KusQRWQUhwHrOXNbNdFBCjlcl4Ppt/mggTbcONYYiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FwrudPih; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="dsFXt8st"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1789370157; x=1789629357;
-	bh=U1IpbkgfNMga2YklmwuKhovIzDnZPM+tL+jR3Z6DJ5o=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=dsFXt8stm8SY+/WMjjOUUvum9fMU0ZcsROpBkIbBBxN+bIBQKfuu7kjebsMY8VXJZ
-	 YQF0UIFlsOuu6hbSQCvCIw1TlG1txuhxSMrHQ5ytuuQIwz8vQWstXNKoyqfQsRf4xA
-	 8wCTjhfHR7wD7bELyKFM/MN2kHR1tUJ/xIJ0VygHIwYkbNSwCN7UrTlYvSIoP/omVI
-	 WireAwbKIlY2B2R0Wu9x7me4XeKcgVJiUFSZh+v8DemEBWjn4zZ+qxsb7HQTEgG7kS
-	 08vrpZcKAcnHuecQNWK34YwPnHXObIODo66DZsjLsWmUX9nK6lDrrG60Lc2lL/orUi
-	 0ZMWmXNt8cBqA==
-X-Pm-Submission-Id: 4hjxJX0l9bz2ScPS
-From: Esben Haabendal <esben@geanix.com>
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
- <robh@kernel.org>,  "Krzysztof Kozlowski" <krzk+dt@kernel.org>,  "Conor
- Dooley" <conor+dt@kernel.org>,  "Martin Kepplinger" <martink@posteo.de>,
-  "Sean Nyekjaer" <sean@geanix.com>,  "David Lechner"
- <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
-  "Andy Shevchenko"
- <andy@kernel.org>,  "Martin Kepplinger"
- <martin.kepplinger@theobroma-systems.com>,  "Christoph Muellner"
- <christoph.muellner@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
-  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 9/9] iio: accel: mma8452: Support interrupt sharing
-In-Reply-To: <20260914002203.5ca07dd0@jic23-hlaptop>
-References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
-	<20260907-mma8452-open-drain-v8-9-c17407e22118@geanix.com>
-	<_9NG2PCqwv-AxkrhQVOkPVIgvYD4-t2CFH5W5HVBmr35w9xmX9v9FIraB1OPE8Ssbd_pjQqM-bq3DEAtRl78Sg==@protonmail.internalid>
-	<20260914002203.5ca07dd0@jic23-hlaptop>
-Date: Mon, 14 Sep 2026 09:15:55 +0200
-Message-ID: <87y0d4pal0.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FwrudPih"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789372825; x=1820908825;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9Sn76LLDRFARz/KCNhJyCKv/7XWJMa9IVHapNKGw/TU=;
+  b=FwrudPihN7K2/klcJdseH+q3SdFLz7Hr1F8+frQN5iOZszV/TX29UggH
+   byzorJmUYZIBiIQ7+C6etvxc7mzk6Y4SYZCbQrIPW1xUJyIwONZnjK6+F
+   95yY1+sTPY7d+fhwFcEL+zd5gPWACiL9I35DU8GcuhvHT4mKhprkHV2fa
+   +w1XbYTBrOo8JzcpmbMgDR1ZXZo6mGx/eKggylXbh9oMMvklm+dkYny/v
+   AWIg88kAfF5GoArAPoOhPMUA/+CFwd9n5n1bj2/HiP/SbZSgWqvQEkD9H
+   MuHWtnbZ66HfFsEIP/tTjCpu/xdT45sBYoEx1HzRDLWlo9Q6fYueYcj1S
+   A==;
+X-CSE-ConnectionGUID: qMe4vhmKRcmhpiO2nyGvRg==
+X-CSE-MsgGUID: S7Rzx+4+SimYc/7TOFc1vA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11904"; a="107095139"
+X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
+   d="scan'208";a="107095139"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 01:00:24 -0700
+X-CSE-ConnectionGUID: F8Dbi8XtTzmsChUlk8/s5g==
+X-CSE-MsgGUID: LB7HtylyQcCR9f2GSz/REw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
+   d="scan'208";a="271160132"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.29])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 01:00:20 -0700
+Date: Mon, 14 Sep 2026 11:00:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chang Yu <marcus.yu.56@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Shi Hao <i.shihao.999@gmail.com>,
+	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: light: add AS7343 multi-spectral sensor
+ driver
+Message-ID: <aqepkmQS_p6K1Bd6@ashevche-desk.local>
+References: <20260912013912.51887-1-marcus.yu.56@gmail.com>
+ <20260912013912.51887-3-marcus.yu.56@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260912013912.51887-3-marcus.yu.56@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-"Jonathan Cameron" <jic23@kernel.org> writes:
+On Fri, Sep 11, 2026 at 06:39:12PM -0700, Chang Yu wrote:
+> Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
+> 
+> The AS7343 is a 14-channel spectral sensor featuring 11 visible
+> channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
+> flicker detection channel.
+> 
+> The driver exposes 12 spectral channels (11 visible light and 1
+> near-infrared) via sysfs. Runtime PM is implemented to stop
+> measurements when the device is suspended or torn down. Power is
+> never cut (PON=1 always) to preserve register values.
+> 
+> Future patches will add configurable gain and integration time,
+> interrupt support, buffered reads, VIS channel, and flicker
+> detection.
 
-> On Mon, 07 Sep 2026 16:51:04 +0200
-> Esben Haabendal <esben@geanix.com> wrote:
->
->> Adding support for sharing interrupt line with other device requires the
->> interrupt handler to handle runtime PM suspension properly, ignoring the
->> irq if the device is suspended (maybe even off). And while at it, we use
->> the PM reference to ensure we do not get suspended while processing an irq.
->>
->> In order to prevent the chip from raising irq while suspended (that is when
->> using fixed regulator, where suspend just means setting the device in
->> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
->> then restores the value again when resuming.
->>
->> With that in place, it is safe to add the IRQF_SHARED flag.
->>
->> Keep in mind that the device by default is using push-pull for the irq pin,
->> which might require additional hardware design to allow interrupt sharing.
->>
->> Signed-off-by: Esben Haabendal <esben@geanix.com>
->> ---
->>  drivers/iio/accel/mma8452.c | 67 +++++++++++++++++++++++++++++++++++++++------
->>  1 file changed, 58 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index fda29df5d109..e521dca37f76 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -120,6 +120,7 @@
->>   * @sleep_val:			time in ms to sleep while waiting for drdy
->>   * @ctrl_reg1:			CTRL_REG1 register shadow value
->>   * @data_cfg:			DATA_CFG register shadow value
->> + * @ctrl_reg4:			CTRL_REG4 register value to restore on resume
->>   * @open_drain:			true for irq pin in open-drain mode
->>   */
->>  struct mma8452_data {
->> @@ -138,6 +139,7 @@ struct mma8452_data {
->>  	int sleep_val;
->>  	u8 ctrl_reg1;
->>  	u8 data_cfg;
->> +	u8 ctrl_reg4;
->>  	bool open_drain;
->>  };
->>
->> @@ -1083,15 +1085,21 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->>  {
->>  	struct iio_dev *indio_dev = p;
->>  	struct mma8452_data *data = iio_priv(indio_dev);
->> +	struct device *dev = &data->client->dev;
->>  	irqreturn_t ret = IRQ_NONE;
->> +	int pm_status;
->>  	int src;
->>
->> +	pm_status = pm_runtime_get_if_active(dev);
->
-> Sashiko raises the question of what happens if you actually get an error
-> return from this. You may be deliberately ignoring those, but if
-> so add a comment.
+...
 
-Yes, sounds like a good idea.
+> +/*
+> + * Support for AMS AS7343 14-channel multi-spectral sensor.
+> + * (7-bit I2C slave address 0x39)
+> + *
+> + * Based on the work of:
+> + *   Christian Eggers <ceggers@arri.de> (AS73211 driver)
+> + *
+> + * Copyright (c) 2026 Chang Yu <marcus.yu.56@gmail.com>
+> + *
+> + * Datasheets:
 
-> The fun race around tear down is worth considering in particular (see
-> sashiko comment).
+Why plural?
 
-I will look into that. Although very unlikely, it does sound like a real
-issue that *could* occur.
+> + *   https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
+> + *
+> + * TODO:
+> + *   - Autosuspend
+> + *   - Support for configurable gain and integration time
+> + *   - Interrupt support
+> + *   - Add support for reading the VIS channel
+> + *   - Flicker detection
+> + */
 
-Adding a boolean flag (remove_in_progress = true) to the mma8452_data
-struct, and set that in mma8452_remove() before disabling runtime pm
-seems like a KISS solution. Should we be returning IRQ_HANDLED or
-IRQ_NONE in that case?  There is no IRQ_MAYBE return value :D
+...
 
->> +	if (pm_status == 0)
->> +		return IRQ_NONE; /* device is powered down */
->
->> @@ -1784,29 +1796,62 @@ static void mma8452_remove(struct i2c_client *client)
->>  #ifdef CONFIG_PM
->>  static int mma8452_runtime_suspend(struct device *dev)
->>  {
->> -	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
->> +	struct i2c_client *client = to_i2c_client(dev);
->> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>  	struct mma8452_data *data = iio_priv(indio_dev);
->>  	int ret;
->>
->> -	scoped_guard(mutex, &data->lock)
->> -		ret = mma8452_standby(data);
->> +	guard(mutex)(&data->lock);
-> Mixing guards...
+> +#define AS7343_ID				0x5a
 
-Yes, I know. Resolving that turned out to be a bit more painful than I
-thought. I do have that resolved in the next series I keep on talking
-about. But distilling that as a separate patch for adding to this series
-turned out to be impossible, as it relies on some of the other work,
-like refactoring of the ACTIVE/STANDBY state handling (synchronization),
-and most importantly, the switch to using regmap caching to properly
-handle restoring of register values on resume.
+> +/* AS7343 config registers */
+> +#define AS7343_ENABLE				0x80
 
-I am therefore hoping that we can find some way to agree on things here,
-and then properly resolve it in the next series...
+> +#define AS7343_ATIME				0x81
 
-For what it is worth, in this very specific case, the only guard used is
-first in the LIFO order, and will therefore be executed in exactly the
-right order on exit, as it will run after all the goto cleanup, just as
-the LIFO cleanup order requires.
+> +#define AS7343_ASTEP				0xd4
 
-Obviously a fragile and undesirable way of doing error handling, but it
-will go away again in the next series where I will eliminate the goto
-error handling in mma8452_runtime_suspend().
 
->> +
->> +	ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG4);
->>  	if (ret < 0) {
->> -		dev_err(dev, "powering off device failed\n");
->> +		dev_warn(dev, "backing up CTRL_REG4 failed\n");
->>  		return -EAGAIN;
->> +	} else
->> +		data->ctrl_reg4 = ret;
->> +
->> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG4, 0);
->> +	if (ret) {
->> +		dev_warn(dev, "disabling interrupt sources (CTRL_REG4) failed\n");
->> +		return -EAGAIN;
->> +	}
->> +
->> +	ret = mma8452_standby(data);
->> +	if (ret < 0) {
->> +		dev_err(dev, "transition to STANDBY mode failed\n");
->> +		ret = -EAGAIN;
->> +		goto out_restore_ctrl_reg4;
->
-> and goto is explicitly advised against in the docs in cleanup.h
-> You need to restructure the code to avoid that, potentially via
-> a helper function.
+> +#define AS7343_CFG0				0xbf
+> +
+> +#define AS7343_CFG1				0xc6
 
-I agree. See above.
+> +#define AS7343_CFG20				0xd6
 
->>  	}
->>
->> +	/*
->> +	 * Interrupt line should be deasserted now, so we just need ensure any
->> +	 * mid-flight irq is completed (will return IRQ_NONE due to
->> +	 * pm_status==0).
->> +	 */
->> +	if (client->irq)
->> +		synchronize_irq(client->irq);
->> +
->>  	ret = regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
->>  	if (ret) {
->>  		dev_err(dev, "failed to disable regulators\n");
->> -		return ret;
->> +		goto out_active;
->>  	}
->>
->>  	return 0;
->> +
->> +out_active:
->> +	if (mma8452_active(data))
->> +		dev_warn(dev, "failed to switch back to ACTIVE mode\n");
->> +out_restore_ctrl_reg4:
->> +	if (i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG4, data->ctrl_reg4))
->> +		dev_warn(dev, "restoring CTRL_REG4 failed\n");
->> +	return ret;
->>  }
->>
->>  static int mma8452_runtime_resume(struct device *dev)
->>  {
->> -	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
->> +	struct i2c_client *client = to_i2c_client(dev);
->> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>  	struct mma8452_data *data = iio_priv(indio_dev);
->>  	int ret, sleep_val;
->>
->> @@ -1820,6 +1865,10 @@ static int mma8452_runtime_resume(struct device *dev)
->>  	if (ret)
->>  		goto runtime_resume_failed;
->>
->> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG4, data->ctrl_reg4);
->> +	if (ret)
->> +		goto runtime_resume_failed;
->> +
->>  	ret = mma8452_active(data);
->>  	if (ret < 0)
->>  		goto runtime_resume_failed;
->>
+> +#define AS7343_CONTROL				0xfa
+> +
+> +/* AS7343 status registers */
+> +#define AS7343_STATUS2				0x90
+> +#define AS7343_STATUS3				0x91
+> +#define AS7343_STATUS				0x93
+> +#define AS7343_ASTATUS				0x94
+> +#define AS7343_STATUS5				0xbb
+> +#define AS7343_STATUS4				0xbc
+> +#define AS7343_FD_STATUS			0xe3
+> +
+> +/* AS7343 spectral data registers */
+> +#define AS7343_DATA_FZ		0x95
+> +#define AS7343_DATA_FY		0x97
+> +#define AS7343_DATA_FXL		0x99
+> +#define AS7343_DATA_NIR		0x9b
+> +#define AS7343_DATA_F2		0xa1
+> +#define AS7343_DATA_F3		0xa3
+> +#define AS7343_DATA_F4		0xa5
+> +#define AS7343_DATA_F6		0xa7
+> +#define AS7343_DATA_F1		0xad
+> +#define AS7343_DATA_F7		0xaf
+> +#define AS7343_DATA_F8		0xb1
+> +#define AS7343_DATA_F5		0xb3
+> +#define AS7343_DATA_FD_L	0xb7
+> +#define AS7343_DATA_FD_H	0xb8
+
+> +/* AS7343 FIFO buffer data registers */
+> +#define AS7343_FIFO_LVL		0xfd
+> +#define AS7343_FDATA_L		0xfe
+> +#define AS7343_FDATA_H		0xff
+
+Please, keep indentation for the registers the same. Also would be nice to have
+them sorted by offset.
+
+...
+
+> +static int as7343_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	struct as7343_data *data = iio_priv(indio_dev);
+> +	unsigned int unused;
+> +	struct regmap *map;
+> +	struct device *dev;
+> +	__le16 result;
+> +	int ret;
+
+> +	map = data->regmap;
+> +	dev = regmap_get_device(map);
+
+Assign them directly in the definition block above.
+
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED(dev, pm);
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW: {
+> +		/* Wait until integration time passes for all 3 cycles. */
+> +		msleep(160);
+> +
+> +		/*
+> +		 * Reading ASTATUS latches all data registers to this read.
+> +		 * We don't care about the returned saturation/gain status for
+> +		 * now.
+> +		 */
+> +		guard(mutex)(&data->mutex);
+
+Blank line. Always make guard()() to be visible (by grouping it separately
+from the other pieces of code).
+
+> +		ret = regmap_read(map, AS7343_ASTATUS, &unused);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_bulk_read(map, chan->address,
+> +				       &result, sizeof(result));
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = le16_to_cpu(result);
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int as7343_setup_device(struct device *dev, struct as7343_data *data)
+> +{
+> +	struct regmap *map = data->regmap;
+> +	unsigned int val;
+> +	__le16 step;
+> +	int ret;
+> +
+> +	/* Power on */
+> +	ret = regmap_set_bits(map, AS7343_ENABLE, AS7343_ENABLE_PON);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Need to set REG_BANK to 1 before we can access ID */
+> +	ret = regmap_set_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(map, AS7343_ID, &val);
+> +	if (ret)
+> +		return ret;
+
+> +	if (val != 0x81)
+> +		dev_info(dev, "Unknown device ID: %x\n", val);
+
+Wouldn't be better to define 0x81 with meaningful name?
+
+> +	ret = regmap_clear_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Configure the SMUX to readout all channels */
+> +	ret = regmap_update_bits(map, AS7343_CFG20, AS7343_CFG20_AUTO_SMUX,
+> +				 FIELD_PREP(AS7343_CFG20_AUTO_SMUX,
+> +					    AS7343_CFG20_AUTO_SMUX_READOUT_ALL));
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set 50.1ms integration time and x256 gain for now */
+> +	step = cpu_to_le16(AS7343_ASTEP_VAL);
+> +	ret = regmap_bulk_write(map, AS7343_ASTEP, &step, sizeof(step));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(map, AS7343_ATIME, AS7343_ATIME_VAL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_update_bits(map, AS7343_CFG1, AS7343_CFG1_AGAIN,
+> +				  FIELD_PREP(AS7343_CFG1_AGAIN,
+> +					     AS7343_CFG1_AGAIN_X256));
+> +}
+
+...
+
+> +static int as7343_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct as7343_data *data = iio_priv(indio_dev);
+> +	struct regmap *map = data->regmap;
+
+> +	return regmap_clear_bits(map, AS7343_ENABLE, AS7343_ENABLE_SP_EN);
+
+Can this mess up the raw read? If so, also needs a mutex to be held.
+
+> +}
+> +
+> +static int as7343_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct as7343_data *data = iio_priv(indio_dev);
+> +	struct regmap *map = data->regmap;
+> +
+> +	return regmap_set_bits(map, AS7343_ENABLE, AS7343_ENABLE_SP_EN);
+> +}
+
+Same Q.
+
+...
+
+> +static void as7343_suspend_action(void *data)
+> +{
+> +	struct device *dev = data;
+
+Unneeded casting, can name parameter 'dev' above.
+
+> +	as7343_suspend(dev);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
