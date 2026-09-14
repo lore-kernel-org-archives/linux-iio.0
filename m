@@ -1,33 +1,33 @@
-Received: from mail-106112.protonmail.ch (mail-106112.protonmail.ch [79.135.106.112])
+Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C716B33A9E2
-	for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 06:50:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7953AE6E2;
+	Mon, 14 Sep 2026 07:16:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789368647; cv=none; b=s6lBsn5KIdS0McdgGqfc4Xk7OmsilBPucsszdMa6z8dz7dh/eIp3pIVCnmbzFyysPZKSqDCn2VcYVkfMb+v314dj/iE8MrOeb9KuBa4tXKcBlF1SzI+GFDbfsJOcf7Eph5AyfFhqWz0IKKv/74DP0sxUE1j26xviSnEJQ2se6fs=
+	t=1789370166; cv=none; b=PQGmHRvbPEsTCmAdBcpeJgXsRlQfgka9/pJ1559LZ6eddgueu+Q5ch6zbbjd6Po0GQ++wqIK3Szz3gt7XRIzS7x3S0et7PkrpssWHq9tSH3oAIy3eMGSEyf+HS+qQCexDOEExPo09e6szXXYBoX/mvCl3PdR3H0mCz84y6wL60g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789368647; c=relaxed/simple;
-	bh=aIpbLlwdmbcTnwkTSzFZLDJCnVOvqN3X5lMPhJCFO8M=;
+	s=arc-20240116; t=1789370166; c=relaxed/simple;
+	bh=+9qvXNG0V3EvlwpXeMXN0075vbs75g7OZP2JSZOyNFo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=B2zTprWwnje45XyU9zAjqTZuCblebpcpN75PvV8T7F7YuauDFf+LZOzs6p8a1780ETqIr3tRZl//j/18IfBu7lp9ECaI3cv/JcjLrRtYXTg8JR+Vnw3OQhsh6HDog7ZFP8yxCRhaUCh3bkcVC2GZxU0cIHHlxiIds5NhkzGTFKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=SlZ1nkVh; arc=none smtp.client-ip=79.135.106.112
+	 MIME-Version:Content-Type; b=IyY2uAdKlk/hKGS543zoUpoiZR12BJNG32YiP6+Ul4b5q7GiNRfxRsQk91PMf+be4De9o9HRrMOOhFdj7TOXN+NCtTZG7XCyzKbs7wMAr/YKBbfIdatIfLbSaiEHaOEslmqV4ChtZDX+Vukl0KKzdytgOu8JZ+mp1NN1KopfyQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=dsFXt8st; arc=none smtp.client-ip=79.135.106.113
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="SlZ1nkVh"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="dsFXt8st"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1789368636; x=1789627836;
-	bh=voOVQn4SEWZAEsyGJZ/P1FdKKOEHwrdxFVFyvFaooXE=;
+	s=protonmail; t=1789370157; x=1789629357;
+	bh=U1IpbkgfNMga2YklmwuKhovIzDnZPM+tL+jR3Z6DJ5o=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=SlZ1nkVhLUA5+qYF6nnoBg02O4uVlBtVHzbE6Ypu3TH9edKjL4TJXWSM/9pSCQM8q
-	 kWKcEHxYKuZNFS7P8ZDRjTft9RFJplwfWpsZpRLTg9lZghHoKmR1XwkcBmmrk72YGm
-	 T1UMeAzxzjwI1cQzQ1Qjvvn5Ko+XAtOdqeviP/0bZ7VByeIQIv9gx3SLTYNVN4MuUC
-	 8AT9p4+qJtKXuZhkHrYqMkDxgeSdhYzFKOZnZJPeOl1zynks/owCtWqtcGwaeUe6PP
-	 hF0+M+XHluebLD1MZ3PRrx1JG/p3J60+/TPfLapB21FrXGzpKeYP7ZcBNVKnzAbpQ2
-	 HsFHOyyeXx3Bw==
-X-Pm-Submission-Id: 4hjwlF3sd9z1DF6l
+	b=dsFXt8stm8SY+/WMjjOUUvum9fMU0ZcsROpBkIbBBxN+bIBQKfuu7kjebsMY8VXJZ
+	 YQF0UIFlsOuu6hbSQCvCIw1TlG1txuhxSMrHQ5ytuuQIwz8vQWstXNKoyqfQsRf4xA
+	 8wCTjhfHR7wD7bELyKFM/MN2kHR1tUJ/xIJ0VygHIwYkbNSwCN7UrTlYvSIoP/omVI
+	 WireAwbKIlY2B2R0Wu9x7me4XeKcgVJiUFSZh+v8DemEBWjn4zZ+qxsb7HQTEgG7kS
+	 08vrpZcKAcnHuecQNWK34YwPnHXObIODo66DZsjLsWmUX9nK6lDrrG60Lc2lL/orUi
+	 0ZMWmXNt8cBqA==
+X-Pm-Submission-Id: 4hjxJX0l9bz2ScPS
 From: Esben Haabendal <esben@geanix.com>
 To: "Jonathan Cameron" <jic23@kernel.org>
 Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
@@ -40,15 +40,14 @@ Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
  <martin.kepplinger@theobroma-systems.com>,  "Christoph Muellner"
  <christoph.muellner@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
   <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 6/9] iio: accel: mma8452: Add comment block for
- struct mma8452_data
-In-Reply-To: <20260914001514.3a33ce55@jic23-hlaptop>
+Subject: Re: [PATCH v8 9/9] iio: accel: mma8452: Support interrupt sharing
+In-Reply-To: <20260914002203.5ca07dd0@jic23-hlaptop>
 References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
-	<20260907-mma8452-open-drain-v8-6-c17407e22118@geanix.com>
-	<9JAXlYhUmV0zxVuB-Ckxjm3ncsCELASr3bemodiWlAbhyXvdWJqEHVY2wBgIuYWLlGxR-6MNWrZ8O17oMdynCg==@protonmail.internalid>
-	<20260914001514.3a33ce55@jic23-hlaptop>
-Date: Mon, 14 Sep 2026 08:50:32 +0200
-Message-ID: <8733vcqqbr.fsf@geanix.com>
+	<20260907-mma8452-open-drain-v8-9-c17407e22118@geanix.com>
+	<_9NG2PCqwv-AxkrhQVOkPVIgvYD4-t2CFH5W5HVBmr35w9xmX9v9FIraB1OPE8Ssbd_pjQqM-bq3DEAtRl78Sg==@protonmail.internalid>
+	<20260914002203.5ca07dd0@jic23-hlaptop>
+Date: Mon, 14 Sep 2026 09:15:55 +0200
+Message-ID: <87y0d4pal0.fsf@geanix.com>
 User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -60,44 +59,187 @@ Content-Type: text/plain
 
 "Jonathan Cameron" <jic23@kernel.org> writes:
 
-> On Mon, 07 Sep 2026 16:51:01 +0200
+> On Mon, 07 Sep 2026 16:51:04 +0200
 > Esben Haabendal <esben@geanix.com> wrote:
 >
->> The struct mma8452_data is central for this driver, and it makes sense to
->> have a description of the fields in it to make it easier to work with the
->> driver.
+>> Adding support for sharing interrupt line with other device requires the
+>> interrupt handler to handle runtime PM suspension properly, ignoring the
+>> irq if the device is suspended (maybe even off). And while at it, we use
+>> the PM reference to ensure we do not get suspended while processing an irq.
+>>
+>> In order to prevent the chip from raising irq while suspended (that is when
+>> using fixed regulator, where suspend just means setting the device in
+>> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
+>> then restores the value again when resuming.
+>>
+>> With that in place, it is safe to add the IRQF_SHARED flag.
+>>
+>> Keep in mind that the device by default is using push-pull for the irq pin,
+>> which might require additional hardware design to allow interrupt sharing.
 >>
 >> Signed-off-by: Esben Haabendal <esben@geanix.com>
 >> ---
->>  drivers/iio/accel/mma8452.c | 16 ++++++++++++++++
->>  1 file changed, 16 insertions(+)
+>>  drivers/iio/accel/mma8452.c | 67 +++++++++++++++++++++++++++++++++++++++------
+>>  1 file changed, 58 insertions(+), 9 deletions(-)
 >>
 >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index c6af68d2a297..2c1b97b77bc1 100644
+>> index fda29df5d109..e521dca37f76 100644
 >> --- a/drivers/iio/accel/mma8452.c
 >> +++ b/drivers/iio/accel/mma8452.c
->> @@ -104,6 +104,22 @@
+>> @@ -120,6 +120,7 @@
+>>   * @sleep_val:			time in ms to sleep while waiting for drdy
+>>   * @ctrl_reg1:			CTRL_REG1 register shadow value
+>>   * @data_cfg:			DATA_CFG register shadow value
+>> + * @ctrl_reg4:			CTRL_REG4 register value to restore on resume
+>>   * @open_drain:			true for irq pin in open-drain mode
+>>   */
+>>  struct mma8452_data {
+>> @@ -138,6 +139,7 @@ struct mma8452_data {
+>>  	int sleep_val;
+>>  	u8 ctrl_reg1;
+>>  	u8 data_cfg;
+>> +	u8 ctrl_reg4;
+>>  	bool open_drain;
+>>  };
 >>
->>  #define MMA8452_AUTO_SUSPEND_DELAY_MS		2000
+>> @@ -1083,15 +1085,21 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+>>  {
+>>  	struct iio_dev *indio_dev = p;
+>>  	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	struct device *dev = &data->client->dev;
+>>  	irqreturn_t ret = IRQ_NONE;
+>> +	int pm_status;
+>>  	int src;
 >>
->> +/**
->> + * struct mma8452_data - IIO device private data structure
->> + * @client:			the I2C client object
->> + * @lock:			mutex for synchronziation of register
->> + *				read-modify-write and holding chip in STANDBY
->> + *				mode while writing to registers
->> + * @orientation:		mounting matrix, flipped axis etc
->> + * @chip_info:			chip specific data
->> + * @vdd_reg:			reference to VDD regulator
->> + * @vddio_reg:			reference to VDDIO regulator
+>> +	pm_status = pm_runtime_get_if_active(dev);
 >
-> These don't exist any more.  Sanjay did a conversion to bulk regulators
-> that I picked up a few weeks back. Please rebase for v9 on top
-> of the togreg branch of iio.git.
+> Sashiko raises the question of what happens if you actually get an error
+> return from this. You may be deliberately ignoring those, but if
+> so add a comment.
 
-Already done and queued up to be sent :)
+Yes, sounds like a good idea.
 
-> Seems that sashiko figured out enough to base this on a more recent
-> tree than you have.
+> The fun race around tear down is worth considering in particular (see
+> sashiko comment).
 
-/Esben
+I will look into that. Although very unlikely, it does sound like a real
+issue that *could* occur.
+
+Adding a boolean flag (remove_in_progress = true) to the mma8452_data
+struct, and set that in mma8452_remove() before disabling runtime pm
+seems like a KISS solution. Should we be returning IRQ_HANDLED or
+IRQ_NONE in that case?  There is no IRQ_MAYBE return value :D
+
+>> +	if (pm_status == 0)
+>> +		return IRQ_NONE; /* device is powered down */
+>
+>> @@ -1784,29 +1796,62 @@ static void mma8452_remove(struct i2c_client *client)
+>>  #ifdef CONFIG_PM
+>>  static int mma8452_runtime_suspend(struct device *dev)
+>>  {
+>> -	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct i2c_client *client = to_i2c_client(dev);
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>>  	struct mma8452_data *data = iio_priv(indio_dev);
+>>  	int ret;
+>>
+>> -	scoped_guard(mutex, &data->lock)
+>> -		ret = mma8452_standby(data);
+>> +	guard(mutex)(&data->lock);
+> Mixing guards...
+
+Yes, I know. Resolving that turned out to be a bit more painful than I
+thought. I do have that resolved in the next series I keep on talking
+about. But distilling that as a separate patch for adding to this series
+turned out to be impossible, as it relies on some of the other work,
+like refactoring of the ACTIVE/STANDBY state handling (synchronization),
+and most importantly, the switch to using regmap caching to properly
+handle restoring of register values on resume.
+
+I am therefore hoping that we can find some way to agree on things here,
+and then properly resolve it in the next series...
+
+For what it is worth, in this very specific case, the only guard used is
+first in the LIFO order, and will therefore be executed in exactly the
+right order on exit, as it will run after all the goto cleanup, just as
+the LIFO cleanup order requires.
+
+Obviously a fragile and undesirable way of doing error handling, but it
+will go away again in the next series where I will eliminate the goto
+error handling in mma8452_runtime_suspend().
+
+>> +
+>> +	ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG4);
+>>  	if (ret < 0) {
+>> -		dev_err(dev, "powering off device failed\n");
+>> +		dev_warn(dev, "backing up CTRL_REG4 failed\n");
+>>  		return -EAGAIN;
+>> +	} else
+>> +		data->ctrl_reg4 = ret;
+>> +
+>> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG4, 0);
+>> +	if (ret) {
+>> +		dev_warn(dev, "disabling interrupt sources (CTRL_REG4) failed\n");
+>> +		return -EAGAIN;
+>> +	}
+>> +
+>> +	ret = mma8452_standby(data);
+>> +	if (ret < 0) {
+>> +		dev_err(dev, "transition to STANDBY mode failed\n");
+>> +		ret = -EAGAIN;
+>> +		goto out_restore_ctrl_reg4;
+>
+> and goto is explicitly advised against in the docs in cleanup.h
+> You need to restructure the code to avoid that, potentially via
+> a helper function.
+
+I agree. See above.
+
+>>  	}
+>>
+>> +	/*
+>> +	 * Interrupt line should be deasserted now, so we just need ensure any
+>> +	 * mid-flight irq is completed (will return IRQ_NONE due to
+>> +	 * pm_status==0).
+>> +	 */
+>> +	if (client->irq)
+>> +		synchronize_irq(client->irq);
+>> +
+>>  	ret = regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
+>>  	if (ret) {
+>>  		dev_err(dev, "failed to disable regulators\n");
+>> -		return ret;
+>> +		goto out_active;
+>>  	}
+>>
+>>  	return 0;
+>> +
+>> +out_active:
+>> +	if (mma8452_active(data))
+>> +		dev_warn(dev, "failed to switch back to ACTIVE mode\n");
+>> +out_restore_ctrl_reg4:
+>> +	if (i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG4, data->ctrl_reg4))
+>> +		dev_warn(dev, "restoring CTRL_REG4 failed\n");
+>> +	return ret;
+>>  }
+>>
+>>  static int mma8452_runtime_resume(struct device *dev)
+>>  {
+>> -	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct i2c_client *client = to_i2c_client(dev);
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>>  	struct mma8452_data *data = iio_priv(indio_dev);
+>>  	int ret, sleep_val;
+>>
+>> @@ -1820,6 +1865,10 @@ static int mma8452_runtime_resume(struct device *dev)
+>>  	if (ret)
+>>  		goto runtime_resume_failed;
+>>
+>> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG4, data->ctrl_reg4);
+>> +	if (ret)
+>> +		goto runtime_resume_failed;
+>> +
+>>  	ret = mma8452_active(data);
+>>  	if (ret < 0)
+>>  		goto runtime_resume_failed;
+>>
