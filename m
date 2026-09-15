@@ -1,64 +1,62 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD3124CE699;
-	Tue, 15 Sep 2026 19:13:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F164CDA35;
+	Tue, 15 Sep 2026 19:14:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789499638; cv=none; b=Y7Xlo+RsqD95XW9ylFzyRvB9krUW7YNu4/xQNNBtPnx+G+ISGULybd7pYzGdVGdScaBNU4vMvrs3KzpNsandtwXgJkbbpIH6DYyAkWI6/UnxKygXbBQSGdl3OcbFseSPM1rFAz3NWCFaUr6ExNBShKIk++fZEcGRuyRdcPsSlFA=
+	t=1789499657; cv=none; b=oxu5CWM3kyXZTVLpNXMBFIYiOtMBP1vzMGMyJH+/v9K2w30yCVZqmCoVpI/4/3car/s0n1tpwO/TXq7lCSBi+v5UaiqSA6umjKhBNkroNc5JD5NTRIVSXA9/Ql0GzidOfvmG4Y4qFFhb8HYBi1pEimlxMaKNkLpaOdW1Z6n2jWM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789499638; c=relaxed/simple;
-	bh=xuGhHB9OCTJKM/tSIrDKQ502qmmg4V4WbtyF9roXJPY=;
+	s=arc-20240116; t=1789499657; c=relaxed/simple;
+	bh=yTS3YHxIrqB0FTK5hh0K9SX0v6Xl7xg6JbJTLAqi6eM=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mq1Pnftcarm8g3jwHSShYhOOKkqY/A/BeVFtQjBypyxVwokMw/fAmjnepc9Mz+spyzdcO2LBwYLPXIrp4xlseHDwWIN2QBZ+Xnujy/FAT569L5ri9Gdd/VLNYXZElnV955/jQKR6UrVBPM94qlKoEOIpoCSfkwTsrW6N8F1lj50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=kAqgDzMm; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=ozZtjVS4dQl1D1DAT5xm3fH0y/2kAjDSBPtYetZb4gUs+4o8Trm0MqyS5eiZfBIVZIWiaPM4xpWFEm8rtblrGxDx/bV5nKn9x5zQJaug5MygtOdbl8qdzVfIGetnH4pm0ucQgMZyS2f3z8027JenxzBXURxeUYtgHxcpbQzjKfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=0pqGASFi; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="kAqgDzMm"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="0pqGASFi"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68FIsLet1279385;
-	Tue, 15 Sep 2026 15:13:50 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68FIsTG11279425;
+	Tue, 15 Sep 2026 15:14:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=2BVTE
-	GSCpu9awTgv6gc+5x7blOD3n6BEdht2nJgXRps=; b=kAqgDzMmh1aniJSobF2T1
-	O9vGWc/nCn6cRQtKft3ZNnMfyE/RVNTI7MsKQCYn+S5tr2r34HQs842QNzUg23SP
-	fAhaoZ/kxV8EBIP6AcasjWH9/9utGmBbrZqS/UhuZFnrhgBo1TEN2SYh88atofnQ
-	duFve4Wg1Iy0emqBX0NmmZn4zb6SsVLivLYJw4kiCFKmD4QTM1H5OVhU0aPkLnHX
-	d5+CCDS8m5FKSwdAMZJ4CqK9Z1PyKHxzgMhKNxzKRhGi8sGse/vluTN1JEmuWxn1
-	bTwojq2VTVPdmr20aw4QoBGW9ca5mSNtbtNARNoQ8a2oKBGgEZKSPMoMZCf4+B9H
-	A==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=xt1Ep
+	LU3HquXk1aVcfC7E1DHsiA25IQXrJhg3msO/D4=; b=0pqGASFiNCIZdfBGWfqGL
+	UqS2VmB3AQ3RaIrSztuP7Yzl9eUmQrNXAIJ5PzboEfk12LljaSOQZFSN8csaQEFA
+	KnJdZszR/CvpzvgFi0AnQWqhYlErUSitQuTGO1nsKHbxQ/l8gp6lsBQQfHz0i7xf
+	59aYjIUjxEQleFUqd6zbFVExPlg+PqAh99IqokxZshA3nzopUrXoUc5mydUKvbvN
+	9DNCgSgDpbrmqwyFt+66zGRBQZS6gRLpFJe+Hgw3bAC0pAaPVwpzl/sLbsYBrvax
+	sT0v4WAKpAvjsYxeRFLFtboNLq1SO/SF612kh+bttTJrbvwP0GXp/Ofs2xrCtGu6
+	g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gq98c0u3f-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gq98c0u4s-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 15 Sep 2026 15:13:50 -0400 (EDT)
+	Tue, 15 Sep 2026 15:14:10 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68FJDnnI019151
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68FJE8FT019215
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 15 Sep 2026 15:13:49 -0400
+	Tue, 15 Sep 2026 15:14:08 -0400
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 15 Sep
- 2026 15:13:48 -0400
+ 2026 15:14:08 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 15 Sep 2026 15:13:48 -0400
+ Transport; Tue, 15 Sep 2026 15:14:08 -0400
 Received: from work.maxim-ic.internal ([10.66.6.190])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68FJDX2I028139;
-	Tue, 15 Sep 2026 15:13:35 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68FJDqYq028146;
+	Tue, 15 Sep 2026 15:13:55 -0400
 From: Marcelo Schmitt <marcelo.schmitt@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux@analog.com>
 CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <dlechner@baylibre.com>,
         <andy@kernel.org>, <Michael.Hennerich@analog.com>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <corbet@lwn.net>,
-        <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>,
-        Andy Shevchenko
-	<andriy.shevchenko@intel.com>
-Subject: [PATCH v2 05/15] iio: adc: ad4134: Serialize single-read operations
-Date: Tue, 15 Sep 2026 16:13:27 -0300
-Message-ID: <342e0983c0f458d1376fb69cc984cfd8421a1d56.1789494473.git.marcelo.schmitt@analog.com>
+        <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v2 06/15] iio: adc: ad4134: Run shorter transfers when CRC is disabled
+Date: Tue, 15 Sep 2026 16:13:47 -0300
+Message-ID: <5522b7295a995855bef4a20b32dff1ab6c75010b.1789494473.git.marcelo.schmitt@analog.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1789494473.git.marcelo.schmitt@analog.com>
 References: <cover.1789494473.git.marcelo.schmitt@analog.com>
@@ -71,24 +69,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE1MDI4MCBTYWx0ZWRfX0LFGG/MxMtqs
- Mly7BtgQCOYepWI3idB63V+0t/4HMEFOyPR06kenaYUsB0zIQofzrwG6MhwUSroF4vTbOaBNA6Z
- yLBo0iXf3MnZsuGhz02q14z9xZ5VO+2gG4yo4kzs8QieOGYnAh8V
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE1MDI4MCBTYWx0ZWRfX8MP7A/3RAqvJ
- nYPr7oiTVDan06mYVnFw18F313/DXf99302BtNVqygfUyclk0jhITjv1cITuZUP+im8sy3JxKqS
- A2kDHvmS2dXMmGOVEj5NDRaVXgmVeT8mHg+vWeuyAJ74BH2EnqR3FonSBoepUt8055n8nS1JuWT
- CfNhOUwFMHrJxyc+UvLHG8cTI2phs1YVT7E+flNcwuilXAQTsDlHZanMt1d2xQZNap1x16jqLKD
- ol/5ZE08ICWtge52f35gdtzm8NGgYeuCeHQec43ik2gnni3lbV6bdU30zLGepkKdFc6mxveSBED
- eY4Sh8YvaCTc+5HpH53OwPwbekSa1lwjqjArj0iEh5LkfIzCiEcIkOb6Vu5pAs8yRxa9UZT7xjE
- gh8bZhLvr+hRmiWXYeyp+5P42Urtv9RkyDSCJ7LSlIU8HVyqK9VWTSDdNQz7XWusWm3SASch7gD
- XZUfN1MgvQDpv3ckilg==
-X-Proofpoint-GUID: 37IDbZQL-rmPWW-_TRFQUQMOUQbNCTNA
-X-Proofpoint-ORIG-GUID: 37IDbZQL-rmPWW-_TRFQUQMOUQbNCTNA
-X-Authority-Analysis: v=2.4 cv=KKvPn1Fo c=1 sm=1 tr=0 ts=6aa998ee cx=c_pps
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE1MDI4MCBTYWx0ZWRfX+ejIaEuJXo9a
+ MMvfxDlriuy69RapqRXA0Pow1uLB40gQQ01pmNuwkdZn3JYNDJNXuUpK5IJyJ+xZthL6sLAzBth
+ LO/lEY/4/Wec4AeF6SINogoB43LHXc98+A8aGNMyyhlbmGRxmlq9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE1MDI4MCBTYWx0ZWRfXzPHS5iZKI/gb
+ aAyL86151E+50Cjss/HbpVccLvtO6zDtBKRR+pK9Enp/QBHjqhG17jL/oOaGry3L4cutoiqRtm1
+ jNUkACKTWYWwFU6gCErY7lfKi+5gbME4B40/Ft/HlrtcljaTAO43Yhvxadgsu3daFCOFbjv6ej5
+ 9t0FEoSdiqPcR+Yg9+Ll4NXabqsbN6aTTR5aT1JMHeQGMhH/P/E1VuVm66AiRUrhRugb2I1KjQZ
+ E84Ou8Jgf/j+B46d3tuGg65yXLgm5gT7P/m39YizGwuty4oEGJELQUW93izsZV0u5O1YI/neObU
+ CsqKAwnMZuq+w3E5Y89F78d+XsrmIi6SM0XOE4pBM9JEfnPco+8NquJHwrBWK2h04gCaz2iWBPa
+ QI4yk6Fzwmo5i1LyXTqDa6OiKPcGKsTpJj/klKumGkVT/Mny6DREoW/1mYNwZSqSkZBw2wbGasu
+ fxImsbBg6TJgd9yIFNA==
+X-Proofpoint-GUID: PSKbzI9c73DpuZ2JXyVK0UCqs7KpyebH
+X-Proofpoint-ORIG-GUID: PSKbzI9c73DpuZ2JXyVK0UCqs7KpyebH
+X-Authority-Analysis: v=2.4 cv=KKvPn1Fo c=1 sm=1 tr=0 ts=6aa99902 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=QyXUC8HyAAAA:8 a=gAnH3GRIAAAA:8
- a=lQRJhboXyqThIMNCO80A:9
+ a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=oleLBB3xA4KM-oybjuwA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-15_05,2026-09-15_02,2025-10-01_01
@@ -98,82 +95,73 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609150280
 
-Protect single-sample read operations from going wrong if two or more of
-them run concurrently. Serialize the data read operation so to avoid
-single-sample read requests disrupting each other.
+When AD4134 has its SPI CRC feature enabled, one extra byte (the CRC code)
+is sent through SPI for both ends to verify the integrity of data
+transfers. Though, when CRC is not enabled, SPI transfers can be shorter.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 ---
-Change log v1 -> v2:
-- Added {} to delimit scoped mutex usage context in single-sample read.
-- Used pahole to reduce memory holes in ad4134_state struct.
+No changes since v1.
 
- drivers/iio/adc/ad4134.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ad4134.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-index 7400bd145d8a..7773b7af349b 100644
+index 7773b7af349b..b4db20b80c44 100644
 --- a/drivers/iio/adc/ad4134.c
 +++ b/drivers/iio/adc/ad4134.c
-@@ -7,6 +7,7 @@
- #include <linux/array_size.h>
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/crc8.h>
- #include <linux/delay.h>
-@@ -15,6 +16,7 @@
- #include <linux/export.h>
- #include <linux/gpio/consumer.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
-@@ -98,6 +100,11 @@ struct ad4134_state {
- 	struct regmap *regmap;
- 	unsigned long sys_clk_hz;
- 	struct gpio_desc *odr_gpio;
-+	/*
-+	 * Synchronize access to members the of driver state, and ensure
-+	 * atomicity of consecutive register access operations.
-+	 */
-+	struct mutex lock;
+@@ -106,6 +106,7 @@ struct ad4134_state {
+ 	 */
+ 	struct mutex lock;
  	int refin_mv;
++	bool crc_en;
  	/*
  	 * DMA (thus cache coherency maintenance) requires the transfer buffers
-@@ -257,7 +264,9 @@ static int ad4134_read_raw(struct iio_dev *indio_dev,
+ 	 * to live in their own cache lines.
+@@ -159,7 +160,7 @@ static int ad4134_reg_write(void *context, unsigned int reg, unsigned int val)
+ 	struct spi_transfer xfer = {
+ 		.tx_buf = st->tx_buf,
+ 		.rx_buf = st->rx_buf,
+-		.len = AD4134_SPI_MAX_XFER_LEN,
++		.len = st->crc_en ? AD4134_SPI_MAX_XFER_LEN : 2,
+ 	};
  	int ret;
  
- 	switch (info) {
--	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_RAW: {
-+		guard(mutex)(&st->lock);
-+
- 		gpiod_set_value_cansleep(st->odr_gpio, 1);
- 		/*
- 		 * For slave mode gated DCLK (data sheet page 11), the minimum
-@@ -276,6 +285,7 @@ static int ad4134_read_raw(struct iio_dev *indio_dev,
- 			return ret;
+@@ -169,7 +170,7 @@ static int ad4134_reg_write(void *context, unsigned int reg, unsigned int val)
+ 	if (ret)
+ 		return ret;
  
- 		return IIO_VAL_INT;
-+	}
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = st->refin_mv;
- 		*val2 = AD4134_CHAN_PRECISION_BITS - 1;
-@@ -444,6 +454,10 @@ static int ad4134_probe(struct spi_device *spi)
+-	if (st->rx_buf[2] != st->tx_buf[2])
++	if (st->crc_en && st->rx_buf[2] != st->tx_buf[2])
+ 		dev_dbg(&st->spi->dev, "reg write CRC check failed\n");
  
- 	crc8_populate_msb(ad4134_spi_crc_table, AD4134_SPI_CRC_POLYNOM);
+ 	return 0;
+@@ -217,7 +218,7 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
+ 	struct spi_transfer xfer = {
+ 		.tx_buf = st->tx_buf,
+ 		.rx_buf = st->rx_buf,
+-		.len = AD4134_SPI_MAX_XFER_LEN,
++		.len = st->crc_en ? AD4134_SPI_MAX_XFER_LEN : 2,
+ 	};
+ 	unsigned int inst;
+ 	int ret;
+@@ -232,7 +233,7 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
+ 	*val = st->rx_buf[1];
  
-+	ret = devm_mutex_init(dev, &st->lock);
-+	if (ret)
-+		return ret;
-+
- 	st->regmap = devm_regmap_init(dev, NULL, st, &ad4134_regmap_config);
- 	if (IS_ERR(st->regmap))
- 		return dev_err_probe(dev, PTR_ERR(st->regmap),
+ 	/* Check CRC */
+-	if (st->rx_buf[2] != st->tx_buf[2])
++	if (st->crc_en && st->rx_buf[2] != st->tx_buf[2])
+ 		dev_dbg(&st->spi->dev, "reg read CRC check failed\n");
+ 
+ 	return 0;
+@@ -313,6 +314,7 @@ static int ad4134_min_io_mode_setup(struct ad4134_state *st)
+ 	struct device *dev = &st->spi->dev;
+ 	int ret;
+ 
++	st->crc_en = true; /* In minimum I/O mode CRC cannot be disabled */
+ 	st->odr_gpio = devm_gpiod_get(dev, "odr", GPIOD_OUT_LOW);
+ 	if (IS_ERR(st->odr_gpio))
+ 		return dev_err_probe(dev, PTR_ERR(st->odr_gpio),
 -- 
 2.53.0
 
