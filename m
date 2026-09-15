@@ -1,69 +1,68 @@
-Received: from mail-yx2-f12.google.com (mail-yx2-f12.google.com [74.125.224.140])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 395CD3F99F4
-	for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 02:49:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 695B73CE0BB
+	for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 03:19:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789440582; cv=none; b=VYdmvfpvrTapynKhB9wsb715KZ33F8uuH+1euMio7DLBbGusM69Xm8ih8IF9GngyVYhholftjZQ1X2GA7CkD8nHisjrpaHS9ofGDPUkgcbTSGDIqw+K1P9l5bjv7t1zu2mjARhrQK7FcI3+LbZGdYKfDURioybu3mySz49l/cuA=
+	t=1789442386; cv=none; b=EJWqaVf6F0VrDbJVD0TocQlfWsValzgdlwULm+a4DFO2eirt713SuF6w3BWaZ9J22r0YXvYCTDgh6Vv4yk/m1DDgSEF6g1bS7tzqdgH5es6BUPPaibWVEDwSAf8ROMviPlkAnZpuApV+NAWcwUlDFAa38hIyVbrzkzT5dq7COa4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789440582; c=relaxed/simple;
-	bh=dZtJypvCQ3nH/VIpTSnun9IN+DGvbnyN1VglMN3CCUU=;
+	s=arc-20240116; t=1789442386; c=relaxed/simple;
+	bh=uwpZLoRLkNBT7PMqbNXrKU1bb9r6CwQZXLWmhP5sK6k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dsJgN/TJImtkmEdSTMlOMnK5p2Nvgcx80SnSWJvaS28x0aqIxr/IG8PSlAMLxIiBkcJVJ8fyE8lxBaOFNfb/Pk6BUuM3LSK8rzzVR6yHMkeHVhTwCD/z6XS5ENd2Y0uo7ijjBYkl7SEAiCQjhOgLfg3XlmREgPX3VsoiHOZ5XWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HXuWFaPr; arc=none smtp.client-ip=74.125.224.140
+	 Content-Type:Content-Disposition:In-Reply-To; b=aTZBPv9rrhwn3ynMQ37lpJsrHsa4z3/GlPbn3AsCv48HhqomwyBl6mRijiKSEXC4R8rBTZ1Lktgqn/d2ObE2OditsFDA3svl2cw/U2KctJR+/HKcZge7QZJOJ7bcUpEtGgvJr/UIGQU/i+TZLLyMB9Fyv1eFpat0GKKQXoT9Zbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QlWbliUL; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HXuWFaPr"
-Received: by mail-yx2-f12.google.com with SMTP id 956f58d0204a3-66e4ab20a32so2917956d50.2
-        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 19:49:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QlWbliUL"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2caced6038eso5108725ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2026 20:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789440580; x=1790045380; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789442384; x=1790047184; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=98dR90gK+JQcg6XkR8TXqOD8Hf/WJSfb2StQiLmkr9w=;
-        b=HXuWFaPrDFOT61uL3BUEyVPWnZpfYxHhTSSLsjSpuM/avihwogZNbVmFdjqa2pv+W8
-         Bbet+fhjllD3p2jDlDCYZXv5CWo67kqwk1QSVa1MCXaS437lYRAlAifpysFXTtlWY3U/
-         WWzjSlpkzuQ1NXccv3QwZKt0PvufcTc8MqtKYqlumqHjjEC7KbDuyTuUDRKqCe+g/i/u
-         +lguDCciTAYHCikaO2CaczbgsHH/6Idhb9yaVf2ZwhPKyUG80FSf4Q/rfbxFjN+/caLb
-         hx97B59VpTpgjNvD2+BI0e/Wbe3J45bgprXX/Ww18yD7OaOL/LvdCV7hI/vReCBg+nY0
-         1/1w==
+        bh=mJYv8oGmScEWJOhrPjRzRavFJv92CQ9kx+j15hB8nf0=;
+        b=QlWbliUL1vu+wUXeVYwerqCHh6X+P1QyQQnzkF3jN64ctVILa9NvtjL5eJQEaf1ID+
+         8YvMmAr6LjT5qXgC+TmY2QLGHff1xsp6FV+5o2yfLFCXOx90VCF2MZuuIEsO8PV7IgEX
+         lgMZQ61Jy6ZZyvZzEIAFcqlhTfWAKVsZ63zL0yrNsf9x6/9g+f3iZU9zdtz88HTYBox6
+         wdynRD79+1UuXPvP+S/p7oMBHNdoBeDEi0B4Zck5zWhBE94o4kDqQF0rrutmVoqkIYGt
+         poKmXcXSCcO/RNy3os/FdCFbdOpE5ZEq7QGSuvWl0Amv9ztOxlbET+cQArjJSlvrBlSP
+         mCFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789440580; x=1790045380;
+        d=1e100.net; s=20260707; t=1789442384; x=1790047184;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=98dR90gK+JQcg6XkR8TXqOD8Hf/WJSfb2StQiLmkr9w=;
-        b=hzucRJl08BKiERPXnpjxHK8gz7/ClY00rpqvkNUPaTcQiSl4N90WTBRPWawb2m3ps5
-         8YGMBCYQh+uFgHafrhZbrFzPGgR98nzj3uyFxfQGiceKUZ2GWVq8lgHecpGfaIc5T2yM
-         BU1yV4X0t4XfbEJzcnyTbdbsIJoDrWEIWtL8YKcSU7G4IouF1CCfmp0QvOStQ1FItMRz
-         ASVKHJfi6bWwWh3zba7uglduXOIkHtta4dbBCm8fk9vU6+iUNFC0lzMOFMsexp7znjrT
-         4CATBPEi+0rLWvl8kIApMftPhVKl6afaiH5P1blZYTtqg9+4+way820SW4zJVX7HA/M3
-         r0KQ==
-X-Forwarded-Encrypted: i=1; AKwUvBw0NWIRKnk4JjyLD8dlqMTtxYS4oQ5MsD8pwmHR20bwSMxOnlWsbMwyw6I0VhWG5My7JGdMcdBn4PU=@vger.kernel.org
-X-Gm-Message-State: AFuF++lBIk+srruX7jF5HFnb+hzcV3FQqftR9/yRuflQkehL2AHjgxTe
-	cT/R5PoRCmcfLbCAJtyeUeA26GpIwknwRDS/ZQIYi2zkUS6jyAuaIh94
-X-Gm-Gg: AYBFou1++J2pqajBwXsgh1msYKP9214bzD8iDu3HVHpMIbHw+/JjufC5gqtKY2PL0dr
-	ueBWUFogYbT/AaXwYNwX8iN7GnBQ9GRdC52EpQ363TdXGh8kcnKhgLoeJp+C1E6LctFN82u4d1w
-	V/QOxltzeyVY8ihlW+SxgL4txBEAUVr88gNVPKD/yHHls6eCsIRvsWuikKrkKwWN2EJYBVIR0LH
-	9J8hIoxRBEIgEtN1FW55/MfkXd0umuildjHYWa3iQQx1wfalkUmOS11seq8Dv/h1QuK5zDe4LHh
-	HO6P/Xh0ZSPlD5goNsAOZ0PzW+0VZecFyoQVBUr7LVBbL7mqRHtxcmDaMWYN/IgzVkEqA4zIORb
-	t2Lgfsy2cqa2FBSHKIa2ZCTJfMKPfIOxF/e8rU9i7RFcfRGYaWCHoTnbrp2N8Z0D/tPBz2f2qwe
-	KCxh+72OJQvmYJ/WbYtzbqGAdW552xSt8pvPfzmFoH7mM+NQIDmf9aSw==
-X-Received: by 2002:a05:690e:4882:10b0:66f:c1bc:4086 with SMTP id 956f58d0204a3-6714e07b20bmr1035977d50.73.1789440580062;
-        Mon, 14 Sep 2026 19:49:40 -0700 (PDT)
+        bh=mJYv8oGmScEWJOhrPjRzRavFJv92CQ9kx+j15hB8nf0=;
+        b=0kHRGbaDuUHoo+SdMJkmbSsROvag21f154iezfw8+xBsyhLGbVOYqe7R3YquJAPsqf
+         O4sp4aXr9uBPRJBAYG4hseAvo/zsL5wfbTwEp5CC+MVJa7zUiq2g2F4P8n08/vq8cbRc
+         sZadlIgeWMGEiOzGT864tFFT97wHMPgEDur/ZGk6UhlhUzS3o37kyBwmxrnqrJowgBMz
+         iV5+dZruNSwYrtaTRKeFu+fx5/QqaquwY0SEfizJZEBpCggRNA/MVRuGix3FSY92xyeS
+         s4lSwGyJJqksDU5D9QzDRESFhVbx7svIFhCuw57+gxYTaO8z47eH9NenQQf1QBZh5OOq
+         AIbg==
+X-Forwarded-Encrypted: i=1; AKwUvBxJR9mTtjv/7zdRpmJtFG8ko/6xK2MLz9B3ldGFNru6Zrjxpa9YuPrq2LmYGlYSLbeqQJ2rDQaQV/E=@vger.kernel.org
+X-Gm-Message-State: AFuF++kxZN7vDMw+K3YqfnLQ+hx93HNyrW6anhDNNjXlBrnjvSud7lcn
+	sv+QTQPl4Lpla4TEeg83B0dONNVzResoovD+IUd6NSd5fUnZ2/YvwC7u
+X-Gm-Gg: AYBFou2slzn+rBeok+bgtX2YZPFZ9M7nnYSN+tfkK+qyGSRpImo6aIGpo8wd1W21Ha7
+	2ui/tXQVD8BvzuYwTFRLfNMtpZFXo0pXvEf7XYFGBzZ5msRzT0Gz7uN1N3kqQw0PyJjhaKxHc/6
+	vCUfsUL1Oew/b7nx8Ct2bcigg1K+yP6nyHX4d1nW3dmtDbObkOFD+QeODKUy9vkfbvcl4EBABXi
+	m0D3wALVEC5dumvNaRxvklffg9Uye5jq+l8JxLqpJxlE48MXGhps4D3OdcXyVgJbBQg34SefOUl
+	a8wiIhxYhrOGs2p8MQa53atncTfzEc31qYzej4G09pxMn0xf9sdHhwf3z2S7mL+jeXzY52dAvYn
+	iJInxBa35dJ1cHI3+2FONJctUb9n7DwxV4VpmQwP3UedYcUerVVVUXxuDTPPKmq3kSG+1EaPEt/
+	D2m0xzuNW8yyqpYFGZfVN8MCVUhDS3Wg+6p/n6QEb1fdwmNoYLtBZseA==
+X-Received: by 2002:a17:903:2446:b0:2d8:d4d2:d13a with SMTP id d9443c01a7336-2dd7655b5f3mr29130825ad.22.1789442384487;
+        Mon, 14 Sep 2026 20:19:44 -0700 (PDT)
 Received: from gmail.com ([2600:1700:5431:250::3e])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67125db3a05sm5345430d50.5.2026.09.14.19.49.37
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33ba4e9b359sm29297802eec.14.2026.09.14.20.19.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2026 19:49:39 -0700 (PDT)
-Date: Mon, 14 Sep 2026 19:49:36 -0700
+        Mon, 14 Sep 2026 20:19:43 -0700 (PDT)
+Date: Mon, 14 Sep 2026 20:19:42 -0700
 From: Chang Yu <marcus.yu.56@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Rob Herring <robh@kernel.org>,
@@ -73,12 +72,15 @@ Cc: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>,
 	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
 	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <aqiyQOMGGIzu-91z@gmail.com>
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: add as7343
+Message-ID: <aqi5TjKT8I2JqpVI@gmail.com>
 References: <20260912013912.51887-1-marcus.yu.56@gmail.com>
- <20260912013912.51887-3-marcus.yu.56@gmail.com>
- <aqepkmQS_p6K1Bd6@ashevche-desk.local>
+ <20260912013912.51887-2-marcus.yu.56@gmail.com>
+ <20260913015652.029475d2@jic23-hlaptop>
+ <aqX90oniPRdsu5jp@gmail.com>
+ <20260913035132.1fb50e6e@jic23-hlaptop>
+ <aqYWbWoBYaDJA9h-@gmail.com>
+ <20260913181457.4bb2ebbc@jic23-hlaptop>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,86 +89,74 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aqepkmQS_p6K1Bd6@ashevche-desk.local>
+In-Reply-To: <20260913181457.4bb2ebbc@jic23-hlaptop>
 
-On Mon, Sep 14, 2026 at 11:00:18AM +0300, Andy Shevchenko wrote:
-> On Fri, Sep 11, 2026 at 06:39:12PM -0700, Chang Yu wrote:
+On Sun, Sep 13, 2026 at 06:14:57PM +0100, Jonathan Cameron wrote:
+> On Sat, 12 Sep 2026 20:20:13 -0700
+> Chang Yu <marcus.yu.56@gmail.com> wrote:
 > 
-> ...
+> > On Sun, Sep 13, 2026 at 03:51:32AM +0100, Jonathan Cameron wrote:
+> > > On Sat, 12 Sep 2026 18:35:14 -0700
+> > > Chang Yu <marcus.yu.56@gmail.com> wrote:
+> > >   
+> > > > Hi Jonathan,
+> > > > 
+> > > > A quick comment inline.
+> > > > 
+> > > > On Sun, Sep 13, 2026 at 01:56:52AM +0100, Jonathan Cameron wrote:  
+> > > > > On Fri, 11 Sep 2026 18:39:11 -0700
+> > > > > Chang Yu <marcus.yu.56@gmail.com> wrote:
+> > > > >     
+> > > > > > +    description:
+> > > > > > +      The driver current for the external LED connected to the LDR pin.
+> > > > > > +    minimum: 4000
+> > > > > > +    maximum: 258000
+> > > > > > +    multipleOf: 2000
+> > > > > > +    default: 12000
+> > > > > > +
+> > > > > > +  sync-gpios:
+> > > > > > +    description: |
+> > > > > > +      Optional GPIO pin that can be used either as a synchronization input to
+> > > > > > +      start/stop measurement or as an external start/stop signal for
+> > > > > > +      synchronizing with the connected LED.    
+> > > > > 
+> > > > > So the datasheet starts referring to using this for some level of sync
+> > > > > but then only actually treats it as as a gpio (maybe I'm missing something).
+> > > > > Any idea what that stuff about start/stop is talking about?
+> > > > > 
+> > > > > The only thing I can find about this is the device diagram in figure 13 that has the GPIO
+> > > > > wired to the led driver and the automatic measurement engine.
+> > > > >     
+> > > > That's what I got from the datasheet as well. They don't describe how to
+> > > > use the GPIO pin to perform synchronizations at all.
+> > > > 
+> > > > The adafruit arduino driver
+> > > > (https://github.com/adafruit/Adafruit_AS7343/blob/main/Adafruit_AS7343.cpp)
+> > > > is slightly more helpful - the GPIO in output mode signals when the
+> > > > spectral measurement starts. Unfortunately no information about input
+> > > > mode.  
+> > > 
+> > > There is no separate control?  If so we can't use it as a GPIO as whilst
+> > > there is a control to set the state it will randomly get overwritten if
+> > > we do such a read. So to me sounds like that is there for testing the
+> > > connection and similar usecases only and we should not expose this as
+> > > a GPIO. Maybe input is possible but that may also have side effects.
+> > > So I'd be tempted to drop it from the binding - with some description
+> > > of why it is not there in the patch description.
+> > >   
+> > 
+> > Agreed. What does this mean for the LED then? For all intents and purposes
+> > it's controlled by only 1 register. It may have some interactions with the
+> > GPIO but since they are completely undocumented so we might as well consider
+> > them non-existent. IMO it probably doesn't warrant a LED subnode and
+> > led-max-microamp is enough. Maybe DT folks can also comment on that.
 > 
-> > +static int as7343_setup_device(struct device *dev, struct as7343_data *data)
-> > +{
-> > +	struct regmap *map = data->regmap;
-> > +	unsigned int val;
-> > +	__le16 step;
-> > +	int ret;
-> > +
-> > +	/* Power on */
-> > +	ret = regmap_set_bits(map, AS7343_ENABLE, AS7343_ENABLE_PON);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Need to set REG_BANK to 1 before we can access ID */
-> > +	ret = regmap_set_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = regmap_read(map, AS7343_ID, &val);
-> > +	if (ret)
-> > +		return ret;
-> 
-> > +	if (val != 0x81)
-> > +		dev_info(dev, "Unknown device ID: %x\n", val);
-> 
-> Wouldn't be better to define 0x81 with meaningful name?
-> 
-
-If I remeber correctly Jonathan prefers just putting 0x81 inline. I'm
-OK with either style so I'll defer to the judgement to Jonathan here.
-
-> > +	ret = regmap_clear_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Configure the SMUX to readout all channels */
-> > +	ret = regmap_update_bits(map, AS7343_CFG20, AS7343_CFG20_AUTO_SMUX,
-> > +				 FIELD_PREP(AS7343_CFG20_AUTO_SMUX,
-> > +					    AS7343_CFG20_AUTO_SMUX_READOUT_ALL));
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Set 50.1ms integration time and x256 gain for now */
-> > +	step = cpu_to_le16(AS7343_ASTEP_VAL);
-> > +	ret = regmap_bulk_write(map, AS7343_ASTEP, &step, sizeof(step));
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = regmap_write(map, AS7343_ATIME, AS7343_ATIME_VAL);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return regmap_update_bits(map, AS7343_CFG1, AS7343_CFG1_AGAIN,
-> > +				  FIELD_PREP(AS7343_CFG1_AGAIN,
-> > +					     AS7343_CFG1_AGAIN_X256));
-> > +}
-> 
-> ...
-> 
-> > +static int as7343_suspend(struct device *dev)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > +	struct as7343_data *data = iio_priv(indio_dev);
-> > +	struct regmap *map = data->regmap;
-> 
-> > +	return regmap_clear_bits(map, AS7343_ENABLE, AS7343_ENABLE_SP_EN);
-> 
-> Can this mess up the raw read? If so, also needs a mutex to be held.
+> Agreed, given software is controlling the current we need that and there
+> isn't a lot more we can do.  I guess you have the Adafruit board. Are the
+> pins wired out so you can perhaps see what happens in practice?
 > 
 
-People familiar with runtime PM correct me if I'm wrong, but I believe
-PM_RUNTIME_ACQUIRE waits for any ongoing suspend callback to finish
-before returning? If so I think there is no risk of a race here. In
-the case of system suspend, worst case scenario SP_EN gets cleared
-before we read ASTATUS or the data register, which for my use case
-at least is OK since the entire system is suspending anyway.
-
+Luckily the adafruit board comes with an LED already wired to the pin. Some
+quick testing shows the LED register (LED_ACT, LED_DRIVE) does work.
+Unfortunately the GPIO remains a mystery but I guess that's the best I can
+do for now.
