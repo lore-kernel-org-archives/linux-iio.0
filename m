@@ -1,81 +1,80 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-ej2-f12.google.com (mail-ej2-f12.google.com [74.125.228.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C4EA3C09EB
-	for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 13:16:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3B2C3B442F
+	for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 13:17:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789478204; cv=none; b=qAdWGQ1noI0tHCEhPWVTjiOekAKxrI9m+NNsHZYdEJXKkI71qolXjZZ49U59lrf9zqh5bUsiHRrEOcWBFLZ49Ih4CIAvjyK6WsBh4AOOsXPgjiL2uukb5lgX2pzysx/9nuCe9OSU9+7yK3ao5/Et4TrjMgnwcPNeQVluk9UPHlU=
+	t=1789478241; cv=none; b=TCXHC792jspDIBT5gYkRYx2PcuJ3CAgNYF7DV/xlGdj3ItDrzyLie67ieZnUYtgcRXeu+jul6QUoDx3qwFycM6aGR3Ap08aPvwO9rdxb8tHNywTOmOCA7Zhy0CDzpNi9heNUvzcWxniHcVFgjnaAPKkoHCab1rbmvAjUsnKoubw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789478204; c=relaxed/simple;
-	bh=usQ6otGy61tea2/+SN0kWeGAn4CCH12vYdkTnhTHXWs=;
+	s=arc-20240116; t=1789478241; c=relaxed/simple;
+	bh=PeFihLQ+e3Ey/2XTvIqLp/rsmvNZcxzZ0Nn2aECEjJk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=B8VIpLezMRUBzbO++q1yd+OI9V6yUJ5r9CpkhVQEx7pt5gWXvIQ/rNqwysae0hAuZM+8mUs9FLkklnxFFawfRQiNC9DLaLkv838WtSMIsaM2NeP3w5bEgDzK1JdT08LE3m43dxOXwkUf13fTh/OvAJtfinmlhpeIhjrB9Ie7AJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UJnhYlRU; arc=none smtp.client-ip=74.125.225.141
+	 MIME-Version:Content-Type; b=l40VtQ9IT1mp28S8SzZjzP1jf95wG1LGIkRyxV90SrBDo+MnsWuEK1RqKxZGkgc4KXrefkDSCVJWBxmvoCz3Opm6y1+JdgnSazDy7fdr5R/jWTn2N0QGMRH9PCM8+ngqJa/+cnZRN9w83QHcmUDZJLpHABVa6q3VbXyKCuyHDy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GOSTA7Fj; arc=none smtp.client-ip=74.125.228.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UJnhYlRU"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e6b885ef8so15331255e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 06:16:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GOSTA7Fj"
+Received: by mail-ej2-f12.google.com with SMTP id a640c23a62f3a-c254f9f7db0so51981366b.3
+        for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 06:17:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789478200; x=1790083000; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789478238; x=1790083038; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=yOh4YxsUy9cnJP0mnCeYYmhsQkJTthFN6MeVe5U5BCY=;
-        b=UJnhYlRU/5gIjw4B+i5fNFyGDdvGac4qD0oSJLTa1hxb32IdKLnWoG9AsEEffHOwFS
-         bY5ODFPDQSWAycunF7gGXt+RUDrxFjcaRZxFo1aJb9UngFYcDVXTa5GVdIEhunjscQt7
-         EKm6yVag/XgVqX3t/d6xLjxaTkGJ0VwSeGBZjRB2ip/TogwMfe3Cnukb/pDm/+HVEZn5
-         xlamzWwZW5Tn9LzXNd0xi4PvVS2g2Lo4rbd5CgxOBY2nrihyER2QKB1d5lKkFrFXdEFO
-         AlkLzFmox/Wank1DwRPAelxSeIQMl9mU6LycvQyPssLMF9e4MQoqgyv8k22H4CJ8lby5
-         PCbw==
+        bh=ky+km9SB+CxkGYQT+Ihg9VmqJMBueSg4hZ23dJAFm7g=;
+        b=GOSTA7FjuA6IIgbpZrKJy5FAYoZkHLTUMt31qVok9HDldk4keb8p6b7ZfY8bZbTszZ
+         Tq1Op0auntagCHCX6yux+Z1BWZG1agy+A12HfSkGbNRD1cPaNOmRu29vx2AFxlS5cpzL
+         9EiI/A0F0ftIw2KKt2AZ6JBRIpffFZDboTBdiBAaRUiJNqKdmA03Es+TktA6nT7mogkc
+         QIezmgtBX6tS4bigBGLWIWFa9cuovnjnDTL/XMqVu4Iu9vnR4S5S58W9bXmTq1pOAUAu
+         PntYQszC8BBba1XD1N/Vjsk2nSKadOFlut7BwETSIYARQEDxS+ja3URx6ERVIHERlfpE
+         223g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789478200; x=1790083000;
+        d=1e100.net; s=20260707; t=1789478238; x=1790083038;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=yOh4YxsUy9cnJP0mnCeYYmhsQkJTthFN6MeVe5U5BCY=;
-        b=ySwToP3oZkX0BnDeSbsQ3VrgBkmZiL6AiCHgfqVnBG8XqVwy9iZRvwS/j/JRvU1wsb
-         EbXWZ9vY6WfzgW8SgVDraPuGPsHlLBNhQWA1dT7+/Odo/8O575TGYeAG6YPaGuYvR3nd
-         D5ekWc+PlDMn/w1IZXqDNpyJcBVcY40UFnCeOuMKOJAwwJALeh79TVZvVlWKqyOPxlsr
-         9jo7sS52meUMvpwnQkPob4SPwh+O2h55pMVPumpTq8+fGeYykcUd8MjPcCp1lIgVQOiY
-         CBaF+TwqikA5QJmxBS/Xbvb+nnvUl3L8YQ/OyUtNwS6bAphg0X2rlrQUoQCRc2G4tgPz
-         m77w==
-X-Forwarded-Encrypted: i=1; AKwUvBz0jNDItJffLatiq6RRJtFJAJRgzmxvEgd1LCTJcIRKuNZFsvT+IkA2btxw9rIpj4RATMdDwqL2HEw=@vger.kernel.org
-X-Gm-Message-State: AFuF++kN+92XLc+5roaLOXyWy39BAV32SWiCcAmIWy3q/LzA46XQJwCs
-	QJIGEH1gy1ns/gv1jwFjlyFFLGMHYFBquj5fgVz6RdFsMOSFwRamgkRo
-X-Gm-Gg: AYBFou29W0XMUx0Zto99kwQFyQN+dTSfx2Hs9JdP9dXSuV/9BH9L+mrB6jXrv//GkAV
-	rOcvox31xjXx1RWCmfAmqPxWkfbJEOHFBl/IIVBkFpxvvaC90RHr2OE3lNC5qhAbPCMBz0e9GOF
-	0ewDfIU2R8xnmbYVgcyEXXPSJKOQellDPzDG+/Z4rjgbxrBANU4Cz+XE/DiuHSrhaIrAsxebzjx
-	Pnzy8UMNlvkqJggBlrIVNsfTpbYqZwzvwGpfmLPV7wKq8NMoempcsLAU7y3KRN3X90PadDLeCLM
-	f/EjvKNRa5oTV6Y2gQhPLgd/EOOrF5WjBuI+Lji2XvPAnUj+Z0jDOWE4G8Ra6Xoku2i2TB0KMWR
-	A93hE2ymmxH51u8lL09cIsQotdG9/02Sg/RAk5ZstGnaRc1QmGvMqbuYgs/1wUTYWENPXXnn/Pq
-	rf7b7w2uGswbKG5rAzH5WhQGB2moua+i23BgLx1wugbaHsutxOZcFgQKfH6WbZRpipjWAbF/tiy
-	LvImgiXCe5jUGjZ775w5BbctbeZHU510nGIhIOXUhtqglmDGMh+fbH8esOUzdbG5C1R77a1o6X3
-	cVxA1PmU34YcHinQ4tagPHJGOyhJzULEpYm4fdOdQo8tKVH1Al9aS+xQpT0vtaGoHuQJVDOB5Co
-	fHZpy6vWn6zr7h4kjPLhTy/Ucq6qnYLVOL5RVQE9MtDxFj9R9V7CJFOs7lFPNXHpfCz0ozgC5XL
-	uaqoTB
-X-Received: by 2002:a05:600c:81ca:b0:49e:642a:4f6f with SMTP id 5b1f17b1804b1-49e7a69ba24mr89660425e9.33.1789478200316;
-        Tue, 15 Sep 2026 06:16:40 -0700 (PDT)
+        bh=ky+km9SB+CxkGYQT+Ihg9VmqJMBueSg4hZ23dJAFm7g=;
+        b=fK+oUy/cAlJyBKcG2ig9miIoa3/Ck2msykw3cyn4Wo5DN/mk1dgQY1H5A7ZUjO0WD6
+         Ob8sZ9xDx3+o7qWJi2fRS+d8hixKVkbHcI3G73gkyzyErSAHAFbEZywike7BRPsIPQWB
+         zeHBLkUvqMubBp6G61NW56zuHE4mCrC/RicNvoOIIIPk9uyuJh6FH6y5XUfvUWM4oBx7
+         ZXRFvrlQZu7CE03LGJDAEuKOWpxSSPZ6A4C3/OjyoDZfpn+1gCKTHUXgCGl7b9OfcBDh
+         U3ENPtCVxUEaC+vCXtTTL1fScn94/dtvTYSM4HE7oEfH2acQvI1CaqXGgJuVJVIDQb4w
+         gB3Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxCk6uTTxcStRhm/wyB8Zq/O6iBuvKfDpS74uFjwmBfSDiZFkAzSVLPbpZFo3Ea6G0yK5RpTa8zlOU=@vger.kernel.org
+X-Gm-Message-State: AFuF++mFmBA9PPZ9NWQdrGNsmbxO+CU6HZsiG0gXiSh2p8+r4P8mcLSY
+	uu/0R7GXNN08DcFBQ9dibAONJmwEufZ6fhHfIoGd3Wx2sJcK/w5GP3Sa
+X-Gm-Gg: AYBFou3SRuTAJIyEy0VF6gwLRvERxxjhy5gL5nm4crYJhIDPFOgRYCAJwMP5794prrZ
+	bLyHfeYnn66gbKMlkzwEaLQ112ujfxnEFLJ8QvvHm32gur4mrtMkb0xYIOtMOX3mjxPDYs0MFbl
+	GcvkXXBJ8jEwJ+UchmJR4w8R0YV487yNFPkcKfB+1wXFADv6vJAJuNjGIR1qc0bMUB5qWMu1cXu
+	faAmy5M+uI+WExj0/HgtjfS8MSPugKpYspSKxXdRpR2nvssz4ya2WXSdX8shlnIW024Hg0iKyXB
+	dbWm4DJAEkaz4NMVvwGMyRVcG2ocP1VVqBsrC8087jJmTGcoJE809HJ20tT4dRoUz76hqk1OBAL
+	+lvfcsbXURThVQDTnBkMyl+92Idggc07nk4jR1Y3nGfp0E+9UE8TJmngrH+eI8uzSWEb8z4bSX/
+	RTz93VDkefY7TTvQ3EzcBjdpZv2bSQEM8pjnmwVxGk5PwcI59nna2JpUpQwJ5K3U/TsgeHOlLA9
+	t1p5OpwRNvjz9t056RZOFkSNw6s+57Lfh3cA8lVlQioe+Qpgnj/vi0uf/9gn1R9aCmegyfEmsdQ
+	5B2LF6C1xeRUMdEVCW/7JjbBg9oI/sESftgS4N61JOAeezW2HBOIDc5ghut20BBq3GBEFMKsIzM
+	zFDVT/3M4L2EWisymREOVtI7yCracYBW7pukxSXsi3RI2r/lyCofU6mATA0ukSeSD4IA2KcYEyd
+	/kGVAZ
+X-Received: by 2002:a17:907:9702:b0:c29:41e1:c918 with SMTP id a640c23a62f3a-c29d7717ca5mr96666966b.1.1789478237989;
+        Tue, 15 Sep 2026 06:17:17 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49e7ef735cesm65466155e9.6.2026.09.15.06.16.38
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c296608dc91sm589042266b.39.2026.09.15.06.17.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2026 06:16:39 -0700 (PDT)
-Date: Tue, 15 Sep 2026 15:16:34 +0200
+        Tue, 15 Sep 2026 06:17:17 -0700 (PDT)
+Date: Tue, 15 Sep 2026 15:17:16 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 Cc: jic23@kernel.org, gregkh@linuxfoundation.org, nuno.sa@analog.com,
  Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
  linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 2/3] staging: iio: adc: ad7816: Serialize SPI
- operations
-Message-ID: <20260915151634.0000787e@gmail.com>
-In-Reply-To: <20260915075939.18180-3-abdelnasserhussein11@gmail.com>
+Subject: Re: [PATCH v7 0/3] staging: iio: adc: ad7816: Fix SPI operations
+ race condition and DMA safety
+Message-ID: <20260915151716.000011c9@gmail.com>
+In-Reply-To: <20260915075939.18180-1-abdelnasserhussein11@gmail.com>
 References: <20260915075939.18180-1-abdelnasserhussein11@gmail.com>
-	<20260915075939.18180-3-abdelnasserhussein11@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -86,46 +85,54 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 15 Sep 2026 10:59:38 +0300
+On Tue, 15 Sep 2026 10:59:36 +0300
 Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-...
+> This series addresses separate issues in the ad7816 driver regarding
+> race conditions and DMA safety across all SPI operations.
+> 
+> Changes in v7:
+> 
+>     Patch 2: Moved the mutex to the top of the ad7816_chip_info struct
+>     (right after the pointers) to prevent struct padding/holes, as
+>     pointed out by Andy Shevchenko. Also expanded the mutex to serialize
+>     ad7816_spi_write() to prevent race conditions.
+> 
+>     Patch 3: Dropped the dedicated rx_buf. Switched all spi_write() and
+>     spi_read() calls to use spi_write_then_read(..., NULL, 0) to safely
+>     handle DMA using an internal bounce buffer, avoiding cacheline sharing,
+>     as guided by Jonathan Cameron.
+> 
+> Changes in v6:
+> 
+>     Separated the alphabetical sorting of include headers into a dedicated
+>     precursor patch (Patch 1).
+> 
+>     Kept the mutex addition strictly focused on serializing the read
+>     operations without modifying the sizeof() argument (Patch 2).
+> 
+>     Moved the sizeof() argument fix to the DMA-safe buffer patch where
+>     it logically belongs (Patch 3).
+> 
+> Changes in v5:
+> 
+>     Split the changes into separate patches for bisectability.
+> 
+>     Replaced stack buffer with a dedicated rx_buf aligned with
+>     IIO_DMA_MINALIGN.
+> 
+> Abdelnasser Hussein (3):
+>   staging: iio: adc: ad7816: Sort headers alphabetically
+>   staging: iio: adc: ad7816: Serialize SPI operations
+>   staging: iio: adc: ad7816: Fix DMA safety issues in SPI transfers
+> 
+>  drivers/staging/iio/adc/ad7816.c | 29 ++++++++++++++++++++---------
+>  1 file changed, 20 insertions(+), 9 deletions(-)
+> 
 
-> +	ret = devm_mutex_init(&spi_dev->dev, &chip->lock);
-> +	if (ret)
-> +		return ret;
-> +
->  	chip->spi_dev = spi_dev;
->  	for (i = 0; i <= AD7816_CS_MAX; i++)
->  		chip->oti_data[i] = 203;
+For the whole series:
 
-The patch in itself is fine, but Sashiko points out that the mutex
-could be added in the ad7816_store_mode/channel() functions. Nevertheless,
-this patch only focuses on SPI transfers so you could add guards to the
-GPIO functions in another patch (I don't think you need to send a v8 though,
-just another patch after this series gets merged).
-
-Does this newly added lock also need to be acquired in the sysfs store
-functions?
-If a userspace process concurrently writes to the mode or channel sysfs
-attributes, the GPIO pin and device state can be modified without acquiring
-chip->lock:
-drivers/staging/iio/adc/ad7816.c:ad7816_store_mode() {
-    ...
-	if (strcmp(buf, "full") == 0) {
-		gpiod_set_value(chip->rdwr_pin, 1);
-		chip->mode = AD7816_FULL;
-	} else {
-    ...
-}
-drivers/staging/iio/adc/ad7816.c:ad7816_store_channel() {
-    ...
-	chip->channel_id = data;
-    ...
-}
-Could this concurrent access corrupt the rdwr_pin state, chip->mode, or
-chip->channel_id variables during an ongoing SPI transfer, leading to
-malformed transactions or corrupted ADC readings?
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
 Kind regards,
