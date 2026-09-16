@@ -1,37 +1,37 @@
-Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D0984483AF;
-	Wed, 16 Sep 2026 08:09:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3EE33D51A;
+	Wed, 16 Sep 2026 08:09:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789546189; cv=none; b=Sd4uofQXky8vrdqRgrQgBt351S5VNMGn/gDuMxS3hP+SF0dqP3TJeaxIBxcHgp3XEUQ+dhwytqwQXQ7q+bauaLD16LhyjVDQNuphZHTgNyUIR4Y+f8sZqD78PGHfEs8zNRZHATRpLz76G8Anr+p2llsq+2hmIEMqClwkdIcd2JI=
+	t=1789546190; cv=none; b=E/yQPXfR45Ni3l1v7y5XTLAL9Txd+dvXixxqzBAb+fWKJJAsQsu4XtoOexaWkxn19hkhBrghMAhyXKvFvdTsdqyswT2iiWcEgHUfHVTLclYmbRiSoRVt1zCHDfoo+jul+8DIM38CEY5Lp2q7R4O/C1BzH/AZSu7I0KnlkrkBhvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789546189; c=relaxed/simple;
-	bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+	s=arc-20240116; t=1789546190; c=relaxed/simple;
+	bh=7g4Bx6VcNobxJ0NKjiVjkZ2NfOoDHgnEhpsjeZEGI9Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=e+objT0xXsDxBeudq2VVoNDDgHKN9BphEG0zXVAzmyJI2T8djDTqmkEYSiS2GtBBM1/hgQDEH71x80/If8irvOgXiIce6P8nFfDaEqX2UNabVjbfyDzIwbShHl3LUbZ5P3jG3Qycisw+ZJLMTSYX1Pu3X4wvmDskWu/hZoRT0J0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=jgvbVR1C; arc=none smtp.client-ip=185.70.43.172
+	 In-Reply-To:To:Cc; b=oYAIQQbbFUdrT3mKR03m5a7HitnB4qkEGHhduMByXTdxBO45UDmUfUxENhObYvvR5LyiGlF1sGHAzSXlEMVL/OwoYecSm6NOTRLYso3QPbxMCNVYAmVcUaWTyAiOLxvSv7/ZOsZZxJQLNm9MLuLt4ikJBxoNQeLRJBu+yOn0hwM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=WmVvQ/vA; arc=none smtp.client-ip=79.135.106.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="jgvbVR1C"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="WmVvQ/vA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1789546162; x=1789805362;
-	bh=sNcmNScEhpmF/4cOJIi/n2ntDi0iE/3WYicZo1sq86I=;
+	s=protonmail; t=1789546167; x=1789805367;
+	bh=KdnGPyMt+WNrC+sXSZeon9pFIAKeJSHes4isdLhm8wg=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=jgvbVR1C2miDAi8+mWdOxhQ2VIBjqj7+WGoaYWQva0zQV3ZhySWAvo2rRIX0dX+wa
-	 xmGT8XEgXuNCfjQumFc3LxW0gVVXd/kbgz0B85ZvFIHbPx49CGbZIN2b85ftYUlGQd
-	 4XD2zzCBc9VAzuRREEpviR1N60fOaswHvU9ZFuEOI0qeaKStdtc8n56SklJiXQE/Uf
-	 o+plmjr3iIvfWVQgdLh7vzTx4Usr23qJ+pPMoXbMjiCDpoCLDKd6+ecDnH8Y3v73/5
-	 XSaApKUpc3auokq3IQJBWTZklzESDFHC6foP28e6SonnPyQdGgnxlKjap95en5pj8N
-	 hCsKlEuPuBMhA==
-X-Pm-Submission-Id: 4hlBPD2cLfz1DDKv
+	b=WmVvQ/vAFKIGgYgFaFzLL/zeSDtybfwg6us4vVK33nYMgpdc9ARj5MMmi3yGfDH/O
+	 4a+7n5/O9jWvutBSXpUdeUtdbCF+Vjxf1WvLPz9mm8kb+UeRQXFNknn5sDuJ4fHozN
+	 YJi32bE6pBoAy1YU7CuXZd+I8leNl+NYnfyt9YbEKZTBkvFl57qi5nc7GgQXnNCgs4
+	 yZlogwpisshoNLnxV0EAg9ktAgVKMR6+mm2/DwZ+A/pywA4P4lrz0gwnNaljKj83SK
+	 CXXf6Embn7JM+ShyajUt/v6t0C52iqLLRmfUVSSyznEtHJo61BDq/RB4nTcZfkirG5
+	 RjPzyY9oDR5FQ==
+X-Pm-Submission-Id: 4hlBPJ53csz2ScPH
 From: Esben Haabendal <esben@geanix.com>
-Date: Wed, 16 Sep 2026 10:07:57 +0200
-Subject: [PATCH v9 01/10] dt-bindings: iio: accel: mma8452: Add
- drive-open-drain
+Date: Wed, 16 Sep 2026 10:07:59 +0200
+Subject: [PATCH v9 03/10] iio: accel: mma8452: Fix runtime PM bugs in
+ mma8452_read()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260916-mma8452-open-drain-v9-1-0dd24fa2f3d7@geanix.com>
+Message-Id: <20260916-mma8452-open-drain-v9-3-0dd24fa2f3d7@geanix.com>
 References: <20260916-mma8452-open-drain-v9-0-0dd24fa2f3d7@geanix.com>
 In-Reply-To: <20260916-mma8452-open-drain-v9-0-0dd24fa2f3d7@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -53,42 +53,76 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, 
  Christoph Muellner <christoph.muellner@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ stable@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789546157; l=1037;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789546157; l=2127;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
- b=Xylm022efn23CkDn2cmNcTM9uttisqYkTx3O6Bgd6V5Sp9P71o/xLgVH9Zgfz9Xmp2y2CLNH6
- 1OuA7/VRvGyCPmcQz2QKxwRr9mZ4OXfe5N8ht2mv7VFfWxP+T9Isowa
+ bh=7g4Bx6VcNobxJ0NKjiVjkZ2NfOoDHgnEhpsjeZEGI9Y=;
+ b=Ju2uL8tn7OgC+R/Nfn5weZgamzhJrK5EWQ/i4i4Y+TUcEj5WmjfoYRvbJiMrRLAFiXjUX0ECW
+ 3JJZ9qUruXjB5httPKCE5KovQ1PtEooEjuY5h9yd73h6ct6bvefhOrU
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-Add new boolean to configure selected interrupt pin to open drain instead
-of the default push-pull mode.
+When runtime PM support was added [1], the implementation in mma8452_read()
+was done incorrectly, as it calls mma8452_drdy() before ensuring runtime pm
+has set the device active, so it can cause read from STATUS register while
+device is suspended/off. At the same time, the return value from
+i2c_smbus_read_i2c_block_data() was discarded, and the function would
+return the value returned from pm_runtime_put_autosuspend() instead.
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+When the latter bug described above was fixed [2], another bug was
+introduced, as mma8452_read() would now leak the runtime PM reference
+counter when i2c_smbus_read_i2c_block_data() failed.
+
+This commit corrects this mess.
+
+[1] commit 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
+[2] commit 5bdff291d20c ("iio: accel: mma8452: handle I2C read error(s) in mma8452_read()")
+
+Fixes: 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
+Cc: stable@vger.kernel.org
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/accel/mma8452.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
-index b0dd2b4e116a..20701aa725d0 100644
---- a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
-@@ -39,6 +39,12 @@ properties:
-     minItems: 1
-     maxItems: 2
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index a937cbd84f30..a77c4b88b61d 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -242,21 +242,25 @@ static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
  
-+  drive-open-drain:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: the interrupt line will be configured as open drain, which is
-+      useful if several sensors share the same interrupt line. (This binding is
-+      taken from pinctrl.)
+ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
+ {
+-	int ret = mma8452_drdy(data);
+-
+-	if (ret < 0)
+-		return ret;
++	int ret;
+ 
+ 	ret = mma8452_set_runtime_pm_state(data->client, true);
+ 	if (ret)
+ 		return ret;
+ 
++	ret = mma8452_drdy(data);
++	if (ret < 0)
++		goto out_runtime_put;
 +
-   vdd-supply: true
-   vddio-supply: true
+ 	ret = i2c_smbus_read_i2c_block_data(data->client, MMA8452_OUT_X,
+ 					    3 * sizeof(__be16), (u8 *)buf);
+ 	if (ret < 0)
+-		return ret;
++		goto out_runtime_put;
++
++	return mma8452_set_runtime_pm_state(data->client, false);
  
+-	ret = mma8452_set_runtime_pm_state(data->client, false);
++out_runtime_put:
++	mma8452_set_runtime_pm_state(data->client, false);
+ 
+ 	return ret;
+ }
 
 -- 
 2.55.0
