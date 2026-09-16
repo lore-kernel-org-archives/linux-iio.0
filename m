@@ -1,54 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156C64D0CC4
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 16:51:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8150C525A78
+	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 16:51:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789577470; cv=none; b=P2JB/sJMcFnm5IieNY/e6zu/lhVd+uAm8jIpw0WOsE2KB0OOHKn167PYWCwd3rk7jsbt9BzQNkRTGYbNi8todc7Kakt0O3EnbVpLLJBJ8tVhHEi7vyWrrVZzxYO81H903RhnGtQQXJrv6oUtVaBH0PzHnNeCSGqOwD+ZTIzgzLM=
+	t=1789577527; cv=none; b=dqXw6ng8rShMqGZ++8MjGsjxuLd1SXnvV8d18vliEd31aiCl+pVLkM620VM4xmfDzM3QmsQPk/OF4IP6bpGU2a5OiIW/yYKQRje4X9IRaKeLV6LwU46RtEOVmv/6VUFD+vBQ2Q+Q/defFgb0IiYCUmvccFpIXkgxTAyOhx3K0eI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789577470; c=relaxed/simple;
-	bh=aPNoc/IlVGOzrz4AF5oUnZbB8ytSLfqRYFF3aP/E0sQ=;
+	s=arc-20240116; t=1789577527; c=relaxed/simple;
+	bh=jlDHHiMVqeXgdpn1Zj7e0N2hLgqwzeWFJxceKYb+YHU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=shh3Q1KNKY8r/mFRUrXGCpEcTqn7aghvyfo0KjV0HdJq06+e0wOxeCnYSFLL3UnNEkeCo1x7O+9hOs3zfHBPBANcmmeOgCYbXDc4fmIllzS6406pmGINhenmIGlE/dUFb7moFfolKsM7xHuvFC7t6Dy1t8ivbFaHOZogjPt4OzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KDzpsTWg; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=VhF13ZmjySwSxSUcmezY8dSBCpKNWAwXqnwssmiUsa2RiOSeNjX34NjyKj5zdgsnseaP8e1kmh6lO9ugvE/+JeSyDafNmI2lcQ/yOkGQPj5c5uguBKXYh0vrwh6cYHhnQHLX9upENJRqvpn/2R0xWhAgX1NGXs+WzCpiF60hPFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JcbHzxFv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KDzpsTWg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C939D1F008A3
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 16:50:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JcbHzxFv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C71011F00900
+	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 16:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789577459;
-	bh=aPNoc/IlVGOzrz4AF5oUnZbB8ytSLfqRYFF3aP/E0sQ=;
+	s=k20260515; t=1789577509;
+	bh=jlDHHiMVqeXgdpn1Zj7e0N2hLgqwzeWFJxceKYb+YHU=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=KDzpsTWg/z/5krxTobDbUSigXfKLPKN3GY+kPVHqBR7Qs64CjzbIot5CkPAxP2KI+
-	 Upq0GS82M9H0w++Czaj9svBiDTIMQmYdYP/CnWtiPeFrOEHUujcdjRSLexmI83DV+8
-	 d3OQKB1DCYTLA88vtfqbmhxp+3cXxscBoXEspNQE0qlsMYOfCwjg24mnoTiNgsl1/S
-	 2qLgSSSaznjuc0hKlv6DMiusMtJMUHjJIhhSSySZ7vl9callQF4Q+5MgOlSemRyTDx
-	 yueZt3Uscllvxw64KPLdcYhjZOLgiIXI50AcSMUhvVtuef5e/bhhcPutASFv5vSY+5
-	 AtaQQrqZxPKdg==
-Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b5e4f13d7aso1617724e87.1
-        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 09:50:59 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBzVPsSAq6iW7koN012R6czjgPM4zhlZR+j3IExVc1+Sy9jQQxu0coKUXme1YLV15InFleUewPlGQDo=@vger.kernel.org
-X-Gm-Message-State: AFuF++leE+hi0y+fJCTvhRg7u6ZTYyMLK/6N7s5VPWKvUgSMl7QVBM4S
-	kjwNIRylVkTt+XUaKonpD4z9GBCzBA9eYsvVUbA9aLg/hj4wKqrf2UkqPYfd5jyupjK850le7M+
-	zDaKaR0XDcA1UjvcSyde5SaISFNi5LHc=
-X-Received: by 2002:a05:6512:4023:b0:5b8:b419:c8ad with SMTP id
- 2adb3069b0e04-5b8b6617917mr969995e87.17.1789577458536; Wed, 16 Sep 2026
- 09:50:58 -0700 (PDT)
+	b=JcbHzxFvgLrpPJkR5R3XBY3y2SfCcwhDFnSiLhJ1B+/JTtnxdxndb4zLLznpRuxMr
+	 zDUB6DlQP+4KRhUFQ8qZIwmbtMSg4Sa213btbd920xJW3yvf/Rn4Qzedge0V2JpjlX
+	 DSseYM02zkMboFVManwZ9pkz7gBcwpL3z/fAJjcC2l/MJBjBv12ZukFan7Y5adtLR5
+	 PKISREbVUR980BR6UCPR2TSmSQ7nhb1eCTbfCo2hB8HPqtX95CCZxk0cjc1OeNxXHC
+	 wHby+UM/xrpkpvxH7mvJSJwmMZRLimAjK/eOXdvW4CtjMIwx6V8jFLqWrsv0qByTdb
+	 TzMjmwn1jm1BA==
+Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b5e4f15b79so1142416e87.1
+        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 09:51:49 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByYSTVb3VvFZdqzZ2Ytd+05r7D6Ka/fX01HySirdUDeBuwmMTvpmaAK2Q8G+TeMjrQ7SKoS+1OYL9E=@vger.kernel.org
+X-Gm-Message-State: AFuF++mPeuMASsWSlDhHq9RpY//XkPnk1E0d9h9MBm7INM0i9mSkxasE
+	pn9BJd5tm0etMRY1HeU8l/TlweddZ909ht02NunnKCzFWTY0yu86CaAcP4c8VA3bB9Wz3Xh9Cbh
+	k1esyCVah659au1ol2ud9fVhQhRMGSQk=
+X-Received: by 2002:a05:6512:3d10:b0:5b6:17b6:2224 with SMTP id
+ 2adb3069b0e04-5b8b665478emr1974764e87.23.1789577508492; Wed, 16 Sep 2026
+ 09:51:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260909132153.1596191-1-arnd@kernel.org> <20260909132153.1596191-9-arnd@kernel.org>
-In-Reply-To: <20260909132153.1596191-9-arnd@kernel.org>
+References: <20260909132153.1596191-1-arnd@kernel.org> <20260909132153.1596191-13-arnd@kernel.org>
+In-Reply-To: <20260909132153.1596191-13-arnd@kernel.org>
 From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 16 Sep 2026 18:50:45 +0200
-X-Gmail-Original-Message-ID: <CAD++jL=dBJNiZMwRfYtVXC=qfWEU8WY1DRRzDA1o9Ngsd_VRqg@mail.gmail.com>
-X-Gm-Features: AcwNN1VWCbypMBp0nAwSnIVxOHs3QNpjZkwVGv_5Swi1QUA8mHWSb92JoMn3LYg
-Message-ID: <CAD++jL=dBJNiZMwRfYtVXC=qfWEU8WY1DRRzDA1o9Ngsd_VRqg@mail.gmail.com>
-Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
+Date: Wed, 16 Sep 2026 18:51:35 +0200
+X-Gmail-Original-Message-ID: <CAD++jLm253spmn1Tq2Jekiw2Q9xD_HDQ+AFRgWovLyE=veAfhA@mail.gmail.com>
+X-Gm-Features: AcwNN1Xrn_ibUNrql-q0n8N3iTosx-ZSLrxjHuJr9HzfGfgIlGS2dfpxQ3q588w
+Message-ID: <CAD++jLm253spmn1Tq2Jekiw2Q9xD_HDQ+AFRgWovLyE=veAfhA@mail.gmail.com>
+Subject: Re: [PATCH 12/14] mfd: remove unused mcp-sa11x0/ucb1x00 driver
 To: Arnd Bergmann <arnd@kernel.org>
 Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, linux-kernel@vger.kernel.org, 
 	linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, 
@@ -73,13 +73,13 @@ Cc: Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, linux-kernel@vger.kernel.or
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 9, 2026 at 3:23=E2=80=AFPM Arnd Bergmann <arnd@kernel.org> wrot=
+On Wed, Sep 9, 2026 at 3:24=E2=80=AFPM Arnd Bergmann <arnd@kernel.org> wrot=
 e:
 
 > From: Arnd Bergmann <arnd@arndb.de>
 >
-> This driver was apparently never used, as it has has no devicetree
-> support and never had corresponding platform_data definitions.
+> The sa1100 platform has been removed, so these drivers are no longer
+> used anywhere.
 >
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
