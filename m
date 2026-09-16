@@ -1,69 +1,69 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011042.outbound.protection.outlook.com [52.101.70.42])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011021.outbound.protection.outlook.com [52.101.70.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA00A49E5E5;
-	Wed, 16 Sep 2026 09:28:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ABA33AE184;
+	Wed, 16 Sep 2026 09:30:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.21
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789550913; cv=fail; b=pH1ChcprvwfYpSBNqAPy7luTUzm1RueYWff4by1Frf/S6P4y/YnxFx4i8O6p+aOupY6HEaB2kvLxcm5bbzNq5UnBWuKN5o6iYshXY0I3U3Q6hmid+DwFuXg82uExdUVqzMtLDMk8WqLoW9U/DIND+gy++VmlheRq+Uw4kNikL+o=
+	t=1789551031; cv=fail; b=D4pzlpzKUYS9kfeaju/bFi+G0twKPnDcGgMe/W8nuWc/neiYyAitMawCieSWk6YBy3Y9VEiD9KfJlDIAL17WvLoE367YmpvjFySP8ndeV2Tx3KcycvKmDHRwqataqbMaVCyqBncMidWd66ssM1d3jRjRu/HOfQ/m58ezt+tMcIo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789550913; c=relaxed/simple;
-	bh=FEfAbHkncoEduSHjVbXLqeUEj4SQb6MGTxloQTcQCEY=;
+	s=arc-20240116; t=1789551031; c=relaxed/simple;
+	bh=lEGai8/xvmS84mskoDcuPJd+lXE2SwHXVIJqmukvVRI=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=S8f+X3qfm7cwBQRCy9qk/0AqtehPDp1zdpqjqPKWO+WROJdEQ52f9fPCU+voev4uF5tWRXl7ETK7am6zpDO/p6WZsXiowft9rTSFYHa76vI1/TOisPrFEA6EBRSqx6S0DBVqF8+GQNY70wr3VMWOw2Qe6lyjjFGtOF+3ZtUtFy8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=Lvr0Rv0s; arc=fail smtp.client-ip=52.101.70.42
+	 Content-Type:MIME-Version; b=PxV5imWn3JS1x7vBgRfjAGbvaN6ERiaHlKad3SDGzPOjbwPmTl/ZIjSpvkNcJrtP/xOW4TTalJ/EzDLXi3qmbfOAJzL1cEXq0Ux5t6RjUmkRLfBSe2uZLKSILisboASf4amheg2sec+2+uQSK7iXyJ8h8yaoZCHF6lA+SClX5QM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=SSd/NgOV; arc=fail smtp.client-ip=52.101.70.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="Lvr0Rv0s"
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="SSd/NgOV"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ct4+PrgoqV9/pFEmkU5Fy+Hsvmnzj3Eh3J+ucuqhUKo1MmlzQLr51MUltlk2Qb9onuvEGBrayozxyHg2PBQ7oXje68LTjCxqia64ixxLlaS4bMIx1+hm45j+ufBAFS/h951EzEjYvHefXeQP0Rt4YeFh/046zK4/A172DzYbiFRrK2J2CQ/lCFgqrkGJ0AAfKYI9c9WSJ7tWyMh7UNne2QBpul9IKp/IYUXOt3oEY1+/y68JIxox2+bCB8wy/4g5oxeMpwcaOuyBwGlOxeFJvcRkLRjfePRk3EFW598h8x1vpkAEwvqqIJkmCP21ynDP5SDdezuPfU2Yt5SeX8nBsA==
+ b=CwPsAiWk/K5nPVgv9rajdIFhPwWpt3xwCjhyPA1YXonc+giwMGfgpiARfEF+nvSvL+iCeCQkxdHVwZh1dRp/e/KwDt4kkHLR1/YCyxwS6/4GnCVI6vv7OS/5g6bTsf1UOx7NMiGtYm4fBNWH0qXRTHVKUowsRWt0nIYuVcDJW6d3/M4JSBUziHX3188/3GlOh/Kpr9lQIYTJ3CQ7tavIDFRWLYYWmBn+UAWzR7fSIfdecYf3Qcs+1THWHmlzsMRQf2Bd52N1+gQA9RG3+wCComGN8cF8o5oBpceFg9Hg/jx1dunCVZkeYoI1Jqeh7tS1WUuxmm2D4MeaEaMbyYFOzQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z8/H2bkZRD5MAzDCR5mbT87ZR84jXLJoDjpc1xWU+wI=;
- b=bX0O30ufQx8angpmlp4DQTc9rNnGWaNA89nbrt9emotuoSt5uaZfxzghbwZOjvGQkW9kPSLi7hFyiOZ6srK5ZW8s0q3OY5t8LSiWovwz9cyTOYJsEsjkNvgMW8hgs/pI+mEoZXd+4widz7/EgC5tDLD24Oft7MG41H3ZssVzc+L0i1D9rorHfMl9ar2jfaNDqCF9fFCOK5umHd29023HofsGTNes/Hjl9GMZNY5bO5F5FEGDhGUzYe+km/XnnDQ21EhAMfjxv28NHYTINQa03dhBgiD55Rbq8L8owUqRIgm+OXn5f1qNyTkC9npTCem1B5gY+lhB/9n+QB3PhzxXcQ==
+ bh=lEGai8/xvmS84mskoDcuPJd+lXE2SwHXVIJqmukvVRI=;
+ b=FGJywStYBJYZX4sd+IPbunxOtu2o85/8R8hBZsj1BlLHhWH8QnXbTe6KO+XSH7YoEJkwoiPOtVWGtvwkHjcM1BKrQ0+Ry8qu55q5TxjdtvGernZpeDoFKBDD9vgoBdBnWb62lurszbe3VXoq9v2BXhEZJrtdpV4w+FZh+WRRt0KxIJ83Vb16hYJnBglo4PUdChfVAfaSHCWf30V+UQypfrtILcSnqsNtcnu4No8qdYYnCmJmVZQqt+B185MxqN9r619A2kWcxdVQr1+ddh/TKNPH+J1jfC1Q6pwwxqMhE6nxnn2aEBdK4N75Qgm5gjQU+mKLSxgLg1GPuxTcNk5Z8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
  dkim=pass header.d=axis.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z8/H2bkZRD5MAzDCR5mbT87ZR84jXLJoDjpc1xWU+wI=;
- b=Lvr0Rv0sg4oTaLb48s09PhFS/ZbGSMMCwillvV3CNx4GoO7z8VGutktntPwGUrcQ70FG8Vw3FccTJJ3zXtuIW/VRsXG2noqrZ2FZPbig7HO53R7W+cjVMbqltFUrvOUmvKVan7vN03/kWH3BxeISA+UhWIVslOLw0Us8Rnn9J18=
+ bh=lEGai8/xvmS84mskoDcuPJd+lXE2SwHXVIJqmukvVRI=;
+ b=SSd/NgOV16bBM9AfokzM+2wb8AbLYyOw+dTyny1NdOnm/oqW0ayAY1gvMeS6vus38bb9OOd4gz4eTDIXINmys532PbEEisJg6kuuwK7kbJSi7JYy03sfIQCGUAsRrKX9iaNPR5zIsaGiHLr1bfepxxqIyYeO/s4D+Ah0qj5esow=
 Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
  (2603:10a6:10:43a::19) by AM9PR02MB7011.eurprd02.prod.outlook.com
  (2603:10a6:20b:267::20) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.11; Wed, 16 Sep
- 2026 09:28:19 +0000
+ 2026 09:30:17 +0000
 Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
  ([fe80::7510:e8c3:db37:47ff]) by DB3PR0202MB9129.eurprd02.prod.outlook.com
  ([fe80::7510:e8c3:db37:47ff%5]) with mapi id 15.21.0406.012; Wed, 16 Sep 2026
- 09:28:19 +0000
+ 09:30:17 +0000
 From: Kanak Shilledar <Kanak.Shilledar@axis.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
+To: "dlechner@baylibre.com" <dlechner@baylibre.com>,
 	"joshua.crofts1@gmail.com" <joshua.crofts1@gmail.com>, Henrik Grimler
 	<Henrik.Grimler@axis.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"jean-baptiste.maneyrol@tdk.com" <jean-baptiste.maneyrol@tdk.com>,
-	"robh@kernel.org" <robh@kernel.org>, "marcelo.schmitt1@gmail.com"
-	<marcelo.schmitt1@gmail.com>, "andy@kernel.org" <andy@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>, "macromorgan@hotmail.com"
-	<macromorgan@hotmail.com>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
-	Kernel <Kernel@axis.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 5/8] iio: imu: inv_icm42607: Add support for
- ICM-42370-P
-Thread-Topic: [PATCH v3 5/8] iio: imu: inv_icm42607: Add support for
- ICM-42370-P
-Thread-Index: AQHdOh9BPh9OL1eREEOLL+sfXGnts7bCY36AgA6jqwA=
-Date: Wed, 16 Sep 2026 09:28:19 +0000
-Message-ID: <d5502abac64a6a6f177e251e8ec514bc346e1a08.camel@axis.com>
+	"Jean-Baptiste.Maneyrol@tdk.com" <Jean-Baptiste.Maneyrol@tdk.com>,
+	"robh@kernel.org" <robh@kernel.org>, "jic23@kernel.org" <jic23@kernel.org>,
+	"andy@kernel.org" <andy@kernel.org>, "krzk+dt@kernel.org"
+	<krzk+dt@kernel.org>, "macromorgan@hotmail.com" <macromorgan@hotmail.com>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>, "marcelo.schmitt1@gmail.com"
+	<marcelo.schmitt1@gmail.com>
+CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kernel
+	<Kernel@axis.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v3 6/8] iio: imu: inv_icm42607: Implement MREGx register
+ access
+Thread-Topic: [PATCH v3 6/8] iio: imu: inv_icm42607: Implement MREGx register
+ access
+Thread-Index: AQHdOh87FN81ruWo+kuBt7z8nBLE4rbDCmqAgA39TgA=
+Date: Wed, 16 Sep 2026 09:30:17 +0000
+Message-ID: <2537d21c50da4e74107244010f1ce193b3fdee26.camel@axis.com>
 References: <20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com>
-	 <20260901-b4-inv_icm42370p-v3-5-77cc31642115@axis.com>
-	 <178874609182.3402141.7546313507051426644.b4-review@b4>
-In-Reply-To: <178874609182.3402141.7546313507051426644.b4-review@b4>
+	 <20260901-b4-inv_icm42370p-v3-6-77cc31642115@axis.com>
+	 <BE1P281MB1426CC3CADAD2D34138C5886CEB22@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
+In-Reply-To:
+ <BE1P281MB1426CC3CADAD2D34138C5886CEB22@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
@@ -72,58 +72,58 @@ authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=axis.com;
 x-ms-publictraffictype: Email
 x-ms-traffictypediagnostic: DB3PR0202MB9129:EE_|AM9PR02MB7011:EE_
-x-ms-office365-filtering-correlation-id: f472d188-b481-4bb9-5962-08df13d4d871
+x-ms-office365-filtering-correlation-id: 1055f9ae-8c0a-4a6e-8a72-08df13d51e9b
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam:
- BCL:0;ARA:13230040|23010399003|1800799024|7416014|376014|6049299003|366016|22082099003|18002099003|3613699012|38070700021|4053099003|4143699003|10067099003|11063799006|56012099006|6133799003;
+ BCL:0;ARA:13230040|6049299003|366016|23010399003|376014|7416014|1800799024|4133799003|10067099003|4143699003|56012099006|11063799006|18002099003|921020|22082099003|4053099003|3613699012|38070700021;
 x-microsoft-antispam-message-info:
- laHbge7+gmIv3Ew2Xlew6ByMHIEtkTmp/ZLW1bJAtR/75ElQCsl1jpKNCY5BaJ05Gp3s/D8gI4OYaqLh/j5QRISRbZJQ6B+BRdDBZYuFyOvlMhu5EW6EL4NrFKOdZLIZCZ6KF07sNNCdVLiWnkaGI4H92yJ17eEc35+DwblQcfjwE9Zbo4xSV4Lk408yN16zf0FwIyY+Obwopyx4YjtpFzSfbICl+qHsL71wKWXHp+KcJdQ6t5dHGAuZ3aTeJLYy4V9w4ME4UTF4Sy0VYPYYjONfU2LeiFoNGp/ufWmD8f0ptcoaUR+MrVkHj3g/aNkaDNbPJcMu9THDZCTs3sm5/03BkLqCIeLuEbblsEg5JfIFq16kuHkZ3BCuwGR5Eq78ojZyQe+goIGQ5+2vs6/7B22mNPIVA5Yq2s3CHuaEANEBgMTdVGT+IGa+7Y2vRsO0ZLYOLLDvv/kEandkkLxJ7+/tX6BuKchgrJKVjPWvb4bdqElNh6VKTFSLJ0lf052CHi8SEUv/ssJlIA87g0GgiFzRzv2TF//Gdp6ImtXhmtsMzXv66jTOPTSbjjAVH8yrO1S/Gf+HFbcpx33wcU5HGOuxmC5UvTBNCijZsLHPtgBmFzVfCzGPhGKh9w7GglI5WkKjajZgdz1Ijkw2zBqhazoEu3IgbctaFZTLA66hI/pRx3DAkZH8f5w2+KVrA7WC9KaTiXPDgjsee+tSFtcEkQ==
+ fI/mN/73d4oN/js12U4pO3Hvu2LIcCogg1FYVtXW9PdO4m4UGJ/SBla09PJYA49QY9aI5ztPJbFf67Bhv3xK0I5FZKwSkwlUI3qWhcQq1P5kAKagG+2yCYRgtDxxeyYPqOWb3kBbloe3Jix+H5H9ayPxX23viTGR7khLcd0uVeoRw3vC7hfKZTRZj4h44VT74LbL+30sIc7zBF7DjcOvCll5n47axa1rvqzbL2ePgkigpq9oFFwxCelGVFK7U+px+JizvE3h/+w4UV2u1hhVFSd724BRSh+dIFj5zvuM+oWoWh0UdM004BzUf9SHwynFFXuK0HvFlmFsuLEjzB5fCpdT9R2TpJ1ps33b8cWpzUirjIhk36FLMC/5W9ShYeChSgFHKt1Qa+jmFmtHOIqCoaJNgf1qXDj3tSl+j9COp0oq2RolBsMSe6ORMuSB6ht6d3j9G8TfnQVWmcbh1RwQD90zizdhUZl5LtZK3aoWLkXMcXqZAn6ke0eFN96EkT33EP4bkOQa1VUv7BWHFZPJidPDq2ZJ/7tcWvsLMV33BDfbx3scUTqD6Hwqfqie06xWoDJmqno4wLGEEr6Cm/5zERUuPBJlivKU9F51vI+X81u9hv+ZouvcJJ/G/Eej+OOb0d7/NE4vqRH15+3sds1GaEUe9bIPRz1wfoIDNynLaBqFJK/H9DwFY651e8JlCXgFGkPFt0L8NueNziYuW/zlqgYNaFtpUwsYkZ0UUhDqwAQ=
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(7416014)(376014)(6049299003)(366016)(22082099003)(18002099003)(3613699012)(38070700021)(4053099003)(4143699003)(10067099003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(6049299003)(366016)(23010399003)(376014)(7416014)(1800799024)(4133799003)(10067099003)(4143699003)(56012099006)(11063799006)(18002099003)(921020)(22082099003)(4053099003)(3613699012)(38070700021);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?SDMxZEFvRkVDOVNFb1ZjcTZicWtpNDcvTHVIM2Z5dCtsRUNPTWdyMm9FTDRR?=
- =?utf-8?B?V1F0WWUrN05tRGJLZFordEVVOVBnQldDUm5TeitCbjhBOGVWNHUrdW5HNUFC?=
- =?utf-8?B?R24vcUVRcDR1UjU2NUNOeVVWVi90d2RTU2tZVnByWWNhMlJIWGIwZ3VFVjVI?=
- =?utf-8?B?WHlIeVRJdW5UVEJZVVNodGdML1lGc21BUUNRcEFxY0RMejJXOHhuOFNSTnAy?=
- =?utf-8?B?VHZ3Q2xoTllYcVpFSmx2eFJmR1paZmJsUnhCRXNGY2kzb095aXhwSFFReUhz?=
- =?utf-8?B?M2tZRDVMRDZQZGdEdERrRGN0VnJ1dERWeUdtaFNIVnUvTHlLT3ovZVNjd2VM?=
- =?utf-8?B?MUJNUmRTV1d3SkUwT0dyOWYvZm1UZ1h5RWNHOEE1dmM5MTduUS9iQUk1bkJh?=
- =?utf-8?B?ZTZtZXh6UEN0SzVIYTB1Rlk1ZC9mNEIyR2Rhb1FVa3N1aWVjSDdyVkNIeGMv?=
- =?utf-8?B?NXRtRDQyU256Si8zS09FSmxVZDJXREtIeTdLODh3alZLOFdFaFZxeUpBTCs4?=
- =?utf-8?B?c29lT2RVZklqdXMwTFR0ZFR2NDI4a1BEa2RzMUl5YndtZzJvZzN2c2s1R2RM?=
- =?utf-8?B?bTNzSVg1N3ZQb2pVUC9FbStqRCtPS2MySEhlbGJzN2hlOG5uMnEydnVYbEdY?=
- =?utf-8?B?bE1SbXJ0dno1T1A0dXVURzA0c3YrYmVsNEk5M3IrcXE1Z2RxVE9VbEJHM0lO?=
- =?utf-8?B?M0lIZ0NBdWpQY2pxNElpQWxTVGpiZXlicVBKTnhTak1lM0VzQ1VDUS8wdEV2?=
- =?utf-8?B?L1IxZG4rT3NqTXp6NDU2U29xRGdPN3NzbGZRSU9HWGIzc2EwMG5XYUxzTGtz?=
- =?utf-8?B?dUhjZ0xLbjUyN3luRndYOGpPMDZwVFpXbHRTNG52S0RDelMzMVMzV3IreGNh?=
- =?utf-8?B?SmdKSHpwQWw2NFBKSlNNWEluNER3c2lDU0Z1alNadmpLTEJjSm5ITTdpeEZ0?=
- =?utf-8?B?Y0FlZjg4eW02Um1ZTDBLbkdnK0R1enFZWFEwcG8vVkVFSWppZ2lnNlJ5MEZh?=
- =?utf-8?B?ck44bXhYK05zajNjeTVpYlJCTEFzWEpSaGJ4QnVTekd0TitoK2ZwaG56eWNw?=
- =?utf-8?B?dW9xVnVFY3pOaWJ3KzcycHo1Zlp6eHM0bGNXbkpkM1lObS9UQWZXMXk4SzNC?=
- =?utf-8?B?ZXB4NGtRSkJDa2xQWEFuNExhM3Flb3pNYXVZS3NOZFRNS0dOVXZqOHV5Qk9J?=
- =?utf-8?B?NlZEcmVYeHJlMFBvYVJFOWtzdlB2MlFPQmt6NnlKYnpHdWRoNkpQbFcwZ0pL?=
- =?utf-8?B?bG5pNEgvZmpWVXpzTmtyQisxR0UxMWJmRGJSVWVOd1lXUjFLYmVNOGIycDAr?=
- =?utf-8?B?ekdvV2RkU01jWXlLd0ZTclFZMzFBZ1RaK1NiWjhRb25rNVFjNHY5OUVpTjV2?=
- =?utf-8?B?MjB0SFFQcUkyUHliNjZYYjk5SEZ0K1RpNjhIWHVlY1FCMHNSMnB6OG5RTm96?=
- =?utf-8?B?SkViajk0ZDJ0UWdycENUeGlXSUtFRUR2c2JFVndYWjU3TXZDU3d2eTRPcnlC?=
- =?utf-8?B?b3Vqd01RRE0wck54Tm1UcExrb0lBb3BEdnRoMGk0d1N3VUxSVGZIWnNGcTRP?=
- =?utf-8?B?OThLQWlTUk1FL1diNjQyM3g1THZzeWh5TGlKemhBZGxDSHBiRUlLVUlDbDBQ?=
- =?utf-8?B?OHVZMm5XQ3V1YUx2WS9ZNkNyVHlkMmsrWHRaT0hjaW1QT3VpbDNEc1VXZzlS?=
- =?utf-8?B?OWNBc0JURWcwa1RTOStvWHdtTElxN2psTWEwczdnRzBJY0lRaVFlY2RIamJM?=
- =?utf-8?B?OXlQY1hLYkhidU9aTldqR2E5ZmxWOUNxZ3BiL2NMOE0zNDJKeTFCVUZtamJj?=
- =?utf-8?B?K0tVVkdQZXdKaEo4NCs4WDJ4Y2g3NkptVW1pdjNqdDhVUmV5ekdnMTFZYmRt?=
- =?utf-8?B?bjlmMS9mcFJTRkRld05mVk1tSmhEOStJeWdVQ0ZkQnN4WTRMTnlXd2VwYUxn?=
- =?utf-8?B?a1VJZUs5d045bmozN3R3dmZnWmlnT3grUm5pMm1qUU5NSjhWZU1jZ2lQNzVT?=
- =?utf-8?B?Q1Qxam9NUGJ1aGk3d1dsV0dRV0F5bExTNjVIWW9wVU9sdjhWSjFRRVltVTBJ?=
- =?utf-8?B?ekFJamtVV2FGTXBpdFVoV1U2eEhPdEFRVjJKZHkybmljZWpHMnljZEkwYTZL?=
- =?utf-8?B?M1dsWkxyMFp4Rm5LWGJhT0kwWE45am1LVHpKRmFUWmxBQTZYVUpPckNKNGVo?=
- =?utf-8?B?TUlpN1NJdEJ3Z2pzTzM5STB1ZlpFcGJvU2g2c2JtWmJmc2tGcmhwMGRDekx1?=
- =?utf-8?B?WlRZWFFxczkrOTNrNlBpckRNODRvK2FpVG9tYlgxTmlaTytPODN6bVZBQldH?=
- =?utf-8?B?b0NMQVZWTUJmM3ZmSTQrdkdPZjVjUUtxZkR5bDhrM3VmSi9hTmY2Zz09?=
+ =?utf-8?B?U2Vzd1pVcVVDM0VKK3RWWXlEYWNwSjZZWjBZUGE5SU45ay93akJlWFdhNW5z?=
+ =?utf-8?B?WWlxMFFQU25FeGQvek4wTVJsd200c0lENVlIemhZOXJYYWgvMElNZjk0R2xD?=
+ =?utf-8?B?NEdBQVNEcGlySzd3M3ptckNXemEyMHlwV1pmSmNyQ2NNakIvTmpsL2l1eUNl?=
+ =?utf-8?B?TDVMV1J0dlpnQzV3TUtyQ1h3U2s4U2RnTGlkUGtETnNtQTd5eXlja0wyckE5?=
+ =?utf-8?B?WlNRNEh6YUlPYUFPdGJ4NitobVFpV3Z4RzVxajBWVlpIc3dKWjZGVUZZQ3N1?=
+ =?utf-8?B?ZWlScWM0d2N2SStsVHFIcFFuaDM4WGl6bW9xdDBNdFNmTXZRa0lueEZ0ZStv?=
+ =?utf-8?B?ZmowRWwzblRXQnFOZFhKTnJLYkJKbXhwcWFNUWxvSk1lV3VFaDQ0bUltQVVv?=
+ =?utf-8?B?RUYwZGZiSS91REhOTUxmTnNtZGpTNGtwbnprVzd4bSt1UlNCNXJXRXRlY3Yx?=
+ =?utf-8?B?Zjg1dzBjbjZnNzBTQURQWVU4ZEluY3pZZ2RJYnNibGRNUUI5WGVVU2M1R0h0?=
+ =?utf-8?B?UlZKSWJoS1ZxSmpaZnBrZkxlU1lwMjlzajVMN2ZZVkdhU2VPdDFBUFZ1REEy?=
+ =?utf-8?B?ZE9PTWI2TTFnTGxWOXkwMnNHRFRzb1pnRFF0UnRabzB4UXh5dGxiSFcvLy83?=
+ =?utf-8?B?VkRxS2RCMXVrVVRGZEc2ZnliWFJwbnBBVmlwQXhmYU9XQzBqSENpc2RqLzk3?=
+ =?utf-8?B?UFUwanM0VUtNY2VhV1lFM3JFV2lOWkJOR2NhZTNlU2s3L3pmNmpReFJsM0Na?=
+ =?utf-8?B?b2Z5QXd5UUliMmhqczRxdlhiNWxUeXZoQUF2UDB1d2tjcVc3TkwyR1UxRDhx?=
+ =?utf-8?B?TGRqVXo4R3pZZ2c0UFQyMndxcXBSWTBQRzlRWGJnYWFIcm5xcmxRclVsK2Ns?=
+ =?utf-8?B?Sm45NHN0cGlJZVVWSU9yY2RJMi9mM0Z5cG1HcXZlbVhJdGdKNWZ2R3pyWXlO?=
+ =?utf-8?B?VDNLdEIvbzMyK3A0ZUdCdlZNclF5M0RmZ1BOWGxzcVEwMlJIcHhYaXZPU3dt?=
+ =?utf-8?B?b3dnK0tnaHE1M0wvcXI3TmlHN0JqWnVDSkt3NmxSb2RjdXRTamRqZHM1MDZE?=
+ =?utf-8?B?Q0F5MFZMMDJHcDFpdk1yeHJURVkweXFXVTdsOE9VRUphSnM1REpqMHdzMUR2?=
+ =?utf-8?B?Ry9jVklyMnpXUmtLYnVyYlVEUmF6UnpRakd3alh5MnNESGxzQVJxZTY3Y1di?=
+ =?utf-8?B?V1MwS2Nsaml4bWltSEpwdzVYTmhXL2U0cE5OWlo0UU1VWHRPd3BnU0piQ1BX?=
+ =?utf-8?B?MHhEMWpMeDhaWXFGZjhVcVFDTXBLTzFMZzN4aFNOQ3JPVUVSSHBjcFhCQ01U?=
+ =?utf-8?B?WWVaTTV0bXdoRSt2bjBzSDRwbEkzdGhqWWhhdEVLdVNod2lSY1BLZ1dpUUVR?=
+ =?utf-8?B?ay9YMEYxVjZmNENTTXIrYmdEb2ZkWUJzbDZMc0Zic0xsOHU2SjhpSFBZOXdo?=
+ =?utf-8?B?cXoxZEdybGZhcHhpekJQOXZvUGxRdG5tZldodlVEUXQ0TjJaR0N5RCtEVkJJ?=
+ =?utf-8?B?QWZoYjNodlcrN2pwYnVEOWxGVklNYWNlOUs2S0ZmT3NFNHU0OGRYeE15Tng2?=
+ =?utf-8?B?K256a1NrYkFHOHY5dWdXUEhhRzdqN2lUMVVwdmhXM29Sc3UyTExieUs4QzFI?=
+ =?utf-8?B?NUNNaW1FQVNUM0JPK3JVck5pLzV1emtNWUJJTzZHbHVralpTL0wxYzltZHov?=
+ =?utf-8?B?VE1FTUVKUlZlck1XNWdVSGV3RjFyYVBQeDBiUWNLWkJHVmZjaXZXL2ViaUNF?=
+ =?utf-8?B?YjZlbk1oR1FTVUNnNXh1TmFsQWZLMk5Kc2RnWE1STW1jUlNzODdDcy9GNXJ3?=
+ =?utf-8?B?NmJYU2lIRDdGcHpvcVQzMm0rdDhpTEFMclZ3SmRFdDdMM0gxZlB6eGI5NDdE?=
+ =?utf-8?B?UUNva1h6YzJLOUNCQlE1Ky9IRFIzWlhFUnVWeVNpWXkwWXlTVFpOK2pOdWox?=
+ =?utf-8?B?dHRCT2RLWDMxQk1nUlM0UkE4UExGalFxNzArWkt3OE8vam5FNFFQZExKVWJ1?=
+ =?utf-8?B?TloyMndQQVRvZ0RVSDlSMkptUHFXWVFYdEluOTlaSlIrU2ZiSDVJbkF0bEVB?=
+ =?utf-8?B?V01EQXN3cXAzTnE2MW5xSzFEQnJzT1Q0YndoMW82UEVLNTY3b04rVVFDVnRV?=
+ =?utf-8?B?TjBIM09GRkUzeEhFdy9jMVhxNldjYnN2TzQzb0RPdnZZZDIvV2hORHhKVGJB?=
+ =?utf-8?B?ZGNmb3RyeTQrMng2b0ZDME1QdFM3WnJjMzQ3RlgzOGl0M01ISFVQL0Y2YTIv?=
+ =?utf-8?B?ZFpQcjlCcGQ4aDZYMGpVMzJhTkxudzFVRmxUSnFOSVN4UmppTzFmTEpWSFBi?=
+ =?utf-8?B?N2RXRFc0REd3RHJHUStLYlJNbWRBTk83Uy9jbG9lbzA4UktVT21GUT09?=
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="=-YJrI7CYgOGAy1rh2io17"
+	protocol="application/pgp-signature"; boundary="=-6R9Tr7LSowkFE7pgc9uO"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -133,191 +133,95 @@ MIME-Version: 1.0
 X-OriginatorOrg: axis.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DB3PR0202MB9129.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f472d188-b481-4bb9-5962-08df13d4d871
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 09:28:19.4783
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1055f9ae-8c0a-4a6e-8a72-08df13d51e9b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 09:30:17.2282
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Wk5hXw2LrnJsSs0qRRLv6inHAV7KYJ1iO7I1S9TeQ0GTjkNtpjpzKXAKBzyVRrPS
+X-MS-Exchange-CrossTenant-userprincipalname: wJvnYmP2haO6AtAt3M52O/z+ATLNR9gcEorzdcmyKsey+KoLyVtncV1dFD+CnMS5
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR02MB7011
 
---=-YJrI7CYgOGAy1rh2io17
+--=-6R9Tr7LSowkFE7pgc9uO
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jonathan,
+Hi, Jonathan and Jean-Baptiste,
 
-On Mon, 2026-09-07 at 02:54 +0100, Jonathan Cameron wrote:
-> > Add support for the Invensense ICM-42370-P MEMS MotionTracking 3-
-> > axis
-> > accelerometer with built-in temperature sensor. This device is
-> > almost
-> > identical to the existing Invensense ICM-42607-P IMU, but lacks
-> > gyroscope. The device supports I2C, SPI and I3C, implement only I2C
-> > support. Provide basic support for raw sensor reads via sysfs.
-> > There is
-> > also a built-in temperature sensor but it can not be turned off.
+On Mon, 2026-09-07 at 11:52 +0000, Jean-Baptiste Maneyrol wrote:
+> [Some people who received this message don't often get email from
+> jean-baptiste.maneyrol@tdk.com. Learn why this is important at
+> https://aka.ms/LearnAboutSenderIdentification=C2=A0]
+>=20
+> > The device supports indirect register access to different banks. A
+> > specific routine needs to be followed when accessing the registers
+> > in
+> > another bank as documented in the datasheet (section 13). This is
+> > required for accessing registers configured via the user and
+> > implementing buffer support.
 > >=20
 > > Datasheet:
 > > https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-> > Datasheet: https://www.lcsc.com/product-detail/C5129967.html
+> > Datasheet:
+> > https://urldefense.com/v3/__https://www.lcsc.com/product-detail/C512996=
+7.html__;!!FtrhtPsWDhZ6tw!CMTPpmwpQnn9q5feyPtbKfDlZZxlAh6FLT3KngBIAt4pGu5iF=
+9cjUawWbxpNVF6__BzwZo0XM8x2ABrLJ4I1epLGPQXws4rTlA$[lcsc[.]com]
+> > Assisted-by: LLM
 > > Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
+> > ---
+> > LLM was used to improve the mreg_check function to include the case
+> > where the sensor is in a POWER OFF or LOW POWER mode to utilize the
+> > RC
+> > oscillator for initiating the bank access.
+> > ---
+> > drivers/iio/imu/inv_icm42607/inv_icm42607.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 |=C2=A0 29 ++++++
+> > drivers/iio/imu/inv_icm42607/inv_icm42607_core.c | 108
+> > ++++++++++++++++++++++-
+> > 2 files changed, 135 insertions(+), 2 deletions(-)
 > >=20
 > > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
 > > b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > index fa85cf738cc0..a183a8566617 100644
+> > index a183a8566617..a522850e0268 100644
 > > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > @@ -368,6 +368,7 @@ struct inv_icm42607_sensor_state {
-> > =C2=A0#define
-> > INV_ICM42607_REG_WHOAMI				0x75
-> > =C2=A0#define INV_ICM42607P_WHOAMI				0x60
-> > =C2=A0#define INV_ICM42607_WHOAMI				0x67
-> > +#define INV_ICM42370P_WHOAMI				0x0D
+> >=20
+[...]
 >=20
-> I'd put this in alpha numeric order.=C2=A0 Either that or by WHOAMI value=
-.
-> Neither is true currently.
+> Hello Kanak,
+>=20
+> for accessing MREG registers I strongly recommend to create a new
+> regmap
+> structure for handling this access. This way, you can use the created
+> regmap
+> to handle all registers access without having to check each time you
+> access
+> a register if it is a normal or an MREG register. Having dedicated
+> function
+> is very error prone.
+>=20
+> You can have a look inside inv_icm45600 driver that have the same
+> kind of MREG
+> registers and is using a regmap for abstracting the access.
+>=20
+> Thanks,
+> JB
 
-Will fix it
-
->=20
-> > =C2=A0
-> > =C2=A0/*
-> > =C2=A0 * Timings as listed in section 3 of datasheet, all values listed
-> > in datasheet
-> > @@ -392,6 +393,7 @@ typedef int (*inv_icm42607_bus_setup)(struct
-> > inv_icm42607_state *);
-> > =C2=A0extern const struct regmap_config inv_icm42607_regmap_config;
-> > =C2=A0extern const struct inv_icm42607_hw inv_icm42607_hw_data;
-> > =C2=A0extern const struct inv_icm42607_hw inv_icm42607p_hw_data;
-> > +extern const struct inv_icm42607_hw inv_icm42370p_hw_data;
-> > =C2=A0extern const struct dev_pm_ops inv_icm42607_pm_ops;
-> > =C2=A0
-> > =C2=A0const struct iio_mount_matrix *
-> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > index 7eb486ff673b..e77d72e0f7bc 100644
-> > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > @@ -92,6 +92,17 @@ static const struct inv_icm42607_conf
-> > inv_icm42607_default_conf =3D {
-> > =C2=A0	},
-> > =C2=A0};
-> > =C2=A0
-> > +/* Chip initial default configuration */
-> > +static const struct inv_icm42607_conf inv_icm42370_default_conf =3D
-> > {
-> > +	.gyro =3D { },
->=20
-> Don't specificy it.=C2=A0 C will fill it in anyway with 0s.
-
-Will fix it
-
-
-> > +	.accel =3D {
-> > +		.mode =3D INV_ICM42607_SENSOR_MODE_OFF,
-> > +		.fs =3D INV_ICM42607_ACCEL_FS_4G,
-> > +		.odr =3D INV_ICM42607_ODR_100HZ,
-> > +		.filter =3D INV_ICM42607_FILTER_BW_25HZ,
-> > +	},
-> > +};
-> > +
-> > =C2=A0const struct inv_icm42607_hw inv_icm42607_hw_data =3D {
-> > =C2=A0	.whoami =3D INV_ICM42607_WHOAMI,
-> > =C2=A0	.name =3D "icm42607",
->=20
->=20
-> > @@ -617,16 +635,38 @@ int inv_icm42607_core_probe(struct regmap
-> > *regmap,
-> > =C2=A0	pm_runtime_set_autosuspend_delay(dev,
-> > INV_ICM42607_SUSPEND_DELAY_MS);
-> > =C2=A0	pm_runtime_use_autosuspend(dev);
-> > =C2=A0
-> > -	/* Initialize IIO device for Accel */
-> > -	st->indio_accel =3D inv_icm42607_accel_init(st);
-> > -	if (IS_ERR(st->indio_accel))
-> > -		return PTR_ERR(st->indio_accel);
-> > +	switch (st->hw->whoami) {
-> > +	case INV_ICM42607_WHOAMI:
-> > +	case INV_ICM42607P_WHOAMI:
->=20
-> It is almost never good design to match against whoami values.
-> Doing so scales really badly as a driver ends up supporting more and
-> more devices.
->=20
-> Instead encode what they mean in additional properties in the chip
-> info structure.
-
-Will modify to sue the chip info struct.
-
->=20
-> > +		/*
-> > +		 * Invensense, ICM42607 and ICM42607P both have
-> > accelerometer
-> > +		 * and gyroscope functionality.
-> > +		 */
-> > +		st->indio_accel =3D inv_icm42607_accel_init(st);
-> > +		if (IS_ERR(st->indio_accel))
-> > +			return PTR_ERR(st->indio_accel);
->=20
-> This first bit is in btoh paths, so drop it out of this switch.
->=20
-> > +
-> > +		st->indio_gyro =3D inv_icm42607_gyro_init(st);
->=20
-> Add a has_gyro flag or something like that to chip_info.
->=20
-> > +		if (IS_ERR(st->indio_gyro))
-> > +			return PTR_ERR(st->indio_gyro);
-> > +
-> > +		break;
-> > +	case INV_ICM42370P_WHOAMI:
-> > +		/*
-> > +		 * Invensense, ICM42370P has only accelerometer
-> > functionality.
-> > +		 * Thus, set the gryo property to NULL.
-> > +		 */
-> > +		st->indio_accel =3D inv_icm42607_accel_init(st);
-> > +		if (IS_ERR(st->indio_accel))
-> > +			return PTR_ERR(st->indio_accel);
-> > =C2=A0
-> > -	/* Initialize IIO device for Gyro */
-> > -	st->indio_gyro =3D inv_icm42607_gyro_init(st);
-> > -	if (IS_ERR(st->indio_gyro))
-> > -		return PTR_ERR(st->indio_gyro);
-> > +		st->indio_gyro =3D NULL;
->=20
-> st should be zeroed anyway so shouldn't be any reason to do this.
-
-Will fix this.
-
->=20
-> > =C2=A0
-> > +		break;
-> > +	default:
-> > +		/* No WHOAMI value matched */
-> > +		return dev_err_probe(dev, -ENODEV, "Failed to find
-> > a matching WHO_AM_I value\n");
-> > +	}
-> > =C2=A0	return 0;
-> > =C2=A0}
-> > =C2=A0EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
+I will rewrite this bank access patch to match it similar to how it is
+done in the inv_icm45600 driver.
 
 Thanks and Regards,
 Kanak Shilledar
 
---=-YJrI7CYgOGAy1rh2io17
+--=-6R9Tr7LSowkFE7pgc9uO
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaqphMAAKCRDEY9j7t8Ka
-Z2DaAP0VBHL2O9e7kNDgTHNA9MFnEsI/CBq4lKPJSTNiDiqZhAD/TQhyi5TRkhU3
-cdXgsNauEaMiba9JZird1q+1++vk/wA=
-=zkQx
+iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaqphqAAKCRDEY9j7t8Ka
+Z9xwAQC53XFpMK2MdvxJCsL7KTwR76QpwTW+EcXp4Yb0lgi27AEA5RmkklPz6YJU
+bEiBcDTWqOwo5hlEtxtjBUtQZ3mrPgc=
+=my9E
 -----END PGP SIGNATURE-----
 
---=-YJrI7CYgOGAy1rh2io17--
+--=-6R9Tr7LSowkFE7pgc9uO--
