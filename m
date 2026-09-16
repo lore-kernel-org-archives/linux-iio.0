@@ -1,116 +1,213 @@
-Received: from mail-lf2-f12.google.com (mail-lf2-f12.google.com [74.125.229.204])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0FA24E06C8
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 21:02:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.204
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 868174DF4BE;
+	Wed, 16 Sep 2026 22:58:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789592565; cv=none; b=PKCe9MfTDbf5mqC3dqQCGz+XpQ/9HRDhgGVIKuv+EiUFo3LWm8KX68nGnDlDs6zCd9AHED3GRKgtzkbc54oZsEzBdrcOzZpWSOdx8h/2Qw3I9tyND0obhQyS6PC0Es0C2rntMV01Ne4Yv5HPW0hFV5tea0yHLFc9UsSciP80XB8=
+	t=1789599489; cv=none; b=MKKd9eOjThuC6UIkPCkIR2kdctgS5g0o+ayZxwgNlLzVCZ1q4Ot/HBWk+mmXtgBjZyeFKv3KY+ElaeNilcNWzFHouOXi7mSRUehfdiAG3pz4MDQzL+3Wn7u4l/5LwsgqUHYUhQ2r6XZ2Cy5lOi54AnvfAyLDzAw54GPisGzy2UE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789592565; c=relaxed/simple;
-	bh=koETFQfjHFNpObPm+a3iwcMgfX+tKG8jegzJvsvQFnI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jLgmTBgwPAHrMUQZvv182AMxvqHXgzB6VxDUqC1ta8uwjMEXsLJf5kHq1H+gRNwc2kht3e8cXzCgHiK2SfzPv0EPEHtBxeyn7xXMIEli2mxKDAa8zsoxPVrtCnkEyOoQYY2g9Dy7uZxaetVv2EVNeWeI/10oBQdKp2BQ7Ykn01A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B8p8cGfC; arc=none smtp.client-ip=74.125.229.204
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789599489; c=relaxed/simple;
+	bh=ClCEok3CT57Zb0Uc0FasxIKpEnVdYyzMiUQspae6JfM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jwBiyr8ZaWfp3OtIAwUUBbKhb7y6xWzQtFmUbAnM+EE7zPHVqRs4dQ39RWKgHisDowlUIDAUesf+UfT2/DavGgjowVRV3tlCGzql38k9Ae1jacc2eF22jACAxazqzMNtCXiIcLfZgvn1tRNAhXqZj6upjc9cYiGAAEybuKSWhSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oMNHj13y; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B8p8cGfC"
-Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b76ff64d78so53899e87.1
-        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 14:02:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789592546; x=1790197346; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=4qlLYXZqY4ht5qui+jz/p5YTH6iOKiAioS4FKUxhszs=;
-        b=B8p8cGfCldas2anB/fuM0UdJh4PckzprEqpsw+FXf0xs7+xV76PH+gNLxihMewKdTS
-         w37n+EwLKv5tDXV2ol+iGvHIZQCBKBKfEIH7FCwe2/zBMdvcOvraibkFn0iKJY/HKFSG
-         xyBLc6ctonmH6ixWy77k3cuYwc+pTkYD0OhNc0kzwV0mcPOEmzZeFmqMeoQD9fr2BV3c
-         1K1TdWG0gxMH11GcrR4d/e4vJiebwPNx89qTR4T6C4L67W5OMopOgRDFbbRnPFgIL+5b
-         GV4EshpFZqRXCyX4rZPR75aFnPUP0/NW3P2LrFFvGPKF5RVaD6tZw9CtjUd5JungkK5J
-         lM6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789592546; x=1790197346;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=4qlLYXZqY4ht5qui+jz/p5YTH6iOKiAioS4FKUxhszs=;
-        b=WX/GWZAHfssb8XKZVZz6LiOqcdBjIuAvnpPTIFa6N16qbYdEDOD5OPjT/JBgBlylfZ
-         LFhsyE+mfkuSIoDG738jTa08HtHx9r3+N0DvOZfON+937EbdZpBZriY9j8WEoTjsAyl6
-         FVHXZbIkcHr4Z0bV9jOZyWvEsvjOg2yVbRa8u1RprAwB5l0E4Fl1ZVYvzhNumlBO+h0g
-         R+SSF8y51exCnbpPwE1iBAu7FPFy+LuwzgQts6u3uQg7dVd2TvZsKIYbNeVYBhKkiVGV
-         vTuDKxa0+JA6fzL/hhKWueyjHvnVq9pc9uJMDz9BE8o1nWxMBlyWAFXwhrQzH6/iy2H8
-         mhfw==
-X-Forwarded-Encrypted: i=1; AKwUvBwszKOYPVm6woUTrr6oOc/YZBGgKPH7H6EqVqm/J9JREvbvq0aoEXJrFX64Zix8hM/ac8o7L4JeHMQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++kBlTndh8a+DkI0xyL2OV4rqoAGw4atHqwvaX4LOeWKeNO96XKZ
-	NwrgF6jNqLRyIT3/FJ6aLadjO++hwpdV8LED96XIfKNTgw34ICzFpcU6
-X-Gm-Gg: AYBFou1LlL/UBAklDAOqBwlEcWeiSFMmvz0SST2KBdRXEJU8rPQ2pbas4eOgbqn1da4
-	763MJBy0u/pRUM6NHH0blC3t54kZfOMhDhKrsSRgvRM277GHBXgKXJ46XOCRWO/+xVUt/TJ9C82
-	2b1XqjjFCoOkvsLUzuhBdxdr8wP2yk+TOT7vXMstI47vRaHEHUy5m0qek9hmgh72OZHznM+hmub
-	DQhVlhDeYONa96ZzYwOirYojNwcSkngxqbrwoBFQzOYoa5FyDdWYdG8A+grezuFK9FyEqqmWrfc
-	UeT5M+gvcBK1Q/10BTAEierzcy/ZNKQ36V/W6z+CnULuijifHTalDJgA3AVEWQ8bWej2jRQ2BGw
-	/qNbQHR9mqEOKUpx8mMR++ueF/QwOxG439Y5L+U0t01pJyo34vsVPV9uedLPY+d76qKMr6ayHKF
-	t2b8/kiJQVmkWDIlQUL1k9ZBGZL18rpbkzYoEip6mpl/xxuSf1KnJrJJWA64MnSkWpj8QzymEe2
-	mQMcF345TJinvsJ82zc2KiqYMYdsQCKZ3atROf9F8qSQiAeZC9QnKU/qa+1ZUp9Y1LB7Q==
-X-Received: by 2002:a05:6512:2c97:b0:5b6:1a7c:59e7 with SMTP id 2adb3069b0e04-5b8b665ea83mr1028346e87.65.1789592545994;
-        Wed, 16 Sep 2026 14:02:25 -0700 (PDT)
-Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8b57e7f2fsm1175758e87.76.2026.09.16.14.02.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2026 14:02:24 -0700 (PDT)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: jic23@kernel.org
-Cc: Andy Shevchenko <andy@kernel.org>,
-	Bill Wendling <morbo@google.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Joel Stanley <joel@jms.id.au>,
-	Justin Stitt <justinstitt@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	llvm@lists.linux.dev
-Subject: Re: [PATCH v6 5/6] iio: pressure: dps310: add hardware FIFO support
-Date: Thu, 17 Sep 2026 00:02:23 +0300
-Message-ID: <20260916210223.15456-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260910033636.3a2ed151@jic23-hlaptop>
-References: <20260824201203.396651-6-zoone.rupert@gmail.com> <178813888151.2788519.16547013180884814648.b4-review@b4> <20260906094622.433243-1-zoone.rupert@gmail.com> <20260910033636.3a2ed151@jic23-hlaptop>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oMNHj13y"
+Received: by linux.microsoft.com (Postfix, from userid 1223)
+	id 9622420B7169; Wed, 16 Sep 2026 15:57:10 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9622420B7169
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1789599430;
+	bh=0N7fIBRWd3/w9pGV5v/O/6SzjQp5f7M7FtwQz2jDFjc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=oMNHj13yMDpsAxbsBEB4TdoxsOJUFK0CMVP4QtiWukYsqHK66WFNNHqJK+rG2msMn
+	 vLx2+IIAc+Ilq0yi7/xS8S8rtfuQKpfxLacDgtbk50xmASuuxqjRVSAos+PlqKqXGC
+	 lctB/o0//IR8mlYjqgJ2cfkO01n3HITlG17D2DrQ=
+Date: Wed, 16 Sep 2026 15:57:10 -0700
+From: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
+	linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
+	vitor.soares@toradex.com, samagazaryan@google.com,
+	gregkh@linuxfoundation.org, arnd@arndb.de,
+	boris.brezillon@collabora.com,
+	oleksandr.shulzhenko.viktorovych@intel.com,
+	tgopinath@linux.microsoft.com, corbet@lwn.net,
+	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
+	jorge.marques@analog.com, pgaj@cadence.com,
+	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
+	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
+	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
+	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
+	haren@linux.ibm.com, pasha.tatashin@soleen.com,
+	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
+	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
+	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
+	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
+	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
+ user-space access
+Message-ID: <20260916-454d66ca84cc91479b195aa5@linux.microsoft.com>
+References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
+ <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
+ <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
 
-On Thu, 10 Sep 2026 03:36:36 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sat, Sep 12, 2026 at 04:34:01PM +0300, Andy Shevchenko wrote:
+> On Fri, Sep 11, 2026 at 02:09:35PM -0700, Meagan Lloyd wrote:
+> > The i3cdev driver is a character device driver that allows user-space
+> > to control and interact with I3C devices.
+> 
+> > Currently, it has the ability to perform Single Data Rate (SDR)
+> > transfers - basic reads/writes.
+> > 
+> > With the addition of sysfs driver_override, there is now a
+> > straightforward and direct way to match the i3cdev driver to any i3c
+> > device without stepping on the toes of more specialized drivers that are
+> > loaded automatically.
+> 
+> Is it safe? Why on the earth do we need this? The commit message has not enough
+> information.
+>
 
-> Maybe we just set the minimum allowed watermark to something that
-> in practice always has a temperature (or almost does)? It's kind
-> of true that a watermark below that doesn't work because we end
-> up dropping data.
+I can't see a reason that it'd be unsafe. To give additional confidence,
+it's already in-use in many bus_types:
 
-Two temperature entries are prs_rate / tmp_rate pressure entries apart, so
-a batch needs one more than that before it is sure of catching one. The
-FIFO holds 32, so there is no such watermark once the ratio reaches 32.
-That is six of the 64 rate pairs, and one of them is pressure 32 Hz with
-temperature 1 Hz, the case that found this, which would want 33.
+drivers/platform/wmi/core.c:    .driver_override = true,
+drivers/hv/vmbus_drv.c: .driver_override =      true,
+drivers/base/platform.c:        .driver_override = true,
+drivers/cdx/cdx.c:      .driver_override = true,
+drivers/s390/cio/css.c: .driver_override = true,
+drivers/vdpa/vdpa.c:    .driver_override = true,
+drivers/bus/fsl-mc/fsl-mc-bus.c:        .driver_override = true,
+drivers/pci/pci-driver.c:       .driver_override = true,
+drivers/rpmsg/rpmsg_core.c:     .driver_override = true,
+drivers/amba/bus.c:     .driver_override = true,
 
-So I will hold them locally instead, which is what you asked for first. The
-drain timer runs at half the fill time, so nothing overflows while the
-driver waits, and the hold lasts only until the first temperature of the
-session, bounded by the rate ratio at 128 entries. The first push still
-waits for that temperature, but only once per enable, and no pressure entry
-is dropped. I will re-run the zero output regression against it.
+To answer why we need it:
+If we want to write i3cdev as a standard device driver, it can't
+actually match anything by default. This is because, some devices on the
+system may need specific drivers and i3cdev is generic and should
+technically match every device.
 
-> Validity flag in the data we push to userspace?  That never works because
-> we don't have a universal encoding for one.
+Since the driver_override is default NULL and is set via sysfs, this
+allows any specific drivers on boot to be loaded up and would allow
+explicit control on what device i3cdev gets bound to.
 
-I meant driver state, not a channel. Moot now.
+This was my rational. I will refine the commit message with more details.
 
-Rupesh
+> > This is accomplished by the i3cdev driver not having any entries in
+> > the i3c_device_id table. After boot, simply set the driver_override
+> > to "i3cdev" and bind the device manually via the sysfs bind knob.
+> > This can also be automated with udev rules as well.
+> > 
+> > The character device interface will be exposed at: /dev/bus/i3c/<bus
+> > id>-<Provisional ID>
+> 
+> ...
+> 
+> > +	struct i3c_xfer xfer = { +		.rnw = I3C_WRITE
+> 
+> In such cases always leave a trailing comma. It will reduce possible
+> churn in the future.
+>
+
+Good point, I'll fix that.
+ 
+> > +	};
+> 
+> ...
+> 
+> > +	return !ret ? len : ret;
+> 
+> My gosh, wouldn't Elvis just work naturally?
+> 
+> 	return ret ?: len;
+> 
+
+You're right, that is much nicer!
+
+> ...
+> 
+> > +	for (int i = 0; i < metadata->nxfers; i++) {
+> 
+> Why is 'i' signed?
+>
+
+Mostly for readability and to make sure the line length on loop headers
+is kept below 80 chars. As a precaution, to make sure that 'i' can
+represent any metadata->nxfers value without overflow during loops, I
+check that metadata->nxfers is less than/equal to INT_MAX in
+get_metadata().
+ 
+> > +		ret = copy_struct_from_user(k_uxfer, +
+> > sizeof(*k_uxfers), + uxfer, + metadata->xfer_size); + if (ret) +
+> > goto out_free_k_uxfers; + +		/* Enforce that padding must be
+> > zero */ +		if (memchr_inv(k_uxfer->pad, 0,
+> > sizeof(k_uxfer->pad))) { +			ret = -EINVAL; + goto
+> > out_free_k_uxfers; +		} + +		uxfer +=
+> > metadata->xfer_size; /* u8 pointer so use xfer_size */ + k_uxfer++;
+> > /* struct i3cdev_xfer pointer */ + }
+> 
+> ...
+> 
+> > +		if (!ret) +			total_bytes +=
+> > i3c_xfers[i].len; +		else +			return ret;
+> 
+> Yeah, you really need to reconsider patterns you use in the code. Here
+> 'else' is redundant. Homework to understand how (#easy).
+>
+
+Thanks for pointing this out. It would read better if I removed the else
+block, opting to bail out early if ret is non-zero.
+ 
+> ...
+> 
+> > +/** + * print_i3c_err() - Prints the I3C error encountered during
+> > the prior + * call to the core's transfer function.  + * @i3cdev:
+> > i3cdev_data object + * @metadata: Kernel's copy of i3cdev_xfers
+> > (ioctl I3CDEV_XFER input) + * @i3c_xfers: i3c_xfer array that was
+> > sent to the I3C core
+> 
+> > + * Returns: void
+> 
+> Huh?! Where is this coming from?
+> 
+
+In i3cdev_ioctl_do_xfers, if i3c_device_do_xfers failed, I wanted to
+print out the first I3C controller error encountered. The controller
+drivers can set this in the i3c_xfer.err field. Hence this function.
+
+It's to aid debugging and provide useful error information.
+I can certainly refine the wording on the print_i3c_err documentation
+header to make this more clear.
+
+> > + */
+> 
+> ...
+> 
+> Please, rely less on AI and more on the common sense and
+> proof-reading.
+> 
+> -- With Best Regards, Andy Shevchenko
+
+I think I gave you the wrong impression. The new contributions in this
+series were written and developed by me. I used AI for quality assurance
+and cross-referencing. Since I incorporated some AI-flagged suggestions,
+I tried to acknowledge that with the Assisted-by tag.
+
+Thank you,
+Meagan
+
