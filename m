@@ -1,105 +1,98 @@
-Received: from mta0.migadu.com (out-154.mta0.migadu.com [91.218.175.154])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 006E03BCD3D
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 05:26:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6A4146A66;
+	Wed, 16 Sep 2026 05:49:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789536388; cv=none; b=NaD9CSiREE0Ech3IOwes8XtByxFyzHVN4Miz7y++JivO+m43nVF0b+szXmyM5ofoNARYsCIkMcSF0qb/FtxBGTNfuc+g75pdQOLCFinzAzsN8GjHOkRSXdutR+2lCEznAWoH6snfJ35arRn4bsIYVHcCs6SnPTTIdV2kl7rLE3g=
+	t=1789537779; cv=none; b=kIg5Kloa/rN50rdRj13lFkL0o3Yn+ny14rcJfDH5S+D4JAdKz40pKz9zp+05AjV9VW7D0HVJUBp+qYTr3LefjYL2sWRzR3Q06LNHYW7iHC1A9epR3oxRMnesuzGEXV/UYA93T2m/pf5PN/Wp3jdiVneqe6vsucnZOlKck+O/+kE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789536388; c=relaxed/simple;
-	bh=nX59McT1tSV4udr0cFvFpmaLCOFZkJiL5qt7ZC90zG4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gcMFRA1ih5zBYkQ9Cr29Sk1skX8CZZrmlGOPXh3Eug/w2H1T3G26fChgKw66bh9RecCUZRR6eeORcV7340lcryZN72d/0LXS6uNA8mqpxCv8J7JGL3k0RyvwUxuHbRBEMfTIYZGDFpU89LwuHLLIxmCHlu4d4Vrh/ebZiktH0jQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=jOVtXpGM; arc=none smtp.client-ip=91.218.175.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1789537779; c=relaxed/simple;
+	bh=jeuhy1iSsZy4MhHBaH8+S0uwh03Y4PJkKzT6BLizY+I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DMJIIA5Ca5I2nmIRmjxBLEjDun6PP5j7BwHW5ydt6ifQgcrDbEJhI+Ch1hjLmScorlyFHIPNoOebWW91i0pSBm8iYLoSJVXaLd+1mxWavyqvIwtlDuoPItyGpEbh9fjMIPXHNQnrQVn1XVlI/HiYkChBRbNEMHsjxDELuUsZ5xU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Vh2dW0Wq; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="jOVtXpGM"
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=nX59McT1tSV4udr0cFvFpmaLCOFZkJiL5qt7ZC90zG4=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1789536384; v=1; x=1790141184;
- b=jOVtXpGM9SOEhrY1n47AM+T/7DAWy8/TF2kYL/Y5BsyIh53QKgXNrQz5iHIAFDI57jvEqO9B
- CNACyfYiafcDRvBaC9NVvjAY2HoumsX8TbU1Bg7kk5xrcMcJU+MpFeUW7Eb29V43+LDmYZISexz
- QimUzi3Oj60z/qPfSdXxeGJA=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id e60f27ed6bc2f662;
-	Wed, 16 Sep 2026 05:26:23 +0000
-X-Mizu-Trace-ID: e60f27ed6bc2f662
-X-Migadu-Flow: FLOW_OUT
-Message-ID: <ed05f764-2be6-44a7-a13b-795954d8eb35@linux.dev>
-Date: Wed, 16 Sep 2026 08:26:21 +0300
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Vh2dW0Wq"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=O9SuEdt/eXEhTwvxh7cDDTs5tMOZ9Xs65h3KXpjyOEU=; b=Vh2dW0WqFvXwtAsbpRkoSe4MQ9
+	hB2ZOmxotK+6ClX5UeR3/6FXjiAVTZHVpkBzox1s4GG7LDoIh3K1TwN+iTF+aoJ8GFxAcJ8DzWio6
+	oh++hpDE7Dicaeru0peZlgmwZ7uHER6aJH6fda7lI7KdoisA91t5yYp8XnVDvdPCc5whtOXnC+oMx
+	GpcCSYRQethZQW1FnmZw3C7cfpCJvBBWKZKDnLCYH4PNUZIBqSVJdl7ajSrNJ6RAKLusxs0ZHdZ/J
+	KXT2RHahSGrIp9WRJvk3LV8AoBnnI65iVnCGJsa+UDaTs04FQBcfbzlAzfwrEbXbomsWIdUjTO3od
+	zn5HFEQA==;
+Received: from [50.53.43.113] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1x6iWM-00000008PmL-3ASU;
+	Wed, 16 Sep 2026 05:49:26 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	linux-doc@vger.kernel.org
+Subject: [PATCH] docs: iio: backend: use literal block for commands
+Date: Tue, 15 Sep 2026 22:49:24 -0700
+Message-ID: <20260916054924.2052572-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Reply-To: mazziesaccount@gmail.com
-Subject: Re: [PATCH 07/12] iio: pressure: rohm-bm1390: Fix AVE_NUM
- initialization
-To: Jonathan Cameron <jic23@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
- Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>,
- Mehdi Djait <mehdi.djait.k@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Kalle Niemi <kaleposti@gmail.com>,
- =?UTF-8?Q?Topi_Sonkaj=C3=A4rvi?= <sonkajarvi@hotmail.com>
-References: <cover.1786347811.git.mazziesaccount@gmail.com>
- <7784e12793187a75dc10b0e84471f0cefe4d28b9.1786347811.git.mazziesaccount@gmail.com>
- <anovRGxtsyJZ8cO9@ashevche-desk.local>
- <247b0e35-f49e-4bec-abd4-4a2c3dd49a2d@gmail.com>
- <anr0jtvYorFKaEXY@ashevche-desk.local> <20260817021549.29522111@jic23-huawei>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <matti.vaittinen@linux.dev>
-In-Reply-To: <20260817021549.29522111@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 17/08/2026 04:15, Jonathan Cameron wrote:
-> On Tue, 11 Aug 2026 13:08:14 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> 
->> On Tue, Aug 11, 2026 at 12:05:47PM +0300, Matti Vaittinen wrote:
->>> On 10/08/2026 23:06, Andy Shevchenko wrote:
->>>> On Mon, Aug 10, 2026 at 10:53:07AM +0300, Matti Vaittinen wrote:
->>
->> ...
->>
->>>>> Use FIELD_PREP() to shift the intended AVE_NUM value to correct field.
->>>>
->>>> Can it be FIELD_PREP_CONST()?
->>>
->>> Can you please elaborate why it should in this case?
->>
->> I'm not sure why it's not obvious, but the parameters are constants, why would
->> we need an additional check or even checks?
->>
-> Hmm.  I went and had a look as this macro turns up a fair bit.
-> I'm fairly sure in the case of a pair of compile time constants
-> FIELD_PREP() both performs additional checks at compile time and
-> probably collapses to a constant.
-> The docs for FIELD_PREP_CONST() observe it is for when
-> you need it to be a constant rather than when it might be
-> (even if you know it is)
-> 
-> So I think it's not necessarily appropriate here.
+Use literal blocks for 'cat' and 'echo' commands to separate them from
+the surrounding text. Otherwise the lines run together, without any
+clear break before or after the commands.
 
-Thanks for digging deeper into this. :) Sounds like you confirm what I 
-understood from the docs.
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+---
+Cc: Nuno Sa <nuno.sa@analog.com>
+Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>
+Cc: Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: linux-doc@vger.kernel.org
 
-Yours,
-   -- Matti
+ Documentation/ABI/testing/debugfs-iio-backend |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
+--- linux-next-20260914.orig/Documentation/ABI/testing/debugfs-iio-backend
++++ linux-next-20260914/Documentation/ABI/testing/debugfs-iio-backend
+@@ -8,13 +8,13 @@ What:		/sys/kernel/debug/iio/iio:deviceX
+ KernelVersion:	6.11
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Directly access the registers of backend Y. Typical usage is:
++		Directly access the registers of backend Y. Typical usage is::
+ 
+-		Reading address 0x50
+-		echo 0x50 > direct_reg_access
+-		cat direct_reg_access
++		  Reading address 0x50
++		  echo 0x50 > direct_reg_access
++		  cat direct_reg_access
+ 
+-		Writing address 0x50
+-		echo 0x50 0x3 > direct_reg_access
+-		//readback address 0x50
+-		cat direct_reg_access
++		  Writing address 0x50
++		  echo 0x50 0x3 > direct_reg_access
++		  //readback address 0x50
++		  cat direct_reg_access
