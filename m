@@ -1,44 +1,44 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013028.outbound.protection.outlook.com [52.101.83.28])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011042.outbound.protection.outlook.com [52.101.70.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B358A374E5A;
-	Wed, 16 Sep 2026 09:26:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA00A49E5E5;
+	Wed, 16 Sep 2026 09:28:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.42
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789550784; cv=fail; b=rCszfAXO5KjfU3yJ//pL4YpiykUj0JRvSO+oiy2BeEsaTB9e4+xzf8jlg9rakftsxo0UrHJOliEKZTM5f5uKy7r8wQQKRHPNVNATOYJGAgWxxRCmeaacsVc051E82lRpAiR7wctuOt0CrMCddSBib8f+ZWA6ZcdOxaezNZsIVf0=
+	t=1789550913; cv=fail; b=pH1ChcprvwfYpSBNqAPy7luTUzm1RueYWff4by1Frf/S6P4y/YnxFx4i8O6p+aOupY6HEaB2kvLxcm5bbzNq5UnBWuKN5o6iYshXY0I3U3Q6hmid+DwFuXg82uExdUVqzMtLDMk8WqLoW9U/DIND+gy++VmlheRq+Uw4kNikL+o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789550784; c=relaxed/simple;
-	bh=EYNgjutgPHk23z+kSTf3y5PJn/IqoOmrFy2crY0Y96g=;
+	s=arc-20240116; t=1789550913; c=relaxed/simple;
+	bh=FEfAbHkncoEduSHjVbXLqeUEj4SQb6MGTxloQTcQCEY=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=AsJ2FnIzj9VubNiO9s1b9tVo1A0jxoOXNLLu79NN1E5TtP6Xd9rOoDivWWXVBbzHbpnQz1ij92DO5lLPZCBzYXPnyOSfIyupyaIbhYPCkuq7WdYeIfYvhc9X00po/tCWRKqfuiQp8JOpBHbbxv+PTFWzdpuuB4m8SuXLCRLoOzg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=dtfvFEhP; arc=fail smtp.client-ip=52.101.83.28
+	 Content-Type:MIME-Version; b=S8f+X3qfm7cwBQRCy9qk/0AqtehPDp1zdpqjqPKWO+WROJdEQ52f9fPCU+voev4uF5tWRXl7ETK7am6zpDO/p6WZsXiowft9rTSFYHa76vI1/TOisPrFEA6EBRSqx6S0DBVqF8+GQNY70wr3VMWOw2Qe6lyjjFGtOF+3ZtUtFy8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=Lvr0Rv0s; arc=fail smtp.client-ip=52.101.70.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="dtfvFEhP"
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="Lvr0Rv0s"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QfYg0o47iJn0K4TQVnh8E+lz9lqOF5qcVWawyWwNCWU/iZvYAzAjsrMmJ1KCOtyKmc2c4HFczaMAak3kknV7g55tRKsQwyKDkmNacmXfaBaWGEPguBx7CUddYe5JQViN0kQaepogdzOf8Nt9o3QW/cO/EvW6zzI3uO2Iaku0z3etiZxIK1qlGIbFA7tQA2my7nM/PI+HPVX1uB95sYadtR+8gH6NNVWpqeOLRO7O6HP+Ua/PyMp+jX01xoFZs03ObSwXcksiLmH4xoWrC+81TBqTNjtZFA8LCXOeLMuAfqldtHUhnUaooz4qx79yXEaiEq0qirMVpw6Q3/tDqiqmgQ==
+ b=Ct4+PrgoqV9/pFEmkU5Fy+Hsvmnzj3Eh3J+ucuqhUKo1MmlzQLr51MUltlk2Qb9onuvEGBrayozxyHg2PBQ7oXje68LTjCxqia64ixxLlaS4bMIx1+hm45j+ufBAFS/h951EzEjYvHefXeQP0Rt4YeFh/046zK4/A172DzYbiFRrK2J2CQ/lCFgqrkGJ0AAfKYI9c9WSJ7tWyMh7UNne2QBpul9IKp/IYUXOt3oEY1+/y68JIxox2+bCB8wy/4g5oxeMpwcaOuyBwGlOxeFJvcRkLRjfePRk3EFW598h8x1vpkAEwvqqIJkmCP21ynDP5SDdezuPfU2Yt5SeX8nBsA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EYNgjutgPHk23z+kSTf3y5PJn/IqoOmrFy2crY0Y96g=;
- b=Z8UsPtXk6mrD0rVCVZmo2ve1dDTRtQjJQsqjYZyp8m2uL7IgKQ9wfA2gZgVdtzOEB09Gtrwgykue3B4C3XCPm1neysOxiCC3qEwRIkbqowlQUIx8EhGLJmRlt1gCaKYnvd9MWtUaasFojxx7MYXZgZe5ngIgo+3UPMOrYhMf4F5N7hCt1zWJrT9r7ZJDCywLvoRer/QNq1gTS5YNCuyftuXu99Ek78lOHns+3QS0pgXv4dHeKPGuQRiZ9Mpb0f8vQgXg25cdY3d0BPFpZIwfcFgnwk/X9kZyVbRTmXMSnwNt21Sy7cooId3z7V080Dl3P+Z47dp7flKRA5SKL6AxUQ==
+ bh=z8/H2bkZRD5MAzDCR5mbT87ZR84jXLJoDjpc1xWU+wI=;
+ b=bX0O30ufQx8angpmlp4DQTc9rNnGWaNA89nbrt9emotuoSt5uaZfxzghbwZOjvGQkW9kPSLi7hFyiOZ6srK5ZW8s0q3OY5t8LSiWovwz9cyTOYJsEsjkNvgMW8hgs/pI+mEoZXd+4widz7/EgC5tDLD24Oft7MG41H3ZssVzc+L0i1D9rorHfMl9ar2jfaNDqCF9fFCOK5umHd29023HofsGTNes/Hjl9GMZNY5bO5F5FEGDhGUzYe+km/XnnDQ21EhAMfjxv28NHYTINQa03dhBgiD55Rbq8L8owUqRIgm+OXn5f1qNyTkC9npTCem1B5gY+lhB/9n+QB3PhzxXcQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
  dkim=pass header.d=axis.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EYNgjutgPHk23z+kSTf3y5PJn/IqoOmrFy2crY0Y96g=;
- b=dtfvFEhPhkaClZg4S9TygHLmvzG/GYg/9vTbWTZsQiOzbcMFDXMjTwA22kC9668yykOM8sjfunTHzS+CM0urU9P7XT9aKatRUUXOxzlS8LCWs72Y4xM8pgfS1dPOfh2ZZSs+XOvvGyS2VRO2n/mJwgActtzkp9FrpUZOYkUbLMc=
+ bh=z8/H2bkZRD5MAzDCR5mbT87ZR84jXLJoDjpc1xWU+wI=;
+ b=Lvr0Rv0sg4oTaLb48s09PhFS/ZbGSMMCwillvV3CNx4GoO7z8VGutktntPwGUrcQ70FG8Vw3FccTJJ3zXtuIW/VRsXG2noqrZ2FZPbig7HO53R7W+cjVMbqltFUrvOUmvKVan7vN03/kWH3BxeISA+UhWIVslOLw0Us8Rnn9J18=
 Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
- (2603:10a6:10:43a::19) by VI1PR02MB6222.eurprd02.prod.outlook.com
- (2603:10a6:800:197::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.9; Wed, 16 Sep
- 2026 09:26:12 +0000
+ (2603:10a6:10:43a::19) by AM9PR02MB7011.eurprd02.prod.outlook.com
+ (2603:10a6:20b:267::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.11; Wed, 16 Sep
+ 2026 09:28:19 +0000
 Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
  ([fe80::7510:e8c3:db37:47ff]) by DB3PR0202MB9129.eurprd02.prod.outlook.com
  ([fe80::7510:e8c3:db37:47ff%5]) with mapi id 15.21.0406.012; Wed, 16 Sep 2026
- 09:26:12 +0000
+ 09:28:19 +0000
 From: Kanak Shilledar <Kanak.Shilledar@axis.com>
 To: "jic23@kernel.org" <jic23@kernel.org>
 CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
@@ -53,15 +53,17 @@ CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
 	<linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
 	<linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
 	<devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 4/8] iio: imu: inv_icm42607: Switch to little endian
-Thread-Topic: [PATCH v3 4/8] iio: imu: inv_icm42607: Switch to little endian
-Thread-Index: AQHdOh8+7thVAvENdUGm0x15OYIBRLbCY36AgA6jFoA=
-Date: Wed, 16 Sep 2026 09:26:12 +0000
-Message-ID: <67384399da5e5258925cad8bfbd47bb99b9b865f.camel@axis.com>
+Subject: Re: [PATCH v3 5/8] iio: imu: inv_icm42607: Add support for
+ ICM-42370-P
+Thread-Topic: [PATCH v3 5/8] iio: imu: inv_icm42607: Add support for
+ ICM-42370-P
+Thread-Index: AQHdOh9BPh9OL1eREEOLL+sfXGnts7bCY36AgA6jqwA=
+Date: Wed, 16 Sep 2026 09:28:19 +0000
+Message-ID: <d5502abac64a6a6f177e251e8ec514bc346e1a08.camel@axis.com>
 References: <20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com>
-	 <20260901-b4-inv_icm42370p-v3-4-77cc31642115@axis.com>
-	 <178874609181.3402141.4159201185317451449.b4-review@b4>
-In-Reply-To: <178874609181.3402141.4159201185317451449.b4-review@b4>
+	 <20260901-b4-inv_icm42370p-v3-5-77cc31642115@axis.com>
+	 <178874609182.3402141.7546313507051426644.b4-review@b4>
+In-Reply-To: <178874609182.3402141.7546313507051426644.b4-review@b4>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
@@ -69,59 +71,59 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=axis.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB3PR0202MB9129:EE_|VI1PR02MB6222:EE_
-x-ms-office365-filtering-correlation-id: f331527f-a129-43d0-6a87-08df13d48ccb
+x-ms-traffictypediagnostic: DB3PR0202MB9129:EE_|AM9PR02MB7011:EE_
+x-ms-office365-filtering-correlation-id: f472d188-b481-4bb9-5962-08df13d4d871
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam:
- BCL:0;ARA:13230040|6049299003|376014|23010399003|7416014|1800799024|366016|22082099003|18002099003|4053099003|38070700021|3613699012|10067099003|11063799006|5023799004|56012099006|4143699003;
+ BCL:0;ARA:13230040|23010399003|1800799024|7416014|376014|6049299003|366016|22082099003|18002099003|3613699012|38070700021|4053099003|4143699003|10067099003|11063799006|56012099006|6133799003;
 x-microsoft-antispam-message-info:
- gTYpb5mmc/q/y1+qh9pbKXhe87mXCh0GEKUri/40oDD/qGRtFW86RJCO97bi+5o++ehgjXmI/ufJG79TsxXTZ4l+wqZjxqK4dz8pmu+ecQJd23hOJyjIBpjO42a0WXv2InkdrUjAdSYXbn8UaH0b+nGGpLL8h2bLJHPDc25Ue9dvCy98W3pRuPJH5S7+xsPFZ6qPcL69T6pfby2GNUwNnuJfnUBgQ5mk32JjZnrxQVaT9dRAHDH6PlIV8/TNP9NIFY4xb0SX3Dx/M/kyyinqswMwd8WYgAmtSpVWP2Q/YOsQVf6E2tQKfOPJTR0AsNizkq9hQ6PU2mjMABxbQArHVkSjX9vG5B96mXS5wmhd1cI3IJ+lyIK4wUVR2S40GFqQg+0sVTa9/Nvlw+5go9MF1PdezVzxWyDQPpBMxQkwDyRO2ivBuCCiHo7n5jeq5c6ax1V/39hsj6IizK47Qyt246wBKv6q+HO03cVEguRjau/dhY2GUWUMqSJBJxMl7BA0xo0O9kRZgny31tIgMGHKswM/Javgoqg/o18doCZ7I+DYqeMhY2DkCa+FZCqgNp58bYvX6GYCpAQH2u/nS6dxW0HXhgOgf7p5QCt/uP1/Dkrk+pE7+BhDKn5XuxXQaT7Vt0zXu3AQGdGpc8ANLKN9SBefFDKnrHGYG075NLfmvnrm93I67emTIOnm0UcfMeZNOmg/F4lE6wbnNuK+6LtjCuGnBWLV0u9w57JWAk8yMab5/1cuCqitpA6e5blVOK13
+ laHbge7+gmIv3Ew2Xlew6ByMHIEtkTmp/ZLW1bJAtR/75ElQCsl1jpKNCY5BaJ05Gp3s/D8gI4OYaqLh/j5QRISRbZJQ6B+BRdDBZYuFyOvlMhu5EW6EL4NrFKOdZLIZCZ6KF07sNNCdVLiWnkaGI4H92yJ17eEc35+DwblQcfjwE9Zbo4xSV4Lk408yN16zf0FwIyY+Obwopyx4YjtpFzSfbICl+qHsL71wKWXHp+KcJdQ6t5dHGAuZ3aTeJLYy4V9w4ME4UTF4Sy0VYPYYjONfU2LeiFoNGp/ufWmD8f0ptcoaUR+MrVkHj3g/aNkaDNbPJcMu9THDZCTs3sm5/03BkLqCIeLuEbblsEg5JfIFq16kuHkZ3BCuwGR5Eq78ojZyQe+goIGQ5+2vs6/7B22mNPIVA5Yq2s3CHuaEANEBgMTdVGT+IGa+7Y2vRsO0ZLYOLLDvv/kEandkkLxJ7+/tX6BuKchgrJKVjPWvb4bdqElNh6VKTFSLJ0lf052CHi8SEUv/ssJlIA87g0GgiFzRzv2TF//Gdp6ImtXhmtsMzXv66jTOPTSbjjAVH8yrO1S/Gf+HFbcpx33wcU5HGOuxmC5UvTBNCijZsLHPtgBmFzVfCzGPhGKh9w7GglI5WkKjajZgdz1Ijkw2zBqhazoEu3IgbctaFZTLA66hI/pRx3DAkZH8f5w2+KVrA7WC9KaTiXPDgjsee+tSFtcEkQ==
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(6049299003)(376014)(23010399003)(7416014)(1800799024)(366016)(22082099003)(18002099003)(4053099003)(38070700021)(3613699012)(10067099003)(11063799006)(5023799004)(56012099006)(4143699003);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(7416014)(376014)(6049299003)(366016)(22082099003)(18002099003)(3613699012)(38070700021)(4053099003)(4143699003)(10067099003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?bU9PRndOZTFOdloxVFJCMWp3cVNUZlFkSlArZktjWlVVYjVFc2lZTGhWa083?=
- =?utf-8?B?N3g1MWRQcUg2OW1OU3F6Z09QK0N1Q0RhdWdPLzJadjhldjVOSEQxU0x1cnVE?=
- =?utf-8?B?cHcwb242Ukx6MklHVXBkc0NlZHZON2orTWNjTWo4OG9DSFplZTJnN05NYWFr?=
- =?utf-8?B?c3JOZmVuQ2xUbHRxbVl1Uk4zRWFaR1k2anlIOU1lZXVGcTJZN0VyeUR5QXFV?=
- =?utf-8?B?ZzFQK0t6Nk5PK3hVa3NaaFRHRzYxTk1PZEhlWlFwWFk3TkNUMzQwNGIyWFhm?=
- =?utf-8?B?SWYvemhRVmFvSC9CSnJZVjY3U1N5d0laMEhKblRMbDlvSng4cWNoajAyeFY2?=
- =?utf-8?B?eU9helBrSlk0R3hXMkEwZEF1aG4xTXFjbEQwTkl1OUhwOSt6NllPRnYyQW51?=
- =?utf-8?B?VTdsQVp2cTROS3ZHZzcvNm1CMlAwMDhoRmE3aWZQOE5YSDRkOVhDc3U0UHFn?=
- =?utf-8?B?empOYUtNL3Fudld3eUxRSU1zNWtPSmZYZ056ejZ4RDJwZDEyclhzWG03L0lp?=
- =?utf-8?B?ZXQ3V1crWXFXTVp5MWZsUDlFSTN4R2g3YTFaL3RYMWRCbDdPV3lrUDRVNTB6?=
- =?utf-8?B?N3JEeEhpS3hmN2d3MXRZM05UWWg3MUl2MlFDcjB0S0dlQWViUlVNUDdlazEz?=
- =?utf-8?B?UUE3WFRKWVhZYUxYUmNYYVA3bU1qdDExL09mNTQyWE9yQ2Jtb2JtNTdSZi9C?=
- =?utf-8?B?cXZPUXQ3K1NVR2dmSUlJRS9SRTBmQUpGeHRxc3VtQWx1VHNKcHh4ckRwMTBk?=
- =?utf-8?B?OEZrYnJTcEFDY3FETVE4aURRcDNGYXYvczZBdlN5SFFWOG9HRUZ1a2RLUW5W?=
- =?utf-8?B?Z0lCSTJCeVJ3WUFqVGdLc0Zab3lNR29oTzdlT3EyNFZmcGVVNTZ6enVwTFhX?=
- =?utf-8?B?OU16YmNhYndsQm9VdFR3UWJKRWprUDgwWjlCOG56MHRGYmg4R3FLR1YxcEJJ?=
- =?utf-8?B?RnR3cFozYVUzdDBudmNwWEFQNDRPUFMyTVozdVhPcCszTnZpZ0t4a2FPbUQx?=
- =?utf-8?B?QlRSUGNpQTBUS3NvclpzVExoMkk2YkszQ3NoNURSbzZkc0xnVWdPdTBvTWJv?=
- =?utf-8?B?ZDUvNS9OTWlmUjFKanBSU29nNXlQZ3YxRDZNWFQ1YzNtL2FETzlMcWk0a0xV?=
- =?utf-8?B?OXhBOTBVY0ZVaE5WRmhmam90VG1uRUJOcEdzZ2dZN1ljNGYvR2pTQzlvUGVt?=
- =?utf-8?B?cWtMMFNDUmhrRUd2OWdWaDIwSU4wRVdrMTZhd2ZmRmZuTE12TFZsU25SMFBC?=
- =?utf-8?B?SGFZdTFIVm96NWNzeXl1c3REVU1hTDQrQVBWbjFGSGFTOTU3K1dvMWJRR21D?=
- =?utf-8?B?R080NkxmQ1E2TVVWVlBxRkRpay9HaHhneU9DUGhFZlc5UHUyem5RNHM1U3pK?=
- =?utf-8?B?TkN6WTh1SlNtK2JIY3VpVkl6U210Q3ozV21YakZoNTF4SWVWWmU3SmtCcHQ5?=
- =?utf-8?B?ZGpDcTA1Q1U2aXJQTmxRLzFiNFNkOWRyU2lIMDcvc1hDOU5ENHl2V29oRko4?=
- =?utf-8?B?QmU1UzJkWVIxVmhvRGJaeDhxWEo5YThRUzRjSi91WUFqcitSM0l5cXFtNmh1?=
- =?utf-8?B?QVlmckRLUG1EZHJadVJrZTRyVFlTdWg2MVc0NWIrNnQ5MnYzUXI4NFNVWkNJ?=
- =?utf-8?B?OFluS1AvRWhYS1pqeXRRY0hOMHJ1ZHZRRFBHd3RiNzgzWVZKNGtzOWZ5TXBP?=
- =?utf-8?B?VkcrWUx1bDF1d0NjbGVMMU9YYnNKNlcxYzZOUkx5RUNQc2NmUWpROEJ5a3Zh?=
- =?utf-8?B?TjdHRWJCVllwdkd5SG8zTElmQm1wa1FEdjhJZkMzL09mbCtSQU9OWWUxS2do?=
- =?utf-8?B?cHprc3BLS1FvVElQc2UzNmllZ25yTHhuR1BnQnRHYkx4eUtDQjhZMktGaExM?=
- =?utf-8?B?ZU00aXhrcnlSMDJrbHpMWUJUbUxwZEJGdElvYXllam1mSWl2S3pQNUVpQWxJ?=
- =?utf-8?B?VGFqa0pGVWR6dXprQnhqeEdzQnN3L1pYRWNqWUVzckFWSURZc3ByVGF2bGZz?=
- =?utf-8?B?Y29PVHdMWEtXUEhTK1NvQ2lVU3FpTTlSUkRPWVZuQ1ZJMXVIY2FFcER5aTJ3?=
- =?utf-8?B?ZjBRNDZ2azZ5SG85bHBUanVqZkR4THRnOVRjQnAzb0JnbVJQdkUvVk5TMTFD?=
- =?utf-8?B?WHlQVml5RjEvWHVsMnIrZWVzRUFvVEFKRTF3Qkpvano3M1h2RUVtQ2d6bG1n?=
- =?utf-8?B?KzFzL0d3QzFSeUxYaFJqWGhUb2xkTE5YazZkZDY0RDVYSHR3Y3JrZ2RwVFB5?=
- =?utf-8?B?alFuMG1yR2NQczMwdkhiL0Y5UFBaYmcxMHBKV3FvRy92T1JGMFpabEtzL21x?=
- =?utf-8?B?UGNRMWJlbkd4SWVvRDhoQ0x2UmJ6Y3JqTm9kbnRha3U1cGp3a2krQT09?=
+ =?utf-8?B?SDMxZEFvRkVDOVNFb1ZjcTZicWtpNDcvTHVIM2Z5dCtsRUNPTWdyMm9FTDRR?=
+ =?utf-8?B?V1F0WWUrN05tRGJLZFordEVVOVBnQldDUm5TeitCbjhBOGVWNHUrdW5HNUFC?=
+ =?utf-8?B?R24vcUVRcDR1UjU2NUNOeVVWVi90d2RTU2tZVnByWWNhMlJIWGIwZ3VFVjVI?=
+ =?utf-8?B?WHlIeVRJdW5UVEJZVVNodGdML1lGc21BUUNRcEFxY0RMejJXOHhuOFNSTnAy?=
+ =?utf-8?B?VHZ3Q2xoTllYcVpFSmx2eFJmR1paZmJsUnhCRXNGY2kzb095aXhwSFFReUhz?=
+ =?utf-8?B?M2tZRDVMRDZQZGdEdERrRGN0VnJ1dERWeUdtaFNIVnUvTHlLT3ovZVNjd2VM?=
+ =?utf-8?B?MUJNUmRTV1d3SkUwT0dyOWYvZm1UZ1h5RWNHOEE1dmM5MTduUS9iQUk1bkJh?=
+ =?utf-8?B?ZTZtZXh6UEN0SzVIYTB1Rlk1ZC9mNEIyR2Rhb1FVa3N1aWVjSDdyVkNIeGMv?=
+ =?utf-8?B?NXRtRDQyU256Si8zS09FSmxVZDJXREtIeTdLODh3alZLOFdFaFZxeUpBTCs4?=
+ =?utf-8?B?c29lT2RVZklqdXMwTFR0ZFR2NDI4a1BEa2RzMUl5YndtZzJvZzN2c2s1R2RM?=
+ =?utf-8?B?bTNzSVg1N3ZQb2pVUC9FbStqRCtPS2MySEhlbGJzN2hlOG5uMnEydnVYbEdY?=
+ =?utf-8?B?bE1SbXJ0dno1T1A0dXVURzA0c3YrYmVsNEk5M3IrcXE1Z2RxVE9VbEJHM0lO?=
+ =?utf-8?B?M0lIZ0NBdWpQY2pxNElpQWxTVGpiZXlicVBKTnhTak1lM0VzQ1VDUS8wdEV2?=
+ =?utf-8?B?L1IxZG4rT3NqTXp6NDU2U29xRGdPN3NzbGZRSU9HWGIzc2EwMG5XYUxzTGtz?=
+ =?utf-8?B?dUhjZ0xLbjUyN3luRndYOGpPMDZwVFpXbHRTNG52S0RDelMzMVMzV3IreGNh?=
+ =?utf-8?B?SmdKSHpwQWw2NFBKSlNNWEluNER3c2lDU0Z1alNadmpLTEJjSm5ITTdpeEZ0?=
+ =?utf-8?B?Y0FlZjg4eW02Um1ZTDBLbkdnK0R1enFZWFEwcG8vVkVFSWppZ2lnNlJ5MEZh?=
+ =?utf-8?B?ck44bXhYK05zajNjeTVpYlJCTEFzWEpSaGJ4QnVTekd0TitoK2ZwaG56eWNw?=
+ =?utf-8?B?dW9xVnVFY3pOaWJ3KzcycHo1Zlp6eHM0bGNXbkpkM1lObS9UQWZXMXk4SzNC?=
+ =?utf-8?B?ZXB4NGtRSkJDa2xQWEFuNExhM3Flb3pNYXVZS3NOZFRNS0dOVXZqOHV5Qk9J?=
+ =?utf-8?B?NlZEcmVYeHJlMFBvYVJFOWtzdlB2MlFPQmt6NnlKYnpHdWRoNkpQbFcwZ0pL?=
+ =?utf-8?B?bG5pNEgvZmpWVXpzTmtyQisxR0UxMWJmRGJSVWVOd1lXUjFLYmVNOGIycDAr?=
+ =?utf-8?B?ekdvV2RkU01jWXlLd0ZTclFZMzFBZ1RaK1NiWjhRb25rNVFjNHY5OUVpTjV2?=
+ =?utf-8?B?MjB0SFFQcUkyUHliNjZYYjk5SEZ0K1RpNjhIWHVlY1FCMHNSMnB6OG5RTm96?=
+ =?utf-8?B?SkViajk0ZDJ0UWdycENUeGlXSUtFRUR2c2JFVndYWjU3TXZDU3d2eTRPcnlC?=
+ =?utf-8?B?b3Vqd01RRE0wck54Tm1UcExrb0lBb3BEdnRoMGk0d1N3VUxSVGZIWnNGcTRP?=
+ =?utf-8?B?OThLQWlTUk1FL1diNjQyM3g1THZzeWh5TGlKemhBZGxDSHBiRUlLVUlDbDBQ?=
+ =?utf-8?B?OHVZMm5XQ3V1YUx2WS9ZNkNyVHlkMmsrWHRaT0hjaW1QT3VpbDNEc1VXZzlS?=
+ =?utf-8?B?OWNBc0JURWcwa1RTOStvWHdtTElxN2psTWEwczdnRzBJY0lRaVFlY2RIamJM?=
+ =?utf-8?B?OXlQY1hLYkhidU9aTldqR2E5ZmxWOUNxZ3BiL2NMOE0zNDJKeTFCVUZtamJj?=
+ =?utf-8?B?K0tVVkdQZXdKaEo4NCs4WDJ4Y2g3NkptVW1pdjNqdDhVUmV5ekdnMTFZYmRt?=
+ =?utf-8?B?bjlmMS9mcFJTRkRld05mVk1tSmhEOStJeWdVQ0ZkQnN4WTRMTnlXd2VwYUxn?=
+ =?utf-8?B?a1VJZUs5d045bmozN3R3dmZnWmlnT3grUm5pMm1qUU5NSjhWZU1jZ2lQNzVT?=
+ =?utf-8?B?Q1Qxam9NUGJ1aGk3d1dsV0dRV0F5bExTNjVIWW9wVU9sdjhWSjFRRVltVTBJ?=
+ =?utf-8?B?ekFJamtVV2FGTXBpdFVoV1U2eEhPdEFRVjJKZHkybmljZWpHMnljZEkwYTZL?=
+ =?utf-8?B?M1dsWkxyMFp4Rm5LWGJhT0kwWE45am1LVHpKRmFUWmxBQTZYVUpPckNKNGVo?=
+ =?utf-8?B?TUlpN1NJdEJ3Z2pzTzM5STB1ZlpFcGJvU2g2c2JtWmJmc2tGcmhwMGRDekx1?=
+ =?utf-8?B?WlRZWFFxczkrOTNrNlBpckRNODRvK2FpVG9tYlgxTmlaTytPODN6bVZBQldH?=
+ =?utf-8?B?b0NMQVZWTUJmM3ZmSTQrdkdPZjVjUUtxZkR5bDhrM3VmSi9hTmY2Zz09?=
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="=-u4BjXMRusxyrNl9MCf1V"
+	protocol="application/pgp-signature"; boundary="=-YJrI7CYgOGAy1rh2io17"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -131,54 +133,191 @@ MIME-Version: 1.0
 X-OriginatorOrg: axis.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DB3PR0202MB9129.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f331527f-a129-43d0-6a87-08df13d48ccb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 09:26:12.5739
+X-MS-Exchange-CrossTenant-Network-Message-Id: f472d188-b481-4bb9-5962-08df13d4d871
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 09:28:19.4783
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6+jYT3cejTZL77MeNYbTJQ1JTSxiClNArc1a2Kto43E/wuCeXAut9fRXlv9WIbR3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB6222
+X-MS-Exchange-CrossTenant-userprincipalname: Wk5hXw2LrnJsSs0qRRLv6inHAV7KYJ1iO7I1S9TeQ0GTjkNtpjpzKXAKBzyVRrPS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR02MB7011
 
---=-u4BjXMRusxyrNl9MCf1V
+--=-YJrI7CYgOGAy1rh2io17
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi Jonathan,
 
 On Mon, 2026-09-07 at 02:54 +0100, Jonathan Cameron wrote:
-> > The device supports both big and little endian formats for sensor
-> > data,
-> > this is handled via the SENSOR_DATA_BIT in INTF_CONFIG0 register.
-> > The
-> > default value is big-endian format.
+> > Add support for the Invensense ICM-42370-P MEMS MotionTracking 3-
+> > axis
+> > accelerometer with built-in temperature sensor. This device is
+> > almost
+> > identical to the existing Invensense ICM-42607-P IMU, but lacks
+> > gyroscope. The device supports I2C, SPI and I3C, implement only I2C
+> > support. Provide basic support for raw sensor reads via sysfs.
+> > There is
+> > also a built-in temperature sensor but it can not be turned off.
 > >=20
-> > Switch to little-endian as it matches the native byte order on vast
-> > majority of systems and avoids unnecessary byte-swapping.
+> > Datasheet:
+> > https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
+> > Datasheet: https://www.lcsc.com/product-detail/C5129967.html
+> > Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
+> >=20
+> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> > b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> > index fa85cf738cc0..a183a8566617 100644
+> > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+> > @@ -368,6 +368,7 @@ struct inv_icm42607_sensor_state {
+> > =C2=A0#define
+> > INV_ICM42607_REG_WHOAMI				0x75
+> > =C2=A0#define INV_ICM42607P_WHOAMI				0x60
+> > =C2=A0#define INV_ICM42607_WHOAMI				0x67
+> > +#define INV_ICM42370P_WHOAMI				0x0D
 >=20
-> This is an ABI change.=C2=A0 Whilst in theory they are self describing an=
-d
-> no one should be assuming they are stable, in practice people do.
->=20
-> So we need a stronger reason than it saves a few byte swaps.
-> If there is nothing else leave the ABI alone.
+> I'd put this in alpha numeric order.=C2=A0 Either that or by WHOAMI value=
+.
+> Neither is true currently.
 
-I will drop this patch in v4.
+Will fix it
+
+>=20
+> > =C2=A0
+> > =C2=A0/*
+> > =C2=A0 * Timings as listed in section 3 of datasheet, all values listed
+> > in datasheet
+> > @@ -392,6 +393,7 @@ typedef int (*inv_icm42607_bus_setup)(struct
+> > inv_icm42607_state *);
+> > =C2=A0extern const struct regmap_config inv_icm42607_regmap_config;
+> > =C2=A0extern const struct inv_icm42607_hw inv_icm42607_hw_data;
+> > =C2=A0extern const struct inv_icm42607_hw inv_icm42607p_hw_data;
+> > +extern const struct inv_icm42607_hw inv_icm42370p_hw_data;
+> > =C2=A0extern const struct dev_pm_ops inv_icm42607_pm_ops;
+> > =C2=A0
+> > =C2=A0const struct iio_mount_matrix *
+> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> > b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> > index 7eb486ff673b..e77d72e0f7bc 100644
+> > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> > @@ -92,6 +92,17 @@ static const struct inv_icm42607_conf
+> > inv_icm42607_default_conf =3D {
+> > =C2=A0	},
+> > =C2=A0};
+> > =C2=A0
+> > +/* Chip initial default configuration */
+> > +static const struct inv_icm42607_conf inv_icm42370_default_conf =3D
+> > {
+> > +	.gyro =3D { },
+>=20
+> Don't specificy it.=C2=A0 C will fill it in anyway with 0s.
+
+Will fix it
+
+
+> > +	.accel =3D {
+> > +		.mode =3D INV_ICM42607_SENSOR_MODE_OFF,
+> > +		.fs =3D INV_ICM42607_ACCEL_FS_4G,
+> > +		.odr =3D INV_ICM42607_ODR_100HZ,
+> > +		.filter =3D INV_ICM42607_FILTER_BW_25HZ,
+> > +	},
+> > +};
+> > +
+> > =C2=A0const struct inv_icm42607_hw inv_icm42607_hw_data =3D {
+> > =C2=A0	.whoami =3D INV_ICM42607_WHOAMI,
+> > =C2=A0	.name =3D "icm42607",
+>=20
+>=20
+> > @@ -617,16 +635,38 @@ int inv_icm42607_core_probe(struct regmap
+> > *regmap,
+> > =C2=A0	pm_runtime_set_autosuspend_delay(dev,
+> > INV_ICM42607_SUSPEND_DELAY_MS);
+> > =C2=A0	pm_runtime_use_autosuspend(dev);
+> > =C2=A0
+> > -	/* Initialize IIO device for Accel */
+> > -	st->indio_accel =3D inv_icm42607_accel_init(st);
+> > -	if (IS_ERR(st->indio_accel))
+> > -		return PTR_ERR(st->indio_accel);
+> > +	switch (st->hw->whoami) {
+> > +	case INV_ICM42607_WHOAMI:
+> > +	case INV_ICM42607P_WHOAMI:
+>=20
+> It is almost never good design to match against whoami values.
+> Doing so scales really badly as a driver ends up supporting more and
+> more devices.
+>=20
+> Instead encode what they mean in additional properties in the chip
+> info structure.
+
+Will modify to sue the chip info struct.
+
+>=20
+> > +		/*
+> > +		 * Invensense, ICM42607 and ICM42607P both have
+> > accelerometer
+> > +		 * and gyroscope functionality.
+> > +		 */
+> > +		st->indio_accel =3D inv_icm42607_accel_init(st);
+> > +		if (IS_ERR(st->indio_accel))
+> > +			return PTR_ERR(st->indio_accel);
+>=20
+> This first bit is in btoh paths, so drop it out of this switch.
+>=20
+> > +
+> > +		st->indio_gyro =3D inv_icm42607_gyro_init(st);
+>=20
+> Add a has_gyro flag or something like that to chip_info.
+>=20
+> > +		if (IS_ERR(st->indio_gyro))
+> > +			return PTR_ERR(st->indio_gyro);
+> > +
+> > +		break;
+> > +	case INV_ICM42370P_WHOAMI:
+> > +		/*
+> > +		 * Invensense, ICM42370P has only accelerometer
+> > functionality.
+> > +		 * Thus, set the gryo property to NULL.
+> > +		 */
+> > +		st->indio_accel =3D inv_icm42607_accel_init(st);
+> > +		if (IS_ERR(st->indio_accel))
+> > +			return PTR_ERR(st->indio_accel);
+> > =C2=A0
+> > -	/* Initialize IIO device for Gyro */
+> > -	st->indio_gyro =3D inv_icm42607_gyro_init(st);
+> > -	if (IS_ERR(st->indio_gyro))
+> > -		return PTR_ERR(st->indio_gyro);
+> > +		st->indio_gyro =3D NULL;
+>=20
+> st should be zeroed anyway so shouldn't be any reason to do this.
+
+Will fix this.
+
+>=20
+> > =C2=A0
+> > +		break;
+> > +	default:
+> > +		/* No WHOAMI value matched */
+> > +		return dev_err_probe(dev, -ENODEV, "Failed to find
+> > a matching WHO_AM_I value\n");
+> > +	}
+> > =C2=A0	return 0;
+> > =C2=A0}
+> > =C2=A0EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
 
 Thanks and Regards,
 Kanak Shilledar
 
-
---=-u4BjXMRusxyrNl9MCf1V
+--=-YJrI7CYgOGAy1rh2io17
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaqpgswAKCRDEY9j7t8Ka
-Z4aiAP9qwxJAx/P+XF39SLD9x44qA+L6IJPcIkjkEbs+TJvaCgEA6J2QMf91VuJJ
-dvQbSd8hkHzh74gsQrcK3ZiOL6O7IAs=
-=XkjE
+iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaqphMAAKCRDEY9j7t8Ka
+Z2DaAP0VBHL2O9e7kNDgTHNA9MFnEsI/CBq4lKPJSTNiDiqZhAD/TQhyi5TRkhU3
+cdXgsNauEaMiba9JZird1q+1++vk/wA=
+=zkQx
 -----END PGP SIGNATURE-----
 
---=-u4BjXMRusxyrNl9MCf1V--
+--=-YJrI7CYgOGAy1rh2io17--
