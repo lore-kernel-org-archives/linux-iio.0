@@ -1,69 +1,69 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011021.outbound.protection.outlook.com [52.101.70.21])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011070.outbound.protection.outlook.com [40.107.130.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ABA33AE184;
-	Wed, 16 Sep 2026 09:30:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3A04A843F;
+	Wed, 16 Sep 2026 09:37:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.70
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789551031; cv=fail; b=D4pzlpzKUYS9kfeaju/bFi+G0twKPnDcGgMe/W8nuWc/neiYyAitMawCieSWk6YBy3Y9VEiD9KfJlDIAL17WvLoE367YmpvjFySP8ndeV2Tx3KcycvKmDHRwqataqbMaVCyqBncMidWd66ssM1d3jRjRu/HOfQ/m58ezt+tMcIo=
+	t=1789551463; cv=fail; b=ltRAtiUjI5jDzMcXHKbrtDk+v2cY0IDkYUITQN+qp1XalHO0U89gg1BiyQ64VpAw8qHCkuEFvFADB9nvlyP9XpvAXK84AHskrpGcvN4CuLUnCE+5aIcI4w9GSGK1SYZi425aEd7q+6UfC7ulAJw9Q8BQAVQ+QVKSt45V4ZU+SpM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789551031; c=relaxed/simple;
-	bh=lEGai8/xvmS84mskoDcuPJd+lXE2SwHXVIJqmukvVRI=;
+	s=arc-20240116; t=1789551463; c=relaxed/simple;
+	bh=ydPdMFXntLRyiKdR1j9GoB4q/sMlpW8PMdMFspaqXrc=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=PxV5imWn3JS1x7vBgRfjAGbvaN6ERiaHlKad3SDGzPOjbwPmTl/ZIjSpvkNcJrtP/xOW4TTalJ/EzDLXi3qmbfOAJzL1cEXq0Ux5t6RjUmkRLfBSe2uZLKSILisboASf4amheg2sec+2+uQSK7iXyJ8h8yaoZCHF6lA+SClX5QM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=SSd/NgOV; arc=fail smtp.client-ip=52.101.70.21
+	 Content-Type:MIME-Version; b=i5Sefv67w8ZQDwnNV2tMXSIuQA27YTKbAqOVrlggLafQeJfWmEhhIsHP2NRd0vDZ2Ph9htZDSajYkOHnW5EAU2kSxrUjpjq47wI/P98Q4GW6RP05n5t/pVClu3RIVtiJpcRJV54g5qjLRLJJ+9Jkx6t9NzcCmuEhxMk1N7DMLww=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=eC8bKX6/; arc=fail smtp.client-ip=40.107.130.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="SSd/NgOV"
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="eC8bKX6/"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CwPsAiWk/K5nPVgv9rajdIFhPwWpt3xwCjhyPA1YXonc+giwMGfgpiARfEF+nvSvL+iCeCQkxdHVwZh1dRp/e/KwDt4kkHLR1/YCyxwS6/4GnCVI6vv7OS/5g6bTsf1UOx7NMiGtYm4fBNWH0qXRTHVKUowsRWt0nIYuVcDJW6d3/M4JSBUziHX3188/3GlOh/Kpr9lQIYTJ3CQ7tavIDFRWLYYWmBn+UAWzR7fSIfdecYf3Qcs+1THWHmlzsMRQf2Bd52N1+gQA9RG3+wCComGN8cF8o5oBpceFg9Hg/jx1dunCVZkeYoI1Jqeh7tS1WUuxmm2D4MeaEaMbyYFOzQ==
+ b=uiFWFXKfI8ttvISdtKqliYx9iz6CW6e/VLsjVEi3f2ytnfr+jkQI3wIUmiZ3+Wuag3AV86sOFjjdBC2WwmjHzwxZ83FexSd9e8YbRoR5mNkaQQRZL6PEh1HNrOqrOG/MPC4U/KMRDQGIq3kUdcZu3ratrNua1lobUtlyjfduonqVpAFUjCgNLe6tlJSjlCAOUfRa9a9X6e52nOC9KIcFcaEx4xtKoQlfNuuiM5NX+HKF4yVq3HWnbEMnev4t4oIyhCSDc64vvmcYFBpwFpldxY7UHOLN2m6sf+TuWCh+4ceEk5hb4PceXK3tNh2uIbrGkVIFAZmZ3dSKjKsaHgwZuA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lEGai8/xvmS84mskoDcuPJd+lXE2SwHXVIJqmukvVRI=;
- b=FGJywStYBJYZX4sd+IPbunxOtu2o85/8R8hBZsj1BlLHhWH8QnXbTe6KO+XSH7YoEJkwoiPOtVWGtvwkHjcM1BKrQ0+Ry8qu55q5TxjdtvGernZpeDoFKBDD9vgoBdBnWb62lurszbe3VXoq9v2BXhEZJrtdpV4w+FZh+WRRt0KxIJ83Vb16hYJnBglo4PUdChfVAfaSHCWf30V+UQypfrtILcSnqsNtcnu4No8qdYYnCmJmVZQqt+B185MxqN9r619A2kWcxdVQr1+ddh/TKNPH+J1jfC1Q6pwwxqMhE6nxnn2aEBdK4N75Qgm5gjQU+mKLSxgLg1GPuxTcNk5Z8Q==
+ bh=ydPdMFXntLRyiKdR1j9GoB4q/sMlpW8PMdMFspaqXrc=;
+ b=Io0/PPLeWTZVsrwhSLiT0jd4uRJPqazntHvuyfNqWSJoNsZUUOD6Bxwwfry0uq+20YJfZHzGtSMnhJQbodmltZWKOOLVZAXJypTRVnzi4OGaVfEUne/jdLwF8vaShB3VJOuSSo5rRe1e55iekPzmeDxp9OrgGQcogx1kPw4xaJVGVxRI8SEnwnOSVUlUJHI6UKQcH86kvNLIVbWbo2rv32B/57KI4FQGaJsIlk9//iLNBS4tWHs/w+Qn9m5//aN7yh0nIHvoAapBUhcdP2cfJvZGRKZfLtwWTm9PceTXz1mEEUvKIlvpcUtzlTjIbtx2raak3UlH5fp8M+U1OSUB0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
  dkim=pass header.d=axis.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lEGai8/xvmS84mskoDcuPJd+lXE2SwHXVIJqmukvVRI=;
- b=SSd/NgOV16bBM9AfokzM+2wb8AbLYyOw+dTyny1NdOnm/oqW0ayAY1gvMeS6vus38bb9OOd4gz4eTDIXINmys532PbEEisJg6kuuwK7kbJSi7JYy03sfIQCGUAsRrKX9iaNPR5zIsaGiHLr1bfepxxqIyYeO/s4D+Ah0qj5esow=
+ bh=ydPdMFXntLRyiKdR1j9GoB4q/sMlpW8PMdMFspaqXrc=;
+ b=eC8bKX6/9slNRm81p4BgaJ8aGs2MSlIHfryIwPYlaoaspPovYmR0w/dO7rowlPeCSBN/FtR3H+MkbDj+J3PucLxCxe6/LvdUqvUYgImazq9hKcSHl692/HgakG55qJNhvkJbKGH6dNL2PO2bWTVID5+dtgVGxUTsXAchQpt7Zk4=
 Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
- (2603:10a6:10:43a::19) by AM9PR02MB7011.eurprd02.prod.outlook.com
- (2603:10a6:20b:267::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.11; Wed, 16 Sep
- 2026 09:30:17 +0000
+ (2603:10a6:10:43a::19) by AMBPR02MB131711.eurprd02.prod.outlook.com
+ (2603:10a6:20b:78d::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.9; Wed, 16 Sep
+ 2026 09:37:32 +0000
 Received: from DB3PR0202MB9129.eurprd02.prod.outlook.com
  ([fe80::7510:e8c3:db37:47ff]) by DB3PR0202MB9129.eurprd02.prod.outlook.com
  ([fe80::7510:e8c3:db37:47ff%5]) with mapi id 15.21.0406.012; Wed, 16 Sep 2026
- 09:30:17 +0000
+ 09:37:32 +0000
 From: Kanak Shilledar <Kanak.Shilledar@axis.com>
-To: "dlechner@baylibre.com" <dlechner@baylibre.com>,
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
 	"joshua.crofts1@gmail.com" <joshua.crofts1@gmail.com>, Henrik Grimler
 	<Henrik.Grimler@axis.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"Jean-Baptiste.Maneyrol@tdk.com" <Jean-Baptiste.Maneyrol@tdk.com>,
-	"robh@kernel.org" <robh@kernel.org>, "jic23@kernel.org" <jic23@kernel.org>,
-	"andy@kernel.org" <andy@kernel.org>, "krzk+dt@kernel.org"
-	<krzk+dt@kernel.org>, "macromorgan@hotmail.com" <macromorgan@hotmail.com>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>, "marcelo.schmitt1@gmail.com"
-	<marcelo.schmitt1@gmail.com>
-CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kernel
-	<Kernel@axis.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3 6/8] iio: imu: inv_icm42607: Implement MREGx register
- access
-Thread-Topic: [PATCH v3 6/8] iio: imu: inv_icm42607: Implement MREGx register
- access
-Thread-Index: AQHdOh87FN81ruWo+kuBt7z8nBLE4rbDCmqAgA39TgA=
-Date: Wed, 16 Sep 2026 09:30:17 +0000
-Message-ID: <2537d21c50da4e74107244010f1ce193b3fdee26.camel@axis.com>
+	"jean-baptiste.maneyrol@tdk.com" <jean-baptiste.maneyrol@tdk.com>,
+	"robh@kernel.org" <robh@kernel.org>, "marcelo.schmitt1@gmail.com"
+	<marcelo.schmitt1@gmail.com>, "andy@kernel.org" <andy@kernel.org>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>, "macromorgan@hotmail.com"
+	<macromorgan@hotmail.com>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
+	Kernel <Kernel@axis.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 7/8] iio: imu: inv_icm42607: Add accelerometer
+ calibbias support
+Thread-Topic: [PATCH v3 7/8] iio: imu: inv_icm42607: Add accelerometer
+ calibbias support
+Thread-Index: AQHdOh88BMzhlSng1EGhR8lSUpATibbCY36AgA6mQIA=
+Date: Wed, 16 Sep 2026 09:37:32 +0000
+Message-ID: <b58448efafcd27ceb2c924139ea97201b349b534.camel@axis.com>
 References: <20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com>
-	 <20260901-b4-inv_icm42370p-v3-6-77cc31642115@axis.com>
-	 <BE1P281MB1426CC3CADAD2D34138C5886CEB22@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-In-Reply-To:
- <BE1P281MB1426CC3CADAD2D34138C5886CEB22@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
+	 <20260901-b4-inv_icm42370p-v3-7-77cc31642115@axis.com>
+	 <178874609182.3402141.6437933635539106261.b4-review@b4>
+In-Reply-To: <178874609182.3402141.6437933635539106261.b4-review@b4>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
@@ -71,59 +71,59 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=axis.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB3PR0202MB9129:EE_|AM9PR02MB7011:EE_
-x-ms-office365-filtering-correlation-id: 1055f9ae-8c0a-4a6e-8a72-08df13d51e9b
+x-ms-traffictypediagnostic: DB3PR0202MB9129:EE_|AMBPR02MB131711:EE_
+x-ms-office365-filtering-correlation-id: ada5fcdd-f2b2-40a4-1da6-08df13d62231
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam:
- BCL:0;ARA:13230040|6049299003|366016|23010399003|376014|7416014|1800799024|4133799003|10067099003|4143699003|56012099006|11063799006|18002099003|921020|22082099003|4053099003|3613699012|38070700021;
+ BCL:0;ARA:13230040|376014|7416014|366016|23010399003|6049299003|1800799024|38070700021|3613699012|4143699003|11063799006|56012099006|10067099003|22082099003|18002099003|6133799003|4053099003;
 x-microsoft-antispam-message-info:
- fI/mN/73d4oN/js12U4pO3Hvu2LIcCogg1FYVtXW9PdO4m4UGJ/SBla09PJYA49QY9aI5ztPJbFf67Bhv3xK0I5FZKwSkwlUI3qWhcQq1P5kAKagG+2yCYRgtDxxeyYPqOWb3kBbloe3Jix+H5H9ayPxX23viTGR7khLcd0uVeoRw3vC7hfKZTRZj4h44VT74LbL+30sIc7zBF7DjcOvCll5n47axa1rvqzbL2ePgkigpq9oFFwxCelGVFK7U+px+JizvE3h/+w4UV2u1hhVFSd724BRSh+dIFj5zvuM+oWoWh0UdM004BzUf9SHwynFFXuK0HvFlmFsuLEjzB5fCpdT9R2TpJ1ps33b8cWpzUirjIhk36FLMC/5W9ShYeChSgFHKt1Qa+jmFmtHOIqCoaJNgf1qXDj3tSl+j9COp0oq2RolBsMSe6ORMuSB6ht6d3j9G8TfnQVWmcbh1RwQD90zizdhUZl5LtZK3aoWLkXMcXqZAn6ke0eFN96EkT33EP4bkOQa1VUv7BWHFZPJidPDq2ZJ/7tcWvsLMV33BDfbx3scUTqD6Hwqfqie06xWoDJmqno4wLGEEr6Cm/5zERUuPBJlivKU9F51vI+X81u9hv+ZouvcJJ/G/Eej+OOb0d7/NE4vqRH15+3sds1GaEUe9bIPRz1wfoIDNynLaBqFJK/H9DwFY651e8JlCXgFGkPFt0L8NueNziYuW/zlqgYNaFtpUwsYkZ0UUhDqwAQ=
+ Cs0ISZTT0foD5T1wscJO0ujPwIN9KHcTggFDGfAJcVqJ40dMSuawaLLY7yh638K4JsnKJ7G3V70+z9iJmojQD4NUmHOJ/b1hH5xtOWfndzLQa922uRlGbtyNNZMrUFShosvNuGoixKv+4eChOHbqqjZEV+JaKdJhs+VSIlGADFk8QtG/1jqfEPENMZDkywy/OFlm+3K20pc+d2Ws38h5jUchMcN5HRVsIpFDlpui5FTonlt3khWXXrWHqn3QpTzsqWb5pdq//w0XIKuKpWTS5bVYVJv311BWQrejUN8lu59KW8saVncT1kPpoyaOS9Hc6CbOr4LUqBXxGQ4fVZ+5XTfbgcnVOoU6Pgbgas4xMn3tPAL93x9EPs+W6c0hPlllswaRJxxz6AcoL+hinLh2m8iF3AaRy6SSQScKkD2ywFcqruccl0MTr6La9hXZu5YJYLZlMppex2mI7H6E6qowtU3IQiL/AcJL87bkcnc8r+3zHiwTqgOA6zmrZAxQjIbkqdLAmlf0IXyfGaoUEy9/FmH8CNV3lwrhUi8DfT0jAlMhY/Fa0Wj8cOJRgUt3R/om99qsezb16RR2/T8/OiQG0NoAajBuXi0WhDKAZu9M5QDaHfjmHeJXFOXaNOkJvzmgFNpH0LY01xO3j1UwIkZRNWp8CS0unHdRrE9MJwQimgdCnRzlchiYyN5n4v5aFNGwEazSuYJjML/Y9MO76plm/Q==
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(6049299003)(366016)(23010399003)(376014)(7416014)(1800799024)(4133799003)(10067099003)(4143699003)(56012099006)(11063799006)(18002099003)(921020)(22082099003)(4053099003)(3613699012)(38070700021);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0202MB9129.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(23010399003)(6049299003)(1800799024)(38070700021)(3613699012)(4143699003)(11063799006)(56012099006)(10067099003)(22082099003)(18002099003)(6133799003)(4053099003);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?U2Vzd1pVcVVDM0VKK3RWWXlEYWNwSjZZWjBZUGE5SU45ay93akJlWFdhNW5z?=
- =?utf-8?B?WWlxMFFQU25FeGQvek4wTVJsd200c0lENVlIemhZOXJYYWgvMElNZjk0R2xD?=
- =?utf-8?B?NEdBQVNEcGlySzd3M3ptckNXemEyMHlwV1pmSmNyQ2NNakIvTmpsL2l1eUNl?=
- =?utf-8?B?TDVMV1J0dlpnQzV3TUtyQ1h3U2s4U2RnTGlkUGtETnNtQTd5eXlja0wyckE5?=
- =?utf-8?B?WlNRNEh6YUlPYUFPdGJ4NitobVFpV3Z4RzVxajBWVlpIc3dKWjZGVUZZQ3N1?=
- =?utf-8?B?ZWlScWM0d2N2SStsVHFIcFFuaDM4WGl6bW9xdDBNdFNmTXZRa0lueEZ0ZStv?=
- =?utf-8?B?ZmowRWwzblRXQnFOZFhKTnJLYkJKbXhwcWFNUWxvSk1lV3VFaDQ0bUltQVVv?=
- =?utf-8?B?RUYwZGZiSS91REhOTUxmTnNtZGpTNGtwbnprVzd4bSt1UlNCNXJXRXRlY3Yx?=
- =?utf-8?B?Zjg1dzBjbjZnNzBTQURQWVU4ZEluY3pZZ2RJYnNibGRNUUI5WGVVU2M1R0h0?=
- =?utf-8?B?UlZKSWJoS1ZxSmpaZnBrZkxlU1lwMjlzajVMN2ZZVkdhU2VPdDFBUFZ1REEy?=
- =?utf-8?B?ZE9PTWI2TTFnTGxWOXkwMnNHRFRzb1pnRFF0UnRabzB4UXh5dGxiSFcvLy83?=
- =?utf-8?B?VkRxS2RCMXVrVVRGZEc2ZnliWFJwbnBBVmlwQXhmYU9XQzBqSENpc2RqLzk3?=
- =?utf-8?B?UFUwanM0VUtNY2VhV1lFM3JFV2lOWkJOR2NhZTNlU2s3L3pmNmpReFJsM0Na?=
- =?utf-8?B?b2Z5QXd5UUliMmhqczRxdlhiNWxUeXZoQUF2UDB1d2tjcVc3TkwyR1UxRDhx?=
- =?utf-8?B?TGRqVXo4R3pZZ2c0UFQyMndxcXBSWTBQRzlRWGJnYWFIcm5xcmxRclVsK2Ns?=
- =?utf-8?B?Sm45NHN0cGlJZVVWSU9yY2RJMi9mM0Z5cG1HcXZlbVhJdGdKNWZ2R3pyWXlO?=
- =?utf-8?B?VDNLdEIvbzMyK3A0ZUdCdlZNclF5M0RmZ1BOWGxzcVEwMlJIcHhYaXZPU3dt?=
- =?utf-8?B?b3dnK0tnaHE1M0wvcXI3TmlHN0JqWnVDSkt3NmxSb2RjdXRTamRqZHM1MDZE?=
- =?utf-8?B?Q0F5MFZMMDJHcDFpdk1yeHJURVkweXFXVTdsOE9VRUphSnM1REpqMHdzMUR2?=
- =?utf-8?B?Ry9jVklyMnpXUmtLYnVyYlVEUmF6UnpRakd3alh5MnNESGxzQVJxZTY3Y1di?=
- =?utf-8?B?V1MwS2Nsaml4bWltSEpwdzVYTmhXL2U0cE5OWlo0UU1VWHRPd3BnU0piQ1BX?=
- =?utf-8?B?MHhEMWpMeDhaWXFGZjhVcVFDTXBLTzFMZzN4aFNOQ3JPVUVSSHBjcFhCQ01U?=
- =?utf-8?B?WWVaTTV0bXdoRSt2bjBzSDRwbEkzdGhqWWhhdEVLdVNod2lSY1BLZ1dpUUVR?=
- =?utf-8?B?ay9YMEYxVjZmNENTTXIrYmdEb2ZkWUJzbDZMc0Zic0xsOHU2SjhpSFBZOXdo?=
- =?utf-8?B?cXoxZEdybGZhcHhpekJQOXZvUGxRdG5tZldodlVEUXQ0TjJaR0N5RCtEVkJJ?=
- =?utf-8?B?QWZoYjNodlcrN2pwYnVEOWxGVklNYWNlOUs2S0ZmT3NFNHU0OGRYeE15Tng2?=
- =?utf-8?B?K256a1NrYkFHOHY5dWdXUEhhRzdqN2lUMVVwdmhXM29Sc3UyTExieUs4QzFI?=
- =?utf-8?B?NUNNaW1FQVNUM0JPK3JVck5pLzV1emtNWUJJTzZHbHVralpTL0wxYzltZHov?=
- =?utf-8?B?VE1FTUVKUlZlck1XNWdVSGV3RjFyYVBQeDBiUWNLWkJHVmZjaXZXL2ViaUNF?=
- =?utf-8?B?YjZlbk1oR1FTVUNnNXh1TmFsQWZLMk5Kc2RnWE1STW1jUlNzODdDcy9GNXJ3?=
- =?utf-8?B?NmJYU2lIRDdGcHpvcVQzMm0rdDhpTEFMclZ3SmRFdDdMM0gxZlB6eGI5NDdE?=
- =?utf-8?B?UUNva1h6YzJLOUNCQlE1Ky9IRFIzWlhFUnVWeVNpWXkwWXlTVFpOK2pOdWox?=
- =?utf-8?B?dHRCT2RLWDMxQk1nUlM0UkE4UExGalFxNzArWkt3OE8vam5FNFFQZExKVWJ1?=
- =?utf-8?B?TloyMndQQVRvZ0RVSDlSMkptUHFXWVFYdEluOTlaSlIrU2ZiSDVJbkF0bEVB?=
- =?utf-8?B?V01EQXN3cXAzTnE2MW5xSzFEQnJzT1Q0YndoMW82UEVLNTY3b04rVVFDVnRV?=
- =?utf-8?B?TjBIM09GRkUzeEhFdy9jMVhxNldjYnN2TzQzb0RPdnZZZDIvV2hORHhKVGJB?=
- =?utf-8?B?ZGNmb3RyeTQrMng2b0ZDME1QdFM3WnJjMzQ3RlgzOGl0M01ISFVQL0Y2YTIv?=
- =?utf-8?B?ZFpQcjlCcGQ4aDZYMGpVMzJhTkxudzFVRmxUSnFOSVN4UmppTzFmTEpWSFBi?=
- =?utf-8?B?N2RXRFc0REd3RHJHUStLYlJNbWRBTk83Uy9jbG9lbzA4UktVT21GUT09?=
+ =?utf-8?B?bUZ5SDhxODBEYnVub1poSm1Jb2M0S3hOS2I4algwSUU5bFcwdWJoTmN6N1Nj?=
+ =?utf-8?B?SnJqUVhjVExYejhsMXIyQ2pJcmIyUjVxUGU5MnE2bGpYRVRIMXNEMFhYeHJt?=
+ =?utf-8?B?YnRBd25oTUpZNUNzd1lQR2J0SHNkQXA5TGNNWnA0WjJqNEVLMjAvM3M3QnFB?=
+ =?utf-8?B?dExxWk9aV3VJSGtOWk1aUjRHcGpEYXpkQVJMOEMwRklqdmhpRHFrc0hJUmc5?=
+ =?utf-8?B?TEJsN1lWTm5KVGcvVWp2Nk1RS2FxMHhBa0xYWEg4bHZXb2Myc1U1ckowK3FM?=
+ =?utf-8?B?QTdlNVZpelhIQjNweVVDclQrQklMRXlvZmNmaDlEckR1d1dNN3pHSnlCS3Nz?=
+ =?utf-8?B?dEJxYktBR3NLUzBDMnRNL1o0K29KZzVrdXdpdDVTYkVHOEVodGNLOTNCOWdD?=
+ =?utf-8?B?VnlaZXpXZUdwcWZ6MjVheW1lT3pvOFIvMjUybnVLYlFnU2Z1VXFYM1RuMExh?=
+ =?utf-8?B?QlVRa0ovREhwbG5GRUk5bzd2Tm9ZSlhDdjRlMys4MzgycUxYOHIzWDQvWTN0?=
+ =?utf-8?B?QmQ0ZXlnamg3WUVXNmZ0QkFGNFJrN3RVUGlkelQvSXhFWm4xMmg3V3l1ZUZu?=
+ =?utf-8?B?dWR4YzdtUEhuUnV6MUxZR3hrTWVpeWRBaTFjZmNpZjA5NWw5TkZmc2xoZjBE?=
+ =?utf-8?B?TzNpUWlPWkZZc3Q1OG9pczYwQUx6a05NaGtPMVgwZmZLY09icnRRanM0RzA3?=
+ =?utf-8?B?d0dCM0U1aUNmS0JwMm5tRjJXRExVQWtWbGVwTmFub2NDVStBakxOQkV5bXJR?=
+ =?utf-8?B?bDdFNXNOV1c2d01JT0h4SGtVTTBhQm90aDd0SWtaZFZtWUdvMmxiNTlvaVhm?=
+ =?utf-8?B?VlNQOGhZZzNlOXFPTW1MMWpRd0tQTDNicit4amtSQkM1aVl5aUYvR3dpTWJi?=
+ =?utf-8?B?L2NBSUYwaStvSXdEVlJlUWFkaW41S3ZOdXY0TDJHQ1NrUkRpbzZRdWJFRDVO?=
+ =?utf-8?B?Yk9OcURhcTNlT0xTaFVsUk1rdW0yRlcxUWdGbXVPZHRVb3VIVEl3alIvL09u?=
+ =?utf-8?B?OXRORzZqQnROWDJZSUpBbHVtVjAzRWNyck5aV0pGUUV6K2xiTXlnSmJXOVNO?=
+ =?utf-8?B?OHE2Y1NYMHNKVkptYVYrakZpQU1CZ0huMWZlSktHQ0ZyZnBvTzcwNWZnbllU?=
+ =?utf-8?B?bHA5YkFyL1prNmJNMnFjcWdrTmhTdG9VNG9UemNpZVFIdDVJUXZwWXMwV1c0?=
+ =?utf-8?B?dmNRUjdiMzlpVW94cXJDaHBLUldOdUpyV2lEYTBMZzZ0ZUJZT2huSlBrd3dO?=
+ =?utf-8?B?cG14ZHVtN3oreTFmeE1PRjhTWHBwNEROeVJkM0dLS1JvYzMxQ2pYSENnZmpQ?=
+ =?utf-8?B?UjFsWG8zdnlNdVNOTzNYRUxGNi9WUXU5cHE1QVlxMVVZeUtnRDI4M2JHNmtr?=
+ =?utf-8?B?aVVvb1pENnExQndOYWpoK3EyRkJkQnF0ZDkzSUpYRlkvL2Qrd2N6ZHc5aTVK?=
+ =?utf-8?B?MWJkK1A4YnVyU1NDdUxNakFVdk5uQ2M4Vk5sK1Y2VTdQemtBcFZLS2swZGtq?=
+ =?utf-8?B?S0sxWUZmdUZUYXVjZjlBUitXVVUrdUVjK09EbEs1d21JQkFJbDlCTmJ5TjhI?=
+ =?utf-8?B?VkcvZ2NOU096RGVYaGdJTXVBTlc2RktlTUM3a2RlbDV1VDBmTngyYnRsbXpl?=
+ =?utf-8?B?R2VDWWQ2cS9pb0dOR2hhVnY4TzRwVU9Vbk9BQU5XK1ZOWlNKUjllclh2blBj?=
+ =?utf-8?B?RW9ra2tmSk9ReW1JQ3kxWWhjNTZNNjFMVUIyKzQ2bUNlOTBjZCtWRjc0dWRZ?=
+ =?utf-8?B?dHZmV294WU9ybjJPeDV5L2JZZDQzZ1JoejJ5Q2F3RjdoUkVESkphNjhVSzZW?=
+ =?utf-8?B?NTVuZ3dBN1ZuV3lVci9DbE5SNUNEQ0h3VERZeGpwSFRCcEcrR3J2VDJzOHBh?=
+ =?utf-8?B?VUhLUkx3ZDRUbHhiOXpDdno0SkFGUXl1VmtlNUNEdEpjS0VDZ2RpQUNGeXlu?=
+ =?utf-8?B?US9vNzZkZ0cxQlc4dTc0OVJNZ1pYQnBjZGs3TjBwckJSaTdmMHJjOHJRdjgv?=
+ =?utf-8?B?elU0b1JXb2VZa1ZBa2NjNHBMTE9zYkk2RGZGa0NPM0hUdlNVdzFhalUxQkti?=
+ =?utf-8?B?M3kzbGpoQTlTcGpLekpMb1paMzlOeU9lb2JhSkliSFpKTVlXbTh5dWNCVEJl?=
+ =?utf-8?B?M1hjZGQ5ZVdpRGJlVWp1Q2p5NGpnemJNek13dVRzeEpSUDE0SEhHSzJNQkw0?=
+ =?utf-8?B?ZlJvYWNrWW4zT0tSaGUwaTdpRzNXRmtGYVNpanNwM3FMWXZoSjVVamFnSzQv?=
+ =?utf-8?B?QnNYM3FJbXZwbXowZ24ybm42MDlzNEpGRUcrdGh2NlRZYVFRMlJxOS9oalo5?=
+ =?utf-8?B?RnRTTGdtcktYekVGOU9Pc3BycHFYUTV1K240UVNHd2M2d1ljQ0hHZz09?=
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="=-6R9Tr7LSowkFE7pgc9uO"
+	protocol="application/pgp-signature"; boundary="=-qzSuFjs5Ohro8rco8Vti"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -133,95 +133,57 @@ MIME-Version: 1.0
 X-OriginatorOrg: axis.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DB3PR0202MB9129.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1055f9ae-8c0a-4a6e-8a72-08df13d51e9b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 09:30:17.2282
+X-MS-Exchange-CrossTenant-Network-Message-Id: ada5fcdd-f2b2-40a4-1da6-08df13d62231
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2026 09:37:32.7310
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wJvnYmP2haO6AtAt3M52O/z+ATLNR9gcEorzdcmyKsey+KoLyVtncV1dFD+CnMS5
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR02MB7011
+X-MS-Exchange-CrossTenant-userprincipalname: PhB5kW+lVXk/gzTa5FWjEBSUaRHzlqW/WGusjjWTyZijX+nlrmYjj9BhdX+JL42H
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AMBPR02MB131711
 
---=-6R9Tr7LSowkFE7pgc9uO
+--=-qzSuFjs5Ohro8rco8Vti
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Jonathan and Jean-Baptiste,
+Hi Jonathan,
 
-On Mon, 2026-09-07 at 11:52 +0000, Jean-Baptiste Maneyrol wrote:
-> [Some people who received this message don't often get email from
-> jean-baptiste.maneyrol@tdk.com. Learn why this is important at
-> https://aka.ms/LearnAboutSenderIdentification=C2=A0]
->=20
-> > The device supports indirect register access to different banks. A
-> > specific routine needs to be followed when accessing the registers
-> > in
-> > another bank as documented in the datasheet (section 13). This is
-> > required for accessing registers configured via the user and
-> > implementing buffer support.
+On Mon, 2026-09-07 at 02:54 +0100, Jonathan Cameron wrote:
+> > Expose IIO_CHAN_INFO_CALIBBIAS on the accelerometer channels. The
+> > registers are stored in MREG1, which can be accessed by the
+> > mreg_read
+> > and mreg_write routines. The calibration bias is written to
+> > OFFSET_USER4
+> > to OFFSET_USER8 registers in MREG1.
+> >=20
+> > Note: The accelerometer functionality is tested with Invensense,
+> > ICM42370-P development board.
 > >=20
 > > Datasheet:
 > > https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-> > Datasheet:
-> > https://urldefense.com/v3/__https://www.lcsc.com/product-detail/C512996=
-7.html__;!!FtrhtPsWDhZ6tw!CMTPpmwpQnn9q5feyPtbKfDlZZxlAh6FLT3KngBIAt4pGu5iF=
-9cjUawWbxpNVF6__BzwZo0XM8x2ABrLJ4I1epLGPQXws4rTlA$[lcsc[.]com]
-> > Assisted-by: LLM
+> > Datasheet: https://www.lcsc.com/product-detail/C5129967.html
 > > Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
-> > ---
-> > LLM was used to improve the mreg_check function to include the case
-> > where the sensor is in a POWER OFF or LOW POWER mode to utilize the
-> > RC
-> > oscillator for initiating the bank access.
-> > ---
-> > drivers/iio/imu/inv_icm42607/inv_icm42607.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 |=C2=A0 29 ++++++
-> > drivers/iio/imu/inv_icm42607/inv_icm42607_core.c | 108
-> > ++++++++++++++++++++++-
-> > 2 files changed, 135 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> > index a183a8566617..a522850e0268 100644
-> > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> >=20
-[...]
 >=20
-> Hello Kanak,
+> Various things inline.
 >=20
-> for accessing MREG registers I strongly recommend to create a new
-> regmap
-> structure for handling this access. This way, you can use the created
-> regmap
-> to handle all registers access without having to check each time you
-> access
-> a register if it is a normal or an MREG register. Having dedicated
-> function
-> is very error prone.
+> Thanks
 >=20
-> You can have a look inside inv_icm45600 driver that have the same
-> kind of MREG
-> registers and is using a regmap for abstracting the access.
->=20
-> Thanks,
-> JB
+> Jonathan
 
-I will rewrite this bank access patch to match it similar to how it is
-done in the inv_icm45600 driver.
-
+I will fix these issues.
 Thanks and Regards,
 Kanak Shilledar
 
---=-6R9Tr7LSowkFE7pgc9uO
+--=-qzSuFjs5Ohro8rco8Vti
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaqphqAAKCRDEY9j7t8Ka
-Z9xwAQC53XFpMK2MdvxJCsL7KTwR76QpwTW+EcXp4Yb0lgi27AEA5RmkklPz6YJU
-bEiBcDTWqOwo5hlEtxtjBUtQZ3mrPgc=
-=my9E
+iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaqpjWwAKCRDEY9j7t8Ka
+Z4PpAP9PIxvrVo74bCZWv1izqREPF+P48mu5Gf7xFeCSp7Z4oQEA1idglH++t+kt
+tj29KxEt7mxv2l9kSnSFvD973ZLcBwY=
+=MZ/1
 -----END PGP SIGNATURE-----
 
---=-6R9Tr7LSowkFE7pgc9uO--
+--=-qzSuFjs5Ohro8rco8Vti--
