@@ -1,68 +1,80 @@
-Received: from mail-oo2-f11.google.com (mail-oo2-f11.google.com [74.125.231.139])
+Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com [209.85.214.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A32581A6807
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 06:01:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7756368D51
+	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 06:01:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789538491; cv=none; b=M5Pw7sKWpphv8vlqrUItH5HvvLOxaIhatDO9qD7F00t+K23KxvrrlStfVKLCwB+5ro4TXuyF+U0yBzeYqfuhvoGtOAlsBYUVErOvvjoDg43o20ai++/bejijNz0nD8uyaQqv0T3ZSYgJ5TRo8qzx0vkSwOkiHaiGsXe/RiLBZnE=
+	t=1789538500; cv=none; b=hUbJVe9asCnDsL4quy0TZQ4QGkEOktkuhw7N0cChELZnJCKCqTF0QWLacSTEjnLDGMcKiaCaOgllJ0Ti3m1g87Pi2IS+k8mzuGnFrnbigXWGCGMMm5DkpT6FUZv/h/NEdK3TK+kYMVv24BPl0eE63Bq04Ci6AZ8Nm4pwDVM98OY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789538491; c=relaxed/simple;
-	bh=gIqEnxwVe50DvXv4oPtzSIzI3qcg/sTGXOy20OZ3DGw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XXeJW5gF9RdfcnxftpGLTMlOoZ2u2TWC6ltG6XVQUHdHuAcOZMTqJidKBie7ewCebhD8d+LO/S4lFLElyoQteuUiB0xXZjW+vRDe19uO2dvpa2LK0scNmP/H7Da/zwfSvmvSPK9g18LQBBpSTyl3F7qI0JkJ2A8J3AtkQ0JIMgo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PrhBOJsh; arc=none smtp.client-ip=74.125.231.139
+	s=arc-20240116; t=1789538500; c=relaxed/simple;
+	bh=2Orkx/0NqOZ8km/RXqu4dfyHpd6v/U3IDJ3+BOniJQ0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Ra8PD94XVdqulUH+ZYUcSIT2F3P57STJHwXpn0SnftZbmwBd1TXoqOu1klvm+jTLmpaw+gc9qwGcn3DuXvXJG4G/3+gKueEeRvnzyxrRwGZ0bnNulXAZZ/Igtu3g3fIq2K17r5QccDf5ALG1Fkd0RwrIo9bBkvZuHOgctnoBfVo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=flLMuHXS; arc=none smtp.client-ip=209.85.214.194
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PrhBOJsh"
-Received: by mail-oo2-f11.google.com with SMTP id 46e09a7af769-8069d92e182so1516975a34.0
-        for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 23:01:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="flLMuHXS"
+Received: by mail-pl1-f194.google.com with SMTP id d9443c01a7336-2db710396ffso14550825ad.1
+        for <linux-iio@vger.kernel.org>; Tue, 15 Sep 2026 23:01:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789538488; x=1790143288; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=cJGOJi9W8AEvzfvI6HU6TdGB/nZBZPfFkLPpp/UAVuw=;
-        b=PrhBOJshRPqszx7BfOQOBLqEM+xorWDYp8hhnJYEPmJ1sErcoaLTiYkoeVagd7MAgH
-         B20Tqzr8xIqsLgkAPSv8Rv379CVEWsh2j/F99hWFLXIpq8q9yWe7RQobhEk/rbH1UGox
-         3mCfWLzJJyOWaSwT6XzM++l2S/5J/CFGJIl2mIqr625fJ55Ebe83+amOd/k78Mc+IFYJ
-         eb3y6pfm6HsO3J8L79pFmq0RDJrTdQL42X6w7cTBOtm5/A/+XX8Pn3CHHmHjfS/2HiAP
-         bBjyqRYy0Eexd3Wqi2x+R7NyrxROH56IbnFFw1x8Bt9vad+psG6wFHwKjimoQf/RyFjG
-         A28Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789538488; x=1790143288;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1789538498; x=1790143298; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=cJGOJi9W8AEvzfvI6HU6TdGB/nZBZPfFkLPpp/UAVuw=;
-        b=SFUFZgtbeG15vTtlvXMt3gmYX3bGqYH1wL/ZfOT645iklTTy5mGGuIDzh4vURhhgUI
-         4ffKZR7OkjI/QaQtRBk1Knz8uYkxg9G4IPmN7gJ0ImNHSrWOZU4pYfegHTz7kKFNIZOP
-         6QGOO3+78ZK9BhlOcRFAMljYkoMA+XIijEw29sR0dzIHDlzdFY6B8/oZAz/SlVCKGcoY
-         DI30iB0pbnAljXdh/WQrt6fSPcIRBelfqdnZRW5OrH4EW2sszRpgtkEx+WdIsp36Tg1v
-         GEflXuGrHbxZ3CAGOsPJknJ/3URPkGN+r10Pr89Gnx2ZPNplkblDasjIRSsdUzCFgb0s
-         J6CQ==
-X-Gm-Message-State: AFuF++k42mwbYnvBHEMLHIqHFRUE2jMP7suSalOdOlp5nosFs6ENA87z
-	xpiGswRWSg/i/XuCVGyx1rfpGh+gVqHX4fTZwoWOaZnerSuJ+L7dv3Pe2cxPJo9htn0=
-X-Gm-Gg: AYBFou1eI8kPPa/aXaQcE3IWmJHFWql3QdpDdnsgCF3rAXb9Dn8CoYNdP8i7dC97frh
-	+OSfixtfxCq91cNCW2I3X2PmnxM8YRCLW3VxXOMt58tl2Cqxo4Ndc4jDJQoclvBA5A2aahT4KBg
-	DjisOkNrXJ7eaQxiJMBvlEthVUEmWH9hslVZ2lPEU/bH2lIcEGPQOBpDbPMG70xNwB3DmYp47WN
-	t5s/NJyz2atvCWswlM4fIfmOCmq0eA0UFyh0S8NkLkaSi7mJuR4ETMx1Qk5cM02/3QONKs8ftkY
-	ZrKzylI7882wrhpYW+FSuAX6boLJ7AUv/LmlWlv+y7BOxoor8u2F/XXS0g5zHVEhTEOF+I7iSVk
-	+LZrbDydyWhDE1NXyWil54tJSUsG8zeZ/e4OrLqZRbnLA+Dhjd2+VZ9y1jr1wbJRtSbrS7hGIdr
-	wQcf/jRy/cdcQ9CsYz04U0bLxETDR4ythupeWH6JJzPdNgjZQpjcQfFcGIHixGIpPTpXLucvqtw
-	TMixQr1JexO3yIz4PMH1bDOtqnRQg==
-X-Received: by 2002:a05:6820:290c:b0:6b7:46e9:9701 with SMTP id 006d021491bc7-6c7d44e4c89mr1528053eaf.49.1789538488363;
-        Tue, 15 Sep 2026 23:01:28 -0700 (PDT)
+        bh=yJ6nkhLgAEtz5X/dBEi4fkLEohVcqre5Sm/6ZumIFn8=;
+        b=flLMuHXSOD/zg1Vapzhp9UKzusQ8Ge4s9ybg+vkIUE+t246JiqJKz+nQaBimQiTF4q
+         QXvZNP5w9szjfNzLbHBK3EqW3dsfQs3BTn/K+bkcil8hFnsJhUfQVwYppUQj413gEqvL
+         EJn2yR907VYDbomAFjMZj8lHT64TB726KX7D2o52GemR9c/D/9Z8aaMLvaStqLHfp97H
+         +JtxuaRfvE9PCu9YVT0ron2uvRRNLOW0XWMDc3bItVGvEtrPbL+y7rxlwFvX2AVCSF7J
+         P4eGxNnvnTJu/VddevjruktryLwJZqDg62oPl+lv/nRpRiA7ySD8hvF3i3p6K9P1dxBM
+         KPhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789538498; x=1790143298;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=yJ6nkhLgAEtz5X/dBEi4fkLEohVcqre5Sm/6ZumIFn8=;
+        b=a/ZyB2QGZOm3V/G/98sU2qSvI6kMrlfIYPtplJsP5Q+n8dfSTdjKExHcSq5iRz4gpV
+         kahTRqVhUwvExk4hsZkFdwdJvXt0Hnkkyia0116LfxMqKMg6i52p9bee22BnVNriwUKr
+         F5N9FbHG8fXbrzDAAsoSwsr4j6AAtGp8TPlnxmJO1Ok5D8sKfakmLsJDLh/03SrSCZYf
+         sp+v5xx3/CsYCCkGgeixjmHqCFO32Y2GPV1Fzbm+Kg6FOo/5+YANZS7asMME/bbie/MU
+         5gHx3Wo8HDvrKhzd9GatrTBvQocXw7gWcZC4DImsBMp26iomWS+hRuE7t6hxuomVn+JL
+         Eebw==
+X-Gm-Message-State: AFuF++nzKdXcJM0nbVzCUrexsiQqUgPfky95uKgT4sX7fMofbg1GFDHQ
+	tF22+FD0aNALVpA8Q4Lu9s0NP7NJL258I9KjY0tOaZlIiX4p0+RNbWicBSAvuD1PbAA=
+X-Gm-Gg: AYBFou3cB2rjMceHYgNa8Kb2QPIwWorddgntNabDQ99EP/8Y+t05W825pZBSr0OWen+
+	zJiy9gJ/35pv8Fr+a5IWQMNbkMA1j6gNZxp3fpNRu4g2kFQSvi78ILT3GCHi7zTdf0hJVyfHPnE
+	njkDCbSO6WrKsipN4phb3QWcPVXA24A8R4XusO9TJTyvsdCQBjF/gJZT/Pr/6F/iRRoT8Zjy2ez
+	n7KRInmPWhGrcMCfVZGBiVnzb9PScrpJCUgHazJr7jiIyRWuQFzP/FBHOxxaNAN8BTvpsvPJfdO
+	72HqukLl1Fqh47M/WrL56ZYOc4KZsMVucvrLHxFHCqMeJbEltN75WFPVhSsDSMgEJxOVJ2qDJWi
+	ph2aVWvCsfUVce2DpLNZX8cV9m5Uxt3doeZUujhM9oAUQ+R0dGrCZdJxNhlxglS375JfufqWGNQ
+	lc1RwdSmCObXKMZEUIXaLrxBLO4y0S14Xcgk/AH4Ew4tKP7zVgeJKr4V+RYkG6fllf/racqhWUk
+	6oPWzG7bi6750ad1Mg=
+X-Received: by 2002:a17:90b:5706:b0:39e:1a96:bbb0 with SMTP id 98e67ed59e1d1-39e1a96d303mr2976100a91.29.1789538497871;
+        Tue, 15 Sep 2026 23:01:37 -0700 (PDT)
 Received: from DESKTOP-M0MLFVC.localdomain ([165.99.41.153])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33bf5aa1194sm5150929eec.14.2026.09.15.23.01.24
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33bf5aa1194sm5150929eec.14.2026.09.15.23.01.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2026 23:01:27 -0700 (PDT)
+        Tue, 15 Sep 2026 23:01:37 -0700 (PDT)
 From: Shehryar Ahmad <shehryar.amd@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Shehryar Ahmad <shehryar.amd@gmail.com>
-Subject: [PATCH v3 0/7] iio: accel: merge adis16203 into mainline adis16201 and remove from staging
-Date: Wed, 16 Sep 2026 10:55:30 +0500
-Message-ID: <20260916055547.15206-1-shehryar.amd@gmail.com>
+To: linux-iio@vger.kernel.org,
+	linux@analog.com,
+	linux-kernel@vger.kernel.org
+Cc: Shehryar Ahmad <shehryar.amd@gmail.com>,
+	stable@vger.kernel.org,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v3 1/7] iio: accel: adis16201: fix channel order for buffer mode
+Date: Wed, 16 Sep 2026 10:55:31 +0500
+Message-ID: <20260916055547.15206-2-shehryar.amd@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260916055547.15206-1-shehryar.amd@gmail.com>
+References: <20260916055547.15206-1-shehryar.amd@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,44 +83,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This v3 series addresses review feedback on the previous attempt to move
-ADIS16203 from staging into the mainline ADIS16201 driver [1].
+Reshuffle adis16201_channels to ascending scan_index order to avoid data
+corruption during IIO core demultiplexing since the ADIS driver builds
+the buffer in channel array order, while the IIO core demultiplexes it
+in scan_index order.
 
-Key changes from v2:
-- Fixed channel order for buffer mode in precursor patch (patch 1)
-- Updated matching tables to modern conventions
-- Moved adis_data into chip_info
-- Added separate adis16203_data instance and dropped runtime copy in
-  probe
-- Fixed Kconfig help text format 
+This changes the raw buffer byte layout for existing adis16201 users
+reading buffered data directly.
 
-Patches 6 and 7 carry Reviewed-by tags from prior review.
+Fixes: 591298e54cea ("Staging: iio: accel: adis16201: Move adis16201 driver out of staging")
+Cc: stable@vger.kernel.org
+Signed-off-by: Shehryar Ahmad <shehryar.amd@gmail.com>
+---
+ drivers/iio/accel/adis16201.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-[1] https://lore.kernel.org/all/20260913085307.13846-1-shehryar.amd@gmail.com/
-
-Shehryar Ahmad (7):
-  iio: accel: adis16201: fix channel order for buffer mode
-  iio: accel: adis16201: add SPI device ID table
-  iio: accel: adis16201: add OF device ID table
-  iio: accel: adis16201: prepare driver to support additional parts
-  iio: accel: adis16201: add ADIS16203 support
-  staging: iio: accel: remove adis16203, merged into mainline adis16201
-    driver
-  dt-bindings: iio: accel: adi,adis16201: add adis16203 compatible
-
- .../bindings/iio/accel/adi,adis16201.yaml     |   6 +-
- drivers/iio/accel/Kconfig                     |   8 +-
- drivers/iio/accel/adis16201.c                 | 133 ++++++--
- drivers/staging/iio/Kconfig                   |   1 -
- drivers/staging/iio/Makefile                  |   1 -
- drivers/staging/iio/accel/Kconfig             |  19 --
- drivers/staging/iio/accel/Makefile            |   6 -
- drivers/staging/iio/accel/adis16203.c         | 315 ------------------
- 8 files changed, 117 insertions(+), 372 deletions(-)
- delete mode 100644 drivers/staging/iio/accel/Kconfig
- delete mode 100644 drivers/staging/iio/accel/Makefile
- delete mode 100644 drivers/staging/iio/accel/adis16203.c
-
+diff --git a/drivers/iio/accel/adis16201.c b/drivers/iio/accel/adis16201.c
+index ba0f97944..834714fb9 100644
+--- a/drivers/iio/accel/adis16201.c
++++ b/drivers/iio/accel/adis16201.c
+@@ -202,19 +202,19 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_chan_spec adis16201_channels[] = {
+-	ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT_REG, ADIS16201_SCAN_SUPPLY, 0,
+-			 12),
+-	ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT_REG, ADIS16201_SCAN_TEMP, 0, 12),
+ 	ADIS_ACCEL_CHAN(X, ADIS16201_XACCL_OUT_REG, ADIS16201_SCAN_ACC_X,
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+ 	ADIS_ACCEL_CHAN(Y, ADIS16201_YACCL_OUT_REG, ADIS16201_SCAN_ACC_Y,
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+-	ADIS_AUX_ADC_CHAN(ADIS16201_AUX_ADC_REG, ADIS16201_SCAN_AUX_ADC, 0, 12),
+ 	ADIS_INCLI_CHAN(X, ADIS16201_XINCL_OUT_REG, ADIS16201_SCAN_INCLI_X,
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 12),
+ 	ADIS_INCLI_CHAN(Y, ADIS16201_YINCL_OUT_REG, ADIS16201_SCAN_INCLI_Y,
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 12),
+-	IIO_CHAN_SOFT_TIMESTAMP(7)
++	ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT_REG, ADIS16201_SCAN_SUPPLY, 0,
++			 12),
++	ADIS_AUX_ADC_CHAN(ADIS16201_AUX_ADC_REG, ADIS16201_SCAN_AUX_ADC, 0, 12),
++	ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT_REG, ADIS16201_SCAN_TEMP, 0, 12),
++	IIO_CHAN_SOFT_TIMESTAMP(7),
+ };
+ 
+ static const struct iio_info adis16201_info = {
 -- 
 2.43.0
 
