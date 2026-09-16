@@ -1,102 +1,163 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37E64503BF4;
-	Wed, 16 Sep 2026 14:19:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1BF61A2C04;
+	Wed, 16 Sep 2026 14:39:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789568383; cv=none; b=gNVppUm1z4Vr4wdQOxfi44mqZpxRfH70hB2eYzNF/hoEwcDy6kC4STN1n7Lt4asnK4s7BKcXzmxZClSM6UyH7D3vLvhr4aviOVuNXLCW/Z28Mh1NsTrNbTdfdGZskEeP+mWQEh/43zAYmZjZ/dudiq8jPDq4yXqbrNDfXf4gHB8=
+	t=1789569554; cv=none; b=uDxOeAR4+BZ/epIhlk+1jnhC5Tgb+lui75JcBDXet9kPnKhmRAEn+GlD58/10yOAQqwLpAbQQrzSIkduLi9PdskUCZiVQZXpEnmnSPFjRhBwd1AVTX9cSdKm+WYnbtycV38yX9TrIG0Bry1wjDHeM3YQFb5eymGZX2Mq/O3i4Ls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789568383; c=relaxed/simple;
-	bh=Sw1zqZvbLm0kZi6yuHbFjMrsBWYZAkfQUPrgGT+a98c=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=W3khDrQ90eSLS+ARJ39yPe6D32y97EWpMe99dMTG0kvT60ZPrwS10z+Cnd3qlr76fB83cVuAmjxnICdhcLWNgRPO5/OYE9EdeW8UGt0iHSvgMn8T6Y6NZVah5tK0LEvXfAwT65knxTvx6rf7nd4/DkYwRLtTe4IO0ujDKnG1Fqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=oURNRpw7; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1789569554; c=relaxed/simple;
+	bh=XrmV5AYtnPtVAHzQnffCQxg/8kqWWYTjiNeJHagDZwA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UXIVawgHc5j4ms6ohTarAgiLNAKvZwAda3AdZqJBDOTEyXFJTV6BspLPA7Y8dbL/60CkgyJeLcFGkhFjE1gQ5cm2tsCKUOX+eWUzHDO9BRDPIwFiFfTn9e56/Q7Q2QAXBPpmLJzLQpPesn5RIFeMmwZp2XvUNM7bHqpsokIqsWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D6CFO0S1; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="oURNRpw7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D6CFO0S1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1789568382; x=1821104382;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=Sw1zqZvbLm0kZi6yuHbFjMrsBWYZAkfQUPrgGT+a98c=;
-  b=oURNRpw72EIeOrArM25qEeyl4nKv/KV96Z14zHDrrYsCkd4eK+GJiCZI
-   KSy7XNr9CrzQxL5HJz4g7YbQRT4M6OxsjOsS/HsS9n58WyjcYG3LDhDkZ
-   UWvEcw7eGncT4C+HnSS9pPo5IoSrGNsci1BAl+ZI1yb7bxeGq6lSgR209
-   FuUHl27RsUEScPkpxRVxwlIsqwh49RK5BjC0GUDudQGLkK28I1LRtS3x2
-   JTGeT01Ow9y8EFSSgDlPfHzI3VPjdbwYIzx8iiR3czn4YazKHNgtmsW9a
-   usUsJamrDigkZuyqjkLmoNE9TZ3cE/kRti3S3yzRajNX/GYEwH3gqiBT8
-   Q==;
-X-CSE-ConnectionGUID: 8t6vyIQuRfWtCTVJFMoV+Q==
-X-CSE-MsgGUID: NaZ5rvWuSdmJyG9pPnaSIw==
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789569552; x=1821105552;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XrmV5AYtnPtVAHzQnffCQxg/8kqWWYTjiNeJHagDZwA=;
+  b=D6CFO0S1w+nn0EgQ/98MN60pbVFmLwYXLXQIaz1OqGiKDNEyU+fDTfjR
+   THotq6gTlNha3qwi4g5yt3IHYuVUnRBHGIDUVZD0ABSO+Y1Cd5nEqq5lg
+   UWhR33O7o4lRcAlAErrUhr5ukGu55oJqr6bUCKlCbsrI7zBxIzOZzlIQf
+   itu+5ZJLNDszmX9E/gZUOU9MEOhP3LXO7la9B8l3kXLipijMdqKt+fls8
+   QuPk/yYyIvtJTY91pxWqH0j+LSxVPsyQk9gC2LJIGeQ853sIobsE0QiQd
+   jkag1GA+zfF1XJMvw03oIU7mPXQNsFBc0RVZImn3kKktut48Z3mc1TQiE
+   A==;
+X-CSE-ConnectionGUID: 6mWlzFzuSxiNLC7pUq3ztg==
+X-CSE-MsgGUID: gBaOFpSZTPSeB0UWbgBOCw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="115483549"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="64005076"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 07:19:40 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.87.152) by
- chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.45; Wed, 16 Sep 2026 07:19:19 -0700
-Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Wed, 16 Sep 2026 07:19:16 -0700
-From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Wed, 16 Sep 2026 17:16:33 +0300
-Subject: [PATCH v6 07/11] iio: dac: mcp47feb02: correct typo from a comment
+   d="scan'208";a="115483549"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 07:39:11 -0700
+X-CSE-ConnectionGUID: FstFep20SDOsQTM+1NaYBw==
+X-CSE-MsgGUID: qK+yDxxsQBWJyllQdob0Ww==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="269657357"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.145])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 07:39:07 -0700
+Date: Wed, 16 Sep 2026 17:39:05 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: stm32-adc: fix possible division by zero in
+ processed channel
+Message-ID: <aqqqCf6mQPMoKZRj@ashevche-desk.local>
+References: <20260916-adc-fix-div0-v2-1-f702d3ed782c@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260916-mcp47feb02_refactor-v6-7-285464651f89@microchip.com>
-References: <20260916-mcp47feb02_refactor-v6-0-285464651f89@microchip.com>
-In-Reply-To: <20260916-mcp47feb02_refactor-v6-0-285464651f89@microchip.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789568335; l=1004;
- i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=Sw1zqZvbLm0kZi6yuHbFjMrsBWYZAkfQUPrgGT+a98c=;
- b=wxAKFlx8xbVfTv2sK2uhA/SxBvmGPF6C5krjPOGidbms3DcYOcmuRTiXoMZX/qtxOJ585VV2E
- pEBpu03ou0uCWrfknxdiQf8duY2zy7M2WE+5UzxnOtDocZ+8h+60A1J
-X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
- pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260916-adc-fix-div0-v2-1-f702d3ed782c@foss.st.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Typo corrected to 'Register' in the comment regarding defined masks for the
-gain register.
+On Wed, Sep 16, 2026 at 04:10:05PM +0200, Fabrice Gasnier wrote:
+> In case the conversion has failed or returned zero, processing *val
+> can lead to a division by zero. Need to check for errors, or converted
+> value is zero, before processing the data. In case the converted value
+> is zero, e.g. the Vrefint channel, this should be considered as invalid
+> in all cases.
 
-Reported-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Link: https://lore.kernel.org/all/20260723231859.03f92ce6@systembl0wer/
-Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
----
- drivers/iio/dac/mcp47feb02.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+...
 
-diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-index 67bf8d9d9835095263b2ca6b710acca60612354a..8dac4e2fb74fe4563324343ce215af3389129130 100644
---- a/drivers/iio/dac/mcp47feb02.c
-+++ b/drivers/iio/dac/mcp47feb02.c
-@@ -52,7 +52,7 @@
- #define DAC_CTRL_MASK(ch)				(GENMASK(1, 0) << (2 * (ch)))
- #define DAC_CTRL_VAL(ch, val)				((val) << (2 * (ch)))
- 
--/* Gain Control and I2C Slave Address Reguster fields */
-+/* Gain Control and I2C Slave Address Register fields */
- #define DAC_GAIN_MASK(ch)				(BIT(0) << (8 + (ch)))
- #define DAC_GAIN_VAL(ch, val)				((val) << (8 + (ch)))
- 
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Link: https://lore.kernel.org/all/20260911161555.244F31F000FF@smtp.kernel.org/
+
+Closes: ^^^
+
+
+> +		if (mask == IIO_CHAN_INFO_PROCESSED) {
+> +			int vrefint_raw;
+> +
+> +			if (ret < 0) {
+> +				iio_device_release_direct(indio_dev);
+> +				return ret;
+> +			}
+> +
+> +			vrefint_raw = *val;
+
+> +
+
+Unneeded blank line.
+
+> +			if (vrefint_raw == 0) {
+> +				iio_device_release_direct(indio_dev);
+> +				return -EINVAL;
+> +			}
+> +
+> +			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / vrefint_raw;
+> +		}
+
+Let's look at the current code in this switch-case
+
+	case IIO_CHAN_INFO_PROCESSED:
+		if (!iio_device_claim_direct(indio_dev))
+			return -EBUSY;
+		if (chan->type == IIO_VOLTAGE)
+			ret = stm32_adc_single_conv(indio_dev, chan, val);
+		else
+			ret = -EINVAL;
+
+		if (mask == IIO_CHAN_INFO_PROCESSED)
+			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
+
+		iio_device_release_direct(indio_dev);
+		return ret;
+
+In the previous version you were trying to keep goto-less approach.
+However in the current state of affairs I don't think the goto is
+too bad (after all we need to backport this to the kernels that may
+not have IIO_DEV_ACQUIRE_DIRECT_MODE() macro).
+
+Also checking 'ret' under another condition seems unusual.
+
+What about
+
+	case IIO_CHAN_INFO_PROCESSED:
+		if (!iio_device_claim_direct(indio_dev))
+			return -EBUSY;
+		if (chan->type == IIO_VOLTAGE)
+			ret = stm32_adc_single_conv(indio_dev, chan, val);
+		else
+			ret = -EINVAL;
+		iio_device_release_direct(indio_dev);
+		if (ret)
+			return ret;
+
+		if (*val == 0)
+			return -EINVAL;
+
+		if (mask == IIO_CHAN_INFO_PROCESSED)
+			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
+
+		return 0;
+
+? (Yes, we leave that line untouched, but we get the change cleaner.)
+
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
