@@ -1,34 +1,34 @@
 Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
 	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A2A750C28D;
-	Wed, 16 Sep 2026 16:28:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C0CC5581F2;
+	Wed, 16 Sep 2026 16:30:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789576135; cv=none; b=AWHccbECOGSiMICQMxnPcGn6QwyqOHJ+BHEhucletG8p07Zor8u5Ry+4ho5JUh6aOF+pg6k91VFhzHhvv6HXb3Bu6W2XXaXOghGGtINmGE4WyJRS1HP3QZWiSLIt/iTbB2h9Ol6DaHAz6ork5MI8F2oDKYsU+H8+T9HOrjmiq5E=
+	t=1789576227; cv=none; b=rQJ4n1H2RC8Da+spGhTyybctZ84I9IsZ04lrfGui2YZ8QvQ2vZctQ31veLcmHny4BqA5YZuIS7i1PrSZhpRd1L2AiRNdV8hQ2R7FZrqVqiT5c6uqxGHHX7BfJdkVIm+10oEXPlTk43dXBORx86amdTv3fbg9kwvcpqzcXmIO2F0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789576135; c=relaxed/simple;
-	bh=5c13c6br1VNb439OxYGRCvv0YyDfGn/CnZe7LkB6p38=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Viaozca6wPAf2k7JgsW1uuffsIGFJ6OvJz155FmxGWVHyR4Nv1zF2fDeMzc9FC3oCW1g9akjtQRHyeIsLD2nUrJ6boHW+AHpMwyuaHJDqa3rFOgsTPcPBd0VJklyw23QqcOI/WjQ+c8aNSHPsswkZ0fO5mQogfcmhWjprDcne0E=
+	s=arc-20240116; t=1789576227; c=relaxed/simple;
+	bh=dDk6+kVp7i2/7e3H9+Qgr9nD4/ygnU27ul2HOZpHVCc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rNiRTC/ZyNUDOe0a1QUtj1M1X7Qn6e2vVKf0lN3r499xYzlRJAb3EbGU26n0b4VpCfZbZwxDFPTiG06qplraE7azEJ3YIU/zxWakCaadLCjVUNgqxKm4VO6+teZBmBqUssr5Gpp8MdlLQ8Kn3sHODAgqiVwbKRyFLdMMUQeO0BE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
 Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
-	by APP-05 (Coremail) with SMTP id zQCowADnTzq9w6pqt6htCA--.21920S2;
-	Thu, 17 Sep 2026 00:28:45 +0800 (CST)
+	by APP-05 (Coremail) with SMTP id zQCowABXh0EYxKpqB65tCA--.22179S2;
+	Thu, 17 Sep 2026 00:30:16 +0800 (CST)
 From: Wentao Liang <vulab@iscas.ac.cn>
 To: andy@kernel.org
 Cc: dlechner@baylibre.com,
 	jic23@kernel.org,
+	linusw@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	nuno.sa@analog.com,
-	tomasz.duszynski@octakon.com,
 	Wentao Liang <vulab@iscas.ac.cn>,
 	stable@vger.kernel.org
-Subject: [PATCH] iio: chemical: scd30: Fix trigger reference leak in scd30_setup_trigger()
-Date: Wed, 16 Sep 2026 16:28:17 +0000
-Message-Id: <20260916162817.2083674-1-vulab@iscas.ac.cn>
+Subject: [PATCH] iio: gyro: mpu3050: Fix runtime PM leak in mpu3050_drdy_trigger_set_state()
+Date: Wed, 16 Sep 2026 16:29:49 +0000
+Message-Id: <20260916162949.2083791-1-vulab@iscas.ac.cn>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -37,14 +37,14 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowADnTzq9w6pqt6htCA--.21920S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw47GF1kKrWDJFy3Cw4DArb_yoW8try5pF
-	Z7CFWYyryUXr48JF4kZr1kCryrtFZIqFWfKr48uas2v3s8ZwnYgr1agrWaqw48CFW8W34U
-	XFZ5Wrn5CFWIyFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID:zQCowABXh0EYxKpqB65tCA--.22179S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7WF1UGFy5KF48JryDJFW5KFg_yoW8KF4xpr
+	4IgF9IkFykXr4ftr4vyF1qqFy5Cr4fJrZ5WrWxK3sava13CF4jkF1jvFWaqF1fZrWkWF1U
+	Jr47GFZxuF47taDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
 	9KBjDU0xBIdaVrnRJUUUv014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
 	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+	1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+	6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
 	1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
 	7VC0I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r
 	1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AK
@@ -54,67 +54,84 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7Aw47GF1kKrWDJFy3Cw4DArb_yoW8try5pF
 	AFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8
 	JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUb
 	o5l5UUUUU==
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiDAEMA2qqpO9KqwAAso
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCRQMA2qqozVQtwACsh
 
-The reference taken with iio_trigger_get() is only dropped by
-iio_dev_release() when INDIO_BUFFER_TRIGGERED is set. Failure of
-devm_request_threaded_irq() in scd30_setup_trigger(), or of triggered
-buffer setup in scd30_probe(), returns before that mode is set and
-leaks the reference acquired for indio_dev->trig. Take the reference
-after the IRQ request succeeds and set up the trigger after the
-buffer so that only failures with the mode already set follow the
-iio_trigger_get().
+The enable path of the trigger state callback called
+pm_runtime_get_sync() and returned early on every following register
+access failure without releasing the runtime PM reference, leaving
+the device powered permanently. Use pm_runtime_resume_and_get() to
+propagate resume errors without bumping the usage count, and release
+the reference on all error paths before returning.
 
-Fixes: 64b3d8b1b0f5 ("iio: chemical: scd30: add core driver")
+Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
 Cc: stable@vger.kernel.org
 Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
 ---
- drivers/iio/chemical/scd30_core.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/iio/gyro/mpu3050-core.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
-index a665fcb78806..dc56291e1892 100644
---- a/drivers/iio/chemical/scd30_core.c
-+++ b/drivers/iio/chemical/scd30_core.c
-@@ -644,8 +644,6 @@ static int scd30_setup_trigger(struct iio_dev *indio_dev)
- 	if (ret)
- 		return ret;
- 
--	indio_dev->trig = iio_trigger_get(trig);
--
- 	/*
- 	 * Interrupt is enabled just before taking a fresh measurement
- 	 * and disabled afterwards. This means we need to ensure it is not
-@@ -659,6 +657,8 @@ static int scd30_setup_trigger(struct iio_dev *indio_dev)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "failed to request irq\n");
- 
-+	indio_dev->trig = iio_trigger_get(trig);
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index d84e04e4b431..aab2984a0c09 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -988,20 +988,23 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+ 		return 0;
+ 	} else {
+ 		/* Else we're enabling the trigger from this point */
+-		pm_runtime_get_sync(mpu3050->dev);
++		ret = pm_runtime_resume_and_get(mpu3050->dev);
++		if (ret)
++			return ret;
 +
- 	return 0;
- }
+ 		mpu3050->hw_irq_trigger = true;
  
-@@ -710,16 +710,16 @@ int scd30_probe(struct device *dev, int irq, const char *name, void *priv,
- 	if (ret)
- 		return dev_err_probe(dev, ret, "failed to reset device\n");
- 
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL, scd30_trigger_handler, NULL);
-+	if (ret)
-+		return ret;
-+
- 	if (state->irq > 0) {
- 		ret = scd30_setup_trigger(indio_dev);
+ 		/* Disable all things in the FIFO */
+ 		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
  		if (ret)
- 			return dev_err_probe(dev, ret, "failed to setup trigger\n");
+-			return ret;
++			goto err_pm_put;
+ 
+ 		/* Reset and enable the FIFO */
+ 		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+ 				      MPU3050_USR_CTRL_FIFO_EN |
+ 				      MPU3050_USR_CTRL_FIFO_RST);
+ 		if (ret)
+-			return ret;
++			goto err_pm_put;
+ 
+ 		mpu3050->pending_fifo_footer = false;
+ 
+@@ -1013,12 +1016,12 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+ 				   MPU3050_FIFO_EN_GYRO_ZOUT |
+ 				   MPU3050_FIFO_EN_FOOTER);
+ 		if (ret)
+-			return ret;
++			goto err_pm_put;
+ 
+ 		/* Configure the sample engine */
+ 		ret = mpu3050_start_sampling(mpu3050);
+ 		if (ret)
+-			return ret;
++			goto err_pm_put;
+ 
+ 		/* Clear IRQ flag */
+ 		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+@@ -1037,10 +1040,14 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ 		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
+ 		if (ret)
+-			return ret;
++			goto err_pm_put;
  	}
  
--	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL, scd30_trigger_handler, NULL);
--	if (ret)
--		return ret;
--
- 	ret = scd30_command_read(state, CMD_FW_VERSION, &val);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "failed to read firmware version\n");
+ 	return 0;
++
++err_pm_put:
++	pm_runtime_put_autosuspend(mpu3050->dev);
++	return ret;
+ }
+ 
+ static const struct iio_trigger_ops mpu3050_trigger_ops = {
 -- 
 2.34.1
 
