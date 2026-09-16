@@ -1,52 +1,52 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D8150C2BF;
-	Wed, 16 Sep 2026 14:19:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8A650C284;
+	Wed, 16 Sep 2026 14:19:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789568376; cv=none; b=ImEzWXF5/bAI0E7oSwzW7q7bihmH8jXDGJgfAFSkhZPoMMFmpnaeDPq6iov6tnn2vL2zg5pSJdqTXimGRn76j32aJ5Xu1aUJuPUlmrr3+SYD8lGU5qgic/9D6mZ66Vyotg3K7iPcpkfwT7PCOB2DpE9SIMHjsqJ+jgDLgfIKhEs=
+	t=1789568377; cv=none; b=EGN9D5LQ7wiVFPMQdSz/3hbK/V+CJzFKIEzBB83gC5R5SaORz0ik7z5HxNUvjG6uu8/RAR6+MdKKqoKvgrE8AqcQYrai4zVdQ+nu7YHsCsnX/pBdVu8w2+4jp8auGmtAbClPIPWcrXGjQpjK8pvM3ck7dBQNyq4VqKerkKaqms0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789568376; c=relaxed/simple;
-	bh=ox3TW9dR7HuYXesFtQTlhj0f6iwz5LSaxwwsKpTLehg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=lmzLEqy+hABpBLbyY4odHtjKF7hZufzVjNMBp4FSjJ01V40OscY46xGOw//nkTVcgxcNNGNxHhDGUOBf4M6ixlp6bRsGySdnfPKIPNEvM758soGDNE1ia7cddGSGIHEr3eaChcxbmSR2QKDn1M705LvGLuBh94ZzAzCd+k8INiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=HW7Qfzj1; arc=none smtp.client-ip=68.232.153.233
+	s=arc-20240116; t=1789568377; c=relaxed/simple;
+	bh=95oK2Em+6Zzkj37ZY6n7ewhIaub3b7ikSf2b8XQRY/Y=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=egm5bIGV7lZs6CgRX1zIvtQ96366KA9KlEjcF5rzYTfdT77ldYh7TyHPAoxYFbC3eztk4EaFm1jx0UjkWLX/J+tqygMBwYOcbfWnTFgt/c6dBUI4G8tPNEJwg0FoPBUDuCfSneQZ2RIqGXWnKmrn6oQWdlmvvml6OWiVT7nh9NA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=OsFLK0sG; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="HW7Qfzj1"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="OsFLK0sG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
   t=1789568375; x=1821104375;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=ox3TW9dR7HuYXesFtQTlhj0f6iwz5LSaxwwsKpTLehg=;
-  b=HW7Qfzj1UC+cbSWryOd+pJ+Nku6IdPF9DPPmR3eDl24NmSKZntizzoyL
-   xJSBPCnkrI9mHfnBm7lmmBNn5u2bM4S+2f9PsZASt5jDMh0qzpGriCVqS
-   AIMzDXZGfjg3YSXeEkU/tMiXWdYx8r4D+Q8DBF4b0MQbh6xAM++3cfHED
-   Hk/4AYQATjsH4NPMP4O5uiok+sh58X6XUyjsQpf5X+0bEAFi9pSN6vMSl
-   dEVmjUbTSjXrpLdDgcwih3OeeBA9JWqdEiit1+QjB25/PLsevAGaAiilc
-   7ldahV3Az43kq52qAe+BNMANvaaoPCqsv5VhUf5LITcttInHCmOMo9QZ4
+  h=from:subject:date:message-id:mime-version:
+   content-transfer-encoding:to:cc;
+  bh=95oK2Em+6Zzkj37ZY6n7ewhIaub3b7ikSf2b8XQRY/Y=;
+  b=OsFLK0sGP+W99AIq0p9nJYzP6CA12344PJTtTO9mJitxwOciZGLB1rdk
+   7cD1R8iDyYbMd+iXll4HK4Z5Tl0MbONiS6nMX/lG/f2PpV16ojZJr8S5b
+   NToPhpR3f2dLewpViUmwJbODCqkw0rh9W1atgktBaoII1Au8p142UxlkE
+   nR/7DZ6EJ7piLYKbDrXuCCFlIaOCJ/pKX1xcFk7Lm5HhjKRH+TPiQOy/2
+   EpishZ8dIkKr7edYAq+ZrAhD13Cav4Z8t8rqhdI9qa+/ALJAWvX8w3ED7
+   7rf9NJFmkCTTyXNppcocJk7Uwx+l1kvzOvW0H1UPaXxIK4jjrQVUrsmeb
    w==;
-X-CSE-ConnectionGUID: iP8P1HvzS8KO9TYqKEpMVw==
-X-CSE-MsgGUID: GpM6SGO9Qpyt1xp3Sdb3Wg==
+X-CSE-ConnectionGUID: CGbd2ULzTIqzfFz4HxHHzg==
+X-CSE-MsgGUID: o23SrtbkRjiY3qqdMlhO1Q==
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="295112904"
+   d="scan'208";a="64005045"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Sep 2026 07:19:34 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Sep 2026 07:19:19 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Wed, 16 Sep 2026 07:19:22 -0700
+ 15.1.2507.58; Wed, 16 Sep 2026 07:18:58 -0700
 Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex03.mchp-main.com
  (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Wed, 16 Sep 2026 07:19:19 -0700
+ Transport; Wed, 16 Sep 2026 07:18:55 -0700
 From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Wed, 16 Sep 2026 17:16:34 +0300
-Subject: [PATCH v6 08/11] iio: dac: mcp47feb02: rename channel mask and
- value macros
+Subject: [PATCH v6 00/11] Refactor Microchip MCP47FEB02 I2C driver in
+ separate modules to add support for MCP48FEB02 SPI driver
+Date: Wed, 16 Sep 2026 17:16:26 +0300
+Message-ID: <20260916-mcp47feb02_refactor-v6-0-285464651f89@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -55,120 +55,128 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260916-mcp47feb02_refactor-v6-8-285464651f89@microchip.com>
-References: <20260916-mcp47feb02_refactor-v6-0-285464651f89@microchip.com>
-In-Reply-To: <20260916-mcp47feb02_refactor-v6-0-285464651f89@microchip.com>
+X-B4-Tracking: v=1; b=H4sIALqkqmoC/3XNTU7EMAwF4KuMsiYocdL8sOIeCKE4dWgWnVYpq
+ kCj3h3PsBiEwvLZz58vYqNWaRNPp4totNetLmcO7uEk8pTO7yTryFmAAqccDHLOq/WFUMFbo5L
+ yx9JkScGCSmQggODLlTf186a+vHKe6sa1r9uTXV+nP54H0/V2LZUkGiI54zxgfp5rbkue6vqYl
+ 1lczd3cnaBs3zHsRF8CBl2Mg9Bz7C9Hx75j2UFCSMlgGVXsOcPdieofZ2AnoPOYE0Yz6r/OcRz
+ fa+ItN5IBAAA=
+X-Change-ID: 20260625-mcp47feb02_refactor-fa8420ae3282
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
  Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
  Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
 CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>
+	Jonathan Cameron <jic23@kernel.org>, <sashiko-bot@kernel.org>,
+	<stable@vger.kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789568335; l=3928;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789568335; l=4939;
  i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=ox3TW9dR7HuYXesFtQTlhj0f6iwz5LSaxwwsKpTLehg=;
- b=3ZlN8SjILKhqc81fLtCWvw/nlLLT28IIEWQ/GZhfpesZyW16RuG75NRrkT1td4An9i4klYIic
- SX+A9KJtIQACfeQBJuUHx1mYWD9d6Q3k6bjI8MCksCGKB8YVS1TCUIo
+ bh=95oK2Em+6Zzkj37ZY6n7ewhIaub3b7ikSf2b8XQRY/Y=;
+ b=fqc8bOq4bTHoHxssyvkXXuWjGTjP71omSVTt/7/1HRGRBQPJkIsZDplEnmxNfA4GzVULS3p3W
+ Jswm9ZJB9xQDIOJXG3eVGExfsds/OLoY9trZvTbdGkSjpOfhgun2AH8
 X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
  pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-Rename generic DAC_CTRL_MASK/VAL macros to MCP47FEB02_VREF_PD_MASK/VAL
-in order to clearly indicate for which control registers these channel
-masks are suitable.
+Refactor I2C driver implementation into separate modules in order to add
+support for SPI MCP48FxBy1/2/4/8 DAC family on top of the I2C
+implementation. The I2C and SPI devices have the same memory map and
+supported functionalities.
 
-Reported-by: Jonathan Cameron <jic23@kernel.org>
-Link: https://lore.kernel.org/all/20260528125140.16a8f173@jic23-huawei/
 Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 ---
- drivers/iio/dac/mcp47feb02.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+Changes in v6:
+- use field_get() in Gain, Vref and Power-Down registers channel formulas
+- rebase from 7.2 to 7.3-rc1
+- add fixes tags and Cc stable in the commit messages
+- add numeric constants in front of time defines for better readability
+- replaced dev_err() with dev_warn_probe() for missing label
+- if match data is not found at probe, return -ENODATA and a suitable
+    error message
+- Link to v5: https://lore.kernel.org/r/20260909-mcp47feb02_refactor-v5-0-8b67bcab93d1@microchip.com
 
-diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-index 8dac4e2fb74fe4563324343ce215af3389129130..5c09ca25a75e0ecb2bfc5a2d5e62e5f7d3156810 100644
---- a/drivers/iio/dac/mcp47feb02.c
-+++ b/drivers/iio/dac/mcp47feb02.c
-@@ -49,8 +49,8 @@
- #define MCP47FEB02_NV_I2C_SLAVE_ADDR_MASK		GENMASK(7, 0)
- 
- /* Voltage reference, Power-Down control register and DAC Wiperlock status register fields */
--#define DAC_CTRL_MASK(ch)				(GENMASK(1, 0) << (2 * (ch)))
--#define DAC_CTRL_VAL(ch, val)				((val) << (2 * (ch)))
-+#define MCP47FEB02_VREF_PD_MASK(ch)			(GENMASK(1, 0) << (2 * (ch)))
-+#define MCP47FEB02_VREF_PD_VAL(ch, val)			((val) << (2 * (ch)))
- 
- /* Gain Control and I2C Slave Address Register fields */
- #define DAC_GAIN_MASK(ch)				(BIT(0) << (8 + (ch)))
-@@ -555,7 +555,8 @@ static int mcp47feb02_suspend(struct device *dev)
- 		data->chdata[ch].powerdown = true;
- 		pd_mode = data->chdata[ch].powerdown_mode + 1;
- 		ret = regmap_update_bits(data->regmap, MCP47FEB02_POWER_DOWN_REG_ADDR,
--					 DAC_CTRL_MASK(ch), DAC_CTRL_VAL(ch, pd_mode));
-+					 MCP47FEB02_VREF_PD_MASK(ch),
-+					 MCP47FEB02_VREF_PD_VAL(ch, pd_mode));
- 		if (ret)
- 			return ret;
- 
-@@ -587,7 +588,8 @@ static int mcp47feb02_resume(struct device *dev)
- 			return ret;
- 
- 		ret = regmap_update_bits(data->regmap, MCP47FEB02_VREF_REG_ADDR,
--					 DAC_CTRL_MASK(ch), DAC_CTRL_VAL(ch, pd_mode));
-+					 MCP47FEB02_VREF_PD_MASK(ch),
-+					 MCP47FEB02_VREF_PD_VAL(ch, pd_mode));
- 		if (ret)
- 			return ret;
- 
-@@ -598,8 +600,8 @@ static int mcp47feb02_resume(struct device *dev)
- 			return ret;
- 
- 		ret = regmap_update_bits(data->regmap, MCP47FEB02_POWER_DOWN_REG_ADDR,
--					 DAC_CTRL_MASK(ch),
--					 DAC_CTRL_VAL(ch, MCP47FEB02_NORMAL_OPERATION));
-+					 MCP47FEB02_VREF_PD_MASK(ch),
-+					 MCP47FEB02_VREF_PD_VAL(ch, MCP47FEB02_NORMAL_OPERATION));
- 		if (ret)
- 			return ret;
- 	}
-@@ -656,7 +658,8 @@ static ssize_t mcp47feb02_write_powerdown(struct iio_dev *indio_dev, uintptr_t p
- 	 */
- 	tmp_pd_mode = state ? (data->chdata[reg].powerdown_mode + 1) : MCP47FEB02_NORMAL_OPERATION;
- 	ret = regmap_update_bits(data->regmap, MCP47FEB02_POWER_DOWN_REG_ADDR,
--				 DAC_CTRL_MASK(reg), DAC_CTRL_VAL(reg, tmp_pd_mode));
-+				 MCP47FEB02_VREF_PD_MASK(reg),
-+				 MCP47FEB02_VREF_PD_VAL(reg, tmp_pd_mode));
- 	if (ret)
- 		return ret;
- 
-@@ -822,7 +825,7 @@ static int mcp47feb02_ch_scale(struct mcp47feb02_data *data, int ch, int scale)
- 	}
- 
- 	ret = regmap_update_bits(data->regmap, MCP47FEB02_VREF_REG_ADDR,
--				 DAC_CTRL_MASK(ch), DAC_CTRL_VAL(ch, tmp_val));
-+				 MCP47FEB02_VREF_PD_MASK(ch), MCP47FEB02_VREF_PD_VAL(ch, tmp_val));
- 	if (ret)
- 		return ret;
- 
-@@ -1027,7 +1030,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
- 			return ret;
- 		data->chdata[i].dac_data = dac_val;
- 
--		data->chdata[i].ref_mode = field_get(DAC_CTRL_MASK(i), vref_ch);
-+		data->chdata[i].ref_mode = field_get(MCP47FEB02_VREF_PD_MASK(i), vref_ch);
- 		data->chdata[i].use_2x_gain = field_get(DAC_GAIN_MASK(i), gain_ch);
- 
- 		/*
-@@ -1071,7 +1074,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
- 			break;
- 		}
- 
--		pd_tmp = field_get(DAC_CTRL_MASK(i), pd_ch);
-+		pd_tmp = field_get(MCP47FEB02_VREF_PD_MASK(i), pd_ch);
- 		data->chdata[i].powerdown_mode = pd_tmp ? (pd_tmp - 1) : pd_tmp;
- 		data->chdata[i].powerdown = !!(data->chdata[i].powerdown_mode);
- 	}
+Changes in v5:
+- improve commit messages by justifying the changes made
+- increase polling time for EEPROM writes
+- delete unnecessary comments and extra blank line from header file
+- Link to v4: https://lore.kernel.org/r/20260819-mcp47feb02_refactor-v4-0-beb2aa3bfd09@microchip.com
 
+Changes in v4:
+- remove unused headers
+- add missing header types.h in protocol files
+- create 6 precursor commits before the refactor patch for handling:
+    - comment typo
+    - renaming command mask define
+    - for an invalid label use a debug message instead of probe error
+    - correct return value in store_eeprom_store() for false state case
+    - correct channel gain formula
+    - read DAC value register to initialize channel data struct field at
+      probe 
+- Link to v3: https://lore.kernel.org/r/20260804-mcp47feb02_refactor-v3-0-97f8b81f3628@microchip.com
+
+Changes in v3:
+- renumbering the patch version to include the first patch submision
+- fix review comments device tree binding:
+   - change 'additionalProperties' to unevaluatedProperties
+   - add else branch with spi-max-frequency in the condition which checks
+     if a device has SPI interface
+   - correct SPI address example
+   - add clock polarity and clock phase properties for SPI devices
+   - enumerate I2C devices in lexicographic order from the description section
+   - specify supported SPI modes using dependencies
+- fix review comments driver:
+   - remove unneccesarry libraries and add the missing ones
+   - correct comment typo
+   - return -ENODEV using dev_err_probe() in protocol probe functions
+   - use named initializers
+   - move defines for registers and enums from the header to the core file
+   - add dev_set_drvdata() in probe()
+   - move mutex aquiring from mcp47feb02_write_to_eeprom() to
+     store_eeprom_store()
+   - write correct value into Vref register in resume()
+- Link to v2: https://lore.kernel.org/r/20260723-mcp47feb02_refactor-v1-0-ee59e63672bc@microchip.com
+
+v2:
+- include in the same patch series the refactoring of the driver and the
+  support for SPI devices, but in different patches
+- remove changes regarding review comments received not related to the
+  code refactoring
+- first version of the combined refactoring I2C and adding support for SPI
+  driver
+- Link to v1: https://lore.kernel.org/all/20260403-mcp47feb02-fix2-v1-1-da60c773550e@microchip.com
+
+v1:
+- first version which did not separate the refactoring and adding support for
+  SPI devices (into different patches from the same series)
+
+---
+Ariana Lazar (11):
+      iio: dac: mcp47feb02: initialize dac_data field in channel data struct at probe
+      iio: dac: mcp47feb02: Fix gain field initialization for active channels
+      iio: dac: mcp47feb02: use field_get() instead of custom dynamic macros
+      iio: dac: mcp47feb02: Return len when disabling EEPROM store
+      iio: dac: mcp47feb02: Increase EEPROM Programming Write Cycle Time
+      iio: dac: mcp47feb02: Avoid unjustified probe error on missing label
+      iio: dac: mcp47feb02: correct typo from a comment
+      iio: dac: mcp47feb02: rename channel mask and value macros
+      iio: dac: mcp47feb02: refactor MCP47FEB02 I2C driver into two modules
+      dt-bindings: iio: dac: add support for MCP48FEB02 SPI
+      iio: dac: add support for Microchip MCP48FEB02
+
+ .../bindings/iio/dac/microchip,mcp47feb02.yaml     | 221 +++++++++---
+ MAINTAINERS                                        |   2 +-
+ drivers/iio/dac/Kconfig                            |  32 +-
+ drivers/iio/dac/Makefile                           |   4 +-
+ .../iio/dac/{mcp47feb02.c => mcp47feb02-core.c}    | 373 +++------------------
+ drivers/iio/dac/mcp47feb02-i2c.c                   | 145 ++++++++
+ drivers/iio/dac/mcp47feb02-spi.c                   | 145 ++++++++
+ drivers/iio/dac/mcp47feb02.h                       |  43 +++
+ 8 files changed, 591 insertions(+), 374 deletions(-)
+---
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+change-id: 20260625-mcp47feb02_refactor-fa8420ae3282
+
+Best regards,
 -- 
-2.43.0
+Ariana Lazar <ariana.lazar@microchip.com>
 
