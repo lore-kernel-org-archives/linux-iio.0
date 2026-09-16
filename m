@@ -1,141 +1,92 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25F74968EB
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 09:45:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B63F94B4890;
+	Wed, 16 Sep 2026 09:51:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789551912; cv=none; b=ZqxQqn9iXO+aV4FsPDPCUNe//EFE1W72/wCA7uVTY5K3De8SyHI9VVy8J8hzsl/gT95Ni75CFR+lvQzCkN1SHOc28ATMfycUt4LqyI8qZqMsmdNqIarBWCWhLfwCJJL8nlm/i/BX/iMj0qHmkTSDPyhz7voAgtIgIoxvTN20djc=
+	t=1789552291; cv=none; b=a30r20Stm2nMvFP1nT0/m2XjkqaO63ZaMM8mZMKz1Qj0UZnLA0A+WNrncc+4S4oa642D/f5s6IkmYSfUGbvb5T4vCpRsCpFBz9rXHkUWYtYW+VAaNdJlB3Xt41vAMcfZf84eUttAG4aNlv7PlP0C0LaOKDeEil5p9fnZfB+qZI4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789551912; c=relaxed/simple;
-	bh=MR2n2E+Ve4xO4iUtdmDW34456DHtOWZBko8Pj6o1iIU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EInDx47Gngy+NwuHoPJoKLlNju18OjH3agWL+J24qPZ+W4f86II680+b76JfpwzmzOXzamj8Re4K0y/YbKu4iYp2a5AnsoqX8pRYN3ls4omaddaknIKAo1M0vMetIpbLx04WgwzsStrAQzSQxfLDxdLNRkbh8qg0xD6GNnsIcIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UZLSb1k0; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789552291; c=relaxed/simple;
+	bh=UIwWPNKRQ8FW7Bu3jbEPy9yWyv1Y+CRFZBuPobR95d0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y7LbdMbZXlW0Wy8eWDDfaXGDnJ/XJbvA38UP9S7MlfrYacrI6GLo8lrmGOG47YrfgsDgSQWykjzcWgteAqK7HBRRCwwoolxWi+BzMu1zQJrOdML2jc3sFpTzYQOX7JCfIY9/FYFPG1y92KJoUKgjqD1QlfXYTrBZpMXkymHqdFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jdk0yPsi; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UZLSb1k0"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49b912d37b5so4332885e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 02:45:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789551899; x=1790156699; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=mlvIWhHxBEziBE7U0OeSd/0yRYTGHP2RvC97KNNwMIM=;
-        b=UZLSb1k05dP78zdfVGpisY9oAFhpWoCGbeS8KoAGEA8ewUFklmFuh2TSCQwO7D8UiX
-         G6GDeKk1WwAd0xq/l8HCB4qAsyk53jDcjQO7tkLPCSAjCRI7azo7jI+eZBpton19mjBs
-         k9dc+EVMxflSj2ItGCN36FvTK1sbHwUwybI7qBhwinzIsnPRhEMnt6U35OzrEiiKY+De
-         Uz96mnCn32+iEIE6w4l9h6b+lahYa6qJToo4/7RUyKQxFpp2SqcUNBt0upvMeAzgzhil
-         rcUPB7dzG76c7cdorV82MEn0IazAaNEw7NsAIzkw3CHUT+T3+yX1xRXfqCuBQFT97E9u
-         25iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789551899; x=1790156699;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mlvIWhHxBEziBE7U0OeSd/0yRYTGHP2RvC97KNNwMIM=;
-        b=Qcx0uRDxkVuLMRskXoaWPkZX9tPLotC6G+ocGv3QTxldXBrAIpUQh/n8jaIQwNQllD
-         zdpyck0TG2ibC4vnxNhhZdAqHQpaTJwC++TM1KXZ4xGjVjsNBNffi7eHUrEPAoKXAqk3
-         tQcC7VcaO9kIQzkZzy1ebYb+dC6+oVASejMySXJ3S8B4jRDy0yHeS/BQpTCuYff3LFgH
-         vyPF/4YJTdiC6Kd1Stn7CuFOvlujyeys4ak0upEnuAxhEs63Inl9MZi/I91h1xR5pTDH
-         UooYMuXaI7WyjgGCL510DloY4TYaBfeLxkwyQ4LcDx2a8Hd1OCgFSqJEbEAyF+OddQIA
-         8ljw==
-X-Forwarded-Encrypted: i=1; AKwUvBz5/aBkwBGPGagZwGawTHnwub04UqNDGfOm/8J84TLpNLlm98DnDcREgP3dla0Ia6DY6Fv4ODIt8Ek=@vger.kernel.org
-X-Gm-Message-State: AFuF++mU3WT+vAeuqVvIQeSKXJOjmayLZHdSFyD6xWCqca61xFvoXhKX
-	crhTpmOLUPlo+C17OCZxJqWTVwv/gYTbhdgFHWToib8Gviy72iNoxVvc
-X-Gm-Gg: AYBFou2p+UlDc7DngCW94Mng7u27FGuIxD///kFV9cJXaO+1ufeWeHB95dCbAdZa/qa
-	YVPyWvfFQzzi1FD5v/EnBrmZD7reXCDlnevKZ3lZPNxUKwIhg+zO1ZrFgp7fBICCCDnpRtBnEoP
-	pT6uIlEsTqc25erPreTqyVqoIW7PFFQgawB+ooMrAjkEDFfdfqbngmKzRY7If1C9pA5L0h5Xgh3
-	QYFoT1NStTlafrR6daVUvthk+fYLCC6IiZNkbuxVxutSm19OxP3fDZGFX+DiWbHilhdPHLHl+jP
-	zMo2g/2oIHrH4KcV2A6jaez5Iv9T6hAUc0QjK7VENdNSvwhcJn7N3drwtDC/OujhjlSwFDHafsp
-	byNZhW0NopdWRAG4zhw9FJERJCVC8MYGeMYBLOtOIsYHNmZDKUCFczLPyGAsq99ER6uKhmicUPJ
-	u3Jpk3sQNa6pxK5oRz1sG5KmO0o/tXObq130B2h2Po3FLTbdHrSpUSXnGrq+6ON03zmZKWRETJD
-	o4Q9MVo40gcPZk5xHeYJMTq1UqnAD6NzIfZRx8zRC+R+o6Ig0pku1XXgDwCbv7R/uR7YEa5v2ch
-	b3zMz36mjAx12o/2AuQagM2VWZp9zpBUwgTLKtyHmq/kypXj93rKBJVd5Afbz0h6OzPdhH6trHX
-	F0OR4d2/I6M29r8Im9qM2wGpykjbctU+iD0+FbcO4H9MerXTYB9tmobI10rcrzy3D9syztagBIy
-	wcs41P
-X-Received: by 2002:a05:600d:1b:b0:49b:9105:cdaf with SMTP id 5b1f17b1804b1-49f1d516a12mr35131575e9.8.1789551898435;
-        Wed, 16 Sep 2026 02:44:58 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49e83b02211sm68509815e9.9.2026.09.16.02.44.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2026 02:44:58 -0700 (PDT)
-Date: Wed, 16 Sep 2026 11:44:57 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Kanak Shilledar <Kanak.Shilledar@axis.com>
-Cc: "jic23@kernel.org" <jic23@kernel.org>, "dlechner@baylibre.com"
- <dlechner@baylibre.com>, Henrik Grimler <Henrik.Grimler@axis.com>,
- "nuno.sa@analog.com" <nuno.sa@analog.com>, "jean-baptiste.maneyrol@tdk.com"
- <jean-baptiste.maneyrol@tdk.com>, "robh@kernel.org" <robh@kernel.org>,
- "marcelo.schmitt1@gmail.com" <marcelo.schmitt1@gmail.com>,
- "andy@kernel.org" <andy@kernel.org>, "krzk+dt@kernel.org"
- <krzk+dt@kernel.org>, "macromorgan@hotmail.com" <macromorgan@hotmail.com>,
- "conor+dt@kernel.org" <conor+dt@kernel.org>, Kernel <Kernel@axis.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 7/8] iio: imu: inv_icm42607: Add accelerometer
- calibbias support
-Message-ID: <20260916114457.000073ba@gmail.com>
-In-Reply-To: <b58448efafcd27ceb2c924139ea97201b349b534.camel@axis.com>
-References: <20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com>
-	<20260901-b4-inv_icm42370p-v3-7-77cc31642115@axis.com>
-	<178874609182.3402141.6437933635539106261.b4-review@b4>
-	<b58448efafcd27ceb2c924139ea97201b349b534.camel@axis.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jdk0yPsi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789552272; x=1821088272;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UIwWPNKRQ8FW7Bu3jbEPy9yWyv1Y+CRFZBuPobR95d0=;
+  b=jdk0yPsiUehhv06oNoymxFlAux/tGdJ3Ns1z4zbevzWt9o/aSJo/RcNb
+   N3POKAyuS8SxqIB2z2v61VDfuAHu3hXglq/gXnx/qRotIw+3iWMqfG5au
+   HmU580FOCNyV3DLyAUOkKuOohyh4UGN9DS3WRUL9+RKKjylILT7aBFCcB
+   A3pqz0RBp25np3UDOalyjJThqoP8jUwYHg3OVKGe7NMMKfQk/ALWtB/h1
+   ulosZyq3IUlVanQOnDlQAJZpUO9efkeKiSajQ3wEf92voBrl3Eg8WJj49
+   j5V3w1YfvwEoblx7LxAQBcPwb3ALBdfu0xS5lyQMq7v695BOg7Aw1ahxs
+   g==;
+X-CSE-ConnectionGUID: XC4inCXJTFevNHqHxERtYw==
+X-CSE-MsgGUID: GLWqJ4TvTkCRG5UaI6+6jQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="101270147"
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="101270147"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 02:51:06 -0700
+X-CSE-ConnectionGUID: KfvqFqviTauBpXirtJ5MXw==
+X-CSE-MsgGUID: RK56W2AkRI2hfojlaoS2QQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="267080866"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.145])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 02:51:01 -0700
+Date: Wed, 16 Sep 2026 12:50:58 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Ryan Brue <ryanbrue.dev@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, mfd@lists.linux.dev,
+	Roman Vivchar <rva333@protonmail.com>,
+	Luca Leonardo Scorcia <l.scorcia@gmail.com>
+Subject: Re: [PATCH 0/3] iio: adc: add mt6397 PMIC AUXADC support
+Message-ID: <aqpmgliQW7FW53o5@ashevche-desk.local>
+References: <20260915-rbrue-suez-upstreaming-mt6397-auxadc-v1-0-d35d2ac3d6f0@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260915-rbrue-suez-upstreaming-mt6397-auxadc-v1-0-d35d2ac3d6f0@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 16 Sep 2026 09:37:32 +0000
-Kanak Shilledar <Kanak.Shilledar@axis.com> wrote:
+On Tue, Sep 15, 2026 at 11:15:25PM -0500, Ryan Brue wrote:
+> The MediaTek mt6397 PMIC has a 10-bit AUXADC that nothing in-tree can
+> reach. On boards built around it that ADC is the only path to the battery:
+> the SoC's AUXADC is wired to board thermistors, and the charger ICs these
+> boards use have no ADC at all, so without it there is no pack voltage and
+> no state of charge.
 
-> Hi Jonathan,
-> 
-> On Mon, 2026-09-07 at 02:54 +0100, Jonathan Cameron wrote:
-> > > Expose IIO_CHAN_INFO_CALIBBIAS on the accelerometer channels. The
-> > > registers are stored in MREG1, which can be accessed by the
-> > > mreg_read
-> > > and mreg_write routines. The calibration bias is written to
-> > > OFFSET_USER4
-> > > to OFFSET_USER8 registers in MREG1.
-> > > 
-> > > Note: The accelerometer functionality is tested with Invensense,
-> > > ICM42370-P development board.
-> > > 
-> > > Datasheet:
-> > > https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-> > > Datasheet: https://www.lcsc.com/product-detail/C5129967.html
-> > > Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>  
-> > 
-> > Various things inline.
-> > 
-> > Thanks
-> > 
-> > Jonathan  
-> 
-> I will fix these issues.
-> Thanks and Regards,
-> Kanak Shilledar
-> 
+This doesn't explain why a brand new driver? Perhaps we have existing code that
+may be updated to support this device?
 
-Hi Kanak,
+-- 
+With Best Regards,
+Andy Shevchenko
 
-No need to send a response to a review only saying you'll fix the
-pointed out issues, it generates too much noise on the list. No
-response means you agree with the review and will address it in
-the next version :)
 
-Thanks!
-
---
-Kind regards,
-Joshua Crofts
