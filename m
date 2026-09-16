@@ -1,55 +1,55 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E47544F0530;
-	Wed, 16 Sep 2026 11:16:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D544F4749;
+	Wed, 16 Sep 2026 11:15:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789557378; cv=none; b=AnlmtOR+V7eKxZlZuc/yTLuDCK+VmA5xgLG0n6epvKdKGvbZcUgUzr2u6dAkiZ0oupseUUzx1a99WhBEpKpYA4CHuwohQVWHvwGrvmeOevP9UbrkU6laKHIZD2hC0NXt9RbCoNbdfvZgv6+7Va4Rpfs22VccFR0SocWeikykWLo=
+	t=1789557377; cv=none; b=jsJiKA5d+7ail+jsN+5bUhaZFNhvQCNN7freA4Q4+oY0JTZ1v9d6xtkRkY2N6HuaIwhjLLMlRLzSyqUR6N79rNMeJaV71it8KgL3L2l2AzyV34x4E2Gxo2HKJgFWEKjTnc1xszFYEbsY4shsGLpGs4aHF4jRL+/NQW22yOPVgso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789557378; c=relaxed/simple;
-	bh=Sy0TAtQPR0DePJv39WZgzsURvXS+UElzAQCEZlwOEfE=;
+	s=arc-20240116; t=1789557377; c=relaxed/simple;
+	bh=35OkYFOWBEMMZ4daLpY2GcuANZ4j5fZkzy9bdNhgsLs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=iwHwgI2gksSTIcMgoI+MnsxSASKgQ1nr1A5LFEFWVsZqSLD6Sq3Ig40goNl/cmYnbiIXsV46A53z3Xe30SlUrfHB6WnLRXxUHzt/WGjISxthDMKRv8FtQnpQKqL+KY2D546Kcqub5CfVA0Rbwtx0xsQpzKYfnN4Ii6Xr4EXu15M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=TTAoIIfp; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=BZoykIyhFbyAodvVzJbW8sXYtOES0b8lpAbC+WBlH37XgidvEZpw1DSsYZrXbUpJVdDiwakiP4kU3X3siAnApY5BkiBdFPCZ3GxgC1qB/Dlxge7Chg5rWupvwnKR68Qz6aR00HIXs3KXDyLQ2imlAkfXGhlav8pbQGROopheDxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=E94N2+M7; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="TTAoIIfp"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68G6gRII1548638;
-	Wed, 16 Sep 2026 07:15:38 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="E94N2+M7"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68G79dNm1591639;
+	Wed, 16 Sep 2026 07:15:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Ku6j+
-	AaC5z1sRLyffFSbyAz3ehG59A7Z/kBv/HBtLpQ=; b=TTAoIIfpMQxVeqOTLcUnO
-	3METDU0I/3siHevYwRQ3x7oTsRJnP8z9h/43umlrz6bzvpBw6PD34cxfazn61P51
-	+vcB6lgxmEQrvZl/xJFeFTq3zfnRyabZiA7ccmZwG1LX7GBbZ69HOf2hNuR+dbyM
-	7or7uJlRKzcFQZvcN3puvTcXzLsrVIecB32NaxfydmLHn4ovlLhh6xNQ2ZkOgTLd
-	Fu2WzqA3Poh0nQwWcZ4FdCG6dOKgIDNUFOFX0ZzKaJSfZW360QkftdEPh2hCkSBY
-	RgGPjvHLTeu4RgmgB52G0pOb7F2n89q1z7uYrXPh/8n8TrRkKMTo3IT+7e0kBeyJ
-	w==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=7cDZj
+	50L3wCrX3fd95v045w/2Wh5HWpt6csfuPyCcPE=; b=E94N2+M7+HFnnDSJmyGAB
+	DGrw442FioLPm8iX63Jo9FH5+k75s869siWFYQ0qbKaQ7SNEhK2e5uP1LqJV8O+b
+	kjk4PuOtOhStcsM1XEKMok5ORgCtCeMIZr3ETvMChK3ttkXILpXMtlodR8hfqNX3
+	WdqtqRyx6Fo94BEHWk7hK9E/MulW2XYbMW1xNGiH9XaQBkFwQ2s7PIsLlsaS161k
+	D/m6IZ/3K3LrcDqKw8rwEkrLXonc3HteBT0K2mmALOBRNldIkgnQQKeyT6barqS4
+	NvNxr5m6EEQcRbz7ztI/1brRXBk69rO7jvhmuzIWma2UhYik69vY0bre9JKi+/7K
+	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gqj57hxga-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gq98c4cn9-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Sep 2026 07:15:38 -0400 (EDT)
+	Wed, 16 Sep 2026 07:15:22 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68GBFbiT047178
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68GBFKDA047121
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 16 Sep 2026 07:15:37 -0400
+	Wed, 16 Sep 2026 07:15:20 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 16 Sep
- 2026 07:15:37 -0400
+ 2026 07:15:20 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 16 Sep 2026 07:15:37 -0400
+ Transport; Wed, 16 Sep 2026 07:15:20 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com (HYB-e1y2fvUQ3cx.ad.analog.com [10.44.3.69])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68GBENE8004263;
-	Wed, 16 Sep 2026 07:15:30 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68GBENE3004263;
+	Wed, 16 Sep 2026 07:15:15 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Wed, 16 Sep 2026 13:14:05 +0200
-Subject: [PATCH v8 16/17] iio: adc: ad7768: Register GPIO auxiliary device
+Date: Wed, 16 Sep 2026 13:14:00 +0200
+Subject: [PATCH v8 11/17] iio: adc: ad7768: Add per-channel filter controls
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260916-ad7768-driver-v8-16-27aa24db5225@analog.com>
+Message-ID: <20260916-ad7768-driver-v8-11-27aa24db5225@analog.com>
 References: <20260916-ad7768-driver-v8-0-27aa24db5225@analog.com>
 In-Reply-To: <20260916-ad7768-driver-v8-0-27aa24db5225@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
@@ -87,121 +87,194 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
         =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
 	<u.kleine-koenig@baylibre.com>,
         Janani Sunil <janani.sunil@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Bartosz Golaszewski
-	<bartosz.golaszewski@oss.qualcomm.com>
+        Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789557263; l=2423;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789557263; l=5033;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=Sy0TAtQPR0DePJv39WZgzsURvXS+UElzAQCEZlwOEfE=;
- b=0UZvV4IiOPYmI/U4jXihFOjRQjtQLPyGOWBb7opAOMUMVC6pJDuqvBsJbBOksHDBdDBCzTeHJ
- 5MhT3ONXxy/C1J9CCBzBGiNElhqIVUw0fUTqDEg4aqUKo4JH0WZMN5P
+ bh=35OkYFOWBEMMZ4daLpY2GcuANZ4j5fZkzy9bdNhgsLs=;
+ b=D+RWGcf7nO6dwvZesf2NJuAUgrKI2YK/8qlbPggzXR9up06uH348rrRecssJLpInNXxEWgDDA
+ nC/LRxE2+t4CYUGmUVypRRptB/RQAQa74XtGWJ29J7wU1RKlOzshKP0
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfX7rhyPLhLPq2u
- RJMqEvDscrExomlS8bUF6K2+yUHCl6DQTmQ6/eeA3yvUZFUHYsgU5yvGowXEhZXFxTAIcNiuMde
- ZsIXmPoNZCLgLPdcLTBenVbE3d1VQTagecCFRxxUYu4UqBrMRgki
-X-Authority-Analysis: v=2.4 cv=HfuB3SE8 c=1 sm=1 tr=0 ts=6aaa7a5a cx=c_pps
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfXzb3K354BAiGn
+ uGsFZvqfKD+NRh3z7jcWiiyhm6woogAr/0gNhr2TdboWoSUnMI5tfwsRfYMCMDtslxBJ9+B4bEV
+ yEhOwOxLEPK93pJSkMkbfUJYUKc9Tx9wd+OUSvaTAseSXSNYEvzL
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfXwz054VgdjRZt
+ rBVhY//zyopCKHn7vRvSnUzL6ZAzTh1QReYEcRQbktCgqhLHUXCs1FM/Qxt/1TavdosHIXXNPwn
+ 0goaBy0eEB7Cn1m4N4LgnGZAd8u6wF0eYppmMH9+u41ylOHXpJZ8HRQnNaN3wtNRT5RUmKis/dg
+ Cr5PHJC5swSZBzOKb7MX/CniBtEicv1PhijFpNPg5jN6DNxD8mDJll7VksxLxmJ2FVrKHQPTpjx
+ YG1nvbc6pTN/NsV75sctdLpLhcZavX0I0nY4of5mZ7wLMYt129EuR9OJUAh2crETwWVcFrSEftw
+ rb/879nZ4BPkgMvfwan3ONeYJj4tmG/PaNDYxshbcVQTyvVCpPS6oVFfb72aTllgecG4DRV1aiR
+ hF7jRXLg9PIntJyVQAmhoNu3pAQOdNQFpGR/4NCCRnM+sH1ndI88Qb5ggmYQ9B0vhWmz2+SXGTg
+ WFVocNBHehsAta3y8qA==
+X-Proofpoint-GUID: sGPRKycywAcwiE22VZ3w2mNbuZUAA7Wa
+X-Proofpoint-ORIG-GUID: sGPRKycywAcwiE22VZ3w2mNbuZUAA7Wa
+X-Authority-Analysis: v=2.4 cv=KKvPn1Fo c=1 sm=1 tr=0 ts=6aaa7a4a cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=EUspDBNiAAAA:8
- a=gAnH3GRIAAAA:8 a=uS1bAgcam2TDL027Z10A:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: nszd99Ma5eBKBkdjgjNxk4OjO9SRHERE
-X-Proofpoint-GUID: nszd99Ma5eBKBkdjgjNxk4OjO9SRHERE
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfXymVK1heed5bL
- EnvnqAWVQn2kDpNr+T6lx5qzfGDgG2m/fdKaT446EeFi3Mk0twPlqKXUNCK9hFyXlMcYCtviIew
- MrXkkx4cpm+N8YxK2fGk8pEA756kt6hANKcL2tzW4bgRcat6XJ+2TlLSBh65cjuQrGwybYuKwaP
- iq7DyHOE5qJlxQvrd3o5xLnP245NeY64PTnqbFabJQ4F5PMhibldjq13iUZUGP/ElY9I8ZkHZ++
- k2tz3WAOXG72RRVuM8mYA7KLkcasPUq527dIR6ECbdtJfVwIINQaMKewWCTZ04jeGH5K0XZR98z
- /Hy4XhQ42C8NICo9/74XAcjEE6A7LOGsDZR+TrSMcupT0o3JbboKbgkfIG8bXBdFGBtnlnb+Cwp
- gP7ZN9taQXPr8UxZ7g7ywHOqJaWVzfx9RqhdNlH5a2P+u+XRvqPDtOyDf1ZDtJImGBZKhS9SQdf
- kWrMCGQdFaSGMKtuGXQ==
+ a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
+ a=u1yhE7RKQyILiklAgKsA:9 a=QEXdDO2ut3YA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-15_05,2026-09-15_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 adultscore=0 priorityscore=1501 suspectscore=0 phishscore=0
- bulkscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0 clxscore=1011
+ malwarescore=0 clxscore=1015 priorityscore=1501 impostorscore=0 phishscore=0
+ bulkscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 suspectscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609160148
 
-Register an auxiliary device when the AD7768 is described as a GPIO
-controller. This allows the GPIO driver to share the parent regmap and
-runtime power-management state.
+Expose wideband and sinc5 filter selection for each channel. Group
+enabled channels by their requested sampling frequency and filter pairs
+and program each pair into one of the two hardware mode profiles.
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- drivers/iio/adc/Kconfig  |  1 +
- drivers/iio/adc/ad7768.c | 29 +++++++++++++++++++++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/iio/adc/ad7768.c | 72 ++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 66 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index c784bee0fd65..dea25315ed20 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -435,6 +435,7 @@ config AD7768
- 	tristate "Analog Devices AD7768/AD7768-4 ADC driver"
- 	depends on SPI
- 	select REGULATOR
-+	select AUXILIARY_BUS
- 	select IIO_BUFFER
- 	select IIO_BACKEND
- 	select REGMAP
 diff --git a/drivers/iio/adc/ad7768.c b/drivers/iio/adc/ad7768.c
-index 33b1b124d4d1..1fb14907b2b7 100644
+index 1bd86dc41b2c..b2e129e6fa33 100644
 --- a/drivers/iio/adc/ad7768.c
 +++ b/drivers/iio/adc/ad7768.c
-@@ -6,6 +6,7 @@
-  */
+@@ -104,6 +104,11 @@
+ #define AD7768_MAX_CHANNEL				8
+ #define AD7768_NUM_CHANNEL_MODES			2
  
- #include <linux/array_size.h>
-+#include <linux/auxiliary_bus.h>
- #include <linux/bitfield.h>
- #include <linux/bitmap.h>
- #include <linux/bitops.h>
-@@ -1273,6 +1274,30 @@ static const struct iio_info ad7768_info = {
- 	.update_scan_mode = ad7768_update_scan_mode,
- };
++enum ad7768_filter_type {
++	AD7768_FILTER_TYPE_WIDEBAND,
++	AD7768_FILTER_TYPE_SINC5,
++};
++
+ enum ad7768_clock_source {
+ 	AD7768_CLOCK_SOURCE_MCLK,
+ 	AD7768_CLOCK_SOURCE_XTAL,
+@@ -164,6 +169,7 @@ struct ad7768_state {
+ 	int freqs[AD7768_MAX_FREQS];
+ 	unsigned int ch_freq[AD7768_MAX_CHANNEL];
+ 	unsigned int power_mode_idx;
++	enum ad7768_filter_type ch_filter[AD7768_MAX_CHANNEL];
+ 	struct iio_backend *back;
+ 	unsigned int vref_uV[2];
  
-+static int ad7768_gpio_adev_init(struct ad7768_state *st)
+@@ -556,12 +562,59 @@ static int ad7768_set_sampling_freq(struct iio_dev *indio_dev,
+ 	return 0;
+ }
+ 
++static int ad7768_set_filter_mode(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan,
++				  unsigned int mode)
 +{
-+	struct device *dev = regmap_get_device(st->regmap);
-+	struct spi_device *spi = to_spi_device(dev);
-+	struct auxiliary_device *adev;
-+	int id;
++	struct ad7768_state *st = iio_priv(indio_dev);
 +
-+	if (!device_property_read_bool(dev, "gpio-controller"))
-+		return 0;
++	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++	if (IIO_DEV_ACQUIRE_FAILED(claim))
++		return -EBUSY;
 +
-+	/*
-+	 * Use the SPI bus number and chip select to derive a stable per-device
-+	 * ID.
-+	 */
-+	id = (spi->controller->bus_num << 8) | spi_get_chipselect(spi, 0);
-+	adev = __devm_auxiliary_device_create(dev, KBUILD_MODNAME, "gpio",
-+					      NULL, id);
-+	if (!adev)
-+		return dev_err_probe(dev, -ENODEV,
-+				     "Failed to create GPIO auxiliary device\n");
++	guard(mutex)(&st->lock);
++	st->ch_filter[chan->channel] = mode;
 +
 +	return 0;
 +}
 +
- static int ad7768_configure_precharge_buffers(struct iio_dev *indio_dev,
- 					      struct ad7768_precharge_config *precharge_cfg)
- {
-@@ -1830,6 +1855,10 @@ static int ad7768_probe(struct spi_device *spi)
- 		return dev_err_probe(dev, ret,
- 				     "Failed to register VCM regulator\n");
- 
-+	ret = ad7768_gpio_adev_init(st);
-+	if (ret)
-+		return ret;
++static int ad7768_get_filter_mode(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan)
++{
++	struct ad7768_state *st = iio_priv(indio_dev);
 +
- 	return devm_iio_device_register(dev, indio_dev);
++	guard(mutex)(&st->lock);
++
++	return st->ch_filter[chan->channel];
++}
++
++static const char *const ad7768_filter_types[] = {
++	[AD7768_FILTER_TYPE_WIDEBAND] = "wideband",
++	[AD7768_FILTER_TYPE_SINC5] = "sinc5",
++};
++
++static const struct iio_enum ad7768_filter_types_enum = {
++	.items = ad7768_filter_types,
++	.num_items = ARRAY_SIZE(ad7768_filter_types),
++	.set = ad7768_set_filter_mode,
++	.get = ad7768_get_filter_mode,
++};
++
++static struct iio_chan_spec_ext_info ad7768_ext_info[] = {
++	IIO_ENUM("filter_type", IIO_SEPARATE, &ad7768_filter_types_enum),
++	IIO_ENUM_AVAILABLE("filter_type", IIO_SEPARATE, &ad7768_filter_types_enum),
++	{ }
++};
++
+ static int ad7768_find_matching_mode(const bool *mode_used,
+ 				     const unsigned int *mode_freq,
+-				     unsigned int freq)
++				     const enum ad7768_filter_type *mode_filter,
++				     unsigned int freq,
++				     enum ad7768_filter_type filter)
+ {
+ 	for (unsigned int mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
+-		if (!mode_used[mode] || mode_freq[mode] == freq)
++		if (!mode_used[mode] ||
++		    (mode_freq[mode] == freq && mode_filter[mode] == filter))
+ 			return mode;
+ 	}
+ 
+@@ -571,6 +624,7 @@ static int ad7768_find_matching_mode(const bool *mode_used,
+ static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
+ 				      const unsigned long *scan_mask)
+ {
++	enum ad7768_filter_type mode_filter[AD7768_NUM_CHANNEL_MODES] = { };
+ 	unsigned int mode_freq[AD7768_NUM_CHANNEL_MODES] = { };
+ 	bool mode_used[AD7768_NUM_CHANNEL_MODES] = { };
+ 	struct ad7768_state *st = iio_priv(indio_dev);
+@@ -599,13 +653,15 @@ static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
+ 		int mode;
+ 
+ 		mode = ad7768_find_matching_mode(mode_used, mode_freq,
+-						 st->ch_freq[c]);
++						 mode_filter, st->ch_freq[c],
++						 st->ch_filter[c]);
+ 		if (mode < 0)
+ 			return dev_err_probe(dev, -EINVAL,
+ 					     "Over %d channel modes required\n",
+ 					     AD7768_NUM_CHANNEL_MODES);
+ 
+ 		mode_freq[mode] = st->ch_freq[c];
++		mode_filter[mode] = st->ch_filter[c];
+ 		mode_used[mode] = true;
+ 
+ 		mask = ad7768_channel_mode_mask(st, c);
+@@ -629,8 +685,9 @@ static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		ret = regmap_clear_bits(st->regmap, AD7768_REG_CH_MODE(mode),
+-					AD7768_CH_MODE_FILTER_TYPE_MSK);
++		ret = regmap_assign_bits(st->regmap, AD7768_REG_CH_MODE(mode),
++					 AD7768_CH_MODE_FILTER_TYPE_MSK,
++					 mode_filter[mode]);
+ 		if (ret)
+ 			return ret;
+ 
+@@ -887,8 +944,10 @@ static int ad7768_init_sampling_freqs(struct ad7768_state *st)
+ 	avail_freq = &st->avail_freq[st->power_mode_idx];
+ 	default_freq = avail_freq->freq_cfg[avail_freq->n_freqs - 1].freq_hz;
+ 	for (unsigned int channel = 0;
+-	     channel < st->chip_info->num_channels; channel++)
++	     channel < st->chip_info->num_channels; channel++) {
+ 		st->ch_freq[channel] = default_freq;
++		st->ch_filter[channel] = AD7768_FILTER_TYPE_WIDEBAND;
++	}
+ 
+ 	return 0;
  }
+@@ -971,6 +1030,7 @@ static int ad7768_parse_config(struct iio_dev *indio_dev,
+ 				.realbits = 24,
+ 				.storagebits = 32,
+ 			},
++			.ext_info = ad7768_ext_info,
+ 		};
+ 	}
  
 
 -- 
