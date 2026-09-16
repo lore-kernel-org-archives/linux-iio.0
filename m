@@ -1,60 +1,54 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845B84F0537;
-	Wed, 16 Sep 2026 11:15:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A934C14E2;
+	Wed, 16 Sep 2026 11:15:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789557346; cv=none; b=Js9NxWsuOWIIgNkfRYlzhqJaw0GDclJvBUewX/MkYqR0qBqg+coHsB4E5BzuqeTN3DUTzI3VrAwVPlT+FxAC9IIPplBbZCB+aKrgWMad/oxqneu1KRzPFz+j+PZBtKqVEhmb04edeD1F74lvf6AVHyXwOpth8oosHiuFx0hXaKA=
+	t=1789557350; cv=none; b=js6vHVtukYvdj1GQ33tafprDwmAhZJyzZKJhfnPLJ0AEug0+QHzhIAUawkNv1d1sqo0ItgwSQMMsMIRXS+oNcJKtZRqTpvdgVheFhLeMHbtNCsEGqjWlkWrxP2n0OwmF+YLzoLQ37+O+DYfPyDGCs0r4EYe+GZaswzfUjIeGp2E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789557346; c=relaxed/simple;
-	bh=kfZ/qMGdaLc9JqtlgpRlLCks7N0v+gTh6WRH08apTuc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=RCDzdlV6aKESRYwJs3/IvXnWOTIH4E8Gkb82KfKHp2BLWQNgmVWOlJlZEmHlos4RyQ7yzrIfO7SbRTPGSf/cqeq0QJp0XQpCUSMcHfleOjl2yICqzAoMcDrhC6INTzXt5KR6LvZHvQJDR0oJMvD7t3DsaCBeQW/Zln8lknI2Xvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=tx3LWXlN; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1789557350; c=relaxed/simple;
+	bh=7grzkl/3foOuB3ojlsC92stWG9IpK8dePXgjhxcxT+w=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=Z66NRfUsP5gnFfxoMu5olQvzD1BMK/foZ8ZhxpT/AOVESStslle5qkY1M5hoWKZgxy+/ar2OwKPOUyu7gs6oHJastLRdPSQU3yIpdkG3OT4VcvWCKe5KeQE1WIPGRuKCDjB2Oxs98wKyphHe1TfPOuV9bWRYcGnhjiA0gL/zRC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=l1/Mg8Fs; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="tx3LWXlN"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="l1/Mg8Fs"
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68GB0pJ72358614;
-	Wed, 16 Sep 2026 07:15:16 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68GAtqRi2358727;
+	Wed, 16 Sep 2026 07:14:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=9IKrS
-	XKAMmMA9spcClJH1y73W6vj/qGk1asS1dpN0fY=; b=tx3LWXlNzExpMCeh9nOTz
-	Wlu0l+XH6+N81d2AicqKf4QdFXQuKY3xRclgPFwl3zEThcJRjqVS5lo48HQgCbxW
-	X/jawp9v9TZsK/TivUSjuxREalIouc6z+h1ZQSopB4LxA5etirxydJs0acdPZnzY
-	QRvP5sBVFeUwawrXpdG6+S2IKKUw6fF0iDIzwl/S8YG/PLZy7rdc1VA+0AfCVfb+
-	9VgIA8sJiNg/crQuBrQL+ABZjD5L/6T/KGPTcYMAzg+ABwwmwMOLg+u/rEWztUfu
-	XaP1oV2lJuWsVCX3WlsFt+2ZXZetSPBokdChIbekZjUeF5s8Rz5AhF5FJxl/2Z3n
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gq57ee2sj-1
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=AbWVep3OuormQks5bDEiNevtw4w
+	8A4iDPwwFieU688c=; b=l1/Mg8FsDXDoXIKtxw8JJdoqk/hujNALwvAxWQSuHxh
+	Y53k1vY/9Wb3Dqj8FfkVLfwyT7dVLBY3W3Mz0hLcKf1k+hwc8apIzlGIGN6D0aD8
+	tABbW0ngpiYFZ70zC7ws2IJejGq1XHux4qD4KmRNdnuna/0a/gAX8KnWJatqt1H6
+	Peg/4NB8ZLGX0Xcry/IFhSTOR2uwlV2rnGSIl9d/ArdWyb/bcZdvfssl0uf3SsFH
+	XrevMQHgel/ZWecZK0EZ/lW5rEpkj4YyK+EA9h044UvUedPOSHAIojs4zwOWuChh
+	lxYnfKkBG4M8OZ649ujJUy+5HKx2cmFyLxCm64lrcaw==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4gq57ee2r2-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Sep 2026 07:15:16 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68GBFFFf047112
+	Wed, 16 Sep 2026 07:14:48 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 68GBElL9015729
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 16 Sep 2026 07:15:15 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 16 Sep 2026 07:15:14 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 16 Sep 2026 07:15:14 -0400
+	Wed, 16 Sep 2026 07:14:47 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 16 Sep
+ 2026 07:14:46 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 16 Sep 2026 07:15:14 -0400
+ Transport; Wed, 16 Sep 2026 07:14:46 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com (HYB-e1y2fvUQ3cx.ad.analog.com [10.44.3.69])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68GBENE1004263;
-	Wed, 16 Sep 2026 07:15:09 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68GBENDq004263;
+	Wed, 16 Sep 2026 07:14:26 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Wed, 16 Sep 2026 13:13:58 +0200
-Subject: [PATCH v8 09/17] iio: adc: ad7768: Configure channel sampling
- profiles
+Subject: [PATCH v8 00/17] iio: adc: Add AD7768/AD7768-4 ADC driver support
+Date: Wed, 16 Sep 2026 13:13:49 +0200
+Message-ID: <20260916-ad7768-driver-v8-0-27aa24db5225@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,20 +57,23 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260916-ad7768-driver-v8-9-27aa24db5225@analog.com>
-References: <20260916-ad7768-driver-v8-0-27aa24db5225@analog.com>
-In-Reply-To: <20260916-ad7768-driver-v8-0-27aa24db5225@analog.com>
+X-B4-Tracking: v=1; b=H4sIAO55qmoC/2XQzUoDMRSG4VspWRs5+TtJXHkf4iK/bUBnSkaCU
+ ubezRSkY2b5BZ43cG5kSbWkhbycbqSmVpYyT32YpxMJFzedEy2xb8KBI2gw1EWt0dBYS0uVMgi
+ RKW4xcCDdXGvK5fvee3vv+1KWr7n+3PONba9/JTuUGqNApUyMWZmjRffqJvcxn5/D/Em2VOMPb
+ gBHzjsHrl1QiTuU7MDFjjMxctF58EpJYa2LHA9c7jhnI5ede2+yj4BRJn/gas/HKzbVeRIiOMx
+ GMscPHB/cghw5blwKbbKV6PPxd73jDEauO9dZgweNXKf/p1vX9RcFMai1JQIAAA==
+X-Change-ID: 20260708-ad7768-driver-10cd15296c20
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
 	<Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, "Rob
- Herring" <robh@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Conor
- Dooley" <conor+dt@kernel.org>,
+        Conor
+ Dooley <conor+dt@kernel.org>,
         Olivier Moysan <olivier.moysan@foss.st.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Linus Walleij <linusw@kernel.org>,
@@ -92,318 +89,336 @@ CC: <linux@analog.com>, <linux-iio@vger.kernel.org>,
         =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
 	<u.kleine-koenig@baylibre.com>,
         Janani Sunil <janani.sunil@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Conor Dooley
+	<conor.dooley@microchip.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789557263; l=8361;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789557263; l=15056;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=kfZ/qMGdaLc9JqtlgpRlLCks7N0v+gTh6WRH08apTuc=;
- b=6MeJVvzZocs6Asz+xFEr3V416VSFSPkMtWY8IJEa8fWkjuvpjNClwZYOFAuIoB5gsfujT+GMz
- PwOBBTIKsreAUEYoGxEvGH2YCLrHxXfYYmjftzsVgybQjxTWcEaxrcn
+ bh=7grzkl/3foOuB3ojlsC92stWG9IpK8dePXgjhxcxT+w=;
+ b=dBcXKcF8Rm41yPrIm24YY7vtF0h1KQ7meRnIYwjWVOHvZO6vrLCW+NyggpfKuyh7Qu+i9iNU0
+ x4eqN2iGbTmB7QgyehVQnrT3l6Hd9v7Dwicd6OOB1sT2emgVh1hY9Ol
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: -jHuz5oxXS2DT0417p-UppSnn1DUEBvJ
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfX58xuWKbbW3CZ
- uwGnpGFhHi/3uphCEemA3h8cp7hW6npAQeqJzZFpdOUXGC9N+u0zWpOpDSQ+PRVStDDapXa19Po
- 18PGxuCuAZlIkS47CrxnP86x8CTOM08gN65bKcgMzMzevHtsed4hseS5RWq1SmFuaDvNy+Qi24a
- hhM0L4HgVp3ePHswACtUqzJTbPGdakGdp8STEKC9RN8M0lBKUk5DQJOcjGmyXqXeVJNrxJGF5F9
- GfUGYxakEi8vgWe7kBy3WuhrBksoz+V61F2BvtYl8NrZAlf5OLqiH5rcHnUmzan6OFeiaLwl7FX
- vYLqV2Ey/m3eueYv7crb4CQza/PW8Ho4HdJZGXESsBRZnv8nlxlAQC5hXPf/IlHvsj7eyEXj0mO
- viepGCDyjVNUWR2vXtLMulsHaRPp1ElJE1TfpX8x05daxo58Ej5F8iMKxgWlvaVue+GGONHLHMl
- 4B/1q61V/F94o1A6Vyw==
-X-Authority-Analysis: v=2.4 cv=V9HoQuni c=1 sm=1 tr=0 ts=6aaa7a44 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+X-Proofpoint-GUID: mZcYCM25wLnJQCtus8AhzvepzG0Ck1pl
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfX2zUgth/bdtI9
+ 4jEpjmePar44g9ka/dbW/mWpUdvY18IFjis4vD/j0n88Y0HXYzqDDDHbeQ/qsiGvw8MsbUOssi3
+ SO5Zf1b+0Dhk0ernjEGHysC/iMCocUWcsbvxH/Kc9MaJEID/T5rlBz1ppgShiOjy18C2IepID3E
+ neM2qn7J9f/vPJtXBVzciDMt/P9GQ0AMCxkznVLjiJFUN4qU342ZsAxGRViRbDqgns3ZnbURHdl
+ aI1Q1WM1QvJrOkxNOL8WEEYwHcg8SIKMy9vgdop8m7don1Jh8oqpO4FhbHobhRFgAF01yAAv6Nz
+ EKPjkK5IHQcQnwUZ6DfCsQ4aD2RosnBO+oQo0Wzk+wXh36XgnNb5use9GTrP3hUtxE16Nzgx51q
+ Q1MVI1bqCszpySti1+wrAPANAnb3Tj6h4lvQHnFhQVaaXF6oFxNB/T+1PCbOMdDBDskaoTNBSCS
+ X1PYp/0C+XyuwDPK5aA==
+X-Authority-Analysis: v=2.4 cv=V9HoQuni c=1 sm=1 tr=0 ts=6aaa7a28 cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
  a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22
  a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8
- a=YaUG07iyn5Nj4qywQSYA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: -jHuz5oxXS2DT0417p-UppSnn1DUEBvJ
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfXxS+c8BtD/3oJ
- q4uPz1mUAyx5IRjdqQsbrel4//zerjpE3DOWNzC6PaDJuueQEZ2PkETzDCV5eeCreyvMk+hknEZ
- a7ablRSzzQuoP8Btmfnkdg6K38xxekN2Um9G3WXS3vCM6qID+Kiq
+ a=VwQbUJbxAAAA:8 a=unmCqhydswL9w6WEWosA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: mZcYCM25wLnJQCtus8AhzvepzG0Ck1pl
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE2MDE0OCBTYWx0ZWRfX+11WKoL0Msiy
+ YneQAW0dtkYolQxx4YyxP875wtALUha+QNZGX4NjQAhkVfQVf91bVZQPH6iHWVL9+vriVBRcuBB
+ cN6wfuT8eEDD5mUvwinDUEecAaaLN/q0mJFjFcTiTNcez6hY+VQ8
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-15_05,2026-09-15_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 clxscore=1015 adultscore=0 priorityscore=1501 suspectscore=0
+ bulkscore=0 clxscore=1011 adultscore=0 priorityscore=1501 suspectscore=0
  malwarescore=0 phishscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609160148
 
-At buffered capture setup, select the fastest compatible power mode for
-the enabled channel rates. Group channels into the two hardware mode
-profiles and program their decimation, mode selection, and data clock.
+Add support for Analog Devices AD7768 and AD7768-4, 24-bit simultaneous
+sampling Sigma-Delta ADCs with automatic power mode selection.
+
+Datasheet:
+https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-ad7768-4.pdf
+
+**Device Overview:**
+The AD7768 is an 8-channel, 24-bit simultaneous sampling ADC. The
+AD7768-4 is a 4-channel variant. Both support configurable power modes,
+programmable decimation filters, and a high-speed serial interface with
+1, 2, 4, or 8 data output lines. Per-channel offset, gain, and phase
+calibration registers are available.
+
+**Features Implemented:**
+- Support for AD7768 (8-channel) and AD7768-4 (4-channel) via device
+  match data.
+- Automatic low-noise power mode selection (fast, median, low power)
+  with associated decimation rate and output data rate tables.
+- Per-channel offset, gain, and conversion delay via IIO attributes.
+- SPI communication with custom regmap bus for the device's protocol.
+- IIO backend integration with adi-axi-adc for high-speed data capture.
+- CRC data integrity verification over the serial interface.
+- Register a GPIO auxiliary device for the separately submitted AD7768
+  GPIO driver.
+- VCM common-mode output exposed through the regulator framework, with
+  runtime PM management while the output is enabled.
+
+**Patch Summary:**
+1. Initialize the AXI ADC state mutex.
+2. Add the AD7768 and AD7768-4 devicetree binding.
+3. Add the IIO backend CRC operation.
+4. Implement CRC control in the AXI ADC backend.
+5. Add core AD7768 and AD7768-4 capture support.
+6. Validate the master clock rate.
+7. Add the power-mode configuration helper.
+8. Derive output data rates and the data-clock divider.
+9. Configure enabled channels across two sampling profiles.
+10. Expose per-channel sampling-frequency controls.
+11. Expose per-channel filter controls.
+12. Wait for active digital filters to settle.
+13. Add per-channel offset and gain calibration controls.
+14. Add per-channel conversion delay.
+15. Expose the VCM output through the regulator framework.
+16. Register the GPIO auxiliary device from the parent driver.
+17. Add driver documentation.
+
+**Testing:**
+The driver was compiled and tested on the EVAL-AD7768FMCZ using a
+Zedboard with a mainline kernel.
+
+**Driver Rationale:**
+The AD7768/AD7768-4 warrants its own driver due to several
+device-specific characteristics:
+
+1. A custom SPI framing protocol: register reads and writes use 16-bit
+   frames with embedded read/write bits and register address fields,
+   requiring a custom regmap bus implementation rather than the standard
+   SPI regmap backend.
+
+2. A coupled power mode / sample rate model: available output data rates
+   are not a flat list but depend on the active power mode (fast, median,
+   low power), each with its own set of valid decimation rates. This
+   relationship must be managed in the driver.
+
+3. Simultaneous sampling across all channels with per-channel calibration
+   registers (24-bit offset, gain, and phase) that are laid out
+   differently between the 8-channel AD7768 and the 4-channel AD7768-4,
+   requiring device-specific register mapping.
+
+4. IIO backend integration for high-speed data capture via adi-axi-adc,
+   including CRC data integrity verification over the serial interface.
+
+5. On-chip GPIO: the parent registers an auxiliary device that shares its
+   regmap and runtime PM state. The GPIO driver and supporting gpio-regmap
+   changes are handled separately through the GPIO tree.
+
+**Base:**
+This series is based on Linux v7.3-rc1, commit
+cee9395acd8043be0644b25c34bfa86623f2b935 ("Linux 7.3-rc1").
 
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- drivers/iio/adc/ad7768.c | 165 +++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 138 insertions(+), 27 deletions(-)
+Changes in v8:
+- Introduce the DCLK divider helper in the core patch to avoid moving its
+  register-programming logic later in the series.
+- Document why register caching is not used and clarify that the shared
+  SPI read buffer is serialized by the regmap lock.
+- Factor crystal excitation channel handling into a helper.
+- Simplify data-line devicetree property handling, AVSS error handling,
+  power-off initialization and SPI device ID initializers.
+- Link to v7: https://lore.kernel.org/r/20260910-ad7768-driver-v7-0-7f70b07627e1@analog.com
 
-diff --git a/drivers/iio/adc/ad7768.c b/drivers/iio/adc/ad7768.c
-index 2d051d91e1cf..fc8226d5d556 100644
---- a/drivers/iio/adc/ad7768.c
-+++ b/drivers/iio/adc/ad7768.c
-@@ -7,7 +7,9 @@
- 
- #include <linux/array_size.h>
- #include <linux/bitfield.h>
-+#include <linux/bitmap.h>
- #include <linux/bitops.h>
-+#include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/device.h>
-@@ -16,6 +18,7 @@
- #include <linux/math.h>
- #include <linux/minmax.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/property.h>
- #include <linux/regmap.h>
-@@ -33,7 +36,6 @@
- 
- #define AD7768_REG_CH_MODE(x)				(0x01 + (x))
- #define   AD7768_CH_MODE_FILTER_TYPE_MSK		BIT(3)
--#define     AD7768_CH_MODE_FILTER_TYPE_WIDEBAND		0x0
- #define   AD7768_CH_MODE_DEC_RATE_MSK			GENMASK(2, 0)
- 
- #define AD7768_REG_CH_MODE_SEL				0x03
-@@ -100,6 +102,7 @@
- #define AD7768_MAX_MCLK_FREQ_HZ				(34 * HZ_PER_MHZ)
- #define AD7768_MAX_FREQ_PER_MODE			6
- #define AD7768_MAX_CHANNEL				8
-+#define AD7768_NUM_CHANNEL_MODES			2
- 
- enum ad7768_clock_source {
- 	AD7768_CLOCK_SOURCE_MCLK,
-@@ -147,6 +150,8 @@ struct ad7768_chip_info {
- 
- struct ad7768_state {
- 	struct regmap *regmap;
-+	/* Protects device register access and configuration. */
-+	struct mutex lock;
- 	struct clk *mclk;
- 	unsigned int datalines;
- 	enum ad7768_clock_source clock_source;
-@@ -201,6 +206,17 @@ static u8 ad7768_channel_mask(const struct ad7768_state *st, u8 ch)
- 	return BIT(st->chip_info->chan_map[ch]);
- }
- 
-+static u8 ad7768_channel_mode_mask(const struct ad7768_state *st, u8 ch)
-+{
-+	/*
-+	 * AD7768-4 channels 2 and 3 use bits 4 and 5 for CH_x_MODE, while
-+	 * their CH_x_MDE_EN fields are in bits 2 and 3 and must be programmed
-+	 * to the same value. On AD7768, chan_map[] is an identity map, so the
-+	 * OR produces a single bit.
-+	 */
-+	return BIT(ch) | ad7768_channel_mask(st, ch);
-+}
-+
- static u8 ad7768_all_standby_mask(const struct ad7768_state *st)
- {
- 	return GENMASK(st->chip_info->num_channels - 1, 0);
-@@ -482,23 +498,131 @@ static int ad7768_set_mode_decimation(struct ad7768_state *st,
- 					     freq_cfg->dec_rate));
- }
- 
--static int ad7768_update_scan_mode(struct iio_dev *indio_dev,
--				   const unsigned long *scan_mask)
-+static int ad7768_set_lowest_noise_mode(struct ad7768_state *st,
-+					const unsigned long *scan_mask)
-+{
-+	unsigned int mode_idx = ARRAY_SIZE(ad7768_power_modes);
-+
-+	/*
-+	 * The output data rate ranges overlap between the power modes. At a
-+	 * common ODR, the faster mode has lower noise, so prefer the fastest
-+	 * mode that supports every enabled channel.
-+	 */
-+	while (mode_idx--) {
-+		unsigned int channel;
-+
-+		for_each_set_bit(channel, scan_mask, st->chip_info->num_channels) {
-+			if (!ad7768_find_freq_config(st, mode_idx,
-+						     st->ch_freq[channel]))
-+				break;
-+		}
-+
-+		/* All enabled channels support their requested frequency. */
-+		if (channel == st->chip_info->num_channels)
-+			return ad7768_set_power_mode(st, mode_idx);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad7768_find_matching_mode(const bool *mode_used,
-+				     const unsigned int *mode_freq,
-+				     unsigned int freq)
-+{
-+	for (unsigned int mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
-+		if (!mode_used[mode] || mode_freq[mode] == freq)
-+			return mode;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad7768_apply_channel_modes(struct iio_dev *indio_dev,
-+				      const unsigned long *scan_mask)
- {
-+	unsigned int mode_freq[AD7768_NUM_CHANNEL_MODES] = { };
-+	bool mode_used[AD7768_NUM_CHANNEL_MODES] = { };
- 	struct ad7768_state *st = iio_priv(indio_dev);
-+	struct device *dev = indio_dev->dev.parent;
- 	unsigned long channel_mask;
- 	unsigned long standby_mask;
-+	unsigned int max_freq;
-+	unsigned int c;
- 	int ret;
- 
-+	guard(mutex)(&st->lock);
-+
-+	ret = ad7768_set_lowest_noise_mode(st, scan_mask);
-+	if (ret == -EINVAL)
-+		return dev_err_probe(dev, ret,
-+				     "No power mode supports all ODRs\n");
-+	if (ret)
-+		return ret;
-+
- 	channel_mask = ad7768_all_standby_mask(st);
- 	standby_mask = channel_mask & ~*scan_mask;
- 	ad7768_keep_xtal_channel_active(st, &standby_mask);
- 
-+	for_each_set_bit(c, scan_mask, st->chip_info->num_channels) {
-+		unsigned int mask;
-+		int mode;
-+
-+		mode = ad7768_find_matching_mode(mode_used, mode_freq,
-+						 st->ch_freq[c]);
-+		if (mode < 0)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "Over %d channel modes required\n",
-+					     AD7768_NUM_CHANNEL_MODES);
-+
-+		mode_freq[mode] = st->ch_freq[c];
-+		mode_used[mode] = true;
-+
-+		mask = ad7768_channel_mode_mask(st, c);
-+		ret = regmap_assign_bits(st->regmap, AD7768_REG_CH_MODE_SEL,
-+					 mask, mode);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ret = regmap_update_bits(st->regmap, AD7768_REG_CH_STANDBY,
- 				 channel_mask, standby_mask);
- 	if (ret)
- 		return ret;
- 
-+	max_freq = 0;
-+	for (unsigned int mode = 0; mode < AD7768_NUM_CHANNEL_MODES; mode++) {
-+		if (!mode_used[mode])
-+			continue;
-+
-+		ret = ad7768_set_mode_decimation(st, mode_freq[mode], mode);
-+		if (ret)
-+			return ret;
-+
-+		ret = regmap_clear_bits(st->regmap, AD7768_REG_CH_MODE(mode),
-+					AD7768_CH_MODE_FILTER_TYPE_MSK);
-+		if (ret)
-+			return ret;
-+
-+		max_freq = max(max_freq, mode_freq[mode]);
-+	}
-+
-+	ret = ad7768_set_clk_divs(st, max_freq);
-+	if (ret)
-+		return ret;
-+
-+	return ad7768_sync(st);
-+}
-+
-+static int ad7768_update_scan_mode(struct iio_dev *indio_dev,
-+				   const unsigned long *scan_mask)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = ad7768_apply_channel_modes(indio_dev, scan_mask);
-+	if (ret)
-+		return ret;
-+
- 	for (unsigned int ch = 0; ch < st->chip_info->num_channels; ch++) {
- 		if (test_bit(ch, scan_mask))
- 			ret = iio_backend_chan_enable(st->back, ch);
-@@ -656,11 +780,10 @@ static void ad7768_set_available_sampling_freqs(struct ad7768_state *st)
- 		st->avail_freq[n_power_modes - 1].n_freqs--;
- }
- 
--static int ad7768_configure_capture(struct ad7768_state *st)
-+static int ad7768_init_sampling_freqs(struct ad7768_state *st)
- {
- 	const struct ad7768_avail_freq *avail_freq;
- 	unsigned int default_freq;
--	unsigned int mode_config;
- 	int ret;
- 
- 	ret = ad7768_set_power_mode(st, ARRAY_SIZE(ad7768_power_modes) - 1);
-@@ -673,27 +796,7 @@ static int ad7768_configure_capture(struct ad7768_state *st)
- 	     channel < st->chip_info->num_channels; channel++)
- 		st->ch_freq[channel] = default_freq;
- 
--	ret = ad7768_set_mode_decimation(st, default_freq, 0);
--	if (ret)
--		return ret;
--
--	mode_config = FIELD_PREP(AD7768_CH_MODE_FILTER_TYPE_MSK,
--				 AD7768_CH_MODE_FILTER_TYPE_WIDEBAND);
--	ret = regmap_update_bits(st->regmap, AD7768_REG_CH_MODE(0),
--				 AD7768_CH_MODE_FILTER_TYPE_MSK,
--				 mode_config);
--	if (ret)
--		return ret;
--
--	ret = regmap_write(st->regmap, AD7768_REG_CH_MODE_SEL, 0);
--	if (ret)
--		return ret;
--
--	ret = ad7768_set_clk_divs(st, default_freq);
--	if (ret)
--		return ret;
--
--	return ad7768_sync(st);
-+	return 0;
- }
- 
- static int ad7768_parse_config(struct iio_dev *indio_dev,
-@@ -803,7 +906,11 @@ static int ad7768_parse_config(struct iio_dev *indio_dev,
- 
- 	ad7768_set_available_sampling_freqs(st);
- 
--	return ad7768_configure_capture(st);
-+	ret = ad7768_init_sampling_freqs(st);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to set power mode\n");
-+
-+	return 0;
- }
- 
- static int ad7768_reset(struct ad7768_state *st)
-@@ -976,6 +1083,10 @@ static int ad7768_probe(struct spi_device *spi)
- 	st = iio_priv(indio_dev);
- 	spi_set_drvdata(spi, st);
- 
-+	ret = devm_mutex_init(dev, &st->lock);
-+	if (ret)
-+		return ret;
-+
- 	st->chip_info = spi_get_device_match_data(spi);
- 	if (!st->chip_info)
- 		return dev_err_probe(dev, -ENODATA, "Failed to get match data\n");
+Changes in v7:
+- Ensure the device enters sleep during managed teardown regardless of
+  the runtime PM state.
+- Replace the implicit ffs()-based DCLK divider encoding with explicit,
+  validated hardware encodings.
+- Update the power mode and master clock divider fields in a single
+  register operation.
+- Clarify why the AD7768-4 channel mode selection updates both the
+  channel mode and the mode enable bits.
+- Handle calibration bias as a single signed 24 bit two's complement
+  value while keeping calibration scale unsigned.
+- Validate that the conversion delay divisors meet the 32 bit
+  requirements of the DIV_ROUND_CLOSEST_ULL() and explain the two-stage
+  validation.
+- Document that buffer setup fails when enabled channels require more
+  than two distinct mode profiles.
+- Simplify SPI regmap write callback, precharge buffer definitions and
+  extraction, AD7768-4 readable register ranges, channel loop naming and
+  chip information structure layout.
+- Link to v6: https://lore.kernel.org/r/20260904-ad7768-driver-v6-0-e4378f946bfb@analog.com
 
+Changes in v6:
+- Rebase onto Linux v7.3-rc1 cee9395acd8043be0644b25c34bfa86623f2b935.
+- Document why the custom SPI protocol requires regmap bulk transfers to
+  be split into individual register accesses.
+- Simplify register definitions, channel parsing, data-line property
+  handling, clock-source selection, error reporting, and fixed capture
+  configuration.
+- Use standard unit and bit helpers and keep the scale implementation
+  stable as sampling-frequency controls are introduced.
+- Simplify output-rate derivation, DCLK divider selection, power-mode
+  selection, filter settling, and conversion-delay arithmetic.
+- Add the mutex only when first used and optimize the driver state layout
+  based on pahole results.
+- Split the GPIO support patches into a separate series based on
+  gpio/for-next:
+  https://lore.kernel.org/r/20260903-ad7768-gpio-v6-0-4254ef6c9b38@analog.com
+- Link to v5: https://lore.kernel.org/r/20260828-ad7768-driver-v5-0-e33ca6f841a2@analog.com
+
+Changes in v5:
+- Split configurable sampling support into focused patches for clock
+  validation, power-mode setup, output-rate derivation, channel profiles,
+  sampling-frequency controls, filter controls, and filter settling.
+- Read the positive and negative reference supply voltages and report the
+  resulting differential IIO scale for each channel group.
+- Allow grounded REF1- and REF2- inputs to omit their regulator supplies,
+  treating absent negative reference supplies as 0 V.
+- Document the per-channel IIO scale attribute.
+- Require a named master clock, remove the default clock source, and
+  clarify why the LVDS clock is enabled only after device configuration.
+- Clarify the clock-source, supply, and VCM descriptions in the
+  Devicetree binding, and drop the unused sync-out-gpios property.
+- Simplify scan-mask handling, register-range checks, channel parsing,
+  reset timing, probe initialization, and error reporting.
+- Use the exact 1.66 ms reset start-up delay and standard time-unit
+  constants for fixed delays.
+- Avoid runtime-PM references for cached IIO attributes and acquire them
+  locally for calibration register accesses.
+- Use regmap_assign_bits() for single-bit assignments and sizeof() for
+  calibration byte-array transfers.
+- Rework gpio-regmap runtime-PM guards and synchronize the pm_dev member
+  and kernel-doc ordering.
+- Simplify the AD7768 GPIO auxiliary driver's includes and probe setup,
+  and drop its cross-tree MAINTAINERS update.
+- Note that the AXI ADC mutex fix is already queued in the IIO fixes tree.
+- Link to v4: https://lore.kernel.org/r/20260821-ad7768-driver-v4-0-bb8fbd06d4eb@analog.com
+
+Changes in v4:
+- Move the AXI ADC mutex initialization fix to the start of the series.
+- Clarify the IIO backend CRC documentation for input and output paths.
+- Add explicit MCLK, crystal, and LVDS clock-source handling and
+  sequencing.
+- Keep the required channel active for crystal excitation.
+- Configure FILTER/GPIO4 for crystal and LVDS clock sources and reserve
+  it from GPIO consumers while it is used for clock selection.
+- Make AVSS optional.
+- Validate MCLK, crystal, and LVDS clock rates against datasheet limits.
+- Split each differential reference into positive and negative supplies.
+- Correct AD7768-4 standby and channel-mode bit handling.
+- Program the AD7768-4 channel mode-enable bits correctly.
+- Use unshifted register values and FIELD_PREP() consistently.
+- Use regmap single-bit helpers where appropriate.
+- Use scoped runtime-PM guards and scoped loop variables.
+- Use for_each_set_bit() and named channel-child iteration.
+- Remove the redundant initial autosuspend request.
+- Document the validated 20 ms wake-up delay.
+- Make REGULATOR mandatory when VCM regulator support is introduced.
+- Add feature dependencies and includes in their respective patches.
+- Convert gpio-regmap runtime-PM handling to cleanup guards.
+- Use active-only PM references for gpio-regmap operations.
+- Mark GPIO chips using runtime PM as sleep-capable.
+- Simplify the AD7768 GPIO auxiliary driver.
+- Clean up IIO and kernel coding-style issues across the series.
+- Drop the redundant Devicetree example.
+- Update the link to the latest Rev. D datasheet, update table
+  references.
+- Address the remaining binding description comments.
+- Link to v3: https://lore.kernel.org/r/20260813-ad7768-driver-v3-0-cb554399ad26@analog.com
+
+Changes in v3:
+- Split the IIO driver into core support and focused patches for sampling
+  modes, calibration, conversion delay, VCM, and GPIO registration.
+- Split AXI ADC mutex initialization into a separate preparatory patch.
+- Use PSEC_PER_SEC, explicit frequency units, unsigned frequency storage,
+  32-bit divider arithmetic, and rounddown_pow_of_two().
+- Use endian helpers and bulk regmap operations for calibration transfers,
+  while retaining single-register writes for the custom SPI protocol.
+- Validate the MCLK rate during probe and reject a zero computed DCLK rate.
+- Remove redundant SPI and channel-template state, regmap_attach_dev(),
+  unused includes, and a forward declaration, unused chn_mode assignment.
+- Move regulators additionalProperties and drop redundant GPIO
+  dependencies from the Devicetree binding.
+- Split the gpio-regmap changes and add the regmap_test_bits() conversion
+  as a separate cleanup.
+- Limit the generic gpio-regmap extension to optional runtime PM support.
+- Use an AD7768 reg_mask_xlate() callback to select the output latch for
+  output GPIOs and document why it is required.
+- Use regmap_test_bits() when reading the VCM enable state.
+- Use descriptive runtime PM cleanup labels and verify structure layout
+  with pahole.
+- Set the VCM regulator's regulators_node so constraints from the nested
+  vcm-output node are parsed.
+- Mark gpio-regmap GPIO chips as sleep-capable when a runtime PM device is
+  configured.
+- Reword the conversion-delay and buffered-capture documentation to
+  clarify their operation.
+- Link to v2: https://lore.kernel.org/r/20260806-ad7768-driver-v2-0-027ac5e2a641@analog.com
+
+Changes in v2:
+- Renamed and expanded supply descriptions, split reference to
+  ref1-supply and ref2-supply.
+- Added START and synchronization signal descriptions.
+- Added variant-specific channel and data-line validation.
+- Made adi,data-lines-number optional, defaulting to the maximum.
+- Renamed the precharge and reference-buffer properties, removed channel
+  mode and power mode properties.
+- Exposed the VCM output through the regulator framework and updated
+  documentation accordingly.
+- Improved runtime PM initialization and requested initial autosuspend
+  after probe.
+- Automatically assigned channels to two hardware mode profiles.
+- Selected the lowest noise compatible power mode when ODR ranges overlap.
+- Replaced the raw phase attribute with the standard conversion-delay
+  attribute.
+- Added filter-settling delays based on the selected filter and ODR.
+- Fixed AD7768-4 register and channel-bit mapping, including standby,
+  calibration, phase, precharge and reference-buffer handling.
+- Added direct-mode protection around runtime channel configuration.
+- Added calibration register range validation and documented
+  calibration values as raw unsigned 24-bit values.
+- Added the required reset pulse delay derived from MCLK.
+- Added a generic GPIO-regmap patch providing runtime-PM integration
+  and separate output-register readback.
+- Converted the AD7768 GPIO auxiliary driver to use gpio-regmap.
+- Documented that AXI ADC CRC control bit 8 is common to the AXI ADC
+  cores.
+- Added the missing AXI ADC mutex initialization.
+- Expanded the driver documentation to describe dynamic channel
+  grouping, power-mode selection, VCM regulation and conversion delay.
+- Link to v1: https://lore.kernel.org/r/20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com
+
+---
+Janani Sunil (17):
+      iio: adc: adi-axi-adc: Initialize state mutex
+      dt-bindings: iio: adc: Add AD7768
+      iio: backend: Add support for CRC
+      iio: adc: adi-axi-adc: Add support for CRC
+      iio: adc: Add AD7768 and AD7768-4 core support
+      iio: adc: ad7768: Validate master clock rate
+      iio: adc: ad7768: Add power mode helper
+      iio: adc: ad7768: Derive output data rates
+      iio: adc: ad7768: Configure channel sampling profiles
+      iio: adc: ad7768: Add sampling frequency controls
+      iio: adc: ad7768: Add per-channel filter controls
+      iio: adc: ad7768: Wait for digital filters to settle
+      iio: adc: ad7768: Add calibration controls
+      iio: adc: ad7768: Add per-channel conversion delay
+      iio: adc: ad7768: Add VCM regulator support
+      iio: adc: ad7768: Register GPIO auxiliary device
+      Documentation: iio: Add AD7768 Documentation
+
+ .../devicetree/bindings/iio/adc/adi,ad7768.yaml    |  270 +++
+ Documentation/iio/ad7768.rst                       |  275 +++
+ Documentation/iio/index.rst                        |    1 +
+ MAINTAINERS                                        |    9 +
+ drivers/iio/adc/Kconfig                            |   15 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/ad7768.c                           | 1923 ++++++++++++++++++++
+ drivers/iio/adc/adi-axi-adc.c                      |   25 +
+ drivers/iio/industrialio-backend.c                 |   33 +
+ include/linux/iio/backend.h                        |    6 +
+ 10 files changed, 2558 insertions(+)
+---
+base-commit: cee9395acd8043be0644b25c34bfa86623f2b935
+change-id: 20260708-ad7768-driver-10cd15296c20
+
+Best regards,
 -- 
-2.43.0
+Janani Sunil <janani.sunil@analog.com>
 
