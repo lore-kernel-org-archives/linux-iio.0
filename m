@@ -1,32 +1,32 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E460D3C1D6F;
-	Wed, 16 Sep 2026 18:30:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C2194D6C25;
+	Wed, 16 Sep 2026 18:38:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789583459; cv=none; b=HEYzM60yTKgGjOfFqrNBjgG5IoLSq53XdmwB2cebqm7So9gXbVKMuCO8LHr+cQ51kZ6rjetX/9wsWop+RLFDCAwNMB7Yk1J/hjf8gNQ6zmZ6Ye97+JtCufhom5ekzuJe49HcIPn7g4scuadMyIrFY8S9vYlRwK3k1KN0F581Xr4=
+	t=1789583922; cv=none; b=Nv5gaijkjg5m4+mOwfGfH71DiaO898T1tnPe1aUFOcT0V7OLFhgk1ZPDUTbOY+EspIAD6ZcTUgoTPTSgqr8rstjPIV64MhdW1mPgs1tIXNzN2sh93fBUVKahw9rHAzqMqjFufkjVSO4UThoeEQEa8Hoiyg+Qg2LsSeqjPkKkHNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789583459; c=relaxed/simple;
-	bh=DNox2b07xylBJuR8uuwZn8WR+4Dg9cFvEwwFr0HkWYc=;
+	s=arc-20240116; t=1789583922; c=relaxed/simple;
+	bh=Kmj2piQvTekmNry0dJIgneh0YfYITYhWcgxWZQ7r7Rc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CxAfMFmepTp3f3N+WAMKhJbH5ld2ycXIOeOzmcNKM3sqhNYt1fzCJBJd6r6O6GzneqRhdVkp0swRrqq2w+fI24++tzfh9JEGiRPgIdu2G6JBgumnsIlfHgbVKraJrTqidcbQFSlhHgd9MI24g+5q2oSp1TxnheRtWNOYcXQsXCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=jp95ag81; arc=none smtp.client-ip=13.77.154.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=KHp7aW6QmFxAMMVVwovclzqzIuJW9kNtmD2VolQxbpc4uKt+llaMI6Dodj+M48d2PK4Ek5NItKANgmO30/VoF543iXhocSKrDAct/lfWOZbUFpWiQCEY8+Wu6BIWw6udYCZJN95uMqkev/LKBCaYKBy11Z/92on9gTOu4Vo0odk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=rfvyhs86; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="jp95ag81"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="rfvyhs86"
 Received: by linux.microsoft.com (Postfix, from userid 1223)
-	id DE87520B7169; Wed, 16 Sep 2026 11:29:57 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DE87520B7169
+	id 1CEC920B7169; Wed, 16 Sep 2026 11:37:49 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1CEC920B7169
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1789583397;
-	bh=66yRjiZbxnq9mprxpNY9s32uLqj5SRsaSVuXRrNPJDo=;
+	s=default; t=1789583869;
+	bh=9wZWN3c7VtfU90nlylRqOxhet8YTp7k1kim88XV1ips=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jp95ag81bTPAfUxSwAMExx+Vq6XExpCBRqB/a+E59hTqkE1wEIzFPyYcabB2JGi6X
-	 m1lOuWIwhz/Xl0v6sxikBQLslMD7uVBiASTSbpbWwxtqVp7WwbbkBzjQcz8Noey/id
-	 ZrJSfh6hgBsaqrkZKroU94QqPJ7D0v7khXhi7nLo=
-Date: Wed, 16 Sep 2026 11:29:57 -0700
+	b=rfvyhs86B1WHn0HXBT2/McElIEdN6Md26yOwXBHT06v6u7v4r6/Saj0sxJHRis2yS
+	 mGIVyLRBWCrUYRtKfaw0bwXCSYo4X3clSVvu4cjWoPtEFsjc/yCljS/i+9m+t2hNym
+	 Uwy3mV8kPJ1dQ+74YMB7IQwZpHEQgNCeLfPkYbcM=
+Date: Wed, 16 Sep 2026 11:37:49 -0700
 From: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-To: Guenter Roeck <linux@roeck-us.net>
+To: Randy Dunlap <rdunlap@infradead.org>
 Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
 	linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
 	vitor.soares@toradex.com, samagazaryan@google.com,
@@ -34,7 +34,7 @@ Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
 	boris.brezillon@collabora.com,
 	oleksandr.shulzhenko.viktorovych@intel.com,
 	tgopinath@linux.microsoft.com, corbet@lwn.net,
-	skhan@linuxfoundation.org, Frank.Li@nxp.com,
+	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
 	jorge.marques@analog.com, pgaj@cadence.com,
 	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
 	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
@@ -49,11 +49,12 @@ Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
 	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
 	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] i3c: master: enable driver_override for I3C
-Message-ID: <20260916-2b134d3050dcbc59b45e40ce@linux.microsoft.com>
+Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
+ user-space access
+Message-ID: <20260916-6e1c9c4182821362eb097551@linux.microsoft.com>
 References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-2-meaganlloyd@linux.microsoft.com>
- <342236b8-11f0-44bc-b0f3-2f167a6f521b@roeck-us.net>
+ <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
+ <5cd22376-6921-4a2b-acba-371bcbbfa00f@infradead.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,16 +63,23 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <342236b8-11f0-44bc-b0f3-2f167a6f521b@roeck-us.net>
+In-Reply-To: <5cd22376-6921-4a2b-acba-371bcbbfa00f@infradead.org>
 
-> Separate patches for each hwmon driver, please. Each patch should use the
-> standard prefix used in hwmon drivers.
+> > +	close(fd);
+> > \ No newline at end of file
 > 
+> Fix the warning above, please.
+> Also:
+> Documentation/userspace-api/i3c/i3cdev.rst: WARNING: document isn't included in any toctree [toc.not_included]
+> 
+> add that file to the table of contents (somewhere).
+> 
+> thanks.
+> -- 
+> ~Randy
 
-> Thanks,
-> Guenter
-
-Will do, thanks for the feedback.
+Thanks for catching that! I'll add the newline at the end of the file as
+well as add this page to the table of contents.
 
 Best regards,
 Meagan
