@@ -1,92 +1,113 @@
-Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F032447805;
-	Wed, 16 Sep 2026 07:23:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45994432FD;
+	Wed, 16 Sep 2026 07:31:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789543421; cv=none; b=LSD7BDe7jEjT5pKh8U6TgZiXcRfOjVZWbdMwtE+jIh4OoBrfmc9Dn5YsRth76UkyUNova4lSmt5bhz+K3WAZ2pY2gaWs/8W/RI8ehdBY/9ikjvX3t5D4f82LEgLVYPk4wwB7GiUVMHlq1+mdlLTxnAj01DueWaq3/NsHuIYX8mg=
+	t=1789543883; cv=none; b=ckxPn+TAu8lZid04egaSHmEd6DdUgDeMw0i8TG4M6PU7oXov+pAbasChKQ5ZzeLEutyiDgTzH0EHziiqga5IMmTt7iYHlHQkiD95QZopOdewBpTShZxWLpKHzUfirycH4V3j/gMVvtAg5keBI8b1ecaQPwgloHW4EK+6ITggp9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789543421; c=relaxed/simple;
-	bh=CYU1jUqcD8f8ydXOmi/N32Vz1fMulUC8n8CJvnF356Q=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=BH6z516nv2+bcIZmbS+N4xU+JNowVVjNSQsunpPtlk2sE3hmSuFLEq8zghh+V4ATtwPKk4ka+BDBkCO2VM+YKgmkux48E97RFXd5PK7KYS+JPVhptdg9kzJrlD+2ufYIql8TgrrMPltXR1NHpeaR+MEP1H1QCvbL1VCeUIXEFzA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
-	by APP-03 (Coremail) with SMTP id rQCowAC3wD7jQ6pqYhTfBw--.23878S2;
-	Wed, 16 Sep 2026 15:23:15 +0800 (CST)
-From: Wentao Liang <vulab@iscas.ac.cn>
-To: david@lechnology.com
-Cc: jm@ti.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	wbg@kernel.org,
-	Wentao Liang <vulab@iscas.ac.cn>,
-	stable@vger.kernel.org
-Subject: [PATCH] counter: ti-eqep: Fix runtime PM imbalance in ti_eqep_probe()
-Date: Wed, 16 Sep 2026 07:22:47 +0000
-Message-Id: <20260916072247.1967830-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1789543883; c=relaxed/simple;
+	bh=rdGpBD8Eisa9ARLs+EWjxDE/BU5fmqrO4rcGBHOTxKQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KNSNMYAj8oPpLVZX2ScuZnHGjYiaJqsmvTwl5SDnk8UaM2HilP7Q/+QCAK8FcCVH45zcjb9KrqTkB/Ibsp+rV8tPg6eAPcCr86117H2mnoJB7evRswXp7I8/2ALKQ5bNhSYD8qOhitnB1RNMpuhkFNMjCMYg0GeP6eZAmTx0vkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XKos5u+F; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XKos5u+F"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789543874; x=1821079874;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rdGpBD8Eisa9ARLs+EWjxDE/BU5fmqrO4rcGBHOTxKQ=;
+  b=XKos5u+Fmuxw1tv+ANVXGCMtIwE3uckwMnC287Ffk7A3ktCnSGVGQPu4
+   5Om59v7R74KNP3leK3wiEV9m9cSuBAxG+ETRM6p3z6ms3wS4W7e42ZEQ3
+   U12rAMeoJCLAK6zgiDjoRzLu2CiQqlWAgwVT2a4N/vjaY737f9GO1PNRJ
+   4B34IQ6jvZkeNCTomn8i4deZVpYLwupyKxo2GcanXLigPLctv2losoDVP
+   JrywAGjNsWAEpmzs6ZRraazHS+4yIIxPVJsRDRfkrCfrUBThKQ+ORTU9e
+   fBRsd+zMDju8wtYYvXtS4CHRKvprZKZ6Ub6ilvmkccMQGUhsRccqrukfp
+   Q==;
+X-CSE-ConnectionGUID: G66v2xkQTdGIqjYBZXExcg==
+X-CSE-MsgGUID: R0OzfYAPQuu5NhUbJg/ktQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="107425637"
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="107425637"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 00:31:08 -0700
+X-CSE-ConnectionGUID: +73MyqACSgC/S9MuG04dwA==
+X-CSE-MsgGUID: xyi+tZQ3TEqb0E/J5aW5Ng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="311533637"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.145])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 00:31:05 -0700
+Date: Wed, 16 Sep 2026 10:31:02 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-kernel@vger.kernel.org, Nuno Sa <nuno.sa@analog.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH] docs: iio: backend: use literal block for commands
+Message-ID: <aqpFtj_yYBcznhDT@ashevche-desk.local>
+References: <20260916054924.2052572-1-rdunlap@infradead.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:rQCowAC3wD7jQ6pqYhTfBw--.23878S2
-X-Coremail-Antispam: 1UD129KBjvJXoWrZF1fAw1DXrWDXF18Zr1fZwb_yoW8Jr45pF
-	4vvF98tFyxXrWIkasrAw1kZF9Y9rW2yay8G34kWa48Zw15Ja4Yk3WUJFyaqF10vrZ5uw15
-	tw1DWFy7AF4Yyr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvj14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_Jw0_WrylYx0Ex4A2jsIE14v26F4j6r4UJwAm72CE4IkC6x0Yz7v_Jr
-	0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0En4kS14v2
-	6r126r1DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
-	AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCI
-	c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267
-	AKxVWxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j
-	6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjfUrF
-	ApUUUUU
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBwQMA2qqQJUOSgAAsd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260916054924.2052572-1-rdunlap@infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-In ti_eqep_probe(), runtime PM is enabled and acquired via
-pm_runtime_get_sync(dev). However, if devm_clk_get_enabled() fails,
-the function returns directly without calling pm_runtime_put_sync()
-and pm_runtime_disable(), leaving the runtime PM usage count and
-enable state unbalanced.
+On Tue, Sep 15, 2026 at 10:49:24PM -0700, Randy Dunlap wrote:
+> Use literal blocks for 'cat' and 'echo' commands to separate them from
+> the surrounding text. Otherwise the lines run together, without any
+> clear break before or after the commands.
 
-Add the missing pm_runtime_put_sync() and pm_runtime_disable() calls
-on the clock error path.
+...
 
-Fixes: 0cf81c73e4c6 ("counter: ti-eqep: enable clock at probe")
-Cc: stable@vger.kernel.org
-Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
----
- drivers/counter/ti-eqep.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> -		Directly access the registers of backend Y. Typical usage is:
+> +		Directly access the registers of backend Y. Typical usage is::
+>  
+> -		Reading address 0x50
+> -		echo 0x50 > direct_reg_access
+> -		cat direct_reg_access
+> +		  Reading address 0x50
 
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index d21c157e531a..84fbf500b0f8 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -548,8 +548,11 @@ static int ti_eqep_probe(struct platform_device *pdev)
- 	pm_runtime_get_sync(dev);
- 
- 	clk = devm_clk_get_enabled(dev, NULL);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
-+		pm_runtime_put_sync(dev);
-+		pm_runtime_disable(dev);
- 		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
-+	}
- 
- 	err = counter_add(counter);
- 	if (err < 0) {
+Then make it a shell comment style
+
+		  # Reading address 0x50
+
+> +		  echo 0x50 > direct_reg_access
+> +		  cat direct_reg_access
+>  
+> -		Writing address 0x50
+> -		echo 0x50 0x3 > direct_reg_access
+> -		//readback address 0x50
+> -		cat direct_reg_access
+
+> +		  Writing address 0x50
+
+Ditto.
+
+> +		  echo 0x50 0x3 > direct_reg_access
+> +		  //readback address 0x50
+
+And correct the style of this altogether.
+
+> +		  cat direct_reg_access
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
