@@ -1,61 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45994432FD;
-	Wed, 16 Sep 2026 07:31:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C583448BA8;
+	Wed, 16 Sep 2026 07:35:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789543883; cv=none; b=ckxPn+TAu8lZid04egaSHmEd6DdUgDeMw0i8TG4M6PU7oXov+pAbasChKQ5ZzeLEutyiDgTzH0EHziiqga5IMmTt7iYHlHQkiD95QZopOdewBpTShZxWLpKHzUfirycH4V3j/gMVvtAg5keBI8b1ecaQPwgloHW4EK+6ITggp9I=
+	t=1789544166; cv=none; b=UxBmm9A/6Kkx2Gm2M09M4/R+yQKCsCKsIc82VKF+Vb4itsUx1H6IKgNiZgXzvo4t1EB71qvneyT9I7vrZSgTQGVREHk0NELb/ypPpNYBM0UmL/FzWvaGFvon0Vc82yhgAt8IRREE1tTEcE+eW0XHXo+WwB6cr89YwVp04uhDkvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789543883; c=relaxed/simple;
-	bh=rdGpBD8Eisa9ARLs+EWjxDE/BU5fmqrO4rcGBHOTxKQ=;
+	s=arc-20240116; t=1789544166; c=relaxed/simple;
+	bh=GkzRMnHLUAmW3pw+F+QgiPFULxg/81kYYY7dmuCPp9U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KNSNMYAj8oPpLVZX2ScuZnHGjYiaJqsmvTwl5SDnk8UaM2HilP7Q/+QCAK8FcCVH45zcjb9KrqTkB/Ibsp+rV8tPg6eAPcCr86117H2mnoJB7evRswXp7I8/2ALKQ5bNhSYD8qOhitnB1RNMpuhkFNMjCMYg0GeP6eZAmTx0vkk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XKos5u+F; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=m+4/pQ+Zb8UxKT59Ehvz1qZhLIjSIwuAiQZ+V1W6ZCZO0dIFpg0V/5zGM5T7wX7un/RbfY/hh44JbhRWBu5MKGlDfWc0lkMILTV/m/hLAgQPck8nG8V37iSqafY1eiVFDKPmEiEd2EUC9lhMb+hn6VFUeJqTVDnZEyWri9LUjQE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZtTpbNLU; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XKos5u+F"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZtTpbNLU"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789543874; x=1821079874;
+  t=1789544149; x=1821080149;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=rdGpBD8Eisa9ARLs+EWjxDE/BU5fmqrO4rcGBHOTxKQ=;
-  b=XKos5u+Fmuxw1tv+ANVXGCMtIwE3uckwMnC287Ffk7A3ktCnSGVGQPu4
-   5Om59v7R74KNP3leK3wiEV9m9cSuBAxG+ETRM6p3z6ms3wS4W7e42ZEQ3
-   U12rAMeoJCLAK6zgiDjoRzLu2CiQqlWAgwVT2a4N/vjaY737f9GO1PNRJ
-   4B34IQ6jvZkeNCTomn8i4deZVpYLwupyKxo2GcanXLigPLctv2losoDVP
-   JrywAGjNsWAEpmzs6ZRraazHS+4yIIxPVJsRDRfkrCfrUBThKQ+ORTU9e
-   fBRsd+zMDju8wtYYvXtS4CHRKvprZKZ6Ub6ilvmkccMQGUhsRccqrukfp
-   Q==;
-X-CSE-ConnectionGUID: G66v2xkQTdGIqjYBZXExcg==
-X-CSE-MsgGUID: R0OzfYAPQuu5NhUbJg/ktQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="107425637"
+  bh=GkzRMnHLUAmW3pw+F+QgiPFULxg/81kYYY7dmuCPp9U=;
+  b=ZtTpbNLUgmgo63ZMEqbwtHA8YhY3XW6BCAoZO2Kp2sGhPhVm0mipgZ7z
+   Z0d5ooc/7EP9Z4LUWLYQqHRita9Gonf+EyC4u+4Ms1wVyp0uaSk2z/KU+
+   vYTwjXVmkunH1vKIYGn5hl6Rx1pNk2Hxd4NN5WegMXaPiUkPzDRoT6Oty
+   XqJEBLTQUtS6FC18ZTGvMgr0+YmMJPpnsS7/lgMXv8llFTgCuD1cQFpYK
+   J2XUAHQwk815rHP48b+Jom46hktlSPiMLyDj6eS+HGIAegysAXRvda3Vf
+   WXuNqzFhww1PMoQXfVPD08F8VhA20NfEMoN8xNHNjgSMVD6tZpKEWEL2Q
+   w==;
+X-CSE-ConnectionGUID: mgO986L7Riem/cLgPbKw1w==
+X-CSE-MsgGUID: 5Uad1/FiS2KF6tykk3DA7Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="88851660"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="107425637"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 00:31:08 -0700
-X-CSE-ConnectionGUID: +73MyqACSgC/S9MuG04dwA==
-X-CSE-MsgGUID: xyi+tZQ3TEqb0E/J5aW5Ng==
+   d="scan'208";a="88851660"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 00:35:45 -0700
+X-CSE-ConnectionGUID: GSN9yJVbRO2xpOZsPAj3VA==
+X-CSE-MsgGUID: VOs25VG+S32ijjFd8p0pTA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="311533637"
+   d="scan'208";a="267043796"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.145])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 00:31:05 -0700
-Date: Wed, 16 Sep 2026 10:31:02 +0300
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 00:35:41 -0700
+Date: Wed, 16 Sep 2026 10:35:39 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-kernel@vger.kernel.org, Nuno Sa <nuno.sa@analog.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH] docs: iio: backend: use literal block for commands
-Message-ID: <aqpFtj_yYBcznhDT@ashevche-desk.local>
-References: <20260916054924.2052572-1-rdunlap@infradead.org>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: stm32-adc: fix possible division by zero in
+ processed channel
+Message-ID: <aqpGy9oQkDC-xZGW@ashevche-desk.local>
+References: <20260915-adc-fix-div0-v1-1-7daed9e52f2f@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,47 +68,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260916054924.2052572-1-rdunlap@infradead.org>
+In-Reply-To: <20260915-adc-fix-div0-v1-1-7daed9e52f2f@foss.st.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Sep 15, 2026 at 10:49:24PM -0700, Randy Dunlap wrote:
-> Use literal blocks for 'cat' and 'echo' commands to separate them from
-> the surrounding text. Otherwise the lines run together, without any
-> clear break before or after the commands.
+On Tue, Sep 15, 2026 at 06:10:40PM +0200, Fabrice Gasnier wrote:
+> In case the conversion has failed or returned zero, processing *val
+> can lead to a division by zero.
+> Need to check for errors, or converted value is zero, before processing
+> the data.
+> In case converted value is zero, e.g. the Vrefint channel, this should
+> be considered as invalid in all case.
+
+Something went very wrong with the indentation of the above.
 
 ...
 
-> -		Directly access the registers of backend Y. Typical usage is:
-> +		Directly access the registers of backend Y. Typical usage is::
->  
-> -		Reading address 0x50
-> -		echo 0x50 > direct_reg_access
-> -		cat direct_reg_access
-> +		  Reading address 0x50
+> -		if (mask == IIO_CHAN_INFO_PROCESSED)
+> -			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
+> +		if (mask == IIO_CHAN_INFO_PROCESSED) {
+> +			if (ret >= 0 && *val)
+> +				*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
+> +			else
+> +				ret = ret < 0 ? ret : -EINVAL;
+> +		}
 
-Then make it a shell comment style
+Reuse of the *val makes code harder to follow. Add a temporary variable for
+this and do something like this (also note other simplifications)
 
-		  # Reading address 0x50
+		tmp_choose_good_name = *val;
+		...
+		if (mask == IIO_CHAN_INFO_PROCESSED) {
+			if (ret < 0)
+				return ret;
+			if (tmp == 0)
+				return -EINVAL;
 
-> +		  echo 0x50 > direct_reg_access
-> +		  cat direct_reg_access
->  
-> -		Writing address 0x50
-> -		echo 0x50 0x3 > direct_reg_access
-> -		//readback address 0x50
-> -		cat direct_reg_access
+			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / tmp;
+		}
 
-> +		  Writing address 0x50
-
-Ditto.
-
-> +		  echo 0x50 0x3 > direct_reg_access
-> +		  //readback address 0x50
-
-And correct the style of this altogether.
-
-> +		  cat direct_reg_access
+>  		iio_device_release_direct(indio_dev);
+>  		return ret;
 
 -- 
 With Best Regards,
