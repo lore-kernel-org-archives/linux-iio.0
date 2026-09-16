@@ -1,37 +1,37 @@
-Received: from mail-43171.protonmail.ch (mail-43171.protonmail.ch [185.70.43.171])
+Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E129466AEF
-	for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2026 08:09:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D0984483AF;
+	Wed, 16 Sep 2026 08:09:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789546198; cv=none; b=pfBIu7QbK3AAUyVAkcyqrv4Jzd14JhQ/H5um7/W+G+hULNySCqFPS8QWm0+61J9UtetjkPBjhovpSFlVBE5byOUofg+mBFiQE4NzsXMEb8s1DXBeCcSxZmfwIdT2mXhs2Ep9/i5mRCu2TJg+UYcRuBtfLn6NuCFaLHVzNYf8RR4=
+	t=1789546189; cv=none; b=Sd4uofQXky8vrdqRgrQgBt351S5VNMGn/gDuMxS3hP+SF0dqP3TJeaxIBxcHgp3XEUQ+dhwytqwQXQ7q+bauaLD16LhyjVDQNuphZHTgNyUIR4Y+f8sZqD78PGHfEs8zNRZHATRpLz76G8Anr+p2llsq+2hmIEMqClwkdIcd2JI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789546198; c=relaxed/simple;
-	bh=K1jPbnIpn2vPrtvqzcNi7Vjb6hG0x04g8LVYMsnM6gY=;
+	s=arc-20240116; t=1789546189; c=relaxed/simple;
+	bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=QlJ9Os6EuDTt1xiQGDrc2+/U2di3muH7ONNfskHP1WxbC+2CxxK+J6f0zMVlxajICsn8jzZ71brRpJ7+BTegyOvwgzXbjK8pRz3rJ0rDn2eLxXxAml95I1mTjSiLRDasuCcML6NlONrMf/896pDI8c8O89ROc5+4GEB2MQv79ds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=ZZQ53PU3; arc=none smtp.client-ip=185.70.43.171
+	 In-Reply-To:To:Cc; b=e+objT0xXsDxBeudq2VVoNDDgHKN9BphEG0zXVAzmyJI2T8djDTqmkEYSiS2GtBBM1/hgQDEH71x80/If8irvOgXiIce6P8nFfDaEqX2UNabVjbfyDzIwbShHl3LUbZ5P3jG3Qycisw+ZJLMTSYX1Pu3X4wvmDskWu/hZoRT0J0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=jgvbVR1C; arc=none smtp.client-ip=185.70.43.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="ZZQ53PU3"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="jgvbVR1C"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1789546172; x=1789805372;
-	bh=QCIfMsx6KjKXpnoxBI1XGkxGk4Y7Sik+nYV7bSHmLbY=;
+	s=protonmail; t=1789546162; x=1789805362;
+	bh=sNcmNScEhpmF/4cOJIi/n2ntDi0iE/3WYicZo1sq86I=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=ZZQ53PU3kiySaayOLmyA8tfwYe5hQjIggQD1A8wYKzkd3PpD6YrA1kBaLeVRvFbui
-	 lgaAXTC3LhAC+OYuRumC1xUjArgOSAhOL3UYR9d7DRCfSv2o+SAHpfl8tRsWf5TbZl
-	 kRP0mvdT2pca1dl3YQcNVFCs3qRJa4FBsKwtEO2qFaDxkQkzDQljrD/6vD1yMh/zM/
-	 3Av3gBQDFFIzYDxa9c+2SCk5z7zn9mt+khKRG5S3yBIhzuMgLMQ58zoK43VkOMcXsa
-	 TGctV/6x0K2Mb+HXPc9yvqKUN60lz+pm0yfOpwkwrMQMsM369w1HCYCojRPeT/iSGK
-	 Fnnb3DBAObH2w==
-X-Pm-Submission-Id: 4hlBPQ5mGsz2ScPS
+	b=jgvbVR1C2miDAi8+mWdOxhQ2VIBjqj7+WGoaYWQva0zQV3ZhySWAvo2rRIX0dX+wa
+	 xmGT8XEgXuNCfjQumFc3LxW0gVVXd/kbgz0B85ZvFIHbPx49CGbZIN2b85ftYUlGQd
+	 4XD2zzCBc9VAzuRREEpviR1N60fOaswHvU9ZFuEOI0qeaKStdtc8n56SklJiXQE/Uf
+	 o+plmjr3iIvfWVQgdLh7vzTx4Usr23qJ+pPMoXbMjiCDpoCLDKd6+ecDnH8Y3v73/5
+	 XSaApKUpc3auokq3IQJBWTZklzESDFHC6foP28e6SonnPyQdGgnxlKjap95en5pj8N
+	 hCsKlEuPuBMhA==
+X-Pm-Submission-Id: 4hlBPD2cLfz1DDKv
 From: Esben Haabendal <esben@geanix.com>
-Date: Wed, 16 Sep 2026 10:08:02 +0200
-Subject: [PATCH v9 06/10] iio: accel: mma8452: Fix unintended comment
- indent
+Date: Wed, 16 Sep 2026 10:07:57 +0200
+Subject: [PATCH v9 01/10] dt-bindings: iio: accel: mma8452: Add
+ drive-open-drain
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260916-mma8452-open-drain-v9-6-0dd24fa2f3d7@geanix.com>
+Message-Id: <20260916-mma8452-open-drain-v9-1-0dd24fa2f3d7@geanix.com>
 References: <20260916-mma8452-open-drain-v9-0-0dd24fa2f3d7@geanix.com>
 In-Reply-To: <20260916-mma8452-open-drain-v9-0-0dd24fa2f3d7@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -53,67 +53,42 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, 
  Christoph Muellner <christoph.muellner@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789546157; l=2166;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789546157; l=1037;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=K1jPbnIpn2vPrtvqzcNi7Vjb6hG0x04g8LVYMsnM6gY=;
- b=bmWELgMFJN5IP12tltf9Vblc4o5YDdxcqFoCmHGAV2ms0pCK9zHvrcW+vQOqLv5FmhWxhc0IY
- ZT92Utb2lw1AAa8uJ2TEWrelv8+p9UvxZuEgWYT+gEQ3u8tWoeHC0p7
+ bh=Vy2kFGWf40LZZu/OrRKxOp27EqZPY3iYxkaZKLnSAbQ=;
+ b=Xylm022efn23CkDn2cmNcTM9uttisqYkTx3O6Bgd6V5Sp9P71o/xLgVH9Zgfz9Xmp2y2CLNH6
+ 1OuA7/VRvGyCPmcQz2QKxwRr9mZ4OXfe5N8ht2mv7VFfWxP+T9Isowa
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-The extra space this block was indented with looks quite untraditional, and
-does not align with the common style used in the kernel.
+Add new boolean to configure selected interrupt pin to open drain instead
+of the default push-pull mode.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/accel/mma8452.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 72b4ab32775a..b70bc8638128 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -122,21 +122,21 @@ struct mma8452_data {
- 	u8 data_cfg;
- };
+diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
+index b0dd2b4e116a..20701aa725d0 100644
+--- a/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma8452.yaml
+@@ -39,6 +39,12 @@ properties:
+     minItems: 1
+     maxItems: 2
  
-- /**
--  * struct mma8452_event_regs - chip specific data related to events
--  * @ev_cfg:			event config register address
--  * @ev_cfg_ele:			latch bit in event config register
--  * @ev_cfg_chan_shift:		number of the bit to enable events in X
--  *				direction; in event config register
--  * @ev_src:			event source register address
--  * @ev_ths:			event threshold register address
--  * @ev_ths_mask:		mask for the threshold value
--  * @ev_count:			event count (period) register address
--  *
--  * Since not all chips supported by the driver support comparing high pass
--  * filtered data for events (interrupts), different interrupt sources are
--  * used for different chips and the relevant registers are included here.
--  */
-+/**
-+ * struct mma8452_event_regs - chip specific data related to events
-+ * @ev_cfg:			event config register address
-+ * @ev_cfg_ele:			latch bit in event config register
-+ * @ev_cfg_chan_shift:		number of the bit to enable events in X
-+ *				direction; in event config register
-+ * @ev_src:			event source register address
-+ * @ev_ths:			event threshold register address
-+ * @ev_ths_mask:		mask for the threshold value
-+ * @ev_count:			event count (period) register address
-+ *
-+ * Since not all chips supported by the driver support comparing high pass
-+ * filtered data for events (interrupts), different interrupt sources are
-+ * used for different chips and the relevant registers are included here.
-+ */
- struct mma8452_event_regs {
- 	u8 ev_cfg;
- 	u8 ev_cfg_ele;
++  drive-open-drain:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: the interrupt line will be configured as open drain, which is
++      useful if several sensors share the same interrupt line. (This binding is
++      taken from pinctrl.)
++
+   vdd-supply: true
+   vddio-supply: true
+ 
 
 -- 
 2.55.0
