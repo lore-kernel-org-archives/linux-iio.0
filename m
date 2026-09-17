@@ -1,169 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.6])
+Received: from mail-106112.protonmail.ch (mail-106112.protonmail.ch [79.135.106.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD8E22FE0E;
-	Thu, 17 Sep 2026 06:24:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 176AC3B42C0;
+	Thu, 17 Sep 2026 06:24:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.112
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789626287; cv=none; b=omljkekw5a95k0ZIULxdQpdZ2dwzoB2ppE7h7b8KtkxwMfLiFwSsfDZfJ73tQ56yLC1JPxGO0+Za0Q/YY3kHq87lnXxE5SMHVtpl33A1BRcybN7fplfUHpEvXWbuU9tDdLCwQat+MKNJd29PRXVnjsnhXtEYIxeErbSDBDVrnd0=
+	t=1789626292; cv=none; b=pDhVfYXquwcVxybckaM+/L5/uVSO5c6JlHNaYPbpXVAlsJAzi31Oux3l4tfjrZJlnqexrCcNMUBeijvLtrSkt+9bRyIItWssyTy/Bw4m2I4LFWmFKBiXovYek2u510PEPzfnGO0WX7y/57VpS91tSv4os05cZlSte2vj3fN8yeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789626287; c=relaxed/simple;
-	bh=qT+cSvgxR/drCHZE3qZtKVtSgJX/veG+thk2cR/IrnE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CuZjMq6fs+XJMb/Lyk61B5cSd4U2SPN8e8rEvqbHC87sBVpphKC4B00v6hvbFebZqwabDzWR4CENiHWwVQkidNH4kHj0sGi8V0upAo9riOYNb7jnu1AQO6p80Yl6rqR50CYknos+/Y9o0rHZRlOejbH9ZpLs4dJ8zcMe7uQBtbc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B9hQH3va; arc=none smtp.client-ip=192.198.163.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1789626292; c=relaxed/simple;
+	bh=rnJOIiNTcdbASSkEuhTpF8A1YSK0nv3UCrd+KByTuhQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=f20k7ngaG5C18wWQoOhF496uAHdg7ViyA/OgtJPRhYuNXzXW3F3kViw8m4JqjPM5HrA0+H+17fAZaJ1lAzaNsNmWu4/3NgCYyF1uqG6xR7Elq5+JTKsPzjfD2SVcihbKoUYD5DWaGU62U1YlFHgG+8FBJ1Tzp0MuX4EDhEMn5AU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=rn/ZrrgS; arc=none smtp.client-ip=79.135.106.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B9hQH3va"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789626286; x=1821162286;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qT+cSvgxR/drCHZE3qZtKVtSgJX/veG+thk2cR/IrnE=;
-  b=B9hQH3vaHDZbMt8HwlnghWIzmF2oT9oxp5vovijtfotAJHudkBY5lK64
-   cXAaFv9w5ZtqDwIW1fdcWL0yfCxYU0jZgveExqLRpwKZ1fUApjYugInZ3
-   lSEju+ymhZXbNZUbEl/plCd66Q3L3JrXBHY3+CYEk9OXmWDJG64IkccIo
-   10GjYj9BJGM9QjZvGPqI7uUYV07zeHgEK6RENpk4QsgYS1fApzl3dfjYY
-   TmxI9IqzGnNN2eHhCgQPcMU1OOEleTjjjVnFyJORotCLLhIcXcbcu8qNu
-   daK1HmdBBSGB6S+SJDzGdcjZnbBT7WKH79VnctT/W982+IDsYr5EthMmY
-   Q==;
-X-CSE-ConnectionGUID: Dm5ZTCMxRzKyaWFUkNH6kw==
-X-CSE-MsgGUID: NSwpQKydTYehtsz5wwI3eg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="521666"
-X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="521666"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa116.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 23:24:11 -0700
-X-CSE-ConnectionGUID: qhUQHYQJTCqSbjz7LP9MMQ==
-X-CSE-MsgGUID: C0p1b/cgTB2SPYyn8EQStA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="270954024"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.11])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 23:24:02 -0700
-Date: Thu, 17 Sep 2026 09:23:59 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-Cc: linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
-	vitor.soares@toradex.com, samagazaryan@google.com,
-	gregkh@linuxfoundation.org, arnd@arndb.de,
-	boris.brezillon@collabora.com,
-	oleksandr.shulzhenko.viktorovych@intel.com,
-	tgopinath@linux.microsoft.com, corbet@lwn.net,
-	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
-	jorge.marques@analog.com, pgaj@cadence.com,
-	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
-	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
-	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
-	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
-	haren@linux.ibm.com, pasha.tatashin@soleen.com,
-	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
-	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
-	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
-	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
-	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/3] I3C character device driver using driver_override
-Message-ID: <aquHf5yuubnCvgHT@ashevche-desk.local>
-References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <aqVTBIKRP3iRDCvf@ashevche-desk.local>
- <20260916-8a117e874c96753fd704b163@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="rn/ZrrgS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail; t=1789626284; x=1789885484;
+	bh=TA6rlXyicXZfTTHClBxkqFgtYRL1l+vtdpQgmLVwMGc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=rn/ZrrgSSIExsU9ZgAdwG6yolw/s2LXHZUHF2mUWlphzHYutwhNubTUZg45iVdC+v
+	 VOtFkfwQMll90wLolFnkO9sJfG3UlYHVtYg+V7QU04Qn9BBPSVp+9qTms7ZwJjJJPi
+	 5ny5hurjyLw7UcCd4uOw2kn0wNUdqkHTCmQBChi5/eNcfy8JWSNjBMJyDFiD6HatkV
+	 zkBk1GNeCtS5mHfbZrgDEj+JvjqlEvasNegPYzOJ+7g+4XXNVoe1f6Xnfk2JYv/Bw/
+	 rh02FUsdBUSPRJqJvJbmDKpOMR7M7hXxGioZdifxQMp9zC77czok/coL9dmVatuNfJ
+	 1Q5B9p3uDXLqg==
+X-Pm-Submission-Id: 4hlm220bDBz2ScPL
+From: Esben Haabendal <esben@geanix.com>
+To: "Jonathan Cameron" <jic23@kernel.org>
+Cc: "Martin Kepplinger" <martink@posteo.de>,  "Lars-Peter Clausen"
+ <lars@metafoo.de>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
+  "Sean Nyekjaer" <sean@geanix.com>,  "David Lechner"
+ <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+  "Andy Shevchenko"
+ <andy@kernel.org>,  "Martin Kepplinger"
+ <martin.kepplinger@theobroma-systems.com>,  "Christoph Muellner"
+ <christoph.muellner@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
+  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 9/9] iio: accel: mma8452: Support interrupt sharing
+In-Reply-To: <20260917034607.2674781e@jic23-hlaptop>
+References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
+	<20260907-mma8452-open-drain-v8-9-c17407e22118@geanix.com>
+	<_9NG2PCqwv-AxkrhQVOkPVIgvYD4-t2CFH5W5HVBmr35w9xmX9v9FIraB1OPE8Ssbd_pjQqM-bq3DEAtRl78Sg==@protonmail.internalid>
+	<20260914002203.5ca07dd0@jic23-hlaptop> <87y0d4pal0.fsf@geanix.com>
+	<C6aGTWK07IZGyMQVOFXCAuZody8OsqRS5uG0Kd88ikhzwZ4SDBhHmsku0KivRAa0i6oyuYBvLiau1uFJKwa5Mg==@protonmail.internalid>
+	<20260917034607.2674781e@jic23-hlaptop>
+Date: Thu, 17 Sep 2026 08:24:41 +0200
+Message-ID: <871pas8keu.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260916-8a117e874c96753fd704b163@linux.microsoft.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain
 
-On Wed, Sep 16, 2026 at 12:28:57PM -0700, Meagan Lloyd wrote:
-> On Sat, Sep 12, 2026 at 04:26:28PM +0300, Andy Shevchenko wrote:
-> > On Fri, Sep 11, 2026 at 02:09:32PM -0700, Meagan Lloyd wrote:
-> > > This is a rework and revival option for Vitor Soares' I3C character
-> > > device driver patch series from 2020 [1] that I've been exploring for a
-> > > few months.  Recently there was a revival posted to the list [2], so I
-> > > wanted to share this design option as well.
-> > > 
-> > > In [1] and [2], the i3cdev driver automatically attaches and detaches
-> > > depending whether another driver has attached/not. In [1], Boris was
-> > > suggesting we explore a more straightforward and traditional binding
-> > > method aligning with the Linux driver model. At the time, there wasn't
-> > > a way to auto-bind while keeping manual binding possible as they shared
-> > > the same match() hook. Now with the new driver_override feature,
-> > 
-> > Where is it new? It's quite an old mechanism in the driver core...
-> 
-> My understanding is that this support was added in March 2026 here:
-> https://lore.kernel.org/all/20260303115720.48783-1-dakr@kernel.org/
+"Jonathan Cameron" <jic23@kernel.org> writes:
 
-> Some busses had their own version of this, but the above series made
-> a general, re-usable solution available.
+>> >> +	if (pm_status == 0)
+>> >> +		return IRQ_NONE; /* device is powered down */
+>> >
+>> >> @@ -1784,29 +1796,62 @@ static void mma8452_remove(struct i2c_client *client)
+>> >>  #ifdef CONFIG_PM
+>> >>  static int mma8452_runtime_suspend(struct device *dev)
+>> >>  {
+>> >> -	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> >> +	struct i2c_client *client = to_i2c_client(dev);
+>> >> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> >>  	struct mma8452_data *data = iio_priv(indio_dev);
+>> >>  	int ret;
+>> >>
+>> >> -	scoped_guard(mutex, &data->lock)
+>> >> -		ret = mma8452_standby(data);
+>> >> +	guard(mutex)(&data->lock);
+>> > Mixing guards...
+>>
+>> Yes, I know. Resolving that turned out to be a bit more painful than I
+>> thought. I do have that resolved in the next series I keep on talking
+>> about. But distilling that as a separate patch for adding to this series
+>> turned out to be impossible, as it relies on some of the other work,
+>> like refactoring of the ACTIVE/STANDBY state handling (synchronization),
+>> and most importantly, the switch to using regmap caching to properly
+>> handle restoring of register values on resume.
+>>
+>> I am therefore hoping that we can find some way to agree on things here,
+>> and then properly resolve it in the next series...
+>
+> Ok. It is fine for now.  Perhaps add a comment along the lines of
+> /* Must be first action in scope that needs to be undone on error */
+>
+> And hopefully it won't be around long enough for anyone to copy it
+> into more code!
 
-Nope, the series fixes the bug and at the same time refactored to provide a
-generalised solution. The driver_override as a concept exists for ages.
+Ok. I got a bit trigger happy, so v9 is now sent with a proposed
+(temporary) fix for it it instead. If that meets resistance, I will
+consider falling back to adding the comment you proposed above.
 
-> > > the auto-binding of i3cdev on boot can be avoided if the i3cdev driver has
-> > > an empty match ID table. After boot, where specialized drivers would have
-> > > already bound, user-space can explicitly opt-in by setting the
-> > > driver_override sysfs file with 'i3cdev' and manually binding via sysfs
-> > > (or by simply loading the driver if it's loadable). This can also be
-> > > easily automated with udev rules that run whenever the I3C core exposes
-> > > a new device.
-
-> > > One downside of the automatic attach/de-attach is that if a different
-> > > driver is loaded later, the first driver could have altered something
-> > > on the device, breaking any assumptions of the subsequent driver.
-
-...
-
-> > > Note that i3c-tools [3] or a fork of it will need small updates:
-> > > 1. Update include/uapi/linux/i3c/i3cdev.h to match updated uapi structs
-> > > 2. In i3ctransfer.c, use actual_len for reads
-> > 
-> > > I've added MODULE_VERSION("1.0.0") in the i3cdev driver, so i3c-tools
-> > > could use that to determine whether to use the old out-of-tree uapi or this one.
-> > 
-> > Absolutely no. This is legacy macro which has no need since Git era. In Git
-> > the module version is the Git SHA hash of the tip of the used tree. Nobody will
-> > understand what 1.0.0 means and how it maps to the applied patches (if any of
-> > them affects the behaviour of the feature in question).
-> > 
-> > On top of that, upstream has no clue what and how many possible custom ABIs /
-> > UAPIs exists, and we do not care, to be honest.
-> > 
-> > > [1] https://lore.kernel.org/linux-i3c/cover.1582069402.git.vitor.soares@synopsys.com/
-> > > [2] https://lore.kernel.org/linux-i3c/ap_1-gFF7S821xJT@ninjato/T/#m9107c1785a4a16b1b3cb84c3269d17fac35819c8
-> > > [3] https://github.com/vitor-soares-snps/i3c-tools
-
-> My reasoning was that i3c-tools has been around for years now and it may
-> be in-use assuming the UAPI from [1]. Adding MODULE_VERSION was a low
-> effort, compatible, and
-
-> reliable way
-
-Nope, you are mistaken. As I explained the opaque 1.0.0 means nothing. The Git
-SHA *is* the version of the code in question.
-
-> to keep using the same i3c-tools
-> repo (and accommodate a changed UAPI).
-> 
-> In any case, in Sam's thread [2], there is talk of moving i3c-tools into
-> the kernel's tools directory. That's the better solution, so I can drop
-> the MODULE_VERSION in future revisions.
-
-This is really orthogonal. But yes, keeping tools at the kernel source tree
-makes sense for a better maintenance.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+/Esben
