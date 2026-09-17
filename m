@@ -1,50 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9192C1788;
-	Thu, 17 Sep 2026 03:01:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B3D73537E8;
+	Thu, 17 Sep 2026 03:05:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789614078; cv=none; b=HBljUhZXR8f4jU/TIwivW0hraNL6mA0ymefXx/KJjVpxoZwus4e0n3qqTrM8B9cY9MZG2jGR2LUiMQDELGtmiylXhiqCShtjUlV90mVSQnog24s0xxmSUmjdSNy4tTjCQXpLvBFwyaXb8QPI0zBn5U14AQTnhC3waQQDbOgNTmw=
+	t=1789614351; cv=none; b=Pfn2v734FU8JKiGh9zONuPcrIvycfFoA9CVosiwJiu+LAvls+x01OQb8QnvKBxwPM09Qv7fsNGRJr2Ecjk177GkzQjvZOSWDtGMII6X7AN72iXH571395kJLRnOF/RkyQfVs2BYL0rZQNmLnraTRrbBA5rHWrt3C/AMHeZvVQY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789614078; c=relaxed/simple;
-	bh=QWJAJqvH1e/AGtyDInlJSpQJy2Zn0TUCa22Mxp86lic=;
+	s=arc-20240116; t=1789614351; c=relaxed/simple;
+	bh=jbeJzO5n6sJ+4m6lQ6TLwCWBTO8CHq1Cqr1AMsCx2gA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VDVm8uARxVNRQmIY/axiElxNyH1J6RLxxqFK4cXPtGMZVpMeScl4LxrGVm8eoR+hVXX9qq/x/4qIL5UnBoPNkeiabShh46ZtZ+ZW3PWxgWDMSQuGNr4MwpXqlTjz8nISnSEvneYyKWhQXnHADHYWXt806Dzyl2nUmZRqurR1zSs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nEaz2tU+; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hiE07oX7jB8XqBbkeNTrS3QUCNHYNmtlcetjnZFhmT5CQOvZByzcGRarD+4D+gBFa/TCklWMoel/V9e4RIlQw6lBokl5VPDMbZ+CVnvrYaPp+2hD2ZJDP0drqlDiFevunpwn9YrU8ULLeH9pEbgih9kGQd6Phsq9aMn90PdI41w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cHwLeRuf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nEaz2tU+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E1E1F000FF;
-	Thu, 17 Sep 2026 03:01:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cHwLeRuf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9CDC1F000FF;
+	Thu, 17 Sep 2026 03:05:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789614070;
-	bh=YZ3EH78hvQbWNUoIiyebmp9fOz2qE1EZcl3jVsHy+wo=;
+	s=k20260515; t=1789614349;
+	bh=2+fkdTQ/raiQYYgRa0ZJ6r63NemGLRl+TLMgLDDs6kE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=nEaz2tU+DVWd6u3p15MU/SMK2qYh2FAQ+RBHctm1iQ/YBI6KvzERTvC8AeRb2R6dY
-	 hbFBDASgAZgbS8hNf4dKuEkgo93YfdoVAVtAjhC+4kr5WoKa+Ph5P1tufb8TUNtcKP
-	 QHilyA2isfSgrzYyfcSeNLEHgHSBLdcsMzfA+bl55aTGYBxNsRVP9BU9gJUjpAUx2B
-	 f6ZVYGmEIdqDc88lQxAm+zJ/5+Q3DcHTsfUjJoBAKpEoVtUL7LBCkZ/ivioNeva3kI
-	 rIaHqdBjCwl4GKaMmPA5ASJGvURzgCq86qgKidUwakCi7dYZGaPMutW3vgkjyYc69t
-	 OPtyXLAVD16DA==
-Date: Thu, 17 Sep 2026 04:01:02 +0100
+	b=cHwLeRuf+DBvtxC2r8ep2LEUMeLo4YmU9Q0niZxQDIMKgqg10gGnJYw5gXAU8ccK6
+	 uGyVD3wQBOgEV2qqlDt0xxpIV1GKyoGXvN6bUJkTwzwU5PNjtjz4dtOQcvxc801sZD
+	 UslVq3XQkMf3ZtpV4gyZHxuoq9uG6Cog7wO+az+Hs5osOqPP7nDXTJ1eGg5rSymnhU
+	 Dpx4KctxiTi/HvqDKifzlyzub2hCCPq58NYCJzXPyCjx8WH5VypTJ25H8wbOLwsNDx
+	 LFozJmry93FNrDJulMsKglYNiD63OB5Qjr316rgQZ46/Fcn5zFZrAMBcTL9mUyRDJQ
+	 di24YFyeH1o5A==
+Date: Thu, 17 Sep 2026 04:05:42 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Chang Yu <marcus.yu.56@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Andy Shevchenko
- <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Shi Hao <i.shihao.999@gmail.com>, "Jose A. Perez de
- Azpillaga" <azpijr@gmail.com>, Joshua Crofts <joshua.crofts1@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <20260917040102.59be257c@jic23-hlaptop>
-In-Reply-To: <aqiyQOMGGIzu-91z@gmail.com>
-References: <20260912013912.51887-1-marcus.yu.56@gmail.com>
-	<20260912013912.51887-3-marcus.yu.56@gmail.com>
-	<aqepkmQS_p6K1Bd6@ashevche-desk.local>
-	<aqiyQOMGGIzu-91z@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Guangshuo Li <lgs201920130244@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The
+ Capable Hub)" <u.kleine-koenig@baylibre.com>, Siratul Islam
+ <email@sirat.me>, Matti Vaittinen <mazziesaccount@gmail.com>, Danilo
+ Krummrich <dakr@kernel.org>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: kxcjk-1013: disable autosuspend on remove
+Message-ID: <20260917040542.2600a7af@jic23-hlaptop>
+In-Reply-To: <20260914144920.00002f7b@gmail.com>
+References: <20260914112053.1686061-1-lgs201920130244@gmail.com>
+	<20260914144920.00002f7b@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,60 +52,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 14 Sep 2026 19:49:36 -0700
-Chang Yu <marcus.yu.56@gmail.com> wrote:
+On Mon, 14 Sep 2026 14:49:20 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> On Mon, Sep 14, 2026 at 11:00:18AM +0300, Andy Shevchenko wrote:
-> > On Fri, Sep 11, 2026 at 06:39:12PM -0700, Chang Yu wrote:
-> > 
-> > ...
-> >   
-> > > +static int as7343_setup_device(struct device *dev, struct as7343_data *data)
-> > > +{
-> > > +	struct regmap *map = data->regmap;
-> > > +	unsigned int val;
-> > > +	__le16 step;
-> > > +	int ret;
-> > > +
-> > > +	/* Power on */
-> > > +	ret = regmap_set_bits(map, AS7343_ENABLE, AS7343_ENABLE_PON);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	/* Need to set REG_BANK to 1 before we can access ID */
-> > > +	ret = regmap_set_bits(map, AS7343_CFG0, AS7343_CFG0_REG_BANK);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	ret = regmap_read(map, AS7343_ID, &val);
-> > > +	if (ret)
-> > > +		return ret;  
-> >   
-> > > +	if (val != 0x81)
-> > > +		dev_info(dev, "Unknown device ID: %x\n", val);  
-> > 
-> > Wouldn't be better to define 0x81 with meaningful name?
-> >   
+> On Mon, 14 Sep 2026 19:20:53 +0800
+> Guangshuo Li <lgs201920130244@gmail.com> wrote:
 > 
-> If I remeber correctly Jonathan prefers just putting 0x81 inline. I'm
-> OK with either style so I'll defer to the judgement to Jonathan here.
+> ...
+> 
+> > Add the missing pm_runtime_dont_use_autosuspend() call to the remove
+> > path.
+> >
+> > This issue was found by manual code inspection.
+> >  
+> 
+> I'm on the fence whether this sentence should go under the ---
+In this world of LLMs I'm going to stick up for human effort and
+keep that in the commit message :)
 
-I briefly wondered why I said that and went to look.
-I've been reading too many multipart drivers that do
+Either would have been fine with me.
 
-#define THING1_ID 42
-#define THING2_ID 43
+I'm not going to rush this one in, so applied to the testing branch of
+iio.git
 
-struct something_chip_info thing1_chip_info = {
-	.id = THING1_ID,
-};
-
-struct something_chip_info thing2_chip_info = {
-	.id = THING2_ID,
-};
-
-And in those cases it doesn't make any sense to have defines.
-So I was thinking don't do it here either so we'd be in a nicer
-position when another device (maybe) shows up.
+Thanks,
 
 Jonathan
+
+>  
+> ...
+> 
+> > @@ -1547,6 +1547,7 @@ static void kxcjk1013_remove(struct i2c_client *client)
+> >  
+> >  	iio_device_unregister(indio_dev);
+> >  
+> > +	pm_runtime_dont_use_autosuspend(&client->dev);
+> >  	pm_runtime_disable(&client->dev);
+> >  	pm_runtime_set_suspended(&client->dev);
+> >    
+> 
+> It would've been better if you sent the 4 patches as a series with a cover
+> letter as all of them are the same fix.
+> 
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
+
