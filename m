@@ -1,213 +1,116 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 868174DF4BE;
-	Wed, 16 Sep 2026 22:58:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BBE925B0AC;
+	Thu, 17 Sep 2026 00:15:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789599489; cv=none; b=MKKd9eOjThuC6UIkPCkIR2kdctgS5g0o+ayZxwgNlLzVCZ1q4Ot/HBWk+mmXtgBjZyeFKv3KY+ElaeNilcNWzFHouOXi7mSRUehfdiAG3pz4MDQzL+3Wn7u4l/5LwsgqUHYUhQ2r6XZ2Cy5lOi54AnvfAyLDzAw54GPisGzy2UE=
+	t=1789604125; cv=none; b=kbsy2BoWmvnX+dOBHbjCyKv/9ENFVWDdif15AiVb8b8jX2CatnDSjoHpbfR6HcbyY22jsHuxYV+TA+NES8EIsxDQ5EfpN3kAsfcHdcc7H+7FI3s6HrvaJiMic387fx2zASvjkQCJ214iUrRC4+FwwgPURIrSCWC5EC3xGZXKdwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789599489; c=relaxed/simple;
-	bh=ClCEok3CT57Zb0Uc0FasxIKpEnVdYyzMiUQspae6JfM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jwBiyr8ZaWfp3OtIAwUUBbKhb7y6xWzQtFmUbAnM+EE7zPHVqRs4dQ39RWKgHisDowlUIDAUesf+UfT2/DavGgjowVRV3tlCGzql38k9Ae1jacc2eF22jACAxazqzMNtCXiIcLfZgvn1tRNAhXqZj6upjc9cYiGAAEybuKSWhSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oMNHj13y; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1789604125; c=relaxed/simple;
+	bh=czW/fvrVtqxI4u3KGivAA0dUquI3pNQk2btbCYoYgKU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=F9mpQQdzZjJMiJ+buKYOeNpVDR74xGKYaK30TjzMhTEgeDXwbsva5NVQezA3MU13348YrCkbZbflH0JtRQiw3IKqt9lpvLirg3XEF191cDQjbMIU966EcrF5FSEbcKdNMJI0t8goSeCG61VVBpYvAmA0hUq9bXCpUhTI+31UT+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h4hy+MZM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oMNHj13y"
-Received: by linux.microsoft.com (Postfix, from userid 1223)
-	id 9622420B7169; Wed, 16 Sep 2026 15:57:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9622420B7169
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1789599430;
-	bh=0N7fIBRWd3/w9pGV5v/O/6SzjQp5f7M7FtwQz2jDFjc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oMNHj13yMDpsAxbsBEB4TdoxsOJUFK0CMVP4QtiWukYsqHK66WFNNHqJK+rG2msMn
-	 vLx2+IIAc+Ilq0yi7/xS8S8rtfuQKpfxLacDgtbk50xmASuuxqjRVSAos+PlqKqXGC
-	 lctB/o0//IR8mlYjqgJ2cfkO01n3HITlG17D2DrQ=
-Date: Wed, 16 Sep 2026 15:57:10 -0700
-From: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
-	linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
-	vitor.soares@toradex.com, samagazaryan@google.com,
-	gregkh@linuxfoundation.org, arnd@arndb.de,
-	boris.brezillon@collabora.com,
-	oleksandr.shulzhenko.viktorovych@intel.com,
-	tgopinath@linux.microsoft.com, corbet@lwn.net,
-	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
-	jorge.marques@analog.com, pgaj@cadence.com,
-	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
-	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
-	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
-	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
-	haren@linux.ibm.com, pasha.tatashin@soleen.com,
-	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
-	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
-	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
-	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
-	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
- user-space access
-Message-ID: <20260916-454d66ca84cc91479b195aa5@linux.microsoft.com>
-References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
- <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h4hy+MZM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAD11F000FF;
+	Thu, 17 Sep 2026 00:15:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789604123;
+	bh=FBD2M7EHU+xk7BgFAzGt5KdnHPiie45TXShxSTbtRCI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=h4hy+MZMVMNiZP2lByogTdWfeXqlDxT8lNSsQ4Yrfu3+lBwdfakKsyJzfwbV8K20/
+	 neyyIC4huCUD78mLtAnGwJ8Wu5oU3jL3tKxRXdltL7GZ44tcIeow/pVHycwv5aONxq
+	 zKx+/5R3xdvNL1z0aTQXzjo/Kzx3HSxz47vSdTXVUX2iaiXuziBLu6rD6M+O1eyT1B
+	 xwgAUs9zUeASk7XO7XlpvKBEylPa7FkLp6Untf03hNFe+NLDWMAAx0kgrudSH2WZg7
+	 35R0pM2hz+Ab0RH4Jm7e4+Gi1bmGypdh59V0tkUsm7r3cvAPekD433zpBdvjR9b6/2
+	 78Jq7L3VpdvoA==
+Date: Thu, 17 Sep 2026 01:15:18 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Wentao Liang <vulab@iscas.ac.cn>
+Cc: andy@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, nuno.sa@analog.com,
+ petre.rodan@subdimension.ro
+Subject: Re: [PATCH] iio: accel: bma220: Fix trigger reference leak in
+ bma220_common_probe()
+Message-ID: <20260917011518.297868ca@jic23-hlaptop>
+In-Reply-To: <20260916160823.2082283-1-vulab@iscas.ac.cn>
+References: <20260916160823.2082283-1-vulab@iscas.ac.cn>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, Sep 12, 2026 at 04:34:01PM +0300, Andy Shevchenko wrote:
-> On Fri, Sep 11, 2026 at 02:09:35PM -0700, Meagan Lloyd wrote:
-> > The i3cdev driver is a character device driver that allows user-space
-> > to control and interact with I3C devices.
-> 
-> > Currently, it has the ability to perform Single Data Rate (SDR)
-> > transfers - basic reads/writes.
-> > 
-> > With the addition of sysfs driver_override, there is now a
-> > straightforward and direct way to match the i3cdev driver to any i3c
-> > device without stepping on the toes of more specialized drivers that are
-> > loaded automatically.
-> 
-> Is it safe? Why on the earth do we need this? The commit message has not enough
-> information.
->
+On Wed, 16 Sep 2026 16:08:23 +0000
+Wentao Liang <vulab@iscas.ac.cn> wrote:
 
-I can't see a reason that it'd be unsafe. To give additional confidence,
-it's already in-use in many bus_types:
+> indio_dev->trig holds an extra reference taken by iio_trigger_get(). It is
+> only dropped by iio_dev_release() when the device has a triggered mode set,
+> and indio_dev->modes is still INDIO_DIRECT_MODE until
+> devm_iio_triggered_buffer_setup() runs. Both early error paths return
+> before that point, so the reference is leaked.
+> 
+> Release the trigger reference on the IRQ request and the deinit action
+> failure paths.
+> 
+> Fixes: b7e17ca10793 ("iio: accel: bma220: add interrupt trigger")
+> Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
 
-drivers/platform/wmi/core.c:    .driver_override = true,
-drivers/hv/vmbus_drv.c: .driver_override =      true,
-drivers/base/platform.c:        .driver_override = true,
-drivers/cdx/cdx.c:      .driver_override = true,
-drivers/s390/cio/css.c: .driver_override = true,
-drivers/vdpa/vdpa.c:    .driver_override = true,
-drivers/bus/fsl-mc/fsl-mc-bus.c:        .driver_override = true,
-drivers/pci/pci-driver.c:       .driver_override = true,
-drivers/rpmsg/rpmsg_core.c:     .driver_override = true,
-drivers/amba/bus.c:     .driver_override = true,
+When doing a fix like this send one only and then wait before sending
+more.  Also look at the discussions that have already gone on around
+this topic on the list.  Sashiko mentions this ever time and there
+are numerous replies to why it is a 'fix later' issue.
 
-To answer why we need it:
-If we want to write i3cdev as a standard device driver, it can't
-actually match anything by default. This is because, some devices on the
-system may need specific drivers and i3cdev is generic and should
-technically match every device.
+This is a lot more complex than simply doing a trigger put not because
+it is technically wrong but because it leaves us with considerably less
+readable and maintainable code.  The solution needs to be proper
+devm_ registration and cleanup. However that is complex to actually do.
 
-Since the driver_override is default NULL and is set via sysfs, this
-allows any specific drivers on boot to be loaded up and would allow
-explicit control on what device i3cdev gets bound to.
+We have known it was an issue for some time and no fix has been forthcoming
+yet.  There are userspace paths to put this trigger at runtime and we need
+to distinguish between those registered via the devm path and those that
+are not. Only the driver registered ones should be cleaned up.
 
-This was my rational. I will refine the commit message with more details.
+Mixing and matching between devm calls and manual cleanup is not a solution
+to this that I am going to consider.
 
-> > This is accomplished by the i3cdev driver not having any entries in
-> > the i3c_device_id table. After boot, simply set the driver_override
-> > to "i3cdev" and bind the device manually via the sysfs bind knob.
-> > This can also be automated with udev rules as well.
-> > 
-> > The character device interface will be exposed at: /dev/bus/i3c/<bus
-> > id>-<Provisional ID>
-> 
-> ...
-> 
-> > +	struct i3c_xfer xfer = { +		.rnw = I3C_WRITE
-> 
-> In such cases always leave a trailing comma. It will reduce possible
-> churn in the future.
->
+Jonathan
 
-Good point, I'll fix that.
- 
-> > +	};
-> 
-> ...
-> 
-> > +	return !ret ? len : ret;
-> 
-> My gosh, wouldn't Elvis just work naturally?
-> 
-> 	return ret ?: len;
-> 
 
-You're right, that is much nicer!
-
-> ...
+> ---
+>  drivers/iio/accel/bma220_core.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 > 
-> > +	for (int i = 0; i < metadata->nxfers; i++) {
-> 
-> Why is 'i' signed?
->
-
-Mostly for readability and to make sure the line length on loop headers
-is kept below 80 chars. As a precaution, to make sure that 'i' can
-represent any metadata->nxfers value without overflow during loops, I
-check that metadata->nxfers is less than/equal to INT_MAX in
-get_metadata().
- 
-> > +		ret = copy_struct_from_user(k_uxfer, +
-> > sizeof(*k_uxfers), + uxfer, + metadata->xfer_size); + if (ret) +
-> > goto out_free_k_uxfers; + +		/* Enforce that padding must be
-> > zero */ +		if (memchr_inv(k_uxfer->pad, 0,
-> > sizeof(k_uxfer->pad))) { +			ret = -EINVAL; + goto
-> > out_free_k_uxfers; +		} + +		uxfer +=
-> > metadata->xfer_size; /* u8 pointer so use xfer_size */ + k_uxfer++;
-> > /* struct i3cdev_xfer pointer */ + }
-> 
-> ...
-> 
-> > +		if (!ret) +			total_bytes +=
-> > i3c_xfers[i].len; +		else +			return ret;
-> 
-> Yeah, you really need to reconsider patterns you use in the code. Here
-> 'else' is redundant. Homework to understand how (#easy).
->
-
-Thanks for pointing this out. It would read better if I removed the else
-block, opting to bail out early if ret is non-zero.
- 
-> ...
-> 
-> > +/** + * print_i3c_err() - Prints the I3C error encountered during
-> > the prior + * call to the core's transfer function.  + * @i3cdev:
-> > i3cdev_data object + * @metadata: Kernel's copy of i3cdev_xfers
-> > (ioctl I3CDEV_XFER input) + * @i3c_xfers: i3c_xfer array that was
-> > sent to the I3C core
-> 
-> > + * Returns: void
-> 
-> Huh?! Where is this coming from?
-> 
-
-In i3cdev_ioctl_do_xfers, if i3c_device_do_xfers failed, I wanted to
-print out the first I3C controller error encountered. The controller
-drivers can set this in the i3c_xfer.err field. Hence this function.
-
-It's to aid debugging and provide useful error information.
-I can certainly refine the wording on the print_i3c_err documentation
-header to make this more clear.
-
-> > + */
-> 
-> ...
-> 
-> Please, rely less on AI and more on the common sense and
-> proof-reading.
-> 
-> -- With Best Regards, Andy Shevchenko
-
-I think I gave you the wrong impression. The new contributions in this
-series were written and developed by me. I used AI for quality assurance
-and cross-referencing. Since I incorporated some AI-flagged suggestions,
-I tried to acknowledge that with the Assisted-by tag.
-
-Thank you,
-Meagan
+> diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
+> index f32d875b994e..4820d99e214a 100644
+> --- a/drivers/iio/accel/bma220_core.c
+> +++ b/drivers/iio/accel/bma220_core.c
+> @@ -544,14 +544,19 @@ int bma220_common_probe(struct device *dev, struct regmap *regmap, int irq)
+>  		ret = devm_request_threaded_irq(dev, irq, NULL,
+>  						&bma220_irq_handler, IRQF_ONESHOT,
+>  						indio_dev->name, indio_dev);
+> -		if (ret)
+> +		if (ret) {
+> +			iio_trigger_put(indio_dev->trig);
+>  			return dev_err_probe(dev, ret,
+>  					     "request irq %d failed\n", irq);
+> +		}
+>  	}
+>  
+>  	ret = devm_add_action_or_reset(dev, bma220_deinit, data);
+> -	if (ret)
+> +	if (ret) {
+> +		if (indio_dev->trig)
+> +			iio_trigger_put(indio_dev->trig);
+>  		return ret;
+> +	}
+>  
+>  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+>  					      bma220_trigger_handler, NULL);
 
