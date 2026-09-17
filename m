@@ -1,164 +1,178 @@
-Received: from mail-08.mail-europe.com (mail-08.mail-europe.com [57.129.93.249])
+Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011025.outbound.protection.outlook.com [40.107.74.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FE893932E6;
-	Thu, 17 Sep 2026 06:34:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.129.93.249
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789626886; cv=none; b=u4yhcEF5AbzGp0e7mNk9ZPgzJZOUXQh5P44vGhRDOb0Q+XsbIogWh0VG9IyXKonlYTahorX2r/X5LOlxol/hvhQ4Ldy1yFZOnpypd/SGyBGB+CGwBQ8ihDWIve/0GD928ZvE7lVrRBpVF5BAtvaAF9Fu7U4MVxrngmRizomJrVI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789626886; c=relaxed/simple;
-	bh=2/uFg4EjKbGHReWeWnTdshU9VW5fOVfHYiDnKJ+3ro8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=VVrpz+x1ZC7xDXxfAJx2fqL46c8MQ9kM2sFoGwKE5gu/VlEFuXFJlpIwDDhd+pCglgvEZcyMeEu6O1RRf3kH1CcTnHpB2tESeBLdDWyui9IA5GMpbR9e6nHPA85KqXjkMf27THeGv9BEePdLR420AW1xDSFPGn494IZI/34Z2+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=jjKQEDXH; arc=none smtp.client-ip=57.129.93.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00E2039DBD4;
+	Thu, 17 Sep 2026 06:36:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.25
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789627013; cv=fail; b=nB6l40fbe3rMRB1mx6V/buoSG6yrZYpFSOX89g+xW2y7RLb92NTx3aeFtS5mt0X5UvtQVKt//Iypz0o338qNntBDx6XzeNHqNwn2uzOKJuxcE22MwRvLBYQrrEfA97iOkzcrM1yJEZ6Dm/9ADq0yfHgmkaav3hrPIT9KnuEQGzI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789627013; c=relaxed/simple;
+	bh=SDkbxYOXLAd8oXuR1eEkUeEFdMVYj2zBtFhDc0SQmNk=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=o3+npXa6g+3G5ayG8FjVUmfw26UgP28MoJM7ad6Lam6sKV0Pti0TaFXrdm3MrZWsPBDuwej713eXAt2vN2CrUbSzJ6IH5bGnfGMPP1lkniPO02uyde++6ypHJvVNfsEg1B2yrFafqywBuy01oD+J1IFFVzuqncNVEo4yRoEokJo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=lwFTNY+p; arc=fail smtp.client-ip=40.107.74.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="jjKQEDXH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1789626872; x=1789886072;
-	bh=ugT0jmD7PYyfp4XG81Y3iv6whgBa6K0D7E7kXpwhpMA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=jjKQEDXHpyfAeSJn/+X7MIZzaBEsNvEUWXSaHdUZk6k4ItHgacDQ3WTso73U8/EGH
-	 7pVkFSopu1yCU9dHq9yRqIItQ9vv5E5JkO/rpDyTp1IirA6BUXriXaPOdVJjO2LBem
-	 nlwWmjNXegZu94YGxId4XMiGraR2WfA9MB8AtnWdqumhYawKG+n6e5oyTXQYEVCPrl
-	 2TsDMwxTnLwS5NybLiu22c0QLTgIHGIPGAkkzxoG2wv8Rr3ZPGXXovVn/vuIEjvYAp
-	 JNF1Ywu9EewSCxW6nSeUMY2WPH8t0aXy1mFVd0Ov0REkutS30zbXvvN2280n769akm
-	 qPRyTTwT+5m5w==
-X-Pm-Submission-Id: 4hlmFK3ghkz2ScD7
-From: Esben Haabendal <esben@geanix.com>
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
- <robh@kernel.org>,  "Krzysztof Kozlowski" <krzk+dt@kernel.org>,  "Conor
- Dooley" <conor+dt@kernel.org>,  "Martin Kepplinger" <martink@posteo.de>,
-  "Sean Nyekjaer" <sean@geanix.com>,  "David Lechner"
- <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
-  "Andy Shevchenko"
- <andy@kernel.org>,  "Martin Kepplinger"
- <martin.kepplinger@theobroma-systems.com>,  "Christoph Muellner"
- <christoph.muellner@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
-  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 9/9] iio: accel: mma8452: Support interrupt sharing
-In-Reply-To: <20260917034721.0f4a8701@jic23-hlaptop>
-References: <20260907-mma8452-open-drain-v8-0-c17407e22118@geanix.com>
-	<20260907-mma8452-open-drain-v8-9-c17407e22118@geanix.com>
-	<_9NG2PCqwv-AxkrhQVOkPVIgvYD4-t2CFH5W5HVBmr35w9xmX9v9FIraB1OPE8Ssbd_pjQqM-bq3DEAtRl78Sg==@protonmail.internalid>
-	<20260914002203.5ca07dd0@jic23-hlaptop>
-	<lU80OLl5Xk_Bte8Klo69TR6a5JIitMP_N_IXZFIWkRKUmrV6NFHrMHxp1PUFoo8hb3OpKPo_4R2QWBYpfOLFJw==@protonmail.internalid>
-	<87y0d4pal0.fsf@geanix.com> <87pkyfox0i.fsf@geanix.com>
-	<cbWGFGkr-0IRJ6KihI-uhTyO_d6SU8xex-XZtJkhLUVTbGiZn0uJDe0Cc5V1-1AKIwd9nU5nvIwgeB2d-rpOtA==@protonmail.internalid>
-	<20260917034721.0f4a8701@jic23-hlaptop>
-Date: Thu, 17 Sep 2026 08:34:28 +0200
-Message-ID: <87wlsk75e3.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="lwFTNY+p"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=k3NVQAcDoSSvqVPsSb1nFTdllHCTJjGfxA/HKdzaB1SgOh9zgUjKjjWMUUeiRu0cdnxwuk21O7XXMZvpYnO9Hj2fsKBDE2gVm5/Wi+Sk5SxBfDFCXrZVYnOi3CLMAoPgy3/OPHFkjdHHMZ1ema80LXqMDW10GbRYPqjJuJ7PTsXg/QujyhhQIuoFzUi2ZuQn0JydEpOKq/C7mULPSjnpd/o14FLNeuzqxACxqzoXfsU4TPnL8UihB5JKmb2uaFjKQ5wwWeJZPT1SfZL4Hy1qrUuWF6KY8szOEnaH91lvrDT8zz3nBrEZaXsGck6ZvdhWxTJqM6pbCXcbtXNpR0MYPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZbAKi+qNE16BFENtbFxO+y2UrhJLqwxjHFCXCR03G1o=;
+ b=moHl1L8Hl6HDCcdPaZfheyqFN33/tvuJ0gW/b5z4g14QQ9Q1pGevU8WLkungczzFZq933W5K5pATV7aGmpMFR9HIFHwflSjEwEsQwqLqLvoYjDMv/0gzA1goDgbS5aafVqMuTxWhPNH5DTk1EK4Ov0HuM05kEUvQr9FdwJWt0+NjBU7B1MLDQFkq2WMhEIE55sCNhBt9Nk+BFlv1R24nHJT6kZCP41VskysoKXX61c2tfYI/4m34gB22YNVJ95qDv4UhQWk95wCi2utRUQQOzzXrDs46BQclr1JKq0GzsCf1qTG4LuECNwTBaPV/5FnqrxklD68Jibg/a03bip1Wug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZbAKi+qNE16BFENtbFxO+y2UrhJLqwxjHFCXCR03G1o=;
+ b=lwFTNY+pBWoz254LHT+Z+Q2rtXKfFdFXTwGPcG5AfxCzhU5ngrrxquk4BzMHR8Hzpzsekg4fBj+Ej4Y4skcVZ3TM62Zu8/xpvu8zZ29v9oIYMPMWc0M4FVhurBh8jWQ1elIxRips1jxLSEq3a9lkyqvN//OnN3cUlYk64H9vMhM=
+Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
+ (2603:1096:405:29b::10) by TYCPR01MB9765.jpnprd01.prod.outlook.com
+ (2603:1096:400:20b::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.12; Thu, 17 Sep
+ 2026 06:36:46 +0000
+Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
+ ([fe80::a68f:5c9:9de8:4fa4]) by TYRPR01MB15619.jpnprd01.prod.outlook.com
+ ([fe80::a68f:5c9:9de8:4fa4%3]) with mapi id 15.21.0406.012; Thu, 17 Sep 2026
+ 06:36:45 +0000
+From: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Biju Das <biju.das.jz@bp.renesas.com>, William Breathitt Gray
+	<wbg@kernel.org>, Lee Jones <lee@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+	<linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>
+Subject: RE: [PATCH 01/15] counter: rz-mtu3-cnt: put runtime PM on
+ initialization error path
+Thread-Topic: [PATCH 01/15] counter: rz-mtu3-cnt: put runtime PM on
+ initialization error path
+Thread-Index: AQHdRIjU7IpSq2vAwEeH3XqYKQftL7bR8tIAgABgjNA=
+Date: Thu, 17 Sep 2026 06:36:45 +0000
+Message-ID:
+ <TYRPR01MB156190DDA845D556BF192BC0E85B82@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+References: <20260914203614.2035277-1-cosmin-gabriel.tanislav.xa@renesas.com>
+	<20260914203614.2035277-2-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260917014616.17b5f0f2@jic23-hlaptop>
+In-Reply-To: <20260917014616.17b5f0f2@jic23-hlaptop>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYRPR01MB15619:EE_|TYCPR01MB9765:EE_
+x-ms-office365-filtering-correlation-id: 59c0ef7d-b51e-4ad1-7bce-08df14860b21
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|18002099003|22082099003|38070700021|11063799006|56012099006|10067099003|4143699003;
+x-microsoft-antispam-message-info:
+ KZyfYKFwkjepB8dsKcbuyCjswnSQBQcPBjbkZ7g4AJvesinwppcRHeuynd0MQZPEFvWIg9WWxZbuZ5tY3ZkXvOFNmK9OLH0PFelmw2PUAtB237B0CuXaeZMfQeEfS+IuwwN4F6TkIctnhpwAb4N7zHJxbuwUzyLOOYq/2p+/mXKlypnPdAUipnDzEh/tT+FsHxa+LeRaixLc+k9aNsh5OINxOPgOLQDn3dK9KEx2up5CbAM1hkzQixfthqHGo0PoavOgorVqdJysClIexYYCOWodMI4sXZG4bSKYbcGGCbTO1SmgW/5n37Bm9GcQqIN+CXnKy0v2GnW0RTbtbGuIWJofciGv91i/TYOt/ev+z+A4PPZxWKVGgqhYveVQk9ZfZGWrMFGHXgKdu+MkM+0SRVmH57NSr2PjDbxsNaICMmRms3LIu4GdCHRHaGV7FtWtWhSwQlASI93bCPIhYVdlRimtfMhuuRIo3AoZAGrq38i9UigNIEBvpDQ4J14Mj6XBxxisgrX/q2Ogvfb3R9eYc0tCW/sHTRtr83PUup0+/tylGEjI345wJdX/HudCOurkqd1DilnFDjEjf0ymN4aE1Q5pr73Q/7K2RHLFNpQ4J6+91qzC2vskafE3k9jbU2fJGEKc9NmCEabuKdkhJXoJvIyz+71sr6OGZB3ox3vjoqB5vE7WasnVTng3pKhqaO4UgLN0X9vEBgREYVtjHcDirIpjcEZMmyryHUCrT3Pf9Iw=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYRPR01MB15619.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(18002099003)(22082099003)(38070700021)(11063799006)(56012099006)(10067099003)(4143699003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?YD7BofgZTAZGLpPVGn73pYid7xWN4lkCsOQYV5W4fmyXFCPTe5aaDRSJaAy1?=
+ =?us-ascii?Q?PRIoBYU4Bo6I6mAXza7MB8rCkeA88MvcmGpiNOTkkf4efltrRBsF0aNw0aaD?=
+ =?us-ascii?Q?yqKm918kHTKB0TbkY60pVnrne7MgyI1wPS21y4YNVCUpOhXy4G68l6ZaOKHE?=
+ =?us-ascii?Q?5r5BxO83cu0HjK4TmG4xFry1XGRfuNFLufKwsptr+KNXw9K70IQiNCiyPLsz?=
+ =?us-ascii?Q?EWYBnq8STy6tGZWdB4SKVSa7hzits6WpYMlzd2ak6nS8xWLlYKKwFavVOBSl?=
+ =?us-ascii?Q?Ui9vd1X7yYwa7qE3ssCTZBxgADNwgfXeCeVpr1174wjYzNs9myTvrObOd9XR?=
+ =?us-ascii?Q?v0AXrE/b/ogF5dACMQ6edcNqhNVDH7pNOrqOKXpxk6mPlV9MVPRR+2ClTExD?=
+ =?us-ascii?Q?i0q2kC3tzAl09lPACXXoiF0wUxHG0OgK6wgCoXHmbVLUnJt5fJWJESYGJf9E?=
+ =?us-ascii?Q?C7w83DnXOrPMq+TPnF1+Lx593gMzbd+paNTL4/Pw8sPWznr+/AFb5ndUFvKH?=
+ =?us-ascii?Q?B+5KCFe3MM9Tw54KhKDuyl2vudQhDuLNJ1YIT8fy0XdRtsW3RmWKENxpNj1b?=
+ =?us-ascii?Q?7eAvtvKyvkJNaZwO5kfN16ebFMz+cTv6h+IdJ1G5Ci83HmNLp7JCfjJdm+m2?=
+ =?us-ascii?Q?5TPZwFn/sRKbAlbwwo07SgY8qM1bcTSEDPSoBEfmeq6sIYZFbUTgZvL0zbZi?=
+ =?us-ascii?Q?/bGPkrcUUjHTRCfpp6XUWF/ZSZc5mDvnhu2zSvvEqeiPqAdwDjzUrHWqZiq/?=
+ =?us-ascii?Q?9RRJEFQ3khAZgWBDNESv2Mk1PmLqEaWdVI0gyCLGjgJWcwZ0oMtiWpO9Eqjp?=
+ =?us-ascii?Q?ApKcdjbUi4HCOgKie863P4hSaaraX/ittc2f3iLgYIRnk9ZBcWOhkQ2LV79+?=
+ =?us-ascii?Q?L4nB8BcjoaKV0qyKFvxyXDvZjaKz/jQTzCcbpjwd+1nuQn4YaXwlvNyb8x7X?=
+ =?us-ascii?Q?MaICC9UEcee14T8xgcGxAF3g9ksDJEPCeiY8jFIZ1N20AILtvMUvo2Is5UCY?=
+ =?us-ascii?Q?X+z0Q0WdUk5E9FbWe+K2EU56nlWpzZzXiKr15jo1l55epsoV4gyMQx8ltw24?=
+ =?us-ascii?Q?tvhUJJa34LwpbWOTVd0U3EMqZ2xP5VHdjuaCoBmr5z5YRFrUhcoLewd48GWf?=
+ =?us-ascii?Q?MTpYIhuYu8RM+Arqvw5l60IOL2VEE6iO8+BYgs2FfYCnm/ISxfiVFwBFsJjf?=
+ =?us-ascii?Q?03/z5mO4NpgjGuxUgtNo7LVTOT++aAe1KNttFzVImtIAvdOL9x+Wm/twPlmj?=
+ =?us-ascii?Q?CsW1sZ+kNptaFugcmyHwIZ2rUd2Yd/+zIlhHFkVsc0ubo99xQY2SS7mGNBfP?=
+ =?us-ascii?Q?0CLl7zDQCnRbdKm0GkaRY2cB6oSSamkFn/rM9G/MaVR+mvsyCEv2piwYzInJ?=
+ =?us-ascii?Q?Pa5qYpWg+GGmlOQqNjjOMdhSG0lS/MWzfwJlu87Fz5G60/NZEQ3QNTASUvcl?=
+ =?us-ascii?Q?txh4+Q0bYwUwLi3wuod/9Y43TduYHfMg7A38qVRdikbPrTmXst7aD5cATm+U?=
+ =?us-ascii?Q?7+NJkRWIXL0kFvHXOk8JmtX+DfTj5evQ2zaSO3rwqRBZM//+k9I7TOOOhTCS?=
+ =?us-ascii?Q?RTogPGOL9OoQuOIKpOSjVzDGzLm2Qwixk/C64rtgGyKVHW/PjEJOwELUU2nO?=
+ =?us-ascii?Q?eACsH2lkE9OkLR1++PN9TivgwpeJsImyo/85tUHHecJiYIcVkgidLhEKr2yM?=
+ =?us-ascii?Q?LMlE0qtdKBf6y7z1KP3VMwP7cOtiKs6Pr2RQAVDCUNY/owzO9WhRIYwEld3g?=
+ =?us-ascii?Q?XJRELV2Lq/19LeCEtLQ+leAFQ4Dw3ezusNcAn+0I+Zrm0m2oVGLY?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYRPR01MB15619.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59c0ef7d-b51e-4ad1-7bce-08df14860b21
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Sep 2026 06:36:45.4532
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hfLsjJq0WlZKpOaKmOVuGyO0YWzkjBcNawQOjPrMUxIBrsPHc03fOaVUwUVp/Xv5XwwxuPR44vpnIW0gdFfYynNqgZF8grlZ8OUF1s0dQZwmnbodaje1UaobVJwDh1uY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB9765
 
-"Jonathan Cameron" <jic23@kernel.org> writes:
+> From: Jonathan Cameron <jic23@kernel.org>
+> Sent: Thursday, September 17, 2026 3:46 AM
+>=20
+> On Mon, 14 Sep 2026 23:36:00 +0300
+> Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com> wrote:
+>=20
+> > If rz_mtu3_initialize_counter() fails, the runtime PM usage count is no=
+t
+> > decremented.
+> >
+> > rz_mtu3_initialize_counter() will fail if the requested channel is busy=
+.
+> >
+> > Call pm_runtime_put() in the error path to decrement the usage count,
+> > and flip the check to keep the success path straightforward.
+> >
+> > Cc: stable@vger.kernel.org
+> > Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter driver"=
+)
+> > Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+> > ---
+> >  drivers/counter/rz-mtu3-cnt.c | 8 ++++++--
+> >  1 file changed, 6 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/counter/rz-mtu3-cnt.c b/drivers/counter/rz-mtu3-cn=
+t.c
+> > index 7bfb6979193c..48f183f0b54f 100644
+> > --- a/drivers/counter/rz-mtu3-cnt.c
+> > +++ b/drivers/counter/rz-mtu3-cnt.c
+> > @@ -506,8 +506,12 @@ static int rz_mtu3_count_enable_write(struct count=
+er_device *counter,
+> >  	if (enable) {
+> >  		pm_runtime_get_sync(counter->parent);
+> >  		ret =3D rz_mtu3_initialize_counter(counter, count->id);
+> > -		if (ret =3D=3D 0)
+> > -			priv->count_is_enabled[count->id] =3D true;
+> > +		if (ret) {
+> > +			pm_runtime_put(counter->parent);
+> > +			goto exit;
+>=20
+> I'd use a guard() for the mutex and return here and one more case
+> above. Not quite the minimal fix, but will give a more readable result.
+>=20
 
-> On Tue, 15 Sep 2026 08:21:17 +0200
-> Esben Haabendal <esben@geanix.com> wrote:
->
->> "Esben Haabendal" <esben@geanix.com> writes:
->>
->> > "Jonathan Cameron" <jic23@kernel.org> writes:
->> >
->> >> On Mon, 07 Sep 2026 16:51:04 +0200
->> >> Esben Haabendal <esben@geanix.com> wrote:
->> >>
->> >>> Adding support for sharing interrupt line with other device requires the
->> >>> interrupt handler to handle runtime PM suspension properly, ignoring the
->> >>> irq if the device is suspended (maybe even off). And while at it, we use
->> >>> the PM reference to ensure we do not get suspended while processing an irq.
->> >>>
->> >>> In order to prevent the chip from raising irq while suspended (that is when
->> >>> using fixed regulator, where suspend just means setting the device in
->> >>> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
->> >>> then restores the value again when resuming.
->> >>>
->> >>> With that in place, it is safe to add the IRQF_SHARED flag.
->> >>>
->> >>> Keep in mind that the device by default is using push-pull for the irq pin,
->> >>> which might require additional hardware design to allow interrupt sharing.
->> >>>
->> >>> Signed-off-by: Esben Haabendal <esben@geanix.com>
->> >>> ---
->> >>>  drivers/iio/accel/mma8452.c | 67 +++++++++++++++++++++++++++++++++++++++------
->> >>>  1 file changed, 58 insertions(+), 9 deletions(-)
->> >>>
->> >>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> >>> index fda29df5d109..e521dca37f76 100644
->> >>> --- a/drivers/iio/accel/mma8452.c
->> >>> +++ b/drivers/iio/accel/mma8452.c
->> >>> @@ -120,6 +120,7 @@
->> >>>   * @sleep_val:			time in ms to sleep while waiting for drdy
->> >>>   * @ctrl_reg1:			CTRL_REG1 register shadow value
->> >>>   * @data_cfg:			DATA_CFG register shadow value
->> >>> + * @ctrl_reg4:			CTRL_REG4 register value to restore on resume
->> >>>   * @open_drain:			true for irq pin in open-drain mode
->> >>>   */
->> >>>  struct mma8452_data {
->> >>> @@ -138,6 +139,7 @@ struct mma8452_data {
->> >>>  	int sleep_val;
->> >>>  	u8 ctrl_reg1;
->> >>>  	u8 data_cfg;
->> >>> +	u8 ctrl_reg4;
->> >>>  	bool open_drain;
->> >>>  };
->> >>>
->> >>> @@ -1083,15 +1085,21 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->> >>>  {
->> >>>  	struct iio_dev *indio_dev = p;
->> >>>  	struct mma8452_data *data = iio_priv(indio_dev);
->> >>> +	struct device *dev = &data->client->dev;
->> >>>  	irqreturn_t ret = IRQ_NONE;
->> >>> +	int pm_status;
->> >>>  	int src;
->> >>>
->> >>> +	pm_status = pm_runtime_get_if_active(dev);
->> >>
->> >> Sashiko raises the question of what happens if you actually get an error
->> >> return from this. You may be deliberately ignoring those, but if
->> >> so add a comment.
->> >
->> > Yes, sounds like a good idea.
->> >
->> >> The fun race around tear down is worth considering in particular (see
->> >> sashiko comment).
->> >
->> > I will look into that. Although very unlikely, it does sound like a real
->> > issue that *could* occur.
->> >
->> > Adding a boolean flag (remove_in_progress = true) to the mma8452_data
->> > struct, and set that in mma8452_remove() before disabling runtime pm
->> > seems like a KISS solution. Should we be returning IRQ_HANDLED or
->> > IRQ_NONE in that case?  There is no IRQ_MAYBE return value :D
->>
->> Or maybe instead:
->>
->> In mma8452_remove(), we switch the order of
->> pm_runtime_disable()/pm_runtime_set_suspended() with free_irq(), and
->> race condition will magically disappear without any further changes.
->>
->> I will push a new version with this change.
->
-> I'm not keen if that means we are disabling in a different order to setup.
-> Now if you can flip setup as well it is probably fine.
+Hi Jonathan. I did the minimal fix here so it can be backported easily.
+Patch 14/15 does the guard() conversion for the mutexes. Is that okay?
 
-Yes, we should be using same order in setup. I will do that.
-
-Can I keep it in this patch, or do you want this to be split into a
-separate patch (together with change to mma8452_remove())?
-
-AFAICS, the changes doesn't fix anything without the changes in
-mma8452_interrupt() in this patch, so you could argue that it doesn't
-make sense as a separate change.
-
-/Esben
