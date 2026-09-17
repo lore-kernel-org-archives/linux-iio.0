@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 626B733BBD7;
-	Thu, 17 Sep 2026 00:35:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 084BA22A4E9;
+	Thu, 17 Sep 2026 00:37:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789605333; cv=none; b=Q1+1bhebYjdUMsgLTN5A9ymbRUbtBRrbG00Gk/7fWjjuTIp8C18hms/FEyS9TY+ZQ3lLYTDeIkO7zD4a8jXb32N3H4pfrLGezSIonKZvDaEsYsM+pxnvcJ30akibi4wBldgg1S83Ij2/F8vzzdkykbJyk0sVCGktIdx8KRQJ1m8=
+	t=1789605463; cv=none; b=PMMFv6n1FgEqUrKs9Ty+ObI0vAy1tgaYbDlhHuJYt6Z+LYD/R2SJKdyk47lkrUgakLVKGGAp2c+4x7hKTYleIPAxFFfYq0mrD0Nwfo4gm9xQys1NwlKVniJfrb2VcklNJ7zOlJ1ZshCq7dw6vCbzt8NKsMBkd67IEePqBXGAWww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789605333; c=relaxed/simple;
-	bh=2/tdqlw6vXtO24iaDv7futA5HHSvR37f6H9D1F192nQ=;
+	s=arc-20240116; t=1789605463; c=relaxed/simple;
+	bh=9C3qRVbLzi7//u7PrW2lIHIf9POM5tqrlVH3xVAWEwU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Co8++7qDhzRr62QMMz/D34zTaGOUh52w3heJHRTjf17CI21P7sWbq4GwkbbrFzKpdP2JvjJJk0SR405lXp3TX13J4RzkmjkNX1tK1HsBgJkB/ZtAEgXmpie+NcaPe0SlUnDRNkzFj3taOUMMPaT62H0OlwzbakI4MD08OKKjMrg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K5fL7zzn; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=XWv4Baihvrp4GE3rRVacAf5hq6rmXXkBlEYtjEqjE+1TWRqHOyeoOgmvhhQWmC6u6nqa71kavXHHvtHk6x/VL39H4b0HsnTBOR+ZvQBX3ZI06NzX4bioUVccNT17UDzKeVZ4HrYl2NmLbyxDI3k5xtHFCS9ONI/gdPyoy2R2s28=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QwpKnPxL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K5fL7zzn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E5A1F000FF;
-	Thu, 17 Sep 2026 00:35:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QwpKnPxL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF9241F000FF;
+	Thu, 17 Sep 2026 00:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789605330;
-	bh=PYQ4YR8JKG2CF8G9dEZ1LC5DzF2Kh+srf0yaNn7gBAE=;
+	s=k20260515; t=1789605461;
+	bh=9C3qRVbLzi7//u7PrW2lIHIf9POM5tqrlVH3xVAWEwU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=K5fL7zznlygisp113bqOqBLQQJG4kZTyzWOiUakcf8heHFe14OVocS5PSg/okN9b4
-	 gPElV/fFWTwi5ZRXBDT1DdAD59yeHyR4iBBK4zKG0HLQ0yFExx+iBpCglmIsZq4hoW
-	 F2/X7a+Jvsp5obrEkctN7v6tFTMhqY61oqjcuR5USinM/2SV0hd722UrcXzHIwgKc4
-	 T9HOBjwBlfYlM9NNCYutzrfrU65hLg7wOOyXVeAAH/3JxEEUgzK/ivDAFQHvY5Qq44
-	 t3IeS7uXpI9JvAXQBISz1yHxSzzR89J/ZqY3xBr8Nk8eLiihgRUdeyo4mFGufeT777
-	 e6NRa6DpjSFuQ==
-Date: Thu, 17 Sep 2026 01:35:28 +0100
+	b=QwpKnPxLmlxB+bxRwuzoAStYMWOT2NmCF3IKBfkq1SMQ6O+XOXtAnSxPYQSutNoic
+	 IfLAJYnl2haYfaRERdJJX+8Ai93qaSC6Z+6SCRgzIgY0/EZ6723MhKhqQlj6rN/f47
+	 +UIhbaG7BN9vCPChuu1mywIdZ8+Ow+MPqYY3zDkEKXtODCNVirIPOIJdignDkhhlOz
+	 MLFsPH1hRNJLFWboN2YAAPg3hhaAeUtmoPpJA3OXNJXjEi3LhVe1R0Q9NNuA7h3UDN
+	 n3iVnT+X+MbrV/Zyap59EVynt4uc4UPldytzcU4IXahzVqANqWpsH80gNJ1BrNOFKH
+	 J/XHAFoIFjEmw==
+Date: Thu, 17 Sep 2026 01:37:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Wentao Liang <vulab@iscas.ac.cn>
-Cc: andy@kernel.org, dlechner@baylibre.com, gwendal@chromium.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- nuno.sa@analog.com, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: light: acpi-als: Fix trigger reference leak in
- acpi_als_probe()
-Message-ID: <20260917013528.137c154e@jic23-hlaptop>
-In-Reply-To: <20260916163440.2084089-1-vulab@iscas.ac.cn>
-References: <20260916163440.2084089-1-vulab@iscas.ac.cn>
+To: Linus Walleij <linusw@kernel.org>
+Cc: Wentao Liang <vulab@iscas.ac.cn>, andy@kernel.org,
+ dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, nuno.sa@analog.com, xc-racer2@live.ca,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] iio: light: gp2ap002: Fix runtime PM leak in
+ gp2ap002_read_raw()
+Message-ID: <20260917013738.64ef0574@jic23-hlaptop>
+In-Reply-To: <CAD++jLmJ_t1DVkDfRwbTQ23w9AJ9wpB3yqcCCTXqe6H8A_-D9g@mail.gmail.com>
+References: <20260916163646.2084234-1-vulab@iscas.ac.cn>
+	<CAD++jLmJ_t1DVkDfRwbTQ23w9AJ9wpB3yqcCCTXqe6H8A_-D9g@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -44,56 +46,41 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 16 Sep 2026 16:34:40 +0000
-Wentao Liang <vulab@iscas.ac.cn> wrote:
+On Wed, 16 Sep 2026 19:34:56 +0200
+Linus Walleij <linusw@kernel.org> wrote:
 
-> The reference taken with iio_trigger_get() is only dropped by
-> iio_dev_release() when INDIO_BUFFER_TRIGGERED is set. If
-> devm_iio_triggered_buffer_setup() fails before setting that mode, the
-> reference acquired for indio_dev->trig leaks. Move the
-> iio_trigger_get() after the buffer setup succeeds.
-> 
-> Fixes: 24b84444eb6f ("iio: acpi_als: Add trigger support")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
-Same again.  Not going to introduce subtle ordering fixes like this.
-We need a comprehensive solution with appropriate changes in the
-IIO core to handle cleaning that reference up. See bma220 for
-more on this.
-> ---
->  drivers/iio/light/acpi-als.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-> index ab229318dce9..ad95057d99c2 100644
-> --- a/drivers/iio/light/acpi-als.c
-> +++ b/drivers/iio/light/acpi-als.c
-> @@ -206,11 +206,6 @@ static int acpi_als_probe(struct platform_device *pdev)
->  	ret = devm_iio_trigger_register(dev, als->trig);
->  	if (ret)
->  		return ret;
-> -	/*
-> -	 * Set hardware trigger by default to let events flow when
-> -	 * BIOS support notification.
-> -	 */
-> -	indio_dev->trig = iio_trigger_get(als->trig);
->  
->  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
->  					      iio_pollfunc_store_time,
-> @@ -219,6 +214,12 @@ static int acpi_als_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->  
-> +	/*
-> +	 * Set hardware trigger by default to let events flow when
-> +	 * BIOS support notification.
-> +	 */
-> +	indio_dev->trig = iio_trigger_get(als->trig);
-> +
->  	ret = devm_iio_device_register(dev, indio_dev);
->  	if (ret)
->  		return ret;
+> On Wed, Sep 16, 2026 at 6:37=E2=80=AFPM Wentao Liang <vulab@iscas.ac.cn> =
+wrote:
+>=20
+> > pm_runtime_get_sync() increments the usage counter even on failure,
+> > so every successful call must be paired with a put. A failure of
+> > gp2ap002_get_lux() returned early and skipped the paired
+> > pm_runtime_put_autosuspend(), permanently preventing runtime
+> > suspend. Jump to the common exit that releases the reference.
+> >
+> > Fixes: f6dbf83c17cb ("iio: light: gp2ap002: Take runtime PM reference o=
+n light read")
+> > Cc: stable@vger.kernel.org =20
+>=20
+> IMO not stable material.
+
+Also that's not what upstream looks like:
+
+https://elixir.bootlin.com/linux/v7.2.5/source/drivers/iio/light/gp2ap002.c=
+#L246
+
+Wentao, that function would definitely benefit form use of the
+ACQUIRE macros in pm_runtime.h though if you do want to
+improve it.
+
+>=20
+> > Signed-off-by: Wentao Liang <vulab@iscas.ac.cn> =20
+>=20
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
+>=20
+> Yours,
+> Linus Walleij
 
