@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C985B3B14C2;
-	Thu, 17 Sep 2026 05:49:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD8E22FE0E;
+	Thu, 17 Sep 2026 06:24:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789624195; cv=none; b=KvL9gzqA2OcDmjieONKbdMqTP0TDFl0QM5SJAvvTzZ8o05RoxWgTbYDXH/udV/0NeHnm19B4QTYcdy+QxCjQ2TxgkIBDoBE60yilnNgmhvYFXvl/Ieb2fBTVnFmF6IUJEQIoOMQQknRTUb2HYOOlwv0lOT5jbAKBo8t4YXDVBy4=
+	t=1789626287; cv=none; b=omljkekw5a95k0ZIULxdQpdZ2dwzoB2ppE7h7b8KtkxwMfLiFwSsfDZfJ73tQ56yLC1JPxGO0+Za0Q/YY3kHq87lnXxE5SMHVtpl33A1BRcybN7fplfUHpEvXWbuU9tDdLCwQat+MKNJd29PRXVnjsnhXtEYIxeErbSDBDVrnd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789624195; c=relaxed/simple;
-	bh=59P7Y18Ydw5mkPxnsBk+xpCbi1DdyDKJjxpEyzjpf20=;
+	s=arc-20240116; t=1789626287; c=relaxed/simple;
+	bh=qT+cSvgxR/drCHZE3qZtKVtSgJX/veG+thk2cR/IrnE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pcnu80RjFMYLo62VbeRf0VFdBGcVcvWZgdcesF2jh1noSftOd6zXF1KjVvHsUfN6NKEKARzk8mtcc3M3wdQi7ncqbgCTPH28tBXbcgYdV2vj7679uudieiVhNjH49tww4UkTtif7zx1rP2eywCpo0kqWXvMZnn9Y1Z47xQfd+ic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gyv7kBkF; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=CuZjMq6fs+XJMb/Lyk61B5cSd4U2SPN8e8rEvqbHC87sBVpphKC4B00v6hvbFebZqwabDzWR4CENiHWwVQkidNH4kHj0sGi8V0upAo9riOYNb7jnu1AQO6p80Yl6rqR50CYknos+/Y9o0rHZRlOejbH9ZpLs4dJ8zcMe7uQBtbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B9hQH3va; arc=none smtp.client-ip=192.198.163.6
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gyv7kBkF"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B9hQH3va"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789624193; x=1821160193;
+  t=1789626286; x=1821162286;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=59P7Y18Ydw5mkPxnsBk+xpCbi1DdyDKJjxpEyzjpf20=;
-  b=gyv7kBkFx7IDS8Oy7HzyWrVPsuSNE4tbi/y6LNmAP/Gv1ZqTdy07WalJ
-   thoWfPbfGDM15EoJ/eJdzricZRaThoBUwtan7LkSWqEh+ul80gADDB8HR
-   jMm5yjXC+HQZ1OeCl4TsXLUHtDIv/SDYRxvgQjbdJ38tPWbbg1whDFKPO
-   /KNJ7opH76D+AH79+ZHjQ2ZQO4rvpdiTfLqur1frPgbZkhFzbJuqCWTiE
-   fXFpPUHHkSuDOo26yrREEI5WKJxSw/wmW9Yes9rBO0J5Pl1rmSZCs8uXt
-   MTj6hsbiBUwiqVSqkTMCZ5ZpmDPhfRidd2oWCavPIPU8tWuURELZbjARb
-   w==;
-X-CSE-ConnectionGUID: zNJ+tfp5SgyXCwtaI9fuog==
-X-CSE-MsgGUID: JxwppWd0TqmHo1cAgetaIQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="89876444"
+   mime-version:in-reply-to;
+  bh=qT+cSvgxR/drCHZE3qZtKVtSgJX/veG+thk2cR/IrnE=;
+  b=B9hQH3vaHDZbMt8HwlnghWIzmF2oT9oxp5vovijtfotAJHudkBY5lK64
+   cXAaFv9w5ZtqDwIW1fdcWL0yfCxYU0jZgveExqLRpwKZ1fUApjYugInZ3
+   lSEju+ymhZXbNZUbEl/plCd66Q3L3JrXBHY3+CYEk9OXmWDJG64IkccIo
+   10GjYj9BJGM9QjZvGPqI7uUYV07zeHgEK6RENpk4QsgYS1fApzl3dfjYY
+   TmxI9IqzGnNN2eHhCgQPcMU1OOEleTjjjVnFyJORotCLLhIcXcbcu8qNu
+   daK1HmdBBSGB6S+SJDzGdcjZnbBT7WKH79VnctT/W982+IDsYr5EthMmY
+   Q==;
+X-CSE-ConnectionGUID: Dm5ZTCMxRzKyaWFUkNH6kw==
+X-CSE-MsgGUID: NSwpQKydTYehtsz5wwI3eg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="521666"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="89876444"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 22:49:51 -0700
-X-CSE-ConnectionGUID: UtfYpDp6QsWxFvIddu146g==
-X-CSE-MsgGUID: nf4LjH4tSUCIbjYEGJPJxw==
+   d="scan'208";a="521666"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa116.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 23:24:11 -0700
+X-CSE-ConnectionGUID: qhUQHYQJTCqSbjz7LP9MMQ==
+X-CSE-MsgGUID: C0p1b/cgTB2SPYyn8EQStA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="298668405"
+   d="scan'208";a="270954024"
 Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.11])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 22:49:42 -0700
-Date: Thu, 17 Sep 2026 08:49:40 +0300
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 23:24:02 -0700
+Date: Thu, 17 Sep 2026 09:23:59 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
 Cc: linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
@@ -67,129 +67,100 @@ Cc: linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
 	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
 	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
- user-space access
-Message-ID: <aqt_dCazxTDR4cpk@ashevche-desk.local>
+Subject: Re: [PATCH 0/3] I3C character device driver using driver_override
+Message-ID: <aquHf5yuubnCvgHT@ashevche-desk.local>
 References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
- <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
- <20260916-454d66ca84cc91479b195aa5@linux.microsoft.com>
+ <aqVTBIKRP3iRDCvf@ashevche-desk.local>
+ <20260916-8a117e874c96753fd704b163@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260916-454d66ca84cc91479b195aa5@linux.microsoft.com>
+In-Reply-To: <20260916-8a117e874c96753fd704b163@linux.microsoft.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Sep 16, 2026 at 03:57:10PM -0700, Meagan Lloyd wrote:
-> On Sat, Sep 12, 2026 at 04:34:01PM +0300, Andy Shevchenko wrote:
-> > On Fri, Sep 11, 2026 at 02:09:35PM -0700, Meagan Lloyd wrote:
-> > > The i3cdev driver is a character device driver that allows user-space
-> > > to control and interact with I3C devices.
-> > 
-> > > Currently, it has the ability to perform Single Data Rate (SDR)
-> > > transfers - basic reads/writes.
+On Wed, Sep 16, 2026 at 12:28:57PM -0700, Meagan Lloyd wrote:
+> On Sat, Sep 12, 2026 at 04:26:28PM +0300, Andy Shevchenko wrote:
+> > On Fri, Sep 11, 2026 at 02:09:32PM -0700, Meagan Lloyd wrote:
+> > > This is a rework and revival option for Vitor Soares' I3C character
+> > > device driver patch series from 2020 [1] that I've been exploring for a
+> > > few months.  Recently there was a revival posted to the list [2], so I
+> > > wanted to share this design option as well.
 > > > 
-> > > With the addition of sysfs driver_override, there is now a
-> > > straightforward and direct way to match the i3cdev driver to any i3c
-> > > device without stepping on the toes of more specialized drivers that are
-> > > loaded automatically.
+> > > In [1] and [2], the i3cdev driver automatically attaches and detaches
+> > > depending whether another driver has attached/not. In [1], Boris was
+> > > suggesting we explore a more straightforward and traditional binding
+> > > method aligning with the Linux driver model. At the time, there wasn't
+> > > a way to auto-bind while keeping manual binding possible as they shared
+> > > the same match() hook. Now with the new driver_override feature,
 > > 
-> > Is it safe? Why on the earth do we need this? The commit message has not enough
-> > information.
+> > Where is it new? It's quite an old mechanism in the driver core...
 > 
-> I can't see a reason that it'd be unsafe. To give additional confidence,
-> it's already in-use in many bus_types:
+> My understanding is that this support was added in March 2026 here:
+> https://lore.kernel.org/all/20260303115720.48783-1-dakr@kernel.org/
 
-This argument has nothing to do with i³c. Each bus is different on a physical
-layer, electrical protocols and programming flow. Each of them has own
-constraints.
+> Some busses had their own version of this, but the above series made
+> a general, re-usable solution available.
 
-> To answer why we need it:
-> If we want to write i3cdev as a standard device driver, it can't
-> actually match anything by default. This is because, some devices on the
-> system may need specific drivers and i3cdev is generic and should
-> technically match every device.
+Nope, the series fixes the bug and at the same time refactored to provide a
+generalised solution. The driver_override as a concept exists for ages.
 
-Yes, but I have seen no reason why we should expose i³c bus to the user
-space. With i²c we already know very well that it was (and still is)
-a bad idea. Why i³c is better (especially taking into account i²c
-compatible mode and more complex programming flow)?
+> > > the auto-binding of i3cdev on boot can be avoided if the i3cdev driver has
+> > > an empty match ID table. After boot, where specialized drivers would have
+> > > already bound, user-space can explicitly opt-in by setting the
+> > > driver_override sysfs file with 'i3cdev' and manually binding via sysfs
+> > > (or by simply loading the driver if it's loadable). This can also be
+> > > easily automated with udev rules that run whenever the I3C core exposes
+> > > a new device.
 
-> Since the driver_override is default NULL and is set via sysfs, this
-> allows any specific drivers on boot to be loaded up and would allow
-> explicit control on what device i3cdev gets bound to.
-> 
-> This was my rational. I will refine the commit message with more details.
-
-Put a real life example why the exposing i³c devices into user space is
-absolutely necessary.
-
-> > > This is accomplished by the i3cdev driver not having any entries in
-> > > the i3c_device_id table. After boot, simply set the driver_override
-> > > to "i3cdev" and bind the device manually via the sysfs bind knob.
-> > > This can also be automated with udev rules as well.
-> > > 
-> > > The character device interface will be exposed at: /dev/bus/i3c/<bus
-> > > id>-<Provisional ID>
+> > > One downside of the automatic attach/de-attach is that if a different
+> > > driver is loaded later, the first driver could have altered something
+> > > on the device, breaking any assumptions of the subsequent driver.
 
 ...
 
-> > > +	for (int i = 0; i < metadata->nxfers; i++) {
+> > > Note that i3c-tools [3] or a fork of it will need small updates:
+> > > 1. Update include/uapi/linux/i3c/i3cdev.h to match updated uapi structs
+> > > 2. In i3ctransfer.c, use actual_len for reads
 > > 
-> > Why is 'i' signed?
-
-> Mostly for readability and to make sure the line length on loop headers
-> is kept below 80 chars. As a precaution, to make sure that 'i' can
-> represent any metadata->nxfers value without overflow during loops, I
-> check that metadata->nxfers is less than/equal to INT_MAX in
-> get_metadata().
-
-No need to add useless checks.
-
-...
-
-> > > +/** + * print_i3c_err() - Prints the I3C error encountered during
-> > > the prior + * call to the core's transfer function.  + * @i3cdev:
-> > > i3cdev_data object + * @metadata: Kernel's copy of i3cdev_xfers
-> > > (ioctl I3CDEV_XFER input) + * @i3c_xfers: i3c_xfer array that was
-> > > sent to the I3C core
+> > > I've added MODULE_VERSION("1.0.0") in the i3cdev driver, so i3c-tools
+> > > could use that to determine whether to use the old out-of-tree uapi or this one.
 > > 
-> > > + * Returns: void
+> > Absolutely no. This is legacy macro which has no need since Git era. In Git
+> > the module version is the Git SHA hash of the tip of the used tree. Nobody will
+> > understand what 1.0.0 means and how it maps to the applied patches (if any of
+> > them affects the behaviour of the feature in question).
 > > 
-> > Huh?! Where is this coming from?
+> > On top of that, upstream has no clue what and how many possible custom ABIs /
+> > UAPIs exists, and we do not care, to be honest.
+> > 
+> > > [1] https://lore.kernel.org/linux-i3c/cover.1582069402.git.vitor.soares@synopsys.com/
+> > > [2] https://lore.kernel.org/linux-i3c/ap_1-gFF7S821xJT@ninjato/T/#m9107c1785a4a16b1b3cb84c3269d17fac35819c8
+> > > [3] https://github.com/vitor-soares-snps/i3c-tools
+
+> My reasoning was that i3c-tools has been around for years now and it may
+> be in-use assuming the UAPI from [1]. Adding MODULE_VERSION was a low
+> effort, compatible, and
+
+> reliable way
+
+Nope, you are mistaken. As I explained the opaque 1.0.0 means nothing. The Git
+SHA *is* the version of the code in question.
+
+> to keep using the same i3c-tools
+> repo (and accommodate a changed UAPI).
 > 
-> In i3cdev_ioctl_do_xfers, if i3c_device_do_xfers failed, I wanted to
-> print out the first I3C controller error encountered. The controller
-> drivers can set this in the i3c_xfer.err field. Hence this function.
-> 
-> It's to aid debugging and provide useful error information.
-> I can certainly refine the wording on the print_i3c_err documentation
-> header to make this more clear.
+> In any case, in Sam's thread [2], there is talk of moving i3c-tools into
+> the kernel's tools directory. That's the better solution, so I can drop
+> the MODULE_VERSION in future revisions.
 
-My point is about kernel-doc. Why do we need the return section for void?
-Where it comes from?
-
-> > > + */
-
-...
-
-> > Please, rely less on AI and more on the common sense and
-> > proof-reading.
-
-> I think I gave you the wrong impression. The new contributions in this
-> series were written and developed by me. I used AI for quality assurance
-> and cross-referencing. Since I incorporated some AI-flagged suggestions,
-> I tried to acknowledge that with the Assisted-by tag.
-
-I see, then there is a room to improve the code. But the main question is
-why do we even need this whole interface to begin with?
+This is really orthogonal. But yes, keeping tools at the kernel source tree
+makes sense for a better maintenance.
 
 -- 
 With Best Regards,
