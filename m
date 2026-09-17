@@ -1,80 +1,61 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AC50223DEA;
-	Thu, 17 Sep 2026 18:00:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A95A4E9C1B;
+	Thu, 17 Sep 2026 18:09:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789668043; cv=none; b=ulzfGa7vcq0GV8SIk5QlSzwj8zRCvCL9vOAqMUJlUhGDduGC6lUOGTA/5WAfDFBISgw490yYqJAjbDUPHnVcsX6FRUjmMXeynEQBsPTK2qu1TpUzIVdZ3n/VBvHDoZChnHVrW8QZoOrYlebGPMXsew00ogwNhaFKVxAjWOCIME0=
+	t=1789668601; cv=none; b=ACFW39c78eXwEnjkcUjGVr0bATdk6N8+rD+tAQoWmqbtmama2tRSb+x9x2gxzZinTcSVuC8S+RmbFpDr/pSVsRGpt8TleA1TuGPbA55o4Y1DItUkWhToZyV9UZPZxrR0kiR3pZP+0ZlpPhXLfNnCMGLhha9HhHFWeya/9KFOydQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789668043; c=relaxed/simple;
-	bh=SwmFplgdvfZk74xWXHbUdLsf9CUwvb66wjy26upL8Ls=;
+	s=arc-20240116; t=1789668601; c=relaxed/simple;
+	bh=oai6U0JbCD4GjPdMag8AoSuR0BOXNS/qIxk4AQoBcA4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ui9PmQJxrjmdUnfdOKgH6re0VN6u1Dj8uHgLehxUSa/Lj/ujNNj0OeTobvYWYF7IiixkayQQcSeD3PeKXGxehoLnyoEaZSrZUxyTvMlb1GQCzXt/0atWPziPF/zxkSc148OG9KqYTQm6L2cHelyErFGqcixwibpRoSjuhaeHaNU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LVkG09Hq; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=YDAwNo/w3nFWMZ+WT2I2KwjKODb6FGtVeW0ERsepTvbTUPKCXpmtcGE01jlTTE8rGvVIEOu/SzHrEr4QcL+gj7I33c/Aex+xk5SrACNUBfVdm7KqW74r+o5uKJqUvIEf2HSZkxp8CGMhQHG1jYOKwAM1PDdXagQ/nTmEGYzwVgo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WbPi5HkV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LVkG09Hq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACBF31F00893;
-	Thu, 17 Sep 2026 18:00:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WbPi5HkV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F0B51F00893;
+	Thu, 17 Sep 2026 18:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789668042;
-	bh=bDkA9Is1Jx1AOE6Tvx2VWAovPxbpbhANimFsfanmC0s=;
+	s=k20260515; t=1789668599;
+	bh=4pYu5PJMwDbiD3YaUZzHgB4wN8SoNcJfUzk9qPUH13c=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=LVkG09HqfsKZmJFS9qmt6OvQIdIMnn38+xzlPNcI19TxAJDAVqDvcv13mx5RhiTJF
-	 BLFpnR+BysQpygTq/jJME04w/nYC6JbWWyngMv/UqyKfFg/XRgx7vghrbUABrl1xVa
-	 gzPWxiGrTTasJL7YDq+byQVo+FUUD/WjlOUBbOLR/Xd71lWSaRrldlsJicJcKWYeHS
-	 hiIJQAirnKUCBG3M/4JbVZfqSp+8BFzJVS57Tp/RKVgvNfoJF+cer2fMfEtKfCDQB9
-	 69UFkPdaOAPFuQu79OdO6zaHZJVHecxL8QaqbdLDMo5FenvMFzH+F34vu3f36Eukda
-	 OZliUmPKbP87Q==
-Date: Thu, 17 Sep 2026 23:30:37 +0530
+	b=WbPi5HkVF8DSz0T2SCNJanVPF1hO+VUVNvlf7dZN/M+QGQZdaZZ++HiKXIdGawI0K
+	 HoNSeXerN+3x7/q2GZx9A1BCMFtT6htdqJZ48oJSZe5prgnajMVxTbrsV37XDsodIL
+	 nFgOSCtk9xLUnNo9T5jIw7b+hxZrEP2SI7saVA+3Tfuw89Qv7f66r2lozXtG1mM9N5
+	 /wB/fpo4qFySqnM6qYJ3bWJdhbhNrCwJd0ZXHgk1bBgE76Dt0bo4BxnnXXZCXNiwB4
+	 5I+uWXcHsxWWx3DRSbK05yRnPAhe00NkpmwlmO7L2NzHBqZ/zl4oPzq6bUmJ7fh5bU
+	 LcQRf0alicsEw==
+Date: Thu, 17 Sep 2026 23:39:54 +0530
 From: Vinod Koul <vkoul@kernel.org>
-To: Daniel Matyas <matyasdaniel006@gmail.com>
-Cc: Lee Jones <lee@kernel.org>,
-	=?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>,
-	Ulf Hansson <ulfh@kernel.org>, Liang Yang <liang.yang@amlogic.com>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	Richard Weinberger <richard@nod.at>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Jerome Brunet <jbrunet@baylibre.com>,
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Jose Abreu <joabreu@synopsys.com>,
-	Ray Jui <ray.jui@broadcom.com>,
-	Scott Branden <scott.branden@broadcom.com>,
-	Atish Patra <atishp@rivosinc.com>, Shawn Guo <shawn.guo@linaro.org>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-	Okan Sahin <Okan.Sahin@analog.com>, devicetree@vger.kernel.org,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>,
-	linux-rtc@vger.kernel.org, Ricard Wanderlof <ricardw@axis.com>,
-	patches@opensource.cirrus.com, Lukas Wunner <lukas@wunner.de>,
-	Chunfeng Yun <chunfeng.yun@mediatek.com>,
-	Eugen Hristev <ehristev@kernel.org>,
-	dri-devel@lists.freedesktop.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux@analog.com, linux-input@vger.kernel.org,
-	chrome-platform@lists.linux.dev, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH] dt-bindings: Expand flow lists to block lists
-Message-ID: <aqwqxSxqg7aRjchE@parshuram>
-References: <20260917144028.459053-1-matyasdaniel006@gmail.com>
+To: Frank Li <Frank.li@oss.nxp.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+	Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v4 01/10] dmaengine: Move enum dma_slave_buswidth to a
+ new header
+Message-ID: <aqws8pN2rfS9-dCC@parshuram>
+References: <20260911-dmaengine-support-wider-dma-masks-v4-0-72b8fd4cc78e@analog.com>
+ <20260911-dmaengine-support-wider-dma-masks-v4-1-72b8fd4cc78e@analog.com>
+ <aqgCQvRw9fns__0d@SMW015318>
+ <aqjzvxI4ecoFvRLT@ashevche-desk.local>
+ <aqlpoBJJXfZgsMxT@parshuram>
+ <aqlwRkNcs_UqKjWs@parshuram>
+ <aql6u3T0nnSVr-FC@SMW015318>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,19 +64,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260917144028.459053-1-matyasdaniel006@gmail.com>
+In-Reply-To: <aql6u3T0nnSVr-FC@SMW015318>
 
-On 17-09-26, 17:40, Daniel Matyas wrote:
-> Running dt_bindings_check returned:
-> [error] string value is redundantly quoted with any quotes (quoted-strings)
+On 15-09-26, 12:04, Frank Li wrote:
+> On Tue, Sep 15, 2026 at 09:50:22PM +0530, Vinod Koul wrote:
+> > On 15-09-26, 21:22, Vinod Koul wrote:
+
+> > > > Traditional naming would be
+> > > > dma/engine/provider.h
+> > > > dma/engine/consumer.h
+> > >
+> > > consumer and provider and good names.. I would retain the full dmaengine
+> > > everywhere please. dma causes confusion already!
+> >
+> > Thinking about it again, drivers/dma/dmaengine.h should be the provider
 > 
-> The files used quotation marks in flow lists because the strings had
-> commas and these commas were interpreted as separators. Convert flow
-> style lists to block style lists, so that there is no problems with the
-> commas.
+> There some dmaengine code outside drivers/dma directory, like
+> drivers/crypto/ccp/ccp-dmaengine.c
 
-Acked-by: Vinod Koul <vkoul@kernel.org>
-
+They chose to be outside, their choice... They need to be updated as
+well to point to ../../dma/dmaengine.h :-)
 
 -- 
 ~Vinod
