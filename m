@@ -1,41 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15CCB315D53;
-	Thu, 17 Sep 2026 00:40:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F394D315D53;
+	Thu, 17 Sep 2026 00:40:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789605631; cv=none; b=qNONQXWjcqmOn4z0VEO2FzWJrcI3Q0jLHqXzYIfNyQl5MAOiPSwzaP+XQUriyFZ6P+hJXsRyhstLl4FaDNGG1uAILn4sEv2rQmoB0Cr42uwuKQyY+/Tt5ha416PK0UnSe+KXQiFhXnuN+2IOz+9GC3pMBjS3QJb/VX/XGQRkb64=
+	t=1789605648; cv=none; b=u2/FGTd9N/W994p6jm93O80vMxv0eYn6F87m1Jd53G+uISNZBdAhf60zACrQ9Zi8wUM+YwoFZj+r/5AflMIkDgAxKDXSEBXUQJRvrxjUPA1SspySngjLGglr8qH0GtV76FS1vQo3S3OFyGXByHorXdkIDu2ofecq9uhrdKMnHHI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789605631; c=relaxed/simple;
-	bh=vU2QzVgiQj1VdWTGZn61iwgkgT1piR6P5X0m+S7uxD0=;
+	s=arc-20240116; t=1789605648; c=relaxed/simple;
+	bh=53fQJtWaglbTzYvtW1itQmUmK3y5fQPMcjBjBJCLpb4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YPMpahaawBLcxZZ1hVaAEBcV2f+hmVTWZyso2UMFxtu++4nleGa4KD3flitB6p0ppQNRiNrOTTZNYg3XjJI9p7TyIXjafW6l4DA7Rzh2BOu0Knsx8MwdCPGtj/dej51JE4ptvhLLyi2ONUxcYIh9j+SMJ2slIiQOh0eBb07T8L8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LrKdxZnM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=U1Oz2oZbCIjJHkamjU5K2Aa3bbiyUJQY+F6fjA0gVzwTff8SrNTff0lBlmb1hLZxGekfkF4GceQ5KOR+rM38OAA83d2B8yz6n5dHzxhRk3ScFyybqoMFu1VFZoursFCr0Hr6DTjozhC0zB03ehizA03QNktjnTt6+6dncPFG2i0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VeG2uQOa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LrKdxZnM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920271F000FF;
-	Thu, 17 Sep 2026 00:40:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VeG2uQOa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CF21F000FF;
+	Thu, 17 Sep 2026 00:40:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789605629;
-	bh=TngripDjIv509ba9jJdzbHOoNLvRQcTJFhKWxkvF5qc=;
+	s=k20260515; t=1789605646;
+	bh=x7PZzSgSd7bhRvjxdxDYadQIgM+pPnZzijQbH933b7Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LrKdxZnMF5BPyyOlKkmVDOQ+Znw+To6XUgW162u1b8dHql8VL8MlEOg1mXi6AkiSW
-	 OrNZB5QG8hj+jjzr3KdmFrWw7a/JbHuYvbba74SoJVqURGIZc4VY2uvZfQc9stguTL
-	 6Jij5EaIrOFmgsxZ0AHd+CRsl2ZnQPLE+Ungkn658Vk+aNSt8YWy3aAkIEuYAOXjDz
-	 uNZX54ZNE8Qwh4zj4WdE6wczSEPOD7lEOCTeaXMw1ckF2ZGmS4UKhkIxtAVAT+6z33
-	 L5vZ4VgZ/DKHfDSdt5VRRFNj9EoFcmhuB1THaTwsvoUMa9Yt+U1zyZo/Cb+mBOI6ZS
-	 l90wL609hcpTg==
-Date: Thu, 17 Sep 2026 01:40:27 +0100
+	b=VeG2uQOaE6bl3ZgltdIsLIABmGIOucAyb+QtaV092jcfj/B/F7gFM7pRR7QSF5PS0
+	 NEVNQq8QrxhO5KWw4Y1L8pWj1/scSfhZDcuE6crzh3fM3OL3XKoS0U8X/U4qhGMykX
+	 oWcmXyXlJHSrCgOHuSxFqhm/N0QCAzfbzHgeW898fn4u2Ma0py/4/L2HOkK6hHcCP5
+	 TPLh98/xJ8am1ioUoj80a+w5xzzyD5dtqhw+Nbnj0TvtZoGSy3TXZa2KPTlERnddOE
+	 nxrcK2mkfO51EyA4J9QLF4VnNCEIZcMaEKI6sWopTVvsXGdY9u8UfaZvkGS2ctvXty
+	 SQniwDp6+ip0g==
+Date: Thu, 17 Sep 2026 01:40:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Wentao Liang <vulab@iscas.ac.cn>
-Cc: andy@kernel.org, dlechner@baylibre.com, email@sirat.me,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, nuno.sa@analog.com
-Subject: Re: [PATCH] iio: proximity: vl53l1x: Fix trigger reference leak in
- vl53l1x_probe()
-Message-ID: <20260917014027.757b0677@jic23-hlaptop>
-In-Reply-To: <20260916164255.2084644-1-vulab@iscas.ac.cn>
-References: <20260916164255.2084644-1-vulab@iscas.ac.cn>
+Cc: andy@kernel.org, apokusinski01@gmail.com, dlechner@baylibre.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ nuno.sa@analog.com, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: temperature: tmp006: Fix trigger reference leak in
+ tmp006_probe()
+Message-ID: <20260917014044.4f72b35c@jic23-hlaptop>
+In-Reply-To: <20260916164517.2084799-1-vulab@iscas.ac.cn>
+References: <20260916164517.2084799-1-vulab@iscas.ac.cn>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,47 +47,46 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 16 Sep 2026 16:42:55 +0000
+On Wed, 16 Sep 2026 16:45:17 +0000
 Wentao Liang <vulab@iscas.ac.cn> wrote:
 
 > The reference taken with iio_trigger_get() is only dropped by
 > iio_dev_release() when INDIO_BUFFER_TRIGGERED is set. Failure of
-> vl53l1x_configure_irq() or of triggered buffer setup returns before
-> that mode is set and leaks the reference acquired for
-> indio_dev->trig. Move the iio_trigger_get() after those setup steps
-> succeed.
+> devm_request_irq() or of triggered buffer setup returns before that
+> mode is set and leaks the reference acquired for indio_dev->trig.
+> Take the reference only after the triggered buffer setup succeeds.
 > 
-> Fixes: 128e5ebec856 ("iio: proximity: add driver for ST VL53L1X ToF sensor")
+> Fixes: 91f75ccf9f03 ("iio: temperature: tmp006: add triggered buffer support")
+> Cc: stable@vger.kernel.org
 > Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
-Not this way given the subtle ordering constraint it is relying on.
 
-See other threads on same topic.
-
+Not this way - see other threads on same topic.
 
 > ---
->  drivers/iio/proximity/vl53l1x-i2c.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/temperature/tmp006.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
-> index 4d9cb3983dba..f1b8ff7fac09 100644
-> --- a/drivers/iio/proximity/vl53l1x-i2c.c
-> +++ b/drivers/iio/proximity/vl53l1x-i2c.c
-> @@ -713,8 +713,6 @@ static int vl53l1x_probe(struct i2c_client *client)
+> diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/tmp006.c
+> index d8d8c8936d17..06303ce72bfb 100644
+> --- a/drivers/iio/temperature/tmp006.c
+> +++ b/drivers/iio/temperature/tmp006.c
+> @@ -354,8 +354,6 @@ static int tmp006_probe(struct i2c_client *client)
 >  		if (ret)
 >  			return ret;
 >  
-> -		indio_dev->trig = iio_trigger_get(trig);
+> -		indio_dev->trig = iio_trigger_get(data->drdy_trig);
 > -
->  		ret = vl53l1x_configure_irq(dev, client->irq, indio_dev);
->  		if (ret)
->  			return ret;
-> @@ -724,6 +722,8 @@ static int vl53l1x_probe(struct i2c_client *client)
->  						      NULL);
->  		if (ret)
->  			return ret;
-> +
-> +		indio_dev->trig = iio_trigger_get(trig);
->  	}
+>  		ret = devm_request_irq(&client->dev, client->irq,
+>  				       iio_trigger_generic_data_rdy_poll,
+>  				       IRQF_NO_THREAD, "tmp006_irq",
+> @@ -369,6 +367,9 @@ static int tmp006_probe(struct i2c_client *client)
+>  	if (ret < 0)
+>  		return ret;
 >  
->  	return devm_iio_device_register(dev, indio_dev);
+> +	if (data->drdy_trig)
+> +		indio_dev->trig = iio_trigger_get(data->drdy_trig);
+> +
+>  	return devm_iio_device_register(&client->dev, indio_dev);
+>  }
+>  
 
