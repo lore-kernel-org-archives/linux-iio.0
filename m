@@ -1,298 +1,230 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010017.outbound.protection.outlook.com [52.101.69.17])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011054.outbound.protection.outlook.com [52.101.70.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A607A53D0A7;
-	Thu, 17 Sep 2026 13:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D4D659B68E;
+	Thu, 17 Sep 2026 14:38:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.54
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789652334; cv=fail; b=snY6OjgOhOQupXfjJaDvmSECmcnLO4Lsvd7OB3qQhs3ZwD3h3cKiJ12+LIbxZ8y0bdkvRunRDrmVaDNzyfsbRjHrPTJaWGRcsfwi5OAs7OrjwJv0qfkjOaY1crub1Q2e6D9ULvpb42NQvgEtDArWefb86yXzlNC1D1vI/EQaO3M=
+	t=1789655913; cv=fail; b=r3jt5+XPKbKaPVJNu8Qc/hvgWRbcnm7h1/8ldzfaSZqN8Je84ZpEaxDtjNsn2f9y72hcc40NJgDIxvq2guuolloAfLqXHPQHfhmuaJhAcRPL9hn9lSkv59Y0waTfnRoW7qYsZfymy96E+B33h4Z2lnUopiG4Dh1Z2ktQSzvop7w=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789652334; c=relaxed/simple;
-	bh=Eid6ScYF9GTextLygQ5AH4WcLr2z4yp6PZ9pLW0wqhI=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=RFRwZRHIRYfTtncHYOhr8DStqNOuxMcve5FUVSXQyCYRBt6DFx95WVLeE/KukSWh0HhuBg80jUDk+HtVjZpzhML19TEQ7bpOWLcKiOd3ZZy+JUl5mKtlk1LQEx5ZykjoIFKLd6W1DqkZSpEGvmzAZSxBQ1QPWhBL82EEDpuH1+g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=em7wdMM/; arc=fail smtp.client-ip=52.101.69.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	s=arc-20240116; t=1789655913; c=relaxed/simple;
+	bh=6J+SlQ/kPHzFZHXCR3Xn155bPTySTcNpL2/4FblsABU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=UTj1oSUHhUWirhEDw5ESaGpB4zStEjgoiEz+afUfOdmwZxGdWG0LhQkcwI7Huk97aGpciUZh4XtdF9RBh6vp5rHkBQ5doozULuFL+bSYOnLMNBI8W1ALwKyUe6nzMz9Ng8tH2PnFf0aedzY1Cy1Jn6hC4dVskTyP+CW2vYB729k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=p87bhFwn reason="signature verification failed"; arc=fail smtp.client-ip=52.101.70.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="em7wdMM/"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="p87bhFwn"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YK7mufrzUhc0Vw4gucmViriqm66ErT7vn7vzEZcl1e4BBfCsu5an09w26LvnLzgdxinloU0qnof2uHJOl0f1OHN/ABMkTOWiE7Y1yLT7mrG2nRGp7JubZR5UuTfIJcMsPJq7rrJQ+6q6R2yi4rYJdfAoC6s6sqihwlMm1vG2QyDS6XmoGRVbOtRsBUr1kuYrbRLpZk6HoRyNfOR99hLsf3S4PtIG70A3mY6aEJOryNBoCr79rAJ0E6UgB6ARxlF8fS+FdvYHY91pli/8JOXFg/125CCRx0MwMM4GddzS6JtqwsG1JGDGDY96p948BPByVsXP4i+qEXsjvbbCpsDcKQ==
+ b=tDxocd1Gil6GTQsi3jfAif3NpVCqGlZVvPpR4LciYBLL2LGYiIeF+qGzltp3HlfrqnKXYiJVOYBmlozRtNVne8aKHDJx32ql5nBmd4HC2znCZwxLSr0Z2enKiPttRU4NRLx/9B5XDElfrKEGRhcEXaZrYB6zVFpS6/shyufuynbY5UwY7MVbZ7p9J2E+aGSZjCIdeV/qjy/4ozLJsvEqgTAqnHO8fOmiGA6GvR7hM11GqaCc8K5xEcInfeXcmReSYT5uJriG9R7VIF4DYQVdEkuqi4BWnHxjU9/MKLecfjM4z2xzUvw0lCP6fbN5XcU3qLPFJzBzPaqlylDMaXM/Ug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+6KmR2evk+vD8gWccMTXsc8jjs4Is34kttjUiCnSR94=;
- b=RDjsSU13OfIhRpsRXCPZJYLqTkaZtuap7hDljUezTZLRz4f78k98+fSNT2xXBdKX8zIKLlbwa94YivvpBGVnKAlZIjajszcewP7zh7PjoQtkHjO1sX/KyFXryuVREhywMBC+R9Euugsc9KdIIObyWPR5H9QjHPJWnvm9Rcyr2aNNEctECA8tcAyGjmPdIRdGdUMweUUZYeRwKKjiNBlq6P0mTgsSiVpzzIsarhe4JnLG0Lh8KuxsacHgo80axGm8ZSI/PK2MTQg9jOkFz66/+ZS/n3Ph5CyKbvph/WUr2duwCRPbGBgrzEapm+NhQvEI/gkj/jvlVu8LwnHlSJK++w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=analog.com smtp.mailfrom=axis.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ bh=rsy/gm8Pyeq95oeZmgUTPC0eC1lcM6Hj/7wbHYEelvw=;
+ b=czhpA4MExWMzcFcn/l6Esi8+2sBaRi/+xEbZzwa0NkiOlj6sshs2QchRBJx/Yo0oEcsYEKTU7HvvLglCo3fMV2Hy3AbcXnSFWLV+tkJc9cYFERAblfC7Tl1x1uOMYMIOH8EXsZOwd0R3IRAGP7RsCeZntAuiNK48+6SogHyqWgE1gBT12E0HZsoRGdWVpsACmqyP5HRIif/KjDV65c/XWvzslGRiSrVGI1rPBrhqqWnqWznI098XTmIu2Gnr/oi1aaZSSzr0h9MtiEdM6np723umtV8MdEC6x79/Gfp+3v0aIzrIu0ng5/Rb2XJXG7z2T3Dbx9r6ktD7oW01fDO8JQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+6KmR2evk+vD8gWccMTXsc8jjs4Is34kttjUiCnSR94=;
- b=em7wdMM/PKgiKbe8hkI2WcIrc87gFE0FcOtoTJjzOOE//RJXxAuFljhpFfvmfklFHLvJKZkeCrnxtIW4q4iDbee8u18kp1Iid//ddtANQj4OF29z5aBwNXnqcCNlnVSFCbfXokkU2RiT3NhNDCbeMAt7Vym5pwsS10GnAj0s5RE=
-Received: from AM8P190CA0011.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:219::16)
- by AS8PR02MB8736.eurprd02.prod.outlook.com (2603:10a6:20b:53a::21) with
+ bh=rsy/gm8Pyeq95oeZmgUTPC0eC1lcM6Hj/7wbHYEelvw=;
+ b=p87bhFwnak7Taj6esGM+RlYnZ3jGSVnuPfgJBg6LGcGmykZUjM/VfRPoPOiuYjgqkqRjCQ3M9sklF8mUrHhZ9lfOLI9h/maco71fJoXyxr2IrC+FZShuBLhLSrbq5whuU0++JYBQPRnvfoNt9nw5wjXOTqs3KXrS9MAXLREaE111FqbbM6AvlipUFWXTx2RtSogrXf7aIIH/hty9/eN/pOXyhmTXFvFpLKu8ScizJHC9KxYlm3VQ8h7Y+XhGzSTqeeT/WfJnJy/LwqvSttxMgs41dAR3JwXvgvkenGN2uHwpY/ASC0k/HKWwZz2i1YNDCkKYGZXVCRThNnIvWng8Wg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by AM7PR04MB6968.eurprd04.prod.outlook.com (2603:10a6:20b:dc::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.12; Thu, 17 Sep
- 2026 13:38:30 +0000
-Received: from AM2PEPF00070CF2.eurprd02.prod.outlook.com
- (2603:10a6:20b:219:cafe::1c) by AM8P190CA0011.outlook.office365.com
- (2603:10a6:20b:219::16) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.12 via Frontend Transport; Thu,
- 17 Sep 2026 13:38:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
- smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=axis.com;
-Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
- 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com; pr=C
-Received: from mail.axis.com (195.60.68.100) by
- AM2PEPF00070CF2.mail.protection.outlook.com (10.167.242.4) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Thu, 17 Sep 2026 13:38:29 +0000
-Received: from SE-MAILARCH01W.axis.com (10.20.40.15) by se-mail10w.axis.com
- (10.20.40.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.1748.39; Thu, 17 Sep
- 2026 15:38:20 +0200
-Received: from se-mail11w.axis.com (10.20.40.11) by SE-MAILARCH01W.axis.com
- (10.20.40.15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Thu, 17 Sep
- 2026 15:38:19 +0200
-Received: from se-intmail01x.se.axis.com (10.4.0.28) by se-mail11w.axis.com
- (10.20.40.11) with Microsoft SMTP Server id 15.2.1748.39 via Frontend
- Transport; Thu, 17 Sep 2026 15:38:19 +0200
-Received: from pc66231-2602.sto.se.axis.com (pc66231-2602.sto.se.axis.com [10.133.4.42])
-	by se-intmail01x.se.axis.com (Postfix) with ESMTP id DDBCE2F21;
-	Thu, 17 Sep 2026 15:38:19 +0200 (CEST)
-Received: by pc66231-2602.sto.se.axis.com (Postfix, from userid 21940)
-	id D12F5305D601; Thu, 17 Sep 2026 15:38:19 +0200 (CEST)
-From: Kanak Shilledar <kanak.shilledar@axis.com>
-Subject: [PATCH v4 0/5] Add support for InvenSense ICM-42370-P
- accelerometer
-Date: Thu, 17 Sep 2026 15:38:15 +0200
-Message-ID: <20260917-b4-inv_icm42370p-v4-0-fd9373f123c9@axis.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.13; Thu, 17 Sep
+ 2026 14:38:26 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%7]) with mapi id 15.21.0406.012; Thu, 17 Sep 2026
+ 14:38:26 +0000
+Date: Thu, 17 Sep 2026 09:38:15 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v4 01/10] dmaengine: Move enum dma_slave_buswidth to a
+ new header
+Message-ID: <aqv7V0E5GObzw9l0@SMW015318>
+References: <20260911-dmaengine-support-wider-dma-masks-v4-0-72b8fd4cc78e@analog.com>
+ <20260911-dmaengine-support-wider-dma-masks-v4-1-72b8fd4cc78e@analog.com>
+ <aqgCQvRw9fns__0d@SMW015318>
+ <aqjzvxI4ecoFvRLT@ashevche-desk.local>
+ <aqlYOHIFU_dB72I3@SMW015318>
+ <aqvFFg5Uh1cXln0y@nsa>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aqvFFg5Uh1cXln0y@nsa>
+X-ClientProxiedBy: CYZPR17CA0006.namprd17.prod.outlook.com
+ (2603:10b6:930:8c::7) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAEftq2oC/23NTQ6CMBCG4auQrq3ptHWKrryHMQb6o7MQCDUNh
- nB3Cy40yvKb5HlnZNH35CM7FCPrfaJIbZOH3hTM3qrm6jm5vJkUEgXKPa81pyZdyN61VEZ03Fq
- HBgRibQPLrOt9oGFJns553yg+2v65fEgwX9+xUuB/LAEXHI0olQm7UstwrAaKW9ve2dxK8suDW
- vEye4DKu+CCQad+vPr4vYAVr7I3xloFqCXA7stP0/QC5rxnBS8BAAA=
-X-Change-ID: 20260629-b4-inv_icm42370p-ccd671066bcf
-To: Henrik Grimler <henrik.grimler@axis.com>, Jonathan Cameron
-	<jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko
-	<andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
-	<krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, "Jean-Baptiste
- Maneyrol" <jean-baptiste.maneyrol@tdk.com>, Joshua Crofts
-	<joshua.crofts1@gmail.com>, Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>
-CC: Kanak Shilledar <kanak.shilledar@axis.com>, <kernel@axis.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6927;
- i=kanak.shilledar@axis.com; h=from:subject:message-id;
- bh=Eid6ScYF9GTextLygQ5AH4WcLr2z4yp6PZ9pLW0wqhI=;
- b=kA0DAAoWxGPY+7fCmmcByyZiAGqr7UrIB1U96nbJS2IxhKdgi915fUDEFEudnT0LI2HKFMCmN
- Ih1BAAWCgAdFiEEzjK3W79j/i2cG0LSxGPY+7fCmmcFAmqr7UoACgkQxGPY+7fCmmcaHwD/TbYn
- VbIcguleUqOf3WxaKV7Hc4yJe6xZTlObYN5XZdwA/3ax88Vk+ebdEXbUfCiYzD7qx5uKZdXmIAf
- wcZ/bf7sE
-X-Developer-Key: i=kanak.shilledar@axis.com; a=openpgp;
- fpr=CDB0F1C8EAD5B522C7B3A77928221FF065DB55F9
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM2PEPF00070CF2:EE_|AS8PR02MB8736:EE_
-X-MS-Office365-Filtering-Correlation-Id: 53a24fc3-6955-41c0-4383-08df14c0f550
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|AM7PR04MB6968:EE_
+X-MS-Office365-Filtering-Correlation-Id: c68591ff-0806-4829-f87e-08df14c95520
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|376014|23010399003|7416014|82310400026|32650700020|13003099007|921020|3023799007|6133799003|18002099003|10067099003|56012099006|11063799006;
+	BCL:0;ARA:13230040|1800799024|23010399003|7416014|19092799006|366016|376014|18002099003|22082099003|5023799004|11063799006|56012099006|4143699003|10067099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	Agel5hHNt9yW1oXefj3ZzKGECOasJDxgqF9XiyJ+pMwWHp0WSClB48jeuJTCUiBDtxM1N5ldusXSsc2IRxgUeGT77b9M1LCbApRdjUZadFtnPn0su8EnQc0LCx1HhyYFwB+LA7bTKZhzSIm2qTxXyLZQFX2YEtvH1wwyXyGYqQMEaAVUnvUuYVC+2CaOotcI/z9sfjDBcktzM6h/o3rusbS2I9YM+c/LvZesoGjXvViMt6tHoSFBCvKxdb7GvWNU136xcQdKoQeJzKh9lpivAqbbyg1CLiGV1WfVPQc6c2ut1iP5fSof5bHfhBbkASQu51nDj9ZvCgK4krRlmo05iBItl5fERBb6hE3vaiDZYKuJNb7h/RIlsUZIbaaG9ZsrpQxVUPFgkOHPvdQfjlBOry/x3rKTETdue+cii6KT0QiDvHdbBC2t3NqLDUPLWdDVdN6qRHfO4r5uV0v4vd3oaKl1/Jf2PSB/XtTtAnLlxwSW+aNS8SuIwe9qCOqlKwrn1l8X6fVxBBqORssTh/CmWOtidN+se+0mc2YtmngfK8NGIvZNlEds/dxL3wHLxGm/fGTdC/UUWItMuUlSqPnc8n7kzNiK6/M8KXmgG2fB8MmXgRmniJqG2iVxMZJCWF/PIggQuL7YfpRuZao69FhUM2lZPtaSZswr9MG+VH3rqIieGq76Cm9lmrPH7kV0FI21
+	D0qZEjIxGVrI42sj6hC7muSgGqF7F7o7YzKGfXvX5rRcVLohq3vulj9QDYn2+ZhLLoL6TGWhVgFhyZWPjruqqQHrSZGK1qbRd1XxYZNPrTpf6WICU9tL5Pwep9lnStcKQxiV7QDtCNFJMgg0PCizSqOqKW2Xc7w/ZHpOJi4eDO71BPn2fNycrcc/XJv1BkaUxHQj3CvQt5mq4RI7xTm0wLIcyOY1vge3P+axbN4Zhbbv4WwFfkMLeAwx5g981Ik2BmKk0bIciqBJl0QXFns1cf6A7rNqgUQrZYKdhiUFwhxGqbhdInFeb4tC1Bvd9J8nXvUgLExtsujwO3LoQPxzuzFNQ5VfJydOUCiE9Px8z4u4uFMuatPFOFBK4WH7si9mok/cFig0Ap7WkMewrafkMvyRvTiQd9E6bfACfnrQT34kCXxL7it6VtfxB+fApY4y5otfY8a3h/J2bOvavJKagP3tkyPv29Iux4fuLrKGy2VE62pY324eptETe0OF4u2b0okOl3lTJnMIxI3gXMHT+IwI5/EcqmLoBeNfTtWOs9aJxem8uN57J0zFbyojQlNXp+lpEL2snY5+kUxFNk952e5t2ICYB8XwFKb32UMDYCRv8VK65zNcwfva9EPcuMcSq2tdBWQ32LQTi0PUSwRCUzxaGXewztCFj3wLoRsW+pk=
 X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(376014)(23010399003)(7416014)(82310400026)(32650700020)(13003099007)(921020)(3023799007)(6133799003)(18002099003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(7416014)(19092799006)(366016)(376014)(18002099003)(22082099003)(5023799004)(11063799006)(56012099006)(4143699003)(10067099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	lfrqNyBzZO2rOfpYHy9CexehygztsInGjUBXqxkdVDrnz5i6g3sC0JL4INToNlhJc7bvcdNsakGDPVfCIsN158TSKnMZMrt7sgag9LmTTESOWOjEqqX/qfSXKaM+bgjrRJ+9wc2BtrrIq4Csc06BMPx3aH2Aw+DWrdJpszt3oRrvVIbt9LU9jBbh0rOD/5R1HsgsgGS/IKJeQCnw0TFOg3csBfJnueg6Gag2jJpc4V25gUguDMuZpzeSjNZbZfQ3imo9BDheWzWnHxnZ37v1YvruS7SY/ymQDj3WLQ2x/KZ3GXhPkEIZ6w2SCet35pKys74n1a1f4zxNtlJMguBleugSQathiKSuVBeCYVNTiwCChCbSSWvOWH/Jepi22sZlIqhw/tV18b/Ui/CbxVLHChv9kN28fhrTuCOGbyWmip2JADa9HmVGpj91IMxo+t6K
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2026 13:38:29.1354
+	=?iso-8859-1?Q?lLg3kbAwP27c4DNU2M6V2potYRQajpV0Us3mDHnFxHu24nTR++IdYfEXbq?=
+ =?iso-8859-1?Q?exUtWVC9d0LKR2p2dRtLRWCm+BFOC/e0noFWGmDFptE72kS3pseJc/jkMj?=
+ =?iso-8859-1?Q?T3gJL796ins7vc7oGWS12v7w5+tMNaqohlVtdKqDef1al4kQgJL1HUO2j5?=
+ =?iso-8859-1?Q?22QqzHRKhYRj/Fw3v3uYgXApnwpDHCaeMN1UrhVNyv/E75sfKTT1/XTb2o?=
+ =?iso-8859-1?Q?Iae7T99dMGT88fiomdwlWzskB4DXe2ldLTXQYGYLeorIMj/vPDOe7h0LJY?=
+ =?iso-8859-1?Q?hDhqPyV0+hPJKvz01j5CT5fc/OvLB24ETogpa/STZHxdKn3bsU8Wld9ubq?=
+ =?iso-8859-1?Q?OoJ9AOhdI+N9UfCOWMktnw/NqujUifX8ax65zg4+sDI2XY928ovQXw2piP?=
+ =?iso-8859-1?Q?NJPMBdKfTQlnRA8VZ0SlSlLiCzCerBLGrcX/kDgzK2WhmVc4JfSzjxRI21?=
+ =?iso-8859-1?Q?6zVEjFtI86ZJxe3TJu1P8wkURVb+mi6KHlKMeHy0PzNOT3JdEy8tWPr+vE?=
+ =?iso-8859-1?Q?SdD5KTto7tzIELBtZ+xIWylMqhsKXCAiZNogCniO5BDwvqRPEV1Z8UKRU8?=
+ =?iso-8859-1?Q?S6PmhbpOhJUMj/99+FTCBR5NejndArd3O1N8HauQsvKpbCfwNSPF9tJpDw?=
+ =?iso-8859-1?Q?f+k7zVsfbDFIfYuK7S09a1sHy1/FfyvAs9PjRqKThSs5Z2Kb2O6JkdHH0A?=
+ =?iso-8859-1?Q?Qt7gu5DuS7ZtzM3cCVZzUbZcVjj/sbuEEUcv5KxZRpvxAqBlEDf7ANJuPx?=
+ =?iso-8859-1?Q?oxcKN8qCKN93QEqrO+HJGYA6/Y7vGE/RmAOze25dg0BO6HE61CmYT7TiLL?=
+ =?iso-8859-1?Q?4ibympKSK8tlwu4Nj4pkV0dCeXYdHN0/Amf486FY1bEBRaN0UDN729Uics?=
+ =?iso-8859-1?Q?ogVBvK21KAapikKt0aEk80DYSRZ6hZcw4rF61h/K5vOiDHh1e2mXY8S4/J?=
+ =?iso-8859-1?Q?FOEI7Bi5/HsXwOGENIHFzTdA5OWyBNKnDCQn9EK8u31/MPwAekKQ4G/iza?=
+ =?iso-8859-1?Q?/v2gSna+9kdaVjiwBzrv+cmx8G1SEbvU2E1JoteFRvpvvD/YoJ2xMNJcVT?=
+ =?iso-8859-1?Q?R6ocKm43ARSPRhMjrhGmv9dU4JQrQZX8AWdiGAmJjQ+sX0cjQmlMggMDrb?=
+ =?iso-8859-1?Q?zKWZMjJ2aIWI5xHZbed7OyJxH9mtxwq/gVDLTGDec5LCNSdXLRTAvfPR1g?=
+ =?iso-8859-1?Q?MZ0BgRwbdrDBTW2X2yK7qhs68ll1X8F5JH1W3V7FgFfVnL/t+mIn8d/REa?=
+ =?iso-8859-1?Q?nw6B7Kt+z86mQZs3PAwUjPE2dNFjpXa9MZpbSo47sXnG7S+Zlfk4EQejjI?=
+ =?iso-8859-1?Q?PcnwrdXUsuaBPlB0rCBhlouGtAu/WacmVmmDqAKEWp+DO7J0/s2fuiYoMf?=
+ =?iso-8859-1?Q?6kXx6ZEuevOMriMnZCSBTGdtYOuzehj1rKU7yX07Nlj9CDavd0jDsIS5f/?=
+ =?iso-8859-1?Q?4keCmoI2c4TMoRBLkC1LtbnmHiCHSqKMKJJa3w4uZQlM29prnq1gSUEREG?=
+ =?iso-8859-1?Q?Pfg8AZlUiI5tYKZ7SIETEqkPTiUfy5BhKdtlbQqBHzoMRHVrKpo7z0c6X2?=
+ =?iso-8859-1?Q?loHhkVFEJypQ8uKOGckLbUPTYgWh1G6rcm6Ay5NBDBFD1eIAMWiZdFKR0/?=
+ =?iso-8859-1?Q?8oPUXFAHSQhLpMUIRAva9BYUdzVrxd2koOQ0Fb9stdcnXGFyZNRdV60yJI?=
+ =?iso-8859-1?Q?s0GRxPYF6PYDCziRJc+HwYr14V6DhV7P76S/8MNKkFT13Zbzijt58NDD7r?=
+ =?iso-8859-1?Q?vrIiZGrqDwXfY2NnK2fT4GfZGFudJwm8cGJIsBajxCeM11VuM2jEGFGaJo?=
+ =?iso-8859-1?Q?vCKzW2B0JXT1ABgijqpGLW1Mas+uR824iiZ7I7dhA5W7bUKpptFj?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c68591ff-0806-4829-f87e-08df14c95520
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2026 14:38:26.2569
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53a24fc3-6955-41c0-4383-08df14c0f550
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AM2PEPF00070CF2.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB8736
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FNMkonIogOoZ4phRPw3zavo6YCCmj01g2OTPxUgES8wbR7vs4OmYHwjbAduSuuJk46/I7ATDravDahlhEkk2xq9fbPle8ChjXMkiyt9QwVn7gxsZl5L3M1Qi1DvzNfsZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6968
 
-InvenSense ICM42370P is a high performance MEMS MotionTracking 3-axis
-accelerometer. It supports I2C, I3C and SPI protocols. It has a 2.25kB
-FIFO and two programmable interrupts with support for ultra-low-power
-wake-on-motion support. It has a built-in temperature sensor. This
-patch series adds basic support for the sensor with functionality of
-performing raw reads and writes via the I2C interface.
+On Thu, Sep 17, 2026 at 11:49:46AM +0100, Nuno Sá wrote:
+> On Tue, Sep 15, 2026 at 09:37:44AM -0500, Frank Li wrote:
+> > On Tue, Sep 15, 2026 at 10:29:03AM +0300, Andy Shevchenko wrote:
+> > > On Mon, Sep 14, 2026 at 09:18:42AM -0500, Frank Li wrote:
+> > > > On Fri, Sep 11, 2026 at 06:25:36PM +0100, Nuno Sá wrote:
+> > > > > In preparation for the bitmap based bus width capabilities, move
+> > > > > enum dma_slave_buswidth out of linux/dmaengine.h into a new
+> > > > > include/linux/dma/engine/types.h.
+> > > > >
+> > > > > linux/dmaengine.h is included nearly everywhere, so growing it with the
+> > > > > new interface would make every one of its users pay for it. Keeping the
+> > > > > basic types in a separate header lets the new interface live next to it
+> > > > > without that cost. linux/dmaengine.h includes the new header, so its
+> > > > > users are unaffected.
+> > > > >
+> > > > > While at it, add the missing kernel-doc for the enum members. The block
+> > > > > already opened with /**, so kernel-doc expected every member to be
+> > > > > described and warned about each one of them. Describe the UNDEFINED case
+> > > > > in particular, as its meaning depends on where the value is used.
+> > >
+> > > ...
+> > >
+> > > > >  include/linux/dmaengine.h        | 20 +++-----------------
+> > > >
+> > > > I think it is good to split dmengine consumer and provider header files to
+> > > > hidden dmaengine's detail.
+> > >
+> > > It's indeed desirable change. but isn't it a bit out of scope of the series?
+> > > I suggest to do one step at a time. Would it work for you?
+> >
+> > Yes, but I hope the file name is finial expected file name. it is okay
+> > just move enum dma_slave_buswidth to there now.
+>
+> Hi Frank, if I understood you, you mean to have an engine.h as kind of a
+> consumer and have enum dma_slave_buswidth on it?
 
-This device contains 4 register banks for configuring the device called
-MREG0, MREG1, MREG2 and MREG3. Unlike other devices from the same
-vendor, this contains a very different way of accessing the register
-banks apart from the default user bank 0 (MREG0). The register bank access
-procedure is mentioned in the datasheet Section 13. This is very
-similar to the existing InvenSense, ICM-42607-P driver. Thus, it
-improves the existing driver support and adds the ICM-42370-P device to
-it.
+yes,
 
-While adding the support for new device, I tried to perform some fixes
-to the existing driver which were pointed out in the v2 of this patch
-series.
+>
+> If so, note that enum is used both by consumers and providers so having
+> them in types kind of header makes sense to me. Kind of the same as with
+> the new widthmask header. It's used by both.
 
-The buffer support will be added in another patch series.
+Yes, generally, provider include consumer's header files.
 
-Note: The datasheet for InvenSense, ICM-42607-P could not be found on the 
-official https://www.invensense.tdk.com/en-us website. Thus, I am 
-using the datasheet available at https://www.lcsc.com.
+suppose detail dmaengine implement should be hidden in provider header
+files.
 
-Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-Datasheet: https://www.lcsc.com/product-detail/C5129967.html
-Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
----
-Changes in v4:
-- Drop the little endian ABI change patch.
-- Drop the odr formatting patch.
-- Drop the gyroscope calibbias implementation patch.
-- Reword commit subject for changes to the IIO channels macro.
-- Fix formatting across patch stack.
-* DT bindings
-- Reword the commit message of dt-bindings patch.
-- Drop the MAINTAINERS entry.
-* ICM42370-P support
-- Update the probe to select gyroscope functionality based on the
-  chipinfo struct based on the `has_gyro` member.
-- Drop setting gyro member in the `inv_icm42370_default_conf` struct to
-  NULL.
-* MREG bank access
-- Update the bank access as per @Jean's comment to make it similar to
-  icm45600 driver.
-- Use the regmap approach to handle bank access.
-- Dropped setting the default configuration for the ICM42370 to be
-  always start in the LOW_POWER mode.
-* Calibbias support
-- Add calibbias to `inv_icm42607_accel_read_avail()` function.
-- Instead of clamping out of range values reject them with -EINVAL.
-- Fix return handling of calibbias functions.
+consumer is just subset by use provide APIs. It takes time to implement it
+but can start work from enum dma_slave_buswidth.
 
-- Link to v3: https://patch.msgid.link/20260901-b4-inv_icm42370p-v3-0-77cc31642115@axis.com
+Just choose good filenames now, avoid rename letter.
 
-Changes in v3:
-- Updated the cover letter to match the implementation.
-- Add SPI properties to dt-bindings and fix typo (leave out I3C for now).
-- Move the implementation to inv_icm42607 driver as both are similar
-  devices.
-- Fix formatting of the drivers based on the comments received in v2.
-- Switch endianness of the driver.
-- Update mreg checking to perform bank access even if the device is in
-  OFF or LOW POWER state.
-- Implement mreg read writes and calibbias support for inv_icm42607
-  driver.
-- Drop buffer and interrupt handling implementation for next patch series.
+ideally, As vnod said include/linux/dmaengine.h is consumer header file.
+drivers/dma/dmaegine.h as providers.
 
-- Link to v2: https://patch.msgid.link/20260813-b4-inv_icm42370p-v2-0-11aedfdf76d3@axis.com
+but some dmaengine driver outside drivers/dma/ directory.
 
-Changes in v2:
-* Changes across all files
-- Update MAINTAINERS with company mailing list
-- Sort/Cleanup of includes
-- Use `guard(mutex)` and newer `pm_runtime` APIs
-- Fix code formatting and add empty lines
-- Be consistent in inv_icm42370_data variable name
-- Fix MODULE_DESCRIPTION
-- Drop secondary state struct and merge it's properties in
-  `inv_icm42370_data` struct
-- Update mreg_read/write function calls
-- Change the compatible and filename to `icm42370p`
+Maybe we use
 
-* Changes to dt-binding
-- Add dependencies property
-- Made vdd and vddio supply as required
-- Add description to drive-open-drain property
-- Add mount-matrix property
-- Add interrupt-names property
+include/linux/dmaengine_consumer.h as start.  wait for vnod to comments.
 
-* Changes to `inv_icm42370.h` and `inv_icm42370_buffer.h`:
-- Resturcture the file according to @Marcelo's advice
-- Move struct __aligned properties to the end
+Frank
 
-* Changes to `inv_icm42370_core.c`:
-- Fix _accel_scale[] values
-- Add IIO_TIMESTAMP to channel spec
-- Update mreg_read/write to fix bank access
-- Replace usleep_range() with fsleep()
-- Use constants from linux/units.h
-- Call `_update_fifo_period()` after updating the ODR values
-- Fix mathematical error in offset calculation
-- Implement handling of mount matrix
-- Implement handling of named interrupts
-- Use devm_regulator_get_enable for the vdd/vddio regulators
-- Use better error handling
-- Move iio device registration after performing IRQ init
-
-* Changes to `inv_icm42370_i2c.c`
-- Change compatible string as per the binding
-- Use named identifiers
-- Add `id_table` to the i2c_driver struct
-
-* Changes to `inv_icm42370_buffer.c`
-- Update FIFO enable/disable logic
-- Update FIFO buffer to match the specification and handle increased
-  size dynamically.
-
-- Link to v1: https://patch.msgid.link/20260806-b4-inv_icm42370p-v1-0-670837f5842f@axis.com
-
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-To: Henrik Grimler <henrik.grimler@axis.com>
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno SÃ¡ <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Chris Morgan <macromorgan@hotmail.com>
-Cc: kernel@axis.com
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
----
-Kanak Shilledar (5):
-      dt-bindings: Add InvenSense ICM-42370-p accelerometer
-      iio: imu: inv_icm42607: Simplify IIO channel macros
-      iio: imu: inv_icm42607: Add support for ICM-42370-P
-      iio: imu: inv_icm42607: Implement MREGx register access
-      iio: imu: inv_icm42607: Add accelerometer calibbias support
-
- .../bindings/iio/accel/invensense,icm42370p.yaml   |  87 +++++++
- drivers/iio/imu/inv_icm42607/inv_icm42607.h        | 170 +++++++++-----
- drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c  | 217 ++++++++++++++++--
- drivers/iio/imu/inv_icm42607/inv_icm42607_core.c   | 253 ++++++++++++++++++---
- drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c   |  23 +-
- drivers/iio/imu/inv_icm42607/inv_icm42607_i2c.c    |  11 +
- drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c    |   5 +
- 7 files changed, 649 insertions(+), 117 deletions(-)
----
-base-commit: 69fa76f0af3414cc189c3b0b807cb59e327ecc00
-change-id: 20260629-b4-inv_icm42370p-ccd671066bcf
-
-Best regards,
---  
-Kanak Shilledar <kanak.shilledar@axis.com>
-
+>
+> - Nuno Sá
+>
+> >
+> > Frank
+> >
+> > >
+> > > > suggest name
+> > > > 	dma/engine.h
+> > > >
+> > > > so we can start move more API to this files.
+> > > >
+> > > > after all user include this consumer header file,  old
+> > > > include/linux/dmaengine.h rename to include/linux/dmaengine-provider.h,
+> > > > which only include by dmaengine drivers.
+> > >
+> > > Traditional naming would be
+> > > dma/engine/provider.h
+> > > dma/engine/consumer.h
+> > >
+> > > --
+> > > With Best Regards,
+> > > Andy Shevchenko
+> > >
+> > >
