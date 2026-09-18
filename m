@@ -1,120 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C56D48551F;
-	Fri, 18 Sep 2026 06:25:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C4E397949;
+	Fri, 18 Sep 2026 06:40:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789712707; cv=none; b=VfLpGu8UfFFPIXN4E0UemQAleAh6p+yAjuSzwohLF5V6GvBuwFKMywHVx7OSrWRo/mod/OPaOPVy9cAze+oyDzBOg7jvPkrxaykgLfoj0guLKCw8hFR5Z3HNPeX+TslFXiD06UAASLrhNGiXcGwZJAfMXVsriH1dYu3ExUK+rs4=
+	t=1789713610; cv=none; b=IDLZpquisBGxXue2ZuGUm+ze0KJBNGIrnvzhLz46303ikHlgDIBqjvlQDtIqTJxfsl5b4veGR4BPW6U/O8eY6gWKVfQ+JqhITivGu4JDpxP4oQRGDjz6bE+l5FbOcfq56KP8+cH82vooYVhPJvlfJa1KWFM1QbhEO+IX4zNwLBc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789712707; c=relaxed/simple;
-	bh=kMWoUije5yTrC+y3H2eCV42peF2ZwHmEpdZ1AzMBN08=;
+	s=arc-20240116; t=1789713610; c=relaxed/simple;
+	bh=qH80mGE9pCwDhwBrlDfTjjf9ew0D0sIRmxCNxFsJE7A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DQDeeBD9EUEkXsBHmnEJEnBpUisxDPzQ/H9kzx7eSX5mjiJvOVUD88YNP+Fjc3dHeQg9W6JMokVtQ81+4UJUjUr6PAlNNGmrvSmj9BqpKS1hMuef8CjMb/GxRsz/6dx9u6HVlzcjPhQ1cEaQ9QydMVDH6UWWi/zSuSoLViW300E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q/G8cbH8; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=piIPtJ2+okAE44hyoqiPb4vi3THLn2BHVT5j5U2L0r/17i9ncB3IW5zjMZA8XGn3oDVr223LL4pPpkwFR+0kqGDkwlvCNcWsIURFAbx6pSzZ8qabzB9HolzraL6wh92nsTxBgMF+vzlqpnDmkNCZnA6RApLGK70e/0g+5v28vOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IhxD1Y+e; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q/G8cbH8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789712705; x=1821248705;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kMWoUije5yTrC+y3H2eCV42peF2ZwHmEpdZ1AzMBN08=;
-  b=Q/G8cbH8IYMGqS6X4PrOGD9B4Uj4DLhriKBGgwAFnZJHC0k66Rfjj8/r
-   JCs0ZdNyhLnvLU/i5/WeNEjFli9LTSnLHCIUqaLc7GQKK/JhQM48I6fZ/
-   GJwFnb8rVLpeBWGGMOtYxcPdNqv0T/AjCk7TEe+UpZBmGYaDDPyhRhQye
-   Z77ILAeM4WSIGcTesrRZNfgfO3ZVZAXwtzr6AxYqTePpT8dZqlVXHUaDX
-   PDzHcFn9NYjh10gFOxcy+Tv9yZ3zevGHxOMLDAbqKfBNw8wVRbeGlJpvv
-   iaBrLo2W5wodrZBpMDtEBQdwYu2FFCC8SsxP7r4Nh9g8FD0up5UnE6AoT
-   Q==;
-X-CSE-ConnectionGUID: ZeIFikmlSJC5X9dMXTk/WA==
-X-CSE-MsgGUID: 7HxR9GM6SNaee240pnEuOg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="77761328"
-X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="77761328"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2026 23:25:04 -0700
-X-CSE-ConnectionGUID: nik7p8FETbK9DCqO6zw0zw==
-X-CSE-MsgGUID: VmqEWhMvSN6swG9gHq3yag==
-X-ExtLoop1: 1
-Received: from carterle-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.170])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2026 23:24:59 -0700
-Date: Fri, 18 Sep 2026 09:24:57 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Vinod Koul <vkoul@kernel.org>
-Cc: Frank Li <Frank.li@oss.nxp.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
-	Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IhxD1Y+e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE98C1F00893;
+	Fri, 18 Sep 2026 06:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789713608;
+	bh=THnFdyTeq0KsVfc/2yhY0wS2msxeEvDxKlZCMnDU5UE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=IhxD1Y+eG3fxALQgFkFo2XLbW64HqLJNRzjmbOs/Ikg9+PONsCFrD9QDsnEVouFtt
+	 GudWuCnVij2L/v17xwmSJwVzq1b5bvF5NCm8HsjMqkPLi+c3SG5qECyRlptHwYE1RE
+	 i5yk8Hq7z8fnB0DGgQnZkTZZYD5e11WmZh4sgj3gvS+K3D0qo9STpuS8e6FBp+Xjhx
+	 j4eWxnZ13irnAO8ZbbbLjT0qOOBoXlgw1NXQ22udx23Hf/T6qhlmCIg8e2xntf34/q
+	 Qv2SwRMlmB8tPsm7A9pMSYcZKW3ahYhnlI1adxMOBhN83PQOzEens4su2tCJi0x2P6
+	 0s9gjw5iGkRPQ==
+Date: Fri, 18 Sep 2026 08:40:05 +0200
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+To: Kees Cook <kees@kernel.org>
+Cc: Kees Cook <kees+treewide@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v4 01/10] dmaengine: Move enum dma_slave_buswidth to a
- new header
-Message-ID: <aqzZOZ2ovBc6affP@ashevche-desk.local>
-References: <20260911-dmaengine-support-wider-dma-masks-v4-0-72b8fd4cc78e@analog.com>
- <20260911-dmaengine-support-wider-dma-masks-v4-1-72b8fd4cc78e@analog.com>
- <aqgCQvRw9fns__0d@SMW015318>
- <aqjzvxI4ecoFvRLT@ashevche-desk.local>
- <aqlpoBJJXfZgsMxT@parshuram>
- <aqlwRkNcs_UqKjWs@parshuram>
- <aql6u3T0nnSVr-FC@SMW015318>
- <aqws8pN2rfS9-dCC@parshuram>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: Allocate ext_channels with
+ ARRAY_SIZE()
+Message-ID: <aqzcxf84JEdoyzwA@lore-qca>
+References: <20260917211350.i.934-kees@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="wbQJT2YbkD8xj2MZ"
 Content-Disposition: inline
-In-Reply-To: <aqws8pN2rfS9-dCC@parshuram>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260917211350.i.934-kees@kernel.org>
 
-On Thu, Sep 17, 2026 at 11:39:54PM +0530, Vinod Koul wrote:
-> On 15-09-26, 12:04, Frank Li wrote:
-> > On Tue, Sep 15, 2026 at 09:50:22PM +0530, Vinod Koul wrote:
-> > > On 15-09-26, 21:22, Vinod Koul wrote:
+--wbQJT2YbkD8xj2MZ
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-...
+> From: Kees Cook <kees+treewide@kernel.org>
+>=20
+> In preparation for making the devm_kmalloc family of allocators type
+> aware, we need to make sure that the returned type from the allocation
+> matches the type of the variable being assigned. (Before, the allocator
+> would always return "void *", which can be implicitly cast to any
+> pointer type.)
+>=20
+> This is allocating a copy of magn_channels, which is an array of struct
+> iio_chan_spec, but the size was taken from the whole array, which would
+> make the allocation type a pointer to the array rather than the
+> "struct iio_chan_spec *" being assigned. Allocate ARRAY_SIZE-many
+> entries instead. The resulting allocation size is the same.
+>=20
+> Build tested ARCH=3Dx86_64 allmodconfig with GCC 16.2.0:
+> drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.o
+>=20
+> Assisted-by: LLM coccinelle
+> Signed-off-by: Kees Cook <kees+treewide@kernel.org>
 
-> > > > > Traditional naming would be
-> > > > > dma/engine/provider.h
+Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-(Actually majority of the subsystems use driver.h.)
+> ---
+> Cc: Lorenzo Bianconi <lorenzo@kernel.org>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: David Lechner <dlechner@baylibre.com>
+> Cc: "Nuno S=E1" <nuno.sa@analog.com>
+> Cc: Andy Shevchenko <andy@kernel.org>
+> Cc: <linux-iio@vger.kernel.org>
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/i=
+mu/st_lsm6dsx/st_lsm6dsx_shub.c
+> index d6a1eeb151ca..cbc47fa5b101 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+> @@ -766,8 +766,8 @@ st_lsm6dsx_shub_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+>  			IIO_CHAN_SOFT_TIMESTAMP(3),
+>  		};
+> =20
+> -		ext_channels =3D devm_kzalloc(hw->dev, sizeof(magn_channels),
+> -					    GFP_KERNEL);
+> +		ext_channels =3D devm_kcalloc(hw->dev, ARRAY_SIZE(magn_channels),
+> +					    sizeof(*ext_channels), GFP_KERNEL);
+>  		if (!ext_channels)
+>  			return NULL;
+> =20
+> --=20
+> 2.34.1
+>=20
 
-> > > > > dma/engine/consumer.h
-> > > >
-> > > > consumer and provider and good names.. I would retain the full dmaengine
-> > > > everywhere please. dma causes confusion already!
-> > >
-> > > Thinking about it again, drivers/dma/dmaengine.h should be the provider
-> > 
-> > There some dmaengine code outside drivers/dma directory, like
-> > drivers/crypto/ccp/ccp-dmaengine.c
-> 
-> They chose to be outside, their choice... They need to be updated as
-> well to point to ../../dma/dmaengine.h :-)
+--wbQJT2YbkD8xj2MZ
+Content-Type: application/pgp-signature; name=signature.asc
 
-Hmm... It's rare to make such a requirement in the kernel for the resources
-like this. All I know about (GPIO, regulator, pwrseq, IIO), they split and
-provide the interfaces to the whole kernel.
+-----BEGIN PGP SIGNATURE-----
 
--- 
-With Best Regards,
-Andy Shevchenko
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCaqzcxQAKCRA6cBh0uS2t
+rI17AP0fAoZ0k4l8NkWBt1GT/hkmsWRWMZ2bReA5VRyYonj21AEA2AEKuZmVysDv
+uxhbCT+fCsUIVmBlGYCPLXgeAMfbtwk=
+=VerI
+-----END PGP SIGNATURE-----
 
-
+--wbQJT2YbkD8xj2MZ--
