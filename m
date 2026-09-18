@@ -1,117 +1,177 @@
-Received: from mail-qk2-f13.google.com (mail-qk2-f13.google.com [74.125.230.205])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B6F74E4323
-	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 12:02:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.230.205
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789732924; cv=pass; b=U+SX2O+dSw6twYLHIB/uXeCbSbOfeGIutqUjPXie3pBNbUwQBAlbQFIURs1HGIg2rNA/CW5GWFSNDEXMqn1M0xcIgqIky6Va+AXQI3D03yllX+zaQJa75wFUkz/1/DxS6hFl2VXTVi5fnhQv5HZ5fWU1IimtSQY1TjzE4A78yEo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789732924; c=relaxed/simple;
-	bh=6ayaWbsmcz83d0RD1dqGD3+lcx2KhLYJ1JU2hHA60YM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FVVF4wiwCqQ8t1U/OCWcy0qxFjn3OzgpXhHjirwUKIQuf8JO3YOIyMJUYmMaepYx1XjRFP4tZbR1G8rHrXEPXJnI7eJ0+79V0vIKf3CmAlBNRNSc43ltRmPUP0mgFABKnDZ4s2ck3CO/7lqB+T1ziGlynRE2xftI2Ep1Q7w5lSk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HU1DyoUA; arc=pass smtp.client-ip=74.125.230.205
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE8E14AB3DA;
+	Fri, 18 Sep 2026 12:15:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789733736; cv=none; b=TRbHEkZUm9lRj/qS6RgJj4LWGbzb6vcixCwDmQ4UWrTYkAjxqg3ApfaWeOVtmqSK/CW14bfRMxM7BoXMIWS+5Aw4Qib/aJQA4Re+baTVlFvHnMtovtMb7OUVGkNpQHpqmbmNYC1fNtP7anZkxyoVzVFLYiXHhXFJV67ENx9w19I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789733736; c=relaxed/simple;
+	bh=T/apRxOiS6EEfsFUMJh7FJWp82q3VzXDa8jFlGB6dos=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hn6y8d0etBmjrgAJCxmRtEfCQub05wkAK3/x3D7g/J+lxBV6RRxIBsj5W3rtSbqgJ9YGJ5mnsbnIDBR+/EkzALea6MdW1tw2QS9RLReesPTx61M7NNdVah3mwph4UGvM0xhr8tyMbswyeJUuZqbbc7Uep4Wq8Z3xiuqSuWM6K7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZlXuPLpW; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HU1DyoUA"
-Received: by mail-qk2-f13.google.com with SMTP id d75a77b69052e-52fb76798a2so2755741cf.1
-        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 05:02:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789732922; cv=none;
-        d=google.com; s=arc-20260327;
-        b=m0KbFvbS2fHIxkiHaAapoZa6aRts2TE8Uj2Cw3HvW4V3HFW3JyGFTfRHV/0GvANVkd
-         tz8oEtvaI4/TTEoGpFBlchqxW1+dtmxoO9a2hE6vgGxKk57bn8loUEVIB3tHw2EHyCVl
-         kGpiW0Ou1+wtzAOf7pCmqP/MXSJiMg6O3YM040pXwb+HrKJ4VWzFHtxkLF75iYjNxy6u
-         bv2EcnB11oJU6fXojpeNxZThqe4l0lcnNcQHZtGf+IDVSsB9Izp8WoKS4ewuUtTuv6zG
-         Ka15uCrvQ8y8VAvi1BeCL8dT0HFbnbp6qKAYVP6AyCRmL7Af7+DeBwChQc1yj9H8NDRG
-         oFuQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=6ayaWbsmcz83d0RD1dqGD3+lcx2KhLYJ1JU2hHA60YM=;
-        fh=WjZ5te7qyxiMdK2VLZkZQq/KJLoKYCBaV3OmJpF5Ymg=;
-        b=rrUD68tZ0H/vEzaOEGxmq0JNv0TS6jJOjh9WbF6fThVhRe/PWR8ow1FmPeLWIMxAoJ
-         +jgyK3gTcnaWP6WPHoVYveRqSj/DGp976jMzMJ5ejEbk9Aqor4jNArqIzyNIDEptJGzY
-         fdC70Zx9fHanXdZ0qvFvYv9acbqwSJb4PuEq0w+nfjOM0WZ8IwdpvmX8FoYT9/j8kXi8
-         F/n3nuQdSMZQ8qyGs5USLJ2Y6uwzNmEzRyA9mfLYLDxsWHSqX9HtCXVNeB74ZfHHXbLq
-         A/8MbI/Xv19NzZUjDKTDWe7ENpFDk+SUkXQbSii+gYJyxVyr2YEaXnd3KKDcycPEcXXJ
-         asWQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789732922; x=1790337722; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=6ayaWbsmcz83d0RD1dqGD3+lcx2KhLYJ1JU2hHA60YM=;
-        b=HU1DyoUA7W3ZObi2Xqt9/2fae8wZ7EEnYH+PQWyTnRYjXhp7IW+ZNKKpYuiJr76b5D
-         PyeFLJ/g829YoI4RD6A8FdQ3piPTlDr9QFaLLbQ35IWhcQDEzZ34hz+nsXvtOT0IvcKV
-         3JEPAt+XZ/5oCvDsLOLywp9dZ3t4L1Swq3smkgbSH3rOth1rjI2GaS2JNNUjpVBYYrX7
-         /4Vm8Z6QrcMGGPftPU5CYO6YBqW3+pf1ZjasctfHTjleDSZh5UrOaDecldkPuTVHVOr4
-         gVKVQ6kCf9mLp/l0mZBffjR1Q0SqfsUT2Y1qjsHzQ9IByQN3wUYVCp4QHr3p4nBtQaAv
-         b/iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789732922; x=1790337722;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=6ayaWbsmcz83d0RD1dqGD3+lcx2KhLYJ1JU2hHA60YM=;
-        b=HbTFYxtvnlOCaorQHJJY9FXpBItKqWJv9O+xdlhQkmtMt/iZdZzg79CDH7gjdnzfHe
-         41ezprLd2iEgbEL4C9oUPgnxyLcn4zZ5jXc7DNNkQAcAFlQrqAbYYzw2414G0XJlF/pi
-         GAdM2v0MYPNnYHUyuJmb+IogeQd+NAEfle6/zJIlkqGGeLvhhylBFw2Ryz4DofVoiAqX
-         pnDpcSHy3ULKbrmmrGdJouox2hZy3rDaZBk/akcZBsVVMdMcf7G6ysXTODCKEu44c1YI
-         qI9RLGLQT/DxOxvqLHwb/PexZHpODNN50GgVYot6r4dXqlNEpHA6rUNp6YWowsdA0K87
-         /bXw==
-X-Forwarded-Encrypted: i=1; AKwUvByDnuANN9PUqzHY+h9Db749f7LS5HT2i+Ui32mkFiaMinPMswTVn8MlyGl9pqrDVqLpSj4tuC5XZ2M=@vger.kernel.org
-X-Gm-Message-State: AFuF++lpXq2cRJ6OowoAwfkc8GzJXWvCX0hF2zjehEhLXsgt52189lJD
-	URX6Ov2JgqXjhqMEtNWHWEaK+tAAor5fQLoHFYuIiegTpP963Or0s31jbsN9Vcz64q8ontFZcmu
-	QSx41g14+ONVselul7NuqsNqFnL3Ifpk=
-X-Gm-Gg: AYBFou1OlSBfVMiH1f+K3v8iOzsGqVl89N5sVoEKP3jjoPDM5d7u2y15q1XblqoI2zG
-	CT8XUktaNRpebja07e+BbaSc/G3bRSrR9X4d6iJxmX5DC1qtwzkjA9BvSBZ/onFsO99Fng4wIjk
-	5uCUmuGTRbqxq3j+1H1QfSdk3f1YPkQcwzwTu5C76ocD9TCMei6vMBqSIZZuZxH7SFQOGupqLoY
-	31nKoIGDxD2sHVAhXuAwoNRJH5i9gpPArtk98bpTxWAa/f26Ffa+W5OfTxDeLWlHhArrKdce2ss
-	UZE3GIzhh8DIQOluEOUKLAcDL1MW2WOnbNFlOgehSCWKH/0hlcbORdGNlldkaGuwMeQI+/dnunk
-	3nO3uhTruPkslCtBR2TWDFA==
-X-Received: by 2002:a05:622a:244b:b0:530:ea8c:1b6c with SMTP id
- d75a77b69052e-5329e976b4amr30710831cf.29.1789732921860; Fri, 18 Sep 2026
- 05:02:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZlXuPLpW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789733735; x=1821269735;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T/apRxOiS6EEfsFUMJh7FJWp82q3VzXDa8jFlGB6dos=;
+  b=ZlXuPLpWcnGP9rPUfelThyUuMhTFpLqiKAAvd/lm30uru+vHQp4zpMuk
+   2B7CwwjxgY+W2Na0uIuH+Fir/XZFgsLb9Dl/YbGwnQC8p9kU+NvZIfu0V
+   ZjSDBwjAYdAqxxTU3KqoT15hP69xED0GTCP3Hs4620vj5bQOatdzqpyAH
+   l6KdbXxVk9Iy+7Y9SdgJRWb/zae3RGg6S70QeLFC6CuZnhjnVREnBsMEF
+   TMtPr5h2Ph9pqjLKBuYrJE8RDEryp6rVj/nyGgSAYV/VdyHp7doCRRfel
+   5dxX0l2n6mU2uwjkATAvjbsn26yQhqFONo18XXUMOuwxuc8En0KkCTOIC
+   Q==;
+X-CSE-ConnectionGUID: RMvnY9D2SWmXsH000GPcDA==
+X-CSE-MsgGUID: 94/XXiaWQAKvucHFv+vcNA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11908"; a="90368237"
+X-IronPort-AV: E=Sophos;i="6.27,108,1787036400"; 
+   d="scan'208";a="90368237"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 05:15:34 -0700
+X-CSE-ConnectionGUID: SKLexVT8TM23bbjGa8ylxw==
+X-CSE-MsgGUID: 0OkvWzxQT3G71Y4F2x0OjQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,108,1787036400"; 
+   d="scan'208";a="2565023"
+Received: from lkp-server01.sh.intel.com (HELO 462990a40a85) ([10.239.97.150])
+  by fmviesa012.fm.intel.com with ESMTP; 18 Sep 2026 05:15:32 -0700
+Received: from kbuild by 462990a40a85 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1x7XV3-000000009ll-0fqn;
+	Fri, 18 Sep 2026 12:15:29 +0000
+Date: Fri, 18 Sep 2026 20:14:46 +0800
+From: kernel test robot <lkp@intel.com>
+To: Salah Triki <salah.triki@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: Re: [PATCH v2] iio: temperature: tsys02d: Fix state
+ desynchronization on resolution write error
+Message-ID: <202609182052.HpuVt6ba-lkp@intel.com>
+References: <20260917091609.626043-1-salah.triki@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260917080905.7654-1-palaomer100@gmail.com> <20260918-inescapable-crafty-cat-b03a46@quoll>
-In-Reply-To: <20260918-inescapable-crafty-cat-b03a46@quoll>
-From: =?UTF-8?Q?=C3=96mer_PALA?= <palaomer100@gmail.com>
-Date: Fri, 18 Sep 2026 15:01:33 +0300
-X-Gm-Features: AcwNN1UohY9u8D1FB3Y5bUT2HvOqBkA66e9QPA1W3DSDZ76z-GyXly1_UBbtjCo
-Message-ID: <CAKhZXnqGPPFFKttTCxswx2cpSJctJxAduRLZ77NEVLTk8T3xWA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: iio: accel: add adi,adis16203 support
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org, 
-	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, linux@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260917091609.626043-1-salah.triki@gmail.com>
 
-Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> Bindings are not for drivers, but nevertheless you clearly did not read
-> the discussions I linked in your previous post.
->
-> That's staging stuff. Are you again fixing some issues only because
-> checkpatch told so?
->
-> Best regards,
-> Krzysztof
+Hi Salah,
 
-Hi Krzysztof,
+kernel test robot noticed the following build errors:
 
-You are completely right, and I apologize for missing this. I will
-drop this patch since the driver is still under staging.
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on linus/master v7.3-rc3 next-20260916]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Thank you for your guidance and patience.
+url:    https://github.com/intel-lab-lkp/linux/commits/Salah-Triki/iio-temperature-tsys02d-Fix-state-desynchronization-on-resolution-write-error/20260917-101608
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20260917091609.626043-1-salah.triki%40gmail.com
+patch subject: [PATCH v2] iio: temperature: tsys02d: Fix state desynchronization on resolution write error
+config: riscv-randconfig-1000-20260918 (https://download.01.org/0day-ci/archive/20260918/202609182052.HpuVt6ba-lkp@intel.com/config)
+compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260918/202609182052.HpuVt6ba-lkp@intel.com/reproduce)
 
-Best regards,
-Omer PALA
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202609182052.HpuVt6ba-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/iio/temperature/tsys02d.c:89:2: error: cannot jump from switch statement to this case label
+      89 |         default:
+         |         ^
+   drivers/iio/temperature/tsys02d.c:82:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
+      82 |                 guard(mutex)(&dev_data->lock);
+         |                 ^
+   include/linux/cleanup.h:423:2: note: expanded from macro 'guard'
+     423 |         CLASS(_name, __UNIQUE_ID(guard))
+         |         ^
+   include/linux/cleanup.h:303:3: note: expanded from macro 'CLASS'
+     303 |                 class_##_name##_constructor
+         |                 ^
+   <scratch space>:93:1: note: expanded from here
+      93 | class_mutex_constructor
+         | ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
+      16 | #define __PASTE(a, b) ___PASTE(a, b)
+         |                       ^
+   include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
+      15 | #define ___PASTE(a, b) a##b
+         |                        ^
+   <scratch space>:99:1: note: expanded from here
+      99 | __UNIQUE_ID_unlock_472
+         | ^
+   drivers/iio/temperature/tsys02d.c:82:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
+   include/linux/cleanup.h:423:15: note: expanded from macro 'guard'
+     423 |         CLASS(_name, __UNIQUE_ID(guard))
+         |                      ^
+   include/linux/compiler.h:165:2: note: expanded from macro '__UNIQUE_ID'
+     165 |         __PASTE(__UNIQUE_ID_,                                   \
+         |         ^
+   include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
+      16 | #define __PASTE(a, b) ___PASTE(a, b)
+         |                       ^
+   include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
+      15 | #define ___PASTE(a, b) a##b
+         |                        ^
+   <scratch space>:87:1: note: expanded from here
+      87 | __UNIQUE_ID_guard_471
+         | ^
+   1 error generated.
+
+
+vim +89 drivers/iio/temperature/tsys02d.c
+
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  65  
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  66  static int tsys02d_write_raw(struct iio_dev *indio_dev,
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  67  			     struct iio_chan_spec const *chan,
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  68  			     int val, int val2, long mask)
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  69  {
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  70  	struct ms_ht_dev *dev_data = iio_priv(indio_dev);
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  71  	int i, ret;
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  72  
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  73  	switch (mask) {
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  74  	case IIO_CHAN_INFO_SAMP_FREQ:
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  75  		i = ARRAY_SIZE(tsys02d_samp_freq);
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  76  		while (i-- > 0)
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  77  			if (val == tsys02d_samp_freq[i])
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  78  				break;
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  79  		if (i < 0)
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  80  			return -EINVAL;
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  81  
+3c8dd88f5e71a2 Salah Triki      2026-09-17  82  		guard(mutex)(&dev_data->lock);
+3c8dd88f5e71a2 Salah Triki      2026-09-17  83  
+3c8dd88f5e71a2 Salah Triki      2026-09-17  84  		ret = ms_sensors_write_resolution(dev_data, i);
+3c8dd88f5e71a2 Salah Triki      2026-09-17  85  		if (ret)
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  86  			return ret;
+3c8dd88f5e71a2 Salah Triki      2026-09-17  87  
+3c8dd88f5e71a2 Salah Triki      2026-09-17  88  		dev_data->res_index = i;
+53bf4d067d5115 Ludovic Tancerel 2015-10-01 @89  	default:
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  90  		return -EINVAL;
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  91  	}
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  92  }
+53bf4d067d5115 Ludovic Tancerel 2015-10-01  93  
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
