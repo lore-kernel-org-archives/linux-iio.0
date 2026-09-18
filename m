@@ -1,61 +1,63 @@
 Received: from mail-lf2-f13.google.com (mail-lf2-f13.google.com [74.125.229.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110B13F20EC
-	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 12:25:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF9774E9C35
+	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 12:25:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789734326; cv=none; b=Du1PFS6iFOzVn4IUSNF/iYxbeFXFJ/8ul5ObYSwD9mwusTKMV+an7RVL1rfk+JEhzENkdoOqImc0bLSsgQwGZqDVEby4WlhkYHlgvAGcKQTDn0sEqOtKjuSo7SDVUR3PgVh8RkFbUrruq8sGIBW7RTICBJ2vo1Kl6WpixztYlz8=
+	t=1789734329; cv=none; b=AqPvxPFZmTvPt3dSPDy20eIkbVlR33PtMO5o6R4yLY8RPH/vWohfBflodQsXYZQgnoz46o5UfIeGq7RVUvv1Sxby1sSH6kIcaC09lPO6WvXZx4hFLSITmfjaSpSQxybZfOGTwAOoUbFwbArRKQh6BMWKBOMnyAJIEXWCWoiHLow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789734326; c=relaxed/simple;
-	bh=9ZSenL6dtsrp2oZX3sDl2ArZs7VcmFhK1VTxgTrS8gc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N0hhX6/usaeCSMemiPqOQjwUvuOMTgsUJnVl9BDIs9YTJVCW4iHP+9eZpje7hEwpAMCZJr+7RDYwpBV5nxzaCAyNinHJT8gH2c5j5JJ96MFie/H49zQV6NPiis+XSIsagDRQqOmiYCN9wsIer3+oC5fz608SBDaeQcZb+Ki8MDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GeSAMZ4+; arc=none smtp.client-ip=74.125.229.205
+	s=arc-20240116; t=1789734329; c=relaxed/simple;
+	bh=XEU3X6TrPs6UzvTqsbHKRzxHg0PLadxing8itj7f4nw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ot4puYnYM8P+xH5i/OaQyvF6rvRMtLIHluPn7eXPfU8ckDPxbrtFDTRHJanpA5Q+xAr3o2I+/XoEM0uVZDyZGwZA1IGtcY89nXMNhqiLLvzZpMG+VhpeZNhtSgGrtGQTEfG5/ERpGkj6GxwXXINnVzjvIeyZ/GtBnQGn3G2saeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jnwhAQkT; arc=none smtp.client-ip=74.125.229.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GeSAMZ4+"
-Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b5e4f17452so557122e87.3
-        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 05:25:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jnwhAQkT"
+Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b7be8dbabfso614106e87.2
+        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 05:25:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789734320; x=1790339120; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=CMf/fmxNjFr5lz+nt/08I/rGej163DC0gAtINhbDhHI=;
-        b=GeSAMZ4+viRqrtMAXU7pv+EBNtYUJxdYWLgPvaWfC7AlTwrRP/ci8xdwdH/TB+rEsp
-         m+TYjLPoxSLfSwmn98GxukRg78bhJ3MN+LuRsR9mzEuvYSC9wTJIOSlLtIp2ic1WSH6p
-         07bXf2aQ0LhzB5YGHpLw6Wh94c/zg9M1bHUdjvds2aL+65eJ5+07YfU2LKuf+USLLc92
-         y5sc89zMAWiR7nGxuoJtwjC0bBdfq50fRtMyaG3wr2ydH6j2ZZZZjk0/BJ/zcSm47DZ/
-         vyih9qwKiTOY4cHo0PSDG/VcTRm35Sc8+LyMNOtpQC0HVfWlRrsXJ2/2gh3Qme8uKiUe
-         1Fxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789734320; x=1790339120;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1789734321; x=1790339121; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=CMf/fmxNjFr5lz+nt/08I/rGej163DC0gAtINhbDhHI=;
-        b=Dgffc/eD8U/QtFEOeA/AuTmMeftdBlEbtU+XzkJuOftdOo/ME4a+WcrnmNxb+v+F9P
-         bqCnC8ITBFof+GH6cHI31Isv1TSG/U5apkvckcNTcTMk08B0NOvUi35n/2JjW+ehjJDQ
-         UswWkaBUjqTC1sH+mZXki3avPEV2W/xGugcyuy2gY5QgO0RKUKYfNBOYD+enhs2qhJgW
-         LpAxdKOnzQpJI/sIKT9symfpWhIPHc8tuxOlkkxVnQdTD0Z9W4VaDSEuqnveLc0pP9DJ
-         Og8nDIA+3BlKKdpW+ePqCTCYrQm6VmIvxhu1pCWKjc4vd2jgCS+UhekU4/M8O7QDowUZ
-         6FVg==
-X-Gm-Message-State: AFuF++nO8KLKE3UvqlbpZtN/DX0i1PT/IwsW9fTTTLl5doGUfSkGiH+D
-	8b24bYdJ/7PfTExE/MhZ+y6Hi+4kW9xWtV27kgzHLOSrMy2zI9TX0lO+
-X-Gm-Gg: AYBFou0wMtsXBq4X/Yi16yqVK8OmNig8AklYG4cBzdr4zVoX9VJKlM1QplTe3sOdBd/
-	BVtCRinjchLkx6ioagIRsRDvxK5qiQDKAEQ4XQDf/VtzMaDUQKTc0QVv13MBPz5wK39WalMLQdt
-	FTz0M+/MWbK3p0rDpqd7rmHC5UfAsyavtVSC8Sixtv1Z3bf/2ZuDZj3SqZWrEfmuaBZ3k5OmyW5
-	Vfl8CJcHhJjLAJE3EnwNqsXsFnXFjIcuDJ/NzR68wQJ2RZ7rmXkU8MgEMmGbr0WoKjM+hle5BXf
-	G60wf54gnvEeFHFy9Hmn1gJ5NaPP5l1w21oMr5WoUQsJGO4L3+yYZneKY9VrDxQU17oElOlkQ5x
-	aqqFkIwFt9YoTVMi/O2mgj+X+nqiAtayKN22mREEJlkIDQ66wJ99GVz57+/Y0X5nFdUK/yswbsl
-	dAPKjGV8ocb/OxmTQ+5MiOE77E3CuJJ1lrZxlucoxSLDfWr7xQbI/u7dbW+NW5wqq9KHPaaSsc0
-	q3PtAgC9lPt6DHVy0vogxZgOuoA7rRxeIjogPXVcmvaqwRJ46CDFbDkecP54B47E5rh/Q==
-X-Received: by 2002:a05:6512:3c93:b0:5b8:9fa1:9c3b with SMTP id 2adb3069b0e04-5b8c1846e53mr784754e87.32.1789734319524;
-        Fri, 18 Sep 2026 05:25:19 -0700 (PDT)
+        bh=OfR3YrnGEF1eVDtqqFJbMom6dYue/Q5AxIRNa4I1fXg=;
+        b=jnwhAQkT5QOibrOI4GsyOst+ElbFwout/QutsXF0V/Xrzw+6XwIuIfg1Q791MqhXia
+         S8WLl5Srl+Qw8Ey8yqjymFKZdNe9Wp4JCT7Vv2tmzrbyr1NBudYeXEs9ZWFz0W+7traA
+         WFBqF9gImjs7dm2tFj42CCfrP4duM5RcsaKysFNy89xz1qCgpUrSfhC69NcLIiPoAeSq
+         qVu1ZGtMc5yXsEMQ+H+NuU/kxEQJO0vppeC+ClE8z2r4bXjSypD/0W7E3LMoG+rcXYXd
+         oYeeV/WeuOZsCtndQ8Jb8a2pnUlHCGHBMQ6WhUyeg1DDqcHPmofsuiBgi9sP47fQ56VS
+         3j4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789734321; x=1790339121;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=OfR3YrnGEF1eVDtqqFJbMom6dYue/Q5AxIRNa4I1fXg=;
+        b=jEkWu+6soXTkW3R2eqy8owEfs6MckGI4//BswtFlc9hohrkbgMlLSobjONdFXkE8YF
+         Fwg/CtcMMpdLDojeBbiOvSEfKqVyjHY06EaRfCPEc3Yu/o8yY1IVmZGxKUJajvpA32Po
+         HbmKJbquzHRy/f/Fpd12jxLl4KBtVkfBpOzsemSsSgo6qn9Klkbck3+8TOWG2Cl/1o8x
+         jK4eMm0vrtOHC3y5vaXbBxhagtZe43Md93PCpZz4qCxJoRom+yxEy7t1r7W9thEvhngY
+         ua6MbsztynykJOYReTem/kcmULv3eOc0bgJepCdhfLeu49rt8ZTnGInSFEQTPCnopmLo
+         ph8A==
+X-Gm-Message-State: AFuF++kMXNmHoSne0hp0Qh7hy35M4IWoJOciEan/IthTRd6le9PpoD4s
+	OosDhZRgwtQV9+5JxrrO7SXK41GuqDSfM/J/WaXjQr3f6e3LAdqW6XiD
+X-Gm-Gg: AYBFou1AgGnZCIJXIcMMM8+7C6CIBvbSB4hP4bas6u10WLOAHfXGfZeCYgzKBeFBIK7
+	lWfAWwsXMwDaQtR4Wi8GdAT/qDWurrs8UT0lT4zxgBpGifIRfOm8xLR0MCDHFnUKmqIqsd1AMZs
+	T9tXJD7aC/wQsSQglf5mPXJJ2Rq7LHf/QJB9DfbE0J5sngHGMh3CU6W22+tLpP1MBw9RAWbIbA3
+	ibFReuvaMOP59kwWtNWGpaZ1vaAiJZHn3Yntw7GgJayaZnBwBfNRU26Qv0+kzLzPZG8M0nihE+u
+	eAWdvTf3sK2cDTlL5IyfAyh2bT+CHOK9lHKXIs/p6Lb8S4/4FpE8VV+zl1uJdCxhlS6HMUgK0vG
+	/Bu8t4T2XZF2ZRK/NHcAeCbK23aylDmL496RhCRahQ4vFkmjcDBtzPiORdQ0bjSWsdXsYB7lNj4
+	Wmli+29qsYBdQm7PCuJKtX+v6SB1rDZqX/8EWwHv8skO6o4iyp+5cBDOWIwY5kDHSugbzWwhZxQ
+	ZQrOLd1gXEuSE7nrUaVXPt576qlsiMWP+2szezvWxbGFvHwuxFAIslBoud/tfnNllsIjQ==
+X-Received: by 2002:a05:6512:3baa:b0:5b6:4ae:3ff7 with SMTP id 2adb3069b0e04-5b8c18449abmr695430e87.31.1789734320670;
+        Fri, 18 Sep 2026 05:25:20 -0700 (PDT)
 Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8c270ea53sm398549e87.12.2026.09.18.05.25.18
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8c270ea53sm398549e87.12.2026.09.18.05.25.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 05:25:18 -0700 (PDT)
+        Fri, 18 Sep 2026 05:25:19 -0700 (PDT)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
 To: Andy Shevchenko <andy@kernel.org>,
 	Bill Wendling <morbo@google.com>,
@@ -70,11 +72,14 @@ To: Andy Shevchenko <andy@kernel.org>,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	llvm@lists.linux.dev,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: [PATCH v7 00/10] iio: pressure: dps310: FIFO and triggered buffer support
-Date: Fri, 18 Sep 2026 15:25:07 +0300
-Message-ID: <20260918122517.377565-1-zoone.rupert@gmail.com>
+	Rupesh Majhi <zoone.rupert@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v7 01/10] iio: pressure: dps310: fix CFG_REG bit definitions
+Date: Fri, 18 Sep 2026 15:25:08 +0300
+Message-ID: <20260918122517.377565-2-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260918122517.377565-1-zoone.rupert@gmail.com>
+References: <20260918122517.377565-1-zoone.rupert@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,45 +88,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-v6 had FIFO support as one patch. Andy asked for a split, so ten here.
+Driver defines them as BIT(4), BIT(5) and BIT(6). Per datasheet P_SHIFT
+is bit 2, FIFO_EN is bit 1 and SPI_MODE is bit 0.
 
-Buffered capture without a trigger, draining hardware FIFO on a timer.
-Patch 6 adds an IIO core accessor Jonathan asked for; patch 7 uses it to
-refuse timestamp channel, as FIFO entries carry none.
+Only P_SHIFT has a user. dps310_set_pres_precision() sets it at
+oversampling 16 or above, so with wrong bit the result register is never
+shifted and stops matching the scale factor compensation divides by.
+in_pressure_input returns -ERANGE at oversampling 16, 32 and 64.
 
-Pressure read before first temperature is held, not dropped.
+FIFO_EN needed by FIFO support later in this series.
 
-Tested on a DPS310 on a BeagleBone Black, pressure 32 Hz, temperature 1 Hz,
-watermark 1. v6 stalled on two of six buffer enables; this series on none
-of twelve, at 90 to 98 scans per 3 s trial against 96 ideal.
+Fixes: ba6ec48e76bc ("iio: Add driver for Infineon DPS310")
+Fixes: d711a3c7dc82 ("iio: dps310: Add pressure sensing capability")
+Cc: stable@vger.kernel.org
+Assisted-by: LLM
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+---
+ drivers/iio/pressure/dps310.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Patch 10 opts into clang context analysis and comes last, so it can be
-dropped alone. Built with clang 23 and CONFIG_WARN_CONTEXT_ANALYSIS, no
-warnings.
-
-Deferred to a cleanup series: min_t() to min(), 1000 to KILO,
-30 * USEC_PER_MSEC, David's define sort, c00/c10 via get_unaligned_be24().
-
-Rupesh Majhi (10):
-  iio: pressure: dps310: fix CFG_REG bit definitions
-  iio: pressure: dps310: use a local device pointer in probe
-  iio: pressure: dps310: use get_unaligned_be24() for the 24-bit results
-  iio: pressure: dps310: take the lock once per raw read
-  iio: pressure: dps310: add triggered buffer support
-  iio: core: add an accessor for scan_timestamp
-  iio: pressure: dps310: read buffered samples from the hardware FIFO
-  iio: pressure: dps310: derive the drain interval from the watermark
-  iio: pressure: dps310: implement .hwfifo_flush_to_buffer()
-  iio: pressure: dps310: check the lock markings with context analysis
-
- drivers/iio/pressure/Kconfig  |   2 +
- drivers/iio/pressure/Makefile |   2 +
- drivers/iio/pressure/dps310.c | 726 ++++++++++++++++++++++++++++++----
- include/linux/iio/iio.h       |   9 +
- 4 files changed, 652 insertions(+), 87 deletions(-)
-
-
-base-commit: 61718ed183599e5162496b5306c3377a925d21cd
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 45bdb8c7670f..35260b399390 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -50,9 +50,9 @@
+ #define DPS310_CFG_REG		0x09
+ #define  DPS310_INT_HL		BIT(7)
+ #define  DPS310_TMP_SHIFT_EN	BIT(3)
+-#define  DPS310_PRS_SHIFT_EN	BIT(4)
+-#define  DPS310_FIFO_EN		BIT(5)
+-#define  DPS310_SPI_EN		BIT(6)
++#define  DPS310_PRS_SHIFT_EN	BIT(2)
++#define  DPS310_FIFO_EN		BIT(1)
++#define  DPS310_SPI_EN		BIT(0)
+ #define DPS310_RESET		0x0c
+ #define  DPS310_RESET_MAGIC	0x09
+ #define DPS310_COEF_BASE	0x10
 -- 
 2.43.0
 
