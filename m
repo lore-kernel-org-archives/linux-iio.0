@@ -1,29 +1,30 @@
 Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FEF49AA22
-	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 12:21:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1119B4E80B1
+	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 12:21:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.202.193.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789734071; cv=none; b=Lo56bVx1uUA6rIvb5tJbcRF0hNHgg/7b/zKnqR3fSCvSYWjfEqohbpMlcCWkwCC5OhjieW/vPtTJsKxvOyy3ZOjJHIjZLH70xtjfee0OPQvH1aXcsltrckBDyoeTV41YtrRK9AF6zTEHc7/mckb26tOxxEzmbbrk3p24uD2tC1M=
+	t=1789734075; cv=none; b=F5Xml9cu9lRim1qt6Ch5hC1eKloqzK3HZ7e8hVcBZP7htb5nCfb4iUXC0C9mfh8c9CUj9rNcCisNa4Q6c4P/5cKIspMuTy7XGvFx1yJ2FxqYyxzGouxT98Ip5Hbk3fK3X74RuVr19IWLMlF0HDVE6ffe5JP1pWsFJVqWse8Dd5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789734071; c=relaxed/simple;
-	bh=SEmeR4FLjJT2YPtaPNjUPThsojh0fPVV6bVT6zfE2vA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WZ3nU96vl67hnD7IFGL3LgcExaEdP9yHYTP3YeIT6hEePqEkIjpTxLbp187BcVIj/TgvYHcDDDWfT0yjC02kBgh0Y6EqFOde8MQOcSUwn4DHALBxmsD6XuOdsI7RReRu4uaRYuO4T088kWxfsb3as3m0n0dZKpfmRXRC2n+FFG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arkamondal.net; spf=pass smtp.mailfrom=arkamondal.net; dkim=pass (2048-bit key) header.d=arkamondal.net header.i=@arkamondal.net header.b=be+BFe5s; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=gYNfSGXb; arc=none smtp.client-ip=34.202.193.197
+	s=arc-20240116; t=1789734075; c=relaxed/simple;
+	bh=a07U5kp7Ed56BcaidCAcdWRKpOlR81d1yd1MM3ojZNg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QT+wvRZkwY0FtTgL2ECLp5t9GjyI22+rClffkBKLah7a5zgUbfboYKw0UbUNQG/pCIVY44mtHtv5+/47/BQ4GHYbVDuyJiKm+qXJkEfCBspRG6b+CwxG3gDJuT9G8Nzcr3OYLDsYTCdWXgY1Vw0K6c9Z1+O3BK27FvwKXXRaa2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arkamondal.net; spf=pass smtp.mailfrom=arkamondal.net; dkim=pass (2048-bit key) header.d=arkamondal.net header.i=@arkamondal.net header.b=e8NJ7vwn; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=Wm13VU4N; arc=none smtp.client-ip=34.202.193.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arkamondal.net header.i=@arkamondal.net header.b="be+BFe5s";
-	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="gYNfSGXb"
-DKIM-Signature: a=rsa-sha256; b=be+BFe5sXrf8abcK9x5P7FpVoZdDQOm0PmYtJR5VLWKcV5B7hJ53A/MAvQJqcKmsXACsOzQlYpvM28DRZRNPoCryiqVAnkifLSBVTKRw1qQd1mBiV+E88YcXrxz6bbO7MyugdDjf0GwJgrtwFwsq8rTVQ5DgHySxf8G9GWONmy0ZDFiOEYFiF0bGCuZDIpRhPTKT2nG/J13qnbZzpHpF+B9/+FXsRqoD7Mno8WAA87n2Y/13LvsUFShbW0dwbAP1hZoi0ieTZOGZDtx1rhjmFJC4Tt+fnkM4P4ZBxmGpztHkuH0269+TVOEX5PR9TS27l43QOrSP5dB4RcgtywwKAA==; s=purelymail2; d=arkamondal.net; v=1; bh=SEmeR4FLjJT2YPtaPNjUPThsojh0fPVV6bVT6zfE2vA=; h=Received:From:To:Subject:Date;
-DKIM-Signature: a=rsa-sha256; b=gYNfSGXbVuIGacqrUyzX4vG8zDnwXaGIhf4KKHmXCXS0znbMLyX+xTwdbcJvqNNCKE+or/5VO4kW6WIPr/m1DwhmECT0GCJEnJ4f5pNq+mQdwOupBwysiUeR4NnHisR1r4ofkUYlftbTy/+VfVhgiHPDmxgiK5RZls+oR48mWMAhognHHhG8Xz2G/2tzyfo3elcSva2u1USusLX+3yaGCBHB7eByleV7NAFlANQrN3fIbTLGYzhOsStLJ59p1fWxV3iLoEdJ+AZQec/uFEYq6zgZb9gXtmomxRA89QEAMRwnJtk/KtoQJPgHrlfiuQAQIHNNXYszk3rZqIQsoLkZaw==; s=purelymail2; d=purelymail.com; v=1; bh=SEmeR4FLjJT2YPtaPNjUPThsojh0fPVV6bVT6zfE2vA=; h=Feedback-ID:Received:From:To:Subject:Date;
+	dkim=pass (2048-bit key) header.d=arkamondal.net header.i=@arkamondal.net header.b="e8NJ7vwn";
+	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="Wm13VU4N"
+DKIM-Signature: a=rsa-sha256; b=e8NJ7vwnoCVNM0jWTGe1403nhCrKGqKxBeJC/WFSkJlTqdu4e/qDvD7hhLYJoO9m5lN6tF8lK+9Ubvrnm2FyjmtnXjFSV6nz1S+Q1vr6FwH9QzvaFuLg2RoImt0Pdw3kMPCE6BhgTcCHJ/CXVlVZkduX4gznAU80L1Miwk+t+bV3ilYe0ZCVhrFDYVkiMXYLopcrcMC9LTlaX4Z+Nz+FwjEm9IOEyM3PUVRkD98M7Q4l8jE19SPegh40fPy5AcCBHgm1HsupWdkCvk4wGpGv2G6kPyHal+drhRnAt44OW4SvOUAJf/HoH9pZCxY3QSks7Jpxzw7cumS4Ec2E46FIVQ==; s=purelymail2; d=arkamondal.net; v=1; bh=a07U5kp7Ed56BcaidCAcdWRKpOlR81d1yd1MM3ojZNg=; h=Received:From:To:Subject:Date;
+DKIM-Signature: a=rsa-sha256; b=Wm13VU4NDyaQOzeylNe+YJ+zKpOnVlNbpdrYc7GAa8uDpMRGjw2giL/FDO8d8/hlnC6lmEXVM+9LO5lu7VblGglvem+7hinaWVyUCbgt7ellwnu3E/P0agMJTMxT5kmxuCcPE2STWwXiYOokZlXwnh9SLmJVwLFGcrOeWBElPejdJ1+Lf6XJMpUKkd3Z/9dYK7n1lnRh5gWgMdQh9EyQgle6I/MHF+onqGfuCFb2HtM423DU2IA4xexxbaBCTiu2ITmuAyPeo9PsQIIQDBJ+ARLvJ+s9Twp8Cw7rZGTp/BEaJ2zIQ8jkhJqbtMzaX/GO3GSFX2pAbtH10FhP6ODPhQ==; s=purelymail2; d=purelymail.com; v=1; bh=a07U5kp7Ed56BcaidCAcdWRKpOlR81d1yd1MM3ojZNg=; h=Feedback-ID:Received:From:To:Subject:Date;
 Feedback-ID: 1246644:48769:null:purelymail
 X-Pm-Original-To: linux-iio@vger.kernel.org
 Authentication-Results: purelymail.com; auth=pass
-Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -1407208783;
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -450814046;
           (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-          Fri, 18 Sep 2026 12:20:48 +0000 (UTC)
+          Fri, 18 Sep 2026 12:20:51 +0000 (UTC)
 From: Arka Mondal <arka@arkamondal.net>
 To: Jonathan Cameron <jic23@kernel.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -39,10 +40,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-kernel@vger.kernel.org,
 	arkamondalofficial@gmail.com,
 	Arka Mondal <arka@arkamondal.net>
-Subject: [PATCH 0/5] iio: dac: ad5758: fix DMA alignment, raw range, offset and 4-20 mA
-Date: Fri, 18 Sep 2026 21:20:27 +0900
-Message-ID: <20260918122032.134947-1-arka@arkamondal.net>
+Subject: [PATCH 1/5] iio: dac: ad5758: Fix alignment for DMA safety
+Date: Fri, 18 Sep 2026 21:20:28 +0900
+Message-ID: <20260918122032.134947-2-arka@arkamondal.net>
 X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260918122032.134947-1-arka@arkamondal.net>
+References: <20260918122032.134947-1-arka@arkamondal.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,49 +56,38 @@ Content-Transfer-Encoding: quoted-printable
 X-MIME-Autoconverted: from 8bit to quoted-printable by Purelymail
 Content-Type: text/plain; charset=UTF-8
 
-The first attempt to send this series on 2026-09-18 was rejected by
-the kernel.org mail servers, so it did not reach the lists. The patches
-are unchanged.
+ad5758_spi_reg_read() reads into st->d32[2] with spi_sync_transfer(),
+but d32 is not marked __aligned(IIO_DMA_MINALIGN), so it can share a
+cacheline with the fields before it. When DMA is not cache coherent,
+the cache invalidation after the read can discard CPU writes to those
+fields.
 
-This series fixes four bugs in the AD5758 driver, all present since
-commit 28d1a7ac2a0d ("iio: dac: Add AD5758 support"). The last bug
-takes two patches, one for the binding and one for the driver.
+Mark d32 __aligned(IIO_DMA_MINALIGN). It is the last member of the
+struct, so nothing comes after it.
 
-Patch 1 marks the SPI receive buffer __aligned(IIO_DMA_MINALIGN), so
-it no longer shares a cacheline with other driver state. The 2022
-conversion of IIO drivers to IIO_DMA_MINALIGN only changed existing
-____cacheline_aligned markings, and this driver had none.
+Fixes: 28d1a7ac2a0d ("iio: dac: Add AD5758 support")
+Signed-off-by: Arka Mondal <arka@arkamondal.net>
+---
 
-Patch 2 rejects raw values outside 0 to U16_MAX. Writing -1 currently
-gives full-scale output.
+Notes:
+    Compile tested only; no relevant hardware available.
 
-Patch 3 fixes the offset for every range that does not start at 0.
-The +-20 mA range reports -32 instead of -32768.
+ drivers/iio/dac/ad5758.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patches 4 and 5 fix the 4 mA to 20 mA range. The binding and the
-driver give it as <4 24000>, which is 4 uA to 24 mA. The data sheet
-(Rev. B, Table 32) and the original text binding say range code 1010
-is 4 mA to 20 mA. The old value is still accepted: the binding marks
-it deprecated and the driver maps it to the corrected range, so
-existing device trees keep working.
-
-Compile tested only; no relevant hardware available. The binding was
-checked with make dt_binding_check and with test device trees:
-<4000 20000> and <4 24000> are accepted; <4 20000> is rejected.
-
-Arka Mondal (5):
-  iio: dac: ad5758: Fix alignment for DMA safety
-  iio: dac: ad5758: Reject out-of-range raw values
-  iio: dac: ad5758: Fix the offset calculation
-  dt-bindings: iio: dac: adi,ad5758: Fix the 4 mA to 20 mA current range
-  iio: dac: ad5758: Fix the 4 mA to 20 mA current range
-
- .../bindings/iio/dac/adi,ad5758.yaml           |  4 ++++
- drivers/iio/dac/ad5758.c                       | 18 ++++++++++++++----
- 2 files changed, 18 insertions(+), 4 deletions(-)
-
-
-base-commit: 08df884136f1c1197bab2a27814404fd329d9aac
+diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
+index 44efa373cd80..ba381bd252d1 100644
+--- a/drivers/iio/dac/ad5758.c
++++ b/drivers/iio/dac/ad5758.c
+@@ -117,7 +117,7 @@ struct ad5758_state {
+ =09unsigned int dc_dc_ilim;
+ =09unsigned int slew_time;
+ =09bool pwr_down;
+-=09__be32 d32[3];
++=09__be32 d32[3] __aligned(IIO_DMA_MINALIGN);
+ };
+=20
+ /*
 --=20
 2.55.0
 
