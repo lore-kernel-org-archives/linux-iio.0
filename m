@@ -1,243 +1,408 @@
-Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BB43112AB
-	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 14:26:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.202.193.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B628A4FDE61
+	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 14:58:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789741595; cv=none; b=I9kMaLySEKLtyC5NAm+sC/XdX46L2qs9SNyohUlz4oD75v84h9DbFza36TmMJK51So5Jx1CPAjv0CSDpim4qQ2vwkHkrVUb08L0mBNANA6R0HkG1r/cgQYfqHJFkmEr7uco4EpMKcX38tSCavZBJajLK2jlLJtMOH6Z/nhX/rtc=
+	t=1789743512; cv=none; b=iBZMa5mxEVZ8Rq+wvkmmLqIJoCQpf7Qmu7io2zJpX5iwjnwvAkSeKkQmD8d2QeArVApaeJOQ3YP2Brs5u1CC87ygX6fkJCsYirrNtDDj1XyHVk/pw8vzbFT6usqGZygJZV9z0/9E3TMd5ECgdJhFFlDsAzKtIjIGLI709Hke0zI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789741595; c=relaxed/simple;
-	bh=V/ao0xgrL052+a77Zs37pNAkv8uUAgXm6H+hU649GVA=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:In-Reply-To:Subject:
-	 From:To:References; b=ns7a1f/1fC8FU+jCZnAg1nMdsRRUWxa0QEHPUGt228zHT6iv9bA/fSLDf9wR95fnC5EAcziOD8xu/dByCvxS2wa0HXk+QeUi0hiBFjOjeMy/ozqrCvRQwq+avDgAvlOu3NRxIwiSbL8Pe4ZXxP1jtN7IezaGw7eYMFqRPPRxAQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc; spf=pass smtp.mailfrom=maxwelld.cc; dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b=AtF6Oa1s; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=ED4xUpx2; arc=none smtp.client-ip=34.202.193.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=maxwelld.cc
+	s=arc-20240116; t=1789743512; c=relaxed/simple;
+	bh=gM3dN3vn0teyG2eo0migns+FOD8Hc/tmEG6a/GRXaWU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=acQzWKyvLmM0brWm1UArMgDSULHGXuh5HhHgkgFIK8qQseosJ9T01dCXtjwDSSEbjl+riEwIOKvc+sleGv7pyyGA7TYGkuJhqMIEYvIuzsQ5UZX2u/aDP1SQB/nR3UOMb2B9xoxqgDUka+F/Jv5q/myTstDk9nBOT5K5ziJOM6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=As4Ukfbb; arc=none smtp.client-ip=74.125.225.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b="AtF6Oa1s";
-	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="ED4xUpx2"
-DKIM-Signature: a=rsa-sha256; b=AtF6Oa1s/AL2tmQTFwmhbhlh/8MOdpMs8SUG6UZTZYISeQJ/ayQcdGgRWU2djKsKNrX6mMAlvgfsAosXfH0wLl2engdC7HQdXbV90KTqwIjvnZPVZ6uumYWSAEZmidY9fdLKY5po0q4Pq9MOLumlS2IPu0gQhnKTqNw3+cnfimIvRVHkNNUd/TgLWWdIEoRa7aECaQWMvPDdbfABMfHhC3SRAMyTb0Ilbug9LR4+zB+t1NfZQVVPFzIjgGx0RuyuP/Ho6qVURB5rtise/aiF/OXLHgb/mfqNgpPRP4/T0TmFbtT/d22WqTR1X2se8UIkdNLMj/tJKBGYVaanq18HFg==; s=purelymail2; d=maxwelld.cc; v=1; bh=V/ao0xgrL052+a77Zs37pNAkv8uUAgXm6H+hU649GVA=; h=Received:Date:Subject:From:To;
-DKIM-Signature: a=rsa-sha256; b=ED4xUpx2J63TAftELukA7kr8PI3mk3R0lFd5SnAegjO9DChMy1EK8tueJw8/fKfMXL5F9MUMGoiYgFjEz2olnsImSCQFk9MUwNq9uIRVkNP46iCxz4FW0vC/lr8JPjxRFbJLsa+Hb/28BABjghUEt0kmocrayQXg4lvXxeIHeRa2gyNwY7SPT+gRgNzWifIr8QLw/Z/QHIdT2AFVYLOTWgeZEkcxSDOr0+ZaEPvdxhDzex7wHs8IOck/g98/iChe54dic8yckhX1ZBPOzDtTv9XSPsZ4mNaGaPrFXkMy59ebhlvXZyfnW7hV9NtvtSQ213Qirnn93LtsUVBAu/9rzg==; s=purelymail2; d=purelymail.com; v=1; bh=V/ao0xgrL052+a77Zs37pNAkv8uUAgXm6H+hU649GVA=; h=Feedback-ID:Received:Date:Subject:From:To;
-Feedback-ID: 1013395:40550:null:purelymail
-X-Pm-Original-To: linux-iio@vger.kernel.org
-Authentication-Results: purelymail.com; auth=pass
-Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -954385832;
-          (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-          Fri, 18 Sep 2026 14:26:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="As4Ukfbb"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49b912d3920so6093545e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 07:58:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789743509; x=1790348309; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VEqgVyr0IKosewJ1enUgGbXkimIQHDNWyRi2d4RqJp4=;
+        b=As4UkfbbA56uLOkK1Fc4H2XMww/nYoGWu9U16lg2GxtBe/20H3q1l/3rYAv+IJsuiE
+         Xj5d9p4MMnl3OfTrzY6nymlZmBVGst95WLqk2zKzijRqttdZwUDc7VQu+tkITKg0Yy0t
+         Z4WQgfFG+q9n4rwP52FXyHhX9NiQhiZduDtc5uFNEw4wTpcW8Xf3UsHEVL9rYhof2PHE
+         IZ6jKIxl/iZTkLcVmKHseTEiNxbLm6FMB4gSOYVNBFFwkl5IAcq+pI/R43NqCaeAlM8P
+         XbB7lOIsD5oQ3n51+PrEZRuRZ/lzx1oq2Fh17yltTC2bvZCIuy75uoOtFjUM0PmNlcwt
+         cSoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789743509; x=1790348309;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=VEqgVyr0IKosewJ1enUgGbXkimIQHDNWyRi2d4RqJp4=;
+        b=yGq01oNE4DkBeJ0972B4TGMgw+jZEXwDQjGBajdyOTsVeZvxo9BvwxeHeWj6kGdyuR
+         ysX5F9nQfI3TEPptuQeu8idxK27rdAwUYHoMr19JR27dxmHaqw2CWsDirZanKZSf5AhY
+         v0dmRlYQ+UYajf7Asdc4Yb2oAZqoJTGnrz5TofQdrD43tiBZ7SQMn2SH5iSLEJuwANwg
+         YrXx/i3EpwFcTumaAl94/yy0w4dBmfM4NBYevhymW+GH08tBoITLaqAoLMuclTlfThng
+         I/lv8ftcRtH6o9H19KnFeS2v9aatOqpvYHDzfWbtDyRaPDGatswT4Ea074uvNt8mMJ59
+         +KwA==
+X-Gm-Message-State: AFuF++kuhg5az3olnLvpFBYmprPGQOmuUEIWNko7GUOFfZDB/mDqS5kX
+	pA0nv/+jTHH69gSh+uFgLPXnJGviMyFaNW6L0PGXWUhKJMsY1sPh2xRP
+X-Gm-Gg: AYBFou1D2s7Oc25xpFvkULF6+Yqo/mVipNzWoEWRT7MDiPzZ1kmrq6jONmMxXH+cP92
+	APy3K8GV7ObNKtIQUbnBcUO61EMm6p2NqlLbLi8mTCqHo0kOxeiSLgdAx6+FMiGjmGsOEPrAbSC
+	zZeVwo7f96Lhj4qbEriiehzhXq/m36joBNz9IxKfRIZ343O6X0dEJGPGPn6x/uZJQLQoKlb8csl
+	+H9SYijzCklAbDoepAelhU3mN15w58C9fv7/UR8UYA0Q3bw9JZf5PRhqGb9iw5TsK+/oofP9+qg
+	fn+F83oGjD0Sb44nzxv3D431en85/Me/ve4xHqLqC3JXSVunAoww2VfDiQlUE0oaNXK2paK5Prm
+	W881PwrUoEVhHDJ8aVhpvzkpVbVCDSUmdTjCQTYY9rPUekDiB3XTNcY2iCgwZMbS4f64fl6yChL
+	uPTjuq3BTdLSOrFMEsjWT23jkb5IoxLpScsPo4H9gHZvP5yNODe61aRhO6cPegKLMu3XI8xe0pD
+	sRU4O+lrJbk/wmc7e90wMUudyEIC7jAKdNW2F6eQy4v3A==
+X-Received: by 2002:a05:600c:8518:b0:49d:28c4:b304 with SMTP id 5b1f17b1804b1-49fc5741563mr38720975e9.29.1789743508528;
+        Fri, 18 Sep 2026 07:58:28 -0700 (PDT)
+Received: from localhost.localdomain ([5.176.179.200])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fc7d46399sm80345295e9.12.2026.09.18.07.58.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2026 07:58:28 -0700 (PDT)
+From: Omer PALA <palaomer100@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
+Date: Fri, 18 Sep 2026 17:58:04 +0300
+Message-ID: <20260918145804.26957-1-palaomer100@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 18 Sep 2026 09:26:04 -0500
-Message-Id: <DLIIFO80EL2F.1KMD8IOGGTS1Y@maxwelld.cc>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-In-Reply-To: <20260918134019.1101308-2-jmatko@utu.fi>
-Subject: Re: [PATCH 1/3] iio: chemical: sgp40: Implement
- get_serial_number-command
-From: "Maxwell Doose" <maxwell@maxwelld.cc>
-To: "Jaakko Koivisto" <jmatko@utu.fi>, "Andreas Klinger" <ak@it-klinger.de>,
- "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260918134019.1101308-1-jmatko@utu.fi>
- <20260918134019.1101308-2-jmatko@utu.fi>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi there Jaakko,
+Add yaml devicetree binding for xlnx,zynq-xadc-1.00.a,
+xlnx,axi-xadc-1.00.a and xlnx,system-management-wiz-1.3 from
+xilinx-xadc.txt file.
 
-Firstly a (rather important) question I have is what's the point? I'm
-not sure that anyone will need the serial number on the fly (assuming a
-business would be using this, they will likely keep records of their
-parts). Though maybe I could be wrong (so feel free to prove me wrong).
+Signed-off-by: Omer PALA <palaomer100@gmail.com>
+---
+ .../bindings/iio/adc/xilinx-xadc.txt          | 141 ----------------
+ .../bindings/iio/adc/xlnx,xadc.yaml           | 159 ++++++++++++++++++
+ 2 files changed, 159 insertions(+), 141 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
 
-On Fri Sep 18, 2026 at 8:40 AM CDT
-Jaakko Koivisto <jmatko@utu.fi> wrote:
-
-> -Retrieve the chip serial number.
-> -Present the serial number to userspace as device attribute.
-> -Rename the tg_measure -struct now that is is used for multiple
-> commands.
->
-
-Last one should be left out and put in a separate patch.
-
-Also, commit message needs a bit of work, something like:
-	"Add support to the SGP40 driver to enable retrieval of the
-	serial number from the chip and add new sysfs attribute to
-	expose the serial number to userspace."
-
-> Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
-> ---
->  drivers/iio/chemical/sgp40.c | 78 +++++++++++++++++++++++++++++++++++-
->  1 file changed, 76 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
-> index b2b5e32a9eb2..c1e2a992ec2a 100644
-> --- a/drivers/iio/chemical/sgp40.c
-> +++ b/drivers/iio/chemical/sgp40.c
-> @@ -35,6 +35,7 @@
->  #include <linux/mutex.h>
->  #include <linux/i2c.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> =20
->  /*
->   * floating point calculation of voc is done as integer
-> @@ -53,11 +54,12 @@ struct sgp40_data {
->  	int			rht;
->  	int			temp;
->  	int			res_calibbias;
-> +	u64			serial_number;
->  	/* Prevent concurrent access to rht, tmp, calibbias */
->  	struct mutex		lock;
->  };
-> =20
-> -struct sgp40_tg_measure {
-> +struct sgp40_command {
->  	u8	command[2];
->  	__be16	rht_ticks;
->  	u8	rht_crc;
-> @@ -70,6 +72,18 @@ struct sgp40_tg_result {
->  	u8	res_crc;
->  } __packed;
-> =20
-
-Name change should be put in a different patch or just left out
-entirely.
-
-> +/*
-> + * Datasheet table 16. Serial number is given as 48-bit value 0xAAAABBBB=
-CCCC.
-> + */
-> +struct sgp40_serial_number_result {
-> +	__be16	A;
-> +	u8	A_crc;
-> +	__be16	B;
-> +	u8	B_crc;
-> +	__be16	C;
-> +	u8	C_crc;
-> +} __packed;
-> +
-
-Perhaps this but maybe this could be implemented as an
-annonymous struct instead.
-
->  static const struct iio_chan_spec sgp40_channels[] =3D {
->  	{
->  		.type =3D IIO_CONCENTRATION,
-> @@ -162,6 +176,40 @@ static int sgp40_calc_voc(struct sgp40_data *data, u=
-16 resistance_raw, int *voc)
->  	return 0;
->  }
-> =20
-> +static int sgp40_get_serial_number(struct sgp40_data *data)
-> +{
-> +	int ret;
-> +	struct i2c_client *client =3D data->client;
-> +	struct sgp40_command get_sn =3D {.command =3D {0x36, 0x82}};
-> +	struct sgp40_serial_number_result res;
-> +
-> +	ret =3D i2c_master_send(client, (char*)&get_sn, sizeof(get_sn.command))=
-;
-> +	if (ret !=3D sizeof(get_sn.command)) {
-> +		dev_err(data->dev, "i2c_master_send ret: %d, expected %zu", ret, sizeo=
-f(get_sn.command));
-
-Missing '\n' here (sashiko).
-
-> +		return -EIO;
-> +	}
-> +	msleep(1);
-> +	ret =3D i2c_master_recv(client, (char*)&res, sizeof(res));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret !=3D sizeof(res)) {
-> +		dev_err(data->dev, "i2c_master_recv ret: %d, expected: %zu", ret, size=
-of(res));
-> +		return -EIO;
-> +	}
-> +
-> +	if (crc8(sgp40_crc8_table, (u8*)&res.A, 2, SGP40_CRC8_INIT) !=3D res.A_=
-crc ||
-> +	    crc8(sgp40_crc8_table, (u8*)&res.B, 2, SGP40_CRC8_INIT) !=3D res.B_=
-crc ||
-> +	    crc8(sgp40_crc8_table, (u8*)&res.C, 2, SGP40_CRC8_INIT) !=3D res.C_=
-crc)
-> +	{
-> +		dev_warn(data->dev, "CRC error in get_serial_number");
-
-Probably should return either -EIO or -EREMOTEIO here (sashiko).
-
-> +	}
-> +
-> +	data->serial_number =3D 0LL | ((u64)be16_to_cpu(res.A) << 32) | ((u64)b=
-e16_to_cpu(res.B) << 16) | (u64)be16_to_cpu(res.C);
-> +	dev_dbg(data->dev, "serial number: %llu", data->serial_number);
-> +
-> +	return 0;
-> +}
-> +
->  static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *re=
-sistance_raw)
->  {
->  	int ret;
-> @@ -169,7 +217,7 @@ static int sgp40_measure_resistance_raw(struct sgp40_=
-data *data, u16 *resistance
->  	u32 ticks;
->  	u16 ticks16;
->  	u8 crc;
-> -	struct sgp40_tg_measure tg =3D {.command =3D {0x26, 0x0F}};
-> +	struct sgp40_command tg =3D {.command =3D {0x26, 0x0F}};
->  	struct sgp40_tg_result tgres;
-> =20
->  	mutex_lock(&data->lock);
-> @@ -311,9 +359,31 @@ static int sgp40_write_raw(struct iio_dev *indio_dev=
-,
->  	return -EINVAL;
->  }
-> =20
-> +static ssize_t serial_number_show(struct device *dev,
-> +				  struct device_attribute *attr,
-> +				  char *buf)
-> +{
-> +	struct sgp40_data *data =3D iio_priv(dev_to_iio_dev(dev));
-> +
-> +	return sysfs_emit_at(buf, 0, "%llu\n", data->serial_number);
-> +}
-> +
-> +static IIO_DEVICE_ATTR_RO(serial_number, 0);
-> +
-> +static struct attribute *sgp40_attributes[] =3D {
-> +	&iio_dev_attr_serial_number.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static struct attribute_group sgp40_attribute_group =3D {
-> +	.attrs =3D sgp40_attributes,
-> +};
-> +
-> +
->  static const struct iio_info sgp40_info =3D {
->  	.read_raw	=3D sgp40_read_raw,
->  	.write_raw	=3D sgp40_write_raw,
-> +	.attrs		=3D &sgp40_attribute_group,
->  };
-> =20
->  static int sgp40_probe(struct i2c_client *client)
-> @@ -347,6 +417,10 @@ static int sgp40_probe(struct i2c_client *client)
->  	indio_dev->channels =3D sgp40_channels;
->  	indio_dev->num_channels =3D ARRAY_SIZE(sgp40_channels);
-> =20
-> +	ret =3D sgp40_get_serial_number(data);
-> +	if (ret)
-> +		dev_warn(dev, "failed to retrieve device serial number\n");
-> +
->  	ret =3D devm_iio_device_register(dev, indio_dev);
->  	if (ret)
->  		dev_err(dev, "failed to register iio device\n");
+diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+deleted file mode 100644
+index f42e18078..000000000
+--- a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
++++ /dev/null
+@@ -1,141 +0,0 @@
+-Xilinx XADC device driver
+-
+-This binding document describes the bindings for the Xilinx 7 Series XADC as well
+-as the UltraScale/UltraScale+ System Monitor.
+-
+-The Xilinx XADC is an ADC that can be found in the Series 7 FPGAs from Xilinx.
+-The XADC has a DRP interface for communication. Currently two different
+-frontends for the DRP interface exist. One that is only available on the ZYNQ
+-family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
+-on all series 7 platforms and is a softmacro with a AXI interface. This binding
+-document describes the bindings for both of them since the bindings are very
+-similar.
+-
+-The Xilinx System Monitor is an ADC that is found in the UltraScale and
+-UltraScale+ FPGAs from Xilinx. The System Monitor provides a DRP interface for
+-communication. Xilinx provides a standard IP core that can be used to access the
+-System Monitor through an AXI interface in the FPGA fabric. This IP core is
+-called the Xilinx System Management Wizard. This document describes the bindings
+-for this IP.
+-
+-Required properties:
+-	- compatible: Should be one of
+-		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
+-		  configuration interface to interface to the XADC hardmacro.
+-		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
+-		  interface to the XADC hardmacro.
+-		* "xlnx,system-management-wiz-1.3": When using the
+-		  Xilinx System Management Wizard fabric IP core to access the
+-		  UltraScale and UltraScale+ System Monitor.
+-	- reg: Address and length of the register set for the device
+-	- interrupts: Interrupt for the XADC control interface.
+-	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
+-	  when using the axi-xadc or the axi-system-management-wizard this must be
+-	  the clock that provides the clock to the AXI bus interface of the core.
+-
+-Optional properties:
+-	- xlnx,external-mux:
+-		* "none": No external multiplexer is used, this is the default
+-		  if the property is omitted.
+-		* "single": External multiplexer mode is used with one
+-		   multiplexer.
+-		* "dual": External multiplexer mode is used with two
+-		  multiplexers for simultaneous sampling.
+-	- xlnx,external-mux-channel: Configures which pair of pins is used to
+-	  sample data in external mux mode.
+-	  Valid values for single external multiplexer mode are:
+-		0: VP/VN
+-		1: VAUXP[0]/VAUXN[0]
+-		2: VAUXP[1]/VAUXN[1]
+-		...
+-		16: VAUXP[15]/VAUXN[15]
+-	  Valid values for dual external multiplexer mode are:
+-		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
+-		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
+-		...
+-		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
+-
+-	  This property needs to be present if the device is configured for
+-	  external multiplexer mode (either single or dual). If the device is
+-	  not using external multiplexer mode the property is ignored.
+-	- xnlx,channels: List of external channels that are connected to the ADC
+-	  Required properties:
+-		* #address-cells: Should be 1.
+-		* #size-cells: Should be 0.
+-
+-	  The child nodes of this node represent the external channels which are
+-	  connected to the ADC. If the property is no present no external
+-	  channels will be assumed to be connected.
+-
+-	  Each child node represents one channel and has the following
+-	  properties:
+-		Required properties:
+-			* reg: Pair of pins the channel is connected to.
+-				0: VP/VN
+-				1: VAUXP[0]/VAUXN[0]
+-				2: VAUXP[1]/VAUXN[1]
+-				...
+-				16: VAUXP[15]/VAUXN[15]
+-			  Note each channel number should only be used at most
+-			  once.
+-		Optional properties:
+-			* xlnx,bipolar: If set the channel is used in bipolar
+-			  mode.
+-
+-
+-Examples:
+-	xadc@f8007100 {
+-		compatible = "xlnx,zynq-xadc-1.00.a";
+-		reg = <0xf8007100 0x20>;
+-		interrupts = <0 7 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&pcap_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-			};
+-			channel@1 {
+-				reg = <1>;
+-			};
+-			channel@8 {
+-				reg = <8>;
+-			};
+-		};
+-	};
+-
+-	xadc@43200000 {
+-		compatible = "xlnx,axi-xadc-1.00.a";
+-		reg = <0x43200000 0x1000>;
+-		interrupts = <0 53 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&fpga1_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-				xlnx,bipolar;
+-			};
+-		};
+-	};
+-
+-	adc@80000000 {
+-		compatible = "xlnx,system-management-wiz-1.3";
+-		reg = <0x80000000 0x1000>;
+-		interrupts = <0 81 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&fpga1_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-				xlnx,bipolar;
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+new file mode 100644
+index 000000000..6031de763
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+@@ -0,0 +1,159 @@
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/xlnx,xadc.yaml#
++$schema: http://devicetree.org/schemas/meta-schema.yaml#
++
++title: Xilinx XADC device driver
++
++maintainers:
++  - Omer PALA <palaomer100@gmail.com>
++
++description: |
++  This binding document describes the bindings for the Xilinx 7 Series XADC as well
++  as the UltraScale/UltraScale+ System Monitor.
++
++properties:
++  compatible:
++    enum:
++      - xlnx,zynq-xadc-1.00.a
++      - xlnx,axi-xadc-1.00.a
++      - xlnx,system-management-wiz-1.3
++
++  reg:
++    description: Address and length of the register set for the device
++    maxItems: 1
++
++  interrupts:
++    description: Interrupt for the XADC control interface.
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  interrupt-parent: true
++
++  xlnx,external-mux:
++    description: Selects the external mux mode.
++    enum: [none, single, dual]
++    default: none
++
++  xlnx,external-mux-channel:
++    description: >
++      Configures which pair of pins is used to sample data in
++      external mux mode.
++    $ref: /schemas/types.yaml#/definitions/uint32
++
++  xlnx,channels:
++    type: object
++    description: List of external channels that are connected to the ADC.
++    properties:
++      "#address-cells":
++        const: 1
++      "#size-cells":
++        const: 0
++    patternProperties:
++      "^channel@[0-9a-f]+$":
++        type: object
++        properties:
++          reg:
++            description: Pair of pins the channel is connected to
++            minimum: 0
++            maximum: 16
++          xlnx,bipolar:
++            description: If set the channel is used in bipolar mode.
++            $ref: /schemas/types.yaml#/definitions/flag
++        required:
++          - reg
++        additionalProperties: false
++    additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++unevaluatedProperties: false
++
++allOf:
++  - if:
++      properties:
++        xlnx,external-mux:
++          const: single
++    then:
++      properties:
++        xlnx,external-mux-channel:
++          minimum: 0
++          maximum: 16
++
++  - if:
++      properties:
++        xlnx,external-mux:
++          const: dual
++    then:
++      properties:
++        xlnx,external-mux-channel:
++          minimum: 1
++          maximum: 8
++
++examples:
++  - |
++    soc {
++      #address-cells = <1>;
++      #size-cells = <1>;
++
++      xadc@f8007100 {
++        compatible = "xlnx,zynq-xadc-1.00.a";
++        reg = <0xf8007100 0x20>;
++        interrupts = <0 7 4>;
++        interrupt-parent = <&gic>;
++        clocks = <&pcap_clk>;
++
++        xlnx,channels {
++          #address-cells = <1>;
++          #size-cells = <0>;
++
++          channel@0 {
++            reg = <0>;
++          };
++          channel@1 {
++            reg = <1>;
++          };
++          channel@8 {
++            reg = <8>;
++          };
++        };
++      };
++      xadc@43200000 {
++        compatible = "xlnx,axi-xadc-1.00.a";
++        reg = <0x43200000 0x1000>;
++        interrupts = <0 53 4>;
++        interrupt-parent = <&gic>;
++        clocks = <&fpga1_clk>;
++
++        xlnx,channels {
++          #address-cells = <1>;
++          #size-cells = <0>;
++          channel@0 {
++            reg = <0>;
++            xlnx,bipolar;
++          };
++        };
++      };
++      adc@80000000 {
++        compatible = "xlnx,system-management-wiz-1.3";
++        reg = <0x80000000 0x1000>;
++        interrupts = <0 81 4>;
++        interrupt-parent = <&gic>;
++        clocks = <&fpga1_clk>;
++
++        xlnx,channels {
++          #address-cells = <1>;
++          #size-cells = <0>;
++          channel@0 {
++            reg = <0>;
++            xlnx,bipolar;
++          };
++        };
++      };
++    };
+-- 
+2.55.0
 
