@@ -1,70 +1,84 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BC5199E89;
-	Fri, 18 Sep 2026 06:42:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFB136AB46;
+	Fri, 18 Sep 2026 06:47:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789713744; cv=none; b=SZLPSGNNdoydsmajaUB/j6J1L3IFPfSUKZX3Y9Kh3/vxKQ3r3wnAJsVxi5RGggPjoigdDewPTnh4I4ptQpjXswlFAOGXXspDw8embvj7j7Hz28y+bSGnDWgt/2NgrJEmpifJ1jAhe2jvjFGbEZVV3OfcnkU4S9lW56E9LS++7ks=
+	t=1789714056; cv=none; b=jAdBTnRdJYgmq4ixt61r4YOfj4/AcmzBX4WYk/vNTZmWX7WR7HN89Rlimn7Tx0lzc8eIJM+lo1w6H6QSly0tdWSbHSCDvH61UN8aoJRCep9nrzF6Ek+BJCfU3rXvXXVsfHpQRuQG2gcFJZIHdcPVCcrPPpJeVxOw5h5A19AbhSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789713744; c=relaxed/simple;
-	bh=Q8qkLWFRIEs3LhO9JJsC9itRXPMawbI1tnHmSNR1qjU=;
+	s=arc-20240116; t=1789714056; c=relaxed/simple;
+	bh=6YanQ4j2axnNmAVMCsCzfrwlvp0zLxWMQEBqbUI0jaA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SIm9jKkWTcUhZxGHxDqWO8mM7bEILxaG99+SkOAdiFEBo7pZ5jyms3H7L1iPFRvtu3esXSFaHXETJEhfzEaIE8mCRRuYdsBbhYCyE/TaoELFx9sJfjMFIAo11ZbAvaQ0AIYxzmp/2x4nLXmAb8Y7v12FehvM3PkZWZwwAV2d3zs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FpGqt8CX; arc=none smtp.client-ip=192.198.163.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=AQGv1vHq2xtjJkJTS5mZo9l2LDcf2Ij+Wwy6oY6q+8LhzzGcmTO0SXIx+Zj0qKaUXjV0He591Ud7FtHv+Jy4sHe1oOsG0zdX8UulCWasFgKVfdFJZrBV6ABvoMM4G5eAKeQIhCwakVD86Z6wFDZdoSlWXppsuf8/d44MLLAnlrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lsNithr3; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FpGqt8CX"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lsNithr3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789713742; x=1821249742;
+  t=1789714054; x=1821250054;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Q8qkLWFRIEs3LhO9JJsC9itRXPMawbI1tnHmSNR1qjU=;
-  b=FpGqt8CXtWKlt0YDM6BsZnxMl9dsdxlHtg2RdYqJFkK6oA7O6ZO/xjUS
-   Oef3zJoIARQFFNA+sRMDh6HP4GVzQBibkjQASg+ao9G8OiYS3F2AE0UwY
-   VjJLovinEd0uD2GpLnbK2xpsmg6lLWCulVIp2rWkJoDFgYipyZoq1ZzUX
-   jPikc2pcmrhUf/PSSLmPqbp3JU2Dmv+ZyjsjlVwKATh1uUPOAVv/eT8X9
-   GA+YaIZJyc7sT4E5OJ/I3bzXjP0akVUxlKs0KEBUaL4jBSBBF2rEf79hM
-   LzeNN83EPDlrmhi9b7dq9j0VDxw0Jnl3tGVf0b8JWGY/WS2mZswOb+ccz
-   g==;
-X-CSE-ConnectionGUID: tv7826B0RJeWCPOA+fh9Dw==
-X-CSE-MsgGUID: tKJYMWJvQL+oaqmklPGWQg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="90217380"
+  bh=6YanQ4j2axnNmAVMCsCzfrwlvp0zLxWMQEBqbUI0jaA=;
+  b=lsNithr35OB6dlco6vZuBhg4KsNMgYIAz6INaMgr6332YWGcptjTtEGT
+   NUReX/KxEBsVlbs0YRF8TkBuf4l9D84B7MZ4xZ3QgqDKUvis/LBZCeOXw
+   TYiucbOTH4vDZinOOuTAqF3kHd6CPiwkbuosBlIMGgbP2Yycglt5xc8ZM
+   nljPnASh3tve4NkSJ0Ih99tm6fKwjIlPlIcCMY972kBZP/43ONv/8nZQ8
+   31YqWRL7/gmu36r5qYNO5CPu/CcKkXQXLoPXPUbJUikAFNYBl9hoVwC/F
+   ZHd41Fn4lC2dBp89zhyiHPS6sCTinwgmkISLO2h0Hn4BAnkulpM0Bpr8v
+   Q==;
+X-CSE-ConnectionGUID: VFv72gMYRmKxkyj/mkTDHQ==
+X-CSE-MsgGUID: 3xsUD7DjROy/pywNjoaqzA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="90218035"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="90217380"
+   d="scan'208";a="90218035"
 Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2026 23:42:21 -0700
-X-CSE-ConnectionGUID: XqPyq6tVQjmBYMsrb8i6uA==
-X-CSE-MsgGUID: WKZRfvWWQ0ScMHejZX/UkA==
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2026 23:47:33 -0700
+X-CSE-ConnectionGUID: G7IZiRvjTG+wDabJyYvZwQ==
+X-CSE-MsgGUID: apAPhVFURX+XHpRIfNXygw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="2433853"
+   d="scan'208";a="2435704"
 Received: from carterle-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.170])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2026 23:42:18 -0700
-Date: Fri, 18 Sep 2026 09:42:11 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2026 23:47:27 -0700
+Date: Fri, 18 Sep 2026 09:47:24 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ryan Brue <ryanbrue.dev@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Frank.Li@oss.nxp.com
+Cc: Eugen Hristev <ehristev@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, mfd@lists.linux.dev,
-	Roman Vivchar <rva333@protonmail.com>,
-	Luca Leonardo Scorcia <l.scorcia@gmail.com>
-Subject: Re: [PATCH 0/3] iio: adc: add mt6397 PMIC AUXADC support
-Message-ID: <aqzdQ64Y_mkEdLZU@ashevche-desk.local>
-References: <20260915-rbrue-suez-upstreaming-mt6397-auxadc-v1-0-d35d2ac3d6f0@gmail.com>
- <aqpmgliQW7FW53o5@ashevche-desk.local>
- <2d1b80f2-53f6-4ed6-81bf-e35c0a9efb26@gmail.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Felix Gu <ustc.gu@gmail.com>, Stepan Ionichev <sozdayvek@gmail.com>,
+	Shuvam Pandey <shuvampandey1@gmail.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Frank Li <Frank.Li@nxp.com>,
+	Piyush Patle <piyushpatle228@gmail.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Pei Xiao <xiaopei01@kylinos.cn>, Shi Hao <i.shihao.999@gmail.com>,
+	Kees Cook <kees+treewide@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	"open list:MICROCHIP SAMA5D2-COMPATIBLE ADC DRIVER" <linux-iio@vger.kernel.org>,
+	"moderated list:ARM/Microchip (AT91) SoC support" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>,
+	imx@lists.linux.dev, vkoul@kernel.org
+Subject: Re: [PATCH 1/1] iio: use dmaengine_get_dma_device() instead of
+ chan->device->dev
+Message-ID: <aqzefLjkj6VrLR1b@ashevche-desk.local>
+References: <20260917203652.1279059-1-Frank.Li@oss.nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,66 +87,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2d1b80f2-53f6-4ed6-81bf-e35c0a9efb26@gmail.com>
+In-Reply-To: <20260917203652.1279059-1-Frank.Li@oss.nxp.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Sep 17, 2026 at 03:24:05PM -0500, Ryan Brue wrote:
-> On 9/16/26 4:50 AM, Andy Shevchenko wrote:
-> > On Tue, Sep 15, 2026 at 11:15:25PM -0500, Ryan Brue wrote:
-> > > The MediaTek mt6397 PMIC has a 10-bit AUXADC that nothing in-tree can
-> > > reach. On boards built around it that ADC is the only path to the battery:
-> > > the SoC's AUXADC is wired to board thermistors, and the charger ICs these
-> > > boards use have no ADC at all, so without it there is no pack voltage and
-> > > no state of charge.
-> > This doesn't explain why a brand new driver? Perhaps we have existing code that
-> > may be updated to support this device?
-> I considered adding mt6397 support to either mt6323-auxadc or mt6359-auxadc,
-> and both had problems.
+On Thu, Sep 17, 2026 at 04:36:26PM -0400, Frank.Li@oss.nxp.com wrote:
+
+> Replace direct dma_chan::device::dev access with the proper
+> dmaengine_get_dma_device() accessor in IIO DMA consumers.
 > 
-> Both mt6323-auxadc and mt6359-auxadc select channels through a request
-> register (1 bit per channel), while mt6397 uses a 4-bit numeric field CHSEL
-> in CON1 (10:7), and then pulses a START bit (CON1 bit 0). That was the
-> biggest reason I made the new driver.
+> chan->device->dev is not always the device used for DMA mapping.
+> Some DMA engines support per-channel IOMMU mappings, so different
+> channels may use different DMA devices.  dmaengine_get_dma_device()
+> returns the correct device for each channel.
 > 
-> For mt6323-auxadc, which is the closest I could find to the mt6397
-> (CON0..CON27), it has 13 more registers than the mt6397 (CON0..CON14). It
-> uses CON22 for its request register, and reads the result value from the
-> same register as the ready bit. We don't do that - the mt6397 has a factory
-> calibrated value for each channel at 0x16 higher than the raw value. mt6323
-> also has a 1800 mV / 15 bit scale / resolution while we have 1200 mV / 10
-> bits. We also have some per-channel preparation that we have to do before
-> the burst, that the mt6323 doesn't have to do.
-> 
-> For mt6359-auxadc, it has a more generic framework for describing the
-> AUXADC, but it assumes requests are channel-per-bit, and so we would have to
-> basically ignore req_idx, req_mask, rdy_idx, and rdy_mask.
+> This also prepares for making the DMA engine provider data structures
+> private. DMA consumers should not access DMA engine internals directly.
 
-> We also have our own software sampling, which the vendor does too (Amazon
-> Fire OS based on Linux 3.18). We'd have to have our own sampling callback to
-> do it.
+...
 
-If it's not an upstream, we do not care.
+>  drivers/iio/adc/at91-sama5d2_adc.c                 |  9 ++++++---
+>  drivers/iio/adc/nxp-sar-adc.c                      |  2 +-
+>  drivers/iio/adc/stm32-adc.c                        | 10 ++++++----
+>  drivers/iio/adc/stm32-dfsdm-adc.c                  |  4 ++--
+>  drivers/iio/adc/ti_am335x_adc.c                    |  4 ++--
+>  drivers/iio/buffer/industrialio-buffer-dmaengine.c |  5 +++--
 
-> I drafted two other versions of these patches adding mt6397 support to both
-> of those drivers, but the differences meant I had to add a lot of extra
-> boilerplate to each driver and to me it didn't make sense.
-> 
-> In v2 I will add the justification to the cover letter and commits for why I
-> chose a new driver.
+Strictly speaking this is two patches, one per ADC folder and the other against
+IIO core. But this one is not a big one, so up to Jonathan.
 
-Yes, please. Always do that when submitting a brand new driver that might sound
-like a (partially) compatible with something already existing.
-
-> If you'd like me to instead send the exploratory patches I made adapting
-> mt6323-auxadc or mt6359-auxadc, let me know. I'm fine if it ends up seeming
-> like we should adapt one of the existing drivers, but I think the mechanism
-> for controlling this AUXADC is unique and merits its own driver.
-> 
-> Thanks again for the review, I am going through each one, and sorry for the
-> delay. I'm rather new to kernel development.
-
-No problem, and welcome!
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
