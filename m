@@ -1,52 +1,56 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A20632;
-	Fri, 18 Sep 2026 07:36:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C7F4A2E32;
+	Fri, 18 Sep 2026 07:36:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789717015; cv=none; b=D6hRxIl0NX4YsLKz3JfKiX5Y6ec8ryXK5WGZJARIdxCRHVvo8XXhhXc8EoV7iw2N4oxl6JlGT4YC/DTcBXiVvVTEEraG/KRTOcnEv6QEQPqNLDqIsyH0atJ1kxRUK3J5TrAJoJIO4jR8AjBoRVgMF4xJ+nWXxmzYLGe6zxcPZZs=
+	t=1789717016; cv=none; b=iUZi6kxlhHOfV1txPeoNwdcjDv0gQXvRPc+X7/Ito5etDi1p0yUk2JmIWKUysfTWJX7KePkpdRQZwdccVKiEnuGwZv+0g7eYMuc0hGfwhxk245LAW9gjt5udzatvjwnQAJPN/Xm/Db46GxvI6GY2cBE5yS8hAMwn8Xj3aXSxLeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789717015; c=relaxed/simple;
-	bh=ArZcDThcurlJ0nD6yr9+gwux3lXVW1q0qXu9PpWMjSg=;
+	s=arc-20240116; t=1789717016; c=relaxed/simple;
+	bh=BB1CWGAce8kzl2nNA7V8Mf2cWPWwnS69sdS81EWA3TM=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Uc2/2zRAGlc60bNIRXegHusRRHclD9eidbSp/j/2bK99WCw/vIudYjxc83o+X4sgwrSbWvUOfVJ03bJXxZe4PMeypqQBlPoKR9sVUY5qFStWMMgkp2H4T98n/2qiRrhQAWPjs6LZ3eiQFDPw8ETJm9ZgqiQH6ZhEtQC2nO/1eJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=s/ROTyyK; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=EK1KnXl03vJ04ote+whRzD96cVScgG2VSOLptCAnAS0ca563rZ3MQVk7KbDEg+ICr3vhOpuaLg4h7bmqwEppa+HHKG1yEScng9ag/X+VmTOezAcmCRyL5uRPee6kpZ1bRsLmPn1ijBE/2EfeSvFZA+Msby2nLtuht8Pk9ZZq3VY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=yXuPWvkn; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="s/ROTyyK"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68I5wKFb570743;
-	Fri, 18 Sep 2026 03:36:25 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="yXuPWvkn"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68I5wRrL3969437;
+	Fri, 18 Sep 2026 03:36:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=viFGZ
-	LX5Gyzr3zRHG5k+XuJmn61uaJo4fgcVYFFmRFo=; b=s/ROTyyKHUAsZJDfj05io
-	0bR1kNlC2BN4CWgam2imGfUtrVbZelLjTdBj0fGkp5VloOy9BHEP8aeIMPb3fLPO
-	nT2jUYQu1cRjiQnAdCF3//RgprmV+h6acRpYPGWyDrSiYTDCggwpOVek5E0XIjQ8
-	yTuN0X5qXmsMDUFNcDA8okHgDRxCSDDpQpqU6FZI/okcoatGoecaY+f+KzSGG/9e
-	Tap5MeNAfvsyAJSQsi3zD0je8v1Oj323x9f7iDJ/aqLNUaORLTFhy2v742QGS++b
-	bi9JABNSkUZFeHTxPGKW+1IM+RLcPFFDyweGKmrPbxvX0LNTQqJMasvJt+tVUN1j
-	w==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=pub59
+	7Tt19iQNAUAhkbhqQ/yDDbDH1KhPbFPriZJEiY=; b=yXuPWvknlmZ74rJq9JDVf
+	9ixbw2ALLp7iRXtTSL7dtGl7OTnWl5GtzyP5AnDHmbEJVNFznqLImvrRDfw4YFIf
+	I6YAvS9VUx/y6smWh3GgRovUMVYnvqURpdiRIQOD3Z7djLp5yYxVDEW5AkpfoNim
+	+PHVCthi5tjv2A9JaFrPfnZvgbOLLTqsRDzxdUmC+gelHac0NujUTV8seFADIdUo
+	6lZd+cRsOUFuiw13tfUlV3onq28eojQywXUGg7fvR2miu35ZVsgPMzIWunp4uerc
+	DV8GLcXONdYUscoSEkWKb3s+xAvfSj/KEHxn6RVfLVBNR8/J+OPt6nt5ItOHxB3/
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4grk0h3ubj-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4grk0xktf7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Sep 2026 03:36:24 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68I7aNS1011068
+	Fri, 18 Sep 2026 03:36:16 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68I7aF2g011029
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 18 Sep 2026 03:36:23 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 18 Sep
- 2026 03:36:23 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 18 Sep 2026 03:36:23 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.219])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68I7ZjpW019677;
 	Fri, 18 Sep 2026 03:36:15 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 18 Sep 2026 03:36:15 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 18 Sep 2026 03:36:14 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 18 Sep 2026 03:36:15 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.219])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68I7ZjpU019677;
+	Fri, 18 Sep 2026 03:36:09 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?=
@@ -56,8 +60,8 @@ To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
         David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
         Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah
- Khan <skhan@linuxfoundation.org>,
+        "Shuah
+ Khan" <skhan@linuxfoundation.org>,
         Randy Dunlap <rdunlap@infradead.org>,
         Marcelo Schmitt <marcelo.schmitt@analog.com>,
         Joshua Crofts
@@ -65,14 +69,13 @@ To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
         Radu Sabau <radu.sabau@analog.com>, Salih Erim
 	<salih.erim@amd.com>,
         Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
-        Jakub
- Szczudlo <jakubszczudlo40@gmail.com>,
+        "Jakub Szczudlo" <jakubszczudlo40@gmail.com>,
         <linux-iio@vger.kernel.org>, <linux@analog.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-doc@vger.kernel.org>
-Subject: [PATCH v2 4/6] iio: adc: ade9000: gate the DICOEFF write behind a chip_info flag
-Date: Fri, 18 Sep 2026 10:35:33 +0300
-Message-ID: <20260918073537.1572-5-antoniu.miclaus@analog.com>
+Subject: [PATCH v2 2/6] iio: adc: ade9000: fix DIPC event never being handled or cleared
+Date: Fri, 18 Sep 2026 10:35:31 +0300
+Message-ID: <20260918073537.1572-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260918073537.1572-1-antoniu.miclaus@analog.com>
 References: <20260918073537.1572-1-antoniu.miclaus@analog.com>
@@ -85,123 +88,68 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE4MDEwMiBTYWx0ZWRfXyqNmLa4XOvKn
- Za49AHB07HCSW0r2Z/T1Jw1lQIXmSYuqrzzdiHE5JnMYmIsi58ENSTAmdIwVbvFgiljho1szSsW
- L5okolq20bT9FRxCFapDPIgJX6pzMP/znyGMUJZZtnhtQqFOH3Cd
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE4MDEwMiBTYWx0ZWRfXyd31opQCh0Al
- 2SQNJW4wv2yQsQBs9zcLB2ukMcCoSgaolYsH/yEqrhJTC15Yb3VM8rRdFSoLeaf3KBXmmkFawfg
- s+SyXOqMXxA9hZAA56iF2v3uSAFqSUNO2Uh+rDaiESRydUwH7x/sHtTHCxWkShkHEnDkDfIYB4Y
- Qt+GTz/CbbDrsp6ZH8rFe5Z73fdTB0+wJmngM8awnI+MzvOLToEQG91iPQS8wikwmzr+kgpKLCZ
- p9vlCfS3xjIPyK4I0mr/NlPuZDohkNg/JmGGG1jEwtakLsXmi/lC2tSZ8ySE5YDVZxQH2uyS1re
- 9TGGlj05Dv3vns7ZZJ5xZt/iTv3AAvs+WCTtuEy7bH7KVVAPGjsfpowqJgwvmdQYTGUD8S33SQT
- D7XfcE4vkq4xNEZO5ZW5Z41y73JXyiyq/yhdO+d3tXOaCt6ZiUVoDvmbEiiYELitT9NnB3N4/GY
- EvoJ/n/c7GWVKY0nRpg==
-X-Proofpoint-GUID: GQKX71cEFcHn1KVTpKlWEGCSuX0qLR8_
-X-Proofpoint-ORIG-GUID: GQKX71cEFcHn1KVTpKlWEGCSuX0qLR8_
-X-Authority-Analysis: v=2.4 cv=IpqL47/g c=1 sm=1 tr=0 ts=6aace9f8 cx=c_pps
+X-Proofpoint-GUID: -gkmVFXqn2LvykUChoaKkxncRoH_9aBC
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE4MDEwMiBTYWx0ZWRfX4YMLN0YAQhDu
+ tbYuMknz1NdmipcL4f1N4aQEIYopx2tK96P4a64b6MgTSnP7AEkSeKZOBA68LPxOqCeZcArmC0p
+ 5Yup82ZDXpEkUI/AV2kjWNpbGvDbfemjQ4f3FdTFUra86OL/aL79AoeM49crjDnpVD9DNU0sLKn
+ zEuQWSQId6J5E8/1X/rSQGp6KRokCfwKHlBYP6oGWsQi9xGm+HRnbEkgOP2SV0Y0MnjO0vdChQi
+ lYE5bBWcpcxGPyoa82a7NGKcHrHzw/FBVgeBM+uJcG367dgqaVw63q/otaKM8b1PzDOlD9dq02C
+ 5aFY4YAsDfp/WQFXmIuS9CgMRnqcHYPROua1AyYxfqPitQIKLihd1kkCLaidseqEYbsC3mVz8ef
+ sITRe6SsjgvMfZceWoFqRftG738Bu2ZY1NlRUY46IKq6h7uNGWUK+IYA7OsF8TsBzNh/yXu8SDK
+ 9J24Bg3KeluyevhOGCw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE4MDEwMiBTYWx0ZWRfX1Xeac/kgMe1Z
+ Kz03B2qarRFwXfAibVe8RBgNmZlWfw7XCHKUNrvCkOmNMAcGaFaViA1J2uQdgu0sD2Nqdp4/7UV
+ IAkTLYN9HR5K2TdbRFlonMgFwyEi1qUhUXCKsd+NQjyCNPU79L/B
+X-Proofpoint-ORIG-GUID: -gkmVFXqn2LvykUChoaKkxncRoH_9aBC
+X-Authority-Analysis: v=2.4 cv=OtXaWC/t c=1 sm=1 tr=0 ts=6aace9f0 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=HWq8w0C2B1yOpf0TK-AA:9
+ a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=UsWkN0LNHv3q8H0V0WkA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-18_02,2026-09-16_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 clxscore=1015 adultscore=0 phishscore=0 lowpriorityscore=0
- priorityscore=1501 spamscore=0 suspectscore=0 bulkscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609180102
+ impostorscore=0 malwarescore=0 bulkscore=0 adultscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 priorityscore=1501 suspectscore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
+ definitions=main-2609180102
 
-Some parts in the ADE9000 family have no on-chip digital integrator and
-therefore lack the DICOEFF register; they use an external analog integrator
-for Rogowski coil current sensors. Prepare for such parts by adding a
-has_digital_integrator flag to the chip_info and only writing DICOEFF when
-it is set.
+The STATUS1 interrupt handler scans the enabled interrupt bits using
+ADE9000_ST1_CROSSING_DEPTH as both the bitmap size and the exclusive upper
+bound of the for_each_set_bit_from() loop. ADE9000_ST1_CROSSING_DEPTH was
+25, so the scan only covered bits 6..24 and never examined bit 25,
+ADE9000_ST1_DIPC_BIT (phase C voltage dip).
 
-Move the DICOEFF and RUN writes out of the shared initialization sequence
-into ade9000_setup() so DICOEFF can be issued conditionally while RUN still
-starts the DSP afterwards. All currently supported parts set the flag, so
-there is no functional change.
+As a result, when userspace enables the DIPC threshold event and it fires,
+the handler neither pushes the IIO event nor sets bit 25 in handled_irq.
+Since STATUS1 is write-1-to-clear, the DIPC status bit is never cleared and
+the interrupt keeps re-asserting, causing an interrupt storm.
 
+Bump ADE9000_ST1_CROSSING_DEPTH to 26 so the scan includes DIPC.
+
+Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
 Changes in v2:
-- new precursor patch, split out of the ADE9430 support patch.
+- new patch, found by the sashiko review of v1.
 
- drivers/iio/adc/ade9000.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ade9000.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-index ce0317766698..0167d5bcdb74 100644
+index 0f64bfb221da..ce0317766698 100644
 --- a/drivers/iio/adc/ade9000.c
 +++ b/drivers/iio/adc/ade9000.c
-@@ -290,6 +290,7 @@ enum ade9000_wfb_cfg {
-  * @rms_full_scale_codes: digital code produced at full-scale RMS input
-  * @watt_full_scale_codes: digital code produced at full-scale power input
-  * @pcf_full_scale_codes: digital code produced at full-scale xI_PCF/xV_PCF input
-+ * @has_digital_integrator: part has an on-chip digital integrator (DICOEFF)
-  *
-  * The full-scale codes are taken from the respective datasheets and are used to
-  * derive the IIO scale of the raw measurement channels.
-@@ -301,6 +302,7 @@ struct ade9000_chip_info {
- 	unsigned int rms_full_scale_codes;
- 	unsigned int watt_full_scale_codes;
- 	unsigned int pcf_full_scale_codes;
-+	bool has_digital_integrator;
- };
+@@ -219,7 +219,7 @@
+ #define ADE9000_ST1_ERROR2_BIT		BIT(30)
+ #define ADE9000_ST1_ERROR3_BIT		BIT(31)
+ #define ADE9000_ST1_CROSSING_FIRST	6
+-#define ADE9000_ST1_CROSSING_DEPTH	25
++#define ADE9000_ST1_CROSSING_DEPTH	26
  
- struct ade9000_state {
-@@ -680,6 +682,7 @@ static const struct ade9000_chip_info ade9000_chip_info = {
- 	.rms_full_scale_codes = 52702092,
- 	.watt_full_scale_codes = 20694066,
- 	.pcf_full_scale_codes = 74532013,
-+	.has_digital_integrator = true,
- };
- 
- static const struct ade9000_chip_info ade9078_chip_info = {
-@@ -689,6 +692,7 @@ static const struct ade9000_chip_info ade9078_chip_info = {
- 	.rms_full_scale_codes = 52866837,
- 	.watt_full_scale_codes = 20823646,
- 	.pcf_full_scale_codes = 74680000,
-+	.has_digital_integrator = true,
- };
- 
- static const struct reg_sequence ade9000_initialization_sequence[] = {
-@@ -704,13 +708,11 @@ static const struct reg_sequence ade9000_initialization_sequence[] = {
- 	{ ADE9000_REG_EVENT_MASK, ADE9000_EVENT_DISABLE },
- 	{ ADE9000_REG_WFB_CFG, ADE9000_WFB_CFG },
- 	{ ADE9000_REG_VLEVEL, ADE9000_VLEVEL },
--	{ ADE9000_REG_DICOEFF, ADE9000_DICOEFF },
- 	{ ADE9000_REG_EGY_TIME, ADE9000_EGY_TIME },
- 	{ ADE9000_REG_EP_CFG, ADE9000_EP_CFG },
- 	/* Clear all pending status bits by writing 1s */
- 	{ ADE9000_REG_STATUS0, GENMASK(31, 0) },
- 	{ ADE9000_REG_STATUS1, GENMASK(31, 0) },
--	{ ADE9000_REG_RUN, ADE9000_RUN_ON }
- };
- 
- static int ade9000_spi_write_reg(void *context, unsigned int reg,
-@@ -1672,6 +1674,21 @@ static int ade9000_setup(struct ade9000_state *st)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to write register sequence");
- 
-+	/*
-+	 * DICOEFF must be configured before the DSP is started. Parts without
-+	 * an on-chip digital integrator lack this register, so skip it there.
-+	 */
-+	if (st->info->has_digital_integrator) {
-+		ret = regmap_write(st->regmap, ADE9000_REG_DICOEFF,
-+				   ADE9000_DICOEFF);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Failed to set DICOEFF\n");
-+	}
-+
-+	ret = regmap_write(st->regmap, ADE9000_REG_RUN, ADE9000_RUN_ON);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to start DSP\n");
-+
- 	fsleep(2000);
- 
- 	return 0;
+ #define ADE9000_WFB_TRG_DIP_BIT		BIT(0)
+ #define ADE9000_WFB_TRG_SWELL_BIT	BIT(1)
 -- 
 2.43.0
 
