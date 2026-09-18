@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE66370D69;
-	Fri, 18 Sep 2026 07:19:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0228E3DCD9C;
+	Fri, 18 Sep 2026 07:31:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789715944; cv=none; b=XJ5f0Ak6MBNUbHxS3abgrEDzOlgiF4ySPeIlS0fJtLQWa+aeMtRH4i13S8iuVkiif7MZLsWnRkpheMl6ia4TETkCtyIKldALRkIE+WkbQ00Nbffmc3vK1lg/ABNAhcrDTeOxLCljmiXEwM/wjkDRYi6AeOldQmIinnYOKdopnZg=
+	t=1789716712; cv=none; b=UFEt3wJQV8tIuexsUc26qVBhMhqaHnSQhGsQHfuO3NjUpXvKY+FX0s3Xp/kkEPKjJQZLddDXwwxFrQ/QK2wfk2g+gXqmg8v6vicqaa9QiO9i0wCU+PcSAhmJ5HhmdbwRSqTYVbxiuf080eKPgvNgo3DTDvhnWzQvRqfJhIFltNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789715944; c=relaxed/simple;
-	bh=dfxlF5cxykKt1JLCGAytW/kqApoyMBeXGMrJQ5Ycbg4=;
+	s=arc-20240116; t=1789716712; c=relaxed/simple;
+	bh=rSShAsO12XubLfGpze9r4T+pSVrU9sR0OtduLM9w+dU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JF9qSjGUm0CRimbVk3tcDkDUC3IrMKUu0EIcN5zCr03AY0kIGPXjkD4srS40rhPJyMSCKIRulUvy6MlICEHcR/2J34MSMg4Dc7otBIrmWdcQxScK04LRcIFYN1bDNQfqCfyse6eDQJFxHVgxtBpS8GrX01QjHxWJxbqhtes2Abo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AO5MzpOI; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=iEI5TgYv4bUbep6IPSd2EYNb0D8GKBQLXN/kry0LrDqvbkzp0j5XNEaCETTRWpza+7F/nQ2N5xF0AhSzZc0BnA4YKByDQyRL6JY1fuXTBY/CoSdRvirK/4sH+6EQU9wYOgOsggVI27BoR0DLzvlqYxeAH+qvOrwmZ5KmTUckRK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TpUZJPKu; arc=none smtp.client-ip=192.198.163.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AO5MzpOI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TpUZJPKu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789715942; x=1821251942;
+  t=1789716710; x=1821252710;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=dfxlF5cxykKt1JLCGAytW/kqApoyMBeXGMrJQ5Ycbg4=;
-  b=AO5MzpOIY1iqz4xALzwf6KWEZ1NoI4XqXad2JhZh2a0E8gtsn5V0uk+E
-   KrhHe5HNSjyGtMyoI9gXF58hlNdftOuRFX1gSUN+hKhp1N1ywFYAzA4TP
-   sHiRpffaySWyNTHAsQh8IOV2+0Pp56Emai6jqCd4lV3WK1OZ4sOln4/8m
-   YrjqZjnQXIi9TbPxH1tjxFbWPqqr7kVawGSzwI/HWhtqw5WRziwSd4qJ9
-   zbSn9K59UkTtTc87NJ8b803iqcTXI7bvYgL7ZQuUuHUNg4LDlbwLhYrM8
-   4mHoR/UllDv8w/UUzAAuO9hd9HV56Wx4A5Jy6tEW2/AFz0pg/M1CfRlLH
-   g==;
-X-CSE-ConnectionGUID: RMbQHMX1TCu6yTPjrv8q1Q==
-X-CSE-MsgGUID: T1+/muIFQcuV5b56AUlKtw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="89338051"
+  bh=rSShAsO12XubLfGpze9r4T+pSVrU9sR0OtduLM9w+dU=;
+  b=TpUZJPKu5a9jo181Msofp43nNcY1ahIxyWpzLbnP0UzKX0knj75eYcqg
+   Gf3SIelie+cKdNAmGbFSYDzUpQvn00q5jvx6KJfAvcAF4EkmEtl98pgVZ
+   5tMpfnfmcmqTyzK3hVa/OlIM9ucHP0dwdM9vzWN1e2GZ13bb/oGJosXAf
+   hGhklVEI8JDRZo8XpKuF/GzwS2rFBdcY6OxaCE66wwFt22J9RH5g6C98z
+   b2Am7i4TzrUfxN5nqxQlZ0MagEpibttEw3vRiyHEeDTeEmeEXELJR1GxG
+   ha/8RLeKtxzY4ZJRZQIM9WR64yK8BtGNvA1X6zKkNcvt9DhiVf4O2aprm
+   w==;
+X-CSE-ConnectionGUID: nw287oPJRsWB/vjRICEDvw==
+X-CSE-MsgGUID: 5ALQNgMASDi2KkgLvZtVbg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="712659"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="89338051"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 00:19:01 -0700
-X-CSE-ConnectionGUID: YVxCbwO2SqqSvBOkmu44aw==
-X-CSE-MsgGUID: FpOe3BXLSpad84ZaQLJXvQ==
+   d="scan'208";a="712659"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa114.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 00:31:49 -0700
+X-CSE-ConnectionGUID: qLC/C1UYRsSZmIz02DoYvw==
+X-CSE-MsgGUID: tnrRKkoxRlG/AUaUUZGwig==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="276224505"
+   d="scan'208";a="268006028"
 Received: from carterle-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.170])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 00:18:57 -0700
-Date: Fri, 18 Sep 2026 10:18:51 +0300
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 00:31:45 -0700
+Date: Fri, 18 Sep 2026 10:31:38 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Ryan Brue <ryanbrue.dev@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -60,9 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-mediatek@lists.infradead.org, mfd@lists.linux.dev,
 	Roman Vivchar <rva333@protonmail.com>,
 	Luca Leonardo Scorcia <l.scorcia@gmail.com>
-Subject: Re: [PATCH v2 0/3] iio: adc: add mt6397 PMIC AUXADC support
-Message-ID: <aqzl29C_R4zwAnDK@ashevche-desk.local>
+Subject: Re: [PATCH v2 2/3] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
+ driver
+Message-ID: <aqzo2vqeGEGCLFIP@ashevche-desk.local>
 References: <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-0-db35882a6080@gmail.com>
+ <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-2-db35882a6080@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,48 +73,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-0-db35882a6080@gmail.com>
+In-Reply-To: <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-2-db35882a6080@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Sep 17, 2026 at 09:19:49PM -0500, Ryan Brue wrote:
-> The MediaTek mt6397 PMIC has a 10-bit AUXADC that nothing in-tree can
-> reach. On boards built around it that ADC is the only path to the battery:
-> the SoC's AUXADC is wired to board thermistors, and the charger ICs these
-> boards use have no ADC at all, so without it there is no pack voltage and
-> no state of charge.
+On Thu, Sep 17, 2026 at 09:19:51PM -0500, Ryan Brue wrote:
+> The mt6397 AUXADC is a 10-bit ADC behind the SoC's PMIC wrapper. On boards
+> built around this PMIC it is the only way to read the battery: the SoC's
+> AUXADC is wired to board thermistors and the charger ICs these boards use
+> have no ADC of their own.
 > 
-> Patch 1 adds the compatible to the existing MediaTek PMIC AUXADC schema and
-> the header naming the channels, patch 2 the driver, patch 3 the MFD cell
-> that instantiates it. The cell comes last so that no commit in between
-> registers a child no driver can claim.
+> Add a driver exposing the battery voltage and battery temperature
+> channels. Only those two are described, so a channel ID in the device tree
+> is an index into the driver's channel array rather than the PMIC's channel
+> number, as mt6323-auxadc does. The ready bit lives in a channel's raw
+> result register, but the value comes from the chip's trimmed copy of it,
+> which is what the vendor driver reads for a measurement.
 > 
-> The mt6397 is not given mediatek,mt6359-auxadc as a fallback because the
-> two are not register compatible; patch 1 has the detail.
+> Both channels need more than that, as the vendor programs them. The
+> battery voltage is measured through ISENSE, because a board with a
+> switching charger in the power path leaves BATSNS on the charger's system
+> rail instead of on the pack. The thermistor only reads correctly with the
+> PMIC's battery-detect bias and input buffer enabled, which take 20 ms to
+> settle. Both are switched back off afterwards.
 > 
-> Only the two channels a board needs for its pack are described, so patch 1
-> ships a header naming them: a channel ID is an index into the driver's array
-> and not the PMIC's channel number, as in mt6323-auxadc. The register
-> sequences are the ones the vendor kernel's pmic_auxadc.c programs.
-> 
-> One note on patch 3: it adds a cell to mt6397_devs[], which Luca Leonardo
-> Scorcia's MT6392 series converts to the MFD_CELL_* macros in its patch
-> 4/9 [1]. Whichever of the two lands second needs a respin. Mine would
-> become a single MFD_CELL_OF(), and I can do a respin if that patch arrives
-> first.
+> Reads average sixteen conversions in software; the chip's sample
+> accumulator makes no measurable difference at any setting, so it is left
+> at one sample per conversion.
 
-> Cc'd Luca.
+...
 
-Instead of this, just put the real Cc: email tag here
-Cc: Luca Leonardo Scorcia <l.scorcia@gmail.com>
+The below should be part of the comment block, no commit message needs to
+be polluted with this.
 
-> Tested on an Amazon Fire HD 10 (2017), an mt8173 with an mt6397. Both
-> channels are exercised: the battery channel by a fuel gauge, which reads 817
-> counts, 3830 mV with the pack at rest, and the thermistor channel by an
-> ntc-thermistor consuming it.
-> 
-> A new driver was created here, instead of modifying an existing driver such
-> as mt6323-auxadc or mt6359-auxadc, for the following reasons:
+> A new driver was created here, instead of modifying an existing driver
+> such as mt6323-auxadc or mt6359-auxadc, for the following reasons:
 > 
 >  - Both mt6323-auxadc and mt6359-auxadc select channels through a request
 >    register (1 bit per channel), while mt6397 uses a 4-bit numeric field
@@ -136,29 +131,243 @@ Cc: Luca Leonardo Scorcia <l.scorcia@gmail.com>
 >    (Amazon Fire OS based on Linux 3.18). We'd have to have our own
 >    sampling callback to do it.
 > 
-> I have two things in the driver different from the vendor (Amazon
-> Fire OS based on a 3.18 kernel). Verified with over 150 interleaved reads
-> per setting:
-> 
->  - Leaving the ISENSE input enabled between reads, as the vendor does,
->    makes no difference to the value, so the driver switches it off again
->    and leaves both ADC input enables clear when idle.
-> 
->  - The chip's sample accumulator makes no difference at 4, 8, 16 or 31
->    samples and costs no measurable time, so it is left at one. Software
->    averaging helps, but only by about a quarter: 0.92 LSB standard
->    deviation for one conversion against 0.67 for sixteen, where independent
->    samples would have given 0.23. Conversions in a burst are correlated.
-> 
-> The reading was checked against the charger, which regulates the pack to
-> a programmed voltage in constant-voltage mode. Over twelve such voltages
-> from 3904 to 4080 mV, and charge currents from 111 to 778 mA, the driver's
-> reading is a mean of 0.9 mV from the regulated value, well inside
-> the charger's regulation tolerance. That also settles reading the chip's
-> trimmed result register rather than the raw one - the raw register is
-> 20.7 mV low at every one of the twelve points.
-> 
-> [1] https://lore.kernel.org/all/20260902193351.185771-5-l.scorcia@gmail.com/
+> Assisted-by: LLM
+> Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
+> ---
+
+...here is the comment block...
+
+>  MAINTAINERS                     |   1 +
+>  drivers/iio/adc/Kconfig         |  11 ++
+>  drivers/iio/adc/Makefile        |   1 +
+
+...
+
+> +static int mt6397_auxadc_read_once(struct mt6397_auxadc *adc,
+> +				   const struct iio_chan_spec *chan, int *val)
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	unsigned int reg;
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(map, MT6397_AUXADC_CON1,
+> +				 MT6397_AUXADC_CON1_CHSEL,
+> +				 FIELD_PREP(MT6397_AUXADC_CON1_CHSEL,
+> +					    chan->address));
+
+Make it two a bit long lines rather than four.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* START is edge triggered: it has to be lowered before being raised. */
+> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON1, MT6397_AUXADC_CON1_START);
+> +	if (ret)
+> +		return ret;
+
+Does it need any settling timeout (in case it was set before)?
+
+> +	ret = regmap_set_bits(map, MT6397_AUXADC_CON1, MT6397_AUXADC_CON1_START);
+> +	if (ret)
+> +		return ret;
+> +
+> +	fsleep(MT6397_AUXADC_START_US);
+> +
+> +	ret = regmap_read_poll_timeout(map, MT6397_AUXADC_ADC(chan->address),
+> +				       reg, reg & MT6397_AUXADC_ADC_RDY,
+> +				       100, 100 * USEC_PER_MSEC);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(map, MT6397_AUXADC_ADC_TRIM(chan->address), &reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = FIELD_GET(MT6397_AUXADC_ADC_VAL, reg);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int mt6397_auxadc_battemp_bias(struct mt6397_auxadc *adc, bool on)
+
+There is nothing common between on==false and on==true cases. Make it two
+distinct functions and drop bool parameter. It's actually a recommended
+pattern.
+
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	int ret, err;
+> +
+> +	if (on) {
+> +		ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
+> +				      MT6397_AUXADC_CON0_BUF_PWD_ON);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
+> +				      MT6397_AUXADC_CON0_BUF_PWD_B);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_set_bits(map, MT6397_CHR_CON7,
+> +				      MT6397_CHR_CON7_BATON_TDET_EN);
+> +	} else {
+> +		/*
+> +		 * Every step of the teardown is attempted even if an earlier
+> +		 * one failed, so that one failing write cannot leave the bias
+> +		 * or the input buffer powered. The first error is reported.
+> +		 */
+> +		ret = regmap_clear_bits(map, MT6397_CHR_CON7,
+> +					MT6397_CHR_CON7_BATON_TDET_EN);
+> +
+> +		err = regmap_clear_bits(map, MT6397_AUXADC_CON0,
+> +					MT6397_AUXADC_CON0_BUF_PWD_B);
+> +		if (!ret)
+> +			ret = err;
+> +
+> +		err = regmap_clear_bits(map, MT6397_AUXADC_CON0,
+> +					MT6397_AUXADC_CON0_BUF_PWD_ON);
+> +		if (!ret)
+> +			ret = err;
+
+These 'if (!ret)' bug me. What can we do if the ret == 0 and err != 0
+on the caller's level? In other words, what can caller do in such a case?
+
+> +	}
+> +
+> +	return ret;
+> +}
+
+...
+
+> +static int mt6397_auxadc_isense_disable(struct mt6397_auxadc *adc)
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	int ret, err;
+> +
+> +	/* As above: the routing is undone even if the select write failed. */
+> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON14,
+> +				MT6397_AUXADC_CON14_CH0_NORM_SEL |
+> +				MT6397_AUXADC_CON14_CH0_LBAT_SEL);
+> +
+> +	err = regmap_clear_bits(map, MT6397_CHR_CON16,
+> +				MT6397_CHR_CON16_ADCIN_VSEN_EN |
+> +				MT6397_CHR_CON16_ADCIN_VBAT_EN);
+> +	if (!ret)
+> +		ret = err;
+> +
+> +	return ret;
+
+This can be written as
+
+	if (ret)
+		return ret;
+
+	return err;
+
+
+But the same Q as per above remains.
+
+> +}
+
+...
+
+> +static int mt6397_auxadc_read_channel(struct mt6397_auxadc *adc,
+> +				      const struct iio_chan_spec *chan,
+> +				      int *val)
+> +{
+> +	bool isense = chan->channel == MT6397_AUXADC_ISENSE;
+> +	unsigned int sum = 0;
+> +	int sample;
+> +	int ret;
+
+> +	/* Held across the whole burst: the channel select is shared state. */
+
+Unneeded comment. It's obvious that guard()() takes the whole scope.
+
+> +	guard(mutex)(&adc->lock);
+> +
+> +	/*
+> +	 * Once any part of the per-channel setup has been written, the
+> +	 * teardown has to run, so every exit below goes through it.
+> +	 */
+> +	if (isense) {
+> +		ret = mt6397_auxadc_isense_enable(adc);
+> +		if (ret)
+> +			goto out_teardown;
+
+Have you compiled this?
+
+> +		fsleep(MT6397_AUXADC_ISENSE_SETTLE_US);
+> +	} else {
+> +		ret = mt6397_auxadc_battemp_bias(adc, true);
+> +		if (ret)
+> +			goto out_teardown;
+> +		fsleep(MT6397_AUXADC_BATTEMP_SETTLE_US);
+> +	}
+> +
+> +	for (unsigned int i = 0; i < MT6397_AUXADC_SAMPLES; i++) {
+> +		ret = mt6397_auxadc_read_once(adc, chan, &sample);
+> +		if (ret)
+> +			goto out_teardown;
+> +
+> +		sum += sample;
+> +	}
+> +
+> +	*val = DIV_ROUND_CLOSEST(sum, MT6397_AUXADC_SAMPLES);
+> +
+> +out_teardown:
+> +	/* Lower START so the converter is not left armed between reads. */
+> +	regmap_clear_bits(adc->regmap, MT6397_AUXADC_CON1,
+> +			  MT6397_AUXADC_CON1_START);
+> +
+> +	if (isense)
+> +		mt6397_auxadc_isense_disable(adc);
+> +	else
+> +		mt6397_auxadc_battemp_bias(adc, false);
+> +
+> +	return ret;
+> +}
+
+So, this function has to refactored. And please, compile and test the code
+*each* time you update it.
+
+...
+
+> +static int mt6397_auxadc_read_raw(struct iio_dev *indio_dev,
+> +				  const struct iio_chan_spec *chan,
+> +				  int *val, int *val2, long mask)
+> +{
+> +	struct mt6397_auxadc *adc = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = mt6397_auxadc_read_channel(adc, chan, val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+
+> +		/* 1200 mV full range with 10-bit resolution. */
+> +		*val = 1200;
+> +		if (chan->channel == MT6397_AUXADC_ISENSE)
+> +			*val *= MT6397_AUXADC_ISENSE_DIVIDER;
+
+Make it if-else.
+
+> +		*val2 = 10;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
 
 -- 
 With Best Regards,
