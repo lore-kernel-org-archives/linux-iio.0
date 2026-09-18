@@ -1,142 +1,243 @@
-Received: from fortymile.utu.fi (fortymile.utu.fi [130.232.247.4])
+Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C47C54FDA41;
-	Fri, 18 Sep 2026 13:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.232.247.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BB43112AB
+	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 14:26:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.202.193.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789738892; cv=none; b=htu2oOZrjtMRuT+HY7LmFLI5DLAGjvMwZYXiEu9dNfyBN11Mmm/ZXVhdbcCvfld2R/2GUP0Bk7xZNyaSbpU5Iq290COfw+rSE1PlJxG/XFK29yBJ9lmKgDgmpbJgdRCg0nh9exjtTmcXd8ChTeTfad/tv+7gp0bEUM5VIHMlLfI=
+	t=1789741595; cv=none; b=I9kMaLySEKLtyC5NAm+sC/XdX46L2qs9SNyohUlz4oD75v84h9DbFza36TmMJK51So5Jx1CPAjv0CSDpim4qQ2vwkHkrVUb08L0mBNANA6R0HkG1r/cgQYfqHJFkmEr7uco4EpMKcX38tSCavZBJajLK2jlLJtMOH6Z/nhX/rtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789738892; c=relaxed/simple;
-	bh=S0+TGh/h4+UFW61/vihct0C5r6oNSK0lqI/qa/nC41I=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RxQwKt/WU0dqwQnbrh9YF4KMBs4VrXXcci+dgmSVJGDJBb/gWv94ZwrfnFDrePJiD/tFGAEAVN5KGZjYWkRXK6M6KpG/Vup+iwDWHP9mw0WvWe34NcIDi5RkgT5XKtWjxjC8EzpgGPD9zJ+KVvrO1a5YzKqz5oGT6Xkdxcbekro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi; spf=pass smtp.mailfrom=utu.fi; dkim=pass (2048-bit key) header.d=utu.fi header.i=@utu.fi header.b=Uq8cJlCC; arc=none smtp.client-ip=130.232.247.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utu.fi
+	s=arc-20240116; t=1789741595; c=relaxed/simple;
+	bh=V/ao0xgrL052+a77Zs37pNAkv8uUAgXm6H+hU649GVA=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:In-Reply-To:Subject:
+	 From:To:References; b=ns7a1f/1fC8FU+jCZnAg1nMdsRRUWxa0QEHPUGt228zHT6iv9bA/fSLDf9wR95fnC5EAcziOD8xu/dByCvxS2wa0HXk+QeUi0hiBFjOjeMy/ozqrCvRQwq+avDgAvlOu3NRxIwiSbL8Pe4ZXxP1jtN7IezaGw7eYMFqRPPRxAQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc; spf=pass smtp.mailfrom=maxwelld.cc; dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b=AtF6Oa1s; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=ED4xUpx2; arc=none smtp.client-ip=34.202.193.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=maxwelld.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=utu.fi header.i=@utu.fi header.b="Uq8cJlCC"
-Received: from smtp-04.utu.fi (smtp-04.utu.fi [130.232.207.47])
-	by fortymile.utu.fi  with ESMTPS id 68IDf76a029543-68IDf76c029543
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-	Fri, 18 Sep 2026 16:41:07 +0300
-Received: from ex19-16.utu.fi ([130.232.247.56])
-	by smtp-04.utu.fi with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <jaakko.ma.koivisto@utu.fi>)
-	id 1x7Ypv-007Nmd-7o;
-	Fri, 18 Sep 2026 16:41:07 +0300
-Received: from lorpotin (91.145.105.139) by ex19-16.utu.fi (130.232.247.56)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Fri, 18 Sep
- 2026 16:41:06 +0300
-From: Jaakko Koivisto <jmatko@utu.fi>
-To: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Jaakko
- Koivisto <jmatko@utu.fi>
-Subject: [PATCH 3/3] iio: chemical: sgp40: Implement turn_heater_off-command
-Date: Fri, 18 Sep 2026 16:40:19 +0300
-Message-ID: <20260918134019.1101308-4-jmatko@utu.fi>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260918134019.1101308-1-jmatko@utu.fi>
-References: <20260918134019.1101308-1-jmatko@utu.fi>
+	dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b="AtF6Oa1s";
+	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="ED4xUpx2"
+DKIM-Signature: a=rsa-sha256; b=AtF6Oa1s/AL2tmQTFwmhbhlh/8MOdpMs8SUG6UZTZYISeQJ/ayQcdGgRWU2djKsKNrX6mMAlvgfsAosXfH0wLl2engdC7HQdXbV90KTqwIjvnZPVZ6uumYWSAEZmidY9fdLKY5po0q4Pq9MOLumlS2IPu0gQhnKTqNw3+cnfimIvRVHkNNUd/TgLWWdIEoRa7aECaQWMvPDdbfABMfHhC3SRAMyTb0Ilbug9LR4+zB+t1NfZQVVPFzIjgGx0RuyuP/Ho6qVURB5rtise/aiF/OXLHgb/mfqNgpPRP4/T0TmFbtT/d22WqTR1X2se8UIkdNLMj/tJKBGYVaanq18HFg==; s=purelymail2; d=maxwelld.cc; v=1; bh=V/ao0xgrL052+a77Zs37pNAkv8uUAgXm6H+hU649GVA=; h=Received:Date:Subject:From:To;
+DKIM-Signature: a=rsa-sha256; b=ED4xUpx2J63TAftELukA7kr8PI3mk3R0lFd5SnAegjO9DChMy1EK8tueJw8/fKfMXL5F9MUMGoiYgFjEz2olnsImSCQFk9MUwNq9uIRVkNP46iCxz4FW0vC/lr8JPjxRFbJLsa+Hb/28BABjghUEt0kmocrayQXg4lvXxeIHeRa2gyNwY7SPT+gRgNzWifIr8QLw/Z/QHIdT2AFVYLOTWgeZEkcxSDOr0+ZaEPvdxhDzex7wHs8IOck/g98/iChe54dic8yckhX1ZBPOzDtTv9XSPsZ4mNaGaPrFXkMy59ebhlvXZyfnW7hV9NtvtSQ213Qirnn93LtsUVBAu/9rzg==; s=purelymail2; d=purelymail.com; v=1; bh=V/ao0xgrL052+a77Zs37pNAkv8uUAgXm6H+hU649GVA=; h=Feedback-ID:Received:Date:Subject:From:To;
+Feedback-ID: 1013395:40550:null:purelymail
+X-Pm-Original-To: linux-iio@vger.kernel.org
+Authentication-Results: purelymail.com; auth=pass
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -954385832;
+          (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
+          Fri, 18 Sep 2026 14:26:06 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: ex19-16.utu.fi (130.232.247.56) To ex19-16.utu.fi
- (130.232.247.56)
-X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFxYWFhYWFBeUVxfSFhISFpdSAIJCQMDB0YFCUYDBwEeARscBygdHB1GDgFIWUhZXkgJAygB
- HEUDBAEGDw0aRgwNSFhIWkhZXEhZW1hGWltaRlpYX0ZcX0hQSFhIWEhdSFhIWEhYSFleSAkDKAEcRQMEAQYPDRpGDA1IWEhZXUgJBgwRKAMNGgYNBEYHGg9IWEhaWUgM
- BA0LAAYNGigKCREEAQoaDUYLBwVIWEhaXUgEAQYdEEUBAQcoHg8NGkYDDRoGDQRGBxoPSFhIWVBIBh0GB0YbCSgJBgkEBw9GCwcFSFg=
-X-FEAS-Client-IP: 130.232.207.47
-X-FE-Last-Public-Client-IP: 130.232.207.47
-X-FE-Policy-ID: 3:5:2:SYSTEM
-X-FE-Hostname: fortymile.utu.fi
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=utu.fi; s=out-utu-v3; c=relaxed/relaxed;
- h=from:to:cc:subject:date:message-id:references:mime-version:content-type;
- bh=SXpp521fGMKCupgRYWcmk2dGLc+m9cXA26+JbieW7lE=;
- b=Uq8cJlCC40s/wHdr1btAie2yURRTxCkQd6Wnb1AP3dhXlfPqDC2XR5SdgY5Uka7fmmFVuHYPiVLZ
-	HnCLONw/gJcZQZEjY20ZMz+tS6N2a8nj56baB+5TUZd3CwXOd6gMvjaK969ufJzVA9AGDRMMUn/9
-	3DdQis2nBG412rDYsRIRBtKEYKO2KZcTzkYxzJN+xTBhRve7Jghb8xK2hkuZkJM5La9ABwJfhHlg
-	dEt+7BPA2pxfKKG37Di4IR+1t0Lj99by0dCrh5V49Z7XN4XIb/8AdGBhQZpCLlu/yPjbKZ77/N+R
-	4YYSuvc5WfNfbuUDC5Em4gsBvSp/fxuFcFXHtQ==
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 18 Sep 2026 09:26:04 -0500
+Message-Id: <DLIIFO80EL2F.1KMD8IOGGTS1Y@maxwelld.cc>
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20260918134019.1101308-2-jmatko@utu.fi>
+Subject: Re: [PATCH 1/3] iio: chemical: sgp40: Implement
+ get_serial_number-command
+From: "Maxwell Doose" <maxwell@maxwelld.cc>
+To: "Jaakko Koivisto" <jmatko@utu.fi>, "Andreas Klinger" <ak@it-klinger.de>,
+ "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
+ <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260918134019.1101308-1-jmatko@utu.fi>
+ <20260918134019.1101308-2-jmatko@utu.fi>
 
--Turn the heating element off and enter idle mode.
--Present the functionality as device attribute,
- 'echo 1 > turn_heater_off'.
+Hi there Jaakko,
 
-Saves approx. 2.5 mA compared to regular operation. The heating element
-is automatically turned back on when measurement is performed.
+Firstly a (rather important) question I have is what's the point? I'm
+not sure that anyone will need the serial number on the fly (assuming a
+business would be using this, they will likely keep records of their
+parts). Though maybe I could be wrong (so feel free to prove me wrong).
 
-Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
----
- drivers/iio/chemical/sgp40.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+On Fri Sep 18, 2026 at 8:40 AM CDT
+Jaakko Koivisto <jmatko@utu.fi> wrote:
 
-diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
-index 28d5e737d1dc..a4fc5c778303 100644
---- a/drivers/iio/chemical/sgp40.c
-+++ b/drivers/iio/chemical/sgp40.c
-@@ -29,6 +29,7 @@
-  * by writing to the out values of temp and humidityrelative.
-  */
- 
-+#include "linux/device.h"
- #include <linux/delay.h>
- #include <linux/crc8.h>
- #include <linux/module.h>
-@@ -259,6 +260,21 @@ static int sgp40_execute_self_test(struct sgp40_data *data)
- 	}
- }
- 
-+static int sgp40_turn_heater_off(struct sgp40_data *data)
-+{
-+	int ret;
-+	struct i2c_client *client = data->client;
-+	struct sgp40_command turn_off = {.command = {0x36, 0x15}};
-+
-+	ret = i2c_master_send(client, (char*)&turn_off, sizeof(turn_off.command));
-+	if (ret != sizeof(turn_off.command)) {
-+		dev_err(data->dev, "i2c_master_send ret: %d, expected %zu", ret, sizeof(turn_off.command));
-+		return -EIO;
-+	}
-+	msleep(1);
-+	return 0;
-+}
-+
- static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance_raw)
- {
- 	int ret;
-@@ -417,10 +433,22 @@ static ssize_t serial_number_show(struct device *dev,
- 	return sysfs_emit_at(buf, 0, "%llu\n", data->serial_number);
- }
- 
-+static ssize_t turn_heater_off_store(struct device *dev,
-+				     struct device_attribute *attr,
-+				     const char *buf, size_t len)
-+{
-+	struct sgp40_data *data = iio_priv(dev_to_iio_dev(dev));
-+	sgp40_turn_heater_off(data);
-+
-+	return len;
-+}
-+
- static IIO_DEVICE_ATTR_RO(serial_number, 0);
-+static IIO_DEVICE_ATTR_WO(turn_heater_off, 0);
- 
- static struct attribute *sgp40_attributes[] = {
- 	&iio_dev_attr_serial_number.dev_attr.attr,
-+	&iio_dev_attr_turn_heater_off.dev_attr.attr,
- 	NULL
- };
- 
--- 
-2.55.0
+> -Retrieve the chip serial number.
+> -Present the serial number to userspace as device attribute.
+> -Rename the tg_measure -struct now that is is used for multiple
+> commands.
+>
+
+Last one should be left out and put in a separate patch.
+
+Also, commit message needs a bit of work, something like:
+	"Add support to the SGP40 driver to enable retrieval of the
+	serial number from the chip and add new sysfs attribute to
+	expose the serial number to userspace."
+
+> Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
+> ---
+>  drivers/iio/chemical/sgp40.c | 78 +++++++++++++++++++++++++++++++++++-
+>  1 file changed, 76 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
+> index b2b5e32a9eb2..c1e2a992ec2a 100644
+> --- a/drivers/iio/chemical/sgp40.c
+> +++ b/drivers/iio/chemical/sgp40.c
+> @@ -35,6 +35,7 @@
+>  #include <linux/mutex.h>
+>  #include <linux/i2c.h>
+>  #include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> =20
+>  /*
+>   * floating point calculation of voc is done as integer
+> @@ -53,11 +54,12 @@ struct sgp40_data {
+>  	int			rht;
+>  	int			temp;
+>  	int			res_calibbias;
+> +	u64			serial_number;
+>  	/* Prevent concurrent access to rht, tmp, calibbias */
+>  	struct mutex		lock;
+>  };
+> =20
+> -struct sgp40_tg_measure {
+> +struct sgp40_command {
+>  	u8	command[2];
+>  	__be16	rht_ticks;
+>  	u8	rht_crc;
+> @@ -70,6 +72,18 @@ struct sgp40_tg_result {
+>  	u8	res_crc;
+>  } __packed;
+> =20
+
+Name change should be put in a different patch or just left out
+entirely.
+
+> +/*
+> + * Datasheet table 16. Serial number is given as 48-bit value 0xAAAABBBB=
+CCCC.
+> + */
+> +struct sgp40_serial_number_result {
+> +	__be16	A;
+> +	u8	A_crc;
+> +	__be16	B;
+> +	u8	B_crc;
+> +	__be16	C;
+> +	u8	C_crc;
+> +} __packed;
+> +
+
+Perhaps this but maybe this could be implemented as an
+annonymous struct instead.
+
+>  static const struct iio_chan_spec sgp40_channels[] =3D {
+>  	{
+>  		.type =3D IIO_CONCENTRATION,
+> @@ -162,6 +176,40 @@ static int sgp40_calc_voc(struct sgp40_data *data, u=
+16 resistance_raw, int *voc)
+>  	return 0;
+>  }
+> =20
+> +static int sgp40_get_serial_number(struct sgp40_data *data)
+> +{
+> +	int ret;
+> +	struct i2c_client *client =3D data->client;
+> +	struct sgp40_command get_sn =3D {.command =3D {0x36, 0x82}};
+> +	struct sgp40_serial_number_result res;
+> +
+> +	ret =3D i2c_master_send(client, (char*)&get_sn, sizeof(get_sn.command))=
+;
+> +	if (ret !=3D sizeof(get_sn.command)) {
+> +		dev_err(data->dev, "i2c_master_send ret: %d, expected %zu", ret, sizeo=
+f(get_sn.command));
+
+Missing '\n' here (sashiko).
+
+> +		return -EIO;
+> +	}
+> +	msleep(1);
+> +	ret =3D i2c_master_recv(client, (char*)&res, sizeof(res));
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret !=3D sizeof(res)) {
+> +		dev_err(data->dev, "i2c_master_recv ret: %d, expected: %zu", ret, size=
+of(res));
+> +		return -EIO;
+> +	}
+> +
+> +	if (crc8(sgp40_crc8_table, (u8*)&res.A, 2, SGP40_CRC8_INIT) !=3D res.A_=
+crc ||
+> +	    crc8(sgp40_crc8_table, (u8*)&res.B, 2, SGP40_CRC8_INIT) !=3D res.B_=
+crc ||
+> +	    crc8(sgp40_crc8_table, (u8*)&res.C, 2, SGP40_CRC8_INIT) !=3D res.C_=
+crc)
+> +	{
+> +		dev_warn(data->dev, "CRC error in get_serial_number");
+
+Probably should return either -EIO or -EREMOTEIO here (sashiko).
+
+> +	}
+> +
+> +	data->serial_number =3D 0LL | ((u64)be16_to_cpu(res.A) << 32) | ((u64)b=
+e16_to_cpu(res.B) << 16) | (u64)be16_to_cpu(res.C);
+> +	dev_dbg(data->dev, "serial number: %llu", data->serial_number);
+> +
+> +	return 0;
+> +}
+> +
+>  static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *re=
+sistance_raw)
+>  {
+>  	int ret;
+> @@ -169,7 +217,7 @@ static int sgp40_measure_resistance_raw(struct sgp40_=
+data *data, u16 *resistance
+>  	u32 ticks;
+>  	u16 ticks16;
+>  	u8 crc;
+> -	struct sgp40_tg_measure tg =3D {.command =3D {0x26, 0x0F}};
+> +	struct sgp40_command tg =3D {.command =3D {0x26, 0x0F}};
+>  	struct sgp40_tg_result tgres;
+> =20
+>  	mutex_lock(&data->lock);
+> @@ -311,9 +359,31 @@ static int sgp40_write_raw(struct iio_dev *indio_dev=
+,
+>  	return -EINVAL;
+>  }
+> =20
+> +static ssize_t serial_number_show(struct device *dev,
+> +				  struct device_attribute *attr,
+> +				  char *buf)
+> +{
+> +	struct sgp40_data *data =3D iio_priv(dev_to_iio_dev(dev));
+> +
+> +	return sysfs_emit_at(buf, 0, "%llu\n", data->serial_number);
+> +}
+> +
+> +static IIO_DEVICE_ATTR_RO(serial_number, 0);
+> +
+> +static struct attribute *sgp40_attributes[] =3D {
+> +	&iio_dev_attr_serial_number.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static struct attribute_group sgp40_attribute_group =3D {
+> +	.attrs =3D sgp40_attributes,
+> +};
+> +
+> +
+>  static const struct iio_info sgp40_info =3D {
+>  	.read_raw	=3D sgp40_read_raw,
+>  	.write_raw	=3D sgp40_write_raw,
+> +	.attrs		=3D &sgp40_attribute_group,
+>  };
+> =20
+>  static int sgp40_probe(struct i2c_client *client)
+> @@ -347,6 +417,10 @@ static int sgp40_probe(struct i2c_client *client)
+>  	indio_dev->channels =3D sgp40_channels;
+>  	indio_dev->num_channels =3D ARRAY_SIZE(sgp40_channels);
+> =20
+> +	ret =3D sgp40_get_serial_number(data);
+> +	if (ret)
+> +		dev_warn(dev, "failed to retrieve device serial number\n");
+> +
+>  	ret =3D devm_iio_device_register(dev, indio_dev);
+>  	if (ret)
+>  		dev_err(dev, "failed to register iio device\n");
 
