@@ -1,52 +1,52 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64A644229BA;
-	Fri, 18 Sep 2026 09:08:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36CD13EFD27;
+	Fri, 18 Sep 2026 09:08:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789722483; cv=none; b=mp1XeWD1EPOrTdyxrs+NozI6CRo1d8qNRxc0hjzeajsSv5z4q2EpoOLKn/dxdSfPqBCOR5GdvXJVbkX6BBQmyD43J26gVhlSlJqwoVLAlbjrA2ji1EdHLH2GqQyX2Auv8r17a0x9ZUJXJwObw7lDc/LOq2DkXeqa681JDPZkJuc=
+	t=1789722484; cv=none; b=dukqcb16HTEzqRc+s895POsTcfPOq6PBI5A7w5P1waXMO+w+3tko6gDUZFzGvtwP+KvwpfKpU5L7mT/J6aH+fiuAwBY9I3nqTio3zcEiFS0Nl+pd5BU5RhBRcxYUib7iqFxRAn7jS8weEgLBVvXtVXKqhhbxfyZYiEiMVU5Ty34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789722483; c=relaxed/simple;
-	bh=FaODXQpCD/pVNfBOQ2De+KS1r/oxpsS0Ncq5LaCtSC8=;
+	s=arc-20240116; t=1789722484; c=relaxed/simple;
+	bh=a+u0WLPF1pBjssaax87p4zK10+4fRro4TveSh8jNkAk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=NOKuYNntvZtpTeTIcInq2AmDog7tqSxskFT999FlrU7acgWh/hZeCHdKhDwWyfi5RT3M2lOzrA+m/S6s8VLDjn2PLINjFtNvX4lzDbzlD4Zjl4rnnuH4+DbnrUdJoJcSwKzTKTy7CBgHoX6I+Xf0FbmHBdjlllOyK+nzmnNE6sI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=PyLEXauZ; arc=none smtp.client-ip=68.232.153.233
+	 In-Reply-To:To:CC; b=YziWDJe9Jm0ADAsh89jP5ea0wZtIUtFC/YoXEFHXKK2Z+zZb7648/kHALulL6OMAabGJe7lbS2q4lApLuFtSqNmTw96muyCuyw5ulF/iIZPCpoXiCDwQe7LWzmGx6Q+1fMWLHOK0rxZANk1921vSPLI0rc3Ii5hwMbsdNrmYOtQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=LlcUTmcM; arc=none smtp.client-ip=68.232.153.233
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="PyLEXauZ"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="LlcUTmcM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1789722486; x=1821258486;
+  t=1789722487; x=1821258487;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=FaODXQpCD/pVNfBOQ2De+KS1r/oxpsS0Ncq5LaCtSC8=;
-  b=PyLEXauZXeQ/SnK+NtkCmEOBSxiOeBQ5BxByM34dZFC6vKnujDfnbAw6
-   8UPHXn0KNz8t8f1w+/jgCZe04/vxJSPCjsCQgvnNlNgB4M+rpJshpwY5C
-   KgX++qXK/V/EViBxODaDMdDglSnPsSIE6teisQj3x2PWzhA9g6+deuCz9
-   qPnZYqRs+ZWP3rKCA7jkMJ+jwB8rxglzV0sEP/Pb7kj9XO1e5qKWfdREg
-   ui8CFYQZyAC349MXUMdJoL9rjSqNq9hKxDYDDCy691vVg6Z3c/KWwnli9
-   z/tnCTBz0X1/dweNuya+ICBJAsY77SfEP8XEhsILu35uxspi/odg+sBu4
-   A==;
-X-CSE-ConnectionGUID: N5lDwR5/SG+Kak6R2jQMTg==
-X-CSE-MsgGUID: OAzJygZzTlaK7LA4eJJ6zg==
+  bh=a+u0WLPF1pBjssaax87p4zK10+4fRro4TveSh8jNkAk=;
+  b=LlcUTmcM3iZq7xzOE3sAejD8cs7VbWeSLbkHiNQL++NoEp0ZQTKx8zGG
+   EPhqY0JCBsZ0ImoGQ0cByfKGc4SHIh6R6wrvqzJwBA5wQvTCnISjfGOSa
+   Uw56JQlMMrAiCk/dvWCtanhYNIpqgPZHWDCD/WwyRnXhL8TbXonj+bYJm
+   YG25XKSh2F9cjTfJZaZ+dhASGb7FVTx10Hm0FYIkZ8DRa1JEbRGzw/xLY
+   GTcrzgMQPl8MkXTmUoKTJpGRDBsjQ+TlPWAmi8d8dtF8hcEC5sLz3VKM4
+   fYNsRFIt9wOXLw6sBrtje8N6dVVW/D42YlMpQl8ZlhKQrrW5QrVicaoKj
+   g==;
+X-CSE-ConnectionGUID: DfTTcDInRgeI3lAjtihk3A==
+X-CSE-MsgGUID: 10IzJ8zEQZ2Q3ChEWdD84g==
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="295219121"
+   d="scan'208";a="295219128"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 02:07:55 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 02:07:58 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
  chn-vm-ex3.mchp-main.com (10.10.87.32) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.49; Fri, 18 Sep 2026 02:07:50 -0700
+ 15.2.2562.49; Fri, 18 Sep 2026 02:07:53 -0700
 Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Fri, 18 Sep 2026 02:07:47 -0700
+ Transport; Fri, 18 Sep 2026 02:07:50 -0700
 From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Fri, 18 Sep 2026 12:06:29 +0300
-Subject: [PATCH v7 03/11] iio: dac: mcp47feb02: use field_get() instead of
- custom dynamic macros
+Date: Fri, 18 Sep 2026 12:06:30 +0300
+Subject: [PATCH v7 04/11] iio: dac: mcp47feb02: Return len when disabling
+ EEPROM store
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -55,7 +55,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260918-mcp47feb02_refactor-v7-3-82ca794eafe2@microchip.com>
+Message-ID: <20260918-mcp47feb02_refactor-v7-4-82ca794eafe2@microchip.com>
 References: <20260918-mcp47feb02_refactor-v7-0-82ca794eafe2@microchip.com>
 In-Reply-To: <20260918-mcp47feb02_refactor-v7-0-82ca794eafe2@microchip.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -64,50 +64,43 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
  Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
 CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>
+	Jonathan Cameron <jic23@kernel.org>, <sashiko-bot@kernel.org>,
+	<stable@vger.kernel.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789722457; l=1508;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789722457; l=1073;
  i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=FaODXQpCD/pVNfBOQ2De+KS1r/oxpsS0Ncq5LaCtSC8=;
- b=LdnVyJmDQVFV1dcZKADzA6HRcf34WD9W7pGwcQZQU5DCMNnJKLZVjvBsriNfufao7qFTkaut3
- dVxcq3q1FApDCt89+A067HryjgPgv0JmmXFhQgWe0tH0ztFwqAff/55
+ bh=a+u0WLPF1pBjssaax87p4zK10+4fRro4TveSh8jNkAk=;
+ b=+QIx3hxCTSWoNnDjJfyfnG0dC1wLSDQZVo+MyJbaUbQVAZmP3XjYiYkkAlXiRngtztRll5o2E
+ Xy20XwdifGACmD7yZsPWduEM59vojlMWHjNAZgDf4+J7GlAiTCCalmR
 X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
  pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-Replace manual bit operations which select channel corresponding bits
-from a control register in mcp47feb02_init_ctrl_regs() with field_get()
-macro used with masks already defined for regmap operations within the
-driver.
+When state is false, return the number of bytes (len) the buffer has
+instead of 0 to properly signal that the input buffer was fully consumed,
+preventing unnecessary write retries.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Link: https://lore.kernel.org/all/20260913224339.490d89ba@jic23-hlaptop/
+Fixes: bf394cc80369 ("iio: dac: adding support for Microchip MCP47FEB02")
+Reported-by: sashiko-bot@kernel.org
+Closes: https://lore.kernel.org/all/20260804134616.1D8A21F00A3E@smtp.kernel.org/
+Cc: stable@vger.kernel.org
 Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 ---
- drivers/iio/dac/mcp47feb02.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/mcp47feb02.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
-index 1b1a4972f77196399297b3912abe69efcbf17d75..d910a6cf9718d6c6ad68eb1bb1ff5f3b15b33e84 100644
+index d910a6cf9718d6c6ad68eb1bb1ff5f3b15b33e84..2bd2e1bd93db01f79122aaeda2ba4ff14320b404 100644
 --- a/drivers/iio/dac/mcp47feb02.c
 +++ b/drivers/iio/dac/mcp47feb02.c
-@@ -1024,7 +1024,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
- 			return ret;
- 		data->chdata[i].dac_data = dac_val;
+@@ -467,7 +467,7 @@ static ssize_t store_eeprom_store(struct device *dev, struct device_attribute *a
+ 		return ret;
  
--		data->chdata[i].ref_mode = (vref_ch >> (2 * i)) & MCP47FEB02_DAC_CTRL_MASK;
-+		data->chdata[i].ref_mode = field_get(DAC_CTRL_MASK(i), vref_ch);
- 		data->chdata[i].use_2x_gain = field_get(DAC_GAIN_MASK(i), gain_ch);
+ 	if (!state)
+-		return 0;
++		return len;
  
- 		/*
-@@ -1068,7 +1068,7 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
- 			break;
- 		}
- 
--		pd_tmp = (pd_ch >> (2 * i)) & MCP47FEB02_DAC_CTRL_MASK;
-+		pd_tmp = field_get(DAC_CTRL_MASK(i), pd_ch);
- 		data->chdata[i].powerdown_mode = pd_tmp ? (pd_tmp - 1) : pd_tmp;
- 		data->chdata[i].powerdown = !!(data->chdata[i].powerdown_mode);
- 	}
+ 	/*
+ 	 * Verify DAC Wiper and DAC Configuration are unlocked. If both are disabled,
 
 -- 
 2.43.0
