@@ -1,89 +1,86 @@
-Received: from mail-pj2-f13.google.com (mail-pj2-f13.google.com [74.125.227.141])
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA0DE528441
-	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 18:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55C5518122
+	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 18:59:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789755965; cv=none; b=NRENLYLHIcL5zPxtxazbBU7ERXMBajdjdt+Y2XG1tBbO/XdeSd9ZHmUe0FA7EAxqp3L26Bwj5J/Gg9739oBxeK5acmW/C1DQYodeCBmf62dbpiAHWwg6bEPlVnQOjG3JZvyLmRg7CtpH700ROdbUjWpoP/HWHOro2ew097knMEg=
+	t=1789757945; cv=none; b=dZroGQzqq1JkEUJkKlIiIa2KfKw6LneLgml9rN7HxAeyFsLKUpuI3hKDMBrRMaRRRp3gYyNiEcXaFXiTIPE/Hw4GarH1iLKV7Mwo6KeDeoATmgkZWpm7QWKPhG52Lm6rgl/4vhIUxK8NiikK1AsP1hasA7WZgDOaqKpiy2vhJnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789755965; c=relaxed/simple;
-	bh=uP2zYyrVNhxR0F5wRNx8VTP3WfC+4MKI0Hisfj+rKY4=;
+	s=arc-20240116; t=1789757945; c=relaxed/simple;
+	bh=/FbHT9o2WMbM0FApAIv7rH49v02xoqlz6GhTyHqXgcE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fE1mFCIjIgcPx7TZjTV5NQkWe0V2d7nltU6tk67fqhAAyrZeGEi7f4p265BRba4yc5LS6sfWAwLCIpwTA1PO6uSthBPSiatiA+I5Ks9rijbM2d5jPb6X3LH3mYZRi7dqHqxx+uBVUz5wHV7JsKPexr2RvrvvVx44NE8kI1uxPxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rfw6TOSM; arc=none smtp.client-ip=74.125.227.141
+	 MIME-Version; b=mzAuPlXypJfpAnS9Y5wa2r4ovYYcNQirbAb5MqENsmWH9LXYXNonTBZ7a8XPffbq5g79ePuULPsHJkXe+2TEk6448vOp28IK42bXDMKtZ/TbTHro158+lJVgteVm09RmtLyX5fMj2dNZ/rYQGZ0KsH4jWpihaB4zOerilebn3w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eCEQTexq; arc=none smtp.client-ip=74.125.225.141
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rfw6TOSM"
-Received: by mail-pj2-f13.google.com with SMTP id d9443c01a7336-2d747f066d8so3875235ad.1
-        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 11:26:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eCEQTexq"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49b912d8239so8133235e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 11:58:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789755962; x=1790360762; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789757936; x=1790362736; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=ezND/MR9Dspsyc6ymR2jshkitQWvrthe2sHCr5Ma1SU=;
-        b=rfw6TOSMZuuXMW2e7aVbmmH85ZFE5l77LhTMd7wt9kxS9aZyId9DjLgDnBhID45giq
-         u6qgWmuGm38PEfTdGqrbEzYn5V4R3BiNUe7UvjfoaJN2wEO6lwEBYacMvLFcnIE8y7hl
-         AiPZbe9U/gJVvjCcxW7a5Jghz+A/5AKzsfy2hyg4IjhPjRRXIIEawODmlQw8kpEsJk1K
-         h1KYwkJdynHYOxq72IKNnD6x8VnfJCdunAQRv62yk/4glpPpQrXFyLBHFpoRLFzSMLJq
-         wLYricIJe2tHIrRJz4Z2UzxizRVpsj5NNlGztPxODOiSyhB5Qcs3TpBGqAtAKEcDdBin
-         O3Rw==
+        bh=wSwV9QyihTEWzNpSev0Rq3JhnfzG5CYZv5DMfWp7kMA=;
+        b=eCEQTexqQfROhlOufNWAVnxwNg9SWm7RaAT022ZnLAOUIea0CsR14jpof91q8EsiG1
+         13FZi3S8s6rCIUNPkshvzhI67MK6tXQqpgaxMl3RDYfHjn8d/hs7vNDiGP0KM+4docgD
+         Z4JvtoMtU+pyhXrfRtY+f0vhKjLfEAR6KLnHhrniSQu5AJ4UyrGBGVOvth3kWdjndtHn
+         XlLadJVQYInIQDQ6lujzRHHkX4mG5QB0I+jlijx5qanq4RmU0SCKJ6+BxWjfG68qroPJ
+         Xiv+p0rK3b/b0dE6pfE6YhiBcoOInCY48KzI4gvemEaBQ+1aQ670QvV8iVu2r5AYqyHm
+         A+PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789755962; x=1790360762;
+        d=1e100.net; s=20260707; t=1789757936; x=1790362736;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ezND/MR9Dspsyc6ymR2jshkitQWvrthe2sHCr5Ma1SU=;
-        b=hiHvl0OK50JJbbncpKjhOoMnHRgd++06ZxFWkVTKwNxG1MPq4f40SJzUaSgfkU7GnH
-         /n43RCYTzYq6Q+EJFWmCprc/PN4VkoWK07my3Bx1PcXxbw2+jNjn0mStvBhxP1FPIQlM
-         L7vb1PY5AIckPVPwEO9w0UheI99YSyqIOdwXS6SlDVLxFHS3vPQUrrNt1wKN7fE7e27Y
-         drPqMp1Uzm1353ofcX/DGhH0jAgrNiARvHa96NO9BSOrCUjB92IvJfRocEt9LWVHnTDC
-         8Uhd2oinvPoMERaQ8FdvDxHNnoOCWWXrw21qAWocsLEfZbFn33n87iF2bjLYVOr7v9Hv
-         k3qg==
-X-Forwarded-Encrypted: i=1; AKwUvBw/lrE6viH7qK6/UdJYaIkB2/GHJ5b5zLcTKiYx0ujDPblaeyu0wEFXaHyZZauWeyw9LZhQYbCiR0Y=@vger.kernel.org
-X-Gm-Message-State: AFuF++kRwhluIm9Oy4zm1U7Z5l+ym2Kkx5v/8sTJ/p1eVSsNS3o26YIe
-	LNC3LcIRCaJFbBShS0PK5OqlK2lRNagLSv3tF/rZ83KqhNXM8s7v+del
-X-Gm-Gg: AYBFou2KEa8JSPaAzpMXAKf+Sw1+mVio9Ccr0eQ/bn6cpSkkM4tDys7AHQ2VHHSc+kl
-	WCppIoQeogwAbLPR3dDXWnxz4+LYvvRoJm9J4DUDO09AtCcC34dbalK1YqEHAJtkv3NVK2ZjqgF
-	1JtXpVuRjdDTyRyxfnrMwrpogzAZO035hgrVdR9VyiYvpukgypW48TBgA+4amWIdCIkfKDzi7cP
-	D1CScNwMGjYkvWsJDox0Z2sH98livrCRJEruu4HaEYQQHV7nNkUlWdZ7PS0cZH3yEsIN3GLvQaC
-	ZiiaYxry1ee+qS6oIR1ORjI33vHooquZwEEpGUowQq+D9Tw8hXQsvzEYG82tN8wXPvbb7poO6we
-	pblNFLBhf2WcY1Huzd6FQQIPbfQvCx9WsIt1KMQREWZgjFAaKD4gjaXig6r78Y9Mp/81e6A0zTq
-	meZKPmQF57xhJg0Y/lbM0mYurCUWUbnVMekO98Gu/3+kAxzsgk4tSUGCamzacq5KSRGcjPNvyaK
-	UwEKS5Jc+BZZkDTtASayXIUQnDzfKqnMmHCnpJHWyw827qJjeFXw9fEjKizRN34AxSX4ASKv1oc
-	ZnpKfCgx+0pob9RapYI=
-X-Received: by 2002:a17:902:d487:b0:2dd:c053:b9c9 with SMTP id d9443c01a7336-2ddc053bab9mr8915495ad.26.1789755961647;
-        Fri, 18 Sep 2026 11:26:01 -0700 (PDT)
-Received: from DESKTOP-G3E0OSP.localdomain ([58.224.60.243])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ddc16b49casm871895ad.7.2026.09.18.11.25.57
+        bh=wSwV9QyihTEWzNpSev0Rq3JhnfzG5CYZv5DMfWp7kMA=;
+        b=GjLu41O/B2Q3Pq/XKRpEj7qdS8ysjUO8ZSu7b1tw8X7D/2zRHrsfOqZNKDePNpw80i
+         zFb2x+0Ug6UFTU19Ihg5ZuCDVVu8HUd8bj8f/zY0oyjZJ1+MS0yoMa0K1wcDldP2VuPO
+         CovM3uXtof7O8GqQyH76hJ0YMc9dxidlAgbAXMcefxboiHOgqOyi5POgxBCtboVIsl2S
+         uF8cZ0KBfmqx2IPQjrpIPXiLx0kaF+tjKubKrEbQP0Mh/8OkoRN+AXIe1TGEYEptSZ6Y
+         13NV/voOgm+7vS8Sb6arNDMEUnoCulNABfBsdRcw2783eYMKhdfCMj3WR/7V5mOxCSrl
+         ZvMw==
+X-Gm-Message-State: AFuF++lraywfhkaKM5lq9PM1yyyA7tZxZXosxQmhM+G+1WCmoM+l9bVh
+	7e7YVyXi3t7aZjgX88n6tiGKa44Ho/RR/PUT4cjrKc+SKbE6B4pfB+E6
+X-Gm-Gg: AYBFou3CKaGYwfTtUEouZwmiPzrU3JvrIGXWWKJwK/5uF7sI944uTA0fMsPCioFpNE5
+	CM/VewU27kpjeKRu1EY2+WTbssXAMxqSPl3DNM0DZuU9q437K1P8p9cx/zffYQKD3Uk+M4RZi0R
+	JdGDqELBP6GOVGuGvOojlJi///z4uJQtTxFPu4zOQUkmnOiwlJ0v1W9Qh1EEyds+yA7a2AhXZcE
+	U8oDmt+DXum80Mte/EujsyVe0ft/LtS+Rpb7BrqHot++tQZu+qShSvX9O2/WIwEz2w2mFd0s9sP
+	KJDl6q5rxjyeZtBY5zcmQwwg6/d7aSaExhx9OEF22PYRTf49GscdsXzq8kB3h2CMB3GkZsaFv8G
+	qC29riNFoCFdjV2864ad1PlTIz5+nwzSbFJGiNeJdUdg4Nu4h8wh6ayJQaz8VlJG+V2DwORnCyz
+	O330H2ADHjbNifSnNiPvspk/3Oym0dId8Lh8jH5yQIjbwpcypr0gJZr1eUlfyI5wjKZxRzZVpQg
+	XWgmttHoi3cWnPid/kntJ0Cb1wrgGVGmk7fxRxPIU+Y+e4=
+X-Received: by 2002:a05:600c:3512:b0:49c:e1cd:536 with SMTP id 5b1f17b1804b1-49fc56aee64mr48011805e9.12.1789757936371;
+        Fri, 18 Sep 2026 11:58:56 -0700 (PDT)
+Received: from localhost.localdomain ([176.220.123.16])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0eab91sm14380145e9.1.2026.09.18.11.58.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 11:26:00 -0700 (PDT)
-From: Jinseob Kim <kimjinseob88@gmail.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andriy.shevchenko@intel.com,
-	linux-kernel@vger.kernel.org,
-	rdunlap@infradead.org,
-	joshua.crofts1@gmail.com,
-	u.kleine-koenig@baylibre.com,
-	julianbraha@gmail.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	corbet@lwn.net,
-	skhan@linuxfoundation.org,
-	linux-doc@vger.kernel.org
-Subject: [PATCH v10 8/8] iio: osf: add IIO KUnit tests
-Date: Sat, 19 Sep 2026 03:24:46 +0900
-Message-ID: <59251baa5b1f53a72ac7a09afc334398e2e84db7.1789753020.git.kimjinseob88@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1789753020.git.kimjinseob88@gmail.com>
-References: <cover.1789753020.git.kimjinseob88@gmail.com>
+        Fri, 18 Sep 2026 11:58:55 -0700 (PDT)
+From: Omer PALA <palaomer100@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michal Simek <michal.simek@amd.com>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM/ZYNQ ARCHITECTURE),
+	linux-kernel@vger.kernel.org (open list)
+Cc: linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM/ZYNQ ARCHITECTURE),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v3] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
+Date: Fri, 18 Sep 2026 21:58:06 +0300
+Message-ID: <20260918185813.5070-1-palaomer100@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260918174809.17502-1-palaomer100@gmail.com>
+References: <20260918174809.17502-1-palaomer100@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -92,376 +89,368 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the existing IIO active-scan packing and buffer producer lifetime
-tests. Extend the test build wiring and help text to cover both suites.
+Add yaml devicetree binding for xlnx,zynq-xadc-1.00.a,
+xlnx,axi-xadc-1.00.a and xlnx,system-management-wiz-1.3 from
+xilinx-xadc.txt file.
 
-This changes no production source. The complete series retains the
-production behavior of the combined-driver revision, with CRC
-terminology clarified.
-
-Assisted-by: LLM
-Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+Signed-off-by: Omer PALA <palaomer100@gmail.com>
 ---
- drivers/iio/opensensorfusion/Kconfig        |   2 +-
- drivers/iio/opensensorfusion/Makefile       |   2 +-
- drivers/iio/opensensorfusion/osf_iio_test.c | 325 ++++++++++++++++++++
- 3 files changed, 327 insertions(+), 2 deletions(-)
- create mode 100644 drivers/iio/opensensorfusion/osf_iio_test.c
+ PATCH v3 Details:
+ - Fixed $schema URI: "schemas/meta-schema.yaml#" -> "meta-schemas/core.yaml#"
+ - Added "required: [xlnx,external-mux]" to each allOf/if block so the
+  none/single/dual mux conditionals only match when the property is
+  actually set, not just absent
 
-diff --git a/drivers/iio/opensensorfusion/Kconfig b/drivers/iio/opensensorfusion/Kconfig
-index 316f33be1327..b4a2cde9645e 100644
---- a/drivers/iio/opensensorfusion/Kconfig
-+++ b/drivers/iio/opensensorfusion/Kconfig
-@@ -20,7 +20,7 @@ config OPEN_SENSOR_FUSION_KUNIT_TEST
- 	default KUNIT_ALL_TESTS
- 	help
- 	  Build focused unit tests for the Open Sensor Fusion core sample
--	  acceptance, direct-read cache, and capability/session handling. The tests
-+	  acceptance, direct-read cache, and IIO buffer paths. The tests
- 	  exercise accepted, ignored, and rejected sample handling without
- 	  exposing additional production interfaces.
- 
-diff --git a/drivers/iio/opensensorfusion/Makefile b/drivers/iio/opensensorfusion/Makefile
-index c2f5ba065a62..6a28b14cae1f 100644
---- a/drivers/iio/opensensorfusion/Makefile
-+++ b/drivers/iio/opensensorfusion/Makefile
-@@ -4,4 +4,4 @@ obj-$(CONFIG_OPEN_SENSOR_FUSION) += open-sensor-fusion.o
- 
- open-sensor-fusion-y := osf_core.o osf_iio.o osf_protocol.o osf_serdev.o \
- 			 osf_stream.o
--open-sensor-fusion-$(CONFIG_OPEN_SENSOR_FUSION_KUNIT_TEST) += osf_core_test.o
-+open-sensor-fusion-$(CONFIG_OPEN_SENSOR_FUSION_KUNIT_TEST) += osf_core_test.o osf_iio_test.o
-diff --git a/drivers/iio/opensensorfusion/osf_iio_test.c b/drivers/iio/opensensorfusion/osf_iio_test.c
+ .../bindings/iio/adc/xilinx-xadc.txt          | 141 -------------
+ .../bindings/iio/adc/xlnx,xadc.yaml           | 191 ++++++++++++++++++
+ 2 files changed, 191 insertions(+), 141 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+deleted file mode 100644
+index f42e18078..000000000
+--- a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
++++ /dev/null
+@@ -1,141 +0,0 @@
+-Xilinx XADC device driver
+-
+-This binding document describes the bindings for the Xilinx 7 Series XADC as well
+-as the UltraScale/UltraScale+ System Monitor.
+-
+-The Xilinx XADC is an ADC that can be found in the Series 7 FPGAs from Xilinx.
+-The XADC has a DRP interface for communication. Currently two different
+-frontends for the DRP interface exist. One that is only available on the ZYNQ
+-family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
+-on all series 7 platforms and is a softmacro with a AXI interface. This binding
+-document describes the bindings for both of them since the bindings are very
+-similar.
+-
+-The Xilinx System Monitor is an ADC that is found in the UltraScale and
+-UltraScale+ FPGAs from Xilinx. The System Monitor provides a DRP interface for
+-communication. Xilinx provides a standard IP core that can be used to access the
+-System Monitor through an AXI interface in the FPGA fabric. This IP core is
+-called the Xilinx System Management Wizard. This document describes the bindings
+-for this IP.
+-
+-Required properties:
+-	- compatible: Should be one of
+-		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
+-		  configuration interface to interface to the XADC hardmacro.
+-		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
+-		  interface to the XADC hardmacro.
+-		* "xlnx,system-management-wiz-1.3": When using the
+-		  Xilinx System Management Wizard fabric IP core to access the
+-		  UltraScale and UltraScale+ System Monitor.
+-	- reg: Address and length of the register set for the device
+-	- interrupts: Interrupt for the XADC control interface.
+-	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
+-	  when using the axi-xadc or the axi-system-management-wizard this must be
+-	  the clock that provides the clock to the AXI bus interface of the core.
+-
+-Optional properties:
+-	- xlnx,external-mux:
+-		* "none": No external multiplexer is used, this is the default
+-		  if the property is omitted.
+-		* "single": External multiplexer mode is used with one
+-		   multiplexer.
+-		* "dual": External multiplexer mode is used with two
+-		  multiplexers for simultaneous sampling.
+-	- xlnx,external-mux-channel: Configures which pair of pins is used to
+-	  sample data in external mux mode.
+-	  Valid values for single external multiplexer mode are:
+-		0: VP/VN
+-		1: VAUXP[0]/VAUXN[0]
+-		2: VAUXP[1]/VAUXN[1]
+-		...
+-		16: VAUXP[15]/VAUXN[15]
+-	  Valid values for dual external multiplexer mode are:
+-		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
+-		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
+-		...
+-		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
+-
+-	  This property needs to be present if the device is configured for
+-	  external multiplexer mode (either single or dual). If the device is
+-	  not using external multiplexer mode the property is ignored.
+-	- xnlx,channels: List of external channels that are connected to the ADC
+-	  Required properties:
+-		* #address-cells: Should be 1.
+-		* #size-cells: Should be 0.
+-
+-	  The child nodes of this node represent the external channels which are
+-	  connected to the ADC. If the property is no present no external
+-	  channels will be assumed to be connected.
+-
+-	  Each child node represents one channel and has the following
+-	  properties:
+-		Required properties:
+-			* reg: Pair of pins the channel is connected to.
+-				0: VP/VN
+-				1: VAUXP[0]/VAUXN[0]
+-				2: VAUXP[1]/VAUXN[1]
+-				...
+-				16: VAUXP[15]/VAUXN[15]
+-			  Note each channel number should only be used at most
+-			  once.
+-		Optional properties:
+-			* xlnx,bipolar: If set the channel is used in bipolar
+-			  mode.
+-
+-
+-Examples:
+-	xadc@f8007100 {
+-		compatible = "xlnx,zynq-xadc-1.00.a";
+-		reg = <0xf8007100 0x20>;
+-		interrupts = <0 7 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&pcap_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-			};
+-			channel@1 {
+-				reg = <1>;
+-			};
+-			channel@8 {
+-				reg = <8>;
+-			};
+-		};
+-	};
+-
+-	xadc@43200000 {
+-		compatible = "xlnx,axi-xadc-1.00.a";
+-		reg = <0x43200000 0x1000>;
+-		interrupts = <0 53 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&fpga1_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-				xlnx,bipolar;
+-			};
+-		};
+-	};
+-
+-	adc@80000000 {
+-		compatible = "xlnx,system-management-wiz-1.3";
+-		reg = <0x80000000 0x1000>;
+-		interrupts = <0 81 4>;
+-		interrupt-parent = <&gic>;
+-		clocks = <&fpga1_clk>;
+-
+-		xlnx,channels {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			channel@0 {
+-				reg = <0>;
+-				xlnx,bipolar;
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
 new file mode 100644
-index 000000000000..63d3ca1af329
+index 000000000..ffaada52f
 --- /dev/null
-+++ b/drivers/iio/opensensorfusion/osf_iio_test.c
-@@ -0,0 +1,325 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+@@ -0,0 +1,191 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +
-+#include <kunit/device.h>
-+#include <kunit/test.h>
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/xlnx,xadc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/bitmap.h>
-+#include <linux/completion.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/buffer_impl.h>
-+#include <linux/iio/iio.h>
-+#include <linux/kthread.h>
-+#include <linux/string.h>
++title: Xilinx XADC device driver
 +
-+#include "osf_core.h"
-+#include "osf_iio.h"
++maintainers:
++  - Omer PALA <palaomer100@gmail.com>
 +
-+static noinline void osf_test_poison_stack(void)
-+{
-+	u8 bytes[1024];
++description: |
++  This binding document describes the bindings for the Xilinx 7 Series XADC as well
++  as the UltraScale/UltraScale+ System Monitor.
 +
-+	memset(bytes, 0xa5, sizeof(bytes));
-+	barrier_data(bytes);
-+}
++properties:
++  compatible:
++    enum:
++      - xlnx,zynq-xadc-1.00.a
++      - xlnx,axi-xadc-1.00.a
++      - xlnx,system-management-wiz-1.3
 +
-+static void osf_iio_check_scan(struct kunit *test, struct iio_dev *indio_dev,
-+			       const s32 *values, unsigned int channels,
-+			       unsigned int mask, bool ts)
-+{
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	unsigned int data_bytes = hweight32(mask) * sizeof(s32);
-+	unsigned int ts_offset = ALIGN(data_bytes, 8);
-+	unsigned int scan_bytes = ts ? ts_offset + 8 : data_bytes;
-+	unsigned int offset = 0;
-+	u8 scan[24] __aligned(8);
-+	s64 before, after, timestamp;
-+	int ret;
++  reg:
++    description: Address and length of the register set for the device
++    maxItems: 1
 +
-+	bitmap_zero((unsigned long *)buffer->scan_mask, iio_get_masklength(indio_dev));
-+	for (unsigned int i = 0; i < channels; i++)
-+		if (mask & BIT(i))
-+			set_bit(i, (unsigned long *)buffer->scan_mask);
-+	buffer->scan_timestamp = ts;
-+	ret = iio_update_buffers(indio_dev, buffer, NULL);
-+	KUNIT_ASSERT_EQ(test, ret, 0);
++  interrupts:
++    description: Interrupt for the XADC control interface.
++    maxItems: 1
 +
-+	kunit_info(test, "device=%s mask=%u ts=%u bytes=%u\n",
-+		   indio_dev->name, mask, ts, scan_bytes);
-+	memset(scan, 0xa5, sizeof(scan));
-+	before = iio_get_time_ns(indio_dev);
-+	osf_test_poison_stack();
-+	ret = osf_iio_push_sample(indio_dev, values, channels);
-+	after = iio_get_time_ns(indio_dev);
-+	KUNIT_EXPECT_EQ(test, ret, 0);
-+	KUNIT_EXPECT_EQ(test, buffer->bytes_per_datum, scan_bytes);
-+	ret = iio_pop_from_buffer(buffer, scan);
-+	KUNIT_EXPECT_EQ(test, ret, 0);
-+	if (ret)
-+		goto disable;
++  clocks:
++    maxItems: 1
 +
-+	for (unsigned int i = 0; i < channels; i++) {
-+		if (!(mask & BIT(i)))
-+			continue;
-+		KUNIT_EXPECT_MEMEQ(test, scan + offset, &values[i], sizeof(s32));
-+		offset += sizeof(s32);
-+	}
-+	if (ts) {
-+		for (unsigned int i = data_bytes; i < ts_offset; i++)
-+			KUNIT_EXPECT_EQ(test, scan[i], (u8)0);
-+		memcpy(&timestamp, scan + ts_offset, sizeof(timestamp));
-+		KUNIT_EXPECT_GE(test, timestamp, before);
-+		KUNIT_EXPECT_LE(test, timestamp, after);
-+	}
-+	/* Neither kfifo nor the producer may write outside the consumer stride. */
-+	for (unsigned int i = scan_bytes; i < sizeof(scan); i++)
-+		KUNIT_EXPECT_EQ(test, scan[i], (u8)0xa5);
++  interrupt-parent: true
 +
-+disable:
-+	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, NULL, buffer), 0);
-+}
++  xlnx,external-mux:
++    description: Selects the external mux mode.
++    enum: [none, single, dual]
++    default: none
 +
-+/* Protect timestamp alignment holes and every supported scan layout. */
-+static void osf_iio_scan_bytes_test(struct kunit *test)
-+{
-+	static const u16 types[] = {
-+		OSF_SENSOR_ACCELEROMETER, OSF_SENSOR_GYROSCOPE,
-+		OSF_SENSOR_MAGNETOMETER, OSF_SENSOR_TEMPERATURE,
-+	};
-+	const s32 values[] = { 101, -202, 303 };
-+	struct osf_capability_entry entry = {
-+		.sample_format = OSF_SAMPLE_FORMAT_S32,
-+		.scale_nano = 1000000,
-+	};
-+	struct osf_device *osf;
-+	struct device *dev;
++  xlnx,external-mux-channel:
++    description: >
++      Configures which pair of pins is used to sample data in
++      external mux mode.
++    $ref: /schemas/types.yaml#/definitions/uint32
 +
-+	dev = kunit_device_register(test, "osf-iio");
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
-+	osf = kunit_kzalloc(test, sizeof(*osf), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, osf);
-+	osf_core_init(osf, dev);
++  xlnx,channels:
++    type: object
++    description: List of external channels that are connected to the ADC.
++    properties:
++      "#address-cells":
++        const: 1
++      "#size-cells":
++        const: 0
++    required:
++      - "#address-cells"
++      - "#size-cells"
++    patternProperties:
++      "^channel@[0-9a-f]+$":
++        type: object
++        properties:
++          reg:
++            description: Pair of pins the channel is connected to
++            minimum: 0
++            maximum: 16
++          xlnx,bipolar:
++            description: If set the channel is used in bipolar mode.
++            $ref: /schemas/types.yaml#/definitions/flag
++        required:
++          - reg
++        additionalProperties: false
++    additionalProperties: false
 +
-+	for (unsigned int t = 0; t < ARRAY_SIZE(types); t++) {
-+		unsigned int channels = t == 3 ? 1 : 3;
-+		struct iio_dev *indio_dev;
-+		int ret;
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
 +
-+		entry.sensor_type = types[t];
-+		entry.channel_count = channels;
-+		ret = osf_iio_register_sensor(dev, &entry, osf, &indio_dev);
-+		KUNIT_ASSERT_EQ(test, ret, 0);
-+		for (unsigned int mask = 1; mask < BIT(channels); mask++)
-+			for (unsigned int ts = 0; ts < 2; ts++)
-+				osf_iio_check_scan(test, indio_dev, values, channels, mask, ts);
-+		osf_iio_unregister_sensor(indio_dev);
-+	}
-+}
++unevaluatedProperties: false
 +
-+struct osf_iio_race {
-+	struct iio_buffer_access_funcs access;
-+	const struct iio_buffer_access_funcs *original;
-+	struct iio_dev *indio_dev;
-+	struct completion entered;
-+	struct completion release;
-+	struct completion config_started;
-+	struct completion config_done;
-+	atomic_t block_store;
-+	atomic_t stores;
-+	atomic_t disabled;
-+	atomic_t bad_store;
-+	int enable_error;
-+	int disable_error;
-+	int config_result;
-+	bool unregister;
-+};
++allOf:
++  - if:
++      properties:
++        xlnx,external-mux:
++          const: none
++      required:
++        - xlnx,external-mux
++    then:
++      properties:
++        xlnx,external-mux-channel: false
 +
-+static struct osf_iio_race *osf_iio_race_from_buffer(struct iio_buffer *buffer)
-+{
-+	return container_of(buffer->access, struct osf_iio_race, access);
-+}
++  - if:
++      properties:
++        xlnx,external-mux:
++          const: single
++      required:
++        - xlnx,external-mux
++    then:
++      properties:
++        xlnx,external-mux-channel:
++          minimum: 0
++          maximum: 16
++      required:
++        - xlnx,external-mux-channel
 +
-+static int osf_iio_test_store(struct iio_buffer *buffer, const void *data)
-+{
-+	struct osf_iio_race *race = osf_iio_race_from_buffer(buffer);
++  - if:
++      properties:
++        xlnx,external-mux:
++          const: dual
++      required:
++        - xlnx,external-mux
++    then:
++      properties:
++        xlnx,external-mux-channel:
++          minimum: 1
++          maximum: 8
++      required:
++        - xlnx,external-mux-channel
 +
-+	if (atomic_xchg(&race->block_store, 0)) {
-+		complete(&race->entered);
-+		if (!wait_for_completion_timeout(&race->release, 5 * HZ))
-+			return -ETIMEDOUT;
-+	}
-+	if (atomic_read(&race->disabled))
-+		atomic_inc(&race->bad_store);
-+	atomic_inc(&race->stores);
-+	return race->original->store_to(buffer, data);
-+}
++examples:
++  - |
++    soc {
++      #address-cells = <1>;
++      #size-cells = <1>;
 +
-+static int osf_iio_test_enable(struct iio_buffer *buffer, struct iio_dev *indio_dev)
-+{
-+	struct osf_iio_race *race = osf_iio_race_from_buffer(buffer);
++      xadc@f8007100 {
++        compatible = "xlnx,zynq-xadc-1.00.a";
++        reg = <0xf8007100 0x20>;
++        interrupts = <0 7 4>;
++        interrupt-parent = <&gic>;
++        clocks = <&pcap_clk>;
 +
-+	if (race->enable_error)
-+		return race->enable_error;
-+	atomic_set(&race->disabled, 0);
-+	return 0;
-+}
++        xlnx,external-mux = "single";
++        xlnx,external-mux-channel = <0>;
 +
-+static int osf_iio_test_disable(struct iio_buffer *buffer, struct iio_dev *indio_dev)
-+{
-+	struct osf_iio_race *race = osf_iio_race_from_buffer(buffer);
++        xlnx,channels {
++          #address-cells = <1>;
++          #size-cells = <0>;
 +
-+	atomic_set(&race->disabled, 1);
-+	return race->disable_error;
-+}
++          channel@0 {
++            reg = <0>;
++          };
++          channel@1 {
++            reg = <1>;
++          };
++          channel@8 {
++            reg = <8>;
++          };
++        };
++      };
++      xadc@43200000 {
++        compatible = "xlnx,axi-xadc-1.00.a";
++        reg = <0x43200000 0x1000>;
++        interrupts = <0 53 4>;
++        interrupt-parent = <&gic>;
++        clocks = <&fpga1_clk>;
 +
-+static int osf_iio_test_producer(void *data)
-+{
-+	struct osf_iio_race *race = data;
-+	const s32 values[] = { 101, -202, 303 };
++        xlnx,external-mux = "single";
++        xlnx,external-mux-channel = <0>;
 +
-+	while (!kthread_should_stop()) {
-+		osf_iio_push_sample(race->indio_dev, values, ARRAY_SIZE(values));
-+		cond_resched();
-+	}
-+	return 0;
-+}
++        xlnx,channels {
++          #address-cells = <1>;
++          #size-cells = <0>;
++          channel@0 {
++            reg = <0>;
++            xlnx,bipolar;
++          };
++        };
++      };
++      adc@80000000 {
++        compatible = "xlnx,system-management-wiz-1.3";
++        reg = <0x80000000 0x1000>;
++        interrupts = <0 81 4>;
++        interrupt-parent = <&gic>;
++        clocks = <&fpga1_clk>;
 +
-+static int osf_iio_test_configure(void *data)
-+{
-+	struct osf_iio_race *race = data;
++        xlnx,external-mux = "single";
++        xlnx,external-mux-channel = <0>;
 +
-+	complete(&race->config_started);
-+	if (race->unregister) {
-+		osf_iio_unregister_sensor(race->indio_dev);
-+		race->config_result = 0;
-+	} else {
-+		race->config_result = iio_update_buffers(race->indio_dev, NULL,
-+							 race->indio_dev->buffer);
-+	}
-+	complete(&race->config_done);
-+	while (!kthread_should_stop())
-+		msleep(20);
-+	return 0;
-+}
-+
-+static void osf_iio_expect_quiesce(struct kunit *test, struct osf_iio_race *race)
-+{
-+	struct task_struct *config;
-+	unsigned long waited;
-+
-+	config = kthread_run(osf_iio_test_configure, race, "osf-cfg-test");
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, config);
-+	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->config_started, HZ), 0UL);
-+	waited = wait_for_completion_timeout(&race->config_done, msecs_to_jiffies(20));
-+	KUNIT_EXPECT_EQ(test, waited, 0UL);
-+	complete(&race->release);
-+	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->config_done, HZ), 0UL);
-+	kthread_stop(config);
-+	KUNIT_EXPECT_EQ(test, race->config_result, 0);
-+}
-+
-+/* Run real IIO configuration and kfifo code against an independent producer. */
-+static void osf_iio_buffer_lifetime_test(struct kunit *test)
-+{
-+	struct osf_capability_entry entry = {
-+		.sensor_type = OSF_SENSOR_ACCELEROMETER,
-+		.channel_count = 3,
-+		.sample_format = OSF_SAMPLE_FORMAT_S32,
-+		.scale_nano = 1000000,
-+	};
-+	const s32 values[] = { 101, -202, 303 };
-+	struct task_struct *producer;
-+	struct osf_iio_race *race;
-+	struct osf_device *osf;
-+	struct iio_dev *indio_dev;
-+	struct iio_buffer *buffer;
-+	struct device *dev;
-+	int stores, ret;
-+
-+	dev = kunit_device_register(test, "osf-race");
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
-+	osf = kunit_kzalloc(test, sizeof(*osf), GFP_KERNEL);
-+	race = kunit_kzalloc(test, sizeof(*race), GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, osf);
-+	KUNIT_ASSERT_NOT_NULL(test, race);
-+	osf_core_init(osf, dev);
-+	ret = osf_iio_register_sensor(dev, &entry, osf, &indio_dev);
-+	KUNIT_ASSERT_EQ(test, ret, 0);
-+	buffer = indio_dev->buffer;
-+	race->indio_dev = indio_dev;
-+	race->original = buffer->access;
-+	race->access = *buffer->access;
-+	race->access.store_to = osf_iio_test_store;
-+	race->access.enable = osf_iio_test_enable;
-+	race->access.disable = osf_iio_test_disable;
-+	buffer->access = &race->access;
-+	init_completion(&race->entered);
-+	init_completion(&race->release);
-+	init_completion(&race->config_started);
-+	init_completion(&race->config_done);
-+	atomic_set(&race->disabled, 1);
-+	set_bit(0, (unsigned long *)buffer->scan_mask);
-+	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-+
-+	atomic_set(&race->block_store, 1);
-+	producer = kthread_run(osf_iio_test_producer, race, "osf-rx-test");
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, producer);
-+	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->entered, HZ), 0UL);
-+	osf_iio_expect_quiesce(test, race);
-+
-+	for (unsigned int i = 0; i < 100; i++) {
-+		bitmap_zero((unsigned long *)buffer->scan_mask, iio_get_masklength(indio_dev));
-+		*(unsigned long *)buffer->scan_mask = (i % 7) + 1;
-+		buffer->scan_timestamp = i & 1;
-+		KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-+		cond_resched();
-+		KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, NULL, buffer), 0);
-+	}
-+
-+	race->enable_error = -EIO;
-+	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), -EIO);
-+	stores = atomic_read(&race->stores);
-+	KUNIT_EXPECT_EQ(test, osf_iio_push_sample(indio_dev, values, 3), 0);
-+	KUNIT_EXPECT_EQ(test, atomic_read(&race->stores), stores);
-+	race->enable_error = 0;
-+	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-+	race->disable_error = -EIO;
-+	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, NULL, buffer), -EIO);
-+	stores = atomic_read(&race->stores);
-+	KUNIT_EXPECT_EQ(test, osf_iio_push_sample(indio_dev, values, 3), 0);
-+	KUNIT_EXPECT_EQ(test, atomic_read(&race->stores), stores);
-+	race->disable_error = 0;
-+
-+	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-+	/* Retain ownership while testing unregister against an admitted push. */
-+	get_device(&indio_dev->dev);
-+	reinit_completion(&race->entered);
-+	reinit_completion(&race->release);
-+	reinit_completion(&race->config_started);
-+	reinit_completion(&race->config_done);
-+	atomic_set(&race->block_store, 1);
-+	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->entered, HZ), 0UL);
-+	race->unregister = true;
-+	osf_iio_expect_quiesce(test, race);
-+	kthread_stop(producer);
-+	KUNIT_EXPECT_EQ(test, atomic_read(&race->bad_store), 0);
-+	KUNIT_EXPECT_GT(test, atomic_read(&race->stores), 0);
-+	buffer->access = race->original;
-+	put_device(&indio_dev->dev);
-+}
-+
-+static struct kunit_case osf_iio_test_cases[] = {
-+	KUNIT_CASE(osf_iio_scan_bytes_test),
-+	KUNIT_CASE(osf_iio_buffer_lifetime_test),
-+	{ }
-+};
-+
-+static struct kunit_suite osf_iio_test_suite = {
-+	.name = "osf-iio",
-+	.test_cases = osf_iio_test_cases,
-+};
-+
-+kunit_test_suite(osf_iio_test_suite);
-+
-+MODULE_LICENSE("GPL");
++        xlnx,channels {
++          #address-cells = <1>;
++          #size-cells = <0>;
++          channel@0 {
++            reg = <0>;
++            xlnx,bipolar;
++          };
++        };
++      };
++    };
 -- 
-2.43.0
+2.55.0
 
