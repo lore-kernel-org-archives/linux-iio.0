@@ -1,61 +1,105 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 828C748FF99;
-	Fri, 18 Sep 2026 11:27:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 402EE3E40EE;
+	Fri, 18 Sep 2026 11:28:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789730833; cv=none; b=bjzzIvMRWSk9DZZD4LqC1DcGk/OTSI1aM6OS0IV5X3oHIOk+z03Vq2NTGgZ0VQfs6l6k1xoBK9N4/qHWCTeq7XDAytlsMGukoRjCmiOI1KPvcoqYpXY0p6Jr3SxdqTeVuEo0JsFF2Nw+eO4teG6WjAielQWjiE9xeaYKcM4yqHY=
+	t=1789730897; cv=none; b=iI5aEr6vOeduIWhsUq6E3QgywM8sdk8a60SHZM+j4CopoqK4XqJBD1ufyejiazSZk3NtlmAWLitq4LyAnKHuJa5v7ozbkLUAxTgPPb6oLVu+SsnFtaF3dhoaP/bM17GEWYbaP7eHIB+vmcIAoZFQz11nrt170UrphFbyaHrvyew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789730833; c=relaxed/simple;
-	bh=MTuf641jR4z9DAZ9uZUaNjh7g0R8Y2l3VjChqlVAxrE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j3iC5xsuuTAdNbx05k9KbWpmbPBaa8Spdj02yiaxsV2UbIpVF7bbkV2BeJ8TpKeTLJmd3lOtpX5xC3ywNGpCy1ORGc7E3ia7RiMlUUHsY6kHESq6NC6UJis92zOCKohq/teHqr09JgvIixkvrI3Mzh9VOG/7CClpQeiWMQaL4Vo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZgdtmtbO; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789730897; c=relaxed/simple;
+	bh=0/I9pdB6OrT5Xb6fcTDrHPY+wyD2QZbx+E5Aek7CrJw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qgTEKAjzOAdn5xXlCgDuhuz28dNKS9b1vOtvJRrukB3GSj81PLVly5MWP19+b6kg5JujGGN1VbJtui9T8a4ywGDqMm39V4AjgZVKOCqysQQYJOaYGgWNESsSYUhjfDYdJm3yZA8vIr382VOfyfr5dd4D16FDpdcyl6oUZT8A3H0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ofg9NoIv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZgdtmtbO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90BC71F000FF;
-	Fri, 18 Sep 2026 11:27:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ofg9NoIv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A08C1F000FF;
+	Fri, 18 Sep 2026 11:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789730825;
-	bh=MTuf641jR4z9DAZ9uZUaNjh7g0R8Y2l3VjChqlVAxrE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZgdtmtbO37i1L9n+C4k73ZyEKfQZdLUXTgNPGrIXQyENnXEBGG9RblJBxVKCGPSc/
-	 ubKiuN6HDTGptXbzh9OefaUNmzz5XAum/vtTm5KUQKHrlICBFRUPH7QTBlQFiRXmYg
-	 TUPLDPMbSlV+1OPoyzS/vJ50Lk3PrdWhcctFy0HApilY/agsH7Ac3pkf8cvpoXzaU+
-	 ibfYammaxYoavTyliWyZUecOQwcGiGaw1A3oxjw9lQFJ/dI3Krky6PhrhLjLeokJSb
-	 0R8waxd+2q9fSddqLHyuVrooclOjfK1hVu/kKAuTQuGapi+m1WHwuvYgXiF+8yetL6
-	 513t6lSd8W0yg==
-Date: Fri, 18 Sep 2026 13:27:01 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Omer PALA <palaomer100@gmail.com>
-Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org, 
-	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, linux@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iio: accel: add adi,adis16203 support
-Message-ID: <20260918-inescapable-crafty-cat-b03a46@quoll>
-References: <20260917080905.7654-1-palaomer100@gmail.com>
+	s=k20260515; t=1789730895;
+	bh=70OUb4RAhHcFyLRrTfSRSJ/COM8Z2n7Q2/sXV/j2qVI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=Ofg9NoIvZkTS6SMbRYER6uuJF9rXYNBS/NqlwjEAOb7ucFEbT6k7xBmISlXn10dQd
+	 L7U4yYF1+Y0zW6p6Sn2YJapfmZnVifxuPBl1G8BrC+KAmBiiWdVnKktkXw9ij2LfWb
+	 tdhLwB/zbEs5RrP4GSbZBc3rlD1njr4+uAG+sBolI4vaK4hWjk58DrX7mO6t2Mbrim
+	 LbGQWfTNwKZXcLAdWyqEAETAMlEqnRSzU8OdkZO12JpInD6IF4OIE70h6j/PScYHvb
+	 Pri7imDWX3ibTUFqpkad2UwHjfvxRBZfvpCAoSTNJWqE32fvENsQrfsnTC/34nHZ0+
+	 kmRhPA3cPSOyA==
+Message-ID: <f98165f2-270d-4117-8492-e1bc94b19330@kernel.org>
+Date: Fri, 18 Sep 2026 13:28:10 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260917080905.7654-1-palaomer100@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: iio: adc: Add AD7816 binding
+To: Omer PALA <palaomer100@gmail.com>, nuno.sa@analog.com,
+ Michael.Hennerich@analog.com, jic23@kernel.org, dlechner@baylibre.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260917212751.16729-1-palaomer100@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260917212751.16729-1-palaomer100@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 17, 2026 at 11:09:05AM +0300, Omer PALA wrote:
-> Add adi,adis16203 support to adi,adis16201.yaml for
-> staging adis16203 driver
+On 17/09/2026 23:27, Omer PALA wrote:
+> Add a DeviceTree binding schema for the Analog Devices AD7816
+> digital temperature sensor. The same schema also covers the
+> compatible AD7817 and AD7818 variants.
+> 
+> The driver currently lives under drivers/staging/iio/adc/ad7816.c.
 
-Bindings are not for drivers, but nevertheless you clearly did not read
-the discussions I linked in your previous post.
-
-That's staging stuff. Are you again fixing some issues only because
-checkpatch told so?
+Then why are you posting this? Did you read discussions I linked before?
+If so, why repeating the same?
 
 Best regards,
 Krzysztof
-
