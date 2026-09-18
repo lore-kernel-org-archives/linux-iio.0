@@ -1,376 +1,188 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.4])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0228E3DCD9C;
-	Fri, 18 Sep 2026 07:31:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CABE349D5A1;
+	Fri, 18 Sep 2026 07:36:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789716712; cv=none; b=UFEt3wJQV8tIuexsUc26qVBhMhqaHnSQhGsQHfuO3NjUpXvKY+FX0s3Xp/kkEPKjJQZLddDXwwxFrQ/QK2wfk2g+gXqmg8v6vicqaa9QiO9i0wCU+PcSAhmJ5HhmdbwRSqTYVbxiuf080eKPgvNgo3DTDvhnWzQvRqfJhIFltNI=
+	t=1789717013; cv=none; b=OpCPK/qwTuIuIaulsY/7cvG5YZ2Cc9/HPayjI4/pKjiiT+zIrfCESAqzPJ/ruv7MEtU//FF9dmxvgNGt2XxBjoECL+VQBcAtzivUzSUjUCbJN0i7fKn3fQiVrJDnURU+n/RSqKUSiI2KDJcMmgmteNh1oCVS69F0QRcDrSNfWXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789716712; c=relaxed/simple;
-	bh=rSShAsO12XubLfGpze9r4T+pSVrU9sR0OtduLM9w+dU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iEI5TgYv4bUbep6IPSd2EYNb0D8GKBQLXN/kry0LrDqvbkzp0j5XNEaCETTRWpza+7F/nQ2N5xF0AhSzZc0BnA4YKByDQyRL6JY1fuXTBY/CoSdRvirK/4sH+6EQU9wYOgOsggVI27BoR0DLzvlqYxeAH+qvOrwmZ5KmTUckRK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TpUZJPKu; arc=none smtp.client-ip=192.198.163.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1789717013; c=relaxed/simple;
+	bh=VhMAE3ufNZbB0YJLoZN9BJs9K3vI9jhjkDTfXq7XvE8=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=M436sLvzQHCEKj0MDWamZG6lLOzJ35cXxaK0P/5pDcNQ3Fyf4tA/7koTT8DXn+yXsxoog0j6QNyN2FTajk1C9rDZq/KdLDp0lAunOUQNXLuTWu3cnSWt47Z6lMYh9fLUR3qVpLKy0QVMq4pInyFpCMyIHcnNLCYxmZeCsE5pM2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=GzoHavaf; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TpUZJPKu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789716710; x=1821252710;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rSShAsO12XubLfGpze9r4T+pSVrU9sR0OtduLM9w+dU=;
-  b=TpUZJPKu5a9jo181Msofp43nNcY1ahIxyWpzLbnP0UzKX0knj75eYcqg
-   Gf3SIelie+cKdNAmGbFSYDzUpQvn00q5jvx6KJfAvcAF4EkmEtl98pgVZ
-   5tMpfnfmcmqTyzK3hVa/OlIM9ucHP0dwdM9vzWN1e2GZ13bb/oGJosXAf
-   hGhklVEI8JDRZo8XpKuF/GzwS2rFBdcY6OxaCE66wwFt22J9RH5g6C98z
-   b2Am7i4TzrUfxN5nqxQlZ0MagEpibttEw3vRiyHEeDTeEmeEXELJR1GxG
-   ha/8RLeKtxzY4ZJRZQIM9WR64yK8BtGNvA1X6zKkNcvt9DhiVf4O2aprm
-   w==;
-X-CSE-ConnectionGUID: nw287oPJRsWB/vjRICEDvw==
-X-CSE-MsgGUID: 5ALQNgMASDi2KkgLvZtVbg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="712659"
-X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="712659"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa114.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 00:31:49 -0700
-X-CSE-ConnectionGUID: qLC/C1UYRsSZmIz02DoYvw==
-X-CSE-MsgGUID: tnrRKkoxRlG/AUaUUZGwig==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="268006028"
-Received: from carterle-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.170])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2026 00:31:45 -0700
-Date: Fri, 18 Sep 2026 10:31:38 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ryan Brue <ryanbrue.dev@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, mfd@lists.linux.dev,
-	Roman Vivchar <rva333@protonmail.com>,
-	Luca Leonardo Scorcia <l.scorcia@gmail.com>
-Subject: Re: [PATCH v2 2/3] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
- driver
-Message-ID: <aqzo2vqeGEGCLFIP@ashevche-desk.local>
-References: <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-0-db35882a6080@gmail.com>
- <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-2-db35882a6080@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="GzoHavaf"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68I5wceu255622;
+	Fri, 18 Sep 2026 03:36:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=r6JyW
+	2APjiiJ2Tv21NG+40B9kelFs3J7hgA1aU4MYww=; b=GzoHavaftT/YKnhw6v2XJ
+	4avBPpS9P57035k8JvlN5WalkB+DP55n6sPVf5kAL7E6aYFkYX7qyfPPv8ZtfZ5F
+	R0anumZNEaT3SIjAVoe7gLAfaxt2bN5xr0FWLoRZohqfs4Ajr3Ke6ZKunDRsQAD4
+	pGd1oyQsvTbq2LPQP9SU9LbLiL/cFprmW6bAFWtY888zj898MMa4hOD/gIKqF4Se
+	SMGFzFe8zOij/VCWV9Dk+o09Yq/IXsM1E1jHbgtj2J6agSMfgH4aMyKVC1vclBGg
+	N5rCKG+0GtPyEbWNiGzNC+l+1I/rHcX/yeU0UafSAl+j7OEBKJR4MFcDp6s3AqYI
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4grm943db9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 18 Sep 2026 03:36:28 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 68I7aRwL011071
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 18 Sep 2026 03:36:27 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 18 Sep
+ 2026 03:36:27 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 18 Sep 2026 03:36:27 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.219])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68I7ZjpX019677;
+	Fri, 18 Sep 2026 03:36:19 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah
+ Khan <skhan@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marcelo Schmitt <marcelo.schmitt@analog.com>,
+        Joshua Crofts
+	<joshua.crofts1@gmail.com>,
+        Radu Sabau <radu.sabau@analog.com>, Salih Erim
+	<salih.erim@amd.com>,
+        Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+        Jakub
+ Szczudlo <jakubszczudlo40@gmail.com>,
+        <linux-iio@vger.kernel.org>, <linux@analog.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+Subject: [PATCH v2 5/6] iio: adc: ade9000: add support for ADE9430
+Date: Fri, 18 Sep 2026 10:35:34 +0300
+Message-ID: <20260918073537.1572-6-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260918073537.1572-1-antoniu.miclaus@analog.com>
+References: <20260918073537.1572-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-2-db35882a6080@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=AcckjHXG c=1 sm=1 tr=0 ts=6aace9fc cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=zlWSOBlsY_1KlUt2hasA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE4MDEwMiBTYWx0ZWRfX72zr1mxz+3NQ
+ QcP9e0DpyfuM0n3Xwus24acJ8Htr+l4Ih3+poYW7cR7cNs4WmzO1eI9s5YercGJb7DN2/5Vooe6
+ ppdCL+7EgmlHiiPQj81V0vchIIbHzwaXDF5OijQnX/0A5t91ix+I
+X-Proofpoint-ORIG-GUID: CvdzLwUUP3eKmIKiLRTQAytXEqJ1NX5P
+X-Proofpoint-GUID: CvdzLwUUP3eKmIKiLRTQAytXEqJ1NX5P
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE4MDEwMiBTYWx0ZWRfXxiYSNhtzbSth
+ 2ik39xCjDbbo0bXwEj4K9Q136Y+PTMupYjUKrulzF/xZMJBRjQVUljWengiKd0l8eFtu2D6RKlj
+ s1ppKYtzyNt0CKY+PH6YR11qIZBRhxn7LvtCadbRuVnLs912d0XeuwFypli5+UNYPqtmbE+aowh
+ oetnShlJoZ9bmouRKWoxGCJTOV02fgFso1te7YdXLo+qtu/HbbRzXTpfTdSxSOguOsclWJxpP0f
+ XEXz+PawifEk4eW+UeM+gEaaTlGC7E7kshOawrchxw+Fm60sVUNiMS89BS4sax0eASSCzUsGKC/
+ kOTZSsWsKj+FYLS6MWEGSZvn5zS4HBu14c8sqVOq14WyTBpIPtBeWGRMrwIEvYU1PJ9iY+dpV8l
+ aQ18DPsEsGfsPZbYgFBL2qovbNULRtY05B+vRUaJwXlg/qBXSixTu02EPcVwnM4tj95SI7mJRBT
+ 97XsZtTtYZ1lflAtQbQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-18_02,2026-09-16_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 bulkscore=0
+ clxscore=1015 priorityscore=1501 impostorscore=0 malwarescore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
+ definitions=main-2609180102
 
-On Thu, Sep 17, 2026 at 09:19:51PM -0500, Ryan Brue wrote:
-> The mt6397 AUXADC is a 10-bit ADC behind the SoC's PMIC wrapper. On boards
-> built around this PMIC it is the only way to read the battery: the SoC's
-> AUXADC is wired to board thermistors and the charger ICs these boards use
-> have no ADC of their own.
-> 
-> Add a driver exposing the battery voltage and battery temperature
-> channels. Only those two are described, so a channel ID in the device tree
-> is an index into the driver's channel array rather than the PMIC's channel
-> number, as mt6323-auxadc does. The ready bit lives in a channel's raw
-> result register, but the value comes from the chip's trimmed copy of it,
-> which is what the vendor driver reads for a measurement.
-> 
-> Both channels need more than that, as the vendor programs them. The
-> battery voltage is measured through ISENSE, because a board with a
-> switching charger in the power path leaves BATSNS on the charger's system
-> rail instead of on the pack. The thermistor only reads correctly with the
-> PMIC's battery-detect bias and input buffer enabled, which take 20 ms to
-> settle. Both are switched back off afterwards.
-> 
-> Reads average sixteen conversions in software; the chip's sample
-> accumulator makes no measurable difference at any setting, so it is left
-> at one sample per conversion.
+The ADE9430 is a polyphase energy metering device that is register
+compatible with the ADE9000. The differences relevant to the driver are
+the absence of the on-chip dip/swell detection and the absence of an
+on-chip digital integrator (the ADE9430 uses an external analog integrator
+for Rogowski coils, so the DICOEFF register does not exist). Its full-scale
+ADC codes are the same family-A values as the ADE9000.
 
-...
+Add a chip_info for the ADE9430, reusing the dip/swell-less channel table
+first added for the ADE9078, and explicitly set has_digital_integrator to
+false so the DICOEFF write is skipped. Wire up the SPI and OF device tables
+and Kconfig.
 
-The below should be part of the comment block, no commit message needs to
-be polluted with this.
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+Changes in v2:
+- reuse ade9078_channels instead of adding a duplicate channel table.
+- move the DICOEFF gating to a separate precursor patch.
 
-> A new driver was created here, instead of modifying an existing driver
-> such as mt6323-auxadc or mt6359-auxadc, for the following reasons:
-> 
->  - Both mt6323-auxadc and mt6359-auxadc select channels through a request
->    register (1 bit per channel), while mt6397 uses a 4-bit numeric field
->    CHSEL in CON1 (10:7), and then pulses a START bit (CON1 bit 0).
-> 
->  - For mt6323-auxadc, which is the closest I could find to the mt6397
->    (CON0..CON27), it has 13 more registers than the mt6397 (CON0..CON14).
->    It uses CON22 for its request register, and reads the result value
->    from the same register as the ready bit. We don't do that - the mt6397
->    has a factory calibrated value for each channel at 0x16 higher than the
->    raw value. mt6323 also has a 1800 mV / 15 bit scale / resolution while
->    we have 1200 mV / 10 bits. We also have some per-channel preparation
->    that we have to do before the burst, that the mt6323 doesn't have to
->    do.
-> 
->  - For mt6359-auxadc, it has a more generic framework for describing the
->    AUXADC, but it assumes requests are channel-per-bit, and so we would
->    have to basically ignore req_idx, req_mask, rdy_idx, and rdy_mask.
-> 
->  - We also have our own software sampling, which the vendor does too
->    (Amazon Fire OS based on Linux 3.18). We'd have to have our own
->    sampling callback to do it.
-> 
-> Assisted-by: LLM
-> Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
-> ---
+ drivers/iio/adc/Kconfig   |  1 +
+ drivers/iio/adc/ade9000.c | 12 ++++++++++++
+ 2 files changed, 13 insertions(+)
 
-...here is the comment block...
-
->  MAINTAINERS                     |   1 +
->  drivers/iio/adc/Kconfig         |  11 ++
->  drivers/iio/adc/Makefile        |   1 +
-
-...
-
-> +static int mt6397_auxadc_read_once(struct mt6397_auxadc *adc,
-> +				   const struct iio_chan_spec *chan, int *val)
-> +{
-> +	struct regmap *map = adc->regmap;
-> +	unsigned int reg;
-> +	int ret;
-> +
-> +	ret = regmap_update_bits(map, MT6397_AUXADC_CON1,
-> +				 MT6397_AUXADC_CON1_CHSEL,
-> +				 FIELD_PREP(MT6397_AUXADC_CON1_CHSEL,
-> +					    chan->address));
-
-Make it two a bit long lines rather than four.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* START is edge triggered: it has to be lowered before being raised. */
-> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON1, MT6397_AUXADC_CON1_START);
-> +	if (ret)
-> +		return ret;
-
-Does it need any settling timeout (in case it was set before)?
-
-> +	ret = regmap_set_bits(map, MT6397_AUXADC_CON1, MT6397_AUXADC_CON1_START);
-> +	if (ret)
-> +		return ret;
-> +
-> +	fsleep(MT6397_AUXADC_START_US);
-> +
-> +	ret = regmap_read_poll_timeout(map, MT6397_AUXADC_ADC(chan->address),
-> +				       reg, reg & MT6397_AUXADC_ADC_RDY,
-> +				       100, 100 * USEC_PER_MSEC);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(map, MT6397_AUXADC_ADC_TRIM(chan->address), &reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*val = FIELD_GET(MT6397_AUXADC_ADC_VAL, reg);
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int mt6397_auxadc_battemp_bias(struct mt6397_auxadc *adc, bool on)
-
-There is nothing common between on==false and on==true cases. Make it two
-distinct functions and drop bool parameter. It's actually a recommended
-pattern.
-
-> +{
-> +	struct regmap *map = adc->regmap;
-> +	int ret, err;
-> +
-> +	if (on) {
-> +		ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
-> +				      MT6397_AUXADC_CON0_BUF_PWD_ON);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
-> +				      MT6397_AUXADC_CON0_BUF_PWD_B);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_set_bits(map, MT6397_CHR_CON7,
-> +				      MT6397_CHR_CON7_BATON_TDET_EN);
-> +	} else {
-> +		/*
-> +		 * Every step of the teardown is attempted even if an earlier
-> +		 * one failed, so that one failing write cannot leave the bias
-> +		 * or the input buffer powered. The first error is reported.
-> +		 */
-> +		ret = regmap_clear_bits(map, MT6397_CHR_CON7,
-> +					MT6397_CHR_CON7_BATON_TDET_EN);
-> +
-> +		err = regmap_clear_bits(map, MT6397_AUXADC_CON0,
-> +					MT6397_AUXADC_CON0_BUF_PWD_B);
-> +		if (!ret)
-> +			ret = err;
-> +
-> +		err = regmap_clear_bits(map, MT6397_AUXADC_CON0,
-> +					MT6397_AUXADC_CON0_BUF_PWD_ON);
-> +		if (!ret)
-> +			ret = err;
-
-These 'if (!ret)' bug me. What can we do if the ret == 0 and err != 0
-on the caller's level? In other words, what can caller do in such a case?
-
-> +	}
-> +
-> +	return ret;
-> +}
-
-...
-
-> +static int mt6397_auxadc_isense_disable(struct mt6397_auxadc *adc)
-> +{
-> +	struct regmap *map = adc->regmap;
-> +	int ret, err;
-> +
-> +	/* As above: the routing is undone even if the select write failed. */
-> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON14,
-> +				MT6397_AUXADC_CON14_CH0_NORM_SEL |
-> +				MT6397_AUXADC_CON14_CH0_LBAT_SEL);
-> +
-> +	err = regmap_clear_bits(map, MT6397_CHR_CON16,
-> +				MT6397_CHR_CON16_ADCIN_VSEN_EN |
-> +				MT6397_CHR_CON16_ADCIN_VBAT_EN);
-> +	if (!ret)
-> +		ret = err;
-> +
-> +	return ret;
-
-This can be written as
-
-	if (ret)
-		return ret;
-
-	return err;
-
-
-But the same Q as per above remains.
-
-> +}
-
-...
-
-> +static int mt6397_auxadc_read_channel(struct mt6397_auxadc *adc,
-> +				      const struct iio_chan_spec *chan,
-> +				      int *val)
-> +{
-> +	bool isense = chan->channel == MT6397_AUXADC_ISENSE;
-> +	unsigned int sum = 0;
-> +	int sample;
-> +	int ret;
-
-> +	/* Held across the whole burst: the channel select is shared state. */
-
-Unneeded comment. It's obvious that guard()() takes the whole scope.
-
-> +	guard(mutex)(&adc->lock);
-> +
-> +	/*
-> +	 * Once any part of the per-channel setup has been written, the
-> +	 * teardown has to run, so every exit below goes through it.
-> +	 */
-> +	if (isense) {
-> +		ret = mt6397_auxadc_isense_enable(adc);
-> +		if (ret)
-> +			goto out_teardown;
-
-Have you compiled this?
-
-> +		fsleep(MT6397_AUXADC_ISENSE_SETTLE_US);
-> +	} else {
-> +		ret = mt6397_auxadc_battemp_bias(adc, true);
-> +		if (ret)
-> +			goto out_teardown;
-> +		fsleep(MT6397_AUXADC_BATTEMP_SETTLE_US);
-> +	}
-> +
-> +	for (unsigned int i = 0; i < MT6397_AUXADC_SAMPLES; i++) {
-> +		ret = mt6397_auxadc_read_once(adc, chan, &sample);
-> +		if (ret)
-> +			goto out_teardown;
-> +
-> +		sum += sample;
-> +	}
-> +
-> +	*val = DIV_ROUND_CLOSEST(sum, MT6397_AUXADC_SAMPLES);
-> +
-> +out_teardown:
-> +	/* Lower START so the converter is not left armed between reads. */
-> +	regmap_clear_bits(adc->regmap, MT6397_AUXADC_CON1,
-> +			  MT6397_AUXADC_CON1_START);
-> +
-> +	if (isense)
-> +		mt6397_auxadc_isense_disable(adc);
-> +	else
-> +		mt6397_auxadc_battemp_bias(adc, false);
-> +
-> +	return ret;
-> +}
-
-So, this function has to refactored. And please, compile and test the code
-*each* time you update it.
-
-...
-
-> +static int mt6397_auxadc_read_raw(struct iio_dev *indio_dev,
-> +				  const struct iio_chan_spec *chan,
-> +				  int *val, int *val2, long mask)
-> +{
-> +	struct mt6397_auxadc *adc = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = mt6397_auxadc_read_channel(adc, chan, val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-
-> +		/* 1200 mV full range with 10-bit resolution. */
-> +		*val = 1200;
-> +		if (chan->channel == MT6397_AUXADC_ISENSE)
-> +			*val *= MT6397_AUXADC_ISENSE_DIVIDER;
-
-Make it if-else.
-
-> +		*val2 = 10;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7a60ffd0ddd8..3a3ae09fc10f 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -587,6 +587,7 @@ config ADE9000
+ 	  integrated circuits:
+ 	    - ADE9000
+ 	    - ADE9078
++	    - ADE9430
+ 
+ 	  The devices feature high-precision analog-to-digital converters
+ 	  and digital signal processing to compute RMS values, power factor,
+diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+index 0167d5bcdb74..e0113b62a261 100644
+--- a/drivers/iio/adc/ade9000.c
++++ b/drivers/iio/adc/ade9000.c
+@@ -695,6 +695,16 @@ static const struct ade9000_chip_info ade9078_chip_info = {
+ 	.has_digital_integrator = true,
+ };
+ 
++static const struct ade9000_chip_info ade9430_chip_info = {
++	.name = "ade9430",
++	.channels = ade9078_channels,
++	.num_channels = ARRAY_SIZE(ade9078_channels),
++	.rms_full_scale_codes = 52702092,
++	.watt_full_scale_codes = 20694066,
++	.pcf_full_scale_codes = 74532013,
++	.has_digital_integrator = false, /* no on-chip digital integrator */
++};
++
+ static const struct reg_sequence ade9000_initialization_sequence[] = {
+ 	{ ADE9000_REG_PGA_GAIN, ADE9000_PGA_GAIN },
+ 	{ ADE9000_REG_CONFIG0, ADE9000_CONFIG0 },
+@@ -1859,6 +1869,7 @@ static int ade9000_probe(struct spi_device *spi)
+ static const struct spi_device_id ade9000_id[] = {
+ 	{ .name = "ade9000", .driver_data = (kernel_ulong_t)&ade9000_chip_info },
+ 	{ .name = "ade9078", .driver_data = (kernel_ulong_t)&ade9078_chip_info },
++	{ .name = "ade9430", .driver_data = (kernel_ulong_t)&ade9430_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, ade9000_id);
+@@ -1866,6 +1877,7 @@ MODULE_DEVICE_TABLE(spi, ade9000_id);
+ static const struct of_device_id ade9000_of_match[] = {
+ 	{ .compatible = "adi,ade9000", .data = &ade9000_chip_info },
+ 	{ .compatible = "adi,ade9078", .data = &ade9078_chip_info },
++	{ .compatible = "adi,ade9430", .data = &ade9430_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ade9000_of_match);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
