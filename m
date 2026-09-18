@@ -1,63 +1,63 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55C5518122
-	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 18:59:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A4F51DB1B
+	for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 19:46:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789757945; cv=none; b=dZroGQzqq1JkEUJkKlIiIa2KfKw6LneLgml9rN7HxAeyFsLKUpuI3hKDMBrRMaRRRp3gYyNiEcXaFXiTIPE/Hw4GarH1iLKV7Mwo6KeDeoATmgkZWpm7QWKPhG52Lm6rgl/4vhIUxK8NiikK1AsP1hasA7WZgDOaqKpiy2vhJnU=
+	t=1789760789; cv=none; b=D9qdJfo6/Vd7tRwiN7h5cQ341cXFQxL7jGIDkOSwrarmu11iXN4WQksRoY2TWvBvKwVUXoHBOvB9IMn1xpQd+cr6KH5lPRCeV8rTqfzu0HPqSy9qL9UuVPu1EfcSYDGHDHSENppOoJW+tRw3piO0nJYtto0jEX+opTa86boJEzU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789757945; c=relaxed/simple;
-	bh=/FbHT9o2WMbM0FApAIv7rH49v02xoqlz6GhTyHqXgcE=;
+	s=arc-20240116; t=1789760789; c=relaxed/simple;
+	bh=k1IXWrVwbwiFJ5FN8m5Ke96kWS/YD24123z+mfdLK8c=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mzAuPlXypJfpAnS9Y5wa2r4ovYYcNQirbAb5MqENsmWH9LXYXNonTBZ7a8XPffbq5g79ePuULPsHJkXe+2TEk6448vOp28IK42bXDMKtZ/TbTHro158+lJVgteVm09RmtLyX5fMj2dNZ/rYQGZ0KsH4jWpihaB4zOerilebn3w8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eCEQTexq; arc=none smtp.client-ip=74.125.225.141
+	 MIME-Version; b=nzKu0ht3FihHl80ny625iTQGw1YQkQWZqeVBegs/orNAlxQmNDglSfIbfeAmZUm27CkUoZhSh5fPLHhXsvreuLwJznu5Lg/d3EkTeEEADDRPbmF/qgafMJn7/UmYBJz0soBsUCx3wEMWG/zzn5qrzgfSLM4wyy9te7M3MCGWikA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HtVVyp3J; arc=none smtp.client-ip=74.125.225.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eCEQTexq"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49b912d8239so8133235e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 11:58:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HtVVyp3J"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-482f6350faaso616105f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 12:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789757936; x=1790362736; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789760783; x=1790365583; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=wSwV9QyihTEWzNpSev0Rq3JhnfzG5CYZv5DMfWp7kMA=;
-        b=eCEQTexqQfROhlOufNWAVnxwNg9SWm7RaAT022ZnLAOUIea0CsR14jpof91q8EsiG1
-         13FZi3S8s6rCIUNPkshvzhI67MK6tXQqpgaxMl3RDYfHjn8d/hs7vNDiGP0KM+4docgD
-         Z4JvtoMtU+pyhXrfRtY+f0vhKjLfEAR6KLnHhrniSQu5AJ4UyrGBGVOvth3kWdjndtHn
-         XlLadJVQYInIQDQ6lujzRHHkX4mG5QB0I+jlijx5qanq4RmU0SCKJ6+BxWjfG68qroPJ
-         Xiv+p0rK3b/b0dE6pfE6YhiBcoOInCY48KzI4gvemEaBQ+1aQ670QvV8iVu2r5AYqyHm
-         A+PA==
+        bh=yWRnP7UG9al7zX73KpF10170VZIpXbd7qsbcXPsjnQU=;
+        b=HtVVyp3JEJCROBvBaPsm7w4ydLLZ8ybfOVEv0QBYJdL1svi+1ZRQjZNA9Xv2x85lPi
+         Jx2246+QF3qD7yiD8JyEEY3wG7boubNn+dkP9hvpCH3xAce620o2pesOdHXaqRZ3IG80
+         TB5t4YdWkgcAddR0YWHiVMN/7673/fhs3Pak4Z2qo20idt2UOMgu2Qcbs3fCl+Jxp4U/
+         ez50risQN+htQvKDKjIO9rDpM2PF9GY9t8iWOSLJ3FZZNNNn8bOU4kzhB9b0f7u5bqhm
+         dA+tGdNTINQAhcVyM16XIwCbIZBNuSofEvbzYii/8rEdYL1MxYCoW5CZ9gaDjQj/YJuv
+         5CNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789757936; x=1790362736;
+        d=1e100.net; s=20260707; t=1789760783; x=1790365583;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=wSwV9QyihTEWzNpSev0Rq3JhnfzG5CYZv5DMfWp7kMA=;
-        b=GjLu41O/B2Q3Pq/XKRpEj7qdS8ysjUO8ZSu7b1tw8X7D/2zRHrsfOqZNKDePNpw80i
-         zFb2x+0Ug6UFTU19Ihg5ZuCDVVu8HUd8bj8f/zY0oyjZJ1+MS0yoMa0K1wcDldP2VuPO
-         CovM3uXtof7O8GqQyH76hJ0YMc9dxidlAgbAXMcefxboiHOgqOyi5POgxBCtboVIsl2S
-         uF8cZ0KBfmqx2IPQjrpIPXiLx0kaF+tjKubKrEbQP0Mh/8OkoRN+AXIe1TGEYEptSZ6Y
-         13NV/voOgm+7vS8Sb6arNDMEUnoCulNABfBsdRcw2783eYMKhdfCMj3WR/7V5mOxCSrl
-         ZvMw==
-X-Gm-Message-State: AFuF++lraywfhkaKM5lq9PM1yyyA7tZxZXosxQmhM+G+1WCmoM+l9bVh
-	7e7YVyXi3t7aZjgX88n6tiGKa44Ho/RR/PUT4cjrKc+SKbE6B4pfB+E6
-X-Gm-Gg: AYBFou3CKaGYwfTtUEouZwmiPzrU3JvrIGXWWKJwK/5uF7sI944uTA0fMsPCioFpNE5
-	CM/VewU27kpjeKRu1EY2+WTbssXAMxqSPl3DNM0DZuU9q437K1P8p9cx/zffYQKD3Uk+M4RZi0R
-	JdGDqELBP6GOVGuGvOojlJi///z4uJQtTxFPu4zOQUkmnOiwlJ0v1W9Qh1EEyds+yA7a2AhXZcE
-	U8oDmt+DXum80Mte/EujsyVe0ft/LtS+Rpb7BrqHot++tQZu+qShSvX9O2/WIwEz2w2mFd0s9sP
-	KJDl6q5rxjyeZtBY5zcmQwwg6/d7aSaExhx9OEF22PYRTf49GscdsXzq8kB3h2CMB3GkZsaFv8G
-	qC29riNFoCFdjV2864ad1PlTIz5+nwzSbFJGiNeJdUdg4Nu4h8wh6ayJQaz8VlJG+V2DwORnCyz
-	O330H2ADHjbNifSnNiPvspk/3Oym0dId8Lh8jH5yQIjbwpcypr0gJZr1eUlfyI5wjKZxRzZVpQg
-	XWgmttHoi3cWnPid/kntJ0Cb1wrgGVGmk7fxRxPIU+Y+e4=
-X-Received: by 2002:a05:600c:3512:b0:49c:e1cd:536 with SMTP id 5b1f17b1804b1-49fc56aee64mr48011805e9.12.1789757936371;
-        Fri, 18 Sep 2026 11:58:56 -0700 (PDT)
+        bh=yWRnP7UG9al7zX73KpF10170VZIpXbd7qsbcXPsjnQU=;
+        b=mzpYzw/7bW5CHNs2EQwfGFCheuzHyaXDI645d9/g8695Jh4By/J1bq6W/1Z1q+KTj/
+         KBiASOVb1/t03Xz4Ad+wMMTrR2mogd9gzvbz4+1Y1/Hadpxhxzcccwom3QaTEDoIjaqj
+         MdhZnsCUQOc60d30EL6OgKWI5I5KaAC5z2CqEVINDv8dxDnv96O25u6eq0Dk78bqizfU
+         5v2YOVBxx/xGBYTCbW4WxMj1/DHTe90MWulyGBesjRoC63v3gEM6m7xPCJxbmc0RVZq3
+         XzGdgHeGUPmXGwUlyIwTJJJvyULMlj5GulI/FpAEQZVgGBccpqQ1WRaOq/Ukmux+vjac
+         19sg==
+X-Gm-Message-State: AFuF++lrlLmX1bCjbX9CsSEHHsmtKynGWdQeuSBscpZtCHPHNa3ivAJ0
+	B4Kr0UtBN+LkNdwxVqSr/3v4Nsk7mGfTENzeWlOJBRG8WddZ7UOvp9Y0
+X-Gm-Gg: AYBFou1JLbC55k5SXeRdqpHy4TtBPYAdVB6dL8Imkm3aa+6BGy6GvpJhel8lX7e/fxd
+	DxRDczmzgrM9wrRk53MGwtIOy4HQkh22G93BuZ2YdKkRcVOnNjJHRc/c2tmXDxiwwwpguuzKJx4
+	lJFgFhg9rqQG8jDRLC9UbvfTN6efEvRNdkH4monU7U0WgFDF0+HWZ6nhCHTl1RAi6bIYrbIuddf
+	/9a5pV84hNp298XJ9h9G8kwjF/pbuqUpUCWyyLjQbOs1XPh3TmVARlZkQoGjhb+L4cdXtolj0jP
+	1W67HHK9O6+x/pN+Vpe8l7dlXhc6kF+/CdAyj2cFoS3d3snNxWEN3zIucXONgltoFRcBk9WLXGy
+	jFXn/rz293idFZW90FG42hOmyKOzgWB/T3o8LOJMfjOOB/9IzI2EAEpX1+i+TwCJAOVJDtHkVmr
+	vAUwdgVc1Kpe4UoTdkEzPXlc1JIogDBNmhw6YizPSFxtouVeHr5o5n4g9mcUTF5bRgqNIRx3a/g
+	aBvAm59e9foaLklHSdYiCWpyhBjEmuMWOpmp8YWC2Zacks=
+X-Received: by 2002:a05:6000:41c9:b0:487:1646:8740 with SMTP id ffacd0b85a97d-4871e261a94mr4620940f8f.29.1789760783335;
+        Fri, 18 Sep 2026 12:46:23 -0700 (PDT)
 Received: from localhost.localdomain ([176.220.123.16])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0eab91sm14380145e9.1.2026.09.18.11.58.52
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48724562aebsm890025f8f.14.2026.09.18.12.46.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 11:58:55 -0700 (PDT)
+        Fri, 18 Sep 2026 12:46:22 -0700 (PDT)
 From: Omer PALA <palaomer100@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -75,12 +75,12 @@ Cc: linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
 	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
 	linux-arm-kernel@lists.infradead.org (moderated list:ARM/ZYNQ ARCHITECTURE),
 	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
-Date: Fri, 18 Sep 2026 21:58:06 +0300
-Message-ID: <20260918185813.5070-1-palaomer100@gmail.com>
+Subject: [PATCH v4] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
+Date: Fri, 18 Sep 2026 22:44:27 +0300
+Message-ID: <20260918194434.9240-1-palaomer100@gmail.com>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260918174809.17502-1-palaomer100@gmail.com>
-References: <20260918174809.17502-1-palaomer100@gmail.com>
+In-Reply-To: <20260918185813.5070-1-palaomer100@gmail.com>
+References: <20260918185813.5070-1-palaomer100@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -95,15 +95,13 @@ xilinx-xadc.txt file.
 
 Signed-off-by: Omer PALA <palaomer100@gmail.com>
 ---
- PATCH v3 Details:
- - Fixed $schema URI: "schemas/meta-schema.yaml#" -> "meta-schemas/core.yaml#"
- - Added "required: [xlnx,external-mux]" to each allOf/if block so the
-  none/single/dual mux conditionals only match when the property is
-  actually set, not just absent
+ Changes in v4:
+  - Fixed validation bypass for default 'xlnx,external-mux' mode by using 'not: enum' logic in the allOf block.
+  - Applied minimum/maximum constraints correctly to the 'reg' property under 'items'.
 
  .../bindings/iio/adc/xilinx-xadc.txt          | 141 -------------
- .../bindings/iio/adc/xlnx,xadc.yaml           | 191 ++++++++++++++++++
- 2 files changed, 191 insertions(+), 141 deletions(-)
+ .../bindings/iio/adc/xlnx,xadc.yaml           | 189 ++++++++++++++++++
+ 2 files changed, 189 insertions(+), 141 deletions(-)
  delete mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
  create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
 
@@ -256,10 +254,10 @@ index f42e18078..000000000
 -	};
 diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
 new file mode 100644
-index 000000000..ffaada52f
+index 000000000..388511476
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
-@@ -0,0 +1,191 @@
+@@ -0,0 +1,189 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +
 +%YAML 1.2
@@ -294,8 +292,6 @@ index 000000000..ffaada52f
 +  clocks:
 +    maxItems: 1
 +
-+  interrupt-parent: true
-+
 +  xlnx,external-mux:
 +    description: Selects the external mux mode.
 +    enum: [none, single, dual]
@@ -324,8 +320,9 @@ index 000000000..ffaada52f
 +        properties:
 +          reg:
 +            description: Pair of pins the channel is connected to
-+            minimum: 0
-+            maximum: 16
++            items:
++              - minimum: 0
++                maximum: 16
 +          xlnx,bipolar:
 +            description: If set the channel is used in bipolar mode.
 +            $ref: /schemas/types.yaml#/definitions/flag
@@ -344,11 +341,10 @@ index 000000000..ffaada52f
 +
 +allOf:
 +  - if:
-+      properties:
-+        xlnx,external-mux:
-+          const: none
-+      required:
-+        - xlnx,external-mux
++      not:
++        properties:
++          xlnx,external-mux:
++            enum: [single, dual]
 +    then:
 +      properties:
 +        xlnx,external-mux-channel: false
