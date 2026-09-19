@@ -1,165 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 339B647255C;
-	Sat, 19 Sep 2026 10:36:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C54A4718D8
+	for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 10:44:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789814202; cv=none; b=KprbTAuuKsHb27wbkQ6KhwjMC81Gvbyj5Lku3D3qQVjQ1kqbkiRhenxGuR56JYMWITM2L4L4nzTRLNTdTzmZ4npxUiMBENiNXbuVpRj/NwPUQkuDs2IMmJZYt31U2YlskMu64FSqYX9XK+ZRTY1IsYrKsEKlXjh4Cz8ePx2Bwgg=
+	t=1789814692; cv=none; b=EXp3NFhCiYQht7QYxI6MKh6+kYfUumBzYGTHUkeUB0SuUJhzvifetygzdF4AsDIpRXD7sFtP6rgIjU96zac1YiBOOT0SXSyWJ/K113r6rKigK/qB4g2pMlBhYaO/K9pPzeCoJu4mE6mI5xmiOOK0pSgqBwDE3ymH/y/dzIpbgdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789814202; c=relaxed/simple;
-	bh=6Jh2nVeKWv5uHsIXOSo7+EXH3R1zxIBSFylkX5LiR0g=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DQOBHO9v0/eDuHgXhOI8JQb1S5IDXRBU2ohkSIUurjEJ8gYFMAE6a97v1N/1fWoEWxHtrnjd4H2fCSo60HbO7JqY34+AHtId2jr5zTVySIgvGmtELtbHgiSFlZNEvBnHYC19hswmfJHVYC4wPfVZXZMMIgHa0lus9RdtD1PwW6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IYg87xH1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1789814692; c=relaxed/simple;
+	bh=TJmcyUMfUmcsYyZScDlt8xhUYwQRzwxjW+m4HiJ0NoA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nxc9/5ISYvewq0K8TGw6gguOLiq3B6FIUN6VWzCLtnHFsld/XcyWWitkHixOuhuYJQ/Dk+dEAvFunRhQkLzX3u4Vj6vCE3JVkf/TPlEPt2t1WkDrTGd5j53rNaegjfoxxBAqFOFcShNxuAXjNaC0iJk6gMIyox5HGtc3AXvnR18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VSlcqc2W; arc=none smtp.client-ip=74.125.225.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IYg87xH1"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 15935C2BD00;
-	Sat, 19 Sep 2026 10:36:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1789814202;
-	bh=6Jh2nVeKWv5uHsIXOSo7+EXH3R1zxIBSFylkX5LiR0g=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=IYg87xH1B5cuFQqpacYC2EQe+8Fijhny5m5ahOUEpaoU+iC+Hz5vna1AggNI+got6
-	 +YW2GSheKVeZcGRbByDO+SpqaVC6uvDU2ZW5TOEKPjlKxxsQO4N1E/O4uwlQF8ZGUO
-	 UkipoWRfC/K/QyZTCffjxc0aIox3Yh/tvS8gmtPLHFqtYF+wXBEI0diUEGQxQIGHvE
-	 o20+1qEcq/UXtLtMg2EvZzxn64/xddSrfEsHT8c3TK8ytmyf791+p7B5lALLHoIprA
-	 5jSuQADqKbeqLRwqGH0snhPcLlz0GeTk+/yeEO9YlHdUMontb4y4CqmaGUOA9AVsH7
-	 JT3P/hXowQ7Ig==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F02C982DA;
-	Sat, 19 Sep 2026 10:36:42 +0000 (UTC)
-From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Sat, 19 Sep 2026 16:06:37 +0530
-Subject: [PATCH v6 14/14] iio: temperature: hid-sensor-temperature: convert
- probe and teardown to devm-managed resources
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VSlcqc2W"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49cd38e0e5dso20135645e9.2
+        for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 03:44:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789814689; x=1790419489; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wg8QRQKmkIfgrPNpMhEYrYo1EuPYnVkkY2nrckW83dc=;
+        b=VSlcqc2WJfSP6ou9NPzP/SwWKUe7vGvrDVUYsQVIaVowvgfXUdu2Py9GLhrwD3WHvo
+         EIE5RGo4DuJQqqnniakSvii/bQtP5yTniXnOyvDjiyKAE9STRHKs19q3602EOwDycTe8
+         lor32Rnrc7Pvb9r3Ux511lj6KqO9v+R86U0FA6wIfza6UyQ4K1ejbclzxKEHJRfrWNA5
+         jUKuJnwMqs8UAh4ri2pU2cpefqUzaW8l/YJUqk2gsOI186107ke1bOfREsNyLuDzbzPo
+         LWgXlFKvNcJGLAra0FyIVB/d7HagC1iWMjL3GSEpM7hH6HEIlZ+MfOleIfVvAI9/WYhL
+         GXSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789814689; x=1790419489;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wg8QRQKmkIfgrPNpMhEYrYo1EuPYnVkkY2nrckW83dc=;
+        b=zZjWQGXjtd04rOhXtmakYvYYoiWD/Wc9JDKLWg8ZM7vcQp/VAXME/HxoUOFjGcHWaO
+         sKGEQYj52D2VY9cF3abbXoNoMxEpUZFifee8Pk0RigowXvkcNw3CXtZwTS0SioNzK2xJ
+         X3R154+DnyNK67fpfWwfFZbCm4GV2pR26gNuXCK5Men84m0Zoj6q1IdTtftUUumdEkWp
+         ZqZm8Wh6m5xGl1utYFy/AweSb1MYmo4VqierXfXNP+Uhl0TwuUocW2wtGlvUMnFLRcgA
+         ru6yTd3l679fuLZWdzJxVdLjQ0/TMovgZpTvcETh1NFDajeJ8HwYCzhc306TuD6LIeh9
+         zVTA==
+X-Forwarded-Encrypted: i=1; AKwUvBw656a6bhDyyNvZPWj9MlKpTvi3QUzbmxlfWRCSiSzej5H89LRimru3T2l7oQSdKZ5xW6vHTtl1sQw=@vger.kernel.org
+X-Gm-Message-State: AFuF++lzxi3bugT23OTTFNuctjz5LW1zr3S0YUZDeUH9NPeebY1DlyoF
+	UKoTHq95HcvcK3ciXlXPDSdGVEHt9TI5LRJSEsQhJ+2irBc0vvkZfLwf
+X-Gm-Gg: AYBFou0gpZ5VXvpvouOaWTMCwiu8eWVVUgabRsqZrbulvPzXvCl+lqOL1Bc4gCf0S/x
+	Ll+f8VVOINCKPfTZsXkNtmPzkOg47f88kj1hx58QzqHwZjWqiu4MEiir9zU1i8zlaHdQtUM2iEH
+	pSv0NHC2547MAd98Yk+VoTazznKew/eQ1jPt7PEJO41/6VCYiHT7Z1TM8d9wLpckmgMWKD+6+TL
+	F/m5AC1WMv/AG5yLdVJNTTx6khKyRKJL/eD9hpymSTcA2lTen4EoP6/Hj/8DLS/wIamVkxtXIQa
+	+YLtFGMr1XSz6JsU5jukEJvHLJ66iYdXldyCHTypcjw0V0JQF40ur1VCgznK0CHkGN/OMrgJwTw
+	v5QT3neBroVu6OEVITP34blTgsNXIuRQusF0Ku11UABz8gzfRi/oCf+j4WbyBIz8wW75qkgwCLb
+	4IQ6z4NAzqSWBddpzEPyNTyqN/0+1go0Y6Ca6a1HnAMT0ilaTNeFOGp976lBzE3I70x+s=
+X-Received: by 2002:a05:600c:154c:b0:49f:c451:b4ab with SMTP id 5b1f17b1804b1-49fc5743c34mr68901275e9.29.1789814688641;
+        Sat, 19 Sep 2026 03:44:48 -0700 (PDT)
+Received: from localhost ([2c0f:3d00:6be:8900:ce5e:9212:ea4b:f30])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd074336sm62992825e9.8.2026.09.19.03.44.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Sep 2026 03:44:47 -0700 (PDT)
+Date: Sat, 19 Sep 2026 13:44:44 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: jic23@kernel.org, gregkh@linuxfoundation.org, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, linux@analog.com, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+	joshua.crofts1@gmail.com
+Subject: Re: [PATCH] staging: iio: adc: ad7816: Protect sysfs attributes with
+ mutex
+Message-ID: <aq5nnHPp-tg3C6k0@stanley.mountain>
+References: <20260919085513.9173-1-abdelnasserhussein11@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-14-d577b2371b3c@gmail.com>
-References: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
-In-Reply-To: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- Benjamin Tissoires <bentiss@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-input@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789814199; l=3471;
- i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=1Xb2KI32YvGlS/Xf3zjMfPomVo3QjnOydjNIX/ii4Sk=;
- b=PMW2nTN2cnFdguySR2C8vQb0ytoKT1PRHbd3zQGsre6RwZ6Kitm/xx4KDZwGqIEpTTFyqAWkl
- /dUsZcTaRwkAocZXal0WZte9Sj1FIXoWVTe8y0liH0tpqMlFykzkyVs
-X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
- pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
-X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
- with auth_id=848
-X-Original-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Reply-To: sanjayembeddedse@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260919085513.9173-1-abdelnasserhussein11@gmail.com>
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Sat, Sep 19, 2026 at 11:55:13AM +0300, Abdelnasser Hussein wrote:
+> The sysfs store functions (ad7816_store_mode and ad7816_store_channel)
+> modify the device state and toggle GPIO pins. If accessed concurrently
+> by userspace during an ongoing SPI transfer, this could corrupt the
+> SPI transaction.
+> 
+> Add the existing chip->lock guard to these functions to serialize
+> access and prevent race conditions.
+> 
+> Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 
-Convert HID IIO driver resource management to use devm-managed helpers,
-tying the lifetime of all resources to the device.
+Add a Fixes tag.
 
-HID trigger setup, IIO registration, and sensor hub callback resource
-are now managed using devm APIs. Cleanup logic previously handled
-explicitly in probe error and teardown paths.
-
-This simplifies the probe path by removing goto-based error handling,
-eliminates the remove callback entirely.
-
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/temperature/hid-sensor-temperature.c | 39 ++++++------------------
- 1 file changed, 9 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-index aa5a2b872247..ac5a287d1de3 100644
---- a/drivers/iio/temperature/hid-sensor-temperature.c
-+++ b/drivers/iio/temperature/hid-sensor-temperature.c
-@@ -189,11 +189,12 @@ static struct hid_sensor_hub_callbacks temperature_callbacks = {
- /* Function to initialize the processing for usage id */
- static int hid_temperature_probe(struct platform_device *pdev)
- {
-+	struct device *dev = &pdev->dev;
-+	struct hid_sensor_hub_device *hsdev = dev_get_platdata(dev);
- 	static const char *name = "temperature";
- 	struct iio_dev *indio_dev;
- 	struct temperature_state *temp_st;
- 	struct iio_chan_spec *temp_chans;
--	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*temp_st));
-@@ -230,42 +231,21 @@ static int hid_temperature_probe(struct platform_device *pdev)
- 
- 	atomic_set(&temp_st->common_attributes.data_ready, 0);
- 
--	ret = hid_sensor_setup_trigger(indio_dev, name,
--				       &temp_st->common_attributes);
-+	ret = devm_hid_sensor_setup_trigger(dev, indio_dev, name,
-+					    &temp_st->common_attributes);
- 	if (ret)
- 		return ret;
- 
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	temperature_callbacks.pdev = pdev;
--	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE,
--					   &temperature_callbacks);
-+	ret = devm_sensor_hub_register_callback(dev, hsdev,
-+						HID_USAGE_SENSOR_TEMPERATURE,
-+						&temperature_callbacks);
- 	if (ret)
--		goto error_remove_trigger;
--
--	ret = iio_device_register(indio_dev);
--	if (ret)
--		goto error_remove_callback;
--
--	return ret;
--
--error_remove_callback:
--	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE);
--error_remove_trigger:
--	hid_sensor_remove_trigger(&temp_st->common_attributes);
--	return ret;
--}
--
--/* Function to deinitialize the processing for usage id */
--static void hid_temperature_remove(struct platform_device *pdev)
--{
--	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct temperature_state *temp_st = iio_priv(indio_dev);
-+		return ret;
- 
--	iio_device_unregister(indio_dev);
--	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE);
--	hid_sensor_remove_trigger(&temp_st->common_attributes);
-+	return devm_iio_device_register(dev, indio_dev);
- }
- 
- static const struct platform_device_id hid_temperature_ids[] = {
-@@ -284,7 +264,6 @@ static struct platform_driver hid_temperature_platform_driver = {
- 		.pm	= &hid_sensor_pm_ops,
- 	},
- 	.probe		= hid_temperature_probe,
--	.remove		= hid_temperature_remove,
- };
- module_platform_driver(hid_temperature_platform_driver);
- 
-
--- 
-2.34.1
-
+regards,
+dan carpenter
 
