@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0815D3624A9;
-	Sat, 19 Sep 2026 07:08:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F7E2E040D;
+	Sat, 19 Sep 2026 07:25:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789801707; cv=none; b=iPhD5+iZh+JQ1UxMAYrLf76//2nDjqhUcXjiU8FAyGYzPu9sY+/RMLwcP9yyqtTZWYFMOIHDzCf4VVOJHSMQaso/i5SIsHzdfx33hnYKQ7sa3HkS4b5mfi4OfCH02teTui6X21MYpZcFNYkGZ6vDlWZFErQ1Ah9WRvraZ/roxjo=
+	t=1789802726; cv=none; b=Meb2relDuZHq4Gjj61zNZD8BGBnFwiDaV9yqFhNRQF/Hp7qW4TT75qlSV5V+NAW7BA4D2DvgWNDxPDtOaxxJVVqi/S2+Rot1tWMzVxBfSvVrg5Y8L+PiW5BD+lL479uc2RzPiElOndEko6Ejnn1G/B3VccmBEABlXqnFI+X8+/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789801707; c=relaxed/simple;
-	bh=5MGz3WuTKdMlxJLz4fLHKYHs7Zt62FQYjI6usArljZU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LZjZGC9/jx1bFCCAjPaIhprbj3iauy7fEXpRw6ROzh+mIOc7V37XUl1PySyl9Th3/9gFQrph6zV7O9zt/2F8uR7NI4XXwnNFbi01ZkNMNEtrBpjxAwKQ0RiMUN6NtDhLAVX4+P4h6ux5zq94063RX5zOwTF8Y0x9Ifmippcq1E8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BCh+Q1fk; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789802726; c=relaxed/simple;
+	bh=dZUeROihmHBFdkbPDVuhMmWdYMvUMfvtMDaVHHDnscw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=gsM1Gd18Og1rNW3TtJx/PVKBAxWyDMv8SIINy2sMnJ4u6G2uv7cwYWoe0xgKzcR0NUccxryRBzucgNZPpCnRgk7e5BD4zXzp49xG4zcVO0vnkK7fpC6B6hJV3c8XwxWzKHmxqtqbzHiLaevstEHv5dEhQkexI+GVQ214TeBRKI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HoNoCvkv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BCh+Q1fk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC9F41F000FF;
-	Sat, 19 Sep 2026 07:08:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HoNoCvkv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8BE1F000FF;
+	Sat, 19 Sep 2026 07:25:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789801705;
-	bh=uhaSLRWxWnpOZ1hMGZ3P8vEzC790v0CsHkY9724kydk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=BCh+Q1fkXZMtjVafQ5YGFV+h5db354VNq/ELCWyC4KkM9EOKXmUTlqgi+ma1wXozp
-	 DftsecIquMnGZU/bn7dlqfHB0SFowcKCtqYqFYBKKfUSA8s3K9Rsk5SMYPxnV+DeBV
-	 Y5Sj2gXory2ScdEG5Sx21lZEfxqdEdqZ9ssZyQau7j9QTMvL/H4vwGIsnSHVVKjlqr
-	 r41sO26J5aU+9ztpXEn5Q6cqRxLTKJH0TIlovq31RymcWsd+tEVLn+dCLOvNd83tjr
-	 uc83mnTCusi1VsH/mO2vViF+aXTvauBuk/3UmRhVl0wbrNfua+U/YMiqJx6DLrDv5O
-	 AiKJ0In7NVj/A==
-Message-ID: <457bb3d5-1d73-4acb-9ef0-4e40de6bdc94@kernel.org>
-Date: Sat, 19 Sep 2026 09:08:04 +0200
+	s=k20260515; t=1789802724;
+	bh=fAD6GbG/00mvVvJ/4iMpR9akbfBBXwDJ9dBrI57N/Qg=;
+	h=Date:Subject:To:References:From:In-Reply-To;
+	b=HoNoCvkv0GrWiliCtbLtqZZGme1pfStF/olhW/47guAXcMB8XnKa3Sh07a+mqlA6m
+	 5MTEXnHesA9Aab6th5cv0EJtMAHnoI1KvzryYAREHixC5mQKvhz2RW/uV4+75H89gg
+	 trPRt5Fm45TWpqqvFlxyg/OKDnEh3gzQoKDJTBH+IOQQZsmysQuRoInJwqPnfPQ9HX
+	 V4S31Htc2fn25ZBLkLAXyIIEFjFExdfJoYDuIkmT/QZKYYTGNRYoYBDEy/70bWUf8B
+	 qUCuSXQjdzUjn7QcMMQMywN1DTQcCZ8y1gYb6Ccd1CnniXc+HmjtdS07D3s0K2SxGA
+	 +6d9/xrns//Gw==
+Message-ID: <b787a787-5011-4f14-9332-4cca098b374d@kernel.org>
+Date: Sat, 19 Sep 2026 09:25:17 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,46 +35,20 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: Expand flow lists to block lists
-To: Daniel Matyas <matyasdaniel006@gmail.com>, Lee Jones <lee@kernel.org>,
- =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Ulf Hansson <ulfh@kernel.org>, Liang Yang <liang.yang@amlogic.com>,
- Miquel Raynal <miquel.raynal@bootlin.com>,
- Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>,
- Neil Armstrong <neil.armstrong@linaro.org>,
- Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
- Manivannan Sadhasivam <mani@kernel.org>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Will Deacon <will@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>, Vinod Koul <vkoul@kernel.org>,
- Thierry Reding <thierry.reding@kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>
-Cc: Jose Abreu <joabreu@synopsys.com>, Ray Jui <ray.jui@broadcom.com>,
- Scott Branden <scott.branden@broadcom.com>, Atish Patra
- <atishp@rivosinc.com>, Shawn Guo <shawn.guo@linaro.org>,
- Dmitry Osipenko <digetx@gmail.com>, Thierry Reding
- <thierry.reding@gmail.com>, Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
- Okan Sahin <Okan.Sahin@analog.com>, devicetree@vger.kernel.org,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@sifive.com>, Conor Dooley <conor@kernel.org>,
- linux-rtc@vger.kernel.org, Ricard Wanderlof <ricardw@axis.com>,
- patches@opensource.cirrus.com, Lukas Wunner <lukas@wunner.de>,
- Chunfeng Yun <chunfeng.yun@mediatek.com>, Eugen Hristev
- <ehristev@kernel.org>, dri-devel@lists.freedesktop.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org, linux@analog.com,
- linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
- linux-riscv@lists.infradead.org
-References: <20260917144028.459053-1-matyasdaniel006@gmail.com>
+Subject: Re: [PATCH v5] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
+To: Omer PALA <palaomer100@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>,
+ "moderated list:ARM/ZYNQ ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20260918194434.9240-1-palaomer100@gmail.com>
+ <20260918203257.6034-1-palaomer100@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -120,23 +94,31 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260917144028.459053-1-matyasdaniel006@gmail.com>
+In-Reply-To: <20260918203257.6034-1-palaomer100@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 17/09/2026 16:40, Daniel Matyas wrote:
-> Running dt_bindings_check returned:
-> [error] string value is redundantly quoted with any quotes (quoted-strings)
+On 18/09/2026 22:32, Omer PALA wrote:
+> Add yaml devicetree binding for xlnx,zynq-xadc-1.00.a,
+> xlnx,axi-xadc-1.00.a and xlnx,system-management-wiz-1.3 from
+> xilinx-xadc.txt file.
 > 
-> The files used quotation marks in flow lists because the strings had
-> commas and these commas were interpreted as separators. Convert flow
-> style lists to block style lists, so that there is no problems with the
-> commas.
-> 
-> Signed-off-by: Daniel Matyas <matyasdaniel006@gmail.com>
+> Signed-off-by: Omer PALA <palaomer100@gmail.com>
+> ---
+>  Changes in v5:
+>   Fix validation bypass: xlnx,external-mux-channel could be set even
+>   when xlnx,external-mux was omitted entirely, due to "not: properties:"
+>   being vacuously true when the key is absent. Now uses required +
+>   properties with if/else.
 
-Ignore this patch. Daniel sent it THREE times, so we need to respond
-three times that it is wrong.
+How many versions are you going to send one day? If you only used search:
+https://lore.kernel.org/all/?q=dfn%3ADocumentation%2Fdevicetree%2Fbindings%2Fiio%2Fadc%2Fxilinx-xadc.txt
+
+I asked for this indirectly in your staging patch. I pointed previous
+discussion where I said work was already done and received comments.
+
+The lesson to take from that was to CHECK for existing work and READ
+existing comments.
 
 Best regards,
 Krzysztof
