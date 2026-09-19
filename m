@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D583603E9;
-	Sat, 19 Sep 2026 08:25:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9452618C008;
+	Sat, 19 Sep 2026 08:31:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789806314; cv=none; b=eDJkP4TRwLIAfQN8DKozZ+nVgOR7YliZPmEZC1dtyJBn5NQYPOIhjt6Cy2SwzeTB7WVVqJPZ64v3T1wQjEw9u++XBqBt7JOS4w7D+UNqp6+jerT+yHDTpkEB8AEo+/yQe/+BknclAx/Zo96nJyW6Xee6ynjZ4d5zEp9AGPULkHM=
+	t=1789806666; cv=none; b=lLiHFI8ChyCbZlMAJiUpAo5gRwzIGIrLCYv03XU2vYGTTV0PfhEXf2SohcwWQrDlKlLdqOSsphZLz7YGONnEOBMTdVPJ94zxZrvsZmr76oWBE3GBdCloRjL1ut7KiEiOEX2RmAE3wJdLFhQrc/qeFlYbyg3JcmNTIN2wHquYDuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789806314; c=relaxed/simple;
-	bh=IPnxpLXknb+Homj3tnTkblNUzWmamqNYzqMzUcG9lxw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YiqHes8EvVuAWOsleUWQHipPu1tW6jTLtH338YG8RrR5SYOMPg2ACI0IHJnl20OF++P7QdnTsfF6ve9kpVLlH42UjU1BVzOqw4JwQgZOtrdkAelF8FsuYJrTXSuOAqwJe1kT5PWXnpLmYYuRVosmmNC1O1ApM/kW/lQPizzMOQk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h7JW3+0R; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789806666; c=relaxed/simple;
+	bh=X6RL2JI3kxJv4dgANFf7fYX5rdyc5+2L1E2U6vdK8OQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=sPRDHdFgpUsi9yeQ8bMhO8QdumOIT1YM4ENsFkM4yY3PFb6LyuC+U2Po1up3PkucFyoz5KOla+4lg172NLVByEeVH250ACbECIhGgLwL8uBAykIT0E51BcbQvISe71hhCEd98fIWdbhghXeaCcpnD5VVWV4SH6ZJwWngrYBP/hY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AnoKd96W; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h7JW3+0R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4DEA1F000FF;
-	Sat, 19 Sep 2026 08:25:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AnoKd96W"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDAC1F000FF;
+	Sat, 19 Sep 2026 08:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789806312;
-	bh=xOAMUEIxI8rPd83YPsqibNb4uijIWIdFhQP0S6k7ADw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=h7JW3+0RV6wCHekwxHyTuSDyAfF9uOFETx0DezDhPjhtQrcEV4PT75QzPDePyhvBv
-	 RxKPqI32He16K4yzL1wQqRS+KEoCO21GxW2seH8DDch69Fw29GcSS1q8Idb4mMQ8gy
-	 NdU7lSnnVPIGrHla8edyQp/tXKPgPja1Oo7IGv3d8fEre6G6fbWKmCii02H3ErN6lj
-	 kdJXYdB3qg1xQLt9hQ9rdA4ia0jCRucDeNE+EUN9znToE5qYF9trJi624GDavoWNN2
-	 FmhOUs6FM3ZIoFhrzR9psOVYalO9y423r+ug4LaylOQ/edJNLvKX6Zha10x3paOeIH
-	 sqLzLSRl6IbmA==
-Message-ID: <8bf084cc-b8de-4309-a35c-773e45ffe14e@kernel.org>
-Date: Sat, 19 Sep 2026 10:25:07 +0200
+	s=k20260515; t=1789806665;
+	bh=WJXr3mXMac0JiWtkpJtm5+HHxvx39jh0W9RxZ5cTS5I=;
+	h=Date:Subject:To:References:From:In-Reply-To;
+	b=AnoKd96WTeitUYdUpwftrsXRCLhoDG7v2blshgwQjepAAFb9gLjouIhcQ3qNexnt1
+	 tX1aBt4kYpu5cmWOX8dAG0LlD/S0stW7ySbQbhNH/s/buaNl7GycJx9quOaHYVwM0/
+	 sKhD8mdycLJyJGVP+WYESwxVdVNoHvmTg6NtOBI4u+FROuShMiGTmHhXKIlarFGPnr
+	 +TSbqTOnOdQ5XJBsYZ7PyUKgrQgZ43DFhHWi6jlfhYl4p+hTlOZYsC+pFcJuYg84r+
+	 GAFqWo5bcWFIGKKoLwWy3AVcI0BxLs939p+VAHgB341l59QnOYq7twrfEiaJXkkwPV
+	 +i1cyvbr4DowA==
+Message-ID: <2585bfec-a8f1-4bb6-b729-fac62af40926@kernel.org>
+Date: Sat, 19 Sep 2026 10:30:56 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,15 +35,22 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] mailmap: add email mapping
-To: Maxwell Doose <m32285159@gmail.com>, Tomasz Duszynski
- <tduszyns@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+Subject: Re: [PATCH v5] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
+To: Omer PALA <palaomer100@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <20260713223046.20779-1-maxwell@maxwelld.cc>
- <20260713223046.20779-2-maxwell@maxwelld.cc>
- <CAKqfh0Gu-iZ5ucKXWY=wzkUHSm1r7-YjaXExuq=tGcjqg5eerA@mail.gmail.com>
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>,
+ "moderated list:ARM/ZYNQ ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20260918194434.9240-1-palaomer100@gmail.com>
+ <20260918203257.6034-1-palaomer100@gmail.com>
+ <b787a787-5011-4f14-9332-4cca098b374d@kernel.org>
+ <DLJ50GBWD392.55LXSSAFNR9X@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -89,27 +96,28 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <CAKqfh0Gu-iZ5ucKXWY=wzkUHSm1r7-YjaXExuq=tGcjqg5eerA@mail.gmail.com>
+In-Reply-To: <DLJ50GBWD392.55LXSSAFNR9X@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 25/07/2026 04:10, Maxwell Doose wrote:
-> On Mon, Jul 13, 2026 at 6:31 PM Maxwell Doose <maxwell@maxwelld.cc> wrote:
->>
->> I'm transitioning to a new email, add mapping to keep email up to date.
->>
->> Signed-off-by: Maxwell Doose <maxwell@maxwelld.cc>
->> ---
->>  .mailmap | 1 +
->>  1 file changed, 1 insertion(+)
->>
+On 19/09/2026 10:07, Omer PALA wrote:
+> Hi Krzysztof,
 > 
-> Ping
+> I assure you this binding patch was written manually by me.
 > 
-> I'm also away right now (sorry for not mentioning).
+> That was my third DT Schema i have ever written.
+> 
+> I used ai to understand the structure of dt schemas and i wrote this
+> myself.
 
-You received comments, which apparently you decided to ignore and ping
-instead.
+I do not believe that. I quoted the exact part which is impossible to code.
+
+> 
+> My intention was to add the Devicetree binding for xlnx,xadc devices.
+> I apologize if the YAML schema structure or formatting violates current
+> dtschema conventions.
+
+The AI slop violates.
 
 Best regards,
 Krzysztof
