@@ -1,148 +1,142 @@
-Received: from mail-yx2-f12.google.com (mail-yx2-f12.google.com [74.125.224.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2252225403
-	for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 03:46:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0815D3624A9;
+	Sat, 19 Sep 2026 07:08:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789789588; cv=none; b=ChDA551es5o9KcaaMI/FWS2joSWyCGohC8SPxri/x0562lRrmkipDQEjr9y7dQDDdbz/UZMdSj+t4c41Lzq5C91jCFqF1YajFeP+QRMH5W7AQH97N2C1zgcc1Bec+MHYKfqq0gtddBn78wjtaCBYF66VOXW/IXUbdhIhmWWIQp4=
+	t=1789801707; cv=none; b=iPhD5+iZh+JQ1UxMAYrLf76//2nDjqhUcXjiU8FAyGYzPu9sY+/RMLwcP9yyqtTZWYFMOIHDzCf4VVOJHSMQaso/i5SIsHzdfx33hnYKQ7sa3HkS4b5mfi4OfCH02teTui6X21MYpZcFNYkGZ6vDlWZFErQ1Ah9WRvraZ/roxjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789789588; c=relaxed/simple;
-	bh=fHoduSfqmeHU5vnirE2APiqfMdBihLmLNXcPHXFuxyw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i/bKpt/O0Rcz3DRbyaFHY9T2BU8LgnVbC8Ik0gu8buLeAxBMdMZNVThGJt99ok1grUPWxWhxo3h7CEcAGbVI1iVrtoOSA+4TqquUtW3a3AY0jOAT+88yrJqwE6fQkD0atDD8TxVvAPFyBvOoKM8T3p8Bhr33L1BjEmO2yg0gm/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KMt7HpIH; arc=none smtp.client-ip=74.125.224.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789801707; c=relaxed/simple;
+	bh=5MGz3WuTKdMlxJLz4fLHKYHs7Zt62FQYjI6usArljZU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LZjZGC9/jx1bFCCAjPaIhprbj3iauy7fEXpRw6ROzh+mIOc7V37XUl1PySyl9Th3/9gFQrph6zV7O9zt/2F8uR7NI4XXwnNFbi01ZkNMNEtrBpjxAwKQ0RiMUN6NtDhLAVX4+P4h6ux5zq94063RX5zOwTF8Y0x9Ifmippcq1E8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BCh+Q1fk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KMt7HpIH"
-Received: by mail-yx2-f12.google.com with SMTP id 00721157ae682-85d43daa8f4so10061067b3.3
-        for <linux-iio@vger.kernel.org>; Fri, 18 Sep 2026 20:46:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789789585; x=1790394385; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=kkEWiPdkM+yBWXXqRxoSdmIjUeqUoHdebZ7h0q4+WKg=;
-        b=KMt7HpIHhl7BWzKbeN/pe9ncuijW0RX+rPxXTHgWiRNS44HjWnMKU9UOLLbOblVPNJ
-         XkTk8GRja1LzkTuqoouR6kWrIXFWqhHsmq57p7Vtp/Aa68Fon1HZE/Nr25BWHc58wRZL
-         9cjWcIPxDo7e1vIHKe6HRrDH/4SaLw1j2XhTXfnSbrTjz+p/4YbEaQn90KZoqL+WaklO
-         qQu4sGPuZnpiGI+XFVEK1vkRq10xav/pYOGJxd9MwbBYl4JDl0M9GCVZvHhhOiNz/dqs
-         0zjLu/DzlvtZBML+uKdCmfJhq1Yrwq0B9pCqtYfVS+jutyrZ9x2BHLJLE3cYlHN6Z9gt
-         SJXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789789585; x=1790394385;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=kkEWiPdkM+yBWXXqRxoSdmIjUeqUoHdebZ7h0q4+WKg=;
-        b=y/TCHP82ekH0cDZUxYPZIYAnXMYJg7q+dlD11tHw2OhHUrIqN0S9J5sUGaRK7vSf4m
-         C3NlwWo2jRnC81NXbOaejxyWt0tvdgyydfw/WX0zyeCyTq57y/suUqAwDScuM97vWCqh
-         U9iIZuWxkos2z2NryaV2gykJWQrZOujEfF+/WYGKX1QK4uUULbqUeOITKhfgO3fu+MLU
-         i1Vnr9jDvEM9Q5Kz43DYoeD3oxFVp0Vh6ScVolc8i0VcQhSdWP7Jy7QbOwNajz8wn/Zu
-         hqEqq87117LdB+lRJxDLgJFssedKNxISIMMquNfnqkzJOKsxMH6NJXYIeaS4hUuP1KQB
-         UTbA==
-X-Forwarded-Encrypted: i=1; AKwUvBxPtbHju25Iyx936MC2FvqLGWOhSUFCSZxrV96ANA1K0USWtiW7WFVKPLFxC39ha9GSLtGA8MrDdak=@vger.kernel.org
-X-Gm-Message-State: AFuF++mYDdM/B43bWDDx+TOrV5/QbyQAvSHMv+puJw31xEMM0gCnMwww
-	ruLC/bOlx5QI8yMVzIJCSK7rygFUt90t5pXvnHeO+c3HD/oI50PW6EE2
-X-Gm-Gg: AYBFou3OOPZ5PsOAMDzeW2EIJMWqX4kXTfH6dzUz8HHxuvzaAnn2qk/uD/iG0QqSMpe
-	fPkcSDpgbQxA0hPSw8V3hzhalOccK42WB2AGlc470AcbUPvhZicM9n2t4LtlOR4uvd+hPEkYOL1
-	V2QZJWRWYfAyGJwL8stOMdyt/JVaosWO4lgAiP6dkRvC8JMn5d5CL2DFEU5rC/OiX/VVtRbv18w
-	/yYzbCNR5XECdn5xaReHlxqgAeaCLB2YkQUgi3+xFXMSp5i3Pn9y6FeiblQ2AgWUwxX4o6X5CSR
-	lqWA24L1CJyhOlk1iIXtbTt2n/RA/ueqhKWhbDABJm/6TmFD1SL6f3ZqO3mDEuE8qhuke3hFYP6
-	K8pIelkeRKTHBauS200oRi8LMdq5yq9pTyf5bxLlOYHMmWzcnjyRvRr4Lo8/jqVFnwk6+TS6jsh
-	SWhvE+RmWxb/q+d+iLUWbnTxyAddpSIINtjdzKIPA+D7nILMOMNN5oSw==
-X-Received: by 2002:a05:690c:88:b0:873:5bd1:98c9 with SMTP id 00721157ae682-8973839bd60mr14337277b3.59.1789789585628;
-        Fri, 18 Sep 2026 20:46:25 -0700 (PDT)
-Received: from gmail.com ([2600:1700:5431:250::3e])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-89a480d45f9sm5919867b3.36.2026.09.18.20.46.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 20:46:24 -0700 (PDT)
-Date: Fri, 18 Sep 2026 20:46:18 -0700
-From: Chang Yu <marcus.yu.56@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Chang Yu <marcus.yu.56@gmail.com>, Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Shi Hao <i.shihao.999@gmail.com>,
-	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <aq4FioMYYiPqlhwS@gmail.com>
-References: <20260912013912.51887-1-marcus.yu.56@gmail.com>
- <20260912013912.51887-3-marcus.yu.56@gmail.com>
- <aqepkmQS_p6K1Bd6@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BCh+Q1fk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC9F41F000FF;
+	Sat, 19 Sep 2026 07:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789801705;
+	bh=uhaSLRWxWnpOZ1hMGZ3P8vEzC790v0CsHkY9724kydk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=BCh+Q1fkXZMtjVafQ5YGFV+h5db354VNq/ELCWyC4KkM9EOKXmUTlqgi+ma1wXozp
+	 DftsecIquMnGZU/bn7dlqfHB0SFowcKCtqYqFYBKKfUSA8s3K9Rsk5SMYPxnV+DeBV
+	 Y5Sj2gXory2ScdEG5Sx21lZEfxqdEdqZ9ssZyQau7j9QTMvL/H4vwGIsnSHVVKjlqr
+	 r41sO26J5aU+9ztpXEn5Q6cqRxLTKJH0TIlovq31RymcWsd+tEVLn+dCLOvNd83tjr
+	 uc83mnTCusi1VsH/mO2vViF+aXTvauBuk/3UmRhVl0wbrNfua+U/YMiqJx6DLrDv5O
+	 AiKJ0In7NVj/A==
+Message-ID: <457bb3d5-1d73-4acb-9ef0-4e40de6bdc94@kernel.org>
+Date: Sat, 19 Sep 2026 09:08:04 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aqepkmQS_p6K1Bd6@ashevche-desk.local>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: Expand flow lists to block lists
+To: Daniel Matyas <matyasdaniel006@gmail.com>, Lee Jones <lee@kernel.org>,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ Ulf Hansson <ulfh@kernel.org>, Liang Yang <liang.yang@amlogic.com>,
+ Miquel Raynal <miquel.raynal@bootlin.com>,
+ Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Will Deacon <will@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>, Vinod Koul <vkoul@kernel.org>,
+ Thierry Reding <thierry.reding@kernel.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>
+Cc: Jose Abreu <joabreu@synopsys.com>, Ray Jui <ray.jui@broadcom.com>,
+ Scott Branden <scott.branden@broadcom.com>, Atish Patra
+ <atishp@rivosinc.com>, Shawn Guo <shawn.guo@linaro.org>,
+ Dmitry Osipenko <digetx@gmail.com>, Thierry Reding
+ <thierry.reding@gmail.com>, Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
+ Okan Sahin <Okan.Sahin@analog.com>, devicetree@vger.kernel.org,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@sifive.com>, Conor Dooley <conor@kernel.org>,
+ linux-rtc@vger.kernel.org, Ricard Wanderlof <ricardw@axis.com>,
+ patches@opensource.cirrus.com, Lukas Wunner <lukas@wunner.de>,
+ Chunfeng Yun <chunfeng.yun@mediatek.com>, Eugen Hristev
+ <ehristev@kernel.org>, dri-devel@lists.freedesktop.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org, linux@analog.com,
+ linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
+ linux-riscv@lists.infradead.org
+References: <20260917144028.459053-1-matyasdaniel006@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260917144028.459053-1-matyasdaniel006@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 14, 2026 at 11:00:18AM +0300, Andy Shevchenko wrote:
-> On Fri, Sep 11, 2026 at 06:39:12PM -0700, Chang Yu wrote:
-> > +#define AS7343_ID				0x5a
+On 17/09/2026 16:40, Daniel Matyas wrote:
+> Running dt_bindings_check returned:
+> [error] string value is redundantly quoted with any quotes (quoted-strings)
 > 
-> > +/* AS7343 config registers */
-> > +#define AS7343_ENABLE				0x80
+> The files used quotation marks in flow lists because the strings had
+> commas and these commas were interpreted as separators. Convert flow
+> style lists to block style lists, so that there is no problems with the
+> commas.
 > 
-> > +#define AS7343_ATIME				0x81
-> 
-> > +#define AS7343_ASTEP				0xd4
-> 
-> 
-> > +#define AS7343_CFG0				0xbf
-> > +
-> > +#define AS7343_CFG1				0xc6
-> 
-> > +#define AS7343_CFG20				0xd6
-> 
-> > +#define AS7343_CONTROL				0xfa
-> > +
-> > +/* AS7343 status registers */
-> > +#define AS7343_STATUS2				0x90
-> > +#define AS7343_STATUS3				0x91
-> > +#define AS7343_STATUS				0x93
-> > +#define AS7343_ASTATUS				0x94
-> > +#define AS7343_STATUS5				0xbb
-> > +#define AS7343_STATUS4				0xbc
-> > +#define AS7343_FD_STATUS			0xe3
-> > +
-> > +/* AS7343 spectral data registers */
-> > +#define AS7343_DATA_FZ		0x95
-> > +#define AS7343_DATA_FY		0x97
-> > +#define AS7343_DATA_FXL		0x99
-> > +#define AS7343_DATA_NIR		0x9b
-> > +#define AS7343_DATA_F2		0xa1
-> > +#define AS7343_DATA_F3		0xa3
-> > +#define AS7343_DATA_F4		0xa5
-> > +#define AS7343_DATA_F6		0xa7
-> > +#define AS7343_DATA_F1		0xad
-> > +#define AS7343_DATA_F7		0xaf
-> > +#define AS7343_DATA_F8		0xb1
-> > +#define AS7343_DATA_F5		0xb3
-> > +#define AS7343_DATA_FD_L	0xb7
-> > +#define AS7343_DATA_FD_H	0xb8
-> 
-> > +/* AS7343 FIFO buffer data registers */
-> > +#define AS7343_FIFO_LVL		0xfd
-> > +#define AS7343_FDATA_L		0xfe
-> > +#define AS7343_FDATA_H		0xff
-> 
-> Please, keep indentation for the registers the same. Also would be nice to have
-> them sorted by offset.
-> 
-Due to the register layout sometimes registers with similar
-functions/purposes are scattered across the address space. As a
-compromise I'll group registers by purposes and sort by offset within
-the same group.
+> Signed-off-by: Daniel Matyas <matyasdaniel006@gmail.com>
+
+Ignore this patch. Daniel sent it THREE times, so we need to respond
+three times that it is wrong.
+
+Best regards,
+Krzysztof
