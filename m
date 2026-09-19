@@ -1,140 +1,164 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D31982F8EAC
-	for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 09:39:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8707B2F7F15;
+	Sat, 19 Sep 2026 10:36:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789810792; cv=none; b=jdMzRwH+NYtOnj25Ju0co1P6zXmyUi/zYiWcHHmu87atCvEi8roI6o7HMO7nYJ0mIkGjd3DhrLr37eSysiHk2fX4IuelKOf80cI84YFPji8BaYIXVOamzTFa91cPrPmOVr0OHPgyfpb1Ncn4w94Z+E04ZCa60THoF4I3R4SXJ+Q=
+	t=1789814201; cv=none; b=UD0JEFGGDigJW8n/kteQJRLSB/iZa+Rozdnn6AvUWS19WHG191uIt8idr5dKmeIfKyuF2IdnKtE5hyF8Y6+uwqA2CMIQXdLbGDQ+vGb8KhvxHy2hMNxSzCi8B+lfIGSwEJduIDEb1m5f1oHv7fanyhtAfQoJkubJikWVjY278bs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789810792; c=relaxed/simple;
-	bh=VnurqPrpnN+sAeEL0x3TldaQv3nsKFA2accKz2jjL5k=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Uq2ngcAwaEmxqy9mkl9jvgv1VqfsjNA0F354fNOUeDgumMOElSNSrW+jdkhXn4okRlGZmPkq7qwmfbhcACJeGES1q6XgnB/N4IEQuJpPL+A0daXn1zBZRgjIPYjOl9CeAUv2BRFVH8Ols5M7BzdV7Y22coXhpfvtpmQd0Auc1Bc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xdy4y/0d; arc=none smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789814201; c=relaxed/simple;
+	bh=Dz56lHO8he1vv9orP1xWMaqbnHaRAuLjNpCvMw/oeR0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ptW2MHZDZ2q3vKJI1gew1F4X/LQ7i2twj7vbABIFvti7Qk/JWwCpaursvImtb2xAepmlJ0CAr5rl9jjm5mWtvjg/R0QlK8FgFh2YQI5y69bQzoY3qgWNCLGv1VHmdGrG92/rCm3cLjXwoBTa0M4VW/dyI5ISywUCG3A7lFIZ5P0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fdLfkEpj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xdy4y/0d"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cd38e0e5dso19674335e9.2
-        for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 02:39:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789810788; x=1790415588; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=uuNs+jmp7P80c+ETSoD8IhUkYAoa0hGSn0P6AjTo/tk=;
-        b=Xdy4y/0d9E2EulS41gMojgLvVGEQa5wi6wotpFRTtA5Ug2QefACIn+1zHZfH4ZDUXk
-         Zdc6t5JAYrL8mZCUeTf9NqrpUeIkVGOYHjXROLksUbQEOMX8U15kNJY96+RM9VjpQlGC
-         8Xg/n5gD1UQ8W8WuV/1+raPO3W4RQN5b0OHIJ9XBcKfCMBxy+lw1SSbXkSAr/mX6dRha
-         ICmho3xvBFd9RHdsphEZ2ZzaYnzW3YxaCmjLauVBN1PnSkoNgkzUEk5jTM5YYrxgZ4MG
-         XT2Rx9W1m87Y4EdaXCfpJVzn509bBTWF5mWaG1utt0zE2Bm908PNouVsG9uvgGJwba8n
-         GU1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789810788; x=1790415588;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=uuNs+jmp7P80c+ETSoD8IhUkYAoa0hGSn0P6AjTo/tk=;
-        b=Oy3w84LHSg2kRvbZaRnuhW5Rhq5EkM5nZeANcTXVcTnWUHPTEx0/ODD+xOv8UKdlMY
-         sMUXa4gKwOGj/8HTxEXCm9gWqAafgN1QYzv9yScwNRZC2pFu8WFiK9tKm7vX3Uf8eR7M
-         5foybcxpNssvpjvd059gDJYSVYPQinnG7Kqtl4MHvDJoS2Ztqj/xF6/E35M3Ft9r1MiB
-         s5Y6t8tanUjcOQL+rRmvYS1dDZNOHFA7TwAnRSTe5OCMMTPKs9YfLZdTnT7Cpm3uqPZh
-         oYJO0/sPe3smDKyLxFeIxTnfKMjaxvltVu9NhBCHtI7LOlKffHmJmrv8mXK+6XGtvZum
-         i0wQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxAVPDIGbpyn5/wEAyPV90ZRXSaVkjGjRtULBDmoZqVVaWHOPTARUjeh7z/hkbivWI/8lagQM+SmGk=@vger.kernel.org
-X-Gm-Message-State: AFuF++k/U3yLglSGXbDZWhZANltDIAXkbQ1aXpJJpWeuRjTWD9alqcA1
-	rzDDKTdoN3I67+0IF1d+ZbtpAQm8p6R6V5eHdwzoiy0Ke2HiZTu0drRl
-X-Gm-Gg: AYBFou2eAWftgrEJO/5Vj7j17hq/0uzObPgQeqTZjep8dkyyJ7Sf+WwPawaX3Da58sA
-	uXIbEvXTkBGzRrBAh2X3COWbHyOyEg/rwdPyZ0l9czagbSk7gPH6HlM5xlXsRrYCdR9R7n1kEAy
-	QYOWoHD0Uvcbh0F3u0ffJ1agDMd0oM4m3FQAmrQBZ4NhDstrQSkSZ++1V4UsI8RIJRL91USd0Q1
-	HfDd4RPQt17a912l9o01jXCKXpNmd3JUWzj1Bo1QHSiKvouYulruBLsif6xaUhCE71guSacUnFb
-	6nYs0rxkj+nj45ubf9gHkas8jYAXCeBFoaOY1kasrV2IeOehVBufMu4BgfS+7h4s3ykk1frw8y+
-	fnzL+A45PG4XfJEYMlHuMSGNB/QTo5o9y10PXVtPZfI7xILeDaoP24Xojf3CCJ50KSHt7N4DUiw
-	6SK3XcGNOCIKGodJSQdwtwOZmPNhOp+dPzGqrJGF+EjRkfK0DHfU4R0xlMA1mmZnDh1XFZmoh/B
-	KN//0NlTc0yEp9ddKIkvfWW4y4ENMDl3OW4mij4qqp+eW6c/SyE9QEv7VtxpRpF63RLt0dTJLjE
-	I7mt142cItHJqDN4ncLzQfw4GUgqMOIv6S43aBfOqSibudWM88zWvYUt56MMRuf6DFTm2HYEyIO
-	qYgsZMADNIC36tWmBi6LScSgPVWhQri8=
-X-Received: by 2002:a05:600c:1391:b0:49d:272d:74b4 with SMTP id 5b1f17b1804b1-49fc566e5ebmr66465085e9.2.1789810787947;
-        Sat, 19 Sep 2026 02:39:47 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0ece6esm83417145e9.2.2026.09.19.02.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2026 02:39:47 -0700 (PDT)
-Date: Sat, 19 Sep 2026 11:39:45 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: "Ivan A. Melnikov" <iv@altlinux.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, Francesco Lavra <flavra@baylibre.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: tools: Use proper macro to detect _Float16 support
-Message-ID: <20260919113945.2bee973b@systembl0wer>
-In-Reply-To: <20260918161305.1161852-1-iv@altlinux.org>
-References: <20260918161305.1161852-1-iv@altlinux.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fdLfkEpj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 425C1C2BCB9;
+	Sat, 19 Sep 2026 10:36:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1789814201;
+	bh=Dz56lHO8he1vv9orP1xWMaqbnHaRAuLjNpCvMw/oeR0=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=fdLfkEpjVqnbY9FxFDItQ5vjzGlFQCK4SiTL1Scd5riBHwut7UBy+B2xhf2tCdfOt
+	 Mkb9N+hjNf6CL0tBrbXjPQm0ft8Gso7VbP6xxjFj7EM8hRlTb0bksCF30IHxXwfsaU
+	 OX/lHoiVEo3n4t4gNeUEg3W0hG4h2S1Y9i6yNs95xQu5/MtWsbLm7P7ljzf5r1Exj0
+	 O8paWLjt1iuKheB4M+wByJGlxKzM3u+zIpmZjBNE1UnJ70JRHneD4Vpbfn96NeLZ0e
+	 CDI1rPBOUt2BgOPfRWbbYQCPbaIU2VoReAuCghkINXQKMtXxuqEEufR/C0FKeb5tfA
+	 c2b7AYuNhVNaA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D3CDC982DA;
+	Sat, 19 Sep 2026 10:36:41 +0000 (UTC)
+From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
+Subject: [PATCH v6 00/14] HID: iio: Introduce devm_ APIs for HID sensors
+Date: Sat, 19 Sep 2026 16:06:23 +0530
+Message-Id: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKdlrmoC/42OTQ6DIBCFr2JYdxr8I9hV79G4oDDoNEUMqGljv
+ HtRL9DVvC95ed+sLGIgjOyWrSzgQpH8kEBcMqZ7NXQIZBKzgheCC15CIUGNAYg8BDTzYNQwgQr
+ d7DCFpYYJ3QgVVg2ikaJUlqWtMaClz+F5tCfH+flCPe3je6OnOPnwPR5Z6r13OiUXfzrT5WBz2
+ xQ6N7Lk9t45Re+r9o6127b9AOVA8wjsAAAA
+X-Change-ID: 20260603-28-apr-iio-redundant-argument-v5-temp-4e49eed863af
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
+ Benjamin Tissoires <bentiss@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-input@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>, 
+ Zhang Lixu <lixu.zhang@intel.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789814199; l=5636;
+ i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
+ bh=Dz56lHO8he1vv9orP1xWMaqbnHaRAuLjNpCvMw/oeR0=;
+ b=Hwm6WS3aJO+JiF5ZNf4/y8CcFyKoAwS5naAdP6HrzsnobPjAQt7bHvzAx0McnR/w75y+ahfW0
+ cHbR30bQaudCa//Bh3wqPxRCIL9+MIfIDyxJn1ZLiQ/Lu023639RK4G
+X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
+ pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
+X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
+ with auth_id=848
+X-Original-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Reply-To: sanjayembeddedse@gmail.com
 
-On Fri, 18 Sep 2026 20:13:02 +0400
-"Ivan A. Melnikov" <iv@altlinux.org> wrote:
+Following feedback from reviewers and Srinivas, v4 series was split
+into two additional sub-series to perform cleanup and preparatory work
+before adding devm support:
+- HID: iio: warning clean up and prefer kernel coding style
+  https://lore.kernel.org/all/20260707-15-jun-hid-iio-alignment-v3-0-8791574ad0fe@gmail.com/
+- HID: iio: basic clean up for usage_id
+  https://lore.kernel.org/all/20260610-6-june-hid-iio-correct-usage-id-v2-0-c3c5f0720493@gmail.com/
 
-> __FLT16_MAX__ is an internal compiler macro. GCC defines it if
-> _Float16 is supported by the target in general, but the support
-> may depend on the exact target options. For example, on i586
-> without -msse2 I get the following error from GCC15:
-> 
->   iio_generic_buffer.c: In function 'print2byte':
->   iio_generic_buffer.c:141:17: error: invalid conversion from type '_Float16' without option '-msse2'
->     141 |                 printf("%05f ", ((float)converter.f + info->offset) * info->scale);
->         |                 ^~~~~~
-> 
-> To fix that, use the public macro without double underscores.
-> 
-> Fixes: cdd445d4b2a9 ("iio: tools: Add support for floating-point types in buffer scan elements")
-> Signed-off-by: Ivan A. Melnikov <iv@altlinux.org>
-> ---
->  tools/iio/iio_generic_buffer.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-> index 000193612aad..9ea93984e0e9 100644
-> --- a/tools/iio/iio_generic_buffer.c
-> +++ b/tools/iio/iio_generic_buffer.c
-> @@ -131,7 +131,7 @@ static void print2byte(uint16_t input, struct iio_channel_info *info)
->  		printf("%05f ", ((float)input + info->offset) * info->scale);
->  		break;
->  	case 'f': {
-> -#if defined(__FLT16_MAX__)
-> +#if defined(FLT16_MAX)
->  		union {
->  			uint16_t u;
->  			_Float16 f;
+Both series have been merged into IIO tree. This series introduces
+device-managed APIs and converts HID IIO sensor drivers to use the new
+devm-managed resources.
 
-One Sashiko issue:
+checkpatch reports a "suspect code indent" warning on the DEFINE_FREE()
+declaration, but this appears to be a false positive caused by the macro
+expansion. The code builds cleanly.
 
-Does this unintentionally disable _Float16 support for all architectures?
+Changes in v6:
+- Following input from Andy rectify kernel-doc for return
+- With input from Jonathan used devres framework implemetation with
+  cleanup helpder to reduce complexity and resource allocation.
+- Link to v5: https://patch.msgid.link/20260806-28-apr-iio-redundant-argument-v5-temp-v5-0-f1f92c1d830f@gmail.com
+Changes in v5:
+- With input from Jonathan, convert all HID IIO drivers to use
+  fully devm instead of partial or specific API; this is potential
+  goal and validation on that will reduce multiple validation cycle.
+- Rebase changes on latest iio/testing tree and resolve merge conflict
+- Resolve mail client issue as v4 series was splitted into sub-series
+- Link to v5: https://lore.kernel.org/all/20260524192059.1193716-1-sanjayembedded@gmail.com/
+Changes in v4:
+- Extend the series to cover remaining HID IIO drivers with devm API usage
+- Reorder patches to place cleanup and warning fix at beginning and,
+  devm-related changes toward the end based on feedback from David
+- v3 series -> https://lore.kernel.org/all/20260509101040.791404-1-sanjayembedded@gmail.com/
+Changes in v3:
+- Added cleanup and prepratory changes before adding devm_ API
+  conversion based on self review: 0002, 0004, 0006, 0007 and 0008
+- Address andy's review comment on commit message and coding style
+- v2 series -> https://lore.kernel.org/all/20260429175918.2541914-1-sanjayembedded@gmail.com/
+Changes in v2:
+- Following input from Jonathan and Andy, squash initial patch v1
+  series in single change as individual change should not break anything
+- Add devm API support and two driver using the same
+- v1 series -> https://lore.kernel.org/all/20260428071613.1134053-1-sanjayembedded@gmail.com/
 
-Since the tools build environment uses gnu11 compilation flags without
-explicitly defining __STDC_WANT_IEC_60559_TYPES_EXT__, FLT16_MAX is
-undefined across all architectures. This causes the preprocessor to skip
-this block entirely, causing the tool to always print 
-<unsupported 2-byte float> for 16-bit float data, even on platforms where 
-native support previously worked.
+Testing:
+  - Compiled with W=1 for each patch in series
+PS:
+- Sashiko reported an issue in a different driver and noted that it is not
+  introduced by this series. I have taken this feedback into account and
+  will address the actual issue in a separate series focus on that driver.
+- Following input from Jonathan, will prepare followup series for
+  HID IIO drivers to consistency support for logs in probe() path
 
-If FLT16_MAX were actually defined, the compiler would still parse the
-_Float16 block and throw the same missing -msse2 compilation error mentioned
-in the commit message. Is there an alternative way to check for hardware
-support without completely disabling the feature?
+---
+Sanjay Chitroda (14):
+      iio: hid-sensors: remove unused iio_dev argument
+      iio: hid-sensors: introduce device managed API
+      HID: hid-sensor-hub: introduce device managed API
+      iio: gyro: hid-sensor-gyro-3d: convert probe and teardown to devm-managed resources
+      iio: accel: hid-sensor-accel-3d: convert probe and teardown to devm-managed resources
+      iio: humidity: hid-sensor-humidity: convert probe and teardown to devm-managed resources
+      iio: light: hid-sensor-prox: convert probe and teardown to devm-managed resources
+      iio: light: hid-sensor-als: convert probe and teardown to devm-managed resources
+      iio: magnetometer: hid-sensor-magn-3d: convert probe and teardown to devm-managed resources
+      iio: orientation: hid-sensor-incl-3d: convert probe and teardown to devm-managed resources
+      iio: orientation: hid-sensor-rotation: convert probe and teardown to devm-managed resources
+      iio: position: hid-sensor-custom-intel-hinge: convert probe and teardown to devm-managed resources
+      iio: pressure: hid-sensor-press: convert probe and teardown to devm-managed resources
+      iio: temperature: hid-sensor-temperature: convert probe and teardown to devm-managed resources
 
--- 
-Kind regards,
-Joshua Crofts
+ drivers/hid/hid-sensor-hub.c                       | 35 ++++++++++++++++++
+ drivers/iio/accel/hid-sensor-accel-3d.c            | 40 +++++----------------
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 21 +++++++++--
+ .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 +--
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              | 41 +++++----------------
+ drivers/iio/humidity/hid-sensor-humidity.c         | 38 +++++---------------
+ drivers/iio/light/hid-sensor-als.c                 | 39 +++++---------------
+ drivers/iio/light/hid-sensor-prox.c                | 40 +++++----------------
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 41 +++++----------------
+ drivers/iio/orientation/hid-sensor-incl-3d.c       | 42 +++++-----------------
+ drivers/iio/orientation/hid-sensor-rotation.c      | 40 +++++----------------
+ .../iio/position/hid-sensor-custom-intel-hinge.c   | 38 ++++----------------
+ drivers/iio/pressure/hid-sensor-press.c            | 41 +++++----------------
+ drivers/iio/temperature/hid-sensor-temperature.c   | 39 +++++---------------
+ include/linux/hid-sensor-hub.h                     | 26 ++++++++++++++
+ 15 files changed, 175 insertions(+), 351 deletions(-)
+---
+base-commit: 9c464e7473f762cee4c031a09da04f65a1c65d49
+change-id: 20260603-28-apr-iio-redundant-argument-v5-temp-4e49eed863af
+
+Best regards,
+--  
+Sanjay Chitroda <sanjayembeddedse@gmail.com>
+
+
