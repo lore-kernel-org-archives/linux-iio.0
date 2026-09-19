@@ -1,121 +1,104 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 486AC35C693
-	for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 19:55:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59AAC339366
+	for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 22:33:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.202.193.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789847750; cv=none; b=OSUbY+Blp6k9BlAlK0qERWt3vGMESSTDs1BVnOguCYuY/NsSsNueoaxDUGnz5QLHi9Qpx+sd0xl/jRMVDon6kljhR9ajIoIWNFd1dxO1+T+cL0jRf0APXveQgG+nULxZXN5+viuMY8j2yEH+pk4lqiNHH9J6Aq2YA5xws3m/nZQ=
+	t=1789857227; cv=none; b=lt+K463MUE3JYsxEvMjvFa6OFOCy4YSZ9RkuPIMEpjhDjQ/03ZVRDGrrsthPoEmTsJ2Tid7A+946x83H1/ufxCLivAOtqqtYaXij2L+oZlq0bj3+LllVy/Oa5lGw89x7G454KxWvfGwxpgUuz9H2ph76g5wtCW+CqFifEEyfVHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789847750; c=relaxed/simple;
-	bh=g3SPnvN4YEARiFmdW5Ux83YJ3rzRN9/F/Tr8VpCksLQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IieMuAuB/OqTDWRJzHnKkbihfi6ZnmlmixiGTjzi5pA2u9bQl30M3WnKi5D1XobbhygwNR6YTxnVEE/oqJmt4j/K/q+TUd298Tleld+l7kdlLgHHXZMzxr1rPRaaQfgxu7EoSfMu//AKJxDmHMBBnRbb7ejxDkWtrP8V2Dxe7kA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BC65/TAa; arc=none smtp.client-ip=74.125.225.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789857227; c=relaxed/simple;
+	bh=Nq8hmbT0klHnk+cmwfMkWkiE/aDzI8pSKmhkUGauk8k=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:In-Reply-To:Subject:
+	 From:To:References; b=bKq/QTl+URM/qW+I/fZZYyY/5yCtU0SwY558NJgjsD7vsWvvr8kFoFW05/9TdpYwW0ETjTTh56m95bGxYfam5uAoFgvQuurw4G6c+sKnXemzZRQtLCjljkGwGct6VKyqwJnZolPd4puEcecQt61jMt0pmwq0ZXSjgUE7PtNrnlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc; spf=pass smtp.mailfrom=maxwelld.cc; dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b=ihwKmsUn; dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b=ltTEhZPo; arc=none smtp.client-ip=34.202.193.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=maxwelld.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=maxwelld.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BC65/TAa"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485b1d2874fso622142f8f.0
-        for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 12:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789847747; x=1790452547; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=TcN+YUzHfzeC0XYeUrNzJxeHFOGLorYxlXTCMVHIaKo=;
-        b=BC65/TAatxPTE+45OYIh9GGRJJ2kUV1P+MaSqxjS929w0bqDlppSRIOfAwq2FiOpTL
-         pAoE2ChiJm6rC+sxtFWl01WAnwvGu+6d4HSi7p+k7gY44y0wNeb4cb7gV55MV4Nm6DMQ
-         dpCQtkE39GnXaaJdEn655FKXoJE5mSHJS1hQOOgDJDOfWCA1H6L5qyf0gICWYo5hN9FS
-         XK+KJ9DehgBilqR26api4VC3puJ5KjDX5RIzn00PmjfVBGW3uLSrqGNbAwoA1DQGThZ2
-         37KbUHGj50ucpffn6Kj65V1zQtyMT1oEIZVv5dno/WtZICKS2aSdAw6Tg1708xSwE8c6
-         k39Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789847747; x=1790452547;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=TcN+YUzHfzeC0XYeUrNzJxeHFOGLorYxlXTCMVHIaKo=;
-        b=BoGxfE0RQtVDFhx9tiVLPY1q8dxIBkGmGmQW/k0PwzA2evZ0uERilNxAytf+7UxC8g
-         nFkcayjyYqNVkzo02zxanqOV8NHx0jR0RUgdvnIG2Symd019pci1vpDzmaDnaIVL2qd7
-         GBfG2L7Ij70CclEZHh2XHLnN9SCWhnUGxaS1DNcu5jwMEh1cYozu8DDC48CUxcFlcn6u
-         YL0MF5MR87/r4rR/JrIF9Pjx469U0nWiDqZu/jKVja66w4NVwIU+Sbbr4GIU4RoIxEN2
-         /MVREIIiz/L/2MX+O5/KlHKvt3AHGsJgnmq+FydfBK72FS7EO+aupbX5xOiYCGBQtGwj
-         8eDg==
-X-Gm-Message-State: AFuF++mSEwlis/Z/exTWovcsxGA/YBS6H7QhlmP/Wd8IcGR/htHC99b7
-	tEBBalyKd0TYDu2zBa5tShf/tULvk6ZHVUui6qk1lNhYdSzVMjmZiSdNcgVUOQUT
-X-Gm-Gg: AYBFou36uHT5HH/2c9JoaL8zUW7VYT1/raH0OY3dgVGsuMzxVH0ewt+YcQ05ZmnYSgt
-	CAhz4sP6m0mbmFN4AQSZFDtbdfu3OEYlzJJmslhlicfeJRerr8I9O8ow+G16Pm5hlTRJVWzT998
-	vq0fgFbM1g3X3QAjetpHkmZdoEONS1vgP7Rr4zFVKWQBCpSkqeAqmJY1XVSkKNnVCBJ6ZnP3BH9
-	fQzD5ccda0nAV9kNVQwGg3nZW/LBTzFUAlAMs+zDexdqzST2wK6EWp9TREllOGvVNniRBsK0q9a
-	RUcizykQbTQUw7Kd7eYVWqw57DxiItuty9PtTGp5OMKWNFl8i4CUPAIuH06Vl2GJBJy7A+LzeUP
-	CtJ+m4TlEf4sRsz9InXe+o7rJGMWyRxkgTjI/IERMc0XWKZL6cGRtXueF3GDMh3UfoDg7Gr/0Iu
-	jZ7xThgd55mzpp7/bnpKoMAwB14zT53xWdhbMnNqjZG9+Z5QJT4hHp8egby/U1ZX40o+2jpYsBV
-	/B2FD30plucFOE0ZaPigzE1vmpt0c4drlbOjqvbiK02S8iigfUFNMd7Kx5qWj+y3XUm9AkkDype
-	GUSBdDE=
-X-Received: by 2002:a05:600c:3510:b0:49e:6836:5386 with SMTP id 5b1f17b1804b1-49fc4eef2dfmr95041315e9.0.1789847747394;
-        Sat, 19 Sep 2026 12:55:47 -0700 (PDT)
-Received: from SegFaultinator.localdomain ([37.142.157.121])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd07bba7sm93823795e9.9.2026.09.19.12.55.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2026 12:55:46 -0700 (PDT)
-From: Angel2Eyes <thefireking@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	Angel2Eyes <thefireking@gmail.com>
-Subject: [PATCH] iio: adc: mcp3422: use sysfs_emit() in show functions
-Date: Sat, 19 Sep 2026 22:55:07 +0300
-Message-ID: <20260919195507.94130-1-thefireking@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=maxwelld.cc header.i=@maxwelld.cc header.b="ihwKmsUn";
+	dkim=pass (2048-bit key) header.d=purelymail.com header.i=@purelymail.com header.b="ltTEhZPo"
+DKIM-Signature: a=rsa-sha256; b=ihwKmsUn2KDZi4rfrFRi/q5H70xz85n6nR5cMQ6W1q0NbohkPSm0fhJvmH01Ug8i+Ndns6S1ycwuiCX0xeenCro80KQ+2uA7rROo1Yv/WdwxK9HoTk0osxoX1kXS+MffrnFPm8Nov5l8OvEoFHr+xW9cdWl+RQXpMWNw+74f5OUCGt2UvU3tlMbX//TRE1gA5OM9+QAd9SAtmw7XuhmxQFT34X5lmhXMFuNN5kxwvsTE87f3rPRpJp3DPFd+pn9xWFn/4LJxlTkB/TEM5K8EHOQV/QaN/NY9yWYXET45TM5PnoJ2cvYadUtA2GDviUS0hp+bQ1K0sFH3hFx7lq4Jig==; s=purelymail2; d=maxwelld.cc; v=1; bh=Nq8hmbT0klHnk+cmwfMkWkiE/aDzI8pSKmhkUGauk8k=; h=Received:Date:Subject:From:To;
+DKIM-Signature: a=rsa-sha256; b=ltTEhZPoQn/WDmKnbEoDC4AM4vqz4GUfH54yDunqAOm9SrGviN0cHuFx1F040xJ0pk/xcyBInTKH1ApBJGjoXeFx4b3StCigmWi8h9EGYh6u9usb2Ux/huHzE8TWXKP4e5SJec/I8xBRIspg6YtmHvBSfbClexktSWob2tX8ZdmE+MbvlTkAnOEQc8Pampb82FcQRKCgK1YtTzsXKGjcMT3kpA+MWjcWPYahbiml0hWWf5EL9ukTYlWbSfzxTcgeQudSfI0p28tNHFkSfjcE7NpYXGcAhNvPk5+yGIW1iqbASZLJC7wgj2yXRwh5yQrvsYnyTdtoFKNCNnOXDg2hWQ==; s=purelymail2; d=purelymail.com; v=1; bh=Nq8hmbT0klHnk+cmwfMkWkiE/aDzI8pSKmhkUGauk8k=; h=Feedback-ID:Received:Date:Subject:From:To;
+Feedback-ID: 1013395:40550:null:purelymail
+X-Pm-Original-To: linux-iio@vger.kernel.org
+Authentication-Results: purelymail.com; auth=pass
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id 2110463059;
+          (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
+          Sat, 19 Sep 2026 22:33:37 +0000 (UTC)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 19 Sep 2026 17:33:36 -0500
+Message-Id: <DLJNFI3A4WZ6.1PWFZJRQIDLZA@maxwelld.cc>
+Cc: <jic23@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+ <andy@kernel.org>
+In-Reply-To: <20260919195507.94130-1-thefireking@gmail.com>
+Subject: Re: [PATCH] iio: adc: mcp3422: use sysfs_emit() in show functions
+From: "Maxwell Doose" <maxwell@maxwelld.cc>
+To: "Angel2Eyes" <thefireking@gmail.com>, <linux-iio@vger.kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260919195507.94130-1-thefireking@gmail.com>
 
-sysfs_emit() is preferred over sprintf() for sysfs show() callbacks
-since it is aware of the PAGE_SIZE buffer and has built-in size and
-alignment checks.
+Hello,
 
-Convert the remaining sprintf() calls in mcp3422_show_samp_freqs() and
-mcp3422_show_scales(). The formatted output is unchanged.
+On Sat Sep 19, 2026 at 2:55 PM CDT
+Angel2Eyes <thefireking@gmail.com> wrote:
 
-Assisted-by: LLM
-Signed-off-by: Angel2Eyes <thefireking@gmail.com>
----
- drivers/iio/adc/mcp3422.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> sysfs_emit() is preferred over sprintf() for sysfs show() callbacks
+> since it is aware of the PAGE_SIZE buffer and has built-in size and
+> alignment checks.
+>
+> Convert the remaining sprintf() calls in mcp3422_show_samp_freqs() and
+> mcp3422_show_scales(). The formatted output is unchanged.
+>
+> Assisted-by: LLM
 
-diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-index 36ba00edf..fd9e72265 100644
---- a/drivers/iio/adc/mcp3422.c
-+++ b/drivers/iio/adc/mcp3422.c
-@@ -262,9 +262,9 @@ static ssize_t mcp3422_show_samp_freqs(struct device *dev,
- 	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
- 
- 	if (adc->id > 4)
--		return sprintf(buf, "240 60 15\n");
-+		return sysfs_emit(buf, "240 60 15\n");
- 
--	return sprintf(buf, "240 60 15 3\n");
-+	return sysfs_emit(buf, "240 60 15 3\n");
- }
- 
- static ssize_t mcp3422_show_scales(struct device *dev,
-@@ -273,7 +273,7 @@ static ssize_t mcp3422_show_scales(struct device *dev,
- 	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
- 	u8 sample_rate = FIELD_GET(MCP3422_SRATE_MASK, adc->config);
- 
--	return sprintf(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
-+	return sysfs_emit(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
- 		mcp3422_scales[sample_rate][0],
- 		mcp3422_scales[sample_rate][1],
- 		mcp3422_scales[sample_rate][2],
+Pretty sure this should be the name of the LLM used (feel free to
+correct me if I'm wrong though).
 
-base-commit: 69fa76f0af3414cc189c3b0b807cb59e327ecc00
--- 
-2.43.0
+> Signed-off-by: Angel2Eyes <thefireking@gmail.com>
+
+The DCO requires the use of a known identity (e.g. <first> <last>),
+but this does not seem to be one.
+
+Please read Documentation/process/submitting-patches.rst next time.
+
+> ---
+>  drivers/iio/adc/mcp3422.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+> index 36ba00edf..fd9e72265 100644
+> --- a/drivers/iio/adc/mcp3422.c
+> +++ b/drivers/iio/adc/mcp3422.c
+> @@ -262,9 +262,9 @@ static ssize_t mcp3422_show_samp_freqs(struct device =
+*dev,
+>  	struct mcp3422 *adc =3D iio_priv(dev_to_iio_dev(dev));
+> =20
+>  	if (adc->id > 4)
+> -		return sprintf(buf, "240 60 15\n");
+> +		return sysfs_emit(buf, "240 60 15\n");
+> =20
+> -	return sprintf(buf, "240 60 15 3\n");
+> +	return sysfs_emit(buf, "240 60 15 3\n");
+>  }
+> =20
+>  static ssize_t mcp3422_show_scales(struct device *dev,
+> @@ -273,7 +273,7 @@ static ssize_t mcp3422_show_scales(struct device *dev=
+,
+>  	struct mcp3422 *adc =3D iio_priv(dev_to_iio_dev(dev));
+>  	u8 sample_rate =3D FIELD_GET(MCP3422_SRATE_MASK, adc->config);
+> =20
+> -	return sprintf(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
+> +	return sysfs_emit(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
+>  		mcp3422_scales[sample_rate][0],
+>  		mcp3422_scales[sample_rate][1],
+>  		mcp3422_scales[sample_rate][2],
+>
+> base-commit: 69fa76f0af3414cc189c3b0b807cb59e327ecc00
 
