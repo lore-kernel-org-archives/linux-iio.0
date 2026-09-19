@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F7E2E040D;
-	Sat, 19 Sep 2026 07:25:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2702E3AE193;
+	Sat, 19 Sep 2026 07:33:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789802726; cv=none; b=Meb2relDuZHq4Gjj61zNZD8BGBnFwiDaV9yqFhNRQF/Hp7qW4TT75qlSV5V+NAW7BA4D2DvgWNDxPDtOaxxJVVqi/S2+Rot1tWMzVxBfSvVrg5Y8L+PiW5BD+lL479uc2RzPiElOndEko6Ejnn1G/B3VccmBEABlXqnFI+X8+/o=
+	t=1789803190; cv=none; b=ZJuqkCEYNWaQtV5ySYOMcFl9p0L0WB+1qkXnK8L9hkM+8UJ4rp1OrHOj2RkhYpDDyjArWgR3tQdEUDX8qRt2WK1IXLE/GLAiWYtgZpRquq5QFR4uJknwUr+j2pzZhnePSuG+0HZP78kVwJ//K3uwNGEmCo6A7miV6sBbVNZnPy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789802726; c=relaxed/simple;
-	bh=dZUeROihmHBFdkbPDVuhMmWdYMvUMfvtMDaVHHDnscw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=gsM1Gd18Og1rNW3TtJx/PVKBAxWyDMv8SIINy2sMnJ4u6G2uv7cwYWoe0xgKzcR0NUccxryRBzucgNZPpCnRgk7e5BD4zXzp49xG4zcVO0vnkK7fpC6B6hJV3c8XwxWzKHmxqtqbzHiLaevstEHv5dEhQkexI+GVQ214TeBRKI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HoNoCvkv; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789803190; c=relaxed/simple;
+	bh=DY9yCnPcoEN7mwimu5kfuSss0weGJbfhGzh1HordMZU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KfEcBHNAucB+gBKR2bvUuj+EtpNzPp/rXx0q5qg23dhJV1qzHEsfaWDEtnXwa/igC4sVm1i4ndJ6TGs2FzkwRFl4KGGscA+Nt2AHU0Qc2kcIBu0oOBNxWWPcVgkeUvJOmEyIBCkt6DnN2LYCDpPV8Hr7l57XAmpLmFGee2XKMaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cubiMZhU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HoNoCvkv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8BE1F000FF;
-	Sat, 19 Sep 2026 07:25:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cubiMZhU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5DD1F00898;
+	Sat, 19 Sep 2026 07:33:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789802724;
-	bh=fAD6GbG/00mvVvJ/4iMpR9akbfBBXwDJ9dBrI57N/Qg=;
-	h=Date:Subject:To:References:From:In-Reply-To;
-	b=HoNoCvkv0GrWiliCtbLtqZZGme1pfStF/olhW/47guAXcMB8XnKa3Sh07a+mqlA6m
-	 5MTEXnHesA9Aab6th5cv0EJtMAHnoI1KvzryYAREHixC5mQKvhz2RW/uV4+75H89gg
-	 trPRt5Fm45TWpqqvFlxyg/OKDnEh3gzQoKDJTBH+IOQQZsmysQuRoInJwqPnfPQ9HX
-	 V4S31Htc2fn25ZBLkLAXyIIEFjFExdfJoYDuIkmT/QZKYYTGNRYoYBDEy/70bWUf8B
-	 qUCuSXQjdzUjn7QcMMQMywN1DTQcCZ8y1gYb6Ccd1CnniXc+HmjtdS07D3s0K2SxGA
-	 +6d9/xrns//Gw==
-Message-ID: <b787a787-5011-4f14-9332-4cca098b374d@kernel.org>
-Date: Sat, 19 Sep 2026 09:25:17 +0200
+	s=k20260515; t=1789803186;
+	bh=+Ead2yNdsi52mLDc8KcMpW95aXpiB+Zjyng05WrtRqo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=cubiMZhU1TuMNW8IzLaWZWEvuq8m792oTlWWfP5IbBux0dufb3v7ZKjSe7vCXAIEI
+	 3A5k8NX2+/L07kkR+g1QSyNtKKO5sSLOe61olCTrmusHGfd8qaTFT5tX891zifRADg
+	 EqiujGJU01UQKGWCVnx5KcgCMpX1bImFApBuITp5SAivKXy1LZgEvIf/KAGftmSH/j
+	 +7EIE0MX5c7hrcu/LdilExtZjByhN4twJAlIGXsUFqGIOQVFRQBcoQMBlZ0XcWVmpa
+	 adps+sioPKFsoiAbxS94kPrFbMEXbHBaCUDFX5V0nWNbjCVlaSAtnugd5wZgCO+R/N
+	 lc3KoBdxElJGA==
+Message-ID: <11af07b8-7833-4729-b981-48d3d74835af@kernel.org>
+Date: Sat, 19 Sep 2026 09:32:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,20 +35,14 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
-To: Omer PALA <palaomer100@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
- "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>,
- "moderated list:ARM/ZYNQ ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20260918194434.9240-1-palaomer100@gmail.com>
- <20260918203257.6034-1-palaomer100@gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
+To: Omer PALA <palaomer100@gmail.com>, jic23@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260918145804.26957-1-palaomer100@gmail.com>
+ <20260918174809.17502-1-palaomer100@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -94,31 +88,47 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260918203257.6034-1-palaomer100@gmail.com>
+In-Reply-To: <20260918174809.17502-1-palaomer100@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 18/09/2026 22:32, Omer PALA wrote:
+On 18/09/2026 19:48, Omer PALA wrote:
 > Add yaml devicetree binding for xlnx,zynq-xadc-1.00.a,
 > xlnx,axi-xadc-1.00.a and xlnx,system-management-wiz-1.3 from
 > xilinx-xadc.txt file.
 > 
 > Signed-off-by: Omer PALA <palaomer100@gmail.com>
-> ---
->  Changes in v5:
->   Fix validation bypass: xlnx,external-mux-channel could be set even
->   when xlnx,external-mux was omitted entirely, due to "not: properties:"
->   being vacuously true when the key is absent. Now uses required +
->   properties with if/else.
+>
 
-How many versions are you going to send one day? If you only used search:
-https://lore.kernel.org/all/?q=dfn%3ADocumentation%2Fdevicetree%2Fbindings%2Fiio%2Fadc%2Fxilinx-xadc.txt
+...
 
-I asked for this indirectly in your staging patch. I pointed previous
-discussion where I said work was already done and received comments.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+> new file mode 100644
+> index 000000000..f9b717c29
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/xlnx,xadc.yaml
+> @@ -0,0 +1,185 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/xlnx,xadc.yaml#
+> +$schema: http://devicetree.org/schemas/meta-schema.yaml#
 
-The lesson to take from that was to CHECK for existing work and READ
-existing comments.
+It is IMPOSSIBLE to come up with such code. Really impossible. Therefore
+I assume you vibe coded this AI slop.
+
+AI slop is not acceptable. It is absolute waste of our time. All this
+was converted with LLM ALREADY, so why do we need one more conversion
+with slop-tool? I even explicitly wrote this more than once on GSoC
+guidelines and social.kernel.org.
+
+AI contributions without being marked appropriately (see coding
+assistants doc) are clear sign of violating our trust, although it is
+secondary thing because marking slop as AI-assisted and sending is still
+a work which should never be done.
+
+If you send us AI slop, that's the label your contributions might receive.
 
 Best regards,
 Krzysztof
