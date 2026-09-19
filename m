@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9452618C008;
-	Sat, 19 Sep 2026 08:31:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C90E93EA66
+	for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 08:38:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789806666; cv=none; b=lLiHFI8ChyCbZlMAJiUpAo5gRwzIGIrLCYv03XU2vYGTTV0PfhEXf2SohcwWQrDlKlLdqOSsphZLz7YGONnEOBMTdVPJ94zxZrvsZmr76oWBE3GBdCloRjL1ut7KiEiOEX2RmAE3wJdLFhQrc/qeFlYbyg3JcmNTIN2wHquYDuo=
+	t=1789807100; cv=none; b=AeHi36MtIQ3V87Zb8MTPNsh/fQmvVjmaw2hfgsMlecMc3oQppuBAgnF4bJBZ/iVx+Vm7QGATIg3ysa4Y9Xy8Ji+0jSi5BZ3Z6assZR/8T7ZJpr+/CvJkgTTBXZxyPKPAHmbHh2uPU9yjZPj2FAz8+Fye4CcmKrcQgALLFhqx0Mc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789806666; c=relaxed/simple;
-	bh=X6RL2JI3kxJv4dgANFf7fYX5rdyc5+2L1E2U6vdK8OQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=sPRDHdFgpUsi9yeQ8bMhO8QdumOIT1YM4ENsFkM4yY3PFb6LyuC+U2Po1up3PkucFyoz5KOla+4lg172NLVByEeVH250ACbECIhGgLwL8uBAykIT0E51BcbQvISe71hhCEd98fIWdbhghXeaCcpnD5VVWV4SH6ZJwWngrYBP/hY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AnoKd96W; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789807100; c=relaxed/simple;
+	bh=E/hPOg1OENodSsJ6mlvZpr1Hqj8yHyCAAemCdL74Mw4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pvFp/cCq3BjZn2bU9vyxVONT4blPDZCj3ahxjFC/aBEykHZ5h5l0stfbOS/4rslIyggxcXUdU/GPh3OOMNM+CPa7vs+4gTGcuqfXzvWFR6H/XvyRauwpgf/teupIZ8hHMCNr9KyQj6GLeelqXpr1HUifayPTs8UatI9YuQxYCaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CJCrOc/0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AnoKd96W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDAC1F000FF;
-	Sat, 19 Sep 2026 08:30:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CJCrOc/0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEEF91F000FF;
+	Sat, 19 Sep 2026 08:38:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789806665;
-	bh=WJXr3mXMac0JiWtkpJtm5+HHxvx39jh0W9RxZ5cTS5I=;
-	h=Date:Subject:To:References:From:In-Reply-To;
-	b=AnoKd96WTeitUYdUpwftrsXRCLhoDG7v2blshgwQjepAAFb9gLjouIhcQ3qNexnt1
-	 tX1aBt4kYpu5cmWOX8dAG0LlD/S0stW7ySbQbhNH/s/buaNl7GycJx9quOaHYVwM0/
-	 sKhD8mdycLJyJGVP+WYESwxVdVNoHvmTg6NtOBI4u+FROuShMiGTmHhXKIlarFGPnr
-	 +TSbqTOnOdQ5XJBsYZ7PyUKgrQgZ43DFhHWi6jlfhYl4p+hTlOZYsC+pFcJuYg84r+
-	 GAFqWo5bcWFIGKKoLwWy3AVcI0BxLs939p+VAHgB341l59QnOYq7twrfEiaJXkkwPV
-	 +i1cyvbr4DowA==
-Message-ID: <2585bfec-a8f1-4bb6-b729-fac62af40926@kernel.org>
-Date: Sat, 19 Sep 2026 10:30:56 +0200
+	s=k20260515; t=1789807098;
+	bh=7g1jEiTMcqNA+VdyOP9PyQGneRPRUhJtgWd3c19/5Bg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=CJCrOc/0HbGWnthpr4mS3RC1rpRunGrgK7L6QYZ7KJdogYdowX2ZRgXqu148ChUtq
+	 jNmz8NVKSOW74yxCZSzVOmJJ1MeowKJMLQoRsG1s9i6nb2LBON1kxzIa0h5ztOxZcn
+	 B/YVMXldbN9wed9zrKVjjRM9wZUXbqhK4/jaYmFibQyZNPCnPwQUOZlDB8FbAunlY/
+	 eQxDgBO3SVcZQqVpefaDGq8oqnPtu91XEzTUHUkhiB8My2st49Gw9xKUyVQsJgOjSZ
+	 iderIxvQpO3wuXXd2qNhAQ1cAokqfRPacVNMhApQYNQa4RzM5u0uh5L9OHKEwzfdou
+	 6cWvf4GJovPxQ==
+Message-ID: <a77309b9-7317-4d74-9593-a1f9705ccea1@kernel.org>
+Date: Sat, 19 Sep 2026 10:38:13 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,22 +35,14 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5] dt-bindings: iio: adc: Add dt binding to xlnx,xadc
-To: Omer PALA <palaomer100@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
- "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>,
- "moderated list:ARM/ZYNQ ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20260918194434.9240-1-palaomer100@gmail.com>
- <20260918203257.6034-1-palaomer100@gmail.com>
- <b787a787-5011-4f14-9332-4cca098b374d@kernel.org>
- <DLJ50GBWD392.55LXSSAFNR9X@gmail.com>
+Subject: Re: [RFC] Maintainer entry profile/contributor guide for IIO
+To: Joshua Crofts <joshua.crofts1@gmail.com>,
+ David Lechner <dlechner@baylibre.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, andy@kernel.org,
+ nuno.sa@analog.com
+References: <20260817111825.000063f6@gmail.com>
+ <cb1937e9-c2fa-4d8d-bd95-f53423d88077@baylibre.com>
+ <20260818090652.000020bc@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -96,28 +88,73 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <DLJ50GBWD392.55LXSSAFNR9X@gmail.com>
+In-Reply-To: <20260818090652.000020bc@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 19/09/2026 10:07, Omer PALA wrote:
-> Hi Krzysztof,
+On 18/08/2026 09:06, Joshua Crofts wrote:
+> On Mon, 17 Aug 2026 19:31:45 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 > 
-> I assure you this binding patch was written manually by me.
-> 
-> That was my third DT Schema i have ever written.
-> 
-> I used ai to understand the structure of dt schemas and i wrote this
-> myself.
+>> On 8/17/26 4:18 AM, Joshua Crofts wrote:
+>>> Hi all,
+>>>
+>>> I was browsing lore and checked out the ksummit mailing list, where the
+>>> topic about guiding new contributors arose [1]. New contributors tend to
+>>> make the same mistakes when sending patches, causing reviewers to point
+>>> these out all the time over and over again. For IIO, this is definitely the
 
-I do not believe that. I quoted the exact part which is impossible to code.
+New contributors do the same mistakes because they do not read existing
+documentation, thus one more documentation won't solve it.
+
+>>> case (I myself send an email telling people not to send a v2 in reply to a
+>>> v1 several times a week). Other subsystems have a "Maintainer entry profile"
+>>> that contains subsystem-specific process info (DAMON for example [2]) and 
+>>> (sometimes even [3]) a document describing the code style of the subsystem
+>>> (this would be a great place where to mention things like not using
+>>> kernel.h in new drivers etc.). I'm happy to create both of the documents
+>>> but it's always great to hear other people's ideas!   
+>>
+>> I think there are plenty of new contributor (to the kernel) guides out there.
+>> People just don't read them. So I don't think we need another. Nothing wrong
+>> with trying to make the existing guides more clear/easy to understand though.
+>>
+>> A subsystem doc that has our code style quirks and idioms would be helpful
+>> though as I don't think that has every been written down in a single place.
+>> Especially useful now since AI reviewers will read it even if humans don't.
+> 
+> Yes, but it shouldn't be limited to code style quirks - I highly doubt new
+> contributors develop against the togreg tree of iio.git for example.
+> 
+> I'd propose 2 documents:
+> - entry profile - documenting the review cycle, patchwork, point people over to
+>   Sashiko, relevant git tree etc.
+
+Maintainers file already defines git tree. Patchwork as well. Please
+read existing docs first, because it seems you propose to duplicate it
+(including submitting patches and other process documents).
+
+Subsystem profiles are expected to document things which are done here a
+bit differently or specific subsystem expectations, narrowing general
+kernel process docs.
+
+
+> - code style - the TODO is fine for existing problems in the subsystem but doesn't
+>   point out idioms we have in IIO, i.e. not using (the awful) kernel.h, preferring
+>   devm_* functions, not failing on a mismatched ID to ensure fallback etc. This is
+>   stuff that appears a lot in patches.
+
+You just described standard kernel practice. Don't create documents just
+for sake of creating them.
 
 > 
-> My intention was to add the Devicetree binding for xlnx,xadc devices.
-> I apologize if the YAML schema structure or formatting violates current
-> dtschema conventions.
+> Whether new contributors read these is up to them (from my experience if you write
+> decent docs people still won't read them and ask pointless questions), nevertheless
+> if we suspect someone is new we can just point them to these documents instead of
+> reiterating the same over and over again.
 
-The AI slop violates.
+You can already point them to existing docs.
+
 
 Best regards,
 Krzysztof
