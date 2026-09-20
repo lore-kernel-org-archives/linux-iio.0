@@ -1,57 +1,57 @@
 Received: from sonic.asd.mail.yahoo.com (sonic-asso1-0020.asd.mail.yahoo.com [34.2.90.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E0146D567
-	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 16:48:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3B773AEF2E
+	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 16:48:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.2.90.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789922905; cv=none; b=Xthew8Z7pMuz7ZvHr7EWq5lVxWyicIq9OOuchrXChDKGXvDzT15RUHQLm2mDRhiGsWXQ5TYoRdrRjgrNaipRNVPxjYjkUMccKk1E05MkW22P/UbU2O5Zns+pgar7VbNQyfofreQYIQLi/duWBNUyL9nU4muUOUz3YqZGhpIISKI=
+	t=1789922921; cv=none; b=GG5XLFuUAGKxT4UiolLH/wEx+XphCtRy4o6SJM+VOJKrocUzyAG2qtdqhMHCeMvu9dD4/VVRMrDGiTJUqh3Ff043jLcQ8Heh+zJxFmSmHj7j9Fw6Dn6VHWVDTMQsDQU6OrOUCT4G/0Sc5wdkyOod01uARKKpTRU7WgFUOhIMrbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789922905; c=relaxed/simple;
-	bh=MMo2tU/uFTcuGLaeRQMSBsciZFCzKetL6uMoGpvo8vg=;
+	s=arc-20240116; t=1789922921; c=relaxed/simple;
+	bh=M3TwVQSxzL8OTtoIgvRUVZ5XdCvSGNTwXSq0c8cgupU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eE3I4Frx3whr11D9EWqNpwjgkhZHhQHlQBVTuF50A+2x6260V/8p9wsPQR2NIgdxKOdPUs4zIqbwo+noi4899+9kZfvlH+q/Cl2sFBm4YdBmvSz9nlkMginFbppWzGUlZF7QkYBKjwCxfgQmqJKFD+QgQv0qmtwSmxfSN8xhrzw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=J44/Ly9w; arc=none smtp.client-ip=34.2.90.19
+	 MIME-Version; b=kkomLsXlS2edSg2WJN70fpbBjbK/Hf5RqjeXuQrQLQr2bUFc+tFP5PAdxbfpZ8+MZlMTNfqt/ae5wjO4B9SpNXh/OpyS4Ly8xgT0lvoR2+TvDRlKZ66DJJ4BF3lNw6sJHZSRtuZXWmyT7RY2W1UwPQZBq/nYOfzLY0OTIpRuGmk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=s4roq/Hx; arc=none smtp.client-ip=34.2.90.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="J44/Ly9w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1789922901; bh=dtbE9rIWnBabBb9zh2Iq6Z4Ip9wNcn5qrngxLVRETZo=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=J44/Ly9wczaoHMAQqnP+BxsJIYN8fX3uQ5FG4vPO64p0jQbA9lF3Tpknr+wzJEl1RFNtHDsJC+xlxYaTKgI6junqPuEsYnmIYVsbkWPNL4yuclFwVlV+o7AdicdTUlJtQWlQ8/2/hkhkD5fQYcDkyorylpb7QpHSozrk8OUUC/wO41uVDmer6LEY2gWmTsZYF6W2T739mJLy+SisKk3D1u3mmryIEeXAJtLwxC4C9CGioRQaEFwPiGobFu0D7QjEE5IeTQLQXIyFE78K+Ul2EiO3GVykahnwxBVC0G0gaQ619qEpqc5cDeh/bLNRhb18uITx2reMeklH8NefkcKIYQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1789922901; bh=XePQYKTxjfr7S3OIXwjGe8R+h7JMcpalhxn7hJWilu+=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=buA+jxxPPlu0RlJ+Ar34Nc5yY7WHI04q+um7MT1eP6bD4iUBFB7YHqMAw2Y5WRx2CmOS/WnudstmTB4dtS1CulkXm+4DdtWhOMmW6ZXZ6Cobq/hONx9/U05ZqH3iaKVjVdgc+gBqgMS+pFmPWcS7BVdG+BtGuxrsZ+qiQNKp91zpFPgsPiQl3Ur/aV8bAkEwXgmTSI/AEQ2wUdMfw48KMZEbi8qXmfujC58Z6fEdHJg8Npb40oal8YocCQVqUwr7vR1gyjISIudWo1zelBRVAkLayvDkUViWGIRJNNXCsjXGgp/9khnTBOtBoldnJGLFIlnmZsoDtobXQHfnhTdvEg==
-X-YMail-OSG: ttRd2FgVM1kk4Sin6RBo.AtZqxCEaSMVSiPz8bQbXOKqtBgdAwh415x_5biJfq2
- Il1g0WKVKxr_XGZA_brHD6aSnPH0E9xyXeSXr0Z3jzQdUf4h6goY7Nq8oj0B8WmL7kfG3ekBAXzz
- 7J4WERGy5zOmDkZqLPhtPT22THiMRdQWGESCel5eTdQe61BnIAAmRonS5Nbkp4NT.bRgV_2qsbnv
- c3DdMP6k5hPxOfPA.Cou9at30jv6rQcWHbg1vHmw.guKQzyUolIPt2t33sqWlMnmKFzQLnzoiXkZ
- AB.vyKAnNTW.FGlh6iAQF8BwFscd5UubsmeZ4C1lHathZtGM.zZjRMvrNBossFkjqDOLF.C.fNM7
- qx77I1gaDt.shZeVP1I3lePaKML4TWYJVo2PFyKWQo3sW5ZV33AEcb0bEcTQtUknDMyznrVcjXw2
- iS.EUblIBOQpNqa3bPkzw7AdAkAK5VY7WwB3qZYJmEnCDkAfzXVwIn.390L97P8xkWx4B2xif51E
- TyUrWitcHmf76sJCd3ztZApHQIElqS3iHnLW8UPJNb88X2KVNy9yFldhNgnYRIoTW.nfnxpW43jP
- 8X7mXbAzVh7LX1ayVsxlKIAZZ.MDvw9bBW3JRMEkBo1hjs2CEcbT4RP6bmT1k1xw9nnKGYhqcuxG
- mT6zWUTB9awyebjAJhwvEoTYzqa8rTvXLzRVC1NHt0rabvWjMl0W3hREHQxNv_bFheYfGH673dle
- VoH_KDBs9Iooa6XrF7KN6ab.sfZcAV2KaVT5CtdgiW8KtLE1XMtvD6MXjBeYhHCAADNQBwv9UmbW
- iXxcW2k5T6kp2Ri.A0C_n7IEWgc5ORlfqzEZ8UUvjyLXY3KMTjtFHdpPPmqfR1Rcza9lL.JyWKoC
- CuEfQKk.bgG4TgRJRDnFL8pLa8mrwt0Hi93A0vSsOPulxZrQ7U_pcIwbEuEkvMf.nZH8.eFlT5Su
- yj6.oVbNgXrgiu.AGx.jY3rbb7JETc_TjtwpUpRB.8OxI7I8tvkJT2MGLFY_atDKoHoDsENlHtGX
- M.0vrpCBvEtBDtK.1c2RNnvvdsQ6CbFk340gAThP_5PWF0kDZvOORzd3SakkPOfx.YQ2ReW8yIKV
- e4xa0CYjF17mzpksMxJpNXrKpiNAAAwXu.NMivekABymwEKGxjxFH3XRqBjtXQUXe61WK8aenlj8
- kXVzig2fX9Uxeswmzi1Jc3UVz8_RuKaVvyC2v.jzRoJ5AKosP.ZoZ9rTaWZxMiWghzwtexjYZKhI
- Igs8TcFY6ClWTuOJp23d9Kg.q.smJb6uhm2H8DV88t2iKDVgvYH0AWLUwacD_qHzEI7Qzhj016DH
- 1J0NKkaymsdWyjb.jM4ts6NWUPrjuuyVByIn1Ha7GkGU7nsKnHdwg4JctSMJ7j6TcKZ94bYG9Tk1
- J5RDhA6Bwu_cOi2FbUbG1CFnbygBzpO4ntObxnUcbRnQ3kCOblnl4_gtcZhKyUjCeJh9fTHPJNie
- gFxaqbPR45LyQeCzPOGWqip5ab.BWAdhbnWAis1oCIKUvMyC1IqTcvvnX.R5PgWXsjvDZ5Erf71P
- fi4cZIDiCNQIc9JIThP7ptIwX8MK8H9ENnzUyp9nkmkcLyvpHrXmQtqN3acY6NsMVx4kc4_r0LDz
- dusg0A4K6fJ7JENrdM2dAwirWD5oWX0HAx8wpHV7OuMgsn_OkdAWPMTv1fYC0qjnr_25Grt6oAJY
- beBv0japV2V29s3uhGC396p4URaAOpkc6VH8NlS5E_TFSillRXFUiVu0JGaleDsPs_cEoksthzN_
- CCT6TF75XS_eLS5eetp8zIM9QwBmrvdAQAoxN.p6uRYaJshfuBdttoV6bQJ3XhvoSdfTYFTMDHkH
- qpN9440byegy.tsflOvscvxvlc6_ZBA16q8ULN8oEQ1S75kHgyvgN._IFGctEtDNR7S1Sjp9BW3o
- MfHk1ubtu0nDeh8Sirtz87GbLgLT6.rLA74Cj044CLgcaWQ6EeeKuo1ZjhpvMnGrIdrsbC3TsuZy
- mTKszTkiLFbtFW2_WwMJJw0kWWck9NQvm5ep9XFECUdD9gkaE3mSRR10dOVwzOc2PKr4S
+	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="s4roq/Hx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1789922916; bh=VirRgdhWA7/WF4fUS2RhE//kdKRIQqItbSzIjEB9TXU=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=s4roq/HxjTxn4/vnh8kT47a0uUkUrsaPztvtK+1UrQdzmuCjdq7QsbkrBUE/u21uHlpVPxiim7jvscnu4sfAHJ5NPjYmyGXyt21ClFYcvsEjdLk99cnuOiG0jVS8mSdPqe8wh/be2pyCHKL9rt4dCW2fIz3oY1zpm81CMSQlwPtSGdzdGYgpZf1Nfu9azfn2YKQ2aN0XutmLEuF/VIdwTTYCFbXYjCwOAe3diqOuDmEnf1GC8QFPbZ2c5F4CeNKbUC2EtN4DU9DI0acXX3bc+hrybBPRub8ln6I/nwf4aVS9BwBxcTchxDrtbjyvKHEXnX5s9+9a7aLphexseeqw2Q==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1789922916; bh=Gh4/nIO0jl3MHnA+0tRI4sYM/IANXn6Axar+aA6uyEF=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=ICfyFJune9huwB72LJFZmtTEI0uWRQPT4abtK1f754jIcNduqsCsD2tMtsblTLCN3LQY9J4nmTgaLNxCYuiISmIpnjchQCWdMGsEU44ZNMis0zkbNMDZ8A/v5ilul18ZuwEJVKvMedKACYjWYm2wl9YuvUMnlDwWYHhPpNy/lx6PTmBJtrPqWqAg75GOBm3IW19KIvHMdrLKQrVvbXqtooNuF3b556ggWl8k4qOwm2U0Jm5rHpfii96/RyknexmsNeXKytDeSglcNsb+sr+ELs/UwOzRnZGC+sS9OEQMx0ymzy7IXXu9yoclHVDsY7Q/RycQkcDg/EHXiFTVLYIrGw==
+X-YMail-OSG: Oq1WP0kVM1ke5HTfILwXWquzN_XITO5ewqOZwvbbasfz3zEBanKZH.bjkBWBLtW
+ mN_.cQgzjUdiE2wTebaHdgPROxnXRXe.eEEfQ4G8sTb8VpAn6MUpEYhVWq7CU.fti71tbka.9fgC
+ tfix24giX0bg2pv5JWLOghaq5Rw5f4Zq4Jw0n6xR2DC9PJIKl0loGVs9Po_Oj8rKKlOLpGcDgFj3
+ WRJAjFUeQIFfr32USHnhTuNfFL9Zz_rT1ShkOOQz44Ic43d35jxg3S2S2FSrJ9z_kjc2ZjbVe6CV
+ FWtQ8V6OLPUNQ5cwfiiMXeVk9LxvET9b0dnKbl3TyjIz3l.rzXwEo.nO4ZuHk8FLiYBlGtI3FUsW
+ KB1rY11vFGkUXX.e_Bh.H1QNWaoG_MSNXeOihmq.abf03fd04rzOPkgblpWFgwvI_l8WvolUTVL9
+ S_PcbHyasRtMQsbC2BpYfEH918Ob5KK_zPQF3DoRvB3IsmvuWclbc9lxFmMpu2eWkytNj0PGj9RL
+ yIUw_nYlT4oT3ymy5ftQirGmhNkLS.bi91jSPerHnh.YZ4h9PJSczV7bGSmE_Ni_BaIpPjycupsE
+ 9.9yCs9JpiufeldKXpNQ0Z9zscYcKyeskmFtbmsiNGIiMlkqxzNc8BR8EwiCNnEG9MWADNHHPq9A
+ eg77ZCcd2oUxBxQ2bDsA5tqex9bqInmydUYHtuScG_1s3OborqgVsODWk0Vsbdi3tJCTlXl3v2XP
+ mjTWxHmsOZmBFFhy2.Zmlssu5U2.JvfZRD9RpXY00fGj0sdBd6kc0NgXWx0Mzr__QleGQteX3w7V
+ 7g8_4lRNxl6YZvjC1EKdAk4MRHHlji3MjtPlaFdae_vWW1BzyTc7jkKftkEADH_QZumTJZaVA.wk
+ ZIfCyEWr1zWceu_zFIb6BAKel.fnIUe3_Pv5x3Lg1xMQS1kLKIoR_QW97SVqYpZUhvJRS25g6zEi
+ ByiokjKG7Vdqpcf4j1J8bK.vNWWD7XGNZZvvuSJcy6xWdavdqa8DfASYBg.TLUfYGxZE_CjAnK6i
+ onIDFINY62ejOb0MAh.NXZltjcvJx3wmsK.RzFWGBCuXgZZTAZkXWIpe36IMCgevSrU3Lh11olU9
+ OQR3zxqfQ09LDhgf2eLBdgYUQUKQcvH.Fj_rVgDKrsgJO9wuITjwG8qVFwrz3VQKIJW4cl43ZnRp
+ vx63Iuvh7Aa.107kRJQIqJH2NKJ.5A5mp3MDAg8_GGNdQliMJUKcOOn7mlLCZfEQ2bqGz_OYOwkj
+ wubWxuhfi0xzlzHX6lkExoWIPLF2QFKFqQWXC9aRTgNmhAXZQnmDL13CKwgwYXY.kWjL1Q0IIIHD
+ DBwt0y2oiuOfJPwbhdHIUGigrMtSG0.DnDjsJXrNcGwU7D5lCpkebcaiFsQLKDazxBbYzyy12Env
+ R1zaN_Q4H_8ipFizcYQgNY_b94EZVENnRUN3LUdSNdZ9OQhUzgoSErRhn8qadaEC3z7STVnLUXbg
+ 7tJsN94o0vBxtcvYZll2nHtjGPoGeA50j5zZWoCpVBY5f5ZTKHjHR8Py.8v5u0z0bsA5JaPJqLS.
+ HwKXzWrfVmVXypP1ce_NhkVJ6hE37q8G_o2RWw8yxreXRDlFWdxtqwD.vNGeE3OBFrmaVP5qn6U1
+ Q8fbCns7peH7A5hHVKXZF_W5YCRMrwpuUHG8Uk3JTGBXfGzEjX0trZmDJDUA6qSBA4XpKgn0ZEm2
+ 2PU_oX0Dd6TWPE6qJ53K_d7ei2n4m_MVeCk8YI56ngUgeFdEceHIKz1521ihxujV15giQZ7kQfol
+ KGB6ctIlUcv6pzet9QOjqD4M.ZWfPedIpnjsl3Mq05XOgtEH4GdxWPE502QigJStJAsAQ5FF4Tif
+ norM0LxbhGLQ3F3c3iIbh5Au3N9uFYhbyP_myUCuBlcwk570WAyUZU7.Tc9ZJn_2Gu8qYqSk6NQP
+ sQhHSsZLMehnDF2.Wvsff8X7bCVFgPifkjJ1_8smmCCpMF5rw5Pgq9SLTIKPVMbmHGb6Yor_Vy8N
+ aqrFWWOhfmQK944vRLaiDJumR9IuBMQtOqBneJUcQ.M7Oa2tpDVi4M5ixzuyblLo_nfLX
 X-Sonic-MF: <m.abubakar365@yahoo.com>
-X-Sonic-ID: 7a11ee8c-bb38-4796-b7f4-30470e453cb5
-Received: from sonic.gate.mail.ne1.yahoo.com by mail-asdoutdeli-p-cin-asso1-prod-sonicconsumer-svc-102 with HTTP; Sun, 20 Sep 2026 16:48:21 +0000
+X-Sonic-ID: aefa5b42-fc18-47f2-b05f-e46382c86173
+Received: from sonic.gate.mail.ne1.yahoo.com by mail-asdoutdeli-p-cin-asso1-prod-sonicconsumer-svc-102 with HTTP; Sun, 20 Sep 2026 16:48:36 +0000
 Received: from dip55.lsn.bf1.yahoo.com ([67.195.177.64])
           by hello (SMTP) with SMTP ID 523daeaa0215dea57efbd4c0222e20e0;
-          Sun, 20 Sep 2026 16:48:15 +0000 (UTC)
+          Sun, 20 Sep 2026 16:48:32 +0000 (UTC)
 From: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Rob Herring <robh@kernel.org>,
@@ -64,9 +64,9 @@ Cc: dlechner@baylibre.com,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-Subject: [PATCH v2 1/2] dt-bindings: iio: pressure: add Sensirion SDP31
-Date: Sun, 20 Sep 2026 21:47:23 +0500
-Message-ID: <20260920164724.32019-2-m.abubakar365@yahoo.com>
+Subject: [PATCH v2 2/2] iio: pressure: add Sensirion SDP31 driver
+Date: Sun, 20 Sep 2026 21:47:24 +0500
+Message-ID: <20260920164724.32019-3-m.abubakar365@yahoo.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260920164724.32019-1-m.abubakar365@yahoo.com>
 References: <20260920164724.32019-1-m.abubakar365@yahoo.com>
@@ -78,79 +78,283 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add device tree bindings for the Sensirion SDP31 differential pressure
-sensor, an I2C device that also reports temperature.
+Add an IIO driver for the Sensirion SDP31 differential pressure sensor.
+The device is accessed over I2C and reports differential pressure and
+temperature. Each measurement is validated using the sensor's CRC-8
+checksum.
+
+Tested on an SDP31 connected to a Raspberry Pi 4 I2C bus.
 
 Signed-off-by: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
 ---
- .../iio/pressure/sensirion,sdp31.yaml         | 41 +++++++++++++++++++
- MAINTAINERS                                   |  5 +++
- 2 files changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+ MAINTAINERS                   |   1 +
+ drivers/iio/pressure/Kconfig  |  11 ++
+ drivers/iio/pressure/Makefile |   1 +
+ drivers/iio/pressure/sdp31.c  | 209 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 222 insertions(+)
+ create mode 100644 drivers/iio/pressure/sdp31.c
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml b/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
-new file mode 100644
-index 000000000..a98e7c97e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
-@@ -0,0 +1,41 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/pressure/sensirion,sdp31.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sensirion SDP31 differential pressure sensor
-+
-+maintainers:
-+  - Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-+
-+description: |
-+  Differential pressure sensor from Sensirion with an I2C interface.
-+
-+properties:
-+  compatible:
-+    const: sensirion,sdp31
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      pressure@21 {
-+        compatible = "sensirion,sdp31";
-+        reg = <0x21>;
-+        vdd-supply = <&vdd_3v3>;
-+      };
-+    };
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 214aeee76..e285147be 100644
+index e285147be..a053a530e 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -24855,6 +24855,11 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/chemical/sensirion,scd4x.yaml
- F:	drivers/iio/chemical/scd4x.c
+@@ -24859,6 +24859,7 @@ SENSIRION SDP31 DIFFERENTIAL PRESSURE SENSOR DRIVER
+ M:	Muhammad Abu Bakar <m.abubakar365@yahoo.com>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
++F:	drivers/iio/pressure/sdp31.c
  
-+SENSIRION SDP31 DIFFERENTIAL PRESSURE SENSOR DRIVER
-+M:	Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
-+
  SENSIRION SDP500 DIFFERENTIAL PRESSURE SENSOR DRIVER
  M:	Petar Stoykov <petar.stoykov@prodrive-technologies.com>
- S:	Maintained
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 838a8340c..58172639c 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -286,6 +286,17 @@ config MS5637
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called ms5637.
+ 
++config SDP31
++	tristate "Sensirion SDP31 differential pressure sensor I2C driver"
++	depends on I2C
++	select CRC8
++	help
++	  Say Y here to build support for Sensirion SDP31 differential pressure
++	  sensor I2C driver.
++
++	  To compile this driver as a module, choose M here: the core module
++	  will be called sdp31.
++
+ config SDP500
+ 	tristate "Sensirion SDP500 differential pressure sensor I2C driver"
+ 	depends on I2C
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index bc0d11a20..5279a0ebd 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -35,6 +35,7 @@ obj-$(CONFIG_MS5611) += ms5611_core.o
+ obj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o
+ obj-$(CONFIG_MS5611_SPI) += ms5611_spi.o
+ obj-$(CONFIG_MS5637) += ms5637.o
++obj-$(CONFIG_SDP31) += sdp31.o
+ obj-$(CONFIG_SDP500) += sdp500.o
+ obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+ st_pressure-y := st_pressure_core.o
+diff --git a/drivers/iio/pressure/sdp31.c b/drivers/iio/pressure/sdp31.c
+new file mode 100644
+index 000000000..e661a7af8
+--- /dev/null
++++ b/drivers/iio/pressure/sdp31.c
+@@ -0,0 +1,209 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#include <linux/cleanup.h>
++#include <linux/crc8.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/once.h>
++#include <linux/regulator/consumer.h>
++#include <linux/unaligned.h>
++
++#include <linux/iio/iio.h>
++
++#define SDP31_CMD_TRIG_DP    0x362F
++#define SDP31_MEAS_DELAY_MS  50
++#define SDP31_TEMP_SCALE     5
++#define SDP31_CRC8_POLY      0x31
++#define SDP31_CRC8_INIT      0xff
++
++DECLARE_CRC8_TABLE(sdp31_crc8_table);
++
++struct sdp31_data {
++	struct i2c_client *client;
++	struct mutex lock; /* serializes access to the sensor */
++	u16 dp_scale;
++};
++
++struct sdp31_reading {
++	s16 pressure;
++	s16 temp;
++	u16 scale;
++};
++
++/* #2: build the command as a be16 and send it directly. */
++static int sdp31_send_cmd(struct i2c_client *client, u16 cmd)
++{
++	__be16 buf = cpu_to_be16(cmd);
++	int ret = i2c_master_send(client, (u8 *)&buf, sizeof(buf));
++
++	if (ret < 0)
++		return ret;
++	return (ret == sizeof(buf)) ? 0 : -EIO;
++}
++
++static int sdp31_check_crc(const u8 *word)
++{
++	if (crc8(sdp31_crc8_table, word, 2, SDP31_CRC8_INIT) != word[2])
++		return -EIO;
++	return 0;
++}
++
++/* #3: takes sdp31_data and holds the lock for the whole transaction. */
++static int sdp31_measure(struct sdp31_data *data, struct sdp31_reading *out)
++{
++	u8 rx[9];
++	int ret;
++
++	guard(mutex)(&data->lock);
++
++	ret = sdp31_send_cmd(data->client, SDP31_CMD_TRIG_DP);
++	if (ret)
++		return ret;
++
++	msleep(SDP31_MEAS_DELAY_MS);
++
++	ret = i2c_master_recv(data->client, rx, sizeof(rx));
++	if (ret < 0)
++		return ret;
++	if (ret != sizeof(rx))
++		return -EIO;
++
++	if (sdp31_check_crc(&rx[0]) ||
++	    sdp31_check_crc(&rx[3]) ||
++	    sdp31_check_crc(&rx[6]))
++		return -EIO;
++
++	/* #4: use the unaligned big-endian helper instead of manual shifts. */
++	out->pressure = (s16)get_unaligned_be16(&rx[0]);
++	out->temp = (s16)get_unaligned_be16(&rx[3]);
++	out->scale = get_unaligned_be16(&rx[6]);
++	return 0;
++}
++
++static int sdp31_read_raw(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val, int *val2, long mask)
++{
++	struct sdp31_data *data = iio_priv(indio_dev);
++	struct sdp31_reading r;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = sdp31_measure(data, &r);   /* locking now lives inside */
++		if (ret)
++			return ret;
++		switch (chan->type) {
++		case IIO_PRESSURE:
++			*val = r.pressure;
++			return IIO_VAL_INT;
++		case IIO_TEMP:
++			*val = r.temp;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_PRESSURE:
++			*val = 1;
++			*val2 = data->dp_scale * 1000;
++			return IIO_VAL_FRACTIONAL;
++		case IIO_TEMP:
++			*val = SDP31_TEMP_SCALE;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info sdp31_info = {
++	.read_raw = sdp31_read_raw,
++};
++
++static const struct iio_chan_spec sdp31_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	},
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++static int sdp31_probe(struct i2c_client *client)
++{
++	struct device *dev = &client->dev;   /* #5 */
++	struct iio_dev *indio_dev;
++	struct sdp31_data *data;
++	struct sdp31_reading r;
++	int ret;
++
++	/* #9: get and enable the sensor's supply (auto-disabled on remove). */
++	ret = devm_regulator_get_enable(dev, "vdd");
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to enable regulator\n");
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++
++	ret = devm_mutex_init(dev, &data->lock);   /* #6 */
++	if (ret)
++		return ret;
++
++	/* #7: populate the shared CRC table exactly once, race-free. */
++	DO_ONCE(crc8_populate_msb, sdp31_crc8_table, SDP31_CRC8_POLY);
++
++	/* Confirm the sensor is present and learn its scale factor. */
++	ret = sdp31_measure(data, &r);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to read from sensor\n");  /* #8 */
++	if (!r.scale)
++		return dev_err_probe(dev, -EINVAL, "invalid scale factor\n");
++	data->dp_scale = r.scale;
++
++	indio_dev->name = "sdp31";
++	indio_dev->info = &sdp31_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = sdp31_channels;
++	indio_dev->num_channels = ARRAY_SIZE(sdp31_channels);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct i2c_device_id sdp31_id[] = {
++	{ .name = "sdp31" },   /* #10: named initializer */
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, sdp31_id);
++
++static const struct of_device_id sdp31_of_match[] = {
++	{ .compatible = "sensirion,sdp31" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sdp31_of_match);
++
++static struct i2c_driver sdp31_driver = {
++	.driver = {
++		.name = "sdp31",
++		.of_match_table = sdp31_of_match,
++	},
++	.probe = sdp31_probe,
++	.id_table = sdp31_id,
++};
++module_i2c_driver(sdp31_driver);
++
++MODULE_AUTHOR("Muhammad Abu Bakar");
++MODULE_DESCRIPTION("Sensirion SDP31 differential pressure sensor");
++MODULE_LICENSE("GPL");
 -- 
 2.43.0
 
