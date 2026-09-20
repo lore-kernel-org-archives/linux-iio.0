@@ -1,214 +1,379 @@
-Received: from mail-pj2-f13.google.com (mail-pj2-f13.google.com [74.125.227.141])
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EE902D9ECB
-	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 14:08:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C537643DEBE
+	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 16:04:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789913303; cv=none; b=cnBAtxP5bjpx4W17VliRgOM73kLxl2YXnbHaR9Rz25dlr613EHEbASTf1FFYl7UOPJuoF0jKXZknjxKIaNGpY2IbbZ7ua6fbmgX++/SCmrvyt4Fz7kFQAT1TNS1yY8rfqmGCdyozgEigMvKdjy7O5BYiyU5O+XlMMVPzfXQh6xM=
+	t=1789920278; cv=none; b=AU53zN+J2McYy3HVqsN2GfosZsLSu4N3Z1fKSp2jPuUFixA4iTUeVzWTFcXGhp42fmNEgGDGwf6ycOnfUlWQYP37kdXSObn12umxaD7/rmILSv4p5cr9KTZwGkcWbJTmBfoDAHeH70cfrd2UeqM3y4iDQw73xyXouVhFxM5+7pE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789913303; c=relaxed/simple;
-	bh=bof09/06nPiQ4HzLqim9Sfhjmg3hRr1rOAzuadnmP+k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ICQeypH5ZKVcCZRsC7N+kQHSTyozy2lWxRsW2LpbA03tmhtrFNP7JsC8Mpm+MV86yr72GjN8TD4fTj1EYPfX46unHWfAKJ0DjJexvfBclsFywaALtUI8Z7gwHP6oGEM8M9Gx/tJ9PH/sUjdohw+4tpPgrGNlG4cZcsjC9odVQGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FonyBhjo; arc=none smtp.client-ip=74.125.227.141
+	s=arc-20240116; t=1789920278; c=relaxed/simple;
+	bh=4Q0MaRhk7dORf7/0yfsW2Fab3UNfOB07rplrxV62BhQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=CTl6fcd9pJkXTbOu08ESWaZI+hYpBeArRMKopxWfkFFoZakMjLumeX3y43t9jGacJACZulNg24lXhyfsQEKxTRhP1npEmrVcCXJhMozQx0HkLozKJm0+5C4lEwMQ8zwoHrBW31PcIrr5jdPjo4XoP2+xWSQCY0jqY+DHt2O4TgA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jx5XRGuF; arc=none smtp.client-ip=74.125.225.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FonyBhjo"
-Received: by mail-pj2-f13.google.com with SMTP id 98e67ed59e1d1-396ccc09d65so2014089a91.3
-        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 07:08:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jx5XRGuF"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-484366874b0so1231817f8f.2
+        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 09:04:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789913302; x=1790518102; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=iyOmZAJ5EC0g24waSg1z6ypsi7AcrrbpqT6UrnwgkGA=;
-        b=FonyBhjoMeC1jqWHAxmLeMtbVXfrqU+W7qQttCpdKcO+uKfaszWTqIBcm7RwHfVEd2
-         UaQCTvt6r4wAdntCQDDdXfSf2olZcf4pjbRxkdvJLJU5hOU9vkn7uGqrRLJyP22pEyee
-         m5lEJzy221Qq6tAQd1OIpMjbgi3OlIPb1yUFWcfkBun74PWVEGo86u1CJ4Opn0MYcSFr
-         N1nkfDdFS8lcalJmFvfiaQNrYW0Vb+1j02Gdy+0ckc+MenoUBeD9lLFwmor9JQ03ZCMs
-         D2/VJsYUTXRttYN6xjdQ2JBfaHjRoBGx+ntRarliDB9JXRg3qK+D4h04KShg8A54cXEH
-         FYKQ==
+        d=gmail.com; s=20251104; t=1789920271; x=1790525071; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ig3jH0x1Y9g8A0aQSq295NLuP2JJYwzb3U2m9Tl0kOU=;
+        b=Jx5XRGuFd/ivRgeYutrw6WDRrIZMPA8QstD+GaMWcezW80pj0pSXjPxryDbLtRQDYI
+         9hJttpz7/nxzgY6xIHLc5+qZlAjhp8Hr1xO1CJ/1jA+GuL+HihJlBS2Yxb8IXuooQO/l
+         UfVUeOlJrYNOwuvRt2O3xs4jx4R0YcRIomL19S8lNZ7DdX1ISPAuhRE0XuYY6Qsm27zl
+         g1At+Nw4ttOaVnKuwt0q78ovIRXfTaDdgmpY+jo0SUcHsDoB9gE6u6qcqVvc9Rjq3B3Q
+         9liWHMQsts3Cy9EejC0MICHc3Wtsh9iZQm5zUWLTmGDyRtXNA0AIfDWlpngnlEEHFy88
+         gTZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789913302; x=1790518102;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=iyOmZAJ5EC0g24waSg1z6ypsi7AcrrbpqT6UrnwgkGA=;
-        b=Q9yRI0/mRBKsL5LLo6wShaqgvhvZnarEr6ntpi20XOLn0P24tONeAQ5tGQ5r1gyq2U
-         zwTCr/24hUUP77PP4h+9o8ZCVXFh+UZv+OMpBiHP0wVap9MGoAzF+an6u9pl4WuhSrZs
-         3r6bxPNcAXvg7UEZUUmzZmqmBWILIhDc6PMTqk0haLl8mRDxz0EYXGljrPyp48lNK60e
-         8MIkIGcD4wYGHTsUIokBjNXZxO5hObOa7d6n0skBc/QnVHsL2lv96Xpbdb0Cx4++zu7x
-         wSlPgGX9lvgF/+iFq6RHNhgKLnObwCA09Do9Hq1laYcIc7MZkcfrspquRjare/eecm8K
-         poBA==
-X-Forwarded-Encrypted: i=1; AKwUvBx/n4Q1FEyp5KR/aRxDgMfv0IlTHlcrJm9LTi+iHENqfzQWeeTJQWdmdlNI1N6EyQlxjVsKpcCzAck=@vger.kernel.org
-X-Gm-Message-State: AFuF++nc0cqthDnxJjHgFM9ZgcdzZUQdpdNvuvCh2W3Hnnxh3MWaZ86C
-	CHicLKQt5JaT3jO3HfPCmmZmb+7m2LwhGImFiZBMqLkvI9cFH2AwwOjc
-X-Gm-Gg: AYBFou3gC225JgHWIohgzbih6M8zW6ExXH+/G5ViJBKwUErE/Zs4JPAgNYYKcyOuVqQ
-	RyhMXZsN7Om3ANwJlvInSP8brBFLmD+RXUsbUZ5qTSsGtKI6Ktp15TEwQR4bXqmSTOf7ffluzWI
-	PSybAgtLoj24e4iHTJqxequL4Y+jusPXnZoB3tho/B52w7qwOcQm212eUAWjIjCr1TuYQG41u+4
-	Xkh7oFn4t6j96l6QrkAQoDiLBGX6BDJBcu0fuCFb7E1PSt+DkWVpxCMTXROPuv4gRaP0tJwhTIK
-	7gYLYTFbClv9cIVXuCNB5rxQfQnBkyRucQ4DBkRhcWQ9AzOkRIyLN3wjWeZaXRYlK1stNSjp3HS
-	sxT9MbKY4fHTx89FZgeCMu60KqCwl7UJaYrtwToKGiU6csLlhGVP+gglj/fGJWSc30ocd4RctkH
-	N6yL6s8Zei3eEWDrJv5OC7vdANYHrYLGlMmnpmzk/PNrL8X4Bn+U3CYiZq5NcE4I11aPF3EKkLs
-	PfZBABwshOU7SE=
-X-Received: by 2002:a17:90b:3eca:b0:39e:6a7f:1dc6 with SMTP id 98e67ed59e1d1-39e6a7f2209mr7510006a91.34.1789913301817;
-        Sun, 20 Sep 2026 07:08:21 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-144e14dd04dsm2962133c88.7.2026.09.20.07.08.19
+        d=1e100.net; s=20260707; t=1789920271; x=1790525071;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ig3jH0x1Y9g8A0aQSq295NLuP2JJYwzb3U2m9Tl0kOU=;
+        b=RKsA9OhSA0UNXG4RJ2TCIqid+7nTjz60WCUJIy9XP7T4RgTRKbrpJIAFniEM6drTyg
+         wEmmPskdd8/QhEZmv/kkpW8wp/PVPA8zQ+FxjtqljZvGIT9y3EsnnkyyASaW7+SABNsy
+         yr50xDZb1KTUQIH/6NzmF7DqknkCa3rw4rXwFm5D+uYW4ALGmGfLWiywlIWY7Ko0OkuW
+         vv58TZyYaexzt0rLPvlDYC1H3chtGX5s6Fl5DKpbmt3Z5P8t6aHTXnx3Tzd4P2iM8JaH
+         PBJpREtxdyr/kKJinxMNYCDG5v2C6jvdrOYKEt3nBeaC+0AZbC5mJ+T3NL94Wwo1z2q9
+         WmbQ==
+X-Gm-Message-State: AFuF++mssLwqO6AcM+9545WkJa4VHJspeZsSd4e3UbjUGwx5ne0WT5U/
+	S00jJEP+J3NQ0W61cIkxDcntWxAN/0N/tWKI3PuTtwmEdL7s1TGMede5WWJzSwMB
+X-Gm-Gg: AYBFou21dMIWtF7H1QJGqSPsdPgXH/TSlGOy5HpLQB0/7UhYc4bg/Kp1vQM2TTOIfo6
+	U/5btPkg1CU0gxVhUAdSXHh1Ez3dJkS+tAMzgjddeHh+bItXPqKNsJqRQ4LUYQdQUUp6rdOiYUk
+	qGhQGdmMI5hUIB/POj67SZtzBS9k6idGvsBVorPUGGthVV3BRwhOeDs8GjEN8Zbmry/qg8lAN1n
+	v+E3NUmxj3M/42Z3pLAPzw7irt+QLfGn/kj2OYzWjbnSuuos4aKF0iJknu/REP/7z0XAb56AQ4J
+	0gpXC754jzL9Uhk8Q99m50cpyOAXkgKtEpRhqax9miClgiuDpPf6QMybzeSyQjN74FPe2H6M6Cg
+	IVO7skXSRn6k4tegicTBNRyYG0Q03OEtKmszSJa6DVHqVXPIybz4vmLuhbuCeY+wAYoVoH8vSzI
+	SvZp1WeECEDredtDuEOKdFzqtoH5vfl29FPooUytVhu1aUbXVMUUmQMmDWoJuA8HH9Aeokek1W+
+	lhGHiAGiMGftPS4cD9jK4LFSDvzFjpVvYLxSp8A5eFy2d1OaYEsU7lujLWhvV24aD8NjGsyRmKe
+	R7iU2Js=
+X-Received: by 2002:a05:6000:4028:b0:487:40a:5ba8 with SMTP id ffacd0b85a97d-4871e25e2demr16925137f8f.15.1789920271055;
+        Sun, 20 Sep 2026 09:04:31 -0700 (PDT)
+Received: from SegFaultinator.localdomain ([37.142.157.121])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4872459d409sm15065717f8f.33.2026.09.20.09.04.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2026 07:08:20 -0700 (PDT)
-Date: Sun, 20 Sep 2026 11:09:27 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/5] iio: imu: inv_icm42607: Implement MREGx register
- access
-Message-ID: <aq_pFy46SirVu09b@debian-BULLSEYE-live-builder-AMD64>
-References: <20260917-b4-inv_icm42370p-v4-0-fd9373f123c9@axis.com>
- <20260917-b4-inv_icm42370p-v4-4-fd9373f123c9@axis.com>
+        Sun, 20 Sep 2026 09:04:30 -0700 (PDT)
+From: Yuval Saar <thefireking@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	maxwell@maxwelld.cc,
+	Yuval Saar <thefireking@gmail.com>
+Subject: [PATCH v2] iio: adc: mcp3422: use read_avail() for available attributes
+Date: Sun, 20 Sep 2026 19:00:29 +0300
+Message-ID: <20260920160247.1224672-1-thefireking@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260919195507.94130-1-thefireking@gmail.com>
+References: <20260919195507.94130-1-thefireking@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260917-b4-inv_icm42370p-v4-4-fd9373f123c9@axis.com>
+Content-Transfer-Encoding: 8bit
 
-On 09/17, Kanak Shilledar wrote:
-> The device supports indirect register access to different banks. A
-> specific routine needs to be followed when accessing the registers in
-> another bank as documented in the datasheet (section 13). This is
-> required for accessing registers configured via the user and
-> implementing buffer support. The implementation is inspired from the
-> icm45600 driver. The banks are defined based on their initial bank
-> access code which are written to the BLK_SEL_* regs. However, there is a
-> variation for MREG1 as User Bank 0 and MREG1 both share the same 0x00,
-> so User Bank 1 has 0x00 and MREG1 has 0x01. When MREG1 register is
-> accessed, then BLK_SEL_* is written with 0x00 instead of 0x01.
-> 
-> Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-> Datasheet: https://www.lcsc.com/product-detail/C5129967.html
-> Assisted-by: LLM
-> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
-> ---
-> LLM was used to implement the mreg back switching support.
-...
->  
-> -/* Virtual register addresses: @bank on MSB (4 upper bits), @address on LSB */
-> +/*
-> + * Virtual register addresses: bank id in the upper byte, register address in
-> + * the lower byte. Bank 0 is directly addressable on the bus. MREG banks are
-> + * reached through the BLK_SEL/MADDR/M indirect access window, one byte per
-> + * transaction (datasheet section 13, no burst support).
-> + *
-> + * MREG1 programs BLK_SEL = 0x00, which collides with the direct bank, so it
-> + * gets the distinct virtual id 0x01. MREG2 and MREG3 virtual ids match their
-> + * BLK_SEL values.
-> + */
-> +#define INV_ICM42607_REG_BANK_MASK			GENMASK(15, 8)
-> +#define INV_ICM42607_REG_ADDR_MASK			GENMASK(7, 0)
-> +
-> +#define INV_ICM42607_BANK0				0x0000
-> +#define INV_ICM42607_MREG1				0x0100
-> +#define INV_ICM42607_MREG2				0x2800
-> +#define INV_ICM42607_MREG3				0x5000
-> +
-> +/* BLK_SEL value written to the device for each virtual bank id. */
-> +#define INV_ICM42607_MREG1_BLK_SEL			0x00
-> +#define INV_ICM42607_MREG2_BLK_SEL			0x28
-> +#define INV_ICM42607_MREG3_BLK_SEL			0x50
-> +
-> +/*
-> + * Datasheet section 13, Accessing MREGx Registers: no bus access for 10us
-> + * after programming the indirect access window.
-> + */
-> +#define INV_ICM42607_MREG_ACCESS_DELAY_US		10
->  
->  /* Register Map for User Bank 0 */
-It would help review if either the commit message or a comment here made it
-clear Bank 0 register access is now going to be handled by the same routines
-used by 16-bit virtual regmap_config. Replacing 0x00 by 0x0000 looks odd
-otherwise.
+Custom sysfs show functions only expose the sampling frequency and
+scale lists to userspace. Use read_avail() and the channel _available
+masks so the IIO core creates sampling_frequency_available and
+in_voltage_scale_available. Sysfs names and formatted output are
+unchanged, and in-kernel IIO consumers can query the lists directly.
 
-> -#define INV_ICM42607_REG_MCLK_RDY			0x00
-> +#define INV_ICM42607_REG_MCLK_RDY			0x0000
-> +#define INV_ICM42607_MCLK_RDY_BIT			BIT(3)
->  
-> -#define INV_ICM42607_REG_DEVICE_CONFIG			0x01
-> +#define INV_ICM42607_REG_DEVICE_CONFIG			0x0001
->  #define INV_ICM42607_DEVICE_CONFIG_SPI_AP_4WIRE		BIT(2)
->  #define INV_ICM42607_DEVICE_CONFIG_SPI_MODE		BIT(0)
->  
-...
-> -static bool inv_icm42607_is_readable_reg(struct device *dev, unsigned int reg)
-> +static int inv_icm42607_mclk_get(struct regmap *map, bool *idle_set)
->  {
-> -	switch (reg) {
-> -	case INV_ICM42607_REG_MCLK_RDY ... INV_ICM42607_REG_INT_CONFIG:
-> -	case INV_ICM42607_REG_TEMP_DATA1 ... INV_ICM42607_REG_TMST_FSYNCL:
-> -	case INV_ICM42607_REG_APEX_DATA4 ... INV_ICM42607_REG_INTF_CONFIG1:
-> -	case INV_ICM42607_REG_INT_STATUS_DRDY ... INV_ICM42607_REG_FIFO_DATA:
-> -	case INV_ICM42607_REG_WHOAMI:
-> -		return true;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	*idle_set = false;
-> +
-> +	ret = regmap_read(map, INV_ICM42607_REG_MCLK_RDY, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val & INV_ICM42607_MCLK_RDY_BIT)
-> +		return 0;
-> +
-> +	/*
-> +	 * Clock isn't running: we're either in Sleep mode or in Accel LP mode
-> +	 * running on WUOSC. Force the RC oscillator on via IDLE and wait for
-> +	 * MCLK_RDY. Datasheet gives 10us (accel startup) to 200us (accel
-> +	 * transition from OFF) for this to complete.
-> +	 */
-> +	ret = regmap_set_bits(map, INV_ICM42607_REG_PWR_MGMT0,
-> +			      INV_ICM42607_PWR_MGMT0_IDLE);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*idle_set = true;
-> +
-> +	ret = regmap_read_poll_timeout(map, INV_ICM42607_REG_MCLK_RDY, val,
-> +				       val & INV_ICM42607_MCLK_RDY_BIT, 10, 200);
-> +	if (ret) {
-> +		regmap_clear_bits(map, INV_ICM42607_REG_PWR_MGMT0,
-> +				  INV_ICM42607_PWR_MGMT0_IDLE);
-> +		*idle_set = false;
-To fully handle the error path, it should also check regmap_clear_bits() return.
-E.g.
-		ret2 = regmap_clear_bits(map, INV_ICM42607_REG_PWR_MGMT0,
-					 INV_ICM42607_PWR_MGMT0_IDLE);
-		if (ret2)
-			dev_err(...);
-		else
-			*idle_set = false;
+Replace magic numbers(chip ids and sample-rate values) with named constants.
 
->  	}
->  
-> -	return false;
-> +	return ret;
->  }
->  
+Compile tested. checkpatch --strict clean. Sysfs names and available-list
+text checked against IIO core formatters. No hardware.
+
+Assisted-by: LLM
+Signed-off-by: Yuval Saar <thefireking@gmail.com>
+---
+ drivers/iio/adc/mcp3422.c | 168 ++++++++++++++++++++------------------
+ 1 file changed, 90 insertions(+), 78 deletions(-)
+
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index 36ba00edf..239438dc7 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -19,11 +19,9 @@
+ #include <linux/i2c.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
+-#include <linux/sysfs.h>
+ #include <linux/unaligned.h>
+ 
+ #include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+ 
+ #define MCP3422_CHANNEL_MASK	GENMASK(6, 5)
+ #define MCP3422_SRATE_MASK	GENMASK(3, 2)
+@@ -39,6 +37,25 @@
+ #define MCP3422_PGA_8	3
+ #define MCP3422_CONT_SAMPLING	BIT(4)
+ 
++/* Sample rates in SPS. MCP3422_SRATE_* above are the config-bit encodings. */
++#define MCP3422_SPS_240	240
++#define MCP3422_SPS_60	60
++#define MCP3422_SPS_15	15
++#define MCP3422_SPS_3	3
++
++/*
++ * i2c_device_id.driver_data / adc->id. MCP3421-4 are 18-bit (3 SPS
++ * available); MCP3425-8 are 16-bit and omit that rate.
++ */
++#define MCP3421_ID		1
++#define MCP3422_ID		2
++#define MCP3423_ID		3
++#define MCP3424_ID		4
++#define MCP3425_ID		5
++#define MCP3426_ID		6
++#define MCP3427_ID		7
++#define MCP3428_ID		8
++
+ #define MCP3422_CHAN(_index) \
+ 	{ \
+ 		.type = IIO_VOLTAGE, \
+@@ -47,27 +64,33 @@
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) \
+ 				| BIT(IIO_CHAN_INFO_SCALE), \
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
++		.info_mask_shared_by_type_available = \
++				BIT(IIO_CHAN_INFO_SCALE), \
++		.info_mask_shared_by_all_available = \
++				BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+ 	}
+ 
+-static const int mcp3422_scales[4][4] = {
+-	{ 1000000, 500000, 250000, 125000 },
+-	{ 250000,  125000, 62500,  31250  },
+-	{ 62500,   31250,  15625,  7812   },
+-	{ 15625,   7812,   3906,   1953   } };
++/* IIO_VAL_INT_PLUS_NANO lists: { integer, nano } per PGA gain. */
++static const int mcp3422_scale_avail[][8] = {
++	[MCP3422_SRATE_240] = { 0, 1000000, 0, 500000, 0, 250000, 0, 125000 },
++	[MCP3422_SRATE_60]  = { 0, 250000,  0, 125000, 0, 62500,  0, 31250  },
++	[MCP3422_SRATE_15]  = { 0, 62500,   0, 31250,  0, 15625,  0, 7812   },
++	[MCP3422_SRATE_3]   = { 0, 15625,   0, 7812,   0, 3906,   0, 1953   },
++};
+ 
+ /* Constant msleep times for data acquisitions */
+-static const int mcp3422_read_times[4] = {
+-	[MCP3422_SRATE_240] = 1000 / 240,
+-	[MCP3422_SRATE_60] = 1000 / 60,
+-	[MCP3422_SRATE_15] = 1000 / 15,
+-	[MCP3422_SRATE_3] = 1000 / 3 };
+-
+-/* sample rates to integer conversion table */
+-static const int mcp3422_sample_rates[4] = {
+-	[MCP3422_SRATE_240] = 240,
+-	[MCP3422_SRATE_60] = 60,
+-	[MCP3422_SRATE_15] = 15,
+-	[MCP3422_SRATE_3] = 3 };
++static const int mcp3422_read_times[] = {
++	[MCP3422_SRATE_240] = 1000 / MCP3422_SPS_240,
++	[MCP3422_SRATE_60] = 1000 / MCP3422_SPS_60,
++	[MCP3422_SRATE_15] = 1000 / MCP3422_SPS_15,
++	[MCP3422_SRATE_3] = 1000 / MCP3422_SPS_3 };
++
++/* sample rates to integer conversion table; 3 SPS is last and 18-bit only */
++static const int mcp3422_sample_rates[] = {
++	[MCP3422_SRATE_240] = MCP3422_SPS_240,
++	[MCP3422_SRATE_60] = MCP3422_SPS_60,
++	[MCP3422_SRATE_15] = MCP3422_SPS_15,
++	[MCP3422_SRATE_3] = MCP3422_SPS_3 };
+ 
+ /* sample rates to sign extension table */
+ static const int mcp3422_sign_extend[4] = {
+@@ -169,7 +192,7 @@ static int mcp3422_read_raw(struct iio_dev *iio,
+ 	case IIO_CHAN_INFO_SCALE:
+ 
+ 		*val1 = 0;
+-		*val2 = mcp3422_scales[sample_rate][pga];
++		*val2 = mcp3422_scale_avail[sample_rate][2 * pga + 1];
+ 		return IIO_VAL_INT_PLUS_NANO;
+ 
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+@@ -199,8 +222,8 @@ static int mcp3422_write_raw(struct iio_dev *iio,
+ 		if (val1 != 0)
+ 			return -EINVAL;
+ 
+-		for (i = 0; i < ARRAY_SIZE(mcp3422_scales[0]); i++) {
+-			if (val2 == mcp3422_scales[sample_rate][i]) {
++		for (i = 0; i < ARRAY_SIZE(mcp3422_scale_avail[0]) / 2; i++) {
++			if (val2 == mcp3422_scale_avail[sample_rate][2 * i + 1]) {
+ 				adc->pga[req_channel] = i;
+ 
+ 				FIELD_MODIFY(MCP3422_CHANNEL_MASK, &config, req_channel);
+@@ -213,17 +236,17 @@ static int mcp3422_write_raw(struct iio_dev *iio,
+ 
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		switch (val1) {
+-		case 240:
++		case MCP3422_SPS_240:
+ 			temp = MCP3422_SRATE_240;
+ 			break;
+-		case 60:
++		case MCP3422_SPS_60:
+ 			temp = MCP3422_SRATE_60;
+ 			break;
+-		case 15:
++		case MCP3422_SPS_15:
+ 			temp = MCP3422_SRATE_15;
+ 			break;
+-		case 3:
+-			if (adc->id > 4)
++		case MCP3422_SPS_3:
++			if (adc->id > MCP3424_ID)
+ 				return -EINVAL;
+ 			temp = MCP3422_SRATE_3;
+ 			break;
+@@ -256,45 +279,34 @@ static int mcp3422_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
+-static ssize_t mcp3422_show_samp_freqs(struct device *dev,
+-		struct device_attribute *attr, char *buf)
+-{
+-	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
+-
+-	if (adc->id > 4)
+-		return sprintf(buf, "240 60 15\n");
+-
+-	return sprintf(buf, "240 60 15 3\n");
+-}
+-
+-static ssize_t mcp3422_show_scales(struct device *dev,
+-		struct device_attribute *attr, char *buf)
++static int mcp3422_read_avail(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      const int **vals, int *type, int *length,
++			      long mask)
+ {
+-	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
++	struct mcp3422 *adc = iio_priv(indio_dev);
+ 	u8 sample_rate = FIELD_GET(MCP3422_SRATE_MASK, adc->config);
+ 
+-	return sprintf(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
+-		mcp3422_scales[sample_rate][0],
+-		mcp3422_scales[sample_rate][1],
+-		mcp3422_scales[sample_rate][2],
+-		mcp3422_scales[sample_rate][3]);
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		*vals = mcp3422_scale_avail[sample_rate];
++		*type = IIO_VAL_INT_PLUS_NANO;
++		*length = ARRAY_SIZE(mcp3422_scale_avail[0]);
++		return IIO_AVAIL_LIST;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*vals = mcp3422_sample_rates;
++		*type = IIO_VAL_INT;
++		if (adc->id <= MCP3424_ID)
++			*length = ARRAY_SIZE(mcp3422_sample_rates);
++		else
++			/* 16-bit parts: drop trailing 3 SPS entry */
++			*length = ARRAY_SIZE(mcp3422_sample_rates) - 1;
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
+ }
+ 
+-static IIO_DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
+-		mcp3422_show_samp_freqs, NULL, 0);
+-static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+-		mcp3422_show_scales, NULL, 0);
+-
+-static struct attribute *mcp3422_attributes[] = {
+-	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+-	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group mcp3422_attribute_group = {
+-	.attrs = mcp3422_attributes,
+-};
+-
+ static const struct iio_chan_spec mcp3421_channels[] = {
+ 	MCP3422_CHAN(0),
+ };
+@@ -313,9 +325,9 @@ static const struct iio_chan_spec mcp3424_channels[] = {
+ 
+ static const struct iio_info mcp3422_info = {
+ 	.read_raw = mcp3422_read_raw,
++	.read_avail = mcp3422_read_avail,
+ 	.write_raw = mcp3422_write_raw,
+ 	.write_raw_get_fmt = mcp3422_write_raw_get_fmt,
+-	.attrs = &mcp3422_attribute_group,
+ };
+ 
+ static int mcp3422_probe(struct i2c_client *client)
+@@ -344,20 +356,20 @@ static int mcp3422_probe(struct i2c_client *client)
+ 	indio_dev->info = &mcp3422_info;
+ 
+ 	switch (adc->id) {
+-	case 1:
+-	case 5:
++	case MCP3421_ID:
++	case MCP3425_ID:
+ 		indio_dev->channels = mcp3421_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(mcp3421_channels);
+ 		break;
+-	case 2:
+-	case 3:
+-	case 6:
+-	case 7:
++	case MCP3422_ID:
++	case MCP3423_ID:
++	case MCP3426_ID:
++	case MCP3427_ID:
+ 		indio_dev->channels = mcp3422_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(mcp3422_channels);
+ 		break;
+-	case 4:
+-	case 8:
++	case MCP3424_ID:
++	case MCP3428_ID:
+ 		indio_dev->channels = mcp3424_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(mcp3424_channels);
+ 		break;
+@@ -382,14 +394,14 @@ static int mcp3422_probe(struct i2c_client *client)
+ }
+ 
+ static const struct i2c_device_id mcp3422_id[] = {
+-	{ .name = "mcp3421", .driver_data = 1 },
+-	{ .name = "mcp3422", .driver_data = 2 },
+-	{ .name = "mcp3423", .driver_data = 3 },
+-	{ .name = "mcp3424", .driver_data = 4 },
+-	{ .name = "mcp3425", .driver_data = 5 },
+-	{ .name = "mcp3426", .driver_data = 6 },
+-	{ .name = "mcp3427", .driver_data = 7 },
+-	{ .name = "mcp3428", .driver_data = 8 },
++	{ .name = "mcp3421", .driver_data = MCP3421_ID },
++	{ .name = "mcp3422", .driver_data = MCP3422_ID },
++	{ .name = "mcp3423", .driver_data = MCP3423_ID },
++	{ .name = "mcp3424", .driver_data = MCP3424_ID },
++	{ .name = "mcp3425", .driver_data = MCP3425_ID },
++	{ .name = "mcp3426", .driver_data = MCP3426_ID },
++	{ .name = "mcp3427", .driver_data = MCP3427_ID },
++	{ .name = "mcp3428", .driver_data = MCP3428_ID },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, mcp3422_id);
+
+base-commit: 69fa76f0af3414cc189c3b0b807cb59e327ecc00
+-- 
+2.43.0
+
+---
+v2:
+- Use read_avail() instead of custom sysfs show functions (Jonathan)
+- Use a known identity on Signed-off-by (Maxwell, Jonathan)
+- Replace magic numbers (chip ids and sample rates) with named constants
+v1: https://lore.kernel.org/linux-iio/20260919195507.94130-1-thefireking@gmail.com/
