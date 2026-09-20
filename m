@@ -1,127 +1,131 @@
-Received: from mail-oa2-f0.google.com (mail-oa2-f0.google.com [74.125.231.64])
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D97B73D6CD7
-	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 05:32:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 881B933DEE6
+	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 09:15:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789882330; cv=none; b=dq1K2gmOE7xvD29BvM9QTxUsbZmtFUT5TVsjY3PzAaWWLzbXdnwvC5hGpb4jeGdkV0P+uZJ8drwWnr44frX0CGs4enVtsGRoXddJoeuW636dvsmno3XYCIpNvFw3pqNPvoNcyDDbL4ekNuXewVPraSOurQEoZHE9XmdA3XMa4YY=
+	t=1789895746; cv=none; b=Ks3d8CPdEm4f7v+dfpmyQ2e7JfoY7OeThqUxdqkkCPZiU+PjdyCOFwPNGvoSaN/72kNYSSz3vpPhtc9urfH7rYe/HMsrjPxhslvlg2GEJgUikQF77JxHu0imOLtOQEmsTwAb+nFG0fognq7MXRe7bbELJurHQpuwjghZVEVqRt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789882330; c=relaxed/simple;
-	bh=1otP8UYV9viBZZ+f8NwjITACufQDeLB/kdjE9I9R9IM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=k/6B7bINE6ljfdvEXLI8MXa+F42OPfNnFLIB8G2+afK0OQ//hMV5JMwgJTAvFZY3vqTZgpox/ZbAU/z3h80Utg8Jd2WY+uvmrmNP6PQbs5Irl40vALn2mcJufEVJWSDGNHQNPc8yvpAKVD9u/WURC5wnSeRAxmM1VQwIc6vMQvo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cEchglrN; arc=none smtp.client-ip=74.125.231.64
+	s=arc-20240116; t=1789895746; c=relaxed/simple;
+	bh=pNEWE+topqr1rhpsk0SHV4F0J9u5bipTgTSisRc3TTU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Uq5+wqb1xFdM5VH0MX1AVDcU/6CSUfw5rIp9THh7iYPNXca7hm7v0HaepTPHCVDlJksZQTZl32nFaRooTuP4sw/GG5u4TO88SOEBaH1bCm19GzJqpGT4/TpxZwD8euRdsEQfa3iYhxEkorbcQsv/wjwYtPohec/H0NwDkBkfAyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aqDrx1VZ; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cEchglrN"
-Received: by mail-oa2-f0.google.com with SMTP id 586e51a60fabf-4511f6a63edso297083fac.1
-        for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 22:32:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aqDrx1VZ"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ccfd61ecaso17200585e9.3
+        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 02:15:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789882328; x=1790487128; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=54xUl28tB3oyyAr/XFRTTgMHGsQTvwV3/5B41pgtCxk=;
-        b=cEchglrNuJlLC45J60P4tJ6kTKISj+g7r23WamFMMTF/k9fbbVFvGI0e57s5YzuAAk
-         Aeoge6jiTvuBjdAZYLL2LIE53huRy1BteP0fdAuD8CH1oRS0xqvzh5UKrTD5ZIoBFw82
-         HVtodRMIIimS5nnmf1DvfikNl9WQxLcVsZBkWvRrdVEPu+WdVww73ygeZKyoNeQrHo1P
-         GihHDvUOMtJpIPhLJhasaL4rrC8QUVbVyOLnI7QuRN43fD4A/XrM5inMtJeBtY4BpxUp
-         raa4pJatHTqzo5/nRJ0Cp1u0cYuGxQu6Afv7IY/aG8QbP1CYmRFUFSce+/4aB2MYihZU
-         5raA==
+        d=gmail.com; s=20251104; t=1789895743; x=1790500543; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=E1cW/zqFKr4VTXcMiUtx8FkhmYjSXHe8PhD59Qq3qEY=;
+        b=aqDrx1VZGfWBs3sStWEnlAHoZfvRe1XLEIcq2w7+rI7kMYBIldNLKc+qZoe42HQoA9
+         6+CW0TCcLjcMancyDGRmax5WJjx+YvBS0KxVnO/5Fod0tZl5u59ptGNiOQxNwLgTqAIU
+         P6JWXDiWUytAf9FstmUT4QHYBoj6+V5sLTdbTBn2iypfkXYXtm+WrEVcmdmkS9CkApfr
+         GoiOAPajBtGqG/MPlo2COMGdvljK56fEaMxVeCqhgnFv4jI+qsV4v1Mg7xNTMp2ETnDF
+         XWYaYHh/Yn23p54wD82ciSJS96jdHW6oioudYePxIXwbjOpykWqEbZAioGGfb6gAr2Fj
+         f9CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789882328; x=1790487128;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=54xUl28tB3oyyAr/XFRTTgMHGsQTvwV3/5B41pgtCxk=;
-        b=TKPYcvzW8o+vTqbg3dg5H1qNihLmJ8vxzi2HpbBiBAIOErkKAsGV6L3jCJEmiT+TBa
-         lL6MLn6b0RCuKR51jO+ztFcepi9YIUgdBmrT/ZywNZJU+BCxGRnC5d8Z76APnybn6N8E
-         zQLuBpx/M3JrTiaJZLke0Qs7isKoZgVuwytSqnTS9KWF1K2icekdufPqd1JhTm6LMRXW
-         rIW9rQtcTnesy6e0+SK4n9tpUg2etH0FX7gHenYTFdek55IQPvtfTETY65six/9fTBzd
-         0R4AWa2Iuoc6BMNOnJXKTQ/dJKblwgrXZ1bxlwBrB4R7fhGIlYTrAn8HPlU0PmikLczc
-         0DeA==
-X-Gm-Message-State: AFuF++lxDvRauvMaP13Q+bF8EjdQB9gCp5r4H3Fc0zRsvQzlOq+ffKpI
-	/bAC8AAJ5tm9qYd5HVsOrugmyakGOP42i6eqxXUfAtdXKCY0e93P7kiR
-X-Gm-Gg: AYBFou3/tYp6eP8Mfrom70wfZUK/0aUopYg9tk07+iDwri8nQ/ezah9wTOt5gLnnKaa
-	9WZ+Q9tg84/NHkIYwxCDmufHtHubgwKve8Ly0J7DE4Is83COEOpCjQ+qA8gge6L/B7E3UXuyaEN
-	gIMxq4bBCsYMKgofxP1+Edyf/fLL+AYuHWBVCx3xiP68nKlBKFCOp+pP57HtEms37Uk4OMDQysj
-	b7NzriXWtRkVx1+iuItCJIUGYSInyeHUx9DVNW10oqhBE3ykvxQyHD99iGUvfv9yHI/CcQ7pIs+
-	KahzPx01ZE2gLlZoNFJwGLh3KDjpd2AquxnyotYRo1vmGhA8UaoMyDHbfcmgqRO9rYmtRd6+7fa
-	mw4vnbX24YdcCTgz4WHtgpvrUcI3x0GEr2uy43UuhowupukHMMUNO5wgb+aBexewen1qJYIM0K+
-	ZiQsdQp7utuiigZgliWG2vby8rEd6YsDn09s7hnRsSce/Vxb+AWGKyiaRGhLwseXfhIw==
-X-Received: by 2002:a05:6820:818a:b0:6b7:8396:f3d6 with SMTP id 006d021491bc7-6ca9ce4cfcdmr7217118eaf.56.1789882327657;
-        Sat, 19 Sep 2026 22:32:07 -0700 (PDT)
-Received: from [192.168.18.164] ([2600:8804:5716:d800::2620])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6cd3541f07fsm5007319eaf.10.2026.09.19.22.32.04
+        d=1e100.net; s=20260707; t=1789895743; x=1790500543;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=E1cW/zqFKr4VTXcMiUtx8FkhmYjSXHe8PhD59Qq3qEY=;
+        b=gg30RFc0RG8dDQHjNvgMr5NLhDC2RISsLg/ePZCEanycWNqJs87Y+owv28qvq/psY4
+         rnHWsIa2Q/Rvj5s3fLahgTDgtg2UvWU0C+LAXZRG1oolXDPw0dXPP82cu2Cn2KIbp0aj
+         iOfnGSXZpj9P5C6v3n2TiNZC87IVBdhsRSnELXuNCTKoQXcetLC3dXD5K2aF0h3ZyBdW
+         fgnf8NUPkYwMI0p7AUswypJZYHDM2zz2wiVmgvermDb+3PTMh5qnkmXpVww6Ouo55KuN
+         xByPVyxcpDtFOAVQB0LaI9HcYFcp/EMuu6vtHnriWD0xe6koQxqKTLmjvlR5xE2MArF3
+         +GOg==
+X-Forwarded-Encrypted: i=1; AKwUvBy+R3+5GmrshtbM3tODs8gd1JR30h4aJsuERNGP938QKyF4jpgdDnojhe3PmXkbGVgeX5zSQ1htNpE=@vger.kernel.org
+X-Gm-Message-State: AFuF++koy6aoMgWYU8zp3lxBVhRCxBpxh++X3FJ/hzPa5Y+zB1n12hx1
+	VgJE8uvq1I8VA6h00zK+sTW5AwFJyaWLvxASqtrdEeQUK2obRsh8Hk0a6V+oRA==
+X-Gm-Gg: AYBFou0b3O1ICTZ0w3Ke73+xOctSBeBI9gcr5HxU8UPlI0QRWzgSiXiXmtw6PSAsOEo
+	YY9zxLixSN5SvPRmEyccsqOnqPKsADE3l6pYE/fH0PkqQPFqLJjtvj6hCzoxuHF+nlRz4qehBRM
+	HIpCpKoRksLTVdzze6sICPojizR/BkwY8CV2fBT09a7nvAeJ5ryQNpJ1+9HUjpnA5f52cmDhePI
+	KvgmsaDw1/FtwaimG5pAuigqoxLXxPUPXeFzlP3hu1hN6EHykWxhzCJgVu4nLmL1iLUx1/mfl5q
+	Mk5wOf+4qeK7yYhbYkLs6wUYNl4c5hw7oV0R/iZlhV0t+3/Cksc8BJf+9jTV5MMC4FD1Q/oapk1
+	/PFqkOCgCihc1leslkltKEKUSM2THg1KF5n6OOafCUPL66Mag3ymdDWL/9BKj/oBtYtMVMAwY+u
+	BGGEATN748hLlXvLsAZ9cr48rGdB3sfHNz4wWKBKODuVbIJwdKz7KXChq7FpkYlnITEhCX/j0+x
+	lUS9of8naBZNoo/8sSUaw==
+X-Received: by 2002:a05:600c:3586:b0:49e:7d69:83b7 with SMTP id 5b1f17b1804b1-49fc56f7376mr130239775e9.13.1789895742442;
+        Sun, 20 Sep 2026 02:15:42 -0700 (PDT)
+Received: from fedora ([154.182.123.247])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0ece6esm185953065e9.2.2026.09.20.02.15.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Sep 2026 22:32:06 -0700 (PDT)
-From: Ryan Brue <ryanbrue.dev@gmail.com>
-Date: Sun, 20 Sep 2026 00:31:53 -0500
-Subject: [PATCH v3 3/3] mfd: mt6397-core: Add mt6397 AUXADC support
+        Sun, 20 Sep 2026 02:15:41 -0700 (PDT)
+From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+To: jic23@kernel.org,
+	gregkh@linuxfoundation.org,
+	nuno.sa@analog.com,
+	Michael.Hennerich@analog.com
+Cc: dlechner@baylibre.com,
+	andy@kernel.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	joshua.crofts1@gmail.com,
+	error27@gmail.com,
+	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Subject: [PATCH v2] staging: iio: adc: ad7816: Protect sysfs attributes with mutex
+Date: Sun, 20 Sep 2026 12:15:22 +0300
+Message-ID: <20260920091522.15507-1-abdelnasserhussein11@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-3-c00edacbee64@gmail.com>
-References: <20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-0-c00edacbee64@gmail.com>
-In-Reply-To: <20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-0-c00edacbee64@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Lee Jones <lee@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-mediatek@lists.infradead.org, mfd@lists.linux.dev, 
- Roman Vivchar <rva333@protonmail.com>, 
- Luca Leonardo Scorcia <l.scorcia@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>, 
- Ryan Brue <ryanbrue.dev@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789882316; l=822;
- i=ryanbrue.dev@gmail.com; s=20260906; h=from:subject:message-id;
- bh=1otP8UYV9viBZZ+f8NwjITACufQDeLB/kdjE9I9R9IM=;
- b=9u9PT8EgMhT2CU7ynGTjZXDCJlhMILqp7KosTLFKUyKBrbzaMyv7T6YSoFBmQnoUOssaMtNEq
- wq0GEJz7dXDAC/rXFbTt3HuxJH3iGRrtfTsh2kyNLr/fEKdyaxtfq/X
-X-Developer-Key: i=ryanbrue.dev@gmail.com; a=ed25519;
- pk=KsUvVaP//v/2q+ZBuacc7cLbsyEYn+AD71Sn28oZWKo=
+Content-Transfer-Encoding: 8bit
 
-The mt6397 PMIC includes an AUXADC. Register the AUXADC in the mt6397
-devices array to allow the corresponding driver to probe using compatible
-string.
+The sysfs store functions (ad7816_store_mode and ad7816_store_channel)
+modify the device state and toggle GPIO pins. If accessed concurrently
+by userspace during an ongoing SPI transfer, this could corrupt the
+SPI transaction.
 
-Assisted-by: LLM
-Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
+Add the existing chip->lock guard to these functions to serialize
+access and prevent race conditions.
+
+Fixes: 7924425db04a ("staging: iio: adc: new driver for AD7816 devices")
+Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 ---
- drivers/mfd/mt6397-core.c | 3 +++
- 1 file changed, 3 insertions(+)
+Changes in v2:
+- Added a blank line after guard(mutex) statements as requested by Joshua.
+- Added Fixes tag as requested by Dan.
+- Collected Reviewed-by tag from Joshua.
 
-diff --git a/drivers/mfd/mt6397-core.c b/drivers/mfd/mt6397-core.c
-index 9ec951996588..5d5f816492aa 100644
---- a/drivers/mfd/mt6397-core.c
-+++ b/drivers/mfd/mt6397-core.c
-@@ -261,6 +261,9 @@ static const struct mfd_cell mt6359_devs[] = {
+ drivers/staging/iio/adc/ad7816.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index f76f0215119a..2a15d7598abb 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -143,6 +143,8 @@ static ssize_t ad7816_store_mode(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
  
- static const struct mfd_cell mt6397_devs[] = {
- 	{
-+		.name = "mt6397-auxadc",
-+		.of_compatible = "mediatek,mt6397-auxadc",
-+	}, {
- 		.name = "mt6397-rtc",
- 		.num_resources = ARRAY_SIZE(mt6397_rtc_resources),
- 		.resources = mt6397_rtc_resources,
-
++	guard(mutex)(&chip->lock);
++
+ 	if (strcmp(buf, "full") == 0) {
+ 		gpiod_set_value(chip->rdwr_pin, 1);
+ 		chip->mode = AD7816_FULL;
+@@ -207,6 +209,8 @@ static ssize_t ad7816_store_channel(struct device *dev,
+ 		return -EINVAL;
+ 	}
+ 
++	guard(mutex)(&chip->lock);
++
+ 	chip->channel_id = data;
+ 
+ 	return len;
 -- 
-2.55.0
+2.54.0
 
