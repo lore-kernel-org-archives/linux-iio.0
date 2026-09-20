@@ -1,62 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31766488210;
-	Sun, 20 Sep 2026 23:26:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37400486B8F;
+	Sun, 20 Sep 2026 23:29:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789946766; cv=none; b=u/thEVBett5wPMtApb0lablNuHoBXLcwFZH0hkyiroXpfu1yb++6Nsh7s05Rmiuz1rO1FWZjC+pWpbN74v3BygjY7SC+PMj6gcW9sC3WVwG4GRP+YDJRWcnTp0S1B3nQTRggA+F8igHSt2v/Uo+pIxt79Ded1lXQiyErtXVjxq4=
+	t=1789946984; cv=none; b=eBOtVwnX0pWpe3jCwtbUxHSe4PCPuiNor4KaNQundmIjSy1QDJSgskmf9qDbkAbuHXGMy4ZvqRCSN7hINbPEW7OeqjxYvo38qQ7/9c3jWay3qxsq6yTHN9wt5oehCQXbYKpQ8zLqvabE34rMy4DwkdoP9ginw7x96WnMFdJJKh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789946766; c=relaxed/simple;
-	bh=FbScpXhMWehUBrX4m3r9npwatVRgC4t0vDoJH4HVE+c=;
+	s=arc-20240116; t=1789946984; c=relaxed/simple;
+	bh=N2Au9r+zMcyHCgr4T8u1BEPd546PYXxMg/KsTwAtO3E=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DKhikz64mz1UAinfVb/+fLXFM+X00O5WNMO6BdOOT5M3vt4hiMfBQtPnuMJ/J6uaZmsbHURUYgJs+8jCopILMbap27I03ZMsTP8maZqz6XNh+ju38D9qkzvNZ9M6jAvmrSHGKIY/GPCfvDDh0mn3huPIWMbo0goNJ01ePk+bzsw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EqV5NwmP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=bI0yXiI1pkvpJ3T4vYpNgyKjKX4RhK86n/XL/dApc7JXKAoxF4Niqho02ADne1mzWkhB+YJwXDlY3m1HIGPDin2ghIwRXtg9ZoJp9bSFt8JcNDnp0qDJdl3ZoxTkTLL39X3P9wAZGi5donwvatxXcR4YRzCto8VdIIJyoq2yqRA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gX1tS/uy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EqV5NwmP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E7401F000FF;
-	Sun, 20 Sep 2026 23:26:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gX1tS/uy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BB421F000FF;
+	Sun, 20 Sep 2026 23:29:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789946764;
-	bh=VpEmr/e3ukCd0czHB3NsTxN/yKr60rTN8HisxDGMEl4=;
+	s=k20260515; t=1789946982;
+	bh=MEkF27XUvCQ5Nvijd1E9vzEq6RzWp47jl2fDe/xRNJ0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=EqV5NwmPD3ytRoFsnfM7vY/sXFX0byGf5f75kKNQoxx8WPsdyfr+Hq4EfvSGiTiGC
-	 KPwPuSXl4zw+D6QpKXiUu/rJzKVHzbfOFhD+Fpj1v603tNXAwQ5BoQfcDN99JV1V3S
-	 vh2OYmlI36y/zqYH3DfucLVYIyf6dymY3aEnR+b0O3emz1xoTAocu+Niez5Okdyk6i
-	 43BSBC+haao6gw6DCIMlIQI2BImgtTzGP+gUptrP2K+oSceE8P7wHtksod5sLhqVhJ
-	 9ssYb3M+44hq+IK7owZB8EGRaEIrPVuMDmm26gVgksUGbSurM4XjsyvfMhrijQErwm
-	 m9XmmpgSqUo9w==
-Date: Mon, 21 Sep 2026 00:26:00 +0100
+	b=gX1tS/uyS1TSvfxYWk/Y5C2Xn12QJ/2ZebP3aPL3FCdlIMiQCF8vb5qB1HuV1PBgw
+	 HlgQ/rfaO1fAbwboAP7V2lw+nckAHST4jkLGT3+X8bEGDPeBJHV6yPc+DptwUINujd
+	 iSuUx+lx09QZLY1U/mPzTlVrSYpCQkf1RVzd0PHFOAxqVo1cpsHOAVa9FDYg1YhZ8S
+	 O7x84GuTdQmMgxxwRJGlZjqpy6W91FKjKrIW2p+4m9Q93VutHiQROV0pjsRy46xkoI
+	 7gGt97HFa28ExzM65441rI789hLLadiygID1hLIVgQdBhz2gYrbN6rn33BE3ynhcTi
+	 dDGtB+QcRFULQ==
+Date: Mon, 21 Sep 2026 00:29:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Frank.Li@oss.nxp.com, Eugen Hristev <ehristev@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea
- <claudiu.beznea@tuxon.dev>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>, Daniel Lezcano
- <daniel.lezcano@kernel.org>, Felix Gu <ustc.gu@gmail.com>, Stepan Ionichev
- <sozdayvek@gmail.com>, Shuvam Pandey <shuvampandey1@gmail.com>, Antoniu
- Miclaus <antoniu.miclaus@analog.com>, Frank Li <Frank.Li@nxp.com>, Piyush
- Patle <piyushpatle228@gmail.com>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- (The Capable Hub)" <u.kleine-koenig@baylibre.com>, Takashi Sakamoto
- <o-takashi@sakamocchi.jp>, Giorgi Tchankvetadze
- <giorgitchankvetadze1997@gmail.com>, Olivier Moysan
- <olivier.moysan@foss.st.com>, "Rob Herring (Arm)" <robh@kernel.org>, Pei
- Xiao <xiaopei01@kylinos.cn>, Shi Hao <i.shihao.999@gmail.com>, Kees Cook
- <kees+treewide@kernel.org>, Michael Hennerich
- <michael.hennerich@analog.com>, "open list:MICROCHIP SAMA5D2-COMPATIBLE ADC
- DRIVER" <linux-iio@vger.kernel.org>, "moderated list:ARM/Microchip (AT91)
- SoC support" <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "moderated list:ARM/STM32 ARCHITECTURE"
- <linux-stm32@st-md-mailman.stormreply.com>, imx@lists.linux.dev,
- vkoul@kernel.org
-Subject: Re: [PATCH 1/1] iio: use dmaengine_get_dma_device() instead of
- chan->device->dev
-Message-ID: <20260921002600.7c3d5630@jic23-hlaptop>
-In-Reply-To: <aqzefLjkj6VrLR1b@ashevche-desk.local>
-References: <20260917203652.1279059-1-Frank.Li@oss.nxp.com>
-	<aqzefLjkj6VrLR1b@ashevche-desk.local>
+To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc: Kanak Shilledar <kanak.shilledar@axis.com>, Henrik Grimler
+ <henrik.grimler@axis.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Jean-Baptiste Maneyrol
+ <jean-baptiste.maneyrol@tdk.com>, Joshua Crofts <joshua.crofts1@gmail.com>,
+ Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/5] iio: imu: inv_icm42607: Simplify IIO channel
+ macros
+Message-ID: <20260921002936.6e06e790@jic23-hlaptop>
+In-Reply-To: <aq_lwtGT8G-BTLM2@debian-BULLSEYE-live-builder-AMD64>
+References: <20260917-b4-inv_icm42370p-v4-0-fd9373f123c9@axis.com>
+	<20260917-b4-inv_icm42370p-v4-2-fd9373f123c9@axis.com>
+	<aq_lwtGT8G-BTLM2@debian-BULLSEYE-live-builder-AMD64>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -67,43 +55,142 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 18 Sep 2026 09:47:24 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Sun, 20 Sep 2026 10:55:14 -0300
+Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> On Thu, Sep 17, 2026 at 04:36:26PM -0400, Frank.Li@oss.nxp.com wrote:
-> 
-> > Replace direct dma_chan::device::dev access with the proper
-> > dmaengine_get_dma_device() accessor in IIO DMA consumers.
+> On 09/17, Kanak Shilledar wrote:
+> > The INV_ICM42607_ACCEL_CHAN and INV_ICM42607_GYRO_CHAN macro had a third
+> > parameter of _ext_info, drop it and just point the .ext_info field to
+> > the respective inv_icm42607_*_ext_infos. This reduces the repetitive
+> > calling of inv_icm42607_*_ext_infos struct in the IIO channel spec
+> > struct and makes the code more easy to follow.
 > > 
-> > chan->device->dev is not always the device used for DMA mapping.
-> > Some DMA engines support per-channel IOMMU mappings, so different
-> > channels may use different DMA devices.  dmaengine_get_dma_device()
-> > returns the correct device for each channel.
+> > Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
+> > ---
+> >  drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c | 23 ++++++++++-------------
+> >  drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c  | 23 ++++++++++-------------
+> >  2 files changed, 20 insertions(+), 26 deletions(-)
 > > 
-> > This also prepares for making the DMA engine provider data structures
-> > private. DMA consumers should not access DMA engine internals directly.  
-> 
-> ...
-> 
-> >  drivers/iio/adc/at91-sama5d2_adc.c                 |  9 ++++++---
-> >  drivers/iio/adc/nxp-sar-adc.c                      |  2 +-
-> >  drivers/iio/adc/stm32-adc.c                        | 10 ++++++----
-> >  drivers/iio/adc/stm32-dfsdm-adc.c                  |  4 ++--
-> >  drivers/iio/adc/ti_am335x_adc.c                    |  4 ++--
-> >  drivers/iio/buffer/industrialio-buffer-dmaengine.c |  5 +++--  
-> 
-> Strictly speaking this is two patches, one per ADC folder and the other against
-> IIO core. But this one is not a big one, so up to Jonathan.
-Agreed that would be ideal but I don't care enough for a v2!
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+> > index 0b3f035c2da0c..8f61bc9014526 100644
+> > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+> > @@ -17,7 +17,7 @@
+> >  #include "inv_icm42607.h"
+> >  #include "inv_icm42607_temp.h"
+> >  
+> > -#define INV_ICM42607_ACCEL_CHAN(_modifier, _index, _ext_info)			\
+> > +#define INV_ICM42607_ACCEL_CHAN(_modifier, _index)				\
+> >  {										\
+> >  	.type = IIO_ACCEL,							\
+> >  	.modified = 1,								\
+> > @@ -34,9 +34,14 @@
+> >  		.storagebits = 16,						\
+> >  		.endianness = IIO_BE,						\
+> >  	},									\
+> > -	.ext_info = _ext_info,							\
+> > +	.ext_info = inv_icm42607_accel_ext_infos,				\
+> >  }
+> >  
+> > +static const struct iio_chan_spec_ext_info inv_icm42607_accel_ext_infos[] = {
+> > +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42607_get_mount_matrix),
+> > +	{ }
+> > +};
+> > +  
+> Moving iio_chan_spec_ext_info declaration upwards looks like a spurious change.
+> If moving the declaration upwards is really needed, the commit message could
+> have a phrase or two explaining why.
 
-Applied to the testing branch of iio.git (material for next merge window)
-That will turn up in linux-next once tests are done and I remember to push.
+It would have some sort of logic if they were before the .ext_info
+in the macro just on basis we generally expect to look earlier
+in a file for things that are used.  Obviously doesn't matter
+given that is in a macro called much later.
 
-Thanks,
+Fully agree some explanatory comments would be useful!
 
 Jonathan
 
 > 
+> >  enum inv_icm42607_accel_scan {
+> >  	INV_ICM42607_ACCEL_SCAN_X,
+> >  	INV_ICM42607_ACCEL_SCAN_Y,
+> > @@ -44,18 +49,10 @@ enum inv_icm42607_accel_scan {
+> >  	INV_ICM42607_ACCEL_SCAN_TEMP,
+> >  };
+> >  
+> > -static const struct iio_chan_spec_ext_info inv_icm42607_accel_ext_infos[] = {
+> > -	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42607_get_mount_matrix),
+> > -	{ }
+> > -};
+> > -
+> >  static const struct iio_chan_spec inv_icm42607_accel_channels[] = {
+> > -	INV_ICM42607_ACCEL_CHAN(IIO_MOD_X, INV_ICM42607_ACCEL_SCAN_X,
+> > -				inv_icm42607_accel_ext_infos),
+> > -	INV_ICM42607_ACCEL_CHAN(IIO_MOD_Y, INV_ICM42607_ACCEL_SCAN_Y,
+> > -				inv_icm42607_accel_ext_infos),
+> > -	INV_ICM42607_ACCEL_CHAN(IIO_MOD_Z, INV_ICM42607_ACCEL_SCAN_Z,
+> > -				inv_icm42607_accel_ext_infos),
+> > +	INV_ICM42607_ACCEL_CHAN(IIO_MOD_X, INV_ICM42607_ACCEL_SCAN_X),
+> > +	INV_ICM42607_ACCEL_CHAN(IIO_MOD_Y, INV_ICM42607_ACCEL_SCAN_Y),
+> > +	INV_ICM42607_ACCEL_CHAN(IIO_MOD_Z, INV_ICM42607_ACCEL_SCAN_Z),
+> >  	INV_ICM42607_TEMP_CHAN(INV_ICM42607_ACCEL_SCAN_TEMP),
+> >  };
+> >  
+> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
+> > index 5b4683c2dd1e4..8e8d36461e515 100644
+> > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
+> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
+> > @@ -17,7 +17,7 @@
+> >  #include "inv_icm42607.h"
+> >  #include "inv_icm42607_temp.h"
+> >  
+> > -#define INV_ICM42607_GYRO_CHAN(_modifier, _index, _ext_info)			\
+> > +#define INV_ICM42607_GYRO_CHAN(_modifier, _index)				\
+> >  {										\
+> >  	.type = IIO_ANGL_VEL,							\
+> >  	.modified = 1,								\
+> > @@ -34,9 +34,14 @@
+> >  		.storagebits = 16,						\
+> >  		.endianness = IIO_BE,						\
+> >  	},									\
+> > -	.ext_info = _ext_info,							\
+> > +	.ext_info = inv_icm42607_gyro_ext_infos,				\
+> >  }
+> >  
+> > +static const struct iio_chan_spec_ext_info inv_icm42607_gyro_ext_infos[] = {
+> > +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42607_get_mount_matrix),
+> > +	{ }
+> > +};
+> > +  
+> Same here, why moving inv_icm42607_gyro_ext_infos declarations up is necessary?
+> 
+> >  enum inv_icm42607_gyro_scan {
+> >  	INV_ICM42607_GYRO_SCAN_X,
+> >  	INV_ICM42607_GYRO_SCAN_Y,
+> > @@ -44,18 +49,10 @@ enum inv_icm42607_gyro_scan {
+> >  	INV_ICM42607_GYRO_SCAN_TEMP,
+> >  };
+> >  
+> > -static const struct iio_chan_spec_ext_info inv_icm42607_gyro_ext_infos[] = {
+> > -	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42607_get_mount_matrix),
+> > -	{ }
+> > -};
+> > -
+> >  static const struct iio_chan_spec inv_icm42607_gyro_channels[] = {
+> > -	INV_ICM42607_GYRO_CHAN(IIO_MOD_X, INV_ICM42607_GYRO_SCAN_X,
+> > -			       inv_icm42607_gyro_ext_infos),
+> > -	INV_ICM42607_GYRO_CHAN(IIO_MOD_Y, INV_ICM42607_GYRO_SCAN_Y,
+> > -			       inv_icm42607_gyro_ext_infos),
+> > -	INV_ICM42607_GYRO_CHAN(IIO_MOD_Z, INV_ICM42607_GYRO_SCAN_Z,
+> > -			       inv_icm42607_gyro_ext_infos),
+> > +	INV_ICM42607_GYRO_CHAN(IIO_MOD_X, INV_ICM42607_GYRO_SCAN_X),
+> > +	INV_ICM42607_GYRO_CHAN(IIO_MOD_Y, INV_ICM42607_GYRO_SCAN_Y),
+> > +	INV_ICM42607_GYRO_CHAN(IIO_MOD_Z, INV_ICM42607_GYRO_SCAN_Z),
+> >  	INV_ICM42607_TEMP_CHAN(INV_ICM42607_GYRO_SCAN_TEMP),
+> >  };
+> >  
+> > 
+> > -- 
+> > 2.43.0
+> >   
 
