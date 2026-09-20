@@ -1,69 +1,70 @@
 Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A53B44718C9
-	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 18:05:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EBC446D543
+	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 18:05:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789927532; cv=none; b=K6av4MRV4ZlMIarZkhK4vseiPZ2dlBYB9B7Qoyl468Sh242lKHgm+3s3qVCyLyTSWIsrfOZphH2DraeXPZenNhvg80zaUK5ArA9yVMDbc/nWhdp8D74Ren1gPjD6bjsTtGH4/Yovx1EO5b3E+QikWV7o9emy/OeZtDd0aI/spVc=
+	t=1789927533; cv=none; b=JZXkcr1WKO4DPVCV/g3eo58lgqKrSshcw2OxLz59c5MRaTRAEAPieJY+R1qPswMauwTRPCSsvd2a1lmeKc4Qo6FXlmY/PI8i1ZomnXcXIuFBrVyQklApDdRJJp8AV6i8P8KECB+4coVCo07HGT+H+V5M5aZqitIeVhBlFQh6WBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789927532; c=relaxed/simple;
-	bh=dLxOYdKXvkaClOyJOYY7nRCSPbJKZs+aRfOmFRQ+mIo=;
+	s=arc-20240116; t=1789927533; c=relaxed/simple;
+	bh=pjgBUps3bhRyY6u6ycXVMzX0Fos9VuZiAf5efJGxEsE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uPGdEyiwInlNC71F0L568To/gZ8Ibmvyb+UaxCFz+GbFZSZNoeSR3XypX5OOCOdUcveNUD/0kwvuVM9rHIHT+BwzXHWL7yLK8yCSiemi8FGd+RUl+3A2qKzzIPcyEqunAmaTu60X7EVjtrUisYXUiWQ48B/ziUtjd8Ac00iyO6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=euBn8KNB; arc=none smtp.client-ip=74.125.225.140
+	 In-Reply-To:To:Cc; b=bro+DDLhpk3Bv9uz23wCVAgjJ3Qv3xmzgqJ8jqyO43WMXqiSxPezbyJjny/7k8GglfcgxDo0nvf39vfh9ymHLm3fdpewymN8xmwGeVWTw7O4wHFFpH3yomKonpeszzjMR0ovOiqyZH5DFtmrWER1VdDoiyTrlfshPi6nPmOvabs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OEUEhQKZ; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="euBn8KNB"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cc9f581c4so9227995e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 11:05:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OEUEhQKZ"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912e2406so11121495e9.1
+        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 11:05:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20251104; t=1789927529; x=1790532329; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=XLHPUDcQhR4jS0ghRdDc7IRJPvZddsu/qB7+ubmSKgc=;
-        b=euBn8KNBfTbgStF5hqzNdM0Zy/iW0mueziCA2hWydhhTafAjkueggDd+EMHeZ6NOQq
-         o3w6rNyN8NYGnyfDDCX/kcQtH5E1txf0xzrrCspmD+xTGjfcfdqsVXp+Pjt+C8yTnRau
-         2VfKKPfHNAOvPoJeqJTBDUffWFvAPPqQp5VSBPZnjE7Ln6B3/RYWvjYggbgxhU8y3E79
-         9jCOy7WzIT6GDs2ww0dq1DmdpmRilsCdhJVR23VCKjA6gLdUwvOOR38B4FUO/xYiTLgR
-         kyr23IdzUv/M1k0anrT1Glrois72AeKIIKpwj8ww3AzfuMR5P9LweFIFI/7htWlfVjhx
-         H37A==
+        bh=/eKvqLxq/FDnVLXWqL74StVCqkT72bEtQBBRhBThWEs=;
+        b=OEUEhQKZKDkV1L/B+R+7tZsGgjYjLAZowSLRUM3FR4ktYBsQKn1WJ7yGPWDX2X1DYI
+         nuQP22ynoC8zmU4p7qGeHts5oWvQkdFZLAvhMlzxUpkR5dODrCK8GctmlzGRnE+6pH/d
+         FbP7y8tJXk4c5x1qBXW8se1pFBFfu3wn5YdJ9H2HER4kOhEQig6uGnZMKBqlxmTqhvBI
+         qa4CncvlLK4W88PgavH5qX+F68O/JlGMjYWoD1Qi2vkLtYMpB/92WQ65qoDdKehUH8Bb
+         2MUafT4oy98sQTxTud+eR78+6/SYeqKekJeXEzMt+YsnH4l/zZigxL8rOPzNFvkTBVAe
+         mrTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20260707; t=1789927529; x=1790532329;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=XLHPUDcQhR4jS0ghRdDc7IRJPvZddsu/qB7+ubmSKgc=;
-        b=oZRFTWbOxs5x9SV9V8oq5YOzIm/fFVoEObCUuXDQoGn0LLTbAdclj9qVqfTXxIxyyM
-         7ZrcIDuEOWo+231iFvwNg+/iMknD/BWVQEJcBZ11GOUkUOiNQJFIzbflo5oGJjIEmtkd
-         XSLi4mIeuhmbvSeFTgLotlyVXnNdv8gEwt6F3lm/91w1hMzXTpPr3IJ13Z1vngW0Y1Ei
-         uCOULh5qwTfN2hn7sTjPzd4fsH3Ob0Gsx7/yWjlBXDs7cy2PrcE8X0SSj5VKNVDPzSbk
-         ctuWzADrwYjOwBzx2lv6M72qCuacUqtD03IY1zZ8yc6stjmGj0nRlG7WNGrd9YeDppo0
-         KuUQ==
-X-Gm-Message-State: AFuF++kMj1eduPVocfRdfzwpZsKn2lff7jpX+AarG/236zvFooZp13WD
-	bxscEMqjQ5vp/dO4+cpFF8cD9PuIhWqbLdgu+08MLFMuAGLKO/MnXFWp
-X-Gm-Gg: AYBFou0Alp5hoQcckt29iWNigNbykMEE8jQ4Ls+seIzbozc0MP9WglsUWn8oEEnkDaK
-	mmTaJ7Crc+JMydzaEB3BIdK/VnPmfd0rFHf0umd/+ZaWObg8Nd0IY9d1fGhQAs89IVj+gZvoqy9
-	WuMHjxE4cgcILomrfQnzH05qxuJJKjKVx0R4zWamD+mQWTYI8yevPCKlOok0s036wAaQTGP2ueg
-	Q9kf0Glh+5wKwNcPnQf5ziCeTabOb7kRYZ657rkb9ndQSestmMensrOjxFHu4lREya1RIwIEmG2
-	c1sXCb1FiSxUuRftZq/dBoVLaNBdAzXO9rJSJqyGzIa0pT/NRYXFf2N3pSmDtCDxdZSsGdEOMFJ
-	yNlGvIZEISjmY4B1ajO9PaRG7fWHlZfNYenS6ZMIoXAOEMgdZLtVQ+KcTFrSlpJ+4LPP4dsobZv
-	BQ7aJDDXGKMCoGlhyCLUZehgZSgUpo7EafAAJlHhVyvdV4i+xqoHQFcCIS2ZHQ/DANb5Kb+7g3w
-	OgiWeJQJhR1W9JJf06xstRtBfuizIF1P8jXxCfjP8QBIVVH9bl+bmPTvDMOpWyNrDPyOejTyFMY
-	l4cFPW3VRxCWnmBCkeGqqw4AESRdiF92u9v/OPGegMy5+kyVmazzEtWCpt3QdlMFSRWnyUhYwgN
-	kU65qwQaF/JlGnRx/M8oq/49owyx5OD/YXyw=
-X-Received: by 2002:a05:600c:3f06:b0:49d:257c:a735 with SMTP id 5b1f17b1804b1-49fc4ff42b4mr132546265e9.11.1789927529036;
+        bh=/eKvqLxq/FDnVLXWqL74StVCqkT72bEtQBBRhBThWEs=;
+        b=tYPmGrA07ZCAWFReVpqsVDNoPfN05+sWmku6SFYI7B9B5+qJj6y1HFSbefxGKg12Ol
+         FFZT1br2iDU4aceIHU1YD2uc5Ea1YV2FeqcnKBn+bsYOp3PaTGH8+Yip7DW/VFDjv0qS
+         +RE1gIKoyRf/HpIZkIQPLgPbr9TVFnvnq3M3KOO2eNz4d0qcWraqB4EtcpTJ9tphwLa5
+         hrBeku4CqrOG2LkjlaEbdDWS38x7w1ejaSfP3kkugs13AWjF/ocbIwz0YBZeea6sWB95
+         hgmIwkXCTo+CzExcCCfLmcEFUyBW2kJAEojmvuVYN4lHCVk2iQyDMWlsScXGSiRH7V9Y
+         eGRg==
+X-Gm-Message-State: AFuF++lee1A6VozCG+yapWsNkHvzEV6j8SIi8YONCdiFi28yHXg0GmvZ
+	/Ux5AdUy/+wBozgKSC2I5rQvc+5I2S9PY8Vt3qUeQDcrr1V5U1E8wYXhKk6rfQ==
+X-Gm-Gg: AYBFou1zITl2GjHfSAkmK03dLGbbOtECXIV19VLslGLfEea9aHs/DDEI9z+WSuZvVqx
+	HRzvggwuMF/w4fnIhm9QuEveJwviuQw/lFY4CpILteuFU5PKmWNPtFJiufOO3UkMmKbamGRjg8D
+	M76stl6aAw6ZzBgwNEz0mBYh6hqaP20+Cb7Ckjl/Do5vtvtmgo9RpWRKnBpfWhHTgpbjHbJGdeB
+	xymCAg/fVU3N2FCfh1K3Mm5n329gfBeAhgpYtgKnitwigs6ip3uVMx+ITpSET0H2m0tSrbGd54U
+	HaCyo1/IHbokJ5vKXZldNli6+G3QxS/+fUuT0353m4a+hwvp93Zp4plPKo9Z4+b4oErGYlUt81E
+	QDuC3nG4GxONoVrPHwVGo9dNP6qe9JHvP5Ua56W5pJL+Vid1/bZg6nInCSn/+nO33V2dT4sStvo
+	v5SmLLKFStPVz4cpF1+EC0Hd2TBK6Z38ANIkB4qjBD/U5E1TNwttGWl4YlmPNyLR4+lewtEZYh7
+	YmRghXxMc0JWRx41cPf96x5ENdV8jzY7Sow1344LKqSKf6eERfyDv8JxRFoB3mxj5Rqqu4NSYug
+	sUfYb3v0Wh4P+MECuK0aOfd7FdULQ6nWECKuSKL2JtaX3OclTOg64SLXyZo9J3/Tds6yNXoCOK1
+	+T+mReRifIAjVlM0FEatFMD2qWpD0yElKoiOcZp64cT2bUg==
+X-Received: by 2002:a05:600c:4714:b0:49e:6581:7baf with SMTP id 5b1f17b1804b1-49fc4f72886mr130088595e9.2.1789927529563;
         Sun, 20 Sep 2026 11:05:29 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0f7b9bsm164648055e9.5.2026.09.20.11.05.28
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0f7b9bsm164648055e9.5.2026.09.20.11.05.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2026 11:05:28 -0700 (PDT)
+        Sun, 20 Sep 2026 11:05:29 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sun, 20 Sep 2026 20:05:26 +0200
-Subject: [PATCH v9 4/5] iio: magnetometer: ak8975: add scan mask index enum
+Date: Sun, 20 Sep 2026 20:05:27 +0200
+Subject: [PATCH v9 5/5] iio: magnetometer: ak8975: make use of the macros
+ from bits.h
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,7 +73,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20260920-ak8975-cleanup-v9-4-1b0f00ec19ef@gmail.com>
+Message-Id: <20260920-ak8975-cleanup-v9-5-1b0f00ec19ef@gmail.com>
 References: <20260920-ak8975-cleanup-v9-0-1b0f00ec19ef@gmail.com>
 In-Reply-To: <20260920-ak8975-cleanup-v9-0-1b0f00ec19ef@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -80,63 +81,104 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
+ Joshua Crofts <joshua.crofts1@gmail.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789927524; l=1530;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789927524; l=3014;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=dLxOYdKXvkaClOyJOYY7nRCSPbJKZs+aRfOmFRQ+mIo=;
- b=957w/ie6wp15m2IKWReNJXqdl264V+6m3kEKGuUYbsq6Agb5MPU27RYMGJhiCyeMLa/fu/Lc6
- V3FdLkJmOnTC2c7jxEhRlnEmStcYpd3tzZeQ0U+Ox5PQCJbAJRXnQuA
+ bh=6ZMjVC6e/KIqTzgrm9DqPo2hpOPArGBVsN2S5dq6DFc=;
+ b=51owwuPaLGk6u9mi2rhRJdyER1xoSr7TMn5CxXZCPw9yln+SCfYQCb9OH6/h3Bz8JTL/jEM24
+ RFPNwofyTeqDJWrQCF8I5sETkrcXmhra1aVT+W1+IAfiI1xbwaBKYaV
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Add an enum to explicitly define scan mask indexes for the X, Y, Z and
-timestamp channels. Also, update the struct iio_chan_spec to use said
-enum for the .scan_index parameter.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-This prevents magic numbers from obscuring the hardware channel mapping
-and improves code style.
+Make use of BIT() and GENMASK() where it makes sense.
 
-No functional change.
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 42f6892f4efd..ac556644b02d 100644
+index ac556644b02d..05cdd285c5f4 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -237,6 +237,13 @@ enum ak_ctrl_mode {
- 	MODE_END,
+@@ -44,8 +44,7 @@
+ #define AK8975_REG_INFO			0x01
+ 
+ #define AK8975_REG_ST1			0x02
+-#define AK8975_REG_ST1_DRDY_SHIFT	0
+-#define AK8975_REG_ST1_DRDY_MASK	(1 << AK8975_REG_ST1_DRDY_SHIFT)
++#define AK8975_REG_ST1_DRDY_MASK	BIT(0)
+ 
+ #define AK8975_REG_HXL			0x03
+ #define AK8975_REG_HXH			0x04
+@@ -54,15 +53,12 @@
+ #define AK8975_REG_HZL			0x07
+ #define AK8975_REG_HZH			0x08
+ #define AK8975_REG_ST2			0x09
+-#define AK8975_REG_ST2_DERR_SHIFT	2
+-#define AK8975_REG_ST2_DERR_MASK	(1 << AK8975_REG_ST2_DERR_SHIFT)
++#define AK8975_REG_ST2_DERR_MASK	BIT(2)
+ 
+-#define AK8975_REG_ST2_HOFL_SHIFT	3
+-#define AK8975_REG_ST2_HOFL_MASK	(1 << AK8975_REG_ST2_HOFL_SHIFT)
++#define AK8975_REG_ST2_HOFL_MASK	BIT(3)
+ 
+ #define AK8975_REG_CNTL			0x0A
+-#define AK8975_REG_CNTL_MODE_SHIFT	0
+-#define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
++#define AK8975_REG_CNTL_MODE_MASK	GENMASK(3, 0)
+ #define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
+ #define AK8975_REG_CNTL_MODE_ONCE	0x01
+ #define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
+@@ -94,8 +90,7 @@
+ 
+ #define AK09912_REG_ST1			0x10
+ 
+-#define AK09912_REG_ST1_DRDY_SHIFT	0
+-#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
++#define AK09912_REG_ST1_DRDY_MASK	BIT(0)
+ 
+ #define AK09912_REG_HXL			0x11
+ #define AK09912_REG_HXH			0x12
+@@ -106,8 +101,7 @@
+ #define AK09912_REG_TMPS		0x17
+ 
+ #define AK09912_REG_ST2			0x18
+-#define AK09912_REG_ST2_HOFL_SHIFT	3
+-#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
++#define AK09912_REG_ST2_HOFL_MASK	BIT(3)
+ 
+ #define AK09912_REG_CNTL1		0x30
+ 
+@@ -116,8 +110,7 @@
+ #define AK09912_REG_CNTL_MODE_ONCE	0x01
+ #define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
+ #define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
+-#define AK09912_REG_CNTL2_MODE_SHIFT	0
+-#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
++#define AK09912_REG_CNTL2_MODE_MASK	GENMASK(4, 0)
+ 
+ #define AK09912_REG_CNTL3		0x32
+ 
+@@ -864,7 +857,10 @@ static const struct iio_chan_spec ak8975_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(AK8975_CHAN_TS),
  };
  
-+enum ak_chan_index {
-+	AK8975_CHAN_X,
-+	AK8975_CHAN_Y,
-+	AK8975_CHAN_Z,
-+	AK8975_CHAN_TS,
+-static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
++static const unsigned long ak8975_scan_masks[] = {
++	BIT(AK8975_CHAN_X) | BIT(AK8975_CHAN_Y) | BIT(AK8975_CHAN_Z),
++	0
 +};
-+
- struct ak_def {
- 	enum asahi_compass_chipset type;
- 	long (*raw_to_gauss)(u16 data);
-@@ -851,8 +858,10 @@ static const struct iio_chan_spec_ext_info ak8975_ext_info[] = {
- 	}
  
- static const struct iio_chan_spec ak8975_channels[] = {
--	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
--	IIO_CHAN_SOFT_TIMESTAMP(3),
-+	AK8975_CHANNEL(X, AK8975_CHAN_X),
-+	AK8975_CHANNEL(Y, AK8975_CHAN_Y),
-+	AK8975_CHANNEL(Z, AK8975_CHAN_Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(AK8975_CHAN_TS),
- };
- 
- static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
+ static const struct iio_info ak8975_info = {
+ 	.read_raw = &ak8975_read_raw,
 
 -- 
 2.55.0
