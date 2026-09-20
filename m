@@ -1,40 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAB62C21D8
-	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 00:30:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D92142147F9;
+	Sun, 20 Sep 2026 00:34:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789864207; cv=none; b=HgRdEYz6P3iWmsSn+8rVkreBHEhUmP3GKxIFpRK02cZxZYi1SWtKZRgHeybv2Ryxuhtl6icdFz/qCQ9Hc0NVTzxqHe7K/OsE8Y1AcgY9KVwRXkvjyN/HyoMCnTzTugM5WUOi24D+J9+BcGREPpsQ+LgYNyI18Yq2AYrLfpd5Gos=
+	t=1789864472; cv=none; b=t6Wz7E6TXiBeCkSv8+Ge9Er3EIbGzj9GIFBRAErG6/g8AtOnv4wuBV6fMCjgHGoDjkVxB0+Wjme2xV1QSOynL3iICzoQSEnyxe3wyNnoQ5vrGo/He6i4pvKC5UXmo9T1BZxX+8rzbQd8OWyEIaajhVSAZ9Dm41DcVJAVHbvukfs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789864207; c=relaxed/simple;
-	bh=O1ALBM13iEX1wzEjmJ9CPWZKzzSIcHlm8EazGLsTFmE=;
+	s=arc-20240116; t=1789864472; c=relaxed/simple;
+	bh=wD4u27ceSQgWQ46kv3MvqHiHiVme3nzUStrmHJR6BwQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iUIUtJ9JCwFr6sxxXqNqH2f6SNOZWDWiJKBOWsHWSXvW6aNn44WYdbKZvf+gF3SgngiXOaUtfJPfUo285b094nxLC/3gkTCyhng8JfnSqW1zuWpE3Xsl+Azedcs4NGcVu/WWhawv0As6qFeg94vsNfA0nCTp/AJYZqJ+Ltpx7Lc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cYt5t7sr; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ScAWykdbnE11prc/iMjmPgfH7iBJQgYueGBIUCOCSQ4/FgzaRXsg6leJDM4QMjlncTFk5uz8CENvYI3Z1IEtEqx1vvlSXVKMRqbyJVJ7ab6BF26+1xm5bzI/31zhwQhT1MQ0ZXUv1e4Jz/DmQMLX9uiXdzlvRhFHc5Z9B4DKkew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N/0KmN4M; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cYt5t7sr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA8E1F000FF;
-	Sun, 20 Sep 2026 00:30:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N/0KmN4M"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D361F000FF;
+	Sun, 20 Sep 2026 00:34:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789864206;
-	bh=bLO+3Ab9qBjg0IS2eKd8BtxrLrpQO95LPqnZGFo/2gU=;
+	s=k20260515; t=1789864471;
+	bh=hIQ02hcVmV7rgzgXxzImukq7uXYS54Gr3ip95fsB8/A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cYt5t7srStg0wM79dBWDTJ3+3QCsxBS2b1OyiridK9iSi9nFE5HWM+GT5itKogs+1
-	 R3LHhLFRjTagZaAxGjaYTHnXZaVb6yG1YuEBYahEIYF+HSJ1LkLZPbMzFZLhzEBXjY
-	 Qv/1njVS4l/Z3eL7vfFhtnNiKAzbCeAzEEzUuHSxRZ4xjI5cJWhM3jqcZCMnlWYy/V
-	 0liMohcMRKYlX5kf0kmUORcpjqXZw9X34+Hc7HmUYJ2/xlIyMxjV+XuvoE2Jfb9TYp
-	 1GwjYSEIqMUPb01kDBXUAjVZm5tHs0FDQjNZpGL3pc3Y8rs04/mizgnGL7OMLzuFaq
-	 R8HWvF06gDZoQ==
-Date: Sun, 20 Sep 2026 01:30:00 +0100
+	b=N/0KmN4MgQUBgLIFtPHhnhCLk+N3i3292qea5jtghzgQywDb1+VMbumzXrBlLoWT2
+	 OPeUBSsuiX5jgN2ksbP93943FIKdoPhThvEkRvhbsYYGonntM7KO65BMdbCkXhU0Sp
+	 X+YSot/4Eqo5/T+PlPCGrs7LnUj0X/qF4JItNosg0e0CpNaMugZjtV+JJmrk/aKuN/
+	 mVcfzp4s5MUveaCp43+r3/j+yX9AhODgYsTtn4eBzH/3JXXgkzo6XWgJbNPFoHPM3K
+	 6h9W64DfqAh3rNJgthlkV2UPbcQQLPBEWicLqtqb8MeJhJ8dsqtwdNT8K/4JIAd5hj
+	 U0NM7rf+tu1sg==
+Date: Sun, 20 Sep 2026 01:34:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Angel2Eyes <thefireking@gmail.com>
-Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org
-Subject: Re: [PATCH] iio: adc: mcp3422: use sysfs_emit() in show functions
-Message-ID: <20260920013000.7ed606c5@jic23-hlaptop>
-In-Reply-To: <20260919195507.94130-1-thefireking@gmail.com>
-References: <20260919195507.94130-1-thefireking@gmail.com>
+To: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] iio: pressure: add Sensirion SDP31 driver
+Message-ID: <20260920013427.492a2d10@jic23-hlaptop>
+In-Reply-To: <20260919223854.13437-1-m.abubakar365@yahoo.com>
+References: <20260919223854.13437-1-m.abubakar365.ref@yahoo.com>
+	<20260919223854.13437-1-m.abubakar365@yahoo.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,61 +48,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 19 Sep 2026 22:55:07 +0300
-Angel2Eyes <thefireking@gmail.com> wrote:
+On Sun, 20 Sep 2026 03:38:52 +0500
+Muhammad Abu Bakar <m.abubakar365@yahoo.com> wrote:
 
-> sysfs_emit() is preferred over sprintf() for sysfs show() callbacks
-> since it is aware of the PAGE_SIZE buffer and has built-in size and
-> alignment checks.
+> This series adds support for the Sensirion SDP31 differential pressure
+> sensor, an I2C device that also reports temperature.
 > 
-> Convert the remaining sprintf() calls in mcp3422_show_samp_freqs() and
-> mcp3422_show_scales(). The formatted output is unchanged.
-> 
-> Assisted-by: LLM
-> Signed-off-by: Angel2Eyes <thefireking@gmail.com>
-Hi.  
+> Patch 1 adds the device tree binding.
+> Patch 2 adds the IIO driver, which exposes differential pressure and
+> temperature channels and validates each measurement using the sensor's
+> CRC-8 checksum.
 
-In the ideal case you would go further here and make us of the
-read_avail() callback and appropriate _avail bitmap elements
-for the channels.  Given simple nature of these two functions that
-should be easy to convert.  The reason to do this is to make the
-ranges etc available to in kernel users.
+Hi,
 
-If you want to just make this simpler change I don't mind, but
-we do need that 'well known identity' for the Sign off that
-Maxwell has raised.
+Given we have another sensirion pressure sensor supported already (the SDP500)
+I'd expect a brief note here on why it doesn't make sense to add support to
+that driver for this new part.  Also check other similar drivers as sometimes
+we get compatible parts from multiple vendors.
+
+FWIW the two parts don't look to be that similar so probably a very short note :)
 
 Jonathan
 
-> ---
->  drivers/iio/adc/mcp3422.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+
 > 
-> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-> index 36ba00edf..fd9e72265 100644
-> --- a/drivers/iio/adc/mcp3422.c
-> +++ b/drivers/iio/adc/mcp3422.c
-> @@ -262,9 +262,9 @@ static ssize_t mcp3422_show_samp_freqs(struct device *dev,
->  	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
->  
->  	if (adc->id > 4)
-> -		return sprintf(buf, "240 60 15\n");
-> +		return sysfs_emit(buf, "240 60 15\n");
->  
-> -	return sprintf(buf, "240 60 15 3\n");
-> +	return sysfs_emit(buf, "240 60 15 3\n");
->  }
->  
->  static ssize_t mcp3422_show_scales(struct device *dev,
-> @@ -273,7 +273,7 @@ static ssize_t mcp3422_show_scales(struct device *dev,
->  	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
->  	u8 sample_rate = FIELD_GET(MCP3422_SRATE_MASK, adc->config);
->  
-> -	return sprintf(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
-> +	return sysfs_emit(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
->  		mcp3422_scales[sample_rate][0],
->  		mcp3422_scales[sample_rate][1],
->  		mcp3422_scales[sample_rate][2],
+> The driver was developed and tested on an SDP31 wired to the I2C bus of
+> a Raspberry Pi 4.
 > 
-> base-commit: 69fa76f0af3414cc189c3b0b807cb59e327ecc00
+> Muhammad Abu Bakar (2):
+>   dt-bindings: iio: pressure: add Sensirion SDP31
+>   iio: pressure: add Sensirion SDP31 driver
+> 
+>  .../iio/pressure/sensirion,sdp31.yaml         |  40 ++++
+>  MAINTAINERS                                   |   6 +
+>  drivers/iio/pressure/Kconfig                  |  11 +
+>  drivers/iio/pressure/Makefile                 |   1 +
+>  drivers/iio/pressure/sdp31.c                  | 194 ++++++++++++++++++
+>  5 files changed, 252 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+>  create mode 100644 drivers/iio/pressure/sdp31.c
+> 
 
