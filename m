@@ -1,445 +1,357 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa2-f11.google.com (mail-oa2-f11.google.com [74.125.231.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CA2C1F3B8A;
-	Sun, 20 Sep 2026 02:18:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE52B3655C2
+	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 02:48:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789870691; cv=none; b=H5OOtlRRa+Ir+1KUjHZd+KU7Gql1K1gw32zNmtWFSToO4r3r601oLatXKYDoma3a2rcL/kG/mmmFR6XysBradKfVx5cJsVu1GwIFRje6Hq/EPQ8WuS2gHnzcwEx9hE+AHvDKSuyWQm6o0l7cmFaLFi6T9j39TuCqoASkbOHCt9o=
+	t=1789872512; cv=none; b=bv1e77qGm9a2yHNNs6s/TQIecmLj8w5T/58NieNITeSe/Hqh27Aw+UaXUyDFaiDhyebwPa9ckNIM9Li7eME16b7kwhI1moeJQK+2C6WtqFwMy6ZUtdcI0dLIntfvqpSP+Q1c/yI6wGy83LdahGppE4pspkCxNpaq4UZ21I68Jfk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789870691; c=relaxed/simple;
-	bh=oo78RpNfiXwJn7r46jiNKS6yIJyDb+MQNVxkmov69Wc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NQyrx+dRj4ztaIMIRHUzwBRwMqinPUaDisYtOYVwW1zJiDT6O2LktlwaCTy9iyDLEOINdSVIosS310j1nSJTspcLK8UoFbtblnAc9ojCOx5NL36eZbxSe+zddF8tffNFN3NlIyH+VI9mThksX2xvm9WMUx/uli5hGpspDj/NHHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MfVFWnZ+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789872512; c=relaxed/simple;
+	bh=5zJQUcTfeHOupAFBO5SzKmha1B+IVgnGLyfPlMQyMi4=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=FRJaPn4I1Phnnf+uDiejKMvZPOZag61OLgtnK1+o3JgynNsVPqyH2ni/iRV9zWqyEle/wd8Ms3mEt+opj/GuF14RLxqbHOguz/gHBto2qenygocEpsfS1cqFhRTPx+yk/H4zOqxEi1pmwNO2tBuEy6dftrMYyEuG/LQiavPglCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=edrJU3Ob; arc=none smtp.client-ip=74.125.231.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MfVFWnZ+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 796591F000FF;
-	Sun, 20 Sep 2026 02:18:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789870689;
-	bh=1a/vwBnGGSIRYfx7PP1aJOZeFIh+KqK6KRk7beFBFRU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=MfVFWnZ+ghJ3Yl9mgB9jziDDPYAcV2tY1OJX+/JicFP+ZvlHBKDI4pfV9o4BMBlmF
-	 WhkF08o1/sXYWBxN56mOnwA+AF26zinknmaFCvjf8Zwqsl9+XZwwHd+3/ymhJ6kmi/
-	 zJrSFNKdWCmCMHzI4bwQ5gi3dxKDdx4EjaJfy7YOpD0LcZOovFK3IjTcIssfBOej83
-	 709qjKzSIABKEUo9aLqZqdzWGj3RzZcNwLYiuLtyYr5SoIbgNvuF15nfrHnSEc96wu
-	 6mXAZmjydQo7jZ56+f3OIJbxl4cLVU8Iv6zlo/SZV9orVkTp5XLf59I4d/+PFp2nhB
-	 DiGQw6GNKyirA==
-Date: Sun, 20 Sep 2026 03:18:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andriy.shevchenko@intel.com, linux-kernel@vger.kernel.org,
- rdunlap@infradead.org, joshua.crofts1@gmail.com,
- u.kleine-koenig@baylibre.com, julianbraha@gmail.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- corbet@lwn.net, skhan@linuxfoundation.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v10 8/8] iio: osf: add IIO KUnit tests
-Message-ID: <20260920031805.1d5aa396@jic23-hlaptop>
-In-Reply-To: <59251baa5b1f53a72ac7a09afc334398e2e84db7.1789753020.git.kimjinseob88@gmail.com>
-References: <cover.1789753020.git.kimjinseob88@gmail.com>
-	<59251baa5b1f53a72ac7a09afc334398e2e84db7.1789753020.git.kimjinseob88@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="edrJU3Ob"
+Received: by mail-oa2-f11.google.com with SMTP id 586e51a60fabf-462dec1c4c5so830423fac.0
+        for <linux-iio@vger.kernel.org>; Sat, 19 Sep 2026 19:48:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789872510; x=1790477310; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:subject:from:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=TjvmYyCc6sVH2RWH/PPf9bwAMgPY9Arl3SG7xhOPHXY=;
+        b=edrJU3ObiRBfUezczsp3hF4E0jIdgu62Oi+NduiwJbDFH3fBJQc3Lfv/5vpcrRd8MD
+         vOUi+fmqHaqLwGPGoBFs3Tj8W2QKEugh19joQ+4hGp16nYQQWIWJB3fFQayFdxUt5eS7
+         4lN4ZA4z2khMeq+Po5Q5pRULgUyCZtNMMYemp3QKdHH6+o/EKyxaCRCeV2tV34jfalSs
+         N0oga6ITNllKo3u9vWa0bdb8sFjlrdnY/AWxYtTFAZUB3RiwY8LDYhPwYjDOfNIC5A/W
+         d5SWTMg4lW8sN/gGk9D/+36o7i6Bh3uisti8nfWX7TFmMhiGK6z7b8vEpZOIZRf4lgbr
+         rlIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789872510; x=1790477310;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:subject:from:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=TjvmYyCc6sVH2RWH/PPf9bwAMgPY9Arl3SG7xhOPHXY=;
+        b=mK/svQ7vu0dxvTXYur55G9t6nKBcrwNEyLrxKd+5EwBi4x8ae+kUcv4B64Ns0+iKCO
+         tey8X4kE+8yv2lj3uw9yy/lI+3NYSTDSbSyC+C1VS4nV5OFI92BsTh4fZZUl3PnQR8GA
+         pPj2Rg9xapBGCo08rb8hMQ7N2fVqTZUBCLtE+T0Yxar7o5vccu5ArQxGxA9JMywXlZHv
+         68GJwSkDp3HaIbBrcqMYxy+/ztOMwWyMifiTMC60Kr+SvJLfKDYUouA++3W/KNmAhubm
+         otEYA0bouaFXjVovpqQyn0Mu7ZUAPeZ1Wlnul6titlXkRbb4KRJC2LOhbuyjGINQyjwU
+         48Ag==
+X-Forwarded-Encrypted: i=1; AKwUvBz4+ZsuK+mkWjwBjthKov+hHLbE6StPEMDLw5OAAkDBlx7Qk9cQNupH5iCEm60Z5zPoOeMOiQUBBrY=@vger.kernel.org
+X-Gm-Message-State: AFuF++l64WkpxIiw5Ngb1EFRJC7VQGoEaeH2MPpK/MLbJkzqr+kXGZUv
+	Q2yVCSMtGqz5zEj9cQPvgqfGPVggyivTonRMoyBBeT4GtlxXWYAKiW3l
+X-Gm-Gg: AYBFou107jm2pqvNrRkAz0hfkoq2hGmp/WDd5R23qj24IVLQtDR5D1eAfcYjxB+oIEB
+	w/lQM/plv51DRLtAP20ounmGSa6omym1NSzs46IniaozJezULc8ZnzHaRHcHazqdlTdfgVwJjfi
+	Pf9MXRC7K9+J7ca+4nbx+0+BVylhnFlLjYGwY5P6/mMPAuI0um/0ZRMY1PyEgjoKkwdTBTflNLX
+	+IbNfQSnaPM+cZ/o1lQvyKqQmaGIZJbWs1PXs62QOXR9P0V7aa4UqTCpVZmZ6dXSfQVnvw+hp9C
+	ZRx8cqvtnPemiGvFvKVH+FqUOGOBW7VTFiWC3c2RTUC6JxuQ9CcNkKXR9dCrkgqXDGF2B/tuEqB
+	WL0g06HLvQCOA4iEcGCGHqC9wWV8yiHmyARV91l7RSIv3nrYRdYvGv59XLdJA0BmG7jaoKLobUQ
+	qfBYPfwivRmV+NFDFemZumzNeJq0DyUx9202RnZWNx4YDRch9Fy1Cwdfb4BM3KPGhb6UNlf2g2v
+	gfwYyc+027hujAVlsNcs5/xIw==
+X-Received: by 2002:a05:6870:d24c:b0:43b:bb18:affd with SMTP id 586e51a60fabf-486e554a334mr7101333fac.8.1789872509696;
+        Sat, 19 Sep 2026 19:48:29 -0700 (PDT)
+Received: from ?IPV6:2600:8804:5716:d800::2620? ([2600:8804:5716:d800::2620])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4881f4d519fsm4188565fac.2.2026.09.19.19.48.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Sep 2026 19:48:28 -0700 (PDT)
+Message-ID: <7f1ab011-c90f-42fc-bc4c-836a1ef9febc@gmail.com>
+Date: Sat, 19 Sep 2026 21:48:25 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+From: Ryan Brue <ryanbrue.dev@gmail.com>
+Subject: Re: [PATCH v2 2/3] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
+ driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ mfd@lists.linux.dev, Roman Vivchar <rva333@protonmail.com>,
+ Luca Leonardo Scorcia <l.scorcia@gmail.com>
+References: <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-0-db35882a6080@gmail.com>
+ <20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-2-db35882a6080@gmail.com>
+ <aqzo2vqeGEGCLFIP@ashevche-desk.local>
+Content-Language: en-US
+In-Reply-To: <aqzo2vqeGEGCLFIP@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Sat, 19 Sep 2026 03:24:46 +0900
-Jinseob Kim <kimjinseob88@gmail.com> wrote:
+On 9/18/26 2:31 AM, Andy Shevchenko wrote:
+> The below should be part of the comment block, no commit message needs to
+> be polluted with this.
+>
+>> A new driver was created here, instead of modifying an existing driver
+>> such as mt6323-auxadc or mt6359-auxadc, for the following reasons:
+>>
+>>   - Both mt6323-auxadc and mt6359-auxadc select channels through a request
+>>     register (1 bit per channel), while mt6397 uses a 4-bit numeric field
+>>     CHSEL in CON1 (10:7), and then pulses a START bit (CON1 bit 0).
+>>
+>>   - For mt6323-auxadc, which is the closest I could find to the mt6397
+>>     (CON0..CON27), it has 13 more registers than the mt6397 (CON0..CON14).
+>>     It uses CON22 for its request register, and reads the result value
+>>     from the same register as the ready bit. We don't do that - the mt6397
+>>     has a factory calibrated value for each channel at 0x16 higher than the
+>>     raw value. mt6323 also has a 1800 mV / 15 bit scale / resolution while
+>>     we have 1200 mV / 10 bits. We also have some per-channel preparation
+>>     that we have to do before the burst, that the mt6323 doesn't have to
+>>     do.
+>>
+>>   - For mt6359-auxadc, it has a more generic framework for describing the
+>>     AUXADC, but it assumes requests are channel-per-bit, and so we would
+>>     have to basically ignore req_idx, req_mask, rdy_idx, and rdy_mask.
+>>
+>>   - We also have our own software sampling, which the vendor does too
+>>     (Amazon Fire OS based on Linux 3.18). We'd have to have our own
+>>     sampling callback to do it.
+>>
+>> Assisted-by: LLM
+>> Signed-off-by: Ryan Brue<ryanbrue.dev@gmail.com>
+>> ---
+> ...here is the comment block...
+Done in v3.
+>> +static int mt6397_auxadc_read_once(struct mt6397_auxadc *adc,
+>> +				   const struct iio_chan_spec *chan, int *val)
+>> +{
+>> +	struct regmap *map = adc->regmap;
+>> +	unsigned int reg;
+>> +	int ret;
+>> +
+>> +	ret = regmap_update_bits(map, MT6397_AUXADC_CON1,
+>> +				 MT6397_AUXADC_CON1_CHSEL,
+>> +				 FIELD_PREP(MT6397_AUXADC_CON1_CHSEL,
+>> +					    chan->address));
+> Make it two a bit long lines rather than four.
+Done in v3.
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	/* START is edge triggered: it has to be lowered before being raised. */
+>> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON1, MT6397_AUXADC_CON1_START);
+>> +	if (ret)
+>> +		return ret;
+> Does it need any settling timeout (in case it was set before)?
+I don't think so. The ready bit gets cleared when START gets raised, not 
+when it gets lowered, so a missed edge wouldn't surface as an error. The 
+poll would match the previous conversion's ready bit and a stale value 
+would be averaged into the burst, so I forced one by suppressing the 
+clear on START.
 
-> Add the existing IIO active-scan packing and buffer producer lifetime
-> tests. Extend the test build wiring and help text to cover both suites.
-> 
-> This changes no production source. The complete series retains the
-> production behavior of the combined-driver revision, with CRC
-> terminology clarified.
-> 
-> Assisted-by: LLM
-> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+With the clear suppressed the set finds START already high, so regmap 
+doesn't issue a write at all and no edge happens. All 40 reads still 
+succeeded, but each one returns sixteen identical conversions instead of 
+the usual spread, and nothing shows up in dmesg.
 
-So there are a number of generic tests in here (using osf as a device)
-that we should probably be looking to pull out as independent self tests
-if we can.  Good to have them as something to build on though and
-there are of course some driver interactions that matter.
+It also let me calibrate the probe, which I wanted before trusting a 
+zero out of it. Probing the result register just after the rise, it 
+counts the injected stale bits exactly: 93.75% with the clear 
+suppressed, which is 15 of 16 because in the first conversion of a burst 
+START is already low and still makes an edge, and 43.79% against 43.75% 
+predicted when seven of sixteen are made stale. In normal operation 
+everything it sees is conversions that have already finished, and once I 
+subtract those out, what's left at 30 us -- which is where the poll 
+first looks -- is -5.1e-3 +/- 2.9e-3 over 96000 conversions.
 
-Anyhow, I'd like input from others on how they think we should ensure
-the coverage you have here is present but avoid duplication on a per
-driver basis (assuming others decide to also start putting together
-comprehensive self tests like you have done!).
+The two writes are never back to back anyway, since each one is its own 
+transaction on an uncached regmap over the PMIC wrapper and the set 
+alone takes at least 7.3 us. I also tried inserting a gap of 30 and 300 
+us, and it moves the reading by under 0.06 LSB, with no poll timing out 
+across about a million conversions.
 
-I'd like to find time to take a close look at these tests but
-it won't happen for a while as there is simply to much activity on
-the list + I'm travelling in the next few weeks (including Linux
-Plumbers in Prague in early October).  So it may be that we end
-up merging the driver ahead of these tests.
+Even though the vendor isn't necessarily what we care about, it also 
+writes START 0 then 1 with nothing in between.
 
-Jonathan
+I don't have a datasheet figure for a minimum low time, this is all 
+measured, so if you end up wanting a wait there let me know, v3 has a 
+bit more context in the comment.
 
-> ---
->  drivers/iio/opensensorfusion/Kconfig        |   2 +-
->  drivers/iio/opensensorfusion/Makefile       |   2 +-
->  drivers/iio/opensensorfusion/osf_iio_test.c | 325 ++++++++++++++++++++
->  3 files changed, 327 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/iio/opensensorfusion/osf_iio_test.c
-> 
-> diff --git a/drivers/iio/opensensorfusion/Kconfig b/drivers/iio/opensensorfusion/Kconfig
-> index 316f33be1327..b4a2cde9645e 100644
-> --- a/drivers/iio/opensensorfusion/Kconfig
-> +++ b/drivers/iio/opensensorfusion/Kconfig
-> @@ -20,7 +20,7 @@ config OPEN_SENSOR_FUSION_KUNIT_TEST
->  	default KUNIT_ALL_TESTS
->  	help
->  	  Build focused unit tests for the Open Sensor Fusion core sample
-> -	  acceptance, direct-read cache, and capability/session handling. The tests
-> +	  acceptance, direct-read cache, and IIO buffer paths. The tests
->  	  exercise accepted, ignored, and rejected sample handling without
->  	  exposing additional production interfaces.
->  
-> diff --git a/drivers/iio/opensensorfusion/Makefile b/drivers/iio/opensensorfusion/Makefile
-> index c2f5ba065a62..6a28b14cae1f 100644
-> --- a/drivers/iio/opensensorfusion/Makefile
-> +++ b/drivers/iio/opensensorfusion/Makefile
-> @@ -4,4 +4,4 @@ obj-$(CONFIG_OPEN_SENSOR_FUSION) += open-sensor-fusion.o
->  
->  open-sensor-fusion-y := osf_core.o osf_iio.o osf_protocol.o osf_serdev.o \
->  			 osf_stream.o
-> -open-sensor-fusion-$(CONFIG_OPEN_SENSOR_FUSION_KUNIT_TEST) += osf_core_test.o
-> +open-sensor-fusion-$(CONFIG_OPEN_SENSOR_FUSION_KUNIT_TEST) += osf_core_test.o osf_iio_test.o
-> diff --git a/drivers/iio/opensensorfusion/osf_iio_test.c b/drivers/iio/opensensorfusion/osf_iio_test.c
-> new file mode 100644
-> index 000000000000..63d3ca1af329
-> --- /dev/null
-> +++ b/drivers/iio/opensensorfusion/osf_iio_test.c
-> @@ -0,0 +1,325 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +#include <kunit/device.h>
-> +#include <kunit/test.h>
-> +
-> +#include <linux/bitmap.h>
-> +#include <linux/completion.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/buffer_impl.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/kthread.h>
-> +#include <linux/string.h>
-> +
-> +#include "osf_core.h"
-> +#include "osf_iio.h"
-> +
-> +static noinline void osf_test_poison_stack(void)
-> +{
-> +	u8 bytes[1024];
-> +
-> +	memset(bytes, 0xa5, sizeof(bytes));
-> +	barrier_data(bytes);
-> +}
-> +
-> +static void osf_iio_check_scan(struct kunit *test, struct iio_dev *indio_dev,
-> +			       const s32 *values, unsigned int channels,
-> +			       unsigned int mask, bool ts)
-> +{
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +	unsigned int data_bytes = hweight32(mask) * sizeof(s32);
-> +	unsigned int ts_offset = ALIGN(data_bytes, 8);
-> +	unsigned int scan_bytes = ts ? ts_offset + 8 : data_bytes;
-> +	unsigned int offset = 0;
-> +	u8 scan[24] __aligned(8);
-> +	s64 before, after, timestamp;
-> +	int ret;
-> +
-> +	bitmap_zero((unsigned long *)buffer->scan_mask, iio_get_masklength(indio_dev));
-> +	for (unsigned int i = 0; i < channels; i++)
-> +		if (mask & BIT(i))
-> +			set_bit(i, (unsigned long *)buffer->scan_mask);
-> +	buffer->scan_timestamp = ts;
-> +	ret = iio_update_buffers(indio_dev, buffer, NULL);
-> +	KUNIT_ASSERT_EQ(test, ret, 0);
-> +
-> +	kunit_info(test, "device=%s mask=%u ts=%u bytes=%u\n",
-> +		   indio_dev->name, mask, ts, scan_bytes);
-> +	memset(scan, 0xa5, sizeof(scan));
-> +	before = iio_get_time_ns(indio_dev);
-> +	osf_test_poison_stack();
-> +	ret = osf_iio_push_sample(indio_dev, values, channels);
-> +	after = iio_get_time_ns(indio_dev);
-> +	KUNIT_EXPECT_EQ(test, ret, 0);
-> +	KUNIT_EXPECT_EQ(test, buffer->bytes_per_datum, scan_bytes);
-> +	ret = iio_pop_from_buffer(buffer, scan);
-> +	KUNIT_EXPECT_EQ(test, ret, 0);
-> +	if (ret)
-> +		goto disable;
-> +
-> +	for (unsigned int i = 0; i < channels; i++) {
-> +		if (!(mask & BIT(i)))
-> +			continue;
-> +		KUNIT_EXPECT_MEMEQ(test, scan + offset, &values[i], sizeof(s32));
-> +		offset += sizeof(s32);
-> +	}
-> +	if (ts) {
-> +		for (unsigned int i = data_bytes; i < ts_offset; i++)
-> +			KUNIT_EXPECT_EQ(test, scan[i], (u8)0);
-> +		memcpy(&timestamp, scan + ts_offset, sizeof(timestamp));
-> +		KUNIT_EXPECT_GE(test, timestamp, before);
-> +		KUNIT_EXPECT_LE(test, timestamp, after);
-> +	}
-> +	/* Neither kfifo nor the producer may write outside the consumer stride. */
-> +	for (unsigned int i = scan_bytes; i < sizeof(scan); i++)
-> +		KUNIT_EXPECT_EQ(test, scan[i], (u8)0xa5);
-> +
-> +disable:
-> +	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, NULL, buffer), 0);
-> +}
-> +
-> +/* Protect timestamp alignment holes and every supported scan layout. */
-> +static void osf_iio_scan_bytes_test(struct kunit *test)
-> +{
-> +	static const u16 types[] = {
-> +		OSF_SENSOR_ACCELEROMETER, OSF_SENSOR_GYROSCOPE,
-> +		OSF_SENSOR_MAGNETOMETER, OSF_SENSOR_TEMPERATURE,
-> +	};
-> +	const s32 values[] = { 101, -202, 303 };
-> +	struct osf_capability_entry entry = {
-> +		.sample_format = OSF_SAMPLE_FORMAT_S32,
-> +		.scale_nano = 1000000,
-> +	};
-> +	struct osf_device *osf;
-> +	struct device *dev;
-> +
-> +	dev = kunit_device_register(test, "osf-iio");
-> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
-> +	osf = kunit_kzalloc(test, sizeof(*osf), GFP_KERNEL);
-> +	KUNIT_ASSERT_NOT_NULL(test, osf);
-> +	osf_core_init(osf, dev);
-> +
-> +	for (unsigned int t = 0; t < ARRAY_SIZE(types); t++) {
-> +		unsigned int channels = t == 3 ? 1 : 3;
-> +		struct iio_dev *indio_dev;
-> +		int ret;
-> +
-> +		entry.sensor_type = types[t];
-> +		entry.channel_count = channels;
-> +		ret = osf_iio_register_sensor(dev, &entry, osf, &indio_dev);
-> +		KUNIT_ASSERT_EQ(test, ret, 0);
-> +		for (unsigned int mask = 1; mask < BIT(channels); mask++)
-> +			for (unsigned int ts = 0; ts < 2; ts++)
-> +				osf_iio_check_scan(test, indio_dev, values, channels, mask, ts);
-> +		osf_iio_unregister_sensor(indio_dev);
-> +	}
-> +}
-> +
-> +struct osf_iio_race {
-> +	struct iio_buffer_access_funcs access;
-> +	const struct iio_buffer_access_funcs *original;
-> +	struct iio_dev *indio_dev;
-> +	struct completion entered;
-> +	struct completion release;
-> +	struct completion config_started;
-> +	struct completion config_done;
-> +	atomic_t block_store;
-> +	atomic_t stores;
-> +	atomic_t disabled;
-> +	atomic_t bad_store;
-> +	int enable_error;
-> +	int disable_error;
-> +	int config_result;
-> +	bool unregister;
-> +};
-> +
-> +static struct osf_iio_race *osf_iio_race_from_buffer(struct iio_buffer *buffer)
-> +{
-> +	return container_of(buffer->access, struct osf_iio_race, access);
-> +}
-> +
-> +static int osf_iio_test_store(struct iio_buffer *buffer, const void *data)
-> +{
-> +	struct osf_iio_race *race = osf_iio_race_from_buffer(buffer);
-> +
-> +	if (atomic_xchg(&race->block_store, 0)) {
-> +		complete(&race->entered);
-> +		if (!wait_for_completion_timeout(&race->release, 5 * HZ))
-> +			return -ETIMEDOUT;
-> +	}
-> +	if (atomic_read(&race->disabled))
-> +		atomic_inc(&race->bad_store);
-> +	atomic_inc(&race->stores);
-> +	return race->original->store_to(buffer, data);
-> +}
-> +
-> +static int osf_iio_test_enable(struct iio_buffer *buffer, struct iio_dev *indio_dev)
-> +{
-> +	struct osf_iio_race *race = osf_iio_race_from_buffer(buffer);
-> +
-> +	if (race->enable_error)
-> +		return race->enable_error;
-> +	atomic_set(&race->disabled, 0);
-> +	return 0;
-> +}
-> +
-> +static int osf_iio_test_disable(struct iio_buffer *buffer, struct iio_dev *indio_dev)
-> +{
-> +	struct osf_iio_race *race = osf_iio_race_from_buffer(buffer);
-> +
-> +	atomic_set(&race->disabled, 1);
-> +	return race->disable_error;
-> +}
-> +
-> +static int osf_iio_test_producer(void *data)
-> +{
-> +	struct osf_iio_race *race = data;
-> +	const s32 values[] = { 101, -202, 303 };
-> +
-> +	while (!kthread_should_stop()) {
-> +		osf_iio_push_sample(race->indio_dev, values, ARRAY_SIZE(values));
-> +		cond_resched();
-> +	}
-> +	return 0;
-> +}
-> +
-> +static int osf_iio_test_configure(void *data)
-> +{
-> +	struct osf_iio_race *race = data;
-> +
-> +	complete(&race->config_started);
-> +	if (race->unregister) {
-> +		osf_iio_unregister_sensor(race->indio_dev);
-> +		race->config_result = 0;
-> +	} else {
-> +		race->config_result = iio_update_buffers(race->indio_dev, NULL,
-> +							 race->indio_dev->buffer);
-> +	}
-> +	complete(&race->config_done);
-> +	while (!kthread_should_stop())
-> +		msleep(20);
-> +	return 0;
-> +}
-> +
-> +static void osf_iio_expect_quiesce(struct kunit *test, struct osf_iio_race *race)
-> +{
-> +	struct task_struct *config;
-> +	unsigned long waited;
-> +
-> +	config = kthread_run(osf_iio_test_configure, race, "osf-cfg-test");
-> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, config);
-> +	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->config_started, HZ), 0UL);
-> +	waited = wait_for_completion_timeout(&race->config_done, msecs_to_jiffies(20));
-> +	KUNIT_EXPECT_EQ(test, waited, 0UL);
-> +	complete(&race->release);
-> +	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->config_done, HZ), 0UL);
-> +	kthread_stop(config);
-> +	KUNIT_EXPECT_EQ(test, race->config_result, 0);
-> +}
-> +
-> +/* Run real IIO configuration and kfifo code against an independent producer. */
-> +static void osf_iio_buffer_lifetime_test(struct kunit *test)
-> +{
-> +	struct osf_capability_entry entry = {
-> +		.sensor_type = OSF_SENSOR_ACCELEROMETER,
-> +		.channel_count = 3,
-> +		.sample_format = OSF_SAMPLE_FORMAT_S32,
-> +		.scale_nano = 1000000,
-> +	};
-> +	const s32 values[] = { 101, -202, 303 };
-> +	struct task_struct *producer;
-> +	struct osf_iio_race *race;
-> +	struct osf_device *osf;
-> +	struct iio_dev *indio_dev;
-> +	struct iio_buffer *buffer;
-> +	struct device *dev;
-> +	int stores, ret;
-> +
-> +	dev = kunit_device_register(test, "osf-race");
-> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
-> +	osf = kunit_kzalloc(test, sizeof(*osf), GFP_KERNEL);
-> +	race = kunit_kzalloc(test, sizeof(*race), GFP_KERNEL);
-> +	KUNIT_ASSERT_NOT_NULL(test, osf);
-> +	KUNIT_ASSERT_NOT_NULL(test, race);
-> +	osf_core_init(osf, dev);
-> +	ret = osf_iio_register_sensor(dev, &entry, osf, &indio_dev);
-> +	KUNIT_ASSERT_EQ(test, ret, 0);
-> +	buffer = indio_dev->buffer;
-> +	race->indio_dev = indio_dev;
-> +	race->original = buffer->access;
-> +	race->access = *buffer->access;
-> +	race->access.store_to = osf_iio_test_store;
-> +	race->access.enable = osf_iio_test_enable;
-> +	race->access.disable = osf_iio_test_disable;
-> +	buffer->access = &race->access;
-> +	init_completion(&race->entered);
-> +	init_completion(&race->release);
-> +	init_completion(&race->config_started);
-> +	init_completion(&race->config_done);
-> +	atomic_set(&race->disabled, 1);
-> +	set_bit(0, (unsigned long *)buffer->scan_mask);
-> +	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-> +
-> +	atomic_set(&race->block_store, 1);
-> +	producer = kthread_run(osf_iio_test_producer, race, "osf-rx-test");
-> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, producer);
-> +	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->entered, HZ), 0UL);
-> +	osf_iio_expect_quiesce(test, race);
-> +
-> +	for (unsigned int i = 0; i < 100; i++) {
-> +		bitmap_zero((unsigned long *)buffer->scan_mask, iio_get_masklength(indio_dev));
-> +		*(unsigned long *)buffer->scan_mask = (i % 7) + 1;
-> +		buffer->scan_timestamp = i & 1;
-> +		KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-> +		cond_resched();
-> +		KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, NULL, buffer), 0);
-> +	}
-> +
-> +	race->enable_error = -EIO;
-> +	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), -EIO);
-> +	stores = atomic_read(&race->stores);
-> +	KUNIT_EXPECT_EQ(test, osf_iio_push_sample(indio_dev, values, 3), 0);
-> +	KUNIT_EXPECT_EQ(test, atomic_read(&race->stores), stores);
-> +	race->enable_error = 0;
-> +	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-> +	race->disable_error = -EIO;
-> +	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, NULL, buffer), -EIO);
-> +	stores = atomic_read(&race->stores);
-> +	KUNIT_EXPECT_EQ(test, osf_iio_push_sample(indio_dev, values, 3), 0);
-> +	KUNIT_EXPECT_EQ(test, atomic_read(&race->stores), stores);
-> +	race->disable_error = 0;
-> +
-> +	KUNIT_EXPECT_EQ(test, iio_update_buffers(indio_dev, buffer, NULL), 0);
-> +	/* Retain ownership while testing unregister against an admitted push. */
-> +	get_device(&indio_dev->dev);
-> +	reinit_completion(&race->entered);
-> +	reinit_completion(&race->release);
-> +	reinit_completion(&race->config_started);
-> +	reinit_completion(&race->config_done);
-> +	atomic_set(&race->block_store, 1);
-> +	KUNIT_EXPECT_NE(test, wait_for_completion_timeout(&race->entered, HZ), 0UL);
-> +	race->unregister = true;
-> +	osf_iio_expect_quiesce(test, race);
-> +	kthread_stop(producer);
-> +	KUNIT_EXPECT_EQ(test, atomic_read(&race->bad_store), 0);
-> +	KUNIT_EXPECT_GT(test, atomic_read(&race->stores), 0);
-> +	buffer->access = race->original;
-> +	put_device(&indio_dev->dev);
-> +}
-> +
-> +static struct kunit_case osf_iio_test_cases[] = {
-> +	KUNIT_CASE(osf_iio_scan_bytes_test),
-> +	KUNIT_CASE(osf_iio_buffer_lifetime_test),
-> +	{ }
-> +};
-> +
-> +static struct kunit_suite osf_iio_test_suite = {
-> +	.name = "osf-iio",
-> +	.test_cases = osf_iio_test_cases,
-> +};
-> +
-> +kunit_test_suite(osf_iio_test_suite);
-> +
-> +MODULE_LICENSE("GPL");
+>> +static int mt6397_auxadc_battemp_bias(struct mt6397_auxadc *adc, bool on)
+> There is nothing common between on==false and on==true cases. Make it two
+> distinct functions and drop bool parameter. It's actually a recommended
+> pattern.
+Done in v3.
+>> +{
+>> +	struct regmap *map = adc->regmap;
+>> +	int ret, err;
+>> +
+>> +	if (on) {
+>> +		ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
+>> +				      MT6397_AUXADC_CON0_BUF_PWD_ON);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
+>> +				      MT6397_AUXADC_CON0_BUF_PWD_B);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = regmap_set_bits(map, MT6397_CHR_CON7,
+>> +				      MT6397_CHR_CON7_BATON_TDET_EN);
+>> +	} else {
+>> +		/*
+>> +		 * Every step of the teardown is attempted even if an earlier
+>> +		 * one failed, so that one failing write cannot leave the bias
+>> +		 * or the input buffer powered. The first error is reported.
+>> +		 */
+>> +		ret = regmap_clear_bits(map, MT6397_CHR_CON7,
+>> +					MT6397_CHR_CON7_BATON_TDET_EN);
+>> +
+>> +		err = regmap_clear_bits(map, MT6397_AUXADC_CON0,
+>> +					MT6397_AUXADC_CON0_BUF_PWD_B);
+>> +		if (!ret)
+>> +			ret = err;
+>> +
+>> +		err = regmap_clear_bits(map, MT6397_AUXADC_CON0,
+>> +					MT6397_AUXADC_CON0_BUF_PWD_ON);
+>> +		if (!ret)
+>> +			ret = err;
+> These 'if (!ret)' bug me. What can we do if the ret == 0 and err != 0
+> on the caller's level? In other words, what can caller do in such a case?
+Nothing, and in v2 it didn't do anything -- read_channel() discarded the 
+teardown's return anyways, so the value wasn't even used. v3 hands it to 
+dev_err() instead, as mt6323-auxadc.c does on its own release path, and 
+the accumulators are gone.
 
+The 'if (!ret)' left in read_channel() are sequencing the next step 
+rather than merging an error into it, and the teardown below it is 
+unconditional, but if you don't want 'if (!ret)' at all, let me know.
+>> +	if (!ret)
+>> +		ret = err;
+>> +
+>> +	return ret;
+> This can be written as
+>
+> 	if (ret)
+> 		return ret;
+>
+> 	return err;
+>
+>
+> But the same Q as per above remains.
+I took it a step further and made both teardowns return on the first 
+failure rather than attempting the rest. mt6323_auxadc_release() does 
+the same, and so do twelve others in drivers/iio that I could find. One 
+does continue after a failed write -- ltr390_powerdown(), but it's a 
+void devm cleanup callback that logs each error as it comes, so it has 
+nothing to return.
+
+With this change, a failed write can leave the later bits set. The read 
+still returns its value with the failure logged, and the teardown runs 
+at the end of every read, so the next read of that channel clears them.
+>> +	/* Held across the whole burst: the channel select is shared state. */
+> Unneeded comment. It's obvious that guard()() takes the whole scope.
+Done in v3.
+>> +	guard(mutex)(&adc->lock);
+>> +
+>> +	/*
+>> +	 * Once any part of the per-channel setup has been written, the
+>> +	 * teardown has to run, so every exit below goes through it.
+>> +	 */
+>> +	if (isense) {
+>> +		ret = mt6397_auxadc_isense_enable(adc);
+>> +		if (ret)
+>> +			goto out_teardown;
+> Have you compiled this?
+Yes, with clang on arm64 and gcc on x86_64 allmodconfig, W=1 clean at 
+every patch in the series, and the codegen was correct: one mutex_lock, 
+one mutex_unlock and a single ret in read_raw() with read_channel() 
+inlined into it, and no path that takes the lock reaches that ret 
+without passing the unlock. The only two branches ahead of the lock are 
+the SCALE and default cases, and neither takes it. Still, I missed that 
+cleanup.h wants goto and cleanup helpers to not mix, and I shouldn't 
+have mixed them. v3 puts the sample loop into its own function, so 
+read_channel() becomes setup, then a conditional burst and an 
+unconditional teardown, with no label.
+>> +		fsleep(MT6397_AUXADC_ISENSE_SETTLE_US);
+>> +	} else {
+>> +		ret = mt6397_auxadc_battemp_bias(adc, true);
+>> +		if (ret)
+>> +			goto out_teardown;
+>> +		fsleep(MT6397_AUXADC_BATTEMP_SETTLE_US);
+>> +	}
+>> +
+>> +	for (unsigned int i = 0; i < MT6397_AUXADC_SAMPLES; i++) {
+>> +		ret = mt6397_auxadc_read_once(adc, chan, &sample);
+>> +		if (ret)
+>> +			goto out_teardown;
+>> +
+>> +		sum += sample;
+>> +	}
+>> +
+>> +	*val = DIV_ROUND_CLOSEST(sum, MT6397_AUXADC_SAMPLES);
+>> +
+>> +out_teardown:
+>> +	/* Lower START so the converter is not left armed between reads. */
+>> +	regmap_clear_bits(adc->regmap, MT6397_AUXADC_CON1,
+>> +			  MT6397_AUXADC_CON1_START);
+>> +
+>> +	if (isense)
+>> +		mt6397_auxadc_isense_disable(adc);
+>> +	else
+>> +		mt6397_auxadc_battemp_bias(adc, false);
+>> +
+>> +	return ret;
+>> +}
+> So, this function has to refactored. And please, compile and test the code
+> *each* time you update it.
+Ack. Admittedly I hadn't tested the 'goto out_teardown' path prior to 
+sending out the v2, so I apologize. I have now tested it by injecting a 
+failure into each of the helpers read_channel() calls. All five paths 
+return the helper's errno, the teardown runs, and leaves every bit the 
+partial setup wrote clear again, and guard() releases the mutex.
+
+I also stubbed out the teardown as a negative control, and the same 
+faults do leave the bits set in that situation, so the check can fail. 
+The restructure is in v3.
+> ...
+>
+>> +static int mt6397_auxadc_read_raw(struct iio_dev *indio_dev,
+>> +				  const struct iio_chan_spec *chan,
+>> +				  int *val, int *val2, long mask)
+>> +{
+>> +	struct mt6397_auxadc *adc = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		ret = mt6397_auxadc_read_channel(adc, chan, val);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		return IIO_VAL_INT;
+>> +
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		/* 1200 mV full range with 10-bit resolution. */
+>> +		*val = 1200;
+>> +		if (chan->channel == MT6397_AUXADC_ISENSE)
+>> +			*val *= MT6397_AUXADC_ISENSE_DIVIDER;
+> Make it if-else.
+Done in v3.
+>> +		*val2 = 10;
+>> +
+>> +		return IIO_VAL_FRACTIONAL_LOG2;
+>> +
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+Thanks Andy!
+
+Best regards,
+Ryan
