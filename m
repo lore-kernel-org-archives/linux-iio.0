@@ -1,98 +1,174 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E5064582E8;
-	Sun, 20 Sep 2026 17:39:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C906A3515EB;
+	Sun, 20 Sep 2026 17:48:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789925996; cv=none; b=WDofC6J0FjqdujO1RFZ18OGozgN2yQbCwbvKZS33b31SmjWhtbeXQaHDQsI8BgqEbjYPMRUzskQ4ZdPi6znhjzCVzsMXorLA4hj/hwJbs8n3S6Ch+kQMRF/RRV1bYsSi1dkp0airjxawcZSgT7iYMdD5dtZJLX5D2Nz72vo6Fr8=
+	t=1789926525; cv=none; b=cYT/VkYn6f2Lqceok79CoitSNXCOiSXXTDQLj/i7bgB2sUXQ8ucqZko1NIJKPAgLjEcseDC+ePASgDcgKAuzeHYt4zJdh4WWX09hvR0ZsmNsNeCWPPiY/t7LHa5hKegdgTu6z9RK/iyVFlIl7K7fYdO3TjRQNmRV6AMLm4egblg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789925996; c=relaxed/simple;
-	bh=UuLrSrIlFQ9JehvKhIf/e7djgtsY/z46hmjOd1vl6CE=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=FzG9pycZWwXMiycpPDrqXGQ2ZynPqc0V37BlzcBoqVi0mN1ekH0YNVUj6e5y4JL48Y/TUT0V1A3s29l6YS/eboxkfeJWtWeedvipFodF/AW2aA/SOZ1/mZpIqga5dKpfoiDwOAHsYhl/+/T+ycLsF66o85ux3vEos7G1HOlgrbk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O+Hlmsqb; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789926525; c=relaxed/simple;
+	bh=ZSp9cPhLXqk0gMNF2vxZ4/V/4ovuJA8EYMg0ikdaBH4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GoXnS9eA7qgr00pKRlKwJONBtUUp+7YKOlsjsgI82TrxSp36ZZ5llwaEow99HmSsRmUxi3D2+ar+PtbZBk9d+3ZvIhPwfkTVNZhhAxzUc8Af1aSd4WektCtoq9ZBkSDl06TAbsJdsAomPwUEiiSPYIrH4YmWCoIcV3lMqE4BRY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FwML+czH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O+Hlmsqb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92CAE1F0089B;
-	Sun, 20 Sep 2026 17:39:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FwML+czH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE5E1F000FF;
+	Sun, 20 Sep 2026 17:48:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789925994;
-	bh=r49z117kGKVvD9l7cQffPVPF1FdJw4+tF4s9KCbObss=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=O+HlmsqbwvQZ85iabVwfjHtbApvorpN93buCWdBQNCNaJ5D3EgIQbmIjnLMqzKgeE
-	 9pGmsDgSrDKR+hO15ocOy45WsldMFBZCBVCPqz+nu73i+ObxxCPEtb9J1f0PQR789x
-	 Np5r4BXh5r2iwr3p97aXfab+OBnrYHifPkEM+C376lq9nHoPKhEv4pc/thOjMsT+Ub
-	 PODDuARJP57PMuP3kiLWDhOILWSjLjjO/Tc79KFMG1h8XuZnbzRV8k+Q7xaPfuq0kV
-	 Ic+zVx2QEJDgbjyZ7rncozcoYprVW4BaUPWk3VGv2XfXMxpGoNIpv0Yl2CHMPtRw/U
-	 nncbMf6/Gn/yg==
+	s=k20260515; t=1789926523;
+	bh=KwRQA3be4ONm7rVan1uRGscgGvuBIhdC4tlpxcuo80Q=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=FwML+czHKqjkthxIT7v2pmpZpoG/03VH+0JpEfbtdPnG187b8Tc3nchPnKGkT+Dvf
+	 VrBSWL2s7eiorifPRTorLoigzeXwzQbkAyiT0pP3r2I/rJyUSDJAVDqLsfUv/rAlXi
+	 wxASvK1dwrTw8yF5DkfDb6/C8RFKP3zcj618NzR1kFW52E5y8PWXj/Igt+B541P7tp
+	 p+D9VtmJfJ2dLwyCrJ+vp/JYfSO18AfWh33C4fU/ANrRpkhaJ7UG4OnFoAQZeGOVgW
+	 /1L9ClrrDHiMeclOMYhE/aOFb3Yw89I2zD1V6pSkTgsh7K/AFS4IUCvFC5iKO9xcF0
+	 9LXhoVRm1IUlA==
+Date: Sun, 20 Sep 2026 18:48:37 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jaakko Koivisto <jmatko@utu.fi>
+Cc: Andreas Klinger <ak@it-klinger.de>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] iio: chemical: sgp40: Implement
+ execute_self_test-command
+Message-ID: <20260920184837.2b2ca5dd@jic23-hlaptop>
+In-Reply-To: <20260918134019.1101308-3-jmatko@utu.fi>
+References: <20260918134019.1101308-1-jmatko@utu.fi>
+	<20260918134019.1101308-3-jmatko@utu.fi>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 6/8] dt-bindings: iio: adc: renesas,rzg2l-adc:
- Document RZ/G3L ADC for TSU
-From: Jonathan Cameron <jic23@kernel.org>
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
- Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
- Daniel Lezcano <daniel.lezcano@kernel.org>, 
- Geert Uytterhoeven <geert+renesas@glider.be>, 
- Magnus Damm <magnus.damm@gmail.com>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, linux-pm@vger.kernel.org, 
- linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
- devicetree@vger.kernel.org, Chris Paterson <Chris.Paterson2@renesas.com>, 
- Biju Das <biju.das@bp.renesas.com>
-In-Reply-To: <20260918150730.122056-7-biju.das.jz@bp.renesas.com>
-References: <20260918150730.122056-1-biju.das.jz@bp.renesas.com>
- <20260918150730.122056-7-biju.das.jz@bp.renesas.com>
-Date: Sun, 20 Sep 2026 18:39:26 +0100
-Message-Id: <178992596604.706584.10451227613547984363.b4-review@b4>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=789;
- i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=UuLrSrIlFQ9JehvKhIf/e7djgtsY/z46hmjOd1vl6CE=;
- b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqsBpoUK3bnfohIeRE/l9QuB627gyf68nHxI4+9
- OnK0CKtmXGJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCarAaaBEcamljMjNAa2Vy
- bmVsLm9yZwAKCRBUhTSZxPQWiMs8D/4pPJrGB14Q+9HwJmYiKqgBUDky/vQsiSQd9UVBhswXowa
- X5Yz2bm9cHfQ0Kbxr6eCFcJhyTXE6G2zZhHHvd57Jl2VNMbq57FcSCOU5TpvMBMpPyVaH40J6+F
- EdbOns6u2su6hScaIUnAk7SVCcoLMEn5p4gNe/dqx7LpSMJii/Du1qrizGCEny3ipa5JlpMxdu/
- hqZu9moKrzS6Se7k9pX7uhOaLxIf/hIo899sOnPIb5j/K7vWBVZL1IKQWL9wFW6ZN/Y1kSHuF9C
- mR04/r2wYAJpd226NUeMbg/CXEVvJwJg43RyURulUv+jnku75vv56cUo2nNAW3fDpHBb9UvxKmr
- 9Fy7cyI2P8BdSnecuwh66HmYJWR6J0nZ3b9KT1aM/4NxJ1/I/c/QtOl6qCuT5mTgRdth9XrgoaW
- NqORlRXctnn+t26Hn5T9xOFDHNLcmG4naMkvhvn+pryXZXKIPHfQ3GiFFgn2+KIu2f4CT4b7G08
- t866JuBtdXILR5J90nos3ll+mfLg3ly5udd7z7mCx1LUjy9ocbyBQhJdhOEGX6xN+KeuEY4Om5P
- TnbBU80KPOFnGvL5H+X55hYe479yxGhk9dnmBgtP3F3gFOJkotbU34k0JasIfd+FqWJCVucMTKc
- abiKMGtKDbpBFJTayUQKLPYRDd6Df3ACLaWtCmg==
-X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
- fpr=6E2966B387840652912681B154853499C4F41688
 
-> Add renesas,r9a08g046-adc1 compatible string and its hardware
-> parameters for the ADC1 IP on RZ/G3L, which is dedicated to
-> the on-chip TSU (thermal sensor unit).
+On Fri, 18 Sep 2026 16:40:18 +0300
+Jaakko Koivisto <jmatko@utu.fi> wrote:
+
+> -Run the chip self test routine testing heater and MOX -material.
+> -Log error if the test fails.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->
-> diff --git a/drivers/iio/adc/rzg2l_adc.c b/drivers/iio/adc/rzg2l_adc.c
-> index 408fbf8c29cc..35eaebfbdd77 100644
-> --- a/drivers/iio/adc/rzg2l_adc.c
-> +++ b/drivers/iio/adc/rzg2l_adc.c
-> @@ -500,8 +500,17 @@ static const struct rzg2l_adc_hw_params rzg3s_hw_params = {
->  	.adint_inten_mask = GENMASK(11, 0),
->  };
+> Datasheet does not clearly state if the chip is completely unusable if
+> the test fails. Because of this the driver will try to use the chip
+> normally even if the self-test has failed.
+> 
+> Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
+Hi Jaakko,
+
+A few things inline,
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/chemical/sgp40.c | 53 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+> 
+> diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
+> index c1e2a992ec2a..28d5e737d1dc 100644
+> --- a/drivers/iio/chemical/sgp40.c
+> +++ b/drivers/iio/chemical/sgp40.c
+> @@ -84,6 +84,19 @@ struct sgp40_serial_number_result {
+>  	u8	C_crc;
+>  } __packed;
 >  
-> +static const struct rzg2l_adc_hw_params rzg3l_adc1_hw_params = {
-> +	.num_channels = 9,
+> +/*
+> + * Datasheet table 13.
+> + */
+> +#define SGP40_SELF_TEST_PASS 0xD4
+> +#define SGP40_SELF_TEST_FAIL 0x4B
+> +
+> +struct sgp40_self_test_result {
+> +	u8	data;
+> +	u8	_ignore;
+> +	u8	crc;
+> +} __packed;
+> +
+> +
+>  static const struct iio_chan_spec sgp40_channels[] = {
+>  	{
+>  		.type = IIO_CONCENTRATION,
+> @@ -210,6 +223,42 @@ static int sgp40_get_serial_number(struct sgp40_data *data)
+>  	return 0;
+>  }
+>  
+> +static int sgp40_execute_self_test(struct sgp40_data *data)
+> +{
+> +	int ret;
+> +	struct i2c_client *client = data->client;
+> +	struct sgp40_command run_test = {.command = {0x28, 0x0E}};
+> +	struct sgp40_self_test_result res;
+> +
+> +	ret = i2c_master_send(client, (char*)&run_test, sizeof(run_test.command));
+> +	if (ret != sizeof(run_test.command)) {
+> +		dev_err(data->dev, "i2c_master_send ret: %d, expected %zu", ret, sizeof(run_test.command));
+> +		return -EIO;
+Only called from problem so prefer use of
 
-This maybe needs a comment that only channel 8 actually goes anywhere.
+		return dev_err_probe().
 
--- 
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Also don't eat the error if it returns on (rather than a short access).
+
+
+> +	}
+> +	msleep(320);
+
+Spec reference needed for any sleep times.
+
+> +
+> +	ret = i2c_master_recv(client, (char*)&res, sizeof(res));
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != sizeof(res)) {
+> +		dev_err(data->dev, "i2c_master_recv ret: %d, expected: %zu", ret, sizeof(res));
+> +		return -EIO;
+
+return dev_err_probe() and don't eat the error return if there is one.
+
+> +	}
+> +
+> +	if (crc8(sgp40_crc8_table, (u8*)&res, 2, SGP40_CRC8_INIT) != res.crc) {
+> +		dev_warn(data->dev, "CRC error in execute_self_test");
+
+CRC fail indicates broken comms. I'd fail hard on this one.
+
+> +	}
+> +
+> +	dev_dbg(data->dev, "self test result: 0x%x", res.data);
+> +	switch (res.data) {
+> +		case SGP40_SELF_TEST_PASS:
+> +			return 0;
+> +		case SGP40_SELF_TEST_FAIL:
+> +		default:
+> +			return res.data;
+> +	}
+> +}
+> +
+>  static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance_raw)
+>  {
+>  	int ret;
+> @@ -421,6 +470,10 @@ static int sgp40_probe(struct i2c_client *client)
+>  	if (ret)
+>  		dev_warn(dev, "failed to retrieve device serial number\n");
+>  
+> +	ret = sgp40_execute_self_test(data);
+> +	if (ret)
+> +		dev_warn(dev, "device self test failed: ret 0x%x", ret);
+
+There should be a distinction between the test failed to run and failed to pass.
+For failing to run (e.g. comms error) then fail the probe.  Failing to pass
+the test is what you might choose to carry on from.
+
+> +
+>  	ret = devm_iio_device_register(dev, indio_dev);
+>  	if (ret)
+>  		dev_err(dev, "failed to register iio device\n");
+
