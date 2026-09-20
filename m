@@ -1,70 +1,31 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EBC446D543
-	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 18:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C9003D3D11;
+	Sun, 20 Sep 2026 18:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789927533; cv=none; b=JZXkcr1WKO4DPVCV/g3eo58lgqKrSshcw2OxLz59c5MRaTRAEAPieJY+R1qPswMauwTRPCSsvd2a1lmeKc4Qo6FXlmY/PI8i1ZomnXcXIuFBrVyQklApDdRJJp8AV6i8P8KECB+4coVCo07HGT+H+V5M5aZqitIeVhBlFQh6WBo=
+	t=1789929162; cv=none; b=irc0ZK5c8AH70hY11EjqhQFog27H3zNV0mFNzlJkeLoL4b0QiisI3cNRIx20fdDgMAwyQq2SMwtEbL4usI5zFCQveTjmuBxwH3JTKvAbbRjj9ebsjtGf9vvG26Z9X7qBaMPkQcGcDzWkn6yW+hRnzztsaNHKXiDXQE6S8qTXw+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789927533; c=relaxed/simple;
-	bh=pjgBUps3bhRyY6u6ycXVMzX0Fos9VuZiAf5efJGxEsE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=bro+DDLhpk3Bv9uz23wCVAgjJ3Qv3xmzgqJ8jqyO43WMXqiSxPezbyJjny/7k8GglfcgxDo0nvf39vfh9ymHLm3fdpewymN8xmwGeVWTw7O4wHFFpH3yomKonpeszzjMR0ovOiqyZH5DFtmrWER1VdDoiyTrlfshPi6nPmOvabs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OEUEhQKZ; arc=none smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789929162; c=relaxed/simple;
+	bh=5qSTGmNGAhOZ8zMtxSTRknPMcWB6mtjje8RoB0c6T/U=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=QxyxJlcxIWwICXfOG4LEJALttAYVhMECYDY2favdEKCEK0jdMtJsNBP7uI0+L5eEZ7yqxwDM5VyIy4uaeEDjCXLRp21UFZuAUhDYMApJbTiAlpkOx56FA9VyBsyDM42PV6AX2nmJ2cPn9SoC1Y5+WMF1nNz9SIF8OI2WL6VZ774=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kUL+3WDB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OEUEhQKZ"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912e2406so11121495e9.1
-        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 11:05:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789927529; x=1790532329; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=/eKvqLxq/FDnVLXWqL74StVCqkT72bEtQBBRhBThWEs=;
-        b=OEUEhQKZKDkV1L/B+R+7tZsGgjYjLAZowSLRUM3FR4ktYBsQKn1WJ7yGPWDX2X1DYI
-         nuQP22ynoC8zmU4p7qGeHts5oWvQkdFZLAvhMlzxUpkR5dODrCK8GctmlzGRnE+6pH/d
-         FbP7y8tJXk4c5x1qBXW8se1pFBFfu3wn5YdJ9H2HER4kOhEQig6uGnZMKBqlxmTqhvBI
-         qa4CncvlLK4W88PgavH5qX+F68O/JlGMjYWoD1Qi2vkLtYMpB/92WQ65qoDdKehUH8Bb
-         2MUafT4oy98sQTxTud+eR78+6/SYeqKekJeXEzMt+YsnH4l/zZigxL8rOPzNFvkTBVAe
-         mrTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789927529; x=1790532329;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=/eKvqLxq/FDnVLXWqL74StVCqkT72bEtQBBRhBThWEs=;
-        b=tYPmGrA07ZCAWFReVpqsVDNoPfN05+sWmku6SFYI7B9B5+qJj6y1HFSbefxGKg12Ol
-         FFZT1br2iDU4aceIHU1YD2uc5Ea1YV2FeqcnKBn+bsYOp3PaTGH8+Yip7DW/VFDjv0qS
-         +RE1gIKoyRf/HpIZkIQPLgPbr9TVFnvnq3M3KOO2eNz4d0qcWraqB4EtcpTJ9tphwLa5
-         hrBeku4CqrOG2LkjlaEbdDWS38x7w1ejaSfP3kkugs13AWjF/ocbIwz0YBZeea6sWB95
-         hgmIwkXCTo+CzExcCCfLmcEFUyBW2kJAEojmvuVYN4lHCVk2iQyDMWlsScXGSiRH7V9Y
-         eGRg==
-X-Gm-Message-State: AFuF++lee1A6VozCG+yapWsNkHvzEV6j8SIi8YONCdiFi28yHXg0GmvZ
-	/Ux5AdUy/+wBozgKSC2I5rQvc+5I2S9PY8Vt3qUeQDcrr1V5U1E8wYXhKk6rfQ==
-X-Gm-Gg: AYBFou1zITl2GjHfSAkmK03dLGbbOtECXIV19VLslGLfEea9aHs/DDEI9z+WSuZvVqx
-	HRzvggwuMF/w4fnIhm9QuEveJwviuQw/lFY4CpILteuFU5PKmWNPtFJiufOO3UkMmKbamGRjg8D
-	M76stl6aAw6ZzBgwNEz0mBYh6hqaP20+Cb7Ckjl/Do5vtvtmgo9RpWRKnBpfWhHTgpbjHbJGdeB
-	xymCAg/fVU3N2FCfh1K3Mm5n329gfBeAhgpYtgKnitwigs6ip3uVMx+ITpSET0H2m0tSrbGd54U
-	HaCyo1/IHbokJ5vKXZldNli6+G3QxS/+fUuT0353m4a+hwvp93Zp4plPKo9Z4+b4oErGYlUt81E
-	QDuC3nG4GxONoVrPHwVGo9dNP6qe9JHvP5Ua56W5pJL+Vid1/bZg6nInCSn/+nO33V2dT4sStvo
-	v5SmLLKFStPVz4cpF1+EC0Hd2TBK6Z38ANIkB4qjBD/U5E1TNwttGWl4YlmPNyLR4+lewtEZYh7
-	YmRghXxMc0JWRx41cPf96x5ENdV8jzY7Sow1344LKqSKf6eERfyDv8JxRFoB3mxj5Rqqu4NSYug
-	sUfYb3v0Wh4P+MECuK0aOfd7FdULQ6nWECKuSKL2JtaX3OclTOg64SLXyZo9J3/Tds6yNXoCOK1
-	+T+mReRifIAjVlM0FEatFMD2qWpD0yElKoiOcZp64cT2bUg==
-X-Received: by 2002:a05:600c:4714:b0:49e:6581:7baf with SMTP id 5b1f17b1804b1-49fc4f72886mr130088595e9.2.1789927529563;
-        Sun, 20 Sep 2026 11:05:29 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0f7b9bsm164648055e9.5.2026.09.20.11.05.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2026 11:05:29 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sun, 20 Sep 2026 20:05:27 +0200
-Subject: [PATCH v9 5/5] iio: magnetometer: ak8975: make use of the macros
- from bits.h
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kUL+3WDB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E441F000FF;
+	Sun, 20 Sep 2026 18:32:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789929160;
+	bh=iWJ8Hhou1ZIvrEnQGdMkTN/d+QCJmY4lUSyRAENmm8k=;
+	h=Subject:From:To:Cc:In-Reply-To:References:Date;
+	b=kUL+3WDBuG9cogTHGfJFbka7fSZyjrI5nQHe8Yw9dc9b2MpW+KTyN5QCr4NUXD8Vp
+	 VgrsZ9NlCpjeEnFL/vg5/6OCwnaVSy/Mx/YFZdMfmkTTcjG85lzPArDM9ryj6Z/aNu
+	 H49n+m4+Y7/8DjAjlfZxhRkGhdTOMp+k5ECqGjTCE1bFbvzUEP8fBCOZ8npysfOhac
+	 mkQyOudnqFSIKplFsxRX13m7uZsD1f8k+qjhyeqH+aN63FKaUdIBBUTam/BexwrrHh
+	 CVIK0f7Lc+pJ21nvQQC2cZ7kk3z6DErOdyGjqzoMGHA5LI+qpsVwZdn7eRE52wFcHu
+	 xp0U9Hfu2pXEQ==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,114 +33,227 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260920-ak8975-cleanup-v9-5-1b0f00ec19ef@gmail.com>
-References: <20260920-ak8975-cleanup-v9-0-1b0f00ec19ef@gmail.com>
-In-Reply-To: <20260920-ak8975-cleanup-v9-0-1b0f00ec19ef@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789927524; l=3014;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=6ZMjVC6e/KIqTzgrm9DqPo2hpOPArGBVsN2S5dq6DFc=;
- b=51owwuPaLGk6u9mi2rhRJdyER1xoSr7TMn5CxXZCPw9yln+SCfYQCb9OH6/h3Bz8JTL/jEM24
- RFPNwofyTeqDJWrQCF8I5sETkrcXmhra1aVT+W1+IAfiI1xbwaBKYaV
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v7 07/10] iio: pressure: dps310: read buffered samples
+ from the hardware FIFO
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Bill Wendling <morbo@google.com>, 
+ David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>, 
+ Joel Stanley <joel@jms.id.au>, Jonathan Cameron <jic23@kernel.org>, 
+ Justin Stitt <justinstitt@google.com>, 
+ Nathan Chancellor <nathan@kernel.org>, 
+ Nick Desaulniers <ndesaulniers@google.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+In-Reply-To: <20260918122517.377565-8-zoone.rupert@gmail.com>
+References: <20260918122517.377565-1-zoone.rupert@gmail.com>
+ <20260918122517.377565-8-zoone.rupert@gmail.com>
+Date: Sun, 20 Sep 2026 19:32:13 +0100
+Message-Id: <178992913316.706584.7705975324672941059.b4-review@b4>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4913;
+ i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
+ bh=5qSTGmNGAhOZ8zMtxSTRknPMcWB6mtjje8RoB0c6T/U=;
+ b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqsCauJe6fDPhdJxdZGkmfZcIDDQcr9QJGJizM4
+ bN4TTryEaOJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCarAmrhEcamljMjNAa2Vy
+ bmVsLm9yZwAKCRBUhTSZxPQWiMh7D/4314Hb5QkeQ+xzSsAbzcvTbh9cpCnLYyAIzs7EBpp/DM6
+ HHIR1EO4JpSanxPgLsruvh3C3sZe9L/VQS2CP9OFgk0c12udmtfHBoJQ0bi8WfEL7/EbpZumhjg
+ P/TyoVNnMQjvQnkuaGdSJ3gEExrf0gkyaZKhRRZWar9GU1W2MlVwSj9wRlAZMG8xrbFIVWY1sE+
+ mMFUDtGTgZOczDa/FSKR3gZcrJQSbPf6A81gowxYJCzahhxHcAmpfrg9qUTgZSQ36/SdGuIGmjO
+ b4w9ylcd5dsV/HyIx2W+O3wZG2RMaxszh6jV9D62DxnmY5xDkPZH3OM4/4T9t53Ufp0CFQ6Gcnl
+ XWc5nss7XRjcpJIaTBF/Q2UppA2ZPieqVqzSOnqKwsxXIR6s3oYPfSvFuZtYjTfQG+IHvONt2sU
+ 7rCEPQNdt2edqFmx98/UOikb6amTkcE+996pMU4UooPngakwRX75ADDo4R4QsZVZB043FHGXutw
+ aya4nzpR7kcMUNdQnhoeUdUvnbUgiodLne+Yw+m5sQ+pDxB+8duIZSpqgOaGK4v1MAlOJ/gwX4T
+ 82FqF4tcWVXtTkmZV5zgmI1px9+xRCbIXRMYr6v9rG2BRKdoYBxvUxhsp//e8HRs/bTXCWgtw07
+ NPaeQd2rsonWsxFuyrrudmL0oHcuXChpB4Y1QpA==
+X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
+ fpr=6E2966B387840652912681B154853499C4F41688
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> The DPS310 has a 32-entry FIFO shared by both measurements. Drain it from
+> a work item and push what it held, so a buffered capture needs no
+> trigger. Nothing in tree wires the interrupt pin, so the work rearms
+> itself at half the time the FIFO takes to fill.
+> 
+> Entries carry one measurement each, so a pressure entry is compensated
+> with the temperature ahead of it. Pressure read before the first
+> temperature of a session is held until one arrives rather than dropped,
+> so the first push can wait a temperature period.
+> 
+> FIFO entries are not timestamped, so postenable refuses the timestamp
+> channel unless a trigger is attached.
+> 
+> Tested on a DPS310 on a BeagleBone Black.
+> 
+> Assisted-by: LLM
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+Looking good.  Just a few small things.
 
-Make use of BIT() and GENMASK() where it makes sense.
+Jonathan
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Co-developed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/magnetometer/ak8975.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+> index dd816d47bbec..e63ea7873e5b 100644
+> --- a/drivers/iio/pressure/dps310.c
+> +++ b/drivers/iio/pressure/dps310.c
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index ac556644b02d..05cdd285c5f4 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -44,8 +44,7 @@
- #define AK8975_REG_INFO			0x01
- 
- #define AK8975_REG_ST1			0x02
--#define AK8975_REG_ST1_DRDY_SHIFT	0
--#define AK8975_REG_ST1_DRDY_MASK	(1 << AK8975_REG_ST1_DRDY_SHIFT)
-+#define AK8975_REG_ST1_DRDY_MASK	BIT(0)
- 
- #define AK8975_REG_HXL			0x03
- #define AK8975_REG_HXH			0x04
-@@ -54,15 +53,12 @@
- #define AK8975_REG_HZL			0x07
- #define AK8975_REG_HZH			0x08
- #define AK8975_REG_ST2			0x09
--#define AK8975_REG_ST2_DERR_SHIFT	2
--#define AK8975_REG_ST2_DERR_MASK	(1 << AK8975_REG_ST2_DERR_SHIFT)
-+#define AK8975_REG_ST2_DERR_MASK	BIT(2)
- 
--#define AK8975_REG_ST2_HOFL_SHIFT	3
--#define AK8975_REG_ST2_HOFL_MASK	(1 << AK8975_REG_ST2_HOFL_SHIFT)
-+#define AK8975_REG_ST2_HOFL_MASK	BIT(3)
- 
- #define AK8975_REG_CNTL			0x0A
--#define AK8975_REG_CNTL_MODE_SHIFT	0
--#define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
-+#define AK8975_REG_CNTL_MODE_MASK	GENMASK(3, 0)
- #define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
- #define AK8975_REG_CNTL_MODE_ONCE	0x01
- #define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
-@@ -94,8 +90,7 @@
- 
- #define AK09912_REG_ST1			0x10
- 
--#define AK09912_REG_ST1_DRDY_SHIFT	0
--#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
-+#define AK09912_REG_ST1_DRDY_MASK	BIT(0)
- 
- #define AK09912_REG_HXL			0x11
- #define AK09912_REG_HXH			0x12
-@@ -106,8 +101,7 @@
- #define AK09912_REG_TMPS		0x17
- 
- #define AK09912_REG_ST2			0x18
--#define AK09912_REG_ST2_HOFL_SHIFT	3
--#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
-+#define AK09912_REG_ST2_HOFL_MASK	BIT(3)
- 
- #define AK09912_REG_CNTL1		0x30
- 
-@@ -116,8 +110,7 @@
- #define AK09912_REG_CNTL_MODE_ONCE	0x01
- #define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
- #define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
--#define AK09912_REG_CNTL2_MODE_SHIFT	0
--#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
-+#define AK09912_REG_CNTL2_MODE_MASK	GENMASK(4, 0)
- 
- #define AK09912_REG_CNTL3		0x32
- 
-@@ -864,7 +857,10 @@ static const struct iio_chan_spec ak8975_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(AK8975_CHAN_TS),
- };
- 
--static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
-+static const unsigned long ak8975_scan_masks[] = {
-+	BIT(AK8975_CHAN_X) | BIT(AK8975_CHAN_Y) | BIT(AK8975_CHAN_Z),
-+	0
-+};
- 
- static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
+
+
+>  enum dps310_scan_index {
+>  	DPS310_SCAN_TEMP,
+>  	DPS310_SCAN_PRESSURE,
+> +	DPS310_SCAN_TIMESTAMP,
+>  };
+>  
+>  static const struct iio_chan_spec dps310_channels[] = {
+> @@ -140,7 +168,7 @@ static const struct iio_chan_spec dps310_channels[] = {
+>  			.endianness = IIO_CPU,
+>  		},
+>  	},
+> -	IIO_CHAN_SOFT_TIMESTAMP(2),
+> +	IIO_CHAN_SOFT_TIMESTAMP(DPS310_SCAN_TIMESTAMP),
+
+Why not in previous patch?
+
+>  };
+
+
+> +/* Pressure seen before any temperature, kept until one turns up */
+> +static void dps310_fifo_hold(struct dps310_data *data, s32 pressure_raw)
+> +	__must_hold(&data->lock)
+> +{
+> +	if (data->fifo_held < data->fifo_hold_max)
+> +		data->fifo_hold[data->fifo_held++] = pressure_raw;
+> +}
+> +
+> +/* Returns scans pushed */
+> +static int dps310_fifo_push_held(struct dps310_data *data)
+> +	__must_hold(&data->lock)
+> +{
+> +	unsigned int i, held = data->fifo_held;
+
+As below, I'd separate those two declartions onto different lines.
+
+> +	int rc = 0;
+> +
+> +	for (i = 0; i < held; i++) {
+> +		rc = dps310_fifo_push_scan(data, data->fifo_temp_raw,
+> +					   data->fifo_hold[i]);
+> +		if (rc)
+> +			break;
+> +	}
+> +
+> +	/* What did not go out stays for the next drain */
+> +	data->fifo_held = held - i;
+> +	memmove(data->fifo_hold, &data->fifo_hold[i],
+> +		data->fifo_held * sizeof(*data->fifo_hold));
+> +
+> +	return rc ? rc : i;
+> +}
+> +
+> +/*
+> + * Read the batch out before compensating it, so a pressure entry pairs with
+> + * the temperature preceding it rather than the last one in the batch.
+> + *
+> + * Returns scans pushed.
+> + */
+> +static int dps310_fifo_drain(struct dps310_data *data)
+> +	__must_hold(&data->lock)
+> +{
+> +	bool pressure_enabled = test_bit(DPS310_SCAN_PRESSURE,
+> +					 data->iio->active_scan_mask);
+> +	u8 kind[DPS310_FIFO_DEPTH];
+> +	s32 raw[DPS310_FIFO_DEPTH];
+> +	unsigned int i, n = 0, pushed = 0;
+
+Please use separate lines for declerations with assignment and
+those without.
+
+> +	int rc;
+> +
+> +	for (i = 0; i < DPS310_FIFO_DEPTH; i++) {
+> +		rc = dps310_fifo_read_entry(data, &raw[n]);
+> +		if (rc < 0)
+> +			return rc;
+> +
+> +		if (rc == DPS310_FIFO_EMPTY)
+> +			break;
+> +
+> +		kind[n++] = rc;
+
+Given n is used in a couple of places, I'd keep the handling simple
+by doing it as
+	for (i = 0, n = 0; i < DPS310_FIFO_DEPTH; i++, n++)
+
+That makes it visisble that it is a loop variable rather than
+one tha is only sometime incremented.
+
+Maybe rename it to something like cnt to make it more obvious
+what it is.
+
+> +	}
+> +
+> +	for (i = 0; i < n; i++) {
+> +		if (kind[i] == DPS310_FIFO_TEMP) {
+> +			data->fifo_temp_raw = raw[i];
+> +			data->fifo_temp_valid = true;
+> +
+> +			if (!pressure_enabled) {
+> +				rc = dps310_fifo_push_scan(data, raw[i], 0);
+> +				if (rc)
+> +					return rc;
+> +
+> +				pushed++;
+> +				continue;
+> +			}
+> +
+> +			rc = dps310_fifo_push_held(data);
+> +			if (rc < 0)
+> +				return rc;
+> +
+> +			pushed += rc;
+> +			continue;
+> +		}
+> +
+> +		if (!pressure_enabled)
+> +			continue;
+> +
+> +		if (!data->fifo_temp_valid) {
+> +			dps310_fifo_hold(data, raw[i]);
+> +			continue;
+> +		}
+> +
+> +		rc = dps310_fifo_push_scan(data, data->fifo_temp_raw, raw[i]);
+> +		if (rc)
+> +			return rc;
+> +
+> +		pushed++;
+> +	}
+> +
+> +	return pushed;
+> +}
+> +
+
+> +
+> +static void dps310_fifo_hold_free(struct dps310_data *data)
+> +	__must_hold(&data->lock)
+> +{
+> +	kfree(data->fifo_hold);
+> +	data->fifo_hold = NULL;
+
+Why clear fifo_hold?  Nothing ever checks if it is NULL.
+
+> +	data->fifo_hold_max = 0;
+
+Similar for this.  If you are checking it you are in a path
+where we are assuming the fifo is valid. I'd hope the
+code is structured so that isn't the case.
+
+> +}
+> +
+Thanks,
+
+Jonathan
 
 -- 
-2.55.0
-
+Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
