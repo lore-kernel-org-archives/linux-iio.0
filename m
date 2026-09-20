@@ -1,70 +1,69 @@
 Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F5D1471262
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A53B44718C9
 	for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 18:05:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789927532; cv=none; b=qCVxL+u82c/weT27VDz4ctyftnpUWusF8oMR5NJ0AaIYsnwbsj4CfFXlVVhbuK15er5HA6t7t76lPw4RcpIEvXGOeHOAO3aubgzUS4iMyg0N1QRwQJ45ePI/gBX1XnsoRUcZ2gMloWqnGztgjHEcwL8r3HhJ0i+xepj1a0VWjXo=
+	t=1789927532; cv=none; b=K6av4MRV4ZlMIarZkhK4vseiPZ2dlBYB9B7Qoyl468Sh242lKHgm+3s3qVCyLyTSWIsrfOZphH2DraeXPZenNhvg80zaUK5ArA9yVMDbc/nWhdp8D74Ren1gPjD6bjsTtGH4/Yovx1EO5b3E+QikWV7o9emy/OeZtDd0aI/spVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1789927532; c=relaxed/simple;
-	bh=YgCqOrWQxVJ9FlU8nNZ/kRHpsjDAdbKIMAISWP9FdQc=;
+	bh=dLxOYdKXvkaClOyJOYY7nRCSPbJKZs+aRfOmFRQ+mIo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=WsDMYCJmCnvy+5qvg3kodXzbdFtMixpxPvxqhLcZqk86gxfpfSwg5KHwMXkFa7BlBm/Pt9DerBtd5zG81ijXxn+3YxUxS0Onvvp4lX6cBRI9HizIJ/2rdhcxzeSuRATPTUdbV7iKIYNUL2P+8r5qReuCuUcGSw+T3PCmhzAwMio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fhJDI0Wh; arc=none smtp.client-ip=74.125.225.140
+	 In-Reply-To:To:Cc; b=uPGdEyiwInlNC71F0L568To/gZ8Ibmvyb+UaxCFz+GbFZSZNoeSR3XypX5OOCOdUcveNUD/0kwvuVM9rHIHT+BwzXHWL7yLK8yCSiemi8FGd+RUl+3A2qKzzIPcyEqunAmaTu60X7EVjtrUisYXUiWQ48B/ziUtjd8Ac00iyO6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=euBn8KNB; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fhJDI0Wh"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b965f447cso18704375e9.3
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="euBn8KNB"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cc9f581c4so9227995e9.0
         for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 11:05:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789927528; x=1790532328; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789927529; x=1790532329; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=wcqgoArmWocaqUGN27gh98cUQRMjwBxwt3AvnyaBbC0=;
-        b=fhJDI0WhNqk2oSE3sTpAqWtDnzU30RE45zaWkKMjGUq01QJhqGzY3oC3iPE9/176NH
-         XhfUe+BoZJV6rj9AtqpmfhlzRaiu1P/t38Mb7KqyG8gHeZ+KV+xE9ZxEAM0fEpUw1Zb5
-         MWUcKk1TTPVpstjzBeo2Sy8gJsPk2NJUBBoeId/noOmYDWxJr6qL3EEXWvLWkS46kxx5
-         ho6DmH4/MhAmK2DMYkMY1JRELX4D41sSaTtfnp8vIp7mDlo/keDdLXFDd597Ue0WT3i6
-         KgiNcE0NMj+XP1PcI8kEHu0fcpZSAXxtiCo6Ogjn4/gNzlho7OQl4IVo/v8D9kw3/Rl/
-         /OgQ==
+        bh=XLHPUDcQhR4jS0ghRdDc7IRJPvZddsu/qB7+ubmSKgc=;
+        b=euBn8KNBfTbgStF5hqzNdM0Zy/iW0mueziCA2hWydhhTafAjkueggDd+EMHeZ6NOQq
+         o3w6rNyN8NYGnyfDDCX/kcQtH5E1txf0xzrrCspmD+xTGjfcfdqsVXp+Pjt+C8yTnRau
+         2VfKKPfHNAOvPoJeqJTBDUffWFvAPPqQp5VSBPZnjE7Ln6B3/RYWvjYggbgxhU8y3E79
+         9jCOy7WzIT6GDs2ww0dq1DmdpmRilsCdhJVR23VCKjA6gLdUwvOOR38B4FUO/xYiTLgR
+         kyr23IdzUv/M1k0anrT1Glrois72AeKIIKpwj8ww3AzfuMR5P9LweFIFI/7htWlfVjhx
+         H37A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789927528; x=1790532328;
+        d=1e100.net; s=20260707; t=1789927529; x=1790532329;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=wcqgoArmWocaqUGN27gh98cUQRMjwBxwt3AvnyaBbC0=;
-        b=GJWPpAdfjxTM1AZiCZ9219/8/w3s73xj7R2eHA3XvUPR6COLaXB0IgRvdOr0Lt74LQ
-         DJU7WodVuS4WpAo62Et1Cmch8dmugbEvlfvgVOJx59kfV0eSbjFcWobbvEvUPIDijbsk
-         lcIrtUMw5eqBch3vkOx+MzseIhgjLFRfUs9nG86Smo6lthiNANSrhG14/PNCzxmdkxbs
-         XiERFR954OUIhoUqWEHm9RufBkGcs6Hz5NTWHWJKhOw984qVNJVhaYuJxUudNgK9yNoB
-         jDrpzWRTFPoKaXt6BTYpnXox6UrB18aFZDYBkYQllsIO2DnpfsJRtwsXcvk3Ttz1O7xM
-         S6jw==
-X-Gm-Message-State: AFuF++kVE9cxUna4gGYT8ycr9Q+RWgR3hA1lc+CjZUAKimqIZVPxbZtb
-	fTZSV5PD+gW/Im8eG6leT9VAgsqkIeBvy631pKOgcgg2KqO7cv+FI9fd
-X-Gm-Gg: AYBFou3vbNtN+5szUowarxuEAHgW2xQSngGCF13fs/dCV/RydbPbhBPdcMcqwcq/PHC
-	HPoSWv9ifpwxdu+3Ju4KaD4EHaUH+KBtZpv2k8TLztHEGbQkwJbifYVX9BlzMbhxdJLQvwJKje9
-	VSb7s0NSlSiwrmei7fUEgkNn3efErFnx0tvtEQT5DJqq+3HGB7Qjjyo/dGngbbiyVrn/Yn51hAE
-	2obpjx8ldO8Lcxq6MAAe+jLtgeYt+T9lfYYh8AJKNnRE9thQ1Cj4He3yGKqYFF1AQW0NnGZVOPY
-	hc/Ej5J18pEJPqpsoBSXEj30q3V/eGGa5nZ6mCEjZM9MBJOOPdiFoKhOf2hlUpIUbGkaey+amjV
-	2uLR0aNfmJoQhbmsTP6mi2hTT6eGf8hYneQZjSqjKWRLZyKsCyNR7xFu9+K5HR6m8Jz/TJw7mIi
-	ag99/2AzlFuE6URFhYGLi6B3vtntWfKKWicmMGdVPtQF9TFPgoxMugSg7C210umPXPxRNPuPSkn
-	a8I2DQ1cVBBelyG0KahKo8S1ABbBFbeXYyRXpxG9wX+08cBl5/X1mdsVPYe+wj4nCDJFo//oX+o
-	6lnqPT1KGh1lxgdimcP1fvrWFodwk9nf2kcB9jYtbjJzUO7O0kQu071BASa/QdukD/O8hPZTjjv
-	WYMcSvYbTZ1dN/wNRSIqrCQ4QgqtbrBl+ys65b+r+n+SHTQ==
-X-Received: by 2002:a05:600c:4f09:b0:493:aa0a:45ad with SMTP id 5b1f17b1804b1-49fc56692c6mr115229405e9.2.1789927528351;
-        Sun, 20 Sep 2026 11:05:28 -0700 (PDT)
+        bh=XLHPUDcQhR4jS0ghRdDc7IRJPvZddsu/qB7+ubmSKgc=;
+        b=oZRFTWbOxs5x9SV9V8oq5YOzIm/fFVoEObCUuXDQoGn0LLTbAdclj9qVqfTXxIxyyM
+         7ZrcIDuEOWo+231iFvwNg+/iMknD/BWVQEJcBZ11GOUkUOiNQJFIzbflo5oGJjIEmtkd
+         XSLi4mIeuhmbvSeFTgLotlyVXnNdv8gEwt6F3lm/91w1hMzXTpPr3IJ13Z1vngW0Y1Ei
+         uCOULh5qwTfN2hn7sTjPzd4fsH3Ob0Gsx7/yWjlBXDs7cy2PrcE8X0SSj5VKNVDPzSbk
+         ctuWzADrwYjOwBzx2lv6M72qCuacUqtD03IY1zZ8yc6stjmGj0nRlG7WNGrd9YeDppo0
+         KuUQ==
+X-Gm-Message-State: AFuF++kMj1eduPVocfRdfzwpZsKn2lff7jpX+AarG/236zvFooZp13WD
+	bxscEMqjQ5vp/dO4+cpFF8cD9PuIhWqbLdgu+08MLFMuAGLKO/MnXFWp
+X-Gm-Gg: AYBFou0Alp5hoQcckt29iWNigNbykMEE8jQ4Ls+seIzbozc0MP9WglsUWn8oEEnkDaK
+	mmTaJ7Crc+JMydzaEB3BIdK/VnPmfd0rFHf0umd/+ZaWObg8Nd0IY9d1fGhQAs89IVj+gZvoqy9
+	WuMHjxE4cgcILomrfQnzH05qxuJJKjKVx0R4zWamD+mQWTYI8yevPCKlOok0s036wAaQTGP2ueg
+	Q9kf0Glh+5wKwNcPnQf5ziCeTabOb7kRYZ657rkb9ndQSestmMensrOjxFHu4lREya1RIwIEmG2
+	c1sXCb1FiSxUuRftZq/dBoVLaNBdAzXO9rJSJqyGzIa0pT/NRYXFf2N3pSmDtCDxdZSsGdEOMFJ
+	yNlGvIZEISjmY4B1ajO9PaRG7fWHlZfNYenS6ZMIoXAOEMgdZLtVQ+KcTFrSlpJ+4LPP4dsobZv
+	BQ7aJDDXGKMCoGlhyCLUZehgZSgUpo7EafAAJlHhVyvdV4i+xqoHQFcCIS2ZHQ/DANb5Kb+7g3w
+	OgiWeJQJhR1W9JJf06xstRtBfuizIF1P8jXxCfjP8QBIVVH9bl+bmPTvDMOpWyNrDPyOejTyFMY
+	l4cFPW3VRxCWnmBCkeGqqw4AESRdiF92u9v/OPGegMy5+kyVmazzEtWCpt3QdlMFSRWnyUhYwgN
+	kU65qwQaF/JlGnRx/M8oq/49owyx5OD/YXyw=
+X-Received: by 2002:a05:600c:3f06:b0:49d:257c:a735 with SMTP id 5b1f17b1804b1-49fc4ff42b4mr132546265e9.11.1789927529036;
+        Sun, 20 Sep 2026 11:05:29 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0f7b9bsm164648055e9.5.2026.09.20.11.05.27
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd0f7b9bsm164648055e9.5.2026.09.20.11.05.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2026 11:05:27 -0700 (PDT)
+        Sun, 20 Sep 2026 11:05:28 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sun, 20 Sep 2026 20:05:25 +0200
-Subject: [PATCH v9 3/5] iio: magnetometer: ak8975: use temporary variable
- for struct device
+Date: Sun, 20 Sep 2026 20:05:26 +0200
+Subject: [PATCH v9 4/5] iio: magnetometer: ak8975: add scan mask index enum
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,7 +72,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20260920-ak8975-cleanup-v9-3-1b0f00ec19ef@gmail.com>
+Message-Id: <20260920-ak8975-cleanup-v9-4-1b0f00ec19ef@gmail.com>
 References: <20260920-ak8975-cleanup-v9-0-1b0f00ec19ef@gmail.com>
 In-Reply-To: <20260920-ak8975-cleanup-v9-0-1b0f00ec19ef@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -81,261 +80,63 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789927524; l=8345;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789927524; l=1530;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=pQ2sT/6TLCQz8CRTj1fj/jJzxcC1GLC9Mr0TP4ugBFU=;
- b=uwDRET1cn92/LUbE3/IdCFE9JScqH/8OTTrvf+yXNpCEcc7WO8xCDmxVRxGwmVNRGDtv0FQa3
- bojCudeqOLVDE7uJn/g5J0Jg38hsTAWCWVP9WDAaSKuYZkEfp29ffGX
+ bh=dLxOYdKXvkaClOyJOYY7nRCSPbJKZs+aRfOmFRQ+mIo=;
+ b=957w/ie6wp15m2IKWReNJXqdl264V+6m3kEKGuUYbsq6Agb5MPU27RYMGJhiCyeMLa/fu/Lc6
+ V3FdLkJmOnTC2c7jxEhRlnEmStcYpd3tzZeQ0U+Ox5PQCJbAJRXnQuA
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Add an enum to explicitly define scan mask indexes for the X, Y, Z and
+timestamp channels. Also, update the struct iio_chan_spec to use said
+enum for the .scan_index parameter.
 
-Use temporary variable for struct device to make code neater.
+This prevents magic numbers from obscuring the hardware channel mapping
+and improves code style.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+No functional change.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 65 +++++++++++++++++++--------------------
- 1 file changed, 32 insertions(+), 33 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 59a7bb83a731..42f6892f4efd 100644
+index 42f6892f4efd..ac556644b02d 100644
 --- a/drivers/iio/magnetometer/ak8975.c
 +++ b/drivers/iio/magnetometer/ak8975.c
-@@ -433,18 +433,17 @@ struct ak8975_data {
- /* Enable attached power regulator if any. */
- static int ak8975_power_on(struct ak8975_data *data)
- {
-+	struct device *dev = &data->client->dev;
- 	int ret;
+@@ -237,6 +237,13 @@ enum ak_ctrl_mode {
+ 	MODE_END,
+ };
  
- 	ret = regulator_enable(data->vdd);
- 	if (ret) {
--		dev_warn(&data->client->dev,
--			 "Failed to enable specified Vdd supply\n");
-+		dev_warn(dev, "Failed to enable specified Vdd supply\n");
- 		return ret;
- 	}
- 	ret = regulator_enable(data->vid);
- 	if (ret) {
--		dev_warn(&data->client->dev,
--			 "Failed to enable specified Vid supply\n");
-+		dev_warn(dev, "Failed to enable specified Vid supply\n");
- 		regulator_disable(data->vdd);
- 		return ret;
- 	}
-@@ -580,6 +579,7 @@ static irqreturn_t ak8975_irq_handler(int irq, void *data)
- static int ak8975_setup_irq(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
-+	struct device *dev = &client->dev;
- 	int irq;
- 	int ret;
- 
-@@ -590,9 +590,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- 	else
- 		irq = gpiod_to_irq(data->eoc_gpiod);
- 
--	ret = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
--			       IRQF_TRIGGER_RISING,
--			       dev_name(&client->dev), data);
-+	ret = devm_request_irq(dev, irq, ak8975_irq_handler, IRQF_TRIGGER_RISING,
-+			       dev_name(dev), data);
- 	if (ret)
- 		return ret;
- 
-@@ -608,12 +607,13 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- static int ak8975_setup(struct ak8975_data *data)
- {
- 	struct i2c_client *client = data->client;
-+	struct device *dev = &client->dev;
- 	int ret;
- 
- 	/* Write the fused rom access mode. */
- 	ret = ak8975_set_mode(data, FUSE_ROM);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting fuse access mode\n");
-+		dev_err(dev, "Error in setting fuse access mode\n");
- 		return ret;
++enum ak_chan_index {
++	AK8975_CHAN_X,
++	AK8975_CHAN_Y,
++	AK8975_CHAN_Z,
++	AK8975_CHAN_TS,
++};
++
+ struct ak_def {
+ 	enum asahi_compass_chipset type;
+ 	long (*raw_to_gauss)(u16 data);
+@@ -851,8 +858,10 @@ static const struct iio_chan_spec_ext_info ak8975_ext_info[] = {
  	}
  
-@@ -623,26 +623,25 @@ static int ak8975_setup(struct ak8975_data *data)
- 							sizeof(data->asa),
- 							data->asa);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Not able to read asa data\n");
-+		dev_err(dev, "Not able to read asa data\n");
- 		return ret;
- 	}
- 	if (ret != sizeof(data->asa)) {
--		dev_err(&client->dev, "Error reading asa data\n");
-+		dev_err(dev, "Error reading asa data\n");
- 		return -EIO;
- 	}
+ static const struct iio_chan_spec ak8975_channels[] = {
+-	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
+-	IIO_CHAN_SOFT_TIMESTAMP(3),
++	AK8975_CHANNEL(X, AK8975_CHAN_X),
++	AK8975_CHANNEL(Y, AK8975_CHAN_Y),
++	AK8975_CHANNEL(Z, AK8975_CHAN_Z),
++	IIO_CHAN_SOFT_TIMESTAMP(AK8975_CHAN_TS),
+ };
  
- 	/* After reading fuse ROM data set power-down mode */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 
- 	if (data->eoc_gpiod || client->irq > 0) {
- 		ret = ak8975_setup_irq(data);
- 		if (ret < 0) {
--			dev_err(&client->dev,
--				"Error setting data ready interrupt\n");
-+			dev_err(dev, "Error setting data ready interrupt\n");
- 			return ret;
- 		}
- 	}
-@@ -748,10 +747,11 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	struct ak8975_data *data = iio_priv(indio_dev);
- 	const struct i2c_client *client = data->client;
- 	const struct ak_def *def = data->def;
-+	struct device *dev = &data->client->dev;
- 	__le16 rval;
- 	int ret;
- 
--	pm_runtime_get_sync(&data->client->dev);
-+	pm_runtime_get_sync(dev);
- 
- 	mutex_lock(&data->lock);
- 
-@@ -773,20 +773,20 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	/* Read out ST2 for release lock on measurement data. */
- 	ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST2]);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in reading ST2\n");
-+		dev_err(dev, "Error in reading ST2\n");
- 		goto exit;
- 	}
- 
- 	if (ret & (data->def->ctrl_masks[ST2_DERR] |
- 		   data->def->ctrl_masks[ST2_HOFL])) {
--		dev_err(&client->dev, "ST2 status error 0x%x\n", ret);
-+		dev_err(dev, "ST2 status error 0x%x\n", ret);
- 		ret = -EINVAL;
- 		goto exit;
- 	}
- 
- 	mutex_unlock(&data->lock);
- 
--	pm_runtime_put_autosuspend(&data->client->dev);
-+	pm_runtime_put_autosuspend(dev);
- 
- 	/* Swap bytes and convert to valid range. */
- 	*val = clamp_t(s16, le16_to_cpu(rval), -def->range, def->range);
-@@ -795,8 +795,8 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 
- exit:
- 	mutex_unlock(&data->lock);
--	pm_runtime_put_autosuspend(&data->client->dev);
--	dev_err(&client->dev, "Error in reading axis\n");
-+	pm_runtime_put_autosuspend(dev);
-+	dev_err(dev, "Error in reading axis\n");
- 	return ret;
- }
- 
-@@ -966,7 +966,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * We may not have a GPIO based IRQ to scan, that is fine, we will
- 	 * poll if so.
- 	 */
--	eoc_gpiod = devm_gpiod_get_optional(&client->dev, NULL, GPIOD_IN);
-+	eoc_gpiod = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
- 	if (IS_ERR(eoc_gpiod))
- 		return PTR_ERR(eoc_gpiod);
- 	gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
-@@ -976,13 +976,12 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * deassert reset on ak8975_power_on() and assert reset on
- 	 * ak8975_power_off().
- 	 */
--	reset_gpiod = devm_gpiod_get_optional(&client->dev,
--					      "reset", GPIOD_OUT_HIGH);
-+	reset_gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(reset_gpiod))
- 		return PTR_ERR(reset_gpiod);
- 
- 	/* Register with IIO */
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
-@@ -994,7 +993,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	data->reset_gpiod = reset_gpiod;
- 	data->eoc_irq = 0;
- 
--	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	ret = iio_read_mount_matrix(dev, &data->orientation);
- 	if (ret)
- 		return ret;
- 
-@@ -1004,16 +1003,16 @@ static int ak8975_probe(struct i2c_client *client)
- 		return -ENODEV;
- 
- 	/* If enumerated via firmware node, fix the ABI */
--	if (dev_fwnode(&client->dev))
--		name = dev_name(&client->dev);
-+	if (dev_fwnode(dev))
-+		name = dev_name(dev);
- 	else
- 		name = id->name;
- 
- 	/* Fetch the regulators */
--	data->vdd = devm_regulator_get(&client->dev, "vdd");
-+	data->vdd = devm_regulator_get(dev, "vdd");
- 	if (IS_ERR(data->vdd))
- 		return PTR_ERR(data->vdd);
--	data->vid = devm_regulator_get(&client->dev, "vid");
-+	data->vid = devm_regulator_get(dev, "vid");
- 	if (IS_ERR(data->vid))
- 		return PTR_ERR(data->vid);
- 
-@@ -1029,7 +1028,7 @@ static int ak8975_probe(struct i2c_client *client)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Unexpected device\n");
- 
--	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
-+	dev_dbg(dev, "Asahi compass chip %s\n", name);
- 
- 	/* Perform some basic start-of-day setup of the device. */
- 	ret = ak8975_setup(data);
-@@ -1066,8 +1065,8 @@ static int ak8975_probe(struct i2c_client *client)
- 	 * The device comes online in 500us, so add two orders of magnitude
- 	 * of delay before autosuspending: 50 ms.
- 	 */
--	pm_runtime_set_autosuspend_delay(&client->dev, 50);
--	pm_runtime_use_autosuspend(&client->dev);
-+	pm_runtime_set_autosuspend_delay(dev, 50);
-+	pm_runtime_use_autosuspend(dev);
- 
- 	return 0;
- }
-@@ -1082,7 +1081,7 @@ static int ak8975_runtime_suspend(struct device *dev)
- 	/* Set the device in power down if it wasn't already */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 	/* Next cut the regulators */
-@@ -1106,7 +1105,7 @@ static int ak8975_runtime_resume(struct device *dev)
- 	 */
- 	ret = ak8975_set_mode(data, POWER_DOWN);
- 	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		dev_err(dev, "Error in setting power-down mode\n");
- 		return ret;
- 	}
- 
+ static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
 
 -- 
 2.55.0
