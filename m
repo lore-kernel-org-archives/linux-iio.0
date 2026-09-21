@@ -1,97 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CABD1A681C;
-	Mon, 21 Sep 2026 01:06:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF121A681C
+	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 01:08:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789952809; cv=none; b=CgZZ37M/O+Xb2D1o98Mb/zUS2ky+XOcdx0OCOpNdAMyEBDysJJhw1vr04O59ltDs1gJirwOWoEzKFrhWfWMe5ppn4TH/cdWtxWYTitu//Qn71WULKiCliLEpjivqTeZI24ZUrYSoJ8vLwWpRoddmJInsZQQFzESWl+D4NXCQtcE=
+	t=1789952883; cv=none; b=iKBxMWVJjttLdsMhVIebQbTYvtq4FyddrfdByXOFmyZerFlOkXENl1CEu7MAaM5UmP9iqlHXhFdz8tn6sHoW3Oh7vm59XDOwKtippd8gJZFJvPY5rlKk1mdmNGDGKxm2dTJ8WASw2id1aetP/RZd+8EJ+CHHI2dorHMxzy8NvfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789952809; c=relaxed/simple;
-	bh=kSeIPaZnSdLwk48BLT3A2cLYFdAdm89k0wI0JXNhWu4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=PEEVHhFwyMDNg+FTmNjUbHAsnzMT62BtOc1RhYYfEu8v/WzMYI4/Za+W11ZNCX5JzoM/3M+zSU9HetXy5Z0muuOyaAW7RCMZ5sMRzpdTkhHwBaq30LcwBDoExQWLgMnlDu7/weJDP/QqLsYDJbnX18oMGXrUSXmKow9pqADsqLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TwGARmwq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1789952883; c=relaxed/simple;
+	bh=Vi6/hOsj3a64qELxEcXYaB2B1elAyu5So769mwqydhU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=X7zF6+10ZWLLNyhnIRfoT7gRZc9/MSg4DCUvByyqN/cg7ZBUgm9aLg67D1TAW5wOYEgkNZtEiCSiBEZuIV3q+J/9u6s7VdBgzqVEM3ecjledz2DPEA3znyyro+jRp2c6snF3cvHpG9qRoCf3EMhMLEAeC2BxnqOLGbcBWYo0NbU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L7HzCba3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TwGARmwq"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 85F53C2BCC7;
-	Mon, 21 Sep 2026 01:06:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1789952808;
-	bh=kSeIPaZnSdLwk48BLT3A2cLYFdAdm89k0wI0JXNhWu4=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=TwGARmwqxjmLsL226LmUhuaPpRBhVqTBAcxJCyYeLV0e7+I3uAOAMxoYtLmSgsTq3
-	 +vYKhHxsjFYtcY9a90PixfHalVrkorszbcqZDUsFT40ZuQQLSqbT8xashJduqdnvjG
-	 HF+d2m4ZSBja11hQHt+5Sh8ZIqLcL9BLEkY3QMTqRgVr11SeP6w+V30fjYQ0SvIlck
-	 IBvGiMMIwwZNQzJSYLea3FVOrlzG+cJaO9QwypzEfcIjBwOn9w644jOTQHVfXKTQTr
-	 RnJijviM4N4N9KYugLF3nT+yTYC32cGqUNZV/VUG54h8k6ionfP93IcPUFp89dhPTw
-	 cQGbn9VwkHsSA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7A9C982ED;
-	Mon, 21 Sep 2026 01:06:48 +0000 (UTC)
-From: Carlos Casadiego via B4 Relay <devnull+cdcp206.gmail.com@kernel.org>
-Date: Sun, 20 Sep 2026 20:06:45 -0500
-Subject: [PATCH] iio: accel: kx022a: fix typo in comment
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L7HzCba3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C994C1F00893;
+	Mon, 21 Sep 2026 01:08:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789952882;
+	bh=FDdpuHwv4HLpZwmegaHiMnloY4paSrMwgJe4vSQllEc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=L7HzCba30UsdZtN5EDkflHCiSHiswIsqBYVRkOZBV7p6iQ4aWfbQjz+AkvauXQu+b
+	 JEOuPOVMt8SzLQJXmO/Zjts6ZkSwOxTaeLnA6hk7FaqHfjLdz2kbEbOIhRn7er+uB/
+	 zea1Doex01rFyT3p+WHV6GV0dAmqaqX53z12e0by6K5UiDpW8+xgBujhahMehBaI6X
+	 KcHhHc/UuTwTu1NjWnNJ6Dgy/MwlX9py00sab0bILJTXwEb4E7U+e9yTtlURjJ5csF
+	 pmUvNAz8ywbCZdGBKPAmLSoL2tk7QX8qm8ekF3QmvmowhMathMzsmzy9XqlKKKCU/i
+	 zf7m3dFXx+ccA==
+Date: Mon, 21 Sep 2026 02:07:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Shehryar Ahmad <shehryar.amd@gmail.com>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 0/7] iio: accel: merge adis16203 into mainline
+ adis16201 and remove from staging
+Message-ID: <20260921020759.4aad9a31@jic23-hlaptop>
+In-Reply-To: <20260916055547.15206-1-shehryar.amd@gmail.com>
+References: <20260916055547.15206-1-shehryar.amd@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260920-iio-kx022a-fix-comment-typo-v1-1-9fc233272712@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQqDMBBA0avIrB1IBqm0Vyku7DjqtJhIEosi3
- r2xLh98/g5RgkqER7FDkK9G9S7DlgXw2LpBULtsIEM3cyeDqh4/qyFqsdcV2U+TuIRpmz2y7Sw
- L1VVNPeTDHCQ3//uzuRyX11s4nUs4jh/VuvWYfwAAAA==
-X-Change-ID: 20260920-iio-kx022a-fix-comment-typo-c1d1ce27472f
-To: Matti Vaittinen <mazziesaccount@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Carlos Casadiego <cdcp206@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789952807; l=1081;
- i=cdcp206@gmail.com; s=20260921; h=from:subject:message-id;
- bh=mvcHymTttESoKzke8JCk3w2u0GZpHklCZh7R9jCyH3U=;
- b=EEMBuBP1D6LozTGVw47+ODRdmdkOqJiA328/LP37/Gq1hWFkEorZkg5w8eQm+qF3azdvJ/xsg
- EEJUTQGiqJ6A/XNlc7/a++YeeQh+pZEUQ7OpoSz9oM8NT2ieZtjjnIO
-X-Developer-Key: i=cdcp206@gmail.com; a=ed25519;
- pk=Vr3c2AUi1oYbgVkQtRSsWin33frZn0vGGq5g04VWmH8=
-X-Endpoint-Received: by B4 Relay for cdcp206@gmail.com/20260921 with
- auth_id=1041
-X-Original-From: Carlos Casadiego <cdcp206@gmail.com>
-Reply-To: cdcp206@gmail.com
 
-From: Carlos Casadiego <cdcp206@gmail.com>
+On Wed, 16 Sep 2026 10:55:30 +0500
+Shehryar Ahmad <shehryar.amd@gmail.com> wrote:
 
-Fix "usng" to "using" in a comment.
+> This v3 series addresses review feedback on the previous attempt to move
+> ADIS16203 from staging into the mainline ADIS16201 driver [1].
+> 
+> Key changes from v2:
+> - Fixed channel order for buffer mode in precursor patch (patch 1)
+> - Updated matching tables to modern conventions
+> - Moved adis_data into chip_info
+> - Added separate adis16203_data instance and dropped runtime copy in
+>   probe
+> - Fixed Kconfig help text format 
+> 
+> Patches 6 and 7 carry Reviewed-by tags from prior review.
+> 
+> [1] https://lore.kernel.org/all/20260913085307.13846-1-shehryar.amd@gmail.com/
 
-Signed-off-by: Carlos Casadiego <cdcp206@gmail.com>
----
- drivers/iio/accel/kionix-kx022a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cover letter should have the same to and cc list as the patches.
+Anyhow, hopefully that didn't really mean anyone missed much.
 
-diff --git a/drivers/iio/accel/kionix-kx022a.c b/drivers/iio/accel/kionix-kx022a.c
-index 8f2810c8ffeb..a3d80e4e7f1e 100644
---- a/drivers/iio/accel/kionix-kx022a.c
-+++ b/drivers/iio/accel/kionix-kx022a.c
-@@ -809,7 +809,7 @@ static int __kx022a_fifo_flush(struct iio_dev *idev, unsigned int samples,
- 		 * the timestamps. If we are ran from IRQ, then the
- 		 * IRQF_ONESHOT has us covered - but if we are ran by the
- 		 * user-space read we need to disable the IRQ to be on a safe
--		 * side. We do this usng synchronous disable so that if the
-+		 * side. We do this using synchronous disable so that if the
- 		 * IRQ thread is being ran on other CPU we wait for it to be
- 		 * finished.
- 		 */
+Series applied to the testing branch of iio.git. That will get
+pushed out for linux-next to pick up once the bots have had a little
+time to poke at it.
 
----
-base-commit: 61718ed183599e5162496b5306c3377a925d21cd
-change-id: 20260920-iio-kx022a-fix-comment-typo-c1d1ce27472f
+Thanks,
 
-Best regards,
---  
-Carlos Casadiego <cdcp206@gmail.com>
+Jonathan
 
+> 
+> Shehryar Ahmad (7):
+>   iio: accel: adis16201: fix channel order for buffer mode
+>   iio: accel: adis16201: add SPI device ID table
+>   iio: accel: adis16201: add OF device ID table
+>   iio: accel: adis16201: prepare driver to support additional parts
+>   iio: accel: adis16201: add ADIS16203 support
+>   staging: iio: accel: remove adis16203, merged into mainline adis16201
+>     driver
+>   dt-bindings: iio: accel: adi,adis16201: add adis16203 compatible
+> 
+>  .../bindings/iio/accel/adi,adis16201.yaml     |   6 +-
+>  drivers/iio/accel/Kconfig                     |   8 +-
+>  drivers/iio/accel/adis16201.c                 | 133 ++++++--
+>  drivers/staging/iio/Kconfig                   |   1 -
+>  drivers/staging/iio/Makefile                  |   1 -
+>  drivers/staging/iio/accel/Kconfig             |  19 --
+>  drivers/staging/iio/accel/Makefile            |   6 -
+>  drivers/staging/iio/accel/adis16203.c         | 315 ------------------
+>  8 files changed, 117 insertions(+), 372 deletions(-)
+>  delete mode 100644 drivers/staging/iio/accel/Kconfig
+>  delete mode 100644 drivers/staging/iio/accel/Makefile
+>  delete mode 100644 drivers/staging/iio/accel/adis16203.c
+> 
 
