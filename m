@@ -1,64 +1,64 @@
 Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D0B14915B4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C71B4915A7
 	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:02:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789988526; cv=none; b=fwOwgkFx1PeU1uWySeICnykvIBpX+PGuhUEJD6pJTiVznVSivVnTQUjT4NSotiHdjJ+Z3UAQtgLpaJ3ULuNBVNk6wpqlwAI8rPAAe1rvKqgZRtV8UdNzFye20OYSWXbx4ZZC+CqSWA4jNpGw04dnJOMNUd1BNrbat1EgPUQm6Cs=
+	t=1789988526; cv=none; b=m9sq6Qofd8Sdt/6QfHtrm1b8XOMRRe2PiHGmIarch+GOrpsaHNqBKHfI4gG8qfhJi5dW5l3s7b8gFgmiuFJwBLmvFFGHwWKezTM7T+bMsY6F93D4BImtyGJ3dUD663BLQDc/pcsi/qQunTKA5F4Isk7pMXLpdisoIKznrtsqkT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1789988526; c=relaxed/simple;
-	bh=El7Fck6y7ypxHU4T5nHt8VEDERbOkkCbpy9voDft7SU=;
+	bh=smbOHgTnDqLfvUfS8tyABi4Cl+89CAiGSJnYdaVQpYk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dg+uFlCRkcC7nPWoBE4wTNPCDVJG8/lVfr9xJbO8TOg2ap9uXV7acMMfBzGw19z6Kq3CUVqw3GpRNpNL7bZ3srXubzI7UApUpqZKpXl4q9NEjQ+Lu04GJkpwXioaVzEe0987yEv9KZidh5jIuPK5Rz96LiBpyG5kFiyJpbMLvwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eqBoXwXW; arc=none smtp.client-ip=74.125.225.140
+	 MIME-Version; b=DidVMrUSHu4s3OFLD+SOVbmWKOwy2MQHYpJyT5nnIdi9QZsfe1xtt+hGj99xIXK2KoCYnG7j6biAYCXzUuPSUfkNoYJqeHDBLs5i3bvAgngmXZL2dIFKTf0gLZu+MQV/c97S/l+cID5xN/iV/pdZ+iCAfUQYDkmFM5QLKdEqY50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aUScAqG3; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eqBoXwXW"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cd38e0f79so15527165e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:01:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aUScAqG3"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ccfd61ecaso24384385e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:02:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789988517; x=1790593317; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789988518; x=1790593318; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Egn531y6D5eia68zUO0Bjiv9ns5XoXFVaQXnVIjBldw=;
-        b=eqBoXwXWuds2UhyGnuScSX/jJuBU8QBg4ccV8H1r0Ms3MVO1HuQ/GEzyhfg2PRjdlJ
-         7i+JjNwbJIdSAl0+pGm3aQcXybtQH32nxsypDxCnZJeKKf6E8jvPp50mug89iMxuEj9y
-         9mezbXYpwBUWZ69qnSsrNOcnK0xpV2vxZrh/R2IuS2um7LASuU3ZA6EbmXtNi057/VNZ
-         eel27rMcM3XWgz4uW+NlNhPnMm21MhA99IprPtxnZ6+xJlAYqG6xfYpxFKnDHuPynvWr
-         lk8uOyqJ8ImluEUxuyJRiZ30DjUHNV4J+81GgXY7+SP+JiMFd/N+aJ01cjd0hR10gnm4
-         fEfw==
+        bh=s9+sP23Ww3lq9DKMamGJva2CDC1gphzBkrBVWrhACZE=;
+        b=aUScAqG3T/cOKuT0ndJQZu6lf+t/4aGU7YpePoW3t+lgyWfAQpB9oj+j3k6GdIEsz8
+         U68cf27M51xPPOdHMIyjnRSmm7+5+0B59bzCIlaT/vam+rL19Oaf/WzZbhfRR6SG+8p9
+         Xyccg0S5Raw5QrDU4DJ0PKsDLF7R+dZ6+XxwVSLP5Z7ttUOy+aHAvgWX3Dw4BK7eTrPB
+         0yrsHbbDgzz2Mexp5Ak/VcJqD+4GCqf33goRFVNN4quEFEpV62NM06TecdoyahtYlHvJ
+         CzM8suNSSzgpLK4P2akrWfMy27kAVLQ7hSDVFwGueH4abDmfqH0vWLLnCLG09+6PgfRp
+         9vdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789988517; x=1790593317;
+        d=1e100.net; s=20260707; t=1789988518; x=1790593318;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Egn531y6D5eia68zUO0Bjiv9ns5XoXFVaQXnVIjBldw=;
-        b=UoLUN5bjI9PnPHOGr45ujZ8uW/prMJkOC1NYgaG1tx86/e6ssmZHIU/TH8LQQT4e1n
-         biLZA5Fa75AjnCen9PvodnY5D/NE+wcQoYX+sBAeyNWQ5afrdnuPDmNcucyNV9fbTK4J
-         /g5kXST20WK0ZN+2e7+lJA5Re8Fiv3LELl/n3mKlvVyLpIaW5JbpFHiwP3+JTnubMW5s
-         AVvFmO9nA4CcJ4X/WM0eTkQHci7Qs2d1XCba2y+qxEGFwXLQx8s09PXgcWThrtBIvfYe
-         p18O3cKZyYMrRDp7PnQnhB8gLX5UHykuth4b7mYhcG56CWJNwl7lq+AssXNjj0eCNlxQ
-         lltQ==
-X-Gm-Message-State: AFuF++nYV7+etKg2JeTbp24Ap/ZRTE+euoinurEnlpEVwPpFNExl8Oqu
-	O32TE82ubhKuhq5F7WG9aBMzlWj6Ximkd4UE1PDRn9Q7/8E92EPur2qi
-X-Gm-Gg: AYBFou3WWDfglyLUN27pPg9VwGwJiKhnzHVn8lsg893oBR2JbdIo8mcpZfaIJasWdN3
-	GvuICFa8LcIt+9N5NDJFGBG+CeRvTWtoE/uHdg0vpqs5z8BM3H5YieS3UAmggRHAFxpVyT8wguO
-	70QL57cLyPxPha07rQfvi7M1p2q4IXtLDDb0umuced0NrDvTL3K0dLNgBcOqcx0hojHlY5D5d7d
-	Y5f/2wDeWRuVcyYSefe7Thz7m7MoHVEo7PcYSN1B2mB2C9qao/ufzwmrCgQLyIn66Ouwnx4taMt
-	Xw3aEL1+P61OGD0Hm0UCCPsY1sIKfZHsPH7IvlAgIFKmz6m8O2MpkeN1Phu4n7TiYZAkEt9F4En
-	oyBooaQtp73jBbhaYbEmAR/3krG+uHW+gCrDigxo8GK3ensAjGfGuv7lY+Fxxm/T5UdWRzZNZGv
-	/KqGP0E7ogYCvzKDAnUXGeDzExmAfHv+Ixt2lALpXprXuAb026CIRCHWCKFIM8xSisSEu6j0m20
-	FBLuoys6hPGFNWhwoynOrWDrhhvFX6NjKlk/yI+/yOcjkTTtExjsxbvsiGuSwvMVxxTgK3eGRU2
-	TkMqxsY=
-X-Received: by 2002:a05:600c:8b24:b0:49f:ce78:3563 with SMTP id 5b1f17b1804b1-49fce78360emr88120395e9.20.1789988517491;
-        Mon, 21 Sep 2026 04:01:57 -0700 (PDT)
+        bh=s9+sP23Ww3lq9DKMamGJva2CDC1gphzBkrBVWrhACZE=;
+        b=a/wd6qbaJtGAFzJpSJOni+7fBEH5v2gBJKspzMavgtq1Sz1vB+SPxMSM825IO/6QO4
+         WmNPfqAkZviZCeC1cMb5jWTw4lUXWxbAqy+11tQ1dE0EtkRJT1PYanHWGjBed8x9obQy
+         gmBOq59p8NbdkGsoW73s/e7nWc2Fy80QOGw5F636LYXugmulssoUjBhskilAa9u7uniy
+         vtr3VpY1fu1voPLLda1spaos18nU3nclXYlpTgQKQJ2kIxjgiD2715u6jYesXdnjKEGA
+         Dy08uW3JqVkmE27cc46++3Yv8mtJ6pyjSh7cnNcJrh7k8/400hEkAWKwAwJo+52eTISx
+         hJRQ==
+X-Gm-Message-State: AFuF++nHoMtBxwdORnnrYCr1g0t0r1qWJYZZeBn2D8QMnOFgyEIi0H+p
+	2d9rRTWrhiP3DR6mo2gDLuVrXsBo6nrxf3hNwQmW3I6y7O0rqCuZZ0ig
+X-Gm-Gg: AYBFou0fzHkDZ1fvyhjr6YxOXkk9g5DJJZo7840+ZBmNHL8V0bw7yPKIJD04SSyk/a8
+	0FBr6f0tvACIkMHe9uFEw3J4N7nIDopRT95C1mhbXH5YHXPFrPyGm/ZZeLJWyDsUMgi9ZbAoJuX
+	uLRQKzSMMlvl4e24c2bwgAvwCLcVkAnbYNeNDzROGS++QBbDFzfqugRVVrtWu3ANqFjTUJ8iiWj
+	yXzWIgyKVRRIMzSbAeVOpFoD82dOLYf+Sr42zNtdZmhlKeHnlUMp1CggKs5scqoss761YxSzEIb
+	uMGFbmKSXgo1AEVQu3NDVcXIPLyf2ONag+17T5RZ8cHTDkjZWJuov/9Qq3TA9C3/HNqz+KjJyLx
+	TsN1rxnjrrPQcHLbMNr5vVER4AbwsnQSRkKu5LZhbLdtNEtIxmhQR12wYJSgKKSW8THBLA7WbkF
+	4jxEICUkgGktdppUsTAPllZndBIG8tvJm399U0uue0NpFXRROnYjLOIHm/lAHGh6x9eNi6fmGuZ
+	/OFMD9PwQe03JX0vc8N65k9oV9FB7CrJJj0WFL3WQX7Hnz/jHU+y5EyMB2CK0n6BuqMmpJRPdxm
+	XHpxvyo=
+X-Received: by 2002:a05:600c:3586:b0:49e:7d69:83b7 with SMTP id 5b1f17b1804b1-49fc56f7376mr183862295e9.13.1789988518301;
+        Mon, 21 Sep 2026 04:01:58 -0700 (PDT)
 Received: from iku.Home ([2a06:5906:61b:2d00:856:ad4f:1ab5:71b6])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd07bc34sm214267425e9.10.2026.09.21.04.01.56
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd07bc34sm214267425e9.10.2026.09.21.04.01.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 04:01:56 -0700 (PDT)
+        Mon, 21 Sep 2026 04:01:57 -0700 (PDT)
 From: Prabhakar <prabhakar.csengg@gmail.com>
 X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Geert Uytterhoeven <geert+renesas@glider.be>,
@@ -78,9 +78,9 @@ Cc: linux-iio@vger.kernel.org,
 	Biju Das <biju.das.jz@bp.renesas.com>,
 	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 2/3] arm64: dts: renesas: r9a09g077: Drop unwired ADC interrupts
-Date: Mon, 21 Sep 2026 12:01:43 +0100
-Message-ID: <20260921110144.44425-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 3/3] arm64: dts: renesas: r9a09g087: Drop unwired ADC interrupts
+Date: Mon, 21 Sep 2026 12:01:44 +0100
+Message-ID: <20260921110144.44425-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -98,17 +98,17 @@ Remove the compare match and compare mismatch interrupts from the ADC
 device nodes, as these interrupts are not wired to the GIC according to
 the hardware manual Rev.1.30.
 
-Fixes: a82a42963c89 ("arm64: dts: renesas: r9a09g077: Add ADCs support")
+Fixes: 4ed27b4fdeb1 ("arm64: dts: renesas: r9a09g087: Add ADCs support")
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- arch/arm64/boot/dts/renesas/r9a09g077.dtsi | 18 ++++++------------
+ arch/arm64/boot/dts/renesas/r9a09g087.dtsi | 18 ++++++------------
  1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a09g077.dtsi b/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
-index 486692bb84cf..674e35e4f242 100644
---- a/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
-@@ -1271,11 +1271,9 @@ adc0: adc@90014000 {
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
+index bf81ab9b64c5..68c8daed557b 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
++++ b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
+@@ -1274,11 +1274,9 @@ adc0: adc@90014000 {
  				     <GIC_SPI 699 IRQ_TYPE_EDGE_RISING>,
  				     <GIC_SPI 700 IRQ_TYPE_EDGE_RISING>,
  				     <GIC_SPI 701 IRQ_TYPE_LEVEL_HIGH>,
@@ -119,10 +119,10 @@ index 486692bb84cf..674e35e4f242 100644
  			interrupt-names = "adi", "gbadi", "gcadi",
 -					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
 +					  "cmpai", "cmpbi";
- 			clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
+ 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
  				 <&cpg CPG_MOD 206>;
  			clock-names = "adclk", "pclk";
-@@ -1295,11 +1293,9 @@ adc1: adc@90014400 {
+@@ -1298,11 +1296,9 @@ adc1: adc@90014400 {
  				     <GIC_SPI 704 IRQ_TYPE_EDGE_RISING>,
  				     <GIC_SPI 705 IRQ_TYPE_EDGE_RISING>,
  				     <GIC_SPI 706 IRQ_TYPE_LEVEL_HIGH>,
@@ -133,10 +133,10 @@ index 486692bb84cf..674e35e4f242 100644
  			interrupt-names = "adi", "gbadi", "gcadi",
 -					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
 +					  "cmpai", "cmpbi";
- 			clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
+ 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
  				 <&cpg CPG_MOD 207>;
  			clock-names = "adclk", "pclk";
-@@ -1319,11 +1315,9 @@ adc2: adc@80008000 {
+@@ -1322,11 +1318,9 @@ adc2: adc@80008000 {
  				     <GIC_SPI 709 IRQ_TYPE_EDGE_RISING>,
  				     <GIC_SPI 710 IRQ_TYPE_EDGE_RISING>,
  				     <GIC_SPI 711 IRQ_TYPE_LEVEL_HIGH>,
@@ -147,7 +147,7 @@ index 486692bb84cf..674e35e4f242 100644
  			interrupt-names = "adi", "gbadi", "gcadi",
 -					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
 +					  "cmpai", "cmpbi";
- 			clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
+ 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
  				 <&cpg CPG_MOD 225>;
  			clock-names = "adclk", "pclk";
 -- 
