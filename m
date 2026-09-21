@@ -1,64 +1,64 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3531848AE17
-	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:01:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D0B14915B4
+	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:02:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789988522; cv=none; b=Bn/ckpc14Iie59CO9yKO9f5XN7oZX9TvrDUmVjTvdrYZlm2x58ZfkPCuyOIA8+oeh94ue2Re7GK9D6cWOHYySKf6kTJxaif5FuzMQRkagEWlBaqkPArNggVNoyRljQD19EdoM7nHiS2Ei4HBolExZwBwPVR6BNQOYJx5zY0Dwrc=
+	t=1789988526; cv=none; b=fwOwgkFx1PeU1uWySeICnykvIBpX+PGuhUEJD6pJTiVznVSivVnTQUjT4NSotiHdjJ+Z3UAQtgLpaJ3ULuNBVNk6wpqlwAI8rPAAe1rvKqgZRtV8UdNzFye20OYSWXbx4ZZC+CqSWA4jNpGw04dnJOMNUd1BNrbat1EgPUQm6Cs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789988522; c=relaxed/simple;
-	bh=g+yjyBlPM3DyxbBgTRNNL0HdvBmH9IZFR3frJ4kwSTg=;
+	s=arc-20240116; t=1789988526; c=relaxed/simple;
+	bh=El7Fck6y7ypxHU4T5nHt8VEDERbOkkCbpy9voDft7SU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=epqiT6U/BuZ9IcPjmIWmkJ9MMMTR3ogj38ozaDcDp1VvkI5w/ZRLR17iV3HdFrb3d1MjdvCtWb1LBGrOVKb5pEycML6R+VlVF1WXsQ60w+4rUPNEEt5VVTxbS+jPBvaKk6KdlBDNzF8tfWtGf8c51RV4G+KpgOm9aFjUDZmJbR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B0PvexX1; arc=none smtp.client-ip=74.125.225.141
+	 MIME-Version; b=dg+uFlCRkcC7nPWoBE4wTNPCDVJG8/lVfr9xJbO8TOg2ap9uXV7acMMfBzGw19z6Kq3CUVqw3GpRNpNL7bZ3srXubzI7UApUpqZKpXl4q9NEjQ+Lu04GJkpwXioaVzEe0987yEv9KZidh5jIuPK5Rz96LiBpyG5kFiyJpbMLvwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eqBoXwXW; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B0PvexX1"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e69b9e16aso29113455e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:01:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eqBoXwXW"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cd38e0f79so15527165e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:01:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789988516; x=1790593316; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789988517; x=1790593317; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=57oJZCX/AW18tWPdP5KRkbGYQagmjaqL4TR6kTXJsWA=;
-        b=B0PvexX1E5ly7JAXBh79Rz8QshkUMFzGqJvwbWPuUROM5JvN6lpfraFL4hH1bM/lZF
-         3OXGIomc3A6s9NErb3i15OQoT1+qfLGQfwViNNo+ayvYwMd3xHM7vTnZRZINI1sCmODJ
-         eTbhjig53p40a08I7++cknceGWiAPDxn6qEZJ27N/3cKxGfKfmRqEL+uA2A1QxoM09I1
-         S+s7GY5MgnmppII8zyvxt4cyWgUOYlkxIpvueMeNl3hW/CyMMVb4nwimV55dmigua2+x
-         5qR1N1m94yFyMf/oqEuapdB+kfOFmcmpcStONKNEqUcw4mTx/V0x8cj1e3t6rKpiopWz
-         d1Zw==
+        bh=Egn531y6D5eia68zUO0Bjiv9ns5XoXFVaQXnVIjBldw=;
+        b=eqBoXwXWuds2UhyGnuScSX/jJuBU8QBg4ccV8H1r0Ms3MVO1HuQ/GEzyhfg2PRjdlJ
+         7i+JjNwbJIdSAl0+pGm3aQcXybtQH32nxsypDxCnZJeKKf6E8jvPp50mug89iMxuEj9y
+         9mezbXYpwBUWZ69qnSsrNOcnK0xpV2vxZrh/R2IuS2um7LASuU3ZA6EbmXtNi057/VNZ
+         eel27rMcM3XWgz4uW+NlNhPnMm21MhA99IprPtxnZ6+xJlAYqG6xfYpxFKnDHuPynvWr
+         lk8uOyqJ8ImluEUxuyJRiZ30DjUHNV4J+81GgXY7+SP+JiMFd/N+aJ01cjd0hR10gnm4
+         fEfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789988516; x=1790593316;
+        d=1e100.net; s=20260707; t=1789988517; x=1790593317;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=57oJZCX/AW18tWPdP5KRkbGYQagmjaqL4TR6kTXJsWA=;
-        b=vAwHxyynWjwNmRTT0JYoKcD1n6Fg7AEPysl1a4NJcjHxmI1vgtxmXOR6liakPb0vcl
-         o+Os6qZwDu2+Lg++uLmCra7bcnAIvX0bRdbvildAWpIqgQqvY2YhUZJkZN7AhsDDwsqx
-         3utZltf/eJag7eycuRf670eZdydlUJDERT8s6mkU6etlvKvTENpxP2oqxL1+bLAYHA7L
-         EtiD1xgCeTVkePFxxn4B2cNh92HEZzvt/UaAleJZRDsxw4g7NAErT1zF59Qn7A9BcBsF
-         do+zMd4ZSf45LTFJrzfys9rBmP0xLOY7J651Y68yqW+cbc6a1O9R7rTY8u0DxihQd++5
-         S12w==
-X-Gm-Message-State: AFuF++njzknlYGQ1itLlsvx04m6cgSviPURFJXPKa4UyJvdgC0Moqp8v
-	zqTbKOoXOB/9MizOlEcoa07pXdYN+5XlNAgDmn5gsjvqEqFCCQ01g7R5
-X-Gm-Gg: AYBFou1d/nEuQZ2c6kgIYIwcIBpmN/OEQZuwZ2kzLXvAW//SMImULFXOkA1XR4rarXh
-	m1eR1LgNPeUtJSJP8gbPuVFjwDZu4n+JMLiEU/+udzlLkvFl6ISIiZ038YEzMIMNcBD1iXI46PS
-	OmyiTLFf4qfuseGPJNIT+oJzuOvlGT9GAmplrUiC4JBmPJEvcXabnmepHGt751+pO7UFoDU5uHo
-	HIaYNmOamKVLmzFobX+mjZomUsNEfPZpC0W9dlHAAcesTKHwkGWbSCYn3eDdpDNc+tLn4b8UkhW
-	xSrvzy2dHykHRY73LdETLHdNXLvESkw4XzrlE0A8rySGft9bG0RSkX3eW6AKNFDGxnKPutq7SFl
-	jXT0Ib9r0eHJzf568CG+rFuxYWAfRJu+/O5xCadEl800VaN1/5EZUhIKIpp5edLKoPPJUpRsYjm
-	//qhZ0LU+V4FHm206Nd3snpVOOd2YBQgtDOl7NaUnFck6M25EHDHn/cyc/MUnP+hVbpbIW5Se5N
-	1PcqDPK1U1J0hR2zcP9V02LhKb+XQOEcZGLWnrkA4NGZ6sav2eVxVhLjTnt4NUhaqHt8psjaMTh
-	FJeTqfA=
-X-Received: by 2002:a05:600c:1385:b0:49c:edd2:855 with SMTP id 5b1f17b1804b1-49fc5673264mr139072305e9.6.1789988516540;
-        Mon, 21 Sep 2026 04:01:56 -0700 (PDT)
+        bh=Egn531y6D5eia68zUO0Bjiv9ns5XoXFVaQXnVIjBldw=;
+        b=UoLUN5bjI9PnPHOGr45ujZ8uW/prMJkOC1NYgaG1tx86/e6ssmZHIU/TH8LQQT4e1n
+         biLZA5Fa75AjnCen9PvodnY5D/NE+wcQoYX+sBAeyNWQ5afrdnuPDmNcucyNV9fbTK4J
+         /g5kXST20WK0ZN+2e7+lJA5Re8Fiv3LELl/n3mKlvVyLpIaW5JbpFHiwP3+JTnubMW5s
+         AVvFmO9nA4CcJ4X/WM0eTkQHci7Qs2d1XCba2y+qxEGFwXLQx8s09PXgcWThrtBIvfYe
+         p18O3cKZyYMrRDp7PnQnhB8gLX5UHykuth4b7mYhcG56CWJNwl7lq+AssXNjj0eCNlxQ
+         lltQ==
+X-Gm-Message-State: AFuF++nYV7+etKg2JeTbp24Ap/ZRTE+euoinurEnlpEVwPpFNExl8Oqu
+	O32TE82ubhKuhq5F7WG9aBMzlWj6Ximkd4UE1PDRn9Q7/8E92EPur2qi
+X-Gm-Gg: AYBFou3WWDfglyLUN27pPg9VwGwJiKhnzHVn8lsg893oBR2JbdIo8mcpZfaIJasWdN3
+	GvuICFa8LcIt+9N5NDJFGBG+CeRvTWtoE/uHdg0vpqs5z8BM3H5YieS3UAmggRHAFxpVyT8wguO
+	70QL57cLyPxPha07rQfvi7M1p2q4IXtLDDb0umuced0NrDvTL3K0dLNgBcOqcx0hojHlY5D5d7d
+	Y5f/2wDeWRuVcyYSefe7Thz7m7MoHVEo7PcYSN1B2mB2C9qao/ufzwmrCgQLyIn66Ouwnx4taMt
+	Xw3aEL1+P61OGD0Hm0UCCPsY1sIKfZHsPH7IvlAgIFKmz6m8O2MpkeN1Phu4n7TiYZAkEt9F4En
+	oyBooaQtp73jBbhaYbEmAR/3krG+uHW+gCrDigxo8GK3ensAjGfGuv7lY+Fxxm/T5UdWRzZNZGv
+	/KqGP0E7ogYCvzKDAnUXGeDzExmAfHv+Ixt2lALpXprXuAb026CIRCHWCKFIM8xSisSEu6j0m20
+	FBLuoys6hPGFNWhwoynOrWDrhhvFX6NjKlk/yI+/yOcjkTTtExjsxbvsiGuSwvMVxxTgK3eGRU2
+	TkMqxsY=
+X-Received: by 2002:a05:600c:8b24:b0:49f:ce78:3563 with SMTP id 5b1f17b1804b1-49fce78360emr88120395e9.20.1789988517491;
+        Mon, 21 Sep 2026 04:01:57 -0700 (PDT)
 Received: from iku.Home ([2a06:5906:61b:2d00:856:ad4f:1ab5:71b6])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd07bc34sm214267425e9.10.2026.09.21.04.01.55
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd07bc34sm214267425e9.10.2026.09.21.04.01.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 04:01:55 -0700 (PDT)
+        Mon, 21 Sep 2026 04:01:56 -0700 (PDT)
 From: Prabhakar <prabhakar.csengg@gmail.com>
 X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Geert Uytterhoeven <geert+renesas@glider.be>,
@@ -78,9 +78,9 @@ Cc: linux-iio@vger.kernel.org,
 	Biju Das <biju.das.jz@bp.renesas.com>,
 	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 1/3] dt-bindings: iio: adc: renesas,r9a09g077-adc: Drop unwired interrupts
-Date: Mon, 21 Sep 2026 12:01:42 +0100
-Message-ID: <20260921110144.44425-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/3] arm64: dts: renesas: r9a09g077: Drop unwired ADC interrupts
+Date: Mon, 21 Sep 2026 12:01:43 +0100
+Message-ID: <20260921110144.44425-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -94,56 +94,62 @@ Content-Transfer-Encoding: 8bit
 
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Remove the compare match and compare mismatch interrupts from the binding,
-as these interrupts are not wired to the GIC on RZ/T2H and RZ/N2H SoCs
-according to the hardware manual Rev. 1.30.
+Remove the compare match and compare mismatch interrupts from the ADC
+device nodes, as these interrupts are not wired to the GIC according to
+the hardware manual Rev.1.30.
 
-While this change introduces an ABI break, the expected impact on existing
-users is minimal, if any, since the interrupts are not wired to the GIC
-and are not used by the driver.
-
-Fixes: 4d8d58987cb5 ("dt-bindings: iio: adc: document RZ/T2H and RZ/N2H ADC")
+Fixes: a82a42963c89 ("arm64: dts: renesas: r9a09g077: Add ADCs support")
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- .../bindings/iio/adc/renesas,r9a09g077-adc.yaml        | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/renesas/r9a09g077.dtsi | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml b/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml
-index 4b5934ac296b..5b496729022e 100644
---- a/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml
-@@ -34,8 +34,6 @@ properties:
-       - description: A/D scan end interrupt for Group C
-       - description: Window A compare match
-       - description: Window B compare match
--      - description: Compare match
--      - description: Compare mismatch
- 
-   interrupt-names:
-     items:
-@@ -44,8 +42,6 @@ properties:
-       - const: gcadi
-       - const: cmpai
-       - const: cmpbi
--      - const: wcmpm
--      - const: wcmpum
- 
-   clocks:
-     items:
-@@ -119,11 +115,9 @@ examples:
-                    <GIC_SPI 709 IRQ_TYPE_EDGE_RISING>,
-                    <GIC_SPI 710 IRQ_TYPE_EDGE_RISING>,
-                    <GIC_SPI 711 IRQ_TYPE_LEVEL_HIGH>,
--                   <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>,
--                   <GIC_SPI 855 IRQ_TYPE_EDGE_RISING>,
--                   <GIC_SPI 856 IRQ_TYPE_EDGE_RISING>;
-+                   <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>;
-       interrupt-names = "adi", "gbadi", "gcadi",
--                        "cmpai", "cmpbi", "wcmpm", "wcmpum";
-+                        "cmpai", "cmpbi";
-       clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
-                <&cpg CPG_MOD 225>;
-       clock-names = "adclk", "pclk";
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g077.dtsi b/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
+index 486692bb84cf..674e35e4f242 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
++++ b/arch/arm64/boot/dts/renesas/r9a09g077.dtsi
+@@ -1271,11 +1271,9 @@ adc0: adc@90014000 {
+ 				     <GIC_SPI 699 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 700 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 701 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 851 IRQ_TYPE_EDGE_RISING>,
+-				     <GIC_SPI 852 IRQ_TYPE_EDGE_RISING>;
++				     <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "adi", "gbadi", "gcadi",
+-					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
++					  "cmpai", "cmpbi";
+ 			clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
+ 				 <&cpg CPG_MOD 206>;
+ 			clock-names = "adclk", "pclk";
+@@ -1295,11 +1293,9 @@ adc1: adc@90014400 {
+ 				     <GIC_SPI 704 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 705 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 706 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 707 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 853 IRQ_TYPE_EDGE_RISING>,
+-				     <GIC_SPI 854 IRQ_TYPE_EDGE_RISING>;
++				     <GIC_SPI 707 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "adi", "gbadi", "gcadi",
+-					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
++					  "cmpai", "cmpbi";
+ 			clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
+ 				 <&cpg CPG_MOD 207>;
+ 			clock-names = "adclk", "pclk";
+@@ -1319,11 +1315,9 @@ adc2: adc@80008000 {
+ 				     <GIC_SPI 709 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 710 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 711 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 855 IRQ_TYPE_EDGE_RISING>,
+-				     <GIC_SPI 856 IRQ_TYPE_EDGE_RISING>;
++				     <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "adi", "gbadi", "gcadi",
+-					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
++					  "cmpai", "cmpbi";
+ 			clocks = <&cpg CPG_CORE R9A09G077_CLK_PCLKL>,
+ 				 <&cpg CPG_MOD 225>;
+ 			clock-names = "adclk", "pclk";
 -- 
 2.55.0
 
