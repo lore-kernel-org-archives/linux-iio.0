@@ -1,234 +1,282 @@
-Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 779F3468C23
-	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 09:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.139.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789982839; cv=fail; b=R3MtmoTAGRJZQ9Mi1gRjlHdzlapq3dRZ66tcWBT5IkTNrFMJtBP1JrFE7K0UfUoA5bASi1dspwPsuMpJKj7ZcKBFEVKwFQTv8Py10M3VFN0naA2U71C4KbpAIXjVhMq5ndX88h9OyJMIITGNcwwNT0XAARbu/Rnyoe1zaawROsc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789982839; c=relaxed/simple;
-	bh=3pxh4XHJiF9E14Ux255owyzwDaSdSQW7LxZ16cnTXD8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=hbfHzAZP13k4MuTcu9tSu469MQ5wxsYC1hRQMuuFKDluLIzQLK+PfQlBb3sK+wVzko6521lx2i9iaR07zuJE1fY5nlmJfGmG0MuUNX0A2MHNNct6V5pPQuxPWOkeKsa4/bapoh8LUh5o0y4qJqxT1ta3erjx785nj6Zu9Fxu9uU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=E5N6RdVH; arc=fail smtp.client-ip=148.163.139.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85B563932D5;
+	Mon, 21 Sep 2026 10:15:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789985739; cv=none; b=PMQpHRfnc1ds+1KGNtWQvfjqH7LtRhY2w15Sduad3Ya8mSJXM9VPIGGHQFNwtVNlI9e2eU5pMWxMg3iq0NdfXXOQY3IocQiw7B+MCbCmMPyDMJ6ZtvMWL5nZJsQkK6a8o6qg0OUOI39nBO7BwOWhcLdC1J8u1ZwH75bAfGoCJow=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789985739; c=relaxed/simple;
+	bh=tZtMCjyRjEVpTYK9a7RCqJ/OJnIZNfwPzTXTJARyiqM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YExBAzTFYkY4YfJdojQbwDvkJCChypEw7CCTpaxCo3UVcu8l5lsauoRDTvHO3YAfF/hLMWVdrZhIGniEh67u+cEnrripjk45wkVCAbmmN5lZjJbsxl0XRx4EMoKKk/lwNRuNHpCbgcrGA5QFAMjhVNIYtHRuJmAuRQ/fOe8CnXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=mXwGSfjC; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="E5N6RdVH"
-Received: from pps.filterd (m0516786.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68L79ZoT1735419;
-	Mon, 21 Sep 2026 05:27:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=2pXU+
-	AzIca+4HUELWgykjLyREMNSQ9NhoS8kYYkwSd4=; b=E5N6RdVHS8uCl3yKcxEaW
-	xu/KREUolgye3jRbXG2ojsxrt+DdnqsLi1UIQnP3R+LW2CrcF0r8YfhAeWUX7Zmx
-	wgzAgMQvSXQnmcI3SFT4wv6x7dvY9W+seqbtEIzVtssM8lk5SfgUOB3XDyWEqql6
-	h2IvszAdHNraf8/wkWLQFTG0xWt8AwNfbbD3FF07F5G7NxCeOLXpEeMBskboQcVA
-	irapHvjDm5t98XcShfoYC2efK3jaAqAJ1ie8RGS9DPM/bccpi0WSaNqMjAsPMcaq
-	Rofzmd3m3B81ItU/aXv3oORc3vXpXHNVTwkV5EcURDHFEbipdPi7RtZ5xzEBMVw0
-	g==
-Received: from bn1pr04cu002.outbound.protection.outlook.com (mail-eastus2azon11010017.outbound.protection.outlook.com [52.101.56.17])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gtb0hk7ck-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Mon, 21 Sep 2026 05:27:13 -0400 (EDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cF2A3P1PwVCC1G1GWQKlQz3QLq9YK3zo7j+rKE/oSlmZJ6alyS2MXD0gS0+G2D+oaBRQA5DchH8hpjvjtp/U65UG0AkX6p+fGrJETNEqS6hG+RSlk6uOS5YOi9f72ThDv03AtGx5BepMhAcEb3Dvb5Hr/a64rylP7vSNBYBp5xarZXZY0q1NGQDn9SGVVMjkO1EDJFnSlwZ2qAVmERc66LPu5KHFmlp1l22WT+JPN5rtVkNhIZrnO3/6Dit/PgHCyPDw596UgsJeQTpO/+T5BH2tpN+IDStji0IQjPU8Cy1EahleJt9O+74UDqe6aY+mUjsMRz+G05IRYq/XpDVq5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2pXU+AzIca+4HUELWgykjLyREMNSQ9NhoS8kYYkwSd4=;
- b=sdYCq91nvoqTH5b3plLTJOyow900DJ4KOnmVaad2rYpMsXlAROKufVg6NdzBPxZdcTdZ57Xf4K8vz87AVR/UFJQ2kk71AlNVedq+pAplwlInIK4SUGktGN1vmrWzsvhn5BZPYGxr5yF3m12mm03Jfq3AlpahYZd0J4If/N3ImxiXbQx7t4JPUiaR2JgwPOF+6/wJwVHYdm6j7xPTF05QfoD+nLE7BiDx8Q/xwtOKTwDT4ONDeYxUAtgkkhXW5u9VqquwRnaXinlRd4DM7JHZA1ThZAoDG9UV7eLc9XrpXm3JY6TtMrL7AcE2xz1akZiNywQJplZNs7AlBmbpAtUcwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
- by BY1PR03MB7262.namprd03.prod.outlook.com (2603:10b6:a03:522::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.16; Mon, 21 Sep
- 2026 09:27:09 +0000
-Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
- ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
- ([fe80::2a19:76b2:e731:8c5a%6]) with mapi id 15.21.0428.015; Mon, 21 Sep 2026
- 09:27:09 +0000
-Date: Mon, 21 Sep 2026 10:28:24 +0100
-From: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
-        jic23@kernel.org, andy@kernel.org
-Subject: Re: [RFC] Maintainer entry profile/contributor guide for IIO
-Message-ID: <arD2UjzKu2k8elgM@nsa>
-References: <20260817111825.000063f6@gmail.com>
- <cb1937e9-c2fa-4d8d-bd95-f53423d88077@baylibre.com>
- <20260818090652.000020bc@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260818090652.000020bc@gmail.com>
-X-ClientProxiedBy: MA3P292CA0054.ESPP292.PROD.OUTLOOK.COM
- (2603:10a6:250:48::15) To SJ0PR03MB5469.namprd03.prod.outlook.com
- (2603:10b6:a03:28a::17)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="mXwGSfjC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1789985735;
+	bh=tZtMCjyRjEVpTYK9a7RCqJ/OJnIZNfwPzTXTJARyiqM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=mXwGSfjC43zRsHGRv+b3VYs9+SM/XZumFJR8wiN1GnOLRQgPqtyB3HPTLbTo6Xcmm
+	 diCckJQntmudlTEfHjY/bJgOAKq30axoN1qb9NBscKfniEEiz0nCFotPzAA1MJtR3A
+	 7x7wk/dh5tZnmJ7LWIZfLQsLQijoXGB1RmBhrBxUdE6NnDw46PH6tDKdWlj1lXU8Yb
+	 ABcs3SsTxkL2wGGhVzVVpVtSOJwkuOxWCwILObqwTHrOt7YTPkoUEwmTa4EmqAYjv/
+	 F50Dkz0OIiiGU3IFXMYfuX2s8sXb1rJ/ySozxlV25vurscmYniZGESKOL02aPzY16n
+	 BEX50MZjDC4xg==
+Received: from [100.64.1.21] (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 1932017E01D1;
+	Mon, 21 Sep 2026 12:15:35 +0200 (CEST)
+Message-ID: <9d9648f8-2097-492a-ba20-6345e8661174@collabora.com>
+Date: Mon, 21 Sep 2026 12:15:34 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|BY1PR03MB7262:EE_
-X-MS-Office365-Filtering-Correlation-Id: e85660fe-c159-416d-8b2c-08df17c28178
-X-LD-Processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
- BCL:0;ARA:13230040|1800799024|376014|366016|23010399003|5023799004|6133799003|10067099003|4143699003|56012099006|11063799006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
- 1/1+uB3U74odsMN8WlElVC/Zi3PqaREQSk3aV8M8g7xeXUfJwIJ+5dPuMFSsuHylbIIwXxGJecays2/iXYX7FijohCunDDepA3YPdGD5B+w5Ks9vDv/WQuWbtlwP4ebXunksSVix6FL9QULtJvQX59PKwGtMS55Xy2/abyyAJZ8LrwKNInI9RrNutZk4/6LYvQZS5NwCHayr3xIfPwgLECpJHgTy4RhoFCYCJGqzPMCrtoGbgkRHkEDCKuODffdSsiZvfknJIE66Ie5TzPrCRqgvk7Md6xZaxOZR7YsbSRraALZKlbsAHPwajj38C3veYp9MD+Dl1GglLjFJGjcFi/msIPzcpoBnWoBhfHyrq9okTIcvs5hruBntSdEaOg60W1mwzTu7hhXMMmk9FxgDBLv7//b5tLFcCWq0650IqN6UBlr2F0AW/fM83XUBjlaG+g/g1zaSyzyQ0oyP0z959NxAE4sthiywRNG4E0Umd9P89JOy3ilCusUdQzl87RZwX2PAmscZfoDbW96FqEc2ymQEgLIbBCvhWnpYEG4lGA3bRhPwl/5oFavUBVHUR1KxnpOWZfnR2E1K16q0uPF8GFDcXAqnxM7W48Yq1mpVL2BxtQiEIYbzL/FHQMO8Yodz
-X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(23010399003)(5023799004)(6133799003)(10067099003)(4143699003)(56012099006)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
- =?utf-8?B?MG1FbEJkYkFyRXNpV0VONG0wTFFCOHorcHJuUGRGMUFEZXNtTG1rVDNNSE9i?=
- =?utf-8?B?eTI2U1RKejExaFlIVDVWMGs4OGZ3VlA0WkdIeFI3aFl3aUtwSXFpWnRiRzhE?=
- =?utf-8?B?UEhueUJaUE5oeW1wQ2RMMi8xQitYMlExSk8yYTNSZzBTOTVXMzlpSXBQZUc1?=
- =?utf-8?B?NDRLN1RWak55VHNzRjY0N0F0Ymo1TWpXKzZCTWdTdWIvUDFuV1lkMVBZMzVH?=
- =?utf-8?B?SEZRVTJDaGlVWFFpTmtTSGg2OEY3dGlsTWpESVFJK3hvbDluVkZDZDV0dkI1?=
- =?utf-8?B?eVhXYTgxWUx4c0RtSVo4WEZodS8rc216TjNqR3FBMTlRZnljWXZWTFBYa1Jv?=
- =?utf-8?B?MmRhUnhCb2pNSCt1dkU1a2c2SWUrcFB1V3JoVm9lQVVaaVR4d0dnVHhwMGR5?=
- =?utf-8?B?bVpibmYzL1cwU0JFdUswYzVldTFGNzFJajIyOWtLd01Hais0NjkxM3RJVlNw?=
- =?utf-8?B?SDZ4WHRZNkVYa0NiTmlXYndBbFZPOWo0bDdlTFFOYjkvRThsaGVudFdwN1dz?=
- =?utf-8?B?WmhNVjRRNDM2MUVSaWxlemNIYXVxSXBhb25pRzhTbzdSb2trRmlzY1lzR2pj?=
- =?utf-8?B?ZFdNN0FSMDJVZUtycWZTUTczMjM0T3pZY2x1RjJFem1uQ0pNdis3b0FBT3pK?=
- =?utf-8?B?Tzdnakp2TlJzVjI2TG5RTThBMk43ZTZubUNHVHZnbzJGKzMxM3czUWNQek5z?=
- =?utf-8?B?SGdsMzlhbWhRNUlDMWlSV09pNU5TQ1d2MDBiM01FTVozcEMvNk5walQ2a2ly?=
- =?utf-8?B?ejU4UUdWbi9ROWNjaDBzanhaY3BEaTVZZlA4MnF1VWhMVWpUNERDalZ1RWNj?=
- =?utf-8?B?ZmxFTUo4ZTZSTnN3UENTOXZxZzZlN3pWSVpvMlFvZWtDRVNwSVRObGhxd1Ri?=
- =?utf-8?B?WkNFTUFnZDdXdTZOb3hUaThMc2xPQVRNU2Q2OGRBaFdtZXRYWkQ1d2pZaXJ1?=
- =?utf-8?B?eG5HOTY0ZUV2QWN5OFhLSXlGNUhCN0g5bzZydGtOMXBUQWtzeC81VU5iS1V4?=
- =?utf-8?B?b3ZIaW1LS3EwMDQxU3BRRzFTWDJBazlsT1ZQRDBWSHJtbkk0dlFNUlVZQ2VY?=
- =?utf-8?B?d2ZJSzhrVjFtZDVyai9RZ0JsZDVCV0JjUWpFWHlqbGtKNGtYc0JqRFo3T1FT?=
- =?utf-8?B?azVHQmJmT1gxZFJDeGQ3SUZJa1E0eUwza3lMYjhxeXAxanBaaWNHV1Z0OHk5?=
- =?utf-8?B?OXpLSERpZkduejlsbzJaU1hhbGxheEViSnU1NnNmdDlsY2JGbDQ4cjNGL01I?=
- =?utf-8?B?T2hxSk1UK3hKZm5DM3krN3BGaERCcWxadGIxRjd4UllhRWdkU1E3eVV1aTBs?=
- =?utf-8?B?TFRFTXRtVXE5S0ZGU1VJMk51RGNlZU5uRmlmYWt3Y2ZtdERzcEJNbmQ4T1lX?=
- =?utf-8?B?Q0ZwUCtFU1Rva3FZc1NxTm5LNTY4NnZ5dEU5UHNxdVdqR1dKZlZuSmFtS0lm?=
- =?utf-8?B?TWZFVzRhVVM4NmFoMnBBYjh5OUJZYmtFR1hJalphekVpeWRFVU8zQzFXeDBX?=
- =?utf-8?B?U3FyZVhxbmNZMzYrM0JtLzZoVE5XK0dyWTRQMER4aUR4TFRkSVlMWmRHOGNZ?=
- =?utf-8?B?bnZ6R2cwR09QdFNtL1RxUXN2TTB1RmV4d1ZPSTJOSStOdm9mQWczdko3Ny9V?=
- =?utf-8?B?amZVOWZrL2s1NGhvSlFwYWRMRTNBSTdqSW9sM20vMVlyeFVKQTNWeDMwWlN5?=
- =?utf-8?B?ZXVwT3J1cDNZNGwrNWpDek03NW9FbGF5eG12SDZyV1ZMTnMvaG4xVnBTR2tj?=
- =?utf-8?B?WXRVWW5CSDdMU2YrdDN5b0tKNUQzMkkxSThnalRrL2N4eTRGdmNmRnZTRVRJ?=
- =?utf-8?B?TmFtNU5OY1ZoRzZPVHd1SHd3OFlUbkhGQ2Z5UkQxc04zbDRnN21kSmtPTjho?=
- =?utf-8?B?cHZQdS9LZEpWOUlXQVRrSWhxOURoanVRZ1dhY25TM0dDNnluL2NmQ0orR0pm?=
- =?utf-8?B?T0RsV1ZETGY1MXJPeGo2TU1tM21EYllKb05ud0E0QnBDVGU2U0Eyby9Rd0xL?=
- =?utf-8?B?ZlcxUmhCall2Q1U2cFFvQSt0bGEzbDRmeVJxNkVQWTNBRHdqSGQ5QUpJMFN2?=
- =?utf-8?B?NXZPSXRlbGZ5dDJlcFpFMUtjK2FnNWpZWXJvTmhMQzNDdnVGa29pWktDeXlX?=
- =?utf-8?B?OE1CczlvdmlsN1lYZ3kyM3ROU1ZIVHgwRmFBN0VpOEhNY0M4SUdhNTdkdEFB?=
- =?utf-8?B?ZnhSazRzQ25DOGNSUjlHQlVCWlkrMUVMallJc1hKZmJTSDZlc3BnU2xIY1d3?=
- =?utf-8?B?NkdWL0diYnl6TUFxNy8zcmZ0VHRKUmJpR0dhMnVhYzdSS3RhVjBYWjlzd2VW?=
- =?utf-8?B?L1N4ZFRBRWMvWnplUHR1Q2NRYUwwUHFPWU9JRDczUk4zeFMwMjd0Zz09?=
-X-Exchange-RoutingPolicyChecked:
-	WnwMIruvoFq8JcurgtMNorkctaBVWm3mB7RIkyCKQF7hO2ZcavGaR5Q2UKy8T44YBbt2roP1yZoxP01V/D3Pop+kYX2LXFo+NrXLyfkT6HwVWDlncGbRdTfzj/6Aa1F1iMZjncq6Vy8xnQ4KR+vlF1+nCWH1E6eRALERhU5fLrr9OUzNNNCqbU1TuTtEPrX/RFzEMiztiQmfsx5SIFQ1xBld8tgLcf+2a9TbTx9QRzuf0aA4FjIfSTfWXORRahyzYgXmbtV9tSbszxgYXpuGlV2dhBRKt16gaIX+qPrcOTQZ5leDo4rvK7AVNaA74H5GH8VS8uzJvP+xZewKnF2zEQ==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e85660fe-c159-416d-8b2c-08df17c28178
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2026 09:27:09.6266
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YU24XaPfDvbIyF7Rjv4dSwpR70r6/MNTxseAKKuOrzsYdqfIIV8fpIs1Il9M2dt04360DmzG8vvZffVKSZR0CQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR03MB7262
-X-Authority-Analysis: v=2.4 cv=BJomP1QG c=1 sm=1 tr=0 ts=6ab0f871 cx=c_pps
- a=JAvUoUKTMhMV/AtIpjtZgQ==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
- a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
- a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=M51BFTxLslgA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=ZQxX5BWu6Z8IJBb2zLX7:22
- a=NEAV23lmAAAA:8 a=IpJZQVW2AAAA:8 a=HtJ6usEcWkVFUjQNf9wA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-ORIG-GUID: RiCRE4WQZiNPaOMKY595NChaNDbfKpdt
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTIxMDEzNSBTYWx0ZWRfX4viO3nNQFOnh
- xSohkijubyqI9aXXEiEpzVtd4g1xClpYrQ7Sb4kJfrxtifaLqixis7Lr40lc3pzeSa+AQFyv117
- a+52tXEm6nHS/zH8SQrd8ggjlbGfTbUnWuTq4bWi02gXlctfsGNh
-X-Proofpoint-GUID: RiCRE4WQZiNPaOMKY595NChaNDbfKpdt
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTIxMDEzNSBTYWx0ZWRfXyj84CHFJQNMv
- cdYocKrUwKERIPXYLjCVCATxzg4xPfbTjVzhMuv7jISTuCBRqbOIL3rkhe8lkDvb8m1kcl3r6nN
- VbhKks0EKlSffwppX0LAqgyZQJnSuiJpnulzESOez+70ivAnu7lkAMuwS34YYmAP5fS2PHIBEm8
- uU1Q92PmNojUIrCPAm7/1v1eFvhwIrYhxyuc6MYEY3ZjbhB+xzztoDw/NmYqtYszO4lufHOGvtT
- BPlvDTAY2hCsDq47rSYna9xWVotzeK59b3RyhilkFbQwFWQk/BXKfzRyfkNo+CwGjH1pIMZuk4a
- maEt9MxjQM4La3+eRZX38pHcOpLx/Owo2yMhjqi1QEDNEUJE/BuEmb88mEHXA5ne5W94Ht27Srx
- ATQ7NOQF4m/5CatI5eOhEfanturF3JIjrZMg7IKzsG8fGAlEsJPWFB9hTe0LQPpSfMcJf0YqnWD
- DverZ1roBxreiEq0g0w==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-21_03,2026-09-16_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 malwarescore=0 priorityscore=1501 bulkscore=0 adultscore=0
- clxscore=1011 lowpriorityscore=0 suspectscore=0 spamscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609210135
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/3] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
+ driver
+To: Ryan Brue <ryanbrue.dev@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, Lee Jones <lee@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, mfd@lists.linux.dev,
+ Roman Vivchar <rva333@protonmail.com>,
+ Luca Leonardo Scorcia <l.scorcia@gmail.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+References: <20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-0-c00edacbee64@gmail.com>
+ <20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-2-c00edacbee64@gmail.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-2-c00edacbee64@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 18, 2026 at 09:06:52AM +0200, Joshua Crofts wrote:
-> On Mon, 17 Aug 2026 19:31:45 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
+On 9/20/26 07:31, Ryan Brue wrote:
+> The mt6397 AUXADC is a 10-bit ADC behind the SoC's PMIC wrapper. On boards
+> built around this PMIC it is the only way to read the battery: the SoC's
+> AUXADC is wired to board thermistors and the charger ICs these boards use
+> have no ADC of their own.
 > 
-> > On 8/17/26 4:18 AM, Joshua Crofts wrote:
-> > > Hi all,
-> > > 
-> > > I was browsing lore and checked out the ksummit mailing list, where the
-> > > topic about guiding new contributors arose [1]. New contributors tend to
-> > > make the same mistakes when sending patches, causing reviewers to point
-> > > these out all the time over and over again. For IIO, this is definitely the
-> > > case (I myself send an email telling people not to send a v2 in reply to a
-> > > v1 several times a week). Other subsystems have a "Maintainer entry profile"
-> > > that contains subsystem-specific process info (DAMON for example [2]) and 
-> > > (sometimes even [3]) a document describing the code style of the subsystem
-> > > (this would be a great place where to mention things like not using
-> > > kernel.h in new drivers etc.). I'm happy to create both of the documents
-> > > but it's always great to hear other people's ideas!   
-> > 
-> > I think there are plenty of new contributor (to the kernel) guides out there.
-> > People just don't read them. So I don't think we need another. Nothing wrong
-> > with trying to make the existing guides more clear/easy to understand though.
-> > 
-> > A subsystem doc that has our code style quirks and idioms would be helpful
-> > though as I don't think that has every been written down in a single place.
-> > Especially useful now since AI reviewers will read it even if humans don't.
+> Add a driver exposing the battery voltage and battery temperature
+> channels. Only those two are described, so a channel ID in the device tree
+> indexes the driver's channel array rather than the PMIC's channel number,
+> as mt6323-auxadc does. The ready bit lives in a channel's raw result
+> register, but the value comes from the chip's factory-calibrated copy.
 > 
-> Yes, but it shouldn't be limited to code style quirks - I highly doubt new
-> contributors develop against the togreg tree of iio.git for example.
+> The battery voltage is measured through ISENSE, because a board with a
+> switching charger in the power path leaves BATSNS on the charger's system
+> rail instead of on the pack. The thermistor only reads correctly with the
+> PMIC's battery-detect bias and input buffer enabled, which take 20 ms to
+> settle. Both are switched back off afterwards.
 > 
-> I'd propose 2 documents:
-> - entry profile - documenting the review cycle, patchwork, point people over to
->   Sashiko, relevant git tree etc.
-> - code style - the TODO is fine for existing problems in the subsystem but doesn't
->   point out idioms we have in IIO, i.e. not using (the awful) kernel.h, preferring
->   devm_* functions, not failing on a mismatched ID to ensure fallback etc. This is
->   stuff that appears a lot in patches.
-
-Personally I do think we have some things (not just coding style)  that are very
-specific to IIO. But maybe another docs file is not the question. Or at least one
-for humans to read :)?! Have you evaluate just having an IIO entry for
-sashiko? That way, hopefully the bot would take care about the subsystem
-specifics and preferences.
-
-I wanted to do this myself at some point but I'm always pulled for
-something else so if this is feels like something you agree and would
-like to get done, please go ahead :)
-
-[1]: https://github.com/masoncl/review-prompts/tree/main/kernel/subsystem
-
-My 2 cents!
-- Nuno Sá
-
+> Reads average sixteen conversions in software; the chip's sample
+> accumulator makes no measurable difference at any setting, so it is left
+> at one sample per conversion.
 > 
-> Whether new contributors read these is up to them (from my experience if you write
-> decent docs people still won't read them and ask pointless questions), nevertheless
-> if we suspect someone is new we can just point them to these documents instead of
-> reiterating the same over and over again.
+> Assisted-by: LLM
+> Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
 > 
-> -- 
-> Kind regards,
-> Joshua Crofts
+> ---
+> 
+> A new driver was created here, instead of modifying an existing driver such
+> as mt6323-auxadc or mt6359-auxadc, for the following reasons:
+> 
+>   - Both mt6323-auxadc and mt6359-auxadc select channels through a request
+>     register (1 bit per channel), while mt6397 uses a 4-bit numeric field
+>     CHSEL in CON1 (10:7), and then pulses a START bit (CON1 bit 0).
+> 
+>   - For mt6323-auxadc, which is the closest I could find to the mt6397
+>     (CON0..CON27), it has 13 more registers than the mt6397 (CON0..CON14).
+>     It uses CON22 for its request register, and reads the result value
+>     from the same register as the ready bit. We don't do that - the mt6397
+>     has a factory-calibrated value for each channel at 0x16 higher than the
+>     raw value. mt6323 also has a 1800 mV / 15 bit scale / resolution while
+>     we have 1200 mV / 10 bits. We also have some per-channel preparation
+>     that we have to do before the burst, that the mt6323 doesn't have to
+>     do.
+> 
+>   - For mt6359-auxadc, it has a more generic framework for describing the
+>     AUXADC, but it assumes requests are channel-per-bit, and so we would
+>     have to basically ignore req_idx, req_mask, rdy_idx, and rdy_mask.
+> 
+>   - We also have our own software sampling, which the vendor does too
+>     (Amazon Fire OS based on Linux 3.18). We'd have to have our own
+>     sampling callback to do it.
+> ---
+>   MAINTAINERS                     |   1 +
+>   drivers/iio/adc/Kconfig         |  11 ++
+>   drivers/iio/adc/Makefile        |   1 +
+>   drivers/iio/adc/mt6397-auxadc.c | 391 ++++++++++++++++++++++++++++++++++++++++
+>   4 files changed, 404 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 41d7b3a67415..9b254f98b5d7 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16717,6 +16717,7 @@ MEDIATEK MT6397 PMIC AUXADC DRIVER
+>   M:	Ryan Brue <ryanbrue.dev@gmail.com>
+>   L:	linux-iio@vger.kernel.org
+>   S:	Maintained
+> +F:	drivers/iio/adc/mt6397-auxadc.c
+>   F:	include/dt-bindings/iio/adc/mediatek,mt6397-auxadc.h
+>   
+>   MEDIATEK MT6735 CLOCK & RESET DRIVERS
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 415e519ad4eb..9a1d36ed53cb 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -1233,6 +1233,17 @@ config MEDIATEK_MT6370_ADC
+>   	  This driver can also be built as a module. If so, the module
+>   	  will be called "mt6370-adc".
+>   
+> +config MEDIATEK_MT6397_AUXADC
+> +	tristate "MediaTek MT6397 PMIC AUXADC driver"
+> +	depends on MFD_MT6397
+> +	help
+> +	  Say yes here to enable support for MediaTek MT6397 PMIC Auxiliary ADC.
+> +	  This driver provides the battery voltage and battery temperature
+> +	  channels used by the fuel gauge on boards built around this PMIC.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called mt6397-auxadc.
+> +
+>   config MEDIATEK_MT6577_AUXADC
+>   	tristate "MediaTek AUXADC driver"
+>   	depends on ARCH_MEDIATEK || COMPILE_TEST
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index dcec0abb03b7..13cb4206bdb7 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -105,6 +105,7 @@ obj-$(CONFIG_MEDIATEK_MT6323_AUXADC) += mt6323-auxadc.o
+>   obj-$(CONFIG_MEDIATEK_MT6359_AUXADC) += mt6359-auxadc.o
+>   obj-$(CONFIG_MEDIATEK_MT6360_ADC) += mt6360-adc.o
+>   obj-$(CONFIG_MEDIATEK_MT6370_ADC) += mt6370-adc.o
+> +obj-$(CONFIG_MEDIATEK_MT6397_AUXADC) += mt6397-auxadc.o
+>   obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
+>   obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+>   obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
+> diff --git a/drivers/iio/adc/mt6397-auxadc.c b/drivers/iio/adc/mt6397-auxadc.c
+> new file mode 100644
+> index 000000000000..d860cd3a8922
+> --- /dev/null
+> +++ b/drivers/iio/adc/mt6397-auxadc.c
+> @@ -0,0 +1,391 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * MediaTek MT6397 PMIC AUXADC IIO driver
+> + *
+> + * Copyright (c) 2026 Ryan Brue <ryanbrue.dev@gmail.com>
+> + *
+> + * Based on drivers/iio/adc/mt6323-auxadc.c
+> + */
+> +
+
+..snip..
+
+> +
+> +static int mt6397_auxadc_battemp_bias_on(struct mt6397_auxadc *adc)
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
+> +			      MT6397_AUXADC_CON0_BUF_PWD_ON);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(map, MT6397_AUXADC_CON0,
+> +			      MT6397_AUXADC_CON0_BUF_PWD_B);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_set_bits(map, MT6397_CHR_CON7,
+> +			       MT6397_CHR_CON7_BATON_TDET_EN);
+> +}
+> +
+> +static int mt6397_auxadc_battemp_bias_off(struct mt6397_auxadc *adc)
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_clear_bits(map, MT6397_CHR_CON7, MT6397_CHR_CON7_BATON_TDET_EN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON0, MT6397_AUXADC_CON0_BUF_PWD_B);
+> +	if (ret)
+> +		return ret;
+
+If this fails, and the internal buffers are kept enabled, are you sure that
+the AUXADC won't lock up?
+
+Should it lock up, I imagine that the best thing that could happen is a power
+leakage, but can be as bad as a system lockup.
+
+Should we unconditionally also clear the MT6397_AUXADC_CON0_BUF_PWD_ON bit
+even if MT6397_AUXADC_CON0_BUF_PWD_B clearing fails?
+
+> +
+> +	return regmap_clear_bits(map, MT6397_AUXADC_CON0,
+> +				 MT6397_AUXADC_CON0_BUF_PWD_ON);
+> +}
+> +
+> +static int mt6397_auxadc_isense_enable(struct mt6397_auxadc *adc)
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	int ret;
+> +
+> +	/*
+> +	 * Two of the five independent input enables, not a select field:
+> +	 * BATSNS is cleared first so that the two inputs are never enabled
+> +	 * onto the battery channel at the same time.
+> +	 */
+> +	ret = regmap_clear_bits(map, MT6397_CHR_CON16, MT6397_CHR_CON16_ADCIN_VBAT_EN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(map, MT6397_CHR_CON16, MT6397_CHR_CON16_ADCIN_VSEN_EN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_set_bits(map, MT6397_AUXADC_CON14,
+> +			       MT6397_AUXADC_CON14_CH0_NORM_SEL |
+> +			       MT6397_AUXADC_CON14_CH0_LBAT_SEL);
+> +}
+> +
+> +static int mt6397_auxadc_isense_disable(struct mt6397_auxadc *adc)
+> +{
+> +	struct regmap *map = adc->regmap;
+> +	int ret;
+> +
+> +	ret = regmap_clear_bits(map, MT6397_AUXADC_CON14,
+> +				MT6397_AUXADC_CON14_CH0_NORM_SEL |
+> +				MT6397_AUXADC_CON14_CH0_LBAT_SEL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_clear_bits(map, MT6397_CHR_CON16,
+> +				 MT6397_CHR_CON16_ADCIN_VSEN_EN |
+> +				 MT6397_CHR_CON16_ADCIN_VBAT_EN);
+
+Same here, but makes even more sense: if clearing the channel selector
+fails, you still want to disable the ADCIN in an effort to avoid power
+leakage.
+
+Everything else looks good, so I'm sure that you're getting my R-b on
+version 4.
+
+Cheers,
+Angelo
