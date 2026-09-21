@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7FAF1D4606;
-	Mon, 21 Sep 2026 01:51:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 884CC31195B;
+	Mon, 21 Sep 2026 01:51:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789955467; cv=none; b=iVJMnn4Fq3H/9YIjyt19xq7d8ljtaAI8UgX9yVMbV2R3BIZrD4NI00Ve9pX6lgdvdv+dAfKzLUD+uxFtTdAMoKJzsK+RucFgx68EeTHfuR2JPsvt1UR1/RhSltmXkBfbBQDzau6YLxupBOTeu+ScOVsdgDa/rs6T5omhQUPgFl0=
+	t=1789955468; cv=none; b=ZIvBc+VwxLeELPIckbzJ4QrULDUcbS4/dyNkDPpH8nrj9jlsQJfhiclThyHdzOBjclOw7cw4wzGVAV0LKF0kfIqzyzTXzqL52nnJmlcmYlzwAJwjpsMG7/iP1DzIzt48VZRpXDHXvTmP+FusUj0/27pw0kBcewUYYL/73Qe2DVs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789955467; c=relaxed/simple;
-	bh=alFjdedo6BI8fFm9aUO6g5778zUTplko+KyOa/SJkb8=;
+	s=arc-20240116; t=1789955468; c=relaxed/simple;
+	bh=SZIF9iDnMvUeXhVezcXKljQCVwSlsFloxxL8Kv+fMw4=;
 	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=V7s4rMROY13LgdnNqxpcwcv63GkkE1SOuB+4+ahO6qXD4pNdtem8eV2JgdEgrq5HTkYf56afkNSUDcyO4fHQDrLSLBCYD3AqflXLWAmCNUP1CWhURgqJ5bW+MeIZtKMRyBArMm7jqugW5OyCVu4cmQzDkxrsJsK9koHeaV7lu3s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B3niNh+y; arc=none smtp.client-ip=100.103.45.18
+	 References:Date:Message-Id; b=cxLbMVYjcDKA5VBBlG983LtA54SiPEbHJdWcBkKcd1aZVzRIbnEvxfQpnDVjx5vFEduuUdwEovl7cM74gZkomshEgd9QxO+dutUcoOatTmW8Tnl3TChjzCe8WgXEhhAYG5wU3xtX6LWSC5T/GHOZmp1X2h1kZRZxRVQ6mREliqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E+WpwGdE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B3niNh+y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933361F00898;
-	Mon, 21 Sep 2026 01:51:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E+WpwGdE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20A41F0089D;
+	Mon, 21 Sep 2026 01:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789955465;
-	bh=L95vhrbWo2vNkQXF9t3WIlJl9leIde7M4gWt6WR53L4=;
+	s=k20260515; t=1789955466;
+	bh=Sb9foMsHfH9st8FVUhgFtiG1JqBh52X2lbf2oFqA3tA=;
 	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=B3niNh+y++y9vTEDcbIvjIWBrUmGkDzfNYqY473/xnDTq0TfPntZSS6lFa/qCBhla
-	 8f8jkDh19GvoQRJFkp/Kb24DUUu4vu96h3wpeqdgWRikKekbWEJTBL1wP3PieQv7wp
-	 IVl45NZ+uLA9GH66UomPNqeUen4WQqhMpoM0ZmL9yP6YlJj89PII6IgOGI1f+NFXGU
-	 63IXwmEr5aEvyIEWIlQxxQ+IgTkpnoqvUdTZwc7HdGr6e5pnIpnR+RNfTdxLrFTWcQ
-	 M6iZbsl6LaVNZKgQ0VXup83Sjh6dc5s/cWpiU9PM9g1p5sNioTe+Tohh56iKxvmhq+
-	 0CEb1k+yjVhjA==
+	b=E+WpwGdEd3llJvsmlkXlM7gDUrtDM2DfM5VfHhGOh/ffM0vZHvN90uoIMn0BCa+0x
+	 iLavzby+jbz/nPk1ZcAVe6nW1s/pPKvJ/BzT11my6UYtgL3M6+w4aImxrHEKpt0YRd
+	 sdF4bEnk34MQpCN3xNEOsZZYN05Cjwwu2p349JA9+dumBGWeDbFIykFC11qtIJH4+J
+	 g9iQafXM9hf7kuvUpvdnsX3sODZ2704Hga0r5Xq7iIB25fNURqMQiSBRvbJ9hiZwxu
+	 9b/8Hy989Cxd161ICYuxvsasTplqkTStOPHM53LIika0V6lK++XeQEsrZsayKq8VVU
+	 GFQ09zc9/ZxeA==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -34,7 +34,8 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 11/15] iio: adc: ad4134: Support SPI 4-wire mode
+Subject: Re: [PATCH v2 13/15] dt-bindings: iio: adc: adi,ad4134: Add high
+ data throughput example
 From: Jonathan Cameron <jic23@kernel.org>
 To: Marcelo Schmitt <marcelo.schmitt@analog.com>
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -43,105 +44,36 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org, 
  conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org, 
  marcelo.schmitt1@gmail.com
-In-Reply-To: <db5578ed11d5ad9f5abb9569d893065dbf79fb13.1789494473.git.marcelo.schmitt@analog.com>
+In-Reply-To: <958894021cf7bd3012567d1dfabd7f2008fe8d31.1789494473.git.marcelo.schmitt@analog.com>
 References: <cover.1789494473.git.marcelo.schmitt@analog.com>
- <db5578ed11d5ad9f5abb9569d893065dbf79fb13.1789494473.git.marcelo.schmitt@analog.com>
+ <958894021cf7bd3012567d1dfabd7f2008fe8d31.1789494473.git.marcelo.schmitt@analog.com>
 Date: Mon, 21 Sep 2026 02:50:45 +0100
-Message-Id: <178995544507.955708.8795648344873356535.b4-review@b4>
+Message-Id: <178995544508.955708.9865443380631226751.b4-review@b4>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2607;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=343;
  i=jonathan.cameron@oss.qualcomm.com; h=from:subject:message-id;
- bh=alFjdedo6BI8fFm9aUO6g5778zUTplko+KyOa/SJkb8=;
- b=kA0DAAoBVIU0mcT0FogByyZiAGqwjYSgSL9dhjvO50CC69J4LwcUfumJFdvhNObKSHEwv163N
- YkCRQQAAQoALxYhBG4pZrOHhAZSkSaBsVSFNJnE9BaIBQJqsI2EERxqaWMyM0BrZXJuZWwub3Jn
- AAoJEFSFNJnE9BaIVJ0P+wXNPE/v7fUqQ5EgAZeitcyK1+Xeg3fQLUVYijxNyrya/BFOotdZBef
- y9UNr0yOQyts6NwUujRJyUDElyiETNMWet4OAYtsRr7OputsKAy5k06UIF22N5LnrUR1qFTD6RA
- Y8dDDXUj+ikhIim24JrxCfh44uhjAer8Q9nhNxiZrGCQCS3TPWG5GaG+Iwr2mc7oSmVCElROUPw
- rULbmyvCofhoak0WvTAq0Z8XTIyI1/cNr6WZlPTZin03jObVDE4V/WtY0nmQmAcUf5CsMW9aBIj
- YzGohMkK/pMUdAsp0R0X6wD4E0asv4EhlrVBL1MOuWHIxTi2MhALuWvCf+rKtGPs6ND/U48zrcw
- yC/JvPlmT2pyFr9d9g0GEPAhZOmZ0ZiS+AsR1XiFYdCsAfMbCb4w6+KXHoWBpNDGxapmYuf8ODU
- uYDc1EvVKOqT37AGspx5UPNEMYX+MwKoVSwFLslTGbi/CG5l02bDL4doNkcDHKqFI10Z0iKYSBA
- z9PeCI9ZFYqpFNV8aBRrInKHPtht2MCG8JkW4qX3cLzmMQR7q4Fx7wpfw+2kZgVGkRGOL5P9tpx
- MlNoIKnnP1NhgXfXKsuxSmx3fO1yXfRCsNrQQSgwq4lPgExH8YIBYJhAPl5LtTB7Eb+w7GhAq5U
- V7xoA+OSnkONSNTGQKs8TSYkzsQ3j
+ bh=SZIF9iDnMvUeXhVezcXKljQCVwSlsFloxxL8Kv+fMw4=;
+ b=owEBfwKA/ZANAwAKAVSFNJnE9BaIAcsmYgBqsI2E+RshzUXK9SVl3vn5DjSdtrjazaLMRaqRn
+ BJYi6pSouiJAkUEAAEKAC8WIQRuKWazh4QGUpEmgbFUhTSZxPQWiAUCarCNhBEcamljMjNAa2Vy
+ bmVsLm9yZwAKCRBUhTSZxPQWiN9uD/4wJv4HiiNzBc9YycavW6VXYfR0uXyU3ZgujRtviDn2uwG
+ Jj/iS+ujWxeRcOhCKLdbujaRpLVeq9b0M68KNgx9jqUx1t5TWlma41/pJB91j40j7xGltEQ4Wvz
+ xcbnA4nbNLBAbQFgN4uBpR3HFBX8im+XPD2c/1+lHmovMiQjtZ95R7Z6woPK0ErOmJpDwagHI2J
+ PqRoHRM805F4kVfMClOXCBkAJm+wdbK/fOg8JX+7rUuvrYQv4xYqeZjzjh3Fi6derlE81lnop/Y
+ ZnSiEWX9gkOO2a6wgQ6ir/qHtI2CP0u3aQkKtmkygbxvnyfEcJPG9M8BJGD2JGIPL5SbWIByi4s
+ NdGBpzgS2t5fJ4pIGUxBLo+1aqaukZGdHs0GTV0LEUftVzw7RkytexRzgFeZGMOO+BTd20M9Tf1
+ qnFN/pLpFLTPtbMxBhk/hpbdo6oyJIQumugyWHo64vFsTFCt60fk1sx1fQgto1p/g5B3lOy5VrD
+ 7247Edp6SbYlCnGPynR8n1RsjzSasd6LQW0PDwTvrUk/XgBJljqsKANulZqtAOLl3aEYsWeQmhr
+ aqwpC9llH4WPoHvxF0ejJQFIqPxSRBFETjsZxUkL092h+RN/sZlZQzOjagPxrt1hraxf2mKZlM/
+ HQQq75zDhmM5ZxVHXN/J0rDUHmyEWi1lSEWC9Yg==
 X-Developer-Key: i=jonathan.cameron@oss.qualcomm.com; a=openpgp;
  fpr=6E2966B387840652912681B154853499C4F41688
 
-> AD4134 devices can be wired in a few different ways. So far, only minimum
-> I/O mode was supported. While minimum I/O mode allows interfacing with
-> AD4134 with a reduced number of wires, that wiring configuration is not
-> optimal for high-throughput data acquisition.
-> 
-> Extend AD4134 support to enable interfacing in SPI 4-wire configuration.
+> Add device tree example for AD4134 operation in 4-wire SPI mode with 4
+> lines to transfer data samples to the host controller.
 > 
 > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-There is a lot of sashiko feedback on this one. Make sure
-to take a close look.
-https://sashiko.dev/#/patchset/cover.1789494473.git.marcelo.schmitt%40analog.com
-
->
-
-> diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-> index 0b6843bf8a9e..cc6bc325f6ee 100644
-> --- a/drivers/iio/adc/ad4134.c
-
->  enum ad4134_filter_type {
->  	AD4134_WIDEBAND,
->  	AD4134_SINC6,
-> @@ -155,6 +171,12 @@ struct ad4134_state {
->  	 * atomicity of consecutive register access operations.
->  	 */
->  	struct mutex lock;
-> +	/*
-> +	 * Ensure atomicity of access mode switch operations.
-> +	 */
-
-One line comment seems like enough.
-
-> +	struct mutex access_mode_lock;
-> +	struct mux_state *mux_st[2]; /* For external multiplexer control */
-> +	enum ad4134_spi_mode spi_mode;
->  	int refin_mv;
->  	bool crc_en;
->  	/*
-> @@ -230,6 +252,85 @@ static const struct regmap_access_table ad4134_regmap_wr_table = {
->  	.n_yes_ranges = ARRAY_SIZE(ad4134_regmap_wr_range),
->  };
->  
-> +/*
-> + * This function controls a multiplexer OUTSIDE OF AD4134 SILICON.
-> + * When AD4134 SDO and DOUT0 pins are multiplexed, this function changes the
-> + * multiplexer state to route SDO to the SPI controller. See AD4134 IIO
-> + * documentation for details.
-> + */
-> +static int ad4134_set_register_access(struct ad4134_state *st)
-> +{
-> +	int ret;
-> +
-> +	guard(mutex)(&st->access_mode_lock);
-> +
-> +	st->spi->mode = SPI_MODE_0;
-
-Oh goody we are flipping the spi bus type and that is not
-describable in firmware.
-
-> +	ret = spi_setup(st->spi);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = mux_state_deselect(st->mux_st[AD4134_DOUT0_INPUT]);
-> +	if (ret)
-> +		dev_err(&st->spi->dev, "error on DOUT0 deselect: %d\n", ret);
-> +
-> +	/*
-> +	 * Try to update the multiplexer state to route SDO to the SPI
-> +	 * controller. If the SDO mux state is BUSY (i.e. locked), that means
-> +	 * the desired state is already selected and we should not block here.
-> +	 */
-
-I'm confused whether this is an expected path or not. Is there
-some race after the deselect above? If so call out how that
-occurs.
+Why not do this earlier in the patch series - before introducing
+4 wire support?
 
 -- 
 Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
