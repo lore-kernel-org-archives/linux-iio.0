@@ -1,49 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94BD33AEF4E;
-	Mon, 21 Sep 2026 23:53:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB7748BD47;
+	Mon, 21 Sep 2026 23:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790034836; cv=none; b=g34ORxYAfNrJ8d4rNgjd575+BXRBLbbQPJJU2vjxpbGTEmZpVyisWiFKbRSRjseT8OUBC4n0QeRnfDHnYYyA5ZZYp7LrT0KplQ8P8X5DoW8sulhkv9rpCaTLaf3MDZxhllMjlNk1Jm/k2O5QM0X/pm3H+EopmzfWMAZzBagTgYk=
+	t=1790034973; cv=none; b=pkxGYuDK0w+0/SFl69lKT5bfkwUT//k1blAEfTRoeR677fkamWZCb4s4+lurRpB98wNwWFmu2RjuhTN9FSTfakCkwo1cWZo/MN1241+28thrb65a7BM614zhgGL5RisTENsHWyq4DcFTy0zybddA6G+IdTr5dXt2Pg3ARg+NpIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790034836; c=relaxed/simple;
-	bh=ZGRK0sDG/XpSMHc4Lhho3n007+8QFLF2F76F2fxTV04=;
+	s=arc-20240116; t=1790034973; c=relaxed/simple;
+	bh=CNpH2CiJdLH4J8i0FELeSpqlURAM6+z3/Kfw7e3mFsQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R6ItKC1Pa0c9XzVEYTi0xLnNUPl3rHrchRilErA3IAEYA/fSJPyAJoRazocZ16GeTV1Snb+n7O8QSTz8ZWHJm1Fbqlmmy1F6vuwXHVaYkA7Vb7iwtjnk0sM7iPdArXKQX+oiDqzhBSRSzIE/RPWPgLl/AjFAynfK2Km6P+SB9cA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JeuEKLq4; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=S/0OBVrdqPgnrAsQMELWIXh8E+W2JdXHEz8/9j+f8kBm+NAErtpUIoU52cv8holzdhRAF6dEmcOgq3YdQs20xMkIDVF5xzr6Lsp3UanZq3DL7C+2Zw73t0p6bSDqvZw1bIiftFnM1y7p3Ym5SU/L/2QMeBRUcVUe6Te1M5pCj/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VIxivc17; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JeuEKLq4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 529F81F000FF;
-	Mon, 21 Sep 2026 23:53:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VIxivc17"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3DB01F00893;
+	Mon, 21 Sep 2026 23:56:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790034832;
-	bh=diy5dTMuGN9SnimJ6pKCOC3PsKM87clvjh/CmMiUvFs=;
+	s=k20260515; t=1790034971;
+	bh=YzzecS67/0aUSkLWxgELsl3YaUCRgzFDJOg+Ant+wdw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JeuEKLq4RJROUUy6nZnZJNjbsQbdfs6em8G330IU3kWgjngY4t1B6ZkqnnnATDs6Q
-	 TqUb3KPumdGRc8jL7lJO+SFXK1XfHRJc1o9qolQbHksLuSQTeIjgXVIIvBbzPN9/17
-	 WCIGg7ziNdzLRhjuQkgyG2/g1CpD+2FcfMFkrXfI3T99Wpu61orM77H3rPwNsSxINS
-	 tqCpttMf+hoiEGJYsA06v9ZrNJqpqjfrxckTWn2R8Na5Wq4ZZUw3EUkcGT8+BJY7a4
-	 GuM91FTSCr9ZjSAY2WPYafJWXkaNUSxtXWQzVnr4/hrY9ybgqFleHR0Vh/5Y37Q2Nt
-	 k9Z2W+G1XaAGg==
-Date: Tue, 22 Sep 2026 00:53:47 +0100
+	b=VIxivc17/0ZSLAyaV5P1Er+Yq5GdR7Brr0B0eshyk7ACkgvDf9lp7nOZ42576+Beg
+	 sSJ2wH6PsjbDDyAmm1AwT981aksDPrMT7vZmx11ulEKOxC536lA7kOIcVaj3r38k30
+	 lBpo3vJDQi08hBdcmbzq1WEGgtY2iA7blNi+UW1LnX00ma9BWb8dvHe2vbGiMzsZ1h
+	 5wTX3ghOQZBm3gKb/PVimjI1gSD6oDgAI7CioDSlH3wEF/ai546rTU+GkxK3G0GJyf
+	 2N97DSw/kdqZCSUDuttX1yYetCJ3R8orfxIxXiQM4kRl28LL6l/TdWO81g2ZGFXs/q
+	 QTYrSCYZg556w==
+Date: Tue, 22 Sep 2026 00:56:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, Bill Wendling <morbo@google.com>,
- David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>,
- Joel Stanley <joel@jms.id.au>, Justin Stitt <justinstitt@google.com>,
- Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
- <ndesaulniers@google.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- llvm@lists.linux.dev
-Subject: Re: [PATCH v7 09/10] iio: pressure: dps310: implement
- .hwfifo_flush_to_buffer()
-Message-ID: <20260922005347.069c490e@jic23-hlaptop>
-In-Reply-To: <20260921183106.231972-1-zoone.rupert@gmail.com>
-References: <20260918122517.377565-1-zoone.rupert@gmail.com>
-	<20260918122517.377565-10-zoone.rupert@gmail.com>
-	<178992913316.706584.1446996024286841775.b4-review@b4>
-	<20260921183106.231972-1-zoone.rupert@gmail.com>
+To: <Ariana.Lazar@microchip.com>
+Cc: <andriy.shevchenko@intel.com>, <dlechner@baylibre.com>,
+ <joshua.crofts1@gmail.com>, <nuno.sa@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <robh@kernel.org>, <linux-kernel@vger.kernel.org>, <andy@kernel.org>,
+ <krzk+dt@kernel.org>, <sashiko-bot@kernel.org>, <conor+dt@kernel.org>,
+ <stable@vger.kernel.org>
+Subject: Re: [PATCH v7 00/11] Refactor Microchip MCP47FEB02 I2C driver in
+ separate modules to add support for MCP48FEB02 SPI driver
+Message-ID: <20260922005607.4de00f3e@jic23-hlaptop>
+In-Reply-To: <f8ac8ad69138fc9e19074e491f91f2892e7bba95.camel@microchip.com>
+References: <20260918-mcp47feb02_refactor-v7-0-82ca794eafe2@microchip.com>
+	<aq0J9Vs1_rUAlcoA@ashevche-desk.local>
+	<20260921000803.1148e493@jic23-hlaptop>
+	<f8ac8ad69138fc9e19074e491f91f2892e7bba95.camel@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,41 +50,52 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 21 Sep 2026 21:31:06 +0300
-Rupesh Majhi <zoone.rupert@gmail.com> wrote:
+On Mon, 21 Sep 2026 14:16:34 +0000
+<Ariana.Lazar@microchip.com> wrote:
 
-> On Sun, 20 Sep 2026 19:32:13 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > As talked abotu above, I think iio_device_claim_buffer_mode()
-> > will do the job here as it stops the IIO core transitioning between
-> > modes until afte this is done with the active_scan_mask.  
-> 
-> It does, but patch 10 then warns on it:
-> 
->   dps310.c:1233:2: warning: releasing mutex 'iio' that was not held
->                    [-Wthread-safety-analysis]
-> 
-> clang 23.1.2, CONFIG_WARN_CONTEXT_ANALYSIS=y. There is a
-> DEFINE_GUARD_COND for direct mode but none for buffer mode, so clang
-> cannot follow the conditional claim. v8 holds the same lock over the
-> same span with IIO_DEV_GUARD_CURRENT_MODE() and the mode check that was
-> already there. If you would rather have the named API, say so and I
-> will add the buffer mode guard and ACQUIRE macro to the core first.
+> Hi Jonathan,
+>=20
+> Thank you for the review.
+>=20
+> > Anyhow, let me queue some of these.=C2=A0 I doubt we'll see anything new
+> > from sashiko given the minor tweaks the rest of this series.
+> >=20
+> > So with that in mind, applied patches in this order
+> > 1 2 4 5
+> > held 6 back for the thing about checking if property present.
+> > 3 7 8 with link dropped.
+> >=20
+> > So just 6 9 and 10 for next version please.
+> >=20
+> > All the above on the testing branch of iio.git. =20
+>=20
+> I was wondering if the correct approach for the v8 series is to create
+> a new branch based on iio/testing and add the remaining patches onto
+> it?=20
+>=20
+> These would include the needed changes: the property_present check for
+> the label (former patch 6), the new precursor patch for the EEPROM
+> mutex (former patch 9 split into 2 patches), along with the refactoring
+> and SPI support additions (former patches 10 and 11).
+>=20
+> Please let me know if this is the preferred way to handle it.
 
-Adding the guard is fine - we kicked that back a while ago simply
-due to lack of users. Is there a path to annotating the non
-ACQUIRE.. functions to expose the right information to clang?
+Yes please do that. It will probably confuse sashiko but as discussed above
+the chances of Sashiko spotting new stuff at this point should be low
+anyway.  Prior to the LLMs becoming useful we used to do this sort
+of partial series being merged a lot. It's less common now as we
+loose bot coverage.
 
-I did similar for sparse and at least the direct_mode claims
-a while back. This might be a case of it just gets too complex
-though and the compiler fails to figure out what is wrong.
+Thanks,
 
 Jonathan
 
-> 
-> Rupesh
+>=20
+> Best regards,
+> Ariana
+>=20
+>=20
 
