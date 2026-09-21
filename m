@@ -1,155 +1,152 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C71B4915A7
-	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:02:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E72A348FF92
+	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:33:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789988526; cv=none; b=m9sq6Qofd8Sdt/6QfHtrm1b8XOMRRe2PiHGmIarch+GOrpsaHNqBKHfI4gG8qfhJi5dW5l3s7b8gFgmiuFJwBLmvFFGHwWKezTM7T+bMsY6F93D4BImtyGJ3dUD663BLQDc/pcsi/qQunTKA5F4Isk7pMXLpdisoIKznrtsqkT4=
+	t=1789990443; cv=none; b=afIszntIf73FpzUzMQ86gxSNx3LLt2dQQQNT273A5qvgA8JdLsF//zcqfp/RF1ELCZfkMPIbIS+7b4EsjNQtnDefdFRiXMd6EPyzvFTKryFA2NfxDFiQ6HRnoHQy67kEkEAcnPxhMBhkKwxxnAaBnRxQWJsEHWHxkqX1Gij6vOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789988526; c=relaxed/simple;
-	bh=smbOHgTnDqLfvUfS8tyABi4Cl+89CAiGSJnYdaVQpYk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=DidVMrUSHu4s3OFLD+SOVbmWKOwy2MQHYpJyT5nnIdi9QZsfe1xtt+hGj99xIXK2KoCYnG7j6biAYCXzUuPSUfkNoYJqeHDBLs5i3bvAgngmXZL2dIFKTf0gLZu+MQV/c97S/l+cID5xN/iV/pdZ+iCAfUQYDkmFM5QLKdEqY50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aUScAqG3; arc=none smtp.client-ip=74.125.225.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1789990443; c=relaxed/simple;
+	bh=igMMVzyB0kazDBf1FCrnS86fOSdJceOcYZNYKQsRSwE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=atzWu1pK/TjYqi1S1RCytTR5JEpq57hQ+xWvAhJCItGw+vIlGYSLI3JALomE/pUam/YalWNVhf8607UPuOEcXK7U57i9uyOelQuTFAHtUEKwLYf6KWC7mptIwbCg/toCJYBAq/OCm3uukloPT5xFf3DAt1OYdy9HcSpa0YSSIN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WF3LwFfF; arc=none smtp.client-ip=74.125.225.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aUScAqG3"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ccfd61ecaso24384385e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:02:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WF3LwFfF"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-482f6350f88so1731374f8f.2
+        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:33:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789988518; x=1790593318; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=s9+sP23Ww3lq9DKMamGJva2CDC1gphzBkrBVWrhACZE=;
-        b=aUScAqG3T/cOKuT0ndJQZu6lf+t/4aGU7YpePoW3t+lgyWfAQpB9oj+j3k6GdIEsz8
-         U68cf27M51xPPOdHMIyjnRSmm7+5+0B59bzCIlaT/vam+rL19Oaf/WzZbhfRR6SG+8p9
-         Xyccg0S5Raw5QrDU4DJ0PKsDLF7R+dZ6+XxwVSLP5Z7ttUOy+aHAvgWX3Dw4BK7eTrPB
-         0yrsHbbDgzz2Mexp5Ak/VcJqD+4GCqf33goRFVNN4quEFEpV62NM06TecdoyahtYlHvJ
-         CzM8suNSSzgpLK4P2akrWfMy27kAVLQ7hSDVFwGueH4abDmfqH0vWLLnCLG09+6PgfRp
-         9vdA==
+        d=gmail.com; s=20251104; t=1789990438; x=1790595238; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:sender:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=AlSfZ5SyLA7gnS311aS5PZjku8Ua3hLuitk3rxSYlQg=;
+        b=WF3LwFfFXyWuYmq2whc2ae97AmMrzq/jDIrAP4kyu+zgmGWXXaSAArmji8OQfhouxb
+         j3HJazSeYnzF5rpOPmuB9EN1p10/5DoUjEy7Dqe8BuoaCvo7R0F73qu0SCX3/7EAsBSh
+         cNwlSIh2Vhqo+RopxNtQxHneUj1rAWY6uLhUa+8EX+tMtarH9z7yp+ucIKylswfkgJzU
+         mfkatn1g5TKgf94WVksalmzhhW05AuzeRJfNNj+kij90ogrhQnbZsjUwDj4nS0ORpBwh
+         T1MtMg6rMJYA+175eLuOcihfaJLpqzjYvXK+sIqTv7Kgkq22dJ5lIewUKwT7J/3OgvCn
+         ZY/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789988518; x=1790593318;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=s9+sP23Ww3lq9DKMamGJva2CDC1gphzBkrBVWrhACZE=;
-        b=a/wd6qbaJtGAFzJpSJOni+7fBEH5v2gBJKspzMavgtq1Sz1vB+SPxMSM825IO/6QO4
-         WmNPfqAkZviZCeC1cMb5jWTw4lUXWxbAqy+11tQ1dE0EtkRJT1PYanHWGjBed8x9obQy
-         gmBOq59p8NbdkGsoW73s/e7nWc2Fy80QOGw5F636LYXugmulssoUjBhskilAa9u7uniy
-         vtr3VpY1fu1voPLLda1spaos18nU3nclXYlpTgQKQJ2kIxjgiD2715u6jYesXdnjKEGA
-         Dy08uW3JqVkmE27cc46++3Yv8mtJ6pyjSh7cnNcJrh7k8/400hEkAWKwAwJo+52eTISx
-         hJRQ==
-X-Gm-Message-State: AFuF++nHoMtBxwdORnnrYCr1g0t0r1qWJYZZeBn2D8QMnOFgyEIi0H+p
-	2d9rRTWrhiP3DR6mo2gDLuVrXsBo6nrxf3hNwQmW3I6y7O0rqCuZZ0ig
-X-Gm-Gg: AYBFou0fzHkDZ1fvyhjr6YxOXkk9g5DJJZo7840+ZBmNHL8V0bw7yPKIJD04SSyk/a8
-	0FBr6f0tvACIkMHe9uFEw3J4N7nIDopRT95C1mhbXH5YHXPFrPyGm/ZZeLJWyDsUMgi9ZbAoJuX
-	uLRQKzSMMlvl4e24c2bwgAvwCLcVkAnbYNeNDzROGS++QBbDFzfqugRVVrtWu3ANqFjTUJ8iiWj
-	yXzWIgyKVRRIMzSbAeVOpFoD82dOLYf+Sr42zNtdZmhlKeHnlUMp1CggKs5scqoss761YxSzEIb
-	uMGFbmKSXgo1AEVQu3NDVcXIPLyf2ONag+17T5RZ8cHTDkjZWJuov/9Qq3TA9C3/HNqz+KjJyLx
-	TsN1rxnjrrPQcHLbMNr5vVER4AbwsnQSRkKu5LZhbLdtNEtIxmhQR12wYJSgKKSW8THBLA7WbkF
-	4jxEICUkgGktdppUsTAPllZndBIG8tvJm399U0uue0NpFXRROnYjLOIHm/lAHGh6x9eNi6fmGuZ
-	/OFMD9PwQe03JX0vc8N65k9oV9FB7CrJJj0WFL3WQX7Hnz/jHU+y5EyMB2CK0n6BuqMmpJRPdxm
-	XHpxvyo=
-X-Received: by 2002:a05:600c:3586:b0:49e:7d69:83b7 with SMTP id 5b1f17b1804b1-49fc56f7376mr183862295e9.13.1789988518301;
-        Mon, 21 Sep 2026 04:01:58 -0700 (PDT)
-Received: from iku.Home ([2a06:5906:61b:2d00:856:ad4f:1ab5:71b6])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fcd07bc34sm214267425e9.10.2026.09.21.04.01.57
+        d=1e100.net; s=20260707; t=1789990438; x=1790595238;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:sender:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=AlSfZ5SyLA7gnS311aS5PZjku8Ua3hLuitk3rxSYlQg=;
+        b=172BRh3wW1XQkHCwLuVXXf1bQLcet7nCFx4zMV09LYXlWMlTkv6u7TK4VhmysAPUml
+         O8cmBmHJfBTeVStv5KoeeoYMtpNkf2rN7jyUZ5A4/DcCzIu5rK2ubvZjnalXEJp8dKwf
+         0sryJVSxqB/xAJVKI5tNVzcjV4/y3DTlrkqhhs7FWjpGlGKblUTR7T6yyo2Oen2XqdUF
+         IxLAZN9BDld+PcUdyjqxt0tCc6J7IJzvsMV59sC+us27DbvfoNP67+es8WhWKi7/ZAG2
+         qGpeUfsuB78gSslM26aGqQbOOfn30kKZVhpQinR5X7tTKgnFEEoJMwcgiv30hfWI9/Wt
+         jB7w==
+X-Forwarded-Encrypted: i=1; AKwUvBwyHiCdF0E3X7bo7M0Dj5dirn7OwJHjuqNjMYZTQlKoNAZcuBV58cXEfivfNBpri6A0nPJPnts/QsM=@vger.kernel.org
+X-Gm-Message-State: AFuF++m5fRZKvOGmGX8+dd/bN8LJrFIqayV/CgblFILsu9hYEdzaiEGs
+	1SgGQ6++HdrIzuSyQ5WULMIZESxdVfn1exMHrz0PYdJwYQyA8ziPg0p1
+X-Gm-Gg: AYBFou1xfn1J0WL8xDT+RWXPZe4ixgVkNB1Xucusn/4IHqPMTiWxqiBaNTZzf4SK1IF
+	YQRHoK0+tNmRi2POCvx2pKqYjRopuITf+dTz9FTqYsx8BP22JVwhZFANy4FTthtMbhxPSlZevU3
+	IVhydb3O9jzt84yiKeavg+bOiuRZc16b1X38+lFwCEIFDCavO71XspZ7lqKoO1lKtOXYDcnf/nD
+	IlRi5S0xz0eNqM2FKkEvDx2EbEFIHIKgR6QqH/25c5dhSPfcnAwGQrJcnZdI+KWlFqVzwLKXmNp
+	acsk6tM/QG8YRgA286KvggHVN+c5MTtdO7ubQpMzTqPDWsKpn6mnxLefy8pYeHgA041MgdgU4gR
+	l+Y8NuGLpz10aUjWdTJWzKNt75+aG9ke/32OVc4cYnokV12R+lZIpanKEv0A3tKW1etTK9+zQI6
+	/sdUTnzKIWVRT73fyi+Y9j3+097wgmpH7/XB43okYitqRx0kVNzIKMuh+e46dxz8VWGhLSHUPZY
+	PHAxVFKq8RyFg==
+X-Received: by 2002:a05:6000:22c9:b0:486:fe09:6918 with SMTP id ffacd0b85a97d-4871e373ae9mr15558359f8f.56.1789990437762;
+        Mon, 21 Sep 2026 04:33:57 -0700 (PDT)
+Received: from iv-work ([193.43.9.250])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48724562bcbsm24047359f8f.16.2026.09.21.04.33.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 04:01:57 -0700 (PDT)
-From: Prabhakar <prabhakar.csengg@gmail.com>
-X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Prabhakar <prabhakar.csengg@gmail.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 3/3] arm64: dts: renesas: r9a09g087: Drop unwired ADC interrupts
-Date: Mon, 21 Sep 2026 12:01:44 +0100
-Message-ID: <20260921110144.44425-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 21 Sep 2026 04:33:57 -0700 (PDT)
+Sender: "Ivan A. Melnikov" <ivan.a.melnikov@gmail.com>
+Date: Mon, 21 Sep 2026 15:33:55 +0400
+From: "Ivan A. Melnikov" <iv@altlinux.org>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+	Francesco Lavra <flavra@baylibre.com>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: tools: Use proper macro to detect _Float16 support
+Message-ID: <arEDbA8fIxR6mrZq@iv-work>
+References: <20260918161305.1161852-1-iv@altlinux.org>
+ <20260919113945.2bee973b@systembl0wer>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260919113945.2bee973b@systembl0wer>
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Sat, Sep 19, 2026 at 11:39:45AM +0200, Joshua Crofts wrote:
+> On Fri, 18 Sep 2026 20:13:02 +0400
+> "Ivan A. Melnikov" <iv@altlinux.org> wrote:
+> 
+> > __FLT16_MAX__ is an internal compiler macro. GCC defines it if
+> > _Float16 is supported by the target in general, but the support
+> > may depend on the exact target options. For example, on i586
+> > without -msse2 I get the following error from GCC15:
+> > 
+> >   iio_generic_buffer.c: In function 'print2byte':
+> >   iio_generic_buffer.c:141:17: error: invalid conversion from type '_Float16' without option '-msse2'
+> >     141 |                 printf("%05f ", ((float)converter.f + info->offset) * info->scale);
+> >         |                 ^~~~~~
+> > 
+> > To fix that, use the public macro without double underscores.
+> > 
+> > Fixes: cdd445d4b2a9 ("iio: tools: Add support for floating-point types in buffer scan elements")
+> > Signed-off-by: Ivan A. Melnikov <iv@altlinux.org>
+> > ---
+> >  tools/iio/iio_generic_buffer.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+> > index 000193612aad..9ea93984e0e9 100644
+> > --- a/tools/iio/iio_generic_buffer.c
+> > +++ b/tools/iio/iio_generic_buffer.c
+> > @@ -131,7 +131,7 @@ static void print2byte(uint16_t input, struct iio_channel_info *info)
+> >  		printf("%05f ", ((float)input + info->offset) * info->scale);
+> >  		break;
+> >  	case 'f': {
+> > -#if defined(__FLT16_MAX__)
+> > +#if defined(FLT16_MAX)
+> >  		union {
+> >  			uint16_t u;
+> >  			_Float16 f;
+> 
+> One Sashiko issue:
+> 
+> Does this unintentionally disable _Float16 support for all architectures?
 
-Remove the compare match and compare mismatch interrupts from the ADC
-device nodes, as these interrupts are not wired to the GIC according to
-the hardware manual Rev.1.30.
+Indeed, it does. Sorry, my patch is incorrect. I must have completely
+messed up all my checks on Friday.
 
-Fixes: 4ed27b4fdeb1 ("arm64: dts: renesas: r9a09g087: Add ADCs support")
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- arch/arm64/boot/dts/renesas/r9a09g087.dtsi | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+> Since the tools build environment uses gnu11 compilation flags without
+> explicitly defining __STDC_WANT_IEC_60559_TYPES_EXT__, FLT16_MAX is
+> undefined across all architectures. This causes the preprocessor to skip
+> this block entirely, causing the tool to always print 
+> <unsupported 2-byte float> for 16-bit float data, even on platforms where 
+> native support previously worked.
+> 
+> If FLT16_MAX were actually defined, the compiler would still parse the
+> _Float16 block and throw the same missing -msse2 compilation error mentioned
+> in the commit message. Is there an alternative way to check for hardware
+> support without completely disabling the feature?
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
-index bf81ab9b64c5..68c8daed557b 100644
---- a/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a09g087.dtsi
-@@ -1274,11 +1274,9 @@ adc0: adc@90014000 {
- 				     <GIC_SPI 699 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 700 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 701 IRQ_TYPE_LEVEL_HIGH>,
--				     <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH>,
--				     <GIC_SPI 851 IRQ_TYPE_EDGE_RISING>,
--				     <GIC_SPI 852 IRQ_TYPE_EDGE_RISING>;
-+				     <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "adi", "gbadi", "gcadi",
--					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
-+					  "cmpai", "cmpbi";
- 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
- 				 <&cpg CPG_MOD 206>;
- 			clock-names = "adclk", "pclk";
-@@ -1298,11 +1296,9 @@ adc1: adc@90014400 {
- 				     <GIC_SPI 704 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 705 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 706 IRQ_TYPE_LEVEL_HIGH>,
--				     <GIC_SPI 707 IRQ_TYPE_LEVEL_HIGH>,
--				     <GIC_SPI 853 IRQ_TYPE_EDGE_RISING>,
--				     <GIC_SPI 854 IRQ_TYPE_EDGE_RISING>;
-+				     <GIC_SPI 707 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "adi", "gbadi", "gcadi",
--					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
-+					  "cmpai", "cmpbi";
- 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
- 				 <&cpg CPG_MOD 207>;
- 			clock-names = "adclk", "pclk";
-@@ -1322,11 +1318,9 @@ adc2: adc@80008000 {
- 				     <GIC_SPI 709 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 710 IRQ_TYPE_EDGE_RISING>,
- 				     <GIC_SPI 711 IRQ_TYPE_LEVEL_HIGH>,
--				     <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>,
--				     <GIC_SPI 855 IRQ_TYPE_EDGE_RISING>,
--				     <GIC_SPI 856 IRQ_TYPE_EDGE_RISING>;
-+				     <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "adi", "gbadi", "gcadi",
--					  "cmpai", "cmpbi", "wcmpm", "wcmpum";
-+					  "cmpai", "cmpbi";
- 			clocks = <&cpg CPG_CORE R9A09G087_CLK_PCLKL>,
- 				 <&cpg CPG_MOD 225>;
- 			clock-names = "adclk", "pclk";
+Apparently, the only correct way to detect _Float16 is to try compiling
+some code that uses it. For that, a feature can be added to tools/build.
+
+On other hand, x86 without SSE2 is the only platform I could find where
+__FLT16_MAX__ is defined, but _Float16 does not work, so a simple
+platform-specific workaround would also work and would be much less
+elaborate.
+
+WDYT?
+
 -- 
-2.55.0
-
+  wbr,
+    iv m.
