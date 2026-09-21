@@ -1,54 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDEA2235BE2;
-	Mon, 21 Sep 2026 02:05:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C10842749DC;
+	Mon, 21 Sep 2026 02:08:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789956356; cv=none; b=fXehjt4UoRAun7CiS/t8VrnPdpLmx07w1hwMKRdlodR/O7P9w9JjrcFSXfag+RYqgbUJy7XRlT1VucE7Ve3Deypzmej4BPBAVtasvv1N0StSc2zxxRmhyed+xT8lHAXJulBo1IXxs8ioZJE6Qz/oGMHUhTt9esu7nR3q0w/vrfI=
+	t=1789956505; cv=none; b=Sz8RuoSYa1oR3a4WazywDPmW0XftqFzPW5JwAfXmVrkB7f2e5fOADSzM0AqVe6Ef/8GZLpyHfN3OBTjmUkwhL3L3Nv23pV1fyP3Ipb6Tl/0j6thEMa6J3K6CNRakM4P1Udf1wvlmgqcWQEMx5UlVM7svuPs4xJ3O3zZQp95HJz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789956356; c=relaxed/simple;
-	bh=55LU5E5arv0NuHchabANuHElzHfLTFJEby021ctAXRE=;
+	s=arc-20240116; t=1789956505; c=relaxed/simple;
+	bh=FaQMT0rE37baVWJSJ0dRe4PqLBIHpn+9HdLmHtyFE5k=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FQdYO/2qQrh5D+gmBUemCCpuRvbazO6TKEntSJcQfO26wwDIN+79O2W/du35cjd1wZaPK1MtR1Ee+JjjghSRQykOgmL6YfZU8jG4x68C1Z1d+mSwmSba1AsqFgYqKMpurQvTkvcP5OqryD3LPZM7mkF82cI0HedHtTTAJ+VymOc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nLGXGx/9; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=VDLbG9ZMRKhPgbaL1Si6LCm376dPZivQNGZ8qw/+0jxJCtA+Yj8Mn6VfOxd9/dfvM3Ktgz+Zgw5BXQ0G01xKagxHpaZOnUjejrVqLpO2XlrOpmmDqO6Cb8sYiRpO0Qzcpo6ROekCQJEzmXHvDHCKN6XKMm+09BmwI83tkkt/HXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XZkPaFQH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nLGXGx/9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF591F000FF;
-	Mon, 21 Sep 2026 02:05:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XZkPaFQH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C8DB1F000FF;
+	Mon, 21 Sep 2026 02:08:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789956354;
-	bh=uikkSmrumHAqGpsS77IAH7yKBMssXnftH2z/L0nZR7s=;
+	s=k20260515; t=1789956503;
+	bh=NpIRnFxqUUD3tCptCr10Wb+X9uJvASSGEA6JSURbCr4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=nLGXGx/9rS7szEc3KLwMSNkACxLS7aBM6MZ2WuBpUCNbb10PeIQyJNh+f255zDV4B
-	 81x0Wp1ESuGMCcArEtxuxgxQ+AIEqHX+1t9xacnYxV19VCpqlX5lKztXK++pwxNAh4
-	 IubwkaPXp5URZ+l/0RKAGyDk4MqF45h/9dlPSgeC/LW3aD5b3bdNrMt82us3l7odaD
-	 MCajDY46F4fcDFFMrqwSzVBYxJrwZz0Vs0p85f39r2NZLKu5tlqcZEgep3pnPm4hCG
-	 /tfytr6E9VNyJ1N17tqr2/ZZ54JX/cBg6fhNigRFYBW6GsS4DIV9VhT0G8uq68aarp
-	 bNqAsBfFSub5Q==
-Date: Mon, 21 Sep 2026 03:05:46 +0100
+	b=XZkPaFQHJ/onb/hbeK+wuQOu8zy2YVScKURFRY04c0BF7yrtvTNfT5xQQMjbFC9M2
+	 z41m/Jzg3z/cU03Z8EdS/9Oxwq8lbNg5ME8M/wSyYdvPQlZ/G1WdawhYS5u9yYrDGl
+	 OpQ6ZcXXdgftyVBhQz8FcIyjCqfJeWPMBiwdiH3CDt8zTXRl70j9YQBBIaQBt3cwcR
+	 gx0sXh/Rga0P2/CAqPPVVs3k2Du83t8NSQS0VJ0l/IIQEpxkpLLJqBemsLCA2LLVgs
+	 Lh+BZds9HPaFDB52fH85RmjbWcQaygKJqAqdKyJ1ql+8hjZDuwp5/NRsqbrZNuwIse
+	 JXYb1aQihgltQ==
+Date: Mon, 21 Sep 2026 03:08:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>, Marek Vasut
- <marex@nabladev.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
- <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
- Cheick Traore <cheick.traore-ext@st.com>, Olivier Moysan
- <olivier.moysan@foss.st.com>
-Subject: Re: [PATCH 1/8] dt-bindings: iio: adc: stm32-adc: add support for
- stm32mp23 and stm32mp25
-Message-ID: <20260921030546.73800535@jic23-hlaptop>
-In-Reply-To: <f1f9db42-f022-45da-a6fa-132d54d07716@foss.st.com>
-References: <20260911-adc-stm32mp25-v1-v1-0-cef26eecdef2@foss.st.com>
-	<20260911-adc-stm32mp25-v1-v1-1-cef26eecdef2@foss.st.com>
-	<20260913040801.30e07d4c@jic23-hlaptop>
-	<6e28ede2-686c-4972-8a15-348ae090cec8@foss.st.com>
-	<20260917035338.2ef5ded6@jic23-hlaptop>
-	<f1f9db42-f022-45da-a6fa-132d54d07716@foss.st.com>
+To: "Zhang, Lixu" <lixu.zhang@intel.com>
+Cc: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>, Yibo Tan
+ <lhfff@tju.edu.cn>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>, "Shevchenko, Andriy" <andriy.shevchenko@intel.com>,
+ "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] HID: sensor-hub: synchronize multi-value read
+ cancellation
+Message-ID: <20260921030820.3ef1a6bd@jic23-hlaptop>
+In-Reply-To: <SJ0PR11MB56133EB59F6A661ECE3820D593B82@SJ0PR11MB5613.namprd11.prod.outlook.com>
+References: <20260910112338.4171983-1-lhfff@tju.edu.cn>
+	<9ae8e6b44ffaf5affb7324f802a3626c581ac461.camel@linux.intel.com>
+	<SJ0PR11MB56133EB59F6A661ECE3820D593B82@SJ0PR11MB5613.namprd11.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -59,192 +52,70 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 17 Sep 2026 09:27:10 +0200
-Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
+On Thu, 17 Sep 2026 01:16:09 +0000
+"Zhang, Lixu" <lixu.zhang@intel.com> wrote:
 
-> On 9/17/26 04:53, Jonathan Cameron wrote:
-> > On Tue, 15 Sep 2026 09:49:01 +0200
-> > Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
-> >   
-> >> On 9/13/26 05:08, Jonathan Cameron wrote:  
-> >>> On Fri, 11 Sep 2026 17:51:23 +0200
-> >>> Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
-> >>>     
-> >>>> Add stm32mp23 and stm32mp25 compatibles. Three ADCs can be found on
-> >>>> these SoCs, split into two blocks:
-> >>>> - ADC12 are tightly coupled (common registers).
-> >>>> - ADC3 is managed independently.
-> >>>> Each ADC is a 12-bits successive approximation analog-to-digital converter,
-> >>>> with up to 20 multiplexed channels that can be configured as single ended
-> >>>> or differential.
-> >>>>
-> >>>> New property "st,adc-trigger-sel " allow to make the difference between
-> >>>> the ADCs and to apply the correct trigger configuration.
-> >>>>
-> >>>> STM32 ADC may be in a power domain: allow a single 'power-domains'.
-> >>>>
-> >>>> Restrict the last channel (19), as it is wired directly to ADC Vref+.
-> >>>> It's meaningless to have direct measurement. Internal Vref with
-> >>>> calibration data from bsec (nvmem) must be used instead e.g. vrefint.
-> >>>> Restrict deprecated properties (st,adc-channels, st,adc-diff-channels,
-> >>>> st,min-sample-time-nsecs).
-> >>>>
-> >>>> Co-developed-by: Cheick Traore <cheick.traore-ext@st.com>
-> >>>> Signed-off-by: Cheick Traore <cheick.traore-ext@st.com>
-> >>>> Co-developed-by: Olivier Moysan <olivier.moysan@foss.st.com>
-> >>>> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-> >>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>    
-> >>>
-> >>> Hi Fabrice, all,
-> >>>     
-> >>>> ---
-> >>>>  .../devicetree/bindings/iio/adc/st,stm32-adc.yaml  | 106 ++++++++++++++++++---
-> >>>>  1 file changed, 94 insertions(+), 12 deletions(-)
-> >>>>
-> >>>> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> >>>> index c4c4575d3fa9..0e0ceaa3d8d6 100644
-> >>>> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> >>>> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> >>>> @@ -23,11 +23,18 @@ maintainers:
-> >>>>  
-> >>>>  properties:
-> >>>>    compatible:
-> >>>> -    enum:
-> >>>> -      - st,stm32f4-adc-core
-> >>>> -      - st,stm32h7-adc-core
-> >>>> -      - st,stm32mp1-adc-core
-> >>>> -      - st,stm32mp13-adc-core
-> >>>> +    oneOf:
-> >>>> +      - items:
-> >>>> +          - enum:
-> >>>> +              - st,stm32f4-adc-core
-> >>>> +              - st,stm32h7-adc-core
-> >>>> +              - st,stm32mp1-adc-core
-> >>>> +              - st,stm32mp13-adc-core
-> >>>> +      - items:
-> >>>> +          - enum:
-> >>>> +              - st,stm32mp23-adc-core
-> >>>> +              - st,stm32mp25-adc-core
-> >>>> +          - const: st,stm32-adc-core    
-> >>>
-> >>> What is this?  Given these all vary in features
-> >>> why would we fallback to a generic match for
-> >>> these new compatibles?    
+> >-----Original Message-----
+> >From: Zhang, Lixu
+> >Sent: Friday, September 11, 2026 1:17 PM
+> >To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>; Yibo Tan
+> ><lhfff@tju.edu.cn>; Jiri Kosina <jikos@kernel.org>; Jonathan Cameron
+> ><jic23@kernel.org>; Benjamin Tissoires <bentiss@kernel.org>
+> >Cc: Shevchenko, Andriy <andriy.shevchenko@intel.com>; linux-
+> >input@vger.kernel.org; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> >Subject: RE: [PATCH v1] HID: sensor-hub: synchronize multi-value read
+> >cancellation
+> >  
+> >>-----Original Message-----
+> >>From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+> >>Sent: Friday, September 11, 2026 2:29 AM
+> >>To: Yibo Tan <lhfff@tju.edu.cn>; Jiri Kosina <jikos@kernel.org>;
+> >>Jonathan Cameron <jic23@kernel.org>; Benjamin Tissoires
+> >><bentiss@kernel.org>
+> >>Cc: Zhang, Lixu <lixu.zhang@intel.com>; Shevchenko, Andriy
+> >><andriy.shevchenko@intel.com>; linux-input@vger.kernel.org; linux-
+> >>iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> >>Subject: Re: [PATCH v1] HID: sensor-hub: synchronize multi-value read
+> >>cancellation
 > >>
-> >> Hi Jonathan, all
+> >>On Thu, 2026-09-10 at 19:23 +0800, Yibo Tan wrote:  
+> >>> sensor_hub_input_attr_read_values() publishes a caller-owned buffer
+> >>> to the raw-event path. If its interruptible wait times out or is
+> >>> interrupted, it clears pending.status without taking data->lock and
+> >>> returns.
+> >>>  
 > >>
-> >> Ack, I'll drop it in v2,
-> >>  
-> >>>
-> >>>
-> >>>     
-> >>>>  additionalProperties: false
-> >>>>  
-> >>>>  required:
-> >>>> @@ -239,11 +276,18 @@ patternProperties:
-> >>>>  
-> >>>>      properties:
-> >>>>        compatible:
-> >>>> -        enum:
-> >>>> -          - st,stm32f4-adc
-> >>>> -          - st,stm32h7-adc
-> >>>> -          - st,stm32mp1-adc
-> >>>> -          - st,stm32mp13-adc
-> >>>> +        oneOf:
-> >>>> +          - items:
-> >>>> +              - enum:
-> >>>> +                  - st,stm32f4-adc
-> >>>> +                  - st,stm32h7-adc
-> >>>> +                  - st,stm32mp1-adc
-> >>>> +                  - st,stm32mp13-adc
-> >>>> +          - items:
-> >>>> +              - enum:
-> >>>> +                  - st,stm32mp23-adc
-> >>>> +                  - st,stm32mp25-adc
-> >>>> +              - const: st,stm32-adc    
-> >>>
-> >>> Similar to above, what is this?    
+> >>Hi Lixu,
 > >>
-> >> same,
-> >>  
-> >>>
-> >>>     
-> >>>> @@ -344,6 +388,12 @@ patternProperties:
-> >>>>          items:
-> >>>>            - const: vrefint
-> >>>>  
-> >>>> +      st,adc-trigger-sel:
-> >>>> +        description: Selects the HW trigger configuration available on this ADC
-> >>>> +        $ref: /schemas/types.yaml#/definitions/uint32
-> >>>> +        enum: [0, 1]    
-> >>>
-> >>> Magic value that is meaningless to see in a dts.  If they
-> >>> are effectively not compatible, give them different compatibles and
-> >>> drop this property.  I'm unconvinced this property is more
-> >>> useful than that given just how opaque the description is.    
-> >>
-> >> That's exactly what I was wondering about. As you suggest, I can remove
-> >> this property, and introduce dedicated compatibles in V2, to clearly
-> >> identify the differences.
-> >>
-> >> Need to distinguish:
-> >> - ADC12 are tightly coupled (common registers).
-> >> - ADC3 is managed independently.
-> >> Triggers are different between them. The purpose of st,adc-trigger-sel
-> >> was to identify that.
-> >>
-> >> Also MP23 and MP25 are also different (trigger list). Combining this
-> >> would lead to introduce four compatibles, I'm thinking of:
-> >> - st,stm32mp23-adc12
-> >> - st,stm32mp23-adc3
-> >> - st,stm32mp25-adc12
-> >> - st,stm32mp25-adc3
-> >>  
-> > Naming wise, I wonder if it looks too much like adc twelve?
-> > Not sure how to avoid that cleanly as adc1-2 seems odd too.  
+> >>Please give me quick test. Change itself looks good, not sure if we
+> >>need something more.  
+> >Hi Srinivas,
+> >
+> >The machine is currently running other tests. Once they are done next week, I
+> >will run a quick test on this change and get back to you with feedback.  
 > 
-> Hi Jonathan,
+> Tested-by: Zhang Lixu <lixu.zhang@intel.com>
 > 
-> Indeed, so could introduce one compatible per Soc/ADC ?
+> I did some basic validation on a real HID sensor hub / rotation sensor system and did not see a regression from this patch.
 > 
-> +          - st,stm32mp23-adc1
-> +          - st,stm32mp23-adc2
-> +          - st,stm32mp23-adc3
-> +          - st,stm32mp25-adc1
-> +          - st,stm32mp25-adc2
-> +          - st,stm32mp25-adc3
-> 
-> There are some other differences between adc1 and adc2, e.g. in the
-> reference manual:
-> - ADC1 is connected to 18 external channels + 2 internal channels
-> - ADC2 is connected to 14 external channels + 6 internal channels
-> - ADC3 is connected to 14 external channels + 6 internal channels
-> 
-> This is resolved currently by channels child nodes with labels for
-> internal channels. So maybe better to name all of them (future proof) ?
-Yes. Ideally the binding would be constraining the channel nodes
-and we'd need the compatible to do that.
+Great. Thanks!
 
-Seems like we have a winner - separate compatibles :)
+Yibo Tan, please can you spin a v2 addressing the other feedback.
+
+thanks,
 
 Jonathan
 
+> Thanks,
+> Lixu
 > 
-> Please advise,
-> Best Regards,
-> Fabrice
-> 
-> >   
-> >> I plan to update it in v2.
+> >
+> >Thanks,
+> >Lixu
+> >  
 > >>
-> >> Thanks,
-> >> Fabrice
-> >>  
-> >>>
-> >>>
-> >>>     
-> >>  
-> >   
-> 
+> >>Thanks,
+> >>Srinivas  
+> >  
 > 
 
