@@ -1,46 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B48D30BF70;
-	Mon, 21 Sep 2026 02:10:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1812F7EF3;
+	Mon, 21 Sep 2026 02:13:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789956657; cv=none; b=V2m6lvKR4ewlmIKLe0YGs36dGKUs8vpG36VZDU5I/cf5u9GoPiCbfGf/6PSreiYq/oJMLktZCu4awAXzAAufrCTsTZ+145+eUcHSTo24R6vKL4JeZ76Mo0ZUc7HZP+FsUWFokGXVAynHf4bIWJktqAgCMJ20qZHI7UfG/m3aeb0=
+	t=1789956808; cv=none; b=dj7wICGJOAq3kwXrA84EEMGk+AyQKLr78zOEMvdXfsh8F3gt8IShZH1F0hbycpYlJVj/xoae7QkBgHwYqGweJ/nthGQBrgqEWpStb9fA+sqmRdlHECZNooGgwTt2SbBc8ssYyzJICByhvQNyzS2G0xMs0YFxVLrOgIUAtkutA9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789956657; c=relaxed/simple;
-	bh=aUDACwDStVzjM+F2npJ/h4BbQFznP8OS1TGbxbv8WpQ=;
+	s=arc-20240116; t=1789956808; c=relaxed/simple;
+	bh=wW9q3xxSv+EdD0YDTdtWWpzKrVloxopLFNPJM6TxMvk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QDugc8q8i934roUlyOSpS0wcVK56a1OQ/X8X9gQu0ujTiCU0yEPxqHopzQ474f5sSID0BxvZcD106M4xUG/ZtP6qc9zfKHH/tmnz58CT9AaTaxZCgReI2kO7FdCgxU00BAW8+iRZd6LyYijQf1hBTfHa8X4VT0SRK5YmZWACjQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O6n1bYa6; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=iafJxxPLWbgB/sC6uS0OzvzxLeqw6SO692PLvt3okEXLJs2dj2mNSOMmBuyHsBynxgPrDhqBmGL0OqFDtLXc3roeQSjT0vAH8m5eLv3dPeHL/NsAFp2HWthjnnrmDwIX5kBi7WVA5rBE+L8PT4+YHuUmZe9Qkv1Z/hRE91ZVDqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QIi5MDSN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O6n1bYa6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE4321F000FF;
-	Mon, 21 Sep 2026 02:10:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QIi5MDSN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 462FD1F000FF;
+	Mon, 21 Sep 2026 02:13:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789956655;
-	bh=NhImPibtvOUZtnLDZAHZuztyyY5AGDMx8uSdsrXfV7o=;
+	s=k20260515; t=1789956806;
+	bh=DPTi7N5qsYEdFhSbNOboj1eNrq7d+EjudYJT3x6S26A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=O6n1bYa61Vz6wp2GKO3rtaEQUkAJTf9boUeUTjExGcSOyZStLAyiGi3MN38VMkqiL
-	 iGi1jOUdjMXJMEJhIQXCaR33/XVlBKTo2/H0KWDU+U9x3V+QfBr2q/iZB/lN4UNXKJ
-	 kr97nmL3itfVF0fJh6sCc0cOMnNgirJjmMkx7r6xZ85bIYm3bXb0YPhhCCYnV+Hr1U
-	 PEdUAuwUxYmB5y1TXcIhihMD+KslgU0C3LDHBsSnVVCL2nFvp5t8y0rHBFWO20BoGc
-	 SdsYhJrGWlD9Ldu43GjHWLUR7sOcJfDTqhSHm7oYSOl2uRpuCszEybRhYD5lm6D82t
-	 yAN1JtSrcT2ag==
-Date: Mon, 21 Sep 2026 03:10:50 +0100
+	b=QIi5MDSNuDOE2E59yM+3fBosxl77HtcBUnz6Jnrp3o92ZFqQ5Eqx/I/dJlWeGkyyq
+	 Tbra22LYGSbVmeK3k+VnXQCa/IP3lnl+N2+xSeCFTTdqynmN7MdeXvq8sjO3rxUWwP
+	 wI+68FXx5G9uSe2oPvF5DnrB+F6CIbOv8XnLPlb0NcrOtMGq5vE+SgIqbbzlTTX3Hr
+	 yUI7yTA4notVohgHAA7JtFPTScat6N4NCVhDiQ239i8yrQ5f9u5iStm/yIEDIG7ZCQ
+	 msirpVpASzIAHyjkQOsjSzJjn5mpjqJQJPni53HfuPPFEyvtvKNtDu7wKuEDrvh5bp
+	 UA7JYjbknJyuw==
+Date: Mon, 21 Sep 2026 03:13:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
-Cc: Tsz Shan Chan <tsz.chan.dev@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Tsz Shan Chan <tchan@jacques.com.au>
-Subject: Re: [PATCH v3] iio: light: apds9306: fix default sampling frequency
- definition
-Message-ID: <20260921031050.2ee15633@jic23-hlaptop>
-In-Reply-To: <56f77aaf-30ca-451d-b3f4-8a80f3be1c6a@tweaklogic.com>
-References: <20260904-apds9306-v3-1-4f668393c2ae@jacques.com.au>
-	<20260906045929.0a1c46fd@jic23-huawei>
-	<56f77aaf-30ca-451d-b3f4-8a80f3be1c6a@tweaklogic.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux@analog.com>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: ad4080: add support for AD4885
+Message-ID: <20260921031321.45893860@jic23-hlaptop>
+In-Reply-To: <20260913232155.5b8d226f@jic23-hlaptop>
+References: <20260907101944.9748-1-antoniu.miclaus@analog.com>
+	<20260907101944.9748-3-antoniu.miclaus@analog.com>
+	<20260913232155.5b8d226f@jic23-hlaptop>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,86 +51,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 12 Sep 2026 20:29:36 +0930
-Subhajit Ghosh <subhajit.ghosh@tweaklogic.com> wrote:
+On Sun, 13 Sep 2026 23:21:55 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On 6/9/26 1:29 pm, Jonathan Cameron wrote:
-> > On Fri, 04 Sep 2026 11:19:48 +1000
-> > Tsz Shan Chan <tsz.chan.dev@gmail.com> wrote:
-> >   
-> >> APDS9306_SAMP_FREQ_10HZ is defined as 0.
-> >>
-> >> According to the datasheet (Broadcom AV02-4755EN, page 11,
-> >> ALS_MEAS_RATE), bits[2:0] set the measurement rate:
-> >> - 000: 25ms  (40Hz)
-> >> - 001: 20ms  (20Hz)
-> >> - 010: 100ms (10Hz)
-> >>
-> >> Change APDS9306_SAMP_FREQ_10HZ from 0 to 2 to write the correct value
-> >> for 10Hz.
-> >>
-> >> Datasheet: https://docs.broadcom.com/doc/AV02-4755EN
-> >> Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
-> >> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> >> Signed-off-by: Tsz Shan Chan <tchan@jacques.com.au>  
-> > Looks correct to me, but as driver is only a few years old, I'll leave
-> > some time to see if Subhajit is still about to take a look.
+> On Mon, 7 Sep 2026 13:19:44 +0300
+> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+> 
+> > Add support for the AD4885, a dual-channel, 16-bit, 10 MSPS SAR ADC.
 > > 
-> > Jonathan  
-> 
-> Hi Tsz,
-> Really good find.
-> I am just trying to find out how this happened as this is not a logic or implementation error!
-> Let me rig up my test setup, read back from the reg and make sure it gives 0x22 without any init.
-> 
-> Looks all right to me according to the datasheet and init sequence.
-> Acked-by: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
-> 
-Shout if your testing shows up anything interesting.
-In meantime I've queued this up on the testing branch of iio.git and marked
-it for stable
+> > The AD4885 is the dual-channel variant of the AD4085, sharing the same
+> > register map and SPI interface as the rest of the AD4080 family. Like
+> > the AD4884, it uses two independent ADC channels, each with its own SPI
+> > configuration interface, but it runs at a lower maximum throughput and
+> > therefore uses the same maximum LVDS conversion clock count as the
+> > AD4085.
+> > 
+> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>  
+> LGTM. I'll leave it on list a few days though as we still
+> need a DT ack.
+I'm not entirely sure why but it jumped directly to handled
+elsewhere in the dt-binding patchwork.
+
+Works for me ;)
+Applied,
 
 Thanks,
 
 Jonathan
 
-> Thanks Andy and Jonathan.
 > 
-> Regards,
-> Subhajit Ghosh
-> 
-> >> ---
-> >> Changes in v3:
-> >> - Move datasheet URL to datasheet tag in the commit message
-> >> - Link to v2: https://lore.kernel.org/r/20260903-apds9306-v2-1-e8673986ae56@jacques.com.au
-> >>
-> >> Changes in v2:
-> >> - Add datasheet link to commit message
-> >> - Remove blank line in the tag block
-> >> - Link to v1: https://lore.kernel.org/r/20260903-apds9306-v1-1-3f892aa4f156@jacques.com.au
-> >> ---
-> >>   drivers/iio/light/apds9306.c | 2 +-
-> >>   1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
-> >> index f681b02e4922..7dd41136734f 100644
-> >> --- a/drivers/iio/light/apds9306.c
-> >> +++ b/drivers/iio/light/apds9306.c
-> >> @@ -61,7 +61,7 @@
-> >>   #define APDS9306_NUM_REPEAT_RATES	7
-> >>   #define APDS9306_INT_SRC_CLEAR	0
-> >>   #define APDS9306_INT_SRC_ALS	1
-> >> -#define APDS9306_SAMP_FREQ_10HZ	0
-> >> +#define APDS9306_SAMP_FREQ_10HZ	2
-> >>   
-> >>   /**
-> >>    * struct part_id_gts_multiplier - Part no. and corresponding gts multiplier
-> >>
-> >> ---
-> >> base-commit: 940de590b839f71d6dc846160534bf202401b8b7
-> >> change-id: 20260903-apds9306-bedba7b74e59
-> >>
-> >> Best regards,  
-> >   
+> Jonathan
 > 
 
