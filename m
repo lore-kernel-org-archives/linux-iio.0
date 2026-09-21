@@ -1,97 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed2-f37.google.com (mail-ed2-f37.google.com [74.125.228.101])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 950D930DEA6;
-	Mon, 21 Sep 2026 08:34:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC3D0453A5E
+	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 08:46:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789979656; cv=none; b=kdgVxiotdamlEBVdi9XIqVbI2OyeHdYOjOv89JQ8GD4cpVQy3l7WUeffTvCW9MVhiDQIXtwZXtWdqPPUCEE3Q4ojb01AK6TXsJsvfF2iZy+E6FxefRJBPQjI0TpsBdVA9+IAlroKlplG4GxId7miwfjH/8UMffpRxhCbw4TEcvw=
+	t=1789980409; cv=none; b=jrHV6xq8dOwcVfahEcCiq5E4/Oh/DxZmQcyQDvwcAePET+vIDfv1FWt2T5+Dgz0nBb2qLBPj9WkT3nstqnM+zuQydrdG7WJTuGQPRUsEJxJg3v4MafDImvDetYx/SDGQnTSfnw+31/X45J8xI5ykg6KV/azS7QoM9tYU7ULcoAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789979656; c=relaxed/simple;
-	bh=LKQBA+epEihVp/53sMaunef0vZqLpiZm8EEONl8LDls=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W/CxlHQ42EHvxDyOBVQqvVMQapnqfqKlaf2XJOCrFUDFDuzBN+smUhNPBaLdkGoMHnC+0mSRHcgnjNPQKSVohMfrO4K/EMUjFw2Md4vI9SYLl32Y9EevOmXXbD0Stf90Iw/QRWOSUc7PxuzfE1pP1MVbcOSQxSTXCMerjgbdgSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mP3nWF7g; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789980409; c=relaxed/simple;
+	bh=KyBH7dhUVR4B0av3A00svT+cy5avMnDRCt6F/8hLFiQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AIXpqNEEDLRbX6nQ/4I+jNqfPQOWWZaIg68aa+OvRQb1kX/eKYF3CwWH9RqgewkUZtusclEhZP2iFGjZrxQD5Mv+9R2TnUw7dg8BlBJwoiT92tAH6O42OFaJcQykfjOlSN+G/mzHvCBsIFsQE7WdNNttpPwb20GRHD3cQqIcZKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xde7lvO7; arc=none smtp.client-ip=74.125.228.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mP3nWF7g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A5741F000FF;
-	Mon, 21 Sep 2026 08:34:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789979655;
-	bh=8gbl7Xm+wSfCvDbbc3qvZFGs24Sa3c8Li3JzmJET1KM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mP3nWF7gGESdM2fA9CMjpIcdOIQbsFwFIUK+oQtYtVi0L8AORfOrkM/amIbo3cP9Q
-	 hHgvUapxO/ZL65CqoVmV7I8tVJrNI67pJqMr7lzly8tDbpcZTAy0dlZjix+U6/0S0M
-	 AfJWOBYCcIUSKvILtwULBkbfgJyIeIT9PUwgZpMtDLcNWgGoYS+RykMJSqf6Aw1vp/
-	 06IDQWzunYXkyj2/L7kWDuSfIYq5+zRt0odBfXT6cPrkA53am5SQ4H9HyJCtKhiX8d
-	 VM1hEYw0eO7WtEqQjaGf61b0SquKks2QdNFea/yuiMdPjZy5C/Eqbimcg/QHJbea/H
-	 u7XNeMACJxK7A==
-Date: Mon, 21 Sep 2026 01:34:14 -0700
-From: Kees Cook <kees@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad7173: Remove const from chan_arr allocation
- type
-Message-ID: <202609210131.8441BD398B@keescook>
-References: <20260917211436.i.689-kees@kernel.org>
- <aqzfhNmU3sazdCTQ@ashevche-desk.local>
- <20260921002128.46dc36db@jic23-hlaptop>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xde7lvO7"
+Received: by mail-ed2-f37.google.com with SMTP id 4fb4d7f45d1cf-6a9984f9a59so3793055a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 01:46:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789980406; x=1790585206; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=U83Tc5sQYnzc1MW72+9l9dJyYEc+FCbzixyfv/lGGEw=;
+        b=Xde7lvO7wONq4WdJWo6Y4+36q0sugLQo7GicQlDObrmem8LfZ/gVLYU/J2MK+8WLTZ
+         2ivBumskyL28bEmZAOVzELbUmX0SnMH2rRtgT8ZvVnuv9C+/LaB8PBlEvN25ATL+s6HL
+         HAlIUK8ZHxacglxHdq09BfHLZi3O7HtmLllOlabGi8HV2sSF0qDwi4GiTMTSvu0XQFze
+         /ALoNlmiU//wJL4Ff2F2H+fKfGxyYHQdxbD+vQG/CrRcMIgsedNa7QjQAlOUH5Mh31zI
+         0WxL4FtQR5Ou2ds7yFd36eo+aXzqVdxNC8gcglkdlE1OnduVKtj+79o7rx0BNls/GL2A
+         XFBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789980406; x=1790585206;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=U83Tc5sQYnzc1MW72+9l9dJyYEc+FCbzixyfv/lGGEw=;
+        b=jpmgpuGTkxNhdZoppmpAG76d4R8n5hajOCTugTl1dkp5v8Jk3PEPM3nE9JAgUdu9eP
+         pREf5AaWbqBbnhe5ISXnKwQ38n1mCjVeu+iPUCXWaUEBI3xCxIj+8x2lH2TBy4GDXB7C
+         VAstmHCqrWGBaaGuxAfxsWhuS8d1jdCnYONv0wqYJBUN2KXimtS+XH63oLD6Gyl87IN7
+         RHQGlu5ot3uALlE/5p6rqbjRwiZTgPljDPdy+EIslM/4mXYgWWGi1cCVf0jj66eJj8J5
+         0Ul4u6QKxdvYUhHcj7j7MCHrkN7HTIpRp0ZS5XuglG3KL+BfH/+VIBtuQpRmDCy3UhL5
+         E9gQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxhEMd9AroMX26ZE+krJqS9nXCbd+FxU2+7KWmF27ZU1+e/DaA6/epfEvqgQEnjZ91jgwWvDSO7P4M=@vger.kernel.org
+X-Gm-Message-State: AFuF++kjIvaq4EF2Ecap3QhJS8CJBKTJ/KYPmSR2EDXY66C+mohmfkwR
+	iSBDgwf8LD3bnFOCeufWzqO31EsfYjhYa9ecKyOOQ4541l0UiLuB/vdd
+X-Gm-Gg: AYBFou0r0QRRIkGVgPBAZGchNUyzpRXSEX+tETG5ShxowDGgOwOZ+Dt5vhDLKEoua/z
+	zhxS6JQ6xviZzthQlLb5TWLgiWS3FT729dvTHQMMfs7hVGnaw/9HjklaSeVo1pljX4Bg4Y5TX8V
+	5NhKfnq9+NNmsUQGdoWce82pDzKzX4mKmQ2s/q+J5KvOUhqEmup+WZYzCCTnGgqW7E5yClfaMpe
+	zD1710Yk9x6eaH7vWS0Jafjony8+fDcfbTSiOGF/ViUo8JXQTCMPhrB+dCRhEP9wwJAzKjiBQRj
+	tcN0O+HRRuymVSrv4GWSWB6M90/o/KmjUE9V0ql9SAQmoPbKiJo11Tbz4VqzVA98j6vPzcSf7p9
+	/ojcIhr34nDKwaAiyH2GgfHTiCBtpBaN5I0KHYfeC0yPwhCLBqFq7SwwbM/Xpr2PPMEtxY++aPP
+	Dkkz8lnI6VvqOF/FLFbsrlF/w+icSrs3pqCzg4O/yrFlO0ImlaZO8ZwmWSr1rGgxNcBuW+/4BQu
+	u2J3AqLLTY=
+X-Received: by 2002:a05:6402:23c7:b0:6aa:4529:4cb7 with SMTP id 4fb4d7f45d1cf-6aa53135128mr7228644a12.16.1789980405879;
+        Mon, 21 Sep 2026 01:46:45 -0700 (PDT)
+Received: from [172.24.138.145] ([137.71.226.102])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6aa67d821efsm3882322a12.10.2026.09.21.01.46.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Sep 2026 01:46:44 -0700 (PDT)
+Message-ID: <457da50e-a633-4508-a8e9-7e000933623c@gmail.com>
+Date: Mon, 21 Sep 2026 10:46:41 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260921002128.46dc36db@jic23-hlaptop>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 00/17] iio: adc: Add AD7768/AD7768-4 ADC driver support
+To: Jonathan Cameron <jic23@kernel.org>,
+ Janani Sunil <janani.sunil@analog.com>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Michael Walle <mwalle@kernel.org>,
+ Randy Dunlap <rdunlap@infradead.org>, linux@analog.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>, Conor Dooley <conor.dooley@microchip.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+References: <20260916-ad7768-driver-v8-0-27aa24db5225@analog.com>
+ <20260921013732.6c5399e7@jic23-hlaptop>
+Content-Language: en-US
+From: Janani Sunil <jananisunil.dev@gmail.com>
+In-Reply-To: <20260921013732.6c5399e7@jic23-hlaptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 21, 2026 at 12:21:28AM +0100, Jonathan Cameron wrote:
-> On Fri, 18 Sep 2026 09:51:48 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> 
-> > On Thu, Sep 17, 2026 at 02:14:37PM -0700, Kees Cook wrote:
-> > 
-> > > In preparation for making the devm_kmalloc family of allocators type
-> > > aware, we need to make sure that the returned type from the allocation
-> > > matches the type of the variable being assigned. (Before, the allocator
-> > > would always return "void *", which can be implicitly cast to any
-> > > pointer type.)
-> > > 
-> > > The assigned type is "struct iio_chan_spec *", but the converted
-> > > allocation type would be "const struct iio_chan_spec *", as the size was
-> > > taken from "*indio_dev->channels", and "indio_dev->channels" points to
-> > > const. As there is no general way to remove const qualifiers, take the
-> > > size from the assignment target instead. No change in allocation size
-> > > results.  
-> > 
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > 
-> > ...
-> > 
-> > > -	chan_arr = devm_kcalloc(dev, sizeof(*indio_dev->channels),
-> > > +	chan_arr = devm_kcalloc(dev, sizeof(*chan_arr),
-> > >  				st->num_channels, GFP_KERNEL);  
-> > 
-> > I would even dare to put it on a single line now (yes, 86 characters long).
-> > (No need to resend, Jonathan I hope can tweak if he agrees with this.)
-> Done, though I would assume Kees is going to send a mega series
-> that rewrites this line anyway and might well make it even shorter.
 
-I will indeed. :) But Coccinelle will be happy with whatever shape it
-has. (It'll swap "devm_kcalloc" for "devm_kmalloc" and then gain "_objs"
-and lose ", GFP_KERNEL".)
+On 9/21/26 02:37, Jonathan Cameron wrote:
+> On Wed, 16 Sep 2026 13:13:49 +0200
+> Janani Sunil <janani.sunil@analog.com> wrote:
+>
+>> Add support for Analog Devices AD7768 and AD7768-4, 24-bit simultaneous
+>> sampling Sigma-Delta ADCs with automatic power mode selection.
+>> Changes in v8:
+>> - Introduce the DCLK divider helper in the core patch to avoid moving its
+>>    register-programming logic later in the series.
+>> - Document why register caching is not used
+> Other than open question on regcache vs volatile registers
+> this series looks good to me now.  So let us get that resolved
+> nice and quickly.  If it turns out regcache can be used I don't mind
+> just tweaking that comment for now and taking a follow up patch to
+> turn regcache on when you have it ready.
+>
+> Jonathan
 
-> Applied to the testing branch of iio.git (queued for next merge window
-> subject to tests etc)
+volatile_reg would handle the live GPIO and status registers. I will remove the regcache sentence from the comments, leaving just the SPI framing explanation. I'll look at enabling regcache in a separate patch.
 
-Thanks!
+Best Regards,
+Jan
 
--- 
-Kees Cook
