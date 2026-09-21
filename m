@@ -1,118 +1,97 @@
-Received: from mail-pz2-f43.google.com (mail-pz2-f43.google.com [74.125.228.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FE683515EA
-	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 06:24:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 950D930DEA6;
+	Mon, 21 Sep 2026 08:34:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789971898; cv=none; b=C8cr6ki7q1R7gsvdaGKBvYX/HngHnIbinACaEVBkwTpLOSncJUCPjYax9YWjMO3dyUKbZXVhiCsFJb7LgaQ4M+k3gMNsKPtt6gZGyesKwf0B/4AQ4MJW1dp55yuEVUrXFi+dXGhk4ahEuT630mMXRiV6vWcE8QJo4o+ddeHXA7g=
+	t=1789979656; cv=none; b=kdgVxiotdamlEBVdi9XIqVbI2OyeHdYOjOv89JQ8GD4cpVQy3l7WUeffTvCW9MVhiDQIXtwZXtWdqPPUCEE3Q4ojb01AK6TXsJsvfF2iZy+E6FxefRJBPQjI0TpsBdVA9+IAlroKlplG4GxId7miwfjH/8UMffpRxhCbw4TEcvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789971898; c=relaxed/simple;
-	bh=pA549//OYM7fyJIc7yxSbMcyjzH13X8kC3Rw7VmSaNM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Mb0vMp/sRrg+UPo2hLvWOAj05L30DG8w74YvR9unKw2MkuqFYDdKUlgDX4DIZvLBag2OTx4jYYtmecef71pvEpOYYhGysQn8ObNFyFdZU/lbBfneq1TfXnMGaIcdVok/BZE80wja0RPjuYbbPlYi9u8jTZV6TjD1JL3tI2tThjg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jnTBVffg; arc=none smtp.client-ip=74.125.228.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789979656; c=relaxed/simple;
+	bh=LKQBA+epEihVp/53sMaunef0vZqLpiZm8EEONl8LDls=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W/CxlHQ42EHvxDyOBVQqvVMQapnqfqKlaf2XJOCrFUDFDuzBN+smUhNPBaLdkGoMHnC+0mSRHcgnjNPQKSVohMfrO4K/EMUjFw2Md4vI9SYLl32Y9EevOmXXbD0Stf90Iw/QRWOSUc7PxuzfE1pP1MVbcOSQxSTXCMerjgbdgSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mP3nWF7g; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jnTBVffg"
-Received: by mail-pz2-f43.google.com with SMTP id d2e1a72fcca58-85469a34908so2351337b3a.0
-        for <linux-iio@vger.kernel.org>; Sun, 20 Sep 2026 23:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789971897; x=1790576697; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=AJ/GHRkp98XLTockNWA7TYk+PmU+zv6J0kw1z2p9qwE=;
-        b=jnTBVffgHqBZ/BoaQr/dBO5sR2a3IJRsZIIzh+KqeVFwl9/JlkJpAJG2zVFcSwDJA6
-         zZjCZPCzdHspLtLZyPO9bAGSEC3fUpDahXZ/Hny3BrxPqgK1sxqEF/wFHIjJlfQ1pUB7
-         5ZjowWh2Q5t/hFQOmxYkOXe3P8U+zvg0RMCrx5y7hsg1PRBIUbiOTkwEZo4eNSKiXsux
-         3iAF/pwYF1Hy1iwOb/VxndYAHeKKEOX1N+KdCK60Xugt30yVtbG+z8GCYdhz7orolGFZ
-         n5mFuXMC8t82ulLzmyN2n+ujl8TzdawfX7/F+Unq3NVjrlku8vOtGwkyn9KGLbIXCDb9
-         ey3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789971897; x=1790576697;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=AJ/GHRkp98XLTockNWA7TYk+PmU+zv6J0kw1z2p9qwE=;
-        b=agMQeyibWC90KM0o/A22QRc7pxI+BeL5t0+zRZ5HatQEKiwj+vbVyIuFE3Jkf7eWiY
-         KhmY3nfrnWFpv7vxPwHU0UQsgRIhOV++9LtxTw+9bk+HN8GwN1VEqWDe+KAhGZLLWGjj
-         rKmjwWNhH2mG0E/2l9bV3uq+wq+AEBt5noDPvt7ht17EQJSvOPNYJT3dAnpFILK3JfIy
-         H6X4qZkAHq5wysF3ETUgntDa9GFCD+PjyKLaC7SyMZfqcTMIdZvXzsF+oAlDw3/ttqrQ
-         Uu123DG8nDbxpFVa2NEdXStkC1pUik2qsDYKg1vJ8AI7WR7Pn9CYM0qgn65l93BPoN78
-         qdqw==
-X-Forwarded-Encrypted: i=1; AKwUvBwv5pMhByZZtaB7xpiLGvE75BSiaWCnEuM32S83ZkcFs2++jmMtIUIq84hioOJWpCyaEMg3K5STzSQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++ntnLbiOLBswH2mG7DjEpXTen7YKwxTKCU/Sdq+gzRd0IyqnA5z
-	9fZJdzdH4yITqO43CAyoMK/zg3fW+abpTQPEo1pjESqnx0KPWD9VovkO
-X-Gm-Gg: AYBFou2BblzYPUkcpiOScdJqThModMrZ2woFd/hJrJZEGeT+Wl82uywTAIuPTbN5zM7
-	sRZTvKBLiMlitwcktlRgln2dpDkwfe8LKfrgr1VWvhuqU0vwEcAqO52gAsihcjuKgv2xtYz0V+P
-	UXp5wGrXeUyDvV5XSDVMTesKSEoLerHaES8b1JuY+aN5XvfItrV4aKhZnvf2Csjzz32qzI9IT3/
-	8zxtyuAi4wSe7MRfx/2bLZANPWP3mDKkqAD8Q2e/+yGDQb0nR7ek+3iFowF5A7eX4pNqMScLv7B
-	C89CKgucK+P1oQpWn70XfLxDXTzyJq5lDBiZUHvKzUHodFGLo7u1JCaQw65mVnvGc+pPn2m7eYV
-	pAfjNz3NCkbW2OYgOhQsPePW8d+nGmdZXvL8BiGVoknRvVWnXHhGS8fLlrb4clOLV/kRKP1Xkw8
-	t+c7H5maNmXl+xLwxB0nr2U8aIAI1y+foZRXDi48AqUtiZT3uVUaKhSXGykr+q9uj3CbzfcYoMD
-	6SUNK+f7ATe+UadJwid87RyL/ng3BQL0hkFeV6V/qpCXNL6yii6uU/hQzYHw1BxEo6BiKRT+XUf
-	gl6/51U=
-X-Received: by 2002:a05:6a00:f0b:b0:878:34d7:697c with SMTP id d2e1a72fcca58-87834d76ce7mr6330562b3a.42.1789971896493;
-        Sun, 20 Sep 2026 23:24:56 -0700 (PDT)
-Received: from DESKTOP-G3E0OSP.localdomain ([58.224.60.243])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-877aa107908sm2750128b3a.46.2026.09.20.23.24.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Sep 2026 23:24:56 -0700 (PDT)
-From: Jinseob Kim <kimjinseob88@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: buffer: serialize buffer teardown with mode claims
-Date: Mon, 21 Sep 2026 15:24:21 +0900
-Message-ID: <20260921062421.64647-1-kimjinseob88@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mP3nWF7g"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A5741F000FF;
+	Mon, 21 Sep 2026 08:34:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789979655;
+	bh=8gbl7Xm+wSfCvDbbc3qvZFGs24Sa3c8Li3JzmJET1KM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=mP3nWF7gGESdM2fA9CMjpIcdOIQbsFwFIUK+oQtYtVi0L8AORfOrkM/amIbo3cP9Q
+	 hHgvUapxO/ZL65CqoVmV7I8tVJrNI67pJqMr7lzly8tDbpcZTAy0dlZjix+U6/0S0M
+	 AfJWOBYCcIUSKvILtwULBkbfgJyIeIT9PUwgZpMtDLcNWgGoYS+RykMJSqf6Aw1vp/
+	 06IDQWzunYXkyj2/L7kWDuSfIYq5+zRt0odBfXT6cPrkA53am5SQ4H9HyJCtKhiX8d
+	 VM1hEYw0eO7WtEqQjaGf61b0SquKks2QdNFea/yuiMdPjZy5C/Eqbimcg/QHJbea/H
+	 u7XNeMACJxK7A==
+Date: Mon, 21 Sep 2026 01:34:14 -0700
+From: Kees Cook <kees@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad7173: Remove const from chan_arr allocation
+ type
+Message-ID: <202609210131.8441BD398B@keescook>
+References: <20260917211436.i.689-kees@kernel.org>
+ <aqzfhNmU3sazdCTQ@ashevche-desk.local>
+ <20260921002128.46dc36db@jic23-hlaptop>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260921002128.46dc36db@jic23-hlaptop>
 
-Buffer-mode claims hold mlock to guarantee that the device remains in
-buffer mode until the claim is released. Normal buffer updates take
-info_exist_lock followed by mlock in iio_update_buffers().
+On Mon, Sep 21, 2026 at 12:21:28AM +0100, Jonathan Cameron wrote:
+> On Fri, 18 Sep 2026 09:51:48 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> 
+> > On Thu, Sep 17, 2026 at 02:14:37PM -0700, Kees Cook wrote:
+> > 
+> > > In preparation for making the devm_kmalloc family of allocators type
+> > > aware, we need to make sure that the returned type from the allocation
+> > > matches the type of the variable being assigned. (Before, the allocator
+> > > would always return "void *", which can be implicitly cast to any
+> > > pointer type.)
+> > > 
+> > > The assigned type is "struct iio_chan_spec *", but the converted
+> > > allocation type would be "const struct iio_chan_spec *", as the size was
+> > > taken from "*indio_dev->channels", and "indio_dev->channels" points to
+> > > const. As there is no general way to remove const qualifiers, take the
+> > > size from the assignment target instead. No change in allocation size
+> > > results.  
+> > 
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > 
+> > ...
+> > 
+> > > -	chan_arr = devm_kcalloc(dev, sizeof(*indio_dev->channels),
+> > > +	chan_arr = devm_kcalloc(dev, sizeof(*chan_arr),
+> > >  				st->num_channels, GFP_KERNEL);  
+> > 
+> > I would even dare to put it on a single line now (yes, 86 characters long).
+> > (No need to resend, Jonathan I hope can tweak if he agrees with this.)
+> Done, though I would assume Kees is going to send a mega series
+> that rewrites this line anyway and might well make it even shorter.
 
-However, iio_device_unregister() disables and deactivates all buffers
-without taking mlock. This can invalidate buffer state, including
-active_scan_mask, while a buffer-mode claim is held.
+I will indeed. :) But Coccinelle will be happy with whatever shape it
+has. (It'll swap "devm_kcalloc" for "devm_kmalloc" and then gain "_objs"
+and lose ", GFP_KERNEL".)
 
-Take mlock in iio_disable_all_buffers() so that unregister honors the
-mode-claim lifetime guarantee. The info_exist_lock -> mlock ordering
-matches iio_update_buffers().
+> Applied to the testing branch of iio.git (queued for next merge window
+> subject to tests etc)
 
-Fixes: 0a8565425afd ("iio: core: introduce iio_device_{claim|release}_buffer_mode() APIs")
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
----
- drivers/iio/industrialio-buffer.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Thanks!
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 2c9ec93dff47..d60bad5492e7 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1377,6 +1377,10 @@ EXPORT_SYMBOL_GPL(iio_update_buffers);
- 
- void iio_disable_all_buffers(struct iio_dev *indio_dev)
- {
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+
-+	guard(mutex)(&iio_dev_opaque->mlock);
-+
- 	iio_disable_buffers(indio_dev);
- 	iio_buffer_deactivate_all(indio_dev);
- }
-
-base-commit: dceba8e581e3e8f475da0efbd7a73f3d9524ddd2
 -- 
-2.43.0
-
+Kees Cook
