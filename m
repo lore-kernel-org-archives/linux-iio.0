@@ -1,156 +1,245 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012069.outbound.protection.outlook.com [52.101.53.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs2-f15.google.com (mail-vs2-f15.google.com [74.125.227.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D293B42FB;
-	Mon, 21 Sep 2026 14:16:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790000199; cv=fail; b=j5LUQCdlY1+jDPN2lBg8xE1F+ru0t+cS8NFDVbzIZmhzD9yt4VrQnew7UP5gCHMrLGOvnjdGFUpJlp9yFKTMbuS/RMrP9ilI+tRzocWmBmDJywq18YXEvN74SC3ZgwWIUrsNrgQvE/6IqPngtyN7MJHIqcvbEa4eGYKF1tieSlQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790000199; c=relaxed/simple;
-	bh=IU3I9TrbW/fohkr1nyzYMosF8vtrD/VsAjvjwyY8Uok=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=bJkXTZA282unFWuCzxxj32mu3aaGj9r1MjbUT0aYg85PhYHnU70kaWVwBfoUxB0247ts6JhGz+qoMmMQb+aGplyfb+dTptFMhweUxVTJR+ydQXo+Pnsx7h0752tnp3CQWf2goZHryGXvmL7fcOy9WmA3YPpjtWh3XsZmayJC77Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=VOnL2iUj; arc=fail smtp.client-ip=52.101.53.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E1D94B5CA2
+	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 15:11:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790003488; cv=none; b=Ea5mvK6F8qOAswzR580SrGshBYbhn5Oa7ZtPIjiszPZ2s6ueB0P5HOPzE2E9qyKFXaBdn7MmLnS5TebNb3eUhoTi4oWOoeUpx/UKu6f7YEXyg1av//JSasIZhy0vpqO2xTgYB//aQ67x3MjqyA+PNKQqRc7ltoIgnKQ+lZAzmoQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790003488; c=relaxed/simple;
+	bh=ZTCJvXoBV8RP2vIYKQszn9XZ30Wu6GdcQ0zPG5RY6IM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bEr6QiR8dN5NsP3RsPirOwOWv9WSaYeWgwlug/1YGPKdVtq5jcS3nRA++O6rYRDEbFVqKLJ/f8eqZ/yC11gpuEuOu1Va0MAF0j8e0JXYdlgUtXGXccXtyz6j1QwE74XaxmeL4zhDg2bTgpUfB3XKaP0ch3+taDYAMVqRkq6e8Xk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fFpnWOr7; arc=none smtp.client-ip=74.125.227.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="VOnL2iUj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RNOvt0Z0hzcBiRW22/JzfUvOyn20SbY6VZHZyEfr2DI0MTtLIFe/eVkt8l1zL3g0MyJiXFPuiEc+V5Fl6dBoab3IBXGuo85lYCbI47DoAbdNufkvAwNjZ2X4PNsJPokirFaP+tcTOscY56fkmMjHhbWdSBEVEFBMBlzFrg4Rg2ncQb1X050BdTmplFPEJEdvhZGAAbHAS3hdMakLi+CF6ylj9oPmHNNGMSlW5BRSlR4eqD/M+IdPutQyJcNdPz55AN+Tk2fb4T7QhJSOfMyzeA7fV8JSNrzuZZlAMSpWWs0nlvmnyFxJfgloC6ZWo/KkXBLKdaCpaDqqtGy5cfGJ8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IU3I9TrbW/fohkr1nyzYMosF8vtrD/VsAjvjwyY8Uok=;
- b=jLYmwB0WwTGaYUC9+Cp6FSlzDEUZ9RDgfhZkftuhH0XZXLZWV3mCnNa0ka6c9/geoIABR0OWTKpu78Vy4Pq8VtKqCbccfhII3CQvnZo40fUbMBzOoGYqZqT5ylum4ESmoZsWJRuCm6L4PXBoRbtxCLYlXTJaVjOy9PVyhj4A/h6K6XDCro4vEvkSfZ1AAQiFdDxcImgGiiAYeoXTCc4gdphszNkyg4QuGylIEExeg1yIjOV5Yu2+oGkzJfcw3TDDrMFpLlCBgB/JPDses5VM9uM6j/5yZFGPJ5NWu3qh+cveRT/LWlq9Ex8bOjeRhm4lN0WdteAlYz2AxgJDyz4oKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microchip.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IU3I9TrbW/fohkr1nyzYMosF8vtrD/VsAjvjwyY8Uok=;
- b=VOnL2iUjI/sbOnDMKdIsce8pKEJRkJCvC1stY4KEQfIcsCPgGYZ/Crp7cyzxb/jt7tFAl+4Qq1NpFw+DCDgCvh6XIPmlPrTGXgvMsdlrcoowDEJJpqj1vxSk0MU5vghbY5kGK8H7cCsXBo0OL2UauNINqlTsrzDNdfETvmWXWeZI/vv7qK48MnM4UbWAAXAR+h57fi6k87GxKjsoWEZ4nOTreYyYtZjqW1fifw3SeNcgnetaUISjjHQvRhTFzMDokFdJh//hzC/H3ZiZPG+pwd3BnMa+7ptXAkbSkpWYOpK7gYjI2gCDNCbiDjaSNJjlhR1xWZPuhZBOQwH4iYkarw==
-Received: from SN7PR11MB8262.namprd11.prod.outlook.com (2603:10b6:806:26e::13)
- by CY8PR11MB7825.namprd11.prod.outlook.com (2603:10b6:930:71::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.16; Mon, 21 Sep
- 2026 14:16:34 +0000
-Received: from SN7PR11MB8262.namprd11.prod.outlook.com
- ([fe80::2a54:c2a5:16e4:48dd]) by SN7PR11MB8262.namprd11.prod.outlook.com
- ([fe80::2a54:c2a5:16e4:48dd%3]) with mapi id 15.21.0428.015; Mon, 21 Sep 2026
- 14:16:34 +0000
-From: <Ariana.Lazar@microchip.com>
-To: <jic23@kernel.org>, <andriy.shevchenko@intel.com>
-CC: <dlechner@baylibre.com>, <joshua.crofts1@gmail.com>, <nuno.sa@analog.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>, <robh@kernel.org>,
-	<linux-kernel@vger.kernel.org>, <andy@kernel.org>, <krzk+dt@kernel.org>,
-	<sashiko-bot@kernel.org>, <conor+dt@kernel.org>, <stable@vger.kernel.org>
-Subject: Re: [PATCH v7 00/11] Refactor Microchip MCP47FEB02 I2C driver in
- separate modules to add support for MCP48FEB02 SPI driver
-Thread-Topic: [PATCH v7 00/11] Refactor Microchip MCP47FEB02 I2C driver in
- separate modules to add support for MCP48FEB02 SPI driver
-Thread-Index: AQHdR00udHDJE8TAz0OdNS2Ah67wwLbUGFeAgAQC1YCAAP3TAA==
-Date: Mon, 21 Sep 2026 14:16:34 +0000
-Message-ID: <f8ac8ad69138fc9e19074e491f91f2892e7bba95.camel@microchip.com>
-References: <20260918-mcp47feb02_refactor-v7-0-82ca794eafe2@microchip.com>
-	 <aq0J9Vs1_rUAlcoA@ashevche-desk.local>
-	 <20260921000803.1148e493@jic23-hlaptop>
-In-Reply-To: <20260921000803.1148e493@jic23-hlaptop>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN7PR11MB8262:EE_|CY8PR11MB7825:EE_
-x-ms-office365-filtering-correlation-id: af9161f5-3f83-45f8-1f7a-08df17eaf134
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|23010399003|376014|7416014|1800799024|366016|10067099003|11063799006|18002099003|22082099003|56012099006|4143699003|38070700021;
-x-microsoft-antispam-message-info:
- 09EjFsVJF6Z7/kZ97+9L6fX7M+yFlPZNDkscDo3GkPQ6B24bd6kII/UxCo8c1mKIucGGFF0GyPBeKLozUvoLqmuEhT5ZII54b0mzQrD2fEEsxuYOHOJAKZ9R72Gc6AHndmKaww2VLjKQs+nu/WlrsDQbX4BJ71TTSWgnOvdBaemCl9WOHWc32yCUw80ZzUouHgAaDFiXMpSGpdPUk7Gacu9cJ6pOv4hnjidp+bH7ysJpx4njYx09aveSbsu3SP8E78NccPuA0+5kI0rJEao25N6a8U2l/kTwKdUQKibZzD02AJLDXZpDLnCjqlHZzCgYb8ouftII9e15HfAOc/SZNnMlTSCr0TE2X1URl3B3h+V31fQysyNJ5YCA5x8kGg19k8sYMHtvnM4K9g441cgF8AkbuPXSrtUdhoO95LVQE9btKR3vbgFK9JQzIYM1ku1vTodH0pRdp0bYnDT4NrVAKRTbVFDJOovffRrCJCLMmZ24gYeghM32iC8sB8pvfPetZI8dNS+pxK4gHWKrr6Pc4/Rpdi+eio/hQ0sMmgJWV4I+3HdE1i9ml+ssC871vN/x57Jzv58riI8nzeUyjGLpGdQIhps+SoIK8BX5SeMfCCH70DtGqFSCr4xj5R39y1FGhNpPGoQ+x9yQMp+miZEBCuKX5hNLNo8SgwgPv0Ni09Qum3x2T50tOFpf6iTQyg2n+HuKRm4zFD4UjUKMsiXEyjvfDmka9QeuXn98Mft16qs=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB8262.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(1800799024)(366016)(10067099003)(11063799006)(18002099003)(22082099003)(56012099006)(4143699003)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?MkFmbWNSTnN2QTVnenZrYVhOdVFMM3A2cGFieW4vUTIvQ2RjZzIxRkdEVHJ1?=
- =?utf-8?B?Z2Y4c2Rpd2liRWo2cU5oeGlxcWlKdXNEbmZNQjNPQ1B4WHRWTDhNUlZSZEE3?=
- =?utf-8?B?cUNjUUYwZk1SNStZN2VvNitmSVE0WER5SS9TTEloczZDdjRDajZqSS82VWd4?=
- =?utf-8?B?SjdXdDJNQjlFYmZBOVFMUTloTWw2QjV6S3lOMjcwMlF3MmxzNm5hWC9NNGdN?=
- =?utf-8?B?RjhkUGZ5ZUNSMzFDK0IrdkFWSmhXZFpoRFMwQ2JGOWErRE9ydVIxZCtaUFo4?=
- =?utf-8?B?elNBY0JwdTZHS3lmMkxldlFKMzlmSkpubVk4aXdHb0U5bHYxTzVBUlJ5WVZS?=
- =?utf-8?B?V29UVlE1cDdBMHI0UnFJZTV5VTNDQlR3N3ZOalR3L0RGdnMvUStPM0ErSENS?=
- =?utf-8?B?QlFDSzYvTzJlLzluL1RITWJOZjJpcVhKU0dsWGlQZjdxWExLc29MMkdjbXJs?=
- =?utf-8?B?TUlLcGZmMGpNY2QxN0liMFpNNHNYa2tCS2dGeWMxb29kMVkvR0tNUVFJUDg1?=
- =?utf-8?B?T3l2TjZINTVxR3JLS2tBU3dRVkQvQVd2TnlvTHNOcnhzbm9acUd5UnpSMDA3?=
- =?utf-8?B?cFVZT0hXYVBjVmxYVkpqREFuM0lLK1E1YXlQVEZnOHI3ZVd0ODcyNmxkaVlx?=
- =?utf-8?B?bDVQemFJcmhTQ2taWWlUMEl2ZHNrWFkwWGMreFVIRDFmWVJQWlNyc3ZhTVJk?=
- =?utf-8?B?bVdyRW5KUVpZblhKQjUxWjZsUVNRS1BiZDJlME5TbFZqVElLQnhvRisvUS9z?=
- =?utf-8?B?UWZMd2ZFSWJVNmt5VEVtRzBOQ1REdG45SUlFMENBaDRqQXArdHQyaU1IMFZi?=
- =?utf-8?B?anNnYVp5V01TSFk1NDMvYjR4MzNlNDVpOW1COE0vN0RRTXpJTG4wa0t3RnNs?=
- =?utf-8?B?YmNSZzYrb0V6Ymltc1QwdTF0K3p3ZFFManhva1A4VGVzeFNTUDAwdXQ2MTJp?=
- =?utf-8?B?dW9VWmhoV1ErRkEvR21VUnRyUEVDOWVidFBOVVIvUm5YZDNuUWVkSlNYQk9h?=
- =?utf-8?B?ME9KMFBtSzBZL3hTNDRmazV6Y0wwRFdKcUk2YlY5b3gyQlIrREFaYTY0K2ZO?=
- =?utf-8?B?RFZkL2hKdjI4RjU2eVhnMEoyMEl6cEpDb0FPcXJSdFdFNlB6N3VIM0UzK2dB?=
- =?utf-8?B?SWF4WWpoUHJIRGN4VWZiNEQvTXBZVGxHcXpTa1VPZy83dnZ1OGR4TktRSURW?=
- =?utf-8?B?QnJPWTlzWTAwOHUyalVRSzlFM2RGOWlNaW9LWG9MckZZSDhHR1ZwbUtmNGwy?=
- =?utf-8?B?YjhaZ1F5WDJNRHZRU0FtR2ZRbHVEL1I5TmhaQWNtQVczT2dpMlBBMkRhTUNQ?=
- =?utf-8?B?eEdKTENOL003aGhteDZONGpSbGw0c082ZUVtdm9PZXBLWVFwWk9PWWcvcFRN?=
- =?utf-8?B?bTM5MFU4a3A5bStTdVIzZWhuejFOblNZa3NhNzZUMXdUM05SbFRQeFVtSDA0?=
- =?utf-8?B?eTkyaWR4YWx5cXZFdE1QKzNlSlFGN1VvQXQrZVVaTmtGeGpCWkZQMHovK3lO?=
- =?utf-8?B?MFpCYm9ka2lHQ2thVzNXVmtnWTBjU1dDTjdRNVhueW12aDAra1A4dkdVWGdk?=
- =?utf-8?B?dWVIYXBPNDdIZ2tGdWp6YXF5T3RXZjhwQ2M1bWNQakRxOVpMTjl6Q2NtSE5J?=
- =?utf-8?B?ZkFCdE1HTkVkbTdPZ3FHTXk4Q0tPa05paXZEa2JzL1JjbThoM09EbXVtdEo4?=
- =?utf-8?B?cjlTT2wyZHNwWGtYdy9CbWJRakM0UXRuQ2gvZ01OREZ4WUx6V0o4VmRXZHJk?=
- =?utf-8?B?QytEY3F0VG45cnJUbjlBc3ExVnVyZ0c2eEZTZUo0ejNCcStYdWNCcm50QTdT?=
- =?utf-8?B?cXVnVVJ6eGQwL0lubys5SXo2WDhWMTZPRWx6Y0gvTkpYbng3OEIwZFVzV0dS?=
- =?utf-8?B?cTdzMEFEVDhVYnZQU2Q2enFqK1Jud1FiM1g0MDBnMXkwdmI5VUw2SzhVdzVo?=
- =?utf-8?B?M1hsbEV5N3BacHQyaTB2MmhJbHFiQlNkeVM0MDRhZE9rNjJwaHcxRGp4dm9y?=
- =?utf-8?B?NFRRRE1qc09MNGgxRE1aSTBYbFJqK212UXE4Sy9pWDJPUkZTZmgxTk9YOGdQ?=
- =?utf-8?B?aWhiN25TakE0RExzcHBDTGRLSmkya2FyTGgxcE8yb01jZ083RWhlREp1bkZL?=
- =?utf-8?B?VUxwdVdoMzVqWXc0VTU5MFZ2OGprS3RsVHdQM3VObjhMQVp4RWRobEtjZHFu?=
- =?utf-8?B?Q25LNzc4N2JkYnhpdDI4WWovUnUyazhPMklxYVMweTc5c2Uva0Y3aHd4TzNK?=
- =?utf-8?B?QUp0WUVHVjhseFNNSDJld0ZjYllyRFlLODFHT2pKTi9McXM5NGY2UDI3cndl?=
- =?utf-8?B?dG0xQThJcmFQZ0ZvSTFzTUVyajJFM28yQnZ1bmsvV0tPWExYT0tyeFJQSVcw?=
- =?utf-8?Q?hW+NlYpHw3kJ6rhU=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <82B49A1D8D105541BE7CDAC41F3DF085@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fFpnWOr7"
+Received: by mail-vs2-f15.google.com with SMTP id 71dfb90a1353d-5c981b0d59cso1959603e0c.3
+        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 08:11:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790003478; x=1790608278; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=cKj6cgHdEp15E9vhsDJp2muq+So8+qMhQDWxfEct4bI=;
+        b=fFpnWOr7Q4JwtO1nRHqEkmzSMld/2lkJ9CpBTiqGt+sxpXhdMHJ2X/hBvpDyx4oLeA
+         360Ns0JrDCFUeuota7RRkr1Atj1FI1cRVuixBhr9ddYUCG6mhZECdvbf8ilZyEztrMid
+         lQSalDQth6RaJ+8LYEb61BwHr55n1j6kdHzg+b2upSmvcMUCQ1G0a1Y3cMcF6JWpy06g
+         JIkoI2XKCj8UVUCHBITE9C0I6RxMSV1YjFkYGGGACPn9YrapJlisj1FYlH5NX91b1/F9
+         7P15YhoP9OfXQCoJdXcCB8xdc4uGguJWjKJ/jWADXpqw+6H/V6DqvWymHtNySumOvd8U
+         u5Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790003478; x=1790608278;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=cKj6cgHdEp15E9vhsDJp2muq+So8+qMhQDWxfEct4bI=;
+        b=U7Q9yHdDdBMyoWMJJsxUghIp5OZPRd8Lp83OrYiepUMsRBemEkZRCaMDUuNDf4TVNO
+         6setwyOut1gfxYoKfa4q/OP+3Sixfv9YPSgg5c2Guq5a+zvSD7VIxNbXqOJmogSi/eez
+         fd3ZNFMZLQ7mtUHHfYGzBchhiuLfXjWBy+MHsApmBMiFxQqaN+K/IckR53H1ZFZY0+99
+         3AQv2q4gP699nMdkezEUcrniZY9eoRH8HUwPW1gr1MXTJV9lxUyJD7zDIGdIz006uio6
+         v/BXMC0XDn0Uot2DNVwCqyGTKcLbYCykilJAhskXNRSXqCzlxj2hKrRpfU2ybe3N4mMY
+         yk1Q==
+X-Forwarded-Encrypted: i=1; AKwUvBwFL0AhlNbhmaeKTi10VkfeiJKVqESPM0OEolud/fN3F1q/Nob3Z6BV39Up+/BGvd6RfZYtTzXziSQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++l9fyUscWJVwIVgba/37NzHZ/RBILYhieAnn8Qf+vdHMuh6JeLT
+	kvYqG9x0wkOwPORAlCl6YMNNegZIr7DVOySN7PaI8rena7l9g6oPAKd5
+X-Gm-Gg: AYBFou02MTEqCOTjkLsVFyPfRzO9FipbQzwjs/Y9O6YGpZHN5uT8vhBSs8wdCkT8AiA
+	An742bY93b822DRJys3xmmInTiXdxVbZHGNoLioquGdJbN1yBz8RjHL6+AzirunPU/0504YWOq/
+	2cxihPZvebDJ8eK0bD3py9a6CRLfJpnq/lytzDMwzFTHwbBoFwlEqhidCGBzRsMai2S1Rd2oClz
+	3kaghS42pugrrZRyzyBWrItfjvZfU834F1Zyxj6r6TTVcvhW16V6bGwIwXYC/B2S9BdyYPUGgy+
+	LG832BL1uQ0nGz7r2DjbFL5pC+qkoOOVXaTBR9zvB+F85yc6frKro1Q1YawqoFP9PotAlvGKswr
+	ZTO/qH11iEVBDnTTlqqWX4s+5cAJmUU+39LpUmTrVIXaYns3v573pmh5gMgQZ9I1cc2BlGXtEPT
+	2W2AHmLHQ2ZTwqwM/m4b+cL0VRYziE3EPa1f9fVQtGWUpzlXpDYazyGG57YK2zndRw4Ltx2pIps
+	z/A
+X-Received: by 2002:a05:6122:2202:b0:5c9:c60e:3a3d with SMTP id 71dfb90a1353d-5c9c60e3d5bmr3601718e0c.21.1790003478530;
+        Mon, 21 Sep 2026 08:11:18 -0700 (PDT)
+Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c9e1e46d24sm151226e0c.3.2026.09.21.08.11.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Sep 2026 08:11:17 -0700 (PDT)
+Date: Mon, 21 Sep 2026 12:12:24 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux@analog.com, nuno.sa@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, Michael.Hennerich@analog.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH v2 08/15] iio: adc: ad4134: Support buffered data read
+Message-ID: <arFJWLuqlzvkk6qP@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1789494473.git.marcelo.schmitt@analog.com>
+ <dbc37d95fe7f96bd158d8e3339c41205524ae217.1789494473.git.marcelo.schmitt@analog.com>
+ <178995544507.955708.14374719433731561725.b4-review@b4>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: microchip.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB8262.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af9161f5-3f83-45f8-1f7a-08df17eaf134
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2026 14:16:34.6265
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zXyU26rnwtcyI77c4SkPQ0ffSKEgbsCIT/uTFe1ohLuDZICHs6JTTnNKUzac0gCVaMxAa5f+7+s+jG+e9DRVxNn18xP73x/kQEejOnd+eTw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7825
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <178995544507.955708.14374719433731561725.b4-review@b4>
 
-SGkgSm9uYXRoYW4sDQoNClRoYW5rIHlvdSBmb3IgdGhlIHJldmlldy4NCg0KPiBBbnlob3csIGxl
-dCBtZSBxdWV1ZSBzb21lIG9mIHRoZXNlLsKgIEkgZG91YnQgd2UnbGwgc2VlIGFueXRoaW5nIG5l
-dw0KPiBmcm9tIHNhc2hpa28gZ2l2ZW4gdGhlIG1pbm9yIHR3ZWFrcyB0aGUgcmVzdCBvZiB0aGlz
-IHNlcmllcy4NCj4gDQo+IFNvIHdpdGggdGhhdCBpbiBtaW5kLCBhcHBsaWVkIHBhdGNoZXMgaW4g
-dGhpcyBvcmRlcg0KPiAxIDIgNCA1DQo+IGhlbGQgNiBiYWNrIGZvciB0aGUgdGhpbmcgYWJvdXQg
-Y2hlY2tpbmcgaWYgcHJvcGVydHkgcHJlc2VudC4NCj4gMyA3IDggd2l0aCBsaW5rIGRyb3BwZWQu
-DQo+IA0KPiBTbyBqdXN0IDYgOSBhbmQgMTAgZm9yIG5leHQgdmVyc2lvbiBwbGVhc2UuDQo+IA0K
-PiBBbGwgdGhlIGFib3ZlIG9uIHRoZSB0ZXN0aW5nIGJyYW5jaCBvZiBpaW8uZ2l0Lg0KDQpJIHdh
-cyB3b25kZXJpbmcgaWYgdGhlIGNvcnJlY3QgYXBwcm9hY2ggZm9yIHRoZSB2OCBzZXJpZXMgaXMg
-dG8gY3JlYXRlDQphIG5ldyBicmFuY2ggYmFzZWQgb24gaWlvL3Rlc3RpbmcgYW5kIGFkZCB0aGUg
-cmVtYWluaW5nIHBhdGNoZXMgb250bw0KaXQ/IA0KDQpUaGVzZSB3b3VsZCBpbmNsdWRlIHRoZSBu
-ZWVkZWQgY2hhbmdlczogdGhlIHByb3BlcnR5X3ByZXNlbnQgY2hlY2sgZm9yDQp0aGUgbGFiZWwg
-KGZvcm1lciBwYXRjaCA2KSwgdGhlIG5ldyBwcmVjdXJzb3IgcGF0Y2ggZm9yIHRoZSBFRVBST00N
-Cm11dGV4IChmb3JtZXIgcGF0Y2ggOSBzcGxpdCBpbnRvIDIgcGF0Y2hlcyksIGFsb25nIHdpdGgg
-dGhlIHJlZmFjdG9yaW5nDQphbmQgU1BJIHN1cHBvcnQgYWRkaXRpb25zIChmb3JtZXIgcGF0Y2hl
-cyAxMCBhbmQgMTEpLg0KDQpQbGVhc2UgbGV0IG1lIGtub3cgaWYgdGhpcyBpcyB0aGUgcHJlZmVy
-cmVkIHdheSB0byBoYW5kbGUgaXQuDQoNCkJlc3QgcmVnYXJkcywNCkFyaWFuYQ0KDQoNCg==
+Hi Jonathan,
+
+On 09/21, Jonathan Cameron wrote:
+> > Enable users to run buffered data captures triggered by IIO trigger device.
+> > Add an IIO timestamp channel so each data scan is provided with measurement
+> > time information. Require single-read operations to be in IIO device direct
+> > access mode to prevent buffered and single-shot data captures to disrupt
+> > each other.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> 
+> Hi Marcelo
+> 
+> Sashiko had a bunch of feedback on this one.  Note that you can save
+> time if you check out what it comes up with and reply to the thread
+> to say what is valid and not.
+
+Yes, I've been working on fixes for the issues that seem legitimate. Most of
+them do seem to make sense. I was to reply only to the ones that seem off, but
+didn't yet manage to fully assess them all. Will start providing preliminary
+reply to automated reviews.
+
+> 
+> I haven't yet asked for those emails to go directly to linux-iio
+> as the quality is mixed and I am reluctant to confuse newcomers, but
+> most like I will ask them to turn those emails on in a month or so
+> if not before. In meantime more experienced folk can look at the
+> website directly.
+> 
+> > diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
+> > index 30c7b1d1bc67..0b6843bf8a9e 100644
+> 
+> >  
+> 
+> >  
+> >  struct ad4134_state {
+> > @@ -149,7 +161,10 @@ struct ad4134_state {
+> >  	 * DMA (thus cache coherency maintenance) requires the transfer buffers
+> >  	 * to live in their own cache lines.
+> >  	 */
+> > -	u8 rx_buf[AD4134_SPI_MAX_XFER_LEN] __aligned(IIO_DMA_MINALIGN);
+> > +	union {
+> > +		u8 reg[AD4134_SPI_MAX_XFER_LEN];
+> > +		u32 scan[ARRAY_SIZE(ad4134_chan_set)];
+> 
+> 
+> Sashiko:
+> [Severity: High]
+> Does this array size fail to account for the timestamp's alignment padding?
+> 
+> The array is fixed at 20 bytes (5 elements). When all 4 channels and the 64-bit
+> timestamp are active, the IIO core computes scan_bytes as 24 bytes due to the
+> timestamp's 8-byte alignment requirement (16 bytes data + 8 bytes padding and
+> timestamp). Passing sizeof(st->rx_buf.scan) to iio_push_to_buffers_with_ts()
+> later in the trigger handler will cause the IIO core's safety check to fail,
+> aborting the buffer push with -ENOSPC on full-scan captures.
+> -
+> 
+> That does indeed look wrong. I'd expect to see one of the DECLARE
+> buffer macros used here to ensure a large enough buffer.  This
+> should have shown up in testing so I'm curious why it didn't.
+
+I had initially tested with only one or two channels enabled while requesting
+timestamp. This issue is going to be fixed in v3.
+
+> 
+> [Severity: High]
+> Can concurrent lockless accesses corrupt the rx_buf shared union?
+> 
+> The ad4134_trigger_handler() executes locklessly in a pollfunc context, while
+> regmap debugfs reads/writes (which do not acquire the IIO direct mode lock) can
+> concurrently use st->rx_buf.reg as a DMA buffer. This can result in corrupted
+> SPI scan data, corrupted regmap read/write data, and potentially invalid
+> hardware configurations or ADC samples if debugfs is accessed while a triggered
+> buffer capture is running.
+> 
+> -
+> Also sounds valid though I haven't confirmed everything stated.
+> A buffer like this should be protected by a local lock, not rely on
+> serialization via the mode claim mechanism.
+
+Yes, that's a valid one that is going to be fixed.
+
+> 
+> > +	} rx_buf __aligned(IIO_DMA_MINALIGN);
+> >  	u8 tx_buf[AD4134_SPI_MAX_XFER_LEN];
+> >  };
+> 
+> 
+> > @@ -281,7 +296,7 @@ static int ad4134_data_read(struct ad4134_state *st, unsigned int reg,
+> >  		 * Clock out data from all channels to avoid that.
+> >  		 */
+> >  		if (i == AD4134_VREG_CH(reg))
+> > -			sample = get_unaligned_be24(st->rx_buf);
+> > +			sample = get_unaligned_be24(st->rx_buf.reg);
+> >  	}
+> >  	*val = sign_extend32(sample, AD4134_CHAN_PRECISION_BITS - 1);
+> 
+> [Severity: Medium]
+> Does this leak uninitialized stack memory if the soft timestamp channel is read
+> as a virtual register?
+> 
+> Because ad4134_regmap_config sets max_register to include the soft timestamp
+> channel (ARRAY_SIZE(ad4134_chan_set) includes the timestamp, making index 4
+> valid), userspace could read virtual register index 4 via regmap debugfs. In
+> that case, this loop iterates only up to AD4134_NUM_CHANNELS (indices 0 to 3),
+> meaning `i == AD4134_VREG_CH(reg)` (where AD4134_VREG_CH(reg) would be 4) is
+> never true. The sample variable is left uninitialized, and an uninitialized
+> 32-bit stack chunk is processed and returned to userspace.
+> -
+> Please check this one.
+> >  
+> 
+Ack
+
+> 
+> 
+> > @@ -333,6 +348,37 @@ static const struct regmap_config ad4134_regmap_config = {
+> >  	.max_register = AD4134_CH_VREG(ARRAY_SIZE(ad4134_chan_set)),
+> >  };
+> >  
+> > +static irqreturn_t ad4134_trigger_handler(int irq, void *p)
+> > +{
+> > +	struct iio_poll_func *pf = p;
+> > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > +	struct ad4134_state *st = iio_priv(indio_dev);
+> > +	unsigned int i = 0;
+> > +	int ret;
+> > +
+> > +	gpiod_set_value_cansleep(st->odr_gpio, 1);
+> > +	fsleep(1);
+> > +	gpiod_set_value_cansleep(st->odr_gpio, 0);
+> > +
+> > +	for (unsigned int ch = 0; ch < AD4134_NUM_CHANNELS; ch++) {
+> > +		ret = spi_write_then_read(st->spi, NULL, 0, &st->rx_buf.scan[ch],
+> > +					  BITS_TO_BYTES(AD4134_CHAN_PRECISION_BITS));
+> > +		if (ret)
+> > +			goto err_out;
+> > +
+> > +		if (test_bit(ch, indio_dev->active_scan_mask) && ch != i)
+> > +			memcpy(&st->rx_buf.scan[i++], &st->rx_buf.scan[ch],
+> 
+> [Severity: High]
+> Does this conditional logic permanently corrupt the scan data by overwriting
+> active channels?
+> 
+> When the first active channel has the same index as the destination (for example,
+> both are 0), the condition `ch != i` evaluates to false, short-circuiting the
+> if statement and entirely skipping the post-increment `i++`. The next active
+> channel will then overwrite the previous data by being written to scan[0] again.
+> This triggers on any standard buffered capture involving multiple channels.
+> -
+> 
+> Check this one as well. Looks plausible to me.
+
+Ack.
+
+Thanks,
+Marcelo
