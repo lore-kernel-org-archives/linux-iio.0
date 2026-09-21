@@ -1,85 +1,45 @@
-Received: from mail-lr2-f12.google.com (mail-lr2-f12.google.com [74.125.230.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76FBD5013A6
-	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 18:31:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156935187F9;
+	Mon, 21 Sep 2026 23:27:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790015516; cv=none; b=QZxws8tMoaOThL2ciZlDrzF0jb1Liq8tzOrUlfM3r7oINleEey0IBasUDfIaR1+EkVQVCTWSIEq9uadtBAYzTSnnaxy8xYUYuaM2GHd9I193Jn4LhUwM9ey5TDdy4H+lmTCzYZwxxqdUHAs+HVrJzOHXbZX4m9eWPuID+w4J9Ok=
+	t=1790033293; cv=none; b=sQv1K9wvhHxgNjlwUlnVxYh2c67P1v6hB1qqABzmdNCjgiJNl/u8o0xXgvvSqtKS6Gzy+LI94UpjZ1HUVPfp7a7NQTRb2AbOTE+BWLXnitaevDPiBE04mEAcfN903XleeJENufI4H/w3bmVna2wQPSq67wRGALG8IOnMxCrppoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790015516; c=relaxed/simple;
-	bh=LSoXDOkihoTe+1aeuwkzPsOIbGrXJATfUTeqR5S99lA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LUl1ospBW3M7PzCZPBATP1dMCjkIzjPNpNx3Sllnuwjr1szjwJQ+HUU+YOzXDLLSURDPCBDJfcNdN98FSqwnTlMMKlvX/euzfmQu1tqmAxwGR8keuJWboKlzxOd3Kg/sB3B/7i3g5hBvhN4492/g6OcOr/143KFct72+as2vDVQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bukcw5U2; arc=none smtp.client-ip=74.125.230.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790033293; c=relaxed/simple;
+	bh=WsLSf+qnHq0yGR6VmDwK8Wr3TjmpvTXaFFLSt/oyEMI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Zemkqb17C3k78fnqnHDTuupDcDR9cm7Zda/S57zs0xJ37RCs6HXvQMdLsxRChHA36FBKzLwQPCl7CP1L83TNRfQNd+XXibIW034pmRYF4RJlJNFJ/38LHPqVtAmDPjC7b7nt7Wa3ps4YRE7njf+di290wycrHRwkHPP4XabfF8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IkUwtSYP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bukcw5U2"
-Received: by mail-lr2-f12.google.com with SMTP id 38308e7fff4ca-3a5b6840edcso29269731fa.1
-        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:31:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790015512; x=1790620312; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Pj32bFFZvi2cnsgj5gH1ddQyBwu2DGpSO+g4f8bX3TE=;
-        b=bukcw5U2BMEzqddWjFZb4eCDOHSaUNJAW3Ez+KxEeIy9UzbyXV0ALMU+D3QuemEMOq
-         cAYAB3ivTj6oEccm13sruXlx1P7pgisUaNGRD4M/4rAOKEbt/Eb5LYlh4379Ml3j6sMa
-         4JMLTyefSFuWQ4J/b7JM9krGmpzgXX85aAPak0P6FpEWlLEGn3d4AMnUUIhnhQQ8iR9Q
-         F+SEtqQ0iKoIlV2fAnEaoiPyUB3hWG++w+gDHSTitjBjVmcWm4B2Awcw3uCXwEkFNNRy
-         b3x5zUGv6jor4NpuWO/NpshT03U6s1erTl5nv9Fs8piR4KKcpSoBrKuyTdOS2rzBWm2w
-         ivzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790015512; x=1790620312;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Pj32bFFZvi2cnsgj5gH1ddQyBwu2DGpSO+g4f8bX3TE=;
-        b=ybYtSGx7D0SVQBzNUUPhAp4lVj1ai1q4EuyR1clVLQYoerkZwBRZX0IuCIJD9yPkt4
-         Y44E2zGZoAJEa5PPBl6zJ1vzoJswQYe0RKhT2WYGAivp2+FJpzhQeBAwz033/Vwcozh/
-         dLZcuBURUmoVDhPcJ3d/cmOKchitF5U3E09pcFyULnpEnWvSaMv10TUHB66PPgYZy12E
-         Kse+nq/D7dU10UO84aH8OhIRV2mM9t/Lr5AgNK5YuxAWiabH+p98fL1FMjmtNYEnQ1Ge
-         t16AJGBme38c558ubStv8E3hWMb6xTcUHumeeaDDwilRsL3GDAkyG/WgcE8380gVLVP8
-         EwjQ==
-X-Gm-Message-State: AFuF++lpLh+RHLJkrq0w4dVqknksitivdUijDhf8p23PB7e9grdo9yUU
-	I1PaQ9MjaVD231Se+JBKGr+aetleWaoRjIXmhdQFHEm9wZHLLx5ce5Ey
-X-Gm-Gg: AYBFou3xlS0zsBDXNRjkTuTtvethSNTBK4xDVHUAn/57PqTNP+Np5qD1vxmNFFf7+eq
-	ZXUcQOL/5ZXGz6qM/Zkv6sIanfO2QGNJc9VOwtS/5H6F2KetV3grF0vFEPy53pKy7gV1EGFCVes
-	9mBh71Mai4inXQxTRmXNlyn1q9JdxV4KvImHo/cCuhwPqVgTFqg56Q+Q4Ro/jb484mtK+7WmCkP
-	NNLdYB+R66HaKGl0qDAuAHe/XzwYpP4L6pTwmkxakMXq+vogsVkblPPv4t1AuF/j62yOAf0kt+B
-	2Enj2pmS4G/DhDFkXkzaNboBWtHOHlFN+ykdQex14gsPxITWJAOZDbqfdCN5OF0nL2IYU5m7rif
-	qzHLOuaJS8eWeG94lL1gzcuh7Zoktgmmz8Yvp5M0f3YtL7oLxgaJGAe651cElPSBrAeWekU7Snu
-	yn8dbvghq4aR1/c6s5Ysiq6jbYq0H+J7022FA3qYG/R0NcQ4uQzGfjc6IA8CpW85yk39fNsQASz
-	hwze6QcksM0mYW7s57T1xrm/LpTq3WX2nlzg1k3bmCnWOUM4bJKXEe8nbNxDS6tr9xfTRiWupHi
-	KnTM
-X-Received: by 2002:a05:651c:a393:10b0:3a5:f06c:f897 with SMTP id 38308e7fff4ca-3a5fc0f47b3mr16606591fa.28.1790015512257;
-        Mon, 21 Sep 2026 11:31:52 -0700 (PDT)
-Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a60761e5d6sm24260141fa.29.2026.09.21.11.31.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Sep 2026 11:31:51 -0700 (PDT)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>,
-	Bill Wendling <morbo@google.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IkUwtSYP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3301F00893;
+	Mon, 21 Sep 2026 23:27:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790033275;
+	bh=Ml9KxPG2/iFwRpn7Lwg7J4zJT5THTLC34N1bTCQkm5Y=;
+	h=From:To:Cc:Subject:Date;
+	b=IkUwtSYP8uC4JZMSnwmogAZtGS2GK3IoX4q6gl9ylDPbtPbMwruHJD8Rl3G/1tw2y
+	 iTdaTXRTZWVT717KTnKLwccfVDidLo/QV+4gvPWEWug027vxyFw7HmklaXVjbVOChG
+	 X0cGc1QSUHTCiOzxDHhD8Rr8+1To8Zhy0xwjw4cP486TMl/QR+t1LqmEIhQHHJUVF3
+	 qP//Tg6fO7e2hVI9a3b2D044lC0tyQkN3mGruFUmFDmnyFYJJTz7Fvs+ZoeEDb+xWh
+	 d0hAPo+AAwxWQFmDqifK/lCpVNRlvYEnAxf5fQ9mgiD097v14nQ6AgRt2IuPd9TAgE
+	 ZOcQ/WAkWMWlg==
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Joel Stanley <joel@jms.id.au>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Justin Stitt <justinstitt@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Kevin Tsai <ktsai@capellamicro.com>
 Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	llvm@lists.linux.dev,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: [PATCH v8 10/10] iio: pressure: dps310: check the lock markings with context analysis
-Date: Mon, 21 Sep 2026 21:31:32 +0300
-Message-ID: <20260921183132.233136-11-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260921183132.233136-1-zoone.rupert@gmail.com>
-References: <20260921183132.233136-1-zoone.rupert@gmail.com>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: iio: Add dedicated CM32181 schema
+Date: Mon, 21 Sep 2026 18:27:51 -0500
+Message-ID: <20260921232752.3136129-1-robh@kernel.org>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -88,33 +48,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-__must_hold() markings added earlier in this series are only
-documentation unless the file opts in, so switch the analysis on for
-dps310.o.
-
-Clean with clang 23.1.0 and CONFIG_WARN_CONTEXT_ANALYSIS=y. It does run:
-dropping the lock around dps310_fifo_drain() warns rather than going
-quietly.
+Add a dedicated Capella CM32181 ambient light sensor schema. The device
+has optional vdd-supply and interrupt properties, so it no longer fits
+in trivial-devices. Include both optional properties in the binding
+example.
 
 Assisted-by: LLM
-Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
 ---
- drivers/iio/pressure/Makefile | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/iio/light/capella,cm32181.yaml   | 44 +++++++++++++++++++
+ .../devicetree/bindings/trivial-devices.yaml  |  2 -
+ 2 files changed, 44 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/capella,cm32181.yaml
 
-diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-index bc0d11a20acc..4b1a05f7a0bd 100644
---- a/drivers/iio/pressure/Makefile
-+++ b/drivers/iio/pressure/Makefile
-@@ -3,6 +3,8 @@
- # Makefile for industrial I/O pressure drivers
- #
- 
-+CONTEXT_ANALYSIS_dps310.o := y
+diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm32181.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm32181.yaml
+new file mode 100644
+index 000000000000..63212e3ec96b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/capella,cm32181.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/capella,cm32181.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_ABP060MG) += abp060mg.o
- obj-$(CONFIG_ABP2030PA) += abp2030pa.o
++title: Capella CM32181 ambient light sensor
++
++maintainers:
++  - Kevin Tsai <ktsai@capellamicro.com>
++
++properties:
++  compatible:
++    const: capella,cm32181
++
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@10 {
++            compatible = "capella,cm32181";
++            reg = <0x10>;
++            vdd-supply = <&vdd_3v3>;
++            interrupt-parent = <&gpio>;
++            interrupts = <17 IRQ_TYPE_EDGE_RISING>;
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index b7ddbeb40a27..1778bf9fe17d 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -81,8 +81,6 @@ properties:
+           - atmel,atsha204a
+             # BPA-RS600: Power Supply
+           - blutek,bpa-rs600
+-            # CM32181: Ambient Light Sensor
+-          - capella,cm32181
+             # CM3232: Ambient Light Sensor
+           - capella,cm3232
+             # CM3323: Ambient Light Sensor
 -- 
-2.43.0
+2.53.0
 
