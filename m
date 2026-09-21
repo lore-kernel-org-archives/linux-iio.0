@@ -1,305 +1,156 @@
-Received: from mail-ej2-f12.google.com (mail-ej2-f12.google.com [74.125.228.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012069.outbound.protection.outlook.com [52.101.53.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1543648594A
-	for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 11:59:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.140
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789992000; cv=none; b=Ts61QFqTtZjrRePrjy8fmT3nPaR5+x7F70ti/XGAvCQ/DX7O1qVNeumbmMgtGE2Deg+ZkPEcUJjWx+7HogMDaMTauCsWtJkpHyOalukknq6QSqoOlI8EKC8dEaTcKGjc7584vt2bIJdbagYyWWBnox85bm9OVGO6Zf1gp55SLRE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789992000; c=relaxed/simple;
-	bh=bEPzRIyIzB0IF+0zjejBOzqxA+2cdOa9NJ/Zly89bAI=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=ehwQCWGVBf3VCvW+p03emVL3YVemWHhgy/fm+DH7kYvsPd0iZP3a1in9N/++EjsJLe7hDtDNYrQO0myiLqvnPDcF3pU2Mr7f8qSsZcY8PCk/jjKoszmU/XtyA4kFap0qMxHNU5Z9SH7OohJB4P0f+DQ0PqhYcZO9jQC/PjOn46M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=conchuod.ie; spf=pass smtp.mailfrom=conchuod.ie; dkim=pass (2048-bit key) header.d=conchuod.ie header.i=@conchuod.ie header.b=BPPz4J5q; arc=none smtp.client-ip=74.125.228.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=conchuod.ie
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=conchuod.ie
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D293B42FB;
+	Mon, 21 Sep 2026 14:16:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790000199; cv=fail; b=j5LUQCdlY1+jDPN2lBg8xE1F+ru0t+cS8NFDVbzIZmhzD9yt4VrQnew7UP5gCHMrLGOvnjdGFUpJlp9yFKTMbuS/RMrP9ilI+tRzocWmBmDJywq18YXEvN74SC3ZgwWIUrsNrgQvE/6IqPngtyN7MJHIqcvbEa4eGYKF1tieSlQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790000199; c=relaxed/simple;
+	bh=IU3I9TrbW/fohkr1nyzYMosF8vtrD/VsAjvjwyY8Uok=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=bJkXTZA282unFWuCzxxj32mu3aaGj9r1MjbUT0aYg85PhYHnU70kaWVwBfoUxB0247ts6JhGz+qoMmMQb+aGplyfb+dTptFMhweUxVTJR+ydQXo+Pnsx7h0752tnp3CQWf2goZHryGXvmL7fcOy9WmA3YPpjtWh3XsZmayJC77Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=VOnL2iUj; arc=fail smtp.client-ip=52.101.53.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=conchuod.ie header.i=@conchuod.ie header.b="BPPz4J5q"
-Received: by mail-ej2-f12.google.com with SMTP id a640c23a62f3a-c254f56039dso372399966b.3
-        for <linux-iio@vger.kernel.org>; Mon, 21 Sep 2026 04:59:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google; t=1789991995; x=1790596795; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :references:in-reply-to:user-agent:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=vm99IYdaFdSFEgRLWbOM1gyDbfw+zjAxHYiDcpK5GD8=;
-        b=BPPz4J5qUJbxgD7iIKL0SLMwKlXYaEe66n6DuChwl9Bu8fECKtyH5K95L0F7hmdLyg
-         36C7rzq9E3YxTGtqdpPWhHdXSRDpGlk1qfi860PsbV0WeWjitFq77bXvlR7USfE79jLS
-         RG4SY6xHOlFPk58mJ36rmc5JxpSDGZe1m5ahwBHwyTlLh4w1G+oKGCj5sgIX8NPNYXJE
-         xZzL4yTxrlpGTJz1kUS1sX09ss9vL3JMVLd+3XsI4tASFs7X9Eb8kr5aUk3WaBBlhesh
-         6EW+dcAo+EXgAxtT/nMFFYo36YZ4FIYKDmYzT1CZugSknZsOgdEqWaJaBhv7CCPuE31j
-         v9gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789991995; x=1790596795;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :references:in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vm99IYdaFdSFEgRLWbOM1gyDbfw+zjAxHYiDcpK5GD8=;
-        b=RDcwiB5wtxzI+ds2mugwC3eseGqa7QwK0Xir+wDqWzQq6SxDG42HdtUtgw9ggwax5h
-         RgEIq77pHO8r0ADnKBLDdKeEKnPrkDRI9HSALtTD3N6kJ46i/4XBAzcTerOBvNq/r60b
-         NdifResqbM6YIlPbfTqThUMPK+88GnjOfZuz0nEvsX0zxjn7v9Hos5M0LC2bcaXTbIzQ
-         QJVzI1zb1EaGq6hHlKJjceXNHU4wcdLhH8avXwwE9jyvqlB/K49rhqXpyJh3gUX0cEKr
-         /eRS8mDl/fc1VxninhDQIoF80JeB091fpEcNnLbwA5QUqOpojCflQqpcMpn5xWbwz+ma
-         09EA==
-X-Forwarded-Encrypted: i=1; AKwUvBxVmkxsG23jMp4ujK8/TtlIkrl3lJ87El3CFHLXW4foYdXhsqc2KmGndpvEoyiFqfOAd3xXeJigDic=@vger.kernel.org
-X-Gm-Message-State: AFuF++km+873CStcEjLXEUSsR8KjtoX4FJgBeRSQEST+/hBcgoB8dyBH
-	uxg9Ik9MlQY7H/nDzq5mb5iFe1ynpKNcXsQud4Hhqygy00cvGjWT0yzn3Vgk7C6ism0=
-X-Gm-Gg: AYBFou28Xnmyjww844Qh8jtAmTNCgsErgu6G0gany4UhcQUuJs3YFhi9+rLl6BQ6LKh
-	DWrlwc/pmEi9pbynF7VloERuvLrHLK6Zhql0RWlPe+GX+N1sxlzoZK7hl6/1QTUA1kR0CJEk3B6
-	Il6fuZylgvag6cEkO3GrTHWd2CaDPdjyGLytB7/7vcZpW0oV2p0/zGcy5zrmbn2jGijkJ5jyyo6
-	yn/BvTO7V7JhD4mv3C5dmwovv6jRNgtHUmsaPP4+t+hhm6Af4rruxaqv02K372aL/GzLwYFxX8O
-	8rIpCDuN5AzLN180qVSNfoMvCEMYSfpo26rDu5xv5/VZqT0Q3DgiC2XjFybh/jZgG5fWSkiA0vK
-	DtQ4vnDsQqdGSbMpZ+SOJM3KXBd3FhldcF7UJrvDX4HcpY0SCs/RMM/MZ0bZcqrhfL2HnAtOX5+
-	Z6kwxRcVtMHqnio1w+xmrQ2FoliyHHTmDdoYNx6cxPDb9lkvN1QW3fDFYAzMA6Tpnves1QuiuD
-X-Received: by 2002:a17:906:c10b:b0:c26:19de:9138 with SMTP id a640c23a62f3a-c2a15cf34efmr955118766b.43.1789991995191;
-        Mon, 21 Sep 2026 04:59:55 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([80.233.32.56])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2a3523816dsm290466766b.2.2026.09.21.04.59.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Sep 2026 04:59:54 -0700 (PDT)
-Date: Mon, 21 Sep 2026 13:59:53 +0200
-From: Conor <mail@conchuod.ie>
-To: Chang Yu <marcus.yu.56@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Conor Dooley <conor@kernel.org>,
- Joshua Crofts <joshua.crofts1@gmail.com>,
- David Lechner <dlechner@baylibre.com>,
- =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Shi Hao <i.shihao.999@gmail.com>,
- "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: light: add as7343
-User-Agent: K-9 Mail for Android
-In-Reply-To: <arCp0DQpBiOk3zvz@zephyrus-g14.localdomain>
-References: <20260907210042.32552-1-marcus.yu.56@gmail.com> <20260907210042.32552-2-marcus.yu.56@gmail.com> <20260908-dinner-shelve-1d61e19ee3b7@spud> <20260913014203.2bae2222@jic23-hlaptop> <20260915-gleeful-jester-c8114edf28ff@spud> <20260917034823.03940ac4@jic23-hlaptop> <aq3rdBcMw1XcHnkL@gmail.com> <20260920010448.114fc597@jic23-hlaptop> <77D15400-6ECD-4661-8733-E1F4F85077AF@conchuod.ie> <arCp0DQpBiOk3zvz@zephyrus-g14.localdomain>
-Message-ID: <0FB27C18-FADD-4791-8159-41FE6D04D8F3@conchuod.ie>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="VOnL2iUj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=RNOvt0Z0hzcBiRW22/JzfUvOyn20SbY6VZHZyEfr2DI0MTtLIFe/eVkt8l1zL3g0MyJiXFPuiEc+V5Fl6dBoab3IBXGuo85lYCbI47DoAbdNufkvAwNjZ2X4PNsJPokirFaP+tcTOscY56fkmMjHhbWdSBEVEFBMBlzFrg4Rg2ncQb1X050BdTmplFPEJEdvhZGAAbHAS3hdMakLi+CF6ylj9oPmHNNGMSlW5BRSlR4eqD/M+IdPutQyJcNdPz55AN+Tk2fb4T7QhJSOfMyzeA7fV8JSNrzuZZlAMSpWWs0nlvmnyFxJfgloC6ZWo/KkXBLKdaCpaDqqtGy5cfGJ8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IU3I9TrbW/fohkr1nyzYMosF8vtrD/VsAjvjwyY8Uok=;
+ b=jLYmwB0WwTGaYUC9+Cp6FSlzDEUZ9RDgfhZkftuhH0XZXLZWV3mCnNa0ka6c9/geoIABR0OWTKpu78Vy4Pq8VtKqCbccfhII3CQvnZo40fUbMBzOoGYqZqT5ylum4ESmoZsWJRuCm6L4PXBoRbtxCLYlXTJaVjOy9PVyhj4A/h6K6XDCro4vEvkSfZ1AAQiFdDxcImgGiiAYeoXTCc4gdphszNkyg4QuGylIEExeg1yIjOV5Yu2+oGkzJfcw3TDDrMFpLlCBgB/JPDses5VM9uM6j/5yZFGPJ5NWu3qh+cveRT/LWlq9Ex8bOjeRhm4lN0WdteAlYz2AxgJDyz4oKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microchip.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IU3I9TrbW/fohkr1nyzYMosF8vtrD/VsAjvjwyY8Uok=;
+ b=VOnL2iUjI/sbOnDMKdIsce8pKEJRkJCvC1stY4KEQfIcsCPgGYZ/Crp7cyzxb/jt7tFAl+4Qq1NpFw+DCDgCvh6XIPmlPrTGXgvMsdlrcoowDEJJpqj1vxSk0MU5vghbY5kGK8H7cCsXBo0OL2UauNINqlTsrzDNdfETvmWXWeZI/vv7qK48MnM4UbWAAXAR+h57fi6k87GxKjsoWEZ4nOTreYyYtZjqW1fifw3SeNcgnetaUISjjHQvRhTFzMDokFdJh//hzC/H3ZiZPG+pwd3BnMa+7ptXAkbSkpWYOpK7gYjI2gCDNCbiDjaSNJjlhR1xWZPuhZBOQwH4iYkarw==
+Received: from SN7PR11MB8262.namprd11.prod.outlook.com (2603:10b6:806:26e::13)
+ by CY8PR11MB7825.namprd11.prod.outlook.com (2603:10b6:930:71::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.16; Mon, 21 Sep
+ 2026 14:16:34 +0000
+Received: from SN7PR11MB8262.namprd11.prod.outlook.com
+ ([fe80::2a54:c2a5:16e4:48dd]) by SN7PR11MB8262.namprd11.prod.outlook.com
+ ([fe80::2a54:c2a5:16e4:48dd%3]) with mapi id 15.21.0428.015; Mon, 21 Sep 2026
+ 14:16:34 +0000
+From: <Ariana.Lazar@microchip.com>
+To: <jic23@kernel.org>, <andriy.shevchenko@intel.com>
+CC: <dlechner@baylibre.com>, <joshua.crofts1@gmail.com>, <nuno.sa@analog.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>, <robh@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <andy@kernel.org>, <krzk+dt@kernel.org>,
+	<sashiko-bot@kernel.org>, <conor+dt@kernel.org>, <stable@vger.kernel.org>
+Subject: Re: [PATCH v7 00/11] Refactor Microchip MCP47FEB02 I2C driver in
+ separate modules to add support for MCP48FEB02 SPI driver
+Thread-Topic: [PATCH v7 00/11] Refactor Microchip MCP47FEB02 I2C driver in
+ separate modules to add support for MCP48FEB02 SPI driver
+Thread-Index: AQHdR00udHDJE8TAz0OdNS2Ah67wwLbUGFeAgAQC1YCAAP3TAA==
+Date: Mon, 21 Sep 2026 14:16:34 +0000
+Message-ID: <f8ac8ad69138fc9e19074e491f91f2892e7bba95.camel@microchip.com>
+References: <20260918-mcp47feb02_refactor-v7-0-82ca794eafe2@microchip.com>
+	 <aq0J9Vs1_rUAlcoA@ashevche-desk.local>
+	 <20260921000803.1148e493@jic23-hlaptop>
+In-Reply-To: <20260921000803.1148e493@jic23-hlaptop>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN7PR11MB8262:EE_|CY8PR11MB7825:EE_
+x-ms-office365-filtering-correlation-id: af9161f5-3f83-45f8-1f7a-08df17eaf134
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|23010399003|376014|7416014|1800799024|366016|10067099003|11063799006|18002099003|22082099003|56012099006|4143699003|38070700021;
+x-microsoft-antispam-message-info:
+ 09EjFsVJF6Z7/kZ97+9L6fX7M+yFlPZNDkscDo3GkPQ6B24bd6kII/UxCo8c1mKIucGGFF0GyPBeKLozUvoLqmuEhT5ZII54b0mzQrD2fEEsxuYOHOJAKZ9R72Gc6AHndmKaww2VLjKQs+nu/WlrsDQbX4BJ71TTSWgnOvdBaemCl9WOHWc32yCUw80ZzUouHgAaDFiXMpSGpdPUk7Gacu9cJ6pOv4hnjidp+bH7ysJpx4njYx09aveSbsu3SP8E78NccPuA0+5kI0rJEao25N6a8U2l/kTwKdUQKibZzD02AJLDXZpDLnCjqlHZzCgYb8ouftII9e15HfAOc/SZNnMlTSCr0TE2X1URl3B3h+V31fQysyNJ5YCA5x8kGg19k8sYMHtvnM4K9g441cgF8AkbuPXSrtUdhoO95LVQE9btKR3vbgFK9JQzIYM1ku1vTodH0pRdp0bYnDT4NrVAKRTbVFDJOovffRrCJCLMmZ24gYeghM32iC8sB8pvfPetZI8dNS+pxK4gHWKrr6Pc4/Rpdi+eio/hQ0sMmgJWV4I+3HdE1i9ml+ssC871vN/x57Jzv58riI8nzeUyjGLpGdQIhps+SoIK8BX5SeMfCCH70DtGqFSCr4xj5R39y1FGhNpPGoQ+x9yQMp+miZEBCuKX5hNLNo8SgwgPv0Ni09Qum3x2T50tOFpf6iTQyg2n+HuKRm4zFD4UjUKMsiXEyjvfDmka9QeuXn98Mft16qs=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB8262.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(1800799024)(366016)(10067099003)(11063799006)(18002099003)(22082099003)(56012099006)(4143699003)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?MkFmbWNSTnN2QTVnenZrYVhOdVFMM3A2cGFieW4vUTIvQ2RjZzIxRkdEVHJ1?=
+ =?utf-8?B?Z2Y4c2Rpd2liRWo2cU5oeGlxcWlKdXNEbmZNQjNPQ1B4WHRWTDhNUlZSZEE3?=
+ =?utf-8?B?cUNjUUYwZk1SNStZN2VvNitmSVE0WER5SS9TTEloczZDdjRDajZqSS82VWd4?=
+ =?utf-8?B?SjdXdDJNQjlFYmZBOVFMUTloTWw2QjV6S3lOMjcwMlF3MmxzNm5hWC9NNGdN?=
+ =?utf-8?B?RjhkUGZ5ZUNSMzFDK0IrdkFWSmhXZFpoRFMwQ2JGOWErRE9ydVIxZCtaUFo4?=
+ =?utf-8?B?elNBY0JwdTZHS3lmMkxldlFKMzlmSkpubVk4aXdHb0U5bHYxTzVBUlJ5WVZS?=
+ =?utf-8?B?V29UVlE1cDdBMHI0UnFJZTV5VTNDQlR3N3ZOalR3L0RGdnMvUStPM0ErSENS?=
+ =?utf-8?B?QlFDSzYvTzJlLzluL1RITWJOZjJpcVhKU0dsWGlQZjdxWExLc29MMkdjbXJs?=
+ =?utf-8?B?TUlLcGZmMGpNY2QxN0liMFpNNHNYa2tCS2dGeWMxb29kMVkvR0tNUVFJUDg1?=
+ =?utf-8?B?T3l2TjZINTVxR3JLS2tBU3dRVkQvQVd2TnlvTHNOcnhzbm9acUd5UnpSMDA3?=
+ =?utf-8?B?cFVZT0hXYVBjVmxYVkpqREFuM0lLK1E1YXlQVEZnOHI3ZVd0ODcyNmxkaVlx?=
+ =?utf-8?B?bDVQemFJcmhTQ2taWWlUMEl2ZHNrWFkwWGMreFVIRDFmWVJQWlNyc3ZhTVJk?=
+ =?utf-8?B?bVdyRW5KUVpZblhKQjUxWjZsUVNRS1BiZDJlME5TbFZqVElLQnhvRisvUS9z?=
+ =?utf-8?B?UWZMd2ZFSWJVNmt5VEVtRzBOQ1REdG45SUlFMENBaDRqQXArdHQyaU1IMFZi?=
+ =?utf-8?B?anNnYVp5V01TSFk1NDMvYjR4MzNlNDVpOW1COE0vN0RRTXpJTG4wa0t3RnNs?=
+ =?utf-8?B?YmNSZzYrb0V6Ymltc1QwdTF0K3p3ZFFManhva1A4VGVzeFNTUDAwdXQ2MTJp?=
+ =?utf-8?B?dW9VWmhoV1ErRkEvR21VUnRyUEVDOWVidFBOVVIvUm5YZDNuUWVkSlNYQk9h?=
+ =?utf-8?B?ME9KMFBtSzBZL3hTNDRmazV6Y0wwRFdKcUk2YlY5b3gyQlIrREFaYTY0K2ZO?=
+ =?utf-8?B?RFZkL2hKdjI4RjU2eVhnMEoyMEl6cEpDb0FPcXJSdFdFNlB6N3VIM0UzK2dB?=
+ =?utf-8?B?SWF4WWpoUHJIRGN4VWZiNEQvTXBZVGxHcXpTa1VPZy83dnZ1OGR4TktRSURW?=
+ =?utf-8?B?QnJPWTlzWTAwOHUyalVRSzlFM2RGOWlNaW9LWG9MckZZSDhHR1ZwbUtmNGwy?=
+ =?utf-8?B?YjhaZ1F5WDJNRHZRU0FtR2ZRbHVEL1I5TmhaQWNtQVczT2dpMlBBMkRhTUNQ?=
+ =?utf-8?B?eEdKTENOL003aGhteDZONGpSbGw0c082ZUVtdm9PZXBLWVFwWk9PWWcvcFRN?=
+ =?utf-8?B?bTM5MFU4a3A5bStTdVIzZWhuejFOblNZa3NhNzZUMXdUM05SbFRQeFVtSDA0?=
+ =?utf-8?B?eTkyaWR4YWx5cXZFdE1QKzNlSlFGN1VvQXQrZVVaTmtGeGpCWkZQMHovK3lO?=
+ =?utf-8?B?MFpCYm9ka2lHQ2thVzNXVmtnWTBjU1dDTjdRNVhueW12aDAra1A4dkdVWGdk?=
+ =?utf-8?B?dWVIYXBPNDdIZ2tGdWp6YXF5T3RXZjhwQ2M1bWNQakRxOVpMTjl6Q2NtSE5J?=
+ =?utf-8?B?ZkFCdE1HTkVkbTdPZ3FHTXk4Q0tPa05paXZEa2JzL1JjbThoM09EbXVtdEo4?=
+ =?utf-8?B?cjlTT2wyZHNwWGtYdy9CbWJRakM0UXRuQ2gvZ01OREZ4WUx6V0o4VmRXZHJk?=
+ =?utf-8?B?QytEY3F0VG45cnJUbjlBc3ExVnVyZ0c2eEZTZUo0ejNCcStYdWNCcm50QTdT?=
+ =?utf-8?B?cXVnVVJ6eGQwL0lubys5SXo2WDhWMTZPRWx6Y0gvTkpYbng3OEIwZFVzV0dS?=
+ =?utf-8?B?cTdzMEFEVDhVYnZQU2Q2enFqK1Jud1FiM1g0MDBnMXkwdmI5VUw2SzhVdzVo?=
+ =?utf-8?B?M1hsbEV5N3BacHQyaTB2MmhJbHFiQlNkeVM0MDRhZE9rNjJwaHcxRGp4dm9y?=
+ =?utf-8?B?NFRRRE1qc09MNGgxRE1aSTBYbFJqK212UXE4Sy9pWDJPUkZTZmgxTk9YOGdQ?=
+ =?utf-8?B?aWhiN25TakE0RExzcHBDTGRLSmkya2FyTGgxcE8yb01jZ083RWhlREp1bkZL?=
+ =?utf-8?B?VUxwdVdoMzVqWXc0VTU5MFZ2OGprS3RsVHdQM3VObjhMQVp4RWRobEtjZHFu?=
+ =?utf-8?B?Q25LNzc4N2JkYnhpdDI4WWovUnUyazhPMklxYVMweTc5c2Uva0Y3aHd4TzNK?=
+ =?utf-8?B?QUp0WUVHVjhseFNNSDJld0ZjYllyRFlLODFHT2pKTi9McXM5NGY2UDI3cndl?=
+ =?utf-8?B?dG0xQThJcmFQZ0ZvSTFzTUVyajJFM28yQnZ1bmsvV0tPWExYT0tyeFJQSVcw?=
+ =?utf-8?Q?hW+NlYpHw3kJ6rhU=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <82B49A1D8D105541BE7CDAC41F3DF085@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: microchip.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB8262.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af9161f5-3f83-45f8-1f7a-08df17eaf134
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2026 14:16:34.6265
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zXyU26rnwtcyI77c4SkPQ0ffSKEgbsCIT/uTFe1ohLuDZICHs6JTTnNKUzac0gCVaMxAa5f+7+s+jG+e9DRVxNn18xP73x/kQEejOnd+eTw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7825
 
-
-
-On 21 September 2026 05:51:44 GMT+02:00, Chang Yu <marcus=2Eyu=2E56@gmail=
-=2Ecom> wrote:
->On Sun, Sep 20, 2026 at 03:14:30PM +0200, Conor wrote:
->>=20
->>=20
->> On 20 September 2026 02:04:48 GMT+02:00, Jonathan Cameron <jic23@kernel=
-=2Eorg> wrote:
->> >On Fri, 18 Sep 2026 18:55:00 -0700
->> >Chang Yu <marcus=2Eyu=2E56@gmail=2Ecom> wrote:
->> >
->> >> On Thu, Sep 17, 2026 at 03:48:23AM +0100, Jonathan Cameron wrote:
->> >> > On Tue, 15 Sep 2026 18:11:17 +0100
->> >> > Conor Dooley <conor@kernel=2Eorg> wrote:
->> >> >  =20
->> >> > > On Sun, Sep 13, 2026 at 01:42:03AM +0100, Jonathan Cameron wrote=
-: =20
->> >> > > > On Tue, 8 Sep 2026 19:13:55 +0100
->> >> > > > Conor Dooley <conor@kernel=2Eorg> wrote:
->> >> > > >    =20
->> >> > > > > On Mon, Sep 07, 2026 at 02:00:41PM -0700, Chang Yu wrote:   =
-=20
->> >> > > > > > Add binding for AMS AS7343 which is a 14-channel multi-spe=
-ctral sensor
->> >> > > > > > with i2c address of 0x39=2E
->> >> > > > > >=20
->> >> > > > > > The GPIO pin is described as a generic GPIO for now=2E Bin=
-ding design for the
->> >> > > > > > more advanced measurement/LED synchronization use cases ar=
-e deferred to
->> >> > > > > > future patches=2E     =20
->> >> > > > >=20
->> >> > > > > Unfortunately, you can't change what you document, so pickin=
-g something
->> >> > > > > correct now is needed - even if the driver doesn't use it ye=
-t=2E   =20
->> >> > > >=20
->> >> > > > Definitely needs an outline of how it would be backwards compa=
-tible and
->> >> > > > an explanation of why not now=2E  Sometimes a portion of the b=
-inding is
->> >> > > > so uncertain that we do kick it back from initial version but =
-we 'must'
->> >> > > > be sure we can extend the binding to new configurations=2E  No=
-rmally this
->> >> > > > is one of those we are fairly sure, but not entirely sure case=
-s - or
->> >> > > > picking between two options where consensus isn't being reache=
-d=2E
->> >> > > >=20
->> >> > > > Chang Yu: This sort of things needs discussion and is one of t=
-he reasons to
->> >> > > > go slowly=2E   =20
->> >> > >=20
->> >> > > Ye, I note that there are 2 more versions of this since I left t=
-his
->> >> > > comment, but you seem to be on top of that=2E
->> >> > >  =20
->> >> > > > > > Datasheet: https://look=2Eams-osram=2Ecom/m/5f2d27fff9a874=
-d2/original/AS7343-14-Channel-Multi-Spectral-Sensor=2Epdf
->> >> > > > > > Signed-off-by: Chang Yu <marcus=2Eyu=2E56@gmail=2Ecom>
->> >> > > > > > ---
->> >> > > > > > Changes in v2:
->> >> > > > > >   - Add the LDR, the interrupt pin, and the GPIO pin to th=
-e bindings=2E
->> >> > > > > >   - Fix node name and unit address mismatch=2E
->> >> > > > > >   - Include MAINTAINERS changes=2E
->> >> > > > > >=20
->> >> > > > > >  =2E=2E=2E/bindings/iio/light/ams,as7343=2Eyaml        | 6=
-9 +++++++++++++++++++
->> >> > > > > >  MAINTAINERS                                   |  6 ++
->> >> > > > > >  2 files changed, 75 insertions(+)
->> >> > > > > >  create mode 100644 Documentation/devicetree/bindings/iio/=
-light/ams,as7343=2Eyaml
->> >> > > > > >=20
->> >> > > > > > diff --git a/Documentation/devicetree/bindings/iio/light/a=
-ms,as7343=2Eyaml b/Documentation/devicetree/bindings/iio/light/ams,as7343=
-=2Eyaml
->> >> > > > > > new file mode 100644
->> >> > > > > > index 000000000000=2E=2Eb06d445b92b3
->> >> > > > > > --- /dev/null
->> >> > > > > > +++ b/Documentation/devicetree/bindings/iio/light/ams,as73=
-43=2Eyaml
->> >> > > > > > @@ -0,0 +1,69 @@
->> >> > > > > > +# SPDX-License-Identifier: GPL-2=2E0-only OR BSD-2-Clause
->> >> > > > > > +%YAML 1=2E2
->> >> > > > > > +---
->> >> > > > > > +$id: http://devicetree=2Eorg/schemas/iio/light/ams,as7343=
-=2Eyaml#
->> >> > > > > > +$schema: http://devicetree=2Eorg/meta-schemas/core=2Eyaml=
-#
->> >> > > > > > +
->> >> > > > > > +title: AMS AS7343 14-Channel Multi-Spectral Sensor
->> >> > > > > > +
->> >> > > > > > +maintainers:
->> >> > > > > > +  - Chang Yu <marcus=2Eyu=2E56@gmail=2Ecom>
->> >> > > > > > +
->> >> > > > > > +description: |
->> >> > > > > > +  The AMS AS7343 is a 14-channel multi-spectral sensor wi=
-th i2c address of 0x39=2E
->> >> > > > > > +  https://look=2Eams-osram=2Ecom/m/5f2d27fff9a874d2/origi=
-nal/AS7343-14-Channel-Multi-Spectral-Sensor=2Epdf
->> >> > > > > > +
->> >> > > > > > +properties:
->> >> > > > > > +  compatible:
->> >> > > > > > +    enum:
->> >> > > > > > +      - ams,as7343
->> >> > > > > > +
->> >> > > > > > +  reg:
->> >> > > > > > +    description:
->> >> > > > > > +      I2C address of the device (0x39)=2E
->> >> > > > > > +    maxItems: 1
->> >> > > > > > +
->> >> > > > > > +  interrupts:
->> >> > > > > > +    description:
->> >> > > > > > +      Open drain output active low interrupt pin=2E
->> >> > > > > > +    maxItems: 1
->> >> > > > > > +
->> >> > > > > > +  vdd-supply: true
->> >> > > > > > +
->> >> > > > > > +  ams,led-current-microamp:
->> >> > > > > > +    description:
->> >> > > > > > +      The driver current for the external LED connected t=
-o the LDR pin=2E
->> >> > > > > > +    minimum: 4000
->> >> > > > > > +    maximum: 258000
->> >> > > > > > +    multipleOf: 2000
->> >> > > > > > +    default: 12000     =20
->> >> > > > >=20
->> >> > > > > Rather than a custom property, the tsl2772 uses led-max-micr=
-oamp:
->> >> > > > > tsl2772=2Eyaml
->> >> > > > > 46:  led-max-microamp:
->> >> > > > > 81:                led-max-microamp =3D <100000>;
->> >> > > > >=20
->> >> > > > > I wonder if the same should be done here, or if there should=
- be an leds
->> >> > > > > subnode? Perhaps the IIO folks can comment on that=2E   =20
->> >> > > >=20
->> >> > > > I don't think we've ever bothered with a subnode as there only=
- tends
->> >> > > > to be one of them=2E  Given the enabling etc is all hardware c=
-ontrolled
->> >> > > > I'm not sure a more generic LED binding makes sense=2E I don't=
- know that
->> >> > > > much about the led bindings though so maybe it is worth doing =
-a subnode
->> >> > > > just to use the leds/common=2Eyaml definition of led-max-micro=
-amp?   =20
->> >> > >=20
->> >> > > Could always just put a ref in to leds/common=2Eyaml and not bot=
-her with a
->> >> > > child node=2E I'd stick with the additionalProperties: false, si=
-nce
->> >> > > there's lots of leds properties that probably don't apply to a d=
-evice
->> >> > > like this=2E
->> >> > >  =20
->> >> > Sounds good to me=2E
->> >> >  =20
->> >> > > Cheers,
->> >> > > Conor=2E =20
->> >> >  =20
->> >> A quick heads up, adding a ref produces the following error when run=
-ning
->> >> dt_binding_check:
->> >>=20
->> >> properties:led-max-microamp: '$ref' should not be valid under {'cons=
-t': '$ref'}
->> >> 	hint: Standard unit suffix properties don't need a type $ref
->> >> 	from schema $id: http://devicetree=2Eorg/meta-schemas/core=2Eyaml
->> >>=20
->> >> So it looks like we can just put led-max-microamp, and not add the $=
-ref=2E
->> >
->> >Ah=2E That's a bit irritating as it is assuming the ref is to get the
->> >type rather than to make the connection to the standard definition
->> >of what it is=2E  Conor, what is the best way around this?=20
->> >Maybe a comment to say where it is documented instead of a $ref?
->>=20
->> From the error, it looks like this was done incorrectly, but impossible=
- to tell for sure without the snippet=2E
->> The ref I was talking about would be at the  top level
->>=20
->> >
->> >J
->> >
->I was doing something like:
->    led-max-microamp:
->      $ref: /schemas/leds/common=2Eyaml#/properties/led-max-microamp
->      minimum: 4000
->which gave me the error=2E
->
->IIUC, Conor was suggesting something like:
->    allOf:
->      - $ref: /schemas/leds/common=2Eyaml#
->
->From my limited understanding of dt bindings, the above should not be
->used together with additionalProperties: false ? So do we want something
-
-It can be used with it, you just need to list the property in the schema y=
-ou're writing - which you have to do anyway because you're setting constrai=
-nts on it=2E
-
-Cheers,
-Conor=20
-
->like:
->
->    allOf:
->      - $ref: /schemas/leds/common=2Eyaml#
->
->    unevaluatedProperties: false
->
->Or just stick with what's in v5?
->
+SGkgSm9uYXRoYW4sDQoNClRoYW5rIHlvdSBmb3IgdGhlIHJldmlldy4NCg0KPiBBbnlob3csIGxl
+dCBtZSBxdWV1ZSBzb21lIG9mIHRoZXNlLsKgIEkgZG91YnQgd2UnbGwgc2VlIGFueXRoaW5nIG5l
+dw0KPiBmcm9tIHNhc2hpa28gZ2l2ZW4gdGhlIG1pbm9yIHR3ZWFrcyB0aGUgcmVzdCBvZiB0aGlz
+IHNlcmllcy4NCj4gDQo+IFNvIHdpdGggdGhhdCBpbiBtaW5kLCBhcHBsaWVkIHBhdGNoZXMgaW4g
+dGhpcyBvcmRlcg0KPiAxIDIgNCA1DQo+IGhlbGQgNiBiYWNrIGZvciB0aGUgdGhpbmcgYWJvdXQg
+Y2hlY2tpbmcgaWYgcHJvcGVydHkgcHJlc2VudC4NCj4gMyA3IDggd2l0aCBsaW5rIGRyb3BwZWQu
+DQo+IA0KPiBTbyBqdXN0IDYgOSBhbmQgMTAgZm9yIG5leHQgdmVyc2lvbiBwbGVhc2UuDQo+IA0K
+PiBBbGwgdGhlIGFib3ZlIG9uIHRoZSB0ZXN0aW5nIGJyYW5jaCBvZiBpaW8uZ2l0Lg0KDQpJIHdh
+cyB3b25kZXJpbmcgaWYgdGhlIGNvcnJlY3QgYXBwcm9hY2ggZm9yIHRoZSB2OCBzZXJpZXMgaXMg
+dG8gY3JlYXRlDQphIG5ldyBicmFuY2ggYmFzZWQgb24gaWlvL3Rlc3RpbmcgYW5kIGFkZCB0aGUg
+cmVtYWluaW5nIHBhdGNoZXMgb250bw0KaXQ/IA0KDQpUaGVzZSB3b3VsZCBpbmNsdWRlIHRoZSBu
+ZWVkZWQgY2hhbmdlczogdGhlIHByb3BlcnR5X3ByZXNlbnQgY2hlY2sgZm9yDQp0aGUgbGFiZWwg
+KGZvcm1lciBwYXRjaCA2KSwgdGhlIG5ldyBwcmVjdXJzb3IgcGF0Y2ggZm9yIHRoZSBFRVBST00N
+Cm11dGV4IChmb3JtZXIgcGF0Y2ggOSBzcGxpdCBpbnRvIDIgcGF0Y2hlcyksIGFsb25nIHdpdGgg
+dGhlIHJlZmFjdG9yaW5nDQphbmQgU1BJIHN1cHBvcnQgYWRkaXRpb25zIChmb3JtZXIgcGF0Y2hl
+cyAxMCBhbmQgMTEpLg0KDQpQbGVhc2UgbGV0IG1lIGtub3cgaWYgdGhpcyBpcyB0aGUgcHJlZmVy
+cmVkIHdheSB0byBoYW5kbGUgaXQuDQoNCkJlc3QgcmVnYXJkcywNCkFyaWFuYQ0KDQoNCg==
