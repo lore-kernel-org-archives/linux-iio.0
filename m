@@ -1,152 +1,114 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-vs2-f43.google.com (mail-vs2-f43.google.com [74.125.227.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0175F5540BD
-	for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 15:07:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9806A38735E
+	for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 15:31:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790089664; cv=none; b=BuSMSIER4ZBfJpUjBSvEyXjPFxK05uendd5K0UV1xO2aIRDc8u26OLRI4Tv8ZHARO/TtzKKTqxXYId3W2oevi/KvCHdMiQDc7+prg3SC0gmQA6SOCQOiZiFljgvAx/nAED36bjJ2V3/K/87pnzx5aBSH20EQJWXVOPSdr1bQ40U=
+	t=1790091065; cv=none; b=NI6+S3wXGLJItQtFJlTMyqB0863ZN2s0R8qzlGx+vMu0KLSncfzFXG2TTicyYgA1aXJ6gHv19GPZkPlbp1g0K4TIVKx7D4JqhUkh7gAyetg9frVnKKM/m5mLWZPnOVlaIcCSKT13jjSETM4QrCSwF1ek4mSGaBgr0bcS7+Uny1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790089664; c=relaxed/simple;
-	bh=A5lEFNp4zZC8TW9NCE07Bcytxj1y0F1MHW2S3HOG98Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=S+VnGQ7Mj+eimhiJMDCRGcnIxuMx3YI2NT6cqlXquAvVQZMrToH1552g6hC5FBkeCDG9zkR9Jgq+F4iDfWWy1IxAMv+ky74y9T+OGujxGlsrvQXB7gFoba9k143aRhfyr1ELrvFGzW26GT2VVJoqoePaCIVQa+dvlz7pTP8R6SE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j7yJZJzJ; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1790091065; c=relaxed/simple;
+	bh=0IK9+EwvsBoYDJYGUac8cxaRSG01Rz8fKvCBOkF5H0E=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XwfREZcmN4YgvHO/b4MdVxHYp/L/wYZ73g/RC4jb5bsGZLhkedbWqvJQzDfVw1nFLvHIj4/vsEtpgaVlpXxr89a3tH4xPONTW2BHhrDItmFHxYOJqoeDZFnMpg7JAa0bNgceYbqW6SoryCq1j2sfZBbCk7PB7P+TT4y9NW7tm5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=74.125.227.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j7yJZJzJ"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49b912d37b5so25483685e9.2
-        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 08:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790089658; x=1790694458; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=cYVZ7T3jaCAtW5iQuO9uelNVDbhOTDL0HmEhCbd0NOQ=;
-        b=j7yJZJzJ7oTg8DWq13Abc0/PuFs2hQS1chhP/6R9IVH6aKUvReOanH0lTXIx0sO5yU
-         SZVxv64vuI8cx212hzpxi6zD9nR4Ow6MNGgoJEpkCwGvfLTAoPFUq1v0P/hFT0Jxi9B2
-         Fs4PMKxesK/itI9cXBiTUeVWraesXJB6yaPeNxJQ9XBk56LkrTzAzSYbvzf41QHvkkY/
-         EYORqjLVUxBkszIsB+wxZgRZi+DaJFmhhtEWH2eLWvTVFPfG1BrHkYiXC+bi+d7RVUmo
-         9/AwpnxDy74YegNekqHQeRSTH3CDu/bf/0rh4QbqjyfZI/CeopBcgOwdx6q7hcWRzRym
-         tj1Q==
+Received: by mail-vs2-f43.google.com with SMTP id ada2fe7eead31-78564421fdbso1443523137.1
+        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 08:31:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790089658; x=1790694458;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=cYVZ7T3jaCAtW5iQuO9uelNVDbhOTDL0HmEhCbd0NOQ=;
-        b=p6FXlpGp4A4kGj34enepckgkgv5kvkQgop8aAdr+oyGmyxc2Z65ZuWh6BtbIMUApZM
-         r9fhDUuNqdJ9HHM1vl+En0HuiNH/LI1JpX5pRhx8lPdcV5a6F5CIOet2V9lPxHPv2Ytx
-         3nGtUfISD3XJ/Qfvc2C6oQKfLt3J7PCOPn6GTpMalmdd4PhB7XpET7m/3BYo1n8RL4rb
-         LljnpWy2XubZdY3pAHsZPh/BTPfIWTcScWr0WZCvCyvRA846k1QWs7Hh/cuf8eCMIpZ0
-         24iBrcuaqsMti35jAOyKTYxtMwP5rQX4KmdcfiwsAGzGfr1/rBZoDw/jfE6Xl42mXXkr
-         TZXA==
-X-Forwarded-Encrypted: i=1; AKwUvBxqsFbfLb0Xj7B/4EySJ+4NRkhnsPgVJdq2Z9Yg599/0vnDp3HG0vdIPblIyKsoSj65Gk9qysi3WWo=@vger.kernel.org
-X-Gm-Message-State: AFuF++mJqyVkT+HK8/YqZzODKhhsJDl0ViJ+fKVQxLVoh9vM0M9LbxEZ
-	F0Bz/Ar6521paFhms+gvyUOq5h1xGsWRuXsejC+D4R043IW3875FBy52
-X-Gm-Gg: AYBFou2Yd1RGP8DcHuuI0UsLwE8ydKzKI9TsOg/4hzp0+F60u+jylHaO22adIaYQeP1
-	XKpK/8ZF0XRRSo4Ezf10Z8p7I3/z8NH6drE6ZUXEwkX6/oTCeCRH3hbK2E0ejcjR/IMGEpceQYN
-	uR3+Q6ow+1EZ18Z/njMv8xXhZSiOVh6Vde6NBlf5iMaDhNwgImQmegv7Gr2FAVbA81MrjWN4krV
-	kXyiLNwIg0/5bhspBav3ywEBSG36IgXDZ+NwrYYYptf509a4eyqN4uUjsvJziGLyvH06Dd7Qxov
-	al81B0p6jyxz7KhJvC9S46wPmE8uRGdDwdQJg7pQ0kqiDckSwwT2APc4ZfI/+FFHh9WDyCzzk4/
-	Jn6cHg4L85GxMK0PtqCQZKHy9NO+hLIdfg7Z0yyyDBhqB1uj+Irg8D7oOmmWlzZoY59xUZMChaY
-	J/OPsKh3UsrXOi6flcoTsiWvDTkaKFvCsqWTSawI+fg+/6dSKVZDFIez/TCQenf/F+Yo4ZGy/fp
-	ISATOEsVRaH09BAfDYbvJ/+YlA9CRBbK87Ga+fxxVAt7EGJPMGMjLf2Tma5Khmoj49oIZiEwa81
-	z8E3N6Jd0q73BfxtFedsfh70OMApnxCIi0D7XyU1bjrK/9VQIuPqcG5UluXspVSf93kClwmt4Hx
-	0Bf9uRrAKryXd5ONAIkNZB1ce8gNctvP45hog6O/Pdek6m6v9uOYbzAJUIT/0svhFw5xrS6rguB
-	MByAWI
-X-Received: by 2002:a05:600c:c494:b0:49f:ce78:3568 with SMTP id 5b1f17b1804b1-49fce783681mr134919705e9.25.1790089658065;
-        Tue, 22 Sep 2026 08:07:38 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fddfe221fsm869795e9.10.2026.09.22.08.07.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 08:07:35 -0700 (PDT)
-Date: Tue, 22 Sep 2026 17:07:34 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
- jic23@kernel.org, andy@kernel.org
-Subject: Re: [RFC] Maintainer entry profile/contributor guide for IIO
-Message-ID: <20260922170734.000046d7@gmail.com>
-In-Reply-To: <arKWs7nTaJAda-XA@nsa>
-References: <20260817111825.000063f6@gmail.com>
-	<cb1937e9-c2fa-4d8d-bd95-f53423d88077@baylibre.com>
-	<20260818090652.000020bc@gmail.com>
-	<arD2UjzKu2k8elgM@nsa>
-	<20260922165124.0000132f@gmail.com>
-	<arKWs7nTaJAda-XA@nsa>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        d=1e100.net; s=20260707; t=1790091062; x=1790695862;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=/Ivia3s8tcpv+jz42ruOpNgJ1iPkEln4U/VwumY2Fss=;
+        b=vJr72QIvGZF/P0IObE6kqZzdpOc4bMHJ1PUZWlpWdwtvhFpfBB8Xc3CCvrL6nqYyX5
+         wi7za68iV8moOlcUV2SOL+cXy3UNOCzDukJRd6yBDTZ8KuRgFHermC0gzcg/491LXp2z
+         HCghAj7cNqkIEgS8W6MqBG6Fi+jM+Iptin9Z29DeN9ziUWiUdR/qVALp2jUGjMfM3nBr
+         NogOl1Rjb6g7HPrP1OcF7pCX/Mv8vMlu/uHhbYy/+5cCgEGp4QO1JJjJ6zEIDSSXtw9/
+         sM3aRg2orcfWJFTXHGWSesE6WrQPAkzO8cE5OLTcfHn7anmjMRe7+b++gmEQnb7+ZxoU
+         s9JA==
+X-Forwarded-Encrypted: i=1; AKwUvByIak/RXeZyaVim29KO7i7LqWrePB9nsC3S7UDs5RqDoMAQnU17iIiwvv5BLqSy2n4x7jbUQ8umM+k=@vger.kernel.org
+X-Gm-Message-State: AFuF++mkhkCAgqkfZkc9fsd6sNKbk2xcGC8pwfXjlrn2M5KKQl4ufy0C
+	VFYl41mYPT4+5KzAn9JpDS+YvEUPjbyFkOMmV7/q11lgL7nQ7IbZeZRJTFAHEIYX
+X-Gm-Gg: AYBFou3Jd4lgs9MWY2SMZ0yD8PvoWKbKk5pUYxlWn61Rp89Ijy0hfEkpj7t88zqT0AM
+	Qqa7l0Yb+CXSzGOHaYnSe8QE8UOvtlavN+hdsCGhc94q8OflQwtjCXrRyKFWlZkDHULkZa68ZcE
+	7Gq+btLpNzdfs4rekgZ79BWYQO74GVl3s1wD0Evsol0kDneahO9RJYhxALiSEPkXwVGbxss1ji3
+	8Db2veYtYp/FWStxn3AtYVBPFBpLpcY2+7EgnjNhRbAzEc5jTr3kk6Cflo02X7rJsue7OB57ns8
+	oGT8sDql5BY2PdkMEeJc6o7CLToakqJTAhAqrkiNLhBjzXgHzW32nORZUCgz/lrpbJqwqxcNrBU
+	cPcZ3Y2SWTUKxuv4/Ad+QZrjx1xCFyy+ugEumr4StnSQIu8y5yzmpZv1WyCLDsJDx8Pj1XqAVcS
+	mm9i9zrDlb5MJHa7AxkEI1uRqDo4HJg0eWtIflef57C8JIe0+BkFE9m0V3M+HaEKlPE7XTn6Dr6
+	FpJ5PAD0EJX0EftsXP5JQSjO5GIr8RUMV7b
+X-Received: by 2002:a05:6102:80a3:b0:79b:6220:1c70 with SMTP id ada2fe7eead31-7a55a71a16dmr7393962137.11.1790091062170;
+        Tue, 22 Sep 2026 08:31:02 -0700 (PDT)
+Received: from mail-vs2-f27.google.com (mail-vs2-f27.google.com. [74.125.227.27])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7abf5a7fb17sm99511137.7.2026.09.22.08.31.00
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Sep 2026 08:31:01 -0700 (PDT)
+Received: by mail-vs2-f27.google.com with SMTP id 71dfb90a1353d-5c963d7503fso1449143e0c.0
+        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 08:31:00 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBwVrHhceuAz7zXNM5qpaE/OQKy3VZkkEYxf4nHYgZjoM+8pi2gYEKknNdigaMdxnaILizivy74kmYA=@vger.kernel.org
+X-Received: by 2002:a05:6122:e230:b0:5bd:b2e1:e1f5 with SMTP id
+ 71dfb90a1353d-5c9b58fd54cmr8860951e0c.2.1790091060069; Tue, 22 Sep 2026
+ 08:31:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+References: <20260921110144.44425-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20260921110144.44425-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20260921110144.44425-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 22 Sep 2026 17:30:47 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUX9s1q6SdrgiMciGfHYAvCp1kFzGYL4pHf7PzzipEPUw@mail.gmail.com>
+X-Gm-Features: AclHuK_p5w8PzHnOOSGm4t2QYnyy-nd81aSQvB28I4MJvz8KTxnmCW8kHjNnqd8
+Message-ID: <CAMuHMdUX9s1q6SdrgiMciGfHYAvCp1kFzGYL4pHf7PzzipEPUw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: renesas,r9a09g077-adc: Drop
+ unwired interrupts
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 22 Sep 2026 16:03:26 +0100
-Nuno S=E1 <nuno.sa@analog.com> wrote:
+Hi Prabhakar,
 
-> On Tue, Sep 22, 2026 at 04:51:24PM +0200, Joshua Crofts wrote:
-> > On Mon, 21 Sep 2026 10:28:24 +0100
-> > Nuno S=E1 <nuno.sa@analog.com> wrote: =20
-> > > > I'd propose 2 documents:
-> > > > - entry profile - documenting the review cycle, patchwork, point pe=
-ople over to
-> > > >   Sashiko, relevant git tree etc.
-> > > > - code style - the TODO is fine for existing problems in the subsys=
-tem but doesn't
-> > > >   point out idioms we have in IIO, i.e. not using (the awful) kerne=
-l.h, preferring
-> > > >   devm_* functions, not failing on a mismatched ID to ensure fallba=
-ck etc. This is
-> > > >   stuff that appears a lot in patches.   =20
-> > >=20
-> > > Personally I do think we have some things (not just coding style)  th=
-at are very
-> > > specific to IIO. But maybe another docs file is not the question. Or =
-at least one
-> > > for humans to read :)?! Have you evaluate just having an IIO entry for
-> > > sashiko? That way, hopefully the bot would take care about the subsys=
-tem
-> > > specifics and preferences.
-> > >=20
-> > > I wanted to do this myself at some point but I'm always pulled for
-> > > something else so if this is feels like something you agree and would
-> > > like to get done, please go ahead :)
-> > >=20
-> > > [1]: https://github.com/masoncl/review-prompts/tree/main/kernel/subsy=
-stem
-> > >=20
-> > > My 2 cents!
-> > > - Nuno S=E1 =20
-> >=20
-> > There was a thread about adding Sashiko reviews to IIO but it died out =
-:(
-> > I proposed adding an IIO-specific prompt. Any ideas on what it should c=
-ontain? =20
->=20
-> Not sure if I get the above. I already see sashiko doing reviews in IIO?
-> What am I missing?
->=20
-> What I mean is adding specialized IIO preferences/tecnical details to it.=
- And for that
-> we need to add a new iio.md in [1] and a table entry in [2]. If I'm not
-> missing anything.
->=20
-> Sashiko is using the review prompt repo.
->=20
+Thanks for your patch!
 
-Yes, that is what I meant, adding iio.md (or something like that). I believ=
-e Sashiko
-pulls prompts from here [1] (?).
+On Mon, 21 Sept 2026 at 13:01, Prabhakar <prabhakar.csengg@gmail.com> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> Remove the compare match and compare mismatch interrupts from the binding,
+> as these interrupts are not wired to the GIC on RZ/T2H and RZ/N2H SoCs
+> according to the hardware manual Rev. 1.30.
 
-[1] https://github.com/sashiko-dev/sashiko/blob/main/third_party/prompts/ke=
-rnel/subsystem/hwmon.md
+These are indeed only wired to the DMAC and Event Link Controller.
 
---=20
-Kind regards,
-Joshua Crofts
+>
+> While this change introduces an ABI break, the expected impact on existing
+> users is minimal, if any, since the interrupts are not wired to the GIC
+> and are not used by the driver.
+>
+> Fixes: 4d8d58987cb5 ("dt-bindings: iio: adc: document RZ/T2H and RZ/N2H ADC")
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
