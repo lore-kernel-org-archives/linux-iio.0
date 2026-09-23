@@ -1,68 +1,52 @@
-Received: from mail-lr2-f41.google.com (mail-lr2-f41.google.com [74.125.230.105])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from omta038.useast.a.cloudfilter.net (omta038.useast.a.cloudfilter.net [44.202.169.37])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B039D19005E
-	for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 04:53:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.105
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EF3E38E8AC
+	for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 05:38:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.37
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790139216; cv=none; b=BEq3oZn3Upqs+CuJ7DbxTh1NnMCBO9vSv8vGWLQFDvGRNOPbh/xTEWlrcG/EDul+HVVHStrfWNERrqtiRm/18cQjYYw5zUIXol3rPFfkQyQGIh+6lXJj7Fp5c0bbRmv8BJ5M9SRYLCY6W5zpH6p/oBbNp8mOVE3F9/UCQSp4Dyk=
+	t=1790141911; cv=none; b=N3FfBpAF9cbCfbTweHKCfiB5Vfqc/scsCV1MLeL88NY9uPUbPy4r5Cekc9pTiADlTvOqBTNG/Na3lOBRcVXqiIRCy7sNYlvVVoS7WP0cfctbJr4i/4+16niiGra8KV/VcEwTE5lDFVNlGY1ry8xzzmv29k4WmaJrM2c9PY8Trk0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790139216; c=relaxed/simple;
-	bh=SrOtEX/ghHHp/7OJ1oFoNqlawokWvnWr4PS8cN8dABU=;
+	s=arc-20240116; t=1790141911; c=relaxed/simple;
+	bh=CHf7YR2P1zfqC8/qUYW8PpUaHXWITc/4OJW3WX30+6s=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GR0R896+XJofBXJyJFGCEWTfCapo8NmAYmPqdbrSzwp2//NVgbIDMBMrZNVw/7ESbYLZ9n18O3UujkKK8thS8F0ukoUYgwJEKctbrIAz7ZwL+AmimbVWoptoaVZOF9cmmOpqQQKzhkA36O4YHHKhWhjGJ4ULqX6W3JPOOrdQMYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nqOqehCp; arc=none smtp.client-ip=74.125.230.105
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 In-Reply-To:Content-Type; b=M+Kznb4bhSwkZR0eyf4h0K6RkNo34jXkSLAaF9fgqH/L7pZnwZQ5yBk8wnB3k2zsx2hnkRo+bDYkzY2fqn+782xzVbGcfYaF31VTAkz8Xw7gPxwPgp5/Q440haBfqXPiydNJfTGh7jxmLIw3X3+XxanvQSCxxCGosFMC3s5wp3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=wcavxlZ1; arc=none smtp.client-ip=44.202.169.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nqOqehCp"
-Received: by mail-lr2-f41.google.com with SMTP id 38308e7fff4ca-3a6287d59b2so3718101fa.2
-        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 21:53:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790139212; x=1790744012; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=AylAKepIyU+pHcAiXkxcY1iALnL/FJ5BBVyeQ6kjQtY=;
-        b=nqOqehCpC91FGfrfMkgvcifeVHX7COAgRZPt0vgV7ZZCzWzLOQLd4WLVLMaQ3uab0g
-         HF0qCY1WyfOSE4RnbEqY8mLh6O+C9V+Ucf2/skSVC61/aw/tjtckkF8tAXC+mi+nvmRq
-         rFf+rT/Q71oCNbgWVnodt7QJTSuhy39ZDdDO57HBpqdFHPOWcxjYKkVrHBYgY69sga54
-         18eQTQjaw6SuSybo7uBsEaExlHKBMALjOj64HD5FHua2kukA3YefOkwVJYBYoOUD60AF
-         6XAUxBzLQFisq7C30vuTw8B1qRqhpxZdkLSVOwhVphtXIm7mOCiObE/ap2dm8jfKld22
-         PuRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790139212; x=1790744012;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=AylAKepIyU+pHcAiXkxcY1iALnL/FJ5BBVyeQ6kjQtY=;
-        b=VJeOtcJcDMMH95hyO0KaGLdRVgo4+9jZt16p6n6YidEIgNvz+gyNZSFQyA6xtc/ZvU
-         nVGksF/kPkgiQK2Dvjh9qa+o3ZIooDQkhMK9Dm1HK4/d1LCCHvSdkfFkb89BDhkiJOHw
-         acnjoxF5klSaIMzdDIynOZqwy0ATSm1PoBiFi8Gf0TguCblsbfgU6nn4qeYwe4LB2+e0
-         pm9YPM2UNOUG5+Sa2KyhoSusINIHI7W3EORqlpdN2a6N68ge8DEXqgmBk6boGxRpvSO3
-         ZUbyxlnpQ/g0zrnrdJ32SDuTIICalbE51GrbOs1hdNmMggLDErolzwg8CfjtkDWxp2F9
-         2CKQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxoVtz6QU17Fadhbjng5h06cgvvaMjMRwlr7uZ2bFb7GmCahPgJj3q9iriov4wzZVPhd5a29+Sjbjg=@vger.kernel.org
-X-Gm-Message-State: AFuF++kFBSlvKPG7xaEO2nVwnlYufDLsJAV8IzXAujszxLvHZALso+3w
-	mPRZp0uF8q5C18Ac4Dle87tg4GmFXFK34UeX+FDaVmcFjq+gLtOWtb+K7WHvAkxH
-X-Gm-Gg: AYBFou2rrNxw59VwYQejGLjrOjm+vO7y4oDw8/w6I4Gi/NAEThcmBT93FeM3wQOioli
-	FXPgXPpQZDdqyCEjZWX3uz5SPadn22baiBMvVmfyHxZImaJyuTgQAx6doRnRP0xqb7LA4sfXoMn
-	X7uQNOS40xq65qTqTNvs7zhSjzjNOoZuxx/PfvE2wyXF3Ia6426cME+/alZ0r85sWextxvrWrzB
-	VvkzXPEA2kLwRfsgXKV9ejtxA7AH4RAEBzaNKVIMH6ya4Ur492oqlTLf7lhg3SskcbbQWO4EPBN
-	VWRYa8hdjr6Dy9xy2NL3HwXBVUEmd9Qa9KQw7MiajfjDuES+O8D0fKRjHsE+aG3yEOkMTCnM66L
-	cmiufLpm43ElqoIO/RkSSvY2k+LhF2mejlv/Qs+/pp4lyLBwW6XjaRi6ZdVMhN0SJPOWFYHjjew
-	Yb+TnBLjlS9FJMbiRY57uFRBHHe25VbJnZOG7WxWaYoXq/Hocqm/9BJ8pdv7raSbqy7FQdLIKXJ
-	DQ7lWN8zQ28ofwkJytOU6p9gX7GyCmdD2m9BMcPXdtxNaLdPx+zTK4=
-X-Received: by 2002:a05:651c:a20c:10b0:3a5:da9c:4659 with SMTP id 38308e7fff4ca-3a63068020emr1910501fa.27.1790139212242;
-        Tue, 22 Sep 2026 21:53:32 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8d85893cbsm327531e87.47.2026.09.22.21.53.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Sep 2026 21:53:30 -0700 (PDT)
-Message-ID: <a71d93ad-815d-4f6b-8046-e331d165a1d2@gmail.com>
-Date: Wed, 23 Sep 2026 07:53:28 +0300
+	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="wcavxlZ1"
+Received: from eig-obgw-5002b.ext.cloudfilter.net ([10.0.29.226])
+	by cmsmtp with ESMTPS
+	id 9AP7x3rxgJFmF9FgUxmKqM; Wed, 23 Sep 2026 05:38:22 +0000
+Received: from gator4166.hostgator.com ([108.167.190.91])
+	by cmsmtp with ESMTPS
+	id 9FgTxgEGiCZwg9FgTxOSSX; Wed, 23 Sep 2026 05:38:21 +0000
+X-Authority-Analysis: v=2.4 cv=f4JIBPyM c=1 sm=1 tr=0 ts=6ab365cd
+ a=vY9Mjuda9oMEc2E4Cx1x2A==:117 a=vY9Mjuda9oMEc2E4Cx1x2A==:17
+ a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=7T7KSl7uo7wA:10 a=1XWaLZrsAAAA:8
+ a=VwQbUJbxAAAA:8 a=uNDWqsvZ2givMv5jDzEA:9 a=QEXdDO2ut3YA:10
+ a=2aFnImwKRvkU0tJ3nQRT:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
+	List-Archive; bh=9nKFyigc1frVZS9CIQh1jg/E4/ykOvn8MgO5qeg9drw=; b=wcavxlZ1EV72
+	KhTCSyaArt7b0uBYHi1VUzqkhgnSKazZlRWTo7Ge0PMh0ZM9c+58vANvfPu1F+SQM4wRBJ+QEvt+C
+	WX47oewvI/760U4RB8BSmchKsE0TMxyja8sZxb5aKH6NiCV02EysGyYmxazcNgoJoKkfwkbvuhn+a
+	pSYBDx2Cvj/u00eNS6Drk4f+jCKVpZd1FtnN0v8pW+tFffO5xNkTY6cJV+KojtKwq/W4/W8m2L2O+
+	2Xil3PpKFMAWS5uJqqiA6FhIgKqnqs4zVe0HuLwY/ZN3lXna2K+RRyPGRpufMEHAMbua5+Jkk+7hB
+	5iPQjEo2FzKcXZ8hKBxn6g==;
+Received: from flh4-125-195-69-90.tky.mesh.ad.jp ([125.195.69.90]:37820 helo=[10.203.100.34])
+	by gator4166.hostgator.com with esmtpsa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
+	(Exim 4.100)
+	(envelope-from <gustavo@embeddedor.com>)
+	id 1x9FgS-00000001tuW-1rCn;
+	Wed, 23 Sep 2026 00:38:20 -0500
+Message-ID: <00310b7b-7367-4546-90f3-4c0bc23f36d7@embeddedor.com>
+Date: Wed, 23 Sep 2026 14:37:45 +0900
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,20 +55,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] iio: gts-helper: add __counted_by_ptr to struct iio_gts
-To: Bill Wendling <morbo@google.com>, Jonathan Cameron <jic23@kernel.org>
+To: Bill Wendling <morbo@google.com>,
+ Matti Vaittinen <mazziesaccount@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-hardening@vger.kernel.org, codemender-patching+linux@google.com
 References: <20260923041630.2553973-1-morbo@google.com>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
+Content-Language: en-US
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 In-Reply-To: <20260923041630.2553973-1-morbo@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 125.195.69.90
+X-Source-L: No
+X-Exim-ID: 1x9FgS-00000001tuW-1rCn
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: flh4-125-195-69-90.tky.mesh.ad.jp ([10.203.100.34]) [125.195.69.90]:37820
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 4
+X-Org: HG=hgshared;ORG=hostgator;
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfEf9yDeGUjdm5YiH+khsRFsd8ISAm9rOPPdvk+4ndEEGFrCHZcrwsUDhhtPV7Gk+WA2tEKCyMyPUozLVaX4cEuDD7I2yqgBTdLShUjVCoA/kEi04X1Pe
+ u8PNQRqbL3V4WMipNcqNPnR4Bxogyr2YK8+i9FSK1zIhaxwoWtlWW5wO//Mu0/a6XD/w96TuH3yrVLCr9owx6Iz5KYfWoagwf3o=
 
-On 23/09/2026 07:16, Bill Wendling wrote:
+
+
+On 9/23/26 13:16, Bill Wendling wrote:
 > The compiler attribute __counted_by_ptr can be used by KASAN and UBSAN
 > to detect out-of-bounds accesses to pointer fields in structs where a
 > corresponding element count field is available.
@@ -107,9 +115,10 @@ On 23/09/2026 07:16, Bill Wendling wrote:
 > Assisted-by: LLM
 > Signed-off-by: Bill Wendling <morbo@google.com>
 
-I like this! Thanks!
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Acked-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Thanks
+-Gustavo
 
 > ---
 >   drivers/iio/industrialio-gts-helper.c |  4 ++--
@@ -158,10 +167,3 @@ Acked-by: Matti Vaittinen <mazziesaccount@gmail.com>
 >   };
 >   
 
-
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
