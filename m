@@ -1,119 +1,125 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 589C73E49E9;
-	Wed, 23 Sep 2026 17:34:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE09559C9D
+	for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 19:10:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790184898; cv=none; b=XB8DCVMcKjGMWvqQSGl/x5WkF70vqkWiAJfW2s03lwpoOkjygbD1EclfqKh34MJPFpEHG6hPbMHzj7psDNk/lRDnAaMmRexlFSGa8mAi/C0apFPAtRq4JRjn9bS2vLBijRG24WUg2Esg/2WB/9YS/3VqJpMKg8mL+qFTYZhdGJQ=
+	t=1790190630; cv=none; b=oA9Vwc+9K/+yIPr3G1VMvr9meqKmus5x2aZ6uPbDLZPlRjtwIgNhdftGk/Cfp25N3knQr366SbeFI0Fo/2tnPQU+xqrY949qCeGFQDUvaG4WI9pyu0dMhYX+4jeeZccu/JXszK7T7qDqt7unEqS6sm+Ut3XGp9Mmpdesc4/jhxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790184898; c=relaxed/simple;
-	bh=J4J9x7yb7BhfvES9FzHgh7nrcdN+UU5L6GtQWwjAvLw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=BGa5usgBaVUAi1Z6K5r8MBm3D20+Pcvspkdjss7ApQL3ffSXnJzP3iK4mB5i6CO6vY4a633fcQ4niLtHrvY9cy32IZxw8sGpr1zM7kDEnwXOMi8XFuhjRjKMfQVHHKqxdDrxihw4PljEiA6t/Dh5LA3Lpftun8mRXegvbb0+IeE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n0tv4Fdc; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790190630; c=relaxed/simple;
+	bh=dS+Q5YrTBm//gZDQ0F0CZTkdeWin1xpU3ZzifWE7nYE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=HOAt24X4GBiDxupqV98MXrjXggDyBOIgW/XvrbEBXs9G2RObBR1oo2YO2hBlQB5oT7AXsmqKsKA23mYR8rh7TxGW7sARRS+Ujy1t+fiZSqhIL28tYQRphJ5YttTzUPQlHrAQ7mT3NXGnk21/ZIWg8srN2fAE9jPvKN5D54hGKO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fcX7KQuN; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n0tv4Fdc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790184897; x=1821720897;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=J4J9x7yb7BhfvES9FzHgh7nrcdN+UU5L6GtQWwjAvLw=;
-  b=n0tv4FdcHnO4IHyXzFYhddfC21ufin0WdD2WzxC2XP/Bg8F0rO13gmSv
-   gu2+rWkEcgLhWzBjIyKJRSGfYgm6KiXuscjdbr2Gqt4rQv0L6n0byWsBI
-   P5r/5W+u1onOuPN0mE0YANl7M2xiBch1PiDXxWc8+gR3+rUeZLyYa1ML9
-   TG4ymL8gtLc7QMuVbyiQFrYrfeB6l+okp4YBU9CNteqA2BZhjqJNqeN89
-   2WseZDlh578DtvtYXrLwbLaPrCMnabSCoUtmsyV111EoM7c54rcFNzgkY
-   kpyomTqC+0WT02p4Y2Xg4b1XOewuCV12sC4tCjPEXf870iAK1ycYTumeA
-   A==;
-X-CSE-ConnectionGUID: 1sSEPiUUSfKxTEStJcsfyQ==
-X-CSE-MsgGUID: sUs8crMBTkKpTowgpvMW5w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="78464759"
-X-IronPort-AV: E=Sophos;i="6.27,119,1787036400"; 
-   d="scan'208";a="78464759"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 10:34:56 -0700
-X-CSE-ConnectionGUID: uvt6cm+uSqyX09TY0OaAuA==
-X-CSE-MsgGUID: fIOZ0hjbQk2Izydzz85PgQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,119,1787036400"; 
-   d="scan'208";a="4801411"
-Received: from spandruv-desk2.jf.intel.com ([10.24.80.14])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 10:34:55 -0700
-Message-ID: <319e10c431f821e672a378943784b6c650b13fab.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: accel: bmc150: check reset write error
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: cdcp206@gmail.com, Jonathan Cameron <jic23@kernel.org>, David Lechner
-	 <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, 
- Andy Shevchenko
-	 <andy@kernel.org>, Olof Johansson <olof@lixom.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Wed, 23 Sep 2026 10:34:55 -0700
-In-Reply-To: <20260923-iio-bmc150-check-reset-error-v1-1-b8c1ebc4c947@gmail.com>
-References: 
-	<20260923-iio-bmc150-check-reset-error-v1-1-b8c1ebc4c947@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fcX7KQuN"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49d1fb0cf5eso9462255e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 12:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1790190627; x=1790795427; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=97UpkxI40FojhbMsaRc1vNaLp1lGktp8HL/rnM/BvcM=;
+        b=fcX7KQuNm1JZTwoYpTH03R3UGUG3x5rskjk2gP1XIqJKcuKTn7TyTUS2pTjcv/AtQk
+         qVJVcNQeIHMAupV+ClnQ9ao7xsfOfA6QKU7QBDapn1+TxNAICG4SYLk9zYLAWBO87hU7
+         e4ytlfVKU65nUfK+9jjO/LAr30LGNaP3IzIkKlgW7fSYH3pyvhu38uGMwhBFz2sXvUr1
+         Q9dA8RuM1/VErcpr6U4nwgRfGXbHPHyCxkHGdxj6AqvA5GtiPg/L+lXYSQCZQfw5lvcp
+         ewGnk/CwGDyukTNHPG4cI1/s61cNx10ZUNkXOydFPNufSjrnQ2ws7ny8WmKXzR1UQ05u
+         xLEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790190627; x=1790795427;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=97UpkxI40FojhbMsaRc1vNaLp1lGktp8HL/rnM/BvcM=;
+        b=pM3eY1niPNYwTtYZty1yQKmyRDp0ZHU9vUNmq1MFsZv4SXbshCfz/aza9GSODFwtbF
+         iwruhiGPR8TziLDvdtbOk4kT1fNUrYjYrFlRKX8lCZ2tNM3/J3aOFeMHIcYHLJdT214y
+         OYN5uy26FnKXtPwYCizBHDCCKvNCExYQFKfYLkXhNlZCAeJI4lJ7v1tGnozaFp1bvdPI
+         zl9Lmfc5LWUwiPRcimW0qKFuUgS1+bUzg3m4j/93MyUkvR0IwjR51YaUv/lvjKOJy/Ky
+         pvSm2eBW5qfroDUUsAoaRGZJh+1ognViVwDoSo7PvsF8TJe51whkoyFUrqEauhLzxoWN
+         Nt6g==
+X-Gm-Message-State: AFuF++mkGg3bQSYxiIMtqTKYaMnEvABXX7O82CuEj6McIUrty6DDm9xF
+	Pd9m4uKB248cDgie8/3aGatZJx5pC6rS/RW6Ma18Fa1VkTZpNEh8CIKykp1A2HlV8SI=
+X-Gm-Gg: AYBFou2b9R1SlWKeFmnuBPTQD2ONk8gRWHh38wBLcpusFqKiCdY+4aoO8R3MZebMlT7
+	/5Uy+LauPt9CdXYQa+sg8vm41i0JchVj87OOxKcwk+QqZSnOtnYOd7Lo/10NDv9v0E+YQNEEslP
+	I9aGN/0fwgcQNQ0iIL5rRXkeUTLZ7uk49qA8TUBzV+udLJbayFDKtjHJG+SDomp++qxWGwGlJGl
+	tnCvk5RAquAlTWf+fXnwKtJI0MpUoMB5bq1kA+uKDz5ghQPvEJcF8VRFdj5qOS0NaLjnjoeeNZt
+	FQIfF0r8WlZO1oYevjz2ACTdGAhd+rp6DbPwXs2a/R1eAoe/JqvLTEhHVgHLCugLa7i7fdqQ/ny
+	YUON3oneipky1pfxMQHS1PZaSK8B7HpTLCJFpUyhxjgTLxM4I+P3W9AoCj9tjUxrEF2ja5vLgKf
+	2tdZqGfxxCGsdg6VJbcB2Ny2HZ3kHjjHCy7Oa9erO97KK0vepJZdIxn74tztr3hwMwh4+N9QHSK
+	rWt9TRjKaO0HPFxrBhUcVLx18gMsGZFF5LMe80w
+X-Received: by 2002:a05:600c:3556:b0:49f:bd3c:bc24 with SMTP id 5b1f17b1804b1-49fe6708a46mr2508055e9.31.1790190626506;
+        Wed, 23 Sep 2026 12:10:26 -0700 (PDT)
+Received: from arrakeen.starnux.net ([2a01:e0a:106d:1080:52eb:f6ff:feb3:451a])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5bae53dsm7291815e9.4.2026.09.23.12.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Sep 2026 12:10:26 -0700 (PDT)
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Subject: [PATCH 0/2] iio: adc: add support for the MAX34417 Four-Channel
+ High Dynamic Range Power Accumulator
+Date: Wed, 23 Sep 2026 21:10:21 +0200
+Message-Id: <20260923-topic-sm8x50-iio-max34417-adc-v1-0-41d4ba1bfc41@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAB0ktGoC/yXMwQ6CMAwA0F8hPdukbKDDXyEexihaExhZ0Swh/
+ LtTj+/ydlBOwgrXaofEb1GJS0F9qiA8/HJnlLEYDJkzdcbiFlcJqLPLLaFIxNln2zT1Bf0Y0FD
+ HzlFr7TRAOdbEk+Tf39/+1tfw5LB9UziOD5n7UTqBAAAA
+X-Change-ID: 20260923-topic-sm8x50-iio-max34417-adc-209e880533fb
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Neil Armstrong <neil.armstrong@linaro.org>
+X-Mailer: b4 0.15.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1014;
+ i=neil.armstrong@linaro.org; h=from:subject:message-id;
+ bh=dS+Q5YrTBm//gZDQ0F0CZTkdeWin1xpU3ZzifWE7nYE=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBqtCQg1FjoPWp7N82OJUtBxw1T0p9FJc3F+pXkbVtM
+ wFz3MU2JAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCarQkIAAKCRB33NvayMhJ0XGVD/
+ 9AJ/1swOUyeCQbubWH9D5jE00VUfaFKQqXg4jF/HNbZrD75qObT2fOgCytPzopFd9t0WLOaE4FPGQp
+ YSghf6+eQUJn/B0Kz45UUb7u7iENNP2NrWlAmqOJNDxdNmcrEYJevOQW5076G2FGfE6RCJkoavBCqe
+ b5yKYndTpHrU7Qv0TE7PR3oXbT5mokklouibZBJgk03lpwXf9ZNs8nIf4kWAKHcnXIRHKC3+pFaLNU
+ 3wvJNekZ/AKlo3NKzJ9S9Q5fl8jDl5ColVNi4Z+XcvI1Gmvx1jnMEHylZPlbNl7ta5tyfCkA418xVK
+ MgRiPMM9+0Jk3Jvu8ONaOHQvy1UnXm6+qt3gcRAy5Rkj8/uZcSEkp1b0C0ngNum08nwM6pOSG/n5fB
+ aScXMoMabTWzDJ+mT/WR+evYGivIu0EPcsX4+Re1HSOEbDlWYESbQywPmrNPhilrm+0sCyc+WVLJ0d
+ +HRW77zkW6fUQ/jJHMAp8kFha2XepEmhPeerpOHvjfnOvSKAT0AIfoAfSLb5mtiVUxtvtPyjZBL2jp
+ fzee2lcfz73aMeGcPr+Fuu3RxDeK0psz/V5uXxl7rRvthikmAaG9fCztQNRzlGaXXCNj6HqamjASCD
+ 9rLPJZJpfxk6oEvBsgaMxfjcFKVGDTaUDIG2zmWheqqsAYfZCAV4LJoCtwUg==
+X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
+ fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-On Wed, 2026-09-23 at 11:41 -0500, Carlos Casadiego via B4 Relay wrote:
-> From: Carlos Casadiego <cdcp206@gmail.com>
->=20
-> The software reset is required to bring the device into a known
-> state before reading the chip ID.
->=20
-> Check the return value of regmap_write() and abort initialization if
-> the reset command cannot be written.
->=20
-> Fixes: 1c500840934a ("iio: accel: bmc150: reset chip at init time")
->=20
-> Signed-off-by: Carlos Casadiego <cdcp206@gmail.com>
+The MAX34417 is a specialized current and voltage monitor used to determine
+power consumption of portable systems. The driver support getting the channel
+voltage and accumulated average power over an I2C/SMBUS serial interface.
 
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+Neil Armstrong (2):
+      dt-bindings: iio: add: document the MAX34417 Four-Channel High Dynamic Range Power Accumulator
+      iio: adc: add driver for the MAX34417 Four-Channel High Dynamic Range Power Accumulator
 
-> ---
-> =C2=A0drivers/iio/accel/bmc150-accel-core.c | 8 ++++++--
-> =C2=A01 file changed, 6 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iio/accel/bmc150-accel-core.c
-> b/drivers/iio/accel/bmc150-accel-core.c
-> index 46bb36d9366e..43a39e1ccce5 100644
-> --- a/drivers/iio/accel/bmc150-accel-core.c
-> +++ b/drivers/iio/accel/bmc150-accel-core.c
-> @@ -1561,8 +1561,12 @@ static int bmc150_accel_chip_init(struct
-> bmc150_accel_data *data)
-> =C2=A0	 * Reset chip to get it in a known good state. A delay of
-> 1.8ms after
-> =C2=A0	 * reset is required according to the data sheets of
-> supported chips.
-> =C2=A0	 */
-> -	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
-> -		=C2=A0=C2=A0=C2=A0=C2=A0 BMC150_ACCEL_RESET_VAL);
-> +	ret =3D regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
-> +			=C2=A0=C2=A0 BMC150_ACCEL_RESET_VAL);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Error writing reset register\n");
-> +		return ret;
-> +	}
-> =C2=A0	usleep_range(1800, 2500);
-> =C2=A0
-> =C2=A0	ret =3D regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID,
-> &val);
->=20
-> ---
-> base-commit: d8c0f48f0b1583308a98401c0c7b1a65d1d43a6c
-> change-id: 20260923-iio-bmc150-check-reset-error-389b096b0ad4
->=20
-> Best regards,
-> --=C2=A0=20
-> Carlos Casadiego <cdcp206@gmail.com>
->=20
+ .../bindings/iio/adc/maxim,max34417.yaml           |  99 ++++++
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/max34417.c                         | 356 +++++++++++++++++++++
+ 4 files changed, 467 insertions(+)
+---
+base-commit: fd73f4a6659897191fa0d40695fe370925dd3780
+change-id: 20260923-topic-sm8x50-iio-max34417-adc-209e880533fb
+
+Best regards,
+--  
+Neil Armstrong <neil.armstrong@linaro.org>
+
