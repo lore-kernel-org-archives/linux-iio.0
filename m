@@ -1,69 +1,69 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013065.outbound.protection.outlook.com [40.107.159.65])
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013048.outbound.protection.outlook.com [52.101.83.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6679A5581FD;
-	Wed, 23 Sep 2026 15:39:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3EA35519BD;
+	Wed, 23 Sep 2026 15:39:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790177979; cv=fail; b=IxtLtyZNiBz0ax3YTZY5aHYZCCRfxoeksdPXKCbOyuY4fpwGavs4AGJg04KqPLjKKMBspUeQGvZF2ZXYpLdxEtjH8wF/umaKW22z4iYNkwCf7JNt9Uwr43s73ZtkExyDagZ1YmxzclDwCUlq+RUiHEg8wdrwhJM55c8n/NwnIrc=
+	t=1790177980; cv=fail; b=JD12VyWZmjBeSXkZrnGdU4mtC+/tGcDaipIb1O+uPQrHmqn2lZJbRsxmCILRY6808U+JhkogkZKLp+G6hr5lZ3G6HBkkCSJDgiFciOy/1iZf9D6h/jCDq/GMZdnXiAbH6eVAb/Og7uauqz37EcD8Jo+slMogx9FzclQrhLaot5E=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790177979; c=relaxed/simple;
-	bh=/s0EA+mMcGosA28p+vb+GMe7NIuG94FB/e3U20iHFfY=;
+	s=arc-20240116; t=1790177980; c=relaxed/simple;
+	bh=1MB6Mofld5mUU1Ssyy0Im6BpaNXVDrdfl8A5srXb91g=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=bt6wDc/AMHbrGoZeCF5q2KFolDfXpN6hXRzHdsC0/AUcBXqjR+19kM+QqLOhCGxOrf6On8bj0r7AujHtCBi6X5b2ZJB7BbWX94qGLyFlpHsI97+ByLfGbyyAO5EhzEKUu4XboVcatNNQj6iWTgFXjFwM4mwdQx0CFovzhDwkc4Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=PDN6Y8TF; arc=fail smtp.client-ip=40.107.159.65
+	 In-Reply-To:To:CC; b=RvYJEGrVMCvt2gxrHTO7JlQxcPnzcU5tD2qHLPYfFN6qltvNSrfDS+TTHV07LUv0t22n/YyrA8rGoOnQopOqEhL5XMCC90FfrRqOiBhyLhpinyDn2gQbkFY4KbszbeAYgdtmcslk66QQ2TU/7XHVYJPUBA+eD5tEAmkkJMV8WK0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=DGniFHH1; arc=fail smtp.client-ip=52.101.83.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="PDN6Y8TF"
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="DGniFHH1"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xvmUAOm+cjCW1hrRrj1YVHkRPEyemeC7JxD6JHYzhrNKDN/o4zPkQbd/0QbNVFhxZ2zWaiJuGJQ9qqhLjyC3RNkWZNgBwfSFq9bYt6Ms4FeRzGO+zfTTaD7uzgsntSDExo+kotZUIcEpsywcc/l/WPKYt73zC809TtvoIktZoeEeQ4pggBwX7PIENcUUHgYXYWU6QUE4hjKwmBdOsYgNvgD06ON4pw2AMYkQLiOmgWUQloN3/85st8ictuIMUjF+MOrL9fEqD7P+UFLE8betw9EC+wHyoM/nRQcento145pPoExBj4U9j0UhSMCrc2sfB5VC/Im3GwKZQiwKiDUB2g==
+ b=PQS/PQ15bxtu17q09nXOZVaoSURIV9Bx2PHApq9XSCZGaI9seub5AFHrm7FmO13pqU54MtKOPUElKIEXcoUl15THKbC+VaA6e5Sr0RSUBwB80u39SqklJgHgn8+hMbUHU+z7ZYCTriSn4ArOirKnqJBRI9IF5EPps859xGkhTbeicyYTNpdqCT6eiuoHJun8PeDyUnHUnmZrhgyfT7odVpdYCDrqEe18g6uniwcBpafoq3ZpZl2PILykv1FXu2P0rFBLJq/FhaAPzUvgVnzbwNKWXfIzIfazQlQg2A2A5q8Ppe2h/F6U/f4Gzvbcx4kWE3SDgzEuJ0FgXfNyIeQ8WA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=za4ZTK0Ksc2dqzy2fM/TuJDfoum243RULGb6iZ3X30Q=;
- b=K5q+rB7QB7VI9mdsi7hvCiMOEr+ytpCL0S8DboN4kwndIAZjFmtYoyQ88rnYp765PQHJOwnVbsWkOtkdu/k7CjxPDg2dmeumxfxG0JMJFSHVfK7e6XUyHwELz6NMnRyY1Q5Y35PnIxjfVpNdFN+OzOe3YCsma/7Ec3I/7miQwsDFMwynAJl40Jo4sVxHAT5hebc5HkKTqpJUZ9Hq5Nx3hM5tIhQgwQOJQ/klQU62ryxxY6MmGXCACu2TQYolLU+vxCYikaFHRfmzaPf09LAfzAlZS+sja4x1zLWy2+4ZXA7MEWrdrzcI1Mi62GXQAhz/CUaRqLqRdqtnjob/6uWsww==
+ bh=gSDQQtaGefJVnaguHiRfRQliIJ0M8A42nurTRC7g5I4=;
+ b=D7lUh8Kc5VhEDmnSaYtx/4OtnQzyyuyX5C3uK+vX7oRuzNyUFqVAnQnTDSAWIdAwHtxDhsFg0zso6SFZhA2xc2j4OFvXEwyuyi513E86QcZG9y+YhDjR7vnI8ydI3aHdfo/RJ6F8Nl0NHwmWJv1USbzAvVhI2Vkm5G5x88WoeeLFB+opFou2OvPClr5WhdIenxgzr09P8YN4Dk2IK1zPECqSH6BTo59I0SEvQouQH5mUWxkT9qw2Vr7LdnyFvujlOVgVG0v9+Y8oppv4Ci313PVJgu3A7k22qaPJwdjrsnpYK5xRtV+B227Yo3bsxRvxH4rWhC+2X9jMGqxewhmpqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 164.130.1.59) smtp.rcpttodomain=st-md-mailman.stormreply.com
+ 164.130.1.60) smtp.rcpttodomain=st-md-mailman.stormreply.com
  smtp.mailfrom=foss.st.com; dmarc=fail (p=none sp=none pct=100) action=none
  header.from=foss.st.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=za4ZTK0Ksc2dqzy2fM/TuJDfoum243RULGb6iZ3X30Q=;
- b=PDN6Y8TF2EWyhYQLAMRuapl6r6RcRPWQH677sdxoZUOMBeA2WGnRu4m7NN6nOkAPUXa4rXKLMkwftOom9RN4BRiHiZu/7zWA1tfdJozwiET/PtlB+LlqO2WiLG7AXL8k6XiBr28voiGaLLYcSv0zsQCIfLi2gJ0WNSYhTpbFOXDlpeYtzOYrsnqKENRmgv25tmsPdU7SU6DNpxx/GQ3sYVjN34iQB9N3booGVL3iqBxcynUiCsLVbhUIk0HF66KC1evqSXcnEEbtQ2CujzDu+311VuhA6mg2cHSAxJwDHnjge+NbjztfCEp4dPrPiRdXZVDzszRWx0iVQ050/Lvsnw==
-Received: from MA3P292CA0009.ESPP292.PROD.OUTLOOK.COM (2603:10a6:250:2c::10)
- by PRAPR10MB5154.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:29c::5) with
+ bh=gSDQQtaGefJVnaguHiRfRQliIJ0M8A42nurTRC7g5I4=;
+ b=DGniFHH1HGfw9Dh/5QWjysjbFOzPz2NKF8tEGbxwRJOcP0+qqmzteW7l47G2f+BByhX1Gep9Pq4LMv4kZjbVOiT7z/t0E/c7bJn9tO8qiB09tGs7IDxkAkl2d+gviYza5xAOS+Dqy7MY53F8sgw1ZDzProl3TZ7Z8RKPfIAYGRjMzyjKtiSDAzvGDzZFtODEK3MmNf5A613kfI3fujivKjVaDWiHBIqNH5Se1Ha3c8X2sdXLWo/jXUjPQbmhfGqohwVQ7gP/S6gIiPCtRZOVtTI2240XaK9ywatJ3/KpTwoeMwQ78snq3limAEHOHJBLEy2R7pu3OBfDOeRiNpqfug==
+Received: from OL1P279CA0044.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:14::13)
+ by DB9PR10MB6642.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3d2::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.14; Wed, 23 Sep
- 2026 15:39:31 +0000
-Received: from MAD0EPF000008B6.eurprd04.prod.outlook.com
- (2603:10a6:250:2c:cafe::a6) by MA3P292CA0009.outlook.office365.com
- (2603:10a6:250:2c::10) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.13; Wed, 23 Sep
+ 2026 15:39:32 +0000
+Received: from WA1PEPF000099CF.eurprd04.prod.outlook.com
+ (2603:10a6:e10:14:cafe::49) by OL1P279CA0044.outlook.office365.com
+ (2603:10a6:e10:14::13) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.16 via Frontend Transport; Wed,
- 23 Sep 2026 15:39:30 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
- is 164.130.1.59) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
+ 23 Sep 2026 15:39:31 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 164.130.1.60)
+ smtp.mailfrom=foss.st.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=foss.st.com;
 Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
- designate 164.130.1.59 as permitted sender) receiver=protection.outlook.com;
- client-ip=164.130.1.59; helo=smtpO365.st.com;
-Received: from smtpO365.st.com (164.130.1.59) by
- MAD0EPF000008B6.mail.protection.outlook.com (10.167.241.138) with Microsoft
+ designate 164.130.1.60 as permitted sender) receiver=protection.outlook.com;
+ client-ip=164.130.1.60; helo=smtpO365.st.com;
+Received: from smtpO365.st.com (164.130.1.60) by
+ WA1PEPF000099CF.mail.protection.outlook.com (10.167.242.23) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Wed, 23 Sep 2026 15:39:30 +0000
-Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpo365.st.com
- (10.250.44.71) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.451.8 via Frontend Transport; Wed, 23 Sep 2026 15:39:31 +0000
+Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpO365.st.com
+ (10.250.44.72) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Wed, 23 Sep
- 2026 17:45:58 +0200
+ 2026 17:45:20 +0200
 Received: from localhost (10.252.7.7) by STKDAG1NODE2.st.com (10.75.128.133)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Wed, 23 Sep
- 2026 17:39:29 +0200
+ 2026 17:39:30 +0200
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Date: Wed, 23 Sep 2026 17:39:07 +0200
-Subject: [PATCH v2 04/14] iio: adc: stm32-adc: manage characterization
- voltage diversity
+Date: Wed, 23 Sep 2026 17:39:08 +0200
+Subject: [PATCH v2 05/14] iio: adc: stm32-adc: rework internal channels
+ data
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,7 +72,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260923-adc-stm32mp25-v1-v2-4-46bc019537c6@foss.st.com>
+Message-ID: <20260923-adc-stm32mp25-v1-v2-5-46bc019537c6@foss.st.com>
 References: <20260923-adc-stm32mp25-v1-v2-0-46bc019537c6@foss.st.com>
 In-Reply-To: <20260923-adc-stm32mp25-v1-v2-0-46bc019537c6@foss.st.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -84,124 +84,155 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 CC: Marek Vasut <marex@nabladev.com>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>, Olivier Moysan
-	<olivier.moysan@foss.st.com>
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 X-Mailer: b4 0.16.0
 X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
  (10.75.128.133)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MAD0EPF000008B6:EE_|PRAPR10MB5154:EE_
-X-MS-Office365-Filtering-Correlation-Id: a595aada-bd70-4cf7-bf39-08df1988dbec
+X-MS-TrafficTypeDiagnostic: WA1PEPF000099CF:EE_|DB9PR10MB6642:EE_
+X-MS-Office365-Filtering-Correlation-Id: 140454d8-77a8-4662-6c81-08df1988dc6d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|7416014|1800799024|36860700016|23010399003|10067099003|56012099006|11063799006|18002099003|22082099003|6133799003;
+	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|376014|7416014|23010399003|11063799006|10067099003|56012099006|22082099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	OFciNev1hzLlsIx7N9LNwhp6YdHJw9oUVQ794YUzeS/CmxvpW2Vfgdk85b88lq7uGA1IyC5cLZFsuijxqzIbvfc2zCP05udmiQIylV5iuglHDLTOVpfe1HluczGtarFQpmRD38AVGLjIFmLJEd1moPpKL4lq46xRLpkP1YXw2uffLJlOjZYNHXkVkMvwjr57i6nfYWjhKYVXvLcNM/WPoddWCeG5wY3gem0b+1Ze0Mxm7X1O/ISgW0eriI5qpf4M6yCcJ53dfPEIAz69j/ptsQKXS1cpyObjHIYxvQ+qqXKMe3t93aaUTS1WUmrbzL+Al0c8p6F8Nz45IGcq5m0AY6LKBC1PUzXsXG8JPVQ0IFBm7FkwrsOMsJbhaZAWOS7p133YOWhG1DebatMZUFJ6UlEhosf4R1kUXXNPdiXarryI5kjd/vmx/eBW3i4OSNNNOLFUQSwV3YAIKlagc2Pe5qTiiU5UGa5uuzZugw4PEh2soxpuyyWY70Yqdsp1oWvAbdfUmBKN1uMimSGDGFqpQF+TMPZdODncoE0oQAtCqaAA3LYCYKFMnYuhwYjcSBla2A6L+DFTNAI4lJE3Q+wZ4HPlcWQgcizZEbUP9SZcE/ocJKEp5OYf5GjNckkecgIKunoxKAd/tIXCcHjBnOJjgV8Y5x3SHWjTPstkdBpNHXhkVa8/QZtTkcbPsdkqXgrERuIX5xpt7zLaedL7Hh1QtA==
+	L3mt2KMwPjXX9lM7t8L+6xT5l5afeUrP/muPaUryIUPxScKQO9+85YbIQXhhZtaJMcdv5uG71FtLct740c4buTp87YzGYITF+C/0yL1/pusVpnsqNvlmhA/cv6Ki8e0L3L5pL9uDdcsxBKI1jvH89ZDmIBXY22qvmPQ8r5AmniCLxIN+QsHs1Hrw5Rpg8PVUaU0lxkiw4zos0LmopfQXCB/71FRS0MKXnzMa3YZuU0+olgSIxi335ReAOZPdmg8mdBzAQiGQqXCVpCs+m6uYMk+KoiVyIcs6RL5wdw2EePG2rQJEfqPET6RDil+IzN3Mbj4F7KK2q9I2s95Jj6Stz0Tod/cRjflRTq4qh0iN+VAzaic+Nvb4GA5U53s2LiqzFdxmVj3gNB3xFosyr1lMnpUL8nY/W/Cv1S9aDUJYmn2wU6nhCReHU4YP2UWcLrKYYQeBCLh3VeA4uVnDkZ2hwwLBsESMHezyCrKyBR6A2lASrFFcGjjSTTjEvl6TX4vYnmBXtPvrN5ODYef+hIiY1JBU+mxxXXFKckCVcwGcpnRtU6yt82ExcNwvEWUWorNlI4K862a8w8Fjn6KXogzEisYCF+7DSYc3oPSp36ZzrSibHghAWFNkQQvBia9DVEnkIxcaIzk9AALAsQkcqOTLjfl+tJStzR3OHfMNBVA1/kjvzJUmJAoJM869RcfVVrYG32BEegyaYV8ogAQdVmAYpw==
 X-Forefront-Antispam-Report:
-	CIP:164.130.1.59;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(1800799024)(36860700016)(23010399003)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(376014)(7416014)(23010399003)(11063799006)(10067099003)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	F7FPFuX+MKx3DXg29s7F9efDnEn1LZEuafgvhhf9Zz/AylPUp2KGv3uKWt4InLoI8/UKDzc2zuhSJY2kBL1MdGsmhBltSaj5hZA0AYtHGMxOjBPqu+IBELf0GJJu9HwvQCpJSmJBIcqJLkzb3PoLk8J3spoyAH+JhANjFeJfIf8pDMIafWH2vAfVJnczjrjzZCpugfcEcONtKyyV926Z3NfkOI32gd4rS42s+V45iGFnED8xzjbR8FQC/zry05Pc30XQi7+NBiIl/wG5ATOpeDQgoHGkeG9OIA2W8830OdQFh9fMJ0KbAX/XWs1M69vvTmK/Yd8OhFGQIo8osoBIdRbQvZ7GlMeWxS4VOFxeMTceroQ1WsfE0nr6YgAfl4ZH35Ou0D5C0SEDo8WfT/YcqT1DNT9M3yyFpTJkPFeyEqTwlCnvtRTLAP2dKKlxH54n
+	/NW4IaVNw/gQ2J+oBOF2V2XWSyJeWM/bs5BSqM5puYAzxPstNLd0t4Y5Jvw6eBRiul7rNVxmaDEzqMVUvgGURIFRvVVu9qbjG5NrYrzLc3eh1wYmIheTbBcKgWepwygLbSDTQBhRztbccuRfuZCk+BJ8p5Ocm/Nz8UR0FExEjgwACtcohzyR5eZJLigauppQQ56xLEv5xW9YvLUa3D/4ihQxOGm656Oi1p12TGsFXodbCXcCx/xvUQqn6FNLNFEnE12L/F4cYl/t59KaJUF9jiH48POpQ3gD8cGMT6KqkiJMdjH6H4LtGfCruD+8Cx0v8fN6nHtog0Vs1L8FAS/HAmJsxsBfoXe1jhrMCt2R2y6wqDNCVa6odHVave3wOJD4Wvfahy7Oy1f5c/wjkdm5OOrbzjX1mtTFQACPn8p67a6UP82W/KM4p2wA22563nc0
 X-OriginatorOrg: foss.st.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 15:39:30.4618
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 15:39:31.3153
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a595aada-bd70-4cf7-bf39-08df1988dbec
+X-MS-Exchange-CrossTenant-Network-Message-Id: 140454d8-77a8-4662-6c81-08df1988dc6d
 X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.59];Helo=[smtpO365.st.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.60];Helo=[smtpO365.st.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MAD0EPF000008B6.eurprd04.prod.outlook.com
+	WA1PEPF000099CF.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PRAPR10MB5154
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB6642
 
-From: Olivier Moysan <olivier.moysan@foss.st.com>
+Diversity in internal channels data array lead to have zeroed data.
+To facilitate addition of new internal channels, without touching
+all array initializers, only focus on exiting channels on each
+supported ADC variant (e.g. each SoC).
 
-The characterization voltage used to calibrate vrefint depends
-on SoC family. Add vref_charac_mv field in stm32_adc_cfg structure
-to store the characterization voltage for each SoC, and use it
-in Vref computation formula.
+This also allows to get rid of static_assert() checks.
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+No functional change intended.
+Cosmetic update: remove comma on STM32_ADC_INT_CH_NB as it should
+always be the last element.
+
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
 Changes in v2:
-- Andy's review comments: rename variable to vref_charac_mv (unit suffix).
-  Drop the const attribute.
+- new precursor patch as suggested by Jonathan
 ---
- drivers/iio/adc/stm32-adc.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/iio/adc/stm32-adc.c | 51 +++++++++++++++++++++++----------------------
+ 1 file changed, 26 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 90f0e257e6d1..ddf74c674da6 100644
+index ddf74c674da6..ac60c31de7a5 100644
 --- a/drivers/iio/adc/stm32-adc.c
 +++ b/drivers/iio/adc/stm32-adc.c
-@@ -43,7 +43,6 @@
- #define STM32_ADC_TIMEOUT_US		100000
- #define STM32_ADC_TIMEOUT	(msecs_to_jiffies(STM32_ADC_TIMEOUT_US / 1000))
- #define STM32_ADC_HW_STOP_DELAY_MS	100
--#define STM32_ADC_VREFINT_VOLTAGE	3300
+@@ -86,25 +86,16 @@ enum stm32_adc_int_ch {
+ 	STM32_ADC_INT_CH_VDDQ_DDR,
+ 	STM32_ADC_INT_CH_VREFINT,
+ 	STM32_ADC_INT_CH_VBAT,
+-	STM32_ADC_INT_CH_NB,
++	STM32_ADC_INT_CH_NB
+ };
  
- #define STM32_DMA_BUFFER_SIZE		PAGE_SIZE
- 
-@@ -211,6 +210,7 @@ struct stm32_adc;
-  * @set_ovs:		routine to set oversampling configuration
-  * @smp_cycles:		programmable sampling time (ADC clock cycles)
-  * @ts_int_ch:		pointer to array of internal channels minimum sampling time in ns
-+ * @vref_charac_mv:	Vref characterization voltage used to measure vrefint calibration value
-  */
- struct stm32_adc_cfg {
- 	const struct stm32_adc_regspec	*regs;
-@@ -230,6 +230,7 @@ struct stm32_adc_cfg {
- 	void (*set_ovs)(struct iio_dev *indio_dev, u32 ovs_idx);
- 	const unsigned int *smp_cycles;
- 	const unsigned int *ts_int_ch;
-+	int vref_charac_mv;
+-/**
+- * struct stm32_adc_ic - ADC internal channels
+- * @name:	name of the internal channel
+- * @idx:	internal channel enum index
+- */
+-struct stm32_adc_ic {
+-	const char *name;
+-	u32 idx;
+-};
+-
+-static const struct stm32_adc_ic stm32_adc_ic[STM32_ADC_INT_CH_NB] = {
+-	{ "vddcore", STM32_ADC_INT_CH_VDDCORE },
+-	{ "vddcpu", STM32_ADC_INT_CH_VDDCPU },
+-	{ "vddq_ddr", STM32_ADC_INT_CH_VDDQ_DDR },
+-	{ "vrefint", STM32_ADC_INT_CH_VREFINT },
+-	{ "vbat", STM32_ADC_INT_CH_VBAT },
++/* STM32 ADC internal channel names */
++static const char stm32_adc_ic[STM32_ADC_INT_CH_NB][STM32_ADC_CH_SZ] = {
++	[STM32_ADC_INT_CH_VDDCORE] = "vddcore",
++	[STM32_ADC_INT_CH_VDDCPU] = "vddcpu",
++	[STM32_ADC_INT_CH_VDDQ_DDR] = "vddq_ddr",
++	[STM32_ADC_INT_CH_VREFINT] = "vrefint",
++	[STM32_ADC_INT_CH_VBAT] = "vbat",
  };
  
  /**
-@@ -1615,7 +1616,7 @@ static int stm32_adc_read_raw(struct iio_dev *indio_dev,
- 		if (mask == IIO_CHAN_INFO_PROCESSED) {
- 			if (*val == 0)
- 				return -EINVAL;
--			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
-+			*val = adc->cfg->vref_charac_mv * adc->vrefint.vrefint_cal / *val;
- 		}
+@@ -2268,7 +2259,7 @@ static int stm32_adc_populate_int_ch(struct iio_dev *indio_dev, const char *ch_n
+ 	int i, ret;
  
- 		return ret;
-@@ -2711,6 +2712,7 @@ static const struct stm32_adc_cfg stm32f4_adc_cfg = {
- 	.stop_conv = stm32f4_adc_stop_conv,
- 	.smp_cycles = stm32f4_adc_smp_cycles,
- 	.irq_clear = stm32f4_adc_irq_clear,
-+	.vref_charac_mv = 3300,
+ 	for (i = 0; i < STM32_ADC_INT_CH_NB; i++) {
+-		if (!strncmp(stm32_adc_ic[i].name, ch_name, STM32_ADC_CH_SZ)) {
++		if (!strncmp(stm32_adc_ic[i], ch_name, STM32_ADC_CH_SZ)) {
+ 			bool na;
+ 
+ 			/* Check internal channel availability */
+@@ -2302,7 +2293,7 @@ static int stm32_adc_populate_int_ch(struct iio_dev *indio_dev, const char *ch_n
+ 				return 0;
+ 			}
+ 
+-			if (stm32_adc_ic[i].idx != STM32_ADC_INT_CH_VREFINT) {
++			if (i != STM32_ADC_INT_CH_VREFINT) {
+ 				adc->int_ch[i] = chan;
+ 				break;
+ 			}
+@@ -2715,8 +2706,10 @@ static const struct stm32_adc_cfg stm32f4_adc_cfg = {
+ 	.vref_charac_mv = 3300,
  };
  
- static const unsigned int stm32_adc_min_ts_h7[] = { 0, 0, 0, 4300, 9000 };
-@@ -2732,6 +2734,7 @@ static const struct stm32_adc_cfg stm32h7_adc_cfg = {
- 	.irq_clear = stm32h7_adc_irq_clear,
- 	.ts_int_ch = stm32_adc_min_ts_h7,
- 	.set_ovs = stm32h7_adc_set_ovs,
-+	.vref_charac_mv = 3300,
+-static const unsigned int stm32_adc_min_ts_h7[] = { 0, 0, 0, 4300, 9000 };
+-static_assert(ARRAY_SIZE(stm32_adc_min_ts_h7) == STM32_ADC_INT_CH_NB);
++static const unsigned int stm32_adc_min_ts_h7[STM32_ADC_INT_CH_NB] = {
++	[STM32_ADC_INT_CH_VREFINT] = 4300,
++	[STM32_ADC_INT_CH_VBAT] = 9000
++};
+ 
+ static const struct stm32_adc_cfg stm32h7_adc_cfg = {
+ 	.regs = &stm32h7_adc_regspec,
+@@ -2737,8 +2730,11 @@ static const struct stm32_adc_cfg stm32h7_adc_cfg = {
+ 	.vref_charac_mv = 3300,
  };
  
- static const unsigned int stm32_adc_min_ts_mp1[] = { 100, 100, 100, 4300, 9800 };
-@@ -2754,6 +2757,7 @@ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
- 	.irq_clear = stm32h7_adc_irq_clear,
- 	.ts_int_ch = stm32_adc_min_ts_mp1,
- 	.set_ovs = stm32h7_adc_set_ovs,
-+	.vref_charac_mv = 3300,
+-static const unsigned int stm32_adc_min_ts_mp1[] = { 100, 100, 100, 4300, 9800 };
+-static_assert(ARRAY_SIZE(stm32_adc_min_ts_mp1) == STM32_ADC_INT_CH_NB);
++static const unsigned int stm32_adc_min_ts_mp1[STM32_ADC_INT_CH_NB] = {
++	[STM32_ADC_INT_CH_VDDCORE] = 100,
++	[STM32_ADC_INT_CH_VREFINT] = 4300,
++	[STM32_ADC_INT_CH_VBAT] = 9800
++};
+ 
+ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
+ 	.regs = &stm32mp1_adc_regspec,
+@@ -2760,8 +2756,13 @@ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
+ 	.vref_charac_mv = 3300,
  };
  
- static const unsigned int stm32_adc_min_ts_mp13[] = { 100, 0, 0, 4300, 9800 };
-@@ -2772,6 +2776,7 @@ static const struct stm32_adc_cfg stm32mp13_adc_cfg = {
- 	.irq_clear = stm32h7_adc_irq_clear,
- 	.ts_int_ch = stm32_adc_min_ts_mp13,
- 	.set_ovs = stm32mp13_adc_set_ovs,
-+	.vref_charac_mv = 3300,
- };
+-static const unsigned int stm32_adc_min_ts_mp13[] = { 100, 0, 0, 4300, 9800 };
+-static_assert(ARRAY_SIZE(stm32_adc_min_ts_mp13) == STM32_ADC_INT_CH_NB);
++static const unsigned int stm32_adc_min_ts_mp13[STM32_ADC_INT_CH_NB] = {
++	[STM32_ADC_INT_CH_VDDCORE] = 1000,
++	[STM32_ADC_INT_CH_VDDCPU] = 1000,
++	[STM32_ADC_INT_CH_VDDQ_DDR] = 1000,
++	[STM32_ADC_INT_CH_VREFINT] = 4300,
++	[STM32_ADC_INT_CH_VBAT] = 9800
++};
  
- static const struct of_device_id stm32_adc_of_match[] = {
+ static const struct stm32_adc_cfg stm32mp13_adc_cfg = {
+ 	.regs = &stm32mp13_adc_regspec,
 
 -- 
 2.43.0
