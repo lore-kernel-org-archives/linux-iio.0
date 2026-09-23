@@ -1,110 +1,103 @@
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5D51440641
-	for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 22:09:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D92D363C53;
+	Wed, 23 Sep 2026 01:55:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790115004; cv=none; b=V7pqo7oUX+E/VKuDOeDCDRiUZIj1RaF2i3Q9dk9WHMgmn+Gldr3Fp24nv9BsoGNJX0zGsZXOeNyL+ezkL1asL0YOml9KpxKlNXOX+ut8OpAPN+SHfWk7naRbQj7JBOfvScoCBmZrX7mPj4z4i1SW8X/FqdGHt9p5yJMcKUwpfKY=
+	t=1790128533; cv=none; b=HwZrarpjtPF3yQbtAP+0pls8TcwXjooQZmMZZuQHGcfF97B3h4WUNAodsgWyuY6xWtsi6RKtGBqq7PvWPpIa1mpY5QFD0uze2viPSkYT51ttBn1E0ieXuF945xAORZCKZHus1NPNcoLbD0XiXKlDQBAfhvxoC4uRQf/KkElz9EY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790115004; c=relaxed/simple;
-	bh=ez6IjVz1RI/L1fCWYZYoXXXQ0XI9Qbd928iUK8xMI1Q=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=IUKaSNZU2NWQIup0Lk97fIi68UpGSBbATLTY/ei4bEvLw+7oqFJX3h6KC5KwixRes9ojgLs6TOXst8Pd6Wk9vMl+6z+TzERErsOtssOVdRGSjPepvoBpJqtO1jMXLnMtVisl+6Oc4ze9dHaBQDB8qV+ZzzJHliNw9daaH+EzuuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--morbo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L13afg3S; arc=none smtp.client-ip=209.85.216.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--morbo.bounces.google.com
+	s=arc-20240116; t=1790128533; c=relaxed/simple;
+	bh=0iCFEQlm1p8Fr5jcnQVVzaPOt23XyT2joxzszaHHzOQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KrBYWDA1kAQeD54OfQO0Yfw2UPo66Lw3Y65xnYiyMeq919l65bHYUSG9yTCYryIJJHJotJ68X2M/LKa+ETF4MVF9fKbAvmy3fnU25qS6JKuQkJUnBHOwZLRJXd8lz7+MI4NGU++J9dU8TK8e7Z5/jfdX+nlJLKxkLUfsuG+Nlhg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d10FBC8J; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L13afg3S"
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-3823dcc1647so243632a91.3
-        for <linux-iio@vger.kernel.org>; Tue, 22 Sep 2026 15:09:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790114994; x=1790719794; darn=vger.kernel.org;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=KStyCSuaz3JtzFB2fu+E5KRM99Ww/CsJLkB3+qyDWQQ=;
-        b=L13afg3SJ8OAsLJU4yUbZ2cLRTNRhLsm4SF7IAlw5qEvtKqwJiL8Tx5MengxIA/wTK
-         GjyqlaZ6bpVkTnTdoGVTLKsenaazIt+Y746Pk+Id0kEfYlz+LTPzVjgMyajLusIgc9uZ
-         r6LB30kexihn4vyRir/7JL4RH2X8sA0OocD6cDYgy0GYYuzXDRvbEiacTYKfn87iXkzq
-         nLouAVmJq/zdiAo95Njw41J2szM2kucQu23BhSIgbZ+M/BNaVIGc2SvSujgO4Ber+MM0
-         tRZWjMNmmTHy2NvUMfo3q5GEGdydUCbGIAyFxu6ojdu3/oy8ZGtbP8O++SsWbCIIrWNG
-         pC4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790114994; x=1790719794;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=KStyCSuaz3JtzFB2fu+E5KRM99Ww/CsJLkB3+qyDWQQ=;
-        b=H4pN8wGaockVIsw7dbau3I1z+tB5GknmG9XsWYG8rwYrX0/SFU+uyfq0bZV+p8hbeJ
-         lklzffKYNq5U3sW2p5qMknZweHyv6O35i8ewPhYfXlVnakvPQ5Eqyrru4BJcr+X7YGaL
-         yZzF006c+VNun5YFk71UdK66pMw//GFasfC0yB3e1i85CiP4c3E5CuNnRep+SwufNk8y
-         gDxlHZIlfc0d29fFrSABiCk39UgsUjZCXn5t72I2B8ndPGslW7jfHpN5FRPqFb24qPAM
-         zy1rYQ3wikUpu3olLUrCooW7JIFsu7h1P6/1Mi8VCTufACcLsP+8KR5lpWU/uvS/dHrO
-         JPVw==
-X-Forwarded-Encrypted: i=1; AKwUvBxObpKC1eUWm5nkh26HXqwfhVP5tlKjs7COf/SwZj2lfbe0ACsz+sY4wrUwOATpdSIXq8CF5AxFpx4=@vger.kernel.org
-X-Gm-Message-State: AFuF++mf4NT/t0IFqdlxyNv2EvbDNcOeaOh0NA4UjBCWBrL1QvuSJgWV
-	78hs1e8D4uBpcLGqIkOyjVwz3KY215yonV2HU356nSgy7J6q81rBFxM1DZms73ezFbktdNbRWKI
-	Q
-X-Received: from pgbcn9.prod.google.com ([2002:a05:6a02:a89:b0:cbe:e432:1cc2])
- (user=morbo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3d8e:b0:38e:fea2:df53
- with SMTP id 98e67ed59e1d1-3a07e5adc58mr635171a91.4.1790114994291; Tue, 22
- Sep 2026 15:09:54 -0700 (PDT)
-Date: Tue, 22 Sep 2026 22:09:50 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d10FBC8J"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B07411F000FF;
+	Wed, 23 Sep 2026 01:55:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790128532;
+	bh=X+dyIOnJDxtCFBSI269Uh2sL2tF0Fhcw4ura3+Ar5q8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=d10FBC8JthFkSm3LXDMRoCpjw96umUoAMYYErFFBLSJL7E3jKlvFC0h6b5GJNMF4O
+	 NJx3ExCevp48xoOTACLsO+Zyk+xoPbY7b040RB3Sv4dgKeJcJNvj8+hNqyPkSjvD2Z
+	 ar7Wc8rIHt0YpXGhmHK5YMQX0dqPFqMXOAz5xolcnkzCsoVC8JsIVMZcN5ZdswDiTE
+	 Q1sSKKyHepASa7KV9NreTCyDv17S6jFSeTCDdm1z9BIBV15t4enQyVsI7IraO+FfTh
+	 jtd6FAP1xtmEHYVe+hZ4wTR8SzUNr2prLZhQF4PpH8hY6BKL9zURfCrUFeiixz9046
+	 BCO283Zfna5oQ==
+Date: Wed, 23 Sep 2026 02:55:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan
+ Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Kees Cook
+ <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v10 04/17] iio: add IIO_FREQUENCY channel type
+Message-ID: <20260923025522.49b10c08@jic23-hlaptop>
+In-Reply-To: <bukynp5qvtqf5jgqnxzxesvt5vimm3i3lvqrwmffc7fecjnabx@rqyeho7v5cnn>
+References: <20260729-ad9910-iio-driver-v10-0-aa1f6167729e@analog.com>
+	<20260729-ad9910-iio-driver-v10-4-aa1f6167729e@analog.com>
+	<xevuqaudwm4hpnhbful263yx6r45liuch6yc7xjk2i7wly3oxo@xe2htu27rkl7>
+	<bukynp5qvtqf5jgqnxzxesvt5vimm3i3lvqrwmffc7fecjnabx@rqyeho7v5cnn>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.55.0.1082.g2b9226bbc0-goog
-Message-ID: <20260922220950.2267270-1-morbo@google.com>
-Subject: [PATCH] iio: adc: qcom-adc5-gen3: Annotate struct adc5_device_data
- with __counted_by_ptr
-From: Bill Wendling <morbo@google.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, "=?UTF-8?q?Nuno=20S=C3=A1?=" <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, 
-	Bill Wendling <morbo@google.com>, codemender-patching+linux@google.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Under compiler-supported bounds checking (via KASAN or UBSAN), pointer
-fields inside structures can be annotated with the '__counted_by_ptr'
-attribute to specify which field in the same structure holds the element
-count. This enables the compiler to perform runtime bounds checking on
-the pointer.
+On Tue, 22 Sep 2026 17:07:45 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-Annotate the "base" pointer field in "struct adc5_device_data" with the
-"__counted_by_ptr" attribute pointing to "num_sdams". The number of
-SDAMs is determined from the device property and assigned to "num_sdams"
-which is then used to initialize "base" via "devm_kcalloc".
+> On 22/09/26 16:56, Rodrigo Alencar wrote:
+> > esOn 29/07/26 09:25, Rodrigo Alencar via B4 Relay wrote:  
+> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > 
+> > > Add IIO_FREQUENCY channel type to support Direct Digital Synthesizer (DDS)
+> > > devices that handles frequency values written directly to its buffered
+> > > interface.  
+> > 
+> > ...
+> >   
+> > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > ---
+> > >  drivers/iio/industrialio-core.c | 1 +
+> > >  include/uapi/linux/iio/types.h  | 1 +
+> > >  tools/iio/iio_event_monitor.c   | 2 ++
+> > >  3 files changed, 4 insertions(+)
+> > > 
+> > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> > > index bdf3d4c06331..a45277bc5d99 100644
+> > > --- a/drivers/iio/industrialio-core.c
+> > > +++ b/drivers/iio/industrialio-core.c
+> > > @@ -99,6 +99,7 @@ static const char * const iio_chan_type_name_spec[] = {
+> > >  	[IIO_ATTENTION] = "attention",
+> > >  	[IIO_ALTCURRENT] = "altcurrent",
+> > >  	[IIO_COVERAGE] = "coverage",
+> > > +	[IIO_FREQUENCY] = "frequency",  
+> > 
+> > Hi Jonathan,
+> > 
+> > Thanks for not giving up on this one! Taking a look at the testing branch,
+> > I think this line was dropped during the rebase (addressing a conflict)  
+Fixed up. Build test just running. Thanks!
+> 
+> btw, now that we are at this again, it crossed my mind...
+> Is it fine to have a channel named the same way an attribute may be named?
+> wonder if userspace tools could get confused.
+I don't think so as they should be dealing with the ordering of different things
+and we will always have a channel type before a modifier.
 
-By ensuring "num_sdams" is set to the correct element count prior to
-the "base" pointer allocation, and since the size of "base" is never
-reallocated or changed, this annotation is safe and will not cause any
-false-positive runtime bounds check panics or KASAN issues.
+Jonathan
 
-Cc: codemender-patching+linux@google.com
-Assisted-by: LLM
-Signed-off-by: Bill Wendling <morbo@google.com>
----
- include/linux/iio/adc/qcom-adc5-gen3-common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/iio/adc/qcom-adc5-gen3-common.h b/include/linux/iio/adc/qcom-adc5-gen3-common.h
-index 39cbfcbdb101..b3e2c2f50e8f 100644
---- a/include/linux/iio/adc/qcom-adc5-gen3-common.h
-+++ b/include/linux/iio/adc/qcom-adc5-gen3-common.h
-@@ -137,7 +137,7 @@ struct adc5_sdam_data {
-  */
- struct adc5_device_data {
- 	struct regmap *regmap;
--	struct adc5_sdam_data *base;
-+	struct adc5_sdam_data *base __counted_by_ptr(num_sdams);
- 	int num_sdams;
- };
- 
--- 
-2.55.0.1082.g2b9226bbc0-goog
+>  
 
