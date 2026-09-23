@@ -1,67 +1,68 @@
 Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE09559C9D
-	for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 19:10:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D4D3560AA0
+	for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 19:10:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790190630; cv=none; b=oA9Vwc+9K/+yIPr3G1VMvr9meqKmus5x2aZ6uPbDLZPlRjtwIgNhdftGk/Cfp25N3knQr366SbeFI0Fo/2tnPQU+xqrY949qCeGFQDUvaG4WI9pyu0dMhYX+4jeeZccu/JXszK7T7qDqt7unEqS6sm+Ut3XGp9Mmpdesc4/jhxE=
+	t=1790190631; cv=none; b=Ro4hAfie2oGA/V5MJ/9b5F7nOTITjUyB6RTnjFm/4h7xufiEQClYgAnsU7kewde+1Ak12c9XzG/M5xjQkK5/TkrNyPfX0NAmSQyx7B1tdwiwkezhwgyazuRntCsFnIZ+/9Iv5LS7g+JP8NQOOup+eUKfAUb/h+NT4N8bJYUa81c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790190630; c=relaxed/simple;
-	bh=dS+Q5YrTBm//gZDQ0F0CZTkdeWin1xpU3ZzifWE7nYE=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=HOAt24X4GBiDxupqV98MXrjXggDyBOIgW/XvrbEBXs9G2RObBR1oo2YO2hBlQB5oT7AXsmqKsKA23mYR8rh7TxGW7sARRS+Ujy1t+fiZSqhIL28tYQRphJ5YttTzUPQlHrAQ7mT3NXGnk21/ZIWg8srN2fAE9jPvKN5D54hGKO0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fcX7KQuN; arc=none smtp.client-ip=74.125.225.140
+	s=arc-20240116; t=1790190631; c=relaxed/simple;
+	bh=7ZDZ7klOzvZJ/C+DBag+kOc89L0iMjV12OJhh/9VyzY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=D080p8ZJc604f/A6aoeAMNFpmxJKCQiwRs9DGhkffRM0HfcKOzAsvMwVq80nFgqaWwI/weF3KtoaYYc3Md46JXSkHvOzGX3wH0z5CojvLGWhS8zJes57Lx/oVNRkxZgJprUVciegRAmFyqv7Jy1nxqGYaEbDihFxsFqA+Nb2Yzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=nQcxCnDM; arc=none smtp.client-ip=74.125.225.140
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fcX7KQuN"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49d1fb0cf5eso9462255e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 12:10:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="nQcxCnDM"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ce364488dso4277585e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 12:10:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google; t=1790190627; x=1790795427; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=97UpkxI40FojhbMsaRc1vNaLp1lGktp8HL/rnM/BvcM=;
-        b=fcX7KQuNm1JZTwoYpTH03R3UGUG3x5rskjk2gP1XIqJKcuKTn7TyTUS2pTjcv/AtQk
-         qVJVcNQeIHMAupV+ClnQ9ao7xsfOfA6QKU7QBDapn1+TxNAICG4SYLk9zYLAWBO87hU7
-         e4ytlfVKU65nUfK+9jjO/LAr30LGNaP3IzIkKlgW7fSYH3pyvhu38uGMwhBFz2sXvUr1
-         Q9dA8RuM1/VErcpr6U4nwgRfGXbHPHyCxkHGdxj6AqvA5GtiPg/L+lXYSQCZQfw5lvcp
-         ewGnk/CwGDyukTNHPG4cI1/s61cNx10ZUNkXOydFPNufSjrnQ2ws7ny8WmKXzR1UQ05u
-         xLEw==
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=QH5dWwR2GVuVuHDcQ8qHypbiUhKqxfbgH0UpgH6h77o=;
+        b=nQcxCnDMHdhy0VdE/2aDjrC+h4mIYKjryDmaItqV5BtgRMxst6gDMMBmMMnkZLH9Mb
+         vxiEJ+Zg2PD+aSn8Ospg4JU7ywRmbxx0h6qi00Bis15p1cxpUb4XY0EErMEjUYNFdXkc
+         xjdq5nRkk/zQr0Nm9/QtCyJrpJHTvfDBKhHGUJ7jszWFeeRAHGnQZGxXUBOvjo6Trmpc
+         HfhTTCxBZGE9H1xIzjHIobpyHFxik8tUgtRcuM0iLL8POfIw9gbZANj+75kQW3ujPhBd
+         S/GiJS2hKhWQIS+WGFZy7++83stUvSeCmjNl0qTpUB5GwtduOI4oTLlNnLj20Ppa7U4p
+         0fuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20260707; t=1790190627; x=1790795427;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=97UpkxI40FojhbMsaRc1vNaLp1lGktp8HL/rnM/BvcM=;
-        b=pM3eY1niPNYwTtYZty1yQKmyRDp0ZHU9vUNmq1MFsZv4SXbshCfz/aza9GSODFwtbF
-         iwruhiGPR8TziLDvdtbOk4kT1fNUrYjYrFlRKX8lCZ2tNM3/J3aOFeMHIcYHLJdT214y
-         OYN5uy26FnKXtPwYCizBHDCCKvNCExYQFKfYLkXhNlZCAeJI4lJ7v1tGnozaFp1bvdPI
-         zl9Lmfc5LWUwiPRcimW0qKFuUgS1+bUzg3m4j/93MyUkvR0IwjR51YaUv/lvjKOJy/Ky
-         pvSm2eBW5qfroDUUsAoaRGZJh+1ognViVwDoSo7PvsF8TJe51whkoyFUrqEauhLzxoWN
-         Nt6g==
-X-Gm-Message-State: AFuF++mkGg3bQSYxiIMtqTKYaMnEvABXX7O82CuEj6McIUrty6DDm9xF
-	Pd9m4uKB248cDgie8/3aGatZJx5pC6rS/RW6Ma18Fa1VkTZpNEh8CIKykp1A2HlV8SI=
-X-Gm-Gg: AYBFou2b9R1SlWKeFmnuBPTQD2ONk8gRWHh38wBLcpusFqKiCdY+4aoO8R3MZebMlT7
-	/5Uy+LauPt9CdXYQa+sg8vm41i0JchVj87OOxKcwk+QqZSnOtnYOd7Lo/10NDv9v0E+YQNEEslP
-	I9aGN/0fwgcQNQ0iIL5rRXkeUTLZ7uk49qA8TUBzV+udLJbayFDKtjHJG+SDomp++qxWGwGlJGl
-	tnCvk5RAquAlTWf+fXnwKtJI0MpUoMB5bq1kA+uKDz5ghQPvEJcF8VRFdj5qOS0NaLjnjoeeNZt
-	FQIfF0r8WlZO1oYevjz2ACTdGAhd+rp6DbPwXs2a/R1eAoe/JqvLTEhHVgHLCugLa7i7fdqQ/ny
-	YUON3oneipky1pfxMQHS1PZaSK8B7HpTLCJFpUyhxjgTLxM4I+P3W9AoCj9tjUxrEF2ja5vLgKf
-	2tdZqGfxxCGsdg6VJbcB2Ny2HZ3kHjjHCy7Oa9erO97KK0vepJZdIxn74tztr3hwMwh4+N9QHSK
-	rWt9TRjKaO0HPFxrBhUcVLx18gMsGZFF5LMe80w
-X-Received: by 2002:a05:600c:3556:b0:49f:bd3c:bc24 with SMTP id 5b1f17b1804b1-49fe6708a46mr2508055e9.31.1790190626506;
-        Wed, 23 Sep 2026 12:10:26 -0700 (PDT)
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QH5dWwR2GVuVuHDcQ8qHypbiUhKqxfbgH0UpgH6h77o=;
+        b=Z6duEZPk9i96YfQ68VLhx2Q6uhZXA2dd7vHMtxUlwjSRHDP8wtRDzdMm2QWnH8C/HM
+         MUU3dd22Ge9t5oNP7dkEmdivYTYD/x+d1LI8k5qyOWmXYfQUffEnBOVeJfnJigkv41vc
+         EvGxAmpsrDaipbm0VcC+JNT/5rEThcGe7ondD5j+m4N6gQHfkaEonYh8lhHA7fxfYmdC
+         EUEzJ6PPccYiwNkOFGULFSfXk/7GAmWDzofBe4vUag6vAlpC6Hx30ey2XYnCBaxjyDua
+         TtJ40XSwGnuFAe1wihhT/Vj5JCsw8l2IC2rdOCzRLV/yF1Y8RRigtAybQtpo9hk7ORMb
+         oWtQ==
+X-Gm-Message-State: AFuF++k/wp/DhoV7/ANyyFgPT8CnryCrm0XlkhkdupepeZ4DP20FnNmY
+	Q0tqoLufWgpBMY5oN6449pbEHBZFOQfrEwzsgKkbAXgpFyY2JY1qfURgwqAZjhmkNgQ=
+X-Gm-Gg: AYBFou0gO7z1kEH6k06T4TdsrjugY57kS/EBtAOGV7jmrHZe3tie8vbpq30O7SIcCol
+	xTyFNgkJ4vcxmGRO+wHMMc+Xqas50ZahTo98w8N3JMRYCBf7Y216nfm40UBVMiiyBRzwBj6FtPn
+	i6Vxin1HUaqFHRbo7zA43p0DqqA8H1Q4539rSFBMEEFDMrfHq92/5sj7JW458jS8AUDsP4jCfe8
+	0AKbDtfy+PINzDD7LngN6FNVJGEbIutd8AI2xIJj0j1MpK8PB9m1NcyCY9t+wfP5im7KHpKO1Lt
+	9RqSTppbTsWs1AGSWUQ3Ghv04vWo7yuHjiEr89xRAdZntnloCrvVlpdMn49XzWV1/0YNz4F6YVT
+	yrb/DFYoSuMgB6W9BXfSWrTnN17GijiUFDEVN5K9RC8xLjMYjblqimaVKoge95YwafLLTEl87A5
+	iVcnpA+dkxqffthLWUw1l+gFSKfGOpXWHEeRZGY3O6hty1Zh/cq8t6s94tE4tTKb1ZRFmtO2891
+	FyXGyoTB9dhh5gaWgY=
+X-Received: by 2002:a05:600c:35ce:b0:49e:8222:3451 with SMTP id 5b1f17b1804b1-49fe66fa420mr2247145e9.14.1790190627241;
+        Wed, 23 Sep 2026 12:10:27 -0700 (PDT)
 Received: from arrakeen.starnux.net ([2a01:e0a:106d:1080:52eb:f6ff:feb3:451a])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5bae53dsm7291815e9.4.2026.09.23.12.10.25
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5bae53dsm7291815e9.4.2026.09.23.12.10.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 23 Sep 2026 12:10:26 -0700 (PDT)
 From: Neil Armstrong <neil.armstrong@linaro.org>
-Subject: [PATCH 0/2] iio: adc: add support for the MAX34417 Four-Channel
- High Dynamic Range Power Accumulator
-Date: Wed, 23 Sep 2026 21:10:21 +0200
-Message-Id: <20260923-topic-sm8x50-iio-max34417-adc-v1-0-41d4ba1bfc41@linaro.org>
+Date: Wed, 23 Sep 2026 21:10:22 +0200
+Subject: [PATCH 1/2] dt-bindings: iio: add: document the MAX34417
+ Four-Channel High Dynamic Range Power Accumulator
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,10 +71,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAB0ktGoC/yXMwQ6CMAwA0F8hPdukbKDDXyEexihaExhZ0Swh/
- LtTj+/ydlBOwgrXaofEb1GJS0F9qiA8/HJnlLEYDJkzdcbiFlcJqLPLLaFIxNln2zT1Bf0Y0FD
- HzlFr7TRAOdbEk+Tf39/+1tfw5LB9UziOD5n7UTqBAAAA
-X-Change-ID: 20260923-topic-sm8x50-iio-max34417-adc-209e880533fb
+Message-Id: <20260923-topic-sm8x50-iio-max34417-adc-v1-1-41d4ba1bfc41@linaro.org>
+References: <20260923-topic-sm8x50-iio-max34417-adc-v1-0-41d4ba1bfc41@linaro.org>
+In-Reply-To: <20260923-topic-sm8x50-iio-max34417-adc-v1-0-41d4ba1bfc41@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -83,43 +83,137 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Neil Armstrong <neil.armstrong@linaro.org>
 X-Mailer: b4 0.15.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1014;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3189;
  i=neil.armstrong@linaro.org; h=from:subject:message-id;
- bh=dS+Q5YrTBm//gZDQ0F0CZTkdeWin1xpU3ZzifWE7nYE=;
- b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBqtCQg1FjoPWp7N82OJUtBxw1T0p9FJc3F+pXkbVtM
- wFz3MU2JAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCarQkIAAKCRB33NvayMhJ0XGVD/
- 9AJ/1swOUyeCQbubWH9D5jE00VUfaFKQqXg4jF/HNbZrD75qObT2fOgCytPzopFd9t0WLOaE4FPGQp
- YSghf6+eQUJn/B0Kz45UUb7u7iENNP2NrWlAmqOJNDxdNmcrEYJevOQW5076G2FGfE6RCJkoavBCqe
- b5yKYndTpHrU7Qv0TE7PR3oXbT5mokklouibZBJgk03lpwXf9ZNs8nIf4kWAKHcnXIRHKC3+pFaLNU
- 3wvJNekZ/AKlo3NKzJ9S9Q5fl8jDl5ColVNi4Z+XcvI1Gmvx1jnMEHylZPlbNl7ta5tyfCkA418xVK
- MgRiPMM9+0Jk3Jvu8ONaOHQvy1UnXm6+qt3gcRAy5Rkj8/uZcSEkp1b0C0ngNum08nwM6pOSG/n5fB
- aScXMoMabTWzDJ+mT/WR+evYGivIu0EPcsX4+Re1HSOEbDlWYESbQywPmrNPhilrm+0sCyc+WVLJ0d
- +HRW77zkW6fUQ/jJHMAp8kFha2XepEmhPeerpOHvjfnOvSKAT0AIfoAfSLb5mtiVUxtvtPyjZBL2jp
- fzee2lcfz73aMeGcPr+Fuu3RxDeK0psz/V5uXxl7rRvthikmAaG9fCztQNRzlGaXXCNj6HqamjASCD
- 9rLPJZJpfxk6oEvBsgaMxfjcFKVGDTaUDIG2zmWheqqsAYfZCAV4LJoCtwUg==
+ bh=7ZDZ7klOzvZJ/C+DBag+kOc89L0iMjV12OJhh/9VyzY=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBqtCQgF5o4IkV8REDXPbiUBGSYERQyQlwDExrR3OYa
+ tAAcaW+JAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCarQkIAAKCRB33NvayMhJ0QngD/
+ oDvtzmJp7GTtiWNI+PlkrC2pVivYhEibQ3RWf3eaw1305ZaOx78EORAX/o9PZu6LIE18IGSH6DL0n8
+ gsFO0w5xOi3XBa7fM3XaC8AXJMZKaPYHOe/cLwnqD7dyVBlpaGz7auAe6qEbkbCvmXV55glEP03bCm
+ OTpPV0llS0JikKnNOyVp9uq5FHeeJ0Qqaz7TiZtJNtP6s7qd0nmrEa2ZrS6UOTh9XkArPZbq24FkQI
+ qSWAq0N86aDmd195csKFI/OS2l82uIP+BWsGZHRjXvHUHNo8pZQ682wv8vF5MY9M1qzwu//a2HKfAj
+ yLBb1Rj9J44q2VSRbmAaAv0qVcSccqHV3kR1vOTai6khk9ZSjf5gpxCJfw6O2GNxidUbTfxpPpmStE
+ apmuwqPOcQi7/EEIq0xzVv3QhZCYZhWTsTAW/Lq1M4SHp9WZO+4HZh1Hspt3QtaEi1rse6iHYU8Vwe
+ mg4mWOAB1f5rskSuHQLZ3QX/ntMvqXRVuAAUbgspksT7H3otxUN+rG9BmGV8HikCERwcUyqvf4GOcY
+ djV5PhXZx/yMKfTU7NHU2jTtiyrjY8v5uqP/h92O6soj1Csf1j/vs4qLsJ0IF1+lyuNaKKswSZL7WS
+ g03W5faFmTcTfBAcXEI6nS6YXbzvdIiN6nlWZY91XcV1ir4UC0eYFdCRV/hg==
 X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
  fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-The MAX34417 is a specialized current and voltage monitor used to determine
-power consumption of portable systems. The driver support getting the channel
-voltage and accumulated average power over an I2C/SMBUS serial interface.
+Document the Maxim MAX34417 Four-Channel High Dynamic Range Power
+Accumulator used to monitor power consumption of portable systems.
 
 Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
-Neil Armstrong (2):
-      dt-bindings: iio: add: document the MAX34417 Four-Channel High Dynamic Range Power Accumulator
-      iio: adc: add driver for the MAX34417 Four-Channel High Dynamic Range Power Accumulator
+ .../bindings/iio/adc/maxim,max34417.yaml           | 99 ++++++++++++++++++++++
+ 1 file changed, 99 insertions(+)
 
- .../bindings/iio/adc/maxim,max34417.yaml           |  99 ++++++
- drivers/iio/adc/Kconfig                            |  11 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/max34417.c                         | 356 +++++++++++++++++++++
- 4 files changed, 467 insertions(+)
----
-base-commit: fd73f4a6659897191fa0d40695fe370925dd3780
-change-id: 20260923-topic-sm8x50-iio-max34417-adc-209e880533fb
+diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max34417.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max34417.yaml
+new file mode 100644
+index 000000000000..6f2339a92771
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/maxim,max34417.yaml
+@@ -0,0 +1,99 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/maxim,max34417.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX34417 Four-Channel High Dynamic Range Power Accumulator
++
++maintainers:
++  - Neil Armstrong <neil.armstrong@linaro.org>
++
++description: |
++  The MAX34417 is a specialized current and voltage monitor used to determine
++  power consumption of portable systems. The device has a very wide dynamic
++  range (20,000:1) that allows for the accurate measurement of power in such
++  systems. The device is configured and monitored with a standard I2C/SMBus
++  serial interface. The unidirectional current sensor offers precision
++  high-side operation with a low full-scale sense voltage.
++
++  Specifications about the device can be found at:
++  https://www.analog.com/media/en/technical-documentation/data-sheets/max34417.pdf
++
++properties:
++  compatible:
++    const: maxim,max34417
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++  vio-supply: true
++
++patternProperties:
++  "^channel@[0-3]$":
++    $ref: adc.yaml
++    type: object
++    description:
++      Represents the internal channels of the sensor.
++
++    properties:
++      reg:
++        items:
++          - minimum: 0
++            maximum: 3
++
++      label: true
++
++      maxim,rsense-val-micro-ohms:
++        description:
++          Adjust the Rsense value to the resistor value
++        enum: [1000, 2000, 4000, 5000, 10000, 15000, 20000, 25000, 40000, 50000, 100000]
++        default: 1000
++
++    required:
++      - reg
++      - maxim,rsense-val-micro-ohms
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        sensor@10 {
++              compatible = "maxim,max34417";
++              reg = <0x10>;
++
++              #address-cells = <1>;
++              #size-cells = <0>;
++
++              channel@0 {
++                  reg = <0>;
++                  label = "ch0";
++                  maxim,rsense-val-micro-ohms = <5000>;
++              };
++
++              channel@1 {
++                  reg = <1>;
++                  label = "ch1";
++                  maxim,rsense-val-micro-ohms = <10000>;
++             };
++        };
++    };
 
-Best regards,
---  
-Neil Armstrong <neil.armstrong@linaro.org>
+-- 
+2.34.1
 
