@@ -1,69 +1,69 @@
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013024.outbound.protection.outlook.com [40.107.162.24])
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013002.outbound.protection.outlook.com [40.107.162.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D7D04F85A9;
-	Wed, 23 Sep 2026 15:39:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.24
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F2846C4D0;
+	Wed, 23 Sep 2026 15:39:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.2
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790177975; cv=fail; b=Liojn99RjqWFg5nnahYUkn33MgETBzeRsRBRl7HgQOGx5GnSsztcE8x5mokaUFg/5AYYV1i5QPtLHdEWShuVa1EunT9IlQRKQ4av8Y36/qjiWP6OiiSNpX4EUoK1u8qwwdA1JNy2GoA3a5tuW0XW93z1ccTuZ6XwvHMDOQxXFBw=
+	t=1790177977; cv=fail; b=mcBJ0ePAyLQUNPiKcwVvUkLBRjL6V+nmthMUlv1rywT9mkOB3TsKGTauhk+l95WgRExjhpCYVPk6OwF76RsOtDQY8F5OcwLANCBUQxQyWMccIEmVEd7g0Q6qJ2HMGyamDpcHz4GK/OSbaR9n89BWm8tTaKe16PInnyv2X+kyVf4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790177975; c=relaxed/simple;
-	bh=BhYJx/9A2yNqo3/jeMOUUB55QCOnQqwyhY2wHO0abYM=;
+	s=arc-20240116; t=1790177977; c=relaxed/simple;
+	bh=ZmD7qIcJpHxEn3+/61ipahgAIeApBqgICIKmygCBD2I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=Xl7LJT7mJSaFAu7JnMGa/5pPSR46RfSI+MeV/eDlnZh9oRRuNO2LaVLJx1Mck8s6XPRZ43ZLRqoLjHKKXczwIkZ4hJvmxOgXdKfkQqBGfrUFxl9uTZAWF3b2dOR20ujZGHHTzLZzjtOqekdDt4kbbNt1h4cF0UPkk728ARi+OIc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=LodmsKxO; arc=fail smtp.client-ip=40.107.162.24
+	 In-Reply-To:To:CC; b=oL7+vZzh7VJHnPu0mAFxBdTq5t8T/ZSSevUlg8P1C/2+I6OlAcwNMI75pk2vwHBRY1nT20F+RcWkrHeXJ+C4UBNt/tbvH22uogtCXYZwG2hrrVhqrKiwKVT6KU76wYepn/yoGo7UFBfWCkiXRw2UMFSj1R+yU7ffhRU+BXk4rhg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=farif1eA; arc=fail smtp.client-ip=40.107.162.2
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="LodmsKxO"
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="farif1eA"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=L1IcC4SROYXNClexriguMr4/FS/p6GSfS8s5vsboIDi72jFbCymOXJ5hr498YQPWuR9P5GWlsRr2MBc5ybYcCKc0sL1BlS/1yrh/SyGq8vc8bl5S/tGoiC2P4DGpfdb48dyR6ng34uI1de3o59CZtz9A1oAWwsuqa80kIvOoDOVEMYIwMWpGLF1Lr9nCau5lkh0A1zezw9JXKlxw7bV5powxkn3XGz8zJ+bYOcV8Ua3/AZD7cz/BIfNgdxjyAQBozfCEj2MJJNCsBhm/a1cwLK37ke3vh0sA55DFwjIYrVAkBR/wBoXB65cAvrX9absmBcndabhp0OCUK8qQ39gLXw==
+ b=WK3xEvEtTCZ5syOOfp9dj15u0wIwArNXCJtlkM9pwt0VcWghZD0loZsQW3aK2u4xE8Q8SgewenCwpaQMTaiT1RqoTOdwMYvEtujz1LaqZBzgYret41DwYeMib+xXcMyAY5E58hxTfddOtGnkgaiU4/lEUtWMiP6escMtpPBGI5Dwft4fBs1XYNPSLrNEbw3YqL9j8IitOcYcDSB+ccNetQpz1k1BZVYefylv1c8mqOsdwnL+Kc3zCkRcWIUPdL1RtpdFqb/gHmBqXjdHgyulOaHpcpZRIaOfAwYUdQBr1X4KB+0Pqm5TFuVVVBJ546C+Ma8XeeWFvT1jse+5IYxSnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MQRRyv3J5DLGN7L/CYs+2LWcQAdmwhlsHI04RAiZ8o0=;
- b=y8H/AqgWiytcDN42uIzSf3xhGV3rFz/vV2tvQx7nnDT+O0rK5eeIk+DC2NP+nGl4meMMJDDQ8eMSESkc0HwgPhsp8ywUlvtwzjr66t9L8gQfC3QJuuh2vyq7TpnlSEQITD6JRayOefPxzJyT3ZUVpFPPO1FlvCc8mNSn3Cb8TEPcqI3GN3/otDDVV/g8NzfQzDr8dz0W6XeNFSRIhbip1cdMh1fC5PInuHpiDBUwgceOGTuXeqr5qy52B0zNWGJcCGciEMJZNr14VK0CjJw8ndlDMhDgmk8wmBJbc+wrVgMYXXUB/p2Lboz1PeF6LWnJM0SiKbE47DhF0uB+lsefBQ==
+ bh=N7tIvJgD2x09GrLWHzpho0MO1qmTrLP/91niW6izk2g=;
+ b=y7jvuF62hUdIDiMAf708BD0TNsaerHPatDei7XrWQw3gwzprrLij3oaIXVOOb274xOMC68xGpBHSqHgUpPA/Dbbvv+7Eb8DNl9aFytt4LpGiV+dr+OcbsbbmAwmdcDhWGF4yamwcOmYts9TWLo7fSP0DnJEcJKSszFrk9fWtM9lMaax8y3MNBBNuOnSgL5Efe1a4PCVihW5/Hcnhyui7xI7y7SWiP6eUnJooW0lejeJJ6qXrOEup2hKbpPzRszA1EYWM+XuMaS7gRKPdbsi0am2II+G1EBzVIB7c0bucHM2+llCG+93ljohQGzDSv1vRwkTtEs9Zj6NeVnnXPQMtcg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 164.130.1.59) smtp.rcpttodomain=st-md-mailman.stormreply.com
+ 164.130.1.60) smtp.rcpttodomain=st-md-mailman.stormreply.com
  smtp.mailfrom=foss.st.com; dmarc=fail (p=none sp=none pct=100) action=none
  header.from=foss.st.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MQRRyv3J5DLGN7L/CYs+2LWcQAdmwhlsHI04RAiZ8o0=;
- b=LodmsKxO7IHr/+vHjO/BvNQ8nQM46hxL5oaWX9WIC+cvy186SVDiTjcsEYjedQkby8PZkiLwfqE8zdu0Ytsi8nqJsJU5xF2czbfg0Nv72RdIRK2veL1GaJGCNYg6hWsgucEo0etBwIQI4G4ohXOqWt+pyuegoBzB7prqIg22W8gCWx6LEakAqt+YGh1QLQCdYxLSAmC4+iHSGM53NZOD4leM1EEbTlwPtd8jCiJCx/qSZuv3WJ5GAkDhfAd21j/UdjMFNwTkm57XHd6GPzrUC9DQUHLkDAiVLhRkxzAmBjxtxb6b86cpwNImCYSYcu3LWDgvg4qoBqpRDewH4U+qGA==
-Received: from DU7P195CA0001.EURP195.PROD.OUTLOOK.COM (2603:10a6:10:54d::15)
- by DB5PR10MB9193.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:5e6::15) with
+ bh=N7tIvJgD2x09GrLWHzpho0MO1qmTrLP/91niW6izk2g=;
+ b=farif1eA1/ycKkCTAjGee/Rp47gqOWzk2WStlWuTekwEJ1zLMj4wtikXX384dyCXmB6aWBlHbW72ARnex2yT2f5bLzKF3Cv+fYYq7RL0er6FFqMHKkriHWQqkyyYALYl8A/1kiiKeTnOGWfTYkd4sVeRrohJGL4NlzQVqKUg8yGhrpbwyyDXBWTwx4rdeQ6K996y0CJDGiiPMrFL5YFq2Wf54UCr+BFVntyOrDbciX7UnnxV8H3dG/CzcOq1nDxAE2yqBbChgiDkKxBpWJH108kPWwNQSFCAVksBgFQr5FoRcwmHSYMOqfU45NomU/eh6+U55+UBQ5arJJOdjUssog==
+Received: from OL1P279CA0045.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:14::14)
+ by PAVPR10MB7036.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:30f::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.17; Wed, 23 Sep
- 2026 15:39:29 +0000
-Received: from MAD0EPF000008B2.eurprd04.prod.outlook.com
- (2603:10a6:10:54d:cafe::64) by DU7P195CA0001.outlook.office365.com
- (2603:10a6:10:54d::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.14; Wed, 23 Sep
+ 2026 15:39:30 +0000
+Received: from WA1PEPF000099CF.eurprd04.prod.outlook.com
+ (2603:10a6:e10:14:cafe::2e) by OL1P279CA0045.outlook.office365.com
+ (2603:10a6:e10:14::14) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.14 via Frontend Transport; Wed,
  23 Sep 2026 15:39:29 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 164.130.1.59)
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 164.130.1.60)
  smtp.mailfrom=foss.st.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=foss.st.com;
 Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
- designate 164.130.1.59 as permitted sender) receiver=protection.outlook.com;
- client-ip=164.130.1.59; helo=smtpO365.st.com;
-Received: from smtpO365.st.com (164.130.1.59) by
- MAD0EPF000008B2.mail.protection.outlook.com (10.167.241.134) with Microsoft
+ designate 164.130.1.60 as permitted sender) receiver=protection.outlook.com;
+ client-ip=164.130.1.60; helo=smtpO365.st.com;
+Received: from smtpO365.st.com (164.130.1.60) by
+ WA1PEPF000099CF.mail.protection.outlook.com (10.167.242.23) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Wed, 23 Sep 2026 15:39:28 +0000
-Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpo365.st.com
- (10.250.44.71) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.451.8 via Frontend Transport; Wed, 23 Sep 2026 15:39:29 +0000
+Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpO365.st.com
+ (10.250.44.72) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Wed, 23 Sep
- 2026 17:45:56 +0200
+ 2026 17:45:17 +0200
 Received: from localhost (10.252.7.7) by STKDAG1NODE2.st.com (10.75.128.133)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.43; Wed, 23 Sep
  2026 17:39:27 +0200
 From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Date: Wed, 23 Sep 2026 17:39:05 +0200
-Subject: [PATCH v2 02/14] iio: adc: stm32-adc: core: manage clock prescaler
- diversity
+Date: Wed, 23 Sep 2026 17:39:04 +0200
+Subject: [PATCH v2 01/14] dt-bindings: iio: adc: stm32-adc: add support for
+ stm32mp23 and stm32mp25
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,7 +72,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260923-adc-stm32mp25-v1-v2-2-46bc019537c6@foss.st.com>
+Message-ID: <20260923-adc-stm32mp25-v1-v2-1-46bc019537c6@foss.st.com>
 References: <20260923-adc-stm32mp25-v1-v2-0-46bc019537c6@foss.st.com>
 In-Reply-To: <20260923-adc-stm32mp25-v1-v2-0-46bc019537c6@foss.st.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -84,173 +84,187 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 CC: Marek Vasut <marex@nabladev.com>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>, Cheick Traore
+	<cheick.traore-ext@st.com>, Olivier Moysan <olivier.moysan@foss.st.com>
 X-Mailer: b4 0.16.0
 X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
  (10.75.128.133)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MAD0EPF000008B2:EE_|DB5PR10MB9193:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5372faf3-bff5-49ee-cfe7-08df1988daf4
+X-MS-TrafficTypeDiagnostic: WA1PEPF000099CF:EE_|PAVPR10MB7036:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4fad786-b74f-405f-9dec-08df1988db69
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|82310400026|23010399003|36860700016|7416014|6133799003|10067099003|56012099006|11063799006|22082099003|18002099003;
+	BCL:0;ARA:13230040|23010399003|376014|7416014|1800799024|82310400026|36860700016|6133799003|10067099003|56012099006|11063799006|22082099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	y8E+pPeBadHtXMrVkBOMxq7pgk538yxMWMAxl375s4SmRbph/Je3aiZo3Ea9GzQIbGiRRqHQeWE2vDpeTTKEwwKnPnY1CFvVB8rTBgCV2oI9ZjNZSeELx44NOz79r6JDcXcKTEcy4Doah+8mJPhc4jkiv1t17Sr+vnfyWHKZg9fkhSRB61ij5zHf4m+4WoGl0eVzA/fsQUTVTTOAp/HG8mCi1Of2b1JNNTpIfMOSp/0WwbKx0sty8zDMpg7it/eW5ypU+uD23kMVW1stBjLq2mZoHXeHQent5U0gHDdFf5yMwb7Oebuc73oa5Fu+xZgbjFmWgaBZlHDupMvTqJV7G4EpEuOfRj2zcJuNoY8ULjtdU5ifCWUGa1MH96QJB6qTWO9dwYcTxl+6phtgfjp/UAoO2Te/FGvO2owZsIBEuiqmU/HAYlO7FvNFDZF1hieiSZL4OGUZTEWN61zaaK+2cexUCpYQz2j5VAEMsCe8ofqTHXGO/duHka4jZd5sKaSa8oxdMMOvXp+98fUGNdepiW4dzw2AKExx4Gyp/X7108SYPILa1tMYRV8uhSO7WBNiTXZ++FEvaF5KVrIfuzsh6jS2odYzIsuuhU/6kBSv7KcWL1Yzr19olDybnBFGbnsG38moJ2jhvYfgDV3+LOKWgVHjRw6nHHcTiPCtLIEl6OY7jdVAACwwvxETV0RegVpg0fkr0zpxYf9rYjR/0kv2gg==
+	tLMEP2f4ftFtuvqm6C93gjzJNAyqt/PB2PKNxa/HNNK9shmT7uDyiuXcwrC+xKAHLQdAlVwh6yhZgWYL0IklKi4vsjK/O7LM+aoTqcYfjekELDQmKm43lthHXJf6gyVV4l/L/20DhwUEqE5bxTZ3NbfQtt6wSmd/CW10E13BArtViExqf/E6Emym5d/EfqVW7993ZDgRVY6A8BDCizk6/M17V9ukm88+6wLsuBKO5ldvD/4hnyrk8T5j8VMBoR9MyXO6GE44rEgnpLVhbq/rHPusf8s7bTd1pIqKMm/TTUU1VY7mST3G4oPuCLkZ9TYhhcaQU3YD30Oz0VAeDEp+/P7WC/eo65Z+dfGXfpkz1VOTPSW9zDtWnVHoLHGTHwoQHf7QD9VihWECOcL/7DX004sl5olSnxqUCQUvdi6zPnWo/cYQNlNprkZJnW5aHVy8mixPRnm/lKBIrC3/E15WGEgJzxBl6MV4yWrwC/kWhO4SDT4cI7Z1v7LJps2yDucUNijehz5bcBYKKrupIbAiWB9Hjo7xisgHqjJU0onbjzUA+Q4E7p8J5vo7fyypndnlsTZeuSHjUSkCrUMVgV/sUuMfkYqHzeyAdsoMqtdO9RWuFvaXjwczvTHiqDZ7ZAmgRNHg4K9HPg47IZgkEw4M3zH6qnR2PIl6u085qXWMoCoc01NnEYkEU6zeRs5YFfx3RjDRrZd0HJtn/1AhxvS+AQ==
 X-Forefront-Antispam-Report:
-	CIP:164.130.1.59;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(23010399003)(36860700016)(7416014)(6133799003)(10067099003)(56012099006)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(1800799024)(82310400026)(36860700016)(6133799003)(10067099003)(56012099006)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	5KH9uAQla+03Eu+qUiC2BL3PlAfIPYiy1kkUvr2sP6Q8m9RfhXTYi8ao5iUM2Dq+CP9vXv0fVTLo9SnjzPibELxlt22tJWtfne+BtyRXOuFdxFOclBYNskREmYxysrZr7rSZAJuCBCsRJNLmS5uPvqgy86JJuzoxsj+1Mt1j4zoOeG4+KjTC5/JoAmXS1zmjwkknTdxUZqQXolRtWVg7WlcIrWIbAR3Lrnzae5eiuj49JhQfCM84itpZ1Ur4PzrNgIoSuRnjGi9af2RPx1LLdB08JHfOUkzEuEHurjQqYaaWuDceDHbYi/v7a24JA8GUdv9GFWJU5/RCADbkl7so457ikukRomtYB0Ea1ZHoDSAc+J4hEWZUkRUdbZPI/Jr02VQ7YZ0H6D4zqF+PVgJ63z9VjhTKlTFGyl/NvdlDEvZpgAhcUqY6qYpjhyrfGKIt
+	u6uTE80zxqjf6++sfRiu1N9ntW3QR9sEGlkm3dlCG7D6DY29MXwOKPz7vHJAT0G58g20dQjCEeTOQLBjnqai/73ZvKEY+h0EvNW1qGyQOZ/saphQGABSPc/bIPNEMxFppggQWCGw6aDu/IsAh6/VO78B4FwphuhQyKvWtK6A332soi4CvjTVBzKJt4NWUZfoqeWX2VwsYFfTL5Wo/3QkO5ZgZJ5nNGmS0c3o3RejayFKrdTtpeX+uDtiv7guwRHKT9RJftLje6mLOBmz0outPcGaxKj/wbeZrm2yiPZscdIRgVdDvGu2z9+Irf5OtRFgR1WY1lS+0LJNThhsHauBIJiFv5j7oslDh212GeCmsZEkWd9kDyaB7U8zUo8PgbiJAxnZ7vUYKsBthhVwd1OsW11Zp7r0Lrmuh1rmeKx6OXfPdBd+8JVXnHYi72Lvg+PL
 X-OriginatorOrg: foss.st.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 15:39:28.8424
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 15:39:29.6165
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5372faf3-bff5-49ee-cfe7-08df1988daf4
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4fad786-b74f-405f-9dec-08df1988db69
 X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.59];Helo=[smtpO365.st.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.60];Helo=[smtpO365.st.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MAD0EPF000008B2.eurprd04.prod.outlook.com
+	WA1PEPF000099CF.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB5PR10MB9193
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB7036
 
-Make the clock prescaler selection configurable, to prepare stm32mp2
-support.
-Reuse existing stm32f4_adc_clk_sel(). Rename it so it's no longer
-specific to stm32f4. Add configuration data to handle upcoming
-differences on:
-- registers and bits
-- division ratio
-No functional change intended.
+Add stm32mp23 and stm32mp25 compatibles. Three ADCs can be found on
+these SoCs, split into two blocks:
+- ADC1 and ADC2 are tightly coupled (common registers).
+- ADC3 is managed independently.
 
+Each ADC has:
+- 12-bits successive approximation analog-to-digital converter
+- up to 20 single ended or differential multiplexed channels
+- different trigger list, or internal channels interconnects, hence
+  add a dedicated compatible for each ADC1, ADC2 and ADC3.
+
+The trigger list varies in between the two SoCs. So add a compatible for
+each SoC/ADC child.
+
+STM32 ADC may be in a power domain: allow a single 'power-domains'.
+
+Restrict the last channel (19), as it is wired directly to ADC Vref+.
+It's meaningless to have direct measurement. Internal Vref with
+calibration data from bsec (nvmem) must be used instead e.g. vrefint.
+
+Restrict deprecated properties (st,adc-channels, st,adc-diff-channels,
+st,min-sample-time-nsecs).
+
+Co-developed-by: Cheick Traore <cheick.traore-ext@st.com>
+Signed-off-by: Cheick Traore <cheick.traore-ext@st.com>
+Co-developed-by: Olivier Moysan <olivier.moysan@foss.st.com>
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 ---
 Changes in v2:
-- new precursor patch as advised by Andy and Jonathan
-- unsigned prescaler array as advised by Andy
-- cosmetic: spaces before and after braces
+- Drop st,adc-trigger-sel: as discussed with Jonathan, better to
+  describe each ADC child with a dedicated compatible. It is robust
+  approach to distinguish variations in trigger list and internal
+  channels interconnects.
+- Drop unused fallback compatible.
 ---
- drivers/iio/adc/stm32-adc-core.c | 40 ++++++++++++++++++++++++++--------------
- 1 file changed, 26 insertions(+), 14 deletions(-)
+ .../devicetree/bindings/iio/adc/st,stm32-adc.yaml  | 71 ++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
-index a42d82d61cb8..14ed50bb3ab5 100644
---- a/drivers/iio/adc/stm32-adc-core.c
-+++ b/drivers/iio/adc/stm32-adc-core.c
-@@ -50,6 +50,8 @@
-  * @ovr_msk:    array of ovr (overrun flag) masks in csr for adc1..n
-  * @ier:	interrupt enable register offset for each adc
-  * @eocie_msk:	end of conversion interrupt enable mask in @ier
-+ * @presc_msk:	prescaler mask in ccr
-+ * @presc_shift: prescaler bit shift in ccr
-  */
- struct stm32_adc_common_regs {
- 	u32 csr;
-@@ -58,6 +60,8 @@ struct stm32_adc_common_regs {
- 	u32 ovr_msk[STM32_ADC_MAX_ADCS];
- 	u32 ier;
- 	u32 eocie_msk;
-+	u32 presc_msk;
-+	u32 presc_shift;
- };
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+index c4c4575d3fa9..e7e92fd4959a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+@@ -28,6 +28,8 @@ properties:
+       - st,stm32h7-adc-core
+       - st,stm32mp1-adc-core
+       - st,stm32mp13-adc-core
++      - st,stm32mp23-adc-core
++      - st,stm32mp25-adc-core
  
- struct stm32_adc_priv;
-@@ -66,6 +70,8 @@ struct stm32_adc_priv;
-  * struct stm32_adc_priv_cfg - stm32 core compatible configuration data
-  * @regs:	common registers for all instances
-  * @clk_sel:	clock selection routine
-+ * @presc:	clock prescaler array
-+ * @num_presc:	number of clock prescalers in presc array
-  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
-  * @ipid:	adc identification number
-  * @has_syscfg: SYSCFG capability flags
-@@ -75,6 +81,8 @@ struct stm32_adc_priv;
- struct stm32_adc_priv_cfg {
- 	const struct stm32_adc_common_regs *regs;
- 	int (*clk_sel)(struct platform_device *, struct stm32_adc_priv *);
-+	unsigned int *presc;
-+	unsigned int num_presc;
- 	u32 max_clk_rate_hz;
- 	u32 ipid;
- 	unsigned int has_syscfg;
-@@ -126,22 +134,22 @@ static struct stm32_adc_priv *to_stm32_adc_priv(struct stm32_adc_common *com)
- }
+   reg:
+     maxItems: 1
+@@ -78,6 +80,9 @@ properties:
+       Phandle to the vdd input voltage. It can be used to supply ADC analog
+       input switches on stm32mp1.
  
- /* STM32F4 ADC internal common clock prescaler division ratios */
--static int stm32f4_pclk_div[] = {2, 4, 6, 8};
-+static unsigned int stm32f4_pclk_div[] = { 2, 4, 6, 8 };
++  power-domains:
++    maxItems: 1
++
+   st,syscfg:
+     description:
+       Phandle to system configuration controller. It can be used to control the
+@@ -215,6 +220,33 @@ allOf:
+           maximum: 75000000
+           default: 75000000
  
- /**
-- * stm32f4_adc_clk_sel() - Select stm32f4 ADC common clock prescaler
-+ * stm32_adc_clk_sel() - Select stm32f4 ADC common clock prescaler
-  * @pdev: platform device
-  * @priv: stm32 ADC core private data
-  * Select clock prescaler used for analog conversions, before using ADC.
-  */
--static int stm32f4_adc_clk_sel(struct platform_device *pdev,
--			       struct stm32_adc_priv *priv)
-+static int stm32_adc_clk_sel(struct platform_device *pdev,
-+			     struct stm32_adc_priv *priv)
- {
- 	unsigned long rate;
- 	u32 val;
- 	int i;
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - st,stm32mp23-adc-core
++              - st,stm32mp25-adc-core
++
++    then:
++      properties:
++        clocks:
++          maxItems: 1
++
++        clock-names:
++          const: adc
++
++        interrupts:
++          items:
++            - description: interrupt line for ADC1 or ADC3
++            - description: interrupt line for ADC2
++          minItems: 1
++
++        st,max-clk-rate-hz:
++          minimum: 700000
++          maximum: 70000000
++          default: 70000000
++
+ additionalProperties: false
  
--	/* stm32f4 has one clk input for analog (mandatory), enforce it here */
-+	/* This ADC has one clk input for analog (mandatory), enforce it here */
- 	if (!priv->aclk) {
- 		dev_err(&pdev->dev, "No 'adc' clock found\n");
- 		return -ENOENT;
-@@ -153,20 +161,20 @@ static int stm32f4_adc_clk_sel(struct platform_device *pdev,
- 		return -EINVAL;
- 	}
+ required:
+@@ -244,6 +276,12 @@ patternProperties:
+           - st,stm32h7-adc
+           - st,stm32mp1-adc
+           - st,stm32mp13-adc
++          - st,stm32mp23-adc1
++          - st,stm32mp23-adc2
++          - st,stm32mp23-adc3
++          - st,stm32mp25-adc1
++          - st,stm32mp25-adc2
++          - st,stm32mp25-adc3
  
--	for (i = 0; i < ARRAY_SIZE(stm32f4_pclk_div); i++) {
--		if ((rate / stm32f4_pclk_div[i]) <= priv->max_clk_rate)
-+	for (i = 0; i < priv->cfg->num_presc; i++) {
-+		if ((rate / priv->cfg->presc[i]) <= priv->max_clk_rate)
- 			break;
- 	}
--	if (i >= ARRAY_SIZE(stm32f4_pclk_div)) {
-+	if (i >= priv->cfg->num_presc) {
- 		dev_err(&pdev->dev, "adc clk selection failed\n");
- 		return -EINVAL;
- 	}
+       reg:
+         description: |
+@@ -486,6 +524,39 @@ patternProperties:
+               maxItems: 19
+               items:
+                 minimum: 40
++
++      - if:
++          properties:
++            compatible:
++              contains:
++                enum:
++                  - st,stm32mp23-adc1
++                  - st,stm32mp23-adc2
++                  - st,stm32mp23-adc3
++                  - st,stm32mp25-adc1
++                  - st,stm32mp25-adc2
++                  - st,stm32mp25-adc3
++
++        then:
++          properties:
++            reg:
++              enum:
++                - 0x0
++                - 0x100
++
++            interrupts:
++              minimum: 0
++              maximum: 1
++
++            assigned-resolution-bits:
++              enum: [6, 8, 10, 12]
++              default: 12
++
++            channel@19: false
++            st,adc-channels: false
++            st,adc-diff-channels: false
++            st,min-sample-time-nsecs: false
++
+     additionalProperties: false
  
--	priv->common.rate = rate / stm32f4_pclk_div[i];
--	val = readl_relaxed(priv->common.base + STM32F4_ADC_CCR);
--	val &= ~STM32F4_ADC_ADCPRE_MASK;
--	val |= i << STM32F4_ADC_ADCPRE_SHIFT;
--	writel_relaxed(val, priv->common.base + STM32F4_ADC_CCR);
-+	priv->common.rate = rate / priv->cfg->presc[i];
-+	val = readl_relaxed(priv->common.base + priv->cfg->regs->ccr);
-+	val &= ~priv->cfg->regs->presc_msk;
-+	val |= i << priv->cfg->regs->presc_shift;
-+	writel_relaxed(val, priv->common.base + priv->cfg->regs->ccr);
- 
- 	dev_dbg(&pdev->dev, "Using analog clock source at %ld kHz\n",
- 		priv->common.rate / 1000);
-@@ -314,6 +322,8 @@ static const struct stm32_adc_common_regs stm32f4_adc_common_regs = {
- 	.ovr_msk = { STM32F4_OVR1, STM32F4_OVR2, STM32F4_OVR3 },
- 	.ier = STM32F4_ADC_CR1,
- 	.eocie_msk = STM32F4_EOCIE,
-+	.presc_msk = STM32F4_ADC_ADCPRE_MASK,
-+	.presc_shift = STM32F4_ADC_ADCPRE_SHIFT,
- };
- 
- /* STM32H7 common registers definitions */
-@@ -850,7 +860,9 @@ static DEFINE_RUNTIME_DEV_PM_OPS(stm32_adc_core_pm_ops,
- 
- static const struct stm32_adc_priv_cfg stm32f4_adc_priv_cfg = {
- 	.regs = &stm32f4_adc_common_regs,
--	.clk_sel = stm32f4_adc_clk_sel,
-+	.clk_sel = stm32_adc_clk_sel,
-+	.presc = stm32f4_pclk_div,
-+	.num_presc = ARRAY_SIZE(stm32f4_pclk_div),
- 	.max_clk_rate_hz = 36000000,
- 	.num_irqs = 1,
- 	.num_adcs = 3,
+     required:
 
 -- 
 2.43.0
