@@ -1,59 +1,54 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77FEF33F58B;
-	Thu, 24 Sep 2026 14:21:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16F5B3CE495;
+	Thu, 24 Sep 2026 14:38:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790259682; cv=none; b=meOz5dV/sWwN0Yfssy7udTz+sELM54VltmsJPIbbLc0gUAauEU5SbE1Otemc95gUZbfZ98Oj32aQvm8g1Oa1ywl1Vn1A3WleV+IGXkznNVYcnQTRFwoO3Tn9r8O0Laf3B6rJwRNs4OR5n/J747jV0V+sWUDaZDZcu07lT32bfsQ=
+	t=1790260696; cv=none; b=dwJ2/+W7r+f5UoNfE1CVMLeS4wHf8H2P13OrAFrT4X+OrtoNQiF3ubbjQoFo+3KjjfmjXubkEdo2L0x0Kh03qcFwQxIR0iv6pVoiQUO4s2vIdPk6/wR+xjgzG0emzRFlUzetwSaFPJRbUuY8eLuTEFciiKXQh6mzdwo2KqxUE98=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790259682; c=relaxed/simple;
-	bh=N6srY4tvep9PzCj7VVWtMGXcgA0WZ4BmNejD5Y2NvlU=;
+	s=arc-20240116; t=1790260696; c=relaxed/simple;
+	bh=VQWnshW7x5JKhHt60SoiR0TLDTR0iIuIQR1epXJ8brQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GQY/vrZvoH0Tdn7xwMqXTJ2mAZZTRda8GiR1PhSePlnP/YLg0mC5JYRzpXtM89D98VpqXXU7KyJAeC8QXXC67gVeetMGXVltEnpnM9Z2LOLMuG422MPkH7WbLe5ibV3Kh0oFGNds0Mhc0MkHXJjG+ANELlOaHW04+H/bwLP6elc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hGKA4T90; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=HbDaBO8TQM70cEwx7+ShOZFB3h6jbmW3ZCk/hP+UIvthvhDmSgdVTAoOLAY8fTjE0QV56twl+z5069cLNNJ0R2yIB080W8ErF3ApIo5/g0RGzqZjdmh10byN69l7f2z0k4TDVU61Gvyj54/4BQqYnrxEbqYedt0QZzQqfs+TH98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mJa0nT7M; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hGKA4T90"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790259679; x=1821795679;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=N6srY4tvep9PzCj7VVWtMGXcgA0WZ4BmNejD5Y2NvlU=;
-  b=hGKA4T90Y0OiWTaQcVHGmLXtJFyd1jknSqr8Dus/RvIfRCxEQTL/taX6
-   YAxGUZir4kuoxv3nu+B+KoCaJO9JAkUzGMWSoUkySoZFnWRJDtdzpuumw
-   M07AM+fxbpNEQsrc1J9quXMgB+FTc7biOVcmyKculABDinrMhkyDOXkcr
-   4clmV4YwfuldkvSfV9evLzR+SBzTbiwhf7NZYHn2MDPG71mJRrV9K/Kv6
-   o9UU2ekfiMoJuj0W7oyI28EjG2NmEAARH4CGkgruC7Slz+HBjtEA+nqp1
-   uqS3NjUI2N8lnQDIrFJX8U0V6nv6A3rh/zMNNzSkfBVkX6ya+JrErOgGP
-   A==;
-X-CSE-ConnectionGUID: vw0HE0vdRhyKIw2U6d2McQ==
-X-CSE-MsgGUID: QeTXgOkPSVi17rhEv4yHfw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="108526079"
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="108526079"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 07:21:19 -0700
-X-CSE-ConnectionGUID: BTmVa5GqQ6GTPSvZqY2qPw==
-X-CSE-MsgGUID: Stit2HCYQbibEfdyMATYOA==
-X-ExtLoop1: 1
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.199])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 07:21:16 -0700
-Date: Thu, 24 Sep 2026 17:21:14 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc: Gustavo Silva <gustavograzs@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mJa0nT7M"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CAF1F000FF;
+	Thu, 24 Sep 2026 14:38:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790260695;
+	bh=ldCUMl64vgCWY7zzR6Hp0M0K4EOVF52HaqQY1yiujP0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=mJa0nT7My79F5EEMeFkscYdM7Nb/TJxUl1Y0nTE1c6aC+DUjpzQ+T0NJu7FHm/zPh
+	 l/uNdJX5Z+k1XJpexQBKxOQ/M+n4qNg4+ZS5DPocJhpZ2M7HR2k6Cw+3LsPKgHqsF5
+	 pRHHw79MaJUPiHCa8Jz2ycJXOmVA+umfs3NThyrDcz30ndKLsbeD64gaDDC78NMmJe
+	 kkKMXzGoUDP1zysTp9QbVL1bhsO+tVdsa5neQBhUvK/19zIjs0c3GdogKeFHyg1i0d
+	 M/RyEl29DqtdjrU1Uq8TyBYw3MmB2z1cgIBfKv0U9i8ueZfYUA5UCVcTwkY68wZWN+
+	 fUS8v3NLd/qPg==
+Date: Thu, 24 Sep 2026 09:38:13 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Magnus Damm <magnus.damm@gmail.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
-	Peng Fan <peng.fan@nxp.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: ens160: use regmap_assign_bits() for
- conditional set/clear
-Message-ID: <arUx2r3swu5512Bd@ashevche-desk.local>
-References: <20260924083527.461864-1-peng.fan@oss.nxp.com>
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	linux-iio@vger.kernel.org,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-renesas-soc@vger.kernel.org,
+	Chris Paterson <Chris.Paterson2@renesas.com>,
+	Biju Das <biju.das@bp.renesas.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: iio: adc: renesas,rzg2l-adc: Make
+ '#io-channel-cells' required for R9A08G045
+Message-ID: <179026069285.4124788.11493153710746349553.robh@kernel.org>
+References: <20260911133653.115553-1-biju.das.jz@bp.renesas.com>
+ <20260911133653.115553-2-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,19 +57,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260924083527.461864-1-peng.fan@oss.nxp.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260911133653.115553-2-biju.das.jz@bp.renesas.com>
 
-On Thu, Sep 24, 2026 at 04:35:26PM +0800, Peng Fan (OSS) wrote:
 
-> Replace if/else block using regmap_set_bits()/regmap_clear_bits() with
-> the simpler regmap_assign_bits() call.
+On Fri, 11 Sep 2026 14:36:44 +0100, Biju Das wrote:
+> Add a conditional schema constraint so that '#io-channel-cells' is
+> required when the compatible string is "renesas,r9a08g045-adc".
+> 
+> This is required because the R9A08G045 ADC serves as an IIO provider,
+> allowing external hardware consumer nodes (such as the TSU) to reference
+> its individual channels. The '#io-channel-cells' property must be present
+> so consumers can correctly specify the channel index in their 'io-channels'
+> phandle property.
+> 
+> Fixes: a3152e5c742c ("dt-bindings: thermal: r9a08g045-tsu: Document the TSU unit")
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  .../devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml   | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
