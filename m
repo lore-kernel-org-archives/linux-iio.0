@@ -1,67 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8243D4156F0;
-	Thu, 24 Sep 2026 18:22:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355BE48CD59;
+	Thu, 24 Sep 2026 20:53:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790274134; cv=none; b=TItAoq5tDwIkQeAopUqbbt0tvZlzy2u4AfeamBizXHmAa+2p8tIxTATGD8kTaegB/5YCPWQSxEHKowM7ukK2ZKUmLvTVnfF3WSnZ1cNP918cjVxsrNB99zeJlC7wQYxGXa2bCQ/x2f1ATYJnR5MEGZVeixf74nzRXGEKdZihUk4=
+	t=1790283199; cv=none; b=cb6tUudruxEi1FzLDkIlTV+9eHJShX5IVDCIYEGFrLwApHn/vKieEggBkbX5p+hQDcFRiaib3V5wbU9hPI9dN3jwb5X1odiOm21Ww2kntHmqnv32PAM5wmfunfW9sA9MLIrzkA2tyKygeHFpWWMj6+1RygFtp0KspxzrCutvcHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790274134; c=relaxed/simple;
-	bh=q0eaopFOAWSDHlYn5l7W04BqZZoq89xUqr5KKrSkYNU=;
+	s=arc-20240116; t=1790283199; c=relaxed/simple;
+	bh=q7f2yxHXOO+EhXNPemNFyuYM9CjLPx5BB5xiwbdY6OM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LE4zM26JlNZOVCjN6KPhT8Hrku//NB8ABCSSNoq2JYaEdbojjjtdrU4nkSeDxk80px6lbuzVwu2Lq9IiW0MoDec2NJCW5YrW0QrEFtpZMjfw1dd2CEJhCBHk/EomjLjvn991gLRg9GKYO5hyBQVQaRWOidPPvd5rxukhqE/f/Fs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mMr+Qlgg; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Au7IgME0DlOHF3retiYaMzFxhNovdxY/davQNF7CrtOHMEipp4GCwdPWrlCYq/c8BFYYD++PA0nTHJxFh7iG2c/q0SAoyQZvKBlCe9AmC99mtmeG2lFgFxohImHvU7LhQzJpYRcdga/ginn4hRhbaQ+23LLecH6g42snmxKzGsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ifSiNXyS; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mMr+Qlgg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ifSiNXyS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790274132; x=1821810132;
+  t=1790283198; x=1821819198;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=q0eaopFOAWSDHlYn5l7W04BqZZoq89xUqr5KKrSkYNU=;
-  b=mMr+QlggIIIwPU46ryDcnyoGcNgQXviSUCsLRgSFOZkwUyCLbRVXpiBu
-   N/kT8aVHLUJFkuPTsC3607VoA/m1VWlrpsMSIUv/HPBKapu7rcEuxvg5z
-   TtDHdubn21VUv4jmdZCXHMzxQpHPRnxIO3dWMpwqRQVPemj8gglcDoIy1
-   ZFcx2jo8nKr2DocNrzEQiDnmlabac6yLSP1Mw9p8N461WiG9tWwY7HBht
-   vVJ834Ydffm1KwC+moUm6F2KX4rQYcMQa8wkKZGanfwTBtg3EuXI8Z9mr
-   /jIDqmkHySGGVs9MiSrKaPPcC01qFoQ1WlD1Ptjp+hawKs22PDsQr5hyR
-   w==;
-X-CSE-ConnectionGUID: rdFYylGeT5OTvd8ZTzFf0g==
-X-CSE-MsgGUID: q17vPr/PQguZAgwqQ0eOUw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="90120638"
+  bh=q7f2yxHXOO+EhXNPemNFyuYM9CjLPx5BB5xiwbdY6OM=;
+  b=ifSiNXySRWiCWymlaWHGll0pKh/uX48979N8MmgRdXiv0b9MKS8+2TtC
+   Rwcn0n0C6L9j00GrjwPypkMDedp5usujbmmW97l2r92tOJTMY5YCs72Um
+   aQixVIhQM3D1Ltv7eCje/XvFC0B8kPZFAsC8L9aH6epcqvvaSp99cOJeh
+   HiANmIpkqQCOoQqEPhVXaa4yfqe87Nd35eont8Eay09y/NMeJFfMwFG0P
+   mEFv7gp3HGzHCGvqIBhboxD7fzl4DAwZD3Et9X2kcaT2KkoeuPAyAs5y1
+   bupMylb73G/7YJlf37uOi8P3wpFEe2Z6hrkQbc8i5pra97DkJeOiCEE4d
+   Q==;
+X-CSE-ConnectionGUID: afeounszQgmxgChRCq07PQ==
+X-CSE-MsgGUID: AayKgZAqRkecjf+UYh9bMg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="89931406"
 X-IronPort-AV: E=Sophos;i="6.27,121,1787036400"; 
-   d="scan'208";a="90120638"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 11:22:12 -0700
-X-CSE-ConnectionGUID: FqnfOOLOShCzeYC9VC7EYQ==
-X-CSE-MsgGUID: Efw1IqdETSOW4aZzrApbKA==
+   d="scan'208";a="89931406"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 13:53:18 -0700
+X-CSE-ConnectionGUID: EySsJcHbR/KjdDu1GwigVQ==
+X-CSE-MsgGUID: D0+HtdKLSYm1S8nJAIwBVQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,121,1787036400"; 
-   d="scan'208";a="302034433"
+   d="scan'208";a="270620671"
 Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.199])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 11:22:07 -0700
-Date: Thu, 24 Sep 2026 21:22:05 +0300
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 13:53:14 -0700
+Date: Thu, 24 Sep 2026 23:53:12 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chang Yu <marcus.yu.56@gmail.com>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Shi Hao <i.shihao.999@gmail.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <arVqTWVw-eIZEcrR@ashevche-desk.local>
-References: <20260919235145.48273-1-marcus.yu.56@gmail.com>
- <20260919235145.48273-3-marcus.yu.56@gmail.com>
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Marek Vasut <marex@nabladev.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 05/14] iio: adc: stm32-adc: rework internal channels
+ data
+Message-ID: <arWNuD9apkeeT2Rd@ashevche-desk.local>
+References: <20260923-adc-stm32mp25-v1-v2-0-46bc019537c6@foss.st.com>
+ <20260923-adc-stm32mp25-v1-v2-5-46bc019537c6@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,73 +71,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260919235145.48273-3-marcus.yu.56@gmail.com>
+In-Reply-To: <20260923-adc-stm32mp25-v1-v2-5-46bc019537c6@foss.st.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Sep 19, 2026 at 04:51:45PM -0700, Chang Yu wrote:
-> Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
+On Wed, Sep 23, 2026 at 05:39:08PM +0200, Fabrice Gasnier wrote:
+> Diversity in internal channels data array lead to have zeroed data.
+> To facilitate addition of new internal channels, without touching
+> all array initializers, only focus on exiting channels on each
+> supported ADC variant (e.g. each SoC).
 > 
-> The AS7343 is a 14-channel spectral sensor featuring 11 visible
-> channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
-> flicker detection channel.
+> This also allows to get rid of static_assert() checks.
 > 
-> The driver exposes 12 spectral channels (11 visible light and 1
-> near-infrared) via sysfs. Runtime PM is implemented to stop
-> measurements when the device is suspended or torn down. Power is
-> never cut (PON=1 always) to preserve register values.
-> 
-> Future patches will add configurable gain and integration time,
-> interrupt support, buffered reads, VIS channel, and flicker
-> detection.
+> No functional change intended.
+> Cosmetic update: remove comma on STM32_ADC_INT_CH_NB as it should
+> always be the last element.
 
-...
+Yes, but...
 
-> +#include <linux/build_bug.h>
+> -static const unsigned int stm32_adc_min_ts_h7[] = { 0, 0, 0, 4300, 9000 };
+> -static_assert(ARRAY_SIZE(stm32_adc_min_ts_h7) == STM32_ADC_INT_CH_NB);
+> +static const unsigned int stm32_adc_min_ts_h7[STM32_ADC_INT_CH_NB] = {
+> +	[STM32_ADC_INT_CH_VREFINT] = 4300,
+> +	[STM32_ADC_INT_CH_VBAT] = 9000
 
-This is unusual to meet...
+...you should have it when it's not a terminator entry. Here is the case when
+it's not a terminator, neither in other similar cases below.
 
-...
-
-> +static inline u8 as7343_atime_steps(unsigned int step)
-> +{
-> +	BUILD_BUG_ON(step < 1 || step > 256);
-
-How is this any useful? The step == 1 gives the result 0, the step 256,
-255 respectively. This covers the whole range of the returned variable
-(u8).
-
-> +	return step - 1;
-> +}
-> +
-> +static inline u16 as7343_astep_x2780ns(unsigned int n)
-> +{
-> +	BUILD_BUG_ON(n < 1 || n > 65535);
-> +	return n - 1;
-> +}
-
-Ditto.
-
-...
-
-TL;DR: I do not see anything meaningful from these BUILD_BUG_ON():s.
-It's not a problem if the result gives just wrapped-up value. Or is it?
-
-...
-
-> +static int as7343_read_label(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, char *label)
-> +{
-> +	int channel = chan->channel;
-
-Why signed?
-Also split assignment, it will make code more maintainable.
-
-> +	if (channel < 0 || channel >= ARRAY_SIZE(as7343_channel_labels))
-> +		return -EINVAL;
-> +
-> +	return sysfs_emit(label, "%s\n", as7343_channel_labels[channel]);
-> +}
+> +};
 
 -- 
 With Best Regards,
