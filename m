@@ -1,218 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 338F93F7877;
-	Thu, 24 Sep 2026 16:43:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8243D4156F0;
+	Thu, 24 Sep 2026 18:22:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790268208; cv=none; b=BVXZ+6uAP6y87v4iMoLJpbhMdyqau78ptafhuojCaK+OxrXUXdlT4uib3wbCAVcJanh2wOiwLGQRJ4veDUjqG4pJWZ+4UH2CA3cnhACPh2b3pt9KPkfUV5r+tkXoRIw9zeB6DbOzgX//6ZEz356LnqEjX/jrm+82C5c4llpLya4=
+	t=1790274134; cv=none; b=TItAoq5tDwIkQeAopUqbbt0tvZlzy2u4AfeamBizXHmAa+2p8tIxTATGD8kTaegB/5YCPWQSxEHKowM7ukK2ZKUmLvTVnfF3WSnZ1cNP918cjVxsrNB99zeJlC7wQYxGXa2bCQ/x2f1ATYJnR5MEGZVeixf74nzRXGEKdZihUk4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790268208; c=relaxed/simple;
-	bh=wdfoa2fFD1Ldu2rxTdXlcxcOl1ZtZVdRX+3itKuRkeI=;
+	s=arc-20240116; t=1790274134; c=relaxed/simple;
+	bh=q0eaopFOAWSDHlYn5l7W04BqZZoq89xUqr5KKrSkYNU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R5T8vXxmHKDXjZj0k3YJWJC8iRIX/8jLHXXOWi1qFxj1xWfZePiq38XLnzVSVnH713ARKkbt6k7RezU3GyPGJ/aU/kk+5jywAaYk+n72yQARUYLZ9Q0pcIOFxENohZ4SJGyfYY3JMBjPYepnWGLzZnIDc52ZCDZSPm7PUkGhTZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fiY9qGl8; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=LE4zM26JlNZOVCjN6KPhT8Hrku//NB8ABCSSNoq2JYaEdbojjjtdrU4nkSeDxk80px6lbuzVwu2Lq9IiW0MoDec2NJCW5YrW0QrEFtpZMjfw1dd2CEJhCBHk/EomjLjvn991gLRg9GKYO5hyBQVQaRWOidPPvd5rxukhqE/f/Fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mMr+Qlgg; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fiY9qGl8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D91FB1F000FF;
-	Thu, 24 Sep 2026 16:43:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790268207;
-	bh=eeOMAfZ7gGE2yjVP9uWGI7wCNSoOiQ6bsy6YThTfOk8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=fiY9qGl8dQ1VqZKKOjzg1yEChk436T4Mvo5vuja/CbJ0f/MJ5MbERsE1DC2mqMVL7
-	 rE99QVxzvfJEzt0pPBNkEfMJQWONWzfHtD/+oGROsbUEjWEL1bAu0sqpLjKjIE0l7l
-	 cqJA7s2H1lGPaARXtW5ZFxbKYZ0mi5Q0+NygDaK926t74YMDsVdT/G4JgqPjiAu50V
-	 Ueft42wAh/M1ycBSo5lcVPkaVjqdF8V6vn5fmFpvYMogCM7Rmv3qw0XHWbKtWFuaKA
-	 evPyXfZLzOT17tMCb0aQR0R64jmZF7g6YnXfU5N+Zk0rgt/vO9RFwFyEZXq/KiXmkX
-	 kSBrKIcgidGSw==
-Date: Thu, 24 Sep 2026 17:43:22 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Neil Armstrong <neil.armstrong@linaro.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mMr+Qlgg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790274132; x=1821810132;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=q0eaopFOAWSDHlYn5l7W04BqZZoq89xUqr5KKrSkYNU=;
+  b=mMr+QlggIIIwPU46ryDcnyoGcNgQXviSUCsLRgSFOZkwUyCLbRVXpiBu
+   N/kT8aVHLUJFkuPTsC3607VoA/m1VWlrpsMSIUv/HPBKapu7rcEuxvg5z
+   TtDHdubn21VUv4jmdZCXHMzxQpHPRnxIO3dWMpwqRQVPemj8gglcDoIy1
+   ZFcx2jo8nKr2DocNrzEQiDnmlabac6yLSP1Mw9p8N461WiG9tWwY7HBht
+   vVJ834Ydffm1KwC+moUm6F2KX4rQYcMQa8wkKZGanfwTBtg3EuXI8Z9mr
+   /jIDqmkHySGGVs9MiSrKaPPcC01qFoQ1WlD1Ptjp+hawKs22PDsQr5hyR
+   w==;
+X-CSE-ConnectionGUID: rdFYylGeT5OTvd8ZTzFf0g==
+X-CSE-MsgGUID: q17vPr/PQguZAgwqQ0eOUw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="90120638"
+X-IronPort-AV: E=Sophos;i="6.27,121,1787036400"; 
+   d="scan'208";a="90120638"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 11:22:12 -0700
+X-CSE-ConnectionGUID: FqnfOOLOShCzeYC9VC7EYQ==
+X-CSE-MsgGUID: Efw1IqdETSOW4aZzrApbKA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,121,1787036400"; 
+   d="scan'208";a="302034433"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.199])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 11:22:07 -0700
+Date: Thu, 24 Sep 2026 21:22:05 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chang Yu <marcus.yu.56@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: add: document the MAX34417
- Four-Channel High Dynamic Range Power Accumulator
-Message-ID: <20260924-circling-punk-e75ea71e60b0@spud>
-References: <20260924-topic-sm8x50-iio-max34417-adc-v2-0-9a0609e72f5c@linaro.org>
- <20260924-topic-sm8x50-iio-max34417-adc-v2-1-9a0609e72f5c@linaro.org>
+	Conor Dooley <conor+dt@kernel.org>,
+	Shi Hao <i.shihao.999@gmail.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] iio: light: add AS7343 multi-spectral sensor
+ driver
+Message-ID: <arVqTWVw-eIZEcrR@ashevche-desk.local>
+References: <20260919235145.48273-1-marcus.yu.56@gmail.com>
+ <20260919235145.48273-3-marcus.yu.56@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="kJO3RZKdI1PbxmPX"
-Content-Disposition: inline
-In-Reply-To: <20260924-topic-sm8x50-iio-max34417-adc-v2-1-9a0609e72f5c@linaro.org>
-
---kJO3RZKdI1PbxmPX
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20260919235145.48273-3-marcus.yu.56@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Sep 24, 2026 at 03:14:15PM +0200, Neil Armstrong wrote:
-> Document the Maxim MAX34417 Four-Channel High Dynamic Range Power
-> Accumulator used to monitor power consumption of portable systems.
->=20
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
->  .../bindings/iio/adc/maxim,max34417.yaml           | 100 +++++++++++++++=
-++++++
->  1 file changed, 100 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max34417.yam=
-l b/Documentation/devicetree/bindings/iio/adc/maxim,max34417.yaml
-> new file mode 100644
-> index 000000000000..058af61cc04e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max34417.yaml
-> @@ -0,0 +1,100 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/maxim,max34417.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Maxim MAX34417 Four-Channel High Dynamic Range Power Accumulator
-> +
-> +maintainers:
-> +  - Neil Armstrong <neil.armstrong@linaro.org>
-> +
-> +description: |
-> +  The MAX34417 is a specialized current and voltage monitor used to dete=
-rmine
-> +  power consumption of portable systems. The device has a very wide dyna=
-mic
-> +  range (20,000:1) that allows for the accurate measurement of power in =
-such
-> +  systems. The device is configured and monitored with a standard I2C/SM=
-Bus
-> +  serial interface. The unidirectional current sensor offers precision
-> +  high-side operation with a low full-scale sense voltage.
-> +
-> +  Specifications about the device can be found at:
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ma=
-x34417.pdf
-> +
-> +properties:
-> +  compatible:
-> +    const: maxim,max34417
+On Sat, Sep 19, 2026 at 04:51:45PM -0700, Chang Yu wrote:
+> Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
+> 
+> The AS7343 is a 14-channel spectral sensor featuring 11 visible
+> channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
+> flicker detection channel.
+> 
+> The driver exposes 12 spectral channels (11 visible light and 1
+> near-infrared) via sysfs. Runtime PM is implemented to stop
+> measurements when the device is suspended or torn down. Power is
+> never cut (PON=1 always) to preserve register values.
+> 
+> Future patches will add configurable gain and integration time,
+> interrupt support, buffered reads, VIS channel, and flicker
+> detection.
 
-ADI wants people to use their prefix for newly added devices,
-particularly if their release is after the maxim purchase.
+...
 
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +  reg:
-> +    maxItems: 1
+> +#include <linux/build_bug.h>
 
-Atypical ordering, usually reg is before these cells props.
+This is unusual to meet...
 
-> +
-> +  vdd-supply: true
-> +  vio-supply: true
-> +
-> +patternProperties:
-> +  "^channel@[0-3]$":
-> +    $ref: adc.yaml
-> +    type: object
-> +    description:
-> +      Represents the internal channels of the sensor.
-> +
-> +    properties:
-> +      reg:
-> +        items:
-> +          - minimum: 0
-> +            maximum: 3
-> +
-> +      label: true
+...
 
-This doesn't do anything, when you have unevalatedProperties: false.
-If these are the only valid properties, use additionalProperties: false
-instead. Otherwise, you can just remove this line.
+> +static inline u8 as7343_atime_steps(unsigned int step)
+> +{
+> +	BUILD_BUG_ON(step < 1 || step > 256);
 
-> +
-> +      shunt-resistor-micro-ohms:
-> +        description:
-> +          Value in micro Ohms of the shunt resistor connected between th=
-e RS+ and RS- inputs.
-> +        minimum: 1000
-> +        maximum: 100000
-> +        default: 1000
-> +
-> +    required:
-> +      - reg
-> +
-> +    unevaluatedProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
+How is this any useful? The step == 1 gives the result 0, the step 256,
+255 respectively. This covers the whole range of the returned variable
+(u8).
 
-Typically in IIO, supplies are made required unless the device can
-operate without them.
+> +	return step - 1;
+> +}
+> +
+> +static inline u16 as7343_astep_x2780ns(unsigned int n)
+> +{
+> +	BUILD_BUG_ON(n < 1 || n > 65535);
+> +	return n - 1;
+> +}
 
-Cheers,
-Conor.
+Ditto.
 
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        sensor@10 {
-> +              compatible =3D "maxim,max34417";
-> +              reg =3D <0x10>;
-> +
-> +              #address-cells =3D <1>;
-> +              #size-cells =3D <0>;
-> +
-> +              channel@0 {
-> +                  reg =3D <0>;
-> +                  label =3D "ch0";
-> +                  shunt-resistor-micro-ohms =3D <5000>;
-> +              };
-> +
-> +              channel@1 {
-> +                  reg =3D <1>;
-> +                  label =3D "ch1";
-> +             };
-> +
-> +              channel@2 {
-> +                  reg =3D <2>;
-> +             };
-> +        };
-> +    };
->=20
-> --=20
-> 2.34.1
->=20
+...
 
---kJO3RZKdI1PbxmPX
-Content-Type: application/pgp-signature; name=signature.asc
+TL;DR: I do not see anything meaningful from these BUILD_BUG_ON():s.
+It's not a problem if the result gives just wrapped-up value. Or is it?
 
------BEGIN PGP SIGNATURE-----
+...
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCarVTKgAKCRB4tDGHoIJi
-0juJAQD+gZ7xrihX290uJSi/Goa9Sgv8OFftmneSvBsYIYzKmgEArTFrIH5WBmbD
-RBAy2vdynMSVd7ziB1yw6RtJhcSsrwo=
-=MH1t
------END PGP SIGNATURE-----
+> +static int as7343_read_label(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan, char *label)
+> +{
+> +	int channel = chan->channel;
 
---kJO3RZKdI1PbxmPX--
+Why signed?
+Also split assignment, it will make code more maintainable.
+
+> +	if (channel < 0 || channel >= ARRAY_SIZE(as7343_channel_labels))
+> +		return -EINVAL;
+> +
+> +	return sysfs_emit(label, "%s\n", as7343_channel_labels[channel]);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
