@@ -1,384 +1,90 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFD0C47F3C0;
-	Thu, 24 Sep 2026 12:59:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6BBC473C64;
+	Thu, 24 Sep 2026 13:03:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790254788; cv=none; b=Ed9jo44EOomTKg063Lt7yNf8L5UKrOk0eGUkHoVBI0BDkHpj563ahHzK+guO81s0fJPj7SDHSP7+4HuVSd4JSXp+8Qc84jTc9G/rUvi5t4uXRK/NAHigtHX94pCAb9wzE79+rKi92uwGbeG3s8Qf7Hy+X6lfg6DuVTbdL7jEUqc=
+	t=1790255022; cv=none; b=MbggQ9fToxlp30QpTaEksudGguXXkdocOpXGUoaDBF2GZ4BIYreMZVssONTu37awUTJzVIjF5247Oe+jPcDsrjWl60UdbJk6TqC9uyqYXUaoVldA9eJpzbBc1teZnhfKHiSsv0G+m+2R/0Uw7aRPl7A9ea+mpo5LP4cKLZ6tp0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790254788; c=relaxed/simple;
-	bh=acUL/CcC7KE1IDiRXLEfBcTJXBXILIApK2E6Dz8MP1c=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=X9WvtkeMmGVvLz6zCU3WDMuNcIZB1lxUUfUbPRVfKyQbEE0Ne77c8vFqRMHaGTB7hLxMvXI1CaTC/7CUq8EqLDh85k6Qb1pO69cHpEyVsJUbE/yiupXjQ1UI6q9wvurvnlOvYVzMz4KgX5+YkSjaQzxLkYj4QFsLJkr2WQzpT3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=dBe+lS7A; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1790255022; c=relaxed/simple;
+	bh=yaEI7bUkT2kPbqMJzYaqqlf866wGtg97g7OCrkKhcZY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gPkqtxtZswGGzAq4zlmktEY8vCanUTTg0xrBKxbzpJ3eYUZ9z51+Ou6cfv+kuPd+89JgWvEmI0CgooXozBQ1mS9fBlE9zg7ZS1VQzE147LvssM9de7opvSYuaAkwkOtT3H6ixrHm93eBFx1bmukIJT+6rsmPBxpz4zZIyFAg2dM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DsqS479B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="dBe+lS7A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1790254785; x=1821790785;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=acUL/CcC7KE1IDiRXLEfBcTJXBXILIApK2E6Dz8MP1c=;
-  b=dBe+lS7AcfjfF6xAvu4OEO84ZT2wElSj7gmKQ3CSmI5HTeD3DAjl3ouD
-   1iGSHZ6/+F9CX1QE6QpTFBNtaE4AMuRxWBuOPDijxEyr9HCzBteZbIDbs
-   15+qB4VhbZ+hqWAkZDqWl5Nvw97XdTBqiVifuXWHSn6DrHe9KMMWV0P6v
-   aBLgUTKbwmdz3zitfGsnKk6Zx6TyXwhd67jP8fFNOOpe3E/AZf4QL5gPr
-   3lYTjHLNwmX5Eqn5xt6bsoj41qEgsm6qBtlqRzOPxIdTb2TR0fuuK8bzC
-   iDQqOpuc5EHBPKo0Aq3V9XLpLPzi1cyAPQAWj30cqxY8CKawnctqOGd+3
-   g==;
-X-CSE-ConnectionGUID: MRJLVakFQcGIU8pzXEzEKQ==
-X-CSE-MsgGUID: Tgtby6N0SoyeG7iQaS7GKw==
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="63151069"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 05:59:38 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex1.mchp-main.com (10.10.87.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.49; Thu, 24 Sep 2026 05:59:38 -0700
-Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Thu, 24 Sep 2026 05:59:35 -0700
-From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Thu, 24 Sep 2026 15:59:22 +0300
-Subject: [PATCH v8 4/5] dt-bindings: iio: dac: add support for MCP48FEB02
- SPI
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DsqS479B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDD091F000FF;
+	Thu, 24 Sep 2026 13:03:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790255017;
+	bh=Am7+MiZmIsSuyEa1RB59QI6cb2yHg7tmLMNWzm1b5LE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=DsqS479B+enA9wts2BNbRFQ12rEWCl9+jtRfsV+yCzfFDgJsChlmpYk5JNvlPgGlv
+	 aY/S4E7JP3SRNgQUp++BVUL2Nj/+Meeftem9WaJrB/8vJfeI4QxQKBG9/BacPURw3X
+	 T3ldTgOYmW7S1H6N9ylvQDnH+A9EcpWxwc7gQhMkRqo9fzEtGE69L7g2SqrcOGkw5D
+	 Tbfo1NUfeAnuzqKRRHEfZFd0G+LfTirdXMCgfu0L9FfppzxlFOtoE0XW1vuWmGKeEY
+	 kRb+WdlFh5RFXJp0ffjeQZKt18kN9v+kRDAEHZGLL4lb9kyoabCBadjKRLKhRNnIZr
+	 p0IoNYOoo52DA==
+Date: Thu, 24 Sep 2026 15:03:32 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] iio: pressure: add Sensirion SDP31 driver
+Message-ID: <20260924-gleeful-macho-seahorse-e4bdc2@quoll>
+References: <20260920164724.32019-1-m.abubakar365.ref@yahoo.com>
+ <20260920164724.32019-1-m.abubakar365@yahoo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260924-mcp47feb02_refactor-v8-4-17dc2ce3485e@microchip.com>
-References: <20260924-mcp47feb02_refactor-v8-0-17dc2ce3485e@microchip.com>
-In-Reply-To: <20260924-mcp47feb02_refactor-v8-0-17dc2ce3485e@microchip.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1790254762; l=15556;
- i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=acUL/CcC7KE1IDiRXLEfBcTJXBXILIApK2E6Dz8MP1c=;
- b=zHvQPF8JovlCVTfUgIeIwFYN1NqqfCXRni5hSgEzFF2FCJO9D/18bj3lBkBwT8ZTYVrPxRSVl
- qsI3LTV80b5ARiMi8lcgTM+uaLhroXXykFxNX16xv6qzvhYFLit8Wb4
-X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
- pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260920164724.32019-1-m.abubakar365@yahoo.com>
 
-Add the SPI MCP48FxBy1/2/4/8 part numbers, the spi-max-frequency property
-and a devicetree example for SPI usage to the existing binding.
+On Sun, Sep 20, 2026 at 09:47:22PM +0500, Muhammad Abu Bakar wrote:
+> This series adds support for the Sensirion SDP31 differential pressure
+> sensor, an I2C device that also reports temperature.
+> 
+> The SDP31 uses a completely different I2C command protocol from the
+> already supported SDP500 (command-triggered measurements with a per-word
+> CRC-8), so extending the sdp500 driver does not make sense. No compatible
+> parts from other vendors were found.
+> 
+> Patch 1 adds the device tree binding.
+> Patch 2 adds the IIO driver, which exposes differential pressure and
+> temperature channels and validates each measurement using the sensor's
+> CRC-8 checksum.
+> 
+> The driver was developed and tested on an SDP31 wired to the I2C bus of
+> a Raspberry Pi 4.
+> 
+> Changes since v1:
+> - Explain in this cover letter why a new driver is added instead of
+>   extending the sdp500 driver.
+> - dt-bindings: make vdd-supply required, and enable the regulator in the
+>   driver using devm_regulator_get_enable().
+> - Move the MAINTAINERS entry into the dt-bindings patch; the driver patch
+>   only adds its own file.
+> - Populate the CRC-8 table with DO_ONCE() to avoid a race between
+>   concurrent probes.
+> - Use devm_mutex_init() and take the lock inside sdp31_measure() using
+>   guard(mutex).
+> - Build the command with __be16/cpu_to_be16() and parse the reply with
+>   get_unaligned_be16().
+> - Use a named initializer in the i2c_device_id table.
+> - Minor cleanups: local struct device *dev, single-line dev_err_probe(),
+>   and a comment on the mutex.
+> 
+> v1: https://lore.kernel.org/linux-iio/20260919223650.13396-1-m.abubakar365@yahoo.com/
 
-Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
----
- .../bindings/iio/dac/microchip,mcp47feb02.yaml     | 221 ++++++++++++++++-----
- 1 file changed, 173 insertions(+), 48 deletions(-)
+Link does not work.
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-index d131f136bd15161666932261bcacd6d124b23ede..a86d094f0d4b54f9d9cc39fd54222f5968714668 100644
---- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47feb02.yaml
-@@ -4,58 +4,92 @@
- $id: http://devicetree.org/schemas/iio/dac/microchip,mcp47feb02.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Microchip MCP47F(E/V)B(0/1/2)(1/2/4/8) DAC with I2C Interface Families
-+title: Microchip MCP4(7/8)F(E/V)B(0/1/2)(1/2/4/8) DAC with I2C/SPI Interface Families
- 
- maintainers:
-   - Ariana Lazar <ariana.lazar@microchip.com>
- 
- description: |
--  Datasheet for MCP47FEB01, MCP47FEB11, MCP47FEB21, MCP47FEB02, MCP47FEB12,
--  MCP47FEB22 can be found here:
--    https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005375A.pdf
--  Datasheet for MCP47FVB01, MCP47FVB11, MCP47FVB21, MCP47FVB02, MCP47FVB12,
--  MCP47FVB22 can be found here:
--    https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005405A.pdf
--  Datasheet for MCP47FEB04, MCP47FEB14, MCP47FEB24, MCP47FEB08, MCP47FEB18,
--  MCP47FEB28, MCP47FVB04, MCP47FVB14, MCP47FVB24, MCP47FVB08, MCP47FVB18,
--  MCP47FVB28 can be found here:
--    https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP47FXBX48-Data-Sheet-DS200006368A.pdf
--
--  +------------+--------------+-------------+-------------+------------+
--  | Device     |  Resolution  |   Channels  | Vref number | Memory     |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FEB01 |     8-bit    |      1      |      1      |   EEPROM   |
--  | MCP47FEB11 |    10-bit    |      1      |      1      |   EEPROM   |
--  | MCP47FEB21 |    12-bit    |      1      |      1      |   EEPROM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FEB02 |     8-bit    |      2      |      1      |   EEPROM   |
--  | MCP47FEB12 |    10-bit    |      2      |      1      |   EEPROM   |
--  | MCP47FEB22 |    12-bit    |      2      |      1      |   EEPROM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FVB01 |     8-bit    |      1      |      1      |      RAM   |
--  | MCP47FVB11 |    10-bit    |      1      |      1      |      RAM   |
--  | MCP47FVB21 |    12-bit    |      1      |      1      |      RAM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FVB02 |     8-bit    |      2      |      1      |      RAM   |
--  | MCP47FVB12 |    10-bit    |      2      |      1      |      RAM   |
--  | MCP47FVB22 |    12-bit    |      2      |      1      |      RAM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FVB04 |     8-bit    |      4      |      2      |      RAM   |
--  | MCP47FVB14 |    10-bit    |      4      |      2      |      RAM   |
--  | MCP47FVB24 |    12-bit    |      4      |      2      |      RAM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FVB08 |     8-bit    |      8      |      2      |      RAM   |
--  | MCP47FVB18 |    10-bit    |      8      |      2      |      RAM   |
--  | MCP47FVB28 |    12-bit    |      8      |      2      |      RAM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FEB04 |     8-bit    |      4      |      2      |   EEPROM   |
--  | MCP47FEB14 |    10-bit    |      4      |      2      |   EEPROM   |
--  | MCP47FEB24 |    12-bit    |      4      |      2      |   EEPROM   |
--  |------------|--------------|-------------|-------------|------------|
--  | MCP47FEB08 |     8-bit    |      8      |      2      |   EEPROM   |
--  | MCP47FEB18 |    10-bit    |      8      |      2      |   EEPROM   |
--  | MCP47FEB28 |    12-bit    |      8      |      2      |   EEPROM   |
--  +------------+--------------+-------------+-------------+------------+
-+  Datasheets for MCP47F(E/V)B(0/1/2)(1/2/4/8) DAC with I2C Interface Families:
-+   Datasheet for MCP47FEB01, MCP47FEB02, MCP47FEB11, MCP47FEB12, MCP47FEB21,
-+   MCP47FEB22 can be found here:
-+     https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005375A.pdf
-+   Datasheet for MCP47FVB01, MCP47FVB02, MCP47FVB11, MCP47FVB12, MCP47FVB21,
-+   MCP47FVB22 can be found here:
-+     https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005405A.pdf
-+   Datasheet for MCP47FEB04, MCP47FEB08, MCP47FEB14, MCP47FEB18, MCP47FEB24,
-+   MCP47FEB28, MCP47FVB04, MCP47FVB08, MCP47FVB14, MCP47FVB18, MCP47FVB24,
-+   MCP47FVB28 can be found here:
-+     https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP47FXBX48-Data-Sheet-DS200006368A.pdf
-+   Datasheets for MCP48F(E/V)B(0/1/2)(1/2/4/8) DAC with SPI Interface Families:
-+   Datasheet for MCP48FEB01, MCP48FEB02, MCP48FEB11, MCP48FEB12, MCP48FEB21,
-+   MCP48FEB22 can be found here:
-+     https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005429B.pdf
-+   Datasheet for MCP48FVB01, MCP48FVB02, MCP48FVB11, MCP48FVB12, MCP48FVB21,
-+   MCP48FVB22 can be found here:
-+     https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005466A.pdf
-+   Datasheet for MCP48FEB04, MCP48FEB14, MCP48FEB24, MCP48FEB08, MCP48FEB18,
-+   MCP48FEB28, MCP48FVB04, MCP48FVB14, MCP48FVB24, MCP48FVB08, MCP48FVB18,
-+   MCP48FVB28 can be found here:
-+     https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP48FXBX4-8-Family-Data-Sheet-DS20006362A.pdf
-+
-+  +------------+--------------+-------------+-------------+------------+------------+
-+  | Device     |  Resolution  |   Channels  | Vref number |   Memory   | Interface  |
-+  |------------|--------------|-------------|-------------|------------|------------|
-+  | MCP47FEB01 |              |      1      |      1      |   EEPROM   |    I2C     |
-+  | MCP47FEB02 |              |      2      |      1      |   EEPROM   |    I2C     |
-+  | MCP47FEB04 |              |      4      |      2      |   EEPROM   |    I2C     |
-+  | MCP47FEB08 |     8-bit    |      8      |      2      |   EEPROM   |    I2C     |
-+  | MCP48FEB01 |              |      1      |      1      |   EEPROM   |    SPI     |
-+  | MCP48FEB02 |              |      2      |      1      |   EEPROM   |    SPI     |
-+  | MCP48FEB04 |              |      4      |      2      |   EEPROM   |    SPI     |
-+  | MCP48FEB08 |              |      8      |      2      |   EEPROM   |    SPI     |
-+  |------------|--------------|-------------|-------------|------------|------------|
-+  | MCP47FEB11 |              |      1      |      1      |   EEPROM   |    I2C     |
-+  | MCP47FEB12 |              |      2      |      1      |   EEPROM   |    I2C     |
-+  | MCP47FEB14 |              |      4      |      2      |   EEPROM   |    I2C     |
-+  | MCP47FEB18 |    10-bit    |      8      |      2      |   EEPROM   |    I2C     |
-+  | MCP48FEB11 |              |      1      |      1      |   EEPROM   |    SPI     |
-+  | MCP48FEB12 |              |      2      |      1      |   EEPROM   |    SPI     |
-+  | MCP48FEB14 |              |      4      |      2      |   EEPROM   |    SPI     |
-+  | MCP48FEB18 |              |      8      |      2      |   EEPROM   |    SPI     |
-+  |------------|--------------|-------------|-------------|------------|------------|
-+  | MCP47FEB21 |              |      1      |      1      |   EEPROM   |    I2C     |
-+  | MCP47FEB22 |              |      2      |      1      |   EEPROM   |    I2C     |
-+  | MCP47FEB24 |              |      4      |      2      |   EEPROM   |    I2C     |
-+  | MCP47FEB28 |    12-bit    |      8      |      2      |   EEPROM   |    I2C     |
-+  | MCP48FEB21 |              |      1      |      1      |   EEPROM   |    SPI     |
-+  | MCP48FEB22 |              |      2      |      1      |   EEPROM   |    SPI     |
-+  | MCP48FEB24 |              |      4      |      2      |   EEPROM   |    SPI     |
-+  | MCP48FEB28 |              |      8      |      2      |   EEPROM   |    SPI     |
-+  |------------|--------------|-------------|-------------|------------|------------|
-+  | MCP47FVB01 |              |      1      |      1      |   RAM      |    I2C     |
-+  | MCP47FVB02 |              |      2      |      1      |   RAM      |    I2C     |
-+  | MCP47FVB04 |              |      4      |      2      |   RAM      |    I2C     |
-+  | MCP47FVB08 |     8-bit    |      8      |      2      |   RAM      |    I2C     |
-+  | MCP48FVB01 |              |      1      |      1      |   RAM      |    SPI     |
-+  | MCP48FVB02 |              |      2      |      1      |   RAM      |    SPI     |
-+  | MCP48FVB04 |              |      4      |      2      |   RAM      |    SPI     |
-+  | MCP48FVB08 |              |      8      |      2      |   RAM      |    SPI     |
-+  |------------|--------------|-------------|-------------|------------|------------|
-+  | MCP47FVB11 |              |      1      |      1      |   RAM      |    I2C     |
-+  | MCP47FVB12 |              |      2      |      1      |   RAM      |    I2C     |
-+  | MCP47FVB14 |              |      4      |      2      |   RAM      |    I2C     |
-+  | MCP47FVB18 |    10-bit    |      8      |      2      |   RAM      |    I2C     |
-+  | MCP48FVB11 |              |      1      |      1      |   RAM      |    SPI     |
-+  | MCP48FVB12 |              |      2      |      1      |   RAM      |    SPI     |
-+  | MCP48FVB14 |              |      4      |      2      |   RAM      |    SPI     |
-+  | MCP48FVB18 |              |      8      |      2      |   RAM      |    SPI     |
-+  |------------|--------------|-------------|-------------|------------|------------|
-+  | MCP47FVB21 |              |      1      |      1      |   RAM      |    I2C     |
-+  | MCP47FVB22 |              |      2      |      1      |   RAM      |    I2C     |
-+  | MCP47FVB24 |              |      4      |      2      |   RAM      |    I2C     |
-+  | MCP47FVB28 |    12-bit    |      8      |      2      |   RAM      |    I2C     |
-+  | MCP48FVB21 |              |      1      |      1      |   RAM      |    SPI     |
-+  | MCP48FVB22 |              |      2      |      1      |   RAM      |    SPI     |
-+  | MCP48FVB24 |              |      4      |      2      |   RAM      |    SPI     |
-+  | MCP48FVB28 |              |      8      |      2      |   RAM      |    SPI     |
-+  +------------+--------------+-------------+-------------+------------+------------+
- 
- properties:
-   compatible:
-@@ -84,10 +118,37 @@ properties:
-       - microchip,mcp47feb08
-       - microchip,mcp47feb18
-       - microchip,mcp47feb28
-+      - microchip,mcp48feb01
-+      - microchip,mcp48feb02
-+      - microchip,mcp48feb04
-+      - microchip,mcp48feb08
-+      - microchip,mcp48feb11
-+      - microchip,mcp48feb12
-+      - microchip,mcp48feb14
-+      - microchip,mcp48feb18
-+      - microchip,mcp48feb21
-+      - microchip,mcp48feb22
-+      - microchip,mcp48feb24
-+      - microchip,mcp48feb28
-+      - microchip,mcp48fvb01
-+      - microchip,mcp48fvb02
-+      - microchip,mcp48fvb04
-+      - microchip,mcp48fvb08
-+      - microchip,mcp48fvb11
-+      - microchip,mcp48fvb12
-+      - microchip,mcp48fvb14
-+      - microchip,mcp48fvb18
-+      - microchip,mcp48fvb21
-+      - microchip,mcp48fvb22
-+      - microchip,mcp48fvb24
-+      - microchip,mcp48fvb28
- 
-   reg:
-     maxItems: 1
- 
-+  spi-max-frequency:
-+    maximum: 10000000
-+
-   "#address-cells":
-     const: 1
- 
-@@ -178,6 +239,21 @@ required:
-   - vdd-supply
- 
- allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            pattern: "^microchip,mcp48f[ev]b[0-2][1248]$"
-+    then:
-+      $ref: /schemas/spi/spi-peripheral-props.yaml#
-+      dependencies:
-+        spi-cpha: [ spi-cpol ]
-+        spi-cpol: [ spi-cpha ]
-+    else:
-+      properties:
-+        spi-max-frequency: false
-+        spi-cpha: false
-+        spi-cpol: false
-   - if:
-       properties:
-         compatible:
-@@ -189,6 +265,12 @@ allOf:
-               - microchip,mcp47fvb01
-               - microchip,mcp47fvb11
-               - microchip,mcp47fvb21
-+              - microchip,mcp48feb01
-+              - microchip,mcp48feb11
-+              - microchip,mcp48feb21
-+              - microchip,mcp48fvb01
-+              - microchip,mcp48fvb11
-+              - microchip,mcp48fvb21
-     then:
-       properties:
-         lat1-gpios: false
-@@ -211,6 +293,12 @@ allOf:
-               - microchip,mcp47fvb02
-               - microchip,mcp47fvb12
-               - microchip,mcp47fvb22
-+              - microchip,mcp48feb02
-+              - microchip,mcp48feb12
-+              - microchip,mcp48feb22
-+              - microchip,mcp48fvb02
-+              - microchip,mcp48fvb12
-+              - microchip,mcp48fvb22
-     then:
-       properties:
-         lat1-gpios: false
-@@ -233,6 +321,12 @@ allOf:
-               - microchip,mcp47feb04
-               - microchip,mcp47feb14
-               - microchip,mcp47feb24
-+              - microchip,mcp48feb04
-+              - microchip,mcp48feb14
-+              - microchip,mcp48feb24
-+              - microchip,mcp48fvb04
-+              - microchip,mcp48fvb14
-+              - microchip,mcp48fvb24
-     then:
-       patternProperties:
-         "^channel@[0-3]$":
-@@ -251,6 +345,12 @@ allOf:
-               - microchip,mcp47feb08
-               - microchip,mcp47feb18
-               - microchip,mcp47feb28
-+              - microchip,mcp48feb08
-+              - microchip,mcp48feb18
-+              - microchip,mcp48feb28
-+              - microchip,mcp48fvb08
-+              - microchip,mcp48fvb18
-+              - microchip,mcp48fvb28
-     then:
-       patternProperties:
-         "^channel@[0-7]$":
-@@ -272,7 +372,7 @@ allOf:
-       properties:
-         microchip,vref1-buffered: false
- 
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
-@@ -299,4 +399,29 @@ examples:
-             };
-         };
-     };
-+  - |
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        dac@0 {
-+          compatible = "microchip,mcp48feb02";
-+          reg = <0x0>;
-+          vdd-supply = <&vdac_vdd>;
-+          vref-supply = <&vref_reg>;
-+          spi-max-frequency = <10000000>;
-+
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+          channel@0 {
-+            reg = <0>;
-+            label = "Adjustable_voltage_ch0";
-+          };
-+
-+          channel@1 {
-+            reg = <0x1>;
-+            label = "Adjustable_voltage_ch1";
-+          };
-+        };
-+    };
- ...
-
--- 
-2.43.0
+Best regards,
+Krzysztof
 
