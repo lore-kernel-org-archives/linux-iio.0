@@ -1,141 +1,225 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A244078C6
-	for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 22:02:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1C4D41F349;
+	Thu, 24 Sep 2026 22:11:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790287362; cv=none; b=cNiMCepU9P980JcNMZ7cwAxzbH4tGJNr2nZhRXNLeLtpI3mz/jzEeOSBLKWzyHdR0inbv3auJ3sYVhD6QjbR0tCtsbmu6hXkYSBvtsEi+Ls+jHS3ZufuaXTf+sqRIlwBmFHXHrdFhDdleKy5PzvFJIv/jNkSmJLgM+wU6Rqpbas=
+	t=1790287902; cv=none; b=rqIlgKKHjIcx/2lqfZFT+hq3U97oBs1Pnz4hctV5NAOO0pS4nyAkalYRPp5vLfEhi0/PykUXRNylaS6vro+C4fBBRw0HpyaoyD/YYMbk372TJvBddzgsMlJYW9vbiH7T1Jl63njICPJfEvPk/VmFZvWW7/uHQpDLvKABbBdxHYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790287362; c=relaxed/simple;
-	bh=q9Q38rfwg+ndLuv/SnmRyYC3yPpGM/HR1YdJVhzn990=;
+	s=arc-20240116; t=1790287902; c=relaxed/simple;
+	bh=as72uMcCbD4JiFvSQaNcychQmcCTurW5nyfAJ5ediK4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dvD2glxBn23weP40NQxYvs0CM3b60Ycoq6pkMexAsKp7KI+lGmDHPonX46GjxO5JwIgO8psqMpe5DYP7b3C7Gm4oIXlVQE8JxA7hmaj3sswFKZtiZxBy5+kTuxOOAV6yjEKViUHASMTaFqwCpACGXEsg4GlW8+H4Ir6V/K7RaWk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bqI+X8F/; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=HwmJK3WIFYkNPo2XVMW2rhUMPy1i4L76MkHjC7kIv+Yyg5P8XbQI6WLUvBz/DHPzpmAxUTeDstROzdoP9DF53U7AQV9x3vfU9c4FcbCv5BvHN4KFsrDnSmAe9Am2ZBI/c2O2DPtYzqpLqspumve2B1QZ1Rrn1Es37aGbftxvvnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YW41R6az; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bqI+X8F/"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e6c0fce17so1580425e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 15:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790287360; x=1790892160; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=FxovyPH3Np+Hc1hy5wmf+7gNJx0ZGtqWMTp+L5wj2dg=;
-        b=bqI+X8F/fyJDveM3Xvepmg2A9EfwVsQcJ1tL21cPB+8suevU2IfBnNyqKB63QKmqPG
-         iLjKYCKMVM1zMS1PLI7dzQHRAEcItMoo96aiZGb73XJB3ihyEZhIeqFtJeCEzFgpx5QZ
-         MPEnClbBcDLU+G/UBXYK100F/hlfxSe4otpLOnv2e+3nc4iMme40+I2g0oC3+OZJfdj3
-         +ccUm1b71WPlsGsnnlvSxx1iiicJbbfk6MUAWN2192laisQfrTGus5VZdH5eVXYa7V4B
-         1e56AjdsYqxgDu7jLDYAv3uXGMIuOOXeptGcxlZE4Zr9f1ZCyLX844us/fn0LgGdKB73
-         5VfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790287360; x=1790892160;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=FxovyPH3Np+Hc1hy5wmf+7gNJx0ZGtqWMTp+L5wj2dg=;
-        b=0szumV0jfCXxA+b5JKTWQsKs3OO9lgp9077zviCapQAsxlZzRA077kIId1zFI9jOO+
-         WX6mJ1BXq99JZAN4tUS9TMOqSwoiusHo9UfGrzoXaB2tjo3rHBYNqt9AovSB6M8/Hswh
-         kantcTTcByAn9w6sdes5ZEuUH229HikDF28oDsp7NpZbl2vauVXtH2ojby9SFsRTV/xt
-         WQL91NnTesHOrTydPdBdCsO+5p0ZvTZJCOAgncob8tWLgVa2sPBIcf0k6f706+ZVj9L/
-         c5sPTNID1riVFZUyJvvkO9WaS0kdceVCIVOZzff56xNmUIirUCKHlk4a+l5O6HsPvgcB
-         pNKA==
-X-Forwarded-Encrypted: i=1; AKwUvBxOJtgJOavKYD/6H19We2njaO9c0BtAV+gph7oEzkPbAEpDzB2o/kMw8iYsx5O0SFJ/aIlgqTAF2cI=@vger.kernel.org
-X-Gm-Message-State: AFuF++mXjWAj90geNtuzJVJ0PqEztcAd9s2m+3zu7NgqvF9ORN3JnKhq
-	PyMXK7DlDpZXWrNkNH54ORoFwTtXTyDoIh1otj/ltttEOPyzYsSbgfNp
-X-Gm-Gg: AYBFou2xWqHMSsSzah++itxkzRgF0Llb2LhJyV80F1uSJ9hkkmBWS1kFdQsPYxQZ03N
-	EvJfOTG+ViTZTGUbyMFkxJdklwOatfk1yBieXw4lxb/UuBvjPwlcuzD8yn93WoYLRSuYbCga6YQ
-	Z8XdSQY8uRcYPMlBzwq043756gR7Z0OKGhtGduV6a+ddx0enWG1ZoQ+EPBOtPPhwqgZkKe+WU03
-	2aQj63FOsY2jbKi+z8ZD1W5INajXAkJ/+A+Ev9BzmZ5DsStAnZIA3sSC2qbvZEghcz1urUND+/t
-	8GlRLAMT1J8NpNPCRwjW6oQgVQgno3PLTiWImDsbV418XgIX5RXBnqD2LGm2SA9FZPUU1U8IaP4
-	FlkBk2Y9WgRX0axqmo+JvNTH/VMNJV8FMP9o7zM+YRjTa2jvEAPIByvTdS9CIyWYnYdNS0ehgEr
-	u5X0qn5IgVmlNFNfGbaNbO2CN4VAFfyfupitiTtEioH6b8YcMBz8aTnbof5yg=
-X-Received: by 2002:a05:600c:698e:b0:49c:fc6e:a3dc with SMTP id 5b1f17b1804b1-49fe66f1491mr70434555e9.27.1790287359476;
-        Thu, 24 Sep 2026 15:02:39 -0700 (PDT)
-Received: from gmail.com ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5dfa6a7sm154421105e9.12.2026.09.24.15.02.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Sep 2026 15:02:36 -0700 (PDT)
-Date: Fri, 25 Sep 2026 00:02:34 +0200
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-To: Chang Yu <marcus.yu.56@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Shi Hao <i.shihao.999@gmail.com>, Joshua Crofts <joshua.crofts1@gmail.com>, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <arWccqy8YlLJxeWA@gmail.com>
-References: <20260919235145.48273-1-marcus.yu.56@gmail.com>
- <20260919235145.48273-3-marcus.yu.56@gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YW41R6az"
+Received: by linux.microsoft.com (Postfix, from userid 1223)
+	id 22BFB20B7167; Thu, 24 Sep 2026 15:10:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 22BFB20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790287851;
+	bh=r3n8IcDEhgi+VEQtnJMrWd+GOlGZCNoe/fBGoTU0rkM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YW41R6azC4xYKKcnEtJJkEiFHG/tmwZMcdKv+DQcnTjv9Dmb4rhgfvVLnrVg80Ei6
+	 FAI63I7VWQFSfwHzIfBnWDX/uORWeG8i+fhrArgHwryFLCxjdPMSA3fvpRWp9m9O8g
+	 V+6A4YsyE4YnxBIc7Z7Mrkrs0N/JKwrXfUMzdZrE=
+Date: Thu, 24 Sep 2026 15:10:51 -0700
+From: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	y@linux.microsoft.com
+Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
+	linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
+	vitor.soares@toradex.com, samagazaryan@google.com,
+	gregkh@linuxfoundation.org, arnd@arndb.de,
+	boris.brezillon@collabora.com,
+	oleksandr.shulzhenko.viktorovych@intel.com,
+	tgopinath@linux.microsoft.com, corbet@lwn.net,
+	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
+	jorge.marques@analog.com, pgaj@cadence.com,
+	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
+	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
+	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
+	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
+	haren@linux.ibm.com, pasha.tatashin@soleen.com,
+	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
+	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
+	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
+	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
+	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux@analog.com, linux-iio@vger.kernel.org, andi.shyti@kernel.org
+Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
+ user-space access
+Message-ID: <20260924-db82fe4537102d1920dd09bc@linux.microsoft.com>
+References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
+ <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
+ <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
+ <20260916-454d66ca84cc91479b195aa5@linux.microsoft.com>
+ <aqt_dCazxTDR4cpk@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20260919235145.48273-3-marcus.yu.56@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aqt_dCazxTDR4cpk@ashevche-desk.local>
 
-On Sat, Sep 19, 2026 at 04:51:45PM -0700, Chang Yu wrote:
-> +static int as7343_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	struct as7343_data *data = iio_priv(indio_dev);
-> +	struct regmap *map = data->regmap;
-> +	struct device *dev = regmap_get_device(map);
-> +	unsigned int unused;
-> +	__le16 result;
-> +	int ret;
-> +
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW: {
-> +		/* Wait until integration time passes for all 3 cycles. */
-> +		msleep(160);
+On Thu, Sep 17, 2026 at 08:49:40AM +0300, Andy Shevchenko wrote:
+> On Wed, Sep 16, 2026 at 03:57:10PM -0700, Meagan Lloyd wrote:
+> > On Sat, Sep 12, 2026 at 04:34:01PM +0300, Andy Shevchenko wrote:
+> > > On Fri, Sep 11, 2026 at 02:09:35PM -0700, Meagan Lloyd wrote:
+> > > > The i3cdev driver is a character device driver that allows user-space
+> > > > to control and interact with I3C devices.
+> > > 
+> > > > Currently, it has the ability to perform Single Data Rate (SDR)
+> > > > transfers - basic reads/writes.
+> > > > 
+> > > > With the addition of sysfs driver_override, there is now a
+> > > > straightforward and direct way to match the i3cdev driver to any i3c
+> > > > device without stepping on the toes of more specialized drivers that are
+> > > > loaded automatically.
+> > > 
+> > > Is it safe? Why on the earth do we need this? The commit message has not enough
+> > > information.
+> > 
+> > I can't see a reason that it'd be unsafe. To give additional confidence,
+> > it's already in-use in many bus_types:
+> 
+> This argument has nothing to do with i³c. Each bus is different on a physical
+> layer, electrical protocols and programming flow. Each of them has own
+> constraints.
 
-three integration periods hardcoded next to a hardcoded integration
-time, so nothing keeps them in sync. make ATIME/ASTEP writable and the
-fixed wait no longer covers a readout. as73211, which this is based on,
-computes the timeout and polls NDATA. STATUS2 (0x90) bit 6 is AVALID is
-defined and never read, does it cover all three cycles? the datasheet
-does not say.
+My take is that if you're using the i3cdev module, it's up to the
+programmer to review schematics/datasheets to know how to program
+the hardware devices and bus (in the case of hubs) correctly.
 
-> +
-> +		/*
-> +		 * Reading ASTATUS latches all data registers to this read.
-> +		 * We don't care about the returned saturation/gain status for
-> +		 * now.
-> +		 */
-> +		guard(mutex)(&data->mutex);
-> +
-> +		ret = regmap_read(map, AS7343_ASTATUS_REG, &unused);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = regmap_bulk_read(map, chan->address,
-> +				       &result, sizeof(result));
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = le16_to_cpu(result);
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
---
-cheers, jose a. p-a
+Note, this thread's driver_override approach was not favored by the i3c
+subsystem reviewers, so please continue any further discussion in the
+prevailing approach's thread:
+https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.com/T/#mb42d9b2785f8508d39eaf782b3d29189226b8029
+
+> 
+> > To answer why we need it:
+> > If we want to write i3cdev as a standard device driver, it can't
+> > actually match anything by default. This is because, some devices on the
+> > system may need specific drivers and i3cdev is generic and should
+> > technically match every device.
+> 
+> Yes, but I have seen no reason why we should expose i³c bus to the user
+> space. With i²c we already know very well that it was (and still is)
+> a bad idea. Why i³c is better (especially taking into account i²c
+> compatible mode and more complex programming flow)?
+> 
+
+cc'ing Andy Shyti from I2C subsystem for context.
+
+Andy, we're considering an I3C character device driver interface.
+If you have any feedback from your experience with I2C, can you
+please share it in:
+https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.com/T/#mb42d9b2785f8508d39eaf782b3d29189226b8029
+
+> > Since the driver_override is default NULL and is set via sysfs, this
+> > allows any specific drivers on boot to be loaded up and would allow
+> > explicit control on what device i3cdev gets bound to.
+> > 
+> > This was my rational. I will refine the commit message with more details.
+> 
+> Put a real life example why the exposing i³c devices into user space is
+> absolutely necessary.
+
+I'm supporting a kernel running on accelerator cards that plug into
+various server SKUs where hubs/devices along the bus are not physically
+on the card & may differ across SKUs. So, I'm looking to program hubs
+flexibly and dynamically from userspace to setup bus hardware paths.
+
+The hub drivers being posted to i3c subsystem require hard-coding in the
+devicetree to setup the ports physically according to intended
+bus/hardware design. As mentioned, these cards will not know what SKU it
+will be plugged into, so the devicetree hard-coding cannot reasonably be
+determined ahead of time. Theoretically, you may be able to add some
+bootloader support to go query SKU information from other server
+components and then populate the devicetree for the kernel, but that
+will require heavy lifting and plumbing between other server firmware
+components and the bootloader.
+
+Further replies and discussion can be routed here:
+https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.com/T/#mb42d9b2785f8508d39eaf782b3d29189226b8029
+
+Thank you,
+Meagan
+> 
+> > > > This is accomplished by the i3cdev driver not having any entries in
+> > > > the i3c_device_id table. After boot, simply set the driver_override
+> > > > to "i3cdev" and bind the device manually via the sysfs bind knob.
+> > > > This can also be automated with udev rules as well.
+> > > > 
+> > > > The character device interface will be exposed at: /dev/bus/i3c/<bus
+> > > > id>-<Provisional ID>
+> 
+> ...
+> 
+> > > > +	for (int i = 0; i < metadata->nxfers; i++) {
+> > > 
+> > > Why is 'i' signed?
+> 
+> > Mostly for readability and to make sure the line length on loop headers
+> > is kept below 80 chars. As a precaution, to make sure that 'i' can
+> > represent any metadata->nxfers value without overflow during loops, I
+> > check that metadata->nxfers is less than/equal to INT_MAX in
+> > get_metadata().
+> 
+> No need to add useless checks.
+> 
+> ...
+> 
+> > > > +/** + * print_i3c_err() - Prints the I3C error encountered during
+> > > > the prior + * call to the core's transfer function.  + * @i3cdev:
+> > > > i3cdev_data object + * @metadata: Kernel's copy of i3cdev_xfers
+> > > > (ioctl I3CDEV_XFER input) + * @i3c_xfers: i3c_xfer array that was
+> > > > sent to the I3C core
+> > > 
+> > > > + * Returns: void
+> > > 
+> > > Huh?! Where is this coming from?
+> > 
+> > In i3cdev_ioctl_do_xfers, if i3c_device_do_xfers failed, I wanted to
+> > print out the first I3C controller error encountered. The controller
+> > drivers can set this in the i3c_xfer.err field. Hence this function.
+> > 
+> > It's to aid debugging and provide useful error information.
+> > I can certainly refine the wording on the print_i3c_err documentation
+> > header to make this more clear.
+> 
+> My point is about kernel-doc. Why do we need the return section for void?
+> Where it comes from?
+> 
+> > > > + */
+> 
+> ...
+> 
+> > > Please, rely less on AI and more on the common sense and
+> > > proof-reading.
+> 
+> > I think I gave you the wrong impression. The new contributions in this
+> > series were written and developed by me. I used AI for quality assurance
+> > and cross-referencing. Since I incorporated some AI-flagged suggestions,
+> > I tried to acknowledge that with the Assisted-by tag.
+> 
+> I see, then there is a room to improve the code. But the main question is
+> why do we even need this whole interface to begin with?
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+> 
+> -- 
+> linux-i3c mailing list
+> linux-i3c@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-i3c
