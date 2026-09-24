@@ -1,68 +1,68 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870C44A261C
-	for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 15:23:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8943C49BD9E
+	for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 15:25:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790263441; cv=none; b=NSRj7ke6Gf3CCKZ0UUDyPRpdvBSPOLwMiGCcukCa6zSoELc5BLAylAATtSjRROpFKkRLsC24TXctvc4SsbmG8Wa6Y60nVpAoT0qbMkvHk+IS80DjfUWTkn+Mvwvqe0mETHJOJlRu4TmLWUJvbl1oNQLytakh5mOsp8IlJd9nAJI=
+	t=1790263544; cv=none; b=Hit39ejbK9OdkqU3M+Dh3BMW3bUupKrwKYAsWLj7fBvMVt/KDhREZ4XQZInWiLubuUJm6SwXJ4J0zcCN+wwJIVAoiSbfEcZxZgijmHvVG19B1xx55zVO6fQpOS2DzI2dt9f5yynMRRzeShH7cuMxvXGHMnufKH0II/zIWYSt7gE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790263441; c=relaxed/simple;
-	bh=IzhOLVKsqwgB42QUPIej0sfnAYJnOXzy1Dnq+Xf7mcY=;
+	s=arc-20240116; t=1790263544; c=relaxed/simple;
+	bh=QUgI+N6cvHFqcWPrsjrCdXgxKDSlGHUCiUa89pcPZnY=;
 	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=AzbzLOqV5gW0PiuOjeWEtlFdu/mxc80JBjMIdv2uH32IZFK8MAFtYYUp/14+8ZaYqWiWIrI0h9RWW4Hd3XstsGz4fGtszu2ckZyUXnDdHcg3Mt0qtpwOu1l2buk4TZz3UqmKbothUHjqzjqOf50ESPG7eAjhIyeH2IAT2BIJVyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=isxjtbMs; arc=none smtp.client-ip=74.125.225.141
+	 In-Reply-To:Content-Type; b=Ac0iMmIen0LoKQ3+PbOz4sN3l4N9N2lI6P7KrPuIV2mM1GCo1gsDo0A4A1eX2Z07ympU/hu1oMWtItsoQLrTlJbg7inc/tvbOquAV75ZuCdqFrcQrWzz3ZCZJPd7ufhffyCfKnLiVAB5lXn2KjckHc9gd6t1pTBOa9zmqa/Zevw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QTlAPPVK; arc=none smtp.client-ip=74.125.225.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="isxjtbMs"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e71cdb22bso16573775e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 08:23:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QTlAPPVK"
+Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-48879d4fd8aso35017f8f.2
+        for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 08:25:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1790263435; x=1790868235; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1790263541; x=1790868341; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:organization
          :autocrypt:content-language:references:cc:to:subject:reply-to:from
          :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Q9PzBhkbr0buW5EMvI92IjryNXR5uhHKomis0hHXcI4=;
-        b=isxjtbMsEISrr+nOqIq5Va2JwJfaWovg8RwBXcuRRhTBnTTXvMGulrx3B0ec4vSnWV
-         REjAFnqZ86bxJMoSmAlpuRgTyanWxlqMQPGBvjmaV8n89J1PTWAk1FwgD7WJSfAUtBmY
-         1GG4rSkolBd7VwUbaktacRp5BhAO8wiAgiCPAeuyr0HgTzgwTnR0facmLpvSo4QOPN0G
-         7cmn7z4oCqjyZ1z3WRNIhT14IazTo20CWudQnE5B1D2pRhk82g8HKXmoVRyskiKcTFbz
-         HBt6WADyv0N+Rqa55h1VY6vhmMtu8Idls22Bhwyl3nq6T7qklApAIKzVWeByhDoSOtJS
-         N9+A==
+        bh=8cnDBSikRAsgHAsxFd+ggbMusWUaRFenMiRKU617Ngc=;
+        b=QTlAPPVKuamrJFAqYuF7s0QtyFm+6Gx1zL0rghV/Zv2CDE8DqfGgGKYlkOkD/6Npvz
+         0hAa+Sx1QwC+pePgYLJziW6svRnkPDT5XTrdpxJRbV1K+VEuxuQiQopEEKZmqX2nNa4J
+         LJ3gOsp2YECmgFZkhBQ2dhJBNYqJf8C1RRMe4+oqEm82A1Loc460sHwHtUtB24arwAJP
+         G1heeM/wbqHpULR0pFmfZ7szD8Y1eGr0JJCaZgTp8TDb3vUBPMJ1FJlSnlSVitIheREo
+         GLLsqpovtSBVmofqRpWLocc3DFCFEVxZo3mQSbMIWBJm6qUEahkfE6bQ15gnP+5PCnev
+         8Vkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790263435; x=1790868235;
+        d=1e100.net; s=20260707; t=1790263541; x=1790868341;
         h=content-transfer-encoding:content-type:in-reply-to:organization
          :autocrypt:content-language:references:cc:to:subject:reply-to:from
          :user-agent:mime-version:date:message-id:x-gm-gg:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Q9PzBhkbr0buW5EMvI92IjryNXR5uhHKomis0hHXcI4=;
-        b=EmfOgpAVbXe6J7/ccxO5Ao5XvE9MTVzms92SpSUWr09B64C70KcF9emuhlht5SIsLT
-         yMooI4uU87gvDV3aR8lKuSeyWrGjdaqs7vwiq/1xlrWSn3qR59s6PQdh1t7sq703Zhco
-         dF/EdrXiUvMesZr1J5XgUsCtzUR/Ub8BcrQJRtx1SWnOlI17g6YrT9w7pV4DMPmNijgv
-         EfUcTuqdL/1eyVcN9Z6Wmco5ffEHwzPAptVCcaUt+nqOlm39FBAa+L/Cwj2C1GL5xi0l
-         u6reJemHjpTplYo/CPNT2BfJLBRyDcF6s38P4jXVSr0h1ZlFQasP6mrj+vkwy/Gqaqse
-         Neqg==
-X-Forwarded-Encrypted: i=1; AKwUvBz7nbe5iWeat+WynEXV8AwbWV2Q6aUzxzk7uc+PVKgvVfg2CmnCOTlLbV+DDyn/SZFvXh7EqUO4I+M=@vger.kernel.org
-X-Gm-Message-State: AFuF++mQqMrtjOe5ZU1ONkGaFLflfxb+sMMSMSxwpzQqcb4NMfMSQ8p1
-	vPW3SeadtVssOTsGRnvae69SkmsC1JEBMRDlPqlX6pOwa2zkofNi71XMbwPZaw6nuRA=
-X-Gm-Gg: AYBFou1jX5GftvMakKAmulCwn54vrKoI/bQ6e7MCp5SgH8j53Xm3RKU5kCiYdOvHEx9
-	+/bCNVLOAkSCAH4IMihyaH2SNWsnk4wU3dHLqSOBEXFyTVPEbNxoT5MtvjS01WmmHXwywXX1dky
-	cWDhzcFj/SonGqvB+n0ZnKsI8sROeJqPZX8P7mD1n4aX5gmL36Rzr/mWV95pXnFldK39s4Tlg1Z
-	G0fFIqFgbXG1cNs5lCQlblfyegnW2Pa+XINfMiImGVvalUZ3OJ2g0CbhEHwsJl/x/mM3UmIfRdL
-	vd3J+jhfzjI8BV+cpsG/TSLC2Osa5BODQjruGhSjqZOEMYlsBTWBqEt6DiNSTz9C/NNiehUT1BO
-	vMa6YeioR7JoOPtk0mCdOyBjE2RMU6fkoriCMZF3WVcZwdpV39QU7zcllEiEpVEnIVxtG5Qcm+o
-	7ODVW8j/SfprxgFemILK08oYWFWAj8YxHQhftwD343HJl1xGCmW/eROMnEqY+ooRj+N1INoktBE
-	Pw3dHXAFMxJyGt3of0CIEc86LKvhBj1l68h+i7tPX86yYm4G7JwTA==
-X-Received: by 2002:a05:600c:4e86:b0:49c:dcec:bd27 with SMTP id 5b1f17b1804b1-49fe66cb868mr47177865e9.8.1790263434520;
-        Thu, 24 Sep 2026 08:23:54 -0700 (PDT)
+        bh=8cnDBSikRAsgHAsxFd+ggbMusWUaRFenMiRKU617Ngc=;
+        b=axqI65n4+VGPepK15rVuyKyFSDE7iXiaZap2aoT0OYUY3PDQHAL0tdXwmtxxFjYSTq
+         L4oYzNh5iYiuHXmKtcL6OBB9kahZwLoQdYN4L0+3vHjJkMHhBdagCCtyPvvOfZDhl4WR
+         xrZ/Qi7rBdZ4PEsKcOSxnVeoUoTIkKIsch7KiEu/4/z+KSp254JTGnrGQMCFWD7qofaR
+         o8uV6CmFGNFl1GSidXGfX7GOSVQddzJn8jQKXYAxpCfwGhpl8vWwMVXTTOO6YlSViYt8
+         S/I/gN2kwveFvqFPFW/F8SeIz3ZvSLvmcvebasSBcSGzTq8c6cBIDRziCHbqfnlSZVLc
+         m+Wg==
+X-Forwarded-Encrypted: i=1; AKwUvByQW8i5DcUN/cVj6EyKQXShv9zaDzDCzePyZ8gnDgURIzDh+bOrlEfFHKGcQm0+6JLHyYUA7V58fdM=@vger.kernel.org
+X-Gm-Message-State: AFuF++mKl3MIN59ZFP66ceJezPl+tIrAj81TO0swzUSHF2NLb6xn1Q7x
+	gbijDuUbK8txWUO2ykWe0nw4DRVG3+gK7ul3mjcT+BC9C1h+Pu+WhNoR1Ndp04pRek8=
+X-Gm-Gg: AYBFou2g6W70XbUCdnhrQ/e5laLiLUpgIWF5PPLdJhAPrPn7mFC8XJI3gC5VYbTt3km
+	NXUywNnlDYkwV8d2+73Xgh9TS6qYG22pxHpQyMDXhmqRi4SgNDVwlah3sxfbO+EaGNIva2aBg/3
+	1PTaEqan6zOCZ9/2+dc5nnWMN2LlyfFizqIjHpC2q0sLc0Z8ryjmvkMlRckY1vZjO3UQRmQb+iL
+	n1lPwIsPWz/IcgVML/hh999xyuAsOWXtDd9AZ2yC5+gmjgcOcEyhYRPxU3AAbjBa8GwKfEwmZFr
+	/57zIkxSIsWJQqSX3938GzDkmm4n0HtTd5lBVv0ZIyf2j/3liHdJ0zQx7cEkDCq/wUxrUc3e/Ie
+	3GfMrEbGZRZ+z6+CmfnyC/CU71S1QwgKzeV97iNDdtfOI3SjzKlfGAUgkQAIdXDZ4E3UWI1TDb3
+	mEaaZwe0Px/4uRwhR3aRq+vY4/t7UsYnQB8BxGD+8kVwxnXR944tcHQVV6+qB+FHZHLobYjlTY4
+	CBJgdAKL+UK8nqudFnc2mGPGImT4E8k1TY0NdpMrBHEfn8QaVJ/Rek=
+X-Received: by 2002:a05:6000:230b:b0:487:2566:4b06 with SMTP id ffacd0b85a97d-48871682d15mr5167489f8f.21.1790263540499;
+        Thu, 24 Sep 2026 08:25:40 -0700 (PDT)
 Received: from ?IPV6:2a01:e0a:106d:1080:b956:9fee:508c:ebd8? ([2a01:e0a:106d:1080:b956:9fee:508c:ebd8])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5dfa6a7sm116649845e9.12.2026.09.24.08.23.53
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48868889409sm12781439f8f.35.2026.09.24.08.25.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Sep 2026 08:23:53 -0700 (PDT)
-Message-ID: <fa02f447-21db-4448-912a-aa39b26f364a@linaro.org>
-Date: Thu, 24 Sep 2026 17:23:52 +0200
+        Thu, 24 Sep 2026 08:25:40 -0700 (PDT)
+Message-ID: <488640b6-9535-4209-a569-327683c0d9a3@linaro.org>
+Date: Thu, 24 Sep 2026 17:25:39 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,8 +74,8 @@ From: Neil Armstrong <neil.armstrong@linaro.org>
 Reply-To: Neil Armstrong <neil.armstrong@linaro.org>
 Subject: Re: [PATCH 2/2] iio: adc: add driver for the MAX34417 Four-Channel
  High Dynamic Range Power Accumulator
-To: Joshua Crofts <joshua.crofts1@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -85,7 +85,6 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
 References: <20260923-topic-sm8x50-iio-max34417-adc-v1-0-41d4ba1bfc41@linaro.org>
  <20260923-topic-sm8x50-iio-max34417-adc-v1-2-41d4ba1bfc41@linaro.org>
  <20260924095457.00006ed6@gmail.com> <arUxl7QeiEzFlI7O@ashevche-desk.local>
- <20260924171220.00002cbc@gmail.com>
 Content-Language: en-US, fr
 Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
@@ -112,27 +111,108 @@ Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
  QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
 Organization: Linaro
-In-Reply-To: <20260924171220.00002cbc@gmail.com>
+In-Reply-To: <arUxl7QeiEzFlI7O@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi,
-
-On 9/24/26 17:12, Joshua Crofts wrote:
-> On Thu, 24 Sep 2026 17:20:07 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On 9/24/26 16:20, Andy Shevchenko wrote:
+> On Thu, Sep 24, 2026 at 09:54:57AM +0200, Joshua Crofts wrote:
+>> On Wed, 23 Sep 2026 21:10:23 +0200
+>> Neil Armstrong <neil.armstrong@linaro.org> wrote:
 > 
->> On Thu, Sep 24, 2026 at 09:54:57AM +0200, Joshua Crofts wrote:
->>> On Wed, 23 Sep 2026 21:10:23 +0200
->>> Neil Armstrong <neil.armstrong@linaro.org> wrote:
+> Joshua, below also something to you to pay attention to on top of the good
+> parts you covered already.
+> 
+> ...
+> 
+>>> +/**
+>>> + * struct max34417_data - max34417 specific data.
+>>> + * @regmap:	device register map.
+>>> + * @dev:	max34417 device.
+>>> + * @lock:	lock for protecting access to device hardware registers, mostly
 >>
->> Joshua, below also something to you to pay attention to on top of the good
->> parts you covered already.
+>> Nit-picking, but... Device, MAX34417, Lock.
 > 
-> Thanks! Unfortunately a v2 already popped up on the list today...
+> Generally speaking it should be consistent with whatever style is being chosen.
+> If we go with the first capitalized letter, then yes, otherwise below should go
+> to small first letter. In any case MAX part number should be capitalized (or
+> someone might think of it as struct max34417).
+> 
+>>> + *		for reading common accumulator count and control register.
+>>> + * @input_correction:	Correction based on the Rsense value from channel nodes.
+>>> + * @input_label:	Channel label from channel nodes.
+>>> + */
+> 
+> ...
+> 
+>>> +static int max34417_read_voltage(struct max34417_data *max34417,
+>>> +				 const struct iio_chan_spec *chan, int *val)
+>>> +{
+>>> +	uint16_t voltage;
+>>> +	uint8_t buf[3];
+> 
+> uXX types, please. Everywhere.
+> 
+>>> +	int rc;
+>>> +
+>>> +	guard(mutex)(&max34417->lock);
+>>> +
+>>> +	rc = max34417_accumulator_update(max34417);
+>>> +	if (rc)
+>>> +		return rc;
+>>> +
+>>> +	rc = regmap_noinc_read(max34417->regmap, chan->address, &buf, 3);
+> 
+> sizeof()
+> 
+>>> +	if (rc)
+>>> +		return rc;
+>>> +
+>>> +	voltage = buf[2] | ((uint64_t)buf[1] << 8);
+>>> +	voltage >>= 2;
+> 
+> Not sure what is in the buf[0], but verbatim the above is get_unaligned_le16().
+> 
+>>> +	*val = voltage;
+>>> +
+>>> +	return IIO_VAL_INT;
+>>> +}
+> 
+> ...
+> 
+>>> +	power = buf[7];
+>>> +	power |= ((uint64_t)buf[6] << 8UL);
+>>> +	power |= ((uint64_t)buf[5] << 16UL);
+>>> +	power |= ((uint64_t)buf[4] << 24UL);
+>>> +	power |= ((uint64_t)buf[3] << 32UL);
+>>> +	power |= ((uint64_t)buf[2] << 40UL);
+>>> +	power |= ((uint64_t)buf[1] << 48UL);
+> 
+> get_unaligned_be64() / be64_to_cpu().
+
+Will switch to get_unaligned_xx()
+
+> 
+> ...
+> 
+>>> +		fwnode_property_read_string(node, "label", &max34417->input_label[index]);
+>>> +		if (fwnode_property_read_u32(node, "maxim,rsense-val-micro-ohms", &rsense))
+>>> +			rsense = MAX34417_DEFAULT_RSENSE;
+> 
+> What if the property is there, but some issue has happened?
+> We have an idiomatic
+> 
+> 	if (_property_present()) {
+> 		rc = _property_read();
+> 		if (rc)
+> 			return ...rc...;
+> 		...
+> 	} else {
+> 		...apply default...
+> 	}
 > 
 
-Just ignore my V2, I'll apply Andy's suggestions in a v3.
+Will switch to that
 
 Thanks,
 Neil
