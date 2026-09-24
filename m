@@ -1,227 +1,108 @@
-Received: from mail-vs2-f41.google.com (mail-vs2-f41.google.com [74.125.227.41])
+Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83B2D38AC9A
-	for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 22:06:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.227.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790201185; cv=pass; b=WvrLdEAj6P1qfvYdyr/fq4ZLrZSwoGk0wy0NjXfY+vay2Am3eZynf24LV6LMep+toTAhOElnTOfIGdKUDR/mgByUjo8KSBrancTHQBIyxwLXcf9Mlott4BnLgj0StErQkels5jrn+qcpxTL9qRG1AD18ZzCLrSqiPN9z+a7LVD8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790201185; c=relaxed/simple;
-	bh=AsWbvRuBs6JsB6ieQaz86pXFNDyRQud0rrGGSGlxzuY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SG1x+EEhA8NC5KmlhruuXxJuV6azOjLIVdCno981cQR65AoJ3ip1YPc/hZcZPxjl9c+nILowup3DPYpmbbTqS189I2vpt14xNKcEODbcWOIJH9vmlB2zFQq2d/xhtCBJO0bo9FjQW8fLwucpep5yYjNLz/L44TjpDDQybnh6/cE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HS3+hd2L; arc=pass smtp.client-ip=74.125.227.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A455241D4F1
+	for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 07:06:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790233589; cv=none; b=Mv4D3rUm7xdhq8lbxawXnIZGpCiXWKXUy1BzzsXCtaP0b+9j5X6ROCp3tjXNNadsybKmZlnRAuG5OMvVhTVtQvtEL1tq1coJVQAtcGF69/ioLUc5ZV11LLzGjyRJSkVhiSFKd0XxKsPBcPtKx5Ma/ae/niRA/SCIT64jeNcojCo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790233589; c=relaxed/simple;
+	bh=qF/GmJdDAJbhCt6NxR0IXt/ma6iHiqTNuALlBPxzgdg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k1mTFkwB9elMOFChMZLR5Dq+mueSzpTi2qZQm+vOkTVTZGWw/LYwRqAz8rii2z6YGd6aUy3u/qSU3RBUtAr8/euGToYEaH2rXyUYJji7oEPHdo1460jfQluHo4vIlp3pf9Ip458w5GeXP6wEQefOGbePLoleErWtsLF4ymjcW0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K+echMSk; arc=none smtp.client-ip=74.125.225.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HS3+hd2L"
-Received: by mail-vs2-f41.google.com with SMTP id ada2fe7eead31-78a5e045187so659632137.1
-        for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2026 15:06:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790201180; cv=none;
-        d=google.com; s=arc-20260327;
-        b=eHo9GijzTBpDm/8/utObg7yQU7bhkByZcs1uA4nfVS6LyujnstX5i1q85QBnIBLtc9
-         Qwv8S/DaMF4RPjghAKWJPV8381rOVSFQMQ1NMJ5N8LCvgRyrh2tENusZRJICvoeuJJpT
-         Qe1o6vdG3537F5HwlWGxw7ihjqmkAuG9C2aXQtirmcj5T4V1in6A0EzcfeOqevwpdDfN
-         dDRieixHbnT/dNDi02M6JPFLeStGHvRws2LNkmfMluK8LmO+dhMjkkB7Guc3xUnlytA8
-         AD4ilWoKcSAMHeSvCsYbiRWA4zV3cO2kOI/ZxUAMII+9YzkUv59Jrz3Sqx4RkNa51sa+
-         kUhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=3yKK+WuchgTTwdNLrz4OxJ2b7Qi8+fI+db9UtwpFLIo=;
-        fh=nZ1NraWq11sXamHrDICsOYbYK6rfd+LwbFHECqBqW0A=;
-        b=KFf5XPgTfP7yEV2kieCihwRF8gP5NM/SZ6Mvrc5GMDeR+PLZ8nx4C7q7xgJ7AkdRqO
-         hgtEX0MlhXKvq2VO/t5P89vLUc5t4o7s9cjlql+DZPdHt2rYof76AEpQM14jLwDtLiea
-         MRY5jYg2aEyLEbZruibV4KsyeGlpxfSc/QUXpL1izQkzE8QeQae03wBmmuvPjvsVfRZX
-         r32x9nfqmUizukTYpb/Ew48YnXKVfJ4VRrYgrv0RrqFeHoTtQD8clQLkCL5Vz+VHmAMr
-         Y2ht13lLBR9vX4ISMhB7IjlAIrot5uoLVzxgu33OLsK8YNoLrhs49UbZ8/F6RXV3qcLI
-         DA6g==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K+echMSk"
+Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-482f63546c5so1370008f8f.2
+        for <linux-iio@vger.kernel.org>; Thu, 24 Sep 2026 00:06:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790201180; x=1790805980; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1790233579; x=1790838379; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=3yKK+WuchgTTwdNLrz4OxJ2b7Qi8+fI+db9UtwpFLIo=;
-        b=HS3+hd2LNIXxo51Lo08u/4zA+eKjJTYh/z+YZ/iJuZzIVK8UCdK2zz2G3TjboIMapd
-         SUVSki8eM7T9Nxd/CABC7JJUIiPKL2XQcyfNAk0ng1IDvdUyebs224vozRCCPgcu4PJg
-         OdVCyQIUkpDst0NEMsTutZJB7Te6Eros3gqVOVRoMPV9grBZeD1vx8dJ0hJFoQNDS5nQ
-         RF8hwA4H6+RVxsL8a+FAAs9Zm9X8C9P3K0UiKr18rnvl7I3SLa1mbFZ1l5HwijmlynnM
-         IBXhigQm+/Tnfn3Dd+O1F1Yxv7tOXw5H8XJawYndPvHbokkPm+54c5J+5y3c4BdEVeku
-         Rrzw==
+        bh=aNGRH9rZqGsSRMqbv+c8f/d7VbynsVVOoe5uGipRICI=;
+        b=K+echMSkFK9Cg8+MpoQFFvLFuIprDqBh3s/DkKFIEoMv+9QAnLNnpHBI5HChGohXTa
+         au7GsUflCH5v5gWxFNJ59F5JRjijqCWE1K9o865FJ3ElMJ+ZEDSLWU5S8jSfqM+dL661
+         5NCvSMQuByDtKUdiqAX1W9H/LWH8pNH8WTPUfYAmhQQOC4RDM1zBq87fAdz1EPsMGGFQ
+         2jxqle42qE/pe0SYoXA9mzURbzanIuaUTptKtL+EUAWCnSElVHidYyeS/Um9CcppRp45
+         UgjX6rkchbqshxH+8M2UHCOZoyC9VvYPw/ZF5X4n9pIIzonesUnMAWyhBAv27r7ks1jy
+         2kaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790201180; x=1790805980;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1790233579; x=1790838379;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=3yKK+WuchgTTwdNLrz4OxJ2b7Qi8+fI+db9UtwpFLIo=;
-        b=yMeVnj3xe63aXwncgq/fVjCL3gs0oRq+ADVRlAAdYJ1WE3w9Ma/kC43RyxNSOp2BWP
-         nzD+uu+R3sCWTNwByprPviRX20wsSnK549V6iSszIx8PF6EULilH3/xRX82RDoI5XyFX
-         UVYW8ylsi6IMUNKEattMKAeXohh8f+tEJb3znDjIyedKF8BPTCFlCiBu+bc1XAbXfBro
-         PPnyQtUT6aMq4QOMMs+RpwZSW115s8yqdIG5nLQWc0UbF7ImGesOWFVuAhfhYslNEy47
-         5cgtndT2jaMYlLPy7HtpgNjGvA+/LaSLbZjd+AXRk389MIvCCV8I0tBmRuXICR+XZVOu
-         YL8g==
-X-Forwarded-Encrypted: i=1; AKwUvBwSbhdGFosB3pWtBWC1LpwoOBSvGD1jFN+zuF+i8rRjYv51yZbsTQNYmb4IbkZxSpGnY3zpslTLiTg=@vger.kernel.org
-X-Gm-Message-State: AFuF++nX1GfP6SzrPBOvVELoSwqBTUVm3+HFioNLio8UrPU4BaHKGBeb
-	GPEGo15HlTHjxBBXrBxqMzAWqsIFOvK0Px2tzUCWTGdXCgnsrQLDF3f5YoqVmG4nRctXU993yCy
-	EpAsGw7Ay8CwZZeoAwF8XWuROHD5qgbyV55PYV1E=
-X-Gm-Gg: AYBFou1o3YQUcpy8dcVufHARsBttGo3PIF70nb+cZnVvrmP6d+s7LM4QBkjb9JFXIyh
-	OA++NGUcWLNcs08xhHLORwJRdM6DEFXNfSYZWsZS6IOLn7vnSgUes+KWwJUOQZ9UnmJx0Fn6LoF
-	gOIMvbAohN2G+OysXXwB/XpEWzy13mZmfSCnQBaH2f3nLoyycnXgFFom/D3erRDVCBywzYtzp4K
-	teTy5T9zr6vXSEL49fa5OV2qZ0BdJHlwbI2nwR6WLSdwVKQ6caSWL4UNAA4OI21g44WoA3MsbzJ
-	Urqh5dsgOF40gp+TsTH4DvBIfw4P3tLtFq4RCGBxj9/x2kfsxZZHK3Gu2MDjVOhgJDP6REfsiE2
-	GFCYGZQTC3lFEy3E9zsWa
-X-Received: by 2002:a05:6102:61c4:b0:7a7:b6a:b022 with SMTP id
- ada2fe7eead31-7af38bbded1mr142471137.22.1790201179622; Wed, 23 Sep 2026
- 15:06:19 -0700 (PDT)
+        bh=aNGRH9rZqGsSRMqbv+c8f/d7VbynsVVOoe5uGipRICI=;
+        b=RO7piFI+IHuUWA3P5cn98M8gfAldKS7KrxRWGofJXCsu4RCyfnHcw5xkbTDygFtpS6
+         pFpnKcrWUWCEZ/PuUhKFAD3wzhAZ7SRBr1OW3AGXVfQaWHsM8TUUol36cP1PUEdzDlmI
+         JnOyzkryAImv1Pb8AzhWwfFQ5YMHgiOldTSzYAUGQOmlc/TMJ2+W/LnwVIJBzd2hGIZm
+         swtSexg4ey8hwUEsXmV0nviW0OI8rpMBH9f+rgBu9b8ml9QlE6jFqcy4Uj9lvJ0Es3VL
+         +Ps9/6NhXavK7RZ4EzQAQGsMzTgdHxwaPcJNARFYGpLSNxYDsLJJCU33gOqrqN/0t0hB
+         bHsQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwg9rW1sonCznfAYdRaEwt459jQ8f+xAMvD8d9q62bz3nLhdJl66ZiBr6GM4mHKwdQkvGQJod3Qhho=@vger.kernel.org
+X-Gm-Message-State: AFuF++kfeErep3rhKO5TzZlsg+OH8++J9IsBsxo1a1ux2btdlUYL/0hv
+	UqSwQQSCMoM5LVw+v7XL++kwyIO0/6VNvWz+Dk+C8+WX9DqhIjhq9hpG
+X-Gm-Gg: AYBFou3oscbJ4dKC+5vZWoAqhfaLFgun9RoTsYDUx6tz6l3n1D/s9u10wBp6RGbJsvv
+	FwlQivWmpPJT6kUvIzF8BYk3m1COITXME9E151HMZTtKe20g4Wb+LSQfbYkkNV5ejaCcj0ADyV/
+	XhNvtIkDKU9vGeL2STgO3BuVEsiGg4iAgn43vh8B8AwgWN3SUKVwibTn50FmsNJGZWOlflXDpbH
+	+1/32FDvEaW+vRQ0LLZX8rhbPR3wO+1avF+kbVVDvGvJ2q09/ggQ/ADK5ViySx9Y6ntXFHQA5ov
+	2mgdgWv16BqcuFTkv6m8J6zMOQwYgD+wFP+E4EPJUAYsgX+1k/e0YHiqf7Jd5TXeMgpBkTqI0jU
+	Hx1BEeK76tTt+SlDakQeUuSuxUCfMm8nLYRTNoRkIEGHbwdVJH0hp8guy6iJGQ7uZ1SdnBTV8cI
+	wpY54lPIbwH6Vq9VUpL3FOM0yJuebE5rhPvPmtrReYQSWQ6hSFXMOt4/JO6Oc6HG9//rtNNO4Hy
+	gqNovko5VoE5wHziPfrIf/tl6+Nk3W9YO20V62x/LkqRjfEuJM9kH/7h/JUv47z5Lf58Fs1mByX
+	SNxloEzxQxo67CD0+EE6AOHhxhvMgxim4Cb7i0+hckBpcOU8Oq6twzS3qK84/IOSR9c1UZ8+VyP
+	dE+80Q4B93RPC8BKu7hI3cwbOAIBSWm/jyO46nOFF+5cKV0hG+thFZNUiGsWSQIfZ8FbxbObyep
+	jgR39A
+X-Received: by 2002:a05:6000:220f:b0:485:8c16:5ee9 with SMTP id ffacd0b85a97d-4887175fceamr2133359f8f.35.1790233578647;
+        Thu, 24 Sep 2026 00:06:18 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48868486408sm11108512f8f.9.2026.09.24.00.06.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2026 00:06:18 -0700 (PDT)
+Date: Thu, 24 Sep 2026 09:06:17 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Kevin Tsai
+ <ktsai@capellamicro.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: iio: Add dedicated CM32181 schema
+Message-ID: <20260924090617.00007d47@gmail.com>
+In-Reply-To: <20260923191616.2217203-1-robh@kernel.org>
+References: <20260923191616.2217203-1-robh@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260922112111.1970872-1-morbo@google.com> <202609230033.E3A658F@keescook>
- <CAGG=3QW+N1FoUL2GOLfU=U1Pj-eb_o99Z_Mq76ocrZ29S-NyZg@mail.gmail.com>
-In-Reply-To: <CAGG=3QW+N1FoUL2GOLfU=U1Pj-eb_o99Z_Mq76ocrZ29S-NyZg@mail.gmail.com>
-From: Bill Wendling <morbo@google.com>
-Date: Wed, 23 Sep 2026 15:06:03 -0700
-X-Gm-Features: AclHuK_fY_1P8WjIOJbnwMFJqwDTCUFnN7YSyMbkDR7oEaQHX-fU05ol8keeeJ8
-Message-ID: <CAGG=3QXAoU8cPQHFLDPa7KZGPWMEqS9iLXY2KeBt2us=K6Z6hQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: st_sensors: add __counted_by_ptr to struct st_sensor_settings
-To: Kees Cook <kees@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
-	Randy Dunlap <rdunlap@infradead.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, 
-	codemender-patching+linux@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 23, 2026 at 12:34=E2=80=AFPM Bill Wendling <morbo@google.com> w=
-rote:
-> On Wed, Sep 23, 2026 at 12:52=E2=80=AFAM Kees Cook <kees@kernel.org> wrot=
-e:
-> > On Tue, Sep 22, 2026 at 11:21:11AM +0000, Bill Wendling wrote:
-> > > Annotate the "ch" pointer member of "struct st_sensor_settings" with =
-the
-> > > "__counted_by_ptr" attribute. The elements of "ch" are counted by the
-> > > "num_ch" member in the same struct.
-> > >
-> > > All instances of "struct st_sensor_settings" are defined as "static
-> > > const" arrays across the ST sensor core drivers. For pressure sensors=
-,
-> > > "num_ch" is explicitly initialized with the size of the respective
-> > > channel array using "ARRAY_SIZE(...)" during static definition.
-> >
-> > I wanted to understand this so, in drivers/iio/accel/st_accel_core.c:
-> >
-> > static const struct st_sensor_settings st_accel_sensors_settings[] =3D =
-{
-> > ...
-> >                 .ch =3D (struct iio_chan_spec *)st_accel_12bit_channels=
-,
-> > ...
-> > }
-> >
-> > static const struct iio_chan_spec st_accel_12bit_channels[] =3D {
-> >         ST_SENSORS_LSM_CHANNELS_EXT(IIO_ACCEL,
-> >                         BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCAL=
-E),
-> >                         ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 1=
-2, 16,
-> >                         ST_ACCEL_DEFAULT_OUT_X_L_ADDR,
-> >                         st_accel_mount_matrix_ext_info),
-> >         ...
-> >         IIO_CHAN_SOFT_TIMESTAMP(3)
-> > };
-> >
-> > #define IIO_CHAN_SOFT_TIMESTAMP(_si) (struct iio_chan_spec) {          =
- \
-> >         .type =3D IIO_TIMESTAMP,                                       =
-   \
-> >         .channel =3D -1,                                               =
-   \
-> >         .scan_index =3D _si,                                           =
-   \
-> >         .scan_type =3D {                                               =
-   \
-> >                 .sign =3D 's',                                         =
-   \
-> >                 .realbits =3D 64,                                      =
-   \
-> >                 .storagebits =3D 64,                                   =
-   \
-> >         },                                                             =
- \
-> > }
-> >
-> > So .ch is assigned an array of items which looks to end with a terminat=
-ion
-> > sentinel. And .num_ch is unassigned:
-> >
-> > $ git grep '\.ch =3D ' drivers/iio/accel/st_accel_core.c | wc -l
-> > 16
-> > $ git grep '\.num_ch =3D ' drivers/iio/accel/st_accel_core.c | wc -l
-> > 0
-> >
-> > > For accelerometer, gyroscope, and magnetometer sensors, "num_ch" is n=
-ot
-> > > explicitly initialized (and thus defaults to 0). This is because thos=
-e
-> > > drivers hardcode the channel count to "ST_SENSORS_NUMBER_ALL_CHANNELS=
-"
-> > > rather than using "num_ch" from the settings struct.
-> >
-> > Yeah, checks out:
-> >
-> > $ git grep '\.ch =3D ' | cut -d: -f1 | sort | uniq -c
-> >      16 accel/st_accel_core.c
-> >       4 gyro/st_gyro_core.c
-> >       5 magnetometer/st_magn_core.c
-> >       6 pressure/st_pressure_core.c
-> > $ git grep '\.num_ch =3D ' | cut -d: -f1 | sort | uniq -c
-> >       6 pressure/st_pressure_core.c
-> >
-> > Interestingly, the pressure/st_pressure_core.c uses both assigned .num_=
-ch
-> > _and_ a sentinel.
-> >
-> > > Since these structures are static const, both "ch" and "num_ch" are
-> > > fully initialized at compile time and available immediately at boot
-> > > time.  The only accesses to the "ch" field of "st_sensor_settings" oc=
-cur
-> > > when assigning it to "indio_dev->channels" during device probing.
-> >
-> > Heh, so the bounds check gets laundered. :) Even pressure:
-> >
-> > pressure/st_pressure_core.c:    press_data->num_data_channels =3D press=
-_data->sensor_settings->num_ch - 1;
-> > pressure/st_pressure_core.c:    indio_dev->num_channels =3D press_data-=
->sensor_settings->num_ch;
-> >
-> > > Because "sensor_settings->ch" is never dereferenced or accessed as an
-> > > array, adding the "__counted_by_ptr" annotation does not cause any
-> > > runtime panics or false-positive bounds checks under KASAN or UBSAN.
-> >
-> > I would argue that either __counted_by_ptr has no use here ("accidental=
-ly
-> > safe because no one dereferences .ch" isn't a great justification)
-> > or that the accelerometer, gyroscope, and magnetometer sensors should
-> > have their .num_ch assigned correctly so that the "contract" is correct=
-,
-> > even if nothing does the deref.
-> >
-> This is all very weird. Below is the full output from CodeMender. It
-> might give some insight into this, but perhaps we should just NACK
-> this patch?
->
-After further review, I'm going to NACK this patch as having no
-effect. I think this makes me a real kernel developer now? :-)
+On Wed, 23 Sep 2026 14:16:15 -0500
+"Rob Herring (Arm)" <robh@kernel.org> wrote:
 
-NACK: Bill Wendling <morbo@google.com>
+> Add a dedicated Capella CM32181 ambient light sensor schema. The device
+> has optional vdd-supply and interrupt properties, so it no longer fits
+> in trivial-devices. Include both optional properties in the binding
+> example.
+> 
+> Assisted-by: LLM
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+> v2:
+>  - use additionalProperties instead of unevaluatedProperties
+> ---
 
--bw
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
+-- 
+Kind regards,
+Joshua Crofts
