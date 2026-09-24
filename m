@@ -1,33 +1,32 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1C4D41F349;
-	Thu, 24 Sep 2026 22:11:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFEE8473C8C;
+	Thu, 24 Sep 2026 23:27:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790287902; cv=none; b=rqIlgKKHjIcx/2lqfZFT+hq3U97oBs1Pnz4hctV5NAOO0pS4nyAkalYRPp5vLfEhi0/PykUXRNylaS6vro+C4fBBRw0HpyaoyD/YYMbk372TJvBddzgsMlJYW9vbiH7T1Jl63njICPJfEvPk/VmFZvWW7/uHQpDLvKABbBdxHYY=
+	t=1790292459; cv=none; b=OPPWeUk25KjsMkD+QHBFrIde+bzifYXxQhvDSMGThHxJMKt0CkQ/jvvp0MfIXvUYJEWKrrEnE5tw3Uu/n+W6R7/BimpTm3iA1pz/YlrjH9dc7Fr0fhNurWUno52MdryfhfZ5gQojCze2uHbvL3uaIHo2waK+puXjGnpbLKY8dBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790287902; c=relaxed/simple;
-	bh=as72uMcCbD4JiFvSQaNcychQmcCTurW5nyfAJ5ediK4=;
+	s=arc-20240116; t=1790292459; c=relaxed/simple;
+	bh=b3diYIyUxGsc2Fn2erUGeQZjsoSz+2Xj1Vx0ni3W6DY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HwmJK3WIFYkNPo2XVMW2rhUMPy1i4L76MkHjC7kIv+Yyg5P8XbQI6WLUvBz/DHPzpmAxUTeDstROzdoP9DF53U7AQV9x3vfU9c4FcbCv5BvHN4KFsrDnSmAe9Am2ZBI/c2O2DPtYzqpLqspumve2B1QZ1Rrn1Es37aGbftxvvnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YW41R6az; arc=none smtp.client-ip=13.77.154.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=oN1bY9Y1bFGM5Z/ImOvOWVUorhtAqw34y8gFU2vSB/INgd1A4Pa4y1iWAEPJ/WF0+3EepTPQxzVn7Uk9HVGT32EO1C//0zfsHfcYHWY/MmnJ8k7cdWzQC6cvbTVxlbMLtROsXi8OPlMXf3yf+leuzM0XacIw6epgtRCQBocIiD4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=sKbbtKfJ; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YW41R6az"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="sKbbtKfJ"
 Received: by linux.microsoft.com (Postfix, from userid 1223)
-	id 22BFB20B7167; Thu, 24 Sep 2026 15:10:51 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 22BFB20B7167
+	id 379CC20B7167; Thu, 24 Sep 2026 16:26:47 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 379CC20B7167
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1790287851;
-	bh=r3n8IcDEhgi+VEQtnJMrWd+GOlGZCNoe/fBGoTU0rkM=;
+	s=default; t=1790292407;
+	bh=Ol4Gw21epj/8o0vv4nhFU7uulVUuXLQX34MJO4d++BM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YW41R6azC4xYKKcnEtJJkEiFHG/tmwZMcdKv+DQcnTjv9Dmb4rhgfvVLnrVg80Ei6
-	 FAI63I7VWQFSfwHzIfBnWDX/uORWeG8i+fhrArgHwryFLCxjdPMSA3fvpRWp9m9O8g
-	 V+6A4YsyE4YnxBIc7Z7Mrkrs0N/JKwrXfUMzdZrE=
-Date: Thu, 24 Sep 2026 15:10:51 -0700
+	b=sKbbtKfJp0xwhazY6dZN1s6FSAhmDbLW451ldNLBpYkgVf4iN1FJt+VM8Y6mMelVu
+	 fvsVMsJolobwtOFvPAGnLafipE1deJZKFkIlT8Pnl6GDUUFSll4oiWvq3lRm/4wTMv
+	 NoJXAb4LeOHKFCTcZYfWKfAVmO54Y26EjTOYvHgs=
+Date: Thu, 24 Sep 2026 16:26:47 -0700
 From: Meagan Lloyd <meaganlloyd@linux.microsoft.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
-	y@linux.microsoft.com
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
 	linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
 	vitor.soares@toradex.com, samagazaryan@google.com,
@@ -52,7 +51,7 @@ Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
 	linux@analog.com, linux-iio@vger.kernel.org, andi.shyti@kernel.org
 Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
  user-space access
-Message-ID: <20260924-db82fe4537102d1920dd09bc@linux.microsoft.com>
+Message-ID: <20260924-86692413bdae0e78a12c1425@linux.microsoft.com>
 References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
  <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
  <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
@@ -93,6 +92,10 @@ On Thu, Sep 17, 2026 at 08:49:40AM +0300, Andy Shevchenko wrote:
 > This argument has nothing to do with i³c. Each bus is different on a physical
 > layer, electrical protocols and programming flow. Each of them has own
 > constraints.
+> 
+
+(resending as my previous reply hit a snag and is probably marked as
+spam for most people)
 
 My take is that if you're using the i3cdev module, it's up to the
 programmer to review schematics/datasheets to know how to program
@@ -103,7 +106,6 @@ subsystem reviewers, so please continue any further discussion in the
 prevailing approach's thread:
 https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.com/T/#mb42d9b2785f8508d39eaf782b3d29189226b8029
 
-> 
 > > To answer why we need it:
 > > If we want to write i3cdev as a standard device driver, it can't
 > > actually match anything by default. This is because, some devices on the
@@ -116,9 +118,9 @@ https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.c
 > compatible mode and more complex programming flow)?
 > 
 
-cc'ing Andy Shyti from I2C subsystem for context.
+cc'ing Andi Shyti from I2C subsystem for context.
 
-Andy, we're considering an I3C character device driver interface.
+Andi, we're considering an I3C character device driver interface.
 If you have any feedback from your experience with I2C, can you
 please share it in:
 https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.com/T/#mb42d9b2785f8508d39eaf782b3d29189226b8029
@@ -131,6 +133,7 @@ https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.c
 > 
 > Put a real life example why the exposing i³c devices into user space is
 > absolutely necessary.
+> 
 
 I'm supporting a kernel running on accelerator cards that plug into
 various server SKUs where hubs/devices along the bus are not physically
@@ -152,7 +155,7 @@ https://lore.kernel.org/linux-i3c/20260921230603.2518652-1-samagazaryan@google.c
 
 Thank you,
 Meagan
-> 
+
 > > > > This is accomplished by the i3cdev driver not having any entries in
 > > > > the i3c_device_id table. After boot, simply set the driver_override
 > > > > to "i3cdev" and bind the device manually via the sysfs bind knob.
