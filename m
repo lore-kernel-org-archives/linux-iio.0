@@ -1,87 +1,89 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 493334A0EF6;
-	Fri, 25 Sep 2026 14:10:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EAD041CB2E;
+	Fri, 25 Sep 2026 14:17:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790345458; cv=none; b=ZW1gzOpUYvilqx9UtYigWybJo7ivqsm0Xiuib96eqMA3oxeHwHCSPRRi0FSaD/Cme4BNmlwPHOpvql0/AxLM5J6NfbZTEUDxvxFeMD2RRDeHk/eNdjrhOhszdo/LdEfF5zbK/QKyFq+H3LwYECJIkEgqqnDr8qFdNJ5+QMc7srw=
+	t=1790345849; cv=none; b=jD+A9Hpgw1PQoSFu6G7qcoiMGYGwZjLWsJYuzUPVKt3/5HxDtIArVV01gkPaqTecdhumVf/p2XkoO35VijjkDhpu7m3+jQeaer4exKR2q841LWXD/UMDCaEvVD1Nsp0iIXh3yjCb4oV4PwfqQx0uNA1eyhzWHstKOhLxkb4BCQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790345458; c=relaxed/simple;
-	bh=mPOb5G1Qz/RmNykC0s7p7NQ24Lun83T2cohQt2hDKvA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eBo1hFxvGaYERo55+OzC3ete1tNA/R+/xjoOsZlaeAHiAohWzrhqyWvMh/qsH7SGue/QfARclZZ96PoNEC3gAnPx4IaT0ilF8P+nBUuxV3Ax4oYmDEPi5QY2hKhjzl/n3rPz/NTu0301E6RzXQvA0y0vhYb3OXFUHxKCLOmiy28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=YDKHp4+A; arc=none smtp.client-ip=117.135.210.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1790345849; c=relaxed/simple;
+	bh=3gjbXGMXwE90b1nySzsIkaTNf6M5jLT1dtocPiPyz0g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=c9jh7Ghz28JngL87ZgiMxyF50/KiCFUwU+0yUahg6/DBOdLS4jo0SKcRegL62Ex0xamL8KOVDutoHH0f4BsKGYePHwj1sEuBV2MQ46/PNmCQZW2c8ecwjaTkVpuVzj9dI+XBgAOY1Pnie5zqTzS/SIDO8b+0LYsy2TdYFEYpUfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Io2YXslZ; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="YDKHp4+A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=eP
-	pXmbo4ejp8460fe8NLuub/ALvk6mEPsOLd+XEHehc=; b=YDKHp4+AwrLSgskTIN
-	qJLkong60tuAgtjwTEKKi9xnbLNYMYoj2Mx0KCWxLPkSlRmcCEvEOCuYC35fEVJY
-	tj3iNjRaPvwnLI0gSQKLDLXGzYF+xF7dsIKB4wBH3P/MFBApYYbf7WBsWM0eeF1r
-	f1LXQd3ESj5d0K+EzE9GwK950=
-Received: from pc.localdomain (unknown [])
-	by gzga-smtp-mtada-g1-1 (Coremail) with SMTP id _____wDnL5zAgLZqpBIGAw--.274S2;
-	Fri, 25 Sep 2026 22:10:09 +0800 (CST)
-From: Jiale Yao <yaojiale02@163.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Io2YXslZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790345847; x=1821881847;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3gjbXGMXwE90b1nySzsIkaTNf6M5jLT1dtocPiPyz0g=;
+  b=Io2YXslZjwppu/lp8GLF1JjTFXALCPO4R3jhM1DIW5cTXVkfEjupcmNN
+   jVYFG4/S5tXu0qUQf+aMXqKS6mj4Z573aOUeNxvGeWa5LWdJEPo0xvH+f
+   PSQ55VaQWk+AHQGcVN0yHn+Ibkem++ZuOoebYA/LxVB31ohTF0SjM9znX
+   mGdAbp0t8Zz/zY4SdxNKdSrjxIywBWDWYI74ClGcdV8o9ny45MW5B4p+z
+   R2Xq6ttW8OQiXWIndj7jO5U4ntvzJZ540StF3ui4CEUk188qKEUNx7ECi
+   aJBbPb0rQ1jClsFF8BK54iCLAW1ZRS4Hue4TtiY/q06CysloiHyh89Kv0
+   w==;
+X-CSE-ConnectionGUID: lSAwW37PT0yw66GKblfgUA==
+X-CSE-MsgGUID: BkKPooARSUuplHlmEH0KZg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="101657768"
+X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
+   d="scan'208";a="101657768"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 07:17:26 -0700
+X-CSE-ConnectionGUID: JyYcFE34QuKrLcxZSdqybw==
+X-CSE-MsgGUID: NV70zMnKRoKq3HqOwx4amA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
+   d="scan'208";a="300620359"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.27])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 07:17:22 -0700
+Date: Fri, 25 Sep 2026 17:17:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jiale Yao <yaojiale02@163.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-	Siratul Islam <email@sirat.me>,
-	Maxwell Doose <maxwell@maxwelld.cc>,
-	linux-iio@vger.kernel.org,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Danilo Krummrich <dakr@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Cc: Jiale Yao <yaojiale02@163.com>
-Subject: [PATCH] iio: imu: kmx61: reject duplicate event disable
-Date: Fri, 25 Sep 2026 22:10:05 +0800
-Message-Id: <20260925141006.2255067-1-yaojiale02@163.com>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH] iio: accel: kxcjk-1013: reject duplicate event disable
+Message-ID: <araCbz928KEnAamY@ashevche-desk.local>
+References: <20260925140945.2254656-1-yaojiale02@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDnL5zAgLZqpBIGAw--.274S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Xr47urWrWw1rXw4kXF48Xrb_yoWkGwb_uw
-	4rZr97XF4DAr4kJ3W5Zr1fXFy8ta4j9F1vvF1IvFsaka47XFs3Gws5XrZ8AwsrWrWUtayk
-	KrsrZr1FvwsxGjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRMJ5rUUUUUU==
-X-CM-SenderInfo: x1dryxhdohiji6rwjhhfrp/xtbCzQGY0mq2gMHPggAA3W
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260925140945.2254656-1-yaojiale02@163.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The IIO core does not filter duplicate writes to the event enable
-attribute. kmx61_write_event_config() already ignores repeated enable
-requests, but a repeated disable request still calls
-kmx61_set_power_state(data, false, KMX61_ACC), dropping a runtime PM
-reference that was not acquired for this request. This can underflow the
-runtime PM usage count and trigger a "Runtime PM usage count underflow"
-warning.
+On Fri, Sep 25, 2026 at 10:09:43PM +0800, Jiale Yao wrote:
+> The IIO core does not filter duplicate writes to the event enable
+> attribute. kxcjk1013_write_event_config() already ignores repeated
+> enable requests, but a repeated disable request still calls
+> kxcjk1013_set_power_state(data, false), dropping a runtime PM reference
+> that was not acquired for this request. This can underflow the runtime
+> PM usage count and trigger a "Runtime PM usage count underflow" warning.
+> 
+> Return early when the requested state already matches ev_enable_state.
 
-Return early when the requested state already matches ev_enable_state.
+Sounds like a bug that needs to be fixed and hence Fixes tag to be applied.
 
-Signed-off-by: Jiale Yao <yaojiale02@163.com>
----
- drivers/iio/imu/kmx61.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index c288437d53ea..a4962b88ef58 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -939,7 +939,7 @@ static int kmx61_write_event_config(struct iio_dev *indio_dev,
- 	struct kmx61_data *data = kmx61_get_data(indio_dev);
- 	int ret = 0;
- 
--	if (state && data->ev_enable_state)
-+	if (state == data->ev_enable_state)
- 		return 0;
- 
- 	guard(mutex)(&data->lock);
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
