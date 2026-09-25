@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F143644C3;
-	Fri, 25 Sep 2026 02:58:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30ABC20DD51;
+	Fri, 25 Sep 2026 03:05:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790305139; cv=none; b=tqnYtyG/qla9H42DZgr6VlW0154nSGot1lU1N4aC1pWNF7M8rk64iIhPdzHDRAZK13E7GIhvvePCC/NDKKLRx5BbSFzJHHyL5WVq/Zyj9Za4iEpPXF3moyW8yeU/MeuXJGU1UNNfBv5C9fgpuv3cKaOYl8jn6GhHSwJQ3eL0C1Q=
+	t=1790305508; cv=none; b=ekEOWN9epdj03MI+Rd/+9qaS3U1T4kmB47UQrAhj8ZMNLY9+8djYQ/IryOONWr14hGjZA5clhbMesJ/+EEQxIbDsUZoK4IDmSR+t/nuCXPA56CN0q/OhiZDhK7CB4myDxoO6CYbF8GvFA4DUU/uLUbMQWcGR9yWUd//EOQlTD+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790305139; c=relaxed/simple;
-	bh=RBFCIXmvqlDheP5WIEQLbXuwS9V66DNQrsum6MO7DrU=;
+	s=arc-20240116; t=1790305508; c=relaxed/simple;
+	bh=2A8vo2SuH6b7YVnhQt79UkvODW+AXcGxLv/gEtfkqP4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KfysffTy4UDVqAYck5e7ZgI0yMXwR+Fnrv60413eaQCFAL/7tkiDnVKEBe7DSCMQAwkdN0A8LxS7+ck6Vdb+/Esv0iZnjJW7d7QzxfSetSk+1PyQoTskm+0WAwnRFHSzCY/dPiuffBW8Jsfosp/HbNOcXrNM9qAQPTLE1XuaVj0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=elXytXMm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=PhdHmSfC1A+5f5Ted7i2AOnIA023/TrpiP8VjY8dNU4AjZ5rkQuYwz6aIZ80Igl83mUTBvl5Q/ng5i9piIAIcCK3f6UjaKrsywLOtisVLvV817RAfeSLTuQ6uGrGiugl+t1KlB4ZkGGrz7RXq0xbThVqpPS/ewgjhxem8UUq84M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aNViKnWz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="elXytXMm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A17731F000FF;
-	Fri, 25 Sep 2026 02:58:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aNViKnWz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC27B1F000FF;
+	Fri, 25 Sep 2026 03:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790305137;
-	bh=6QbF1KfDJCB9rgve07szBDgH+2dK6JMhCN9I6Z2GaKM=;
+	s=k20260515; t=1790305507;
+	bh=pDXMhPHA2gHjXcVjTuL1ZM+tJpMVc3m3oAFbbntrwRQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=elXytXMmPT11ygAWkIdUyLd4GBGIHgabogKmaqUiw0X2RmcuFe2xsj8S6FMoXZFti
-	 t9KjKqRk+KTOc7yzhZEVJDOx3eaEXLICeFvODyMsG7VrI/fw+ukt7s5jslDTZ5pE2p
-	 p33qG0gj9f/SuL2fH4lPoDn1G2VM8XooRNUUIprYyUzUFD61x246t4jd0YU4GoXaQl
-	 ZO8uA1UAflZNI451XTAd+nl2gdUD5H+9xHt/HXcLo9rvCHc+x7U8afmcLfvFFxFD5x
-	 hA18AHwuPNsT4oJayI5Ic8FDSHZ8EQ1apbA9lTXBWGofx07c5PlSsGemQsDBCHE75s
-	 wmPalfAD4N6Cw==
-Date: Fri, 25 Sep 2026 03:58:53 +0100
+	b=aNViKnWzHTMKl13Gmi7ToI8DPgS9miZ911vIvRMdCciGgnarMtljmq3v4LqNCkvDF
+	 ZAEP0wJ+rfBII2g2Fwzbc9JfZTY4oPw1ZvQhpOrA3ZK5SnZphaR8rNbb7l01embAgr
+	 4KMZnWSI7aZfuocI2eG07so+FaP1x+NdDpndw/4l7qAy0Uk3WIkjbh2OcyZUK3nqkE
+	 zwzKj4u85j+Nz3wSmR7FatkSnTeUjuXYCxXTeUJAvJTZH+4Fl5+BNcfh8euvZQSN0Q
+	 TufB+KMcrLJZUC92P57vk03Red9xl+9B5h0s1yAuzIjVZIoih17cacP1DIbXCyRPJt
+	 hIJR9LIriLzNg==
+Date: Fri, 25 Sep 2026 04:05:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad4080: enable address ascension for chip
- identification
-Message-ID: <20260925035853.5b0ec67c@jic23-hlaptop>
-In-Reply-To: <arKNNx-6RAXbus6R@nsa>
-References: <20260922110958.1329-1-antoniu.miclaus@analog.com>
-	<arKNNx-6RAXbus6R@nsa>
+To: Carlos Casadiego via B4 Relay <devnull+cdcp206.gmail.com@kernel.org>
+Cc: cdcp206@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Olof Johansson
+ <olof@lixom.net>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: accel: bmc150: check reset write error
+Message-ID: <20260925040500.0f637249@jic23-hlaptop>
+In-Reply-To: <20260924-iio-bmc150-check-reset-error-v2-1-b6dc74d7aaf4@gmail.com>
+References: <20260924-iio-bmc150-check-reset-error-v2-1-b6dc74d7aaf4@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,62 +44,70 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 22 Sep 2026 15:15:19 +0100
-Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+On Thu, 24 Sep 2026 09:48:45 -0500
+Carlos Casadiego via B4 Relay <devnull+cdcp206.gmail.com@kernel.org> wrote:
 
-> On Tue, Sep 22, 2026 at 02:09:58PM +0300, Antoniu Miclaus wrote:
-> > The two byte bulk read at AD4080_REG_PRODUCT_ID_L expects PRODUCT_ID_L
-> > followed by PRODUCT_ID_H. After a software reset the AD408x defaults to
-> > descending address mode, so the second byte comes from CHIP_TYPE (0x03)
-> > instead. CHIP_TYPE reads 0x07 on all AD408x parts, so an AD4080 reports
-> > 0x0750 rather than 0x0050 and every part logs "Unrecognized CHIP_ID".
-> >=20
-> > Set ADDR_ASC along with SDO_ENABLE before the read. This is the only
-> > multi byte transfer in the driver, so no other access is affected.
-> >=20
-> > Fixes: b66cddc8be72 ("iio: adc: ad4080: fix chip identification")
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > --- =20
->=20
-> You could also just use change AD4080_REG_PRODUCT_ID_L to
-> AD4080_REG_PRODUCT_ID_H (maybe a slight smaller diff). Nut no strong
-> feelings:
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-Applied to the testing branch of iio.git and marked for stable.
-I think this one can wait for the merge window. In reality it
-is likely so will all the other fixes I currently have on the iio-fixes
-branch.
+> From: Carlos Casadiego <cdcp206@gmail.com>
+> 
+> The software reset is required to bring the device into a known
+> state before reading the chip ID.
+> 
+> Check the return value of regmap_write() and abort initialization if
+> the reset command cannot be written.
+> 
+> Fixes: 1c500840934a ("iio: accel: bmc150: reset chip at init time")
+> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Signed-off-by: Carlos Casadiego <cdcp206@gmail.com>
 
-Thanks.
+Just to check: Was this verified against actual hardware?
 
-Jonathan
+Quite a few devices get going on their resets before sending
+acks on i2c which means you get an error on that particular
+write.  That is often why you don't see an error check on this
+particular operation.
 
->=20
-> >  drivers/iio/adc/ad4080.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-> > index 4843ecdd91a8..4ed82aa42400 100644
-> > --- a/drivers/iio/adc/ad4080.c
-> > +++ b/drivers/iio/adc/ad4080.c
-> > @@ -710,7 +710,8 @@ static int ad4080_setup_channel(struct ad4080_state=
- *st, unsigned int ch)
-> >  		return ret;
-> > =20
-> >  	ret =3D regmap_write(st->regmap[ch], AD4080_REG_INTERFACE_CONFIG_A,
-> > -			   AD4080_INTERFACE_CONFIG_A_SDO_ENABLE);
-> > +			   AD4080_INTERFACE_CONFIG_A_SDO_ENABLE |
-> > +			   AD4080_INTERFACE_CONFIG_A_ADDR_ASC);
-> >  	if (ret)
-> >  		return ret;
-> > =20
-> >=20
-> > base-commit: dceba8e581e3e8f475da0efbd7a73f3d9524ddd2
-> > --=20
-> > 2.43.0
-> >  =20
+
+
+
+> ---
+> Changes in v2:
+> - Remove the blank line in the tag block.
+> - Add Srinivas Pandruvada's Acked-by.
+> - Link to v1: https://patch.msgid.link/20260923-iio-bmc150-check-reset-error-v1-1-b8c1ebc4c947@gmail.com
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index 46bb36d9366e..43a39e1ccce5 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -1561,8 +1561,12 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	 * Reset chip to get it in a known good state. A delay of 1.8ms after
+>  	 * reset is required according to the data sheets of supported chips.
+>  	 */
+> -	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
+> -		     BMC150_ACCEL_RESET_VAL);
+> +	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
+> +			   BMC150_ACCEL_RESET_VAL);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Error writing reset register\n");
+> +		return ret;
+> +	}
+>  	usleep_range(1800, 2500);
+>  
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
+> 
+> ---
+> base-commit: d8c0f48f0b1583308a98401c0c7b1a65d1d43a6c
+> change-id: 20260923-iio-bmc150-check-reset-error-389b096b0ad4
+> 
+> Best regards,
+> --  
+> Carlos Casadiego <cdcp206@gmail.com>
+> 
+> 
 
