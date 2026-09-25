@@ -1,199 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f9.google.com (mail-wr2-f9.google.com [74.125.225.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5070477E4D;
-	Fri, 25 Sep 2026 09:10:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F1F3E3C5F
+	for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 11:03:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790327460; cv=none; b=NLVtCivs4Y9olEXc7fHaAcpnytwUU4DIxqjqYOapAVE1gl81qjh+1MbP/We0C4iq7qAsuqbeot6gdbS8D1FnQvfc5S1gdnICf5QK4D+lozD9ucE0C5bJjpkoq78BECX9pJq4bb+WjgiSJBCOFw/aulSTw/FVkIeEJ5sOBtOUprQ=
+	t=1790334213; cv=none; b=kZc1Ql2OqhOVoZsP3aMjcAVc+rGSBJO9by9zZCxSTb/emLKGRcSJkuN3pEJ0WT9XCAoTxeaoRP7W3RlY8HhjaGPO3SyK4+ZLH9y7sowkPsmZyvZv5aPXMPi6qXULP+/2dY59jkh3EQsU8g7KDifEw97Z/tfXqybSD5SPeI9X2X8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790327460; c=relaxed/simple;
-	bh=g+73qLoYaz6+pvyfvA5np/DdngHoGLgjI1wJ9+pR5P4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=boi3eXHoL5Y/D25ujDY8ZPU27UmBDHcdRaow95seL+mK4HzMYS+J4fGB0508/vaIItu0/mfpTlyu8gsdQid5z/Ai+O1AheXVjT4uM+4ppO6Q9/Jkmg5W4QeQfm/YDY8iUCZKrcxb0mmUq48sD6ByQOtAWOlqX4SM7+abGfMQMHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UNsMafiw; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1790334213; c=relaxed/simple;
+	bh=zC4z0kFbgJ/oRwa7t2ro0ax09WNAsCpiV49s9UZsfl4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=aTMno0nyEU7DKbY2kklU672pnC3do+eHXP03d09wWb/osNqMHDNWNrHHUXzAo6EANkXhDvKjG94bwNEJyBEPAnRi0zEmCeCjj8wA4UshvXmxbzOWihEvI2//+oD2XjtjKhTAeEcrJM/wXV8A+px0bfgrksPRvIyN38lTxM2JigI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VKkwfyH8; arc=none smtp.client-ip=74.125.225.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UNsMafiw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790327458; x=1821863458;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=g+73qLoYaz6+pvyfvA5np/DdngHoGLgjI1wJ9+pR5P4=;
-  b=UNsMafiwm0lfFTaZwqLtf31zos91Ghfq9z4e4ZWHXwvWT+MlOxldN4WK
-   vBlYhLZ3UJ/9177XkI/n0BVQY5oeNaHShba5vCxFyFmD4MgCWouR3n4yv
-   VV7Mm4fhp/XBYd9T+eh/3eAEQ9Zcv/44W0KB2hTc+Ib4nnXf3OHZ+t7Vl
-   o92OuAcKPdh2iLKic5KRFx9b4M7dWU/dlSIoqwQ7gNukPU4UgrxD59W2H
-   PW0ax7NdfZ5T6tdDKHZidKulJrWB+fuuzr4tnBQ+E8176vnsxXcB/ZFAb
-   G5Wl+u9jlWpLp0YqxWZTLaIy53VX2xGPC6etfwnJ9/k40uVRTqR7IJgHe
-   g==;
-X-CSE-ConnectionGUID: hbCWX9CLQKumgaQBX/J9Zg==
-X-CSE-MsgGUID: 9eoOIXofSYmgbqtvlrtKDw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11915"; a="116639363"
-X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
-   d="scan'208";a="116639363"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 02:10:57 -0700
-X-CSE-ConnectionGUID: QFpkLrKQSBSUj4oVroqcRQ==
-X-CSE-MsgGUID: kGT9NfHbQ7qsBksGc/ByfA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,122,1787036400"; 
-   d="scan'208";a="274373884"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.27])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2026 02:10:47 -0700
-Date: Fri, 25 Sep 2026 12:10:45 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Armin Wolf <W_Armin@gmx.de>
-Cc: Meagan Lloyd <meaganlloyd@linux.microsoft.com>,
-	linux-i3c@lists.infradead.org, alexandre.belloni@bootlin.com,
-	vitor.soares@toradex.com, samagazaryan@google.com,
-	gregkh@linuxfoundation.org, arnd@arndb.de,
-	boris.brezillon@collabora.com,
-	oleksandr.shulzhenko.viktorovych@intel.com,
-	tgopinath@linux.microsoft.com, corbet@lwn.net,
-	skhan@linuxfoundation.org, linux@roeck-us.net, Frank.Li@nxp.com,
-	jorge.marques@analog.com, pgaj@cadence.com,
-	wsa+renesas@sang-engineering.com, tommaso.merciai.xr@bp.renesas.com,
-	nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, andy@kernel.org, lorenzo@kernel.org,
-	enelsonmoore@gmail.com, rppt@kernel.org, pratyush@kernel.org,
-	giovanni.cabiddu@intel.com, gabewhigham@gmail.com,
-	haren@linux.ibm.com, pasha.tatashin@soleen.com,
-	jirislaby@kernel.org, adrian.ho.yin.ng@altera.com,
-	ustc.gu@gmail.com, jszhang@kernel.org, adrian.hunter@intel.com,
-	akhilrajeev@nvidia.com, tze.yee.ng@altera.com,
-	manikanta.guntupalli@amd.com, shubhrajyoti.datta@amd.com,
-	jarkko.nikula@linux.intel.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] i3c: add i3cdev character device module for
- user-space access
-Message-ID: <arY6lReqi-UDuorI@ashevche-desk.local>
-References: <20260911210935.1353126-1-meaganlloyd@linux.microsoft.com>
- <20260911210935.1353126-4-meaganlloyd@linux.microsoft.com>
- <aqVUyYkpKT8iX4Jz@ashevche-desk.local>
- <20260916-454d66ca84cc91479b195aa5@linux.microsoft.com>
- <aqt_dCazxTDR4cpk@ashevche-desk.local>
- <f6eb60e0-e318-4846-a906-31cb965ccb15@gmx.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VKkwfyH8"
+Received: by mail-wr2-f9.google.com with SMTP id ffacd0b85a97d-48877a1da19so186743f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 04:03:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790334210; x=1790939010; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=CerMNlkIdGv7koVlXaq6GKcXCSbjYoltTboOWcnalW0=;
+        b=VKkwfyH8Sx8CFPHiyzav6P2zAlPzRl30E6/SI0CClIBny5tWJO8e7uigeyGl0nONjY
+         uasOIhWUptuQKAKIEuydVASbWb+6PZoEZTcgpFUVyBvzQCMG9vS68bWpURR3Ceq16qS6
+         zUvgziLzBbO+S8xR7ouZtrtWnxtmI7UYVVx0yTC2T2OV5gAgi7PIvUhOuF3sPgvl5hbp
+         H5F6L6UN82K9+76wujApVvaJRU1GuRgN9GIeHbUpEmJsysnWoPBCclVcBkqG59BpkPnT
+         5iiIzzfmh7xJ4PLb9/2uEoVrW/GG3Kyv9/gjCoTzJWdaqZIxP1W9G3AkGVPGG3mK+9hd
+         mdXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790334210; x=1790939010;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CerMNlkIdGv7koVlXaq6GKcXCSbjYoltTboOWcnalW0=;
+        b=hxpQvjmaFT2mCBjehQEP2VdFmwSs35BYNkCfEJSgqxe27SVW8y29yCWDNInOxHkZnP
+         PaI5puTJqO6bbGZI5G2SW2ROdgvu5pmuoQJ0o/QhXGjq110/bNoQN1zJ13Xd/ThyFNnh
+         fy2W2v8TqLHUKFOZuJwq2zVB+N4hG/Oeh9HZs19gooOBftMqaIP62/b56bkmW2IlLStJ
+         HR7jWWJ8d7uFkQDtDyUB0JEghvk55t4rUWl0a+TbPBMwj/6bnxkA4V9E8w5JMoXF4Fc+
+         qbVLre3OAukULRYNRdbf0QdR1dBJB3G+OFdBtiqskRTQyMao8cuH5JcoxEKkUYYao3y+
+         bzLA==
+X-Forwarded-Encrypted: i=1; AKwUvBwfCzUSD/QcHPbN7kFRTrWJr6Zgu8fhM0zFrv/nBGPP8aHLN9waJGEmKUlayF/+c3xcYdyi7WEiX+U=@vger.kernel.org
+X-Gm-Message-State: AFuF++kNSPu8GVZVUT5mCwcuf/71ZYjAVwrMWD36uHOFm50NThJjhkpj
+	CKaGvP31X/ASAUCRrrBm7qEmSb2n2HlYCXCC4D1KPEQ+YFuTcEn6MvxM
+X-Gm-Gg: AYBFou0wEkcka7vpOz3sJ8aa6fg18PDuMqLL1YG3eGjzAvYy/UwUj/yDo9HwQPlf5S7
+	C0Asx/sD195FG97PomSW3m4VHBgfpgivE6CyBUH9UQcU71kemLDpE8J4Gx7Iw0zTF+Wjeef2iDC
+	9HJ1dt/E5AG7ypffjk7DlqPJYnE8U1GRFKNJ1hRZ+XYEo9+xkLJuheaMltHeqvPbhz6V+dOF7Js
+	HQkk/NAV49TalO9zA8H5NDoF1PQGs5Q10Dt7NCT38ZtqZD7ivVr4BEGW1GZORNCE6A6rttZZ30r
+	PEmQEX+7tMUaOIHojYVj7Krwd/2Tmoam6cwBVeOccZIikiIbpCW0gCcnuSmrj4fCgdm1fjMoT9U
+	qG1LQALd93KeyEZ+STRjJoRWfIzL1U5kinnBRsG6fs/9aGGvUSpUUtF8nhi+JZoIFbu3f4ifaa2
+	sbZ7UKc0sHZmeQGzjzp6h9uklL8XyWvQnmXMGjykzHdMTy4ceZVG3xpJLSAn9u7BKYDg==
+X-Received: by 2002:a05:6000:1788:b0:487:77c:f6c4 with SMTP id ffacd0b85a97d-4887db2effamr3048240f8f.35.1790334209914;
+        Fri, 25 Sep 2026 04:03:29 -0700 (PDT)
+Received: from fedora ([165.99.41.159])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4887a355826sm6414715f8f.18.2026.09.25.04.03.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2026 04:03:29 -0700 (PDT)
+From: Shehryar Ahmad <shehryar.amd@gmail.com>
+To: jic23@kernel.org
+Cc: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	andy@kernel.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Shehryar Ahmad <shehryar.amd@gmail.com>
+Subject: [RFC PATCH] iio: adis_buffer: fix buffer ordering for IIO core demultiplexing
+Date: Fri, 25 Sep 2026 16:02:39 +0500
+Message-ID: <20260925110239.59320-1-shehryar.amd@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <f6eb60e0-e318-4846-a906-31cb965ccb15@gmx.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Sep 22, 2026 at 10:53:09PM +0200, Armin Wolf wrote:
-> Am 17.09.26 um 07:49 schrieb Andy Shevchenko:
-> > > On Sat, Sep 12, 2026 at 04:34:01PM +0300, Andy Shevchenko wrote:
-> > > > On Fri, Sep 11, 2026 at 02:09:35PM -0700, Meagan Lloyd wrote:
-> > > > > The i3cdev driver is a character device driver that allows user-space
-> > > > > to control and interact with I3C devices.
-> > > > > Currently, it has the ability to perform Single Data Rate (SDR)
-> > > > > transfers - basic reads/writes.
-> > > > > 
-> > > > > With the addition of sysfs driver_override, there is now a
-> > > > > straightforward and direct way to match the i3cdev driver to any i3c
-> > > > > device without stepping on the toes of more specialized drivers that are
-> > > > > loaded automatically.
-> > > > Is it safe? Why on the earth do we need this? The commit message has not enough
-> > > > information.
-> > > I can't see a reason that it'd be unsafe. To give additional confidence,
-> > > it's already in-use in many bus_types:
-> > This argument has nothing to do with i³c. Each bus is different on a physical
-> > layer, electrical protocols and programming flow. Each of them has own
-> > constraints.
-> > 
-> > > To answer why we need it:
-> > > If we want to write i3cdev as a standard device driver, it can't
-> > > actually match anything by default. This is because, some devices on the
-> > > system may need specific drivers and i3cdev is generic and should
-> > > technically match every device.
-> > Yes, but I have seen no reason why we should expose i³c bus to the user
-> > space. With i²c we already know very well that it was (and still is)
-> > a bad idea. Why i³c is better (especially taking into account i²c
-> > compatible mode and more complex programming flow)?
-> 
-> in my experience sometimes during driver development you want to access the device
-> directly to test things, but of course this is incredibly unsafe.
+Hi Jonathan,
 
-Exactly, and not only unsafe, it's also quite dangerous to the HW. The users must
-*not* see or have this feature.
+After issue raised by Sashiko in adis16203 graduation series [1], looking at
+other drivers if they might have same issue. It appears that the root
+cause is in adis_buffer.c itself. The library constructs the SPI
+transaction in channel array order while IIO core demultiplexes in
+scan_index order.
 
-> I think we should taint the kernel as soon as userspace applications perform raw
-> i3c accesses, but the idea itself is fine from my point of view.
+adis16209 and adis16260 have the same mismatched ordering that
+adis16201/16203 had.
 
-Not only this, but guard it in the first place.
-However my personal opinion is an bsolute NAK to this idea. If you want do
-something, do the proper driver in the kernel.
+Rather than reordering channel arrays in affected driver,
+would it be sensible to make adis_update_scan_mode() iterate
+in scan_index order instead of channel array order?
 
-> > > Since the driver_override is default NULL and is set via sysfs, this
-> > > allows any specific drivers on boot to be loaded up and would allow
-> > > explicit control on what device i3cdev gets bound to.
-> > > 
-> > > This was my rational. I will refine the commit message with more details.
-> > Put a real life example why the exposing i³c devices into user space is
-> > absolutely necessary.
-> > 
-> > > > > This is accomplished by the i3cdev driver not having any entries in
-> > > > > the i3c_device_id table. After boot, simply set the driver_override
-> > > > > to "i3cdev" and bind the device manually via the sysfs bind knob.
-> > > > > This can also be automated with udev rules as well.
-> > > > > 
-> > > > > The character device interface will be exposed at: /dev/bus/i3c/<bus
-> > > > > id>-<Provisional ID>
-> > ...
-> > 
-> > > > > +	for (int i = 0; i < metadata->nxfers; i++) {
-> > > > Why is 'i' signed?
-> > > Mostly for readability and to make sure the line length on loop headers
-> > > is kept below 80 chars. As a precaution, to make sure that 'i' can
-> > > represent any metadata->nxfers value without overflow during loops, I
-> > > check that metadata->nxfers is less than/equal to INT_MAX in
-> > > get_metadata().
-> > No need to add useless checks.
-> > 
-> > ...
-> > 
-> > > > > +/** + * print_i3c_err() - Prints the I3C error encountered during
-> > > > > the prior + * call to the core's transfer function.  + * @i3cdev:
-> > > > > i3cdev_data object + * @metadata: Kernel's copy of i3cdev_xfers
-> > > > > (ioctl I3CDEV_XFER input) + * @i3c_xfers: i3c_xfer array that was
-> > > > > sent to the I3C core
-> > > > > + * Returns: void
-> > > > Huh?! Where is this coming from?
-> > > In i3cdev_ioctl_do_xfers, if i3c_device_do_xfers failed, I wanted to
-> > > print out the first I3C controller error encountered. The controller
-> > > drivers can set this in the i3c_xfer.err field. Hence this function.
-> > > 
-> > > It's to aid debugging and provide useful error information.
-> > > I can certainly refine the wording on the print_i3c_err documentation
-> > > header to make this more clear.
-> > My point is about kernel-doc. Why do we need the return section for void?
-> > Where it comes from?
-> > 
-> > > > > + */
-> > ...
-> > 
-> > > > Please, rely less on AI and more on the common sense and
-> > > > proof-reading.
-> > > I think I gave you the wrong impression. The new contributions in this
-> > > series were written and developed by me. I used AI for quality assurance
-> > > and cross-referencing. Since I incorporated some AI-flagged suggestions,
-> > > I tried to acknowledge that with the Assisted-by tag.
-> > I see, then there is a room to improve the code. But the main question is
-> > why do we even need this whole interface to begin with?
-> > 
+Would this be the right approach, or is there something I'm missing?
 
+[1]: https://lore.kernel.org/all/20260914015321.7a660ab5@jic23-hlaptop/
+
+Signed-off-by: Shehryar Ahmad <shehryar.amd@gmail.com>
+---
+ drivers/iio/imu/adis_buffer.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+index 501da4eae..45200b753 100644
+--- a/drivers/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -110,10 +110,10 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 		spi_message_add_tail(&adis->xfer[j], &adis->msg);
+ 	}
+ 
+-	chan = indio_dev->channels;
+-	for (i = 0; i < indio_dev->num_channels; i++, chan++) {
+-		if (!test_bit(chan->scan_index, scan_mask))
+-			continue;
++	for_each_set_bit(i, scan_mask, iio_get_masklength(indio_dev)) {
++		chan = iio_find_channel_from_si(indio_dev, i);
++		if (!chan)
++			return -EINVAL;
+ 		if (chan->scan_type.storagebits == 32)
+ 			*tx++ = cpu_to_be16((chan->address + 2) << 8);
+ 		*tx++ = cpu_to_be16(chan->address << 8);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.55.0
 
