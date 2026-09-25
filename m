@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B546261B8D;
-	Fri, 25 Sep 2026 01:50:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C39A231355C;
+	Fri, 25 Sep 2026 01:51:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790301027; cv=none; b=BQPpJdiOHXPAB6hzfjISwAOdZaL4aDumMoN0tl2NSFrECrHoth2qCy2mS1y0kSEyE7fL/S2/AUoWx+xB1jE2xCp8hujATQD5gZ+WxoKCS0YQjPoeqN/EZm/XJEaGc8TYu8c6bGQa3XdvQj+UNqSKjb8rNNUUsI346XX8lJ0fUbU=
+	t=1790301119; cv=none; b=O2mbWNnqzX9NKHfYTSq80cchx6Lx5JNeZsYp8bg3QB11/cEsarGLyfmfLKe2T0/COXi6jqkerA0pHICTxB53XTphW/n4kaPDA6ZjIjUZqb4L6PL8TkzaDfqstvhoZvT478qnqRxYflHmKHYHipkmuxlvJwwvAimrKKy0fIuHhK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790301027; c=relaxed/simple;
-	bh=inEqjEpDglLkNFy8nCjjq8+AxguZny3hJWOmKgFbXNE=;
+	s=arc-20240116; t=1790301119; c=relaxed/simple;
+	bh=CC4xt5GiBlwbRUw7wQ9WjWfl5sgxtf7DH1Tkfa5r5As=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cSvdACbL9x9mHUP3KUIkVfcomnmfeuyOfYtwzQ+NqfNQ1ywm2QZyVx10bHMR3iRbEspULPscUkkZS1uBI3TX9z+fG0WbEOS0KJ0bSyGrUa2TCp6Jl69GfrB3GGieKOl5oGuWN1IryXZaxDPivJs8iRevZEFK+2MF7volNvXqz4E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oiJe3lmN; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=F41jwl57ukFreLrJ7FYIUvgxCgb6iAsd52Zf17N7lLIajJhcYURb8i9UvweF0PTLHxpxmwBAEHSeYmhM32c7pI2NRozyie5lkU8Bm/GhgEkg1T/9ZqAZfOuM7pv9dXjkDiysDaM8xAdBnBM/vHWRjSpo4Z1zPJ1EvjgcJd54pes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WHq4/t+B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oiJe3lmN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96EA01F000FF;
-	Fri, 25 Sep 2026 01:50:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WHq4/t+B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF9A1F000FF;
+	Fri, 25 Sep 2026 01:51:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790301025;
-	bh=shPc3UzugcyGgOmfcjBgifgZgCAQqdOMWi1NcC9UhmY=;
+	s=k20260515; t=1790301118;
+	bh=M4vMavJkMrkIoZqEbnmJ3voS7dppi1avHmqq3XLmlYY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oiJe3lmNBtbp7KchHuNNEBtqDxelaYxf7TG3b2p56vIeiRbC+qcze9E7xljS6Fbt+
-	 GLoIB8tqfPqy/6DJoW2x5djnBw0a3DhhJNRfuY+CEpEcmdB9++W+8vB1QECGaJVEPd
-	 e31i8JEsfZt4KIkNKHAPCLK5+PCBZp70U+sPvO9WO5Ea5KMWs8gn5S6Wq8UpE/0fJF
-	 xEDOielbdp0vMCbLzdxmz1EJIlzC7xRArX7PulHhZyDRrAnkgYfq5+0hN/AWYCLO55
-	 etxs+At+bKGbM7kyjmI9dbsDdVk2Onxl2LD2hzW1wsJnCXBg7ZuI188flOyTDN7XnE
-	 ygkU9JH0nBUFQ==
-Date: Fri, 25 Sep 2026 02:50:22 +0100
+	b=WHq4/t+BWQ9jjmrpPNpTa/o6N6oWQUuGzaUN5DfW5QM4p0lTvnh7B2ZxXRxMYH4st
+	 CUn5Qt9zCNacx8dFaxpN760fjp4iuu1or9H47RB/9LarBkAkrO8WGj2Ld8NyJRDOUj
+	 QXHoCZeJPotdlFK8wsUZiHxPZR9glG/XZxgZpIuFIX8+KluKC+8ITfWvDfjXfy0vo6
+	 HQ3wWGjiwzWECzirMXcXLjo3rl8oL2MyeuTXhFwtG5nrjvVzbPL8qwfwCEcO+mkr57
+	 VTSkmUKGukpjGiLrsnT9KKx+ecD3lab30+bDBNALn+IFt8VzDSljP1zM0z4k8euLxF
+	 XE1xjFiZXTwwA==
+Date: Fri, 25 Sep 2026 02:51:54 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Pengpeng Hou <hppiscas@163.com>, nuno.sa@analog.com,
- michael.hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: cdc: ad7150: fix OF matching and publish module
- aliases
-Message-ID: <20260925025022.23fcca59@jic23-hlaptop>
-In-Reply-To: <arJX66ZmCWbZ_4RV@ashevche-desk.local>
-References: <20260920033303.11879-1-hppiscas@163.com>
-	<arJX66ZmCWbZ_4RV@ashevche-desk.local>
+To: Pengpeng Hou <hppiscas@163.com>
+Cc: petre.rodan@subdimension.ro, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ tiberiu.a.breana@intel.com, andriy.shevchenko@intel.com
+Subject: Re: [PATCH v2] iio: accel: bma220: publish the SPI driver ACPI
+ alias
+Message-ID: <20260925025154.3a477b43@jic23-hlaptop>
+In-Reply-To: <20260920033358.12345-1-hppiscas@163.com>
+References: <20260920033358.12345-1-hppiscas@163.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,39 +47,51 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 22 Sep 2026 13:26:51 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Sun, 20 Sep 2026 11:33:58 +0800
+Pengpeng Hou <hppiscas@163.com> wrote:
 
-> On Sun, Sep 20, 2026 at 11:33:03AM +0800, Pengpeng Hou wrote:
-> > The OF match entries use positional initializers, which initialize the
-> > name field rather than compatible. Consequently the advertised AD7150,
-> > AD7151 and AD7156 compatible strings do not describe OF compatible
-> > matches. The table is also not exported for module alias generation.
-> > 
-> > Use designated compatible initializers and publish the OF table. Keep
-> > the existing I2C ID table and its device-variant selection unchanged.
-> > 
-> > The issue was found by our static-analysis tool.
-> > 
-> > Fixes: 89f2d5b080bc ("staging:iio:cdc:ad7150: Add of_match_table")
-> > Assisted-by: gpt 5  
+> The SPI driver advertises an ACPI match for BMA0220 but does not export
+> that table. A modular build therefore lacks the ACPI alias used to load
+> the driver when the device is enumerated through ACPI.
 > 
-> Assisted-by: LLM
+> Export the ACPI table. Move the existing SPI export next to its SPI ID
+> table so each export is adjacent to the table it describes.
 > 
-> > Signed-off-by: Pengpeng Hou <hppiscas@163.com>  
+> The issue was found by our static-analysis tool.
 > 
-> Same to other patches with similar tag.
-> 
-> ...
-> 
-> TBH, except the commit message I can't see how LLM could be helpful to the
-> code. It's quite a simple change...
-> 
+> Fixes: bf2a5600a3eb ("iio: accel: Add support for Bosch BMA220")
+> Assisted-by: gpt 5
+Updated to LLM and patch applied.
 
-Applied with the Assisted by tweaked.
-
-Thanks,
-
-Jonathan
-
+> Signed-off-by: Pengpeng Hou <hppiscas@163.com>
+> ---
+> Changes since v1:
+> https://lore.kernel.org/all/20260905133901.66016-1-hppiscas@163.com/
+> Place the SPI export immediately after the SPI table as Jonathan and
+> Andy requested; use the full author name.
+> 
+>  drivers/iio/accel/bma220_spi.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
+> index d6c1087cc3c0..d7a95289df48 100644
+> --- a/drivers/iio/accel/bma220_spi.c
+> +++ b/drivers/iio/accel/bma220_spi.c
+> @@ -28,12 +28,13 @@ static const struct spi_device_id bma220_spi_id[] = {
+>  	{ .name = "bma220" },
+>  	{ }
+>  };
+> +MODULE_DEVICE_TABLE(spi, bma220_spi_id);
+>  
+>  static const struct acpi_device_id bma220_acpi_id[] = {
+>  	{ "BMA0220", 0 },
+>  	{ }
+>  };
+> -MODULE_DEVICE_TABLE(spi, bma220_spi_id);
+> +MODULE_DEVICE_TABLE(acpi, bma220_acpi_id);
+>  
+>  static const struct of_device_id bma220_of_spi_match[] = {
+>  	{ .compatible = "bosch,bma220" },
+> 
+> base-commit: 518e5b794c06c0f0eb40df3e202274a66202c137
 
