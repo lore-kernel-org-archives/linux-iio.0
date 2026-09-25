@@ -1,247 +1,198 @@
-Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010019.outbound.protection.outlook.com [52.101.228.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B50255F28;
-	Fri, 25 Sep 2026 06:17:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790317062; cv=fail; b=A/CFLLHJ1RFEkJT/kaIOcxOPwn7gpsAUmUj7SxoNVoa4vg3vEBr2guwksFskbDS6+X34ER/FWW3A8ZMtgEnLRLBoU01gc7Xbpj+wUMTqmIK/AYhyJn2gUw0ISyOTFQByzLXbrg/OUSNMlrC5JYKECTElxPhJeeruovKZ6b54aCo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790317062; c=relaxed/simple;
-	bh=GmV5cd2HQUW2jgJtBTPra+9aOOp5uIKcuENgmdysjRA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jN9Nd7hinrX6XP2YNaEM3zJGTFepm0NEDh7BSxcMNrGhBiUik2SDPYmM4ESrLQ4NoI5vrAS9oR/96BJNC7ul7nkyhAPiTI/PCfIsmYrWGQWqhyd7YrYR2X1xWmGESklQqSyMy65DtSW277VN6NEmMRgIr2voEU3zKKqqBl5jaOw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=lB5iOYRx; arc=fail smtp.client-ip=52.101.228.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C3C3472076
+	for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 08:12:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790323962; cv=none; b=M3Nnf4Huy/n3RBfRkaz/usaB82b+qjTrzOBEPfCxgYmbjxL0+k+RUCPy4nabzO+HUoEdd5gE1CwQNvVDB6jYicgmsjfXA1Ry0ynBYP19SwenhXsJuYNr48//1kzds04493wHeq9Ib9e/6iRsrcj3IPwtpQ8DHbvPSdHhFnOvS08=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790323962; c=relaxed/simple;
+	bh=F0pWMUz53o74VHfGDjLqFGkToYkSgo8+QZV8EalfPAU=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=kHP1kiEjKkptCstkpFX2RbwmRQE1GHXzecPyZs89Wpcx4V9+iojj7HpiFcRtfl6HDURTlL0f2Q68+wW+0KVi2YrDVmWQGfisDcf/X/ccCFr83Fk/bdvp4/aEGmfl/jtUIkgkSyrf76g0YMRItok8OhMUIKPnE4mC/7pf3PtECjk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JZbW5VH9; arc=none smtp.client-ip=74.125.225.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="lB5iOYRx"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wbh2SookufarXOXcICX8AcunIbNwef7udiRPDjA8iIna/iZhfBXvYZd+JefKtwlqmHrNxS4gFjDGj5riz6ml4HGNo+Q47XKFQgsrXuPzWzaI0yn3BR+lDD+Pq6ml37UvM6qgrcSg8X28fpCilkMUFc5ec7WCzEpflzZ3MlFkVsA4ewtY+Oq90dljs+QLZCv0GPI//c9ocdZmCXCS69iXsMCPq+kzJ1HfFhNF0BTlDP9+mbxPiD31RNdcWI2dQxmGEninBcHnq8ES7Zw+aOjaRAF7ysOwHEk0WtQnx4Y4s8LV3UaGUAKUP3JJARF6f0PAbpIxzavVh/WmigQXE9v5Kw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GKr7Lq2zOHRojKrrWjg1cMW7PQ6j8IFupu6zxkWi0pE=;
- b=qvKwKe1GR7xgk9xpD3eneiUXZp5IPvIW4IIwBJxJk1wk4pVhumcVRxVo6C+QAeYyGsR7bJIOP58o+qn7a66WgEClXZw4cO7mSppyV99+z1uhiAbPnqlUxqRobg/WsV5jIoDZlnEayU7pIANqms52ioMyyiwfpPGAGA5irNDEOd/KUSHjmlKp090vNCzZR13FyuLMfyMRv0HMzdMdflRoYJ3vAqAg24K+t5NrHxLAAnPkAAN14bqrGOO2j69aIwiMa7fTuXNSs4xRU7SnPnoEtPnZ+6ERSOTyQhRy5YGcFLiQnaci8EXuQ7bUV5xbr0povTMmQrevJwVuB8OOSSJdWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 8.62.32.50) smtp.rcpttodomain=bp.renesas.com smtp.mailfrom=bp.renesas.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=bp.renesas.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GKr7Lq2zOHRojKrrWjg1cMW7PQ6j8IFupu6zxkWi0pE=;
- b=lB5iOYRxo5pkAzbmlnzqIgkTH1ECTyEtPxuR709+E5u8DBs89khe3Vdnqo1NzMkkI61HF01Q4KtyhKVdXvng1YP9fwtOqinOj16l0dYnzpJX+H3XlSJWQBl9aV7zAK8B8V2nDfDlh0bRLsXDndz25quEKVPMeSS7oJ84kexK+AY=
-Received: from TY4P286CA0083.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:36d::15)
- by OSZPR01MB8671.jpnprd01.prod.outlook.com (2603:1096:604:180::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.22; Fri, 25 Sep
- 2026 06:17:37 +0000
-Received: from TY2PEPF00005623.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:405:36d:cafe::6c) by TY4P286CA0083.outlook.office365.com
- (2603:1096:405:36d::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.18 via Frontend Transport; Fri,
- 25 Sep 2026 06:17:36 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 8.62.32.50) smtp.mailfrom=bp.renesas.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=bp.renesas.com;
-Received-SPF: Pass (protection.outlook.com: domain of bp.renesas.com
- designates 8.62.32.50 as permitted sender) receiver=protection.outlook.com;
- client-ip=8.62.32.50; helo=ejcrelay004p.adwin.renesas.com; pr=E
-Received: from ejcrelay004p.adwin.renesas.com (8.62.32.50) by
- TY2PEPF00005623.mail.protection.outlook.com (10.167.240.54) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.8
- via Frontend Transport; Fri, 25 Sep 2026 06:17:35 +0000
-Received: from biju-VirtualBox.adwin.renesas.com (unknown [10.226.92.177])
-	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id 61A6B3000259;
-	Fri, 25 Sep 2026 15:17:27 +0900 (JST)
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	Chris Paterson <Chris.Paterson2@renesas.com>,
-	Biju Das <biju.das@bp.renesas.com>,
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v4 7/7] arm64: dts: renesas: r9a08g046: Enable TSU
-Date: Fri, 25 Sep 2026 07:16:05 +0100
-Message-ID: <20260925061617.127349-8-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260925061617.127349-1-biju.das.jz@bp.renesas.com>
-References: <20260925061617.127349-1-biju.das.jz@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JZbW5VH9"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e7d2bb404so2028925e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 01:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1790323954; x=1790928754; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:organization
+         :autocrypt:content-language:references:cc:to:subject:reply-to:from
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ATk7xMKP08uK1zoQuR5gtkcggdAXygth+dWq3sg9U0A=;
+        b=JZbW5VH95n8qS3OkappBNq64+Ev7wUSqzSPSwBCms3Qr83bacL9P4vyE4YUw3EQ8EP
+         evlPc+1LWZgVQ6V7Ee1cBu/fJflSSWjIKofKLjC9CP/2UN3RMwBMBDVO3dHGu7iOyBp2
+         ToeqO2ymtyWx//g9lHVJipsc18RqoJsEpdOpiDCtnp3/c5UXT2InBLpFgSzdETE1vH+n
+         4Cp2SOvBRTUKT8r2W3nliVRDkgDN4g02oiE6x240IENIine6tA0GroZIkwGuh8CJbxqG
+         rwtRKAtKQ1XrYd4z1lUVtwK3k5o/prKa9kXjHTUEbGAnjog00FZ3qlcFEa9buskNJTPM
+         2JaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790323954; x=1790928754;
+        h=content-transfer-encoding:content-type:in-reply-to:organization
+         :autocrypt:content-language:references:cc:to:subject:reply-to:from
+         :user-agent:mime-version:date:message-id:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ATk7xMKP08uK1zoQuR5gtkcggdAXygth+dWq3sg9U0A=;
+        b=jLREhOb10KIep9wF+EhWyPbHKQT1Fnze70ILOCMcnXKrV2nhvFLdc135nWmpEIsusa
+         BLFgodkw/0fNtU/JowsGR31VzI93ulpzUwjz4fAJlWtU6iln1GboKwItb6xzLiqIZuK2
+         0aCCmUwttXpXV9LgpN+Xxg9kMoMjbHJs+ZBBjAELddUk+Ye5TxJ0bb9CYCc5bylMb0Ud
+         kwvSBUfab57TDNjXQKkcOPhZ60Y66FadgVnery0gYDV2oqGnw5U459LlTtirEXlvwWoH
+         gVcuEL8Q/Ek8liK4l7IFLN38SYcvnXl9jhodCFWq4madxbX4m6ZLLViZgf8BtFWp0VAl
+         msog==
+X-Forwarded-Encrypted: i=1; AKwUvBy6e0NfKNSi3+uyI1HGPWHf71Hc5IFueAsbognookGln7CsjtisxgV1/cYmW55uPzXK820Z1X0lssE=@vger.kernel.org
+X-Gm-Message-State: AFuF++kvtJ46J+J3xr/Mv/a33ovyNs34aG6HtOxzabvedOnd4Z85g61W
+	ASanbDnvhaTSTMFtvIB/p3EP1vSRUhkGfiBk8//+vbwo64KIc5JzCEea2zODuZWgy9Q=
+X-Gm-Gg: AYBFou2kUJVC63hZRrP+4vQII5EmpCRyeTAO2CooiygUmFs8bivEuQ+puY7s20XCl8q
+	PX3+dFKdosrZGYaqpSM6vcC4khgfiJUM03y7Iqi9Xy/Af6S4IhboimSjR/HbkC+HH9kVCK7Itop
+	84OfzOxACAxx2OEfpHhwQiAAR/Squ0VXreeHDG8KXOu8nmwlOm5NxTO4jzKk9O+lvfgxIuFMDG3
+	HO3J0WX94trIVfeCA5m75hslDgVRY5z5P9G6h2wBykvJ7RTW8gQys2EtSaysLnU6i4xZ0TW4Mtc
+	Mlb0E/OXyitV8uph0ogU/ya2cCxavz/oVG87ZCZYmImoUXNVUwblq6KO8LmMp04S1poNm3G5hhU
+	evbW7bOqqAv57d+YWDiUY7ip39BYvDrvWu9uzl9k8U8O/4ujnMyqrIYdTbaz8f1Z0f6LW3VeXP3
+	30torvCRO9z5pHxpivAS6V6niNmC8Vbtj0F0Mq2RM+LhZWd5DYy76ymadyrHW4Ffd4LEoD83g32
+	2DhmkPpGY/8OTQ0+rcBSwmOYqO6HT31AYMFhDundP0WmSXa0D+Arg==
+X-Received: by 2002:a05:600c:1f83:b0:49b:8f5e:51fb with SMTP id 5b1f17b1804b1-49fe66c8087mr84370395e9.3.1790323953453;
+        Fri, 25 Sep 2026 01:12:33 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:106d:1080:3151:fc9b:d41c:770b? ([2a01:e0a:106d:1080:3151:fc9b:d41c:770b])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fee915f3dsm45286775e9.1.2026.09.25.01.12.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Sep 2026 01:12:32 -0700 (PDT)
+Message-ID: <9be6cfd1-5cb6-4437-b253-1590292b8cbf@linaro.org>
+Date: Fri, 25 Sep 2026 10:12:32 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TY2PEPF00005623:EE_|OSZPR01MB8671:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: d102fd62-b3f0-460c-ad33-08df1accb14d
-X-LD-Processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|7416014|23010399003|376014|36860700016|1800799024|10067099003|11063799006|56012099006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	J/TJqWD2dxS1pf8rXfPE2p0JU3B7Vbs3IPtRVz7AJT4dXT8OqB+6+FcnJgNUgGKP4/bOvRz3dLguPlNA5Gw3Haj4iLO30fU8tSRnuZt1kmgREbFClweWBQirG05XH7x7TB99aKMocLL66qCOXYndCo1pC5KnYu0tYSSLX0lVwmFkbfNus34yc+cpjzsGpOBQKHXBs0MMPTjPa8cLb0G3YILxYT1EddkQIhIMCVijB4hKjuFwNHUtg+r1BtSkHlDQ5fnQQh95c2qzqQJPCJDav2L31UrWb4W3CDwXPZtwiE6G1QyHNbo6oDjiZGL8ucyU6E4wWDCtBiR+tzP8i8tRemxrIwMcveKmJizcrvkAHyNkXk46m8MVc7ctrUbsU5VZPQz2BSxehjK7QQr9BMob+WIi7q3cyIobG8jkOCiitwF5l7cYh9+cAESu2Uu/hyXgwBQJAuJjRJidGyvnI0tUX9OYpPC4HoRTwqTPVOz1kWG0qne9hAzHPVTpI+RkNMXQ7OAtyxQdrNBR3Hm7qCSkOQKuHL2h7s+PEITNRgjw0v0F6VQeQMvz8sILbrQgN3LoKL64pYELg6oA6wIezL2hwLVsMXPfxMP+ChNtahJhp7ig26aQx2HxjEV5oydFngcPpd/kFd/NwzK7kXxPQnFJXYnDS3oxk7nuPkKZzPpn4KV5UZJaoRpwhvMf+SUeCz4mJ9gddERN/0UAplrQ+sDsrw==
-X-Forefront-Antispam-Report:
-	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(23010399003)(376014)(36860700016)(1800799024)(10067099003)(11063799006)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	GuaN/EoKuivB/0+XNdXbEwzOW2fwXX88w3UFptlLVi3C9sIAIvJoprVA8OaxjNbWznsAevau8hxxtOWa7mXjMzditWzZ2Mzz/wHSFkwp0l4midsyOajYqXznGrP/MJEf5AmhHLoxbKnBqAOeSCkcTtJZ6TylQkLHyxdxlItdfzpDNxYRBEot+Cv4bYAy4kurRP8OjPB3AyxupQsi6N9b/F42GzMQjdOZQyRkFPsOJf8Nq3M2wXDJBDhQj2L8qs9r127wO7JQFudu8g7zca0M2bSJMbSw+rqTzHHQIyAkQVGTPcH7Mj67b6R2xEhZwOYrXxGakJbgWKkZ19sBac1emBtsFV5jp01df6MgUQKB/GVrkJuz4Jfs5AOYTXS8nlTf+KNOY7X7jqL9WAcTdGLCzm8JRYb1DqDzTdq59fw4Jj9Epk+PREdFS1eAs41Zqdz8
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2026 06:17:35.9711
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d102fd62-b3f0-460c-ad33-08df1accb14d
-X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=53d82571-da19-47e4-9cb4-625a166a4a2a;Ip=[8.62.32.50];Helo=[ejcrelay004p.adwin.renesas.com]
-X-MS-Exchange-CrossTenant-AuthSource: TY2PEPF00005623.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSZPR01MB8671
+User-Agent: Mozilla Thunderbird
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Reply-To: Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH v2 0/2] iio: adc: add support for the MAX34417
+ Four-Channel High Dynamic Range Power Accumulator
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260924-topic-sm8x50-iio-max34417-adc-v2-0-9a0609e72f5c@linaro.org>
+ <20260925041325.0efac345@jic23-hlaptop>
+Content-Language: en-US, fr
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro
+In-Reply-To: <20260925041325.0efac345@jic23-hlaptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Add #cooling-cells to the CPU nodes, and describe the ADC1 (used
-exclusively by the TSU) and TSU nodes along with a CPU thermal zone
-using passive and critical trip points, with CPU frequency cooling
-maps for thermal mitigation.
+Hi Jonathan,
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-v3->v4:
- * No Change.
-v2->v3:
- * No Change.
-v1->v2:
- * No Change.
----
- arch/arm64/boot/dts/renesas/r9a08g046.dtsi | 66 ++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
+On 9/25/26 05:13, Jonathan Cameron wrote:
+> On Thu, 24 Sep 2026 15:14:14 +0200
+> Neil Armstrong <neil.armstrong@linaro.org> wrote:
+> 
+>> The MAX34417 is a specialized current and voltage monitor used to determine
+>> power consumption of portable systems. The driver support getting the channel
+>> voltage and accumulated average power over an I2C/SMBUS serial interface.
+>>
+>> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> 
+> Hi Neil,
+> 
+> As pointed out too fast for a v2.  You aren't new upstream so
+> that shouldn't come as a surprise!
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a08g046.dtsi b/arch/arm64/boot/dts/renesas/r9a08g046.dtsi
-index f33d5d7468ff..35046c7dac54 100644
---- a/arch/arm64/boot/dts/renesas/r9a08g046.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a08g046.dtsi
-@@ -179,6 +179,7 @@ cpu0: cpu@0 {
- 			next-level-cache = <&L3_CA55>;
- 			enable-method = "psci";
- 			clocks = <&cpg CPG_CORE R9A08G046_CLK_IC0>;
-+			#cooling-cells = <2>;
- 			operating-points-v2 = <&cluster0_opp>;
- 		};
- 
-@@ -189,6 +190,7 @@ cpu1: cpu@100 {
- 			next-level-cache = <&L3_CA55>;
- 			enable-method = "psci";
- 			clocks = <&cpg CPG_CORE R9A08G046_CLK_IC1>;
-+			#cooling-cells = <2>;
- 			operating-points-v2 = <&cluster0_opp>;
- 		};
- 
-@@ -199,6 +201,7 @@ cpu2: cpu@200 {
- 			next-level-cache = <&L3_CA55>;
- 			enable-method = "psci";
- 			clocks = <&cpg CPG_CORE R9A08G046_CLK_IC2>;
-+			#cooling-cells = <2>;
- 			operating-points-v2 = <&cluster0_opp>;
- 		};
- 
-@@ -209,6 +212,7 @@ cpu3: cpu@300 {
- 			next-level-cache = <&L3_CA55>;
- 			enable-method = "psci";
- 			clocks = <&cpg CPG_CORE R9A08G046_CLK_IC3>;
-+			#cooling-cells = <2>;
- 			operating-points-v2 = <&cluster0_opp>;
- 		};
- 
-@@ -374,6 +378,37 @@ scif5: serial@1004e000 {
- 			status = "disabled";
- 		};
- 
-+		adc1: adc@108c0000 {
-+			compatible = "renesas,r9a08g046-adc1";
-+			reg = <0 0x108c0000 0 0x10000>;
-+			interrupts = <GIC_SPI 378 IRQ_TYPE_EDGE_RISING>;
-+			clocks = <&cpg CPG_MOD R9A08G046_ADC1_ADCLK>,
-+				 <&cpg CPG_MOD R9A08G046_ADC1_PCLK>;
-+			clock-names = "adclk", "pclk";
-+			resets = <&cpg R9A08G046_ADC1_PRESETN>,
-+				 <&cpg R9A08G046_ADC1_ADRST_N>;
-+			reset-names = "presetn", "adrst-n";
-+			power-domains = <&cpg>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#io-channel-cells = <1>;
-+
-+			channel@8 {
-+				reg = <8>;
-+			};
-+		};
-+
-+		tsu: thermal@108d0000 {
-+			compatible = "renesas,r9a08g046-tsu";
-+			reg = <0 0x108d0000 0 0x10000>;
-+			clocks = <&cpg CPG_MOD R9A08G046_TSU_PCLK>;
-+			resets = <&cpg R9A08G046_TSU_PRESETN>;
-+			power-domains = <&cpg>;
-+			#thermal-sensor-cells = <0>;
-+			io-channels = <&adc1 0>;
-+			io-channel-names = "tsu";
-+		};
-+
- 		i2c0: i2c@100ae000 {
- 			compatible = "renesas,riic-r9a08g046", "renesas,riic-r9a09g057";
- 			reg = <0 0x100ae000 0 0x400>;
-@@ -1382,6 +1417,37 @@ stmmac_axi_setup: stmmac-axi-config {
- 		snps,blen = <16 8 4 0 0 0 0>;
- 	};
- 
-+	thermal-zones {
-+		cpu-thermal {
-+			polling-delay = <1000>;
-+			polling-delay-passive = <250>;
-+			thermal-sensors = <&tsu>;
-+
-+			cooling-maps {
-+				map0 {
-+					trip = <&target>;
-+					cooling-device = <&cpu0 0 3>, <&cpu1 0 3>,
-+							 <&cpu2 0 3>, <&cpu3 0 3>;
-+					contribution = <1024>;
-+				};
-+			};
-+
-+			trips {
-+				sensor_crit: sensor-crit {
-+					temperature = <120000>;
-+					hysteresis = <1000>;
-+					type = "critical";
-+				};
-+
-+				target: trip-point {
-+					temperature = <95000>;
-+					hysteresis = <1000>;
-+					type = "passive";
-+				};
-+			};
-+		};
-+	};
-+
- 	timer {
- 		compatible = "arm,armv8-timer";
- 		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
--- 
-2.43.0
+Yeah sorry, but with the initial feedback v1 was far form beeing
+acceptable, will adjust timings for next versions.
+
+> 
+> Secondly for devices that are all about monitoring power supplies
+> etc we always ask for a clear statement of why IIO rather than
+> hwmon + to CC at least the maintainer and often the hwmon list.
+
+Sure, thanks for the suggestion.
+
+> 
+> There are various valid reasons for that choice, but it is good
+> if they are clearly stated for discussion.
+
+I don't honestly have an strong opinion on that, for me IIO offers
+much more options to retrieve data from the sensor and adding the
+complex feature offered. The IIO triggers for example would
+perfectly match with the bulk readout we coulnd't implement with
+the hwmon API.
+
+Thanks,
+Neil
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+>> ---
+>> Changes in v2:
+>> - switch to shunt-resistor-micro-ohms no more required
+>> - removed gpio.h from example
+>> - Fixed max34417->MAX34417 in Kconfig and comments
+>> - Added missing includes and remove unneeded
+>> - Fixed typos in comments
+>> - Switched to fsleep()
+>> - Better aligned max34417_read_power declararation
+>> - Handled 0 acc_count
+>> - Switched to GENMASK_ULL() for 32bits systems
+>> - Added missing empty lines
+>> - Moved the input correction into a helper
+>> - Set default input correction for all channels
+>> - Switched to dev_err_probe() to return from probe
+>> - Switched to device_for_each_child_node_scoped()
+>> - Handled invalid shunt-resistor-micro-ohms value
+>> - Link to v1: https://patch.msgid.link/20260923-topic-sm8x50-iio-max34417-adc-v1-0-41d4ba1bfc41@linaro.org
+>>
+>> ---
+>> Neil Armstrong (2):
+>>        dt-bindings: iio: add: document the MAX34417 Four-Channel High Dynamic Range Power Accumulator
+>>        iio: adc: add driver for the MAX34417 Four-Channel High Dynamic Range Power Accumulator
+>>
+>>   .../bindings/iio/adc/maxim,max34417.yaml           | 100 ++++++
+>>   drivers/iio/adc/Kconfig                            |  11 +
+>>   drivers/iio/adc/Makefile                           |   1 +
+>>   drivers/iio/adc/max34417.c                         | 374 +++++++++++++++++++++
+>>   4 files changed, 486 insertions(+)
+>> ---
+>> base-commit: fd73f4a6659897191fa0d40695fe370925dd3780
+>> change-id: 20260923-topic-sm8x50-iio-max34417-adc-209e880533fb
+>>
+>> Best regards,
+>> --
+>> Neil Armstrong <neil.armstrong@linaro.org>
+>>
+> 
 
