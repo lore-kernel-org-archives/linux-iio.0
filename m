@@ -1,159 +1,163 @@
-Received: from mail-ua2-f43.google.com (mail-ua2-f43.google.com [74.125.226.235])
+Received: from mail-lr2-f12.google.com (mail-lr2-f12.google.com [74.125.230.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB6CB4AD7CA
-	for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 17:35:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.226.235
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D79FB3B4407
+	for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 17:59:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790357730; cv=none; b=p50hMoZRlHBPZArLgv3y0CzH0TteEOjwlRocquMro0QcBS9O5Ih8Q5F3PXfc0F10QE1NbKCGTRAPuOBQdG8wHsrjSBOH2dAE+YxB84qPqL3QrEJErLO6CmA9E4KlKIxWPRHBoisvI0vRz0xw+2FmJxcGP+GIMYnFkzUAq5NzgDY=
+	t=1790359201; cv=none; b=FdxzwnT8vOlHakN6Y4B9DaADL9Vgrq+kujk5CqPq6RRRIHCvoMU8skogRndGSltnu2y4rzvsJGWzTmkakamL6hC0Tro3qQ/sBfSF4CRLmHicTx/Kbd1c4/QYcE7JeYYit745wAAk6vG0TfTZ4IuVDKUBi2onESKvLawfITep9Tw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790357730; c=relaxed/simple;
-	bh=fzcoyo69KXGefqxSS7X+PXbTEIdF4MESbyCrnQvBXr4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VfNZPa1xjEfcaoeRDvuLNNYht6dRR+VoqTgmeoTpDTmKqNzIUc+2YBpMQM4I5ZFZuG3kS6R5N7zjYan08tevfRb/BM6f8ejlPvkMFyZpN9gFr1C3WpQpcLOIg7PIHpDgKtkd5fHuliotu69e/L2HYeiUujPkdDdqoIneOEmHAQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jd1jQ5RN; arc=none smtp.client-ip=74.125.226.235
+	s=arc-20240116; t=1790359201; c=relaxed/simple;
+	bh=g4BFvBfsn4oEjBKgRF001VzU3DsgniL/WavFRiTrhQM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=gfQEQvRMqzCQOVUCjHzd9HYLWJFUWHgUMj48+Ocr1k6bA//pJWD1X24mE2lN8T3qb6d5wVwBxlwYfeVEiJIEj2KmFqeBuLGk/dGJ8ycEPErX6u48cSwamGKWUFktiQoiVDSwOJ/Y1ByrOlM+xmMI7ki6eS0afMnM9zCb+/nuVnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=otD1Cntx; arc=none smtp.client-ip=74.125.230.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jd1jQ5RN"
-Received: by mail-ua2-f43.google.com with SMTP id a1e0cc1a2514c-9832c759198so618802241.3
-        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 10:35:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="otD1Cntx"
+Received: by mail-lr2-f12.google.com with SMTP id 38308e7fff4ca-3a5da7416f9so9164011fa.2
+        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 10:59:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790357728; x=1790962528; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nej2ob9CdbG1DOfUQmIUHXKCzCnebeOZh/kYsDtKROw=;
-        b=jd1jQ5RNLXOulslwVfa4fECC5p5ayy6GW+VSH/wYRKtiwr7ugBUQHRTRVla1HFWQka
-         bt+wTn+kjHCLcc2q6vC3/UZe6tb5JNKkadyOYLYhJtKIUjZCoH0rSGLHk2wE/0rKGzqn
-         HYGWGJF+aGC8ib/RK2PrFHko+zEA+0kubMkIlVk5d3oaQ8bCoV5ovULS/qVJkrvnOZcw
-         Y0gLzqQDL1r0h6k5bk6jXZxNYja6d58NpOc55a3OessRSwmnc71mywaTmDSg1q0Xlu23
-         Yvj2HSeYDfTDarXIsorgRS8vx8tcZ3CwZzPr8QZB4fogMtkZIHjaPU3J8rH0Evg/cUoB
-         Bexg==
+        d=gmail.com; s=20251104; t=1790359197; x=1790963997; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Wexv0ThwJ2Po0yZ00a92cUQBj5VSlQRd+AC/rWaDMjs=;
+        b=otD1CntxYHHYhZzjZSImDa3Y4B8b0bxmOyMqIHYy0sjvX6HEetx8c67VaPkkP3Re0l
+         oc5RuJhvyu6aPqG8bpUXicmRZ4v2xUOam3/yWgA5+FXhN+lWxoxvz0jNPhEm+k8zQSiZ
+         xqGoKYu6+ZzxsEwU9UjKtyZ5cbpv1CZQ8jW+avu3G1EmifKRbXscWhyLo1W2YgILhdTt
+         L3jyAisgVQYZf8kLiy2cLT8DJ1VcAWr667Xac3kl7a6sftG9hfcHHcM9HD87x+BLQ06H
+         N0QCAhh+GzCbIqrhHbOn+amz41Ke/dkf32RE1wb0N9MWjhFaCgFnAStjQEMHIPjlgLwe
+         8JNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790357728; x=1790962528;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=nej2ob9CdbG1DOfUQmIUHXKCzCnebeOZh/kYsDtKROw=;
-        b=GHVKe6pPXbLFNLs9hhoHNjwOo/u634Ks9ljjnHD7FGaC5I5qadeTeKDLvQ69mnnzJS
-         U0t1jdZYPCYEK/PL0YfvKNJTtoOmq+DlFtdDS3i03EJH988mbnt9CJnNcyDGBPyV0nk1
-         6kwtebAnMPKWzxY/OLo15tPSSO9QOo/y7EiZftYRQdM39ccHivygT2/2LNo/ZiSVmPcD
-         Rdq0M+3qptYK5ypK8dEslelse+VUgEOIdIu9gfvzOjgHePHqfKAU6zBPJGDPIlgG8x2D
-         Qo6vmO7vFUkZQoomz4hMsXt4PznDOU7wYzsOxFzwEmNcZTH0AUT00N+tWnk+5wqaQcUI
-         gGNQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwyEg2OVtI2jybAzzrcqZ3Bzk8KtMRYZpPTKHuFvQs1S1/IiYdQnfBuSExxHgf2K1M9MUOhMvqZVHs=@vger.kernel.org
-X-Gm-Message-State: AFuF++kd6BL7wI9YWgr3Pq/PuUFtWU7FwjakoUv7W+XvKEQC8GMoyyGS
-	xkLJc1RwFc2xy0fv3H4VD0S1zLviTA29qWdLUMmcbn5LN4FCMO2Y/L13
-X-Gm-Gg: AYBFou1bQta71OVFmzHRqcEBg7WNH9oiFFV/5JNF9oQkZHoQjzBqE9iWyOclDl7QAlT
-	enmKf+4xWEYZxKwLyHPARa9cGJtwlIaXKn1lNJijcw+TYo4j1H/vGrIuH3TiIWfgjYqep+1eqDP
-	jNOEDee2n5AhSgBV+S8LR2I/N1wIjC+CrYn47kRnX8U/2Li9FEGwqj2DHTwazHaWqjZ+hqjMhOG
-	+T9KA8X1NoDFVI8+gB5vZ2drPhzmvSRfYlYpmvfGRPZC9lvOYBDwgcHm0VSj22Qj3EEkcv6i+Sr
-	5Y4DuXcSPydMVsiXGcj5DVi1oESt8N3+AhaVBjdoJ7ojgfEWc4bNytFLCHzclXss9k7tknwM93x
-	CO6T+ZPbDG4dbyikxeXBQbNobMprUso46uetH3eveCTNqDD3fJFhIKSAb84qtSzZilivDdHJcAk
-	Ca9YMwT665RCDvIKEErZSndzQY+P/c4lTSe7nl2FcaU2f/4yDkS/4uzUj/JcGzH8wwGy5Q4UkHV
-	/9Dwl4arIFT1MT7hWsCi1u8mWxpbJt0LCP8ZOKVl3xA0aNK5FuDyLpu2nAqkawfF7YA
-X-Received: by 2002:a05:6102:5613:b0:7a1:f7e2:aae3 with SMTP id ada2fe7eead31-7af1e6f3a10mr2817620137.21.1790357727527;
-        Fri, 25 Sep 2026 10:35:27 -0700 (PDT)
-Received: from archlinux (dynamic-190-24-104-85.dynamic.etb.net.co. [190.24.104.85])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9861afee2d2sm3436422241.6.2026.09.25.10.35.25
+        d=1e100.net; s=20260707; t=1790359197; x=1790963997;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Wexv0ThwJ2Po0yZ00a92cUQBj5VSlQRd+AC/rWaDMjs=;
+        b=pu4mfDYgkUIqeXCh1beWlVU+hrBc2u7sTig+ZC+uBb+O7PW1sJxwY6/zp+Dk+tWf7V
+         a6MV5twuyEWavto/SczYop8kO0gUF96T7W539WxWU+22WrQshW+qb8M8LLH1Caue0WvW
+         3N9Wdj4TKjmEPdUZJjTuZx0MKrd4zA7T75wWW4rdQUUu5UHD2AOsSDTOlmMRnFNzVfp/
+         qgGvhDJhpV/xfTF2rmshuKeCatGIc86+D5PMvmdTHl7ANgufb08LHi5j9qP+uTKgkUPb
+         W6k3OTISHnDFgc1WfjuZbOLplTNlMh+14IscDMuzGi+p8UvnsegAT9dGgQAcJFxB6pFy
+         TRCg==
+X-Forwarded-Encrypted: i=1; AKwUvBzoI4UrTMzImzZTcDJZ6h+rQcutemRpcJ1ZL0sWESbnqq8qWlIhjKn6srnk/AYC5+rcmNC3PCTdABM=@vger.kernel.org
+X-Gm-Message-State: AFuF++m2IGEyDPZBkxiEVvo0hjQGkCsDoLrrVluErSCXZ9zV+WrclZsM
+	NyUxuMx3Jyd3pyikMiy40o/fH1KRA9G880Ws7lQqbmwecdSe3yjyI6Ke
+X-Gm-Gg: AYBFou3/iPbxmBfkrUifvs45h1ksuIUBF9WSMFjVuVVS9L81D/3sopykuSSKpnvOA4n
+	FNF0pQfKDwB+Ftur2KiB35bwNbByc/OXeRTkIvinVJoxmHLoz8uFpu3kUP/48+QjfCfYSkTOIJB
+	vs3RCrdl7P+VESD83A6Y1+2QTr2YG5FDb8Gy9NhLiAes2ImWVqCS+2ZrBCdD4vlJ3fmket8o2fM
+	55+VhFnz5wR6bmYj0WcnD0CLht0WQjgAn7dN0kkt9c+UEbJCONhGZfkSbeG2kytssKFD33V1MGz
+	EAi+s8oH6xytc9iWqdCMPdHqR3hDRvrLTywPNA03TtDjKGiOr3VROcFKWOeWk66YzekIjhzCpOa
+	jELIow9EjfZGCz/kZs3O3oBJLeRndi9zdduCjXhlBV49afjPx94AdNwhcrn1CB/fF7Zo3WQuzYw
+	KZ56o7HBZE0/W59akQ8ZIpAcij3uL99Uhqstxgq2Xjh3dDpMRJ464l4R2lmQ7+aLY9mHiG5lfYS
+	cYmP92JauKMSfs0wdQQ7RITJfBqmM7i22Iwki19ZBOn1RYMxe/BztIpeHS+mwzv7trfJA==
+X-Received: by 2002:a05:651c:198d:b0:39c:624d:82b9 with SMTP id 38308e7fff4ca-3a63c06c278mr14724591fa.4.1790359196582;
+        Fri, 25 Sep 2026 10:59:56 -0700 (PDT)
+Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a64c2f167asm7361481fa.20.2026.09.25.10.59.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2026 10:35:26 -0700 (PDT)
-Date: Fri, 25 Sep 2026 12:35:24 -0500
-From: Carlos Casadiego <cdcp206@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Carlos Casadiego via B4 Relay <devnull+cdcp206.gmail.com@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
-	Olof Johansson <olof@lixom.net>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: accel: bmc150: check reset write error
-Message-ID: <arawwqTgXBuAsX1h@archlinux>
-References: <20260924-iio-bmc150-check-reset-error-v2-1-b6dc74d7aaf4@gmail.com>
- <20260925040500.0f637249@jic23-hlaptop>
+        Fri, 25 Sep 2026 10:59:56 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: jic23@kernel.org
+Cc: Andy Shevchenko <andy@kernel.org>,
+	Bill Wendling <morbo@google.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Joel Stanley <joel@jms.id.au>,
+	Justin Stitt <justinstitt@google.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev
+Subject: Re: [PATCH v7 09/10] iio: pressure: dps310: implement .hwfifo_flush_to_buffer()
+Date: Fri, 25 Sep 2026 20:58:16 +0300
+Message-ID: <20260925175816.75842-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260922005347.069c490e@jic23-hlaptop>
+References: <20260918122517.377565-1-zoone.rupert@gmail.com> <20260918122517.377565-10-zoone.rupert@gmail.com> <178992913316.706584.1446996024286841775.b4-review@b4> <20260921183106.231972-1-zoone.rupert@gmail.com> <20260922005347.069c490e@jic23-hlaptop>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260925040500.0f637249@jic23-hlaptop>
 
-I have not verified this on BMC150 hardware.
+On Tue, 22 Sep 2026 00:53:47 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-The datasheet documents the soft reset, but I could not find a guarantee
-that the I2C write is acknowledged before the reset starts.
+> Adding the guard is fine - we kicked that back a while ago simply
+> due to lack of users. Is there a path to annotating the non
+> ACQUIRE.. functions to expose the right information to clang?
 
-Given that, I agree that propagating this error could cause a regression,
-so I think the patch should be dropped.
+Yes, with the change below. dps310 then builds clean using
+iio_device_try_claim_buffer_mode() and iio_device_release_buffer_mode(),
+and clang warns on a missing or unbalanced release.
 
-Thanks for pointing this out.
+context_lock_struct() is needed because clang rejects the existing
+__acquires(indio_dev) on a type that is not a lock. The header
+suppression list hides that today.
 
-En Fri, Sep 25, 2026 at 04:05:00AM +0100, Jonathan Cameron escribió:
-> On Thu, 24 Sep 2026 09:48:45 -0500
-> Carlos Casadiego via B4 Relay <devnull+cdcp206.gmail.com@kernel.org> wrote:
-> 
-> > From: Carlos Casadiego <cdcp206@gmail.com>
-> > 
-> > The software reset is required to bring the device into a known
-> > state before reading the chip ID.
-> > 
-> > Check the return value of regmap_write() and abort initialization if
-> > the reset command cannot be written.
-> > 
-> > Fixes: 1c500840934a ("iio: accel: bmc150: reset chip at init time")
-> > Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > Signed-off-by: Carlos Casadiego <cdcp206@gmail.com>
-> 
-> Just to check: Was this verified against actual hardware?
-> 
-> Quite a few devices get going on their resets before sending
-> acks on i2c which means you get an error on that particular
-> write.  That is often why you don't see an error check on this
-> particular operation.
-> 
-> 
-> 
-> 
-> > ---
-> > Changes in v2:
-> > - Remove the blank line in the tag block.
-> > - Add Srinivas Pandruvada's Acked-by.
-> > - Link to v1: https://patch.msgid.link/20260923-iio-bmc150-check-reset-error-v1-1-b8c1ebc4c947@gmail.com
-> > ---
-> >  drivers/iio/accel/bmc150-accel-core.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> > index 46bb36d9366e..43a39e1ccce5 100644
-> > --- a/drivers/iio/accel/bmc150-accel-core.c
-> > +++ b/drivers/iio/accel/bmc150-accel-core.c
-> > @@ -1561,8 +1561,12 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
-> >  	 * Reset chip to get it in a known good state. A delay of 1.8ms after
-> >  	 * reset is required according to the data sheets of supported chips.
-> >  	 */
-> > -	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
-> > -		     BMC150_ACCEL_RESET_VAL);
-> > +	ret = regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
-> > +			   BMC150_ACCEL_RESET_VAL);
-> > +	if (ret < 0) {
-> > +		dev_err(dev, "Error writing reset register\n");
-> > +		return ret;
-> > +	}
-> >  	usleep_range(1800, 2500);
-> >  
-> >  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
-> > 
-> > ---
-> > base-commit: d8c0f48f0b1583308a98401c0c7b1a65d1d43a6c
-> > change-id: 20260923-iio-bmc150-check-reset-error-389b096b0ad4
-> > 
-> > Best regards,
-> > --  
-> > Carlos Casadiego <cdcp206@gmail.com>
-> > 
-> > 
-> 
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -2252,6 +2252,7 @@ EXPORT_SYMBOL_GPL(__devm_iio_device_register);
+  * iio_device_try_claim_buffer_mode() pairs or related helpers instead.
+  */
+ void __iio_dev_mode_lock(struct iio_dev *indio_dev)
++	__no_context_analysis
+ {
+ 	mutex_lock(&to_iio_dev_opaque(indio_dev)->mlock);
+ }
+@@ -2262,6 +2263,7 @@ EXPORT_SYMBOL_GPL(__iio_dev_mode_lock);
+  * @indio_dev: the iio_dev associated with the device
+  */
+ void __iio_dev_mode_unlock(struct iio_dev *indio_dev)
++	__no_context_analysis
+ {
+ 	mutex_unlock(&to_iio_dev_opaque(indio_dev)->mlock);
+ }
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -610,6 +610,8 @@ struct iio_buffer_setup_ops {
+ 				   const unsigned long *scan_mask);
+ };
+ 
++context_lock_struct(iio_dev);
++
+ /**
+  * struct iio_dev - industrial I/O device
+  * @modes:		[DRIVER] bitmask listing all the operating modes
+@@ -726,6 +728,7 @@ void __iio_dev_mode_unlock(struct iio_dev *indio_dev) __releases(indio_dev);
+  * Returns: true on success, false on failure.
+  */
+ static inline bool iio_device_claim_direct(struct iio_dev *indio_dev)
++	__cond_acquires(true, indio_dev)
+ {
+ 	__iio_dev_mode_lock(indio_dev);
+ 
+@@ -760,6 +763,7 @@ static inline bool iio_device_claim_direct(struct iio_dev *indio_dev)
+  * Returns: true on success, false on failure.
+  */
+ static inline bool iio_device_try_claim_buffer_mode(struct iio_dev *indio_dev)
++	__cond_acquires(true, indio_dev)
+ {
+ 	__iio_dev_mode_lock(indio_dev);
+ 
+
+> I did similar for sparse and at least the direct_mode claims
+> a while back. This might be a case of it just gets too complex
+> though and the compiler fails to figure out what is wrong.
+
+It holds up. drivers/iio (allmodconfig) with the analysis on for every
+file goes from 254 warnings to 11, and none of the 11 are the mode lock.
+
+If that works for you, v9 starts with this as a core patch and dps310
+uses the named claim instead of a new guard.
+
+Rupesh
