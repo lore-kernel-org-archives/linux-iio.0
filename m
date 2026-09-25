@@ -1,48 +1,48 @@
 Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD60049C4D8;
-	Fri, 25 Sep 2026 12:44:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E0FF36495F;
+	Fri, 25 Sep 2026 12:58:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790340262; cv=none; b=Xlz2BfMCY5QsBCc4TY4XGO3JuBzKrW4Thp1HdazdFp+2H7wpBvFAvdaAdu/cHy9G2sY59PEzNkabd5QjJsix67ojuEWT/i6NUFjB9WV1NpG2/gKn2noiZ0S4G/CYwGbvBCMdb9lNpQGmwMKpcnfOYIUGVKfsTLACe56D6TI0aAA=
+	t=1790341108; cv=none; b=NEd3vQvSqsEd0DwvZcjQAGzWi7HqD9oqQ+0N5tnEnezBagMRnh+WNYu3vm5ANu0Uw6ApYPG9HixM/yDRdmql/rgEFQ+/zSmQIL8tls3uzDnEx8sQ8UpnNJ1aTbPsKKMLaRQGmeocAfkX4AKrdwWUC6u5Xmm7KEL0SnEag/7ZmbE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790340262; c=relaxed/simple;
-	bh=+G+ofJVzMofLSfEH3ebb+vcMWH1OiBm1lDo+9TXzigk=;
+	s=arc-20240116; t=1790341108; c=relaxed/simple;
+	bh=JDAQJyiC7YeCYZHCyezL/VjzYHBQbtFEYhZXzW2D1/c=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=XW/gGnB5xtarMO/B9VTqvaiRi6c4ZaeKE3l0qgDqR0YeU5DDgjETySg9qArPBFSlZUus9j/KXLXmuRxzUrTxBEIkhCVRT44CWshDMQZz/lNnyw7QXBQF4nk94E98cNpETlw4WKLvEY1Vo/Q8HwSE+uvkQEeIZcmO5efeXVBorac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=P6vk3v08; arc=none smtp.client-ip=220.197.31.2
+	 MIME-Version; b=FmF5FgtKtlnQjO6BLxNV6DQY1V4gMzJrTYfi2JhREwrW1//mMhVzfRanc3fTDUGy0gzUGYD2OpBBY7igoSwe/uk0YCZ/o4wvwqkxcYx1asIsHhhqAg/BYeApqtTbflnd5RDGT/lmNVO5L9nhr4eNBEI0npXg/QOeM4hQmpz2ShM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Sqz+VnK1; arc=none smtp.client-ip=220.197.31.2
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="P6vk3v08"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Sqz+VnK1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=Td
-	ETXxCT+5MKSGr3pbsPvmVhPAjTDZA0JKEQFMPnYak=; b=P6vk3v08RlckleJ+p1
-	S3Pn4jjt5PakS7Lf51cYHcam2IfAU/YBf7uqj86MX2kd0zo5NmFaUgJLGLwBA3ye
-	aGHSgUZ/UhCmB2l6JhLsrA5SX74DbbAqA/4EtwzHWAyzmoB0J+MBiaeFu5bc1K7A
-	B/ydfjMS0Air1CEhKtsoTjbgo=
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=hr
+	var9ms2CLILUqPU2E68sQCBkXDl1Ad+NmZigrC4Mg=; b=Sqz+VnK12mXLS/3/1J
+	BoGDM0hZudXYbYcX3Z2IfwjxGDqLxjDu5ovfwi7MLR/AhBNZG9f3uTyC1t1VADcw
+	1dOkLgTlVazcPU6GAfdi2/c63+otumEz1IMScARm1glooAhd5HxVSbkxq/AOvMM6
+	Xj9cqlHX06kC0EbFOVN6ymmfc=
 Received: from pc.localdomain (unknown [])
-	by gzsmtp2 (Coremail) with SMTP id PSgvCgC3l8p2bLZqMEjpBA--.27791S6;
-	Fri, 25 Sep 2026 20:43:41 +0800 (CST)
+	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wD3f3zUb7ZqOLTlAg--.28269S3;
+	Fri, 25 Sep 2026 20:57:59 +0800 (CST)
 From: Jiale Yao <yaojiale02@163.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Alisa-Dariana Roman <alisa.roman@analog.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
 	linux-iio@vger.kernel.org,
+	linux@analog.com,
 	linux-kernel@vger.kernel.org
 Cc: Jiale Yao <yaojiale02@163.com>,
 	stable@vger.kernel.org
-Subject: [PATCH 4/4] iio: accel: sca3000: reject devices without match data
-Date: Fri, 25 Sep 2026 20:43:31 +0800
-Message-Id: <20260925124332.2090895-5-yaojiale02@163.com>
+Subject: [PATCH 1/9] iio: adc: ad7192: reject devices without match data
+Date: Fri, 25 Sep 2026 20:57:39 +0800
+Message-Id: <20260925125754.2162337-2-yaojiale02@163.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260925124332.2090895-1-yaojiale02@163.com>
-References: <20260925124332.2090895-1-yaojiale02@163.com>
+In-Reply-To: <20260925125754.2162337-1-yaojiale02@163.com>
+References: <20260925125754.2162337-1-yaojiale02@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,45 +50,45 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PSgvCgC3l8p2bLZqMEjpBA--.27791S6
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tw15uF1kGw43Kr1DGF1fXrb_yoW8JF47pF
-	ZrKF90kryfXF4xGr4DW34UZFy5uws8C3WrK3W8KwnY9rWrCFyYvrySga4rtr18KayrC340
-	qFnrCF4UWa1UZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEiSdLUUUUU=
-X-CM-SenderInfo: x1dryxhdohiji6rwjhhfrp/xtbC7x2CvGq2bH3jFQAA33
+X-CM-TRANSID:_____wD3f3zUb7ZqOLTlAg--.28269S3
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tw15uF4rWrWDKFykArWrZrb_yoW8Gr1xpF
+	WjkF9Y9rWUGF1xGr4DGa4UCFy5uF13C3yrKFykuasa9ryFkr1UZryIga4Sqr1rKFWFka4D
+	trW7tr18W3WkCr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pi1CJLUUUUU=
+X-CM-SenderInfo: x1dryxhdohiji6rwjhhfrp/xtbCzhdZk2q2b9ev9QAA3t
 
 SPI driver_override allows a device to bind to this driver without
 matching either the OF or SPI device ID table. In that case,
 spi_get_device_match_data() returns NULL.
 
-sca3000_probe() immediately dereferences the returned chip information
-to set the IIO device name and channel layout, causing a NULL pointer
-dereference.
+ad7192_probe() immediately dereferences the returned chip information
+to initialize the IIO device, causing a NULL pointer dereference.
 
 Commit 572a00852635 ("iio: dac: ad5686: missing NULL check on match
 data") fixed the same driver_override issue in another SPI driver.
 Reject devices without match data before using the chip information.
 
-Fixes: d6ae9f202f61 ("iio: sca3000: simplify with spi_get_device_match_data()")
+Fixes: c3708c829a06 ("iio: adc: ad7192: Convert from of specific to fwnode property handling")
 Cc: stable@vger.kernel.org
 Signed-off-by: Jiale Yao <yaojiale02@163.com>
 ---
- drivers/iio/accel/sca3000.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/adc/ad7192.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index a92a563f6a4b..0d5ed244a663 100644
---- a/drivers/iio/accel/sca3000.c
-+++ b/drivers/iio/accel/sca3000.c
-@@ -1462,6 +1462,8 @@ static int sca3000_probe(struct spi_device *spi)
- 	st->us = spi;
- 	mutex_init(&st->lock);
- 	st->info = spi_get_device_match_data(spi);
-+	if (!st->info)
-+		return -ENODATA;
+diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+index d8f5886fcf69..8bd810546311 100644
+--- a/drivers/iio/adc/ad7192.c
++++ b/drivers/iio/adc/ad7192.c
+@@ -1406,6 +1406,9 @@ static int ad7192_probe(struct spi_device *spi)
+ 	st->int_vref_mv = ret == -ENODEV ? avdd_mv : ret / MILLI;
  
- 	indio_dev->name = st->info->name;
- 	indio_dev->info = &sca3000_info;
+ 	st->chip_info = spi_get_device_match_data(spi);
++	if (!st->chip_info)
++		return -ENODATA;
++
+ 	indio_dev->name = st->chip_info->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = st->chip_info->info;
 -- 
 2.34.1
 
