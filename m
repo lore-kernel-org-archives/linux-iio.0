@@ -1,223 +1,142 @@
-Received: from mail-pz2-f41.google.com (mail-pz2-f41.google.com [74.125.228.41])
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE84D381AF0
-	for <linux-iio@vger.kernel.org>; Sat, 26 Sep 2026 05:55:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE02C1FF1C7
+	for <linux-iio@vger.kernel.org>; Sat, 26 Sep 2026 06:13:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790402108; cv=none; b=Xcus/3HB0r85stTf1bk2YvK61MCncLKjU7iBbHt4VLV/APbG4WbK+eBtdk2RDdl+luxjWiYnnsNd5HYvXb0Tw6T8R5bl4Im8Z2HbbyGoUL8WYND2CertDa7ZS268cIqh64IeS1RjpnOUzVpf44DNtJzxN3DyIN5715aazWPvc8Y=
+	t=1790403199; cv=none; b=eMoY3QS/Q8z0LXtugSmA3rE70XJwR9Xiskfjnyn71KHJcqeoY93atL3zPCEDGxe3lh1CLd2V/RN/VDC6dq6SFpJcVrA3W0RGmdyUAWwbMkaFKMquw0MlN6c/cJHDWC5yY/EN1g1ht3EhBIC8gqDKNPIPP3LxTJd7+vnGXJdS7kc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790402108; c=relaxed/simple;
-	bh=3WHZje11yMZBZBXyTJlYcEDav1jBX7oSpKCSUN+cI5A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D1x2P+xefwOGbSibCRr73Rc0yUc5UL0JJq81Pm2SkahwYivS2ykq5hUWli5aWOdXLwuzadbDMhX7vpL4vh7ZcECJZI3r7Mu2K4MhcwnS+cZIVynYNur1cOwsyq9Ag/6JbwdHM9Wa1xqATidItI2IR17Qu+vodIMopFvnVSakOT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HHfT+KiX; arc=none smtp.client-ip=74.125.228.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790403199; c=relaxed/simple;
+	bh=JhcNgD5ym0n7rwQt8AOhW6hhqsqms6onYIIkuwgKgBQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=n7N9Zq87EdIS1scqnkSgUPOOnidxoI1Jhwz8Tkxlv9vpzFuoDZ/tddo8DAEOe0LWTVVejwVqaiBPethxTFHpg80DDqstRiJbLQ7heoyXzdstjMlNw71BfN1AFib1dvGLxRvTVy6B3c2kZeUmm3CFvVPcUQota9nC/9wncBd5MX8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=c0GRycFa; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HHfT+KiX"
-Received: by mail-pz2-f41.google.com with SMTP id d2e1a72fcca58-85469e211a0so839738b3a.1
-        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 22:55:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="c0GRycFa"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49ff23af865so10713385e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 23:13:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790402104; x=1791006904; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=X/jLk3hOfvplWvnh8rdzJHMk4Xuu5RA6BKKGh8ixgRc=;
-        b=HHfT+KiX1nZdmG1IoZJN3DFiOb7T6TY5o3deob0OFyOLlqWgTObMGxLK0kClm64k7m
-         lP0LK2LJkWPtLbGoKV/kiPF0UiyGdHSktqqrsMp+5IDDx7I51qkhK3CcljAj6BJpDAPX
-         vH3dzoTW11H/hfCYnwhSwPnt3A/2pScycJOkbmC+MwyvM9Wqpn1+6aujfHWDeVRSwjPE
-         AsuutkrKosgeh6v3l6PKik1pEj5UuzQOxmBFS4E6LOuAZWuyxiPkrqwble7uQb2PFL5l
-         d8ctnnx2PhWJIRhDmhxsbEI/TknS9cuzL7AlLfzc7aIJul8IY9ukJmovZTeuHkqoD2N/
-         bv7Q==
+        d=baylibre.com; s=google; t=1790403196; x=1791007996; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=n+km6I0NWRugPNV0kiVWI6nk70n82CkGaUZAPuixyOY=;
+        b=c0GRycFa3eglYxxl2TfiX9HAjmix0YX5ADYM2UGNIN/yiNhj6cO55TSRLUiz5o4lAx
+         uRZttNMsOg7dfoIGEUUQUgK/em5JwdtFAnfOrJ4PtqPJNd+/1FGtiOUcVJDjHLiUYmo5
+         QwgaGR2D0nnT/z/C9vobkhhXsD/vfKc3aKGg8tDb+K7dHwwedRGLcitbkp+DZS0tow/u
+         xbM643tCjRvhySTYPsPg5rVmaakY6ZHgXe+m5CuWE8iFBD1neB/X0XLofBg328v98j2D
+         bZ4p2isFCfP9a7vsqlruc4VCjgG4jNxWbXlFGgp/83eIyDdOaouUk/qHrCojrmdqQx3O
+         Zdzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790402104; x=1791006904;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=X/jLk3hOfvplWvnh8rdzJHMk4Xuu5RA6BKKGh8ixgRc=;
-        b=LPuUzLSsPk8b/UfbZ6ZqopC5+hSBOhlka6xljpUXs8O7vuXEORRgK2zz872BJhmU5n
-         6kJzi2SkDZ8QpPTnsjMLoGUnMTXEy7h6OvD4jFG8MR+OQAiVuKzIUoHCJSzZS6VlyicM
-         +cQOyo6lGe3visq7p0P8fsI9zbm+cMHFBCVQgpmBAsF7Kn9YRzT4kvFiCyahHUN62Whp
-         JH8F9mNwlDYe/PMQfl9BuoNnmAUArGIJ3F2c7PtL54/Rjsh6vzO71wIl8bikirHNpeXa
-         07GIPg/4+khTghXK1nFuyWp1AcvHdfjFDGN/eEaoj3A8vJo5yephqSRwirREroPuEOPM
-         2CeA==
-X-Forwarded-Encrypted: i=1; AKwUvBwDg3+86TGhuThoXBYp19MEJpS3ONRjf+qGCQzu4YarxTQQbx/fxhCKPOqAy1w89nVf/prrstURm14=@vger.kernel.org
-X-Gm-Message-State: AFuF++lE823KvXorfRBzn9EQMHXrZGPFG9uExiLIrXC9xyJKhU+jDdd/
-	7Xgrn3fHzxaMOj+fSOUik1rzU97WV/UL4m60AhXnte3SaDCuej4cQ+kh
-X-Gm-Gg: AYBFou22zgIZtz1gt9sx5aqxAyCsbBgzuvoNc5Y85LQdSSnFZDu9XoHyoWbRUJ1zAEu
-	GdIF9zaP0rNfbABwfzf+M/tdherhSzixBbA0BPlUOKV/6zoy6cs+mPhwqOF2ol/Lb4hFMnyrA7c
-	wDqdJhnghhXBdLd+i3sAdjetomxexy7dzD0ShNPKyajxGvss/afm8ZAOoi72FB973RxcfQZKH05
-	5XSVaVXUPPmBYpNNjPFRlRleVWgKvWfgW1ujw1gQVXuIz3DI2WfvxPx+xe7WnDF/8kLTtIBS/nB
-	JSVYshAH+Pxrkga4WIH51uq+ZpkspXpXskd+8axjhl33mxqgXEHnnetKHv4FdEpHtaX3+Z6rfSp
-	07wxmYrgQZW8Uk20/IjpkS+rU6P2HAagpmIs+BrKJ5kGxfZzxsy45pPjCLFrZKWdahHOTMt9oi5
-	54BLBHvX8V4J/MO4rjWq5QaTXqjhJmo+6IeRZ8IHeOTw4ph97jtmBpALnqdyAyKCF04DqfhnpE/
-	/qCxMvSGJvyeZM0AphDNxf0Ls5Yu24WIq+dfWgCVvHhrzq8lsh6+naYuoTnmPDrhmgYN1fN22Nm
-	6un4h5ZV4ePxuIunNy6YiGjWhPD5URgDb4jQ26NLE6P1joY3
-X-Received: by 2002:a05:6a00:a203:b0:878:3538:8f7e with SMTP id d2e1a72fcca58-87e9f82210amr5561877b3a.44.1790402104209;
-        Fri, 25 Sep 2026 22:55:04 -0700 (PDT)
-Received: from dell-pro-max-tower-t2.cse.unsw.EDU.AU (pag-t2-pc.cse.unsw.EDU.AU. [129.94.173.199])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-87feac93380sm1964103b3a.33.2026.09.25.22.54.59
+        d=1e100.net; s=20260707; t=1790403196; x=1791007996;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=n+km6I0NWRugPNV0kiVWI6nk70n82CkGaUZAPuixyOY=;
+        b=TjROOkZpR2zf8qPNs5pA1qiNaPLWTGH8yxyRmoc944Co2ohdULYpQhjdmsD75DG7Oz
+         pC7qu0gmpb3ei54P219s0dSwJ4jqBdSWP1O4ZB1TRHeiEdPnmRca52xzgsky0pXcRE4o
+         3f19hX4iFvHsg7cJfSJowA+73GfgAhS8DuhqnQ0FR0gZT1PZF17rpUlKZbbJk5uAtgtE
+         AJ9sxkuQNsxshB8CiFAMcvZf72qx88XVg5HdboQQciS/uPgmrLjBq1x/DmNFfycWRN/D
+         SRdyFiaiS3WkfFjwiiwH4ta5Kz+j/y+Qe66bv6KYwQBpcah4cajeYEpnuFArZ88rhwhX
+         mavg==
+X-Forwarded-Encrypted: i=1; AKwUvBz9llZxKFwPwOULFXs4MO3NDENjUJAARFYex/QbReuyt4O8lTEr9K41ocFuaFm9w9qL+dW2qBNLjBo=@vger.kernel.org
+X-Gm-Message-State: AFuF++lY4syuaLinYDnsSzTv62BY70hrnJboW02q3Ld9ARZFxmngCK8g
+	OTRnit9xnZtNZhe8+wcYTzbCI2xOsqou4rz40jB9mSK2borTDDG4/mbp70uYHkb/TaPhzi46+ms
+	Z36gw
+X-Gm-Gg: AYBFou1rToiKRYq0sAOoM85tVg3B9y5mxtHtaZmO7OgQwtsrU/yF5bf6V4K1+J0zU3f
+	BU63KNiAAaMpgS5kuiW083bajMZfSMjjiiJslnRCgXuydY+u+A0BmblQEP4+gh9/LIxgpZ+TL6c
+	ZPPq/eC24L3v8XDgQurIWbsY7dTHDBV20n2FEeN2fVHgC14BjwYIlkM5PAXq2gk5B0rNDLwXUMk
+	mr6kPswiex2TeNRiTSahkV1Xy7c66500OoP971ec7qpHTmFGhMrBF90O8XE9COfHfztwpNYySax
+	0d2ELeIdcF0Ey4LYLLivCpAwN+E5t8yT3V3VSk8O4PMH44QDQzY7LoOO5d9ze9W9mWkbeXjD2RX
+	lVejn4eYTjiLychi0eqbdoZzh3hLHyWQtK+xDz8FTA+8vX+u4yodjZkhLF6VkbTtzEve8Qru4fh
+	YYn4saZVR8F4Llouet9+3Yoq9e0jGyhLLsrRgzDerbd/SL2Uq8a/a86cDo9pW3ORbCghTrdAnbR
+	2IP
+X-Received: by 2002:a05:600c:698e:b0:49c:fc6e:a3dc with SMTP id 5b1f17b1804b1-49fe66f1491mr142775025e9.27.1790403196073;
+        Fri, 25 Sep 2026 23:13:16 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49ff06b6108sm129009385e9.8.2026.09.25.23.13.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2026 22:55:03 -0700 (PDT)
-From: Weigang He <geoffreyhe2@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
-	Conall O'Griofa <conall.ogriofa@amd.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michal Simek <michal.simek@amd.com>,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Weigang He <geoffreyhe2@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: adc: xilinx-ams: fix out-of-bounds accesses when parsing channels
-Date: Sat, 26 Sep 2026 15:54:56 +1000
-Message-ID: <20260926055456.3289189-1-geoffreyhe2@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        Fri, 25 Sep 2026 23:13:15 -0700 (PDT)
+Date: Sat, 26 Sep 2026 08:13:13 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jiale Yao <yaojiale02@163.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rodrigo Alencar <rodrigo.alencar@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Anshul Dalal <anshulusr@gmail.com>, 
+	Antoniu Miclaus <antoniu.miclaus@analog.com>, Herve Codina <herve.codina@bootlin.com>, 
+	Shi Hao <i.shihao.999@gmail.com>, Linus Walleij <linusw@kernel.org>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Angel Iglesias <ang.iglesiasg@gmail.com>, linux@analog.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] iio: validate SPI match data before use
+Message-ID: <ardhvKaSdYh2HiS6@monoceros>
+References: <20260925131738.2200612-1-yaojiale02@163.com>
+ <20260926021143.478d5361@jic23-hlaptop>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="qj3qlzf53fecmdod"
+Content-Disposition: inline
+In-Reply-To: <20260926021143.478d5361@jic23-hlaptop>
 
-ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
-ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
-channel specs and lets ams_init_module() fill them for the AMS node and
-each of its children, without telling it how much room is left.
 
-For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
-"channel@N" child after the 10 fixed PL channels. The binding allows
-reg values 20..50, so a PL node can have up to 31 such children, i.e.
-up to 41 PL channels, while only 31 are budgeted for it. Together with
-the 13 PS and 7 AMS control channels, this writes past the end of the
-buffer. Since the modules are filled in device tree order, the fixed
-channel blocks copied after the PL node can overflow as well.
+--qj3qlzf53fecmdod
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 0/7] iio: validate SPI match data before use
+MIME-Version: 1.0
 
-ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
-unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
-far out of bounds.
+Hello Jonathan,
 
-Pass the remaining capacity down to ams_init_module() and
-ams_get_ext_chan() and fail with -EINVAL when a module does not fit,
-instead of writing past the buffer. Also reject reg values below 20, as
-the binding requires.
+On Sat, Sep 26, 2026 at 02:11:43AM +0100, Jonathan Cameron wrote:
+> On Fri, 25 Sep 2026 21:17:29 +0800
+> Jiale Yao <yaojiale02@163.com> wrote:
+>=20
+> > SPI driver_override can bind a device without a matching entry in the
+> > driver's ID tables.  spi_get_device_match_data() then returns NULL.
+> >=20
+> > These seven IIO drivers use that result without checking it, causing a
+> > NULL pointer dereference during probe.  Add the missing checks before
+> > the match data is used.
+>=20
+> I was hoping we'd close this finally by adding a flag to the
+> drivers to say they should fail a match if driver_override is set.
+> Given I thought maybe that would happen when Andy looked into this
+> a while back I've been sitting on this problem for a while.
+>=20
+>=20
+> Unfortunately seems we have to carry on papering over it in the
+> drivers for now :(
 
-Found by static analysis tool CodeQL.
+Note there is another effort:
+https://lore.kernel.org/lkml/20260922-driver-override-opt-out-v1-0-58c35ded=
+3b83@nvidia.com/
 
-Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM codeql
-Signed-off-by: Weigang He <geoffreyhe2@gmail.com>
----
+Best regards
+Uwe
 
-Notes:
-    Compile-tested only (ARCH=arm64 allmodconfig, W=1). Not tested on
-    hardware, and there is no reproducer.
-    
-    The CodeQL query behind this report was synthesized with LLM assistance,
-    and the fix and changelog were drafted with LLM assistance; I have
-    reviewed them.
+--qj3qlzf53fecmdod
+Content-Type: application/pgp-signature; name="signature.asc"
 
- drivers/iio/adc/xilinx-ams.c | 29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index 158e6133abf50..373a9e799ee63 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -1142,7 +1142,8 @@ static const struct iio_chan_spec ams_ctrl_channels[] = {
- };
- 
- static int ams_get_ext_chan(struct fwnode_handle *chan_node,
--			    struct iio_chan_spec *channels, int num_channels)
-+			    struct iio_chan_spec *channels, int num_channels,
-+			    int max_channels)
- {
- 	struct iio_chan_spec *chan;
- 	struct fwnode_handle *child;
-@@ -1151,9 +1152,15 @@ static int ams_get_ext_chan(struct fwnode_handle *chan_node,
- 
- 	fwnode_for_each_child_node(chan_node, child) {
- 		ret = fwnode_property_read_u32(child, "reg", &reg);
--		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
-+		if (ret || reg < 30 - AMS_PL_MAX_FIXED_CHANNEL ||
-+		    reg > AMS_PL_MAX_EXT_CHANNEL + 30)
- 			continue;
- 
-+		if (num_channels >= max_channels) {
-+			fwnode_handle_put(child);
-+			return -EINVAL;
-+		}
-+
- 		chan = &channels[num_channels];
- 		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
- 		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
-@@ -1183,7 +1190,7 @@ static void ams_iounmap_pl(void *data)
- 
- static int ams_init_module(struct iio_dev *indio_dev,
- 			   struct fwnode_handle *fwnode,
--			   struct iio_chan_spec *channels)
-+			   struct iio_chan_spec *channels, int max_channels)
- {
- 	struct device *dev = indio_dev->dev.parent;
- 	struct ams *ams = iio_priv(indio_dev);
-@@ -1191,6 +1198,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
-+		if (max_channels < ARRAY_SIZE(ams_ps_channels))
-+			return -EINVAL;
-+
- 		ams->ps_base = fwnode_iomap(fwnode, 0);
- 		if (!ams->ps_base)
- 			return -ENXIO;
-@@ -1202,6 +1212,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
- 		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
- 		num_channels = ARRAY_SIZE(ams_ps_channels);
- 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
-+		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
-+			return -EINVAL;
-+
- 		ams->pl_base = fwnode_iomap(fwnode, 0);
- 		if (!ams->pl_base)
- 			return -ENXIO;
-@@ -1214,8 +1227,11 @@ static int ams_init_module(struct iio_dev *indio_dev,
- 		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
- 		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
- 		num_channels = ams_get_ext_chan(fwnode, channels,
--						num_channels);
-+						num_channels, max_channels);
- 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
-+		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
-+			return -EINVAL;
-+
- 		/* add AMS channels to iio device channels */
- 		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
- 		num_channels += ARRAY_SIZE(ams_ctrl_channels);
-@@ -1245,7 +1261,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 		return -ENOMEM;
- 
- 	if (fwnode_device_is_available(fwnode)) {
--		ret = ams_init_module(indio_dev, fwnode, ams_channels);
-+		ret = ams_init_module(indio_dev, fwnode, ams_channels, ams_size);
- 		if (ret < 0)
- 			return ret;
- 
-@@ -1253,7 +1269,8 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 	}
- 
- 	device_for_each_child_node_scoped(dev, child) {
--		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
-+		ret = ams_init_module(indio_dev, child, ams_channels + num_channels,
-+				      ams_size - num_channels);
- 		if (ret < 0)
- 			return ret;
- 
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmq3YnYACgkQj4D7WH0S
+/k5G3wf+ISl+49DMFXf4GNQEB2v8tA68jc5xy+T5JzNOcNEajtXS1J/YhuorbySX
+ienyxR20KZdHnn2ax1uAP+2IjdhZbLyoRFxHUw+p+EJ5gEJNm4I0vQaMTr/IhF79
+Mkkc9TIyswqCMGbg3fUHtDOGWQTjUwlpRRZwKcdLvUgGL3A+ZAZXj36SlPhQn/cA
+DUo1TDIplGtu+FuHgPOXHd9TcmMbIsqz7Dw0UitCJPIMQl1NJRhracEWxaX3Ro4f
+/8sncXjnm7obW25uWPW2JvMqcZr8Kp6bUWsp3lj6gapfnyXXb97Htcoag4i+beMY
+kVyfupYJzav/YzrpCYV1FqnYd18jlQ==
+=VFj7
+-----END PGP SIGNATURE-----
 
-base-commit: 165768bb70265b5c38cf0b73fafd75be235f8b14
--- 
-2.43.0
-
+--qj3qlzf53fecmdod--
