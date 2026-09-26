@@ -1,119 +1,223 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pz2-f41.google.com (mail-pz2-f41.google.com [74.125.228.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C86E1547040;
-	Sat, 26 Sep 2026 01:18:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE84D381AF0
+	for <linux-iio@vger.kernel.org>; Sat, 26 Sep 2026 05:55:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790385508; cv=none; b=V3SPtPMC/YWzoVMWFqgtcawznUWVXdGTwnEBNWB0hwHgOBwag9vHkuQVvzXFM/QkeLol7NOzgX+FmifE3O5MQCFynRZjyo/Orc4+2c5uF9ew6SWaoViUh9gjlr9R/VTqbgLozyBC5xFaEqNu05jsTkIKs0+f76IMi4+Czf1Hquw=
+	t=1790402108; cv=none; b=Xcus/3HB0r85stTf1bk2YvK61MCncLKjU7iBbHt4VLV/APbG4WbK+eBtdk2RDdl+luxjWiYnnsNd5HYvXb0Tw6T8R5bl4Im8Z2HbbyGoUL8WYND2CertDa7ZS268cIqh64IeS1RjpnOUzVpf44DNtJzxN3DyIN5715aazWPvc8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790385508; c=relaxed/simple;
-	bh=v+5fpcyJSGXngo2MNoVp6lbViDgMCPoACmRIH/2vClQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R9HkIkIRDxd+W4RAkarHEqg3b4J5SB7R38cPpWGYyLpjZt4csbBthtjLtCiToSAkk/5k2va3DuVRW9hWJsB4ZX9/Lyn+ut99bl/HK9ig5wn1S4NOkGkuo3j1JQFV66gBvenVbz6HjSpM9RDPpQyB4/MedCjo5q724KbdYtm7MkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=atM0tqvu; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790402108; c=relaxed/simple;
+	bh=3WHZje11yMZBZBXyTJlYcEDav1jBX7oSpKCSUN+cI5A=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D1x2P+xefwOGbSibCRr73Rc0yUc5UL0JJq81Pm2SkahwYivS2ykq5hUWli5aWOdXLwuzadbDMhX7vpL4vh7ZcECJZI3r7Mu2K4MhcwnS+cZIVynYNur1cOwsyq9Ag/6JbwdHM9Wa1xqATidItI2IR17Qu+vodIMopFvnVSakOT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HHfT+KiX; arc=none smtp.client-ip=74.125.228.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="atM0tqvu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24DA41F000FF;
-	Sat, 26 Sep 2026 01:18:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790385507;
-	bh=BytMDVNhiPSsnAucAw8lOh4p8z3HFZcW8cgFKNrI9rY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=atM0tqvue+tvbOtWF3uvS8qlwN5uB3ZtAK/hJ5AKeiGFhCe/h+rNlWwBaZph3/dN0
-	 KRTsuFWrfvvJbOYK4AYg8tesCNxlgPktyYY36aBeTKQouAsZJb/8vOzkYatl1C6Lvj
-	 hF8/4Js+Be8CTIzvI3Dotnp4cCuem4U9vfE/UsQ+nEgog5+sW85YuewjKBzCObn3Vo
-	 2XsrEykgFHPHYSJ5FvkQ/pX1sHdUonbdBXJTKaQTz+zO7NuSjTS2vJXciH686cux2v
-	 afyrJaKKtmMJ1KnmdBI6BbRZjYGc2Eo0niZLww1Of+eIajhFPDQtX2avonSqHqbUMl
-	 TPdI5ZfAaK1xQ==
-Date: Sat, 26 Sep 2026 02:18:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jiale Yao <yaojiale02@163.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 6/9] iio: adc: ti-adc128s052: validate SPI match data
-Message-ID: <20260926021823.6493dbe2@jic23-hlaptop>
-In-Reply-To: <20260926021506.361a62c1@jic23-hlaptop>
-References: <20260925125754.2162337-1-yaojiale02@163.com>
-	<20260925125754.2162337-7-yaojiale02@163.com>
-	<20260926021506.361a62c1@jic23-hlaptop>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HHfT+KiX"
+Received: by mail-pz2-f41.google.com with SMTP id d2e1a72fcca58-85469e211a0so839738b3a.1
+        for <linux-iio@vger.kernel.org>; Fri, 25 Sep 2026 22:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790402104; x=1791006904; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=X/jLk3hOfvplWvnh8rdzJHMk4Xuu5RA6BKKGh8ixgRc=;
+        b=HHfT+KiX1nZdmG1IoZJN3DFiOb7T6TY5o3deob0OFyOLlqWgTObMGxLK0kClm64k7m
+         lP0LK2LJkWPtLbGoKV/kiPF0UiyGdHSktqqrsMp+5IDDx7I51qkhK3CcljAj6BJpDAPX
+         vH3dzoTW11H/hfCYnwhSwPnt3A/2pScycJOkbmC+MwyvM9Wqpn1+6aujfHWDeVRSwjPE
+         AsuutkrKosgeh6v3l6PKik1pEj5UuzQOxmBFS4E6LOuAZWuyxiPkrqwble7uQb2PFL5l
+         d8ctnnx2PhWJIRhDmhxsbEI/TknS9cuzL7AlLfzc7aIJul8IY9ukJmovZTeuHkqoD2N/
+         bv7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790402104; x=1791006904;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=X/jLk3hOfvplWvnh8rdzJHMk4Xuu5RA6BKKGh8ixgRc=;
+        b=LPuUzLSsPk8b/UfbZ6ZqopC5+hSBOhlka6xljpUXs8O7vuXEORRgK2zz872BJhmU5n
+         6kJzi2SkDZ8QpPTnsjMLoGUnMTXEy7h6OvD4jFG8MR+OQAiVuKzIUoHCJSzZS6VlyicM
+         +cQOyo6lGe3visq7p0P8fsI9zbm+cMHFBCVQgpmBAsF7Kn9YRzT4kvFiCyahHUN62Whp
+         JH8F9mNwlDYe/PMQfl9BuoNnmAUArGIJ3F2c7PtL54/Rjsh6vzO71wIl8bikirHNpeXa
+         07GIPg/4+khTghXK1nFuyWp1AcvHdfjFDGN/eEaoj3A8vJo5yephqSRwirREroPuEOPM
+         2CeA==
+X-Forwarded-Encrypted: i=1; AKwUvBwDg3+86TGhuThoXBYp19MEJpS3ONRjf+qGCQzu4YarxTQQbx/fxhCKPOqAy1w89nVf/prrstURm14=@vger.kernel.org
+X-Gm-Message-State: AFuF++lE823KvXorfRBzn9EQMHXrZGPFG9uExiLIrXC9xyJKhU+jDdd/
+	7Xgrn3fHzxaMOj+fSOUik1rzU97WV/UL4m60AhXnte3SaDCuej4cQ+kh
+X-Gm-Gg: AYBFou22zgIZtz1gt9sx5aqxAyCsbBgzuvoNc5Y85LQdSSnFZDu9XoHyoWbRUJ1zAEu
+	GdIF9zaP0rNfbABwfzf+M/tdherhSzixBbA0BPlUOKV/6zoy6cs+mPhwqOF2ol/Lb4hFMnyrA7c
+	wDqdJhnghhXBdLd+i3sAdjetomxexy7dzD0ShNPKyajxGvss/afm8ZAOoi72FB973RxcfQZKH05
+	5XSVaVXUPPmBYpNNjPFRlRleVWgKvWfgW1ujw1gQVXuIz3DI2WfvxPx+xe7WnDF/8kLTtIBS/nB
+	JSVYshAH+Pxrkga4WIH51uq+ZpkspXpXskd+8axjhl33mxqgXEHnnetKHv4FdEpHtaX3+Z6rfSp
+	07wxmYrgQZW8Uk20/IjpkS+rU6P2HAagpmIs+BrKJ5kGxfZzxsy45pPjCLFrZKWdahHOTMt9oi5
+	54BLBHvX8V4J/MO4rjWq5QaTXqjhJmo+6IeRZ8IHeOTw4ph97jtmBpALnqdyAyKCF04DqfhnpE/
+	/qCxMvSGJvyeZM0AphDNxf0Ls5Yu24WIq+dfWgCVvHhrzq8lsh6+naYuoTnmPDrhmgYN1fN22Nm
+	6un4h5ZV4ePxuIunNy6YiGjWhPD5URgDb4jQ26NLE6P1joY3
+X-Received: by 2002:a05:6a00:a203:b0:878:3538:8f7e with SMTP id d2e1a72fcca58-87e9f82210amr5561877b3a.44.1790402104209;
+        Fri, 25 Sep 2026 22:55:04 -0700 (PDT)
+Received: from dell-pro-max-tower-t2.cse.unsw.EDU.AU (pag-t2-pc.cse.unsw.EDU.AU. [129.94.173.199])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-87feac93380sm1964103b3a.33.2026.09.25.22.54.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2026 22:55:03 -0700 (PDT)
+From: Weigang He <geoffreyhe2@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+	Conall O'Griofa <conall.ogriofa@amd.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michal Simek <michal.simek@amd.com>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Weigang He <geoffreyhe2@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: adc: xilinx-ams: fix out-of-bounds accesses when parsing channels
+Date: Sat, 26 Sep 2026 15:54:56 +1000
+Message-ID: <20260926055456.3289189-1-geoffreyhe2@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat, 26 Sep 2026 02:15:06 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
+ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
+channel specs and lets ams_init_module() fill them for the AMS node and
+each of its children, without telling it how much room is left.
 
-> On Fri, 25 Sep 2026 20:57:44 +0800
-> Jiale Yao <yaojiale02@163.com> wrote:
-> 
-> > SPI driver_override allows a device to bind to this driver without
-> > matching either the firmware tables or SPI device ID table. In that
-> > case, spi_get_device_match_data() returns NULL.
-> > 
-> > adc128_probe() also obtains the IIO device name by dereferencing the
-> > result of spi_get_device_id(), which is NULL on the same override path.
-> > The probe can therefore crash before it reaches the match data access.
-> > 
-> > Commit 572a00852635 ("iio: dac: ad5686: missing NULL check on match
-> > data") fixed the same driver_override issue in another SPI driver.
-> > Reject devices without match data and use the always available SPI
-> > modalias for the IIO device name.  
-> 
-> Why this change?  The name is clearly encoded in a place that makes
-> it readily available and verifiably the right thing in a way that
-> spi->modalias does not.
-> There isn't any reason the IIO name would always match that even it
-> happens to do so here.
+For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
+"channel@N" child after the 10 fixed PL channels. The binding allows
+reg values 20..50, so a PL node can have up to 31 such children, i.e.
+up to 41 PL channels, while only 31 are budgeted for it. Together with
+the 13 PS and 7 AMS control channels, this writes past the end of the
+buffer. Since the modules are filled in device tree order, the fixed
+channel blocks copied after the PL node can overflow as well.
 
-Actually - ignore that, I misread this and assumed the code
-was different from what was actually there.
+ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
+unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
+far out of bounds.
 
-Drivers shouldn't be using spi_get_device_id(spi)->name but
-I'm not sure modalias is any better.
+Pass the remaining capacity down to ams_init_module() and
+ams_get_ext_chan() and fail with -EINVAL when a module does not fit,
+instead of writing past the buffer. Also reject reg values below 20, as
+the binding requires.
 
-I'm out of time for now, so will revisit this in a day or so.
+Found by static analysis tool CodeQL.
 
-> 
-> 
-> > 
-> > Fixes: d5f0da0c6972 ("iio: adc: ti-adc128s052: Switch to use spi_get_device_match_data()")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Jiale Yao <yaojiale02@163.com>
-> > ---
-> >  drivers/iio/adc/ti-adc128s052.c | 8 +++++---
-> >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-> > index 1899813c1aee..f9a995ff403e 100644
-> > --- a/drivers/iio/adc/ti-adc128s052.c
-> > +++ b/drivers/iio/adc/ti-adc128s052.c
-> > @@ -195,12 +195,14 @@ static int adc128_probe(struct spi_device *spi)
-> >  	adc = iio_priv(indio_dev);
-> >  	adc->spi = spi;
-> >  
-> > -	indio_dev->name = spi_get_device_id(spi)->name;
-> > +	config = spi_get_device_match_data(spi);
-> > +	if (!config)
-> > +		return -ENODATA;
-> > +
-> > +	indio_dev->name = spi->modalias;
-> >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >  	indio_dev->info = &adc128_info;
-> >  
-> > -	config = spi_get_device_match_data(spi);
-> > -
-> >  	indio_dev->channels = config->channels;
-> >  	indio_dev->num_channels = config->num_channels;
-> >    
-> 
-> 
+Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+Cc: stable@vger.kernel.org
+Assisted-by: LLM codeql
+Signed-off-by: Weigang He <geoffreyhe2@gmail.com>
+---
+
+Notes:
+    Compile-tested only (ARCH=arm64 allmodconfig, W=1). Not tested on
+    hardware, and there is no reproducer.
+    
+    The CodeQL query behind this report was synthesized with LLM assistance,
+    and the fix and changelog were drafted with LLM assistance; I have
+    reviewed them.
+
+ drivers/iio/adc/xilinx-ams.c | 29 +++++++++++++++++++++++------
+ 1 file changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index 158e6133abf50..373a9e799ee63 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -1142,7 +1142,8 @@ static const struct iio_chan_spec ams_ctrl_channels[] = {
+ };
+ 
+ static int ams_get_ext_chan(struct fwnode_handle *chan_node,
+-			    struct iio_chan_spec *channels, int num_channels)
++			    struct iio_chan_spec *channels, int num_channels,
++			    int max_channels)
+ {
+ 	struct iio_chan_spec *chan;
+ 	struct fwnode_handle *child;
+@@ -1151,9 +1152,15 @@ static int ams_get_ext_chan(struct fwnode_handle *chan_node,
+ 
+ 	fwnode_for_each_child_node(chan_node, child) {
+ 		ret = fwnode_property_read_u32(child, "reg", &reg);
+-		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
++		if (ret || reg < 30 - AMS_PL_MAX_FIXED_CHANNEL ||
++		    reg > AMS_PL_MAX_EXT_CHANNEL + 30)
+ 			continue;
+ 
++		if (num_channels >= max_channels) {
++			fwnode_handle_put(child);
++			return -EINVAL;
++		}
++
+ 		chan = &channels[num_channels];
+ 		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
+ 		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
+@@ -1183,7 +1190,7 @@ static void ams_iounmap_pl(void *data)
+ 
+ static int ams_init_module(struct iio_dev *indio_dev,
+ 			   struct fwnode_handle *fwnode,
+-			   struct iio_chan_spec *channels)
++			   struct iio_chan_spec *channels, int max_channels)
+ {
+ 	struct device *dev = indio_dev->dev.parent;
+ 	struct ams *ams = iio_priv(indio_dev);
+@@ -1191,6 +1198,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
++		if (max_channels < ARRAY_SIZE(ams_ps_channels))
++			return -EINVAL;
++
+ 		ams->ps_base = fwnode_iomap(fwnode, 0);
+ 		if (!ams->ps_base)
+ 			return -ENXIO;
+@@ -1202,6 +1212,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
+ 		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
+ 		num_channels = ARRAY_SIZE(ams_ps_channels);
+ 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
++		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
++			return -EINVAL;
++
+ 		ams->pl_base = fwnode_iomap(fwnode, 0);
+ 		if (!ams->pl_base)
+ 			return -ENXIO;
+@@ -1214,8 +1227,11 @@ static int ams_init_module(struct iio_dev *indio_dev,
+ 		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
+ 		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
+ 		num_channels = ams_get_ext_chan(fwnode, channels,
+-						num_channels);
++						num_channels, max_channels);
+ 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
++		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
++			return -EINVAL;
++
+ 		/* add AMS channels to iio device channels */
+ 		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
+ 		num_channels += ARRAY_SIZE(ams_ctrl_channels);
+@@ -1245,7 +1261,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+ 		return -ENOMEM;
+ 
+ 	if (fwnode_device_is_available(fwnode)) {
+-		ret = ams_init_module(indio_dev, fwnode, ams_channels);
++		ret = ams_init_module(indio_dev, fwnode, ams_channels, ams_size);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -1253,7 +1269,8 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	device_for_each_child_node_scoped(dev, child) {
+-		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
++		ret = ams_init_module(indio_dev, child, ams_channels + num_channels,
++				      ams_size - num_channels);
+ 		if (ret < 0)
+ 			return ret;
+ 
+
+base-commit: 165768bb70265b5c38cf0b73fafd75be235f8b14
+-- 
+2.43.0
 
