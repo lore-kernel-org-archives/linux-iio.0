@@ -1,50 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA2033DEE9;
-	Sun, 27 Sep 2026 17:20:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F1A175A8D;
+	Sun, 27 Sep 2026 17:20:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790529611; cv=none; b=EOJefVC14Zve4vKt8x9vnp7PY0FZrmeIrW8UigNZc+zk8LGSHjVIcWtfBUGhBOJSeLwnmShst0Peb7tgi7O2J2gTCV8YSJHOa4IfKBmYmo+PboLYE7TRsWtWES/Db+y1pgOVXPHap6N72nLRioahzvJKH9vL1w81sZl8Povmy0k=
+	t=1790529638; cv=none; b=Ko6Nv1Swm2OAhz0i44yngSBPWmGto/S0bGjRAv2hRChR/o+TUFbIpvfjSZ70wjclQ95twRGy7Bg6eNdYmo7zSEswDaUM7ak4T47eeDtmBn6X1ACygs6YgcTI/0/BNEAJ6y3wjvmh4EDDsGFnNYMEmojbE+oOA7l1s6NL6aY2ofg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790529611; c=relaxed/simple;
-	bh=22g2bhWEVOzBB93cClGUub2SG10F+1foaYL9rEaxCvY=;
+	s=arc-20240116; t=1790529638; c=relaxed/simple;
+	bh=u5/wDkmjLQblmCApcNDp5j71D8QW3Rp1zyX8ySE2wk8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PM6iInd30g5t9KgU9E8bLwsnvc2WnCEXExoKH8HVTRVv8NnEVtoZFoRIQDx7g7DAf0dHhdWzJJML6DfjVNfaURNkbDkzoHnwVpSikjN5Xg/CnamionjGrVGijEMzgSjekTgVj7qiSSMgwEVknYaQRMMCJ+lWrNNBDskw6VM/bvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AXy6B9F1; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=d9O8cUBKh+fCWiL8owEDvZSjrEuePNnbzyUoGD+x5DhflamDhKdqJBhXkZdZ6LSnw9QOTLAkQhb/GAbBbjkrrK2o5qsZWhLXxxiyonykIWw0ggxmCblehcFXjsFS8/6gFt9qXGYUYjdel3/CVDLc4UdzdX7whZ2V5Y7MCFORN/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H35YaXF0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AXy6B9F1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FB91F000FF;
-	Sun, 27 Sep 2026 17:20:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H35YaXF0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3701F000FF;
+	Sun, 27 Sep 2026 17:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790529609;
-	bh=dnqbkM979B+9s4buxvI+GIWuF41/BLvgBEICg7/Xe1I=;
+	s=k20260515; t=1790529637;
+	bh=uqM2/RhHyVMNSnI3o/wEgW+aZX/6c3k3HHCtJRj7/PU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=AXy6B9F1w7AWTQOzXSyTTzNE5szGZ4p/FQnPeb2+6RwYkEe3tinzafVy9dFmc1G/x
-	 DGeDrl0p/dsEELV5pLsKC5i0HxKi3qaR3KZUwmAHyKQQt4ErXn6PNzpAEM++odY3bS
-	 zrC0ge4/sKjW6LYYRsArVzmC8lsxkkgFsBz2zHHVPtPf0Mp8jVIVAW+F4LkMJ91fht
-	 e3RsBFiuxBUntYlnr+PceMJtbS+BfJTnrVPKlcwVJYQ22YLobpv/uUYPTlyhCZOx3G
-	 dg98E38R49wJZiFSWYs/A8RT/uMeLjxqeqHTn8JAg1PR4XWSvoxwkH1mxZ/mX4hGHW
-	 29XJ6fjNjkjLw==
-Date: Sun, 27 Sep 2026 18:20:01 +0100
+	b=H35YaXF0NJ6e31pYQMK9Z0MB81nez7defH9Y7Ukyr9hB/ACjbsDYBZ3iNxoionO5l
+	 8rGLQPpahjXtJ24IA+m9K1tbjLXF0tL0FFnJnjynUrfS6+QlCaZmEozfb7FL4u4Yfu
+	 8AIi6k2JZ0vixKzeuE+090pDV0K7uVG9Bu+aAttxPwLUkMzE5S1rDhuXqXO7w3/X/7
+	 h+L7kTO54onK93BlihgaAjXEmVWugtacJY5Ts2VLSCzpDTreJrKONpooADMJKTFC+o
+	 XeuVbega939AQek+QR5qBhm7cMjwhJlLlIOvgaHS7WbOyqu52EV3sXmPXaxELAXKdB
+	 Hq6RWNZgd1D5Q==
+Date: Sun, 27 Sep 2026 18:20:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
- <u.kleine-koenig@baylibre.com>
-Cc: Jiale Yao <yaojiale02@163.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Rodrigo Alencar <rodrigo.alencar@analog.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Anshul Dalal
- <anshulusr@gmail.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>, Herve
- Codina <herve.codina@bootlin.com>, Shi Hao <i.shihao.999@gmail.com>, Linus
- Walleij <linusw@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Angel
- Iglesias <ang.iglesiasg@gmail.com>, linux@analog.com,
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jiale Yao <yaojiale02@163.com>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+ Siratul Islam <email@sirat.me>, Maxwell Doose <maxwell@maxwelld.cc>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/7] iio: validate SPI match data before use
-Message-ID: <20260927182001.10c331dd@jic23-hlaptop>
-In-Reply-To: <ardhvKaSdYh2HiS6@monoceros>
-References: <20260925131738.2200612-1-yaojiale02@163.com>
-	<20260926021143.478d5361@jic23-hlaptop>
-	<ardhvKaSdYh2HiS6@monoceros>
+Subject: Re: [PATCH] iio: imu: kmx61: reject duplicate event disable
+Message-ID: <20260927182031.6d490331@jic23-hlaptop>
+In-Reply-To: <araCxIGnZK0zuUSS@ashevche-desk.local>
+References: <20260925141006.2255067-1-yaojiale02@163.com>
+	<araCxIGnZK0zuUSS@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,46 +47,24 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, 26 Sep 2026 08:13:13 +0200
-Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
-e:
+On Fri, 25 Sep 2026 17:18:44 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Hello Jonathan,
->=20
-> On Sat, Sep 26, 2026 at 02:11:43AM +0100, Jonathan Cameron wrote:
-> > On Fri, 25 Sep 2026 21:17:29 +0800
-> > Jiale Yao <yaojiale02@163.com> wrote:
-> >  =20
-> > > SPI driver_override can bind a device without a matching entry in the
-> > > driver's ID tables.  spi_get_device_match_data() then returns NULL.
-> > >=20
-> > > These seven IIO drivers use that result without checking it, causing a
-> > > NULL pointer dereference during probe.  Add the missing checks before
-> > > the match data is used. =20
-> >=20
-> > I was hoping we'd close this finally by adding a flag to the
-> > drivers to say they should fail a match if driver_override is set.
-> > Given I thought maybe that would happen when Andy looked into this
-> > a while back I've been sitting on this problem for a while.
-> >=20
-> >=20
-> > Unfortunately seems we have to carry on papering over it in the
-> > drivers for now :( =20
->=20
-> Note there is another effort:
-> https://lore.kernel.org/lkml/20260922-driver-override-opt-out-v1-0-58c35d=
-ed3b83@nvidia.com/
-
-Nice. I look forward to ripping all these checks out again
-if that lands. Obviously we won't backport doing that given the checks
-will remain harmless.
-
-Jonathan
-
->=20
-> Best regards
-> Uwe
+> On Fri, Sep 25, 2026 at 10:10:05PM +0800, Jiale Yao wrote:
+> > The IIO core does not filter duplicate writes to the event enable
+> > attribute. kmx61_write_event_config() already ignores repeated enable
+> > requests, but a repeated disable request still calls
+> > kmx61_set_power_state(data, false, KMX61_ACC), dropping a runtime PM
+> > reference that was not acquired for this request. This can underflow the
+> > runtime PM usage count and trigger a "Runtime PM usage count underflow"
+> > warning.
+> > 
+> > Return early when the requested state already matches ev_enable_state.  
+> 
+> Same comments as per previous patches of the same topic.
+> 
+Fixes tag needed.
 
