@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B18A3B961F;
-	Sun, 27 Sep 2026 19:20:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F4FD35CB95;
+	Sun, 27 Sep 2026 19:21:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790536828; cv=none; b=OpMVQADirkgplTMOkWasUDHDv6aPaP7Scadove166iqOejRi8hum9e9KRQ7oBMehZ+6eraheW5t5jje1Bw0D4pgp4VfUv7VFDQlhNs39A0oZiMVJCUkOBldBWiDSaHCucfVK3cbAbNzuPfNf96J/TyGl+dJeMdT96l3FGObndNE=
+	t=1790536883; cv=none; b=tZLqgkCzdS0RlNPCNpaC6Wo+srvEP3JmiowtYblIeXfASgk6UqKbSvixrTDQ7BgPdEmOkYuDdmnIKTUt1hYOmpSZGXsYev/GecF8Z+z+CoNeDaNctBRAYgUU0z4ppG5rrEr7QVahQInMLCCM/gzmmA2lavj2qYSTDYXdJZNjI54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790536828; c=relaxed/simple;
-	bh=oiCTL8EpT0ZRStGZFP34WodlD/ufVXWiGnOSZ+U04WY=;
+	s=arc-20240116; t=1790536883; c=relaxed/simple;
+	bh=pT/g357OQnWhsy5ERImIRYEyrP7OHaCbkJH06k/2nz0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KbW6LZYId3P/6sbQhBqZ9p0h262X3nFWurbehkYiWqU6G7D8fv1OpkpPqvP1Tg8ZLmlveA9G/xnx+noWJ09tECTOpAWs/FejCr8Vj60SmJH6KmIExwAdd5Rs5cmoNdTBdo1VZM0ZAt02cqskRSKDGtREfI5+Sy5ZnIR4P23BW1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LRk4BjLP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=FSN8hUz7Tmo668layrjoFU0tojeBB1jJbiUKFBLSiillZktCSFKXYHGcIp0AzQuFch8/YeT8w5cxhH+tFQeBrrw51d3MdSk8EuRVYR0I55H9GZ4Oxiy6JSRvdZTzi5Qm//ld9JcTqK4IWdbsXvIeM3erwgIykhxVhFPt+a48ob4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=earYQG+b; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LRk4BjLP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 094381F000FF;
-	Sun, 27 Sep 2026 19:20:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="earYQG+b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF141F000FF;
+	Sun, 27 Sep 2026 19:21:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790536825;
-	bh=w1Mt3mxIwkZ6STlK6MldHGLAuseHKDidYUPG0X552Jo=;
+	s=k20260515; t=1790536881;
+	bh=9OEr1IRN4XgSD+aBRpKzIVj95AUPl3h/Qpn1S5XAVgo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LRk4BjLPkwusaTTrwwdj6kzOE0J9hbIESOQBLcl1iUf1psD+sCWmLY/5VTDgSlAsu
-	 HJVZxiQPmOqYTGenFQAyT2SK5CMx6s8+yFY+HOcAZVypv9GaiL+o+7onkS1ZIsqp32
-	 QndLFSb4tKytiI8WT136yyEk8i5Cfluk0xpXlk2RWmTgenI/P7134b1pRswsxLSrwt
-	 WfeVEUNAYe6/du4kR69AR5aKWeYWatnJQ5e63uUkINylvVkL+oeBzNG+7jkbcRVy8e
-	 kKX/ZZYDWPhoy9A3/6yXOs2LkqfkPL6gj74P8OV3kU7uZIibouUpcDNGsjsEz2afwP
-	 547a5KP1rjH5g==
-Date: Sun, 27 Sep 2026 20:19:48 +0100
+	b=earYQG+b4V1Hm6q2jaZy0vPnmxa5/dsrbhN6+T+GXXnBErP+U3/iFVodR4TB6pC9S
+	 YWGj+OLgDNnEvlEPAkCOYFRBc5WkpafRsmQ0oHZC1UMixUFtWrtQMg+Vnb1KsvIfEK
+	 0wH0++q3IJ0jDdoP5E9Wx2D43K3IH09gi+PpguDAvKsJQB/aJWI9sNvfhmhSlwPVyr
+	 ZAIhf5LOX/8EIAgpQpBrb4SJe3TM3Uki2AHhYJw9SpM2t1WXh6vt1zDqGkwEk3AD14
+	 +tbo7iH9gKYHCYNbLLWAFJV2L0+y6x42Rducwd73WfK4Gg9Dmg28is1Z1OtOdgrTIH
+	 pMWX44OMkPMUA==
+Date: Sun, 27 Sep 2026 20:21:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rupesh Majhi <zoone.rupert@gmail.com>
 Cc: Andy Shevchenko <andy@kernel.org>, Bill Wendling <morbo@google.com>,
@@ -36,12 +36,12 @@ Cc: Andy Shevchenko <andy@kernel.org>, Bill Wendling <morbo@google.com>,
  <ndesaulniers@google.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  llvm@lists.linux.dev
-Subject: Re: [PATCH v8 04/10] iio: pressure: dps310: take the lock once per
- raw read
-Message-ID: <20260927201917.2e8412b7@jic23-hlaptop>
-In-Reply-To: <20260921183132.233136-5-zoone.rupert@gmail.com>
+Subject: Re: [PATCH v8 05/10] iio: pressure: dps310: add triggered buffer
+ support
+Message-ID: <20260927202117.04eac945@jic23-hlaptop>
+In-Reply-To: <20260921183132.233136-6-zoone.rupert@gmail.com>
 References: <20260921183132.233136-1-zoone.rupert@gmail.com>
-	<20260921183132.233136-5-zoone.rupert@gmail.com>
+	<20260921183132.233136-6-zoone.rupert@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,21 +52,19 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 21 Sep 2026 21:31:26 +0300
+On Mon, 21 Sep 2026 21:31:27 +0300
 Rupesh Majhi <zoone.rupert@gmail.com> wrote:
 
-> A processed pressure read takes the lock twice: once in the raw read,
-> then again when dps310_calculate_pressure() trylocks to refresh the
-> temperature. The refresh is skipped whenever the lock is busy.
+> Add a triggered buffer to capture continuously on both channels instead
+> of one sysfs read at a time.
 > 
-> Split the raw reads into variants that expect the lock held and give each
-> channel a helper that takes it once for the whole sequence, so the
-> temperature refresh is unconditional. Buffered capture later in this
-> series needs the same shape.
+> Raw register value is not useful on its own, pressure has to go through
+> the compensation polynomial and needs a temperature reading. Report raw
+> in Pa with 1/1000 scale to keep full resolution in the buffer without
+> changing what the existing processed attribute reports.
 > 
-> Mark the functions that need the lock with __must_hold() rather than a
-> comment, and include cleanup.h, which ACQUIRE() needs and was coming in
-> transitively.
+> Raw and processed reads return -EBUSY while buffer is on, so does any
+> reconfiguration.
 > 
 > Assisted-by: LLM
 > Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
