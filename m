@@ -1,45 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F4AA2765ED;
-	Sun, 27 Sep 2026 17:45:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0542E22B5;
+	Sun, 27 Sep 2026 17:49:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790531127; cv=none; b=fvCp6Xf2MGpMSxSSocHYLxfhGrkKTww3rfn3mqemcbQCRs/gBMiL9xZK/ofiRZh4OV2rW/XNxE/mkIANMM6pSzWdiNg9CORjPb1TDGYTeFn9qwjQ9GAGqe/IXdbM10ZmBazubjdanKsUW9XQo/0ZKEaHQQLKkNWfgeIHdI4zS8c=
+	t=1790531372; cv=none; b=IU0r38EI+Nd4IimaKSzLHQTbwR3JD2FRpGHNqYOJMc2241sc/UIGjPi+0/C6I6lX3Hy7CX8dpRYvWoI+P6gB0Hbtqzj/AuC1L8HAc1otwDboLLXP70o34ww/Ielf9HqDMXX4JagpLzs+MXjzod9RKQe/geRRGsB2SRHxWC/coo0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790531127; c=relaxed/simple;
-	bh=cR3vz3frva+A53vWFF8Ow0W02iWNyo5Zklm97jmWdVE=;
+	s=arc-20240116; t=1790531372; c=relaxed/simple;
+	bh=JmH6ynSVla384YYdBPmjN+u5U/j2CRGFnFL5O+k4U40=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A8HIOdKgle4tMF7L7+TBGw08DBKLLXXgNUQD37HkgzLrCpPZPTTpZvq3HHpP1U3qqgWtGBjbcj00Rx5kjsOhC/dINxwRyOfYpZkvqBPVqIuR71ZtuI4BUJAlETCYE/PFY1SgNvPmaP+bwa+d751K5kZfM5bWSVUZ4mpJicxroZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dVpVXy1j; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=cinyACQ800sC0YfusDdRp2uhLfNhQm9FIrLLJ+U84sIYuxOFukT7uTMb6hVfA5gBwsIGZ4EjhvzSwK/m0B2NViRu6gmKgHACG+z6BOUSVNaHrE43hD0iVVEPSZFyJBIubZvhUYOPU/tiUKUDcvS96VzK/ABzCeDv0l94DuJcZsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mYZG62gi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dVpVXy1j"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A4B1F000FF;
-	Sun, 27 Sep 2026 17:45:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mYZG62gi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BAE21F000FF;
+	Sun, 27 Sep 2026 17:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790531125;
-	bh=3hEemW1CQPbavWnA4xtTCd8PwbJwsC2IK7Xzx6SzOdk=;
+	s=k20260515; t=1790531370;
+	bh=vep0rxIRKoNxiLFQDPN+hgCPxdJunk6/QndDTJ30FU8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dVpVXy1jjCGXOzLsP/P3HbcBXWRSuCSfCa81hED2Z7zmkGCyW94DLkhdfYSu9kKgv
-	 8G7bL6lTTEN8Sn3Nv2ZvQvg8aZdYhqEKdAfFd63tMYbE+tZ8QAteJ2XxSVghcnSHx6
-	 I1LeiDtq6u9RddkjF8iHTQkQGE4Og8Nk/UyWO6P2d7iSR3EK9KLlMr79rJyESnrIiD
-	 jfGJ+IPi6YdhCE/RR3gHn8JcyAsN6kDHQih7PmSiB2u8M8oPqO43BpWxBRDuxzyVcs
-	 sUIXKL1AmIyw8DaTIX8869tc1OEta+Fd0GXz6xQpk/nqaN7qGwFBtbagwT0Mf1lCPV
-	 7Et3Q3PhaB0Yw==
-Date: Sun, 27 Sep 2026 18:45:21 +0100
+	b=mYZG62gi1MfOQjlEtabjcLxsCKlJIcb7RbmgT2+zjFK+BXH6zgV9pfl38PmGrQwWn
+	 qHVgKBkIxWqyAHMxfinPzhMLEZLdtNmx5ZUROy2ss2l6fF1wPIau2XlaMyQaGN11no
+	 AgcKvsLndaDRc+6rDrlkSGtBbiS5paXG+dmu5PGMty8B2SwStzpWyFrTJN3ASxUAT2
+	 YQxkfqzhLnJzC+NRIWy6JSR9g60OOdBY7acEcbR5x5q3DUHkOthK7h3isyW98RehJm
+	 de+CWyPIwhOP1YpWBdG1DKOCvhD/Nmo8iaKGw/v+78D9UmiAiTj7jR893zCv44EuWL
+	 aBdvfXbC8oKjA==
+Date: Sun, 27 Sep 2026 18:49:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Jiale Yao <yaojiale02@163.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 6/9] iio: adc: ti-adc128s052: validate SPI match data
-Message-ID: <20260927184521.022ccf49@jic23-hlaptop>
-In-Reply-To: <20260926021823.6493dbe2@jic23-hlaptop>
+Cc: Alisa-Dariana Roman <alisa.roman@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Ramona Bolboaca <ramona.bolboaca@analog.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, Matti
+ Vaittinen <mazziesaccount@gmail.com>, Kurt Borja <kuurtb@gmail.com>, "Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>, David Jander <david@protonic.nl>, Danilo
+ Krummrich <dakr@kernel.org>, Linus Walleij <linusw@kernel.org>, Dmitry
+ Torokhov <dmitry.torokhov@gmail.com>, Bartosz Golaszewski
+ <bartosz.golaszewski@oss.qualcomm.com>, Guillaume Stols
+ <gstols@baylibre.com>, Jonathan Santos <Jonathan.Santos@analog.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Oleksij Rempel
+ <o.rempel@pengutronix.de>, linux-iio@vger.kernel.org, linux@analog.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/9] iio: adc: reject SPI devices without match data
+Message-ID: <20260927184923.4362386e@jic23-hlaptop>
+In-Reply-To: <20260925125754.2162337-1-yaojiale02@163.com>
 References: <20260925125754.2162337-1-yaojiale02@163.com>
-	<20260925125754.2162337-7-yaojiale02@163.com>
-	<20260926021506.361a62c1@jic23-hlaptop>
-	<20260926021823.6493dbe2@jic23-hlaptop>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,82 +58,57 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 26 Sep 2026 02:18:23 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, 25 Sep 2026 20:57:38 +0800
+Jiale Yao <yaojiale02@163.com> wrote:
 
-> On Sat, 26 Sep 2026 02:15:06 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
+> SPI driver_override can bind a device to a driver without a matching
+> firmware entry or SPI device ID. In that case,
+> spi_get_device_match_data() returns NULL.
 > 
-> > On Fri, 25 Sep 2026 20:57:44 +0800
-> > Jiale Yao <yaojiale02@163.com> wrote:
-> >   
-> > > SPI driver_override allows a device to bind to this driver without
-> > > matching either the firmware tables or SPI device ID table. In that
-> > > case, spi_get_device_match_data() returns NULL.
-> > > 
-> > > adc128_probe() also obtains the IIO device name by dereferencing the
-> > > result of spi_get_device_id(), which is NULL on the same override path.
-> > > The probe can therefore crash before it reaches the match data access.
-> > > 
-> > > Commit 572a00852635 ("iio: dac: ad5686: missing NULL check on match
-> > > data") fixed the same driver_override issue in another SPI driver.
-> > > Reject devices without match data and use the always available SPI
-> > > modalias for the IIO device name.    
-> > 
-> > Why this change?  The name is clearly encoded in a place that makes
-> > it readily available and verifiably the right thing in a way that
-> > spi->modalias does not.
-> > There isn't any reason the IIO name would always match that even it
-> > happens to do so here.  
+> These nine ADC probe paths assume that the returned chip information is
+> present and later dereference it. Reject devices without match data before
+> the pointer is used, following the handling added to the AD5686 bus
+> frontends by commit 572a00852635 ("iio: dac: ad5686: missing NULL check on
+> match data").
 > 
-> Actually - ignore that, I misread this and assumed the code
-> was different from what was actually there.
+> The ADC128S052 and ADS7950 probes also dereference spi_get_device_id() to
+> obtain the IIO device name. Use the always available SPI modalias instead,
+> so the override path does not depend on a matching SPI ID.
 > 
-> Drivers shouldn't be using spi_get_device_id(spi)->name but
-> I'm not sure modalias is any better.
-> 
-> I'm out of time for now, so will revisit this in a day or so.
-> 
+> Each patch fixes one driver and can be applied independently.
 
-I did a bit of LLM assisted digging and it does seem that some
-of the previous issues around these names and ACPI PRP0001 have
-been resolved these days so as far as I can tell this ends
-up the with the correct answer.
+Whilst I'd have loved to just set the flag that the series Uwe
+links to adds, that's not available yet so for now indeed
+these are all valid fixes.  I'm not going to rush them in.
+Applied to the testing branch of iio.git which means next merge
+window most likely.
 
-> > 
-> >   
-> > > 
-> > > Fixes: d5f0da0c6972 ("iio: adc: ti-adc128s052: Switch to use spi_get_device_match_data()")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Jiale Yao <yaojiale02@163.com>
-> > > ---
-> > >  drivers/iio/adc/ti-adc128s052.c | 8 +++++---
-> > >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-> > > index 1899813c1aee..f9a995ff403e 100644
-> > > --- a/drivers/iio/adc/ti-adc128s052.c
-> > > +++ b/drivers/iio/adc/ti-adc128s052.c
-> > > @@ -195,12 +195,14 @@ static int adc128_probe(struct spi_device *spi)
-> > >  	adc = iio_priv(indio_dev);
-> > >  	adc->spi = spi;
-> > >  
-> > > -	indio_dev->name = spi_get_device_id(spi)->name;
-> > > +	config = spi_get_device_match_data(spi);
-> > > +	if (!config)
-> > > +		return -ENODATA;
-> > > +
-> > > +	indio_dev->name = spi->modalias;
-> > >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> > >  	indio_dev->info = &adc128_info;
-> > >  
-> > > -	config = spi_get_device_match_data(spi);
-> > > -
-> > >  	indio_dev->channels = config->channels;
-> > >  	indio_dev->num_channels = config->num_channels;
-> > >      
-> > 
-> >   
+Thanks,
+
+Jonathan
+
 > 
+> Jiale Yao (9):
+>   iio: adc: ad7192: reject devices without match data
+>   iio: adc: ad7606: reject devices without match data
+>   iio: adc: ad7768-1: reject devices without match data
+>   iio: adc: max11205: reject devices without match data
+>   iio: adc: mcp3911: reject devices without match data
+>   iio: adc: ti-adc128s052: validate SPI match data
+>   iio: adc: ti-ads1018: reject devices without match data
+>   iio: adc: ti-ads131m02: reject devices without match data
+>   iio: adc: ti-ads7950: validate SPI match data
 > 
+>  drivers/iio/adc/ad7192.c        | 3 +++
+>  drivers/iio/adc/ad7606_spi.c    | 6 +++++-
+>  drivers/iio/adc/ad7768-1.c      | 3 +++
+>  drivers/iio/adc/max11205.c      | 2 ++
+>  drivers/iio/adc/mcp3911.c       | 2 ++
+>  drivers/iio/adc/ti-adc128s052.c | 8 +++++---
+>  drivers/iio/adc/ti-ads1018.c    | 3 +++
+>  drivers/iio/adc/ti-ads131m02.c  | 2 ++
+>  drivers/iio/adc/ti-ads7950.c    | 4 +++-
+>  9 files changed, 28 insertions(+), 5 deletions(-)
+> 
+> base-commit: 93f51579e7df248780214094418f205253383cc5
 
