@@ -1,45 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AADB1DF736;
-	Sun, 27 Sep 2026 17:16:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA2033DEE9;
+	Sun, 27 Sep 2026 17:20:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790529401; cv=none; b=LobZaGPEXSgODreoso0pT+3zrHrvpTFKGcgYu0i9C+SnCmZx3Bsu27FaWJc89ER+GoYLt2lCJoGmtXYsH6m29cSMYnUGSbktL+jhYaMYnK2eOFOUmQan0qzyUm1f/JgBZyZBl16NuIPV4ZWglQWrPJ8XWP4KvKYvNySQwlDKRbA=
+	t=1790529611; cv=none; b=EOJefVC14Zve4vKt8x9vnp7PY0FZrmeIrW8UigNZc+zk8LGSHjVIcWtfBUGhBOJSeLwnmShst0Peb7tgi7O2J2gTCV8YSJHOa4IfKBmYmo+PboLYE7TRsWtWES/Db+y1pgOVXPHap6N72nLRioahzvJKH9vL1w81sZl8Povmy0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790529401; c=relaxed/simple;
-	bh=Gdai30PjBzWLZGdj5WZEr/OfE0c3yijYtn+GBcIo4no=;
+	s=arc-20240116; t=1790529611; c=relaxed/simple;
+	bh=22g2bhWEVOzBB93cClGUub2SG10F+1foaYL9rEaxCvY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JXOhdOSw19tmoCnPoBhsD8SScBTm1GsX8x+K84s9ETZeNiUybshMw1Z6UIsC7JhRCdxJBw6/tLKMG8+D4PdItUKMLhg6WwxYS9onT7IwoKD8SRliuEQ7xYv12AmmnJ6izcxBTSofpqp3kJ2SQRcJ94xWGpPy2957iK4W4cepCUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zt8xGnhj; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=PM6iInd30g5t9KgU9E8bLwsnvc2WnCEXExoKH8HVTRVv8NnEVtoZFoRIQDx7g7DAf0dHhdWzJJML6DfjVNfaURNkbDkzoHnwVpSikjN5Xg/CnamionjGrVGijEMzgSjekTgVj7qiSSMgwEVknYaQRMMCJ+lWrNNBDskw6VM/bvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AXy6B9F1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zt8xGnhj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785631F000FF;
-	Sun, 27 Sep 2026 17:16:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AXy6B9F1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FB91F000FF;
+	Sun, 27 Sep 2026 17:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790529399;
-	bh=bpOBFqR9/CyIrsFJP/ZVh16uI2vmK0AckLze3Xfu3G4=;
+	s=k20260515; t=1790529609;
+	bh=dnqbkM979B+9s4buxvI+GIWuF41/BLvgBEICg7/Xe1I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Zt8xGnhj6PGRayAa7247FB50WWcuXXlRWwB07g/ILU7h6IK5649f4+arMDCQ5xqmS
-	 gZI3s8OjsuKf2UZuntzekLsv/+3sTyqhJIGZnvskSKB4sByjxvb7SEcTvO4qHyrYQL
-	 mbILA40ronAvUVAjDLee3A774M45G6zCv7EzFJN1hDqAWYJYB+7ImPk2HnILcvuLwt
-	 SuXX4s7mK3C2UOmbFQSvRfDCSjBCiOWqBmfdRsfUYGaym9i9bXzEFccfANUbW58KVD
-	 x/9zOUuCHZjRi3xUhNTrceYX3LZ+Aat2GENvttG830SRXZnCcvdyMrkBuXkRIJQv3n
-	 8bw/hYDzNB2UA==
-Date: Sun, 27 Sep 2026 18:16:32 +0100
+	b=AXy6B9F1w7AWTQOzXSyTTzNE5szGZ4p/FQnPeb2+6RwYkEe3tinzafVy9dFmc1G/x
+	 DGeDrl0p/dsEELV5pLsKC5i0HxKi3qaR3KZUwmAHyKQQt4ErXn6PNzpAEM++odY3bS
+	 zrC0ge4/sKjW6LYYRsArVzmC8lsxkkgFsBz2zHHVPtPf0Mp8jVIVAW+F4LkMJ91fht
+	 e3RsBFiuxBUntYlnr+PceMJtbS+BfJTnrVPKlcwVJYQ22YLobpv/uUYPTlyhCZOx3G
+	 dg98E38R49wJZiFSWYs/A8RT/uMeLjxqeqHTn8JAg1PR4XWSvoxwkH1mxZ/mX4hGHW
+	 29XJ6fjNjkjLw==
+Date: Sun, 27 Sep 2026 18:20:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "jiale yao" <19888972804@163.com>
-Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "David Lechner"
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, "Stepan Ionichev" <sozdayvek@gmail.com>,
+To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>
+Cc: Jiale Yao <yaojiale02@163.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Anshul Dalal
+ <anshulusr@gmail.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>, Herve
+ Codina <herve.codina@bootlin.com>, Shi Hao <i.shihao.999@gmail.com>, Linus
+ Walleij <linusw@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Angel
+ Iglesias <ang.iglesiasg@gmail.com>, linux@analog.com,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: bmg160: reject duplicate event disable
-Message-ID: <20260927181632.76bc1eda@jic23-hlaptop>
-In-Reply-To: <20260926020133.3699a786@jic23-hlaptop>
-References: <20260925140956.2254877-1-yaojiale02@163.com>
-	<araCndRmAqnX1K9k@ashevche-desk.local>
-	<6b2f4eef.1cf6.1a0d8fc9ac6.Coremail.19888972804@163.com>
-	<20260926020133.3699a786@jic23-hlaptop>
+Subject: Re: [PATCH 0/7] iio: validate SPI match data before use
+Message-ID: <20260927182001.10c331dd@jic23-hlaptop>
+In-Reply-To: <ardhvKaSdYh2HiS6@monoceros>
+References: <20260925131738.2200612-1-yaojiale02@163.com>
+	<20260926021143.478d5361@jic23-hlaptop>
+	<ardhvKaSdYh2HiS6@monoceros>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,93 +52,46 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 26 Sep 2026 02:01:33 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sat, 26 Sep 2026 08:13:13 +0200
+Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
+e:
 
-> On Fri, 25 Sep 2026 22:33:48 +0800 (CST)
-> "jiale yao" <19888972804@163.com> wrote:
-> 
-> > At 2026-09-25 22:18:05, "Andy Shevchenko" <andriy.shevchenko@intel.com> wrote:  
-> > >On Fri, Sep 25, 2026 at 10:09:54PM +0800, Jiale Yao wrote:    
-> > >> The IIO core does not filter duplicate writes to the event enable
-> > >> attribute.    
-> > >
-> > >Can it be done there once for all?    
-> > 
-> > I don't think the core can safely do this generically, since it doesn't own
-> > the per-event state and read_event_config() may reflect shared hardware state.
-> > 
-> > The runtime PM accounting is driver-specific, so handling duplicate writes in
-> > the driver seems safer. gp2ap002 does the same in commit 579c049b4cb6,
-> > refer https://lore.kernel.org/all/20260720193911.74919-2-nikhilgtr@gmail.com/  
-> 
-> Exactly right.
-> 
-> Event handling in the core would indeed require complex mapping of
-> what can actually be enabled on a given device. Some of those we might
-> be able to represent with simple approaches similar to what we do
-> for avail_scan_masks for buffered channels but it is hard to generalize
-> and FWIW that concept still misses some corner cases of channel enabling
-> where drivers have to apply constraints in the actual buffer enable.
-> Those are rare enough that it isn't too much of a problem in practice.
-> Probably fine on 99% of drivers.
-> 
-> Events have simplre cases like:
-> - 1 enable bit turns a whole load of events on (we don't filter in
->   the kernel - so userspace has to cope with surprise events).
-> - Always on event signals.
-> - Limited numbers of general purpose event engines (the ADI IMUs do
->   this as they tend to have 2 instances). Each engine can do anything
->   but there are only two of them.
-> 
-> We also have more complex ones like mode bits that flip a subset
-> of events from one enable state to another.  There are some really
-> odd rules in some devices because some upstream filter that is needed
-> for 5 seemingly unrelated events has to be in a particular state for
-> subsets of them.
-> 
-> Anyhow, all in all event control is a mess of 'original solutions'
-> from vendors and relies on the (naughty) get out of IIO ABI that
-> just occasionally any write to any userspace ABI element can
-> change what is read back from any other.
-> 
-> Not great, but I've never come up with a better solution for events.
-> If anyone wants to have a go at architecting a filtering solution
-> a bit like the IIO buffer demux maybe we can opt in to it from
-> some drivers.
-> 
-> I am wondering if it is worth registering a driver specific tidy
-> up events call though that would disable everything a bit like
-> we disable buffers as part of the userspace tear down.  That would
-> close out some races sashiko has reported.  That project would
-> I think be a lot simpler to implement.
-> 
-This one needs a fixes tag, as do the other similar ones.
-Fine to just reply to each thread with the appropriate tag.
+> Hello Jonathan,
+>=20
+> On Sat, Sep 26, 2026 at 02:11:43AM +0100, Jonathan Cameron wrote:
+> > On Fri, 25 Sep 2026 21:17:29 +0800
+> > Jiale Yao <yaojiale02@163.com> wrote:
+> >  =20
+> > > SPI driver_override can bind a device without a matching entry in the
+> > > driver's ID tables.  spi_get_device_match_data() then returns NULL.
+> > >=20
+> > > These seven IIO drivers use that result without checking it, causing a
+> > > NULL pointer dereference during probe.  Add the missing checks before
+> > > the match data is used. =20
+> >=20
+> > I was hoping we'd close this finally by adding a flag to the
+> > drivers to say they should fail a match if driver_override is set.
+> > Given I thought maybe that would happen when Andy looked into this
+> > a while back I've been sitting on this problem for a while.
+> >=20
+> >=20
+> > Unfortunately seems we have to carry on papering over it in the
+> > drivers for now :( =20
+>=20
+> Note there is another effort:
+> https://lore.kernel.org/lkml/20260922-driver-override-opt-out-v1-0-58c35d=
+ed3b83@nvidia.com/
 
-Thanks,
+Nice. I look forward to ripping all these checks out again
+if that lands. Obviously we won't backport doing that given the checks
+will remain harmless.
 
 Jonathan
 
-> Jonathan
-> 
-> >   
-> > >    
-> > >> bmg160_write_event_config() already ignores repeated enable
-> > >> requests, but a repeated disable request still calls
-> > >> bmg160_set_power_state(data, false), dropping a runtime PM reference
-> > >> that was not acquired for this request. This can underflow the runtime
-> > >> PM usage count and trigger a "Runtime PM usage count underflow" warning.
-> > >> 
-> > >> Return early when the requested state already matches ev_enable_state.    
-> > >
-> > >-- 
-> > >With Best Regards,
-> > >Andy Shevchenko
-> > >    
-> 
-> 
+>=20
+> Best regards
+> Uwe
 
