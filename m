@@ -1,41 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB2041A92A;
-	Sun, 27 Sep 2026 18:44:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C47F3B388D;
+	Sun, 27 Sep 2026 18:47:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790534661; cv=none; b=QXpclFSv2QuJQqa8qmJbT2R391fBjwOf/xMHhWKueS8BCdY3XioOGsWFEmJkUfUFy0hrAwTIkRiUp9ID2oAY6HNbojVAPBF9nxN7FmTMl53qJanQ7dn7PIb+GIPxaoEYsjmEh/W+dLjVEIymieHd6KnGiQh5mJ5YUwGrS5urY3w=
+	t=1790534863; cv=none; b=OYu/b1zSb9OgvPd2Lntzjn3+IFtxZhfZojiVlqCk5Tf2h6BbTzMNlEDcyj1qDZZjaAcbl9UeSeiOWoU82bORPh0QQ+mkd6liS7ONjvaWOLed8/tH3VoBZU22uu4XAjqwEy0t5lwvmAYUpzVvfJaOxTjJoAJ3oyK99+g7JEzeh/4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790534661; c=relaxed/simple;
-	bh=ljYmVK8Yt7p6SpfNSpe1kw+xcwFeJ3OwvshzUP5wELk=;
+	s=arc-20240116; t=1790534863; c=relaxed/simple;
+	bh=3pJmv3/3umA7ZkP71xzHvblAqWKINyjEcVMStuRTR70=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IHM9GXmIp0Yqxj4932KxC+b+oBZFqjp7jTpbrWAW1tyNQ6Er+JxQI6jQ+MFuUzrUCnrQEA0EXOCUaPpxhQHUgI2cPTVEze7mV6s8VAH5S6mRamVILtYrZ6S4G/gMFYiYaf+VJlpmCTWmk5N7TsqOe/Sy1Plj7/zqNujbQRy/S84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EDxWoO8u; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=f/vuKr+JNm6Xr6c0XwXiBNYXuocmOURKATVe1Zq6V6wVfJqtwT7JOcyOW6Ub5FhRuMobkQPDekfUskaOxf8dgocvnFIMqq0vLwylyo+rOitREx+0rv02puW7CGfdjma0sgnhb8ynTDSDieoOt3XCbnV24JjBdLqcbN6+qBLSR+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XiouCllz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EDxWoO8u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EA41F000FF;
-	Sun, 27 Sep 2026 18:44:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XiouCllz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C85C1F000FF;
+	Sun, 27 Sep 2026 18:47:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790534660;
-	bh=SWr5QE6Ryda5brnKpvYSqxagQCIO389FzNkg8IXhHOw=;
+	s=k20260515; t=1790534861;
+	bh=rTGkk6MKJYEzG3GcMmmmeg6WnVpHww0g7NA09ykyC/4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=EDxWoO8uIwXFq/OZsWgI5rn2LUQTnzBCW3TyjIcMf1DvtooSRQb8YqK1yJUDoDOUb
-	 JJFSGwEevturbPmXljxLk7mc4wCM8rhqO4wy8f5ZM/AcP7+gYZYBaN2d6t0Qp/vMHg
-	 9eBPexPFedVn/e4RFxqy41GAYVwULdV36xMlDRezjgxIGxR0vfeU3kStw7zrJU2+cW
-	 WXgUo3TghR1rkeSpb8hDHVrBLYwKzsei6nbC7vWW8ODkVjfriGUN30HcaCsF7+mfZk
-	 PHqQtuKYLbzu45u0gnF4XMPO3OLPLRfNOee/aVxnr0WpIq732agJ0s1uI0jX2XVR56
-	 CfS3+m6K78F4g==
-Date: Sun, 27 Sep 2026 19:44:16 +0100
+	b=XiouCllzQ8ykayo10Wtw+WZ9XUHvKJYxIdOip1YinuSyngXjM6haeQeLkKxhkYMWh
+	 TEz97N/hVI+VL6sO9QCwcl0Hv2/P2G8FIsgYsoeBBCujZIwMrpMfkogK0OX77JosxG
+	 872EwwComyyYJvmkAxQaDjK2Z1y/jNw6UYUXQltl7Kw4goXb+9PPH7XPg6diolzM8d
+	 CtoHzhvC3dsG1UjptevwG1lfIp7eASokpg+hub9c1h1AawVUeGVtPBxxt8V3bWnZhT
+	 tey8FMJLq52mxDjR4COhdZNzCbsQ94N4WYx4riJmDIgbe9ALxgAoiq9M8NPYxdgko7
+	 h4J6/NSUw0vUA==
+Date: Sun, 27 Sep 2026 19:47:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: veml6031x00: Enable internal calibration
-Message-ID: <20260927194416.37f84da9@jic23-hlaptop>
-In-Reply-To: <20260924-veml6031x00_als_cal-v1-1-c046a5e4e998@gmail.com>
-References: <20260924-veml6031x00_als_cal-v1-1-c046a5e4e998@gmail.com>
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Maxime Coquelin
+ <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, <linux-iio@vger.kernel.org>,
+ <linux-stm32@st-md-mailman.stormreply.com>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+ Cheick Traore <cheick.traore-ext@st.com>, <stable@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: stm32: fix minimum sampling time values
+Message-ID: <20260927194734.7bc017a2@jic23-hlaptop>
+In-Reply-To: <20260924-adc-fix-sampling-v1-1-13814954d8d7@foss.st.com>
+References: <20260924-adc-fix-sampling-v1-1-13814954d8d7@foss.st.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,17 +51,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 24 Sep 2026 12:59:57 +0200
-Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+On Thu, 24 Sep 2026 11:53:56 +0200
+Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
 
-> Enable the device's factory internal calibration before entering normal
-> operation to improve ambient light measurements.
+> From: Cheick Traore <cheick.traore-ext@st.com>
 > 
-> Set ALS_CAL during hardware initialization.
+> - On stm32mp15: vddcpu and vddq_ddr are not connected to internal
+> channel, so their sampling time shouldn't be set.
 > 
-> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Applied.
+> - On stm32mp13: vddcpu and vddq_ddr are connected to internal channels
+> and the value for vddcore was not correct. Values from the datasheet
+> are 1us (e.g. 1000ns) for ts_vddcore, ts_vddcpu and ts_vddq_ddr.
+> 
+> Fixes: 7cb2303dd024 ("iio: adc: stm32: manage min sampling time on all internal channels")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Cheick Traore <cheick.traore-ext@st.com>
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Hi Cheick, Fabrice
+
+Given we are fairly late in the cycle and that we have Fabrice's
+other series poking at this same driver I've queued this up on
+the testing branch of iio.git rather than taking a (possibly) faster
+path.  That means it will go upstream in the next merge window.
 
 Thanks,
 
 Jonathan
+
+> ---
+>  drivers/iio/adc/stm32-adc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+> index 90f0e257e6d1..b024326775ae 100644
+> --- a/drivers/iio/adc/stm32-adc.c
+> +++ b/drivers/iio/adc/stm32-adc.c
+> @@ -2734,7 +2734,7 @@ static const struct stm32_adc_cfg stm32h7_adc_cfg = {
+>  	.set_ovs = stm32h7_adc_set_ovs,
+>  };
+>  
+> -static const unsigned int stm32_adc_min_ts_mp1[] = { 100, 100, 100, 4300, 9800 };
+> +static const unsigned int stm32_adc_min_ts_mp1[] = { 100, 0, 0, 4300, 9800 };
+>  static_assert(ARRAY_SIZE(stm32_adc_min_ts_mp1) == STM32_ADC_INT_CH_NB);
+>  
+>  static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
+> @@ -2756,7 +2756,7 @@ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
+>  	.set_ovs = stm32h7_adc_set_ovs,
+>  };
+>  
+> -static const unsigned int stm32_adc_min_ts_mp13[] = { 100, 0, 0, 4300, 9800 };
+> +static const unsigned int stm32_adc_min_ts_mp13[] = { 1000, 1000, 1000, 4300, 9800 };
+>  static_assert(ARRAY_SIZE(stm32_adc_min_ts_mp13) == STM32_ADC_INT_CH_NB);
+>  
+>  static const struct stm32_adc_cfg stm32mp13_adc_cfg = {
+> 
+> ---
+> base-commit: 182c47735554925da9605dc9dd90a8c15a1bbae5
+> change-id: 20260924-adc-fix-sampling-526f0f26829b
+> 
+> Best regards,
+> --  
+> Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> 
+
