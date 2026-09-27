@@ -1,45 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 861232749DA;
-	Sun, 27 Sep 2026 20:54:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B9493BF660;
+	Sun, 27 Sep 2026 20:57:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790542486; cv=none; b=Jhm39VQ/fvZr0WvRAeFeqmZEPzo3SGKCEJ4vUuahwcMrL6qzE2Ko0dkF7O1A7fRe5VMeImuR2kw7o6/1+kvbz6GG4Sr2At65ywvVodi02IKr6hu+/WOUgnifqzNY04EAUOsqNrgO7QHYSWWU0aNN8pG9sC0FODZIohgsZxzsGhI=
+	t=1790542658; cv=none; b=o3n7X0sGyVjzmp9Dh45aQT2RrelHMFLWvIBArdQXhxprfTcWKgpvigUWmsMkrbgShmQjQtY3TVNH1F2yJGCy3/J/hTuG/WrZc1AUW7eWdSSmWU14gAd0hWKqNJpQj/oZuh/6CsgRQEtPHtNaWL08BKP9eKvbm5dE1NkBZrtZjUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790542486; c=relaxed/simple;
-	bh=eDhAy9YHmIef5PpfyCD64Nr4jmVPtByYuE1CUwsNxJw=;
+	s=arc-20240116; t=1790542658; c=relaxed/simple;
+	bh=RleQXdpB5ZueJ69MezIw7yL8mGr2Pe7FgscAEcaANko=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ev8WDiqcDnB2PcOklOjMMp64Xj87XwMQoF6PO7n9jEB0P/zQTH1unDK8NwGUm6qR86I8fwYBg6aHE8V8xXzZJm1c/eZnEhlpv1mbsrOlaRjS4SU4jxcFLLX9rKCKD9/xlgsRhfKq3VMA2+T34W0Iw4/HT+Mf5zfzfcrWf4RTdDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ii3EmcsY; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=d5pVYwM2VCiY80YPHv/G80aVjo85QRRgePig10ibEjpMezMntYr9EGzAOrtkk8VFVKjTYxCpFD6tWbxPjkUhrDDa0QaeQ5NNfj0l9DUJWHhJM/SX1MVaBtjbSVQy1Enl60V/ZGSX1gzJsu8MTLVgIAMcwT3Sf58rOv9GTayj9ww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aB1wPB6D; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ii3EmcsY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7D9D1F000FF;
-	Sun, 27 Sep 2026 20:54:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aB1wPB6D"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FAB41F000FF;
+	Sun, 27 Sep 2026 20:57:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790542485;
-	bh=dZlVlrWmYn5obEhkkIyxRmaEYWIhRBRACfJcNiKJbyQ=;
+	s=k20260515; t=1790542657;
+	bh=I28jh/biD+MEPD2Y9VJQxbmMBNAfGj6du8SxptmJs8k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Ii3EmcsYyfc9E3R/vAOTSTwh+qRmcHYJhBnziMmGGhyomrnZYcVx2m33wpEk22lJb
-	 jzImmP7ciQXmt42JX2YnxLYJQVxcq3YDXuikOyeGInNQfQCEksiH2qkA12EVS3z5NB
-	 oWbtYyLbjR+HjNZdpxEtEqQAHmJUGfZOlDJfY0L7LpfDqFW9sLz6qyhnhgydYCAyrk
-	 ROF/eJFGB+7Gl1MV+66VXod5SJGgMSSxT9mW6APn7dtFPPdUWAgtkKeXxjGqkvinNq
-	 inaBk02TrgSPKtd1DdFHMab/qo8bRQHRMeNfCbU+Uva6BIcXHr3np8bDcZk2hAZ96J
-	 1bRf2jKy4BVHw==
-Date: Sun, 27 Sep 2026 21:54:38 +0100
+	b=aB1wPB6DFtaSl6hQFueqgccOIDlqpF6JUlUl/M9juCS9lXa7hwz+bq3QCNEi6EFcR
+	 dTv4pS6CNhAHvbF2FLtbzW2baGfkQQEX+MEGLvBckWqbPfQ0v3Fe2xrtyxyoLxZ4ED
+	 jwnC39VhnxD1C1D4ZtZIpRnKdfKxHSufC4OrVRU3tGXOs/kQJnJECWiFl/Fqve4YT4
+	 9KlpZx6lh+a21owVMqTfNtlgw11MFaSuG3o49qHBMMEB9Uwuo0kC3JQQyfBLgst+TM
+	 5aNhyXkKWLr7Rg/JH8lRynrqm2UhIwLBSmUDJDOns3kO3JUfrcDspV3uGuLc9XnhaK
+	 8FHjxwYpzuoWw==
+Date: Sun, 27 Sep 2026 21:57:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Ivan A. Melnikov" <iv@altlinux.org>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, Francesco Lavra <flavra@baylibre.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: tools: Use proper macro to detect _Float16 support
-Message-ID: <20260927215438.115ca189@jic23-hlaptop>
-In-Reply-To: <arEDbA8fIxR6mrZq@iv-work>
-References: <20260918161305.1161852-1-iv@altlinux.org>
-	<20260919113945.2bee973b@systembl0wer>
-	<arEDbA8fIxR6mrZq@iv-work>
+To: Sanjay Chitroda via B4 Relay
+ <devnull+sanjayembeddedse.gmail.com@kernel.org>
+Cc: sanjayembeddedse@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, Benjamin Tissoires
+ <bentiss@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, Zhang Lixu
+ <lixu.zhang@intel.com>
+Subject: Re: [PATCH v6 00/14] HID: iio: Introduce devm_ APIs for HID sensors
+Message-ID: <20260927215731.59fdb69b@jic23-hlaptop>
+In-Reply-To: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
+References: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,79 +51,113 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 21 Sep 2026 15:33:55 +0400
-"Ivan A. Melnikov" <iv@altlinux.org> wrote:
+On Sat, 19 Sep 2026 16:06:23 +0530
+Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org> wrote:
 
-> On Sat, Sep 19, 2026 at 11:39:45AM +0200, Joshua Crofts wrote:
-> > On Fri, 18 Sep 2026 20:13:02 +0400
-> > "Ivan A. Melnikov" <iv@altlinux.org> wrote:
-> >   
-> > > __FLT16_MAX__ is an internal compiler macro. GCC defines it if
-> > > _Float16 is supported by the target in general, but the support
-> > > may depend on the exact target options. For example, on i586
-> > > without -msse2 I get the following error from GCC15:
-> > > 
-> > >   iio_generic_buffer.c: In function 'print2byte':
-> > >   iio_generic_buffer.c:141:17: error: invalid conversion from type '_Float16' without option '-msse2'
-> > >     141 |                 printf("%05f ", ((float)converter.f + info->offset) * info->scale);
-> > >         |                 ^~~~~~
-> > > 
-> > > To fix that, use the public macro without double underscores.
-> > > 
-> > > Fixes: cdd445d4b2a9 ("iio: tools: Add support for floating-point types in buffer scan elements")
-> > > Signed-off-by: Ivan A. Melnikov <iv@altlinux.org>
-> > > ---
-> > >  tools/iio/iio_generic_buffer.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-> > > index 000193612aad..9ea93984e0e9 100644
-> > > --- a/tools/iio/iio_generic_buffer.c
-> > > +++ b/tools/iio/iio_generic_buffer.c
-> > > @@ -131,7 +131,7 @@ static void print2byte(uint16_t input, struct iio_channel_info *info)
-> > >  		printf("%05f ", ((float)input + info->offset) * info->scale);
-> > >  		break;
-> > >  	case 'f': {
-> > > -#if defined(__FLT16_MAX__)
-> > > +#if defined(FLT16_MAX)
-> > >  		union {
-> > >  			uint16_t u;
-> > >  			_Float16 f;  
-> > 
-> > One Sashiko issue:
-> > 
-> > Does this unintentionally disable _Float16 support for all architectures?  
+> Following feedback from reviewers and Srinivas, v4 series was split
+> into two additional sub-series to perform cleanup and preparatory work
+> before adding devm support:
+> - HID: iio: warning clean up and prefer kernel coding style
+>   https://lore.kernel.org/all/20260707-15-jun-hid-iio-alignment-v3-0-8791574ad0fe@gmail.com/
+> - HID: iio: basic clean up for usage_id
+>   https://lore.kernel.org/all/20260610-6-june-hid-iio-correct-usage-id-v2-0-c3c5f0720493@gmail.com/
 > 
-> Indeed, it does. Sorry, my patch is incorrect. I must have completely
-> messed up all my checks on Friday.
+> Both series have been merged into IIO tree. This series introduces
+> device-managed APIs and converts HID IIO sensor drivers to use the new
+> devm-managed resources.
 > 
-> > Since the tools build environment uses gnu11 compilation flags without
-> > explicitly defining __STDC_WANT_IEC_60559_TYPES_EXT__, FLT16_MAX is
-> > undefined across all architectures. This causes the preprocessor to skip
-> > this block entirely, causing the tool to always print 
-> > <unsupported 2-byte float> for 16-bit float data, even on platforms where 
-> > native support previously worked.
-> > 
-> > If FLT16_MAX were actually defined, the compiler would still parse the
-> > _Float16 block and throw the same missing -msse2 compilation error mentioned
-> > in the commit message. Is there an alternative way to check for hardware
-> > support without completely disabling the feature?  
-> 
-> Apparently, the only correct way to detect _Float16 is to try compiling
-> some code that uses it. For that, a feature can be added to tools/build.
-> 
-> On other hand, x86 without SSE2 is the only platform I could find where
-> __FLT16_MAX__ is defined, but _Float16 does not work, so a simple
-> platform-specific workaround would also work and would be much less
-> elaborate.
-> 
-> WDYT?
-I would do it properly.  Avoids problems with what is defined for architectures
-changing in the future.
+> checkpatch reports a "suspect code indent" warning on the DEFINE_FREE()
+> declaration, but this appears to be a false positive caused by the macro
+> expansion. The code builds cleanly.
+If possible, Zhang Lixu, would you mind retesting this full set?
 
-Thanks,
+I think the more recent changes in this are unlikely to cause problems
+but would also prefer to have some more tags on this in general before
+I pick it up, so if Srinivas or anyone else has time to take a look
+that would be great.
+
+Thanks
 
 Jonathan
 
+> 
+> Changes in v6:
+> - Following input from Andy rectify kernel-doc for return
+> - With input from Jonathan used devres framework implemetation with
+>   cleanup helpder to reduce complexity and resource allocation.
+> - Link to v5: https://patch.msgid.link/20260806-28-apr-iio-redundant-argument-v5-temp-v5-0-f1f92c1d830f@gmail.com
+> Changes in v5:
+> - With input from Jonathan, convert all HID IIO drivers to use
+>   fully devm instead of partial or specific API; this is potential
+>   goal and validation on that will reduce multiple validation cycle.
+> - Rebase changes on latest iio/testing tree and resolve merge conflict
+> - Resolve mail client issue as v4 series was splitted into sub-series
+> - Link to v5: https://lore.kernel.org/all/20260524192059.1193716-1-sanjayembedded@gmail.com/
+> Changes in v4:
+> - Extend the series to cover remaining HID IIO drivers with devm API usage
+> - Reorder patches to place cleanup and warning fix at beginning and,
+>   devm-related changes toward the end based on feedback from David
+> - v3 series -> https://lore.kernel.org/all/20260509101040.791404-1-sanjayembedded@gmail.com/
+> Changes in v3:
+> - Added cleanup and prepratory changes before adding devm_ API
+>   conversion based on self review: 0002, 0004, 0006, 0007 and 0008
+> - Address andy's review comment on commit message and coding style
+> - v2 series -> https://lore.kernel.org/all/20260429175918.2541914-1-sanjayembedded@gmail.com/
+> Changes in v2:
+> - Following input from Jonathan and Andy, squash initial patch v1
+>   series in single change as individual change should not break anything
+> - Add devm API support and two driver using the same
+> - v1 series -> https://lore.kernel.org/all/20260428071613.1134053-1-sanjayembedded@gmail.com/
+> 
+> Testing:
+>   - Compiled with W=1 for each patch in series
+> PS:
+> - Sashiko reported an issue in a different driver and noted that it is not
+>   introduced by this series. I have taken this feedback into account and
+>   will address the actual issue in a separate series focus on that driver.
+> - Following input from Jonathan, will prepare followup series for
+>   HID IIO drivers to consistency support for logs in probe() path
+> 
+> ---
+> Sanjay Chitroda (14):
+>       iio: hid-sensors: remove unused iio_dev argument
+>       iio: hid-sensors: introduce device managed API
+>       HID: hid-sensor-hub: introduce device managed API
+>       iio: gyro: hid-sensor-gyro-3d: convert probe and teardown to devm-managed resources
+>       iio: accel: hid-sensor-accel-3d: convert probe and teardown to devm-managed resources
+>       iio: humidity: hid-sensor-humidity: convert probe and teardown to devm-managed resources
+>       iio: light: hid-sensor-prox: convert probe and teardown to devm-managed resources
+>       iio: light: hid-sensor-als: convert probe and teardown to devm-managed resources
+>       iio: magnetometer: hid-sensor-magn-3d: convert probe and teardown to devm-managed resources
+>       iio: orientation: hid-sensor-incl-3d: convert probe and teardown to devm-managed resources
+>       iio: orientation: hid-sensor-rotation: convert probe and teardown to devm-managed resources
+>       iio: position: hid-sensor-custom-intel-hinge: convert probe and teardown to devm-managed resources
+>       iio: pressure: hid-sensor-press: convert probe and teardown to devm-managed resources
+>       iio: temperature: hid-sensor-temperature: convert probe and teardown to devm-managed resources
+> 
+>  drivers/hid/hid-sensor-hub.c                       | 35 ++++++++++++++++++
+>  drivers/iio/accel/hid-sensor-accel-3d.c            | 40 +++++----------------
+>  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 21 +++++++++--
+>  .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 +--
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c              | 41 +++++----------------
+>  drivers/iio/humidity/hid-sensor-humidity.c         | 38 +++++---------------
+>  drivers/iio/light/hid-sensor-als.c                 | 39 +++++---------------
+>  drivers/iio/light/hid-sensor-prox.c                | 40 +++++----------------
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 41 +++++----------------
+>  drivers/iio/orientation/hid-sensor-incl-3d.c       | 42 +++++-----------------
+>  drivers/iio/orientation/hid-sensor-rotation.c      | 40 +++++----------------
+>  .../iio/position/hid-sensor-custom-intel-hinge.c   | 38 ++++----------------
+>  drivers/iio/pressure/hid-sensor-press.c            | 41 +++++----------------
+>  drivers/iio/temperature/hid-sensor-temperature.c   | 39 +++++---------------
+>  include/linux/hid-sensor-hub.h                     | 26 ++++++++++++++
+>  15 files changed, 175 insertions(+), 351 deletions(-)
+> ---
+> base-commit: 9c464e7473f762cee4c031a09da04f65a1c65d49
+> change-id: 20260603-28-apr-iio-redundant-argument-v5-temp-4e49eed863af
+> 
+> Best regards,
+> --  
+> Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> 
 > 
 
