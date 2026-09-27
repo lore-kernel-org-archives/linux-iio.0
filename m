@@ -1,49 +1,84 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 233D33BB9E1;
-	Sun, 27 Sep 2026 17:51:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB0381724
+	for <linux-iio@vger.kernel.org>; Sun, 27 Sep 2026 17:55:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790531476; cv=none; b=Yr1Y/kD1Uqbn9szHoXNSlK/97a6n694aokgGjOZ27SsPPcNVeIB9RYmSSVWfKy4xrFuR4lp4pYFeS6ZMz7APNFS0WCUTgDkoWexazF9KySetpMxQvReqsLiewXnhvZoyJzEonWxcQPEFJ0A9NFsVvH8DzQDW7j5JGS4vZKO2+ug=
+	t=1790531726; cv=none; b=mdJUee8LkGUaP9K3PlZGeyw8XWh33ItWgrgbNf17dJ6R3YrScJOuYcvdWLujQyowPikvCr/q37u23nZPjuUxmrqheDl4XGhsTwn0T38k2Il49Zs07yC2xW2nK2sYTqNH0L+3KCP6EtCV3Uxh7pigoC+Yo94kaVketABF6m2tnk4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790531476; c=relaxed/simple;
-	bh=VfM6UmvEhfbNot76OVLRuRNCPOGX2wN8VlSKsx1Xm00=;
+	s=arc-20240116; t=1790531726; c=relaxed/simple;
+	bh=s6FZYmulgvomkdY9Fcfdj3azSZv7XguaNTjdt7XQ080=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=p2FccZiiDLux7WbyjFST9f+rtzzfUp/0uaLuHpfZW+/1ZZIkoSh7TMiSIVUv0ejSUnkew3JSQiZ4c0hOHPMxwF/XDdwlaWGYO0xaHtXcvaShcZ9EfdeJi8MLI1xv3wU5cRrqfL3+rG71aKIJU3MsANE2X431j2whuWBvLu6WRtE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JJY1gOGA; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Pqe18cxkBQnGCiaDFRl2I+VgA3dDEIvGGwXe7D3DbF0VGvlc61u3CgEoT5sI3MpABr5T4+Ay4Nc/LE8umW/5JnUhkIh3KMxLhpXIJSWriL3ihRccDTgZQb/ToFXT2pc6B4YwYZ+pNeO65L6Brq7kSlP9+yKEEHfsgHFZX1WzW0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qIyidMYx; arc=none smtp.client-ip=74.125.225.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JJY1gOGA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4930C1F000FF;
-	Sun, 27 Sep 2026 17:51:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790531474;
-	bh=pXPRnOWTIh1TqTP0A8DjKdZlUDvhkRpGbQwXS8tDHmM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JJY1gOGAq9dF4bfpuvKfW8hI3ygtCXzOQKlYgSzLGFq3C92byn+Wis+ZAEgRAAEa9
-	 E55jqWEFaF1lwT7w5WkOVC4nMI54mwnlXvmrAM5VW5jGBlmjvcErT/rs6ir8lJJ3ru
-	 y64+qYscZD+sPuBmd4fhMrsOPoySio4rTNpiCQC8T1xTUWjEl4EVei7ITTbbWqVjjB
-	 sSbFCbfA6C5F30m+KAdphjKUOdXJNMRb0izofWy3mN8TkY1IthfbDu4LgTvzQlZiK2
-	 IEbZ45Y/vgzGaQ+VK8Cg4HcbDGnpWA3BEqUHWRVAs3HyU8dE4t7q4JVsExp6t5x4gE
-	 Haj/R+xbCjccg==
-Date: Sun, 27 Sep 2026 18:51:11 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jiale Yao <yaojiale02@163.com>
-Cc: Lucas Stankus <lucas.p.stankus@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Ramona Gradinariu
- <ramona.gradinariu@analog.com>, Harshit Mogalapalli
- <harshit.m.mogalapalli@oracle.com>, Linus Walleij <linusw@kernel.org>, "Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
- <u.kleine-koenig@baylibre.com>, Krzysztof Kozlowski <krzk@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/4] iio: accel: reject SPI devices without match data
-Message-ID: <20260927185111.0ca9f238@jic23-hlaptop>
-In-Reply-To: <20260925124332.2090895-1-yaojiale02@163.com>
-References: <20260925124332.2090895-1-yaojiale02@163.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qIyidMYx"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-48449f62b93so775771f8f.0
+        for <linux-iio@vger.kernel.org>; Sun, 27 Sep 2026 10:55:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790531723; x=1791136523; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=nKitTAlwTBExXI+cI2+8578Ap+v+wKyXIoUr5i+JPl8=;
+        b=qIyidMYxGa5GI2DCovSSGiYtkNlwmLmPZVoPMRV8/8HA9hSHYE6Myqe1TlRkKa5C2P
+         P48CbrZ3euJKTmo8k3c4ljO4/tIJXoSKK2DI9DSMcGOouEccutJ2GeH46xNDu9vAAAbF
+         Cmw8PJ5haznHdC2abLVYgfBlhY/qDt9cSNBWlmvdH+6y2Z1paE6RpgiUCwvX0HjBZvZJ
+         9AFiSdYnMbGDPiB4A8e/tVSHpHKz/tMKBUdFwtZZH1nx41qLwihQncd25CaenUHBAtv0
+         Ad77awKe8O21KBLMiLR+CfzCNoUyf20d5LDV1vA2c42P/tGBbMZJ14ueJZ8e2bNca21n
+         sMqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790531723; x=1791136523;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=nKitTAlwTBExXI+cI2+8578Ap+v+wKyXIoUr5i+JPl8=;
+        b=rqJaIHvymEptMrIHoVzV19d6p4CRS9xIOgank2nrUNk7EnratfkcevVsN+/Zi35/tq
+         cUxs1CLwHK+5jCxLFgE5L9xVjTQwFjs2KGF5aeZ7VWoKo2vKuTsoVr/IzScc5wnIKBgs
+         bVYOJzXjCicHuRneKO8ZaurmLhX3OkIK6yx05OR9UN6zvQJQL3G0Mevj5Z18KfiQQO1A
+         gg030hERsCqSbnq+9Q0LhxbwQM8h2Erqy0IWQi43z8J0qrkDP6mmgYOB6hnHjZC2IrUV
+         shST3PDwahCYaZHLirIk1sQROK2MPEPth8OWmRAsoL29XyMNokqTMOb+a9nMZxkUa3iu
+         aywA==
+X-Forwarded-Encrypted: i=1; AKwUvBxEeomdJjQ1c5IYjw0e/igfg+16VrDZZJS7NPP4O/xQnh23wHzKsCRv04BclKCNywuSmS+mnsYz02o=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJyp2yGiWgj0u9qABwVce3seIzYjWpGGvbtJ7OYDWEuDaO6lWEP
+	zj752bbHZxRo5FuLhiqgLHPQiA0wci+v3B2NTCqQE8jBwClQi/JucfOr
+X-Gm-Gg: AYBFou3BCtzIZmIpQ/uQHEEqZv7hpuXxjH2Gch0Mzqcu2v7rpbdrRDnnq3/vNuFfyHO
+	Grg13zIMcHjo11VZYvG3uurpsgpf8f8cwaMWZ6aLVZaVnoYm+YgXEhQmimDDRRA2adyYeXIHH0h
+	Vv3ue1CAaGl3QMHxmY0/ZQ3hMiPCF4LW7M117OcEIgjOmjfZ+bysxlcQaqYSBTIf1l/b3iPjkZP
+	Pufyv3nH767rmL1iqqs5nHWNkGSm+lOFxd4WB5QKDkNgjSUh7b+XKu43NpYnE/rw99X3direVVb
+	85yDU6L0StqzNbzEAJztXzruEu8Kjr+eULdvv4+7nEOKNL3Opr77TzhIoj4vYDTDoN9jfihNKT2
+	ibLnwKE4jUipxhHh9F63GDYsEdtJ07C+jxMub9bwJncAorf6u9/YSD8e48mQG47YoMy6qmv0hl2
+	FmjMvwSRoscR/KQVfUs6J4J6EglXWQ/DFMrnf2owy7SK/5D7QpnZhShZ2RM/6ainKcTPVnAxDU8
+	I2pwHPijpKgEQIqiVBTp7lubi5FV7rxLMx/04Pq156mARii2f8/jYozzgZ3yWL6Wnx3HH3djbsD
+	z79vljVREGM/Ua1MbZ/+TBrNAQLKWDeoXBHWmS2awN9XJ1VJqm54QQAhCNnEaUlDQbu51aM055u
+	X3eJu7kH6hd1ZgsvXHZsvbNWvnvjMaYQ=
+X-Received: by 2002:a05:6000:468c:b0:488:76f5:c7d with SMTP id ffacd0b85a97d-48876f50d2bmr11484821f8f.6.1790531722779;
+        Sun, 27 Sep 2026 10:55:22 -0700 (PDT)
+Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4887a30b1dfsm22726735f8f.4.2026.09.27.10.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Sep 2026 10:55:22 -0700 (PDT)
+Date: Sun, 27 Sep 2026 19:55:19 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Guangshuo Li <lgs201920130244@gmail.com>, Eugen Hristev
+ <ehristev@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: at91-sama5d2: disable autosuspend on remove
+Message-ID: <20260927195519.76c2885b@systembl0wer>
+In-Reply-To: <20260917041128.6d10a2f6@jic23-hlaptop>
+References: <20260914113422.1689331-1-lgs201920130244@gmail.com>
+	<20260914145339.00002f0b@gmail.com>
+	<20260917041128.6d10a2f6@jic23-hlaptop>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,38 +88,65 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 25 Sep 2026 20:43:27 +0800
-Jiale Yao <yaojiale02@163.com> wrote:
+On Thu, 17 Sep 2026 04:11:28 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> SPI driver_override can bind a device to a driver without a matching OF
-> entry or SPI device ID. In that case, spi_get_device_match_data() returns
-> NULL.
+> On Mon, 14 Sep 2026 14:53:39 +0200
+> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 > 
-> The ADXL313, ADXL372, ADXL380, and SCA3000 SPI probe paths assume that the
-> returned chip information is present and later dereference it. Reject
-> devices without match data before the pointer is used, following the
-> handling added to the AD5686 bus frontends by commit 572a00852635 ("iio:
-> dac: ad5686: missing NULL check on match data").
+> > On Mon, 14 Sep 2026 19:34:22 +0800
+> > Guangshuo Li <lgs201920130244@gmail.com> wrote:
+> >   
+> > > at91_adc_probe() enables runtime PM autosuspend with
+> > > pm_runtime_use_autosuspend(). The probe error path correctly undoes
+> > > this setting with pm_runtime_dont_use_autosuspend(), but the normal
+> > > remove path only disables runtime PM.
+> > > 
+> > > The runtime PM API requires pm_runtime_use_autosuspend() to be undone
+> > > with pm_runtime_dont_use_autosuspend() at driver exit unless runtime PM
+> > > was enabled with devm_pm_runtime_enable(). Leaving the autosuspend flag
+> > > set therefore leaves the runtime PM state incompletely cleaned up after
+> > > the driver is unbound.
+> > > 
+> > > Add the missing pm_runtime_dont_use_autosuspend() call to the remove
+> > > path.
+> > > 
+> > > This issue was found by manual code inspection.
+> > > 
+> > > Fixes: 75d7556ac0e4 ("iio: adc: at91-sama5d2_adc: add runtime pm support")
+> > > Cc: stable@vger.kernel.org
+> > > Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+> > > ---
+> > >  drivers/iio/adc/at91-sama5d2_adc.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> > > index e8a5285bb6d4..e68632e628c7 100644
+> > > --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> > > +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> > > @@ -2487,6 +2487,7 @@ static void at91_adc_remove(struct platform_device *pdev)
+> > >  
+> > >  	pm_runtime_disable(st->dev);
+> > >  	pm_runtime_set_suspended(st->dev);
+> > > +	pm_runtime_dont_use_autosuspend(st->dev);
+> > >  	clk_disable_unprepare(st->per_clk);
+> > >  
+> > >  	regulator_disable(st->vref);    
+> > 
+> > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>  
+> Applied.
 > 
-> Each patch fixes one driver and can be applied independently.
-Applied.
+> Please make sure to take into account both Joshua and Krzystof's
+> feedback that multiple near identical changes to drivers in the
+> same subsystem should be in a series.
+> 
 
-Thanks,
+FYI, patches like these will become redundant as I have a patch adding
+this to pm_runtime_reinit() so driver core calls this automatically on
+unbind queued for 7.4 [1].
 
-Jonathan
+[1] https://lore.kernel.org/all/20260919-move-dont-use-autosuspend-v1-1-f6e2d1315c23@gmail.com/
 
-> 
-> Jiale Yao (4):
->   iio: accel: adxl313: reject devices without match data
->   iio: accel: adxl372: reject devices without match data
->   iio: accel: adxl380: reject devices without match data
->   iio: accel: sca3000: reject devices without match data
-> 
->  drivers/iio/accel/adxl313_spi.c | 2 ++
->  drivers/iio/accel/adxl372_spi.c | 2 ++
->  drivers/iio/accel/adxl380_spi.c | 2 ++
->  drivers/iio/accel/sca3000.c     | 2 ++
->  4 files changed, 8 insertions(+)
-> 
-> base-commit: 93f51579e7df248780214094418f205253383cc5
-
+-- 
+Kind regards,
+Joshua Crofts
