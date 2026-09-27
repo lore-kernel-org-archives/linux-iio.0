@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 610C441BA7A;
-	Sun, 27 Sep 2026 17:24:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AAB83515DA;
+	Sun, 27 Sep 2026 17:35:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790529899; cv=none; b=pbNkdlhEzC3qNOvzrQyuqxzYxp37LvVwpDwfLTACi6W/FKehnrjnbVLkCBgCTxgPXMqxKUUtbPmuI4Kc4Qcq9RMrzpf3MNAF1KQCOZa2DyupBBHD6GWwceaVmv9UJ7s2P/e7JMUBKKfIW+kIIgkvV7pO+Qw+Ls8uDwnTQgxtD3I=
+	t=1790530554; cv=none; b=lnRNpGWw64D5lJ0gSeE6szY+HPSbt05eYY4Uygmgliz3fdzjov/XubFzZJjv9E67gR6iSLcYjmeh7kV+NgDuMtViovC6Goc2Nah2wIjHJLRwkyR1GtZl9JUd20XDGn5AJ3cQm20ZhjlKz5+Au8r8gWx2/zRRQO/yC+c8Pbegk5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790529899; c=relaxed/simple;
-	bh=OuN2ndxuCUThwOuzsE/xNgfIKnPGSkYUHA5pIz+BEiU=;
+	s=arc-20240116; t=1790530554; c=relaxed/simple;
+	bh=eNkFFfz6dc3SZZj9a4N7GcFLV3wHeNJZAOcqq1YjwrI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tAt+uTE1bQ7ONHNeu+ggRNnQQy4HxQXRpNVR+IzQoeLWWCKMvUx+b466fZpQKpb0Gq2e54qJoiBHVzHGNMdfeP+0notvnii+oIjEcaj7q/55Gk1ltZuezk83OPFTBIMsT1EatdUBf6DzGtCsqVIjaazPb0b8xBb/kzP38U4mNs4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E62jj1dL; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=a13B9G6mCYKLsDSAhSld8PKHJha3kKTTbvuMkDnqaf8BVJgyTVF6H0WAVDgXut9tDdamWZcapESVRTdUJLsiMYOl9d23jiLTkCRhGpo44Vt1jHJvaYDPpB0d9iGPBkBZqbzoi9ajl2BEkwWpiYbSEj4a3vbPbIkid/UUCHDI9hY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EnE1jXtz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E62jj1dL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9313B1F000FF;
-	Sun, 27 Sep 2026 17:24:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EnE1jXtz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A7AE1F000FF;
+	Sun, 27 Sep 2026 17:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790529897;
-	bh=oMs/Hq0Db/D1FWahvFRO/BSal8VTgymAtB6OnvGiC7g=;
+	s=k20260515; t=1790530553;
+	bh=PAuXAU+9SM44dYTSefN91gN6j1Zwqe0SxuriMvR676Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=E62jj1dLOaM+q0+QaDU3jofUtuj3XKcdyn9KQ0lbxGXbN1ZIARbg1RGhIMFCJLuYM
-	 NVXFCbRp/vD/I31N65PHTdG0AIMhYFFMNCjs/IGlYiA9rOPixN+kK2+0+wU0JBQhv3
-	 y28n5j8sYxLmSnllLvOnMlxJoCaOFGrtwS8yYsi+EV0qRYJEhWuxxt8Mahb3xURe39
-	 TCrfN6+3Oh+mLb/JzQF534IeF1boNNK8b0Tg1BiQwKGWL9Ehs7j+6Np24xK15GbuyO
-	 qSsnsZwWna6O1tgHamaLfQu3SxsgyGiSfVE+80jYskOIPS0bGxgn2UyBeuRb0J6jZn
-	 fv9ugVvi48qwQ==
-Date: Sun, 27 Sep 2026 18:24:52 +0100
+	b=EnE1jXtzQN/xH49a2VYFtamnP7OUaHDGqpOQdZxKLjp2lRyyB2Un9+SMlw6L8c3jD
+	 ihTlFf51wiJ0ABHq+mFBPXaMIXHZpc1hiftqfsD+Tq0GntnmjDDFhRiS7jLhTCelQG
+	 sdkg8Yu7dVTcAR8sXOHuOeNeYbQNQPRsbFR5So9dOnzpf9B58q3zE/8VEyIcAuhXAk
+	 X+y3cczmXc5+2yQBvSLl0cOJLh3A+f6QpDPIGYbwbiFRmre4+Zw6B1/GExnWhT0FaI
+	 RNgLuZPVw4OMC+eD/ytR02nkLClJCTWr+M64/cwkD+fsPlCLNbWbyve19YTkuOTHUc
+	 yXM92YAo4x9BA==
+Date: Sun, 27 Sep 2026 18:35:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, dlechner@baylibre.com,
  nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: pressure: add Sensirion SDP31
-Message-ID: <20260927182452.5755fba7@jic23-hlaptop>
-In-Reply-To: <20260926154118.5471-2-m.abubakar365@yahoo.com>
+Subject: Re: [PATCH v3 2/2] iio: pressure: add Sensirion SDP31 driver
+Message-ID: <20260927183546.0260dc19@jic23-hlaptop>
+In-Reply-To: <20260926154118.5471-3-m.abubakar365@yahoo.com>
 References: <20260926154118.5471-1-m.abubakar365@yahoo.com>
-	<20260926154118.5471-2-m.abubakar365@yahoo.com>
+	<20260926154118.5471-3-m.abubakar365@yahoo.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,94 +48,127 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 26 Sep 2026 20:41:17 +0500
+On Sat, 26 Sep 2026 20:41:18 +0500
 Muhammad Abu Bakar <m.abubakar365@yahoo.com> wrote:
 
-> Add device tree bindings for the Sensirion SDP31 differential pressure
-> sensor, an I2C device that also reports temperature.
+> Add an IIO driver for the Sensirion SDP31 differential pressure sensor.
+> The device is accessed over I2C and reports differential pressure and
+> temperature. Each measurement is validated using the sensor's CRC-8
+> checksum.
+> 
+> Tested on an SDP31 connected to a Raspberry Pi 4 I2C bus.
 > 
 > Signed-off-by: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-I think you have been missing some replies for some reason.
+Hi. 
 
-See https://lore.kernel.org/all/20260920014032.2cc3c851@jic23-hlaptop/
-Also the reply Krzysztof sent to point out you hadn't addressed all
-the feedback on v1.
-
-If you disagree with any suggestions then reply to that email.
-
-Reviewers tend to stop reviewing very quickly if they see that stuff
-they raised in previous versions hasn't been addressed yet.
+Given you are going to probably need to changes stuff in the dt binding
+and so do a v4, various comments inline.  Mostly optimization suggestions.
 
 Jonathan
 
-
-> ---
->  .../iio/pressure/sensirion,sdp31.yaml         | 41 +++++++++++++++++++
->  MAINTAINERS                                   |  5 +++
->  2 files changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml b/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+>  st_pressure-y := st_pressure_core.o
+> diff --git a/drivers/iio/pressure/sdp31.c b/drivers/iio/pressure/sdp31.c
 > new file mode 100644
-> index 000000000..a98e7c97e
+> index 000000000..fd7cac027
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
-> @@ -0,0 +1,41 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/pressure/sensirion,sdp31.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +++ b/drivers/iio/pressure/sdp31.c
+
+> +static int sdp31_measure(struct sdp31_data *data, struct sdp31_reading *out)
+> +{
+> +	u8 rx[9];
+> +	int ret;
 > +
-> +title: Sensirion SDP31 differential pressure sensor
+> +	guard(mutex)(&data->lock);
 > +
-> +maintainers:
-> +  - Muhammad Abu Bakar <m.abubakar365@yahoo.com>
+> +	ret = sdp31_send_cmd(data->client, SDP31_CMD_TRIG_DP);
+> +	if (ret)
+> +		return ret;
 > +
-> +description: |
-> +  Differential pressure sensor from Sensirion with an I2C interface.
+> +	msleep(SDP31_MEAS_DELAY_MS);
 > +
-> +properties:
-> +  compatible:
-> +    const: sensirion,sdp31
+> +	ret = i2c_master_recv(data->client, rx, sizeof(rx));
+
+Given there is only a one time read of scale and that i2c is a rather
+slow bus, can we do a short read when we only want the temperature
+and pressure?  The datasheet mentions Nack + stop is
+sufficient to stop the read out sequence and that is IIRC the
+normal end of an i2c read sequence. So it 'should' be fine to just
+read fewer bytes.
+
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != sizeof(rx))
+> +		return -EIO;
 > +
-> +  reg:
-> +    maxItems: 1
+> +	if (sdp31_check_crc(&rx[0]) ||
+> +	    sdp31_check_crc(&rx[3]) ||
+> +	    sdp31_check_crc(&rx[6]))
+> +		return -EIO;
 > +
-> +  vdd-supply: true
+> +	out->pressure = (s16)get_unaligned_be16(&rx[0]);
+> +	out->temp = (s16)get_unaligned_be16(&rx[3]);
+> +	out->scale = get_unaligned_be16(&rx[6]);
 > +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
+> +	return 0;
+> +}
+
 > +
-> +additionalProperties: false
+> +static int sdp31_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct sdp31_data *data;
+> +	struct sdp31_reading r;
+> +	int ret;
 > +
-> +examples:
-> +  - |
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      pressure@21 {
-> +        compatible = "sensirion,sdp31";
-> +        reg = <0x21>;
-> +        vdd-supply = <&vdd_3v3>;
-> +      };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 214aeee76..e285147be 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -24855,6 +24855,11 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/chemical/sensirion,scd4x.yaml
->  F:	drivers/iio/chemical/scd4x.c
->  
-> +SENSIRION SDP31 DIFFERENTIAL PRESSURE SENSOR DRIVER
-> +M:	Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to enable regulator\n");
 > +
->  SENSIRION SDP500 DIFFERENTIAL PRESSURE SENSOR DRIVER
->  M:	Petar Stoykov <petar.stoykov@prodrive-technologies.com>
->  S:	Maintained
+> +	/* Wait for the sensor to be ready after power-up (datasheet t_PU). */
+> +	msleep(SDP31_POWERUP_TIME_MS);
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +
+> +	ret = devm_mutex_init(dev, &data->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* The CRC table is shared by all instances; initialise it once. */
+
+I would argue that is obvious, so no comment needed.
+
+> +	DO_ONCE(crc8_populate_msb, sdp31_crc8_table, SDP31_CRC8_POLY);
+> +
+> +	/* Confirm the sensor is present and learn its scale factor. */
+
+If you end up with with a specific call to get the scale factor this
+comment will become excessive (see below).
+
+> +	ret = sdp31_measure(data, &r);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to read from sensor\n");
+> +	if (!r.scale)
+> +		return dev_err_probe(dev, -EINVAL, "invalid scale factor\n");
+
+See above. This is the only time we actually read the scale - so perhaps
+we can save some traffic on every other access. Most likely that would give
+you a different command for this scale read back.
+
+> +	data->dp_scale = r.scale;
+> +
+> +	indio_dev->name = "sdp31";
+> +	indio_dev->info = &sdp31_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = sdp31_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(sdp31_channels);
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+
 
