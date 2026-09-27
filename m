@@ -1,84 +1,45 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB0381724
-	for <linux-iio@vger.kernel.org>; Sun, 27 Sep 2026 17:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76C63C98BF;
+	Sun, 27 Sep 2026 17:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790531726; cv=none; b=mdJUee8LkGUaP9K3PlZGeyw8XWh33ItWgrgbNf17dJ6R3YrScJOuYcvdWLujQyowPikvCr/q37u23nZPjuUxmrqheDl4XGhsTwn0T38k2Il49Zs07yC2xW2nK2sYTqNH0L+3KCP6EtCV3Uxh7pigoC+Yo94kaVketABF6m2tnk4=
+	t=1790531978; cv=none; b=c6uK4yjBmP4cOuisp6Sj6f/GBOnttWjdlVtN5uVaAEM6/AsjCmyYf8waHdgWiVxAfrh0ybSAWkpJ3N7Kf+pOINVnqy0t8F34elOgY63UH0Wz8NyW69tIWuFpOWWeFiFSqKI8/G4H9F4+bFMZtFUQH8QJc3bC80adanpqGtzJ1xI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790531726; c=relaxed/simple;
-	bh=s6FZYmulgvomkdY9Fcfdj3azSZv7XguaNTjdt7XQ080=;
+	s=arc-20240116; t=1790531978; c=relaxed/simple;
+	bh=PTJwNzxHC0JLHfX1M87bJjL/C6AQFfuultpt+k6kcRA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Pqe18cxkBQnGCiaDFRl2I+VgA3dDEIvGGwXe7D3DbF0VGvlc61u3CgEoT5sI3MpABr5T4+Ay4Nc/LE8umW/5JnUhkIh3KMxLhpXIJSWriL3ihRccDTgZQb/ToFXT2pc6B4YwYZ+pNeO65L6Brq7kSlP9+yKEEHfsgHFZX1WzW0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qIyidMYx; arc=none smtp.client-ip=74.125.225.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 MIME-Version:Content-Type; b=dbuRcVZMajn+uM0JLQAp96r5zzuFB0CQFkECcInx1vwMj+8/UfiH1oHLUKsp3MJuBCIkxdFYBCY83iLn+xKrDEFNL3Y3fEuVDwgY2Dr5d53kuoy76/3PeWO/9aHRu/ySEPfUESIR20+10Xpe3xK7RnPMPII4EA/QMgA+TuZjWU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bj5TF79i; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qIyidMYx"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-48449f62b93so775771f8f.0
-        for <linux-iio@vger.kernel.org>; Sun, 27 Sep 2026 10:55:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790531723; x=1791136523; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=nKitTAlwTBExXI+cI2+8578Ap+v+wKyXIoUr5i+JPl8=;
-        b=qIyidMYxGa5GI2DCovSSGiYtkNlwmLmPZVoPMRV8/8HA9hSHYE6Myqe1TlRkKa5C2P
-         P48CbrZ3euJKTmo8k3c4ljO4/tIJXoSKK2DI9DSMcGOouEccutJ2GeH46xNDu9vAAAbF
-         Cmw8PJ5haznHdC2abLVYgfBlhY/qDt9cSNBWlmvdH+6y2Z1paE6RpgiUCwvX0HjBZvZJ
-         9AFiSdYnMbGDPiB4A8e/tVSHpHKz/tMKBUdFwtZZH1nx41qLwihQncd25CaenUHBAtv0
-         Ad77awKe8O21KBLMiLR+CfzCNoUyf20d5LDV1vA2c42P/tGBbMZJ14ueJZ8e2bNca21n
-         sMqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790531723; x=1791136523;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=nKitTAlwTBExXI+cI2+8578Ap+v+wKyXIoUr5i+JPl8=;
-        b=rqJaIHvymEptMrIHoVzV19d6p4CRS9xIOgank2nrUNk7EnratfkcevVsN+/Zi35/tq
-         cUxs1CLwHK+5jCxLFgE5L9xVjTQwFjs2KGF5aeZ7VWoKo2vKuTsoVr/IzScc5wnIKBgs
-         bVYOJzXjCicHuRneKO8ZaurmLhX3OkIK6yx05OR9UN6zvQJQL3G0Mevj5Z18KfiQQO1A
-         gg030hERsCqSbnq+9Q0LhxbwQM8h2Erqy0IWQi43z8J0qrkDP6mmgYOB6hnHjZC2IrUV
-         shST3PDwahCYaZHLirIk1sQROK2MPEPth8OWmRAsoL29XyMNokqTMOb+a9nMZxkUa3iu
-         aywA==
-X-Forwarded-Encrypted: i=1; AKwUvBxEeomdJjQ1c5IYjw0e/igfg+16VrDZZJS7NPP4O/xQnh23wHzKsCRv04BclKCNywuSmS+mnsYz02o=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJyp2yGiWgj0u9qABwVce3seIzYjWpGGvbtJ7OYDWEuDaO6lWEP
-	zj752bbHZxRo5FuLhiqgLHPQiA0wci+v3B2NTCqQE8jBwClQi/JucfOr
-X-Gm-Gg: AYBFou3BCtzIZmIpQ/uQHEEqZv7hpuXxjH2Gch0Mzqcu2v7rpbdrRDnnq3/vNuFfyHO
-	Grg13zIMcHjo11VZYvG3uurpsgpf8f8cwaMWZ6aLVZaVnoYm+YgXEhQmimDDRRA2adyYeXIHH0h
-	Vv3ue1CAaGl3QMHxmY0/ZQ3hMiPCF4LW7M117OcEIgjOmjfZ+bysxlcQaqYSBTIf1l/b3iPjkZP
-	Pufyv3nH767rmL1iqqs5nHWNkGSm+lOFxd4WB5QKDkNgjSUh7b+XKu43NpYnE/rw99X3direVVb
-	85yDU6L0StqzNbzEAJztXzruEu8Kjr+eULdvv4+7nEOKNL3Opr77TzhIoj4vYDTDoN9jfihNKT2
-	ibLnwKE4jUipxhHh9F63GDYsEdtJ07C+jxMub9bwJncAorf6u9/YSD8e48mQG47YoMy6qmv0hl2
-	FmjMvwSRoscR/KQVfUs6J4J6EglXWQ/DFMrnf2owy7SK/5D7QpnZhShZ2RM/6ainKcTPVnAxDU8
-	I2pwHPijpKgEQIqiVBTp7lubi5FV7rxLMx/04Pq156mARii2f8/jYozzgZ3yWL6Wnx3HH3djbsD
-	z79vljVREGM/Ua1MbZ/+TBrNAQLKWDeoXBHWmS2awN9XJ1VJqm54QQAhCNnEaUlDQbu51aM055u
-	X3eJu7kH6hd1ZgsvXHZsvbNWvnvjMaYQ=
-X-Received: by 2002:a05:6000:468c:b0:488:76f5:c7d with SMTP id ffacd0b85a97d-48876f50d2bmr11484821f8f.6.1790531722779;
-        Sun, 27 Sep 2026 10:55:22 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4887a30b1dfsm22726735f8f.4.2026.09.27.10.55.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Sep 2026 10:55:22 -0700 (PDT)
-Date: Sun, 27 Sep 2026 19:55:19 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Guangshuo Li <lgs201920130244@gmail.com>, Eugen Hristev
- <ehristev@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: at91-sama5d2: disable autosuspend on remove
-Message-ID: <20260927195519.76c2885b@systembl0wer>
-In-Reply-To: <20260917041128.6d10a2f6@jic23-hlaptop>
-References: <20260914113422.1689331-1-lgs201920130244@gmail.com>
-	<20260914145339.00002f0b@gmail.com>
-	<20260917041128.6d10a2f6@jic23-hlaptop>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bj5TF79i"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D701F000FF;
+	Sun, 27 Sep 2026 17:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790531976;
+	bh=jKX1hNu8JN77nrUnKVqFivHurfvZIBwO7xuCL/DDob0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Bj5TF79i2FGenm6oaBgqo6f68Umjy/5ukQxDwghivvCmZpNKpQ5E7j6Q4um66B1Qr
+	 4fDJDdurAxNwavieugnwrHaxwvVFyAieJBZID99jJQ6y584fKAq1RJk9402fv64JDq
+	 EV5GHSDkriWItMAGvoCkCgUkIBGlwU6X+GyIJUAZiZY23ayMgU7cRLsQQoZnm6F3PS
+	 Hp1DhkZqbR5SbjsLS9HgWFTPFI7x/DN4yBp5bp2N50ig7ca6ryCIePoXoKCynj+5eu
+	 W/+YbhIOkC1OhYIp3rbda+wnDQ8JrmcXNjJRIuchbsQiD3OKwgvmPeekokXWiIEVMP
+	 0dwHFZRJpOoag==
+Date: Sun, 27 Sep 2026 18:59:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Shehryar Ahmad <shehryar.amd@gmail.com>
+Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ andy@kernel.org, linux@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Robert Budai <robert.budai@analog.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>, Dragos Bogdan
+ <dragos.bogdan@analog.com>
+Subject: Re: [RFC PATCH] iio: adis_buffer: fix buffer ordering for IIO core
+ demultiplexing
+Message-ID: <20260927185929.70635769@jic23-hlaptop>
+In-Reply-To: <20260925110239.59320-1-shehryar.amd@gmail.com>
+References: <20260925110239.59320-1-shehryar.amd@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -88,65 +49,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 17 Sep 2026 04:11:28 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, 25 Sep 2026 16:02:39 +0500
+Shehryar Ahmad <shehryar.amd@gmail.com> wrote:
 
-> On Mon, 14 Sep 2026 14:53:39 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+> Hi Jonathan,
 > 
-> > On Mon, 14 Sep 2026 19:34:22 +0800
-> > Guangshuo Li <lgs201920130244@gmail.com> wrote:
-> >   
-> > > at91_adc_probe() enables runtime PM autosuspend with
-> > > pm_runtime_use_autosuspend(). The probe error path correctly undoes
-> > > this setting with pm_runtime_dont_use_autosuspend(), but the normal
-> > > remove path only disables runtime PM.
-> > > 
-> > > The runtime PM API requires pm_runtime_use_autosuspend() to be undone
-> > > with pm_runtime_dont_use_autosuspend() at driver exit unless runtime PM
-> > > was enabled with devm_pm_runtime_enable(). Leaving the autosuspend flag
-> > > set therefore leaves the runtime PM state incompletely cleaned up after
-> > > the driver is unbound.
-> > > 
-> > > Add the missing pm_runtime_dont_use_autosuspend() call to the remove
-> > > path.
-> > > 
-> > > This issue was found by manual code inspection.
-> > > 
-> > > Fixes: 75d7556ac0e4 ("iio: adc: at91-sama5d2_adc: add runtime pm support")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
-> > > ---
-> > >  drivers/iio/adc/at91-sama5d2_adc.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> > > index e8a5285bb6d4..e68632e628c7 100644
-> > > --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> > > +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> > > @@ -2487,6 +2487,7 @@ static void at91_adc_remove(struct platform_device *pdev)
-> > >  
-> > >  	pm_runtime_disable(st->dev);
-> > >  	pm_runtime_set_suspended(st->dev);
-> > > +	pm_runtime_dont_use_autosuspend(st->dev);
-> > >  	clk_disable_unprepare(st->per_clk);
-> > >  
-> > >  	regulator_disable(st->vref);    
-> > 
-> > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>  
-> Applied.
+> After issue raised by Sashiko in adis16203 graduation series [1], looking at
+> other drivers if they might have same issue. It appears that the root
+> cause is in adis_buffer.c itself. The library constructs the SPI
+> transaction in channel array order while IIO core demultiplexes in
+> scan_index order.
 > 
-> Please make sure to take into account both Joshua and Krzystof's
-> feedback that multiple near identical changes to drivers in the
-> same subsystem should be in a series.
+> adis16209 and adis16260 have the same mismatched ordering that
+> adis16201/16203 had.
 > 
+> Rather than reordering channel arrays in affected driver,
+> would it be sensible to make adis_update_scan_mode() iterate
+> in scan_index order instead of channel array order?
+> 
+> Would this be the right approach, or is there something I'm missing?
 
-FYI, patches like these will become redundant as I have a patch adding
-this to pm_runtime_reinit() so driver core calls this automatically on
-unbind queued for 7.4 [1].
+It is definitely plausible.  For this I'd need some input from someone
+who can actually test some of these parts.
 
-[1] https://lore.kernel.org/all/20260919-move-dont-use-autosuspend-v1-1-f6e2d1315c23@gmail.com/
+Nuno, you are listed as library maintainer - so can you get someone to
+look at this please. +CC various other folk from maintainers or who have worked
+in this area in last few years.
 
--- 
-Kind regards,
-Joshua Crofts
+Otherwise, just a comment to use a Link tag for cross references.
+
+Thanks,
+
+Jonathan
+
+
+> 
+> [1]: https://lore.kernel.org/all/20260914015321.7a660ab5@jic23-hlaptop/
+> 
+Link: https://lore.kernel.org/all/20260914015321.7a660ab5@jic23-hlaptop/ #[1]
+> Signed-off-by: Shehryar Ahmad <shehryar.amd@gmail.com>
+> ---
+>  drivers/iio/imu/adis_buffer.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+> index 501da4eae..45200b753 100644
+> --- a/drivers/iio/imu/adis_buffer.c
+> +++ b/drivers/iio/imu/adis_buffer.c
+> @@ -110,10 +110,10 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+>  		spi_message_add_tail(&adis->xfer[j], &adis->msg);
+>  	}
+>  
+> -	chan = indio_dev->channels;
+> -	for (i = 0; i < indio_dev->num_channels; i++, chan++) {
+> -		if (!test_bit(chan->scan_index, scan_mask))
+> -			continue;
+> +	for_each_set_bit(i, scan_mask, iio_get_masklength(indio_dev)) {
+> +		chan = iio_find_channel_from_si(indio_dev, i);
+> +		if (!chan)
+> +			return -EINVAL;
+>  		if (chan->scan_type.storagebits == 32)
+>  			*tx++ = cpu_to_be16((chan->address + 2) << 8);
+>  		*tx++ = cpu_to_be16(chan->address << 8);
+
