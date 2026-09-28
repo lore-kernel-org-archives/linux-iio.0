@@ -1,233 +1,181 @@
-Received: from mail-lr2-f35.google.com (mail-lr2-f35.google.com [74.125.230.99])
+Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 277BF485501
-	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 10:18:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E017549AA21
+	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 10:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790590699; cv=none; b=bZscNpHaLY4kedE/Gz6OMTrPpmcE3LntuULTphRiQ15QTMHaBV7UE/e8udAY0OxfsFt617EZV2MJ2xXhlEld4O2BYUwjus0oEKzF6urIeb2EW6/9nmAbrkab7LbhbHW0WRvkevsc6KvxNCixNgJOhYvgwZfLlZ9II34KRwA1wxc=
+	t=1790591232; cv=none; b=I+LsMFGk2/UVvz8WsqwMSpR6covSb42izQmJq6eSunjAapFZ6vECpHPhaM3wsEapCj7psF98Jbh20ASDTqjzZ9YeqDUzJj17auHCy0vnRLu7LQhaTb3X2/8iOVWbxit+bhua8ENHnkmYeSwoxN+xftpnM5iMgiF2LrLToQLUUok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790590699; c=relaxed/simple;
-	bh=E1MhPQWSrLfY4VBaK8XBPOI9ZWR+ICi7Yfd3dmhR3H0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=S4wMhHPHNmYnCbq44OIil9VqSfE/iKCxRfcSj9uG5KjLid1JVsE8HOpXPisjvjMq42H2zMjXeq0X2873f+uxWryocOQ6TCLgAy5j6f0a8hfBjHivj92oMFuLbchZ8s2gxIOPnfIkXH8XfyGHDP4wBExcVbIxGgDgRY7l8oJ9zXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BSRBLZI4; arc=none smtp.client-ip=74.125.230.99
+	s=arc-20240116; t=1790591232; c=relaxed/simple;
+	bh=lfw5A0uXAuhjAZYX/T8OzUkOdY60W+ytkN54QbMhIRU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=qfweN9GCg0K54Db+GUwDt4j0ACkSXAlFzeFZ6jFTteYPinkh2YkTwMvZzN0HvPRbCVowVZpcXBEFiqWdn2LHTKSGuuC1YnrEjf+sstCR4JmGL85UocPCpTMDQGMA7AU8NDSyowBKdq4WgwpaxPqqnP28Yeg3airZugZsxAQPGgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=URUNnOml; arc=none smtp.client-ip=74.125.225.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BSRBLZI4"
-Received: by mail-lr2-f35.google.com with SMTP id 38308e7fff4ca-3a6124046f0so23349631fa.3
-        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 03:18:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="URUNnOml"
+Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-48434392b02so2433988f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 03:27:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790590695; x=1791195495; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=XFXRt7k2N0Gwq06pxPx7MFAt+Ag+XYY7IlLvDigbagU=;
-        b=BSRBLZI4WfL9aKG5uCht0B6xmygi1InhX1icWY3RtNFmp+LpS2rLKOkLWUXPRdYc0N
-         vKg9x5p0WJvfE5VlbgPpoNGQ1nLtM6sb+pGAAz8XU0JNmfv0lpZ9dIiWCUHeUZfQl7Rs
-         oEuHT65qnM9VYrBu1kPqhDThYFfvN3k8WJkAw9USgqsVdE+yiZ864gYI3fteR3lLLKpE
-         6s3Pp/LES+cEtCfaFbvXonQ9RURrLsabmye8oModrO6Hhhf7dIaZRx9SChyhQyy2Z30B
-         a2wTVTdCrMqh1Zfyfwfd9xdOt3mSzrW3gGo6pPFq4cucxQj7MajVoWHgmkv11r4ZzZv1
-         +pAw==
+        d=gmail.com; s=20251104; t=1790591228; x=1791196028; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pOMrGoe0MJA+5JRUzHhpj1OGWu27WePfFyfzZS0Xvg0=;
+        b=URUNnOmlGSsz1Q0YUjhWskzhtgq6nKyuGOZkSsW5DDvmi2iAYJXvRguk5163n/jiuN
+         89TZX9j3KQW9JEiaYyeXBUh0wK4NyR/lxPTRTiILgsEi23oWOjGlU5I8iYgeyLT4Nz/o
+         P44sIbG64giveTAPBc+AHicIJKtmzTUlwFk4z1gaSKR3ra2MOBjUfM+hMgnws0FSbsb8
+         NxMspionauswC1Rj4f1pi03imYg78eC53acTEVAI2ShguTx3jLWf8F2pNEetGaErAaNH
+         rPVmn4Ku3+YoIeoy4CVOn5ix16TwYcoQkI5z2NHC0kzdURHO/UrUxvnPc7FWg391W4GC
+         LpAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790590695; x=1791195495;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=XFXRt7k2N0Gwq06pxPx7MFAt+Ag+XYY7IlLvDigbagU=;
-        b=rK44B4tIqPI/7jtRgNPgGZs76JPS80Z3gaqmTtBmmAaqdYGjwk/lUHlqqxJfsQ1M8v
-         OnPSqIEwAUoMsaxR1YqNx/KGOHYLnAgfyJPrdVtcquUcbvCyAS1B14TP8sHAek8ROMX8
-         BTuPGvhZMe93yqxqhUqo22ySuBwAFRE0aF706Y3ST72gLTB+ti2VKyUWiP2sm+aRPMoo
-         3mU3KZIvH8UZKdEDt8iFegEjwU1iVrckZG3CO7/s851auk4rJjufeHMDMyNy+CWVVuwB
-         Fe/X5SLf1KPm1u6suzNMinYBFRRg5wL82kaG5RLHEz+xo2QEkVZSBZXohjHjfaT3vBci
-         FZvg==
-X-Gm-Message-State: AFq9FYIg7SL0htWYUbj8dcC+wN+7OSVPtANPoy9UpP3N9OdAqYFVgGJ+
-	lvShlqjmgtE33pvt2chAxHUq/7vLPlxGyzNbUCrleIndFxhh7VrDse1z
-X-Gm-Gg: AYBFou0ZyHQFqursvcC0MJIXReijDqbyyY06LNMUBrl/zrA/k1U19x4muoiICkrRp0T
-	p/Omu679ia+EiFPnJdj9jaSmLtccYW0sqNCLs3lz+XyrmKSHrKD8VLbYy3E7sdtNyEFXkOb5sbx
-	B1PWiz4HRPQmRGT2nbkiICwFquUa92ZDyYyA4g36NUGoEsYV+fpbSGXbxxQQqSSh0cnF4+IImib
-	rZMN1vxbRvVR1cQh1/dQOtoAIiQ0bnO8bkM5tC1rnJnH2Xb2GbDFTMU9NCp+ItwQl8eb5DPtXg2
-	8dkGeO86DoHjtEWdf/B6uAPu5VWH8tcJkFW/cPjjyFRZe4ujgPMnDXZeKLOwOAZx+9UQA4jykAe
-	/O99izlHiFYuSiYkcVHbKfRxqN9H92r9yEY92Ugo2KSobFwOPbOF4wIt391t6D8aQcYH8XI50AQ
-	otLiylekWeetJIzFCJKBbNs3QkySulNajI5NC8wuIbpiLbZFYIyWo+ocUnmZoyArIR9FZNUCAK6
-	bd9gYy0cBPRebOYlB/R3Aa3kx2mOYYOw1Y3oA7aVvyM4fQFRt0Mc1dG8fxSJXaOFY34Xg==
-X-Received: by 2002:a2e:be2a:0:b0:3a5:f044:fcbf with SMTP id 38308e7fff4ca-3a63c2ff078mr34722581fa.25.1790590694744;
-        Mon, 28 Sep 2026 03:18:14 -0700 (PDT)
-Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a64c30617esm27613471fa.26.2026.09.28.03.18.13
+        d=1e100.net; s=20260707; t=1790591228; x=1791196028;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pOMrGoe0MJA+5JRUzHhpj1OGWu27WePfFyfzZS0Xvg0=;
+        b=zo/dKnBNThw/L4/om9mThXyAyaS9+Owd6LEvYYb4yC2RHHkOxHuHs/omUOFOFGZjor
+         NVLtYmNC34oCzIkNrijw6JTgRgSgAvXBvQb9HjBz2kZlMrjZcZB4JrTvxZgWOTegT/k0
+         0nd9CTz6Cd+/1lHVTSOrfMl2hvQTkTr/ekMNA/90RhSyochBpYRl9vdIuTs9jwNdDM91
+         9UPLtheBUb6buW2w/g+XYDCGjnNhmBCiBCunbyodcKmdven4lzej23lbq3Vnw/kmB7UR
+         /8Be75u9X/83nIBEIqx0kpCC3p5JFHqghxxMNsJXc9RxnUz9kBQ2CxJFrLqWpGWX2bIY
+         mAeA==
+X-Forwarded-Encrypted: i=1; AKwUvBzRzf3frLKBrNCQlrTyucHnfFU/llXlY+3eRw8+0n5GJ/LMvmh3HmZX+IpZubYTpPrEERBmnZRulUI=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLrrtdv2YWWLv41b/Dv6FrU+NMuAWjrKTZFr2u4DkdvRleexflC
+	F6/yFrgSjVUUx+86Ti3izY4fotl/29Fq7oqqAHa0El/0vC/gga3O9U2U
+X-Gm-Gg: AYBFou3r6zNSYOJ2WOJEiVoR0WB5qL3YbzO22f5YI0B2GnYO1uSFTaNPX5qUcKnkr5O
+	sP3hVJRpEADbK22/a+w9uEG4zg1lOfxBDC3pLiPeteHNRN0ho7E69TJEU0GXLT5tvXYpQz8J/cH
+	1acrMVKAU2ilEtdRkwKZjZvWpoDRyqlK+6Mhxx+oBEYS1tVB9EiZPKYSMjZsEQajuXM1s8BLaU4
+	I55tP7EveMv4ZTrYkqDOXWEaSOueNlbRMBO105+6CkzP2E893Ge+fUFYebJ4HVekv48RtqO2TMc
+	52Br4hGfDh5pBNuANb+1HJP43qWSLGRk+XISMqE/V9BglbvhWXisKceHLVjzXfAFMbKRnXmjCTP
+	JcM3WLkYStwmzZpXdCr1nybOCoknGBbt0U0koCLAFPQ/2DfAZN8vzY6PImWL6KiFUZhF2rhQrDR
+	tlvwDgh9YFOY7ZSlrY6ZlwbwIRMXdzocJ3puqMeZ7yG8fuZCLFGHazypTdgNHLHgOZk5bbwQcsk
+	pMBWCi/Qgp0nqCsyLofJ/vxe9NGzjy0WtoGq80T4JKZj1w/ZdYdhWMnduUjonLyg6ASMMxJBn+3
+	NdNYyaatoXSdCdzz0zDkrRf9h67OKXWrQWuNDWYhNPJkjSGtZMVQKksCHC277aF2FYCSiVAhm4e
+	9bUcAVtNVPCcn/Ht1F9sYd+wmbhfnM6QnW8KfWOC5PA==
+X-Received: by 2002:a05:6000:461e:b0:488:8a5d:ffcf with SMTP id ffacd0b85a97d-4888a5e01b1mr8368802f8f.19.1790591227919;
+        Mon, 28 Sep 2026 03:27:07 -0700 (PDT)
+Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4887a30bcc4sm27549105f8f.1.2026.09.28.03.27.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 03:18:14 -0700 (PDT)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rupesh Majhi <zoone.rupert@gmail.com>,
-	Sashiko <sashiko-bot@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: pressure: dps310: fix overflow in pressure compensation
-Date: Mon, 28 Sep 2026 13:18:03 +0300
-Message-ID: <20260928101803.547005-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        Mon, 28 Sep 2026 03:27:07 -0700 (PDT)
+Date: Mon, 28 Sep 2026 12:27:04 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Esben Haabendal <esben@geanix.com>, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, Sean Nyekjaer
+ <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, Christoph
+ Muellner <christoph.muellner@theobroma-systems.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v10 10/10] iio: accel: mma8452: Support interrupt
+ sharing
+Message-ID: <20260928122704.03df4e7e@systembl0wer>
+In-Reply-To: <aroytGH8u-gGFYvq@ashevche-desk.local>
+References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
+	<20260928-mma8452-open-drain-v10-10-b906fb408386@geanix.com>
+	<aroytGH8u-gGFYvq@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-p^3 * c30 and t * p^2 * c21 overflow s64 at most oversampling ratios,
-and pressure comes out about 150 Pa low on a DPS310 here.
+On Mon, 28 Sep 2026 12:26:12 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-Use Horner form, dividing by scale factor at each step. Overflow then
-needs a raw value far outside sensor range and returns -ERANGE.
+> On Mon, Sep 28, 2026 at 10:26:26AM +0200, Esben Haabendal wrote:
+> > Adding support for sharing interrupt line with other device requires the
+> > interrupt handler to handle runtime PM suspension properly, ignoring the
+> > irq if the device is suspended (maybe even off). And while at it, we use
+> > the PM reference to ensure we do not get suspended while processing an irq.
+> > 
+> > In order to prevent the chip from raising irq while suspended (that is when
+> > using fixed regulator, where suspend just means setting the device in
+> > STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
+> > then restores the value again when resuming.
+> > 
+> > The scoped_guard in mma8452_runtime_suspend() is changed to a plain
+> > mutex_lock() instead, both to prevent mixing guards and goto, but also to
+> > ensure that we stay in STANDBY mode while writing to CTRL_REG4 and all the
+> > way up to disabling the device as much as possible.
+> > 
+> > With that in place, it is safe to add the IRQF_SHARED flag.
+> > 
+> > Keep in mind that the device by default is using push-pull for the irq pin,
+> > which might require additional hardware design to allow interrupt sharing.  
+> 
+> ...
+> 
+> > +	pm_status = pm_runtime_get_if_active(dev);
+> > +	if (pm_status == 0)
+> > +		/* device is powered down */
+> > +		return IRQ_NONE;  
+> 
+> > +	if (IS_ENABLED(CONFIG_PM) && pm_status < 0)
+> > +		/* runtime PM was disabled, possibly suspending */
+> > +		return IRQ_HANDLED;  
+> 
+> This is very interesting part. I bet this will be the first driver using this.
+> A big question "why?"
+> 
+> > +	/*
+> > +	 * pm_status is now 1 or -EINVAL (with CONFIG_PM not enabled). If
+> > +	 * pm_status==1, runtime PM is enabled and device is RPM_ACTIVE. If
+> > +	 * pm_status==-EINVAL, runtime PM is build-time disabled (i.e. CONFIG_PM
+> > +	 * not enabled), and we can/must assume device is active.
+> > +	 */
+> > +
+> >  	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+> >  	if (src < 0)
+> > -		return IRQ_NONE;
+> > +		goto out_runtime_put;
+> >  
+> >  	if (!(src & (data->chip_info->enabled_events | MMA8452_INT_DRDY)))
+> > -		return IRQ_NONE;
+> > +		goto out_runtime_put;
+> >  
+> >  	if (src & MMA8452_INT_DRDY) {
+> >  		iio_trigger_poll_nested(indio_dev->trig);
+> > @@ -1120,6 +1139,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+> >  		ret = IRQ_HANDLED;
+> >  	}
+> >  
+> > +out_runtime_put:
+> > +	if (pm_status > 0)
+> > +		pm_runtime_put_autosuspend(dev);
+> > +
+> >  	return ret;
+> >  }  
+> 
+> ...
+> 
+> > +	pm_runtime_enable(dev);
+> > +	pm_runtime_set_autosuspend_delay(dev, MMA8452_AUTO_SUSPEND_DELAY_MS);
+> > +	pm_runtime_use_autosuspend(dev);  
+> 
+> I don't see the respective _dont_use_autosuspend() call anywhere.
 
-Checked against datasheet formula at all eight ratios.
+FWIW, starting Linux 7.4 you won't need to add _dont_use_autosuspend()
+calls, driver core will just handle it on unbind [1].
 
-Fixes: d711a3c7dc82 ("iio: dps310: Add pressure sensing capability")
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/patchset/20260921183132.233136-1-zoone.rupert%40gmail.com
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
----
-Based on iio/testing, since the buffer series reworked this function.
-Can send a version for fixes-togreg if you prefer.
+If anyone would like to join me in purging the kernel of redundant
+dont_use_autosuspend() calls once the patch hits mainline, feel free
+to do so :)
 
- drivers/iio/pressure/dps310.c | 94 +++++++++++++++--------------------
- 1 file changed, 39 insertions(+), 55 deletions(-)
+[1] https://lore.kernel.org/all/20260919-move-dont-use-autosuspend-v1-1-f6e2d1315c23@gmail.com/
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 85df58ac1809..a22c8b9860af 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -19,6 +19,7 @@
- #include <linux/limits.h>
- #include <linux/math64.h>
- #include <linux/module.h>
-+#include <linux/overflow.h>
- #include <linux/regmap.h>
- #include <linux/unaligned.h>
- 
-@@ -660,75 +661,58 @@ static int dps310_write_raw(struct iio_dev *iio,
- 	}
- }
- 
-+/* Fixed point one for the compensation fractions */
-+#define DPS310_CALC_ONE		((s64)BIT_ULL(20))
-+
-+/* *acc = (*acc + coef) * raw / k, with coef scaled to match *acc */
-+static bool dps310_horner_step(s64 *acc, s32 coef, s64 raw, s64 k)
-+{
-+	s64 prod;
-+
-+	if (check_mul_overflow(*acc + coef * DPS310_CALC_ONE, raw, &prod))
-+		return false;
-+
-+	*acc = div64_s64(prod, k);
-+
-+	return true;
-+}
-+
- static int dps310_calculate_pressure(struct dps310_data *data, int *val)
- 	__must_hold(&data->lock)
- {
--	int i;
-+	s64 p = data->pressure_raw;
-+	s64 t = data->temp_raw;
-+	s64 prs = 0;
-+	s64 tmp = 0;
-+	s64 pressure;
-+	int kp, kt;
- 	int rc;
--	int kpi;
--	int kti;
--	s64 rem = 0ULL;
--	s64 pressure = 0ULL;
--	s64 p;
--	s64 t;
--	s64 denoms[7];
--	s64 nums[7];
--	s64 rems[7];
--	s64 kp;
--	s64 kt;
- 
--	rc = dps310_get_pres_k(data, &kpi);
-+	rc = dps310_get_pres_k(data, &kp);
- 	if (rc)
- 		return rc;
- 
--	rc = dps310_get_temp_k(data, &kti);
-+	rc = dps310_get_temp_k(data, &kt);
- 	if (rc)
- 		return rc;
- 
--	kp = (s64)kpi;
--	kt = (s64)kti;
--
--	p = (s64)data->pressure_raw;
--	t = (s64)data->temp_raw;
--
--	/* Section 4.9.1 of the DPS310 spec; algebra'd to avoid underflow */
--	nums[0] = (s64)data->c00;
--	denoms[0] = 1LL;
--	nums[1] = p * (s64)data->c10;
--	denoms[1] = kp;
--	nums[2] = p * p * (s64)data->c20;
--	denoms[2] = kp * kp;
--	nums[3] = p * p * p * (s64)data->c30;
--	denoms[3] = kp * kp * kp;
--	nums[4] = t * (s64)data->c01;
--	denoms[4] = kt;
--	nums[5] = t * p * (s64)data->c11;
--	denoms[5] = kp * kt;
--	nums[6] = t * p * p * (s64)data->c21;
--	denoms[6] = kp * kp * kt;
--
--	/* Kernel lacks a div64_s64_rem function; denoms are all positive */
--	for (i = 0; i < 7; ++i) {
--		u64 irem;
--
--		if (nums[i] < 0LL) {
--			pressure -= div64_u64_rem(-nums[i], denoms[i], &irem);
--			rems[i] = -irem;
--		} else {
--			pressure += div64_u64_rem(nums[i], denoms[i], &irem);
--			rems[i] = (s64)irem;
--		}
--	}
--
--	/* Increase precision and calculate the remainder sum */
--	for (i = 0; i < 7; ++i)
--		rem += div64_s64((s64)rems[i] * 1000000000LL, denoms[i]);
-+	/*
-+	 * Section 4.9.1 of the DPS310 spec in Horner form. Multiplying the raw
-+	 * powers out first overflows s64 at every oversampling ratio but 16.
-+	 */
-+	if (!dps310_horner_step(&prs, data->c30, p, kp) ||
-+	    !dps310_horner_step(&prs, data->c20, p, kp) ||
-+	    !dps310_horner_step(&prs, data->c10, p, kp) ||
-+	    !dps310_horner_step(&tmp, data->c21, p, kp) ||
-+	    !dps310_horner_step(&tmp, data->c11, p, kp) ||
-+	    !dps310_horner_step(&tmp, data->c01, t, kt))
-+		return -ERANGE;
- 
--	pressure += div_s64(rem, 1000000000LL);
--	if (pressure < 0LL)
-+	pressure = data->c00 + div64_s64(prs + tmp, DPS310_CALC_ONE);
-+	if (pressure < 0)
- 		return -ERANGE;
- 
--	*val = (int)min_t(s64, pressure, INT_MAX);
-+	*val = min_t(s64, pressure, INT_MAX);
- 
- 	return 0;
- }
-
-base-commit: 873ba60d7f2e52a171845ca290cf366878864b1e
 -- 
-2.43.0
-
+Kind regards,
+Joshua Crofts
