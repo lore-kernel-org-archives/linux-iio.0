@@ -1,108 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic.asd.mail.yahoo.com (sonic-asso1-0020.asd.mail.yahoo.com [34.2.90.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C4934FDA5E;
-	Mon, 28 Sep 2026 21:49:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141D34F7CC0
+	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 21:54:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.2.90.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790632199; cv=none; b=uYLyZjECHLl+UHVWfNmc5PAHtoMjAUBNByiba7bqVDNh/Ibbq5aYlu9f/0kKaMhEP33fCThuGKVyoOZxNud6N+qb1TaTqiyDap8Ptft8cnbaATUizMJnkI2kZWs2cTh7PlY71E/IPveFOjJ9h+NrhBMCb0hB6Rz5/OUObQlkdeI=
+	t=1790632497; cv=none; b=JwyHT7PVtifuiGnvrQhtmEkretzQQMkprJpBfS6P3/QYdCh57b6MkT2xLaPRA//7jGpq3p9SsjUruI2j8Sz1CwrFucDySOnaNKBqAmSO8yEAxplYvcK9qJYv3fLFm3znn4n+rRpGWH/I5G39A2Mgf+/yCIYFJY90mv9wZNX/SmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790632199; c=relaxed/simple;
-	bh=3A2k4B1MyyYGlKtnyMek8DNyKiLznOjV5xluhGSwX50=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ffTOnzkJeXI/7rljmWnW1hQq2+MdbfOgN/LHQx5yjAWiqCAIX52NjtOofj98ntMZnpICoPYDsJguKeOpACVg9PKPpLRj6xGnLSpGEalxgaMswXdIv8GH80JciF8uGvZo9GK2YkmuFV0WM++W21qS6Qoc4u5GLBheP4veElzz6DU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JzdweCFF; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1790632497; c=relaxed/simple;
+	bh=jCL4z3TqXM8kEezxfX4y2YEX2K7cxLQC5MpNZiieyno=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:References; b=U104WofkbBuiT9rxUNZGWBTsfnqa8QrwTSoqOQOG63dG9BcnfcfgwBNsxOdpaUmbGAj7LsLQ0A0maX7IUnMfyCKeWq59n3JOI9fg4Y9/n39e7Hj+E/EwoFsWaUnsLZAnmi24SnITWPcz77+pG2S4zRINOr4pnBKxVrA+GahNCrY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=OKynxuW+; arc=none smtp.client-ip=34.2.90.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JzdweCFF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790632198; x=1822168198;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3A2k4B1MyyYGlKtnyMek8DNyKiLznOjV5xluhGSwX50=;
-  b=JzdweCFFoG13oNLxiTaYdb7GTn3MF5b9Fx7/pLQyz8WG0qkOfnfSBbx1
-   K3OnbGA40p1G07r1wyAifLlFcp/UGj4eC660r+aIn6rHjVwUTQrUbNhsA
-   irtHc/qlZS+mgaV0nV3gqoA/7nN8vNg5jnmTRx6Lgfb8g7Quy84YUtnNk
-   Db2dMTUKi3e5wPw5K7NG8S8vUmsFDcWV8WYpnWlRP7LMnQJ3uhKeOzXnd
-   LM8+pHo0nqE01hOBk4oQypq8ejjwVXXSurZqW4uZAVmmxlBltbtlwvDzZ
-   nbBK9I9o0LPHjw4tTNbMWb2kdLg1NUI69TV17JXeQ8qhfKJAViI6mlcFY
-   w==;
-X-CSE-ConnectionGUID: nUR8NSgjQsysPdGt/OJaWQ==
-X-CSE-MsgGUID: Ve/XkwB5SGOnBQHcgESlkg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11919"; a="90295161"
-X-IronPort-AV: E=Sophos;i="6.27,129,1787036400"; 
-   d="scan'208";a="90295161"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 14:49:56 -0700
-X-CSE-ConnectionGUID: agS7fjZAS8yA+UD6RGr5mQ==
-X-CSE-MsgGUID: LfT05oMtSsy/cY302rRjFQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,129,1787036400"; 
-   d="scan'208";a="278380629"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.42])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 14:49:52 -0700
-Date: Tue, 29 Sep 2026 00:49:49 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ryan Brue <ryanbrue.dev@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="OKynxuW+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1790632491; bh=zO5q4LkqU9FGSgnhhTg/0N9HuMtDades8t3AQLFFfCI=; h=From:To:Cc:Subject:Date:References:From:Subject:Reply-To; b=OKynxuW+wBRX9cQ39oE+03ybphcQH6/5yJQ5APWbVQqzHBVrcgW0GHpFgsyxUjT3GrtWjSS9D5fcWSfVN6o81y/bZaj1okZyLSPjKHCbIw8FqYa91tES+OXkUJKU1+9mq0fR4Wvp0H0j2wz7q3lSdveMkFKUWoKBkQD3msmRYw9+stv/Jf9RuGXq6ll4co+OTg6iQwGdBAOTBj1TbdRaT4zflOp7mud9M36myLo+fZI3HQ9BKYCi9SVTzN/DLc12uiIJNDHmf/d1KlT3ye+TbtzDEpWyxtWn8ss6xtC/exzVhrG70UW21Y1UMZzGzij53nUhX6+e3ceu/4O9OoWrUQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1790632491; bh=Cnx9IoA8YsoWFYObYmBbbjthH5LUXDOW+qGCM8TIoxZ=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=N1a7LQ7lEQOPCyM6OZIe+7roqdyBk/WSPtOMd59q1Ne3Dhu4L/N4GxejSv/XDKVjR9eCR3baQ7VkgJQKzqgPsodPPnlTdqhxa4nP9xv4OSMxKPbhxFUn5OIQnqAckzsncdRdVWSrlYW2DsO0Q/RNOHqhtoNETn8jqA6Hn26ch3htMje0bR2EtCU0qyYSSJQfqV9uhNwFfLR92IIxxwqQshvbzXOaDG1MoBthevnWpJLQKAKyO/lQ73R5vglxhCFODs/fqUvT86UDxVI/emyv+w4GrafqcCeHQPFlzkoQQ1dggHdumuIEr9uTX/kPYc3Iqw165j0OGQM44IZXCs7nZA==
+X-YMail-OSG: aOYKTKYVM1lcMskE9FR4cSeG_dSVaLo.GDeuGvOcus1mP_A3brvWve7YZFCFoNp
+ Rdqps.ILl_LMvoG7IUrbm4ELF6joC2aMObWg6pX1xYCg5mzlFl3.JZ0LWeIN55ntX1lYO4I6gHbS
+ iW9SWB3tnA2iA2AtdG8FGxW50Z6AQKWXmbxcgQxGIf_xwl7FyRR.qtAgZOAPFHr1d6mmXMSxmCyq
+ P1PT6jpKEqTTcP.BsLV6eWagmMLDahyILVjHkSTS3m8XDMDSDGaCSp4RH9_eTbNpWWQ7zOw8D.Y.
+ 9ei0kqN.2xbhurA9uUfV2pF5B81VpbPUjP9MHhwUvJMWwRnfTgXhI_Pl.202VUCsbYin27kB9NwK
+ UA07kfLJKTGMd4KKCjk0pcsxaHFXDMDO1pCGU5Pd8avgdmBAWmZtzFbzeG4eAacVJFhJ.S3BSLPJ
+ ytPiAi0XwayS0hiGJR4nO_JizMRoNzuRJBzWCk_rCRLINPDGopKAXDclUDWk06hMsK5UoTwsBPik
+ I3.3nnvAu5OzttZcte5Uu60zJBsHD8mWHe2kmphDQUG_Fqeo57iexvE2WKi1NfX89NltMwVKPoym
+ STERXQDFiLTGiPGQoBGtSTyKpQ94RYqtTyVMrv9wJgglXgwPwSD9dJjfeDPaLqv314Plt69GVHBa
+ bDyNlL.TaO0gGOJ4v8V7c_X40QyaoufBSsWXfLTqONkusUEnv7eLOJrwMqYUGjP13stftNCdIOYM
+ Mv5oHeb1QzjtUvs.wfMKxxq0wyrFlrqwdJgVdlVlV8YZ.7zN8rOfSJj4n1LRfMQmAdEwwB4W6qS2
+ V9yJZkflZDZUROcsek29FqENROpH3tNidji6gntWhhDsHA9hJgGGvL8o1ifUYSMJO3wgrf8B4Ihl
+ 7Yg26TFZufNbhRlM3v9mfqfkidPk3wUPh3CDEH5CLUIqA555tT88wI9uDsZxY7ksMUoN3vrGne5l
+ 6jeG_c.j.PIqGnaPVhSyLhlYuJ8VdGoAc_uXxuMBGEHTzmZAv_AdVHXkDuuUmK96gyECYRbef6x7
+ ih2nKV154lHSgZSK4Rg8ziFmQw_.oYJucTTUirxINr_UfP9kn0VDrSDARUsnqOp6qyJCFreRczvr
+ _rNwlftcwkze7GMKlckOnYu_4qRTPv8bWDU.Si5dhSrW8QxKlds0f204cZQp_Ele3S5X3Esa0pWj
+ YJOYRL9i6mJqLZfX4rM1tHDples79BSu3CYDGA2aKICFjBE24eeeAw7WDkQi.0kCGBhoJSuCuqiq
+ OCAa.85eysZlV.3PX3u94f9tDvPC2VtvJTTnfBvubmv8kfoGneXdJOXYf23KEOOBnkpPHYdbrc0F
+ nqZrgRZ_g9ZqI9b1bOX5KG.nrOx.l.VbE1BbUZzzRfmFCdHkJdDw2ZyVcQFVMQbA8FZKl0iNORQX
+ qDNA_QaTAwzOOT3JJTx333ALnxtRwp9FGYlDXzMcsDyjEd51xRwZmZfPOE0QeplFRstghx0kWxx6
+ e_lRr6vUtFhZseQ2UrdW_jairz0PkBpgIZkOxfJ6Bvq42eJ1kdvmTEf0X_kpLdPn2YnNfGnTlZUf
+ _C0Y95cc9VcCNHmejyBsog3fWMr92MKb0njUeAQg4Kf14J.kWBDXizMiJrwIYIjnd8VtmBPk8ENB
+ 8gVCWcmuY82OKwUQFLniTczIoxMNepF1v1pZ2LiFNJUclYwYoBad82Ai1TeG99bCKuLN5QGOcTJK
+ ODa6j4P_vnfYIYluvryVHqOcoXrlaQTbw94HxZIBZfNhP7l8H3mb3xd8DbLa1o.X1aaJqUvaq5rO
+ OCFfOscHpoURrgBODpFjy6Vt5JTaL0i61ReO9BneF.AxXD6Z5qBBpjvr3LgtpQHI3ifg8gj9RuxJ
+ Yb1OAQF8yjEJlnoSR3QXKbPNR9tohDwN3PCJocmk93W1mRvae_4Z9Y3cszB7h75W1HD.Rh6LlIfv
+ kOKYMqmpRITGsk1PKOkmmyGfu1FGgeXLFwlDOWzrGIpVSZ89nk7aRl9tGTK4ybLmZN606uQD2Ogo
+ h700sfyTpO.NN8GbtRfcutDGO9Z3bWiIJi.VuCl1M.cJ9JMdakojlQL8V
+X-Sonic-MF: <m.abubakar365@yahoo.com>
+X-Sonic-ID: 4587f15b-2661-4a40-a739-321f1891aa3a
+Received: from sonic.gate.mail.ne1.yahoo.com by mail-asdoutdeli-p-cin-asso1-prod-sonicconsumer-svc-101 with HTTP; Mon, 28 Sep 2026 21:54:51 +0000
+Received: from dip75.lsn.bf1.yahoo.com ([67.195.177.84])
+          by hello (SMTP) with SMTP ID 76ff639862f4e2dcd2f1f2eb210a11ab;
+          Mon, 28 Sep 2026 21:54:45 +0000 (UTC)
+From: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, mfd@lists.linux.dev,
-	Roman Vivchar <rva333@protonmail.com>,
-	Luca Leonardo Scorcia <l.scorcia@gmail.com>
-Subject: Re: [PATCH v4 2/3] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
- driver
-Message-ID: <arrg_SBRTPbquCFA@ashevche-desk.local>
-References: <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-0-23533a0d30e3@gmail.com>
- <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-2-23533a0d30e3@gmail.com>
+	Conor Dooley <conor+dt@kernel.org>
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	m.abubakar365@yahoo.com
+Subject: [PATCH v4 0/2] iio: pressure: add Sensirion SDP31 driver
+Date: Tue, 29 Sep 2026 02:54:20 +0500
+Message-ID: <20260928215422.3720-1-m.abubakar365@yahoo.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-2-23533a0d30e3@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+References: <20260928215422.3720-1-m.abubakar365.ref@yahoo.com>
 
-On Mon, Sep 28, 2026 at 03:57:20PM -0500, Ryan Brue wrote:
-> The mt6397 AUXADC is a 10-bit ADC behind the SoC's PMIC wrapper. On boards
-> built around this PMIC it is the only way to read the battery: the SoC's
-> AUXADC is wired to board thermistors and the charger ICs these boards use
-> have no ADC of their own.
-> 
-> Add a driver exposing the battery voltage and battery temperature
-> channels. Only those two are described, so a channel ID in the device tree
-> indexes the driver's channel array rather than the PMIC's channel number,
-> as mt6323-auxadc does. The ready bit lives in a channel's raw result
-> register, but the value comes from the chip's factory-calibrated copy.
-> 
-> The battery voltage is measured through ISENSE, because a board with a
-> switching charger in the power path leaves BATSNS on the charger's system
-> rail instead of on the pack. The thermistor only reads correctly with the
-> PMIC's battery-detect bias and input buffer enabled, which take 20 ms to
-> settle. Both are switched back off afterwards.
-> 
-> Reads average sixteen conversions in software; the chip's sample
-> accumulator makes no measurable difference at any setting, so it is left
-> at one sample per conversion.
+This series adds support for the Sensirion SDP3x family of differential
+pressure sensors (SDP31, SDP32 and SDP33), I2C devices that also report
+temperature.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+The SDP3x uses a completely different I2C command protocol from the
+already supported SDP500, so extending the sdp500 driver does not make
+sense.
+
+Patch 1 adds the device tree binding.
+Patch 2 adds the IIO driver, which exposes differential pressure and
+temperature channels and validates each measurement using the sensor's
+CRC-8 checksum. The scale factor is read from the sensor at runtime, so
+the SDP31, SDP32 and SDP33 (which differ only in range) are all supported.
+Tested on an SDP31 wired to the I2C bus of a Raspberry Pi 4.
+
+Changes since v3:
+- dt-bindings: support the whole SDP3x family (sdp31/sdp32/sdp33) and
+  describe the optional interrupt line.
+- driver: for a normal measurement read only the pressure and temperature
+  words (6 bytes); read the scale factor once at probe.
+- driver: add sdp32/sdp33 to the match tables and report the matched part
+  name.
+- driver: add a file header with the datasheet link and drop comments that
+  only restated the code.
+
+v1: https://lore.kernel.org/linux-iio/20260919223650.13396-1-m.abubakar365@yahoo.com/
+v2: https://lore.kernel.org/linux-iio/20260920164533.31988-1-m.abubakar365@yahoo.com/
+v3: https://lore.kernel.org/linux-iio/20260926154118.5471-1-m.abubakar365@yahoo.com/
+
+Muhammad Abu Bakar (2):
+  dt-bindings: iio: pressure: add Sensirion SDP31
+  iio: pressure: add Sensirion SDP31 driver
+
+ .../iio/pressure/sensirion,sdp31.yaml         |  48 ++++
+ MAINTAINERS                                   |   6 +
+ drivers/iio/pressure/Kconfig                  |  11 +
+ drivers/iio/pressure/Makefile                 |   1 +
+ drivers/iio/pressure/sdp31.c                  | 241 ++++++++++++++++++
+ 5 files changed, 307 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+ create mode 100644 drivers/iio/pressure/sdp31.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
