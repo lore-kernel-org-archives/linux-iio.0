@@ -1,120 +1,114 @@
-Received: from mail-oi2-f42.google.com (mail-oi2-f42.google.com [74.125.231.234])
+Received: from mail-lf2-f13.google.com (mail-lf2-f13.google.com [74.125.229.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62AE47F3C2
-	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 21:07:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.231.234
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790629676; cv=pass; b=HD7JHGU3nhIoaU57OROWhD1OLlRmu1I77+rCBS1whMIg1TfPqmhAKKtvRVwjPy7jupa/Qx54gIUj/FKYMz7mDjkNmCkPcGQ1JoyLmmGdshmWUzN66pnd05Ysh4koZ40u9wLxmlHp6PfZrkSzUgpzNBe2G1UT5RBj3JSP1vHQ6d8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790629676; c=relaxed/simple;
-	bh=y6msfbNFuQcpgJ7i9i+gI5S8bcxxgxGClBG3WW+qGzE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nKxXZjfxPKfkUENyWcQi6SLyfp3Cjr2KBngBlT2Au/24ZCsciwobRAIouakbU5Mbkwqyy1SxS5mq3I+LzMZkJArE/oBOq1m/rnfdyJEhE3RhNtqwqNAMhMin6OpEk/FxP4yCmOL8YxiXSxwFlA4OfNGy/pp3k9KihJdDaKzyHAc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PiOpfAnt; arc=pass smtp.client-ip=74.125.231.234
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8193947DF86
+	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 21:11:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.205
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790629901; cv=none; b=ZMffQyrtXY6kITX5yJQ32MVdyjr4QWs/YCYTHljbJVArWTEjCJ/pnRa288CE+UVsKy/UJ1wzZl6n3dHPCuaq/+7JBW62yhIyKpVgek7dvw3muRHivLb5+oSq/6LNhGTXmFVOJHCDdq4SqzoCkabyQzcvfhDUXTi8Vya5+jI5f78=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790629901; c=relaxed/simple;
+	bh=tsxLQf8jd7dlQ+Ix8M4HThMl6rFIraMlD65LQaxolTM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=d25pBjcQUBZf+NSvsi70/OuYRQ2BqZfOCVEzgeuOHNCAK9iYrWge1tMrniouOMqWvXdFNoDxVSTvvC9zJDXqYwgNvBQmgGBftaBm8XG413cmErSe+DTsmYUW2H4AvIhO8io8geUAv5fKcsIPnGbYgE9ciUIMcfXjkxwgLQslBhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aXjt0K1n; arc=none smtp.client-ip=74.125.229.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PiOpfAnt"
-Received: by mail-oi2-f42.google.com with SMTP id 5614622812f47-4e6e6dd1e66so850068b6e.0
-        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 14:07:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790629673; cv=none;
-        d=google.com; s=arc-20260327;
-        b=AbvoJXqyBZcCbKIQT9IwOpN9DbE/ToYLf6xfQli6GhPLFcbvxIIj2O4ZULV7fEdcHa
-         jR9HhC/pZavglusnb6NWCEyhJXULTlBuBl72PyuFgyKtYQiUSJPpcJ6dfRWCdcBt+vCF
-         z81w9sOIZaB7hdYI5SG+4NtOiAVaDK01bosVQmSfzuMdeJoLr0cEyFL89qKLBAze5bi9
-         SNeQP7JmmXLzwTGMD9AeUImhi1RXp4KiuCShFLFjCeZWFYZITwPb0Y1dpZOTcWl1tAyh
-         lSIOAgFRdmx0hRrGLhm0vdTtVaRdsX7IMASqb0yteu6QtrR/aMvMaLwylxjvMiEY0NyA
-         hlMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=y6msfbNFuQcpgJ7i9i+gI5S8bcxxgxGClBG3WW+qGzE=;
-        fh=ckLlac3a+8uYYVwzY9RXufaI4Rlbi/xbSoOx7lQfxlA=;
-        b=Hhz8LLr4c5ahPMh/k3GwWskh5Kse8IQF88RW9j2ta/ptI4viGq+XtlUAwJ6o6/HU72
-         fWF0RDtLds5ZIyL/Vl2WpeCGYhJ2PFKEFrEhEoxi9eBycyO++rskgVzAF0vw7hzzECRJ
-         n9uVwkQWaBQCO389gXFyRpaeBjo+ehmU9jLfVIFwhn9xZDTj6bAqxt+Gnjl5YB3520aI
-         xaicOSHiqpGezAnUa2w+DPBwMAjrT7EG3FZIzLAKkAQugQuyyVSbu3OXTs9Z7ceRoTXS
-         qhZBDpHI2Uy6bEYWNtCUcdcfZNkXBS9Nx3A8/yzG2yGzBP32aPQV+wfEktJimggopvHg
-         8gFg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aXjt0K1n"
+Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b899413537so4849160e87.1
+        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 14:11:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790629673; x=1791234473; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=y6msfbNFuQcpgJ7i9i+gI5S8bcxxgxGClBG3WW+qGzE=;
-        b=PiOpfAntCZ8yLPGEeKI+hyFBkvuihK4h3SMkN0//sQ4oh4MFs9l+OC7i1iAc380Uy3
-         OnZyBnCoPodHAXb34xATDT5kyc7bsLf6m4rWYCyLxpVdQ/QuvztXl4wPDjNS0NWOCAkG
-         t++l5Fb+kIoXz47wu+S4vDU1agAugdHSGWUBhvmHCMfQJ4k+mrrirm57KQBRvZ+W6I8s
-         ZFeZcEVzLL0KLbQqxKi5vm7KssnsxO4fUC8REFJNeDUgsZXClUOzJTJfOkTIehGCrUB3
-         yAhV91D13gQUb8hCJpYAumFf5s5B2ksA3H1ptMddinnH/0mqzI3q7lbWHJX3WKgBky0a
-         cjPw==
+        d=gmail.com; s=20251104; t=1790629897; x=1791234697; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=SrpocXf0O2heWpnp0ajD/rYn/Hmrr/pD9FGGdmh/wgQ=;
+        b=aXjt0K1nn75bqqZNxEQZ0KbaUt34cCEv9uBkgKAtiRAfTjwQCwAXCtzxMghhX4yQ/N
+         kECY0YwHhUpUpdHU18u7vyW6uKO4OMuS9fzBbvzIClStSYxYd0xfMp4TNX0l3V6LTT8A
+         TpC9aTdPPcMaOGdi9MgWkZ6Plv64TrhCjeWPe9q45fN3EBzBrsV2269tdEwJMGaGAD+E
+         yV/Ci3DgRe/P/oTHDc14I+qq3Z9u2PTLUyTE4cByt0r5ySkhl/mrZ8kXKW72h3OYOAvT
+         UMKvPx5cGjO5ostxzePFhLqTQAztXg4teeonvl4G9YZqJLfNgacF8axWfwKMOoMCAW9X
+         qDGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790629673; x=1791234473;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=y6msfbNFuQcpgJ7i9i+gI5S8bcxxgxGClBG3WW+qGzE=;
-        b=HK78cKIQZ7Li0MrlNiiHfv5SKhFr1z28gz6xX1bZJXB8tkbvPrMKHnPYwD7jolfFLN
-         igBNReYSRnmjaNRkzD+kVgn12tix6x2hlQEr+6SOOIzbQItCf4EPagaVJVrCrGdV16w6
-         Vr9OtwjCYVrDDPiXucSmBP8iARph0e4qONkYHIk42nwlOF4J4FLC/fwFnnxh/K84Bm0Q
-         7eE7rgeGK7hgoHEcJubVUM0tuZge+HkoFiGMWTZ8JpOmLsysupFzzfDJGgdfOYwYPoDJ
-         kIzTDzhRsN/HgcjPRnmqUr5vUMbmqQPBMNXDyVPJHXhsNeax32eRhYGdQ+fx+ZbCeubN
-         ZnWw==
-X-Forwarded-Encrypted: i=1; AKwUvBzhQQfltpmpmjUqLuYZX3EmqQgpWNhaXXlLe3puVdl60Mtk7bep1e1e+4+U5jfEQeS8Q+1Wuyz+YEA=@vger.kernel.org
-X-Gm-Message-State: AFuF++nyMpeqjaOekTcmGZ4wDzstPLGE9HNTWsinegHmFivWEeYc1COZ
-	bQOSRzMrvOMwbig8NhwQH5KhoyO33cpjR67nq7X23pywBmNwehNKNE+SM44PWIO7pWFbKgwrl5k
-	ukOrnb0HKsn2qVfMRXd4IG1Hf6ScVvbA=
-X-Gm-Gg: AYBFou1q+vWqA4Wb3YL9EobRXhAMbL/56rwec3pytRRlAyNSRIs9jf13fqGYc/RO9Wh
-	/6/uVVmJw2Mb23ZpHLy4sfoFU9xtuUBA4uhUh2Bo3Bcp+U35W7ExhLRI8WGJWVXod3egg9LAYv8
-	s9BLCQpmAwFKN8v3Z97vegvRBst0taSQduM23wWYuWuLu0je1dEGo3bWEcp3NBTKrK1oa2fvFEv
-	IVt7JRa5KfY5C4pZWIGYytXj2kJJZ49jceIMG+ZPpCxAWwu+i0MP59U2VK5SJtOwHivebaDuaFx
-	ldVFf4w84Axuu1wwRnxFpg9YO8rNbMad5g7mH48yyriO5QSjFOO1jiJKT3GfBE3T0wQDxa2B9Wf
-	8OXdA3FHi+tuO
-X-Received: by 2002:a05:6808:198a:b0:4b3:75cb:b856 with SMTP id
- 5614622812f47-4d72a2562e9mr16552925b6e.9.1790629673450; Mon, 28 Sep 2026
- 14:07:53 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1790629897; x=1791234697;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=SrpocXf0O2heWpnp0ajD/rYn/Hmrr/pD9FGGdmh/wgQ=;
+        b=zML92XgBkTb7jKxIC+tvrDYtqO6ADjIx4713QomdmxOX4eX25Ne0meXlgNu+SkoxqT
+         vE7J4hi7xcTa35srHg09bNiXSqpTs5GH8HnZTY4wHcY62bT5PK9uE2+8S2q70RNatJ8Q
+         Ba4vexVDfkZ/DrZo7rmnKm22y27W/NII1rEKnkf9ygd7DzT/LEsQAqVXy3j6dirmt5ZN
+         RHFhfEzJ4988WSA9TusoE3V6N9SIM8tUyJNqnzG2Q0SpksRAQGAoYa1YkUVaknnE9YVD
+         jO86M+K4PFULQvThM8SwQkx43xZwTaRl9+bFXy+phe8VTh01vZzfdDquYT6sBfOY5yt1
+         ylTw==
+X-Gm-Message-State: AFq9FYIvtltQEHphp6v3TTr8dVXId5SCQsN5sbeIT6Gy+rs4/rxauTOo
+	3wHInPCNNFQYFmrgftsDXLDB5je/shUzcfrJNcv7IO7witlrKwm8lndT
+X-Gm-Gg: AYBFou35/CMKlUMVbtdv8WDRUwnNtU+e/wACzYs/rrIyPFBs9MiCrvXjiaWGd4Ue3xy
+	yx0oRhpMhz+MTJYH4HvosLbuLGmnN+RxARzeP7frQy1cbaYTZVWWM52MM1XLbdjtFInUy5uhcq7
+	I65Y1l2ILc1dh7qJXY5lmkFZ2WJjKI2+QiLGLExqw15j4D5/89edLXCGJQj60z2fJivMw2C5zor
+	GyLoXmHM8BGWM+RMTQJXYVHWWtCK027q2EjXlo0RBCxPGMAPX7g0ce4ICGAbZjwM4TPKSvcONp0
+	QWSOxtDwqm0PAe2jK+SfqIy7vfQdo/DuXD/MlN44fLQO3H6kwCxCVUGSOM4Kncs3hib6Ao8J+DF
+	L7lKUzdP+UFLZL9hKdrB+fd5n7ylBlk86pSR3Uk7yTKVpDQGvpSfvGWUh41ZvYmrkGNAKbTuI23
+	i4h7zecwYzS90XCa0J0k1paMBhWMLN9O6WqYONaEAJQtD+OlErHrtWtXojC6WINQxYpxNZqOgE5
+	Oj116mZyUE6XmtcUXiZwiaBrG9bOcyWXCUPclBx88xx41WXO/6etSC0MiN+RRebKcirLA==
+X-Received: by 2002:a05:6512:23a6:b0:5b8:f034:cbf7 with SMTP id 2adb3069b0e04-5b8f034cdeamr2665277e87.49.1790629897237;
+        Mon, 28 Sep 2026 14:11:37 -0700 (PDT)
+Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b9d826fa06sm842860e87.8.2026.09.28.14.11.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 14:11:35 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: [PATCH v9 0/3] iio: pressure: dps310: hardware FIFO support
+Date: Tue, 29 Sep 2026 00:11:24 +0300
+Message-ID: <20260928211127.641828-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260928142450.103799-1-vidhu.linux@gmail.com> <CAHp75VcW3ADQdf68Whmo7yhqu9rdi54YVYgyh5PRLPccH6aUBg@mail.gmail.com>
-In-Reply-To: <CAHp75VcW3ADQdf68Whmo7yhqu9rdi54YVYgyh5PRLPccH6aUBg@mail.gmail.com>
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-Date: Tue, 29 Sep 2026 02:37:41 +0530
-X-Gm-Features: AclHuK8JYQr6zVy-MVLb9YJgMPw7_y1Mm2flQRhzFloJn7TG5F9PXG6HsjEjJBs
-Message-ID: <CAFqz8LL0bgOu3TKfxz0Ri=qw09wVHC68CbVS2yZZjv7oKTGwVw@mail.gmail.com>
-Subject: Re: [PATCH] iio: humidity: am2315: fix negative temperature decoding
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-	Siratul Islam <email@sirat.me>, Tiberiu Breana <tiberiu.a.breana@intel.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Andy,
-On Mon, Sep 28, 2026 at 9:01 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
+Rest of v8, rebased on iio/testing where 1-6 and 10 now are.
 
-> Can you use sign_extend32()?
+Since v8, both in patch 1:
+ - a held entry that fails to compensate is dropped. v8 kept it and
+   retried it at every temperature entry, failing that drain and losing
+   rest of its batch. With one bad entry injected on hardware, v8 lost
+   20 to 45% of samples and v9 only that entry
+ - postenable takes the lock by hand instead of mixing guard() and goto
 
-I checked whether sign_extend32() can be used here, but I don't
-think itcan be applied since as per datasheet [1], The temperature value
-is sign-magnitude such that bit 15 is the sign and bits 14 to 0
-contain the magnitude. For eg., 0x8065 represents -101.
-sign_extend32(temp_raw, 15) would instead interpret 0x8065 as a
-two's-complement value, giving us -32667.
+On your question about out-of-range values in the FIFO: none seen from
+real data at any oversampling ratio. Checking turned up an s64 overflow in
+pressure compensation, fixed on its own:
+https://lore.kernel.org/linux-iio/20260928101803.547005-1-zoone.rupert@gmail.com/
 
-So I think the sign bit needs to be decoded explicitly by masking
-bit 15 and negating the magnitude when set.
+Retested on a DPS310 on a BeagleBone Black: six of six buffer enables
+produce data, flush race test clean. Built with clang 23 and
+CONFIG_WARN_CONTEXT_ANALYSIS, no warnings.
 
-[1] https://cdn-shop.adafruit.com/datasheets/AM2315.pdf
+Clang annotation for the mode claim helpers, from Andy's question on v7
+9/10, comes as its own series, with at_least for dps310_fill_channels().
+Cleanup series after that.
 
-Regards,
-Vidhu Sarwal
+Rupesh Majhi (3):
+  iio: pressure: dps310: read buffered samples from the hardware FIFO
+  iio: pressure: dps310: derive the drain interval from the watermark
+  iio: pressure: dps310: implement .hwfifo_flush_to_buffer()
+
+ drivers/iio/pressure/dps310.c | 410 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 400 insertions(+), 10 deletions(-)
+
+
+base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+-- 
+2.43.0
+
