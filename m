@@ -1,79 +1,80 @@
-Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+Received: from mail-oo2-f39.google.com (mail-oo2-f39.google.com [74.125.231.167])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D90034BA42
-	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 14:25:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 087414E66A5
+	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 15:29:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.167
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790605510; cv=none; b=C9ArW5n6eObQCo753F8L/PBI6wSL+No9M6LrysM2fVd8ZdraRm++htD89k9B94sQnSCJGGoHW1If9c71mfaw1g7SrU47Fi5OdEx158+1bgBYPOuT5E945/YyyHD4DbLE98K72Roz06ziATZ8oc7oNcy9m05g11jf6PWTQhqc/u0=
+	t=1790609344; cv=none; b=Vzc8RrwLoWnhpSF2AUfCx0UluBQpsi9FyBhj2OK9kE9WVxl2KIHb08rbaI4hOL96YKSU3X/GlmEHXY7AlbtQsIT8epdBnj4tq8aWQozT4W4fk0RzTjn6Ilx5dmCIbVc2FvrLkiJI3CyvTQjxBHqa36BhZXL05Mzmobr5eaw28lU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790605510; c=relaxed/simple;
-	bh=mf3hvugbE3AhK+xoz4r5nVLwHXOKy2f0yQoZNu6pYaA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WidtI0o+D1PY0TDci7UjGH81zH63FDnbXpZx3LwIPf3531xe8YjgZemaZeM7zqp3MzY4PP2t2C8zM3khxdnxvkbdE+Hbtq2pJ3GTm8NLhSMJ8BQlx+e3iSZAyFWvmL7snyQzjqOFS7pQuCl1iN24E8wb39j9nbR+ibhRDoy0dPI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ogZybVCJ; arc=none smtp.client-ip=74.125.82.181
+	s=arc-20240116; t=1790609344; c=relaxed/simple;
+	bh=PGI5LSsUHdXzEsPU3eTZRxILUn153NxKw3UV6sGM8ds=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=n4nDoK/N0YVKJZc6jwRQyKoVOmBl6C3n5+If8JCa2OXSinJDn4wODFAny4JKW5QlP50JdSvDsaV6hYfbBjl9nym6l7qnpVQ3IZarGildx0QWEZFwzccTUylv0KQxbXfhLg6IfAIX9VAGwS7Z9ku/opI7EFHoT8VIFU+KRwbetQI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kzBjCjyo; arc=none smtp.client-ip=74.125.231.167
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ogZybVCJ"
-Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-3115c4451c8so2483004eec.1
-        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 07:25:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kzBjCjyo"
+Received: by mail-oo2-f39.google.com with SMTP id 46e09a7af769-81c3544e2b7so811962a34.1
+        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 08:29:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790605507; x=1791210307; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=eZgUQuTykGxBSJt5x1FfopNzOuVlXIKdkSB27V8r4Cs=;
-        b=ogZybVCJHdlAIaE6MiPjS/tgK28jHFZ/gD/gJ8Hnts382Wo8PSMCixVTyw24y7mIvu
-         FrFQ9Vd93vE40qoJaNGQY9IYwfbv9YV+NHVi5+fXKwDLXWFiXmDrL/W3gtiqNpThXEIO
-         /euxpDvAOMy79Y6b6ectskfrDdcx96KVygO9fo2WscV1stHfJRiachs3Wi+EgLAc8B61
-         Z5Co29R3E6QDcYweTc65IbKHWP1X0+CW62G4MSEuoZY/icFw3F1LDbz16Yd4xdRY0R2V
-         WP8Rt2lIozQv+IQ+maApMam8nBKsJXeo4fcA2PSSFQTQiZtMrSZCM6Q7YAlCdLKdA66D
-         J6WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790605507; x=1791210307;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1790609342; x=1791214142; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=eZgUQuTykGxBSJt5x1FfopNzOuVlXIKdkSB27V8r4Cs=;
-        b=I3aoqHopX/bUWitdP3MfMkTnI9x8q+B69XIGLk9reUXEk0Zif+FHsFE5NCYewiNv58
-         P4mnmn56y1JVqO3H+ciS5TB4O2SA9ErD+ytreKl+pQmYXz99o0Aaud/XuE/H7b9HBAUF
-         ckiZN8MgE32ESYmJpaSLM3mkuJUhI78QIEwnPqCnAdTCy4sSb/xx0Elf0YECN7kHyVWm
-         3Evg6wGZX+1F/C40YTyT6nOiUmdx6AM+qc0XVBEZX8Pvl7flG9OT3Jaofs/vQ9X7rS/o
-         /NjDlyqWbMJT/D5Scn4jCseMNUiA1PWrLHkQqGGmpiIH0liONjOr6aMCZ3zA8WOm6xFF
-         vQvA==
-X-Forwarded-Encrypted: i=1; AKwUvBy2zuQfQLuNvvb7SFe8kvVLAKtJn5tahKEibwxaq/nF7cVQXc7wGi9aOGGe5zqonR2PP17DO5DsPKQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLUcIaSfOaJeo8MBVVQj4MXJKPVWcZ8u+ml57BxyEQY+27LAHOG
-	wynRgqVwgABArDqRv+dtB2mePZdg4QsMB32h0/v/oWxsDZHH1UdbVwyn
-X-Gm-Gg: AYBFou3LyDZSrxfeaYCOy7q+4ubUhQUZG+6r+TBIxzdEPlqMYs5AO9eOWq45YgrKagn
-	0GqDXRW9mqtPk1J54M0ZHJGH8YmDeRUk9dc0rTKOeQqhRkzOQLMf4ioNsXNS7NS1WRBVbAwzg5F
-	G3um/vjonFdKEE0Cxk8vh0qpz3Gl1AINfuBElNVd7wAQKGFfu+4IS79peRsM9Xnd+Cwtyec0Jwg
-	z6JEm3sIbFqN4jts0QjlGz+YhY2xVGc8NyWU/0fXPxDJogxU+Nhplup1t9dOK/BuRhqXPP/+ORP
-	0YLNNPCK5SZVh9GmDRrkKWjZKgUjS0r76PBwI+rBCnYnOGUF5fHIKNDGWoVn5/G4JLnln6RYfs1
-	B++VhvUyVD2GN/dNc1J/hrCjvWqj8qE8NArArSsZ492xhqH7H63cOgUvWzAEsaIoxqVxwiF1uDc
-	DUro2BXmQKudBWhCyw9YWUnHF/JQN2iJeyPbmHZuWVqp+BWcjcDpibissxt96LWDerV0XZebrFn
-	zXJe8sX/In/5ROAjZz79VrX1SViCQV5nKf/SBs=
-X-Received: by 2002:a05:7300:c3a8:b0:348:201a:6c88 with SMTP id 5a478bee46e88-348201a6eb5mr2740212eec.13.1790605506418;
-        Mon, 28 Sep 2026 07:25:06 -0700 (PDT)
-Received: from primary ([117.203.246.44])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3444fd04d93sm10670483eec.12.2026.09.28.07.25.02
+        bh=PGI5LSsUHdXzEsPU3eTZRxILUn153NxKw3UV6sGM8ds=;
+        b=kzBjCjyoCw/47E1YHMrj6tz4H4gfSqfH65EZmX7tP8U0J1sPskHtLzLfdhov1nwNnl
+         piT5jbYCuVdz2+BYKvLyCeF5ybCko8QZhOavuUNHTsZnT819v1MgfuNTtkMz9gInaJ62
+         qN+SjxA+TwuXP4Cia/e8nHwZBZck5jK/YE0bWJ0XmBX9EPdH3bMOjLq0d5zQsuBg35Hr
+         FhbQ9S4AfOwAx21gmjwmFf9Ca/6+p2gUw1BYSMvx1WMNEIDay6AU8WfuDBOTE9FllHT9
+         DOAKK0eRRb1RI+cwwtD+ewxDhwY0Fkg9IDVijkXKzklhcRgYti69VGuzLQQJVGWsmnsQ
+         LtxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790609342; x=1791214142;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PGI5LSsUHdXzEsPU3eTZRxILUn153NxKw3UV6sGM8ds=;
+        b=qI0XXJZSJvwu+0vuXlNQCzPb+K5BJYe50ISgXKd3c2KU+v7I0OLQ73E1kGog8b5k+c
+         JIy3I5nCqUwuAbyISAQs71iJ+x2yGJQTBz5sR56YYYbBqVdCVrREvbP77lhAgtO7YFWp
+         T9I7vSTWubjzqimVRtT8RjUZ/WLGbReeQXjL58wrtQ4vXAKfLtPOqu7Ri17m3R6O9IRq
+         XvmPoxrsf2MAXSYHvpG9ymMVd9bL10s5vA/mzP6XdQ7hh5pfm3w+k1GsU5Zoi++87Knw
+         Hy/+vmu19AAWa2lxauH60NkDpiS7bgR2kil+hIDWI6rUm2rExx2g6/qG6YM0RrvmLMv0
+         BByw==
+X-Forwarded-Encrypted: i=1; AKwUvBwCS9KdRkqgdEBFcx/77kcbaV+6rNfibkbMlNwPsqqTUt35KtIOhNT2NeqC0F++IopKSVwXOXxhlOs=@vger.kernel.org
+X-Gm-Message-State: AFuF++kXhfRQuS3fB71O0n/o2EuqIGIORQDD+jK1XCcKBWZ5L3VW1Cs4
+	0QqPmFKXpHQmrk2KGPBPuMPxHrABpYLcIgiEwTdiUvrNuxg52rjMdH0f
+X-Gm-Gg: AYBFou2PFmKHLBrAVNaXH1S6xc9QrI9JuN8e+w9gLNQ7y0qfJLx6NQjWpJePmnhr4MV
+	NBFNKAC+SV+9r0KTef7WKvpSeKCsXHap1y2dV+hoObWdJVguRmF+79IJlwmwFktTlduEuLA4thc
+	cJtgIwTpoIgpSDOo5WtjPOlACyItBpnJXW/Atn1rIaKDm2vqDN10Oav9G0Lf7PsY1STu1ybHVV7
+	y81YVpXEteBDvCOmSVvO04TthagK41j4z2kXG9L13eJqh5/sHa04AgHgXaHCw7Lg8GRrmW3a7fp
+	0wbQI7SI2w+2PpTwPw6fjCl0Ynw42uV9sEHWp2kclDw3pWlPyATjFLWsGkfBHoAJmL1pseEt31H
+	whnPhFpMAS8q7fxqrBCI5P8QFWopLnNCongENDO5iHzYY0P/6uY11xH8v39whfrtn6CGzdW0KGL
+	GtDxd+UV4Y4M+uf7zmJtEiVNizC6TyOd/te8Cu/KKMmhDf3I/TZlTPH+ZfNWTCwhzxhbPzyKVsj
+	XazU/j84n0fZ1qYSFl25A==
+X-Received: by 2002:a05:6830:83b0:b0:7fc:ae19:17ec with SMTP id 46e09a7af769-81783e88241mr15803831a34.29.1790609341691;
+        Mon, 28 Sep 2026 08:29:01 -0700 (PDT)
+Received: from cachyos-SlimIce.lan ([2607:fb90:9a26:9349::e71])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-81d584f53e7sm1874160a34.14.2026.09.28.08.28.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 07:25:06 -0700 (PDT)
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
+        Mon, 28 Sep 2026 08:29:00 -0700 (PDT)
+From: Jared Wuerzburger <jwuerz@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lorenzo Bianconi <lorenzo@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Siratul Islam <email@sirat.me>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	Samuel Dionne-Riel <samuel@dionne-riel.com>,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	Vidhu Sarwal <vidhu.linux@gmail.com>
-Subject: [PATCH] iio: humidity: am2315: fix negative temperature decoding
-Date: Mon, 28 Sep 2026 19:54:50 +0530
-Message-ID: <20260928142450.103799-1-vidhu.linux@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: imu: st_lsm6dsx: Drop trailing comma in ACPI match table entries
+Date: Mon, 28 Sep 2026 10:28:41 -0500
+Message-ID: <20260928152841.68967-1-jwuerz@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <aroutl04Q99mqJor@ashevche-desk.local>
+References: <20260927220559.24169-1-jwuerz@gmail.com> <20260927220559.24169-2-jwuerz@gmail.com> <aroutl04Q99mqJor@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,56 +83,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The AM2315/AM2320 report temperature as a sign-magnitude value,
-with bit 15 as the sign and bits 14-0 as the magnitude.
-am2315_read_data() stores the raw value directly in an s16, causing
-negative temperatures to be interpreted as two's complement. Both the
-read_raw and the triggered buffer paths are affected.
+On Mon, Sep 28, 2026 at 12:09:10PM +0300, Andy Shevchenko wrote:
+> On Sun, Sep 27, 2026 at 05:05:58PM -0500, Jared Wuerzburger wrote:
 
-Decode the sign bit before storing the temperature value. Positive
-readings are unaffected.
+...
 
-Fixes: 366a3270c1c5 ("iio: humidity: Add support for AM2315")
-Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
----
-Other implementations [1] [2] for the same sensor have hit this bug when the
-sensor was placed in a freezer, although neither is kernel code.
- [1] https://github.com/adafruit/Adafruit_CircuitPython_AM2320/issues/1
- [2] https://github.com/letscontrolit/ESPEasy/issues/307
+> > Assisted-by: Claude:claude-opus-5-5
+>
+> Assisted-by: LLM
 
- drivers/iio/humidity/am2315.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Thanks, that was the format from an older version of
+coding-assistants.rst. I'll use Assisted-by: LLM in v4, in 2/2 as well.
 
-diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
-index f29baa251f9f..31c4f52a0108 100644
---- a/drivers/iio/humidity/am2315.c
-+++ b/drivers/iio/humidity/am2315.c
-@@ -113,6 +113,7 @@ static int am2315_read_data(struct am2315_data *data,
- 	 */
- 	u8 rx_buf[8];
- 	u16 crc;
-+	u16 temp_raw;
- 
- 	/* First wake up the device. */
- 	am2315_ping(data->client);
-@@ -144,8 +145,15 @@ static int am2315_read_data(struct am2315_data *data,
- 
- 	sensor_data->hum_data = (rx_buf[AM2315_HUM_OFFSET] << 8) |
- 				 rx_buf[AM2315_HUM_OFFSET + 1];
--	sensor_data->temp_data = (rx_buf[AM2315_TEMP_OFFSET] << 8) |
--				  rx_buf[AM2315_TEMP_OFFSET + 1];
-+
-+	/*
-+	 * Temperature is sign-magnitude, not two's complement:
-+	 * bit 15 is the sign, bits 14-0 are the magnitude (x0.1 degC).
-+	 */
-+	temp_raw = (rx_buf[AM2315_TEMP_OFFSET] << 8) |
-+		   rx_buf[AM2315_TEMP_OFFSET + 1];
-+	sensor_data->temp_data = (temp_raw & 0x8000) ?
-+				  -(temp_raw & 0x7fff) : temp_raw;
- 
- 	return ret;
- 
--- 
-2.53.0
+...
 
+> Thanks, but while at it, also switch to C99 initialisers to avoid an additional
+> churn (there is ongoing activity to switch all ID tables to use C99 initialisers).
+
+Will do. v4 converts the table to { .id = ..., .driver_data = ... },
+which also matches the i2c_device_id table in the same file.
+
+Thanks for the quick review!
+
+Jared
