@@ -1,37 +1,37 @@
-Received: from mail-43170.protonmail.ch (mail-43170.protonmail.ch [185.70.43.170])
+Received: from mail-43171.protonmail.ch (mail-43171.protonmail.ch [185.70.43.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38C58472F6D
-	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 08:26:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB9DE47253F;
+	Mon, 28 Sep 2026 08:26:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790583999; cv=none; b=YauA8w6IpJFJ8fNwwChKvsWwEs5f0GQkijqM/RF6122GACaohwkWGA5/KdxxBSFB0y3Ef213t97W6TttR8ZlQ6JQ60WJKAG+PZN7kwSskY4QV1NwSfsupkxwvLDkIG/MYSOMuG259ynQTKJqvIhr6BtQoPadl08ep4GDmNZX3lI=
+	t=1790584001; cv=none; b=AtdrDu8RrZvTi7RQP0u5w60OOFEF0RmnrCyyJf3IBn8eTrDSt7DO1LqCUfIvZJBmEcbMOynxGomrz9PXV7BbK6pkZDe4LrW5nO7sbFtAp3Dj+snTOaKofUiyax1TjDk7qQjZMbTPSVnNauS5miKm0gu3662QZ1uRDwlSZRclgoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790583999; c=relaxed/simple;
-	bh=5aHhFmRHH7hXWezUncCFq6AliuOuzN9v+On7qJIecuQ=;
+	s=arc-20240116; t=1790584001; c=relaxed/simple;
+	bh=7g4Bx6VcNobxJ0NKjiVjkZ2NfOoDHgnEhpsjeZEGI9Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SpkWzTMaBaUmfXqg3KXVKSvy/fRC19Q9r1ps5hPf6Kcs6pBP0/cWOYxKwAok33jKdldelCuK4GlGq3lFBvf2t0ZQgunWx3ddWjtQtSk2N/VsecPTP82WkQxeTJTj6cvZW3OXyatNQvzAC5c7RiIBksbkURfDct+362r7m7rpgVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=NTDu6Qw8; arc=none smtp.client-ip=185.70.43.170
+	 In-Reply-To:To:Cc; b=Br2oeQ/3dKvdl/0rsHayCSNqz0pVzFiP0gEVphye4vmXk/QwlCv/x9fg6HnBDSwYPbAX95A3FqErucqSHzykXBBgAgCa8H22uRSM8urmCgPwO4PTF3CwtrE/OOAFRnYa0tiV+kFVRqwEy2IIk7psXSO/mdGae8qv96cLL6bDmTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=QCwGg2aV; arc=none smtp.client-ip=185.70.43.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="NTDu6Qw8"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="QCwGg2aV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1790583989; x=1790843189;
-	bh=zOE/xhizi9/jAXNjhr878qhJ9pvevPWCdRYDdJUXczg=;
+	s=protonmail; t=1790583991; x=1790843191;
+	bh=KdnGPyMt+WNrC+sXSZeon9pFIAKeJSHes4isdLhm8wg=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=NTDu6Qw8bGoZOGwoxJifS+qzqMUIBygrTiRw2Ru1Rl5N28GQqDgAueS6/DIx9b0zx
-	 L/Cl6pI3uJ3O791yqxd3/p9S8mEgubAso+NOpQGH1aMMx4rJK98EdPKC9e6qNxgnrV
-	 nsaQ+i8isj4YOVJf9s2gEwliqqDO1LmYWYJL+4sE2LWYj4+3eFCPTa4iwnO2JDdHV8
-	 zxA0sqLIyDASLAAsm6MkCnobphFL8aItbeJaR0+xX6XDITk7ct7lQquH6jx9rjpFkg
-	 I2WSScPWGEL+nKWVlHR8n8yw2ndthx7xUuvON4g2GZ5DwdOnfi18iVjuC0mXfghJCl
-	 NfFp9NwGQhdOg==
-X-Pm-Submission-Id: 4htZCR2PRLz1DF4w
+	b=QCwGg2aV6Ljp0sU8JTdCvDyZjb2H+DjHRYSIKhYvwliw25PlYhDN7fb2K9+ygymTq
+	 3ZsbyqbQSaahHncMgRA9iujoLkqmL/2uUUcAeamjcrnjl4teo5aTfoW+x3+kHZdSM4
+	 PWKwYxRN2P7yb8YfHvLqEzVkYp3rGMJqMxibXBZv7kS4lxa31swR0elorUqgiJFZ7b
+	 hNFkHXj9GUsUrJ2etUltiSdAfP5LH2saglSP8bMdeURRLdPKxLt6P0wuwEa0U3xyNV
+	 HhZlKHRf7hbbhL7GO5xckIasKazLzJ/JdzVujNpQAsi1ouZ3Lj487YrYduw0fMBSsf
+	 bR8n9ODvPFp7Q==
+X-Pm-Submission-Id: 4htZCT6QNMz2ScpX
 From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 28 Sep 2026 10:26:18 +0200
-Subject: [PATCH v10 02/10] iio: accel: mma8452: Fix use-after-free bug in
- error error path
+Date: Mon, 28 Sep 2026 10:26:19 +0200
+Subject: [PATCH v10 03/10] iio: accel: mma8452: Fix runtime PM bugs in
+ mma8452_read()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260928-mma8452-open-drain-v10-2-b906fb408386@geanix.com>
+Message-Id: <20260928-mma8452-open-drain-v10-3-b906fb408386@geanix.com>
 References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
 In-Reply-To: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -54,51 +54,75 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Christoph Muellner <christoph.muellner@theobroma-systems.com>
 Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- stable@vger.kernel.org, Joshua Crofts <joshua.crofts1@gmail.com>
+ stable@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1790583982; l=1204;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790583982; l=2127;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=5aHhFmRHH7hXWezUncCFq6AliuOuzN9v+On7qJIecuQ=;
- b=hW8GY8QUKVx4DKCL9nU/p3fhVjaQ36BWQAEmTL/kneYuZYusYvByhxM9Dp7cILHmYQGl6ptke
- cbi4odVoe1nCUd2Bu36B99n8326BntOr/vf4cpoSHolvP2R3twXsiVD
+ bh=7g4Bx6VcNobxJ0NKjiVjkZ2NfOoDHgnEhpsjeZEGI9Y=;
+ b=txX77s4OaVR6OD1k8sTLGTpuIPLUvakGwmS4wze10HMHy3j43ChPZynnkTq1QL4MHV2e9PV6w
+ J1hwwYlxOS4C7lczPQfMLisZULSYUuf6dluG/Occ9js5IabHTLeMa4M
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-If mma8452_probe() fails in iio_device_register() or later, we could end up
-with runtime suspend callback being called with a now freed device pointer.
+When runtime PM support was added [1], the implementation in mma8452_read()
+was done incorrectly, as it calls mma8452_drdy() before ensuring runtime pm
+has set the device active, so it can cause read from STATUS register while
+device is suspended/off. At the same time, the return value from
+i2c_smbus_read_i2c_block_data() was discarded, and the function would
+return the value returned from pm_runtime_put_autosuspend() instead.
+
+When the latter bug described above was fixed [2], another bug was
+introduced, as mma8452_read() would now leak the runtime PM reference
+counter when i2c_smbus_read_i2c_block_data() failed.
+
+This commit corrects this mess.
+
+[1] commit 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
+[2] commit 5bdff291d20c ("iio: accel: mma8452: handle I2C read error(s) in mma8452_read()")
 
 Fixes: 96c0cb2bbfe0 ("iio: mma8452: add support for runtime power management")
 Cc: stable@vger.kernel.org
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/accel/mma8452.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/accel/mma8452.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index fe62a903f0e2..a937cbd84f30 100644
+index a937cbd84f30..a77c4b88b61d 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -1681,7 +1681,7 @@ static int mma8452_probe(struct i2c_client *client)
+@@ -242,21 +242,25 @@ static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
  
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto free_irq;
-+		goto runtime_suspend;
+ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
+ {
+-	int ret = mma8452_drdy(data);
+-
+-	if (ret < 0)
+-		return ret;
++	int ret;
  
- 	ret = mma8452_set_freefall_mode(data, false);
- 	if (ret < 0)
-@@ -1692,6 +1692,10 @@ static int mma8452_probe(struct i2c_client *client)
- unregister_device:
- 	iio_device_unregister(indio_dev);
+ 	ret = mma8452_set_runtime_pm_state(data->client, true);
+ 	if (ret)
+ 		return ret;
  
-+runtime_suspend:
-+	pm_runtime_disable(dev);
-+	pm_runtime_set_suspended(dev);
++	ret = mma8452_drdy(data);
++	if (ret < 0)
++		goto out_runtime_put;
 +
- free_irq:
- 	if (client->irq)
- 		free_irq(client->irq, indio_dev);
+ 	ret = i2c_smbus_read_i2c_block_data(data->client, MMA8452_OUT_X,
+ 					    3 * sizeof(__be16), (u8 *)buf);
+ 	if (ret < 0)
+-		return ret;
++		goto out_runtime_put;
++
++	return mma8452_set_runtime_pm_state(data->client, false);
+ 
+-	ret = mma8452_set_runtime_pm_state(data->client, false);
++out_runtime_put:
++	mma8452_set_runtime_pm_state(data->client, false);
+ 
+ 	return ret;
+ }
 
 -- 
 2.55.0
