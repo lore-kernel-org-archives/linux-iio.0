@@ -1,120 +1,77 @@
-Received: from mail-244107.protonmail.ch (mail-244107.protonmail.ch [109.224.244.107])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E15475348
-	for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 08:26:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.107
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AB07478842;
+	Mon, 28 Sep 2026 08:30:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790584020; cv=none; b=uB20/ERFMs11BATTF+hqNHCsIpcdE1OxpHVs4/f0srmEPWT59iy9bUZ5wbd8WOwYckw2jVVLUPG0WsBbd8Pzi9Tv8Z0nWlPB0/3GDz1uRmoIBwIpkrv8T1goHOXtUjrWCZDmdtFxDDjcivwj8QV68kzsT0EPPJ6H1akddWopPz0=
+	t=1790584265; cv=none; b=On33tL4EJ+7aiDiwa25S4P4I5GUseYuFhlS+cIfLlpvZC8KmvcmNzNSYqwb6jrIkCb486mNC4TZvJxW1WJPDERfbzcE4vpMuaf31B1Q7CZPnz32GEEdgNPF10ss4ciDp5jiezHT2mvdr0YDfbxGtMFGGOvguze1rBUGTAhHqU44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790584020; c=relaxed/simple;
-	bh=K1jPbnIpn2vPrtvqzcNi7Vjb6hG0x04g8LVYMsnM6gY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=N6WFFzIu/sX0Pd2V4QIgn6P1He0b4U/OpUbabONS3KaQQX41F1MTw7/OroT6XH9jmAtv97+AnJkfGhBfQoqJ/7aYUZlUUdrfFmj1cWX0OROBgokrIvOFcn9CCVHVl+FewJfZSdNIkkNmfWMWTUgEUfZhp1BcaTVu9fGBQpJFu2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=SAkM/9NG; arc=none smtp.client-ip=109.224.244.107
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1790584265; c=relaxed/simple;
+	bh=C/TzPf/qbsxjybdQpJhCXH/4GQXEgN8uIr2/1O5Kl/Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=EuIA4kO2ODEiYCySbYsDjjbxuwmYlFqegkFUdEly4mSS7SRbIhHsjmJSWvL0dPlwyb1vM5sx3GOhpSbrXM5lxz/JDfSQIgNPaWwjeOwcCh/ZD5UAdDReHfZzZJmLHtEc2G/DJNhYc8DUE3sDIdjQkr5zQ1+VtHWFTEr6SrDppYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=B5MuTM7K; arc=none smtp.client-ip=220.197.31.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="SAkM/9NG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1790583998; x=1790843198;
-	bh=QCIfMsx6KjKXpnoxBI1XGkxGk4Y7Sik+nYV7bSHmLbY=;
-	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=SAkM/9NGJ3VcY3M2BzND+fCxorHLcBG3ZFDSBST6Sx/1wUl5RYxkLyzjKM5TiKzXB
-	 cI7B3L+oN89d6cLY9ixUUAxuJ4sJd+cHzNse43h3W95xk40AXLG2xgATUDyH8paMX/
-	 IipJKFlzp9PrvV9A8Nf/jVmHymd//nh22lpvzvak0Frhzbu1AU71rJrLsQCxOdfpkg
-	 dkdA/JEeUHgPv35sSHSxk1qLBmsb+JvlV56pEUdBFKradZF+6C2fIQkhMpCq53OXTp
-	 5K7+Z8aoaPvFBvTJ7NZES2K6fQrYk40cJTY4Dsd7gsGojU3giFq8Kz59xkiLbhsDNd
-	 fnMhBPk4Fxlrw==
-X-Pm-Submission-Id: 4htZCc4b0hz1DF6h
-From: Esben Haabendal <esben@geanix.com>
-Date: Mon, 28 Sep 2026 10:26:22 +0200
-Subject: [PATCH v10 06/10] iio: accel: mma8452: Fix unintended comment
- indent
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="B5MuTM7K"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=C/TzPf/qbsxjybdQpJhCXH/4GQXEgN8uIr2/1O5Kl/Y=; b=B
+	5MuTM7KRoTauYLOG845zIh2GZpAPrN2wk+o/oNCMpHbqRxQRof/L1kFnlEas0aQe
+	XBv1AkEjxyxrOUkto/ekSgrF+MCGxSmPz6zdornpEeEpgQM4nsPWHVskMbv59GAY
+	koXqFK+oIZsbyv6axBKS4r99j9OSBAOIN/IymMeprw=
+Date: Mon, 28 Sep 2026 16:30:02 +0800 (CST)
+From: "jiale yao" <19888972804@163.com>
+To: "Jonathan Cameron" <jic23@kernel.org>
+Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>,
+	"David Lechner" <dlechner@baylibre.com>,
+	=?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	"Andy Shevchenko" <andy@kernel.org>,
+	=?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
+ <u.kleine-koenig@baylibre.com>,
+	"Takashi Sakamoto" <o-takashi@sakamocchi.jp>,
+	"Siratul Islam" <email@sirat.me>,
+	"Maxwell Doose" <maxwell@maxwelld.cc>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH] iio: imu: kmx61: reject duplicate event disable
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
+ 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
+In-Reply-To: <20260927182031.6d490331@jic23-hlaptop>
+References: <20260925141006.2255067-1-yaojiale02@163.com>
+ <araCxIGnZK0zuUSS@ashevche-desk.local>
+ <20260927182031.6d490331@jic23-hlaptop>
+X-NTES-SC: AL_Qu2SAvmTu0or5CaaZOkcn08ShO49XMOyvfoi2YFTc+gGmTzU3j0if1JyFELowOyzNySDujGrVSdF5ct2e7h6clEtY5e7xIvwOXm4AgBdQg==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260928-mma8452-open-drain-v10-6-b906fb408386@geanix.com>
-References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
-In-Reply-To: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, 
- Sean Nyekjaer <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, 
- Christoph Muellner <christoph.muellner@theobroma-systems.com>
-Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1790583982; l=2166;
- i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=K1jPbnIpn2vPrtvqzcNi7Vjb6hG0x04g8LVYMsnM6gY=;
- b=qJdKs2Xt7zSoQ7rvCmwU1/ZF3pwXf4Ud0z7Hyl/UdwOLZXcYruTOi0odto9YhsaJXmanItsTE
- ji/aMTIyg/2A1A11HtHShn/HXQDrR2b+nN1cAubAVv9r+4Cq7sQULB3
-X-Developer-Key: i=esben@geanix.com; a=ed25519;
- pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
+Message-ID: <1024d805.7930.1a0e722a587.Coremail.19888972804@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:iCgvCgDHZziKJbpq9Y5PAA--.50958W
+X-CM-SenderInfo: x1dryxhdohiji6rwjhhfrp/xtbCzQq07mq6JYoxxQAA3W
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-The extra space this block was indented with looks quite untraditional, and
-does not align with the common style used in the kernel.
-
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/iio/accel/mma8452.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 72b4ab32775a..b70bc8638128 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -122,21 +122,21 @@ struct mma8452_data {
- 	u8 data_cfg;
- };
- 
-- /**
--  * struct mma8452_event_regs - chip specific data related to events
--  * @ev_cfg:			event config register address
--  * @ev_cfg_ele:			latch bit in event config register
--  * @ev_cfg_chan_shift:		number of the bit to enable events in X
--  *				direction; in event config register
--  * @ev_src:			event source register address
--  * @ev_ths:			event threshold register address
--  * @ev_ths_mask:		mask for the threshold value
--  * @ev_count:			event count (period) register address
--  *
--  * Since not all chips supported by the driver support comparing high pass
--  * filtered data for events (interrupts), different interrupt sources are
--  * used for different chips and the relevant registers are included here.
--  */
-+/**
-+ * struct mma8452_event_regs - chip specific data related to events
-+ * @ev_cfg:			event config register address
-+ * @ev_cfg_ele:			latch bit in event config register
-+ * @ev_cfg_chan_shift:		number of the bit to enable events in X
-+ *				direction; in event config register
-+ * @ev_src:			event source register address
-+ * @ev_ths:			event threshold register address
-+ * @ev_ths_mask:		mask for the threshold value
-+ * @ev_count:			event count (period) register address
-+ *
-+ * Since not all chips supported by the driver support comparing high pass
-+ * filtered data for events (interrupts), different interrupt sources are
-+ * used for different chips and the relevant registers are included here.
-+ */
- struct mma8452_event_regs {
- 	u8 ev_cfg;
- 	u8 ev_cfg_ele;
-
--- 
-2.55.0
-
+QXQgMjAyNi0wOS0yOCAwMToyMDozMSwgIkpvbmF0aGFuIENhbWVyb24iIDxqaWMyM0BrZXJuZWwu
+b3JnPiB3cm90ZToKPk9uIEZyaSwgMjUgU2VwIDIwMjYgMTc6MTg6NDQgKzAzMDAKPkFuZHkgU2hl
+dmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AaW50ZWwuY29tPiB3cm90ZToKPgo+PiBPbiBGcmks
+IFNlcCAyNSwgMjAyNiBhdCAxMDoxMDowNVBNICswODAwLCBKaWFsZSBZYW8gd3JvdGU6Cj4+ID4g
+VGhlIElJTyBjb3JlIGRvZXMgbm90IGZpbHRlciBkdXBsaWNhdGUgd3JpdGVzIHRvIHRoZSBldmVu
+dCBlbmFibGUKPj4gPiBhdHRyaWJ1dGUuIGtteDYxX3dyaXRlX2V2ZW50X2NvbmZpZygpIGFscmVh
+ZHkgaWdub3JlcyByZXBlYXRlZCBlbmFibGUKPj4gPiByZXF1ZXN0cywgYnV0IGEgcmVwZWF0ZWQg
+ZGlzYWJsZSByZXF1ZXN0IHN0aWxsIGNhbGxzCj4+ID4ga214NjFfc2V0X3Bvd2VyX3N0YXRlKGRh
+dGEsIGZhbHNlLCBLTVg2MV9BQ0MpLCBkcm9wcGluZyBhIHJ1bnRpbWUgUE0KPj4gPiByZWZlcmVu
+Y2UgdGhhdCB3YXMgbm90IGFjcXVpcmVkIGZvciB0aGlzIHJlcXVlc3QuIFRoaXMgY2FuIHVuZGVy
+ZmxvdyB0aGUKPj4gPiBydW50aW1lIFBNIHVzYWdlIGNvdW50IGFuZCB0cmlnZ2VyIGEgIlJ1bnRp
+bWUgUE0gdXNhZ2UgY291bnQgdW5kZXJmbG93Igo+PiA+IHdhcm5pbmcuCj4+ID4gCj4+ID4gUmV0
+dXJuIGVhcmx5IHdoZW4gdGhlIHJlcXVlc3RlZCBzdGF0ZSBhbHJlYWR5IG1hdGNoZXMgZXZfZW5h
+YmxlX3N0YXRlLiAgCj4+IAo+PiBTYW1lIGNvbW1lbnRzIGFzIHBlciBwcmV2aW91cyBwYXRjaGVz
+IG9mIHRoZSBzYW1lIHRvcGljLgo+PiAKPkZpeGVzIHRhZyBuZWVkZWQuCgpGaXhlczogZmQzYWU3
+YTlmMjFjICgiaWlvOiBpbXU6IGtteDYxOiBBZGQgc3VwcG9ydCBmb3IgYW55IG1vdGlvbiB0cmln
+Z2VyIikK
