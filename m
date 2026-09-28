@@ -1,125 +1,163 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 520B42D63E5;
-	Mon, 28 Sep 2026 09:22:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0493930FF36;
+	Mon, 28 Sep 2026 09:26:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790587368; cv=none; b=VWw4ZQXLTRcBVEg3J35yqTSs+IvKJkhdAkMAN64sPZQY/Ztcuwhd5yWeiUkzuPWtngOR/c6o4M0zXevtsceCbAYvghGuUoWGVuYcFQpPar9xYAhNw2Sd/vkXzpHcS0OhKXxduLEAhPIo5NM2CI5oQ5HodvFhnl/ovo5N8QM2Ubs=
+	t=1790587580; cv=none; b=s1qAwUi1LXQYUJiVkS+EXXTLdKlOM+uxSsdQqW89LtDADB3Zf3bG8it2crwd+JnwaWPO1EVv7G/jXWYYcT6kgPq+kmHZYoc6Ql+ApHuevwRnaZ1UMR9YPjbyXP24EIgrbyRCq7vdPr7Vnkz2X5nMhLjqTp61RwT7KTxM/T6JGkw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790587368; c=relaxed/simple;
-	bh=JrwNnYCTS5b8Tx4LGT7g2UW+osk/zqSczKKqU1rCLFU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=KY9wHfOT6DfrQSoJyaZuy1Tk84iBBstQCeZHW0hR19zDHjZg131TGVE+37oL+8xAeUQEKwDz65+GJtJzHKoWmSIBkXZbcp6iE2a+61rK+HD4AUDTuRYvRPU/Dj6L8aLbdR660444OKOYEuvvivxRcJP5+g2OZ7QKX9ktUKHGP0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=WIH357Vf; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1790587580; c=relaxed/simple;
+	bh=BqXixSJM2wxVIE8VLmqDLfVq25fTtS+NGlMKrjAztIc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lMRANMIGGyUDnt/4jKBhQRZqhdxe25FXZs7mTjXVA2qhg3L3/2HT7ppyDr386HEO3EZ1HVAMLIeo45zK71bfH7izixUHoH/WMOabFzagTHRhM3dqpdnxjKx6+QxOhM2yQT4wKaXwj79vYQkaz/jC/Eo4FuUEFWN7x09oo02x7WY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OivBuJr6; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="WIH357Vf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=JrwNnYCTS5b8Tx4LGT7g2UW+osk/zqSczKKqU1rCLFU=; b=W
-	IH357VfYlNULYZ81rv3KTaQUgknPHitwpAYa4ID23xmqwwglUUADl+m0/cgnevk0
-	q30UIsTmXLNWE13vUo+xvJ7xwIAVauFbGBRuJDztQUf4vxSf74c16heqqN4W20ht
-	pZnsTkNaiGhB0hxgzfKny8+DmWXpCGO9SdKG3NZWj0=
-Date: Mon, 28 Sep 2026 17:22:09 +0800 (CST)
-From: "jiale yao" <19888972804@163.com>
-To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>,
-	"David Lechner" <dlechner@baylibre.com>,
-	=?GBK?Q?Nuno_S=A8=A2?= <nuno.sa@analog.com>,
-	"Andy Shevchenko" <andy@kernel.org>,
-	"Stepan Ionichev" <sozdayvek@gmail.com>, linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OivBuJr6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790587580; x=1822123580;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BqXixSJM2wxVIE8VLmqDLfVq25fTtS+NGlMKrjAztIc=;
+  b=OivBuJr6DqES6TLRF9+vrxU/i1f6UOAD1vSp2Gp21Dd6BY+FmHSl2s3s
+   hXsaUmdtcZAjJpPisqcozFy/Z9mYnOUAANNnnLONXHkeWQzUO6wNt/Kgb
+   e8+8y5RZxK/EWHdA2T3kQQVmEimNTx5Y+OYzkfPu5OjEPPk3agJpL1PIQ
+   IHP3YD8bhX/xELJagLr82ib4lYFdT1yqjQhoshkbHy+BPI4KuxO2LAtAh
+   oeDbLixFuf2dTEw0DB6gauDlk7U0kvXuFJIQ1LNS3FerZsaCAzIePNHG9
+   tcKS5yBI7jkvoNKQuL7TWdhCFFNICK3p3lSx2tWWwavFRtFXjVuZTLo1W
+   g==;
+X-CSE-ConnectionGUID: P/4lCNdgTS2Z5qAFhnAsvA==
+X-CSE-MsgGUID: mK2AgWmhQJGzz1LU0u6WEg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="90325204"
+X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
+   d="scan'208";a="90325204"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 02:26:19 -0700
+X-CSE-ConnectionGUID: IH7GfTYzQfqWd07e9NVZ8A==
+X-CSE-MsgGUID: +ztMo0lMRG6XmY91CGeTcg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
+   d="scan'208";a="304491448"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.42])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 02:26:16 -0700
+Date: Mon, 28 Sep 2026 12:26:12 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Esben Haabendal <esben@geanix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Martin Kepplinger <martink@posteo.de>,
+	Sean Nyekjaer <sean@geanix.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
+	Christoph Muellner <christoph.muellner@theobroma-systems.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] iio: gyro: bmg160: reject duplicate event disable
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <20260927181632.76bc1eda@jic23-hlaptop>
-References: <20260925140956.2254877-1-yaojiale02@163.com>
- <araCndRmAqnX1K9k@ashevche-desk.local>
- <6b2f4eef.1cf6.1a0d8fc9ac6.Coremail.19888972804@163.com>
- <20260926020133.3699a786@jic23-hlaptop>
- <20260927181632.76bc1eda@jic23-hlaptop>
-X-NTES-SC: AL_Qu2SAvmTuEsp7ymbbOkcn08ShO49XMOyvfoi2YFTc+gGmTzU3j0if1JyFELowOyzNySDujGrVSdF5ct2e7h61gg0WNyWmKEcYgN7+UNaUw==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+Subject: Re: [PATCH v10 10/10] iio: accel: mma8452: Support interrupt sharing
+Message-ID: <aroytGH8u-gGFYvq@ashevche-desk.local>
+References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
+ <20260928-mma8452-open-drain-v10-10-b906fb408386@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:iCgvCgD3n4TCMbpqoKRPAA--.50864W
-X-CM-SenderInfo: x1dryxhdohiji6rwjhhfrp/xtbCzgLFAGq6McI8aAAA3+
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260928-mma8452-open-drain-v10-10-b906fb408386@geanix.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-QXQgMjAyNi0wOS0yOCAwMToxNjozMiwgIkpvbmF0aGFuIENhbWVyb24iIDxqaWMyM0BrZXJuZWwu
-b3JnPiB3cm90ZToKPk9uIFNhdCwgMjYgU2VwIDIwMjYgMDI6MDE6MzMgKzAxMDAKPkpvbmF0aGFu
-IENhbWVyb24gPGppYzIzQGtlcm5lbC5vcmc+IHdyb3RlOgo+Cj4+IE9uIEZyaSwgMjUgU2VwIDIw
-MjYgMjI6MzM6NDggKzA4MDAgKENTVCkKPj4gImppYWxlIHlhbyIgPDE5ODg4OTcyODA0QDE2My5j
-b20+IHdyb3RlOgo+PiAKPj4gPiBBdCAyMDI2LTA5LTI1IDIyOjE4OjA1LCAiQW5keSBTaGV2Y2hl
-bmtvIiA8YW5kcml5LnNoZXZjaGVua29AaW50ZWwuY29tPiB3cm90ZTogIAo+PiA+ID5PbiBGcmks
-IFNlcCAyNSwgMjAyNiBhdCAxMDowOTo1NFBNICswODAwLCBKaWFsZSBZYW8gd3JvdGU6ICAgIAo+
-PiA+ID4+IFRoZSBJSU8gY29yZSBkb2VzIG5vdCBmaWx0ZXIgZHVwbGljYXRlIHdyaXRlcyB0byB0
-aGUgZXZlbnQgZW5hYmxlCj4+ID4gPj4gYXR0cmlidXRlLiAgICAKPj4gPiA+Cj4+ID4gPkNhbiBp
-dCBiZSBkb25lIHRoZXJlIG9uY2UgZm9yIGFsbD8gICAgCj4+ID4gCj4+ID4gSSBkb24ndCB0aGlu
-ayB0aGUgY29yZSBjYW4gc2FmZWx5IGRvIHRoaXMgZ2VuZXJpY2FsbHksIHNpbmNlIGl0IGRvZXNu
-J3Qgb3duCj4+ID4gdGhlIHBlci1ldmVudCBzdGF0ZSBhbmQgcmVhZF9ldmVudF9jb25maWcoKSBt
-YXkgcmVmbGVjdCBzaGFyZWQgaGFyZHdhcmUgc3RhdGUuCj4+ID4gCj4+ID4gVGhlIHJ1bnRpbWUg
-UE0gYWNjb3VudGluZyBpcyBkcml2ZXItc3BlY2lmaWMsIHNvIGhhbmRsaW5nIGR1cGxpY2F0ZSB3
-cml0ZXMgaW4KPj4gPiB0aGUgZHJpdmVyIHNlZW1zIHNhZmVyLiBncDJhcDAwMiBkb2VzIHRoZSBz
-YW1lIGluIGNvbW1pdCA1NzljMDQ5YjRjYjYsCj4+ID4gcmVmZXIgaHR0cHM6Ly9sb3JlLmtlcm5l
-bC5vcmcvYWxsLzIwMjYwNzIwMTkzOTExLjc0OTE5LTItbmlraGlsZ3RyQGdtYWlsLmNvbS8gIAo+
-PiAKPj4gRXhhY3RseSByaWdodC4KPj4gCj4+IEV2ZW50IGhhbmRsaW5nIGluIHRoZSBjb3JlIHdv
-dWxkIGluZGVlZCByZXF1aXJlIGNvbXBsZXggbWFwcGluZyBvZgo+PiB3aGF0IGNhbiBhY3R1YWxs
-eSBiZSBlbmFibGVkIG9uIGEgZ2l2ZW4gZGV2aWNlLiBTb21lIG9mIHRob3NlIHdlIG1pZ2h0Cj4+
-IGJlIGFibGUgdG8gcmVwcmVzZW50IHdpdGggc2ltcGxlIGFwcHJvYWNoZXMgc2ltaWxhciB0byB3
-aGF0IHdlIGRvCj4+IGZvciBhdmFpbF9zY2FuX21hc2tzIGZvciBidWZmZXJlZCBjaGFubmVscyBi
-dXQgaXQgaXMgaGFyZCB0byBnZW5lcmFsaXplCj4+IGFuZCBGV0lXIHRoYXQgY29uY2VwdCBzdGls
-bCBtaXNzZXMgc29tZSBjb3JuZXIgY2FzZXMgb2YgY2hhbm5lbCBlbmFibGluZwo+PiB3aGVyZSBk
-cml2ZXJzIGhhdmUgdG8gYXBwbHkgY29uc3RyYWludHMgaW4gdGhlIGFjdHVhbCBidWZmZXIgZW5h
-YmxlLgo+PiBUaG9zZSBhcmUgcmFyZSBlbm91Z2ggdGhhdCBpdCBpc24ndCB0b28gbXVjaCBvZiBh
-IHByb2JsZW0gaW4gcHJhY3RpY2UuCj4+IFByb2JhYmx5IGZpbmUgb24gOTklIG9mIGRyaXZlcnMu
-Cj4+IAo+PiBFdmVudHMgaGF2ZSBzaW1wbHJlIGNhc2VzIGxpa2U6Cj4+IC0gMSBlbmFibGUgYml0
-IHR1cm5zIGEgd2hvbGUgbG9hZCBvZiBldmVudHMgb24gKHdlIGRvbid0IGZpbHRlciBpbgo+PiAg
-IHRoZSBrZXJuZWwgLSBzbyB1c2Vyc3BhY2UgaGFzIHRvIGNvcGUgd2l0aCBzdXJwcmlzZSBldmVu
-dHMpLgo+PiAtIEFsd2F5cyBvbiBldmVudCBzaWduYWxzLgo+PiAtIExpbWl0ZWQgbnVtYmVycyBv
-ZiBnZW5lcmFsIHB1cnBvc2UgZXZlbnQgZW5naW5lcyAodGhlIEFESSBJTVVzIGRvCj4+ICAgdGhp
-cyBhcyB0aGV5IHRlbmQgdG8gaGF2ZSAyIGluc3RhbmNlcykuIEVhY2ggZW5naW5lIGNhbiBkbyBh
-bnl0aGluZwo+PiAgIGJ1dCB0aGVyZSBhcmUgb25seSB0d28gb2YgdGhlbS4KPj4gCj4+IFdlIGFs
-c28gaGF2ZSBtb3JlIGNvbXBsZXggb25lcyBsaWtlIG1vZGUgYml0cyB0aGF0IGZsaXAgYSBzdWJz
-ZXQKPj4gb2YgZXZlbnRzIGZyb20gb25lIGVuYWJsZSBzdGF0ZSB0byBhbm90aGVyLiAgVGhlcmUg
-YXJlIHNvbWUgcmVhbGx5Cj4+IG9kZCBydWxlcyBpbiBzb21lIGRldmljZXMgYmVjYXVzZSBzb21l
-IHVwc3RyZWFtIGZpbHRlciB0aGF0IGlzIG5lZWRlZAo+PiBmb3IgNSBzZWVtaW5nbHkgdW5yZWxh
-dGVkIGV2ZW50cyBoYXMgdG8gYmUgaW4gYSBwYXJ0aWN1bGFyIHN0YXRlIGZvcgo+PiBzdWJzZXRz
-IG9mIHRoZW0uCj4+IAo+PiBBbnlob3csIGFsbCBpbiBhbGwgZXZlbnQgY29udHJvbCBpcyBhIG1l
-c3Mgb2YgJ29yaWdpbmFsIHNvbHV0aW9ucycKPj4gZnJvbSB2ZW5kb3JzIGFuZCByZWxpZXMgb24g
-dGhlIChuYXVnaHR5KSBnZXQgb3V0IG9mIElJTyBBQkkgdGhhdAo+PiBqdXN0IG9jY2FzaW9uYWxs
-eSBhbnkgd3JpdGUgdG8gYW55IHVzZXJzcGFjZSBBQkkgZWxlbWVudCBjYW4KPj4gY2hhbmdlIHdo
-YXQgaXMgcmVhZCBiYWNrIGZyb20gYW55IG90aGVyLgo+PiAKPj4gTm90IGdyZWF0LCBidXQgSSd2
-ZSBuZXZlciBjb21lIHVwIHdpdGggYSBiZXR0ZXIgc29sdXRpb24gZm9yIGV2ZW50cy4KPj4gSWYg
-YW55b25lIHdhbnRzIHRvIGhhdmUgYSBnbyBhdCBhcmNoaXRlY3RpbmcgYSBmaWx0ZXJpbmcgc29s
-dXRpb24KPj4gYSBiaXQgbGlrZSB0aGUgSUlPIGJ1ZmZlciBkZW11eCBtYXliZSB3ZSBjYW4gb3B0
-IGluIHRvIGl0IGZyb20KPj4gc29tZSBkcml2ZXJzLgo+PiAKPj4gSSBhbSB3b25kZXJpbmcgaWYg
-aXQgaXMgd29ydGggcmVnaXN0ZXJpbmcgYSBkcml2ZXIgc3BlY2lmaWMgdGlkeQo+PiB1cCBldmVu
-dHMgY2FsbCB0aG91Z2ggdGhhdCB3b3VsZCBkaXNhYmxlIGV2ZXJ5dGhpbmcgYSBiaXQgbGlrZQo+
-PiB3ZSBkaXNhYmxlIGJ1ZmZlcnMgYXMgcGFydCBvZiB0aGUgdXNlcnNwYWNlIHRlYXIgZG93bi4g
-IFRoYXQgd291bGQKPj4gY2xvc2Ugb3V0IHNvbWUgcmFjZXMgc2FzaGlrbyBoYXMgcmVwb3J0ZWQu
-ICBUaGF0IHByb2plY3Qgd291bGQKPj4gSSB0aGluayBiZSBhIGxvdCBzaW1wbGVyIHRvIGltcGxl
-bWVudC4KPj4gCj5UaGlzIG9uZSBuZWVkcyBhIGZpeGVzIHRhZywgYXMgZG8gdGhlIG90aGVyIHNp
-bWlsYXIgb25lcy4KPkZpbmUgdG8ganVzdCByZXBseSB0byBlYWNoIHRocmVhZCB3aXRoIHRoZSBh
-cHByb3ByaWF0ZSB0YWcuCgpGaXhlczogMjJiNDZjNDVmYjliICgiaWlvOmd5cm86Ym1nMTYwIEd5
-cm8gU2Vuc29yIGRyaXZlciIpCgo+Cj5UaGFua3MsCj4KPkpvbmF0aGFuCj4KPj4gSm9uYXRoYW4K
-Pj4gCj4+ID4gICAKPj4gPiA+ICAgIAo+PiA+ID4+IGJtZzE2MF93cml0ZV9ldmVudF9jb25maWco
-KSBhbHJlYWR5IGlnbm9yZXMgcmVwZWF0ZWQgZW5hYmxlCj4+ID4gPj4gcmVxdWVzdHMsIGJ1dCBh
-IHJlcGVhdGVkIGRpc2FibGUgcmVxdWVzdCBzdGlsbCBjYWxscwo+PiA+ID4+IGJtZzE2MF9zZXRf
-cG93ZXJfc3RhdGUoZGF0YSwgZmFsc2UpLCBkcm9wcGluZyBhIHJ1bnRpbWUgUE0gcmVmZXJlbmNl
-Cj4+ID4gPj4gdGhhdCB3YXMgbm90IGFjcXVpcmVkIGZvciB0aGlzIHJlcXVlc3QuIFRoaXMgY2Fu
-IHVuZGVyZmxvdyB0aGUgcnVudGltZQo+PiA+ID4+IFBNIHVzYWdlIGNvdW50IGFuZCB0cmlnZ2Vy
-IGEgIlJ1bnRpbWUgUE0gdXNhZ2UgY291bnQgdW5kZXJmbG93IiB3YXJuaW5nLgo+PiA+ID4+IAo+
-PiA+ID4+IFJldHVybiBlYXJseSB3aGVuIHRoZSByZXF1ZXN0ZWQgc3RhdGUgYWxyZWFkeSBtYXRj
-aGVzIGV2X2VuYWJsZV9zdGF0ZS4gICAgCj4+ID4gPgo+PiA+ID4tLSAKPj4gPiA+V2l0aCBCZXN0
-IFJlZ2FyZHMsCj4+ID4gPkFuZHkgU2hldmNoZW5rbwo+PiA+ID4gICAgCj4+IAo+PiAK
+On Mon, Sep 28, 2026 at 10:26:26AM +0200, Esben Haabendal wrote:
+> Adding support for sharing interrupt line with other device requires the
+> interrupt handler to handle runtime PM suspension properly, ignoring the
+> irq if the device is suspended (maybe even off). And while at it, we use
+> the PM reference to ensure we do not get suspended while processing an irq.
+> 
+> In order to prevent the chip from raising irq while suspended (that is when
+> using fixed regulator, where suspend just means setting the device in
+> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
+> then restores the value again when resuming.
+> 
+> The scoped_guard in mma8452_runtime_suspend() is changed to a plain
+> mutex_lock() instead, both to prevent mixing guards and goto, but also to
+> ensure that we stay in STANDBY mode while writing to CTRL_REG4 and all the
+> way up to disabling the device as much as possible.
+> 
+> With that in place, it is safe to add the IRQF_SHARED flag.
+> 
+> Keep in mind that the device by default is using push-pull for the irq pin,
+> which might require additional hardware design to allow interrupt sharing.
+
+...
+
+> +	pm_status = pm_runtime_get_if_active(dev);
+> +	if (pm_status == 0)
+> +		/* device is powered down */
+> +		return IRQ_NONE;
+
+> +	if (IS_ENABLED(CONFIG_PM) && pm_status < 0)
+> +		/* runtime PM was disabled, possibly suspending */
+> +		return IRQ_HANDLED;
+
+This is very interesting part. I bet this will be the first driver using this.
+A big question "why?"
+
+> +	/*
+> +	 * pm_status is now 1 or -EINVAL (with CONFIG_PM not enabled). If
+> +	 * pm_status==1, runtime PM is enabled and device is RPM_ACTIVE. If
+> +	 * pm_status==-EINVAL, runtime PM is build-time disabled (i.e. CONFIG_PM
+> +	 * not enabled), and we can/must assume device is active.
+> +	 */
+> +
+>  	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+>  	if (src < 0)
+> -		return IRQ_NONE;
+> +		goto out_runtime_put;
+>  
+>  	if (!(src & (data->chip_info->enabled_events | MMA8452_INT_DRDY)))
+> -		return IRQ_NONE;
+> +		goto out_runtime_put;
+>  
+>  	if (src & MMA8452_INT_DRDY) {
+>  		iio_trigger_poll_nested(indio_dev->trig);
+> @@ -1120,6 +1139,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+>  		ret = IRQ_HANDLED;
+>  	}
+>  
+> +out_runtime_put:
+> +	if (pm_status > 0)
+> +		pm_runtime_put_autosuspend(dev);
+> +
+>  	return ret;
+>  }
+
+...
+
+> +	pm_runtime_enable(dev);
+> +	pm_runtime_set_autosuspend_delay(dev, MMA8452_AUTO_SUSPEND_DELAY_MS);
+> +	pm_runtime_use_autosuspend(dev);
+
+I don't see the respective _dont_use_autosuspend() call anywhere.
+
+...
+
+I am wondering how many of the above possible scenarios you were able to test.
+
+...
+
+P.S.  I bet you can now make a presentation "PM runtime in Linux and
+why it is so hard."
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
