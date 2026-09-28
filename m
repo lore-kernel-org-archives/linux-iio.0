@@ -1,242 +1,191 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011041.outbound.protection.outlook.com [52.101.65.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 218723F7AAC;
-	Mon, 28 Sep 2026 08:36:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790584580; cv=none; b=oxl2aYS85uQjEJq55tcJE4Y857RnqCb9rF8hiXI1YHOjMusqa+y7HnBLTJq5amfmhgQpEdrsOb//EEM2eQtS17TE5+YqkpZfc+YZsGJ28rdYItM+jmSWcUQU7+USWxnvPsCI4Q21EX6gl2UUFPLh4YwvPu3gAxLDZ5cOqVeNwXE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790584580; c=relaxed/simple;
-	bh=pwLgxTRQaJbAuoKRIW3dy1IbXKeQfhH90VKCp8hXN8s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=txvh8lIctcLEqD3BJZPB+m+2uf5vF/LxkutorqjVx/0oa0PcHBIjgnzD/U1UTjuKOycJLjo8OBgs+PRaViYcZw+H3dggKmdsjuPB4DN1klH9qZgs5aGmi5tuZIdzo0GtrGB6Vd/gwQAB6n/A3oF37KPJ7HSiEbrTFSBXR3bOy1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nFahcXac; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 755CA484228;
+	Mon, 28 Sep 2026 08:55:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790585720; cv=fail; b=ssWqKXfp8n+ASwM0szgAsAq3sT/Ut1wl/ls97QmHiiUe6carvyQ4hA6M57Ll59mC7cwS0LGmW/LfvF4Dx7HRgd1/ti3td2elw27+SupLq8nCfweAjVLme5XQ0utrpZrBj/8NJu3uZL7x+Ws6i5IgFAfzMIc+5zJdLBRiTKRqxNs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790585720; c=relaxed/simple;
+	bh=EpfPZAolpL5eXhwCFzMzcXUziD25HpGLs2vW9TaJ/1Y=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=rGdHHX+bJoon6yxVCIKy3YFdNv2lk+7BFkFReaDUvI4QFV1i9ZU63Rh9OlN0NNVTDxGjrwmx9CCgVD2cQMtCCPQE2tgr2iuQlMuarZLsvFWggR14jYFSmKXevgY34A3u2LByASvgqqceAhWqKygBh6RM8tKAGn+3nb0SUDSzCPs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=VMjuFjvh; arc=fail smtp.client-ip=52.101.65.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nFahcXac"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790584576; x=1822120576;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pwLgxTRQaJbAuoKRIW3dy1IbXKeQfhH90VKCp8hXN8s=;
-  b=nFahcXacqmu+/qjRWvoL4wsV48VfJGJYtDO9r+W4NiRtk481o1taHkYz
-   lATsJuryA7eTN1YY/WYysgoa7wCRdBN+rK898S4k5AKvqqkIUtQGKO7xx
-   Ek1xVj3CQGRLt/740XpEpTEaUQgwUmf3OLkPrSdOfJPP+6G2Yj7Rn8hsa
-   hxH1xOSfI4GFfZQQk0PdreTmLbrgkkn2H3t0GPAzce1Q4g3JhqPEnYFku
-   E1wV91nl8bcgyO1JIrezGzde4P3xblO99ZP6lExriBpjpr40ebfcY84QK
-   4+kClTd0AeYLzY4qcrQ2Xfk00EoF6s98RhsmgUPk1DMn9DoNwOsN/UG/a
-   Q==;
-X-CSE-ConnectionGUID: FGtI81RhTy+Utlz7KfFgVA==
-X-CSE-MsgGUID: rCG4kHalR4OKgVEHcfYU8w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="90180917"
-X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
-   d="scan'208";a="90180917"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 01:36:11 -0700
-X-CSE-ConnectionGUID: CuTZjTB9R6CR8m3nW+zr6A==
-X-CSE-MsgGUID: 3XwqWEF9QJu/lQ3auDbLLQ==
-X-ExtLoop1: 1
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.42])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 01:36:08 -0700
-Date: Mon, 28 Sep 2026 11:36:05 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
-	Kurt Borja <kuurtb@gmail.com>
-Subject: Re: [PATCH] iio: adc: ti-ads112c14: add gpio support
-Message-ID: <arom9T0azKX9jV5m@ashevche-desk.local>
-References: <20260925-iio-adc-ti-ads112c14-gpio-v1-1-2a2b218ebf3a@baylibre.com>
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="VMjuFjvh"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YOCV0ePoZu+ouglXXdpt1/TPm2Jd8LYnWPcVJC68L39YtOOfWfiNuvaqrzKEBvOnmeEvhG+iBiK+QVInz7wqp6WktdXV3zk0Tu5eq92TTcTzJn2nshqI7Kdi4gyLkxLYTF+Alz+0CZXVQXbkqDDsG9Di9UC0fPYlVMhM+wKDsRDRVoEsAzPByEHHMJsOtvP8GSGl+KMBHU5P2Kma46PvKeRTBcY9YrWjAzK87VUi9O4ai3AIMulV19MEY4gnjNYZ/yMWzaN+Eu8BdCWsESv7IosTrVcgEr3Pegh3JFLHJhw2egObhnMigXNnuaeBi+FMPdidN1l3kfYiK6Lo4U9dJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EpfPZAolpL5eXhwCFzMzcXUziD25HpGLs2vW9TaJ/1Y=;
+ b=iLjx6/SzaYji5zuTcLTGaIb4/+DDLOKAhb8wMNGXhSoEdougVlyyMv0+3GZF+LGOojvsP2esGtY7J4jlfoJmF0pxRE/FZjftbAExLjPSGGa7dJmyvjNfReQh/6Mrc5qdDpPYMWk5H/8zJZ5dIYnCpT5p4Hl+HZTQLxyZuPP+oYzoNdW5/hbr0YDqgbSjJKXCm+3EDbHxey1/V4hwH0ntzoefvgubC4fcjpR6tGWwlOa681zxKWnqS9b54eooqpgwE7VeXUGGzvksobyTvKAiOAtP8ESE6wjbcsEUwv7Uxk16oGYrntbP3bsMGR0X7v+U2ZINwKWp0n8RaafxCs0y/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
+ dkim=pass header.d=axis.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EpfPZAolpL5eXhwCFzMzcXUziD25HpGLs2vW9TaJ/1Y=;
+ b=VMjuFjvhKes/1e1wbnM0t1i2GTWbMSbCzN6X4U3EIrdWRgdKb5e2ugix+Ko8f+LULI+ha9vkLd0Vo731J5vusm7FJDlDUIeDXkxh29r0BhT9FugFJzKwAaN11KFz7yLD0TdKHiHGqbYDhPGZQ2yJgj6U4NonIcw7L1NEvu+21V4=
+Received: from GV2PR02MB8434.eurprd02.prod.outlook.com (2603:10a6:150:ab::8)
+ by VI1PR02MB6349.eurprd02.prod.outlook.com (2603:10a6:800:198::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Mon, 28 Sep
+ 2026 08:55:13 +0000
+Received: from GV2PR02MB8434.eurprd02.prod.outlook.com
+ ([fe80::a2fa:a7a3:b6ad:9e4d]) by GV2PR02MB8434.eurprd02.prod.outlook.com
+ ([fe80::a2fa:a7a3:b6ad:9e4d%5]) with mapi id 15.21.0451.022; Mon, 28 Sep 2026
+ 08:55:13 +0000
+From: Kanak Shilledar <Kanak.Shilledar@axis.com>
+To: "marcelo.schmitt1@gmail.com" <marcelo.schmitt1@gmail.com>
+CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
+	"joshua.crofts1@gmail.com" <joshua.crofts1@gmail.com>, Henrik Grimler
+	<Henrik.Grimler@axis.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
+	"jean-baptiste.maneyrol@tdk.com" <jean-baptiste.maneyrol@tdk.com>,
+	"robh@kernel.org" <robh@kernel.org>, "jic23@kernel.org" <jic23@kernel.org>,
+	"andy@kernel.org" <andy@kernel.org>, "krzk+dt@kernel.org"
+	<krzk+dt@kernel.org>, "macromorgan@hotmail.com" <macromorgan@hotmail.com>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>, Kernel <Kernel@axis.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 1/5] dt-bindings: Add InvenSense ICM-42370-p
+ accelerometer
+Thread-Topic: [PATCH v4 1/5] dt-bindings: Add InvenSense ICM-42370-p
+ accelerometer
+Thread-Index: AQHdRqnUrxOUwV+GnkCI62/RU5CWVbbXgVuAgAw/bgA=
+Date: Mon, 28 Sep 2026 08:55:12 +0000
+Message-ID: <3ab2ba81a38d4da84d4e3ebc147aa956728e96bc.camel@axis.com>
+References: <20260917-b4-inv_icm42370p-v4-0-fd9373f123c9@axis.com>
+	 <20260917-b4-inv_icm42370p-v4-1-fd9373f123c9@axis.com>
+	 <aq_lObgrI7uAi0K1@debian-BULLSEYE-live-builder-AMD64>
+In-Reply-To: <aq_lObgrI7uAi0K1@debian-BULLSEYE-live-builder-AMD64>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axis.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: GV2PR02MB8434:EE_|VI1PR02MB6349:EE_
+x-ms-office365-filtering-correlation-id: a74ce492-b26d-497a-9103-08df1d3e356d
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|376014|7416014|366016|6049299003|23010399003|4053099003|38070700021|10067099003|11063799006|56012099006|4143699003|18002099003|22082099003;
+x-microsoft-antispam-message-info:
+ M46bEAtQrmRusoPQpAKEF9juZFznyX9FJsxsCzmU1PglC6cUkMkvMBnqo6eJeoT75Phk8FatLDcs5QZol4azglokBwueJxhpDTwqo1qgtJwrP79s2YgFUPF1yUaJ9KnHnfjfJltO6yB1XYnfT3u+NPcmMkx8GbPFUKbbR+5aKTG6jO0tgYNZVkmrh3lpIxM0Qb7OmbrPf6OjrVCySwhDJJDEMHhtaSNh1v+r8x7ukz6LjnBUA4GWUu9Bu6NQCV6SUftOOX7WKQlUshbQmbJmNMACVMA8YxnyAH75Ir0BaMFcSw7BylCCFNaWbk/OCj7mKFoZDXQxZF9mDsB31nSsHntuwjBeS0dpNIGanCRPF7CA//rls44rQylxbvMniTMXaHlAt+yO6wQ/5x54chqDZqgGOz+38xXhCC1q7NgIntfqTNU4qFuQ6eKxNs+RNPRG0brKDtaqctgKPqjGBS4VKIZnOLHVvuYYMzZkmsECpzsp/qKG9oUOPdbPWk7gh+Tonsg2zxp35n1yzEMIKgbG0MirpU5PqYJflc8dvw2JRuIn5efRPaImr7MsQM1pUu021P5rzTnJL9eKzLjmWrrCXkqfanm+JGYPHr4GRJfNP0xsnUUKqMaZQ8Se+GYjQlatZr7+RU3CWhdRX3goDuiW6zGbb2gP0HLJBsW2TuR6iFTpkTSfkFAfe1Mhbs+KE+fsr+BJwXe44luhEcqdF4wRTUgozIFotnymlgX3Ktx83JE=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR02MB8434.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(6049299003)(23010399003)(4053099003)(38070700021)(10067099003)(11063799006)(56012099006)(4143699003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?R3FMUHVJVzJrdnkwTEZmckliYW14STQyL2pra0dtV3VrVGRHTVAyTHIyS21i?=
+ =?utf-8?B?dTJ1Z3Zsb3h4eUhxOUY3NG9OU25sUmNjUVlObHo1RVF5enk1SGFqR2M1eDN1?=
+ =?utf-8?B?dUJsUlBCT3hyb3dyVFNRYW0rblpwSkliM0N4bUdrRDlUOWI2QmhNSUsxUlJT?=
+ =?utf-8?B?ZG9wUmhYV0d3ZG9vSEhENmxIcm9ueTV1MTg1dDIvV2NEdUtlcUJaNFU1MnBK?=
+ =?utf-8?B?THZBOUJKaGVtTVlIT1BOWkc3bWJrZ09wZGNXaUtPTURlMTZhQjkyQ1ozeXdJ?=
+ =?utf-8?B?SE4rYXpSNFhqVGhyQ3YxNHBKRVU0OTFoVGtSd21EOExhdUw4R0pYZkttUnA5?=
+ =?utf-8?B?OEJsUmdUaUNWVEcwdGt0TmVjODNaZloxbTRQL01YRi9HdmNUc0x0QS9UZFc0?=
+ =?utf-8?B?ZHlyNGhJcEJHZmlueUdwT25HOXFZTTlsR0Y1Sjg1NEovR1JheXpFZUJUTWQv?=
+ =?utf-8?B?RFFpMCtwaVZObEIrVzJQcDcvU1N3R2FNZzBtR3BvK3dtWm8rdVdMNXJlQ3Rv?=
+ =?utf-8?B?YkNmeS9taVJmN3kyTTZEQjY1R3JRZy9XU2JnUVpzKzcvN04wbjlBV3NJcmJC?=
+ =?utf-8?B?Tko3NFFBQlZQcGtDdlVDR2crVWo0WUYyS25aa2YzbGpia3pnRk10ZkZpZUth?=
+ =?utf-8?B?eTZ1N2tOc3RIc1VGTGQ5dGdlVkdjdXF0a2lmMCtHRkZqQU5jNUkxa05MNjJX?=
+ =?utf-8?B?ZzBSWVZxSUlDb2QzcTVGTXh1YTVleUZlcW1YOGxuL2NvdlVkcFAvZHRCbmk1?=
+ =?utf-8?B?SUdOM1NNL1loYk8vckRCWEJnaExYb1RSZytySmlEcG1uMTBTTExKUU1HcitP?=
+ =?utf-8?B?ZUFzWVFvYTE5dk1ualNEU1AyVmhITzcveXRNWFVsL3JHdzN4dXZhT3pjS3ZR?=
+ =?utf-8?B?V1diYWxVYWxnYW1iSlZNQzNGMXFaVFBsSzhFWGtSdEkzWUZ6Q3dyK2V4YS9L?=
+ =?utf-8?B?MDZnVWwxalRPL3FyTUlsNjI3ODVVdVhVZnFORnhiM0xlNS9xcmoyWVpBNmRm?=
+ =?utf-8?B?RE9sbTFDZjlTWDRKN2xFL1JtTlVuY2FpMjlIK1dvMDN4SWpjQ3JxSUVtb1ZG?=
+ =?utf-8?B?OFZXRHlBSEdYaFpiekJ4NnRLT1hLeTB2WkNSVWJqRGlnSEVOcndVTUZsOUgw?=
+ =?utf-8?B?aTRpQTFFOUt3a0NJYXREQi81ZUZDTG9DSnA4Vkt4YmRONXFHVWVqS0FyOWtB?=
+ =?utf-8?B?MkhSMXFkTG5xZjNvWjZ3NVFkNlFWalQzYjRXUWR5ZTNvUzhRbVpKY1lsV2Js?=
+ =?utf-8?B?ZHZQL1RuTkMzRlBVZVgxTnZmbWhxUkdVOGFoN0FYN1N0UXJ4ZWxiYzVza0w2?=
+ =?utf-8?B?ZVVDeHhFNlF1ak5aWjRCN0VYTktLRzRpejlNeUhGdW1nV281UDFSemMwQ0x1?=
+ =?utf-8?B?M2E4V2xqWHFTTUVvYUs0NUZwK09yL1RNcHlBMXlDYksvRFExVUM1WkdoRVJ4?=
+ =?utf-8?B?T1h1WHN4cWJqMUhXWDI1bXFFYzZCTy9mRERsdUdDQUF2SDVSTklMdzZHVUt2?=
+ =?utf-8?B?MFhUS011UE9sTStFTHJxN0xuQ3ZncGVlS0RoOXpSdnNsZmVIaENvdWdCQ3NH?=
+ =?utf-8?B?eW5IbjV3YzhKeEg0ZG1UU2djTVR0VDJlUFJ4K1J6WFdCYVZmT3dmS2YvNmpa?=
+ =?utf-8?B?TE45Y1lqK3N4T3ZOTmovZVFSaURjVHg3QnNVcWp1dDQ3d0RDL29XRzVPcjFt?=
+ =?utf-8?B?cWhBOWp1NzFUcGQzSDEvNktWbDF3Ry9MU0pmNElETXBEZ3VHYkMxQWdzakdu?=
+ =?utf-8?B?dnQ0Y2Z4em9kTllEdk1WNGs0OWhyWWpPZktOV3dPRThWSFg3QVljRUIxYnJm?=
+ =?utf-8?B?bE8xMEI1STlkc2ZJSnM4cWxtdHVpOWtPeEdjR1k3bStWUmJwZ3ROZHpWZkxS?=
+ =?utf-8?B?WlpVS1F0cGJCNlRYdzZOWjVGeDNaY0hBNEx3ZkNKZ2h3bDBFVVRWSDFZTWt2?=
+ =?utf-8?B?dkdBWmo3ektsalBQWGJYM1l2enlqRTZSNDFkZ3ExRnhSNmVLemc2eFlUY2hG?=
+ =?utf-8?B?SkxMM3RSNE5OUHYrOVRJS294QUE1KzFUKzFZSkdSR0d2U0JEWmFpNkhYNVRZ?=
+ =?utf-8?B?cjlZQ29JV2lhQXBqeFgyMi8rdkQrUzd1VmpJTStCcmdMWmVHajB2TWQvTnUw?=
+ =?utf-8?B?RzlFdGdSR0Zoc1hBSEZ0OTlOeG1weWl0L3pINHF3M1BNMEFwV3NPU29GOWNB?=
+ =?utf-8?B?U055Yzg0bDdIdndITm96a1JlaVNESHd5N1hJQmpjdzRPSWsvRnhZeVBobXVR?=
+ =?utf-8?B?Y25Gd0gxVVZHT1BybjZnWXhDbFU1ckRmdXVLVW8zbjBMTFYxaStsNjF1c09S?=
+ =?utf-8?B?ZkFBVzBodnZrUTNJSnFMSittVHhKK0pKWXliVFd6TXRVOTdiK1o2QT09?=
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="=-jJt87xtu365NV58mqTCt"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260925-iio-adc-ti-ads112c14-gpio-v1-1-2a2b218ebf3a@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR02MB8434.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a74ce492-b26d-497a-9103-08df1d3e356d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2026 08:55:13.1256
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YxLEAtvwYYfTmrW88YxtHcEqB8li3z8kp5vZWy/wjYF+/IYee9nYIXPFCGa1r9v3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB6349
 
-On Fri, Sep 25, 2026 at 04:50:47PM -0500, David Lechner (TI) wrote:
-> Add support for using the AIN4/GPIO0 to AIN7/GPIO3 pins as GPIOs when
-> the gpio-controller property is present.
-> 
-> Pins that are already used for something else according to the
-> devicetree are excluded from the valid GPIO mask. This includes analog
-> inputs and excitation current outputs used by channels, REFP/REFN when
-> an external reference is used, the /FAULT and /DRDY interrupts and the
-> external clock input.
-> 
-> The per-pin register field macros are replaced with parameterized ones
-> so that they can be used with the GPIO offset.
+--=-jJt87xtu365NV58mqTCt
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-...
+Hi Marcelo,
 
-> +	DECLARE_BITMAP(gpio_reserved_mask, ADS112C14_NUM_GPIO);
+On Sun, 2026-09-20 at 10:52 -0300, Marcelo Schmitt wrote:
+> Hello Kanak,
+>=20
+> On 09/17, Kanak Shilledar wrote:
+> > ICM42370P is a 3-axis accelerometer. The device can support I2C,
+> > SPI
+> > and I3C. Add the supporting devicetree documentation for the
+> > device.
+> > The device supports VDD and VDDIO operating range of 1.71V to 3.6V.
+> >=20
+> Patch 3 says ICM-42370-P is almost identical to the existing
+> Invensense ICM-42607-P.
+> Instead of creating a new doc, could we have similar properties for
+> ICM-42370-P
+> by extending
+> Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml?
+> The updates on the other patches keep supporting both ICM-42370-P and
+> ICM-42370-P with the same device driver.
 
-Why not use valid_mask in GPIO chip directly?
+ICM-42370-P is very similar to ICM-42607-P but it's an accelerometer as
+it does not have gyro. As dt-bindings should describe the hardware I
+think it should be inside the iio/accel/ directory although it is using
+the same driver of IMU. If you think it should be in the same file, I
+will move it and update the binding description.
 
-...
-
-> +static void ads112c14_reserve_gpio_for_ain(unsigned long *gpio_reserved_mask,
-> +					   u32 ain)
-> +{
-> +	if (ain >= 4 && ain <= 7)
-> +		set_bit(ain - 4, gpio_reserved_mask);
-
-Why atomic op is needed?
-
-> +}
-
-...
-
-> +static int ads112c14_gpio_init_valid_mask(struct gpio_chip *gc,
-> +					  unsigned long *valid_mask,
-> +					  unsigned int ngpios)
-> +{
-> +	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-> +	struct ads112c14_data *data = iio_priv(indio_dev);
-
-> +	bitmap_fill(valid_mask, ngpios);
-
-It's already filled by GPIOLIB, isn't it?
-
-> +	bitmap_andnot(valid_mask, valid_mask, data->gpio_reserved_mask, ngpios);
-> +
-> +	return 0;
-> +}
-
-> +static int ads112c14_gpio_init(struct iio_dev *indio_dev)
-> +{
-> +	struct ads112c14_data *data = iio_priv(indio_dev);
-> +	struct device *dev = indio_dev->dev.parent;
-> +
-> +	for (unsigned int i = 0; i < ADS112C14_NUM_GPIO; i++) {
-> +		data->gpio_names[i] = devm_kasprintf(dev, GFP_KERNEL, "%s:GPIO%u",
-> +						     dev_name(&indio_dev->dev), i);
-> +		if (!data->gpio_names[i])
-> +			return -ENOMEM;
-
-Wondering if you can utilise devm_kasprintf_strarray().
-
-> +	}
-> +
-> +	data->gc = (struct gpio_chip) {
-> +		.owner = THIS_MODULE,
-> +		.label = dev_name(dev),
-> +		.parent = dev,
-> +		.base = -1,
-> +		.ngpio = ADS112C14_NUM_GPIO,
-> +		.names = data->gpio_names,
-> +		.can_sleep = true,
-> +		.init_valid_mask = ads112c14_gpio_init_valid_mask,
-> +		.get_direction = ads112c14_gpio_get_direction,
-> +		.direction_input = ads112c14_gpio_direction_input,
-> +		.direction_output = ads112c14_gpio_direction_output,
-> +		.get = ads112c14_gpio_get,
-> +		.set = ads112c14_gpio_set,
-> +	};
-> +
-> +	return devm_gpiochip_add_data(dev, &data->gc, indio_dev);
-> +}
-
-...
-
->  static int ads112c14_parse_channels(struct iio_dev *indio_dev,
-> -				    bool *need_avdd_ref, bool *need_ext_ref)
-> +				    bool *need_avdd_ref, bool *need_ext_ref,
-> +				    unsigned long *gpio_reserved_mask)
->  {
-
-> +			ads112c14_reserve_gpio_for_ain(gpio_reserved_mask, pair[0]);
-
-> +			ads112c14_reserve_gpio_for_ain(gpio_reserved_mask, pair[0]);
-> +			ads112c14_reserve_gpio_for_ain(gpio_reserved_mask, pair[1]);
->  		} else {
-
-> +			ads112c14_reserve_gpio_for_ain(gpio_reserved_mask, pair[0]);
-> +			if (measurement->iadc_count > 1)
-> +				ads112c14_reserve_gpio_for_ain(gpio_reserved_mask, pair[1]);
-
-Can't this be done afterwards at init_valid_mask() stage?
-
-...
-
->  static int ads112c14_probe(struct i2c_client *client)
->  {
-> +	DECLARE_BITMAP(gpio_reserved_mask, ADS112C14_NUM_GPIO);
-
-Hmm... But you have one already in the struct, why another one here?
+Thanks and Regards,
+Kanak Shilledar
 
 
-...
+--=-jJt87xtu365NV58mqTCt
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
-> +	/* FAULT shares a pin with GPIO2. */
-> +	if (fwnode_property_match_string(dev_fwnode(dev), "interrupt-names", "fault") >= 0)
-> +		set_bit(2, gpio_reserved_mask);
+-----BEGIN PGP SIGNATURE-----
 
-Non-atomic?
+iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCaroragAKCRDEY9j7t8Ka
+Z/XfAQCUszRM2vDSx8Vp34qXAKxRJAsP00xFl7FEF01e6tL1bwD/X//G1i32si28
+rUIdrPlm9glPfVLsgfexKUru4BgnDgw=
+=dlA6
+-----END PGP SIGNATURE-----
 
-...
-
->  	if (fwnode_property_match_string(dev_fwnode(dev), "interrupt-names", "drdy") >= 0) {
->  		data->drdy_irq = fwnode_irq_get_byname(dev_fwnode(dev), "drdy");
->  		if (data->drdy_irq < 0)
->  			return dev_err_probe(dev, data->drdy_irq,
->  					     "failed to get drdy interrupt\n");
->  
-> +		/* DRDY shares a pin with GPIO3. */
-> +		set_bit(3, gpio_reserved_mask);
-
-Ditto.
-
-
->  		if (clk)
->  			return dev_err_probe(dev, -EINVAL,
->  					     "cannot use both DRDY and CLK - they share the same pin\n");
-
-...
-
->  	if (clk) {
-> +		/* CLK shares a pin with GPIO3. */
-> +		set_bit(3, gpio_reserved_mask);
-
-Ditto.
-
->  		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
-> -					 ADS112C14_GPIO_CFG_GPIO3_CFG,
-> -					 FIELD_PREP(ADS112C14_GPIO_CFG_GPIO3_CFG,
-> +					 ADS112C14_GPIO_CFG_GPIO_CFG(3),
-> +					 FIELD_PREP(ADS112C14_GPIO_CFG_GPIO_CFG(3),
->  						    ADS112C14_GPIO_CFG_GPIO_CFG_INPUT));
->  		if (ret)
->  			return ret;
-
-...
-
-> +	if (device_property_read_bool(dev, "gpio-controller")) {
-> +		bitmap_copy(data->gpio_reserved_mask, gpio_reserved_mask,
-> +			    ADS112C14_NUM_GPIO);
-> +
-> +		ret = ads112c14_gpio_init(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +	}
-
-This all smells like it should be refactored to nicely have it in one place in init_valid_mask().
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--=-jJt87xtu365NV58mqTCt--
