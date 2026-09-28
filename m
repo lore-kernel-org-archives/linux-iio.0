@@ -1,117 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77C81440A25;
-	Mon, 28 Sep 2026 08:14:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5837746F484;
+	Mon, 28 Sep 2026 08:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790583264; cv=none; b=IwQdpkwN3eXxvwDJjd5X4uWJPsoQYYrCCRu9XloIzubh72WWKIbQ/b2pEwZ7ox9+qEnEg5KbOH7hc22w/HFBFoUM/HnRgol2DZYrbFG/8gPpZmnvnAwbeHmXFXk/KimZ2/3o7n7kdWxpgvUTFYX464J+zoGttTtceRCOEgDrN9Q=
+	t=1790583786; cv=none; b=OAAJQRLyxlBcn+JlMTpVs9KvfXKa1W/KZPKbhg1KIEf468pmimqtohsyEmRELnPpD6pt7MpY4jDZ80kv2UNXU8HFrcPxCjs1Jq4dO/3zhxS2TnOnv6Ky6K2QbI+aP7UxCdcipG/s02JqlE9VvFUqXvG17bZgxKNpfWZzzzMO7uU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790583264; c=relaxed/simple;
-	bh=7ybBn7ZdwlBlJ9WHyiY2r7WhsvHiPw4ssNpFoeZYcAA=;
+	s=arc-20240116; t=1790583786; c=relaxed/simple;
+	bh=1wocS/8MUk0c5FYoePcc+sCMjbYoo1qq/BetZNUrGpM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RyOjm47/IZuzFO++mu2EhMA303WNzG1cJ8ZfReia67v4dGOt9VZk3uUzpDoN2vvPkdM9njjVBZEToCbqudcFcTIV9Mp596NANRBh7bYTppslca096KJ7idupbx4kbMeFD2EcIKBk4jaBFmcoktgJp0NQfL2w+VqIIR9vnYcO0uU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lbD+zQ1s; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=LTGSHrEPaIlHl08egj35eq5f9ojV8syI7cZKDnvIVu7qy7bahhZtsLKGiFLK4O0QpRT2uXnNuWROl/x671bae9fCf6J7qhkJgbAAfb5H6p+8h7S+3Yjn1y2Nzy+TIMSgqJ0Jr2cOfGz+kkipWvcdbGK43C7BQjAZ52aOll0B/L8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dFCSke2w; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lbD+zQ1s"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dFCSke2w"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790583262; x=1822119262;
+  t=1790583785; x=1822119785;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=7ybBn7ZdwlBlJ9WHyiY2r7WhsvHiPw4ssNpFoeZYcAA=;
-  b=lbD+zQ1spia+aw8H+QKWGVyWUsZVxwF7kl6PG8OO2lkZKRU4w/D27Zn5
-   k6VSFdfL3AT5QQ0D80Bog3ASZ6QSVYsdL0VSjj1w7+rqfmtFJdjeXNmic
-   Emshgsvik17j0Df2yupsCi3C6F6+5iwTnebCWJ/tRcvsP4mgyUBu4qHpa
-   hN5w3OxUdBHsadVN2Jpwmkn8gIfVEDuY0JVAbVmRnzaebVwaqBio96Kip
-   LWz+zL8nKsbsfWLnrWn4PeTRZ1LAO7d5XouZIWmElgnbN4xcvkuQcahp1
-   nCrA6IYSD1aS2uHdM1O/6Gqm6K8oPncugUlGpf0xr4mByPu2985JlEQ4n
-   w==;
-X-CSE-ConnectionGUID: 5yLnnwS1SGWzhcTOw32ecQ==
-X-CSE-MsgGUID: FGOP36HFQbKhetnzVSrdvg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="90403270"
+   mime-version:in-reply-to;
+  bh=1wocS/8MUk0c5FYoePcc+sCMjbYoo1qq/BetZNUrGpM=;
+  b=dFCSke2wKSJEFP4A6p13L9R1QdcFt/uTCcSZvV7NlkZB+a9dDl9vUAP4
+   11oRMbFoyQRnHMt9Y2wbTSQRNkQgaybImTrKXNPj6xflwYKI/9HYLhiHm
+   Xv3ugrWs+KPzVTM2omrjJaVY7DV7hPyy953YrLvYwLjXILVWrhxkJtNfk
+   Ox12LUDm95smlR2Oba5khLzPhvOIT2y+e1vuZ9U2uNQOye575Ze/2Sc9y
+   PPT/uNGFqe3wtrC28Xxl7WthpycOcsfKq1BfC/dkmVTdtv2i6MxPvFXsr
+   0gzBOhUcj7D1GVYxJm7XrKwBcUaGrHDoCwFr7tQP1XU/xdnl7O8wMJLUY
+   Q==;
+X-CSE-ConnectionGUID: ExkWOPogR+CAwgdL8SewKg==
+X-CSE-MsgGUID: AXsQDLXrT4i0xV5URw6mlg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="108765977"
 X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
-   d="scan'208";a="90403270"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 01:14:22 -0700
-X-CSE-ConnectionGUID: 7I02WSn5Rj6DcHajdOBhGQ==
-X-CSE-MsgGUID: u0YdxXt5RaCKv0QaYSR51g==
+   d="scan'208";a="108765977"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 01:23:05 -0700
+X-CSE-ConnectionGUID: U0XgYB7cQzujYAq8DGQ0OQ==
+X-CSE-MsgGUID: WlXpRSZvTRSRmYdNxQYmvA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
-   d="scan'208";a="278805402"
+   d="scan'208";a="274220575"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.42])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 01:14:18 -0700
-Date: Mon, 28 Sep 2026 11:14:15 +0300
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 01:23:02 -0700
+Date: Mon, 28 Sep 2026 11:22:59 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Jiale Yao <yaojiale02@163.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rodrigo Alencar <rodrigo.alencar@analog.com>,
+To: Weigang He <geoffreyhe2@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+	Conall O'Griofa <conall.ogriofa@amd.com>,
 	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Anshul Dalal <anshulusr@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Shi Hao <i.shihao.999@gmail.com>, Linus Walleij <linusw@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Angel Iglesias <ang.iglesiasg@gmail.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/7] iio: validate SPI match data before use
-Message-ID: <aroh125qBr1ZAXBI@ashevche-desk.local>
-References: <20260925131738.2200612-1-yaojiale02@163.com>
- <20260926021143.478d5361@jic23-hlaptop>
- <ardhvKaSdYh2HiS6@monoceros>
- <20260927182001.10c331dd@jic23-hlaptop>
+	Michal Simek <michal.simek@amd.com>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: xilinx-ams: fix out-of-bounds accesses when
+ parsing channels
+Message-ID: <aroj4-Wag_kxuBxH@ashevche-desk.local>
+References: <20260926055456.3289189-1-geoffreyhe2@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260927182001.10c331dd@jic23-hlaptop>
+In-Reply-To: <20260926055456.3289189-1-geoffreyhe2@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Sep 27, 2026 at 06:20:01PM +0100, Jonathan Cameron wrote:
-> On Sat, 26 Sep 2026 08:13:13 +0200
-> Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com> wrote:
-> > On Sat, Sep 26, 2026 at 02:11:43AM +0100, Jonathan Cameron wrote:
-> > > On Fri, 25 Sep 2026 21:17:29 +0800
-> > > Jiale Yao <yaojiale02@163.com> wrote:
-> > >   
-> > > > SPI driver_override can bind a device without a matching entry in the
-> > > > driver's ID tables.  spi_get_device_match_data() then returns NULL.
-> > > > 
-> > > > These seven IIO drivers use that result without checking it, causing a
-> > > > NULL pointer dereference during probe.  Add the missing checks before
-> > > > the match data is used.  
-> > > 
-> > > I was hoping we'd close this finally by adding a flag to the
-> > > drivers to say they should fail a match if driver_override is set.
-> > > Given I thought maybe that would happen when Andy looked into this
-> > > a while back I've been sitting on this problem for a while.
+On Sat, Sep 26, 2026 at 03:54:56PM +1000, Weigang He wrote:
+> ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
+> ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
+> channel specs and lets ams_init_module() fill them for the AMS node and
+> each of its children, without telling it how much room is left.
+> 
+> For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
+> "channel@N" child after the 10 fixed PL channels. The binding allows
+> reg values 20..50, so a PL node can have up to 31 such children, i.e.
+> up to 41 PL channels, while only 31 are budgeted for it. Together with
+> the 13 PS and 7 AMS control channels, this writes past the end of the
+> buffer. Since the modules are filled in device tree order, the fixed
+> channel blocks copied after the PL node can overflow as well.
+> 
+> ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
+> unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
+> far out of bounds.
+> 
+> Pass the remaining capacity down to ams_init_module() and
+> ams_get_ext_chan() and fail with -EINVAL when a module does not fit,
+> instead of writing past the buffer. Also reject reg values below 20, as
+> the binding requires.
+> 
+> Found by static analysis tool CodeQL.
 
-Sorry, I have had no time to continue...
+...
 
-> > > 
-> > > Unfortunately seems we have to carry on papering over it in the
-> > > drivers for now :(  
-> > 
-> > Note there is another effort:
-> > https://lore.kernel.org/lkml/20260922-driver-override-opt-out-v1-0-58c35ded3b83@nvidia.com/
+>  	fwnode_for_each_child_node(chan_node, child) {
 
-...but I like this effort, it looks great!
+It seems better to switch to _scoped() variant at some point.
 
-> Nice. I look forward to ripping all these checks out again
-> if that lands. Obviously we won't backport doing that given the checks
-> will remain harmless.
+>  		ret = fwnode_property_read_u32(child, "reg", &reg);
+> -		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
+> +		if (ret || reg < 30 - AMS_PL_MAX_FIXED_CHANNEL ||
+> +		    reg > AMS_PL_MAX_EXT_CHANNEL + 30)
+>  			continue;
+>  
+> +		if (num_channels >= max_channels) {
+> +			fwnode_handle_put(child);
+> +			return -EINVAL;
+
+-ECHRNG
+
+> +		}
+
+...
+
+>  	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
+> +		if (max_channels < ARRAY_SIZE(ams_ps_channels))
+> +			return -EINVAL;
+
+ENOSPC?
+
+...
+
+>  	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
+> +		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
+> +			return -EINVAL;
+
+Ditto.
+
+...
+
+>  	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
+> +		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
+> +			return -EINVAL;
+
+Ditto.
 
 -- 
 With Best Regards,
