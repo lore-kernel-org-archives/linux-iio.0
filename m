@@ -1,52 +1,56 @@
 Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8095B4E4C2D;
-	Tue, 29 Sep 2026 22:44:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 678134E4331;
+	Tue, 29 Sep 2026 22:44:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790721872; cv=none; b=jF10ow3bpFdu9TncAWb2WfYFlU4muUOfn2BjebVWyL56/PSKJ6TSF7+UDz4XZc0P0nsHByrX/O+LEpANkpuTMpWfydPapfeuZYrNbfvvtH2bB6HZNwBiDypEUI190bVWIbNuSky/DGNZ783lo3y0Co0RMaxigGbE2jvMMJerRpw=
+	t=1790721888; cv=none; b=BXcE6l3xhmFFh49Qqu7l7a2qgQgn41rj4q58PrE5JEB0epdjlTCEW76UxNeIMIfQCVG409A8ZvnU9QrPdpZow2sH0bfqJ4T/AdgYq2SFxeYTyJ2JdELXI0+zD3P4ShlEKJiAARgB0liKPruAOP9LCLtH5reRBUX8KSE3Ft7mB7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790721872; c=relaxed/simple;
-	bh=72ge+QkzgaRluyGkqR4bm9xu4Pr0kV4tvihtFiboyiw=;
+	s=arc-20240116; t=1790721888; c=relaxed/simple;
+	bh=WYdPML9ZURN2TOcSaQLSC5En8VpduN5Ss1JAlMHwCQw=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sTfE9oAC7cjeOF/Um9czkkanosY2mtB03p3IdU6md6Ax7zaVzSnh1PS8DVwHd9OZUVPjFspThJMqvY0d3lZ35k7cFG07bTsZL3kgv36HmzMkwyr9++ot6A+U47eAEkHuDWB6dI/+FoMm1mrbojgoBNs3Fo+OqsG+IBVKWneLfXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zLKYQ9M0; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=ur7/ULw2/T5rGl1n1wqzvGzjCSU+LbW/12RPRAv0Xa1tC3r/qHRoI6AYux39cbhCWxMPBEVETcYrkKAYzlKPqjp3tCainzd7PP0lRMbxtd1MLpvYqHw/hHyRDmHdNnBB2Mp0gmx4Tr4RUAtRTJFK9MSZ7Z4ablNs8t+B4QmcUlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=sOgrw8UW; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zLKYQ9M0"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="sOgrw8UW"
 Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68TKYVj31298256;
-	Tue, 29 Sep 2026 18:44:25 -0400
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68TL3Fxb1297570;
+	Tue, 29 Sep 2026 18:44:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=urmds
-	V5UPSlLuY828bPjUARXN8uhN7GDcTFD9kbujls=; b=zLKYQ9M0oZofGQnJVOir2
-	1l5i0eB0wV9EaJP/LVKXNNnO8vzGRnFAZvx78QJpv7MC57uLAFDr6VxFp8HbkRWt
-	SFL8l87C58K0KJ4i1CDManVnEzIPq8czUzaHIoq5bkZ1HI3jdzsm436F9d0+kVHz
-	E7DQQuHX4TBE4VTHfblhmL/2FiwTIj9WO6rmF6GLP4dVh76bOCDT9DRajt2MRtiy
-	vhUCzIpEIgvo8iHLjQjIAPItrHvAwng19EDRvnpGuC4OsnpfnJEzetMeFP+qKS/2
-	gH4IfHO/9KxpFlM8NKXelE2IWY87B3JdPW0j4uyW7vcp2TCTMStFxF/GNsej9Oqb
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=vHgg/
+	1qZsQSPssIzUgM7L/ZSZDmzONOpZxORDLzdh1I=; b=sOgrw8UW5WIMAQCpTejgq
+	RWzzxCeif0vf+Qc2+6+jIz9NKZry1LaDNfrOUCYmngTL1/EMZ99jRfXgwO8nKUuu
+	PUvoaSH2kCYIN7o06HT85R1JZuxTCkYyhDbRuFGHtUDP92JiMWgh5Ky7f/45eELG
+	EDaZDDxopNPo/LY5mTH+MYGf8wZ+X9wusU5G+YyQTHuDDUpX9OKYOSRM7s54arUS
+	sGyDOTKz7wrAWFhxuAAZ79JXr38IITfZH6cvvgvIEWK8tFdtJAgSgabiEVHE7shQ
+	G0S10wFzfO5/eXsH1U5AIInAsd8V2wvUEno44N/3ipYD0o8lR/GmTYAW5nWEVXxe
 	g==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gyugbrtst-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4gyugbrttu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Sep 2026 18:44:24 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 68TMiNYD041527
+	Tue, 29 Sep 2026 18:44:42 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 68TMifxS041545
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 29 Sep 2026 18:44:23 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 29 Sep
- 2026 18:44:23 -0400
+	Tue, 29 Sep 2026 18:44:41 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 29 Sep 2026 18:44:41 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 29 Sep 2026 18:44:40 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 29 Sep 2026 18:44:23 -0400
+ Transport; Tue, 29 Sep 2026 18:44:40 -0400
 Received: from work.maxim-ic.internal ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68TMi93q008202;
-	Tue, 29 Sep 2026 18:44:12 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 68TMiRHY008208;
+	Tue, 29 Sep 2026 18:44:30 -0400
 From: Marcelo Schmitt <marcelo.schmitt@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux@analog.com>
@@ -54,9 +58,9 @@ CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <dlechner@baylibre.com>,
         <andy@kernel.org>, <Michael.Hennerich@analog.com>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <corbet@lwn.net>,
         <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v3 07/13] iio: adc: ad4134: Support buffered data read
-Date: Tue, 29 Sep 2026 19:44:04 -0300
-Message-ID: <095cea21f1a9fc39aa0a81b990e87c1046bb3dc9.1790719424.git.marcelo.schmitt@analog.com>
+Subject: [PATCH v3 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI connection mode
+Date: Tue, 29 Sep 2026 19:44:22 -0300
+Message-ID: <12e5af9d96f6c5e800ad860d3cfa6ac8006a22e2.1790719425.git.marcelo.schmitt@analog.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1790719424.git.marcelo.schmitt@analog.com>
 References: <cover.1790719424.git.marcelo.schmitt@analog.com>
@@ -69,23 +73,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTI5MDA5MCBTYWx0ZWRfX36IeLcwD1pUZ
- dKpu+F3XmhzyykkKFg4LJsB6Ozb/EuaBs+uMTnxX0OXAWdlz183itMmrEJCOCeCtyWUxhK84cfM
- NnQEqfqDFpDYgdVj09zsX6s6DB2uDrdfjfs4ZUO+MYIPjv1wZf3Lg2t4rM36hnbUx6b7Bzl57Rk
- ab8pmgN8oBHXFWwjg0fjKuTA9zdxh9lPugtBDANUYBZhpR9sluF2e0NZI3f999FEtw6OGT0ak6i
- 9s3Sj84b6S4Fayz7cbqjR4qKpZkV5FOF1zTwTcWXMZ0SfNj6OVowVorB3+wHxmCATn1Fpr9aXvH
- 6ZhId9p3m/QHobpVKqbIIrP1sV9By/QnmC3oA3l7ItrzmGKwUGa26qOTpfxKLi8Z54G6GXww2Yo
- 1+JLWnaFqrvyc4KdD0Vfz4yDMqFzteONlWVHQ8mvyzFXCyhQBzFD9CFTQ6NhN6joyQR1YqPS58X
- 6GeTtmLrhmERMjfHfqg==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTI5MDA5MCBTYWx0ZWRfX24IQx4uTREVY
- reoLuwjHjHtcaMVvFGH6CQVhjUnMMhPPdmf3CFG6+LNxaZcr30CH8zyFXgxfPQ4Zup133HRMgIJ
- azxmxZCUOnCunGkRaMzWvY3Mnobezc1wns6JIKvngv1qcOTmhSnI
-X-Proofpoint-GUID: GjKjRQzUq5PQfSIA2O0xiH2ftPCFuPV2
-X-Proofpoint-ORIG-GUID: GjKjRQzUq5PQfSIA2O0xiH2ftPCFuPV2
-X-Authority-Analysis: v=2.4 cv=Eexd0/mC c=1 sm=1 tr=0 ts=6abc3f49 cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTI5MDA5MCBTYWx0ZWRfX13nx+V1VokBH
+ SK9RdVxCDFOgLfatQMish++iudi+jeLFIZfeNLXPsBMQJR/59nObeeWOJW2O2MQsfGP7xM5Hayt
+ JWXdgvQxMKGaL/cCGLnnpjlyKVBLXf2uZkFOjrXilq169rrma3rMOODsJVxU1xpZKCaq86G2fb0
+ KtkZiuqrI5eFKE08kCf9gjezvVJJ0qSEMLoox5lp4yngqSYF+F4VF5TfsIDE3sT+vz+NpwF94mM
+ WGfrpjhkbEuveI9yIG7YdaRJe/9aIJRTODKpC1FxsIm+EQB78Xl2/l67+QQMxRmFSbj18SCNE2W
+ MqYvrBu8hmli5adjqWROtG/Ana7Lbq9SVFwWeP3GaUTzMSGJBNQrqGW8ZcdPPeoNTAlggS7N/J9
+ AAbUK2CHbANhGHksRZeyd5HyVanPzPnKXXOAR3jsKeIj0FfgtTDrungTd66WIu0zS3FNQcrIRMI
+ z74eqe1fsPWZ44acX2w==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTI5MDA5MCBTYWx0ZWRfX+sEr4s80AVsp
+ RtW5VEup4xZZzKscD4hFfK3/ENBa3Gj7jB0Wh0YElDQAW82Hmc7F6r4ZO5jBPf5HWfy7KlPbooN
+ SLhfF+QrZ6KDXo/FUawVA1DJkbs3l6KwRPl7ae4a2Zo/OcyNYytS
+X-Proofpoint-GUID: zVvrUuAKWpLY_frDn6frhyY8J9iazMaY
+X-Proofpoint-ORIG-GUID: zVvrUuAKWpLY_frDn6frhyY8J9iazMaY
+X-Authority-Analysis: v=2.4 cv=Eexd0/mC c=1 sm=1 tr=0 ts=6abc3f5a cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
  a=VdqzKS8jKosA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=viz8uc1E70eCCRT_w6QA:9
+ a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=DH_SYrm0qA8J76jfPwUA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-29_04,2026-09-21_02,2025-10-01_01
@@ -96,150 +100,92 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
  definitions=main-2609290090
 
-Enable users to run buffered data captures triggered by IIO trigger device.
-Add an IIO timestamp channel so each data scan is provided with measurement
-time information. Require single-read operations to be in IIO device direct
-access mode to prevent buffered and single-shot data captures to disrupt
-each other.
+Document how AD4134 chips are connected to the host SPI controller
+according to different wiring configurations.
 
 Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 ---
 Change log v2 -> v3:
-- Now using IIO_DECLARE_BUFFER_WITH_TS macro to set properly sized triggered
-  buffer storage that includes room for timestamp.
+- Adjusted spi-rx-bus-width constraints.
 
- drivers/iio/adc/Kconfig  |  2 ++
- drivers/iio/adc/ad4134.c | 61 +++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 62 insertions(+), 1 deletion(-)
+Unfortunately, I missed SPI connection mode properties when introducing AD4134
+dt-doc and the device driver defaulted to a no-CS configuration. Due to that,
+conventional 4-wire mode can't be made default without leading to a regression.
+Still, updating the SPI mode default to 4-wire is a sensible thing to do later
+on if acceptable.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a802d8ee4dd9..fc7de0bb400a 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -125,6 +125,8 @@ config AD4134
- 	depends on SPI
- 	select REGMAP_SPI
- 	select CRC8
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for Analog Devices AD4134 SPI analog to
- 	  digital converters (ADC).
-diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-index 14996a0d1fe8..f0196126515e 100644
---- a/drivers/iio/adc/ad4134.c
-+++ b/drivers/iio/adc/ad4134.c
-@@ -26,7 +26,10 @@
- #include <linux/unaligned.h>
- #include <linux/units.h>
+ .../bindings/iio/adc/adi,ad4134.yaml          | 51 ++++++++++++++++---
+ 1 file changed, 44 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+index ea6d7e026419..0b2a2cbfadae 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+@@ -131,6 +131,26 @@ properties:
+     enum: [ free-running, gated ]
+     default: gated
  
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
++  adi,spi-mode:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [ no-cs, 4-wire, one-channel-chain, two-channel-chain ]
++    default: no-cs
++    description: |
++      This property indicates the SPI wiring configuration.
++      * no-cs: The datasheet calls this "minimum I/O mode". In this mode, the CS
++        line is not used (tied to GND).
++      * 4-wire: Specifies a conventional SPI wiring configuration.
++      * one-channel-chain: In this mode, the DOUT0 line of one chip is connected
++        to DOUT2 of the next chip upstream in the chain. Only the data interface
++        of the upmost device in the stream is in direct connection with the
++        digital host.
++      * two-channel-chain: In this mode, the DOUT0 and DOUT1 lines of one chip
++        are respectively connected to DOUT2 and DOUT3 of the next chip upstream
++        in the chain. Only the data interface of the upmost device in the stream
++        is in direct connection with the digital host.
++
++  '#daisy-chained-devices': true
++
+ required:
+   - compatible
+   - reg
+@@ -141,13 +161,30 @@ required:
+   - clocks
+   - clock-names
  
- #define AD4134_RESET_TIME_US			(10 * USEC_PER_SEC)
+-oneOf:
+-  - required:
+-      - ldoin-supply
+-  - required:
+-      - avdd1v8-supply
+-      - dvdd1v8-supply
+-      - clkvdd-supply
++allOf:
++  - oneOf:
++      - required:
++          - ldoin-supply
++      - required:
++          - avdd1v8-supply
++          - dvdd1v8-supply
++          - clkvdd-supply
++
++  - oneOf:
++      - required: [adi,spi-mode, '#daisy-chained-devices']
++        properties:
++          adi,spi-mode:
++            const: one-channel-chain
++          spi-rx-bus-width:
++            const: 1
++      - required: [adi,spi-mode, '#daisy-chained-devices']
++        properties:
++          adi,spi-mode:
++            const: two-channel-chain
++          spi-rx-bus-width:
++            const: 1, 1
++      - properties:
++          '#daisy-chained-devices': false
  
-@@ -124,6 +127,13 @@ static const struct iio_chan_spec_ext_info ad4134_filter_type_ext_info[] = {
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),				\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),			\
- 	.ext_info = ad4134_filter_type_ext_info,				\
-+	.scan_index = (_index),							\
-+	.scan_type = {								\
-+		.format = IIO_SCAN_FORMAT_SIGNED_INT,				\
-+		.realbits = AD4134_CHAN_PRECISION_BITS,				\
-+		.storagebits = 32,						\
-+		.endianness = IIO_CPU,						\
-+	},									\
- }
+ unevaluatedProperties: false
  
- static const struct iio_chan_spec ad4134_chan_set[] = {
-@@ -131,6 +141,7 @@ static const struct iio_chan_spec ad4134_chan_set[] = {
- 	AD4134_CHANNEL(1),
- 	AD4134_CHANNEL(2),
- 	AD4134_CHANNEL(3),
-+	IIO_CHAN_SOFT_TIMESTAMP(4),
- };
- 
- struct ad4134_state {
-@@ -269,7 +280,7 @@ static int ad4134_data_read(struct ad4134_state *st, unsigned int reg,
- 	 * interface. Now we read data from all channels but keep only the bits
- 	 * from the requested one.
- 	 */
--	for (i = 0; i < ARRAY_SIZE(ad4134_chan_set); i++) {
-+	for (i = 0; i < AD4134_NUM_CHANNELS; i++) {
- 		ret = spi_write_then_read(st->spi, NULL, 0, st->rx_buf,
- 					  BITS_TO_BYTES(AD4134_CHAN_PRECISION_BITS));
- 		if (ret)
-@@ -333,6 +344,43 @@ static const struct regmap_config ad4134_regmap_config = {
- 	.max_register = AD4134_CH_VREG(ARRAY_SIZE(ad4134_chan_set) - 1),
- };
- 
-+static irqreturn_t ad4134_trigger_handler(int irq, void *p)
-+{
-+	IIO_DECLARE_BUFFER_WITH_TS(u32, channels, AD4134_NUM_CHANNELS) = { };
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ad4134_state *st = iio_priv(indio_dev);
-+	struct spi_transfer xfer = {
-+		.rx_buf = st->rx_buf,
-+		.cs_off = true,
-+		.len = BITS_TO_BYTES(AD4134_CHAN_PRECISION_BITS),
-+	};
-+	int ret;
-+
-+	gpiod_set_value_cansleep(st->odr_gpio, 1);
-+	fsleep(1);
-+	gpiod_set_value_cansleep(st->odr_gpio, 0);
-+
-+	/* Execute transfers for all channels so the entire data frame is read. */
-+	for (int ch = 0, i = 0; ch < AD4134_NUM_CHANNELS; ch++) {
-+		ret = spi_sync_transfer(st->spi, &xfer, 1);
-+		if (ret)
-+			goto out;
-+
-+		if (!test_bit(ch, indio_dev->active_scan_mask))
-+			continue;
-+
-+		channels[i++] = get_unaligned_be24(st->rx_buf);
-+	}
-+
-+	iio_push_to_buffers_with_ts(indio_dev, channels, sizeof(channels),
-+				    pf->timestamp);
-+
-+out:
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static int ad4134_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long info)
-@@ -342,6 +390,10 @@ static int ad4134_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (info) {
- 	case IIO_CHAN_INFO_RAW: {
-+		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-+		if (IIO_DEV_ACQUIRE_FAILED(claim))
-+			return -EBUSY;
-+
- 		guard(mutex)(&st->sync_lock);
- 
- 		gpiod_set_value_cansleep(st->odr_gpio, 1);
-@@ -546,6 +598,13 @@ static int ad4134_probe(struct spi_device *spi)
- 		return dev_err_probe(dev, ret,
- 				     "failed to setup minimum I/O mode\n");
- 
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
-+					      iio_pollfunc_store_time,
-+					      ad4134_trigger_handler,
-+					      NULL);
-+	if (ret)
-+		return ret;
-+
- 	/* Bump precision to 24-bit */
- 	ret = regmap_update_bits(st->regmap, AD4134_DATA_PACKET_CONFIG_REG,
- 				 AD4134_DATA_PACKET_CONFIG_FRAME_MASK,
 -- 
 2.53.0
 
