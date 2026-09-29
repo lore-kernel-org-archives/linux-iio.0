@@ -1,65 +1,65 @@
-Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+Received: from mail-wr2-f34.google.com (mail-wr2-f34.google.com [74.125.225.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E30523798
-	for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2026 12:42:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A763524AEF
+	for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2026 12:42:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790685776; cv=none; b=KdHpxjkdsAY6nrLS/2eGiXQ24TqUn5Kf+MqlkyOZdkzowJT4/SrwiqGdzYs+J+wDsvVwmfDw3+j6NxT1iwL6+lQOgh+GNQTdmhWmSycLWfG2bfSvlAQ/5/IKKgBk/HZ1Ggpo7/NXHv5fFw/twI8aixZFMQWTdwG1LQsOK3wBo6U=
+	t=1790685778; cv=none; b=XksX401DBIfGV8rgYQ2xAH8TI015sWuJx6ndgU0ycmrTt3mF6IA5xGCsmoWtQ9DDmKIVSU1xJpzXBQfkVDQxzw9Fc9XnU7qWP1xeO3yVPwn0VoGbAbeOoBwYFnTJzr93cIbsXT6BbTRSohLkcied46x5LOGaUP+1SlymzsDXcL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790685776; c=relaxed/simple;
-	bh=6Sy6vgSYukgx1flhb82E53r8hjS6KeohuIzJbCR1Vj4=;
+	s=arc-20240116; t=1790685778; c=relaxed/simple;
+	bh=N/Fg0ckEM7Ej/EFsFzrgFeUexMpnCOX5K4Eclxi3jsM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=j4nds0cB7riA7w6446xA2dLZt6XLjTr+KDs1CBbsOnKM1MndZ4HBKaevWpe9yS8hy6TIfCovGxEau6DzPXaJsWFZX8xwJePKKqgIQ4g+CCdCKvsyS4h3wxZczYseZcTWeb8+yOYLj3F6qJCLSlERottgu1KN1CuEV/sSkRlxQuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RM7nQ0Ky; arc=none smtp.client-ip=74.125.225.140
+	 MIME-Version; b=bVnj/BPxNJIfWQWcVS5VTkcWPCA4bRieuId6RST9TnCLEXa301b7DshYgBBCCGoIaYHmS5/tinwfoGRJh2F1hO0DNGNW3mrn6pqKxItRuMUYl75BCke6Ob9+xoSxwWgyIHIdE+vVBZxsMSJBAQedrUOw/imOVHarMXAdPu8+cGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dKG+/2AP; arc=none smtp.client-ip=74.125.225.98
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RM7nQ0Ky"
-Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49b912d822dso30852905e9.2
-        for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2026 05:42:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dKG+/2AP"
+Received: by mail-wr2-f34.google.com with SMTP id ffacd0b85a97d-48af5ae31d8so423353f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2026 05:42:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790685773; x=1791290573; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1790685774; x=1791290574; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=4J1veNvmysC8QT8osypByF4KUi97wR8R1soWK43MPcE=;
-        b=RM7nQ0Kyd/I8SjIqCOnMNn+bgE2V+19fWDEl1TZSO87meezXkSFYLMXb6IWucAX/XB
-         y9mS6G2sjZ0oK/JJNsNr1httHAZjCRB4/nwvAmVlNI3frS0daLpMuCvf+dQgCDFCXtRk
-         9O3NBLdZ3xABQSRfehSFdc3rf/Ha5HJayHWSTDb8YqmrX1UDlxVqsgiiOKT66Ne8kkO2
-         oN4OfjAK0uuFGcFABnt55O77bKbZFGv7xjj8kpZvuxjAQZyXGVY4cOAYBDCrmAIjeZ+4
-         jgFnzrQTa4RyxhvGKL7Lppn5mYktO8hcy1AHX+IRMbG6cqC2VVWa/52LhrMUkUeKp38N
-         PGsg==
+        bh=CklJvYA4bHZqCaFDmRqhZRi0YHZtTPoVpEjj+VZ/lJo=;
+        b=dKG+/2APWwKALQYX/7+jVAtEalR02YF9k4bbYEiPRcEQBrCpPW33q2qDEyi9wpKRWz
+         b2CRdW7kqUMpV11zZY1rrKmN0gU3YWHG1irgvES0xD2KlgYAcBZnmIdoVbUl+H5fr7aJ
+         Yh0HyTWIIKh4ytrO88wfukb3KMl8gGp2e0pBfts+2yDCbv7VVVKOutmOcy2Sv+s8wfys
+         m67mf92UvFgcHwlMT07TtvrdQDq1NYAf2uzpXOqGJ9Fhoe+sng67UAuY4GzSrEsCYLIX
+         zUSqTBD5jlzAN2fCcbCoi3MRs1SjpKok66O/oUEdXSrbvkxGOLcrSJxojUToahmU6psB
+         A5Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790685773; x=1791290573;
+        d=1e100.net; s=20260707; t=1790685774; x=1791290574;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=4J1veNvmysC8QT8osypByF4KUi97wR8R1soWK43MPcE=;
-        b=1NzAod16ziLsTXU5iD/VxZ8caLTA6ZAJNXTZYUlbFNdFzdTaNG/mFOYNmUmNH6NTRo
-         8BAW8eJ1Z2Tg5OgfSnifOG54MlEPq1gOOK3x66G1k3KSLR2NtlZKgg9TIvZGKeuYc9F4
-         1/PLc1ws2lwlEK3FoHMc+7p2u9Rj+T2b+4UAemQ1UfU7bJ57JYzTJWfAkCj1he2RuaXR
-         PVYcThTHkYcUlaGqaiiM+jL14rBC3FQJQKG69Ol9L6bS4r1pWWJmuzuMqf4LP7egqKuV
-         pGCDTe6QkXFqat5wziaRneCD0BFFHfW0C6ap02fUx6F5idRHv4LKsG6xtN+D0uEepFVL
-         TcHg==
-X-Forwarded-Encrypted: i=1; AKwUvBw7w/9w5B0jAyFxGM+2qbcVgxT49izfbGWq63vcoMWsPgNus7vJLO5rEuFA4yL64kXrIxCYKvX6aCQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++lQtV2mR7p+ACigsqatChqQBAfG6KC1E9VybzWDYtr648aD4n0A
-	iC+AK64D7Dq3eOKHgQuPe2ivNjhGAdEavCtQZ2anKa+fCSMzE0obPA+Z
-X-Gm-Gg: AYBFou2tovLo1Kq5D/AajuKYqrA+rPM0QQ5rEKzUU0PzeFVsLRmofWOAxA9oQTArS7Z
-	1JMV89z2r2+in5ydYOqMvoADdlzqu6X4hR2E5Ji1+vpgP5IDfhk65otmLey2SiPHwGRet2LqgjM
-	cpe7ZWqWWhKZsOZnn8buiW9EhtqdaVDxIYrxpV0QPH/uuwJYvbzDkTgFwnjKHdYtJ1u+N6i2eAj
-	YMlxEfxONmgD+Pl9Xsoz7J/wRFJrqNtQ4Ho9mao3MBXATttsTv9AdhLzfcTA53KB35Mf/zznI/S
-	tCbM/qQ/VkOZC2kdRpU5Aih31jlRi3bITDff293DCG9G4iif/o0Hqj4mVwyBenTGmfWKqxeQKjj
-	RQGHRsaojmE9PmZijx3SIBoXcdifAglQwhdZuXiotnbjE9eCtHkDVhKmxSofBhN/QBivdumskKk
-	I/i/tL0J6tl/C3bw4aqMkXgoDN3mYmP3ntZDrT2TllM6T4H24tCtr3bxSILFX8qCkuBgg78bY4s
-	rUbNOszhQtXkIVCV1jViOkugMttl3cyKby8bUR+0mD4/UO6ix6dzBBv8OP9f6tpYnq2xrFPK/As
-	9qYLMOZEkghCYU1LsQ==
-X-Received: by 2002:a05:600c:19d1:b0:49c:d818:8764 with SMTP id 5b1f17b1804b1-49fe7b62c5bmr277276605e9.11.1790685773162;
+        bh=CklJvYA4bHZqCaFDmRqhZRi0YHZtTPoVpEjj+VZ/lJo=;
+        b=TDLFKk5I4fPg1NwQw8ftJEGRmTHG5uqwgqz/62UK1aK6Rq4BdV+LliHZF0izlva2b3
+         qHZh+6Bb7LJUtJswojarqndvKdpiK3DTMO8U+BUpbHbwlHEGOifZMgidmVTqymTpB+34
+         VS9kJVQBPNPDCBKjhnl+PTQhyVbxi5y0tH3ToxQr0Hs6vBp0qoz6ULuWOGhMw9HbH9/Q
+         3aGdluXxstE/qjibJU2ym8vZK++jBks3bu+HhDbamilvvDTgrsvKQ0wS3/Kb6czIQsv9
+         K09BvHZBMnvljNKmjZAnu7qUSJmvyM09XsWRDacjoigvQXb7q1hLrxMKakzGXmqoChJQ
+         a4KA==
+X-Forwarded-Encrypted: i=1; AKwUvByZsCsQ98qahv3Z5F9h/BHjlKOCmxSt6Wsx5orZzSzAcaJF/rG1pqxJQJCZmOJ0tj6dPwAeDS2uZ9A=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLCODzwjTVfoMVSrN9SK7Vzm0Brc1jbrVkE3uBWIm6GM5PiOA7e
+	tdQcPZWXYDQGtV831YcR4eIAVk/OsOz0yQKCJfrRRkbicfC6rrzsc4ts
+X-Gm-Gg: AYBFou0Tn38hOW107rtT3X5BgSdH1mLe3WWB9xekVO8szcFUUOJ+5faqEXx/4TCnDY/
+	3WuQ0ovtRMbJH1naX3nKmbg2ugeR2RQFQ2GcgIxkhhGaxxfUdFsjGKZ09o/BmL9d0jXz9EGCbB9
+	+vAEFNxVRX2IEZ4QDm+F2jj1jBtfx495b6qWK2XR2TPWKzrnHvwxgfFDYXX+VnfJMyuWDwB75B4
+	cd0rFthXojwfGci5YwgOtA+yBOiAa83q1YYWXscrNDapXoTenyXEmlFXw1B7Fp28IstmSBeT83O
+	FtT+77qDV8Suk0cQsWt+YKaowX3ITWFQSn7nKmTiJPCpqZBUEyw+9ylCczmYIym5CQOBstAP9CP
+	R3Ym8h9kai7ymjX4jqH3pyzjK5er/iH1v6K3q/QkFvtZ1ve9r6Hx1p9V9bFpOeDGCGOWn34lwnA
+	65Mv/4eWhYfaGjsvutz555PTqx1jrTraPQKmH2GHr9xiu00pOOxHMQ6+HD2d43PCxrg69+AKlYa
+	MTfXipmDgpQyTiVxe7rMe2nGJ0QoimGvJagYgwHw46YtuFjnNLDLLqql1WS0qS7IjLrwtblmN5S
+	d009GTLPGXlXW4MkbQ==
+X-Received: by 2002:a05:6000:2f83:b0:487:27f9:843 with SMTP id ffacd0b85a97d-4887172a612mr29919339f8f.56.1790685773839;
         Tue, 29 Sep 2026 05:42:53 -0700 (PDT)
 Received: from iku.example.org ([2a06:5906:61b:2d00:be4b:8730:c872:1736])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48af502da06sm4436630f8f.11.2026.09.29.05.42.52
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48af502da06sm4436630f8f.11.2026.09.29.05.42.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2026 05:42:52 -0700 (PDT)
+        Tue, 29 Sep 2026 05:42:53 -0700 (PDT)
 From: Prabhakar <prabhakar.csengg@gmail.com>
 X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
@@ -81,9 +81,9 @@ Cc: linux-renesas-soc@vger.kernel.org,
 	Biju Das <biju.das.jz@bp.renesas.com>,
 	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 1/8] dt-bindings: iio: adc: renesas,r9a09g077-adc: Add RZ/V2H(P) and RZ/V2N support
-Date: Tue, 29 Sep 2026 13:42:41 +0100
-Message-ID: <20260929124248.237032-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/8] iio: adc: rzt2h: Wait for the analog part to stop after a forced stop
+Date: Tue, 29 Sep 2026 13:42:42 +0100
+Message-ID: <20260929124248.237032-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -97,97 +97,52 @@ Content-Transfer-Encoding: 8bit
 
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Extend the ADC binding for the RZ/V2H(P) and RZ/V2N SoCs to describe the
-ADC variant used by these SoCs and its differences from RZ/T2H.
+When ADCSR.ADST is cleared to forcibly stop a conversion, the analog part
+of the A/D converter can take up to 2 ADCLK cycles to stop operating.
 
-The RZ/V2H(P) ADC provides 8 channels, has a fixed conversion time of
-20 ADCLK cycles, does not support calibration, and supports selectable
-12-bit and 8-bit conversion resolution.
+Wait for the write to ADCSR to complete and allow the analog part to stop
+before reconfiguring or restarting the converter.
 
-Add RZ/V2N with RZ/V2H(P) as its fallback compatible, as the ADC IP is
-identical between the two SoCs.
-
+Fixes: fc3b97dd71ab ("iio: adc: add RZ/T2H / RZ/N2H ADC driver")
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- .../iio/adc/renesas,r9a09g077-adc.yaml        | 38 +++++++++++++++++--
- 1 file changed, 34 insertions(+), 4 deletions(-)
+ drivers/iio/adc/rzt2h_adc.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml b/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml
-index 5b496729022e..a0fed2f31370 100644
---- a/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/renesas,r9a09g077-adc.yaml
-@@ -18,10 +18,14 @@ description: |
- properties:
-   compatible:
-     oneOf:
-+      - enum:
-+          - renesas,r9a09g057-adc # RZ/V2H(P)
-+          - renesas,r9a09g077-adc # RZ/T2H
-       - items:
--          - const: renesas,r9a09g087-adc # RZ/N2H
--          - const: renesas,r9a09g077-adc # RZ/T2H
-+          - const: renesas,r9a09g056-adc # RZ/V2N
-+          - const: renesas,r9a09g057-adc # RZ/V2H(P)
-       - items:
-+          - const: renesas,r9a09g087-adc # RZ/N2H
-           - const: renesas,r9a09g077-adc # RZ/T2H
+diff --git a/drivers/iio/adc/rzt2h_adc.c b/drivers/iio/adc/rzt2h_adc.c
+index 8ba7b0fde8a1..d53888730f00 100644
+--- a/drivers/iio/adc/rzt2h_adc.c
++++ b/drivers/iio/adc/rzt2h_adc.c
+@@ -15,6 +15,7 @@
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/kthread.h>
++#include <linux/math.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+@@ -58,6 +59,7 @@
+ #define RZT2H_ADC_DMA_BUFFER_SIZE	(RZT2H_ADC_DMA_BUFFER_SAMPLES * \
+ 					 RZT2H_ADC_MAX_CHANNELS * \
+ 					 RZT2H_ADC_CHANNEL_BYTES)
++#define RZT2H_ADC_STOP_CYCLES		2
  
-   reg:
-@@ -55,19 +59,22 @@ properties:
+ struct rzt2h_adc_dma {
+ 	struct dma_chan *chan;
+@@ -124,6 +126,13 @@ static void rzt2h_adc_stop(struct rzt2h_adc *adc)
+ 	reg &= ~(RZT2H_ADCSR_ADIE_MASK | RZT2H_ADCSR_ADST_MASK);
  
-   dmas:
-     minItems: 1
--    maxItems: 3
-+    maxItems: 5
-     description:
-       Must contain a list of references to DMA RX specifiers.
- 
-   dma-names:
-     minItems: 1
--    maxItems: 3
-+    maxItems: 5
-     items:
-       const: rx
- 
-   power-domains:
-     maxItems: 1
- 
-+  resets:
-+    maxItems: 1
+ 	writew(reg, adc->base + RZT2H_ADCSR_REG);
 +
-   '#address-cells':
-     const: 1
++	/*
++	 * When a conversion is forcibly stopped, the analog part of the A/D
++	 * converter takes up to 2 ADCLK cycles to stop operating.
++	 */
++	ndelay(DIV_ROUND_UP_ULL((u64)RZT2H_ADC_STOP_CYCLES * NSEC_PER_SEC,
++				adc->adclk_rate));
+ }
  
-@@ -101,6 +108,29 @@ required:
-   - clock-names
-   - power-domains
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,r9a09g057-adc
-+    then:
-+      required:
-+        - resets
-+      patternProperties:
-+        "^channel@[8-f]$": false
-+        "^channel@[0-7]$":
-+          properties:
-+            reg:
-+              maximum: 7
-+    else:
-+      properties:
-+        dmas:
-+          maxItems: 3
-+        dma-names:
-+          maxItems: 3
-+        resets: false
-+
- additionalProperties: false
- 
- examples:
+ static void rzt2h_adc_set_sst(struct rzt2h_adc *adc, unsigned int ch, u8 sst)
 -- 
 2.55.0
 
