@@ -1,128 +1,210 @@
-Received: from mail-oi2-f42.google.com (mail-oi2-f42.google.com [74.125.231.234])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971722F5495
-	for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2026 01:21:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.234
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790644902; cv=none; b=Q2j1X/+m2nePndvzbIpBSR2xgxIK1aGyLTSuX8IsK4xlgWmMegwYxkojNU6PbNvlwbgZ0xQ4MLal3uqgFHYG6w0ryCpjJ/VqodxfHN3GXnRx1D+tEkF+TAt2f1tbBVtO5MdOX6eHOL36qzrLS6yDVKJAiSjbS+oGXyjAq5I7/3g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790644902; c=relaxed/simple;
-	bh=n0NF20FVc7dFuhkFp5r7/ym4uGaeOxlFX1AIR7oub6o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Auamu7NZF7hphCZ2ew6Ntt2XDhVhEIGzqqGsclkkPR6PmQV7pCdB5CfUPuCBwYRr5NmoFnz7RUm/gGNhOQe5cbIb4OtWAe8eP0+tV3Z9StRvBD2tDLMj1Rj9qAPPUkPVEg7AXfR1fJWuco+SklQ27S3wffjc2M9TFOJv60DzOeA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M3/vhqrA; arc=none smtp.client-ip=74.125.231.234
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C9721FF23;
+	Tue, 29 Sep 2026 04:31:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790656289; cv=fail; b=mA1FS/xrxIXFqSUPi9OE8vyw3m6s0X+5LmtvkvfNRKe1R2xtzz36qQM4zd7TkWQXi20w213T+MRKPakqQ9S/9SktTjONFGNLKYNtc8Md83icpOUx5U2hjf0djnB/AGfL0inP8xleKQIxVVPYF3shBlxnb+rv7n9oL6vgcr9JTUI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790656289; c=relaxed/simple;
+	bh=sajwWxqIhUr59cC0g7uR0ZSXFJsdZMABO21yJIx9CRA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=lg/kibb//U+AkhPLcltZdSp6lAUhr+3cCWeJMTwdbFPuNXAlLMwdT4B1B44hf+KlJDcWimx77QpWJ5kA/8oGtHZQ2JQkk2yPxHfz/D9dc7XiQW36WceWIjm1nZkYx4N1f52seosvfaTkYPMYuoMdh66rnp/YZBMMUYEzh+JEOp0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JFk9NlMj; arc=fail smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M3/vhqrA"
-Received: by mail-oi2-f42.google.com with SMTP id 5614622812f47-4e874624e83so521432b6e.1
-        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 18:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790644899; x=1791249699; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EdlWV1UrrswI4TlOFB+Lu4Lt2sreQh/UqmTFUVR9kI0=;
-        b=M3/vhqrAC67vr9DJocBiCDDOLHEd1dL5VFv24euU6SzbUQgHu9Hm7maiSoOTskWh63
-         rZWQxsASTEzqO3k4BvaPgF2Xh84s7H+TEogi8ngp5zHFIWKRThk1v+JpRo684akO/ylU
-         X77lL45SKVMjGibP9BE7y4CWcP8EuACrgLLoaM3PD3nscYWNbN8JkOP2T4Jis5bE70gj
-         sd87GW6TJBop8vyf5s4wyiAOhlKp1UBFfeS8oQtuCOw/hR//cIlq8QFZJKhxXfi0CS5j
-         WwPytA2b/PdzH3MYweW4JNnU1Z0U+h8+kuUx6STHFB1adQXRN1jCL43LO97zeSY7XxQF
-         uIBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790644899; x=1791249699;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EdlWV1UrrswI4TlOFB+Lu4Lt2sreQh/UqmTFUVR9kI0=;
-        b=YNxZhrNYK2bdkOgx55PvYoeO5dxfIQjNNV2FE8wJ6IqXw7tH9kdSEWhDttI8srmHo7
-         fD1viDGuDUUp5dm0VjzUUsBX4Od+LtG4XhKtWEl2saOm8wh8RYfa6Hrt4Dp5SyDqZWCV
-         rCLDs1SKstousVMk8r9zK5uMbwlsg6jfhhRqz6V4wyNVMR63hOR17bVmakx6DJ4to/Ie
-         o5DxlsK8iuw+ySilXHfGAKFSWWklEQEzAayOFdDY4hJqnOKlPeQ3nLHQodU847bi/oMk
-         kXRhtq1vNDFbikERas2/Eae+0T1aWm/fTzVQ7BD4I2gArshg6TH3vnz58u/LaDkW001z
-         qKgA==
-X-Forwarded-Encrypted: i=1; AKwUvBxxUqbjrdKLNIk93J2cikwvS3R+trqiGRigpNxmmGDp8OmBJ7T1ygqJHSNxsoV9G/qYAmFBGAN6iww=@vger.kernel.org
-X-Gm-Message-State: AFuF++kEEvLydoO4Rvc/BtZnnj2AUXEV0MidrTiho+HmOOLNy+GVbJiy
-	gGGMdpE6LHjuUMTJRHxTGisVye1Mz5oXgLHRIAi07+/+R5swVRHktTh8
-X-Gm-Gg: AYBFou2h4mp0dcE67CwOXsI/Cy9mNVnObEdSvLUpxoTyuEsbE2ioEBxxuzFeBFAffK6
-	vWEbsJSQ6ummkMzmuS1VI7w5f/YdbijikqdrgKh8nP+GqdfKgK+Y6JclD8TIUa0JGhZVbem9T1+
-	/ohtn0jO1qUjxKz5Vwx6GT3UHJgSrHiSLSnq+QD5J1ntO/ZFWUEzk+BMwdDE7KVV2PqdlCCSE+S
-	yaK1cghSyyG5aAIzJ6Kmxr48x5q1AXhRv93Vyv+7+r71bTwt2n7yByfAffsHoCFzXfs35rg/Gul
-	nbT0og3IslaitPrEQKh7bPr/fuS6a2ENyZD0ruxNmntIjPcvqSUT3WAr7pfnEkzFLYz6E6BHajT
-	HSjfOb0mz1Ooji2V31CxgyBK5WXaQDTJHArxbiTgemrWLIaExezE3HqbZz+5M0udFmZFHgice7/
-	lxVIHgBw7T9TwomelCwnqpxc28HRnJAKMJ/WzEdcZEuVZrQGTRkRqSjDFGfkEEfzxPigziUfpZj
-	QVYbGDC/wNRpRAYT7JDh4MURXdCy5zWTfGFCysB9DX3IizHDCk=
-X-Received: by 2002:a05:6808:c18f:b0:4d6:9133:cff3 with SMTP id 5614622812f47-4edd64228bamr679952b6e.26.1790644899389;
-        Mon, 28 Sep 2026 18:21:39 -0700 (PDT)
-Received: from archlinux.lan ([136.34.156.120])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4ebbc7b9453sm3546338b6e.13.2026.09.28.18.21.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 18:21:38 -0700 (PDT)
-From: Danish Khateeb <danishkhateeb03@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Danish Khateeb <danishkhateeb03@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] counter: Allow 32-bit tasks to use the character device
-Date: Mon, 28 Sep 2026 20:21:38 -0500
-Message-ID: <20260929012138.71156-1-danishkhateeb03@gmail.com>
-X-Mailer: git-send-email 2.55.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JFk9NlMj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790656285; x=1822192285;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=sajwWxqIhUr59cC0g7uR0ZSXFJsdZMABO21yJIx9CRA=;
+  b=JFk9NlMjJ2V18QRs2bTBNnzZ6qUUeDGjN1O0UwQe2g8b8B5g69JZNiEE
+   7wes88S8a94o7sVcEK7qwgllt8WcP7EuId8/5EXfLBlnSlCY1hyFkMXKI
+   J4uRFr579zGxtFZayvmGspyWS17YXhVGrH1rU+/soBHyN1L+okRIwzzR2
+   dg2bNWQOzWF86eIpwTMOaVDeNs9amuM/Ricr8bWW6hUAruTHnIgmvoZPn
+   9DYHWPQW7rD9YfSbbD1SjAvucbyVrHq2xs33qpYpiUdIgphf+3XnFIwYv
+   3tgoUL/e6B+4ErEkjxLUhvO6Wh0vXPOuMnPTm6EuKBQN1GnwOJcZEXLAg
+   g==;
+X-CSE-ConnectionGUID: nE/CIO54QJ2hyigTMkbZ3Q==
+X-CSE-MsgGUID: 3SmWeLJqTd6O33bVs67htg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11919"; a="94079450"
+X-IronPort-AV: E=Sophos;i="6.27,129,1787036400"; 
+   d="scan'208";a="94079450"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 21:31:25 -0700
+X-CSE-ConnectionGUID: b7v7WaYNTxiI3vS0obxwmw==
+X-CSE-MsgGUID: +rx9AlM0RzWroVNZs1uUNQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,129,1787036400"; 
+   d="scan'208";a="283334843"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 21:31:24 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46; Mon, 28 Sep 2026 21:31:24 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46 via Frontend Transport; Mon, 28 Sep 2026 21:31:24 -0700
+Received: from PH8PR06CU001.outbound.protection.outlook.com (40.107.209.68) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.46; Mon, 28 Sep 2026 21:31:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=WoBcuvD63oryksb+CFn1W0fnbPykCSGN8IwWJqcy+u+7dHgolMt1Q14GdXUVQxTQ1guGHNetVUfKHQKQ8W8v7IwmyzZ4dBTzRWMgAKkicF/phmTUpP0xymOBHH885DuqYHXY5fDjlTWgTOsRXXfdPjG+G40NaAAasYZIaTY1WHWRy5801K+ovQpXwSycaeZ4vRL2pKNwXMA+sW0pDJXbe9vw2a7lZsfih2W9rVDRhPMA637DI7WENya18uyBIT/SedGRKKvULjIR1Tq1L05XBovCkAkouVEDo3XUGqt0hEv9pTJt4fxzfymFF0nPEjI2SZ9dAn3X+WgyeTEliX2A0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sajwWxqIhUr59cC0g7uR0ZSXFJsdZMABO21yJIx9CRA=;
+ b=Pyw2+2LEfLQ5hNhYkcZRKAEsKUzGfFQxo0JhxY+dCEyRKNVc27q9iuVNeSqGSsjVOT1M6stbVJuFWu3yJ2gK8gGlISW/sihh1cyxMjfZ15uSxICQ8ac4PUEPcgVSIzHDiRI/QaL45d+8LxrtRqA7ffkJGBWkxy0mZWYl9vGtk1V2OW4w4DeqE2Fv3LSC+yr3+M2hfg2XkjlhrvlPGhH1gS7lnGz/DfxXKoBaeJRg7HxCaA1yYYlMTanap6H8KevW+wtgdjhVD6WVHh+u2+WHNge74vOvP3CDp0blpBIzNMDTA3xpD4zvJllWyERKgtQ2mXfjQiYSZLhwfWg5P2/ozw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ0PR11MB5613.namprd11.prod.outlook.com (2603:10b6:a03:3ab::12)
+ by PH8PR11MB7048.namprd11.prod.outlook.com (2603:10b6:510:214::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Tue, 29 Sep
+ 2026 04:31:16 +0000
+Received: from SJ0PR11MB5613.namprd11.prod.outlook.com
+ ([fe80::a7ca:db6b:7913:d6ae]) by SJ0PR11MB5613.namprd11.prod.outlook.com
+ ([fe80::a7ca:db6b:7913:d6ae%6]) with mapi id 15.21.0451.014; Tue, 29 Sep 2026
+ 04:31:16 +0000
+From: "Zhang, Lixu" <lixu.zhang@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, Sanjay Chitroda via B4 Relay
+	<devnull+sanjayembeddedse.gmail.com@kernel.org>
+CC: "sanjayembeddedse@gmail.com" <sanjayembeddedse@gmail.com>, David Lechner
+	<dlechner@baylibre.com>, =?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, "Srinivas
+ Pandruvada" <srinivas.pandruvada@linux.intel.com>, Benjamin Tissoires
+	<bentiss@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-input@vger.kernel.org"
+	<linux-input@vger.kernel.org>
+Subject: RE: [PATCH v6 00/14] HID: iio: Introduce devm_ APIs for HID sensors
+Thread-Topic: [PATCH v6 00/14] HID: iio: Introduce devm_ APIs for HID sensors
+Thread-Index: AQHdSCLIz7+mn3GAhk62JH/qThPYhrbi9VqAgAIQmmA=
+Date: Tue, 29 Sep 2026 04:31:16 +0000
+Message-ID: <SJ0PR11MB5613E265B13CA359CDD40E83938C2@SJ0PR11MB5613.namprd11.prod.outlook.com>
+References: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
+ <20260927215731.59fdb69b@jic23-hlaptop>
+In-Reply-To: <20260927215731.59fdb69b@jic23-hlaptop>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ0PR11MB5613:EE_|PH8PR11MB7048:EE_
+x-ms-office365-filtering-correlation-id: 7ee445a4-61db-4a4a-ba68-08df1de2804a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|23010399003|7416014|366016|376014|38070700021|11063799006|56012099006|6133799003|10067099003|4143699003|22082099003|18002099003;
+x-microsoft-antispam-message-info: ZB/4dSEUnz+UsP+aSUvmO3vNTinkpQnqsNizR4EAu1soJ13PGIX6Qh3qA4vy4cglTlSpP1ghKenYdwBb8hjG97Gl5qPfvGgj7s2umz/QGWT4ERx0WPcfjtlp6/bTLckF7OLYRLuNLk0gDlRmokci2msH9tRizdVJ2md7/KusmIeprVXgC0RbwC8pWkHX64ziRYaYg5pr6R3y3LiyxfJOD09/s+KqjbNmftU3MxhOl1JLgJPBUxBgAJ1F3w9jlwaTDv5karHRTrM6UUunWGz+a+Ehkr3dEF9oJeCnf4FInJ8WkxyNPpGPJ4mE5pLNqq4DfDdy0Jm86DK9ZlJ6ItN5cF3IDJK3D0VaLORIW2pBRsR2e8YJrXSHPx2KetFRDIw2Pox0npw3gG87jbe1Ts/tig04iWTaOB+o2MUUdgRonFGr8fRlMG0y3AMpN5xw+zwmRPAexLooSvGRC9ILXcyDQxYje1GnorEClW1WvCtxm540L3cJKWA782y7ora4IqFKbfp23WroSE05HEJbYMBTt01zXGWaeGAE/dvkxuwioG3upH4r/TW8NSBk9r8WlmmK5dSQaDXKnDLBYmmEXqk/0+Rkk0SA0lHZqaHtpV0efHIbA78WSkwS7AoXbND7bdhMMtJ5Xf4GE2t5ue+s1r+APuSQYoxxR4PzW3hUw37qE5OrWWyzf0NDp+/vQFnKkk+3
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB5613.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(7416014)(366016)(376014)(38070700021)(11063799006)(56012099006)(6133799003)(10067099003)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?W/DDbfe6C3uLhqeK5W7uoTpFjR3xZGPESui2JjkYIXepqywHwW+b9DEXyG?=
+ =?iso-8859-1?Q?5aq7xui3nlEd65H96xE5sI6cPy14KzbxaLxeP5PzrWK7zCPBDbZZOZ8s9y?=
+ =?iso-8859-1?Q?F96Qv3eekdcuxQXrhRU2LuuTsf0Ol8erUnYE9xKnR8ziIVotJEyR4/PAA7?=
+ =?iso-8859-1?Q?jhUM4x6kcFmFLbyID3krir8eySpHUQ3rprDOtu5uRcD/ymABVdJHWHiMM8?=
+ =?iso-8859-1?Q?kK6e+S6zFUaf1ALyTZQp4HW1vaZKA4iXmc2TbxakT5acsLZBdx2j0KJEyy?=
+ =?iso-8859-1?Q?RuzuUeuJasvSw9wPFZRHAtXywKd2SZM0i79vWoqeL80PQMEXdlkW/+wQzZ?=
+ =?iso-8859-1?Q?1tzpHspaXxF6N58irePboC6IivJXzHOIMYb6NB/gYgUCUYecatdV9HOZYl?=
+ =?iso-8859-1?Q?LOOP1oXvvMSl23X8rTGcErN2VwVWAsJCrZjOEFnHlm6t5EGWtsc7tAq8OA?=
+ =?iso-8859-1?Q?Df8lpwUVBiTnRVa5zSFLQbU2hFclw0XPBnOKXnL2mL2zfgUaRCwjBQrFSV?=
+ =?iso-8859-1?Q?WEFCM4hXoGtOYhFrXzZk5Pykp0KsCvyRA9QJ6kHW95lZFN5NBIvMrE0ozf?=
+ =?iso-8859-1?Q?j6d58H56ty3PUUlbwTC3xxLZjIlC82+BpHid3nsNyYdObvqjAKtekOhMJ1?=
+ =?iso-8859-1?Q?+ti3AP+tJvjdvHxRRyAuqVCaJ6jqXlkQf0U41ZrO7VtHVHtFCg/4AbDn/w?=
+ =?iso-8859-1?Q?PYe5k11yqYb+Q9YVyg+omohGw+QIVTM5ubp34KquWnH/UTHIrgHqw2BSYv?=
+ =?iso-8859-1?Q?Byetb86yoczu6Myu+Roz7B20j+t1dze7mlwGn3gwlBk+Av3tAyhUQiyMWZ?=
+ =?iso-8859-1?Q?OK4dHR5Oc3mJN29xftRy27kjraZN9gEy1xVZaFZG33S/FZFeO+RehohZYg?=
+ =?iso-8859-1?Q?mSj/NaiHmszll05rlb0T9/V6/VIqF6oSx0pLuiSFDp9UN3tnxPW648/xjl?=
+ =?iso-8859-1?Q?pFRco84C/72AlQE1snAvBlfAcDTS2k1lZMqXuvLeUqEn02TxWbDlpi8QYQ?=
+ =?iso-8859-1?Q?aZR5lg7n/nXaj8uGX4hlvrnfm+ROr50oUp6L3bn7piOhLfB3odlJUCGWWw?=
+ =?iso-8859-1?Q?MHF7kdKLJDx5lNrniuWpjCLaocv//MvAmTV1bTcfeQoSocssRiV+ckvwxi?=
+ =?iso-8859-1?Q?VbCL/RCS/0oulOscVaJhJDAdjH2Fr0lUlAts9tmFtg1x3tnqKYPOljfeCu?=
+ =?iso-8859-1?Q?fDVY/9CJaK5Q4QG15JdG3ePVUUaEMDRrRR3IbsuOzrR6BzH80aAAEF4Avn?=
+ =?iso-8859-1?Q?cYsEmHPFH3xs9wm53eCBKAMUVqrp7ekjuQZ1joHRkv+laSCc2+owKB+k+V?=
+ =?iso-8859-1?Q?pzxBjaH2/yfFPqUK5pDKg0E+FfsdSCwRSKdDJFBYOb4SbTkLpuGq3zqMfu?=
+ =?iso-8859-1?Q?ojdRxSVCqgR+WvQ0KZbZ22WEGLzOd4QpRLQQ1omMq0KrVEy+naqb0KXNPh?=
+ =?iso-8859-1?Q?NWuHYAbbRthotAuvLN4zYQYSwjBwvWy7aR0YkXp4GEUqebXZwKdFhMvgbT?=
+ =?iso-8859-1?Q?Q/a4luuRoFPagXAyo6qYL99n7oTxxEmJAUo90HeU1lKGQ/dxTj4mLy+10H?=
+ =?iso-8859-1?Q?9c8GGBAJCdqYaLtplKr+0bDzY0q2smsj3P34DRCrmMWla1jMpuZU17zsFm?=
+ =?iso-8859-1?Q?EG1VNJ7PyemvUvgjvAZBFy6WdgUCkT4PHU/+lqzCpVgc/OL08FJIbSh1lK?=
+ =?iso-8859-1?Q?lnRHtXfUuz9pEe6lphbQBhwhE2s5ZgCpSaADiGnSpgQX654WeeobTZTxLu?=
+ =?iso-8859-1?Q?lSHECyHZZF6p2oYMDaWA8xqQF/Yek+0/IJgHiEUe2NsKfc?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked: DuuwOFXQlgJpn1nwLpLc/QUKo7C4qp0+bvbqmix5aKAXB3COg3B0bDs4NL9OsVLYJ3fgXBuJXFLpZcJCWPU2TRiprreM5WIECel0CdgeQayOj8t6wMEplG8PfeEjIRq7P18XI9VbgFf+nqyDdFQEaGx++4gOBkiGJbuKzjVKqNbfAAhk/VFwhSgz+qWIPvVZJpN0bWQLwzLzf4DTO2RDi+K0Wdg2W8da19/C0gW5GEML+PBu7qZFghPNeiamkMD5VEvYFkUqFNKTmO/qHgM7Lzoh60/KxSwyxH9s7tdenaSfGUPmu7daM8OQ9Ow9PIv1mTiztAsqLNEAWnrh6uCsug==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB5613.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ee445a4-61db-4a4a-ba68-08df1de2804a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2026 04:31:16.1660
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: f7fOTro67c+ZSDF4zco/zHA9DDKCPvYCMoF+Z05FEuWBcrR2gDc+p9+El1Vboz7JG/WZTIJkLx++LVIwt60+kQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7048
+X-OriginatorOrg: intel.com
 
-counter_fops has no .compat_ioctl, so COUNTER_ADD_WATCH_IOCTL,
-COUNTER_ENABLE_EVENTS_IOCTL and COUNTER_DISABLE_EVENTS_IOCTL fail with
--ENOTTY for 32-bit tasks on a 64-bit kernel, e.g. armhf userspace on
-arm64. Without a watch, such a task gets no events from /dev/counterN.
+>-----Original Message-----
+>From: Jonathan Cameron <jic23@kernel.org>
+>Sent: Monday, September 28, 2026 4:58 AM
+>To: Sanjay Chitroda via B4 Relay
+><devnull+sanjayembeddedse.gmail.com@kernel.org>
+>Cc: sanjayembeddedse@gmail.com; David Lechner <dlechner@baylibre.com>;
+>Nuno S=E1 <nuno.sa@analog.com>; Andy Shevchenko <andy@kernel.org>; Jiri
+>Kosina <jikos@kernel.org>; Srinivas Pandruvada
+><srinivas.pandruvada@linux.intel.com>; Benjamin Tissoires
+><bentiss@kernel.org>; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.=
+org;
+>linux-input@vger.kernel.org; Zhang, Lixu <lixu.zhang@intel.com>
+>Subject: Re: [PATCH v6 00/14] HID: iio: Introduce devm_ APIs for HID senso=
+rs
+>
+>On Sat, 19 Sep 2026 16:06:23 +0530
+>Sanjay Chitroda via B4 Relay
+><devnull+sanjayembeddedse.gmail.com@kernel.org> wrote:
+>
+>> Following feedback from reviewers and Srinivas, v4 series was split
+>> into two additional sub-series to perform cleanup and preparatory work
+>> before adding devm support:
+>> - HID: iio: warning clean up and prefer kernel coding style
+>>
+>> https://lore.kernel.org/all/20260707-15-jun-hid-iio-alignment-v3-0-879
+>> 1574ad0fe@gmail.com/
+>> - HID: iio: basic clean up for usage_id
+>>
+>> https://lore.kernel.org/all/20260610-6-june-hid-iio-correct-usage-id-v
+>> 2-0-c3c5f0720493@gmail.com/
+>>
+>> Both series have been merged into IIO tree. This series introduces
+>> device-managed APIs and converts HID IIO sensor drivers to use the new
+>> devm-managed resources.
+>>
+>> checkpatch reports a "suspect code indent" warning on the
+>> DEFINE_FREE() declaration, but this appears to be a false positive
+>> caused by the macro expansion. The code builds cleanly.
+>If possible, Zhang Lixu, would you mind retesting this full set?
+Hi Jonathan,
 
-struct counter_watch has the same layout for 32-bit and 64-bit tasks,
-and the other two ioctls take no argument, so compat_ptr_ioctl() is
-enough. struct counter_event, which read() returns, has the same layout
-too.
+I'm currently on vacation and will be off for the upcoming China National D=
+ay holiday. I'll retest the full set once I'm back!
+Thanks for your patience.
 
-Fixes: b6c50affda59 ("counter: Add character device interface")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Danish Khateeb <danishkhateeb03@gmail.com>
----
+Thanks,
+Lixu
 
-Notes:
-    Tested on x86_64 in QEMU (counter-fixes plus this patch, KASAN and
-    lockdep) with interrupt-cnt on a gpio-sim line, toggling the line five
-    times per run:
-    
-    - before: tools/counter/counter_watch_events built with -m32 fails with
-      "Error adding watches[0]: Inappropriate ioctl for device", and so do
-      the enable and disable ioctls; the 64-bit build gets all five events
-    - after: the -m32 build gets the same five events and the same errors
-      for an invalid watch and a bad pointer as the 64-bit build
-    
-    No splats. W=1 builds are clean for arm64 (COMPAT=y, LLVM=1) and for
-    i386 (no COMPAT).
-
- drivers/counter/counter-chrdev.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
-index 61451ba74ca1..f5bf8e40096b 100644
---- a/drivers/counter/counter-chrdev.c
-+++ b/drivers/counter/counter-chrdev.c
-@@ -457,6 +457,7 @@ static const struct file_operations counter_fops = {
- 	.read = counter_chrdev_read,
- 	.poll = counter_chrdev_poll,
- 	.unlocked_ioctl = counter_chrdev_ioctl,
-+	.compat_ioctl = compat_ptr_ioctl,
- 	.open = counter_chrdev_open,
- 	.release = counter_chrdev_release,
- };
-
-base-commit: fd73f4a6659897191fa0d40695fe370925dd3780
--- 
-2.55.0
-
+>
