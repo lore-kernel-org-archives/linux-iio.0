@@ -1,140 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi2-f42.google.com (mail-oi2-f42.google.com [74.125.231.234])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB96A344021;
-	Mon, 28 Sep 2026 22:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971722F5495
+	for <linux-iio@vger.kernel.org>; Tue, 29 Sep 2026 01:21:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790633063; cv=none; b=TW/zowEyn3heZLd+aGy3qk9RS7zEqp+l5TptoY6aYdOuhNxKYNot5ieGJaGSDwaUpXYSxliADxAD9N4T2ScFNeyRPo5YxRj4/YmScF6QDKJHtfvCA5V8b+2SPUBmZP+15MZoRHVc7MUdwhsRw+NlzJWLuI0TQ/F4Nk2uGWAekJ4=
+	t=1790644902; cv=none; b=Q2j1X/+m2nePndvzbIpBSR2xgxIK1aGyLTSuX8IsK4xlgWmMegwYxkojNU6PbNvlwbgZ0xQ4MLal3uqgFHYG6w0ryCpjJ/VqodxfHN3GXnRx1D+tEkF+TAt2f1tbBVtO5MdOX6eHOL36qzrLS6yDVKJAiSjbS+oGXyjAq5I7/3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790633063; c=relaxed/simple;
-	bh=BwsjGz6iUh59cLgLUFJKdhLkOfQobRfo4RrxZOTVLJw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fLLiBKIQ19l8a3iSSUFeW5ux36kbrR17YzBPHxaQZ1yehIQLmzw43Bnvfl5g79zV89R0EZ1ZdaE7CnsluAkqzUlcOKRN66vDLUxTiMShHcACZ9x9lgwteZzuHRXh4urDey+iiNfD9vLxp9ovLgSoTXHqd5ku05kl5Ig8cATGTgc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kWTWbsW9; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1790644902; c=relaxed/simple;
+	bh=n0NF20FVc7dFuhkFp5r7/ym4uGaeOxlFX1AIR7oub6o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Auamu7NZF7hphCZ2ew6Ntt2XDhVhEIGzqqGsclkkPR6PmQV7pCdB5CfUPuCBwYRr5NmoFnz7RUm/gGNhOQe5cbIb4OtWAe8eP0+tV3Z9StRvBD2tDLMj1Rj9qAPPUkPVEg7AXfR1fJWuco+SklQ27S3wffjc2M9TFOJv60DzOeA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M3/vhqrA; arc=none smtp.client-ip=74.125.231.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kWTWbsW9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790633062; x=1822169062;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BwsjGz6iUh59cLgLUFJKdhLkOfQobRfo4RrxZOTVLJw=;
-  b=kWTWbsW945It6wCjqnGHXPKJnQ9D76mTKUkyEyYWZrChYXA6e6oPgHpl
-   yCzw+nfQECsiMflIXb1ucTkMiXyodauFzCVfpxKetI0E/eYa4+NG5BcGp
-   aXUqpMl9P6R0lFI/vpu8kegLLu8ILTon76zKPXPhPSavCXfctyGcKBSkq
-   e0yYP1X1NhBf9iWJPT9rNlSVFxawGecwiXb1qlUy2whLPtKeNTtuHmbWb
-   V5l9TX9w6iCQ5zJiMoxgTav3C35NmLEnQoIuPe0dMyIwI4vOrEnayVbbH
-   B97uMgn03jxrbfyAJorjfnKCKaZtNQpQLK/3JfLaXAK0gknhQBTCuHvk/
-   A==;
-X-CSE-ConnectionGUID: qvu2TkIsTby6dP+zrEh3DQ==
-X-CSE-MsgGUID: UT5IMSR9Rk2A/67G9lhNxQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11919"; a="90563416"
-X-IronPort-AV: E=Sophos;i="6.27,129,1787036400"; 
-   d="scan'208";a="90563416"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 15:04:22 -0700
-X-CSE-ConnectionGUID: YR79f9dTSi2hW8CeEJUDag==
-X-CSE-MsgGUID: xr+Z/rNgS2yClAwIheWc2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,129,1787036400"; 
-   d="scan'208";a="278539058"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.42])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 15:04:19 -0700
-Date: Tue, 29 Sep 2026 01:04:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: pressure: add Sensirion SDP31 driver
-Message-ID: <arrkYNNlD6_bCgiO@ashevche-desk.local>
-References: <20260928215422.3720-1-m.abubakar365@yahoo.com>
- <20260928215422.3720-3-m.abubakar365@yahoo.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M3/vhqrA"
+Received: by mail-oi2-f42.google.com with SMTP id 5614622812f47-4e874624e83so521432b6e.1
+        for <linux-iio@vger.kernel.org>; Mon, 28 Sep 2026 18:21:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790644899; x=1791249699; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EdlWV1UrrswI4TlOFB+Lu4Lt2sreQh/UqmTFUVR9kI0=;
+        b=M3/vhqrAC67vr9DJocBiCDDOLHEd1dL5VFv24euU6SzbUQgHu9Hm7maiSoOTskWh63
+         rZWQxsASTEzqO3k4BvaPgF2Xh84s7H+TEogi8ngp5zHFIWKRThk1v+JpRo684akO/ylU
+         X77lL45SKVMjGibP9BE7y4CWcP8EuACrgLLoaM3PD3nscYWNbN8JkOP2T4Jis5bE70gj
+         sd87GW6TJBop8vyf5s4wyiAOhlKp1UBFfeS8oQtuCOw/hR//cIlq8QFZJKhxXfi0CS5j
+         WwPytA2b/PdzH3MYweW4JNnU1Z0U+h8+kuUx6STHFB1adQXRN1jCL43LO97zeSY7XxQF
+         uIBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790644899; x=1791249699;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EdlWV1UrrswI4TlOFB+Lu4Lt2sreQh/UqmTFUVR9kI0=;
+        b=YNxZhrNYK2bdkOgx55PvYoeO5dxfIQjNNV2FE8wJ6IqXw7tH9kdSEWhDttI8srmHo7
+         fD1viDGuDUUp5dm0VjzUUsBX4Od+LtG4XhKtWEl2saOm8wh8RYfa6Hrt4Dp5SyDqZWCV
+         rCLDs1SKstousVMk8r9zK5uMbwlsg6jfhhRqz6V4wyNVMR63hOR17bVmakx6DJ4to/Ie
+         o5DxlsK8iuw+ySilXHfGAKFSWWklEQEzAayOFdDY4hJqnOKlPeQ3nLHQodU847bi/oMk
+         kXRhtq1vNDFbikERas2/Eae+0T1aWm/fTzVQ7BD4I2gArshg6TH3vnz58u/LaDkW001z
+         qKgA==
+X-Forwarded-Encrypted: i=1; AKwUvBxxUqbjrdKLNIk93J2cikwvS3R+trqiGRigpNxmmGDp8OmBJ7T1ygqJHSNxsoV9G/qYAmFBGAN6iww=@vger.kernel.org
+X-Gm-Message-State: AFuF++kEEvLydoO4Rvc/BtZnnj2AUXEV0MidrTiho+HmOOLNy+GVbJiy
+	gGGMdpE6LHjuUMTJRHxTGisVye1Mz5oXgLHRIAi07+/+R5swVRHktTh8
+X-Gm-Gg: AYBFou2h4mp0dcE67CwOXsI/Cy9mNVnObEdSvLUpxoTyuEsbE2ioEBxxuzFeBFAffK6
+	vWEbsJSQ6ummkMzmuS1VI7w5f/YdbijikqdrgKh8nP+GqdfKgK+Y6JclD8TIUa0JGhZVbem9T1+
+	/ohtn0jO1qUjxKz5Vwx6GT3UHJgSrHiSLSnq+QD5J1ntO/ZFWUEzk+BMwdDE7KVV2PqdlCCSE+S
+	yaK1cghSyyG5aAIzJ6Kmxr48x5q1AXhRv93Vyv+7+r71bTwt2n7yByfAffsHoCFzXfs35rg/Gul
+	nbT0og3IslaitPrEQKh7bPr/fuS6a2ENyZD0ruxNmntIjPcvqSUT3WAr7pfnEkzFLYz6E6BHajT
+	HSjfOb0mz1Ooji2V31CxgyBK5WXaQDTJHArxbiTgemrWLIaExezE3HqbZz+5M0udFmZFHgice7/
+	lxVIHgBw7T9TwomelCwnqpxc28HRnJAKMJ/WzEdcZEuVZrQGTRkRqSjDFGfkEEfzxPigziUfpZj
+	QVYbGDC/wNRpRAYT7JDh4MURXdCy5zWTfGFCysB9DX3IizHDCk=
+X-Received: by 2002:a05:6808:c18f:b0:4d6:9133:cff3 with SMTP id 5614622812f47-4edd64228bamr679952b6e.26.1790644899389;
+        Mon, 28 Sep 2026 18:21:39 -0700 (PDT)
+Received: from archlinux.lan ([136.34.156.120])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4ebbc7b9453sm3546338b6e.13.2026.09.28.18.21.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 18:21:38 -0700 (PDT)
+From: Danish Khateeb <danishkhateeb03@gmail.com>
+To: William Breathitt Gray <wbg@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Danish Khateeb <danishkhateeb03@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] counter: Allow 32-bit tasks to use the character device
+Date: Mon, 28 Sep 2026 20:21:38 -0500
+Message-ID: <20260929012138.71156-1-danishkhateeb03@gmail.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260928215422.3720-3-m.abubakar365@yahoo.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 29, 2026 at 02:54:22AM +0500, Muhammad Abu Bakar wrote:
-> Add an IIO driver for the Sensirion SDP3x family of differential pressure
-> sensors (SDP31, SDP32 and SDP33). The devices are accessed over I2C and
-> report differential pressure and temperature. Each measurement is
-> validated using the sensor's CRC-8 checksum. The scale factor is read
-> from the sensor at runtime, so all three parts are supported.
-> 
-> Tested on an SDP31 connected to a Raspberry Pi 4 I2C bus.
+counter_fops has no .compat_ioctl, so COUNTER_ADD_WATCH_IOCTL,
+COUNTER_ENABLE_EVENTS_IOCTL and COUNTER_DISABLE_EVENTS_IOCTL fail with
+-ENOTTY for 32-bit tasks on a 64-bit kernel, e.g. armhf userspace on
+arm64. Without a watch, such a task gets no events from /dev/counterN.
 
-...
+struct counter_watch has the same layout for 32-bit and 64-bit tasks,
+and the other two ioctls take no argument, so compat_ptr_ioctl() is
+enough. struct counter_event, which read() returns, has the same layout
+too.
 
-> +#include <linux/cleanup.h>
-> +#include <linux/crc8.h>
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/once.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/unaligned.h>
+Fixes: b6c50affda59 ("counter: Add character device interface")
+Cc: stable@vger.kernel.org
+Assisted-by: LLM
+Signed-off-by: Danish Khateeb <danishkhateeb03@gmail.com>
+---
 
-Follow IWYU principle.
-At least types.h, err.h or errno.h are absent.
+Notes:
+    Tested on x86_64 in QEMU (counter-fixes plus this patch, KASAN and
+    lockdep) with interrupt-cnt on a gpio-sim line, toggling the line five
+    times per run:
+    
+    - before: tools/counter/counter_watch_events built with -m32 fails with
+      "Error adding watches[0]: Inappropriate ioctl for device", and so do
+      the enable and disable ioctls; the 64-bit build gets all five events
+    - after: the -m32 build gets the same five events and the same errors
+      for an invalid watch and a bad pointer as the 64-bit build
+    
+    No splats. W=1 builds are clean for arm64 (COMPAT=y, LLVM=1) and for
+    i386 (no COMPAT).
 
-...
+ drivers/counter/counter-chrdev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +static int sdp31_read_measurement(struct sdp31_data *data, s16 *pressure,
-> +				  s16 *temp)
-> +{
-> +	u8 rx[6];
-> +	int ret;
-> +
-> +	ret = sdp31_trigger_read(data, rx, sizeof(rx));
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (sdp31_check_crc(&rx[0]) || sdp31_check_crc(&rx[3]))
-> +		return -EIO;
+diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
+index 61451ba74ca1..f5bf8e40096b 100644
+--- a/drivers/counter/counter-chrdev.c
++++ b/drivers/counter/counter-chrdev.c
+@@ -457,6 +457,7 @@ static const struct file_operations counter_fops = {
+ 	.read = counter_chrdev_read,
+ 	.poll = counter_chrdev_poll,
+ 	.unlocked_ioctl = counter_chrdev_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
+ 	.open = counter_chrdev_open,
+ 	.release = counter_chrdev_release,
+ };
 
-> +	*pressure = (s16)get_unaligned_be16(&rx[0]);
-> +	*temp = (s16)get_unaligned_be16(&rx[3]);
-
-And casting is for...?
-
-> +	return 0;
-> +}
-
-...
-
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_PRESSURE:
-> +			*val = 1;
-> +			*val2 = data->dp_scale * 1000;
-
-KILO?
-
-> +			return IIO_VAL_FRACTIONAL;
-> +		case IIO_TEMP:
-> +			/* raw / 200 = degC, so raw * 5 = milli-degC */
-> +			*val = 5;
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-
+base-commit: fd73f4a6659897191fa0d40695fe370925dd3780
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.55.0
 
