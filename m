@@ -1,47 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A621E0DD8;
-	Wed, 30 Sep 2026 17:59:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355BB3B3BE1
+	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 18:12:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790791166; cv=none; b=gNgeWLdSYRvmwL5ouRn9tPcq+kHyZLrIKRut9AFnvFk4vhaHu80jWRB6/QeQ+9JGU/p7D3JKZ/Tq6ioZoAFQoR8A/V61HunlGS1EVUNVF6IyLevGupnVzw82g6qEbN99T2Gtcs4JtYSLuBI7K/VPcuNbKtASF2GC4jh6OPuJ06g=
+	t=1790791930; cv=none; b=ICAm7J6RkDahR2Qy6jL7W14TRbvwKsSz+LB56FgVJ1tjP4qweo4hEKVKxJKEnaDFMRXu03JdZMG68ixU88+8LZUXVZo+LAjEqpleTjf4bJJrCmmcGoSfSCLhjsmqyvFDzEqa2lmBNwfm5i3P/bsSuu7va06OGrTHO38WA36nFW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790791166; c=relaxed/simple;
-	bh=ZgC4Sqq5xwC4zBkq2aPMLurpWwH1EohFR4jPcM5VQo8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=k1/74cd3H5QJFEzfXVlfUC2FKJnJjwINfvrqB9MmElid1+3a0q2WXXn3OTBU3b9MGYyFFiQBcMLlPh3O8LfOq+P9ZtbURfsSGnkRRJjIw73dbaNCLCkp1WsdHTVyn9qMquEnPG+xpr9XvvVIecGnZJiXbqWFlxfgSlAShwBNimU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d0JKb0Cm; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790791930; c=relaxed/simple;
+	bh=pTsf3yVpRPJaEVrdk6KnVrX1yznkHWpzOa5z8W0NXrw=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=eCoxuKN8vyC60td20QBb6JsXHDUowNA8SV/MqSw6q9Ftp4NZcz76VdfFpFhf5rDjS6FgTH6BLtxfRRkh6nSI3AMawgRqXJuegYusBJ/fLHgb90diXkOYDSllIwcPx+8KN5vMbtgg6WLo5J2za/RiZKlKi0rSkLFY1UP3s+Bk0G8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YPjVGY8k; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d0JKb0Cm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A9F1F00898;
-	Wed, 30 Sep 2026 17:59:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YPjVGY8k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 723781F00899;
+	Wed, 30 Sep 2026 18:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790791164;
-	bh=PLNnyjohnPl4xhPf587W7AbXGI/7ND1XrL+7doDL6DM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=d0JKb0CmRdhluE8uLDeT9N6n1smocOz7Xwk/hpnHijzMtlfsXi191uDheAuqdv158
-	 cfg/OV9Hw9MCZQxfoROVEssTPai52Bn4xcakQ8l/zgPtEZCcky2LIBpNlrGL0ZLVPk
-	 E59OfmIbKRBOSJuo/MymqDq6IFyHC/rENsHEoHf7p2Pci86Oh4r3wynb9Efe1vu2dr
-	 01tuUB1QKJtLSUxTB9lMZYhXLYCGbmBZM4WYOKwixZf0zYAbzEO8Rya/+BMhzEOWQs
-	 iZtvaMKK3IdyfCSi54+zEPslcolPtFwRoPoLcHV0ocYnh5A1j3UiizXRNPycFEvIyi
-	 cJQf12h+HCRBw==
-Date: Wed, 30 Sep 2026 18:59:19 +0100
+	s=k20260515; t=1790791929;
+	bh=K1XxXaMjIWqqVt/KV4h8Iabdm9Ibw9vdeKB/YU3mzqo=;
+	h=Date:From:To:Subject;
+	b=YPjVGY8kIwNL3Rm0aRkCClurqtLOp/W25Ilm+Gr1sA2hhjLfgEIVeGuPxLnrztabV
+	 Nwl3bH/JMZEKSbSu1JemKoIrDgX44UDTkLAEOIJ0cHP/WUJT97OoN550boxdicUOlW
+	 cRySVd6Xd50PhWqx9Gm0n3EauPXDNxdyuaWCyQG+NlrLITlD13TtH0oiHf8br5KSvg
+	 yFIB1dHpzn31smMW/rMWklo/0yyhLVGGwdf6EAQD4T762qmxtMETX1k+xpAfJ9hLA+
+	 Ps2kV4uKNHLAA1RN7yH1yfvmb/lafmUOpD8ER0zuJGnjGjTFIXI3W8/5AXvFK/SyMF
+	 r7Xry2Jh+ffUQ==
+Date: Wed, 30 Sep 2026 19:12:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Yibo Tan <lhfff@tju.edu.cn>, Jiri Kosina <jikos@kernel.org>, Benjamin
- Tissoires <bentiss@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Zhang Lixu	 <lixu.zhang@intel.com>,
- linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] HID: sensor-hub: Fail unfinished multi-value reads
- on removal
-Message-ID: <20260930185919.54170a4e@jic23-hlaptop>
-In-Reply-To: <20260913182120.01bac5c3@jic23-hlaptop>
-References: <20260913045411.5e2f5b25@jic23-hlaptop>
-	<20260913072910.1944300-1-lhfff@tju.edu.cn>
-	<5b28a9e82b8f3d4458b678505ef7063525ce1141.camel@linux.intel.com>
-	<20260913182120.01bac5c3@jic23-hlaptop>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] IIO: Fixes for late in the 7.3 cycle - (7.4 merge window
+ soon enough)
+Message-ID: <20260930191205.4f6a2664@jic23-hlaptop>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,165 +38,97 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, 13 Sep 2026 18:21:20 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+The following changes since commit 137d6ccf0ec8c48ecf0facc47cc46926df5fd0f3:
 
-> On Sun, 13 Sep 2026 08:50:35 -0700
-> srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->=20
-> > On Sun, 2026-09-13 at 15:29 +0800, Yibo Tan wrote: =20
-> > > sensor_hub_remove() completes pending reads after stopping the HID
-> > > device,
-> > > but does not record why they completed.=C2=A0 A successful completion=
- wait
-> > > therefore returns zero even if no complete input report was received.
-> > > Multi-value IIO callers then format their untouched automatic buffer
-> > > as a
-> > > successful result.
-> > >=20
-> > > With a valid four-element signed 32-bit quaternion report descriptor,
-> > > an
-> > > unprivileged reader received all 16 bytes of the untouched buffer.=C2=
-=A0
-> > > Across
-> > > 11 independent KASLR-enabled boots, four reads exposed exact pointers
-> > > to
-> > > dev_rot_channels or dev_sysfs_ops.=C2=A0 Subtracting the matching lin=
-k-
-> > > time
-> > > symbol address recovered the kernel KASLR slide in all four cases.
-> > >=20
-> > > The reader ran as UID/GID 65534 with no effective capabilities
-> > > through the
-> > > mode-0644 IIO attribute.=C2=A0 The test used a privileged UHID broker=
- to
-> > > create
-> > > and remove the provider; it does not demonstrate unprivileged
-> > > provider
-> > > removal.
-> > >=20
-> > > Mark a pending request as shut down before completing it from the
-> > > removal
-> > > path, and return -ENODEV from a multi-value read that observes the
-> > > marker
-> > > after a successful wait.=C2=A0 Let removal win even if a response rac=
-ed
-> > > with
-> > > teardown, since the device is no longer available.
-> > >=20
-> > > The Root B-only repair returned -ENODEV with no payload or kernel
-> > > diagnostic in 3/3 matching signed-32-bit runs.=C2=A0 The source
-> > > reproducer,
-> > > complete vulnerable and fixed serial logs, result tables, and
-> > > checksums are
-> > > available in [1].
-> > >=20
-> > > Link:
-> > > https://github.com/kimaiden1984-boop/linux-kernel-poc-collections/tre=
-e/main/cases/hid-sensor-quaternion-root-b-kaslr
-> > > =C2=A0[1]
-> > > Fixes: f784fcea4506 ("HID: sensor-hub: Add
-> > > sensor_hub_input_attr_read_values() for multi-byte reads")
-> > > Cc: stable@vger.kernel.org
-> > > Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> > > Assisted-by: LLM
-> > > Signed-off-by: Yibo Tan <lhfff@tju.edu.cn>   =20
-> >=20
-> >=20
-> > Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> =20
->=20
-> Applied to the fixes branch of iio.git.
->=20
-> It might or might not go upstream before the next merge windows. In pract=
-ice
-> I'm going to assume these devices are typically not hotplugable except in
-> dev kits so we are unlikely to see this on production devices unless
-> someone manually removes?  That does affect whether to fix it, but only h=
-ow
-> fast we rush it upstream!
+  rust_binderfs: add transaction_report feature entry (2026-09-16 19:33:40 +0100)
 
-I fluffed this again :(.  One day I'll remember which bits of this driver
-stack sit in drivers/hid.
+are available in the Git repository at:
 
-Should go via that tree not IIO. So I'll drop it.
+  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-late-7.3
 
-Reviewed-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+for you to fetch changes up to 9ee8306121495d2a25aa5d1bfd519f2748786b83:
 
+  iio: adc: ad_sigma_delta: fix use-after-free on unbind (2026-09-30 18:59:56 +0100)
 
->=20
-> Jonathan
->=20
-> >=20
-> >  =20
-> > > ---
-> > > Changes in v3:
-> > > - Replace the raw_size error sentinel with a dedicated teardown flag,
-> > > as
-> > > =C2=A0 suggested by Jonathan Cameron.
-> > > - Let teardown win if it races with a completed response.
-> > >=20
-> > > v2:
-> > > https://lore.kernel.org/r/20260912050257.837340-1-lhfff@tju.edu.cn/
-> > >=20
-> > > =C2=A0drivers/hid/hid-sensor-hub.c=C2=A0=C2=A0 | 6 +++++-
-> > > =C2=A0include/linux/hid-sensor-hub.h | 2 ++
-> > > =C2=A02 files changed, 7 insertions(+), 1 deletion(-)
-> > >=20
-> > > diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
-> > > hub.c
-> > > index 6470a290ebfc..a9bd72218c07 100644
-> > > --- a/drivers/hid/hid-sensor-hub.c
-> > > +++ b/drivers/hid/hid-sensor-hub.c
-> > > @@ -334,6 +334,8 @@ int sensor_hub_input_attr_read_values(struct
-> > > hid_sensor_hub_device *hsdev,
-> > > =C2=A0			ret =3D -ETIMEDOUT;
-> > > =C2=A0		else if (cycles < 0)
-> > > =C2=A0			ret =3D cycles;
-> > > +		else if (hsdev->pending.shutdown)
-> > > +			ret =3D -ENODEV;
-> > > =C2=A0
-> > > =C2=A0		hsdev->pending.status =3D false;
-> > > =C2=A0	}
-> > > @@ -805,8 +807,10 @@ static int sensor_hub_finalize_pending_fn(struct
-> > > device *dev, void *data)
-> > > =C2=A0{
-> > > =C2=A0	struct hid_sensor_hub_device *hsdev =3D dev->platform_data;
-> > > =C2=A0
-> > > -	if (hsdev->pending.status)
-> > > +	if (hsdev->pending.status) {
-> > > +		hsdev->pending.shutdown =3D true;
-> > > =C2=A0		complete(&hsdev->pending.ready);
-> > > +	}
-> > > =C2=A0
-> > > =C2=A0	return 0;
-> > > =C2=A0}
-> > > diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-
-> > > sensor-hub.h
-> > > index ab5cc8db3fbb..5aecf4474183 100644
-> > > --- a/include/linux/hid-sensor-hub.h
-> > > +++ b/include/linux/hid-sensor-hub.h
-> > > @@ -38,6 +38,7 @@ struct hid_sensor_hub_attribute_info {
-> > > =C2=A0/**
-> > > =C2=A0 * struct sensor_hub_pending - Synchronous read pending informa=
-tion
-> > > =C2=A0 * @status:		Pending status true/false.
-> > > + * @shutdown:		The device is being removed.
-> > > =C2=A0 * @ready:		Completion synchronization data.
-> > > =C2=A0 * @usage_id:		Usage id for physical device, e.g. gyro
-> > > usage id.
-> > > =C2=A0 * @attr_usage_id:	Usage Id of a field, e.g. X-axis for a gyro.
-> > > @@ -48,6 +49,7 @@ struct hid_sensor_hub_attribute_info {
-> > > =C2=A0 */
-> > > =C2=A0struct sensor_hub_pending {
-> > > =C2=A0	bool status;
-> > > +	bool shutdown;
-> > > =C2=A0	struct completion ready;
-> > > =C2=A0	u32 usage_id;
-> > > =C2=A0	u32 attr_usage_id;   =20
-> >  =20
->=20
->=20
+----------------------------------------------------------------
+IIO: Fixes for 7.3, or 7.4 merge window.
 
+Nothing here strikes me as particularly urgent.
+
+The core buffer one has been there a long time and is a race only seen
+during driver removal.
+
+core
+- Ensure buffer teardown on remove occurs under same locks as in other
+  paths, preventing races around access to active_scan_mask.
+adi,ad-sigma-delta
+- Fix a use-after-free in driver unbind path by just always allocating
+  a buffer that is large enough rather than trying to resize at runtime.
+adi,ad4030
+- Fix validation of oversampling_ratio to check if value is in range before
+  using it.
+adi,ad7173
+- Fix swapped masks for filter fields being written.
+adi,ad9000
+- Fix a potential NULL dereference.
+kionix,kxcfjk-1013
+- Reject disable of disabled event with underflows on runtime PM.
+inv,icm42607
+- Don't eat runtime suspend errors.
+- Make sure to put runtime PM back on errors in system resume.
+isil,isl29501
+- Fix a wrong return type for register_write function so it can return
+  error codes.
+st,stm32-adc
+- Fix checking for whether a channel actually exists.
+- Avoid a possible division by zero.
+ti,pac1934
+- Fix missing memory allocation check.
+
+----------------------------------------------------------------
+Fabrice Gasnier (2):
+      iio: adc: stm32-adc: fix check on internal channel availability
+      iio: adc: stm32-adc: fix possible division by zero in processed channel
+
+Fan Wu (1):
+      iio: adc: ad_sigma_delta: fix use-after-free on unbind
+
+Jiale Yao (1):
+      iio: accel: kxcjk-1013: reject duplicate event disable
+
+Jinseob Kim (1):
+      iio: buffer: serialize buffer teardown with mode claims
+
+Linmao Li (3):
+      iio: imu: inv_icm42607: propagate runtime suspend errors
+      iio: imu: inv_icm42607: restore runtime PM on system resume errors
+      iio: adc: ade9000: fix NULL pointer dereference in clkout registration
+
+Marcelo Schmitt (1):
+      iio: adc: ad7173: Fix digital filter configuration
+
+Pengpeng Hou (1):
+      iio: cdc: ad7150: fix OF matching and publish module aliases
+
+Salah Triki (2):
+      iio: proximity: isl29501: Fix return type of isl29501_register_write
+      iio: adc: ad4030: fix invalid oversampling_ratio validation
+
+Slavin Liu (1):
+      iio: adc: pac1934: check ACPI label duplication
+
+ drivers/iio/accel/kxcjk-1013.c                   |  2 +-
+ drivers/iio/adc/ad4030.c                         | 11 ++++--
+ drivers/iio/adc/ad7173.c                         |  4 +--
+ drivers/iio/adc/ad_sigma_delta.c                 | 31 ++++++++++-------
+ drivers/iio/adc/ade9000.c                        |  5 +--
+ drivers/iio/adc/pac1934.c                        |  4 +++
+ drivers/iio/adc/stm32-adc.c                      | 43 ++++++++++++++----------
+ drivers/iio/cdc/ad7150.c                         |  8 +++--
+ drivers/iio/imu/inv_icm42607/inv_icm42607_core.c | 38 ++++++++++++++++-----
+ drivers/iio/industrialio-buffer.c                |  4 +++
+ drivers/iio/proximity/isl29501.c                 |  2 +-
+ 11 files changed, 102 insertions(+), 50 deletions(-)
