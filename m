@@ -1,115 +1,98 @@
-Received: from mail-wr2-f35.google.com (mail-wr2-f35.google.com [74.125.225.99])
+Received: from mail-lf2-f12.google.com (mail-lf2-f12.google.com [74.125.229.204])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 787E3466B58
-	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 08:24:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87E5D54705E
+	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 08:30:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.204
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790756655; cv=none; b=qkv4sbsXZDfbNlcQ6+392dg8tOXX9g0r1fG5lsTymtVbXpnbwFjb+QwsVFx01HojDWceDb4FFIZnZphI0AoYSiK3W8sFWU9ZGbjRaQWloX0dHcQCn12cPq23V243CYpCLHusOnkl6GMi7xdCP2lHo7wI94IEfvQSu0knJfJjrPI=
+	t=1790757026; cv=none; b=Jlm1fmouc4v/qy8L3zTo+DuFOAz5wqf4UhJS9YQMwUZ660V44uXzF0sce+nZsP/XGcFN57+UcxcaC1ixzjzO9/I8umTCaPsMhdtaWzyEvq6CTKzplxDtzyjFsAclBRxbp0he0+/hVoCXBgmpcS3VfRDdt62hTVHgsnUXHONh58Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790756655; c=relaxed/simple;
-	bh=ipGQ97f7MUkelnfRrS7W0DNwckkxAJ/D9GjaelK6Pms=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=V+ZR4oJzC74xdowiHjaDsTBzcLp6ydI3tKiBpXHGPTQdMIFTpC+JmssQJSL+PR2GogfbcZWv7Ebkm1RXrJo458aGlKSbiykky5Y9R9JuFZQL0sMh0NQ6NdLyUy5rRlf1UYAIKrTgFIrD6b1zUtcRWzABe2pF3lC1L1kWmituYnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pRoGKwR5; arc=none smtp.client-ip=74.125.225.99
+	s=arc-20240116; t=1790757026; c=relaxed/simple;
+	bh=ZTLy2b/aZ6jnk96E49OmqQA6r9eoSOmIhpd2yxFKaIs=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=bVLSR95nFE6d8zdQl0q2h41SUWpcFxYgRded+YXnJWWC5W1oSiMLlL5HwKUS7MJYcJJE8CW/Hf86zBl5VxGfHlmjf+uZ6eikrSwzzKd5Y6QYiJHNZgNycRBTj0HKFtx+3Fo7CuiPrNnfB70ZghcXFMOeVzWdGZFWDwSYN+RE1JA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S1w6eAP/; arc=none smtp.client-ip=74.125.229.204
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pRoGKwR5"
-Received: by mail-wr2-f35.google.com with SMTP id ffacd0b85a97d-4885d4825adso3055146f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 01:24:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S1w6eAP/"
+Received: by mail-lf2-f12.google.com with SMTP id 2adb3069b0e04-5b8eb3a9d9bso4561329e87.2
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 01:30:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790756651; x=1791361451; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=O/vpu6nOACLN1GW1gZlQkN6/DVvLR93ljsvBEfccVh4=;
-        b=pRoGKwR55/XDsZT+XJlovQU7LhMuIxeOye+WtxKF5BB/1Y3+p0LU7K/jD+7uQwAH3g
-         conNn+NZiavStVhU4Fhx0BCODGaLoDIEu24YOyOx8+V4e+zP6vAYnWaWP0fwAKXx4s15
-         cMH4Ny//dvocLzYYjIa1WEdAHMD4l/PK8Tp96dOpVPNAJwQxGvxpYWiKI9QkefqUQLpo
-         z/okCCnRpUiuR1PnqQcSWwnkV+c0EdlkZ/DUWWphSSpuHePneG1dPLzBmrmm8U3UisXr
-         NaJgY/k1OyiYVaUOM3euOsIc6EEe71wmXa1XJnBS9Q1VZ1rW+r8xWE0B+I7QD+c5/Hl6
-         FQtQ==
+        d=gmail.com; s=20251104; t=1790757022; x=1791361822; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=HsFzur6ZDixhPdht293SKHwUgftZBx+zn+PzskiFAnU=;
+        b=S1w6eAP/aW4ZcEK9/xRzb9Jj81Ff9uLqlMuzPoaDd3U0qd3nmEx+Hv2qJt982bMZwR
+         vR7YGrciwrIUW4+rMlDc0cvWcS5xpOphkmEKgld5qO6jbSvFc6+guuPgrnoev799iXT+
+         xA2awM0DZ1oZnokupBBpnj4uJzfujVfrXYsechEQwbeI1BJLFYq+o5D84ERfIBomyO8w
+         EagQLq+lYi8cHnKUtQwOH1fO/GlqnCSWLC43cOB4vYU8gnbA7pqUanTgT1M14541g1R6
+         h5JV65uNHAwTI+NNU+8Al5RAjF8wUk5sqVWah5jN9zfS366xDOrEoCuAr+sayxVq7lMp
+         DS7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790756651; x=1791361451;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=O/vpu6nOACLN1GW1gZlQkN6/DVvLR93ljsvBEfccVh4=;
-        b=CQwMRzB2c/iUmqu4Ir3cV+CEhWFqNqodPiAmE8I5Nh4+rWSjnhO9fNUVIwlN9thCJG
-         TaUfyQryXDF06wSbWqBu9pKffP25WBH/V6wNIrq1cS/q8LQ8i/VvwSd4bYyk+4YDMFm3
-         UjPgxgp0Gb5eekZj+jBdI8Crq4ZU9VCJkgK/CgQ5e2rNZGSL9d7OowRqsg8hpPpu3OiG
-         RtKL8spKEDpGDNmjFxkeZZ5023iP9QKhpJ/amzsUmvbLU2MFx1vpeBTlazhfy30Xm+Ai
-         B9K/odTWTZJFsDNlvmV0zpZmgFism6+S8yEe0nkPPD+eY2hgu+LxzlMjxIWdvDqjCOcn
-         iDZA==
-X-Forwarded-Encrypted: i=1; AKwUvBzMj7FkDrNtIfG3CNf2aOn2dm8DdcqCqksnKcUAcwuQ3uuWg2lfORJjbnRMHT3iwY/XyE+si1HUHmk=@vger.kernel.org
-X-Gm-Message-State: AFuF++m11gTBMVc8Oz+F8r7XV809w6UsL5DzFnxg4dKYy+mdE87g9OJG
-	FPxSJMHmSN9Nl0BzC3SIByULHikvCcUztbvlGtwvc13PwNaXsko3FBPN
-X-Gm-Gg: AYBFou1I3gHk3QS85ahDOAR5DlGuPo3ogsYtdD7zI1Z5juQaLjsrZjBwzFGwvfX5qps
-	5fnIVxx5wakhxpG6/8562GgY7UJ+poYDwv8LxAX2Bx1gZSsNSv/csl7P95lAWUElsrOjTlisNr+
-	M8isqlkpxPapStpDOOY+y+DA67zS3CC6V7wi5gDvBshkLMZHjMo8c4RWX8lVJ3gDKLZvFo7EB2y
-	6UXEw0mGOw7yfvQEnYrSsWFey+MvhESVxub3qRRlGeD073KsXDjcOwIejfSkWwBaYipiWPPKFtO
-	fUmv9xdEYLpli3UYmDxWlGvNdpTShnyHi2vNfaCNeKzOVKVHbwlY+pCeL4ChEmHfLymjWrakRIC
-	5avLbAsBtbXDRmn+N6h1YW2zHFXvpPT+buhicvOh6qvCt6Ja4PTo5dmPSq+1+sFfVDYUFa3TTXD
-	lMwMuHxfg/eBQNJRrPz2STbOStGi77JPsVQRca20fRXFCJ6vflIymuj14cOuC4QfFha7uBVrwS1
-	eFix4FZ0LOdhznr6t8MjUZFSES7I3Ow7aIySs0sa0W1cn9EfN0BGpXR4jfxNR5X0R83iKPxESDb
-	wP/xLBpTDiKUINKNh2ZF33wUVJfZ28mVmlgj2lKZCbsndwmYEYO65y4WsV5Ooe/yHt8vE8TtZVb
-	G1fdSaYeeul9SdmYbHhl1gC0nRYYicLZEFQvxg/10BWKP0yrE5nQ8OAmqOb6O7x3YP7kKLpsqKH
-	jq71u8
-X-Received: by 2002:a05:600c:3b9f:b0:4a0:1b21:2628 with SMTP id 5b1f17b1804b1-4a01b212757mr10135465e9.23.1790756651411;
-        Wed, 30 Sep 2026 01:24:11 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0174fb909sm40727985e9.12.2026.09.30.01.24.10
+        d=1e100.net; s=20260707; t=1790757022; x=1791361822;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=HsFzur6ZDixhPdht293SKHwUgftZBx+zn+PzskiFAnU=;
+        b=tYK53o/+WeoYtN3s98XWKSicu4vic6yyy9pyJQbYKsTsf0LPSE0xW+H7mjPrJZu1DA
+         VrmPz7cxOgZZAr9FkqVW57VXj3p/6vK1uyDsqiXneQtouDSvS8k1fHwR3U6ChzDJOb7V
+         fVZR482uZYS0FJGZ83PZwxR4tHYKz9+Yt3c3QFaLdsjFhBgxHjc3XUoscFldwRP2G9qc
+         jGcXaFGjlbSQIlAgIwboV8vll6mgvP5Wbg2Xd2r9tGhLDdrk79U4XvPw3db2HaL+TJe3
+         ptoTn3beM1QcXPiIt8SmrZCgZ6VWtHttU6GlDMXlLMMpJ+Yr8h+g/rMqwgDoPPu6wE3v
+         o8tw==
+X-Forwarded-Encrypted: i=1; AKwUvBxq0Kv4cBFMvWuMWAMdKRT3VfItXkh10vxOhEcHPznYSmuIXE+VLlhT0Bevkt6zhnCSai+Rw2Vv18E=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKfQGYQeiNSqt9WaTNBLoBifiTRcDqIedhqKUH9IDpqBBZStqAw
+	9GCtRN7Oq/IeyOzkCHf98aI+LNZDvHwBjP7Hihnw0UTDtfLFyagUpNnh
+X-Gm-Gg: AYBFou3EffXF1kURZgpIgv8o+M/cVsi2cE4q3JHhEwOhOxQ5lsNKSkhJk2/3vHSCcaq
+	H0I4k6wKuBqW0+XJVvCF8VUjyHCbUl7oLhufodnWBg3yVmYYQ41jML02aKRmBLMC6tLe5FUslRK
+	bL9Yzps6S+HeMWWWF1009MYk7rcOYyvlePEiq+FxUg14ynQtpbUoD8U23ydwe77PIrzWClLCfOO
+	Er2tup00hhi0OyTUGUo8Av/hgFiGAl5lOP+fAnDCUUDQXYh1Ifxj9cQ0v6jT4Pn+xPcFi5ulUfm
+	SjDBiXGwkoVKdhPvJdhtGv5EuSX1YuT4HGOZj9kbGC1wYLAjc7m5MkTSaCbs2kYm7n9b8dSXgrd
+	Rri7ixu1ypMBEcyhvxR09iacCfKPa1WsD5trxME5JleDzFgwl3nX1LPZpYzqJQChwT9tHpakpon
+	R4/gPQpW3ltUFp/biP1MlWFSZ1RgBtKadmYuS/iCJCuG9mSa4z8lyjoMD5JeBvKEJzSxulTtHXp
+	ucR2pYef2IfM8A2A1oTdMcOOxSMi+QYxFx67efaAtgTPjPql4QJcAMiITi4nCtZ4VnNFgk=
+X-Received: by 2002:a05:6512:b95:b0:5b6:183c:5ca2 with SMTP id 2adb3069b0e04-5ba406177f4mr276043e87.64.1790757022218;
+        Wed, 30 Sep 2026 01:30:22 -0700 (PDT)
+Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ba3fc08d3asm187309e87.80.2026.09.30.01.30.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 01:24:11 -0700 (PDT)
-Date: Wed, 30 Sep 2026 10:24:09 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: jic23@kernel.org, gregkh@linuxfoundation.org, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
- linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org, error27@gmail.com,
- narcisaanamaria12@gmail.com
-Subject: Re: [PATCH 1/3] staging: iio: accel: adis16203: fix inclination
- naming and remove unsupported Y-axis
-Message-ID: <20260930102409.00003055@gmail.com>
-In-Reply-To: <20260929184900.39515-2-abdelnasserhussein11@gmail.com>
-References: <20260929184900.39515-1-abdelnasserhussein11@gmail.com>
-	<20260929184900.39515-2-abdelnasserhussein11@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Wed, 30 Sep 2026 01:30:21 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: andriy.shevchenko@intel.com
+Cc: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 1/3] iio: pressure: dps310: read buffered samples from the hardware FIFO
+Date: Wed, 30 Sep 2026 11:29:52 +0300
+Message-ID: <20260930082952.878967-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <arriSm8L567yqOjV@ashevche-desk.local>
+References: <20260928211127.641828-1-zoone.rupert@gmail.com> <20260928211127.641828-2-zoone.rupert@gmail.com> <arriSm8L567yqOjV@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue, 29 Sep 2026 21:48:58 +0300
-Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
+On Tue, Sep 29, 2026 at 12:55:22AM +0300, Andy Shevchenko wrote:
+> On Tue, Sep 29, 2026 at 12:11:25AM +0300, Rupesh Majhi wrote:
+> > +/* Returns which measurement the entry came from, or a negative error */
+> > +static int dps310_fifo_read_entry(struct dps310_data *data, s32 *value)
+> > +	__must_hold(&data->lock)
+>
+> Hmm... Don't you want to also add lockdep annotations?
 
-> The ADIS16203 measures inclination around a single axis. As per the
-> datasheet, register 0x0C gives a 360-degree output, and 0x0E gives a
-> +/- 180-degree output of the exact same measurement.
-> 
-> The current driver incorrectly maps 0x0E as a separate Y-axis. This patch
-> removes the phantom Y-axis, updates the naming, and adjusts the timestamp
-> channel index.
-> 
-> Note: The ADIS_INCLI_CHAN(X, ...) modifier is intentionally kept to
-> preserve the existing userspace ABI (incli_x_raw). Furthermore, removing
-> the phantom Y-axis inherently shifts the scan indexes of subsequent
-> channels down by one, which is expected to correct the hardware
-> representation.
-> 
-> Fixes: 2df79e1bddc4 ("staging: iio: accel: Rename source files and update Makefile")
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-> ---
+All __must_hold() functions here are static and called only from
+dps310.c, which is opted into context analysis since patch 10 of v8, so
+clang checks every caller. If you still want lockdep_assert_held() I
+would add it to all 20 in a separate patch, as 12 are already applied.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
--- 
-Kind regards,
-Joshua Crofts
+Rupesh
