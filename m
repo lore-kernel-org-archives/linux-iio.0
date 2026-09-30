@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 612EA4718E9;
-	Wed, 30 Sep 2026 09:23:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D598247AF75;
+	Wed, 30 Sep 2026 09:26:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790760231; cv=none; b=eGiL5ipr3ujYNyjNXw0k62gZN8Mj7uZPW5RFe/Br7WUOVnaJK5jh9IYRnpk/ioeScoqq+PJqWywjg6iMjH3gt9NdTYanJxjFTTOk4Yv5U4dRIM4im94GzydNg2iBZ2ENvKEa3Zf7WVgFwGfOsQPBePQ5QSWDV8qaVEMOwrQrNh8=
+	t=1790760396; cv=none; b=WOp7qwEW8ng74I0byp1qjn64klDVOlW4q5x0d5GSPABc5TRD43jctwHqLbg9OQjJ8a5wtDTvyGAEXSyrWNzJR7M3kaHvgbkCTUc7QcrL3lzkdyc4+n0MEOF84KixBjD7op431zuYYJz05qkGQtR0mam1DbzMKXFmVLA0f9O/GeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790760231; c=relaxed/simple;
-	bh=cq/BXhOtaid1stWAPe/hJ661uiAvoRSE8cCpjYuRQ1A=;
+	s=arc-20240116; t=1790760396; c=relaxed/simple;
+	bh=rMd9S+rhPYUjIH42FvN2RL4U6ANgR1UX4u5KmL5fbz4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vg5ayhHJvPKBUKFfqJu+O6D+wnukU+udpGOzJQkgWCRP2Mnkvl+G8J+Zy7/jiebASZxubQVFShYpvJd3KJ5WPjLaOYsmSg4w5G/PCjRqMRxdKhuDbVT8HzykoGpu6GT4fkh3DdLbT/OIK/XIexht649gRB6k2OvMYU586Zi/PEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OTmt7kmM; arc=none smtp.client-ip=192.198.163.7
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZddOMuUxFHaM4npejZoeZhJD7yTIzBLi1nOnQPFOZSwTGkzdyeoBiLAEFfiqdDL4LchmA9f1jSl0cY05oTpZbXZ5BDGPh98xlj8zBjl2P8b9Ymq2cyLRxpLJkj9hOw57EIGG/5/3wMbhxsXpcI/oXVJ/2a3xBIT+Ofm4ARljjbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZDk2Xp1y; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OTmt7kmM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZDk2Xp1y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790760230; x=1822296230;
+  t=1790760395; x=1822296395;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=cq/BXhOtaid1stWAPe/hJ661uiAvoRSE8cCpjYuRQ1A=;
-  b=OTmt7kmM0/qJ/uh5/Wmfs+lKdc1h4gEqBjuGguURQPQIau6r+5T54gjm
-   5QsJDg3cJkVo0eqFD6OtaWnlAos3MaWlq4Dl++Ja2LNVudXpzu3hKd29D
-   1zzM3bwavGhHrfYMgyTIjpL31zuqoL/DkiZG9JL76tjBxqfY8R+qxoHVR
-   AboL1UyI8mXVt+D1cIiOrRw1+txvomemNtt88fOzmaEWyIhrboizmbfRg
-   5JLH7W2O3FZNERUlvJKnXwnMZoBt4oY8bnnMo/WgZFFAOHlDbqHc2Az7E
-   q7LHTj4Vzk9qBxfv7098GdpJ6wv02sqLrkht6dpapUwbAETG+cH2a6LXx
-   g==;
-X-CSE-ConnectionGUID: TCrVodawRHma8evh5d3bTA==
-X-CSE-MsgGUID: JvDjPvRNTBWVxmOKqrYJWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11920"; a="117023008"
+  bh=rMd9S+rhPYUjIH42FvN2RL4U6ANgR1UX4u5KmL5fbz4=;
+  b=ZDk2Xp1y3L2uOe2Wb2RRw9RTVgyM7lLokYxKQz9FP6S+RsKXB1d5ME/0
+   NKpHO7s3vwb3W3DQnx1yVpXdaOdg1+3bQuSWzq1G6TEdywkDiKvUVQjQX
+   mXc/HNR2l1S9Tbj20e2r0FQ7LdvVkQb4gu8PzjDQxsgnvgKB29KHCgQlF
+   04hvUE69L8hMe8h5v/opxMZksJDzBuHaosbcyroXvRbSdV8fhJVl1wVk7
+   +pDP4t3jv7MBwVQCVqtaJL1VpBXOquwaqGIbKt1JYnk/nNqBwnnDNPhbu
+   OMBlECMzt/+nTRMy1CU86Lwp080/kQlxQCC24L7ZGA7Pu+CGNYUPAdGqN
+   Q==;
+X-CSE-ConnectionGUID: 9wvzSRjvTAOtdHz1+b73QA==
+X-CSE-MsgGUID: h9OgsxIpRSmwb44zD/NNEA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11920"; a="90353440"
 X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
-   d="scan'208";a="117023008"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 02:23:49 -0700
-X-CSE-ConnectionGUID: 0asZAznXSlaX6nh7cxKpLg==
-X-CSE-MsgGUID: Xf8MHHLSQm6w4w5ig8JiPg==
+   d="scan'208";a="90353440"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 02:26:35 -0700
+X-CSE-ConnectionGUID: arKvBQZARyiwkS9Hq23NLg==
+X-CSE-MsgGUID: CYJodn92RQOYT3Q9UkDP7Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,132,1787036400"; 
-   d="scan'208";a="305150934"
+   d="scan'208";a="272101956"
 Received: from spandruv-desk1.amr.corp.intel.com (HELO localhost) ([10.245.245.137])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 02:23:46 -0700
-Date: Wed, 30 Sep 2026 12:23:42 +0300
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2026 02:26:30 -0700
+Date: Wed, 30 Sep 2026 12:26:27 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Prabhakar <prabhakar.csengg@gmail.com>
 Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
@@ -62,11 +62,10 @@ Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
 	Biju Das <biju.das.jz@bp.renesas.com>,
 	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH 2/8] iio: adc: rzt2h: Wait for the analog part to stop
- after a forced stop
-Message-ID: <arzVHnMtKqQx5rdZ@ashevche-desk.local>
+Subject: Re: [PATCH 3/8] iio: adc: rzt2h: Add chip-specific configuration
+Message-ID: <arzVw02dIqn4M-VK@ashevche-desk.local>
 References: <20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20260929124248.237032-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20260929124248.237032-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,28 +74,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260929124248.237032-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20260929124248.237032-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Sep 29, 2026 at 01:42:42PM +0100, Prabhakar wrote:
+On Tue, Sep 29, 2026 at 01:42:43PM +0100, Prabhakar wrote:
 
-> When ADCSR.ADST is cleared to forcibly stop a conversion, the analog part
-> of the A/D converter can take up to 2 ADCLK cycles to stop operating.
+> Prepare the driver for supporting SoCs with ADC IP that is similar to the
+> RZ/T2H ADC but may have different channel configurations.
 > 
-> Wait for the write to ADCSR to complete and allow the analog part to stop
-> before reconfiguring or restarting the converter.
+> Introduce chip-specific configuration for the channel template and number
+> of channels, and use it when setting up the IIO channels and DMA layout.
 
 ...
 
-> +	/*
-> +	 * When a conversion is forcibly stopped, the analog part of the A/D
-> +	 * converter takes up to 2 ADCLK cycles to stop operating.
-> +	 */
-> +	ndelay(DIV_ROUND_UP_ULL((u64)RZT2H_ADC_STOP_CYCLES * NSEC_PER_SEC,
-> +				adc->adclk_rate));
+> +struct rzt2h_adc_chip_info {
+> +	const struct iio_chan_spec *chan_template;
 
-I do not see the point in having _ULL (64-bit) division. Do you?
+__counted_by_ptr() ?
+
+> +	unsigned int num_channels;
+> +	u8 features;
+> +};
+
+...
+
+> +	chip_info = device_get_match_data(dev);
+> +	if (!chip_info)
+> +		return -ENODEV;
+
+-ENODATA
 
 -- 
 With Best Regards,
