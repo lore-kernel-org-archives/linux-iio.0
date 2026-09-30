@@ -1,273 +1,209 @@
-Received: from mail-pz2-f37.google.com (mail-pz2-f37.google.com [74.125.228.37])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A16751AFCE
-	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 17:13:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.37
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790788383; cv=none; b=Z0Yjr2MwtBDeWX3tEgxRaOi4geqOTcWgN5vAYJveLPtatxf1NBxjazKSAAa38+CO14zYm/InFtoVPMcHypexjv6aOGNxvV3e8hZ0Cijr+ctjHlumkSJp8vlrrZjxUXG6ukCbJaCTVZa2N4wf+7H9PAPIrTMKVy4/Eaimgci1n0Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790788383; c=relaxed/simple;
-	bh=hMX+oIIb55Cf3VNQseh7iXz0EyGuzALvNmlUogjFbfE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KXTBnkqvASps/YHzGnwZv3Zyq2yX3FSfvwHt8AAM7JKJV3Fjz6G6V5Wo2vSmKmdjuN3QCsj/nFBuYwbIgPVvGTd/yB+ARCDljRmr/nc5QPhf1ZoH1qFuRhsKkWPKrHuSCXiaLn026f0V0D0iVXzmgaERQfMW1qbUpSjWuEUYmZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AkOwk7d+; arc=none smtp.client-ip=74.125.228.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D1151B163
+	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 17:15:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790788506; cv=pass; b=RLngE7+sclKVbD75GLlF59pnl6qG80MSKSIp9iX4cIPVOn8qrqJ9geG3N8RJu2wsLv46bgQf4RTFIOVokypgW8n68OGtgou3LgZ4uncPr3VRckXFrO/fRMpQnRWXO9T1nBCJAu50GeLR2Z7iz+zJF1GtJqeNZeecJHpolWzUg6A=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790788506; c=relaxed/simple;
+	bh=flTa9IPUvO2Wfd7dxpZCg15j/sd3TNn9DagEWKcsB10=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hHaVZ8lqji/PAF13iZwmgZVqGPipj4q6F9GYp4YtaD60PxzV7aKoh53AzjaIbj5ReE1olLlgKmvBDdpKN+E/yOmypJt8os1c0TNTSTSs7qzHZdkUxxCfJfjmPqi9Sfayt1az13mj8i8RBwRg8cqW+2Vmjt7ah+IaqsLvGqP2MG4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Iciufym2; arc=pass smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AkOwk7d+"
-Received: by mail-pz2-f37.google.com with SMTP id 41be03b00d2f7-cc7c4c92477so1462738a12.0
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 10:13:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Iciufym2"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-48b02a2359aso2773f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 10:15:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790788502; cv=none;
+        d=google.com; s=arc-20260327;
+        b=EyGPed1H7m0y0UU4PF/yrbSPQXMdpiVSQMpCJEWMqvi8RuQCYjtOAd7zaI+wswQLO4
+         OGKsOIxB83dT5f0oAwy1BpiwdQCs8Wxl6XbIOFA/kQxzgtfR2JHacKkz1pWSUv1yESnv
+         oEa+xK6YS8DHzU40Qno+baSNvLU3GWF4uWP0WKNAFswETbwi9ML6e7z/ab3+P3ViAhHw
+         WzZibXD9GO2QtZjYE82rkvf5XRNCqBjiVq+F2X6T1ZK1NGDkCl3QN9SC1Lj5Z8iVz7LV
+         CKmB9/FUiZA+npIipfKdJAvs8VU/lVmZAEFHjWWcIGDng6SHwnkqM1czL0GTKln1A+69
+         dvvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=wLIs5aSN/ephptBI36FGk5tlNNffSxw7Odm4ILpRBMY=;
+        fh=xTmGcSu7+K2DLHnyE2AA+DzohwE/ozE+POeBpz01c9Y=;
+        b=aH3Qfkg6xGOwZu2LM/pIa7fwJBIlsuZX8TIJHPyJZSVS0gk4AyWPJDovQk5ZPBzd/h
+         HE+JOdaqxMLT2BGM+YjuYQop1P/5j01OxuUd5Tz0c1SOgfgJHgOYyuARYx1g/EUK6MUg
+         6605X2xO1a3z4kMb5G6BS6KRpYUm3ZykxkxhCqIAfhhWiRqFH6E5cl5CPeGxu9P9rGCc
+         N/onlt0FBvEE3UsLQM6EEN4bhLoyGfjASnxLgXSHotly7NT8wu7EjdXTxoL+iAVUVSbc
+         FVhfDxXiSjyJpcY/6F+3DR6OMm+IpgI/ZLpCGAVEU15vUgEy+gnHUKAdaPFGdFYFD8qw
+         OU6A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790788382; x=1791393182; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Vp5xSWFJYyxfXZazr8hT5EWtXkbpTX2kBymGREXyXiU=;
-        b=AkOwk7d+prmfMIouCXT5ZnsR77wjOheXJ8mXOnIR0e5Orjx6EVwaMJjzuZaE00xAD3
-         YrlAWtBXfQhZEfVZOarM/yYZp9TmOfwq04i7Ym4ObZkZ9aUszHIgfitINGGw6PPFTsEv
-         oBF6YKgKOFkBJSs1KdVNq2C9fZJD9eGbDH9CA/YA2xSmHAqQG7/vON/jujJFiMI78pkn
-         RGGATUb74gFneVRey6mK4X1njxdPle8GmrzYrbwtTMS+FPnIaw1TuJvwWL3+ywYqgM5q
-         0KGZ/zlxrSl3d2o0omtrpWqJkQafcB5hbup/882pvlALxNU9/d0ldk6UuUw9YG/AasDN
-         KlkA==
+        d=gmail.com; s=20251104; t=1790788502; x=1791393302; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wLIs5aSN/ephptBI36FGk5tlNNffSxw7Odm4ILpRBMY=;
+        b=Iciufym2ZntFU/rJrlRxGAKWnPBz4YIbIEpD1bz2y+wMSFnwRY1Myb6KKinax40CqJ
+         khQtMQvl55TCfWcc3pM2zNJaYrgC8c8k7pDPSsuAa9Mm5i8Mqqsb1Rbb3dHuh+yZRtVP
+         le8mHNP9vWHXtQXtZXOHjo9NuYHrmXUfu3HLmhw8EJWbrmhMouJDehXY86RyF0XqbiKJ
+         d2VqNYa4LUIumHLrNadrRiPtQ2X0VpbuO2T59KrO0iHwaNzeddTHb2RCuZyjPTrQrwQM
+         iPxnJNVAGItU7YVR0E1OrDPIlm6A37u+/4ZncWNwgzVMeX2wOoOo8Pp/8LvVmrsrzpBL
+         PiIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790788382; x=1791393182;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Vp5xSWFJYyxfXZazr8hT5EWtXkbpTX2kBymGREXyXiU=;
-        b=vDee8rWDCCzAkHRpyk/6zbIFqGDtTmxK7Imhr4q2OGPmNF0Wb5mGc+HQ+hGkOSxLFi
-         Tvz6aaoUWgKn0CXcP6YCTBK+eDDfORbYGGmUH9Sle9/no5u+qUzQG8q8gM0q79qNc35W
-         6kMFbJKQY3Ehjg0rbTvRJcCLU0M+EQJnk8vnB042jNGKFBr6FtwnH29s+qKDoo7bi/16
-         sefiMO7MiGc5psTot8z/x8WGLhug56SpRM0iSmGve0AWI92PUeCXom6Gi9uiSjBOJZpV
-         RCM47SB/tw+ICJMALwreNRCud/gZGMw3Z+1Ih7x7uKwY44bXdIEDlPe+gEfCDEVe7DYP
-         ynOw==
-X-Forwarded-Encrypted: i=1; AKwUvBzPHryi1VMXMHzOWeAbMcTSC36EAv8LGET5i/FNiwHI76LJYs9n8IiXvYITX1uLoG+0K1eFHU8wecQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++m/xRrEe0rVN0EQnYLM6KmRmTETkJ/jZoQAwDeYBh7owjQCY9Vz
-	GH+6u5eTCt6GAVOwAoLUNq5ATtdiYBkT394E2W8yduF0XhHRK/aQBu1R
-X-Gm-Gg: AYBFou36/HKiXNZGgnDesXTnPlbj+YJMjEBMrjJ+uZWBLk1Cq2AhhZ+qME4dpbYrdOY
-	ORuYQhJYdtczeFYOl84w1758aBMgJmzBBCSuwXbjhZ+ZBsyGv6CtgH96QvZrNPdEO2cBq0A2leU
-	XfFGTL+MoDWenfJjm/oiDF+mN1ToJzUpipyR3v48Fw2+5OIM7m6wb4VzX4IbHeO6/0xOC9dw92T
-	VcAlooyZhbJQUOCv5RMZ8S25eC4JaiJuUQY/UVTjizLgBNpOUwhiTKGTifeSx8eWEmaIz5bYmbY
-	C6YlQ417KXLTCRGP/W6aPYHXSqFEyBCVvqT3Kqq3QwyRjo1ItqzS8eSnkl31D7MPYMnzeds9ORz
-	xaJKQK9kZFZMaoAoJSBfpNWOx6NRB8iIbJuX1H1oH1KJp8RheVIsY/zHJm5e+GRM5iCIXlvFPgs
-	9+xLfY9TBKHALcGMMOS8r9ygImAhMbe3tm+eD/PXa+kb8lLAxLopULpoMh52mnXeURXxuSwk8/X
-	vjJM+rXEnV6aeJcQTi1NlJ/psciLvquY2Z22pn0L/RuPy+1SA==
-X-Received: by 2002:a05:6a00:c494:b0:888:71e:1694 with SMTP id d2e1a72fcca58-888071e1ffdmr75791b3a.8.1790788381640;
-        Wed, 30 Sep 2026 10:13:01 -0700 (PDT)
-Received: from debian.ari ([152.58.182.146])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-887bc2bd404sm636872b3a.46.2026.09.30.10.12.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 10:13:01 -0700 (PDT)
-From: Archit Anant <architanant5@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
-	nuno.sa@analog.com,
-	u.kleine-koenig@baylibre.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v5 10/10] iio: adc: ti-ads1015: replace custom shift macros with FIELD_PREP/GET
-Date: Wed, 30 Sep 2026 22:42:04 +0530
-Message-Id: <20260930171204.12863-11-architanant5@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260930171204.12863-1-architanant5@gmail.com>
-References: <20260930171204.12863-1-architanant5@gmail.com>
+        d=1e100.net; s=20260707; t=1790788502; x=1791393302;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wLIs5aSN/ephptBI36FGk5tlNNffSxw7Odm4ILpRBMY=;
+        b=XgEX3QcWKIQ0h4c6FWSF3FimsO5gkbt/OMIenD3wOuxL2w1jA3dPpUuNB7Ifsab32O
+         iBSOKZ+zBjaHu6IBFV1oOCkGWTy9EDiyoz6SWZaed9M00wKhTJXCxxys+jxYLkgNjup0
+         k6Xty8Lg113r1p/iqyznAMvtu4dnvVKihUbKLAlDqQKzIxKJmPJkaxoBlXM/DDZmCGKL
+         ap8hiY4mci6Y/vM7RSHI/KDTnBBFIvndd79m4qsc0zXNJUB3DtcFLMTqzqNvnpQXEt1H
+         t94td22WntizpjIhJHNY63xL0A/RD2tZHA5eSUZRHMRtLJpXhfwKfiwkNjbgvM+uGs/P
+         f8lQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxGOCBp0vsLrUKZsNUo/NL1M7jKZklE0mBIYEC3FRjyLbu8zQzf1TBqCBom883W+ZM2OOZnnZWG+6I=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKVcZg7r4R5P7L58Y1z+hNp3GtHqfZgmDPe97E1JgTQjNlYoaXb
+	AEK6yZojRWsnnlTZ0fV/YcjsvrA7CKJMhCwb3ve3b7Vad+asXVMJVGhIValM78AuvRV2Dkmk9tQ
+	medJinUozOPF4ZBj8uO4jlNVceg2hQFU=
+X-Gm-Gg: AYBFou3w3BMFLCU1S3mbPnEUS5spCH/iy65jbvep3yeU4pOAFwjzOXMk+8vR0Efy4rU
+	wlt2l/qYvIsp8/Gp37K5c8roZa/HA38nXOqrMpPfN6zKFCRUn+HxXLTBms4MEH5UAJ02+HqaYxu
+	5g2dSBipNEXEqlL/IKQPyLzlSGvU03+DZcZNHa+0tTJwwq8ojazK/W+NfWlARSNEJpoXxPTe5iS
+	SUEivMcQT2/+bUbBxjODPt3R1M3mdyKEa22k0VrKxXLj8o+U1GtbQAFQo5zkREpZNoDhksVEfjC
+	/FiI1tC0V/baeBtAc4yPxXOQeQrhDOGhe5WPEPky6JHCXYZQmZFhs18dFmWxVdKiiegSsNqD+S1
+	zFTDzmeojXaZuuwiW8W+FELJY/1F24dOL20u789UoFnNQrPV8ZrpQo34CMlzllaX3Il/47DtQhf
+	o=
+X-Received: by 2002:a5d:4acc:0:b0:487:342:eb28 with SMTP id
+ ffacd0b85a97d-48b068bf31bmr477202f8f.24.1790788502254; Wed, 30 Sep 2026
+ 10:15:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20260929124248.237032-9-prabhakar.mahadev-lad.rj@bp.renesas.com> <arzX2pzq_0JreVJe@ashevche-desk.local>
+In-Reply-To: <arzX2pzq_0JreVJe@ashevche-desk.local>
+From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date: Wed, 30 Sep 2026 18:14:35 +0100
+X-Gm-Features: AclHuK_nTopzCs1JxF_udaLq0aHe5Q5fBvI6nb69CERob4o8SQmK8yLw1zzL4tc
+Message-ID: <CA+V-a8sj8LnuHGYOV7Et9KXtcKYrSZgP5cgYqxCiE0VCSH_Lkw@mail.gmail.com>
+Subject: Re: [PATCH 8/8] iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Prabhakar <prabhakar.csengg+renesas@gmail.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The driver currently uses custom _SHIFT macros and manual bitwise
-operations to read and write to the configuration register.
+Hi Andy,
 
-Modernize the bitwise logic by replacing all manual shifts with the
-standard FIELD_PREP() and FIELD_GET() macros from <linux/bitfield.h>.
-This improves readability and prevents potential bitwise errors.
+Thank you for the review.
 
-Remove the now-unused _SHIFT macros from the top of the file.
+On Wed, Sep 30, 2026 at 10:35=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Tue, Sep 29, 2026 at 01:42:48PM +0100, Prabhakar wrote:
+>
+> > Add support for the ADC found on the Renesas RZ/V2H(P) SoC, which share=
+s
+> > the RZ/T2H ADC IP but differs in channel count, sampling, calibration a=
+nd
+> > resolution support.
+> >
+> > The RZ/V2H(P) ADC provides 8 channels, has a fixed conversion time of
+> > 20 ADCLK cycles, does not support calibration, and supports selectable
+> > 12-bit and 8-bit conversion resolution.
+> >
+> > Expose the fixed sampling frequency as a read-only attribute and allow
+> > the conversion resolution to be changed through the scale attribute.
+> > Use extended scan types so the reported scan type follows the selected
+> > resolution, and prevent resolution changes while buffered capture is
+> > active.
+>
+> ...
+>
+> >       help
+> >         Say yes here to build support for the ADC found in Renesas
+> > -       RZ/T2H / RZ/N2H SoCs.
+> > +       RZ/T2H / RZ/N2H (and similar SoCs).
+>
+> This wording is good for the summary above, but here please list what the
+> similar SoCs are. Something like
+>
+>         in Renesas SoCs:
+>         - RZ/N2H
+>         - RZ/T2H
+>         - ...specify "similar SoCs" here...
+>
+Ok, I will update it as suggested above.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Archit Anant <architanant5@gmail.com>
----
- drivers/iio/adc/ti-ads1015.c | 68 ++++++++++++++++--------------------
- 1 file changed, 30 insertions(+), 38 deletions(-)
+> >         To compile this driver as a module, choose M here: the
+> >         module will be called rzt2h_adc.
+>
+> ...
+>
+> > +static int rzt2h_adc_write_scale(struct iio_dev *indio_dev,
+> > +                              struct iio_chan_spec const *chan,
+> > +                              int val, int val2)
+> > +{
+> > +     struct rzt2h_adc *adc =3D iio_priv(indio_dev);
+> > +     unsigned int i;
+> > +     u64 scale;
+> > +     u32 rem;
+> > +
+> > +     if (!(adc->chip_info->features & RZT2H_ADC_FEATURE_RES_SELECT))
+> > +             return -EINVAL;
+> > +
+> > +     for (i =3D 0; i < chan->num_ext_scan_type; i++) {
+> > +             scale =3D (u64)RZT2H_ADC_VREF_MV * NANO >>
+> > +                     chan->ext_scan_type[i].realbits;
+> > +             if (div_u64_rem(scale, NANO, &rem) =3D=3D val && rem =3D=
+=3D val2)
+> > +                     break;
+> > +     }
+>
+> > +
+>
+> Blank line here is not needed.
+>
+Ok, I will drop it.
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 2e8f89d16586..cf94e9e6a6d2 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -11,6 +11,7 @@
-  *	* 0x4B - ADDR connected to SCL
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/i2c.h>
-@@ -39,15 +40,6 @@
- #define ADS1015_LO_THRESH_REG	0x02
- #define ADS1015_HI_THRESH_REG	0x03
- 
--#define ADS1015_CFG_COMP_QUE_SHIFT	0
--#define ADS1015_CFG_COMP_LAT_SHIFT	2
--#define ADS1015_CFG_COMP_POL_SHIFT	3
--#define ADS1015_CFG_COMP_MODE_SHIFT	4
--#define ADS1015_CFG_DR_SHIFT	5
--#define ADS1015_CFG_MOD_SHIFT	8
--#define ADS1015_CFG_PGA_SHIFT	9
--#define ADS1015_CFG_MUX_SHIFT	12
--
- #define ADS1015_CFG_COMP_QUE_MASK	GENMASK(1, 0)
- #define ADS1015_CFG_COMP_LAT_MASK	BIT(2)
- #define ADS1015_CFG_COMP_POL_MASK	BIT(3)
-@@ -408,15 +400,16 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
- 	dr = data->channel_data[chan].data_rate;
- 	mask = ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
- 		ADS1015_CFG_DR_MASK;
--	cfg = chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SHIFT |
--		dr << ADS1015_CFG_DR_SHIFT;
-+	cfg = FIELD_PREP(ADS1015_CFG_MUX_MASK, chan) |
-+	      FIELD_PREP(ADS1015_CFG_PGA_MASK, pga) |
-+	      FIELD_PREP(ADS1015_CFG_DR_MASK, dr);
- 
- 	if (ads1015_event_channel_enabled(data)) {
- 		mask |= ADS1015_CFG_COMP_QUE_MASK | ADS1015_CFG_COMP_MODE_MASK;
--		cfg |= data->thresh_data[chan].comp_queue <<
--				ADS1015_CFG_COMP_QUE_SHIFT |
--			data->comp_mode <<
--				ADS1015_CFG_COMP_MODE_SHIFT;
-+		cfg |= FIELD_PREP(ADS1015_CFG_COMP_QUE_MASK,
-+				  data->thresh_data[chan].comp_queue) |
-+		       FIELD_PREP(ADS1015_CFG_COMP_MODE_MASK,
-+				  data->comp_mode);
- 	}
- 
- 	cfg = (old & ~mask) | (cfg & mask);
-@@ -427,7 +420,7 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
- 		data->conv_invalid = true;
- 	}
- 	if (data->conv_invalid) {
--		dr_old = (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_SHIFT;
-+		dr_old = FIELD_GET(ADS1015_CFG_DR_MASK, old);
- 		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data_rate[dr_old]);
- 		conv_time += DIV_ROUND_UP(USEC_PER_SEC, data_rate[dr]);
- 		conv_time += conv_time / 10; /* 10% internal clock inaccuracy */
-@@ -745,6 +738,7 @@ static int ads1015_disable_event_config(struct ads1015_data *data,
- 	const struct iio_chan_spec *chan, int comp_mode)
- {
- 	struct regmap *map = data->regmap;
-+	unsigned int val;
- 	int ret;
- 
- 	if (!ads1015_event_channel_enabled(data))
-@@ -757,10 +751,8 @@ static int ads1015_disable_event_config(struct ads1015_data *data,
- 			comp_mode == ADS1015_CFG_COMP_MODE_WINDOW)
- 		return 0;
- 
--	ret = regmap_update_bits(map, ADS1015_CFG_REG,
--				ADS1015_CFG_COMP_QUE_MASK,
--				ADS1015_CFG_COMP_DISABLE <<
--					ADS1015_CFG_COMP_QUE_SHIFT);
-+	val = FIELD_PREP(ADS1015_CFG_COMP_QUE_MASK, ADS1015_CFG_COMP_DISABLE);
-+	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_COMP_QUE_MASK, val);
- 	if (ret)
- 		return ret;
- 
-@@ -926,11 +918,11 @@ static void ads1015_power_down(void *p)
- {
- 	struct ads1015_data *data = p;
- 	struct regmap *map = data->regmap;
-+	unsigned int val;
- 	int ret;
- 
--	ret = regmap_update_bits(map, ADS1015_CFG_REG,
--				 ADS1015_CFG_MOD_MASK,
--				 ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
-+	val = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_SINGLESHOT);
-+	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK, val);
- 
- 	if (ret)
- 		dev_warn(regmap_get_device(data->regmap),
-@@ -943,6 +935,7 @@ static int ads1015_probe(struct i2c_client *client)
- 	struct device *dev = &client->dev;
- 	struct iio_dev *indio_dev;
- 	struct ads1015_data *data;
-+	unsigned int cfg_mode;
- 	int ret;
- 	int i;
- 
-@@ -1003,19 +996,19 @@ static int ads1015_probe(struct i2c_client *client)
- 		unsigned int cfg_comp_mask = ADS1015_CFG_COMP_QUE_MASK |
- 			ADS1015_CFG_COMP_LAT_MASK | ADS1015_CFG_COMP_POL_MASK;
- 		unsigned int cfg_comp =
--			ADS1015_CFG_COMP_DISABLE << ADS1015_CFG_COMP_QUE_SHIFT |
--			1 << ADS1015_CFG_COMP_LAT_SHIFT;
-+			FIELD_PREP(ADS1015_CFG_COMP_QUE_MASK, ADS1015_CFG_COMP_DISABLE) |
-+			FIELD_PREP(ADS1015_CFG_COMP_LAT_MASK, 1);
- 
- 		switch (irq_trig) {
- 		case IRQF_TRIGGER_FALLING:
- 		case IRQF_TRIGGER_LOW:
--			cfg_comp |= ADS1015_CFG_COMP_POL_LOW <<
--					ADS1015_CFG_COMP_POL_SHIFT;
-+			cfg_comp |= FIELD_PREP(ADS1015_CFG_COMP_POL_MASK,
-+					       ADS1015_CFG_COMP_POL_LOW);
- 			break;
- 		case IRQF_TRIGGER_HIGH:
- 		case IRQF_TRIGGER_RISING:
--			cfg_comp |= ADS1015_CFG_COMP_POL_HIGH <<
--					ADS1015_CFG_COMP_POL_SHIFT;
-+			cfg_comp |= FIELD_PREP(ADS1015_CFG_COMP_POL_MASK,
-+					       ADS1015_CFG_COMP_POL_HIGH);
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -1034,9 +1027,8 @@ static int ads1015_probe(struct i2c_client *client)
- 			return ret;
- 	}
- 
--	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
--				 ADS1015_CFG_MOD_MASK,
--				 ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
-+	cfg_mode = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_CONTINUOUS);
-+	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK, cfg_mode);
- 	if (ret)
- 		return ret;
- 
-@@ -1060,10 +1052,10 @@ static int ads1015_runtime_suspend(struct device *dev)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct ads1015_data *data = iio_priv(indio_dev);
- 	struct regmap *map = data->regmap;
-+	unsigned int val;
- 
--	return regmap_update_bits(map, ADS1015_CFG_REG,
--				  ADS1015_CFG_MOD_MASK,
--				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
-+	val = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_SINGLESHOT);
-+	return regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK, val);
- }
- 
- static int ads1015_runtime_resume(struct device *dev)
-@@ -1071,11 +1063,11 @@ static int ads1015_runtime_resume(struct device *dev)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct ads1015_data *data = iio_priv(indio_dev);
- 	struct regmap *map = data->regmap;
-+	unsigned int val;
- 	int ret;
- 
--	ret = regmap_update_bits(map, ADS1015_CFG_REG,
--				 ADS1015_CFG_MOD_MASK,
--				 ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
-+	val = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_CONTINUOUS);
-+	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK, val);
- 	if (!ret)
- 		data->conv_invalid = true;
- 
--- 
-2.39.5
+> > +     if (i =3D=3D chan->num_ext_scan_type)
+> > +             return -EINVAL;
+> > +
+> > +     /* The scan type changes with the resolution. */
+> > +     IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> > +     if (IIO_DEV_ACQUIRE_FAILED(claim))
+> > +             return -EBUSY;
+> > +
+> > +     adc->resolution =3D i;
+> > +
+> > +     return 0;
+> > +}
+>
+> ...
+>
+> > +     case IIO_CHAN_INFO_SCALE:
+> > +             *vals =3D rzv2h_adc_scale_avail;
+> > +             *type =3D IIO_VAL_FRACTIONAL_LOG2;
+> > +             *length =3D ARRAY_SIZE(rzv2h_adc_scale_avail);
+>
+> Check if array_size.h is included.
+>
+I will include it.
 
+Cheers,
+Prabhakar
