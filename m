@@ -1,180 +1,145 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-wr2-f34.google.com (mail-wr2-f34.google.com [74.125.225.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBC9A4D7D5B
-	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 15:12:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790781185; cv=none; b=GBzW4OvsYK/NLK7qfz5C9HM72uDDM4i9c1ec5KK6lH0juHcX58VL2al3p7Cmt3UvdUUFNYjgiDDsXzos3ZxEoCX4qLZivhi6oIPl4cCYREr77TiDapg3lOO6VJWGTan+VrpFkZkp0GSWRljrCtA+3VrtbRBkhcMd8Ag4GVn+Wj0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790781185; c=relaxed/simple;
-	bh=bzhjqFJC+dCljMazr6CkCDYXx5Eq/Z4c0o1B0NivLB4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Qr7/0BoG/symj2VlbsL6dIVt0l1vuaJ7POJ3YuwF0XREYO/1iJbGhDuLPrwj5p0IqDGIau9qYc0pgfwmXZNaAU0QcVXiMAszpTkkYT1NP5kmgNBOvLPj+zKTFgUgF1eyMT03BLYGLaUmmNF81HZR+Mq8pCZ1+Ijr2T5qZKxYAjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=n1LdssA9; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55C315158BF
+	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 16:45:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.225.98
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790786746; cv=pass; b=CbqXOoRzQkpgbcqiE9uIG+MOPPwfolvpGj9uU6VgA1M1PxmQW1IA0ZnRLUi9CXPi4hZ6RgFG1cR1nNfgRTMwzmgdN+VOFe7Vx1GErEoWKPOknn+WVN4a18JGDNyQqbk/2qZ3d2BpG7TBLI25DWG/aFW5xc9Nps4NTWK+3V5IgPY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790786746; c=relaxed/simple;
+	bh=bhyLwLX3Cbs39RNIdfvjdkMauqLBTv5+SoflpxyeT3g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Mw0wMeNAyxcRCtB58bNA+GI2NaHJdWYU4Ng8HvF198wT2Ih/aGxVm8oTJPrI4lpAyyPhYSGndbFmg+VIIlWn3sZzYgcQ1nRtdPvbrWVMRzVKEzXmDohpW7eVIXTLA4RDlbEn1CdOx2RwcnCvsqFubD3Aokz3ZCeJyfFhN3T4/rY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=knt9JlSv; arc=pass smtp.client-ip=74.125.225.98
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="n1LdssA9"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49ff9642c57so9768105e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 08:12:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="knt9JlSv"
+Received: by mail-wr2-f34.google.com with SMTP id ffacd0b85a97d-48af5ae31d8so1756968f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 09:45:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790786742; cv=none;
+        d=google.com; s=arc-20260327;
+        b=RS+VUO/si7wqMyd4BfRE87F3Oumjvg3yIuRyk9omuPYWQBcGg+YyzWoDuxojUekhl3
+         3D/GXk5O7fX3tdhfsSS21wFogSxhCy/RxLhamz8G+SiccsIW9PKBcHxESEagqTjoUQNQ
+         mC1MptHe2XbHy98lGazcBclr0NA3dhnPHfpVLQ/9KISD3IGJP6V5ViRvrqlhKoFlbWEn
+         tHKgD98uPDd8nuKbXm5pBy9JBgYWpD6X28vuW+YgSY5WoKYHFqCui5lp4a9Tq6HTwKkP
+         jf2mtkej2aqdbIUqZ5En7fSILIW62j/SXeWVBNglQgqeOq9YL87YoVXYTCIYt1Xgrxxt
+         Eh6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=0qr/Ipxr22SFcNZfSu174bMZPRwg/L3HUY1rLAYBi7I=;
+        fh=6F9BblZXn55klU6Su5RXSdNd1P7mW4O3Jjj74WNXSKQ=;
+        b=ez6llFRHPeu+nIVVs8l/khhp7RrLWz82DHcvehbf31cOE0/9Kc9Gau1duTmKkF1tfx
+         RbACTJjnZVlY2aj2cdvvLvgjsvsgPQcLCMpm+GV6TjX2AHC4bc3OcpCVxExs7mO89DsJ
+         CcnLBNFk5JTt8SRqLzC8aq+McIry3jFLAf0e7e/LVXfShAXu27B+nPW0kCKzesrGVCcw
+         AS1VTHlLlspAMwpsdXJ+B2DGCoNuDbGvmdFNU15liAXbiF684z1LkuS7hvMYc6LTSXjh
+         ii2FY1777uclHTj65albQpai6aeKI1wFMMv3tyu+7Ce7BQ9VS2japsP3XrnVQsDxVDZw
+         D10g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790781170; x=1791385970; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1790786742; x=1791391542; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=OSdmhz6QeIhKCNCrOk2rawQmJp3h2Ms8iDYvSFt+tko=;
-        b=n1LdssA9Hvxn9tCFeD9w4b9S3YyPdr5WR+zH6wd7G2hcLSmdOVK+Ojpae19Zq7RNCl
-         UZanfsokIdf1crmGwjSDa2W/bWULVuaUN6PetfktoiwTFG5SnHg+8qccxjshPAEJIKTH
-         jADp30/tiSIFDGuKp9AkzASyjT0bXz3vA6WYSc7oK0HzdfxWwT7kYSs0vh75W4vlo8UX
-         yn8Yp/CkM+WTwD0zOFvRmc03gDLlrYhNerJj2BQZDy2XZMNAGNgwdArsk0DGYzsroY2Z
-         HjZr+LMEM4F5eR2fznNskmrJkrRS1iIqggr4nkjwJ9lran9VfbRWXdFpo0HhayuqCcOw
-         OdGg==
+        bh=0qr/Ipxr22SFcNZfSu174bMZPRwg/L3HUY1rLAYBi7I=;
+        b=knt9JlSvHA/ihsQPnXC8Pto5tXIsmr4YXVA0pm0Xeq04GwRzp6MsVZB+aY/hHa2h0B
+         yoUINlKRc7bS70qcFZbuxmrJdB6q5eXGOikRuXFhxbpGHqoJhTwLYYEF1UHagKwG0gXy
+         smgn3xzTfk8D7fH3T3hp0/0ZP/6h+q4/t/IOMcqsEqYs+Kt7j6W7oyp1RV3y3BIPeQfv
+         ExJZWrWTNyXvM4UOF/MrFQMgRTZglQSFgAR+ipYkC4v1+FyStGbHL49dSKF3GNXc8TZp
+         XHHNx7oxo1GNGTpT8zQi/WQk9KXrCuLD885xnE5/KnF3WygGxo8SMqjrgsi/S4AjuqUC
+         8rSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790781170; x=1791385970;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1790786742; x=1791391542;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=OSdmhz6QeIhKCNCrOk2rawQmJp3h2Ms8iDYvSFt+tko=;
-        b=bLOulVDHcDiwF69w0+UiSW/1I08O2ViKDXwqj5FMcdm65MjW2E5sA4aSxpiB7gIW3M
-         NDvDrEftqQvZMa5ytuYrhMAij4chLVRR7K0JA01NhtqVPjLDfznutMUS7YQX8psSID1Z
-         sJIXbyjz8f1QAb/O4uUsEQ9LwdOOcHym8AuNbThZ8/QwezIZyD5BYUc5B5XV/EaboRoa
-         GUa21yZqv2ZrryQGW0219fOqxcymIh3O4/B+tstTPNY2uzVw92lhqokEYh65daCF9Ih1
-         EgClZxoCSw+9i/Nu4O0r26KNjBYyML3qsaaf/348KYxpJRZOMhDFVf4Hx2lvJ04EoUxx
-         Y4qQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwkfhPSa5gtgwpBfwNVsNNK34O+4lu/mCz41XpnxnTGEE6DNf2N5cox6awa3R972kpbEKyxx9xCGyg=@vger.kernel.org
-X-Gm-Message-State: AFuF++lTs3zlCPVisUGUTsmUYLF3j0V5Rhpk63skGIamfg6Kk047A2e5
-	BMYtIm0Gzz1cH8WbaQOQ6vMim9uIN+pXJk0px/9JuX4YyoGmVJeYbSvEeMEUKg==
-X-Gm-Gg: AYBFou2aB0MykDlggo7v5mskkRVFFwLC9mqPz1EhwZHbrlqBaqY/qOkTNfL/h53M62R
-	BaRZF2s9UJb8tYqN8c9A4jv7nEgpd6QL5hXg4uL1K+3LKiGRqiKFm4v7uREVSwNuDDYQIroucXS
-	Ui5LkKSDxfS/M4gXosfUy7al4vkwhwLCEj5Nl1LNioG/E7V/EVIyBm3gxqvqwTiLRCUbBb9MW4A
-	0nZrelStbjWKymRE1KZXhxhJ6eCr+xqYQGsEjHKo1xdCT+3YCtrnBrdFf/c1C/8rkoCI7iKzVp7
-	zAQhmkNs+e+ZRO6OwIRQzMVsq4H7vNY7S0OkwQZ/Kw3/0kKqy2iQ4+etBE+FFcBMbuUsipNAHwC
-	7wiEfrIOoJDjNUdtJ4tEo1P2BzP2gDVk74vkjZLl7RtHQkrs1nOhdGyxEe0uX0aik7HTcSAWOj4
-	YjvSWDafQ0HzQSOhYW8pWZoYBBtB4dSO1IQMAYSeJZkYzL2rLLjHZnCpm0LsscyJE74hmxD/SpH
-	excqZshbEr0vuybhWp+onT6Xo5c4tu8YIY60CVxpTEMBNkou0dvgO0456m32Dlp8JGIAmVgbilP
-	Lrn3qNlrLxgsU2ySZrbgT+AzEe5uc/3KD+mWv9I2MIepxl89OV752RoFFwbHVfSvsQ1Dd3K66kk
-	A6Xogg2SjJo0W0AVrW4rB7vqlyp2BrgefBe8ctLH0a4tAjCNoGfETFsGIbw+mYT4Lm0FvmBWJdp
-	Xyjn0s
-X-Received: by 2002:a05:600c:5391:b0:4a0:34a:588c with SMTP id 5b1f17b1804b1-4a01b1ba781mr26714605e9.14.1790781169765;
-        Wed, 30 Sep 2026 08:12:49 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a01ccd1566sm18147705e9.2.2026.09.30.08.12.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 08:12:49 -0700 (PDT)
-Date: Wed, 30 Sep 2026 17:12:48 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>, Marek Vasut
- <marex@nabladev.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
- <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
- Cheick Traore <cheick.traore-ext@st.com>, Olivier Moysan
- <olivier.moysan@foss.st.com>
-Subject: Re: [PATCH v3 09/15] iio: adc: stm32-adc: add support for stm32mp23
-Message-ID: <20260930171248.00004562@gmail.com>
-In-Reply-To: <20260930-adc-stm32mp25-v1-v3-9-406834430d72@foss.st.com>
-References: <20260930-adc-stm32mp25-v1-v3-0-406834430d72@foss.st.com>
-	<20260930-adc-stm32mp25-v1-v3-9-406834430d72@foss.st.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        bh=0qr/Ipxr22SFcNZfSu174bMZPRwg/L3HUY1rLAYBi7I=;
+        b=fI0cwT66Z8t6VTqOIKu9UCF1p5obMDZ66Rrx9u/TVyqcPG5rCoNj5OLSXeH8U0xJrV
+         sDJVyX3wwr3E8hlH/Aybv3mJdlZPHxmHsPlQoraZjdeGOy8aRR3K3M2Iwrros4m24/U/
+         Nm48XKlgyPygxYuM8fm5AkfRTWobNxBDrSLg3XGdliKK6fGICBAQQKkJrAdE4zsGcP0v
+         FMGFFJpZRSDVQ3EMTN3ZB9P7LO9nBWVHMA1iFG58GEiqF2htFGQ6E1SO5+zivtCU7OhM
+         PL9pl8Wc1BAVUxjKmVFjo7f22ltM1kxJSOWretA3y0Avn4xSZ/uEGpwFGWr0am/ZfBZX
+         siSw==
+X-Forwarded-Encrypted: i=1; AKwUvBzWDqd5viCkmIHmxYJ3FlaetQufYUP5QaQUNX+r/Up6Vc0Al/s7NS/5RHHc+E4eYv05oD4Ge4E9dyM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLdJmKsz/5NQ46oy5T1Y0nQGl45yuLVakJqIn9loKL+7qpWSyzY
+	HJ3Y32Im8XJAbA9I/rU0cBoovhHVbiXTvYwggea1iFaDvQd8j/xMw9SO+O2E4+U5uOltkiJm20G
+	ItOwwwK6inw2ha5RLkdroon32F8feCk8=
+X-Gm-Gg: AYBFou09xkMIfFzKIvP0ajRE+Wf62D08F5M4JwIHpK8K41PAb2TLCaqm2yprKT7z5QD
+	pgOlSIqn+1dEMgncX57dKr0B6ofXKUQ7+p82mS7F6QvydTkmIh/f5+LtzN43Ghoj22oDQxWL4+E
+	rYOl0nnOyzx3HdXyqiT1zUKQoljvWCYs9pjY2MLaeusfVYdUj1/ukp2sEtJTwGDdQkB/IURDL2G
+	384J+Hj4eDdo/wjIj3ecYNK5nNLgcfaRp+Lj9iBS9C3dSSuaNa1OKohq4HY4IcFabH0vKy1Ltj5
+	4gmmpafC4/MqmPbdUeX06AsfSsOzbgcYOs0C3L/xa4iEBHCVD56ar0mx1e6DeLr7vCAVIh3OZCT
+	nX3coWFoxLQiBHgGDnMky0RzPscgvsKp3U8fuHYGBieoptNebMODUzbvf/Vzhm30PuDb8FF/Tsw
+	==
+X-Received: by 2002:a05:6000:4a01:b0:48a:f36d:fb57 with SMTP id
+ ffacd0b85a97d-48b024ea6cfmr4110706f8f.18.1790786742198; Wed, 30 Sep 2026
+ 09:45:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20260929124248.237032-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <arzVHnMtKqQx5rdZ@ashevche-desk.local>
+In-Reply-To: <arzVHnMtKqQx5rdZ@ashevche-desk.local>
+From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date: Wed, 30 Sep 2026 17:45:15 +0100
+X-Gm-Features: AclHuK9DK0fHm8pKCkWA6Zd6bNeQSmhN0p4rElp5jeZV36-WUljPpymXoO3Fm8M
+Message-ID: <CA+V-a8sgRHDbJqnp6_-0NO8V5f-J96ZtdC698-2n0Z7n71x5qg@mail.gmail.com>
+Subject: Re: [PATCH 2/8] iio: adc: rzt2h: Wait for the analog part to stop
+ after a forced stop
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Prabhakar <prabhakar.csengg+renesas@gmail.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 30 Sep 2026 16:18:30 +0200
-Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
+Hi Andy,
 
-> Add support for ADC on STM32MP23 SoC. It has 3 ADCs, split into two blocks:
-> - ADC1 & ADC2 are tightly coupled.
-> - ADC3 is managed independently.
-> 
-> It is quite similar to STM32MP25 ADC, except for the trigger list. TIM20
-> triggers have been removed. So, handle the differences with a dedicated
-> compatible and compatible data.
-> 
-> Co-developed-by: Cheick Traore <cheick.traore-ext@st.com>
-> Signed-off-by: Cheick Traore <cheick.traore-ext@st.com>
-> Co-developed-by: Olivier Moysan <olivier.moysan@foss.st.com>
-> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-> ---
-> Changes in v3:
-> - Style: Wrap core ID table to 100 chars.
-> 
-> Changes in v2:
-> - New patch, split as advised by Andy: one patch for this new SoC
-> ---
->  drivers/iio/adc/stm32-adc-core.c |   1 +
->  drivers/iio/adc/stm32-adc.c      | 112 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 113 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
-> index bb8b53f52914..f94cc6fe4c02 100644
-> --- a/drivers/iio/adc/stm32-adc-core.c
-> +++ b/drivers/iio/adc/stm32-adc-core.c
-> @@ -936,6 +936,7 @@ static const struct of_device_id stm32_adc_of_match[] = {
->  	{ .compatible = "st,stm32h7-adc-core", .data = (void *)&stm32h7_adc_priv_cfg },
->  	{ .compatible = "st,stm32mp1-adc-core",	.data = (void *)&stm32mp1_adc_priv_cfg },
->  	{ .compatible = "st,stm32mp13-adc-core", .data = (void *)&stm32mp13_adc_priv_cfg },
-> +	{ .compatible = "st,stm32mp23-adc-core", .data = (void *)&stm32mp25_adc_priv_cfg },
->  	{ .compatible = "st,stm32mp25-adc-core", .data = (void *)&stm32mp25_adc_priv_cfg },
->  	{ }
->  };
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index 33e41505b2e9..210b76b21d13 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -563,6 +563,64 @@ static const struct stm32_adc_regspec stm32h7_adc_regspec = {
->  	.smp_bits = stm32h7_smp_bits,
->  };
->  
-> +/* STM32MP23 external trigger sources for ADC1 and ADC2 */
-> +static struct stm32_adc_trig_info stm32mp23_adc1_adc2_trigs[] = {
+Thank you for the review.
 
-This should be const, the trigs field is marked const in stm32_adc_cfg.
+On Wed, Sep 30, 2026 at 10:24=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Tue, Sep 29, 2026 at 01:42:42PM +0100, Prabhakar wrote:
+>
+> > When ADCSR.ADST is cleared to forcibly stop a conversion, the analog pa=
+rt
+> > of the A/D converter can take up to 2 ADCLK cycles to stop operating.
+> >
+> > Wait for the write to ADCSR to complete and allow the analog part to st=
+op
+> > before reconfiguring or restarting the converter.
+>
+> ...
+>
+> > +     /*
+> > +      * When a conversion is forcibly stopped, the analog part of the =
+A/D
+> > +      * converter takes up to 2 ADCLK cycles to stop operating.
+> > +      */
+> > +     ndelay(DIV_ROUND_UP_ULL((u64)RZT2H_ADC_STOP_CYCLES * NSEC_PER_SEC=
+,
+> > +                             adc->adclk_rate));
+>
+> I do not see the point in having _ULL (64-bit) division. Do you?
+>
+Agreed, I will make use of DIV_ROUND_UP() instead.
 
-> +	{ TIM1_TRGO, STM32_EXT0 },
-> +	{ TIM1_TRGO2, STM32_EXT1 },
-> +	{ TIM8_TRGO, STM32_EXT2 },
-> +	{ TIM8_TRGO2, STM32_EXT3 },
-> +	{ TIM2_TRGO, STM32_EXT6 },
-> +	{ TIM3_TRGO, STM32_EXT7 },
-> +	{ TIM4_TRGO, STM32_EXT8 },
-> +	{ TIM5_TRGO, STM32_EXT9 },
-> +	{ TIM6_TRGO, STM32_EXT10 },
-> +	{ TIM15_TRGO, STM32_EXT11 },
-> +	{ TIM1_CH1, STM32_EXT12 },
-> +	{ TIM1_CH2, STM32_EXT13 },
-> +	{ TIM1_CH3, STM32_EXT14 },
-> +	{ TIM2_CH2, STM32_EXT18 },
-> +	{ TIM3_CH4, STM32_EXT19 },
-> +	{ TIM4_CH4, STM32_EXT20 },
-> +	{ TIM5_CH1, STM32_EXT21 },
-> +	{ TIM12_CH1, STM32_EXT22 },
-> +	{ LPTIM1_CH1, STM32_EXT24 },
-> +	{ LPTIM2_CH1, STM32_EXT25 },
-> +	{ LPTIM3_CH1, STM32_EXT26 },
-> +	{ LPTIM4_CH1, STM32_EXT27 },
-> +	{ LPTIM5_OUT, STM32_EXT28 },
-> +	{ }
-> +};
-> +
-> +/* STM32MP23 external trigger sources for ADC3 */
-> +static struct stm32_adc_trig_info stm32mp23_adc3_trigs[] = {
-
-Same here.
-
--- 
-Kind regards,
-Joshua Crofts
+Cheers,
+Prabhakar
