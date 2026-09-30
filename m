@@ -1,123 +1,80 @@
-Received: from mail-vs2-f43.google.com (mail-vs2-f43.google.com [74.125.227.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C56654705F
-	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 19:59:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE9C951D50F;
+	Wed, 30 Sep 2026 21:18:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790798365; cv=none; b=hjca1Q/51w8Q/5EgKBkDDEVe0RjckNQ16ez639Pay92k/fWOS+gj7BDWJvbmSuaosNlUh3Snl2h38RuGpenRTnhb22PIwCfoCzefgNiID5587GHnKefXL2KJlKAEzOZsG6ABn48J1VLoORKXhv5Wpk0sTxbTGVHWsvFvQq8P+yw=
+	t=1790803095; cv=none; b=UDVe3VbOYV84tF/MQSRj0ndG8DxsaadhJLLM9MVfeiKCHTCgbJZVD2D8QWjTK46sTBAEfygPvg+PjKK1WToP4oC+6g6BjA1fSh37RKU5b9C68okk4dJHTkiLLBBQeUpmUblGAqpWHBX6Mo+phSAfA9NesO2KBlv1K2goGJY5KTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790798365; c=relaxed/simple;
-	bh=IxDoNCli60KtOg3+odC/CQMJTv6w8XvqkxAtEahBsgE=;
+	s=arc-20240116; t=1790803095; c=relaxed/simple;
+	bh=Asdm0TpB8u5zy0lzy5pt0MvWertRtCXOd6lENqyikxs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rN6HdbCUXELNBbPBkFkqFt5KqpRQBrApB8FllJ0WND9Y2tN0ob723ZpV34gxIuL8ZLbaIHmdMENOLW9eXs2BRRFbdZMmTthhhIP0kcKcdEIptyEqcLXXv5OK6DbsN84+KGD4sEgUgfCIjDx79kh2HYCI+u3H5TdZhuZQU0khWhE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dkZ84HK0; arc=none smtp.client-ip=74.125.227.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=T3iUFqDfdLTjZGOtrxqyQKhYflRBkpA4B3XRhXYHKVf7LNV2GqV/pfyT4bmNUUVJqJw/BNqHJS88HKUDNipimdhsLmxMA3TNodrwPW1A1VQ7DTqM9V4H2zHIpt+v+/y51RP3AmIflIr53ZqoHRDvANm3QcJrTNRUQ0yGcH+3InU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l15rZbWi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dkZ84HK0"
-Received: by mail-vs2-f43.google.com with SMTP id 71dfb90a1353d-5ce4d8751cbso1643581e0c.0
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 12:59:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790798363; x=1791403163; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=J5spSizosrOmpK8SzSSYeLKeSXZf2rKWRXHBMWYBveo=;
-        b=dkZ84HK0bri1q2vaczZMGxz7cb5I4HK12p1QwpM3cTJb9DUO6YpY68MKcnwQZkoUp8
-         GQXcq/QzArVdEkRcueS29tzD67xZozNh4wZq3ZcabrSX8OOM+fbKTNZXvQLSQN0UuiM7
-         Ev1Q6BxSjcnrNqM/Iyruaklwz6yzknC5X3E7mAq0YxQYRYlXEv374td5pGKaFJLSne8L
-         VPkUY93sbpVmeM/vXTMsevi8yp0p9VwhGNuoagdKmaQylcuih5A+4QZHfNUQ8Xk8KTD2
-         Rqw5oY6QNiiPgYdN/S0Fm0D/30jWG2OCzURae/YYkbbadWYkPst+0ntaDo2Iu3O3izXY
-         LUVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790798363; x=1791403163;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=J5spSizosrOmpK8SzSSYeLKeSXZf2rKWRXHBMWYBveo=;
-        b=Ya35J71vHQW0SSmzhrVqVmCCiAtLNL7MuQEUmGDmqD6UK+R5zGvLticFbT7mQBJIDO
-         6NmJFnJ37yfYUOAdQ3EZg8/a4FIrh3AjbP4HTxaeQLtv37MMx+qvW6coZNb20GObLnW3
-         x5N16pFpxFj3USoinPdD0dhJoy58VbES74UjpOStlVO4PSPVkVUzufFqKZF3rLNyFbAt
-         rSjpmZIrIhKN5Qn+hpyfHjp1DUtvYjlQO5p8s/OCR8OVhwlOKVKbgjEJNPAj7Y32KlNV
-         3IOokBm8I3EcsAKJR7QQijwlJEqfxr6tB9Irqpk64qWyhIu1kckIN0c5PB6fEe41Wpjn
-         6giA==
-X-Gm-Message-State: AFq9FYJ8j/wzRuYJUHUzu+23MqBUIAviJH1+elk0pJsP6TLhcjPVNUSb
-	vHyPKFGuae22xc+AYJ+Lmc0mPw5dhWkGUwPq3XWvwKACNJxEqdfL5C2JMMFmdw==
-X-Gm-Gg: AYBFou26kYc7/b0ZdhCfWLnD0/QFPS6Zg9fwotnbN9OfPWI2a5sWxbSEUXxpHa3d7sL
-	skj+P2J5KJkY3jJ27iNcQatVwNaQiGRRURkLn0hdbERcQrCyXzWQk+IEJ5kGt6kLBDrWuoOmoLI
-	ZBJ4WFwTvJyroqmU/54DT6Dq+pxiq9iExwDLlDHU+lIx+seDmXIF1+WpCAswNVc7htKUVaof/4q
-	fLikf/FBLcDzW/FbBPM/+EG924UfrlNuJ9w2+cZwwZawBzUgO/ROV8iJ6qPVmH+dyNrkSA8vMyE
-	J8kTvCLhZXGdtC9aibTxGjM54oUUdppJa6vFciHim6shJfQCXdcFV40jzkzojZkpz5n6NsBN+HA
-	+VLN9CpcVnYsFX7PzpNcYQloRCTjQwfBSsTILT1LziFu5Zf5obMkiI8t4WKKa+BAqWn5QC4aev8
-	HyPESPPCmJYikxmZ2mtKAVTFdYUjZpM6a+22BvwUGrAFvb8YA8yPdeQ0HIsAb0SvZDQ8nlXrqiW
-	9uOZfXEV7lNJ9M=
-X-Received: by 2002:a05:6122:e26d:b0:5c9:c60e:f4b5 with SMTP id 71dfb90a1353d-5d67ee922b4mr906149e0c.19.1790798363052;
-        Wed, 30 Sep 2026 12:59:23 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5d7fa498cc4sm481660e0c.6.2026.09.30.12.59.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 12:59:22 -0700 (PDT)
-Date: Wed, 30 Sep 2026 16:59:35 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, marcelo.schmitt1@gmail.com
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, robh@kernel.org,
-	conor+dt@kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 12/13] iio: adc: ad4134: Support high-speed data
- capture
-Message-ID: <ar1qJ8LaNaiYF3a5@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1790719424.git.marcelo.schmitt@analog.com>
- <60682dd6c61806bf0d024d242c62b39a349db4f1.1790719425.git.marcelo.schmitt@analog.com>
- <20260929231610.BA7C31F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l15rZbWi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3D531F000FF;
+	Wed, 30 Sep 2026 21:18:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790803094;
+	bh=Asdm0TpB8u5zy0lzy5pt0MvWertRtCXOd6lENqyikxs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=l15rZbWiW/tSQiObx6mwp+9gGKh9XCppH7zEZjV4/ws0N0fhhL935fgxY8T/b9ryq
+	 scgrbCydtbaS9kU0dxFiENiEic8kWwHrDvgrlsQlvuMOK5MtRkasgICmtoCwsDFpec
+	 g1JnkEsBFNCOisjA7nDuJPTofbwDarZmGApQoWfT3O7J1v/UYjpJ5z8s0ZTURjkSkq
+	 Ywil6TqsOkRzj2rX+mR0kGfZEycli/3RPDCiIhczFzNmkk5OD7Hlk+6smZD2mdqbn5
+	 6NMqF51tZttN2pdFPcSNA4UlpmDwNKAqPY4Kyzdb95j7m4x0cGaXJkPbpYvMy6F+jF
+	 U0wyl9hTDnUqA==
+Date: Wed, 30 Sep 2026 22:18:08 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Marek Vasut <marex@nabladev.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Cheick Traore <cheick.traore-ext@st.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>
+Subject: Re: [PATCH v3 01/15] dt-bindings: iio: adc: stm32-adc: add support
+ for stm32mp23 and stm32mp25
+Message-ID: <20260930-blip-hacker-c0eb3c978fb8@spud>
+References: <20260930-adc-stm32mp25-v1-v3-0-406834430d72@foss.st.com>
+ <20260930-adc-stm32mp25-v1-v3-1-406834430d72@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="H5isfrlAMKPo+WOT"
+Content-Disposition: inline
+In-Reply-To: <20260930-adc-stm32mp25-v1-v3-1-406834430d72@foss.st.com>
+
+--H5isfrlAMKPo+WOT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260929231610.BA7C31F000FF@smtp.kernel.org>
 
-On 09/29, sashiko-bot@kernel.org wrote:
-...
-> > +#define AD4134_OFFLOAD_CHANNEL(_index) {					\
-> > +	.type = IIO_VOLTAGE,							\
-> > +	.indexed = 1,								\
-> > +	.channel = (_index),							\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),				\
-> 
-> [Severity: Low]
-> Is it intentional to expose the raw voltage attribute for offload channels?
-> 
-> The IIO_CHAN_INFO_RAW bit is set in the info_mask_separate here, exposing
-> the sysfs attribute. However, ad4134_read_raw() is modified later in this
-> patch to unconditionally return -EPROTONOSUPPORT for raw reads when offload
-> is enabled. Does this clutter the interface with an attribute that is
-> guaranteed to always fail?
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-Oh, I should've done that. Will change accordingly.
+--H5isfrlAMKPo+WOT
+Content-Type: application/pgp-signature; name=signature.asc
 
+-----BEGIN PGP SIGNATURE-----
 
-> > +	if (!in_range(freq_Hz, AD4134_MIN_ODR_FREQ_HZ,
-> > +		      AD4134_MAX_ODR_FREQ_HZ - AD4134_MIN_ODR_FREQ_HZ))
-> > +		return -ERANGE;
-> 
-> [Severity: Medium]
-> Does this validation check inadvertently reject the maximum supported
-> frequency?
-> 
-> The in_range(val, start, len) macro strictly checks if val < start + len.
-> If a user requests exactly AD4134_MAX_ODR_FREQ_HZ, the condition evaluates
-> to MAX < MAX (which is false) and incorrectly returns -ERANGE.
-> 
-For cases where the range doesn't start with 0 or 1, in_range() becomes a
-bit harder to read.
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCar18kAAKCRB4tDGHoIJi
+0pgAAQCk8EVeiVU7bhrDnX9SGs0jNb+botmOIZKyWqLMT6HyVQD8CSU3PsZX2Dlz
+pRsbaiCvl7wPH8G7uJ99rxHJL+MOcQI=
+=tsxz
+-----END PGP SIGNATURE-----
 
-if (freq_Hz < AD4134_MIN_ODR_FREQ_HZ || freq_Hz > AD4134_MAX_ODR_FREQ_HZ)
-	return -ERANGE;
-
-would have been simpler, IMHO.
-Anyways, will fix this and all other issues reported.
+--H5isfrlAMKPo+WOT--
