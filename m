@@ -1,235 +1,107 @@
-Received: from mail-m49197.qiye.163.com (mail-m49197.qiye.163.com [45.254.49.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm2-f12.google.com (mail-wm2-f12.google.com [74.125.225.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202F443D4FD;
-	Wed, 30 Sep 2026 07:03:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 768E744BCAE
+	for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 07:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790751822; cv=none; b=KSgunHzc1C2YnIvYb5leMmIneA5Y7U/XUNG5Ly/Ex3tgZ2exZfN1Ic5ihtH1DDiJo1kqnmNdWx35AKM2JtZiX/HVvQjKpDuckgdqz45WviC6yC6SoMUZmp0skTUJaXNIXowAFJZApX+JjXGNLEQ5ZjFsr94w4ltaKlHxQU+7Jjo=
+	t=1790751874; cv=none; b=ilpNj8+pZCKzY76JhwfSi57St1ogpWozpXl2PcWGnVB7FltUGgzDKGTNzjTq0gdbwfVqz5X1atAOyGOQv5cfk9bKgfIzRtrI8l2FFkhMnCxgB/CX89qxtW1nYDnau6RIx2DOYqr+mjvq0bzxgwVawE/4es5j9WdEC14UWJesndg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790751822; c=relaxed/simple;
-	bh=2KtV+hdbb3/nONdckSDE8IUGHFeOztRpkxwtsIWQqR0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=RXxb/Sa5+ISWEjxuJRDDa6GVI7sNCzxreADDhK5NE0ePoSiM4uElGZoPD6+BLt0RjtoRry5RlzZKLNSTQn3QDyIXm+BrtnlJcod+fpOaL/5d06xUh6JtGXsT6LA37zKt2MaysZpEwiSE6drSGsvmg7TQYMrE0ScjBZCZ+C7R6r4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn; spf=pass smtp.mailfrom=seu.edu.cn; dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b=KS55cMin; arc=none smtp.client-ip=45.254.49.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seu.edu.cn
+	s=arc-20240116; t=1790751874; c=relaxed/simple;
+	bh=yFAS9/v1M5fbag8LFxiryNj/dstnuUqvUFxvrR3AwQU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rIv/Vm1jl/KptfI8/xx9+JhLhCqLTnhZXd6kuapDiXrQ4JJIZHDVZsyZQrIt1RXuizi6bhdTCyRBL6i/8J/fanZxzx6LSEWAsPtQnoOgkFJzYLJ5CV6fcg4yR7dEeU6VcPNJinkfpYKlQH8C9TyedVVARyfJl+3NrJKW4ljCv18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lnTTUOBU; arc=none smtp.client-ip=74.125.225.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b="KS55cMin"
-Received: from PC-202605011814.localdomain (unknown [222.191.246.242])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 4f9a97abb;
-	Wed, 30 Sep 2026 15:03:24 +0800 (GMT+08:00)
-From: Runyu Xiao <runyu.xiao@seu.edu.cn>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Runyu Xiao <runyu.xiao@seu.edu.cn>,
-	Jianhao Xu <jianhao.xu@seu.edu.cn>
-Subject: [PATCH] iio: ssp: Serialize watchdog timer state changes
-Date: Wed, 30 Sep 2026 15:03:19 +0800
-Message-Id: <20260930070319.2933744-1-runyu.xiao@seu.edu.cn>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lnTTUOBU"
+Received: by mail-wm2-f12.google.com with SMTP id 5b1f17b1804b1-49cd5462b69so27809235e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2026 00:04:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790751861; x=1791356661; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=fnSRLEDUbCFQeuJzEmlR0hd67GUctSzHNjgJH5Lw/K8=;
+        b=lnTTUOBU+jsn8hrSkkt4kxTHigXzJm9Q8hDlQrLdEHPwgcugKEqSCxDSEEsVM6Intq
+         GmnqHW/qF+w0zG4L3l7aXznXGXfsiirAt+AaveCPAP2RndVi2aYwV2o7BwhKOlXz8AUv
+         pTksh/g+nWUXwwvaBbD1bJ/YmPIxoOGY7wZbKP4v2XrPG2wtPLigtUiCizmR9SKFQTqZ
+         WxSvDAPmKrevkRJuV6FN7725pTXIiPRdZqdThYv3T5p5kmz+v023Iex64mGZKZIBANIW
+         uzetawdKfW+lvq53W11iHQEnq88CDlEMSuvRQ4mat0HSPINims5PD0tr2FEJfHKESWDP
+         qO2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790751861; x=1791356661;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=fnSRLEDUbCFQeuJzEmlR0hd67GUctSzHNjgJH5Lw/K8=;
+        b=ur65nbc6fo3SOa13/18xeJ9btx+/YHPPrWxub9kodm2pUo9z8NYRCUsgb3nBEYGWSs
+         rgHzFSMCT0+ldry31s2juhcUBaFb3yGzti1ED2/ZUO1ZamUSDDFvSzQdvroO3SiFbcda
+         syjbSQThqiLmFfQsEwBH0STzHqrqsMcmCQESIPyixQtlwC7TBmQUSi2u2OTesHf2PN2/
+         DaMvxyGg/obKBGzfqTqk6rc57/3DNBRGU+GTPQmtjWempkJSA1CEFg3TOOwF7Fc+/2Iu
+         g9xOi2QD3rRBdJQOiUZjDjerBGSrFzcb2PkhJfXr+KZNuYEE7TifFqec4OSWUylXjK+s
+         GGsQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwq0yUmLYFzRSpZ8aWBRGeQVPNkSJVLUh9uw5xrXWLUtzM+oanGhE/cOAKSKI9PL1rL11HrFs7L0XU=@vger.kernel.org
+X-Gm-Message-State: AFuF++m+9GgslDWfAfiHAwwGLiBh0fuu8n3eInvM8+5MfCJpxaYacVus
+	1wHzXGncHUMECatxIdgFieQaJPqy4NPw62FbL7nC9T+ffllgyAdBTLm3
+X-Gm-Gg: AYBFou0LWnIkfiblN7Z3Rzm9sOX2BBE9ZK8p2mhfq6jysBcSCPVMZtDOtpx9bSpPGsv
+	oqsDWDzspXgIKvgHCw5vcv4+hNIJyMmjSN0UKKymxHoLHb2KA4MYVe+vkaBuSlYWKzGDIyTa+wM
+	PkA3oW+FONfuwiGMqhQSGTRDCAFRk+AOaFAvo8G0NsjxBmSxfliMNX0FghX6dB/JDer5BB22mK9
+	1rYj0yjDJrv1yeaLiSLFtpzWFXX2j2zJIQ9Uatm2QXAhFJu1F2EiT285cuIAkcl2Zv3D5ZpdZwo
+	l3Vt7q8xiRXRbegIqQZw1EudSTMv1fwOEM8jYlNmKnm4kvhVhaqCEBDGGolSyFmIeUHEwfYgOjN
+	A/7OYH1LQLfxBWy7huaZPElsJmVEBa7WcqJi27b7dqxKUYRlwBDD51jGyLj90yX2TLFKh3Z054a
+	EHXEPZI14XQE0vecEMMMWeJi+m/fK6ykjFX9AYId1tbAYi7j5zPHyvevDuxbEsS5hYwgUFPdXQY
+	jdwMHEKXwrRQ1e2qGLqaWuxDhj4s6lX8wDn0IjYTTIuR/JMp7kSRhIhhdinPebVTDKulxRwIUYv
+	wdY5Ck9fRmY+ZRcG8/iuL2v7N60c7wSfeM+tIOs0mFEutJeHWqnMFbANdL1Y3Y//MXoAiphYJ/M
+	pHAaleqxqJOVYWZhq27DPan30fGpMN30hoQyU2S1MPVmh7vDIkwLaVqIoFdTk/dNDe83z3f/LyB
+	56Brum
+X-Received: by 2002:a05:600c:5391:b0:4a0:1559:bafd with SMTP id 5b1f17b1804b1-4a01aff068emr5650595e9.8.1790751860600;
+        Wed, 30 Sep 2026 00:04:20 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48b02949a5esm1515980f8f.4.2026.09.30.00.04.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2026 00:04:20 -0700 (PDT)
+Date: Wed, 30 Sep 2026 09:04:19 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: jic23@kernel.org, gregkh@linuxfoundation.org, nuno.sa@analog.com,
+ Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org, error27@gmail.com,
+ narcisaanamaria12@gmail.com
+Subject: Re: [PATCH 3/3] staging: iio: accel: adis16203: clean up register
+ definitions and drop redundant comments
+Message-ID: <20260930090419.000073f9@gmail.com>
+In-Reply-To: <20260929184900.39515-4-abdelnasserhussein11@gmail.com>
+References: <20260929184900.39515-1-abdelnasserhussein11@gmail.com>
+	<20260929184900.39515-4-abdelnasserhussein11@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa0f1200a8e03a1kunmceb1311326dcd2
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDS0pCVksZSUNCHxhLSEJMHVYeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlJSUlVSkJKVUlPTVVJT0lZV1kWGg8SFR0UWUFZT0tIVUpLSE
-	pPSExVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=KS55cMin4s9zsVUKgW+xusMLZeifqmrK9jd+78bOpmG22yUHwsK0uGkx7+B7Ewig6JiQBqM3ugKSbXumfXOqhc7iM+bW8eC2GJdqh+O6gK579AkuUd20QOH3oUXQtTzyA7WGqHS61Bx4/8Dj7uVuTWsDZu1kUG6wyt5AOKE1+cA=; c=relaxed/relaxed; s=default; d=seu.edu.cn; v=1;
-	bh=OIgJV/+gcDhRyQwURWHTp318sLO7LJpLE2v3fshAv9w=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The SSP watchdog timer rearms itself from its callback, but the driver uses
-timer_delete_sync() when the last sensor is disabled and during suspend.
-Those operations do not prevent a concurrent enable or callback from
-rearming the timer after the deletion has completed.  The final remove path
-also used timer_delete_sync(), which does not provide the shutdown
-guarantee needed before releasing the device state.
+On Tue, 29 Sep 2026 21:49:00 +0300
+Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-Protect the watchdog state and enable reference count with a mutex.  The
-callback checks a state flag before rearming. Reusable stops clear the flag
-before deleting the timer. Use timer_shutdown_sync() for the final remove
-path so that any later rearm attempt is rejected permanently.
+> Drop redundant, single-line comments above register macros that provide
+> no additional value.
+> 
+> Vertically align the macro values with tabs to improve readability and
+> conform to standard kernel coding style.
+> 
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> ---
 
-Cancel watchdog work after releasing wdt_lock because the reset work can
-wait for the threaded IRQ handler, which may synchronously wait for refresh
-work that re-enables sensors and takes wdt_lock. Remove the MFD children
-before destroying the locks because IIO child teardown can disable an
-active sensor.
+This seems okay, at least the macros are named exactly like the registers
+in the datasheet... but I wonder what the others think about this.
 
-Fixes: 50dd64d57eee ("iio: common: ssp_sensors: Add sensorhub driver")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Runyu Xiao <runyu.xiao@seu.edu.cn>
----
- drivers/iio/common/ssp_sensors/ssp.h     |  4 ++
- drivers/iio/common/ssp_sensors/ssp_dev.c | 56 ++++++++++++++++++++----
- 2 files changed, 51 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iio/common/ssp_sensors/ssp.h b/drivers/iio/common/ssp_sensors/ssp.h
-index f649cdecc2774..2aa70eff06fc4 100644
---- a/drivers/iio/common/ssp_sensors/ssp.h
-+++ b/drivers/iio/common/ssp_sensors/ssp.h
-@@ -143,6 +143,8 @@ struct ssp_sensorhub_info {
-  * @spi:		spi device
-  * @sensorhub_info:	info about sensorhub board specific features
-  * @wdt_timer:		watchdog timer
-+ * @wdt_lock:		lock protecting watchdog timer state
-+ * @wdt_enabled:		watchdog timer is allowed to rearm
-  * @work_wdt:		watchdog work
-  * @work_firmware:	firmware upgrade work queue
-  * @work_refresh:	refresh work queue for reset request from MCU
-@@ -180,6 +182,8 @@ struct ssp_data {
- 	struct spi_device *spi;
- 	const struct ssp_sensorhub_info *sensorhub_info;
- 	struct timer_list wdt_timer;
-+	struct mutex wdt_lock; /* protects watchdog timer state */
-+	bool wdt_enabled;
- 	struct work_struct work_wdt;
- 	struct delayed_work work_refresh;
- 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index 828fcfe1d4f10..44dfafcaeff71 100644
---- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -179,17 +179,46 @@ static void ssp_wdt_timer_func(struct timer_list *t)
- 	    data->com_fail_cnt > SSP_LIMIT_RESET_CNT)
- 		queue_work(system_power_efficient_wq, &data->work_wdt);
- _mod:
-+	if (READ_ONCE(data->wdt_enabled))
-+		mod_timer(&data->wdt_timer,
-+			  jiffies + msecs_to_jiffies(SSP_WDT_TIME));
-+}
-+
-+static void __ssp_enable_wdt_timer(struct ssp_data *data)
-+{
-+	WRITE_ONCE(data->wdt_enabled, true);
- 	mod_timer(&data->wdt_timer, jiffies + msecs_to_jiffies(SSP_WDT_TIME));
- }
- 
-+static void __ssp_stop_wdt_timer(struct ssp_data *data, bool shutdown)
-+{
-+	WRITE_ONCE(data->wdt_enabled, false);
-+	if (shutdown)
-+		timer_shutdown_sync(&data->wdt_timer);
-+	else
-+		timer_delete_sync(&data->wdt_timer);
-+}
-+
- static void ssp_enable_wdt_timer(struct ssp_data *data)
- {
--	mod_timer(&data->wdt_timer, jiffies + msecs_to_jiffies(SSP_WDT_TIME));
-+	mutex_lock(&data->wdt_lock);
-+	__ssp_enable_wdt_timer(data);
-+	mutex_unlock(&data->wdt_lock);
- }
- 
- static void ssp_disable_wdt_timer(struct ssp_data *data)
- {
--	timer_delete_sync(&data->wdt_timer);
-+	mutex_lock(&data->wdt_lock);
-+	__ssp_stop_wdt_timer(data, false);
-+	mutex_unlock(&data->wdt_lock);
-+	cancel_work_sync(&data->work_wdt);
-+}
-+
-+static void ssp_shutdown_wdt_timer(struct ssp_data *data)
-+{
-+	mutex_lock(&data->wdt_lock);
-+	__ssp_stop_wdt_timer(data, true);
-+	mutex_unlock(&data->wdt_lock);
- 	cancel_work_sync(&data->work_wdt);
- }
- 
-@@ -258,8 +287,10 @@ int ssp_enable_sensor(struct ssp_data *data, enum ssp_sensor_type type,
- 
- 	data->delay_buf[type] = delay;
- 
-+	mutex_lock(&data->wdt_lock);
- 	if (atomic_inc_return(&data->enable_refcount) == 1)
--		ssp_enable_wdt_timer(data);
-+		__ssp_enable_wdt_timer(data);
-+	mutex_unlock(&data->wdt_lock);
- 
- 	return 0;
- 
-@@ -310,6 +341,7 @@ EXPORT_SYMBOL_NS(ssp_change_delay, "IIO_SSP_SENSORS");
- int ssp_disable_sensor(struct ssp_data *data, enum ssp_sensor_type type)
- {
- 	int ret;
-+	bool stop_wdt = false;
- 	__le32 command;
- 
- 	if (data->sensor_enable & BIT(type)) {
-@@ -329,8 +361,14 @@ int ssp_disable_sensor(struct ssp_data *data, enum ssp_sensor_type type)
- 
- 	data->check_status[type] = SSP_ADD_SENSOR_STATE;
- 
-+	mutex_lock(&data->wdt_lock);
- 	if (atomic_dec_and_test(&data->enable_refcount))
--		ssp_disable_wdt_timer(data);
-+		stop_wdt = true;
-+	if (stop_wdt)
-+		__ssp_stop_wdt_timer(data, false);
-+	mutex_unlock(&data->wdt_lock);
-+	if (stop_wdt)
-+		cancel_work_sync(&data->work_wdt);
- 
- 	return 0;
- }
-@@ -510,6 +548,7 @@ static int ssp_probe(struct spi_device *spi)
- 	spi_set_drvdata(spi, data);
- 
- 	mutex_init(&data->comm_lock);
-+	mutex_init(&data->wdt_lock);
- 
- 	for (i = 0; i < SSP_SENSOR_MAX; ++i) {
- 		data->delay_buf[i] = SSP_DEFAULT_POLLING_DELAY;
-@@ -566,6 +605,7 @@ static int ssp_probe(struct spi_device *spi)
- 	free_irq(data->spi->irq, data);
- err_setup_irq:
- 	mutex_destroy(&data->pending_lock);
-+	mutex_destroy(&data->wdt_lock);
- 	mutex_destroy(&data->comm_lock);
- err_setup_spi:
- 	mfd_remove_devices(&spi->dev);
-@@ -584,20 +624,18 @@ static void ssp_remove(struct spi_device *spi)
- 			"SSP_MSG2SSP_AP_STATUS_SHUTDOWN failed\n");
- 
- 	ssp_enable_mcu(data, false);
--	ssp_disable_wdt_timer(data);
-+	ssp_shutdown_wdt_timer(data);
- 
- 	ssp_clean_pending_list(data);
- 
- 	free_irq(data->spi->irq, data);
- 	cancel_delayed_work_sync(&data->work_refresh);
- 
--	timer_delete_sync(&data->wdt_timer);
--	cancel_work_sync(&data->work_wdt);
-+	mfd_remove_devices(&spi->dev);
- 
- 	mutex_destroy(&data->comm_lock);
-+	mutex_destroy(&data->wdt_lock);
- 	mutex_destroy(&data->pending_lock);
--
--	mfd_remove_devices(&spi->dev);
- }
- 
- static int ssp_suspend(struct device *dev)
 -- 
-2.34.1
-
+Kind regards,
+Joshua Crofts
