@@ -1,235 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB1A340F72F;
-	Thu,  1 Oct 2026 19:04:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B2F52F0C46;
+	Thu,  1 Oct 2026 19:13:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790881488; cv=none; b=LOeIA/zrnz75SEkfngEHeOcSb5pBM3EBue9XZChbzh+rEuIpiKYrYjie8Bjkm9VdnXHhHINkBMvcej1BRY/wtYDSxxOaZqeQNZFQZUkVsZpnJ0XlJ3NRjahfHCMfDKKhrwn/PM/SfBB4lk2GElzV9MGqNxJXJw2WJOrrwBh6l7c=
+	t=1790882004; cv=none; b=gMHJZjWgjanGT7g3r1K8vsmpFtAqfj9wPOn5myvFc6fnBxuxHf5mOkAHbooCiMYhDJTjKK1bwTesYaIzeSwOEEqjJGRelOtb8YIBxwlbQwmw6Lp5qmNADNfTSADWKo9C45i8voAQhNoI2dNhFsSYgq7RvDaGXL0BqJCNucHns90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790881488; c=relaxed/simple;
-	bh=t5SlTVlC9o4zXQLctQeaePUP8bIJz+3Q5oQC+3O2paA=;
+	s=arc-20240116; t=1790882004; c=relaxed/simple;
+	bh=Vr4V/gCzPPo+UnjwMdgsC+wmyLcsr9HE+lOJEU++tgo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bQLmMJqyHK/MuzZYYidUdOtbobbOe6Z2e8aWVx32w28f9q0l8yzDOf0BLJ1UV1KaStA2x/52Qt4COZI/DZ65SAV9M7tDkGVcBHG8n66VBRVmm0tyhUscJIO7Z46sfSJ/EvVi6zD6vv5fwEoWg5dTQBK6T2V6Ji3iGzh6JXOd3QM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I9LUIX2T; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rnd/xzdEQyCW+tNQE3obhmNwZujPsB1U+5Fw/IaCWkM8Q5qopEjVkTN7lohESOGbeHBMWOj/uOUpnPRjhAhd+CSKytp/+TlXz6FI+0NWXzy8riafTtqRjLHrC7lCngyxahtQpqf7V6zPStKXeq4OgIMWz3ivLuTcEahr2fpWcQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oDpp9pzB; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I9LUIX2T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E3201F000FF;
-	Thu,  1 Oct 2026 19:04:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790881483;
-	bh=yFQjna1L1rwGBalsjTJZK98c/RCqNMRKtY0FU9F4neg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=I9LUIX2Tuy9LxC6BTrbYnkQ+ZIILRHvK+eEr3usGFtt/nkVTgcJyVThzPfAsorbQo
-	 4Keq3NKvRyQ43Q9oIOuDk6kqDqVSZnMbpaPuwEHyDNCdiwpYJ2z2HlbxYspM9xIwXk
-	 1UMohHsjgfqIyY6IwTBwykAecxsh+P/dvG87b6bEhV8LkDt5MaLmMqCUX4lDrFW0YX
-	 4NK3FvCGC1aPurMauaOGxHyz+LpWCSc7vEPu+7prTbJ8LMMYLryaCNMdBHM8YExGIa
-	 q15aKngP2vQyOu5xcPRxvuVcpKnfofORlobqSukRq1S/uvwA7Ggw/sBq8HBaZfix8H
-	 39pzDz2gFNNLw==
-Date: Thu, 1 Oct 2026 20:04:39 +0100
-From: Conor Dooley <conor@kernel.org>
-To: radu.sabau@analog.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oDpp9pzB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790882002; x=1822418002;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Vr4V/gCzPPo+UnjwMdgsC+wmyLcsr9HE+lOJEU++tgo=;
+  b=oDpp9pzBW33nDxqXALWRF2hLA9hZvgdaQQU3MDzYkMtnZUKqNq5MDlay
+   Q9lA5DMNx9MkHHe4yp11PYEghBozmmwK1/GwB/WwjMQj2OLp6so0M1cnT
+   uNZ4L0fCyqH+ZsgGeAnd0IlHtGYYdV74K+B1hGm+0k14fyQokeD22CCR6
+   IuyAUjOvMML36DQ4ePPQlWtVup66hQp681YCCfM+ksHqPdHU/OYJJi2JW
+   8NicS2F/kXn0eC6i+sj12tSPd7KfGqUT/MKhLz8gDA0MaBzFbYgbXgMTJ
+   3Gxsfb8wxUxMuEmtRfbRaXKoIBkH5uc005nbBXy+7n/b40xUGea9gLHES
+   w==;
+X-CSE-ConnectionGUID: efP2VuxBSc2q7gZc3bAwJQ==
+X-CSE-MsgGUID: o+68SeXySZaCCeoFaNhdFw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="117180995"
+X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
+   d="scan'208";a="117180995"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:13:20 -0700
+X-CSE-ConnectionGUID: 18tymik5T7qQu8HwzKvanA==
+X-CSE-MsgGUID: S0AQYo3oQXCtbS4+WZHidA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
+   d="scan'208";a="279834236"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.27])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:13:17 -0700
+Date: Thu, 1 Oct 2026 22:13:14 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Olivier Moysan <olivier.moysan@foss.st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: Add bindings for ADI ADIS16607
-Message-ID: <20261001-custodian-marvelous-4e0dc985fa3e@spud>
-References: <20261001-adis16607-v1-0-9c89cee35d56@analog.com>
- <20261001-adis16607-v1-1-9c89cee35d56@analog.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH 2/3] iio: adc: add stm32 mdf support
+Message-ID: <ar6wypoRS-5j9iM7@ashevche-desk.local>
+References: <20261001145702.2628429-1-olivier.moysan@foss.st.com>
+ <20261001145702.2628429-3-olivier.moysan@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="z1n9a1k4QbNaH3pC"
-Content-Disposition: inline
-In-Reply-To: <20261001-adis16607-v1-1-9c89cee35d56@analog.com>
-
---z1n9a1k4QbNaH3pC
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20261001145702.2628429-3-olivier.moysan@foss.st.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Oct 01, 2026 at 12:11:49PM +0300, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
->=20
-> Add device tree bindings for the Analog Devices ADIS16607 Precision
-> MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
-> gyroscope, triaxial accelerometer, and temperature sensor, and
-> communicates over SPI Half-Duplex.
->=20
-> Three compatible variants are supported: adis16607-1, adis16607-2,
-        ^^^^^^^^^^^^^^^^^^^
-
-> and adis16607-3.
->=20
-> The binding exposes optional properties for:
->   - An external clock for sync mode (falling back to the internal 8 kHz
->     clock when absent)
->   - A hardware reset GPIO (active low)
->   - FIFO mode for buffered data acquisition with a configurable watermark
->=20
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+On Thu, Oct 01, 2026 at 04:56:46PM +0200, Olivier Moysan wrote:
+> Add the STM32 Multi-function Digital Filter (MDF) core, serial interface
+> and digital filter drivers. The MDF converts bitstreams from sigma-delta
+> modulators or digital microphones into samples exposed through IIO.
+> 
+> Audio: capture PDM microphones via cyclic DMA for an ASoC consumer.
+> Support CIC scaling and filtering, synchronized and interleaving modes.
+> Audio use case requires a DMIC filter, and a separate ASoC DAI.
+> 
+> Analog: expose sigma-delta modulators as IIO voltage channels with
+> direct reads or DMA buffering mode. STM32 timer triggers can be used as
+> clock source.
+> Analog use case requires an IIO backend for the SD modulator.
+> 
+> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 > ---
->  .../devicetree/bindings/iio/imu/adi,adis16607.yaml | 91 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  7 ++
->  2 files changed, 98 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml=
- b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-> new file mode 100644
-> index 000000000000..5fb1ba36e0b7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-> @@ -0,0 +1,91 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/imu/adi,adis16607.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices ADIS16607 IMU
-> +
-> +maintainers:
-> +  - Radu Sabau <radu.sabau@analog.com>
-> +
-> +description: |
-> +  Analog Devices ADIS16607 Precision MEMS Inertial Measurement Unit (IMU)
-> +  with a triaxial gyroscope, triaxial accelerometer, and temperature sen=
-sor.
-> +  Uses SPI Half-Duplex communication protocol.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adis16607-2
-> +      - adi,adis16607-3
+>  drivers/iio/adc/Kconfig               |   27 +
+>  drivers/iio/adc/Makefile              |    3 +
+>  drivers/iio/adc/stm32-mdf-adc.c       | 2078 +++++++++++++++++++++++++
+>  drivers/iio/adc/stm32-mdf-core.c      |  857 ++++++++++
+>  drivers/iio/adc/stm32-mdf-serial.c    |  309 ++++
+>  drivers/iio/adc/stm32-mdf.h           |  312 ++++
+>  include/linux/iio/adc/stm32-mdf-adc.h |   19 +
+>  7 files changed, 3605 insertions(+)
 
-Yet they are not compatible. Why?
-pw-bot: changes-requested
+Unreviewable. Make sure the single patch is ~750 lines.
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-cpha: true
-> +
-> +  spi-cpol: true
-> +
-> +  spi-max-frequency:
-> +    maximum: 15000000
-> +
-> +  vdd-supply: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description:
-> +      Optional external clock for sync mode. If not provided, the intern=
-al
-> +      8 kHz clock is used.
-> +    maxItems: 1
-> +
-> +  reset-gpios:
-> +    description:
-> +      Optional GPIO for hardware reset. If specified, it will be asserted
-> +      during driver probe. The line is active low.
-> +    maxItems: 1
-> +
-> +  adi,fifo-enable:
-> +    type: boolean
-> +    description:
-> +      Enable hardware FIFO mode for buffered data acquisition. When enab=
-led,
-> +      the driver uses the device FIFO with configurable watermark thresh=
-old
-> +      instead of single-sample burst reads.
 
-What aspect of the usecase does setting this depend on?
-Why not just always enable this?
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Cheers,
-Conor.
 
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - spi-cpha
-> +  - spi-cpol
-> +  - vdd-supply
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        imu@0 {
-> +            compatible =3D "adi,adis16607-2";
-> +            reg =3D <0>;
-> +            spi-cpha;
-> +            spi-cpol;
-> +            spi-max-frequency =3D <15000000>;
-> +            vdd-supply =3D <&vdd>;
-> +            interrupts =3D <4 IRQ_TYPE_EDGE_RISING>;
-> +            interrupt-parent =3D <&gpio>;
-> +            clocks =3D <&sync_clk>;
-> +            reset-gpios =3D <&gpio 10 GPIO_ACTIVE_LOW>;
-> +            adi,fifo-enable;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a7fd31320b38..f6ad73be5260 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1717,6 +1717,13 @@ S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
-> =20
-> +ANALOG DEVICES INC ADIS16607 DRIVER
-> +M:	Radu Sabau <radu.sabau@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-> +
->  ANALOG DEVICES INC ADL8113 DRIVER
->  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
->  L:	linux-iio@vger.kernel.org
->=20
-> --=20
-> 2.43.0
->=20
->=20
-
---z1n9a1k4QbNaH3pC
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCar6uxwAKCRB4tDGHoIJi
-0oOXAQDDkqTeuq9vL4rEg4kpx7kY8cGjqutIXIaZ6XcPLWESFgEAiQ9ZjuLrkSyp
-fMQ5J2HUrgBa/bEYn1Do7Nl7WtKxWQk=
-=bCka
------END PGP SIGNATURE-----
-
---z1n9a1k4QbNaH3pC--
