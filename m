@@ -1,101 +1,78 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4285F472554;
-	Thu,  1 Oct 2026 19:20:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106525226BF;
+	Thu,  1 Oct 2026 19:20:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790882455; cv=none; b=TUoYTYJ6XygfwFK4CikQ90oQfQHo7QLXnyWnXPgnmv2K991oakfypw/PV2FyXQPxj8TWL7SaQy/mKlpSynfvCUOjM1dv1m5IC4BvllK4eLpWBdEA0kuh4kxlnTaORhxpLosLk6IFRbV522um3gNdBzJmYHc59TjKbj5ldGFUHLk=
+	t=1790882457; cv=none; b=Y80IC7pxYIoBjR12o58md+yoRsk/o7/YHWgR/Jpfc25Z+uJNSCkOmQ831cTpBtGgKwDaHOvQNYfDV33Y+s2RL9hD/yOL/t7bQUhOZVu7wiGPNX7pi9kFfTi4Vvn+j2cDVXyFE53cwY/TMdk2QPir1ajkBzAKKH95EOQ0A+Qi7JE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790882455; c=relaxed/simple;
-	bh=fma80QKfS1HbQk1sY9MPxh1EoCg9IQFBKBL01ct1Hn0=;
+	s=arc-20240116; t=1790882457; c=relaxed/simple;
+	bh=x1MmOOCahg4e+YZf4G5N/altgnKA5qXFQq8wazzr6ds=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NaHVhmm5IeO5wft42vLJOHaByvGOtjNLubBXpSAY2IK21S1CTha8rmgR++aYoBHglkm9IF9mhKZGDywv9mPqY31lem5c8kqlpRc/ftoPg723Z65OJ5drlmVzPY+mtKcp7ofRisT5TCsEC1v8caFOGRnL+l7Gsh5rDF1Gt2jMW+A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MV7BFiVi; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=bJqkYsvGf6CFW2JT/MM8i5l8RfRLpYxiA+mK/bPAg8UY+d+gL8tTKa5xEpMgOY/8Vl+gP9PBDME7XrqTFwZO13rfL7QnF98hvdGaiMS/uhgQ1umTkBhrVZI5NRLqqmU1n4C/mSbrFKJPrzsDXdGdEpLEG1tOksOm074uzESfgpc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jU1zxpq6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MV7BFiVi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790882453; x=1822418453;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fma80QKfS1HbQk1sY9MPxh1EoCg9IQFBKBL01ct1Hn0=;
-  b=MV7BFiVi6a+evF6j33W4HUzh6l/i7fzV7+sxPUV96lR5nguMhiG+8wAq
-   eK4nK7AzqU7L/+jdkNoRzuZ+pZp1hFm4N3GHRbxHipHHQu07Z7lPGUvFg
-   fRBWbmdzcMoswyhq1++KurNvFsH7k5FDsoA6rHiEjn7Vi8Aeur/YuFJVi
-   7Sy/XsjqUlDGojdrJPRH8s+f+ZqfW9dvWqyGa2kREaQnc2knY92BfmeMO
-   zwXUGpPsVnWheVIPkNTxAs4OJSJi0lbVLtuVy/Accwz+uC9GAc5aEfOGc
-   O+izVDFvjdo3s0TP8b2zA1fqO6fiUXGiM8wqhM96lrp54ObOdp31K/YB5
-   g==;
-X-CSE-ConnectionGUID: ovWLYQSGTKKI+wmjqPtyqw==
-X-CSE-MsgGUID: mmAhWujgRHe6SlMWof0mtg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="91753880"
-X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
-   d="scan'208";a="91753880"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:20:53 -0700
-X-CSE-ConnectionGUID: FQ7MlkvTRj26Q+2S4rO9aA==
-X-CSE-MsgGUID: T1ujAVfnQZ6+r7P4pqEaww==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
-   d="scan'208";a="152429"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.27])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:20:51 -0700
-Date: Thu, 1 Oct 2026 22:20:48 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jU1zxpq6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 898EC1F000FF;
+	Thu,  1 Oct 2026 19:20:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790882455;
+	bh=x1MmOOCahg4e+YZf4G5N/altgnKA5qXFQq8wazzr6ds=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=jU1zxpq67EckGkyWPOprssSe5IBihl380Q9+To2nP7Bm5LiheBHEOvjKwjCZ3+2G7
+	 +O1SUjgIVFzEkeFddecxCtm0+KeEe+ao88XzdQOg9nurUhZhVh2mmjIZc/M+vnwR4w
+	 TmPLxoZmp+sJgdf2o7zNoIk+I0oeHWAH3UbSfPCORHxsrU4n/wa27l1KNrzBoDEgxC
+	 Rg7G3QuT9q/eMg4NFkd8z/fqAG7uAxMzJR3Lt7qwlrZEMgHVFlQ3VOtXeTYm0AAiLT
+	 tyX5i7Q3E0Y4e/QmfQJLtOshsyzsuLD8732oasRUK8IzarCaiTnEkPIVu3bAM7UNzg
+	 attYGZfDQ1o3g==
+Date: Thu, 1 Oct 2026 20:20:50 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Alexey Klimov <alexey.klimov@linaro.org>
+Cc: Sam Protsenko <semen.protsenko@linaro.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 2/3] lib: test-kstrtox: add E notation tests for
- kstrto[u]dec64()
-Message-ID: <ar6ykJxQBAN9OrRS@ashevche-desk.local>
-References: <20261001-e-notation-v1-0-75187bf06c10@analog.com>
- <20261001-e-notation-v1-2-75187bf06c10@analog.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: samsung,exynos: Add Exynos850
+ compatible
+Message-ID: <20261001-ramrod-excess-af03490d5240@spud>
+References: <20261001-exynos850_adc-v1-0-791b3516bb9d@linaro.org>
+ <20261001-exynos850_adc-v1-1-791b3516bb9d@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="BadlZsUMoxOv+uPT"
+Content-Disposition: inline
+In-Reply-To: <20261001-exynos850_adc-v1-1-791b3516bb9d@linaro.org>
+
+--BadlZsUMoxOv+uPT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261001-e-notation-v1-2-75187bf06c10@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Oct 01, 2026 at 12:34:57PM -0300, Rodrigo Alencar via B4 Relay wrote:
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-> Cover E notation parsing in kstrtoudec64() and kstrtodec64(): positive,
-> zero and negative exponents, upper case 'E', an explicit '+' sign,
-> truncation of integer digits by negative exponents, large values, and
-> failures for overflowing or incomplete exponents.
+--BadlZsUMoxOv+uPT
+Content-Type: application/pgp-signature; name=signature.asc
 
-...
+-----BEGIN PGP SIGNATURE-----
 
->  		{"0.2",				20},
->  		{"0.18446744073709551616",	20},
->  		{"1",				20},
-> +		/* E notation: exponent causes overflow */
-> +		{"1e21",			1},
-> +		{"2e20",			1},
-> +		/* E notation: no digits after exponent marker */
-> +		{"1e",			3},
-> +		/* E notation: sign only after exponent marker */
-> +		{"1e+",			3},
-> +		{"1e-",			3},
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCar6ykgAKCRB4tDGHoIJi
+0pcNAPkBIiypEFaEr9cRqf0+A/gpebZXEk4kvlJS5mOUfO3o4gEAsWasR8lY3yxW
+sflI+kUdUrN+nCczr4eOpUsogkPVdA8=
+=rh9C
+-----END PGP SIGNATURE-----
 
-I would also consider something like
-
-	1ee // double 'e'
-	1e+0b // an attempt to have a hexadecimal exponent
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--BadlZsUMoxOv+uPT--
