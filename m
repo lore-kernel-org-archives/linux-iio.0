@@ -1,139 +1,209 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C38483BFAE7
-	for <linux-iio@vger.kernel.org>; Thu,  1 Oct 2026 07:18:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C72E4BA9F2;
+	Thu,  1 Oct 2026 09:11:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790839110; cv=none; b=pc50CSk37C0hKc1OMIQe2AhHNNEg4l20SrYC1ZzFpl/DIMfNU1B7yJBDhloqikGvFnjrPMB/Acl/Rb1QCMygPgYZhh63JKQyyk3IOFiy/sEqkq2qkAZCQNNll+hvt3w+coKE30GJbqThx8nIg6JhDvkkx94AA+GDsEcprRT8iKA=
+	t=1790845911; cv=none; b=Ggx6w5HHL4V3gcibI4iEdFWACTGaW9aU/vh8JlVzVPlqIwYNrrmfusunCxqlGTpCBitTbkbF9qLRcZSr/jrCKb94UQCmkgltac9vLC/IGdPfadNWzJcLp68/Hz/lwyFHylnRFYGMVFP715poi7jsm5IaOvwMR+i3JbFIm/NSFPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790839110; c=relaxed/simple;
-	bh=AVqk6eIbFK8uDoowGzu8wB740SP5bVkVCUg8XnZAsHg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AIYSSOLUHQTu+DJk7g+5yHyN3phQz4bwQlLuN3gUMYRKgOKs8nRvBDdYRDzoXju8BLVXQqIpNWDvNHYSawsQwgVqhSH9l44I2pBZPxwbvxVHwwO6MYyrcVIYRYCac59QMJiWzp34qWch2zzPQglVnEd8tMEFOxAdBni2VB72j2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mmJR3dDg; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790845911; c=relaxed/simple;
+	bh=eaIRGBPsbebSoItVlZ6+wkDtiLX8dohBaanVuPbPoVA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=deTT4XAb2Br98iubRyBC+jtGF9sztteTewzQ6cJFW0kl6pBEqNIZfnZFv8x4A9WKIGNfapUAUtf1SNZKr5HhME69WjB+VLA7yVToGLcZqufInvIx6jbMNamV1CiOjVBOUwIYpbWkhQszWtSgVv3iQBFXtxD0GhMb/qMYQrMtIrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=huLJ5qZO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mmJR3dDg"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-4a00d8bec5aso17021065e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 01 Oct 2026 00:18:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790839107; x=1791443907; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=y+YWX6gQgZo8y4R4a+T3medFXiXOGcAYD9z8MlqiloU=;
-        b=mmJR3dDgiVXM+hdlk7vychW5uyiGr8cv70PVc7kNi8Lfx0ZHmU5g4NIPNW0SliuWAc
-         y0Rf/6JNs2gprTZE3or6R0IBnXwDhYs2hsxOA6RZJu5U6R1/U4Bj15/uYWGsn0ILCSrE
-         IrZA1t1H0i9yNyRNrExFTCFk5BVMqWS9mXmqdEomfQ+2tkVITkd4zlADEGIbiSl0/bg8
-         BZlzSLX7UG6IDwlNjQP+AD05ErVg3Fgb9tBN3XBcRPZuMZ+JB1sUy57IhoClwTEdCzBF
-         kd5AuxUpBJmOEsCjcs7mxy9hcNVEBwldm+QdzKDtEwzrMIP9YkI7O4V0HgBu5VJPOMLB
-         /FDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790839107; x=1791443907;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=y+YWX6gQgZo8y4R4a+T3medFXiXOGcAYD9z8MlqiloU=;
-        b=RXCEwXTQSSltNc2kEb4ApJpQw5opzpD3d/JYqe4vNFu7CvEINN/gwNVRvjiQwXzlDn
-         6unJLEsBauAoyF7RNk7gc1SeJCXl+sKOw5ShgFDYhlbqe8LoWJ2NwpVhEUndzJpDZXx+
-         c+Pc+3FMEnHN0SW4lQH8snlIHV4U1csGIk333HXIZ4X2/Te1+30/D4ZAhR4KD1lg6uaN
-         jeCF5wIppfXw7lwg72EyAo6+0IOYAEbD+0Ur7RIhfIFA4RVR+raq1KkZwGkl+u49EauA
-         Zs/Yu4blWn04hA6tViFNzcABg88k4vKgEDYzAFRCWV3cqD0x8XUHAhToejhSDCLn7eSG
-         Mc6A==
-X-Forwarded-Encrypted: i=1; AKwUvByE7eiI6KGCu/8NeJMvQ1qNRNJ+LCFXR7FXz27ltI761UVLHKFgfxlmrPV1mmgxxX3CKHnBEug7uE0=@vger.kernel.org
-X-Gm-Message-State: AFuF++m/hA/Q2poTJsGs0x+IkyqW1dyBk0fLgsL5llN3O2Cxr8/2EnZH
-	5iQfBSDtNEE6TDFuC7ISGX1BfUZaekOQiPiGI79wxbvYOmJGV+TJ21R/3lK37SbE
-X-Gm-Gg: AYBFou08P/MSOOCgnfShpUhy+OEP+97wRzynBRDm+Jrlz+ePBbKT5tC5B8jZx5Gv75O
-	m2QrumpIYNo4/z/CIeIZ40N1tWDygPbFalFAYLSmi9kNW8lUmo4nBx+ZIcDr2cfZDAZC5x1UMzs
-	H+h3o1+e6K0JiyTkNcK5J0PUw2mYYHCddfmk88XqGScJwvmuFJ08MWGFLiKNRi/4LhozvbfzEdP
-	+3CdWD/tNjVBzNyhYh3R23o/ey3RxU8+9Gdz757e/MxGSCYeLEXAHTn//SXcy/aPn99V/zYgolY
-	4TXsXZoU7Ni/hadCI0Ua4gmvUOnknehGg4JMVNJwkFGPk9KEAe18KlOPLF4zCQY97reqQPDflXF
-	KUUNwCiRaC6SYHb771Wr4nPjG7VfGRwn7xZ6hLBtGLelDurbn5MrGfp8nCv8pOovNwnW6jqGO3+
-	FQGhOiSFrtykyAXmMnxL9SAD1202DM4MvSYOqPc5Hq1uWtN1QJmG8bnsaQfJZ4ajlP71X+xpkPW
-	RRTuHswdTPennLLnX7CxCGzIz8s8JQ7Z7YGA/MUKfLIb6fMDl9r2havXTpgpmEZwGcS1L13sMJ2
-	CqUYkmZJZPMI2bIDHr4RLA9qbY/nej0pZlac7bn/Lhu/derahWkYeBb+IjktGUBa+TUcZQR9txq
-	hxrJ5tu28LMidJtoJj6Wg8KW2QVhq2qf1yYWnucLXneYNTdCYA5/EcfU/sfo3Ay2g3Wlhrn8huf
-	BNCf5f
-X-Received: by 2002:a05:600c:c162:b0:49e:7a00:b9a5 with SMTP id 5b1f17b1804b1-4a01ad907efmr63944185e9.4.1790839106608;
-        Thu, 01 Oct 2026 00:18:26 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a023ecef86sm8562995e9.3.2026.10.01.00.18.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2026 00:18:26 -0700 (PDT)
-Date: Thu, 1 Oct 2026 09:18:27 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Billy Tsai <billy_tsai@aspeedtech.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "Joel Stanley" <joel@jms.id.au>, Andrew Jeffery
- <andrew@codeconstruct.com.au>, "Ryan Chen" <ryan_chen@aspeedtech.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-aspeed@lists.ozlabs.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/3] iio: adc: aspeed: Fix SCU lookup for multi-SCU
- AST2700
-Message-ID: <20261001091827.00001410@gmail.com>
-In-Reply-To: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
-References: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="huLJ5qZO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DBFA4C4AF12;
+	Thu,  1 Oct 2026 09:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790845911;
+	bh=eaIRGBPsbebSoItVlZ6+wkDtiLX8dohBaanVuPbPoVA=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=huLJ5qZOA5I/Ix5g1RIoFt0dB+daW3/3ujmMt9qvbVDjOsPYAlTSIgxx/BTiNVcMM
+	 dQdOMWzZcPaLbgHnBjwtiKA1Hy6t22B7MN8xr3fMYFeKnbzmDBOYj6n0LsnzvT9uhP
+	 N9zMsZWPjZQ2iDWsfVO1xIQrmnkIjRTKp/gc667MxgClmPKiyii1cSZOz7zQ18ZARq
+	 xS+2wDYIDqGLrNy8P2WcAtqbYPRh4LidsgxfLhL8EFUQFdg9dd9smjwsB/+aAOKByG
+	 diISJxqswZT2+5+4YR0vFxccEBmO9aF1jjUF2xHMcmrDQHYqJW+NrF6X8r/hgIvtQj
+	 cuzHnmCAE2Eag==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FA4CA5FB3;
+	Thu,  1 Oct 2026 09:11:50 +0000 (UTC)
+From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Date: Thu, 01 Oct 2026 12:11:49 +0300
+Subject: [PATCH 1/2] dt-bindings: iio: imu: Add bindings for ADI ADIS16607
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20261001-adis16607-v1-1-9c89cee35d56@analog.com>
+References: <20261001-adis16607-v1-0-9c89cee35d56@analog.com>
+In-Reply-To: <20261001-adis16607-v1-0-9c89cee35d56@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790845909; l=4043;
+ i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
+ bh=sOKcxtH40IXx9ikDNcFZu7DbWJsM2j9tuLA7Q4TiFOA=;
+ b=ZAsBjVKphLB4J2i3GsLqAHYjDK3Q33BCol+qEr8Y/dftId4U2GR5pDmt2zni4gayJVBJWplew
+ 0AsCXcZuZwHCh9wYM7cJmYx4Wf1uRnlHKynPn4IbMN9ArdKwhTLsUQ8
+X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
+ pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
+X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
+ auth_id=1094
+X-Original-From: Radu Sabau <radu.sabau@analog.com>
+Reply-To: radu.sabau@analog.com
 
-On Thu, 1 Oct 2026 11:28:43 +0800
-Billy Tsai <billy_tsai@aspeedtech.com> wrote:
+From: Radu Sabau <radu.sabau@analog.com>
 
-> The ADC's reference-voltage trimming data lives in a SCU register. The
-> driver has always located that SCU with a global, name-based
-> device-tree search, which works as long as a platform only has a
-> single node named "syscon". AST2700 splits its SCU into two
-> instances, syscon0 and syscon1, that share that same node name and
-> differ only by label and unit address, so the lookup always resolves
-> to syscon0 even when the ADC's trimming data lives in syscon1.
-> 
-> This series adds an explicit "syscon" phandle property so multi-SCU
-> platforms can point the ADC at the right SCU, keeps the existing
-> global lookup as a fallback for single-SCU platforms and already
-> deployed device trees, and wires the new property up on AST2700.
-> 
-> Patch summary:
-> 1. dt-bindings: iio: adc: Add syscon property for multi-SCU SoCs
-> 2. iio: adc: aspeed: Use syscon phandle for trimming data when available
-> 3. arm64: dts: aspeed: Add syscon phandle to AST2700 ADC nodes
-> 
-> Assisted-by: Claude:claude-sonnet-5
+Add device tree bindings for the Analog Devices ADIS16607 Precision
+MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
+gyroscope, triaxial accelerometer, and temperature sensor, and
+communicates over SPI Half-Duplex.
 
-All Assisted-by tags in your series should be changed to "Assisted-by: LLM"
+Three compatible variants are supported: adis16607-1, adis16607-2,
+and adis16607-3.
 
-> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
-> ---
-> Billy Tsai (3):
->       dt-bindings: iio: adc: Add syscon property for multi-SCU SoCs
->       iio: adc: aspeed: Use syscon phandle for trimming data when available
->       arm64: dts: aspeed: Add syscon phandle to AST2700 ADC nodes
-> 
->  .../bindings/iio/adc/aspeed,ast2600-adc.yaml       | 28 ++++++++++++++++++++++
->  arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi     |  2 ++
->  drivers/iio/adc/aspeed_adc.c                       | 20 +++++++++++-----
->  3 files changed, 44 insertions(+), 6 deletions(-)
-> ---
-> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> change-id: 20261001-ast27xx-adc-upstream-34b3d9e8e27b
-> 
-> Best regards,
+The binding exposes optional properties for:
+  - An external clock for sync mode (falling back to the internal 8 kHz
+    clock when absent)
+  - A hardware reset GPIO (active low)
+  - FIFO mode for buffered data acquisition with a configurable watermark
 
+Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+---
+ .../devicetree/bindings/iio/imu/adi,adis16607.yaml | 91 ++++++++++++++++++++++
+ MAINTAINERS                                        |  7 ++
+ 2 files changed, 98 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+new file mode 100644
+index 000000000000..5fb1ba36e0b7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+@@ -0,0 +1,91 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/imu/adi,adis16607.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADIS16607 IMU
++
++maintainers:
++  - Radu Sabau <radu.sabau@analog.com>
++
++description: |
++  Analog Devices ADIS16607 Precision MEMS Inertial Measurement Unit (IMU)
++  with a triaxial gyroscope, triaxial accelerometer, and temperature sensor.
++  Uses SPI Half-Duplex communication protocol.
++
++properties:
++  compatible:
++    enum:
++      - adi,adis16607-2
++      - adi,adis16607-3
++
++  reg:
++    maxItems: 1
++
++  spi-cpha: true
++
++  spi-cpol: true
++
++  spi-max-frequency:
++    maximum: 15000000
++
++  vdd-supply: true
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    description:
++      Optional external clock for sync mode. If not provided, the internal
++      8 kHz clock is used.
++    maxItems: 1
++
++  reset-gpios:
++    description:
++      Optional GPIO for hardware reset. If specified, it will be asserted
++      during driver probe. The line is active low.
++    maxItems: 1
++
++  adi,fifo-enable:
++    type: boolean
++    description:
++      Enable hardware FIFO mode for buffered data acquisition. When enabled,
++      the driver uses the device FIFO with configurable watermark threshold
++      instead of single-sample burst reads.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - spi-cpha
++  - spi-cpol
++  - vdd-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        imu@0 {
++            compatible = "adi,adis16607-2";
++            reg = <0>;
++            spi-cpha;
++            spi-cpol;
++            spi-max-frequency = <15000000>;
++            vdd-supply = <&vdd>;
++            interrupts = <4 IRQ_TYPE_EDGE_RISING>;
++            interrupt-parent = <&gpio>;
++            clocks = <&sync_clk>;
++            reset-gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
++            adi,fifo-enable;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a7fd31320b38..f6ad73be5260 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1717,6 +1717,13 @@ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+ 
++ANALOG DEVICES INC ADIS16607 DRIVER
++M:	Radu Sabau <radu.sabau@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
++
+ ANALOG DEVICES INC ADL8113 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
-Kind regards,
-Joshua Crofts
+2.43.0
+
+
