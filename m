@@ -1,15 +1,16 @@
 Received: from twmbx01.aspeedtech.com (mail.aspeedtech.com [211.20.114.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58BB83CB911;
-	Thu,  1 Oct 2026 03:28:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38DF83E008F;
+	Thu,  1 Oct 2026 03:29:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.20.114.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790825339; cv=none; b=DPsqoE+A4WqE2F35Vipt1BoloS4mJKnT86itTBZVoc8Dax6keefGSmOxHXt2/5a+x3M2+AnrsmjTyStcV++FhJ/V83bnKIeuArBC1BGuOQtycFICsBMmhw/4hG9JP96jSkVgZRkreFNX+c4fizWMLGyBS4IH9tJKGUAGgyQi4Cs=
+	t=1790825353; cv=none; b=aZ35dz+ss82H9hropmhF7voa8VMMaWvphtFw9oAmSTia8NLuj0IEsuCwCNpljzJnUPOHPvUv97UGIvOgO2WXyOtvMci/jLpAhpzmTOY+7vnYCjqzrzF2Y6uOqyyBPzfZK3996jMgkg5498wcsEZ+ORmi629uEO3JFjtBXnPpvC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790825339; c=relaxed/simple;
-	bh=Qwwf1v0cP1lKAkuefRa4xK+nKzoRTdD8GOlUuQ48oL0=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=l4NoT8sU41x+YqiZeA0/hjJf4ot9MKo7lel0zzGuLFt+z7nWBYleGw5J/5A3I0OV7XZErs8viw52VQmuKDpvibcYb4L3dlaMBpRpyxm914gCyrit6okjBbXqcRClPsn/Bk9reC73mKLJLWddFUyOJXTsJ5RHHVNF6Kkt8sM1ez0=
+	s=arc-20240116; t=1790825353; c=relaxed/simple;
+	bh=FsGT1zbL6rxTYT0DVNlN72Kt+1ynoxmzD31cbn5Esb0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=KWCOZRzqqACiCr6Ejyxq12eSjFqzBRFjUL6bnfSFnrrTD/ZOpGi5qA9irTeunGhweJve0qf3vtOxQeQdIK/a+yXbuu3GwqC2xFWjIAXFp2ayD0720l2nJwCmbUDzkoL11voW4r3QdNutuBt5VEp+fBRaorz9tmijNMeVZb8Agn0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aspeedtech.com; spf=pass smtp.mailfrom=aspeedtech.com; arc=none smtp.client-ip=211.20.114.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aspeedtech.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aspeedtech.com
@@ -21,9 +22,9 @@ Received: from [127.0.1.1] (192.168.10.13) by TWMBX01.aspeed.com
  (192.168.0.62) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
  Transport; Thu, 1 Oct 2026 11:28:45 +0800
 From: Billy Tsai <billy_tsai@aspeedtech.com>
-Subject: [PATCH 0/3] iio: adc: aspeed: Fix SCU lookup for multi-SCU AST2700
-Date: Thu, 1 Oct 2026 11:28:43 +0800
-Message-ID: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
+Date: Thu, 1 Oct 2026 11:28:44 +0800
+Subject: [PATCH 1/3] dt-bindings: iio: adc: Add syscon property for
+ multi-SCU SoCs
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -32,10 +33,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAGvTvWoC/x3MSQqAMAxA0atI1gbaKk5XERfVRs3CgaZKQby7x
- eVb/P+AkGcS6LIHPN0sfOwJOs9gWu2+ELJLBqNMpZXSaCWYOka0bsLrlODJbliUY+FaasjUI6T
- 09DRz/Lf98L4fovR/emYAAAA=
-X-Change-ID: 20261001-ast27xx-adc-upstream-34b3d9e8e27b
+Message-ID: <20261001-ast27xx-adc-upstream-v1-1-5ace57533418@aspeedtech.com>
+References: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
+In-Reply-To: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
  Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
@@ -47,49 +47,82 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, Billy Tsai <billy_tsai@aspeedtech.com>,
 	Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1790825325; l=1731;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790825325; l=2250;
  i=billy_tsai@aspeedtech.com; s=20251118; h=from:subject:message-id;
- bh=Qwwf1v0cP1lKAkuefRa4xK+nKzoRTdD8GOlUuQ48oL0=;
- b=2amv2tlwU+84A4Gia3y54ss8EMMFhAc0RUd99/JvaaoeO2sr60yhlMZBDIBaOiHLvUw0LSt9X
- Xw5hjObnlVOAlpS0coH5MYvmlHgyQ2hxpo6j3y4d9XPQhoOWK3uwAs+
+ bh=FsGT1zbL6rxTYT0DVNlN72Kt+1ynoxmzD31cbn5Esb0=;
+ b=iiLL+6sgRQAuRmZdFxMpNwDwxz4WK9BDIu+XM8WhKlgLD5WieKxUpiRgWTyiNfTxp6PsnUs2F
+ OSn1Dk0UIOECdFmC6HXqdGOQdq4yd9WL9+2W0UOt0jpkHWCII0Lar3m
 X-Developer-Key: i=billy_tsai@aspeedtech.com; a=ed25519;
  pk=/A8qvgZ6CPfnwKgT6/+k+nvXOkN477MshEGJvVdzeeQ=
 
-The ADC's reference-voltage trimming data lives in a SCU register. The
-driver has always located that SCU with a global, name-based
-device-tree search, which works as long as a platform only has a
-single node named "syscon". AST2700 splits its SCU into two
-instances, syscon0 and syscon1, that share that same node name and
-differ only by label and unit address, so the lookup always resolves
-to syscon0 even when the ADC's trimming data lives in syscon1.
+The ADC's reference-voltage trimming data lives in a System Control
+Unit (SCU) register. SoCs with a single SCU instance let the driver
+locate it without any additional information, but SoCs such as AST2700
+that expose more than one SCU node need an explicit phandle to
+disambiguate which one holds the trimming data.
 
-This series adds an explicit "syscon" phandle property so multi-SCU
-platforms can point the ADC at the right SCU, keeps the existing
-global lookup as a fallback for single-SCU platforms and already
-deployed device trees, and wires the new property up on AST2700.
+Add an optional "syscon" phandle property, and require it for the
+AST2700 compatibles since they are the first multi-SCU SoCs supported
+by this driver.
 
-Patch summary:
-1. dt-bindings: iio: adc: Add syscon property for multi-SCU SoCs
-2. iio: adc: aspeed: Use syscon phandle for trimming data when available
-3. arm64: dts: aspeed: Add syscon phandle to AST2700 ADC nodes
-
-Assisted-by: Claude:claude-sonnet-5
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Assisted-by: Claude:claude-sonnet-5
 ---
-Billy Tsai (3):
-      dt-bindings: iio: adc: Add syscon property for multi-SCU SoCs
-      iio: adc: aspeed: Use syscon phandle for trimming data when available
-      arm64: dts: aspeed: Add syscon phandle to AST2700 ADC nodes
-
  .../bindings/iio/adc/aspeed,ast2600-adc.yaml       | 28 ++++++++++++++++++++++
- arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi     |  2 ++
- drivers/iio/adc/aspeed_adc.c                       | 20 +++++++++++-----
- 3 files changed, 44 insertions(+), 6 deletions(-)
----
-base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-change-id: 20261001-ast27xx-adc-upstream-34b3d9e8e27b
+ 1 file changed, 28 insertions(+)
 
-Best regards,
+diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml b/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
+index 249101b55cf4e..0d6b10450cfa8 100644
+--- a/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
+@@ -67,6 +67,11 @@ properties:
+     description:
+       Inform the driver that last channel will be used to sensor battery.
+ 
++  syscon:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Required on SoCs with more than one SCU instance (e.g. AST2700).
++
+ required:
+   - compatible
+   - reg
+@@ -74,6 +79,18 @@ required:
+   - resets
+   - "#io-channel-cells"
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - aspeed,ast2700-adc0
++              - aspeed,ast2700-adc1
++    then:
++      required:
++        - syscon
++
+ additionalProperties: false
+ 
+ examples:
+@@ -95,4 +112,15 @@ examples:
+         #io-channel-cells = <1>;
+         aspeed,int-vref-microvolt = <2500000>;
+     };
++  - |
++    #include <dt-bindings/clock/aspeed,ast2700-scu.h>
++    #include <dt-bindings/reset/aspeed,ast2700-scu.h>
++    adc0: adc@14c00000 {
++        compatible = "aspeed,ast2700-adc0";
++        reg = <0x14c00000 0x100>;
++        clocks = <&syscon1 SCU1_CLK_AHB>;
++        resets = <&syscon1 SCU1_RESET_ADC>;
++        syscon = <&syscon1>;
++        #io-channel-cells = <1>;
++    };
+ ...
+
 -- 
-Billy Tsai <billy_tsai@aspeedtech.com>
+2.34.1
 
