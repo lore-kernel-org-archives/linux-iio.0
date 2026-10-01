@@ -1,78 +1,171 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106525226BF;
-	Thu,  1 Oct 2026 19:20:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44007364E96;
+	Thu,  1 Oct 2026 19:29:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790882457; cv=none; b=Y80IC7pxYIoBjR12o58md+yoRsk/o7/YHWgR/Jpfc25Z+uJNSCkOmQ831cTpBtGgKwDaHOvQNYfDV33Y+s2RL9hD/yOL/t7bQUhOZVu7wiGPNX7pi9kFfTi4Vvn+j2cDVXyFE53cwY/TMdk2QPir1ajkBzAKKH95EOQ0A+Qi7JE=
+	t=1790882958; cv=none; b=EnuSKFZIge6e+GVjbPnNUdFmFb+O3tedFYUACXrMZfuChDXym68BwOAQJmc7V0HljejACte2BGe/wFvlafwuQDd4KZ46TKK/FSqwq42Qnp6rbdC2Cnu5LjQVVH0bNmBOW2+85bgtPYC8Q2riI+p6hosMTQv42O3Zv8x9uVwHdrg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790882457; c=relaxed/simple;
-	bh=x1MmOOCahg4e+YZf4G5N/altgnKA5qXFQq8wazzr6ds=;
+	s=arc-20240116; t=1790882958; c=relaxed/simple;
+	bh=OMtNdUkPoAP8kd989gtFmsnffCAA1xtaNZg/DQMqjqc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bJqkYsvGf6CFW2JT/MM8i5l8RfRLpYxiA+mK/bPAg8UY+d+gL8tTKa5xEpMgOY/8Vl+gP9PBDME7XrqTFwZO13rfL7QnF98hvdGaiMS/uhgQ1umTkBhrVZI5NRLqqmU1n4C/mSbrFKJPrzsDXdGdEpLEG1tOksOm074uzESfgpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jU1zxpq6; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=uBn7Zjoh4pq96OCSKJSinRXn3uLjMMdWV8LLHIod0I/CVqVv/7J5mu9T2NwWalyR/QNhe31Q8uag0lg1iL/acCDiLrrlJYrbmt68tK1+YUNMLpwCkzBYWn0lQM0OGHiPKhIiBkW7BLyGmze1qYFc991lqeQ8XnzB5zcFYaDMFgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eYzkbHhz; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jU1zxpq6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 898EC1F000FF;
-	Thu,  1 Oct 2026 19:20:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790882455;
-	bh=x1MmOOCahg4e+YZf4G5N/altgnKA5qXFQq8wazzr6ds=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=jU1zxpq67EckGkyWPOprssSe5IBihl380Q9+To2nP7Bm5LiheBHEOvjKwjCZ3+2G7
-	 +O1SUjgIVFzEkeFddecxCtm0+KeEe+ao88XzdQOg9nurUhZhVh2mmjIZc/M+vnwR4w
-	 TmPLxoZmp+sJgdf2o7zNoIk+I0oeHWAH3UbSfPCORHxsrU4n/wa27l1KNrzBoDEgxC
-	 Rg7G3QuT9q/eMg4NFkd8z/fqAG7uAxMzJR3Lt7qwlrZEMgHVFlQ3VOtXeTYm0AAiLT
-	 tyX5i7Q3E0Y4e/QmfQJLtOshsyzsuLD8732oasRUK8IzarCaiTnEkPIVu3bAM7UNzg
-	 attYGZfDQ1o3g==
-Date: Thu, 1 Oct 2026 20:20:50 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Alexey Klimov <alexey.klimov@linaro.org>
-Cc: Sam Protsenko <semen.protsenko@linaro.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eYzkbHhz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790882957; x=1822418957;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OMtNdUkPoAP8kd989gtFmsnffCAA1xtaNZg/DQMqjqc=;
+  b=eYzkbHhzwoia3oeEcp0XYEH1UVXlwMVACXOD/tOrbi94+XzS5fxC4wr6
+   RCDd3usZi6dtUey2a/9tLL8xnKdmr55Ef4ZtebUlVLBm4IRPSc95dCo3R
+   nqZaOPGA+tVI/EawU2788afEpPkYNexSK4y/GCJIXUQ8OBYygwHwBV9PF
+   QdsIJEreItwAkW6nfg8fhU1qNEayOYPtww8Bvlh6bRWffzBOyyM4xaGBU
+   sBS+4nlWoy39+6P13mKboEF+XkKpOfkmcH+ph8k0iZ9Ucl53p060wik7q
+   2k9nsn7GDMrMBzYPSm1oZkGm1IjdxiSw+KG1OdpvOb+/Y3NrfURR4F9/L
+   A==;
+X-CSE-ConnectionGUID: q4KOq0I2Qdq/Ii9r9wWHFA==
+X-CSE-MsgGUID: GhVyR9XXRReD2w/iZBZJ3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="100986779"
+X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
+   d="scan'208";a="100986779"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:29:16 -0700
+X-CSE-ConnectionGUID: EFZBs3KCQOu/zUxnOMdfmg==
+X-CSE-MsgGUID: DV5BFFn4TWWtVdnYsSAlUw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
+   d="scan'208";a="274701182"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.27])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:29:13 -0700
+Date: Thu, 1 Oct 2026 22:29:11 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: rodrigo.alencar@analog.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Peter Griffin <peter.griffin@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: samsung,exynos: Add Exynos850
- compatible
-Message-ID: <20261001-ramrod-excess-af03490d5240@spud>
-References: <20261001-exynos850_adc-v1-0-791b3516bb9d@linaro.org>
- <20261001-exynos850_adc-v1-1-791b3516bb9d@linaro.org>
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 3/3] iio: core: use kstrtodec64() to parse
+ fixed-point values
+Message-ID: <ar60h2px1C8hM4-O@ashevche-desk.local>
+References: <20261001-e-notation-v1-0-75187bf06c10@analog.com>
+ <20261001-e-notation-v1-3-75187bf06c10@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="BadlZsUMoxOv+uPT"
-Content-Disposition: inline
-In-Reply-To: <20261001-exynos850_adc-v1-1-791b3516bb9d@linaro.org>
-
---BadlZsUMoxOv+uPT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20261001-e-notation-v1-3-75187bf06c10@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+On Thu, Oct 01, 2026 at 12:34:58PM -0300, Rodrigo Alencar via B4 Relay wrote:
 
---BadlZsUMoxOv+uPT
-Content-Type: application/pgp-signature; name=signature.asc
+> Replace the open-coded __iio_str_to_fixpoint() parser with
+> kstrtodec64(), so sysfs writes of fixed-point values also accept E
+> notation. The scale passed to kstrtodec64() comes from fract_mult, which
+> is a power of ten, 10^n, so ffs(10^n) = n + 1. The fractional part only
+> keeps the sign when the integer part is zero, as before.
+> 
+> The dB suffix for scale attributes is now handled by a separate
+> iio_str_to_fixpoint_units() helper. It strips an optional trailing
+> newline and the "dB" or " dB" suffix before parsing.
+> 
+> When there is no fractional part (fract_mult == 0, or dec_scale == 0 for
+> 64-bit values), try base-autodetecting kstrtoll() first so hexadecimal
+> and octal input keeps its meaning ("010" is still 8). Fall back to
+> kstrtodec64() on -EINVAL to accept E notation.
+> 
+> As a side effect, inputs that used to be rejected for integer-only
+> attributes are now accepted. An invalid octal number such as "08" is
+> parsed as decimal 8, and a fractional value such as "1.5" is truncated
+> to 1, matching how kstrtodec64() drops digits beyond the requested
+> scale.
 
------BEGIN PGP SIGNATURE-----
+...
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCar6ykgAKCRB4tDGHoIJi
-0pcNAPkBIiypEFaEr9cRqf0+A/gpebZXEk4kvlJS5mOUfO3o4gEAsWasR8lY3yxW
-sflI+kUdUrN+nCczr4eOpUsogkPVdA8=
-=rh9C
------END PGP SIGNATURE-----
+> +	/* fract_mult = 10^n, so ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
+> +	unsigned int scale = ffs(fract_mult);
+> +	s64 dec64;
+> +	int ret;
+> +
+> +	ret = -EINVAL;
+> +	if (!fract_mult) /* keep hex/octal support for integers */
+> +		ret = kstrtoll(str, 0, &dec64);
+> +	if (ret == -EINVAL)
+> +		ret = kstrtodec64(str, scale, &dec64);
+> +	if (ret)
+> +		return ret;
 
---BadlZsUMoxOv+uPT--
+Wouldn't be better to write as
+
+	if (fract_mult) {
+		ret = kstrtodec64(str, scale, &dec64);
+	} else {
+		/* keep hex/octal support for integers */
+		ret = kstrtoll(str, 0, &dec64);
+		if (ret == -EINVAL)
+			ret = kstrtodec64(str, scale, &dec64);
+	}
+	if (ret)
+		return ret;
+
+> +	if (fract_mult > 0)
+> +		dec64 = div_s64_rem(dec64, fract_mult * 10, fract);
+> +	else
+> +		*fract = 0;
+> +
+> +	if (dec64 > INT_MAX || dec64 < INT_MIN)
+> +		return -ERANGE;
+> +
+> +	*integer = (int)dec64;
+> +	/* only carry the sign in the fractional part if the integer is zero */
+> +	if (*integer)
+> +		*fract = abs(*fract);
+> +
+
+...
+
+> +static int iio_str_to_fixpoint_units(const char *str, const char *units,
+> +				     int fract_mult, int *integer, int *fract)
+> +{
+> +	size_t units_len = strlen(units);
+> +	size_t num_len = strlen(str);
+> +	const char *dec_str = str;
+> +	char buf[64];
+> +
+> +	if (num_len && str[num_len - 1] == '\n')
+> +		num_len--;
+> +
+> +	if (num_len > units_len &&
+> +	    !strncmp(str + num_len - units_len, units, units_len)) {
+> +		num_len -= units_len;
+> +		if (str[num_len - 1] == ' ')
+> +			num_len--;
+> +		if (num_len >= sizeof(buf))
+> +			return -EINVAL;
+> +		memcpy(buf, str, num_len);
+> +		buf[num_len] = '\0';
+> +		dec_str = buf;
+> +	}
+> +
+> +	return iio_str_to_fixpoint(dec_str, fract_mult, integer, fract);
+> +}
+
+This won't support cases when we have too many leading 0:s.
+All these functions should also strip leading and unneeded 0:s.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
