@@ -1,79 +1,85 @@
 Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F7CC4825DB
-	for <linux-iio@vger.kernel.org>; Thu,  1 Oct 2026 07:12:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C38483BFAE7
+	for <linux-iio@vger.kernel.org>; Thu,  1 Oct 2026 07:18:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790838773; cv=none; b=ov3VSA9F484XIz0ZM+0tPI5qoHEUWRE0RBpAutDc1ZvI4Fhrz0oLBco+LtQq73nWCUyiOTH9y2debLGjbqiCOr+V/BNfUejUHWMk8JfLV5fahfoQL1XFj9xrH4lkrRwVgCIF3uGc8B2FiEWaypB7RYeeTAS+du0nvJj/U0OZFoM=
+	t=1790839110; cv=none; b=pc50CSk37C0hKc1OMIQe2AhHNNEg4l20SrYC1ZzFpl/DIMfNU1B7yJBDhloqikGvFnjrPMB/Acl/Rb1QCMygPgYZhh63JKQyyk3IOFiy/sEqkq2qkAZCQNNll+hvt3w+coKE30GJbqThx8nIg6JhDvkkx94AA+GDsEcprRT8iKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790838773; c=relaxed/simple;
-	bh=pYWtNKCEIADez2nraxJLiPh9vUf2EF3j8+4MBsskwq4=;
+	s=arc-20240116; t=1790839110; c=relaxed/simple;
+	bh=AVqk6eIbFK8uDoowGzu8wB740SP5bVkVCUg8XnZAsHg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SipMO9figvQqSwK3Tmr+8xggiEWyxoxNohgAjhc6D5e3L7K7MdByTarZayhMcuSO2yAc7xMm9jnZAmoDWw1E9Peh/yzUS9MUwvCq+IrvNYjwe7wiBEAEFvA1VqUhvUkS5z2GEkc2Qi2M9mTucgA3NoMnl5hy+DrHb3YU9xmouqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nvvAq98H; arc=none smtp.client-ip=74.125.225.141
+	 MIME-Version:Content-Type; b=AIYSSOLUHQTu+DJk7g+5yHyN3phQz4bwQlLuN3gUMYRKgOKs8nRvBDdYRDzoXju8BLVXQqIpNWDvNHYSawsQwgVqhSH9l44I2pBZPxwbvxVHwwO6MYyrcVIYRYCac59QMJiWzp34qWch2zzPQglVnEd8tMEFOxAdBni2VB72j2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mmJR3dDg; arc=none smtp.client-ip=74.125.225.141
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nvvAq98H"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e7bcb94d3so46319915e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 01 Oct 2026 00:12:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mmJR3dDg"
+Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-4a00d8bec5aso17021065e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 01 Oct 2026 00:18:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790838766; x=1791443566; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1790839107; x=1791443907; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=LZp7N3gR+8r2ILusI/guKJp40S5QXhy02pTeE4zBRNk=;
-        b=nvvAq98HcLZsbqovBW4daMhJdmQa3RzDT0whKjQiddAA4z1VnxjQMqcWI92CrY7TRo
-         VRVeQ6+BG036B3s0+wB9wSewSUGAyBMTyvxPIBFiuNiAGy1ZNrbND1GLPkou2j2BjooR
-         pchEo7khLRu8jBheDM/TYzqUpoTFaCCAoIwUerCaU4whECPPWrLIMaiO1rNkGmUdq2m5
-         W+oS1DUU9G9uP2wtS3HCwrh4qGmAH3VN3hu2NvWwFPCIRTYrV3ZxYUVY/rRQA9R8ExUj
-         0flh6CE6WKqIf610PiFcqXECZ8WjpkMI5PSRVWAMNbxwEnYX6SUGBQmNojB102wFpZkK
-         6i6w==
+        bh=y+YWX6gQgZo8y4R4a+T3medFXiXOGcAYD9z8MlqiloU=;
+        b=mmJR3dDgiVXM+hdlk7vychW5uyiGr8cv70PVc7kNi8Lfx0ZHmU5g4NIPNW0SliuWAc
+         y0Rf/6JNs2gprTZE3or6R0IBnXwDhYs2hsxOA6RZJu5U6R1/U4Bj15/uYWGsn0ILCSrE
+         IrZA1t1H0i9yNyRNrExFTCFk5BVMqWS9mXmqdEomfQ+2tkVITkd4zlADEGIbiSl0/bg8
+         BZlzSLX7UG6IDwlNjQP+AD05ErVg3Fgb9tBN3XBcRPZuMZ+JB1sUy57IhoClwTEdCzBF
+         kd5AuxUpBJmOEsCjcs7mxy9hcNVEBwldm+QdzKDtEwzrMIP9YkI7O4V0HgBu5VJPOMLB
+         /FDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790838766; x=1791443566;
+        d=1e100.net; s=20260707; t=1790839107; x=1791443907;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=LZp7N3gR+8r2ILusI/guKJp40S5QXhy02pTeE4zBRNk=;
-        b=QP52KDmqiXTUDCehMQBOiBeeui6uI3KAABWAaP+rbMvzIl1d47TGMNDx7wdpzpobUm
-         YF/+bAMwJq05NshwL/G1nnP0CebpWryjC9VWTTv8tWiuVTk0cyW1cGGPLW05yAh5gfda
-         Z61N6HMGkTLksJKdSt0x+fpBZQXp+mppXi9Rdc3yFytQfIxHZ4b1sU5Xb5aYEkCOCTh5
-         CmHqE6ljx+9112CwJFjxI5gwIEtsF+GeThOU9UUuwNrhV3lyNLn8DS5Q2vGdfMM9aAe5
-         dowXSygrZoVcMd412zjiMoOCL7ugf3ut9yKDoI/VZPOYJPy//q5FWS1XYS6YE4Xnr95Y
-         +BKQ==
-X-Forwarded-Encrypted: i=1; AKwUvByqBxR6VNW/OZot0/ICJDaPwbJPet/OGX2GNkib+pyn77VdiH1Qv8Ld2a3cFhEPDuNN0t2QL03u13Y=@vger.kernel.org
-X-Gm-Message-State: AFuF++n6VIJXtjjrMnnRc1MtsYFIn8YgK0oEXzNRko+2RpcNFseeFKax
-	Vf00YAhMiEFhxzAr7UdmTaqIK2CsVu/fXdpAzsnW+8pvP7fn/MR0mxA8
-X-Gm-Gg: AYBFou1vChaRfQxdDe7jTFI3+/yW8AVXzxw5Omvab8xP3L5GtjvxUp9hOaVkd8VWAyp
-	vZZBCsYpzcDRsnXLHmnKj3nffQHoTYR6fVAsPgB6Ph9biJVcra6QcUGyxnRs2dbOJHMtUqdkf0M
-	ps4rn305AsRa7AwOG9si2mhrbnoZVt20QU3WDTztj83JO51jhu7yu/I3gvhBMtPb7cZ35nwVzWP
-	s1iJuOZ2uAaq1S6u2C6oPz8+yutvt3P4PWrUOy5B0SY21XHw5a6Jv7UnJu/1CXTG8x3BISSwCri
-	MDue6CcfvuGqL+p26vdAAVza0gHor5v9MqMBEyth4yDawhgfItPPRnwJSFY9o01cACSvmF5RS0u
-	KVGisVT9IOAavSufn3GCEECTwEsSdd7Kt7aqIrEfy2n4SvgLOYksdh5v5DhYH2nBCYXH0j7+s+2
-	0iTTCjPXXYs8ne4MGZZey1uziWKgpetwXsU9b1odNkhZSvtHpNJd8WRHwkhFUlsB0iWTBnVToQ/
-	6gOkX4TLaZEBOnEJ1Az61e5ARCRoc12vlU+3op8aO6iAC2CBsyr0AntNNEFtoU3gGKuuWq+BDQp
-	TBVSU5ahJS+cyM0CId5ulpPx+7Qm/UHDBzKcZIN6a3nwtWCGnxanRDd1E99vP5BGr+jsBXsBjHF
-	UU9uV8dp1K1m31S1i09oKFC5zb0w1UnfNZC43m2h8CPNk9Pe0oYUbDMhaxrRGeowpGeHMfGeGrs
-	5j9d7C
-X-Received: by 2002:a05:600c:4f8e:b0:49e:745d:c317 with SMTP id 5b1f17b1804b1-4a01b0087a5mr56943735e9.12.1790838765815;
-        Thu, 01 Oct 2026 00:12:45 -0700 (PDT)
+        bh=y+YWX6gQgZo8y4R4a+T3medFXiXOGcAYD9z8MlqiloU=;
+        b=RXCEwXTQSSltNc2kEb4ApJpQw5opzpD3d/JYqe4vNFu7CvEINN/gwNVRvjiQwXzlDn
+         6unJLEsBauAoyF7RNk7gc1SeJCXl+sKOw5ShgFDYhlbqe8LoWJ2NwpVhEUndzJpDZXx+
+         c+Pc+3FMEnHN0SW4lQH8snlIHV4U1csGIk333HXIZ4X2/Te1+30/D4ZAhR4KD1lg6uaN
+         jeCF5wIppfXw7lwg72EyAo6+0IOYAEbD+0Ur7RIhfIFA4RVR+raq1KkZwGkl+u49EauA
+         Zs/Yu4blWn04hA6tViFNzcABg88k4vKgEDYzAFRCWV3cqD0x8XUHAhToejhSDCLn7eSG
+         Mc6A==
+X-Forwarded-Encrypted: i=1; AKwUvByE7eiI6KGCu/8NeJMvQ1qNRNJ+LCFXR7FXz27ltI761UVLHKFgfxlmrPV1mmgxxX3CKHnBEug7uE0=@vger.kernel.org
+X-Gm-Message-State: AFuF++m/hA/Q2poTJsGs0x+IkyqW1dyBk0fLgsL5llN3O2Cxr8/2EnZH
+	5iQfBSDtNEE6TDFuC7ISGX1BfUZaekOQiPiGI79wxbvYOmJGV+TJ21R/3lK37SbE
+X-Gm-Gg: AYBFou08P/MSOOCgnfShpUhy+OEP+97wRzynBRDm+Jrlz+ePBbKT5tC5B8jZx5Gv75O
+	m2QrumpIYNo4/z/CIeIZ40N1tWDygPbFalFAYLSmi9kNW8lUmo4nBx+ZIcDr2cfZDAZC5x1UMzs
+	H+h3o1+e6K0JiyTkNcK5J0PUw2mYYHCddfmk88XqGScJwvmuFJ08MWGFLiKNRi/4LhozvbfzEdP
+	+3CdWD/tNjVBzNyhYh3R23o/ey3RxU8+9Gdz757e/MxGSCYeLEXAHTn//SXcy/aPn99V/zYgolY
+	4TXsXZoU7Ni/hadCI0Ua4gmvUOnknehGg4JMVNJwkFGPk9KEAe18KlOPLF4zCQY97reqQPDflXF
+	KUUNwCiRaC6SYHb771Wr4nPjG7VfGRwn7xZ6hLBtGLelDurbn5MrGfp8nCv8pOovNwnW6jqGO3+
+	FQGhOiSFrtykyAXmMnxL9SAD1202DM4MvSYOqPc5Hq1uWtN1QJmG8bnsaQfJZ4ajlP71X+xpkPW
+	RRTuHswdTPennLLnX7CxCGzIz8s8JQ7Z7YGA/MUKfLIb6fMDl9r2havXTpgpmEZwGcS1L13sMJ2
+	CqUYkmZJZPMI2bIDHr4RLA9qbY/nej0pZlac7bn/Lhu/derahWkYeBb+IjktGUBa+TUcZQR9txq
+	hxrJ5tu28LMidJtoJj6Wg8KW2QVhq2qf1yYWnucLXneYNTdCYA5/EcfU/sfo3Ay2g3Wlhrn8huf
+	BNCf5f
+X-Received: by 2002:a05:600c:c162:b0:49e:7a00:b9a5 with SMTP id 5b1f17b1804b1-4a01ad907efmr63944185e9.4.1790839106608;
+        Thu, 01 Oct 2026 00:18:26 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a01f97a0aesm43532655e9.3.2026.10.01.00.12.45
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a023ecef86sm8562995e9.3.2026.10.01.00.18.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2026 00:12:45 -0700 (PDT)
-Date: Thu, 1 Oct 2026 09:12:46 +0200
+        Thu, 01 Oct 2026 00:18:26 -0700 (PDT)
+Date: Thu, 1 Oct 2026 09:18:27 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
- nuno.sa@analog.com, u.kleine-koenig@baylibre.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 00/10] iio: adc: ti-ads1015: modernize resource
- management and bitfield logic
-Message-ID: <20261001091246.000068a8@gmail.com>
-In-Reply-To: <20260930171204.12863-1-architanant5@gmail.com>
-References: <20260930171204.12863-1-architanant5@gmail.com>
+To: Billy Tsai <billy_tsai@aspeedtech.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "Joel Stanley" <joel@jms.id.au>, Andrew Jeffery
+ <andrew@codeconstruct.com.au>, "Ryan Chen" <ryan_chen@aspeedtech.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-aspeed@lists.ozlabs.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] iio: adc: aspeed: Fix SCU lookup for multi-SCU
+ AST2700
+Message-ID: <20261001091827.00001410@gmail.com>
+In-Reply-To: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
+References: <20261001-ast27xx-adc-upstream-v1-0-5ace57533418@aspeedtech.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -84,60 +90,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 30 Sep 2026 22:41:54 +0530
-Archit Anant <architanant5@gmail.com> wrote:
+On Thu, 1 Oct 2026 11:28:43 +0800
+Billy Tsai <billy_tsai@aspeedtech.com> wrote:
 
-> This series modernizes the ti-ads1015 driver by updating its runtime PM
-> handling, error handling, resource management, and register bitfield
-> operations.
+> The ADC's reference-voltage trimming data lives in a SCU register. The
+> driver has always located that SCU with a global, name-based
+> device-tree search, which works as long as a platform only has a
+> single node named "syscon". AST2700 splits its SCU into two
+> instances, syscon0 and syscon1, that share that same node name and
+> differ only by label and unit address, so the lookup always resolves
+> to syscon0 even when the ADC's trimming data lives in syscon1.
 > 
-> This series builds on top of Stepan Ionichev's devm error path fix [1] and:
-> - Replaces SET_RUNTIME_PM_OPS() with DEFINE_RUNTIME_DEV_PM_OPS().
-> - Sorts the driver headers alphabetically.
-> - Returns -ENODATA when match data is missing.
-> - Uses a local device pointer in probe.
-> - Converts suitable error paths to dev_err_probe().
-> - Drops unneeded '< 0' error checks for functions returning 0 or error.
-> - Converts mutex initialization to devm_mutex_init().
-> - Transitions runtime PM setup to devm_pm_runtime_set_active_enabled().
-> - Inlines the redundant ads1015_set_conv_mode() helper.
-> - Replaces custom shift macros with FIELD_PREP()/FIELD_GET().
+> This series adds an explicit "syscon" phandle property so multi-SCU
+> platforms can point the ADC at the right SCU, keeps the existing
+> global lookup as a fallback for single-SCU platforms and already
+> deployed device trees, and wires the new property up on AST2700.
 > 
-> [1] https://lore.kernel.org/all/20260529183708.17819-1-sozdayvek@gmail.com/
+> Patch summary:
+> 1. dt-bindings: iio: adc: Add syscon property for multi-SCU SoCs
+> 2. iio: adc: aspeed: Use syscon phandle for trimming data when available
+> 3. arm64: dts: aspeed: Add syscon phandle to AST2700 ADC nodes
 > 
+> Assisted-by: Claude:claude-sonnet-5
+
+All Assisted-by tags in your series should be changed to "Assisted-by: LLM"
+
+> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 > ---
-> v5:
-> - Reordered patches: inlined ads1015_set_conv_mode() before applying
->   FIELD_PREP() to completely eliminate code churn.
-> - Extracted FIELD_PREP() evaluations into local variables for
->   regmap_update_bits() calls to ensure clean line lengths and readability.
-> - Added a patch to return -ENODATA when i2c_get_match_data() fails, as
->   requested by Andy Shevchenko.
-> - Split devm_mutex_init() into its own patch to decouple it from the
->   runtime PM modernization, as requested by Andy Shevchenko.
+> Billy Tsai (3):
+>       dt-bindings: iio: adc: Add syscon property for multi-SCU SoCs
+>       iio: adc: aspeed: Use syscon phandle for trimming data when available
+>       arm64: dts: aspeed: Add syscon phandle to AST2700 ADC nodes
 > 
-> v4: https://lore.kernel.org/linux-iio/20260827172100.39176-1-architanant5@gmail.com/
+>  .../bindings/iio/adc/aspeed,ast2600-adc.yaml       | 28 ++++++++++++++++++++++
+>  arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi     |  2 ++
+>  drivers/iio/adc/aspeed_adc.c                       | 20 +++++++++++-----
+>  3 files changed, 44 insertions(+), 6 deletions(-)
+> ---
+> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+> change-id: 20261001-ast27xx-adc-upstream-34b3d9e8e27b
 > 
-> Archit Anant (10):
->   iio: adc: ti-ads1015: use DEFINE_RUNTIME_DEV_PM_OPS()
->   iio: adc: ti-ads1015: sort headers alphabetically
->   iio: adc: ti-ads1015: return -ENODATA when match data is missing
->   iio: adc: ti-ads1015: use local device pointer in probe
->   iio: adc: ti-ads1015: use dev_err_probe() for error handling
->   iio: adc: ti-ads1015: drop unneeded < 0 error checks
->   iio: adc: ti-ads1015: use devm_mutex_init()
->   iio: adc: ti-ads1015: use managed runtime PM setup
->   iio: adc: ti-ads1015: inline ads1015_set_conv_mode()
->   iio: adc: ti-ads1015: replace custom shift macros with FIELD_PREP/GET
-> 
->  drivers/iio/adc/ti-ads1015.c | 160 +++++++++++++++++------------------
->  1 file changed, 76 insertions(+), 84 deletions(-)
-> 
+> Best regards,
 
-I have two *very* tiny nits that can be tweaked when applying. Otherwise
-LGTM.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
 Kind regards,
