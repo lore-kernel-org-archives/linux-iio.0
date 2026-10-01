@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2D71525A79;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C10367288;
 	Thu,  1 Oct 2026 15:36:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790868967; cv=none; b=MfQ+lyOs01zXBxqs/1hGHvCZhfWW0uJ1Bsg2pcDMnLlwUYuvWoBgeNxzb2QToZpK7HZuclQ1lKL4LdHHqC3l/J2guK33QgagR3s9ltudnxcFFWlz6wRXM6Ku3cMbO0CpBZmkI/eO+gXzSHF8nmVqMMKR1RDa2Zb3M3eKTSel8QM=
+	t=1790868967; cv=none; b=i/ffMphgt8S2AAAAeGKDMPajB4GNA7vtmq20jKuwbZB9ONjrW4XUx69UBggDnoUXHPUS+1vHZYOEHZ2qN5sJXZArpiuqeHTnr/SRXDq5eqtYbpriG5k28UKD85Y+0wzkgbl5MuyV4pxltvG8KycQmmROYvsJP0nCM0bmbZRwvu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1790868967; c=relaxed/simple;
-	bh=l91djI9VWUpVaBs1oUpDr9A8P7lSpOZ347IxhMa3DFg=;
+	bh=37lrIpoYAxZAUCqJmdrsGZJQi3enj2Yb+EP0/OYenN8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=C8vTq+/I4RBuFqwb/6pm3pN8T08p1PB8eyQZ/ooTXKQy6JRFmU3Jw0fY3TuOEiIG0bPmdKT++piycQil8IcwV3q7hO99YkuWYrFCczQa+hHaD7pD+denwkSLubPYZRXfWcxtTrLMW5bP1aCnH8h1FrQOAqvOut1p+4dTGOUOPTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iEvBXkBQ; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=eWeWdaiYI+LQ3ohKcPedfZ46d4A/J9RqkvZGfunrx9K2N8A3BcJn5eUepAk9s1yntAD5SX2SW7HlCQmQfDEX3dAMu/vYZDtttbfa33WGasETM1z0SZMUISt+phkHwrYwrL8fq/0NGhadh5pduDjYmIqatclOFp56LHss3Mbk88o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DuybV9Y5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iEvBXkBQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E04EC4AF16;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DuybV9Y5"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7FCE2C4AF14;
 	Thu,  1 Oct 2026 15:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1790868967;
-	bh=l91djI9VWUpVaBs1oUpDr9A8P7lSpOZ347IxhMa3DFg=;
+	bh=37lrIpoYAxZAUCqJmdrsGZJQi3enj2Yb+EP0/OYenN8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=iEvBXkBQfa83UTMMmGlAUcfVf/9cQQ+UZryIxJ4KZvB1EMkfXCnIYpLVcavjUIQls
-	 ezuQApmsSPpuIbdD0U161m57wWtD2zcC9Ky09UQrapSCKuBPcoRLx14tBw5rkKPcVk
-	 AVYdPuJ+TrDcMePCrXP+v3C8zFmRxnboBS/GVoR9p0JrYT+4f90GzaCnBGTTvo31YS
-	 SykMqOODQHJpAjXdYAghGZQOeJqqWmuo4z0alB9hqtRg+w/e1QD4iTE+1lidEjGPaM
-	 PfWWhRVHkR5VkW2ZSyjaXrAAn5EIV2LXZ5K5SCkuEMGLoWeStnZ9oT3+CPHZdy3GM3
-	 D3TQT8mr/Tm7Q==
+	b=DuybV9Y5bt74KmPjz2Gdx4XZmerIQhgUN7eVQhtSnGfLL7Hidj1TrrNHkwjfa8asD
+	 bJ0fHPssL3/9xYcYeVA/KWFHELL4IoEH8/M7mz5LAStV0Sci/SaVkThMHhbB6Q5ROf
+	 Kg0usykg5WEc1MN5k9KJ6iC8WaTpBKM5oO3u0s7X4VYKiGyjuiimgT6t/IspvB2PIb
+	 u0Oowlm5aennnalUgK9PmD7fq5hBYSVE8FVrpckIS0FkkUowvUsr1s8J+Mrps0esgF
+	 fCi+LHjXmI3h0cWrkBdWUjmHnECegk4lTNF8Wc4rDduQHVs5RKiJ4M6EsMYqSLwg3/
+	 eW3MUZOCgudVQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FBFCA5FDB;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 628B8CA5FD6;
 	Thu,  1 Oct 2026 15:36:07 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 01 Oct 2026 12:34:58 -0300
-Subject: [PATCH RFC 3/3] iio: core: use kstrtodec64() to parse fixed-point
- values
+Date: Thu, 01 Oct 2026 12:34:57 -0300
+Subject: [PATCH RFC 2/3] lib: test-kstrtox: add E notation tests for
+ kstrto[u]dec64()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261001-e-notation-v1-3-75187bf06c10@analog.com>
+Message-Id: <20261001-e-notation-v1-2-75187bf06c10@analog.com>
 References: <20261001-e-notation-v1-0-75187bf06c10@analog.com>
 In-Reply-To: <20261001-e-notation-v1-0-75187bf06c10@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
@@ -50,11 +50,11 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1790868966; l=6669;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790868966; l=3418;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=vZlhPBlHph5MJsiQtE5ZSwDyo8lXzlfhWg5+fE85ugo=;
- b=IQeCPjeRiRS1K2bo9DZOGkuJr3y0JQ+79PdAV6wxq+8+lbPTTw8IM5B4p0x8WKhPoXpbaDbiJ
- fdD6pFClZS/BLY8fuq3vRYxeFIiaGS+YaxSG8JoUdv3qqgHIi+/MN7p
+ bh=srewDKtYgdW1z7x6ul18kfWxZ8z5yTDtOCBDUGrmJ00=;
+ b=Xrg7Buuq/I8u6q10wc6/1MLtSpWQyjEGmkXF3WuAAHlisleizRxJQtzJj75ZamoQUZ8MCyHMh
+ G2W3DjWNOBJBMiyAEkNx+bOpoSI0kcQYMOVIqNvdJYbwZMkH34CKQCn
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -64,222 +64,100 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Replace the open-coded __iio_str_to_fixpoint() parser with
-kstrtodec64(), so sysfs writes of fixed-point values also accept E
-notation. The scale passed to kstrtodec64() comes from fract_mult, which
-is a power of ten, 10^n, so ffs(10^n) = n + 1. The fractional part only
-keeps the sign when the integer part is zero, as before.
-
-The dB suffix for scale attributes is now handled by a separate
-iio_str_to_fixpoint_units() helper. It strips an optional trailing
-newline and the "dB" or " dB" suffix before parsing.
-
-When there is no fractional part (fract_mult == 0, or dec_scale == 0 for
-64-bit values), try base-autodetecting kstrtoll() first so hexadecimal
-and octal input keeps its meaning ("010" is still 8). Fall back to
-kstrtodec64() on -EINVAL to accept E notation.
-
-As a side effect, inputs that used to be rejected for integer-only
-attributes are now accepted. An invalid octal number such as "08" is
-parsed as decimal 8, and a fractional value such as "1.5" is truncated
-to 1, matching how kstrtodec64() drops digits beyond the requested
-scale.
+Cover E notation parsing in kstrtoudec64() and kstrtodec64(): positive,
+zero and negative exponents, upper case 'E', an explicit '+' sign,
+truncation of integer digits by negative exponents, large values, and
+failures for overflowing or incomplete exponents.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 155 ++++++++++++++++++++--------------------
- 1 file changed, 76 insertions(+), 79 deletions(-)
+ lib/test-kstrtox.c | 52 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index d73f2541375f..b22d2f427bbd 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -994,77 +994,6 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
- 	}
+diff --git a/lib/test-kstrtox.c b/lib/test-kstrtox.c
+index 9255234752db..bfdb109752e9 100644
+--- a/lib/test-kstrtox.c
++++ b/lib/test-kstrtox.c
+@@ -769,6 +769,28 @@ static void __init test_kstrtoudec64_ok(void)
+ 		/* truncation with many excess digits */
+ 		{"0.00000000000000000000000000000000423",	34,	42},
+ 		{"1.99999999999999999999999999999999999",	3,	1999},
++		/* E notation: positive exponent, no fraction */
++		{"1e3",			3,	1000000ULL},
++		{"42e2",		3,	4200000ULL},
++		/* E notation: positive exponent with fraction */
++		{"2.718e3",		3,	2718000ULL},
++		{"1.5e2",		1,	1500ULL},
++		/* E notation: uppercase E */
++		{"1E3",			3,	1000000ULL},
++		/* E notation: explicit positive exponent sign */
++		{"1e+3",		3,	1000000ULL},
++		/* E notation: zero exponent */
++		{"1.5e0",		1,	15ULL},
++		/* E notation: negative exponent shifts decimal left */
++		{"271828e-5",		3,	2718ULL},
++		{"2.71828e-1",		3,	271ULL},
++		{"270e-2",		3,	2700ULL},
++		/* E notation: negative exponent that truncates integer digits */
++		{"27e-4",		3,	2ULL},
++		/* E notation: negative exponent below 1 ULP truncates to 0 */
++		{"1e-5",		3,	0ULL},
++		/* E notation: large value (27 GHz in micro Hz) */
++		{"2.7e10",		6,	27000000000000000ULL},
+ 	};
+ 	TEST_OK(kstrtoudec64, u64, "%llu", test_udec64_ok);
  }
- 
--/**
-- * __iio_str_to_fixpoint() - Parse a fixed-point number from a string
-- * @str: The string to parse
-- * @fract_mult: Multiplier for the first decimal place, should be a power of 10
-- * @integer: The integer part of the number
-- * @fract: The fractional part of the number
-- * @scale_db: True if this should parse as dB
-- *
-- * Returns:
-- * 0 on success, or a negative error code if the string could not be parsed.
-- */
--static int __iio_str_to_fixpoint(const char *str, int fract_mult,
--				 int *integer, int *fract, bool scale_db)
--{
--	int i = 0, f = 0;
--	bool integer_part = true, negative = false;
--
--	if (fract_mult == 0) {
--		*fract = 0;
--
--		return kstrtoint(str, 0, integer);
--	}
--
--	if (str[0] == '-') {
--		negative = true;
--		str++;
--	} else if (str[0] == '+') {
--		str++;
--	}
--
--	while (*str) {
--		if ('0' <= *str && *str <= '9') {
--			if (integer_part) {
--				i = i * 10 + *str - '0';
--			} else {
--				f += fract_mult * (*str - '0');
--				fract_mult /= 10;
--			}
--		} else if (*str == '\n') {
--			if (*(str + 1) == '\0')
--				break;
--			return -EINVAL;
--		} else if (!strncmp(str, " dB", sizeof(" dB") - 1) && scale_db) {
--			/* Ignore the dB suffix */
--			str += sizeof(" dB") - 1;
--			continue;
--		} else if (!strncmp(str, "dB", sizeof("dB") - 1) && scale_db) {
--			/* Ignore the dB suffix */
--			str += sizeof("dB") - 1;
--			continue;
--		} else if (*str == '.' && integer_part) {
--			integer_part = false;
--		} else {
--			return -EINVAL;
--		}
--		str++;
--	}
--
--	if (negative) {
--		if (i)
--			i = -i;
--		else
--			f = -f;
--	}
--
--	*integer = i;
--	*fract = f;
--
--	return 0;
--}
--
- /**
-  * iio_str_to_fixpoint() - Parse a fixed-point number from a string
-  * @str: The string to parse
-@@ -1075,13 +1004,76 @@ static int __iio_str_to_fixpoint(const char *str, int fract_mult,
-  * Returns:
-  * 0 on success, or a negative error code if the string could not be parsed.
-  */
--int iio_str_to_fixpoint(const char *str, int fract_mult,
--			int *integer, int *fract)
-+int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
-+			int *fract)
- {
--	return __iio_str_to_fixpoint(str, fract_mult, integer, fract, false);
-+	/* fract_mult = 10^n, so ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
-+	unsigned int scale = ffs(fract_mult);
-+	s64 dec64;
-+	int ret;
-+
-+	ret = -EINVAL;
-+	if (!fract_mult) /* keep hex/octal support for integers */
-+		ret = kstrtoll(str, 0, &dec64);
-+	if (ret == -EINVAL)
-+		ret = kstrtodec64(str, scale, &dec64);
-+	if (ret)
-+		return ret;
-+
-+	if (fract_mult > 0)
-+		dec64 = div_s64_rem(dec64, fract_mult * 10, fract);
-+	else
-+		*fract = 0;
-+
-+	if (dec64 > INT_MAX || dec64 < INT_MIN)
-+		return -ERANGE;
-+
-+	*integer = (int)dec64;
-+	/* only carry the sign in the fractional part if the integer is zero */
-+	if (*integer)
-+		*fract = abs(*fract);
-+
-+	return 0;
+@@ -801,6 +823,14 @@ static void __init test_kstrtoudec64_fail(void)
+ 		{"0.2",				20},
+ 		{"0.18446744073709551616",	20},
+ 		{"1",				20},
++		/* E notation: exponent causes overflow */
++		{"1e21",			1},
++		{"2e20",			1},
++		/* E notation: no digits after exponent marker */
++		{"1e",			3},
++		/* E notation: sign only after exponent marker */
++		{"1e+",			3},
++		{"1e-",			3},
+ 	};
+ 	TEST_FAIL(kstrtoudec64, u64, "%llu", test_udec64_fail);
  }
- EXPORT_SYMBOL_GPL(iio_str_to_fixpoint);
- 
-+/**
-+ * iio_str_to_fixpoint_units() - Parse a fixed-point number with units from a string
-+ * @str: The string to parse
-+ * @units: The units to expect at the end of the string
-+ * @fract_mult: Multiplier for the first decimal place, should be a power of 10
-+ * @integer: The integer part of the number
-+ * @fract: The fractional part of the number
-+ *
-+ * Returns:
-+ * 0 on success, or a negative error code if the string could not be parsed.
-+ */
-+static int iio_str_to_fixpoint_units(const char *str, const char *units,
-+				     int fract_mult, int *integer, int *fract)
-+{
-+	size_t units_len = strlen(units);
-+	size_t num_len = strlen(str);
-+	const char *dec_str = str;
-+	char buf[64];
-+
-+	if (num_len && str[num_len - 1] == '\n')
-+		num_len--;
-+
-+	if (num_len > units_len &&
-+	    !strncmp(str + num_len - units_len, units, units_len)) {
-+		num_len -= units_len;
-+		if (str[num_len - 1] == ' ')
-+			num_len--;
-+		if (num_len >= sizeof(buf))
-+			return -EINVAL;
-+		memcpy(buf, str, num_len);
-+		buf[num_len] = '\0';
-+		dec_str = buf;
-+	}
-+
-+	return iio_str_to_fixpoint(dec_str, fract_mult, integer, fract);
-+}
-+
- static ssize_t iio_write_channel_info(struct device *dev,
- 				      struct device_attribute *attr,
- 				      const char *buf,
-@@ -1143,17 +1135,22 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 			return -EINVAL;
- 		integer = ch;
- 	} else if (is_64bit) {
--		if (dec_scale)
--			ret = kstrtodec64(buf, dec_scale, &integer64);
--		else
-+		ret = -EINVAL;
-+		if (!dec_scale) /* keep hex/octal support for integers */
- 			ret = kstrtoll(buf, 0, &integer64);
-+		if (ret == -EINVAL)
-+			ret = kstrtodec64(buf, dec_scale, &integer64);
- 		if (ret)
- 			return ret;
- 
- 		iio_val_s64_decompose(integer64, &integer, &fract);
- 	} else {
--		ret = __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
--					    scale_db);
-+		if (scale_db)
-+			ret = iio_str_to_fixpoint_units(buf, "dB", fract_mult,
-+							&integer, &fract);
-+		else
-+			ret = iio_str_to_fixpoint(buf, fract_mult, &integer,
-+						  &fract);
- 		if (ret)
- 			return ret;
- 	}
+@@ -853,6 +883,21 @@ static void __init test_kstrtodec64_ok(void)
+ 		{"-0.00000000000000000001",	20,	-1},
+ 		{"0.009223372036854775807",	21,	LLONG_MAX},
+ 		{"-0.009223372036854775808",	21,	LLONG_MIN},
++		/* E notation: positive number */
++		{"1e3",			3,	1000000LL},
++		{"2.7e3",		3,	2700000LL},
++		{"1.5e0",		1,	15LL},
++		/* E notation: negative number with positive exponent */
++		{"-1e3",		3,	-1000000LL},
++		{"-2.7e3",		3,	-2700000LL},
++		/* E notation: negative exponent */
++		{"27e-1",		3,	2700LL},
++		{"-27e-1",		3,	-2700LL},
++		{"2.7e-1",		3,	270LL},
++		{"-2.7e-1",		3,	-270LL},
++		/* E notation: negative exponent truncates to 0 */
++		{"1e-5",		3,	0LL},
++		{"-1e-5",		3,	0LL},
+ 	};
+ 	TEST_OK(kstrtodec64, s64, "%lld", test_dec64_ok);
+ }
+@@ -881,6 +926,13 @@ static void __init test_kstrtodec64_fail(void)
+ 		{"-0.1",			20},
+ 		{"0.09223372036854775808",	20},
+ 		{"-0.09223372036854775809",	20},
++		/* E notation: exponent causes overflow */
++		{"1e21",		1},
++		{"-1e21",		1},
++		/* E notation: no digits after exponent marker */
++		{"1e",			3},
++		{"1e+",			3},
++		{"1e-",			3},
+ 	};
+ 	TEST_FAIL(kstrtodec64, s64, "%lld", test_dec64_fail);
+ }
 
 -- 
 2.43.0
