@@ -1,171 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lr2-f35.google.com (mail-lr2-f35.google.com [74.125.230.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44007364E96;
-	Thu,  1 Oct 2026 19:29:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFAB642C51C
+	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 07:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790882958; cv=none; b=EnuSKFZIge6e+GVjbPnNUdFmFb+O3tedFYUACXrMZfuChDXym68BwOAQJmc7V0HljejACte2BGe/wFvlafwuQDd4KZ46TKK/FSqwq42Qnp6rbdC2Cnu5LjQVVH0bNmBOW2+85bgtPYC8Q2riI+p6hosMTQv42O3Zv8x9uVwHdrg=
+	t=1790925935; cv=none; b=B9hO0lsdpFhbIQLOJPxatL4vccSwD01jdkagSAXx8GUcQwWqPukPpbzsZaA4Fe1gcAbEcDdVf8jee6l4rMsmC/rYhcopx6Bhp25HkAECDMH81NjhH9oP69u1S5GEA8iYvRu3VAGCslB7PTn7bENMz1BmpeXRu/yju27RU/X+Iqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790882958; c=relaxed/simple;
-	bh=OMtNdUkPoAP8kd989gtFmsnffCAA1xtaNZg/DQMqjqc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uBn7Zjoh4pq96OCSKJSinRXn3uLjMMdWV8LLHIod0I/CVqVv/7J5mu9T2NwWalyR/QNhe31Q8uag0lg1iL/acCDiLrrlJYrbmt68tK1+YUNMLpwCkzBYWn0lQM0OGHiPKhIiBkW7BLyGmze1qYFc991lqeQ8XnzB5zcFYaDMFgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eYzkbHhz; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1790925935; c=relaxed/simple;
+	bh=/kQ4fSekPPFinZeyqe+grEE9/hzLsUKUj00QBMn+5Zs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mB9nxrdsDnTHNpzSC77k3ZOojzZsJZHqIEagOM1NAgT2QWq/zJfo3YHKRbsapqifVeQJVbp2f/yJZ/7quojnwOYNobdhLL9thgbgiaCmKNSDEQbCrO6CbpzxJd+eezCXBm0TjqqXtC0nXy7bDncmqMZGUAMIDoPquCczKCxMaLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SwJ3Coi4; arc=none smtp.client-ip=74.125.230.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eYzkbHhz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790882957; x=1822418957;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OMtNdUkPoAP8kd989gtFmsnffCAA1xtaNZg/DQMqjqc=;
-  b=eYzkbHhzwoia3oeEcp0XYEH1UVXlwMVACXOD/tOrbi94+XzS5fxC4wr6
-   RCDd3usZi6dtUey2a/9tLL8xnKdmr55Ef4ZtebUlVLBm4IRPSc95dCo3R
-   nqZaOPGA+tVI/EawU2788afEpPkYNexSK4y/GCJIXUQ8OBYygwHwBV9PF
-   QdsIJEreItwAkW6nfg8fhU1qNEayOYPtww8Bvlh6bRWffzBOyyM4xaGBU
-   sBS+4nlWoy39+6P13mKboEF+XkKpOfkmcH+ph8k0iZ9Ucl53p060wik7q
-   2k9nsn7GDMrMBzYPSm1oZkGm1IjdxiSw+KG1OdpvOb+/Y3NrfURR4F9/L
-   A==;
-X-CSE-ConnectionGUID: q4KOq0I2Qdq/Ii9r9wWHFA==
-X-CSE-MsgGUID: GhVyR9XXRReD2w/iZBZJ3Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="100986779"
-X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
-   d="scan'208";a="100986779"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:29:16 -0700
-X-CSE-ConnectionGUID: EFZBs3KCQOu/zUxnOMdfmg==
-X-CSE-MsgGUID: DV5BFFn4TWWtVdnYsSAlUw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
-   d="scan'208";a="274701182"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.27])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 12:29:13 -0700
-Date: Thu, 1 Oct 2026 22:29:11 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SwJ3Coi4"
+Received: by mail-lr2-f35.google.com with SMTP id 38308e7fff4ca-3a64d20990fso71413271fa.1
+        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 00:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790925928; x=1791530728; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=sG65+SKn65DP6wBKULwQwiXjO7ctbm5y4pXnwFPOBMw=;
+        b=SwJ3Coi4HLDPU452nuoEbmFp0a6k4TTqrTYldWSOefyJYJczOBYNLOFg0dEhNyLb0Z
+         E2OoQez2VrRIf9ZcE2OiYI4QPXaL/gwklkGLQ01qQ8rFMzC4Zk7mTQo3dDcWV28EVS04
+         vqSvZBiECtze4u+mLMnEfOt5v800aEJp31oiNlil/W4BnkWHT54ZAiQAHh8173BuE8MS
+         3HZjmprcL+O7nqerlP7y3Dug1rsqlfrp7d0IuZjfDX6WSYm/tMwtS3u8bkVajlzyqcvr
+         Sajc1tMiaLpWuCKO0uVOPCc5DF/DZNPXIm/Cqpm5DtFavMtDaKO5w53Ai+KOzT7s3VW7
+         5oaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790925928; x=1791530728;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=sG65+SKn65DP6wBKULwQwiXjO7ctbm5y4pXnwFPOBMw=;
+        b=qyMUdbseIdfzTT6mxVvHdz49tST1x6VGj9kS+3HYuPWiFHNF+XskrZXnnUm5L0VjRS
+         q/DQKNOCLGybRM6OGSYhGtVcHSpGdEwQihzI+7qRre1wPszduUKD75tY6SRO8An6CVIw
+         qEO1E2U1a4XXa1fNQKnK8XqMualpy1nDkrSCrBpuninvZ2IhgalQT5Bjawn4P+xBPeCt
+         qwRusChfo/Jwrejp19gSh70ekva+W/pkveUVhwyffEhougWbjyTfqJuiMClZmg64M9Fk
+         onwxVcr5ou+4posVb6ntM3q4pE+sV4xp1AC3TkkAsihn/BCDr2nM0MIB8ZLGrXo+Jiie
+         dQhw==
+X-Gm-Message-State: AFq9FYKzw3hn49bXg8DsuHD+BeQNTahdSWvdCx31yXAOtJyj41v//Z0y
+	PxPzMR3n8mKNhg8JWc7vPv8y1UXWStk76KxGyBMupXu7H7euBkzV1P/R
+X-Gm-Gg: AYBFou1ldpX59N+RlhpvTp9jiiMcsExdgopVK5jgCD9+kL2JpQq3TbtLEVENVGAKY0O
+	RVW6P6yP441IRyEvaHHQHRO8NtjVMzW2HNnLz8FfHxOiGILcEbUMlz33dgQByA0nM49oJcRkfbd
+	f7vCfbQvFq94HOaQbYkNP+ZCNLPdepD4ysP5mIArJuHDPf0B3XUJtsjgBnIaltaFDR4Rj7XwSIt
+	m/ijDgJN/dXPZ0so47GnmJLAwI25r+4Jk7Vc2WPjkeOYuOhAM2+77MkBCBzX5v2Z8O/7ehwntn5
+	Epd2DrH6tf7PBK9X8Nb6O1WumYl3QSnBVLrUbL1GEfOmXxaQtVza436IIqOuChG+0OEe4Wqe1PU
+	f7864hQ5CEXBiOAY7eE1Txs77RCSlVA6N91P0pGVRLsu7tzh7uoAcR7/f2HNFpNhR2L/HUxl2Zp
+	ypOF0AQAv0QCEU0LoIHaW5Hhm/NuHmM0td+iHngKp0d6OGiX5zOSKqpJNDQo4nDV5UFeEQ4z4QX
+	hjm3rBgE84wl1JRoRzNq0cAYU3PGiezcaqJRJNTPZhG0QeG2bbTUohXTGAMjooOy+7CHifXPAhb
+	Lf5g5Q==
+X-Received: by 2002:a2e:a9a1:0:b0:3a9:2e08:c76f with SMTP id 38308e7fff4ca-3a92e08cabcmr2410271fa.22.1790925927480;
+        Fri, 02 Oct 2026 00:25:27 -0700 (PDT)
+Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a87e324350sm6724731fa.36.2026.10.02.00.25.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Oct 2026 00:25:27 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	Bill Wendling <morbo@google.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 3/3] iio: core: use kstrtodec64() to parse
- fixed-point values
-Message-ID: <ar60h2px1C8hM4-O@ashevche-desk.local>
-References: <20261001-e-notation-v1-0-75187bf06c10@analog.com>
- <20261001-e-notation-v1-3-75187bf06c10@analog.com>
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Justin Stitt <justinstitt@google.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: [PATCH v11 0/5] iio: pressure: dps310: hardware FIFO support
+Date: Fri,  2 Oct 2026 10:25:21 +0300
+Message-ID: <20261002072526.250081-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261001-e-notation-v1-3-75187bf06c10@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Oct 01, 2026 at 12:34:58PM -0300, Rodrigo Alencar via B4 Relay wrote:
+Rest of FIFO series, on iio/togreg which has 1-6 and 10 of v8.
 
-> Replace the open-coded __iio_str_to_fixpoint() parser with
-> kstrtodec64(), so sysfs writes of fixed-point values also accept E
-> notation. The scale passed to kstrtodec64() comes from fract_mult, which
-> is a power of ten, 10^n, so ffs(10^n) = n + 1. The fractional part only
-> keeps the sign when the integer part is zero, as before.
-> 
-> The dB suffix for scale attributes is now handled by a separate
-> iio_str_to_fixpoint_units() helper. It strips an optional trailing
-> newline and the "dB" or " dB" suffix before parsing.
-> 
-> When there is no fractional part (fract_mult == 0, or dec_scale == 0 for
-> 64-bit values), try base-autodetecting kstrtoll() first so hexadecimal
-> and octal input keeps its meaning ("010" is still 8). Fall back to
-> kstrtodec64() on -EINVAL to accept E notation.
-> 
-> As a side effect, inputs that used to be rejected for integer-only
-> attributes are now accepted. An invalid octal number such as "08" is
-> parsed as decimal 8, and a fractional value such as "1.5" is truncated
-> to 1, matching how kstrtodec64() drops digits beyond the requested
-> scale.
+Since v10:
+ - patch 1, new: devm_mutex_init()
+ - patch 2: devm_delayed_work_autocancel(), modes reordered, unused
+   units.h dropped
+ - patch 3: drain_interval_ms local
+ - patch 5: Suggested-by dropped, patch is optional
 
-...
+Pressure overflow fix is now at v3:
+https://lore.kernel.org/linux-iio/20261001121616.109973-1-zoone.rupert@gmail.com/
+Patches 1 and 5 conflict trivially with it. I can rebase on whichever
+goes in first.
 
-> +	/* fract_mult = 10^n, so ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
-> +	unsigned int scale = ffs(fract_mult);
-> +	s64 dec64;
-> +	int ret;
-> +
-> +	ret = -EINVAL;
-> +	if (!fract_mult) /* keep hex/octal support for integers */
-> +		ret = kstrtoll(str, 0, &dec64);
-> +	if (ret == -EINVAL)
-> +		ret = kstrtodec64(str, scale, &dec64);
-> +	if (ret)
-> +		return ret;
+Retested on DPS310 with BeagleBone Black, now also unbind during
+capture. Lockdep run under QEMU.
 
-Wouldn't be better to write as
+v10: https://lore.kernel.org/linux-iio/20260930100158.957977-1-zoone.rupert@gmail.com/
 
-	if (fract_mult) {
-		ret = kstrtodec64(str, scale, &dec64);
-	} else {
-		/* keep hex/octal support for integers */
-		ret = kstrtoll(str, 0, &dec64);
-		if (ret == -EINVAL)
-			ret = kstrtodec64(str, scale, &dec64);
-	}
-	if (ret)
-		return ret;
+Rupesh Majhi (5):
+  iio: pressure: dps310: use devm_mutex_init()
+  iio: pressure: dps310: read buffered samples from the hardware FIFO
+  iio: pressure: dps310: derive the drain interval from the watermark
+  iio: pressure: dps310: implement .hwfifo_flush_to_buffer()
+  iio: pressure: dps310: assert the lock at runtime too
 
-> +	if (fract_mult > 0)
-> +		dec64 = div_s64_rem(dec64, fract_mult * 10, fract);
-> +	else
-> +		*fract = 0;
-> +
-> +	if (dec64 > INT_MAX || dec64 < INT_MIN)
-> +		return -ERANGE;
-> +
-> +	*integer = (int)dec64;
-> +	/* only carry the sign in the fractional part if the integer is zero */
-> +	if (*integer)
-> +		*fract = abs(*fract);
-> +
+ drivers/iio/pressure/dps310.c | 447 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 436 insertions(+), 11 deletions(-)
 
-...
 
-> +static int iio_str_to_fixpoint_units(const char *str, const char *units,
-> +				     int fract_mult, int *integer, int *fract)
-> +{
-> +	size_t units_len = strlen(units);
-> +	size_t num_len = strlen(str);
-> +	const char *dec_str = str;
-> +	char buf[64];
-> +
-> +	if (num_len && str[num_len - 1] == '\n')
-> +		num_len--;
-> +
-> +	if (num_len > units_len &&
-> +	    !strncmp(str + num_len - units_len, units, units_len)) {
-> +		num_len -= units_len;
-> +		if (str[num_len - 1] == ' ')
-> +			num_len--;
-> +		if (num_len >= sizeof(buf))
-> +			return -EINVAL;
-> +		memcpy(buf, str, num_len);
-> +		buf[num_len] = '\0';
-> +		dec_str = buf;
-> +	}
-> +
-> +	return iio_str_to_fixpoint(dec_str, fract_mult, integer, fract);
-> +}
-
-This won't support cases when we have too many leading 0:s.
-All these functions should also strip leading and unneeded 0:s.
-
+base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
