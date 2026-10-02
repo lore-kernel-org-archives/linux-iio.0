@@ -1,153 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD05B4E323C;
-	Fri,  2 Oct 2026 17:12:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790961136; cv=none; b=UoqYkccm3jou2jpT5kL4mUWWZqITYeAJFE/S+A9xoQfk6/muuCtaaq72iiZntCTvYF4F3dCt9OV5vrSFA9LILAUOby5wgNv98LzmNjv6WmVRs1pkSj+SWkdip2DEpowzYj6xhWtnBXd8gqPHg2RKfAdC1d6wEEE5cBLa302h/z4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790961136; c=relaxed/simple;
-	bh=1eDp+KLRfkEMEiliyzfTlBbMZpudbmnz+wWUolATmP4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KP2Bgm4ZYq+h5p/gIKJ22RUn91384KfK6pBjII+dnSBOuiuo3IsixI2bCcOV7/F3Rg4ajTe9p2F0YPiVyQTguzvDxWHiJ4e1oo1Mn48DeTpdZVESgpF1ZYB1oRnx4FXFTV1jmrsnwmTIC6f+kQUo2wPMta2p18q1rc8cdhuuNw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hvt8O64m; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D1064DEC19
+	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 17:23:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790961822; cv=pass; b=DDyqdbCnfFCdvz7lvmTZuLvPKEcy6cmdu6zRgKllzhdpPqi1v0fOsZKRvF7BKeswOW1IcAFIy48VjADnsTnVQpMNSE7bAsboYM9pzylTcuRfgzsJ14oPbdl7y+uaywyAsqAd/9ghXGq25RcCnzdrh2oYYd3Btf/UTDuZZ3Tyk7c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790961822; c=relaxed/simple;
+	bh=VqsakkF+fiyAxZb4saBmZgbMsuByqSA1isMXBNXFd3A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Adp3lzNrq0ZwxT4u43H/rx+KnAipV6JRDOgTG8gHNGH//DuCt82g7Gtpf/WOvLyshlGIopn3qLPEWMEnUQRdsSpN2Qswz45Sp2gxpnb8XgWYl+rVOCDqr74qi0vqdHD4vhLlmJQWNX/kSyRIDZcrJAHSCFUzkJn17RvN4bZq6Zw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E8gLYag4; arc=pass smtp.client-ip=209.85.161.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hvt8O64m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C40C1F0089B;
-	Fri,  2 Oct 2026 17:11:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790961121;
-	bh=gKHsYxZSNrboNG7wTgtMiArfAuiOuFgFalc3IJZIPF4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hvt8O64mz4PU2bYHKtD2VApAyQxjl+s0Xlx2bRON2QTFpyuYoW/kY5XNXJ2GpayKB
-	 K+bu5SZRxjlgmVv8X4ei0hpbR3w9e7gcB63tRTdW8smAmGDYMEL/RV8x3Ktau13MoA
-	 mfas5lqW1kCqd5AIi6makp9hc3xiVe7EJidz1WhH/PnYbVDmMLA5ftJzOvw2lVt0PM
-	 TFFtcTGrgQ/tYjRxFSRrThFvBRYhbAN03ceiw5xcwVMuXBuCJZWci2TzVzGYqJe+GA
-	 yjcVP7iIa2JQ6qwW24joj0/RL+g2aVQrP9H8pxNjhIrBnyYokGyEqGfxEr2FmfE8tg
-	 pr6WR1BV+u1zg==
-Date: Fri, 2 Oct 2026 18:11:56 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/6] dt-bindings: iio: imu: icm42600: Add ICM-42670-P
-Message-ID: <20261002-stoppable-ecology-33276b1244e3@spud>
-References: <20261002-b4-inv_icm42370p-v5-0-c65281b745c9@axis.com>
- <20261002-b4-inv_icm42370p-v5-1-c65281b745c9@axis.com>
- <20261002-waviness-washed-5332bdae4e7f@spud>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E8gLYag4"
+Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-6cfb1329979so15105eaf.1
+        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 10:23:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790961815; cv=none;
+        d=google.com; s=arc-20260327;
+        b=RldTHof495iIddeagFFoV0rO8e6VJa5sOiKk/YQn6B4YTerOdS+ucjmWxX3b0NgwkG
+         AZxzrMhYEnZ9Vz2A6TDqH+uytyFNHfo1H1iplndyYveCKeLjH8GLsBxEfyMLEKJeN+7T
+         dXkWQXhk7+4X8LITr1g0+TY1BxF0eLlYloeoM3kNbt3gtDiDg18rrasR2SxLJEJO3Sbo
+         EEUuLxAlAjZNQqcMPSuIO7SL4oLTexz6ieSzBh/cadeFzAw8s+6r9H4JTs0m13b4KuPE
+         ruXa459LEHUGPwMrl7PykbtNSBfFXkSzmAgTVgm2WFVQIPLXJ10ETG7wQp/V5NOETJfy
+         ihrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=VqsakkF+fiyAxZb4saBmZgbMsuByqSA1isMXBNXFd3A=;
+        fh=g3Hna1eIisqQHjG6tU6Bx9z2dD/qh7u8sGIfyldZHco=;
+        b=ILodOpq4oVUqJS5kTEXrT5HVyNFOgWXNLlzaLiveptOdpeqe2JQmjDqle23QQf4BYV
+         g94Pe4F74pWzzFuRH5zStdJN0EqAWGCJ9ZBeRLWKyMFzNXbksF5s4i4XFQRoFbfDDPFE
+         72SgvDPCmEeNX8JMCeVU0Eufyowj9W2vDQRHXqfT8N41e+O3TLXhPxipu8tEv/Woduku
+         +v8He1lXnYtdbQ5FDi/ocAjObBPD3XO8GopnwPHNF5Fk3+CWFJ/vqux+dlMddzPEGVAf
+         mI/EbPKNNvyMLQ1SRjjXbZnUmRqYaEDsKDG+8R7O8brB4nECp6Iua05jy+JG3yBo3rM8
+         s85Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790961815; x=1791566615; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=VqsakkF+fiyAxZb4saBmZgbMsuByqSA1isMXBNXFd3A=;
+        b=E8gLYag4dZCzvI+Uf/NbVF420DDHqjbqefxKp25f/qJg4wb1IlO8RD8F7e8R5kQUVC
+         0jHKcdbW26iDzh0Nd9XwQiO1zpb2fo1m0qokrf1V1JyVyUMfxNkPVZIHWm1034qXvQO8
+         Br565nvphwmOuhmEFPE1+MFVnk0xSa2Z/8/hXDN77QYReAziyLq75Zdgz9l1K9TIFlnf
+         tHaUa0EHgKKPRNDYQKiS9k8c80JTZp/XaRFbPtNMiqngXs6iuS9bNEbV1CmLJ4RbUGfC
+         BXQoV44bfZdt5QJFCM3uo+EWuJ0Uz3RLhza9MXfvvLhw8F109iQiisjcjGGX2SbNESR6
+         SeIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790961815; x=1791566615;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=VqsakkF+fiyAxZb4saBmZgbMsuByqSA1isMXBNXFd3A=;
+        b=NXF8iIpEWYlBnk27p6GYmz94QRd/I3/mWs0Ig6WiSIRoe2+ztQMXw0DRmCBA3HW6hK
+         K9QrSJa+Ez7zKQ6aYpkwCuWAFtRXi1YdYB5Fo9b/FyqQwsOfd2ezJu0F1mBPbJyTfRBO
+         CoyNkl2EBQ52LkAK3cmN/X/G9pa5tTikym4E7Lhc9EywISVhqVfKuqgNG5g4lDZRI6g9
+         LB61Of6xBn4r/dS6QdGDVMI3UHiHOXhrJqZym4H90TydJ1niaw4r+JiDM4jwVwnOxWtz
+         xc/hptwpEl1AKG3D0eQgd9QrOV+BdHSLilQTphzBmI3KrDlQlBtwEGrnWxaeBFgx7PrI
+         v0ZQ==
+X-Forwarded-Encrypted: i=1; AKwUvByuAD8+Vp5V6Wi+KrDvzwsZHXmhQwVpUsoudQIGgwLkC573bx7MD8FJLEGzY6apvWDmshcduLshQfE=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJyZP0ERHfNT79PKMUBXqwOiUrGBxdTuBdTQtJzC261ObVhMQyn
+	4uyz1VSE8IT2xzG8nfeMSpgQu1kJkija1gnHgJdR0dy5WUuqdmglST5Gg3XOb8QPKH6EUTG/e/M
+	8iZ88u92DU+mFVgAApAd25IYuco12T+A=
+X-Gm-Gg: AYBFou0jBreozuOPaojlvNhWsyrIlZB7ITKJXir1Yzbc6+chGR5UTbdGhWnBOHdxmkB
+	9Ty8hjVa9YlRdNKh8TTOROEGl35kfrfD4R1yvUfdOCF5dYKSrCZCYlfEKNm31JpnxW66mlJPCQo
+	+v2BpsQAJt/1E38KAtric35c2Sapvw2fETzH8VI7NVJ90YzoF4nG+wuSV7d1CrCo1VlHUDqKt6P
+	2nB/SbJXpKXT0byKzI0tuLdmoXJ+mTLqOykEMgrF8o1ElaLWPhMKr9Wy31uO8zMkzNLM/qhF0Q2
+	q80/awz6KSmPDYDNzumqVy0hKQubDR7zieo8mnG3p5a9ZdtmB8z6g0NlRhPqNYSdp54=
+X-Received: by 2002:a05:6870:e18e:b0:49d:d850:8170 with SMTP id
+ 586e51a60fabf-49e3a8c248cmr24800fac.23.1790961815496; Fri, 02 Oct 2026
+ 10:23:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="96vobJaStlC33hWO"
-Content-Disposition: inline
-In-Reply-To: <20261002-waviness-washed-5332bdae4e7f@spud>
+References: <20260929184900.39515-1-abdelnasserhussein11@gmail.com> <20261002153302.5c64819d@jic23-hlaptop>
+In-Reply-To: <20261002153302.5c64819d@jic23-hlaptop>
+From: nasser <abdelnasserhussein11@gmail.com>
+Date: Fri, 2 Oct 2026 20:23:23 +0300
+X-Gm-Features: AclHuK-al5mseWXmh0Z-6X6KwSRpq7Wu9lvhjorTUxxTKLXGZtC6BdvJZuUovys
+Message-ID: <CANpqX3YLq5ckiwjaS19YCVknmz7pRsZXw_f1hht0eWwxn-3s-w@mail.gmail.com>
+Subject: Re: [PATCH 0/3] staging: iio: accel: adis16203: fix axis mapping and cleanups
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: gregkh@linuxfoundation.org, nuno.sa@analog.com, 
+	Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org, 
+	linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, joshua.crofts1@gmail.com, error27@gmail.com, 
+	narcisaanamaria12@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 
---96vobJaStlC33hWO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Jonathan,
 
-On Fri, Oct 02, 2026 at 06:11:00PM +0100, Conor Dooley wrote:
-> On Fri, Oct 02, 2026 at 01:54:25PM +0200, Kanak Shilledar wrote:
-> > TDK Invensense, ICM-42670-P is a 3-axis accelerometer. The device can
-> > support I2C, SPI and I3C. This device has very similar properties as
-> > that of the icm42607/p. Add this device to the existing dt-binding and
-> > update the description to match the devices.
->=20
-> Reading this it's not clear to me why a fallback cannot be used.
->=20
-> You say "similar properties", but what I see below is slotting into an
-> existing enum, without differing restrictions.
+My apologies for the noise.
 
-The lack of a gyroscope is probably why? Please note that here.
+Thank you for pointing this out. I will drop these patches and ensure
+I base all my work on linux-next.
 
-pw-bot: changes-requested
-
->=20
-> Thanks,
-> Conor.
->=20
-> >=20
-> > Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-423=
-70-p
-> > Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml | 6=
- ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42=
-600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.ya=
-ml
-> > index 9e22b603d47fb..c79eb0a1a890e 100644
-> > --- a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> > @@ -11,10 +11,10 @@ maintainers:
-> > =20
-> >  description: |
-> >    6-axis MotionTracking device that combines a 3-axis gyroscope and a =
-3-axis
-> > -  accelerometer.
-> > +  accelerometer. Some devices only have a 3-axis accelerometer.
-> > =20
-> >    It has a configurable host interface that supports I3C, I2C and SPI =
-serial
-> > -  communication, features a 2kB FIFO and 2 programmable interrupts with
-> > +  communication, features up to 2.25kB FIFO and 2 programmable interru=
-pts with
-> >    ultra-low-power wake-on-motion support to minimize system power cons=
-umption.
-> > =20
-> >    Other industry-leading features include InvenSense on-chip APEX Moti=
-on
-> > @@ -28,6 +28,7 @@ properties:
-> >    compatible:
-> >      oneOf:
-> >        - enum:
-> > +          - invensense,icm42370p
-> >            - invensense,icm42600
-> >            - invensense,icm42602
-> >            - invensense,icm42605
-> > @@ -81,6 +82,7 @@ allOf:
-> >          compatible:
-> >            contains:
-> >              enum:
-> > +              - invensense,icm42370p
-> >                - invensense,icm42600
-> >                - invensense,icm42602
-> >                - invensense,icm42605
-> >=20
-> > --=20
-> > 2.43.0
-> >=20
-
-
-
---96vobJaStlC33hWO
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCar/l3AAKCRB4tDGHoIJi
-0qAyAPsE89tduNSVmIE1d3pkoPTj7Sxapq51S6k5SeQieTGnegEAlpj8T2lM0cC2
-LVjyvKPq/ByAWr6mC65FPoU2zZF55gY=
-=CyhV
------END PGP SIGNATURE-----
-
---96vobJaStlC33hWO--
+Best regards,
+Abdelnasser
