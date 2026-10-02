@@ -1,148 +1,119 @@
-Received: from mail-oa2-f12.google.com (mail-oa2-f12.google.com [74.125.231.76])
+Received: from mail-oo2-f39.google.com (mail-oo2-f39.google.com [74.125.231.167])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF0064DEC16
-	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 15:03:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.231.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 499204D487C
+	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 15:20:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.231.167
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790953415; cv=pass; b=KCqF0muFARN3jzURMgWddCRbNo8YCrlr2fd+2Bqqxqmg8H8Odge3/Z2Nfr0TQY6JK2WqOTwKohi0uj19HUnM1xaVygMjIUBDQy3w9HkX//+jbsRbdB7kCeL3GEHPj27eVJWk79jwvyXQXEbyqtsHpIEmVGvhSDSf7tesv1tsSJk=
+	t=1790954459; cv=pass; b=jGXkQ9/PtEEn7ju9nPoUEIKRhYzN5ZYpuOyk8FpySOxoxaRcE5q5jFGHGkOub96hh9B3DgbsK2XGsznMYU1qObJuNvvJuuSYMWxJiJJ+292uOP3zIQ11+SS1rDbk5vmO64h59RdQcYCc/S9vtgxUjhE1eyfjR83PPvgPtoGXDvU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790953415; c=relaxed/simple;
-	bh=MXyuGKEUfSfyI+2p8AQyIzhlojUOxHG3SgkwuZvXZfA=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=hfsR4CLsif7gEC2KQ8yz5f23TX1oWtAaFmr1mEzWtP1gQgasmCRD425PVaMkbZW7G8Es23T+uX485sh2FcVRz7Kt2NoN7aFNPZMjgObsHmcZhmBUCndhVa+FmsnShb7xMsofqJPT9/a8blExpMY/prJcXNsg5CISLyusGWinSi8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qWT8Hrwt; arc=pass smtp.client-ip=74.125.231.76
+	s=arc-20240116; t=1790954459; c=relaxed/simple;
+	bh=c8Ui2uQdljkfizQJxJXTO3Y+BpS1mteN/FKkUOLbueo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=n+Z6z2nYyYlIbwoDmXaWICVM6qtftjLSacdjP0sawllxN+J+gf4MnVUDbtLZndLC9mH3b6h43Q6vuBMyxOMg7Pysq5Sv91XE6QQ9vTlAxkfTmOufVWTg0ogtP8uvlc+NLbwOyqiIadKVlrWZbg/5UJ9/tEo11snJI5ENn++v/Sk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mcuenG35; arc=pass smtp.client-ip=74.125.231.167
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qWT8Hrwt"
-Received: by mail-oa2-f12.google.com with SMTP id 586e51a60fabf-466ccde2a99so2533fac.3
-        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 08:03:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790953412; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mcuenG35"
+Received: by mail-oo2-f39.google.com with SMTP id 006d021491bc7-6e05989a25eso4901eaf.3
+        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 08:20:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790954454; cv=none;
         d=google.com; s=arc-20260327;
-        b=sUFFXxRqr6oqDQqn4K8unhkZb9jWm3HgiUF/iB/KhD2mYNXnWom8Db7y4UVaWRI9jt
-         nqhaQYLYZzXBAlejgrLVibIh9kuA950i71ijNjc0oq7/h87GBWWahNoq4IQCqlmkaRfg
-         uD386M7tvyYmRd7gXtuaPFAbD7dYiEABq3qZKo2CasjsVr2CVUDG5OJTCi5mF7CZafXa
-         Mgvr3m4Bn4SDnKWNIRW/m05ZhdhCxKZTzgs/k51MpC3vLtk/9zSzxfzMYq5Tw3zkPhQP
-         VWwwOaOGhGOTdUJbjH17Pq0b0oI1eTZ25Nw3T5538HOxI36MDjEATAQaM0c4B6euYhGe
-         iJhQ==
+        b=S2JhDDHZA4yf40CXc3nRjvYXvn00HK+kvTus8qGYDiwZ9qyiFss9PnqbBx0ihiY8bi
+         psNbPrZ1PAcNhGSN0fYBOwolUMIbwi7MUI417YtBUdvGJ2HYRnu/Ce3khbVIwq116dWU
+         WMcH2FOs7Nn8nURf6l6l7uCcO/xKO7INIPdxiv9QiX3PYTTAaWXb/tYrngp50aiUtZjT
+         53U5E6OU0nj4Zx+/RJe0ajMiEU159WsYP2ZblO/qfqVglvw8BQTUbGopfF4v36TLW77o
+         mFUWberFZh7Uees1cXPQp8U+rnYeytbF81287qHNpyDTolrJ2fa2J5D+lNaCtXRzoOAy
+         HhvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=8lTEaWqVn4XhZj9xrbkD7eCvnZ674Kwfjo0RvvsMlAU=;
-        fh=ASKZPVIdaUJkIgaZJkvbMdiNwINbxQ+wJ/J06hnm9GM=;
-        b=YayJQlbMHvzgF8m8ndiIrMThhBZTe9TVuFzbRQng7fpQ4RZtRBY7EL2fDW07K6iXKj
-         rVa86lktxg7zt1VjJn74AYzFR/qGIrKpUjqD/e+Dhh02hNWHLA6BI3Nr+5B6sleZJuIf
-         7jfWk8aXnKqRdXpu8s8si8hbS0Q6zZ0yJeKGKdsYcFCh2ReX7lZTQKUWqYa2Rjs3cr0a
-         HDM/5Ih7L8+WU5gsQ/F+olYQXBEXnSeMMpw/30J6Swn8xzrJALgSYE+EQaUlozqqjp4U
-         FrZAwQD6RPk4AdYpe/E09SHaPmtau2UQ9s9BgeqhOtrlVztTyW+cZVAAyM9AKQ7SpxzJ
-         r18A==;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=pRJcBvkIQpM6vnmBseq7C5SjURfqx9cLuKNSFbQ72co=;
+        fh=k4ES4v1B4tn8gqGLwC19zsb3GAbpv5yhFVQ6EwpDrNc=;
+        b=gICKbzUJZ1ip9bPvaGTyBHrXxyCEyVgo7lKHquLUhnJTJrauh1pSgFxrjREfaNQ8lW
+         BweEz4f4Gwg7bcViB+xRKwdnvXnuWsE6HHT2kRti43e+Cra3b5Aa7kfgR9WC3begCWY+
+         2Z93xiSiYYzXzTkyVcjNjZh0lsurBp39JvOg6Ka3HXDIviJEgXV922OktYOu+KsaLswk
+         1Ld0VyWc5QWoGYi+C6xW/2dpgOtDcUBOFtlsyNf48BlBFnhXv1eK3Wr81YaflDC0TRLZ
+         PcSZSje1neeHxU15J+ZSqx8kepMT3g/bsP6MBNMC525+Mk97asppKAEpmPeL0U0EeQg5
+         tJxA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790953412; x=1791558212; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8lTEaWqVn4XhZj9xrbkD7eCvnZ674Kwfjo0RvvsMlAU=;
-        b=qWT8Hrwt70EpGXrcRGGFyeuM9hH4ljVDMzz+3IJ4GNaeG7f2sOZDOKRQlQKFbq7Y+V
-         +pi7WzxITaEYyz5p5ibyc+Y2XT7ZIczTQ+5ZRzy8pJ4k3sQ/ahVEl/2bdne9GmshL9LD
-         7fxEdTzDXvw7si9RwaiJ2iUOMC8nWJCDaJN60/zgJFbI4wrbqSvYhcTg2zTC5rVXhEc0
-         /P/EnCNmDfkikMgAa+Np1qb+uPcRMidDjr679M4DYtRP1u+3m6J0AubEo5a3JDXD945y
-         IsS3zoyj9Bb4YPmeSbetqCU7CgiWAzlnTstm2gyao7N2d9wJ6/QiW3YkxxJefth+Mpdj
-         RlDA==
+        d=gmail.com; s=20251104; t=1790954454; x=1791559254; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pRJcBvkIQpM6vnmBseq7C5SjURfqx9cLuKNSFbQ72co=;
+        b=mcuenG35kUyrjl8BafkSn+d1+Ad5wZZVp7QGOEkvkFNvwMrdvo7MsVOL16hsoo4xgF
+         aTdQFMURiGmg/GBn1Ooff8itLCA7e7bdybwAGCsVDHZSrY8PK+UXWrBe3qq5ix5X7zW7
+         orOGrvHzuhwNIjZFjV8fz+Vw8VDVTvy8cFA4yry3FTMuFzHLVPbyBMCu5XjLztNbQKsj
+         CX4a7dCDVWaUeOJMJXc2D6+w3J9hgiYt2HButBBvmyckLcdeKAIF43rKjT5S/x0lO1Z9
+         W0cvCjOHxYpbpsLRL2eyr7pa9PDYrqQ/BNoHKFINhmGTFb9tRfJmmopIffryiQYp4u/S
+         qiZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790953412; x=1791558212;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=8lTEaWqVn4XhZj9xrbkD7eCvnZ674Kwfjo0RvvsMlAU=;
-        b=2fXVDVfaOg3Nwgho3t4OG0MpcenoagayXYx4TiAVXIEmpyeHZRKLNrUWPtvMrAS6Lg
-         foJvlvtf0aZstLO1CJ7wuqW0lLo6rsUvx3WQ7OAVQb4C+2medEjKyspdpNbwcdL7sz/n
-         eI+zRn8PD15wOkuQBE4E+lHpdEWJI5umwP+rQeNNp0OGitnQ48yqaNcdInHevQPJFo+V
-         1AJKTzIRdAe3cXjmza/88QVUl1oF2Ui3OLKCRREABDrcsXGwNYSfyYio2Sn4xSTkoebg
-         +OgCr5oLWAOaP4QSAFGMjNoZhCYA89p5rElQtniJgr4D1za1YkjdSirpHwr4sZnZj6KQ
-         ZYMQ==
-X-Forwarded-Encrypted: i=1; AKwUvBx5l228PlkQQ+LxF7B4Sk4fzQFujZ8fw6F76VZnb53hERhAUeAv5x0Ze4a2YTJ41oWexyemDehHjV4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJBKphTbaTbMSujxS3p0atEJMfouM6lL+k3oLlDZy150v+9xfl4
-	wlZQyaBnySJq1PcnlmBqQ4TKNVxsftstzk+YQArpvg/ZagikiMOpIyNiGn8gKW1LKAAwz7b+kPs
-	l9hCSzDWbZqtOwVU+OoUbiOhlaBr9Q+U=
-X-Gm-Gg: AYBFou2UT5lMuuiUqo7gfp6TpAXosRCG/WbwpuQZ6sgP2ZN7AiGfTk/sdqYVuX4Y5NZ
-	OZIXYnu/d8Fwj/UZWF5L0/G95Fad0anmpe2jqG0uGinbhIW/P+IG6Ji2mKsiEdYuLMLi7uqN5Pk
-	lfF2RuIY3Aly/XnuFDWqkZMmuMoeRqBOtlQsTdV/NQ905ar19qRUGXO0/YV+CfMebQEx8Uh1Aul
-	kZK8aM6HncDrpOxrsvsy588/7EMz/Q02/X7+m8kOUEp+ATxx5hxasP5IyGq95eZCSSjRxWbSUIY
-	0a4ClHg2/fiFjFY7o2HFKUKrYKUD8YKpl0GTLOsTVjnJNcB2F0Uu90RmbBW+Sck5xFgHR0VDCEP
-	KvCMaf6Uxaw==
-X-Received: by 2002:a05:6870:8317:b0:48f:e3d4:d45c with SMTP id
- 586e51a60fabf-49e15ecb7c3mr2560343fac.59.1790953412253; Fri, 02 Oct 2026
- 08:03:32 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1790954454; x=1791559254;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=pRJcBvkIQpM6vnmBseq7C5SjURfqx9cLuKNSFbQ72co=;
+        b=Q/esSDLTRyOl2yyu7+rfVARwTYFO/DFyi8NfnnLDEnZc6eoHIQgkfMwksYs23ds+q/
+         H+rXypvRDs51lgTWtAbSv0QNMlunl+rt7VYfa+wCmUotKbfiLJFCIcWy3ycoQ0xffP2i
+         Pyd6KTjp0EeGX+e2Dg8c7LAhU2ZGZqgwFii0vmL8CSHRaloPlFnrIOpDDquL/JMGM2Eb
+         mvSe1F73I83Z8zu5if/9vDSSBI14FHh47txr8bMORAy3Mx7ACGKuIBEanVOcRyRE0Y9Y
+         aMLCOPN0DYW0DedyOuFyj1437husHnvEkeLXXJSW7EyKEBC4NXtQPvML4S+IsvqU3Bsi
+         8sdw==
+X-Forwarded-Encrypted: i=1; AKwUvBy5XoIIkJrN8e1x/P6j3RB12oCVuvZsVMNstiomXl+dYp6k2NvVJ/SyMyUVUiZ62SnB93kUSWjpbDE=@vger.kernel.org
+X-Gm-Message-State: AFuF++lWUldQwftmrmeFS8CVaaX9Sg3HVAhyNjgfZPctcWAkd6mfGW5E
+	/us3PbLPGdNf7cB91hadWi9dugEfMzUgbEpXR23Lki1m9SMyaBOsqW+koB/1qbSuPIJYKUE3sB9
+	8i0+mrNY3amOM2yaSqPUcFreoLzYb/P0faiDEF7o=
+X-Gm-Gg: AYBFou0CEhwjoo0mfI6W7r25+BaAfPqx3XHdIBeAgF7NJE7rhqHbw1NSGzGCs/PW06s
+	STHOd9Cvp/+TA4TIxM8hzyTjj+BpZybmZst7qINf0796lvGlvMpLWpMF7tRDHMdZ9q7vpmcPqFa
+	/E0dxD3oU4PYZGGdmsYY1B777UIwXlVH+7rmU441PxzirrpDja7Fo0VmhNPdEgf9v9tDR2PBxgb
+	ygYuGAM4oj5rbSQGl55Jfpti8i/kAl4iINrQK8hq0BfOhunV/czBvSVE+jm96CcQZR3Oxwz5+nE
+	03JJowAG1+gRmKG09tb2TEkHhtUEmw1VZSjVnKp5dTjnoEJSjNeo1zd/kDNcP+3CbNGyxuopDyj
+	wvb6LLZP3Cw==
+X-Received: by 2002:a05:6820:1789:b0:6df:5b31:f4b7 with SMTP id
+ 006d021491bc7-6df5b3205b0mr1758431eaf.88.1790954453969; Fri, 02 Oct 2026
+ 08:20:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
+In-Reply-To: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
 From: Andrej Scek <scek.andrej@gmail.com>
-Date: Fri, 2 Oct 2026 17:03:21 +0200
-X-Gm-Features: AclHuK9lgIwoonEzw54BF2CV4ZLaFO120r5yd1MlEhGJg1CKBsqg6KdWM4n_Kv8
-Message-ID: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
-Subject: [REGRESSION] amd_sfh: accelerometer broken since 6.19 ("Event data
- for report 1 was too short (15 vs 14)")
+Date: Fri, 2 Oct 2026 17:20:43 +0200
+X-Gm-Features: AclHuK8klb-fvmewqmk7PkjTDnYTa3t-BgP_FVZnqttllQOZ5PBEMOmDlR84Ucs
+Message-ID: <CADrS857iYjafXEZcHRSmeOFjrzs0DYG5Dp2PeS0n669cHBjAuQ@mail.gmail.com>
+Subject: Re: [REGRESSION] amd_sfh: accelerometer broken since 6.19 ("Event
+ data for report 1 was too short (15 vs 14)")
 To: linux-input@vger.kernel.org
 Cc: Basavaraj Natikar <basavaraj.natikar@amd.com>, Jiri Kosina <jikos@kernel.org>, 
 	Benjamin Tissoires <bentiss@kernel.org>, srinivas.pandruvada@linux.intel.com, 
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, regressions@lists.linux.dev
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, regressions@lists.linux.dev, 
+	lee@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Hardware:  Lenovo Yoga 7 14ARP8 (82YM), AMD Ryzen 7 7735U (Rembrandt),
-BIOS LCCN18WW (2023-09-16)
-Distro:    Fedora 43
-Component: amd_sfh / hid-sensor-hub / hid_sensor_accel_3d
+Update: this looks like it is caused by
 
-Working:   6.18.13-200.fc43, 6.18.16-200.fc43
-Broken:    6.19.12-200.fc43, 7.2.8-100.fc43
+  0a3fe972a7cb ("HID: core: Mitigate potential OOB by removing bogus memset()")
 
-Description:
-Screen auto-rotation stopped working after updating from 6.18.16 to 6.19.12.
-Since 6.19, every boot logs repeated warnings from the AMD Sensor Fusion Hub
-accelerometer, and iio-sensor-proxy never receives usable orientation data.
-Booting back into 6.18.16 restores rotation, with the same BIOS and userspace.
+which was backported to the 6.18.y and 6.19.y stable trees on 2026-04-11.
+6.18.16 predates that backport and works; 6.19.12 and 7.2.8 contain it and
+fail. The AMD SFH sends 14-byte reports where the descriptor declares 15, and
+those are now rejected instead of zero-padded. (This corrects my earlier note
+that hid-core had no relevant changes; I had only checked v6.18..v6.19.)
 
-Kernel log on 6.19.12 / 7.2.8 (zero occurrences on 6.18.x):
-  hid-sensor-hub 0020:1022:0001.0003: hidraw2: SENSOR HUB HID v0.00
-Device [hid-amdsfh 1022:0001] on pcie_mp2_amd
-  hid-sensor-hub 0020:1022:0001.0003: Event data for report 1 was too
-short (15 vs 14)
-  (repeats 13-86 times per boot, whenever the device is moved)
+The same symptom on another AMD SFH device (Legion Go S, "18 vs 14"):
+https://github.com/ublue-os/bazzite/issues/5796
 
-Occurrences per boot, from the journal:
-  6.18.16: 0, 0, 0
-  6.19.12: 13, 31, 21, 86, 70, 39, 19, 25, 74
-  7.2.8:   12
+So AMD SFH (hid-amdsfh 1022:0001) probably needs to be covered by whatever
+short-report quirk/fix is adopted for this.
 
-monitor-sensor output:
-  6.18.16: === Has accelerometer (orientation: normal, tilt: vertical)
-  -> rotates correctly
-  7.2.8:   === Has accelerometer (orientation: undefined, tilt:
-vertical) -> never changes
+#regzbot introduced: 0a3fe972a7cb
 
-Steps to reproduce:
-1. Boot 6.19 or newer on this machine
-2. Run monitor-sensor and rotate the device in tablet mode
-3. Orientation stays "undefined"/unchanged; dmesg shows "Event data
-for report 1 was too short (15 vs 14)"
-
-Notes:
-  - Not bisected yet. From a quick look at the git history,
-drivers/hid/hid-core.c
-    and drivers/hid/amd-sfh-hid/ have no changes between v6.18 and
-v6.19; the only
-    hid-sensor-hub change in that window is b3e5bcffda37 ("HID: hid-sensor-hub:
-    Use pm_ptr instead of #ifdef CONFIG_PM"). So the cause may be elsewhere.
-  - iio-sensor-proxy 3.8-1.fc43, GNOME Shell 49
-  - Happy to test patches or bisect between v6.18 and v6.19.
-
-Additional info:
-- iio-sensor-proxy 3.8-1.fc43, GNOME Shell 49
-- Happy to test patches or bisect between 6.18 and 6.19.
-
-Fedora bug: https://bugzilla.redhat.com/show_bug.cgi?id=2545224
-
-#regzbot introduced: v6.18..v6.19
+Thanks,
+Andrej
