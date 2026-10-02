@@ -1,115 +1,135 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-b7-smtp.messagingengine.com (fhigh-b7-smtp.messagingengine.com [202.12.124.158])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04CD5483820
-	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 13:36:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 409AE41A517
+	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 13:41:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790948169; cv=none; b=JV4EkTHjjyGC8YEwTNRsEW3yCGMiR0pg99ZX1HSaH01OxVLbrJwys1MNDC/bCgCHIn9XXNgMtjDLzgpifLkXkTB9r3nC7bXXMckhEHerrYL3fy+SS7RxUAnIaOtQupixvQjaBp//jI7T1r6R83tSuy1uFug5RCv+oTRXQoVvdYw=
+	t=1790948469; cv=none; b=JabGvL+JF4yVSOVPSaXVjY8f9VXneJzgNGEXswrLmaOqz7C+DCd9+hORfLm+jizeCcjSV0BvksKQQOxOvdOef9q+GzI+tD6R3qBQSe2+LW/F1y8kAWsSG/OPPj+4EOA7ABhuMzGSS69wSU/4o4NzUUNr//2q+YGUgFbs/dmeHs0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790948169; c=relaxed/simple;
-	bh=OchIdEjn+9zyXsSLPqUkq2D9FS6GCeBw/7jZURJV5nk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WmLA6n3TV87ECxFX7wn2dpAylOg/Em0rr/XF62Vhcxof12PFxxAIhKZhSPUOkN5iTbGP9g+eacnVqSC39CvEJpjGqRX/6Tp5FNxxabFJ+3A5x1If1WcJCtg7XJcIFjLWSideX1gVN4BLD0Jy+fD2LaI58gJVD7FQcRh2KDNkHzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GbJK+yVZ; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790948469; c=relaxed/simple;
+	bh=WF9Y0Q2ogSkQ2UZ2v1wgAF3ztz4coOd1/SES281qYf0=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=B8ihg6TJ/FUgg/Wk020JIabm2vpIXG907mDbzPzWx6CIudkmdmw/d5C+VwEDNCaUtocskKxawo0Aoj8SW8ZYkyTQxK5B/mi93X6idcboS8OqUGyzqkrigh7WmjViBo3cEa5MVetUMMfACiCgMv/wQYrPhos55tNBbHYsyDJeGQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=GcemxUY/; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=dHw877FL; arc=none smtp.client-ip=202.12.124.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GbJK+yVZ"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e7bcb94d3so58332505e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 06:36:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790948164; x=1791552964; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=hPonh+5e5iUqQrGjcJ4XkpAlG+uU/Emvxd2vkVAt8dQ=;
-        b=GbJK+yVZxpOQ4P0CpiIaS/SYNidih/LTvRCtLNFO/kysXB5hkGBJqyAqNzwXh6tx+e
-         my0Ywsl67OsnRnyTqVac/lq/TWRMwd90m+uF3QIOqvwCHX5I6JH3/audKgRqFLl5VE8v
-         4DJSnCqTa8qI3y+orjOCoGoH/exoZAC+EjdVCj1JOoOIKWr8tMfKwJ9sEZVRhrYJimSz
-         HMfgv/e0eQBzzE7y/J73AGP+/54C/hV6HzF20XvRcOTCRO9Lcf4wfvrYIGUVCVHmmSeC
-         0xKYT7BvgRGrFMcDulNQhqS1GyFfxUihcAtKBPF3EM8vBoTo7jvHb/zxdQv+9ZqOjkrv
-         p2aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790948164; x=1791552964;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hPonh+5e5iUqQrGjcJ4XkpAlG+uU/Emvxd2vkVAt8dQ=;
-        b=hU2cjb7m7b4wh1xRupmT6KRibTTVDnwXPRKVctUeTbjETMgYjOXkfg9pA+avAg5jrf
-         vAs8T6PtjOd6v3/eMEaKrVxCq9Li2PfPR8G0hyU/ho/vGDK1nZq5q18/30lFZUPkYdvm
-         RLixUo132LFQb86voXkFfHBh/9XsxOdwD+LIY5LhoA25zCUT8fPIzK8MoV95DXBh8Y/8
-         ONTbtBwwgFy9rpyrqgJZouxx8IhIaO3dCK8ZSoNxUol/Abk1ZED/dVqlg1eak1iKjRj3
-         AKjXlAS2LG3mHvXWRKcbqFkolYRwccQnnga2ZKipUnvvAuHO2MlRr29LPET0AtCB4IMa
-         orEQ==
-X-Forwarded-Encrypted: i=1; AKwUvByOnggslcln8dFBZxonQT3h3y/0/43hfN4ID1D7M2qiHSle9xmgp6TodyT1sgh6N62O+no5AGvDZ94=@vger.kernel.org
-X-Gm-Message-State: AFuF++lSQNYNztxWqhv0xMzS3yhRAVV1ZftTUuWDWkEecAd581yU3qwb
-	r2QyfxUC2lo0R7+10J5PMAqE/y8eHxa1xIgnqh7+p6KwB2luH85/s7cv
-X-Gm-Gg: AYBFou0oY7DsWhwlEWeFxEjxVfa9WK9FbVkJDPk552Xf1TRfr0I20QlP5SChtFA6hB4
-	4EOuGtJguaGmb4DANRMC2BW/9mZnblnfj5FPRugp49W9CqMP4FwyReE+mzFSX8IKK0SWgFBlUef
-	eoEg0bHygI29SKuu1+LsjDzr4f43rJVNQfrOnGS81H5ZSRMYaBENTK4Nhqqtz6T1b/NpBAGwKmH
-	18z33TwkEW/Z6oa/9hA2zwT0qIrsBBzB+TEsIF7of0i9n8yfRxRwNfsGOyE4+PvEF6dEPoc0Dyq
-	ER2k99kQPez5JTtD/TmpMxZOk1u6xkdDoB+AlHPi9KZVXUNwztsR8v5j9fOAXai8+U2ipAo/HuZ
-	AIkx6hjdsjFf85Mt8gYXw6WrHKGQr+a94YCnW9+U1nj5Y8ojLagysYplFLj1J/31JRIe4j5utQO
-	84ilM56DaDcIvF2RC48eJaQXXn7ah4L3CKy1btUBL+wLZQX1NNKEzDPUZ7F/h6TzNLGUrUwHNOg
-	P8bvdwZCkHSZ4hp3W00c59Aq5n2sy+CESx0xdFb5vkFznHChTedUteSHYdxZz4eC0Q2LurbbUEP
-	nUmOO8A4b0PAXGnZPUoWpwV5c9EbAcoXdTYddkylhDNNFkc0c+5OfLo6RFu1YZy50rHn7TyTRMn
-	LlY6W+EdHPuWr8e1rwiEzl/hmDPCMpqrc2By4b1Al9TevQeogd+0RireTNzRBbz5noPAvFkqFe4
-	/igo2/
-X-Received: by 2002:a05:600c:3b01:b0:49f:ce72:e930 with SMTP id 5b1f17b1804b1-4a02758eed8mr51757895e9.34.1790948163749;
-        Fri, 02 Oct 2026 06:36:03 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a027740a2fsm98428015e9.13.2026.10.02.06.36.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 06:36:03 -0700 (PDT)
-Date: Fri, 2 Oct 2026 15:36:02 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Arnd Bergmann <arnd@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, Liviu Stan
- <liviu.stan@analog.com>, Arnd Bergmann <arnd@arndb.de>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, "Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?= (The Capable Hub)"
- <u.kleine-koenig@baylibre.com>, Pan Chuang <panchuang@vivo.com>, Shi Hao
- <i.shihao.999@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: temperature: ltc2983: avoid -Wstring-compare
- warning
-Message-ID: <20261002153602.000032fe@gmail.com>
-In-Reply-To: <ar-xsv05s-D6a7Ri@ashevche-desk.local>
-References: <20261002124902.3703019-1-arnd@kernel.org>
-	<20261002150425.0000286a@gmail.com>
-	<ar-xsv05s-D6a7Ri@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="GcemxUY/";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="dHw877FL"
+Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 306DF7A015F
+	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 09:41:06 -0400 (EDT)
+Received: from ams-imap-03 ([10.64.2.23])
+  by ams-compute-02.internal (MEProxy); Fri, 02 Oct 2026 09:41:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1790948459;
+	 x=1791034859; bh=fM/+6xWChtAgoe1b4ZkxsQoYtayqo7VPboOZkOybYqw=; b=
+	GcemxUY/SBJnxnDDbNql4FJ8nDSq7LmY/dwMK0QWYNXfSppSKadmCqzXR3bBAV1s
+	Guq0lbgm2XJuyjPEidLfWDZbVPDFnCGjeD0S4wXcoyNva1RnnQtipSfFL4wwm9qV
+	AtltD0Xs7r/IPnZ4lRwtt4na14N6iSRdalmnkXwMh+YtAxdg2vVRcRpBpt+sYS5G
+	+GeH5SdWuX1CLg8mvYuJf9agZQn+Ti2304egpeRmRuUImut4SVS/fnmhS5UL225P
+	636/Q/RX8pZvxVC0jl34yDYPPD5fP8kGzetEZIeIjG/Y2Zh/OVSrxGaLy56Fc/ji
+	QiXTnHXkf6tBdFaTi2upxw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1790948459; x=
+	1791034859; bh=fM/+6xWChtAgoe1b4ZkxsQoYtayqo7VPboOZkOybYqw=; b=d
+	Hw877FL0sRk/FmVAhFMeDF5ZyZwbhfvluZk7nx/Wz3GN96CYgMUhZ9+GLBjWpsFl
+	fxTloMB1N2RmANqEF7zDypSdxJCe566xrHXcP0d7xKySTJ/f2QmA07XcRjvnc7P5
+	FWfJnD3Ps5U4IHSRYrMwjRFPK5FF863j1/n7Zag7O2qfDCkhzY4FMWEOfWYidAqb
+	oDi5SaUeRYWVRov9tF4Td3pbe1tK4RIWv1qJltLKyo0cznfXbhL3i1lobISIuviO
+	cuNA0bMf8URYWuBgI0LPxxTS6+s68euqyeP3HdG/ftzI6j7G1uR0liyPfRUOJEog
+	PwTq4JFSYP/anFax3OHcA==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-06;
+	repo=github.com/dkim2wg/interop; date=2026-09-30; sw=lmtpprox;
+	action=sign d=arndb.de a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1790948459; d=arndb.de;
+	mf=PGFybmRAYXJuZGIuZGU+;
+	rt=PGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc+;
+	s=fm1:rsa-sha256:THDv3RvB+0w/HcBSq38ZBuIs218SJhNblfZVVmwYO+z2V0V
+	wRnQJjHjDRJS4Kxzi3yMnWAm5G8tgjwt+ZFdFdU7/gprtENNk5vsKIubUjFUFCxw
+	JDnIjT5evcWJEU0/jy4lNSiyoiJx3is0kUZol6ijTcx1mBszqLe2EPIZMOHOTfaK
+	UtCCkpjPO4g9awh2l5eYGxwOys1FfxW2QQAtoQ7fmTgEmo7g+n9GBj0lkQR7R3Lb
+	8/n9OlQGbqvs6ZjyCcfnDswTZURt1daTagdDp14h5kMwjH3k6tuXWVsWBo3rXABr
+	ZCFQ1XVRFQlJdQzbW8fdpdRjUUuSFSNYG7wP1xw==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-06;
+	repo=github.com/dkim2wg/interop; date=2026-09-30; sw=lmtpprox;
+	action=mi-m=1; hc=12;
+	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
+	from,in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:W3Cr/VU64tn7VBE4m8JIAy/UCojKXZltl2+pYSlSrAo=:WF9Y0Q2ogSkQ2UZ2v1wgAF3ztz4coOd1/SES281qYf0=;
+X-ME-Sender: <xms:Z7S_amGwnm7wCzj48TDa5ZoeyAPfaWgYz7Peh6hGd0MpiMQGtEJPqg>
+    <xme:Z7S_aiITAz8nR1eICNfrMMQCnjYTJoulgE-rHxy6QCXtOv5a_HcDXVdl-wvL7lSK5
+    xYWQSifbUF2368l7VtigktEE-6WTuorT2QwjAEtim7LNzvc62Q15Xk>
+X-ME-Proxy-Cause: dmFkZTFQL3hfV5r5MhVUGZWcq0kdHOIvISgSh0pGvZnE2T4hOzH5GzYzHwxxQG0GwqecmI
+    nLaSZXoMIIYT3yGuQOMOdL4JN0OV3nb42SLygw/FntFQ4rkgRx16mhMbov+6sdstKwddoe
+    +sCLXq7ART1yAFxDC22p1/WENMt7nx531xHRCrELlgzWRuG/0AxJjxXcxHIJcaWSKfCRWf
+    6z95NYmLwp3dlp6YSNUUQEMcZrQfa2wFFl18ZnQJAeJ8vx8whMJOSf1l027j+7tPFz3Xx0
+    AMGIYJcjJng17u/9elLzEpvFpnXwV3FPlo+DfoJpPNyTDfezrRDYWlubCeaMoJlkIpbSaL
+    OQ3ZCgt5LwF3YVK7tqk8zCe2rDq5HuLDzYdZ5GE3hxD7aFc6mjpuTuCxA/p4xWLzEEaVGR
+    PX8zPRMUpcKb4XErq3L0wHJyT3OZOeM24dF6QAnoJxn4wYVwDBzOVcvlzR3pi3HRXwesUy
+    3KM8H6X45C5XXXCZuOEEl58IO/1mD5viONi29d2FeI1T2NL8qIPshzMb/ZmtT0fXkVJs78
+    WxHTMPDcS15LFcvKrU/okpkGlhDqThp+Vxit3hYDtxuxQP5GBal/T3DTKQ/rfx67U8+VSq
+    B2NcLDAxognBxhgym0D6f58oNoaj/M+mCGxhDRBIvyGcdF67jcix4Y+zxfDw
+X-ME-Proxy: <xmx:abS_alcMEvoeDwDks0nGi6gHc4wfz2Oo9p1nYe5GrIPXI40rDB0VKA>
+    <xmx:abS_arU8-K1kGquqFNvRn9lIkkl5Asp7_49TLAQwYtq8o_o-pantVQ>
+    <xmx:abS_auCEsc_WTPTutwSA70FyOkOwZzNBxFOmlUt_fiIrNpczMMRPCg>
+    <xmx:abS_au5R4fxXhdHEQH_OMqfRrclUNe2VxP8XGKCwsXIOBsz8qkbIUA>
+    <xmx:a7S_asjxf4YrFDEA3Tc25XGZsquTQRPkluF7262ImPwuLH-d-fbDzZcO>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.ams.internal (Postfix, from userid 501)
+	id 834E732A008E; Fri,  2 Oct 2026 09:40:55 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-ThreadId: ARQvA_lNeCZZ
+Date: Fri, 02 Oct 2026 15:40:25 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>,
+ "Nathan Chancellor" <nathan@kernel.org>
+Cc: cdcp206@gmail.com, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Jonathan Cameron" <jic23@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>,
+ "David Lechner" <dlechner@baylibre.com>, "Andy Shevchenko" <andy@kernel.org>,
+ "Liviu Stan" <liviu.stan@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, "kernel test robot" <lkp@intel.com>
+Message-Id: <732d7dfd-172b-46ed-94c8-1c550cc682ce@app.fastmail.com>
+In-Reply-To: <ar-yaTw3gBFde0iA@ashevche-desk.local>
+References: 
+ <20260929-iio-ltc2983-fix-string-compare-v1-1-d67d612d6ddd@gmail.com>
+ <arzb0JQxkJAsLsEa@ashevche-desk.local> <20260930150336.GC3142230@ax162>
+ <ar-yaTw3gBFde0iA@ashevche-desk.local>
+Subject: Re: [PATCH] iio: temperature: ltc2983: avoid string comparison for leak
+ detector
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
-On Fri, 2 Oct 2026 16:29:22 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, Oct 2, 2026, at 15:32, Andy Shevchenko wrote:
+> On Wed, Sep 30, 2026 at 05:03:36PM +0200, Nathan Chancellor wrote:
+>> On Wed, Sep 30, 2026 at 12:52:16PM +0300, Andy Shevchenko wrote:
+>> > Hmm... I consider that the compiler warning is just a noise which we should
+>> > ignore or disable. It's doubtfully useful as if it may prove the always false
+>> > or always true cases, it doesn't mean there won't be other cases in the future.
+>> > Do we have any discussion on that warning before?
+>> 
+>> I don't think there has been a discussion around -Wstring-compare
+>> before. Unfortunately, it seems like clang's -Wstring-compare is
+>> different from GCC's -Wstring-compare. clang's is basically a subwarning
+>> in GCC's -Waddress and GCC's -Wstring-compare does not really have an
+>> equivalent in clang proper (it seems like it might be a clang-tidy
+>> check IIUC?):
 
-> On Fri, Oct 02, 2026 at 03:04:25PM +0200, Joshua Crofts wrote:
-> > On Fri,  2 Oct 2026 14:48:51 +0200
-> > Arnd Bergmann <arnd@kernel.org> wrote:  
-> 
-> ...
-> 
-> > Makes sense.
-> > 
-> > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>  
-> 
-> There is an ongoing discussion about this
-> https://lore.kernel.org/linux-iio/20260929-iio-ltc2983-fix-string-compare-v1-1-d67d612d6ddd@gmail.com/
-> 
+It's unfortunate that they do different things, but both warnings
+seem useful to me. I certainly wouldn't turn it off after a single
+false-positive.
 
-Ah, good point!
-
--- 
-Kind regards,
-Joshua Crofts
+      Arnd
