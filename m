@@ -1,119 +1,194 @@
-Received: from mail-oo2-f39.google.com (mail-oo2-f39.google.com [74.125.231.167])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 499204D487C
-	for <linux-iio@vger.kernel.org>; Fri,  2 Oct 2026 15:20:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.231.167
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790954459; cv=pass; b=jGXkQ9/PtEEn7ju9nPoUEIKRhYzN5ZYpuOyk8FpySOxoxaRcE5q5jFGHGkOub96hh9B3DgbsK2XGsznMYU1qObJuNvvJuuSYMWxJiJJ+292uOP3zIQ11+SS1rDbk5vmO64h59RdQcYCc/S9vtgxUjhE1eyfjR83PPvgPtoGXDvU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790954459; c=relaxed/simple;
-	bh=c8Ui2uQdljkfizQJxJXTO3Y+BpS1mteN/FKkUOLbueo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=n+Z6z2nYyYlIbwoDmXaWICVM6qtftjLSacdjP0sawllxN+J+gf4MnVUDbtLZndLC9mH3b6h43Q6vuBMyxOMg7Pysq5Sv91XE6QQ9vTlAxkfTmOufVWTg0ogtP8uvlc+NLbwOyqiIadKVlrWZbg/5UJ9/tEo11snJI5ENn++v/Sk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mcuenG35; arc=pass smtp.client-ip=74.125.231.167
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7A531E106;
+	Fri,  2 Oct 2026 16:44:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790959499; cv=none; b=qMaqOW5VUMsj/K84qHVtxQkYfPC4lXWSvVlYMtaSYeA6jN1Iq7x++ZNEOSt9/aiJ0Ipg2Rznloh6SEU6iUmJAyxB7/OflJ07jWMbQ9FLHJH0/eOnvjY7n8cxO776wqW5/VOHpg9uAH2QbgLPLAQ3kf8NqmV6vrG7W8kbWe4FwWg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790959499; c=relaxed/simple;
+	bh=PvjPY2tE3LMCKRCe0VpyM9hEhDXk1IhlIsWX7a2tAOc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=EaAtpRZjPoLrQK8JrqUjlOcuiDX1OyQRhkSL7aP5vm/8K72LsxOz2Ryhxeb8szyRIBTetetSvk6OOY45q8q1G/RUXODxP3qvIcXYwxWVesLv7Dy7mRouqZW+Mvl17W8UG9JYmFWW5OYLGCu+7Q7HS9GPKv2zd0i/1rSVu7EP5ko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EgsB2AvC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mcuenG35"
-Received: by mail-oo2-f39.google.com with SMTP id 006d021491bc7-6e05989a25eso4901eaf.3
-        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 08:20:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790954454; cv=none;
-        d=google.com; s=arc-20260327;
-        b=S2JhDDHZA4yf40CXc3nRjvYXvn00HK+kvTus8qGYDiwZ9qyiFss9PnqbBx0ihiY8bi
-         psNbPrZ1PAcNhGSN0fYBOwolUMIbwi7MUI417YtBUdvGJ2HYRnu/Ce3khbVIwq116dWU
-         WMcH2FOs7Nn8nURf6l6l7uCcO/xKO7INIPdxiv9QiX3PYTTAaWXb/tYrngp50aiUtZjT
-         53U5E6OU0nj4Zx+/RJe0ajMiEU159WsYP2ZblO/qfqVglvw8BQTUbGopfF4v36TLW77o
-         mFUWberFZh7Uees1cXPQp8U+rnYeytbF81287qHNpyDTolrJ2fa2J5D+lNaCtXRzoOAy
-         HhvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=pRJcBvkIQpM6vnmBseq7C5SjURfqx9cLuKNSFbQ72co=;
-        fh=k4ES4v1B4tn8gqGLwC19zsb3GAbpv5yhFVQ6EwpDrNc=;
-        b=gICKbzUJZ1ip9bPvaGTyBHrXxyCEyVgo7lKHquLUhnJTJrauh1pSgFxrjREfaNQ8lW
-         BweEz4f4Gwg7bcViB+xRKwdnvXnuWsE6HHT2kRti43e+Cra3b5Aa7kfgR9WC3begCWY+
-         2Z93xiSiYYzXzTkyVcjNjZh0lsurBp39JvOg6Ka3HXDIviJEgXV922OktYOu+KsaLswk
-         1Ld0VyWc5QWoGYi+C6xW/2dpgOtDcUBOFtlsyNf48BlBFnhXv1eK3Wr81YaflDC0TRLZ
-         PcSZSje1neeHxU15J+ZSqx8kepMT3g/bsP6MBNMC525+Mk97asppKAEpmPeL0U0EeQg5
-         tJxA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790954454; x=1791559254; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=pRJcBvkIQpM6vnmBseq7C5SjURfqx9cLuKNSFbQ72co=;
-        b=mcuenG35kUyrjl8BafkSn+d1+Ad5wZZVp7QGOEkvkFNvwMrdvo7MsVOL16hsoo4xgF
-         aTdQFMURiGmg/GBn1Ooff8itLCA7e7bdybwAGCsVDHZSrY8PK+UXWrBe3qq5ix5X7zW7
-         orOGrvHzuhwNIjZFjV8fz+Vw8VDVTvy8cFA4yry3FTMuFzHLVPbyBMCu5XjLztNbQKsj
-         CX4a7dCDVWaUeOJMJXc2D6+w3J9hgiYt2HButBBvmyckLcdeKAIF43rKjT5S/x0lO1Z9
-         W0cvCjOHxYpbpsLRL2eyr7pa9PDYrqQ/BNoHKFINhmGTFb9tRfJmmopIffryiQYp4u/S
-         qiZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790954454; x=1791559254;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=pRJcBvkIQpM6vnmBseq7C5SjURfqx9cLuKNSFbQ72co=;
-        b=Q/esSDLTRyOl2yyu7+rfVARwTYFO/DFyi8NfnnLDEnZc6eoHIQgkfMwksYs23ds+q/
-         H+rXypvRDs51lgTWtAbSv0QNMlunl+rt7VYfa+wCmUotKbfiLJFCIcWy3ycoQ0xffP2i
-         Pyd6KTjp0EeGX+e2Dg8c7LAhU2ZGZqgwFii0vmL8CSHRaloPlFnrIOpDDquL/JMGM2Eb
-         mvSe1F73I83Z8zu5if/9vDSSBI14FHh47txr8bMORAy3Mx7ACGKuIBEanVOcRyRE0Y9Y
-         aMLCOPN0DYW0DedyOuFyj1437husHnvEkeLXXJSW7EyKEBC4NXtQPvML4S+IsvqU3Bsi
-         8sdw==
-X-Forwarded-Encrypted: i=1; AKwUvBy5XoIIkJrN8e1x/P6j3RB12oCVuvZsVMNstiomXl+dYp6k2NvVJ/SyMyUVUiZ62SnB93kUSWjpbDE=@vger.kernel.org
-X-Gm-Message-State: AFuF++lWUldQwftmrmeFS8CVaaX9Sg3HVAhyNjgfZPctcWAkd6mfGW5E
-	/us3PbLPGdNf7cB91hadWi9dugEfMzUgbEpXR23Lki1m9SMyaBOsqW+koB/1qbSuPIJYKUE3sB9
-	8i0+mrNY3amOM2yaSqPUcFreoLzYb/P0faiDEF7o=
-X-Gm-Gg: AYBFou0CEhwjoo0mfI6W7r25+BaAfPqx3XHdIBeAgF7NJE7rhqHbw1NSGzGCs/PW06s
-	STHOd9Cvp/+TA4TIxM8hzyTjj+BpZybmZst7qINf0796lvGlvMpLWpMF7tRDHMdZ9q7vpmcPqFa
-	/E0dxD3oU4PYZGGdmsYY1B777UIwXlVH+7rmU441PxzirrpDja7Fo0VmhNPdEgf9v9tDR2PBxgb
-	ygYuGAM4oj5rbSQGl55Jfpti8i/kAl4iINrQK8hq0BfOhunV/czBvSVE+jm96CcQZR3Oxwz5+nE
-	03JJowAG1+gRmKG09tb2TEkHhtUEmw1VZSjVnKp5dTjnoEJSjNeo1zd/kDNcP+3CbNGyxuopDyj
-	wvb6LLZP3Cw==
-X-Received: by 2002:a05:6820:1789:b0:6df:5b31:f4b7 with SMTP id
- 006d021491bc7-6df5b3205b0mr1758431eaf.88.1790954453969; Fri, 02 Oct 2026
- 08:20:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EgsB2AvC"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B4EFEC4AF0B;
+	Fri,  2 Oct 2026 16:44:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790959498;
+	bh=PvjPY2tE3LMCKRCe0VpyM9hEhDXk1IhlIsWX7a2tAOc=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=EgsB2AvCXJeXaTHcSoxMF+EBSnyYglXEvITRez1aQ7jBv3VllTYyUgD5wJvz27Nkd
+	 lw8Ai9GRdk2FVDlsVyFXzjWuSpfSQLMVhj8zIYtpvRa1diXogX5fjvx4v/M3zwHccM
+	 ZnA8+3ri0sLxkAQXW/Unwy3uqOjf/esy+cYjMK7UUtl61oHVnhvF7rOC3YXRxpDVPu
+	 OT7hS14+9S2Kp22jdCCQ+fOSuSbOQHkSpqWz9lDFSHtsbNjoymGS3CNRskYTJB2nhj
+	 cZcO13SLnp2NmIkMARtC7YK9YH7yiKfSOk588q7Pf3YlCJwpKT8uadf7CxIcLFcLRa
+	 CPhWJzie4nc3g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F992CA5FD4;
+	Fri,  2 Oct 2026 16:44:58 +0000 (UTC)
+From: Carlos Casadiego via B4 Relay <devnull+cdcp206.gmail.com@kernel.org>
+Date: Fri, 02 Oct 2026 11:44:50 -0500
+Subject: [PATCH v2] iio: temperature: ltc2983: pass leak detector type
+ explicitly
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
-In-Reply-To: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
-From: Andrej Scek <scek.andrej@gmail.com>
-Date: Fri, 2 Oct 2026 17:20:43 +0200
-X-Gm-Features: AclHuK8klb-fvmewqmk7PkjTDnYTa3t-BgP_FVZnqttllQOZ5PBEMOmDlR84Ucs
-Message-ID: <CADrS857iYjafXEZcHRSmeOFjrzs0DYG5Dp2PeS0n669cHBjAuQ@mail.gmail.com>
-Subject: Re: [REGRESSION] amd_sfh: accelerometer broken since 6.19 ("Event
- data for report 1 was too short (15 vs 14)")
-To: linux-input@vger.kernel.org
-Cc: Basavaraj Natikar <basavaraj.natikar@amd.com>, Jiri Kosina <jikos@kernel.org>, 
-	Benjamin Tissoires <bentiss@kernel.org>, srinivas.pandruvada@linux.intel.com, 
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, regressions@lists.linux.dev, 
-	lee@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20261002-iio-ltc2983-fix-string-compare-v2-1-b0a5ba847790@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42OQQ6CMBBFr0Jm7RhaSbWuvIdhgZ0CY4CSthIN6
+ d0teAGXL//l/79CsJ5tgGuxgrcLB3ZTBnkowPTN1FlkygyylKrUUiOzwyEaqS8nbPmNIXqeOjR
+ unBtv0WihZVW1pdAEuWT2Nlv7wL3+cXg9ntbErXUzeg7R+c/+YBGb9/fYIlAgqTMpIUkR0a0bG
+ x6OOYc6pfQFIaEJKd4AAAA=
+X-Change-ID: 20260929-iio-ltc2983-fix-string-compare-c919244f019d
+To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Liviu Stan <liviu.stan@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ kernel test robot <lkp@intel.com>, Carlos Casadiego <cdcp206@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790959498; l=5099;
+ i=cdcp206@gmail.com; s=20260921; h=from:subject:message-id;
+ bh=K5qv3NJffI5Efos2hZ/Q+vPtuV6gqDi8mJgL6HUEpEo=;
+ b=daUXcj6Gz0VWXbfgnPvN0sOa1XmPau/xaD2OnRPJYSWDB7yi0VLXtPLZ7eVvHDNZrM7QnhVnx
+ XkXy6OuNBS5CYSAXta0li8Pg0AUlAWILEbM5a9HTpbBHGHmGLc6Kp9B
+X-Developer-Key: i=cdcp206@gmail.com; a=ed25519;
+ pk=Vr3c2AUi1oYbgVkQtRSsWin33frZn0vGGq5g04VWmH8=
+X-Endpoint-Received: by B4 Relay for cdcp206@gmail.com/20260921 with
+ auth_id=1041
+X-Original-From: Carlos Casadiego <cdcp206@gmail.com>
+Reply-To: cdcp206@gmail.com
 
-Update: this looks like it is caused by
+From: Carlos Casadiego <cdcp206@gmail.com>
 
-  0a3fe972a7cb ("HID: core: Mitigate potential OOB by removing bogus memset()")
+__ltc2983_custom_sensor_new() uses propname both to select the firmware
+property to read and to determine whether the custom sensor is a leak
+detector.
 
-which was backported to the 6.18.y and 6.19.y stable trees on 2026-04-11.
-6.18.16 predates that backport and works; 6.19.12 and 7.2.8 contain it and
-fail. The AMD SFH sends 14-byte reports where the descriptor declares 15, and
-those are now rejected instead of zero-padded. (This corrects my earlier note
-that hid-core had no relevant changes; I had only checked v6.18..v6.19.)
+Pass this information explicitly from the caller instead of deriving
+the sensor type from the firmware property name. This keeps propname
+limited to identifying the property and preserves the existing
+conversion behavior.
 
-The same symptom on another AMD SFH device (Legion Go S, "18 vs 14"):
-https://github.com/ublue-os/bazzite/issues/5796
+As a side effect, this also avoids the -Wstring-compare warning reported
+by the kernel test robot for callers where GCC can determine that the
+property name cannot match "adi,custom-leak-detector".
 
-So AMD SFH (hid-amdsfh 1022:0001) probably needs to be covered by whatever
-short-report quirk/fix is adopted for this.
+Fixes: 3dd0c048409e ("iio: temperature: ltc2983: Add support for ADT7604")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202609120045.OxEsKLIn-lkp@intel.com/
+Signed-off-by: Carlos Casadiego <cdcp206@gmail.com>
+---
+Changes in v2:
+- Reframe the change around passing the leak detector type explicitly,
+  with the compiler warning as a side effect.
+- Drop const qualifiers from bool parameters as suggested by Andy
+  Shevchenko.
+- Link to v1: https://patch.msgid.link/20260929-iio-ltc2983-fix-string-compare-v1-1-d67d612d6ddd@gmail.com
 
-#regzbot introduced: 0a3fe972a7cb
+To: Nuno Sá <nuno.sa@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Liviu Stan <liviu.stan@analog.com>
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/iio/temperature/ltc2983.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-Thanks,
-Andrej
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index 6efb5252a773..6abaf64c8498 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -471,8 +471,9 @@ static int __ltc2983_chan_custom_sensor_assign(struct ltc2983_data *st,
+ 
+ static struct ltc2983_custom_sensor *
+ __ltc2983_custom_sensor_new(struct ltc2983_data *st, const struct fwnode_handle *fn,
+-			    const char *propname, const bool is_steinhart,
+-			    const u32 resolution, const bool has_signed)
++			    const char *propname, bool is_steinhart,
++			    const u32 resolution, bool has_signed,
++			    bool is_leak_detector)
+ {
+ 	struct ltc2983_custom_sensor *new_custom;
+ 	struct device *dev = &st->spi->dev;
+@@ -545,7 +546,7 @@ __ltc2983_custom_sensor_new(struct ltc2983_data *st, const struct fwnode_handle
+ 			 * to µK so __convert_to_raw() produces the correct hardware
+ 			 * encoding: P + 273.15 K.
+ 			 */
+-			if ((index % 2) != 0 && !strcmp(propname, "adi,custom-leak-detector"))
++			if ((index % 2) != 0 && is_leak_detector)
+ 				temp = temp * 1000000 + 273150000;
+ 
+ 			if ((index % 2) != 0)
+@@ -836,7 +837,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
+ 
+ 		thermo->custom = __ltc2983_custom_sensor_new(st, child,
+ 							     propname, false,
+-							     16384, true);
++							     16384, true, false);
+ 		if (IS_ERR(thermo->custom))
+ 			return ERR_CAST(thermo->custom);
+ 	}
+@@ -950,7 +951,8 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
+ 	if (sensor->type == LTC2983_SENSOR_RTD_CUSTOM) {
+ 		rtd->custom = __ltc2983_custom_sensor_new(st, child,
+ 							  "adi,custom-rtd",
+-							  false, 2048, false);
++							  false, 2048, false,
++							  false);
+ 		if (IS_ERR(rtd->custom))
+ 			return ERR_CAST(rtd->custom);
+ 	}
+@@ -1068,7 +1070,7 @@ ltc2983_thermistor_new(const struct fwnode_handle *child, struct ltc2983_data *s
+ 		thermistor->custom = __ltc2983_custom_sensor_new(st, child,
+ 								 propname,
+ 								 steinhart,
+-								 64, false);
++								 64, false, false);
+ 		if (IS_ERR(thermistor->custom))
+ 			return ERR_CAST(thermistor->custom);
+ 	}
+@@ -1184,7 +1186,7 @@ ltc2983_copper_trace_new(const struct fwnode_handle *child, struct ltc2983_data
+ 						 "adi,custom-copper-trace is required for >1 ohm copper trace\n");
+ 
+ 		ct->custom = __ltc2983_custom_sensor_new(st, child, "adi,custom-copper-trace",
+-							 false, 2048, false);
++							 false, 2048, false, false);
+ 		if (IS_ERR(ct->custom))
+ 			return ERR_CAST(ct->custom);
+ 
+@@ -1275,7 +1277,7 @@ ltc2983_leak_detector_new(const struct fwnode_handle *child, struct ltc2983_data
+ 					 "adi,custom-leak-detector is required for leak detectors\n");
+ 
+ 	ld->custom = __ltc2983_custom_sensor_new(st, child, "adi,custom-leak-detector",
+-						 false, 16, false);
++						 false, 16, false, true);
+ 	if (IS_ERR(ld->custom))
+ 		return ERR_CAST(ld->custom);
+ 
+@@ -1488,7 +1490,7 @@ static struct ltc2983_sensor *ltc2983_temp_new(struct fwnode_handle *child,
+ 					 sensor->chan);
+ 
+ 	temp->custom = __ltc2983_custom_sensor_new(st, child, "adi,custom-temp",
+-						   false, 4096, true);
++						   false, 4096, true, false);
+ 	if (IS_ERR(temp->custom))
+ 		return ERR_CAST(temp->custom);
+ 
+
+---
+base-commit: d2f2868d2f487b418f68db2ef5bd7cf41722ee68
+change-id: 20260929-iio-ltc2983-fix-string-compare-c919244f019d
+
+Best regards,
+--  
+Carlos Casadiego <cdcp206@gmail.com>
+
+
