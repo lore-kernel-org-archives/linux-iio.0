@@ -1,56 +1,57 @@
 Received: from sonic.asd.mail.yahoo.com (sonic-asso1-0020.asd.mail.yahoo.com [34.2.90.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2C0547668C
-	for <linux-iio@vger.kernel.org>; Sat,  3 Oct 2026 16:10:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 970504570FA
+	for <linux-iio@vger.kernel.org>; Sat,  3 Oct 2026 16:10:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.2.90.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791043823; cv=none; b=MBA+3FvCyfZIVhTFfCEMk9qcUNVK4hLFDN+tBlpaTvdUyOYb4sUb2OHrVDdwP7WtT3u25QNKczze3PdzVoNDnLfcVq9QWjd6znuO5DHVPG8dHOVwA2fdHIL0z4CeSJU+lJRkJ6MLAgqqbeNTsc6Iu+LNOqCEuK6RyZAOuXhOg2g=
+	t=1791043825; cv=none; b=u/oJnZqR85MNLevITHHvQ4Omk2aGlzkAa8GfC7DjLOHCh3KK472sHxlGu8cT1DA/pHAQKZHePtVhPBHm6m/0Pft0NJRk6g8cBFWwXnUE9CC7GUCDP3XRXR14J9TuCB3qE2AnWRYtOEk71R8ohKeogTtP8dU31jSHywmGt+Ebrrg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791043823; c=relaxed/simple;
-	bh=qEcfC7+lBDdUI/1qR4OTk/G3nCA3uGTQJcqec/VzSIM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:References; b=sL/x6LenFJXSGYN7B3ckcClzSb9pc0+AjRNa3+ECkZw84WbU36hA6Htd/9UbGhh9Fx4txHhLGweLqNqU/TFjQXhTp7077MoyVlABA6kqdDrdZp8simnoi8DxvLFS0Q8uUighKc45cUBBm3viMGftrY0V5Iio/d9cnbNDbn3udQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=PYpbtkz5; arc=none smtp.client-ip=34.2.90.19
+	s=arc-20240116; t=1791043825; c=relaxed/simple;
+	bh=e3CCT0DLZEQpnh1fqF/XELY4fZlwFEbtVPxyc3yVSqI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=lkVJFI0OpV9ipFfoPIOSht76WqOuQStUFoedswgI3P+aEJjondH1BuPlVs5o1FpG+EhhRRaaIYOuZ8BkcRSiN1TCo86iUXdjvu9HX+QWwLbqKisY5//Z/XrRFThpD0Wh3jmNlB/XFYGkxlSDNqwYNc0lpL4qRvg3NC0dVzdCI54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=ix1Da+M/; arc=none smtp.client-ip=34.2.90.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="PYpbtkz5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1791043812; bh=cTlTE08P6zOTrMluqQHEdgkKFtrrhSvx/vcFnuhWH8o=; h=From:To:Cc:Subject:Date:References:From:Subject:Reply-To; b=PYpbtkz5yIO1/9sWcqgJWd1ePZCmep1gh0FiU2AcMeo+yTCQUzECf5+1AFhsejLhXtiP37ZQ2ycxZmNF0RyO0c8dQioR71EcbA6Ayp5iGT72xzjRN3nxDVahMt85wkcQBglXXzYcfdBi626E7N3qIjYwsp/F6C3Mrv5aS45hqciAGYlqX3jOv4dPaXwDjzU/i6ivzERsODOMszNIvZkWG9nm6iSalb2uHNwtmp2+oJ3kk5DJDf29Sz8TCQ8G9HRxgzT5DWuOKlSW/B4ycfUcc4ID/37EfTONXC2s3YuPbzjMa+uAuKeKrE9pQEXy732ahsEg7wGWNWar+SIqAfS1YA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1791043812; bh=JZWiY/FvpMb2VJUCA7A0hXiZtMnm1dIrxKXl0RmVNvk=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=lyPb1SHYWBEEv/GHQIBTgrTwfg33e5qos3SRAl9KGNVV3cq2rbZMKZKRlFUQq0hp3gyPX5he6SysMOYwyPAOtUVbL0L7cdrwLPUYdKFzMgnW5AxMrI8XtLezpO72wCCNSof3PCyFogmpFdBJCJF7PeOPqu/+YW0ycJTS+gIQj7FI8nvDMVsJVUWVNo0ZWNdliu6w4/xtW8mnkNtlaFF3b3PFQSMyKGKaGXWDHAcbqULvXEwozrqD5i8vT2pb5i0fmUDDh6Lf1L2jG7TjN7595WcdLCXKXKMSGsqLmIcmSwnS9rBlmNuvmlQnT4Ru1uW7FIQfN5kq11UwA5qBUWcUSg==
-X-YMail-OSG: jMeK1CsVM1l9dE4ZuLeUvncsx9fgvP2iKdyYCuLgw7w3yt2o7VQFtxBT18XgYHj
- wOOhcv1PGYbYrmVcw_t.BubWI21Z9xfI7N3lwLbI1WF22GA_FMgZ_9oVuDF7SDGeYaT5T6LINTua
- 9Q3Q0KbIZrEs0bg5bwHhv5c8Rrgvlt1JrO2K4TEn4w0OSZ2bh2jUOIys01FC.UOcgC7dkmCALQhd
- sGT.7ZFYeE8ZghYoDKoR5k04NfEjHA2ss1HhNzNRFq0Au9VdzuQKaVxKv.mHsLcRhOsXHuz27QOQ
- tqpIsQHAghfuuFc2bSYXj3EWsM.DGgGHABzjYe0MWYHu4UC1aL.eqnTwB_IiO_xPoOPp_gyginbO
- it8_PXweBGPN2G82MkDiYeBQTekcW2zHHLDy12yjY9vR.FbIdj0w3vHKnwNrgf4ee0Z5etk0k3ty
- jATsTK4e._dFlGWT9_eVxa0op2PA76nomDzxChjVac.ypnoI17H7J9hi8lXUZE3r7tVrb3LJW56W
- rEh3FGyBB05pmxd.L8OP.ocbQ.PKw2y22KttlPuhgGXkRAN0wmBCCRGUfJXKMdCXOYKl1vLXJXGY
- R2Jb9YWRNPNxhJ3NYJLXpCZyq.kbEqXPpSZlMHo_ur_ARdHKUKHc7qP8NhNiruCSj07.ZOTjtJkG
- EwlkqSDBLITU37sinu2NQmWPzCcUZkPfVcy_EreUMSGOXLqDccQlbgSLdW1e2lQAT1HHfnCOfniq
- _Ko2QUh_hNUfE3tC4I5_TK6Oab0UFtk0U.dpNfajfQAxDHr0WPdeaq4gasvV0vAF0Swx6qUUvmge
- 5M6wqeGR8lonenWWggGwmUPkmTst4i3cc5BNA7kaI3kgXtiTDcAPoD11VWbu0IbF80PBzcR3nSHj
- nF0wiCHbf1q.7.rs8os_TKNw4hlsterj5H3T5NDv3oQkuVJ2enK7W_PQZiG8zCOXaNu5KQiTc6Xw
- d490MI9_IVa2wwoleFE.KSfTG9rVLVXHn.AUt3p2dxzsFgIRZrM554PwUkMfhgNQPKUGahieSEAP
- MBl4cbvP81xkk.GREDPdrpp0yrDj.wOkf6FffEat1zxJYeBYtike0l2SpvGmd0W4ft5lOvO8moss
- 9y4mnSdW4a05teM7I6PnLn5JpYJjQMWFdH4dbflmfpi0IDtdoshOgdscG9Wd6GOF5pGUlRJu8wdl
- 3lWkpsHyRuOybTLaTe0xATEWyYkKhq.rSL6EeSKJ8Nny8uMq9U2AJaMNc7d7HgkJgESCl_WVwsnc
- F1nhIYumF_Vti0IoelS2qe4.TG8zkdaV_TVnC_XFC72GO4PT7Zh3kkhH7OqbTMMCBm6DoJyOm5I.
- tRNO0lcc0ddQvpHWXndASf20rb3Aqo0BdyQGzXlvwz7MB4UDoL08aytruF7spFWM7K0Ijp9p4Q0f
- 24GlPA_0_.Mk4ueuoVCcjJIbRJGFtsLW5N7I64hrY1A2y652a5zliOm_vvcu5EcbSZNZnW5lbJLE
- W_5YXPPbPF5FjiO_jBVIjihsGnIlS6A.csOnkgS0PKmssGFIwt52l.EUwqzz8Y0XjOnBBu0qy8U9
- 6o0Ee1Iv75UAWfHLs_9xl5xWg8BpUUqzzOWc3KvygxV2ebEbZ9bSoV_eEHOF1qU3QIVGE0dXmjb2
- 4XNlUS0mOm103IX3hD9JvYC1mSh2Ng6lKYacm6YKqa29tjo0iBmx4zmGEt144GBxx6WG_vISKDBa
- e5Y90rr59zMxmuxdB2lMtFwK4NWz7RUnBCsoa5kLwkO78mAo8kdbseQfd0fs6uF7Kv84oNlnN0VW
- 50F..S2lyw.pqeANUsM1YN4QSFCV025Oj7zdyMAdR6RSwDIPIrVoOZtkquamraWBA5KAnL.fuQ8o
- LIIgMYIG38EQvBZPOzG3m4.44PCCxNbO8d0vg_JUvbKWZZEx.aYD.I36a73QGHcDMbCmjufnrA1f
- 0F61dZABt8hk_kxKhPeEk4gFWDp1TmJbWdZFNfmJ4tnX1ktbTvML2hffem8FeNtAW7x2P1XTT40d
- AfbmRRkGn0e.gYcuPHXASlpEK1o.TkKCvlyUQpJ2PXED7
+	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="ix1Da+M/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1791043817; bh=U0ezCLIesnCu1jMuCcz6Br1sSFqhTA1WNDrJ1EmBhDw=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=ix1Da+M/sohsm5bnP2chYWKj3OnulYKiBslczqEYWrq7LEvNrtv0zoZJhdSlxL4SNHyCruAZ4d19wony2+ICeB0Bg3PAJEiEHAlQal5g2gI3kKI8lQN+DUdtvm0qAZSp1x+pKivEZdlbOZMGs4i38vZkZtKYMWGoK5ZJltVxle49m0pkhCztlr4rhwdau5bF/yDVPn0Y9B/QI7FAq3RmJJmTmgyhl2OaxTohyLpM+QTYgnRnjwc6EdNakr7oTKNlHMZvgQDhArWnwxRWjxlluKDcJY1ORqVK+TZcbea7QT0C7125UFMOCYZ8O33vMqiKmGqXx08rmNRRshfs3sBOzw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1791043817; bh=GKI2cyBDZ/IEYh8a58X9adGbJdxOUQIKGAJVNbxunyF=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=li+UmdbP4yxIOFy0BCmgSKMULD/X4WDH4GBI6Rw9OVYVuVoWzT1A+Tm7+GEYKPfvfvsoiF/VD7ZL2qpbR5BOasRv5IEMLFGhCfDquExbvgdQykS8j4hwqGnH2KxhpF1DbRBVhN4RT5nx4LWUUPbH29xo5efFeB9r0IBTNDYd2hfgL2NXMAcRzQJH1EwkinHNBtPXso8RGNvYcLZHJEZV7egmRhabuw1kmAAW5YCE8UwmiVgDDPM15A03u650UVveu/+1kwiMUWiTaqQZAaTmRm7uCl/mGHTz8avn73z47OEmD8fQrDq5BDwxuLowx6WbJhVuNDS0xputDdYJDC3+3A==
+X-YMail-OSG: _bqPFyUVM1klTkjyx7bYeXbO2jeYy4jvZyhvv8r8IWN.6ZLBiD50.vQz3MvGWaV
+ yLrPSIRYNQRcKuwwg8vFx.zhKoFwkhk3QdT62ZitjkAhiiWTxYyqrQdkEajvLURaUeimcYJLcWqQ
+ d1WUfcUXvF_LVUs3nuerPYR5WvKh2FPmKBCIyV9vRl08DNmVweVGce84PQTTf6yKrRYQXE1Sslpd
+ z4fII0ufKo5stsa02_Y0c_9EzwTs.H7Mr86l5oXeMyBCYM28NBr0_UKxMrqOewp2n.APNis4chJJ
+ dkhF295u8geiY_VRPuwTwM5b5I9o0Z0C4mK5GUEsrFDzf6evk6W0wjurrHRtDq9.94adWtEH2jJc
+ OMlDO568WW7lyTo9QmUSjfYegPjj.gsM2MPgRwQnwgvjhEmMAMc5x.Sf0mDcMngYVA_S2l6Km7SW
+ aT6z3kwA1UY4UXN7xDOAkIahjNQN3.BjStWzwnh.Ti8f2zOB6WimHc5hP2N17UXyaAt6FoVccNv.
+ XISiy5Edu._z6IR8jRgl7RMx_lbjgv3BVjOGyjmkPnYk6CXeAvGjyeq717ru2Lqjf6ifnrPsF.Mh
+ aep_oEc7AWkcDsBFCqScZinY8w5lMPlGKq.5O9J63Hm0RqPzia7q0RMj.nWw9w5RednTNLUQZh_E
+ lq.lAYiVuoK3ZPSIDGEdhCcU3.aDPfVaBtf2kJuhl2dGUzxwq8tkCqySkltvwrPZrnmlru4NOqkU
+ WtfyuLHq1h3EgEot_kENWu0PSFFbVgBC8QiA5xMvxK.cllk0LRwmD_j1eZ0OtsRUmBKi4SRUr8JQ
+ NjtEx6sW8YBC_jxs8CFYzoKpMF4jObIgitQKCphE013AHeeQM58jmSng5kNvNK0kXudDJWQ1cg3x
+ 5gLjzkfdR8cM2Eg6j_A9omAapWLeIEzn3EVSfAS8nINkriWhSFHnGwGcU3VwDAzpJW5w4kIx4n0X
+ LgVwcMylwCVyX4yqAGnB4FW6wpzfgxn8biQCDuVx4afrkkt0AQLHblP8cgsuSY8.S169TFEwP9OO
+ lBFejvdZ3wSWb84SlX8MnGi7jIMRyDu3A3T.cu8xtGSehb5TK1iZ6.og2WE5aVTvI091_IU_FGI4
+ e4cc3vsR_zOy6OKlrZnvefASWgj4XGGJ4FV4FqobmTiXTcUXbclKvtekYKfG4KWNPhaDHehvOO4z
+ LjeiwtDGGzn07wByNWemt_looNX34CNT57qMYC.YAL7S_OZ12GsdrXX4FGF8ZwFNpeDCbPlj2Tqt
+ uDOWwCkTo8plklxS4cpml3zpFZIuWMfuYD2dnI8PeIQwRffrq3eg62VYkdf4vRDj0dRtPmZ70tzX
+ 4sbV2YnggjbhbmnslF7g4kC2jkhwjO6oL_DvwXwUFSlAeggd1TbICgkf.d_QxFxTlOhW050ZsUhT
+ I0kLceBlvkvHmFk9PiIN5cwT9ynu69oOsmij9k4.Yx49QtmP.AR3aMKDJDvRYaQoP6fW1bEncyXw
+ Of5M9RMEsVwFT7CcHCf2eSeEB_FQuOCop23g4NJQ42i6P2sj.Gag7BOjMsr60rSF.brIMmO.wGWA
+ Jr987xEUYV7qw.hqJ.kycGYrLz8hvkWycaWhzwQgYZRGhA55Q6FyUnLuRj2ccCT810H7ukDcVo1h
+ p7kDQLqpr_mLnQdupF.zKckumwavYLDpGBoOaTOYepkwima5mDw0zM1SSbXYiWoEk.n8dwW8z65M
+ f.CLTEg47OOD2w1B3ltuijKZ0t6w0SX6JRyMF9lmd.B3FMk9fzCbLnpzEJjEQvHPu7qbP7QgWViC
+ otwj0x.tn2vN7KEdJqBN_CpFB0f.STAGw2OcPp.YVIDV374Gn8G8wt7lP1HonudYft1YRxno.PkT
+ RRZFZgbognYk8KGNLZHTx2OqIrzOs2Rq5pKYaKjnhiIvhOkYl1gWmnKCmSp356JEd7fM9hWmzYxn
+ oubyPm3mNbLdu4ZaNNzx.oio4q2d8KOitXnkW1MILIxG7.qU93ZYV0y2Qi5VUSHaHJoNSlUvDP1x
+ IdtjK.0yWRtq0Hmuz8loahtPgPxhsC1CNG0PC.x2nz9EKsFvcXsh3i4Y2KvZYyMIsZDou
 X-Sonic-MF: <m.abubakar365@yahoo.com>
-X-Sonic-ID: 6a1849ee-2cff-49fe-b546-8f7de5c879ce
-Received: from sonic.gate.mail.ne1.yahoo.com by mail-asdoutdeli-p-cin-asso1-prod-sonicconsumer-svc-101 with HTTP; Sat, 3 Oct 2026 16:10:12 +0000
+X-Sonic-ID: 07c6ea70-02b4-4506-9fb7-7b464a9fd1cf
+Received: from sonic.gate.mail.ne1.yahoo.com by mail-asdoutdeli-p-cin-asso1-prod-sonicconsumer-svc-102 with HTTP; Sat, 3 Oct 2026 16:10:17 +0000
 Received: from dip88.lsn.bf1.yahoo.com ([67.195.177.97])
           by hello (SMTP) with SMTP ID d1c6d9a7cda80a7ad7051028df1df544;
-          Sat, 03 Oct 2026 16:10:06 +0000 (UTC)
+          Sat, 03 Oct 2026 16:10:12 +0000 (UTC)
 From: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Rob Herring <robh@kernel.org>,
@@ -63,10 +64,12 @@ Cc: dlechner@baylibre.com,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	m.abubakar365@yahoo.com
-Subject: [PATCH v5 0/2] iio: pressure: add Sensirion SDP31 driver
-Date: Sat,  3 Oct 2026 21:09:47 +0500
-Message-ID: <20261003160949.4657-1-m.abubakar365@yahoo.com>
+Subject: [PATCH v5 1/2] dt-bindings: iio: pressure: add Sensirion SDP31
+Date: Sat,  3 Oct 2026 21:09:48 +0500
+Message-ID: <20261003160949.4657-2-m.abubakar365@yahoo.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261003160949.4657-1-m.abubakar365@yahoo.com>
+References: <20261003160949.4657-1-m.abubakar365@yahoo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,50 +77,93 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-References: <20261003160949.4657-1-m.abubakar365.ref@yahoo.com>
 
-This series adds support for the Sensirion SDP3x family of differential
+Add device tree bindings for the Sensirion SDP3x family of differential
 pressure sensors (SDP31, SDP32 and SDP33), I2C devices that also report
 temperature.
 
-The SDP3x uses a completely different I2C command protocol from the
-already supported SDP500, so extending the sdp500 driver does not make
-sense.
-
-Patch 1 adds the device tree binding.
-Patch 2 adds the IIO driver, which exposes differential pressure and
-temperature channels and validates each measurement using the sensor's
-CRC-8 checksum. The SDP32 and SDP33 differ from the SDP31 only in range
-and use it as a fallback compatible; the scale factor is read from the
-sensor at runtime. Tested on an SDP31 wired to the I2C bus of a
-Raspberry Pi 4.
-
-Changes since v4:
-- dt-bindings: use sensirion,sdp31 as the fallback compatible for the
-  SDP32 and SDP33 instead of listing them as independent compatibles.
-- driver: match only sensirion,sdp31 and report the device as sdp31.
-- driver: include headers for everything used directly, drop redundant
-  casts and use KILO.
-- Add the Assisted-by tags, which were missing from earlier versions.
-
-v1: https://lore.kernel.org/linux-iio/20260919223650.13396-1-m.abubakar365@yahoo.com/
-v2: https://lore.kernel.org/linux-iio/20260920164533.31988-1-m.abubakar365@yahoo.com/
-v3: https://lore.kernel.org/linux-iio/20260926154118.5471-1-m.abubakar365@yahoo.com/
-v4: https://lore.kernel.org/linux-iio/20260928215422.3720-1-m.abubakar365@yahoo.com/
-
-Muhammad Abu Bakar (2):
-  dt-bindings: iio: pressure: add Sensirion SDP31
-  iio: pressure: add Sensirion SDP31 driver
-
- .../iio/pressure/sensirion,sdp31.yaml         |  51 ++++
- MAINTAINERS                                   |   6 +
- drivers/iio/pressure/Kconfig                  |  11 +
- drivers/iio/pressure/Makefile                 |   1 +
- drivers/iio/pressure/sdp31.c                  | 244 ++++++++++++++++++
- 5 files changed, 313 insertions(+)
+Assisted-by: Claude:claude-opus-4-8
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
+---
+ .../iio/pressure/sensirion,sdp31.yaml         | 51 +++++++++++++++++++
+ MAINTAINERS                                   |  5 ++
+ 2 files changed, 56 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
- create mode 100644 drivers/iio/pressure/sdp31.c
 
+diff --git a/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml b/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+new file mode 100644
+index 000000000..ed02b639c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/pressure/sensirion,sdp31.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sensirion SDP31, SDP32 and SDP33 differential pressure sensors
++
++maintainers:
++  - Muhammad Abu Bakar <m.abubakar365@yahoo.com>
++
++description: |
++  Differential pressure sensors from Sensirion with an I2C interface.
++  The SDP31, SDP32 and SDP33 differ only in their measurement range.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - sensirion,sdp32
++              - sensirion,sdp33
++          - const: sensirion,sdp31
++      - const: sensirion,sdp31
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vdd-supply: true
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      pressure@21 {
++        compatible = "sensirion,sdp31";
++        reg = <0x21>;
++        vdd-supply = <&vdd_3v3>;
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 214aeee76..e285147be 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -24855,6 +24855,11 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/chemical/sensirion,scd4x.yaml
+ F:	drivers/iio/chemical/scd4x.c
+ 
++SENSIRION SDP31 DIFFERENTIAL PRESSURE SENSOR DRIVER
++M:	Muhammad Abu Bakar <m.abubakar365@yahoo.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/pressure/sensirion,sdp31.yaml
++
+ SENSIRION SDP500 DIFFERENTIAL PRESSURE SENSOR DRIVER
+ M:	Petar Stoykov <petar.stoykov@prodrive-technologies.com>
+ S:	Maintained
 -- 
 2.43.0
 
