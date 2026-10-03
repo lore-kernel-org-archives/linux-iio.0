@@ -1,173 +1,145 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63ADF2F1FC7;
-	Sat,  3 Oct 2026 15:02:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB47518A93F;
+	Sat,  3 Oct 2026 15:21:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791039741; cv=none; b=a6YlelJNKeVaw0DlpEx+dM8do3Te4QNh/U5dK9MU+1j7aNCEYIps4md8Q6yrHCyemdKRPXKov8NBiWPj+biQeAKedYuBAa4KGrgWJpmluqpmyFX/AmzatEQa+JKDsdgxVDcoUg61yzcnJjNwKt3pilgV7VYTQyqXVMMEhcQw7Gs=
+	t=1791040912; cv=none; b=BPfYk9208f48bzje5M8Fp79zvRevKA6wpvhEG1LdTayZGGg6ozT2k12L0Ao+DPgJcAAPsMB4wSq22ZLh7M3r7qucbsj4TLfZnehv8OEgWUOwzHFrBib3lABJI0oUcE1vZqnV27Epyt/m13w0Wmg/ARH6SvHB30NK7H0bccI+Z9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791039741; c=relaxed/simple;
-	bh=cQ+YELbePZylW2mZliCc7IaDpMKCTRPESA7eaijtq+w=;
+	s=arc-20240116; t=1791040912; c=relaxed/simple;
+	bh=/j9RNnRrsl73fLwVyVNDb/7A6HoUBrV9DU6bJoMj46o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HfJnNjh5bZxHuSHmFP9buTlBUXqYqbWTvm9LRLNUrJWjDJuxDgbUaUl9zdtltgGYgcVa+pgoxSDR1ZYZQQNR9SeF2zhTk/PWLh7Y2aZJhQZFMP3PUv5XVC8awqL/qC64kV1x9nlSOzTW8qDWCvAdftVIrZzhzme/D1jojm9CQ3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GUV0QjAC; arc=none smtp.client-ip=192.198.163.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=RdLatvwm0+MnJJ9D57MRlrg3zNOEDuiigoe766a4arFbqMO2ghXN4boQQ1ULUDOLosLdqdSafrvvhBTyqNnzyKW9JRecvNsrNWdMKHbUUrJ3OZxqWZxCoGQ1fmvL8FGWgAXvZbK1b80lVlzqlGh5M5QIfGlR2qrT+tgvB8F/zVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yu6pTDBN; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GUV0QjAC"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yu6pTDBN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791039739; x=1822575739;
+  t=1791040911; x=1822576911;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=cQ+YELbePZylW2mZliCc7IaDpMKCTRPESA7eaijtq+w=;
-  b=GUV0QjAClkgEfoUKUL8FL1OZOf7/VpMvEqhfUSyOxKeRN5qo+VKNgG7X
-   rGBorm10tuK7c7CeMAK1P0S9WSe4qOgd0Xv9GI0ntrNbNeIBTXHBcwKOZ
-   tTpKhL7zPi7jRAVUccBDYCnyw9CiSMMGAawDX3yeo/wHFMP8W5o4xmKzA
-   c+PrjhTT6HExAaOhEUI4UuUrsz6Eypii6g2EyK9RMHOoOUM4nj66ew9Nd
-   uYqq1jb4Z5TvTa7PKGZl3UuGwK/TCZZ24tafjO4iUVspXTbDPrbjXbF/D
-   3pWCwYG6g+OKvkpyw6CH0g2mNJs9R28ndpMqV4nsdJh8JEmbb0n0cyzl7
-   g==;
-X-CSE-ConnectionGUID: hq/0WWawTzWYojWMBH+3yg==
-X-CSE-MsgGUID: WL9Fo6F3QKWbMgC5d15F6Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11924"; a="91883461"
+   mime-version:in-reply-to;
+  bh=/j9RNnRrsl73fLwVyVNDb/7A6HoUBrV9DU6bJoMj46o=;
+  b=Yu6pTDBNYVn/yN8AhuxRAcGaI6YgCZXD2Nw0QoCwqZgnZaY9Ueofzj8D
+   luhF1viEU1vQhFq0+2qKM4jzAHcJtEwR3dIesfi11JY2QGWVlPmQiwau8
+   PVJBG4qefnE/FMxpO22fu639LOl421I+ryDs9XTpiUFccr1Inbix0KwYM
+   KV6uPDKcONTtD175TvAWh+Y26rv8XeCnCCariTyYp1zuouKxKG+b6FYHR
+   WpatvSEfNXkPXU/KqfLMI8i+DntMFy1ZQkTpb9GDh0u0fjllLxdRVNiMK
+   OkugCwzqAiVn5Ojhc2KSRCpGLIu+/kjYIDD/aqvx+UZykY7kCbPac5UQI
+   w==;
+X-CSE-ConnectionGUID: S44+CQd/QwCiAUTJKSo5Tg==
+X-CSE-MsgGUID: 4VD5DU+ETo2qJNUDoayukA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11924"; a="79337834"
 X-IronPort-AV: E=Sophos;i="6.27,138,1787036400"; 
-   d="scan'208";a="91883461"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2026 08:02:18 -0700
-X-CSE-ConnectionGUID: 6IqjmuD1SNyntD6eBjnptQ==
-X-CSE-MsgGUID: OQgShzM1QFyyGM+kojhAgw==
+   d="scan'208";a="79337834"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2026 08:21:50 -0700
+X-CSE-ConnectionGUID: hnSRoQklRf6ym3VAg/jLOg==
+X-CSE-MsgGUID: vBUrSaiBSwatowgH9UNQ1A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,138,1787036400"; 
-   d="scan'208";a="305961762"
+   d="scan'208";a="280205801"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.245.78])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2026 08:02:15 -0700
-Date: Sat, 3 Oct 2026 18:02:12 +0300
-From: "andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>
-To: Kanak Shilledar <Kanak.Shilledar@axis.com>
-Cc: "andy@kernel.org" <andy@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, Kernel <Kernel@axis.com>,
-	"macromorgan@hotmail.com" <macromorgan@hotmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"joshua.crofts1@gmail.com" <joshua.crofts1@gmail.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"jean-baptiste.maneyrol@tdk.com" <jean-baptiste.maneyrol@tdk.com>,
-	"dlechner@baylibre.com" <dlechner@baylibre.com>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"marcelo.schmitt1@gmail.com" <marcelo.schmitt1@gmail.com>,
-	Henrik Grimler <Henrik.Grimler@axis.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v5 5/6] iio: imu: inv_icm42607: Implement MREGx register
- access
-Message-ID: <asEY9DHDisqVcQ5D@ashevche-desk.local>
-References: <20261002-b4-inv_icm42370p-v5-0-c65281b745c9@axis.com>
- <20261002-b4-inv_icm42370p-v5-5-c65281b745c9@axis.com>
- <ar-tpjenoxMloYq1@ashevche-desk.local>
- <afde7beb4019d8090d3df30bb4e0a1b7ca00ad4a.camel@axis.com>
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2026 08:21:47 -0700
+Date: Sat, 3 Oct 2026 18:21:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Brian Norris <briannorris@chromium.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-stm32@st-md-mailman.stormreply.com,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Fabrice Gasnier <fabrice.gasnier@st.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 3/5] PM: runtime: Propagate last_busy from dependent to
+ dependency
+Message-ID: <asEdiIT7l49vhn7i@ashevche-desk.local>
+References: <20261002230714.507921-1-briannorris@chromium.org>
+ <20261002160309.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <afde7beb4019d8090d3df30bb4e0a1b7ca00ad4a.camel@axis.com>
+In-Reply-To: <20261002160309.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Oct 02, 2026 at 02:25:48PM +0000, Kanak Shilledar wrote:
-
-> On Fri, 2026-10-02 at 16:12 +0300, Andy Shevchenko wrote:
-> > On Fri, Oct 02, 2026 at 01:54:29PM +0200, Kanak Shilledar wrote:
-
-...
-
-> > > +static int inv_icm42607_mreg_read(struct regmap *map, unsigned int
-> > > reg,
-> > > +				  u8 *data, size_t count)
-> > > +{
-> > > +	unsigned int val;
-> > > +	bool idle_set;
-> > > +	u8 blk_sel;
-> > > +	int ret;
-> > > +
-> > > +	/* MREG access is one byte per transaction, no burst
-> > > support. */
-> > > +	if (count != 1)
-> > > +		return -EINVAL;
-> > > +
-> > > +	ret = inv_icm42607_blk_sel(reg, &blk_sel);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	ret = inv_icm42607_mclk_get(map, &idle_set);
-> > > +	if (ret)
-> > > +		return ret;
-> > 
-> > > +	ret = regmap_write(map, INV_ICM42607_REG_BLK_SEL_R,
-> > > blk_sel);
-> > > +	if (ret)
-> > > +		goto out;
-> > 
-> > So, can we use regmap ranges instead?
+On Fri, Oct 02, 2026 at 04:03:07PM -0700, Brian Norris wrote:
+> When a child device suspends, it does not update the last_busy timestamp
+> for its parent. If that parent configured autosuspend and didn't
+> otherwise maintain its last_busy timestamp, it may now be immediately
+> eligible to suspend. This is probably not expected -- the parent should
+> wait for its autosuspend delay before suspending.
 > 
-> We can't use regmap ranges because the register accesses for different
-> banks guarded by a specific routine of writing the bank selector, the
-> address pointer and then finally accessing the value along with
-> checking for timings and clocks. There is also a limitation that,
-> accessing the registers in banks other than USER BANK 0 can only be
-> done serially. It doesn't support bulk reads. This is documented in
-> section 13 of the datasheet [1].
+> The effect of this behavior is that a parent device may suspend sooner
+> than its autosuspend delay, simply because its usage was accounted by
+> its children, and not by direct references to the parent device.
+> 
+> This was noticed in several cases, and some have implemented
+> workarounds, such as in commit c537d3457542 ("iio: adc: stm32-adc: fix
+> runtime autosuspend delay when slow polling"). At the same time, Ulf
+> suggested these problems "should be solved in the runtime PM core".
+> 
+> Instead of working around the problem in drivers, we propagate last_busy
+> timestamps from a dependent device to its dependencies any time it may
+> allow a dependency to suspend -- i.e., when releasing a refcount for its
+> parent or suppliers. We take care to only propagate the timestamp if it
+> is larger than the existing busy timestamp.
+> 
+> Note that this works best if the dependent device is using autosuspend
+> (and therefore updates its last_busy timestamps appropriately), but even
+> for a non-autosuspend child, this is still somewhat useful --
+> non-autosuspend devices still automatically update their last_busy every
+> time they resume.
 
-Sorry if I missed it, but this is an important part of the driver design,
-if not yet, please add a respective note to the commit message on it.
+> Link: https://lore.kernel.org/all/CAPDyKFp=KTf8=zGBSzPYqhjnZpY8xwvjCeM1e-WTKT1QLSxaDA@mail.gmail.com/
 
-> > > +	ret = regmap_write(map, INV_ICM42607_REG_MADDR_R,
-> > > +			   FIELD_GET(INV_ICM42607_REG_ADDR_MASK,
-> > > reg));
-> > > +	if (ret)
-> > > +		goto out;
-> > > +
-> > > +	fsleep(INV_ICM42607_MREG_ACCESS_DELAY_US);
-> > > +
-> > > +	ret = regmap_read(map, INV_ICM42607_REG_M_R, &val);
-> > > +	if (ret)
-> > > +		goto out;
-> > > +
-> > > +	fsleep(INV_ICM42607_MREG_ACCESS_DELAY_US);
-> > > +
-> > > +	*data = val;
-> > > +out:
-> > > +	/* Restore direct access. */
-> > > +	ret = regmap_write(map, INV_ICM42607_REG_BLK_SEL_R, 0);
-> > > +	inv_icm42607_mclk_put(map, idle_set);
-> > > +
-> > > +	return ret;
-> > >  }
+Because Linus might complain on odd Link tags, please make sure you have a
+reference to it in the text and place it in a form like
+
+Link: $URL [1]
+
+and respectively in the text use [1] as a reference.
+
+> Cc: Ulf Hansson <ulfh@kernel.org>
+
+Can go under the '---' cutter, so it won't pollute the commit message in the
+Git history.
+
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+
+ Cc: ...
 
 ...
 
-> > > +static const struct regmap_config inv_icm42607_regmap_config = {
-> > > +	.reg_bits = 8,
-> > > +	.val_bits = 8,
-> > 
-> > No cache? Why?
-> As the virtual regmap config has some caching for USER BANK 0 registers
-> only. The indirect banks doesn't support caching [1].
+> +/*
+> + * Propagate last_busy timestamp from one device to another. This can, for
+> + * example, prevent overactive suspend when a dependency's usage is primarily
+> + * driven by one of its dependents.
+> + */
+> +static void rpm_propagate_last_busy(struct device *dev, struct device *target)
+> +{
+> +	s64 busy = atomic64_read(&dev->power.last_busy);
+> +	s64 target_busy = atomic64_read(&target->power.last_busy);
+> +
+> +	while (target_busy < busy)
 
-This is strange. You mean they are volatile by definition (HW)?
-Otherwise if it's just a software issue, it can still be done,
-for regcache there is no difference if the offset is real or paged.
+But here you already have an outdated ones, no? Why is this not a problem?
 
-> > > +};
-
-> [1] Datasheet: https://www.lcsc.com/product-detail/C5129967.html
+> +		if (atomic64_try_cmpxchg(&target->power.last_busy, &target_busy, busy))
+> +			return;
+> +}
 
 -- 
 With Best Regards,
