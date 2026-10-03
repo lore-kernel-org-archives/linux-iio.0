@@ -1,116 +1,113 @@
-Received: from mail-oa2-f12.google.com (mail-oa2-f12.google.com [74.125.231.76])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 502B63B585F
-	for <linux-iio@vger.kernel.org>; Sat,  3 Oct 2026 04:59:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.231.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791003552; cv=pass; b=L0DDKfz8mfVfcIYUPBsqcZi1W4j4ubq+eDms3TPAngQc9eC5P577vI/65V9VXzTNT9HNXptNO0129JXoA9PHE9c9HqpFUzNYqATPH7vKF7Qj6abvybE+TSfiFkF4urjtyA2VkMFauKGdwvXjFBkzBC42CYzX4uL/Ow1E3DLhgBg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791003552; c=relaxed/simple;
-	bh=ZLTE2MKfj7oX+J0YHkJb4yQZ7AHwrqVbGOY6k2lcfoY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HEQrge4/Lgo9GB7hqcKNY7wnzoQKXEC/4Lc6JO2a2nYOKzvP+68Z9VNwGhLqrou1/lK5gUnaRr1n2jyIZC+SHGtQsL9NWnMgWN8xV6oHOAblEOzBJKGpnQmAVTvH4NW4OKaC4waHBkR8E9a1opE9RL/unuQmh2hrJzyIXMvWNsc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HpQCAy0w; arc=pass smtp.client-ip=74.125.231.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA0CD38D3ED
+	for <linux-iio@vger.kernel.org>; Sat,  3 Oct 2026 05:05:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791003942; cv=none; b=SduWRP++0aalXnuQHmvc9qRNn9tS3e0PZhva/1g+9MIDU2hogLixos/dpI7VoQKKBE6yi9fOOzApJlg7jX/kORsduiEAg8RLZuMgBw2gl1O/5KCPGkvId0qPtEagYkfIgbgwktFcFQx6KbiZeF4dneP3zpryVAr5lmjeUAHG/zw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791003942; c=relaxed/simple;
+	bh=1n3hNLNA8piD8V4+ptQPNN8L/VyoZDHbBd+gVifAf3s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lgvIInH7txg3dECTLeAtuISPhIMh3fL6NLDSlB25A1satoCv2HGA08JL/Y4LrPmar0fGd/kI8nH1mkrXE3DOT21aqiDrf1q5Isc/PAsMUdfORxcu9NzcuMrXu8mf5P0oaQLoDY6eeUwZIR3xncbkvE6dJROPEl/4K+yiOthUKXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tk1FUyKO; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HpQCAy0w"
-Received: by mail-oa2-f12.google.com with SMTP id 586e51a60fabf-469fdb78b1cso86014fac.0
-        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 21:59:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791003547; cv=none;
-        d=google.com; s=arc-20260327;
-        b=VPrWh5+Xzb1BtMxXEa/GfkNNf5gjRIdslDLciNUy9POYcMb601ln7bCtSZ9zssx4h1
-         XY5Xdc87E0E8XPQOXUvkHpT3MIzbmZYzE6fe8VvB0ZRxN3O7U5ps42jMzYTPacET/83/
-         yl+skF7ogv95kSYVX0irngVA3jXbjaFysZQJqWMyJ+TtdIFC76squabJuHU4P3sR3XH3
-         J7gFO7N/CAFb0vy+Z4TQ4PUi+X09AWW7xfai1fpeK7b8uDUDL8ovZww4dh2GDcNIn+96
-         uN6EnUYZysiZZ9lXGZXMeI101c9S6DWh4jXiSJCuLTPG2uRBen2m0QjZbHaRHoKQtRb8
-         eBbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ZLTE2MKfj7oX+J0YHkJb4yQZ7AHwrqVbGOY6k2lcfoY=;
-        fh=/iMn6UHX5sthnQI/fA4mawVU0VIWfHEBRsCez5MppgY=;
-        b=S55k9bAyd/M0NjGl+FrtRV4DwMYEY419XwNwBe5aoKeeuG0t7wPub+oGOjjitVHR7b
-         95bucSy2Zx7z3b424WzYFHjIYdL+v3ltEUZ6bJjl/GGOcpNl3iLDVn6PLTsOTipIausG
-         ZehLEfUOI0YN+hpHlQXc0sDvfv5dZRNyc9+DMk/mJcP5F375+pYiQAN8sa+iv6a1Uf3n
-         c/EswpLb2UOZvgaXJOGSKDFF0Zh0R50bbzR21j9C2FJ9y20XMp/uMXQG91M6ho6WPG87
-         oOdYRHA1xdgdt6OkhrrQDP4V1i0DNGF5LVRkQwTB7RlK2CO+rhcFr62Uvpuk9aiIHE3Q
-         EiyQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tk1FUyKO"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3a49623b865so87348a91.0
+        for <linux-iio@vger.kernel.org>; Fri, 02 Oct 2026 22:05:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791003547; x=1791608347; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ZLTE2MKfj7oX+J0YHkJb4yQZ7AHwrqVbGOY6k2lcfoY=;
-        b=HpQCAy0wFV3TSpsMHi8rX8dXg+3UW9bYzn5YPGd34SVi9JALdhfSvF49e/IST9u7X4
-         EUaQ1nbrmU3TIjrNa6EusGjlLuwNDyNZuyaXLDk8UPjsuPrEGS7az0yRpBKtRgOplA1H
-         9I8U/CmyGkHRo2yiiEP8LbJRhASPJO0X1ml/o2REG3BfbzYLI9MdXPdC9vrwpm0d/EIw
-         k6QeMiPdg0XOQyTlQ9xE3h7yJPvNZ2x6GwsPvhVF64kRpgmq1lvT7uqJYor0M0RzdV/3
-         ZigNMrOPOH0bm6RM20uvXH3GEIocSY9wXyS1uoz+ZS8IGXtib9FuzRuVxFhvV9E9OhSi
-         vl/w==
+        d=gmail.com; s=20251104; t=1791003941; x=1791608741; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=x6LkvQ8Kd/cKQAlxyeidVUPpFg7ou+cK3PrsLKZpAcY=;
+        b=Tk1FUyKO6GKXHLmUBaZNdYaoE7VmXVjEiMrnRJRWTCBboJ2oIJS78fj6tXEh0RAcSr
+         kdAYctGmL1u1mPYIdLcFL+trD/JPPd1Cf59C676ykK9m9jmZpCYp/NaJh9Vf1JJEWAMi
+         TMoGeMc/ediXMU2/enRViU3KPNrkhec8nY6Ni3VfftIRs6i9qiQVH+s+pCKYuZcNiMC/
+         IwfzlJ2sn9SP2qwxQAvinUif8ynFJTJGxA/zjiOi/GLC6Er5cJCcWj7P95e85CpiadK6
+         cWlxs3vSI6XOnVDcMBI6sgDcM7q96P1ajvkjxVgaIkaQaZtq3Y89uWkbTf3/eHexw2hc
+         I+Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791003547; x=1791608347;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ZLTE2MKfj7oX+J0YHkJb4yQZ7AHwrqVbGOY6k2lcfoY=;
-        b=mLMIeYAJuV8Cgrr3Za+TAoqKgUqgomxeY3xk+OJBSEtHdzwwvBmDSVMt0qs8yKqjRm
-         8Dbs29YMbE8yKUhC7jwMaLhAhG1oVgoykq/3q73JwvuAKOLucqjfT+d8cHAO/LbyB5VQ
-         NDcF3oIo8PlgIGwZZcM5yixJYPOlmVRlY3jJZSzd754C+w2jH+bhChrCr/gTyW99Ytqt
-         viqlF4+tcV4jmEYRIaubqBZdkuGdV6dLEPFyVfo18cWHhbQc+6kmSo0uh+FTmmGUU8j3
-         Z4RuIGuEavgJ3Ci0OulysvO3WuX2GwzAOMYQ7OM9Ug3vu7AxuJksz0MzFKRrCnj7iRBk
-         3NMw==
-X-Forwarded-Encrypted: i=1; AKwUvBzbw/KLSsY5Y0JaEmYUY/ycltk1Nfq1E+yIpr0abiasipih/Y6asaRfcEYlF+EKMCtWfp/t6pmCqmk=@vger.kernel.org
-X-Gm-Message-State: AFuF++lFz3PDtdgfOBVAsCXVAFkm3pqAZ4gbysIyclspixNi8TJpJs9n
-	rVcqLMe/63Cl/3RdxEqKnq9RVzfanJRdPIisjIl9B0zbW7yNpl1NaxkPAcUWWadD5QrG446C3Dz
-	h+cosibdd5ZCyb/09/8x8v6sSUHejnavLIXXA
-X-Gm-Gg: AYBFou029YEIgjma9xRBd7clhPVzUWgOND6svmPkoKzn/T+EA0QLD+QkysM3nBQnsM/
-	SGFRsbbsOK7whQ5gRy033t7CrRf0tvjZMeSQkOFw2pH1psW+MWqFhTDQ9bIKAkPabVhABPSNcLA
-	g6UNr/hqD/+7IiAouoIe4hICxIWkcKuyp3DX1G9cX7sWUodSTa0M18kutZf7AgG6aOLAftvfmWl
-	MqXEBb08uBmnPHSGNnvZK99IfGapGggfbUUTR0XFu8ZjwJBv5HB5Tn7q44/7KT/G+fbmwjY2Dss
-	aV3PzPWRTKJJmf8NLvvYNZtRZSQrGlUr/lpcFrwm2daG1Khan61MCbB0
-X-Received: by 2002:a05:6870:6392:b0:49d:ff8c:205e with SMTP id
- 586e51a60fabf-49e15e0f1b4mr4145457fac.29.1791003547211; Fri, 02 Oct 2026
- 21:59:07 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791003941; x=1791608741;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=x6LkvQ8Kd/cKQAlxyeidVUPpFg7ou+cK3PrsLKZpAcY=;
+        b=GYEB1PliHNkunPfLeRq53ACAaVUUYmz2Kki6sR3Amd7M0ZH6OPda2yEunxPPgYkMZL
+         HBAv+ANYC3YiYJG2s4FKtKtT0jQUMyies5smW79buKuPOrOAgabn7sWFUjv7VHDJLBU7
+         bI9JhsfdLEhmzT77LhUBmzcMIX2FMnil3xFVdV/Qh46De6PpT4OWGXMQW4e3KrZn6/uq
+         M6/k2w3rY8H1GWuKchtAk9l37iig7FpycJloW13n+HbmMiRa0OZWBr2G9FwXn8TUwiJx
+         rW1Ur4AkSH+slZfqTCYbV1b++YBVjfUOZ6yUrEyDR2ZKx+Tetmm4wnnwbGq/MCm2XoQ6
+         mFHA==
+X-Forwarded-Encrypted: i=1; AKwUvByhETyTyixYyvKSgWSYGkAmVONY9D0i2QU2WwkwR/doL9spw5tOky3OMQXsVceAmAtYQBUh01i0v/I=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKzyI6PVr3TwKo7YKxVr7YuJEairHgrjcJSF7+QaZl6GEHS4C6Z
+	30c0BQnl++3L388zj94pbXRow7Uw1JvBkekhdzxBwglkv2m6uPikfAxj
+X-Gm-Gg: AYBFou3igYCueTvMkdqomrHpxgsqFn9y1EBhMpeBs1pCfHw9GN4eMTaUBu+90rAwHzy
+	FlbBox7v8VWPprVawXcsg7cmzHz62bdzevZVhlZ5BtYNH3l5ct0jSdx609fB6QT36INYiicg0nR
+	jm+HklrgRn570OEradIZjStbeNS3oS2E9TSiaV8aEIAkfwDGRY2S6WaDjuwBMaLLb4mYIB5ZeIJ
+	c1tH12HIuAJ1+9me0keFqYW50agZbsu+hhvTy7dzHQ7sVfM4WNugCkUwkqrHxCHYFLzj/DPslie
+	jVJkDNnS8eyS2LrRuZQ95d7yXcHxqKTFaUsnIHyCAZJ8pJ7mdiaQyqvybRJEeHtW34iPCX8FY3b
+	grKzFEOfirAba1AoiH7OwztsV5WG2wsio37Pc2ovf0w5IG0YLFZ5+YcSa1fbFV6touZGL+UmW1+
+	hMIf/66h/6P6QnUCvbeioVwjfMAzh+2j1xKbN5N4n/+qF5BmcPZkfNGCI8HeNMb2TvML6uGxH29
+	eRriTauHzAE28m9djmC1g==
+X-Received: by 2002:a17:90b:1d43:b0:39d:fcbe:fe04 with SMTP id 98e67ed59e1d1-3a78675860emr1077468a91.2.1791003940820;
+        Fri, 02 Oct 2026 22:05:40 -0700 (PDT)
+Received: from l (ec2-13-230-214-216.ap-northeast-1.compute.amazonaws.com. [13.230.214.216])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a78d4a869esm1650442a91.2.2026.10.02.22.05.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Oct 2026 22:05:40 -0700 (PDT)
+From: Liu Yufei <lyf98405@gmail.com>
+X-Google-Original-From: Liu Yufei <lyf98405@gmail.com
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Liu Yufei <lyf98405@gmail.com>
+Subject: [PATCH 0/2] iio: proximity: Add Vishay VCNL36829 driver
+Date: Sat,  3 Oct 2026 13:04:51 +0800
+Message-ID: <20261003050453.413700-1-lyf98405@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260929184900.39515-1-abdelnasserhussein11@gmail.com>
- <20261002153302.5c64819d@jic23-hlaptop> <CALoEA-z6Q3YyYZfLyRixk9dPy8mn+mmVJVUrjoCZb6T7FXcDSA@mail.gmail.com>
-In-Reply-To: <CALoEA-z6Q3YyYZfLyRixk9dPy8mn+mmVJVUrjoCZb6T7FXcDSA@mail.gmail.com>
-From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Date: Sat, 3 Oct 2026 07:58:55 +0300
-X-Gm-Features: AclHuK-DJYCkVcKcz3EQyuz62gVz_--FKN6noxc3KcgVxv052URH_j7bypIZRJk
-Message-ID: <CANpqX3Z5_RHPHFCCovZ1jXiQcYgkB5uJVzAKX02udzt2+KDcyw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] staging: iio: accel: adis16203: fix axis mapping and cleanups
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, gregkh@linuxfoundation.org, nuno.sa@analog.com, 
-	Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org, 
-	linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, error27@gmail.com, narcisaanamaria12@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi everyone,
+From: Liu Yufei <lyf98405@gmail.com>
 
-I apologize to you all. I am the one primarily at fault and fully
-responsible for this mistake.
+This series adds support for the Vishay VCNL36829, an I2C proximity
+sensor with an integrated VCSEL emitter.
 
-Jonathan, thank you for letting me know=E2=80=94I will make sure to always
-check linux-next moving forward.
+Patch 1 adds the devicetree binding.
+Patch 2 adds the IIO driver, which exposes the proximity reading and
+a configurable integration time.
 
-However, the important thing for me is that I still learned a lot from
-Joshua's and Andy's reviews on this patch.
+Tested on Orange Pi Zero 2W.
 
-Thank you both so much for your time and valuable feedback, even if it
-was on a driver that no longer exists!
+Liu Yufei (2):
+  dt-bindings: iio: proximity: Add Vishay VCNL36829
+  iio: proximity: Add driver for Vishay VCNL36829
 
-Best regards,
-Abdelnasser
+ .../iio/proximity/vishay,vcnl36829.yaml       |  55 ++++
+ MAINTAINERS                                   |   6 +
+ drivers/iio/proximity/Kconfig                 |  11 +
+ drivers/iio/proximity/Makefile                |   1 +
+ drivers/iio/proximity/vcnl36829.c             | 278 ++++++++++++++++++
+ 5 files changed, 351 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/vishay,vcnl36829.yaml
+ create mode 100644 drivers/iio/proximity/vcnl36829.c
+
+
+base-commit: 52c36105f76e96b638152a42e735f2e7767ed946
+-- 
+2.53.0
+
