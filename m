@@ -1,90 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mail-m49197.qiye.163.com (mail-m49197.qiye.163.com [45.254.49.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4703F0AAF;
-	Sun,  4 Oct 2026 08:43:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D83631A55B;
+	Sun,  4 Oct 2026 09:32:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791103386; cv=none; b=Ye1VlTrouUKZZJXcqVb3I33RqBHP2uX0UX5UC6X22ZwxVTz8rGP2PnjIM+x5UBdnEpIGlsQMlFhlrhM2QSvM9SjX+Bsnw7PXkI/l06gwWBI6xudgvIi4X1O7piaE76bWmmtBQWYjUxlyV42YDsnY4V2gY0hAXBJ5O49Ees0zb/I=
+	t=1791106336; cv=none; b=Cz8RU+m9W7mliDRazP+hrLfHwjltw0ZAJiy4MhCUcyvRYZBf21HcNF9CtAnXoCDn2Hx1eKs/ottwj0LgeDHohb1dViHGu4e/01YdR63QGuh21Rb7bYfd3/s7pKqqPikLmxtzeveQkkX37ecUF+qO/e4pOA9MmUcX87S6IQ9GIXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791103386; c=relaxed/simple;
-	bh=2vGAu/0YxMMlosDI7FUBatoN/q3StUPF3WWTMNiH7hk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sGtZHdmrfp2vq9yP7EfCgr1EEMgMlH97AIJm+o3zTZS9Nj75bBjuAU37gyv54CDnVW4tgplY6JY7DEpjUKtC6J+37AfgrlJYG554cmyUzA6C3TLFG2PtL8mLk+3RoMQld9zmhwxlYbe2o5JpNfj8gB4kpjSs/4rKSwU5rRoHXqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iroGfBfA; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791106336; c=relaxed/simple;
+	bh=bJqunWKjCIs03aC2xgQfhIza1vw9F9flqNLZ6zKsi7s=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WcF3XFPPMPssmROU4vw2AE04M+r1tldlcOU496wYKHkiZwnUt6l7ZI3O20msf+NqHGB1AwyVBOYLyjE4Yx1A3CaYKw2gS64XzGPWn6jiPVbp45nbwl30tEmw1MDkgEak57tY4U7X+GKDNZ3u3OmTO9MaWtfrDkRid+Kw/u4Ln6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn; spf=pass smtp.mailfrom=seu.edu.cn; dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b=ba9e13Bw; arc=none smtp.client-ip=45.254.49.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seu.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iroGfBfA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791103382; x=1822639382;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2vGAu/0YxMMlosDI7FUBatoN/q3StUPF3WWTMNiH7hk=;
-  b=iroGfBfAcQ0v5B0AUrDKucjJVqXVplzixYLIUfrn1nhkBt69l7Q2pmbi
-   snT+rPeeqerfY2Z6Z73iwcw2z0jNEnLWdsF6/447/lVAmqljg30a5/0PZ
-   77hmbBOO9dTqynsemTh64Ps0qT4Y+QwkY4M55sdP1Msx2iXdpY6bUB+Q5
-   B8K5tFm3MyCjGajKVUQ/o5LPZ7QUKU9JdRBwZEWf2uxzPtoxGB4pyyb1U
-   YRaC07Yj+AV5xAZ+iD04dVqryDYUwSFM3pbg72zQHxj2l1dEZ3h1UNrDF
-   RFS3xFb97A2Rz2wAFL7UuYf2N9BDf1bEoxBmf8UC3bG0UXkp4pX5GfcqZ
-   w==;
-X-CSE-ConnectionGUID: DryS0mB4RXyk3IrZlA3/Jw==
-X-CSE-MsgGUID: dZ1qAzKZRNqWvJAf8/vYYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11924"; a="102320740"
-X-IronPort-AV: E=Sophos;i="6.27,139,1787036400"; 
-   d="scan'208";a="102320740"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2026 01:43:01 -0700
-X-CSE-ConnectionGUID: GldCbnOhRHGw1VeubeHqHw==
-X-CSE-MsgGUID: dm6UexKKRbyxv78kTMUKyw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,139,1787036400"; 
-   d="scan'208";a="276095244"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2026 01:42:58 -0700
-Date: Sun, 4 Oct 2026 11:42:56 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>,
+	dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b="ba9e13Bw"
+Received: from PC-202605011814.localdomain (unknown [223.112.146.162])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 4feacba8c;
+	Sun, 4 Oct 2026 17:32:09 +0800 (GMT+08:00)
+From: Runyu Xiao <runyu.xiao@seu.edu.cn>
+To: Andriy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on
- mutex helpers
-Message-ID: <asIRkK-uUz4FKQBN@ashevche-desk.local>
-References: <20261003214516.128573-1-zoone.rupert@gmail.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Karol Wrona <k.wrona@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Jianhao Xu <jianhao.xu@seu.edu.cn>
+Subject: Re: [PATCH] iio: ssp: Serialize watchdog timer state changes
+Date: Sun,  4 Oct 2026 17:31:57 +0800
+Message-Id: <20261004093157.1188299-1-runyu.xiao@seu.edu.cn>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <asIQZ7no-0OrOGn0@ashevche-desk.local>
+References: <20260930070319.2933744-1-runyu.xiao@seu.edu.cn> <arzdLtzXQ4cvObrL@ashevche-desk.local> <20261004053915.1138888-1-runyu.xiao@seu.edu.cn> <asIQZ7no-0OrOGn0@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261003214516.128573-1-zoone.rupert@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0aa10641ab1603a1kunm4ba7b26b336b73
+X-HM-MType: 10
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaQksdVk4YSxhMQh1ISBgaGVYeHw
+	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlJSUhVSkpJVUpPTVVKTUlZV1kWGg8SFR0UWUFZT0tIVUJCSU
+	5LVUpLS1VKQktCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=ba9e13Bw2ybZt5asDirFmJ3ovZweI3SNMg6fmPocb17sMdiHbxjSDBfpppSa0XmSgExkLnftI4kDPYRBywSte0uR2qCx7Es62UBXVTxyrmRpqeFrWqBv78C/vIIQOhUUyT7Y8dNnM9KcLXA3keKiAcm0jsXf+xDu+P6h8Pa7HMI=; c=relaxed/relaxed; s=default; d=seu.edu.cn; v=1;
+	bh=bJqunWKjCIs03aC2xgQfhIza1vw9F9flqNLZ6zKsi7s=;
+	h=date:mime-version:subject:message-id:from;
 
-On Sun, Oct 04, 2026 at 12:45:16AM +0300, Rupesh Majhi wrote:
-> The __acquires() and __releases() on adc5_gen3_mutex_lock() and
-> adc5_gen3_mutex_unlock() name adc, a local declared in the body. With
-> context analysis enabled for this file, the build fails:
-> 
->   error: use of undeclared identifier 'adc'
-> 
-> The lock and unlock are split across these two helpers for the ADC_TM
-> driver, so mark them __context_unsafe() instead.
+On Sun, Oct 04, 2026 at 11:37:59AM +0300, Andriy Shevchenko wrote:
+> General rule of thumb is to defer a new version until the discussion is settled
+> down in the previous round(s).
+>
+> Same Q here, can you reduce the gap by 4 bytes by rearranging the new members?
 
-Doesn't sound right to me. The __acquires() and __releases() IIRC are sparse
-annotations. If clang has something special, it needs to be addressed in
-the compiler-clang.h, no?
+Yes. I checked both layouts with pahole on x86_64. In v2, wdt_enabled and
+wdt_suspended are at offsets 80 and 81, and work_wdt starts at 88, leaving a
+six-byte hole; sizeof(struct ssp_data) is 816 bytes.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Moving the two flags after time_syncing and before timestamp puts work_wdt at
+offset 80 and the flags at offsets 203 and 204. There are then three bytes of
+padding before timestamp at offset 208, and sizeof(struct ssp_data) is 808
+bytes. This reduces the structure size by eight bytes, exceeding the four-byte
+reduction requested. I will include this layout change with the other agreed
+review changes in the next revision.
 
-
+Thanks,
+Runyu
