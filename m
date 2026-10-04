@@ -1,28 +1,28 @@
-Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011006.outbound.protection.outlook.com [40.107.74.6])
+Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011012.outbound.protection.outlook.com [52.101.125.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD73474255;
-	Sun,  4 Oct 2026 17:49:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 765A2473C84;
+	Sun,  4 Oct 2026 17:49:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.125.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791136181; cv=fail; b=rh7/6QSAz65KpYY17chN3lzlXrHs2wZs2ksUTrWBcusJsla9dw/iMBFECs7hwY0nXQwRKC2e64zFq3/K4MlmKJN+x18OUZK32rFQA/FPT9OLVfTEy+MP5zTi5/7NWEfyDFSFlqCTh/hrDiiOFzMpKTspTpimZ9LQzJPy8PQ6EdQ=
+	t=1791136189; cv=fail; b=ELSqAPwMravL1dmuPWGC4gx94d/HEI50yPKuWjxSSzEWHkv0D3I2aPqU9UJFs6rh5fp0YXA8fkXwMd+1dL6dHYd3H64ARWGQk559vAK/yZqXUjonLNtT2D3X2CT0Y/Lbfw5h/ckMqYbOp5nxwrIb14m9Wq3wJT6wNE0FwmzR4n4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791136181; c=relaxed/simple;
-	bh=Eqzjlw1Z0Kc9QKnWBh1Go4r/gHGZGQGp3cbfFmPFoDM=;
+	s=arc-20240116; t=1791136189; c=relaxed/simple;
+	bh=Jib3iLFleCQtwrsnL6r0GaN2UWfJi9NiTQttgNyRAcc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OxWRrQE/KqEWyS5nEzS47Zyhcgl8PEkr6b3yeoXH/Po9L1GUm1fqT5QmxUzLIahFz/3zCiynv0FKE09ISsdRgc9UV4EjY2Ug2okAi2yLdOzRLSlkAoqnAcsaAYrTk7G/9LYQQIMXPtUH/1UKeuq+PcOYplnzEOusMIXuJBeeGrQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=N3O9zP1r; arc=fail smtp.client-ip=40.107.74.6
+	 MIME-Version:Content-Type; b=MCfQg2ETNXgjV0BXaDI1SCHHW8EOlhDivypX3ORUgvIFwOmANtT9lGLFfH10RZJBcFX4jua6GOuznAujZzHUMdzSSTh7w3e6qAHT63CFutBD/Xjs/UcwpKa4FzZsjMPD38qDFroXhnWR7UTcG+r/nS4qgIYGsiiL6u08CY1gTAs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=pI35AMGQ; arc=fail smtp.client-ip=52.101.125.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="N3O9zP1r"
+	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="pI35AMGQ"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=b5Yl2PzspRfj6YbKFDv0ImS+keKJK10nbkOHwPC+lcG3IYFrqi/d2NudpgQAMLJPbv1vEGhnT62yb0H+VQy3dv6e1OTgIWctJiXmpU7AImi18TnFK/dWKSObClr1zGs5G3hPrEyD5AZsCZ/8Q51YlQGKJMgh9A2nwuYgd9Dt4VuzOVpCnTFHr5QDxHAm7QLSlspLpm3S4KMBjF9fEQGBANroKgn8d5ApmxM1kUYuS/HaOzbzzvLOHkevBjytP+3Go0HEKL+FSk9ibJLQ+TvNEPhHVQT7Zg/T2fWLaarKF6waQ3u6boqfwRcyLSO4oJwuhqMc6iEaBL83/uD4tSE0wQ==
+ b=Hlfc7t5U8HcgvJzaUnxGnslZQ2SBvp14WqikzRSyligrR8omDvGbQ6XDywSs1z+fV5Olr3ASt3dSlAt7pmPfALooWFi3IgiG/WkXBOd5bTFbLf7R/K1+g7sZQGMGo5Amnb54EBuINvgQCzRzuEX3nwUEDnJ4O5VoKryAl3lTr5HDeYm+Q0BdhQ6/ACl3SjpxQFl2KbSpH/ZgBJQAPUjC3M7C590rgUoxoMtVvrP3jV9L8ktGKwZrxQ1+JYeotlmtE932Q3zxBfhCwxFbN3MQ2IaTj7syZGeVySxd9Tmfif/u11quAoDlsuDe+iZpj6g/2ocbhl7eL8rKXezS76vQGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B8uB2BA4Hs5u9TCjRXZnMYZxitigf+c7yMortf2m6JI=;
- b=w5x4CzMldIqgIb88Lft4bf5+2Y2Ni7VPyUyYy+pwRm4FihomCwN+7FXrsupWH5G3cBPYh2gdJ3oGiWbwOJzDHshYfUGznyqKOg4BSHhwErvBxlAara1KTwaDCGrhHVirg8qslZLL7n6lqbPPE8XSCpfWT5eo4zTfyhOOfw5v7aFluG3dXdzIAIYRGtpzozgt7XUAKuLWYi1l8VvuaU81YK0rzXF89SJxChVtPPmvKoF3a05yJ4P8RQbtwiiaq7Wfd51QdL9NDiPk6PTJr1x9agNrDbCQtbcBt2LY0La2o0fR+xOZcVmPo5AEGejNbbH/pOuvoAEQXnxy0CLYLOCEFQ==
+ bh=9BaUiax/Jl+FLOEBHfcUyQSP7tpZAnLdakW08vQR5ZQ=;
+ b=VoV8NHwQmpQpAv4rfpQTjgC2/wOBRR0DnTTx4NR9jBs9FFamuwf89H+N/XT5+eK09vr+cZ1Q2s0ZUDMG7V13mqoHYC9NwdL53+xhBu1b1e027qfrR3+p5hSU7wmcDJeDCrFOY9AdF44rluGvnFwFtEcqb4USV/msssuX/hDIGeMSFIksQHdcY7jbNhogT7d9bPo4RG17MXljcp1jRW3fJ+0uYRLBr924YKc9IWRdsiWxHcS4vhISDay5nmrmMuEXDvtbNZHTvVeoejrTtc9kRP/rMXZwx0Mf5VlHoUeYfg96mHS8gY//mu9E20DXIEryMfCvFADy1Irl+3qSAG8mqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  8.62.32.50) smtp.rcpttodomain=bp.renesas.com smtp.mailfrom=renesas.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=renesas.com;
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B8uB2BA4Hs5u9TCjRXZnMYZxitigf+c7yMortf2m6JI=;
- b=N3O9zP1rj6m3PZhTYwWGGAUvktKMn+ipviOh5uGf+mEEXMo8ZIizkp5jY/jjT1cJk70cZAYQAIvWT8mqgNAqC78fV0fSm+bJbsZb2ACD4f/rtwwbSZTbRN/3Wnci14npnx5ZvpDlRaiS57zWJBAtAWoj0BHSDNB3y7TBFxdUtP0=
-Received: from OS7PR01CA0069.jpnprd01.prod.outlook.com (2603:1096:604:253::15)
- by TY4PR01MB15967.jpnprd01.prod.outlook.com (2603:1096:405:2bc::13) with
+ bh=9BaUiax/Jl+FLOEBHfcUyQSP7tpZAnLdakW08vQR5ZQ=;
+ b=pI35AMGQ1Q8NR/vY/yK1zdauEhZ2UTisptW12ahxKPr6IRtgTVjfi0Xwn1f290odMAzhZ7dpfkixepYFEWEixTqyDM8JndnRIxUqY7CnGh9ILxpqzmj1duPx47HBR0KPB/07nF/D8UIxbhyXeZSEciUaL6auo2wlOa+TInB91DQ=
+Received: from OS0P286CA0145.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:16b::23)
+ by TY4PR01MB14450.jpnprd01.prod.outlook.com (2603:1096:405:239::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Sun, 4 Oct
- 2026 17:49:28 +0000
-Received: from OS1PEPF0000D216.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:604:253:cafe::a5) by OS7PR01CA0069.outlook.office365.com
- (2603:1096:604:253::15) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 17:49:32 +0000
+Received: from OS3PEPF0000003C.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:604:16b:cafe::8) by OS0P286CA0145.outlook.office365.com
+ (2603:1096:604:16b::23) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.20 via Frontend Transport; Sun, 4
- Oct 2026 17:49:28 +0000
+ Oct 2026 17:49:32 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 8.62.32.50) smtp.mailfrom=renesas.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=renesas.com;
@@ -49,12 +49,12 @@ Received-SPF: Pass (protection.outlook.com: domain of renesas.com designates
  8.62.32.50 as permitted sender) receiver=protection.outlook.com;
  client-ip=8.62.32.50; helo=ejcrelay004p.adwin.renesas.com; pr=E
 Received: from ejcrelay004p.adwin.renesas.com (8.62.32.50) by
- OS1PEPF0000D216.mail.protection.outlook.com (10.167.240.23) with Microsoft
+ OS3PEPF0000003C.mail.protection.outlook.com (10.167.240.5) with Microsoft
  SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.14
- via Frontend Transport; Sun, 4 Oct 2026 17:49:28 +0000
+ via Frontend Transport; Sun, 4 Oct 2026 17:49:32 +0000
 Received: from demon-pc (unknown [10.226.92.36])
-	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id 7E5E53000253;
-	Mon,  5 Oct 2026 02:49:26 +0900 (JST)
+	by ejcrelay004p.adwin.renesas.com (Postfix) with ESMTP id C44783000246;
+	Mon,  5 Oct 2026 02:49:29 +0900 (JST)
 From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 To: Biju Das <biju.das.jz@bp.renesas.com>,
 	William Breathitt Gray <wbg@kernel.org>
@@ -62,9 +62,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Subject: [PATCH v2 10/15] counter: rz-mtu3-cnt: cache function values
-Date: Sun,  4 Oct 2026 20:47:47 +0300
-Message-ID: <20261004174752.507499-11-cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH v2 11/15] counter: rz-mtu3-cnt: cache external input phase clock value
+Date: Sun,  4 Oct 2026 20:47:48 +0300
+Message-ID: <20261004174752.507499-12-cosmin-gabriel.tanislav.xa@renesas.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261004174752.507499-1-cosmin-gabriel.tanislav.xa@renesas.com>
 References: <20261004174752.507499-1-cosmin-gabriel.tanislav.xa@renesas.com>
@@ -77,42 +77,56 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OS1PEPF0000D216:EE_|TY4PR01MB15967:EE_
+X-MS-TrafficTypeDiagnostic: OS3PEPF0000003C:EE_|TY4PR01MB14450:EE_
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: a0d284b3-c62a-455b-09e2-08df223fd6a1
+X-MS-Office365-Filtering-Correlation-Id: 0b509499-537d-485d-b047-08df223fd8ba
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|23010399003|36860700016|1800799024|10067099003|56012099006|6133799003|11063799006|18092099006|18002099003|22082099003;
+	BCL:0;ARA:13230040|36860700016|23010399003|1800799024|376014|82310400026|18002099003|22082099003|6133799003|10067099003|56012099006|11063799006;
 X-Microsoft-Antispam-Message-Info:
-	SB26XvJu2TdSpd4Lp0i9AWwqbWh1TjpHSBQHuuLh1fgSvkFwKdu2vISQKOOcqQFXIJWd6RxGlxRVWgyvTcdz+mvODAySd6KtSShMj7k+JpmKatoIMNQ51uBG1PJIAgsp5o/viulkBpS3YeskEM6hza0vyPrgGSCmyy78yt+EPhpUxhNbgYlvuio756Mie8iuuaiQrYcohYfC2o8rgd5O8AEyohPde1o+bVOH4VTRqXo1WRHYRKx7jh+aIKIXDd61xTaVwlFBfqxeFlUN2bJeC9ONCU0eHnT7LidlDeTG3PGw5OrhY/snMlNlGM8tOWYd3TJLQciUqLtuf1LWYeMj77+bwhNjDeILmSYJ/vI9tT5xGLIB/cJ3KOo+zhjkABk/UYSpUnpy7Zlyq6xwHky/4DRx5cd1PXfeyVax4AifqSwnWP+LAKopc3SESU9mTEsT2wNVDABKtlpFQTvlmkITWe93HDu5prrIpzmM764drpqaktbMzRqRL5eth1vWBXyRJECknMOgEAa0pbn1h/+xOdNS8+zkuvCNvvmmJ/WOPIkM27QNq7y8W3blJVb649YPUVE3kajJ2ioLHUEdy697iheW57id1mj9OnMXtgv34kY65yyC27Y7rk7ExLzbJEFNTPC93m9Nj6/KZOP8jmq4praOQ/volY7iYI621VHSxZnh+THoVLwrcnvKN66FeJnlNB0mEsVHYDFmFlFHciyKWQ==
+	CR+15N3+cIFvBacS6sdyx++AAWBrHfAO96pml/XdNsiu/Qf55NBXQz748yW1M69MZJ8lDxDlvFUoDqxUGUaJWtD1Pqmy0Yr8VM2DjgNxg4PY/xwwZkV9Q4nWi1yjh9VP8PEUXfJV1V3PCrFyG9bqXyv6LVS8dWOFLAYkH5vDPOU3JfZ3ww8dSfQT9WPTQJ6SgVxUd241lzb+/OUeiptLZufs/KKOo9l994G7QDNZ6IFPk4ff6vUm3Jn5xwBVBNHsO3I7ZHS0ZqIjWYA3BA57PqNQKMXbN+uhX05eGYRFwsisReiZcaK5qq8jOMvBXucrpHLIfzYg55QQJAYLP1yMUMIOMsEwXkZSAG/0M6y/65pQE0lTy856Ek0fVx1UhiEFQ7vnx0YfynGIou1kujGi4fZINE9qIpMCoxtIhAx1zwC+M9er9H0qzwOJngZ34XPALVELpB/+1/zSsnMUqeelLSN5P8nFXLhc27wbuG8F0d34EaS6tyg7OkW7q5dKviuceII3xPCH3KeiY4+ijTR+zlMW/gHoSWxmJc3wMQJPcQyxJCuOQjgC8qOquGseqS/MpgdiO7c+htvkY/gk3IvLEnLRT6TWv34+bNMPC641o0WhmQ8y81zJjwpAgoyYPnKJ6tkMcW0BPP8UAfp2IvK0zXHgfavXHfiJv9JFsnkmwb8NdZpHrItBpE662G/Q+PFBbLClxSst0dz49Wxsm73ufQ==
 X-Forefront-Antispam-Report:
-	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(23010399003)(36860700016)(1800799024)(10067099003)(56012099006)(6133799003)(11063799006)(18092099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:8.62.32.50;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ejcrelay004p.adwin.renesas.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(1800799024)(376014)(82310400026)(18002099003)(22082099003)(6133799003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	3PyFhgSa/TQeSQMa3NYo0TGhMlSGJzpiB8iqPVXL0ql4KlVhTKdGFdvK7Z328Mq2tZqFX/Hwmilng1tD5huK4T+TbYfd1oiXSrqnJMOX/gdIwqZAv3QDhla23hvKcrIBIpv62+/6al/GqA/opPIocZn8Mz7jxrQyRb2M/DUO/b2gumvF3JoCKl3BG24md53alN5TdVI2NzV31k3B83wlow461E467ZaYNdUsueL8z965Z65Gi3bpIQPeR5DeJCLQmUSoO4N6n8qMg/atql9nGT/o14zM0qh1/DDSJVh2zSdlXe1AUVVFv14wCUZUQ4bO3umNPdri3qtm4xPlvfjReZ8cs8y79EExbTYVJDMVAIbFdZ0hr7svjBMLQPt/pfsmjkGanEVE57ZU66/y+cbeuSWF/8yPpzDC3hBWRXwDeKy3ofy+FiiTy8OMGFkO2/e8
+	ccRC4dJEWd7r+UrC5UidrybT0FC+J11Vvz+pwG5mLU9GozWk1vQBVL8xMd+Z4r+b2n2rAxxoPNOl7Hvqz4za0O0ZjehQ6O3V3g62afrRHfUgBT1iUiCAj+/SYYnFmcRSQru84TKhefhbZHvjdaboBgsCdgbAoFBPAbJu889SvYlG/0qBF5D29jIE4IAL2N7MzlTrLOJGPjp3ELjgj3FPUOdXmerazt2LlZxt9KGIV9GqPrg5RnCqLNS8WfVITINuSmTVtEIwhSNgj5fiemIJSxXLx3GVbjudfEznw/AYhwcM25kMCDYwdS7I8anBiMcRv88RSU4ffOgNwuwWwDA9F32y9z20tsJ/QKXD5l0fYOyVrAP7yQgdKU8OzQFwX0Oksxi2sT9m6NqXHk2EAQ0psDJr+7etyw3XRAKH+42gUpq79mqN1X/FwQRSyJfh4YB1
 X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2026 17:49:28.8417
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2026 17:49:32.3682
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0d284b3-c62a-455b-09e2-08df223fd6a1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b509499-537d-485d-b047-08df223fd8ba
 X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=53d82571-da19-47e4-9cb4-625a166a4a2a;Ip=[8.62.32.50];Helo=[ejcrelay004p.adwin.renesas.com]
-X-MS-Exchange-CrossTenant-AuthSource: OS1PEPF0000D216.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthSource: OS3PEPF0000003C.JPNP286.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB15967
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB14450
 
-If an MTU3 channel is used in a specific phase counting mode, when
-disabling it and enabling it again, the user set mode is lost because
-the timer mode register (TMDR1) is initialized to the default value.
+PHCKSEL selects between MTCLKA-MTCLKB and MTCLKC-MTCLKD pins for the
+external input phase clock.
 
-Save the timer mode after setting it and restore it on enable.
-Use the cached value to determine the function in
-rz_mtu3_count_function_read_helper().
+PHCKSEL only affects the 16-bit count backed by MTU2 and the 32-bit
+count.
 
-Avoid writing the TMDR1 register when the count is disabled to prevent
-writing registers without actually owning the channel, as the busy check
-inside ch->is_busy can race with PWM operations.
+Cache the value written to external_input_phase_clock_select and restore
+it on enable to bring the external_input_phase_clock_select sysfs entry
+in line with the other entries.
+
+Initialize the cached value to true, matching PHCKSEL's reset value so
+behavior is unchanged for a count that gets enabled without
+external_input_phase_clock_select being written explicitly.
+
+Always use the cached PHCKSEL value to remove the need to access
+registers while counts might not be enabled.
+
+Only restore it for the count backed by MTU2 as changing PHCKSEL for
+MTU1 does not affect the pins used for the external input phase clock.
+
+Check if any of these counts are enabled before writing the new PHCKSEL
+value.
+
+This prevents writing registers without actually owning the channel,
+as the busy check inside ch->is_busy can race with PWM operations.
 
 Since runtime PM is ensured to be resumed if the count is enabled, drop
 the pm_runtime_get_sync() and pm_runtime_put() calls.
@@ -121,120 +135,126 @@ Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 ---
 
 V2:
- * add struct rz_mtu3_cnt::timer_mode documentation
+ * add struct rz_mtu3_cnt::mtclkc_mtclkd documentation
 
- drivers/counter/rz-mtu3-cnt.c | 35 ++++++++++++++++-------------------
- 1 file changed, 16 insertions(+), 19 deletions(-)
+ drivers/counter/rz-mtu3-cnt.c | 36 +++++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/counter/rz-mtu3-cnt.c b/drivers/counter/rz-mtu3-cnt.c
-index 61cf26e20471..3557a524a1b3 100644
+index 3557a524a1b3..b1714ab1f7db 100644
 --- a/drivers/counter/rz-mtu3-cnt.c
 +++ b/drivers/counter/rz-mtu3-cnt.c
-@@ -68,12 +68,14 @@
-  * @count_is_enabled: Enabled state of Counter value channel
+@@ -69,6 +69,7 @@
   * @ceiling: Cache for ceiling values
   * @count: Cache for count values
-+ * @timer_mode: Cache for timer mode values
+  * @timer_mode: Cache for timer mode values
++ * @mtclkc_mtclkd: Cache for external input phase clock select value
   */
  struct rz_mtu3_cnt {
  	struct mutex lock;
- 	struct rz_mtu3_channel *ch;
- 	u32 ceiling[RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS];
+@@ -77,6 +78,7 @@ struct rz_mtu3_cnt {
  	u32 count[RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS];
-+	u8 timer_mode[RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS];
+ 	u8 timer_mode[RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS];
  	bool count_is_enabled[RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS];
++	bool mtclkc_mtclkd;
  };
  
-@@ -218,17 +220,11 @@ static int rz_mtu3_count_write(struct counter_device *counter,
- 	return 0;
+ static const enum counter_function rz_mtu3_count_functions[] = {
+@@ -178,6 +180,12 @@ static void rz_mtu3_set_count(struct rz_mtu3_channel *const ch, int id,
+ 		rz_mtu3_16bit_ch_write(ch, RZ_MTU3_TCNT, count);
  }
  
--static int rz_mtu3_count_function_read_helper(struct rz_mtu3_channel *const ch,
--					      struct counter_device *const counter,
-+static int rz_mtu3_count_function_read_helper(struct rz_mtu3_cnt *const priv,
-+					      int id,
- 					      enum counter_function *function)
++static void rz_mtu3_set_phcksel(struct rz_mtu3_channel *const ch, bool enable)
++{
++	rz_mtu3_shared_reg_update_bit(ch, RZ_MTU3_TMDR3, RZ_MTU3_TMDR3_PHCKSEL,
++				      enable);
++}
++
+ static int rz_mtu3_count_read(struct counter_device *counter,
+ 			      struct counter_count *count, u64 *val)
  {
--	u8 timer_mode;
--
--	pm_runtime_get_sync(counter->parent);
--	timer_mode = rz_mtu3_8bit_ch_read(ch, RZ_MTU3_TMDR1);
--	pm_runtime_put(counter->parent);
--
--	switch (timer_mode & RZ_MTU3_TMDR1_PH_CNT_MODE_MASK) {
-+	switch (priv->timer_mode[id]) {
- 	case RZ_MTU3_TMDR1_PH_CNT_MODE_1:
- 		*function = COUNTER_FUNCTION_QUADRATURE_X4;
- 		return 0;
-@@ -260,7 +256,7 @@ static int rz_mtu3_count_function_read(struct counter_device *counter,
- 	if (ret)
- 		return ret;
- 
--	ret = rz_mtu3_count_function_read_helper(ch, counter, function);
-+	ret = rz_mtu3_count_function_read_helper(priv, count->id, function);
- 	mutex_unlock(&priv->lock);
- 
- 	return ret;
-@@ -299,9 +295,9 @@ static int rz_mtu3_count_function_write(struct counter_device *counter,
- 		return -EINVAL;
- 	}
- 
--	pm_runtime_get_sync(counter->parent);
--	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, timer_mode);
--	pm_runtime_put(counter->parent);
-+	if (priv->count_is_enabled[count->id])
-+		rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, timer_mode);
-+	priv->timer_mode[count->id] = timer_mode;
- 	mutex_unlock(&priv->lock);
- 
- 	return 0;
-@@ -394,8 +390,8 @@ static void rz_mtu3_32bit_cnt_setting(struct counter_device *counter)
+@@ -390,6 +398,8 @@ static void rz_mtu3_32bit_cnt_setting(struct counter_device *counter)
  	struct rz_mtu3_channel *const ch2 = rz_mtu3_get_ch(counter, 1);
  	struct rz_mtu3_cnt *const priv = counter_priv(counter);
  
--	/* Phase counting mode 1 is used as default in initialization. */
--	rz_mtu3_8bit_ch_write(ch1, RZ_MTU3_TMDR1, RZ_MTU3_TMDR1_PH_CNT_MODE_1);
-+	rz_mtu3_8bit_ch_write(ch1, RZ_MTU3_TMDR1,
-+			      priv->timer_mode[RZ_MTU3_32_BIT_CH]);
++	rz_mtu3_set_phcksel(priv->ch, priv->mtclkc_mtclkd);
++
+ 	rz_mtu3_8bit_ch_write(ch1, RZ_MTU3_TMDR1,
+ 			      priv->timer_mode[RZ_MTU3_32_BIT_CH]);
  
- 	rz_mtu3_set_ceiling(ch1, RZ_MTU3_32_BIT_CH,
- 			    priv->ceiling[RZ_MTU3_32_BIT_CH]);
-@@ -413,9 +409,7 @@ static void rz_mtu3_16bit_cnt_setting(struct counter_device *counter, int id)
+@@ -409,6 +419,8 @@ static void rz_mtu3_16bit_cnt_setting(struct counter_device *counter, int id)
  	struct rz_mtu3_channel *const ch = rz_mtu3_get_ch(counter, id);
  	struct rz_mtu3_cnt *const priv = counter_priv(counter);
  
--	/* Phase counting mode 1 is used as default in initialization. */
--	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, RZ_MTU3_TMDR1_PH_CNT_MODE_1);
--
-+	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, priv->timer_mode[id]);
++	if (id == RZ_MTU3_16_BIT_MTU2_CH)
++		rz_mtu3_set_phcksel(priv->ch, priv->mtclkc_mtclkd);
+ 	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, priv->timer_mode[id]);
  	rz_mtu3_set_ceiling(ch, id, priv->ceiling[id]);
  	rz_mtu3_set_count(ch, id, priv->count[id]);
+@@ -571,17 +583,13 @@ static int rz_mtu3_ext_input_phase_clock_select_get(struct counter_device *count
+ 						    u32 *ext_input_phase_clock_select)
+ {
+ 	struct rz_mtu3_cnt *const priv = counter_priv(counter);
+-	unsigned long tmdr;
+ 	int ret;
  
-@@ -645,7 +639,7 @@ static int rz_mtu3_action_read(struct counter_device *counter,
+ 	ret = rz_mtu3_lock_if_ch0_is_enabled(priv);
  	if (ret)
  		return ret;
  
--	ret = rz_mtu3_count_function_read_helper(ch, counter, &function);
-+	ret = rz_mtu3_count_function_read_helper(priv, count->id, &function);
- 	if (ret) {
- 		mutex_unlock(&priv->lock);
+-	pm_runtime_get_sync(counter->parent);
+-	tmdr = rz_mtu3_shared_reg_read(priv->ch, RZ_MTU3_TMDR3);
+-	pm_runtime_put(counter->parent);
+-	*ext_input_phase_clock_select = test_bit(RZ_MTU3_TMDR3_PHCKSEL, &tmdr);
++	*ext_input_phase_clock_select = priv->mtclkc_mtclkd;
+ 	mutex_unlock(&priv->lock);
+ 
+ 	return 0;
+@@ -597,11 +605,10 @@ static int rz_mtu3_ext_input_phase_clock_select_set(struct counter_device *count
+ 	if (ret)
  		return ret;
-@@ -812,6 +806,7 @@ static int rz_mtu3_cnt_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct counter_device *counter;
- 	struct rz_mtu3_cnt *priv;
-+	unsigned int i;
+ 
+-	pm_runtime_get_sync(counter->parent);
+-	rz_mtu3_shared_reg_update_bit(priv->ch, RZ_MTU3_TMDR3,
+-				      RZ_MTU3_TMDR3_PHCKSEL,
+-				      ext_input_phase_clock_select);
+-	pm_runtime_put(counter->parent);
++	if (priv->count_is_enabled[RZ_MTU3_16_BIT_MTU2_CH] ||
++	    priv->count_is_enabled[RZ_MTU3_32_BIT_CH])
++		rz_mtu3_set_phcksel(priv->ch, ext_input_phase_clock_select);
++	priv->mtclkc_mtclkd = ext_input_phase_clock_select;
+ 	mutex_unlock(&priv->lock);
+ 
+ 	return 0;
+@@ -631,8 +638,6 @@ static int rz_mtu3_action_read(struct counter_device *counter,
+ 	struct rz_mtu3_channel *const ch = rz_mtu3_get_ch(counter, count->id);
+ 	struct rz_mtu3_cnt *const priv = counter_priv(counter);
+ 	enum counter_function function;
+-	bool mtclkc_mtclkd;
+-	unsigned long tmdr;
  	int ret;
  
- 	counter = devm_counter_alloc(dev, sizeof(*priv));
-@@ -823,6 +818,8 @@ static int rz_mtu3_cnt_probe(struct platform_device *pdev)
+ 	ret = rz_mtu3_lock_if_count_is_enabled(ch, priv, count->id);
+@@ -649,10 +654,8 @@ static int rz_mtu3_action_read(struct counter_device *counter,
+ 	*action = COUNTER_SYNAPSE_ACTION_NONE;
+ 
+ 	if (count->id != RZ_MTU3_16_BIT_MTU1_CH) {
+-		tmdr = rz_mtu3_shared_reg_read(priv->ch, RZ_MTU3_TMDR3);
+-		mtclkc_mtclkd = test_bit(RZ_MTU3_TMDR3_PHCKSEL, &tmdr);
+-		if ((mtclkc_mtclkd && is_signal_ab) ||
+-		    (!mtclkc_mtclkd && !is_signal_ab)) {
++		if ((priv->mtclkc_mtclkd && is_signal_ab) ||
++		    (!priv->mtclkc_mtclkd && !is_signal_ab)) {
+ 			mutex_unlock(&priv->lock);
+ 			return 0;
+ 		}
+@@ -814,6 +817,7 @@ static int rz_mtu3_cnt_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv = counter_priv(counter);
++	priv->mtclkc_mtclkd = true;
+ 	priv->ceiling[RZ_MTU3_16_BIT_MTU1_CH] = U16_MAX;
  	priv->ceiling[RZ_MTU3_16_BIT_MTU2_CH] = U16_MAX;
  	priv->ceiling[RZ_MTU3_32_BIT_CH] = U32_MAX;
- 	priv->ch = &ddata->channels[RZ_MTU3_CHAN_1];
-+	for (i = 0; i < RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS; i++)
-+		priv->timer_mode[i] = RZ_MTU3_TMDR1_PH_CNT_MODE_1;
- 
- 	mutex_init(&priv->lock);
- 
 -- 
 2.55.0
