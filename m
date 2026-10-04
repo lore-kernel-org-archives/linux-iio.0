@@ -1,49 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA5C3A6418;
-	Sun,  4 Oct 2026 16:27:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94FC2246781
+	for <linux-iio@vger.kernel.org>; Sun,  4 Oct 2026 16:38:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791131249; cv=none; b=EfbAH3L8qhvWJEdNTBpjedw9392kGftE/W/dKUyat10Lh+qi2hhU8mggjT6iHUjfZ8FKqQetqrDUaBgJ73RIwg4LWWBAtZayxwsbxlkAXLqXFTjFE+YAnh0XNuSvrJZV1B+ZDyApwWNzYeSritPYbrLnV3t5VlRxTvtn0LMNcSE=
+	t=1791131915; cv=none; b=cQ2JQUsW/xa3Mt5lNYzhnvnsnzftvDfH/Np9AFuKQQhOpoLWzA25LZ0YxL+V3fdLc1iQMPR31Jz2iBtK6jISMlRVgbE8gKXqFGknDZXDBg6yLKBnay3KKqw29YkXVkxf3K83s0esXCrL67tXLzYS6OkKkNwyiKRLvFbvFU9OAqs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791131249; c=relaxed/simple;
-	bh=Z4gCoAWckmgDXKou2oJF9djMmcXIf7DvsNo6VGAidRw=;
+	s=arc-20240116; t=1791131915; c=relaxed/simple;
+	bh=0cLBqD4xE7YB+10m8rJevo8PJVZv7MDOy4pr97X1s34=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jP2cwd2IjM0OIBpsfvd1jYRhl6F9+oYSxR5FCDH46xZQdlW3wJ5ZodD99YtGdRQ6lK/AjZF/lyB8jo8H+Dynu+BAZ2u7M0eL7TMygQV7tbq0LZy4bDAzHFEwjbzb2f8qngoLFsIZul4PJuJwDTZd7sSbR0CCk5t0AesdYi6u+pw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DLSOFFNh; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=F/MuDmV1cP81WZdTzCuYAUaUbFoHG7jkSAf8HH8vry2oOOJhAM7ocVDeuxSrTu+eZyfwRdl2w+Qi75XLHrDLBebUFT/Eudh7S5zFZ/0cqqsbcGIpSTUn9avr9IlM9E3D7U6O61SFjtLeuvQAiY458UFpt+zaJirKIbJKcMlFla0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Lw08F5Su; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DLSOFFNh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED8A1F000FF;
-	Sun,  4 Oct 2026 16:27:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Lw08F5Su"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8174A1F000FF;
+	Sun,  4 Oct 2026 16:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791131247;
-	bh=M/dSWsxmcXiuwTULb1QxS7XuqCbQfn/jziyewxOKFzU=;
+	s=k20260515; t=1791131914;
+	bh=IbD+Z86Nl9zAGhX1HsDFE4ScvNBB55H4BWfft/wpwHQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DLSOFFNhJ0lM/4jB6UuInsPixhP8D/lP7HPyKN0CNisPUXCqePbMFy7/IR79CgsME
-	 yo10eANrpuD62ulR9+7YRkwNLsRu+IhmdJ2enM6QHVF/Cf9S4BY39O+0aqor/bFNrx
-	 fi/hFpMVd/R80IuMy0kOKDZ95MGJq+ClI7DRwBwqLX/p6K9L0bQGWhzPbwV976vP6w
-	 ZJ6TraTCP3VRGyhx5x9hm07EDa7BNI1RYagXBfz0FT9+E4RDRbvkESM1KUWEpMNvxM
-	 i3hggNTAfF7bo/KhhA582376EuMpydogjtC/F66Btn35ZnOBZbF+/Y+9205M1YxhBg
-	 Qjl5Xa0cmcb9Q==
-Date: Sun, 4 Oct 2026 17:27:21 +0100
+	b=Lw08F5Sun9Il2ky1H8ZoynADtAyRXQ2fzh1pyHdHl1GvgKH5y9KjmnqNoeCsTZc1/
+	 3DvSm2N2QDqLmUBT/9z5QUmgs8LWM0OtPP5QGc7Se36ZMxtZ8UUDRSS8BdYVHYus4b
+	 Hn8j/+vvemuQoM6hRWN4l0kIOc/d8qCkJO9gd34EyvPuz8ilhptS6/TmPQ7QVhQIY8
+	 xBP6Oa/LS07dsv9NMmJZGZSKLdwyqgzhKcq+B4C0QMrUU0Py53Fs3RxZ7PG0Z0qtAK
+	 b7DV+vYpAr3ahXW07TBjh9Yj7ZVaQrq5Ki0AY34F9jtyqoRe83p2Aw4pB7N8RmR7ev
+	 XroYEqP8l6RAw==
+Date: Sun, 4 Oct 2026 17:38:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Arka Mondal <arka@arkamondal.net>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- arkamondalofficial@gmail.com
-Subject: Re: [PATCH 4/5] dt-bindings: iio: dac: adi,ad5758: Fix the 4 mA to
- 20 mA current range
-Message-ID: <20261004172721.72d6d42e@jic23-hlaptop>
-In-Reply-To: <20260928193449.GA408126-robh@kernel.org>
-References: <20260918122032.134947-1-arka@arkamondal.net>
-	<20260918122032.134947-5-arka@arkamondal.net>
-	<20260920193949.45606414@jic23-hlaptop>
-	<20260928193449.GA408126-robh@kernel.org>
+To: Yuval Saar <thefireking@gmail.com>
+Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, maxwell@maxwelld.cc
+Subject: Re: [PATCH v3 1/2] iio: adc: mcp3422: describe parts with chip_info
+Message-ID: <20261004173828.60eff19e@jic23-hlaptop>
+In-Reply-To: <20261003001647.1975549-2-thefireking@gmail.com>
+References: <20260919195507.94130-1-thefireking@gmail.com>
+	<20261003001647.1975549-1-thefireking@gmail.com>
+	<20261003001647.1975549-2-thefireking@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,43 +47,96 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 28 Sep 2026 14:34:49 -0500
-Rob Herring <robh@kernel.org> wrote:
+On Sat,  3 Oct 2026 03:16:46 +0300
+Yuval Saar <thefireking@gmail.com> wrote:
 
-> On Sun, Sep 20, 2026 at 07:39:49PM +0100, Jonathan Cameron wrote:
-> > On Fri, 18 Sep 2026 21:20:31 +0900
-> > Arka Mondal <arka@arkamondal.net> wrote:
-> >   
-> > > adi,range-microamp gives the 4 mA to 20 mA range as <4 24000>. The
-> > > values are in microamps, so this reads as 4 uA to 24 mA. The original
-> > > text binding described <4 24000> as the "4 mA to 20 mA current range",
-> > > and the data sheet (Rev. B, Table 32) confirms range code 1010 is
-> > > 4 mA to 20 mA.
-> > > 
-> > > Add <4000 20000> and mark <4 24000> deprecated, so existing device
-> > > trees still validate.
-> > > 
-> > > Fixes: 777baca07ef1 ("dt-bindings: iio: dac: Add docs for AD5758 DAC")
-> > > Signed-off-by: Arka Mondal <arka@arkamondal.net>  
-> > 
-> > DT reviewers.   Better to paper over a dt that is specifying the wrong
-> > range as this does (deprecated) or just make it obvious by failing
-> > the binding checks?  I'm thinking failing is better as gets any such
-> > dt fixed up faster.  I also suspect no one actually it this because the
-> > disconnect they should have seen when reading the datasheet and considering
-> > what they wanted should have meant they saw this bug!  
+> The driver encodes MCP3421-8 differences as integer ids and switches
+> on them in probe. Point i2c_device_id.driver_data at a per-chip
+> structure instead, and keep the channel list and 3 SPS support there.
 > 
-> No in tree .dts (for which I don't want more warnings), so I would just 
-> drop it.
+> Compile tested. No hardware.
 
-Works for me. Arka, please send v2 of patches 4 and 5 rebased on my togreg branch.
-Only change being to drop the broken parameter both from binding and from the
-driver.  If anyone screams driver side we might paper over this, but they really
-should have noticed the value was garbage when they wrote their DT!
+Ok. This is a little marginal for a patch to do without any form
+of test.  You could look at the various ways this sort of patch
+can be tested.  Personally I'd probably hack just the DT into qemu
+but that's because it is the tool I am familiar with.  
+
+Otherwise the below is preexisting issues but ones that your code
+is touching on so I'd like them fixed as part of this.
+
+Thanks,
 
 Jonathan
 
 
 > 
-> Rob
+> Assisted-by: LLM
+> Signed-off-by: Yuval Saar <thefireking@gmail.com>
+
+> ---
+>  drivers/iio/adc/mcp3422.c | 103 ++++++++++++++++++++++++++------------
+>  1 file changed, 70 insertions(+), 33 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+> index 36ba00edf..92825aaf2 100644
+> --- a/drivers/iio/adc/mcp3422.c
+> +++ b/drivers/iio/adc/mcp3422.c
+> @@ -320,7 +374,6 @@ static const struct iio_info mcp3422_info = {
+>  
+>  static int mcp3422_probe(struct i2c_client *client)
+>  {
+> -	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+>  	struct iio_dev *indio_dev;
+>  	struct mcp3422 *adc;
+>  	int err;
+> @@ -335,33 +388,17 @@ static int mcp3422_probe(struct i2c_client *client)
+>  
+>  	adc = iio_priv(indio_dev);
+>  	adc->i2c = client;
+> -	adc->id = (u8)(id->driver_data);
+> +	adc->chip_info = i2c_get_match_data(client);
+
+For the one ID that is currently in the of_match_table, this will return NULL
+so it's not a bug as that will then fallback to doing of_device_id matching
+but is not how this stuff is intended to work.  See below.
+
+> +	if (!adc->chip_info)
+> +		return -ENODEV;
+>  
+>  	mutex_init(&adc->lock);
+
+>  
+>  	/* meaningful default configuration */
+>  	config = MCP3422_CONT_SAMPLING |
+> @@ -382,14 +419,14 @@ static int mcp3422_probe(struct i2c_client *client)
+>  }
+>  
+>  static const struct i2c_device_id mcp3422_id[] = {
+> -	{ .name = "mcp3421", .driver_data = 1 },
+> -	{ .name = "mcp3422", .driver_data = 2 },
+> -	{ .name = "mcp3423", .driver_data = 3 },
+> -	{ .name = "mcp3424", .driver_data = 4 },
+> -	{ .name = "mcp3425", .driver_data = 5 },
+> -	{ .name = "mcp3426", .driver_data = 6 },
+> -	{ .name = "mcp3427", .driver_data = 7 },
+> -	{ .name = "mcp3428", .driver_data = 8 },
+> +	{ .name = "mcp3421", .driver_data = (kernel_ulong_t)&mcp3421_chip_info },
+> +	{ .name = "mcp3422", .driver_data = (kernel_ulong_t)&mcp3422_chip_info },
+> +	{ .name = "mcp3423", .driver_data = (kernel_ulong_t)&mcp3423_chip_info },
+> +	{ .name = "mcp3424", .driver_data = (kernel_ulong_t)&mcp3424_chip_info },
+> +	{ .name = "mcp3425", .driver_data = (kernel_ulong_t)&mcp3425_chip_info },
+> +	{ .name = "mcp3426", .driver_data = (kernel_ulong_t)&mcp3426_chip_info },
+> +	{ .name = "mcp3427", .driver_data = (kernel_ulong_t)&mcp3427_chip_info },
+> +	{ .name = "mcp3428", .driver_data = (kernel_ulong_t)&mcp3428_chip_info },
+
+Any idea why this driver has only one of_table_id entry?  I'd generally expect
+that to mirror what we have here.  The issue goes all the way back but let us
+clean it up as part of this series.  Then use i2c_get_match_data() which will
+check for matches in each type of firmware table, starting here with the of
+one.
+
+
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, mcp3422_id);
 
