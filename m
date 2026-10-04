@@ -1,77 +1,118 @@
-Received: from mail-m49197.qiye.163.com (mail-m49197.qiye.163.com [45.254.49.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f51.google.com (mail-dl1-f51.google.com [74.125.82.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D83631A55B;
-	Sun,  4 Oct 2026 09:32:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1B423AFCFD
+	for <linux-iio@vger.kernel.org>; Sun,  4 Oct 2026 10:43:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791106336; cv=none; b=Cz8RU+m9W7mliDRazP+hrLfHwjltw0ZAJiy4MhCUcyvRYZBf21HcNF9CtAnXoCDn2Hx1eKs/ottwj0LgeDHohb1dViHGu4e/01YdR63QGuh21Rb7bYfd3/s7pKqqPikLmxtzeveQkkX37ecUF+qO/e4pOA9MmUcX87S6IQ9GIXM=
+	t=1791110627; cv=none; b=iA8SDQwYkqCkdmxoVjObkSg7j30RMYd0RxcjcBKFGHGTLjEHjrB8+QqjrJMHASThDNMWaXlnSZQ8kwyqpTGYurDjlkfG73CjY5WyeX4ng0WEG5WbEFjzRrHaKGnSRX4S+xYM36bmCTBpENLj31KDyBXzoCKPc31DOkSPCfdtsoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791106336; c=relaxed/simple;
-	bh=bJqunWKjCIs03aC2xgQfhIza1vw9F9flqNLZ6zKsi7s=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WcF3XFPPMPssmROU4vw2AE04M+r1tldlcOU496wYKHkiZwnUt6l7ZI3O20msf+NqHGB1AwyVBOYLyjE4Yx1A3CaYKw2gS64XzGPWn6jiPVbp45nbwl30tEmw1MDkgEak57tY4U7X+GKDNZ3u3OmTO9MaWtfrDkRid+Kw/u4Ln6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn; spf=pass smtp.mailfrom=seu.edu.cn; dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b=ba9e13Bw; arc=none smtp.client-ip=45.254.49.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seu.edu.cn
+	s=arc-20240116; t=1791110627; c=relaxed/simple;
+	bh=hcocD3BnT8CdOqPzpyusgPL1v8JIiSzrfyMqca98N+U=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=g1cRV6UsvvAZmJEZSXFbtknBiG3MAJijWT+ZMoekHM/udMyFfCYUQeD/sCU6mqCAWoXLL9/8mdj49rtxvcaY2NGRtoW31ZoyZcDRXtA3t5DIYrmm2SOX30F0hQDfrvOoAFprJJG2Quzb7Y4yED1cLngM9dq68p5spColjxORclU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MNcBohkK; arc=none smtp.client-ip=74.125.82.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b="ba9e13Bw"
-Received: from PC-202605011814.localdomain (unknown [223.112.146.162])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 4feacba8c;
-	Sun, 4 Oct 2026 17:32:09 +0800 (GMT+08:00)
-From: Runyu Xiao <runyu.xiao@seu.edu.cn>
-To: Andriy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MNcBohkK"
+Received: by mail-dl1-f51.google.com with SMTP id a92af1059eb24-15354aa70e8so1801180c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 04 Oct 2026 03:43:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791110626; x=1791715426; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0woykvoAO5TomuuBQM4gQruWpQXJsME0/h5WzmLnGHw=;
+        b=MNcBohkKNp6ylOq6iuUosYRR/dKC0Bq4Fd5MojzVrixqzPAEnDB4WoiObzwkeBpa0C
+         RoSlCkEJV/XZ5XWVwadn+lasX5L7iQPHSEozAJoQGHATWI08mW9vJlphWJy3Txh1sm8M
+         DMtd8IDMLHUi7QU53yQRKWvq5ZmOoL4RU3ZGPxYSasZMrlob85ib4LQItbCC23DLl8vW
+         F18fRjzzV7YHKh2f/a9cBlsrTXHdKNSrGJa29SvDOeUfd5YA03Zp/WToktEwJT8t56g9
+         plqRmpmyyESH25BNDpRNwOFu5nFT2IF2nVxYlEwqkR+vxxg2LtjahblmERWjqyacLE1R
+         WOPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791110626; x=1791715426;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0woykvoAO5TomuuBQM4gQruWpQXJsME0/h5WzmLnGHw=;
+        b=Va/0Ms2bC8E3ihRsGL7AZ2cY2cQIwi5aFbyWsxwDvneSRQolZnkpSUk2e1tz+qWgnR
+         QyWv8jTLLHflx10LRuvUTyllbjyI0PMHodF/22WhicCeTCBOMqzrGjpL3W+5OXZbAqZW
+         xKfzjNRQwI4CLXswcLeK3aUF31gCJqEoX3MBMJ03gRColavH6Tbjoa9Yk2astiymleST
+         +01bmLDo1z1L+xFUGyACCPpe0wxBSSuGktUcsp+hP22eCqBx/a1slAmJbvoYET445dSZ
+         Gjf+JrGJ1gMDLIRLLQDvZqP7pSjB4TQ+HHpfz8bgiAFXhYxBHm6Dn2WijeANmEnmkF/p
+         EOqA==
+X-Forwarded-Encrypted: i=1; AKwUvBxzwO/yh5holMyiFhPjaaS6WCdSOwUz1pFFcOvT08LCjVxxF2arZiNvVlRDTVQUwf1U6xJv4vxsMms=@vger.kernel.org
+X-Gm-Message-State: AFuF++k+QN4TeQabV7XMiiDvaPMG2Z44Th/NEPapzvRbVMkCTNXMlxRp
+	pGCREDyaFOyzM+G3cOzO4bhd9n/hQ12QM0FdGd9R+6YWUctTmu06KchP
+X-Gm-Gg: AYBFou11iVpXlKDRBOWwQB9/eDsvICya3uWP359eB4BqORl/b6+T7YrnaGw+/OZQ92Q
+	pptxtz+uUcSuCV2i1UrksK91HazhKdQjmP6MjmwC9KTNoGSmB3RNcmrh+NZU7jskYcjjmVCqHS4
+	jyAVSISZn+R45LEbVJfbvywD9BtNxcAC3UWmNtd2ETOY2QkDW0Ej0S+3s5GnuUKZiPFtFT+JRsc
+	w+IY8mDn99njKWDZQUfE2uw0E0PqFAaEUlPDghGMFo2JVpDQqIDC7P75NPxUoGDnwOJc/UjwnJ2
+	grDOmB4D6B5CjivhS0A+rBtH8OVtM5Vg/4mgEbR5snZz58SRdOl+nGLVV49jozoyk6tjCCVgCZ4
+	zv45F8k6BiUcUZdNEStUaMbRdlZauiACR8ahA+vLVEyw8Q00/eUkec6FknoX2wMU43t7D6o3ilN
+	i0LJRSC/v24lpujIE3VSlgPLh/XwpAv7rc3zKeWvmgxe3h89Ht6sEodDGHMNbrM+CF9cggKYcMs
+	NXhdPfcO4/wFT275x6QVEdK+VlTx/i8d5OeGklq8bItCYYnFH5bXOy5MHXqj8pGtr/UOYXHRxNu
+	6TA3o+UdvN2JA7Ia
+X-Received: by 2002:a05:701b:2514:b0:144:ed03:8972 with SMTP id a92af1059eb24-151c32ddc15mr6493829c88.16.1791110625561;
+        Sun, 04 Oct 2026 03:43:45 -0700 (PDT)
+Received: from kapoor ([117.235.129.249])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-351272bb9basm4019140eec.24.2026.10.04.03.43.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Oct 2026 03:43:44 -0700 (PDT)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: andriy.shevchenko@intel.com
+Cc: jbhayana@google.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	geert@linux-m68k.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Jianhao Xu <jianhao.xu@seu.edu.cn>
-Subject: Re: [PATCH] iio: ssp: Serialize watchdog timer state changes
-Date: Sun,  4 Oct 2026 17:31:57 +0800
-Message-Id: <20261004093157.1188299-1-runyu.xiao@seu.edu.cn>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <asIQZ7no-0OrOGn0@ashevche-desk.local>
-References: <20260930070319.2933744-1-runyu.xiao@seu.edu.cn> <arzdLtzXQ4cvObrL@ashevche-desk.local> <20261004053915.1138888-1-runyu.xiao@seu.edu.cn> <asIQZ7no-0OrOGn0@ashevche-desk.local>
+	lkp@intel.com
+Subject: Re: [PATCH] iio: common: scmi_sensors: fix truncating 64-bit divisions
+Date: Sun,  4 Oct 2026 16:13:31 +0530
+Message-ID: <20261004104334.82610-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <asFW-3IPAgFIDViV@ashevche-desk.local>
+References: <asFW-3IPAgFIDViV@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa10641ab1603a1kunm4ba7b26b336b73
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaQksdVk4YSxhMQh1ISBgaGVYeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlJSUhVSkpJVUpPTVVKTUlZV1kWGg8SFR0UWUFZT0tIVUJCSU
-	5LVUpLS1VKQktCWQY+
-DKIM-Signature: a=rsa-sha256;
-	b=ba9e13Bw2ybZt5asDirFmJ3ovZweI3SNMg6fmPocb17sMdiHbxjSDBfpppSa0XmSgExkLnftI4kDPYRBywSte0uR2qCx7Es62UBXVTxyrmRpqeFrWqBv78C/vIIQOhUUyT7Y8dNnM9KcLXA3keKiAcm0jsXf+xDu+P6h8Pa7HMI=; c=relaxed/relaxed; s=default; d=seu.edu.cn; v=1;
-	bh=bJqunWKjCIs03aC2xgQfhIza1vw9F9flqNLZ6zKsi7s=;
-	h=date:mime-version:subject:message-id:from;
 
-On Sun, Oct 04, 2026 at 11:37:59AM +0300, Andriy Shevchenko wrote:
-> General rule of thumb is to defer a new version until the discussion is settled
-> down in the previous round(s).
+On Sat, Oct 03, 2026, Andy Shevchenko wrote:
+> On Sat, Oct 03, 2026 at 11:25:55AM +0530, Arnav Kapoor wrote:
+> > Assisted-by: Claude:claude-opus-5-5 coccinelle
 >
-> Same Q here, can you reduce the gap by 4 bytes by rearranging the new members?
+> Assisted-by: LLM coccinelle
 
-Yes. I checked both layouts with pahole on x86_64. In v2, wdt_enabled and
-wdt_suspended are at offsets 80 and 81, and work_wdt starts at 88, leaving a
-six-byte hole; sizeof(struct ssp_data) is 816 bytes.
+Right, I missed that the documented format had changed. Fixed in v2.
 
-Moving the two flags after time_syncing and before timestamp puts work_wdt at
-offset 80 and the flags at offsets 203 and 204. There are then three bytes of
-padding before timestamp at offset 208, and sizeof(struct ssp_data) is 808
-bytes. This reduces the structure size by eight bytes, exceeding the four-byte
-reduction requested. I will include this layout change with the other agreed
-review changes in the next revision.
+> > +			time_ns = div64_u64(time,
+> > +					    int_pow(10, abs(tstamp_scale)));
+>
+> It's fine to have 82 character single line in this case.
 
-Thanks,
-Runyu
+Will do.
+
+> > +	*hz = div64_u64_rem(NSEC_PER_SEC, interval_ns, &rem);
+>
+> I would expect to see this be a frequency unit to help with left side of the
+> equation
+>
+> 	*hz = div64_u64_rem(HZ_PER_GHZ, interval_ns, &rem);
+>
+> > +	*uhz = div64_u64(rem * 1000000UL, interval_ns);
+>
+> And MICROHZ_PER_HZ here respectively.
+
+Makes sense, I'll use both in v2.
+
+Thanks for the review!
+
+Arnav
