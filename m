@@ -1,106 +1,96 @@
-Received: from mail-dy2-f43.google.com (mail-dy2-f43.google.com [74.125.229.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D74AB3D34AF
-	for <linux-iio@vger.kernel.org>; Sun,  4 Oct 2026 10:44:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA5C3A6418;
+	Sun,  4 Oct 2026 16:27:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791110653; cv=none; b=dwMB/Ya2aiQ2qDFwMD7kMhn+HXDzJkbbjP7Z/xEU/k6owtsciU8sbel+YgLbjc1ph0aeZHTA05LWZLXdeCsEmBRk+CnHQq+v8rwNFBjPjoowcjAcGctcPANxYkKVSvzeSQHnrTie9t+NhTkY+t0h7zfhQhq2MEiHsgVa+veCwgk=
+	t=1791131249; cv=none; b=EfbAH3L8qhvWJEdNTBpjedw9392kGftE/W/dKUyat10Lh+qi2hhU8mggjT6iHUjfZ8FKqQetqrDUaBgJ73RIwg4LWWBAtZayxwsbxlkAXLqXFTjFE+YAnh0XNuSvrJZV1B+ZDyApwWNzYeSritPYbrLnV3t5VlRxTvtn0LMNcSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791110653; c=relaxed/simple;
-	bh=kGjnWXyZ9NQf4aKnHYHj9cq+0Gg79KBWpte5IIsGB/s=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=olsCyQpdmUU32LRep9tPPlb2v3sVj/lRdQMGI9AvHy3e806veEEsgW3Jx20AhwPDy5maUKCKDiLGv78lD8beOhdkOyTOTeSlFZ6Jp2AajGOn19FHQst+ur3p5y+AP1VvvmoNEzCTyqnR4Ha7PHLO7qBXX2C2QsiPggvEapf9Dvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=swwGWgIl; arc=none smtp.client-ip=74.125.229.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791131249; c=relaxed/simple;
+	bh=Z4gCoAWckmgDXKou2oJF9djMmcXIf7DvsNo6VGAidRw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jP2cwd2IjM0OIBpsfvd1jYRhl6F9+oYSxR5FCDH46xZQdlW3wJ5ZodD99YtGdRQ6lK/AjZF/lyB8jo8H+Dynu+BAZ2u7M0eL7TMygQV7tbq0LZy4bDAzHFEwjbzb2f8qngoLFsIZul4PJuJwDTZd7sSbR0CCk5t0AesdYi6u+pw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DLSOFFNh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="swwGWgIl"
-Received: by mail-dy2-f43.google.com with SMTP id 5a478bee46e88-33e46a15703so923541eec.0
-        for <linux-iio@vger.kernel.org>; Sun, 04 Oct 2026 03:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791110651; x=1791715451; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=kGjnWXyZ9NQf4aKnHYHj9cq+0Gg79KBWpte5IIsGB/s=;
-        b=swwGWgIlosq2wuRvbVHoue6Yhz3qOIncO31bvjNYoHabvnFq4E8+GJNkKWLYdT7Qrs
-         bXweSb5f0WkwtVrStIIKXBXi77l+Pfag6whD8e4uk6bJMeX5TGCF+K1yjkcUTLmClSla
-         pmu2H/qxq5wOGN1pDARrwfa7R/kV71Z/9Prl0Fz9nBM3kcgYEE62U6zFI81afaYITnCj
-         vMYbCE7pZ8jV84Y3fehvjR60ACAe3CZoxZsPQuxf0ttQfHQctFt6xwZ4Un3KcFhMCPbS
-         BVjNPsmAalEtue2Mo6Mn2/1ak86JWlDSpfhPIKh8Lha71wnC3XCIYWCQRmA/PqUyGRDA
-         sxJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791110651; x=1791715451;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kGjnWXyZ9NQf4aKnHYHj9cq+0Gg79KBWpte5IIsGB/s=;
-        b=tl13CIeq8FoaAO/iOi5MPDYl9n/KVWcXvHAJjR0CqjEEeW5bIhscGSyduSBJdR+nDT
-         udNF2yvYVuGWSTeUfx/uua0cLT7YuvUX7JjG1q2XtwL2oiOhb/usT+PRxp7qB9lQ3uPD
-         jvpnuf1TMXwaMoVwUkee/InW5KV5Nq/QqW6PdPXlz4rY0CBd0MwxWXWXC0B/v9Mm+dxJ
-         t0wVe1ox89ajFasgc+XN2W4aD1AjcvWrDfk0EFLWBFoxLglJ4K2UP/gAhFdJ9Ladf1DE
-         mbYbTw+9GAULP5YFieKtDQ9p3cjwUm4yjlL9kRJqt91WLdwb+p65qhr7yq37/0w4AQk8
-         qybQ==
-X-Forwarded-Encrypted: i=1; AKwUvBw1U7u1Wzr1L2zxj7nRcDJz9jIuy9HCkcfHcdq7+3g2k4mq1XYqDttVEA9CzwV39yepQxvJSIdOHCM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLC4ipoyZKipXyai/c8UBanzIGzirMi6LiLpXBIj3Y0Pls5fwPv
-	nazc738jCs0NAx+VPR0WfPYQBmNoBtbZ0Pzov0Gqy14+jAQwmsBrkhE7gH4wpVxCJew=
-X-Gm-Gg: AYBFou0XY61xJWP50Xi1NJvAqQNj81Xeq3CU8NzVxFhchkobtEEJsb5pmfbuD7ya1Z0
-	joszkluF22VdGxKmiXlYmMi8OrZPK72Vep1Ct6Z6Y6PsHzxUFn8AtpWFNTr0tMTe3sQZTZDruKL
-	7OTkAVKaMQ6xKsMC/wR4hZwmYnPD2/VsYzzQnB7GRMGCC7CpnXic3qWipjDr7izfVpfCpU/OjIx
-	ew+NvO/hG1hfRsX3gIhnv0B4wUuQ3FSilwiTXXSlVsuiQcIQ6pNZjhr1ejsISvR0ThpR7B9e0O8
-	g3I3nrdzwBssG/0mGSVjze90A+cyx000AKA5rS+gTxDFVmXpc4FiZeQLsV1s+gpFQohV2ntzvUj
-	o8+kfuHCm0magV01Y28TaNDRzRgRAd1+r0jV94r6p/mk2zX3igSlXGK+UJ+jDDXJPxoaOD1hA4A
-	AZ8YcGQsO3262FSztN4ZSrbOzV45ayXngEEcLC2YELPDpbZbn5Fj4YINkisEHYjTsJVEbbiDspX
-	q//zbiSWRd1mm7BNk2mbB8UcAkEewPrymbYN7yZWo6KnALhtt30WG1LmgELtk8263BFo1E14EUn
-	ABLnL/i0aLY6d/r2
-X-Received: by 2002:a05:7300:e9c4:20b0:351:1e72:7470 with SMTP id 5a478bee46e88-3511e727a9cmr3932747eec.13.1791110650783;
-        Sun, 04 Oct 2026 03:44:10 -0700 (PDT)
-Received: from kapoor ([117.235.129.249])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-351277a2fb4sm4159012eec.26.2026.10.04.03.44.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Oct 2026 03:44:10 -0700 (PDT)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: andriy.shevchenko@intel.com
-Cc: jean-baptiste.maneyrol@tdk.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	sean@geanix.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: inv_icm42600: drop stale vdd_supply kernel-doc
-Date: Sun,  4 Oct 2026 16:13:46 +0530
-Message-ID: <20261004104402.83215-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <asFV3JlT-YNYa9vw@ashevche-desk.local>
-References: <asFV3JlT-YNYa9vw@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DLSOFFNh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED8A1F000FF;
+	Sun,  4 Oct 2026 16:27:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791131247;
+	bh=M/dSWsxmcXiuwTULb1QxS7XuqCbQfn/jziyewxOKFzU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=DLSOFFNhJ0lM/4jB6UuInsPixhP8D/lP7HPyKN0CNisPUXCqePbMFy7/IR79CgsME
+	 yo10eANrpuD62ulR9+7YRkwNLsRu+IhmdJ2enM6QHVF/Cf9S4BY39O+0aqor/bFNrx
+	 fi/hFpMVd/R80IuMy0kOKDZ95MGJq+ClI7DRwBwqLX/p6K9L0bQGWhzPbwV976vP6w
+	 ZJ6TraTCP3VRGyhx5x9hm07EDa7BNI1RYagXBfz0FT9+E4RDRbvkESM1KUWEpMNvxM
+	 i3hggNTAfF7bo/KhhA582376EuMpydogjtC/F66Btn35ZnOBZbF+/Y+9205M1YxhBg
+	 Qjl5Xa0cmcb9Q==
+Date: Sun, 4 Oct 2026 17:27:21 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Arka Mondal <arka@arkamondal.net>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ arkamondalofficial@gmail.com
+Subject: Re: [PATCH 4/5] dt-bindings: iio: dac: adi,ad5758: Fix the 4 mA to
+ 20 mA current range
+Message-ID: <20261004172721.72d6d42e@jic23-hlaptop>
+In-Reply-To: <20260928193449.GA408126-robh@kernel.org>
+References: <20260918122032.134947-1-arka@arkamondal.net>
+	<20260918122032.134947-5-arka@arkamondal.net>
+	<20260920193949.45606414@jic23-hlaptop>
+	<20260928193449.GA408126-robh@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 03, 2026, Andy Shevchenko wrote:
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+On Mon, 28 Sep 2026 14:34:49 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-Thanks!
+> On Sun, Sep 20, 2026 at 07:39:49PM +0100, Jonathan Cameron wrote:
+> > On Fri, 18 Sep 2026 21:20:31 +0900
+> > Arka Mondal <arka@arkamondal.net> wrote:
+> >   
+> > > adi,range-microamp gives the 4 mA to 20 mA range as <4 24000>. The
+> > > values are in microamps, so this reads as 4 uA to 24 mA. The original
+> > > text binding described <4 24000> as the "4 mA to 20 mA current range",
+> > > and the data sheet (Rev. B, Table 32) confirms range code 1010 is
+> > > 4 mA to 20 mA.
+> > > 
+> > > Add <4000 20000> and mark <4 24000> deprecated, so existing device
+> > > trees still validate.
+> > > 
+> > > Fixes: 777baca07ef1 ("dt-bindings: iio: dac: Add docs for AD5758 DAC")
+> > > Signed-off-by: Arka Mondal <arka@arkamondal.net>  
+> > 
+> > DT reviewers.   Better to paper over a dt that is specifying the wrong
+> > range as this does (deprecated) or just make it obvious by failing
+> > the binding checks?  I'm thinking failing is better as gets any such
+> > dt fixed up faster.  I also suspect no one actually it this because the
+> > disconnect they should have seen when reading the datasheet and considering
+> > what they wanted should have meant they saw this bug!  
+> 
+> No in tree .dts (for which I don't want more warnings), so I would just 
+> drop it.
 
-> > ---
-> > Comment-only change, checked with scripts/kernel-doc -Wall.
->
-> Is this the only issue with kernel-doc in the entire driver?
+Works for me. Arka, please send v2 of patches 4 and 5 rebased on my togreg branch.
+Only change being to drop the broken parameter both from binding and from the
+driver.  If anyone screams driver side we might paper over this, but they really
+should have noticed the value was garbage when they wrote their DT!
 
-No, I only checked the header I changed. On the whole driver,
-kernel-doc -Wall also warns about three functions that describe their
-return value with "Returns ..." instead of a "Return:" section:
-inv_icm42600_buffer_update_watermark(), inv_icm42600_setup() and
-inv_icm42600_irq_init().
+Jonathan
 
-I'll send a v2 series with a second patch fixing those, so the driver
-has no kernel-doc warnings left.
 
-Arnav
+> 
+> Rob
+
