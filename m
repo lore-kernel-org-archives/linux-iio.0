@@ -1,141 +1,155 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wr2-f32.google.com (mail-wr2-f32.google.com [74.125.225.96])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F38344825BB
-	for <linux-iio@vger.kernel.org>; Mon,  5 Oct 2026 13:13:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8CE6485947
+	for <linux-iio@vger.kernel.org>; Mon,  5 Oct 2026 13:20:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.96
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791206006; cv=none; b=VoVo2LVZ2SPmpEIVZIQUh+4arjbbuThrJwDjIx3UYilR0bdt9dzCUB9Gx5FPBAULbKP+86gxda120iNSmlnF01y2hGaDzYFj+pyRy8INLqaqHVNQwHj4NS85/97d0BAmf3WxU+z0wPc5um7J2ZatKFV5DmWmAG/Cv9D9r8K2FRo=
+	t=1791206434; cv=none; b=q2mlNftaafm2GanSyFkU+SEh1KLEJWiXmT5cClOyo99waiUeI3BXmmdiK/ttB7zH0RZ9419I9NBJ3HTU8oY48EUsT19gYfNRQcwoILaSSLFCd7aieSKF8/QOYuCaUjILH1vkwniFPcnk62/UonKTE7iKcfASe6GptqHNqE60vDI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791206006; c=relaxed/simple;
-	bh=oDmJt3EJtsL6dISeusSh5puteEMhnMpuxIlCFWUAi3Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mHOdtsc1GFZnKEjzoxRS84GE85iiyL4K2iZh4s7bMQJf4BAbFaQLn4deo6DMUFzASvoB96Vw5ZkrVVmWKQt5VzFMwaOLtvcZZL6/Nk8e7y5LcQGV4WzGPem/nAudYxeHNE3khdWFPfKoNwjv004456pjF3a+zVVv/OROhkYGuI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ca7fatL3; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1791206434; c=relaxed/simple;
+	bh=Wke9HpYj8rajyjDe/WQXo5QKw7B9i4Wf8sIf6ePyJhU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=M0mZzqP9tvS1VlWvseCJG5scqupOznk47JCmILl2axeYCeR79eK1Af5VPkQjaKmsOokhtbgRYap2+Qo1jaA8capPzv35aUAHBCeDwcx2fusKyvmLevBlr53QhyW8KBMKyhuF29b6sbjNOpkh3wqN1MZlG97rnd587ptUswueCCY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UCzyd0gG; arc=none smtp.client-ip=74.125.225.96
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ca7fatL3"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49ff680331aso17599375e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 05 Oct 2026 06:13:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UCzyd0gG"
+Received: by mail-wr2-f32.google.com with SMTP id ffacd0b85a97d-482f6350f91so848570f8f.1
+        for <linux-iio@vger.kernel.org>; Mon, 05 Oct 2026 06:20:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791206003; x=1791810803; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=lUlOSe5A8lNERyF+m/EbmOxMTZ4XiY1F/mU41HusoYs=;
-        b=ca7fatL35Cv054jFVqHdX1rQg57LW1v7nUCXKuhv2EHFSylCL9WYk9ARoTF7T3xWS2
-         HcbLsRkEqmw9ixsjN9K9+TbQ54fAJ8rSU5e4GVoOPrq0aEy5xNKqbeMZKkYoI6hDiWqy
-         f4EVyMH7LTBHQxpthc3YrT7FSLrZKAkFKVLlsyJvyQztBuMKOAemu7AQYShLyfswRzkl
-         HPtWvjNfC35DhOL2jaJRbPIvWqZ6tKveUrDOIeWzxx5vPiwit7UgqzZhB2895TBqI9rA
-         /mAAfB28J29y92RNNPwiiKGVIJ1j1tMb2rzMFqyBTg3rMFY+jI7BjIAzYcuyv+ZmZBWO
-         ipwg==
+        d=gmail.com; s=20251104; t=1791206418; x=1791811218; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=lxfXgU6J2Pe/OFfdHlqW2Qga6zf9kDBoyeMvz/c9QrU=;
+        b=UCzyd0gGPYyZqf/DS/GyUvw4+uSbAldaDpDd50v/obcEsuOvmsqcKY4856nreHJfkf
+         wyXFp1xDkhiSzCyXxfjI00Azh5pl1SPnHR0DliRbgjfHGcwnmMoXLY8TYW5LvvL09sCs
+         RAaIkSwZTYjoDVUcr8LJqzrp+EOHmRCwpoNtaNnBnErQ1oomGe3ZBnPTgAxIBCfZ4GGe
+         IooY2uP7hm0/pvhEWNWC6ZzImvplkMAyQsnQlkKVG+rYvwIcvbdtHNSlf8nKzvyqIcPj
+         S2fjk41wx6R/t6e7sE4UjlltNi8ZrdCbEfJMzI1GhcopaNjkqH1vEnf5wrKctf0dVvRN
+         2rCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791206003; x=1791810803;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=lUlOSe5A8lNERyF+m/EbmOxMTZ4XiY1F/mU41HusoYs=;
-        b=GHq3AiQ471+EI5NrKYeWN/85XxaF7Usb4AleKE3ozCj1y3DxjochvS7YAvs1t/nJL1
-         ySq1xjVCoc3ulu1pqQl3y68vnZtdIbuIZQnGcS0Wnc5HjjesVqcOjhrzreJho3/qSthb
-         oDzhLblXbasshMYLY/HoNjXZyBNlWxJIvUfq/LLIRE3cycWmyYGpjgQdsSJG5QFgpcRs
-         wbDWLlsmuRt6CT8gBEHO1I0Y4jK4xRVZswx0coM5A31zmGmQ9kFLeN6G7Fp/SEuU9taC
-         SI1VbT9bv5Xj/bIiYWv7hFcLz3wMLe+I7I/mP5xMA2ZYbx1g/T07YgpOVw2SxW3jBohA
-         172g==
-X-Forwarded-Encrypted: i=1; AKwUvBztzrxwDfgRsUdTnmAyvcP4Z0jH/aPqF/iePojmdszo8XgZDzKnHaoDcAiUD7YRMDS4oJC5ViLdfGY=@vger.kernel.org
-X-Gm-Message-State: AFuF++myUKGRM4gaXNOHhV0flUynrLDfOipqhzypewU7hUdwPsiH2XUl
-	f5fkX8PGk53coXNpJ8WXmGf3FRcRSp6p6UaYXOpCZGsJdqkUZujkj7IG
-X-Gm-Gg: AYBFou3DbWzIvYVdZCM4/fOvi/gy3BO1+wiKFRZiWEEFbKHWZbrwCUbYGKo1KlZlqnX
-	tfREgt0s68uBx5QqLcCL/mpNYT9jlsypCq49NM9gwj0HBMfkkCIgbOmYFeE01HTTRo9g+QSskr6
-	PUqsbOuNz1id0sAfuXBNZN2IQwJzbqePR68EDRIKAuzhhAHPxVS8+hzHcCtbj8nI7X7cvaA1Og1
-	lkpgZO57PkzgaAKWsTBZGPfIlwSmPfcnrQk8Mp6nrPuWwFOHvoyuRjUfF1+l9svByCBfX/O6mra
-	Svy0xoTHgATSxVXm0c0W2Jy9rnti9msZbGq9WWBPbra1qSCKfOZtO4b+gldtuLnJvzkpIPtJMc9
-	qaC1Km/mvx/jXeFd1RZqtNUAR47z0rVQLDm8hCewqrUEEvBdqOaQ5e7DRx72r379+TOTw/StQaG
-	Fqo58znuqqCUEsELRtaj/rN51Zn6IlSz1O4jWyMnTuKBa3LtxDkyIk61s5hnxIm3WYhVQZCP3qs
-	XS4UTj5HutvXZ0DIFBz54D0lPtzlNykxJiflIxxdArJMw5NBFe3BKIVEeXC3zsHYqetgGW0WJge
-	kuT0sKVJSa0U3jQjcIXqpTE1fSYI4upydAVS0dsVApMf42AGagx7zOiHOn2W/iwiPh5nLLdOfH8
-	wUIo+5pKep0DbBx/P0VxRyUF8c4QGocWZYXzFyLpVbqJmbt6tEDwAyPWBPEsH79ZHTRggSRf0Ku
-	86MlUk2w==
-X-Received: by 2002:a05:600c:4705:b0:49c:fc6e:a3da with SMTP id 5b1f17b1804b1-4a1680ffb88mr122325845e9.25.1791206003215;
-        Mon, 05 Oct 2026 06:13:23 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a027734b49sm343621165e9.10.2026.10.05.06.13.22
+        d=1e100.net; s=20260707; t=1791206418; x=1791811218;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=lxfXgU6J2Pe/OFfdHlqW2Qga6zf9kDBoyeMvz/c9QrU=;
+        b=bKDfa54G9R/sbE158NSnvHGYTrcxbRUl7lBUDsIp52dZFYdU2ERp75w3nhbArBrHv5
+         kH6vHs7XQU4kpm/gVbE48+fsQOgvy9Izwcg4FVHo0w4XTcEnRTM3kcPEO3tpAFgOUxNW
+         UREEd4+K1wiMGk2yc6wlL/B7T0GCdrDoaDqNvb8FymAMzEdi58ZsQZTHpZduZtzhC19e
+         84DGttDPVoLMNilZe35lehx1RfRWmnVLhi4h9X9JzeOF6dmpmeAFybR6mU6eN1ihyRQ5
+         cvrWFXlPY7Q8/3KOYcmKP0Yt2CDaO+tbYtdtzKbwQZJ92/4Ypb0FBioquKC9N+m11C5C
+         ftmg==
+X-Gm-Message-State: AFq9FYL4lZYzGUPNdjkvleak9bFuw9VHJPpSGuybmpjPj8WLmP3LHFxI
+	8zGMZiSE5Epnoc3zxgTA5BeoJQf/+fBYoVk3TrfYjYXwamCChMu2s57h
+X-Gm-Gg: AYBFou1f1wxsODaQeMMejTJ0uzMUrlHOYOPV/tI/tE7h3kKQ6Gn19hvdwQ9ZT73Kxq/
+	v8bJrT/Yymb55HS6UocttkLEdCUAZlgob+FT/my2jv1nEkbFVke19AsISIRxMK2GauAGZlFlAnJ
+	FrTTavnUc8o0FGGSBT6I6ZP5MT5ymB7uGbRYm2kPFeJBSHJZ2yLm2qVAYi6lo4RxVWv3/VAtV1k
+	IEX9TFZ0Qxq29138nmdwea8tflJXdyBjgEwqtCktJO9RYiG306sZ3gpqvwIRsVXTxquLy2e2p66
+	kogRZMLhRzK2XBV+3mlINi+9QGoTM8IYT3VuT9oF8yKfti6Sp+xwbkv/MUrHTd1yQj4UjexXvz3
+	OfIue+TrwhZPYGMVAv4md/esxemEIs6iMsEHZLtH29WqSMzuyAbnhRD6H6M5g00IrijwWhN4IQn
+	IGFyDJNYZgyQkr2oCQyllCgqk3XKALtYcLz7TI8gUxh6Fm702CucPdGpQGbdxxALIbnc4TsR6kb
+	1cg1ZHvsDcPuQ==
+X-Received: by 2002:a05:6000:290a:b0:48c:490a:3370 with SMTP id ffacd0b85a97d-48c490a4c95mr12518365f8f.8.1791206418219;
+        Mon, 05 Oct 2026 06:20:18 -0700 (PDT)
+Received: from localhost.localdomain ([196.235.239.251])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48c62290381sm3660017f8f.25.2026.10.05.06.20.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2026 06:13:23 -0700 (PDT)
-Date: Mon, 5 Oct 2026 15:13:17 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Michal Simek <michal.simek@amd.com>,
- Conall O'Griofa <conall.ogriofa@amd.com>, <linux-iio@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
- <git@amd.com>, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v4 06/15] iio: adc: xilinx-xadc: Use
- guard()/scoped_guard() for spinlock locking
-Message-ID: <20261005151317.00001df3@gmail.com>
-In-Reply-To: <20261005094205.1045874-7-dileepkumar.nagavarapu@amd.com>
-References: <20261005094205.1045874-1-dileepkumar.nagavarapu@amd.com>
-	<20261005094205.1045874-7-dileepkumar.nagavarapu@amd.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Mon, 05 Oct 2026 06:20:16 -0700 (PDT)
+From: Salah Triki <salah.triki@gmail.com>
+To: joshua.crofts1@gmail.com,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v3] iio: temperature: tsys02d: Fix state desynchronization on resolution write error
+Date: Mon,  5 Oct 2026 14:20:02 +0100
+Message-ID: <20261005132004.255462-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 5 Oct 2026 15:11:56 +0530
-Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com> wrote:
+In tsys02d_write_raw(), dev_data->res_index is updated before checking
+the return value of ms_sensors_write_resolution(). If the hardware I2C
+write operation fails, dev_data->res_index remains updated with the
+new index despite the physical sensor remaining in its previous state.
 
-> Use guard() and scoped_guard() helpers for spinlock handling
-> instead of spin_lock/spin_unlock sequences.
-> 
-> This removes the need for explicit spin_unlock()
-> 
-> No functional change intended.
-> 
-> Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-> Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
-> ---
+This leads to a state desynchronization where subsequent reads via
+tsys02d_read_raw() return an incorrect sampling frequency.
 
-...
+Fix this by handling the error path first, updating dev_data->res_index
+only on success, and using guard(mutex) to clean up locking.
 
-> @@ -677,15 +670,15 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
->  		xadc->trigger = NULL;
->  	}
->  
-> -	spin_lock_irqsave(&xadc->lock, flags);
-> -	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
-> -	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, XADC_AXI_INT_EOS);
-> -	if (state)
-> -		val |= XADC_AXI_INT_EOS;
-> -	else
-> -		val &= ~XADC_AXI_INT_EOS;
-> -	xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
-> -	spin_unlock_irqrestore(&xadc->lock, flags);
-> +	scoped_guard(spinlock_irqsave, &xadc->lock) {
-> +		xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
-> +		xadc_write_reg(xadc, XADC_AXI_REG_IPISR, XADC_AXI_INT_EOS);
-> +		if (state)
-> +			val |= XADC_AXI_INT_EOS;
-> +		else
-> +			val &= ~XADC_AXI_INT_EOS;
-> +		xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
-> +	}
->  
->  err_out:
->  	mutex_unlock(&xadc->mutex);
+This was found through manual code review.
 
-Since you've moved the spinlocks to use guard, what about replacing
-mutex_lock/unlock as well?
+Fixes: 53bf4d067d51 ("Add tsys02d meas-spec driver support")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+v2 -> v3:
+ - Include <linux/cleanup.h>.
+ - Enclose case block in scope brackets.
+ - Add missing return 0 on success path to prevent falling through to
+   default case.
 
-Otherwise this seems fine.
+v1 -> v2:
+ - Use error-first pattern (if (ret) return ret) instead of if (!ret).
+ - Use guard(mutex) for clean locking and simplified return path.
+ - Add note stating the issue was found through manual code review.
+ - Add proper blank lines.
 
+ drivers/iio/temperature/tsys02d.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/temperature/tsys02d.c b/drivers/iio/temperature/tsys02d.c
+index 2c67faebd90c..3dd33eb3c310 100644
+--- a/drivers/iio/temperature/tsys02d.c
++++ b/drivers/iio/temperature/tsys02d.c
+@@ -12,6 +12,7 @@
+ 
+ #include <linux/array_size.h>
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/dev_printk.h>
+ #include <linux/device.h>
+ #include <linux/i2c.h>
+@@ -71,19 +72,24 @@ static int tsys02d_write_raw(struct iio_dev *indio_dev,
+ 	int i, ret;
+ 
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_SAMP_FREQ:
++	case IIO_CHAN_INFO_SAMP_FREQ: {
+ 		i = ARRAY_SIZE(tsys02d_samp_freq);
+ 		while (i-- > 0)
+ 			if (val == tsys02d_samp_freq[i])
+ 				break;
+ 		if (i < 0)
+ 			return -EINVAL;
+-		mutex_lock(&dev_data->lock);
+-		dev_data->res_index = i;
++
++		guard(mutex)(&dev_data->lock);
++
+ 		ret = ms_sensors_write_resolution(dev_data, i);
+-		mutex_unlock(&dev_data->lock);
++		if (ret)
++			return ret;
+ 
+-		return ret;
++		dev_data->res_index = i;
++
++		return 0;
++	}
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
-Kind regards,
-Joshua Crofts
+2.43.0
+
