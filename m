@@ -1,221 +1,197 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011056.outbound.protection.outlook.com [52.101.65.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl2-f41.google.com (mail-dl2-f41.google.com [74.125.229.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 784154BB5A8;
-	Mon,  5 Oct 2026 15:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.56
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791212579; cv=fail; b=Wa5YIP9ItHVLYqjfUpYUvlwWHrTvCH+bummR0KgSOIhgaPfpvbeVTZBPztaiEeeJvtMNZCIca3jsbVCLFgIoTq5vYeMvwffJPX/AxM2bC9WLom5JEgPmd3P5z0fvtITkExezW2uHP1dJSoVyJJn1dk8RkjS+q31jZbOTI7Mdh0M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791212579; c=relaxed/simple;
-	bh=9WAeR9NY6zHuY+aqpG63QzHyt9kXdHKjzC0uqatlkSA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=YiV2g3Jq/25c3uJiEOA5S1C6aoqCpw0iqQE3iDUMYwbPo4peA5Cwzm8YWQ5ITK7/7DNOnxsy4fUgaTMAKPvrd8nfYmfRZVvCYbPGeDaAyMzJRiee1RIRwW8F5KVqjBZOIOTwAQDZmbwC3GrBJI4DT6lfW0iHWKiZUn+W87TOmnA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=d690+N3w; arc=fail smtp.client-ip=52.101.65.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2CB47ECF9
+	for <linux-iio@vger.kernel.org>; Mon,  5 Oct 2026 18:05:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791223533; cv=none; b=DVR/YGJ/18ZtodVyE6p2U9Lu5+PwnvTsk1M192ptjB6T+YuCNTWaovW5J/jX6oed3Xx3Yfu8Gy6OLNasoE4+8mpoA25sSg+tZ9djMuNXqeuXQnjtc9GFXs4mqmaYGmxk3ZBeTGYFHDF9lf/Eyl1ysYL64BqtWJ2Y6/0AecvgO74=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791223533; c=relaxed/simple;
+	bh=e89rjkDSYceXnMXC0C/pj3HLHiG63mGDReiwnzrRHi0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QMS7PDCv0WP+YQr+WUIo/QjGO66RI+BzIeSUDlUgwALDzgEW9bbIU1ssbjyreGmWXkm2gU0m6uj2tR/A3I09iBIWPNvtieMnBe6Z0oXo/i+/VSqgUrR90Hxfa76kw1/mGGlxfXl1gp0et0YiyDYlpG/YPPpAotiXtvYheaOgYDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=PzB0cqvf; arc=none smtp.client-ip=74.125.229.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="d690+N3w"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BYVJXLZVLKPCrE+QolcWfkvDFhdd7BXjkLvc5VIZHz5El/Lc0WEpgq+2FVuOjKSMefghMlXClxji9U2z/GJEjwPrM5rmGBy7c3TeYPzd89bzDQvmkANEKEPedbjj0m3Sps9+AeZWUMD0chcMsdUOvI3CH8X0g+HJ6nR+YMS5SabY8ThlnRLzzLnPZGpJY2WFYVA3AZeMjxAdPXFmqse6R3WprYa7KT+O3mW4A5k3uyD9fcg3WYOM6b96mUaJTkZWgrP++4848smgh+9fZw2ydfUu2kHc8ZO1CLDleksC+z1o3m6vKkZUVHFaEeDvBJYsZHdFwqOu3VC64uPydTQ+3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P/bAtXn8yfdchV/cL2a9YSKk0oE+h8APnUrqvd5bRtE=;
- b=A2UWGwAEXN10VYgfZ83AM3/AO1+re5u2XxEpIcJtG3+6UnvL2R6WpjN4uCMuzmnYBej7nKW1581QcqY8kv1QL3rP51+8UYoA5TRPe1Y0heiEuJcgnntnJBdwd9XZK79DUSxpV6adQpUf9lDm9iu2klL+jiAX2M2XBlEtd1IEZt/xRvygWZ2lWtvjLzc19BKjumk5ZGtRNA0lUQ9YIgxM+Ty8Xa8y20TBC3M7GN2FV6+wv+1o1+D2HIr+GEPCAPKRISBlnMEBaz7dBupzyHHUAQGcxgUBOxYggHEFNn4iJwV/6tINkeai/BjMxl6tcVbqxQ+KrEYqWHW9RnG+qvMIsw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
- dkim=pass header.d=axis.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P/bAtXn8yfdchV/cL2a9YSKk0oE+h8APnUrqvd5bRtE=;
- b=d690+N3wTkFf/GVR+er+zEulfHouw8LtMeN3hBlp11r+z+NBJxUjfklzNoxGZj0MpqWdjlujTWvRB/P7MLSqDLTgR2UdVz7Do7m7e7vqT3QeiLt+YdJu7DXQD1336HodGParbnRSboAZSnVKkpik6PheC+wreP6uZ1xogzszO/8=
-Received: from GV2PR02MB8434.eurprd02.prod.outlook.com (2603:10a6:150:ab::8)
- by DBAPR02MB6021.eurprd02.prod.outlook.com (2603:10a6:10:18d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Mon, 5 Oct
- 2026 15:02:54 +0000
-Received: from GV2PR02MB8434.eurprd02.prod.outlook.com
- ([fe80::a2fa:a7a3:b6ad:9e4d]) by GV2PR02MB8434.eurprd02.prod.outlook.com
- ([fe80::a2fa:a7a3:b6ad:9e4d%5]) with mapi id 15.21.0451.026; Mon, 5 Oct 2026
- 15:02:53 +0000
-From: Kanak Shilledar <Kanak.Shilledar@axis.com>
-To: "andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>
-CC: "krzk+dt@kernel.org" <krzk+dt@kernel.org>, "robh@kernel.org"
-	<robh@kernel.org>, "andy@kernel.org" <andy@kernel.org>, Kernel
-	<Kernel@axis.com>, "macromorgan@hotmail.com" <macromorgan@hotmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>, "joshua.crofts1@gmail.com"
-	<joshua.crofts1@gmail.com>, "jean-baptiste.maneyrol@tdk.com"
-	<jean-baptiste.maneyrol@tdk.com>, "dlechner@baylibre.com"
-	<dlechner@baylibre.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"marcelo.schmitt1@gmail.com" <marcelo.schmitt1@gmail.com>, "jic23@kernel.org"
-	<jic23@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Henrik Grimler <Henrik.Grimler@axis.com>
-Subject: Re: [PATCH v5 5/6] iio: imu: inv_icm42607: Implement MREGx register
- access
-Thread-Topic: [PATCH v5 5/6] iio: imu: inv_icm42607: Implement MREGx register
- access
-Thread-Index: AQHdUmTXDYhkjTmAnE2JhwSJk6qTNrbqOnUAgAAUloCAAZyBAIADJNmA
-Date: Mon, 5 Oct 2026 15:02:53 +0000
-Message-ID: <b9f2af54922a988483a6188f0119ec5622cf4f6d.camel@axis.com>
-References: <20261002-b4-inv_icm42370p-v5-0-c65281b745c9@axis.com>
-	 <20261002-b4-inv_icm42370p-v5-5-c65281b745c9@axis.com>
-	 <ar-tpjenoxMloYq1@ashevche-desk.local>
-	 <afde7beb4019d8090d3df30bb4e0a1b7ca00ad4a.camel@axis.com>
-	 <asEY9DHDisqVcQ5D@ashevche-desk.local>
-In-Reply-To: <asEY9DHDisqVcQ5D@ashevche-desk.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator:
-authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axis.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: GV2PR02MB8434:EE_|DBAPR02MB6021:EE_
-x-ms-office365-filtering-correlation-id: 5aaa5744-70a2-4c2b-109a-08df22f1bb54
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|6049299003|376014|7416014|23010399003|3613699012|38070700021|11063799006|56012099006|4143699003|10067099003|22082099003|18002099003|4053099003|4013099003;
-x-microsoft-antispam-message-info:
- QkHvhLDFSJg/fszn3bScU5FcE0ECdl6yXzXkgcba/dWNoNJYNzpaJmJr+tQjEWjw2JG8hJAVQVwKPDVUKnSZccioe8XgRrnpUXCbAQBmJXMG6PDeFF+rwVqQPcNU0aGtgqZp/5ebYkQQShUWv5b7O3SRZmsur7i9HHjQrhFkrf1ucm9qVXoqIHMF+xNTvAT8VjwVGZeYeHWnzdf5gzkA5HQxNnUQgZ7yRanzLLPtfBneR00izrvznf27SiZ0xrlgXl0e2wZSExfXTh9Uvli1ibGXX7ET3hMFund+A7uUy0Qwq9JMMK9SksGb7L+1iQA6amUSACoNfNcKSQyxxaT9FjszMPvXcOcNPuOHAR8IBj26y/M+ZaMz9C5c2Yu12kgdTlHn4tTZi9d/wUTJmGwdRcGVIZ5z8vyB09GmkStwKZUa5BapRd2R81Sa/y4egBnrx5y8qoYKJHkoWZpIKUN1ZXE2PS8fbGjOmf+iZ5zhKMKuYOF6/+FQckI1wpCRAZu/AzDQz5sf8v9Eul580o1uiQtl9A5TQW/uzFt73EHZoyhy2gonnTbMERPH+6EgjLx6bxpjraFUeouYcAyZ3CAfBQ801ptWiR4ZHOlXXHB+nmhVur7rh5n09syAISDaiPyDtj84aqY9MVU61k1i+IPid6JsFYjtDPqiF8n7THqLMg7hcTYIoyb22rO8zThGuGLclvztOtahqI6wAqnguhUnEg==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR02MB8434.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(6049299003)(376014)(7416014)(23010399003)(3613699012)(38070700021)(11063799006)(56012099006)(4143699003)(10067099003)(22082099003)(18002099003)(4053099003)(4013099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?SmErNTI3YjMvaEcxK2JOU1lJV2FiZkkvZ0h4RWFQWlh1eDg2TlpPcTdwd1Ix?=
- =?utf-8?B?N0QrUWNKbjBLTSthdFJNdHZzY1RYekV6VFR5WXhSekxsNi9qcndiUGE3NEQ5?=
- =?utf-8?B?MGFSa2xCVDg2Y1ZoeWdaYmkvYVM1REhwSS9Rc1hrT2U5bk5RaUV0dUQ2c0xC?=
- =?utf-8?B?YU52SEdzczd4UWRDQmhxVHRQMjRzYVNGcWgzWEdrZEYvWEx5RndwcC8rQi9H?=
- =?utf-8?B?NTVkYnBKaE9aVWtzeGhOcm03bFdTTGZRVGpna1lSZ1FwWE00cVBuMWcyaDdY?=
- =?utf-8?B?dWN4Ti9nVGxVbGdOQzNqVjJGbjVVRzZqMjBUYXRxcnc0Q29ybWFZSzBRQloz?=
- =?utf-8?B?TDZuZmJ6WGVETzFmdGN5eVp4M2RtS0llUm9SVTlFVE1Jc3dIdHErK3NBbTE0?=
- =?utf-8?B?ajRhZ29DM3U3S3NNT3VRaUNsUHVaVkppSWZRMEJRbHNHeEdnbm9PdC9ETEZP?=
- =?utf-8?B?Y2FOcktPRklpb3FJaVg3VllreWhzTWc0QTE3UWVuNE0wUFJNbzlmSllZOTND?=
- =?utf-8?B?dWdzOHZxK1B6SUhXS2VIOHZTL0s3ZzJDL1BWR21LeE81OW5GcW9EemU1R245?=
- =?utf-8?B?R2htdVNSUmUxTERYT3R3bWZFaW1LejBaR1FKV2crYkczZTZtYmt3a3l5MkIr?=
- =?utf-8?B?ZG1nQUdna0N3NWFiejVUNkVXSHJxalpHc0ZGZ05NV0FGNXRBQ2hNRkwyZGIz?=
- =?utf-8?B?TVQ0K0xmcVZ2a1UxS3NyemxkVEZyUUF0NGE3bG5FQ1M4THpwWHVWUE1UaEVS?=
- =?utf-8?B?S2haL1VKRmVlbUdybWhXWUxVYVUxWllNTlc4YnlIV01aOHZkamNoNTBMcEIz?=
- =?utf-8?B?NkE5RTBOK1RPUmhxRGUvL1NkdXptL1dncUZ0RUJYZTZJUWdreTBObndlZWdE?=
- =?utf-8?B?TkRzK2tSVUdDNndHRTFaYmZVYXRDNytWYVBCL3dkQ1BhREJJdzVaNDFZNlVC?=
- =?utf-8?B?bGpFYUZjUVhVYkZIZ3hCZmpqQkUyS2ozN3NsNkpxOHJuRXRxQUxTVVhpYXFq?=
- =?utf-8?B?STAxTXJNbGw2bFdQVVVYZkk1TVlJdGZ6Rjg4cTRERllxelJJbDZmcUxRdjBn?=
- =?utf-8?B?VU5jeWh2YytTcXpNWHFNS3Q3RlRmd0xmcVBVTUFObVVxZTFkRUM4WFh3S0NP?=
- =?utf-8?B?QzRsYjBzbUdKKy84VGM5RVVIVFF1L2k5K3paaUFhM3ZiQ0N4dUlpNkJoSGx5?=
- =?utf-8?B?ek8yS3NHaGFidFg5Qi9wSkhmaGhqS1ptNTRzYkROZnk2czJFaDJDclZXSmps?=
- =?utf-8?B?Ykl6eStDVjNpbmNINFpxMXRHUUFGc0VrRnY1RSs1ZWxvZmxBamY4WDUyalM0?=
- =?utf-8?B?M2NXaFFVVEYzUUYxdlZxSEdRM2NaTXlQbTY1a2pxVmdFM2kxcGQyM0NsRnVR?=
- =?utf-8?B?Q1JXVzU0OWlEaG0yNkNmRVVXN2pXOUhINEVINlNwNW5UdkdXaE85V0FIQWRw?=
- =?utf-8?B?VjZKVTR0VytaRkl2TnhrRkZtSkF5bDhNRkFtc1ZTQ0FUWGpucEQwVnYrV2Fv?=
- =?utf-8?B?NDBZcmFsSmR3ZEpKdmNlNlZIK1BRbFNzczl4R2ZEeUJUaWFQL2s3eDM4WkpR?=
- =?utf-8?B?YTh2NWU5c3duakk5OVQxTEpxT0E2MUFsU3hKNS9RODJ2eGJpalpONU1tbHNh?=
- =?utf-8?B?Zjhhb0s0V2M4MDRralpOWkxJbVloWGlneTg1VXgvNFRCN1dIY1E4bm5mcGt0?=
- =?utf-8?B?YTc1UVpEWDhYNTVmczBkOVdmZ0VBNjEvSEdxZ3Zaa3VtcGl4S09IOW1yTUpR?=
- =?utf-8?B?aEdPbnVoNDRvOFliUnE5MWh6WjMwUEVJNncxVXFvMXUvNmoreWhibFkxS25n?=
- =?utf-8?B?WCthajhzbjhoYnhKMWRMTmVqNUtTMnFqVnphenMvRzFrdk1xc2ErUkI4UGZa?=
- =?utf-8?B?RG8wODZxSEtNZkxlMzFKK1Q5M3RIdy9scVNiTlR2bWJiSmF0alI4dTBXSjJD?=
- =?utf-8?B?bFlyYkhyWUhTQVdZd3h4T1VqOER6QldLaWZGZzM1VWx3ekNXZ0piclRDSmxj?=
- =?utf-8?B?akVva1JXRWVBNlRMMHVBZ0lUZnZPRjg0ZEVrQWszSk9iNTVwNklBek9JSS96?=
- =?utf-8?B?aGNaMkJvOUJFR0NsWmRiYjEyWjVWbW41ZzFhR2JqQUVraWhQT1k4RHJhaUdm?=
- =?utf-8?B?MzNKTUc1b2hEZldHMjNXMDQ2Z2FtbTlodkRVNHVVYldzSnRHL0p3dG5oQmdt?=
- =?utf-8?B?eXFCSm9CRDRpcjRNdUU5NWRyb0Q1WkJVWmVVbXdlRUxsZ0FBOEdLdjZ3MDdm?=
- =?utf-8?B?MHJrQ1g1Y0FjTTZKR2pzY2RmVnpLMmFXSENrM29JellxTCtCeVNaWWRheFJw?=
- =?utf-8?B?amhqbjlOZm1nWmNjNmtWN2JvRWJsYXlPQTFZVnFDMTVjMUZSQUYwUT09?=
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="=-XM3erh92RLIAuvrENta7"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PzB0cqvf"
+Received: by mail-dl2-f41.google.com with SMTP id a92af1059eb24-1480aba0484so161380c88.0
+        for <linux-iio@vger.kernel.org>; Mon, 05 Oct 2026 11:05:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1791223531; x=1791828331; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=QWvjrH2OoD5/C+DUCVNhJk1znVlYhkyyNM+I18Y3BXk=;
+        b=PzB0cqvfCbtm33fjtolg2q2KkbWvSH0598oNG9o9Tb9NjhHJoekatNsmRxMHnRp67W
+         lLcjfcy60zoqNoj3l2qlLzkeNsHJOo6NKYElqpQ7OJwZjekJ8fISv9Qb6bJN9BoeSHEC
+         CeIAoAAxO49fFUmpJfy9elmIBs//5Epu8wWHo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791223531; x=1791828331;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QWvjrH2OoD5/C+DUCVNhJk1znVlYhkyyNM+I18Y3BXk=;
+        b=MG7eCv37OJauAwgU98lcSd6csvlw6ZJsQp/gjvD8GCfH2dqXyMSDNRStxZ4ZpEYnpy
+         NxvA+m5orhVyifY9xqRp90GcNslf3pBnBIGa8DGbORdADFcxi4Z5EjCy0628kM/ED3ng
+         qahPS+OzSDxkBsHf4mwRJHKRJ4DDs50JEpEDggi0VDzBWdDqt7TkqNoOam7DZCVlks6F
+         TcvQ3iV4BOV/8B7FbT4cjp5cUZ7g4ezGqI4xXwZYXbsSaRXeX9BpuF0MwZQrCGNxy/MU
+         zQb64OokO5AGLqXDn0Q5qgMRUKEW/k59v8S4mwUwqq/XaDmmdip5ijw5JXmLVZQKqdos
+         GLNQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxNahcbrtvqHQZxo4UaCxD1/Vt6OL98Me/LtGtrvG2WN7yOHLHiLAxug//NKeOBt2s+9A/1UrgEtuY=@vger.kernel.org
+X-Gm-Message-State: AFuF++m6+SQ/AWmDuWVFZCgGeqQNJ9/zu3vHAMqGn6wbcYrkfYKAkzaj
+	DLtmvvVFG8At0hMa8uPDXoCo4pCajCdNghqrRbghYvXuHUITxpRMpR1XmkzfgTiAAg==
+X-Gm-Gg: AYBFou0zcwiONHM+kY+gOZT/ySU0J9In+dq9itChC2X7Jbuak0G8EC+kzUWKq6LGlma
+	umMxBiZTxeuxee3vZ+yshUYp7NMTQA3lexRZDWPw8eRizE0vqGLQM2s0F5iXQKSScI+MQoAk15w
+	51fXBBDAvPRpNfZeIIAL6SsP4B6YntK4xlBR49ZYSqfYVntifJDURn3FEwHltVnaBnxbU+UNrAH
+	ur24dlbA8ElhqxRjHZQTqw5Mx+ymvBthZ0CqOAXFKCNlXeURQTBumGsl6ZW4KYdbKWljUI5d5L6
+	/fMOR+gqpDFX7OmYI3ciFT3bGDroQHMyKNhdrNIhTL9rhb8825ak+ejdjq6+zr/cQ39g0JN/I0h
+	ANJu8NHx/+IamWO9fybzb3Lymz1fzXWQtTGQ31vr32wPrGnPzNLGsIKFcfr2pHqKqCxvVP77Fov
+	lsj24dNpMqb7KSaojQAVI0b6s8sWbSWwaJCohqSTZV/6D+SA8XKvtLp2OueFtrG050B1AL26PEq
+	3NdUklB49bJiHgy41+xXVLStW0YrMbRm7a8
+X-Received: by 2002:a05:7022:294:20b0:155:4a09:a228 with SMTP id a92af1059eb24-15d25e09c5dmr375308c88.8.1791223530973;
+        Mon, 05 Oct 2026 11:05:30 -0700 (PDT)
+Received: from localhost ([2a00:79e0:2e7c:8:3452:be62:94e:a46d])
+        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-15d819cb585sm54028c88.5.2026.10.05.11.05.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Oct 2026 11:05:30 -0700 (PDT)
+Date: Mon, 5 Oct 2026 11:05:28 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-stm32@st-md-mailman.stormreply.com,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Fabrice Gasnier <fabrice.gasnier@st.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 3/5] PM: runtime: Propagate last_busy from dependent to
+ dependency
+Message-ID: <asPm6HYpEIAYJ4a3@google.com>
+References: <20261002230714.507921-1-briannorris@chromium.org>
+ <20261002160309.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
+ <asEdiIT7l49vhn7i@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR02MB8434.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5aaa5744-70a2-4c2b-109a-08df22f1bb54
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2026 15:02:53.4605
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bsoScU6bfOjnu5T/UmOejJ/pcRDfT4FAFzjbA/8ltBRrFPXTllMJew5sojcmTgu4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR02MB6021
-
---=-XM3erh92RLIAuvrENta7
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <asEdiIT7l49vhn7i@ashevche-desk.local>
 
 Hi Andy,
-On Sat, 2026-10-03 at 18:02 +0300, andriy.shevchenko@intel.com wrote:
-> On Fri, Oct 02, 2026 at 02:25:48PM +0000, Kanak Shilledar wrote:
->=20
-> > On Fri, 2026-10-02 at 16:12 +0300, Andy Shevchenko wrote:
-> > > On Fri, Oct 02, 2026 at 01:54:29PM +0200, Kanak Shilledar wrote:
->=20
+
+On Sat, Oct 03, 2026 at 06:21:44PM +0300, Andy Shevchenko wrote:
+> On Fri, Oct 02, 2026 at 04:03:07PM -0700, Brian Norris wrote:
+> > When a child device suspends, it does not update the last_busy timestamp
+> > for its parent. If that parent configured autosuspend and didn't
+> > otherwise maintain its last_busy timestamp, it may now be immediately
+> > eligible to suspend. This is probably not expected -- the parent should
+> > wait for its autosuspend delay before suspending.
+> > 
+> > The effect of this behavior is that a parent device may suspend sooner
+> > than its autosuspend delay, simply because its usage was accounted by
+> > its children, and not by direct references to the parent device.
+> > 
+> > This was noticed in several cases, and some have implemented
+> > workarounds, such as in commit c537d3457542 ("iio: adc: stm32-adc: fix
+> > runtime autosuspend delay when slow polling"). At the same time, Ulf
+> > suggested these problems "should be solved in the runtime PM core".
+> > 
+> > Instead of working around the problem in drivers, we propagate last_busy
+> > timestamps from a dependent device to its dependencies any time it may
+> > allow a dependency to suspend -- i.e., when releasing a refcount for its
+> > parent or suppliers. We take care to only propagate the timestamp if it
+> > is larger than the existing busy timestamp.
+> > 
+> > Note that this works best if the dependent device is using autosuspend
+> > (and therefore updates its last_busy timestamps appropriately), but even
+> > for a non-autosuspend child, this is still somewhat useful --
+> > non-autosuspend devices still automatically update their last_busy every
+> > time they resume.
+> 
+> > Link: https://lore.kernel.org/all/CAPDyKFp=KTf8=zGBSzPYqhjnZpY8xwvjCeM1e-WTKT1QLSxaDA@mail.gmail.com/
+> 
+> Because Linus might complain on odd Link tags, please make sure you have a
+> reference to it in the text and place it in a form like
+> 
+> Link: $URL [1]
+> 
+> and respectively in the text use [1] as a reference.
+
+OK, I'll update if/when v2 comes around.
+
+> > Cc: Ulf Hansson <ulfh@kernel.org>
+> 
+> Can go under the '---' cutter, so it won't pollute the commit message in the
+> Git history.
+
+This is a well-documented convention.
+
+Documentation/process/submitting-patches.rst
+
+  If a person has had the opportunity to comment on a patch, but has not
+  provided such comments, you may optionally add a ``Cc:`` tag to the patch.
+  This tag documents that potentially interested parties have been included in
+  the discussion.
+
+I'm directly referencing Ulf's suggestions (Link tag), so I'm also
+making it explicit that I'm CC'ing him.
+
+> > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > ---
+> 
+>  Cc: ...
+> 
 > ...
->=20
-> > > > +static int inv_icm42607_mreg_read(struct regmap *map, unsigned
-> > > > int
-> > > > reg,
-> > > > +				=C2=A0 u8 *data, size_t count)
-> > > > +{
-> > > > +	unsigned int val;
-> > > > +	bool idle_set;
-> > > >=20
-...
-> > > > +
-> > > > +	return ret;
-> > > > =C2=A0}
->=20
-> ...
->=20
-> > > > +static const struct regmap_config inv_icm42607_regmap_config =3D
-> > > > {
-> > > > +	.reg_bits =3D 8,
-> > > > +	.val_bits =3D 8,
-> > >=20
-> > > No cache? Why?
-> > As the virtual regmap config has some caching for USER BANK 0
-> > registers
-> > only. The indirect banks doesn't support caching [1].
->=20
-> This is strange. You mean they are volatile by definition (HW)?
-> Otherwise if it's just a software issue, it can still be done,
-> for regcache there is no difference if the offset is real or paged.
+> 
+> > +/*
+> > + * Propagate last_busy timestamp from one device to another. This can, for
+> > + * example, prevent overactive suspend when a dependency's usage is primarily
+> > + * driven by one of its dependents.
+> > + */
+> > +static void rpm_propagate_last_busy(struct device *dev, struct device *target)
+> > +{
+> > +	s64 busy = atomic64_read(&dev->power.last_busy);
+> > +	s64 target_busy = atomic64_read(&target->power.last_busy);
+> > +
+> > +	while (target_busy < busy)
+> 
+> But here you already have an outdated ones, no? Why is this not a problem?
 
-Sorry, I was not very clear in the explanation about caches. Only some
-specific MREGx registers are volatile and I am not using those yet. I
-have removed the MREGx registers from the _is_volatile_reg function.
+The "target" device (a supplier or parent) can't suspend before this
+point, because the dependent device still holds a reference -- so an
+"outdated" last_busy is not relevant yet. The target last_busy *might*
+become relevant after this point, so this is the point at which it needs
+updated (propagated).
 
-In this 8-bit transport regmap I am not using any caching because the
-16-bit virtual regmap (in _core.c) already knows all the registers
-(readable/writeable/volatile) and also contains a cache. Everything
-which reaches the transport regmap is either a write or read which was
-missed in the virtual cache or an access to the bank switching
-registers which should always reach the hardware. I tried adding
-REGCACHE_MAPLE in the transport regmap, but accessing registers in
-MREG1 then timed out due to stale cached values.
+That's what I mean in the commit message by:
 
-> > >=20
-> > [1] Datasheet: https://www.lcsc.com/product-detail/C5129967.html
+  propagate last_busy timestamps from a dependent device to its
+  dependencies any time it may allow a dependency to suspend -- i.e.,
+  when releasing a refcount for its parent or suppliers.
 
-Thanks and Regards,
-Kanak Shilledar
+Please let me know if I should add some clarification somewhere --
+perhaps also in the comments here on rpm_propagate_last_busy()? Or if
+you see some other problem in the reasoning.
 
---=-XM3erh92RLIAuvrENta7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+Regards,
+Brian
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCasO8GwAKCRDEY9j7t8Ka
-Z6bUAP9KosDIvgBW+cAT+z3UnmLdTLaZKTr0o/rLuuQwDny33gEAyaHuOVXpXK6/
-Qa6t907KPTcePARzH35XeRk4/eHTdwI=
-=q/2n
------END PGP SIGNATURE-----
-
---=-XM3erh92RLIAuvrENta7--
+> > +		if (atomic64_try_cmpxchg(&target->power.last_busy, &target_busy, busy))
+> > +			return;
+> > +}
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
