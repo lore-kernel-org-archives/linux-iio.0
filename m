@@ -1,69 +1,69 @@
-Received: from mail-wr2-f34.google.com (mail-wr2-f34.google.com [74.125.225.98])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 324A9480DFF
-	for <linux-iio@vger.kernel.org>; Mon,  5 Oct 2026 13:09:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F38344825BB
+	for <linux-iio@vger.kernel.org>; Mon,  5 Oct 2026 13:13:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791205796; cv=none; b=T2+BDjr4WepKFtzDYUUTvTh5sYWKiqF0bM6//YeOnXgQJK/M0S+JpIR0mt8zXAAdIUyLj4ICkkSn5+zuLxTwHq50Pbx8Detzsu181vOKh/dLuCy14gMatidte1zNqSzpHoWMMbl39fBA0YeIoJ8nKCMnNEHVR9V40BNjcaCCI5U=
+	t=1791206006; cv=none; b=VoVo2LVZ2SPmpEIVZIQUh+4arjbbuThrJwDjIx3UYilR0bdt9dzCUB9Gx5FPBAULbKP+86gxda120iNSmlnF01y2hGaDzYFj+pyRy8INLqaqHVNQwHj4NS85/97d0BAmf3WxU+z0wPc5um7J2ZatKFV5DmWmAG/Cv9D9r8K2FRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791205796; c=relaxed/simple;
-	bh=eoF04e7AXzXrtoHA5vbEeVEWVJAtxGhk82/yPBy1wzY=;
+	s=arc-20240116; t=1791206006; c=relaxed/simple;
+	bh=oDmJt3EJtsL6dISeusSh5puteEMhnMpuxIlCFWUAi3Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Mhxi5dHDj8Zg3KoFgS5snULvDxPzoa7TPzKlGct51AbkqpsrEV0mjXI4s+VqpDHKDHbmzerWBumBjPKvogqd2cWxIFmw1fkIrvNv7YkUlL3F3bl4OjCMWvqoOz8DTFnDy/9gkLdvUPwSMMRhxwTxQcO3TbPgchrOBJPAfMffhtc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KOqe364O; arc=none smtp.client-ip=74.125.225.98
+	 MIME-Version:Content-Type; b=mHOdtsc1GFZnKEjzoxRS84GE85iiyL4K2iZh4s7bMQJf4BAbFaQLn4deo6DMUFzASvoB96Vw5ZkrVVmWKQt5VzFMwaOLtvcZZL6/Nk8e7y5LcQGV4WzGPem/nAudYxeHNE3khdWFPfKoNwjv004456pjF3a+zVVv/OROhkYGuI0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ca7fatL3; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KOqe364O"
-Received: by mail-wr2-f34.google.com with SMTP id ffacd0b85a97d-48b00a0ac65so871409f8f.0
-        for <linux-iio@vger.kernel.org>; Mon, 05 Oct 2026 06:09:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ca7fatL3"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49ff680331aso17599375e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 05 Oct 2026 06:13:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791205793; x=1791810593; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791206003; x=1791810803; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Ck/YSmwX+BAU8aauMUDi1gthqNGVLuO2QlzjEMLfeNg=;
-        b=KOqe364OWGyyi3FmB4T4oenpfXYZ5MiOUa61Jz3tXAJpUuKYOodV7PJIPKIptSMpXR
-         oTc1AsvNXGqdbe9VHi5yXb8Wa3hbuu/A+C18h60zbjO8PZEYtOdEEuLdFq6KyCe3A0sM
-         ACSArm0h305Ubopm4KEHI2azuzliyVqnMmr5Df0gJWNxVH7IzxGnXNYahxBDrlThPnLE
-         jqcjMXRJZ8Qm2DoN7HpqDQeo9h6js6fcLBOXhFV0VsWVBGFKXk1KUGGw3/evdPxGd/gZ
-         oi0MzLb5dQSd9mf4fUNpeV+0jeY7PxNLNwx81tcjz0JV0OyzixXk5VXDROz1lEDionGo
-         qEsg==
+        bh=lUlOSe5A8lNERyF+m/EbmOxMTZ4XiY1F/mU41HusoYs=;
+        b=ca7fatL35Cv054jFVqHdX1rQg57LW1v7nUCXKuhv2EHFSylCL9WYk9ARoTF7T3xWS2
+         HcbLsRkEqmw9ixsjN9K9+TbQ54fAJ8rSU5e4GVoOPrq0aEy5xNKqbeMZKkYoI6hDiWqy
+         f4EVyMH7LTBHQxpthc3YrT7FSLrZKAkFKVLlsyJvyQztBuMKOAemu7AQYShLyfswRzkl
+         HPtWvjNfC35DhOL2jaJRbPIvWqZ6tKveUrDOIeWzxx5vPiwit7UgqzZhB2895TBqI9rA
+         /mAAfB28J29y92RNNPwiiKGVIJ1j1tMb2rzMFqyBTg3rMFY+jI7BjIAzYcuyv+ZmZBWO
+         ipwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791205793; x=1791810593;
+        d=1e100.net; s=20260707; t=1791206003; x=1791810803;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Ck/YSmwX+BAU8aauMUDi1gthqNGVLuO2QlzjEMLfeNg=;
-        b=0lCtW1iTMEdG6pH5C80CyPyWhEPAKSTzOyF7aOz/RDDlfkIU9hnjoMsTcmN6r28mqs
-         EIC07tSEC70ZCYmazFsiau1zPTL7N6ik6irsUijOmEl9S7d1MWzN2loV9n7vhe+Y37xR
-         Z3iFDBkQQak7hLKPWj1BlogCCSMGrv5C+xj+sb52eBSXP9XpVzlwYZ25Wjf2Xx3MiIvs
-         RQLNxPodR32tkvtConfWbGjpE0oPVbSU/AUBPArqtaj6scyOEBq1OJ8LT5zEIci4h/VD
-         o6BeL6rJxImAkckVxXeNvRk3I9osyX8e7LAjR0eiD0rgwndmAj+RQUThxLUXEri7AYqs
-         dTvQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwhSxd+aI7cxrOtaVhi0oEpsMraXqdaVN4NYKf2ZHU2TEjmESszVCeXQOmTsk+VtJy28WY/YnAG6X4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIXXVf/3GC7EK49eATq7K9iA80vh+ZSnntOwyQdYMny7tMUpNoA
-	uDZ+5sCVVFbiovkCZ5sk/u7Agaxpg8HSd4XEb/aTFRfj3F5hkhawk3Eq
-X-Gm-Gg: AYBFou19auMv47/qSu+rMk4alcmULH7oYMZPiPqml5bqByNinBie0uAcBHvqic7eAd3
-	Up/92w3pOWJ8NpSl6HKrYSiXZFj8vYfJmj6ZU7nP8/lI7dS5VlcLOXVLTAF59YNnY0cMhPvtRMz
-	u/6T3X1hHsXHqBmpEvdpnmLb51ce1GG5aBABh69FstpaJmwGhxQ4lDanlB5eTGBVWlRlY1pbEp5
-	cBZNJjoCHoEs5G93JauOV6rLF8NKVk7pKCqbaH9rEwWXcMb7FcGgGOXYbsj/WB36sOGXEmLhBOO
-	OPFaVomM3n6p51YESFVaD76UIZZJbdifTxkLadyLHsOEJ4of3tz2HuENzSqlNxGY7mBwittlSKd
-	cXHUIcDITegYV09Bf4WWYsi6MVTrrJxsedfuWTTRywqxFwqgA70OYpu3WACQR1dI2Ck6yDWUv1b
-	BJ0f0DfxY6RQfT3czcBl4GPgttVInNJJCQS5+3Af6u3/1RAJVEvWiK7gjUpxfu5m65wJB/4DpUE
-	SzUgDvDhaK2ShYfqE9PyzvUqOdAjpp8QFKbmfgr9G9NfdZO4YESQNgEEw93fskEy9KuN+UPbcSQ
-	ICbgNKzSKLMUp23rt0h2jQ4NU5mk/nTxenM9ONEc6zHkgaiqBOuK6sbM5Zpd10KiEd2Y3n1Gg2I
-	5sAWPFWAHdSHC0VSeBjd+YB71MEAD23tD9x6BPblTo/DuTrXStBLMDOXWHWy4Hejsi20rFLUGNp
-	Zk8KL/J3J4FWpwWxM=
-X-Received: by 2002:a5d:64ca:0:b0:488:83f7:6352 with SMTP id ffacd0b85a97d-48b126f542emr19074352f8f.4.1791205793268;
-        Mon, 05 Oct 2026 06:09:53 -0700 (PDT)
+        bh=lUlOSe5A8lNERyF+m/EbmOxMTZ4XiY1F/mU41HusoYs=;
+        b=GHq3AiQ471+EI5NrKYeWN/85XxaF7Usb4AleKE3ozCj1y3DxjochvS7YAvs1t/nJL1
+         ySq1xjVCoc3ulu1pqQl3y68vnZtdIbuIZQnGcS0Wnc5HjjesVqcOjhrzreJho3/qSthb
+         oDzhLblXbasshMYLY/HoNjXZyBNlWxJIvUfq/LLIRE3cycWmyYGpjgQdsSJG5QFgpcRs
+         wbDWLlsmuRt6CT8gBEHO1I0Y4jK4xRVZswx0coM5A31zmGmQ9kFLeN6G7Fp/SEuU9taC
+         SI1VbT9bv5Xj/bIiYWv7hFcLz3wMLe+I7I/mP5xMA2ZYbx1g/T07YgpOVw2SxW3jBohA
+         172g==
+X-Forwarded-Encrypted: i=1; AKwUvBztzrxwDfgRsUdTnmAyvcP4Z0jH/aPqF/iePojmdszo8XgZDzKnHaoDcAiUD7YRMDS4oJC5ViLdfGY=@vger.kernel.org
+X-Gm-Message-State: AFuF++myUKGRM4gaXNOHhV0flUynrLDfOipqhzypewU7hUdwPsiH2XUl
+	f5fkX8PGk53coXNpJ8WXmGf3FRcRSp6p6UaYXOpCZGsJdqkUZujkj7IG
+X-Gm-Gg: AYBFou3DbWzIvYVdZCM4/fOvi/gy3BO1+wiKFRZiWEEFbKHWZbrwCUbYGKo1KlZlqnX
+	tfREgt0s68uBx5QqLcCL/mpNYT9jlsypCq49NM9gwj0HBMfkkCIgbOmYFeE01HTTRo9g+QSskr6
+	PUqsbOuNz1id0sAfuXBNZN2IQwJzbqePR68EDRIKAuzhhAHPxVS8+hzHcCtbj8nI7X7cvaA1Og1
+	lkpgZO57PkzgaAKWsTBZGPfIlwSmPfcnrQk8Mp6nrPuWwFOHvoyuRjUfF1+l9svByCBfX/O6mra
+	Svy0xoTHgATSxVXm0c0W2Jy9rnti9msZbGq9WWBPbra1qSCKfOZtO4b+gldtuLnJvzkpIPtJMc9
+	qaC1Km/mvx/jXeFd1RZqtNUAR47z0rVQLDm8hCewqrUEEvBdqOaQ5e7DRx72r379+TOTw/StQaG
+	Fqo58znuqqCUEsELRtaj/rN51Zn6IlSz1O4jWyMnTuKBa3LtxDkyIk61s5hnxIm3WYhVQZCP3qs
+	XS4UTj5HutvXZ0DIFBz54D0lPtzlNykxJiflIxxdArJMw5NBFe3BKIVEeXC3zsHYqetgGW0WJge
+	kuT0sKVJSa0U3jQjcIXqpTE1fSYI4upydAVS0dsVApMf42AGagx7zOiHOn2W/iwiPh5nLLdOfH8
+	wUIo+5pKep0DbBx/P0VxRyUF8c4QGocWZYXzFyLpVbqJmbt6tEDwAyPWBPEsH79ZHTRggSRf0Ku
+	86MlUk2w==
+X-Received: by 2002:a05:600c:4705:b0:49c:fc6e:a3da with SMTP id 5b1f17b1804b1-4a1680ffb88mr122325845e9.25.1791206003215;
+        Mon, 05 Oct 2026 06:13:23 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48c6228d716sm3851685f8f.24.2026.10.05.06.09.52
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a027734b49sm343621165e9.10.2026.10.05.06.13.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2026 06:09:53 -0700 (PDT)
-Date: Mon, 5 Oct 2026 15:09:37 +0200
+        Mon, 05 Oct 2026 06:13:23 -0700 (PDT)
+Date: Mon, 5 Oct 2026 15:13:17 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -72,11 +72,12 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  Conall O'Griofa <conall.ogriofa@amd.com>, <linux-iio@vger.kernel.org>,
  <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
  <git@amd.com>, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v4 10/15] iio: adc: xilinx-xadc: Add clarifying comments
-Message-ID: <20261005150937.000044b6@gmail.com>
-In-Reply-To: <20261005094205.1045874-11-dileepkumar.nagavarapu@amd.com>
+Subject: Re: [PATCH v4 06/15] iio: adc: xilinx-xadc: Use
+ guard()/scoped_guard() for spinlock locking
+Message-ID: <20261005151317.00001df3@gmail.com>
+In-Reply-To: <20261005094205.1045874-7-dileepkumar.nagavarapu@amd.com>
 References: <20261005094205.1045874-1-dileepkumar.nagavarapu@amd.com>
-	<20261005094205.1045874-11-dileepkumar.nagavarapu@amd.com>
+	<20261005094205.1045874-7-dileepkumar.nagavarapu@amd.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -87,12 +88,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 5 Oct 2026 15:12:00 +0530
+On Mon, 5 Oct 2026 15:11:56 +0530
 Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com> wrote:
 
-> Add missing comments on struct mutex and spinlock_t in struct xadc
-> (per checkpatch.pl), and explain the non-obvious FIFO-drain loop and
-> Zynq alarm-bit reordering logic.
+> Use guard() and scoped_guard() helpers for spinlock handling
+> instead of spin_lock/spin_unlock sequences.
+> 
+> This removes the need for explicit spin_unlock()
 > 
 > No functional change intended.
 > 
@@ -101,9 +103,38 @@ Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com> wrote:
 > Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 > ---
 
-LGTM.
+...
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> @@ -677,15 +670,15 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
+>  		xadc->trigger = NULL;
+>  	}
+>  
+> -	spin_lock_irqsave(&xadc->lock, flags);
+> -	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+> -	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, XADC_AXI_INT_EOS);
+> -	if (state)
+> -		val |= XADC_AXI_INT_EOS;
+> -	else
+> -		val &= ~XADC_AXI_INT_EOS;
+> -	xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
+> -	spin_unlock_irqrestore(&xadc->lock, flags);
+> +	scoped_guard(spinlock_irqsave, &xadc->lock) {
+> +		xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+> +		xadc_write_reg(xadc, XADC_AXI_REG_IPISR, XADC_AXI_INT_EOS);
+> +		if (state)
+> +			val |= XADC_AXI_INT_EOS;
+> +		else
+> +			val &= ~XADC_AXI_INT_EOS;
+> +		xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
+> +	}
+>  
+>  err_out:
+>  	mutex_unlock(&xadc->mutex);
+
+Since you've moved the spinlocks to use guard, what about replacing
+mutex_lock/unlock as well?
+
+Otherwise this seems fine.
 
 -- 
 Kind regards,
