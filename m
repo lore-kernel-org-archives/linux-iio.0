@@ -1,252 +1,198 @@
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from TY3P286CU002.outbound.protection.outlook.com (mail-japaneastazon11010006.outbound.protection.outlook.com [52.101.229.6])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F8A242D6B
-	for <linux-iio@vger.kernel.org>; Mon,  5 Oct 2026 00:51:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791161474; cv=none; b=Qr1EHfraeQV0sHGeq92/EuJtr9jkA8vmUQchfeLr9W9F1R1GTiQeZmtsguJpdNhHnLBoqW52damCi/LtkXGEnr5On3tgrBGhdFVXna4fXhtJjRWmzSXOreQ51X3UZJ98+GNuvryalNeNxZEFFKmEa/ZuNEmo6P8WI8/upMuCfxw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791161474; c=relaxed/simple;
-	bh=ht2t0kmTXlePQ8I6ndsjKSo6EfG0YJfvql7JkFoBniQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tzvzvqIri5bLDHgPt5kSLeIgWOwVIx9nO3E4c4w4gFcbk8vYcLOBOQqQZdhHR2zuGlrxu8eVo091Hw1b/TsBOhYqYFahEn4fjfvtx+f7OdTrJvI9HYdt4rjyvzxBzStJ4r4vePGJSlf6qlTkIbH/6lRV2b/csQsTE8oHzp+ic/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TQENbEXc; arc=none smtp.client-ip=209.85.222.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B9D40961C;
+	Mon,  5 Oct 2026 08:45:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.229.6
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791189918; cv=fail; b=es1drXxeVdicUY1JnWHZaMalKqtNo9UA5ushQtVACVi8AR5G+H8+qIbOtXPOPBHR6ft9LoV9ebp/VsYt4USjOH5AIdp7l0zrv5GliXkyhQ6f1ZH4/oAWe6WRJK95AjXvoxzxxA6kEiSXVmIR2wNteE++uXwZq4yHdEbkllpzH8o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791189918; c=relaxed/simple;
+	bh=yHrGHTgEgpFi168T2xdTYawgXsHZgjfsWZGixDrGA9U=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=tp6UNIJnJ9wWNF0qeF3U9TSfYQawAHSbnxAqXg89Xl56+y91/X5ztrgKngxFRSig/vaLr/6EzGqgDQGLFKU4ot96L7zZkBHmNpWIYTHPfvFdnkn4HK90pK2c+/Oh5/tpTxTwlUoFhy/T8fIhDGhcMUGiH3jKtLFPUurR14RBVsE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=CptfAii2; arc=fail smtp.client-ip=52.101.229.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TQENbEXc"
-Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-98c67e94e53so468988241.1
-        for <linux-iio@vger.kernel.org>; Sun, 04 Oct 2026 17:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791161472; x=1791766272; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=a7isb0xGzjL6lMG99IXwS6EH+P9csPknCI8tVz+3n8M=;
-        b=TQENbEXcuils9AJC80GLY8jl7CHlpWgQBf0qfh70AiuHF2/oZlfy9qEGl8IPhBsGDj
-         jc3vzdyBV4kmKk4T0vPLWasvzF6w1TrIokyafmuEXIcBBgeqe/3Y6X8Fzj6qnoPNmNAU
-         6E9tlG+AZGnWobBs1oP1tm5LU28ZgiJ1WlVI330dsyZ2QJrENoFShfbmvVb+Xatf5AEa
-         AC35mu5jlxEtUcgivcwt15MImXt3Ej1pUhzxXU9tDtpnTJNfUao41neI8Yhtg32pYdQT
-         aRp0xunL7UP0zx98+Ft1MLtlExgwDiSzG2EqG7hMuSwlQwPF2JnQ2Pi+YYT3g3kXxMol
-         KLpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791161472; x=1791766272;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=a7isb0xGzjL6lMG99IXwS6EH+P9csPknCI8tVz+3n8M=;
-        b=qbGTpRwR5ufyCzae9Kfw+xT3e3wa3c5Bq/cKg/lAEYDJUl3w05gdQs0ycaLdrVp0Ew
-         1MlMkXiT8/cVhK32DallH9C1be0c1y4c96ufN0Wgj835l1LPm7Nw06VBQ3eeMXfwFdwJ
-         UrFeDCSJASbYPCd7silbFMvAreYG1H3+2YIf5jIM79dRn8rIVeUw24SUcVQJjqcOL+CZ
-         YZLBePlLFuFqobOa7OKq+xsk+1wM/h5XMl2RgD6hSa1yR4JmfixVQ8xrTqHu6+B6fU0O
-         heKmamt5qDqKylcob21RZYKAs/+2kiO8R+W+SJkgHj23Iog32fzb98bjRlYkq8+rxw/P
-         c9mA==
-X-Forwarded-Encrypted: i=1; AKwUvBwvF59FJNWR45NRo05Lglc+2bBZdIMgld5MLw7Lf0IIZR6xxTj+OVdDn2AFAEZpY/iIlFN2BYQdIc4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLbcf4/+tU/MCVxy/PeReW7vb+1u1ZQ3AZ2c0eR9NDc3OYC5cGp
-	c6Z6IprYL5kXoOTtTJNY39Wu3+RW/K46lZ+agNDEaYr1Hw7eR5Yxq3hL
-X-Gm-Gg: AYBFou0EiaxdNG+wDvQvzkEinnOGG6QaND1RVhpkhyQiUUCbynzq5pMn2HIXiU6gnHz
-	iNe+9pmE2sUhzduv/ylOpp6wHLK9BEMPEdDMB7o+XShRHhfUca3Oil84OQECQ1usdN0xLjY2VWR
-	UxFkoPjQkBs0WbDB0BgNmCuz7rgC432HF91J4jINB1TqEfXk2PM/JOYdr6E5NmPr3KWzuyvjMzZ
-	7zVwJaViTWZ1uXGQaQ0pORO/AQyjBFy+53sN7Wbgmbu4SwxMV3M2mJAyMpW9zGz0ix+nCKSMUUF
-	YlRBT5pFW/8p6QQWW9sjHHNsENQrPkXx7B3JaVG1J9n/F+C+DkqK8TMZz1z4WEJjy6vW0OGy0qH
-	2wD5pDoyvDHovBZCoNuLlMpUFL9m+YS9H0+NqLkqqGWyq4pbkty7sqm7S97TBwvJs9dRllTNzuA
-	mLJkXqc7OqKMJ0RViA2e5K0VxNS+Bi7D2HkdaTqbf/vLrdVgUIXi4GPytMhET2DxvVxjZ3tSC1i
-	5Me
-X-Received: by 2002:a05:6102:8603:10b0:784:a925:3f0c with SMTP id ada2fe7eead31-7bf7df582c6mr2147719137.0.1791161471650;
-        Sun, 04 Oct 2026 17:51:11 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-98c7031853asm2042611241.12.2026.10.04.17.51.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Oct 2026 17:51:09 -0700 (PDT)
-Date: Sun, 4 Oct 2026 21:51:24 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 6/6] iio: imu: inv_icm42607: Add accelerometer
- calibbias support
-Message-ID: <asL0jC7Qa8YQP0fy@debian-BULLSEYE-live-builder-AMD64>
-References: <20261002-b4-inv_icm42370p-v5-0-c65281b745c9@axis.com>
- <20261002-b4-inv_icm42370p-v5-6-c65281b745c9@axis.com>
+	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="CptfAii2"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=a4rZvm5MhQuP4BNxj66nXdeyq/qfgYtJbFZY2XG6TbshMHu0jXqMtPR+8ajpTRAMgkZ771eTWXtqTjy31QmxBPka2SRr+nv+T9fumcW4IuNUx39prSNDtIToEsvFOOOg83UveVnwt5VFNZsYpjs2fOGWmQ8TwSgkoZTvoglenlL5CYJOYZZgXr2jYpecwS3ZUErv/AWr8J6huBsfwM0yOFQAYJOskkYPEC9Gv2U06prAsUL+xTPZjuC3FkPzkBd59X8OJdtcnWwvvsBo1yfqT6/sdn+UhEuJ3+yI62ElQnE9d5QtPpjx2IpUcidAOV0QHYZ1Mjr5sFDcL2b8DJPKUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X4cFHJywyYRFae3yjiyK6gbL72Xxr/EMumf65Nq3Xzs=;
+ b=E53CDJ2TVlGotK8tKLPP2ZILSiH/RFW34GMgRqmjt+MJ02Q+X8orTDSw6kyyYi77F/NHu48/LBgQkHDRTjBQcqlQrvqmyShXEDime4P7CJAUnaFgQlU57cF2h9CJal1UgxAmJF1P2wTghNdjEcm9kYWTYSUpdyR16QnQeOQ9Bhsr/GEvpgOc/C+50ue6ed7WSIOvE4A95rrYgRuy5lka4GVP8LtP0SWiAvYDGhe7dNkyCJYQEewiAdzlB0rX6yBB9EP44JW6z+ZSbAWIAKO25CrheY+OpslcW4VSNKq4iFpweoN8EZf+vv6j1sWV8VVQKdHDA9pjSclb+4hs6abBZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X4cFHJywyYRFae3yjiyK6gbL72Xxr/EMumf65Nq3Xzs=;
+ b=CptfAii2bIJCEXODVbUI2w7MHEooNDPZtizf4T8Qw7BxVfZrQ4v7oazvfOEM1AH7OUB0itTimnctWqlj/ZAOVPSMA8NCbKGLKBvjuSjOMVU3uI/rd2uIA+lx65iJwyFg2TIEeEMgjCeiji8Ynrby3Jlmmpz7MlcaZNKJPNnqjlA=
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com (2603:1096:400:3d0::7)
+ by TYRPR01MB12431.jpnprd01.prod.outlook.com (2603:1096:405:103::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Mon, 5 Oct
+ 2026 08:45:11 +0000
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de]) by TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de%6]) with mapi id 15.21.0451.026; Mon, 5 Oct 2026
+ 08:45:11 +0000
+From: Biju Das <biju.das.jz@bp.renesas.com>
+To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, William
+ Breathitt Gray <wbg@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cosmin-Gabriel
+ Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: RE: [PATCH v2 00/15] MTU3 counter fixes and improvements
+Thread-Topic: [PATCH v2 00/15] MTU3 counter fixes and improvements
+Thread-Index: AQHdVCieg51++XX0QUuJ0VVqajBbRLbuodBQ
+Date: Mon, 5 Oct 2026 08:45:11 +0000
+Message-ID:
+ <TY3PR01MB113462D03DD936D3A21D13A2486962@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20261004174752.507499-1-cosmin-gabriel.tanislav.xa@renesas.com>
+In-Reply-To: <20261004174752.507499-1-cosmin-gabriel.tanislav.xa@renesas.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TY3PR01MB11346:EE_|TYRPR01MB12431:EE_
+x-ms-office365-filtering-correlation-id: 213ac51c-299e-41f3-e04e-08df22bcf799
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|22082099003|18002099003|38070700021|6133799003|10067099003|56012099006|11063799006;
+x-microsoft-antispam-message-info:
+ Lo3KTJ+Rgci+RJD2g8oIa3tS2pqELxvy0YNvyblxX8cI+wJ05Mnr1iBBBUrXIZ2Q/D5X7ygKWGP94I0R3z1sgvYAQZ6n6qGaSacHaeHqYC1fGg08HvSRoVq+ZpNOW0v6F7bjITTW2SQqICmvGeg4ZBkDBj4Cs6kz44nHa6pGSznPJkODk0VnzRrpexTEXFMj0haHFkpJw/d59GzztfBdbCwXxLRG5oveMKBSBx6jr44uH2I0dOFixCM7mXoAs5pQftrKOyVd5znm4JcPDOdTEyMdQH5L3JVFqeCYgreqVct4gTnVlyByS+rdsW/pFovUfWlhiys25JO5OQu/ktBTunzc+prFUsFzD2/1kRpePblarie1MIJ7EDQ64u/Njpg9PDS4m14ddO8oIHWWeJO6Z2V3Q4aPox0wIlPcoNyhgahG2uMjos4fVyfgp8F1TUd3zEzPkvgn+q8JV04iSeg2D+F+Apd/crPvfIrPHyfLior4nAY1Rkc6q5WKDp9o0niMytlfQt0ZhNiEQQDF5apRkbhU+GSF9E1bKATVRCyTmc3aXzfvD5IV7Pzv76DcZyGNEvC9/iASMwc4yjLYsDaSL4U6Ipv8f8r7NhaGrXwCH0tTMnYL8tm0aJqf2yUFGo1hGJ1GzZebYcEo9oHTQZRkrE5e5wgBLIxlbeEbNeyJunBLZ6BFDXEhhKTbWjBSVjGfoemcx776drvpfOjpXnt5tYelIB7ehPAhWN2CGcDnqa8=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB11346.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(22082099003)(18002099003)(38070700021)(6133799003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?QUEVv80Y5WsZhjJ4DkWVIUMW+8lBKeDeUbS3+31IVX+0qrAhEIssIB4hL19E?=
+ =?us-ascii?Q?9+GJ8XRcc4rQiQDoJ4fi/IflYnnhpMuHhh5XGYu8fm/Sq3+FMNb69f8JGCo7?=
+ =?us-ascii?Q?XUOSC3at9KDiYuMmTM4XNNAycs0tYn+YL+roiRnOV2mJOnF9sAz3K3ph8o9Z?=
+ =?us-ascii?Q?vYbeebh5k2dpBQyLVqhPB/iMPE78YUMkq6LmVTUJ89PdUFR2ry9hL01jBHnb?=
+ =?us-ascii?Q?sMwa+ZBymafzxgbOz72CKGaG3sgtN5MLTgpxGz7/pacYaBm6U5bE8TVpc2Du?=
+ =?us-ascii?Q?ClrSFD6Tmlb6XWvvQt+wBmJCW7sZ+0LPM4aTpYd9qR0V3KA45Dw4D4SX5V+0?=
+ =?us-ascii?Q?HccKpI5G80hjQUQwCaCRqDL3m6gM79aKFMA8KAEcNgxsmd7O2VJdGRIULM+4?=
+ =?us-ascii?Q?T9DaOg23NiBxvy1NdF0cIVxSO3g2IuEx/W+CA0Xx+ZLTQgmftpYicfQt2vbF?=
+ =?us-ascii?Q?kOHCR4ItPccub3RAv1oFu96OACcxayUT82bykPfsLINJ9SUbmCkroEenvheM?=
+ =?us-ascii?Q?pClOGOWyRjuucpNJz9Gi2Nx+Fxtx41jFbhtuG8IeIBz2Nrwz10yVip1CeUAE?=
+ =?us-ascii?Q?bW/7uQZDZJWy/q0GHcDtCUVBZcdvJ/fhOdxXm1M+QCyCMY+LDnFts1wkDDx7?=
+ =?us-ascii?Q?tkaJ/yRZuuQ2e7qZTi8yWUAOi+qvxTBm5qTHUzgW6imCPyReiN6Gh9s9Y2yY?=
+ =?us-ascii?Q?A1KgpqLcrREeFO2F0Jicnc5U3RWPM4HK/TD2Zk/a0vly4n1s+rUcKAjC8R+A?=
+ =?us-ascii?Q?sqkATTHy6sn4YcwRsiKkFgaHdz89TY0cZGlRwO00Zw7yttO6JTA+MWVphgWf?=
+ =?us-ascii?Q?0x+Q+fbp8al9IwhSqophcPT/NagFObiAFRUQPQmvTO2Eeikm2WazYZziFv7J?=
+ =?us-ascii?Q?Ba/yhhzWGIwvRTCBqYvSC+DJLg99sX2i2Dy4+oBBd6sf1wtz2fjHgNE2F0VC?=
+ =?us-ascii?Q?r3sMH+O93fnJuVAR8urfOivJkFNVGuWR/Zw2UWI1J7e2VOXtVZYsg1SL3l9R?=
+ =?us-ascii?Q?hUrdIqTKSJV0V+xTFbOPB3CVyi8HxK9h4pEbonYUvEzEfOKmNNMj3sG3ogOP?=
+ =?us-ascii?Q?9GQVZtnFANA9L+MVIVsPeadHvVlaOZZeUmQsYruK/j2XwHd8OQnhFy8Etj8H?=
+ =?us-ascii?Q?AFlCLY42laO/97/zR7aOaW0R3YFfMJWIDKRA9owQWhYwsNNa/Ypfjm5sgDb6?=
+ =?us-ascii?Q?mSB4cCQZz7ZHldDERbXTHM5l7opoDS5pRlmaXnzWIRUUeEvvErvy7Kpbo5aS?=
+ =?us-ascii?Q?gbo05dc7X3HAtRNdUAaqBepxangIj78A5c69MB1RdSvgWnmt2BB4sAF71lEv?=
+ =?us-ascii?Q?m0jFWWMAWA0DFrEzh3ZgCMWhNzcEqb7vd36pR1Hpz4JcVYK5aAcZRlTL/pGt?=
+ =?us-ascii?Q?YQDLsZgDhQB2BUDI30Oeuyf+fHicOpGOPPYweDIsRQznERJ23mjYzGH3+ZDh?=
+ =?us-ascii?Q?TwCg+1HWV/uwb+kujAPeWJf4/vUk97JdeDTG2HzognW+Ov9oVaXFbElDxiwC?=
+ =?us-ascii?Q?CEnLnv0eyd8awI7Mbcz/T9ncfganCP20SOnBQ/8Yz0No8BQEDgSJTQmoci4M?=
+ =?us-ascii?Q?pJ8slgXeLOtEzqQiRxndgazpdbZNBA5NIhzQnKz02fLMXupT+wTp4+PGWFCE?=
+ =?us-ascii?Q?U8N3WqVGa9MPHWCb3cqtYZuEVcvEbjc4OQ6vsBb/u2BFnK1Txss7WUAgZIqJ?=
+ =?us-ascii?Q?LLMFGJVfqXyqgFP2Z1vNr5rLSItNlTX6b/7QBgSWLs6xkZAIQQQfHgmdIpc/?=
+ =?us-ascii?Q?VOI/EpFAww=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261002-b4-inv_icm42370p-v5-6-c65281b745c9@axis.com>
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB11346.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 213ac51c-299e-41f3-e04e-08df22bcf799
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2026 08:45:11.2560
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BVoxt+VA8Gyso1rxUh2iJ4067pL0qiUb8YUMNaz/+6Fq+kKZd7obOf9Yvs1qo9SDeh3LNMrMBQiPsiLWnKSUk0OPUGdpBFmxpV0/6F9W0d0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYRPR01MB12431
 
-On 10/02, Kanak Shilledar wrote:
-> Expose IIO_CHAN_INFO_CALIBBIAS on the accelerometer channels. The
-> registers are stored in MREG1. The calibration bias is written to
-> OFFSET_USER4 to OFFSET_USER8 registers in MREG1. Reject the out of
-> limit calibbias values instead of clamping it.
-> 
-> Note: The accelerometer functionality is tested with Invensense,
-> ICM42370-P development board.
-Good to know, but this should probably go below the '---'. Not within the commit
-message.
+Hi Cosmin,
 
-> 
-> Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-> Datasheet: https://www.lcsc.com/product-detail/C5129967.html
-> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
-> ---
-Here
+Thanks for the series.
 
->  drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c | 194 +++++++++++++++++++++-
->  1 file changed, 192 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> index 9a3ace3e7fcf9..98cef0058b64c 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> @@ -13,6 +13,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/regmap.h>
->  #include <linux/types.h>
-> +#include <linux/units.h>
->  
-...
-> +	/* 12 bits signed value */
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_X:
-> +	case IIO_MOD_Z:
-> +		offset = sign_extend32(((lo_val & 0xF0) << 4) | hi_val, 11);
-> +		break;
-> +	case IIO_MOD_Y:
-> +		offset = sign_extend32(((hi_val & 0x0F) << 8) | lo_val, 11);
-Can the mask and shifting be done with some combination of FIELD_PREP/_GET/_MODIFY?
-See comment below.
+> -----Original Message-----
+> From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+> Sent: 04 October 2026 18:48
+> Subject: [PATCH v2 00/15] MTU3 counter fixes and improvements
+>=20
+> This series does some code quality improvements to the MTU3 counter subdr=
+iver, while also fixing bugs and
+> adding caching support so that registers are not touched when the counter=
+ is disabled, as there is no
+> request API.
 
-...
-> +static int inv_icm42607_accel_write_offset(struct iio_dev *indio_dev,
-> +					   struct iio_chan_spec const *chan,
-> +					   int val, int val2)
-> +{
-> +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-> +	struct device *dev = regmap_get_device(st->map);
-> +	s32 min, max;
-> +	s16 offset;
-> +	s64 val64;
-> +	int ret;
-> +
-> +	if (chan->type != IIO_ACCEL)
-> +		return -EINVAL;
-> +
-> +	/* inv_icm42607_accel_calibbias: min - step - max in micro */
-> +	min = inv_icm42607_accel_calibbias[0] * (long)MEGA -
-> +	      inv_icm42607_accel_calibbias[1];
-> +	max = inv_icm42607_accel_calibbias[4] * (long)MEGA +
-> +	      inv_icm42607_accel_calibbias[5];
-> +
-> +	val64 = val * (s64)MEGA;
-> +	if (val >= 0)
-> +		val64 += val2;
-> +	else
-> +		val64 -= val2;
-> +
-> +	if (val64 < min || val64 > max)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Convert m/s² to g then to raw value
-> +	 * m/s² to g: 1 / 9.806650
-> +	 * g to raw 12 bits signed, step 0.5mg: 10000 / 5
-> +	 * val in micro (1000000)
-> +	 * val * 10000 / (9.806650 * 1000000 * 5)
-> +	 */
-> +	val64 *= 10000LL;
-> +
-> +	/* For rounding, add + or - divisor (9806650 * 5) divided by 2 */
-> +	if (val64 >= 0)
-> +		val64 += 9806650 * 5 / 2;
-> +	else
-> +		val64 -= 9806650 * 5 / 2;
-> +	offset = div_s64(val64, 9806650 * 5);
-> +
-> +	/* Value is limited to 12 bits signed, return -EINVAL if out of range */
-> +	if (offset < -2048 || offset > 2047)
-> +		return -EINVAL;
-> +
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_X:
-> +		/* OFFSET_USER4 upper nibble is shared. */
-> +		ret = regmap_update_bits(st->map, INV_ICM42607_REG_OFFSET_USER4,
-> +					 GENMASK(7, 4), (offset & 0xF00) >> 4);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return regmap_write(st->map, INV_ICM42607_REG_OFFSET_USER5,
-> +				    offset & 0xFF);
-> +	case IIO_MOD_Y:
-> +		/* OFFSET_USER7 lower nibble is shared. */
-> +		ret = regmap_update_bits(st->map, INV_ICM42607_REG_OFFSET_USER7,
-> +					 GENMASK(3, 0), (offset & 0xF00) >> 8);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return regmap_write(st->map, INV_ICM42607_REG_OFFSET_USER6,
-> +				    offset & 0xFF);
-> +	case IIO_MOD_Z:
-> +		/* OFFSET_USER7 upper nibble is shared. */
-> +		ret = regmap_update_bits(st->map, INV_ICM42607_REG_OFFSET_USER7,
-> +					 GENMASK(7, 4), (offset & 0xF00) >> 4);
-I see the register map for this chip is a bit odd. The above bit masking and
-shifting can be easy to write once one is familiar with the part being
-supported. Though, this really looks like one of the cases where we can declare
-a bitmask and use FIELD_PREP (or even FIELD_MODIFY). Maybe something like
-INV_ICM42607_REG_OFFSET_HIGH	GENMASK(7, 4)
-INV_ICM42607_REG_OFFSET_LOW	GENMASK(3, 0)
+I believe you need to rebase this series on top of[1].
 
-INV_ICM42607_ACCEL_OFFSET_HB	GENMASK(15, 8)
-INV_ICM42607_ACCEL_OFFSET_LB	GENMASK(7, 0)
+Since this patch series is caching userspace values in memory,=20
+It can support suspend to RAM as well as in suspend to RAM,we lose
+the register contents, this patch series can address that limitation.
+Can you also please prepare a follow up patches for STR support?
 
-reg_val = FIELD_PREP(INV_ICM42607_REG_OFFSET_HIGH,
-		     FIELD_GET(INV_ICM42607_ACCEL_OFFSET_HB, offset));
+[1] https://lore.kernel.org/all/20260903090719.3498955-1-dayou5941@163.com/
 
-Please, also take this suggestion to the other similar mask and shifting above.
+Cheers,
+Biju
 
-> +		if (ret)
-> +			return ret;
-> +
-> +		return regmap_write(st->map, INV_ICM42607_REG_OFFSET_USER8,
-> +				    offset & 0xFF);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-...
-> @@ -266,6 +454,8 @@ static int inv_icm42607_accel_write_raw_get_fmt(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT_PLUS_NANO;
->  	case IIO_CHAN_INFO_SAMP_FREQ:
->  		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-Minor neat, if we move the line above up one line we can drop the line below.
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
->  	}
+>=20
+> Patch 3 relies on the following series to enable runtime PM on the parent=
+ device so that the PM domain
+> handles it automatically.
+>=20
+> https://lore.kernel.org/lkml/20261004174024.502949-1-cosmin-gabriel.tanis=
+lav.xa@renesas.com
+>=20
+> V2:
+>  * remove clk.h include
+>  * remove struct rz_mtu3_cnt::clk documentation
+>  * fix struct rz_mtu3_cnt::ceiling documentation
+>  * add struct rz_mtu3_cnt::count documentation
+>  * add struct rz_mtu3_cnt::timer_mode documentation
+>  * add struct rz_mtu3_cnt::mtclkc_mtclkd documentation
+>  * add struct rz_mtu3_cnt::direction documentation
+>  * add struct rz_mtu3_cnt::cascade_counts_enable documentation
+>  * remove now-unused RZ_MTU3_MAX_HW_CNTR_CHANNELS macro
+>  * move rz_mtu3_set_lwa() call after rz_mtu3_disable()
+>  * mention the removed busy check
+>  * mask 16-bit counter value to preserve behavior
+>=20
+> Cosmin Tanislav (15):
+>   counter: rz-mtu3-cnt: put runtime PM on initialization error path
+>   counter: rz-mtu3-cnt: do not assign struct rz_mtu3_channel::dev
+>   counter: rz-mtu3-cnt: remove manual runtime PM handling
+>   counter: rz-mtu3-cnt: use device-managed pm_runtime_enable()
+>   counter: rz-mtu3-cnt: read enable value from cache
+>   counter: rz-mtu3-cnt: disable channel before releasing
+>   counter: rz-mtu3-cnt: unify ceiling values
+>   counter: rz-mtu3-cnt: cache ceiling values
+>   counter: rz-mtu3-cnt: cache count values
+>   counter: rz-mtu3-cnt: cache function values
+>   counter: rz-mtu3-cnt: cache external input phase clock value
+>   counter: rz-mtu3-cnt: cache direction values
+>   counter: rz-mtu3-cnt: keep cascade_counts_enable in sync with usage
+>   counter: rz-mtu3-cnt: drop conditional locks
+>   counter: rz-mtu3-cnt: use pm_runtime_resume_and_get()
+>=20
+>  drivers/counter/rz-mtu3-cnt.c | 458 +++++++++++-----------------------
+>  1 file changed, 149 insertions(+), 309 deletions(-)
+>=20
+> --
+> 2.55.0
+
