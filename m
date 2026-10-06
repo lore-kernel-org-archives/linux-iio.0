@@ -1,63 +1,63 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 236611FA272;
-	Tue,  6 Oct 2026 18:18:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 591CD2EDD53;
+	Tue,  6 Oct 2026 18:19:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791310741; cv=none; b=jeTNJ8Ri3qgmYR4hIr1Rfpff3TjWMJqXQsONDqO2c+OfUN7qZzGX2k5OSzpynmF3DBf/mgH8trJYw1qXsPR7Pzi1oZGuBHvvc/0/OpwGDpbhlK5oz4vmCLMvgYYrhWNAbHrdB/tDVrei2Wr9rleZMHZblGGoqDJkcrHszdTPUA8=
+	t=1791310772; cv=none; b=GUGvO8NBmvPvOeifx5aJRHGcNAfZSdP6fwoYFjXCsvCNRmx5J8haYhrc/YkzJkq6pWDIuGS6/qiQHgZh58XGSVrAv3LtpwdJXC1XSXXTNA8HMlEtbUWMM+ePNDZZI2HR8yTyfWC2OWX2tUFOjQ7HIte5UOSSic8NhS4fHCTWtCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791310741; c=relaxed/simple;
-	bh=Pazddukc8RYdmjC8s1fVqb6d91FgwYDl4TjZbc+N6IQ=;
+	s=arc-20240116; t=1791310772; c=relaxed/simple;
+	bh=nWCMtSb7RXMz2Rk09TLyuLPDfDydaysqF41xAy+UKz4=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=M3CJYftFGg2fA1CeF1x3HUtt99d5p55xj6tqHq9TpqJBqCYObfzQgi9V0q3o5baFV7mZ4oTQJnellECda80ZcLiXMTpAembuDGjxO500AJbe6DyEZ4NzsUU3K0ynpKuJ8Vrx7xs1It71QvvIONfj6ZsSBuctB1fbJpKU995AHcE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=DuumCuk6; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=1vzT8A9t; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=ULSAR60nVnbugHcyhP+6R8h6zd/qgdjoWUFgwPyzwEKBeyn0oBur13YbKDq7NiCI1abJ7CI9hpkA6zdLXXzLWO8XoQwDHDX5CCem7WsrN7eLtSja5vMFmCRqIpB5MepOrl40KrbYtOwx82bsBI9uLvGvM8GVGNI/r/UuUDcdkiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=ZcNHHudZ; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=SBajLyiy; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="DuumCuk6";
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="1vzT8A9t"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 696Hi4VW3252027;
-	Tue, 6 Oct 2026 14:18:55 -0400
+	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="ZcNHHudZ";
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="SBajLyiy"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 696HheSF2853276;
+	Tue, 6 Oct 2026 14:19:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=a0wEnW1kEAgA3rbcNcaF1FxuM5rUCIgmrxf5tfBPh9w=; b=DuumCuk
-	6JEkY0NXvlJb+sfyS6jOJyTj77liRo/6Rwsv/XdmUkcpv55YtmpIGBjjxMjbN5Ft
-	9jywmgj4Mr9pvBXfekW5Jru6ZpWz2gOKDC3/Ea5YVjftajyXknhlewL98sguIfeW
-	Z+PuhmjC9meDLFcXEurIHxf42qUOGxkR0x17dtn2GskDwTEIqwdU72nDewHkTHOH
-	Qa2KwjIzEN2Lcn0nRXoV7uZwDP6HAR4URJ6QcNaf37ou1uAzB8PAspUMhRy1N4XC
-	/saX8hXnbD0+eXvKQ7RkDGl6qoPIRD7QyUX5xM+xfGmq+99fHEb1LvdldSxkovRh
-	ioFTxugTYWxAKdw==
+	DKIM; bh=5jThdN0VZvywoDM6HCLIZq3gsrrONF9/lwB10FKdlWU=; b=ZcNHHud
+	ZzeLuOO9OAWQ28J2jDWnAlV7p0qY/oj1koTWYqV2ZzdXbvNTqJqsBsQaTHGHtyLt
+	UgAGn7ld75SuYnUiz3gUXMmsrPdB1Y5DG78XxQXFHDn5cVECxWdPaP5bJ2nf3uvg
+	VSZehfPyiSw79voTWvJ5Ihmkl9iXndkKCkp6xjk34kOObUzxiV1PjfpK8ioNI8Va
+	4mlrrapZZxCjRFM7dq069KewKByo4B5RMjCeThbWn3bC8CeW8sP1MnCACPAZoM9m
+	qhx2dIS1KLMfV6sbu+kxyPU89L3tuswMgy+UrgH/5HqeJHP36/TR8g+7WtvMt8D9
+	y8gSHo6pa5ykq8w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=a0wEn
-	W1kEAgA3rbcNcaF1FxuM5rUCIgmrxf5tfBPh9w=; b=1vzT8A9tNZrb4yrIGgTRy
-	sPbK48U9qCZtu0em8HH3EqUY08gweOkVn4GkNpHp+ve63Tt695LKpTeCwPquzPsE
-	CpuYFEuPsHPrNolUisvE++GgjtLCXX6qcpC11RG7nPrpqyJYT8EzHUfJ1RgUvC3U
-	pAc3uG3qeQLGKLBjMbmdcQALYTUfBq0gttqq0lVIvk8nIxSS0Fxc7mFOsXM9/NxJ
-	WJWbcdYwF650IXfbNcuEm2LmNFP8xnlAqW0NSL7WQ/QfhutwyCCEkXkknIqTkJtU
-	dL5h0kZLoDaKQB4EMg7KjnFh0B1fH1SteKY8BboxpIoCB+KaVY7OoHePUTHapctk
-	Q==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=5jThd
+	N0VZvywoDM6HCLIZq3gsrrONF9/lwB10FKdlWU=; b=SBajLyiyrsMdqOy+1rqbV
+	lO9jziRJP3UfUkfKlqqvjio1FifRwkQ13V8tpkSB+pzNWyNwV6bSG4iuOSszVXNq
+	jv4cU3kseIRV4KoovDRoMaXzrofO0NG63xloy+tWX5qdDe46BexpkcNnHfkblsXw
+	6dFYdg0lWqrwFlbbG7VxpZNTjmI8Thr3Cj2sYgZya8ohoxjONfy3MXqJKBEwlNUf
+	4GXPHXatz4s5F8bbYM7RiPvtml6eswIechMAzYpQ6Ops1HMmZPpLS2zKS7ruBlpz
+	1suYjT7FrDY2WC22P/LPFTo1dk/k+qwJfRqWB4YkuHcXIvmLhlpIYUJ2PK+6F8oc
+	g==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4h4y34jhwm-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4h4j2exu7d-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 06 Oct 2026 14:18:55 -0400 (EDT)
+	Tue, 06 Oct 2026 14:19:21 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 696IIrDj021730
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 696IJKRY021783
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 6 Oct 2026 14:18:53 -0400
+	Tue, 6 Oct 2026 14:19:20 -0400
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 6 Oct
- 2026 14:18:53 -0400
+ 2026 14:19:20 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 6 Oct 2026 14:18:53 -0400
+ Transport; Tue, 6 Oct 2026 14:19:20 -0400
 Received: from work.maxim-ic.internal ([10.66.6.193])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 696IIeQS001028;
-	Tue, 6 Oct 2026 14:18:42 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 696IJ59N001036;
+	Tue, 6 Oct 2026 14:19:08 -0400
 From: Marcelo Schmitt <marcelo.schmitt@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux@analog.com>
@@ -65,9 +65,9 @@ CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <dlechner@baylibre.com>,
         <andy@kernel.org>, <Michael.Hennerich@analog.com>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <corbet@lwn.net>,
         <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v4 09/13] dt-bindings: iio: adc: adi,ad4134: Document external multiplexer usage
-Date: Tue, 6 Oct 2026 15:18:35 -0300
-Message-ID: <14fe942a44bb0dd67eb9e25e533572e5cbe32b87.1791309733.git.marcelo.schmitt@analog.com>
+Subject: [PATCH v4 10/13] iio: adc: ad4134: Support SPI 4-wire mode
+Date: Tue, 6 Oct 2026 15:19:00 -0300
+Message-ID: <ec26e0e1cbb6572c8eee391951c084a7c264887c.1791309733.git.marcelo.schmitt@analog.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1791309733.git.marcelo.schmitt@analog.com>
 References: <cover.1791309733.git.marcelo.schmitt@analog.com>
@@ -80,50 +80,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: Ow83qf8pk_IiH9WvEqczEphtqPl3At7Y
-X-Proofpoint-GUID: Ow83qf8pk_IiH9WvEqczEphtqPl3At7Y
-X-Authority-Analysis: v=2.4 cv=QYnzLcbv c=1 sm=1 tr=0 ts=6ac53b8f cx=c_pps
+X-Proofpoint-ORIG-GUID: ICpUTaPZtAdnjU36YHUM73lp8od3drqz
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA2MDA3MiBTYWx0ZWRfXyo+yAtGKCJk/
+ I0m+IcIdh/0NII5BpAc4V6Ba9iR0fUiMqw3l64W6V6HU5hEn5fr/trrSe/n02Ngabq+7MIlq2+5
+ QULcbfPnD09R5Z25Fsl1gjIMq9I00uX3GKLSvEiZMRYbHVuATURcDyUrG2+D4jxzxeWNq912X/2
+ lARFRSaguFp5p2BEzxN2+yw67MrqduPKZMkH7mAEZCJAYwDCcjBV/3UVB2IpWzvhciVdr9DpJXe
+ SSlrJ1ZR1f8QlXtus5xUf/0dAkR1ltBmv1SZp4cEtOBI9Gs2gO0WHhK1GCcoU/Fky7gXnJ4iKbu
+ /MVuF6UDfofxTrlSWzk0XMu4ydFly2WFglKqmSJd11HpSlPv2VNK04R86OdYYnFmEfj3KcGCtgR
+ OYt6kn62tjUy0f5ReEENbdjl2iCRLtTHOAsEWt1N4oAfpChqALPxODp9CwCl3u1GSU7DvwVToXI
+ cP+tdgxmS5maMbz2/eQ==
+X-Authority-Analysis: v=2.4 cv=JvtkP84C c=1 sm=1 tr=0 ts=6ac53ba9 cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
  a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=VwQbUJbxAAAA:8
- a=gAnH3GRIAAAA:8 a=YjmlrVWy-zMJPE8JoxkA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA2MDA3MiBTYWx0ZWRfXwwnOAwTpFseR
- 8iOqLsJY1kYYx2ESkVTGipFs0Qs2VehxbFpMKJP7Y79dj+djy1rhjBR2kc28XbQ8GLeiNfFoMp9
- L7gQhDmP1Amk8WGawiexMV/9+zmbdgEKsLmPwUHUgaoK9/DZLzUO
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA2MDA3MiBTYWx0ZWRfX9IhgIXMj/qB6
- EXHbJPjNH7sDX4Nms/mZZsO90gZ01uixBZKHYSpWDnaT1hM7vFIhChocYNoGqvXZmGyCDt0PyI1
- vX9Ah0E1iPNpL1u12lGqVPrPhDDrhvxlSpsjNVc1029ctIX4C9weHly9zpk6629BdOwdb8UZ+Bs
- uE+Dve0WNeaQuqTndzej9cwUPHG/QgMEQbPH6wiJmPvNcXfmjzJHRbPB0teKJBb1FYte5t13bp4
- S++QNvlNUf/f8O3ormcqZUlfNT8r7XWi1UkCOlLIdmCASTkKlPn6WB+r7R5af9pl2nHqmuipKw8
- 7R0gi5cFY1QN2ivRlbkh3+OE3x4jzOo3nvRzBFLigvK7Crb2q5G8fwNHDjEfMYrFVQp/Ib22xnf
- xV8TAozzC7WC+zifZujbPH4KXLd6qVQmHd9sm+hZoe/v9ONrkZsgV3WN/15jT1Rk7UUBk9rn0Nw
- 73MTQkbWJTyGTPgt2YQ==
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
+ a=NXAGyndoHhwLlbJfipYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA2MDA3MiBTYWx0ZWRfXw+yaL1mqNZ4K
+ 3L9FyBe9v1p6U9veYBxpOgHjJIvvXW/P9FxZMC7huYTnmdL1sfCq6y/qTBUBluT7soSqnToQwoc
+ 55ui0+43dtVYLLnS9xam+74yIklbGrXDehCe9eU7kQMxUhP4aRWc
+X-Proofpoint-GUID: ICpUTaPZtAdnjU36YHUM73lp8od3drqz
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-10-06_05,2026-10-06_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
- suspectscore=0 clxscore=1015 impostorscore=0 spamscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2610060072
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 phishscore=0 spamscore=0 adultscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
+ definitions=main-2610060072
 
-The AD4134 design has two data interfaces. One interface allows register
-access for device configuration while the other (separate interface)
-provides ADC sample data. One way of handling both peripheral interfaces is
-to merge them into a single SPI interface by switching between register
-access and sample access according to device user requests. Though, such
-solution requires extra hardware, external to the ADC chip. The access mode
-switch can be done with an external multiplexer selecting either AD4134 SDO
-or AD4134 DOUT0 to connect to the controller. The external multiplexer
-becomes part of hardware requested for AD4134 device operation and thus
-must be provided for operating the peripheral in such merged interface
-schema. Still, there are alternative ways of handling the two AD4134 data
-interfaces so the multiplexer is not always required.
+AD4134 devices can be wired in a few different ways. So far, only minimum
+I/O mode was supported. While minimum I/O mode allows interfacing with
+AD4134 with a reduced number of wires, that wiring configuration is not
+suitable for high-throughput data acquisition.
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Extend AD4134 support to enable interfacing in SPI 4-wire configuration.
+
 Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 ---
-No changes in v4.
+Change log v3 -> v4:
+- Also request ODR GPIO for 4-wire mode when offload is not available.
+- Dropped second driver state mutex (access_lock). Triggered buffer handler is
+  already protected by IIO device mode lock.
 
 Detailed reasoning for the external multiplexer usage.
 
@@ -233,73 +230,362 @@ Yet another possibility would be to have the peripheral sitting in two buses.
 That may be a fallback option if what's currently being proposed fails to comply
 to Linux code standards.
 
+ drivers/iio/adc/Kconfig  |   1 +
+ drivers/iio/adc/ad4134.c | 222 ++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 206 insertions(+), 17 deletions(-)
 
- .../bindings/iio/adc/adi,ad4134.yaml          | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-index 970e7adb2405..c70b9113cd67 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-@@ -104,6 +104,20 @@ properties:
-       GPIO connected to ODR pin. Used to sample ADC data in minimum I/O mode.
-     maxItems: 1
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index fc7de0bb400a..21bb16f66bc9 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -127,6 +127,7 @@ config AD4134
+ 	select CRC8
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
++	select MULTIPLEXER
+ 	help
+ 	  Say yes here to build support for Analog Devices AD4134 SPI analog to
+ 	  digital converters (ADC).
+diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
+index b5207f16054e..debc2ff02705 100644
+--- a/drivers/iio/adc/ad4134.c
++++ b/drivers/iio/adc/ad4134.c
+@@ -17,6 +17,8 @@
+ #include <linux/gpio/consumer.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/mux/consumer.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+@@ -72,6 +74,9 @@
+ #define AD4134_CH3_OFFSET_MSB_REG		0x3E
+ #define AD4134_AIN_OR_ERROR_REG			0x48
  
-+  mux-states:
-+    description:
-+      mux controller node to route SDO and DOUT0 signals from peripheral to
-+      controller.
-+    maxItems: 2
++#define AD4134_SDO_INPUT			0
++#define AD4134_DOUT0_INPUT			1
 +
-+  mux-state-names:
-+    description:
-+      mux state names for routing SDO and DOUT0 signals from peripheral to
-+      controller.
-+    items:
-+      - const: data_read
-+      - const: reg_access
-+
-   adi,asrc-mode:
-     $ref: /schemas/types.yaml#/definitions/string
-     description:
-@@ -231,4 +245,37 @@ examples:
+ /*
+  * AD4134 register map ends at address 0x48 and there is no register for
+  * retrieving ADC sample data. Though, to make use of Linux regmap API both
+@@ -86,6 +91,17 @@
+ #define AD4134_SPI_CRC_INIT_VALUE		0xA5
+ static unsigned char ad4134_spi_crc_table[CRC8_TABLE_SIZE];
  
-         };
-     };
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
++enum ad4134_spi_mode {
++	AD4134_SPI_MODE_NO_CS, /* datasheet calls this "minimum I/O mode" */
++	AD4134_SPI_MODE_4_WIRE,
++};
 +
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++/* maps adi,spi-mode property value to enum */
++static const char * const ad4134_spi_modes[] = {
++	[AD4134_SPI_MODE_NO_CS] = "no-cs",
++	[AD4134_SPI_MODE_4_WIRE] = "4-wire",
++};
 +
-+        adc@0 {
-+            compatible = "adi,ad4134";
-+            reg = <0>;
+ enum ad4134_filter_type {
+ 	AD4134_WIDEBAND,
+ 	AD4134_SINC6,
+@@ -154,6 +170,8 @@ struct ad4134_state {
+ 	 * consecutive register access operations.
+ 	 */
+ 	struct mutex sync_lock;
++	struct mux_state *mux_st[2]; /* For external multiplexer control */
++	enum ad4134_spi_mode spi_mode;
+ 	int refin_mv;
+ 	bool crc_en;
+ 	/*
+@@ -226,6 +244,85 @@ static const struct regmap_access_table ad4134_regmap_wr_table = {
+ 	.n_yes_ranges = ARRAY_SIZE(ad4134_regmap_wr_range),
+ };
+ 
++/*
++ * When operating in modes other than minimum I/O mode, AD4134 register data on
++ * the SDO line is sampled on SCLK rising edge (SPI mode 0). In addition to
++ * that, when AD4134 SDO and DOUT0 pins are multiplexed by hardware OUTSIDE
++ * AD4134 SILICON, the multiplexer state must be set to route SDO to the SPI
++ * controller. With both SPI mode and multiplexer state properly set, register
++ * access runs as usual. Successful calls to this function must be balanced with
++ * calls to ad4134_release_reg_access() so to release the mux state lock. See
++ * AD4134 IIO documentation for details.
++ */
++static int ad4134_claim_reg_access(struct ad4134_state *st)
++{
++	unsigned int cur_mode = st->spi->mode & SPI_MODE_X_MASK;
++	int ret;
 +
-+            spi-max-frequency = <1000000>;
++	if (st->spi_mode != AD4134_SPI_MODE_NO_CS && cur_mode != SPI_MODE_0) {
++		st->spi->mode &= ~SPI_MODE_X_MASK;
++		st->spi->mode |= SPI_MODE_0;
++		ret = spi_setup(st->spi);
++		if (ret)
++			return ret;
++	}
 +
-+            reset-gpios = <&gpio0 86 GPIO_ACTIVE_LOW>;
-+            powerdown-gpios = <&gpio0 88 GPIO_ACTIVE_LOW>;
++	if (st->mux_st[AD4134_SDO_INPUT])
++		return mux_state_select(st->mux_st[AD4134_SDO_INPUT]);
 +
-+            clocks = <&sys_clk>;
-+            clock-names = "clkin";
++	return 0;
++}
 +
-+            avdd5-supply = <&avdd5>;
-+            dvdd5-supply = <&dvdd5>;
-+            iovdd-supply = <&iovdd>;
-+            refin-supply = <&refin>;
-+            avdd1v8-supply = <&avdd1v8>;
-+            dvdd1v8-supply = <&dvdd1v8>;
-+            clkvdd-supply = <&clkvdd>;
++/*
++ * Must be balanced with successful calls to ad4134_claim_reg_access().
++ */
++static int ad4134_release_reg_access(struct ad4134_state *st)
++{
++	if (st->mux_st[AD4134_SDO_INPUT])
++		return mux_state_deselect(st->mux_st[AD4134_SDO_INPUT]);
 +
-+            mux-states = <&ad4134_sdo_dout0_mux 0>, <&ad4134_sdo_dout0_mux 1>;
-+            mux-state-names = "data_read", "reg_access";
++	return 0;
++}
 +
-+            adi,spi-mode = "4-wire";
-+        };
-+    };
- ...
++/*
++ * When operating in modes other than minimum I/O mode, AD4134 ADC sample data
++ * on the DOUT lines is sampled on SCLK falling edge (SPI mode 1). In addition
++ * to that, when AD4134 SDO and DOUT0 pins are multiplexed by hardware OUTSIDE
++ * AD4134 SILICON, the multiplexer state must be set to route DOUT0 to the SPI
++ * controller. With both SPI mode and multiplexer state properly set, ADC
++ * samples can be read normally. Successful call to this function must be paired
++ * with a call to ad4134_release_sample_access().
++ */
++static int ad4134_claim_sample_access(struct ad4134_state *st)
++{
++	unsigned int cur_mode = st->spi->mode & SPI_MODE_X_MASK;
++	int ret;
++
++	if (st->spi_mode != AD4134_SPI_MODE_NO_CS && cur_mode != SPI_MODE_1) {
++		st->spi->mode &= ~SPI_MODE_X_MASK;
++		st->spi->mode |= SPI_MODE_1;
++		ret = spi_setup(st->spi);
++		if (ret)
++			return ret;
++	}
++
++	if (st->mux_st[AD4134_DOUT0_INPUT])
++		return mux_state_select(st->mux_st[AD4134_DOUT0_INPUT]);
++
++	return 0;
++}
++
++/*
++ * Must be balanced with successful calls to ad4134_claim_sample_access().
++ */
++static int ad4134_release_sample_access(struct ad4134_state *st)
++{
++	if (st->mux_st[AD4134_DOUT0_INPUT])
++		return mux_state_deselect(st->mux_st[AD4134_DOUT0_INPUT]);
++
++	return 0;
++}
++
+ static int ad4134_calc_spi_crc(u8 inst, u8 data)
+ {
+ 	u8 buf[] = { inst, data };
+@@ -249,18 +346,27 @@ static int ad4134_reg_write(void *context, unsigned int reg, unsigned int val)
+ 		.rx_buf = st->rx_buf,
+ 		.len = st->crc_en ? AD4134_SPI_MAX_XFER_LEN : 2,
+ 	};
+-	int ret;
++	int access_ret, ret;
++
++	ret = ad4134_claim_reg_access(st);
++	if (ret)
++		return ret;
+ 
+ 	ad4134_prepare_spi_tx_buf(reg, val, st->tx_buf);
+ 
+ 	ret = spi_sync_transfer(st->spi, &xfer, 1);
+ 	if (ret)
+-		return ret;
++		goto out_write_release;
+ 
+ 	if (st->crc_en && st->rx_buf[2] != st->tx_buf[2])
+ 		dev_dbg(&st->spi->dev, "reg write CRC check failed\n");
+ 
+-	return 0;
++out_write_release:
++	access_ret = ad4134_release_reg_access(st);
++	if (access_ret)
++		dev_err(&st->spi->dev, "error on access release: %d\n", access_ret);
++
++	return ret;
+ }
+ 
+ static int ad4134_data_read(struct ad4134_state *st, unsigned int reg,
+@@ -268,7 +374,11 @@ static int ad4134_data_read(struct ad4134_state *st, unsigned int reg,
+ {
+ 	unsigned int i;
+ 	u32 sample;
+-	int ret;
++	int access_ret, ret;
++
++	ret = ad4134_claim_sample_access(st);
++	if (ret)
++		return ret;
+ 
+ 	/*
+ 	 * To be able to read data from all 4 channels through a single line, we
+@@ -284,7 +394,7 @@ static int ad4134_data_read(struct ad4134_state *st, unsigned int reg,
+ 		ret = spi_write_then_read(st->spi, NULL, 0, st->rx_buf,
+ 					  BITS_TO_BYTES(AD4134_CHAN_PRECISION_BITS));
+ 		if (ret)
+-			return ret;
++			goto out_data_read_release;
+ 
+ 		/*
+ 		 * AD4134 has a built-in feature that flags when data transfers
+@@ -296,7 +406,12 @@ static int ad4134_data_read(struct ad4134_state *st, unsigned int reg,
+ 	}
+ 	*val = sign_extend32(sample, AD4134_CHAN_PRECISION_BITS - 1);
+ 
+-	return 0;
++out_data_read_release:
++	access_ret = ad4134_release_sample_access(st);
++	if (access_ret)
++		dev_err(&st->spi->dev, "error on access release: %d\n", access_ret);
++
++	return ret;
+ }
+ 
+ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
+@@ -308,14 +423,18 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
+ 		.len = st->crc_en ? AD4134_SPI_MAX_XFER_LEN : 2,
+ 	};
+ 	unsigned int inst;
+-	int ret;
++	int access_ret, ret;
++
++	ret = ad4134_claim_reg_access(st);
++	if (ret)
++		return ret;
+ 
+ 	inst = AD4134_REG_READ_MASK | reg;
+ 	ad4134_prepare_spi_tx_buf(inst, 0, st->tx_buf);
+ 
+ 	ret = spi_sync_transfer(st->spi, &xfer, 1);
+ 	if (ret)
+-		return ret;
++		goto out_read_release;
+ 
+ 	*val = st->rx_buf[1];
+ 
+@@ -323,7 +442,12 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
+ 	if (st->crc_en && st->rx_buf[2] != st->tx_buf[2])
+ 		dev_dbg(&st->spi->dev, "reg read CRC check failed\n");
+ 
+-	return 0;
++out_read_release:
++	access_ret = ad4134_release_reg_access(st);
++	if (access_ret)
++		dev_err(&st->spi->dev, "error on access release: %d\n", access_ret);
++
++	return ret;
+ }
+ 
+ static int ad4134_reg_read(void *context, unsigned int reg, unsigned int *val)
+@@ -382,6 +506,21 @@ static irqreturn_t ad4134_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int ad4134_buffer_postenable(struct iio_dev *indio_dev)
++{
++	return ad4134_claim_sample_access(iio_priv(indio_dev));
++}
++
++static int ad4134_buffer_predisable(struct iio_dev *indio_dev)
++{
++	return ad4134_release_sample_access(iio_priv(indio_dev));
++}
++
++static const struct iio_buffer_setup_ops ad4134_buffer_setup_ops = {
++	.postenable = &ad4134_buffer_postenable,
++	.predisable = &ad4134_buffer_predisable,
++};
++
+ static int ad4134_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long info)
+@@ -444,11 +583,6 @@ static int ad4134_min_io_mode_setup(struct ad4134_state *st)
+ 	int ret;
+ 
+ 	st->crc_en = true; /* In minimum I/O mode CRC cannot be disabled */
+-	st->odr_gpio = devm_gpiod_get(dev, "odr", GPIOD_OUT_LOW);
+-	if (IS_ERR(st->odr_gpio))
+-		return dev_err_probe(dev, PTR_ERR(st->odr_gpio),
+-				     "failed to get ODR GPIO\n");
+-
+ 	ret = regmap_update_bits(st->regmap, AD4134_DIG_IF_CFG_REG,
+ 				 AD4134_DIF_IF_CFG_FORMAT_MASK,
+ 				 FIELD_PREP(AD4134_DIF_IF_CFG_FORMAT_MASK,
+@@ -594,10 +728,64 @@ static int ad4134_probe(struct spi_device *spi)
+ 		return dev_err_probe(dev, PTR_ERR(st->regmap),
+ 				     "failed to initialize regmap");
+ 
+-	ret = ad4134_min_io_mode_setup(st);
+-	if (ret)
++	ret = device_property_match_property_string(dev, "adi,spi-mode",
++						    ad4134_spi_modes,
++						    ARRAY_SIZE(ad4134_spi_modes));
++	if (ret == -EINVAL) {
++		/* Default to no-cs mode if adi,spi-mode is not specified */
++		if (!device_property_present(dev, "adi,spi-mode"))
++			st->spi_mode = AD4134_SPI_MODE_NO_CS;
++		else
++			return dev_err_probe(dev, ret,
++					     "unsupported adi,spi-mode\n");
++	} else if (ret < 0) {
+ 		return dev_err_probe(dev, ret,
+-				     "failed to setup minimum I/O mode\n");
++				     "getting adi,spi-mode property failed\n");
++	} else {
++		st->spi_mode = ret;
++	}
++
++	if (st->spi_mode == AD4134_SPI_MODE_NO_CS) {
++		/*
++		 * The support hardware for AD4134 may have a multiplexer for
++		 * selecting between AD4134 SDO and AD4134 DOUT0. If that mux
++		 * is set but the user still wants to run AD4134 in minimum I/O
++		 * mode, then DOUT0 is not used and the multiplexer OUTSIDE OF
++		 * AD4134 SILICON must be set to select AD4134 SDO. See AD4134
++		 * IIO documentation for details.
++		 */
++		st->mux_st[AD4134_SDO_INPUT] =
++			devm_mux_state_get_optional_selected(dev, "reg_access");
++		if (IS_ERR(st->mux_st[AD4134_SDO_INPUT]))
++			return dev_err_probe(dev, PTR_ERR(st->mux_st[AD4134_SDO_INPUT]),
++					     "failed to get reg_access mux-state\n");
++
++		ret = ad4134_min_io_mode_setup(st);
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "failed to setup minimum I/O mode\n");
++	} else {
++		/*
++		 * This controls a multiplexer OUTSIDE OF AD4134 SILICON.
++		 * See AD4134 IIO documentation for details.
++		 */
++		st->mux_st[AD4134_SDO_INPUT] = devm_mux_state_get(dev, "reg_access");
++		if (IS_ERR(st->mux_st[AD4134_SDO_INPUT]))
++			return dev_err_probe(dev, PTR_ERR(st->mux_st[AD4134_SDO_INPUT]),
++					     "failed to get reg_access mux-state\n");
++
++		st->mux_st[AD4134_DOUT0_INPUT] = devm_mux_state_get(dev, "data_read");
++		if (IS_ERR(st->mux_st[AD4134_DOUT0_INPUT]))
++			return dev_err_probe(dev, PTR_ERR(st->mux_st[AD4134_DOUT0_INPUT]),
++					     "failed to get data_read mux-state\n");
++
++		indio_dev->setup_ops = &ad4134_buffer_setup_ops;
++	}
++
++	st->odr_gpio = devm_gpiod_get(dev, "odr", GPIOD_OUT_LOW);
++	if (IS_ERR(st->odr_gpio))
++		return dev_err_probe(dev, PTR_ERR(st->odr_gpio),
++				     "failed to get ODR GPIO\n");
+ 
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+ 					      iio_pollfunc_store_time,
 -- 
 2.53.0
 
