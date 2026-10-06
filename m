@@ -1,331 +1,171 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E0EE213E89
-	for <linux-iio@vger.kernel.org>; Tue,  6 Oct 2026 10:39:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB233B3BFE
+	for <linux-iio@vger.kernel.org>; Tue,  6 Oct 2026 11:44:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791283142; cv=none; b=dWpzw9NMlzKyKuw5HnLt7hseY4Eab5csvRXmT91RUnn3dALIJQahICiB8rulQKSMUzDq6C2tJS1ULE7yfDlfZyUxGGrDS98Z8DmzXPJPb8PGM9r8knDcKT7VeQnLYTLTjKcbDMv+a+ci+lh1HxWzVJEWs/Payw1Zv6RDDN5OJbI=
+	t=1791287091; cv=none; b=W2NxMZAhGOLiqpIVFp3pm3LnT+VrG5XCrF3emEXzyHdVkSRkxe084uiIg0Ge/6HbWQopN2TqL1vO7KdwiXW67xMXKH67XLvQ+JnuWoLbizcfhZvnrvWpN6R2Etwo3e+8c99fROR/5n4Xy8j2WGH8YTz8dkbczlJGtfuBC50RGYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791283142; c=relaxed/simple;
-	bh=5SBDIrzGAQEBhEnuVBvjyWjW+cvgWc+5Dhaw9jOzesI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AlhRfiw9TQnJ8rV7ARA3h4B0XewGdN1Wp9yQGGUHG2G4Ytz83iRJLt2eTFehcSQR+5hVyKzxNsVberf/yaoJdeG5kcw9eSDpHYk8NMIq7MeXFk8hWf9Gg9mJUtNwvUr4QR3tq5psL68ckbqrdg/8y7THZU4YL5wHo85HT3Tc/b8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pyX+UMUT; arc=none smtp.client-ip=209.85.221.52
+	s=arc-20240116; t=1791287091; c=relaxed/simple;
+	bh=wmkZFvkKj0Cb7oXf/na4MzUt3wLDgMZFlXMmUmW46n8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NhMWKnzAIHT25Ti70g0eEvh2d5hWq2AoY9yio08tas98/eVz/cjYXE+zi/DPUV5qAZu//yO6mtnuq0Aq6H7R44X9IB378BKj5liQwxjvoDrapHrxsL1lvk+yLH4uhjT49zgltzV6wjXO91/t4m0c+t/87rekLCKKbhZU8I1M+RY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pcpBpZf/; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pyX+UMUT"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-48b042c0759so437220f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 06 Oct 2026 03:39:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pcpBpZf/"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a140e7405dso26981435e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 06 Oct 2026 04:44:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791283139; x=1791887939; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=0PKrnSSgSMY6ZmA5twi9Nx86W77c8h087WtIxcCKmQ0=;
-        b=pyX+UMUTHn7PFHouaOVd5uID28UVxhEMuLqB0ZTWeMIiEL/lxyseo2TsVxQ+SsTo38
-         Fe8CiATIwr6F39IKuDhjJGeTpfb1Ma3UIRAP0DK2HQROEXXGqjnl3eh7SNPg0B6oCGUR
-         yxNe3JhaHg/+iaLHGseu7IMcUw3dwOd4I9mn3VH60JygeTtTtFdThMqePXYi4iz4rB41
-         5iEv6iKE+JlLuBYSgvzLGFFoeNE02RyXrXuFB4CsIz1rR5W96WwnekHVuCKYTeNsSn11
-         rtuTeDRSmyrdfqXUGVXxBe4v5NgYoG/AiuNvwakkbuP7EFT7FptA2cOw11y1Z4/sLHCO
-         okuw==
+        d=gmail.com; s=20251104; t=1791287087; x=1791891887; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=nIH9oNewGm+iiK+DqVLwv9vwseXKMTyaRTgq2ccesyI=;
+        b=pcpBpZf/3lMRRRlr2JD5m+ozqtjCowNvaWXgytkfdY5AR7DPo/8lS7HktyDefe3kCp
+         hpBRSa7x4jDPDcO7kO6SNSZ8GjTeUGo7GhFyCJxfTEYzCs77pBU3POfmiQ1UqAU/+ZCJ
+         1NnkPXp5+QkZd25aFL6wJKhzoytsSdpL71j3XzSXBueG2/YPECYuMWpNCyRxH05YQo/J
+         nOGb7AUeD+oOOfbMx7uJCnK5JTOIuzpcmpWDZOiEOJCjfj9N7740nQNm6HNHrEIhG9qk
+         QlL8Kz4fCZM2U8HGjU5ZEcDtgq/L3/R1OGg5o2S+YtFuhuQDKWFtw81mdDPjLqrAhIoP
+         F/QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791283139; x=1791887939;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=0PKrnSSgSMY6ZmA5twi9Nx86W77c8h087WtIxcCKmQ0=;
-        b=qLaPV71BcJkGmyxbUnDeMPCDTpFahD+ZKNexjl51NtPNwBUz/Grb7rjv2AvQ/a2NLH
-         sFw7dOJeHJd/4eGX6GsWkVN9ukQHkl+jnjvzEUmerOykmTcEdz6xMV6RLDrk1F1hcRq0
-         P7CFBXTplndH68WlpJw5kdDhuA8VKD+KLJPhrdV4/alC4uBZ4xz3fKqrUYwud901A6AX
-         89dhDIfu7d6UtKM0A3J/UnkPoDiGsO2c2pAcBJNIj/OC+7SE9dGzvbrQ93vFfgMEIC10
-         Z9m6a5ZFt1niq2+CIDqbrMRe5owlaYdGRC4zpErAqAVjhGil/1eJ0O+lO7oL/adw2uzE
-         80YA==
-X-Forwarded-Encrypted: i=1; AKwUvBwQs1sb4yDLkm42Spe4C7xojVpebqJ66UMr0vTWXzEoWqmwsJLp0YI1J/8TQpK2h6W61odYZa1Dxjg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJOdceN7nqEF9xD4CbjAeUQ1Qr11QyaN592UhEJhZa9rA1Z8NCl
-	0zMTnVwuMrGrwIbdNn5Z3gRaITnMVg0DSpZFTHpkVzcJbWUXXcyXA/2+
-X-Gm-Gg: AYBFou1GeGi7CTqKvhIM7/QJJViszNRBtyYB2YI0ZXiOIi2XouImCq0U8V3fHu9d0Ke
-	PYde74L+e59vJr9Gc9hc5LDXE5iWiHBjIdvDzHDPBwnuwQp1fCB6xed9oDglRDn25f0vtSwK6t/
-	PLrUN9vGRhUKE2wizoE+SI59o21cG3NhtubX6F5YWziiDZwKsh++VXOBxgDkNW/FGUOLe+tx3m2
-	t6wChvzPwbIw9D/ieU4byNcDkEGZLa9WX91TDEv5jLO41EQPjNSZojV3/grI7CU0nE22bM2d/Bd
-	pENEse7v1ANVqbNxC3DYf5YSdMbB7igtiW16q28hF/UsQbGJSA6UiqYNu5Yy+tqtDvRuFOfm9rS
-	vOJDRbnWhO7RGZDfeZBudxgMZ8WEDWPvdRHxctLsRKAtlR8cbDwiFKx5qtu7VerwWprfVTMqIr0
-	l3f1/aMEOdo5EuuoBUAGEGx095Jonc1CtWqXueCLw2VzPwERa2vUiBizi5CNxWGNx6PSdVtM1hD
-	is32roTzEI9gxym9y0=
-X-Received: by 2002:a05:6000:298e:20b0:485:8a47:5b91 with SMTP id ffacd0b85a97d-48c6d1ee143mr1211829f8f.46.1791283138652;
-        Tue, 06 Oct 2026 03:38:58 -0700 (PDT)
-Received: from fedora ([154.183.153.81])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48c6cd717f8sm2526963f8f.48.2026.10.06.03.38.57
+        d=1e100.net; s=20260707; t=1791287087; x=1791891887;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=nIH9oNewGm+iiK+DqVLwv9vwseXKMTyaRTgq2ccesyI=;
+        b=1K90iN1KgB6dCtUNW7Jp/LLPR3tcoL0G2mOc88JVP4Py24kiddanMI6XIKdNQJLsUg
+         inl/PjDW5aLxjQWSybUIvkYlbt+iJhoUb1lapiJowHHqCXHCm6dU7aXV2QT9Fts32SxP
+         d2CHNZIZ3AN5B1S1XfVHnpEEDh9j0rvpbSEhnaBeYWHU2RMwkVC9qT8gDpo7aX1Yr/Jv
+         OJPWIBP0en7OgbJZ7uZx2c3l6TeY1kvWjXf7Fs+cj7XaSmq+wB+oyE6HCj8QM/dUe5Jv
+         PWNezA5WRBb5bS2CJlNlVTsh6v9pXZiAh/L2gOJD8BNg6BxJfUnaZY0AgvAuyI/1szlg
+         h06Q==
+X-Forwarded-Encrypted: i=1; AKwUvBz21Z8LNQ9u/7/PpEElE9dTexB3H2JYoDb6YjAZCG6GEPQ3wWJA3hDomeYBahT6uHXwXajPCeA+TW0=@vger.kernel.org
+X-Gm-Message-State: AFuF++kd27k1rETzmOx+d3R5PpSpbcyw9vLRWnXu2Y8OOTSa7zYkkyvU
+	gsYcQ0fMwh160KBWGcgNsA2SII6r0C2tq+60qwZ20XAdKR2mxmJVc55F
+X-Gm-Gg: AYBFou3rsO8GZFj8KyegXeYOZr+mVi06T/dc+8in3oYzeJMSgUKxEGN0IOLnbUVZ67d
+	XzdLQJ0bdijrXilPd/zXAB7v7vf/HwpBzMZFp1I7yoa9VFkyFDEVUY0ZUO9KeHsh7z8GUSz2nYf
+	nh1PvXwx26BmPgG8CtfrlqXVOTkUDu9H8DdJOOWwmawr6KjD5j+tsSCty+vQVqJMKGvZfCqrxMR
+	cEl1N5at1dhPia7QNYqfrrMtbc+g3xTVYAA8Q0adIH2dyRia8hBpex0LlubPsGneyeDXLQUvFcR
+	bQ7LuRna3I7p7Gd64zHl66QwaZw+RomSph+qo5oYrCeA/SAYELHQM190tNOb2XiCdNFLVfo7HJz
+	QVU7qE0rtcgKw0Oijma/Jeic+FOvIEWM+4UGpAKKBli0Mquhl/xSA7Z7nXEXUdyi8lBBVgxhjUn
+	py8DOM65KgYFxf8Kqv9X8zfLqP8GxChn/eiqUve4iJAo9kO2pYntk7TGJdIvuCdtNpc4SL7BX/H
+	BZ4OYZdbozxvnqfedwGch98iE1LS/tot7ia+q+GuM+QU4nbBRFVgu3Vmm1t+fIEp9lCwP4t2Y93
+	giAYL3sgSFAb+EKYB+imiRL3acUum5GK9KoVDTrJpEVM8SwFYFy9kC1q8c9kK/YUBzuSw6TbGt7
+	WwUT6CmHXDsJOMaq4tcQL+NUdChDy/l3oK1WsxVvMPNDj/sDWBBgFuF31qJsZyRTr1REcl9E4d+
+	YlwInD
+X-Received: by 2002:a05:600c:1c16:b0:4a1:7832:dfd6 with SMTP id 5b1f17b1804b1-4a17b5340c8mr22006265e9.5.1791287086922;
+        Tue, 06 Oct 2026 04:44:46 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a17c7b7f00sm19805495e9.13.2026.10.06.04.44.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2026 03:38:58 -0700 (PDT)
-From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH] staging: iio: adt7316: use kstrtobool() for sysfs boolean parsing
-Date: Tue,  6 Oct 2026 13:33:50 +0300
-Message-ID: <20261006103350.32853-1-abdelnasserhussein11@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        Tue, 06 Oct 2026 04:44:46 -0700 (PDT)
+Date: Tue, 6 Oct 2026 13:44:43 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Liu Yufei <lyf98405@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: proximity: Add driver for Vishay VCNL36829
+Message-ID: <20261006134443.00000bc9@gmail.com>
+In-Reply-To: <20261006100943.78971-3-lyf98405@gmail.com>
+References: <20261006100943.78971-1-lyf98405@gmail.com>
+	<20261006100943.78971-3-lyf98405@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Replace manual and unsafe character checks (e.g., buf[0] == '1') with the
-standard kstrtobool() API in sysfs store functions. This ensures proper
-handling of standard boolean inputs, fixes potential safety issues, and
-adheres to the Linux kernel coding style.
+On Tue,  6 Oct 2026 18:09:43 +0800
+Liu Yufei <lyf98405@gmail.com> wrote:
 
-Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
----
- drivers/staging/iio/addac/adt7316.c | 94 +++++++++++++++++++++++------
- 1 file changed, 77 insertions(+), 17 deletions(-)
+> From: Liu Yufei <lyf98405@gmail.com>
+> 
+> Add an IIO driver for the Vishay VCNL36829 proximity sensor with
+> integrated VCSEL, connected over I2C.
+> 
+> At probe the driver enables the vdd and vddio supplies, waits for the
+> sensor to power up, checks the device ID, configures the VCSEL current
+> and photodiodes, and turns the proximity engine on. The sensor is put
+> back into shutdown when the device is removed.
+> 
+> The following attributes are exposed:
+>   - in_proximity0_raw
+>   - in_proximity_integration_time
+>   - in_proximity_integration_time_available
+> 
+> Datasheet: https://www.vishay.com/docs/80580/vcnl36829um.pdf
+> Assisted-by: LLM
+> Signed-off-by: Liu Yufei <lyf98405@gmail.com>
+> ---
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 20f6052cc7fb..21a1b811a142 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -246,12 +246,12 @@ static ssize_t adt7316_store_enabled(struct device *dev,
- {
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
--	int enable;
-+	bool enable;
-+	int ret;
- 
--	if (buf[0] == '1')
--		enable = 1;
--	else
--		enable = 0;
-+	ret = kstrtobool(buf, &enable);
-+	if (ret)
-+		return ret;
- 
- 	if (_adt7316_store_enabled(chip, enable) < 0)
- 		return -EIO;
-@@ -285,13 +285,18 @@ static ssize_t adt7316_store_select_ex_temp(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config1;
-+	bool req;
- 	int ret;
- 
- 	if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
- 		return -EPERM;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config1 = chip->config1 & (~ADT7516_SEL_EX_TEMP);
--	if (buf[0] == '1')
-+	if (req)
- 		config1 |= ADT7516_SEL_EX_TEMP;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
-@@ -482,10 +487,15 @@ static ssize_t adt7316_store_disable_averaging(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config2;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config2 = chip->config2 & (~ADT7316_DISABLE_AVERAGING);
--	if (buf[0] == '1')
-+	if (req)
- 		config2 |= ADT7316_DISABLE_AVERAGING;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
-@@ -521,10 +531,15 @@ static ssize_t adt7316_store_enable_smbus_timeout(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config2;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config2 = chip->config2 & (~ADT7316_EN_SMBUS_TIMEOUT);
--	if (buf[0] == '1')
-+	if (req)
- 		config2 |= ADT7316_EN_SMBUS_TIMEOUT;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
-@@ -559,10 +574,15 @@ static ssize_t adt7316_store_powerdown(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config1;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config1 = chip->config1 & (~ADT7316_PD);
--	if (buf[0] == '1')
-+	if (req)
- 		config1 |= ADT7316_PD;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
-@@ -597,10 +617,15 @@ static ssize_t adt7316_store_fast_ad_clock(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config3;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config3 = chip->config3 & (~ADT7316_ADCLK_22_5);
--	if (buf[0] == '1')
-+	if (req)
- 		config3 |= ADT7316_ADCLK_22_5;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-@@ -640,13 +665,18 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config3;
-+	bool req;
- 	int ret;
- 
- 	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
- 		return -EPERM;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
--	if (buf[0] == '1')
-+	if (req)
- 		config3 |= ADT7316_DA_HIGH_RESOLUTION;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-@@ -685,12 +715,17 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config3;
-+	bool req;
- 	int ret;
- 
- 	if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
- 		return -EPERM;
- 
--	if (buf[0] != '1')
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
-+	if (!req)
- 		config3 = chip->config3 & (~ADT7516_AIN_IN_VREF);
- 	else
- 		config3 = chip->config3 | ADT7516_AIN_IN_VREF;
-@@ -728,10 +763,15 @@ static ssize_t adt7316_store_enable_prop_DACA(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config3;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config3 = chip->config3 & (~ADT7316_EN_IN_TEMP_PROP_DACA);
--	if (buf[0] == '1')
-+	if (req)
- 		config3 |= ADT7316_EN_IN_TEMP_PROP_DACA;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-@@ -767,10 +807,15 @@ static ssize_t adt7316_store_enable_prop_DACB(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config3;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config3 = chip->config3 & (~ADT7316_EN_EX_TEMP_PROP_DACB);
--	if (buf[0] == '1')
-+	if (req)
- 		config3 |= ADT7316_EN_EX_TEMP_PROP_DACB;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-@@ -967,10 +1012,15 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 dac_config;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_AB);
--	if (buf[0] == '1')
-+	if (req)
- 		dac_config |= ADT7316_VREF_BYPASS_DAC_AB;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
-@@ -1006,10 +1056,15 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 dac_config;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_CD);
--	if (buf[0] == '1')
-+	if (req)
- 		dac_config |= ADT7316_VREF_BYPASS_DAC_CD;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
-@@ -1969,10 +2024,15 @@ static ssize_t adt7316_set_int_enabled(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 	u8 config1;
-+	bool req;
- 	int ret;
- 
-+	ret = kstrtobool(buf, &req);
-+	if (ret)
-+		return ret;
-+
- 	config1 = chip->config1 & (~ADT7316_INT_EN);
--	if (buf[0] == '1')
-+	if (req)
- 		config1 |= ADT7316_INT_EN;
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+...
+
+> +static int vcnl36829_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct vcnl36829_data *data;
+> +	struct iio_dev *indio_dev;
+> +	struct regmap *regmap;
+> +	unsigned int reg;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	regmap = devm_regmap_init_i2c(client, &vcnl36829_regmap_config);
+> +	if (IS_ERR(regmap))
+> +		return dev_err_probe(dev, PTR_ERR(regmap), "Regmap setup failed\n");
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->regmap = regmap;
+> +
+> +	indio_dev->name = "vcnl36829";
+> +	indio_dev->info = &vcnl36829_info;
+> +	indio_dev->channels = vcnl36829_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(vcnl36829_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to enable vdd\n");
+> +
+> +	ret = devm_regulator_get_enable(dev, "vddio");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to enable vddio\n");
+> +
+> +	/*
+> +	 * The datasheet does not specify a power-up settling time.
+> +	 * Wait 3 ms after enabling the supplies before accessing the
+> +	 * device, as a conservative value.
+> +	 */
+> +	fsleep(3 * USEC_PER_MSEC);
+> +
+> +	ret = regmap_read(regmap, VCNL36829_DEV_ID, &reg);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to read device ID\n");
+> +	if ((reg & 0xFF) != VCNL36829_DEV_ID_VAL)
+> +		dev_warn(dev, "Unknown device ID 0x%x\n", reg & 0xFF);
+
+I'd rather be soft and do dev_info() instead (perhaps this could
+be tweaked when applying).
+
+Otherwise this looks good to me!
+
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
 -- 
-2.54.0
-
+Kind regards,
+Joshua Crofts
