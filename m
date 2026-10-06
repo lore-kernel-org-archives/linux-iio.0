@@ -1,110 +1,147 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C220C3F6C3D
-	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 17:17:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7814A530E14
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 17:55:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791911855; cv=none; b=pcEu9ENCRa/1uSj1Apy0lkeCTfxUv+rRgeQSqepi7TF6F+rxisW3MzDFhGxtaYp0DYnO04z8GNMFCuQI33Te/avZ1RjHvcYG0n76QhI3aBcGb5/HNEBYqo8/T7YO4swNeBIst6DaktTPcehCSIQcvMd4gdKZCOjeoen0EUS5GXA=
+	t=1791914139; cv=none; b=nZXCX07D388zIZXmYWQigFtYxnMED0AfpZUCKSydeKC/IdJdgsxpCYgfVSiml99+f+xLPtT9PfZgccRT9jJkJnAW3djnq5PmuTt9+q6i+MLvOVotO6Po8mxakxFrG/Ij4lqGgQcQNU1As3Co4oEZUZUMLai9RePtSwzmQiE28R4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791911855; c=relaxed/simple;
-	bh=+4OV03i0EJVYJAj0s+f12i9tbSSJEF1awclvr/932vA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OVfQEGcckIJCXKx3owqIBiTXizArksDUCjv9fekcO4udFfRfiMupLGLpTka4s5gtWKi4YeJGEFiatMnFhwiZmPV7D9NzzvkUspqrfAY2r5zKJ7844+ihZ1rafNU4f+ebYXQN7tDwJ+Qk0iWXFMov5vlu6ZdImzNcHXhpGsx9FgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=slmVQe3v; arc=none smtp.client-ip=74.125.82.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791914139; c=relaxed/simple;
+	bh=N9QDoNjH7SQ2a6fTr+DM4BznMS1QQy9nCHm80PlOj4I=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=YlWcaFuWuWotanTAElKWv7c9Orff0+tWz6gHY7X5JISaYMRoJqwDez531P6sB7HvThsgZogdYWfMyrDAxW2ZsBsd8+HhTxvpc69Q0wW3AJd0pyHvsSkBbHUpwyMQhNbVRVzg7Lcypg3fklYDVe9NUfEZssQsUW9MvQKZu077JmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=cy48IUzn; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="slmVQe3v"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-1517bda04a0so2039504c88.0
-        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 10:17:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791911854; x=1792516654; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=eattSOlERH03Tw84P2kHaA8gAf3HFT+7yXhlaXTMwtg=;
-        b=slmVQe3v1rYwSkRLjiT4tWub0gGOGc17+s0M8X0PfvchWOFLWdh0r9CZ8Une7c3BRj
-         kWBu6AJMioYjmIBf7GVnHX8WIgdjv7hmB613PX9jc2GL4AgGMWHHuiL1z4AVW+5m37zJ
-         WPozao46eixgByesANgDBkoyz29HL4I3kSVgLo0Q3hTrP6GjoYm2EK9hLElJA/78XR7e
-         S31a01NKsflVtDNAO2w/yGsHkgB7I2ZuC7qJANtPn+4IqL/PjsgpH7LaHFdgSevB+z7r
-         oKvih9yQYgmy78e6RHs3i1OA6CFJTXxBNvGKok2ZwR2gQ8TROTEA2ANVDoSrRRBZolr0
-         GF3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791911854; x=1792516654;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=eattSOlERH03Tw84P2kHaA8gAf3HFT+7yXhlaXTMwtg=;
-        b=OLNwyxoPsiDj2/voNJgn6JvCEJWLg9c05E6bhH3Lj3x9G2hYDHeJ2JCA+ErRU6U+3t
-         krd8HVqKL4GxyZfDM+KR9e/X90j0ovQgPoeoEUFvEBzz2z28OS/5ws4/oAoKP13lwWRJ
-         R9++R7b4q6n1QY/Z7dBtUcMx8jKzjIbQys+HhjVFo0eO8A3xOZ8Q/r6qzrf5Y+FdBZvw
-         FMgfEwOu9cSpsqMtDlT4iVbV2sKVWWfJODTOA+cM6L7MBOMRMswtvzpkhtfXtW8A8Rr8
-         9n6PpNxQAKnwLwPqZe9+AadzadSTA4F43kmpEV2x/f/2u+1DhFB2GK221GUyonCsxtfi
-         e2MQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwBLvxWxkyvJVEgmlLKJyMiqO0W3Y+WjuIE3bowCP+QY6NV1/PK4/yfqRni4w3DzM5K21fOAo5P7Vk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYL59txvpCts1G8cehH8w/HlRc94sIKXpfMpcTytMbLXnfeK57iU
-	JazVijGdWRe0cZyTj969Ce/TqOqDPi8OqSkUIRYf0FdpBChpZaQpdQQ=
-X-Gm-Gg: AYBFou1DrbgeHLSvN2TQhoPLEgw+fHYrYH1EtOE5L3Uw2nRYYZOi0zsinX6+OvU8HEK
-	dUfvfbd//HAmwUkpxleCtIBwY4haz1JfAHlOv8qm3QKgY3iXrjaRMuD3uoG0oW3GBrYwNsZMh1/
-	fTPaSEYkSIVHsNZ3murlAJ+Gjlfu1atX8uhGXnh73xcGBJVROX/R1MJcqAGhufDmyGmyAOQ/vuo
-	qNOcd4ZdeK4ARShmPcEDcIMVw/6qQGrNhUoRuoAJvAWa0Xg7smL0YzmYSorNEUnXP/jWw+Ro7Wm
-	YTiR92E6B09+SCYWcTzUI/t1+6LLSefB7ZYArkG7/CMUibUGD0LbP5LvzTlJk/rL6qGZnfeo83R
-	XbuwaCslhogcmi+5WkgdC7XP8WtrN8/jy2X047CzAspd5c/dl7Md02bc36UOa8j9DaITdCDKjWf
-	YUDniBSoZdM8/einfby2b8/oFmlpq8VSggDVOZM1Om48fdlBRJsuCkfGNzBfXMgu547/UcVYsJ2
-	7xO3VAsUY7lHg7+HZbLnofoJB5Y94LbYcHBmg==
-X-Received: by 2002:a05:7022:ea8a:b0:166:3e26:c4b5 with SMTP id a92af1059eb24-16a5bf3ee1emr16409864c88.18.1791911853663;
-        Tue, 13 Oct 2026 10:17:33 -0700 (PDT)
-Received: from localhost.localdomain ([101.0.62.171])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537cacb61asm47268839eec.21.2026.10.13.10.17.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 10:17:33 -0700 (PDT)
-From: Nikhil Gautam <nikhilgtr@gmail.com>
-To: anshulusr@gmail.com
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH] iio: chemical: ags02ma: Check for short I2C reads
-Date: Tue, 13 Oct 2026 22:47:26 +0530
-Message-Id: <20261013171726.15670-1-nikhilgtr@gmail.com>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="cy48IUzn"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 734E7C653FA
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 17:56:31 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id D064260362
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 17:55:35 +0000 (UTC)
+Received: by mail.galae.net (Postcow, from userid 0)
+	id 7C70111D71892; Tue, 13 Oct 2026 19:49:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1791914135; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=AKYKWw8yRJADG0ZqwchQesW4ZpXy14oTpfFHmw5LWn4=;
+	b=cy48IUzniLllL3YScDFy6LNEREjzAQAt92LWyyAP96Rk/wFebaMIWkjL+SIa5VVhpWdBZi
+	4IYjbvSag2xUX9oOYiJ4HNm3a9c5uLweGhcDgDr7QW/b9/HImeeNLCPow9d+5F2iGlaHfg
+	Qieg0b6ZqCAl2lCewRHzcIoJRVnG8Pct3EthfNhivTPUQT5+2xlnMbsIkG9nQLzMhCqQGZ
+	Eiy3AXRigaivPUBDUYnfEeAfzBKio4qhh1gDstLgsMv/TXAk1/Dg9uU92eM+6QM0t4CZpg
+	hyHtk7FO4VAJxnJy6iqOzBfhDe8U0FVNMcfPQHwsMTDeVstPL3fDneVLhjzWGg==
+Authentication-Results: mail.galae.net;
+	none
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+To: Thomas Bonnefille <thomas.bonnefille@bootlin.com>
+Cc: Puranjay Mohan <puranjay@kernel.org>,  Jonathan Cameron
+ <jic23@kernel.org>,  David Lechner <dlechner@baylibre.com>,  Nuno
+ =?utf-8?Q?S=C3=A1?=
+ <nuno.sa@analog.com>,  Andy Shevchenko <andy@kernel.org>,  Rob Herring
+ <robh@kernel.org>,  Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
+ Dooley <conor+dt@kernel.org>,  Thomas Petazzoni
+ <thomas.petazzoni@bootlin.com>,  linux-iio@vger.kernel.org,
+  devicetree@vger.kernel.org,  linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: temperature: tmp117: add support for HIGH and
+ LOW alerts
+In-Reply-To: <20261005-add-tmp117-notif-v1-2-c6cef6fad64c@bootlin.com> (Thomas
+	Bonnefille's message of "Mon, 05 Oct 2026 16:44:20 +0200")
+References: <20261005-add-tmp117-notif-v1-0-c6cef6fad64c@bootlin.com>
+	<20261005-add-tmp117-notif-v1-2-c6cef6fad64c@bootlin.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Tue, 06 Oct 2026 16:09:16 +0200
+Message-ID: <87se2ihqer.fsf@bootlin.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-TUID: Qka5b1aiBGbP
+X-Last-TLS-Session-Version: None
+X-Rspamd-Queue-Id: 7C70111D71892
+X-Spamd-Result: default: False [1.78 / 30.00];
+	SUSPICIOUS_RECIPS(1.50)[];
+	DATE_IN_PAST(1.00)[171];
+	BAYES_HAM(-0.62)[76.19%];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_COUNT_ZERO(0.00)[0];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	BCC(0.00)[];
+	TAGGED_RCPT(0.00)[dt];
+	DKIM_SIGNED(0.00)[bootlin.com:s=dkim];
+	MID_RHS_MATCH_FROM(0.00)[];
+	NEURAL_HAM(-0.00)[-1.000];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[13];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	MAILCOW_DOMAIN_HEADER_FROM(0.00)[bootlin.com];
+	URIBL_BLOCKED(0.00)[bootlin.com:mid,localhost:rdns,localhost:helo];
+	TO_DN_SOME(0.00)[]
 
-Check that the I2C receive operation transfers the expected number
-of bytes before accessing the received data.
+Hi Thomas,
 
-Return -EIO if the transfer is incomplete.
+The code overall looks fine but I have a couple of style improvement
+proposals.
 
-Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
----
- drivers/iio/chemical/ags02ma.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+> +
+> +	/*
+> +	 * The threshold is passed in millidegrees Celsius as
+> +	 * value =3D val + val2 / 1000000 (val2 holds the fractional part, with
+> +	 * the sign taken from val). Convert it back with the same LSB ratio:
+> +	 * raw =3D value / (TMP117_LIMIT_LSB_NUM / TMP117_LIMIT_LSB_DEN).
+> +	 */
+> +	tmp =3D (val < 0) ? (s64)val * 1000000 - val2
+> +			: (s64)val * 1000000 + val2;
 
-diff --git a/drivers/iio/chemical/ags02ma.c b/drivers/iio/chemical/ags02ma.c
-index 151178d4e8f4..2219965d044f 100644
---- a/drivers/iio/chemical/ags02ma.c
-+++ b/drivers/iio/chemical/ags02ma.c
-@@ -61,6 +61,12 @@ static int ags02ma_register_read(struct i2c_client *client, u8 reg, u16 delay,
- 		return ret;
- 	}
- 
-+	if (ret != sizeof(read_buffer)) {
-+		dev_err(&client->dev,
-+			"Short read from register 0x%x\n", reg);
-+		return -EIO;
-+	}
-+
- 	crc = crc8(ags02ma_crc8_table, (u8 *)&read_buffer.data,
- 		   sizeof(read_buffer.data), AGS02MA_CRC8_INIT);
- 	if (crc != read_buffer.crc) {
--- 
-2.39.5
+                        ^
+Usually operators stay at the end of the previous line
 
+> +	tmp =3D DIV_ROUND_CLOSEST(tmp * TMP117_LIMIT_LSB_DEN,
+> +				(s64)TMP117_LIMIT_LSB_NUM * 1000000);
+> +	tmp =3D clamp_t(s64, tmp, S16_MIN, S16_MAX);
+> +
+> +	return i2c_smbus_write_word_swapped(data->client,
+> +					    reg, tmp);
+
+Overall the wrapping looks too aggressive in several places
+
+> +}
+
+...
+
+>  static int tmp117_probe(struct i2c_client *client)
+> @@ -208,6 +343,16 @@ static int tmp117_probe(struct i2c_client *client)
+>  	indio_dev->num_channels =3D match_data->num_channels;
+>  	indio_dev->name =3D match_data->name;
+>=20=20
+> +	if (client->irq) {
+
+Since you're adding the binding for it, I'm surprised the irq already
+exists?
+
+> +		ret =3D devm_request_threaded_irq(&client->dev, client->irq,
+> +						NULL, tmp117_interrupt_handler,
+> +						IRQF_ONESHOT, match_data->name,
+> +						indio_dev);
+> +		if (ret) {
+> +			dev_err_probe(&client->dev, ret, "irq request error\n");
+> +			return ret;
+
+Isn't dev_err_probe() return ret already? so return `dev_err_probe()`?
+
+> +		}
+> +	}
+>=20=20
+>  	return devm_iio_device_register(&client->dev, indio_dev);
+>  }
+
+Thanks,
+Miqu=C3=A8l
