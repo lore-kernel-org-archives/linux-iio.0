@@ -1,119 +1,87 @@
-Received: from d.mail.sonic.net (d.mail.sonic.net [64.142.111.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 071243921DB;
-	Wed,  7 Oct 2026 18:55:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.142.111.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F37463E49F7;
+	Wed,  7 Oct 2026 20:47:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791399331; cv=none; b=HFw7Qg0ySayNnRyVCvTc6z/nn7WQ0HGUTV8Xgls5CzN/QfmPahRS+rn01SbZNDYAm7j0jhsxHiRlbmeab0R7m6KJOA01MDouhihuTwA/FOWgf4rErKblUuTwRhiAMx/tF3uCucn3GNN8PAkEBxjfDK+/8+UOKdwNFofuh9PUfrg=
+	t=1791406068; cv=none; b=pOftSkEE0Npi30hMGCP3vCeozEy7wPSvEdPz9m3f4yJ+gBc3DoZdhE+YjLNMpBveRpOL6xbDw0mnzqN0qK3kBPkDUUKxIcAnS52BaOf+xMIPEriPfyC2ysGdnR7L0/HABe2lwk67IacSRaxgS1h9k37lBbhxo/L1YawXhgiw3QY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791399331; c=relaxed/simple;
-	bh=KFWCdC7F+yqj2Ovw/sONna8iCtQg6kTLqqcuDAhdyjg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=H1l2SnY18tPS+HmGlqFl7X8tiR8TO10nBfIVAQFK69hT+guu7qsNRv5P0Iq8ybYhfA52DEpOqSCoxb+MsDzfuVmOIdhpqnjNkNHq3/c2HMHZN5YEc+ki8ZMnBDWmdbGVAl2rvjHmy5Pb9PD1HCwK6WZlO6LW048f9Iq5l8U7/Uo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=murgatroid.com; spf=pass smtp.mailfrom=murgatroid.com; arc=none smtp.client-ip=64.142.111.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=murgatroid.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=murgatroid.com
-Received: from fred.murgatroid.com ([70.134.61.105])
-	(authenticated bits=0)
-	by d.mail.sonic.net (8.16.1/8.16.1) with ESMTPSA id 697IiSJo011993
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-	Wed, 7 Oct 2026 11:44:28 -0700
-Received: from murgatroid.com (shack.murgatroid.com [10.0.0.31])
-	by fred.murgatroid.com (Postfix) with SMTP id C5ACE2A6038E;
-	Wed,  7 Oct 2026 11:44:28 -0700 (PDT)
-Received: (nullmailer pid 622530 invoked by uid 1000);
-	Wed, 07 Oct 2026 18:44:28 -0000
-From: Christopher Hoover <ch@murgatroid.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com,
-        Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christopher Hoover <ch@murgatroid.com>, stable@vger.kernel.org
-Subject: [PATCH v2 2/3] iio: temperature: hid-sensor-temperature: Use per-instance callbacks
-Date: Wed,  7 Oct 2026 11:44:22 -0700
-Message-ID: <20261007184423.622445-3-ch@murgatroid.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261007184423.622445-1-ch@murgatroid.com>
-References: <20261007072329.27806-1-ch@murgatroid.com>
- <20261007184423.622445-1-ch@murgatroid.com>
+	s=arc-20240116; t=1791406068; c=relaxed/simple;
+	bh=SxrGDSyEX73l7LarG93DakxyOY4pzJamaXHDM4sBiEI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IscsRbvz21uhiIWndttpsz07WATYnZemSmkj8wvyDUpNamoTT86QuOiOJvIYRpeDXt1POxZtvRDg1YaMagtnmv+HOmB2elb//85Xge6SgTwndpA7m+OUJYwvzgkQs80WZDLdIlq9FttqjMqjYKetdbPcxk7M5ARBDmyEjKGkzic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c5bhswkH; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c5bhswkH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6917B1F000FF;
+	Wed,  7 Oct 2026 20:47:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791406066;
+	bh=u8v09+uznNxns8CiadeSWkPY6KMiMjm7ORLmbiWyCfU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=c5bhswkHMpLunPnbXDUTmHb0e9KMooSSYkFHsROS+gXOU/Kw01/a4seaLu1RHL9oK
+	 P6ffGKl30zjhP8yNVFu+oSL/tTVSfS1m0LXMTHG9do4iIxNZaMVhqUyPeykEV941yn
+	 YlL7yXtPAh24LXPw9+r21fCgTZWuHvMYo7319isDIKgS2+u7PFm8K4C6cXY6cNPK1M
+	 OL+2ATGDrIxSmpZ2EJaQQog29i22kIiIWdFuel6mX0euAd7U8VI4SOtVh6c/KzvTVt
+	 4iFTUjaEESE4n3+aOgPD18/Tjk4yxW4ZO9yolBhDQ9vKEx6gKhvMcTTGSCyLT04rIp
+	 xTl4i8bdd1LYQ==
+Date: Wed, 7 Oct 2026 15:47:45 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: linux-hwmon@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
+	Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: Re: [PATCH v4 2/3] dt-bindings: iio: adc: add support for PAC1711
+Message-ID: <179140606511.243312.18354429162452985979.robh@kernel.org>
+References: <20261007-pac1711-v4-0-6ef34d7a7947@microchip.com>
+ <20261007-pac1711-v4-2-6ef34d7a7947@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Sonic-CAuth: UmFuZG9tSVY6GaOTSycqD4J8b1kPMALoPokGwAkNZbJFoAzhcR8AhKATBoqx/2t3e7qT4bpWHVpjTglg6lktAxHSNeHvGL3lRr5hVQp3DzU=
-X-Sonic-ID: C;Gl6WIH/C8RGin5cllaD8vQ== M;LKWmIH/C8RGin5cllaD8vQ==
-X-Spam-Flag: Unknown
-X-Sonic-Spam-Details: not scanned (too big) by cerberusd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261007-pac1711-v4-2-6ef34d7a7947@microchip.com>
 
-hid-sensor-temperature keeps a single static struct
-hid_sensor_hub_callbacks for all instances and overwrites its pdev in
-every probe.  With two temperature sensors, input reports for one are
-delivered with the other's platform device; once that device is
-removed, platform_get_drvdata() returns NULL and
-temperature_capture_sample() dereferences it:
 
-  BUG: kernel NULL pointer dereference, address: 00000000000003a8
-  RIP: 0010:temperature_capture_sample+0xd/0x50 [hid_sensor_temperature]
+On Wed, 07 Oct 2026 17:41:54 +0300, Ariana Lazar wrote:
+> This is the device tree schema for Microchip PAC1711, PAC1721, PAC1811 and
+> PAC1821 single-channel power monitor with accumulator. The PAC1711 and
+> PAC1721 devices use 12-bit resolution for voltage and current measurements
+> and 24 bits for power calculations, while PAC1811 and PAC1821 have 16-bit
+> resolution and use 32 bits for power calculations. The 56-bit accumulator
+> register accumulates power (energy) or current (Coulomb counter).
+> 
+> PAC1711 and PAC1811 measure up to 42V Full-Scale Range, respectively 9V for
+> PAC1721 and PAC1821.
+> 
+> The accumulation-source property aims to specify what kind of hardware is
+> intended to be used/available for the user. There are two main cases here:
+> - the user wants to measure also the current/power consumed before the
+> driver insertion (e.g. from the boot to user control) and if this is a
+> runtime setting, the hardware accumulator will be reset by the default
+> configuration the driver starts with.
+> - the driver does not know what type of hardware it's dealing with. In
+> case the part is monitoring the charge/discharge current it does not
+> make sense in user-space to change the accumulator to calculate energy.
+> Same if the hardware is intended to calculate energy it does not make
+> sense in user-space to change to Coulomb counter. Changing the setting
+> from one mode to another will reset the hardware accumulator inside the
+> chip.
+> 
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> ---
+>  .../bindings/iio/adc/microchip,pac1711.yaml        | 169 +++++++++++++++++++++
+>  MAINTAINERS                                        |   6 +
+>  2 files changed, 175 insertions(+)
+> 
 
-The oops happens in sensor_hub_raw_event() with the hub's spinlock
-held, so the hub's removal then hangs.  It reproduces with two uhid
-devices that each declare a temperature sensor, one destroyed while
-the other still sends input reports.
-
-Keep the callbacks in struct temperature_state, as the other HID
-sensor drivers (accel, gyro, als, ...) do.
-
-Fixes: 59d0f2da3569 ("iio: hid: Add temperature sensor support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christopher Hoover <ch@murgatroid.com>
----
- drivers/iio/temperature/hid-sensor-temperature.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-index 5e3262e461f4..35b8643305b9 100644
---- a/drivers/iio/temperature/hid-sensor-temperature.c
-+++ b/drivers/iio/temperature/hid-sensor-temperature.c
-@@ -14,6 +14,7 @@
- 
- struct temperature_state {
- 	struct hid_sensor_common common_attributes;
-+	struct hid_sensor_hub_callbacks callbacks;
- 	struct hid_sensor_hub_attribute_info temperature_attr;
- 	struct {
- 		s32 temperature_data;
-@@ -181,11 +182,6 @@ static int temperature_parse_report(struct platform_device *pdev,
- 	return ret;
- }
- 
--static struct hid_sensor_hub_callbacks temperature_callbacks = {
--	.send_event = &temperature_proc_event,
--	.capture_sample = &temperature_capture_sample,
--};
--
- /* Function to initialize the processing for usage id */
- static int hid_temperature_probe(struct platform_device *pdev)
- {
-@@ -237,9 +233,11 @@ static int hid_temperature_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, indio_dev);
- 
--	temperature_callbacks.pdev = pdev;
-+	temp_st->callbacks.send_event = temperature_proc_event;
-+	temp_st->callbacks.capture_sample = temperature_capture_sample;
-+	temp_st->callbacks.pdev = pdev;
- 	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE,
--					   &temperature_callbacks);
-+					   &temp_st->callbacks);
- 	if (ret)
- 		goto error_remove_trigger;
- 
--- 
-2.43.0
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
