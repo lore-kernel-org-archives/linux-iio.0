@@ -1,209 +1,345 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8244B126A;
-	Wed,  7 Oct 2026 13:47:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E0F4AE12C
+	for <linux-iio@vger.kernel.org>; Wed,  7 Oct 2026 13:52:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791380881; cv=none; b=GK4zgdkwyfYsdJHChoiB87lhSXUleNOCiTASjKQ5fMMhPHfGkTLTsto/0RZExy/kh7vd42DkhTnV6YgP/4/dJFmxX+5sLoc914McH0q4uuPCDZOC3FhTkXKaz0PrhIXLiPXV6vNbrTvYS8wKPCC9DC0zeiVZurVdXAHiwMlwt0g=
+	t=1791381148; cv=none; b=OlMHiPXImSS9R1DQFbWWaj/eV1b16ggjwGZ4hV+w4qkRudx928S1/KXwcDmGLVEpcqEHkK3Ch+ZKC3r+4JMUzJn8riIWITymwnjW5r1b07KGOkASbWuxCUFMqUR6IBOOVI7HlLAetpuAwBf++s91wQvw2BYd9x9LJ0O2TDSWtp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791380881; c=relaxed/simple;
-	bh=zArLKlc/BPYviuyu16AzvuWjXjN7hfU2jtHhHzVZStM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BtL11Hi+ZeZuwBTMtOvHdOTRtPGwt6nA6jR4Mo8jw/o6M/kwbPoTWJTu1tyDG0wIxlYL2GNrU7XXdNMcYEJ3bpM+QEHBj+8Gm++GKA0RiNDrm4XIMPh3rm71LQNTgeqKb1PL28rb0uw1woK4TZTWtmSEmiR5QmKpfFWJaq/CjtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O6HZBQ85; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791381148; c=relaxed/simple;
+	bh=gGwjSvl+z9pW6bbPCaaNS0klvdQ7vWn6BaNEIaLW0xk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oCJiqEinuRElEryavtBmIRGu9Mq4KFHnzgG5ZTdnT1ZNw8UmTIeaPki2nzwg6Ev0es+VpOAZCQ4Pac3EGusO5jDHhs88dkq6s0mLXC9hRAUUh/jchqI0C/gEq8gqKdXJGdiztUcRbm+wLiQVlKFkCCD3wxGWQYqqDWg1HGTYk1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i3vmzwBt; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O6HZBQ85"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CA331F0089B;
-	Wed,  7 Oct 2026 13:47:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791380871;
-	bh=EndcDYuYZFPo86frFhMu07n5NOlKZELpWsp9/YTTj4w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=O6HZBQ85bkZge2ZxJ5Fkhm/XMPYaxwbFiJsHQGs/JekNTNOHejiB5sTbxsdF8AQHA
-	 aBFFYFjOeu6gsfYbmsRtgwRSlcE8lVeOn5N4xbvlIH9lVYmPwrzbAdUu3Mie+iG1Rn
-	 ZD1EnlEYqSam5RIy51DCFG5p+0Qzjxg2FYB5xg0xRFIiy191eWnIkIPWKD413cqBg/
-	 45SLo6ZDABFCsX2ZgW7WhMOWHBFXhsjMjd2ktEGbXWPRHIdjutEaPKs0hyYoTm2zB4
-	 D4vobXc8ps3/MEgCAprmWV3iu+KrcKHLWDy44c8VdRMcwyewiEYZbEBmuy/+pI4+v4
-	 z+9+d1PugI2Ng==
-Date: Wed, 7 Oct 2026 08:47:50 -0500
-From: Rob Herring <robh@kernel.org>
-To: Olivier MOYSAN <olivier.moysan@foss.st.com>
-Cc: Conor Dooley <conor@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i3vmzwBt"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-48b0946c2c2so1312546f8f.3
+        for <linux-iio@vger.kernel.org>; Wed, 07 Oct 2026 06:52:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791381128; x=1791985928; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=aMm89ZuMFRUcykpwHvtlCEKlZZULqgCCXLBJZNe/c4Y=;
+        b=i3vmzwBtV0mZhg+8DgXJ3bvE0p+8BQKU6i2n8rlN18EPzT6MC7YfLH6x0d2JLLVUx/
+         gyX100cj2xhKF6J/bJZyWxYRVXx4cjtSYispW1sGrBufI8IOlFE5ebU5sd4bw4uU7xma
+         yR5B4iSWNFlvvEIA9rq4t7YhY9Wn081QG49GRKfZVvXGRs8PM5lJ4fBSVLxBLmEB0vkx
+         F10VYxtE3K/jFUHkrAFuY11r0ZrvAI2QUdmuEPC5I93/QMXAbxfiPHRSuKXrl6iRlNga
+         aL77GK6pER7MKb7ZglvSB8peNTiLkABcYq6u83R5wIFakHJj3qhH0+v8Wuf/FeB+EMGO
+         6AWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791381128; x=1791985928;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=aMm89ZuMFRUcykpwHvtlCEKlZZULqgCCXLBJZNe/c4Y=;
+        b=swA02PyQPRI4Hwv3dSQTm5Es8P9ezOSHMhUpPdz3tte4fQkO8j0OD9loIEXOcBv3ve
+         yq7HNRVKY6pOp15BtxZ5I3yR8Jjwqi1K7jZ6517Lp9vTfkVR02hDFX0YrRSu9DKtOj4G
+         S9BXdMiLXWvD73YxUdguU+YHoJWDbss12ugolpX+dfjS7S1Wpcvh+Ub1LedM4TQdgmqD
+         yF5w+GmQiBcSiRgK86RRZ/mExqqo4CenHFBR1RyAm0FKlIxAuHnZBoJjxKf8dld7UpIY
+         KL9ke4x1PMwvlOBHkw0n+2zlYbKH56doKoRSXi6tPY1DDre8ego4BbvIPigq7Q/6tzUT
+         hjqA==
+X-Forwarded-Encrypted: i=1; AKwUvBzNqvbfoDqkYIqs+19sZcOIhok9+YhiWC3mjLCHmKvktW7hQuK7Z4PWiYyGM1mTgOiFTxtXBsXZmWI=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL6RFgrWeE8HquHkOCZFZaLI6aOYRzEnTyUrSFJbqPy+MonVPIU
+	MgMebF8CgDDfFII/wJCbB5y69Kr19IjeefSP0J5UM7CJ8NHxVL2D4e1r
+X-Gm-Gg: AYBFou3RkZC3KqF/QoF5DAaOzjbT6F7laWGn9UnQZkDtnFk/vgUVcS3x2bZj0oHnL6/
+	g3xEGxu3XAjCo3ENDY2eKRn/amAFmzTWqKkW3AGkiZN+YFPfWwWV4wB+VaHJq/UbuRLttmPcBKL
+	HKV/QFaT4SsBNy8+JCKMNrbVr7arV7OlC3lWzuvW84hDxRHrJvySDvoKLIyHFNKeJMxfmjg7hBD
+	110mmHco8a7SzMIrDhygTxiCIvBPuQ77f1dAypFbhmiUpvP3KkyCj4MLpUMOWCarrx5+87c4KVB
+	ZNKAh3xudQdP6CrvkydsxZLPHci+I+cQls07zjjJR3WWQGYV168SxMOPjUG/VdsY4PnhVKEwnDq
+	/I5ORwytVn/vUfDexUQr7PjoJPZh8VC7o1/nCZzf3PnXVuni5CQ1FoHn5Afeg30sueKuGo/3Cbs
+	geUt86XxhGfvv5aaMzDRf+cb07IhFxMGWKXoeo4emHwoxJc/0jHToiWAavJIT2NMKK2eRX+OMoN
+	BumwikPXWgLFdKVtyyegavvBoya3Q==
+X-Received: by 2002:a05:6000:128d:b0:48c:7161:43e3 with SMTP id ffacd0b85a97d-48c72889494mr3126374f8f.54.1791381127670;
+        Wed, 07 Oct 2026 06:52:07 -0700 (PDT)
+Received: from fedora ([154.183.153.81])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48c75b4e399sm3651658f8f.56.2026.10.07.06.52.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2026 06:52:07 -0700 (PDT)
+From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: add bindings for stm32 mdf
- filter
-Message-ID: <20261007134750.GC2792240-robh@kernel.org>
-References: <20261001145702.2628429-1-olivier.moysan@foss.st.com>
- <20261001145702.2628429-2-olivier.moysan@foss.st.com>
- <20261001-tribesman-gauze-862e1ef0cdd8@spud>
- <bb8af256-5a77-4215-9eeb-fbcd0cae1829@foss.st.com>
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Subject: [PATCH v2] staging: iio: adt7316: use kstrtobool() for sysfs boolean parsing
+Date: Wed,  7 Oct 2026 16:51:51 +0300
+Message-ID: <20261007135151.11780-1-abdelnasserhussein11@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bb8af256-5a77-4215-9eeb-fbcd0cae1829@foss.st.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 07, 2026 at 11:01:28AM +0200, Olivier MOYSAN wrote:
-> Hi Conor,
-> 
-> Thanks for the review
-> 
-> On 10/1/26 20:32, Conor Dooley wrote:
-> > On Thu, Oct 01, 2026 at 04:56:45PM +0200, Olivier Moysan wrote:
-> > > Add bindings that describes STM32 MDF settings to support
-> > > digital filtering for Pulse Density Modulation (PDM) microphones
-> > > and analog sigma delta modulators.
-> > > 
-> > > Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-> > > ---
-> > >   .../bindings/iio/adc/st,stm32-mdf-adc.yaml    | 383 ++++++++++++++++++
-> > >   1 file changed, 383 insertions(+)
-> > >   create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-mdf-adc.yaml
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-mdf-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-mdf-adc.yaml
-> > > new file mode 100644
-> > > index 000000000000..f2fbc3e150e8
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-mdf-adc.yaml
-> > > @@ -0,0 +1,383 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/iio/adc/st,stm32-mdf-adc.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: STMicroelectronics STM32 Multi-function Digital Filter (MDF) ADC
-> > > +
-> > > +maintainers:
-> > > +  - Olivier Moysan <olivier.moysan@foss.st.com>
-> > > +
-> > > +description: |
-> > > +  STM32 MDF ADC is a sigma delta analog-to-digital converter dedicated to
-> > > +  interface external sigma delta modulators to STM32 micro controllers.
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    enum:
-> > > +      - st,stm32mp25-mdf
-> > > +      - st,stm32mp23-mdf
-> > > +
-> > > +  reg:
-> > > +    minItems: 1
-> > > +    maxItems: 2
-> > 
-> > This needs an items list here. The size of the regions seems like crap
-> > to begin with...
-> > 
-> > > +
-> > > +  clocks:
-> > > +    maxItems: 1
-> > > +
-> > > +  clock-names:
-> > > +    description: Internal clock used for MDF digital processing.
-> > > +    items:
-> > > +      - const: ker_ck
-> > 
-> > This is pointless when you only have one.
-> > 
-> 
-> I agree that it could be dropped. However, it is useful for using
-> devm_regmap_init_mmio_clk.
+Replace manual and unsafe character checks (e.g., buf[0] == '1') with
+the standard kstrtobool() API in sysfs store functions. This ensures
+proper handling of standard boolean inputs, fixes potential safety
+issues, and adheres to the Linux kernel coding style.
 
-I don't know what that function is/does, but that's not justification 
-for bindings. Maybe you need a helper that handles a single clock. Or 
-that function could take a NULL string for single clock? 
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+---
+Changes in v2:
+- Included <linux/kstrtox.h> explicitly as requested.
+- Renamed the boolean variable from 'req' to 'val'. (My initial thought was 'req' as an abbreviation for 'user request', but 'val' is much clearer and avoids any confusion with block/network requests).
+- Added Reviewed-by tag from Joshua.
 
-> 
-> > > +
-> > > +  "#clock-cells":
-> > > +    enum: [0, 1]
-> > 
-> > Why is this not fixed? Also why are parts of your own device consuming
-> > the clocks?
-> > 
-> > > +
-> > > +  clock-output-names:
-> > > +    description: |
-> > > +      CCK0 and CCK1 are optional output clocks, which share the same clock frequency,
-> > > +      but can be gated independently to save power.
-> > > +    minItems: 1
-> > > +    maxItems: 2
-> > > +    oneOf:
-> > > +      - items:
-> > > +          - const: cck0
-> > > +      - items:
-> > > +          - const: cck1
-> > > +      - items:
-> > > +          - const: cck0
-> > > +          - const: cck1
-> > > +
-> > > +  clock-frequency:
-> > > +    description: |
-> > > +      Common clock frequency (Hz) for CCK0 and CCK1 output clocks.
-> > > +      The frequency must be a multiple of the "ker_ck" clock frequency.
-> > > +    maximum: 25000000
-> > 
-> > Should not be needed, the consumers request what they need.
-> > 
-> 
-> The CCKx clock frequency depends on the maximum rate supported by the sigma
-> delta converters (for instance a digital mic) and the expected decimation
-> ratio on the bitstream. Typically this determines the frequency on the SPI
-> bus.
-> This rate is defined statically and shared by the CCKx clocks. So IMHO, as
-> this rate is unique, it can look strange to let the consumer define it.
-> Moreover, it seems to me that clock-frequency is already used to configure
-> the frequency of a provider in some other bindings.
-> For instance: Documentation/devicetree/bindings/clock/silabs,si570.yaml
-> So, it's not clear for me, what is the restriction on clock-frequency
-> property.
-> > > +
-> > > +  ranges: true
-> > > +
-> > > +  clock-ranges: true
-> > > +
-> > > +  resets:
-> > > +    maxItems: 1
-> > > +
-> > > +  reset-names:
-> > > +    items:
-> > > +      - const: mdf
-> > > +
-> > > +  access-controllers:
-> > > +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> > > +    description: |
-> > > +      Phandle to the rifsc device to check access right.
-> > > +
-> > > +  power-domains:
-> > > +    maxItems: 1
-> > > +
-> > > +  st,interleave:
-> > > +    description: |
-> > > +      List of phandles of interleaved filters. The indexes of interleaved filters must be
-> > > +      consecutives starting from 0 (i.e in range [0..N]). The samples from interleaved filters
-> > > +      are muxed in a single channel and retrieved through the device associated to the filter 0.
-> > > +      The filters 1..N have to be enabled, but inherit their configuration from filter 0.
-> > > +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> > 
-> > No idea what these even are, but this is probably not the right way to
-> > represent the relationship between devices. They're apparently ADCs, but
-> > this is also an ADC so I'm not sure what's going on here at all.
+ drivers/staging/iio/addac/adt7316.c | 95 +++++++++++++++++++++++------
+ 1 file changed, 78 insertions(+), 17 deletions(-)
 
-I don't under it either, but regardless phandle-array needs constraints 
-on the items. It's really a matrix with array of phandle+args arrays.
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 20f6052cc7fb..719261cfce9e 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -17,6 +17,7 @@
+ #include <linux/i2c.h>
+ #include <linux/rtc.h>
+ #include <linux/module.h>
++#include <linux/kstrtox.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/events.h>
+@@ -246,12 +247,12 @@ static ssize_t adt7316_store_enabled(struct device *dev,
+ {
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+-	int enable;
++	bool enable;
++	int ret;
+ 
+-	if (buf[0] == '1')
+-		enable = 1;
+-	else
+-		enable = 0;
++	ret = kstrtobool(buf, &enable);
++	if (ret)
++		return ret;
+ 
+ 	if (_adt7316_store_enabled(chip, enable) < 0)
+ 		return -EIO;
+@@ -285,13 +286,18 @@ static ssize_t adt7316_store_select_ex_temp(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config1;
++	bool val;
+ 	int ret;
+ 
+ 	if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
+ 		return -EPERM;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config1 = chip->config1 & (~ADT7516_SEL_EX_TEMP);
+-	if (buf[0] == '1')
++	if (val)
+ 		config1 |= ADT7516_SEL_EX_TEMP;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+@@ -482,10 +488,15 @@ static ssize_t adt7316_store_disable_averaging(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config2;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config2 = chip->config2 & (~ADT7316_DISABLE_AVERAGING);
+-	if (buf[0] == '1')
++	if (val)
+ 		config2 |= ADT7316_DISABLE_AVERAGING;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
+@@ -521,10 +532,15 @@ static ssize_t adt7316_store_enable_smbus_timeout(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config2;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config2 = chip->config2 & (~ADT7316_EN_SMBUS_TIMEOUT);
+-	if (buf[0] == '1')
++	if (val)
+ 		config2 |= ADT7316_EN_SMBUS_TIMEOUT;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
+@@ -559,10 +575,15 @@ static ssize_t adt7316_store_powerdown(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config1;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config1 = chip->config1 & (~ADT7316_PD);
+-	if (buf[0] == '1')
++	if (val)
+ 		config1 |= ADT7316_PD;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+@@ -597,10 +618,15 @@ static ssize_t adt7316_store_fast_ad_clock(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config3;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config3 = chip->config3 & (~ADT7316_ADCLK_22_5);
+-	if (buf[0] == '1')
++	if (val)
+ 		config3 |= ADT7316_ADCLK_22_5;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+@@ -640,13 +666,18 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config3;
++	bool val;
+ 	int ret;
+ 
+ 	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
+ 		return -EPERM;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
+-	if (buf[0] == '1')
++	if (val)
+ 		config3 |= ADT7316_DA_HIGH_RESOLUTION;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+@@ -685,12 +716,17 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config3;
++	bool val;
+ 	int ret;
+ 
+ 	if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
+ 		return -EPERM;
+ 
+-	if (buf[0] != '1')
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	if (!val)
+ 		config3 = chip->config3 & (~ADT7516_AIN_IN_VREF);
+ 	else
+ 		config3 = chip->config3 | ADT7516_AIN_IN_VREF;
+@@ -728,10 +764,15 @@ static ssize_t adt7316_store_enable_prop_DACA(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config3;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config3 = chip->config3 & (~ADT7316_EN_IN_TEMP_PROP_DACA);
+-	if (buf[0] == '1')
++	if (val)
+ 		config3 |= ADT7316_EN_IN_TEMP_PROP_DACA;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+@@ -767,10 +808,15 @@ static ssize_t adt7316_store_enable_prop_DACB(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config3;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config3 = chip->config3 & (~ADT7316_EN_EX_TEMP_PROP_DACB);
+-	if (buf[0] == '1')
++	if (val)
+ 		config3 |= ADT7316_EN_EX_TEMP_PROP_DACB;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+@@ -967,10 +1013,15 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 dac_config;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_AB);
+-	if (buf[0] == '1')
++	if (val)
+ 		dac_config |= ADT7316_VREF_BYPASS_DAC_AB;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
+@@ -1006,10 +1057,15 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 dac_config;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_CD);
+-	if (buf[0] == '1')
++	if (val)
+ 		dac_config |= ADT7316_VREF_BYPASS_DAC_CD;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
+@@ -1969,10 +2025,15 @@ static ssize_t adt7316_set_int_enabled(struct device *dev,
+ 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+ 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+ 	u8 config1;
++	bool val;
+ 	int ret;
+ 
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
+ 	config1 = chip->config1 & (~ADT7316_INT_EN);
+-	if (buf[0] == '1')
++	if (val)
+ 		config1 |= ADT7316_INT_EN;
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+-- 
+2.54.0
 
-Rob
