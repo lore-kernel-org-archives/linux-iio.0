@@ -1,626 +1,187 @@
-Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26B23CC32E
-	for <linux-iio@vger.kernel.org>; Tue,  6 Oct 2026 23:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC476BA3D;
+	Wed,  7 Oct 2026 00:01:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.72.192.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791328812; cv=none; b=f9rIYbh9hmFxWzvP/Pc5xdcDM6jbnQj9I0zp7SRMt1frfTLXsi1MgTb8cTfD074IyfA6q6h0G0hnIVboAAX/eL+YYakBI1YPy432QmmcJHuduLMp0bmHLXF/ijxth8WAuPBbidWH49slROE1eaSbQofrPowr1RTltnF2tapAEzw=
+	t=1791331308; cv=none; b=RK9CbqOMTV3A5fcaUh0YtQ2cydWpVJlc4ALi58Llh3t3TiuFv+ziGjKkiO5W/bbFNn+kPdb995PQnUA0Gz03G4dHg3vc4Q8Yi5Hvn+1fZYDb7rV7dEbn/XiPCAVwltRB/Py15nTsuVWrJulUOy7xXO3OhHLJHv/cBUP4S2BQaVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791328812; c=relaxed/simple;
-	bh=wK2aCxJ9U+ub/DEV7X7hyoaxaqGtj9ujkt+2WBRc93E=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dd8ednD42bk8uTD5YOKOf2duaiepFPw0xrpxma4Ypw3Tmr0zg0RyvRTfpvebKmYPckb4KUtIKLKyqFOYocoLZf3qcr2v9wJk0PIG9D5EbPeRUbpdLuXTEec2XYPpActCNTUBE60epfeyGoljkPXU9/rOA4pI5hkEw61wxHo03po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=V8Hk/RP+; arc=none smtp.client-ip=74.125.82.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1791331308; c=relaxed/simple;
+	bh=AkGS+MaheHpMXKrbQvabwmv4zQHKgmRepF9YCokERMw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Zk4ORoEIF/LLnQtFrYNLZCI46tZIIUR1tucK1bpPzdfmyPt1jQS/3TOSZWd8UAelSqvQMDfsOtVe1VBmjJu+yaV+4nSiHTHuEknijD39VECO7YY5dgIr5vK/MPtb5EO9TVUSxQoMCDWcV5hgmHJgkTRWujcySON3hHJyQ6t4ftY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=maxx-cz@web.de header.b=wRZkB/jm; arc=none smtp.client-ip=217.72.192.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="V8Hk/RP+"
-Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-3282db206d3so9901413eec.0
-        for <linux-iio@vger.kernel.org>; Tue, 06 Oct 2026 16:19:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1791328792; x=1791933592; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=SeuThS77cf851FYkL3wNU27hfqCIdrf/bvhf8WRGatA=;
-        b=V8Hk/RP+kuvRSmUDjqqQ/YnCUKREu5ecv+q0RYafOkmX5TtOSMUGD7nJkTH5csG7a0
-         SE/K+oZQYMvrADbcqSMW+rC3333+fD91KMMYYsYPjobYsUBN0SPJZW3bpBm87OTNtVk6
-         QkJR/l1yRgQBUy1iU4SWIR2p93DdMn6QJSXzI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791328792; x=1791933592;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=SeuThS77cf851FYkL3wNU27hfqCIdrf/bvhf8WRGatA=;
-        b=bVmsu0VV0LIuupNWGR2/JZXjOLPlMUMYkoH3sDIiUsKW3R1wG2lQFxyeqc7ix46Ekq
-         GMk4CxhmwzpjhLWpK6JTBuqsxZDzPDCIXklXxUn3xiFuwEA+eTkwr0gFvLYk2FSw3kfw
-         9QIrlkdtVSFh4f3b1lW8R41uWPxAfugDjO9wK0YSME2gBHfb3rmPupCviyJ4fVSuEPsv
-         2WC2d8iWLX/PUS4YgANTgOABRuS0lo72lsefszhTsa5BEKnpjQtRJU7kK+ADncHGVgkB
-         P1k8od5SZ1aseWa0AX3K/ADYJN/hFHc4NYyilm8fun3m7K3j8KQBetkjFkHYvsWc8IN1
-         ZXhA==
-X-Forwarded-Encrypted: i=1; AKwUvBweFJnx6CWivkezOn9gqM0sYiYSI7+C+z8T9CIXj7bxAh7J8sveBQN94i73b7By9BjVdzFO7zLfyYI=@vger.kernel.org
-X-Gm-Message-State: AFuF++m9tAVHf0vc/FhZjAbANmP87gpwfgA9IJs1gbkpYmMoZks2Wykw
-	Qyr95lVcHuAnqaqCwwO1geqZtQpy8DmTDzlRmM7EibLc3YLSZNAUrA5ahuvHoMFB3Q==
-X-Gm-Gg: AYBFou1FHaU+noUeU909i1ho6eMyz3HQjYsEV3vt7Ly9An4Gfm3b1IG1YNvATrWGRmQ
-	XXLyIVk7te3oMom1xc8gANZgP6FRJZUiu9TZzXMoK9aFpCi7DYV3lrpkYgtjIXbpIzDbpp39av0
-	QBWrVhPE0oDFjvu1tVFAI9sZC0PcwcErKA5AnF/ATm9bq/fMkP6BQA9ZTSUtj+AL0bPQkaWxVh2
-	BTnnyFOA9xxg+PG/62pc5d+CUNJKTpRyn2oPvsxZ3xpfsu3CCILZ98ZFboLEpy3r6G6D/Td0vym
-	C88MtbG2eZhZs17Kxx3tlXO7594YHqcrTtU+aiSKfJg4T5p0Dg8fO6kr+I/9OXw+Pg6w7HNtPud
-	B2Nk077GbFlUEaWX+1Gj/hpXJO/k9Z7RdMLW+Y8swPOh6EdZVSbefTE8c+9qVZaysDxUvFN4ryP
-	rwp3ntnMKnxHI2UKEoyfTN7yLZQ+5Whqg8cWaa1CnoDjbIOoyEzUy/xHjiUSXrmZbJgVbjNxrHL
-	WcUC9/Vhlc6vq25h7MMKfpkX9PoJP6N+EP+Mw==
-X-Received: by 2002:a05:7300:3a97:b0:343:f1fc:9006 with SMTP id 5a478bee46e88-3515de7effbmr291244eec.30.1791328792383;
-        Tue, 06 Oct 2026 16:19:52 -0700 (PDT)
-Received: from localhost ([2a00:79e0:2e7c:8:63eb:e7f9:1d47:7d47])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-3515b01ea9csm1659478eec.27.2026.10.06.16.19.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Oct 2026 16:19:51 -0700 (PDT)
-From: Brian Norris <briannorris@chromium.org>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: linux-pm@vger.kernel.org,
-	Ulf Hansson <ulfh@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Brian Norris <briannorris@chromium.org>,
+	dkim=pass (2048-bit key) header.d=web.de header.i=maxx-cz@web.de header.b="wRZkB/jm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1791331298; x=1791936098; i=maxx-cz@web.de;
+	bh=ZWg9/jfR+xrgJptM0nvWKuFbQmw0DbnJHWBCAG+qDlw=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:
+	 MIME-Version:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=wRZkB/jmG93rRPjnz4VRA16InrO1yBk1lbkEbOFWu5elti6aCCXXEQU029Jq46dF
+	 eY3ASnofltCkFge4eceaNmxFHgMhNBQeJqzjocM1rc+kKcJh38bU7LDFuGB5tgDdm
+	 BnBGd2+1e2HpyzorDcF98PSe7zt/+t2pAAw+AE9lcCuofZCSDwwtsNsciTvp8bq25
+	 dOuUSv9l/FCuhONVHsLZT3HQuzzJ8Tf3qdY2USrH+P+r/NducdE/PlHUSvSOANL8F
+	 iuaMD7bLGWEfgQd9e4uBigfTrF5SXlq5OlO0jIkPYy7ywEPgS9fdqwwBrVnSU/rwo
+	 NEG7Mw8Vnd0IekOR/Q==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from client.hidden.invalid by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MXocY-1xB3gk1udo-00TJ97; Wed, 07
+ Oct 2026 02:01:38 +0200
+From: Maximilian Czirr <maxx-cz@web.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Marek Vasut <marek.vasut+renesas@mailbox.org>,
-	Rui Miguel Silva <rmfrfs@gmail.com>,
 	linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH 03/13] iio: Discard pm_runtime_put_autosuspend() return values
-Date: Tue,  6 Oct 2026 16:13:31 -0700
-Message-ID: <20261006161337.3.If2263e6ae9eaa4493881b72922dcde031ce9d81d@changeid>
-X-Mailer: git-send-email 2.56.0.360.g66cac248cb-goog
-In-Reply-To: <20261006231900.3230373-1-briannorris@chromium.org>
-References: <20261006231900.3230373-1-briannorris@chromium.org>
+	Maximilian Czirr <maxx-cz@web.de>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: hid-sensor: Fix scale for magnetic north heading
+Date: Wed,  7 Oct 2026 02:01:07 +0200
+Message-ID: <20261007000107.16533-1-maxx-cz@web.de>
+X-Mailer: git-send-email 2.56.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:godCFues7cS5y5valh4YuqOhDHD99Kb+X+LVrTnTXlcMInzlw1m
+ l0HI+gcDMrxum19HmgbkSLSGdhhOSrginqnFNuASweXFNtCOgdpLJkNbar0UVvyggZ/kVfH
+ eaBUPhV84ecRXxcfyhNWknd5on0ubdLujzAbWGwoGOFkRS8ISmvcRqdiS4VWBhEz+TYx9Wh
+ W3GwaswY8AavIfaolW1CQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:AE0/sroMNLU=;Y5P35OrEEIFFS6fsVlmzO7+Gzm1
+ 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
 
-Multiple IIO drivers inspect or propagate the return value of
-pm_runtime_put_autosuspend(), which is not particularly useful.
+hid_sensor_format_scale() applies the HID unit exponent only when
+the usage and unit match an entry in unit_conversion[].
 
-Returning an error code from pm_runtime_put_autosuspend() merely means
-that it has not queued up a timer or work item to check whether or not
-the device can be suspended and there are many perfectly valid
-situations in which that can happen, like after writing "on" to the
-device's runtime PM "control" attribute in sysfs for one example.
+Rotation-from-north support uses
+HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, but that usage has no entry in
+the conversion table. As a result, the unit exponent is ignored and the
+heading can be exposed with a scale of 1 instead of the scale specified
+by the HID descriptor.
 
-For this reason, modify these drivers to simply discard the
-pm_runtime_put_autosuspend() return value, and change the return types
-of fxls8962af_power_off() and fxas21002c_pm_put() to void.
+Add a unitless conversion entry so the HID unit exponent is applied to
+the magnetic north heading. A sensor reporting an exponent of -5 then
+correctly exposes a scale of 0.00001 instead of 1.
 
-This will facilitate a planned change of the
-pm_runtime_put_autosuspend() return type to void in the future, similar
-to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
-type to void").
+Fixes: abea9c62c32f ("iio: hid-sensor-magn-3d: Add support for rotation fr=
+om north")
+Cc: stable@vger.kernel.org
+Signed-off-by: Maximilian Czirr <maxx-cz@web.de>
+=2D--
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
-This patch is independent of the rest of the series, except for the end
-(changing the return type). I expect it can be applied by individual
-maintainers, and we pick up the end once the dust is settled.
-
-I couldn't decide if I should split this up by individual driver, or
-just 1 for the whole drivers/iio/ subsystem. Many of these drivers have
-borrowed the same patterns, so I chose to just send 1. Let me know if I
-should split it up.
-
- drivers/iio/accel/bmc150-accel-core.c         | 14 +++++-----
- drivers/iio/accel/fxls8962af-core.c           | 11 +++-----
- drivers/iio/accel/kxcjk-1013.c                | 15 ++++++-----
- drivers/iio/accel/mma8452.c                   | 15 +++++------
- drivers/iio/accel/mma9551_core.c              | 15 +++++------
- drivers/iio/adc/rcar-gyroadc.c                |  4 +--
- drivers/iio/adc/ti-ads1015.c                  |  8 +++---
- drivers/iio/chemical/atlas-sensor.c           |  4 +--
- .../common/hid-sensors/hid-sensor-trigger.c   | 14 ++++------
- drivers/iio/gyro/bmg160_core.c                | 17 +++++-------
- drivers/iio/gyro/fxas21002c_core.c            | 12 +++------
- drivers/iio/imu/kmx61.c                       | 17 ++++++------
- drivers/iio/light/apds9960.c                  |  2 +-
- drivers/iio/light/isl29028.c                  | 15 +++--------
- drivers/iio/light/pa12203001.c                |  3 ++-
- drivers/iio/light/rpr0521.c                   | 15 +++++------
- drivers/iio/light/tsl2583.c                   | 27 +++----------------
- drivers/iio/light/us5182d.c                   |  3 ++-
- 18 files changed, 80 insertions(+), 131 deletions(-)
-
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 46bb36d9366e..2f7fe28e3e0b 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -332,14 +332,14 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
- 	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
- 
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_resume_and_get(dev);
--	else
--		ret = pm_runtime_put_autosuspend(dev);
--	if (ret < 0) {
--		dev_err(dev,
--			"Failed: %s for %d\n", __func__, on);
--		return ret;
-+		if (ret < 0) {
-+			dev_err(dev, "%s: failed to resume: %d\n", __func__, ret);
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(dev);
- 	}
- 
- 	return 0;
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index 18d7b09bddd2..3a2c4ce0557c 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -216,16 +216,11 @@ static int fxls8962af_power_on(struct fxls8962af_data *data)
- 	return ret;
- }
- 
--static int fxls8962af_power_off(struct fxls8962af_data *data)
-+static void fxls8962af_power_off(struct fxls8962af_data *data)
- {
- 	struct device *dev = regmap_get_device(data->regmap);
--	int ret;
--
--	ret = pm_runtime_put_autosuspend(dev);
--	if (ret)
--		dev_err(dev, "failed to power off\n");
- 
--	return ret;
-+	pm_runtime_put_autosuspend(dev);
- }
- 
- static int fxls8962af_standby(struct fxls8962af_data *data)
-@@ -692,7 +687,7 @@ fxls8962af_write_event_config(struct iio_dev *indio_dev,
- 			return -EBUSY;
- 
- 		/* Not in buffered mode so disable power */
--		ret = fxls8962af_power_off(data);
-+		fxls8962af_power_off(data);
- 
- 		iio_device_release_direct(indio_dev);
- 	}
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 166fb786425f..f068753469a8 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -633,14 +633,15 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
- #ifdef CONFIG_PM
- 	int ret;
- 
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_resume_and_get(&data->client->dev);
--	else
--		ret = pm_runtime_put_autosuspend(&data->client->dev);
--	if (ret < 0) {
--		dev_err(&data->client->dev,
--			"Failed: %s for %d\n", __func__, on);
--		return ret;
-+		if (ret < 0) {
-+			dev_err(&data->client->dev,
-+				"%s: failed to resume: %d\n", __func__, ret);
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(&data->client->dev);
- 	}
- #endif
- 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 7d683686dd9d..711689db8694 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -224,15 +224,14 @@ static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
- #ifdef CONFIG_PM
- 	int ret;
- 
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_resume_and_get(&client->dev);
--	else
--		ret = pm_runtime_put_autosuspend(&client->dev);
--	if (ret < 0) {
--		dev_err(&client->dev,
--			"failed to change power state to %d\n", on);
--
--		return ret;
-+		if (ret < 0) {
-+			dev_err(&client->dev, "failed to resume: %d\n", ret);
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(&client->dev);
- 	}
- #endif
- 
-diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-index 2ccb1fb19b96..d8aa0a062779 100644
---- a/drivers/iio/accel/mma9551_core.c
-+++ b/drivers/iio/accel/mma9551_core.c
-@@ -669,15 +669,14 @@ int mma9551_set_power_state(struct i2c_client *client, bool on)
- #ifdef CONFIG_PM
- 	int ret;
- 
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_resume_and_get(&client->dev);
--	else
--		ret = pm_runtime_put_autosuspend(&client->dev);
--	if (ret < 0) {
--		dev_err(&client->dev,
--			"failed to change power state to %d\n", on);
--
--		return ret;
-+		if (ret < 0) {
-+			dev_err(&client->dev, "failed to resume: %d\n", ret);
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(&client->dev);
- 	}
- #endif
- 
-diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
-index d38cf3caeae0..0d3b061d6ec2 100644
---- a/drivers/iio/adc/rcar-gyroadc.c
-+++ b/drivers/iio/adc/rcar-gyroadc.c
-@@ -199,10 +199,8 @@ static int rcar_gyroadc_read_raw(struct iio_dev *indio_dev,
- 		*val = readl(priv->regs + datareg);
- 		*val &= BIT(priv->sample_width) - 1;
- 
--		ret = pm_runtime_put_autosuspend(priv->dev);
-+		pm_runtime_put_autosuspend(priv->dev);
- 		iio_device_release_direct(indio_dev);
--		if (ret < 0)
--			return ret;
- 
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 0fbfa4e499aa..817ec1c73df4 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -370,15 +370,13 @@ static const struct iio_chan_spec tla2024_channels[] = {
- #ifdef CONFIG_PM
- static int ads1015_set_power_state(struct ads1015_data *data, bool on)
- {
--	int ret;
- 	struct device *dev = regmap_get_device(data->regmap);
- 
- 	if (on)
--		ret = pm_runtime_resume_and_get(dev);
--	else
--		ret = pm_runtime_put_autosuspend(dev);
-+		return pm_runtime_resume_and_get(dev);
- 
--	return ret < 0 ? ret : 0;
-+	pm_runtime_put_autosuspend(dev);
-+	return 0;
- }
- 
- #else /* !CONFIG_PM */
-diff --git a/drivers/iio/chemical/atlas-sensor.c b/drivers/iio/chemical/atlas-sensor.c
-index 1d4a9919df1a..48598475512f 100644
---- a/drivers/iio/chemical/atlas-sensor.c
-+++ b/drivers/iio/chemical/atlas-sensor.c
-@@ -426,9 +426,7 @@ static int atlas_buffer_predisable(struct iio_dev *indio_dev)
- 	if (ret)
- 		return ret;
- 
--	ret = pm_runtime_put_autosuspend(&data->client->dev);
--	if (ret)
--		return ret;
-+	pm_runtime_put_autosuspend(&data->client->dev);
- 
- 	return 0;
- }
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 60808e2430ca..d76a6d9f04f6 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -154,21 +154,17 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
- {
- 
- #ifdef CONFIG_PM
--	int ret;
--
- 	if (atomic_add_unless(&st->runtime_pm_enable, 1, 1))
- 		pm_runtime_enable(&st->pdev->dev);
- 
- 	if (state) {
- 		atomic_inc(&st->user_requested_state);
--		ret = pm_runtime_resume_and_get(&st->pdev->dev);
--	} else {
--		atomic_dec(&st->user_requested_state);
--		pm_runtime_use_autosuspend(&st->pdev->dev);
--		ret = pm_runtime_put_autosuspend(&st->pdev->dev);
-+		return pm_runtime_resume_and_get(&st->pdev->dev);
- 	}
--	if (ret < 0)
--		return ret;
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/driv=
+ers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 9e7c26e37880..26f8554d18a5 100644
+=2D-- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -38,6 +38,8 @@ static const struct {
+ 	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+ 	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+=20
++	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, 0, 1, 0},
 +
-+	atomic_dec(&st->user_requested_state);
-+	pm_runtime_use_autosuspend(&st->pdev->dev);
-+	pm_runtime_put_autosuspend(&st->pdev->dev);
- 
- 	return 0;
- #else
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index d611341a0e2a..e8e511daa7c4 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -319,18 +319,15 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
- 	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
- 
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_get_sync(dev);
--	else
--		ret = pm_runtime_put_autosuspend(dev);
--
--	if (ret < 0) {
--		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
--
--		if (on)
-+		if (ret < 0) {
-+			dev_err(dev, "%s: failed to resume: %d\n", __func__, ret);
- 			pm_runtime_put_noidle(dev);
--
--		return ret;
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(dev);
- 	}
- #endif
- 
-diff --git a/drivers/iio/gyro/fxas21002c_core.c b/drivers/iio/gyro/fxas21002c_core.c
-index a88670207cec..408f88f12fe7 100644
---- a/drivers/iio/gyro/fxas21002c_core.c
-+++ b/drivers/iio/gyro/fxas21002c_core.c
-@@ -369,11 +369,11 @@ static int  fxas21002c_pm_get(struct fxas21002c_data *data)
- 	return pm_runtime_resume_and_get(regmap_get_device(data->regmap));
- }
- 
--static int  fxas21002c_pm_put(struct fxas21002c_data *data)
-+static void fxas21002c_pm_put(struct fxas21002c_data *data)
- {
- 	struct device *dev = regmap_get_device(data->regmap);
- 
--	return pm_runtime_put_autosuspend(dev);
-+	pm_runtime_put_autosuspend(dev);
- }
- 
- static int fxas21002c_temp_get(struct fxas21002c_data *data, int *val)
-@@ -396,9 +396,7 @@ static int fxas21002c_temp_get(struct fxas21002c_data *data, int *val)
- 
- 	*val = sign_extend32(temp, 7);
- 
--	ret = fxas21002c_pm_put(data);
--	if (ret < 0)
--		goto data_unlock;
-+	fxas21002c_pm_put(data);
- 
- 	ret = IIO_VAL_INT;
- 
-@@ -430,9 +428,7 @@ static int fxas21002c_axis_get(struct fxas21002c_data *data,
- 
- 	*val = sign_extend32(be16_to_cpu(axis_be), 15);
- 
--	ret = fxas21002c_pm_put(data);
--	if (ret < 0)
--		goto data_unlock;
-+	fxas21002c_pm_put(data);
- 
- 	ret = IIO_VAL_INT;
- 
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index c288437d53ea..a8d37aa549ae 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -747,16 +747,15 @@ static int kmx61_set_power_state(struct kmx61_data *data, bool on, u8 device)
- 		data->mag_ps = on;
- 	}
- 
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_resume_and_get(&data->client->dev);
--	else
--		ret = pm_runtime_put_autosuspend(&data->client->dev);
--	if (ret < 0) {
--		dev_err(&data->client->dev,
--			"Failed: kmx61_set_power_state for %d, ret %d\n",
--			on, ret);
--
--		return ret;
-+		if (ret < 0) {
-+			dev_err(&data->client->dev,
-+				"%s: failed to resume: %d\n", __func__, ret);
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(&data->client->dev);
- 	}
- #endif
- 	return 0;
-diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-index afe520de60e2..611e59d6b027 100644
---- a/drivers/iio/light/apds9960.c
-+++ b/drivers/iio/light/apds9960.c
-@@ -495,7 +495,7 @@ static int apds9960_set_power_state(struct apds9960_data *data, bool on)
- 			usleep_range(data->als_adc_int_us,
- 				     APDS9960_MAX_INT_TIME_IN_US);
- 	} else {
--		ret = pm_runtime_put_autosuspend(dev);
-+		pm_runtime_put_autosuspend(dev);
- 	}
- 
- 	mutex_unlock(&data->lock);
-diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
-index 33deb1726689..190ce67d2efe 100644
---- a/drivers/iio/light/isl29028.c
-+++ b/drivers/iio/light/isl29028.c
-@@ -395,9 +395,7 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = pm_runtime_put_autosuspend(dev);
--	if (ret < 0)
--		return ret;
-+	pm_runtime_put_autosuspend(dev);
- 
- 	return 0;
- }
-@@ -408,7 +406,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
- {
- 	struct isl29028_chip *chip = iio_priv(indio_dev);
- 	struct device *dev = regmap_get_device(chip->regmap);
--	int ret, pm_ret;
-+	int ret;
- 
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0)
-@@ -464,14 +462,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
- 	if (ret < 0)
- 		return ret;
- 
--	/**
--	 * Preserve the ret variable if the call to
--	 * pm_runtime_put_autosuspend() is successful so the reading
--	 * (if applicable) is returned to user space.
--	 */
--	pm_ret = pm_runtime_put_autosuspend(dev);
--	if (pm_ret < 0)
--		return pm_ret;
-+	pm_runtime_put_autosuspend(dev);
- 
- 	return ret;
- }
-diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
-index c0f4db8d95f7..d4e197e05d26 100644
---- a/drivers/iio/light/pa12203001.c
-+++ b/drivers/iio/light/pa12203001.c
-@@ -188,7 +188,8 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
- 	if (on)
- 		return pm_runtime_resume_and_get(&data->client->dev);
- 
--	return pm_runtime_put_autosuspend(&data->client->dev);
-+	pm_runtime_put_autosuspend(&data->client->dev);
-+	return 0;
- 
- err:
- 	mutex_unlock(&data->lock);
-diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-index 7d82efc31f3a..60c5e85bac2c 100644
---- a/drivers/iio/light/rpr0521.c
-+++ b/drivers/iio/light/rpr0521.c
-@@ -357,15 +357,14 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
- 	 * Note: If either measurement is re-enabled before _suspend(),
- 	 * both stay enabled until _suspend().
- 	 */
--	if (on)
-+	if (on) {
- 		ret = pm_runtime_resume_and_get(&data->client->dev);
--	else
--		ret = pm_runtime_put_autosuspend(&data->client->dev);
--	if (ret < 0) {
--		dev_err(&data->client->dev,
--			"Failed: rpr0521_set_power_state for %d, ret %d\n",
--			on, ret);
--		return ret;
-+		if (ret < 0) {
-+			dev_err(&data->client->dev, "Failed to resume: %d\n", ret);
-+			return ret;
-+		}
-+	} else {
-+		pm_runtime_put_autosuspend(&data->client->dev);
- 	}
- 
- 	if (on) {
-diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-index 53fd423aa7ae..deaa71485468 100644
---- a/drivers/iio/light/tsl2583.c
-+++ b/drivers/iio/light/tsl2583.c
-@@ -640,7 +640,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
- 			    int *val, int *val2, long mask)
- {
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
--	int ret, pm_ret;
-+	int ret;
- 
- 	ret = pm_runtime_resume_and_get(&chip->client->dev);
- 	if (ret < 0)
-@@ -709,19 +709,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
- read_done:
- 	mutex_unlock(&chip->als_mutex);
- 
--	if (ret < 0) {
--		pm_runtime_put_autosuspend(&chip->client->dev);
--		return ret;
--	}
--
--	/*
--	 * Preserve the ret variable if the call to
--	 * pm_runtime_put_autosuspend() is successful so the reading
--	 * (if applicable) is returned to user space.
--	 */
--	pm_ret = pm_runtime_put_autosuspend(&chip->client->dev);
--	if (pm_ret < 0)
--		return pm_ret;
-+	pm_runtime_put_autosuspend(&chip->client->dev);
- 
- 	return ret;
- }
-@@ -773,16 +761,9 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
- 
- 	mutex_unlock(&chip->als_mutex);
- 
--	if (ret < 0) {
--		pm_runtime_put_autosuspend(&chip->client->dev);
--		return ret;
--	}
-+	pm_runtime_put_autosuspend(&chip->client->dev);
- 
--	ret = pm_runtime_put_autosuspend(&chip->client->dev);
--	if (ret < 0)
--		return ret;
--
--	return 0;
-+	return ret;
- }
- 
- static const struct iio_info tsl2583_info = {
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index ab518311fd79..e76c40b422f4 100644
---- a/drivers/iio/light/us5182d.c
-+++ b/drivers/iio/light/us5182d.c
-@@ -366,7 +366,8 @@ static int us5182d_set_power_state(struct us5182d_data *data, bool on)
- 	if (on)
- 		return pm_runtime_resume_and_get(&data->client->dev);
- 
--	return pm_runtime_put_autosuspend(&data->client->dev);
-+	pm_runtime_put_autosuspend(&data->client->dev);
-+	return 0;
- }
- 
- static int us5182d_read_value(struct us5182d_data *data,
--- 
-2.56.0.360.g66cac248cb-goog
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+ 		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+=2D-=20
+2.56.0
 
