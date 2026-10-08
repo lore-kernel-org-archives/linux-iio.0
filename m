@@ -1,83 +1,84 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E5574156C6
-	for <linux-iio@vger.kernel.org>; Thu,  8 Oct 2026 07:31:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0165B3DA7FF
+	for <linux-iio@vger.kernel.org>; Thu,  8 Oct 2026 07:41:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791444725; cv=none; b=bWipnal6zCs0BP+GN9ykhJ0X/NJuQ7dcmiB6/cSpMaJpdP0dYi6qlLxIuCtWp39Zd/+gGO8hdcBbtSTQ/BU5oaCix1QJkPbdZZ3/8rR07ddaG7J7aqoDLakm9icWNfvzqNen+B+MUdzoYKIcphK7ME0V0DBfv+ls7sjpnJMrLXA=
+	t=1791445296; cv=none; b=Uqu0UItRFrKlsR4vkqVVPY/cAxXAO8nkii4wbWSXR0lS19cdgVd4L+p2dLPQd+DsrB+UF28XfAH4BUYztOT2ZHavx+Wpi7Z2qwoC+bQCSZGvDuT3eyIkkSjwefxiX3pJRC/WA8Fal+OF1vl0al9xN/Gv0KBCRWXfeq4xoU/SRSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791444725; c=relaxed/simple;
-	bh=R1OauTk58FGLCJ/MOr79hoSoxQboPp2ENsJOfzmEyCY=;
+	s=arc-20240116; t=1791445296; c=relaxed/simple;
+	bh=p4eLj3IK1fG9x/qSMIU6H1LY2Et2owyfZqZcFS+5pn4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SYrV1oJMDoS1JmxkNzFfkM0PkOy2ozwXJj/Jfh2t02JcZbrOLs1ZnPkEPP8lIh2jjAAXCW0RSyACQPpA97xLRCnRzFY6XT0lNgSDVy+DtePpfbBCwYTgBkAkm3Qne/Saq5Vore2yLQtQ2I461D+k3mTo4f/JZNgvF4NBFiM6hq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HWSzOQfM; arc=none smtp.client-ip=209.85.128.47
+	 MIME-Version:Content-Type; b=gpQBuxLOSCJAq1N6cG4HfZABtvU9AjILXnayWPqwA8r1w0qMjK0jGICggtgJt2gr/BhpQ1ZSekukic2SDu4W5glMbO3gJmam0eZsVftOWyIXfaXvnkQ6Mz87lhBmAOiCWpxlVmgxpBQVZb8poCx9Q+VNNYfH6q4KLRr3T+dGds8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hVKj+J9T; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HWSzOQfM"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a16af2a232so22500035e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 08 Oct 2026 00:31:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hVKj+J9T"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a16aaf2067so56081315e9.0
+        for <linux-iio@vger.kernel.org>; Thu, 08 Oct 2026 00:41:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791444707; x=1792049507; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791445292; x=1792050092; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=TBYqwnAjN95MxzXbUBiz1fIAS5G9TFt/mqAU6tkwBvk=;
-        b=HWSzOQfMqXVe/4HDYaEpM+NCxCYL45MrZw9PDtZr85zDEPSsbkPeXb6rPcPfj4v98q
-         oA9J1k+JDPHi5Cp/OWqBkwxaGZUiVActhpBCz+1ywWqm6SykFTzGMJdan58uIWLdMjIk
-         MrN4/Rtg7MwbMvJeGpwFMZDiqE3Sn+UVhPvTyFgeS+9GUwxsBXzuRLHxO83hbQlYP2l1
-         oYbW83KXWUcQ4oFSe1QI12+3HU63lACniHlbYFkO/dR6XCf+f8JEcKq5CZ63zzyi70J5
-         m8eK/0lyYFYSlj+pDwPoN9+NSg7+dpN5UtfS+10kdSoLD1rDO6wm5ouHNTsliYXA0Glw
-         5Xtg==
+        bh=oRAYeLKeAT80x2jiBfAEaezNXmhhh78xhPr6M0J8/2M=;
+        b=hVKj+J9TILkyjZfmYLUF0m7f+C9fBIPV54Z6mgpHRSyOV4285p9WJEr5G2jmxay879
+         xQL648Xpu2ec7zcVVJByx0JABiVgm62EJHyqH/w852Sj5/abCIkNWmHfhWY3uRTaTHh8
+         gu2oHiNmwYlTCf4kDrEOErVv1PNJI3EuaDGTSGrRgM2lwtcaLEmyCUdoMjIHlW7rmh+k
+         uqyYOtxuaZkP/QNBFrqSRdCTekma25BOl5l0Madw9YZRCwNQH1RSUZ5S9gJGntZE7ZWI
+         CAqon4ZEUQD3nTUO+Zf5VnRTTExMYdTTLGAGmI6h8/T+kVDPsWe3PZDZzV20Wf6SE0Yv
+         9q2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791444707; x=1792049507;
+        d=1e100.net; s=20260707; t=1791445292; x=1792050092;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=TBYqwnAjN95MxzXbUBiz1fIAS5G9TFt/mqAU6tkwBvk=;
-        b=1gIO5A4v3eX5ctCsAAJrw190xI0V/Vf7lcWKk1KYBdGVhtH2EnaRtA/0I22q+bu5Ld
-         W/PHjLtp3f2U0FLIye7QEF5o597FRMpZRNb+ed8kSRa1xAbNpCH664fHvNqfMesmpFSD
-         UATLGh7JbDwJL329caMpSoZypcp8i6nLzxzlQMmFw0mjfO3dHW2rOWIQjJNXLsCYGeW4
-         Ykolg57ZJqyZ0Y/Tq0+gmlVONTl7lliVCA2eCTesmtLKwUuzmeCGWR/fSPyLpjPyxQOG
-         Ht6T7GRmUi4ojz36MCWzHv1MEKxmYftV+Jwky7DjagcOznvPoj7mXcWP0Am250h+dG2w
-         BQnw==
-X-Forwarded-Encrypted: i=1; AKwUvByfgeh40jPvzlJQkOcvftdkMsXqboYBDSw/7ZwYHK8EC8WnmiIZyxz/s5Edy6S7mXtvinoS61bWmks=@vger.kernel.org
-X-Gm-Message-State: AFuF++l0Pd1sGTaYudeD9jv+cVafv4QkxgygrxSjBKvryOg/DIBrRxmE
-	HD+0glrb7uwbUDtm/QmDvAb5tO0KivX2QjpHMuZKv96qNxkRVE3IxDfn
-X-Gm-Gg: AYBFou0LvUwCVmlTqAUkIEAYxmg+HWCfBvHf5pEl1Cv5bD3UbsZ1wuGmIJJM4ytdgEs
-	Q4heNl3no91NNbVZEmId275w+cv0QFkVu4SoYBwqENT2J2pL0gQWRPiW/82LFjdLt0ir/wwm/jN
-	3EEuiwRvR+bhHmjN0gYubxJ/C+L6aZruvl6WJ0J7Gc/87TYsUlvIUve+HN4TTtggsAj4cVjtaA5
-	Imz7f5AOJ3LT3Hso45naO76QeWBHsNUp79p5hbhhKSmHEOvU9Kr4dyA1uvpe6wzo8p6tWicb/6n
-	DiO0rK/YWjOu52OBA2ML1Q+/jHucCqZQIqpYKodLGmF2RhmEUGut+9cZXGEEyhbNOzu0+ABxIbj
-	2dlExK/d47d2ZrF+42iBc+ABE92nvdRSZ/AOVCf1nWsgbhsn3l3FoPC9Wb/01oprQvv/sZh8BGp
-	SBxJ7H4Tnr1a0AOX3L4oHRm1ySAiXaeM9vTKd5bxTGQxu5yPll48gmRJtJFaM3lD4xhVOzr17yN
-	rLzWS5JoT7/j/xmuPSZnW5nLIaXKOHsFS3eukEpXT3m+5Vr7kvJbX7ABsldn69rgOuf56lpgX+F
-	ZdXAt/Dmon8qXwptrcjRjEKBADYY4YuaCmJv/dxe3tnHDEUNFVcAMqFpJkioz7I3YrIFbv0BP5g
-	GVjWEjJX1Bh1htlnItalooPJq8y0A5blGZ5cTytnCXADqeY07cns/EyAsHdk9EyF/Vg4dXgM3iu
-	15LvS169qxl+N/4qx+
-X-Received: by 2002:a05:600c:3b9f:b0:4a0:2644:80db with SMTP id 5b1f17b1804b1-4a180664e4fmr81750295e9.35.1791444707089;
-        Thu, 08 Oct 2026 00:31:47 -0700 (PDT)
+        bh=oRAYeLKeAT80x2jiBfAEaezNXmhhh78xhPr6M0J8/2M=;
+        b=zT/L9mIkTYNTKeoUSQx1X+/ahhGTX5xjWQE8T1dGbkHwtRRRc773zfX215lYU/uuUV
+         zypzH/X9K1TIqG5UAHX3RxqwMtpatsJReQJXWFUwpJB2CgK41OQ/fj9rtGBC+ywN8fBG
+         hbneGKiOKwVuYWEAZHSsx2VwX5yPyUO+vGmV5rWnWFWVhPITlWepv7/FmYm0cbdF3+xK
+         d292bFVJhdLob/+S1qSNUB+TWt5YD24hJoCA5DBoyi6jrzec7q/4Ld8EVLkCjW6tnUVO
+         YKtIJJyZRgAfr96w30u8q/vCPxMtYmY3lXFYGkNLObDGtoyYkTdmM4iMWL4J/pikmm0k
+         3Jsw==
+X-Forwarded-Encrypted: i=1; AKwUvBzlTVIihEaKmTztUB7ZpEdCQcVHQqyMogTk/5pk6bzQu0VZVe5HQq97hK3DTHQPdaeF6H0Fk3rj3ZE=@vger.kernel.org
+X-Gm-Message-State: AFuF++kD5QRAgq6LsKgBaHpYo1krdx8zQITpuHPz8J505mgogmSPb/NC
+	KSdBwbF7tUi2D/R2diqHdoY9OU6W8u5/qDuX443PVH0XixAVABrkwly0
+X-Gm-Gg: AYBFou04LsUAT4aL3POejUK3IC/peXRmGV8NbpTlpYESuaPM5f6O2g4YtKMDW7I6Agr
+	T3OhF4un0Gk7L3HQdnP1dtmRF4iCX3+KejCFns8DIa8/DHlt3tXUDcxEi7LLvlViTaOPGAWK4js
+	WFTenuo95za19Sc/nIsKhKx1FQYM4qHtY8B9vKiHVMSnOWJ6d/7IY5gcKonKZZ9YOmFWBf2V+AE
+	O0x/OucuwSMpsdVq1KE0ajqMPoRQlct6eLTU5v887vU7XHEaXhmxQWPv7pv2gsFFLbiwLogTRIx
+	xpCDtE72vf+Va5Qcyfqh0AjHHlWINlzmKDR2sB8Ifm7Q5Z0nQ+vThi74CezkI60So8rluBewRoh
+	MizwD+x3/lGZqLeMDSTOtgshJDgXMeawdIHnahON/l1Tgzzj+tn+sVJtpuSAaORWt5N4AWZAumW
+	C+wZKQg0Wm9TXPcnHLgB6RYMcedIlPmTeq/Hi96aMlsbuLqTDLQQmianVSLoK/9aGhtVwOrkccx
+	A4tfOhdjPTMDJC+KK7+ibYDbvmeduPonLhzo9ArODwtukVtE8Oq1CppBkjrfwiPNKrKSnpQibRZ
+	tMYWY2M+OPwrAkVvH/xJtwxdRwPLajITD1YfkzCPhIesYq6aPayut6ULbiA+BwfrDahgfodEqBO
+	+svQ02gaAWRrwPjUyjw9ZJXPi9AWdKvBYS2hoo9LB/BJUmQqeuCMc4UMBYJ7vWA4O1cGQMZGB4L
+	6GKGKkFyS3oalQ+pg=
+X-Received: by 2002:a05:600c:154c:b0:49c:fed6:cd3f with SMTP id 5b1f17b1804b1-4a18043c080mr88363195e9.23.1791445292117;
+        Thu, 08 Oct 2026 00:41:32 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1842abdb9sm47993535e9.6.2026.10.08.00.31.46
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a185d914fdsm68758875e9.7.2026.10.08.00.41.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2026 00:31:46 -0700 (PDT)
-Date: Thu, 8 Oct 2026 09:31:16 +0200
+        Thu, 08 Oct 2026 00:41:31 -0700 (PDT)
+Date: Thu, 8 Oct 2026 09:41:19 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Alexis Bouzigues via B4 Relay
  <devnull+BouziguesAlexis.JohnDeere.com@kernel.org>
-Cc: BouziguesAlexis@JohnDeere.com, Jonathan Cameron <jic23@kernel.org>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Lothar Rubusch <l.rubusch@gmail.com>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+Cc: BouziguesAlexis@JohnDeere.com, Jonathan Cameron <jic23@kernel.org>,
+ Lucas Stankus <lucas.p.stankus@gmail.com>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Lothar Rubusch <l.rubusch@gmail.com>, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  stable@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: adxl345: select IIO_BUFFER and
- IIO_KFIFO_BUF
-Message-ID: <20261008093116.000077e1@gmail.com>
-In-Reply-To: <20261007-fix-adxl345-buffer-deps-review-v1-1-0c94c8d0443a@JohnDeere.com>
-References: <20261007-fix-adxl345-buffer-deps-review-v1-1-0c94c8d0443a@JohnDeere.com>
+Subject: Re: [PATCH] iio: accel: adxl313: add missing buffer selections in
+ Kconfig
+Message-ID: <20261008094119.00003007@gmail.com>
+In-Reply-To: <20261006-fix-adxl313-buffer-deps-review-v1-1-386006c407be@JohnDeere.com>
+References: <20261006-fix-adxl313-buffer-deps-review-v1-1-386006c407be@JohnDeere.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -88,33 +89,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 07 Oct 2026 09:34:16 -0500
+On Tue, 06 Oct 2026 19:08:58 -0500
 Alexis Bouzigues via B4 Relay <devnull+BouziguesAlexis.JohnDeere.com@kernel.org> wrote:
 
 > From: Alexis Bouzigues <BouziguesAlexis@JohnDeere.com>
 > 
-> Since the addition of FIFO watermark support, adxl345_core.c calls
-> devm_iio_kfifo_buffer_setup() and iio_push_to_buffers(), but the
-> ADXL345 Kconfig entry does not select IIO_BUFFER and IIO_KFIFO_BUF.
-> Building with CONFIG_ADXL345_I2C=y and CONFIG_IIO_BUFFER=n fails to
-> link:
+> The FIFO support added to the ADXL313 core uses
+> devm_iio_kfifo_buffer_setup() and iio_push_to_buffers(), but its Kconfig
+> entry does not select the required buffer support. Enabling either
+> frontend without IIO_BUFFER or IIO_KFIFO_BUF causes undefined references
+> to devm_iio_kfifo_buffer_setup_ext() and iio_push_to_buffers().
 > 
->   ld: drivers/iio/accel/adxl345_core.o: in function `adxl345_irq_handler':
->   adxl345_core.c:(.text+0x145c): undefined reference to `iio_push_to_buffers'
->   ld: drivers/iio/accel/adxl345_core.o: in function `adxl345_core_probe':
->   adxl345_core.c:(.text+0x1db6): undefined reference to `devm_iio_kfifo_buffer_setup_ext'
+> Select IIO_BUFFER and IIO_KFIFO_BUF from the shared ADXL313 core symbol
+> so both the I2C and SPI frontends have the required dependencies.
 > 
-> Add the missing selects on the hidden ADXL345 core symbol, as done for
-> ADXL367, ADXL372 and ADXL380, so both the I2C and SPI front-ends are
-> covered.
-> 
-> Fixes: cf04212d1fe7 ("iio: accel: adxl345: add FIFO with watermark events")
+> Fixes: ff8093fa6ba4 ("iio: accel: adxl313: add buffered FIFO watermark with interrupt handling")
+> Cc: stable@vger.kernel.org
 > Assisted-by: LLM
 > Signed-off-by: Alexis Bouzigues <BouziguesAlexis@JohnDeere.com>
 > ---
 
 Tested-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
+If you're doing the same change for multiple drivers, please send it
+as a series, it will make reviewing easier.
 
 -- 
 Kind regards,
