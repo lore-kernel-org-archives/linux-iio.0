@@ -1,139 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C6F035AC14;
-	Thu,  8 Oct 2026 16:46:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D7CD45D5E7;
+	Thu,  8 Oct 2026 21:28:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791478018; cv=none; b=FwJkPoqezd0jsInGiLbfEHnORj4/u3P5ReC/M7zPwgNbcakdJFSdxOoZIKDeFpLpAkU/aRJiWAQtHE6S1vSR5y73SFoq2qDqreIMhxIzTzPDVNuw4JaPRNPvcyeAJfzxUVH18wgCP46FA8Ac0MN5zGg6d8t0POvDn+Dl/Nk0KXE=
+	t=1791494882; cv=none; b=HwHTHM58MlPxp7pMGYQ7iA1ohTwDeVtsHcTTnyS6XClUCOsnVwf6uuvnLJbBx3VF0FlJFDcwtpCx6xhi1BwWZR6cF+5N3mh6Ulg4REuysFCiQnpZDGFYd8Snifyv2AM/9jpq3sWToeB0FFZuv1e60np7oGP87VF7+t70ADtfR/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791478018; c=relaxed/simple;
-	bh=y9exSn++eNilrTXWwsY6/at3Kjqr1BXo2+Q4Osb9AgA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m79VVKJdbWZyQp5D4l/oQ0jKUaZlErzpR2X9U6GXEdbIuBHXBpDSkkz3Bt7VKPqNn37/fAkQMCDMSm8p6TXee2bhGnXJWzlWMgHA0WBL2XFgbzJzaEvtBHh6kcF3mf6Dwdu2MU8U/ehze67egkl+IOmkhhn6pVGiCT7RAyMM9gw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bIuxar2P; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791494882; c=relaxed/simple;
+	bh=TeR7Q+fqs/UcoTH+pEMoFwsQlixEwVVHjBq8FefJ8i4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=CBMhVf2PAgLuStx5XnrZGinQL5ckROUMeXiNWLnk7/iHrc9P8xZ0H2D2I1R6woO0Jkv9Q2KyD430/N4s6lb76+eK+gOXqR5fM8eusVY4Vs3+suEWBAlOArJNf+mUreNZZ5ah2q7AzK40jgV19aUbek+E6sM9sbhHUmnGPfxV2Ik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sAU1bZMD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bIuxar2P"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791478017; x=1823014017;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=y9exSn++eNilrTXWwsY6/at3Kjqr1BXo2+Q4Osb9AgA=;
-  b=bIuxar2Pt9MqvQ+6b/+NpetNurC1Xw9UQ7XGnaSxCwtrFPEBKiF3rB9C
-   63pFqoCYNkPZGIFmoTDNlsIJEBm0BC+foKDxwCuX10ZYV9UVBViBLg87s
-   /1EkHc7ACaSDupaOjMYItQ1jUuQ06rD1FL+EAqyjoQc5+RQOse7Uo1ozc
-   xiu9pM3P+80XgeuEjVXozad+iqG4tCR8gpurbohpuYWsAbxGB+iUxoOO8
-   VHAp10wlcT2zMWFynj63oFxnxmYS3FjZdW4/O9QAgLz4DDFii3chUJ6Up
-   yP5bMI1D+7nAp2YBuz78EebuGv1BrBfiFY1rPgHYA2l5OPr2oA0DIYXEj
-   Q==;
-X-CSE-ConnectionGUID: +ie2uicEQ9WtggpnXbVB1A==
-X-CSE-MsgGUID: M3VCrLVSTwm4ZGj8hiMz1Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11928"; a="279753"
-X-IronPort-AV: E=Sophos;i="6.27,146,1787036400"; 
-   d="scan'208";a="279753"
-Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2026 09:46:57 -0700
-X-CSE-ConnectionGUID: GbDOzSzaSVmBlV8f31DQSg==
-X-CSE-MsgGUID: uW1pO5uBRBGKnV+PCecRLg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,146,1787036400"; 
-   d="scan'208";a="1912917"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa012.fm.intel.com with ESMTP; 08 Oct 2026 09:46:54 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xErGc-000000004f0-2yit;
-	Thu, 08 Oct 2026 16:46:50 +0000
-Date: Fri, 9 Oct 2026 00:46:35 +0800
-From: kernel test robot <lkp@intel.com>
-To: Ariana Lazar <ariana.lazar@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	Ariana Lazar <ariana.lazar@microchip.com>
-Subject: Re: [PATCH v4 3/3] iio: adc: add support for PAC1711
-Message-ID: <202610090029.8WKWgYLF-lkp@intel.com>
-References: <20261007-pac1711-v4-3-6ef34d7a7947@microchip.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sAU1bZMD"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AD327C2BCC7;
+	Thu,  8 Oct 2026 21:28:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1791494881;
+	bh=TeR7Q+fqs/UcoTH+pEMoFwsQlixEwVVHjBq8FefJ8i4=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=sAU1bZMDSb/MNRI+JwkoIjBscFAoLgRInepZf5t8PUStnOV4o6DLEzfq26tJPga0K
+	 0fKoqXQne8TZjd9bc2JLwLTvVpO1SZfqqTTrYxljtqR/+LNteer0rruejNSkmHqMpy
+	 Pt4rk+uYZbDJvD2kzjGD1a09dVHA8pH7sKoIeFjhRX5Z+spB/mkVpeDI04Ud5FknAN
+	 E9hddErQ/2Q7xvSmbj+pgwk5uQ7143oKWKXZ78wH7fugk4u8f4Ta/k6SEn0lBZbBh9
+	 ASWmJUGJsgDaIrzGyFJjSY3frcF85knUHQwi7QJUOr0yKoPvFOqWPd4q8o3aiGSBin
+	 P+JwxCqaSzTdw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85919CA6015;
+	Thu,  8 Oct 2026 21:28:01 +0000 (UTC)
+From: Fabio Forni via B4 Relay <devnull+development.redaril.me@kernel.org>
+Date: Thu, 08 Oct 2026 23:27:59 +0200
+Subject: [PATCH] iio: afe: iio-rescale: Add platform IDs
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261007-pac1711-v4-3-6ef34d7a7947@microchip.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261008-iio_rescale_platform_ids-v1-1-019f1c144022@redaril.me>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MQQqDMBBA0avIrBuIoRjbq5QShmSiA9bIjEghe
+ HeDy7f4v4KSMCm8uwpCByuXtaF/dBBnXCcynJrBWTf01o6GuQQhjbhQ2Bbcc5Ff4KTGJoc+YXz
+ 5J0LLN6HM/3v9+Z7nBX4+cQZqAAAA
+X-Change-ID: 20261008-iio_rescale_platform_ids-0d2a7dac974a
+To: Peter Rosin <peda@lysator.liu.se>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Fabio Forni <development@redaril.me>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2514;
+ i=development@redaril.me; h=from:subject:message-id;
+ bh=lvuR+QebAMjMI31UmklRwBBfWEf2jwig4BQ8unLKdow=;
+ b=kA0DAAoWgcJymq2hamcByyZiAGrICuChWTkRFreAg1lxyLYmsekEsNX+aIaBAxwp0zBFHYtBd
+ 4h1BAAWCgAdFiEE/0Iysos2NDLajxh9gcJymq2hamcFAmrICuAACgkQgcJymq2hamfjFQEAirpA
+ ncsel/jCwPi3z1NCt4yT74lqYoQmcO1Z6l3mv9oBALiHrP0yg++SvBU4Rkdfvavd34K0penzEYU
+ FhkxjwlAO
+X-Developer-Key: i=development@redaril.me; a=openpgp;
+ fpr=FF4232B28B363432DA8F187D81C2729AADA16A67
+X-Endpoint-Received: by B4 Relay for development@redaril.me/default with
+ auth_id=1033
+X-Original-From: Fabio Forni <development@redaril.me>
+Reply-To: development@redaril.me
 
-Hi Ariana,
+From: Fabio Forni <development@redaril.me>
 
-kernel test robot noticed the following build warnings:
+When a rescaler is probed starting from a `struct swnode`,
+device_get_match_data() will always set rescale->cfg to NULL,
+because device_get_match_data() is unimplemented for software nodes.
 
-[auto build test WARNING on cee9395acd8043be0644b25c34bfa86623f2b935]
+This commit makes the probe function fall back to platform IDs when
+it couldn't fetch the rescaler configuration from the match table.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ariana-Lazar/iio-core-add-IIO_CHARGE-channel-type/20261007-174153
-base:   cee9395acd8043be0644b25c34bfa86623f2b935
-patch link:    https://lore.kernel.org/r/20261007-pac1711-v4-3-6ef34d7a7947%40microchip.com
-patch subject: [PATCH v4 3/3] iio: adc: add support for PAC1711
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20261009/202610090029.8WKWgYLF-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 16.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261009/202610090029.8WKWgYLF-lkp@intel.com/reproduce)
+Signed-off-by: Fabio Forni <development@redaril.me>
+---
+ drivers/iio/afe/iio-rescale.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610090029.8WKWgYLF-lkp@intel.com/
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index 3a6a09ffa526..fcdeeacedbe8 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -517,12 +517,28 @@ static const struct of_device_id rescale_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, rescale_match);
+ 
++static const struct platform_device_id rescale_platform_ids[] = {
++	{ .name = "current-sense-amplifier",
++	  .driver_data = CURRENT_SENSE_AMPLIFIER, },
++	{ .name = "current-sense-shunt",
++	  .driver_data = CURRENT_SENSE_SHUNT, },
++	{ .name = "voltage-divider",
++	  .driver_data = VOLTAGE_DIVIDER, },
++	{ .name = "temperature-sense-rtd",
++	  .driver_data = TEMP_SENSE_RTD, },
++	{ .name = "temperature-transducer",
++	  .driver_data = TEMP_TRANSDUCER, },
++	{ }
++};
++MODULE_DEVICE_TABLE(platform, rescale_platform_ids);
++
+ static int rescale_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct iio_channel *source;
+ 	struct rescale *rescale;
++	const struct platform_device_id *id;
+ 	int sizeof_ext_info;
+ 	int sizeof_priv;
+ 	int i;
+@@ -548,6 +564,15 @@ static int rescale_probe(struct platform_device *pdev)
+ 	rescale = iio_priv(indio_dev);
+ 
+ 	rescale->cfg = device_get_match_data(dev);
++	if (!rescale->cfg) {
++		id = platform_get_device_id(pdev);
++		if (!id)
++			return dev_err_probe(dev,
++					     -EINVAL,
++					     "missing or invalid device configuration");
++
++		rescale->cfg = &rescale_cfg[id->driver_data];
++	}
+ 	rescale->numerator = 1;
+ 	rescale->denominator = 1;
+ 	rescale->offset = 0;
+@@ -602,6 +627,7 @@ static struct platform_driver rescale_driver = {
+ 		.name = "iio-rescale",
+ 		.of_match_table = rescale_match,
+ 	},
++	.id_table = rescale_platform_ids,
+ };
+ module_platform_driver(rescale_driver);
+ 
 
-All warnings (new ones prefixed by >>):
+---
+base-commit: 6c377d19d4a5116d9bec5203aa3c6c11523e7898
+change-id: 20261008-iio_rescale_platform_ids-0d2a7dac974a
 
->> drivers/iio/adc/pac1711.c:134:51: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073667551616' to '-42000000' [-Woverflow]
-     134 |                 [PAC1711_FULL_RANGE_BIPOLAR]  = { -PAC1711_VBUS_FSR_UV, PAC1711_VBUS_FSR_UV },
-         |                                                   ^
-   drivers/iio/adc/pac1711.c:135:51: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073688551616' to '-21000000' [-Woverflow]
-     135 |                 [PAC1711_HALF_RANGE_BIPOLAR]  = { -PAC1711_VBUS_FSR_HALF_UV,
-         |                                                   ^
-   drivers/iio/adc/pac1711.c:140:51: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073700551616' to '-9000000' [-Woverflow]
-     140 |                 [PAC1711_FULL_RANGE_BIPOLAR]  = { -PAC1721_VBUS_FSR_UV, PAC1721_VBUS_FSR_UV },
-         |                                                   ^
-   drivers/iio/adc/pac1711.c:141:51: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073705051616' to '-4500000' [-Woverflow]
-     141 |                 [PAC1711_HALF_RANGE_BIPOLAR]  = { -PAC1721_VBUS_FSR_HALF_UV,
-         |                                                   ^
-   drivers/iio/adc/pac1711.c:148:42: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073709451616' to '-100000' [-Woverflow]
-     148 |         [PAC1711_FULL_RANGE_BIPOLAR] = { -PAC1711_VSENSE_FSR_UV, PAC1711_VSENSE_FSR_UV },
-         |                                          ^
-   drivers/iio/adc/pac1711.c:149:42: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073709501616' to '-50000' [-Woverflow]
-     149 |         [PAC1711_HALF_RANGE_BIPOLAR] = { -PAC1711_VSENSE_FSR_HALF_UV, PAC1711_VSENSE_FSR_HALF_UV },
-         |                                          ^
+Best regards,
+-- 
+Fabio Forni <development@redaril.me>
 
 
-vim +134 drivers/iio/adc/pac1711.c
-
-   130	
-   131	static const int pac1711_vbus_range_tbl[2][3][2] = {
-   132		[PAC1711_VOLTAGE_RANGE_IDX] = {
-   133			[PAC1711_FULL_RANGE_UNIPOLAR] = { 0, PAC1711_VBUS_FSR_UV },
- > 134			[PAC1711_FULL_RANGE_BIPOLAR]  = { -PAC1711_VBUS_FSR_UV, PAC1711_VBUS_FSR_UV },
-   135			[PAC1711_HALF_RANGE_BIPOLAR]  = { -PAC1711_VBUS_FSR_HALF_UV,
-   136							  PAC1711_VBUS_FSR_HALF_UV },
-   137		},
-   138		[PAC1721_VOLTAGE_RANGE_IDX] = {
-   139			[PAC1711_FULL_RANGE_UNIPOLAR] = { 0, PAC1721_VBUS_FSR_UV },
-   140			[PAC1711_FULL_RANGE_BIPOLAR]  = { -PAC1721_VBUS_FSR_UV, PAC1721_VBUS_FSR_UV },
-   141			[PAC1711_HALF_RANGE_BIPOLAR]  = { -PAC1721_VBUS_FSR_HALF_UV,
-   142							  PAC1721_VBUS_FSR_HALF_UV },
-   143		},
-   144	};
-   145	
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
