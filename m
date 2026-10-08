@@ -1,128 +1,121 @@
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73D953876CD
-	for <linux-iio@vger.kernel.org>; Thu,  8 Oct 2026 05:27:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E5574156C6
+	for <linux-iio@vger.kernel.org>; Thu,  8 Oct 2026 07:31:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791437222; cv=none; b=lbv763uuWigtD6KZ0dzJbUGEKX3E+qaUGWJyaR/StfBUx/Rnw98uUxTLNTAz54XeFm0bWZ7IKBIvO5TlXnnCD7Vxtkj6itB5zhWis7OGz1O0y5SQsHB8nwRH7zysrVo/7pMLnARYMHz+swIQhP7KYlZ5bI7Fl1JD0r+zi61QRPM=
+	t=1791444725; cv=none; b=bWipnal6zCs0BP+GN9ykhJ0X/NJuQ7dcmiB6/cSpMaJpdP0dYi6qlLxIuCtWp39Zd/+gGO8hdcBbtSTQ/BU5oaCix1QJkPbdZZ3/8rR07ddaG7J7aqoDLakm9icWNfvzqNen+B+MUdzoYKIcphK7ME0V0DBfv+ls7sjpnJMrLXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791437222; c=relaxed/simple;
-	bh=kCpneSjNmiQ+uKN1uru50DEBeDjE1ps61mB5XGB9ArU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=jaLFsKQHesTT1ZOSmIY5vcOdciW31h8784NRgwcSBLof5PtoVCMLs2ClfV8lmQj92Fk4bUyIlWmb9wuQzjL7ae31fIEzUBC0o0hjKnIFp+fWBXtVCyG9dPTGCL4zXV2p9akNUoCq2QRRQrkiplJa6oxMlCB7qMKLXo4VFkabTSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rc6h+5Fl; arc=none smtp.client-ip=74.125.82.173
+	s=arc-20240116; t=1791444725; c=relaxed/simple;
+	bh=R1OauTk58FGLCJ/MOr79hoSoxQboPp2ENsJOfzmEyCY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SYrV1oJMDoS1JmxkNzFfkM0PkOy2ozwXJj/Jfh2t02JcZbrOLs1ZnPkEPP8lIh2jjAAXCW0RSyACQPpA97xLRCnRzFY6XT0lNgSDVy+DtePpfbBCwYTgBkAkm3Qne/Saq5Vore2yLQtQ2I461D+k3mTo4f/JZNgvF4NBFiM6hq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HWSzOQfM; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rc6h+5Fl"
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-3514e7cbbbaso5323225eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 07 Oct 2026 22:27:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HWSzOQfM"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a16af2a232so22500035e9.1
+        for <linux-iio@vger.kernel.org>; Thu, 08 Oct 2026 00:31:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791437219; x=1792042019; darn=vger.kernel.org;
-        h=content-disposition:content-type:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=FUiKPJBB/QLn6JR/2soSQPjMVxJQocjLWOUnc2itzYU=;
-        b=Rc6h+5FllXUOPPwLUmpupRf3V3Cap+Z+NlqWYXjtEEsSYvjwLbCJGVe+/gLqQqqfnE
-         mwVpLga+h3phI1vj3AzAW4Te5qXYCbgIWYFcAQ47YliwLrkqfEM4b+OxJnVhyfvx/m45
-         q3T7v7IfML2FNJX+H0ZgViXwdVzx4Cf0WmG8ZYgk0Rhj7b0vk5pG0zPWrMkBcM5mNadL
-         mMv8uGV12NRbwcH4I0o7y0TJWoE83stVMiclEqhYiR/YZ7e6hu2VhwI32KDiMDMTGVhR
-         AF0yFAw7AvK+vLRNIwGYSo+CuGufuT47B0qHuebAJeELGJ2+FR2LNSlvxaY49nOlBi+J
-         hqHA==
+        d=gmail.com; s=20251104; t=1791444707; x=1792049507; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=TBYqwnAjN95MxzXbUBiz1fIAS5G9TFt/mqAU6tkwBvk=;
+        b=HWSzOQfMqXVe/4HDYaEpM+NCxCYL45MrZw9PDtZr85zDEPSsbkPeXb6rPcPfj4v98q
+         oA9J1k+JDPHi5Cp/OWqBkwxaGZUiVActhpBCz+1ywWqm6SykFTzGMJdan58uIWLdMjIk
+         MrN4/Rtg7MwbMvJeGpwFMZDiqE3Sn+UVhPvTyFgeS+9GUwxsBXzuRLHxO83hbQlYP2l1
+         oYbW83KXWUcQ4oFSe1QI12+3HU63lACniHlbYFkO/dR6XCf+f8JEcKq5CZ63zzyi70J5
+         m8eK/0lyYFYSlj+pDwPoN9+NSg7+dpN5UtfS+10kdSoLD1rDO6wm5ouHNTsliYXA0Glw
+         5Xtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791437219; x=1792042019;
-        h=content-disposition:content-type:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=FUiKPJBB/QLn6JR/2soSQPjMVxJQocjLWOUnc2itzYU=;
-        b=hCAFODU/1v1SdoZRXJhCOgWq6jgfHYyISQ3pcxVCThidTJyLsm4pSPx0/NGpVe98Lh
-         7UEsGvmI10T45XBO3njiqvKBDisHFTom8NveRpQdm6VcMW8Kibg1D5eVK7DC8LH8DgoJ
-         GxurLlpVhwWa7e4c67FQaWZ5271IMx4l9/WU+AuusiqyNgrgKfn9Ll7q8y1mklLilbqy
-         7DffN5iD3KIevh66HLL2PTaEFaM3kIGMaK0ITCb09kMKnKLT6jxdK/9gcioJJ9Eljz08
-         ngzKco9h2ikVjDJ+4UpJPmiItrEQQTxCc6nLVS+gRyM3sjvzuMIKGSkO+Flh9YOYo2Yr
-         8MYQ==
-X-Gm-Message-State: AFuF++m08dIm523A27TdeGzrnBG990mYWFMOMgnHNNSagsSK19lD/yVi
-	nNb3foYiMg3z019WQvnNEB6Q3hJFvK36+Kz9KKqRhDbC2sXWMrHGLOWaz+giIg==
-X-Gm-Gg: AYBFou15FbGDrKY4DdSzAGFJ6IKTTySOm5NFL7R+7Mw901Wc6y8P4y2XJFp3zUncbFZ
-	3+74Vmz4OBJ2Gv+8KiubMIRml5auFkBScFYRVxqNhH5rqNpXmaWQagwMqCkRplCVHyAK5oUY7Yk
-	HZw3Umv7YCueOQqYMBztluPspT7xBri5rrJh5RqJcU8z+IgD/Otp6AG+75gnMgh4SL9FWEsMlIN
-	c/+iB8l/FAJO9c+OzQ5THXk//2F717aYJGpxSBblaPGenMW+T/oO/sdf7Fg1ogjpyz2P/qs13Tz
-	7lEEpXNL4qxPzTuX8DTpnTtr/3wrjtg6oCbyCnV/dk72cxsVkCav9cbeMHm8PdUn0KfPwAvXr1F
-	G3hf4dlsSyY0ouwAhalLP/tQLG3pAd71xa16HRjZGjH6v8aIuOvT+0/4F8I8Lv4/AvyAaHCCemC
-	atkJNa+rOxEGshERM5Tdvk8oKkGCojkewh12/kRhS9NSO2D2Zlx9MYeSlitu9TnTRdDFj95KbXN
-	R4K
-X-Received: by 2002:a05:7022:112:b0:166:780c:60b6 with SMTP id a92af1059eb24-166780c615amr1618720c88.9.1791437219119;
-        Wed, 07 Oct 2026 22:26:59 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-16168f586f8sm13933072c88.13.2026.10.07.22.26.57
+        d=1e100.net; s=20260707; t=1791444707; x=1792049507;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=TBYqwnAjN95MxzXbUBiz1fIAS5G9TFt/mqAU6tkwBvk=;
+        b=1gIO5A4v3eX5ctCsAAJrw190xI0V/Vf7lcWKk1KYBdGVhtH2EnaRtA/0I22q+bu5Ld
+         W/PHjLtp3f2U0FLIye7QEF5o597FRMpZRNb+ed8kSRa1xAbNpCH664fHvNqfMesmpFSD
+         UATLGh7JbDwJL329caMpSoZypcp8i6nLzxzlQMmFw0mjfO3dHW2rOWIQjJNXLsCYGeW4
+         Ykolg57ZJqyZ0Y/Tq0+gmlVONTl7lliVCA2eCTesmtLKwUuzmeCGWR/fSPyLpjPyxQOG
+         Ht6T7GRmUi4ojz36MCWzHv1MEKxmYftV+Jwky7DjagcOznvPoj7mXcWP0Am250h+dG2w
+         BQnw==
+X-Forwarded-Encrypted: i=1; AKwUvByfgeh40jPvzlJQkOcvftdkMsXqboYBDSw/7ZwYHK8EC8WnmiIZyxz/s5Edy6S7mXtvinoS61bWmks=@vger.kernel.org
+X-Gm-Message-State: AFuF++l0Pd1sGTaYudeD9jv+cVafv4QkxgygrxSjBKvryOg/DIBrRxmE
+	HD+0glrb7uwbUDtm/QmDvAb5tO0KivX2QjpHMuZKv96qNxkRVE3IxDfn
+X-Gm-Gg: AYBFou0LvUwCVmlTqAUkIEAYxmg+HWCfBvHf5pEl1Cv5bD3UbsZ1wuGmIJJM4ytdgEs
+	Q4heNl3no91NNbVZEmId275w+cv0QFkVu4SoYBwqENT2J2pL0gQWRPiW/82LFjdLt0ir/wwm/jN
+	3EEuiwRvR+bhHmjN0gYubxJ/C+L6aZruvl6WJ0J7Gc/87TYsUlvIUve+HN4TTtggsAj4cVjtaA5
+	Imz7f5AOJ3LT3Hso45naO76QeWBHsNUp79p5hbhhKSmHEOvU9Kr4dyA1uvpe6wzo8p6tWicb/6n
+	DiO0rK/YWjOu52OBA2ML1Q+/jHucCqZQIqpYKodLGmF2RhmEUGut+9cZXGEEyhbNOzu0+ABxIbj
+	2dlExK/d47d2ZrF+42iBc+ABE92nvdRSZ/AOVCf1nWsgbhsn3l3FoPC9Wb/01oprQvv/sZh8BGp
+	SBxJ7H4Tnr1a0AOX3L4oHRm1ySAiXaeM9vTKd5bxTGQxu5yPll48gmRJtJFaM3lD4xhVOzr17yN
+	rLzWS5JoT7/j/xmuPSZnW5nLIaXKOHsFS3eukEpXT3m+5Vr7kvJbX7ABsldn69rgOuf56lpgX+F
+	ZdXAt/Dmon8qXwptrcjRjEKBADYY4YuaCmJv/dxe3tnHDEUNFVcAMqFpJkioz7I3YrIFbv0BP5g
+	GVjWEjJX1Bh1htlnItalooPJq8y0A5blGZ5cTytnCXADqeY07cns/EyAsHdk9EyF/Vg4dXgM3iu
+	15LvS169qxl+N/4qx+
+X-Received: by 2002:a05:600c:3b9f:b0:4a0:2644:80db with SMTP id 5b1f17b1804b1-4a180664e4fmr81750295e9.35.1791444707089;
+        Thu, 08 Oct 2026 00:31:47 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1842abdb9sm47993535e9.6.2026.10.08.00.31.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2026 22:26:57 -0700 (PDT)
-Date: Thu, 8 Oct 2026 02:27:15 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org,
-	dlechner@baylibre.com, marcelo.schmitt1@gmail.com
-Subject: [PATCH v1 1/1] iio: Allow device drivers to specify IIO event unit
- type
-Message-ID: <e359fa003ebc61c8b0e37ba9810a04c70e5a300e.1791437050.git.marcelo.schmitt@analog.com>
+        Thu, 08 Oct 2026 00:31:46 -0700 (PDT)
+Date: Thu, 8 Oct 2026 09:31:16 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Alexis Bouzigues via B4 Relay
+ <devnull+BouziguesAlexis.JohnDeere.com@kernel.org>
+Cc: BouziguesAlexis@JohnDeere.com, Jonathan Cameron <jic23@kernel.org>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lothar Rubusch <l.rubusch@gmail.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: adxl345: select IIO_BUFFER and
+ IIO_KFIFO_BUF
+Message-ID: <20261008093116.000077e1@gmail.com>
+In-Reply-To: <20261007-fix-adxl345-buffer-deps-review-v1-1-0c94c8d0443a@JohnDeere.com>
+References: <20261007-fix-adxl345-buffer-deps-review-v1-1-0c94c8d0443a@JohnDeere.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The IIO event ABI documentation distinguishes between interfaces that
-handle values in device-specific units (_raw) and event interfaces that
-handle values in real-world units (e.g. meters, Joules, lux, etc).
-However, the IIO event code infrastructure had never really implemented the
-bits to distinguish between those two types of interfaces.
+On Wed, 07 Oct 2026 09:34:16 -0500
+Alexis Bouzigues via B4 Relay <devnull+BouziguesAlexis.JohnDeere.com@kernel.org> wrote:
 
-Because distinguishing between device (_raw) and real-world (_input) units
-only makes sense for value and hysteresis info, only add complementary enum
-item for those.
+> From: Alexis Bouzigues <BouziguesAlexis@JohnDeere.com>
+> 
+> Since the addition of FIFO watermark support, adxl345_core.c calls
+> devm_iio_kfifo_buffer_setup() and iio_push_to_buffers(), but the
+> ADXL345 Kconfig entry does not select IIO_BUFFER and IIO_KFIFO_BUF.
+> Building with CONFIG_ADXL345_I2C=y and CONFIG_IIO_BUFFER=n fails to
+> link:
+> 
+>   ld: drivers/iio/accel/adxl345_core.o: in function `adxl345_irq_handler':
+>   adxl345_core.c:(.text+0x145c): undefined reference to `iio_push_to_buffers'
+>   ld: drivers/iio/accel/adxl345_core.o: in function `adxl345_core_probe':
+>   adxl345_core.c:(.text+0x1db6): undefined reference to `devm_iio_kfifo_buffer_setup_ext'
+> 
+> Add the missing selects on the hidden ADXL345 core symbol, as done for
+> ADXL367, ADXL372 and ADXL380, so both the I2C and SPI front-ends are
+> covered.
+> 
+> Fixes: cf04212d1fe7 ("iio: accel: adxl345: add FIFO with watermark events")
+> Assisted-by: LLM
+> Signed-off-by: Alexis Bouzigues <BouziguesAlexis@JohnDeere.com>
+> ---
 
-Users of the IIO event ABI should, as much as possible, match the event
-unit type with the channel unit type. I.e. device drivers that present
-device-specific raw units for their channels ought to also provide event
-interfaces that handle raw units. Conversely, when IIO channels provide
-processed (_input) data, IIO events will generally be expected to operate
-over real-world units as well.
+Tested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
-Complement the IIO event info enum, allowing IIO drivers to specify what
-type of event info is used for their event interfaces.
-
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
----
-This was originally a patch series [1], but the suggestions provided back then
-allowed it to be greatly simplified.
-
-[1]: https://lore.kernel.org/linux-iio/cover.1768759292.git.marcelo.schmitt1@gmail.com/
-
- include/linux/iio/types.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index d8944c9e5e90..bf03eb498753 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -15,7 +15,11 @@
- enum iio_event_info {
- 	IIO_EV_INFO_ENABLE,
- 	IIO_EV_INFO_VALUE,
-+	IIO_EV_INFO_VALUE_RAW,
-+	IIO_EV_INFO_VALUE_INPUT,
- 	IIO_EV_INFO_HYSTERESIS,
-+	IIO_EV_INFO_HYSTERESIS_RAW,
-+	IIO_EV_INFO_HYSTERESIS_INPUT,
- 	IIO_EV_INFO_PERIOD,
- 	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
- 	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
-
-base-commit: 04434a1d0f311d76b1f15fa987918b471a0b8c6a
 -- 
-2.53.0
-
+Kind regards,
+Joshua Crofts
