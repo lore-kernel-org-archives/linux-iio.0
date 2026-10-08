@@ -1,128 +1,227 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFE8D3E558D
-	for <linux-iio@vger.kernel.org>; Thu,  8 Oct 2026 07:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 600993E764C;
+	Thu,  8 Oct 2026 08:32:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791446161; cv=none; b=Rbvc3NqyTDGDDdnGLYAIh179Akh4zR11NSJCRNUQ3bExjWivVqy3fl7u20x41sRdfq1k2fJ8ONoK8PNYYTuLEvRXiU28wbbOHJ0A83jWdlS4N7ejGE5C3uiMwFxCM/t/4ViV2fBL4CiV87bBASREfNz9vUH78Y3dZgsE4Dyis68=
+	t=1791448345; cv=none; b=GgEs4FjFjpVuFtrFMjXVJkPFsRHbbvbEhNk7Pe2apZOuu1TsKhdRAPetsTEXMvjNB/Qd72VIljPYKRvXI4pwoehwyHiP1Iyutfl+oqd8ejWVSCwPqhVfcKAA8C+pVenHPg1FGt65FGlVzoDpgwBpjpVJNUibMH9XoXeg440Dbis=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791446161; c=relaxed/simple;
-	bh=1eLsAsBcb3/SU5wMEmlWmiLY4M5auQ2xVNRdqlqUs4c=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f4J9/q3W+/9oYnOLVyqvpVV9K/yEUp/L5iil/VIDMsKFXqQEYqfvuff1Ody3Umc5deGfCIiOLjNOHGBz8KjS7WqlQD+bsyLB0RxzH+n0sJliseogjj7KRznCogwnpds5AGK46X3bUs4GwPNHb1v2Z+yKnacUlBndPimHw8lhEvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PPhLKAKL; arc=none smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791448345; c=relaxed/simple;
+	bh=wgExskAdbglgz31ok+x5vWdb//tIQQPa12UByAAFggY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=J4c7EDPLYaOiWVhMvWSAXLPBrEKEcyH98R4pruAE4leTLOObba7B2ZbuatrjjJWLrC127a1HkScoBkNtG6Bk0EvfzHm1nLgLgblbdGPtH1cEgXrNfHb7c7WZ0S/YK72K4IUCwNaDnsPv4MzfpJgDnLLpM+KGzQquNMgivsMIhew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cHO6dDUZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PPhLKAKL"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48c4649b3aaso1730394f8f.2
-        for <linux-iio@vger.kernel.org>; Thu, 08 Oct 2026 00:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791446158; x=1792050958; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=RqJ80RZLGvdSDJWSa/30QB3K8CJAPo6KFuj937ftJzU=;
-        b=PPhLKAKLe3Xj3jWLUOoBBNGiy5nU11Mdq8tEOP1WIqNd6b97t8C+0nqokWqG9J2cR2
-         KParJi47v2JiNiCIh0v7u5ANu5urcvf5ZsBEBWKjAeOu2zRcIE4mNfdSdZu2uQUXRCQh
-         1RWNVNHf36C7BhA781Ua1+oce37wOirjhHrtx1sItMEuPzLa6EI0neX+DO9L7ZPbW6xg
-         BEj1zHerprEsF7mmOplUPasj817BHcBCeZ5sdlS3nMfdkNVqiJfJij9Px+SVohyig0k0
-         cgo2EPgilaS0Vv5alzeroYb0VoojSzPeuXAlIMKJ18EvRZKsDfgvDWeZEHDWJcN0S3r5
-         +jmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791446158; x=1792050958;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=RqJ80RZLGvdSDJWSa/30QB3K8CJAPo6KFuj937ftJzU=;
-        b=H8P7525dbHBLpefK8nxhOhXXbvo+i1AauN+ewBiKM8ydee43NgVlGP11qg4SnHrqW0
-         wLINq3cIjG/l5q6BiBFtGwk/dTIvFMHCQsMTqKKt/ab50Z4WNZqtUze/AlDLYigx1Tsk
-         +2w/jeotGWw1HE8udNm3MGYv78LsqhoWljn82PyXUTPktWlnGM8S6xsnxfiPW8vb3dSl
-         zE4jqQ/DhIDAKwvdjlF2auTzhRuS815S2gWyyn7preTjGQzvX1h7Odu0zSowd0g8XZxI
-         koRMQSuL+n43mzz1XICVfa7qt8v0s7Frou7TgAvvc8291dZhhlwNw26liqT9KrvCmbXq
-         Oh8w==
-X-Forwarded-Encrypted: i=1; AKwUvBz0nooGSaZNtW7TflF5U/w6NN3nfGJqkab3QUhBGF1ym9apWZHgiXFxP2wAoe4WgzuJUPZddvTdWBI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLbtdo7OPb0ptDeKtTR9rtmKTbjXjq3FsLZsy4Z2f1wQ22NPbpO
-	NYCLWfhyRw2jdB4wyrKgoPCeKzjM7Jln2tJCjDumY+hllr7IWiHCe+vR
-X-Gm-Gg: AYBFou2UmgmH7tzbs3zxTfJ3sEJY1WoepVvrvhsZKRshAFiP0NCzHc3eMSJr8TiNJ19
-	UWL/hUMPps4LzEru8imWDJ7nP1dHbYReHb5ywA2f6tq5CMgeZwR3NAOzfOU8J+x1LtKJzcfp7kW
-	1epj008rJGJMqctreJzDSmRj3S6wUQbQ80ZfmevsoQxvAFYk847ovEt9e3aUiqfqJBZuvCe2FHG
-	5owpC/pnKRCwpTLdN7b4YzaZRsW/DDURdqzbBoPQQFx2eG3zmlWsfPh+wDUdmBCKQKwVTkVYmxR
-	B9toy3HCmRft+x8u4LUJ44qjw8cfBHCPlT8xxx8BCWVFwD9PyfdjUbTyFzG2OVM0SNirpFDyDxN
-	iS+YrzKeIu2zSzBiRTMCYzvDAVvb4VGHjuU8tNnhcx5hmJ7fpqDA4KSpXRJa7f6OeZRCZKhT0Rp
-	/prsHrpy38Yya7P+izek4QXT9/JUMBp+Qh3tO8b57eBhCCz/q9s2WV5r5CgjwWpa7rkUQJi/dPj
-	tycV72mSKo5a3n4KeVTjIn9eCteEnxhSK7TW3d+h8CC0Y/Aug448xfsBXjVSDHSw+j7jY3A8mC1
-	pI2rAFpS3NfrolOK+5novSANOhaBf2fL5pPWkjdJQsoFwMFmz+QsNag3Y8dudj8zXb0WBspAygF
-	D/PiuKJeQkw6C5j7/6extktqTTRYndZu4mL2sHO2wjMVIHM+p4Ru7E8n4+wiCxTRGHo30BuOAs+
-	0GPYp1fQ==
-X-Received: by 2002:adf:ed4c:0:b0:487:1662:cf4c with SMTP id ffacd0b85a97d-48c72707d0fmr7555934f8f.7.1791446158003;
-        Thu, 08 Oct 2026 00:55:58 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48c71d31767sm10344398f8f.51.2026.10.08.00.55.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2026 00:55:57 -0700 (PDT)
-Date: Thu, 8 Oct 2026 09:55:57 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Christopher Hoover <ch@murgatroid.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Benjamin Tissoires <bentiss@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, David Lechner
- <dlechner@baylibre.com>, nuno.sa@analog.com, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] iio: hid-sensors: fix shared callbacks in
- temperature and humidity
-Message-ID: <20261008095557.0000617a@gmail.com>
-In-Reply-To: <20261007184423.622445-1-ch@murgatroid.com>
-References: <20261007072329.27806-1-ch@murgatroid.com>
-	<20261007184423.622445-1-ch@murgatroid.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cHO6dDUZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C725BC2BCC7;
+	Thu,  8 Oct 2026 08:32:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1791448344;
+	bh=wgExskAdbglgz31ok+x5vWdb//tIQQPa12UByAAFggY=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=cHO6dDUZmK2JM6mOwd1HRAgh52BslcNP+VlBBbmLkcs6+c0sQOLrb4zT8yrV69L9C
+	 bncnVyqtwK/s80Zo3T8vEMYw7hhqMBzb3bpm2LtrDkn2pQTHl1dgd5OqOgDu+MRafO
+	 x9LmaSESukL+lpPTQYtJ/HSQnlKWn/Cxgh+4Jp86iW5Bu6xRgs6RbimU9KYOZBhyNs
+	 HwiSclGYpBKSK+srQy1eBkBjrulWF0sMsLJKQnFXO3s1E9OFdCQ9jCp+YOghOsSwBh
+	 MCMzJUeKwD0fQdp3PRckSTBsrzH3bDKQ0Gasr1gEbFjP2Oh+Npoh6o/hjykcmv/F2V
+	 BDrZ154O+j8Wg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A457ECA600B;
+	Thu,  8 Oct 2026 08:32:24 +0000 (UTC)
+From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Subject: [PATCH v2 0/6] iio: imu: Add support for the ADI ADIS16607
+Date: Thu, 08 Oct 2026 11:31:52 +0300
+Message-Id: <20261008-adis16607-v2-0-7c94df80878a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAPhUx2oC/03MQQrCMBCF4auUWRuZRJK2rryHdBGn03ZAG0mkK
+ CV3N2bl8n88vh0SR+EE52aHyJskCWsJc2iAFr/OrGQsDQaNQ6db5UdJ2jlsFXb9NJGzlvgG5f+
+ MPMm7Wteh9CLpFeKn0pv+rVXRiPpP2bRC1VPXE/PJjtZd/OrvYT5SeMCQc/4CNtbCZ6MAAAA=
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791448342; l=7980;
+ i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
+ bh=wgExskAdbglgz31ok+x5vWdb//tIQQPa12UByAAFggY=;
+ b=vslH2gi+d4Z3F/W2fWQUsTIWfBXc3VwRdLMT3iGwnoWATrxIZ1NqB7DfnVJ7a7+HnfxsJhhm1
+ ByMVjlzErBHC/bvwFOy3CnNX3jlmzc06iINwA8g314vnHKzgzqfTYVe
+X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
+ pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
+X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
+ auth_id=1094
+X-Original-From: Radu Sabau <radu.sabau@analog.com>
+Reply-To: radu.sabau@analog.com
 
-On Wed,  7 Oct 2026 11:44:20 -0700
-Christopher Hoover <ch@murgatroid.com> wrote:
+This series adds support for the Analog Devices ADIS16607, a precision
+MEMS IMU with triaxial gyroscope, triaxial accelerometer, and
+temperature sensor, communicating over a non-standard SPI Half-Duplex
+protocol.
 
-> hid-sensor-temperature and hid-sensor-humidity share one static
-> struct hid_sensor_hub_callbacks across instances and overwrite its pdev
-> on every probe.  With two temperature sensors, reports for one go to
-> the other's pdev; once that device is removed,
-> temperature_capture_sample() dereferences NULL.  I hit this on 7.0
-> with two uhid-created sensors.
-> 
-> Patches 2-3 make the callbacks per instance, as the other HID sensor
-> drivers do.  Patch 1 makes sensor_hub_remove_callback() take
-> pdata->lock, as sensor_hub_raw_event() does, so a report racing an
-> unbind cannot call through the freed callbacks.
-> 
-> Changes in v2:
-> - New patch 1, for the use-after-free on unbind found by the Sashiko
->   review of v1.
-> 
-> Christopher Hoover (3):
->   HID: hid-sensor-hub: Synchronize callback removal with raw events
->   iio: temperature: hid-sensor-temperature: Use per-instance callbacks
->   iio: humidity: hid-sensor-humidity: Use per-instance callbacks
-> 
->  drivers/hid/hid-sensor-hub.c                     | 12 ++++++++++--
->  drivers/iio/humidity/hid-sensor-humidity.c       | 12 +++++-------
->  drivers/iio/temperature/hid-sensor-temperature.c | 12 +++++-------
->  3 files changed, 20 insertions(+), 16 deletions(-)
-> 
-> 
-> base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
+Patch 1 adds two small adislib (drivers/iio/imu/adis.c) extensions
+this series needs:
+ - An optional self_test callback for devices whose self-test sequence
+   doesn't fit the generic mask-write/sleep/check-status pattern.
+ - An optional post_reset_setup callback for devices that need extra
+   device-specific bring-up between reset and self-test (SPI mode
+   locking, status/bootloader checks, pin or burst-mode configuration,
+   etc.) - not all ADIS devices need this, so it's only called when
+   set, same as self_test.
+Plus a fix to __adis_initial_startup()'s reset fallback, which was
+calling __adis_reset() directly instead of dispatching through
+adis->ops->reset(). That bug is invisible for every existing adislib
+driver (adis_default_ops.reset is __adis_reset() itself), but silently
+breaks a driver with fully custom ops - like this one - on any board
+without a reset-gpios property. Carries a Fixes tag for the commit
+that introduced the hardcoded call; no stable backport is needed since
+the bug only manifests for a custom-ops driver, and this is the first
+one.
 
-Also for future reference, please don't send a new version as a
-reply to the previous version, it breaks tooling :(
+Patch 2 adds the devicetree binding.
 
+Patches 3-6 add the driver in functional groupings, as requested in
+v1 review:
+ - Patch 3: base driver - probe, raw channel reads, decimation/sample
+   frequency, startup and self-test via adislib, debugfs identity
+   entries. No buffered capture yet.
+ - Patch 4: buffered capture via the device's hardware FIFO.
+ - Patch 5: external clock sync support.
+ - Patch 6: calibration bias support for gyro/accel.
+
+Notable points for reviewers:
+
+ - The device does not implement the standard ADIS SPI protocol used
+   by other parts in the family; reads/writes are done over a custom
+   Half-Duplex sequence (see adis16607_spi_read()/adis16607_spi_write()
+   and the adis_ops overrides).
+
+ - Startup is split across the two new adislib callbacks rather than a
+   driver-private initial_startup(): adis16607_post_reset_setup() does
+   SPI Half-Duplex locking, dev_id verification, the bootloader-busy
+   check, an optional reset-status GPIO output, and (once FIFO is
+   wired up in patch 4) burst-mode and interrupt-pin configuration;
+   adis16607_self_test() does only the actual per-axis delta-check.
+
+ - The optional reset-status GPIO output (RESET_GPIO_MASK, part of
+   "optional hardware reset via GPIO") is configured in patch 3's
+   post_reset_setup, independent of FIFO. Patch 4 later adds the
+   DR/DEV_NOK pins to the same USER_GPIO_CFG register via a
+   read-modify-write, so it cannot clobber what patch 3 already set.
+
+ - The hardware FIFO is the *only* buffered capture path - there is no
+   single-sample direct burst-read trigger mode. The FIFO-pop command
+   and the regular burst-read command are genuinely different
+   protocols on this device (different payload shapes, no checksum on
+   the FIFO side), so this stays driver-private rather than going
+   through adislib's generic burst-read helpers.
+
+ - The FIFO-threshold interrupt is signaled via DEV_NOK on the
+   device's one physically-wired interrupt pin, which stays asserted
+   (level-triggered) until DIAG_STAT is read and cleared - this sets
+   has_fifo on adis_data and requests the IRQ through adislib's
+   threaded/level path, matching adislib's actual contract for that
+   flag.
+
+ - An optional external clock (clocks property) selects between
+   SYNC_DIRECT and SYNC_SCALED modes depending on the supplied
+   frequency, with the internal 8 kHz clock used as the default when
+   no clock is provided (adis16607_config_clk()).
+
+ - spi-max-frequency is corrected to 10 MHz (datasheet maximum), down
+   from 15 MHz in v1.
+
+This has been tested on a Raspberry Pi 4 (arm64) with the device wired
+over SPI, exercising the FIFO buffered-capture path with the updated
+DEV_NOK/level-triggered interrupt wiring.
+
+To: Lars-Peter Clausen <lars@metafoo.de>
+To: Michael Hennerich <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc: linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+
+Changes in v2:
+- Split the driver commit into functional groupings per review:
+  base, FIFO, external clock sync, calibration bias (Nuno).
+- Added adis_data.self_test and adis_data.post_reset_setup callbacks
+  to adislib instead of duplicating startup/self-test logic in the
+  driver (Nuno). post_reset_setup is a second, honestly-named hook
+  added after review feedback that overloading self_test to also mean
+  "everything else the device needs at startup" was misleading.
+- Fixed __adis_initial_startup()'s reset fallback to dispatch through
+  adis->ops->reset() instead of a hardcoded __adis_reset() call -
+  found while wiring up this driver's custom reset op. Added a Fixes
+  tag for the originating commit.
+- Removed the direct single-sample burst-read capture path entirely;
+  the hardware FIFO is now the only buffered capture mode. Dropped
+  adi,fifo-enable from the binding accordingly.
+- Fixed FIFO-threshold interrupt wiring: set has_fifo on adis_data and
+  switch the DT interrupt type from edge to level, matching the
+  DEV_NOK signal this now uses (previously only the data-ready pulse
+  was wired, which never actually generated a FIFO interrupt).
+- Moved the optional reset-status GPIO output into the base driver
+  patch (where it conceptually belongs) instead of bundling it into
+  the FIFO patch's USER_GPIO_CFG write; the FIFO patch now updates
+  that register with a read-modify-write instead of a blind write.
+- Fixed cover letter: "Three compatible variants (-1, -2, -3)" was
+  wrong, there are only two (-2, -3); "configurable data-ready
+  interrupt pin (DIO1-4)" was wrong, there's a single fixed pin.
+- Corrected spi-max-frequency to 10 MHz (datasheet maximum), from
+  15 MHz.
+- Renamed ADIS16607_REG_SW_RES to ADIS16607_REG_SOFT_RESET to match
+  the datasheet's register name; renamed burst_buf to fifo_buf and
+  dropped the redundant "fifo_" prefix from the buffer postenable/
+  postdisable/ops names, since FIFO is the only capture mode and
+  "burst" no longer described what that scratch buffer is used for.
+- Link to v1: https://lore.kernel.org/r/20261001-adis16607-v1-0-9c89cee35d56@analog.com
+
+---
+Radu Sabau (6):
+      iio: imu: adis: Add optional self_test callback and fix custom reset dispatch
+      dt-bindings: iio: imu: Add bindings for ADI ADIS16607
+      iio: imu: Add driver for the ADI ADIS16607
+      iio: imu: adis16607: Add FIFO-based buffered/triggered capture
+      iio: imu: adis16607: Add external clock sync support
+      iio: imu: adis16607: Add calibration bias support for gyro/accel
+
+ .../devicetree/bindings/iio/imu/adi,adis16607.yaml |   83 ++
+ MAINTAINERS                                        |    8 +
+ drivers/iio/imu/Kconfig                            |   13 +
+ drivers/iio/imu/Makefile                           |    1 +
+ drivers/iio/imu/adis.c                             |   30 +-
+ drivers/iio/imu/adis16607.c                        | 1373 ++++++++++++++++++++
+ include/linux/iio/imu/adis.h                       |   14 +
+ 7 files changed, 1515 insertions(+), 7 deletions(-)
+---
+base-commit: 9c87e61e3c5797277407ba5eae4eac8a52be3fa3
+change-id: 20260617-adis16607-089ffc655ceb
+
+Best regards,
 -- 
-Kind regards,
-Joshua Crofts
+Radu Sabau <radu.sabau@analog.com>
+
+
