@@ -1,77 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B9864BEE53;
-	Fri,  9 Oct 2026 11:49:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79A9037F728
+	for <linux-iio@vger.kernel.org>; Fri,  9 Oct 2026 12:06:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791546581; cv=none; b=R4Slt9xHoXMK6sCsASp0LGMkFv0ZvS++5acncY5C7R6PK7zazrjYtFIgFSvvaDFSYWKbdXl03AmQ/yoefM6XnyrDStQj7Db7f8MmTK9tNxDQp+EQ2sYtR0JM1CUgX1Sp/Nwn9pZbBgmPpmOGi3antKblhlEqZgZd9f8LaAscZXo=
+	t=1791547593; cv=none; b=cIbHviKwukdAapUfyoO2ugS/WepC5UfI5v0Ht17C7bQe/WBtrxiEinr2exEdtk9YrGHnrNEen2g+azmAJJhR9BVOQz+/+JzW/hORi0rBL5oOw3k8egS8aLRsJtY52Oouh88wGKMFN5bvST7euI58KkzCNRQ024fiTGU9H/8Svv4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791546581; c=relaxed/simple;
-	bh=qqpWBb6K0zxBB49oafd/WyrzEvAjnkElc6lknN10aDQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o/+QmwG92eBhVTr9O6ZrsXYUubR+RzCyejEKT/dN1eDw1WURrtn4eCfyrjY6V4YoNYts80Ic3zUgtZ0bOIq6Y3Oev1mWIZhbyayTAikP8AyXdegkb8AMy6oJBcL27bU5wQRibkphLFASRCO4g3ag69PYgeky3VWgHUhT3wMp7q8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dlS+lTP+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791547593; c=relaxed/simple;
+	bh=hOv5cDWUXPtG1yahyo6pzhmnH4Ks7c65TADdBXCaVOc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=q4MOR9fQDkzi+zoh90ZBMpXsinbb2SJywE6j5gI7gf0qGP+8VHk2rgV1ZkFuWkLsRNEK5wMeXQdJBovdA0Vfw9uSE+SSeEWyvZkGU/ifOXZek77i/RmdCo30mWNQIwPhhDNXRoCaOOvuUFv9GHUNetrG+ewpbPg93akcXBZn8W0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LlUVp8FQ; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dlS+lTP+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE491F00898;
-	Fri,  9 Oct 2026 11:49:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791546572;
-	bh=CIyXD8wTbt3nZtZ5v+UTmUyElDBfr2EMxvYLIBrKQjY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=dlS+lTP+H5P82dbQnhwsvIM7M2QtStqmsl4/8YzjCzNW6nLQ7fP8nsOklLjxqTKPQ
-	 oYyz3qaFva9yrKND7feZiBP/cu35e6EXNoqOg83EZMKYRPDASNzelMKz9TAjAEs74k
-	 N54vGN8f0Sml53COFVjxziwLs/b4+UrmgiGqtZv9XWp1UpiwBHSlhyLKS2FwbXAg2B
-	 eQ30QhMBjz3D94amAxWAZER5pNcMRxma+o2rDxVog7tbwZgnDwzbeGTZRmqrRzVz4I
-	 psXifW/L5Yt67dIraRL5PzgHqJEu2mfnWT3Yb7EqrVwNUn9vKkQO/31Fw3waw8y/XH
-	 oK76Uv2O1NUrQ==
-Date: Fri, 9 Oct 2026 12:49:25 +0100
-From: Lee Jones <lee@kernel.org>
-To: Andrej Scek <scek.andrej@gmail.com>
-Cc: linux-input@vger.kernel.org,
-	Basavaraj Natikar <basavaraj.natikar@amd.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	srinivas.pandruvada@linux.intel.com,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	regressions@lists.linux.dev
-Subject: Re: [REGRESSION] amd_sfh: accelerometer broken since 6.19 ("Event
- data for report 1 was too short (15 vs 14)")
-Message-ID: <20261009114925.GB199624@google.com>
-References: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
- <CADrS857iYjafXEZcHRSmeOFjrzs0DYG5Dp2PeS0n669cHBjAuQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LlUVp8FQ"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a02718da81so30331595e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 09 Oct 2026 05:06:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791547587; x=1792152387; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=4ZIo+hbBbh95/Ym6wzbahCH1ehdtPjKzs3eJGJE97JM=;
+        b=LlUVp8FQ2MPyn6ZFghQagi1IXoAdvvWZX3b735EJI1KETnOaXFX1HSQiwBmgXQhBAc
+         lO7mgmTX6ncK3rCjIi6RAPC+lzHc133N+3oQsaF+Bg33WJm0vjSJMZZOGFj2LFw0t1Vr
+         Ozv0bmKBGCU7TE3nMFgJlWpzPQxjlwB0D2lHc+ZjXmrU0nc6IQNOhS0ZjyBe8i1Zqfvl
+         1C0h2gqZ7sfbaJgJbUNUSvJxVBIeZU3WQdpqVyBXiuvrK4NLxwxsSEOgDRPvAB5JtUVo
+         KO16HSMNWrFhriIr7s3+2Hez4qrhsM3qB8pqA1XZlVFsGYW2yDORNg671z6GsEz1AMJw
+         dYbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791547587; x=1792152387;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=4ZIo+hbBbh95/Ym6wzbahCH1ehdtPjKzs3eJGJE97JM=;
+        b=cLxtKZ7UyaFm1W2MstMWEFnpq2u27xmQI6v5DESsC4rGrn0+pvqpWfFZpgeVG8p8Tb
+         nFvTGzrnxBJGpJadN1xRHVs7yO9jS5x6zpkgYZPhrTDW+b+LYToXGtQw0mVt7eQl55uL
+         wUOLbsvfnL+bN9XjLaQRl0bTk4IqV7GPT5ji9Bup5VMtaCOmxL8MDhsJhM7WgEEmQxhg
+         CtrIlfb8etV/ofa+pH6332kfKt4rVEP1FxVrriyq2eqdo6ATYuxZzIHBiyV2QpYfnfKk
+         ohnQrbCtHHlf0KOnTaFs8qIXS8pVSTv6K4eyJejkNI1BTkL/B62Vgj+G3CnpPIkKIN+V
+         NCPA==
+X-Forwarded-Encrypted: i=1; AKwUvBwN0ObcB3wikfplYDLS/5eKsD7Z2VB6BmL6t0uH5usiFHYurUoQBq6BrIXtyJJ74jcxz0SIrvWKHHY=@vger.kernel.org
+X-Gm-Message-State: AFuF++luy3W44YcagOcx4eI6o5/rMAtwcdWrwiJUlKz4F7om0H/qmGdJ
+	hjYg8BnTv1nTbWhTvOTycpzV/Vr3DKp3ZqOlu69pVulvvY+4X553i4xK
+X-Gm-Gg: AYBFou14VabVscP96SezEyscEQudlXWhMTF3/UoE9QvHvKgCVRGUy+IEfHpQ0M2DMiA
+	hDYvgp5FjWHlT3u78ZKK0bZ6tzf8vHZIfDn+cStimO5XQPBmtEQeXM/d4LQo5DQgEGfCUAi0Itf
+	Y3pBD5eEPX8ORNpgXLM1NIZUAJqEh1WKKaRzDJJ8HX/khi/OTYMCMWB/mtmW+mXO1Nw8IctcvAj
+	5bopCKDa04jtUJl7j51jbqeoA21ZpBjn12dNZ1wSFVed0ITN8c9lBi/JTCsUOIYVq0QGEslxUY5
+	1lXihWkCx8NGSLU6FL1ZhtrGNW8Gb3Pc4MNUwDUkPDO/dFEHsuWJiV3DevOQ+ScqKFQi99ZuAni
+	17dGZhAABO5c9z251IPdCvo+h15oQEkN0xxhzZPYIx082pTQYbkB4ika7MAmtyo5ruHGjJbfDK5
+	6s/MvzPJ9KLQN5KYas6Gb2VJohJDWn6xlUmeEhomVHjkvev+lCfIG1cwcpH8D/wK1o5Yg01mKpz
+	mNyLjsbTKbSH6LpGjVdB7fscDhBSXq3Pl18x2p0+VGgQpDmF2uOoZpXIAMsIyNp0Q3Vtn/gWXNm
+	hEFAjQUyV2HakqWWXF5mMd++lODHkjXu+skh3SXOZV8mgPk3PIpwejwM4IVWK0gjABteMXsEGxR
+	HzIIi3iy2AKC3MlfTWeGStmvacopowve5jT4kRo6AdFXCAjU8GTy1ejzmtEp1EmfdcQ==
+X-Received: by 2002:a05:600c:3e0f:b0:4a0:1b21:2628 with SMTP id 5b1f17b1804b1-4a18e4b60d8mr31527275e9.23.1791547587405;
+        Fri, 09 Oct 2026 05:06:27 -0700 (PDT)
+Received: from systembl0wer (90-182-211-1.rcp.o2.cz. [90.182.211.1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18bc6a484sm57732875e9.2.2026.10.09.05.06.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2026 05:06:27 -0700 (PDT)
+Date: Fri, 9 Oct 2026 14:06:23 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Andrei Stancovici via B4 Relay
+ <devnull+andrei.stancovici.analog.com@kernel.org>
+Cc: andrei.stancovici@analog.com, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
+ Beguin <liambeguin@gmail.com>, linux@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: lltc,ltc2497: add LTC2493
+ support
+Message-ID: <20261009140623.18920555@systembl0wer>
+In-Reply-To: <20261009-submission-ltc2493-support-v1-v1-1-3dad1d4b152a@analog.com>
+References: <20261009-submission-ltc2493-support-v1-v1-0-3dad1d4b152a@analog.com>
+	<20261009-submission-ltc2493-support-v1-v1-1-3dad1d4b152a@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADrS857iYjafXEZcHRSmeOFjrzs0DYG5Dp2PeS0n669cHBjAuQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 02 Oct 2026, Andrej Scek wrote:
+On Fri, 09 Oct 2026 11:43:34 +0300
+Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org> wrote:
 
-> Update: this looks like it is caused by
+> From: Andrei Stancovici <andrei.stancovici@analog.com>
 > 
->   0a3fe972a7cb ("HID: core: Mitigate potential OOB by removing bogus memset()")
+> The LTC2493 is a 24-bit delta-sigma ADC with 4 single-ended or 2
+> differential inputs and an I2C interface. Its channel map matches no
+> part already listed, so it gets its own compatible rather than a
+> fallback; no new property is needed.
 > 
-> which was backported to the 6.18.y and 6.19.y stable trees on 2026-04-11.
-> 6.18.16 predates that backport and works; 6.19.12 and 7.2.8 contain it and
-> fail. The AMD SFH sends 14-byte reports where the descriptor declares 15, and
-> those are now rejected instead of zero-padded. (This corrects my earlier note
-> that hid-core had no relevant changes; I had only checked v6.18..v6.19.)
-> 
-> The same symptom on another AMD SFH device (Legion Go S, "18 vs 14"):
-> https://github.com/ublue-os/bazzite/issues/5796
-> 
-> So AMD SFH (hid-amdsfh 1022:0001) probably needs to be covered by whatever
-> short-report quirk/fix is adopted for this.
-> 
-> #regzbot introduced: 0a3fe972a7cb
+> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
+> ---
 
-This is on my radar.  Leave it with me.
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-Lee Jones
+Kind regards,
+Joshua Crofts
