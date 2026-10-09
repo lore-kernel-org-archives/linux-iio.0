@@ -1,53 +1,56 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E8638AC78;
-	Fri,  9 Oct 2026 15:53:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8434738837D;
+	Fri,  9 Oct 2026 15:53:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.139.77
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791561194; cv=fail; b=mBwMPCJHGmntsS8OhbbNPNcdI6c+U6moKSL80bcJAoS72T9VHb3Qp71kag7k/+X2U5MOLpnWFi9/tmTXwyfgny41FtvO9CLbOHcNDvET3URIRpg6v43TUqXEKlrMc4y2YRWCYR2sfpPf7yZSKg6cyE4eaPY92FyeNlfIoyeX+dI=
+	t=1791561208; cv=fail; b=grWPcv4bwaUOu49LNBXgfazVmsz/5pk57e6h2bFx30c7rsZCquwIN8zCFtd5c9DZWtFKuLEanHOfCSBYb05kSDDXj0C6Dd+18VARHvJn9Po+NiAQ5pSd+/YnlHHZaGp/glyjl04NqfN3spSiAuP7lMaqJgrZUa6Fqsd12xLzTdE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791561194; c=relaxed/simple;
-	bh=53zF5UbsM+jfi/rPcYipkiAJQYtt5gYnsR52IyZ0a24=;
-	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=p8CJL5+/uPGYs41LWmvJ04ReqCfKkGah0BaHWg/lMlWnEx3OyLvp5jKj7h0SmjO51YbHuKZw1GEJ/OOlox03ZK8IED7znelNzfxBJnpGeBZjUlFqAQ5hz92MrKuP9yfY2a9MhdaIC+zmI6ct9YgsTAH7o6+00C4MaknIuUOk8BE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=D5Ut2IMM; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=LLqLDBFi; arc=fail smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1791561208; c=relaxed/simple;
+	bh=i6eGbJpnesnmwckll91gtKivDQsCyX3Xb7L4uirYROg=;
+	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
+	 To:Cc:MIME-Version; b=lmui6h4X1VNyzwQai/cM6G6aS/EhfhemJ1YO1oesaAis6gz9r5fGZZ7tFVO9RpZJ6LTafQ10mQ6ukj9kFNkkoen/1HmDBrW1diu2hBiVPUKnzsanwVkxHE+FAfM+1bJ37yb3M1P464S27Ag7FtoYJDalvy9cVYfc+041LcSJuMk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=RjLKoDFS; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=BbLHxdtT; arc=fail smtp.client-ip=148.163.139.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="D5Ut2IMM";
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="LLqLDBFi"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 699FUjvJ2822101;
-	Fri, 9 Oct 2026 11:51:37 -0400
+	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="RjLKoDFS";
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="BbLHxdtT"
+Received: from pps.filterd (m0375854.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 699DN9vM2289188;
+	Fri, 9 Oct 2026 11:51:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
-	:message-id:mime-version:subject:to; s=DKIM; bh=Zak14qqVsNzea/dV
-	1FqtWabUuWEEGjwFITyeerxFjTw=; b=D5Ut2IMMLxuLrMTQ+laon6gEXqPoDl6C
-	9lQjJcLT+nXp+vSDt/kBD3wIHs33VwGsChYIYpUdemAI5ztvYEU2lDsitt4MZAcq
-	BZEEjsuTuo8X/L+OzV9ea8QDQJk91o92c1645jcg6c23P6JszfQ7FY9NOEATksrM
-	Se0s6vF+CdOC1vI2ApYqDYzetcpAs7Z2EsL39ual8djIMlJaNRWt5lcL8cBkQ1QD
-	GzdRPw0BTxpun8305mGrteBVG7LutW3LcGhZGc/LMEsFMCw6HMJ9Djq0cOmLYCR2
-	3X8T7BDeIhVcFCLRJqIUdIp277DiHU1bDV+0ObK0ziXHmc1UgSrXsA==
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=u7oVZD1MkFU1drqMyInhONPz5h8zMS9R6gqJSwmciZg=; b=RjLKoDF
+	STiRsyQMYdrb+bTWau796v1w+w1oH3NDe6cXjOKsPSFkH4YyNra1JuVx9DnHcnFP
+	SY3ujRt12Pn0dvOokX5JCI0hVvCngqtvgaVdATmiA9DqQGWnAPpVqIUGIVW8uGOc
+	c9YXNTM9C89SeMZXEigGNKgvwH0qcwSTPtGAIGrZAQMcTdAElv9abGixhsz7ZCt1
+	YKpNjdcq3Jdt6o5vHfZDjDwr9EhwbOzPIiF6+Ts5NDnXf8bglTp/3PPlC5NU1cFR
+	5tQgN1ORAvKc1ZwyilyojyeyepPuGBAgy8Zvsib8HTLBQf48JAxlmZQnoqAPQsL1
+	qxTemHoBrXNRpDQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=Zak14qqVsNzea/dV1FqtWabUuWE
-	EGjwFITyeerxFjTw=; b=LLqLDBFi+T5fTEtfh+MAHV3OyUTdI3MO5dTGBceNMgH
-	PFLIs/BG5+9joUYY7AJzchIUp0ctuGeghyEelSgMqG3hAPebC+QdgjhaGpKTP5n4
-	P18gpx3Jqxqhn1M9CCM8zDlpmEuGEqIQcH2qQkCeOJngOFvDDF+BuIGqpl1/ZKcD
-	FiNnlwM23fBYxA+lj/suvjD+L3Pf7/lOii+snMhna5b0ngv4LBYXAFxWkqpZPzFa
-	CCaZa2Sy0KOuN8qPgH2Jb3rK/6QSoLiurI4n4LBwVGkmPyBYBN/tv1N2sV4URD3g
-	Q6UJ9j7Uxk4/Zbt1rbN1TxIklFQEfAJUOS1c7oTz7cQ==
-Received: from cy3pr05cu001.outbound.protection.outlook.com (mail-westcentralusazon11013053.outbound.protection.outlook.com [40.93.201.53])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4h6dvw79f4-2
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=u7oVZ
+	D1MkFU1drqMyInhONPz5h8zMS9R6gqJSwmciZg=; b=BbLHxdtT3ug5lpQx+XbzI
+	hoFEKumnTYYYsb6n4kINF1BFsMe+zJYsle/KsARgZPrNzTYWDNev55D7RYB9+aYZ
+	CH1nwb/OoyWWJa5irfiWd9Fg1rnuHpiAEQRonJosA53l29wsx/PuxK2d+bJvM6cy
+	S8/4vBLTO9qdbUI/3XrfEjw1+1ooTEx6CcNR4FJdzB1I6g1W8D0NzWYmbBVgmmIq
+	N5naMMqbsIFnzQFTxObuFH2ZTIMZ6gNH5LMThz5+h5xE5dBn77AVW8JUKuq2faGs
+	gnuWDVoB/Of/6oOayBOI4FeD6FDZYUBl97GktCOqE04vTF5SehPqGRS/UvgC540F
+	w==
+Received: from ph7pr06cu001.outbound.protection.outlook.com (mail-westus3azon11010011.outbound.protection.outlook.com [52.101.201.11])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4h6kgmmvam-1
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Fri, 09 Oct 2026 11:51:37 -0400 (EDT)
+	Fri, 09 Oct 2026 11:51:52 -0400 (EDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=k1QUKnZSiltga+NNrN2rvmG+2rcLlDxUMdYK9eDbJHx3CA+Mwkgws7DoPVglIp9iQwrT1ixcG8lJGcfmK1Eze26t+YicjUEXFnLmXDSF2Sn97AFv/+m5/X4JO+apMjg1Iew+nKU1PpVIh5m38N/ANVlMMtkVyef2b4+O95pUN/iEqNxKVTIfoJAUbfc1VlkOwy8tf3iWAq+OSNWlguT355Ihihvftqfu/BvGQv0vG/8xiQ02/wG0ocm48f2Xgkf2+TcIBK/g41O9pep7+Hl3d0rR4WRp2n3iNXRU1GKRMHbl+EsgDcm2+JElzlVOU5MFOR0OJ5pWxJ3mV4oVBl1XQw==
+ b=P1b1ePB7pFOh491iZ6vxB9id514zP0oajIuc/P0B0QocgFr2/a8zuPYjNWYWqJZ8sOQqRAZvkLNS0OPwLzN472z9/i2/n2Kr7muwA9NbqA6pCzt8dVMU3Rj3RUZpdrcEk/cQn6QePsDXiWKkfcnKARNJzjoV/TYrDBVq9QuURNAYDaQgs8fAnFpl8YQ+/LqNOLR0hP30mPpkBLZVw6hjD8pUtiFi+c1uB2t4QehJ/bFVAF69CN7ok9k8TEzuGyoupvRtbOodyKFjdV9+J93PYCkdlhh2RI5fNjDlh6asxWpSHHzMXrGXVobvf2wGLcXT3f1c6nb2u5CLqoGVcgI5Fg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Zak14qqVsNzea/dV1FqtWabUuWEEGjwFITyeerxFjTw=;
- b=JpDNTfVmlxYQ5a0egRL3g9PHSh4tPkb9a4wCy8dE6vYsCB8tB7T+S0ewQgU3ZTO9EUDvn46ZCrM7RVQrAhVcd6syA3+6ueQv/sVecS9YGVOP+Pgz9MPUWMArZXwFsRmQurCqykD8rr7fmyHb2l1sqgsv/Heft/kCB+YqOYJgXHF7+lnxGEOYLiR/9Acp4+vrggq0dM2VSmHnQyH2/8zDckpQ7/x8hSTrNWkYHRyJbyJ0ObAEGf+6puLi8r3BmYBBdjU/8J/Kxa6WkFc9XtvmENC7FsLvhSJJhMSiRRpsgqGO2drCOw3pknMpB+LOalgjPEOzk9sz3iRHuAoW8+lzTw==
+ bh=u7oVZD1MkFU1drqMyInhONPz5h8zMS9R6gqJSwmciZg=;
+ b=SMxOPqGs/LEV6MglwiR9cZwCcx+n5H4DZSCRvyOAAVgIfkNwLL6eADrEzs3cR0tnYv9+0TPNF83tF/t07W6sXA/i9L+uTw1CCeUNbpsUl0oDYbKUEunyUlkq1dRWT60R4AKEBbBH3Im1KulVlNKtG6byCDPW/eP85JDXq0SOAAh0wbYECipvX6FUnsyqgFsCeIE400eY6a0StN8u8cswltYARgzEXp515fZJuwh0Qz80QamCCIWe/Q4mLD/GbQe9ku7dghSToMwnRiD7WyRBaGCq/ILJyhfkpAvJMTySp+FBdDYXdfIqBXj+8s6oZsvG7UzJDyp1h2UEBJFKP9SpUA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
  dkim=pass header.d=analog.com; arc=none
@@ -57,23 +60,19 @@ Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
  by DM6PR03MB5051.namprd03.prod.outlook.com (2603:10b6:5:1ea::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.17; Fri, 9 Oct
- 2026 15:51:34 +0000
+ 2026 15:51:39 +0000
 Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
  ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
  ([fe80::2a19:76b2:e731:8c5a%6]) with mapi id 15.21.0496.015; Fri, 9 Oct 2026
- 15:51:34 +0000
+ 15:51:38 +0000
 From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v5 0/9] dmaengine: Support bus widths of 32 bytes and above
-Date: Fri, 09 Oct 2026 16:52:52 +0100
-Message-Id: <20261009-dmaengine-support-wider-dma-masks-v5-0-4c4e63a7a1af@analog.com>
+Date: Fri, 09 Oct 2026 16:52:53 +0100
+Subject: [PATCH v5 1/9] dmaengine: Support bus widths of 32 bytes and above
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43Oy27DIBAF0F+JWJeKh/GYrvofVRcYBoe2fggcJ
- 1Xkfy+4qpIqGy/vaHTuvZKEMWAiL4cribiEFMYhB/V0IPZohg5pcDkTwUTNaq6o6w0OXRiQptM
- 0jXGm5+AwljvtTfpMVBljuag0oACSnSmiD5et4+39N6dT+4F2LnD5OIY0j/F7G7Hw8vfXV+/oW
- zhl1BkhTeNsC6p+NYP5GrtnO/ZF3yiQbC8lQQrPvXbamnuqbF/EbV3Dd5Eik9xDC7pxTCr/QMo
- 7UvI9pMykYuA0VLr2wj2Q1Y3UfBdZZRJE23hXWQsN/iPXdf0BB/HRLCkCAAA=
-X-Change-ID: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
+Message-Id: <20261009-dmaengine-support-wider-dma-masks-v5-1-4c4e63a7a1af@analog.com>
+References: <20261009-dmaengine-support-wider-dma-masks-v5-0-4c4e63a7a1af@analog.com>
+In-Reply-To: <20261009-dmaengine-support-wider-dma-masks-v5-0-4c4e63a7a1af@analog.com>
 To: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
         linux-arm-msm@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
@@ -88,20 +87,17 @@ Cc: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         David Lechner <dlechner@baylibre.com>,
         Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
-        Frank Li <Frank.Li@nxp.com>,
-        Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791561175; l=3617;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791561175; l=13891;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=53zF5UbsM+jfi/rPcYipkiAJQYtt5gYnsR52IyZ0a24=;
- b=uk0jd+6IOD+eeOJf2d5JmaT0ikChBf8jEH7Pjx6iMKA9Chmq6NEkpYV5TQBBqX6lSHF1EgMq1
- wF5Q34CGTw4AraUU4OzMV/t89X7UJxI/xMazl4INkYk7KPAveX3p+sU
+ bh=i6eGbJpnesnmwckll91gtKivDQsCyX3Xb7L4uirYROg=;
+ b=Hg6R4RXO8WyiLHw6UwrgUa6vAh0E/pfI8P2LzRqAIH+FGbuquefsjAWMSt6w0+tkfJ0DYsI+3
+ krM2ktwuy7ECxBvmB18jekpCFgUf+QMaKo38P3tTqGMEpmfRYvZtmrN
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ClientProxiedBy: MA3P292CA0043.ESPP292.PROD.OUTLOOK.COM
- (2603:10a6:250:46::17) To SJ0PR03MB5469.namprd03.prod.outlook.com
+X-ClientProxiedBy: MA3P292CA0034.ESPP292.PROD.OUTLOOK.COM
+ (2603:10a6:250:46::6) To SJ0PR03MB5469.namprd03.prod.outlook.com
  (2603:10b6:a03:28a::17)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -111,173 +107,482 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|DM6PR03MB5051:EE_
-X-MS-Office365-Filtering-Correlation-Id: fd873bf4-4fcf-41c3-f60f-08df261d31f1
+X-MS-Office365-Filtering-Correlation-Id: 54c783bf-c012-445c-6a12-08df261d3425
 X-LD-Processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
- BCL:0;ARA:13230040|376014|7416014|1800799024|23010399003|366016|6133799003|18002099003|10067099003|11063799006|56012099006;
+ BCL:0;ARA:13230040|376014|7416014|1800799024|23010399003|366016|6133799003|18002099003|22082099003|10067099003|3023799007|5023799004|11063799006|56012099006;
 X-Microsoft-Antispam-Message-Info:
- b0DoLD9uuwKFXdhPnt1AvH/hJvPEYzcLVyKfKfE2zoerep3NmvjMUJ2g/n/erFYdOp7jCG16MdsjWbeMRRNv59JMeEIjM9NixmiAz3XxdgwmNBI2Sx8T6pe6kH1mOou0XFyuogMI8oUI9ULq89yDj/e3F7UQ8VWOQ+wXMooJTAsX/s+Vtb611i0Zs/COV1egLMmPl7VQG/rqiSsgQbCfmp8YiWytJsgXIzi1n55CTHe6GOY5FsLItgyoKNNDl8Hx28n4rsuLUZ20+UWVcN9U5oB/fpJDWc6dFc8Iz4iTINo/1eMOgImoFSiJsncyYJlJodC6vk+26s1Zf+O45a7wfJ8lmrQ2qetODB1YU0enCYwKVbAsD5MSP0+7Y8Ldx90g/Vgy4LrMj/0TtZ6XW19kRzk1j+NwrZG3AdaYBSQOrbo8X9y9Vf11BbFYc9ERHPoYI2ujAwdOuj2/dlCqh355TbsuT30YyKp76b3LpUXbqNOO+njj6HPAzsQl7TdO0PkQLIdbDueDbQQ0ll2cfvBfCZTlI9hAOMvAl1s+wyLGgXdhTWeX4wMgamMGPiIs18D9JKR6d8dAMbnx98s7Q1Rain97r/wV9rHg1LiZ0qlW9VnZTr2nlEcRlckz9ZiQcrAq
+ EOFswDMTRU7jTRtYStjE4J9VqnH9/GSTZSHlzb9UgDcM5eV8B86RNm+jF4asVO4lWXqXmwNnBA4UB0sG/O4SUjjZYPKUSnxCtuyvns5jCe2JB17MUnWhTFdC7WCEUdlFA6Bt4DvnnnfJL9iBPvuIY6koSwWYMHhfTog5CJ5r5i6mp4DAMKreP4p1hn7P77vFT5LjNrGT6OSFaml0jdbvuzgJ3XJ3kaE7268oTy568iJwwoKglxhdwRtFuWBiuhwgHjag7bORPbIT6e1UF8AfzkgZW0GAME2cDThTguhi6wiixBiX9STCyKFGe/MDiK57m+adHwjlq0QMX0IRrm6mluxmFRPqwHe1F8I52/O+JG5tx9lgXO0k8Juyn0HQZ4s9eS0ykkmN6jPtNUnUG9v99TJ0erNJyVd4jxHrwlf+coG4+NIoQQsOgJBTJ23umro69Y7f3cm2tTDHjgHnAJM8pa5JA2BUmFzkPF88qOT4c5Gfn0mEhCn2hQoJf4r8Axbi1YEXdr1TIQPVTYhT9xIO5L0rWDaAKonI2Lb26oOKx7JKg0s16DKVMTniUdD7N9OE4WAySfmKgcxdEeCd87pG1rK8XXI0uLW3jFIXZRIxK86VFx87TEgArkOXaveR5dFkPDy5iSegUArOtlVksoxe71UyCZrE6HBloumoJJNIfRw=
 X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(23010399003)(366016)(6133799003)(18002099003)(10067099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(23010399003)(366016)(6133799003)(18002099003)(22082099003)(10067099003)(3023799007)(5023799004)(11063799006)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
- =?utf-8?B?enZudWRWOURsWTgxbC9yMG9iUThvR3h1K3pmMDZQNVp5QlpwbzVmQm5aNVlQ?=
- =?utf-8?B?MU5XNUZ1MWQ0R3p0R1UxMTZDTEtBcDB3S3FkSTNtQjUzQWN2Q3E3cU9FWWlu?=
- =?utf-8?B?WnZMTWVQd3pvZkVHMDBCdU93ajJRSG13Wm5DTjNKNXV4QU9UZDU5QkNSenZw?=
- =?utf-8?B?ZWtpVGJRZDA4TnZYdXRrTXFTc0dyWU4vcm84WGd4dHpDVEtpQTQ4bHBpaStL?=
- =?utf-8?B?NTFiSXRJdnRPVUVaWnBMTWxnUTZSNDJLNGRRSHk3V1FXMFMyazZvRG54UGVO?=
- =?utf-8?B?ZE5RcjVEQlFleUVVcVJvN1g5ckVNTjV0Q00zcVhvbkZiWDRPSENNeUZyZUlX?=
- =?utf-8?B?STgwTUdON3QrVFNWNkhuaE1BU0VKem1RL1VNSWhvQm5uUit1TktROHNtbGR2?=
- =?utf-8?B?bUlweXZFKzNHWEZONFozalV1STZ4QTJsMjJ2N016OE9YaTlISVpDVHNFY2Uz?=
- =?utf-8?B?RVdla3ErSFRlSGNpb3JuTzBGZFRaZVZRUFRMekpza0FUdTFxZ3Fkb3BXcm02?=
- =?utf-8?B?N2ZYUEtLbDh0SzFBN1Q1a29adjcrN2syNEdyRmxIaGxocFZSUDZrQlJ3aHZW?=
- =?utf-8?B?RVByTVpsY3dPbzQzdW0xcVZVT1hVOXp6TDFNemZ5aFB6MnN1N1FTNFF5QUtT?=
- =?utf-8?B?Zmo1cVVhbHBCR01IK1FtRkxtUG9aN3BydW5aKzI3WFp1QXRlbHg5UXZYdTN5?=
- =?utf-8?B?RDZuOVV2dFFyQ3l4bHhIZVIwOG12b2lyQU10eHh4ak9zTmFDanpNMHFMUE9x?=
- =?utf-8?B?VFdPMkdrRjVBMEk3eFJSYUk1NzZ0cVlIUHFvMkxaN2Y2eGpVcGVvYXVhYkZw?=
- =?utf-8?B?RVZWcC9kS0dkY0FUVS9LYm9tZzcrY2QxS0dMRGRFUzVmdFI4Q3AzN2hWVjJp?=
- =?utf-8?B?TkJZRUY1dUxocEZiaFhhdm1kS0llSDJlUVNKa3hBN2k2UTgvYmFRUk9rTDdm?=
- =?utf-8?B?NnNzNEZadnkvOEFPUE1BSUNoQzVUMnZDK3BDTnRuR1ZHZi9NeDZvbVdUYlBX?=
- =?utf-8?B?b2JMdTNvVkxjQVlMNjdSaFFJVUtGa2VpR3cxTGpkVFZFNVpnK1BjZkhpbHNi?=
- =?utf-8?B?bkVzOUxYUDZaS1dPOGl2ZnVBV1BoenhzeUd0Y2JaanFvVGFkSXdTK2dKRzdp?=
- =?utf-8?B?blJ0QUpGYnhQSmdEeFNjanVoQmhFOGRnRERodFRvOHVSSlBFODF0dVA0ekIr?=
- =?utf-8?B?eUdxVU9YV0t3NTMrZlJxZlhraXd4SUJ4VTBVRG9BbFRzSzlTYVlqbzhLWWpw?=
- =?utf-8?B?MjN3M1RhN0o5QkRncjYzT3FqeFNtRXdYY2lQaW5HRUtTMlBFeWxFOWVtbmMx?=
- =?utf-8?B?ZUNla2dtaTNBODZLVE5aUmkwRlNQb1JrSG9Rb3p4UVhDdFlmUnBoL3NhM3JL?=
- =?utf-8?B?TzVTeUk4c1ZPa241Vnh5eGJZaGVXNjlLWTE2Zkl6R0xGL3ByMkpLK2dYNWhh?=
- =?utf-8?B?ZkNKZHNOYUFlc3hwV2dkZGJnYkFhYXhIQzg2WXdteTNxMDAzc0IxTjBobVBx?=
- =?utf-8?B?N2RINGFHOUlqMWJzM0NySkp4dUtWeXJCUll2akR6bkJrY0xnZ1VycGpSUnhy?=
- =?utf-8?B?MEFGUjdJNE8rckJ6SnBEdWNYanc5cVhqem96cUJHenFER29jTzg0cDJQYTFr?=
- =?utf-8?B?b0V6dGVpSzNnY3J3RmNNTklrRS9sUHRjRW1xYTUwL3VFSks0ZmNiejM1UDQ1?=
- =?utf-8?B?OVVSOFNkS3N5UlVwUmFsUkltMTBMcW5KV3FZMjZrcmVWNUsvOFpSL01GQ3Vs?=
- =?utf-8?B?SUtmZ1g0QjBURGhTYjVrTHlTZlNGbWs2QU01V3ozTGFIekxOSjhjUDFyS1lq?=
- =?utf-8?B?UjRJdlpabnBDMnBSMzlCdklzS3VVT3Y5K1BwbHYwNzM2US9wTHp2eHorQ0ZH?=
- =?utf-8?B?WGxzMFQza2poMFhHU3N4dTl6eVYrdW5IcmlOUWc3UEdSYW02NnRIR0ZseWZj?=
- =?utf-8?B?YnVRV2loVW55K0p0U2s0S0diZXFlNWJKWStNZThpOVpaSWFERFRqNVgyQWdF?=
- =?utf-8?B?RjBOdmg3aVBFUk90SDY0R2lubUVoQThTc3ppd3JQRk4wY3lRYW9FNTFkNHh0?=
- =?utf-8?B?NVIySkhmUkdLRmMwZS9DR3pGWnp2U3B6VWJTejNLYUhsTC9FOXA3aE02OG81?=
- =?utf-8?B?SEpudkxHZHZpOWg4S1VaeWlrZFhQN2p5eURSNVMvQWdHRFdzemRvV0VodXVV?=
- =?utf-8?B?N050QlhyUTVpeWZnVStmSzlUNlVPcHlSV3FwdkZzSUpQMk14R0ZWbEJhZ3Jq?=
- =?utf-8?B?TTFOaGVPNXp6REdFMThIeG90YkgwZWJmNk43MXhrWWtEVWV6NW1KQ0JoM2pa?=
- =?utf-8?B?THBtTDJTa2I2Y3RrOVNZNmxwNGVZUWsrYkhUYnkxVUlMWFRpQ3EyZz09?=
+ =?utf-8?B?UUk1Z0REYmN1dWd1ZklsendyM1IxVXhKYzhXeFBBbzVhbDZhWWhFQUlmK0tE?=
+ =?utf-8?B?KzB5bCtyOWlnK1NaKy9RbS9lN3JVWkxpQ1lGTGZNekQvZk14RFZMQzREUzR0?=
+ =?utf-8?B?c0Y5b08vSm9YQTV3UkVoWVJJbktheUFzRkN3dVIxZ3VvSFhKbms1VGlHbVBZ?=
+ =?utf-8?B?NGZhWTVFZmFPNWJkN21VNFBOdDBwM0JUQVZib1JMbHVpaC9mN3BlZ1VGelJi?=
+ =?utf-8?B?S1I1N1lZYllwYjE0bU5UNDNkblphNUFVclluL284THhRSUs0d3BBbG1LTlAv?=
+ =?utf-8?B?UDNkZGluOC8wYnQ3dVBNNHVFaHB5cnJseityMzlxK1lPV1hmbHAyMmw1MWtj?=
+ =?utf-8?B?a3NCUnNkVW01QzJOUkYrMFliUStXL2FYamFuRDFqMlFaeDFRcUdOQ0NEYWZO?=
+ =?utf-8?B?TEV6UFI3c2R3UHE3N0xrMUV1VnQ3LzQ0RFpTbGEwcVhHMHgxMUxaRW92c04w?=
+ =?utf-8?B?bEJleW0ybmhrVGNnOEZGT2VJcVhrS0cyOFBBVlY5UDRRdEtzSXAvb1BYRFZk?=
+ =?utf-8?B?cFpUenptZWFUcmMyY1RoSmpBLyswM3c5bjZCeTRnbVRwR3dXMlE0dUdPWWlO?=
+ =?utf-8?B?M2kwY3FFenVraUh5T2JsNjJUTDdybEt0MW05c2U0MmRaTmhuUllGUVVPNXBI?=
+ =?utf-8?B?bVhrOEh2RTJGeHk5aEljWnlBanF2dEhiY2tVZzRlbjduZC9pa0ZoL1Urc1N6?=
+ =?utf-8?B?enZEbGlBKzNvS0lZemRqUmQya1M1NTJWYm1FVUhlbXIwRFBTbHJ5RTF1YXBq?=
+ =?utf-8?B?NEMvRVY2V0NuNTB0WUNxZVhuMDNES2FlSmd3UGU0K2tSYWNVZWRmYmYvS3cy?=
+ =?utf-8?B?aFF1VUhwKzBSV0c0L21YelRlN25oQ0tEZjNoaTNsNTMyQU1WZWFxcXZBaWFM?=
+ =?utf-8?B?dDl3RmhCTWJuMXdmK0hxcW41UzJoWUdOcWt5VWJ3akYvekRxTjRZaElNQkFl?=
+ =?utf-8?B?b1lrNksxM0oxeGFLN205eFpMUU5ZcWpBZEM3ak1kNFBLRC82UWhabHJ3YTFs?=
+ =?utf-8?B?STFkRVpIVnpHUzZCZ1krK1M5LzI1elMzZmkyb0Z6Tkt4WlpheVAwV21LU2sw?=
+ =?utf-8?B?M1hOZW9xb1ZnTU1KY25pQnJQZEhsUWY2WTFhZExXNzBCSVF5N1dDS1Rqa01h?=
+ =?utf-8?B?TEg5Zk9ESDlZVnc1aTM5R1pxUDJpYUpLNkkvZkFQZFloSDhBVGhFbEIvejVp?=
+ =?utf-8?B?Wk90dk03WmdBUGU5TmtRN2tFVnFLc0lOYTNWT0NuQ2Z6YnU4bzh2blVteHJD?=
+ =?utf-8?B?MjBUODhxUmNicmxTSllRRUNrTE1QUVEzY2pOYy9Ra2JNN0lxMmtyanRnR29k?=
+ =?utf-8?B?RTJmNm9JZnlodWFQVFZHMVJFdnB0RTN2YTY1MVNOQlBNQnlRZGgrYTlKKzFX?=
+ =?utf-8?B?WUdCUHdlM0ZoS0hwUTNlVC9XcW8wYlkvNnAzVFYwMzhJUHo4MEVEdWp0NU9Z?=
+ =?utf-8?B?RHBmYzQ4bzlESk1UNUZXRGNKS0NIS2ptaitlQVc2MDhoUEVIT3V5dm52c0d5?=
+ =?utf-8?B?a24xS1hOOGJZeUM2VWhEaVd5WndHaHNSR3ZoQVBQajZIU0NwV0hiSWtIa202?=
+ =?utf-8?B?Rjh2cG9FSWtZWjVFdjBsQ3QrMlhwbzRhQ25KU3dNK0RtQ0NWSUFyMVlacXpF?=
+ =?utf-8?B?dlMxeGZhWXVoZFNGWXNxcTBleVBzT3FpYzR5TmdJS1lDbzBRajRhNnpJQkNG?=
+ =?utf-8?B?cUQ2UVFqOUpJdmtJUW5xK2kzcHFYUHF0MXA4SzNGS05SakNzbmhZaWgvbDdV?=
+ =?utf-8?B?ck1TU0QvVUdMUW81U053S3UweWx5RC9CZThNWUxIYW9tU1V2QTJSdnUzT3pM?=
+ =?utf-8?B?RkNnZGx4bFVzZG4yR0M2djdxeW5GQVZ3TnRkemdhSGh4Z2tKTDdRNzJ1THlF?=
+ =?utf-8?B?MmlucGtJSGhTdFV5TU5IcFVDdGpKRCtGR0MrWlRyN2FPMlpGdjJFWVJ1Y3Fj?=
+ =?utf-8?B?aHRTbFNMLzJpR3B6a01QMU1pYVpTSE14Z0h5VDlHTXVRdFdDanZoa25CZVQr?=
+ =?utf-8?B?clRxVUV4aXl0T2ZXOC9LQUJmTVNZbUlYNjhhT0NERTY2aUFBVjUxNkR4SGJ0?=
+ =?utf-8?B?cVNjMUNCZ2hoMUdmWThpQ0tMQitlYnhWOHRqb2hDazA3aTlzVGp0TC9PWGFi?=
+ =?utf-8?B?SGp1U1F0bEFiNU04bWlEbTFkY0wrYzVPaC9BNTllc0ZiOFpYNXJoTWVrRWND?=
+ =?utf-8?B?NG9LcHh5M0VxMWpUMDJFZGtkYisyWk5hVW9tc3UzZ2NvWUZoV3M1aFhNbmZR?=
+ =?utf-8?B?cnJUOXQzbVpldTY0WW9waEt2M3ZRY01pRkt2aG1OdnNxZTRjTkpxSjBBbUtR?=
+ =?utf-8?B?Y05PdDQ1V1E2R2xEWnArcGk3cjV1YUlkNWJROVpmWk5iZUZOTHViQT09?=
 X-Exchange-RoutingPolicyChecked:
-	zRBe6xaPOhziWLQVx7LibZFt5ji/yFgJMXtQxHKZxKwig/5vhFVTrvVqI+ftylS3d6RrZxjmXkgrZkmk5cf6zouPTUjwVM2xMJ96zPhetcDm3Z9UeeNw8Hy6OlMV9+gu0vdtHbI77ElWMxy86HGyEM8Xm9qM3opviUgEWqht4XdrXtjc8CXSbSGipCDv5lkk5HPy1Vi8U0pVh970Jn2ae0AmoN2aFmYIMff+Mv+clWtuJQ9VqK3pSTuNMlYnwxItlUkpZ2MsLXsGY+T0wVMZwIGnI0AznOJJYcFw8nf4/1UiYxBgAjYBZkHIwHCXuud3AGjHQUeufQIGgvN7vX6QBw==
+	OH2n55KpphvGsPUYS/D4NRWISafdOXPeQOMA6jsav5i27qX4HHm2y0nFRFssuwVX/oyQFZNCxWOPa8VSt7ZW1o6Xihnucm5oifpt8DVMVbGtg2/jur7oYM5OAjD3VVJXRTZcVAm3JPbNq9yJRv9VeWlR/1r86Ekvi+9qgpQk0dBt4fszD36/5K2umEhDu2jhIfUzgQ//fn8qqrfQRIUWA3ZsAVZBbP1nBGJfUBiRAl7ugioO5vUrS3z3s4Ym/WaSJE+5uREulc/HKdGXGAZvB7XFD88iVK6QPJSUq0r0X/udKDl4pJ5q3R2bnIB43GNIgLNXeC3NufSYYe63EyrQGw==
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd873bf4-4fcf-41c3-f60f-08df261d31f1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54c783bf-c012-445c-6a12-08df261d3425
 X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2026 15:51:34.4926
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2026 15:51:38.2474
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lKNNsWPXSx5+sEU6yLV8w0j1VtmlkoF8nq6rgzJJGJp5SpVaHDV8Rs2g44TJqSWqU5G7PWGwcSUIj0h995h9Bg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Cn5OiDy7bDRxBNNOpez1xkmHbhgxr81Te7tPQxt4xpQo6HF5V5X5V4hXwg7r8r4koGhFv9oETCHOcfKRQ622fg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB5051
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA5MDA2MyBTYWx0ZWRfXw2IOKFyDuVOW
- oVkAGV8iT6Uexd4+JLxx/nXVyX/QzOa/lzXP5A1idnaQhmkaY/hLjIOkMfJUABPQY2Ql1RuD98a
- jfNZajZKo1fHsx3tdEqeaM47PuON95Yi6He7Y1CPwsWnw8yHaFJS
-X-Authority-Analysis: v=2.4 cv=LcKpeTfi c=1 sm=1 tr=0 ts=6ac90d89 cx=c_pps
- a=IxQEmK7OG+ZB3KQxmUR4Jg==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
+X-Proofpoint-GUID: 07gfubEU9_qKjlcQkk4ATxhAvgQGUPmP
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA5MDA2MyBTYWx0ZWRfX4/MJyAILblLI
+ bUHbQT9MMUlJFNAk0cii4YeysMexZa9gP8nBMVvCEIUG9RD/uvc4y+4H7+R6R0vw67VBwiMgIbw
+ zUbMJxTxfqPGAOACnYrQjQfVqFTfRbgw2HXkCUbEDEe5x4lBRSKs
+X-Authority-Analysis: v=2.4 cv=Avx7T+9P c=1 sm=1 tr=0 ts=6ac90d98 cx=c_pps
+ a=WfYMUjdTTdEkkNza/pHfSQ==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
  a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
  a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=M51BFTxLslgA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22
- a=VwQbUJbxAAAA:8 a=bC-a23v3AAAA:8 a=gAnH3GRIAAAA:8 a=LA5vrRYEtGaYHk84EFoA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=FO4_E8m0qiDe52t0p3_H:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA5MDA2MyBTYWx0ZWRfX4haLWqU849P0
- pj2M8fZKXwvN0VZ/7UbvqQSEeof81yKJkbjc1um0qJo2mTNsFk5XJ34HVJgU59tMkgCUJ2IBExf
- YlF0t383KU5tE7gTxXcdADClnZOV/QXOTtbjNjLr6jV8UtCmn6rQPmjx+Pdt8ZK6V13gytqSF51
- ljmtUjMbwjSHqZZniTVRNF2MhtTANvxjewquWK4pVEb6805WPK0ALf3SfbTqeYzclAM/8f0lZoe
- e8dkEHvQQnzDxpWKBTIpexg9stqqm+lmufkLc97DYsWvDpQ27/ARZQIelx5aNWtUPIypW5ZLzvJ
- 1aDqtOd+0Ygjp87CzdT+d3/zFNTl6FkR6AE08GnNNpoUBjURRLMN1nIC1c1c8oOiKrDmGa0tYvX
- 9aPx27hP6H5K2ctSLQXnbNHiPMmHP+57lv2sIoFMEy9nSONZT7IPkG2Kdj4KJLlcCPsccODpsdF
- ZES+XSZyRgUU66JSEXg==
-X-Proofpoint-ORIG-GUID: wF63ZV2Dnee5NdebqGCo6Ht_DOlhYqd-
-X-Proofpoint-GUID: wF63ZV2Dnee5NdebqGCo6Ht_DOlhYqd-
+ a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=iZSIUCweCk2Oy3QsdGPA:22
+ a=gAnH3GRIAAAA:8 a=bbKM_mjVB8olCydZLLoA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: 07gfubEU9_qKjlcQkk4ATxhAvgQGUPmP
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA5MDA2MyBTYWx0ZWRfXxmb9Z6ZcU0x7
+ SV+DnoOAfuwdJ6Cnh6E1QbO2LaEGgcY++Te9upXAPbBzYNCSkWAGMqwdAl/l0lnb1uR2ukE7iuS
+ kbq0xozqcodi+HZmWPl3W2tiIqrLOX+APn7XXliyPrF/giI17IdOl6HdBbPIbLQpAs+8OF0RLMF
+ lx+hZOdpk5+3XYwPXmaMEBEVtw0ANCOCLh9OGj6hUHFZDVGyrLzrcnRHDOtELCzdHemOUYDCGGS
+ USPnayMWKRbDtux42iBhdXBpqihbYxLgtX8CVoxQyyJ7G1Y2xVQtKZaG99o+r/aiqGVZzXyj8zl
+ G+t5na7pGMrNzJrJVitBIoerdw11UUVqYNaKwkb6VqsdM07gD6Tc9cGd3omrch2WZkQ87xSmLeJ
+ XwbG1at52fNHo4SHwUYAWU7fvs3AHYze7wYsOTrrmSWuNrFUsmdyI5Rz1LlvnYQsDXgP/ObZcEu
+ bH31J5wW05riQWk6QUQ==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-10-09_04,2026-10-08_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 suspectscore=0 adultscore=0 phishscore=0 clxscore=1015
- priorityscore=1501 spamscore=0 impostorscore=0 malwarescore=0
- lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610020000
+ impostorscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
+ suspectscore=0 spamscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2610020000
  definitions=main-2610090063
 
-The DMA engine slave capabilities advertise the supported source and
-destination bus widths through src_addr_widths / dst_addr_widths. These
-are plain u32 bitmasks where a set bit's position equals the
-corresponding enum dma_slave_buswidth value, e.g.
-DMA_SLAVE_BUSWIDTH_4_BYTES sets bit 4.
+The src_addr_widths and dst_addr_widths capability masks encode each
+supported width as a bit whose position equals the corresponding
+enum dma_slave_buswidth value (e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets bit
+4). As these masks are plain u32, widths of 32 bytes and above
+(DMA_SLAVE_BUSWIDTH_32/64/128_BYTES map to bits 32, 64 and 128) cannot
+be represented at all.
 
-The consequence is that widths of 32 bytes and above cannot be
-represented at all: DMA_SLAVE_BUSWIDTH_32/64/128_BYTES would need bits
-32, 64 and 128, which do not fit in a u32. Hardware with wider data
-paths is becoming common, so add a representation that can express these
-widths while still using enum dma_slave_buswidth.
+Introduce bitmap-based bus width capabilities that span the full enum
+range, through a new dma_buswidth_mask_t type modeled after
+dma_cap_mask_t. To allow DMA controller drivers to be converted
+incrementally, the legacy dma_device u32 fields are kept alongside the
+new masks and the core folds a legacy-only driver's u32 into the mask
+when the device is registered, so consumers only ever have to look at
+the mask.
 
-This series switches consumers and a small set of producers to the new
-bus width capabilities, represented by a dma_buswidth_mask_t modeled
-after dma_cap_mask_t. The legacy dma_device u32 fields are kept for now
-so the remaining DMA controller drivers can be converted incrementally:
-dma_async_device_register() folds a legacy-only producer's u32 into the
-mask, so consumers only ever have to look at the mask.
+The fold is bidirectional while both representations coexist. A driver
+that only fills in the legacy u32 gets its mask derived from it, so the
+consumers already converted see it. A driver that only fills in the mask
+gets its legacy u32 derived from the mask, so the consumers not
+converted yet, which read the legacy dma_slave_caps fields, keep working.
 
-Once the remaining producers are converted, the legacy dma_device
-src/dst_addr_widths fields can be removed as a final cleanup.
+On top of that, dma_get_slave_caps() derives the legacy dma_slave_caps
+masks from the new ones when a device_caps() callback adjusted them, so
+that a converted controller narrowing its per-channel capabilities is
+still seen by the consumers not converted yet, while a driver adjusting
+the legacy masks directly keeps working.
 
-This issue was discussed before here:
-
-https://lore.kernel.org/dmaengine/abkoXXbaxaiqbBuX@vaman/
-
-Changes in v5:
-- Drop the "Move enum dma_slave_buswidth to a new header" patch and the
-  include/linux/dma/engine/{types,widthmask}.h split. The bus width
-  type and helpers now live in linux/dmaengine.h, next to
-  enum dma_slave_buswidth, as both consumers and providers use them
-  (Vinod, Frank).
-- Patch 1:
-  - Move dma_buswidth_mask_t and the bus width helpers into
-    linux/dmaengine.h and drop the linux/bitops.h include.
-  - Document that dma_bus_width_set{,_many}() add to the mask, like
-    __set_bit(), so the caller initializes it (Andy).
-  - Drop Andy's Acked-by given the header rework.
-- Patch 2-8:
-  - Drop the linux/dma/engine/widthmask.h include.
-- Patch 8:
-  - Include linux/dmaengine.h in spi-dw.h instead of
-    linux/dma/engine/types.h.
-- Link to v4: https://patch.msgid.link/20260911-dmaengine-support-wider-dma-masks-v4-0-72b8fd4cc78e@analog.com
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 
 ---
-Nuno Sá (9):
-      dmaengine: Support bus widths of 32 bytes and above
-      dmaengine: dma-axi-dmac: Use bus width capability helpers
-      dmaengine: dw-axi-dmac: Use bus width capability helpers
-      dmaengine: qcom: gpi: Use bus width capability helpers
-      dmaengine: stm32-dma3: Use bus width capability helpers
-      iio: buffer-dmaengine: Use dma_slave_caps bus width accessors
-      ALSA: pcm_dmaengine: Use dma_slave_caps bus width helpers
-      spi: dw: Use dma_slave_caps bus width helpers
-      dmaengine: Drop legacy bus width fields from dma_slave_caps
 
- drivers/dma/dma-axi-dmac.c                         |  13 +-
- drivers/dma/dmaengine.c                            |  24 ++-
- drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c     |  37 ++--
- drivers/dma/qcom/gpi.c                             |  11 +-
- drivers/dma/stm32/stm32-dma3.c                     |  33 ++--
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |  15 +-
- drivers/spi/spi-dw-dma.c                           |   7 +-
- drivers/spi/spi-dw.h                               |   3 +-
- include/linux/dmaengine.h                          | 199 +++++++++++++++++++--
- sound/core/pcm_dmaengine.c                         |  20 ++-
- 10 files changed, 295 insertions(+), 67 deletions(-)
+Andy, did not take your tag given that you're the one asking for the
+split and since we ended up not doing it, not sure if the tag is
+to be kept :)
 ---
-base-commit: 511afae96d89847f753fcab6b3a597f0281be9d5
-change-id: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
---
+ drivers/dma/dmaengine.c   |  51 +++++++++++-
+ include/linux/dmaengine.h | 208 +++++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 246 insertions(+), 13 deletions(-)
 
-Thanks!
-- Nuno Sá
+diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
+index c5fef57b5adf..4ba9d6c7448a 100644
+--- a/drivers/dma/dmaengine.c
++++ b/drivers/dma/dmaengine.c
+@@ -33,6 +33,7 @@
+ 
+ #include <linux/acpi.h>
+ #include <linux/acpi_dma.h>
++#include <linux/bitmap.h>
+ #include <linux/device.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+@@ -592,8 +593,11 @@ int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
+ 	if (!device->directions)
+ 		return -ENXIO;
+ 
++	dma_bus_width_copy(caps->src_bus_widths, device->src_bus_widths);
++	dma_bus_width_copy(caps->dst_bus_widths, device->dst_bus_widths);
+ 	caps->src_addr_widths = device->src_addr_widths;
+ 	caps->dst_addr_widths = device->dst_addr_widths;
++
+ 	caps->directions = device->directions;
+ 	caps->min_burst = device->min_burst;
+ 	caps->max_burst = device->max_burst;
+@@ -611,9 +615,31 @@ int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
+ 	 * callback to override the generic capabilities with
+ 	 * channel-specific ones.
+ 	 */
+-	if (device->device_caps)
++	if (device->device_caps) {
+ 		device->device_caps(chan, caps);
+ 
++		/*
++		 * A driver already converted to the bus width interface
++		 * adjusts the masks, so derive the legacy capabilities from
++		 * them for the consumers not converted yet. Drivers not
++		 * converted adjust the legacy capabilities directly, in which
++		 * case there is nothing to do.
++		 *
++		 * Goes away with the legacy dma_slave_caps fields.
++		 */
++		if (!bitmap_equal(caps->src_bus_widths.bits,
++				  device->src_bus_widths.bits,
++				  DMA_SLAVE_BUSWIDTH_MAX))
++			caps->src_addr_widths = bitmap_read(caps->src_bus_widths.bits,
++							    0, 32);
++
++		if (!bitmap_equal(caps->dst_bus_widths.bits,
++				  device->dst_bus_widths.bits,
++				  DMA_SLAVE_BUSWIDTH_MAX))
++			caps->dst_addr_widths = bitmap_read(caps->dst_bus_widths.bits,
++							    0, 32);
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(dma_get_slave_caps);
+@@ -1173,6 +1199,27 @@ void dma_async_device_channel_unregister(struct dma_device *device,
+ }
+ EXPORT_SYMBOL_GPL(dma_async_device_channel_unregister);
+ 
++/*
++ * DMA controller drivers not converted to the bus width helpers only fill in
++ * the legacy u32 masks, which cannot hold widths of 32 bytes and above. Fold
++ * them into the mask so that consumers only ever have to look at the mask.
++ *
++ * Goes away with the legacy dma_device fields.
++ */
++static void dma_device_fold_legacy_bus_widths(struct dma_device *device)
++{
++	if (bitmap_empty(device->src_bus_widths.bits, DMA_SLAVE_BUSWIDTH_MAX))
++		bitmap_from_arr32(device->src_bus_widths.bits, &device->src_addr_widths, 32);
++	/* consumers not converted yet still read the legacy caps */
++	else if (!device->src_addr_widths)
++		device->src_addr_widths = bitmap_read(device->src_bus_widths.bits, 0, 32);
++
++	if (bitmap_empty(device->dst_bus_widths.bits, DMA_SLAVE_BUSWIDTH_MAX))
++		bitmap_from_arr32(device->dst_bus_widths.bits, &device->dst_addr_widths, 32);
++	else if (!device->dst_addr_widths)
++		device->dst_addr_widths = bitmap_read(device->dst_bus_widths.bits, 0, 32);
++}
++
+ /**
+  * dma_async_device_register - registers DMA devices found
+  * @device:	pointer to &struct dma_device
+@@ -1234,6 +1281,8 @@ int dma_async_device_register(struct dma_device *device)
+ 		dev_dbg(device->dev,
+ 			 "WARN: Device release is not defined so it is not safe to unbind this driver while in use\n");
+ 
++	dma_device_fold_legacy_bus_widths(device);
++
+ 	kref_init(&device->ref);
+ 
+ 	/* note: this only matters in the
+diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
+index 71cde09ff240..eb68eea840b5 100644
+--- a/include/linux/dmaengine.h
++++ b/include/linux/dmaengine.h
+@@ -427,8 +427,179 @@ enum dma_slave_buswidth {
+ 	DMA_SLAVE_BUSWIDTH_32_BYTES = 32,
+ 	DMA_SLAVE_BUSWIDTH_64_BYTES = 64,
+ 	DMA_SLAVE_BUSWIDTH_128_BYTES = 128,
++	DMA_SLAVE_BUSWIDTH_MAX
+ };
+ 
++/**
++ * typedef dma_buswidth_mask_t - bus width capabilities bitmap modeled after
++ * dma_cap_mask_t.
++ *
++ * Each supported bus width is represented by the bit whose position equals the
++ * corresponding enum dma_slave_buswidth value, e.g. a device supporting a bus
++ * width of 4 bytes has bit 4 set.
++ */
++typedef struct {
++	DECLARE_BITMAP(bits, DMA_SLAVE_BUSWIDTH_MAX);
++} dma_buswidth_mask_t;
++
++/**
++ * dma_bus_width_valid - test if a bus width is a valid one
++ * @width: bus width to validate
++ *
++ * Return: true if @width is a valid &enum dma_slave_buswidth, false otherwise.
++ */
++static inline bool dma_bus_width_valid(enum dma_slave_buswidth width)
++{
++	switch (width) {
++	case DMA_SLAVE_BUSWIDTH_UNDEFINED:
++	case DMA_SLAVE_BUSWIDTH_1_BYTE:
++	case DMA_SLAVE_BUSWIDTH_2_BYTES:
++	case DMA_SLAVE_BUSWIDTH_3_BYTES:
++	case DMA_SLAVE_BUSWIDTH_4_BYTES:
++	case DMA_SLAVE_BUSWIDTH_8_BYTES:
++	case DMA_SLAVE_BUSWIDTH_16_BYTES:
++	case DMA_SLAVE_BUSWIDTH_32_BYTES:
++	case DMA_SLAVE_BUSWIDTH_64_BYTES:
++	case DMA_SLAVE_BUSWIDTH_128_BYTES:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static inline int __dma_bus_width_set_many(dma_buswidth_mask_t *mask,
++					   const enum dma_slave_buswidth *widths,
++					   unsigned int n_widths)
++{
++	for (unsigned int i = 0; i < n_widths; i++) {
++		if (!dma_bus_width_valid(widths[i]))
++			return -EINVAL;
++
++		__set_bit(widths[i], mask->bits);
++	}
++
++	return 0;
++}
++
++/**
++ * dma_bus_width_set_many - set the supported bus widths
++ * @mask: bus width mask
++ * @widths: array of supported bus widths
++ * @n_widths: number of entries in @widths
++ *
++ * Like __set_bit(), the widths are added to @mask and the bits already set in it
++ * are left untouched, so @mask must be initialized by the caller.
++ *
++ * Return: 0 on success, -EINVAL if @widths contains an invalid bus width. Note
++ * that the bus widths validated before the failing one are still set.
++ */
++#define dma_bus_width_set_many(mask, widths, n_widths) \
++	__dma_bus_width_set_many(&(mask), (widths), (n_widths))
++
++/**
++ * dma_bus_width_set - set a single supported bus width
++ * @mask: bus width mask
++ * @width: supported bus width
++ *
++ * Like __set_bit(), @width is added to @mask and the bits already set in it are
++ * left untouched, so @mask must be initialized by the caller.
++ *
++ * Return: 0 on success, -EINVAL if @width is invalid.
++ */
++#define dma_bus_width_set(mask, width) \
++	__dma_bus_width_set_many(&(mask), (const enum dma_slave_buswidth[]){ (width) }, 1)
++
++static inline int __dma_bus_width_clear(dma_buswidth_mask_t *mask,
++					enum dma_slave_buswidth width)
++{
++	if (!dma_bus_width_valid(width))
++		return -EINVAL;
++
++	__clear_bit(width, mask->bits);
++
++	return 0;
++}
++
++/**
++ * dma_bus_width_clear - remove a bus width from a bus width mask
++ * @mask: bus width mask
++ * @width: bus width to clear
++ *
++ * Return: 0 on success, -EINVAL if @width is invalid.
++ */
++#define dma_bus_width_clear(mask, width) __dma_bus_width_clear(&(mask), (width))
++
++static inline bool __dma_bus_width_test(const dma_buswidth_mask_t *mask,
++					enum dma_slave_buswidth width)
++{
++	if (!dma_bus_width_valid(width))
++		return false;
++
++	return test_bit(width, mask->bits);
++}
++
++/**
++ * dma_bus_width_test - test if a bus width is part of a bus width mask
++ * @mask: bus width mask
++ * @width: bus width to test
++ *
++ * Return: true if @width is set in @mask, false otherwise.
++ */
++#define dma_bus_width_test(mask, width) __dma_bus_width_test(&(mask), (width))
++
++static inline enum dma_slave_buswidth
++__dma_bus_width_min(const dma_buswidth_mask_t *mask)
++{
++	enum dma_slave_buswidth width;
++
++	width = find_first_bit(mask->bits, DMA_SLAVE_BUSWIDTH_MAX);
++	if (width == DMA_SLAVE_BUSWIDTH_MAX)
++		return DMA_SLAVE_BUSWIDTH_UNDEFINED;
++
++	return width;
++}
++
++/**
++ * dma_bus_width_min - get the smallest bus width of a bus width mask
++ * @mask: bus width mask
++ *
++ * Return: the smallest bus width set in @mask, or
++ * %DMA_SLAVE_BUSWIDTH_UNDEFINED if @mask is empty.
++ */
++#define dma_bus_width_min(mask) __dma_bus_width_min(&(mask))
++
++static inline void __dma_bus_width_copy(dma_buswidth_mask_t *dst,
++					const dma_buswidth_mask_t *src)
++{
++	bitmap_copy(dst->bits, src->bits, DMA_SLAVE_BUSWIDTH_MAX);
++}
++
++/**
++ * dma_bus_width_copy - copy a bus width mask
++ * @dst: bus width mask to copy to
++ * @src: bus width mask to copy from
++ */
++#define dma_bus_width_copy(dst, src) __dma_bus_width_copy(&(dst), &(src))
++
++static inline bool __dma_bus_width_and(dma_buswidth_mask_t *dst,
++				       const dma_buswidth_mask_t *src1,
++				       const dma_buswidth_mask_t *src2)
++{
++	return bitmap_and(dst->bits, src1->bits, src2->bits,
++			  DMA_SLAVE_BUSWIDTH_MAX);
++}
++
++/**
++ * dma_bus_width_and - intersect two bus width masks
++ * @dst: bus width mask to store the result in
++ * @src1: first bus width mask
++ * @src2: second bus width mask
++ *
++ * Return: true if @dst has at least one bus width set, false otherwise.
++ */
++#define dma_bus_width_and(dst, src1, src2) \
++	__dma_bus_width_and(&(dst), &(src1), &(src2))
++
+ /**
+  * struct dma_slave_config - dma slave channel runtime config
+  * @direction: whether the data shall go in or out on this slave
+@@ -523,10 +694,11 @@ enum dma_residue_granularity {
+ 
+ /**
+  * struct dma_slave_caps - expose capabilities of a slave channel only
+- * @src_addr_widths: bit mask of src addr widths the channel supports.
+- *	Width is specified in bytes, e.g. for a channel supporting
+- *	a width of 4 the mask should have BIT(4) set.
+- * @dst_addr_widths: bit mask of dst addr widths the channel supports
++ * @src_bus_widths: mask of source bus widths the channel supports.
++ * @src_addr_widths: legacy bit mask of source bus widths the channel supports.
++ * @dst_bus_widths: mask of destination bus widths the channel supports.
++ * @dst_addr_widths: legacy bit mask of destination bus widths the channel
++ *	supports.
+  * @directions: bit mask of slave directions the channel supports.
+  *	Since the enum dma_transfer_direction is not defined as bit flag for
+  *	each type, the dma controller should set BIT(<TYPE>) and same
+@@ -545,8 +717,14 @@ enum dma_residue_granularity {
+  * resubmitted multiple times
+  */
+ struct dma_slave_caps {
+-	u32 src_addr_widths;
+-	u32 dst_addr_widths;
++	struct {
++		dma_buswidth_mask_t src_bus_widths;
++		u32 src_addr_widths;
++	};
++	struct {
++		dma_buswidth_mask_t dst_bus_widths;
++		u32 dst_addr_widths;
++	};
+ 	u32 directions;
+ 	u32 min_burst;
+ 	u32 max_burst;
+@@ -839,10 +1017,10 @@ struct dma_filter {
+  * @dev: struct device reference for dma mapping api
+  * @owner: owner module (automatically set based on the provided dev)
+  * @chan_ida: unique channel ID
+- * @src_addr_widths: bit mask of src addr widths the device supports
+- *	Width is specified in bytes, e.g. for a device supporting
+- *	a width of 4 the mask should have BIT(4) set.
+- * @dst_addr_widths: bit mask of dst addr widths the device supports
++ * @src_bus_widths: mask of source bus widths the device supports.
++ * @src_addr_widths: legacy bit mask of source bus widths the device supports.
++ * @dst_bus_widths: mask of destination bus widths the device supports.
++ * @dst_addr_widths: legacy bit mask of destination bus widths the device supports.
+  * @directions: bit mask of slave directions the device supports.
+  *	Since the enum dma_transfer_direction is not defined as bit flag for
+  *	each type, the dma controller should set BIT(<TYPE>) and same
+@@ -924,8 +1102,14 @@ struct dma_device {
+ 	struct module *owner;
+ 	struct ida chan_ida;
+ 
+-	u32 src_addr_widths;
+-	u32 dst_addr_widths;
++	struct {
++		dma_buswidth_mask_t src_bus_widths;
++		u32 src_addr_widths;
++	};
++	struct {
++		dma_buswidth_mask_t dst_bus_widths;
++		u32 dst_addr_widths;
++	};
+ 	u32 directions;
+ 	u32 min_burst;
+ 	u32 max_burst;
+
+-- 
+2.56.0
 
