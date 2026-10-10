@@ -1,182 +1,108 @@
-Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF7233E024B
-	for <linux-iio@vger.kernel.org>; Sat, 10 Oct 2026 06:53:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E22282F20
+	for <linux-iio@vger.kernel.org>; Sat, 10 Oct 2026 07:05:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791615239; cv=none; b=EnjWowgzO74zhjhMRlXdxPrEd1XP+yE3+NfHxP8uTmRb3Lvvq7KYS+zRcoseSEKxEI+hGEToYFQrUwWVedtOS3o1m7hRgQt+d9C8AvSdb1jmHPqJ5gF+ktm+C6os+DtAnFFlhQqhqXc+JK+VyEEf5KdamlVGFxCfrFhz2up61t8=
+	t=1791615954; cv=none; b=fP5Vw01wGkMoyAHMzjN1ZuBZmCSSWJRxcbhqmNJ8MPu62wpoObI1euBgILu+fxMdrYbQpO05pT0oEM1YWqwSOAdI53VPJ5OeBncdgpTB/CxeEowEbZe9Hjnry3E8WVPfJpyfJplkneifqJcvo7wvhI1zer+CGMWT5Gx1doZFAtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791615239; c=relaxed/simple;
-	bh=KCiU9H7oAsfJb+wOCJGHY+ftuBOqit3svB97TjTz8Ps=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=bh8fopsVxU1O0J5JiVm4sNjZKUX2+zfIsT2UrFcRRXG3vcGm6hMmqxfbd3fKJbnfRM8uOBuAFurNrvycmZlzIVffXmMvz3KpjYJEtZUdng1wpDo7S94DnSHas6he9QYpmsB8kDBY1El437nilOJZggi/+S+QVsoMPj2FTLH7gUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cjYTGa9a; arc=none smtp.client-ip=74.125.82.48
+	s=arc-20240116; t=1791615954; c=relaxed/simple;
+	bh=JMKAvhIXCNUjIDcumQ07uQ6ytuxwQvAU0JuO97CiZgg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Y7+zYlL5aBw+gNrqR1lL6EG3aS+oZzD0JmZQdPz6x5MnaoipkPuraKEKSXlMqmknWxrbfcL9MmQ6B8DeT2uRfQ2ux1whXnpVZ9EZW276iUyHvJg2WUHy2deHfXsk3AxofgVI1sBCLckBtbOQ/wrjalwGzFaHPKNWd/4IpnZh2is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HxcfU1+k; arc=none smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cjYTGa9a"
-Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-14394530ec6so344599c88.1
-        for <linux-iio@vger.kernel.org>; Fri, 09 Oct 2026 23:53:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HxcfU1+k"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-48c4d870d54so227495f8f.2
+        for <linux-iio@vger.kernel.org>; Sat, 10 Oct 2026 00:05:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791615237; x=1792220037; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=JbdiTE9cW05Ir8fGL9rCBVCwwyaDuqPvBVhKoWrKJGI=;
-        b=cjYTGa9ae2WwjSfLPM3nmEiW8Okrdn2JhaFUWC3E8pr0WU+tSQAV/wJOFQdve0S68W
-         Dbz7g7S0LH5INJxbrNsp33XSFkfO06LaaMQcvuCHFSn1Xld12eR/btSQHtOjVVVMAj7s
-         A9kZ1pUcdjqmk/PfGGnQV3p524U2sWA97CYvN4Lvh85YNLhKaUBF2vlxXAnhvuSKY0xy
-         UPqWE5z/Ml0wjdL1KyuodYKDuaG/PhMVmmbnO821/xtA3kjBt83xvNkvNer437bLOEvr
-         oFMmgaEOHFkYgNTx4y/FOubxyy3KyTvL7Hf2pZotjwn5HwJMiefysPj6pC5iPFb/WaCG
-         +DyA==
+        d=gmail.com; s=20251104; t=1791615951; x=1792220751; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=M9cNNicW0o/hRO92NlnGJ2pji8f57gDd+YVFwHh22Sk=;
+        b=HxcfU1+kFifjL4FwBpqnR3SP4fU7IVhK7AMgJ+vFB5YO1heTATpr6yWcwkFxR3wp4i
+         AjqeHkCDyUVPG3/Uqs5HFkvttghiCm1xpjh6gWA8AnPL8ZZEomUwvgaxYFwnAS9yAsG1
+         Ef+6Z2H51B+6++lbrXKKIAg/Ns5PAiGz9lKx2tqvSH8Xk6pG/KJQ4igdp6NcDlFhLKDh
+         qlE/qVC6zsJaZK8OTVdwjUbySZQCnomU0n0lZEYSGUZgHTF/zUeKKnNNQggYsZjV3yjY
+         yei3W/Nwdgq7u68uRiqtEGr0e7Xd4tMagdIA0tpscz0VPyJmos26SwQvVks73fJHExiT
+         cyjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791615237; x=1792220037;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1791615951; x=1792220751;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=JbdiTE9cW05Ir8fGL9rCBVCwwyaDuqPvBVhKoWrKJGI=;
-        b=biK7b9Uwn00BIbnXsjflmA05Lxrt6jEG0hbpkXO/IgLNf1laQLmrmtaxgPtbRQ72TU
-         +anmeKWF+Wk+SptSMQ0OyUWp3Idk6h1zQqPJRwXraomyiAVWko0JayagRGFBDK64KrS2
-         K3gBzCusZFlYPA0NvuzaK7xO7F3VSpQUxEVp8V3+MGbW9TxRZU+1fhFAXH9LJCe6GPa5
-         bHhaW7hlqkM2LDqJ0R7oAwP2z7qT0UcON9WD2dkbmNfwSmmY/6CVx9leqIUj+BRbFi7T
-         D2+t0XoLvRg9X1kEABKZr0hUIboB9Jf/Z6F4yS8G1H4laLGZXdV/F+a9X/jajP1DG0lL
-         SKNA==
-X-Forwarded-Encrypted: i=1; AKwUvBx/k+f2Jca2zq13c9gxBG77XefeSSVE3kOba79+bc64paWnaRRcPigIcFcLS2goN+T3uOysdcPvDa8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLuKQHIj+CCp7PDG2wJ/S/rEpCSqU0HJQrM6fstsPt0YpHpuY3P
-	/lEkhwiYuEl2aBKQKGL8mfLHmBKqfoJJHa508VzACIuzqsCX6sC8asrh
-X-Gm-Gg: AYBFou021/a414XNASznhpaEwoIy8D/XGBJmxt1h00N94b/jluAjerBdQi4Zv40G4n1
-	apeE2IBkZUi+b7Y1JsYK/j55bxfFbYo92wQcSoYhM01YKTuL6pNNy3QHe7p/kHGJ2+z1b9ezYQ2
-	qcliva3aV5BaOFZqtg1fSSqLMPYdGHMF0kysX74yXnlMXJftMfts8vBvDQUaS4tNJrcwD+detVc
-	JaU9Jod6Uz/CsHL3TgErg9cpyj5PR3kLGNtn8YZ57lBX1uENuu38gNi32sFFz/5eL2ylr/dB9vj
-	2OcsJm+d1yWSl2JTVnC9Wr4ykdy3sQ3pmXTLx8BK+LpH7GQ2SqT9+VTotc4TfW2J9p9dBcvgmcF
-	l8aK78UqqqEX9csIZ9DbHLK5u5TUuK8ncP1Em3e17dZ4QrQufkgeR03TUBzcXhGUetav+wtbgIf
-	HO6CkfDf/230Czu73VeZaxmtzSI+Q0Bf7NfYkS8JzMh1c2Oln6+iiNPmFAJ4fgrU5UrKMo0ALn6
-	X5CvtCb7Xq4MY5SmfdZQpl9HQoWMALT59lFIRk=
-X-Received: by 2002:a05:701b:2906:b0:168:6ad8:e89e with SMTP id a92af1059eb24-16a63d21e08mr4178604c88.45.1791615236985;
-        Fri, 09 Oct 2026 23:53:56 -0700 (PDT)
-Received: from [192.168.100.70] (host-200-61-172-117.iplanisp.com.ar. [200.61.172.117])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537cacb5e9sm13009650eec.20.2026.10.09.23.53.54
+        bh=M9cNNicW0o/hRO92NlnGJ2pji8f57gDd+YVFwHh22Sk=;
+        b=IXVWc3rQPHLmYOaBrdEcLV/Q9eCrymyW9cT0X2ZLp9uoTLkgidPh/MaQs+/N6nwyIj
+         JV8r4havGov+GKDgt7s8TU2ovHPgkTzDYpLxruqFHsmqcxQ5eQDgCDaKUHi5Q5jCJ3+Y
+         DEzgFlRdOcetnB5nx1nGaqMMtOgFehadKCXTbbi7+rGhHdASqgOp5yAmpWDwLvufUsJP
+         15jg4f0OctmsTZlGXHRpzpKrlkovjpSqXNwzG5msA4JlKsajrKQsn/xFT//G4TMvMrvd
+         jngmq5XkN3z5Ma57qIgTGlreAR61Ul6bsavTdr2gKisZBknj9ITjd98RBI3xfW+4Frpn
+         w0zA==
+X-Forwarded-Encrypted: i=1; AKwUvBz7NoT16fVHGEl6OfVv1GcbhTrachxCzhQFuDfQrn8BOJqlJ/QU6FCipCE+bWq8JUOpQm6nBILB3RQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLqDvgf0habrmMeKR9OdInCWpWb0RvaVNcCWmPwGOcCPGe6pW2B
+	KpcDmrvR5gNCDQW+uQBVb6+aArCtxzeWfhK+6f7UFfh1jUiJc4dujqVz
+X-Gm-Gg: AYBFou1HBPEc6JGvznAKIzqcOc/QayU3REzONrzaiUI+4gIjDlppGB1JIbpgPWrHwDs
+	tUG8m6BqvxN09ky+B1qM8Uaoldg9MVApcom/7xI2W1AOev3rzz+qvMoz6z6/VrrgOwM1MObfbPe
+	Yhh6/YMEptOr/KAKiI+PxY8pjFksQDfz259qlhf8ldeGlypJW7XZshDja+kRDN37g+vTK6mEIHH
+	+mkEPdD2bi2fdvLHI0eFoEpFxqCHdAJfoj1tpIDiNGDxNypRHQa1K7k+ZB3oG0CestPqf8EwJM8
+	nVc7Yb5Mi+3waStBnsKqCDrl3N5pUH1ZG3moLayQVXxzwAI5gLj4ZKuH27rzprpP/BAmDapvaK5
+	R7N9dF/inxp0Gg9POFrgV4Zntb8b/jRL4epbg74+c+SXh75Ps2hfNsHEyhXtBRWxCM9mwwY0eSG
+	AzMZLqAq5trtVQh8RCtTv7qRLK5661D5Mm6emhSuGm3KdLNuAGK41bbvoDtxSX3yyYLhZM1Nlxj
+	oWD2qGjxiCZ2lEegxEdC7AgzkBpR0ICkyHnTD1sd/vClx7VRWwCInZm4TT11/TEBQJ8a+Shh1tj
+	f3JK1CAwX+wY75OQ5P25/mABdbU5W2Ae7DUgMqIjWH3Ob/EasTRLTgo5Ck7ZsAe46kIwg9qKCI+
+	4J8qnifGVSY22OUG/hmmW4kj0LVZHrgw9fwFSsGBq7GuPN+o=
+X-Received: by 2002:a05:6000:4308:b0:488:823d:5060 with SMTP id ffacd0b85a97d-48dbacf1667mr7353088f8f.48.1791615951135;
+        Sat, 10 Oct 2026 00:05:51 -0700 (PDT)
+Received: from systembl0wer ([2001:718:1202:45:4bf3:6161:9f6f:60cb])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48db9adf5e6sm7449823f8f.56.2026.10.10.00.05.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 23:53:56 -0700 (PDT)
-From: Kurt Borja <kuurtb@gmail.com>
-Date: Sat, 10 Oct 2026 03:52:49 -0300
-Subject: [PATCH v5 10/10] iio: adc: ti-ads1262: support common mode
- supplies
+        Sat, 10 Oct 2026 00:05:51 -0700 (PDT)
+Date: Sat, 10 Oct 2026 09:05:48 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Andrei Stancovici via B4 Relay
+ <devnull+andrei.stancovici.analog.com@kernel.org>
+Cc: andrei.stancovici@analog.com, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Liam
+ Beguin <liambeguin@gmail.com>, linux@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] iio: adc: ltc2497: add LTC2493 support
+Message-ID: <20261010090548.789cb699@systembl0wer>
+In-Reply-To: <20261009-submission-ltc2493-support-v1-v1-2-3dad1d4b152a@analog.com>
+References: <20261009-submission-ltc2493-support-v1-v1-0-3dad1d4b152a@analog.com>
+	<20261009-submission-ltc2493-support-v1-v1-2-3dad1d4b152a@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261010-ads126x-v5-10-49e331cb2fed@gmail.com>
-References: <20261010-ads126x-v5-0-49e331cb2fed@gmail.com>
-In-Reply-To: <20261010-ads126x-v5-0-49e331cb2fed@gmail.com>
-To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2778; i=kuurtb@gmail.com;
- h=from:subject:message-id; bh=KCiU9H7oAsfJb+wOCJGHY+ftuBOqit3svB97TjTz8Ps=;
- b=owGbwMvMwCUmluBs8WX+lTTG02pJDFknHzz77dK1n8X0pfahdSv6X2ZNUDC6qdJmevSzkITFY
- ueT6qprO0pZGMS4GGTFFFnaExZ9exSV99bvQOh9mDmsTCBDGLg4BWAiR0MYGVp+bharN+WTX/4s
- ojv93Ikti4vNp65V7q5kXlO4bavwg52MDL/yas4FZNqtWfwz4gu/jaHVATvLto7X04+62vjoHKl
- 7zQoA
-X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
- fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
-Enable common mode regulators. The usual configuration is to have our
-own 'vbias' regulator connected internally as common mode voltage on the
-AINCOM pin.
+On Fri, 09 Oct 2026 11:43:35 +0300
+Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org> wrote:
 
-Signed-off-by: Kurt Borja <kuurtb@gmail.com>
----
- drivers/iio/adc/ti-ads1262.c | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+> From: Andrei Stancovici <andrei.stancovici@analog.com>
+> 
+> The LTC2493 is the 4-channel member of the LTC2499 family: 4 single-ended
+> inputs or 2 differential pairs, with the same command format and 24-bit
+> result. Add it with its own channel table.
+> 
+> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2493fe.pdf
+> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
+> ---
 
-diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
-index 5bb41b70353f..66a7fedfefde 100644
---- a/drivers/iio/adc/ti-ads1262.c
-+++ b/drivers/iio/adc/ti-ads1262.c
-@@ -241,6 +241,7 @@ struct ads1262 {
- 	u32 rref_ohms[ADS1262_EXT_REF_COUNT][ADS1262_EXT_REF_COUNT];
- 	int refp_uV[ADS1262_EXT_REF_COUNT];
- 	int refn_uV[ADS1262_EXT_REF_COUNT];
-+	int common_mode_uV[ADS1262_INPMUX_AINCOM + 1];
- 	IIO_DECLARE_BUFFER_WITH_TS(__be32, scan_buffer,
- 				   ADS1262_FW_CHANNEL_COUNT +
- 				   ADS1262_MON_CHANNEL_COUNT);
-@@ -690,6 +691,13 @@ static int ads1262_read_raw(struct iio_dev *indio_dev,
- 						      scale * ADS1262_TEMP_SLOPE_uV_C);
- 			iio_val_s64_decompose(offset, val, val2);
- 
-+			return IIO_VAL_INT_64;
-+
-+		case IIO_VOLTAGE:
-+			offset = mul_u64_u64_div_u64(st->common_mode_uV[chan->channel2],
-+						     NANO, scale);
-+			iio_val_s64_decompose(offset, val, val2);
-+
- 			return IIO_VAL_INT_64;
- 		default:
- 			return -EOPNOTSUPP;
-@@ -1123,6 +1131,28 @@ static irqreturn_t ads1262_irq_handler(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static int ads1262_parse_common_mode_supplies(struct ads1262 *st)
-+{
-+	struct device *dev = &st->spi->dev;
-+	char name[sizeof("aincom")];
-+	int ret;
-+
-+	for (unsigned int i = 0; i <= ADS1262_INPMUX_AINCOM; i++) {
-+		if (i < ADS1262_INPMUX_AINCOM)
-+			scnprintf(name, sizeof(name), "ain%u", i);
-+		else
-+			scnprintf(name, sizeof(name), "aincom");
-+
-+		ret = devm_regulator_get_enable_read_voltage(dev, name);
-+		if (ret < 0 && ret != -ENODEV)
-+			return dev_err_probe(dev, ret,
-+					     "failed to get common mode supply: %s\n", name);
-+		st->common_mode_uV[i] = ret != -ENODEV ? ret : 0;
-+	}
-+
-+	return 0;
-+}
-+
- static int ads1262_vbias_enable(struct regulator_dev *rdev)
- {
- 	struct ads1262 *st = rdev_get_drvdata(rdev);
-@@ -1876,6 +1906,9 @@ static int ads1262_parse_channels(struct iio_dev *indio_dev)
- 		spec->info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 						     BIT(IIO_CHAN_INFO_SCALE);
- 
-+		if (!chan->is_resistance && !spec->differential)
-+			spec->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
-+
- 		i++;
- 	}
- 
-@@ -2027,6 +2060,10 @@ static int ads1262_spi_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
-+	ret = ads1262_parse_common_mode_supplies(st);
-+	if (ret)
-+		return ret;
-+
- 	ret = ads1262_populate_tables(indio_dev);
- 	if (ret)
- 		return ret;
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-2.55.0
-
+Kind regards,
+Joshua Crofts
