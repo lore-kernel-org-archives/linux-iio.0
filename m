@@ -1,383 +1,242 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011045.outbound.protection.outlook.com [52.101.65.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7490E3EA967
-	for <linux-iio@vger.kernel.org>; Fri,  9 Oct 2026 23:26:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791588385; cv=none; b=PHXlGNlc/nwUI/4svzwLgX4HViX+25B+lKr/RqZLdU+oUwe86TecgUhj5vJh6t+kuOPXf51VefnM3TB4rgYWMLXeyDWVgx9fiGR1IWrtpWBNajuAUEMpxkagiiD9BldaW1xBp0JPL25oKNPulAzEjA8o4oxAKl6XrhSOHWolfZY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791588385; c=relaxed/simple;
-	bh=aSCk7vR7RCc/E1Vdt5vktFWYGrnms6k1gSa+I2W+kyM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Q51oVL/A19Q6AlTlPQ5S/TVfVh9aGXPnreEKZqmf4tzG7RsgYaY1k8JfCyTVvGJjkUWBGcwvHC5Ge35kP3/gQ4WwTBH7A8BTFGx6uAVRM/mgiOt95hGqA8a47hXwihb9Utag4lLCJJsvmgNlTSfNijmSRx6V7oBYxiveXs2mYuw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=UVxRWwFb; arc=none smtp.client-ip=209.85.210.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6231519F12D;
+	Sat, 10 Oct 2026 02:45:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791600324; cv=fail; b=VKHZULBvy/NX2LBjI5XZaREdVU02RYcQxOQTEbqSPHfpBCOcnIdMIi3mwddAPKQkzqHAmkGuu20w3e9A1oT09Hh9BkVeYcFbNdvBQWmQCLhJab4qdxcMCXVKkn0KxpB18KZ0rkXg7jOyNDyuO0gHDIJw249qc5SnUCNGmZi5pOo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791600324; c=relaxed/simple;
+	bh=CKAa2exvzXQQ1oHH06nd2gbUYxwrbFv1VIlRM7zDBX4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=UvK3Ds1EAitX8LkSc09mLFpfZVE775N73GkVrsSVC4bH5mtUdjTGU3OaznxWZtdzohMiG/egXVo61kTJTdNORRzG4LLoJJLkN8g5JMjKNKvgwzqoIokDcB4rOOK/Mk7ohCjUB9TyGjBPTWDHPrmRo9nJH3iGNvs/D6mh//ZPe8I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=hPNYYNsf reason="signature verification failed"; arc=fail smtp.client-ip=52.101.65.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="UVxRWwFb"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-8245021651dso243434a34.0
-        for <linux-iio@vger.kernel.org>; Fri, 09 Oct 2026 16:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1791588382; x=1792193182; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=kqJrYP7Xtsbw30SMQRn1hKDSp3oWJh6uZpJoxaHfYgQ=;
-        b=UVxRWwFbyFizweJCophojEEfb/ohMPV6NdGpVOlYz1h5AFy/tFl/xiujeLOFhqibwr
-         YN+lBAztqMvJbekrhT0RsLaTb8pgX5p1lLILuqKn5x6SC0DvdcAhZc3z1gcO+1yIVH8E
-         9VwEDje9xjyxYwdYRWyc4DQfFGG7aW8sC2w8X7l+fi6zpbp+iVyCBKH5M1SkZzhXNgrE
-         wgyS8u8sYPZcnEKjmON1w2FZagUyGe2eZnx0iU3wtP5PP0EtEUeAicgaUOo67qYKfML+
-         SlrLS2E23QZZvgGqKo3TOC9RQH0HrbWz9hRfG4WoV5HUzu9c65cHSTXDVAMpOFfs92+g
-         XbDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791588382; x=1792193182;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=kqJrYP7Xtsbw30SMQRn1hKDSp3oWJh6uZpJoxaHfYgQ=;
-        b=F89pt+uJEHHpM15X82BlxF/nFBDm0goyTeFNjslwyJojj7qgTeXwwb4zK2ffFEwB0x
-         uufdhhXJe67X2Md0uQlJyXJ7ETGLM5fytoNx3xxgUT3TtLtkCXr0JdpfaCh43zRkwZsi
-         WyTjmCAyXMcTl1jBJ+S0bSLJujhgX1XcNbKZsfMzbmQfibCxMEpWEMO1n2d1+NCKPrDg
-         uahUMrxqB4DdMvDcZzOCc9WwPLHeb/oQ1KmF55XbUoUj2Bdu+OCCIJeTbU9WQDdLkUb7
-         m1B7jkpMrcgUwqc4t+/pooCpdgXuili38Bq6XID4qozWwETW9VsnIRQ5F+veLOncD3i4
-         1kXA==
-X-Gm-Message-State: AFuF++nWf/n9Eb/A0KiZ/oPuwBjSgY0dW2vkav18f8KPJIDEUsB0FtoR
-	czaj0chdFRxX/5iyCQ9uOHH8gD8s3g2XOSG7lqxZyccErnW8ADbE1NRqUeTzPFMiU3g=
-X-Gm-Gg: AYBFou0M/xq1K8xvK182+tAH3bI5H1sDtQsEUEwlyrIZgiCUEy5tWAb6CqL3mGYjTe2
-	26xSIMLLVl+riTDXoStP/Xn54nLbJZr+anC/od+A6TY0MTtwOFKW+fnWsQaBQAsRxdhbo4Ie91B
-	ncVb9UFh3H4XFnngp4IIV6GoSTowbKlVfIgZIQ1l1fv+cf+419c9SaCOu9dK/q1WrXMR1DkSsTG
-	4+kV+ksz+ulsRDave+SeUNC8mBrHrMHkq+/OkCDaN0AlnPR9agEXGbh2hgTfZQC52sDg4xcH4AB
-	ezPmColqquY+TBZC688K29tO6ZsFNURo9GmzD+Dd3meZ7CGxP57LUj6tYPiHTqfDQ/ntSZm+ime
-	zx0x03t/CgSKMl/fHSrbZ0snOJdzheQ1o/S7zMK2Ej1RZK/zN84hYJHE9wMynjtdnD5PAgpW8nH
-	ISgDnCeH/8RFdpAzvLxMNTkp2IRdmMzCf/oTAF7+lzvWYxamyUWXHDrum+7Xhcrk9t6qBsB9DVq
-	dQ=
-X-Received: by 2002:a05:6830:349e:b0:822:a76e:9595 with SMTP id 46e09a7af769-830966ee42emr3475463a34.18.1791588381787;
-        Fri, 09 Oct 2026 16:26:21 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:29bd:56f6:5ae7:35d2])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-83038f82468sm3293817a34.11.2026.10.09.16.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 16:26:20 -0700 (PDT)
-From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Fri, 09 Oct 2026 18:25:52 -0500
-Subject: [PATCH v2 2/2] iio: adc: ti-ads112c14: add gpio support
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="hPNYYNsf"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=c+mObMe2OeyDTWte9tqJwCVK1JEbBj0V8oI8EcjZS7rAQc7JnD87P26eAgK25r2bb7xUtSVnyjQofndCfclp8Ip7b6/T6Y8Ce0sFYEStGx71UODXdZyqmOJeT35MG81uZ2f6VipyCmk2B9Ze831RlBbtT8lp5foABKWYE73+39lFHF8xoyUqWNFJYOCdU69cGgqkZ2V26tRl7FHqhaWUrAdG6xKP7BkZWOaLzq5y8tag0ckf0Y9KrToT/BvBTrpD86e00OHpjglHYKFYB0lSHB1SRaJtQt+AYJRnRB4jXcD9Y1eckoTLRsD1M0SHZ6cSw8fqK2CPSSTnqqxVVa59oA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xfU5+s/nyNTUbzmKmLkYcBIc2WVdwQLLCcaQZEv8WHU=;
+ b=URGF/K19Jr6t/oJmkUZkFvEuUy7j0M69xMfjuVDyj1llsf5GV4/pWUfj3PSQdcwahdteG2bSyIbL/hhaP6WCe/F5gLyVgkene/eIgCsgKoKUIQ8laPWJTfZiL9W5kc2/KG5lOZhg/cOm+aRRT2SmVZzZbnO3mLBUK8trzAtiEO9Y36JKj6kP82CjcVWgB7ys/iGeWMzcBmiOFJRmGsw+p0dxyv/ed2dfSYBSe/Jy4ztVttDmZnGavfnjx4vGGLNqlU3Z9u3YXL0gtI37ZDDrwbVOa7a3K5dDswIbaVni+Wo1a8L/4kE85nw5wkYuFlnu/RSuuek0WI1BMThdSEUegg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xfU5+s/nyNTUbzmKmLkYcBIc2WVdwQLLCcaQZEv8WHU=;
+ b=hPNYYNsfzFY6Z3cs5BPHkeKrMnXJRE8rvISBUTWX6yRBVAFbxKHafD35Y9M/XIOD7Elc8owtyaI/6A8eyYFYe7yevfRcyL+8ueyNJBBkuSTxkdJ3x4/8969pXDoJ7X8efLy+MRQ0HVSaA59g7T5GsmwsGUea6OtmRivkt5qRSZHKQTiEsOxre9UzfwXVCwl6/nTGMPm83Ee3TyCyq4Z3HaXGWV7Yo1gkN818jKN2d6eEyywLBJvf2CqYqO4hQhoG4ugNTWdS5AksX9oM1Seu2njkGiXTfxKMGUwBXaHZ/DZL46EHOzFDRXxQS1hRcTpSrNaHwlcosAxRlfltMHl6Rw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by PA4PR04MB9589.eurprd04.prod.outlook.com (2603:10a6:102:265::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.18; Sat, 10 Oct
+ 2026 02:45:19 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%7]) with mapi id 15.21.0496.015; Sat, 10 Oct 2026
+ 02:45:18 +0000
+Date: Fri, 9 Oct 2026 21:45:06 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v5 1/9] dmaengine: Support bus widths of 32 bytes and
+ above
+Message-ID: <asmmsoNxW-gfugXx@SMW015318>
+References: <20261009-dmaengine-support-wider-dma-masks-v5-0-4c4e63a7a1af@analog.com>
+ <20261009-dmaengine-support-wider-dma-masks-v5-1-4c4e63a7a1af@analog.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261009-dmaengine-support-wider-dma-masks-v5-1-4c4e63a7a1af@analog.com>
+X-ClientProxiedBy: FR0P281CA0125.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:97::20) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261009-iio-adc-ti-ads112c14-gpio-v2-2-3231a795fa63@baylibre.com>
-References: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
-In-Reply-To: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>, 
- Bartosz Golaszewski <brgl@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, Chris Hall <c-hall@ti.com>, 
- Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, 
- "David Lechner (TI)" <dlechner@baylibre.com>
-X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=9894; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=aSCk7vR7RCc/E1Vdt5vktFWYGrnms6k1gSa+I2W+kyM=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqyXgQIhI0AwTxQ0IKOmHaWuzhL2x0NEMM6iIQy
- FRyR6A9eJyJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCasl4EAAKCRDCzCAB/wGP
- wGFWB/0ZhDj6oIXwKpnq83W9oI3ZH/vM6c9sA30YyNTXqpTGjXMdCoFZU5JANPAXtcGAb/AWIMu
- drKdToBDwCkqpNMOgiB114ilPwy9RfCtqDOeJAcfiYk3mg1CTPYQgHHr1v2LgpjHX3h08J7JEXN
- dmfAQYdCLlQrw+Uo2B6yHUSaT7QwsA2WM8v/BiubP3iuru4+2CeiimUfjvp2607YCnYZQMoHK5Y
- gnv5F78t0qaQT1PE54V0KuaOmTwJTDfZVTR1yu5cT5K+tB9qnSAMeFuCBnhVxtxJS1KdLnFKpra
- g9VUK5N7RC/NV5oloNVQBLo/dtjiEqMvQvZRAo3y6ghyU4Fq
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|PA4PR04MB9589:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9589e2d0-d55f-40d1-622c-08df2678854a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|23010399003|19092799006|11063799006|261009223027099003|56012099006|4143699003|10067099003|22082099003|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	vyLLLN96zpRZUrxyyL/f2MDqlJzkTC0aC7Wkm5UrQQenyc7U2ng33KZfa57xL9PUNPmfn252hu1RozX4Sk25x1+rRMte0cu/DpfBid2mjriwT2plTBZYUUjZy7BqxPFrsNu6TMLzoZ6dNupbg+g2kRV1C/+KKAe0+6ZrNifuy6VMUSN1dSiBV0qa0LEiOk8pZnZCBiD/p72RQK2YSnNTLLlW80uMnjR27QVde9GVamE7V6VM3eoelXy7sOi8q/0WYG0H4dv8pIgXThi0+cwCQYzWHBXaf+wRqbO0rALekLRNdQcafdgxWnyVmuoICgpsARFzq+1RukQCtLdXOg9AKZip/sl9ZMQvD8LF5jrhf63UTR0ca566HW26y1CqmCMNx7Fnxf0VylDC1LAXaA9/tFMplz3F123Ivm2EnPtL1yF+a/mllE7vTTz+R9ajsQsiW5AtuLnMQ/3/PTYACpam83ibUo6KB1NkwQo6lKZbN4gnOQO4OoWsnLAiQ9n3MSDPsJUh9TS6rHEcoaoRRxeY1qO0jCp7AuAHOjzvujTSJgxQbGXxjl/yxLwYI15wk133zlVt24I6bO0JduaSbhj4Cwwq+hXT8suLO0eSjSRgnoMsydZNcUSVHom7lDRXA86KnKEr2kGiZHXXm2uWk8Pe5P7M0efZgEbsWW7kem1OdRI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(23010399003)(19092799006)(11063799006)(261009223027099003)(56012099006)(4143699003)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?4nHVbjLyt+YgJVfbYVcfJgPyiWj0H0ICxt2qNUovIV6UBgek9ohiuoQyGT?=
+ =?iso-8859-1?Q?t8/VnzRC5H5xG7a6G12755jNavyVtr1b+81tVHTfjM96IF6tYlQ0BzpTQQ?=
+ =?iso-8859-1?Q?3m38niRV4QLp2a1WUx2l6jOO3O0qbLU2d3/8v7e4uyCCP12UlwIm/i1qpw?=
+ =?iso-8859-1?Q?WsZKeVLhWd97f7n7FAF+Z7u9UDYE3/Y4RuIEQaRGGJ27wTtEJRYqMug1BR?=
+ =?iso-8859-1?Q?dmnR92dIvCUX5y0iRcvnQ0Hk3EBr8ddEPTDnF1x6vWmGDk7fjyhNHAlRSy?=
+ =?iso-8859-1?Q?NCciaN4AzgcaP6wTofWKTHYSzcPD+dFuNeTARi2l0KztYGSVpRFSXEe1Ci?=
+ =?iso-8859-1?Q?t7NyiGFhoOFX8AfL1/2RJ2bDz6Z6SKGdAt2VQwzgpTncZLhzndxg5hZ2LP?=
+ =?iso-8859-1?Q?nn0K+vFyowqDbNB58ZoEb5Wep0+PHUfLVYR+3f44NxcvxarypphNTLYEO9?=
+ =?iso-8859-1?Q?qo5s34y/TXnF/R/O0N/XsZ8EheYZ1tgW8DVNu9BPk97j3/qvmSepAFjGED?=
+ =?iso-8859-1?Q?ooa5CqEEcSQjIR8uyqy4AvMy+BEydfh0pG82CVnzBS4b/8YD5banGUncD3?=
+ =?iso-8859-1?Q?Wh376neTv70SLGJLyi4FqkF5LT67atKnYeg0lPDb0oDcAULC6oJ5onClQ4?=
+ =?iso-8859-1?Q?DTGedN1SH5ughagldWesdcHzVnTTQ6fUAnnHpTNwCUgcpCNBMZI6ojMTXz?=
+ =?iso-8859-1?Q?xnuXSFO3PQCgVTnYqL3tNJCdkSv47R9eZw4U48d4wND8/d3AdtT2Xioc6J?=
+ =?iso-8859-1?Q?qUA7DEiOIgkGODDjh1utPhpwfkSFijUkmMfvRDY01Ra/hcUqalXtC6DgWn?=
+ =?iso-8859-1?Q?9ubHEoyR6nUDf4VbgXQICQAAn3pUIZVE7l1bK6UFeMHDKfNc2l5XbnB2/z?=
+ =?iso-8859-1?Q?VrvT2z6Pd9ZyEZBCxUYlrt2n2n+nr8RbrNicOXSDkY2Zzg8l7YhQ6eV6Vd?=
+ =?iso-8859-1?Q?WjOoI3h16SLXi4zL/+W0Tors5Rg8QYPswbZ3iBn2HEwFfTgPcsi7/knkr9?=
+ =?iso-8859-1?Q?alsMFlQfRzJ08GLSfY0foWZnUQkFEOYAbk6Bp3NTaRrP57hZ1BtKyFaBtk?=
+ =?iso-8859-1?Q?SHYpWNsdrbImYBvTnIawUcpH0bB0+KZE3agIGBc3y/UykBsLVfurT8P185?=
+ =?iso-8859-1?Q?D9RQ6YhvDrwdByww8/TpJzqHibjjfBOv4cC/Bl44AZiFher3byKOzm6CNC?=
+ =?iso-8859-1?Q?FmkNJB9Y5IqZWsuJJrYhXTgmBgiXtpUiPZtI8A0JeRGFYr9ji/FNmp11rh?=
+ =?iso-8859-1?Q?c7C8c4FrKYLhCfM3lHTAxAuXxl+18SsuhP8Hi1gbU+psQsWholvP41m+0M?=
+ =?iso-8859-1?Q?DTJ3ZoO6DC9zyLtLmLxYgDTtcCuTuqKVxZMYKMXoeVIrjsf80ateimMU1I?=
+ =?iso-8859-1?Q?WbqhGZDunHbi9Vr6O2+U7l565CMRE8g2UQeddHT7rnhWUIKJtD2lpDlbSm?=
+ =?iso-8859-1?Q?sT9xb2Zon1D6ZnEunkKlftmbKHY3gnzl5GbbtdLmpxZRw9zn6ptml73MgX?=
+ =?iso-8859-1?Q?FtUsP3lUbvn8V7ITs8HdlidzsFpGzNS9I0qMbh7l7jMkj6ioKPdcI4vGjo?=
+ =?iso-8859-1?Q?rDK/h7AEaHPAr3HYAOHpOsdfv/iTuYZy8IEZ/ZkX9o9rdmOv+snKPIOXVg?=
+ =?iso-8859-1?Q?oo4QcejaR7ls3y0E5CxzvWswQGAbeWeCGo1ZVhNVDAJs7cw8xYXiXDNKAu?=
+ =?iso-8859-1?Q?HKo6kX8ZmLxcgH2sslL/y3QrolVpEw+WtzAOWGjt744dtVvyAq/6hk52OW?=
+ =?iso-8859-1?Q?tMahPdOOQRSrydnG3vqpOyAL6UHXJLFTX2dMd22HefSPBOoJ+eGarjkpXe?=
+ =?iso-8859-1?Q?zfoGntH9KRVXysWUhPIi1EhOlOMuBlaDkX4V2ie28k0EkMS/lw6f?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9589e2d0-d55f-40d1-622c-08df2678854a
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2026 02:45:18.5791
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ke+BeKn7Hg2V53Da601Q2HBuK1epNiDWdJx2kjtrpPAjHtZ5YwT+0162yHKDxIl+JQUah0kWG/IervkbAGMThdcL0XBdYmqxsN2Z20KfKXAqv6q9CCXU/qpV7U5rvihn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9589
 
-Add support for using the AIN4/GPIO0 to AIN7/GPIO3 pins as GPIOs when
-the gpio-controller property is present.
+On Fri, Oct 09, 2026 at 04:52:53PM +0100, Nuno Sá wrote:
+> The src_addr_widths and dst_addr_widths capability masks encode each
+> supported width as a bit whose position equals the corresponding
+> enum dma_slave_buswidth value (e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets bit
+> 4). As these masks are plain u32, widths of 32 bytes and above
+> (DMA_SLAVE_BUSWIDTH_32/64/128_BYTES map to bits 32, 64 and 128) cannot
+> be represented at all.
+>
+> Introduce bitmap-based bus width capabilities that span the full enum
+> range, through a new dma_buswidth_mask_t type modeled after
+> dma_cap_mask_t. To allow DMA controller drivers to be converted
+> incrementally, the legacy dma_device u32 fields are kept alongside the
+> new masks and the core folds a legacy-only driver's u32 into the mask
+> when the device is registered, so consumers only ever have to look at
+> the mask.
+>
+> The fold is bidirectional while both representations coexist. A driver
+> that only fills in the legacy u32 gets its mask derived from it, so the
+> consumers already converted see it. A driver that only fills in the mask
+> gets its legacy u32 derived from the mask, so the consumers not
+> converted yet, which read the legacy dma_slave_caps fields, keep working.
+>
+> On top of that, dma_get_slave_caps() derives the legacy dma_slave_caps
+> masks from the new ones when a device_caps() callback adjusted them, so
+> that a converted controller narrowing its per-channel capabilities is
+> still seen by the consumers not converted yet, while a driver adjusting
+> the legacy masks directly keeps working.
+>
+> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+>
+> ---
+>
+> Andy, did not take your tag given that you're the one asking for the
+> split and since we ended up not doing it, not sure if the tag is
+> to be kept :)
+> ---
+>  drivers/dma/dmaengine.c   |  51 +++++++++++-
+>  include/linux/dmaengine.h | 208 +++++++++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 246 insertions(+), 13 deletions(-)
+>
+...
+>
+>  	/* note: this only matters in the
+> diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
+> index 71cde09ff240..eb68eea840b5 100644
+> --- a/include/linux/dmaengine.h
+> +++ b/include/linux/dmaengine.h
+> @@ -427,8 +427,179 @@ enum dma_slave_buswidth {
+>  	DMA_SLAVE_BUSWIDTH_32_BYTES = 32,
+>  	DMA_SLAVE_BUSWIDTH_64_BYTES = 64,
+>  	DMA_SLAVE_BUSWIDTH_128_BYTES = 128,
+> +	DMA_SLAVE_BUSWIDTH_MAX
+>  };
+>
+...
+> +/**
+> + * dma_bus_width_min - get the smallest bus width of a bus width mask
+> + * @mask: bus width mask
+> + *
+> + * Return: the smallest bus width set in @mask, or
+> + * %DMA_SLAVE_BUSWIDTH_UNDEFINED if @mask is empty.
+> + */
+> +#define dma_bus_width_min(mask) __dma_bus_width_min(&(mask))
+> +
 
-Pins that are already used for something else according to the
-devicetree are excluded from the valid GPIO mask. This includes analog
-inputs and excitation current outputs used by channels, REFP/REFN when
-an external reference is used, the /FAULT and /DRDY interrupts and the
-external clock input.
+We are working on make dma_device private. New API avoid direct use
+dma_device field.
 
-Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
----
- drivers/iio/adc/Kconfig        |   2 +-
- drivers/iio/adc/ti-ads112c14.c | 168 +++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 164 insertions(+), 6 deletions(-)
+pass down dma_chan point, dma engine handle everything in core part.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a802d8ee4dd9..b0242b2fdb2d 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1878,7 +1878,7 @@ config TI_ADS112C04
- 
- config TI_ADS112C14
- 	tristate "Texas Instruments ADS112C14/ADS122C14"
--	depends on I2C
-+	depends on I2C && GPIOLIB
- 	select CRC8
- 	select REGMAP
- 	help
-diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-index cbd82de03127..e0cadc445a44 100644
---- a/drivers/iio/adc/ti-ads112c14.c
-+++ b/drivers/iio/adc/ti-ads112c14.c
-@@ -17,6 +17,7 @@
- #include <linux/delay.h>
- #include <linux/dev_printk.h>
- #include <linux/device/devres.h>
-+#include <linux/gpio/driver.h>
- #include <linux/i2c.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
-@@ -157,6 +158,8 @@
- #define ADS112C14_INT_REF0_mV				1250
- #define ADS112C14_INT_REF1_mV				2500
- 
-+#define ADS112C14_NUM_GPIO				4
-+
- enum {
- 	ADS112C14_VREF_SOURCE_INTERNAL_2_5V,
- 	ADS112C14_VREF_SOURCE_INTERNAL_1_25V,
-@@ -357,6 +360,9 @@ struct ads112c14_channel_state {
- struct ads112c14_data {
- 	const struct ads112c14_chip_info *chip_info;
- 	struct regmap *regmap;
-+	struct gpio_chip gc;
-+	const char *gpio_names[ADS112C14_NUM_GPIO];
-+	DECLARE_BITMAP(gpio_reserved, ADS112C14_NUM_GPIO);
- 	struct iio_trigger *drdy_trig;
- 	/* Synchronizes access to register value fields. */
- 	struct mutex lock;
-@@ -384,6 +390,135 @@ struct ads112c14_data {
- 						 ARRAY_SIZE(ads112c14_sys_mon_channels));
- };
- 
-+static u32 ads112c14_reserve_ain_pin(unsigned long *reserved, u32 ain)
-+{
-+	if (ain >= 4 && ain <= 7)
-+		bitmap_set(reserved, ain - 4, 1);
-+
-+	return ain;
-+}
-+
-+static int ads112c14_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
-+{
-+	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, ADS112C14_REG_GPIO_CFG, &reg_val);
-+	if (ret)
-+		return ret;
-+
-+	switch (field_get(ADS112C14_GPIO_CFG_GPIO_CFG(offset), reg_val)) {
-+	case ADS112C14_GPIO_CFG_GPIO_CFG_INPUT:
-+		return GPIO_LINE_DIRECTION_IN;
-+	case ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_PUSH_PULL:
-+	case ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_OPEN_DRAIN:
-+		return GPIO_LINE_DIRECTION_OUT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ads112c14_gpio_direction_input(struct gpio_chip *gc,
-+					  unsigned int offset)
-+{
-+	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+
-+	return regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
-+				  ADS112C14_GPIO_CFG_GPIO_CFG(offset),
-+				  field_prep(ADS112C14_GPIO_CFG_GPIO_CFG(offset),
-+					     ADS112C14_GPIO_CFG_GPIO_CFG_INPUT));
-+}
-+
-+static int ads112c14_gpio_direction_output(struct gpio_chip *gc,
-+					   unsigned int offset, int value)
-+{
-+	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = regmap_assign_bits(data->regmap, ADS112C14_REG_GPIO_DATA_OUTPUT,
-+				 ADS112C14_GPIO_DATA_OUTPUT_GPIO_DAT_OUT(offset),
-+				 value);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
-+				  ADS112C14_GPIO_CFG_GPIO_CFG(offset),
-+				  field_prep(ADS112C14_GPIO_CFG_GPIO_CFG(offset),
-+					     ADS112C14_GPIO_CFG_GPIO_CFG_OUTPUT_PUSH_PULL));
-+}
-+
-+static int ads112c14_gpio_get(struct gpio_chip *gc, unsigned int offset)
-+{
-+	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, ADS112C14_REG_STATUS_LSB, &reg_val);
-+	if (ret)
-+		return ret;
-+
-+	return field_get(ADS112C14_STATUS_LSB_GPIO_DAT_IN(offset), reg_val);
-+}
-+
-+static int ads112c14_gpio_set(struct gpio_chip *gc, unsigned int offset,
-+			      int value)
-+{
-+	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+
-+	return regmap_assign_bits(data->regmap, ADS112C14_REG_GPIO_DATA_OUTPUT,
-+				  ADS112C14_GPIO_DATA_OUTPUT_GPIO_DAT_OUT(offset),
-+				  value);
-+}
-+
-+static int ads112c14_gpio_init_valid_mask(struct gpio_chip *gc,
-+					  unsigned long *valid_mask,
-+					  unsigned int ngpios)
-+{
-+	struct iio_dev *indio_dev = gpiochip_get_data(gc);
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+
-+	bitmap_andnot(valid_mask, valid_mask, data->gpio_reserved, ngpios);
-+
-+	return 0;
-+}
-+
-+static int ads112c14_gpio_init(struct iio_dev *indio_dev)
-+{
-+	struct ads112c14_data *data = iio_priv(indio_dev);
-+	struct device *dev = indio_dev->dev.parent;
-+
-+	for (unsigned int i = 0; i < ADS112C14_NUM_GPIO; i++) {
-+		data->gpio_names[i] = devm_kasprintf(dev, GFP_KERNEL, "%s:GPIO%u",
-+						     dev_name(&indio_dev->dev), i);
-+		if (!data->gpio_names[i])
-+			return -ENOMEM;
-+	}
-+
-+	data->gc = (struct gpio_chip) {
-+		.owner = THIS_MODULE,
-+		.label = dev_name(dev),
-+		.parent = dev,
-+		.base = -1,
-+		.ngpio = ADS112C14_NUM_GPIO,
-+		.names = data->gpio_names,
-+		.can_sleep = true,
-+		.init_valid_mask = ads112c14_gpio_init_valid_mask,
-+		.get_direction = ads112c14_gpio_get_direction,
-+		.direction_input = ads112c14_gpio_direction_input,
-+		.direction_output = ads112c14_gpio_direction_output,
-+		.get = ads112c14_gpio_get,
-+		.set = ads112c14_gpio_set,
-+	};
-+
-+	return devm_gpiochip_add_data(dev, &data->gc, indio_dev);
-+}
-+
- static irqreturn_t ads112c14_drdy_irq_handler(int irq, void *private)
- {
- 	struct iio_dev *indio_dev = private;
-@@ -1965,7 +2100,7 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
- 				return dev_err_probe(dev, -EINVAL,
- 						     "single-channel value must be between 0 and 7\n");
- 
--			spec->channel = pair[0];
-+			spec->channel = ads112c14_reserve_ain_pin(data->gpio_reserved, pair[0]);
- 			/*
- 			 * NB: channel2 is unused by iio core code in this case.
- 			 * Let's us avoid special case for negative input mux
-@@ -1984,8 +2119,8 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
- 						     "diff-channels values must be between 0 and 7\n");
- 
- 			spec->differential = 1;
--			spec->channel = pair[0];
--			spec->channel2 = pair[1];
-+			spec->channel = ads112c14_reserve_ain_pin(data->gpio_reserved, pair[0]);
-+			spec->channel2 = ads112c14_reserve_ain_pin(data->gpio_reserved, pair[1]);
- 		} else {
- 			return dev_err_probe(dev, -EINVAL,
- 					     "channel node missing channel type property\n");
-@@ -2014,8 +2149,11 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
- 				return dev_err_probe(dev, -EINVAL,
- 						     "excitation-channels values must be between 0 and 7\n");
- 
--			measurement->idac1_mux = pair[0];
--			measurement->idac2_mux = measurement->iadc_count > 1 ? pair[1] : 0;
-+			measurement->idac1_mux =
-+				ads112c14_reserve_ain_pin(data->gpio_reserved, pair[0]);
-+			if (measurement->iadc_count > 1)
-+				measurement->idac2_mux =
-+					ads112c14_reserve_ain_pin(data->gpio_reserved, pair[1]);
- 
- 			ret = fwnode_property_read_u32_array(child, "excitation-current-nanoamp",
- 							     pair, measurement->iadc_count);
-@@ -2420,6 +2558,10 @@ static int ads112c14_probe(struct i2c_client *client)
- 		return dev_err_probe(dev, -EINVAL,
- 				     "external reference measurements require either refp-supply or ti,refp-refn-resistor-ohms property\n");
- 
-+	/* REFP and REFN share pins with GPIO0 and GPIO1. */
-+	if (data->ext_ref_uV || data->ext_ref_ohms)
-+		bitmap_set(data->gpio_reserved, 0, 2);
-+
- 	clk = devm_clk_get_optional_enabled(dev, NULL);
- 	if (IS_ERR(clk))
- 		return dev_err_probe(dev, PTR_ERR(clk), "failed to get clk\n");
-@@ -2496,12 +2638,19 @@ static int ads112c14_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	/* FAULT shares a pin with GPIO2. */
-+	if (fwnode_property_match_string(dev_fwnode(dev), "interrupt-names", "fault") >= 0)
-+		bitmap_set(data->gpio_reserved, 2, 1);
-+
- 	if (fwnode_property_match_string(dev_fwnode(dev), "interrupt-names", "drdy") >= 0) {
- 		data->drdy_irq = fwnode_irq_get_byname(dev_fwnode(dev), "drdy");
- 		if (data->drdy_irq < 0)
- 			return dev_err_probe(dev, data->drdy_irq,
- 					     "failed to get drdy interrupt\n");
- 
-+		/* DRDY shares a pin with GPIO3. */
-+		bitmap_set(data->gpio_reserved, 3, 1);
-+
- 		if (clk)
- 			return dev_err_probe(dev, -EINVAL,
- 					     "cannot use both DRDY and CLK - they share the same pin\n");
-@@ -2546,6 +2695,9 @@ static int ads112c14_probe(struct i2c_client *client)
- 	}
- 
- 	if (clk) {
-+		/* CLK shares a pin with GPIO3. */
-+		bitmap_set(data->gpio_reserved, 3, 1);
-+
- 		ret = regmap_update_bits(data->regmap, ADS112C14_REG_GPIO_CFG,
- 					 ADS112C14_GPIO_CFG_GPIO_CFG(3),
- 					 FIELD_PREP(ADS112C14_GPIO_CFG_GPIO_CFG(3),
-@@ -2574,6 +2726,12 @@ static int ads112c14_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	if (device_property_read_bool(dev, "gpio-controller")) {
-+		ret = ads112c14_gpio_init(indio_dev);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return devm_iio_device_register(dev, indio_dev);
- }
- 
+> +static inline void __dma_bus_width_copy(dma_buswidth_mask_t *dst,
+> +					const dma_buswidth_mask_t *src)
+> +{
+> +	bitmap_copy(dst->bits, src->bits, DMA_SLAVE_BUSWIDTH_MAX);
+> +}
+> +
+> +/**
+> + * dma_bus_width_copy - copy a bus width mask
+> + * @dst: bus width mask to copy to
+> + * @src: bus width mask to copy from
+> + */
+> +#define dma_bus_width_copy(dst, src) __dma_bus_width_copy(&(dst), &(src))
+> +
+> +static inline bool __dma_bus_width_and(dma_buswidth_mask_t *dst,
+> +				       const dma_buswidth_mask_t *src1,
+> +				       const dma_buswidth_mask_t *src2)
+> +{
+> +	return bitmap_and(dst->bits, src1->bits, src2->bits,
+> +			  DMA_SLAVE_BUSWIDTH_MAX);
+> +}
+> +
+> +/**
+> + * dma_bus_width_and - intersect two bus width masks
+> + * @dst: bus width mask to store the result in
+> + * @src1: first bus width mask
+> + * @src2: second bus width mask
+> + *
+> + * Return: true if @dst has at least one bus width set, false otherwise.
+> + */
+> +#define dma_bus_width_and(dst, src1, src2) \
+> +	__dma_bus_width_and(&(dst), &(src1), &(src2))
+> +
 
--- 
-2.53.0
+One thing I forget, new API should start from dmaengine_.
 
+Frank
