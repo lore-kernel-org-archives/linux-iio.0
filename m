@@ -1,133 +1,194 @@
-Received: from out203-205-221-231.mail.qq.com (out203-205-221-231.mail.qq.com [203.205.221.231])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F73C409275
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 08:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.231
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791708536; cv=none; b=FccoyTa4Q3k/u0WqJdblilkFBwIUfArLOpQ128wCwo1asQqF/YlS3mEl63GGG6umuoTCQ6ihoqx8hYJJuD6Vo2gPc/u9IKUvogg2hJ4r80IESAG3YKcd2qkpnv0pCYbCzz0jwpeYOvnO0ZfCOtRjRHqaJDiiKwsB+sFDnvFp29Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791708536; c=relaxed/simple;
-	bh=AAMiLUQL1aZfpjuWtxhJtBW4uoqr3z5vfym2jjYHz5U=;
-	h=Message-ID:From:To:Cc:Subject:Content-Type:MIME-Version; b=QENEegBYx5G8tV0INZCLEaSF5cPW6w6VoNeSZUBxl7QOL1/r3J3mW+H/4Rnw4CZ70AkzHX1p7dOH+CutyszW1s0zZFApdZt8UBOhWqX/l4eo4lvxNO2NvkQYrtsC3LRbzGUy+Tqd6BnNCRi4PKP/87IBvM0LYdk4Hv9/hIDaQgM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=NiH/cDQW; arc=none smtp.client-ip=203.205.221.231
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12614304BB2
+	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 10:18:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791713894; cv=pass; b=NlUbO6kapf+E8/yPMHwoMDt7be0pA2flweRF89yMsQMrMk3frbm6uZWU8dC8D5/kZWv9HOAjm8lg7PI2JmhtT0D3fMlj5TV1zSwjhbHpSnnflfi+hLLsoAJ2LaquuqvFkG2w6fppplYdvdmkNZxNMsBESyuO2ZNVTkMA9G7LxBI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791713894; c=relaxed/simple;
+	bh=8QVnP8e031bGfGfvNZT9OId6tEk/ip7/dkUDXa6w1aw=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=C7NM5np6cx6TMoRyAwfySFFghnGzro7MT4zlZ1aws8FLds6lh4i5209GGIF7snWgaQsgbPJbrwCxvwpmno/XLMMNYvQ5Jy0p7oykFIkKCA5babr1NnNmRWlsIi3OPfzOfYgxzrQiDWHr7UnklDO4aBBX670wARqzOR/BU7WA+l4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DtsWza2L; arc=pass smtp.client-ip=209.85.222.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="NiH/cDQW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-	s=s201512; t=1791708520;
-	bh=b6pl6KIROIr+mIv97/44CK8Lo6HGmMfZBi/KrrohrDU=;
-	h=From:To:Cc:Subject;
-	b=NiH/cDQWoWyLcLF13XHPAdrpv0w5g/Pjpzs4jb0DJCWL3Rqiy2dNjx40Fw7XDfiC1
-	 ZZIfYXGAb+jDZAHQNkWbRn5rKydC1scp0HGXPumv6Sl4QHM+ZUngbIgviXSFV3W+sk
-	 RsDMoqQCTsTkmM2SrMwFN15v4eNoyDgXszxKRweo=
-Received: from [127.0.0.1] ([111.55.120.57])
-	by newxmesmtplogicsvrsza63-0.qq.com (NewEsmtp) with SMTP
-	id C25382F3; Sun, 11 Oct 2026 16:48:37 +0800
-X-QQ-mid: xmsmtpt1791708517t0njjsmab
-Message-ID: <tencent_C2E579008244A394105247CCC4787391C209@qq.com>
-X-QQ-XMAILINFO: MXzpxT/vcbSgYrxcphtEd60uqzXfzQ09fB8b3b7pwOqe7G7OFRMiV3fcsVnH5A
-	 x2YF5G3EkGL+1YvpNETV5JXWPW8w3Cxy9nq0UXZAQwUIgnhV8vrLMSvT3xXpwdwo2QnQhf46epP1
-	 T5quTL7qb/e0t3KIYExWqTGv2u0PQS24pAhUELRm41Wo3561My52L8fpHUzyffua4LSwlEqyUeF9
-	 CmSma9VO/nA3XRZSxm1+oGgYerhq8XMRsZG0LCOMQ4Ld/WCFJizBICkOwO8kIWjOhzkof1YGSLX0
-	 oH/SQ4DuKg7ZaNu0ZFB9UvQ9/0/S3v7VDXcz2P4NpweoJ6XKYXjQk5V+rnQfYXz+fYb0rF1Fi/ee
-	 wFpc6gy/pw114pteBS6DYRh7iQEd1L4uZSQlXkNWCbQjDU48YInhGPYkte9DGd3MDhd82FiPHihy
-	 s2ZVLZN6b3VkO72aIYpy9tZgb0ND4zaLTiQu2j2hBhW0OYSRBQvSBumnw9mvvEP7612R5stznVwb
-	 hsMF26sxnYcI4O5AFMFpNbXGqUhmWhXo/N/+lhSjx38JZmg9yOcYojdJa/gQt+cXczuh9hy99eNb
-	 XRRsEdQWNGPDe9cEhbvC3yyXjowjspa91NFpfweydClkfIvKXlCi9I2CvpaE/+TjnTXX6Ia6Htgk
-	 4WD4phm7EkId44lTOZ49WXP2e2MIhSiyGRXfV4VwFVDqUOyf+ajwIBlZ5U8Xj82TWw3vx2gtBH5+
-	 4QJypfgXN6FDBennM3IVE4aW4Uf1kbn5WbOWGgM5CY8KxKET6jZZKZcTUQn+UK+gHA9IbdfE2Loi
-	 cjDw/HdEZ2pTOZ0lMm8OcYuEY13kpgvw2A2Ad7cgD4zTKvVg8k7rrdLPYT0cgZZ4FAuusI0Pcmik
-	 5s9GN+fjoJ0IOF0R52FdEJpUCU/ZmRL7NSbpQxCnW/5Ia9BMxg2Tws/NN/bk7gSEntkACWqd7uDg
-	 Y/sOh2lakDwcF9kMeroPH5h6ispdp+dXzjfDk5Z1D/Gu6rkOjJeCYr+Leltb7U0CC4Nsvcn4pcFC
-	 oSg8qkJ1LuNJyJvmQEc2b/S0VoZPrWJDDw6+qquiM49tlyTfbsH+5vRuZ8cmSLUNCbW3simq1wdg
-	 GcdyWEM5Gi1criC+/Gz8EOH9OQsbOsb2nflZNoq41zgaVOmczVLU0I8JY2kA==
-X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
-From: Zixin Wang <ywp1023456@foxmail.com>
-To: Kevin Tsai <ktsai@capellamicro.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
- Nuno =?utf-8?q?S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH] iio: light: cm32181: add support for the CM32183
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DtsWza2L"
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-988f270d308so696162241.2
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 03:18:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791713892; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Yy9vJ3gEHgRusw1UGpmQgddmFK0CR+a0rpcFhHO+6s3DSfRcJo560V1HPGaQLLlD6c
+         K4lr0CcioGtsguBoIhmyYKw+dhWa78pabx/pRL3M1il2w05bRJCd9n5yHGJBoqhLwGDL
+         iGKLDMQ1OlX+NBeELNCVnnYC8yHpmF8/lXPKJ2Wm7L85aOBCbE/iJwQS8jeS22RcTFTH
+         r9UEVyJh5KZjiQDVlJEq8+BM+cHB/KwjwJBxs5bgDkO6zgwnFGlil3kzci8BxbTkOsPR
+         MIPd+rqfkcN1nNNmLZDVGG+9jHTVa6aZHKe2v3C+FefVHKY/35Q5xZ/vIO+a21W/iCWL
+         +v9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :mime-version:dkim-signature;
+        bh=7VFFpRhUZGG173cxRqsJ8XWcj2i+48AarU4CckLgkP0=;
+        fh=HiPopKYNaa8FtUhU3UgsoQP41/0nRRn7Vhd5HgDrxJg=;
+        b=cprFEUmRcKcfhK6uhaVF8Jt+Pmv4GTtDm4Ir4xo9cGD1K1zk99/eRjP2QryJWov6pv
+         ZlBB3ZvD9OQjr/3s8b25ZMi6cvatjHV2FjgeYLSzWy5SrW4diGs9tnSBlpISBVR22wF2
+         pPYfRv6/iQG6wkG4/v2grtncCQo+wpDHz+BrbO33Q6r9Z8ohEC3Ga5gAI/gV6ooM7XZJ
+         EKI1ItaHLCEQSmOhNFU2CBf8PhKeZSGrVqcJ6c9sgo0PX0Dmc3FPEdkawrLmh/CPwb6E
+         bNEwcOpWlVRUWu6dJO4QJgZQi1f3EYTWUjl5qlF36LF1F9F040Wshj0vd6nctfzuQW6j
+         X/Ow==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791713892; x=1792318692; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=7VFFpRhUZGG173cxRqsJ8XWcj2i+48AarU4CckLgkP0=;
+        b=DtsWza2LnSyfn+n2nJDPXdfmm+lGpgMOXksW4jiXdP5HJbYfgShOUTw0LV2aTkaElj
+         tngBZz7Y8vnMxRORnUud9QZZjpuwYDeoAXtGkOVVDtL7Zu3MSbqHGaVCWIR2mtqduBw7
+         5YIbc8191Ebo/TItmPdGvdtoBxd06lDIzsk6bTGeDrFtIibHyliwDX7nDkgZAvkPnjM5
+         h7pzYuBbq4a8u/GiD6pRyYmIqIbWxUkl2wh6J4UqGK5BlI2qeIzHkF+rNx46vKz4anQ9
+         xPC//WRvQ7jQTfCAO9IAE3WUNQZk2IYU6O132aJ2qPiOe3UxepMnyxessYmZcXRIH+C9
+         uA8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791713892; x=1792318692;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=7VFFpRhUZGG173cxRqsJ8XWcj2i+48AarU4CckLgkP0=;
+        b=EqFTLo13aCt1Un2nz6GMYkhfTA78IBUPxUiyJq/46ZhXfz/9hzXu/A+AjcbjmJQGW5
+         uNql2bRw+kCDRAcsmquBqX1wcmW5H0McwBHGV9qPRCOe+mvu7aLptJxBTU8pD80DbBbq
+         iLiYhc8SqcXaorzm80gU6yAeb+WdXOPC3XF+ENWFv9uq8WSsItU4nh+E6aJQRtQ3JYk3
+         4ytYwwsumXCJpWYarjE3e24TGDLQ6X9+p+CpVKTe2bfc/UTWqgjhBxPZ5ErDctQ7LKeL
+         Jml5lWRVowcjDwbgln7nIvBLjuTIKVjQ2T3Pug0eRtkgpmtmbFNylYHR5yJX+QXOtffC
+         4aQQ==
+X-Forwarded-Encrypted: i=1; AKwUvBx7CShqmoxHH8LOuN9FkcqtWdiMQTFPpk7QtjC6sfDf7KQc46zd6rb2cshXGTNgu/unBzTORoYdneM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKr2nKP34iUIVwK3XfOaWrWLVRmzYRUssfsHzDokTnrwa7LM5Lp
+	1atAMB2qSGr9kYMTL5r0gFrRnKQml8rOF9NtztipMKu5Sc9FD5yGQozzU5+9DfBxxdQ4Ekae8+l
+	NkuB0S9st4HVYvZiwcj43gY8mMLG3BiU=
+X-Gm-Gg: AYBFou1ROJJQcnbTX0OJyYaatWj1LtToegU1cxktuuiemKWbt4s0jGo04X/xsQSI703
+	JVMSpsNk4GutPEVZw/un3PBa23ZEjPi1o2a6ELCMGfL7dZtTFguwkMrFoD0e22+EvFZam2tdBz/
+	w4/ntlV1RvaTHIqCpiJ5e3lC6sJB4k7s74nt3wuQGRZDWbQ6i5Qtk9D4aGVaRmKjikrLYndmAtG
+	judNhIsIf/BCxv8TecjsNKkzUVZnfW+ij6np3fJGjKsBpE9q6sUi9b3ob0T6NLO6PkP0DNGuuFT
+	ZDWLu+u11yLrzpu7nq1uDqZIY11jU/q1LtaKrCZ+tLRtxo08LVwZpQ==
+X-Received: by 2002:a67:e70e:0:b0:7c3:2fa4:9a71 with SMTP id
+ ada2fe7eead31-7cb3722f17emr2058168137.9.1791713891831; Sun, 11 Oct 2026
+ 03:18:11 -0700 (PDT)
+Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
+ Sun, 11 Oct 2026 06:18:11 -0400
+Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
+ Sun, 11 Oct 2026 03:17:39 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+From: =?UTF-8?B?6LW15paH5by6?= <berringtoni36@gmail.com>
+Date: Sun, 11 Oct 2026 06:18:11 -0400
+X-Gm-Features: AclHuK9LHDqD951buwV0hi21vRltaUq6IwxrZMZz83OPQBQupDB3sEGtQOzC1cM
+Message-ID: <CAF2O-sPmL=eyUD=EndsOpDnJr2FvpXxhF2RD5S-4-9OgfCRqkg@mail.gmail.com>
+Subject: [PATCH] iio: accel: adxl345: update period cache after successful write
+To: =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The CM32183 is another member of the Capella CM3218x ambient light
-sensor family. Its device ID register (0x07) returns 0x83 in the low
-byte, following the same scheme as the already supported parts:
+The ADXL345 event-period read path returns st->inact_time_ms. The setters
+for inactivity, free-fall and the ODR-derived default currently update
+this cache before writing TIME_INACT or TIME_FF. If the regmap write
+fails, the sysfs write reports an error but a subsequent read returns
+the requested period even though it was not programmed.
 
-    CM3218  -> 0x18
-    CM32181 -> 0x81
-    CM32182 -> 0x82
-    CM32183 -> 0x83
+Update the cached period only after the corresponding regmap write
+succeeds.
 
-The driver falls through to the default branch of the ID switch and
-returns -ENODEV, so probe() fails even though the device is present and
-functional:
-
-    cm32181 i2c-CPLM3218:00: cm32181_probe: register init failed
-
-This was observed on an H3C MegaBook 14 (Intel Core Ultra 5 226V, Lunar
-Lake). Its DSDT declares the sensor as:
-
-    Device (LSRD) {
-        Name (_HID, "CPLM3218")
-        Name (_CID, "CPLM3218")
-        Name (_UID, 1)
-    }
-
-on I2C at address 0x29, and additionally provides the vendor
-initialisation and calibration objects that this driver already parses.
-CPM0[0] reports a device-id of 32183, and CPM1 provides lux_per_bit =
-2200 and calibscale = 265859.
-
-Treat the CM32183 like the CM32181.
-
-Measurements on the above machine confirm the register layout matches:
-the power-on value of the CMD register (0x0001) has bit 0 set, which is
-CM32181_CMD_ALS_DISABLE, and register 0x04 is the ALS data register.
-With this change the driver binds, the ACPI-provided initialisation
-values are written and the CPM1 calibration is taken into account
-(in_illuminance_calibscale reads back 265859). The reported illuminance
-tracks ambient light without saturating.
-
-Signed-off-by: Zixin Wang <ywp1023456@foxmail.com>
+Fixes: 8a1536cc4a1c ("iio: accel: adxl345: add inactivity feature")
+Fixes: f6f22950d925 ("iio: accel: adxl345: extend inactivity time for
+less than 1s")
+Assisted-by: LLM
+Signed-off-by: =E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com>
 ---
-Please Cc me on replies, I am not subscribed to linux-iio.
- drivers/iio/light/cm32181.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Validation:
+- A host harness extracted the production setter and period-read helpers
+  and injected -EIO at regmap_write(). The baseline failed all three
+  failure cases (3/6 passed); the patch passed all six cases, including
+  successful writes.
+- Compiled the full source to an x86_64 object with Apple clang 17 and
+  Debian Linux 6.1 headers plus upstream IIO/regmap headers and a cleanup
+  compatibility shim. This checks syntax and types with a mixed header
+  set; it is not a full current-tree Kbuild/modpost or target-board build.
+- No in-kernel KUnit or hardware test was performed.
 
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 2590fc8..97882e4 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -54,7 +54,10 @@
- 
- #define SMBUS_ALERT_RESPONSE_ADDRESS	0x0c
- 
--/* CPM0 Index 0: device-id (3218 or 32181), 1: Unknown, 2: init_regs_bitmap */
-+/*
-+ * CPM0 Index 0: device-id (3218, 32181 or 32183), 1: Unknown,
-+ * 2: init_regs_bitmap
-+ */
- #define CPM0_REGS_BITMAP		2
- #define CPM0_HEADER_SIZE		3
- 
-@@ -200,6 +203,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
- 		break;
- 	case 0x81: /* CM32181 */
- 	case 0x82: /* CM32182, fully compat. with CM32181 */
-+	case 0x83: /* CM32183 */
- 		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
- 		cm32181->als_it_bits = cm32181_als_it_bits;
- 		cm32181->als_it_values = cm32181_als_it_values;
--- 
-2.39.5
+AI assistance: Codex drafted the fix, changelog and fault-injection
+harness for a contribution related to an ADXL345 SPI/IIO project.
 
+ drivers/iio/accel/adxl345_core.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_c=
+ore.c
+index 6c9080d..cd58304 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -391,30 +391,47 @@ static int adxl345_set_default_time(struct
+adxl345_state *st)
+ 	odr =3D FIELD_GET(ADXL345_BW_RATE_MSK, regval);
+ 	val =3D clamp(max_boundary - adxl345_odr_tbl[odr][0],
+ 		    min_boundary, max_boundary);
+-	st->inact_time_ms =3D MILLI * val;
+
+ 	/* Inactivity time in s */
+-	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
++	ret =3D regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
++	if (ret)
++		return ret;
++
++	st->inact_time_ms =3D MILLI * val;
++
++	return 0;
+ }
+
+ static int adxl345_set_inactivity_time(struct adxl345_state *st, u32 val_i=
+nt)
+ {
++	int ret;
++
++	ret =3D regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
++	if (ret)
++		return ret;
++
+ 	st->inact_time_ms =3D MILLI * val_int;
+
+-	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
++	return 0;
+ }
+
+ static int adxl345_set_freefall_time(struct adxl345_state *st, u32 val_fra=
+ct)
+ {
++	int ret;
++
+ 	/*
+ 	 * Datasheet max. value is 255 * 5000 us =3D 1.275000 seconds.
+ 	 *
+ 	 * Recommended values between 100ms and 350ms (0x14 to 0x46)
+ 	 */
++	ret =3D regmap_write(st->regmap, ADXL345_REG_TIME_FF,
++			   DIV_ROUND_CLOSEST(val_fract, 5));
++	if (ret)
++		return ret;
++
+ 	st->inact_time_ms =3D DIV_ROUND_UP(val_fract, MILLI);
+
+-	return regmap_write(st->regmap, ADXL345_REG_TIME_FF,
+-			    DIV_ROUND_CLOSEST(val_fract, 5));
++	return 0;
+ }
+
+ /**
+base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
+--=20
+2.50.1 (Apple Git-155)
