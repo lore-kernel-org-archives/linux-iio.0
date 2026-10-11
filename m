@@ -1,194 +1,150 @@
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12614304BB2
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 10:18:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791713894; cv=pass; b=NlUbO6kapf+E8/yPMHwoMDt7be0pA2flweRF89yMsQMrMk3frbm6uZWU8dC8D5/kZWv9HOAjm8lg7PI2JmhtT0D3fMlj5TV1zSwjhbHpSnnflfi+hLLsoAJ2LaquuqvFkG2w6fppplYdvdmkNZxNMsBESyuO2ZNVTkMA9G7LxBI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791713894; c=relaxed/simple;
-	bh=8QVnP8e031bGfGfvNZT9OId6tEk/ip7/dkUDXa6w1aw=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=C7NM5np6cx6TMoRyAwfySFFghnGzro7MT4zlZ1aws8FLds6lh4i5209GGIF7snWgaQsgbPJbrwCxvwpmno/XLMMNYvQ5Jy0p7oykFIkKCA5babr1NnNmRWlsIi3OPfzOfYgxzrQiDWHr7UnklDO4aBBX670wARqzOR/BU7WA+l4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DtsWza2L; arc=pass smtp.client-ip=209.85.222.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8075B206;
+	Sun, 11 Oct 2026 10:45:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791715548; cv=none; b=a/VCN+aIV8Ebacp1VtfMHEir9dJesUkohjs5gGmcKPRURTE5aRozsP5yU8FaSo3sDYyixDhrq7/YZU9H2l7BplsJJTH3XFQ82E7KubzlVhCQWoqPzKBPd5oWR1heWrgHwgpYWLNsFj3ug0sKUz+klTUbkhzND5W5O2K44h+ZWwI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791715548; c=relaxed/simple;
+	bh=AW8NKODHQ9uGVl/dxofOMFVTPthHtP98ig1EuK+werI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=BkfKelqXE6d2OCWUGvxVelrUzJ97I2ePkLnKb61WX8f4SWCxe2mX30qzl3p7qXZonyuiIrDfaEBFwSfa7eB/31Q7Gh5bAq+DYmxEeU2gNRY1TWEaztgFawEvCJSLwKoLkLhybf//AsmXRhbl/lbj6i2VGlvAZaIiv/yP3H9fNsc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aKBGqpPx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DtsWza2L"
-Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-988f270d308so696162241.2
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 03:18:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791713892; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Yy9vJ3gEHgRusw1UGpmQgddmFK0CR+a0rpcFhHO+6s3DSfRcJo560V1HPGaQLLlD6c
-         K4lr0CcioGtsguBoIhmyYKw+dhWa78pabx/pRL3M1il2w05bRJCd9n5yHGJBoqhLwGDL
-         iGKLDMQ1OlX+NBeELNCVnnYC8yHpmF8/lXPKJ2Wm7L85aOBCbE/iJwQS8jeS22RcTFTH
-         r9UEVyJh5KZjiQDVlJEq8+BM+cHB/KwjwJBxs5bgDkO6zgwnFGlil3kzci8BxbTkOsPR
-         MIPd+rqfkcN1nNNmLZDVGG+9jHTVa6aZHKe2v3C+FefVHKY/35Q5xZ/vIO+a21W/iCWL
-         +v9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :mime-version:dkim-signature;
-        bh=7VFFpRhUZGG173cxRqsJ8XWcj2i+48AarU4CckLgkP0=;
-        fh=HiPopKYNaa8FtUhU3UgsoQP41/0nRRn7Vhd5HgDrxJg=;
-        b=cprFEUmRcKcfhK6uhaVF8Jt+Pmv4GTtDm4Ir4xo9cGD1K1zk99/eRjP2QryJWov6pv
-         ZlBB3ZvD9OQjr/3s8b25ZMi6cvatjHV2FjgeYLSzWy5SrW4diGs9tnSBlpISBVR22wF2
-         pPYfRv6/iQG6wkG4/v2grtncCQo+wpDHz+BrbO33Q6r9Z8ohEC3Ga5gAI/gV6ooM7XZJ
-         EKI1ItaHLCEQSmOhNFU2CBf8PhKeZSGrVqcJ6c9sgo0PX0Dmc3FPEdkawrLmh/CPwb6E
-         bNEwcOpWlVRUWu6dJO4QJgZQi1f3EYTWUjl5qlF36LF1F9F040Wshj0vd6nctfzuQW6j
-         X/Ow==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791713892; x=1792318692; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7VFFpRhUZGG173cxRqsJ8XWcj2i+48AarU4CckLgkP0=;
-        b=DtsWza2LnSyfn+n2nJDPXdfmm+lGpgMOXksW4jiXdP5HJbYfgShOUTw0LV2aTkaElj
-         tngBZz7Y8vnMxRORnUud9QZZjpuwYDeoAXtGkOVVDtL7Zu3MSbqHGaVCWIR2mtqduBw7
-         5YIbc8191Ebo/TItmPdGvdtoBxd06lDIzsk6bTGeDrFtIibHyliwDX7nDkgZAvkPnjM5
-         h7pzYuBbq4a8u/GiD6pRyYmIqIbWxUkl2wh6J4UqGK5BlI2qeIzHkF+rNx46vKz4anQ9
-         xPC//WRvQ7jQTfCAO9IAE3WUNQZk2IYU6O132aJ2qPiOe3UxepMnyxessYmZcXRIH+C9
-         uA8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791713892; x=1792318692;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=7VFFpRhUZGG173cxRqsJ8XWcj2i+48AarU4CckLgkP0=;
-        b=EqFTLo13aCt1Un2nz6GMYkhfTA78IBUPxUiyJq/46ZhXfz/9hzXu/A+AjcbjmJQGW5
-         uNql2bRw+kCDRAcsmquBqX1wcmW5H0McwBHGV9qPRCOe+mvu7aLptJxBTU8pD80DbBbq
-         iLiYhc8SqcXaorzm80gU6yAeb+WdXOPC3XF+ENWFv9uq8WSsItU4nh+E6aJQRtQ3JYk3
-         4ytYwwsumXCJpWYarjE3e24TGDLQ6X9+p+CpVKTe2bfc/UTWqgjhBxPZ5ErDctQ7LKeL
-         Jml5lWRVowcjDwbgln7nIvBLjuTIKVjQ2T3Pug0eRtkgpmtmbFNylYHR5yJX+QXOtffC
-         4aQQ==
-X-Forwarded-Encrypted: i=1; AKwUvBx7CShqmoxHH8LOuN9FkcqtWdiMQTFPpk7QtjC6sfDf7KQc46zd6rb2cshXGTNgu/unBzTORoYdneM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKr2nKP34iUIVwK3XfOaWrWLVRmzYRUssfsHzDokTnrwa7LM5Lp
-	1atAMB2qSGr9kYMTL5r0gFrRnKQml8rOF9NtztipMKu5Sc9FD5yGQozzU5+9DfBxxdQ4Ekae8+l
-	NkuB0S9st4HVYvZiwcj43gY8mMLG3BiU=
-X-Gm-Gg: AYBFou1ROJJQcnbTX0OJyYaatWj1LtToegU1cxktuuiemKWbt4s0jGo04X/xsQSI703
-	JVMSpsNk4GutPEVZw/un3PBa23ZEjPi1o2a6ELCMGfL7dZtTFguwkMrFoD0e22+EvFZam2tdBz/
-	w4/ntlV1RvaTHIqCpiJ5e3lC6sJB4k7s74nt3wuQGRZDWbQ6i5Qtk9D4aGVaRmKjikrLYndmAtG
-	judNhIsIf/BCxv8TecjsNKkzUVZnfW+ij6np3fJGjKsBpE9q6sUi9b3ob0T6NLO6PkP0DNGuuFT
-	ZDWLu+u11yLrzpu7nq1uDqZIY11jU/q1LtaKrCZ+tLRtxo08LVwZpQ==
-X-Received: by 2002:a67:e70e:0:b0:7c3:2fa4:9a71 with SMTP id
- ada2fe7eead31-7cb3722f17emr2058168137.9.1791713891831; Sun, 11 Oct 2026
- 03:18:11 -0700 (PDT)
-Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Sun, 11 Oct 2026 06:18:11 -0400
-Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Sun, 11 Oct 2026 03:17:39 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aKBGqpPx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E7A91F0089B;
+	Sun, 11 Oct 2026 10:45:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791715547;
+	bh=xt8nKne1ouvTY7wBBsRCk4/6TlDv+T5mG1nv8NKoAbA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=aKBGqpPxUv4wLzhW4mSFZgNctnjPu4lr6kFphDJMyGtloeSmDWULEr2nHpo6uN8RV
+	 Hj9YJe/8IaYdHpa0l271dBawGXgIUgIrSGFGNUah9bEb4FXWsRGcsEisSOc9Yl/Aw2
+	 +P1EjH9GfnKbip/1pHiSu9FV3HQfDCPkyWpblm54AFky5DOQ4OKb0rdRouwb5NTwGJ
+	 2khIQUBkOx7fDdKx+j9EOkAjjrK3Fxf0/1w9xEdjZfyPZDJKnv2FmkmyjfwvJqH3wa
+	 h1cQcLhDkCO7ytkENm1RD6rz/IMOsdTzYrcbW3rkQu/Soq9FHuv5AXi37Bh85lh3fa
+	 86XDkk48//qrQ==
+Date: Sun, 11 Oct 2026 11:45:12 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?= 
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Rob Herring	 <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
+ <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan	
+ <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Marcelo
+ Schmitt <marcelo.schmitt@analog.com>, Joshua Crofts
+ <joshua.crofts1@gmail.com>, Radu Sabau	 <radu.sabau@analog.com>, Salih Erim
+ <salih.erim@amd.com>, Jishnu Prakash	 <jishnu.prakash@oss.qualcomm.com>,
+ Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
+ linux@analog.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] iio: adc: ade9000: add ADE9430 support
+Message-ID: <20261011114512.6a8403d4@jic23-hlaptop>
+In-Reply-To: <20260921001246.72cf14ab@jic23-hlaptop>
+References: <20260918073537.1572-1-antoniu.miclaus@analog.com>
+	<9fc012985151b1b79b5d6e3f16738397ac9f837f.camel@gmail.com>
+	<20260921001246.72cf14ab@jic23-hlaptop>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: =?UTF-8?B?6LW15paH5by6?= <berringtoni36@gmail.com>
-Date: Sun, 11 Oct 2026 06:18:11 -0400
-X-Gm-Features: AclHuK9LHDqD951buwV0hi21vRltaUq6IwxrZMZz83OPQBQupDB3sEGtQOzC1cM
-Message-ID: <CAF2O-sPmL=eyUD=EndsOpDnJr2FvpXxhF2RD5S-4-9OgfCRqkg@mail.gmail.com>
-Subject: [PATCH] iio: accel: adxl345: update period cache after successful write
-To: =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-The ADXL345 event-period read path returns st->inact_time_ms. The setters
-for inactivity, free-fall and the ODR-derived default currently update
-this cache before writing TIME_INACT or TIME_FF. If the regmap write
-fails, the sysfs write reports an error but a subsequent read returns
-the requested period even though it was not programmed.
+On Mon, 21 Sep 2026 00:12:46 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Update the cached period only after the corresponding regmap write
-succeeds.
+> On Fri, 18 Sep 2026 16:27:30 +0100
+> Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+>=20
+> > On Fri, 2026-09-18 at 10:35 +0300, Antoniu Miclaus wrote: =20
+> > > The ADE9430 is a polyphase energy metering device from the same famil=
+y as
+> > > the ADE9000. It is register-compatible with the ADE9000 but omits the
+> > > on-chip dip/swell detection and has no on-chip digital integrator; it
+> > > relies on an external analog integrator for Rogowski coil current sen=
+sors.
+> > >=20
+> > > This series adds ADE9430 support to the existing ade9000 driver, reus=
+ing
+> > > the dip/swell-less channel table introduced for the ADE9078 and addin=
+g a
+> > > matching chip_info for the ADE9430 full-scale codes. A precursor patch
+> > > gates the DICOEFF register write behind a has_digital_integrator chip=
+_info
+> > > flag so it is skipped on parts without an on-chip digital integrator.
+> > >=20
+> > > Patches 1 and 2 are standalone fixes carried with this series. Patch 1
+> > > corrects the ADE9000 full-scale RMS/PCF codes to the same family-A va=
+lues
+> > > the ADE9430 uses. Patch 2 fixes the DIPC event never being handled or
+> > > cleared, found by the sashiko review of v1. Both carry Fixes: tags an=
+d can
+> > > be applied independently of the rest of the series.
+> > >=20
+> > > Changes in v2:
+> > > - new patch: fix the DIPC event never being handled or cleared, found=
+ by
+> > > =C2=A0 the sashiko review of v1 (patch 2).
+> > > - new precursor patch: gate the DICOEFF write behind a has_digital_in=
+tegrator
+> > > =C2=A0 chip_info flag, split out of the ADE9430 support patch.
+> > > - reuse ade9078_channels for the ADE9430 instead of adding a duplicate
+> > > =C2=A0 channel table.
+> > > - reword the documentation intro to "The supported parts are..." so i=
+t does
+> > > =C2=A0 not need updating for each new part.
+> > >=20
+> > > v1:
+> > > https://lore.kernel.org/linux-iio/20260907101623.8730-1-antoniu.micla=
+us@analog.com/
+> > >=20
+> > > Antoniu Miclaus (6):
+> > > =C2=A0 iio: adc: ade9000: fix ADE9000 full-scale RMS and PCF codes
+> > > =C2=A0 iio: adc: ade9000: fix DIPC event never being handled or clear=
+ed
+> > > =C2=A0 dt-bindings: iio: adc: adi,ade9000: add adi,ade9430 compatible
+> > > =C2=A0 iio: adc: ade9000: gate the DICOEFF write behind a chip_info f=
+lag
+> > > =C2=A0 iio: adc: ade9000: add support for ADE9430
+> > > =C2=A0 docs: iio: ade9000: document ADE9430 support
+> > >=20
+> > > =C2=A0.../bindings/iio/adc/adi,ade9000.yaml=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 | 22 ++++++-----
+> > > =C2=A0Documentation/iio/ade9000.rst=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 36 ++++++=
++++--------
+> > > =C2=A0drivers/iio/adc/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 |=C2=A0 1 +
+> > > =C2=A0drivers/iio/adc/ade9000.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 | 39 ++++++++++++++++---
+> > > =C2=A04 files changed, 67 insertions(+), 31 deletions(-)
+> > >=20
+> > >=20
+> > > base-commit: edb91bc566576f6664a3efbad6bd4205aa1d5259   =20
+> >=20
+> > LGTM
+> >=20
+> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com> =20
+> LGTM2.  Just need to give some time for dt-binding reviewers to
+> take a look.
 
-Fixes: 8a1536cc4a1c ("iio: accel: adxl345: add inactivity feature")
-Fixes: f6f22950d925 ("iio: accel: adxl345: extend inactivity time for
-less than 1s")
-Assisted-by: LLM
-Signed-off-by: =E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com>
----
-Validation:
-- A host harness extracted the production setter and period-read helpers
-  and injected -EIO at regmap_write(). The baseline failed all three
-  failure cases (3/6 passed); the patch passed all six cases, including
-  successful writes.
-- Compiled the full source to an x86_64 object with Apple clang 17 and
-  Debian Linux 6.1 headers plus upstream IIO/regmap headers and a cleanup
-  compatibility shim. This checks syntax and types with a mixed header
-  set; it is not a full current-tree Kbuild/modpost or target-board build.
-- No in-kernel KUnit or hardware test was performed.
+Applied to the testing branch of iio.git.  That'll get rebased on=20
+rc1 once available.
 
-AI assistance: Codex drafted the fix, changelog and fault-injection
-harness for a contribution related to an ADXL345 SPI/IIO project.
+Jonathan
 
- drivers/iio/accel/adxl345_core.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+>=20
+> Thanks,
+>=20
+> J
+>=20
 
-diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_c=
-ore.c
-index 6c9080d..cd58304 100644
---- a/drivers/iio/accel/adxl345_core.c
-+++ b/drivers/iio/accel/adxl345_core.c
-@@ -391,30 +391,47 @@ static int adxl345_set_default_time(struct
-adxl345_state *st)
- 	odr =3D FIELD_GET(ADXL345_BW_RATE_MSK, regval);
- 	val =3D clamp(max_boundary - adxl345_odr_tbl[odr][0],
- 		    min_boundary, max_boundary);
--	st->inact_time_ms =3D MILLI * val;
-
- 	/* Inactivity time in s */
--	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
-+	ret =3D regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
-+	if (ret)
-+		return ret;
-+
-+	st->inact_time_ms =3D MILLI * val;
-+
-+	return 0;
- }
-
- static int adxl345_set_inactivity_time(struct adxl345_state *st, u32 val_i=
-nt)
- {
-+	int ret;
-+
-+	ret =3D regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
-+	if (ret)
-+		return ret;
-+
- 	st->inact_time_ms =3D MILLI * val_int;
-
--	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
-+	return 0;
- }
-
- static int adxl345_set_freefall_time(struct adxl345_state *st, u32 val_fra=
-ct)
- {
-+	int ret;
-+
- 	/*
- 	 * Datasheet max. value is 255 * 5000 us =3D 1.275000 seconds.
- 	 *
- 	 * Recommended values between 100ms and 350ms (0x14 to 0x46)
- 	 */
-+	ret =3D regmap_write(st->regmap, ADXL345_REG_TIME_FF,
-+			   DIV_ROUND_CLOSEST(val_fract, 5));
-+	if (ret)
-+		return ret;
-+
- 	st->inact_time_ms =3D DIV_ROUND_UP(val_fract, MILLI);
-
--	return regmap_write(st->regmap, ADXL345_REG_TIME_FF,
--			    DIV_ROUND_CLOSEST(val_fract, 5));
-+	return 0;
- }
-
- /**
-base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
---=20
-2.50.1 (Apple Git-155)
