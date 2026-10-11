@@ -1,142 +1,197 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99FE9314D13
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 23:09:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C8483612FE
+	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 23:14:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791760201; cv=none; b=p79kYdwtfTib2y+xiZfNQbM/aRwu0tT81W+FWe2c4/A9LfBgqAc5IEkilK3CHje3v8JQh8xNZcGHAKNkDTO/qcWRgnHlOaKyw0mKGOCngF4pkFLwMX79xmkaHW9HugH7uGX58pe3Mh9sOZ2F4eXgV6JkNRDaA9pl9H09xCiX2DU=
+	t=1791760466; cv=none; b=m4/fJEaNk7alHfK7Pa2erlL2RqaZSIMVfRRafJaNUb5+KCuKsCOvuqoRitLqyjMtfi46bztHvlfZ76UXBcKIvxVn+2i6K2b9urn5B1AkTJis0LGMbt4v+67cIk4OpoG8N9pNIwqnuVoQAJnskIvESOG3gkqZ8pFs9n06K1Wo7M4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791760201; c=relaxed/simple;
-	bh=+16QtwDq1//lvFyG9fKKvK26/1o3S9Jzkd2YP1TMJmM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZxIEkh2r3MhIobD7+PVtjRlI5asu61h6sYYoOD/sEzHQaC1mFyxNZFT3TEZeLth6U3W0QupXpwfU+NnEplk89u0Irx/XThgPHeAdmVvZAdoM9FQ0cXZIPsAezlHs7NFvQLso6ynngRnMzWeDIhJN+1cOwekCmb5nuAwv8fncbgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=kr618L/p; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1791760466; c=relaxed/simple;
+	bh=fFleWHNo/y1J4A2S1T5/VI79f4PAXSoaji4SutSut/k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N2uxJYDT0N5DScYJLC6SjGMp6LRBd+qEnaSgtuwvfcFO5XPfZcNQyZFH6ON8qeE+6n1MtcSuIJs+PTZAhnTgialO9mMvL2x08DLVOX0mnm948ZeP3qdrp4XyWVpjcz6CphxWRMLS2KHC9C1pmiozc/Kcz5QNTqIzjnNyU8o622A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cjz4N6J0; arc=none smtp.client-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="kr618L/p"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-48b0ef9c76eso1071518f8f.0
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:09:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cjz4N6J0"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-8874539bccbso525932b3a.1
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:14:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1791760198; x=1792364998; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=GcUFAmvYC3+zqJMiUlGkPj1hBaQn7R6Mw/mFH4fX6fE=;
-        b=kr618L/p+ZINapqGMbGF02/Ysz0CbeMpb7EqJMGBHe/M2zJvzSqpOMYmjq+dvbt2jE
-         aVNnlZFFf9Q9YPxy4smkFUpQczEpamoZq5OpQWAz/t9VtxRhWm2kRH1bNReo5hwL+kws
-         VSO90mVzUoQ59eGzsYwsyqonndSrWoCXWDtKvseG/RI+3W+yEcLiOLaZ6EbiK0+rMOGq
-         iX82R6U0wyAJKhdAT8HMC73/Kt8rFudQUzstIhiZzNPQyt6BE6dzLEQtXveYV2g59EWg
-         pcujABMX/8sv2wQv14EgWd8afS/uFYQB569W7PoOB8kQBh1ceUmPGHPRPHJQb1Bpd4ih
-         T4VA==
+        d=gmail.com; s=20251104; t=1791760464; x=1792365264; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Kv44X2ypV4dj/vQWfiHinCIJAZ0imVPklyHLOa+kIIY=;
+        b=Cjz4N6J0w3qwtPLIW1pDRxCJZEpY2T6c33/hqyTWr/tepaz4n8D94qW6F5GB8nBIGM
+         sJuH2vGag3AbRmIA3XKGVIJjil/qcj1HPHJdDxtR9jLwvv6AxLfxh7xp524gl4Omnjq8
+         FjdnYWd8L0aH/6QnkUidOyrbxYGxYsxEh8VpLlzGAaVddja7NApBaW1SoycawiS5GI1w
+         irDiQqBm1uu5Wol3hYZGsijJ/qtCqps/GNKhAMyT7089Qo0zpKm2sNcjPM0wj7/L9z8j
+         oBb+BOUG7vxk62AwuMqbh03teKvsJVvJVYwHo2KunSp1Mu8Zlyaqe8WGd5VpD7UjOSgn
+         hakQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791760198; x=1792364998;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=GcUFAmvYC3+zqJMiUlGkPj1hBaQn7R6Mw/mFH4fX6fE=;
-        b=ockmUUZgSo9zBWypj8Ep5pZtVBafbL916X6nDZi3xQiznmkAf/x6kqvWjz1gEkrN2+
-         mUemg6UWbKLbGB0m6V/zw0hhU1wj/Pl6j6O8BFxeCBs3Ql7Z6a4HcPqFiTeUxoJejY3L
-         SNWVddRU4ISPHdTa9bDEhdb6mXQ7455oxzBeRXizFB8O3IT90F9/OBeuLNluNONGEIBA
-         vYRqpLv7lBluwwszcBG2D6RBqW55cI2475k5R6aLc1yIpwtYoovdSn+WmYuRrtXhLbEH
-         2gmtJqMBkQ/2oA4l/6MheXGEFwbSMNRl5bArIn9Ly89yN01pCVY/WbdvdpnF7l/KT1NL
-         UE8g==
-X-Forwarded-Encrypted: i=1; AKwUvBzNhwck6RR64QPqnZaYwqs685RpxnpQgCW0vYX0keLa1o/BwiPyVtkdVK1ZJiv/8s6XcA4g2SnVQSg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJB8w/xqEBiBhQMk0qAf8LUXByQy6yK5/Ut+Sr3IFSkgUx0YowY
-	IF5AgWqW6tFJIl2Hc82oZK48yL2bA+Dun3NyWUPSCvgkr6QGZqfxWhJJ68cpOl+NheI=
-X-Gm-Gg: AYBFou3Npe8s98M8cCS1UfOkw8btlQb5HP42Kp+J6dq52v7b4CIE0EsZNrdl2it0w1c
-	VenAUTiF9ELe1Q18U699rXSzrpmU2WhJWyMIvOaPAPshfjXx8mPsYv6p6Ky8GttSMGyIhN175/y
-	j6df/EHDblhsLkLE/vnrYxqCb9aiRbx1e4Jky3DUlqW6npGrZCwGDoqEPa/MpHIj3V4fGMzIc1W
-	WyrlBuDsAP5wX6eOEVfg7YZrc7vhsh8J4qjQ1wLYijrb8M0XF6KoYVe+tj0Lk/Ziw7bxjtkOC17
-	is4c8utcYw0gIqNzxK3Gp6KegM/3MujHcLzefYN63X7GwJzt8J/fpRBs62yyNXg8A4M995TqVgt
-	Ek+h7CYJNdwo1kiaA0eQfgUoadt8dNUP4tbtMSaPMQa3Vla19w3POq/T8tJdvYLJgpD9HSHCFIC
-	VBg4BWysbQeYttAwUgB1Ku1HvsaXDC1kb4BgB6iQFXzwhUczH2EOJRz754W5FnbxMvhzxVy7TAM
-	pmf
-X-Received: by 2002:a05:6000:491c:b0:488:8751:e78e with SMTP id ffacd0b85a97d-48dba9bdd09mr15386734f8f.16.1791760198010;
-        Sun, 11 Oct 2026 16:09:58 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-48db97ce3aasm16619964f8f.21.2026.10.11.16.09.55
+        d=1e100.net; s=20260707; t=1791760464; x=1792365264;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Kv44X2ypV4dj/vQWfiHinCIJAZ0imVPklyHLOa+kIIY=;
+        b=HNt2qZ/IH2fCy5tkdfKc24kNnKOBTH6+JSTdAjPtVmMCB5YmJFSoD4Fm0XjPd8oxjd
+         8H+O+OxrbPlCAy91+jFb5d+jxkIHQmHv1szVKULuJLoaOaMeU+PIUd9lM9DmgDozZi/h
+         pdMTRNpg5V5f0Qk7G8xJ1I+5i9D9ViClKskqi6HB1qyg0zu54wbQSkJ2EIRaHLDMqSiH
+         PlyUhXvz9HvSdrfi0qbx3rZIBO83BH3SsMjlzBdBuaFC3FcIXTxC1McoiBfOpScPUQvq
+         uwP1V+fPHSAM72tRkiE0bru66e+mMGa2HLqVr6xbOZ3GX2Ce1GIctYeg93M9TjHEVHsv
+         92PQ==
+X-Forwarded-Encrypted: i=1; AKwUvBy34zt/wgV9sqLum2I90h9j1XlLqFZOLRTbfxwvZG9Gv7NlQwneQNI4va405TTpkHFSqsmF+Zg4OXE=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJAoN1K2AIKRZ2g1MRLwb4GZj+fOx1ONd2TcW8XjM5IM9pNhWMB
+	uRaiP8b2FVlgYKpyDqCimUvfHX2fmRsbqRhz9gtz0PTHa4690OOPJzFS
+X-Gm-Gg: AYBFou3ObUaN0ivu4XhOkylmBvE1Lw6CItHSpr/oxd7tkZWZvHwARW7RszNfrU7UU/p
+	DG71BX6DgNw9JduewAXpVLZ7KrDYGj+5OUAQ2ts+8PMMxDyT7RB3qEYU3OPKbcdHzVEUdIhucVu
+	Tj4Siq4ex8gFX2hlOZ6g0luuyEaesrPVSM9jBDZiVZ/6RmsgRUTiN1FKRMlk66E/7+11RendRRK
+	N2kbMHxOGgMKmiYAwHT5uMm/wIM7j60gtsfv3bjI8iSNCyVLiXekIGC592Q4swEQRbJ6L0pc6lP
+	FbijWu3RfiOp9OQtPckPYig+PMrkonGpjrgEo+bwMqMc6LBr0c062+yPLvt6OaJLdi2J7qO+iTB
+	NNxfZ/CzMOteIcWWOQpkcy8Y5ED3VxCw0QihKcZMmgqVBoV9K0uX/dFRS5gYd77a74hmgOxta7a
+	dS3EPGcc8vTraQZ811lrqoEonLAZuY0EQ+IGGBZyMMBUqQyfRZmBKsEma/0GtofojQoHSBqgHT5
+	LyTvDSJeIdBCN7l6thQFI6Pkn1+opmZBVa20XZpW84uPcyvD9CXiDC4VTOMxIZ+uV+Nm0koQC7D
+	4CTsofg=
+X-Received: by 2002:a05:6a21:3985:b0:3e0:c334:52a0 with SMTP id adf61e73a8af0-3e1a68ea93emr883941637.49.1791760463637;
+        Sun, 11 Oct 2026 16:14:23 -0700 (PDT)
+Received: from DESKTOP-G3E0OSP.localdomain ([58.224.60.243])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-896c48945dcsm3188917b3a.54.2026.10.11.16.14.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 16:09:55 -0700 (PDT)
-Date: Mon, 12 Oct 2026 01:09:55 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: jic23@kernel.org, gregkh@linuxfoundation.org, nuno.sa@analog.com, 
-	Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org, linux@analog.com, 
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	joshua.crofts1@gmail.com, error27@gmail.com, narcisaanamaria12@gmail.com
-Subject: Re: [PATCH 2/3] staging: iio: accel: adis16203: add missing
- spi_device_id table
-Message-ID: <aswW2bAapx3318Zd@monoceros>
-References: <20260929184900.39515-1-abdelnasserhussein11@gmail.com>
- <20260929184900.39515-3-abdelnasserhussein11@gmail.com>
+        Sun, 11 Oct 2026 16:14:22 -0700 (PDT)
+From: Jinseob Kim <kimjinseob88@gmail.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: kimjinseob88@gmail.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	neil.armstrong@linaro.org,
+	andersson@kernel.org,
+	prabhakar.mahadev-lad.rj@bp.renesas.com,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	corbet@lwn.net,
+	skhan@linuxfoundation.org,
+	rdunlap@infradead.org,
+	linux-doc@vger.kernel.org
+Subject: [PATCH v11 0/8] iio: add Open Sensor Fusion UART support
+Date: Mon, 12 Oct 2026 08:13:32 +0900
+Message-ID: <20261011231340.42885-1-kimjinseob88@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="prqxuytw7zq4oius"
-Content-Disposition: inline
-In-Reply-To: <20260929184900.39515-3-abdelnasserhussein11@gmail.com>
+Content-Transfer-Encoding: 8bit
+
+This series adds a UART/serdev receiver for the project's fixed OSF
+Device-to-Host 0.0 protocol. Complete capability snapshots create IIO
+accelerometer, gyroscope, magnetometer and temperature devices with RAW,
+descriptor-derived SCALE and initialized buffered scans.
+
+The receiver validates the fixed OSF0 envelope, CRC and exact known
+message lengths. Equivalent capability reports are idempotent; changes
+to a bound supported inventory fault the session until explicit rebind.
+IIO samples use host timestamps.
+
+Changes since v10:
+- Move OSF under drivers/iio/sensorhubs/osf/ following review.
+- Use the OSF GREEN compatible with the generic OSF fallback.
+- Clarify complete capability-report snapshot semantics.
+- Use designated decoded-frame initialization and drop decoded reserved
+  fields while retaining reserved wire-byte tolerance.
+- Reuse stream reset and simplify core/serdev locking and lifecycle.
+- Use IIO buffer-mode claims instead of a private buffer lock.
+- Simplify scan storage and channel declarations.
+- Fix KUnit worker/device/mutex/resource/completion lifetimes.
+  Generic IIO self-test extraction remains deferred.
+- Synchronize KUnit fault observation and configuration completion with
+  completions and thread joins instead of short polling/deadline windows.
+
+The IIO buffer teardown serialization issue found during the v10 review
+was fixed separately and is now in mainline as commit 84bb0fc46ccf
+("iio: buffer: serialize buffer teardown with mode claims").
+
+This series is based on the IIO testing snapshot fetched for this submission:
+a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
+Runtime validation used this testing base plus the eight OSF patches
+and the exact mainline IIO core fix 84bb0fc46ccf6a545b8fdf57cda83770186ed8dd.
+The core fix is not included in this series and must be present when
+running the series on this testing base.
+
+Fresh validation of this source:
+- GCC and Clang W=1 kernel builds; module builds.
+- osf-core (16 tests) and osf-iio (2 tests), with KASAN, lockdep,
+  DEBUG_MUTEXES, DEBUG_LOCK_ALLOC, DEBUG_OBJECTS and DEBUG_OBJECTS_FREE.
+- 200 production module load/unload cycles and 200 test-enriched module
+  load/unload cycles using identical driver/test C sources, exercising
+  20,000 IIO buffer toggles, scan subsets, timestamps and unregister.
+- DT binding/style/example/schema checks and IIO Sphinx build.
+- Clean sequential application and relevant builds of all eight patches.
+Physical board tests were not repeated for this revision.
+
+Canonical specification (fixed revision):
+https://github.com/opensensorfusion/opensensorfusion-protocol/blob/ca9cdea1ae550c2b4d6f29f87877adae99470744/spec/osf-d2h-0.0.md
+
+The fixed public specification is maintained and adopted by the OSF
+project. This does not imply Linux maintainer approval of the
+specification or driver.
+
+Jinseob Kim (8):
+  dt-bindings: iio: add Open Sensor Fusion device
+  Documentation: iio: add Open Sensor Fusion driver overview
+  iio: osf: add protocol decoding
+  iio: osf: add validated stream parser
+  iio: osf: add UART transport and core receive path
+  iio: osf: add IIO devices from capability reports
+  iio: osf: add core KUnit tests
+  iio: osf: add IIO KUnit tests
+
+ .../bindings/iio/opensensorfusion,osf.yaml    |   55 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ Documentation/iio/index.rst                   |    1 +
+ Documentation/iio/open-sensor-fusion.rst      |   81 ++
+ MAINTAINERS                                   |    8 +
+ drivers/iio/Kconfig                           |    1 +
+ drivers/iio/Makefile                          |    1 +
+ drivers/iio/sensorhubs/Kconfig                |    7 +
+ drivers/iio/sensorhubs/Makefile               |    3 +
+ drivers/iio/sensorhubs/osf/Kconfig            |   27 +
+ drivers/iio/sensorhubs/osf/Makefile           |    7 +
+ drivers/iio/sensorhubs/osf/osf_core.c         |  460 +++++++
+ drivers/iio/sensorhubs/osf/osf_core.h         |   75 ++
+ drivers/iio/sensorhubs/osf/osf_core_test.c    | 1056 +++++++++++++++++
+ drivers/iio/sensorhubs/osf/osf_iio.c          |  288 +++++
+ drivers/iio/sensorhubs/osf/osf_iio.h          |   22 +
+ drivers/iio/sensorhubs/osf/osf_iio_test.c     |  386 ++++++
+ drivers/iio/sensorhubs/osf/osf_protocol.c     |  215 ++++
+ drivers/iio/sensorhubs/osf/osf_protocol.h     |   99 ++
+ drivers/iio/sensorhubs/osf/osf_serdev.c       |  151 +++
+ drivers/iio/sensorhubs/osf/osf_stream.c       |  230 ++++
+ drivers/iio/sensorhubs/osf/osf_stream.h       |   53 +
+ 22 files changed, 3228 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
+ create mode 100644 Documentation/iio/open-sensor-fusion.rst
+ create mode 100644 drivers/iio/sensorhubs/Kconfig
+ create mode 100644 drivers/iio/sensorhubs/Makefile
+ create mode 100644 drivers/iio/sensorhubs/osf/Kconfig
+ create mode 100644 drivers/iio/sensorhubs/osf/Makefile
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_core.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_core.h
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_core_test.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_iio.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_iio.h
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_iio_test.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_protocol.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_protocol.h
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_serdev.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_stream.c
+ create mode 100644 drivers/iio/sensorhubs/osf/osf_stream.h
 
 
---prqxuytw7zq4oius
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 2/3] staging: iio: accel: adis16203: add missing
- spi_device_id table
-MIME-Version: 1.0
-
-On Tue, Sep 29, 2026 at 09:48:59PM +0300, Abdelnasser Hussein wrote:
-> The driver currently relies on OF/DT matching but lacks an SPI device
-> ID table. This prevents module auto-loading on systems without device
-> tree support.
->=20
-> Add the spi_device_id table to resolve this and ensure the driver loads
-> properly across all supported platforms.
->=20
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-> ---
->  drivers/staging/iio/accel/adis16203.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->=20
-> diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/=
-accel/adis16203.c
-> index eddb786d4747..905485fd556f 100644
-> --- a/drivers/staging/iio/accel/adis16203.c
-> +++ b/drivers/staging/iio/accel/adis16203.c
-> @@ -11,6 +11,7 @@
->  #include <linux/iio/imu/adis.h>
-> =20
->  #include <linux/kernel.h>
-> +#include <linux/mod_devicetable.h>
-
-Nope, please don't add new users of <linux/mod_devicetable.h>.
-
-You can rely on struct spi_device_id being provided by
-<linux/spi/spi.h>, alternatively use <linux/device-id/spi.h>.
-
-Best regards
-Uwe
-
---prqxuytw7zq4oius
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrMFz8ACgkQj4D7WH0S
-/k6kywf9EjX7GsElJJsb0VH6miyI4XnlA671jxyreWl8IzCOm+VoTZxx4dp8ulcN
-IZJM+szmAKlVq77vFMB9/ZNczuPCtQAf2GDlu70aXCrTKpgg3d4zRKYTjdKNg4x5
-y2Z+7nphR4rgx2zv9rHu1h3ErB7O3AI5Idxm/DnSQLHQ1ORNeGN93ZcvErD6dJxX
-s4dcRXvOHbNpA+sN2h+2+pYX7gxj7wFoVFKX9IgHTISLs9g4/0KiU0o1xIi9Yn7U
-oHCFngN6yZuI+20/ccHX4RhZ9EyrChTTkQL4ru8H+TU/v9L2Dl6B3aeJQAafr1KB
-lQH0fT0VphJojd3seU53jPC80txX/A==
-=MAFV
------END PGP SIGNATURE-----
-
---prqxuytw7zq4oius--
+base-commit: a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
