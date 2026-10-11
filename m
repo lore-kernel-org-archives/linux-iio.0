@@ -1,77 +1,75 @@
-Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
+Received: from mail-dl1-f51.google.com (mail-dl1-f51.google.com [74.125.82.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 722042EACEF
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 04:54:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB9E257459
+	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 04:56:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791694460; cv=none; b=PDGpSe/pHJ+SSvqpkyBhc2Qxk6J8F5mKcddEysrJqS2pAesyMPO9uKPpvx5wtxihC3ySUia8dQ5uvK07unEbRo4mGd6xxhx1/DwPaHpaAxBEaivdnBFl6+dxLJQkeXtMWUa373pHcMdGgB8B9l67ZiPJXZIITwe4mS9LBsZXHE8=
+	t=1791694589; cv=none; b=I5t4lF6aGO8cSvzuuvc2u/2V2OnZijLlr/4YhU1KO8sadGSgNWpb1xOQly8/7Fygu5TOl3cgCza/R7xVZfH91MrqG7l/9Mx0k2byoWV22vG3qd/QmMd4wqJOcWKYP349uK4+pp8YCQIZBPofo/oBPjjG3J4lVarCxaKYFVlMDtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791694460; c=relaxed/simple;
-	bh=PajRC5vUMiRr6CbTVl3zKRdEDLQRI778cFy62JClji8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RVdEXQ0AZ/EESipHarovub9DruAkaBQE0bwPIwKcfkdl/VmsVwyLzeg9r4FOhRAVG0be26K+xuCeFQph80l2GmsM5wkR725wvjlr3yxTvAMnGjaHYwYteO0TSGr/RHUmrYTkJrAIDj6VrZzHE3mU8VSL6tiKkBfDJIejxErIKDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fUO73iaP; arc=none smtp.client-ip=74.125.82.170
+	s=arc-20240116; t=1791694589; c=relaxed/simple;
+	bh=O7ul0WmTP+iMseIN0P2Bp/XfuNbs/+G4cJMcENk65x8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZZXYWyPus3qYyGjOyNJSacvMY6GXzduikqefDU3gSCv51EGL9UaD0tdADuuk9jl1pV9A7G5j6g+rWs9NmxcruvqsPiWzAh5RtoK9zvM1Z0yTdRkUYEygWQphM0J0k3aZsqAx0OkAePlyxG6OVTpvgUrxXyaSZXrhEr8bPTa9Yas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qX3RYAbP; arc=none smtp.client-ip=74.125.82.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fUO73iaP"
-Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-3535a54bed9so1216379eec.1
-        for <linux-iio@vger.kernel.org>; Sat, 10 Oct 2026 21:54:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qX3RYAbP"
+Received: by mail-dl1-f51.google.com with SMTP id a92af1059eb24-170135e43c7so359116c88.0
+        for <linux-iio@vger.kernel.org>; Sat, 10 Oct 2026 21:56:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791694458; x=1792299258; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791694587; x=1792299387; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=auMfHamRfTcV/GZLqeZ5Y5LbcqKOtpZq3cZN7xkwVsI=;
-        b=fUO73iaPK05Xn94AFMEpHFtZ0nJle9zw7fsi/K1ZBoT4zE9tpfQ4AxlGdF83QiZ+dy
-         CSxWLPVd4uTa88J10SAdAkXte9cYQA11+SBt2OsWxRoaIFkcrq79uRnVBRYQ/xoNEyu8
-         ce8NmF0KJiLehtcOFSiBLIdF3KVDLEhHDjgo9T0vtp0uOM7h3IkT7pAIp/Gtkkylwnq6
-         2dro/8MWeK8BMh7r2qDAzgKVJKxbr6qNz4I4RYqucu3YKa2lGQMw0b4+f9iKebBf7oka
-         mvOn/Q7CTNJmuvw98MDEvU2hbzJ7LhScTYDmsuqWSyBBKxTDKaVh0C6IeFc2XTtSM41a
-         fzrA==
+        bh=NyBqrn/uBzxgl92CYCl9BYbWFbHQuF77V5STTyBOvYs=;
+        b=qX3RYAbPPKhDzD6EMyorW5wbejzwJRnYsZ7eFKeptM/Gp8D4ZAuXOz5Ybbny4/h7uo
+         /C08HOL5sriJh0PYZviaStHY1ZVFsLn/I7wAZj3QVPxU2Z+Ke5FxjtJAMvkpFdAs+7uo
+         fmfXvUwyuYaXNGgL8wtJXB4OqDW9xplJENKQTT/QXdkKMvhxpWoBbTzZzQXEXUC3ncPC
+         3s0GEUFaa980QgrV/bVf0QvBca7xw3122kV9IRQaQmZ409DtXnjWz6itM8KI5gwb9GHw
+         TQshMx3xh4JQmczdTwqietwQDc4ftJug9BWLh2uOe4AiKkjbA3VrTPF3nJrGiJEtibvu
+         eu2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791694458; x=1792299258;
+        d=1e100.net; s=20260707; t=1791694587; x=1792299387;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=auMfHamRfTcV/GZLqeZ5Y5LbcqKOtpZq3cZN7xkwVsI=;
-        b=qYW/M6eTcYWyefhtdSj1lx/UjeNmtuomqEYK9Z6QpMzkqxT8uQfWU5PsM6wQYyxrCZ
-         l5z7USsfZ4Awh9qMSJlwbgKapQtedzKeboDmbBeazsLUpWRYSXyNPdf81oMKdQTJ9Sfy
-         KV+jNOu6Ri8JZ+kqbbokfGwf8zaOfCEvRjHvQjOabH9vH6XYUUJfJI2DsimmKu+XMRKO
-         FCOiJyqiwu8ac8/VXN4a1XNyo7ZXMrSZFNuhB0C8e6RmO7ptDilXCrgwf19H+raNXTVa
-         2WaCk1T17t0XKZCv9o9TQHlsExID156ZpBDFWCqnUDHP2XxZwXDQfgzdsU9Ykxvt6zAv
-         jHHg==
-X-Forwarded-Encrypted: i=1; AKwUvBy2riViLdgs1RAhkmHn3fQs8b2+EFShOmvM8zUcBX9VJHyVUIXmkThqNkKiaQIjYEYnuZLyvESZrUM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIedACy9TvCyBRVLru02BAz0BqCQZ9pGT4fiKF/lpOn5UhUqlsd
-	gAywgFBu5w1+pK4SoYicW8gxRD7j3FvCl9ddu4ZQ6oAGpchYQfpR4oEQ
-X-Gm-Gg: AYBFou0fA93VfMBP99Kk24I8kS59BxPx5v9GZpTussTqRkx8UGRVcDYZ6ZB7Nd+uC4K
-	1yeJKLsDzuB+WyfqfQ6TWkXKNUSxoX1k3Eg73bXI/u13Yv6zovd/NlkjWFaU+e/TOboD2bhzCs2
-	qXSranBjXzcwvqvWXBrP9rsJsqyGDv1LiA2H7n8JlBLDYIyYjse7d2UNpkM1nH7OTqydaGDOi5X
-	KHrG2ZwHt7ziojuUqyagGacXwCrnsTPrgaga8XQUFrJY3V+usiplmebLvvvS6wWn0lTvNvw8Utl
-	l4XKPMqbE1DMb84xNQmRT8JLjyQegbrtyPLv/UycPwrS8DovrwQHb+gUV8fYOC5o/V6VyBYTURW
-	CyZzbmJC8ObkP8liM7UllCoY00MO/ZOS5oasvDUg9a7wlBcSup8NkEOmw9xwuK/98zzhqiJSTSn
-	dWXIHhfM0JhqhWsX/QwYQ/PtmWN8oBAD89L6dtAzPalGle0BzBR+jw9Se5/6HuB4YLLvhtUMVcO
-	x6iouro6L/IGESkebVcseWYXKPER3MIgj/mzKquY6qjpPj6oO7TvmGSucuNmlaxM2T7k/TdrhFZ
-	SO4JHhpkkSBVPNO0UgF+KzKCeWqGBQ==
-X-Received: by 2002:a05:693c:820e:b0:34b:d8dc:430b with SMTP id 5a478bee46e88-3537e0be0dcmr8619947eec.24.1791694458226;
-        Sat, 10 Oct 2026 21:54:18 -0700 (PDT)
+        bh=NyBqrn/uBzxgl92CYCl9BYbWFbHQuF77V5STTyBOvYs=;
+        b=v8fX0JZbl5Bh0gtfoNRyu5Q7OoOFVPYtcbUPzmtZVUoJNeXOf3XxPq3sisXBGhBcxV
+         gClYVF60CegjKZ5ytURVyweCeXWKMRGJ8587AaE0RV7V2Wa+RV0FAVjGvlzF5o/eYhHU
+         CnJ8rxaH/SdwtvWszEQWHgtYdyS082pr02Tq3Boi4tO3wWuW/7VB9AOqIgMo8cy1udRU
+         QlnT56kzBcrE5nq/8XkMtHogNdL+2M2CcO+qhW9e1tg7yh/gVBBrnA/qDuBEMChhATAu
+         NcX2N31TtqmuhUpLPMmr1ycnsUw/MYChVsCwqyQ43aiuu7FF/ILewqOqo1jd9821Klsv
+         gjrw==
+X-Forwarded-Encrypted: i=1; AKwUvBxbHP0AwK4I3TKuvx55I+JrTyyhzmKr4rgeeFIZ0KBM3nr4rUMsOrajTupF0BZ4jp9pgEFSZ2ooAQ4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJyfEf0lR74BcqWNpZTQP5fqN7T4ZfT//JJh618oO/HT8ARUu2X
+	DRzsi+UX1aDHCLc9kwIZnbNeZLJwjp9VfBP9ORyqQRmgAh8QZzzht7ts
+X-Gm-Gg: AYBFou1ILrDt+Mwh2tRmMpbm1ZK9pKXF3/C1XuQrkVi8n3HToI+Xfxao8mkwu4KBhqa
+	xMyPDjjyY8/wXovK4Y6E2LplJen3C1DDKZVv/svkr2TfP6mXK7kkkAiUYSGZVe5iEqdlQMjZb3A
+	GxymKazITj6IvgzCBj+tucMRWsfaCSaAfgDDBkj5fGdCxYM1uydi/IUK522hkdK+30f4JbRe1vi
+	qmboriXqFlUZm5RcsNocfCuE88kaXzFR8eIijs5fb8EVjcjFozvLo39COPEmb8DiC5rWNBnxCWI
+	AL0ZCJwkLjthBklMiMzykKK7SWdbrVNB/bHxBUQY/8pVOmWROjQWlFAlwUvuZ+f0pXudp8QBDvS
+	XwZ08A54XiIlC9KSxNTyjgX038WYBSKR9lNAh6qf2tT5twSqm46AMqw6cIlu6OeJ+7nHfYhtjJE
+	KxKxsgZ/yS74q7Y/L1EsTQO+doWJNPZXTR1OBDhvSAIouEz8/nRquAi4yLbRPy59Q/6tzb2PoB1
+	qDKEn+3NvPNr/rgeoSLkKyQdNULaUwYkOziWRF+4BXCHk3aXh/cG6MUbF/JI20Z2UolJg7mt2TF
+	dTcTeApQEPtETZD3CuT7kCXCjROvxA==
+X-Received: by 2002:a05:701b:2309:b0:158:7ea9:4a76 with SMTP id a92af1059eb24-16a6187f08amr10122967c88.16.1791694587274;
+        Sat, 10 Oct 2026 21:56:27 -0700 (PDT)
 Received: from kapoor.iiserb.ac.in ([203.18.51.212])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537ca79536sm20678181eec.16.2026.10.10.21.54.14
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-169a567bd18sm18518278c88.21.2026.10.10.21.56.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2026 21:54:17 -0700 (PDT)
+        Sat, 10 Oct 2026 21:56:26 -0700 (PDT)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Benson Leung <bleung@chromium.org>
-Cc: Guenter Roeck <groeck@chromium.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	chrome-platform@lists.linux.dev,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH] iio: common: cros_ec_sensors: use sensor_scale union member for CALIBSCALE
-Date: Sun, 11 Oct 2026 10:24:08 +0530
-Message-ID: <20261011045410.356156-1-kapoorarnav43@gmail.com>
+Subject: [PATCH] iio: imu: inv_mpu6050: fix magnetometer scale of Y and Z axes
+Date: Sun, 11 Oct 2026 10:26:17 +0530
+Message-ID: <20261011045619.357261-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -81,51 +79,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The IIO_CHAN_INFO_CALIBSCALE read and write paths send
-MOTIONSENSE_CMD_SENSOR_SCALE, but set the flags through the
-sensor_offset member of the request union, while the scale values in
-the write path are filled through sensor_scale.
+inv_mpu_magn_get_scale() returns st->magn_raw_to_gauss[chan->address],
+where magn_raw_to_gauss[] holds one coefficient per axis, computed in
+inv_magn_init() from the per-axis factory sensitivity adjustment values
+(ASAX, ASAY, ASAZ) of the AK8975/AK8963 magnetometer.
 
-This only works because the sensor_offset and sensor_scale structs of
-struct ec_params_motion_sense happen to place flags at the same offset.
-Use the sensor_scale member that matches the command, so all fields of
-the request are set through the same struct.
+However INV_MPU9X50_MAGN_CHAN() never sets .address, so it is 0 for all
+three magnetometer channels. As a result the Y and Z channels report the
+scale computed from the X axis adjustment value, and userspace scales
+the Y and Z readings with the wrong per-axis calibration.
 
-No functional change.
+Set .address to the axis index (0 for X, 1 for Y, 2 for Z) in the
+channel macro, matching the order used to fill magn_raw_to_gauss[].
 
+Fixes: b1392de06184 ("iio: imu: inv_mpu6050: add MPU925x magnetometer support")
 Assisted-by: LLM
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
-Compile-tested only (W=1); I don't have ChromeOS EC hardware. Both
-union members place flags at the same offset, so the generated host
-command is unchanged.
+Compile-tested only (W=1); I don't have MPU9150/MPU925x hardware. I
+checked the built object: before this patch the X, Y and Z magnetometer
+channels all have .address == 0, after it they have 0, 1 and 2.
 
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index 551b86236abc..2839714f5bc8 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -70,7 +70,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
- 		break;
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_SCALE;
--		st->core.param.sensor_offset.flags = 0;
-+		st->core.param.sensor_scale.flags = 0;
- 
- 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
- 		if (ret == -EPROTO || ret == -EOPNOTSUPP) {
-@@ -178,8 +178,7 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
- 		/* Send to EC for each axis, even if not complete */
- 
- 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_SCALE;
--		st->core.param.sensor_offset.flags =
--			MOTION_SENSE_SET_OFFSET;
-+		st->core.param.sensor_scale.flags = MOTION_SENSE_SET_OFFSET;
- 		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
- 			st->core.param.sensor_scale.scale[i] =
- 				st->core.calib[i].scale;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 38c3f3b398d4..1614f49be66c 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -1576,6 +1576,8 @@ static const unsigned long inv_mpu_scan_masks[] = {
+ 		.type = IIO_MAGN,					\
+ 		.modified = 1,						\
+ 		.channel2 = _chan2,					\
++		/* index of the axis in magn_raw_to_gauss[] */		\
++		.address = (_chan2) - IIO_MOD_X,			\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE) |	\
+ 				      BIT(IIO_CHAN_INFO_RAW),		\
+ 		.scan_index = _index,					\
 -- 
 2.53.0
 
