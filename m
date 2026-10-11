@@ -1,63 +1,65 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C8483612FE
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 23:14:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32257367B6E
+	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 23:14:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791760466; cv=none; b=m4/fJEaNk7alHfK7Pa2erlL2RqaZSIMVfRRafJaNUb5+KCuKsCOvuqoRitLqyjMtfi46bztHvlfZ76UXBcKIvxVn+2i6K2b9urn5B1AkTJis0LGMbt4v+67cIk4OpoG8N9pNIwqnuVoQAJnskIvESOG3gkqZ8pFs9n06K1Wo7M4=
+	t=1791760485; cv=none; b=EuHPH1VkXnWhhW4Im8Q416Ft+yPZo0xCV4HRe7cEl6PBRuTz8t/hvHjBcOcyS9OH4uNKIkeWmtBD/N1iVl4IRlgG3KQOSVkEB0QmOjt/PO6yS209qQ2Gc7u6dd+FqrR54B6ZA22wxtxBMLZIIWSRabn2M+hiaqeNafaNgoMWvCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791760466; c=relaxed/simple;
-	bh=fFleWHNo/y1J4A2S1T5/VI79f4PAXSoaji4SutSut/k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N2uxJYDT0N5DScYJLC6SjGMp6LRBd+qEnaSgtuwvfcFO5XPfZcNQyZFH6ON8qeE+6n1MtcSuIJs+PTZAhnTgialO9mMvL2x08DLVOX0mnm948ZeP3qdrp4XyWVpjcz6CphxWRMLS2KHC9C1pmiozc/Kcz5QNTqIzjnNyU8o622A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cjz4N6J0; arc=none smtp.client-ip=209.85.210.179
+	s=arc-20240116; t=1791760485; c=relaxed/simple;
+	bh=mY7Smke+Kwz6EOpYsROmGVCMz5vFf4N6N8Iv6WYNPIc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=JGoJTVThDHPuTpDaOJfL1/KEZP9Ca837ynejAXacuha3jPOSm4VlIHp6x8qcMQxLS/xl2mY/RicOrlr2qiNyyKTNSH/CYfZPPRmxy1b6Pp9Gn5PuPpxxULipucnFoqFoEkXJWAgMiXC5UuvHOhoJNy5Ae5k7ZmfhUHaz3HKfojs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EjDIH5Fq; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cjz4N6J0"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-8874539bccbso525932b3a.1
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:14:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EjDIH5Fq"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-884062f3296so922853b3a.0
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:14:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791760464; x=1792365264; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Kv44X2ypV4dj/vQWfiHinCIJAZ0imVPklyHLOa+kIIY=;
-        b=Cjz4N6J0w3qwtPLIW1pDRxCJZEpY2T6c33/hqyTWr/tepaz4n8D94qW6F5GB8nBIGM
-         sJuH2vGag3AbRmIA3XKGVIJjil/qcj1HPHJdDxtR9jLwvv6AxLfxh7xp524gl4Omnjq8
-         FjdnYWd8L0aH/6QnkUidOyrbxYGxYsxEh8VpLlzGAaVddja7NApBaW1SoycawiS5GI1w
-         irDiQqBm1uu5Wol3hYZGsijJ/qtCqps/GNKhAMyT7089Qo0zpKm2sNcjPM0wj7/L9z8j
-         oBb+BOUG7vxk62AwuMqbh03teKvsJVvJVYwHo2KunSp1Mu8Zlyaqe8WGd5VpD7UjOSgn
-         hakQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791760464; x=1792365264;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1791760483; x=1792365283; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Kv44X2ypV4dj/vQWfiHinCIJAZ0imVPklyHLOa+kIIY=;
-        b=HNt2qZ/IH2fCy5tkdfKc24kNnKOBTH6+JSTdAjPtVmMCB5YmJFSoD4Fm0XjPd8oxjd
-         8H+O+OxrbPlCAy91+jFb5d+jxkIHQmHv1szVKULuJLoaOaMeU+PIUd9lM9DmgDozZi/h
-         pdMTRNpg5V5f0Qk7G8xJ1I+5i9D9ViClKskqi6HB1qyg0zu54wbQSkJ2EIRaHLDMqSiH
-         PlyUhXvz9HvSdrfi0qbx3rZIBO83BH3SsMjlzBdBuaFC3FcIXTxC1McoiBfOpScPUQvq
-         uwP1V+fPHSAM72tRkiE0bru66e+mMGa2HLqVr6xbOZ3GX2Ce1GIctYeg93M9TjHEVHsv
-         92PQ==
-X-Forwarded-Encrypted: i=1; AKwUvBy34zt/wgV9sqLum2I90h9j1XlLqFZOLRTbfxwvZG9Gv7NlQwneQNI4va405TTpkHFSqsmF+Zg4OXE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJAoN1K2AIKRZ2g1MRLwb4GZj+fOx1ONd2TcW8XjM5IM9pNhWMB
-	uRaiP8b2FVlgYKpyDqCimUvfHX2fmRsbqRhz9gtz0PTHa4690OOPJzFS
-X-Gm-Gg: AYBFou3ObUaN0ivu4XhOkylmBvE1Lw6CItHSpr/oxd7tkZWZvHwARW7RszNfrU7UU/p
-	DG71BX6DgNw9JduewAXpVLZ7KrDYGj+5OUAQ2ts+8PMMxDyT7RB3qEYU3OPKbcdHzVEUdIhucVu
-	Tj4Siq4ex8gFX2hlOZ6g0luuyEaesrPVSM9jBDZiVZ/6RmsgRUTiN1FKRMlk66E/7+11RendRRK
-	N2kbMHxOGgMKmiYAwHT5uMm/wIM7j60gtsfv3bjI8iSNCyVLiXekIGC592Q4swEQRbJ6L0pc6lP
-	FbijWu3RfiOp9OQtPckPYig+PMrkonGpjrgEo+bwMqMc6LBr0c062+yPLvt6OaJLdi2J7qO+iTB
-	NNxfZ/CzMOteIcWWOQpkcy8Y5ED3VxCw0QihKcZMmgqVBoV9K0uX/dFRS5gYd77a74hmgOxta7a
-	dS3EPGcc8vTraQZ811lrqoEonLAZuY0EQ+IGGBZyMMBUqQyfRZmBKsEma/0GtofojQoHSBqgHT5
-	LyTvDSJeIdBCN7l6thQFI6Pkn1+opmZBVa20XZpW84uPcyvD9CXiDC4VTOMxIZ+uV+Nm0koQC7D
-	4CTsofg=
-X-Received: by 2002:a05:6a21:3985:b0:3e0:c334:52a0 with SMTP id adf61e73a8af0-3e1a68ea93emr883941637.49.1791760463637;
-        Sun, 11 Oct 2026 16:14:23 -0700 (PDT)
+        bh=BFBIQXoG2aeGkZzB3O/CnVUwpPtY8AGILGw7slNAgvA=;
+        b=EjDIH5FqKkwkZGkN/wIOe6mir4IU5XwjRBX+NFeRwSrdZYhKJ4b60FnqNF045a8jYG
+         +EfEpf+EhT/YLCNuBNPPBVCFbQT48cPFgsEWCaUkuzPovlg3eEw/IrNQTckNKM2BQKAZ
+         +D30gIGEVg89X1RORSGp4hRFcbYKo9X0A90JWGTgsyOfCFpoONWzfCbIwxNDlGpZ/5vW
+         djsNeYPpUH141jB/YWDywZfOsIVB6oDNhQ2wfGP3VgX6EIeHMuB60ckpWgHbkoCSssZj
+         YUlzBGVMVQ1B2O9QnEH76ytsVLTXG6SBLwfSPbPoVCPkPVBJ5iYNKGTJ0MFDgsXJ/TnP
+         Mi9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791760483; x=1792365283;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=BFBIQXoG2aeGkZzB3O/CnVUwpPtY8AGILGw7slNAgvA=;
+        b=Lvys8SQv0HjR6Oah/NIEfwqsNmwpujSAPQjNfWustOEnbBTQMUgEKuEjXw7FpJRzEE
+         qCPf6IBIzcbA80CQngljDDj6LFuyooCmDJdDA6kNSOnqVftzVJl7L80fjbiGkYIP7CMx
+         7ns9Y6imA1t4ZeR79GsQGMZbMk/iQxKn6XCoC2C3ajvxKY1wxSrrrM81uxP+EJvKl2Ls
+         tX9obGlU3h5cVJf0bzP5Yfue4mTY/JDpyw6eAbFO1CojoalnIqN6XRtd5yIBXFsScz7y
+         gEXbmyabhK5Pb62vljPCWb5QKs2pIRPiRgArbRTeCp9JlssKLtRf5dDeOLJaDUXRbYGA
+         K8/w==
+X-Forwarded-Encrypted: i=1; AKwUvBxwFPSQs9xrSbrFn63OGjGU1r8rQcI6ld1GfajtD3aJpEdRRyFXUPuTVZ9iFgj0XIp61f+yX/O4QxM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIYddSy9DE4a8YGPMnmgkjydB3rGFwBajgIvTisLZ69+jk30JnU
+	tDpNla/K7Q03Bto2PKmgWWHCPe/5yfwUqkMCx+f8dqwVbXMpB8B9pcpU
+X-Gm-Gg: AYBFou07uMNFOJfwluDaesa62jGR0RdFNYPHJVRPEJLo88sNnuJcBO2Ji9Kmht6cef8
+	mxK0Mj5pdwlWj1+lgCSm3GumN1J5GErrokpCDHZbMqQgOWXM4ifGbMgCQzIJhIr0//EGSbGsD/K
+	Wgij46sw23IH62c+Z2FT110aBqEf4sOCwlN1TtmAyXtvOCXmcOYeSe4ygTruP8XDhu3jzrI+OtL
+	ij7yWTcMjs1TgaTIINN5bbBPOtp2fIyVONaeSS+5qqlcZgC7yA/HPw8XW9UXE1JXBO3mHrFPZSL
+	Bn2WOhXdQiYjS6+5vLBiZLcjeHND6nsrL8AgVWWeHlJL0KAgFoCvJvmuK73AOvJsM3roHvNak0d
+	NX47c1Uyu4lMJepkMbkeoycy8N/Ts5Qx4FRAbbAXH5ZbR3YjczXwQuq9t0rZQN7qQl2wwErRrX9
+	57HoqTMYUxb+6P+VzlQoLkQK6H6oqyqkexXO+zY0Yiq9TfNyynAMVvnxybKriiZIo6o4SX9CH44
+	3IkMKigpflXg9+SmyAL2ANvUWBplWsdNyDx7Z3tRfZADx7Ex8WPZJ2sYuvMwox7zFjzTjKUySdY
+	ygziPeA=
+X-Received: by 2002:a05:6a20:e68c:b0:3e0:e513:3ceb with SMTP id adf61e73a8af0-3e16beacademr6278189637.53.1791760483534;
+        Sun, 11 Oct 2026 16:14:43 -0700 (PDT)
 Received: from DESKTOP-G3E0OSP.localdomain ([58.224.60.243])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-896c48945dcsm3188917b3a.54.2026.10.11.16.14.19
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-896c48945dcsm3188917b3a.54.2026.10.11.16.14.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 16:14:22 -0700 (PDT)
+        Sun, 11 Oct 2026 16:14:42 -0700 (PDT)
 From: Jinseob Kim <kimjinseob88@gmail.com>
 To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
@@ -77,10 +79,12 @@ Cc: kimjinseob88@gmail.com,
 	skhan@linuxfoundation.org,
 	rdunlap@infradead.org,
 	linux-doc@vger.kernel.org
-Subject: [PATCH v11 0/8] iio: add Open Sensor Fusion UART support
-Date: Mon, 12 Oct 2026 08:13:32 +0900
-Message-ID: <20261011231340.42885-1-kimjinseob88@gmail.com>
+Subject: [PATCH v11 1/8] dt-bindings: iio: add Open Sensor Fusion device
+Date: Mon, 12 Oct 2026 08:13:33 +0900
+Message-ID: <20261011231340.42885-2-kimjinseob88@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261011231340.42885-1-kimjinseob88@gmail.com>
+References: <20261011231340.42885-1-kimjinseob88@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -89,109 +93,112 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds a UART/serdev receiver for the project's fixed OSF
-Device-to-Host 0.0 protocol. Complete capability snapshots create IIO
-accelerometer, gyroscope, magnetometer and temperature devices with RAW,
-descriptor-derived SCALE and initialized buffered scans.
+Describe OSF GREEN as the current hardware model with a generic OSF
+host-interface fallback. OSF hardware variants may use different sensor
+configurations. A model-specific compatible allows future power sequencing,
+errata and quirks without changing the common fallback.
 
-The receiver validates the fixed OSF0 envelope, CRC and exact known
-message lengths. Equivalent capability reports are idempotent; changes
-to a bound supported inventory fault the session until explicit rebind.
-IIO samples use host timestamps.
+The current Linux driver needs no GREEN-specific handling and matches the
+generic compatible. Sensor inventory and protocol version are discovered
+from runtime wire frames rather than encoded in the compatible strings.
 
-Changes since v10:
-- Move OSF under drivers/iio/sensorhubs/osf/ following review.
-- Use the OSF GREEN compatible with the generic OSF fallback.
-- Clarify complete capability-report snapshot semantics.
-- Use designated decoded-frame initialization and drop decoded reserved
-  fields while retaining reserved wire-byte tolerance.
-- Reuse stream reset and simplify core/serdev locking and lifecycle.
-- Use IIO buffer-mode claims instead of a private buffer lock.
-- Simplify scan storage and channel declarations.
-- Fix KUnit worker/device/mutex/resource/completion lifetimes.
-  Generic IIO self-test extraction remains deferred.
-- Synchronize KUnit fault observation and configuration completion with
-  completions and thread joins instead of short polling/deadline windows.
-
-The IIO buffer teardown serialization issue found during the v10 review
-was fixed separately and is now in mainline as commit 84bb0fc46ccf
-("iio: buffer: serialize buffer teardown with mode claims").
-
-This series is based on the IIO testing snapshot fetched for this submission:
-a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
-Runtime validation used this testing base plus the eight OSF patches
-and the exact mainline IIO core fix 84bb0fc46ccf6a545b8fdf57cda83770186ed8dd.
-The core fix is not included in this series and must be present when
-running the series on this testing base.
-
-Fresh validation of this source:
-- GCC and Clang W=1 kernel builds; module builds.
-- osf-core (16 tests) and osf-iio (2 tests), with KASAN, lockdep,
-  DEBUG_MUTEXES, DEBUG_LOCK_ALLOC, DEBUG_OBJECTS and DEBUG_OBJECTS_FREE.
-- 200 production module load/unload cycles and 200 test-enriched module
-  load/unload cycles using identical driver/test C sources, exercising
-  20,000 IIO buffer toggles, scan subsets, timestamps and unregister.
-- DT binding/style/example/schema checks and IIO Sphinx build.
-- Clean sequential application and relevant builds of all eight patches.
-Physical board tests were not repeated for this revision.
-
-Canonical specification (fixed revision):
-https://github.com/opensensorfusion/opensensorfusion-protocol/blob/ca9cdea1ae550c2b4d6f29f87877adae99470744/spec/osf-d2h-0.0.md
-
-The fixed public specification is maintained and adopted by the OSF
-project. This does not imply Linux maintainer approval of the
-specification or driver.
-
-Jinseob Kim (8):
-  dt-bindings: iio: add Open Sensor Fusion device
-  Documentation: iio: add Open Sensor Fusion driver overview
-  iio: osf: add protocol decoding
-  iio: osf: add validated stream parser
-  iio: osf: add UART transport and core receive path
-  iio: osf: add IIO devices from capability reports
-  iio: osf: add core KUnit tests
-  iio: osf: add IIO KUnit tests
-
- .../bindings/iio/opensensorfusion,osf.yaml    |   55 +
- .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
- Documentation/iio/index.rst                   |    1 +
- Documentation/iio/open-sensor-fusion.rst      |   81 ++
- MAINTAINERS                                   |    8 +
- drivers/iio/Kconfig                           |    1 +
- drivers/iio/Makefile                          |    1 +
- drivers/iio/sensorhubs/Kconfig                |    7 +
- drivers/iio/sensorhubs/Makefile               |    3 +
- drivers/iio/sensorhubs/osf/Kconfig            |   27 +
- drivers/iio/sensorhubs/osf/Makefile           |    7 +
- drivers/iio/sensorhubs/osf/osf_core.c         |  460 +++++++
- drivers/iio/sensorhubs/osf/osf_core.h         |   75 ++
- drivers/iio/sensorhubs/osf/osf_core_test.c    | 1056 +++++++++++++++++
- drivers/iio/sensorhubs/osf/osf_iio.c          |  288 +++++
- drivers/iio/sensorhubs/osf/osf_iio.h          |   22 +
- drivers/iio/sensorhubs/osf/osf_iio_test.c     |  386 ++++++
- drivers/iio/sensorhubs/osf/osf_protocol.c     |  215 ++++
- drivers/iio/sensorhubs/osf/osf_protocol.h     |   99 ++
- drivers/iio/sensorhubs/osf/osf_serdev.c       |  151 +++
- drivers/iio/sensorhubs/osf/osf_stream.c       |  230 ++++
- drivers/iio/sensorhubs/osf/osf_stream.h       |   53 +
- 22 files changed, 3228 insertions(+)
+Assisted-by: LLM
+Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+---
+ .../bindings/iio/opensensorfusion,osf.yaml    | 55 +++++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+ MAINTAINERS                                   |  6 ++
+ 3 files changed, 63 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
- create mode 100644 Documentation/iio/open-sensor-fusion.rst
- create mode 100644 drivers/iio/sensorhubs/Kconfig
- create mode 100644 drivers/iio/sensorhubs/Makefile
- create mode 100644 drivers/iio/sensorhubs/osf/Kconfig
- create mode 100644 drivers/iio/sensorhubs/osf/Makefile
- create mode 100644 drivers/iio/sensorhubs/osf/osf_core.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_core.h
- create mode 100644 drivers/iio/sensorhubs/osf/osf_core_test.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_iio.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_iio.h
- create mode 100644 drivers/iio/sensorhubs/osf/osf_iio_test.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_protocol.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_protocol.h
- create mode 100644 drivers/iio/sensorhubs/osf/osf_serdev.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_stream.c
- create mode 100644 drivers/iio/sensorhubs/osf/osf_stream.h
 
-
-base-commit: a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
+diff --git a/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml b/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..c180c6e41008ee9443411a88c234ae1c19b8de2a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/opensensorfusion,osf.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Open Sensor Fusion Sensor Aggregation Hub
++
++maintainers:
++  - Jinseob Kim <kimjinseob88@gmail.com>
++
++description: |
++  This binding documents the Open Sensor Fusion GREEN sensor hub and its
++  generic host interface. Open Sensor Fusion is a sensor aggregation hub. The hub exposes an OSF protocol
++  data stream over its host interface and reports capabilities and samples for
++  multiple sensor classes. The actual sensor channels are discovered at runtime
++  from OSF capability reports instead of describing them in Device Tree. The
++  protocol version is discovered at runtime.
++
++  Public project documentation is available at:
++
++    https://github.com/opensensorfusion
++
++  OSF0, protocol_major, and protocol_minor are wire-protocol details
++  exchanged in OSF frames.
++
++allOf:
++  - $ref: /schemas/serial/serial-peripheral-props.yaml#
++
++properties:
++  compatible:
++    items:
++      - const: opensensorfusion,osf-green
++      - const: opensensorfusion,osf
++
++  vcc-supply:
++    description:
++      Regulator supplying power to the Open Sensor Fusion device.
++
++required:
++  - compatible
++  - vcc-supply
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    serial {
++        sensor {
++            compatible = "opensensorfusion,osf-green",
++                         "opensensorfusion,osf";
++            vcc-supply = <&vcc_sensor>;
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index ba2002969373433b1f48118872c46cf7bcfff276..0ec4e481c64bc0aac8937c4fbd0d96dbb359b0fb 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1267,6 +1267,8 @@ patternProperties:
+     description: OpenPandora GmbH
+   "^openrisc,.*":
+     description: OpenRISC.io
++  "^opensensorfusion,.*":
++    description: Open Sensor Fusion
+   "^openwrt,.*":
+     description: OpenWrt
+   "^option,.*":
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3a2dfd1a4fd84ccb068332035f054ac77dada814..edae5bf594fc3c72fb39e14b797c7b2eccc11471 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20537,6 +20537,12 @@ F:	Documentation/process/maintainer-devicetree.rst
+ F:	arch/*/boot/dts/
+ F:	include/dt-bindings/
+ 
++OPEN SENSOR FUSION
++M:	Jinseob Kim <kimjinseob88@gmail.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
++K:	opensensorfusion
++
+ OPENCOMPUTE PTP CLOCK DRIVER
+ M:	Vadim Fedorenko <vadim.fedorenko@linux.dev>
+ L:	netdev@vger.kernel.org
