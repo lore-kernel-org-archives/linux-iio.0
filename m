@@ -1,139 +1,139 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 052BE314D13
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:40:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF45C3563F6
+	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:48:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791736802; cv=none; b=D8Psu2CUZ+zemnYOeNswVEX9dn9Arx6EU/UKR2oZ3neX87jyRuDUuTDRCXs4MPrXDnJKJrX1LSblRnJonir/a1wuJ/U7O+DQXJxYLssJ3MDB1vSr+E++SFUYvkSvWJ8PnDCBHYQo4o9nVIKY7C+nskeno/W3rSwhba4DjQQ8MIM=
+	t=1791737338; cv=none; b=Tq32kOH7LUsvQ0NsvsfoLfqDJXd7k/RBWjRGRIjs/3uFqo05tNGMZ8QMtzv5I9kJqu5omhdSUsvczzRTVfFi5+022QYYZSpHfTq4WXGx5QLg6a+BqpSB4mIpx5jy69ueEBlsLWDM5LJfKTWtHuy5K47XlGB7tHQAGBu6gO9r/rc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791736802; c=relaxed/simple;
-	bh=EhMBg/s6MnYlerlCrlEH8yhUL0K+RB5H1t9NeJh8E90=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=s55L8WzCdRX+B7o12gX6rW1RCOOXA7MfkFUCR+coiwnSl30DXseznE33GLn7ZnxS76o7XWvn1sLpJswAvi60s6LyIbioRlkvnwL0J4PDCh0Osy6f06Vf5kY1I1wF5BjirBjSwECygV2Jg74rCIN1RiscycXiVkE/G1nXnIIHlrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fzkgIWtD; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1791737338; c=relaxed/simple;
+	bh=VE/QFdE7A6pGGU+Ppxswa+drIXptP86XND9VPgIcTqI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rwm4Y6DkKkAzTgdrx7yzS1OR9T/myvjTIw3XpLvKGXVQYr1JNTiO4C8wzOfTU0wayfu94TBnMFwFQxZ1rJmdDeUR8JyPg+F0ESBRT/CW6UUhhkmBlfsGCSD2/I/zoBO1GCHihf6E50gYlLnuN56KKiVB99teUFOi6ChL5aqDR8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bxqne31c; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fzkgIWtD"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a1698ea378so9285375e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 09:40:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bxqne31c"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a168355946so8635265e9.0
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 09:48:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791736799; x=1792341599; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Cjm6k42dOyLFIbxGk3oDRyKuVo/hFB0pF5yZpJn1l/s=;
-        b=fzkgIWtDzSJHcoAEsOgTFoG3s6RmIXgu8OzOsEezkawmiSN//BheWRm1ofTHRtWP8J
-         lPOsBuqvcRYxVRydIz+sxfsbchs00e4XjyODgipbazgZo5HRCEI7Qw/StaZyGW2NDfgW
-         PlxqlS40e6FIXTaRNxUYToU04D5HECwup44LArHlQCXcAWVdyNxrOMkkO8hXqJxn8erK
-         p4/8/wWyiYzlDXUU5aPHta9rKGcGgL55V24RH6fgV0ZlRVxbfCqrmF9RhSs5+1a8kLrA
-         5kcza9HAk3PSWMWV1uD9W62YSgs6FkfiVY1ZNCnfNddB4E1wFrkXliMT1jUpuVZ4tgWd
-         nWYQ==
+        d=gmail.com; s=20251104; t=1791737322; x=1792342122; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=HphZQSujEUB6aVAgGUZRqNc8zkx7WZOJuXz3x+2nopE=;
+        b=Bxqne31ctH6q52eMAneNl/XovJ3dizzJBV0kmej5GA0/jiyj4hT/4tbq9NImYEIBAF
+         bRyG0VnVT2Jo1QCMxt7prAnZvgZn5iYYb7p50hClZWymqQT2JdeiC0dsglKGFIKFHyZ8
+         g7cEhDvHPPRJf6De+prGTN8KFB0b0KX/mX2YXqoh2CEi1sSNTBtnN9xaAAWxk3YVok9p
+         mS4/gg7k7Rc85apkDXXoIgp0Uk7n3jhnoe048/vfULxEN9rq7QA5tTJ/xnuKSpuPlVx6
+         1FJScjpDlbiQZCdkFlKtJc2SbHlyzys1pIZBcABySXDgBYnHmujlLR6vDSjooIPquVUB
+         shEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791736799; x=1792341599;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=Cjm6k42dOyLFIbxGk3oDRyKuVo/hFB0pF5yZpJn1l/s=;
-        b=lED8hJ4hRw2H/LJUMZY+KhEkuK0G2+EpvWJ9dr6AoxicJx8+pXzylKYtNu41z5Wmcd
-         ZxKAW/h6v9X3QT+MYHWNgXnJ+CwRBTDGBA4n4SHmWjoubY5sPiTKClyNCRtYpe3yX6C+
-         S+xwxRkVjkMfeLy6j0ghVeliglz7kF0nZETTL2HN8D4JCdiNdLf5hoHWWgLXxlWenVp+
-         hpQ7T8F9y4WTdPuDjTkrh09EZJ6+1+MDvaIiZE9RX55uEjb8TGShM95oWxQC96yZTgnA
-         aGkiZ3kiOvASXP4gv2x69OoLY58eGOe0qSX3qxWMn0YbsZs7lvFmoTJYlc87HsHeo35p
-         EgiA==
-X-Gm-Message-State: AFq9FYJWUhJOHIPcEWbF+tPpE7eMqNC9llruDtVH//bK1++fAy5WZ7aB
-	yhypgeMqGGRsa29rcvgtNiFq3AuHRVGzpQvdx3ZjY4VSn6LOvKGXjKaGhRXWiw==
-X-Gm-Gg: AYBFou0Oj3hOyhC/hEASvRpZlh28hEHTnQMG/2LgWkUB/1E3ShGfVsjwpzOb3/rMRqy
-	lm938zh3UvSgqDjPcb8jv+qa5x8Ekcr+KkFQ5Nxoao3Yv+tzWmUo2tB+bSlHHO1HQ27P+dARS/Z
-	0zZ9Y/CZb/zprBAn5inTXkr3NSZnDhmNtEZfpGVaWqhYU3ZOJhsa+QvBiDua9jlOhIJl0ecpvpH
-	qXLSKIHqfzgVBCSjyhjP2m/XI9ZETVzEsl6zwi24JX1x9As8RhvaCbCHP78yUoxSJw4MVoTctDO
-	3r2Amo1tJZ9Ui9kjaB3TZ9FZSMmQhR5nNDrwoNn0U1Hvl2j4jZav6SwWXLzcSW68V4E3EeBf9/4
-	wqSbTIa697yjb4skmQOjPMpJf9BZ5tXIA92VMwVtiv+dEh3PKK9GC+TZJ7F/Tq/O54vpAxVrVEA
-	sl8+uOX6JIsu+XH4h3WnVQwJ3UmVlIMfE1VmkfQkAdExqR8lcNEnzL97SHWp/WrnuGRkOC764KC
-	YF1S4B5f3b/Asl7KXXOF39EzgO5QL7bTnP0oBcL8cC5C1jJPnPeRpsMeVv7ZydeOas+o+GQV9ve
-	I42f5Ktis3Ap3oNPp2CVKykg8U1wvDTIvufYX4yj9KJ8WvnjPyAVQYrvB+DcD2OPDZiIWYO8/ci
-	T4QbB4yZ79rbh3ufzVsCuBE9KtEFAilB5rmPHW6v6f7SyNJs=
-X-Received: by 2002:a05:600c:8b70:b0:49f:e701:51c8 with SMTP id 5b1f17b1804b1-4a18e4a01acmr138567585e9.9.1791736799033;
-        Sun, 11 Oct 2026 09:39:59 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18be96549sm307874315e9.6.2026.10.11.09.39.58
+        d=1e100.net; s=20260707; t=1791737322; x=1792342122;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=HphZQSujEUB6aVAgGUZRqNc8zkx7WZOJuXz3x+2nopE=;
+        b=EodhfF7WUPmNtec86+CmXWIP5DM/svxQoARZs8xSkMcROObSmwrosb4Ae+vjO3iM2u
+         TfqPg3zebzXouKk8fKTtv9AvNa4BnxZs4WidfPR7yn28WJliK7KocWb0GUUrSId5VlEu
+         oczXPKyIrQ3dQrc0GVek/4J4DZxIqu7c4NX3nnE2wXegjuDq6CBklMZTWdWwvqTR2Gsv
+         lwXMEsMXA//AhSQDQ7xtugNks//3W//nuLDogIeicOuYOnJ+qJTkGYoA0+8dMK9TQ/5j
+         RLZqcIQac9Cx1lI1aP6RzjYY4G4wfdrS3RdSh+4SiQ1Ot2jSBujeIOADF+4yRoQ+sMIS
+         gRvg==
+X-Forwarded-Encrypted: i=1; AKwUvBxixp1fQHlalIUHnHqAuS9j4FSPRtEwO79jxs9egVHQ9gVALpUvklbg9g5MnQjaUr7CrSuoBxLXAcw=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL/h7A0JdzbLBdzW7NQeHziP2HP11U+tsus1NI0D/lG3NlruqYM
+	572Hvrw0wAbDn5XB3pA8r9G768PRspJjVRjgB2+LceDNpRlHuVjo8xPD
+X-Gm-Gg: AYBFou0qSeETnmI0liyO4BRw+VQnvMwtM4e/gbnJwxvuTJn7fl8OMEh4vgBohHuM+L/
+	wReOLMK3DZrv2ZjdK8v40pIHkM2YzAnIoUlcXTeLZp1j4xzu63A7KMkIA5OG71ikS+VOgfhAcEr
+	fqD5F3Ny7Rpo6hGIs4i5s9GvFRyA9A8OH7+1wqLGCyZiThUg0x1jTvAjlrlwifQQKCtrFlWSlQL
+	LPrEfTaz+BPeKfy7F6m9FCd/xki677PKpLklZVyV8JGr7Rz4ijnSKKXpFh2ipXt/SV6c24bgPBa
+	MolUBKyYHvvrtJ3YjU3ylbFDPrhUTfsDg3ZQh4NS+b4phQvBxwCowkxoLof+DZVi6wo60Bp6M2t
+	XuLP0dRQ2aueNbwOCvDIfaEEY5lC4RO8vSNX+2eR1WMGju4ctM6ff0cvew+2xaH8brrvNNsA4HL
+	l2GYorg93Xd2ypHSrpX24jixcjRYLvyqHqCvSxZiadxzR+KNhKS39zT8OF3APNdJzgE9KIm3uXt
+	7z8DfIpsdskNrG3BjrAJghpR0zkcFm8dLEdlKd5UMcoo9dHrwuZKjF1zKDt669hejkPGHyKx0ah
+	1ZsAYvtA69POdTnhKhefhvPn1xGUPov6Mu5kP6HLGbS8gTu+UXng1DSTX9tCkqK0iWgeH7LkR+K
+	LuzeE3nuad10L80CkQy2Vbnb95A8F2EA=
+X-Received: by 2002:a05:600c:3510:b0:4a1:7033:5b55 with SMTP id 5b1f17b1804b1-4a18e4cc437mr152326015e9.21.1791737322002;
+        Sun, 11 Oct 2026 09:48:42 -0700 (PDT)
+Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48db9abda3csm15577697f8f.36.2026.10.11.09.48.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 09:39:58 -0700 (PDT)
+        Sun, 11 Oct 2026 09:48:41 -0700 (PDT)
+Date: Sun, 11 Oct 2026 18:48:39 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sun, 11 Oct 2026 17:53:01 +0200
-Subject: [PATCH] iio: gyro: mpu3050: add missing trigger cleanup on remove
+To: Zixin Wang <ywp1023456@foxmail.com>
+Cc: Kevin Tsai <ktsai@capellamicro.com>, Jonathan Cameron
+ <jic23@kernel.org>, linux-iio@vger.kernel.org, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: light: cm32181: add support for the CM32183
+Message-ID: <20261011184839.4d62884e@systembl0wer>
+In-Reply-To: <tencent_C2E579008244A394105247CCC4787391C209@qq.com>
+References: <tencent_C2E579008244A394105247CCC4787391C209@qq.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261011-mpu3050-fix-v1-1-f55b0d138be4@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzNDA0ND3dyCUmMDUwPdtMwKXUMT00Rz8xRTIyPLJCWgjoKiVKAw2LTo2Np
- aAMP5/C9dAAAA
-X-Change-ID: 20261011-mpu3050-fix-145a77d5229b
-To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Dingisoul <dingiso.kernel@gmail.com>, stable@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791736798; l=1616;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=EhMBg/s6MnYlerlCrlEH8yhUL0K+RB5H1t9NeJh8E90=;
- b=hOSERUJHDV8gdQDBWCvJ8tQg2SVgtaw/Z8hNODJJld+FchhkOoytB/lOhmQWQj+bQDJHG/Mew
- WJkl/KqFv+5Bht20X9dkEFZ8DBHbM0TKYF8XsX4i2YG9ct2Sr0WsOr7
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-The mpu3050_trigger_probe() function registers a trigger but
-mpu3050_common_remove() and error paths in mpu3050_common_probe() forget
-to clean it up, causing a use-after-free bug.
+On Sun, 11 Oct 2026 08:48:56 +0000 (UTC)
+Zixin Wang <ywp1023456@foxmail.com> wrote:
 
-Add the missing iio_trigger_unregister() function.
+> The CM32183 is another member of the Capella CM3218x ambient light
+> sensor family. Its device ID register (0x07) returns 0x83 in the low
+> byte, following the same scheme as the already supported parts:
+> 
+>     CM3218  -> 0x18
+>     CM32181 -> 0x81
+>     CM32182 -> 0x82
+>     CM32183 -> 0x83
+> 
+> The driver falls through to the default branch of the ID switch and
+> returns -ENODEV, so probe() fails even though the device is present and
+> functional:
+> 
+>     cm32181 i2c-CPLM3218:00: cm32181_probe: register init failed
+> 
+> This was observed on an H3C MegaBook 14 (Intel Core Ultra 5 226V, Lunar
+> Lake). Its DSDT declares the sensor as:
+> 
+>     Device (LSRD) {
+>         Name (_HID, "CPLM3218")
+>         Name (_CID, "CPLM3218")
+>         Name (_UID, 1)
+>     }
+> 
+> on I2C at address 0x29, and additionally provides the vendor
+> initialisation and calibration objects that this driver already parses.
+> CPM0[0] reports a device-id of 32183, and CPM1 provides lux_per_bit =
+> 2200 and calibscale = 265859.
+> 
+> Treat the CM32183 like the CM32181.
+> 
+> Measurements on the above machine confirm the register layout matches:
+> the power-on value of the CMD register (0x0001) has bit 0 set, which is
+> CM32181_CMD_ALS_DISABLE, and register 0x04 is the ALS data register.
+> With this change the driver binds, the ACPI-provided initialisation
+> values are written and the CPM1 calibration is taken into account
+> (in_illuminance_calibscale reads back 265859). The reported illuminance
+> tracks ambient light without saturating.
+> 
 
-Reported-by: Dingisoul <dingiso.kernel@gmail.com>
-Closes: https://lore.kernel.org/all/20261010203601.1686148-1-dingiso.kernel@gmail.com/
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Cc: stable@vger.kernel.org
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/gyro/mpu3050-core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Code is good, but no need for the above to go into the commit message.
+I'd have a commit message like:
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 07c0f9011c63..096fd0dc608e 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1260,6 +1260,8 @@ int mpu3050_common_probe(struct device *dev,
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
-+	if (mpu3050->trig)
-+		iio_trigger_unregister(mpu3050->trig);
- 	if (irq)
- 		free_irq(mpu3050->irq, mpu3050->trig);
- 	iio_triggered_buffer_cleanup(indio_dev);
-@@ -1278,6 +1280,8 @@ void mpu3050_common_remove(struct device *dev)
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
-+	if (mpu3050->trig)
-+		iio_trigger_unregister(mpu3050->trig);
- 	if (mpu3050->irq)
- 		free_irq(mpu3050->irq, mpu3050->trig);
- 	iio_triggered_buffer_cleanup(indio_dev);
+Add the device ID for the CM32183. The device has the same register
+layout as the CM32181.
 
----
-base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-change-id: 20261011-mpu3050-fix-145a77d5229b
+What you wrote should IMO go under the ---.
 
-Best regards,
 -- 
+Kind regards,
 Joshua Crofts
-
