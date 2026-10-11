@@ -1,47 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E432D46A1;
-	Sun, 11 Oct 2026 13:20:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64DBF37FF75;
+	Sun, 11 Oct 2026 13:20:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791724823; cv=none; b=rmLrX6I2pjrPk+QuMaEac8kNVFO75FN4S8urAbF3eeYX/7/uYbIN12OVJA+I+Jm9ZlCQL5c5eVgRr4Bm7jJfn0fX5kYzHrsowXB1gFCzz0m/z2Hsg1VSAMhrzFpFYf6DabdgRNjiWEo29njfrA1rVSxpDAAgoS5CKmOQrovEwjk=
+	t=1791724834; cv=none; b=owsOw7U/M+GjX9l910CYDp359RokVRKiwy+p8n9NmMvqx9MDRCx15BSFgVRbznuCkIyCQCLDRY2Nwqtfs/EYjHMfdWkK0e33x19XQ7TfUbIfx7CIVcEqSwneU36HUMGlebl+vhw68fPCPIv31ZjwJjMt9JV+QYFxdM5SipYMA9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791724823; c=relaxed/simple;
-	bh=CCferC2my1KTfiRlvoMZHvwLRRPxthwclodKSDzPpAo=;
+	s=arc-20240116; t=1791724834; c=relaxed/simple;
+	bh=MEXh0r6rKRtCozat/0TLXmCZ/vNwcI5S/ZEwmwaESAk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EpOkH2brTejySfWoLVJYBc9IHa8eW09DJczVc/X5m5UJVOG0zoLolQJ4MqppPK23NqaxhZrCHgbbYdR3PXGZkPCEsxv15NWnF3yadLbOBxNNJWvkT6iJ5WHKGjzHDC8LiauXOUfpdOvvnop8xq7B9j+X/JPssPJe3UAardrR8cg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f9nurOG7; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=CG1UzY02rQstsZZLfINCyOOAcChB/C8h0qJtWwm6DUbtujTsUY9HbUREbRTMi3OvcwvN11gXS83d8Ke4AJVDw3vdSKmd6czP0ymRWkfFL0L1nX1NGXVlfAOxUr4yNkrxCRXjp3il0F219C5m9b5NZW63AwX5XOjCwk90W3jNFuM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JRrv9FEF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f9nurOG7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB7C01F0089B;
-	Sun, 11 Oct 2026 13:20:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JRrv9FEF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99BFC1F0089C;
+	Sun, 11 Oct 2026 13:20:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791724821;
-	bh=B+sTImV2OzP8xPaKYq6APrxAM++DsSPbzV5A+zRS8LM=;
+	s=k20260515; t=1791724833;
+	bh=mCUDoIEInLH5axhQXPHfYVpG76/NuG/7bP0dzGRQs1A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=f9nurOG7GFObPNn8K3ivBt4y8NHagBVpIwGEGNpMeVMPFIj1FSL419QWWdWQaKqFT
-	 zMb42HUDEHhPvSX765Iq0BOS7nNM5rDqY1NTdYv/KJN66www118aJ3mnQy6ogblkqV
-	 czi85CVXRG94i3clIiRL3UAWDouSbdtga3MTpvuWIcnHCsoft+y+XDzBOr7qL1NR8c
-	 qBoigMoOqgmBisQ0Jml84hJuOh/CRo61j+zzEr1cvXyxAxF8BKqiY7KUN6MBIq9crT
-	 C2EDRpAL2ZoeNqx5Unr2AZtneGXQbIPQZTNbOGCDZEwmhmBtMenQwkYjlckJKIkDnz
-	 R96GtnvHdhfcQ==
-Date: Sun, 11 Oct 2026 12:14:22 +0100
+	b=JRrv9FEFkWYKPYUx8jVEf2mVZelkP3igEKgLPTpaJNke5npG30UhrfBcTIcEM/Rjo
+	 LdCP5CiI7WR9E10usYXWkrCjzzQ9tpQORfC6LcNTUWCejuuU7R0Kjaziw7VLn+eRe2
+	 A1iJMbvwuAWMXxYJeNPw5jszLxHQ/yL7jUmr++vXdICCjisSjC+ziGUoJee1P0Ml1n
+	 FV+Ye2T6fp9PpnV3EWtiIEllMe7GQp3VazhNRi55AhLYmoVx2N5ZdqwAR45l7aviGf
+	 zNaP1FerFPwZcKB/sxVdMGredU26xmDGEay3XO3zPdDEael195TYToe8Pts+NfOJr3
+	 +3iV0hcdG4MLA==
+Date: Sun, 11 Oct 2026 14:14:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "jiale yao" <19888972804@163.com>
-Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "David Lechner"
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, "Stepan Ionichev" <sozdayvek@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: bmg160: reject duplicate event disable
-Message-ID: <20261011121422.5c7078ff@jic23-hlaptop>
-In-Reply-To: <5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
-References: <20260925140956.2254877-1-yaojiale02@163.com>
-	<araCndRmAqnX1K9k@ashevche-desk.local>
-	<6b2f4eef.1cf6.1a0d8fc9ac6.Coremail.19888972804@163.com>
-	<20260926020133.3699a786@jic23-hlaptop>
-	<20260927181632.76bc1eda@jic23-hlaptop>
-	<5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v3] iio: pressure: dps310: fix overflow in pressure
+ compensation
+Message-ID: <20261011141411.06bf9209@jic23-hlaptop>
+In-Reply-To: <20261001121616.109973-1-zoone.rupert@gmail.com>
+References: <20261001121616.109973-1-zoone.rupert@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,107 +48,171 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-ID: <20261011111422.bBP3MhGuGJOxLyFKESbjm6X-eW9KJYhWIYzsLlmkq5M@z>
 
-On Mon, 28 Sep 2026 17:22:09 +0800 (CST)
-"jiale yao" <19888972804@163.com> wrote:
+On Thu,  1 Oct 2026 15:16:16 +0300
+Rupesh Majhi <zoone.rupert@gmail.com> wrote:
 
-> At 2026-09-28 01:16:32, "Jonathan Cameron" <jic23@kernel.org> wrote:
-> >On Sat, 26 Sep 2026 02:01:33 +0100
-> >Jonathan Cameron <jic23@kernel.org> wrote:
-> >  
-> >> On Fri, 25 Sep 2026 22:33:48 +0800 (CST)
-> >> "jiale yao" <19888972804@163.com> wrote:
-> >>   
-> >> > At 2026-09-25 22:18:05, "Andy Shevchenko" <andriy.shevchenko@intel.com> wrote:    
-> >> > >On Fri, Sep 25, 2026 at 10:09:54PM +0800, Jiale Yao wrote:      
-> >> > >> The IIO core does not filter duplicate writes to the event enable
-> >> > >> attribute.      
-> >> > >
-> >> > >Can it be done there once for all?      
-> >> > 
-> >> > I don't think the core can safely do this generically, since it doesn't own
-> >> > the per-event state and read_event_config() may reflect shared hardware state.
-> >> > 
-> >> > The runtime PM accounting is driver-specific, so handling duplicate writes in
-> >> > the driver seems safer. gp2ap002 does the same in commit 579c049b4cb6,
-> >> > refer https://lore.kernel.org/all/20260720193911.74919-2-nikhilgtr@gmail.com/    
-> >> 
-> >> Exactly right.
-> >> 
-> >> Event handling in the core would indeed require complex mapping of
-> >> what can actually be enabled on a given device. Some of those we might
-> >> be able to represent with simple approaches similar to what we do
-> >> for avail_scan_masks for buffered channels but it is hard to generalize
-> >> and FWIW that concept still misses some corner cases of channel enabling
-> >> where drivers have to apply constraints in the actual buffer enable.
-> >> Those are rare enough that it isn't too much of a problem in practice.
-> >> Probably fine on 99% of drivers.
-> >> 
-> >> Events have simplre cases like:
-> >> - 1 enable bit turns a whole load of events on (we don't filter in
-> >>   the kernel - so userspace has to cope with surprise events).
-> >> - Always on event signals.
-> >> - Limited numbers of general purpose event engines (the ADI IMUs do
-> >>   this as they tend to have 2 instances). Each engine can do anything
-> >>   but there are only two of them.
-> >> 
-> >> We also have more complex ones like mode bits that flip a subset
-> >> of events from one enable state to another.  There are some really
-> >> odd rules in some devices because some upstream filter that is needed
-> >> for 5 seemingly unrelated events has to be in a particular state for
-> >> subsets of them.
-> >> 
-> >> Anyhow, all in all event control is a mess of 'original solutions'
-> >> from vendors and relies on the (naughty) get out of IIO ABI that
-> >> just occasionally any write to any userspace ABI element can
-> >> change what is read back from any other.
-> >> 
-> >> Not great, but I've never come up with a better solution for events.
-> >> If anyone wants to have a go at architecting a filtering solution
-> >> a bit like the IIO buffer demux maybe we can opt in to it from
-> >> some drivers.
-> >> 
-> >> I am wondering if it is worth registering a driver specific tidy
-> >> up events call though that would disable everything a bit like
-> >> we disable buffers as part of the userspace tear down.  That would
-> >> close out some races sashiko has reported.  That project would
-> >> I think be a lot simpler to implement.
-> >>   
-> >This one needs a fixes tag, as do the other similar ones.
-> >Fine to just reply to each thread with the appropriate tag.  
+> p^3 * c30 and t * p^2 * c21 overflow s64 at most oversampling ratios,
+> and pressure comes out about 150 Pa low on a DPS310 here.
 > 
-> Fixes: 22b46c45fb9b ("iio:gyro:bmg160 Gyro Sensor driver")
+> Use Horner form, dividing by scale factor at each step. Overflow then
+> needs a raw value far outside sensor range and returns -ERANGE.
 > 
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-Note that I'll be rebasing that on rc1 (once available) before sending
-out a pull request.
+> Checked against datasheet formula at all eight ratios.
+> 
+> Fixes: d711a3c7dc82 ("iio: dps310: Add pressure sensing capability")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://sashiko.dev/#/patchset/20260921183132.233136-1-zoone.rupert%40gmail.com
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+I haven't checked the maths closely but assume you have that well tested
+etc.  
+
+> ---
+> v3: min_t() line left as in mainline (Andy), comment cut to one line
+> v2: (s64)BIT(20) instead of BIT_ULL(), min() instead of min_t() (Andy)
+>     https://lore.kernel.org/linux-iio/20260930085819.886339-1-zoone.rupert@gmail.com/
+> v1: https://lore.kernel.org/linux-iio/20260928101803.547005-1-zoone.rupert@gmail.com/
+> 
+> Based on iio/testing, since the buffer series reworked this function.
+> Can send a version for fixes-togreg if you prefer.
+
+This is fine.  Ideal would be to then chase the merge upstream of this patch
+with a backported version - but always up to the author on whether they do that
+work or not.
+
+Applied, to the testing branch of iio.git - though this is more about
+the other patches you have on list potentially making things more complex
+if I took it through the fixes-togreg branch.
 
 Thanks,
 
 Jonathan
 
-> >
-> >Thanks,
-> >
-> >Jonathan
-> >  
-> >> Jonathan
-> >>   
-> >> >     
-> >> > >      
-> >> > >> bmg160_write_event_config() already ignores repeated enable
-> >> > >> requests, but a repeated disable request still calls
-> >> > >> bmg160_set_power_state(data, false), dropping a runtime PM reference
-> >> > >> that was not acquired for this request. This can underflow the runtime
-> >> > >> PM usage count and trigger a "Runtime PM usage count underflow" warning.
-> >> > >> 
-> >> > >> Return early when the requested state already matches ev_enable_state.      
-> >> > >
-> >> > >-- 
-> >> > >With Best Regards,
-> >> > >Andy Shevchenko
-> >> > >      
-> >> 
-> >>   
+> 
+>  drivers/iio/pressure/dps310.c | 89 ++++++++++++++---------------------
+>  1 file changed, 35 insertions(+), 54 deletions(-)
+> 
+> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+> index 85df58ac1809..2682615b69bb 100644
+> --- a/drivers/iio/pressure/dps310.c
+> +++ b/drivers/iio/pressure/dps310.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/limits.h>
+>  #include <linux/math64.h>
+>  #include <linux/module.h>
+> +#include <linux/overflow.h>
+>  #include <linux/regmap.h>
+>  #include <linux/unaligned.h>
+>  
+> @@ -660,72 +661,52 @@ static int dps310_write_raw(struct iio_dev *iio,
+>  	}
+>  }
+>  
+> +/* Fixed point one for the compensation fractions */
+> +#define DPS310_CALC_ONE		((s64)BIT(20))
+> +
+> +/* *acc = (*acc + coef) * raw / k, with coef scaled to match *acc */
+> +static bool dps310_horner_step(s64 *acc, s32 coef, s64 raw, s64 k)
+> +{
+> +	s64 prod;
+> +
+> +	if (check_mul_overflow(*acc + coef * DPS310_CALC_ONE, raw, &prod))
+> +		return false;
+> +
+> +	*acc = div64_s64(prod, k);
+> +
+> +	return true;
+> +}
+> +
+>  static int dps310_calculate_pressure(struct dps310_data *data, int *val)
+>  	__must_hold(&data->lock)
+>  {
+> -	int i;
+> +	s64 p = data->pressure_raw;
+> +	s64 t = data->temp_raw;
+> +	s64 prs = 0;
+> +	s64 tmp = 0;
+> +	s64 pressure;
+> +	int kp, kt;
+>  	int rc;
+> -	int kpi;
+> -	int kti;
+> -	s64 rem = 0ULL;
+> -	s64 pressure = 0ULL;
+> -	s64 p;
+> -	s64 t;
+> -	s64 denoms[7];
+> -	s64 nums[7];
+> -	s64 rems[7];
+> -	s64 kp;
+> -	s64 kt;
+>  
+> -	rc = dps310_get_pres_k(data, &kpi);
+> +	rc = dps310_get_pres_k(data, &kp);
+>  	if (rc)
+>  		return rc;
+>  
+> -	rc = dps310_get_temp_k(data, &kti);
+> +	rc = dps310_get_temp_k(data, &kt);
+>  	if (rc)
+>  		return rc;
+>  
+> -	kp = (s64)kpi;
+> -	kt = (s64)kti;
+> -
+> -	p = (s64)data->pressure_raw;
+> -	t = (s64)data->temp_raw;
+> -
+> -	/* Section 4.9.1 of the DPS310 spec; algebra'd to avoid underflow */
+> -	nums[0] = (s64)data->c00;
+> -	denoms[0] = 1LL;
+> -	nums[1] = p * (s64)data->c10;
+> -	denoms[1] = kp;
+> -	nums[2] = p * p * (s64)data->c20;
+> -	denoms[2] = kp * kp;
+> -	nums[3] = p * p * p * (s64)data->c30;
+> -	denoms[3] = kp * kp * kp;
+> -	nums[4] = t * (s64)data->c01;
+> -	denoms[4] = kt;
+> -	nums[5] = t * p * (s64)data->c11;
+> -	denoms[5] = kp * kt;
+> -	nums[6] = t * p * p * (s64)data->c21;
+> -	denoms[6] = kp * kp * kt;
+> -
+> -	/* Kernel lacks a div64_s64_rem function; denoms are all positive */
+> -	for (i = 0; i < 7; ++i) {
+> -		u64 irem;
+> -
+> -		if (nums[i] < 0LL) {
+> -			pressure -= div64_u64_rem(-nums[i], denoms[i], &irem);
+> -			rems[i] = -irem;
+> -		} else {
+> -			pressure += div64_u64_rem(nums[i], denoms[i], &irem);
+> -			rems[i] = (s64)irem;
+> -		}
+> -	}
+> -
+> -	/* Increase precision and calculate the remainder sum */
+> -	for (i = 0; i < 7; ++i)
+> -		rem += div64_s64((s64)rems[i] * 1000000000LL, denoms[i]);
+> +	/* Section 4.9.1 of the DPS310 spec, Horner form to avoid overflow */
+> +	if (!dps310_horner_step(&prs, data->c30, p, kp) ||
+> +	    !dps310_horner_step(&prs, data->c20, p, kp) ||
+> +	    !dps310_horner_step(&prs, data->c10, p, kp) ||
+> +	    !dps310_horner_step(&tmp, data->c21, p, kp) ||
+> +	    !dps310_horner_step(&tmp, data->c11, p, kp) ||
+> +	    !dps310_horner_step(&tmp, data->c01, t, kt))
+> +		return -ERANGE;
+>  
+> -	pressure += div_s64(rem, 1000000000LL);
+> -	if (pressure < 0LL)
+> +	pressure = data->c00 + div64_s64(prs + tmp, DPS310_CALC_ONE);
+> +	if (pressure < 0)
+>  		return -ERANGE;
+>  
+>  	*val = (int)min_t(s64, pressure, INT_MAX);
+> 
+> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
 
