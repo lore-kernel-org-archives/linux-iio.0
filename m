@@ -1,49 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD5F02AD03;
-	Sun, 11 Oct 2026 13:00:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E432D46A1;
+	Sun, 11 Oct 2026 13:20:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791723641; cv=none; b=X7EDNp939o9iseCl2rnbxmR1xjN5fgZb7ySjlY4X5mJTEXcb8c2JyAQGpWuCebAzU0JWCrvYHJi6VOqxIid6kECSAw8Nq0wJZWzUUIov1L3x9rfkBmpLi2b1oB/qjeaPCuidAw2JzsjhspU2qOkBImGakqSPjKMENAhy7idu1vY=
+	t=1791724823; cv=none; b=rmLrX6I2pjrPk+QuMaEac8kNVFO75FN4S8urAbF3eeYX/7/uYbIN12OVJA+I+Jm9ZlCQL5c5eVgRr4Bm7jJfn0fX5kYzHrsowXB1gFCzz0m/z2Hsg1VSAMhrzFpFYf6DabdgRNjiWEo29njfrA1rVSxpDAAgoS5CKmOQrovEwjk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791723641; c=relaxed/simple;
-	bh=9hCbvebX07T1xMNBPfXkhv3YYnJ9FnbtZpO2VDmZ6+Y=;
+	s=arc-20240116; t=1791724823; c=relaxed/simple;
+	bh=CCferC2my1KTfiRlvoMZHvwLRRPxthwclodKSDzPpAo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eRe3N7puJKBaQexngOYnz0tQPiuk58WME2Ljf4jXczRbyZ2pdHroefmuTfl9lrzUnjXpzAvVDxY59CvjhyNN1js8oMSHF0lWgUxHsTSsTXubQcWKVRBXinCwFjuVCepFFJA1fLt2z32dYEy2zSnIO8/RP4KYRrKbALPB/IgYpHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gh7X10kC; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=EpOkH2brTejySfWoLVJYBc9IHa8eW09DJczVc/X5m5UJVOG0zoLolQJ4MqppPK23NqaxhZrCHgbbYdR3PXGZkPCEsxv15NWnF3yadLbOBxNNJWvkT6iJ5WHKGjzHDC8LiauXOUfpdOvvnop8xq7B9j+X/JPssPJe3UAardrR8cg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f9nurOG7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gh7X10kC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B07B1F0089B;
-	Sun, 11 Oct 2026 13:00:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f9nurOG7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB7C01F0089B;
+	Sun, 11 Oct 2026 13:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791723635;
-	bh=HOVFcYsFJGykwM1UIUyp356S3MbI3P/ysIg/n3jF1t0=;
+	s=k20260515; t=1791724821;
+	bh=B+sTImV2OzP8xPaKYq6APrxAM++DsSPbzV5A+zRS8LM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Gh7X10kC9s5QetyYxRL7bersQrcWPQ1UcpetnsF4p4gq6EIXjD3ZLmY7b6vac/eho
-	 Ii7qfT6D8Uw8xP3XV/xs2bOzgedtgrpefPLTB9WfCJxfCqoXMgQQYE8c/EadQzpG0W
-	 iiybCUNVOZOC5tGMTTgi1aZxiU1dnI45KAAPs271aQ97gLBFN3zhI27Z0zqeixR7Hy
-	 xI/5PCifPMuiLJENzOB/4QkbPcjlMVRJO7h405F0nGFrDpuKyLOwjZmq+zapvtBMCY
-	 5PT5n/NAQsbZPe7kX/IdKLsDIt5j5+Ap0EuycrYZTQ4NKrjHBkL/CGdny9WG6WzwT6
-	 HJniuhO5owePQ==
-Date: Sun, 11 Oct 2026 14:00:02 +0100
+	b=f9nurOG7GFObPNn8K3ivBt4y8NHagBVpIwGEGNpMeVMPFIj1FSL419QWWdWQaKqFT
+	 zMb42HUDEHhPvSX765Iq0BOS7nNM5rDqY1NTdYv/KJN66www118aJ3mnQy6ogblkqV
+	 czi85CVXRG94i3clIiRL3UAWDouSbdtga3MTpvuWIcnHCsoft+y+XDzBOr7qL1NR8c
+	 qBoigMoOqgmBisQ0Jml84hJuOh/CRo61j+zzEr1cvXyxAxF8BKqiY7KUN6MBIq9crT
+	 C2EDRpAL2ZoeNqx5Unr2AZtneGXQbIPQZTNbOGCDZEwmhmBtMenQwkYjlckJKIkDnz
+	 R96GtnvHdhfcQ==
+Date: Sun, 11 Oct 2026 12:14:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, Sean Nyekjaer
- <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, Christoph
- Muellner <christoph.muellner@theobroma-systems.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, Joshua Crofts
- <joshua.crofts1@gmail.com>, Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v10 00/10] io: accel: mma8452: Allow open drain
- interrupt pin configuration
-Message-ID: <20261011140002.6e9d68d3@jic23-hlaptop>
-In-Reply-To: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
-References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
+To: "jiale yao" <19888972804@163.com>
+Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "David Lechner"
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, "Stepan Ionichev" <sozdayvek@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: bmg160: reject duplicate event disable
+Message-ID: <20261011121422.5c7078ff@jic23-hlaptop>
+In-Reply-To: <5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
+References: <20260925140956.2254877-1-yaojiale02@163.com>
+	<araCndRmAqnX1K9k@ashevche-desk.local>
+	<6b2f4eef.1cf6.1a0d8fc9ac6.Coremail.19888972804@163.com>
+	<20260926020133.3699a786@jic23-hlaptop>
+	<20260927181632.76bc1eda@jic23-hlaptop>
+	<5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,171 +49,109 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Message-ID: <20261011111422.bBP3MhGuGJOxLyFKESbjm6X-eW9KJYhWIYzsLlmkq5M@z>
 
-On Mon, 28 Sep 2026 10:26:16 +0200
-Esben Haabendal <esben@geanix.com> wrote:
+On Mon, 28 Sep 2026 17:22:09 +0800 (CST)
+"jiale yao" <19888972804@163.com> wrote:
 
-> Extend the mma8452 driver with support for configuration of the
-> interrupt line in open-drain mode, which is needed for hardware designs
-> where the interrupt line is shared with other chips.
->=20
-> Adding drive-open-drain property to mma8452 device-tree node for such
-> designs to enable switching pin configuration to open-drain mode.
->=20
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> At 2026-09-28 01:16:32, "Jonathan Cameron" <jic23@kernel.org> wrote:
+> >On Sat, 26 Sep 2026 02:01:33 +0100
+> >Jonathan Cameron <jic23@kernel.org> wrote:
+> >  
+> >> On Fri, 25 Sep 2026 22:33:48 +0800 (CST)
+> >> "jiale yao" <19888972804@163.com> wrote:
+> >>   
+> >> > At 2026-09-25 22:18:05, "Andy Shevchenko" <andriy.shevchenko@intel.com> wrote:    
+> >> > >On Fri, Sep 25, 2026 at 10:09:54PM +0800, Jiale Yao wrote:      
+> >> > >> The IIO core does not filter duplicate writes to the event enable
+> >> > >> attribute.      
+> >> > >
+> >> > >Can it be done there once for all?      
+> >> > 
+> >> > I don't think the core can safely do this generically, since it doesn't own
+> >> > the per-event state and read_event_config() may reflect shared hardware state.
+> >> > 
+> >> > The runtime PM accounting is driver-specific, so handling duplicate writes in
+> >> > the driver seems safer. gp2ap002 does the same in commit 579c049b4cb6,
+> >> > refer https://lore.kernel.org/all/20260720193911.74919-2-nikhilgtr@gmail.com/    
+> >> 
+> >> Exactly right.
+> >> 
+> >> Event handling in the core would indeed require complex mapping of
+> >> what can actually be enabled on a given device. Some of those we might
+> >> be able to represent with simple approaches similar to what we do
+> >> for avail_scan_masks for buffered channels but it is hard to generalize
+> >> and FWIW that concept still misses some corner cases of channel enabling
+> >> where drivers have to apply constraints in the actual buffer enable.
+> >> Those are rare enough that it isn't too much of a problem in practice.
+> >> Probably fine on 99% of drivers.
+> >> 
+> >> Events have simplre cases like:
+> >> - 1 enable bit turns a whole load of events on (we don't filter in
+> >>   the kernel - so userspace has to cope with surprise events).
+> >> - Always on event signals.
+> >> - Limited numbers of general purpose event engines (the ADI IMUs do
+> >>   this as they tend to have 2 instances). Each engine can do anything
+> >>   but there are only two of them.
+> >> 
+> >> We also have more complex ones like mode bits that flip a subset
+> >> of events from one enable state to another.  There are some really
+> >> odd rules in some devices because some upstream filter that is needed
+> >> for 5 seemingly unrelated events has to be in a particular state for
+> >> subsets of them.
+> >> 
+> >> Anyhow, all in all event control is a mess of 'original solutions'
+> >> from vendors and relies on the (naughty) get out of IIO ABI that
+> >> just occasionally any write to any userspace ABI element can
+> >> change what is read back from any other.
+> >> 
+> >> Not great, but I've never come up with a better solution for events.
+> >> If anyone wants to have a go at architecting a filtering solution
+> >> a bit like the IIO buffer demux maybe we can opt in to it from
+> >> some drivers.
+> >> 
+> >> I am wondering if it is worth registering a driver specific tidy
+> >> up events call though that would disable everything a bit like
+> >> we disable buffers as part of the userspace tear down.  That would
+> >> close out some races sashiko has reported.  That project would
+> >> I think be a lot simpler to implement.
+> >>   
+> >This one needs a fixes tag, as do the other similar ones.
+> >Fine to just reply to each thread with the appropriate tag.  
+> 
+> Fixes: 22b46c45fb9b ("iio:gyro:bmg160 Gyro Sensor driver")
+> 
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+Note that I'll be rebasing that on rc1 (once available) before sending
+out a pull request.
 
-Applied patches 1-9 to the testing branch of iio.git.
-As mentioned, I think 10 needs a bit more review time.
-
-We may loose sashiko coverage. In theory you can tell it about
-dependencies, but I'm not sure how that works with a temporary
-testing branch.=20
-
-There are some notes on using message-id: tags in the cover
-letter in https://b4.docs.kernel.org/en/latest/contributor/prep.html
-
-I gather from the LPC session last week that sashiko should work
-with those now.
+Thanks,
 
 Jonathan
-=09
-> ---
-> Changes in v10:
-> - Fix sp3ling mistake in struct mma8452_data kernel-doc block.
-> - Swap ordering of pm_runtime and irq setup in mma8452_probe() to match t=
-he
->   order now used in mma8452_remove().
-> - Bail out on -EINVAL in mma8452_interrupt() when CONFIG_PM is enabled.
-> - Link to v9: https://patch.msgid.link/20260916-mma8452-open-drain-v9-0-0=
-dd24fa2f3d7@geanix.com
->=20
-> Changes in v9:
-> - Fix documentation of voltage regulator field(s) in struct mma8452_data
->   kernel-doc block.
-> - Fix a couple of nitpicks in struct mma8452_data kernel-doc block.
-> - Switch to STANDBY mode before writing to CTRL_REG4.
-> - Add patch fixing runtime PM bugs in mma8452_read().
-> - Add comment about handling of -EINVAL return value from
->   pm_runtime_get_if_active() in mma8452_interrupt().
-> - Fix for race between mma8452_remove() and mma8452_interrupt(), by calli=
-ng
->   free_irq() before pm_runtime_disable() instead of after.
-> - Fix mixing of guards and goto in mma8452_runtime_suspend(). Using guards
->   will be re-introduced later on, when mixing can be avoided.
-> - Link to v8: https://patch.msgid.link/20260907-mma8452-open-drain-v8-0-c=
-17407e22118@geanix.com
->=20
-> Changes in v8:
-> - Move patch 7 (with Fixes: ...) to go before the non-fixes patches.
-> - Rebased from v7.3-rc1 to current iio/togreg branch.
-> - Drop patch 8 (identical patch from Sanjay Chitroda already in togreg
->   branch).
-> - Add new patch fixing a strangely extra indentation of a comment block.
-> - Add new patch adding documentation for struct mma8452_data.
-> - Move patch 4 to last in series, and rework the synchronization between
->   suspend/resume and interrupt handler.
-> - Link to v7: https://patch.msgid.link/20260831-mma8452-open-drain-v7-0-2=
-2946812c928@geanix.com
->=20
-> Changes in v7:
-> - Use dev pointer directly in mma8452_runtime_suspend() also.
-> - Move struct i2c_client *client definition to patch 4.
-> - Drop patch 7 (Drop unneeded lock acquire on read).
-> - Link to v6: https://patch.msgid.link/20260825-mma8452-open-drain-v6-0-9=
-b252804ee80@geanix.com
->=20
-> Changes in v6:
-> - Prevent interrupt storm if runtime suspend fails to set the device in
->   standby mode by not setting suspended flag to true when failing to
->   activate standby mode and by ensuring PM counter is not leaked in
->   mma8452_interrupt().
-> - Don't acquire data->lock in mma8452_read_raw().
-> - Add fix for use-after-free in mma8452_probe() error path when CONFIG_PM
->   is enabled.
-> - Fix (brown paper bug) build error introduced in v5.
-> - Renamed label in mma8452_interrupt().
-> - Add patch to return -ENODATA when missing device model information.
-> - Link to v5: https://patch.msgid.link/20260819-mma8452-open-drain-v5-0-d=
-8aa590d7c36@geanix.com
->=20
-> Changes in v5:
-> - Squashed dev_err_probe() call to one line.
-> - Fixed typo in patch 2 title.
-> - Added synchronization between runtime suspend and interrupt handler.
-> - Link to v4: https://patch.msgid.link/20260812-mma8452-open-drain-v4-0-b=
-fca15d02b59@geanix.com
->=20
-> Changes in v4:
-> - Fixed interrupt handler to check runtime PM status before trying to
->   access the chip.
-> - Split open-drain support and interrupt sharing into separate patches.
-> - Added new patch to reuse existing struct device * through mma8452_probe=
-()
->   function.
-> - Print warning message when irq type is not set by firmware.
-> - Link to v3: https://patch.msgid.link/20260805-mma8452-open-drain-v3-0-6=
-149f406a409@geanix.com
->=20
-> Changes in v3:
-> - Reordered patches, swapping #2 and #3.
-> - Always add IRQF_SHARED flag.
-> - New patch to change it so IQRF_TRIGGER_LOW flag is only added when no
->   trigger type is set by firmware.
-> - Link to v2: https://patch.msgid.link/20260715-mma8452-open-drain-v2-0-9=
-5be9f5f4795@geanix.com
->=20
-> Changes in v2:
-> - Commit message of patch 2 updated.
-> - Operator precedence bug fixed in flags argument to
->   request_threaded_irq().
-> - Always check return value of mma8452_set_interrupt_pin_mode(), and just
->   check for non-zero value.
-> - Added new patch with optimization of struct mma8452_data ordering.
-> - Link to v1: https://patch.msgid.link/20260715-mma8452-open-drain-v1-0-b=
-1dd2a440c60@geanix.com
->=20
-> To: Jonathan Cameron <jic23@kernel.org>
-> To: Lars-Peter Clausen <lars@metafoo.de>
-> To: Rob Herring <robh@kernel.org>
-> To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> To: Conor Dooley <conor+dt@kernel.org>
-> To: Martin Kepplinger <martink@posteo.de>
-> To: Sean Nyekjaer <sean@geanix.com>
-> To: David Lechner <dlechner@baylibre.com>
-> To: Nuno S=C3=A1 <nuno.sa@analog.com>
-> To: Andy Shevchenko <andy@kernel.org>
-> To: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-> To: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-> Cc: linux-iio@vger.kernel.org
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
->=20
-> ---
-> Esben Haabendal (10):
->       dt-bindings: iio: accel: mma8452: Add drive-open-drain
->       iio: accel: mma8452: Fix use-after-free bug in error error path
->       iio: accel: mma8452: Fix runtime PM bugs in mma8452_read()
->       iio: accel: mma8452: Optimize struct mma8452_data member orders
->       iio: accel: mma8452: Only apply trigger type when not set by firmwa=
-re
->       iio: accel: mma8452: Fix unintended comment indent
->       iio: accel: mma8452: Add comment block for struct mma8452_data
->       iio: accel: mma8452: Allow open drain interrupt pin configuration
->       iio: accel: mma8452: Use proper error code when missing device model
->       iio: accel: mma8452: Support interrupt sharing
->=20
->  .../devicetree/bindings/iio/accel/fsl,mma8452.yaml |   6 +
->  drivers/iio/accel/mma8452.c                        | 217 +++++++++++++++=
-+-----
->  2 files changed, 177 insertions(+), 46 deletions(-)
-> ---
-> base-commit: e5b9e42a20392b669097c8c4aa09c3aed82ba10c
-> change-id: 20250401-mma8452-open-drain-81577c41375c
->=20
-> Best regards,
-> -- =20
-> Esben Haabendal <esben@geanix.com>
->=20
+
+> >
+> >Thanks,
+> >
+> >Jonathan
+> >  
+> >> Jonathan
+> >>   
+> >> >     
+> >> > >      
+> >> > >> bmg160_write_event_config() already ignores repeated enable
+> >> > >> requests, but a repeated disable request still calls
+> >> > >> bmg160_set_power_state(data, false), dropping a runtime PM reference
+> >> > >> that was not acquired for this request. This can underflow the runtime
+> >> > >> PM usage count and trigger a "Runtime PM usage count underflow" warning.
+> >> > >> 
+> >> > >> Return early when the requested state already matches ev_enable_state.      
+> >> > >
+> >> > >-- 
+> >> > >With Best Regards,
+> >> > >Andy Shevchenko
+> >> > >      
+> >> 
+> >>   
 
