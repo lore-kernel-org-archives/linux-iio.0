@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE22381C4;
-	Sun, 11 Oct 2026 10:58:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91E1E34216C;
+	Sun, 11 Oct 2026 11:23:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791716317; cv=none; b=K59V0PxUBJ0KA/Onr3m7pmXBTYV7kJWQYZiMLocHqh3c36UExku/h57hnIqhiqs4hfdTHzXvGsHYDIfpTZnhv2yqj9Wqid9VMgnachlIQF94gUUPOkSZWJizTuLjPyY1kriYSPX/gDG0q5xe2/HpXDQlhgxqJ6E+N5QYLIVghKg=
+	t=1791717837; cv=none; b=iVG8jMgCJ/HHZ61cY8vZ9Bfovb142UKJYNa7enCst7xeAQpOgfWl1kuHGHC0u6hSjeOORIDTakqBTPlO8kQT0s8OAkPwdyAZso9l5bW9BuEzcCxk4XDkxdl96KPa5qfx7wVBWFllLlSTc+GOMldMCF5JnVG2x+KlN/hHFkmEqA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791716317; c=relaxed/simple;
-	bh=VODYpi1XYKmnEbGob1l+TvrDIwgSeiP34nKOms6fFl0=;
+	s=arc-20240116; t=1791717837; c=relaxed/simple;
+	bh=CCferC2my1KTfiRlvoMZHvwLRRPxthwclodKSDzPpAo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CmdKWC39bRZUoMxTRRyfbzD+54O3HP/ZYaPZAVJZK0wKMrR/MwAjI6oq6wo+qDKHYTs29SgUfgGKSQSvIAwqJ0oTr/1f579h9+O6g8mKzudnLr5bNiAWf/PrpUbEO/lh2j0ZMxGPPhMzovdkji+PV/yxIexyKRj9LHw0a0C7HTM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XQ7ayNtw; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=YDtp4wOfEku1dCgwbZES4m6tOaCiDGZzDug4i1JKI2yJsIi9HjhjtELmvXwl3GqYhcBB73JaUwH19ZePG3/29RC98XfKzKEWVvBsG3dX53X6cukk7Uz5II0eV6PypkIN2rpnbqztHVb2lC8JOxrP7T3zHhIQiXheGdEjwofbxD0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SJNe293a; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XQ7ayNtw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F04271F0089B;
-	Sun, 11 Oct 2026 10:58:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SJNe293a"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE501F0089B;
+	Sun, 11 Oct 2026 11:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791716315;
-	bh=QxPFtbSGT88PrUpZjN4DrJAXdWkZp0N0O1SltjxvujI=;
+	s=k20260515; t=1791717836;
+	bh=B+sTImV2OzP8xPaKYq6APrxAM++DsSPbzV5A+zRS8LM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=XQ7ayNtw61qRElejGpsN9r5WjXlhAbRKDp/xRKp5yUqcc4DgG0JSHsXS0JOoP9tGJ
-	 vE7BniXOBd8HWNy+On/I0Jb8gxZ1WC3rKJQmhjbbDrBqYeNkTeeujnvofCFJVY7C5P
-	 K2zQ9bki1OjLhb/uVaG8QF+KQJr4svNxSYM/VXBgslrzby10QQJfQjhAjgALYz+YWB
-	 wsEokZ5KtwvfdgoSgrZ9+OYsqH6FJwIvDneR2mTKy35yTILZAKu35X05rruSnuiO4q
-	 zzEun2oCqgzKUWP4751WREq/9ofwbgtj/zcPf5gjYnEpKUl5oMkCBVj1FTUVIr0mmv
-	 pyC3SuAv4RXpQ==
-Date: Sun, 11 Oct 2026 11:56:43 +0100
+	b=SJNe293aduo2+L1Mk5AtkOLI/nly1/xtEXT5TJzcVm4ZKK53bk/QdPzSXAQIB2/xT
+	 WlCLamXGF7Q58nK9UxPnz3wXU8f56eXM+Yhpev+JVmNw4wSDfIZKAccjO1GPcSOZa3
+	 v2Ikz5wTGi3UTdyS/pMgxgGeQy9kR9Zqb9xtpe0wAnlZAa5QiO1mEzbToda7XPbeWc
+	 9yt+hSFBPrvrMwQX/8A4biO8vWdPFSRg/95BrT/QMAc1ZiibsDHjsDuf7P582PfEs+
+	 vXrNARNRHy8IhTE6CIdtsCAtbVNUiJ8BSkZwJE2GIYaEowSuREaBtSxqiNY1jy31E5
+	 ip9cGduAiErxg==
+Date: Sun, 11 Oct 2026 12:23:30 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sanjay Chitroda via B4 Relay
- <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Cc: sanjayembeddedse@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jiri Kosina <jikos@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, Benjamin Tissoires
- <bentiss@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, Zhang Lixu
- <lixu.zhang@intel.com>
-Subject: Re: [PATCH v6 00/14] HID: iio: Introduce devm_ APIs for HID sensors
-Message-ID: <20261011115643.54dd6aab@jic23-hlaptop>
-In-Reply-To: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
-References: <20260919-28-apr-iio-redundant-argument-v5-temp-v6-0-d577b2371b3c@gmail.com>
+To: "jiale yao" <19888972804@163.com>
+Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "David Lechner"
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, "Stepan Ionichev" <sozdayvek@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: bmg160: reject duplicate event disable
+Message-ID: <20261011121422.5c7078ff@jic23-hlaptop>
+In-Reply-To: <5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
+References: <20260925140956.2254877-1-yaojiale02@163.com>
+	<araCndRmAqnX1K9k@ashevche-desk.local>
+	<6b2f4eef.1cf6.1a0d8fc9ac6.Coremail.19888972804@163.com>
+	<20260926020133.3699a786@jic23-hlaptop>
+	<20260927181632.76bc1eda@jic23-hlaptop>
+	<5d8fc46a.89bc.1a0e7525da7.Coremail.19888972804@163.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,116 +52,105 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 19 Sep 2026 16:06:23 +0530
-Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org> wrote:
+On Mon, 28 Sep 2026 17:22:09 +0800 (CST)
+"jiale yao" <19888972804@163.com> wrote:
 
-> Following feedback from reviewers and Srinivas, v4 series was split
-> into two additional sub-series to perform cleanup and preparatory work
-> before adding devm support:
-> - HID: iio: warning clean up and prefer kernel coding style
->   https://lore.kernel.org/all/20260707-15-jun-hid-iio-alignment-v3-0-8791574ad0fe@gmail.com/
-> - HID: iio: basic clean up for usage_id
->   https://lore.kernel.org/all/20260610-6-june-hid-iio-correct-usage-id-v2-0-c3c5f0720493@gmail.com/
+> At 2026-09-28 01:16:32, "Jonathan Cameron" <jic23@kernel.org> wrote:
+> >On Sat, 26 Sep 2026 02:01:33 +0100
+> >Jonathan Cameron <jic23@kernel.org> wrote:
+> >  
+> >> On Fri, 25 Sep 2026 22:33:48 +0800 (CST)
+> >> "jiale yao" <19888972804@163.com> wrote:
+> >>   
+> >> > At 2026-09-25 22:18:05, "Andy Shevchenko" <andriy.shevchenko@intel.com> wrote:    
+> >> > >On Fri, Sep 25, 2026 at 10:09:54PM +0800, Jiale Yao wrote:      
+> >> > >> The IIO core does not filter duplicate writes to the event enable
+> >> > >> attribute.      
+> >> > >
+> >> > >Can it be done there once for all?      
+> >> > 
+> >> > I don't think the core can safely do this generically, since it doesn't own
+> >> > the per-event state and read_event_config() may reflect shared hardware state.
+> >> > 
+> >> > The runtime PM accounting is driver-specific, so handling duplicate writes in
+> >> > the driver seems safer. gp2ap002 does the same in commit 579c049b4cb6,
+> >> > refer https://lore.kernel.org/all/20260720193911.74919-2-nikhilgtr@gmail.com/    
+> >> 
+> >> Exactly right.
+> >> 
+> >> Event handling in the core would indeed require complex mapping of
+> >> what can actually be enabled on a given device. Some of those we might
+> >> be able to represent with simple approaches similar to what we do
+> >> for avail_scan_masks for buffered channels but it is hard to generalize
+> >> and FWIW that concept still misses some corner cases of channel enabling
+> >> where drivers have to apply constraints in the actual buffer enable.
+> >> Those are rare enough that it isn't too much of a problem in practice.
+> >> Probably fine on 99% of drivers.
+> >> 
+> >> Events have simplre cases like:
+> >> - 1 enable bit turns a whole load of events on (we don't filter in
+> >>   the kernel - so userspace has to cope with surprise events).
+> >> - Always on event signals.
+> >> - Limited numbers of general purpose event engines (the ADI IMUs do
+> >>   this as they tend to have 2 instances). Each engine can do anything
+> >>   but there are only two of them.
+> >> 
+> >> We also have more complex ones like mode bits that flip a subset
+> >> of events from one enable state to another.  There are some really
+> >> odd rules in some devices because some upstream filter that is needed
+> >> for 5 seemingly unrelated events has to be in a particular state for
+> >> subsets of them.
+> >> 
+> >> Anyhow, all in all event control is a mess of 'original solutions'
+> >> from vendors and relies on the (naughty) get out of IIO ABI that
+> >> just occasionally any write to any userspace ABI element can
+> >> change what is read back from any other.
+> >> 
+> >> Not great, but I've never come up with a better solution for events.
+> >> If anyone wants to have a go at architecting a filtering solution
+> >> a bit like the IIO buffer demux maybe we can opt in to it from
+> >> some drivers.
+> >> 
+> >> I am wondering if it is worth registering a driver specific tidy
+> >> up events call though that would disable everything a bit like
+> >> we disable buffers as part of the userspace tear down.  That would
+> >> close out some races sashiko has reported.  That project would
+> >> I think be a lot simpler to implement.
+> >>   
+> >This one needs a fixes tag, as do the other similar ones.
+> >Fine to just reply to each thread with the appropriate tag.  
 > 
-> Both series have been merged into IIO tree. This series introduces
-> device-managed APIs and converts HID IIO sensor drivers to use the new
-> devm-managed resources.
+> Fixes: 22b46c45fb9b ("iio:gyro:bmg160 Gyro Sensor driver")
 > 
-> checkpatch reports a "suspect code indent" warning on the DEFINE_FREE()
-> declaration, but this appears to be a false positive caused by the macro
-> expansion. The code builds cleanly.
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+Note that I'll be rebasing that on rc1 (once available) before sending
+out a pull request.
 
-I forgot to ask Jiri / Srinivas for an ack for the few bits going through drivers/hid
-(more generally always good!)
-
-Given this has been around a while, I'll queue it up on testing for now
-but am happy to add tags if anyone does have time to look as I'll be rebasing
-on rc1 anyway in a few weeks time.
-
-Thanks
+Thanks,
 
 Jonathan
 
-
-
-> 
-> Changes in v6:
-> - Following input from Andy rectify kernel-doc for return
-> - With input from Jonathan used devres framework implemetation with
->   cleanup helpder to reduce complexity and resource allocation.
-> - Link to v5: https://patch.msgid.link/20260806-28-apr-iio-redundant-argument-v5-temp-v5-0-f1f92c1d830f@gmail.com
-> Changes in v5:
-> - With input from Jonathan, convert all HID IIO drivers to use
->   fully devm instead of partial or specific API; this is potential
->   goal and validation on that will reduce multiple validation cycle.
-> - Rebase changes on latest iio/testing tree and resolve merge conflict
-> - Resolve mail client issue as v4 series was splitted into sub-series
-> - Link to v5: https://lore.kernel.org/all/20260524192059.1193716-1-sanjayembedded@gmail.com/
-> Changes in v4:
-> - Extend the series to cover remaining HID IIO drivers with devm API usage
-> - Reorder patches to place cleanup and warning fix at beginning and,
->   devm-related changes toward the end based on feedback from David
-> - v3 series -> https://lore.kernel.org/all/20260509101040.791404-1-sanjayembedded@gmail.com/
-> Changes in v3:
-> - Added cleanup and prepratory changes before adding devm_ API
->   conversion based on self review: 0002, 0004, 0006, 0007 and 0008
-> - Address andy's review comment on commit message and coding style
-> - v2 series -> https://lore.kernel.org/all/20260429175918.2541914-1-sanjayembedded@gmail.com/
-> Changes in v2:
-> - Following input from Jonathan and Andy, squash initial patch v1
->   series in single change as individual change should not break anything
-> - Add devm API support and two driver using the same
-> - v1 series -> https://lore.kernel.org/all/20260428071613.1134053-1-sanjayembedded@gmail.com/
-> 
-> Testing:
->   - Compiled with W=1 for each patch in series
-> PS:
-> - Sashiko reported an issue in a different driver and noted that it is not
->   introduced by this series. I have taken this feedback into account and
->   will address the actual issue in a separate series focus on that driver.
-> - Following input from Jonathan, will prepare followup series for
->   HID IIO drivers to consistency support for logs in probe() path
-> 
-> ---
-> Sanjay Chitroda (14):
->       iio: hid-sensors: remove unused iio_dev argument
->       iio: hid-sensors: introduce device managed API
->       HID: hid-sensor-hub: introduce device managed API
->       iio: gyro: hid-sensor-gyro-3d: convert probe and teardown to devm-managed resources
->       iio: accel: hid-sensor-accel-3d: convert probe and teardown to devm-managed resources
->       iio: humidity: hid-sensor-humidity: convert probe and teardown to devm-managed resources
->       iio: light: hid-sensor-prox: convert probe and teardown to devm-managed resources
->       iio: light: hid-sensor-als: convert probe and teardown to devm-managed resources
->       iio: magnetometer: hid-sensor-magn-3d: convert probe and teardown to devm-managed resources
->       iio: orientation: hid-sensor-incl-3d: convert probe and teardown to devm-managed resources
->       iio: orientation: hid-sensor-rotation: convert probe and teardown to devm-managed resources
->       iio: position: hid-sensor-custom-intel-hinge: convert probe and teardown to devm-managed resources
->       iio: pressure: hid-sensor-press: convert probe and teardown to devm-managed resources
->       iio: temperature: hid-sensor-temperature: convert probe and teardown to devm-managed resources
-> 
->  drivers/hid/hid-sensor-hub.c                       | 35 ++++++++++++++++++
->  drivers/iio/accel/hid-sensor-accel-3d.c            | 40 +++++----------------
->  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 21 +++++++++--
->  .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 +--
->  drivers/iio/gyro/hid-sensor-gyro-3d.c              | 41 +++++----------------
->  drivers/iio/humidity/hid-sensor-humidity.c         | 38 +++++---------------
->  drivers/iio/light/hid-sensor-als.c                 | 39 +++++---------------
->  drivers/iio/light/hid-sensor-prox.c                | 40 +++++----------------
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 41 +++++----------------
->  drivers/iio/orientation/hid-sensor-incl-3d.c       | 42 +++++-----------------
->  drivers/iio/orientation/hid-sensor-rotation.c      | 40 +++++----------------
->  .../iio/position/hid-sensor-custom-intel-hinge.c   | 38 ++++----------------
->  drivers/iio/pressure/hid-sensor-press.c            | 41 +++++----------------
->  drivers/iio/temperature/hid-sensor-temperature.c   | 39 +++++---------------
->  include/linux/hid-sensor-hub.h                     | 26 ++++++++++++++
->  15 files changed, 175 insertions(+), 351 deletions(-)
-> ---
-> base-commit: 9c464e7473f762cee4c031a09da04f65a1c65d49
-> change-id: 20260603-28-apr-iio-redundant-argument-v5-temp-4e49eed863af
-> 
-> Best regards,
-> --  
-> Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> 
-> 
+> >
+> >Thanks,
+> >
+> >Jonathan
+> >  
+> >> Jonathan
+> >>   
+> >> >     
+> >> > >      
+> >> > >> bmg160_write_event_config() already ignores repeated enable
+> >> > >> requests, but a repeated disable request still calls
+> >> > >> bmg160_set_power_state(data, false), dropping a runtime PM reference
+> >> > >> that was not acquired for this request. This can underflow the runtime
+> >> > >> PM usage count and trigger a "Runtime PM usage count underflow" warning.
+> >> > >> 
+> >> > >> Return early when the requested state already matches ev_enable_state.      
+> >> > >
+> >> > >-- 
+> >> > >With Best Regards,
+> >> > >Andy Shevchenko
+> >> > >      
+> >> 
+> >>   
 
