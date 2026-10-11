@@ -1,125 +1,143 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out203-205-221-209.mail.qq.com (out203-205-221-209.mail.qq.com [203.205.221.209])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B03913314D2
-	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 16:59:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CC782DCF57
+	for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 17:02:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.209
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791737991; cv=none; b=D/XhPJ7cb0/JHoh43HpVEVlpHl6ztjoQKQ9SWhJ4Gfn4TiPlFOlgZhhJNDqSEJTAkobvfOlHS2vPITKnHvGNHrJKRBbK7lv4dClFTzTEmr37PaphO4ZRJ7Skt3d7AqitfZws7/k2eZekqjfrR8IkMMlfU+ViZs3OVk7wEns7LYc=
+	t=1791738177; cv=none; b=Tw/euyR64dVrUGakWwH1qtu/DN7rtxwoUwuoN8GCHsFfxCLsF30JfD7sDO20tdPBPamygyET9YQ+C3XcUNOJtPabMIZrxkEzqHGXscJMKNE5bbLZIr+AiqIVL/YSrO0VSLPQEcKtkRhYJBdQZ8jsVsxk2Ns5/CmATJuoQF72RcQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791737991; c=relaxed/simple;
-	bh=zzX+bR/bpZKQ81jw3RUBBGETlg6PdarFM/AeCbAvceU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mr1EZj/acNHHDFEjJNpw8ZOxbu5HMc5mTYZtudM01U1T2raM5nawohWZRQ5NAr45hKvtMiJguTO3WZD+Z2TBeBmZlL4pP5A0AuJhatr+JWTfQcSVzJEKKk0324IloK7AtAgI9gdmr6BMzrCkM69/xfOneAZVKZ4sijSulfbhK+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kfqcPhWa; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791738177; c=relaxed/simple;
+	bh=9ONPgr/gpjxCtQixO2VzPZJAO4u9D9WuILPmVGmZ2c4=;
+	h=Message-ID:From:To:Cc:Subject:Content-Type:MIME-Version; b=Ta5Esa0fsBYGg3z5/fVwuPzGIB6fE/1ZN0ilbq8LvHI6MPxyhtqEPZAJrUgriTjG+mWTYBqp+UzTKZnu6GIbBF4Shhtw4S4lxpUn26d/KBfBVumCGSi0dVKuHwUsDxb6D7xst/qqGjW3bMOw4otqHTR3/nsJvpaoDITAqr9ymhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=a3M2D7GS; arc=none smtp.client-ip=203.205.221.209
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kfqcPhWa"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a1688d7769so9605795e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 09:59:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791737988; x=1792342788; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=K5RXedlLBJ3gV51QO7vHiNXtLHjWPUcDaWUWiW5a/LE=;
-        b=kfqcPhWa1Ssq8wZOpxpsY/ZeLK4Ylyi6TCz2lWj6ZhUw8kSdANLNIUhz+cpmNe/9OJ
-         CdE0+QUP1ekkl6xJ629PtbMpsOCEJJ87cX1PqEqLmYrVCUkiGM0JzSj7XI4t3d+IJlqW
-         VTV7tfG/Lxppkw67g09VRmgPxiPQ3aCK/87TY9uNjrjGcy8c4HSgsc3YO4lCtronnPn3
-         sOu/ky8V7uPFgPHpf61zndcJsAWS7idodJjghkqngKiA2igtUUcSQE2Fgt6+SNGF44HY
-         wCjgvYUHlvgZSraRHq/DuoGKETOxASwCBcnRuzntsu4cUh9jZxGQlSiMBBQre1R15i1D
-         /Hzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791737988; x=1792342788;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=K5RXedlLBJ3gV51QO7vHiNXtLHjWPUcDaWUWiW5a/LE=;
-        b=1n3MyaG83MO1cXiXc7S27B+fdRSY89aH2wPxuLFanHg3/AL/IOv8yoOiIL7lBwjqoA
-         Tg4m3G8Q8J2UWSsZS1XXS4PyBO5OhTUuDz++d7EjbKMJwybiKt8NDphlP4hHd6wFnmlP
-         OCR+I3Zelr6jBp3lioDeaCU3vT/MwCP0NYZ8SQM+6m2A+mCscGba0J3a4eY+ILtmMXFu
-         JMG0b9B1lLKQYzK/XdvWbBWKm+5v7yCF/ZM5CuoKWNQj7VGHiKiYDHTQpePWZqJZy1oA
-         fgIX/qnFKy0XJ0NrUb/gGp1x8HXC0b3Mao71ZZS8VMbPuMGn+kB8AzsVaAEgD3D9wcSq
-         YCYA==
-X-Forwarded-Encrypted: i=1; AKwUvBxczjRPv8QIcvd2f/F/47rXFyeDpE+aZM965Ye31dGa5srSRsJxWo7npQbE/FBR5budDlII+Zli5BQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJOiFKdJ2oYNv9HLDvx2GOkHKpJyiIJJSsFV3MykGjOTNKTzh2o
-	aoMfsFGa0d0qsm6MVT1HOXSRwhy+A1eyAkvSkRRQO2ahsIL9QcqNwtui
-X-Gm-Gg: AYBFou3jzWqtScN3JEz5JaAvf7XNZBDfy5FQZm7PCdom8yqVtWwYNEayPc4i5B8xLJZ
-	P/4LuiAjjrXHicw34BMpLpgqajVCqNUghxQofIvhBMN5NY2HtYlPIUX29FLajgGsOvj1h7MLJAn
-	tDOJkAFn7CaumVx1Hk4EnEATvDzk9j03QW10kCm3AY1gfn9x4/uoW/JV8KCj9ubQCglYmqTZuwB
-	3n61ZPNuVgWL+TM1VTgub3cghV6OS0yW+zGiGd/9neuNb67u64V0LDZ9Fx5+tuIzODiDioauoWV
-	qmb4vfXLxPtuqyAdNE4HaawwYC88djGdRHUbt7PeQf1pwnDLampP1pZGnwpq+7YggLkwvMXcNLL
-	b9Mnj3ZzbK6gTJ0XyHYgRhAgqNdwwAMZgaWK49mWXQXTSIEVz/imMQOXhNUQm90yitTix61OjnN
-	LYB9m9u+boywtI9olxWXWHrdNTaFSlpGQ+XAkatHgerCX9WVLoFb4TqVTLRKeus4aiWOA8w4wun
-	K78Mmehc+jHeJXb8gLsTRLFDVWRfrlR9mHB35aIg1jBVZWegLgxl75JKNg2jZzKDoSfQxxY15CG
-	Vs9h0wr8da8ZZ6SiBYMtPw+NIi2r2iIHHjOfs1/UcRMZz4vFMNNbxL7QwTG/mavG0PThyFjC2TR
-	mvFWmT7e0OgyFIfo6n02UeMy41DbQ5RY=
-X-Received: by 2002:a05:600c:3d96:b0:4a1:76dd:8c57 with SMTP id 5b1f17b1804b1-4a18e4bed95mr121487985e9.24.1791737987931;
-        Sun, 11 Oct 2026 09:59:47 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18c1e33d2sm305431435e9.0.2026.10.11.09.59.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 09:59:47 -0700 (PDT)
-Date: Sun, 11 Oct 2026 18:59:45 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: =?UTF-8?B?6LW15paH5by6?= <berringtoni36@gmail.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Lothar
- Rubusch <l.rubusch@gmail.com>, linux@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: accel: adxl345: propagate errors when reading
- event configuration
-Message-ID: <20261011185945.0673cd1e@systembl0wer>
-In-Reply-To: <CAF2O-sO1YuVQWLoNT4mRN2+mzFOG-WdQ5Nt80s1k+7PP8QUtFQ@mail.gmail.com>
-References: <CAF2O-sO1YuVQWLoNT4mRN2+mzFOG-WdQ5Nt80s1k+7PP8QUtFQ@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="a3M2D7GS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1791738170;
+	bh=nQ8jvkhkfh+zsIkDAoAzZ3t3md421lAlMwQ2h0BPD5g=;
+	h=From:To:Cc:Subject;
+	b=a3M2D7GSF8msLm9Yu+mVOIP/nhsPfZO0nOSmugRnZIUtPoqtc4qgBy7nm2ZNC/J4D
+	 mOD+T8fk7VGQkSm96WNHFSmJ7XERxgkEQ0WiaOrn8/hqgbOJMnTuj8G4d84wQg4wFB
+	 AwIZMmHKwQmSfhrcOFc8f711qalB4bNEQBgiNc/I=
+Received: from [127.0.0.1] ([112.224.162.161])
+	by newxmesmtplogicsvrszb51-1.qq.com (NewEsmtp) with SMTP
+	id AFB9C1E; Mon, 12 Oct 2026 01:02:47 +0800
+X-QQ-mid: xmsmtpt1791738167tc9rr930o
+Message-ID: <tencent_27A2DA110A464EC41673E7C2217844837C09@qq.com>
+X-QQ-XMAILINFO: N0KWS97VikCl4oJJ1vM5EysMKk51pGnR5ajTun8pU3CS98Mc8mP6bf0iqOeQkU
+	 3EZPbSWG7Y+Ipg611sSgVltNfUTtibHGckJ7ebWnV9IZ9w3TkUKCzqGlzeXlv3V3pG+az/VXkk/0
+	 m1VgZNs8owwGc1OrwfZTCKBF93BUvsZqMXeXM3pPXvRKuQEOQgeVu3XQc9r6LzxBtHLCxMz1e83x
+	 /dhVV0K9ckpAJGtoWlJKQmHUaoMWdCF3qYS1H1YnrkAqbn5KP8mHFBbMpiyOmNF8tFGivD7G8RR8
+	 hm7qVWKUocgaYBw6+MLiqbe5y0ofCuPd1YSr8Ryo0Qy6vtZP4o6vCkBtX/zvVx+yDWBkdxtqrhgK
+	 uClGj37KmjE0VLd/zeTvxAJYBb04WDyMOCGFcGldPB/1GCQDZfl0zNtywNaHU6nkcG5cKiSgvaCh
+	 bjVAOssGCjVUUfe5uy/zIbZFRilT20OpM1gQWGZBJLBb2daXlwfT2NKhkxcPK/SzyNDN/MyhlTNy
+	 JWck3PbXYXdSsoT1ce6iVre37/WuKhnYCrBLGuHYSHbJDjTs6zq131KsybBCyxpkTZLBVFs6ruSo
+	 J2hj3lvX9COvDb2KtcNzAwt5hVBA9JTIr1NhAJGtQ6dCVPoCMKtgb0NogKLUPeuMIN4aUo7OzsYJ
+	 MYE+sEazRhspjVPIvSGQLg2tQn59kMSh+HxwB6a/lasjVdgrSl2wOB8riKdN5c8yvhyzeOe2u8gD
+	 Xq34sf7vKGuRqthV/ilfwQ7Z3KydGCDYFnJUvP/hkum3JGOIE4siGlLkT1zVeE8KOObqv1n1T/FD
+	 /oDBKvdBk+Jg03Y1p0R4wLRe52z+N+Ppx6Q4/nVrOQC0BhjWBGv3EW2VqPXUmpAXGgldUBGK/Xx3
+	 oSP7hj2FpVRJLn2yNCwfiWf7G7IdA0g7TbMRJpDjhcaGyOMYqGGh9BwYjFUnHX8rdVAOEqcqpuwQ
+	 55/IhI2jwej8qklMY9uvYlMuewYNKg/QCt681bxyUkC9cWbAx7KMgA+/beLbev4zQiNQrNlNyoIe
+	 vCy98ho2At3PSTACqdNljMnfsuwRhNYSpLRN9ksXs+U3l/6IrnmfAD9wqBrXVd94xQKYmSmzw5sM
+	 jD77+c5AsJ52IFovIQppCd/cW9TL30glC1pihd6xbyRaY5mUOnrg34Mbb2WbHgOKhCLx/xgt1Org
+	 7z76o=
+X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
+From: Zixin Wang <ywp1023456@foxmail.com>
+To: Kevin Tsai <ktsai@capellamicro.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+ Nuno =?utf-8?q?S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: [PATCH v2] iio: light: cm32181: add support for the CM32183
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 
-On Sun, 11 Oct 2026 02:15:41 -0400
-=E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com> wrote:
+Add the device ID for the CM32183. The device has the same register
+layout as the CM32181.
 
-> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345=
-_core.c
-> index 6c9080d..5983fc7 100644
-> --- a/drivers/iio/accel/adxl345_core.c
-> +++ b/drivers/iio/accel/adxl345_core.c
-> @@ -1176,9 +1176,9 @@ static int adxl345_read_mag_config(struct
+Signed-off-by: Zixin Wang <ywp1023456@foxmail.com>
+---
+v2:
+- Shorten the commit message and move the detailed rationale below the
+  fold, as suggested by Joshua Crofts.
 
-This patch is corrupted - I assume the email client you're using added
-a hard break here, therefore it fails to apply :(
+v1: https://lore.kernel.org/linux-iio/tencent_C2E579008244A394105247CCC4787391C209@qq.com/
 
-Additionally, you didn't use a cover letter, so patch 2 appears as a
-reply to patch 1, which may break tooling.
+The CM32183 is another member of the Capella CM3218x ambient light
+sensor family. Its device ID register (0x07) returns 0x83 in the low
+byte, following the same scheme as the already supported parts:
 
-Please use git send-email to send patches to prevent these issues.
+    CM3218  -> 0x18
+    CM32181 -> 0x81
+    CM32182 -> 0x82
+    CM32183 -> 0x83
 
-> adxl345_state *st,
->  {
->  	switch (dir) {
->  	case IIO_EV_DIR_RISING:
-> -		return !!adxl345_is_act_inact_en(st, type_act);
-> +		return adxl345_is_act_inact_en(st, type_act);
->  	case IIO_EV_DIR_FALLING:
-> -		return !!adxl345_is_act_inact_en(st, type_inact);
-> +		return adxl345_is_act_inact_en(st, type_inact);
->  	default:
->  		return -EINVAL;
->  	}
->=20
-> base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
+The driver falls through to the default branch of the ID switch and
+returns -ENODEV, so probe() fails even though the device is present and
+functional:
 
+    cm32181 i2c-CPLM3218:00: cm32181_probe: register init failed
 
+This was observed on an H3C MegaBook 14 (Intel Core Ultra 5 226V, Lunar
+Lake). Its DSDT declares the sensor as:
 
---=20
-Kind regards,
-Joshua Crofts
+    Device (LSRD) {
+        Name (_HID, "CPLM3218")
+        Name (_CID, "CPLM3218")
+        Name (_UID, 1)
+    }
+
+on I2C at address 0x29, and additionally provides the vendor
+initialisation and calibration objects that this driver already parses.
+CPM0[0] reports a device-id of 32183, and CPM1 provides lux_per_bit =
+2200 and calibscale = 265859.
+
+Treat the CM32183 like the CM32181.
+
+Measurements on the above machine confirm the register layout matches:
+the power-on value of the CMD register (0x0001) has bit 0 set, which is
+CM32181_CMD_ALS_DISABLE, and register 0x04 is the ALS data register.
+With this change the driver binds, the ACPI-provided initialisation
+values are written and the CPM1 calibration is taken into account
+(in_illuminance_calibscale reads back 265859). The reported illuminance
+tracks ambient light without saturating.
+
+Please Cc me on replies, I am not subscribed to linux-iio.
+ drivers/iio/light/cm32181.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index 2590fc8..97882e4 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -54,7 +54,10 @@
+ 
+ #define SMBUS_ALERT_RESPONSE_ADDRESS	0x0c
+ 
+-/* CPM0 Index 0: device-id (3218 or 32181), 1: Unknown, 2: init_regs_bitmap */
++/*
++ * CPM0 Index 0: device-id (3218, 32181 or 32183), 1: Unknown,
++ * 2: init_regs_bitmap
++ */
+ #define CPM0_REGS_BITMAP		2
+ #define CPM0_HEADER_SIZE		3
+ 
+@@ -200,6 +203,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
+ 		break;
+ 	case 0x81: /* CM32181 */
+ 	case 0x82: /* CM32182, fully compat. with CM32181 */
++	case 0x83: /* CM32183 */
+ 		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
+ 		cm32181->als_it_bits = cm32181_als_it_bits;
+ 		cm32181->als_it_values = cm32181_als_it_values;
+-- 
+2.39.5
+
