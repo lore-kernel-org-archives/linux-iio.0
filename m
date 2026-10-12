@@ -1,85 +1,90 @@
-Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 770B44E73CF
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 21:55:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99280472083
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 22:03:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791842130; cv=none; b=fXJMYTOtPMF3ma4GyuU6UZb84gbhjIA1Xxis9USQBTuqdc3qKJ6NZHppzHczxKJtQiW5rhJRP9g3413Y7pOlbKQxZt9W+HVyPZXvsbEolTRR+XaSXMtjO4NKkwvwjcBYpbAzzKwM8VYzEopyRkjzy/wP62oQcAUVcfdsM6uTYRc=
+	t=1791842601; cv=none; b=g+I02qferAXRKtasVJtipds/sKdYOGcMAWBL8xhifGfVjWk5v9pXCsShie1HLFVcMZHO96pUwwKSYd780ajDTB1uwswwaAavp41oCjc1ZQwusmEcSkOjHvePffmTILTmJxaJYauqB5NpSZPO0qOjTjZzlTPUT7hcUfUJlMEVJm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791842130; c=relaxed/simple;
-	bh=v7mSnixZGMtaMz8xX1r2GGHZjopVTLHny2iDACGM2iU=;
+	s=arc-20240116; t=1791842601; c=relaxed/simple;
+	bh=ccgkcMBRb8nQz4mhj6wRp6JfLsMEvJb70e/Z6xow5TU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ltdxGMZuNVbW0zn95grBYNhikxySoav0Z3Tv55Y4JB8Q71m4nGnGIyvtcklBdVwEojKWH8e/8FdNX4J3icYODrSPrNbNaYl5ckSBTYzhTxgEQ+BlBo86JolqTGcCvS5qvyR9cZbTTC3z/Mv9BopWudCN1utwIcy9XfnTq1wm0O0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WoPWWc5z; arc=none smtp.client-ip=74.125.82.177
+	 Content-Type:Content-Disposition:In-Reply-To; b=VqhYZR+/08jcGU/1ezbdlHWO9/Wot45AQq2aTE82c4hcGGUKgYfD4AW/rarRehphZBLCZs7GgVjxdSihtJZvPWPEyiVA6ytl+NGktrgT/iXaxA6mroP6lwvzID36ByTuqzG4hOPGRGu5aAbNHKhE7nxQwyKQvK+BggvJeObhS3s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VFtjTjSP; arc=none smtp.client-ip=74.125.82.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WoPWWc5z"
-Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-353804b591eso3909475eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 14:55:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VFtjTjSP"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-353804b591eso3918078eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 15:03:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791842127; x=1792446927; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791842600; x=1792447400; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kbVgtJX2q8ylQI0zobsXx8l1hr9HiDdvcbYq5xBa+EA=;
-        b=WoPWWc5zM6PBxHQn64cGSZEAn0SOe8cirC7Gdh6qQofC2tVqz+PrkISD46hVEKYB2m
-         QXKUxOl1tGr5fAaCTgd23MkQi+DcUubTEkTb+R9iUoUmi9Q2eapYk0/gaSCr+21UdmKa
-         /bTe9s0GabJIzzi2OUh9f5SgvBgk1q7U9mIrUetN4sNZZyoRJOjpksNEsx2/r+KPixIc
-         v7Jp0ZZwJK7gx22H5w31ZOgNCGymyiDzC0mJnfvN++qgIesDw2RGCKh6N9rm4YjWMKKo
-         9+wTu2YoZKyqH2kt1Zs7aDV8R6mCjCAI8M6ldtds9pEqknmMwKOhuwkzDJcmGYFDHm4b
-         X1IA==
+        bh=NJs555dn0Hiily+4pUme4Llz0sW3A4Uyn/JQ8PM2fk0=;
+        b=VFtjTjSP7l5j2UcUmy2yqHKzg8gTccWrP0jJemfQwFfn06TW4iyHY5WMXmn7P+AIJk
+         kUNE7hgjFnseNrDmb8lgxKixeJYIHpWkQYbsAP1AdG+xq+otdvPIjfSi9RymNG4pT3R9
+         8Cx3HuYUlzgpmenu8TGnfNRYAB+Zuc2kWxKvtd9vYpgzsg8ijLqtc87EMQqqte8ARNpL
+         PQpXsD2pW2OZyOGQIGW6MP8I2gE5w9mSWG/iHACrR0NFvV589dijuQ+1Gv+Bb+bHZgJT
+         b6OAZRyIqIRPHcPZiKm69rw9uOoub5GHceZGvLHxs4NDYs2j0fDgjZ8ZPkD7a6pWSwct
+         VIiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791842127; x=1792446927;
+        d=1e100.net; s=20260707; t=1791842600; x=1792447400;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=kbVgtJX2q8ylQI0zobsXx8l1hr9HiDdvcbYq5xBa+EA=;
-        b=mxAmB71U5oiUeVdP7C3hxlBsisYibxSySaO/c2tRi1/ixUmz7HHaPM1Fgonq4XR8LH
-         OpXxPHxONl6DnXUJHaaTROaOJMs1PlIHBn1EQyPE4O4KimU8ydNwA9jIxrZhtsXoB0zk
-         /zGO5FvKotJIVNntLUdxQi4T3AeqsMoLfE8IHjVz/oD1C3Kla4y4n7SKYvYJPy38dH7L
-         nqXzrtut5xJxdGGjHUJij6kAf2ELksWzp264obJvT+M62VDc8W9uV3Jr/IeNj1r4pghX
-         uwQKmLmjIuMQ/ICDCS8rAp6xqxZmi3PmYW6UF+b4M1Q+PipDPvlIhRwwy+HuEXCElKgq
-         JBFA==
-X-Forwarded-Encrypted: i=1; AKwUvBzjmYa1SIUtHv9NAuquimDjp27EXqOVoLsc3I6pM2LLdapldWR9lYzF8HwgnsSJkcoTAD4hnP7agzI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYK8mh3uuOX5Ll3Jv1i6gCS6giI4ACyj0VSvHlm5wbkGN5TAR6DG
-	dqrhgyzeDtCae0/MlfBA032vr4WcneplBimmAG2bTv0Cf5GjKvpkockc
-X-Gm-Gg: AYBFou1NyF4rQsNEZnSktyBqEheaSuil4A46fdq//f9zL5m10YjpfX43lPWcM89UtCW
-	wsRry2S6wk8Rk2Y4kM23g+/OBUk5wXjD5tHA4+8B5Ct+N/vWvpehltyNIKNnHajN+CO/xajnPgE
-	X7NfVjlDrALvRyDqgZvSt0rJ0PkpjkH6lP5OzgPMvzPTaBcWdB7Lm+/NLLSTeO5tPURBlKhuCc9
-	aznDlMq3CNRlZ3xJxy7Li3URHCHMIhLlaERuHaSC9bJgu3KNS3mYInJbO10dff4zXcdqAzb9hBI
-	R+WCsz41pEdDvBlukLCWITFQwGUGs7MJ+AP8X/rEkizwEJRN3OW2g3EQTEzEyvi34vrOIl4x6gP
-	fBNl7vYx3wnzIpDq/TyrizimmmzcOreRCzLk6sgpVqktYabZMcLdDVDJt0UmdVq+wMJjP51zCQo
-	WCi/qzRBKQgyfeQRdAl9U6sEaTjWAOat7WqXOg3J2IaBKQ1xplUlMemS6MfAyM2F5mp3R1j0tdQ
-	xrIdg==
-X-Received: by 2002:a05:7022:285:20b0:15d:f053:18b6 with SMTP id a92af1059eb24-16a5adfbebdmr13879181c88.9.1791842126992;
-        Mon, 12 Oct 2026 14:55:26 -0700 (PDT)
+        bh=NJs555dn0Hiily+4pUme4Llz0sW3A4Uyn/JQ8PM2fk0=;
+        b=0Tge2TrClq4FV76/AoF+WzDNcKPK4dcdenTpDNxFn9Yo6WLCEg5HODbnWy8pZOOKdP
+         SbUDPrmefi/l/ILLNv7yzCXvjN53aEepVliJycBzxNdlEHq2n58N6Uc7AogVzinQ1XBN
+         cSJZTLYwglLY7AH0L/BcAQjhe5bao6NUFXZJNuJ7Bfxn5F+/ROrA7YEW3UBlKAyPrxJ1
+         vFlG78NPDDbJaY6DxjzP6mF+dFd0OS6mV9C2XjJ3gr2yk0AScpP2ylv7Tg/tIGILVALs
+         VqzETNVIYxyVHhhmNy5K4Z3OYCEAxuNU6DpDW4RWgMD+I+ECm9TiJNQoi1l4CyrlUteK
+         YPeg==
+X-Forwarded-Encrypted: i=1; AKwUvBwJeRTM60Mqi6GponlsI2nu9/6I9RqeKUzx7NQYo6ZvaXKIt6pXuG+bgddTT67TScTgT7Zjn7rlcaY=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJKCgG+1IZZHhb4/mms8pcbsrAdUpT2vIV5wVBksgAU48G84UOF
+	+P3ab9Tmw1szXqa2NTCEV+n3r95rt35AFI3/n0O9ikEJ1eKfeqqZMCcA
+X-Gm-Gg: AYBFou1oejUxHn8jtpC+5ZbuZbd0xRf/KIfF7k3R9HM/LOyvz7PK+0Xes58DIkPopBT
+	ecimea4R3SQiy39Rws+aVQKtcxiloq71Mgf3u/GDzKiu0TmLPMPSSBMqjH0dC0zsbkRATqC0fOx
+	/yFeIrSnZrW3ye7J6TWJ7Jwyt1tpvVPBI5hN44dLvK2a+UNzb1H65PoacYs6bp0B6v13DO2RTnt
+	KgiOvXjgqvXJut6coeH2oqFsiWYFHJo00sU8aG+A7YqvkY1LhwzgjcHziEK0juunUhoCH0lje7m
+	LSZSgbdGSfErwj6GTDXmMSkRaI5Zn000GFSp5qX47d/2ExIRJjWU7sHkJ/GM1N3Gzo+EKU+2PpA
+	oWwXqJgKrTH8aJwMl3hTrJTzL0CzH1A9mVJx2Hzcym0oC5TuLEBS8ktTTAALSblGfTngDYn2YMz
+	nEtQiYUSd4EsxwY5NUiuMvj5KvQTZt/AACW1gMvpzPPkvaqlE6RmVzXR0hGT6cO+t1YYrVUyPMx
+	MM78Q==
+X-Received: by 2002:a05:701b:42c5:20b0:151:2e62:fe4b with SMTP id a92af1059eb24-16a5c8d48ecmr14556937c88.23.1791842599340;
+        Mon, 12 Oct 2026 15:03:19 -0700 (PDT)
 Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1746482c978sm12428271c88.13.2026.10.12.14.55.25
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-169a2d2db98sm31002276c88.10.2026.10.12.15.03.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 14:55:26 -0700 (PDT)
-Date: Mon, 12 Oct 2026 18:55:47 -0300
+        Mon, 12 Oct 2026 15:03:18 -0700 (PDT)
+Date: Mon, 12 Oct 2026 19:03:40 -0300
 From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 6/6] iio: imu: inv_icm42607: Add accelerometer
- calibbias support
-Message-ID: <as1XY5EfKwfnb2DX@debian-BULLSEYE-live-builder-AMD64>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Kanak Shilledar <Kanak.Shilledar@axis.com>,
+	"andy@kernel.org" <andy@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, Kernel <Kernel@axis.com>,
+	"macromorgan@hotmail.com" <macromorgan@hotmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>,
+	"joshua.crofts1@gmail.com" <joshua.crofts1@gmail.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"jean-baptiste.maneyrol@tdk.com" <jean-baptiste.maneyrol@tdk.com>,
+	"dlechner@baylibre.com" <dlechner@baylibre.com>,
+	"nuno.sa@analog.com" <nuno.sa@analog.com>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	Henrik Grimler <Henrik.Grimler@axis.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v6 1/6] dt-bindings: iio: imu: icm42600: Add ICM-42670-P
+Message-ID: <as1ZPOocclBgYkko@debian-BULLSEYE-live-builder-AMD64>
 References: <20261009-b4-inv_icm42370p-v6-0-e53884f185ff@axis.com>
- <20261009-b4-inv_icm42370p-v6-6-e53884f185ff@axis.com>
+ <20261009-b4-inv_icm42370p-v6-1-e53884f185ff@axis.com>
+ <20261012-adventurous-corgi-of-fury-01219b@quoll>
+ <fd4181c7e2f48e3c64530340ae1a02adde1f342e.camel@axis.com>
+ <da8b6047-419b-4c3d-8416-e5c871ea4dec@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -89,144 +94,78 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261009-b4-inv_icm42370p-v6-6-e53884f185ff@axis.com>
+In-Reply-To: <da8b6047-419b-4c3d-8416-e5c871ea4dec@kernel.org>
 
-On 10/09, Kanak Shilledar wrote:
-> Expose IIO_CHAN_INFO_CALIBBIAS on the accelerometer channels. The
-> registers are stored in MREG1. The calibration bias is written to
-> OFFSET_USER4 to OFFSET_USER8 registers in MREG1. Reject the out of
-> limit calibbias values instead of clamping it.
+Hi Krzysztof,
+
+On 10/12, Krzysztof Kozlowski wrote:
+> On 12/10/2026 12:43, Kanak Shilledar wrote:
+> > Hi Krzystztof,
+> > 
+> > On Mon, 2026-10-12 at 10:58 +0200, Krzysztof Kozlowski wrote:
+> >> On Fri, Oct 09, 2026 at 04:12:06PM +0200, Kanak Shilledar wrote:
+> >>>    It has a configurable host interface that supports I3C, I2C and
+> >>> SPI serial
+> >>> -  communication, features a 2kB FIFO and 2 programmable interrupts
+> >>> with
+> >>> +  communication, features up to 2.25kB FIFO and 2 programmable
+> >>> interrupts with
+> >>>    ultra-low-power wake-on-motion support to minimize system power
+> >>> consumption.
+> >>>  
+> >>>    Other industry-leading features include InvenSense on-chip APEX
+> >>> Motion
+> >>> @@ -28,6 +29,7 @@ properties:
+> >>>    compatible:
+> >>>      oneOf:
+> >>>        - enum:
+> >>> +          - invensense,icm42370p
+> >>>            - invensense,icm42600
+> >>>            - invensense,icm42602
+> >>>            - invensense,icm42605
+> >>
+> >> Why aren't the interrupts required?
+> > 
+> > The interrupts are only required if using the device is used in
+> > buffered mode. Which will be added later and the dt-binding will be
+> > updated when the buffer support is added. Currently, the device works
+> > without any interrupts.
+> > 
 > 
-> Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
-> Datasheet: https://www.lcsc.com/product-detail/C5129967.html
-> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
-> ---
-...
-> +static int inv_icm42607_accel_read_offset(struct inv_icm42607_state *st,
-> +		struct iio_chan_spec const *chan, int *val, int *val2)
-> +{
-> +	struct device *dev = regmap_get_device(st->map);
-> +	unsigned int msb_reg, lsb_reg, nib, byte;
-> +	int offset;
-> +	s64 val64;
-> +	s32 bias;
-> +	int ret;
-> +	u32 raw;
-> +
-> +	if (chan->type != IIO_ACCEL)
-> +		return -EINVAL;
-> +
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_X:
-> +		msb_reg = INV_ICM42607_REG_OFFSET_USER4;
-> +		lsb_reg = INV_ICM42607_REG_OFFSET_USER5;
-> +		break;
-> +	case IIO_MOD_Y:
-> +		msb_reg = INV_ICM42607_REG_OFFSET_USER7;
-> +		lsb_reg = INV_ICM42607_REG_OFFSET_USER6;
-> +		break;
-> +	case IIO_MOD_Z:
-> +		msb_reg = INV_ICM42607_REG_OFFSET_USER7;
-> +		lsb_reg = INV_ICM42607_REG_OFFSET_USER8;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	ret = regmap_read(st->map, msb_reg, &nib);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(st->map, lsb_reg, &byte);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* 12 bits signed value */
-> +	if (chan->channel2 == IIO_MOD_Y)
-> +		raw = FIELD_PREP(INV_ICM42607_OFFSET_MSB,
-> +				 FIELD_GET(INV_ICM42607_OFFSET_USER_NIBBLE_LO, nib));
-> +	else
-> +		raw = FIELD_PREP(INV_ICM42607_OFFSET_MSB,
-> +				 FIELD_GET(INV_ICM42607_OFFSET_USER_NIBBLE_HI, nib));
-> +
-> +	raw |= FIELD_PREP(INV_ICM42607_OFFSET_LSB, byte);
-> +	offset = sign_extend32(raw, 11);
-> +
-> +	/*
-> +	 * Convert raw offset to g then to m/s²
-> +	 * 12 bits signed raw step 0.5mg to g: 5 / 10000
-> +	 * g to m/s²: 9.806650
-> +	 * Result in micro (1000000)
-> +	 * (offset * 5 * 9.806650 * 1000000) / 10000
-> +	 */
-Maybe add a comment here highlighting that this is an exception among IIO ABI
-and provide an additional patch extending the note on in_accel_x_calibbias ABI
-doc to include icm42370. Having to amend the ABI doc that way looks to have been
-an unfortunate need (also according to commit 69c93a7df74b).
+> That's misleading or confusing. Either the device works or does not
+> without interrupt hooked up. Consult hardware datasheet if in doubts.
+> 
+> Driver support is different thing here and you cannot make it required
+> later, because that would be unjustified ABI break.
 
-icm42370 seems to be similar to icm42600 so extending the exception might be
-okay in this case. Creating new ABI is probably too much.
+I looked into icm42605 data sheet and saw no clear statement about the interrupts
+being required. The timing diagrams only show protocol specific lines and it
+looks like the interrupt sources can even be disabled (not routed out to any
+interrupt pin). Maybe I'm missing something and the interrupts are required for
+some sort of reset function or so? Otherwise, I don't see how the interrupts are
+required.
 
-> +	val64 = (s64)offset * 5LL * 9806650LL;
-> +	/* For rounding, add + or - divisor (10000) divided by 2 */
-> +	bias = DIV_S64_ROUND_CLOSEST(val64, 10000L);
-> +	*val = bias / (long)MEGA;
-> +	*val2 = bias % (long)MEGA;
-> +
-> +	return IIO_VAL_INT_PLUS_MICRO;
-> +}
-> +
-> +static int inv_icm42607_accel_write_offset(struct iio_dev *indio_dev,
-> +					   struct iio_chan_spec const *chan,
-> +					   int val, int val2)
-> +{
-> +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-> +	struct device *dev = regmap_get_device(st->map);
-> +	s32 min, max;
-> +	u8 msb, lsb;
-> +	s16 offset;
-> +	s64 val64;
-> +	int ret;
-> +
-> +	if (chan->type != IIO_ACCEL)
-> +		return -EINVAL;
-> +
-> +	/* inv_icm42607_accel_calibbias: min - step - max in micro */
-> +	min = inv_icm42607_accel_calibbias[0] * (long)MEGA -
-> +	      inv_icm42607_accel_calibbias[1];
-> +	max = inv_icm42607_accel_calibbias[4] * (long)MEGA +
-> +	      inv_icm42607_accel_calibbias[5];
-> +
-> +	val64 = val * (s64)MEGA;
-> +	if (val >= 0)
-> +		val64 += val2;
-> +	else
-> +		val64 -= val2;
-> +
-> +	if (val64 < min || val64 > max)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Convert m/s² to g then to raw value
-> +	 * m/s² to g: 1 / 9.806650
-> +	 * g to raw 12 bits signed, step 0.5mg: 10000 / 5
-> +	 * val in micro (1000000)
-> +	 * val * 10000 / (9.806650 * 1000000 * 5)
-> +	 */
-Unless Jonathan thinks it to be too verbose, we can also have an ABI comment here.
+Kanak, do you have access to any of those other chips to test whether they work
+without interrupts? If possible, can you also check the data sheets for the other
+parts besides icm42370p and icm42605?
 
-With the ABI exception somehow highlighted,
-Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-
-> +	val64 *= 10000LL;
-> +	offset = DIV_S64_ROUND_CLOSEST(val64, 9806650 * 5);
+Maybe
+  - if:
+      properties:
+        compatible:
+          contains:
+            enum:
+              - invensense,icm42600
+              - invensense,icm42602
+              - invensense,icm42605
+              - invensense,icm42622
+              - invensense,icm42631
+              - invensense,icm42686
+              - invensense,icm42688
+    then:
+      required:
+        - interrupts
+was a documentation mistake?
 
 With best regards,
 Marcelo
