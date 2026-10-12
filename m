@@ -1,110 +1,186 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A59345EA8
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 13:22:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791811352; cv=pass; b=PlbuITwlutR7QKpW7tHtXR16O7N4f9sPKn02ffa9LJD64dXBNYcKf9TinF+z0W376ttp1UHEqFEQ10JX9TEO1KoqqYhpiYQdoPIdEcPzSEVRz0T/qhlTlcikUHeHs3vm7kQ6EsP3C/OyNWJyjZL8TGBqscvyEjXBFtZS3l8RxZE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791811352; c=relaxed/simple;
-	bh=wHRi+Oc404e7CHAB2GIYQFXXtTwKqetx40dVUrZPg5I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=h36yJFrhjCGitqOLF9E37FzBTQwsW7Q/dsLFbN+NjR4aSKHbf9JvJwXGUGdP7BfE9PLzrfKRprYAtRAf6Yle0lZxMiAHScrofzobcIGFqhwhT3CvWZwXZ76zHxUEYvfUuWOFu6k2k/AIvZ8943ifGCCAbEXWaHZcpXKRdvnz428=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cKo6vr/V; arc=pass smtp.client-ip=209.85.160.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C41C3372B2F
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 13:46:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791812819; cv=none; b=s3NnjwWd1hblaE6fYnSjbbLgZTNDpOQAbeOfJSbu3FMp4B4Lsu3QgQmuK7gmr9b9gOz6hm30il6uNYBbLtzOXq0sBa0MUFgbyOOR/t0x9F1OFKxbC0a9MB085aSoQ08dtonpdH3qaTcj6e2d7VWPPy/grL/2CTLjAs/0ROXtPjs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791812819; c=relaxed/simple;
+	bh=qjaI97jXVDe8RUjWaIZn/0Z/bG3SM2HUqYlAbco6hkQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gjINEaDYj4ddQlrkKOqJ8fTLcaolG4kBroCQJVk2pgswUpm6Kz23nlJZYrBvjL4HwT4rV7Xes9hh+67LmZx28SwIneb9mz5jTQu0TWFaarBNW5Dr+SciIOBVIJIwV3ShUGVUbA3V5B/ECWOAZXnQxJjXaOs3/bt1UpLvYBiLu5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gA8ujL9J; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cKo6vr/V"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-451a49abd8aso1779414fac.3
-        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 06:22:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791811349; cv=none;
-        d=google.com; s=arc-20260327;
-        b=EE0wjOSg7gjH6GTupwZYDzfr8AN7KsLYOkUlxfq9QLvOqal7rrOmqwnJVRKzQqE0qd
-         uj7WLZnc5qICXXp9DtOfEMEq40ye/FCimn7pMfiU++f2sVdrjx2dzJwYifc+nrDkYzIA
-         0O4LYQl4xiyrAgVejIMrIoK0QKTyRddzP/imJz8wQCfKiBvCyAAp4rl9ibR/unXMqCnx
-         K+2mN+3ARZ5HJWcWoJRnSzNYKZsPUn0eEYMR7fc/w2jPQVR8Zzli94itSljSlyQlNOYf
-         9qx5q73ORUVwoj1pOBXsrnVPEyZXLjUiqtHsfPLc78T93fu0D9BWr1BGu11hx/B1zt8O
-         UNMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=wHRi+Oc404e7CHAB2GIYQFXXtTwKqetx40dVUrZPg5I=;
-        fh=wrLzH0etwKV82Oh/wzL+x8a2PQd3jSr7y+9V5ULgEJU=;
-        b=o/bk7H6woIVpgL16V8NIiyPT+S+VwfemYpoAVeIwUZvOyiJq6OvF3zRNUAvK1evhnE
-         LumnTRpM3bsszj6roOeuXLqW4wASeJfHqbh+ro0m78KM8myqkcFDgEXuP4xK6Qrar4fh
-         y7dOwPUusrGL2tTCopHKsyg5xM7084lLUF3B6ksK6SWgk6kR6pOG3KmGPnKW3Y/RNdec
-         xtJXhBB+Q0UYPMjBclqxccDO9nLsRAF4IFe7xyvuXxQlLPwXR1FXKkKdnVF6UBFbiH9H
-         JzuBKOGbAClOAMSfn/JNWc/riTWloU+9cB+WG+dU2F6qoDD/mjRsPZlieDmDJeRdFlx2
-         rmzg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gA8ujL9J"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-48c4d99c32bso1853624f8f.1
+        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 06:46:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791811349; x=1792416149; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wHRi+Oc404e7CHAB2GIYQFXXtTwKqetx40dVUrZPg5I=;
-        b=cKo6vr/VBna3UoL7i+xzwpRUrQav/SV7LPJ8lD7uZGErUM55kdnQUkIvwYr34v8kTE
-         Tvk0Stfa1EfmjASvxkYPodAEqDBDVglgVndyf4ESDXMiKV3Us/AHTHZg1MbgytsPxKl+
-         kEY1+fWZjJlkjn8FnGn72u4DSXKG0SiMhaUt559m8NY/JAnQ+Iu19hHkpzwmy2UcNHqp
-         karcvehK5/Nf5rT2B/s35WCHEl+31P8Y0LbM/wfH43KgZjm8J9zmsPyzlMe1h4PAxVyp
-         ED4kn0Mtoy06gOV5XGxC1HMZSLB1QVHPQ7zkJVnPwZe4MFdsAkhF8qoej3QnnFgmm5sf
-         n+VA==
+        d=gmail.com; s=20251104; t=1791812816; x=1792417616; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=3qFNfYV+xp2TW71TFMQFiYJu/H+Cb9LjfXq783Ex4Js=;
+        b=gA8ujL9J7sKs00uG9+ognaN/ZhA4HLhKQxKPbcifuFCvdHzvpk7dRXx1iHXKbPyVW2
+         LkHtBp1oH5Ozs4KNutcxzZyiH4wfnnCifYmw9Cl25Xcn2nJBuYEawNylcYlbQqPpeNBC
+         +4HsZtO1FFVNKKjmnf7ZRa8lHFGM2uBNoFbTXELEtUU44dfys22vifsROEgylpihJIlo
+         NymA3iS+HXw+zu6rCwdMqPAg6HWsIABHuQcEZsnkxZkKeLg1/jDLLpIkxnPMgDjPtUNb
+         dWNokotvCKC8DH8NjJX6YC3NYmbmnRl7exHK+JmyprO8Mb2pceu8ZaN+/2V51Cl3FhG2
+         XqNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791811349; x=1792416149;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=wHRi+Oc404e7CHAB2GIYQFXXtTwKqetx40dVUrZPg5I=;
-        b=XY1RP8aMTNdbUrZYUL8B0UxY14zjBgzvh5gldc/Wk4SUtGAExEiDk8mT7IGWmjYSFd
-         FGHyok/Eg1Bk/ugDy4/hwcIzSbmmCjTtzFg69ewxPqzRnDkvVuGmXmgj+xTX79XmiuRC
-         PRLebv2PmQY59Bg8Gbw9qrv2X9KBhGvir8GqJxvlcDXIaOe7iygHWnWjz2xbnVRieEdM
-         PHFIowKwgI97VRO4SaWLBUWKBHPwh0DbL4RsFsnGXXmPonXcIFRSy6kntilePJntBPaS
-         pnFG2A9/Nh1pyO0bbpRtWvMz3RJQtDVsCv/66L37f6Eo+AzZ5fKZ++H/CvC5k1iT06Cs
-         h9hw==
-X-Forwarded-Encrypted: i=1; AKwUvBy67Fd1gwkCGSarA8JVWK9h8fsH4UdNKEXuwZq1x1pZTPsXm4Pj+Mb4rp0TQ9eSOMqpjKGw2phu78w=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKmcaJbWirmEoS2lqn4FM+IHEz0n9+4FlsUXO+B7VPEI9pjQQnS
-	PjF7DVWaSajG7Wa+OgKw/YAS8HC5liVhyNgj4/q4FoNenvIhW1apzQpHkFb8wETwvWkJN8uf2xh
-	cE7O3A3S5rJ+Nn9UAhh+grzrfUXengf8=
-X-Gm-Gg: AYBFou1K3j7rcHStDpNTW9nZc3NUQuTKv5d+Ba10L/Z0ECKEOI+1Psdkvfrzsewvuzf
-	hZpVglMUyiosrOPKT2NVFr+O+wdpzzOgp6OHieo/DmS+zncPUQySNJspqRiSlrlj4vyBt1NsfF4
-	wZ2MXEqPJqeZbAFaoygu1midPGYIxJtiww/Xlam7GvnKHEhciEYD/9foGtERoJLNJfR26Y7RtYD
-	FCnSegi6uS8x4RrVfeskHBNAi4yfmAKqOZRcB/KYw9ToCoqJnbFyazITDg+5jUGxf4b0JVzMyqS
-	rNr7Ow8slLW7dovq6csxJ/kAoxA+jhXhpy1CWveJGk42BmdyjLZJqMn8
-X-Received: by 2002:a05:6870:8929:b0:49e:f7c:fa52 with SMTP id
- 586e51a60fabf-4a2a8a649a3mr7055634fac.36.1791811349384; Mon, 12 Oct 2026
- 06:22:29 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791812816; x=1792417616;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=3qFNfYV+xp2TW71TFMQFiYJu/H+Cb9LjfXq783Ex4Js=;
+        b=mob47qjJiVBi7DsPTcQrnU+SDI2LUu1dtagmq+Lo9ZMl9DNSG8Zu1qPfDX+9c4k5v/
+         7jXPR7wk8Bf9v8idfk4FPahMfQE8gniar1KbyIGrueK0xL06hMoiUbv8GLy53Etq+ykc
+         mPtcQ165SmS+Yr8FiYLnDBDHPtt1txFicAX6n5nd4/LESkKq+f7W51JFh7xZW/H8zFVK
+         fYe2EdCjxlIkoMTLIMcYpKobu6GDKZpOiP241gnkkQAiw2a+unwgy7lLXBfMsJAUFZCh
+         sc0+PCSgtvumZAkQvJOsyYfTtU0LUvyCop3cgednu+1hIXrjF3qPYoX4gHaRVaFObiG1
+         Ahfw==
+X-Forwarded-Encrypted: i=1; AKwUvByk/UaoK7BisT7+gwE6HUOUUfFAOUvnmKEzK6eiG8GyHyE7AsWOuOnRgscb7ukn8ldxnwrKMPMRmRI=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLfnVBt/QpULjHPof9gBelfD2lHNwNhAxbx227SSRbya/XnoBdt
+	hrlzbBEqmE48unnYdoVpgRYfrAGNqMIC+VeVUrP0tVeBtP1bO6EqtVDZ
+X-Gm-Gg: AYBFou2sA2T0sPaGloyJyCA514OOPNY+/TqRb5RnZv/fGIH4ieWnmRtq4lljd3jBFuu
+	ctlGsrGupXhEYt8dQl3dkeEBVYx/D3Hht+X7ilwTaGF8JkMMpMxjPIOJj/nq0N5bxToD++nBRDB
+	dOcY8CQMqnud904sjaEWRgi4XzGA7lPWB5p9dbCkRj4U/NRY9Nwm0C8hODztcUzjytE5ryYwc5c
+	084/QJ8g0Sc5PD2ELp74cP/mclC4QLvoKk+o/GtvqItQpy1ZgfZkmBfLJjTSpKW6bbPucda7geJ
+	9HvhVNAKGwEY5NVR2Ly9zMScpGxDteSU+QntN4WSSfMXmiQ97qyNbYTZYYCAZEpin5iv8Z39kh/
+	8QMMQvs1Gs3LPIyH4z76ML1m76Oq4JCnqqta5PlfXKpG03+YInpfm1HNpqdRYehoGpAYNggkN3U
+	YDw0+ipDC1AHU4f8p8/laumU7q30INLxF1M091+1EVYnYBDFur5DbO8+hi60iLkddTRMtpYmB3v
+	KSCwl3OPsE4O2aRPyVqqeqe0GWDoWXqfj5p/EYp9POpTUOAgveMR7ZvrBdZZS7ewP1GnL7jJ6SV
+	JOGKCBF6im9DyuPLloJk4JJV29jnHk8xmefGTmCQJ9avkiLEfKcpLLp52QTmLeQG1gKv3EJ1pNa
+	pr0+XYcWdAeeHy1zyoVOG1Ovz0dd3ukeDnDbxbviF8gQ7gIaziBsa5DfY7YhlmPuC91u4swUpuA
+	VSET/p
+X-Received: by 2002:a05:6000:469b:b0:487:f31:8037 with SMTP id ffacd0b85a97d-48dba9db1a1mr11110656f8f.14.1791812815713;
+        Mon, 12 Oct 2026 06:46:55 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48db9aadf9bsm19148872f8f.29.2026.10.12.06.46.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2026 06:46:55 -0700 (PDT)
+Date: Mon, 12 Oct 2026 15:46:52 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>, Marcelo Schmitt
+ <marcelo.schmitt@analog.com>, Radu Sabau <radu.sabau@analog.com>, Janani
+ Sunil <janani.sunil@analog.com>, Salih Erim <salih.erim@amd.com>, Jishnu
+ Prakash <jishnu.prakash@oss.qualcomm.com>, Jakub Szczudlo
+ <jakubszczudlo40@gmail.com>, <linux@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH 2/4] dt-bindings: iio: adc: adi,ade9000: add adi,ade9039
+ compatible
+Message-ID: <20261012154652.00004ed4@gmail.com>
+In-Reply-To: <20261012111342.48040-3-antoniu.miclaus@analog.com>
+References: <20261012111342.48040-1-antoniu.miclaus@analog.com>
+	<20261012111342.48040-3-antoniu.miclaus@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260929184900.39515-1-abdelnasserhussein11@gmail.com>
- <20260929184900.39515-3-abdelnasserhussein11@gmail.com> <aswW2bAapx3318Zd@monoceros>
-In-Reply-To: <aswW2bAapx3318Zd@monoceros>
-From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Date: Mon, 12 Oct 2026 16:22:18 +0300
-X-Gm-Features: AclHuK8W8Rlm4uemP4cn0xb4FiJCWYATf-Tyo02d_DefuCSU9DtfwEC-86YeR0U
-Message-ID: <CANpqX3YqJ307B7p_q1UsZco8MEfO8-rGdaUtRsa20KahxpJ9RA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] staging: iio: accel: adis16203: add missing
- spi_device_id table
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Cc: jic23@kernel.org, gregkh@linuxfoundation.org, nuno.sa@analog.com, 
-	Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org, 
-	linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, joshua.crofts1@gmail.com, error27@gmail.com, 
-	narcisaanamaria12@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hi Uwe,
+On Mon, 12 Oct 2026 14:13:38 +0300
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-Thank you very much for taking the time to review my patch. I really
-appreciate your feedback and pointing me to the correct headers.
+> The ADE9039 is a polyphase energy metering device from the same family as
+> the ADE9000. It is register compatible with the ADE9000 for everything the
+> driver uses, provides the same on-chip dip/swell detection, and shares the
+> full-scale codes of the ADE9078.
+>=20
+> It computes only fundamental reactive power and has no total reactive pow=
+er
+> register, which is noted in the description. Like the ADE9078 it supports=
+ a
+> maximum serial clock frequency of 10 MHz rather than 20 MHz, so extend the
+> existing spi-max-frequency constraint to cover it.
+>=20
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+>  .../bindings/iio/adc/adi,ade9000.yaml         | 29 +++++++++++--------
+>  1 file changed, 17 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml b=
+/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+> index bcc166aad713..70106dd052ce 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+> @@ -5,26 +5,28 @@
+>  $id: http://devicetree.org/schemas/iio/adc/adi,ade9000.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> =20
+> -title: Analog Devices ADE9000/ADE9078/ADE9430 High Performance, Polyphas=
+e Energy Metering
+> +title: Analog Devices ADE9000/ADE9078/ADE9430/ADE9039 High Performance, =
+Polyphase Energy Metering
+> =20
+>  maintainers:
+>    - Antoniu Miclaus <antoniu.miclaus@analog.com>
+> =20
+>  description: |
+> -  The ADE9000, ADE9078 and ADE9430 are highly accurate, fully integrated,
+> -  multiphase energy and power quality monitoring devices. Superior analog
+> -  performance and a digital signal processing (DSP) core enable accurate=
+ energy
+> -  monitoring over a wide dynamic range. An integrated high end reference=
+ ensures
+> -  low drift over temperature with a combined drift of less than =B125 pp=
+m/=B0C
+> -  maximum for the entire channel including a programmable gain amplifier=
+ (PGA)
+> -  and an analog-to-digital converter (ADC). The ADE9078 and ADE9430 do n=
+ot
+> -  provide the on-chip dip/swell detection available on the ADE9000, and =
+the
+> -  ADE9430 has no on-chip digital integrator (it uses an external analog
+> -  integrator for Rogowski coils).
+> +  The ADE9000, ADE9078, ADE9430 and ADE9039 are highly accurate, fully
+> +  integrated, multiphase energy and power quality monitoring devices. Su=
+perior
+> +  analog performance and a digital signal processing (DSP) core enable a=
+ccurate
+> +  energy monitoring over a wide dynamic range. An integrated high end re=
+ference
+> +  ensures low drift over temperature with a combined drift of less than
+> +  =B125 ppm/=B0C maximum for the entire channel including a programmable=
+ gain
+> +  amplifier (PGA) and an analog-to-digital converter (ADC). The ADE9078 =
+and
+> +  ADE9430 do not provide the on-chip dip/swell detection available on the
+> +  ADE9000 and the ADE9039, and the ADE9430 has no on-chip digital integr=
+ator
+> +  (it uses an external analog integrator for Rogowski coils). The ADE903=
+9 only
+> +  computes fundamental reactive power and has no total reactive power re=
+gister.
+> =20
+>    https://www.analog.com/media/en/technical-documentation/data-sheets/AD=
+E9000.pdf
+>    https://www.analog.com/media/en/technical-documentation/data-sheets/AD=
+E9078.pdf
+>    https://www.analog.com/media/en/technical-documentation/data-sheets/AD=
+E9430.pdf
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/AD=
+E9039.pdf
 
-Your corrections are very helpful for my learning process as a
-newcomer, and I am grateful for your guidance.
+That is a very short datasheet :)
 
-Best regards,
-Abdelnasser
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
+--=20
+Kind regards,
+Joshua Crofts
