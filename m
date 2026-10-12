@@ -1,64 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 079764B66C2;
-	Mon, 12 Oct 2026 21:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E7CD4A0EF6;
+	Mon, 12 Oct 2026 21:07:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791839137; cv=none; b=Og3sDnboh+LDOI9B89NLwgHUTDbR5c4j00ntXBlk0BXJH6C0YAeHQFarNNo1MXREAFXw6kAj2n/sfwNCa0HcHY8vk2WBSqhCCuy6ry3GjHTqVD+OQAtyH02jfcXgtp/RarDsySeJvEhiT2rbBa5YpYk5Nfb5WybYl6puj0fKPHY=
+	t=1791839229; cv=none; b=sFNWUxfjH/Gv4egeyBUW1P7knmE5Aimm4OjijH1G1NOUnWqs59Az1R+7sUTnqneCrUb+dZgpMOaTRMW9oj/VxqxcMPgjceXKFO1xnhoy53gpDu+cUSF53v9FkaTJPgXOMaAVaRMYbb3iYGXh6fRZ0/acvv4iveImMbkcxzQjq2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791839137; c=relaxed/simple;
-	bh=SadU8DnjTI8iqyC9HjuGra18BDSNoEP5rD9TJRC3DAQ=;
+	s=arc-20240116; t=1791839229; c=relaxed/simple;
+	bh=bVVAEipiwUOMUcpLzlPT7Lmm5gYJXvHswnCcfXQFJLI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bp+zsbNjFmbKVm3xn7qo8Iurkaf9A0DhFUHVX8eUbrLkVvGaza98pH6fkadPbKVxI6i+JZf0jcPH48ugMLLRd232Q6SPHGwvroWdPFq6gbeIbnMTADRJHOpG/8jEsVgvUITUJQofgFtUIbNs+xAwOMDnn8kIRcw9xtlJxYpq9BQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cyjXkzuh; arc=none smtp.client-ip=192.198.163.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=szApy5mwjNgqXHybsWLDbQpxvxiN8Xt6Cd5keVthQsdF4MhI6PG7RMU0Bc4Y8ERAfOiLn03J8RV0BKCjY8o3aH3bnmSswnS3rMtFk5GVXInPxYBfaqxP8uM0Yw/Zyk4aANcbdUVCeIfCMUzYcCoW5cR8LYLmgJ1y4Bbi4A4sjz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=acNaFtXv; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cyjXkzuh"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="acNaFtXv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791839137; x=1823375137;
+  t=1791839228; x=1823375228;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=SadU8DnjTI8iqyC9HjuGra18BDSNoEP5rD9TJRC3DAQ=;
-  b=cyjXkzuhFPv3Y/lvZmXjtj+eOvierli5uP88MSyaEXNs8MxAh+niVvZA
-   W8ntmzhQuPD8weMwQwl0NYbJvvSPquvlG4JMpnWaFWr4tMUmoBvdHwdot
-   mDXVAbbe5XA7fCM6Isj9evQFeKpsrc6ccbdoMmpJRswCqkVXD5uuYhNgr
-   4j0+89SLoycE/3OqRMmZ7fGz8Kv0j/C3WBAuhQtUvg42XA8LMgnlHyinM
-   ML6wSrXuyPyfIiZ3Aw7YP+CP7AIWs3UtK05pkw6o9FJ/h1ERz+H8Hpfp4
-   SDSx3M4skdPfvWzFyndWlbnXgbKYEtTRdEhQ2DhtjhBav9i1eS6q2PQn6
-   g==;
-X-CSE-ConnectionGUID: 6+Y0onN+Ru6HRVuAwMkm/w==
-X-CSE-MsgGUID: xecZA1i1SYORTLPrWmW2Nw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="565678"
+  bh=bVVAEipiwUOMUcpLzlPT7Lmm5gYJXvHswnCcfXQFJLI=;
+  b=acNaFtXvnXcFxXIslHsF3gTztE5MhrgFhmXJ4RWBjaD+k3kikoLRsuQg
+   TWw/+ZxHgkHWoOxd4I/PZ2rSuQb0N+Uo03SyL+4vzcRZejSZ3Ud1vXNc4
+   JCdAZ3mU+UVBy/BweXuRaFfceOkDEU9ePtqvHGBCYZXx9hy7IBv6By1Rm
+   qj9WA4VmTqZMAlqd1mlJtSOE6QoHabKzUgXMz8ElNGMm2skALHYK3qC4z
+   6IbVV9ehdLQXA6o6+qV89uAXC5PE9zIoRy6N8wyggUAYZQOeTtryEcA8x
+   chaoNvW3fz4zBFoq9R2tTJYxHbTzCL6KRVaBJnpx58/mXdkk7iWlH8i3M
+   A==;
+X-CSE-ConnectionGUID: S73KCWzrR7qqp+JDoHcHCw==
+X-CSE-MsgGUID: bCJydj6lTUSW/LKfohL5xA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="549325"
 X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="565678"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:05:36 -0700
-X-CSE-ConnectionGUID: BbQrLs3JSOSEu+A8+2ob3Q==
-X-CSE-MsgGUID: WLVyzymYQLGIGJAJSubY+g==
+   d="scan'208";a="549325"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:07:07 -0700
+X-CSE-ConnectionGUID: gOhEPTXDQS+gPAMbHWHqrw==
+X-CSE-MsgGUID: /MtGaiJhTBudBOHiTtDmWQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="949457"
+   d="scan'208";a="1096907"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.179])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:05:32 -0700
-Date: Tue, 13 Oct 2026 00:05:30 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:07:02 -0700
+Date: Tue, 13 Oct 2026 00:07:00 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adt7316: use kstrtobool() for sysfs
- boolean parsing
-Message-ID: <as1LmjjV_gLvgwiE@ashevche-desk.local>
-References: <20261006103350.32853-1-abdelnasserhussein11@gmail.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Marek Vasut <marex@nabladev.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Cheick Traore <cheick.traore-ext@st.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	Cheick Traore <cheick.traore@foss.st.com>
+Subject: Re: [PATCH v4 00/15] iio: adc: stm32: add support for stm32mp23 and
+ stm32mp25
+Message-ID: <as1L9F3ua4LKvj73@ashevche-desk.local>
+References: <20261006-adc-stm32mp25-v1-v4-0-d31ec75aecf3@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,26 +76,17 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261006103350.32853-1-abdelnasserhussein11@gmail.com>
+In-Reply-To: <20261006-adc-stm32mp25-v1-v4-0-d31ec75aecf3@foss.st.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 06, 2026 at 01:33:50PM +0300, Abdelnasser Hussein wrote:
-> Replace manual and unsafe character checks (e.g., buf[0] == '1') with the
-> standard kstrtobool() API in sysfs store functions. This ensures proper
-> handling of standard boolean inputs, fixes potential safety issues, and
-> adheres to the Linux kernel coding style.
+On Tue, Oct 06, 2026 at 09:57:31AM +0200, Fabrice Gasnier wrote:
+> Add support for STM32MP23 and STM32MP25 Analog to Digital Converter.
+> It's a variant of other supported STM32MP ADCs. Add the DT bindings,
+> driver, SOC DTS and an example on stm32mp257f-ev1 board.
 
-...
-
-> -	int enable;
-> +	bool enable;
-
->  	if (_adt7316_store_enabled(chip, enable) < 0)
->  		return -EIO;
-
-Makes sense, but check that the type of the functions in use take now boolean,
-ditto for the rest.
+Looks good enough to me,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
