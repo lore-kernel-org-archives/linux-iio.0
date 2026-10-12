@@ -1,95 +1,82 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E7CD4A0EF6;
-	Mon, 12 Oct 2026 21:07:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D848F4CB8B5;
+	Mon, 12 Oct 2026 21:07:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791839229; cv=none; b=sFNWUxfjH/Gv4egeyBUW1P7knmE5Aimm4OjijH1G1NOUnWqs59Az1R+7sUTnqneCrUb+dZgpMOaTRMW9oj/VxqxcMPgjceXKFO1xnhoy53gpDu+cUSF53v9FkaTJPgXOMaAVaRMYbb3iYGXh6fRZ0/acvv4iveImMbkcxzQjq2M=
+	t=1791839238; cv=none; b=uewpq4PDWi4kNv/7kvAKlCl3nCkBedvzzY2vy4YE0Ag4+96uE2XZ6eWV3p3FPiv3Wc3vydZ5WKjX82KEleJpeULNO0OAQ3rjLUGcq4lo3WXF1f6OrkMHVliPMsuwJBjKih70V+YXfl5VmuXcS68N3+k6kcoTEMwmwyeenLvcAVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791839229; c=relaxed/simple;
-	bh=bVVAEipiwUOMUcpLzlPT7Lmm5gYJXvHswnCcfXQFJLI=;
+	s=arc-20240116; t=1791839238; c=relaxed/simple;
+	bh=3WDrJOiLyYyG9nsoeh4ZSbfkp/5PWRrwLY2CJ+IZaJw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=szApy5mwjNgqXHybsWLDbQpxvxiN8Xt6Cd5keVthQsdF4MhI6PG7RMU0Bc4Y8ERAfOiLn03J8RV0BKCjY8o3aH3bnmSswnS3rMtFk5GVXInPxYBfaqxP8uM0Yw/Zyk4aANcbdUVCeIfCMUzYcCoW5cR8LYLmgJ1y4Bbi4A4sjz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=acNaFtXv; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=K1Wi0JCCfLt88UrQjT/9UkKPEnj2LOuiJB7QrxRENUJCPwXO1bqdqNwCvIVYkks36gG1uC0HZQ/t09Pd1B6TwUPZFSNiXErvA1tfRW6ev+EG4BHlR+0a6IObTDpVtKg/tGPyidQg05Y0UGtTred6p7MIsr8pt5CqfGZ7MJEXYSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X0LbWTOC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="acNaFtXv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791839228; x=1823375228;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bVVAEipiwUOMUcpLzlPT7Lmm5gYJXvHswnCcfXQFJLI=;
-  b=acNaFtXvnXcFxXIslHsF3gTztE5MhrgFhmXJ4RWBjaD+k3kikoLRsuQg
-   TWw/+ZxHgkHWoOxd4I/PZ2rSuQb0N+Uo03SyL+4vzcRZejSZ3Ud1vXNc4
-   JCdAZ3mU+UVBy/BweXuRaFfceOkDEU9ePtqvHGBCYZXx9hy7IBv6By1Rm
-   qj9WA4VmTqZMAlqd1mlJtSOE6QoHabKzUgXMz8ElNGMm2skALHYK3qC4z
-   6IbVV9ehdLQXA6o6+qV89uAXC5PE9zIoRy6N8wyggUAYZQOeTtryEcA8x
-   chaoNvW3fz4zBFoq9R2tTJYxHbTzCL6KRVaBJnpx58/mXdkk7iWlH8i3M
-   A==;
-X-CSE-ConnectionGUID: S73KCWzrR7qqp+JDoHcHCw==
-X-CSE-MsgGUID: bCJydj6lTUSW/LKfohL5xA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="549325"
-X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="549325"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:07:07 -0700
-X-CSE-ConnectionGUID: gOhEPTXDQS+gPAMbHWHqrw==
-X-CSE-MsgGUID: /MtGaiJhTBudBOHiTtDmWQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="1096907"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.179])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:07:02 -0700
-Date: Tue, 13 Oct 2026 00:07:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X0LbWTOC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80D81F0089B;
+	Mon, 12 Oct 2026 21:07:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791839237;
+	bh=3WDrJOiLyYyG9nsoeh4ZSbfkp/5PWRrwLY2CJ+IZaJw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=X0LbWTOC3IS6VEuXJjwpmsLuct2YWNNgLbHDIuVQYVojFNnEE966uaU7dl/2mVv/7
+	 tdB6TYh8kmXHsS8YjSO04EUQ8f+3RFtAySHV2krpzZBO6ScLSXWTJ1jAq3VcHs8e2T
+	 s8Ec74MHpIDS9ffpauuHeeTX0t647zKrcx9GdAJcAljh6j6dSRwVg4iMrY5lv4YIp+
+	 ttbQIi7p20ua1I41Ynm7VyK5VBWCLqDCO/ItFKr1XDd6+EWNx4J5NRu8tsVFu//X0B
+	 IgTtG7kcSn/9smZlMg1gQa5qvJFnfj0NIB5GxYMyXb3C4AOjQEVTdtMVzgbY1Ovq57
+	 pplMKMdXnMR1g==
+Date: Mon, 12 Oct 2026 22:07:11 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Marek Vasut <marex@nabladev.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Cheick Traore <cheick.traore-ext@st.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Patrice Chotard <patrice.chotard@foss.st.com>,
-	Cheick Traore <cheick.traore@foss.st.com>
-Subject: Re: [PATCH v4 00/15] iio: adc: stm32: add support for stm32mp23 and
- stm32mp25
-Message-ID: <as1L9F3ua4LKvj73@ashevche-desk.local>
-References: <20261006-adc-stm32mp25-v1-v4-0-d31ec75aecf3@foss.st.com>
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Prabhakar <prabhakar.csengg+renesas@gmail.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v2 1/8] dt-bindings: iio: adc: renesas,r9a09g077-adc: Add
+ RZ/V2H(P) and RZ/V2N support
+Message-ID: <20261012-presoak-partner-dc23bb5b24af@spud>
+References: <20261009184122.1378797-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20261009184122.1378797-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="tCseK2djqWMSaGaO"
+Content-Disposition: inline
+In-Reply-To: <20261009184122.1378797-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+
+--tCseK2djqWMSaGaO
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261006-adc-stm32mp25-v1-v4-0-d31ec75aecf3@foss.st.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 06, 2026 at 09:57:31AM +0200, Fabrice Gasnier wrote:
-> Add support for STM32MP23 and STM32MP25 Analog to Digital Converter.
-> It's a variant of other supported STM32MP ADCs. Add the DT bindings,
-> driver, SOC DTS and an example on stm32mp257f-ev1 board.
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-Looks good enough to me,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+--tCseK2djqWMSaGaO
+Content-Type: application/pgp-signature; name=signature.asc
 
--- 
-With Best Regards,
-Andy Shevchenko
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCas1L/wAKCRB4tDGHoIJi
+0syxAQDNa2IGrEFwPI3bu3jjdnDjLqkYb0h4vqH8kROn5OKMAAD+OcUnK2dfUnZL
+gVSFjdmE7kw3kwgV3kg+OWONHDHPoAU=
+=dNp1
+-----END PGP SIGNATURE-----
 
+--tCseK2djqWMSaGaO--
