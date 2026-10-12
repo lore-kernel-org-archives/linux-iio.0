@@ -1,102 +1,84 @@
-Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8578B3DA7E0
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 21:17:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC2D42BFC7B;
+	Mon, 12 Oct 2026 21:19:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791839866; cv=none; b=G6Iz0HhzKjxiUnEnnxRpIc1Unf2nuwkI6muckp7B5YIJnn7vOaZLo+/ZjldnMmCdBKdGSdyrG3rreai38WNb8wMfiv+guPs1dRM4AqyZaFleXONL4ZhRifr99MeOD9KwPcnkGrD1xNJmv9TaYBgWsKbN3Ya/ZzTD5LrvdIyKGes=
+	t=1791839970; cv=none; b=tlfvYnIl10ndnd/UVuoBJI3ysufWSwdg1uRJdxENzwqTOTsJWRWRHTn1d2RHLfiMEWqP9uHlOQrv06UD3A1hvqkqJxmnuY5W6X8F9+bHzZuEYw6yDMFFGSXNpXXHS9CyeYSa9faD48K/2f85k/jPp9P0yRjCYolKyE0vCHldECs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791839866; c=relaxed/simple;
-	bh=ZOaV5j+eXuFSiRY/48xGC3VEaW0+/0IwPIwLqoa+0WA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=E1ClFPDVSgd/OowhFmwAAGN7Wqe56mpxLn+3SkkjhBF5Tj9db/5ew9Sg8dX4d49iI/2Vr9M4nFyQDi1YNINSTUkkCMCG3yxTBfdeb3Ay5ozpsEJOrDcTo6OkKIv8VQQbaPiu6zZJRksi7M4cupZ1eRN5tuhBR2lvc8uO0y0vfCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RiCc+2Q/; arc=none smtp.client-ip=74.125.82.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791839970; c=relaxed/simple;
+	bh=e65YEVn51bit6H6IUDBgpIfn0iLdlP8g1/U272AdULg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d2EG3tgkiZFUckFb9789QOrwfinq5H7IFpVB71q/n/x5TyUnTYoDvjalvLvzfSEZ6N9aropK58gxC376wpqgjjFOZesLfxsS+JdiqSHplHPtz17YLYr5K2St1Kh8GBruqyBcU8Cq1FdWKJsFqMf3JWPGlldruIaQ3te/kN/gRj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mJp722XR; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RiCc+2Q/"
-Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-3514e7cbbbaso5796789eec.1
-        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 14:17:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791839863; x=1792444663; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ZOaV5j+eXuFSiRY/48xGC3VEaW0+/0IwPIwLqoa+0WA=;
-        b=RiCc+2Q/dfpmswyVrpmJehN0lyNki4pV09gyLNQ6Va885M2TlXH7ovKBhxII5KAxmA
-         ddclO++KwQJpJbsjt0Y3pW8qt3r0Ef8G8wN8E1ti0JqPo3AU02mWFNHSbo9Lfi820W2n
-         GlgTXYF4HqWovS+QvxlZGE4LTtgkRf50IsLWGTrU68+mlR4mK6n15z5ETEAT8CFevwX7
-         I4sC78bcvHUJjTS/NdWvLqXMiOWdBL5x9hfQ/kzbHcamCI3s9mreJhmpC7ygXAV2MF1u
-         6Fl7kqJCoWhErgxTQcSCQYC4xtsAVBuzHI4QwuAIp66o8dqcu85BBRbi2DkEasrW+cU2
-         8CXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791839863; x=1792444663;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ZOaV5j+eXuFSiRY/48xGC3VEaW0+/0IwPIwLqoa+0WA=;
-        b=mb/pZFFaFwgXBB7Uk7bvsiL9O53YWEzcf0sr+fwFvJa6NNayVEqUI+cZDU6AnZOPUL
-         bj2WxULNeOy8PRv/sC2ticBR8TyerEQjJYV/uc9dEcA0JW7EEuDAH4eauElSvszuBF4D
-         34VKyuWQJYeaKkUyqhtRYlH2dJ60o1z+a6zzPSsWlIpkyfCXkZTy8uTZqPUiQsrhxo0G
-         k/nnLlLYlffH/LyFNKSv1uyqzuSjkJhujQsBRzE0WLtNrzwfOwPXqdPmFp7w67LEahoQ
-         mJ65Ig3dy5Ea0J2mXXfJVAW7wk5q4eJyOZ2t5L+nAQ5aSoXzCyaXDLzfHVOP5r4O1KMk
-         p/9A==
-X-Forwarded-Encrypted: i=1; AKwUvByBv/ZBexbdr7EBj5YEiNhUdwfLgX4C46qG1RnBYpCIJtAFpPyPJtSKLQwZCjA0EhTPZqf5oEfLTaQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIVoKVBF0NJdvVMOmIjBLcoGjZZGcIUrxfFEW4txbKRUEDLrMeE
-	Ze2KmlNTwLGSwkTx4BA0Crl/whZqw9EJfjP0el9EzE+mVH4htWbI9Lbb
-X-Gm-Gg: AYBFou3kaXGSxiK/PD2gwAB8olN/cJrveW5ODHfAgmeNI32gwbF+Pr346qGMRcSvv7k
-	meZTbrFbYlVtAkY+u3gQU3oR3uR4NLY7ffLp7yDQiccDIa7yGWg+JYqeV0duCvS7WlSKHI4G0Us
-	K5PDpw8RUz92RR3JAFzpMwalAl+5fhJu/Ph7jeli4GLDtj+qDZypb4JtFvCrcZ2pqJog9ypTc91
-	bfvqnvtFeB3fi4GLCUCe5DZw5bkNhOh2t+yJlnMPUCbtRJck4vwZ3qBXcNRDYt0FpEIDZJpCJht
-	eDzAKCJtu92J7jaKu+P5Snj6vr11/cSuFqGQvN7TQ3emCipxuF5vB8EwCi+sMeLtBVuk+PGeVCo
-	pXGue+H0qNpwbmsk46LdSk/qJISQqX8gT+XFpm9NK49uvXyBDPNhxVl0iSI8HMryhEZHUQUC/1f
-	5GDdPhUtPy19w1MaHs/azlGfAQBK4TNZDHC0zK9eAqUXg0lj9bAUilrgdgjrLj6cZ48BoonWJRz
-	JE7q/H3enoq7kyNlmViTZWXQkl1+Qv1TJw+phCk17uUmvBqaspPHwlV9P2jxp0ZIw/PXT/NrHV7
-	3IHuW4Jq+b6zV2vk7mYKrKD99d8Vfw==
-X-Received: by 2002:a05:7300:8245:b0:35a:7464:6159 with SMTP id 5a478bee46e88-35a74646242mr5454876eec.34.1791839862310;
-        Mon, 12 Oct 2026 14:17:42 -0700 (PDT)
-Received: from kapoor.iiserb.ac.in ([203.18.51.212])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537cb1e02asm39147488eec.27.2026.10.12.14.17.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 14:17:41 -0700 (PDT)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Arnav Kapoor <kapoorarnav43@gmail.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mJp722XR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791839969; x=1823375969;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=e65YEVn51bit6H6IUDBgpIfn0iLdlP8g1/U272AdULg=;
+  b=mJp722XR95FPMftKn6rM/N0ZB/YCU6UIVu2OpMMcTU/tN9N7Zj8e7vpD
+   Zy51zSPeB0SII/Gt91VlVvk6A0iQUdaesXxMjz3kI3NlZVB97FsYtvLa3
+   etiHEkeK69MsPqA/eLrg4uxTwJNp32MADshdLpYXuDTHXCubpVIy1Q6mY
+   cA8zURCyfpBnD4YvaI9Tvb2UwDi28AmWdrJ4xi4vtQSU9YXAr4+IqR/Wk
+   ZEw4ZXD5SjgW5aeT1qk4FtEgUTbZbSRfbuLyGoibmyTr64k+1gMOus0XR
+   Gleqdjcz47O2an6taYQ4Y/5a05NND3Leld27lrTTtP/kfE6OXY21uhp5v
+   Q==;
+X-CSE-ConnectionGUID: /hOyh5NKTOy9EBkUBU4bng==
+X-CSE-MsgGUID: KcbQag7iReic6/i1QjZjBw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="435926"
+X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
+   d="scan'208";a="435926"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:19:29 -0700
+X-CSE-ConnectionGUID: oUbowdnuR0mhF9Th+myUjQ==
+X-CSE-MsgGUID: pNCUC0+ZRxWrMtmNsE74gQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
+   d="scan'208";a="2766590"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.179])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:19:26 -0700
+Date: Tue, 13 Oct 2026 00:19:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Benson Leung <bleung@chromium.org>,
-	Guenter Roeck <groeck@chromium.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	chrome-platform@lists.linux.dev,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: common: cros_ec_sensors: use sensor_scale union member for CALIBSCALE
-Date: Tue, 13 Oct 2026 02:47:30 +0530
-Message-ID: <20261012211733.575305-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261011191641.4e9e2ac4@systembl0wer>
-References: <20261011045410.356156-1-kapoorarnav43@gmail.com> <20261011191641.4e9e2ac4@systembl0wer>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux@analog.com, linux-kernel@vger.kernel.org, jan.sun97@gmail.com
+Subject: Re: [PATCH] iio: dac: ad5529r: Clean up definitions and regmap
+ configuration
+Message-ID: <as1O24cxJRhcSmPO@ashevche-desk.local>
+References: <20261008-ad5529r-review-followup-v1-1-84a98e0e27eb@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261008-ad5529r-review-followup-v1-1-84a98e0e27eb@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, 11 Oct 2026 19:16:41 +0200, Joshua Crofts wrote:
-> Please add a Fixes tag. Otherwise looks good to me!
->
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+On Thu, Oct 08, 2026 at 11:19:15AM +0200, Janani Sunil wrote:
+> Use fixed width register literals matching the device's register address
+> width. Rely on SPI regmap's default read flag instead of specifying the
+> same value explicitly, and remove parentheses around the channel
+> initializer.
 
-Thanks for the review. The mismatch was introduced when CALIBSCALE
-support was added:
+It sounds like a three patches, but I don't care much (up to Jonathan)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Fixes: ed1f2e85da79 ("iio: cros_ec: Add calibscale for 3d MEMS")
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Jonathan, could you pick this up when applying, or would you prefer a v2?
 
-Thanks,
-Arnav
