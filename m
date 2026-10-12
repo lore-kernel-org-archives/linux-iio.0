@@ -1,76 +1,76 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EE113D9550
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 13:50:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C1963E49DA
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 13:51:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791813028; cv=none; b=Dt7hXSUmgQ/gKytX+MdHHfi0koZHwOHshD+WinnV77WoPUHa9mafyl4iet+E0LqO8mZitvR27CJdB/ac+89nDx+c+/ZsapnCjt71JMr4MVS19RaAkQOzAWdl9JOTlMaE/wUWEsIVORl6ef3oXkDS5WOMuGS1tmWclmRR6F46uIA=
+	t=1791813105; cv=none; b=QuTNM6OHO7LzbutxcHBDV1+D/kWykj1lJvpzbBq+sbp8HCQILWa+T/6G3BHpWS15fL68KOav1u3VAOd1z4IvMTFVwuBDoxcqQjwQPlzvwNKVy0Bz3akIYLic6ePQzUq0kfA5YtFjdHoduNJGlkAiwYiJFEMEx4MO47hXfjHtoss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791813028; c=relaxed/simple;
-	bh=AOaJHzkVSqUbswf92A6xGyprhL7vg46+nlQdZPHjJRg=;
+	s=arc-20240116; t=1791813105; c=relaxed/simple;
+	bh=JNLvSKsWbpNpU+kVfR1ZUgo0qtFkPeJnN9n/3eiEcSg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=W2fSKX3lOGwBCgfUOTUja0dVfjnpvelcCi9njoVW8bAcToHyHKvmHX/RPXzjJbB6+GvqrkJIhJ/pNsYX5AOQN2zBAxkktFyn8iDHiAWwDoAPgPSgWLWyposp+Mk0PFWTwH4ZmiH2llIoRKQ8Gvop7EsftTYo+ghdXKLoKtQokYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jz0QyIzX; arc=none smtp.client-ip=209.85.128.42
+	 MIME-Version:Content-Type; b=B7rNl8YuFvG1KV04REHpguUJDwZHRkaK4z+xhriPNfFCpVsVuPSEUpWokyCjvE6QtKT/NEUZT7eXaktBwMJ51IkE0vXje7yRWmIU5r/1DEUOvCrtIjf8tWyjbRYovsl4F4XGlw8XsQvrnXxxsGINL0BVZifxeV8nN8PTJsXTqeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kWW/dfsY; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jz0QyIzX"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4a02667ccebso13078835e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 06:50:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kWW/dfsY"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a172eb31f0so13893185e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 06:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791813025; x=1792417825; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791813103; x=1792417903; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=zE6VoN+PiWAA9KAYU57i+n0fCcZ23h1hk73tpEWp1XQ=;
-        b=Jz0QyIzXS6SOTx4hk1NekRhn8qhOepd9UyGB4Vg+zYY+4ufxsVw2viqS3KebXUD+NX
-         jigTDkHE7NdJzugKAXUqtSw5+ObIu3Ok1KdVySagZnN6Upb3OHpdDv8QxKEtYAWoz4j1
-         kMcBJS9wkFNbYADLxk9V8Vj4bSL8+iKr5v5XLR2oUAZbO0oN9q8KDXxbH58plTFNVrdn
-         bROvq9sDJPPwXP5zfPwvSlrgyJFlmpcUvE0eNDLhZYJ9YZTdajV2Ngx12oT4tgvhw03N
-         uzuGNTp3cbhZCjVJpBv1KSyFFaFE8zwpCmVObVVVt3wB346fI6s7IZfNaevagsgLjtRL
-         MA9Q==
+        bh=oLOrbPkiMwYxELk182ZPfeiCmk/lFJpYO2IK6N8cvrs=;
+        b=kWW/dfsYmSuWUUAmOtu9ANV87tPPKXFs3Wu2Zf4c9BjI1gxqJUEUYZR6eDFV2eSFzZ
+         9IkrgEcM0UNHqTeDzb/fi3vsTrHLpX8HoUz5MUT/ec4oVQM/Hn7YR1hQKx2S4bXHnt8x
+         HZxqhhXXxfOQHbq0nRBwIiB/iVLkCNWky+C4Nztk3wkwVLqubb1dIZgHm8VrsCgo0+l1
+         +QBbPfQpacUPyQXJpH8kkT9EOWM6v+WRMqagJdpxEPH4lyd2x0hXl+3tEGACJyTaAZYQ
+         ejnhHfdKYevn5S4de9Sl/q+i/lSmbVR2Iqwqep7Rwp95GrwKUTAE8N9A8EAhFoiIpmOl
+         LFhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791813025; x=1792417825;
+        d=1e100.net; s=20260707; t=1791813103; x=1792417903;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=zE6VoN+PiWAA9KAYU57i+n0fCcZ23h1hk73tpEWp1XQ=;
-        b=SmZiHIf3wUmA0zKdOGazxgvq0L2RE3DCBZFN8gnofoqdlatyXDm/YgBEjK1n1tPsgI
-         N8oOlRbrmbfT8JMqwXr+bLaow4jel5ehbhiguSGmVIi1N1/i06HiiRHbIlguFFxw+f4n
-         Ire+GiLkabs9uC+XFzpzD+9UuWZYb6JBfJHbaOHk9NsYKSOaAZndNZsV+JPBEYqNRpMi
-         yD1fb/LFD9jyClyRxy5a+lCERboIe7KOSPPfKseo6b0sdwYtdhBDRMr79qA5rW+kU0eL
-         kCBrTQDGpKa8yS7PfhTA98DJEmNbWxHHJ01JvnxxULeAbQCjYU44zAUMndyPviarWx/V
-         QvUw==
-X-Forwarded-Encrypted: i=1; AKwUvBzS5tvonoT2d0Dvsu8yyjHYk0w/mOXVDfLYEjOMb4KSkBqDUUZMng6Y0og4JgTaDmkoLFouV1lsGd0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJQmzZfhEvvnBc86ktCFAaEjp0ZWujkLnuCXc42xYyChum19Rsk
-	z7qNJ0tbi46/ZwWu1OlxwkGRgH8whZq7ND9Xk+XI4MxLmt4MG+1y6viz
-X-Gm-Gg: AYBFou2aPVFbPRlWdbpkDdlMEgG1o51OzxqWPADXjM2EW9NPH1FiDC9P7bJKYY8f2nF
-	5Tk2+UiF0bUwqVFAkPjZnOsvFbh8KLFjuiHHGXR+AfdhR2i4lArw/gQVfRuvnGL05FgAA0XAs7S
-	68/TreF4agLIfPg5l2kEzithxS3qZf2HsxizhwrKB9P3kLVvQwYlfYHx4khgS00WRFBkjSfsxxY
-	cSMktt85BLscaqnB5j5vYgX6V4oWUVU2lwdbe8/vEuBoPDuFTE3jj50TNJ/k43sJ5NvZI22o6St
-	WbyF6+dghGXJS+mIh+JsIoCmUUsF65NJbZXokuL8M3dwxr3RleTiEXWZsNiPOzIwQqMFYRXkj6F
-	Q1Mf6NTCUbcyOrKwanImEAqfRkzZs6+yqXk9visOB4kyMOUoJ1DSLstwnHcLr0MzTxxjW58doaC
-	8iO7XmQiSc0lL5+gEUZr/piQ4u1NYBL4Yoanx353KLSfLxqccZffBufjw2PbhJvfh2Df2ZFTd+G
-	2/bhru5eoc7RgXoer3Mz8ABnsB8tmWAnL2RhxAfFf6sCbXk/Qv2RgqcMUuKzbO74uvQ5uFERNos
-	4jsY0CVuWlOeq0Qvg9nT5fWV9fmNMVX3qtFXmKkl1K3+OLlv6x6j7x8yaZ7N22kxRFV54g+q5cU
-	0NMZs7FjtsxcQgfOyPGe+a9LtaxaFA14PmTukaNm9dCj8MdZSrZwjs8ldObFjT3mrCqeT7ja3Ck
-	UlAZej
-X-Received: by 2002:a05:600c:8b28:b0:49f:ff7b:f056 with SMTP id 5b1f17b1804b1-4a18e4a3c24mr158578585e9.9.1791813025261;
-        Mon, 12 Oct 2026 06:50:25 -0700 (PDT)
+        bh=oLOrbPkiMwYxELk182ZPfeiCmk/lFJpYO2IK6N8cvrs=;
+        b=xS/RQWl6/2PLuJi3IoblpJneKzyvJwkn9UoQjqGYKhM2sdtYd6pYTMAzWNeGhEi9BA
+         iWaKuzP99ZzexCPcwaJ6haU8XGtBEj8nwVNvuwlxh9vepTpGyPgFgbFJ1q8h0jaobgiC
+         plMNyPoXpT2atKzWu2olDw/PH3DtUpCfodulLTge4AZdDv/E0wmNdtmH0B32qJoiD/zr
+         crj+Lah/xLe5r8KAiA98XlkEDu1gYh9wXjh/A4hULOwfUkDiC5GoYZbOv26vun4rNIj1
+         SmbzW4vp1+I3JPIZJwQvKB1EBNpVEACoNt4J+yhrbhtN/NNFXUdy0mUpBBGssQUyyweG
+         gzwQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxtpcLdCD5BA/efGadGzzICZl4tm77K7kOtyoqwG4UB0w1rBLGqwwhLTcTJCESdhxbvJGFn3ReUmUg=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJwY+IBWY8/WD1ssLcKWiEkR5AQI7BW3pVtYpUcZnG7RjPsf1RE
+	X/N1sM4Kt4qCYEJE0Y7LiCnEnZoL19bhZnH/x74n7GH15WW6AivC717L
+X-Gm-Gg: AYBFou3LKLX+IXdNPGa6YmuUprke0rcbzfExtgbovV6uahuoWNEigetM9UfuVVZGHgF
+	Ssib8mICZhRVyidQay2dPjmt+Y/N8CzszsdScFIB7oip5lvFbmGHup4SfcDecDBkD2BzULknhCS
+	agnw/r7HeTqJUELOcV2HQy65Yiog5CHi6J8lt4uOEeaZzRs9WVrHS3CTJk17zzBfGHugW831nQf
+	+GyPbZ8JmgryBfJX0cdtlKqelFAvw3xXJ+Yyjfd+uK/eLfLq5HD17A9bG9Kmv4/z/qOxgiLFyc1
+	pFfNpCFoo3FIO0SscLz9FPEd/0vdSisr4Xp78PMRwHgSgr3exDfqM4TdDaPcgbwT+4hBHcEx/uE
+	OnUi6opmTXuVVz0tC75dG/b3YoOx3+IVDHBCxHQK6tx8AcI8lmN2qhKZKWB9h+Pw4tDIAwlmNSx
+	4rlclTk2LTZsak5gXkQ8du2+iJn+8D/PviCChiMsTfJwa28ZWnmfFmBxiooALrC9ZiqTSLoNkzo
+	T/pda0ymKB7KUr/AE7BRY9YqGVpGQJRnxRY3wZ73PhD1V8V8+ADn0y5bhVUAKn5bvYU/EdSRzIY
+	0hVtKzXEXaSo6P5SVui2bSf8TY9vXVJwgkb7OHjP9/nudkemVxBOJmkPyBzyqzluIzf1y9YVaES
+	Cjle4SIsBPlYH/j3XD+AvR4MbM+jWQI9wrga25Fh+ex4QZvdkIEevHo1DrhunVqYYTsF9nrTfdb
+	eMQkRWYCSJxv3JsSs=
+X-Received: by 2002:a05:600c:3e0a:b0:4a0:1c10:1419 with SMTP id 5b1f17b1804b1-4a18e4cd667mr179122395e9.26.1791813102687;
+        Mon, 12 Oct 2026 06:51:42 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a19f249692sm166741385e9.3.2026.10.12.06.50.23
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48db98c3a13sm19399336f8f.25.2026.10.12.06.51.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 06:50:24 -0700 (PDT)
-Date: Mon, 12 Oct 2026 15:50:22 +0200
+        Mon, 12 Oct 2026 06:51:42 -0700 (PDT)
+Date: Mon, 12 Oct 2026 15:51:38 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
  <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David
  Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>, Krzysztof
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, "Shuah Khan" <skhan@linuxfoundation.org>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
  Randy Dunlap <rdunlap@infradead.org>, Marcelo Schmitt
  <marcelo.schmitt@analog.com>, Radu Sabau <radu.sabau@analog.com>, Janani
  Sunil <janani.sunil@analog.com>, Salih Erim <salih.erim@amd.com>, Jishnu
@@ -78,11 +78,12 @@ Cc: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Michael Hennerich
  <jakubszczudlo40@gmail.com>, <linux@analog.com>,
  <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH 3/4] iio: adc: ade9000: add support for ADE9039
-Message-ID: <20261012155022.00000412@gmail.com>
-In-Reply-To: <20261012111342.48040-4-antoniu.miclaus@analog.com>
+Subject: Re: [PATCH 1/4] iio: adc: ade9000: parameterise the reactive power
+ channel
+Message-ID: <20261012155138.0000726c@gmail.com>
+In-Reply-To: <20261012111342.48040-2-antoniu.miclaus@analog.com>
 References: <20261012111342.48040-1-antoniu.miclaus@analog.com>
-	<20261012111342.48040-4-antoniu.miclaus@analog.com>
+	<20261012111342.48040-2-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -93,22 +94,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 12 Oct 2026 14:13:39 +0300
+On Mon, 12 Oct 2026 14:13:37 +0300
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> The ADE9039 is a polyphase energy metering device that is register
-> compatible with the ADE9000 for every register the driver touches. The
-> differences relevant to the driver are that it shares the full-scale codes
-> of the ADE9078 rather than those of the ADE9000, and that it has no total
-> reactive power register: the register map has no AVAR at 0x211 and no
-> AVAROS at 0x010, only the fundamental AFVAR and AFVAROS.
+> The channel array is declared once by ADE9000_DECLARE_CHANNELS() and
+> specialised per part through the altvoltage_rms argument, which lets parts
+> without dip/swell hardware drop those events. Some parts in the family do
+> not compute total reactive power at all and have no AVAR register, so they
+> need to drop the reactive power channel as well.
 > 
-> Add a chip_info for it and a channel table that keeps the dip/swell events
-> of the ADE9000 but drops the three total reactive power channels. The
-> fundamental reactive energy channels are unaffected, as AFVARHR is present.
+> Add a second argument that selects the reactive power entry and introduce
+> the ADE9000_POWER_REACTIVE_ENTRY()/ADE9000_NO_POWER_REACTIVE_ENTRY() pair
+> for it. The entry macros include their own trailing comma so that the
+> variant for parts lacking the register can expand to nothing.
 > 
-> No change is needed in the CALIBBIAS path: with no channel carrying the
-> AVAR address, that case is simply never reached for this part.
+> No functional change: the preprocessed ade9000_channels and
+> ade9078_channels tables are unchanged.
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > ---
