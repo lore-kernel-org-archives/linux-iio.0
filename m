@@ -1,109 +1,91 @@
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.discnull.de (mail.discnull.de [46.224.56.96])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F6C749AA59
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 14:49:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B8A48FF9A;
+	Mon, 12 Oct 2026 14:51:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.224.56.96
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791816582; cv=none; b=YwM2TBaiQnKd4yE+ysP4xv35gyk/m07FsLnPmHW0yD/my0jJ2naU2IWIbiCG9YM6UWjbkLee/k3LCgw2UJR/a2AAyyGFfbC4+Qj6JbV+AgmCfoZpi7W3poHgb7lqZVFlydnBGVeledG0XWGEW+Igl4Dh6Lt4v0KyJcy74/oY6t0=
+	t=1791816713; cv=none; b=MQZS5CvsEumQdhZeaJaZdjPrvv2E73jN4zYLUr0RVxH1GYNPfUHaJbPfljczUt1vRMevbwq4dGDyAp15g+eRid1GCPhXWz976e6uhlQEgKqewleECdgGhUHfVCPfLla+40WrGQtzAKlPI+409a0zUrqXeBZeNi9Ayu050+qHy0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791816582; c=relaxed/simple;
-	bh=oPkeZaNBkdRECuCTRYVoSMnv9mvchctzGqmg2kEJu8U=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LPXcfAF/zhDveQuZY18S7HRPnfQlp1erdfq0Q7ltwwY066/Lm3ByeWa5imkFdAwLc1LlxtGR8kXrndulG/Av+UrOrmUlwDfYFjTirnfKaJZPkygVsFXm6TJZWIhRwggl6NgzBsePkHtANCKrTp4XDyn1nEAi6JiNHWfYh3kiMVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k+n7mo+u; arc=none smtp.client-ip=74.125.82.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791816713; c=relaxed/simple;
+	bh=f9EvugwLxELEc+dbPD6mVsUPxIzvixYfEzPGz/FCAZM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mAESYjPho875y3Gt5QGbJT6fqjtGZhFgaD+ucHEqJpjclI4lNAV/UMoN6MgcQd246e0/xTK7ZN1zDQxs5SDQlEZqHUAJ+dksm2K3WAlGMG9GkG+4IlJLWW/qgOe2ZaHJrAkm0E6SLyshJYLqKqEcVokqaHea9jXUF6wtkI1QRX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=discnull.de; spf=pass smtp.mailfrom=discnull.de; dkim=pass (2048-bit key) header.d=discnull.de header.i=@discnull.de header.b=mKLL1r8A; arc=none smtp.client-ip=46.224.56.96
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=discnull.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=discnull.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k+n7mo+u"
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-35b2c599f43so1534861eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 07:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791816581; x=1792421381; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:date
-         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Qe8p8UxXn7BQaCP9o12LF3+dtE+HBHraOrQKjsuul2k=;
-        b=k+n7mo+uNRh3FuXhOf4vDpem4wH+S9xgYaH72j3dqtr/lJptAhgz/6u1JBO3tbrs69
-         Y/YU/J7wrE2Psknq2WRs+4hVprbE2Z9vX9NPWjiu80fpI1qn0EhHE6k/HyG3JuZzeXEo
-         nKCHTrSCJc008qF/DzzI2x8UrXpBy7XEM+YzdNOBWNEi90cVhQySXl/kL+96D1SqjzRG
-         da9AtSq2c9dDQ5gnt8tW7shSDGZNTMWFuH/AQ1aVYTY+CkEThQbTi7/iO+orFZGUy9eN
-         lRfez/74vCMgIZcZO9n2E/uC1mrXwT+haRzc0EOK7pmjnpkWELG8fimzexdpl7YTu033
-         AU0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791816581; x=1792421381;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:date
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Qe8p8UxXn7BQaCP9o12LF3+dtE+HBHraOrQKjsuul2k=;
-        b=u3Now81W31IOeyQi9xv1frmx0D7cxZRRC//1TeJaj1ZmBkV+ikM7+U+2vyqmsfXjrt
-         v2siZa+hZ6qhoigY8QgX+mWO4IYpbmgSWvKPpSY8lo50Ujlp9IlxDcC3OG9cf0QKSeM+
-         PbyF+RNAIY8Hh+/kETVvRcRabNQjX7t7ZyOyZYnCEwZbYKGItdAOUibE4WO16c0Plgx1
-         GWe3GDfq7BK78K+eI9hW7hO5gGHz7/i82weXCRDzO/s5wdkstZX2fNfVVtWbQ0DFU/oL
-         g9OU4XC/B+96sC7yqMg5kA7LEG5RtPLHww6dV2W5J+fv+av8Y+Pmqqc54ym1woX0Y76w
-         o6cQ==
-X-Forwarded-Encrypted: i=1; AKwUvBz2EWOQIzALFLUqo0q6OLDVklOB65ucYZZnVzvxwH4v3h9Fxog1TUcQ9FZbnOO0QKOB5zdriZ3pzuM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYInqxP+9h/WH1avPZjuFkomKs+I4BRA27i6LVOqwYe5BqKlzXqC
-	5SXt9tbNywyVWEjnUj2hdrFRhb7sW5EI7XqwGpsWHHSkdqnHqBLoXE+y
-X-Gm-Gg: AYBFou2poUFH01g2kdF+XzY4OuLjAktogGU7mbzyj9SYP/M2hdtIlH679+RrBbG8Z7U
-	B5CUl2GXU6dfbUpxUwjuPUV39fqdwGQgTbGmUhrrPYLzgds31CReTwFEfmIEKRVxoBgHNXJFjbJ
-	B3lbM8hyQ5Kj6Mjz+biGhRxnwsc3jLIsSU5SP9jhXYQXc6MZDAuFhqfj24PWMogsc5MiTVUQMHA
-	3IbQbBjZeirwJvyUlzHmvQLClcq9avEcglc8KH0QZ87J/yih9Tyl7C2QAWNLs+j8thI90QDAmi0
-	mweR9rHFuW/CBE5t8yaEGP0gi0M/bf1sCC42Ht71dkWbyw5jzV/kUvWqwK5UK+ciZVR1kJp5mf7
-	gDC73D4jJ+F/Z5aC5TgErHRUxk2ZYqqPyhKh47UgXJBYmJdfE9VeLRmoidDf+EOimX+ioOowETr
-	0dEP4k+EUedFtR8k/+KHXngABIIPpogNgOeZv+15IDRDK4tRRdy+Wn8QG5KBr8Q6QrHpQzDYlRJ
-	q5KETPWK/ut6QxstOC0DUu4jM95NEygkzI1AY1kkB7AkzWWAaHGnA+H00GF0/ZjOdL42j9G87g=
-X-Received: by 2002:a05:7300:8806:b0:34e:9147:b862 with SMTP id 5a478bee46e88-3537e073ab1mr17729284eec.34.1791816579688;
-        Mon, 12 Oct 2026 07:49:39 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (162.10.253.157.netskope-rdns.com. [162.10.253.157])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537ca6d202sm33239386eec.13.2026.10.12.07.49.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 07:49:38 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Date: Mon, 12 Oct 2026 11:49:30 -0300
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 3/3] iio: core: use kstrtodec64() to parse
- fixed-point values
-Message-ID: <s2h7eparj3igtairdv24jxxfqrrcntwsgq63de5zssvylxcj7q@lgr45mi3ebt2>
-References: <20261001-e-notation-v1-0-75187bf06c10@analog.com>
- <20261001-e-notation-v1-3-75187bf06c10@analog.com>
- <ar9kuHwnTM8jdkqR@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=discnull.de header.i=@discnull.de header.b="mKLL1r8A"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 464C17D44C;
+	Mon, 12 Oct 2026 16:43:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=discnull.de; s=dkim;
+	t=1791816224; h=from:subject:date:message-id:to:cc:mime-version:
+	 content-transfer-encoding; bh=CXXXtlZeRstf+tA6ws1VZ12DOlR/eQxGc153GV1yBDM=;
+	b=mKLL1r8AxfuGAYD10STmWe+yuU/PWRasPvlncTv8AP6r74pxZmRjfziazMZG48e1N3mNyH
+	xj8/PFrQ/ZMuhLGh/oCKVZhHNTtJ9h0277Dm2zyAmIDrLFnrh48twYcY+bxohBHvvSK4rt
+	hIXwkgs7pHHU9ULNi+Setc38qReZrXU0AdbwKpB/wFIF5CMhtp3pyVe1DCZp0vWdC6P3pf
+	AWHgd+7RG5WTuTFQ8ZR9ULe6ohOSUWYSHhgbKRKxx+n3DnUuycdCuUroMiB+RtbpUjbrj+
+	yjV0sWM5dsgxUZK0nVafW1SNN1LuPiHHFp7vLmBmtwAmHtK3hSfGb/UGrhHFbg==
+From: Alexander Sarmanow <as@discnull.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Parthiban Nallathambi <pn@denx.de>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexander Sarmanow <as@discnull.de>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: light: vcnl4035: Fix reversed ALS mode bit
+Date: Mon, 12 Oct 2026 16:43:15 +0200
+Message-ID: <20261012144315.1678195-1-as@discnull.de>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ar9kuHwnTM8jdkqR@ashevche-desk.local>
+X-Last-TLS-Session-Version: TLSv1.3
 
-On 02/10/26 11:00, Andy Shevchenko wrote:
-> On Thu, Oct 01, 2026 at 12:34:58PM -0300, Rodrigo Alencar via B4 Relay wrote:
-> 
-> ...
-> 
-> > +	/* fract_mult = 10^n, so ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
-> > +	unsigned int scale = ffs(fract_mult);
-> 
-> Hmm... It's not obvious. Maybe you want to use int_log() instead?
+According to the datasheet (table 2) the ALS_SD bit behaves the opposite
+way the current ALS mode defines are set, writing 0 powers the sensor
+and writing 1 shuts it down.
 
-hence the comment. intlog10() from int_log.h returns log10(x) * 2^24.
-It could be used with a correction:
+The current driver thinks the ALS is up while it's actually shut down
+and it's down when the systems powers it up.
 
-	DIV_ROUND_CLOSEST(intlog10(x), 1 << 24)
+Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexander Sarmanow <as@discnull.de>
+---
+Tested on a Raspberry Pi 3B+ with a VCNL4035 on I2C, running Raspberry
+Pi OS downstream kernel 6.18.50. Checked with i2cget that bit 0 of the
+config register 0x00 is 0 while PM runtime resume and 1 once it's
+runtime suspended. Also builds cleanly against iio/testing.
 
-because the header warns the result "might be not exactly n·2²⁴".
-Assuming that the fract_mult is a power of 10, ffs is the most straight
-forward way of doing this.
+ drivers/iio/light/vcnl4035.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
+index ce1bd42b0c7c..f1cc75245001 100644
+--- a/drivers/iio/light/vcnl4035.c
++++ b/drivers/iio/light/vcnl4035.c
+@@ -44,8 +44,8 @@
+ #define VCNL4035_DEV_ID_MASK		GENMASK(7, 0)
+ 
+ /* Default values */
+-#define VCNL4035_MODE_ALS_ENABLE	BIT(0)
+-#define VCNL4035_MODE_ALS_DISABLE	0x00
++#define VCNL4035_MODE_ALS_ENABLE	0x00
++#define VCNL4035_MODE_ALS_DISABLE	BIT(0)
+ #define VCNL4035_MODE_ALS_INT_ENABLE	BIT(1)
+ #define VCNL4035_MODE_ALS_INT_DISABLE	0
+ #define VCNL4035_DEV_ID_VAL		0x80
+
+base-commit: a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
+
+Best regards,
+Alexander
 -- 
-Kind regards,
+2.47.3
 
-Rodrigo Alencar
