@@ -1,69 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9889026D4C3;
-	Mon, 12 Oct 2026 21:03:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 079764B66C2;
+	Mon, 12 Oct 2026 21:05:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791838993; cv=none; b=Mge80wKG8bGgS/52MWNGvfSUAkO1bRczRvbVuLbayFpfgW3iztn9qCIJwlzh9Ufj+jiYw1ffilsdpH3wkSF/Nb9ZmxrUWYKjA9gEWNfSNAzlbEp97OrLgTHG2a9Kb0Zi5RjCxxnlJ4s/9pcaLNCH0MSY/ZqSAKMr8QcsIXWB6N8=
+	t=1791839137; cv=none; b=Og3sDnboh+LDOI9B89NLwgHUTDbR5c4j00ntXBlk0BXJH6C0YAeHQFarNNo1MXREAFXw6kAj2n/sfwNCa0HcHY8vk2WBSqhCCuy6ry3GjHTqVD+OQAtyH02jfcXgtp/RarDsySeJvEhiT2rbBa5YpYk5Nfb5WybYl6puj0fKPHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791838993; c=relaxed/simple;
-	bh=RSFsJAtlDvmcdluKq98Yyik3AX0ndCZVuFsLEkW0ECI=;
+	s=arc-20240116; t=1791839137; c=relaxed/simple;
+	bh=SadU8DnjTI8iqyC9HjuGra18BDSNoEP5rD9TJRC3DAQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Knx6b5Pcbi5aDMW1j3tZofyadjrR3OwHd3lwZWMpgoNv0J0+iOw6LJifsSyU1YJ/RMklPNi7enPp8F9D25TEq4mCLUVTM9PTTmNfBiLIGqb1IoL0CtvCcZ8fWCpoSgj0Et4PjlCLH822WTtEjvjJqXQ/u831Ds9IJ8jIbka5jF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hwRvPFpX; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bp+zsbNjFmbKVm3xn7qo8Iurkaf9A0DhFUHVX8eUbrLkVvGaza98pH6fkadPbKVxI6i+JZf0jcPH48ugMLLRd232Q6SPHGwvroWdPFq6gbeIbnMTADRJHOpG/8jEsVgvUITUJQofgFtUIbNs+xAwOMDnn8kIRcw9xtlJxYpq9BQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cyjXkzuh; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hwRvPFpX"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cyjXkzuh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791838992; x=1823374992;
+  t=1791839137; x=1823375137;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=RSFsJAtlDvmcdluKq98Yyik3AX0ndCZVuFsLEkW0ECI=;
-  b=hwRvPFpXpJFUanV3m8bTux5q861J1mLxiMVwf4hkQNGRVqMiZIPTPEeP
-   T+4T+EZx4zoCdIss2ej9oTiyCXLel5+HYurZSJrxGQUJSkiiRlQe4z5xr
-   2/9ObvhUSfxAbhndEA1emmpgRrtDedsRUtRy7eCMeWG4FEaLO5R+TtciZ
-   ISjtg/MBrI37eHBLnkIkll8noLwsZrthTXR1FQPHPUWmcAwrDqHKuC6CV
-   RjQk4YqiFCOE83IAAleZvjR+/Ts5AO/8fZBe7WGY9SUJ7W3O6nX2GpFT7
-   NO+kKAT7Mn+uq1BtBbgtuFHzVAAePtOOYnLSXyQwxkRrL1NLnMjxPFPyb
-   w==;
-X-CSE-ConnectionGUID: 9PMc1RRZT46+cP29TbK1YA==
-X-CSE-MsgGUID: x2rd3FRcTnCSLxiz7ypNZQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="453681"
+  bh=SadU8DnjTI8iqyC9HjuGra18BDSNoEP5rD9TJRC3DAQ=;
+  b=cyjXkzuhFPv3Y/lvZmXjtj+eOvierli5uP88MSyaEXNs8MxAh+niVvZA
+   W8ntmzhQuPD8weMwQwl0NYbJvvSPquvlG4JMpnWaFWr4tMUmoBvdHwdot
+   mDXVAbbe5XA7fCM6Isj9evQFeKpsrc6ccbdoMmpJRswCqkVXD5uuYhNgr
+   4j0+89SLoycE/3OqRMmZ7fGz8Kv0j/C3WBAuhQtUvg42XA8LMgnlHyinM
+   ML6wSrXuyPyfIiZ3Aw7YP+CP7AIWs3UtK05pkw6o9FJ/h1ERz+H8Hpfp4
+   SDSx3M4skdPfvWzFyndWlbnXgbKYEtTRdEhQ2DhtjhBav9i1eS6q2PQn6
+   g==;
+X-CSE-ConnectionGUID: 6+Y0onN+Ru6HRVuAwMkm/w==
+X-CSE-MsgGUID: xecZA1i1SYORTLPrWmW2Nw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="565678"
 X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="453681"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:03:11 -0700
-X-CSE-ConnectionGUID: RztuPPXFQ3a0Yapghe5rPQ==
-X-CSE-MsgGUID: 0OqWiq0uRrSFu+ieXpcVng==
+   d="scan'208";a="565678"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:05:36 -0700
+X-CSE-ConnectionGUID: BbQrLs3JSOSEu+A8+2ob3Q==
+X-CSE-MsgGUID: WLVyzymYQLGIGJAJSubY+g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="964159"
+   d="scan'208";a="949457"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.179])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:03:07 -0700
-Date: Tue, 13 Oct 2026 00:03:04 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:05:32 -0700
+Date: Tue, 13 Oct 2026 00:05:30 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Marek Vasut <marex@nabladev.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 05/15] iio: adc: stm32-adc: rework internal channels
- data
-Message-ID: <as1LCL3y2MN204OB@ashevche-desk.local>
-References: <20261006-adc-stm32mp25-v1-v4-0-d31ec75aecf3@foss.st.com>
- <20261006-adc-stm32mp25-v1-v4-5-d31ec75aecf3@foss.st.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: adt7316: use kstrtobool() for sysfs
+ boolean parsing
+Message-ID: <as1LmjjV_gLvgwiE@ashevche-desk.local>
+References: <20261006103350.32853-1-abdelnasserhussein11@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,35 +67,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261006-adc-stm32mp25-v1-v4-5-d31ec75aecf3@foss.st.com>
+In-Reply-To: <20261006103350.32853-1-abdelnasserhussein11@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 06, 2026 at 09:57:36AM +0200, Fabrice Gasnier wrote:
-> Diversity in internal channels data array lead to have zeroed data.
-> To facilitate addition of new internal channels, without touching
-> all array initializers, only focus on exiting channels on each
-> supported ADC variant (e.g. each SoC).
-> 
-> This also allows to get rid of static_assert() checks.
-> 
-> No functional change intended.
-> Cosmetic update: remove comma on STM32_ADC_INT_CH_NB as it should
-> always be the last element.
+On Tue, Oct 06, 2026 at 01:33:50PM +0300, Abdelnasser Hussein wrote:
+> Replace manual and unsafe character checks (e.g., buf[0] == '1') with the
+> standard kstrtobool() API in sysfs store functions. This ensures proper
+> handling of standard boolean inputs, fixes potential safety issues, and
+> adheres to the Linux kernel coding style.
 
 ...
 
-> static int stm32_adc_populate_int_ch(struct iio_dev *indio_dev, const char *ch_n
+> -	int enable;
+> +	bool enable;
 
->  	int i, ret;
->  
->  	for (i = 0; i < STM32_ADC_INT_CH_NB; i++) {
-> -		if (!strncmp(stm32_adc_ic[i].name, ch_name, STM32_ADC_CH_SZ)) {
-> +		if (!strncmp(stm32_adc_ic[i], ch_name, STM32_ADC_CH_SZ)) {
+>  	if (_adt7316_store_enabled(chip, enable) < 0)
+>  		return -EIO;
 
-So, now this can be converted to use match_string() I believe. However, if you
-are going to do that, it might be a separate patch. OTOH, this is not fix
-anyway, so might be also integrated (but makes a huge change). Up to you.
+Makes sense, but check that the type of the functions in use take now boolean,
+ditto for the rest.
 
 -- 
 With Best Regards,
