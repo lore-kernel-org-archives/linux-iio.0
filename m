@@ -1,63 +1,63 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9BCF41B8C7;
-	Mon, 12 Oct 2026 11:14:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1097041DDFA;
+	Mon, 12 Oct 2026 11:15:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791803689; cv=none; b=dBRCrE5GaCDzqqFwaQJ8g4f4RmONkmhyRJe1Xe8wA6ecpZV+7IUEO7EjSt/ozvDxBKY+fpda1k8pSBDxsfhCqlOfIPJjcHY3vKyFp8L1ripVeCo/zfbk2AigQab67dmJpwv5alzGTtgE4Cj2g+1OeajaS5lsUmGQY0QO2lgURSU=
+	t=1791803704; cv=none; b=oa3rN3M7LaZ0IEEzwRGKcXBzM+GRLTV2aALhHDAJeo3s9/4gWskeMXhu/Y0yBFYh5b0MO8Ngtg3TwcBIO7wksLOov6+2SJ9sZzE7GKXSPPLBHrO2IgT9Cw+AnBMEIabacdMbvFgptXXFPpSvgOTYA5Kc9ClnJGR69VDYKGmNkXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791803689; c=relaxed/simple;
-	bh=8fkjAHI1stfCBBGhIht/mzIv5dbZqvOGYwQhIjGBoI0=;
+	s=arc-20240116; t=1791803704; c=relaxed/simple;
+	bh=idFA8JVKBWB0uncZpM0EC6eIkqYm5V5XjbgXn68qeyA=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WJErlYARACqSf9rJ4m0ysEc5HGQF8XabnXccdjWDf8YS7ZNjv1XfwXZqmo7hOrjI5caQjG49NplbSnpyAAFCkCbDARCspxLVYr9tj7qVQ2esVxppe9CUpAOucr7r+5BPetAfvQAL38FJkG/1CzqzNzS6AFMyaImNc13m8uEsF58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=hKTakj/6; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Xlb5meDW; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=NnR86UAyE0eI04N//7kZ/hFTfyqN5+CpnJ/aZV3sDDFFpbnUtPmC162KnS5XAI5yX411p6o5vpWq3JFKm/oX2vIMDVlH4iK+xDiQ0J7+FJ/xTKvW+RcKsKbGRiR+3narD4xmi2ZO8JEzZ2ziDhdBgRop1rBW6rS/tIJy6B6yKfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=K4BrVbnW; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zjOmrOQx; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="hKTakj/6";
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Xlb5meDW"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69C8O4Hg1120779;
-	Mon, 12 Oct 2026 07:14:36 -0400
+	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="K4BrVbnW";
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zjOmrOQx"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69C8Nt4p2416607;
+	Mon, 12 Oct 2026 07:14:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=A3YU0
-	R5Tzmocv/BPrf7fbhY9aGUzlogk3+YZn07Urzc=; b=hKTakj/6yWL4hHcXdNDnc
-	k/HpF78TC3f0j6i9NAEneRkf3Pf4PSMODNGJMml2cPHpjgDic4W3HAlfxQbKmS0X
-	VkGc04vY0wru9iGarM28tMefmGriv5lfUCKSr7uAP1OpdCR97EY22lY0J7N8YSV8
-	Q4e+buOiqyEUjIzo8pG+Ssd2vrHRfoMKW6YCz5JkR+/57N1xmFsdaOcAyyT18tKl
-	aHCvQx0lNraPzrKhpbT+389j5zXxzWxISBbwTyAlNt/FZhh/l/24hrzf09IIGlfc
-	r453uDMjv2OL1VTEPPGjZlxDeULPllRj5ll1kTgCMNIbP+W1yx7iOYYpJacT0Mb4
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=3vFYv
+	yncw23UlOfEVr2kvg7QoCZuk9RSzMQZbMyteV0=; b=K4BrVbnWjBrsGjSRT4Dss
+	w11b6eIiucipb92Kp8+Vayw0/OyO1DlHR48QJMTwEr1nlu+SyuC9SeaaLZzr+jaF
+	9gn34GfHiUeyj536S2HYiUmqkTINrjQSRBgNXXiacI6Lkqe+ARZ68FgkoWL5EhEr
+	9iIssi7q1T7QvZ/M2YkLLjRuipaWKH6JYstAjA59090baidvhsqwzStaQmUCMkw7
+	GRMp0cD9BbK1dx2kr8Iaghio/K1qgV3P3Uo7V171MG0hLNuV4BY9teHtDnloihjC
+	0bhzPiN64I5UMNSmEXpTkQ/kxAapTVacAjCfvHY9iAlpdGTbmxFj/5swbmQZqKZj
 	A==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=A3YU0
-	R5Tzmocv/BPrf7fbhY9aGUzlogk3+YZn07Urzc=; b=Xlb5meDWiT1lRyyn3Lzl/
-	TEk/qaCj3+cB2hw6Ga5sV/uez10q/V5Ppjs6Rrhlt0rbtV/YhB5gSHFwb26wjAfS
-	tTJOesIjQ0lHKbG6IR32W2lFI5hjnaG6eo8Dtp6dsyTAaj8rt++6NFd728cL2OEo
-	IwGZhnZ/xzCO7Oqjmu5k94/kcG91SQgiRnrFtDkDKuCKp3C6T+T48/dSFKfXrZ2j
-	d9b4uTEpMJLVqX+sw1u0QHnVXtE1gIIYPjInHbsqMOErevjmZkbhXRDTu/o+7IpU
-	ovsGyr7NI8rE8f3vv+nwWgelTtu9+aPI+QxqQOLxbQZze3JYv6+dj7bsrKla7X37
-	Q==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=3vFYv
+	yncw23UlOfEVr2kvg7QoCZuk9RSzMQZbMyteV0=; b=zjOmrOQxd/KWHckyBu5Hr
+	HudQhZnfyzDSP1AdEQDaBX6SxQBq7ukaO0+X3Fp4Q9c4izS7sjaYgkPWqyph85uL
+	7f0LsjU7zs6Bbc/YFQ6LGOalQgkvTedyycFOorRiWFYkrzaD6j+mvMvBaXamnEyL
+	kHgbJn11SkzcGl4MWoqHyZH/V41Qs0loVjJZW5HCNH6807jOkYW7urq2HqZUNJT8
+	IChDQKdIQo++BnnVjnRalEBkmWy/+2gI9KOxy3FDmognxldyMdWrDic3h/3KQ0M4
+	hevtPKCP+QmfjmcbZqLz/qS7qLAMVtvpN+/OLEWAa7l0fqDUtScIv7NPEUEZmH4N
+	g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4h83pe74dw-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4h86peehnv-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 12 Oct 2026 07:14:36 -0400 (EDT)
+	Mon, 12 Oct 2026 07:14:48 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69CBEYh1036763
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69CBElvp036769
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 12 Oct 2026 07:14:34 -0400
+	Mon, 12 Oct 2026 07:14:47 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 12 Oct
- 2026 07:14:34 -0400
+ 2026 07:14:47 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 12 Oct 2026 07:14:34 -0400
+ Transport; Mon, 12 Oct 2026 07:14:47 -0400
 Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.223.86])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69CBE1Wx024898;
-	Mon, 12 Oct 2026 07:14:23 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69CBE1X0024898;
+	Mon, 12 Oct 2026 07:14:32 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
@@ -83,9 +83,9 @@ To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	<jakubszczudlo40@gmail.com>, <linux@analog.com>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH 1/4] iio: adc: ade9000: parameterise the reactive power channel
-Date: Mon, 12 Oct 2026 14:13:37 +0300
-Message-ID: <20261012111342.48040-2-antoniu.miclaus@analog.com>
+Subject: [PATCH 2/4] dt-bindings: iio: adc: adi,ade9000: add adi,ade9039 compatible
+Date: Mon, 12 Oct 2026 14:13:38 +0300
+Message-ID: <20261012111342.48040-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261012111342.48040-1-antoniu.miclaus@analog.com>
 References: <20261012111342.48040-1-antoniu.miclaus@analog.com>
@@ -95,126 +95,115 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDEyMDA0NCBTYWx0ZWRfX84vUV08pfEjo
- tU59GdS9YwFExtUK00YQjv5P5YyhVQ1Ae3EJh7J19g8ExzmL5X+pP9qK1EvqN/apWSP9RsRmr5b
- qYH8/nL8ZYmUwTXdL5W6FHTHo2PaMnT3f4YmQT9QrqfDx+MWTFda6moYsP1NwC931yTGNIgSJx8
- Jc22DxMcP/k3/stDBgUm16F1AX8oFO6GmY3JxKdSKQWUZcFfRP2qdSUO3D4gRSdpF4FeKqdSUZx
- aSGX40vRdMy/iwMcSQOqjpgjBEy6MLic0SevkCSFU8+gQjUBq+V+sTG6mKMiwXvar9QCG74l3Y0
- MocYLWI71R+GEcE6Aragsr7RhfTzTWZ/n5to2W+iXbkuVHpx/7sculC4ChT5HLCcyyHxat2ZdAI
- Vp6e3p/Lr0S4WmSVeuQta0MJ9cS4gwq1HGHBb/Z/uIci5u13Zerqbh0n/IZaQRaANQblDog+bp0
- 9jywmJtgDzhCv4V0kMg==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDEyMDA0NCBTYWx0ZWRfXwbvXW4s2ZQcH
- yNEsS4c9eDjkskEbIexyH5WOpXaWJ4jQ0MayB+jY/Pwxw+r8O54O73i53oAJLf4GsgRQjUdiEnn
- 1rdOKiwsW4u0jBDSOk2+/KQfZGNNfJDPboyGeJAKA/IRhLuHsd7f
-X-Authority-Analysis: v=2.4 cv=dphOmFg4 c=1 sm=1 tr=0 ts=6accc11c cx=c_pps
+X-Proofpoint-GUID: Q8uUl2xEqVd0SJljGRS3fQurK8E_VNoa
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDEyMDA0NCBTYWx0ZWRfXzSKHFIknNsSJ
+ loIh1lVmbfNUJXNOiA1RgBUbyjFe7v0wE14C4k/g0uegDbKgs0M5Ct3xWCzRbBgu4U6RI43SpEy
+ 6y5GcZNF5GqpLYR9s9i6cNE/18bjXosdZeRUfjt4kgCYmWo4Kyk1
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDEyMDA0NCBTYWx0ZWRfXwDrex3T+1teO
+ 4nXHIfN3QxtnLPhpZVTvpsz2T/WycNIlUHUBDrmLjJK5SZaQX7vfM2wH8Eo19asFb+xevxNCSV7
+ 3JL3Qc1NIIkLSlMoean0WcVvXkIo4vsOr2luxPAB2AOpZ0ZsugzY7WHDAH5hOdsMjymSdFsNlKB
+ k5XmybgQxWsD7HMTxl3p0I+5X1xOoKvh0SMm5jkLs5ePu6nXkqKpgWZjF0/YN2Q/0IDZ25b+q28
+ 9f5KkctawLxhv+M6gazH1XQeP1m5bRMNGluHqdqLK1K9Px4y4usAfXa6N8unbwAcBns95k8O4nc
+ 4xOn3yAcMaZWQGg1NaMT2aOOIJqv6+wG69QH9vbyfz2UhkdOy9NwB6WlmdNIR9fRKVTREcqBbrP
+ nSLju3ugn7GEYCJiMzoYmY1bPpO/hLuw6iJmIhpPbQW69VwQjAebS5gMxkQL+W6EPLDTAHv3vnD
+ WXI1ZVF5y0sg8DFeJCA==
+X-Authority-Analysis: v=2.4 cv=QfPzLcbv c=1 sm=1 tr=0 ts=6accc128 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=y2iMgJnqLeesTMF4eTAA:9
-X-Proofpoint-ORIG-GUID: wt6q4btToRzbWfgS6QT7hw-yH3nFRK9h
-X-Proofpoint-GUID: wt6q4btToRzbWfgS6QT7hw-yH3nFRK9h
+ a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gEfo2CItAAAA:8
+ a=gAnH3GRIAAAA:8 a=TF6gXxuSPZkvrYk5CCYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-ORIG-GUID: Q8uUl2xEqVd0SJljGRS3fQurK8E_VNoa
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-10-12_03,2026-10-09_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 malwarescore=0 bulkscore=0 clxscore=1015 suspectscore=0
- phishscore=0 adultscore=0 spamscore=0 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 suspectscore=0 adultscore=0 priorityscore=1501 lowpriorityscore=0
+ clxscore=1015 spamscore=0 phishscore=0 malwarescore=0 impostorscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2610080000 definitions=main-2610120044
 
-The channel array is declared once by ADE9000_DECLARE_CHANNELS() and
-specialised per part through the altvoltage_rms argument, which lets parts
-without dip/swell hardware drop those events. Some parts in the family do
-not compute total reactive power at all and have no AVAR register, so they
-need to drop the reactive power channel as well.
+The ADE9039 is a polyphase energy metering device from the same family as
+the ADE9000. It is register compatible with the ADE9000 for everything the
+driver uses, provides the same on-chip dip/swell detection, and shares the
+full-scale codes of the ADE9078.
 
-Add a second argument that selects the reactive power entry and introduce
-the ADE9000_POWER_REACTIVE_ENTRY()/ADE9000_NO_POWER_REACTIVE_ENTRY() pair
-for it. The entry macros include their own trailing comma so that the
-variant for parts lacking the register can expand to nothing.
-
-No functional change: the preprocessed ade9000_channels and
-ade9078_channels tables are unchanged.
+It computes only fundamental reactive power and has no total reactive power
+register, which is noted in the description. Like the ADE9078 it supports a
+maximum serial clock frequency of 10 MHz rather than 20 MHz, so extend the
+existing spi-max-frequency constraint to cover it.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/adc/ade9000.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
+ .../bindings/iio/adc/adi,ade9000.yaml         | 29 +++++++++++--------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-index e0113b62a261..03b69556b62f 100644
---- a/drivers/iio/adc/ade9000.c
-+++ b/drivers/iio/adc/ade9000.c
-@@ -561,6 +561,15 @@ static const struct iio_chan_spec_ext_info ade9000_ext_info[] = {
- 	.scan_index = -1						\
- }
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+index bcc166aad713..70106dd052ce 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+@@ -5,26 +5,28 @@
+ $id: http://devicetree.org/schemas/iio/adc/adi,ade9000.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
-+/*
-+ * The entry macros below carry their own trailing comma so that parts without
-+ * a total reactive power register can expand to nothing.
-+ */
-+#define ADE9000_POWER_REACTIVE_ENTRY(num)				\
-+	ADE9000_POWER_REACTIVE_CHANNEL(num),
-+
-+#define ADE9000_NO_POWER_REACTIVE_ENTRY(num)
-+
- #define ADE9000_POWER_APPARENT_CHANNEL(num) {				\
- 	.type = IIO_POWER,						\
- 	.channel = num,							\
-@@ -618,8 +627,10 @@ static const struct iio_chan_spec_ext_info ade9000_ext_info[] = {
- /*
-  * Declare a full channel array. @altvoltage_rms picks the RMS voltage channel
-  * variant so parts without dip/swell hardware (e.g. ADE9078) omit those events.
-+ * @power_reactive picks the total reactive power entry so parts that only
-+ * compute fundamental reactive power omit that channel.
-  */
--#define ADE9000_DECLARE_CHANNELS(_name, altvoltage_rms)			      \
-+#define ADE9000_DECLARE_CHANNELS(_name, altvoltage_rms, power_reactive)	      \
- 	static const struct iio_chan_spec _name[] = {			      \
- 		/* Phase A channels */					      \
- 		ADE9000_CURRENT_CHANNEL(ADE9000_PHASE_A_NR),		      \
-@@ -627,7 +638,7 @@ static const struct iio_chan_spec_ext_info ade9000_ext_info[] = {
- 		ADE9000_ALTCURRENT_RMS_CHANNEL(ADE9000_PHASE_A_NR),	      \
- 		altvoltage_rms(ADE9000_PHASE_A_NR),			      \
- 		ADE9000_POWER_ACTIVE_CHANNEL(ADE9000_PHASE_A_NR),	      \
--		ADE9000_POWER_REACTIVE_CHANNEL(ADE9000_PHASE_A_NR),	      \
-+		power_reactive(ADE9000_PHASE_A_NR)			      \
- 		ADE9000_POWER_APPARENT_CHANNEL(ADE9000_PHASE_A_NR),	      \
- 		ADE9000_ENERGY_ACTIVE_CHANNEL(ADE9000_PHASE_A_NR,	      \
- 					      ADE9000_REG_AWATTHR_LO),	      \
-@@ -642,7 +653,7 @@ static const struct iio_chan_spec_ext_info ade9000_ext_info[] = {
- 		ADE9000_ALTCURRENT_RMS_CHANNEL(ADE9000_PHASE_B_NR),	      \
- 		altvoltage_rms(ADE9000_PHASE_B_NR),			      \
- 		ADE9000_POWER_ACTIVE_CHANNEL(ADE9000_PHASE_B_NR),	      \
--		ADE9000_POWER_REACTIVE_CHANNEL(ADE9000_PHASE_B_NR),	      \
-+		power_reactive(ADE9000_PHASE_B_NR)			      \
- 		ADE9000_POWER_APPARENT_CHANNEL(ADE9000_PHASE_B_NR),	      \
- 		ADE9000_ENERGY_ACTIVE_CHANNEL(ADE9000_PHASE_B_NR,	      \
- 					      ADE9000_REG_BWATTHR_LO),	      \
-@@ -657,7 +668,7 @@ static const struct iio_chan_spec_ext_info ade9000_ext_info[] = {
- 		ADE9000_ALTCURRENT_RMS_CHANNEL(ADE9000_PHASE_C_NR),	      \
- 		altvoltage_rms(ADE9000_PHASE_C_NR),			      \
- 		ADE9000_POWER_ACTIVE_CHANNEL(ADE9000_PHASE_C_NR),	      \
--		ADE9000_POWER_REACTIVE_CHANNEL(ADE9000_PHASE_C_NR),	      \
-+		power_reactive(ADE9000_PHASE_C_NR)			      \
- 		ADE9000_POWER_APPARENT_CHANNEL(ADE9000_PHASE_C_NR),	      \
- 		ADE9000_ENERGY_ACTIVE_CHANNEL(ADE9000_PHASE_C_NR,	      \
- 					      ADE9000_REG_CWATTHR_LO),	      \
-@@ -668,8 +679,10 @@ static const struct iio_chan_spec_ext_info ade9000_ext_info[] = {
- 		ADE9000_POWER_FACTOR_CHANNEL(ADE9000_PHASE_C_NR),	      \
- 	}
+-title: Analog Devices ADE9000/ADE9078/ADE9430 High Performance, Polyphase Energy Metering
++title: Analog Devices ADE9000/ADE9078/ADE9430/ADE9039 High Performance, Polyphase Energy Metering
  
--ADE9000_DECLARE_CHANNELS(ade9000_channels, ADE9000_ALTVOLTAGE_RMS_CHANNEL);
--ADE9000_DECLARE_CHANNELS(ade9078_channels, ADE9000_ALTVOLTAGE_RMS_CHANNEL_NO_EVENTS);
-+ADE9000_DECLARE_CHANNELS(ade9000_channels, ADE9000_ALTVOLTAGE_RMS_CHANNEL,
-+			 ADE9000_POWER_REACTIVE_ENTRY);
-+ADE9000_DECLARE_CHANNELS(ade9078_channels, ADE9000_ALTVOLTAGE_RMS_CHANNEL_NO_EVENTS,
-+			 ADE9000_POWER_REACTIVE_ENTRY);
+ maintainers:
+   - Antoniu Miclaus <antoniu.miclaus@analog.com>
  
- /*
-  * Full-scale codes referred from the respective datasheets. These are the
+ description: |
+-  The ADE9000, ADE9078 and ADE9430 are highly accurate, fully integrated,
+-  multiphase energy and power quality monitoring devices. Superior analog
+-  performance and a digital signal processing (DSP) core enable accurate energy
+-  monitoring over a wide dynamic range. An integrated high end reference ensures
+-  low drift over temperature with a combined drift of less than ±25 ppm/°C
+-  maximum for the entire channel including a programmable gain amplifier (PGA)
+-  and an analog-to-digital converter (ADC). The ADE9078 and ADE9430 do not
+-  provide the on-chip dip/swell detection available on the ADE9000, and the
+-  ADE9430 has no on-chip digital integrator (it uses an external analog
+-  integrator for Rogowski coils).
++  The ADE9000, ADE9078, ADE9430 and ADE9039 are highly accurate, fully
++  integrated, multiphase energy and power quality monitoring devices. Superior
++  analog performance and a digital signal processing (DSP) core enable accurate
++  energy monitoring over a wide dynamic range. An integrated high end reference
++  ensures low drift over temperature with a combined drift of less than
++  ±25 ppm/°C maximum for the entire channel including a programmable gain
++  amplifier (PGA) and an analog-to-digital converter (ADC). The ADE9078 and
++  ADE9430 do not provide the on-chip dip/swell detection available on the
++  ADE9000 and the ADE9039, and the ADE9430 has no on-chip digital integrator
++  (it uses an external analog integrator for Rogowski coils). The ADE9039 only
++  computes fundamental reactive power and has no total reactive power register.
+ 
+   https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9000.pdf
+   https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9078.pdf
+   https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9430.pdf
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9039.pdf
+ 
+ $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 
+@@ -32,6 +34,7 @@ properties:
+   compatible:
+     enum:
+       - adi,ade9000
++      - adi,ade9039
+       - adi,ade9078
+       - adi,ade9430
+ 
+@@ -79,7 +82,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: adi,ade9078
++            enum:
++              - adi,ade9039
++              - adi,ade9078
+     then:
+       properties:
+         spi-max-frequency:
 -- 
 2.43.0
 
