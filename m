@@ -1,61 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC2D42BFC7B;
-	Mon, 12 Oct 2026 21:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A5F2BFC7B
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 21:22:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791839970; cv=none; b=tlfvYnIl10ndnd/UVuoBJI3ysufWSwdg1uRJdxENzwqTOTsJWRWRHTn1d2RHLfiMEWqP9uHlOQrv06UD3A1hvqkqJxmnuY5W6X8F9+bHzZuEYw6yDMFFGSXNpXXHS9CyeYSa9faD48K/2f85k/jPp9P0yRjCYolKyE0vCHldECs=
+	t=1791840125; cv=none; b=oLnb8qtD7zx2LNM2CfwJ6bjGDsc7c6fPOhLMYteRohjH4Qo7nktj8GquQfP+kfV2oIPI1SCcGKXSCk2Bywt1ynDywSX57nihKkeaDbzvfhrvfBtpJ3KtaRqJx6BAfZYln81hSGeRS3JupmnGicAbS2NlpIyxTRfv2Yp0cfdkIWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791839970; c=relaxed/simple;
-	bh=e65YEVn51bit6H6IUDBgpIfn0iLdlP8g1/U272AdULg=;
+	s=arc-20240116; t=1791840125; c=relaxed/simple;
+	bh=a2cJKgfgrw6Vb7gi+DN/yGqYqI9wnvP7N45VgPx+e5w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=d2EG3tgkiZFUckFb9789QOrwfinq5H7IFpVB71q/n/x5TyUnTYoDvjalvLvzfSEZ6N9aropK58gxC376wpqgjjFOZesLfxsS+JdiqSHplHPtz17YLYr5K2St1Kh8GBruqyBcU8Cq1FdWKJsFqMf3JWPGlldruIaQ3te/kN/gRj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mJp722XR; arc=none smtp.client-ip=198.175.65.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=SmUtXVN85ad6nMztObv9xdEq/JCcKwtJy1PXNmaYUWnyCdgMYv1JxWknBP69CUlNdGtlwlv4k2rL04pLADqJYAzMTDeAzkjPmWoG2T/UlnVIT7BzJnQ0yl+XKyfC7gkdVjK4difxgK9oNW5NwzGfEqH1XSMlPmHUhVuY19h80Ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZZ1hmR4z; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mJp722XR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZZ1hmR4z"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791839969; x=1823375969;
+  t=1791840124; x=1823376124;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=e65YEVn51bit6H6IUDBgpIfn0iLdlP8g1/U272AdULg=;
-  b=mJp722XR95FPMftKn6rM/N0ZB/YCU6UIVu2OpMMcTU/tN9N7Zj8e7vpD
-   Zy51zSPeB0SII/Gt91VlVvk6A0iQUdaesXxMjz3kI3NlZVB97FsYtvLa3
-   etiHEkeK69MsPqA/eLrg4uxTwJNp32MADshdLpYXuDTHXCubpVIy1Q6mY
-   cA8zURCyfpBnD4YvaI9Tvb2UwDi28AmWdrJ4xi4vtQSU9YXAr4+IqR/Wk
-   ZEw4ZXD5SjgW5aeT1qk4FtEgUTbZbSRfbuLyGoibmyTr64k+1gMOus0XR
-   Gleqdjcz47O2an6taYQ4Y/5a05NND3Leld27lrTTtP/kfE6OXY21uhp5v
+  bh=a2cJKgfgrw6Vb7gi+DN/yGqYqI9wnvP7N45VgPx+e5w=;
+  b=ZZ1hmR4zvpmYyzCphEITrfnawDdBmy5KmUHe3aAoMKdEf7+K2qMDLvTq
+   MRb+aCy6BlzxBOtKi/oclG8kyVzx7kR+aGYD/nAIq5l6IFcucxlK81vvM
+   HwxFCGiBY/y22azxGqL+PjW7LOIk8iHcnwFDzAh3WGPxdpUAsujA3WzWP
+   xTS4CM+IWZRSgRzRowb5YS746jmwl+L80UDyeVgHg3LH1t09JLL02HjTL
+   dAo5Kd9Gw2/aMpx3xsPF6BoBeWP+DvxBj7rFlYMk4guDHNFI5h/rJ/BGc
+   PhHyF9MAfA+KumACNdtDJR8QFei8eY8X03NTzeXXUnPOkq3PU8LjEXERn
    Q==;
-X-CSE-ConnectionGUID: /hOyh5NKTOy9EBkUBU4bng==
-X-CSE-MsgGUID: KcbQag7iReic6/i1QjZjBw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="435926"
+X-CSE-ConnectionGUID: sQxvDGPyS/mKkRnYGOqr5A==
+X-CSE-MsgGUID: PTLwsN3NRl+oWsd3jpXTzw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="655587"
 X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="435926"
-Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:19:29 -0700
-X-CSE-ConnectionGUID: oUbowdnuR0mhF9Th+myUjQ==
-X-CSE-MsgGUID: pNCUC0+ZRxWrMtmNsE74gQ==
+   d="scan'208";a="655587"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:22:03 -0700
+X-CSE-ConnectionGUID: PlalEGn+S96XefT+NoQXBw==
+X-CSE-MsgGUID: V6BhJzGNR/Gmau9BP3oBdA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
-   d="scan'208";a="2766590"
+   d="scan'208";a="1107204"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.179])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:19:26 -0700
-Date: Tue, 13 Oct 2026 00:19:23 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 14:22:01 -0700
+Date: Tue, 13 Oct 2026 00:21:59 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Zixin Wang <ywp1023456@foxmail.com>
+Cc: Kevin Tsai <ktsai@capellamicro.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux@analog.com, linux-kernel@vger.kernel.org, jan.sun97@gmail.com
-Subject: Re: [PATCH] iio: dac: ad5529r: Clean up definitions and regmap
- configuration
-Message-ID: <as1O24cxJRhcSmPO@ashevche-desk.local>
-References: <20261008-ad5529r-review-followup-v1-1-84a98e0e27eb@analog.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: Re: [PATCH v2] iio: light: cm32181: add support for the CM32183
+Message-ID: <as1Pd9blvwNg3IF0@ashevche-desk.local>
+References: <tencent_27A2DA110A464EC41673E7C2217844837C09@qq.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,18 +63,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261008-ad5529r-review-followup-v1-1-84a98e0e27eb@analog.com>
+In-Reply-To: <tencent_27A2DA110A464EC41673E7C2217844837C09@qq.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Oct 08, 2026 at 11:19:15AM +0200, Janani Sunil wrote:
-> Use fixed width register literals matching the device's register address
-> width. Rely on SPI regmap's default read flag instead of specifying the
-> same value explicitly, and remove parentheses around the channel
-> initializer.
+On Sun, Oct 11, 2026 at 05:03:00PM +0000, Zixin Wang wrote:
+> Add the device ID for the CM32183. The device has the same register
+> layout as the CM32181.
 
-It sounds like a three patches, but I don't care much (up to Jonathan)
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+...
+
+> -/* CPM0 Index 0: device-id (3218 or 32181), 1: Unknown, 2: init_regs_bitmap */
+> +/*
+> + * CPM0 Index 0: device-id (3218, 32181 or 32183), 1: Unknown,
+> + * 2: init_regs_bitmap
+> + */
+
+Make it more readable
+
+/*
+ * CPM0 Index
+ * 0: device-id (3218, 32181, or 32183),
+ * 1: Unknown,
+ * 2: init_regs_bitmap
+ */
+
 
 -- 
 With Best Regards,
