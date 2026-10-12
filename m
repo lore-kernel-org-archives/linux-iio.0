@@ -1,171 +1,178 @@
-Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
+Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99280472083
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 22:03:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 168FB399D00
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 23:17:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791842601; cv=none; b=g+I02qferAXRKtasVJtipds/sKdYOGcMAWBL8xhifGfVjWk5v9pXCsShie1HLFVcMZHO96pUwwKSYd780ajDTB1uwswwaAavp41oCjc1ZQwusmEcSkOjHvePffmTILTmJxaJYauqB5NpSZPO0qOjTjZzlTPUT7hcUfUJlMEVJm4=
+	t=1791847041; cv=none; b=pisEqKDsegqkgI6lmd9gFrYeqsqJtTweQuVb4q0ML8iWvSZkgrAhpaR3NEfakFkEEz2MjHibS4t9+cqdthDu3U1Wi/wY24KvGB7Kh10bD8VU4frNPKN1oK9faPfrZkSibIgzeo1Am9C8glxo1oXOoZ8ife4fkciMlkg98VnXdYM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791842601; c=relaxed/simple;
-	bh=ccgkcMBRb8nQz4mhj6wRp6JfLsMEvJb70e/Z6xow5TU=;
+	s=arc-20240116; t=1791847041; c=relaxed/simple;
+	bh=zpGJ2C9ZXKZREZPO809kC3o2ILZTcWpcszBp/d5beEk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VqhYZR+/08jcGU/1ezbdlHWO9/Wot45AQq2aTE82c4hcGGUKgYfD4AW/rarRehphZBLCZs7GgVjxdSihtJZvPWPEyiVA6ytl+NGktrgT/iXaxA6mroP6lwvzID36ByTuqzG4hOPGRGu5aAbNHKhE7nxQwyKQvK+BggvJeObhS3s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VFtjTjSP; arc=none smtp.client-ip=74.125.82.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=G0OfEP/7+nVtUa7KqPCaJgoEyTkOukIBUmHsSet0kZ+nOlPYyueuZeccP5CZuKlYYOj4WUBQlYAmAFxWEmG1FkijkOowcX4TAJmD0BVIwhanPjojWbM4o3LOC5bOqUn1a9tw129Yj2Zspue79nWJX2QTup480EVzYbZ4RDEa5X8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=AUjxFOJH; arc=none smtp.client-ip=74.125.82.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VFtjTjSP"
-Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-353804b591eso3918078eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 15:03:20 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="AUjxFOJH"
+Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-3282db206d3so4312973eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 16:17:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791842600; x=1792447400; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=NJs555dn0Hiily+4pUme4Llz0sW3A4Uyn/JQ8PM2fk0=;
-        b=VFtjTjSP7l5j2UcUmy2yqHKzg8gTccWrP0jJemfQwFfn06TW4iyHY5WMXmn7P+AIJk
-         kUNE7hgjFnseNrDmb8lgxKixeJYIHpWkQYbsAP1AdG+xq+otdvPIjfSi9RymNG4pT3R9
-         8Cx3HuYUlzgpmenu8TGnfNRYAB+Zuc2kWxKvtd9vYpgzsg8ijLqtc87EMQqqte8ARNpL
-         PQpXsD2pW2OZyOGQIGW6MP8I2gE5w9mSWG/iHACrR0NFvV589dijuQ+1Gv+Bb+bHZgJT
-         b6OAZRyIqIRPHcPZiKm69rw9uOoub5GHceZGvLHxs4NDYs2j0fDgjZ8ZPkD7a6pWSwct
-         VIiA==
+        d=chromium.org; s=google; t=1791847039; x=1792451839; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=jULzgmU90GwExwiOegz46rYdLgOhwZJMHx733RDhwSw=;
+        b=AUjxFOJHMFNqdn0qSQdV+lgeYQ7Hohkc5r1F4cSK2jsT50hlnsYWRf1N1zMTf2ShuZ
+         6sIFLZ6U7ayNwu/ZKwOEi3QHWLWamBhZjiWJWKl6yQesEzy7gnbBScJhbuhG7lJqBoka
+         uO9RLNxGlEjncYrlU2P//vgRmRF2FGYW7DG18=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791842600; x=1792447400;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=NJs555dn0Hiily+4pUme4Llz0sW3A4Uyn/JQ8PM2fk0=;
-        b=0Tge2TrClq4FV76/AoF+WzDNcKPK4dcdenTpDNxFn9Yo6WLCEg5HODbnWy8pZOOKdP
-         SbUDPrmefi/l/ILLNv7yzCXvjN53aEepVliJycBzxNdlEHq2n58N6Uc7AogVzinQ1XBN
-         cSJZTLYwglLY7AH0L/BcAQjhe5bao6NUFXZJNuJ7Bfxn5F+/ROrA7YEW3UBlKAyPrxJ1
-         vFlG78NPDDbJaY6DxjzP6mF+dFd0OS6mV9C2XjJ3gr2yk0AScpP2ylv7Tg/tIGILVALs
-         VqzETNVIYxyVHhhmNy5K4Z3OYCEAxuNU6DpDW4RWgMD+I+ECm9TiJNQoi1l4CyrlUteK
-         YPeg==
-X-Forwarded-Encrypted: i=1; AKwUvBwJeRTM60Mqi6GponlsI2nu9/6I9RqeKUzx7NQYo6ZvaXKIt6pXuG+bgddTT67TScTgT7Zjn7rlcaY=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJKCgG+1IZZHhb4/mms8pcbsrAdUpT2vIV5wVBksgAU48G84UOF
-	+P3ab9Tmw1szXqa2NTCEV+n3r95rt35AFI3/n0O9ikEJ1eKfeqqZMCcA
-X-Gm-Gg: AYBFou1oejUxHn8jtpC+5ZbuZbd0xRf/KIfF7k3R9HM/LOyvz7PK+0Xes58DIkPopBT
-	ecimea4R3SQiy39Rws+aVQKtcxiloq71Mgf3u/GDzKiu0TmLPMPSSBMqjH0dC0zsbkRATqC0fOx
-	/yFeIrSnZrW3ye7J6TWJ7Jwyt1tpvVPBI5hN44dLvK2a+UNzb1H65PoacYs6bp0B6v13DO2RTnt
-	KgiOvXjgqvXJut6coeH2oqFsiWYFHJo00sU8aG+A7YqvkY1LhwzgjcHziEK0juunUhoCH0lje7m
-	LSZSgbdGSfErwj6GTDXmMSkRaI5Zn000GFSp5qX47d/2ExIRJjWU7sHkJ/GM1N3Gzo+EKU+2PpA
-	oWwXqJgKrTH8aJwMl3hTrJTzL0CzH1A9mVJx2Hzcym0oC5TuLEBS8ktTTAALSblGfTngDYn2YMz
-	nEtQiYUSd4EsxwY5NUiuMvj5KvQTZt/AACW1gMvpzPPkvaqlE6RmVzXR0hGT6cO+t1YYrVUyPMx
-	MM78Q==
-X-Received: by 2002:a05:701b:42c5:20b0:151:2e62:fe4b with SMTP id a92af1059eb24-16a5c8d48ecmr14556937c88.23.1791842599340;
-        Mon, 12 Oct 2026 15:03:19 -0700 (PDT)
-Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-169a2d2db98sm31002276c88.10.2026.10.12.15.03.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 15:03:18 -0700 (PDT)
-Date: Mon, 12 Oct 2026 19:03:40 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Kanak Shilledar <Kanak.Shilledar@axis.com>,
-	"andy@kernel.org" <andy@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, Kernel <Kernel@axis.com>,
-	"macromorgan@hotmail.com" <macromorgan@hotmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"joshua.crofts1@gmail.com" <joshua.crofts1@gmail.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"jean-baptiste.maneyrol@tdk.com" <jean-baptiste.maneyrol@tdk.com>,
-	"dlechner@baylibre.com" <dlechner@baylibre.com>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	Henrik Grimler <Henrik.Grimler@axis.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v6 1/6] dt-bindings: iio: imu: icm42600: Add ICM-42670-P
-Message-ID: <as1ZPOocclBgYkko@debian-BULLSEYE-live-builder-AMD64>
-References: <20261009-b4-inv_icm42370p-v6-0-e53884f185ff@axis.com>
- <20261009-b4-inv_icm42370p-v6-1-e53884f185ff@axis.com>
- <20261012-adventurous-corgi-of-fury-01219b@quoll>
- <fd4181c7e2f48e3c64530340ae1a02adde1f342e.camel@axis.com>
- <da8b6047-419b-4c3d-8416-e5c871ea4dec@kernel.org>
+        d=1e100.net; s=20260707; t=1791847039; x=1792451839;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=jULzgmU90GwExwiOegz46rYdLgOhwZJMHx733RDhwSw=;
+        b=kPbf2R3w4xqTa7gUJR0oTKbaC2Jd6e4606HPqNquW6jrkGwI6I2kEZZ3skIAcUokH+
+         drADe0P+k+iGE2zmyeX9S6DUW267P56lpRfjhKz8OLxLofpwaIRK6Kaf4l5essP19ulS
+         mTfi03Nz/eshpu6Vme/8LkPXJO64bAImT1LFcBtTHqcgqw0EMt49gGfwbuXCE2+MSdD9
+         6WS76mLBCEeNA0o3mw+HkGlsl/oHZ4qHnpU7Jq2azvqoqD0Faza3ghcKoL6CJUyOIBWG
+         aH9B/XEZyt4ZE+ct+47w1h+SyqXeO3CrCACdDUkAenlpqSkPJoSnNheJ3lWeiMvdgCdh
+         dV1Q==
+X-Forwarded-Encrypted: i=1; AKwUvBzF0KbgCLxHOVF6X0BiQpFiGttPp6o+zmllvtjTiM/hrb4n9iaM3H13bBCFK7kNoHPnocVXoNEYY2c=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLBic8WuQWaqtRWIE0+/QQvia++OgOhPYyxDFMyUWAN/Twe9jYb
+	5anElOfMWX6cmSEl+gNbJJQnsObOUGi5RcJanYPrQNn7PmeBTRlEleAVbSO3wM9aCA==
+X-Gm-Gg: AYBFou1dFYs+QZpVdat8kWvmZRXK2IwCzSmJjJ95dOUbbsWWiDm/zAX2ULzc7ynOWVT
+	VeItHI533YJWxeuBrSIaJLYCOJMACbr+GUgyHUfTO1vQfy5YYklCEjNCAypM8J1dX0hXVdyneS7
+	Pb11jXQwHzNBevwPJ5Nd1LSzy+RjALFhEnHPLYx/xwRBRQLKaehnvUSG5+ktxVukNn+1U+oU4eS
+	bahsJHQZvZSqKuJyBlUdl9gm+fGIFZkpEnt8Xu+92WG5GmWSEETPM72aTU3wtTJgDzuwR8uXLWb
+	Ou5E+xFjF/lObCw+lJ74pmOorHqwFqyO31i4MxO1ZR8GZgEc4hR5m2JHiPVaMpYjA0mbwUvxrrq
+	3x0Qzlg6TY8G7Tqt8qRcL77pQj4zL+POaAE6xGhKQs9XnxWlya+xLkrpPEIpPGURlRetF4Lm/PV
+	6Og9ch+0IfGbD4qr3ApXz9Kyh5RgihrB3tTot3COE+Fq9KqCQuQZdg0qkQJSIdqvuOuW0igvHJT
+	62miP+DwZbpaUDKTJX6QRG+vC7olxToWldq2e4vLAsYRq7v
+X-Received: by 2002:a05:7022:1703:b0:166:b307:5855 with SMTP id a92af1059eb24-16a4ee7e657mr14543536c88.0.1791847038615;
+        Mon, 12 Oct 2026 16:17:18 -0700 (PDT)
+Received: from localhost ([2a00:79e0:2e7c:8:4c0f:2208:f55a:d12f])
+        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-169a1becf08sm36095925c88.5.2026.10.12.16.17.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Oct 2026 16:17:17 -0700 (PDT)
+Date: Mon, 12 Oct 2026 16:17:15 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Fabrice Gasnier <fabrice.gasnier@st.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 3/5] PM: runtime: Propagate last_busy from dependent to
+ dependency
+Message-ID: <as1qe_J37Njol797@google.com>
+References: <20261002230714.507921-1-briannorris@chromium.org>
+ <20261002160309.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
+ <asEdiIT7l49vhn7i@ashevche-desk.local>
+ <asPm6HYpEIAYJ4a3@google.com>
+ <as074Em1m9d5s1yO@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <da8b6047-419b-4c3d-8416-e5c871ea4dec@kernel.org>
+In-Reply-To: <as074Em1m9d5s1yO@ashevche-desk.local>
 
-Hi Krzysztof,
+(Note to self: drop linux-stm32@st-md-mailman.stormreply.com from future
+postings. It's failing hard, and not (AFAICT) just because I'm not
+subscribed.) 
 
-On 10/12, Krzysztof Kozlowski wrote:
-> On 12/10/2026 12:43, Kanak Shilledar wrote:
-> > Hi Krzystztof,
-> > 
-> > On Mon, 2026-10-12 at 10:58 +0200, Krzysztof Kozlowski wrote:
-> >> On Fri, Oct 09, 2026 at 04:12:06PM +0200, Kanak Shilledar wrote:
-> >>>    It has a configurable host interface that supports I3C, I2C and
-> >>> SPI serial
-> >>> -  communication, features a 2kB FIFO and 2 programmable interrupts
-> >>> with
-> >>> +  communication, features up to 2.25kB FIFO and 2 programmable
-> >>> interrupts with
-> >>>    ultra-low-power wake-on-motion support to minimize system power
-> >>> consumption.
-> >>>  
-> >>>    Other industry-leading features include InvenSense on-chip APEX
-> >>> Motion
-> >>> @@ -28,6 +29,7 @@ properties:
-> >>>    compatible:
-> >>>      oneOf:
-> >>>        - enum:
-> >>> +          - invensense,icm42370p
-> >>>            - invensense,icm42600
-> >>>            - invensense,icm42602
-> >>>            - invensense,icm42605
-> >>
-> >> Why aren't the interrupts required?
-> > 
-> > The interrupts are only required if using the device is used in
-> > buffered mode. Which will be added later and the dt-binding will be
-> > updated when the buffer support is added. Currently, the device works
-> > without any interrupts.
-> > 
+On Mon, Oct 12, 2026 at 10:58:24PM +0300, Andy Shevchenko wrote:
+> On Mon, Oct 05, 2026 at 11:05:28AM -0700, Brian Norris wrote:
+> > On Sat, Oct 03, 2026 at 06:21:44PM +0300, Andy Shevchenko wrote:
+> > > On Fri, Oct 02, 2026 at 04:03:07PM -0700, Brian Norris wrote:
 > 
-> That's misleading or confusing. Either the device works or does not
-> without interrupt hooked up. Consult hardware datasheet if in doubts.
+> ...
 > 
-> Driver support is different thing here and you cannot make it required
-> later, because that would be unjustified ABI break.
+> > > > Cc: Ulf Hansson <ulfh@kernel.org>
+> > > 
+> > > Can go under the '---' cutter, so it won't pollute the commit message in the
+> > > Git history.
+> > 
+> > This is a well-documented convention.
+> > 
+> > Documentation/process/submitting-patches.rst
+> > 
+> >   If a person has had the opportunity to comment on a patch, but has not
+> >   provided such comments, you may optionally add a ``Cc:`` tag to the patch.
+> >   This tag documents that potentially interested parties have been included in
+> >   the discussion.
+> > 
+> > I'm directly referencing Ulf's suggestions (Link tag), so I'm also
+> > making it explicit that I'm CC'ing him.
+> 
+> This piece of the documentation was written long time ago before we have got
+> the kernel.org controlled mailing archives (now it's lore.kernel.org). I argue
+> that this piece is outdated and we need to look at all aspects of the commit
+> message. Perhaps having one might not lead to the issue, but exempli gratia 20
+> is. I still think it should be moved to under '---' to show the good example.
 
-I looked into icm42605 data sheet and saw no clear statement about the interrupts
-being required. The timing diagrams only show protocol specific lines and it
-looks like the interrupt sources can even be disabled (not routed out to any
-interrupt pin). Maybe I'm missing something and the interrupts are required for
-some sort of reset function or so? Otherwise, I don't see how the interrupts are
-required.
+Well, it's not 20; it's 1, with a clear reason. So not sure what you're
+saying. Anyway, I've prepped that for v2.
 
-Kanak, do you have access to any of those other chips to test whether they work
-without interrupts? If possible, can you also check the data sheets for the other
-parts besides icm42370p and icm42605?
+Do you think you could propose a documentation update, if it's really so
+out-of-date with current practice?
 
-Maybe
-  - if:
-      properties:
-        compatible:
-          contains:
-            enum:
-              - invensense,icm42600
-              - invensense,icm42602
-              - invensense,icm42605
-              - invensense,icm42622
-              - invensense,icm42631
-              - invensense,icm42686
-              - invensense,icm42688
-    then:
-      required:
-        - interrupts
-was a documentation mistake?
+FWIW, a quick look at the v7.1..v7.2 git log shows over 10,000 Cc lines
+that aren't for stable@ or similar, with over 900 different addressees,
+across roughly 1300 different commits. (For comparison, there are 17,833
+commits in v7.1..v7.2.)
 
-With best regards,
-Marcelo
+It seems like you'll have a hard job trying to apply your rule to
+everybody's changes, especially if it conflicts with the documentation.
+
+> > > > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > > > ---
+> > > 
+> > >  Cc: ...
+> 
+> ...
+> 
+> > > > +/*
+> > > > + * Propagate last_busy timestamp from one device to another. This can, for
+> > > > + * example, prevent overactive suspend when a dependency's usage is primarily
+> > > > + * driven by one of its dependents.
+> > > > + */
+> 
+> ^^^
+> 
+> > > But here you already have an outdated ones, no? Why is this not a problem?
+> > 
+> > The "target" device (a supplier or parent) can't suspend before this
+> > point, because the dependent device still holds a reference -- so an
+> > "outdated" last_busy is not relevant yet. The target last_busy *might*
+> > become relevant after this point, so this is the point at which it needs
+> > updated (propagated).
+> > 
+> > That's what I mean in the commit message by:
+> > 
+> >   propagate last_busy timestamps from a dependent device to its
+> >   dependencies any time it may allow a dependency to suspend -- i.e.,
+> >   when releasing a refcount for its parent or suppliers.
+> > 
+> > Please let me know if I should add some clarification somewhere --
+> > perhaps also in the comments here on rpm_propagate_last_busy()? Or if
+> > you see some other problem in the reasoning.
+> 
+> Perhaps a word to the top function comment?
+
+OK, I've tried to factor that into my drafts for an eventual v2.
+
+Thanks!
+
+Brian
