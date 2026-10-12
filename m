@@ -1,93 +1,95 @@
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F8A137269A
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 02:56:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898AC31F984
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 03:13:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.171
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791773787; cv=pass; b=JPwUSVlFEz6oISdDIR1cYz40LJqhahDrgGauuZ6kYxMqKUF8c7/cyAUY5tnok/YfUWlbcYrJKDUxejZT0cj96HvxBY9dhUxEBnIBZK8y4Imsm4ozQ7sIMIObVSy9tnopYVWzloFVjWhXHD0Ch6h5nB8WQRiQUWwnZTn51kp/qks=
+	t=1791774830; cv=pass; b=q4yAv0sHUBnHc1LhpKeghEEqTiqD7AYri+SD7cxd7aO5db9hoIv+YetoaTD14BJ5tNt6cEqOMZAZal0oaIjt7hpw7YLlZdlTi/DHspZFDwUOsXr0YCzwXJeOKOWLVrjnp3AKGgYqfGQz3s1FSUeUYnFsX7Xxd11jYm8GWd4F6NU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791773787; c=relaxed/simple;
-	bh=bBf7rkKS0FdNhJYMpvvZuNwTaVC4mSM3v4npQa5GPIs=;
+	s=arc-20240116; t=1791774830; c=relaxed/simple;
+	bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PRFmkdIDzTNmj9kL1P+kB7M65ih09Qq1Ft8yXHYod1u/vuwfUN5sP4LdpipGfUYJW5Kcm3JCLf1JvjN22s8R9Jwx7RE34truAL5E/sKwlmIny8k3EeQ06FCwySTht42uRjauygwoJi38oY+HyYmQiZH1KpGOpiFt/AGlZk0fH1w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jyUQ4eWo; arc=pass smtp.client-ip=209.85.215.181
+	 To:Cc:Content-Type; b=Zcm8LGZhArd4rU1DpsV2vwFH6NKus1CBOBBqaFpHcK39z+WAD2zkh43F4qWfhbtKHdhEgN3ab3h7sEknDsm8o4Yns1Z77pHvkp80dhrbaSuyT5mCd6By8xcUOuzDf0cLLVWmMMoUP0ppw94YfszeSoX1RRTBk6IPtaXKjCSCwB0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pgrl8dEc; arc=pass smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jyUQ4eWo"
-Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cc4c7fab7b6so790397a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 19:56:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791773785; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pgrl8dEc"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2e4af975346so8922885ad.0
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 20:13:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791774829; cv=none;
         d=google.com; s=arc-20260327;
-        b=ceVJ4KQQdDtKcIQxd/fN0OXDlLGaiPSMbgpDktbTPNt69MIiGgwO3T0yKfKE45g2Dj
-         SvRMCRr/OWIGXxpj5E3KlvNWCtGxgYkUAT2RlRmt2Yr4uUgUD9uXiwRWF9k6n1CvCkOX
-         WOMqh7fHOtjP2BHtRuvSwZ37RRqCklD2pNx/QXvb3+wGkD3vPK+V47EQTOQlOud8RyQ3
-         2mGM59A7mDXq8buMmUEuEy1+D8QmrjiRMXYFC0J2y1DNIjnPogoAZFFVJVgkqxK3xp1v
-         1OrSKS2Q3oIr4kTcYHe+UVhfsJgVX6i9bNvY4gubGsPOclv6u1NsYGtKJDsHuUwnSAtD
-         gd/A==
+        b=dxs+5eDGqiwdec6KhZ22kErduLX6k2Oz5lsZm5FGm4TK8ZvupbYGZ758IMn1jYb0By
+         aV42kaQJbOnY7gWfQ8Yh90pYMAUbOdV4xe0V/fFt7bqaL78b0LkDaO3C6oD+/gUZrEPT
+         4VF4DkPYPoszDC0dcly29nyTeOzPdn32A2fkgpzwcOeBIoIfq+ARVFUZdbBDx02N69ZT
+         yNnBDEkz2hlc8RTov09eNFixKcmL8jvwCwyA0+ThoJKKSsmRIGRYzgDnPEtLRIbOeQQq
+         qxkQHxVQC8TcArrPq/vm4sd8txTaNgGzB4XunP0LSvKb1Xxm5ypWV/LVxVsRYxp7KBeu
+         TE7Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=bBf7rkKS0FdNhJYMpvvZuNwTaVC4mSM3v4npQa5GPIs=;
-        fh=zT/ovBEzB+AX8XVwG7RXnTjYLnW8Rm0ZPF/DUf1axbo=;
-        b=ZvX373k3OxsBAPpc00c0Y3I1teZwAiMIz8ruKXwSgraNuNMQfTjKDsOCLHlMowF0iS
-         vfKyi+pJ7+SL3kyCLBvmkRBpVdGy4DfG5FQQvuQ/Thdb/xRaartUPsLjpiNaX4VUdDR2
-         p6WROQJkC1gic71UwhzY1v3oE5kHmyWc7ItOOZeeihH484mWXr3e0V1FUbwknzv8nJV0
-         wZiXZxrkZ0fO4cPUfKbPaD5EenEHVb+sbZRdWLekinjeQX4krXDks08cWoKeiKAz9gx1
-         gH5BhNmzkj87df+rPnhnMx8SVFnxaPoi3gLsN+rmsYdBwTCkCy7QdFl+5uRAwSxSyB7n
-         +7rQ==;
+        bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
+        fh=UnwMjuD1e+00DFmvPng+9sDcTv7vg3V6eS7PdLewYY4=;
+        b=fVbxpzOSDsMR32dhIecl277u93aSIgHKoMMFuKwIPNG9Af3qPDvDiGikpQN2fDUYVX
+         wEhWf2rAQmynHTZoMomST0HgqNnxnexLY7BbNN20DwUKiIWiMXGSaBADMeJde4MiT36J
+         P3biJZ4jjmL2YFqShb9mGxtq9+K8a6J+g2JPbxA6YDo+jPixgZiGC+XgzxOvYiMDWVwj
+         aZOsJvJdv2n7oemOOon+8fr3fjUnSKinCfiJuWsTy/WRNGhWNHxRJwMCzo8eGvODWzQr
+         bG3H6CCGKNQpNRZxMQ42T+a47CFKqsegWODYdYwgHYOhCvgaFZu8S26dCU8SDs6Jrh7r
+         CdHw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791773785; x=1792378585; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791774829; x=1792379629; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=bBf7rkKS0FdNhJYMpvvZuNwTaVC4mSM3v4npQa5GPIs=;
-        b=jyUQ4eWoHRPK30DCGpJqnEeqZKHCOCxdmepZWIrD4Lmr5R9BrMq+J94YTXCQnIfBmJ
-         kLDYBoRqPTQq7LHvC+H5PfXLYOjZhiVgEzBgwMDyZFtB/zfiJD0pU/3LFRGaUyvYx/Rh
-         jfykSRLuEaRcXs/nSRAY5/LWRCh0ZMASmoLa4GqxZHOORy/brOplYHVCS4k1UmMJ7ws/
-         1yyC0BGrYvL28e6z2L+xnytX6NoMKFk5qgl+/h3xvdY2r5eEOs3bGo5FiO2EDBOxA2UN
-         RpIfum1TWO52//i4qlhiPhfvmfq0EdWf1sPFhD2qxFZCqgi8MIMkOdFN+fizMQ8OXkZ1
-         D6IQ==
+        bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
+        b=pgrl8dEcdZnUtlPll7bM221Y5818hZTjzHF1AEhpgSLyOOGH4fIbP+ptr/sfl3kWxO
+         jdJibfy04v85SUVQPMW797O1ZkJro2XThFq7uBQaG9jbUVy6r5yKkE9oF5EplogmPSa4
+         9ro3J20Jx+dCw108se0YxqV6Nlg/ddZ4BN/nDfTEQNIfoPp4cp8JZuv3Q8+s7yT/ZIA4
+         NFUWxaozfsIJwIW/6oUcl+W9H1J+jFt5HlnrQbJyJZrtSLmj8nhjGM889oAkbsbUGLbr
+         O3mQVSMDjy1VF4ogdybTxHo6TrDU6pS8J/Kj+O6BkrrNoD+ZxRpgcE4ckR2/4mpv/RA8
+         QKxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791773785; x=1792378585;
+        d=1e100.net; s=20260707; t=1791774829; x=1792379629;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=bBf7rkKS0FdNhJYMpvvZuNwTaVC4mSM3v4npQa5GPIs=;
-        b=EJXCE66YF5dkGKYS2ixHa0ZNuBmBO9yza5x8PrhVHRNJZlN/HGQJ5Dx+g0KBkYpoKI
-         VNJ/MLPw9ug9gEL7BEIe2so2PidefTMJWH/0+8+s8OK7JzOyPtyZaJRHVLDj94AJfiFN
-         TNBNZsBbfefgLaS9U/rV7u0yLp6X+Fdz7Dk6fQbP3mYVgZMVC367ECYx1kaVcYPIsdu6
-         JuuWkgIEQM7t1zKMazY83gPo+fopaJC89haR3y7+P+saEVnay0Rfa6r0LmcdZCWiFX2k
-         5LpDmi+Fmo9ruPMPNBbmwVIa9omKzdxteu5JgnovJVAch/dRPJtCs/DKWv1nzXnMbYac
-         aVyA==
-X-Forwarded-Encrypted: i=1; AKwUvBzEHrNTgv42PSii+9AEz+vgGxLTMR2BNmUd89C1VIIKKOtY3VbiFWTmaoiAoMo+pFe57+uHNBoUon8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJKEoqgOMUJOIdvSUSxvYU0rgwGRDzIGAYTQ3F/41rnLxdsvnON
-	NShTi7XYlpzOHa0Q0CS/8ZbPhH8cVX6Gz90aswXVmtsmAE6QBfB6/0fyWzGzeXQvridkHtcyYxj
-	ms3EVwy8dhqFpM95ec8tyxK6ohRHYZxU=
-X-Gm-Gg: AYBFou0FbARkjEqyQZvS7XicBOyJbWupgLOSihDBWh2mo9B2Xyg/cq/AVHrwdMbd5/7
-	PUwyVUR2ZaM3UhgO/y9Z/ME77OhiAeEtM6EQi1lCyXymAVyvsVgv9HV5MC5zrliDF2Q6He71Qmw
-	kY3oPEH4hnjO2KT3FAGCWFCZSLjIGOI2afvT9m8Xqua7h24phgmf3VkpeQFoOw43B+YTasXxmsh
-	MqkvsZgFQogEP4VovjNKchx6dZYKMDRtMtemBVdw8oLaNdORV/49K8L03BCvjDTlI2BdbPVBDBU
-	lQhSksQJrtfd/SNQAKxctSRd2B75td6F3k8iVFMRHTQLRuYuWwyQOHy+0oi37fAgQLx34fsrR7i
-	7Snc15zAiwkJYnvhUKtDafUjXgCGOFtJxVO8u1wLHMFj40R7CaDh1ATQCm4M2M1w2/XA=
-X-Received: by 2002:a05:6a21:6494:b0:3dd:85aa:452d with SMTP id
- adf61e73a8af0-3e16be318d5mr6655235637.31.1791773784673; Sun, 11 Oct 2026
- 19:56:24 -0700 (PDT)
+        bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
+        b=ov32DjC1UuJ1eJLCcxsaHH7OHGy5ogjAgAQ2Rn/2ZAeyFDxJEe/WFgxLJ0dr/dxPDC
+         H070I3sjr+ih2Ew4uz/iGShwmDsp39n3uuTN8QjK9xM1A5IUTdD9u0tNdz6Li4+t/pW4
+         bjP2dHhylKRlOIFpOSh+PkTCJ+xQKZ2f+Z1fZCGekIhVE251FUGxb9RgsqElDFjwIp1C
+         o4EMCn43DhAwgyZFPfgsPnr5rz/im0kpysefFNmJoC0ffP+bZbRqI357poH1NO7fzCAe
+         di96IpDC7Xs83w9djuUdEVvppoT7CWx7jRlFipSm+EgIkEIaqX5j0950RvAf2h6BDOpO
+         EZhg==
+X-Forwarded-Encrypted: i=1; AKwUvBy2Jqo5Q1S/ipVQW59Qf4bxngANxvHnSwtN06kud27zUwTudUTtx0W6vNO+lO18ehX01tkt1mFzZ/8=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLwpirT4hezx+GkCP7JXPH7OkVyLNCqTn8meOdF6LkghNZ/XNZH
+	in8w6iXxfAuZhsOiB9YG1DtpD5CH9Ncg6oj/dtvE6/0zySBz1a4lvHWuwf3l8LPXKWjZzVx09Ij
+	BH8mzsCO88RzxQfL8t8fC9uh4MlYFfUc=
+X-Gm-Gg: AYBFou0G+ibJ43Bpriwm5IjcPP4vBukVIO6tnDGU6rsbnNLwXsl04aUB68hC5chAGZP
+	VovI8hWwhyFl/yK0d6mv4cUDj7u/pIgSfiiUxLv0eS82xaVIqTqCuEn2JV8mxpFcd1dhdaL+G/Z
+	wu5bwf1HeWsWHYiE9lQkcFQTm0uRL+0ueeYXauPT0dvZEisFDdtWhjWFWcpnBvitjGBsJ6MRvMO
+	gGvrbrxA96FZALzAyvpC195LPZpWTNNJZvnFJoaY9Ft0V38HfpsKfLdcvG2yFvFKXkYqflDYq7p
+	FPVlBHEFwNmj3qyzHTCyFebvL+/L7++xIVHLOVSDmk4Vw8hzfs0ysLfXQva4H8XaYPo9PP8WOxo
+	ICufEQULb2mTIPh9agaHKndvu4gYGoFJxMn2XksqMPSJJR6QPSWrrQnZ1k/DEhY9zky8=
+X-Received: by 2002:a17:902:e884:b0:2e8:3281:6464 with SMTP id
+ d9443c01a7336-2e842cfe9f4mr73943905ad.32.1791774828856; Sun, 11 Oct 2026
+ 20:13:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261011051924.60456-1-jain.sm@gmail.com> <20261011051924.60456-2-jain.sm@gmail.com>
-In-Reply-To: <20261011051924.60456-2-jain.sm@gmail.com>
+References: <20261011051924.60456-1-jain.sm@gmail.com>
+In-Reply-To: <20261011051924.60456-1-jain.sm@gmail.com>
 From: Bui Duc Phuc <phucduc.bui@gmail.com>
-Date: Mon, 12 Oct 2026 09:56:13 +0700
-X-Gm-Features: AclHuK9HjP5BrunROTbTOyyi6-il-VsiuOisXbzNImZPrg21DQwgJ-cb2yVPcfM
-Message-ID: <CAABR9nHpreWy28kYXssUCtHr9w97fvK78sEEetriwVFBV6Kchg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: magnetometer: mmc35240: leave cache-only mode
- before the cache sync
+Date: Mon, 12 Oct 2026 10:13:37 +0700
+X-Gm-Features: AclHuK9uqDFJoTllpeX_OzZxUzR1wDkehf0yZbXw9ZjHspovKBm68NjSPo7pxb8
+Message-ID: <CAABR9nE6KqsMUXYGROsu3icF8oAVTQ8b07dc7gxYcucqoaVJrg@mail.gmail.com>
+Subject: Re: [PATCH 0/2] iio: magnetometer: fix the register restore on resume
+ in mmc35240 and mmc5633
 To: Shashank Mohan Jain <jain.sm@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
@@ -97,24 +99,23 @@ Content-Type: text/plain; charset="UTF-8"
 
 Hi Shashank,
 
-Thanks for the fix.
+Thanks for finding this.
 
 >
-> Fixes: afc8e3ee8307 ("regcache: Validate cache_only state in regcache_sync_region()")
-> Assisted-by: LLM
-> Signed-off-by: Shashank Mohan Jain <jain.sm@gmail.com>
-> ---
-> Prepared with Claude Code (Anthropic), model Claude Opus 5.5
-> (claude-opus-5-5).
+> The Fixes tags name the regcache commit, because that is where the
+> behaviour changed: the drivers have used this order since their resume
+> callbacks were added, and it worked until v7.2. Please tell me if you
+> would rather have the driver commits there.
 >
 
-Note that the wrong ordering in mmc35240_resume() predates afc8e3ee8307;
-the sync in cache-only mode just happened to work before,
-and afc8e3ee8307 only exposed it.
-So the Fixes tag might better point to the commit that introduced the
-resume handler:
+Cache-only mode has to be disabled before the sync, otherwise the
+sync makes no sense. mmc35240 and mmc5633 have been misusing
+the API since their resume callbacks were added, it only worked by accident.
+86fc3483a4d6 and afc8e3ee8307 just catch this misuse.
 
-553a776b7908 ("iio: magnetometer: mmc35240: Add PM sleep support")
+So please point the Fixes tags at the commits that added the resume
+callbacks, so the fixes get backported correctly. I've commented on
+each patch.
 
 Best regards,
 Phuc
