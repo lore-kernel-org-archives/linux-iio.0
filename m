@@ -1,121 +1,130 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898AC31F984
-	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 03:13:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791774830; cv=pass; b=q4yAv0sHUBnHc1LhpKeghEEqTiqD7AYri+SD7cxd7aO5db9hoIv+YetoaTD14BJ5tNt6cEqOMZAZal0oaIjt7hpw7YLlZdlTi/DHspZFDwUOsXr0YCzwXJeOKOWLVrjnp3AKGgYqfGQz3s1FSUeUYnFsX7Xxd11jYm8GWd4F6NU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791774830; c=relaxed/simple;
-	bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Zcm8LGZhArd4rU1DpsV2vwFH6NKus1CBOBBqaFpHcK39z+WAD2zkh43F4qWfhbtKHdhEgN3ab3h7sEknDsm8o4Yns1Z77pHvkp80dhrbaSuyT5mCd6By8xcUOuzDf0cLLVWmMMoUP0ppw94YfszeSoX1RRTBk6IPtaXKjCSCwB0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pgrl8dEc; arc=pass smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6066923392D
+	for <linux-iio@vger.kernel.org>; Mon, 12 Oct 2026 05:01:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791781265; cv=none; b=Ev6YgSZvMrD867y588P+nGGHyAX3devCm/bYXQnMOH5FG95tR4jZF6QJUPjKnHgBLMoUkHI69RhZgfK0IL36vL4LtDvTtO7rzGuxoiFB7dVLj028y7lFHLkckJ982W2nb0Uc/tZ8/tNzsLSK3RieB6YtRuy7QjC4F4f1uQbNsMU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791781265; c=relaxed/simple;
+	bh=YSPqAppYIDiXgXhCpT7joAM6e8KmwPlOW/NJw44Sujg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZJQ0wgPQbuBxBIowjkfwxAaqfUCMQqB7Mg7YhlY8ak077T0E67GVdPfVZkGGisxM3xk5XOrgQFdSI4U0gkK8LBINHgT84BaudmLYUgZ3XlxWK+rxhDbPSich7fy+7boISg+zKeYuTNRol0FRpDWsKDeyi+OXOnUSP+eTfR54JfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R1DScy+v; arc=none smtp.client-ip=74.125.82.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pgrl8dEc"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2e4af975346so8922885ad.0
-        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 20:13:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791774829; cv=none;
-        d=google.com; s=arc-20260327;
-        b=dxs+5eDGqiwdec6KhZ22kErduLX6k2Oz5lsZm5FGm4TK8ZvupbYGZ758IMn1jYb0By
-         aV42kaQJbOnY7gWfQ8Yh90pYMAUbOdV4xe0V/fFt7bqaL78b0LkDaO3C6oD+/gUZrEPT
-         4VF4DkPYPoszDC0dcly29nyTeOzPdn32A2fkgpzwcOeBIoIfq+ARVFUZdbBDx02N69ZT
-         yNnBDEkz2hlc8RTov09eNFixKcmL8jvwCwyA0+ThoJKKSsmRIGRYzgDnPEtLRIbOeQQq
-         qxkQHxVQC8TcArrPq/vm4sd8txTaNgGzB4XunP0LSvKb1Xxm5ypWV/LVxVsRYxp7KBeu
-         TE7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
-        fh=UnwMjuD1e+00DFmvPng+9sDcTv7vg3V6eS7PdLewYY4=;
-        b=fVbxpzOSDsMR32dhIecl277u93aSIgHKoMMFuKwIPNG9Af3qPDvDiGikpQN2fDUYVX
-         wEhWf2rAQmynHTZoMomST0HgqNnxnexLY7BbNN20DwUKiIWiMXGSaBADMeJde4MiT36J
-         P3biJZ4jjmL2YFqShb9mGxtq9+K8a6J+g2JPbxA6YDo+jPixgZiGC+XgzxOvYiMDWVwj
-         aZOsJvJdv2n7oemOOon+8fr3fjUnSKinCfiJuWsTy/WRNGhWNHxRJwMCzo8eGvODWzQr
-         bG3H6CCGKNQpNRZxMQ42T+a47CFKqsegWODYdYwgHYOhCvgaFZu8S26dCU8SDs6Jrh7r
-         CdHw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R1DScy+v"
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-359d729379fso777172eec.0
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2026 22:01:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791774829; x=1792379629; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
-        b=pgrl8dEcdZnUtlPll7bM221Y5818hZTjzHF1AEhpgSLyOOGH4fIbP+ptr/sfl3kWxO
-         jdJibfy04v85SUVQPMW797O1ZkJro2XThFq7uBQaG9jbUVy6r5yKkE9oF5EplogmPSa4
-         9ro3J20Jx+dCw108se0YxqV6Nlg/ddZ4BN/nDfTEQNIfoPp4cp8JZuv3Q8+s7yT/ZIA4
-         NFUWxaozfsIJwIW/6oUcl+W9H1J+jFt5HlnrQbJyJZrtSLmj8nhjGM889oAkbsbUGLbr
-         O3mQVSMDjy1VF4ogdybTxHo6TrDU6pS8J/Kj+O6BkrrNoD+ZxRpgcE4ckR2/4mpv/RA8
-         QKxw==
+        d=gmail.com; s=20251104; t=1791781262; x=1792386062; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Sh12r1iPHZpHQ+j2VdLQ1JnDQGI9QrQoo85Y6cAkElk=;
+        b=R1DScy+vk2oTJOu5T6UDU51IGBE/NrMiLGxqfpqxOIYx3ZSusrtpaNZByUUo+m7nHH
+         9qYvxj5MGE8RgOOO+9qKpvCuhZ9Rg2K1NLQ0fo4i8YSeWpq/gFtXNtQz4BQqt5JIaIl6
+         m/STNEUo64bsXYVCM13ICz8FSbm4CDyFUP0aGCX3UCT4dnKYRJKlwofVNwXv18zNc4S2
+         Zz8IgYV+KJ09nFkXP34/UghRzsWe8ZNVtVcZfRbVjEEDty0YwAo5WWbbndhNNCT8MyqG
+         sxuSz1T835+X6dhLJGvkBqCtWhBHlqkrt+6t0KURsAnZAm6vmo2Yc0/l9hj8j/u1Dlpb
+         4pYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791774829; x=1792379629;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=QQwEMw0MVh6sm8c6n1mzKfmuAGunbeouVXp27oOjqJk=;
-        b=ov32DjC1UuJ1eJLCcxsaHH7OHGy5ogjAgAQ2Rn/2ZAeyFDxJEe/WFgxLJ0dr/dxPDC
-         H070I3sjr+ih2Ew4uz/iGShwmDsp39n3uuTN8QjK9xM1A5IUTdD9u0tNdz6Li4+t/pW4
-         bjP2dHhylKRlOIFpOSh+PkTCJ+xQKZ2f+Z1fZCGekIhVE251FUGxb9RgsqElDFjwIp1C
-         o4EMCn43DhAwgyZFPfgsPnr5rz/im0kpysefFNmJoC0ffP+bZbRqI357poH1NO7fzCAe
-         di96IpDC7Xs83w9djuUdEVvppoT7CWx7jRlFipSm+EgIkEIaqX5j0950RvAf2h6BDOpO
-         EZhg==
-X-Forwarded-Encrypted: i=1; AKwUvBy2Jqo5Q1S/ipVQW59Qf4bxngANxvHnSwtN06kud27zUwTudUTtx0W6vNO+lO18ehX01tkt1mFzZ/8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLwpirT4hezx+GkCP7JXPH7OkVyLNCqTn8meOdF6LkghNZ/XNZH
-	in8w6iXxfAuZhsOiB9YG1DtpD5CH9Ncg6oj/dtvE6/0zySBz1a4lvHWuwf3l8LPXKWjZzVx09Ij
-	BH8mzsCO88RzxQfL8t8fC9uh4MlYFfUc=
-X-Gm-Gg: AYBFou0G+ibJ43Bpriwm5IjcPP4vBukVIO6tnDGU6rsbnNLwXsl04aUB68hC5chAGZP
-	VovI8hWwhyFl/yK0d6mv4cUDj7u/pIgSfiiUxLv0eS82xaVIqTqCuEn2JV8mxpFcd1dhdaL+G/Z
-	wu5bwf1HeWsWHYiE9lQkcFQTm0uRL+0ueeYXauPT0dvZEisFDdtWhjWFWcpnBvitjGBsJ6MRvMO
-	gGvrbrxA96FZALzAyvpC195LPZpWTNNJZvnFJoaY9Ft0V38HfpsKfLdcvG2yFvFKXkYqflDYq7p
-	FPVlBHEFwNmj3qyzHTCyFebvL+/L7++xIVHLOVSDmk4Vw8hzfs0ysLfXQva4H8XaYPo9PP8WOxo
-	ICufEQULb2mTIPh9agaHKndvu4gYGoFJxMn2XksqMPSJJR6QPSWrrQnZ1k/DEhY9zky8=
-X-Received: by 2002:a17:902:e884:b0:2e8:3281:6464 with SMTP id
- d9443c01a7336-2e842cfe9f4mr73943905ad.32.1791774828856; Sun, 11 Oct 2026
- 20:13:48 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791781262; x=1792386062;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Sh12r1iPHZpHQ+j2VdLQ1JnDQGI9QrQoo85Y6cAkElk=;
+        b=e4sHYSR8TIKnuoU2ejYrCybf4vIyaCWNfr23Qv1dFOstel5TYxWnM2JKlJ9Rm0DP5A
+         XZGZBEFTDusCO7w4m0LolPVZHkul7VToNp7ggNVO6zKj8FMB//tSje4cCamMDEAfKbe6
+         UCuXqp5P2CVyzGTZgopnaZ1FtR9pVZqnIqB5Cynv+HHtwGsBmHbJglxk3c24Rcv0xqkd
+         ngqARjYLSmVrBhclzZJtkyB3mPaG/VLSisOZeClcSEs+b2rEwkcPcD0AZew4Z+5FQsRH
+         VRMVWZXD3cll5S4gDG9/3HdQm6nPSV+GJkUIg+6O6qCv6JmqK3PUOL58UrRbp0k/p3CA
+         Djrw==
+X-Forwarded-Encrypted: i=1; AKwUvBwLoF/SPVG81cTBt9EMmTsXUUSzyQQLTOfWrpr0W2a0F4yggaRYbQsUfD413ixlXrSMJrmqzkzGFKY=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKni0JcyNiArV17NbU1vt1DXSIENqJB1iESkU9LhQEH5hMOGwwN
+	PgZRv/uia7IMBr9H/2ahPufhaCyOWB8FQhVPtED8fZJyNy5ww7aYqPMSEq3x2uJO
+X-Gm-Gg: AYBFou31klyr+JuXupldBNwHylEjxImZNWgoOv+P8420V7L9h7pQQFqnviRAkn4leLd
+	L+xc3d6d+8p2XVk8PPDZrrRXXXnnUdi2o+O0YaPcf+VNjT39UBorvzzFSl9jPNx4Ui1QBY3PCVT
+	i0KopMQHy81Zby6UuZUMh/oGVQ9IUQ/ZSr29a0YVMsdXBoCQlboV416ojfEA8Lla39xgCBSfZh5
+	ysdonX9A+/LxopOkKOBuTQ2JHk/Z9ZNFNUCV+ljrKLnIWGFRhRFD79o/L8j9VDC4G+NKrP+l+D8
+	uO92xMMuqvaYi77sFPNlGkVAkgFTXXF92DV+w/0TcZtQyaJAD7jtD0TnSLoNRZqE35Al4jpMpkM
+	OckwpizJJi8nqHi+mR6aMucHD7J5UDfnmHErnBLMyBrklZXxcZTmsfVhwlGirMJwXbvIHJbBMpr
+	qD3+Jc1D8rorRLPHmYVCw3nMCyHKr7u8+Ok7soz2qEeRhzX5kjJMStIf0/M19t3vChE1bfzxsWB
+	CYZzG/eKntSD6BNQ2IMgQL9oDF59qFfMyuF5fitvYP8cxqQq/HpgAg4EEJKQDB0ny3jfNQGo3Ud
+	/97u0DCr+0l5HQ0LUar40pfl8W3pZ+e7KXHiaXvQUfy2/lylHkAmMSzkeIbPG0IYJ/hJ5vtQaOq
+	XaQiR12jVNonQ164u/iBxVMMvsls0Vm1X1M7B89oOVP5fwbGB9L5bOYU=
+X-Received: by 2002:a05:7300:e9d6:10b0:354:1db3:674e with SMTP id 5a478bee46e88-3541db367f0mr12293844eec.6.1791781262172;
+        Sun, 11 Oct 2026 22:01:02 -0700 (PDT)
+Received: from FT6N242TWK ([223.181.119.248])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-353814b556esm31804877eec.18.2026.10.11.22.00.58
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 11 Oct 2026 22:01:01 -0700 (PDT)
+From: Shashank Mohan Jain <jain.sm@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Mark Brown <broonie@kernel.org>,
+	bui duc phuc <phucduc.bui@gmail.com>,
+	Frank Li <Frank.Li@nxp.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] iio: magnetometer: fix the register restore on resume in mmc35240 and mmc5633
+Date: Mon, 12 Oct 2026 10:30:53 +0530
+Message-ID: <20261012050055.48850-1-jain.sm@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261011051924.60456-1-jain.sm@gmail.com>
-In-Reply-To: <20261011051924.60456-1-jain.sm@gmail.com>
-From: Bui Duc Phuc <phucduc.bui@gmail.com>
-Date: Mon, 12 Oct 2026 10:13:37 +0700
-X-Gm-Features: AclHuK9uqDFJoTllpeX_OzZxUzR1wDkehf0yZbXw9ZjHspovKBm68NjSPo7pxb8
-Message-ID: <CAABR9nE6KqsMUXYGROsu3icF8oAVTQ8b07dc7gxYcucqoaVJrg@mail.gmail.com>
-Subject: Re: [PATCH 0/2] iio: magnetometer: fix the register restore on resume
- in mmc35240 and mmc5633
-To: Shashank Mohan Jain <jain.sm@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Mark Brown <broonie@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Shashank,
+The resume callbacks of mmc35240 and mmc5633 call
+regcache_sync_region() before they take the regmap out of cache-only
+mode. Since v7.3-rc1 regmap refuses a sync in cache-only mode with a
+WARN and -EINVAL (86fc3483a4d6 and afc8e3ee8307), so both drivers now
+warn on every resume and no longer restore their control registers.
 
-Thanks for finding this.
+The kernel-doc added by 86fc3483a4d6 says that the caller has to
+disable cache-only mode before the sync, so the two patches change the
+order in the drivers.
 
->
-> The Fixes tags name the regcache commit, because that is where the
-> behaviour changed: the drivers have used this order since their resume
-> callbacks were added, and it worked until v7.2. Please tell me if you
-> would rather have the driver commits there.
->
+The Fixes tags name the commit that added each resume callback
+(553a776b7908 for mmc35240, 6e5f6bf2e3f0 for mmc5633), as suggested by
+Bui Duc Phuc in review of v1: the wrong order predates the regcache
+change (86fc3483a4d6 / afc8e3ee8307), which only turned it into a WARN
+and a failed restore.
 
-Cache-only mode has to be disabled before the sync, otherwise the
-sync makes no sense. mmc35240 and mmc5633 have been misusing
-the API since their resume callbacks were added, it only worked by accident.
-86fc3483a4d6 and afc8e3ee8307 just catch this misuse.
+I have no hardware for either chip. The patches were tested in qemu
+with the drivers bound to an i2c-stub device and a suspend/resume
+cycle through /sys/power/pm_test; the details are in the changelogs.
+A scan of drivers/ and sound/ for other resume paths which sync before
+leaving cache-only mode in the same function found only these two.
 
-So please point the Fixes tags at the commits that added the resume
-callbacks, so the fixes get backported correctly. I've commented on
-each patch.
+Based on mainline (a5ebb76233b7, v7.3-rc6+); the patches also apply
+to next-20261009.
 
-Best regards,
-Phuc
+Changes since v1:
+ - repoint the Fixes tags to the commits that added the resume
+   callbacks (553a776b7908, 6e5f6bf2e3f0), per Bui Duc Phuc's review;
+   the code change is unchanged.
+ - note in each changelog that the ordering predates the regcache
+   change that exposed it.
+
+Shashank Mohan Jain (2):
+  iio: magnetometer: mmc35240: leave cache-only mode before the cache
+    sync
+  iio: magnetometer: mmc5633: leave cache-only mode before the cache
+    sync
+
+ drivers/iio/magnetometer/mmc35240.c | 3 +--
+ drivers/iio/magnetometer/mmc5633.c  | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+
+base-commit: a5ebb76233b79db01e82e061173cb73c6d2b5c6b
+-- 
+2.43.0
+
