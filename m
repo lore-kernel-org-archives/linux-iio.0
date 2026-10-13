@@ -1,154 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6F155208A9;
-	Tue, 13 Oct 2026 16:59:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C220C3F6C3D
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 17:17:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791910762; cv=none; b=I/vKKP0eRkneUfZOOGK4h0F0Svl04Bfru6T6/69BmAapg34WPn2iPE70JeuH7E+HCz8ZA9AFf4Yc+aaRs3MHrMyEVwhdFyNRZl4SoJganT2zs0BDHyuS/plDsXT+75zgdjIgrqsWFebnxGJD052owgpn03S8g5vODVidmuGCy8o=
+	t=1791911855; cv=none; b=pcEu9ENCRa/1uSj1Apy0lkeCTfxUv+rRgeQSqepi7TF6F+rxisW3MzDFhGxtaYp0DYnO04z8GNMFCuQI33Te/avZ1RjHvcYG0n76QhI3aBcGb5/HNEBYqo8/T7YO4swNeBIst6DaktTPcehCSIQcvMd4gdKZCOjeoen0EUS5GXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791910762; c=relaxed/simple;
-	bh=iZwcWXW9P1s2FGcBHBY8OWwVOV8yIE8tuCxLW32Qpjs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QVeQFOHkwxHuMVkHXSRxCrR7qWV3Jo0wxdoRohYMF7MoZ4glldzfcna78KHQO7SGYE0aCNRiT4ootrHwbr4vQH75GUhipqLfbPurmtzu29RHgHExXcA4znVPMVEItlQKChePp4LdcQaSu6vNewffB9N/Cd+rYxsVIMgZyCgCMkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QyP4vueB; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791911855; c=relaxed/simple;
+	bh=+4OV03i0EJVYJAj0s+f12i9tbSSJEF1awclvr/932vA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OVfQEGcckIJCXKx3owqIBiTXizArksDUCjv9fekcO4udFfRfiMupLGLpTka4s5gtWKi4YeJGEFiatMnFhwiZmPV7D9NzzvkUspqrfAY2r5zKJ7844+ihZ1rafNU4f+ebYXQN7tDwJ+Qk0iWXFMov5vlu6ZdImzNcHXhpGsx9FgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=slmVQe3v; arc=none smtp.client-ip=74.125.82.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QyP4vueB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791910760; x=1823446760;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iZwcWXW9P1s2FGcBHBY8OWwVOV8yIE8tuCxLW32Qpjs=;
-  b=QyP4vueBtRk8GlsW04Q1R3IuC3NQR8wjk8dkO3NE0HE9K6CXeK+JXsxt
-   rC9OLnGR950H86Q2PGyuLUADHlr+PC7TEgH0nWZB/SMPh+DUudzNVsr+2
-   XWs5B8QmaiZCceEfc2yr4DAfHXA50sYTHmdDcSY2iOoCCmLFv83N5E9LM
-   N4pZEzsjy4UH6i9dFyYd9L+MRnxt7j5mQUD2HSNOuMsDZ27weh+QtMjod
-   WhumKMq16wc4MC+j1hVsq/MeX+4uQqZW/QzdJrF4+1VW4KFVXkqNd/wBc
-   Xg1t0ec3bxU3f7f1Eg1Yc4CWrh93uOkbcszrhSiN1vqT4jvEbOxmA8EIm
-   g==;
-X-CSE-ConnectionGUID: DHPhrAPMR7Cs++BxpH10zg==
-X-CSE-MsgGUID: IjsXISVeQi2CqRjCnnLF8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11934"; a="530703"
-X-IronPort-AV: E=Sophos;i="6.27,156,1787036400"; 
-   d="scan'208";a="530703"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 09:59:19 -0700
-X-CSE-ConnectionGUID: yeQrbO5FQVaXF7XDvrw0MA==
-X-CSE-MsgGUID: MYBPdhK7RtCYBfQ6CPBcVw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,156,1787036400"; 
-   d="scan'208";a="1551482"
-Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.48])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 09:59:15 -0700
-Date: Tue, 13 Oct 2026 19:59:13 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Eddie James <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Rupesh Majhi <zoone.rupert@gmail.com>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] iio: pressure: dps310: add Zilltek ZTS8032 support
-Message-ID: <as5jYcTlEuOzD6go@ashevche-desk.local>
-References: <20261013112124.1878296-1-paulius.zaleckas@gmail.com>
- <20261013112124.1878296-7-paulius.zaleckas@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="slmVQe3v"
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-1517bda04a0so2039504c88.0
+        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 10:17:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791911854; x=1792516654; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=eattSOlERH03Tw84P2kHaA8gAf3HFT+7yXhlaXTMwtg=;
+        b=slmVQe3v1rYwSkRLjiT4tWub0gGOGc17+s0M8X0PfvchWOFLWdh0r9CZ8Une7c3BRj
+         kWBu6AJMioYjmIBf7GVnHX8WIgdjv7hmB613PX9jc2GL4AgGMWHHuiL1z4AVW+5m37zJ
+         WPozao46eixgByesANgDBkoyz29HL4I3kSVgLo0Q3hTrP6GjoYm2EK9hLElJA/78XR7e
+         S31a01NKsflVtDNAO2w/yGsHkgB7I2ZuC7qJANtPn+4IqL/PjsgpH7LaHFdgSevB+z7r
+         oKvih9yQYgmy78e6RHs3i1OA6CFJTXxBNvGKok2ZwR2gQ8TROTEA2ANVDoSrRRBZolr0
+         GF3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791911854; x=1792516654;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=eattSOlERH03Tw84P2kHaA8gAf3HFT+7yXhlaXTMwtg=;
+        b=OLNwyxoPsiDj2/voNJgn6JvCEJWLg9c05E6bhH3Lj3x9G2hYDHeJ2JCA+ErRU6U+3t
+         krd8HVqKL4GxyZfDM+KR9e/X90j0ovQgPoeoEUFvEBzz2z28OS/5ws4/oAoKP13lwWRJ
+         R9++R7b4q6n1QY/Z7dBtUcMx8jKzjIbQys+HhjVFo0eO8A3xOZ8Q/r6qzrf5Y+FdBZvw
+         FMgfEwOu9cSpsqMtDlT4iVbV2sKVWWfJODTOA+cM6L7MBOMRMswtvzpkhtfXtW8A8Rr8
+         9n6PpNxQAKnwLwPqZe9+AadzadSTA4F43kmpEV2x/f/2u+1DhFB2GK221GUyonCsxtfi
+         e2MQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwBLvxWxkyvJVEgmlLKJyMiqO0W3Y+WjuIE3bowCP+QY6NV1/PK4/yfqRni4w3DzM5K21fOAo5P7Vk=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL59txvpCts1G8cehH8w/HlRc94sIKXpfMpcTytMbLXnfeK57iU
+	JazVijGdWRe0cZyTj969Ce/TqOqDPi8OqSkUIRYf0FdpBChpZaQpdQQ=
+X-Gm-Gg: AYBFou1DrbgeHLSvN2TQhoPLEgw+fHYrYH1EtOE5L3Uw2nRYYZOi0zsinX6+OvU8HEK
+	dUfvfbd//HAmwUkpxleCtIBwY4haz1JfAHlOv8qm3QKgY3iXrjaRMuD3uoG0oW3GBrYwNsZMh1/
+	fTPaSEYkSIVHsNZ3murlAJ+Gjlfu1atX8uhGXnh73xcGBJVROX/R1MJcqAGhufDmyGmyAOQ/vuo
+	qNOcd4ZdeK4ARShmPcEDcIMVw/6qQGrNhUoRuoAJvAWa0Xg7smL0YzmYSorNEUnXP/jWw+Ro7Wm
+	YTiR92E6B09+SCYWcTzUI/t1+6LLSefB7ZYArkG7/CMUibUGD0LbP5LvzTlJk/rL6qGZnfeo83R
+	XbuwaCslhogcmi+5WkgdC7XP8WtrN8/jy2X047CzAspd5c/dl7Md02bc36UOa8j9DaITdCDKjWf
+	YUDniBSoZdM8/einfby2b8/oFmlpq8VSggDVOZM1Om48fdlBRJsuCkfGNzBfXMgu547/UcVYsJ2
+	7xO3VAsUY7lHg7+HZbLnofoJB5Y94LbYcHBmg==
+X-Received: by 2002:a05:7022:ea8a:b0:166:3e26:c4b5 with SMTP id a92af1059eb24-16a5bf3ee1emr16409864c88.18.1791911853663;
+        Tue, 13 Oct 2026 10:17:33 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.62.171])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537cacb61asm47268839eec.21.2026.10.13.10.17.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2026 10:17:33 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: anshulusr@gmail.com
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH] iio: chemical: ags02ma: Check for short I2C reads
+Date: Tue, 13 Oct 2026 22:47:26 +0530
+Message-Id: <20261013171726.15670-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261013112124.1878296-7-paulius.zaleckas@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 13, 2026 at 02:21:24PM +0300, Paulius Zaleckas wrote:
-> The Zilltek ZTS8032 has the DPS310 register map, scale factors and
-> compensation, with these differences:
-> 
-> - two more pressure coefficients, c31 and c40 at 0x22-0x25, adding
->   c40 * Praw_sc^4 + c31 * Traw_sc * Praw_sc^3 to the polynomial
-> - TMP_EXT is MEAS_CFG bit 3, and the temperature coefficients are for
->   the internal sensor (COEF_SRCE reads 0x06). TMP_CFG bit 7 is the top
->   bit of a 4-bit TMP_RATE, so the DPS310 TMP_EXT write would select a
->   25/16 Hz background rate instead of the external sensor.
-> - product ID 0x11 instead of 0x10, the driver does not check it
-> 
-> Add its chip data, reading 22 coefficient bytes and leaving TMP_CFG at
-> 0, and the I2C and OF IDs.
-> 
-> Tested on a ZTS8032 at 0x76 over I2C: in_pressure_input is within 1 Pa
-> of the datasheet formula evaluated from the raw and coefficient
-> registers at every oversampling rate from 1 to 128, and TMP_CFG reads
-> 0x00 after probe.
+Check that the I2C receive operation transfers the expected number
+of bytes before accessing the received data.
 
-...
+Return -EIO if the transfer is incomplete.
 
->  	help
-> -	  Support for the Infineon DPS310 digital barometric pressure sensor.
-> -	  It can be accessed over I2C bus.
-> +	  Support for the Infineon DPS310 and Zilltek ZTS8032 digital
-> +	  barometric pressure sensors. They can be accessed over I2C bus.
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/chemical/ags02ma.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Please, format it to be scalable:
-
-	  Support for the following digital barometric pressure sensors:
-	  - Infineon DPS310
-	  - Zilltek ZTS8032
-	  They can be accessed over I2C bus.
-
->  	  This driver can also be built as a module.  If so, the module will be
->  	  called dps310.
-
-...
-
->   * https://www.infineon.com/dgdl/?fileId=5546d462576f34750157750826c42242
->   *
-> + * The Zilltek ZTS8032 is register compatible, with two more pressure
-> + * calibration coefficients (c31, c40) and temperature calibrated against
-> + * the internal sensor.
-
-Any datasheet link?
-
-...
-
-> -	u8 coef[DPS310_COEF_LEN];
-> +	u8 coef[ZTS8032_COEF_LEN];
-
-I would add
-
-#define MAX_COEF_LEN	18
-
-to the first patch along with the HW specific define and use here (in that patch)
-
-	u8 coef[MAX_COEF_LEN];
-
-so, in this patch you will just add a new HW definition and bump
-
-#define MAX_COEF_LEN	22
-
-...
-
-> +	if (data->info->coef_len == ZTS8032_COEF_LEN) {
-
-This is a bit fragile. What if it will be HW in the future that has 22+ size
-but incompatible with ZTS case?
-
-> +		data->c31 = sign_extend32((coef[18] << 8) | coef[19], 15);
-> +		data->c40 = sign_extend32((coef[20] << 8) | coef[21], 15);
-> +	}
-
+diff --git a/drivers/iio/chemical/ags02ma.c b/drivers/iio/chemical/ags02ma.c
+index 151178d4e8f4..2219965d044f 100644
+--- a/drivers/iio/chemical/ags02ma.c
++++ b/drivers/iio/chemical/ags02ma.c
+@@ -61,6 +61,12 @@ static int ags02ma_register_read(struct i2c_client *client, u8 reg, u16 delay,
+ 		return ret;
+ 	}
+ 
++	if (ret != sizeof(read_buffer)) {
++		dev_err(&client->dev,
++			"Short read from register 0x%x\n", reg);
++		return -EIO;
++	}
++
+ 	crc = crc8(ags02ma_crc8_table, (u8 *)&read_buffer.data,
+ 		   sizeof(read_buffer.data), AGS02MA_CRC8_INIT);
+ 	if (crc != read_buffer.crc) {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.5
 
