@@ -1,69 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC42F37A83D;
-	Tue, 13 Oct 2026 06:48:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2132037AA94;
+	Tue, 13 Oct 2026 07:20:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791874101; cv=none; b=R8iAw9tjjP8IvLKEuyyMCLcz6Rrewf3x50wHPqUDmAonGIZKH/KD+2vJx12P21YF/Txi+Th+AevJtWaZPdpcZAEd8TeRQU9KsULsVVixlMgGpPZd7gsyY5bfZtNLrfNNzoau5cCxzKkiPt+kE1jSyrIlf+HFcac8gfEaKfUaFFo=
+	t=1791876035; cv=none; b=GXZepAEq1q5BIqTv2/V9G7quMztNIQzcRX/lj2lSHzPzjSj8DTv3iEXZEI4NGGdc8u+oQOeZLZVczKDVJGnzy967K+dV5Ns6eAum9vUYWuuYuJQBzSnePkQjzr2CSOF+8qvUGsY2cnqxEQShSnQi2DK2q62BInP+6xp3Q79B04k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791874101; c=relaxed/simple;
-	bh=TlOXs4Lxgq/Cj0Jw93YV8G4gkK/yMhf01kSDNvYKG6Q=;
+	s=arc-20240116; t=1791876035; c=relaxed/simple;
+	bh=lhtNOvnGjrJ0YJ4RZuJIlnz6dosHMOa7q4UAX6irEKE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FaW1MPe09LyUTN4+Ah5Xj6xkOBOXMBNYta5+xtsSsU7ZAcVzSaxhPRk0A7SUe9nFItW9X269CtEKKmI/QeMxhr/twjx708Y5PhDwJEhLNl5a5rhrt6nPJnCQgDvc114vgywK7Kq7x/B/g+Yha3Xghe9TZdcHk2eKw/BU0sRE1EU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CkB+X5Ef; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=KzyXuMMjkZHHVJRO7ndkWoSRELQGwMJBIlBlu3hdwKRhSd1OHyURznZtl2JnCyqJg6naty27s8A/efsKQ2v3yywSdPzkwZDd7LYQdCEZ7PD7kudy1Ujm9MSfAaHFZI4GGdzHS9j3IoMnc9NytsT0hr1PCnnEyjBOrYIIXd6/nZc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AuoizujY; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CkB+X5Ef"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AuoizujY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791874098; x=1823410098;
+  t=1791876035; x=1823412035;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=TlOXs4Lxgq/Cj0Jw93YV8G4gkK/yMhf01kSDNvYKG6Q=;
-  b=CkB+X5EfOMG2m6Gng3kMPp3R/jwk9qtML9/jq98OAawrmmcO0DiB0A6y
-   L5w0PwxLYycg1DMUw0r05Hxgyt6KBDKtfTLvNpwhSDtI1ccl8PXmTMUP9
-   OsZR2gO8F+FnPaDcCNFB/TPsi2D1mKSbJBga/fx1sO4Aye6hzJkIpehmM
-   h4A1RnB8qP9Ji1w7Jv4UsxNPTsd/w5W5pWdIr50lrOoeU1AF6W4+bPMkc
-   4kSuQEulXNQkROZb7UgbXanrVSYyNYAv4KseaMKeMghruC1ZVNpChZj3h
-   LiZ0swjB5Zma/7qfoDcKHHAs+bt8FjZBzOyTiR8lpCaq7natSwVKS1n9V
-   g==;
-X-CSE-ConnectionGUID: TXdh7Jg2Sh6iJJlBzxAODQ==
-X-CSE-MsgGUID: oeQAiV/gQyG/vJ03u1n/+A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="686128"
+  bh=lhtNOvnGjrJ0YJ4RZuJIlnz6dosHMOa7q4UAX6irEKE=;
+  b=AuoizujYw0EOPW2VlQxRyGHfp5EPCbMKte/l0WyxVJz3HBjQtvxlAC+Y
+   Qi2WOHDeaRKuMF2Bl1TKrrITTE9wSQ/LU5tuzV6Lt5X75c7ZxdB65h56D
+   PildgI0KYJlu55dolS7tmZ+l+HRL2Eq2lw8Sw3KQgl3i1ufp3g/59MQy3
+   ORU6EhkVAqb4K+TraaITeH4gBFoJ+OrctLHPt8/cHKfe3Ra2m/SD3Bb4m
+   nmYdbBQvbCLGsWk1KUqjWaWg4pt/UM15mFDbpJZIe+X8kilCl3mlh+7gZ
+   x46+FH9I/SggjqW7xl3xjBbQ1mXasn4K/usPxR3yrkAzEEFTTe277wP0W
+   Q==;
+X-CSE-ConnectionGUID: Amy6rrU3RBeAuTMT+srRdw==
+X-CSE-MsgGUID: bYhhAcITTb6M0CJ5G/+Ixw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="493141"
 X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
-   d="scan'208";a="686128"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 23:48:18 -0700
-X-CSE-ConnectionGUID: p5hP06jETS2cw3U0feJu3g==
-X-CSE-MsgGUID: 1rxr2WtQRWGZNgaXqTkZew==
+   d="scan'208";a="493141"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 00:20:34 -0700
+X-CSE-ConnectionGUID: /GKU5FLRRDqryMAPqrZGoQ==
+X-CSE-MsgGUID: HAM54pmgTfOkzHUQTBPriw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
-   d="scan'208";a="1014797"
+   d="scan'208";a="1052200"
 Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.48])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 23:48:14 -0700
-Date: Tue, 13 Oct 2026 09:48:11 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 00:20:30 -0700
+Date: Tue, 13 Oct 2026 10:20:27 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 3/6] iio: imu: inv_icm42607: Initialize gyro based on
- chip_info
-Message-ID: <as3UKwy03vG3u9d9@ashevche-desk.local>
-References: <20261009-b4-inv_icm42370p-v6-0-e53884f185ff@axis.com>
- <20261009-b4-inv_icm42370p-v6-3-e53884f185ff@axis.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com, jic23@kernel.org,
+	nuno.sa@analog.com, dlechner@baylibre.com, andy@kernel.org,
+	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org,
+	marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v4 07/13] iio: adc: ad4134: Support buffered data read
+Message-ID: <as3bu1imLnoBE1lb@ashevche-desk.local>
+References: <cover.1791309733.git.marcelo.schmitt@analog.com>
+ <5d31212a27c2099c226cce189aa96677e75ca529.1791309733.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,55 +64,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261009-b4-inv_icm42370p-v6-3-e53884f185ff@axis.com>
+In-Reply-To: <5d31212a27c2099c226cce189aa96677e75ca529.1791309733.git.marcelo.schmitt@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Oct 09, 2026 at 04:12:08PM +0200, Kanak Shilledar wrote:
-> Update the chip_info struct with a new `has_gyro` property to support,
-> devices which do not have gyro functionality. This is a precursor for
-> adding support for the Invensense, ICM-42370-P. It is similar to the
-> existing device except it only has accelerometer. Check all operations
-> related to gyro with the boolean.
+On Tue, Oct 06, 2026 at 03:17:56PM -0300, Marcelo Schmitt wrote:
+> Enable users to run buffered data captures triggered by IIO trigger device.
+> Add an IIO timestamp channel so each data scan is provided with measurement
+> time information. Require single-read operations to be in IIO device direct
+> access mode to prevent buffered and single-shot data captures to disrupt
+> each other.
 
 ...
 
-> static int inv_icm42607_set_pwr_mgmt0(struct inv_icm42607_state *st,
+> +static irqreturn_t ad4134_trigger_handler(int irq, void *p)
+> +{
+> +	IIO_DECLARE_BUFFER_WITH_TS(u32, channels, AD4134_NUM_CHANNELS) = { };
+> +	unsigned int chan_bytes = BITS_TO_BYTES(AD4134_CHAN_PRECISION_BITS);
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct ad4134_state *st = iio_priv(indio_dev);
+> +	struct spi_transfer xfer = {
+> +		.rx_buf = st->rx_buf,
+> +		.cs_off = true,
+> +		.len = chan_bytes * AD4134_NUM_CHANNELS,
+> +	};
+> +	int ret;
+> +
+> +	gpiod_set_value_cansleep(st->odr_gpio, 1);
+> +	fsleep(1);
+> +	gpiod_set_value_cansleep(st->odr_gpio, 0);
+> +
+> +	/* Run enough DCLK cycles to match the data frame length. */
+> +	ret = spi_sync_transfer(st->spi, &xfer, 1);
+> +	if (ret)
+> +		goto out;
 
->  	s64 disable_wait;
->  	int ret;
->  
-> +	/* Disable gyro if has_gyro is not set */
-> +	if (!st->hw->has_gyro)
-> +		gyro = INV_ICM42607_SENSOR_MODE_OFF;
+> +	for (int ch = 0, i = 0; ch < AD4134_NUM_CHANNELS; ch++) {
+> +		if (!test_bit(ch, indio_dev->active_scan_mask))
+> +			continue;
 
-This doesn't sound as a good style. Instead, I would see the wrapper that calls
-this with different settings depending on the has_gyro:
+for_each_set_bit() ?
 
-
-	if (st->hw->has_gyro)
-		return inv_icm42607_set_pwr_mgmt0(st, gyro, accel);
-
-	return inv_icm42607_set_pwr_mgmt0(st, INV_ICM42607_SENSOR_MODE_OFF, accel);
-
-...
-
-Side note.
-
-In this function and maybe somewhere else the all *implicit* checks against 0
-has to be made explicit, for instance
-
-	if (!gyro && oldgyro) {
-
-has to be
-
-	if (gyro == INV_ICM42607_SENSOR_MODE_OFF && oldgyro != gyro) {
-
-otherwise the choice of the enum type makes less sense.
-
-...
-
-All the same for the 'accel'.
+> +		channels[i++] = get_unaligned_be24(&st->rx_buf[ch * chan_bytes]);
+> +	}
+> +
+> +	iio_push_to_buffers_with_ts(indio_dev, channels, sizeof(channels),
+> +				    pf->timestamp);
+> +
+> +out:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
 
 -- 
 With Best Regards,
