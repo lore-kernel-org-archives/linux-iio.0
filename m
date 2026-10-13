@@ -1,155 +1,189 @@
 Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2D0B551982
-	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 20:56:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 027B85505FA
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 21:05:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791924967; cv=none; b=MyC2BXluz79vsE8wVllxIa02Mhe0+SjIdkST20qASrTN9sIDngvRKa1C80HGdVwYSDIF2S0GVndZXgrG0zccunNRvxmSbI3zKuD3fp8bq3dX+vsx7bVi8kV9oAAb7X+ZX5bzkZVxqqnX3n+uOb+3hvexzPk1t/rq2IvZ68ydfp8=
+	t=1791925542; cv=none; b=M0O9ZEwmG1H0ZZxQeecc0SJhSsIXx5VB8hGFbXz05Vm2y7YVFMcFgkS0vTFdiDLGVT/hZV2wvx7adnE6x/kxC2DxQuB+k7RYV7YdkLPQrbDU48Rd++098S0YR2tb898hlPQl2/RFxs/0nsPw3PPXdqIiGIO4WMXjQA3aeao0YC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791924967; c=relaxed/simple;
-	bh=3qWH2koItPy/vbViCZzFcKJYSGqpM60iDvtoECll2CM=;
+	s=arc-20240116; t=1791925542; c=relaxed/simple;
+	bh=VY9hMjAXDh1ftFERqn9Z7cXPYFaO8/7QJudSZTKJFGo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JDSpEK16JqF+aMVdMorWl5IK5D+bRxx1SjhpYWssQaPVMb7cvj9CMAjnpF5jbpr+5NhOZCYYG7iYOAlFgpcB8IYC5haLBH21qReU+fCt4kB91aZ2Rby+c7N3s6n+C3Wkpri5ndyti4ZvKDqbTM163jYiBTKq4jzJM3k8S+WLgjg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ly0Grsm/; arc=none smtp.client-ip=209.85.221.179
+	 Content-Type:Content-Disposition:In-Reply-To; b=IqD4WaB5+83YnfqtceZcnFhnk0ALxzoE6X6YcWQWaWyVdnYoD7LjPRTCRhe3Qo3/QDbzsEYs2WoBc2+f1Lz4FgQ5vWyTH/hbvPhZ1aQzH82DObVDid+bmCJ9WabvQiE0WWoP6CcSWGPSczXQK1XzyKY6Zihak6xqN9aw1VUCxsg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XCdxl6ow; arc=none smtp.client-ip=209.85.221.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ly0Grsm/"
-Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-5dc2dc6d3fdso1241461e0c.0
-        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 13:56:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XCdxl6ow"
+Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-5e95b036302so977257e0c.0
+        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 14:05:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791924965; x=1792529765; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=6OUQ+zAp4RYn8L595v0XwK+mQR3INz3p6beOnr31+Cc=;
-        b=Ly0Grsm/8ftZYQ1MnOEhTnmFCe49RJXFjX4kxrmD9zEUJeLw9ZuD85P91dC3B16XO4
-         jaV2ugm4D4pfQ0HbG7qintijVuVpWE4X6gS0izdQmM7erwaTjOV9pJhAE6J9NyjKtLin
-         MR4mnLc+qQDCXTgkOYADzKnT3FBXF6lS3I3tcGTbe9/mE1H/v1Ah049meqY+MkzrbjuK
-         mIC5CEj9SHDSUyxgi8CNZ0Ki9wuw4dDS2/bIZ+An/Ulj3sA1AgrHBXjST7JPGwm1QyL1
-         pPEW4sqfwjlruaTC0oX31JwzQ60XV81fQSAYm6bAw5HT4ghypiD/UNOlm4r+7zSvzopZ
-         xMkg==
+        d=gmail.com; s=20251104; t=1791925540; x=1792530340; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=/hCnLD9wzCgwKNHoCJ7lYMaaHNFptFWgp7Dc0EKbjrs=;
+        b=XCdxl6owE+DjoN7jVA3nxCupMkP6Emw1V86aXYn4RYpy0GJFuj+yMn5csEqcZ5V4YH
+         Hf5nIEj4SO4avMQnzfjhN4EEMKLw1wbcdaWPaH7CcGXf7ZKAx8ZJ7sfsj+kpbI/NpB9N
+         AlN89xOspkiVaCbXI/1BOBJ0cPxsbGW/dKPiDeJqVhrcc+KHh4ARdRLyzfVAD0fF7Lj0
+         tLa+2uieKvX060aufplEc9BD10xgAnwXl8mKdheNBJ9KkO7SNUlqLqFMnMTx3FqIK78K
+         81ECxI9lwKzrh06qMyCe7oSgXtFemGEQGsIODHwPLTKZ5954Msj4YgYQ6UVR6UBlzFEp
+         WurA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791924965; x=1792529765;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=6OUQ+zAp4RYn8L595v0XwK+mQR3INz3p6beOnr31+Cc=;
-        b=wiEJQOuUYHWv0X+oDaY4iN4YqSnmZh52KnPIirQ4/VyGgVsvpERfiarcypsod+AqUG
-         CDrAWaSTkk747uAsGBENLtNBtqbhU4IdEQt3bTZucZktt/14grRRA4bn8vvT8E2Rs0eO
-         51h+oMuZduxTZePiRZugZFw/IJ9PHrilfCeNbBv1CoNO4Byn9IKfOdBMtdoSPTG/VjZi
-         hlNj123xAvQ8q9/ldRkU1c0HPcBdiZLEvxShSdaluJ1dZDvpcEYaJUqXjlBZCYsP/U4l
-         xbkpKda/x0PlQnEN3GTx2TdutalPahBfyGyfw6w6C4bB9PFRojI6eJ/pYIBmJr9w8P7B
-         b/PA==
-X-Gm-Message-State: AFq9FYJ7TyRbroHqnn9wcjUdYALpdfGLz6geKry2UIfDP7lyJ1ZUi+V1
-	HH/MXXbWaWj+NqGaxzyof4ih/JVx2w/nyEyIKmL3p+euyTRwde6ihmQWCpbeBPaH
-X-Gm-Gg: AYBFou0qDypGTKISxPuothy4uH0QSgE/c+1WthxpPW9u+AyOX04FdcJ+FnTixf6+vkJ
-	lm+ELzrLrg/2pGPq0auS1K6b2ExZGQQQ+57KJIecHcA22OmWKzjdyApAQkaj+4ihDtXc/ZS5sTd
-	e5vE7Am3nNO8L6RMc/cXWTCkZhcUdFuQGTlVUB4dTSggsKdqQ9fJXxyO4A+qFtNG3seDFQhaRCz
-	LaXBI80nzjioJWzVAV3HFLRTlyr4rBP9tjuZ7Deo8bLaq0ZTzxCh1EvMXX3RYpHhoxokrfUb0ch
-	M7+bOnTCUKiUR4HE2zL1NKqWR8P76VlwM0dbl6HqUW5HFsCleaMgyz+L3lAEjhk1dFVCjrTkLt7
-	ZUwlU44H1lO+f5MQ4U3TFdnC6V8IJGaQGo8mZFAKu/lPqC0KJHwNYCi94ewJGgYUR8tK4xr1rWv
-	Vtnx0k7gS6J7FGo/bDaEnmlVu8B+fChCT/cQLUnMKSpsmGqEUBMc2yUkpofXwG2IrJwxIfGIKIZ
-	GxZ
-X-Received: by 2002:a05:6122:ca5:b0:5e3:828a:267d with SMTP id 71dfb90a1353d-5e91f518042mr4469938e0c.15.1791924964615;
-        Tue, 13 Oct 2026 13:56:04 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791925540; x=1792530340;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=/hCnLD9wzCgwKNHoCJ7lYMaaHNFptFWgp7Dc0EKbjrs=;
+        b=Zdmy5mTbXq2L40bhXTDKV1VJGTMYiHu5BgD8NDinTQdUIh23nvrLEyRY2zw3xh1iTP
+         7oYkiZFVHDCh3wJ8pHWze8NJ9SH5SuaCQEFMHCx4kr0thY/g/Nd6EXyjmig5OmF2zQpR
+         apfEUxfLPjjFGC60fpsVCuq+mZQb8yS6oUn/S44a0BLa1Pg/t/4zbDaTulY9xWgG9qCc
+         YALCFnN0R4AV0s3uKqulomA5RDqCsob1f0p7drdtzNPAFP5OhVSXyqAyVpZjuZSvnmQ2
+         sprn8tWU0iGh2u8iWgW7PYKmni7Q6O6bv2pYeXZ1m0lHGwmgIlpJg5D0dSMxAyFM0jjw
+         pWuQ==
+X-Gm-Message-State: AFq9FYKGvB4/kUvd1r9LorALxKgOg52xWGBFkiOoe7KCOnx6p5FwSF99
+	gwtZkDBUTYYNJXGm7zCwjAnxFtF7PX/t6fAxLUXeLSM6xB+W3i/VtKisK7/Z7le2
+X-Gm-Gg: AYBFou1gffUSPLcKxYHj6IKpwz2xGNcGd/MRCo3Rxjd3r/5euwRE0uqxeSvepnHDGLs
+	e/IsUIFb/IwSw+BV9k0/jUCtq0ZmR+TkRaG21xCiBo8kRWDIxx+SReZQXG3Y4NMI0LH1KczvYCd
+	gPm5V/l5AbjXOVdUGhnKpX6N7lu3ewnHCAdXxs1L1ojx6qKkkssmj8B2GFID4a1+xOXiLhZRa3a
+	ySCwP+NJzuYT3jitXWFbjL+YVcLUC234EEir4pZjQl56ikoicAcWgq1UzrBEtPBmfqmFkuEijuh
+	2WKKpymFdhxpK6cT7K/ZNcxlkc9+ZfyO9kdQWql+ZQWIXaPPu2gTJDSSNwB3xJL1I/0d57/zinn
+	GOG76dG9yc5AWyeKTc4kwokPN3KQJpTDhodQPjsLBmpY1diqWk6Pq0Yp7fGwXKprtPqT9v9/PCs
+	37/V74hZQ2cVwDDF+O9/JzCmJ4PAd12XXiFsZQk0Nx3+QYGMx19CzOzhIFYpfzBiWStIRMTCGVM
+	FrLzkchHIfeRGg=
+X-Received: by 2002:a05:6122:4a0c:20b0:5c9:a5b6:27b5 with SMTP id 71dfb90a1353d-5e91e74d733mr2547872e0c.18.1791925539808;
+        Tue, 13 Oct 2026 14:05:39 -0700 (PDT)
 Received: from localhost ([2804:30c:96c:bf00:7844:c38c:894:4054])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5e962a6e2b7sm1842792e0c.8.2026.10.13.13.55.59
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5e93683455csm7033499e0c.13.2026.10.13.14.05.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 13:56:01 -0700 (PDT)
-Date: Tue, 13 Oct 2026 17:56:21 -0300
+        Tue, 13 Oct 2026 14:05:39 -0700 (PDT)
+Date: Tue, 13 Oct 2026 18:06:01 -0300
 From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org, marcelo.schmitt1@gmail.com
 Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, robh@kernel.org,
 	conor+dt@kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 05/13] iio: adc: ad4134: Run shorter transfers when
- CRC is disabled
-Message-ID: <as6a9WRxHHav-Nq6@debian-BULLSEYE-live-builder-AMD64>
+Subject: Re: [PATCH v4 08/13] dt-bindings: iio: adc: adi,ad4134: Document SPI
+ connection mode
+Message-ID: <as6dOTPvdfCtgtJg@debian-BULLSEYE-live-builder-AMD64>
 References: <cover.1791309733.git.marcelo.schmitt@analog.com>
- <e46fd2f9b11ff2b690483bc2ea6489b6d145c773.1791309733.git.marcelo.schmitt@analog.com>
- <sashiko-outbox-162348@kernel.org>
+ <6afeb3fcb39f73edde5f39f6f37a1ecea5523319.1791309733.git.marcelo.schmitt@analog.com>
+ <sashiko-outbox-162344@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <sashiko-outbox-162348@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <sashiko-outbox-162344@kernel.org>
 
 On 10/06, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
-> - [Medium] iio: adc: ad4134: broken SPI read CRC calculation and ignored failures
-> - [Medium] iio: adc: missing delay after reset deassertion in probe
+> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+> - [Low] dt-bindings: invalid and incomplete constraints for spi-rx-bus-width
 > --
 > 
-> commit 5284b96efc125640c497213951d3fabe580894ec
+> commit a58d6d0037332b8cd9f5b3717ec4b6ddd8e36734
 > Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
 > 
-> iio: adc: ad4134: Run shorter transfers when CRC is disabled
+> dt-bindings: iio: adc: adi,ad4134: Document SPI connection mode
 > 
-> This commit conditionally reduces the SPI transfer length when the AD4134
-> CRC feature is disabled. It introduces a crc_en flag in the driver state
-> to skip the CRC validation check and send fewer bytes when CRC is inactive.
+> This commit updates the AD4134 device tree bindings to document different SPI 
+> connection modes. It introduces the adi,spi-mode and #daisy-chained-devices 
+> properties along with corresponding constraints for different wiring 
+> configurations.
 > 
-> > diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-> > index a0113fff4b715..85fa16321d744 100644
-> > --- a/drivers/iio/adc/ad4134.c
-> > +++ b/drivers/iio/adc/ad4134.c
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > index ea6d7e0264190..970e7adb2405b 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
 > [ ... ]
-> > @@ -232,7 +233,7 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
-> >  	*val = st->rx_buf[1];
+> > @@ -141,13 +161,36 @@ required:
+> >    - clocks
+> >    - clock-names
 > >  
-> >  	/* Check CRC */
-> > -	if (st->rx_buf[2] != st->tx_buf[2])
-> > +	if (st->crc_en && st->rx_buf[2] != st->tx_buf[2])
-> >  		dev_dbg(&st->spi->dev, "reg read CRC check failed\n");
-> >  
-> >  	return 0;
+> > -oneOf:
+> > -  - required:
+> > -      - ldoin-supply
+> > -  - required:
+> > -      - avdd1v8-supply
+> > -      - dvdd1v8-supply
+> > -      - clkvdd-supply
+> > +allOf:
+> > +  - oneOf:
+> > +      - required:
+> > +          - ldoin-supply
+> > +      - required:
+> > +          - avdd1v8-supply
+> > +          - dvdd1v8-supply
+> > +          - clkvdd-supply
+> > +
+> > +  - oneOf:
+> > +      - required: ['adi,spi-mode', '#daisy-chained-devices']
 > 
-> [Severity: Medium]
-> Does this CRC validation logic reliably verify the read data?
+> [Severity: Low]
+> Neither chain configuration includes spi-rx-bus-width in the required list.
+> 
+> Since JSON Schema property constraints only evaluate when the property is 
+> present, omitting spi-rx-bus-width from a chain node bypasses the hardware 
+> constraint. 
+> 
+> Should spi-rx-bus-width be added to the required lists so the SPI controller 
+> doesn't silently initialize with a single receive lane?
 
-It would require mid-transfer data CRC calculation to properly implement AD4134
-CRC feature. That would probably require changes to the SPI core or even more
-unusual hacks. Fixing the CRC is not part of this series and I don't want to
-extend it further.
+I don't think that would necessarily be a problem.
 
-...
-> > @@ -313,6 +314,7 @@ static int ad4134_min_io_mode_setup(struct ad4134_state *st)
-> >  	struct device *dev = &st->spi->dev;
-> >  	int ret;
-> >  
-> > +	st->crc_en = true; /* In minimum I/O mode CRC cannot be disabled */
-> >  	st->odr_gpio = devm_gpiod_get(dev, "odr", GPIOD_OUT_LOW);
 > 
-> [Severity: Medium]
-> Does the AD4134 device require a stabilization delay before interacting with it
-> over SPI?
+> > +        properties:
+> > +          adi,spi-mode:
+> > +            const: one-channel-chain
+> > +          spi-rx-bus-width:
+> > +            const: 1
 > 
-> In ad4134_probe(), devm_reset_control_get_optional_exclusive_deasserted() is
-> called to deassert the reset line. Execution then proceeds directly to regmap
-> initialization and SPI transfers without any hardware stabilization delay:
+> [Severity: Low]
+> Because the core SPI bindings define spi-rx-bus-width as a uint32-array, 
+> evaluating a device tree value (such as <1>, parsed internally as the JSON 
+> array [1]) against a scalar causes a strict type mismatch. 
 > 
-> 	rst = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
-> 	if (IS_ERR(rst))
-> 		return dev_err_probe(dev, PTR_ERR(rst),
-> 				     "failed to get and deassert reset\n");
-> 
-> 	crc8_populate_msb(ad4134_spi_crc_table, AD4134_SPI_CRC_POLYNOM);
-> 
-> 	ret = devm_mutex_init(dev, &st->sync_lock);
-> 	if (ret)
-> 		return ret;
-> 
-> 	st->regmap = devm_regmap_init(dev, NULL, st, &ad4134_regmap_config);
-> 
-> Without a delay, could the first SPI transactions during probe drop or return
-> invalid data, causing initialization to fail?
+> Could this falsely reject valid configurations during dt_binding_check?
 
-Has never been an issue during tests. Though, I guess it's easier to add
-fsleep(AD4134_RESET_TIME_US) than to keep replying to bots.
+When spi-rx-bus-width = <1>; the property can be omitted and the pair
+#daisy-chained-devices = <N>;
+adi,spi-mode = "one-channel-chain";
+passes dt_binding_check.
+
+> 
+> > +      - required: ['adi,spi-mode', '#daisy-chained-devices']
+> > +        properties:
+> > +          adi,spi-mode:
+> > +            const: two-channel-chain
+> > +          spi-rx-bus-width:
+> > +            items:
+> > +              - const: 1
+> > +              - const: 1
+> 
+> [Severity: Low]
+> This array items constraint validates the first two lanes, but it lacks bounds 
+> checks. 
+> 
+> Does this need minItems: 2 and maxItems: 2 to properly restrict the overall 
+> length of the array?
+
+I've tried that before preparing v4 and the result was dt_binding_check hints.
+'hint: "maxItems" is not needed with an "items" list'
+'hint: "minItems" is only needed if less than the "items" list length'
+
+> 
+> > +      - properties:
+> > +          '#daisy-chained-devices': false
+> > +          adi,spi-mode:
+> > +            enum:
+> > +              - no-cs
+> > +              - 4-wire
+> 
+> -- 
+> Sashiko AI review · https://sashiko.dev/#/patchset/cover.1791309733.git.marcelo.schmitt@analog.com?part=8
