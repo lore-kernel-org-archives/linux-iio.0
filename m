@@ -1,113 +1,115 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7664751DAE9
-	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 16:45:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791909909; cv=pass; b=rLf5XGwiQwcUXlTDPFM2H1WaOrnjwnqWhHEALR80Ljo94cM5thRFgMqywylEKZTABPc1jcMTmhpJRErZkWIDSq84wmt31NLL/YNQuVWiFNxZdghEi3DOPcGDQ4kS5OZchEeLivgsOITWOZxJXZsAfY1wMME7TXfOrKQ6mB+DbAw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791909909; c=relaxed/simple;
-	bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iMZgp24F8EtOCdTaFnNcGp+EVZK0aSvgxobTsJg6WTrMBq2orM1FpKudKGgtQe9uAdSaDAtS9+V78hS1kx+K7Jz1h8e1vS3uFiDlmURvMiO0nNRM1eU0OhgaC6QSaUzoS/F8fKCs8PLVamD0FxM+0+vGI2E3ry0MQ9LCQ+o45zs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bu6oCxjW; arc=pass smtp.client-ip=209.85.167.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD353DD86F
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 16:45:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791909932; cv=none; b=cGkE/COtikCtkoTuN6uz4v3jtQRTc9GPf0xdsuTo/G5Yz8JwUir3VQc4JWmxkB2+I4+AYditdTryROukFxxc9dvFcNCWYz3GgsXIUIFDQiFihVODAs/Bmrqe+ptAH4iCZV7HV95KsS+2pCZujm1TcXZvGPS282J/ckHEUD9pWvg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791909932; c=relaxed/simple;
+	bh=2jPCHhQYXRl27PTSjxxKiq+mBhD4g/zPuIPHha3DcoE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VfvNTLXb5wUrdIAJDctccMNuCKLvDXFmMrqDBrWipHM6bK4Ex7Bw1nariAfexsbx6cxT9KLm/Iqwcio5nD5ot0mm9zMZwWe3tr9EqWMn3ejRskGV7skmT5iuzCNiyeDlLlgDuTkZfxcIXXUqfBBCF6do7tq9Wm3A2h6DAJZ9d/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lx2bpbEc; arc=none smtp.client-ip=209.85.215.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bu6oCxjW"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-4b21f71613fso2115926b6e.2
-        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 09:45:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791909907; cv=none;
-        d=google.com; s=arc-20260327;
-        b=LodPJdtZsxR1C2CzMSNxSh/I4NNXN3d30Zq8k4zQGGs/fetgoWybx2EhRU0c3B2fXf
-         tTCquKvlKfi7EWlOE1tK4Rb/WYOR77pQf5Z2r846/FrT5i6Jy2/y3FkQJx+kqbrycg8W
-         NiTc0UHKuNcoSHBXfGBj1TcRS9j6TPHRscHTxcsusw68AmsNgbQi7mKzzH/wAXVqPXYv
-         yG4/DTRDpF7FLJfGPIqvVERF5XeaLZR+QHmXxwh2snsOT9ksiTfrUCSTpnlWD70gOWYw
-         MxlvGMhriu1XfXwDVu066F9xjmCr1GBtRzaj1blMs4fl+ouph9YtBRwg4pRl9fRSIB6q
-         23RA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
-        fh=yO6xp03yfwejx9XuWGTsnRPEVEA+KGvVngbUXbEeLy8=;
-        b=klBCRk/5t63ycL/Etk4TW6hTK+gjo1i6Lq2Ey2vnF/GNvMM3pS5pRu6G34it1Fg46j
-         RMIAVypbjofl0cBfscsu6s5zZp/62+L8tu7ABGYjnwljEx+gLhi9AL59NLZ2qjybFA6Q
-         V10rxTSRtA7jqMINIRTDoizNtpl/LYdCdVbmO+wE3ruEWRlAE1TOCGH64COnVpV8kpDx
-         9R21RSi4DHOexkJgMf3A5j3SlnC4GdBNv3urLpF6hAUZ0xAjmsrErKBR7QMiS2/u4iHu
-         n2goKYXVu4igGsLhH6P41yHjUn3rHq/7l8U0fpyN/jB7T4lYOfiv217zNuzqILWAxHyu
-         x7TQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lx2bpbEc"
+Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-cc758830601so32627a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 09:45:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791909907; x=1792514707; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1791909930; x=1792514730; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
-        b=bu6oCxjWhaGntr+VM13rF2COOHxrghPdcW2BylwKxNYEXaQVVYbn9FBBxGhgVsmsgj
-         XUfheH0UTD/OFTx+hzPK0grZDg/AosqB0748Za5Z6c7DXdJxE3nQN58/6evJYbzqyfmv
-         kYXvOGuQOv0FIKaD6kixsYMQElxwiXdnoqRuIGMdpk/7Z5GH0UXvvO5UvTpfV2f8ZXMy
-         y0IvfAfRvef28HHOyN4J3mb1jNRqfPfyXdxb020z4w/2gF3mYgLpN3UAJV5v3m0VatLG
-         4hH6hyCVGRhBd+Byflx7lmp6pInZAKAJari5nQ6rdauiBVmxVXNaQQeNoXXwQ0EPKNZj
-         ueHg==
+        bh=QtZ5PzT+iVNvU2u5JnqRMNxH/iEEZQesxZqimXqa8Xs=;
+        b=lx2bpbEckBxUwJceLTvCH5fPGnUIecKhaKFsbNIoGRcSxQ/3hY2Wd5NhQr7KVYrs3x
+         9oRS9ImHOQDgAWlWoQ5rBh3zJbpGxuaKYrh7GKnQolVAryOrW7ouikVRKF//qWepMmTU
+         9zEMv1g3ra0c6bVUUGzMd20cBOkrlpbtnMwWkXoAO9+jqEfQbgFrkhhTjKtTgSIOmt2g
+         cA0txFwWliyQ62jyZByAvRFwREAGzCKIaMr/I0DoiJZcMpLVV0hI0nxG046jwuL02Zpt
+         cQ0YHkubuPqfZc6aVWrxnoGBD0jiq6sFmEnCCi2qqu16Y3moNqh+tMAIZLGpGdOgTRC+
+         mZtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791909907; x=1792514707;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
-        b=OH1PBRXk33iKP/CHDIzRwLzxL1xpYmxbHGvkLrJK4MNBRXmd7qmHOCdK0RKg6n7UFc
-         K2oKaO5pNFLxuPBfGZ0jk/AmMAkvrfA3Kb9RBFB2qZy55KebIAvO6Mi4qas3Jrq3Bgnr
-         pGdDt1AAf+qtZj2lK8KOT2HjeRbFEgu6T6xU6qS6mmfTczUUgGuZS/CzfgczvdQKKTTZ
-         3WkwOBdp+1JjC2ss3IlZnUAnHy6wH+0P6WNMBj5GOI3tUKOIUQ8XSSE8jifFnMiIxdp0
-         0z7HkR/iftzJ4bvZ/I3YaZUxOAedkQelv6g1vxbMPyZAAHkJlRdWxzGkH7w08SzUkGwL
-         AbDQ==
-X-Forwarded-Encrypted: i=1; AKwUvBx9/m4R/MFcTYTQoc1kinMjKm191dbQo1JoKd0Pf/uCQG4BpskAukxecqn3Z8FCX9TOmVRWqTSL5OQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLtmkQgwlgDWnqhwnP32vyOMDstXEHM1psgGLOOqQFBtUxkRFg5
-	9rUOtYVi5X99qpnVGuJYZM1GIMVYLGi8Dj8Oc5YWcEuM78iDI0o9XGDnRuMClXRZsjGQFPw2VPc
-	PBKepF3bv2ZBh2w/4gocd75jykdfZb8C18jhc
-X-Gm-Gg: AYBFou3g8q6WxAPkxDlul7WyNZJ91FpiHqtm7Aq5ywzg2DmYY1+tRL0ae4/fy2yoElT
-	cVNdK8zCKH1UJIfuKzKPg+ecZEah19/qbBbwWIPB6UXdmJzG+ZXLJr+Lr5Gjwc5YOklIVGegoDJ
-	78tUlv44nLFjDLSgbuZIhI9yXOfoXfhhWWF/mPNx4UESw/+rIoK131GyNafCzymq0L8XHie/lLp
-	CSp9SwwNTz3AfFv1TSKdshymMgnpXn2gHXanzs3NOB0HoxMh/Yfe4SwvQ+NoeuDnCpYWDHDrZ5A
-	rkKTrq5qIr7u0+331L3U+2tfG/BTe2p89LS6G1Yv9VhBgiXSaWxO8+Cl1gIb2lBLm+nTMHB53Yh
-	0+OY/9R3qwc9PydEJk9t8Ou+0K+/I0b9TkJrn1xE1G2Afgg==
-X-Received: by 2002:a05:6808:182a:b0:4cb:f21c:a79f with SMTP id
- 5614622812f47-50c516defcbmr14456725b6e.39.1791909907159; Tue, 13 Oct 2026
- 09:45:07 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791909930; x=1792514730;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=QtZ5PzT+iVNvU2u5JnqRMNxH/iEEZQesxZqimXqa8Xs=;
+        b=dmGDFh/Y1PzMwG9bczMNi5f8UGYRiyyiyE+DSWPrFH8Ph92LVg45SH3tu4lzs6dCiB
+         EoLC+wv3/iuzpq6hehB6QMi3CxgilZNi+Lo1H7x1ikz3B5+RM2AHKa+AdmeUr8o6F5f4
+         wZ+AKSCMF5qYDgIqhI9MECvD7b6IO5ZHARRu073pso/FSQKYygWhT37eYuAUDRV1BPyz
+         hsSnC2KYQZXUrWWMHFlC9z68AVzAdqAMvmGNrw5A9M7rRFUuBu08Qk6FdJHKJMYspJb5
+         Z3/io2i/tYfeTV5rpufOIWROoQcF8DsKD8gjYuRz8gJ5SvPivUpZttr/YrhuXzaqw1TR
+         9P3w==
+X-Gm-Message-State: AFq9FYJ50HU7gl20057zUqb0HhvB8tw3BRIomo+IsaX4tjfHN5A+zdnX
+	mnxU2b3Aq1bXUH9oot5DHoUQNTQKK/EmZtbRjtOHQP0TOVz3ASW9zis=
+X-Gm-Gg: AYBFou2ZFQyArKFRVTPnZpgzQnD6nSpje2vbuk6Nygo890DE0AAPhPCfEkL6d99RA34
+	pG4Wcnw4IiuaOgGdASPt638kmvVf8Ipj1nnpgrD3kkKLUUuFNYx7L2lDhkEDTvkOHJORdTA6gTV
+	M3jhZxSRWZC2yLn4k8dNKknNb+T/eNPDC1OrBruhVI2cO/SM62jfrcFsQG3/rxb6MgcVwbrolDS
+	CvrBlMJELDhX4MjtU8U6I6HumnCCjcFS9z5Vi1YqRJGTaZBOz9e5vfbvRIJXwLFQ6efQy0TJkgm
+	nJgi8zrPRqtdPECaL5UQA1+4cheJqfrt3sfYTB6GC8JQrov5dm3HJt4OfaGf1XThaVDCvvNDHZ+
+	CQrnl6Lj7Y57YVCOBNsC60zyekqAQodmPNAnGU2zrkOh3kwZlK+c69984T/cSnaybhPIb+510bz
+	tLOECsqX4z1knVYZL+VAI3cTDrvFSTdwQZQgFQA++oUrgvN7ox4miTd+UkeuSWfafHs0uw6eM4v
+	jXkDnnR0MIVO0WDehYyUcCD4vGNcIfhqJ24e+XOu6A=
+X-Received: by 2002:a05:6a20:d492:b0:3cd:3e77:1dcd with SMTP id adf61e73a8af0-3e16bade0eamr11806760637.1.1791909930228;
+        Tue, 13 Oct 2026 09:45:30 -0700 (PDT)
+Received: from [192.168.1.45] ([101.0.62.171])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cd3d9e26ddfsm5695150a12.17.2026.10.13.09.45.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Oct 2026 09:45:28 -0700 (PDT)
+Message-ID: <ab328578-08a6-455d-a9bf-411aeb561c8c@gmail.com>
+Date: Tue, 13 Oct 2026 22:15:23 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260928142450.103799-1-vidhu.linux@gmail.com>
- <CAHp75VcW3ADQdf68Whmo7yhqu9rdi54YVYgyh5PRLPccH6aUBg@mail.gmail.com>
- <CAFqz8LL0bgOu3TKfxz0Ri=qw09wVHC68CbVS2yZZjv7oKTGwVw@mail.gmail.com> <arrgEPs779q9ck8q@ashevche-desk.local>
-In-Reply-To: <arrgEPs779q9ck8q@ashevche-desk.local>
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-Date: Tue, 13 Oct 2026 22:14:56 +0530
-X-Gm-Features: AclHuK_TBpGn7NoEBdw6LC_e_JC6BfcP9OOGjC18pYWAlajojr0JNuJQwN-0-7M
-Message-ID: <CAFqz8LJbyheyXmf9i6v2cqMgVti_jii5OVe0WSkLvi4sSJXmVQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: humidity: am2315: fix negative temperature decoding
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iio: atlas-ezo: Fix humidity channel read support
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-	Siratul Islam <email@sirat.me>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
+References: <20261012114553.3327-1-nikhilgtr@gmail.com>
+ <20261012114553.3327-2-nikhilgtr@gmail.com>
+ <as1G0yGQ5wKhd-dh@ashevche-desk.local>
+Content-Language: en-US
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+In-Reply-To: <as1G0yGQ5wKhd-dh@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 28, 2026, Vidhu Sarwal wrote:
-> Decode the sign bit before storing the temperature value. Positive
-> readings are unaffected.
+Hi Joshua, Andy,
 
-Hey,
+Thanks for the review and feedback.
 
-A gentle ping on this patch. Please let me know if any further changes
-are needed.
+I checked the Git history and found that the channel type check was 
+already present
+in commit dc3ebfc ("iio: chemical: atlas-ezo-sensor: add humidity sensor 
+support").
+It was not removed when humidity sensor support was introduced, and
+I couldn't find any commit message explaining the original intent of the 
+check.
+
+Regarding the potential I2C read issue reported by Sashiko,
+I'll investigate it and address it in a separate patch series.
+
+I'll also omit the cover letter for future single-patch submissions.
 
 Thanks,
-Vidhu
+Nikhil
+
+On 13-10-2026 02:15 am, Andy Shevchenko wrote:
+> On Mon, Oct 12, 2026 at 05:15:53PM +0530, Nikhil Gautam wrote:
+>> The atlas_ezo_read_raw() function rejects channels that are not of
+>> type IIO_CONCENTRATION, preventing the relative humidity channel
+>> from reading raw and scale values.
+>>
+>> Remove the early channel type check to allow both concentration
+>> and relative humidity channels to reach the mask-specific handling.
+> Have you checked the Git history on this change? Anything interesting there?
+>
+
