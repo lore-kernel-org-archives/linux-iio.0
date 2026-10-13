@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B542518156;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7881A518153;
 	Tue, 13 Oct 2026 13:36:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791898615; cv=none; b=n+6YLZHgLzxUJ2P+v4p/gj3CzZzpK+vc3Z05QMTTGxnZd3yv1ArKcKjyAZVMeE+8DJQ7edelBZgmxzn09UWQh4H5i0RnE2kh8lx3BOlVOUmREbSqjcGzOG2IZB62eX5DSL73p7TT0urIlGFzxaBEYuXP5zIFmNGlKLxDBEKoWTk=
+	t=1791898615; cv=none; b=ubB8fbDNyzkZ2In2ZADXxixNvd4zpX7MgieFIZtKWUjo5v1vZJKhjT2cXYivQvnI/j242/N1XlNm+Vad8WxPQcUfR/OhpD+vzFAf8lzGdt0elnOD/jWxRITS0EU9wyBIxt75e647x0G6UOeajkRadH+NL7UmWAe+BktF2SNYX80=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791898615; c=relaxed/simple;
-	bh=gIFFqm/D+noZWdFIof2v0drJdE+pmryGOCSZvScOQ8Q=;
+	bh=owDy0B8FZ5HCRWilDEUp0cPxvkk0Pp4esgAFgMo1Rz8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=dC924FqTUJpz+MTFPqTQjHAs6SMdHUKADr6vzslUkHe8iil5iMa8A8Jm446HnmZ7srOE9WS3DEb1cWWLxG3AenbwFiqomIS/oeRqEMseI4I+2riNKek8hvWtz6OLABAG/prSD/ta1FQYKR24I8Hn39skW/XdqHuJ6tSeVFL6jiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qIhc3B35; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=EprmRv8fSG+jU5/ZTIe3bXyAjyKnvRW4t/jZQb1OTRaWSn2GHUvyi00FsRmFWTRNlcB6fote7ipZXxB767iKE/lfmOJkb17E6GEluPoasDgDLQnH/hx2bMFMQnp2Mq04pmNDD5075glT8WgAOBuvKQPIyYi8pY00pY4CLo4krvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=truHdlVn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qIhc3B35"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 30FDDC2BCFD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="truHdlVn"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 251EAC2BCF7;
 	Tue, 13 Oct 2026 13:36:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1791898615;
-	bh=gIFFqm/D+noZWdFIof2v0drJdE+pmryGOCSZvScOQ8Q=;
+	bh=owDy0B8FZ5HCRWilDEUp0cPxvkk0Pp4esgAFgMo1Rz8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=qIhc3B3567ERxb06PT1Me0MREG0x93SNfvTqDRqGaoIdg+TdxyC+HWe7qmy5t2px+
-	 rxuczp49JUP1C5Qkuox/aFN3EgtEkPbbOhXkli+nYL1sKa4BxzCmxC+TGDLC47QsPv
-	 xskyD8bT9coHm5tcJMqAz349eajhtdooVAWiMEYMg3MIIdgZYE8JtvCinX1YvO4JhN
-	 K+ZFZyftSKR4tyLbQVEQuK6u5b9HEZrOQ3wRcDGP8VqMkNGVFdduCbbFi0oyQMbaH2
-	 OO0lAdq4L+OoArQMYrcqkFFx+t3QUBSj3MDdQJHSotBYdDdjcTNml4J/6GWYsViyh1
-	 U2IKlnPQm4B1A==
+	b=truHdlVnVg3hkC1yoS7o+wGXuZUkK9maTrrcWGBQxxokTeEBGFs9Z3Jp0zHekJK4r
+	 EzMt620raxsEUteyFfTpkfdALCHOVkMeE+Am0PQNu9Xfxu6Llz63JWZpdASLFb9lG3
+	 yRKY44RPaR7Q1mJe5EQlHT2dw/zIFIzc7XD7FjP0kP1X9+vj+Z+uYD0QzT6Kx/aUDE
+	 QfKVKaXGru4NYRSrMytYqnpry8SbhgA1tMphOxDik8t8oF6jT6GyGqYBtP4dPyGVVz
+	 aKiXjtzwBC4MzcDBfdIpbCD6cBmZmetigRc/heDLjsgNhjSEHhpAeqEPBbw885jSZ+
+	 INqh7J3dsllvA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D55CC6B14;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E20CC6B08;
 	Tue, 13 Oct 2026 13:36:55 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 13 Oct 2026 10:36:45 -0300
-Subject: [PATCH RFC v2 2/4] lib: test-kstrtox: add E notation tests for
- kstrto[u]dec64()
+Date: Tue, 13 Oct 2026 10:36:44 -0300
+Subject: [PATCH RFC v2 1/4] lib: kstrtox: support E notation in
+ kstrtoudec64() and kstrtodec64()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261013-e-notation-v2-2-d4adb5e193fc@analog.com>
+Message-Id: <20261013-e-notation-v2-1-d4adb5e193fc@analog.com>
 References: <20261013-e-notation-v2-0-d4adb5e193fc@analog.com>
 In-Reply-To: <20261013-e-notation-v2-0-d4adb5e193fc@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
@@ -50,11 +50,11 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791898614; l=3656;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791898614; l=2928;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=rzm6uxEz8IPmN2aa0hSMxqOA9+DKXAtlnD62lXnmQZs=;
- b=o4nlDyKEq54mOPkJxtrRbjJDWYmmI1odBKv/Ujc6Il0xJCdMDV00arWTcJdZ1GPfnSfQ3UyX1
- 2e4Q0L/PnrFANlyOXEr5iD6UfElyeqMG12NznX1uCE3XW2WeHXtp7NI
+ bh=3fLsUR5b5WZAVfLhBMXZfjqcJYDq5+HP2L3agWEZDXg=;
+ b=DkDLz1lE0D4DRbTCt0V3gZNWAIxIjkB/IT+WdXFH0h41c5pqlVKEUXLlgCt4obrAF7Bq3beaD
+ plTFiZjMAj9AWrSMJfxyOXyCBuYiHYd5E7kp5oFK4El4R1JhjkAtInF
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -64,106 +64,108 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Cover E notation parsing in kstrtoudec64() and kstrtodec64(): positive,
-zero and negative exponents, upper case 'E', an explicit '+' sign,
-truncation of integer digits by negative exponents, large values, and
-failures for overflowing and invalid inputs.
+Allow decimal strings to carry an exponent suffix, such as "2.7e10" or
+"271828e-5", in kstrtoudec64() and kstrtodec64(). The exponent is added
+to the requested scale to work out how many integer and fractional digits
+are consumed. A negative effective exponent drops integer digits. Digits
+beyond the resulting precision are truncated, as before.
+
+The digits are now scanned first and the string termination is checked
+before any conversion. A missing or malformed exponent ("1e", "1e+")
+returns -EINVAL. An exponent that overflows when added to the scale, or
+that makes the result exceed 64 bits, returns -ERANGE.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- lib/test-kstrtox.c | 58 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ lib/kstrtox.c | 64 +++++++++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 42 insertions(+), 22 deletions(-)
 
-diff --git a/lib/test-kstrtox.c b/lib/test-kstrtox.c
-index 9255234752db..02f42a12647e 100644
---- a/lib/test-kstrtox.c
-+++ b/lib/test-kstrtox.c
-@@ -769,6 +769,28 @@ static void __init test_kstrtoudec64_ok(void)
- 		/* truncation with many excess digits */
- 		{"0.00000000000000000000000000000000423",	34,	42},
- 		{"1.99999999999999999999999999999999999",	3,	1999},
-+		/* E notation: positive exponent, no fraction */
-+		{"1e3",			3,	1000000ULL},
-+		{"42e2",		3,	4200000ULL},
-+		/* E notation: positive exponent with fraction */
-+		{"2.718e3",		3,	2718000ULL},
-+		{"1.5e2",		1,	1500ULL},
-+		/* E notation: uppercase E */
-+		{"1E3",			3,	1000000ULL},
-+		/* E notation: explicit positive exponent sign */
-+		{"1e+3",		3,	1000000ULL},
-+		/* E notation: zero exponent */
-+		{"1.5e0",		1,	15ULL},
-+		/* E notation: negative exponent shifts decimal left */
-+		{"271828e-5",		3,	2718ULL},
-+		{"2.71828e-1",		3,	271ULL},
-+		{"270e-2",		3,	2700ULL},
-+		/* E notation: negative exponent that truncates integer digits */
-+		{"27e-4",		3,	2ULL},
-+		/* E notation: negative exponent below 1 ULP truncates to 0 */
-+		{"1e-5",		3,	0ULL},
-+		/* E notation: large value (27 GHz in micro Hz) */
-+		{"2.7e10",		6,	27000000000000000ULL},
- 	};
- 	TEST_OK(kstrtoudec64, u64, "%llu", test_udec64_ok);
- }
-@@ -801,6 +823,17 @@ static void __init test_kstrtoudec64_fail(void)
- 		{"0.2",				20},
- 		{"0.18446744073709551616",	20},
- 		{"1",				20},
-+		/* E notation: exponent causes overflow */
-+		{"1e21",			1},
-+		{"2e20",			1},
-+		/* E notation: no digits after exponent marker */
-+		{"1e",			3},
-+		/* E notation: sign only after exponent marker */
-+		{"1e+",			3},
-+		{"1e-",			3},
-+		/* E notation: misc */
-+		{"1ee",			3}, /* double 'e' */
-+		{"1e+0b",		3}, /* hex character after exponent */
- 	};
- 	TEST_FAIL(kstrtoudec64, u64, "%llu", test_udec64_fail);
- }
-@@ -853,6 +886,21 @@ static void __init test_kstrtodec64_ok(void)
- 		{"-0.00000000000000000001",	20,	-1},
- 		{"0.009223372036854775807",	21,	LLONG_MAX},
- 		{"-0.009223372036854775808",	21,	LLONG_MIN},
-+		/* E notation: positive number */
-+		{"1e3",			3,	1000000LL},
-+		{"2.7e3",		3,	2700000LL},
-+		{"1.5e0",		1,	15LL},
-+		/* E notation: negative number with positive exponent */
-+		{"-1e3",		3,	-1000000LL},
-+		{"-2.7e3",		3,	-2700000LL},
-+		/* E notation: negative exponent */
-+		{"27e-1",		3,	2700LL},
-+		{"-27e-1",		3,	-2700LL},
-+		{"2.7e-1",		3,	270LL},
-+		{"-2.7e-1",		3,	-270LL},
-+		/* E notation: negative exponent truncates to 0 */
-+		{"1e-5",		3,	0LL},
-+		{"-1e-5",		3,	0LL},
- 	};
- 	TEST_OK(kstrtodec64, s64, "%lld", test_dec64_ok);
- }
-@@ -881,6 +929,16 @@ static void __init test_kstrtodec64_fail(void)
- 		{"-0.1",			20},
- 		{"0.09223372036854775808",	20},
- 		{"-0.09223372036854775809",	20},
-+		/* E notation: exponent causes overflow */
-+		{"1e21",		1},
-+		{"-1e21",		1},
-+		/* E notation: no digits after exponent marker */
-+		{"1e",			3},
-+		{"1e+",			3},
-+		{"1e-",			3},
-+		/* E notation: misc */
-+		{"1Ee+3",		3}, /* double 'e' with mixed case */
-+		{"1e+0xa",		3}, /* hex number exponent */
- 	};
- 	TEST_FAIL(kstrtodec64, s64, "%lld", test_dec64_fail);
- }
+diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+index bac1c057e1b0..4755fc78a62c 100644
+--- a/lib/kstrtox.c
++++ b/lib/kstrtox.c
+@@ -397,39 +397,59 @@ EXPORT_SYMBOL(kstrtobool);
+ 
+ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+ {
+-	unsigned int rv_int, rv_frac;
++	const char *s_int, *s_frac;
++	int exp = 0, len_int = 0;
++	unsigned int rv;
+ 	u64 _res = 0;
++	int ret;
+ 
+-	rv_int = _parse_integer(s, 10, &_res);
+-	if (rv_int & KSTRTOX_OVERFLOW)
+-		return -ERANGE;
+-	s += rv_int;
++	s_int = s;
++	while (isdigit(*s)) {
++		s++;
++		len_int++;
++	}
+ 
+ 	if (*s == '.')
+ 		s++; /* skip decimal point */
+ 
+-	rv_frac = _parse_integer(s, 10, &_res, scale, _res);
+-	if (rv_frac & KSTRTOX_OVERFLOW)
++	s_frac = s;
++	while (isdigit(*s))
++		s++;
++
++	if (!len_int && s_frac == s)
++		return -EINVAL;
++
++	if (*s == 'e' || *s == 'E') { /* E Notation */
++		s++;
++		ret = kstrtoint(s, 10, &exp);
++		if (ret)
++			return ret;
++	} else { /* verify termination */
++		if (*s == '\n')
++			s++;
++		if (*s)
++			return -EINVAL;
++	}
++
++	if (check_add_overflow(exp, (int)scale, &exp))
+ 		return -ERANGE;
+-	s += rv_frac;
+ 
+-	/*
+-	 * Check input beyond rv_int and rv_frac to cover cases like ".5" with
+-	 * scale 0, which is considered a valid input, being parsed as 0.
+-	 */
+-	if (!rv_int && !rv_frac && !isdigit(*s))
+-		return -EINVAL;
++	if (exp < 0) {
++		len_int = max(len_int + exp, 0);
++		exp = 0;
++	}
+ 
+-	while (isdigit(*s)) /* truncate digits */
+-		s++;
++	rv = _parse_integer(s_int, 10, &_res, len_int);
++	if (rv & KSTRTOX_OVERFLOW)
++		return -ERANGE;
+ 
+-	if (*s == '\n')
+-		s++;
+-	if (*s)
+-		return -EINVAL;
++	rv = _parse_integer(s_frac, 10, &_res, exp, _res);
++	if (rv & KSTRTOX_OVERFLOW)
++		return -ERANGE;
+ 
+-	if (_res && ((scale - rv_frac) > 19 /* log10(2^64) = 19.26 */ ||
+-		     check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
++	exp -= rv;
++	if (_res && (exp > 19 /* log10(2^64) = 19.26 */ ||
++		     check_mul_overflow(_res, int_pow(10, exp), &_res)))
+ 		return -ERANGE;
+ 
+ 	*res = _res;
 
 -- 
 2.43.0
