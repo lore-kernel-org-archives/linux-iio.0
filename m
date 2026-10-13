@@ -1,175 +1,195 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86AE25158B9
-	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 14:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A476470436
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 14:49:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791902430; cv=none; b=sjrM4XllviaUSSMkHwSI8LFKIV4CtMvbCLVKBl9yG+XrATUouEVcHYf5DnKyAcp9RkcxAEbwldaJeAvyLJZyK6efDUs6ixKPG1oacGZSkn6pFi86xcrwcI3N4uYfvXFbrOlTUfYMGqdhdxMK4uBl8PG2cvKwuy2FQHuDOPzOmIY=
+	t=1791902977; cv=none; b=EarWKNeZ54pmSPQuel9eANezab801H52Gk9CRxnaWXMTOnodtlNQcObJ5QmUV2WhvfvKm3ywhpMuLGv3iX24XmnQyZaSKc5VdFTp5+3VjG7z8qXXQDNKiz12yRSd2+TWr595bSEksHBRDggOzE31DqKNRS8TYJTBbGQ1Ge9QfJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791902430; c=relaxed/simple;
-	bh=blN9ABMC02XSNQ5QGaDACQCA7ymayQdtQYeWAR1oV00=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Pblv9uuCfvUM9epuJLa4tsS0SlgUWt4mPBaKbKCVlQNEJHoKs50pCl2uaHURfGOT72vbOE0i3rIZahEf2xNNuM9VQqqywu3TieKMr0rxbIu1x8ZgoiFwnNIoibEdD1PNeYaTKRtV1jDWMyQCW9ZgPngBz53yAolwuNre7h58kvc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f0OA54wb; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791902977; c=relaxed/simple;
+	bh=4shNFslN/2vm+UbR7hXkck3vWhQGQ0XGUbraVpHrNto=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iwVj/6cQ+nn5va7qAvKP95oTaiK5DT7t8mKBek5Kj5JuSG+uQN3Ew7y9c5sPuR3x/lEl8wdzBsAGJ3VP9LR6Dm25/FGFQjXnuaYSNfX2ZvKJVXrHhDp+tDfogDeHqK/68sceXcs2YkenhUlb+x3GgwoJw6Ea9a9NIY9OXnJNhxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=CBRnzOnK; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f0OA54wb"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-49fbb2acc90so26431565e9.2
-        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 07:40:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="CBRnzOnK"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4a16c399641so31024635e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 07:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791902427; x=1792507227; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=wMllP9hBRztcOqtqSzVJ6pL2lFuGOqSiZoCqm6sWCA0=;
-        b=f0OA54wbWNLTBcKULszZ+PcMWAXy+zQ3cmSRibpCMI69mffkIfrkDn1ez5fOiY54n2
-         v6qGv3ET2cnS1QZQ99gU9yR2cQc5RQ6Pz2WjmmbOuGy8UAR3+aVQzpCXhdK9oUGifykz
-         TIaleniUUm1x3F2R75N6kac+3sh5tEKo+AXyTWpc51Nj0L0qox05PSzihPwhnejrqtlc
-         ZiShacR7LsHxQVNDLsQyCqzHFyw037WqQ8ciNo3TJS50ndCACdCAUn4TVHCiaLc8K0OV
-         Tbs0SvYinSdZwmZSW9pzgub58AIRb5RvWhPgEL3Mud6TfpYl+BBxdzI/BWW1dP+oLwIH
-         5dlQ==
+        d=baylibre.com; s=google; t=1791902973; x=1792507773; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=PIfoOZUaMPo6S3doq93G1Tv0En9Cid2ywRGemat7sLE=;
+        b=CBRnzOnKCaTVvpE93/PJ1W8brRdcAkS8D3vjclbv+3UnOwtH/FNazRk6bwqy5Wckwo
+         /EtJ5+ecUKygzSmrqYa88Hx4ysTUwVrmlzztR6Q7vhrYTDsJlObzRLdfWnNvp865r7vH
+         6E0DNijkZTQfKER/+MjgU1v18rgaJUf2X9cCANMJeeNTTwUVIObOj2ViC90k4pzBQiav
+         vtYdvIbuBpVbDJkhFz4M8KqlOFFJ83Ax6AJxGZadNTNLGO2My+L3EWIyuGzCYBqcCVoi
+         0ALSt2xWPIkIWFC+RoyGGj5Ul2IJAdtdQi5gF9oybJX/BwaKPou1ECWcYI+YBWWFRVP5
+         Ofqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791902427; x=1792507227;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=wMllP9hBRztcOqtqSzVJ6pL2lFuGOqSiZoCqm6sWCA0=;
-        b=nPXuo/u3MvRtc7+Lc986YOt08aVQpSslQBaLF1jUAGkoNw8epDeY6aNL5EUlt1VgiP
-         Hnp6dgkkNV1urSLm8fGMQKvyLOebAY8SIa8/DqjoP0MWAjvozndBuDL+YQJx/FnVMov7
-         c3x1oJ957ap3wQqhrqOtKglqYXZMGb3ew4kiPNmHjXBLRpUuEE57+VmYETaVkb687Ila
-         jfPku2t/CvNaPZfNuu1c8ite1QJajvzvqCXaO3Ce8iVYKc4IS7dvSdzikWPDb/mZ4ZNa
-         jEYmqaTgjk8GgFBj9wDi32d6YY8BP1SslXSBFVMYy0DO7v7B7XgXFvoUPbq/RP6aEiCc
-         wK1Q==
-X-Forwarded-Encrypted: i=1; AKwUvBzr3r/WA9TFAvgJ4wLj5mpN31oH4NujNovbrz5qNuQcbCaJAIjFZNyx/hdKKhFFSmVYa/Tm8sPCGwM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKIRn3P52hRwONwp5BY007gYcuP8vZoP0lLI6+utoWbg1kQNUnJ
-	T3q3Kq1xjwE1iB1+nQo1bOW2sWm61B8ZLn7bKxlBMPt5bGSV2QCnalIk
-X-Gm-Gg: AYBFou1+4r6jGavLh89z/MDTSQkjX+X93dgzj/A5cs7ZGtM69CVhyPFNlQvPeFNDKBd
-	CrqEhG8TrjEV6u+HFcmQ2yWoZ17SJVQ2YmSP0TFNyTq2+FDozeO+6fdMy2ZMbVqkUnAEJcq2h2f
-	IU9/N4ydHc/08fVLnGyG5nR56W93neVSoS5p5QvnUkOL13tQS79wpV/TJMw9vmrOseBR8qgHVy0
-	/mllKOYsAz0FMCffg7pwuBhCfLnfiteFo2Cry0su9u4JKkl3IoA31BBXb0SU5MSfmvoQ2T7zl1i
-	WAmVulCNtYULmqEsZxtfDx6lX7dw6UqwjtXSSDuWXawNKEhX87wvONSHsHeyXHJY5qKD2zzdfBv
-	Z6wCM5i1Q748oGzjZfY0fXRDGlkeL6BGk88S39lnuGOkcPh5SGr/buUE+WO3z5mdhf/V35yId84
-	x9/B5LCcBGaghCwmwCv6B2JG+fIo4TFxcSPuCir6XB4hhF7BEO7vrAWSEOcxGwPiSj2Nmo9CWJD
-	4kOcO3ywNjh+s8fMWMEeqGGNO3ZISjk
-X-Received: by 2002:a05:600c:c3c1:10b0:4a1:ac66:5f93 with SMTP id 5b1f17b1804b1-4a1ac666305mr34581155e9.8.1791902426392;
-        Tue, 13 Oct 2026 07:40:26 -0700 (PDT)
-Received: from mm-ntb-00805 (ip-94-113-240-150.net.vodafone.cz. [94.113.240.150])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18bb6b3cbsm294892585e9.0.2026.10.13.07.40.25
+        d=1e100.net; s=20260707; t=1791902973; x=1792507773;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=PIfoOZUaMPo6S3doq93G1Tv0En9Cid2ywRGemat7sLE=;
+        b=C01rT3JLVI7Jf41hPPiBd7WmhDpaR6AX5nDZuiAsBi+ixB5WejTp3Wg1ehOFjhOCeX
+         OLpIKC5Xj59w2/MgfC0+Wb0k8E5hblJh1Stya4SZRkYcBhT1aLZgM/8eEvG7cMhSWCkQ
+         NA0eMI2phiOHgxB3nYvmwX1TtGVaQUIfiaQHCicuayyaMKbNgsAO5/zUOc5dgvRZ0eN2
+         CbiyGxYypu8y9tKvlhNaVffuGsObQ6YHi3BxM6vUz/p7gpqph4EntFGIV8e7Icyshvg0
+         sdEH0VZmKecgmNBe0CXVXWm2h4eAgmiYBSC2jp9XrvMAFrCj2bJvWQRgXa4fAV9v2etW
+         jiHA==
+X-Forwarded-Encrypted: i=1; AKwUvBzPBhSNfv/nVG7xSCzMXm0HG0SoLPmUfwu/3hpHpPWmKZjRm5mKMtJ2NwX6eeh3Ajua+10CVzEi/zs=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLNcHG9ceuodw7eC04gNKYVgXRHyFH1gPIp0BA/s4We7TfVixnN
+	Lj5fM5NyBFkjjbvduClqvzEVAgKADvUSy4o2PVxiOCGivMAq8OmT8VQ099FDdLDcr14=
+X-Gm-Gg: AYBFou2mVa4FVyOuochZjLz/5weqv6tcXpg9a+OHU7a7fj/4+u7Yaw1h6/SuowZqrQT
+	pEdeN5RP68yYXqIvhFIf9CIX6fOuJDeXDQSS0zKtDlf6Eulzt1ojB9qEqzMEumIjpcAL8Y6Uxh9
+	geuIrFoxPSPqVlERoO92J1WE5DEsLhvcX5gjYYah44nE2cgvbkL1trJdOSoX3t4RkdJn0c4vtkw
+	MAmOuY5j5p0C3KUBNpl3X4z2KAI/S1fsSF+YI7gqHOyr3R4fvJsH07+aGalmmmPv4k6rz0xeH98
+	Z+7roG8zIUMr89SuUQHh55E0ngvrtB1jbONrhimpYIaK+LTLAXFkd6Yx0YAlkjC7T5x0sfVxezB
+	55qItT8iMyW9Lcy+gmu2vDEozf2ckPF/sqbfYDmdnBWMnreXF5XdtA/bpFTQSz8iRYOrzF3BI5p
+	qPG1gq4x7zSsHXtnL+Oe3PMwMdLGFD4/brI6+0sDq3Qx855sKqnx827p82+Rit3ZonB2oS4p9Ss
+	0c8
+X-Received: by 2002:a05:600c:8b78:b0:4a1:813f:2a60 with SMTP id 5b1f17b1804b1-4a18e47acf5mr286180385e9.11.1791902972584;
+        Tue, 13 Oct 2026 07:49:32 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4a19c71a1d7sm183592355e9.5.2026.10.13.07.49.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 07:40:26 -0700 (PDT)
-From: Jan Remes <ciakval@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joe Sandom <joe.g.sandom@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jan Remes <jan.remes@mycroftmind.com>
-Subject: [PATCH 4/4] iio: light: tsl2591: improve lux calculation precision
-Date: Tue, 13 Oct 2026 16:39:43 +0200
-Message-ID: <20261013143943.436816-5-ciakval@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261013143943.436816-1-ciakval@gmail.com>
-References: <20261013143943.436816-1-ciakval@gmail.com>
+        Tue, 13 Oct 2026 07:49:31 -0700 (PDT)
+Date: Tue, 13 Oct 2026 16:49:30 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Paulius Zaleckas <paulius.zaleckas@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	Eddie James <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Rupesh Majhi <zoone.rupert@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] iio: pressure: dps310: add Zilltek ZTS8032 support
+Message-ID: <as5EOfOqsF5iEHct@monoceros>
+References: <20261012114550.1680054-1-paulius.zaleckas@ui.com>
+ <20261012114550.1680054-5-paulius.zaleckas@ui.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="wvuvco4nogl7rfck"
+Content-Disposition: inline
+In-Reply-To: <20261012114550.1680054-5-paulius.zaleckas@ui.com>
 
-From: Jan Remes <jan.remes@mycroftmind.com>
 
-The lux calculation computes the ratio CH1 / CH0 as a truncated integer
-(CH1 * 1000 / CH0) before using it. When CH1 is close to CH0, the
-truncation makes the result off by up to ~35%, e.g. CH0 = 56097,
-CH1 = 55973 at LOW gain and 100ms gives 1.517 lux instead of 1.118 lux.
+--wvuvco4nogl7rfck
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 4/4] iio: pressure: dps310: add Zilltek ZTS8032 support
+MIME-Version: 1.0
 
-The formula (CH0 - CH1) * (1 - CH1 / CH0) / CPL is equal to
+On Mon, Oct 12, 2026 at 02:45:50PM +0300, Paulius Zaleckas wrote:
+> From: Paulius Zaleckas <paulius.zaleckas@gmail.com>
+>=20
+> The Zilltek ZTS8032 has the DPS310 register map, scale factors and
+> compensation, with these differences:
+>=20
+> - two more pressure coefficients, c31 and c40 at 0x22-0x25, adding
+>   c40 * Praw_sc^4 + c31 * Traw_sc * Praw_sc^3 to the polynomial
+> - TMP_EXT is MEAS_CFG bit 3, and the temperature coefficients are for
+>   the internal sensor (COEF_SRCE reads 0x06). TMP_CFG bit 7 is the top
+>   bit of a 4-bit TMP_RATE, so the DPS310 TMP_EXT write would select a
+>   25/16 Hz background rate instead of the external sensor.
+> - product ID 0x11 instead of 0x10, the driver does not check it
+>=20
+> Add a per-chip table holding the coefficient count and the TMP_CFG
+> startup value, and an OF match table to select it.
+>=20
+> Tested on a ZTS8032 at 0x76 over I2C: in_pressure_input is within 1 Pa
+> of the datasheet formula evaluated from the raw and coefficient
+> registers at every oversampling rate from 1 to 128, and TMP_CFG reads
+> 0x00 after probe.
+>=20
+> Assisted-by: LLM
+> Signed-off-by: Paulius Zaleckas <paulius.zaleckas@gmail.com>
+> ---
+>  drivers/iio/pressure/Kconfig  |  4 +--
+>  drivers/iio/pressure/dps310.c | 66 ++++++++++++++++++++++++++++++-----
+>  2 files changed, 60 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index cef8b90b9ae7..e407243e131c 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -115,8 +115,8 @@ config DPS310
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+> -	  Support for the Infineon DPS310 digital barometric pressure sensor.
+> -	  It can be accessed over I2C bus.
+> +	  Support for the Infineon DPS310 and Zilltek ZTS8032 digital
+> +	  barometric pressure sensors. They can be accessed over I2C bus.
+> =20
+>  	  This driver can also be built as a module.  If so, the module will be
+>  	  called dps310.
+> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+> index 3bc690cc8609..3b0f6d344409 100644
+> --- a/drivers/iio/pressure/dps310.c
+> +++ b/drivers/iio/pressure/dps310.c
+> @@ -7,6 +7,10 @@
+>   *
+>   * https://www.infineon.com/dgdl/?fileId=3D5546d462576f34750157750826c42=
+242
+>   *
+> + * The Zilltek ZTS8032 is register compatible, with two more pressure
+> + * calibration coefficients (c31, c40) and temperature calibrated against
+> + * the internal sensor.
+> + *
+>   * Temperature calculation:
+>   *   c0 * 0.5 + c1 * T_raw / kT =B0C
+>   *
+> @@ -18,6 +22,7 @@
+>  #include <linux/i2c.h>
+>  #include <linux/limits.h>
+>  #include <linux/math64.h>
+> +#include <linux/mod_devicetable.h>
 
-   (CH0 - CH1)^2 * DF / (CH0 * ATIME_ms * AGAIN)
+Adding that header mainly results in pulling in many unneeded
+dependencies, so please don't.
 
-which needs no intermediate ratio. Compute it like that, with a single
-division at the end.
+of_device_id is already provided by <linux/i2c.h>, so you can just drop
+the #include.
 
-Also report the result in micro-lux instead of milli-lux. At MAX gain
-and 600ms one count is well below 1 mlx, so the milli-lux resolution
-throws away information. The numerator still fits into u64.
+>  static const struct acpi_device_id dps310_acpi_match[] =3D {
+> -	{ "IFX3100" },
+> +	{ "IFX3100", (kernel_ulong_t)&dps310_chip_info },
+>  	{ }
+>  };
 
-Assisted-by: LLM
-Signed-off-by: Jan Remes <jan.remes@mycroftmind.com>
----
- drivers/iio/light/tsl2591.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+While touching that struct, please make this:
 
-diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index b780b236897c..82085bd06850 100644
---- a/drivers/iio/light/tsl2591.c
-+++ b/drivers/iio/light/tsl2591.c
-@@ -21,6 +21,7 @@
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- 
- #include <linux/unaligned.h>
- 
-@@ -362,12 +363,12 @@ static int tsl2591_wait_adc_complete(struct tsl2591_chip *chip)
-  * Counts Per Lux (CPL) = (ATIME_ms * AGAIN) / LUX DF
-  * lux = ((C0DATA - C1DATA) * (1 - (C1DATA / C0DATA))) / CPL
-  *
-- * Scale values to get more representative value of lux i.e.
-- * lux = ((C0DATA - C1DATA) * (1000 - ((C1DATA * 1000) / C0DATA))) / CPL
-+ * Since (C0DATA - C1DATA) * (1 - (C1DATA / C0DATA)) equals
-+ * (C0DATA - C1DATA)^2 / C0DATA, this is computed in micro-lux as
-+ * lux = ((C0DATA - C1DATA)^2 * LUX DF * 10^6) / (C0DATA * ATIME_ms * AGAIN)
-  *
-  * CPL is not computed on its own: at 1x gain it is below 1 for integration
-- * times under 500 ms, so the division by LUX DF is folded into the final
-- * division instead.
-+ * times under 500 ms, so all divisions are done at the end.
-  *
-  * Channel 0 = IR + Visible
-  * Channel 1 = IR only
-@@ -383,7 +384,7 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 	int int_time_fval, gain_multi;
- 	u16 als_ch0, als_ch1, als_max;
- 	u64 lux;
--	u32 rem;
-+	u32 diff, rem;
- 	int ret;
- 
- 	ret = tsl2591_wait_adc_complete(chip);
-@@ -436,19 +437,15 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 
- 		int_time_fval = TSL2591_FVAL_TO_MSEC(settings->als_int_time);
- 
--		/* Calculate lux value */
--		lux = (u64)(als_ch0 - als_ch1) *
--		      (1000 - ((als_ch1 * 1000) / als_ch0)) *
--		      TSL2591_LUX_COEFFICIENT;
--		lux = div_u64(lux, int_time_fval * gain_multi);
-+		/* Calculate lux value in micro-lux */
-+		diff = als_ch0 - als_ch1;
-+		lux = (u64)diff * diff * TSL2591_LUX_COEFFICIENT * MICRO;
-+		lux = div64_u64(lux, (u64)als_ch0 * int_time_fval * gain_multi);
- 
- 		dev_dbg(&client->dev, "Raw lux calculation: %llu\n", lux);
- 
--		/* Divide by 1000 to get real lux value before scaling */
--		*val = div_u64_rem(lux, 1000, &rem);
--
--		/* Get the decimal part of lux reading */
--		*val2 = rem * 1000;
-+		*val = div_u64_rem(lux, MICRO, &rem);
-+		*val2 = rem;
- 
- 		break;
- 	default:
--- 
-2.53.0
+	{ .id =3D "IFX3100", .driver_data =3D (kernel_ulong_t)&dps310_chip_info },
 
+Best regards
+Uwe
+
+--wvuvco4nogl7rfck
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrOROwACgkQj4D7WH0S
+/k7wVwf+Ont9281p5OIPzkHrOql/yBXJItCWMp58XtyibFpc3rlNGmaenj029PMM
+qTuPIiOben02yMTKVJO6D/HSeWlynTqxekqGABABKERhjZ5uLTuv6jVaMWAJFC1P
+xPGeFxfDlRQk2WK/QG/iwUwdM3sL3GmDK2Uxz1ZfUDwsk5b24WynLydHJCR8qQmE
++bs3a6Bze5ORCtjvZPXgcsU1EsWZyYmBH3YxFeditn4ANM7bs5WrV+LmmenffWKU
+sx01Iu3ITwRoLSratszOJC3R56tDK+qFJ19MnkclyT2KPQs0iAZj6ukk5T5FNiwY
+oiWHYppEVw9nolSDk+74pWu9NpixUQ==
+=90IN
+-----END PGP SIGNATURE-----
+
+--wvuvco4nogl7rfck--
