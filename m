@@ -1,112 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1212051CF72;
-	Tue, 13 Oct 2026 16:28:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791908916; cv=none; b=gGk9evYNDbcd887JHtryou3pCAM928xS+qgyt8MWIfezVS1BSoZBerG87cpk/g1U+V4lYXzfOJl+AAoSkwA1Cypks7fLlV8reisqO+6q+jpK+IJCUqrrwbgaefnVrIJYXUWiRS4HY0WgFKyK3tPwFTvg2HBQ8AmueO0+Tiuglm4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791908916; c=relaxed/simple;
-	bh=KZ788E6IYYsK1x6zth5J68q+BTkzuIy7rFPYPq3g9h8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X4x2MThnYUkZSIJoSIKusVHLt5i0pRjuoSUdKSCIUmKpbpghVXfN1+eXEGAoSYRVGxPDtTSe4TFmDU3y2BEs001L6lcClndHoFTi4qVyLULjZqYRdmBoWhSbE8OVpOO9HtpcpSAXTwZKKAVYTCjJzQJs798btFN9AryTvkmpYNE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BAKe8pej; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7664751DAE9
+	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 16:45:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.180
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791909909; cv=pass; b=rLf5XGwiQwcUXlTDPFM2H1WaOrnjwnqWhHEALR80Ljo94cM5thRFgMqywylEKZTABPc1jcMTmhpJRErZkWIDSq84wmt31NLL/YNQuVWiFNxZdghEi3DOPcGDQ4kS5OZchEeLivgsOITWOZxJXZsAfY1wMME7TXfOrKQ6mB+DbAw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791909909; c=relaxed/simple;
+	bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=iMZgp24F8EtOCdTaFnNcGp+EVZK0aSvgxobTsJg6WTrMBq2orM1FpKudKGgtQe9uAdSaDAtS9+V78hS1kx+K7Jz1h8e1vS3uFiDlmURvMiO0nNRM1eU0OhgaC6QSaUzoS/F8fKCs8PLVamD0FxM+0+vGI2E3ry0MQ9LCQ+o45zs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bu6oCxjW; arc=pass smtp.client-ip=209.85.167.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BAKe8pej"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791908915; x=1823444915;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KZ788E6IYYsK1x6zth5J68q+BTkzuIy7rFPYPq3g9h8=;
-  b=BAKe8pejM0hWkjx54TJoAWK79Vf1/KMJpwyV61/XI7baExxi120FyUe1
-   Kckp/zaFHFG7TEO1KYncweVMdrOuPJbAqzxymzzyYEHB2m2DQKI+yILnF
-   3yftwmuLNPAqMvKn+kP8SD2jQkRfSw0fb5llJGrrrBt7caOQkV5xkhsVL
-   D6mjeXCgCCapNAb3NSi+47wgUOV95pspsZm3AjunfmaC3yVSymYp8MMoU
-   3uHl3C+IDLaUhtMoemm03m74W+FlEkk3oWAD8xBAKo3FvyL3KMiu6RT5r
-   jkBBha5kk0y7SYIE3sZtyjTmLoyTcbyqQL39o7BLH+PCymiiT4Umwxhaa
-   w==;
-X-CSE-ConnectionGUID: 1b7D4w21TR6pcPL2k2AEjA==
-X-CSE-MsgGUID: mLTD8pXkRjifykwMo7ffpA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11934"; a="542033"
-X-IronPort-AV: E=Sophos;i="6.27,156,1787036400"; 
-   d="scan'208";a="542033"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 09:28:34 -0700
-X-CSE-ConnectionGUID: huD3lZ1gQyan8JAdKfcD9Q==
-X-CSE-MsgGUID: xhoJZanWSFWqCaUoP0kOiQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,156,1787036400"; 
-   d="scan'208";a="1273106"
-Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.48])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 09:28:31 -0700
-Date: Tue, 13 Oct 2026 19:28:29 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Chang Yu <marcus.yu.56@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Shi Hao <i.shihao.999@gmail.com>,
-	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-Message-ID: <as5cLfhdv3rA69v1@ashevche-desk.local>
-References: <20261013115639.167433-1-marcus.yu.56@gmail.com>
- <20261013115639.167433-3-marcus.yu.56@gmail.com>
- <20261013143521.00006de9@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bu6oCxjW"
+Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-4b21f71613fso2115926b6e.2
+        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 09:45:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791909907; cv=none;
+        d=google.com; s=arc-20260327;
+        b=LodPJdtZsxR1C2CzMSNxSh/I4NNXN3d30Zq8k4zQGGs/fetgoWybx2EhRU0c3B2fXf
+         tTCquKvlKfi7EWlOE1tK4Rb/WYOR77pQf5Z2r846/FrT5i6Jy2/y3FkQJx+kqbrycg8W
+         NiTc0UHKuNcoSHBXfGBj1TcRS9j6TPHRscHTxcsusw68AmsNgbQi7mKzzH/wAXVqPXYv
+         yG4/DTRDpF7FLJfGPIqvVERF5XeaLZR+QHmXxwh2snsOT9ksiTfrUCSTpnlWD70gOWYw
+         MxlvGMhriu1XfXwDVu066F9xjmCr1GBtRzaj1blMs4fl+ouph9YtBRwg4pRl9fRSIB6q
+         23RA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
+        fh=yO6xp03yfwejx9XuWGTsnRPEVEA+KGvVngbUXbEeLy8=;
+        b=klBCRk/5t63ycL/Etk4TW6hTK+gjo1i6Lq2Ey2vnF/GNvMM3pS5pRu6G34it1Fg46j
+         RMIAVypbjofl0cBfscsu6s5zZp/62+L8tu7ABGYjnwljEx+gLhi9AL59NLZ2qjybFA6Q
+         V10rxTSRtA7jqMINIRTDoizNtpl/LYdCdVbmO+wE3ruEWRlAE1TOCGH64COnVpV8kpDx
+         9R21RSi4DHOexkJgMf3A5j3SlnC4GdBNv3urLpF6hAUZ0xAjmsrErKBR7QMiS2/u4iHu
+         n2goKYXVu4igGsLhH6P41yHjUn3rHq/7l8U0fpyN/jB7T4lYOfiv217zNuzqILWAxHyu
+         x7TQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791909907; x=1792514707; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
+        b=bu6oCxjWhaGntr+VM13rF2COOHxrghPdcW2BylwKxNYEXaQVVYbn9FBBxGhgVsmsgj
+         XUfheH0UTD/OFTx+hzPK0grZDg/AosqB0748Za5Z6c7DXdJxE3nQN58/6evJYbzqyfmv
+         kYXvOGuQOv0FIKaD6kixsYMQElxwiXdnoqRuIGMdpk/7Z5GH0UXvvO5UvTpfV2f8ZXMy
+         y0IvfAfRvef28HHOyN4J3mb1jNRqfPfyXdxb020z4w/2gF3mYgLpN3UAJV5v3m0VatLG
+         4hH6hyCVGRhBd+Byflx7lmp6pInZAKAJari5nQ6rdauiBVmxVXNaQQeNoXXwQ0EPKNZj
+         ueHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791909907; x=1792514707;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=T0J5BYuAnT3Xdi9Jj3WCm+YKqnN6H2/WrFA4Kd+XVcw=;
+        b=OH1PBRXk33iKP/CHDIzRwLzxL1xpYmxbHGvkLrJK4MNBRXmd7qmHOCdK0RKg6n7UFc
+         K2oKaO5pNFLxuPBfGZ0jk/AmMAkvrfA3Kb9RBFB2qZy55KebIAvO6Mi4qas3Jrq3Bgnr
+         pGdDt1AAf+qtZj2lK8KOT2HjeRbFEgu6T6xU6qS6mmfTczUUgGuZS/CzfgczvdQKKTTZ
+         3WkwOBdp+1JjC2ss3IlZnUAnHy6wH+0P6WNMBj5GOI3tUKOIUQ8XSSE8jifFnMiIxdp0
+         0z7HkR/iftzJ4bvZ/I3YaZUxOAedkQelv6g1vxbMPyZAAHkJlRdWxzGkH7w08SzUkGwL
+         AbDQ==
+X-Forwarded-Encrypted: i=1; AKwUvBx9/m4R/MFcTYTQoc1kinMjKm191dbQo1JoKd0Pf/uCQG4BpskAukxecqn3Z8FCX9TOmVRWqTSL5OQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLtmkQgwlgDWnqhwnP32vyOMDstXEHM1psgGLOOqQFBtUxkRFg5
+	9rUOtYVi5X99qpnVGuJYZM1GIMVYLGi8Dj8Oc5YWcEuM78iDI0o9XGDnRuMClXRZsjGQFPw2VPc
+	PBKepF3bv2ZBh2w/4gocd75jykdfZb8C18jhc
+X-Gm-Gg: AYBFou3g8q6WxAPkxDlul7WyNZJ91FpiHqtm7Aq5ywzg2DmYY1+tRL0ae4/fy2yoElT
+	cVNdK8zCKH1UJIfuKzKPg+ecZEah19/qbBbwWIPB6UXdmJzG+ZXLJr+Lr5Gjwc5YOklIVGegoDJ
+	78tUlv44nLFjDLSgbuZIhI9yXOfoXfhhWWF/mPNx4UESw/+rIoK131GyNafCzymq0L8XHie/lLp
+	CSp9SwwNTz3AfFv1TSKdshymMgnpXn2gHXanzs3NOB0HoxMh/Yfe4SwvQ+NoeuDnCpYWDHDrZ5A
+	rkKTrq5qIr7u0+331L3U+2tfG/BTe2p89LS6G1Yv9VhBgiXSaWxO8+Cl1gIb2lBLm+nTMHB53Yh
+	0+OY/9R3qwc9PydEJk9t8Ou+0K+/I0b9TkJrn1xE1G2Afgg==
+X-Received: by 2002:a05:6808:182a:b0:4cb:f21c:a79f with SMTP id
+ 5614622812f47-50c516defcbmr14456725b6e.39.1791909907159; Tue, 13 Oct 2026
+ 09:45:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261013143521.00006de9@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260928142450.103799-1-vidhu.linux@gmail.com>
+ <CAHp75VcW3ADQdf68Whmo7yhqu9rdi54YVYgyh5PRLPccH6aUBg@mail.gmail.com>
+ <CAFqz8LL0bgOu3TKfxz0Ri=qw09wVHC68CbVS2yZZjv7oKTGwVw@mail.gmail.com> <arrgEPs779q9ck8q@ashevche-desk.local>
+In-Reply-To: <arrgEPs779q9ck8q@ashevche-desk.local>
+From: Vidhu Sarwal <vidhu.linux@gmail.com>
+Date: Tue, 13 Oct 2026 22:14:56 +0530
+X-Gm-Features: AclHuK_TBpGn7NoEBdw6LC_e_JC6BfcP9OOGjC18pYWAlajojr0JNuJQwN-0-7M
+Message-ID: <CAFqz8LJbyheyXmf9i6v2cqMgVti_jii5OVe0WSkLvi4sSJXmVQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: humidity: am2315: fix negative temperature decoding
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
+	Siratul Islam <email@sirat.me>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Oct 13, 2026 at 02:35:21PM +0200, Joshua Crofts wrote:
-> On Tue, 13 Oct 2026 19:56:39 +0800
-> Chang Yu <marcus.yu.56@gmail.com> wrote:
-> 
-> > Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
-> > 
-> > The AS7343 is a 14-channel spectral sensor featuring 11 visible
-> > channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
-> > flicker detection channel.
-> > 
-> > The driver exposes 12 spectral channels (11 visible light and 1
-> > near-infrared) via sysfs. Runtime PM is implemented to stop
-> > measurements when the device is suspended or torn down. Power is
-> > never cut (PON=1 always) to preserve register values.
-> > 
-> > Future patches will add configurable gain and integration time,
-> > interrupt support, buffered reads, VIS channel, and flicker
-> > detection.
-> > 
-> > Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
-> > Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
-> > ---
-> 
-> I think this is ready to be applied.
+On Mon, Sep 28, 2026, Vidhu Sarwal wrote:
+> Decode the sign bit before storing the temperature value. Positive
+> readings are unaffected.
 
-I agree. I have a few nit-picks (easy to address), after that feel also free to
-add
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Hey,
 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+A gentle ping on this patch. Please let me know if any further changes
+are needed.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Vidhu
