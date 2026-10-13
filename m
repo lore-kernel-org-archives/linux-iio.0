@@ -1,83 +1,71 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9989651A151
-	for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 15:15:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CB0518125;
+	Tue, 13 Oct 2026 15:16:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791904540; cv=none; b=DnV9b/CwSLboJdCxzXM61e7p6jY2nRKL1jeSS7+43qQqsNBpAFCc6vAhFcpOCW+hbfXzIHk0o/ECkWKGrLCmAlW8hQqU6sjc1r19uEE2+h7mAaPr8uCqpHtyP81/BX7H0dC9EosLGbLR4U7K+bB/9mLdN0lOi39E0xbhyBhjfrE=
+	t=1791904589; cv=none; b=TPFesfHs5yJiDSN7iRuODplFNm6ZmNh4h/BEc2lCSBJLAqknQiRyAMZCFGjCc2+yq5BH4L3SHXJhx3cFLU8GmtPrmch4SWR1IjzPWJK70U9CaxTVhsU+Vkfb4BarKeRmQUZR4SPQI2Hu58uzpX/k6LwFLJlvKqvdsPNq51Y2LWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791904540; c=relaxed/simple;
-	bh=NapyJptIydBk5J98yC370DZ0xJWQKRaBbCy2B6XYHdA=;
+	s=arc-20240116; t=1791904589; c=relaxed/simple;
+	bh=ekmIL7LjRSf3QW34G0hNCI8IUhuFbCGP3i3TBzqL1XM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qSO5NsrYKeBqUnfZSPdS6jfBJ5RFmBeWuHkY3kZdlV9TERSy42rB8XV1M+sC4QBIkNXC2nZNImBuoddI17cy/kuG8SoUK2ZJ2wNs/h1dNA5v7EzI/HWHakay+pKGvY/8bwIrm7ss3nKbeUrcJqsd6JwqAH/DM1K722uF645eVYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dBR1jNe2; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=TopjsKQtQxbGeDqZLuVwmV2Rs8UpT6JzWI1PS8kOYmh+4HAcEin/TejxC+Fhz2V5io82T5MWHayU37QgIQ8xUSUiaGD7LBMBZTIcOOiCPnZNnZRH4nK/AOiQMsQSZvoWb9hWvmgScXPtfOFWVfpqDfC4ujm+Dw8XEQjS+M8kJGM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VRvqTsjS; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dBR1jNe2"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2e8ad5b31c7so17165305ad.3
-        for <linux-iio@vger.kernel.org>; Tue, 13 Oct 2026 08:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791904538; x=1792509338; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2rkGQo5r8xJBTb8dqMKiMW12xMK6T9au6oc+12YcxIA=;
-        b=dBR1jNe2zWAjzp5Bc6vkfwkBFJT/e/xEeahREKd0JJot7RWYmlid9VLytpa/O3jrwW
-         P5Ptck1EnD1e8U7lCGtukjez7EDLIMYgIVSGIfCbRg5zZe2bIeLv/0yrrfpgxzweip1s
-         R0otIA3SH4LNMPXlLyxZwpZ/F3T85Ssk0Z/3V6Yo3ESx6iTitPmD7zfxRduALS11tctY
-         jnNMq0SVZeOzUlal2D3yFrMeycUtMFX2h+/LR910q61QM97mZz5DeCK7fefFAI9fDhAJ
-         zXF2aP7VzDt1z1GZrVbQkZKDyFsublEff2OzotGs8KhTDvcYAoGJoPCQ1tXyIqCrmhb3
-         Ju3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791904538; x=1792509338;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=2rkGQo5r8xJBTb8dqMKiMW12xMK6T9au6oc+12YcxIA=;
-        b=iXqFYUcQ0EYXJJ37pKZtYDg2NHdMBa7lzqg7cph0JckJcQ+LgLxzsQWi+Dk0gpt+gf
-         MDK6gGSbc7SuAmwHZEsy+/n43gZSg/7yBJfD8xbyYe+GLO3Dwfl5NkT5EjUOEE9t1mUo
-         1PdETB3+7xzbDZMKpmcbrWmY6pjidVTJFdpKJsIL8wMVHwMLDfPqT/8BlMDqbPdarF+s
-         8lOUO7IuEfzbNJ7dphWUyjuyfV29mLXYGicfarkgWRbtBXok5tBR6KpuBMVsyjNTqLyW
-         5ZVh4ZPO9tz/YLIUjA81PmIsEOVGFWB0zKSkeW82/tpD7tzefts+wbsJyr1h0Px6zm48
-         yFLA==
-X-Forwarded-Encrypted: i=1; AKwUvBwj9xrALWTON3+i82QNtcUKF1vlVBfFHZwdfd6e4fnpSmCpZEwZbtBBydNco9JiysBXkm9G6da3ooM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIk1fbaWr8G9sY2IWfHaB6Vc+VuaNktEheR5zKhfIBu5qb/JL6f
-	SjLZKGv5WcEKDiEwyY9xZpbDRrH5PJ8Odn8Pww277OY83aG1ic3oQXgA4E+direOf8U=
-X-Gm-Gg: AYBFou0FoZhNwNhipDid8YaA29PgFE+x0lZB5wix6lR0Es7106dlC+0XC6Y71yTkp2F
-	WIQUUoheh8U+Hx9VLBiKe8txISkFFft4lsw7308SpLwGEpbHqA9xsYx0ctXJLstYzG5tuBBN4tT
-	5zj5gSZnUoCY0u2K8dVHURCvCwBtSwPzce6GinIKsCBdmZRja5CLJmKLksHLkdjUwEN99diqQYj
-	sf1WtTh7eiYowbuURSD8Awb3M5zIxXDstAkFNfqHbY+ErjWgaeEs/EAPr5P3RA16IppK7dnlFuj
-	eTVtPHtPcjKktGpQna+zOUruDsEqvd+sF7yhoXkoUzhFSwIiKDNdnzYJ0DIVePg+HEMeusqiEPs
-	XiPYLnolYOaugl5799RIjVba9lauGpCvr9lhdYVXhL7eYjEWBVUfWf+eRQhLbrXq66GH2hqYZdO
-	umtY3pPUeOIFWeSTiP1eyO4LyZiCoGnpsPQK7yeSZFmabLFzaz6OZv9J7/X/ngK6ezocct4qetj
-	g==
-X-Received: by 2002:a17:902:f54f:b0:2e6:1a1:ef63 with SMTP id d9443c01a7336-2e842cdb1e7mr112815415ad.44.1791904537778;
-        Tue, 13 Oct 2026 08:15:37 -0700 (PDT)
-Received: from localhost ([104.156.230.40])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e8422b8c4csm58698205ad.56.2026.10.13.08.15.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 08:15:37 -0700 (PDT)
-Date: Tue, 13 Oct 2026 23:15:21 +0800
-From: Chang Yu <marcus.yu.56@gmail.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Chang Yu <marcus.yu.56@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VRvqTsjS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791904588; x=1823440588;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ekmIL7LjRSf3QW34G0hNCI8IUhuFbCGP3i3TBzqL1XM=;
+  b=VRvqTsjS0a4MNzb+oK6B7YWsCIbpiQAw5XlqJK1Wx44O3IXXhNwQs0Qh
+   5/ehF5s+gKFXm17CMNfFWYhHNxwu6dnFhmO9UCmGNTQNNd/7sEyBEUDcn
+   h8NZeORoCSrEdBKF6Vf5ynIW/kOuBYgOPReIuI1YZ6bjkbUxs0/iRyRyl
+   mNI1NPq0hpqKEiFmS6Rw/JvKXxURgFon1nuFhSWxnaB/Fiulxh6+KWkai
+   HH3Zm+8kGEue5g7Dhi4COv38XUrrYyfOH+JRkuVKy4vxvZAvexnAle+vD
+   UfJ4NOVrRz65gI44Zkltqta2XKuA+bCGP6iqcowwQVkzgHXQbMQJZkOyx
+   Q==;
+X-CSE-ConnectionGUID: yldZJ9vTREafa+7iQRQUZw==
+X-CSE-MsgGUID: 8VWTTsUlS+GtROXkwhbtdw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11934"; a="506681"
+X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
+   d="scan'208";a="506681"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 08:16:28 -0700
+X-CSE-ConnectionGUID: bgR5OwZoQOStBkyY7jDMJA==
+X-CSE-MsgGUID: QE9sUGqmRlalTmFGgc6cKg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
+   d="scan'208";a="1106742"
+Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.48])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 08:16:22 -0700
+Date: Tue, 13 Oct 2026 18:16:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Shi Hao <i.shihao.999@gmail.com>,
-	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/2] dt-bindings: iio: light: add as7343
-Message-ID: <as5LCasyTFjTNL0x@zephyrus-g14.localdomain>
-References: <20261013115639.167433-1-marcus.yu.56@gmail.com>
- <20261013115639.167433-2-marcus.yu.56@gmail.com>
- <20261013143639.000017b9@gmail.com>
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Prabhakar <prabhakar.csengg+renesas@gmail.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v2 8/8] iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
+Message-ID: <as5LQ6zFzkft2zNJ@ashevche-desk.local>
+References: <20261009184122.1378797-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20261009184122.1378797-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -86,104 +74,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261013143639.000017b9@gmail.com>
+In-Reply-To: <20261009184122.1378797-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 13, 2026 at 02:36:39PM +0200, Joshua Crofts wrote:
-> On Tue, 13 Oct 2026 19:56:38 +0800
-> Chang Yu <marcus.yu.56@gmail.com> wrote:
+On Fri, Oct 09, 2026 at 07:41:22PM +0100, Prabhakar wrote:
+
+> Add support for the ADC found on the Renesas RZ/V2H(P) SoC, which shares
+> the RZ/T2H ADC IP but differs in channel count, sampling, calibration and
+> resolution support.
 > 
-> > Add binding for AMS AS7343 which is a 14-channel multi-spectral sensor
-> > with i2c address of 0x39.
-> > 
-> > The GPIO pin is not described because the datasheet does not document
-> > how to use it for hardware synchronization at all. The GPIO register
-> > also has no mode-select bit to isolate the pin from the chip's
-> > internal control logic. Exposing it as a generic GPIO could result
-> > in kernel writes being overwritten by internal logic.
-> > 
-> > Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
-> > Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
-> > ---
-> > Changes in v6:
-> >  - Add a ref to leds/common.yaml for the LDR pin.
-> > 
-> > Changes in v5:
-> >  - Remove the GPIO pin.
-> > 
-> > Changes in v4:
-> >  - Fix led-max-microamp property name.
-> > 
-> > Changes in v3:
-> >  - Add missing include for gpio.
-> >  - Expand GPIO descrption to include hardware synchronization.
-> >  - Use led-max-microamp instead of led-current-microamp for the LDR pin.
-> > 
-> > Changes in v2:
-> >  - Add the LDR, the interrupt pin, and the GPIO pin to the bindings.
-> >  - Fix node name and unit address mismatch.
-> >  - Include MAINTAINERS changes.
-> > 
-> >  .../bindings/iio/light/ams,as7343.yaml        | 66 +++++++++++++++++++
-> >  MAINTAINERS                                   |  6 ++
-> >  2 files changed, 72 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/light/ams,as7343.yaml b/Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
-> > new file mode 100644
-> > index 000000000000..7fb10b0d4843
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/light/ams,as7343.yaml
-> > @@ -0,0 +1,66 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/light/ams,as7343.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: AMS AS7343 14-Channel Multi-Spectral Sensor
-> > +
-> > +maintainers:
-> > +  - Chang Yu <marcus.yu.56@gmail.com>
-> > +
-> > +description: |
-> > +  The AMS AS7343 is a 14-channel multi-spectral sensor with i2c address of 0x39.
-> > +  https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - ams,as7343
-> > +
-> > +  reg:
-> > +    description:
-> > +      I2C address of the device (0x39).
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    description:
-> > +      Open drain output active low interrupt pin.
-> > +    maxItems: 1
-> > +
-> > +  vdd-supply: true
-> > +
-> > +  led-max-microamp:
-> > +    description:
-> > +      The driver current for the external LED connected to the LDR pin.
-> > +    minimum: 4000
-> > +    maximum: 258000
-> > +    multipleOf: 2000
-> > +    default: 12000
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - vdd-supply
-> > +
-> > +additionalProperties: false
-> 
-> Should be unevaluatedProperties as you're using $refs in the binding,
-> but Jonathan could tweak that when applying.
-> 
-There was a discussion about this back in v2 in which Conor was suggesting
-keeping additionalProperties: false if I recall. I don't know the exact
-pros vs cons so I'll defer to the experts here.
+> The RZ/V2H(P) ADC provides 8 channels, has a fixed conversion time of
+> 20 ADCLK cycles, does not support calibration, and supports selectable
+> 12-bit and 8-bit conversion resolution.
+
+...
+
+> +static int rzt2h_adc_write_scale(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int val, int val2)
+> +{
+> +	struct rzt2h_adc *adc = iio_priv(indio_dev);
+> +	unsigned int i;
+> +	u64 scale;
+> +	u32 rem;
+> +
+> +	if (!(adc->chip_info->features & RZT2H_ADC_FEATURE_RES_SELECT))
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < chan->num_ext_scan_type; i++) {
+> +		scale = (u64)RZT2H_ADC_VREF_mV * NANO >>
+> +			chan->ext_scan_type[i].realbits;
+> +		if (div_u64_rem(scale, NANO, &rem) == val && rem == val2)
+> +			break;
+
+Hmm... AFAICT we can use multiplication as the result of the division is just
+used to compare.
+
+> +	}
+> +	if (i == chan->num_ext_scan_type)
+> +		return -EINVAL;
+> +
+> +	/* The scan type changes with the resolution. */
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +	adc->resolution = i;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +	ret = reset_control_assert(adc->rstc);
+> +	if (ret)
+> +		pwrseq_enable(adc->pwrseq);
+>  
+> -	return reset_control_assert(adc->rstc);
+> +	return ret;
+
+Hmm... If it was added in the previous patches, add with unfolded check and
+explain in the comments that the code done this way to avoid churn in the
+future changes.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
