@@ -1,120 +1,156 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3884E323D
-	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 09:56:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791971780; cv=pass; b=P/WJiqDwjbDqRARocISD1+/lAJgnX/divknKy0XVODUm1zygDUbT7bQ+SYnIXwds/esMWweUimwNjwfScC4GaulfRUYzcT5B+eIilAZikNgCGlNg+Y1oNRICKcClIDv7E4HoKbaiBjDv9jzp3rDgJGzIgBPsQxX3gIsO61Rc2nk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791971780; c=relaxed/simple;
-	bh=ZPg3IVURet1hbZoryf1JRpqlHNpUVFH6kLrlECLl2SU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JhTKUPVqEo6Te4JqbYLR5HfconTqsdy64iht1GUOOc5DbU9hERJv3aN7srQKetBIVTwp4A5LlARUA/MIBEMJuECg+rj8Vw6IGdRrWVLHIRbzYFFoLZDUs08NzvqUg0qdqv4Ee6EyoJJkvO722AZli8cTcuKUCS1qvZ23mp94cQQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h2mmc9BF; arc=pass smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C6D03C2790
+	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 10:04:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791972249; cv=none; b=d0Akxjzbt3XBd8vzzLSgBWb0VbAcVmydCHtzd2239I/BeYr5AjgOt3xLr6NmReYcQY3YSb4vb9waXsusRmgBNWWq0enNnjJDWkNOd+vkA93tFm0pWhHgq+KmVv24dc0to5A9wz++i2h7qprj2VxDA5T4bU57uFG5drdXEQ1kR8I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791972249; c=relaxed/simple;
+	bh=060y4h6BCREz2veKTYINyjEgllxgh/Lbne16CwjQutU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Noow9Wj2FQK60WsgJo5a2Rc4lkKx4olEs8HEk+h9rTl0yXQF0G5DHJHcZTYnSopk63U10/LwSVr2xPqerfGb61CC8zx54WssbkNyKhYhz9rLWVlpaX6HPTm3EuueE23Lc47y4sH1a80DtJ+OLiDLcGIo1z9ugF/7JDEkCFVL3H4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mHnxk6Eb; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h2mmc9BF"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5ba3ec92031so4035384e87.2
-        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 02:56:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791971776; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lS4BZ27KyIPZLXjTdBtgga6PMu3yd93V1NMJsjK6ZuJgf9m9YxNfUGTMHzvZKvmyMP
-         cqz0HvgGA5w8m4MO8/qmUT9hIZHjchtD5T+nbDfeOVZ+zx+hMccr1+sFzEBvNaX5CwHw
-         2QwbLS0CK09i2+SqqP6bXZv0yEn6GzziB4jLBJ9LQ1v7V+atvcmYr3z6S2bP/we7LJoh
-         UW8UMsY2Iw80KAyCo/SHc43f4tiln6mvU03jMo58zOKtfMH7xMIBHZ3JiCH38XH4f3Sl
-         S8JSY5kxZWmPduBw5XQFQ1AWmY0r088TuuwRTeJap4TIM4Na3xilfquz7ZKoiDeezG3g
-         8t3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ga/xxKIasDCJixgw10gLPhVlkRHWXaXqkLdNz27TQ6M=;
-        fh=XgG88VQIj3CYFyzQC9emF4y11pQp1v9iwTDnRRSVFBo=;
-        b=YOsTL0Dp0oz1WAhOB5uot8whA+nPS/qoHC4qdrtY+FbCwUbgL8Db1/9g1H91Pvgoye
-         TOIb5jgJ/P/UShnksv4XYKzlN9A1p+XbKLj9++AUj9eg5ebb6su2dx69++KG3qJET7+Y
-         G4vvLkrL4i3zGPpSjyTOnQ2f3YHSiCr33LliiWikAiLpCTL7qT+cpimQtDjt3CaAjjpa
-         P1Ta2BviD5I/7PVXdUP2W8DGdLV998bmwaCxWmehJtEPgAJ7SGdyf4Oo3N1Y82A5QRUn
-         PxVX/qJje2MV0Q08umjH10SNzOH48LksAKTPCSfDicbxM9CoOuM/Zc6wx01R11UrLd/7
-         YCPw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mHnxk6Eb"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-486e70f2457so131821f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 03:04:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791971776; x=1792576576; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ga/xxKIasDCJixgw10gLPhVlkRHWXaXqkLdNz27TQ6M=;
-        b=h2mmc9BFuXYofgciMzn2WNk6QMC/HV57UsdodCpacrDQs7hqx7xq+wdoIjAZy+PAkM
-         3RRfIMDJqRJCMxKMC0f9xLH2WW7kS/XRUekxfZljDLCWEFjCUD07iBgdqJTLqj2UW6iZ
-         Zu68Bo58orOBJLvcqOLe0DYFMNZjgObFs3SRegTSjOJUxMoWWvMMZteDPQIUQDhQL0ai
-         mHywsImbKmDXLrDGd+ITn65d7OdbAkqrpEK1rcXLIosJm3gXcVL3o2jc3aHe4f8xOxNf
-         JVZWEsJ4ZwXJahZRZG5ghF7AQTH9hpB6K6GqSnycx/yz5dDYwT7KNcPqYsRvtaDYwQO9
-         LJkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791971776; x=1792576576;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1791972246; x=1792577046; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ga/xxKIasDCJixgw10gLPhVlkRHWXaXqkLdNz27TQ6M=;
-        b=sbUEf/+Uobr79K87Fx34e4N3+2UIYy7hxFe7+HWmceQPh4wezam2GLhNdLKL8cb+3M
-         6KA0it7QjEiS2Z5xt+EgKgjBZWPHGvihq1Awds4FxvRRhR64d1o330NQ2fzt63DTuM/h
-         +2ClIzVKoEJhB/qvj9Pl2tnl/K75x43JQ3BxrtrSGDG1c9njfRVntXLYBN9A5TrhKTnj
-         m7FVSSm+pJ6C1p2LXNzgcxN9VBEiYkjjEPSL3kbiJVnX/9SlxzY22V7EUjDHBWJOV/A9
-         /IDophWneufiy32vjhWo+2ZjGWpEk80hvkYPpQDxledOGrNHRU3A+Oa+y+6yWYBH56uF
-         V/Ng==
-X-Forwarded-Encrypted: i=1; AKwUvBwoncYz6Ly2PZAyYBfOwbWIaUE2SOTphQaTtN8/lp9AJVKnVHU00Dl4/lsyIncTxqQL4U4qDyYk5ng=@vger.kernel.org
-X-Gm-Message-State: AFq9FYITXvC8s3wgEPxzP2UIVSQsD+JTUVz0C0T6wyoh+aZ1h+EEPjQc
-	79UXU4O+QxQZqmmh/mIxI0KkU8f4tRdNsqKK5W0H6Eoqsj3OlKb5AXPbtbhBANMsf2xrVPEHzEx
-	NL3cZi/O6nspTCOnn84gJN6l84IEMJ3w=
-X-Gm-Gg: AYBFou3JTaGQJU8zeqQYRalVB7Uez2w5DvCxQUnsCdsUiPM6nSkxzwc8Lv7mw4bHBHC
-	CWxoOWcka79KJ9wd8I10B1nueOi1Lb8o+m+M/eEHjvpZAgtY+vplP7Tyjy3xY913L31EgnseieQ
-	Pu1Qg0gJPut8S1NgucpiQlI4GwzVdc7lGtQKKMOsm02VYqhx3k/iJCJU0IBrCEe8MUEIblR8PJU
-	6vloYWxTnnQKmhOAffd8N/uzlQFQd4xHR4mdYyZltWCKkWZaYdgsmV6Bm5NKUsrekYOZLByqsqK
-	YP+QfTqE4RkJijvxI2jYlF8v+gvtmfDcrOMV9R4rh7xe0FeRdQ57m3q3bZ+SAF2F0QyYos17H+o
-	gq9mnJ2m6RxQ06PR+QMPd2cuWjEs331KCUkiWeQ4SYJsgDeanAi1IIEc=
-X-Received: by 2002:a05:6512:308b:b0:5bc:b962:cdea with SMTP id
- 2adb3069b0e04-5bcde5aab48mr6105374e87.42.1791971775882; Wed, 14 Oct 2026
- 02:56:15 -0700 (PDT)
+        bh=83nMmOQIZqdWD9+WEuaPAFERa9gPcu3uwdWyfDhUP2Q=;
+        b=mHnxk6EbYJlf6fLatNM4UPH1WDJ3fMtpt3XgDSsLTXMxEO+oU2SBGgkzoUVV8HngSe
+         qrxpvxl+uUdBoMOkyGpDMSAfEsRZ+frn1CkYtkfgz5/XsiYTB18zhAkrLjnJ18IFWKSe
+         Yifli9xhiFQGe6jrznu0OScJeTSEnb7ffDwqK8xXqO1NyfI7Xhwg7USZzr/zlnvPWK8C
+         BGpUmzh3wF8jWgxxxy4wh7mG6goe/qEU16d6UjKuxXbgMY6TvayptBJzuZI/XBh8gfX4
+         BzUHoah7tEqnyk89lxMefu6s1Ayf9LgDYfwlhRA7jpFF/kLcsDpF8XGKMGex0ktG9LOc
+         jGCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791972246; x=1792577046;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=83nMmOQIZqdWD9+WEuaPAFERa9gPcu3uwdWyfDhUP2Q=;
+        b=J9h9bV47aEZqMohi1c7wkAz6lnSj3fSk2rE1Yo/lpVmLsF2X+y/Wj/8aWCq03PJ/aJ
+         xqYrbJvhMQJCzm/vHvaGSpHJYe0GgWx944CRQUCA7uGOIolyEb6AWbNHGe4X2NqKn6ZR
+         NfuxiRvnJiaqG2+I43y0up9vRBnSyfwDgS4H5VTisZQhuAbaj6N8g/VhrEXpr6krJv8k
+         a5uss/ge9Q8Qaxki04etdQcbTm3/MRGDeoMQp+RHoAKFFynfMlU++IEA7NbUH496iDJh
+         2jfLjevNbnd5BHoy9RZTKTQ/TSy33qZx0MUNwkjlX7Zk2rJr3fvxQhTNBnofT+sn6mSe
+         pC9w==
+X-Forwarded-Encrypted: i=1; AKwUvBxJYdigTl5Ym/VU80yfB7NpNhaxWL+69PYcHlbbxs+Tm6lcyg+L8vH9zVpTYTqQPn/FLRP7zQymE3g=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIpA5Y4IxTI8lVSoBqLcEuIQ8gBZ3/If1ascX1cC0QJwYpOCmQ6
+	yiVk1lPALlbfs4eDOAkENnu/D4vMm5udLunAKXJbzXyuktSL/5aDmgPJ
+X-Gm-Gg: AYBFou2oHOQMTiktuFc/iPcv41OWQxhcw+rh77l0zjl+KaQdC0b6GZdFy4KH6ZOqZTd
+	M/K9Y7xJji3+EWWmfGd/DsfRMd7vayRkp3Z++Qe10AUCcIsLsX7dXSA3As6gr91uGBXegCSJfH5
+	bEhBvVrn6JdW9Bbs9dep1XGmm9isPk/yyLx2MrpDBq8aCXm4XIcnsSNy0XEQ4oyeEy/D7k1s93m
+	tlctMIIYXoZ175XP35BoAT1ZIeGIngJGJVqgVBpPE9zQGfas4UNxdZMAzRN9AseESceTcLOvUqx
+	mMoot8n5sXMvugcNVYQ4ocfs4Acz6BGbWJ0p9WK3ITDtUPvIMo6d19X2vwIFq+bDdp7XnTm4pHM
+	MUVXVUGM01agh2gW3sqRYLCw5GQ24ICoOXQ4dFLPRhHa15yp0X7qAkVvEeFlLxQQiD2MxDPQ5jI
+	8pTueQJz8H9XWStDG9p/44yVkYRJ5wCfWjliDpbZUdl19hx0d1Ta5JybIUyDvG8lHd1rmwk+dwV
+	xGa
+X-Received: by 2002:a05:6000:2481:b0:48a:f318:ac02 with SMTP id ffacd0b85a97d-48dba9bdbaemr32888695f8f.19.1791972245977;
+        Wed, 14 Oct 2026 03:04:05 -0700 (PDT)
+Received: from [192.168.1.18] ([83.231.69.9])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0aaa5dbsm11296208f8f.12.2026.10.14.03.04.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Oct 2026 03:04:05 -0700 (PDT)
+Message-ID: <528bad54-d862-461a-897e-0fd6734fd8d9@gmail.com>
+Date: Wed, 14 Oct 2026 12:04:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261013112124.1878296-1-paulius.zaleckas@gmail.com>
- <20261013112124.1878296-7-paulius.zaleckas@gmail.com> <as5jYcTlEuOzD6go@ashevche-desk.local>
-In-Reply-To: <as5jYcTlEuOzD6go@ashevche-desk.local>
-From: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Date: Wed, 14 Oct 2026 12:56:03 +0300
-X-Gm-Features: AclHuK_CjFljdIg_AVdVw6UFxSvgyvGJDZnWdujDm8845cPvxJXAakyDfZo58g8
-Message-ID: <CAPiS6wBzomvTOm3axxO7sWCxoJg0ijZOXpj_F+NNT7Woz4Loww@mail.gmail.com>
-Subject: Re: [PATCH v2 6/6] iio: pressure: dps310: add Zilltek ZTS8032 support
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
-	Eddie James <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Rupesh Majhi <zoone.rupert@gmail.com>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 2/2] iio: light: add AS7343 multi-spectral sensor
+ driver
+To: Chang Yu <marcus.yu.56@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Joshua Crofts
+ <joshua.crofts1@gmail.com>, Shi Hao <i.shihao.999@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20261013115639.167433-1-marcus.yu.56@gmail.com>
+ <20261013115639.167433-3-marcus.yu.56@gmail.com>
+Content-Language: en-US
+From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+In-Reply-To: <20261013115639.167433-3-marcus.yu.56@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 13, 2026 at 7:59=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
-> >   * https://www.infineon.com/dgdl/?fileId=3D5546d462576f34750157750826c=
-42242
-> >   *
-> > + * The Zilltek ZTS8032 is register compatible, with two more pressure
-> > + * calibration coefficients (c31, c40) and temperature calibrated agai=
-nst
-> > + * the internal sensor.
->
-> Any datasheet link?
+On 10/13/26 1:56 PM, Chang Yu wrote:
 
-Sorry, AFAIK there is no public datasheet.
-If you need, maybe I can make some screenshot of relevant info from it
-just for you.
-Thanks for the review!
+found a few things before I can give a tag, correct me if I'm wrong.
+
+> The driver exposes 12 spectral channels (11 visible light and 1
+> near-infrared) via sysfs. Runtime PM is implemented to stop
+> measurements when the device is suspended or torn down. Power is
+> never cut (PON=1 always) to preserve register values.
+
+PON=0 is SLEEP, not power off. per the datasheet, entering SLEEP doesn't
+change register settings. idle is 40 uA vs 0.7 uA in sleep. worth
+clearing PON in the teardown action, and probably runtime suspend too.
+
+if this goes in as v6, Jonathan, could you drop the "to preserve
+register values" part of the commit message when applying?
+
+[snip]
+
+> +/* AS7343 channel indices. MUST match data register order above. */
+
+nothing depends on this. drop the MUST, just say it follows the DATA
+register order for auto_smux = 3.
+
+[snip]
+
+> +static inline int as7343_atime_steps(unsigned int step, u8 *atime)
+
+no inline in .c files. same for the other helper.
+
+[snip]
+
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW: {
+> +		/* Wait until integration time passes for all 3 cycles. */
+> +		msleep(160);
+
+derive this from the ATIME/ASTEP defaults, or spell out the math.
+
+> +
+> +		/*
+> +		 * Reading ASTATUS latches all data registers to this read.
+> +		 * We don't care about the returned saturation/gain status for
+> +		 * now.
+> +		 */
+> +		guard(mutex)(&data->mutex);
+> +
+> +		ret = regmap_read(map, AS7343_ASTATUS_REG, &unused);
+
+ASAT_STATUS (bit 7) is thrown away, so saturated counts get returned as
+valid, while the datasheet says to discard them. ideally fixed before
+this hits a release, since changing what read_raw returns after that is
+user-visible. Jonathan, any preference on what it should return then?
+
+[snip]
+
+> +	/*
+> +	 * Setting a 600 * 2.78us * 30 = 50ms integration time as the default
+> +	 * for now.
+> +	 */
+
+cite the datasheet's typical config, that also answers Andy's "magic 600".
+
+-- 
+cheers,
+jose a. p-a
