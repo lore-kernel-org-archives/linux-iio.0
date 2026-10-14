@@ -1,157 +1,100 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1B5953B5EC
-	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 13:36:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791984997; cv=pass; b=nCH2WWMDjwX8FpvBfnxE4hS4t0GfrYepRwgu0ceTuqvU/a9tp16qxt01pLQLG6tVloTjZLoNTunjyAV4nENlZsH9Nq8a0gBPoUlRvIMuzxg+d6qka8nja93M8EAXkHSl8f7TMwiV6ZS+G9L0VfGPbTQ2oqs0F37/Wpdcy6ipjyM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791984997; c=relaxed/simple;
-	bh=IT0qggrd1mARJ6zH4Bx5bdn3EzKctPth4DH9TaUm78M=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=t6874NJRoWhSAu1+B6zNj6wGFrtPuhjyv4lmkEjRJj5eqwl/+1AebMjSjEGZvP2aBMDRXMUP9e7Gb3B0hBlwvUuMaNoZ7z8YGs/FileY5Gu0HuSp8qcgR1UsMo7jCNhz5WJAnRdBzFvhWX+0e6HMLOr8uJzWBkrJRGYHIG2cEP4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=stl97STh; arc=pass smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5AE51DAE0;
+	Wed, 14 Oct 2026 13:50:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791985836; cv=none; b=Kv2DkYR+h+BKx9RQSYLgHA542FkUb6T3UWnA1Tw0eTJHZiR+pe86+9dpXCmRZexjjz6GjqJ0Ml1mC8StGq3pNrR+KyQtiSr31tWYlvnyOYMzFtQkQXS/da5WxIquvOoVMgZXDZxgtPonCXtpZPRes4Glw+SnyelmWon2QWh3cJA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791985836; c=relaxed/simple;
+	bh=Y0kqPV4NiYR089LXFlLwFoO6+rgAl6iQg/PWOf98D8s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HHZS07XuoZxPbwdLETmn+vToqAtKrLIwwMxfnm7WcxVShlxzVedg4qNhDaICyvBvdGdDiO/eIhhvoBpOUVeecltEKpg3TZgrQxEtOFupfGNBFGX9XNE8c181RZb08oETp4J6eV2fL9Hjmyarq15aqdcqMxXPBoQv1PLgVs/oVPI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CmF8M5Iu; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="stl97STh"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6acbdbc1725so1350753a12.3
-        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 06:36:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791984990; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Dfp8FnbusksNa7vRiujwts6aLvsMVcMzr3/Yetd4Sh+PwFi1GdmuxViZWPH8N2oFuc
-         RLYxwB8SDrNWcQ6QcbnDN9xNamgx2o8TyGEXXPGtBKjRa7Ahezll1WtwxhM+6fyIAC3k
-         6LmZA2vt0O29YoOg4M2OBneOHWlq7pAC70nQOMeXKs7S8JIbt2mdBNa0TzwUg9Q6kcjF
-         VJ66NWOeKH6PfAkzxuXf9PFpeTIywzbEWflilDJkTm0H7QNiEbWVf3Dw6PDRl0Ae0a6a
-         k+giQfmk+iRH5BZluEBNIgrUlpReRP1LO7FJX37V0hvdtnoRhf5NR0W9PSEVw0kkbfpC
-         YU6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=WzfJaWITDWTXbAq39l/2Sp3XytY3nCJV7TfZMBMIxVs=;
-        fh=qwaRnUqQAXc4yDp7ndkqDYhgRiMGZTvHMI/fPnm957s=;
-        b=e8HgBvnRPNzU+7HpaBv0MeBxQUpXtquKfS27F9mjU1r3pfZoveYf0Jtwxb5W1YTSQE
-         stAPWuIXkIhUF8jXaRA88Rmai1ZPnJ+9yijKYYPmHMCECZQ4cMeR5N7qrrbBn217D216
-         XEnFelsFjxPqWz25WsYFlfxVIxr6Jl9r8Rn2406q/UfqslN7k2tMzqFIEuHEpp1o96BZ
-         IVWpixkd/8q0+6HbKf4LM/S54E+QFflP7zSn+j6QU5DuS20JjKZR7fm4Qq0Xz8b/ESC/
-         h4C0VQAYFrxBEVw4cuZgMmco7bhbGVXtdYDqeqPg2RaYjS6mKqDxE23bFNi5NtPoVOiO
-         R3JQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791984990; x=1792589790; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WzfJaWITDWTXbAq39l/2Sp3XytY3nCJV7TfZMBMIxVs=;
-        b=stl97SThMAAaKpod2Yo9NGY11Ms0uA2KmHC3Qq68BTZNwq3Nozbh/f2/qLMrAmqXOn
-         5c3jcejjbE8lC60StZ16+ykubS3dxO4UA8mbaJAzXuJxyXtSlJsaq76+TwUBiP4e4r1e
-         dU/C/3Hty3fh34T3Zs/9Fi2kMW1m25XJOHTiIQBU0lrnhQKzQG7rB5xV8L+ArmPMHkpU
-         fiV8bpzGHqByTbO9WbfPvQ7BYcEA6kipWSS1PF7J6v/4Jq/o2Ubdc3KyRKFKqPBwQYIg
-         5DWLtQ+eA6KjMnd+kEduCPoJ4pBsoSm8bJquOHX7RDzdfh02iwV4FkL1eENDmnG2DET+
-         WBeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791984990; x=1792589790;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WzfJaWITDWTXbAq39l/2Sp3XytY3nCJV7TfZMBMIxVs=;
-        b=cXUXARKFzpE3Ls72JqPhafm+RZgTW/x7HJ9i2r1RfNF1zCvHQlZbzdmwZNDuQimMOq
-         gMBcbGma4h8sCQZXaHX3NHuYUxf+YY6ArgFWOGNIMIsktCj1FzVnSGyN3OXWxXoKZsJ5
-         eF5MK/FFjs0S+vnKGaB5pApb6IVLlrllPG2Pg39oev9fXR1WNKEtp3PmsR2cPQdp2lR2
-         LqUfwshFBuspSDBm4Q/+q5AIRGQ6KoXKUKaZKW4v1qfDy+LnFVonAjsfKGqA1cNtbFHh
-         Nlg4KykTaxpKgMe3P0tYvh3UVXHVHY376e/mbZWj4crH3EUJN5jS3T8/qeQkIfbr5c8w
-         Bm4A==
-X-Forwarded-Encrypted: i=1; AKwUvBwIJXkKP2pFgMBppLn454KyOdr402wNvcHuxpZpnnVCosiCIogWYjEs78OP2v/S7VEr/SrxlLXCBwI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLMQoglCh6N5o0lcXc9cJGo0S6IA8gQMaxwFnjwk5GxPc3wDycy
-	7/zI1vwPlhG4rQTxBkNP7+Q9HNZWMDdJjJXa7JgicQj9kQB3ITEQdcokYJzKWHNcA7iz33SB0z2
-	hc67E1e6MbOlLrjTbAtrbT/EsHKPR+bw=
-X-Gm-Gg: AYBFou2ZMpo5X/IDYTN+QgGsKl3KatDt5q4uz49GE3bnrwcg9wzi4GjVupdAkrLOAZ7
-	TAMngjmKm0gf34QYrKtl9Q62vZrFF74B9wdxBNlLcDTdYSYE+9AHx/URNdzrSWCKKmfs55S1KR+
-	/2E2X8KKm7tpLKk4/2vrpP9RJ4VaY5BpQbZ8LnDCWZ/yr4IpXJVVBqpTd5Tej0Q+cLxjIhy01dT
-	pRiUlpDI9Q7Wlev9Xbxv4Zk3Q/o0doVisCbHJq3QlG+6XiyVBGn0eIcVdxTSobMPD9T/cEqJ+Pz
-	el8BIjkuW0dELyOdUJdw3/dvxDsf2LYnfrU4kLFy9gaFvW7wlimcwseLgfj2oSXsffxmgwllYTV
-	mmX1voRLNru75zwIKJhsustQYQnEb61S93DHgtgYiuak2JFPs7JLZQGEdLAwqNSBZ+vPe+VjFog
-	==
-X-Received: by 2002:a05:6402:461a:b0:6b1:e37c:135f with SMTP id
- 4fb4d7f45d1cf-6b1e37c1669mr5342555a12.3.1791984989802; Wed, 14 Oct 2026
- 06:36:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CmF8M5Iu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E8F1F00A2F;
+	Wed, 14 Oct 2026 13:50:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791985835;
+	bh=ORnKpIyYnrFI/qKTM3/A77hyoUOm6u+HVKEp2jC5Vj4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=CmF8M5IuT///GxMWFmO6dqezDSjFwisaPstXQlOLbKWbREN3vhhKtziKwzjY7bJmM
+	 wVgIYTjDOEpd5vtwP3/eFm/GkgIGp1suSG64ulAGs2Y9OUnavWDA/WyYut005R7JnX
+	 AZTQWqUq5wAKR+jvoaZoWlCni/Vfy8hYB/hycPBDL5XKq8tmiMShUcXkmrHyPBgWcE
+	 9R7QvzQg9Q6lO6gNGhXy+9WzFVj2TwviSwkMPj8MuTI7puUyWEguIZfLcnP+IPJzgi
+	 d+1aCeaiZKQBk9vg5cEGEGirjfI9+JskKMWRVRiq44K2dV1xz46uSs1I9xCT/vQ3gy
+	 F7fL+oStrx7sA==
+Date: Wed, 14 Oct 2026 14:50:30 +0100
+From: Lee Jones <lee@kernel.org>
+To: Andrej Scek <scek.andrej@gmail.com>
+Cc: linux-input@vger.kernel.org,
+	Basavaraj Natikar <basavaraj.natikar@amd.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	srinivas.pandruvada@linux.intel.com,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	regressions@lists.linux.dev
+Subject: Re: [REGRESSION] amd_sfh: accelerometer broken since 6.19 ("Event
+ data for report 1 was too short (15 vs 14)")
+Message-ID: <20261014135030.GA839238@google.com>
+References: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
+ <CADrS857iYjafXEZcHRSmeOFjrzs0DYG5Dp2PeS0n669cHBjAuQ@mail.gmail.com>
+ <20261009114925.GB199624@google.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261009184122.1378797-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20261009184122.1378797-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <as5GXPcMKe-CBLXK@ashevche-desk.local>
-In-Reply-To: <as5GXPcMKe-CBLXK@ashevche-desk.local>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Wed, 14 Oct 2026 14:36:03 +0100
-X-Gm-Features: AclHuK-KZvXq9usDlegpOUwMj00FdeLieTauYj8tlmG7JTbxbS1FG7D7z0W2904
-Message-ID: <CA+V-a8sec-ZzMKGZJeNA-iXw-Tkt9mcXv7OoziMtjeh23BjOsg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/8] iio: adc: rzt2h: Wait for the analog part to stop
- after a forced stop
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Prabhakar <prabhakar.csengg+renesas@gmail.com>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261009114925.GB199624@google.com>
 
-Hi Andy,
+On Fri, 09 Oct 2026, Lee Jones wrote:
 
-Thank you for the review.
+> On Fri, 02 Oct 2026, Andrej Scek wrote:
+> 
+> > Update: this looks like it is caused by
+> > 
+> >   0a3fe972a7cb ("HID: core: Mitigate potential OOB by removing bogus memset()")
+> > 
+> > which was backported to the 6.18.y and 6.19.y stable trees on 2026-04-11.
+> > 6.18.16 predates that backport and works; 6.19.12 and 7.2.8 contain it and
+> > fail. The AMD SFH sends 14-byte reports where the descriptor declares 15, and
+> > those are now rejected instead of zero-padded. (This corrects my earlier note
+> > that hid-core had no relevant changes; I had only checked v6.18..v6.19.)
+> > 
+> > The same symptom on another AMD SFH device (Legion Go S, "18 vs 14"):
+> > https://github.com/ublue-os/bazzite/issues/5796
+> > 
+> > So AMD SFH (hid-amdsfh 1022:0001) probably needs to be covered by whatever
+> > short-report quirk/fix is adopted for this.
+> > 
+> > #regzbot introduced: 0a3fe972a7cb
+> 
+> This is on my radar.  Leave it with me.
 
-On Tue, Oct 13, 2026 at 3:55=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Fri, Oct 09, 2026 at 07:41:16PM +0100, Prabhakar wrote:
->
-> > When ADCSR.ADST is cleared to forcibly stop a conversion, the analog pa=
-rt
-> > of the A/D converter can take up to 2 ADCLK cycles to stop operating.
-> >
-> > Wait for the write to ADCSR to complete and allow the analog part to st=
-op
-> > before reconfiguring or restarting the converter.
->
-> ...
->
-> > +     /*
-> > +      * When a conversion is forcibly stopped, the analog part of the =
-A/D
-> > +      * converter takes up to 2 ADCLK cycles to stop operating. Read b=
-ack
-> > +      * ADCSR to make sure the write has reached the hardware before
-> > +      * starting the delay.
-> > +      */
-> > +     readw(adc->base + RZT2H_ADCSR_REG);
-> > +     ndelay(DIV_ROUND_UP(RZT2H_ADC_STOP_CYCLES * NSEC_PER_SEC,
-> > +                         adc->adclk_rate));
->
-> A single line (84 characters) is okay in this case.
->
->         ndelay(DIV_ROUND_UP(RZT2H_ADC_STOP_CYCLES * NSEC_PER_SEC, adc->ad=
-clk_rate));
->
-Ok, I will update it as above in the next version.
+stable/linux-5.10.y:
+59bfdb41a34c HID: pass the buffer size to hid_report_raw_event [5.10.259]
+QUEUED: HID: core: introduce hid_safe_input_report()
+QUEUED: HID: uhid: convert to hid_safe_input_report()
 
-Cheers,
-Prabhakar
+stable/linux-5.15.y:
+a4d6cb7cf45b HID: pass the buffer size to hid_report_raw_event [5.15.210]
+QUEUED: HID: core: introduce hid_safe_input_report()
+QUEUED: HID: uhid: convert to hid_safe_input_report()
 
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+stable/linux-6.1.y:
+121dc93ae1fc HID: pass the buffer size to hid_report_raw_event [6.1.176]
+QUEUED: HID: core: introduce hid_safe_input_report()
+QUEUED: HID: uhid: convert to hid_safe_input_report()
+
+stable/linux-6.6.y:
+9e36568e67f8 HID: pass the buffer size to hid_report_raw_event [6.6.143]
+QUEUED: HID: core: introduce hid_safe_input_report()
+QUEUED: HID: uhid: convert to hid_safe_input_report()
+
+-- 
+Lee Jones
