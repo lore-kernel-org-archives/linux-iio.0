@@ -1,100 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5AE51DAE0;
-	Wed, 14 Oct 2026 13:50:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BE34539795
+	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 14:17:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791985836; cv=none; b=Kv2DkYR+h+BKx9RQSYLgHA542FkUb6T3UWnA1Tw0eTJHZiR+pe86+9dpXCmRZexjjz6GjqJ0Ml1mC8StGq3pNrR+KyQtiSr31tWYlvnyOYMzFtQkQXS/da5WxIquvOoVMgZXDZxgtPonCXtpZPRes4Glw+SnyelmWon2QWh3cJA=
+	t=1791987429; cv=none; b=VulmK6VpMp+ChOoCzNe0EDW+ugciC1iMnLNK5f0pfGtwr3KBVEAFDdF0RL/nN55TTe718+Ru2Z8NOjGI2cSfXr30jw/orByCLCgEX9w5Y0iBUxG0hqqKKfT2Y33lk8Dg/pdgD7+zwvqmnm5CzPvmCPCfCaE/Re1kX91gCtT3GxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791985836; c=relaxed/simple;
-	bh=Y0kqPV4NiYR089LXFlLwFoO6+rgAl6iQg/PWOf98D8s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HHZS07XuoZxPbwdLETmn+vToqAtKrLIwwMxfnm7WcxVShlxzVedg4qNhDaICyvBvdGdDiO/eIhhvoBpOUVeecltEKpg3TZgrQxEtOFupfGNBFGX9XNE8c181RZb08oETp4J6eV2fL9Hjmyarq15aqdcqMxXPBoQv1PLgVs/oVPI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CmF8M5Iu; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791987429; c=relaxed/simple;
+	bh=qZvHyApaLSyIV/u8hAf+LBvoGKwMloq5Pf6iUipRYLI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=jmhU6U5GGDecP3ejDAx3XkhiBaoAogSTXCwaAF4Fzw1jIflA/5/JXWnU3KNX23RfL0p0L0aqrE8bPxq0BtjhVrk44pISaPiNnMeom3+c8H3mjvgaNBWeDdDYx+ErLVSSNVyWxTOaUbSV0JNetKjfLfKk5rofPivXGDdownKaqqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pxNQNDoq; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CmF8M5Iu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E8F1F00A2F;
-	Wed, 14 Oct 2026 13:50:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791985835;
-	bh=ORnKpIyYnrFI/qKTM3/A77hyoUOm6u+HVKEp2jC5Vj4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=CmF8M5IuT///GxMWFmO6dqezDSjFwisaPstXQlOLbKWbREN3vhhKtziKwzjY7bJmM
-	 wVgIYTjDOEpd5vtwP3/eFm/GkgIGp1suSG64ulAGs2Y9OUnavWDA/WyYut005R7JnX
-	 AZTQWqUq5wAKR+jvoaZoWlCni/Vfy8hYB/hycPBDL5XKq8tmiMShUcXkmrHyPBgWcE
-	 9R7QvzQg9Q6lO6gNGhXy+9WzFVj2TwviSwkMPj8MuTI7puUyWEguIZfLcnP+IPJzgi
-	 d+1aCeaiZKQBk9vg5cEGEGirjfI9+JskKMWRVRiq44K2dV1xz46uSs1I9xCT/vQ3gy
-	 F7fL+oStrx7sA==
-Date: Wed, 14 Oct 2026 14:50:30 +0100
-From: Lee Jones <lee@kernel.org>
-To: Andrej Scek <scek.andrej@gmail.com>
-Cc: linux-input@vger.kernel.org,
-	Basavaraj Natikar <basavaraj.natikar@amd.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	srinivas.pandruvada@linux.intel.com,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	regressions@lists.linux.dev
-Subject: Re: [REGRESSION] amd_sfh: accelerometer broken since 6.19 ("Event
- data for report 1 was too short (15 vs 14)")
-Message-ID: <20261014135030.GA839238@google.com>
-References: <CADrS85612m-Hh-G4BJmOhy-y6r3Ni3kD8_GM-2QRBeWWEEZWuA@mail.gmail.com>
- <CADrS857iYjafXEZcHRSmeOFjrzs0DYG5Dp2PeS0n669cHBjAuQ@mail.gmail.com>
- <20261009114925.GB199624@google.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pxNQNDoq"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-48b060ec084so2754824f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 07:17:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791987426; x=1792592226; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=LE5QCyk/kuk4y0k9VpD3QxwfCrYmBzMze00/pe2mg5M=;
+        b=pxNQNDoqcict5o9gxIZUc74J+AGfTP9r+kvXgu85B+rX5mR89CqgayPWjeB7VT9vgn
+         QkWyd1plEvI1TnDi5co43uX7tm9bcFCIiDD2IxGldJ9rih4zQbHcONzBme3Ur4Ikpfgs
+         pV+ASILVgZIX5HkVAIstePXtSWeEmKN3MsyG9I+Rddxa3sfSP/yyi+3CeyN7UO8KaKjr
+         z1Dj+J7ngsR6eu1GlSQ3S9Ez4Xd0Ey9plE5RYN+eb7ZC3akbmb6ytkF0q29HI2xG/Rvw
+         SkRIio/a2Ea9zJkyeICXydjZT0nqcXhEHV5jdMxslcm01kFBJHU8iip2b4PgREWaGo+V
+         uQIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791987426; x=1792592226;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=LE5QCyk/kuk4y0k9VpD3QxwfCrYmBzMze00/pe2mg5M=;
+        b=thke2zfXh7mYCtxbDk2Y5qwvVguCMadCwegiF4FCzCxLuW3qnoPKkcx9hVucQVvWIx
+         woG0uOdF+Ko8jvQDaLj8G0t291p5ucUqdHhuDTyxD+Xs9JbFjutkLfmc14xUQvA7b9aT
+         1Y7AQ2r/F6F43GXUbroLBtAnbKz+xCPFXmPBnpdDiWoKFmfbZe3K2+nYNRPIRRlRKh+E
+         Gom2dIbvnrrU55ZIK3eF0FZVusi39oKuuJoHFjXnunKfMDpDeJNeu58HHKxBhvTJJEK5
+         lQ+qU+bzPfB16puh+LSqjOi/XqeExQEddwnE1/mToPcXML2XgMweQdt7MHVgzjyJQ/Rw
+         bPog==
+X-Forwarded-Encrypted: i=1; AKwUvByQoFaw1Q6x811J6Gnutb1rBJNY4SlRDiRmOKbX0zQOukJs9tmnTTOnSSyBC1nQAtXhkx1EcVRPrIY=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLJr4amE4Upa1zDNHBQj80ZC7o/TlhSczv+/Daj9G4J3rhflZpb
+	O6tl98PKo8tlhNtZgpRX9N78NU2zCUsd0LLngcaKJkwUjhXZtIrq64B6HtMxpt5hfIk=
+X-Gm-Gg: AYBFou3ToBiwJ6d2kgKew79It9Zrsc15WnVZDv4VimNhNwutLO2Hw3S+trknlivheA4
+	PPR3eF+gC0jZzfQOtSom+NmZcbk/C2vU6aY0hqUFG4J9uNRUROHF5aZWiqz/WZxPbKeWylmzkEf
+	tsU4xe+UmOWpJRPoY7qoUI8rLqZEn+Rz0hTz7GodAWLyQS/ji5Hd6x6LFl6REu3k03q7TGRA7vW
+	17PHmDjXYbOL3XKRiQK3MWnEZ6pm3yMFAoJsKVoM5ThmV89w9xoJK9GC4M/qGY461Nk+azcvohO
+	74OQ8aocFWAARkNU/bu7vmhnQL6N3Tfp/t9qJh3Qs846kLg/m+H8E4MizPW1NBtACE3b0nDCSkY
+	MdX9gyECCsxURcp7u0E7BtRVnPXUlXVnMqqmhMn2PiVVVtB29yJ5JpHG4tchMPj7Qf3M3/BkccI
+	/XgnpNuGMIBKk0jLAwA3/z5CFxkCIZkMXzkbZOjphuti9YhuO3HEJWNWUlxoB9a8gx+BY=
+X-Received: by 2002:a5d:6f09:0:b0:48c:5304:5e4f with SMTP id ffacd0b85a97d-48dbaade750mr28722326f8f.15.1791987426244;
+        Wed, 14 Oct 2026 07:17:06 -0700 (PDT)
+Received: from localhost ([2a02:8308:b092:fd00:d20:6232:49ca:4be9])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0aaabc3sm12364370f8f.16.2026.10.14.07.17.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Oct 2026 07:17:05 -0700 (PDT)
+From: Jan Remes <ciakval@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Joe Sandom <joe.g.sandom@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	martin.triska@mycroftmind.com,
+	Jan Remes <jan.remes@mycroftmind.com>
+Subject: [PATCH v2 0/4] iio: light: tsl2591: fix lux calculation and precision, add I2C ID table, report saturation
+Date: Wed, 14 Oct 2026 16:16:46 +0200
+Message-ID: <20261014141650.259929-1-ciakval@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261009114925.GB199624@google.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, 09 Oct 2026, Lee Jones wrote:
+From: Jan Remes <jan.remes@mycroftmind.com>
 
-> On Fri, 02 Oct 2026, Andrej Scek wrote:
-> 
-> > Update: this looks like it is caused by
-> > 
-> >   0a3fe972a7cb ("HID: core: Mitigate potential OOB by removing bogus memset()")
-> > 
-> > which was backported to the 6.18.y and 6.19.y stable trees on 2026-04-11.
-> > 6.18.16 predates that backport and works; 6.19.12 and 7.2.8 contain it and
-> > fail. The AMD SFH sends 14-byte reports where the descriptor declares 15, and
-> > those are now rejected instead of zero-padded. (This corrects my earlier note
-> > that hid-core had no relevant changes; I had only checked v6.18..v6.19.)
-> > 
-> > The same symptom on another AMD SFH device (Legion Go S, "18 vs 14"):
-> > https://github.com/ublue-os/bazzite/issues/5796
-> > 
-> > So AMD SFH (hid-amdsfh 1022:0001) probably needs to be covered by whatever
-> > short-report quirk/fix is adopted for this.
-> > 
-> > #regzbot introduced: 0a3fe972a7cb
-> 
-> This is on my radar.  Leave it with me.
+This series fixes several issues found while using the TSL2591 in
+company products (Raspberry Pi CM5) and when testing (x86_64 laptops
+with MCP2221 USB-I2C bridge).
 
-stable/linux-5.10.y:
-59bfdb41a34c HID: pass the buffer size to hid_report_raw_event [5.10.259]
-QUEUED: HID: core: introduce hid_safe_input_report()
-QUEUED: HID: uhid: convert to hid_safe_input_report()
+The original field report found that the illumination value has always
+been 0.0 (caused by division by zero on ARM).
 
-stable/linux-5.15.y:
-a4d6cb7cf45b HID: pass the buffer size to hid_report_raw_event [5.15.210]
-QUEUED: HID: core: introduce hid_safe_input_report()
-QUEUED: HID: uhid: convert to hid_safe_input_report()
+Patch 1 fixes divisions by zero in the lux calculation, which occur with
+LOW gain and short integration times, or in darkness when CH0 = 0.
 
-stable/linux-6.1.y:
-121dc93ae1fc HID: pass the buffer size to hid_report_raw_event [6.1.176]
-QUEUED: HID: core: introduce hid_safe_input_report()
-QUEUED: HID: uhid: convert to hid_safe_input_report()
+Patch 2 adds an i2c_device_id table so the driver can be probed on systems
+without CONFIG_OF.
 
-stable/linux-6.6.y:
-9e36568e67f8 HID: pass the buffer size to hid_report_raw_event [6.6.143]
-QUEUED: HID: core: introduce hid_safe_input_report()
-QUEUED: HID: uhid: convert to hid_safe_input_report()
+Patch 3 makes the driver return an error instead of a bogus value when the
+sensor is saturated.
 
+Patch 4 improves the formula for calculating lux values to make the
+returned value more accurate.
+
+Patches 3 and 4 change existing behavior, I am OK with splitting the
+series into two, if that makes things better.
+
+AI assistance: Claude Code (Claude Opus 5.5) was used for research on
+sensor behavior, datasheets and Adafruit library, to compare results
+produced by old and new formula, to draft some code for patches 1 and 4.
+I reviewed all of it and tested it on x86_64.
+
+Changes in v2 (thanks to Andy Shevchenko for review):
+- Patch 2: Use C99 initializers
+- Patch 4: Keep variables in reversed xmas tree order
+- Link to v1: https://lore.kernel.org/r/20261013143943.436816-1-ciakval@gmail.com/
+
+Jan Remes (4):
+  iio: light: tsl2591: don't divide by zero
+  iio: light: tsl2591: add I2C device ID table
+  iio: light: tsl2591: report saturation
+  iio: light: tsl2591: improve lux calculation precision
+
+ drivers/iio/light/tsl2591.c | 58 +++++++++++++++++++++++++++----------
+ 1 file changed, 42 insertions(+), 16 deletions(-)
+
+
+base-commit: a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
 -- 
-Lee Jones
+2.53.0
+
