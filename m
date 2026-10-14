@@ -1,108 +1,313 @@
-Received: from sonic.asd.mail.yahoo.com (sonic-asso1-0020.asd.mail.yahoo.com [34.2.90.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58E6248551B
-	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 19:46:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=34.2.90.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24A3D31B101;
+	Wed, 14 Oct 2026 22:49:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792007181; cv=none; b=XaM79rf5KyHAkkamPLZOTAmu1Ch1pNWTMn7IX4R8uUOMI6zPPdR6VXvUqjeyumg6x6QD8TX0WmtZi+AAq3s8ScsKo7oteLk6QWR4j8ijutlHe8DLxgQXsKDdUrIcKPibRnNttRKEj8M516m0cbrL5Jtac9HAIT0eFcQFtvfitAs=
+	t=1792018164; cv=none; b=qBzsARnUNY/EsKh0y4z+C2crutPISwntL46rOHpsU2BtesN4vpc1wSXprbn7uIE7PcEmUMFuiAgxX0AOryip2cgA2U4s7CGsonXswwimaRu5IROUSWnDCYy379AdY7wWW9IjSTtoW2dGF251SdPm0BBhOax8JKO6AI17V/62MXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792007181; c=relaxed/simple;
-	bh=yDFwglLcn+Et0o475/lV2WZBBgW6lHLcNPBxxjrCQrQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JHu+DKSHXnN5GWn7Hk0Ze3nCLARzbgS7hf+qxSo+IDq4SPLRDxCqGY09S24RFXa9C1HrWTS0eZ3AtWQ0hcXUG6+odbZzo4zQkwabnmr9XCdF0uMPp2uvqf/tr06G285oQt49IOP4K6WJwNdgs+XOp/vPxLGzsIsRNl9CbrZoFmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=abqkm85A; arc=none smtp.client-ip=34.2.90.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	s=arc-20240116; t=1792018164; c=relaxed/simple;
+	bh=2n+tSWBKRK+TZ7ijom245GqFpekUQvs5xbdt+IxqpJA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S440Kb/Q/oac+ajSv5c+4NHlAtmSvU/krfTBRt2LMlGNpiTfjZZxUsly9UZLV+cPgmJojZmq83IaK8Ui7hFw7DLpDwMnz5HX1n//FegpCQRphbiMkGZ0yH7XFo5lHmef0R0RbUu8ZB+AkHlzR+Xjo/NBgGi3JzcTR3x1EWGt/pQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K3WkrGqR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="abqkm85A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1792007176; bh=LlsN9iNWBETqK/lTYo54mWuOREfl0PggeOoUj9EqgjU=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=abqkm85Ahz5l5hQBBPsrs3nKhrTYoan8b0rum1VBxg0KTA80hvURNYyyKhCSH1fq7ZqAuAwGCAw6JUy3l7XKg25Qg9pwuabUxQPNfdRkezXKI1hwvH+a+TY/MxaG7KfXX/7BFLrRLwaNW1Cf3A0LZqEECvspeNPtOOPcXdxLzP+SgfIRY5rdzCqp/BnHSEy1Pa+y2Gl+0ry8f2r1X+YTdnMH4klxcinEKvzDyfu8aeEDZ/9tf+E+RZBZuc9F1JAEVkQvEfb0ls4Rp8LvY3RvLBdK+S2pEk1M9tiTMgzOn3zVQcRGtSDl/A/8ptQDgP7wtFBEShA/zSfJo100GA+h7w==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1792007176; bh=1KHDJXsJi2ykJLKh78TaTeW3wHPxU0rcZA+0v2tAEcf=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=Nba7pf3+s/+4VlfCpmUTc2qP23qLEXX7bAXR3CWNhYbTqY7wP8kXK7M+H3gTKIxOlYLGCU9U6s8BLLigZfUoPPUP3U2B3puJhvv6SCBIGN9A0r2OrJFB9PGHYlCZVXmn+ICAGEU4IyxOjsMxPE8OPnbLJpWtIsRl5hcDN71udHoueyj9DNYkxBxiljUoNH9i5i4TLcCe4Nv9LfuwGFDUqYEZ5oHB4/Q8L0JURTgYcVfmz4dAAajRfIOwWrPVLWvr80LbbcBdevFgegbdCfnpmCEeVnqe92rrOJtA56eh5LGP+zfqvXIdaq6xmQDmtt55s7YGp0axbfP6zmuC8z0xIg==
-X-YMail-OSG: 0IS2NakVM1lJ9u_yGlzetUUb8zMb3Ev287e8UcsEDESCCZVhgUbK.olSf1FcpSh
- XEtUXqHr3lJ0zLLhRxM792pNJIpGIT29J4yK6AWOnI_6bdF8OEkULskFGycEr5NBqCgPlLhvRsZm
- RhCAzG.z0LASvyNGR3uzbgLYak38JXTcyFq6a6znPWGwiL6KJNPxPlh3aLVIsEYtRYgkCaT8nsFn
- JeJXHeICbhA59zuAON86bAkhJldL6nyZUPNI.BNrbmEfjq7Em8EiwpSPU94UZMET.MgfmHcb8DqH
- O4bgdrw.RAV2Rv0UP_vk040BiV5b.ZOj1Ex9s9DOpiFp5LyqobcPIg8VtEyp.r.7l5zEb6ff_xc6
- wczPXCX8jGTF200MZXb4Hu4Sj_g2.Z.eoMQGe3UKy6rUkzvdwfXzdvJ30Lnx3PB.f0kKrQwebeHp
- Lc96w3yx6XspbQj0C26uqQB5eSj3qh7nFIVc6pMBvW836y0.vlOtvNN1eaooRsV1TjW5R2s6A6x6
- aGvsbnjJFIH0hnOfD.f2G.Vj.G2TDBC3YBumfeVuADzdbp5glu86CQOMz4Jcagp1PHZXP9OE5snc
- jUKynXUHCtcOQNLZERr1no8hi0i0kK0ff1y_fbhk3qb352m6XnqtjDcb0IUGUnyFzsz6c18Xxich
- Uq2AbmZcgZflqdDmD3Jk.QatrqoA0Bu5N6pNR4hRuTh0ci_BkXCEWXl7otclF6iKyAkt1FEJGESn
- P7DxbpOd.kDLA9x_jNO6Cor6Ku.Fb5UajmqQGiHztmxy5UAldbxG8xwI9WM5eb1sdgoPjUxPBewO
- PXDvm4ZOn.v9E3NPkF55ShwrW8YiqoK7ZymMnX3s.Fe_Atz296RbjLshf5qkzOI5Ba4pwyTbByre
- aMYDWEgDuE.bCyd6hAUx.mDwTsAgDhcsgamGbEKVN5wn.oufAu2ee4DFrZiH6x0lUNtte01AOUtf
- kWD3lyYRVFOTKQPkBCCKqJ.tdGdxQ6u4_poMd8Q4vSxAwPllVov7kOzrpri2XN.hIKix..o9YZsY
- SVqKSYJW7Hv6BmF23YmbX8lS7GQkBdlh.toyrxzBW0BENl5_CT1Wsp9BlQQFTe865oW46.ffMNYf
- pY_qvxy18S_IZquqr_ygDDQPltMkNkBslI7VrSG6Z_E9fH4Hylc_VTQJJ3_VQXu1KHy3pDzvu2MC
- QnZyfHacU87JAFmnYh6XsA1lrB.Cwcw3ZsqDGEJ8vNlS4X.Q.RRr4jn9PU3LlDQDN8lY1bGqeocI
- OTP9RMoYgYl_8h9M0uRYzERjIYWQItegMfmOtCH3SNdrI1xh7cRHDC0Op8FmvDDS6.aR6.y4QwmG
- tOUTN7yiq2ZYgqMQfpZLUiF5Bp5E0l9ny_cRpUl1RLykyeELwTx1hLCi3RDdZmNUdYdlO0OtKHYF
- Q8fNmS1JXcMUWpKInMmvx5UVSs50A6PoSjdWzsQj57xV4coNs2YaRiOr3uJM7wEawIpC1oWJQx90
- AJp0_tULHCQth8ParCxMt2W.6.VWM3lI5ht.J_DlGloSKdt1fxqK.MHu6rRgHHeWtMp_2U4ISy26
- AsKzeIDeP8nzhZxn56j9CqhyiqH0RVQOMbbWjAthUXXhf5_Gkgrdw9IQ2wZSNA8UMWlJOmgbEUxg
- qlHy_.9YDhwv131uGlGfptP.BN.ZmbPf..GT0OGm7Pu9.udphIIi3EqbqJ7k7ul5G5tkreia8QUc
- pekTUm.8xh3eAqFkxZ0TVbbkLi_a1nccxJ2PTxTYbgXYFkSk7l1t.B.jrr8rer04Raw_Zxp23XuR
- EEuXXkpENU_6BvuDzuN0AEcf85vqL93d9gbqKMfYd_S5dj1Lz5gEgidbYosZsCs7X0F7a8ELzk9z
- dpxBr4g45S10DoL9laa13_OuE7WkaJ14QXjblSXl2foRAAyqhfcytqBFsFK5TKrHjkaqXfJnpUrw
- FZ6ExKy4ggPZRAt94PGHEYy1Qukv3qH1.DorEe6cnIMSGf_ps9CgVK.mHL.x5EkcHTYSaesOdtEe
- wS_xkmLfYQ5xFP1t5EkOF7PUlwU8ebQwPZXDaNJkTdVmR
-X-Sonic-MF: <m.abubakar365@yahoo.com>
-X-Sonic-ID: 146d13c2-cb13-499e-9a21-220dc14a804f
-Received: from sonic.gate.mail.ne1.yahoo.com by mail-asdoutdeli-p-cin-asso1-prod-sonicconsumer-svc-102 with HTTP; Wed, 14 Oct 2026 19:46:16 +0000
-Received: from dip31.lsn.bf1.yahoo.com ([67.195.177.40])
-          by hello (SMTP) with SMTP ID 34d3f16bea1af7245a4043044686d416;
-          Wed, 14 Oct 2026 19:46:10 +0000 (UTC)
-From: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K3WkrGqR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC0A1F000C4;
+	Wed, 14 Oct 2026 22:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792018162;
+	bh=a+VLM+36tmgQYYXNxE5+5p9zimFvNHmmZ//pOlOgDHc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=K3WkrGqRDGu1SLHDBhaoOJO1KXPkT0ihkApPQjJZcly8C6xERK0BynDVBNjY7pRCt
+	 ANWBXv6614dAbecH/DWkK8FAzTIjUSE0xd9M60HWBvQh0am9URSApjpmEsSSH/y20k
+	 bVC7/QMLOrXS0t19SEIF+d3UmIukVbdNMM5z0VXEdAikMeqs/8SrU4v05QNcrUBbLw
+	 Ud3yN9aC96wtpwydm+Mptwlv8dA8sX8XHRPsvbHRTJ684E4HglJUdySZVt36Gb7c6v
+	 CZecPdfLmxdiKvejeu/iwx7aT7xr9EZfRLtT0SUCdq/3PSRnYQCoXqNINFiiUQPTlI
+	 JKNtIwScIX8Fw==
+Date: Wed, 14 Oct 2026 23:49:17 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Olivier MOYSAN <olivier.moysan@foss.st.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	andriy.shevchenko@intel.com,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	m.abubakar365@yahoo.com
-Subject: Re: [PATCH v6 2/2] iio: pressure: add Sensirion SDP31 driver
-Date: Thu, 15 Oct 2026 00:45:44 +0500
-Message-ID: <20261014194544.2705-1-m.abubakar365@yahoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <asz4O0zceqa5lz8m@debian-BULLSEYE-live-builder-AMD64>
-References: <asz4O0zceqa5lz8m@debian-BULLSEYE-live-builder-AMD64>
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: add bindings for stm32 mdf
+ filter
+Message-ID: <20261014-unmade-sphinx-71cb25110d58@spud>
+References: <20261001145702.2628429-1-olivier.moysan@foss.st.com>
+ <20261001145702.2628429-2-olivier.moysan@foss.st.com>
+ <20261001-tribesman-gauze-862e1ef0cdd8@spud>
+ <bb8af256-5a77-4215-9eeb-fbcd0cae1829@foss.st.com>
+ <20261008-9e2a48675c1a4c28f2dfa73b@squawk>
+ <950f2801-a613-4f5a-a5a7-cb30101cf293@foss.st.com>
+ <20261009-8db882a9fa159f8759aa7327@squawk>
+ <2ba9235f-182e-4906-92e2-e35cf831d289@foss.st.com>
+ <20261014-untrimmed-partly-81a4a21db49c@spud>
+ <48e528a5-0c54-4778-bd29-b6f44ae95be7@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="MwIaf7mBDFu+e2ZQ"
+Content-Disposition: inline
+In-Reply-To: <48e528a5-0c54-4778-bd29-b6f44ae95be7@foss.st.com>
 
-On Mon, 12 Oct 2026 12:09:47 -0300
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+--MwIaf7mBDFu+e2ZQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > +	indio_dev->name = "sdp31";
-> Hmm, I'm not sure whether it is a big deal or not but, the hardcoded name might
-> cause confusion if the part connected is sdp32 or sdp33. [...]
-> The full disambiguation solution would probably be to read the product
-> identifier bits and match those against a table of supported devices.
+On Wed, Oct 14, 2026 at 06:51:45PM +0200, Olivier MOYSAN wrote:
+> On 10/14/26 17:15, Conor Dooley wrote:
+> > On Mon, Oct 12, 2026 at 02:56:04PM +0200, Olivier MOYSAN wrote:
+> > > On 10/9/26 21:12, Conor Dooley wrote:
+> > > > On Thu, Oct 08, 2026 at 06:37:26PM +0200, Olivier MOYSAN wrote:
+> > > > > On 10/8/26 12:11, Conor Dooley wrote:
+> > > > > > On Wed, Oct 07, 2026 at 11:01:28AM +0200, Olivier MOYSAN wrote:
+> > > > > > > On 10/1/26 20:32, Conor Dooley wrote:
+> > > > > > > >=20
+> > > > > > > > > +
+> > > > > > > > > +required:
+> > > > > > > > > +  - compatible
+> > > > > > > > > +  - reg
+> > > > > > > > > +  - ranges
+> > > > > > > > > +  - clocks
+> > > > > > > > > +  - clock-names
+> > > > > > > > > +  - clock-ranges
+> > > > > > > > > +  - "#address-cells"
+> > > > > > > > > +  - "#size-cells"
+> > > > > > > > > +
+> > > > > > > > > +additionalProperties: false
+> > > > > > > > > +
+> > > > > > > > > +patternProperties:
+> > > > > > > > > +  "^sitf@[0-9]+$":
+> > > > > > > > > +    type: object
+> > > > > > > > > +    description: Serial interface child node
+> > > > > > > >=20
+> > > > > > > > Why is this a child node at all?
+> > > > > > > > Probably not worth reviewing more without a link to the doc=
+s for this
+> > > > > > > > device so I can figure out what on earth is going on!
+> > > > > > > >=20
+> > > > > > >=20
+> > > > > > > The MDF is a digital filter for sigma-delta bitstreams, rathe=
+r than the
+> > > > > > > analog-to-digital converter itself.
+> > > > > > >=20
+> > > > > > > Here is the link to STM32MP25 reference manuel
+> > > > > > > https://www.st.com/resource/en/reference_manual/rm0457-stm32m=
+p2325xx-advanced-armbased-3264bit-mpus-stmicroelectronics.pdf
+> > > > > > > Chapter 45: Multi-function digital filter (MDF)
+> > > > > > >=20
+> > > > > > > On STMP32MP25 SoC, the MDF provides 8 serial interfaces (SITF=
+) and 8 digital
+> > > > > > > filters (DFLT) which can be connected through a multiplexer.
+> > > > > > >=20
+> > > > > > > Below is a schematic view of typical applications targeted by=
+ this
+> > > > > > > peripheral
+> > > > > > >=20
+> > > > > > >=20
+> > > > > > > Audio use case:
+> > > > > > >=20
+> > > > > > > 		mdf
+> > > > > > >                +-------------------------------------+
+> > > > > > > +------+    | +------+    +------+    +------+    |
+> > > > > > > | dmic | -> | | sitf | -> | mux  | -> | dflt | -- | -> audio =
+device
+> > > > > > > +------+    | +------+    +------+    +------+    |
+> > > > > > >                +-------------------------------------+
+> > > > > > >=20
+> > > > > > > For instance, in an audio use case the serial interface can b=
+e configured to
+> > > > > > > provide the clock to the digital microphone (cck0, cck1 or bo=
+th) at a common
+> > > > > > > predefined rate, and to retrieve the PDM samples.
+> > > > > > > The serial interface provides this samples to a digital filte=
+r, which
+> > > > > > > delivers PCM samples on its output.
+> > > > > > >=20
+> > > > > > >=20
+> > > > > > > Analog use case:
+> > > > > > >=20
+> > > > > > > 		mdf
+> > > > > > >                  +-------------------------------------+
+> > > > > > > +--------+    | +------+    +------+    +------+    |
+> > > > > > > | sd adc | -> | | sitf | -> | mux  | -> | dflt | -- | -> iio =
+device
+> > > > > > > +--------+    | +------+    +------+    +------+    |
+> > > > > > >                  +-------------------------------------+
+> > > > > >=20
+> > > > > >=20
+> > > > > > So, looking at the docs and a brief chat with Jonathan about th=
+is
+> > > > > > device, I believe you've got things backwards and this is actua=
+lly the backend,
+> > > > > > and the adc should be the one populating the io-backends proper=
+ty
+> > > > > > pointing to this device. You should have io-backend-cells, and =
+I assume
+> > > > > > that there should be a cell for the adc to select which dlft it=
+ is connected
+> > > > > > to.
+> > > > > >=20
+> > > > >=20
+> > > > > There have already been lengthy discussions in the past about a D=
+FSDM
+> > > > > peripheral on STM32MP1, which has features similar to those of th=
+e MDF and
+> > > > > similar implementation constraints. For the DFSDM, a solution bas=
+ed on an
+> > > > > IIO backend had been upstreamed. The MDF follows the same archite=
+cture. I
+> > > > > need to take a little time to dive back into this issue.
+> > > >=20
+> > > > One thing to note there is that you retrofitted the backends onto t=
+hat
+> > > > device, and the original design here is much older (it's a text
+> > > > binding).
+> > > >=20
+> > > >=20
+> > > > >=20
+> > > > > DFSDM sources:
+> > > > > drivers/iio/adc/stm32-dfsdm-adc.c
+> > > > > drivers/iio/adc/stm32-dfsdm-core.c
+> > > > >=20
+> > > > > Here is a sample of DFSDM DT
+> > > > >=20
+> > > > > sd_adc0: simple-sd-adc0 {
+> > > > > 	compatible =3D "sd-modulator";
+> > > > > 	#io-backend-cells =3D <0>;
+> > > > > 	vref-supply =3D <&v3v3>;
+> > > >=20
+> > > > Yeah, pretty sure this is wrong (backwards). The backend is the thi=
+ng
+> > > > that gets data from an ADC not the ADC.
+> > > >=20
+> > >=20
+> > > The backend framework was introduced to implement complex IIO aggrega=
+te
+> > > devices. The hardwares that were driving this need were analog device=
+ ad9467
+> > > and ST DFSDM.
+> > >=20
+> > > https://lore.kernel.org/linux-iio/20231204144925.4fe9922f@jic23-huawe=
+i/T/#m222f5175273b81dbfe40b7f0daffcdc67d6cb8ff
+> > >=20
+> > >  From drivers/iio/industrialio-backend.c:
+> > >=20
+> > > "The typical architecture is to have one device as the frontend devic=
+e which
+> > > can be "linked" against one or multiple backend devices. All the IIO =
+and
+> > > userspace interface is expected to be registers/managed by the fronte=
+nd
+> > > device which will callback into the backends when needed (to get/set =
+some
+> > > configuration that it does not directly control)."
+> > >=20
+> > >   *                                    ---------------------
+> > >   * ------------------                 | ------------
+> > >   * |     ADC        |-----------------| | ADC CORE |
+> > >   * | (Frontend/IIO) | Serial Data (eg | |(backend) |-------
+> > >   * |                |-----------------| ------------
+> > >   * ------------------                 ---------------------
+> > >=20
+> > > The MDF (or DFSDM) use case, follows this topology:
+> > > - The SD modulator (ADC core) registers in backend framework
+> > > - The MDF registers in IIO framework and exposes the IIO devices
+> > >    It also get configuration (ref voltage) from SD modulator, to comp=
+ute
+> > > scaling.
+> > >=20
+> > > I agree that if we consider the terms frontend and backend, the eleme=
+nts in
+> > > the data flow do not have the roles that we would naturally expect. H=
+owever,
+> > > if we consider the expected role of the elements using the iio-backend
+> > > framework, the usage seems coherent to me.
+> >=20
+> > I didn't even get as far as sd modulators or whatever, if I understand
+> > correctly the ADC inputs on this device are fed by the onboard ADC?
+> > (https://lore.kernel.org/linux-iio/20261006-adc-stm32mp25-v1-v4-0-d31ec=
+75aecf3@foss.st.com/)
+> > In that case, I can't really see how it makes sense for the primary iio
+> > device to change when data is fed back through the mdf or taken
+> > directly from the ADC itself, particularly given how that would affect
+> > the userspace interface.
+> >=20
+> > The "serial" side of this seems in a similar vein to the adi,axi-adc
+> > stuff, which when considered with the ADC inputs, really does give me
+> > the impression this is backwards.
+>=20
+> Some clarifications about the STM32MP25. This SoC does indeed provide ADC=
+s,
+> and these can be connected to the MDF via a dedicated interface. (but not
+> the serial interface).
+>=20
+> However, this use case is not supported by the driver. Only sigma-delta
+> modulators, external to the SoC and connected via the serial interface, a=
+re
+> supported. On ST boards, the only available SD modulators are digital
+> microphones.
 
-Hi Marcelo,
+Quite frankly, I don't care what you are choosing to implement in the
+driver or what your first-party boards support. The binding must
+represent the capabilities of the device, not what subset you deem
+relevant at this point in time. I'm not going to ack anything that does
+not consider all use cases for the device, especially since I the more I
+look the more I am convinced that this is the wrong way to model the
+relationship between devices and therefore intentionally ignoring a use case
+is likely to be problematic when someone does decide that they want to use
+that feature.
 
-Thanks for taking a look, and good point.
+> Anyway, if the internal ADC to MDF use case was supported, the issue would
+> be the same. The whole ADC + MDF set would be presented at the interface =
+as
+> an aggregated device, and the ADC data would not be directly accessible to
+> the user.
 
-I kept the name hardcoded because, after Conor's comment on v4, the SDP32
-and SDP33 use sensirion,sdp31 as a fallback compatible, the way the sdp510
-does with the sdp500 driver. You're right that it isn't quite the same
-situation, though: the sdp500 and sdp510 are identical, while the SDP3x
-parts differ in range. The readings are still correct, since the scale is
-read from the sensor at probe, but the name would always say "sdp31".
+Of course, that's what I was talking about when I said:
+| In that case, I can't really see how it makes sense for the primary iio
+| device to change when data is fed back through the mdf or taken
+| directly from the ADC itself, particularly given how that would affect
+| the userspace interface.
 
-Reading the product identifier at probe and taking the name from a small
-chip_info table would fix that, and I'm happy to do it in a v7. Jonathan,
-would you prefer that, or is the current approach fine?
+To me, in that ADC to MDF use case, the frontend portion of the aggregate
+device presented to userspace needs to be the ADC and the MDF needs to be
+the backend, since otherwise the ADC will simultaneously be frontend and
+backend, depending on which channel is considered. That makes no sense to me
+when the MDF can always be the backend, for all use cases and avoid that
+sort of problem entirely.
+I've heard no argument as to why the MDF cannot be a backend, just that you
+don't want to because the previous device didn't, but copying what was
+done before isn't a justification that bears weight if how it was done
+before isn't the way it should be done.
 
 Thanks,
-Muhammad
+Conor.
+
+--MwIaf7mBDFu+e2ZQ
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatAG7QAKCRB4tDGHoIJi
+0lf0APoDDmWLKbnSiCnHdRPcy+vbGQhQMeNRusw0qJ8Bot87jwD/dNYXNfEsRY9R
+URObrWxRpVhyloeQ5A2gSFp3xlKWNwk=
+=BK0a
+-----END PGP SIGNATURE-----
+
+--MwIaf7mBDFu+e2ZQ--
