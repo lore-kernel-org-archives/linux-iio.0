@@ -1,63 +1,64 @@
 Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D97654528D
-	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 14:17:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FE95452BC
+	for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 14:17:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791987435; cv=none; b=j57nyFdHuUyWw7asc3hzoeM+hj4+lSjrvJlsL5+++MO8AMhcyvd9ezDJYbwn9sKHfcgL7YkoKZ3KPzqkJpzY39pK0pNYctXEUDS04a3uGO4/LPImPhg7MyO1tMmOZEV2lv/DihmOy9PgT4Ftw3KdODzy3koayzt+cNx9+7H6RCQ=
+	t=1791987435; cv=none; b=B0daZx54NJQHXf7gh6iw7IYeTk9NhM2T9qKbxWXjdQOevh5kcY6p+MlIqnwzOiSlbSpaaip/+e3p0/h3nmq8pjnUPmmRvflxEKiwK/RDi5c82RSkSwPpnpiebY3QIKKiDbTffwa/9Uz5xjNX/fyVOqThaGCWIFrbgY6RwAbQU2E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791987435; c=relaxed/simple;
-	bh=12MRTeFclhweew1C1prLdAJcV8GatmH8datWPSP+CmM=;
+	bh=kDdNABE4gdDJtKdFbG4ZkDegZ19QpwxjwjKsqaDeB5A=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mCEvDT5b71WgTJDMOsaCkMkPP0iqtHCpcV9N2lWOKQKEo29aR4Q9vDOqswRm82ig9nyaBQPIUIfgE5HMZvS0rIngmDHbsdS3gTMk3L8gTJvd2CD0I15TfRtCcEXaCgn+TsaeK8a/6MRalUr3srb66IdGg6q32K05BuGZPzhyVV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=i12/Lt/H; arc=none smtp.client-ip=209.85.221.45
+	 MIME-Version; b=bZZUtMFQppRAsE9wFl2woAy84Q8MA71ATis+WgwMxqw4w9UBpqWuXxvCquvkKZ/lCq4SWO3TcaEeL0BwuhnQnjf/7XMweWzxQtLOPqB9o/4gsjN4s4D85zziHF0lku4H2tt/tOrXRXYSxLqM407IAS66dcHGp9kio+pFLUFWrMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E97ywg2D; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i12/Lt/H"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-48af27fe287so588080f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 07:17:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E97ywg2D"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-486e70f2457so271087f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 14 Oct 2026 07:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791987430; x=1792592230; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791987432; x=1792592232; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=uoIt5WxqupAhldD1CTOZ4gXFLC4tvJghYLwden4T97c=;
-        b=i12/Lt/Hw+alTi1MRX7ctEAeayEu1oKWeIBShiqhVtK7jFDCDLM35ab3qJ95hTQZUd
-         B5yz6MfB6sp8Z09DRCs3IPSD97KNlmC9o5fIrUsEBcb4e+E4v5iG6qGV/EtO241Ndxhv
-         JmoLdQKXmfs+pViEd1ROrhpN5XaHxQN2iGqv5aHoD3nhVQOe5xAt1k5+s41lGABR0djH
-         X1a+TF592mNtsNPmaRbzUv/H15IfOG7rYx4y617evukY21i2Abc4mUZsQYyeuRTIY+pZ
-         IJSh4JgNFFzYs9sQojSk/HnzYGyVrAkl1cx6fO2d/dagkaTgo2UnG4Qi5p6hPc0ncsdK
-         WUCA==
+        bh=Es68rB0owF7Uefi5zfeNthuy/yPE6eY6J90ps29yKtA=;
+        b=E97ywg2DaIp7mW8L67g2XSk4hx+oYYWfxw180BnNBkktgT7QA3km+w/vBtE7QtBKpv
+         DWDWxrnOcZDL83sPG2AILLXFONFufcJVJ6YjFucoXiCLdHSxzLQzWxRFeVOE4gfqaRmT
+         zCX1xd159OfIroz/5U3qV7dCgu/ZP5YfhThx10ePwjp+CrUjtLH/q3GqgRA4TKmcWPuI
+         XaR8TEcHARnr2euUX6QkSa6YxSk9AgtEnwiFOjvDPr2y8HdWr9E+pu7zIGh0sGHbfWOk
+         9mXIXVoS+O7zRrZrIfv7+aMHDK+0Cv7pXttA4FccM+gID/URJrNEytTM5WNuc7SYn+sX
+         JlYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791987430; x=1792592230;
+        d=1e100.net; s=20260707; t=1791987432; x=1792592232;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=uoIt5WxqupAhldD1CTOZ4gXFLC4tvJghYLwden4T97c=;
-        b=Tr9EUQReGNcitCnRJVjO/BTK6tj65l6e8Lap59FLqxA9qUiWqjpsjbm20GiMxyjbq6
-         vsBRB2f+DHAmE7lSlc9I0F+v2j5r1GhQA7tn4mcFM/VBgOARy/yVxnYssGYjaKDd8IuS
-         aELRTWcoVmxBJikY5J82NJu23CzvCzUqRHEU2nPfv1iUfHZjPVwqzyEX4DNbYnrMP6my
-         KDLIDAosjTIxbfrXDxhZmcwt3qWbxao2xurT5Es02RWFLPW0++WMv74Hpjp8F6XlH5oK
-         78MaHE4iVgQ7aeBL0t7fJl2oIrFhydTkqHdNJGJnoC47tMFKta8GZf4Hn2uPruqkmlli
-         Ww1g==
-X-Forwarded-Encrypted: i=1; AKwUvBxE+qw0ui8gJWLZjCZvX+D6M3MP/lb7qqi7DdoPS6Rf8lnrjgGFNe5tdqtZgakX8WTYY/QESbiHUFs=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIUsG2sIrg5tGcJudcoVyY5l5UNLjZVYerYHfMOw6SHS1JX6xxF
-	MoWws2sTs/mz+h0o0ShszvNIhMWv0jOBZ08KrDhCo/9KKxixr+AT2U99
-X-Gm-Gg: AYBFou318TRc8NF62tQtfKSUao418yzGY4xDLqEBTA3nDgpxA+vCbgu1ZBPqm0PIicv
-	YvKa181WyrMd63Cigx8V6qn2ggkA7UkGcxxFWsDh9Xb6I4h677SY2ojtSHhtUfz9Zns+E28HmeE
-	Wm5yBvqgC6GA8EKMLJp7uySi0ezWzj/zTAGUDeEKYXpnhvl0B3lPNd8p1hmOQJDWk9Y+O+eyoEW
-	Nfu420RX+9ghkp7p4R8ZW25O87qhFGhimpmZtxfsvgsUCyqKb8/Pl9ih9Ubg8denKI263HpbmY9
-	7AiidxfT0mstl1SwRuB+Gku6pby+OzzNI7QdP34kXFfKcQTaT/5IiVkQ+n4wjOoBH1PzzhhunAF
-	007mBVAxJJofNNEzs0vrHspj134/n0SCW1Soq++q5y5S9JvsS+z7p6TN4F76CM04kpLpWO0xZN8
-	sLVthVP+c7xqT1p8qcUMMnk1BGDrBbVgRNZ6ZYO0oQuOM6PQB+2RFZurE2uls2qjkJB/o=
-X-Received: by 2002:a05:6000:41cd:b0:48d:f14a:9183 with SMTP id ffacd0b85a97d-48df14a934fmr841460f8f.15.1791987430359;
-        Wed, 14 Oct 2026 07:17:10 -0700 (PDT)
+        bh=Es68rB0owF7Uefi5zfeNthuy/yPE6eY6J90ps29yKtA=;
+        b=XppUvwLQ+G6EO9AO8PUK/V7c2S01xPL0pRl2fJuecDhfMHnyMp4MnYvqFPm4h184U0
+         /NsWgspL6gpsynF96t6Ou/kmkWQRgo+AEm4WAXkxPWhFFzHX2MNGA4SrdjiZOUET60om
+         DVOMBio846BUdgz9u0UAW2VauVC0m2Hm05yw0zY6zw0ac4lXbNFIYHstf2sOgnJJNqMJ
+         bFAqUMjoEQ/Rs8A0WgW98VNdvSPxb9GwTa7WNVxl1JXTSOgrBUfSyzOjP68eXDJF9Lol
+         75wUMtP5nNzVAp4yah1kYkFjJkSp3JHUvLfz+7HCTP3mEVdV0uZJwNF4834ks/JLwfL8
+         uljA==
+X-Forwarded-Encrypted: i=1; AKwUvBxNsmYpofBqfk/PQk9F6TM1QK5AERnVcnhBPJR0ofh5JkMstqm8o4naqPEspDVDGQj/gJMMN8x6BHs=@vger.kernel.org
+X-Gm-Message-State: AFq9FYI7ae+bItffhgfhnge/OjstvFpEmst/umUSQSGP2m0Gixgtefaa
+	br3PN2s4/tTUKAwUN1U2lylLEFeKIFaRB8Klya9ndzT25+dN/J0V50Bv
+X-Gm-Gg: AYBFou3TprilMHYUN8Qo7Usou8tWQQuUQ14yijPjxrWy9+sbvDRuQyCuhsC13UTVDxk
+	E0OqfIlvko8ZqLbA6mJ8gh+xPNPcwUC6VgA40htV55BlAgqI3oz2wNo9rzVrinnw++P43p6CC4C
+	x2Fzq2bYANRASoy1GrZKMOEflbKcTAXOkgCz1CahGmolIP0cw3PVWxzvxKnRGVITuKlVli08OEt
+	PRKevOKapkuihqwUWZwaHwiVb0KlRoHmgpl4pXaGIWFWhlz0cW55b0eKGzvnWX1BZQcf3YQliDM
+	DTDkDnS6cnDaVkDan739XRN5H68xGgVpMq7mpCmKt92fQQsqj8GuTK9TXMCCPSZlxR08FMzIQuD
+	NccoKkzxnoJpudpPFpULjyXPmkWO21tFZ16F6zm9wboMWeo37iJjcwWE2oDv+OnAJew4+T0aTUL
+	XIRj9SjjIQR5ZUjHlUK/atkFIZ5gxNLtV+fgD+vJLp1cTELifbotMVPh+cD3oQjkPzuBkpB1ZZe
+	9O2aQ==
+X-Received: by 2002:adf:ed8d:0:b0:48a:f8fb:cd49 with SMTP id ffacd0b85a97d-48dba9c89b5mr21497028f8f.22.1791987431768;
+        Wed, 14 Oct 2026 07:17:11 -0700 (PDT)
 Received: from localhost ([2a02:8308:b092:fd00:d20:6232:49ca:4be9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0bc5e0asm12209106f8f.50.2026.10.14.07.17.08
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0967affsm10999278f8f.1.2026.10.14.07.17.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2026 07:17:09 -0700 (PDT)
+        Wed, 14 Oct 2026 07:17:11 -0700 (PDT)
 From: Jan Remes <ciakval@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -68,9 +69,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-kernel@vger.kernel.org,
 	martin.triska@mycroftmind.com,
 	Jan Remes <jan.remes@mycroftmind.com>
-Subject: [PATCH v2 3/4] iio: light: tsl2591: report saturation
-Date: Wed, 14 Oct 2026 16:16:49 +0200
-Message-ID: <20261014141650.259929-4-ciakval@gmail.com>
+Subject: [PATCH v2 4/4] iio: light: tsl2591: improve lux calculation precision
+Date: Wed, 14 Oct 2026 16:16:50 +0200
+Message-ID: <20261014141650.259929-5-ciakval@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261014141650.259929-1-ciakval@gmail.com>
 References: <20261014141650.259929-1-ciakval@gmail.com>
@@ -84,60 +85,93 @@ Content-Transfer-Encoding: 8bit
 
 From: Jan Remes <jan.remes@mycroftmind.com>
 
-When the TSL2591 sensors is saturated, it reports its maximum value
-(specific one for 100ms integration time, UINT16_MAX otherwise).
+The lux calculation computes the ratio CH1 / CH0 as a truncated integer
+(CH1 * 1000 / CH0) before using it. When CH1 is close to CH0, the
+truncation makes the result off by up to ~35%, e.g. CH0 = 56097,
+CH1 = 55973 at LOW gain and 100ms gives 1.517 lux instead of 1.118 lux.
 
-When either raw channel becomes saturated, return -EOVERFLOW (like
-as73211 and si1133 do) instead of calculating an invalid number when
-reading 'in_illuminance_input'. Keep existing behavior on raw channels.
+The formula (CH0 - CH1) * (1 - CH1 / CH0) / CPL is equal to
 
-Note: Datasheet versions differ in the saturation number for 100ms. Old
-2013 datasheet lists it as 37888, newer versions say 36863. Use the new
-value although the hardware can report up to 37888.
+   (CH0 - CH1)^2 * DF / (CH0 * ATIME_ms * AGAIN)
 
+which needs no intermediate ratio. Compute it like that, with a single
+division at the end.
+
+Also report the result in micro-lux instead of milli-lux. At MAX gain
+and 600ms one count is well below 1 mlx, so the milli-lux resolution
+throws away information. The numerator still fits into u64.
+
+Assisted-by: LLM
 Signed-off-by: Jan Remes <jan.remes@mycroftmind.com>
 ---
- drivers/iio/light/tsl2591.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/iio/light/tsl2591.c | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index 8cfce720efb9..e3092ae77a11 100644
+index e3092ae77a11..fce8cea08201 100644
 --- a/drivers/iio/light/tsl2591.c
 +++ b/drivers/iio/light/tsl2591.c
-@@ -139,7 +139,9 @@
+@@ -21,6 +21,7 @@
+ #include <linux/mutex.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/sysfs.h>
++#include <linux/units.h>
  
- /* TSL2591 maximum values */
- #define TSL2591_MAX_ALS_INT_TIME_MS    600
-+/* Maximal values per datasheet [v3-00] 2023-Feb-08 */
- #define TSL2591_ALS_MAX_VALUE	       (BIT(16) - 1)
-+#define TSL2591_ALS_MAX_VALUE_100MS    36863
+ #include <linux/unaligned.h>
  
- /*
-  * LUX calculations;
-@@ -379,7 +381,7 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 	struct i2c_client *client = chip->client;
+@@ -362,12 +363,12 @@ static int tsl2591_wait_adc_complete(struct tsl2591_chip *chip)
+  * Counts Per Lux (CPL) = (ATIME_ms * AGAIN) / LUX DF
+  * lux = ((C0DATA - C1DATA) * (1 - (C1DATA / C0DATA))) / CPL
+  *
+- * Scale values to get more representative value of lux i.e.
+- * lux = ((C0DATA - C1DATA) * (1000 - ((C1DATA * 1000) / C0DATA))) / CPL
++ * Since (C0DATA - C1DATA) * (1 - (C1DATA / C0DATA)) equals
++ * (C0DATA - C1DATA)^2 / C0DATA, this is computed in micro-lux as
++ * lux = ((C0DATA - C1DATA)^2 * LUX DF * 10^6) / (C0DATA * ATIME_ms * AGAIN)
+  *
+  * CPL is not computed on its own: at 1x gain it is below 1 for integration
+- * times under 500 ms, so the division by LUX DF is folded into the final
+- * division instead.
++ * times under 500 ms, so all divisions are done at the end.
+  *
+  * Channel 0 = IR + Visible
+  * Channel 1 = IR only
+@@ -382,8 +383,8 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
  	u8 als_data[TSL2591_NUM_DATA_REGISTERS];
  	int int_time_fval, gain_multi;
--	u16 als_ch0, als_ch1;
-+	u16 als_ch0, als_ch1, als_max;
+ 	u16 als_ch0, als_ch1, als_max;
++	u32 diff, rem;
  	u64 lux;
- 	u32 rem;
+-	u32 rem;
  	int ret;
-@@ -417,6 +419,14 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 			return gain_multi;
- 		}
  
-+		/* Check for overflow; special case for 100ms integration time */
-+		als_max = TSL2591_ALS_MAX_VALUE;
-+		if (settings->als_int_time == TSL2591_CTRL_ALS_INTEGRATION_100MS)
-+			als_max = TSL2591_ALS_MAX_VALUE_100MS;
-+
-+		if (als_ch0 >= als_max || als_ch1 >= als_max)
-+			return -EOVERFLOW;
-+
- 		/* No visible light, this also catches C0DATA == 0 */
- 		if (als_ch0 <= als_ch1) {
- 			*val = 0;
+ 	ret = tsl2591_wait_adc_complete(chip);
+@@ -436,19 +437,15 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
+ 
+ 		int_time_fval = TSL2591_FVAL_TO_MSEC(settings->als_int_time);
+ 
+-		/* Calculate lux value */
+-		lux = (u64)(als_ch0 - als_ch1) *
+-		      (1000 - ((als_ch1 * 1000) / als_ch0)) *
+-		      TSL2591_LUX_COEFFICIENT;
+-		lux = div_u64(lux, int_time_fval * gain_multi);
++		/* Calculate lux value in micro-lux */
++		diff = als_ch0 - als_ch1;
++		lux = (u64)diff * diff * TSL2591_LUX_COEFFICIENT * MICRO;
++		lux = div64_u64(lux, (u64)als_ch0 * int_time_fval * gain_multi);
+ 
+ 		dev_dbg(&client->dev, "Raw lux calculation: %llu\n", lux);
+ 
+-		/* Divide by 1000 to get real lux value before scaling */
+-		*val = div_u64_rem(lux, 1000, &rem);
+-
+-		/* Get the decimal part of lux reading */
+-		*val2 = rem * 1000;
++		*val = div_u64_rem(lux, MICRO, &rem);
++		*val2 = rem;
+ 
+ 		break;
+ 	default:
 -- 
 2.53.0
 
