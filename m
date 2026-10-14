@@ -1,56 +1,55 @@
-Received: from mail-106112.protonmail.ch (mail-106112.protonmail.ch [79.135.106.112])
+Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 887D834EF07;
-	Wed, 14 Oct 2026 06:26:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548A3371CE3;
+	Wed, 14 Oct 2026 06:35:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791959170; cv=none; b=dXKNj/G4pO1FB6CzlMvy3shybZFWVeVWOlcpRI5h7WVQlNln99Ma65Eb06RjRmyCyKeTkRgUc/ElcMxrrrQtuC6cntnKvSEEMMfTR006JwqJsOwJa3a1X34ZdMuF4gtbMP77IXuSFRLBmdtfKZoq826htoRtYMuQXRuMXYcRGJg=
+	t=1791959707; cv=none; b=HS6J9x3BGwCQj2aPo0ZM3GSsxsCDP/jHyNB9Fsb7/gGyZxP8JKD7mYnk1mpg0antuLi5nmTNa5kkvMA3LKE4GGgVoo0kwk5RQpk9G4YO1TFbyJLiqfosordbk0KXM/v7aj8c3NOT8QytZl6uMlT4wQAdD8L1e3Jf2uRt/IgQmPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791959170; c=relaxed/simple;
-	bh=AOdH/NtuZ7x8y7DtXRJfW6mTAkgGYDqaCZ1dUmXuEjw=;
+	s=arc-20240116; t=1791959707; c=relaxed/simple;
+	bh=BQgNttVkb16QeUcTFW0k6MEASQtNtJZKCmUafCBWVqA=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JE7IpWb5u75T72XXv95silKSZbzFN6c+XTYtIy8+MdkWeOHcK8onueKw/pCiMY5rKV7p32JbCfO2BuQLpgCzJwJR4jQ6DtXN89WesVcgm8cuFOFq+xLLgWxEsCgQMAXHDMav3DdK1P0I8+HvGcfRqjNMBTCWvMqz4JL+LrMRO8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=RCnt3iiX; arc=none smtp.client-ip=79.135.106.112
+	 MIME-Version:Content-Type; b=NujXHnnKgc912kTNiUlPRfxz8kJUw8InkbwELiOjUDUuaewSb7DIipFJhEl0AM6gTUDVGd9ZlPsOt9USSOkOfFgJ2ha4ofg1RFlUo6/xIPvyPV18/4enxpbvgbiiOUEsZbD1IMROlOJ9hmKhtc/OxegomU60FZvJPnylrSMsC34=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=qfwYSl1G; arc=none smtp.client-ip=185.70.43.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="RCnt3iiX"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="qfwYSl1G"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail; t=1791959165; x=1792218365;
-	bh=jD2XxFEplXV76tZsHTrcQNbZhqqu40Gf29di8WhQIGA=;
+	s=protonmail; t=1791959702; x=1792218902;
+	bh=BQgNttVkb16QeUcTFW0k6MEASQtNtJZKCmUafCBWVqA=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=RCnt3iiXjVOA/QmNhoDMEnaYhWbTGZYUqsSlknJWb2BUFtA7GIajfbKewS21/JT9z
-	 +45PB/J9yEfcskhTLK0k+bZNm62rQ0L6yZr+QjpmuDtWCFC9Z6XUzlGlWVH9vppvL0
-	 etJenDqSrVpFaytJqe3BPjETUz5x8PVHHL26wqntgdNgdGbP1hR9huav8YqVAzuHmi
-	 7kcEIle+sVeT+abWU3T1COJ6FPsmOFbgYpYBTutIYHnO5vqMTu1Ci2HpdedLP77W0m
-	 0p8SeikFj2U9Tl4mHZEUOZZ127CsNUob75Q4yE3QGj1NVC+D02He18Bs7AqcrUqPd5
-	 4+RIpweQ5NwHw==
-X-Pm-Submission-Id: 4j4Ln666YWz2ScPW
+	b=qfwYSl1GtV1n5o7XbrnvE7TpFiDXxV4hA1rFPf295HEVxw1EIjyw51XRlTTQnLL4r
+	 UhXVVOKfl2qrBVyJEEeHvKB1cpuBO51zvG6r2dRMKCz5nF2rdERXUN7dUjP/lQMM9P
+	 4kYGhRw2lFOxuomVtvKpL7Gj09fW5DkO63LYNRfMqdlbgqX0d4CuxYojSwv2bTTEc8
+	 dBjhrPGYQHjD2ruXHIyGXZoluTWQGnM9wmSTjguAnAjZzQ8c6gG9+6U42iz1jbPHXh
+	 f7HHuW/+T9ihMBteZTL1SIUwWSVtBClMD1bFiyVi/b9SBGcNpior+yP2jlNQ6gWKbs
+	 R8rsOAeORCriA==
+X-Pm-Submission-Id: 4j4LzS2MgTz1DDXY
 From: Esben Haabendal <esben@geanix.com>
 To: "Jonathan Cameron" <jic23@kernel.org>
-Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>,  "Lars-Peter Clausen"
- <lars@metafoo.de>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
-  "Martin Kepplinger" <martink@posteo.de>,  "Sean Nyekjaer"
- <sean@geanix.com>,  "David Lechner" <dlechner@baylibre.com>,  Nuno
- =?utf-8?Q?S=C3=A1?=
- <nuno.sa@analog.com>,  "Andy Shevchenko" <andy@kernel.org>,  "Martin
- Kepplinger" <martin.kepplinger@theobroma-systems.com>,  "Christoph
- Muellner" <christoph.muellner@theobroma-systems.com>,
-  <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v10 10/10] iio: accel: mma8452: Support interrupt sharing
-In-Reply-To: <20261011134146.3ae020a1@jic23-hlaptop>
+Cc: "Lars-Peter Clausen" <lars@metafoo.de>,  "Rob Herring"
+ <robh@kernel.org>,  "Krzysztof Kozlowski" <krzk+dt@kernel.org>,  "Conor
+ Dooley" <conor+dt@kernel.org>,  "Martin Kepplinger" <martink@posteo.de>,
+  "Sean Nyekjaer" <sean@geanix.com>,  "David Lechner"
+ <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+  "Andy Shevchenko"
+ <andy@kernel.org>,  "Martin Kepplinger"
+ <martin.kepplinger@theobroma-systems.com>,  "Christoph Muellner"
+ <christoph.muellner@theobroma-systems.com>,  <linux-iio@vger.kernel.org>,
+  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>,
+  <stable@vger.kernel.org>,  "Joshua Crofts" <joshua.crofts1@gmail.com>,
+  "Andy Shevchenko" <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v10 00/10] io: accel: mma8452: Allow open drain
+ interrupt pin configuration
+In-Reply-To: <20261011140002.6e9d68d3@jic23-hlaptop>
 References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
-	<20260928-mma8452-open-drain-v10-10-b906fb408386@geanix.com>
-	<CNQ6_DVFGgC82FTU2GwM8v4KY2d4DUOo_b1XhhyOnysR6eWGJEsgFHlNLylYvkM6dWR3mhcGGFNDuN7qwCO1YA==@protonmail.internalid>
-	<aroytGH8u-gGFYvq@ashevche-desk.local> <87mrt1vfz6.fsf@geanix.com>
-	<H9hd6S9zHydf2p6KWFq_NaMFE_pMpnWLFIWe_Z5Hfq5J9ne1na8rtgAz3OEeAQjOsNj8haXLOsiKWQbH2ncP8g==@protonmail.internalid>
-	<20261011134146.3ae020a1@jic23-hlaptop>
-Date: Wed, 14 Oct 2026 08:26:02 +0200
-Message-ID: <877bjkn6h1.fsf@geanix.com>
+	<dAyKULwunTSyJswxrFIpB8ECEAybMkvW-mArZ8lYOcKRTbekTIUNXyjnN0kqvequ9qJOPuBSNDdxkJijqhL5Bw==@protonmail.internalid>
+	<20261011140002.6e9d68d3@jic23-hlaptop>
+Date: Wed, 14 Oct 2026 08:34:59 +0200
+Message-ID: <8733u8n624.fsf@geanix.com>
 User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -62,142 +61,34 @@ Content-Type: text/plain
 
 "Jonathan Cameron" <jic23@kernel.org> writes:
 
-> On Mon, 28 Sep 2026 12:15:57 +0200
+> On Mon, 28 Sep 2026 10:26:16 +0200
 > Esben Haabendal <esben@geanix.com> wrote:
 >
->> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
+>> Extend the mma8452 driver with support for configuration of the
+>> interrupt line in open-drain mode, which is needed for hardware designs
+>> where the interrupt line is shared with other chips.
 >>
->> > On Mon, Sep 28, 2026 at 10:26:26AM +0200, Esben Haabendal wrote:
->> >> Adding support for sharing interrupt line with other device requires the
->> >> interrupt handler to handle runtime PM suspension properly, ignoring the
->> >> irq if the device is suspended (maybe even off). And while at it, we use
->> >> the PM reference to ensure we do not get suspended while processing an irq.
->> >>
->> >> In order to prevent the chip from raising irq while suspended (that is when
->> >> using fixed regulator, where suspend just means setting the device in
->> >> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
->> >> then restores the value again when resuming.
->> >>
->> >> The scoped_guard in mma8452_runtime_suspend() is changed to a plain
->> >> mutex_lock() instead, both to prevent mixing guards and goto, but also to
->> >> ensure that we stay in STANDBY mode while writing to CTRL_REG4 and all the
->> >> way up to disabling the device as much as possible.
->> >>
->> >> With that in place, it is safe to add the IRQF_SHARED flag.
->> >>
->> >> Keep in mind that the device by default is using push-pull for the irq pin,
->> >> which might require additional hardware design to allow interrupt sharing.
->> >
->> > ...
->> >
->> >> +	pm_status = pm_runtime_get_if_active(dev);
->> >> +	if (pm_status == 0)
->> >> +		/* device is powered down */
->> >> +		return IRQ_NONE;
->> >
->> >> +	if (IS_ENABLED(CONFIG_PM) && pm_status < 0)
->> >> +		/* runtime PM was disabled, possibly suspending */
->> >> +		return IRQ_HANDLED;
->> >
->> > This is very interesting part. I bet this will be the first driver using this.
->> > A big question "why?"
+>> Adding drive-open-drain property to mma8452 device-tree node for such
+>> designs to enable switching pin configuration to open-drain mode.
 >>
->> Because as I understood it, I needed to add this for the patch to be
->> accepted [1]. It is definitely possible that I have misunderstood that.
->>
->> The technical reason I believe is that during system suspend,
->> pm_runtime_force_suspend() disabled runtime PM, and if a shared
->> interrupt durings this, pm_runtime_get_if_active returns -EINVAL, and we
->> could therefore end up doing I2C reads on unpowered hardware.
->>
->> Per that reasoning, we probably should be doing this in other drivers as
->> well.
+>> Signed-off-by: Esben Haabendal <esben@geanix.com>
 >
-> I suspect that the combination of a shared interrupt and runtime pm
-> is moderately rare and even when it is there are drivers doing their
-> own tracking to avoid this sort of corner case.
+> Applied patches 1-9 to the testing branch of iio.git.
+> As mentioned, I think 10 needs a bit more review time.
 >
-> There are a lot of these nasty corners in runtime pm :(
+> We may loose sashiko coverage. In theory you can tell it about
+> dependencies, but I'm not sure how that works with a temporary
+> testing branch.
 >
-> This seems like a reasonable solution to me, but given
-> all the discussion on this version was around this patch I'm going
-> to pick up 1-9 to but ask you to send a new version of this one to
-> make sure we get maximum eyes on it.  Please include the PM maintainer
-> as well in the +CC in case we have this all wrong!
+> There are some notes on using message-id: tags in the cover
+> letter in https://b4.docs.kernel.org/en/latest/contributor/prep.html
+>
+> I gather from the LPC session last week that sashiko should work
+> with those now.
 
-Okay. Anything that I should change before sending a new version? And
-should I reset to version 1, or should it be v11?
-
-/Esben
-
->
->>
->> >> +	/*
->> >> +	 * pm_status is now 1 or -EINVAL (with CONFIG_PM not enabled). If
->> >> +	 * pm_status==1, runtime PM is enabled and device is RPM_ACTIVE. If
->> >> +	 * pm_status==-EINVAL, runtime PM is build-time disabled (i.e. CONFIG_PM
->> >> +	 * not enabled), and we can/must assume device is active.
->> >> +	 */
->> >> +
->> >>  	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
->> >>  	if (src < 0)
->> >> -		return IRQ_NONE;
->> >> +		goto out_runtime_put;
->> >>
->> >>  	if (!(src & (data->chip_info->enabled_events | MMA8452_INT_DRDY)))
->> >> -		return IRQ_NONE;
->> >> +		goto out_runtime_put;
->> >>
->> >>  	if (src & MMA8452_INT_DRDY) {
->> >>  		iio_trigger_poll_nested(indio_dev->trig);
->> >> @@ -1120,6 +1139,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->> >>  		ret = IRQ_HANDLED;
->> >>  	}
->> >>
->> >> +out_runtime_put:
->> >> +	if (pm_status > 0)
->> >> +		pm_runtime_put_autosuspend(dev);
->> >> +
->> >>  	return ret;
->> >>  }
->> >
->> > ...
->> >
->> >> +	pm_runtime_enable(dev);
->> >> +	pm_runtime_set_autosuspend_delay(dev, MMA8452_AUTO_SUSPEND_DELAY_MS);
->> >> +	pm_runtime_use_autosuspend(dev);
->> >
->> > I don't see the respective _dont_use_autosuspend() call anywhere.
->>
->> Ah. I was not aware it was attached to a usage counter as well. I will
->> add a pm_runtime_dont_use_autosuspend() to the runtime_suspend: error handling.
->>
->> > ...
->> >
->> > I am wondering how many of the above possible scenarios you were able
->> > to test.
->>
->> Not enough. I haven't done any additional instrumentation to cause all
->> the various error conditions that is handled here in _probe().
->>
->> > ...
->> >
->> > P.S.  I bet you can now make a presentation "PM runtime in Linux and
->> > why it is so hard."
->>
->> LOL. I am getting there, yes. I have definitely learned a lot about how
->> runtime PM works. Especially since I was mostly starting from scratch on
->> that.
->>
->> But i fear it would easily end up being quite a chaotic presentation :)
->
-> :)
->
-> I've vaguely be wondering if we need a bunch of self test + examples
-> to poke all the more crazy corners of runtime pm.  That way we can
-> at least be sure that if we do finally understand it we aren't going
-> to get any regressions.
-
-Not a bad idea :)
+Cool. But in this case, I guess using message-id or change-id would
+be wrong, as it would declare the entire series as a dependency, which
+thereby includes the patch that is being sent. But Maybe I could use
+patch-id to declare dependency on patches 1-9/10.
 
 /Esben
