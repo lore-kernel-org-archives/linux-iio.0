@@ -1,234 +1,158 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6C14548554;
-	Thu, 15 Oct 2026 16:49:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54EC857F723;
+	Thu, 15 Oct 2026 18:16:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792082996; cv=none; b=cBsB4KsviuvTy+AUsAUa5Ez0Hj1QA4G9L9TZ05Wf4Pz5nylK6fz3pEjXBWMzPvnx7Yx3nrfqu/iI3ELhw1DtbxEYvkKj+LHLZqvMDBAilZ0wMJNALE+nBIWnggj8im0oBX3KihTXZGlHQ0W5Je9xlfv/5YQBdVq2OOeLFq2H3E4=
+	t=1792088217; cv=none; b=HkGt5ccTq5fj/FavvykTgf+GAre1mb6jomzKhL4PcKaDAhTZjiFQHs32H7srHtbcMZhJqtJuGqufU1LuaBmNqgXoJ39190SXYK7W4+sWNNdY0UGzXi2siA9KK1hgEEvKO79Y3m+YPZPj6OPDNfCks7oZTkMfciMDOfupkg3sdOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792082996; c=relaxed/simple;
-	bh=UELqeIQMLribOGV8awN5nOAA+BGfrVwbtmkojR88hVg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DokMXHAy3UGLycNejRy9EAZgw4FFSj/XJAabQFyAjSuYs9WInEpBFygfuWuddvrQuxDk6R1stlrED/JODI57dGVmFYfFLKXaXlSRPqZ7QUb0A4htt4y/R7TbmsAD/H1okCz4HMaQEuTxr96qp4WNmANdIhr4T+tyBh+xC5rrqos=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wtajyma8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1792088217; c=relaxed/simple;
+	bh=zcv7Jb3qXXXVu6PeodO7ckwHnhG6wgII4999lN/9D6U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hvqWkl/kVd8rCgZehb9Xh2y2iIz35OhhvQarl73wumoPvl1+9kbx5i5CGoe6haJwsOyrx2NguTr6nVhUxfXrMh2NlzJFJlLJzLKr7wg4Qi20fwSYx09PPnOFHLVBQ7/2Sz/W1g4KzsFQOKf1tuiOgEAb8va1fh9y8Vd0xOR5ScI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LfaSt7Lz; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wtajyma8"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CBF4C2BCF4;
-	Thu, 15 Oct 2026 16:49:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1792082995;
-	bh=UELqeIQMLribOGV8awN5nOAA+BGfrVwbtmkojR88hVg=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Wtajyma8TMGo9W5vs/e5qSE7bBmoFhyHR51f8akR+z3Jx52pcY42YYTa7nAM7115z
-	 Xyjg7ibqA1hZvhgpHCZO1LCVV/khOH2D74TfMtRretAZboZ0k+9QYMRUoYG06cPixp
-	 m70udQNaOPd9z1NyFO9/3imxnJB1M9PyTnxxEUq84rZ8ybtk94y61o2i4R9Y1MJ3jE
-	 ekPNUfxNWl8h+Yk5UfqYUxYfo7MUlUkG9AlQFTsg4XOBMqoTWwouN4Wi/h2PcA4MSU
-	 C9zxcZl/jWJiuctchSRUG8NABqopAIGSsc0369oz0fNavAEyH6Xpgo2O9kOrE5Bqma
-	 E7J2Ihtfw0rUw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A81FCC6B39;
-	Thu, 15 Oct 2026 16:49:55 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 15 Oct 2026 13:49:50 -0300
-Subject: [PATCH 10/10] docs: iio: ad9910: document DRCTL pin control
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LfaSt7Lz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792088210; x=1823624210;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zcv7Jb3qXXXVu6PeodO7ckwHnhG6wgII4999lN/9D6U=;
+  b=LfaSt7LzL5sQ5tgYAgB1tT9bS1WLbSvkpSCze2JQxJH6cT697N27rWql
+   ciliwOTkuq29FGzn8yawCuM9g82+vNVptkAZzl/kA8GKW3pS2xRvVpqlL
+   ao+TCY6Nn1cRijqakrZTiyP7z71tTT+bDROu3xIzTUkD3wfh3rj7uYIb9
+   NPzufIaLSG0lKlsd6NZcKL+33vhkqFwsjQnAk7BM8iA/w5/fYBH6jDvn7
+   G5mNaRjeUlRw/7ysmLXcmJHhkjWoXXZgtHlcDDh7kohamlhDGKn3tUKSL
+   oSh1Yj6KUb7GwYiR2fjUDcVEFML2BkMfAzRGUPkZOL4pNxX36Jp1SGj0L
+   w==;
+X-CSE-ConnectionGUID: SjNtqV0aRd6KG+QEtm3sWA==
+X-CSE-MsgGUID: nWqXYpZbRjuDhE7h2eFvhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="770908"
+X-IronPort-AV: E=Sophos;i="6.27,160,1787036400"; 
+   d="scan'208";a="770908"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 11:16:49 -0700
+X-CSE-ConnectionGUID: PRSsn64xSACHQtN2pci4nA==
+X-CSE-MsgGUID: +Sc5oHvATIabm18d/8RI5g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,160,1787036400"; 
+   d="scan'208";a="1733644"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 11:16:46 -0700
+Date: Thu, 15 Oct 2026 21:16:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
+	Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Linus Walleij <linusw@kernel.org>
+Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add gpio support
+Message-ID: <atEYjMpwn0yKFBk3@ashevche-desk.local>
+References: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
+ <20261009-iio-adc-ti-ads112c14-gpio-v2-2-3231a795fa63@baylibre.com>
+ <CAMRc=Mfn7+uQYvLjGLxU9wMOnRwx5pyPgaLp6oNx+ZcFXyXL=A@mail.gmail.com>
+ <cde9d00a-bfe4-4093-b03d-f76a122e4ded@baylibre.com>
+ <as46xFp-3fXvWPlm@ashevche-desk.local>
+ <ca27a15c-5b21-4381-a82f-e80bb0ae488a@baylibre.com>
+ <atDXNlsDIAzOpgFg@ashevche-desk.local>
+ <11c08f9a-091d-43fb-8c1e-f3f2fe6ec3c2@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261015-ad9910-backend-support-v1-10-3c21648c8e26@analog.com>
-References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
-In-Reply-To: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-doc@vger.kernel.org, 
- Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: Olivier Moysan <olivier.moysan@foss.st.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
- Randy Dunlap <rdunlap@infradead.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792082993; l=6219;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=9AdEqIZ+bYqk9Lw6P7OuqM0LPTI0z5xHBJLcZX+ImKY=;
- b=iEB0Y0PLticdgwYdAAxIokYTL7YY0uahxuWGbnuUTbq7d067PpbmhYNaQYCaEVqF2iBpSxjO4
- fr0brdPY/RZBnmGlAv1b0geUbVjekTb1BEcpQ6kE81EU8ieL+j0zvgz
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11c08f9a-091d-43fb-8c1e-f3f2fe6ec3c2@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
++Cc: Rob. Here is a discussion how properly to check if the specific node has
+gpio-controller flag set. I tend to say that in the case of a simple branch
+(in opposite to if-else) we should use _property_present() and not
+_property_read_bool(). Can you be an arbiter here and tell the correct way
+of doing this?
 
-Document the integration_time attribute of the digital ramp generator
-(DRG) rising and falling channels, and describe how the DRCTL pin
-waveform is generated from those values according to the dwell_en
-configuration. Add usage examples for triangular and sawtooth sweeps
-driven through the DRCTL pin.
+On Thu, Oct 15, 2026 at 09:04:58AM -0500, David Lechner wrote:
+> On 10/15/26 8:37 AM, Andy Shevchenko wrote:
+> > On Thu, Oct 15, 2026 at 08:01:14AM -0500, David Lechner wrote:
+> >> On 10/13/26 9:05 AM, Andy Shevchenko wrote:
+> >>> On Sat, Oct 10, 2026 at 08:46:30AM -0500, David Lechner wrote:
+> >>>> On 10/10/26 4:00 AM, Bartosz Golaszewski wrote:
+> >>>>> On Sat, 10 Oct 2026 01:25:52 +0200, "David Lechner (TI)"
+> >>>>> <dlechner@baylibre.com> said:
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- Documentation/iio/ad9910.rst | 90 +++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 84 insertions(+), 6 deletions(-)
+...
 
-diff --git a/Documentation/iio/ad9910.rst b/Documentation/iio/ad9910.rst
-index aab569f561db..bff55cca8c82 100644
---- a/Documentation/iio/ad9910.rst
-+++ b/Documentation/iio/ad9910.rst
-@@ -85,13 +85,13 @@ system clock (SYSCLK) which affects all other channels.
-      - ``drg_rising_frequency``
-      - ``drg_frequency``
-      - DRG frequency rising-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
- 
-    * - ``out_frequency132``
-      - ``drg_falling_frequency``
-      - ``drg_frequency``
-      - DRG frequency falling-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
- 
-    * - ``out_phase130``
-      - ``drg_phase``
-@@ -104,13 +104,13 @@ system clock (SYSCLK) which affects all other channels.
-      - ``drg_rising_phase``
-      - ``drg_phase``
-      - DRG phase rising-ramp parameters: limit code, dwell enable, ramp clock,
--       rate of change.
-+       rate of change, integration time.
- 
-    * - ``out_phase132``
-      - ``drg_falling_phase``
-      - ``drg_phase``
-      - DRG phase falling-ramp parameters: limit code, dwell enable, ramp clock,
--       rate of change.
-+       rate of change, integration time.
- 
-    * - ``out_altcurrent130``
-      - ``drg_amplitude``
-@@ -123,13 +123,13 @@ system clock (SYSCLK) which affects all other channels.
-      - ``drg_rising_amplitude``
-      - ``drg_amplitude``
-      - DRG amplitude rising-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
- 
-    * - ``out_altcurrent132``
-      - ``drg_falling_amplitude``
-      - ``drg_amplitude``
-      - DRG amplitude falling-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
- 
-    * - ``out_altcurrent140``
-      - ``ram``
-@@ -493,6 +493,60 @@ Ramp channel attributes
-        from the hardware step size and the current ramp clock. Writing
-        requires ``sampling_frequency`` to be configured first.
- 
-+   * - ``integration_time``
-+     - s
-+     - Time interval assigned to the ramp direction, which is used to generate
-+       the DRCTL pin waveform. See `DRCTL pin control`_. Rising and falling
-+       ramp channels of all destinations share the same underlying value for
-+       their respective directions. The written value is adjusted to the
-+       resolution supported by the PWM provider.
-+
-+DRCTL pin control
-+^^^^^^^^^^^^^^^^^
-+
-+The DRCTL pin selects the DRG slope direction: a logic high drives the ramp
-+towards the upper limit and a logic low drives it towards the lower limit.
-+When a PWM is assigned to the DRCTL pin (via the ``pwms`` and ``pwm-names``
-+devicetree properties), the driver generates the DRCTL waveform from the
-+``integration_time`` of the rising and falling ramp channels, according to the
-+``dwell_en`` configuration:
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Rising ``dwell_en``
-+     - Falling ``dwell_en``
-+     - DRCTL waveform
-+
-+   * - 1
-+     - 1
-+     - DRCTL is held high for the rising ``integration_time`` and then held
-+       low for the falling ``integration_time``. The PWM period is the sum of
-+       both intervals. If a ramp reaches its limit before its interval
-+       elapses, the output dwells at that limit.
-+
-+   * - 0
-+     - 1
-+     - Sawtooth rising ramp: a new ramp starts at every DRCTL rising edge,
-+       which happens periodically at the rising ``integration_time``. The
-+       falling ``integration_time`` is not used.
-+
-+   * - 1
-+     - 0
-+     - Sawtooth falling ramp: a new ramp starts at every DRCTL falling edge,
-+       which happens periodically at the falling ``integration_time``. The
-+       rising ``integration_time`` is not used.
-+
-+   * - 0
-+     - 0
-+     - Bidirectional continuous ramp. DRCTL is not relevant and it is held
-+       low.
-+
-+The DRCTL output is disabled when the resulting PWM period is zero, e.g., when
-+the relevant ``integration_time`` attributes are set to ``0``. Without a PWM
-+assigned to the DRCTL pin, writing to ``integration_time`` fails with
-+``-EOPNOTSUPP``.
-+
- Usage examples
- ^^^^^^^^^^^^^^
- 
-@@ -525,6 +579,30 @@ Configure a frequency sweep from 40 MHz to 60 MHz with a rate of change of
-   # Enable the DRG with frequency as the destination
-   echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency130_en
- 
-+With the same limits and rate of change, each ramp takes 0.8 ms to complete.
-+Configure a PWM-driven triangular sweep that dwells 0.2 ms at each limit:
-+
-+.. code-block:: bash
-+
-+  # Enable dwell on both limits, so DRCTL controls the ramp direction
-+  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency131_dwell_en
-+  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency132_dwell_en
-+
-+  # DRCTL high for 1 ms (rising ramp) and low for 1 ms (falling ramp)
-+  echo 0.001 > /sys/bus/iio/devices/iio\:device0/out_frequency131_integration_time
-+  echo 0.001 > /sys/bus/iio/devices/iio\:device0/out_frequency132_integration_time
-+
-+Configure a rising sawtooth sweep that restarts every 1 ms:
-+
-+.. code-block:: bash
-+
-+  # No dwell at the upper limit: the ramp returns to the lower limit
-+  echo 0 > /sys/bus/iio/devices/iio\:device0/out_frequency131_dwell_en
-+  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency132_dwell_en
-+
-+  # A new rising ramp starts every 1 ms
-+  echo 0.001 > /sys/bus/iio/devices/iio\:device0/out_frequency131_integration_time
-+
- RAM mode
- --------
- 
+> >>>>>> +	if (device_property_read_bool(dev, "gpio-controller")) {
+> >>>>>
+> >>>>> I think the right one to use is device_property_present().
+> >>>>
+> >>>> I thought this was the one case where device_property_read_bool() is
+> >>>> actually correct because gpio-controller property is a
+> >>>> /schemas/types.yaml#/definitions/flag.
+> >>>>
+> >>>> Otherwise, we should just remove device_property_read_bool() from the tree
+> >>>> because there would never be a reason to use it.
+> >>>>
+> >>>> My understanding is we should use device_property_present() for non-boolean
+> >>>> properties when we want to know if it is present or not before reading the
+> >>>> value of it.
+> >>>
+> >>> That's not true. The _property_present() checks any type of property, while
+> >>> _property_read_bool() returns an actual value of the flag, while they might
+> >>> overlap in the behaviour, they are semantically completely different.
+> >>
+> >> That is exactly what I said.
+> > 
+> > But you made a code different. As I read it it checks for "is the
+> > gpio-controller property present?" For the question that you may
+> > think off "is the gpio-controller flag is true?" I consider rather
+> > if-else branch as we *either* option.
+> > 
+> > So, when we do
+> > 
+> > 	if (...check_flag...)
+> > 		do_smth();
+> > 
+> > I assume we check the presence of the property (flag). If we do
+> > 
+> > 	x = ...read_flag...;
+> > 
+> > OR
+> > 
+> > 	if (...read_flag... == true)
+> > 		do_smth();
+> > 	else
+> > 		do_smth_else();
+> > 
+> > I consider the appropriate is reading the property.
+> > 
+> 
+> Are you saying flag != boolean DT property type?
+
+No, I'm saying that semantics is defined also in the context of use. In your
+case you check for the property presence and do not use it as a value.
+
+> type: boolean
+> 
+> vs.
+> 
+> $ref: /schemas/types.yaml#/definitions/flag
+> 
+> I know we have both names in dt-bindings but I don't know the history on it
+> and if we consider them semantically different.
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
 
 
