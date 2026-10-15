@@ -1,138 +1,216 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E2654856D;
-	Thu, 15 Oct 2026 18:50:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6BE3DD526;
+	Thu, 15 Oct 2026 18:59:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792090260; cv=none; b=dtpjuBCgaTAl0tTvNFd83AxTe5FOfCscpZm5ziw618+5/eUopDbogEIMThs/nnkDR2kiA6d7Wok2KwEfDdDmSKhQjqIeo+7lwKOyOvtmuJz4NSIHZS90gTDxEJ6Ii1LcRil+S1hFyfUEmcn5cP7tZ3Y1ybAIOlk7h1YERyvvyL8=
+	t=1792090795; cv=none; b=SUwN6+af1stH04Ka/EbI+QszlEp4TbBUVUNmPTy1M3Rh3FOltJNF8RHTHgdKGpOQH7Z6zlL8emhzyOPw4TxqOGPCrc3i3lRa+nBoEQSKvKKLMW/IJaRQ1VSnzf5i2mjFFkOVxrrjQb/xNm3IzEa/n/BiZ8w1bRdzSzWYq/w96XE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792090260; c=relaxed/simple;
-	bh=syEajtdnVGr81HLILeR+mXc8E8UZTA3uXwPRrCpSewM=;
+	s=arc-20240116; t=1792090795; c=relaxed/simple;
+	bh=eEElU/ASY7hM4FjTNpS3QxyZuVDzXjY8CVAKzpMxQIU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LcDSkVRnokT9ziKLc1wgELLLtrUXVmiAWA7vfloo/3f2SndUpESGUhCY4zzl/NbCGrsokTj1JWnn//MwPPgXiVx2DktnrYEgv/8iGkeTStGtFHYfdnAQ9knneev4fGEY3PuGrCFDLBa6x/oZMp274hkQnhtDA2lGGgGkEgv9GrU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cG1iUwXp; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=s5LRleHFId0XQg7DlKi9Af20Y1Ss7K6PFXSwm2k4FpOJ9JZjj4KJE3lRQHu4d8sa/29hBLX2Oh6F6t+Oyqpn/ZNgnt1Kn4kmNyUhnfouG5ALW/gCuSUAyQ4UWwhFkTCmudDz4OKzcZ+q/5EymEciEL82iiGfqxJQECeoNXdCVjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wth7eYeZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cG1iUwXp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792090257; x=1823626257;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=syEajtdnVGr81HLILeR+mXc8E8UZTA3uXwPRrCpSewM=;
-  b=cG1iUwXp459JGn+BIGacvbCrxBRbLq1cmSvOhmBGb7bcZu9CMXbnkk6V
-   HvzYtZweokAtv6VHrjNkuu3RUvisymKJl+rDTi00lHcUWRgjzq6nXCWzR
-   bM/4KeRRoutroAo3tiMM/t30ioS0UHXuVrCMS1fT0kFPV+3xTXIwK0Qpj
-   x8/+Cc019ppN4uEf/8kfuXFXz2Uu5GrlDp7ZLNxA9L63ejY0O6mdjSKG2
-   w7M4RtIMSKaltWZHNwLokRYHZnER9KCB2QH6HnXlRUSaIH2H7LV/CTNEi
-   dzElWnsRWX2WbqNnw5gHmVtmkZJOV1jMUFxoRLnyGgLsn73E646ynjoak
-   A==;
-X-CSE-ConnectionGUID: NON/aWwRSnOtIzWe9XdIjg==
-X-CSE-MsgGUID: 0uvwJqu9QJSIAdZUf8EZTw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="882058"
-X-IronPort-AV: E=Sophos;i="6.27,160,1787036400"; 
-   d="scan'208";a="882058"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 11:50:56 -0700
-X-CSE-ConnectionGUID: wUJZBujDRGqTYFLdeNRQzA==
-X-CSE-MsgGUID: s3TbkpgzTFS9yj0XyQnEog==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,160,1787036400"; 
-   d="scan'208";a="1770326"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 11:50:51 -0700
-Date: Thu, 15 Oct 2026 21:50:48 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: radu.sabau@analog.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wth7eYeZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A961F000C4;
+	Thu, 15 Oct 2026 18:59:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792090793;
+	bh=QRhDD5Kba1/4vJE/aynvHCteJlbfDqNA5/X4nzhZ0Bg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Wth7eYeZLmsM9VNp67WWO1Jb1ODN2CZb/kNwAsaHlgnb/surWcINGPQvTTFkpYAMU
+	 gujfqTmB2U1usi+lAQEN8gnwjzWfjZZM+wW9HyeCCzxjc4ZHw47i7wICudgNN/Kw0w
+	 aZ33rlRbNnX/Ju0Bbicedo8WHWI7cP5HDq34oBhIClUvXr83IwbPIwCkAz+Ltz6JDR
+	 AxHvw17fBIWnV0+quaMclCvUSClt0U8ZMxq73VfPE0USoQVNqBxOIFa+noZFNw+Ph9
+	 iv0Tqyl4iT0qqhSGwU7HKtMhFyr5XsHXMwsljVEyjkl0Y3gg40bqdEAJwAWeuVTiSz
+	 5fYJNzS9T1dlw==
+Date: Thu, 15 Oct 2026 19:59:47 +0100
+From: Conor Dooley <conor@kernel.org>
+To: rodrigo.alencar@analog.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux@analog.com, devicetree@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Alexandru Ardelean <alexandru.ardelean@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/6] iio: imu: adis: Add optional self_test callback
- and fix custom reset dispatch
-Message-ID: <atEgiFbe3B3yiMfp@ashevche-desk.local>
-References: <20261015-adis16607-v3-0-f972d4efee85@analog.com>
- <20261015-adis16607-v3-1-f972d4efee85@analog.com>
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH 03/10] dt-bindings: iio: frequency: add
+ adi,ad9910-axi-backend
+Message-ID: <20261015-enjoying-dividers-94790b437fcd@spud>
+References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
+ <20261015-ad9910-backend-support-v1-3-3c21648c8e26@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="Oi1NC4/rev2QJv0k"
+Content-Disposition: inline
+In-Reply-To: <20261015-ad9910-backend-support-v1-3-3c21648c8e26@analog.com>
+
+--Oi1NC4/rev2QJv0k
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261015-adis16607-v3-1-f972d4efee85@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 15, 2026 at 12:32:58PM +0300, Radu Sabau via B4 Relay wrote:
-
-> Add an optional self_test callback to struct adis_data, for devices
-> whose self-test doesn't fit the generic mask-write/sleep/check-status
-> sequence. Purely additive: defaults to NULL, no change for existing
-> drivers.
-> 
-> Also fix __adis_initial_startup()'s no-reset-gpio path: it called
-> __adis_reset() directly instead of adis->ops->reset(), silently
-> ignoring any driver's custom reset implementation. Invisible until now
-> since adis_default_ops.reset is __adis_reset() itself. Dispatch
-> through adis->ops->reset() instead, adding the settle-time sleep at
-> the call site for custom ops (documented not to sleep internally)
-> while skipping it for the default op (which already sleeps
-> internally).
-
-...
-
-> -		ret = __adis_reset(adis);
-> +		ret = adis->ops->reset(adis);
-> +		if (ret)
-> +			return ret;
-> +		/*
-> +		 * __adis_reset() already sleeps the settle time internally.
-> +		 * Custom reset ops are documented (struct adis_ops::reset)
-> +		 * not to, so sleep here for them.
-> +		 */
-> +		if (adis->ops->reset != __adis_reset)
-> +			msleep(timeouts->sw_reset_ms);
-
-Can't we simply stubbed ->reset to a wrapper on top of the msleep()?
-
-...
-
->  static inline int adis_reset(struct adis *adis)
->  {
-> +	int ret;
+On Thu, Oct 15, 2026 at 01:49:43PM -0300, Rodrigo Alencar via B4 Relay wrot=
+e:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+>=20
+> Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
+> interfaces with the data and control pins of the AD9910 DDS, streaming
+> data from memory via DMA into the 18-bit parallel data port (F[1:0] and
+> D[15:0] pins), which is clocked by the PDCLK output of the device. It
+> also drives the PROFILE[2:0] pins and the DRCTL pin, which controls the
+> slope direction of the digital ramp generator (DRG). The DRCTL pin is
+> driven by a PWM generator, so the IP core is described both as an IIO
+> backend and as a PWM provider.
+>=20
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
+>  .../iio/frequency/adi,ad9910-axi-backend.yaml      | 74 ++++++++++++++++=
+++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 75 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-a=
+xi-backend.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad991=
+0-axi-backend.yaml
+> new file mode 100644
+> index 000000000000..20b884e8eb10
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-back=
+end.yaml
+> @@ -0,0 +1,74 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910-axi-backend.=
+yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  	guard(mutex)(&adis->state_lock);
-> -	return __adis_reset(adis);
+> +title: Analog Devices AD9910 AXI Backend IP core
 > +
-> +	ret = adis->ops->reset(adis);
-> +	if (ret)
-> +		return ret;
+> +maintainers:
+> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
 > +
-> +	/*
-> +	 * __adis_reset() already sleeps the settle time internally. Custom
-> +	 * reset ops are documented (struct adis_ops::reset) not to, so sleep
-> +	 * here for them.
-> +	 */
-> +	if (adis->ops->reset != __adis_reset)
-> +		msleep(adis->data->timeouts->sw_reset_ms);
+> +description:
+> +  FPGA IP core that interfaces with the data and control pins of the AD9=
+910
+> +  Direct Digital Synthesizer. The SPI bus is used as the control interfa=
+ce
+> +  of the AD9910 device, while this IP core streams data from memory via =
+DMA
+> +  into the 18-bit parallel data port (F[1:0] and D[15:0] pins), which is
+> +  clocked by the PDCLK output of the AD9910. The IP core also drives the
+> +  PROFILE[2:0] pins for profile selection and provides a PWM generator t=
+hat
+> +  drives the DRCTL pin, controlling the digital ramp generator (DRG) slo=
+pe
+> +  direction.
+> +
+> +  https://www.analog.com/en/products/ad9910.html
 
-It doesn't look scalable to have this accompanying each ->reset() call.
+Should this link not point to the docs for the backend device?
 
-> +	return 0;
->  }
+Otherwise, this is pretty fine I think..
 
--- 
-With Best Regards,
-Andy Shevchenko
+Conor.
 
+> +
+> +properties:
+> +  compatible:
+> +    const: adi,ad9910-axi-backend
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +    description: AXI bus clock (s_axi_aclk).
+> +
+> +  dmas:
+> +    maxItems: 1
+> +
+> +  dma-names:
+> +    items:
+> +      - const: tx
+> +
+> +  '#io-backend-cells':
+> +    const: 0
+> +
+> +  '#pwm-cells':
+> +    const: 3
+> +    description:
+> +      The first cell must be 0, as only the DRCTL PWM output is availabl=
+e.
+> +      The second cell is the PWM period in nanoseconds and the third cell
+> +      holds the PWM flags.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - dmas
+> +  - dma-names
+> +  - '#io-backend-cells'
+> +  - '#pwm-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    ad9910_backend: dds-backend@44a00000 {
+> +        compatible =3D "adi,ad9910-axi-backend";
+> +        reg =3D <0x44a00000 0x10000>;
+> +        clocks =3D <&clkc 15>;
+> +        dmas =3D <&tx_dma 0>;
+> +        dma-names =3D "tx";
+> +        #io-backend-cells =3D <0>;
+> +        #pwm-cells =3D <3>;
+> +    };
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 3a2dfd1a4fd8..93ad6a829cb3 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1731,6 +1731,7 @@ S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/ABI/testing/debugfs-iio-ad9910
+>  F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+> +F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backen=
+d.yaml
+>  F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+>  F:	Documentation/iio/ad9910.rst
+>  F:	drivers/iio/frequency/ad9910.c
+>=20
+> --=20
+> 2.43.0
+>=20
+>=20
 
+--Oi1NC4/rev2QJv0k
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatEioAAKCRB4tDGHoIJi
+0p6EAQClRur2Sf3UhlxYAaTJqDsuSMyJevkhnvLthhhfwjKnwAD7BunpY9WqCaXo
+F3lDqqxKkiJbBPwxk6IK+Jp+wCE6fg8=
+=4WDP
+-----END PGP SIGNATURE-----
+
+--Oi1NC4/rev2QJv0k--
