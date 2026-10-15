@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F7253D9C9;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 710A354145D;
 	Thu, 15 Oct 2026 16:49:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792082995; cv=none; b=tq+0A29pIMaUAFAG7t5fv2JC18EydBxFQi4WW01ShS2bnFM88cKKOhdXiMVO2Xp6Ii8dQGRnt48gF2q+0q2iEXxkkttZfEoXgJU8igL3+4nA8lhfpjNylbTOdCJ0Ins7v4S1P6G+uBaQl2xtfE6BluH8KPq6NjPzRt98InH52BU=
+	t=1792082995; cv=none; b=blVqkyuNhIo3AJ5cH7m4vbkLyfHi6cu2AP944136pYVKQZhfYLLIBMGpzW1BiXMce0DAHz6NItupT0uSAx36Wx6xq2PCba/3zQKJ/0dJA9R+stVG7alRxMCk/0c5HObTwJ0PNKgwMqbGZnxysjxlJPRrskTNhX12Op+jW9KCKBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1792082995; c=relaxed/simple;
-	bh=qBeZXHM7R+eFGoiA8eSiWzdg88ngr2gc5eMV+f4Prrc=;
+	bh=AaImLE0FEDxw87MGpv3hMNABB731sE/Jzx2WPzMFp5c=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FgHW/g9d1QqEapIPCE+I9AeFGjhmCawVpDD46VTBGilw8idKM6jwcrqk/5wrR1nwMYUO4VDenNcAKtn3sP91CA62e6bnBCc6Bk+FuXX4RV+ZfcrwyJXuUucRmCBlRtXJm02VEKFHAWPu90eGGw9rT8vGxoEhIagYvgR34WVNVSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ts3e0Cv9; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ieFjw/Uxzorwa4dN6wLnA9oYmd6BNB+bIk0uOa63NaS7TQsKrds3wLcrXmhKC5KgSMjKgdAVay6RtS8tFfCeOZOV2+3dJtbxnHLahgQtd69YJZj76kf73Q1+DyHw8vtzf0fPYdP/DEOXcBhSM8C2rtN/FMNZ9vR5/1k9xW566Iw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NMKHz9S1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ts3e0Cv9"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DE98FC2BCFC;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMKHz9S1"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F0915C2BD01;
 	Thu, 15 Oct 2026 16:49:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1792082995;
-	bh=qBeZXHM7R+eFGoiA8eSiWzdg88ngr2gc5eMV+f4Prrc=;
+	bh=AaImLE0FEDxw87MGpv3hMNABB731sE/Jzx2WPzMFp5c=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ts3e0Cv9bjj9FVn0A/BXYpMQh6WXkUJn/HwdNAW+dbNENdSaY2Qcywr3NqmZ5EZRh
-	 n6eO3AU9JlnUtV23NlH1Qj2bihgeBqkjBYAvmeDVEa+zh0cWo4kUA53EIknGFulogJ
-	 xVuFZX+xo9FS6CSfSSqJYbIRPnB8u9YP24CdOKd1goDpN2EsdjAC/dyGfU1E6+bOAt
-	 SrmzK7j8/RECQaQLPzOim5Uh6GtjpT4AqFUl1kE2VWvGWSGgoehsj9sg6QRdeEdblC
-	 7hDM2/DuhYHuSDbj1AgxtmCfWQiNoxiL4TxLAFKaDnA6LuCUerf5ZzUr1IQfILAZZj
-	 0/qR+YN/XFhZA==
+	b=NMKHz9S1EqrJA/oyzomBZAjprJP98YI1R1V01OCRYTvLieX8OxcR1r/9PU9RoufKk
+	 /JWugdmXAGzMpFCPrjAOlmaAjlRiJUXdvGnZ03L4GESQJ0Z8vl3goaOW53UVR8i3or
+	 A0UHUEn+2IwWLAqCaavEZr1MLb+sn/oxTXh5XxcG3UDZ/XOQLTgYffUL99mijULAac
+	 6rJYlMPOPhqM0Dm6KaqAfTxiJYQO6iPsd3jAAeq6lftsCIwlU/sKMAEsIGM2gFT8XL
+	 7DgLTmu/YZCNB5epTp0a2Tv3nPScmDF+naCn3OyXPHMppFoZUNNZ2fTanWKFq8XFfF
+	 QanYarmbNJmpQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7A3CCA464;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE13CCCA466;
 	Thu, 15 Oct 2026 16:49:54 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 15 Oct 2026 13:49:42 -0300
-Subject: [PATCH 02/10] iio: backend: add devm_iio_backend_get_optional()
+Date: Thu, 15 Oct 2026 13:49:44 -0300
+Subject: [PATCH 04/10] dt-bindings: iio: frequency: ad9910: add io-backends
+ property
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261015-ad9910-backend-support-v1-2-3c21648c8e26@analog.com>
+Message-Id: <20261015-ad9910-backend-support-v1-4-3c21648c8e26@analog.com>
 References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
 In-Reply-To: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -58,11 +59,11 @@ Cc: Olivier Moysan <olivier.moysan@foss.st.com>,
  Randy Dunlap <rdunlap@infradead.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792082993; l=4254;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792082993; l=2527;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=jMGRlIFAVCCUz4CCoYv97h4Bqb1DwkRQZ4omjdnHBPA=;
- b=rep/gWP6o7g0TuJDFbq5uZXAbtNeavCTcABecjt66g/dm2woALLaNAba8Ug2NM/XoRo2H/5tz
- jT5VQnTMh+rBpuJryTB+8YUz+Mea9VapIxuo8G5I8dpvie+TTZlLlk7
+ bh=8jAo3Ub+lq360SLcTWJHf+ffhTCESzkP7WQXUZzi1Yw=;
+ b=5bAk63xs1Vpwrtx+6vqlMosUp8ugrwZu08aBnPmW6Z1DUFERxhVFTj0mIdo8rn5z86y3G+dSy
+ wUJlVgncKG/DcXTXxfDbMk2ztxvOZbq4YQkVtk0xqMvrkZNKZxdgles
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -72,103 +73,74 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Frontend devices might not need a backend driver to rely on. An IIO device
-that supports backends can behave differently when they are not available
-and that should be acceptable. Such parts may provide basic functionality
-solely using the control interface (SPI for instance), being able to have
-extended features when a backend is present.
+The AD9910 parallel data port allows high-speed modulation of the DDS
+core parameters, which requires a data source such as an FPGA IP core
+connected to the F[1:0] and D[15:0] pins. Add the io-backends property,
+so that an IIO backend providing such interface can be referenced.
 
-Add devm_iio_backend_get_optional(), which returns NULL when the backend
-is not described in firmware, i.e., when the io-backends property is not
-present or, for a named lookup, when the name is not listed in the
-io-backend-names property. Other errors, such as probe deferral, are
-still returned.
-
-To make that possible, a named lookup that does not match any entry of
-io-backend-names now fails with -ENOENT, the same error returned when the
-io-backends reference is missing. Also, the missing reference is no longer
-logged as an error, leaving that to the caller.
+The property is optional as the parallel port is. The device remains
+functional through the SPI control interface only, as other modes can
+be used to drive the DDS core.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-backend.c | 34 +++++++++++++++++++++++++++++++++-
- include/linux/iio/backend.h        |  2 ++
- 2 files changed, 35 insertions(+), 1 deletion(-)
+ .../bindings/iio/frequency/adi,ad9910.yaml         | 38 ++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index fbf5c39d7655..7af41ba50a65 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -1006,9 +1006,14 @@ static struct iio_backend *__devm_iio_backend_fwnode_get_by_index(struct device
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+index 4eebbd388b27..02fd49db93ff 100644
+--- a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+@@ -120,6 +120,13 @@ properties:
+     items:
+       - const: drctl
  
- 	struct fwnode_handle *fwnode_back __free(fwnode_handle) =
- 		fwnode_find_reference(fwnode, "io-backends", index);
--	if (IS_ERR(fwnode_back))
-+	if (IS_ERR(fwnode_back)) {
-+		/* not described in firmware, let the caller decide what to do */
-+		if (PTR_ERR(fwnode_back) == -ENOENT)
-+			return ERR_CAST(fwnode_back);
++  io-backends:
++    maxItems: 1
++    description:
++      IIO backend that interfaces with the parallel data port, enabling data
++      streaming into the device. The backend may also drive the PROFILE[2:0]
++      and DRCTL pins, the latter being exposed as a PWM provider.
 +
- 		return dev_err_cast_probe(dev, fwnode_back,
- 					  "Cannot get Firmware reference\n");
-+	}
- 
- 	guard(mutex)(&iio_back_lock);
- 	list_for_each_entry(back, &iio_back_list, entry) {
-@@ -1035,6 +1040,8 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
- 
- 	if (name) {
- 		ret = device_property_match_string(dev, "io-backend-names", name);
-+		if (ret == -EINVAL || ret == -ENODATA)
-+			return ERR_PTR(-ENOENT);
- 		if (ret < 0)
- 			return ERR_PTR(ret);
- 		index = ret;
-@@ -1061,6 +1068,31 @@ struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name)
- }
- EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, "IIO_BACKEND");
- 
-+/**
-+ * devm_iio_backend_get_optional - Optional device managed backend device get
-+ * @dev: Consumer device for the backend
-+ * @name: Backend name
-+ *
-+ * Gets the backend associated with @dev. A backend not described in firmware,
-+ * i.e., the io-backends property is not present or @name is not listed in
-+ * the io-backend-names property, is not treated as an error.
-+ *
-+ * RETURNS:
-+ * A backend pointer, NULL if the backend is not described in firmware,
-+ * negative error pointer otherwise.
-+ */
-+struct iio_backend *devm_iio_backend_get_optional(struct device *dev,
-+						  const char *name)
-+{
-+	struct iio_backend *back = devm_iio_backend_get(dev, name);
+   adi,pll-enable:
+     type: boolean
+     description:
+@@ -206,4 +213,35 @@ examples:
+             adi,refclk-out-drive-strength = "disabled";
+         };
+     };
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dds@0 {
++            compatible = "adi,ad9910";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
 +
-+	if (IS_ERR(back) && PTR_ERR(back) == -ENOENT)
-+		return NULL;
++            #clock-cells = <1>;
++            clock-output-names = "sync_clk", "pdclk", "sync_out";
 +
-+	return back;
-+}
-+EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_optional, "IIO_BACKEND");
++            clocks = <&ad9910_refclk>;
++            clock-names = "ref_clk";
 +
- /**
-  * devm_iio_backend_get_by_index - Device managed backend device get by index
-  * @dev: Consumer device for the backend
-diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-index 9c16b695a602..93d5f2073cc3 100644
---- a/include/linux/iio/backend.h
-+++ b/include/linux/iio/backend.h
-@@ -267,6 +267,8 @@ int iio_backend_extend_chan_spec(struct iio_backend *back,
- bool iio_backend_has_caps(struct iio_backend *back, u32 caps);
- void *iio_backend_get_priv(const struct iio_backend *conv);
- struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
-+struct iio_backend *devm_iio_backend_get_optional(struct device *dev,
-+						  const char *name);
- struct iio_backend *devm_iio_backend_get_by_index(struct device *dev, unsigned int index);
- struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
- 						const char *name,
++            dvdd-io33-supply = <&vdd_io33>;
++            avdd33-supply = <&vdd_a33>;
++            dvdd18-supply = <&vdd_d18>;
++            avdd18-supply = <&vdd_a18>;
++
++            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
++            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
++
++            io-backends = <&ad9910_backend>;
++            pwms = <&ad9910_backend 0 1000000 0>;
++            pwm-names = "drctl";
++        };
++    };
+ ...
 
 -- 
 2.43.0
