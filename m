@@ -1,104 +1,161 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F420F5208A9
-	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 13:55:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D59552BE5F
+	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 14:05:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792072555; cv=none; b=tShtR6GiDhQ3D/rH0MSsEq+umZoJjWdKhsKhKSaBd+BEEE3+YZjky8Y6tNZQTRoumTZYGGX+P8fz3WNKpL6Gg7caez4spp6IgbhOFF8oND60H3v6OtonIq/X6/YFczlm9MVjVSIGYHu6/IzxDJTNrAVqVt8HBv/DtxwwEa76fV0=
+	t=1792073104; cv=none; b=cN56jdUFgSL7yC1LFrAArdpgSD28jOc6q9xj51WL5lpAMVFWqI0GT0gOLi4lIIGMH66vl6bmuEbSnxM2jc+uwjGOt8Y6Vp9G/m2+RnrlqCq6clFhN5MsOD3QEcOa8n1/LceIUYCTui83kFZ/k5BivMpOEc08UlR84Smv/+YrxcQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792072555; c=relaxed/simple;
-	bh=gQYm17sa5ahRfisIIwGXqP6mPMhCqy1cszmuXqL0mgk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cV6cwvVtH4gxlBTuyMu9henJnHJcARkakT1PQLk8UnCTSTQa39U+tjbwDImoml3YmU5ECtaN7iIlI9bfJn75QRgDoSv5+i9kxj6VwvJKQ6PkqDY2bwxGtolzArRKs9HG5EGs+QUCq49FftzbtLKHYKDJjyL/iFUv7K9oPdhxE40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MvzDFfVY; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792073104; c=relaxed/simple;
+	bh=rsXRTMWRgOAUoFFW65/OyKrBql26Jz4Z0gD0mEPvusA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=F+9fGcslpXLS4GJHSpDyl2f6DSibTm01f6PuAt2r3T3uSH3qIqPRWnjWFPTRexJAebtrL/6H/X0j4xH+zXispXm4Q75xSmxD5QDwkI1QV1mICI03L3uVVibvGtRon+cqseu9L1RNqAnRBtIJtQLHlpcZkzR3qr1psZBgWlGpkJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WuiF6m3R; arc=none smtp.client-ip=74.125.224.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MvzDFfVY"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a0213948d3so32901365e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 06:55:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WuiF6m3R"
+Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-6790844c9b0so4126299d50.2
+        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 07:05:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792072552; x=1792677352; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=LptXPwjGM5HMaBJ96EAadxxZVvp/oyED+Z19mhaxaso=;
-        b=MvzDFfVYN3o9kBQhjMs5qlPXolXAS5aiR6m+d/NWmWMAdt8fPFkm9e2VyvuzE0A0mu
-         ckuNwwyGuA2UWL1CR51yEGc8ltGqtM3WEK0dv9/q8d1qTsH1pqtj8W5w2E2ngIwIGEcg
-         E02SmjZShNxTUIeowdjN6zV4Bh5kpsw8dEiJNQoJGboYQhH9SujGCq+KLRSap5LB71Mk
-         k6NB92dUsGaNs9fI2OjjBHjoYw/AHL0xJtWACXAvp1ABHdrC1fnD1Tj2qRdoOh5u72zi
-         Gwwhn6vdovpgY0+BGP2VsddTK4PaAU6zkShg3RarkdfarR5+WkZVJu0SdhOXkcbY9L9l
-         l+hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792072552; x=1792677352;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=baylibre.com; s=google; t=1792073101; x=1792677901; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=LptXPwjGM5HMaBJ96EAadxxZVvp/oyED+Z19mhaxaso=;
-        b=PcSCtUTikrYkh6MiHgxmzgp0B0WS5e9UlKsFTxHvP/q7VgfPRiIsg0VGS+tME6bl5I
-         Hx445gwkDbn3n4VUYKBI+i51tUK9nv0QbNZtSh7fiw7ise37dzuL2pf5pbu2C4tABMXo
-         qHHCfxZyhJlpW/plYEr42ZISuV4SnRMTnU+SkXBUZGJZKSG23vUDHfAMw3JQ/zJBUDZe
-         k0HwuOQXw8qkkC/RsKvm4yfN9glWv2aizdwsv0XAD+uhE1yJAWZgpqtidP7f190O8W9B
-         rSnyUCtHzQppbs0moggZIehwvX7RVAMoxvLOAY3zmpeeiPpeOzmrnVVVQmIfJFflsH64
-         1nXQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwmE02GJwSuGVtqbzmp51fcgWny61Jufqn0/FldVPokorGbKRQTSqzfH49REdAlgs9eKCatfea6Na0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJjjzl2pydN8EDVSVFARhZGe35N5ks/0U3b/cnGgM2uDKUxuuFj
-	VYtNdC9wnsapZ9OMfe8hhpARdUYhdMHrCIZlprY+VZbUd290/bjS9EFkT45pYg==
-X-Gm-Gg: AYBFou0Xq9XxZyhC+4v58kUhS/MHxqGlJgNrNQPLfH3a6yp8Dzrtsw5/G6DSBQQonLj
-	+pNEsZL71SO6b7Ote94pDY2nDm4LQJyIovdd5Gn+YP9TWNs9kqdk6liuE+FFpKquDUCIIuy433D
-	irG86dUHDysSuNBzY/N0swhLStRTM53Lu2KvYNIZBTL5A/4zzbegljhjBOGmny8loo095mgJHbv
-	q74wc+EjVDbDDOaXhX2tJ+t9Kd3bY4uA70AxxwqEyvanzvDXn2HMOvreldhv10vKqHU+KiAfL7V
-	8bGDauXGx31GFufk9OP1lnCzgH/yyOO4jYDubKRajzkn3ypCBPwTASXN/dmN5ngO2tYtlBph9bx
-	251qCPXZR+oKv8YcR9JalmA35X1NUbuYp2cB/v07tkcJfPiZZLqohVlIkVn7qUBNbRdP5SzMsml
-	olypuPGl0+vqZ7cdZWVZfmOL7QfPx6Glg0VjRDT3YKrNavQ0iV+ZX5/PIhp77lGNVEgo8S/yR4f
-	3gQzCFWlRivb4ssYXcGgcnnngSUc4JODM7EUNp28RqRkc7Y8MnAEgLc0dDjFkJpgF5+2heRToc/
-	JFZ4qceI0LJ3oDRDcTaausq+kwZQXvXdw7VORb+JrLpbksUCgWV+PBwtksyAmY804pxmpGla+tg
-	m9Hvif8+GPXF406Vb8Sf6NDvi8Rm0LLuh1nR9qEWTBvcsBXhr6oS6n7K1KZJeHudauUCQ3f/gHY
-	gvFnE/cg==
-X-Received: by 2002:a05:600c:83c7:b0:4a1:698d:3044 with SMTP id 5b1f17b1804b1-4a18e493020mr381268955e9.11.1792072551887;
-        Thu, 15 Oct 2026 06:55:51 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1bd97ed33sm84432685e9.5.2026.10.15.06.55.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 06:55:51 -0700 (PDT)
-Date: Thu, 15 Oct 2026 15:55:48 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Nikhil Gautam <nikhilgtr@gmail.com>
-Cc: anshulusr@gmail.com, jic23@kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: ags02ma: Check for short I2C reads
-Message-ID: <20261015155548.00005ad0@gmail.com>
-In-Reply-To: <20261013171726.15670-1-nikhilgtr@gmail.com>
-References: <20261013171726.15670-1-nikhilgtr@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        bh=nwwCXgdH1/n2kjSGAX/1uosUanbLq6bg/jam8MfBwUo=;
+        b=WuiF6m3R5iIq7ZlNajTv3Fywc9buQaZRIwDKdHz2xdmKBDtv7dmYcOazN/88k4tuPT
+         bk5vygnm+1BLIpleBbxtO9qZMtWv213eG220JpIYDrSWKN9e8h5ZozhBJsxb630+T+m4
+         FwdXzr2wF90hSfTQvjwQ7SrgQfgqkXLuusfwYTo2oXWGwDZd6kJXeTiUwwxnqfejXBLU
+         uw3jbQLBqQWraUHMEW0QE8dEsd54jxw6mII17zs93T4N+bqIHem6oRgt28ZCVE9egKOs
+         YSGYpWIgJNUT+mq3A1PwHFk4qFiIxO+nc8tq/tWmEgsa/iGQnYxel6QjSF22xxY9R+eG
+         6t3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792073101; x=1792677901;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=nwwCXgdH1/n2kjSGAX/1uosUanbLq6bg/jam8MfBwUo=;
+        b=Dm34B5FmbtKXy/l+TDzo/eQ7BDarw/zN/Bwi/iIsgZvgCSLhTkPvwMsCY8A5iOwuCn
+         uzJVE6OKeq6wv7u1rZOm+4ilblOTBC/C95sNOftv6yqYGtETqUZo+D1/5pYor6CAPGEQ
+         GURPGKdX+GF+Mew0zX9KOxizQ+zuDyICJoKNms7HK64CL5uJic7iScVJWRvvnkg9awzb
+         REji9HReRlNQtjp9bJtrEBbiJyNY0oshxlC6YPtHlXVkbOXLFv5yj3HfHxI/WQXfoFQz
+         Y/rqDygU4qu6fKEwPp8Kofe69q048LqJFo83gqhHm8/L3xq5WGV+h86iTs6ecKKqoEWk
+         mZ7Q==
+X-Forwarded-Encrypted: i=1; AKwUvByagCMHjApgmiGjeT6Sn9s5qM2DhucBf0Ueyt6lxi57QS0BPZ52CUYaZRfkShbKrhCGIpbKkvYK3Ic=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL805cfYRIOXpI94BqwhwVSHENoi+2PQLbdbvuiKXkvaFMqtavA
+	lgXZmWJ4XH0oe9agec06L7uIF6oLu5w81Bgk6eiE8SAfcqNJB4uEa/mFXVVbLWGqe58=
+X-Gm-Gg: AYBFou18pVNnuSXuwFqKwIGsOWVXezIDWTw1M0AS0Aa8RhAtOw0UlpC1ym4AsGKWMxy
+	T9Tec55UBvfoxBxnCNXzlLKamEDAaFz8ZZUtFO7123++MWHkJiz+Z2oPPljK77uLBIFmdh4FJTX
+	MSx6x2sU2GcZABNTxutFtvWfkMRgnOZvpSmPNNfqorVx7fpSsSDSXingBk4lHGm2lDTkhJt1PmQ
+	06LBJe0G7NdfAHwTiZupQQLVF3jwXFXY47952SoQqDtDPCoiXGF3MF/M4MSq5i5WzGcCRUmLkf4
+	zAIQnvBPV26H5myHOwere1L60TLA/VrB3gtwXhbjSKhU8E2elNt8J/FraoNcgKshp4471dr3TP3
+	/saghgd3/e3kAlIm+GX6jEGVenWuZ7qaCihuO7B3rioglcK/xOX7/vM1EuR6Gv7fCVxoyPxEQxw
+	O+MwDY1vhJCsfyBjirkYi7rvdoGyRuoIcipac3MbKVFxoJJtJ+uxlYt48S/p5TWBI7fwotB9SV3
+	Ho7N0uyztPzgkkFbb9uH+Y989CCjeWdtbNvZnt6Cj/0YJWk
+X-Received: by 2002:a05:690e:138f:b0:675:3507:46e7 with SMTP id 956f58d0204a3-67936984262mr7357304d50.24.1792073101087;
+        Thu, 15 Oct 2026 07:05:01 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:7a64:39ea:e5ac:f974? ([2600:8803:e7e4:500:7a64:39ea:e5ac:f974])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6799548f8ecsm1390554d50.18.2026.10.15.07.04.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Oct 2026 07:04:59 -0700 (PDT)
+Message-ID: <11c08f9a-091d-43fb-8c1e-f3f2fe6ec3c2@baylibre.com>
+Date: Thu, 15 Oct 2026 09:04:58 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add gpio support
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
+ Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>
+References: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
+ <20261009-iio-adc-ti-ads112c14-gpio-v2-2-3231a795fa63@baylibre.com>
+ <CAMRc=Mfn7+uQYvLjGLxU9wMOnRwx5pyPgaLp6oNx+ZcFXyXL=A@mail.gmail.com>
+ <cde9d00a-bfe4-4093-b03d-f76a122e4ded@baylibre.com>
+ <as46xFp-3fXvWPlm@ashevche-desk.local>
+ <ca27a15c-5b21-4381-a82f-e80bb0ae488a@baylibre.com>
+ <atDXNlsDIAzOpgFg@ashevche-desk.local>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <atDXNlsDIAzOpgFg@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Tue, 13 Oct 2026 22:47:26 +0530
-Nikhil Gautam <nikhilgtr@gmail.com> wrote:
-
-> Check that the I2C receive operation transfers the expected number
-> of bytes before accessing the received data.
+On 10/15/26 8:37 AM, Andy Shevchenko wrote:
+> On Thu, Oct 15, 2026 at 08:01:14AM -0500, David Lechner wrote:
+>> On 10/13/26 9:05 AM, Andy Shevchenko wrote:
+>>> On Sat, Oct 10, 2026 at 08:46:30AM -0500, David Lechner wrote:
+>>>> On 10/10/26 4:00 AM, Bartosz Golaszewski wrote:
+>>>>> On Sat, 10 Oct 2026 01:25:52 +0200, "David Lechner (TI)"
+>>>>> <dlechner@baylibre.com> said:
 > 
-> Return -EIO if the transfer is incomplete.
+> ...
 > 
-> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
-> ---
+>>>>>> +	if (device_property_read_bool(dev, "gpio-controller")) {
+>>>>>
+>>>>> I think the right one to use is device_property_present().
+>>>>
+>>>> I thought this was the one case where device_property_read_bool() is
+>>>> actually correct because gpio-controller property is a
+>>>> /schemas/types.yaml#/definitions/flag.
+>>>>
+>>>> Otherwise, we should just remove device_property_read_bool() from the tree
+>>>> because there would never be a reason to use it.
+>>>>
+>>>> My understanding is we should use device_property_present() for non-boolean
+>>>> properties when we want to know if it is present or not before reading the
+>>>> value of it.
+>>>
+>>> That's not true. The _property_present() checks any type of property, while
+>>> _property_read_bool() returns an actual value of the flag, while they might
+>>> overlap in the behaviour, they are semantically completely different.
+>>
+>> That is exactly what I said.
+> 
+> But you made a code different. As I read it it checks for "is the
+> gpio-controller property present?" For the question that you may
+> think off "is the gpio-controller flag is true?" I consider rather
+> if-else branch as we *either* option.
+> 
+> So, when we do
+> 
+> 	if (...check_flag...)
+> 		do_smth();
+> 
+> I assume we check the presence of the property (flag). If we do
+> 
+> 	x = ...read_flag...;
+> 
+> OR
+> 
+> 	if (...read_flag... == true)
+> 		do_smth();
+> 	else
+> 		do_smth_else();
+> 
+> I consider the appropriate is reading the property.
+> 
 
-Fine by me. This is more hardening than a fix so no need for a
-fixes tag.
+Are you saying flag != boolean DT property type?
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+type: boolean
 
--- 
-Kind regards,
-Joshua Crofts
+vs.
+
+$ref: /schemas/types.yaml#/definitions/flag
+
+
+I know we have both names in dt-bindings but I don't know the history on it
+and if we consider them semantically different.
+
+
