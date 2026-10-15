@@ -1,109 +1,111 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 237D7515894
-	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 13:14:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE40B3EFFA6;
+	Thu, 15 Oct 2026 13:22:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792070067; cv=none; b=Wr32iZ4OMpeFssPprWR0Phv4FArm9YIgNZBwdo0vH4vWzmF5F6+RduwVOKdj6Wb3RQWYFQV5EfFqtQ8lEUAaWRCCffy5akI9tg4vDxFBTCRPzoNkyPXBmvOQcWnoOSIgUx8ECb6Xes4eeYF7y8PKtqC3DGSIEQer7MfmGdlY/Kc=
+	t=1792070562; cv=none; b=TU2Ax4Ygze9aPpr0Ku9lL1KCRlZbZEyYPOkQaBJsgB+d0ZAg016CsJ5+1JC8ePXuCXKY04zL9HUvR8wKCJxAB3ZSw8dyk0tk+h4okv+PePnU2vY9AZwxA9ja/brHwU5OUvpcDhXJ2YeWDrLGmrEwCUbX19G9Py9XuhEXjabUoFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792070067; c=relaxed/simple;
-	bh=vmh2K7iDtyJxcr4e+vs2mwwAuQGJXmiU3OYpnbP5Chs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bCSSFS6ufp5OHWUqRlgRTEagYS9Ragbuma8MjWb1cYpjY8jT4VCDl4g9bxPxIjQplbdz8qfQaiO5OeqT4QsyQ3KwM3uI2Bu6SJtTT2PfDZV8kTOs/J3Of5gB6y57whC7j9QdAO98Vdf2rqqsjm+idF+dM8gSyhI+cqslf8w957Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HJtumqmD; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792070562; c=relaxed/simple;
+	bh=IXlVNMDkpK0+fZ4y8gNuDI1b+nRai2Bib1MjbJiOSTk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PnVv/e02Ho7fSceaBNkqIvgvDR9WEinH8+CZtsE8RS2C044N5dio9UYpkCJ0LMQvjFemOZ1CR7f2y/y9VZU9YzSgJp1o8iSEgcrmr2vqdmcn6ltZyFCxJRLLSm3QILuLMheUX4jDC1dMgfrkbYjWU5XrTYdwOCJFZF3oKGRgCn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IOfDvkpe; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HJtumqmD"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4a172eb31f0so46174275e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 06:14:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792070064; x=1792674864; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=DKGlkemdch/mOvhFiOVD3G7PX9cRJidAty9RrIvsrsk=;
-        b=HJtumqmD9S7QmMzDvYc/V4LbLJ5aDxgUJMykfEARGhq9PHJrlt7Z73uPiMOAWb5Ahs
-         4Nzm48TtBhjRHAO9BSwtOXHW8ADrtazaeVuT7dY/MI9mZJ58SYDQJ8EN1UyVf5lMUNHY
-         oh4kf/wTMBhAruSvk1GatYvZvUcRgoVoil/foT+qSs+9fs51kcahPfgCohPS91KOfFD0
-         pm6fbtaUdpNQF4Zp+4DibRIAanIvgSU/RhQW+lmlbv7976R5PQMj3TBiY+dG2qbQvsEy
-         k1qGHNMSVlzdyQfdsasyMs0p0s4l9ksSXPw4O2OcxQZEbjvOVePXixdjeMdBInLkca/3
-         d+1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792070064; x=1792674864;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DKGlkemdch/mOvhFiOVD3G7PX9cRJidAty9RrIvsrsk=;
-        b=DtGgwgJUrhgnGYtLU3iGpdj3webg/0nVqtjfEkqdlk9HqL/o6gis1weHAt0kyNbX0n
-         TMDOgU5006yCT8YVV+cAj3TH0O7TVrVXy3EKIJnuU9TjasB3cChUzH1ruLEZ8HxpVzEa
-         suEsVkT/ybl7P0WoSdropqDu/BJb8AdUaHuaZGFM6YCXdDKEDXyk4aNDTSSlfuchbRrI
-         qgk7zq78E7pk9V0sn17ZRhK4UwVYbAjsiU5IioCY2CFKXhPIeLLD6t38HuHATd4gGJOm
-         SFKSKNqATwrnNWh4o2RR/dNbGcFKBMShluQl0OjXwtMR7vFLas6pUF9hW+Gm2kF80lTH
-         2hWg==
-X-Forwarded-Encrypted: i=1; AKwUvBzz8agfBMPqxG6Rbe2MKmRd6IwGNpYEKa9Xvk84MbMXEhI9H2jPOa3jUIe6uTM4RQbm9S8J5XuEx18=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLmd0f2VAm4dPl2kx/aVcIE8PfpVphyoLWCfaReogZKLtQLQLdf
-	Z9iP99cz5pgm0sOKs1J+Ca3FKIeGgZ2vpsqNW/P0oQj/ym9EFm0C9xgt
-X-Gm-Gg: AYBFou0wEvgHdXtiTjQrty7l4GHL45ZYvswwts+dop0cK51TB+JTtYtqWT+D5240d09
-	YaNP1rzJCGfKrENiP8RfeScFDUUiAoHJhlDlej/zPeUG9lzXksCsmgr4MpoRYf+y4Og/dZFUncY
-	U6jLGoo/OUOQYw4rhJnp6hk5Pa8nmQ9/t4rS0Ey1JY+Z7pVsrY+GHK+YNBywggYsqWWmu+7/cr5
-	tiJpQsfY4ZAiOEo7R93NnAKQ5F7cZ/dicujuWF7pAMjriBlWcaGB4Mh8TF6xzKZGGcaugBpBQcj
-	CSib9/eVqfSmWu4k1FSZ3e1+zl68BmsAi+bJyc+PCnhBbavMGHd6DVtLdFAJeAgi7KVvfNzp8m4
-	MUSyEYVVSPTJIu5TXFUmZdkiFUaIbxw9JHRKWqswJ5ZCjFG5XR2TJZso6KHHurTiWn7z9Rbd4fr
-	di2ZN+xoAM8WQIUL5OGpYtf5vMs9+NBDi1m3A8l1Uu4pbggJAmnvPeKgmBhhLOmZBdHYpAiNj5r
-	Y8aF+q9hC+n1uVYDiUAc16kyT+nSOBqSGAwgcxfPYcNLYQPc5OleHl9zhpEf1ua3/DLIcSkrfVR
-	jFjE9LlAnGg5bpqsyAnP98zXiWnjKIPtsodARZa4w3HF2/zwaNjIxgf/wK12PPX83+smDEWb73B
-	UMxFp6RZLZDaDCnfsdGFFulliA3MOF0jsfb1vhA9ATyGQTCex2dFHUObkDtdQ2mP9pjsLcZ5xEU
-	rfknZb
-X-Received: by 2002:a05:600c:8b58:b0:49f:bcce:13f5 with SMTP id 5b1f17b1804b1-4a18e4ca287mr353914885e9.24.1792070064296;
-        Thu, 15 Oct 2026 06:14:24 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1bd9a8a15sm70210175e9.4.2026.10.15.06.14.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 06:14:24 -0700 (PDT)
-Date: Thu, 15 Oct 2026 15:14:17 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, Eddie
- James <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
- <u.kleine-koenig@baylibre.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Rupesh
- Majhi <zoone.rupert@gmail.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/5] iio: pressure: dps310: add an OF match table
-Message-ID: <20261015151417.00001171@gmail.com>
-In-Reply-To: <20261015104945.2687162-5-paulius.zaleckas@gmail.com>
-References: <20261015104945.2687162-1-paulius.zaleckas@gmail.com>
-	<20261015104945.2687162-5-paulius.zaleckas@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IOfDvkpe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792070561; x=1823606561;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IXlVNMDkpK0+fZ4y8gNuDI1b+nRai2Bib1MjbJiOSTk=;
+  b=IOfDvkpeJBoFLWC0eSprE0VlbP4tf71qVDAAL0us0mObKwFokhPuLCYV
+   xlY7touIsLei4AUV12O2paBOIvVuMkPkj2tTihf+Ifotsf9TW8syYSF09
+   Fw2hlWicBiuIp6tZbIZq4y0JM01D5NrFAjfQrMNj0eql5FWxgBd6tnt+n
+   KSBrmd/gjYVQNCZs2ODbo3Ip97cKW8T1v4XGXlhYR7SrIdaKDqbodjFkz
+   KvippXyx0jW3BxWvCcmXEMAGOHTT0eJ0Ib4BqVLpnuIDaTz4gC5TItSfj
+   xwPm7x7o0QmWndVaKZxW5fxcfr38bgEBas3oW8LKezinAEk5Gw2gyWGLM
+   A==;
+X-CSE-ConnectionGUID: ICbIEr04TbCizcJatjn6yA==
+X-CSE-MsgGUID: 5SEWSCGzSVKbB3fv25IKUw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="870429"
+X-IronPort-AV: E=Sophos;i="6.27,159,1787036400"; 
+   d="scan'208";a="870429"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 06:22:41 -0700
+X-CSE-ConnectionGUID: 2wjwuFS8S5GhOWuEL3J+tQ==
+X-CSE-MsgGUID: YrQLcR/uTtSgUIOFoTCGoA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,159,1787036400"; 
+   d="scan'208";a="2018679"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 06:22:38 -0700
+Date: Thu, 15 Oct 2026 16:22:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
+	Kurt Borja <kuurtb@gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads112c14: add gpio support
+Message-ID: <atDTmxEp2KmTRUYf@ashevche-desk.local>
+References: <20260925-iio-adc-ti-ads112c14-gpio-v1-1-2a2b218ebf3a@baylibre.com>
+ <arom9T0azKX9jV5m@ashevche-desk.local>
+ <f4ddbc02-1fdd-4205-b511-fb39329fa5f3@baylibre.com>
+ <as46JtMAij8yqcVQ@ashevche-desk.local>
+ <f8b97c1c-7dae-4eea-9d64-c2c81ab4ef49@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f8b97c1c-7dae-4eea-9d64-c2c81ab4ef49@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, 15 Oct 2026 13:49:44 +0300
-Paulius Zaleckas <paulius.zaleckas@gmail.com> wrote:
+On Thu, Oct 15, 2026 at 08:00:04AM -0500, David Lechner wrote:
+> On 10/13/26 9:03 AM, Andy Shevchenko wrote:
+> > On Fri, Oct 09, 2026 at 06:04:21PM -0500, David Lechner wrote:
+> >> On 9/28/26 3:36 AM, Andy Shevchenko wrote:
+> >>> On Fri, Sep 25, 2026 at 04:50:47PM -0500, David Lechner (TI) wrote:
 
-> Devicetree nodes match the driver only through the I2C ID table fallback.
-> Add an OF match table, so the chip data comes from the compatible and the
-> module autoloads from the of: modalias the I2C core reports for
-> devicetree devices.
+...
+
+> >>>> +static int ads112c14_gpio_init(struct iio_dev *indio_dev)
+> >>>> +{
+> >>>> +	struct ads112c14_data *data = iio_priv(indio_dev);
+> >>>> +	struct device *dev = indio_dev->dev.parent;
+> >>>> +
+> >>>> +	for (unsigned int i = 0; i < ADS112C14_NUM_GPIO; i++) {
+> >>>> +		data->gpio_names[i] = devm_kasprintf(dev, GFP_KERNEL, "%s:GPIO%u",
+> >>>> +						     dev_name(&indio_dev->dev), i);
+> >>>> +		if (!data->gpio_names[i])
+> >>>> +			return -ENOMEM;
+> >>>
+> >>> Wondering if you can utilise devm_kasprintf_strarray().
+> >>>
+> >> That uses "%s-%zu" internally, so would add a "-" where I don't want it.
+> > 
+> > What's the problem with a dash?
 > 
-> Assisted-by: LLM
-> Signed-off-by: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-> ---
+> I want to match the datasheet pin name.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+I see. Sounds like we might need something more universal for
+devm_kasprintf_strarray(). (Yeah, I understand that that is out
+of the scope of your series.)
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
