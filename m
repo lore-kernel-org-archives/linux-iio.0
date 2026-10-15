@@ -1,133 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E8830C161;
-	Thu, 15 Oct 2026 13:38:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F420F5208A9
+	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 13:55:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792071485; cv=none; b=fFR8R9xifgOQyeglVSJ7Qik+UKZYMAwHByGtpWmHNuaTGFRO5JobvCXE3T57c6+TVQer/Agxt4kV+gJuT1WNEGcqpspTdPWMCy41zPugAW2eElF5EJ7Q6cgbAxMn7PEy27xo77+fo+EjVebdB2ULMtXgc/I/zPMCn6rQGLt3uik=
+	t=1792072555; cv=none; b=tShtR6GiDhQ3D/rH0MSsEq+umZoJjWdKhsKhKSaBd+BEEE3+YZjky8Y6tNZQTRoumTZYGGX+P8fz3WNKpL6Gg7caez4spp6IgbhOFF8oND60H3v6OtonIq/X6/YFczlm9MVjVSIGYHu6/IzxDJTNrAVqVt8HBv/DtxwwEa76fV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792071485; c=relaxed/simple;
-	bh=2bSX/afT8upvE6f0z7KxsTDZDnKrXrn1LCc3xDdR6z8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IpycwMP8a5YpvsjvJ/XcixCfcpk1rT+16UFchP+1yIl0oAHmtzMuMXQ1qRBe5A63brkfSrCU/wPIbr+SeYyhVT1yIbH1Fp4qM1IpBH90InAZSUimT1DmPeZWbXWJy594u5ltbZg9k5ayX1H92niTbpv9uSvJsW8DDKLx766oOBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oH/j6Ajn; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1792072555; c=relaxed/simple;
+	bh=gQYm17sa5ahRfisIIwGXqP6mPMhCqy1cszmuXqL0mgk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=cV6cwvVtH4gxlBTuyMu9henJnHJcARkakT1PQLk8UnCTSTQa39U+tjbwDImoml3YmU5ECtaN7iIlI9bfJn75QRgDoSv5+i9kxj6VwvJKQ6PkqDY2bwxGtolzArRKs9HG5EGs+QUCq49FftzbtLKHYKDJjyL/iFUv7K9oPdhxE40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MvzDFfVY; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oH/j6Ajn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792071484; x=1823607484;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2bSX/afT8upvE6f0z7KxsTDZDnKrXrn1LCc3xDdR6z8=;
-  b=oH/j6AjnkMfuf428L6bWzgGgATBh2Y6KVgJTDcq2+7qT6MlddQK54wqG
-   4GyTIltNYk9hjx8GudASLnlaXDLBB5mNSLnDep3hRMfgV932RL5MnaAYi
-   pvy7LeYT3WIVwHFjIlC8IR+j0PyJWheWVvuXcSjgCviYR26hRmZQ920oo
-   uJWBZI8ih+DmgII0+XtPBp8tOi9yZRHcgA/BX0sDlkPmSJbX4g4yIIgCt
-   REn6+H7XPURELcBfzq1LdPD/YSgwuhHUpvHkbq+Co4QtGJ6jfdwkqygH2
-   wgMf7XC17MJ6iyFCPTf4Mylk1XrHHa0TaJJHh7blO0pEYGmPusjIPGL7f
-   Q==;
-X-CSE-ConnectionGUID: 8vrAMCqfTyC16QzEw2mzKg==
-X-CSE-MsgGUID: BuqXa2fPRO+Vy2akWSTqZw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="740468"
-X-IronPort-AV: E=Sophos;i="6.27,159,1787036400"; 
-   d="scan'208";a="740468"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 06:38:04 -0700
-X-CSE-ConnectionGUID: gx8g/HnUSzG/hP/PFgGokw==
-X-CSE-MsgGUID: ILk8Ge9rR+CiOhACODXXLQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,159,1787036400"; 
-   d="scan'208";a="2051168"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 06:38:01 -0700
-Date: Thu, 15 Oct 2026 16:37:58 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
-	Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Linus Walleij <linusw@kernel.org>
-Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add gpio support
-Message-ID: <atDXNlsDIAzOpgFg@ashevche-desk.local>
-References: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
- <20261009-iio-adc-ti-ads112c14-gpio-v2-2-3231a795fa63@baylibre.com>
- <CAMRc=Mfn7+uQYvLjGLxU9wMOnRwx5pyPgaLp6oNx+ZcFXyXL=A@mail.gmail.com>
- <cde9d00a-bfe4-4093-b03d-f76a122e4ded@baylibre.com>
- <as46xFp-3fXvWPlm@ashevche-desk.local>
- <ca27a15c-5b21-4381-a82f-e80bb0ae488a@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MvzDFfVY"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a0213948d3so32901365e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 06:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792072552; x=1792677352; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=LptXPwjGM5HMaBJ96EAadxxZVvp/oyED+Z19mhaxaso=;
+        b=MvzDFfVYN3o9kBQhjMs5qlPXolXAS5aiR6m+d/NWmWMAdt8fPFkm9e2VyvuzE0A0mu
+         ckuNwwyGuA2UWL1CR51yEGc8ltGqtM3WEK0dv9/q8d1qTsH1pqtj8W5w2E2ngIwIGEcg
+         E02SmjZShNxTUIeowdjN6zV4Bh5kpsw8dEiJNQoJGboYQhH9SujGCq+KLRSap5LB71Mk
+         k6NB92dUsGaNs9fI2OjjBHjoYw/AHL0xJtWACXAvp1ABHdrC1fnD1Tj2qRdoOh5u72zi
+         Gwwhn6vdovpgY0+BGP2VsddTK4PaAU6zkShg3RarkdfarR5+WkZVJu0SdhOXkcbY9L9l
+         l+hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792072552; x=1792677352;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=LptXPwjGM5HMaBJ96EAadxxZVvp/oyED+Z19mhaxaso=;
+        b=PcSCtUTikrYkh6MiHgxmzgp0B0WS5e9UlKsFTxHvP/q7VgfPRiIsg0VGS+tME6bl5I
+         Hx445gwkDbn3n4VUYKBI+i51tUK9nv0QbNZtSh7fiw7ise37dzuL2pf5pbu2C4tABMXo
+         qHHCfxZyhJlpW/plYEr42ZISuV4SnRMTnU+SkXBUZGJZKSG23vUDHfAMw3JQ/zJBUDZe
+         k0HwuOQXw8qkkC/RsKvm4yfN9glWv2aizdwsv0XAD+uhE1yJAWZgpqtidP7f190O8W9B
+         rSnyUCtHzQppbs0moggZIehwvX7RVAMoxvLOAY3zmpeeiPpeOzmrnVVVQmIfJFflsH64
+         1nXQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwmE02GJwSuGVtqbzmp51fcgWny61Jufqn0/FldVPokorGbKRQTSqzfH49REdAlgs9eKCatfea6Na0=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJjjzl2pydN8EDVSVFARhZGe35N5ks/0U3b/cnGgM2uDKUxuuFj
+	VYtNdC9wnsapZ9OMfe8hhpARdUYhdMHrCIZlprY+VZbUd290/bjS9EFkT45pYg==
+X-Gm-Gg: AYBFou0Xq9XxZyhC+4v58kUhS/MHxqGlJgNrNQPLfH3a6yp8Dzrtsw5/G6DSBQQonLj
+	+pNEsZL71SO6b7Ote94pDY2nDm4LQJyIovdd5Gn+YP9TWNs9kqdk6liuE+FFpKquDUCIIuy433D
+	irG86dUHDysSuNBzY/N0swhLStRTM53Lu2KvYNIZBTL5A/4zzbegljhjBOGmny8loo095mgJHbv
+	q74wc+EjVDbDDOaXhX2tJ+t9Kd3bY4uA70AxxwqEyvanzvDXn2HMOvreldhv10vKqHU+KiAfL7V
+	8bGDauXGx31GFufk9OP1lnCzgH/yyOO4jYDubKRajzkn3ypCBPwTASXN/dmN5ngO2tYtlBph9bx
+	251qCPXZR+oKv8YcR9JalmA35X1NUbuYp2cB/v07tkcJfPiZZLqohVlIkVn7qUBNbRdP5SzMsml
+	olypuPGl0+vqZ7cdZWVZfmOL7QfPx6Glg0VjRDT3YKrNavQ0iV+ZX5/PIhp77lGNVEgo8S/yR4f
+	3gQzCFWlRivb4ssYXcGgcnnngSUc4JODM7EUNp28RqRkc7Y8MnAEgLc0dDjFkJpgF5+2heRToc/
+	JFZ4qceI0LJ3oDRDcTaausq+kwZQXvXdw7VORb+JrLpbksUCgWV+PBwtksyAmY804pxmpGla+tg
+	m9Hvif8+GPXF406Vb8Sf6NDvi8Rm0LLuh1nR9qEWTBvcsBXhr6oS6n7K1KZJeHudauUCQ3f/gHY
+	gvFnE/cg==
+X-Received: by 2002:a05:600c:83c7:b0:4a1:698d:3044 with SMTP id 5b1f17b1804b1-4a18e493020mr381268955e9.11.1792072551887;
+        Thu, 15 Oct 2026 06:55:51 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1bd97ed33sm84432685e9.5.2026.10.15.06.55.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Oct 2026 06:55:51 -0700 (PDT)
+Date: Thu, 15 Oct 2026 15:55:48 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: anshulusr@gmail.com, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: chemical: ags02ma: Check for short I2C reads
+Message-ID: <20261015155548.00005ad0@gmail.com>
+In-Reply-To: <20261013171726.15670-1-nikhilgtr@gmail.com>
+References: <20261013171726.15670-1-nikhilgtr@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca27a15c-5b21-4381-a82f-e80bb0ae488a@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 15, 2026 at 08:01:14AM -0500, David Lechner wrote:
-> On 10/13/26 9:05 AM, Andy Shevchenko wrote:
-> > On Sat, Oct 10, 2026 at 08:46:30AM -0500, David Lechner wrote:
-> >> On 10/10/26 4:00 AM, Bartosz Golaszewski wrote:
-> >>> On Sat, 10 Oct 2026 01:25:52 +0200, "David Lechner (TI)"
-> >>> <dlechner@baylibre.com> said:
+On Tue, 13 Oct 2026 22:47:26 +0530
+Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 
-...
-
-> >>>> +	if (device_property_read_bool(dev, "gpio-controller")) {
-> >>>
-> >>> I think the right one to use is device_property_present().
-> >>
-> >> I thought this was the one case where device_property_read_bool() is
-> >> actually correct because gpio-controller property is a
-> >> /schemas/types.yaml#/definitions/flag.
-> >>
-> >> Otherwise, we should just remove device_property_read_bool() from the tree
-> >> because there would never be a reason to use it.
-> >>
-> >> My understanding is we should use device_property_present() for non-boolean
-> >> properties when we want to know if it is present or not before reading the
-> >> value of it.
-> > 
-> > That's not true. The _property_present() checks any type of property, while
-> > _property_read_bool() returns an actual value of the flag, while they might
-> > overlap in the behaviour, they are semantically completely different.
+> Check that the I2C receive operation transfers the expected number
+> of bytes before accessing the received data.
 > 
-> That is exactly what I said.
+> Return -EIO if the transfer is incomplete.
+> 
+> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+> ---
 
-But you made a code different. As I read it it checks for "is the
-gpio-controller property present?" For the question that you may
-think off "is the gpio-controller flag is true?" I consider rather
-if-else branch as we *either* option.
+Fine by me. This is more hardening than a fix so no need for a
+fixes tag.
 
-So, when we do
-
-	if (...check_flag...)
-		do_smth();
-
-I assume we check the presence of the property (flag). If we do
-
-	x = ...read_flag...;
-
-OR
-
-	if (...read_flag... == true)
-		do_smth();
-	else
-		do_smth_else();
-
-I consider the appropriate is reading the property.
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Kind regards,
+Joshua Crofts
