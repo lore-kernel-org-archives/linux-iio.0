@@ -1,68 +1,68 @@
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C85BB4FECFB
-	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 13:00:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE4F522EFB
+	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 13:01:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792069209; cv=none; b=lUqXa7jXJw3KDKHb5n1+p3J21FkzeM/VNgch64HfJT9wyVsm9x68FA0lWeV/qmSHGlz9Kd0/VPREfQMxTn0to3p8vSxXGTI0jyMFM58v/DGrFG1LOxPafZpD2JfDf2YsIPBXfle6QKHYP0CnQahTAJ1KRFIAaQ+vpHl4Q99oBsw=
+	t=1792069282; cv=none; b=J5skoh0BVXv7BGOFN3QEEyjqc1RzebIzbKN8RKHp+pO9yoRbY+b6vwWakZhn1tx+wbY8aQiyaT0Px14R4JMCt620EBWZm2XQVyt15HStMQ3yysYYdLeizWAEY2zNwXACnEG3DSU+F75DQVChTot4/+Du19MEQnWteRT8m8gSIUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792069209; c=relaxed/simple;
-	bh=16EuTssqwYcY7F70h/BUM8kp38l/Q6N8yPmq7gB2Px0=;
+	s=arc-20240116; t=1792069282; c=relaxed/simple;
+	bh=M00L0DQuv05+wzHwVamvXqjP2sz1GvUfTGsI+8cDoWI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gZrlY1r3O1f2nU9UqVf7Z3SOzueeR1q50BAd4WvEON/WDdpEk/fSFKta/2Ygd9olc/NyYVPy05K3N3QyEvhQAjbtkouO0R+dVx8OWfdtk0QeeFyZ1gzPceWbBRPjK6AjtyhbaPSM62Pt+Ra6It2uQ3wA8Y6J+XNe5/PcTUJTA3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=TvO/4yHX; arc=none smtp.client-ip=209.85.161.50
+	 In-Reply-To:Content-Type; b=jzLe4JBxGs4hvWMDL8GvLBQDJDSEeQdX2RU38gke3kbIvFvNgB9AJyMMBlj9lYU0SOCE7U4DKBEXt5MX1S4WtZ55DlCs0Y6XGyk1kXyzTvT4zHBEzC2RgF5z+gHBh2ED7S1/tPqeP5dvlPEH6TIzJHWeZg7FBPb3aFFX+w2noLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=MDe+XW3s; arc=none smtp.client-ip=209.85.167.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="TvO/4yHX"
-Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-6dd059478dcso3454094eaf.0
-        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 06:00:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="MDe+XW3s"
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-504db7f7870so3643267b6e.1
+        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 06:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1792069206; x=1792674006; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1792069279; x=1792674079; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=bRJz94p2M/MzIGOAR59y6E7XPhv7pLCszJw1BEP/IR8=;
-        b=TvO/4yHXA4OYdh5SQcaK6R5Bn9Qi9vl2PjcTbl6wQvPmV/PSRkz7MjIThjaCn7ol9T
-         zlj7R82L5SpHI3EdrqgdWeL8CI0gAF/6T6ZGyelr9euzBwuTrg2BIPmVRobgNNB9APiC
-         rl8OCnvLpTWblzG7Bk9GP1ABjPPq/Oo1tjigrnQ997aO4wSwNWHI+SKiTeg5t8DlN5hD
-         uNQQmHVkpmPATcZ9dpe5LB+1p2OgNaP4XOS5E3rFGNjdQt/R7PLX3k6EBDVRb9NQYKzm
-         RL8E4u84xry9F1drlBGRrqIMuaFyx96myNbz2Eitosb/hA9mkK0L/5+6Cb37J3aIfwEY
-         QK7A==
+        bh=cjFxj3bFbYPisDR6RrznzneRHAUvWft2WkzURGoz+vk=;
+        b=MDe+XW3sZGIKUEnYlfRZINRq8F9iFr7onbzNEHeWmvCuwXJaqwkGKfQ9gFok5rB8Id
+         IaJAjtROcVBzCDsrrDR69dw49e3I5biC8O2qfPa3WkToEm+M3D3LvUFNbnGyedARiCtk
+         cNZtA9RnUSfGGYHtfOcSZRqahDFL6o4H7lgUWZUr2DDzs0IzALO1ecLg7sWiv+lRCKvf
+         5XjUjwtQq5pw5W7ZOKOapISX4hwDWYsyK8+tAfyvkAEoBSgrY5CncfdpHFa5L0owkHYQ
+         TUTamUfG19ipMTGB++x8MWjdt8HWuPUcUIAQCQobn7hdzkM+MnCt+QPNSuXhetr+IvwI
+         oUpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792069206; x=1792674006;
+        d=1e100.net; s=20260707; t=1792069279; x=1792674079;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=bRJz94p2M/MzIGOAR59y6E7XPhv7pLCszJw1BEP/IR8=;
-        b=GxJ/QVgZm7G9iSGTZcdvoKZtJHLARKQ0gEKe0cEPL32poCaJAkX4WG6jHwZWCAaAa4
-         9mFdYQvXgVC+KalsLbMD2CJbmj1Vqgx9HHCXHz9oedDzefXaVx18n9Ysl7EzbqjoIDmD
-         p4OkB8LyzY1Ce7zILSasjAIi+3uT4vmvEMxqMrKmO02Y+m0t7w6VIQYwpV+9jxurVzZt
-         XVqbYhWP+N922TrISfURmvlIvyjYbwx0/9MY1T/h32REubAuP+fNniqG+FiK1aZr/Yv9
-         flDJfbbLW8ciNfJdLjcu00jdHl9DPc0CJJSTlfnS+kQdXth+IRRnu54veN/17XGgLZ7t
-         UNbg==
-X-Forwarded-Encrypted: i=1; AKwUvBxdjYPHY6i+Bqq4pEujp4jr0Zb2RrJyopePeBESlZJX7rIQlgNy/x/rE//NT5omeofAueA9yahCr1g=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKAC4b7Kdrw1KBjlg58R0Zshj2G9yZZ2psiXYuD/Joof6dpl693
-	BJZGJrRDHQPi27i6dJ8UZfNfHrwR97ydpSPsO1SRarkmFCfQ3u64dfrit/VWAI13HJI=
-X-Gm-Gg: AYBFou30YIvOUwD6gBFkARf8984wQMz3R2QnQKcF1THlFlvjn2dFW+tANDe7pt6fxJ2
-	urPhhVT1z9n0GRZ72pFsdQq7FEiX3R+bd/GSRSgwNIjR3Wz8ZEu7GObIji65uvrwkTKFdMus8ii
-	4cc3iVnsDpvU164MwcfTgxwkiSZ3jQ5LkHhJXg8JS0t52YL6iaLIoHdOplVtWOiQOYL43WDiwGS
-	sQ9GjFCKFvDt5AxPGSdmRm3HkiTNeyaRNvw/gkqj42YaYEJShKYg0fdjncErLlbl9LGyWyf9EoN
-	35vi7hEIj+7K5ybDMoOHxa+J13riCVlq9hNPzAVQXIhUSf5ajl5wDRFT8tFdRKL/o3GgOgCF0Ez
-	IbiLGzwf9VYs8VGSqp72H0NuvavZi5ZKIqeR1LkjjJtuftokWzOwHXb6bEdUFjlcJigd5soqZoP
-	gsqTC8KDbBXJ3TeT363pc/6RmhgWTGmKM7Xs5J8fDv1FfHSSpxwpdUCsjZcK170QARfFZdEhC8J
-	4aBaPzcuU9opmBUBlRDW/Rsh90Q3gEsCES/RxB719XnwxI=
-X-Received: by 2002:a05:6820:1791:b0:6dc:5ccd:a0bd with SMTP id 006d021491bc7-6ef0dcff9dcmr15609717eaf.33.1792069206163;
-        Thu, 15 Oct 2026 06:00:06 -0700 (PDT)
+        bh=cjFxj3bFbYPisDR6RrznzneRHAUvWft2WkzURGoz+vk=;
+        b=P2Djcz+IbBIyg/f8fdTfxyG5kCbFjLEv1oy3vfacMl7CjV5Af1XOJVUQy5QU6nfi9G
+         hJvWKiLkniyU3CKbNfPspOC6/Gtmr2r7gpI9pVxrzebZ7koYzA+mjrYJmN7hBRMz/hmU
+         nHWtIsrX0KgmFoQxvOlHj6usjjzrzLotG+HKsd9zUq3vdS1S5Q6a8wDdjxUfUsFAnRTO
+         d8DJs8cYCHbPWBLzQKZC5utSxUl4cqDgttd6kf3bVPG7Y+2UtAmDfAbmoTkODmXhHLcz
+         iMg+GaBKRTzVPCEAYpsd7IF4HF1CIMtQHQiThPB0lvcLD9xMa+aYXRTG7+JVCtxCcLpa
+         WI1A==
+X-Forwarded-Encrypted: i=1; AKwUvBxKwhyl4rvv/NoCbo8GHwejCGnXUE9HS+emAZR5pnstN0Cn0GqfFLyXyCHxNHyMLIX5lAf/A2qFE+Q=@vger.kernel.org
+X-Gm-Message-State: AFq9FYL+o8dYkKyfIAVVvAe1z9I3m+LwDPWI9bOhf3rsD07B1FsS1zqP
+	E6VsWWTqnyjhyhSI8oaz60UFHiSAlKpgjMIaZOZJ2Sg2CmJS79YBTubSLX/Jsyt3Xog=
+X-Gm-Gg: AYBFou2PBLhWn52W6jlR/0P//S22YlXUKVrMvhWor/4Tz6sISMg0bTM/P27jI/3w1AQ
+	UMbAk0/whH+7kMWCCXC1468GhmrXZ/VEILJ4TXJxxcueD4jbqoxLVp6Uzf0G8P+wBuLySLOprkv
+	T4rkmNsnV4g4JOb2IJjBWzZar4vX/ejQ4Mw6CGl3yyxWeye4LqKMgKtgN8NfUr02Z7KkzshAEnS
+	bNvU90DGk8gSq2F97cmpfd93Ts5RvTl7AcQmR0oGxzbgr4VLPgtFkzsIMmerGnIANErOHlxl9fu
+	PRRaX4UKnNPaBJ1uZLbg8KiU7Xa+aHRrrvT1AYTnGPP1UeeQ7MkbZgMmCkJLWqt2VM+j/eSASiW
+	JrJxT3U8uw5mtak4zRb8/hAEzAOX2aZHYr+1U6VeDbCqo+aqEQ2eq/WLoESMNmjUZunw0q8VFv0
+	LLyRfGikytmyiagsCNra3u1KZHKuDvIRJ6C1BUGGarkW3+Nas4gjbXtnVBUKtdwNSzQ8W/Y0XVG
+	Vmv1lOoeRNxVpNKuNCIpG1Nz0mru91T4MQ6ClFU47YgY9ZMHI2X5Lf/Yik=
+X-Received: by 2002:a05:6808:1387:b0:4f6:6041:f0a2 with SMTP id 5614622812f47-50c5482ee7amr19056488b6e.27.1792069279336;
+        Thu, 15 Oct 2026 06:01:19 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:7a64:39ea:e5ac:f974? ([2600:8803:e7e4:500:7a64:39ea:e5ac:f974])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6f4a1303572sm10651029eaf.12.2026.10.15.06.00.05
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-50c1674ddf8sm18952180b6e.4.2026.10.15.06.01.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Oct 2026 06:00:05 -0700 (PDT)
-Message-ID: <f8b97c1c-7dae-4eea-9d64-c2c81ab4ef49@baylibre.com>
-Date: Thu, 15 Oct 2026 08:00:04 -0500
+        Thu, 15 Oct 2026 06:01:16 -0700 (PDT)
+Message-ID: <ca27a15c-5b21-4381-a82f-e80bb0ae488a@baylibre.com>
+Date: Thu, 15 Oct 2026 08:01:14 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,47 +70,51 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: ti-ads112c14: add gpio support
+Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add gpio support
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, Chris Hall <c-hall@ti.com>,
- Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>
-References: <20260925-iio-adc-ti-ads112c14-gpio-v1-1-2a2b218ebf3a@baylibre.com>
- <arom9T0azKX9jV5m@ashevche-desk.local>
- <f4ddbc02-1fdd-4205-b511-fb39329fa5f3@baylibre.com>
- <as46JtMAij8yqcVQ@ashevche-desk.local>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
+ Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>
+References: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
+ <20261009-iio-adc-ti-ads112c14-gpio-v2-2-3231a795fa63@baylibre.com>
+ <CAMRc=Mfn7+uQYvLjGLxU9wMOnRwx5pyPgaLp6oNx+ZcFXyXL=A@mail.gmail.com>
+ <cde9d00a-bfe4-4093-b03d-f76a122e4ded@baylibre.com>
+ <as46xFp-3fXvWPlm@ashevche-desk.local>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <as46JtMAij8yqcVQ@ashevche-desk.local>
+In-Reply-To: <as46xFp-3fXvWPlm@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 10/13/26 9:03 AM, Andy Shevchenko wrote:
-> On Fri, Oct 09, 2026 at 06:04:21PM -0500, David Lechner wrote:
->> On 9/28/26 3:36 AM, Andy Shevchenko wrote:
->>> On Fri, Sep 25, 2026 at 04:50:47PM -0500, David Lechner (TI) wrote:
+On 10/13/26 9:05 AM, Andy Shevchenko wrote:
+> On Sat, Oct 10, 2026 at 08:46:30AM -0500, David Lechner wrote:
+>> On 10/10/26 4:00 AM, Bartosz Golaszewski wrote:
+>>> On Sat, 10 Oct 2026 01:25:52 +0200, "David Lechner (TI)"
+>>> <dlechner@baylibre.com> said:
 > 
 > ...
 > 
->>>> +static int ads112c14_gpio_init(struct iio_dev *indio_dev)
->>>> +{
->>>> +	struct ads112c14_data *data = iio_priv(indio_dev);
->>>> +	struct device *dev = indio_dev->dev.parent;
->>>> +
->>>> +	for (unsigned int i = 0; i < ADS112C14_NUM_GPIO; i++) {
->>>> +		data->gpio_names[i] = devm_kasprintf(dev, GFP_KERNEL, "%s:GPIO%u",
->>>> +						     dev_name(&indio_dev->dev), i);
->>>> +		if (!data->gpio_names[i])
->>>> +			return -ENOMEM;
+>>>> +	if (device_property_read_bool(dev, "gpio-controller")) {
 >>>
->>> Wondering if you can utilise devm_kasprintf_strarray().
->>>
->> That uses "%s-%zu" internally, so would add a "-" where I don't want it.
+>>> I think the right one to use is device_property_present().
+>>
+>> I thought this was the one case where device_property_read_bool() is
+>> actually correct because gpio-controller property is a
+>> /schemas/types.yaml#/definitions/flag.
+>>
+>> Otherwise, we should just remove device_property_read_bool() from the tree
+>> because there would never be a reason to use it.
+>>
+>> My understanding is we should use device_property_present() for non-boolean
+>> properties when we want to know if it is present or not before reading the
+>> value of it.
 > 
-> What's the problem with a dash?
+> That's not true. The _property_present() checks any type of property, while
+> _property_read_bool() returns an actual value of the flag, while they might
+> overlap in the behaviour, they are semantically completely different.
 > 
 
-I want to match the datasheet pin name.
+That is exactly what I said.
