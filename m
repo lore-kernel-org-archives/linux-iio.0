@@ -1,79 +1,77 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6C4D4E8E19
-	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 09:08:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 753163E763E
+	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 09:11:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792055286; cv=none; b=pQX4UzIL0RmR4MnzCGW+Cug3X25FacZkqFycmhgyPGakdYEdaEJ8FwZ+b+7Ka4RklPvq7MuOgNy4Q+BNpweiWxJztuka9pftFinM3QSqTvX7ya9NOCJwQjH3Bbi+/MSXCpYokQQwZQP11y2NDlf5HWCnhnAffcyti2zaF2UoMCw=
+	t=1792055515; cv=none; b=mBwIxpqvWLt3HPchDRpVK778qvPDrOtaEErR+KndwxidmCHODpCh96Ito75LZ/AFFF5/8qwE8eqhcNC/AVtHTJWSKOJIlH5IufOVm28gGeSLq9muomAYCGKDF2/ZiTYk1F9OaDtzXihhMgzzNQFITWGCkB5ZBnFc8wc3h83VaJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792055286; c=relaxed/simple;
-	bh=UmmPnWITwwuejqvLNFKB87tCxE8Nz/bViqOo4tLzpFc=;
+	s=arc-20240116; t=1792055515; c=relaxed/simple;
+	bh=wpQT+stmebXiL4mPACrNE8Fk+UMa7Okg3Oz2NpJ9XAE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ensj9v02PrzHEnyGCcGj754gpqTQIKt2W14qAeTSLUC+0nAqxZUYshSsGaNe0DcX3gxnQaWn5E/0FH+eH4Ko6eWdvZgeGvaPIwzJ/uiUfv/cjjDAoRj2kwC4zdxl9QBbG9xk/XafDh+VrFAG2SbFoU7VVt0UYj1Tr1xysy4Q3X0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pK4ofho4; arc=none smtp.client-ip=209.85.128.47
+	 MIME-Version:Content-Type; b=MqchEbt2H9/t9/n/1u8BG9dfrQracYUtkdwq+4Btq1gHOHvXBLm5PboZaGbuUXoD6QR0W910pVdBeHIp0IbXPAkjtxscM93l2G2uVhZpgdJNMbEojOiKNT89Y9iBuheyk3cMDIavJdZlQN0DOS6jMmphRftBBIO6QSTzRAtpSe0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DiD8dkO2; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pK4ofho4"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a16c1608faso65452445e9.0
-        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 02:08:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DiD8dkO2"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4a1682bff3cso8247815e9.1
+        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 02:11:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792055282; x=1792660082; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792055513; x=1792660313; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=dWuTpLIpZhuW1BW/fT7Wvm1TL1EsBWcKdEk29mnqjRw=;
-        b=pK4ofho46P4msiRi/9IXCc+n/FoTtM8TupKGpNUsJRhOc/Y4ApHZJZqewVyOeN+m70
-         z8bTsxCsrygkDMKS3UY9LTdxI1CgTfY0yu6ytUcQ3XXMVVvex0CjGYCEGZ6mjptryW8t
-         aJznWkifTpiS/OV68duMk/AeYLOw25+woyyhE+lr6jHr6yP3gRLc+O5QXUmkBTUctwHi
-         nhUmG0uGI0mxWjeOgMlW9G1OKpvKBwvNbFG2v1pJ/wFBYd7XMhqMP9K2GvOgb4md/xwJ
-         KdsFsXTRD6n2BsDv9X88eJoHUKvMdmLJ9cosKZza+ovfaRuUIAREyMTRnaC68i4oGowR
-         hT0A==
+        bh=37kUcIBmWaK8bzKMBQU/T3AglBZJLVILgXw3ivUKujU=;
+        b=DiD8dkO2MPF4OxicuMtb4ck/BdVOSv+kAg1K83HlvQ7LqCa+k5BHCngM13sV3oYnZy
+         OfUjAwgl8TnKdjOnyivsEJrFtiBhNSVAbidhVI9Ir6fagOpGU9ZJ/DrMDsX1I2soGQZq
+         fF0jH+mZuPG8t+HrQp0VYtVaC1z8r5RtY+gGJYYD0Unqw3lh3Xp6tIoWAgr1QHpDxXld
+         m6StTP+A9CPMYz60MUn7YvQ6xwxxfOk8H+35L+EvDQWKPaDJp6op4YFmzVtCJWpmz0Vy
+         xPELA20XbfsEOBQHLKLioxHTtB41b8hlgNKs/ocEew2EGP+XcfO5yAbGjCrMGxBb6x6L
+         MzlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792055282; x=1792660082;
+        d=1e100.net; s=20260707; t=1792055513; x=1792660313;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=dWuTpLIpZhuW1BW/fT7Wvm1TL1EsBWcKdEk29mnqjRw=;
-        b=gxeEl6Aq1RGEFsNUDwy5wHFJacyco4uwln8bV8IWolqoUri/GnKIdiY8fbpPT+BT2h
-         FlhiKpNNlIuwJKAMkCpex8BJGhToeGCcoo56nATh7PaZHLAtd1vylBuWUoneNd8fOWHT
-         ZO2GFNO0fJ3RSd6I9m4s4obQH9LpN1IIa6VCVBgrpZc4Ewfnuc0dSKtaXC7dWEzsf8fZ
-         3YXaE6s3EN3FGuuk2mB9kgnCQOQI6BAxofygwmO2p5RvpxzP/gi8Iuxr/ehc8o83UU7m
-         GAZ0xW8JtQQG8CPDJuF0ipn4pVLZbLDuCSap8No17tMTg8hIlVMe9by4jh0ITGUdrJh5
-         +28g==
-X-Forwarded-Encrypted: i=1; AKwUvBzmkY4AeF1ImI5NWOJJJ5PFYYj0y3+tS0cBOhNbquQnebNU0WVz6jxTi+v8tW72dDL+UH316gbmvWI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKtLUiS+RrwnBG3tB9D38+7LThAVPMdkNfTVEYn3tQFAdUZPWXl
-	+Cr5JH9Wvn6fQ+OHJMQGepsd6uDhJtU//ZUw1vXkzY/I//R7bKlPfcui
-X-Gm-Gg: AYBFou3c3HAvaAoyE0ZPxHpMH6G3lYRQsxfoH38uoD73GVbXuqqyWXJEBdSLOQXjI3v
-	BKfq3hlwIt2pUEfT2/oQoqo/M6RLmGaVhTTBaU5XlkKz/UkbdixwjC6g2yQxsiS7d+uCem0YzQY
-	kwPV57/Q0lxGPBxXNSwVFmojYleRANzEuZVclYl7YSeAkrhVKCwvoa8JKV5esVt3yHYucNsdUvr
-	4FkDm87bH7cl4Qw0imL6hkTrWHhPIYEB7dIx+gGUB/5QB05j63ms63NHh1twGnZ3Jt2161bYV0p
-	bNi0Ym9j7I+Ea4aSNmMrJp8IF22dIkv7UVa6OcBw0SGPHvcz05KUojoZ6hqOmRaAm0q8L7T9Nz/
-	kaElptXAhoGhQCsQcTl+upoN9kOCTNzWyqxcVPJ98yEmRdLxABicg2Duymhk1tprgFZSTUishb/
-	u7fXu8rxUTM45bFSke1wJloGXeDuRPcYH7nZk+FbbRLYtukbevcOusiFeP4fJHKDULB6dzElP+5
-	38BXzS2w6lcmoZmpXO3tMHQ6Hx2IrzTAtBPuRK3KsJflSuu7HjghIPUWTctCZRZ/u95z7/O64qo
-	XhJDHVPdiAU9EeQXw/XNjyhFyWA1eqZAqwuLDq85l9uW1NjULpfTMl5h7acb387Mir5t4kHgcrC
-	CcZ0RUa0k/+yYcNWh1MABUz1ZbFi5KCPRkMi2F+/PVBfYuDxJjhim14Ju1qbOVjDBuXNhHvMVq+
-	pe5jM2iw==
-X-Received: by 2002:a05:600c:16ca:b0:4a1:877b:d4e0 with SMTP id 5b1f17b1804b1-4a18dcc911fmr255389955e9.12.1792055281754;
-        Thu, 15 Oct 2026 02:08:01 -0700 (PDT)
+        bh=37kUcIBmWaK8bzKMBQU/T3AglBZJLVILgXw3ivUKujU=;
+        b=I9fc29uHS/PMchdKjRKQzNtTiASe+zJtvk1WMhdk34DO5AHT2XuvGw3NPKG8gU9FGJ
+         BrWfjKegUglNJD0WFfgdO/SYCNEDbDNF2mvq+ljtsABzZjkpmCLyrx2MYFwE1dvd1Ryq
+         ssmCSLU27ht3xb7FTWBCFNzTlpj1gH7ErzSptZ15dhSqLsThEYAHv/bADmz+IpOLEwCx
+         yXmkDHlqR10EUkPubNCTpNs/kSZS04+mUWgyXAtYgRgF1hQ+mGlsTBcObPI0WqQS98tX
+         17s4E+Al030CuPI+m/p1fzQ/Q47K9QMk8Pa+F9fkEIIWFTfaTm838wr+rtUuEIwsf3ZI
+         QEjQ==
+X-Gm-Message-State: AFq9FYLHW8d7KTiHEW8Ou3Y5wb/h/5BmVRosmu9dn/80a1SU+piHiZGH
+	BZUv4G2VM2FYg+B45xwaiIzaQHCBQCe/jXsAT1hMfjYlViG25NoH0m3q
+X-Gm-Gg: AYBFou3J1VLjZqBuNE2UWJHQUbB+cyRmNz0qRKSKMNGXLzCTB/4f4z4ginMybz3bXui
+	EJkE08Cqcgfc937nL+l9BptytX3swwHMWVn6UPwjQr7tLddr3RQaQOB8A9nCpK4uHMjUfgRZyEW
+	phcnHgE7Qv/Io1/9Su8GWdbsxR//TYZzGV3hXXWBsyZgRVgbFTAWk7LXhwma9uaWaVXXmLUiJkt
+	aIwtlV9UIi0Z5Wy/urxPuQcKSzn0twkjSCS5zGCYLlrhbDa+bhNIuDQkK2g2dS1CP+H8cJCaf+g
+	eV7YxaaC6jVVXao+Kv5KLMWj8TohhZjH8mCEDTEZgf25ureguuPtuUxQ2oXta+agDLwFBlphgxt
+	tjC2j1lKdcrcJ+Ph4ZoRT3OQfQNgsezcwRqqfQq4kwHZ74gsJOh9DAllYwCMXbXjVME/tB9RgjZ
+	6w3GtI3mIgSDbkmmIEctd1Ng2oNVTCa75XFGOde6f304SHEwgpcCD7jwAMvf+DrinFXhFcyBjXC
+	Buc9gOalbAoly8UV8ovkCLD4a7/yqgy7SbPJ3UgzyleD7o6ylLseswrYuSi8yfErqukl41VQFCY
+	ZZ1yu9N3/+fYE66cvMrdnI2+xDdPMW+ywCuMINxKIP0ENcp0wNY8oWXRoH11x0+9kGEm0EHeK14
+	KTl5c9H1otr/hm7PWNk6ko0z3TyERCIBoY5GWVU7sgENVgJdv5gpuGvtuVwqXx03lm6QfgEsmHg
+	lvazyq
+X-Received: by 2002:a05:600c:4708:b0:49d:15b9:2a2a with SMTP id 5b1f17b1804b1-4a18e47a8a5mr401130485e9.10.1792055512163;
+        Thu, 15 Oct 2026 02:11:52 -0700 (PDT)
 Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0ac52d3sm17292841f8f.43.2026.10.15.02.08.01
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1bd67a080sm54179925e9.3.2026.10.15.02.11.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 02:08:01 -0700 (PDT)
-Date: Thu, 15 Oct 2026 11:07:58 +0200
+        Thu, 15 Oct 2026 02:11:51 -0700 (PDT)
+Date: Thu, 15 Oct 2026 11:11:45 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Viral Patel <viral8854@gmail.com>
-Cc: Dixit Parmar <dixitparmar19@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: magnetometer: tlv493d: fix magnetic field scale
-Message-ID: <20261015110758.00002539@gmail.com>
-In-Reply-To: <20261014-tlv493d-scale-fix-v1-1-69a722176c06@gmail.com>
-References: <20261014-tlv493d-scale-fix-v1-1-69a722176c06@gmail.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org
+Subject: Re: [PATCH] iio: ccs811: Deassert WAKE GPIO on error paths
+Message-ID: <20261015111145.000065b3@gmail.com>
+In-Reply-To: <20261014152250.8324-1-nikhilgtr@gmail.com>
+References: <20261014152250.8324-1-nikhilgtr@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -84,24 +82,38 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 14 Oct 2026 23:07:36 +0530
-Viral Patel <viral8854@gmail.com> wrote:
+On Wed, 14 Oct 2026 20:52:50 +0530
+Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 
-> The TLV493D-A1B6 datasheet specifies a magnetic resolution of
-> 98 uT/LSB (0.098 mT/LSB). IIO reports magnetic field in Gauss
-> (1 mT = 10 G), so the scale should be 0.98 G/LSB.
+> Ensure the WAKE GPIO is deasserted when status polling fails or
+> the data-ready timeout expires. Early returns could leave WAKE asserted,
+> preventing the sensor from returning to its low-power state and
+> potentially disrupting subsequent I2C transactions.
 > 
-> The driver currently reports 98/1000 = 0.098 G/LSB, which
-> under-reports the magnetic field by a factor of 10. The comment
-> also gives the resolution as 0.0098 mT (9.8 uT), mixing up units.
+> Route error paths through a common cleanup label to ensure WAKE is
+> deasserted before returning.
 > 
-> Correct the scale value and the comment.
-> 
-> Fixes: 106511d280c7 ("iio: magnetometer: add support for Infineon TLV493D 3D Magentic sensor")
-> Signed-off-by: Viral Patel <viral8854@gmail.com>
-> ---
+> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
 
-Good find.
+Please add a Fixes tag.
+
+...
+
+>  	ret = i2c_smbus_read_i2c_block_data(data->client,
+>  					    CCS811_ALG_RESULT_DATA, 8,
+>  					    (char *)&data->buffer);
+> +out:
+>  	ccs811_set_wakeup(data, false);
+> -
+
+Keep the blank line.
+
+>  	return ret;
+>  }
+>  
+
+
+Otherwise,
 
 Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
