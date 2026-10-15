@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6BE3DD526;
-	Thu, 15 Oct 2026 18:59:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E72DC5650F7;
+	Thu, 15 Oct 2026 19:00:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792090795; cv=none; b=SUwN6+af1stH04Ka/EbI+QszlEp4TbBUVUNmPTy1M3Rh3FOltJNF8RHTHgdKGpOQH7Z6zlL8emhzyOPw4TxqOGPCrc3i3lRa+nBoEQSKvKKLMW/IJaRQ1VSnzf5i2mjFFkOVxrrjQb/xNm3IzEa/n/BiZ8w1bRdzSzWYq/w96XE=
+	t=1792090862; cv=none; b=IAe9/glKUghpq2pJifIYh563BW5kHS5tA2UEvFRRsvWi+efNocVy/TXJkgJWigdgkqleum0OOa93hgi62Xrvo/DCe6n2L8Pf8xd15mmE8vOE0FEJp6es+wVBrkbgbr+MXbny9YP65adrufjl5Fv54eEyzFToXOnLkoqtIlLIsfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792090795; c=relaxed/simple;
-	bh=eEElU/ASY7hM4FjTNpS3QxyZuVDzXjY8CVAKzpMxQIU=;
+	s=arc-20240116; t=1792090862; c=relaxed/simple;
+	bh=OGGP3Gc+g4ugsGV/o/gkbmqVWY/OYF6rYovKSR2ACQo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s5LRleHFId0XQg7DlKi9Af20Y1Ss7K6PFXSwm2k4FpOJ9JZjj4KJE3lRQHu4d8sa/29hBLX2Oh6F6t+Oyqpn/ZNgnt1Kn4kmNyUhnfouG5ALW/gCuSUAyQ4UWwhFkTCmudDz4OKzcZ+q/5EymEciEL82iiGfqxJQECeoNXdCVjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wth7eYeZ; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=uM7aEsk+/hcoFpAT1FYaPFVvxHMbDoKlHmrTcZ4JFwSHjxsD4rYBmj+8o6lIPtwT9Nom1aM6vTv95NemHfFu1bMeu6hUAoOxi7sXRAa5s92/RHSV3AV1CDOOwFVTMW0Xan3pReqa/feIlQ8zn54P9IOThafMLWUIhKEk50JtaAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c0eGglui; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wth7eYeZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A961F000C4;
-	Thu, 15 Oct 2026 18:59:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c0eGglui"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFBEE1F000C4;
+	Thu, 15 Oct 2026 19:00:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792090793;
-	bh=QRhDD5Kba1/4vJE/aynvHCteJlbfDqNA5/X4nzhZ0Bg=;
+	s=k20260515; t=1792090843;
+	bh=OGGP3Gc+g4ugsGV/o/gkbmqVWY/OYF6rYovKSR2ACQo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Wth7eYeZLmsM9VNp67WWO1Jb1ODN2CZb/kNwAsaHlgnb/surWcINGPQvTTFkpYAMU
-	 gujfqTmB2U1usi+lAQEN8gnwjzWfjZZM+wW9HyeCCzxjc4ZHw47i7wICudgNN/Kw0w
-	 aZ33rlRbNnX/Ju0Bbicedo8WHWI7cP5HDq34oBhIClUvXr83IwbPIwCkAz+Ltz6JDR
-	 AxHvw17fBIWnV0+quaMclCvUSClt0U8ZMxq73VfPE0USoQVNqBxOIFa+noZFNw+Ph9
-	 iv0Tqyl4iT0qqhSGwU7HKtMhFyr5XsHXMwsljVEyjkl0Y3gg40bqdEAJwAWeuVTiSz
-	 5fYJNzS9T1dlw==
-Date: Thu, 15 Oct 2026 19:59:47 +0100
+	b=c0eGglui3ZCuMcFeS7bbG1bQ21NsUWClNzdHaHe9wXocNO/MkX3O/G3W1SzudiW5U
+	 OrH7m0JqhUBrvbCOQ9te2Ya/E4qOXaCttMZ2JcIW4CcjhMd3OSX/ZNMLHInVTPXJjo
+	 cHr/VA9rvKfQVWuLYtbJPZP9jSAksPVkWdF/WIdCt8HuZ/NWDjhQaCmeTIivegumXb
+	 BlV0Bp7s0DzTXZoMT1zF31DXVz+OcoH9OyI5vbB3cs57nNDfFK1N8TNCTDd6F7TNut
+	 HAIfXUwg9TM6h4aPInvxBGt2VV/YMP5Qw6E0UQ8jVB5ETyFn79a/VJQjE164XTEL9A
+	 05zY/LBORDAsw==
+Date: Thu, 15 Oct 2026 20:00:37 +0100
 From: Conor Dooley <conor@kernel.org>
 To: rodrigo.alencar@analog.com
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -45,11 +45,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
 	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 03/10] dt-bindings: iio: frequency: add
- adi,ad9910-axi-backend
-Message-ID: <20261015-enjoying-dividers-94790b437fcd@spud>
+Subject: Re: [PATCH 04/10] dt-bindings: iio: frequency: ad9910: add
+ io-backends property
+Message-ID: <20261015-uncurious-unwrapped-aa7b2fa6787a@spud>
 References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
- <20261015-ad9910-backend-support-v1-3-3c21648c8e26@analog.com>
+ <20261015-ad9910-backend-support-v1-4-3c21648c8e26@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,160 +57,26 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Oi1NC4/rev2QJv0k"
+	protocol="application/pgp-signature"; boundary="rXpn9wAQnF+zzvmy"
 Content-Disposition: inline
-In-Reply-To: <20261015-ad9910-backend-support-v1-3-3c21648c8e26@analog.com>
+In-Reply-To: <20261015-ad9910-backend-support-v1-4-3c21648c8e26@analog.com>
 
---Oi1NC4/rev2QJv0k
+--rXpn9wAQnF+zzvmy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 15, 2026 at 01:49:43PM -0300, Rodrigo Alencar via B4 Relay wrot=
-e:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->=20
-> Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
-> interfaces with the data and control pins of the AD9910 DDS, streaming
-> data from memory via DMA into the 18-bit parallel data port (F[1:0] and
-> D[15:0] pins), which is clocked by the PDCLK output of the device. It
-> also drives the PROFILE[2:0] pins and the DRCTL pin, which controls the
-> slope direction of the digital ramp generator (DRG). The DRCTL pin is
-> driven by a PWM generator, so the IP core is described both as an IIO
-> backend and as a PWM provider.
->=20
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  .../iio/frequency/adi,ad9910-axi-backend.yaml      | 74 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 75 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-a=
-xi-backend.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad991=
-0-axi-backend.yaml
-> new file mode 100644
-> index 000000000000..20b884e8eb10
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-back=
-end.yaml
-> @@ -0,0 +1,74 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910-axi-backend.=
-yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD9910 AXI Backend IP core
-> +
-> +maintainers:
-> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-> +
-> +description:
-> +  FPGA IP core that interfaces with the data and control pins of the AD9=
-910
-> +  Direct Digital Synthesizer. The SPI bus is used as the control interfa=
-ce
-> +  of the AD9910 device, while this IP core streams data from memory via =
-DMA
-> +  into the 18-bit parallel data port (F[1:0] and D[15:0] pins), which is
-> +  clocked by the PDCLK output of the AD9910. The IP core also drives the
-> +  PROFILE[2:0] pins for profile selection and provides a PWM generator t=
-hat
-> +  drives the DRCTL pin, controlling the digital ramp generator (DRG) slo=
-pe
-> +  direction.
-> +
-> +  https://www.analog.com/en/products/ad9910.html
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-Should this link not point to the docs for the backend device?
-
-Otherwise, this is pretty fine I think..
-
-Conor.
-
-> +
-> +properties:
-> +  compatible:
-> +    const: adi,ad9910-axi-backend
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: AXI bus clock (s_axi_aclk).
-> +
-> +  dmas:
-> +    maxItems: 1
-> +
-> +  dma-names:
-> +    items:
-> +      - const: tx
-> +
-> +  '#io-backend-cells':
-> +    const: 0
-> +
-> +  '#pwm-cells':
-> +    const: 3
-> +    description:
-> +      The first cell must be 0, as only the DRCTL PWM output is availabl=
-e.
-> +      The second cell is the PWM period in nanoseconds and the third cell
-> +      holds the PWM flags.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - dmas
-> +  - dma-names
-> +  - '#io-backend-cells'
-> +  - '#pwm-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    ad9910_backend: dds-backend@44a00000 {
-> +        compatible =3D "adi,ad9910-axi-backend";
-> +        reg =3D <0x44a00000 0x10000>;
-> +        clocks =3D <&clkc 15>;
-> +        dmas =3D <&tx_dma 0>;
-> +        dma-names =3D "tx";
-> +        #io-backend-cells =3D <0>;
-> +        #pwm-cells =3D <3>;
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3a2dfd1a4fd8..93ad6a829cb3 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1731,6 +1731,7 @@ S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/ABI/testing/debugfs-iio-ad9910
->  F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
-> +F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backen=
-d.yaml
->  F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
->  F:	Documentation/iio/ad9910.rst
->  F:	drivers/iio/frequency/ad9910.c
->=20
-> --=20
-> 2.43.0
->=20
->=20
-
---Oi1NC4/rev2QJv0k
+--rXpn9wAQnF+zzvmy
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatEioAAKCRB4tDGHoIJi
-0p6EAQClRur2Sf3UhlxYAaTJqDsuSMyJevkhnvLthhhfwjKnwAD7BunpY9WqCaXo
-F3lDqqxKkiJbBPwxk6IK+Jp+wCE6fg8=
-=4WDP
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatEi1QAKCRB4tDGHoIJi
+0uCxAP95ntDYEgJy1qERWZSEz20Xl3vlfQRB8z7M5bHV7NqTvwD+MqH/CJls1uPL
+57lDZhz1XYBpZua6haLyUeyWhgayQgg=
+=UaJ6
 -----END PGP SIGNATURE-----
 
---Oi1NC4/rev2QJv0k--
+--rXpn9wAQnF+zzvmy--
