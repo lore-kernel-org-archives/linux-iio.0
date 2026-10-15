@@ -1,73 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55AB349EC7F;
-	Thu, 15 Oct 2026 12:18:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D03F51DDF3
+	for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 12:30:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792066683; cv=none; b=AqSYSsK3RyniJxdhO5Gpfb6YQ7TgJGiiHj8S4fqhiI2oBqs8TsnEjU6U0QcFO9R+XgLw0Gs8Gxuq9W9P+RGy8HD0JSlvwHguXz5y82vODMgSpxRDsqJO2UxBBGoDy/0DsN2KjGh6zeoJY1nfS+Emw1yvjS0yitvWupGFVmUZSDI=
+	t=1792067433; cv=none; b=MH/fbMbXgu1QgQnNorze+o/JQDhKSu8J8fhUumewHwO3G64gyoAW2/H7eoLk2b3dq4TVAP126DLIbEU4DKVDUzVMjEQRkIOCJ/xt+Tq0rvzICC5V5ZMerz3fjsbCOYH48Mrs5IxOmcbmknCwI2UejOawzXyx+Oox78W82E3ZlsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792066683; c=relaxed/simple;
-	bh=+fB34VuA7wpq6empWyJXVqzOVhVPkE7LZbcucVhE93Q=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=XQUq1key53WrNEWu+DxCCMSHsWb850Jm5W7WaThjFMZv6ziAiHVcd09o4MoJgX5QUn73/v0rr+nkd47kBw7cr9PU/JhHSUkNbG7fPqhroeWbQOtX/gCh5hm02ekeXdKbVs0CrM4W0UPMNJz4ErRTVOPh0O72x6njaf5hxdM4G4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RIecqfOY; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792067433; c=relaxed/simple;
+	bh=X7fyX3jJFj6nyXssYOE1hLP8LJ2xvGZ+VCHua7U8v/o=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dHa7oOh6UaoPzQbo+eR9T7DVR2MInKmpRQtfjJIAMPzxTLvp2yTLzNwrAmDLGveBkJzr1FEU9N7pHlIEZ0Kj2BOgEH8fnhe1LDfkRas904qI07ywlHJu5AIb9CUb1aWDdRdMEcxswpSY2bjYLhBsBYA+4mulQZg7Yf0ySrm4qZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eY+lf0fO; arc=none smtp.client-ip=209.85.215.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RIecqfOY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE7E1F000C5;
-	Thu, 15 Oct 2026 12:17:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792066681;
-	bh=qVEreEp0Hw8z9be2U0iUr/ECSYHh9yfdw1fSZ6anxtM=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date;
-	b=RIecqfOYt+nhoWwYu4s36KbOZQFld7TG/yeZsEz7i8hA2zroCZdfTU0tlxfDKa8gE
-	 VomsFUpwcjXV9TyKq4ZOnLV8fCdd/1W5pkgS6fqnsPh8N3u426OQiptvlO2uXmDRrl
-	 I1opyKbXyIglmsQxVUrTfIrRB5TLj9grUP9nOM/+lW7qXTJpzurUwbJkHJkllXZSU9
-	 m0w19amKjxkvMNkG/BPjaQxZsxZq0W1Y5fQ69roYVfvG5iZnElgnKEARcoapKNldp6
-	 exDjnjhR4fZ6n9HQe6ycHPbSE0jZp4aWWguUw6e9E7IRQ9lMILfb93NkQK5trbRe9+
-	 TX/L7hjYN2frw==
-From: Lee Jones <lee@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Lee Jones <lee@kernel.org>, Ryan Brue <ryanbrue.dev@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-mediatek@lists.infradead.org, mfd@lists.linux.dev, 
- Roman Vivchar <rva333@protonmail.com>, 
- Luca Leonardo Scorcia <l.scorcia@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
-In-Reply-To: <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-3-23533a0d30e3@gmail.com>
-References: <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-3-23533a0d30e3@gmail.com>
-Subject: Re: (subset) [PATCH v4 3/3] mfd: mt6397-core: Add mt6397 AUXADC
- support
-Message-Id: <179206667779.1910726.5341177428334836457.b4-ty@b4>
-Date: Thu, 15 Oct 2026 13:17:57 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eY+lf0fO"
+Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-cd60d155070so964450a12.2
+        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2026 05:30:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792067432; x=1792672232; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PTnyON18qZ+0nprhOL1KqtGo8K5Ak/y2VZfqrlx6jv4=;
+        b=eY+lf0fOMAVDvkQGpB6KJUPbNY+csVBQ9bKIdKFIGaNFt1QEOWU/rgsnRvw6zvq258
+         tQzxnsvJSIv3mNd0/EiHg9hOI0bLs5n/d4fBzOmCXXcA+8onSUdOaFYdglhkc/jnDk7h
+         n6QHBJ8advfx4aFJGq3TRO/OUp2Q0MPKdYrYGPl8cczZIpakAyLU2/tzOjw2Z3P/MUBV
+         n9q1Wx7KfhvI5DslK2thnElaKKqEHVDf+lWdITScPyAqR4x39fZ7+IqkmUq5WdMEJyaY
+         IOPSezPeiUu2V/U+PDdqaUTv79ArK81h/If0sUyYM5aLPyr9t/CJIjl9LLeX1ZXaPOxQ
+         6U6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792067432; x=1792672232;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=PTnyON18qZ+0nprhOL1KqtGo8K5Ak/y2VZfqrlx6jv4=;
+        b=KNRM5wsaR8FALa0xtXnSZDsJ5oXsFfAd5rcYnNzWX2iOQb0jUZ/xGZOYL3w/cqiqhx
+         poi2pxYFyZs5wppWL1kTcGrsNuTDnBhiWQ4DE1b3+paB2q0PVhU5KyiEEHVcPEmDG9w8
+         Yn003CtoT29btyMmjAbg2novkyb+WnPVnszFMEc3WIgj5IMm4nasPWvADPSt17OYf4Lk
+         DBnGf8dZfESZWYxiLh4clr7tawbK0m9a3t5qARF+hhnHN0PcdPlUg120vhvHUqFq9tE/
+         MYXjOrmDEnVj7Yd59YiA2zLsAu3uFVabM02nPD2w32q/ApRgks0uV6ky1ht1bmjojyBu
+         VMzA==
+X-Gm-Message-State: AFq9FYJ7MX0ddBLUTJP20CibeiaXKpq8ogyELUgqffvW3noaH4qpShVy
+	Cpo7E28omMOZGxVZlK2UUg6SX3vA6cbprM2l+ngbUEsbtU/oa5QZ2teh2Sc4Gk3wRg==
+X-Gm-Gg: AYBFou1GGHZTjMaKUd1uiacsX+Y21b7SGVKA10KoiGl9FFGiv+ypO4P0qrG9+L+feAo
+	X8v1ERqlzFIjzau9UjAsCX6tABePcmbveulTIvJqssLNEb/jMjhOlLp1zIxzMyrc3o9lriDqNfN
+	SU+N3hvAd5jucr5qdMEtvGAPPdmP7HL1M28RS/cr18Nldyh4D3pDAF8wMX1op1ASo4hqxxbHblN
+	pucmsbqYhjN9ilPorwB79hzcFAGanM59lpQXWTCU79gtpw9Qfmuje9+fVzzLx5exFP8LbkoSKHO
+	k9inEjT7/r7C2rfugMfzkvm1mThYkDeLJOHvH0nFgvtw3d2MNshZE3RlROxq9a2ZqC/lmUX6mAd
+	cGu7WU+puvouYeO/OsYRGEAmz7slCZ90QfgiuLjE/4DU3UwtokH/j6t2eFMBcQgPrmRtRk41avM
+	fDCUEzVDx24at1VhY7j4jsElnABahYbs5SczqTNleAA75f0fYBntyRPBsX3z3oJopzNs1UQlZRy
+	+GI16waRg1xsdz9YDAD74vKaBz7sdPB50/A7w==
+X-Received: by 2002:a17:90a:c88b:b0:3a4:8c41:fab6 with SMTP id 98e67ed59e1d1-3ab3ab32a3amr15057215a91.46.1792067431830;
+        Thu, 15 Oct 2026 05:30:31 -0700 (PDT)
+Received: from localhost.localdomain ([45.127.46.52])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1699718c547sm53460746c88.3.2026.10.15.05.30.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Oct 2026 05:30:30 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: [PATCH v2] iio: ccs811: Deassert WAKE GPIO on error paths
+Date: Thu, 15 Oct 2026 18:00:23 +0530
+Message-Id: <20261015123023.3417-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.16-dev-ad80c
 
-On Mon, 28 Sep 2026 15:57:21 -0500, Ryan Brue wrote:
-> The mt6397 PMIC includes an AUXADC. Register the AUXADC in the mt6397
-> devices array to allow the corresponding driver to probe using compatible
-> string.
+Ensure the WAKE GPIO is deasserted when status polling fails or
+the data-ready timeout expires. Early returns could leave WAKE asserted,
+preventing the sensor from returning to its low-power state and
+potentially disrupting subsequent I2C transactions.
 
-Applied, thanks!
+Route error paths through a common cleanup label to ensure WAKE is
+deasserted before returning.
 
-[3/3] mfd: mt6397-core: Add mt6397 AUXADC support
-      commit: cc6597f4e3b752de42249879e0c7054fd23628a1
+Fixes: c6644f7201f3 ("iio: chemical: Add support for external Reset and Wakeup in CCS811")
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+---
+ drivers/iio/chemical/ccs811.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---
-Lee Jones [李琼斯]
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index 998c9239c4c7..dad54f66ebb3 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -198,18 +198,21 @@ static int ccs811_get_measurement(struct ccs811_data *data)
+ 	while (tries-- > 0) {
+ 		ret = i2c_smbus_read_byte_data(data->client, CCS811_STATUS);
+ 		if (ret < 0)
+-			return ret;
++			goto out;
+ 
+ 		if ((ret & CCS811_STATUS_DATA_READY) || tries == 0)
+ 			break;
+ 		msleep(100);
+ 	}
+-	if (!(ret & CCS811_STATUS_DATA_READY))
+-		return -EIO;
++	if (!(ret & CCS811_STATUS_DATA_READY)) {
++		ret = -EIO;
++		goto out;
++	}
+ 
+ 	ret = i2c_smbus_read_i2c_block_data(data->client,
+ 					    CCS811_ALG_RESULT_DATA, 8,
+ 					    (char *)&data->buffer);
++out:
+ 	ccs811_set_wakeup(data, false);
+ 
+ 	return ret;
+-- 
+2.39.5
 
