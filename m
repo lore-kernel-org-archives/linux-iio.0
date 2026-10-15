@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A855437FB;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D86E384CCD;
 	Thu, 15 Oct 2026 16:49:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792082995; cv=none; b=kINoSYu6a2omyOvk4NdUqkgPcd0n3oKIKqG8zdukzMsG1Ujdo0Xh28Ov69SW0pPztJdNunHMhYesxInGYCI3ftIHTdKcG9/G8LCkzPt6CjxZ4VAWDNmTX2OMMlbywSb1wdlSRK+wGGNTItrV4gp4AmXj7mKclp8zUIkQjn0DKGQ=
+	t=1792082995; cv=none; b=ahRMoRdC7GTjM/uxnPCYey1ImEsb6Y3YqGfMDj0gX6l2WS7ppgWljHV4gvotfHgTP71gUmZUuuzB9WY5aIls3ZbR4xOOjUEOSen8sx542xWgiOhn7Libb77KFUlC/lntoOa3PBNqf29cuUsRHCCtAvKqzdpkLODHacjCKa5zbZ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1792082995; c=relaxed/simple;
-	bh=JNXa9EY9DorVXCpgEHNR1iSm211urEUD88TNEug/caA=;
+	bh=eAb5oFB+rdh2Zz6njY91rxePgaWUNucu8QwqMo+DuCE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=kKWGiJlRsDQ3xo45ueJ7Z/dubQWFC79b386Cf5Fv8DdNLteqo/egFmaJxgqKHHVH9BFVugGg7+KYEDBIojjVG4hzboate2ZIRnHFhfEeZKORqd6cXX85jkwHO/TvNi4bDi8u5oZoIe1XF/UEV4HNIIvNlGHqFc7J1IcDszM4+zQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PMoczZ7i; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=aAFIO4O1XxBjZGcCS0uqdbEptIzmsI38OsihWCxG8YyszzzHNzIepFchB/NFpVq+dYcOL7+Vr8jc26PXrI87rv4rGW3wT11xYVK1J6faZTDnm+Ix0BYt32GNmc+UgnoBHmMbyRHY3x53ixoEyvwxYlHlDLGKP+6LBxwSbTe/FtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qf+AjsLh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PMoczZ7i"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0DF89C4AF0B;
-	Thu, 15 Oct 2026 16:49:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qf+AjsLh"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CF26BC2BCF5;
+	Thu, 15 Oct 2026 16:49:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1792082995;
-	bh=JNXa9EY9DorVXCpgEHNR1iSm211urEUD88TNEug/caA=;
+	s=k20201202; t=1792082994;
+	bh=eAb5oFB+rdh2Zz6njY91rxePgaWUNucu8QwqMo+DuCE=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=PMoczZ7ii2uTxjAj0lwjb/XFXJ1yFERFSMZ/iq467DgIwiKkJpI9oX5XHEx6HruSO
-	 f0ZyUaQoaZeJfGpEKZjY/7lSweppKbESDgVYdllwEpe0SzbWFBGWMZwFvYf71jQhDN
-	 N4WW0enWrFLIhGWHXyS3SVcDNxP18NkQto7bDYNJjz4bclK1sPWeRD5hREnJnUME2j
-	 tlMgJLoyKiCqKlNmjSvHhGRIeyvt/7VCHy4FJvQZgqgcsNgLLVZ/EqgDu8E7+NgVEL
-	 oZwpALhsBWjesms/NNT+/TDIuRAv2WWf+VyIQ73bcuvnqDbTxZiR6ofS3hmWtPWhtP
-	 Dte0tOFbliolQ==
+	b=Qf+AjsLhz4AfkZ2mvB/FOclY9mC0ye0yqp9WCofv4H6mh2NCmqOKZxU7DPfzjGw7O
+	 eVzt4CABi/TlRVW10qeMvT7cPcawn/UVA6drd6mKYmKb43r1dMa22FNLLfQTnyVtiY
+	 yAmu4sCJ9CLVlalNWeRNn17Z7BU1mpxy6x8N82IZtbZSLjF4Hdzfil3SlYL/BFCEks
+	 TWwJERX2sZ9+/lfxhHufL9a56xdXHoEAMlBtwmUTxu5mTmAlbKwxxbnMKwIlBC3B2A
+	 lduqCTpsib8q8EKbfQatzAC4LBiaAcgZSBjH3TfxJZD8R1LxD4pIyX06c7MHid8kLy
+	 U372z/RiEeRKQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC84CC6B39;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF192CC6B39;
 	Thu, 15 Oct 2026 16:49:54 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 15 Oct 2026 13:49:45 -0300
-Subject: [PATCH 05/10] iio: frequency: ad9910: move channel indexes into a
- shared header
+Date: Thu, 15 Oct 2026 13:49:41 -0300
+Subject: [PATCH 01/10] iio: frequency: ad9910: powerdown fix
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261015-ad9910-backend-support-v1-5-3c21648c8e26@analog.com>
+Message-Id: <20261015-ad9910-backend-support-v1-1-3c21648c8e26@analog.com>
 References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
 In-Reply-To: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -59,11 +58,11 @@ Cc: Olivier Moysan <olivier.moysan@foss.st.com>,
  Randy Dunlap <rdunlap@infradead.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792082993; l=4329;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792082993; l=2033;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=VsqJQc+ePynwFhVyVl6Uf/Qo3uusPG2hDGbHDjQCWp0=;
- b=/CtkwCFECJiXQy82RHizUoY1L5pL8v0dEkVDf9WFdxSwKGcRXjmJODpFTeuOxLWX176uDGKmM
- foVnVG0qwpzDe9lXDZj+Mnprl0WimFHjcChHUyMHzF9pnD1uTLBCupR
+ bh=z7PqLUz1GS3N66gFTTPD/4sazamj3Ede7ek83iY24FI=;
+ b=v3kIziO3EaoK9N1dW+gWYnAJBcqYdT/6j2lGpDIPLJMxA/OeAZrnJe7PdyQBwxGHRyMoYM4AK
+ mfY6ZmIzvwcBkwwwtsSlJZns0QgAvD2PPvv0cXt0fZCeh3DR1zIiywX
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -73,143 +72,59 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-The channel indexes are used as channel identifiers in IIO backend
-operations, such as enabling a parallel data port destination or
-selecting a profile. Move them, along with the data destination
-definitions, into a shared header, so that the frontend and backend
-drivers agree on those identifiers.
+Enable the software powerdown on all the applicable CFR1 register bits at
+once with an IO update.
 
-No functional change.
+It turns out that DIGITAL and REFCLK_INPUT powerdown do need an IO update
+when enabling the powerdown, but that is not the case when powering it up
+again. It is an asymmetric behavior, which was observed while profiling
+power consumption in the lab.
 
+Fixes: 22452fe6cd08 ("iio: frequency: ad9910: initial driver implementation")
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- MAINTAINERS                    |  1 +
- drivers/iio/frequency/ad9910.c | 35 ++-------------------------------
- drivers/iio/frequency/ad9910.h | 44 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 47 insertions(+), 33 deletions(-)
+ drivers/iio/frequency/ad9910.c | 26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 93ad6a829cb3..a9cb4396b3e1 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1735,6 +1735,7 @@ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
- F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
- F:	Documentation/iio/ad9910.rst
- F:	drivers/iio/frequency/ad9910.c
-+F:	drivers/iio/frequency/ad9910.h
- 
- ANALOG DEVICES INC MAX22007 DRIVER
- M:	Janani Sunil <janani.sunil@analog.com>
 diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
-index 8bc24d0b7442..dc13986dff3d 100644
+index 04a4e184b873..8bc24d0b7442 100644
 --- a/drivers/iio/frequency/ad9910.c
 +++ b/drivers/iio/frequency/ad9910.c
-@@ -33,6 +33,8 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+@@ -621,26 +621,16 @@ static int ad9910_sw_powerdown_set(struct ad9910_state *st, bool enable)
+ 	if (ad9910_sw_powerdown_get(st) == enable)
+ 		return 0;
  
-+#include "ad9910.h"
-+
- /* Register addresses */
- #define AD9910_REG_CFR1			0x00
- #define AD9910_REG_CFR2			0x01
-@@ -194,11 +196,6 @@
- #define AD9910_RAM_ENABLED(st)		\
- 	FIELD_GET(AD9910_CFR1_RAM_ENABLE_MSK, (st)->reg[AD9910_REG_CFR1].val32)
- 
--#define AD9910_DEST_FREQUENCY		0
--#define AD9910_DEST_PHASE		1
--#define AD9910_DEST_AMPLITUDE		2
--#define AD9910_DEST_POLAR		3
+-	/*
+-	 * When powering down, the DAC and AUX_DAC (SW1) must be powered down
+-	 * first, as they require an I/O update to take effect. The opposite is
+-	 * true when powering up, the DAC and AUX_DAC must be powered up last,
+-	 * i.e., after the DIGITAL and REFCLK_INPUT (SW0) power up.
+-	 */
+-	if (enable) {
+-		ret = ad9910_reg32_update(st, AD9910_REG_CFR1,
+-					  AD9910_CFR1_SW1_POWER_DOWN_MSK,
+-					  AD9910_CFR1_SW1_POWER_DOWN_MSK,
+-					  true);
+-		if (ret)
+-			return ret;
 -
- /* PLL constants */
- #define AD9910_PLL_MIN_N		12
- #define AD9910_PLL_MAX_N		127
-@@ -302,34 +299,6 @@ struct ad9910_ram_fw {
- 	__be32 words[] __counted_by_be(wcount);
- } __packed;
++	if (enable)
+ 		return ad9910_reg32_update(st, AD9910_REG_CFR1,
+-					   AD9910_CFR1_SW0_POWER_DOWN_MSK,
+-					   AD9910_CFR1_SW0_POWER_DOWN_MSK,
+-					   false);
+-	}
++					   AD9910_CFR1_SW_POWER_DOWN_MSK,
++					   AD9910_CFR1_SW_POWER_DOWN_MSK,
++					   true);
  
--enum {
--	AD9910_CHAN_IDX_PHY,
--	AD9910_CHAN_IDX_PROFILE_0,
--	AD9910_CHAN_IDX_PROFILE_1,
--	AD9910_CHAN_IDX_PROFILE_2,
--	AD9910_CHAN_IDX_PROFILE_3,
--	AD9910_CHAN_IDX_PROFILE_4,
--	AD9910_CHAN_IDX_PROFILE_5,
--	AD9910_CHAN_IDX_PROFILE_6,
--	AD9910_CHAN_IDX_PROFILE_7,
--	AD9910_CHAN_IDX_PARALLEL_AMP,
--	AD9910_CHAN_IDX_PARALLEL_PHASE,
--	AD9910_CHAN_IDX_PARALLEL_FREQ,
--	AD9910_CHAN_IDX_PARALLEL_POLAR_AMP,
--	AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE,
--	AD9910_CHAN_IDX_DRG_FREQ,
--	AD9910_CHAN_IDX_DRG_PHASE,
--	AD9910_CHAN_IDX_DRG_AMP,
--	AD9910_CHAN_IDX_DRG_FREQ_RAMP_UP,
--	AD9910_CHAN_IDX_DRG_FREQ_RAMP_DOWN,
--	AD9910_CHAN_IDX_DRG_PHASE_RAMP_UP,
--	AD9910_CHAN_IDX_DRG_PHASE_RAMP_DOWN,
--	AD9910_CHAN_IDX_DRG_AMP_RAMP_UP,
--	AD9910_CHAN_IDX_DRG_AMP_RAMP_DOWN,
--	AD9910_CHAN_IDX_RAM,
--	AD9910_CHAN_IDX_OSK,
--};
--
- enum {
- 	AD9910_POWERDOWN,
- 	AD9910_DWELL_EN,
-diff --git a/drivers/iio/frequency/ad9910.h b/drivers/iio/frequency/ad9910.h
-new file mode 100644
-index 000000000000..6452a8678ed9
---- /dev/null
-+++ b/drivers/iio/frequency/ad9910.h
-@@ -0,0 +1,44 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * AD9910 SPI DDS (Direct Digital Synthesizer) driver
-+ *
-+ * Copyright 2026 Analog Devices Inc.
-+ */
-+
-+#ifndef IIO_FREQUENCY_AD9910_H_
-+#define IIO_FREQUENCY_AD9910_H_
-+
-+#define AD9910_DEST_FREQUENCY		0
-+#define AD9910_DEST_PHASE		1
-+#define AD9910_DEST_AMPLITUDE		2
-+#define AD9910_DEST_POLAR		3
-+
-+enum ad9910_channel_idx {
-+	AD9910_CHAN_IDX_PHY,
-+	AD9910_CHAN_IDX_PROFILE_0,
-+	AD9910_CHAN_IDX_PROFILE_1,
-+	AD9910_CHAN_IDX_PROFILE_2,
-+	AD9910_CHAN_IDX_PROFILE_3,
-+	AD9910_CHAN_IDX_PROFILE_4,
-+	AD9910_CHAN_IDX_PROFILE_5,
-+	AD9910_CHAN_IDX_PROFILE_6,
-+	AD9910_CHAN_IDX_PROFILE_7,
-+	AD9910_CHAN_IDX_PARALLEL_AMP,
-+	AD9910_CHAN_IDX_PARALLEL_PHASE,
-+	AD9910_CHAN_IDX_PARALLEL_FREQ,
-+	AD9910_CHAN_IDX_PARALLEL_POLAR_AMP,
-+	AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE,
-+	AD9910_CHAN_IDX_DRG_FREQ,
-+	AD9910_CHAN_IDX_DRG_PHASE,
-+	AD9910_CHAN_IDX_DRG_AMP,
-+	AD9910_CHAN_IDX_DRG_FREQ_RAMP_UP,
-+	AD9910_CHAN_IDX_DRG_FREQ_RAMP_DOWN,
-+	AD9910_CHAN_IDX_DRG_PHASE_RAMP_UP,
-+	AD9910_CHAN_IDX_DRG_PHASE_RAMP_DOWN,
-+	AD9910_CHAN_IDX_DRG_AMP_RAMP_UP,
-+	AD9910_CHAN_IDX_DRG_AMP_RAMP_DOWN,
-+	AD9910_CHAN_IDX_RAM,
-+	AD9910_CHAN_IDX_OSK,
-+};
-+
-+#endif /* IIO_FREQUENCY_AD9910_H_ */
++	/*
++	 * When powering up, the DIGITAL and REFCLK_INPUT (SW0) must be powered
++	 * up first, as they do not require an I/O update to take effect.
++	 */
+ 	ret = ad9910_reg32_update(st, AD9910_REG_CFR1,
+ 				  AD9910_CFR1_SW0_POWER_DOWN_MSK, 0, false);
+ 	if (ret)
 
 -- 
 2.43.0
