@@ -1,313 +1,191 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24A3D31B101;
-	Wed, 14 Oct 2026 22:49:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A378E221DAE;
+	Thu, 15 Oct 2026 01:22:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792018164; cv=none; b=qBzsARnUNY/EsKh0y4z+C2crutPISwntL46rOHpsU2BtesN4vpc1wSXprbn7uIE7PcEmUMFuiAgxX0AOryip2cgA2U4s7CGsonXswwimaRu5IROUSWnDCYy379AdY7wWW9IjSTtoW2dGF251SdPm0BBhOax8JKO6AI17V/62MXM=
+	t=1792027347; cv=none; b=u2iGtSb5nnCt1avB8Qh8vo6nNxW11186A17Jm98GcM8L2YbpGcprCa/V9f5ij6bibOJ6X4sRICNzDXusvn6iasYZEkeINFx9VdAbyIomB6tXF7ZKtSXfZCoz0sxYM/yw7cS81Ac+QcpiVg/U6JivAD0/tffEJRSQvOmVmFuPOgw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792018164; c=relaxed/simple;
-	bh=2n+tSWBKRK+TZ7ijom245GqFpekUQvs5xbdt+IxqpJA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S440Kb/Q/oac+ajSv5c+4NHlAtmSvU/krfTBRt2LMlGNpiTfjZZxUsly9UZLV+cPgmJojZmq83IaK8Ui7hFw7DLpDwMnz5HX1n//FegpCQRphbiMkGZ0yH7XFo5lHmef0R0RbUu8ZB+AkHlzR+Xjo/NBgGi3JzcTR3x1EWGt/pQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K3WkrGqR; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792027347; c=relaxed/simple;
+	bh=PiXcmt2jls7CL+Z1fGnouiTM0kA+wVuw332fIPEoUSM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dz/mXN7gnONrfcwa3NuF//ALWCgj0lnFhJjfIfAd1j+HTL2cZ4SE3MmWlGs8t6BJPEgiqJEOBONEvTHPaGg/WIixvm8vqjPY188D3D+J+EzIe9Pllbc5wRmAmGaPAOWkKSeXh6wXv0oVSmgmkRw3HqpziI3SsPf49f6dpDK2lh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b=QdKQg+4h; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=AY+3685j; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K3WkrGqR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC0A1F000C4;
-	Wed, 14 Oct 2026 22:49:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792018162;
-	bh=a+VLM+36tmgQYYXNxE5+5p9zimFvNHmmZ//pOlOgDHc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=K3WkrGqRDGu1SLHDBhaoOJO1KXPkT0ihkApPQjJZcly8C6xERK0BynDVBNjY7pRCt
-	 ANWBXv6614dAbecH/DWkK8FAzTIjUSE0xd9M60HWBvQh0am9URSApjpmEsSSH/y20k
-	 bVC7/QMLOrXS0t19SEIF+d3UmIukVbdNMM5z0VXEdAikMeqs/8SrU4v05QNcrUBbLw
-	 Ud3yN9aC96wtpwydm+Mptwlv8dA8sX8XHRPsvbHRTJ684E4HglJUdySZVt36Gb7c6v
-	 CZecPdfLmxdiKvejeu/iwx7aT7xr9EZfRLtT0SUCdq/3PSRnYQCoXqNINFiiUQPTlI
-	 JKNtIwScIX8Fw==
-Date: Wed, 14 Oct 2026 23:49:17 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Olivier MOYSAN <olivier.moysan@foss.st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: add bindings for stm32 mdf
- filter
-Message-ID: <20261014-unmade-sphinx-71cb25110d58@spud>
-References: <20261001145702.2628429-1-olivier.moysan@foss.st.com>
- <20261001145702.2628429-2-olivier.moysan@foss.st.com>
- <20261001-tribesman-gauze-862e1ef0cdd8@spud>
- <bb8af256-5a77-4215-9eeb-fbcd0cae1829@foss.st.com>
- <20261008-9e2a48675c1a4c28f2dfa73b@squawk>
- <950f2801-a613-4f5a-a5a7-cb30101cf293@foss.st.com>
- <20261009-8db882a9fa159f8759aa7327@squawk>
- <2ba9235f-182e-4906-92e2-e35cf831d289@foss.st.com>
- <20261014-untrimmed-partly-81a4a21db49c@spud>
- <48e528a5-0c54-4778-bd29-b6f44ae95be7@foss.st.com>
+	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.b="QdKQg+4h";
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="AY+3685j"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69F1LA2h1992657;
+	Wed, 14 Oct 2026 21:22:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:message-id:mime-version:subject:to; s=DKIM; bh=Kvyy1hjreRwUgGia
+	qZDazHH1XtXZLEwshcCI0xjYlsU=; b=QdKQg+4hpXqHrnJy4Ck7CRZF1xxRa9st
+	ttk7tyiy36eAG9qreq6JbMHBMOIKpi9VeacnYZncouezTv9OE6magrXVJo6u4+Wj
+	ZSmhgodSV8tKJvRCb/mx0GXIKlzlHaGQvlvfritzPXtvXqh6VdZu+2N0LCytfFj1
+	rvfAEe3kMtav+rwODDJ3NTxe4AztqE3KjgAItAuymWfjAfgx4FvXiuLkErRkLWkb
+	dUrOMCBPBrAekfMAf0E4fXvNC8LBkOrkNW3esWqZkyOpuilUss3s0d/3eBBio+4P
+	zVKXgyVqe9w3m330Ublo+9N3nm5VOVDw8lHgo85Ps4qnLXcE/oSVDA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=Kvyy1hjreRwUgGiaqZDazHH1XtX
+	ZLEwshcCI0xjYlsU=; b=AY+3685j8bJsNmUSmAFRg9mDMjk8gbbGriQL5x6U/my
+	PWf6PwxN2/kMOObpO9xx2YCRdR5Nz3VT7HwzhePslb9anAkuMAiP2C8QkZKQavIm
+	/yQAT7Uf6tJbxsmOkJZPTcrhVeFgdu570P7i3OxvPH5HUeqFDJFT5Mhc3NP0P/bu
+	gUKNf9t7zNhQRwLGvzfk9RGEobV0sqV3PfIXNU5c74lPR3s2aKBjV1W09FrlktFI
+	PBUS3sA+5ME48pCnVQDtMIR+ZAh05Za4moIf8kvGrLBcjV7bmeaPfvUmSCq75G6x
+	VFtVWQthXbG9RhCMfupSBh60JyKFlfZSUtMo81en7Ig==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4han3h8079-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 14 Oct 2026 21:22:21 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69F1MKSV029721
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 14 Oct 2026 21:22:20 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 14 Oct 2026 21:22:20 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 14 Oct 2026 21:22:20 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 14 Oct 2026 21:22:20 -0400
+Received: from JGERONI2-L01.ad.analog.com ([10.66.6.191])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69F1M7j9003376;
+	Wed, 14 Oct 2026 21:22:10 -0400
+From: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <krzk+dt@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+        <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
+        <andy@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>
+Subject: [PATCH v4 0/2] Add support for Analog Devices MAX30210
+Date: Thu, 15 Oct 2026 09:21:57 +0800
+Message-ID: <20261015012159.44-1-johnerasmusmari.geronimo@analog.com>
+X-Mailer: git-send-email 2.44.0.windows.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="MwIaf7mBDFu+e2ZQ"
-Content-Disposition: inline
-In-Reply-To: <48e528a5-0c54-4778-bd29-b6f44ae95be7@foss.st.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 0ajY7b4rZKWQDjP94zMhAmDReEhoxUoj
+X-Proofpoint-ORIG-GUID: 0ajY7b4rZKWQDjP94zMhAmDReEhoxUoj
+X-Authority-Analysis: v=2.4 cv=ZduIpcVA c=1 sm=1 tr=0 ts=6ad02acd cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8
+ a=mq-ZwdqjH7F0OScFwZYA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDE1MDAwNCBTYWx0ZWRfX55dD6C2WltiR
+ sbXoB8rL+nIoOrFeCeFgrBeT18HJ/NbgQOs9mQXZl0brlKBi629846i9HrK+y7NYuQofnrJajv6
+ M/ybGAAYROcCah3ad1OH7EPuda54vvvqbDC3gjEnHOhCs5id3HLw
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDE1MDAwNCBTYWx0ZWRfXxH+y76jM6B7W
+ RJAWPASD9hot0vQZD/w3DItcUI4g3igX87b/nJtc7teueUNtLcTnKGL25Jmlf04/ql3jDvoUVIU
+ Hda7QQpdU5OPnbihYNx8tWWzp4bZaRGyo184GdPT9V5X1DRfqjd8qDH6RJBoS0TC8ZDO6VEiSrT
+ rgkiP3AS2w07mnwUAoM7pHEfJe0eVnmdF4wh7t1Zq/0LHEJShB5ZFEeIbwl984+X5Kai6r/cIm7
+ BjyncHFegPr7AA+rcEXnFG4cM+QgVOTa4ZVxNM2ZV1WFSnCKuMrbLgPkWspt8yeM4Srt8RMdYlG
+ AZDkCJzLvU3EjIvZergUNqA6TrcIxnjB/ReP/JklU7/1peXCGYKr5qIcclzOCeVcF/XHuwmCX9x
+ Yy6WFSMcXU77KP02Ofd5iZA6EcYmouUjcwMrRhqhf6QrxOrE7Wx5gUK9ceD8rNFRD0+OCYiwSHf
+ bXxTasC9o/5ALCd7PrQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-10-13_01,2026-10-14_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 phishscore=0 bulkscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 adultscore=0 spamscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610080000
+ definitions=main-2610150004
 
---MwIaf7mBDFu+e2ZQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series adds support for the Analog Devices MAX30210 I2C
+temperature sensor.
 
-On Wed, Oct 14, 2026 at 06:51:45PM +0200, Olivier MOYSAN wrote:
-> On 10/14/26 17:15, Conor Dooley wrote:
-> > On Mon, Oct 12, 2026 at 02:56:04PM +0200, Olivier MOYSAN wrote:
-> > > On 10/9/26 21:12, Conor Dooley wrote:
-> > > > On Thu, Oct 08, 2026 at 06:37:26PM +0200, Olivier MOYSAN wrote:
-> > > > > On 10/8/26 12:11, Conor Dooley wrote:
-> > > > > > On Wed, Oct 07, 2026 at 11:01:28AM +0200, Olivier MOYSAN wrote:
-> > > > > > > On 10/1/26 20:32, Conor Dooley wrote:
-> > > > > > > >=20
-> > > > > > > > > +
-> > > > > > > > > +required:
-> > > > > > > > > +  - compatible
-> > > > > > > > > +  - reg
-> > > > > > > > > +  - ranges
-> > > > > > > > > +  - clocks
-> > > > > > > > > +  - clock-names
-> > > > > > > > > +  - clock-ranges
-> > > > > > > > > +  - "#address-cells"
-> > > > > > > > > +  - "#size-cells"
-> > > > > > > > > +
-> > > > > > > > > +additionalProperties: false
-> > > > > > > > > +
-> > > > > > > > > +patternProperties:
-> > > > > > > > > +  "^sitf@[0-9]+$":
-> > > > > > > > > +    type: object
-> > > > > > > > > +    description: Serial interface child node
-> > > > > > > >=20
-> > > > > > > > Why is this a child node at all?
-> > > > > > > > Probably not worth reviewing more without a link to the doc=
-s for this
-> > > > > > > > device so I can figure out what on earth is going on!
-> > > > > > > >=20
-> > > > > > >=20
-> > > > > > > The MDF is a digital filter for sigma-delta bitstreams, rathe=
-r than the
-> > > > > > > analog-to-digital converter itself.
-> > > > > > >=20
-> > > > > > > Here is the link to STM32MP25 reference manuel
-> > > > > > > https://www.st.com/resource/en/reference_manual/rm0457-stm32m=
-p2325xx-advanced-armbased-3264bit-mpus-stmicroelectronics.pdf
-> > > > > > > Chapter 45: Multi-function digital filter (MDF)
-> > > > > > >=20
-> > > > > > > On STMP32MP25 SoC, the MDF provides 8 serial interfaces (SITF=
-) and 8 digital
-> > > > > > > filters (DFLT) which can be connected through a multiplexer.
-> > > > > > >=20
-> > > > > > > Below is a schematic view of typical applications targeted by=
- this
-> > > > > > > peripheral
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > Audio use case:
-> > > > > > >=20
-> > > > > > > 		mdf
-> > > > > > >                +-------------------------------------+
-> > > > > > > +------+    | +------+    +------+    +------+    |
-> > > > > > > | dmic | -> | | sitf | -> | mux  | -> | dflt | -- | -> audio =
-device
-> > > > > > > +------+    | +------+    +------+    +------+    |
-> > > > > > >                +-------------------------------------+
-> > > > > > >=20
-> > > > > > > For instance, in an audio use case the serial interface can b=
-e configured to
-> > > > > > > provide the clock to the digital microphone (cck0, cck1 or bo=
-th) at a common
-> > > > > > > predefined rate, and to retrieve the PDM samples.
-> > > > > > > The serial interface provides this samples to a digital filte=
-r, which
-> > > > > > > delivers PCM samples on its output.
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > Analog use case:
-> > > > > > >=20
-> > > > > > > 		mdf
-> > > > > > >                  +-------------------------------------+
-> > > > > > > +--------+    | +------+    +------+    +------+    |
-> > > > > > > | sd adc | -> | | sitf | -> | mux  | -> | dflt | -- | -> iio =
-device
-> > > > > > > +--------+    | +------+    +------+    +------+    |
-> > > > > > >                  +-------------------------------------+
-> > > > > >=20
-> > > > > >=20
-> > > > > > So, looking at the docs and a brief chat with Jonathan about th=
-is
-> > > > > > device, I believe you've got things backwards and this is actua=
-lly the backend,
-> > > > > > and the adc should be the one populating the io-backends proper=
-ty
-> > > > > > pointing to this device. You should have io-backend-cells, and =
-I assume
-> > > > > > that there should be a cell for the adc to select which dlft it=
- is connected
-> > > > > > to.
-> > > > > >=20
-> > > > >=20
-> > > > > There have already been lengthy discussions in the past about a D=
-FSDM
-> > > > > peripheral on STM32MP1, which has features similar to those of th=
-e MDF and
-> > > > > similar implementation constraints. For the DFSDM, a solution bas=
-ed on an
-> > > > > IIO backend had been upstreamed. The MDF follows the same archite=
-cture. I
-> > > > > need to take a little time to dive back into this issue.
-> > > >=20
-> > > > One thing to note there is that you retrofitted the backends onto t=
-hat
-> > > > device, and the original design here is much older (it's a text
-> > > > binding).
-> > > >=20
-> > > >=20
-> > > > >=20
-> > > > > DFSDM sources:
-> > > > > drivers/iio/adc/stm32-dfsdm-adc.c
-> > > > > drivers/iio/adc/stm32-dfsdm-core.c
-> > > > >=20
-> > > > > Here is a sample of DFSDM DT
-> > > > >=20
-> > > > > sd_adc0: simple-sd-adc0 {
-> > > > > 	compatible =3D "sd-modulator";
-> > > > > 	#io-backend-cells =3D <0>;
-> > > > > 	vref-supply =3D <&v3v3>;
-> > > >=20
-> > > > Yeah, pretty sure this is wrong (backwards). The backend is the thi=
-ng
-> > > > that gets data from an ADC not the ADC.
-> > > >=20
-> > >=20
-> > > The backend framework was introduced to implement complex IIO aggrega=
-te
-> > > devices. The hardwares that were driving this need were analog device=
- ad9467
-> > > and ST DFSDM.
-> > >=20
-> > > https://lore.kernel.org/linux-iio/20231204144925.4fe9922f@jic23-huawe=
-i/T/#m222f5175273b81dbfe40b7f0daffcdc67d6cb8ff
-> > >=20
-> > >  From drivers/iio/industrialio-backend.c:
-> > >=20
-> > > "The typical architecture is to have one device as the frontend devic=
-e which
-> > > can be "linked" against one or multiple backend devices. All the IIO =
-and
-> > > userspace interface is expected to be registers/managed by the fronte=
-nd
-> > > device which will callback into the backends when needed (to get/set =
-some
-> > > configuration that it does not directly control)."
-> > >=20
-> > >   *                                    ---------------------
-> > >   * ------------------                 | ------------
-> > >   * |     ADC        |-----------------| | ADC CORE |
-> > >   * | (Frontend/IIO) | Serial Data (eg | |(backend) |-------
-> > >   * |                |-----------------| ------------
-> > >   * ------------------                 ---------------------
-> > >=20
-> > > The MDF (or DFSDM) use case, follows this topology:
-> > > - The SD modulator (ADC core) registers in backend framework
-> > > - The MDF registers in IIO framework and exposes the IIO devices
-> > >    It also get configuration (ref voltage) from SD modulator, to comp=
-ute
-> > > scaling.
-> > >=20
-> > > I agree that if we consider the terms frontend and backend, the eleme=
-nts in
-> > > the data flow do not have the roles that we would naturally expect. H=
-owever,
-> > > if we consider the expected role of the elements using the iio-backend
-> > > framework, the usage seems coherent to me.
-> >=20
-> > I didn't even get as far as sd modulators or whatever, if I understand
-> > correctly the ADC inputs on this device are fed by the onboard ADC?
-> > (https://lore.kernel.org/linux-iio/20261006-adc-stm32mp25-v1-v4-0-d31ec=
-75aecf3@foss.st.com/)
-> > In that case, I can't really see how it makes sense for the primary iio
-> > device to change when data is fed back through the mdf or taken
-> > directly from the ADC itself, particularly given how that would affect
-> > the userspace interface.
-> >=20
-> > The "serial" side of this seems in a similar vein to the adi,axi-adc
-> > stuff, which when considered with the ADC inputs, really does give me
-> > the impression this is backwards.
->=20
-> Some clarifications about the STM32MP25. This SoC does indeed provide ADC=
-s,
-> and these can be connected to the MDF via a dedicated interface. (but not
-> the serial interface).
->=20
-> However, this use case is not supported by the driver. Only sigma-delta
-> modulators, external to the SoC and connected via the serial interface, a=
-re
-> supported. On ST boards, the only available SD modulators are digital
-> microphones.
+The device provides a 16-bit temperature output and includes
+features such as a hardware FIFO, programmable sampling rate,
+threshold alarms, and interrupt support. These capabilities map
+naturally to the IIO subsystem, particularly the buffered interface
+and event framework -- hwmon has no equivalent buffered-capture
+framework, and its alarm attributes are polled rather than
+interrupt-driven, so there is no path to supporting the FIFO or the
+autonomous threshold comparators there.
 
-Quite frankly, I don't care what you are choosing to implement in the
-driver or what your first-party boards support. The binding must
-represent the capabilities of the device, not what subset you deem
-relevant at this point in time. I'm not going to ack anything that does
-not consider all use cases for the device, especially since I the more I
-look the more I am convinced that this is the wrong way to model the
-relationship between devices and therefore intentionally ignoring a use case
-is likely to be problematic when someone does decide that they want to use
-that feature.
+Although the MAX30210 belongs to the same device family as the
+MAX30208, it is implemented as a separate driver. The MAX30210 has
+a significantly different feature set, including a 64-sample hardware
+FIFO with configurable watermark interrupts, programmable sampling
+rates, and event support. These features require buffered operation
+and IRQ-driven data handling which are not present in the MAX30208
+driver (which talks to the device directly via i2c_smbus_*() calls
+with no regmap, and has no IIO buffer or event interface at all).
 
-> Anyway, if the internal ADC to MDF use case was supported, the issue would
-> be the same. The whole ADC + MDF set would be presented at the interface =
-as
-> an aggregated device, and the ADC data would not be directly accessible to
-> the user.
+In addition, the MAX30210 uses a different register map and a more
+flexible I2C address selection scheme. Supporting both devices in a
+single driver would introduce substantial conditional logic, so a
+separate driver keeps the implementation simpler and easier to
+maintain.
 
-Of course, that's what I was talking about when I said:
-| In that case, I can't really see how it makes sense for the primary iio
-| device to change when data is fed back through the mdf or taken
-| directly from the ADC itself, particularly given how that would affect
-| the userspace interface.
+Patch 1 adds the devicetree binding.
+Patch 2 adds the IIO driver implementation.
 
-To me, in that ADC to MDF use case, the frontend portion of the aggregate
-device presented to userspace needs to be the ADC and the MDF needs to be
-the backend, since otherwise the ADC will simultaneously be frontend and
-backend, depending on which channel is considered. That makes no sense to me
-when the MDF can always be the backend, for all use cases and avoid that
-sort of problem entirely.
-I've heard no argument as to why the MDF cannot be a backend, just that you
-don't want to because the previous device didn't, but copying what was
-done before isn't a justification that bears weight if how it was done
-before isn't the way it should be done.
+Changes since v3:
+https://lore.kernel.org/all/cover.1789032019.git.johnerasmusmari.geronimo@analog.com/
+- regmap_noinc_read() for FIFO reads instead of regmap_bulk_read(),
+  which (combined with regmap caching) could silently return stale
+  cached values of unrelated registers instead of real FIFO data.
+- Mark both bytes of TEMP_DATA_REG volatile for the same reason.
+- Decouple threshold events from the buffer via a refcounted
+  autoconv_get()/autoconv_put() pair, so either can be used
+  independently or concurrently.
+- Don't let a single-shot direct-mode read race with/clobber
+  autonomous conversion mode if a threshold event or the buffer is
+  already using it -- return -EBUSY instead.
+- Don't hard-fail probe when there is no interrupt; fall back to
+  direct-mode-only operation.
+- Fix devm teardown ordering so an in-flight interrupt can't use a
+  freed event interface on removal.
+- Re-assert the powerdown GPIO on removal so the device reaches
+  standby instead of staying powered indefinitely.
+- Style/API fixes from review (register/field grouping, _MASK
+  naming, FIELD_PREP/regmap_assign_bits usage, C99 initializers,
+  dropped redundant i2c_check_functionality() check, comment
+  cleanup).
 
-Thanks,
-Conor.
+All of the above have been verified on real MAX30210 hardware
+(Raspberry Pi 4 test rig), including the no-IRQ fallback, buffer and
+event refcounting (independently and concurrently), rmmod/insmod
+under live interrupts, powerdown GPIO assertion on removal, and FIFO
+flush correctness.
 
---MwIaf7mBDFu+e2ZQ
-Content-Type: application/pgp-signature; name=signature.asc
+Changes since v2:
+https://lore.kernel.org/all/20260304122509.67931-1-johnerasmusmari.geronimo@analog.com/
+- Fix FIFO byte-count handling and sample decoding.
+- Fix IIO debug register read/write access.
+- Validate event threshold values and sampling-frequency register values.
+- Return the correct sampling-frequency format and reject direct reads
+  while buffered capture is enabled.
+- Clean up the Kconfig entry and device-tree supply declaration.
 
------BEGIN PGP SIGNATURE-----
+John Erasmus Mari Geronimo (2):
+  dt-bindings: iio: temperature: add ADI MAX30210
+  iio: temperature: add support for Analog Devices MAX30210
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatAG7QAKCRB4tDGHoIJi
-0lf0APoDDmWLKbnSiCnHdRPcy+vbGQhQMeNRusw0qJ8Bot87jwD/dNYXNfEsRY9R
-URObrWxRpVhyloeQ5A2gSFp3xlKWNwk=
-=BK0a
------END PGP SIGNATURE-----
+ .../iio/temperature/adi,max30210.yaml         |  61 ++
+ MAINTAINERS                                   |   8 +
+ drivers/iio/temperature/Kconfig               |  13 +
+ drivers/iio/temperature/Makefile              |   1 +
+ drivers/iio/temperature/max30210.c            | 788 ++++++++++++++++++
+ 5 files changed, 871 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+ create mode 100644 drivers/iio/temperature/max30210.c
 
---MwIaf7mBDFu+e2ZQ--
+-- 
+2.34.1
+
