@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 176E536B909;
-	Fri, 16 Oct 2026 14:43:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 377062DEA8F;
+	Fri, 16 Oct 2026 14:45:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792161830; cv=none; b=Bq4y+gs3T+Or7rgDrtoAMAhK9scpBqg7wAt27IL2CvYgZ09fHe/4/YDBwlrmz8pZCAbS6Yc7uvNwSVlbFGspqxEWRO9Wa0FpcgX0ScUwiEy8lKB9YOCnmzKVDZ08U8ccyGVw9QCJz9sN8m6gM9WqlWKia8QKVCFUis9noTjXbak=
+	t=1792161924; cv=none; b=DT9NRGnUONTZ8+4vV29d21/+3ta8tXflFOhQo5wFF1UgjbqOE48xrfoLa/EYUI6NeMh0sLsMixdSfA+kJ0JY1kclfp/opCx0RHfNLTmhqpZJzyfL2KKeoAbgv682etFqBHYVaf0BdLdD0Z3bMBCEE1UTUAktED2jCc8hMndRlWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792161830; c=relaxed/simple;
-	bh=IWDhpwO8T5XdBFtIM0r0GmIxS3m1LCBKjHgIzvYQ3JI=;
+	s=arc-20240116; t=1792161924; c=relaxed/simple;
+	bh=lMvn4EaNAc7qV/DRzOEOyqRRxIIyLgDw/ZoD1OMpinU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SEt8ZaZRsRvoGBGf4+VV/DkhZYI89NtfA9NkMK81WX3riMSZNS0owsR0b/Vtvsx/3lK+Fn+G8I79JcF27vUfWvx+FZf74cy0CWGdvrqgjObi2M0Zo5dBuRlq7LGcKLG0KEthpqYbdbUUbOvvMN8sWnZLhSFQdMXVEpt4iEhmlY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g/k1yiOd; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=ogUXUTIq/n+lgLp54oXjWdWq2bIaCCRPMN+I5HsZAy10hmca6c6ihJJqj8bP9AGwVy8iO1YviV6X4hEiA9BMyPtFWRENKdj2HMhndWXqHvQRkJUOyK0DjG9+sSRy/cKgpyb4apQ+JEUmWJF2qFjaRJV7C3NmKz5DNwbHPyaNE0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WjPiCLhe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g/k1yiOd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C36F1F000C5;
-	Fri, 16 Oct 2026 14:43:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WjPiCLhe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C2A71F000C6;
+	Fri, 16 Oct 2026 14:45:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792161828;
-	bh=wau/q72ALP0InLnitZWqmqti3x9g8kQoq78sQZw2it4=;
+	s=k20260515; t=1792161922;
+	bh=lMvn4EaNAc7qV/DRzOEOyqRRxIIyLgDw/ZoD1OMpinU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=g/k1yiOdG0cvI/ATBJ/PvZ89eOxUFU+Os9Va1Bhb7DIBPcJI46gmL78JlK282f+fO
-	 mzmYBqJUquM6tj7/gZPX1IIsfAQGqD5kcyTBmaUQLqLgr6A/5ihplMyP/4jpRXUuQJ
-	 MUTG2pndfGmdAZkZVfckkrxxHKXJ5Z16l8UJ5f15qxamAaE9jm4SHv0Q33HCKOr6cL
-	 OhotK8ofZ8LSiAKxpVViBLogMOGa3ARODqN/7cVNudULSS3qaIP0LHf5AisBRUCeQl
-	 U0FOi2eP6xZ+gRK4amFojhBNrFP4JIuS4aMFmB8omYTty1VAB3WBRp5eP5Nxe/UDMv
-	 URW2uiFF1G0EQ==
-Message-ID: <af011ab8-b9ab-49d1-b9fe-4e87b3979bbd@kernel.org>
-Date: Fri, 16 Oct 2026 16:43:42 +0200
+	b=WjPiCLhe9nyolqzvMNSkP4jN7C11hfZEhAScsRw2Pb1fVG4GzfUTP0MAmY7vogfBR
+	 mciCtGjEKY1PsJj2z4J3IyC45rDxwPw/m3zSbBsIQNLNiO7NehQmqbP7rqVy7vy+AT
+	 bqgI6eFU2MgW1eXTD0QhaoKgL3jq8Fh6GalHY5QaoOoPqs9frwrEaIK2EaGCIARlmd
+	 i/HYv0YLUrX7EZj/D0g4rAaJgSZkeBkNVQzHGheh0Q3JMhrZdDq9k+cIKYx80Hk8xD
+	 Z92eDEAftOvpr1FGU7TixuJr+Zx/XrYbzyr8XHtkwyBAs0CRNW0kojIRGcOKcaIwNu
+	 8m2jQON5pTABQ==
+Message-ID: <97417be4-fc92-4184-b4d1-43482e50983e@kernel.org>
+Date: Fri, 16 Oct 2026 16:45:17 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,17 +35,18 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add AMS TCS3472 and TCS3400
-To: mocker-mug-unwoven@duck.com, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Arka Mondal
- <arka@arkamondal.net>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261016-tcs3400-v1-0-3d79d2a7f449@duck.com>
- <20261016-tcs3400-v1-1-3d79d2a7f449@duck.com>
+Subject: Re: [PATCH 2/3] iio: light: Update DT bindings for GP2AP002
+To: Christoph Rudorff <chris@rudorff.com>, Linus Walleij <linusw@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20261016-iio-light-gp2ap002-v1-0-7c93312fa8d5@rudorff.com>
+ <20261016-iio-light-gp2ap002-v1-2-7c93312fa8d5@rudorff.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -91,67 +92,29 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20261016-tcs3400-v1-1-3d79d2a7f449@duck.com>
+In-Reply-To: <20261016-iio-light-gp2ap002-v1-2-7c93312fa8d5@rudorff.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 16/10/2026 10:15, HuskerMinion via B4 Relay wrote:
-> From: HuskerMinion <mocker-mug-unwoven@duck.com>
-> 
-> The tcs3472 driver has no binding yet. It matches DT nodes only through
-> its I2C device ID.
-> 
-> Document the TCS3472 family and the AMS TCS3400 family, which the next
-> patch adds to the driver. Both are I2C color sensors with one threshold
-> interrupt and a VDD supply.
-> 
-> Signed-off-by: HuskerMinion <mocker-mug-unwoven@duck.com>
+On 16/10/2026 16:43, Christoph Rudorff wrote:
+> add missing vled-supply
 
-Please read submitting patches how to properly attribute the work with
-your real and known identity
+Please use full sentences.
 
+Why missing? Did you check datasheet?
 
-> ---
->  .../devicetree/bindings/iio/light/ams,tcs3472.yaml | 57 ++++++++++++++++++++++
->  1 file changed, 57 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/ams,tcs3472.yaml b/Documentation/devicetree/bindings/iio/light/ams,tcs3472.yaml
-> new file mode 100644
-> index 000000000..cd4a0516e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/ams,tcs3472.yaml
-> @@ -0,0 +1,57 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/ams,tcs3472.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: AMS TCS3472 and TCS3400 color light-to-digital converters
-> +
-> +maintainers:
-> +  - HuskerMinion <mocker-mug-unwoven@duck.com>
-> +
-> +description: |
-> +  Color light sensors with 16-bit clear, red, green and blue channels, an
-> +  I2C interface and a threshold interrupt.
-> +
-> +  The TCS3472 family covers the TCS34721, TCS34723, TCS34725 and TCS34727.
-> +  The TCS3400 family covers the TCS34001, TCS34003, TCS34005 and TCS34007.
+Please use subject prefixes matching the subsystem. You can get them for
+example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+your patch is touching. For bindings, the preferred subjects are
+explained here:
+https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
 
-We do not take families, but actual devices. TCS3400 seems to be a real
-device, so I don't get why you call it a family.
+Subject - everything is "update". Be specific. See git history for examples.
 
-
-> +  The variants differ in I2C address and interface voltage.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ams,tcs3400
-> +      - ams,tcs3472
-
-Your driver cod suggests these are compatible, so it should be expressed.
+Please organize the patch documenting the bindings (DT bindings) before
+the patch using that ABI.
+See also:
+https://elixir.bootlin.com/linux/v6.14-rc6/source/Documentation/devicetree/bindings/submitting-patches.rst#L46
 
 
 Best regards,
