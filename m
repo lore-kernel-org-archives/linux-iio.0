@@ -1,189 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAE2347D45B;
-	Fri, 16 Oct 2026 11:17:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7553B6C15
+	for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 11:18:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792149437; cv=none; b=KvGefPoCNkRAF/U30E1A+q6Fhy8czlaLFL8D6wRqMW25+E1tRhMW9Jk6JjyzEwJ8bguzFz27Os1t0pp6brrmoRecxs748ZolX4gCmmEhq5ekDP+dEZNFDgrWKjr10u/ZjMBqEGFBJGJxbiuZPZGl8rsuq+5ESQ9+8HebZH5ILSo=
+	t=1792149506; cv=none; b=f//5/YGnh79vYGdu1fkK92eEfLHWwYbJeCia7+rkOwkOP1Alt7j1Pd2gfY0niGcly2hVHLeuDua2pRzkf1d2nxy+WC9or0W4YmI7c2DZk4ttY/B9lvCw/v0//+3mVf/eycctTCyzffJkV7k9z304gzrglGGXMhTkvFhUJ3iOuM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792149437; c=relaxed/simple;
-	bh=p8iLKHeLSsqSHq5BgtXcXKEPiJD1O5exfgfWkIq8ETs=;
-	h=From:Subject:Date:Message-Id:To:Cc:MIME-Version:Content-Type; b=AgjbM47Nv8TGMcvkh+TxMd5D31vg5s7M1/Dg2M2wJVoooCnZEFRHthwryGhHONb7e3RIVT1YVhPgDQ6oAy/TKddmI5tvXwdZVX6M1vMzqdXCcbaHDW99f1n0wNBu54oplhMwGCwtvl0ZQZbhNfbLQCQSRPv68Gf8R/LzSpzs3WI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DO/t5OuG; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1792149506; c=relaxed/simple;
+	bh=zgkwj6e9vbDHwtICgViFCAGRLUN/G2JGqqsU7h02Wuw=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b3SSmLCwS1QhFhqTqSEKT1GErJr5YI7UMlSpc2X1Yu0TfN18PIxCBPCtmONzV+MQOdBDillvi3t3xsjO2PKxtP3BsDYqwFu43AVrAWzUrNzrxWL1l0Rm6bxF789fIHaU7aWJLzJr6voPAeDEHJxYggEHPSOj4f/K1wtAcF5yusk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rOLuofGX; arc=none smtp.client-ip=209.85.160.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DO/t5OuG"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 194A4C2BCF4;
-	Fri, 16 Oct 2026 11:17:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1792149437;
-	bh=p8iLKHeLSsqSHq5BgtXcXKEPiJD1O5exfgfWkIq8ETs=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=DO/t5OuGkGIDpxsgSQQZAaMcvn4oEp4VowpY5/pi0jmTw10FFQ/ZTf2gpy9ZW4eyb
-	 vLnrogli2wNquxOZ1iMcanMVmRmFgE7mcqFAh7U67SZsP8AxvsN50YolVqjxtj/CpQ
-	 Jwjp7qe/5lnQ0uLEKHK1ma/USIH4mlFzAj88htuoxGMEW3Jj6NjJwbZ5QYDWFf9Ho0
-	 Y+kKqmbAyFH4TqJjcAKgPOvIpFr9ji/jqfZURBQ6MDlPeUw7sm3sNnWlWsGS3pmgiw
-	 f0uYaP+Y2sGvwXIioGST+VhTHqXQ2pNU2blOcqzVoY6TXUSau+cE31rraFZG1rRHUI
-	 VlPo0W4ATwXUQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E94A6CCA462;
-	Fri, 16 Oct 2026 11:17:16 +0000 (UTC)
-From: Amir Atef via B4 Relay <devnull+amiratefabdallah1122.gmail.com@kernel.org>
-Subject: [PATCH] staging: iio: frequency: ad9834: use guard(mutex)
-Date: Fri, 16 Oct 2026 14:17:12 +0300
-Message-Id: <179214943270.333.5921549521929682753.20261016-ad9834-guard-mutex@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org, 
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-X-Mailer: b4 0.14.3
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rOLuofGX"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-47b47de8b4cso4070383fac.3
+        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 04:18:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792149503; x=1792754303; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:date
+         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=cVz7ThNpphF2wGwY/8fgPQxitchV6jCAr/JmL33wLY0=;
+        b=rOLuofGXs/3SgRSMcaqZ25UKsw8rBc3LS9Pr1WgCbJB3fu2ntW4G7dT7R/4Frfp9+J
+         bbJVBUaY8KFYfTUfjuGdx4pbo3pB1UQRhBcaQTtAWiVnNp8ExOcYl3DMcI++AJXLqo+i
+         JP9+BKb0ekE0RGrRY81HYhK9YY/hmu+XhZ56AhyqaLvlr8MSMu44P1QS0+NcdMeZmYQJ
+         Jwgsprq4De8xfOgx0i2ty7N3wwtRqfOlas3+H+/Vg1pirD+T0JovQDSZP5975BAgb01J
+         u+RN6tKYuoOkBApBzHnFTPk+XMsJjMqlHbX6P4h1TslDSzw40da+Np8yGr2GMIFzcNFf
+         KHKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792149503; x=1792754303;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:date
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=cVz7ThNpphF2wGwY/8fgPQxitchV6jCAr/JmL33wLY0=;
+        b=WP0CxOLA+HDUmkuSTqzp4XrDycPOOZwg8O5ZGEerBnzgZwEY90jrrlA3vf2Ts0mc9q
+         W5njim1xIxdHjG9iar+1UjG1FGIbomFxBoEpVkZAjQymFxHuNndthSyXvhweXY1bttBb
+         nLOq/f+KsCe47iw1mLFySjn0ZrzoOlyZkimjuf2FsJ2hmqUqO8dTDIOSthHMqUmY9fPm
+         S24t6WdUhHZNA6hL7RJTWWO0iJMq80sEjkE/XZrxNbnfvlvYf69jhFYlxmpEVXbYIZcj
+         17mZRkEjiSryXZZ/W22eWluS1xYNX189ql4Yg96Epwg6ShTsR50+cmE4bvKEpin2cxLB
+         6PTw==
+X-Gm-Message-State: AFq9FYLmVirxxlevyAZhkfHW8nY/6N0Skn1CzXnV+eKxel07dHuS7yji
+	HJKDJ5KgDwR7nmCboW4u3cznrKmnJDYYZ9p5W985wcPmdjOpE8U7SWvh
+X-Gm-Gg: AYBFou2+3vvPx42U+FEKEF6UNvQEimJy75BJMR9Z6+ytbJhGRQaUF4F+XCnQThmG76W
+	zP2xM2PXK6sLxvQQ+ZcS8Z1F/FUCsDXLtNellE7OUAsXuxu3cVHFVcIq5koIqQ9YAXBMqasYBXV
+	xyFD4JCXxEe6VlHRpHcRDw8JgXjvk2fva4EMtTgm6gUePgg2X0o/1zY+5JHGvA0rlS9wWF9Jsyj
+	gglXpQXs7PqJuQDvdbzlYIxp58Y2FxSMyeRqBq5sejnvq/009k0ofsYNy6WT+Y5pBfLwRuNB2Fd
+	i3bmEDPOuXvFBgCKxlyq14SbS2bV8Pvdzs2yHxxYNeyJeLRCVCGmv33fjttim9U4E9UN78ClwAn
+	pbdo9MUIveUcKnMXpX4t6ll2NmvUPrkriQF9Eb18d7mgIHLb7IyMyUMdWsuyecaN41fqXSj+UxG
+	OE6AvNtNwKSeoM0goACqc28is8B9SAJ2uOWnqipauPDEcFGk6gR1NwuIbVdcI4FlnssnsYNqRml
+	4bvSqQMZycwd3KIJ6zHg1MoJcYMSH9yPn88zpOPXtKwB/k3bdo94vmD8FAcmvkInxJsMA==
+X-Received: by 2002:a05:6871:810:b0:491:8db3:58bf with SMTP id 586e51a60fabf-4a2a854044amr19154740fac.8.1792149503385;
+        Fri, 16 Oct 2026 04:18:23 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (158.95.44.30.netskope-rdns.com. [158.95.44.30])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4a73b6d7e0csm1510827fac.12.2026.10.16.04.18.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2026 04:18:22 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Date: Fri, 16 Oct 2026 08:18:08 -0300
+To: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-doc@vger.kernel.org, Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, 
+	Olivier Moysan <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH 02/10] iio: backend: add devm_iio_backend_get_optional()
+Message-ID: <w7waqang6lriwbcq6o5s5yuedouuwgacmnj55qsjpzjrv3jut2@cthvkakgyhpi>
+References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
+ <20261015-ad9910-backend-support-v1-2-3c21648c8e26@analog.com>
+ <atEeZPOLASHAcnjF@ashevche-desk.local>
+ <atHjHqyxXj6jkObW@nsa>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792149432; l=3644;
- i=amiratefabdallah1122@gmail.com; s=20261016; h=from:subject:message-id;
- bh=b1+SRs3iAPcCs6+33+xk+21acapvMkXoR0sdLd32oT4=;
- b=eTM9ePPa1AzM1Tbm5Ij4l2P8xsth9a3dmtSM+YUgQN+ZqFJFvY7lqeLrd3PmMUxYAIFollqXh
- sRMZsk01lYIAlbISZDi1QbuuKeJmaa16TioawPSa+pP47EwLhwRfyDp
-X-Developer-Key: i=amiratefabdallah1122@gmail.com; a=ed25519;
- pk=FRhtQptjt3GSkQBUg7qfVL8eusorsJqHzciu3+ss11o=
-X-Endpoint-Received: by B4 Relay for
- amiratefabdallah1122@gmail.com/20261016 with auth_id=1209
-X-Original-From: Amir Atef <amiratefabdallah1122@gmail.com>
-Reply-To: amiratefabdallah1122@gmail.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <atHjHqyxXj6jkObW@nsa>
 
-From: Amir Atef <amiratefabdallah1122@gmail.com>
+On 16/10/26 09:45, Nuno Sá wrote:
+> On Thu, Oct 15, 2026 at 09:41:40PM +0300, Andy Shevchenko wrote:
+> > On Thu, Oct 15, 2026 at 01:49:42PM -0300, Rodrigo Alencar via B4 Relay wrote:
+> > 
+> > > Frontend devices might not need a backend driver to rely on. An IIO device
+> > > that supports backends can behave differently when they are not available
+> > > and that should be acceptable. Such parts may provide basic functionality
+> > > solely using the control interface (SPI for instance), being able to have
+> > > extended features when a backend is present.
+> > > 
+> > > Add devm_iio_backend_get_optional(), which returns NULL when the backend
+> > > is not described in firmware, i.e., when the io-backends property is not
+> > > present or, for a named lookup, when the name is not listed in the
+> > > io-backend-names property. Other errors, such as probe deferral, are
+> > > still returned.
+> > > 
+> > > To make that possible, a named lookup that does not match any entry of
+> > > io-backend-names now fails with -ENOENT, the same error returned when the
+> > > io-backends reference is missing. Also, the missing reference is no longer
+> > > logged as an error, leaving that to the caller.
 
-Use guard(mutex) to manage the state lock in ad9834_write() and
-ad9834_store_wavetype(). simplifies error handling by allowing
-early returns instead of setting the return code and breaking out of the
-switch statement to manually unlock the mutex.
+...
 
-Signed-off-by: Amir Atef <amiratefabdallah1122@gmail.com>
----
- drivers/staging/iio/frequency/ad9834.c | 34 ++++++++++++----------------------
- 1 file changed, 12 insertions(+), 22 deletions(-)
+> > >  		ret = device_property_match_string(dev, "io-backend-names", name);
+> > > +		if (ret == -EINVAL || ret == -ENODATA)
+> > > +			return ERR_PTR(-ENOENT);
+> > 
+> > No. Please, use device_property_present() instead.
+> 
+> Oh right! Totally forgot about that internally :). And it fits into my
+> internal point where I don't agree much in treating -ENODATA the same
+> way as property does not exist.
 
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 0d20f796e0f0..76a520280f68 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -8,6 +8,7 @@
-  */
- 
- #include <linux/bits.h>
-+#include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/dev_printk.h>
- #include <linux/err.h>
-@@ -155,7 +156,7 @@ static ssize_t ad9834_write(struct device *dev,
- 	if (ret)
- 		return ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	switch ((u32)this_attr->address) {
- 	case AD9834_REG_FREQ0:
- 	case AD9834_REG_FREQ1:
-@@ -166,10 +167,8 @@ static ssize_t ad9834_write(struct device *dev,
- 		ret = ad9834_write_phase(st, this_attr->address, val);
- 		break;
- 	case AD9834_OPBITEN:
--		if (st->control & AD9834_MODE) {
--			ret = -EINVAL;  /* AD9834 reserved mode */
--			break;
--		}
-+		if (st->control & AD9834_MODE)
-+			return -EINVAL;  /* AD9834 reserved mode */
- 
- 		if (val)
- 			st->control |= AD9834_OPBITEN;
-@@ -193,8 +192,7 @@ static ssize_t ad9834_write(struct device *dev,
- 			st->control |= this_attr->address;
- 			st->control &= ~AD9834_PIN_SW;
- 		} else {
--			ret = -EINVAL;
--			break;
-+			return -EINVAL;
- 		}
- 		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
- 		ret = spi_sync(st->spi, &st->msg);
-@@ -209,9 +207,8 @@ static ssize_t ad9834_write(struct device *dev,
- 		ret = spi_sync(st->spi, &st->msg);
- 		break;
- 	default:
--		ret = -ENODEV;
-+		return -ENODEV;
- 	}
--	mutex_unlock(&st->lock);
- 
- 	return ret ? ret : len;
- }
-@@ -223,11 +220,11 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad9834_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret = 0;
-+	int ret;
- 	bool is_ad9833_7 = (st->devid == ID_AD9833) || (st->devid == ID_AD9837);
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	switch ((u32)this_attr->address) {
- 	case 0:
-@@ -239,7 +236,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 				st->control &= ~AD9834_OPBITEN;
- 				st->control |= AD9834_MODE;
- 			} else if (st->control & AD9834_OPBITEN) {
--				ret = -EINVAL;	/* AD9834 reserved mode */
-+				return -EINVAL;	/* AD9834 reserved mode */
- 			} else {
- 				st->control |= AD9834_MODE;
- 			}
-@@ -247,7 +244,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 			st->control &= ~AD9834_MODE;
- 			st->control |= AD9834_OPBITEN;
- 		} else {
--			ret = -EINVAL;
-+			return -EINVAL;
- 		}
- 
- 		break;
-@@ -257,19 +254,15 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 			st->control &= ~AD9834_MODE;
- 			st->control |= AD9834_OPBITEN;
- 		} else {
--			ret = -EINVAL;
-+			return -EINVAL;
- 		}
- 		break;
- 	default:
--		ret = -EINVAL;
--		break;
-+		return -EINVAL;
- 	}
- 
--	if (!ret) {
--		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
--		ret = spi_sync(st->spi, &st->msg);
--	}
--	mutex_unlock(&st->lock);
-+	st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
-+	ret = spi_sync(st->spi, &st->msg);
- 
- 	return ret ? ret : len;
- }
+Say a frontend consumes multiple backends, but some of them are optional.
+If we care only about the presence of the property we would fail when
+trying to acquire the optional ones when the required ones are defined.
+am I thinking correctly?
+
 -- 
-2.51.0
+Kind regards,
 
-
-
+Rodrigo Alencar
