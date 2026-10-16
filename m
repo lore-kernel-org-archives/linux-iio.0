@@ -1,374 +1,213 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8503A175A99
-	for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 15:48:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F65F582BA8;
+	Fri, 16 Oct 2026 17:32:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792165738; cv=none; b=FCinbnMCNX2IxI3gqkLCs6QA56qQmpu31T0pygJIHcean8m5Bj2Qb1/U4cnMBk4PU4dNvbeI/1y1sgTD/0OIG7hKtl+VppvEPnX8PhSLYWGpd8GIZs3mtUUjToucqAEF4u4HnOMkuS7QGPKiAju2zCXCenyjCcpxQELIfvwpDj8=
+	t=1792171954; cv=none; b=NWpplWBcRgy0rtBLsYVOaQk21p0VJrlZGhXkOk4rR4zAXJ4jvW5kladVwBHTyuV+uXH8c6RSoknQ1gblz6dm1OWWQ22pi0SnCoPf2krI3KCSlyeAKNqA4NMJ+fSY36FF4FUvvw8So+LDJgrCg/Qt222XXJ+9QTtwt0vOTsaEovs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792165738; c=relaxed/simple;
-	bh=ZOpuVxu/kULGJ+VOcTuckG//XM6UeL0Np1mFx6ntkGg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aZ3EuG3rYlhvBCl16ai0N0b/jJcgv7odcaYfirw83oKVIc2Mb8zfWvZOWHs0qDICoUvRm0bsEyippGzFgn6540AUW67qGqdkU1Nwf14xesMq1TQt3xme6YGPrOCLIFEofhacE0pxsloKt/KG+ODnrum479YUb1wwNI0vqrO/cFk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EuJJH64B; arc=none smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792171954; c=relaxed/simple;
+	bh=Ns63LGgGXeTfZgjYanh9XF0PGadK6PdLUy8UZhCvrwQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=T3YJgel7ou2RuW+W91YWBwVnez7sHH9PCUzvPLxpQLdqfI8imfqAMgkXDFfML5ER0vrFNIpoXgPLmwBMun9VBRHvuLJGiWjKXjS0Vof66Ki7W8C1+CPwLsQztWNLk5yFsiKq9TV3mW9IRli3f24/SImTDw8RtoXDqM4ZVJrzn6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fOEv1L23; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EuJJH64B"
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-8b0d63f60bcso448457b3.3
-        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 08:48:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792165731; x=1792770531; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=yXO8Pfx1V/MvWfozdYJmpTkdBIQMuHsAurvABJvdB4c=;
-        b=EuJJH64BceXP6y609JH8ti5wepSr6Gd9YlUOCFbn3ZDBJM0cqNReWAbyshtpaCMx1W
-         Bk4fcLEDuTZ+8RsnUMnG38fJx8fo5E7Zaj5c8aeL+t2LbytDZp8+vf5cqKCut1nvQ+Kn
-         eXzOD8EooSUnucW+eaDCFhbWuDcKpURo1glsyf1o7W7Cj7uxFk7FYHY+2/zUefstpRB/
-         bn5PIgHoHpeP408fX7g9RpnBaa0X9vt7m1w7cYUGLijSGd4n8OFW3wyXuoOBUBZuj2gp
-         GC2mj5sY4TQUqF6dcw/iCqY5GRuZwqQIFIQQMd8hMlujS3sHebCS2yw+if/IuVCRoIqo
-         Ejig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792165731; x=1792770531;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=yXO8Pfx1V/MvWfozdYJmpTkdBIQMuHsAurvABJvdB4c=;
-        b=EgfpnLN8xpcW7/E+mISvsUgRjEarHrLWG9TXZ2EI90Vt5MRZJoHpEUQpY5j6g7B5Mk
-         0hw0a8GY6fMaT1t+djer47+WXPZN+VyQrsNwhia37IbsDcnEUHGG3G/17OnOWVt6fqxI
-         vq7MOseAC7NllSyaMlJoO5cjvPm2d4EoxC4Zmq2neG+g8zhBpKxdwCkPKr4QXMk/zQjZ
-         kPRtLxnYZ9aAAnvrxVcyVN6wAu36tHLWSExK8W6VvtW5yVy5Mp6+xV14hhxH8YPrvzzs
-         RmUDv1FU+3H+X+V9gFN89olHDqiuJnQ9DpXjdxeyPuZp7BfAafQgvDkPiOxSvaBcHQwv
-         n6uw==
-X-Forwarded-Encrypted: i=1; AKwUvBzeGAyqASpRZ36naJMtP2Pj0GWaAcmcu7xrDXokOPHfeLz/rSkAkf4HrfDCTH+fWyCmDQ2OqHa49y8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLBTgPmtn8r+bagCNkOQ/5QaBs2mFJhnv33tP7gSft868YCVbFu
-	3XMLDm1cw6IMQ8GwsMGQHkvjj1XMKuxuC52SLciEAhjcZLifpyELF+UM
-X-Gm-Gg: AYBFou2jB3h7AdMEIIkFKjfIkjbk+kuh5r4fEgGv+nyYs8aYsFNALfxLTqCzaCE9PhH
-	cDm9NBwAcpocEXYJMXf4hzeACB4+5owlTZ6E2hYj6ASDZHCL0xlMQ3XsxrOU9rL4lPArxO5+Lih
-	jldxvEzQU6oYCCIYVe9TI3n0F3+jICAUp9t3K9BSiRHWVFjZ0G3giVgxuK6UN54nq3IUDJZX3kA
-	ugw1qH3woY/dHYPWpxXwu1g6Sg56GBxgkWnYe9CtsJdigBAyUOoXCg9eHswOyHNc/J1SBQiL3XQ
-	L8S3zcftm3zN3zV8uQhsNR5yQ7GVgTXJcI4llLQNR5Yj2wq35Y5zlfxX4lgmrfXNKcRbrXUb1h+
-	3HLu02bSP1UgVtxVovqFamfj7GKxBG934b3V9Ivoq/YcBEKMtw8vLYgDlQbNOJ6cLH76yGa7k/l
-	zhLNeA+mteLXZoDEu/RnO8MRyXVjDUi7tLPbvq/M6DsxpkN8rfRSwg3pDghN2jEA5yhs6oomXau
-	WvKk7AKdw78HIfpXvpJsWRy2VcZSLRn7dUeQUI=
-X-Received: by 2002:a05:690c:89:b0:8b0:d75a:9cf8 with SMTP id 00721157ae682-8b0f21e08admr1721857b3.41.1792165731215;
-        Fri, 16 Oct 2026 08:48:51 -0700 (PDT)
-Received: from localhost.localdomain ([180.243.241.21])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b0e593c65bsm10882167b3.38.2026.10.16.08.48.46
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 16 Oct 2026 08:48:50 -0700 (PDT)
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Igor Korotin <igor.korotin@linux.dev>,
-	Danilo Krummrich <dakr@kernel.org>
-Cc: Alice Ryhl <aliceryhl@google.com>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Mark Brown <broonie@kernel.org>,
-	Brandon StJohn <branstj@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v6 4/4] iio: position: add Rust driver for ams AS5600
-Date: Fri, 16 Oct 2026 22:48:19 +0700
-Message-ID: <20261016154819.17936-5-muchamadcoirulanwar@gmail.com>
-X-Mailer: git-send-email 2.50.0
-In-Reply-To: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com>
-References: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fOEv1L23"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A641F000C6;
+	Fri, 16 Oct 2026 17:32:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792171953;
+	bh=C0yoXdc6vSqaARtYU9OV8+3n8jcp1mX3G3yPqSziOCU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=fOEv1L23cObP1nf6UVZYMaZEQN8x0bHHZBM4LBk9tnnwcJAxDX1Wh4+QCur7942el
+	 hPWmlYApNH3+NhHpoQYgckRrrkYtuLj++pbt8Mjtrbfd8vDh1S3JziGSqs6lHISddp
+	 5hoxZJFUxqpO8PBBCfES3cB3DfeYUCEqeR1wbQ0veMETsh/ikNZVBvyXT7tpja6XQt
+	 A1ExkOnI7tJbFrCbt4SYP6bvY4BhoovxkJBwTbO2ON6qwVC59bJ1zv+MwNZ7bmDI8c
+	 0uwsBMfCfvMO0TDJ8OUQmHRWptmuvEIgQzc/PlH+QNDmotRpPFUouh5hMFfiTFcY4d
+	 eIhNmmkwtvMww==
+Date: Fri, 16 Oct 2026 18:32:27 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Esben Haabendal <esben@geanix.com>
+Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Lars-Peter Clausen"
+ <lars@metafoo.de>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Martin
+ Kepplinger" <martink@posteo.de>, "Sean Nyekjaer" <sean@geanix.com>, "David
+ Lechner" <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Martin
+ Kepplinger" <martin.kepplinger@theobroma-systems.com>, "Christoph Muellner"
+ <christoph.muellner@theobroma-systems.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v10 10/10] iio: accel: mma8452: Support interrupt
+ sharing
+Message-ID: <20261016183227.7914d3c5@jic23-hlaptop>
+In-Reply-To: <877bjkn6h1.fsf@geanix.com>
+References: <20260928-mma8452-open-drain-v10-0-b906fb408386@geanix.com>
+	<20260928-mma8452-open-drain-v10-10-b906fb408386@geanix.com>
+	<CNQ6_DVFGgC82FTU2GwM8v4KY2d4DUOo_b1XhhyOnysR6eWGJEsgFHlNLylYvkM6dWR3mhcGGFNDuN7qwCO1YA==@protonmail.internalid>
+	<aroytGH8u-gGFYvq@ashevche-desk.local>
+	<87mrt1vfz6.fsf@geanix.com>
+	<H9hd6S9zHydf2p6KWFq_NaMFE_pMpnWLFIWe_Z5Hfq5J9ne1na8rtgAz3OEeAQjOsNj8haXLOsiKWQbH2ncP8g==@protonmail.internalid>
+	<20261011134146.3ae020a1@jic23-hlaptop>
+	<877bjkn6h1.fsf@geanix.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add a Rust driver for the ams AS5600 12-bit magnetic rotary position
-sensor.
+On Wed, 14 Oct 2026 08:26:02 +0200
+Esben Haabendal <esben@geanix.com> wrote:
 
-Expose the raw angle and scale through the IIO sysfs interface in direct
-mode. Read the status register before each angle sample and return
-ENODATA when the magnet-detected bit is clear. Serialize the status and
-angle transaction sequence with a mutex and propagate I2C transport
-errors directly to userspace.
+> "Jonathan Cameron" <jic23@kernel.org> writes:
+> 
+> > On Mon, 28 Sep 2026 12:15:57 +0200
+> > Esben Haabendal <esben@geanix.com> wrote:
+> >  
+> >> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
+> >>  
+> >> > On Mon, Sep 28, 2026 at 10:26:26AM +0200, Esben Haabendal wrote:  
+> >> >> Adding support for sharing interrupt line with other device requires the
+> >> >> interrupt handler to handle runtime PM suspension properly, ignoring the
+> >> >> irq if the device is suspended (maybe even off). And while at it, we use
+> >> >> the PM reference to ensure we do not get suspended while processing an irq.
+> >> >>
+> >> >> In order to prevent the chip from raising irq while suspended (that is when
+> >> >> using fixed regulator, where suspend just means setting the device in
+> >> >> STANDBY mode), we disable all interrupt sources by clearing CTRL_REG4, and
+> >> >> then restores the value again when resuming.
+> >> >>
+> >> >> The scoped_guard in mma8452_runtime_suspend() is changed to a plain
+> >> >> mutex_lock() instead, both to prevent mixing guards and goto, but also to
+> >> >> ensure that we stay in STANDBY mode while writing to CTRL_REG4 and all the
+> >> >> way up to disabling the device as much as possible.
+> >> >>
+> >> >> With that in place, it is safe to add the IRQF_SHARED flag.
+> >> >>
+> >> >> Keep in mind that the device by default is using push-pull for the irq pin,
+> >> >> which might require additional hardware design to allow interrupt sharing.  
+> >> >
+> >> > ...
+> >> >  
+> >> >> +	pm_status = pm_runtime_get_if_active(dev);
+> >> >> +	if (pm_status == 0)
+> >> >> +		/* device is powered down */
+> >> >> +		return IRQ_NONE;  
+> >> >  
+> >> >> +	if (IS_ENABLED(CONFIG_PM) && pm_status < 0)
+> >> >> +		/* runtime PM was disabled, possibly suspending */
+> >> >> +		return IRQ_HANDLED;  
+> >> >
+> >> > This is very interesting part. I bet this will be the first driver using this.
+> >> > A big question "why?"  
+> >>
+> >> Because as I understood it, I needed to add this for the patch to be
+> >> accepted [1]. It is definitely possible that I have misunderstood that.
+> >>
+> >> The technical reason I believe is that during system suspend,
+> >> pm_runtime_force_suspend() disabled runtime PM, and if a shared
+> >> interrupt durings this, pm_runtime_get_if_active returns -EINVAL, and we
+> >> could therefore end up doing I2C reads on unpowered hardware.
+> >>
+> >> Per that reasoning, we probably should be doing this in other drivers as
+> >> well.  
+> >
+> > I suspect that the combination of a shared interrupt and runtime pm
+> > is moderately rare and even when it is there are drivers doing their
+> > own tracking to avoid this sort of corner case.
+> >
+> > There are a lot of these nasty corners in runtime pm :(
+> >
+> > This seems like a reasonable solution to me, but given
+> > all the discussion on this version was around this patch I'm going
+> > to pick up 1-9 to but ask you to send a new version of this one to
+> > make sure we get maximum eyes on it.  Please include the PM maintainer
+> > as well in the +CC in case we have this all wrong!  
+> 
+> Okay. Anything that I should change before sending a new version? And
+> should I reset to version 1, or should it be v11?
 
-The AS5600 stores the raw angle with the high byte at register 0x0c.
-Use the byte-swapped SMBus word helper and mask the result to 12 bits.
+v11.  I lost track on whether anything makes sense to change
+so do what you think is best on that ;)
 
-Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
----
- drivers/iio/position/Kconfig   |  11 ++
- drivers/iio/position/Makefile  |   1 +
- drivers/iio/position/as5600.rs | 177 +++++++++++++++++++++++++++++++++
- rust/kernel/bits.rs            |  29 ++++++
- 4 files changed, 218 insertions(+)
- create mode 100644 drivers/iio/position/as5600.rs
+Jonathan
 
-diff --git a/drivers/iio/position/Kconfig b/drivers/iio/position/Kconfig
-index 1576a6380b53..14ed4bef82e1 100644
---- a/drivers/iio/position/Kconfig
-+++ b/drivers/iio/position/Kconfig
-@@ -6,6 +6,17 @@
- 
- menu "Linear and angular position sensors"
- 
-+config AS5600
-+	tristate "ams AS5600 magnetic rotary position sensor"
-+	depends on I2C=y && RUST
-+	help
-+	  Support for the ams OSRAM AS5600 12-bit magnetic rotary
-+	  position sensor. Provides in_angl_raw (0-4095) and
-+	  in_angl_scale (radians per LSB) via sysfs.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called as5600.
-+
- config IQS624_POS
- 	tristate "Azoteq IQS624/625 angular position sensors"
- 	depends on MFD_IQS62X || COMPILE_TEST
-diff --git a/drivers/iio/position/Makefile b/drivers/iio/position/Makefile
-index d70902f2979d..2d26f6d6ace3 100644
---- a/drivers/iio/position/Makefile
-+++ b/drivers/iio/position/Makefile
-@@ -4,5 +4,6 @@
- 
- # When adding new entries keep the list in alphabetical order
- 
-+obj-$(CONFIG_AS5600) += as5600.o
- obj-$(CONFIG_HID_SENSOR_CUSTOM_INTEL_HINGE) += hid-sensor-custom-intel-hinge.o
- obj-$(CONFIG_IQS624_POS)	+= iqs624-pos.o
-diff --git a/drivers/iio/position/as5600.rs b/drivers/iio/position/as5600.rs
-new file mode 100644
-index 000000000000..b72775241e81
---- /dev/null
-+++ b/drivers/iio/position/as5600.rs
-@@ -0,0 +1,177 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (C) 2026 Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-+//! Driver for ams AS5600 12-bit magnetic rotary position sensor.
-+//!
-+//! Exposes `in_angl_raw` and `in_angl_scale` through the IIO sysfs interface
-+//! in `INDIO_DIRECT_MODE`.
-+//!
-+//! Datasheet: AS5600, document DS000365.
-+
-+use kernel::{
-+    bindings::{
-+        iio_chan_info_enum_IIO_CHAN_INFO_RAW,
-+        iio_chan_info_enum_IIO_CHAN_INFO_SCALE,
-+        iio_chan_spec,
-+        iio_chan_type_IIO_ANGL,
-+        INDIO_DIRECT_MODE, //
-+    },
-+    bits::{
-+        bit_u8,
-+        bit_usize,
-+        genmask_u16, //
-+    },
-+    device::{
-+        Bound,
-+        Core, //
-+    },
-+    error::code::ENODATA,
-+    i2c::{
-+        DeviceId,
-+        Driver,
-+        I2cClient,
-+        IdTable, //
-+    },
-+    i2c_device_table,
-+    iio::{
-+        Device,
-+        IioChanInfo,
-+        IioDriver,
-+        IioVal, //
-+    },
-+    io::Io,
-+    module_i2c_driver,
-+    of,
-+    of_device_table,
-+    prelude::*,
-+    sync::{
-+        new_mutex,
-+        Mutex, //
-+    }, //
-+};
-+
-+const AS5600_REG_STATUS: u8 = 0x0B;
-+const AS5600_REG_RAW_ANGLE_H: u8 = 0x0C;
-+
-+const AS5600_STATUS_MD: u8 = bit_u8(5);
-+const AS5600_RAW_ANGLE_MASK: u16 = genmask_u16(0..=11);
-+
-+module_i2c_driver! {
-+    type: As5600,
-+    name: "as5600",
-+    authors: ["Muchamad Coirul Anwar"],
-+    description: "I2C Driver for ams OSRAM AS5600 Magnetic Rotary Position Sensor",
-+    license: "GPL",
-+}
-+
-+i2c_device_table!(
-+    I2C_TABLE,
-+    MODULE_I2C_TABLE,
-+    <As5600 as Driver>::IdInfo,
-+    [(DeviceId::new(c"as5600"), ())]
-+);
-+
-+of_device_table!(
-+    OF_TABLE,
-+    MODULE_OF_TABLE,
-+    <As5600 as Driver>::IdInfo,
-+    [(of::DeviceId::new(c"ams,as5600"), ())]
-+);
-+
-+struct As5600Channels([iio_chan_spec; 1]);
-+
-+// SAFETY: `iio_chan_spec` is a plain C struct with no interior mutability.
-+// All pointer fields (`event_spec`, `ext_info`, `extend_name`, etc.) are
-+// NULL - set via `zeroed()` and never reassigned - so no shared mutable
-+// state exists behind them. The static is a compile-time constant with no
-+// `&mut` access path, making concurrent shared access safe.
-+unsafe impl Sync for As5600Channels {}
-+
-+static AS5600_CHANNELS: As5600Channels = As5600Channels({
-+    // SAFETY: `iio_chan_spec` is a repr(C) struct where all-zeroes is valid
-+    // (integers default to 0, pointers to NULL).
-+    let mut chan: iio_chan_spec = unsafe { core::mem::zeroed() };
-+    chan.type_ = iio_chan_type_IIO_ANGL;
-+    chan.info_mask_separate = bit_usize(iio_chan_info_enum_IIO_CHAN_INFO_RAW)
-+        | bit_usize(iio_chan_info_enum_IIO_CHAN_INFO_SCALE);
-+    [chan]
-+});
-+
-+#[pin_data]
-+struct As5600Priv {
-+    #[pin]
-+    io_lock: Mutex<()>,
-+}
-+
-+// SAFETY: AS5600_CHANNELS contains one valid, immutable IIO_ANGL channel
-+// exposing only RAW and SCALE. It has no event or extension callbacks,
-+// and all optional pointer fields are null.
-+unsafe impl IioDriver for As5600Priv {
-+    fn read_raw(
-+        &self,
-+        parent: &kernel::device::Device<Bound>,
-+        _chan: *const iio_chan_spec,
-+        info: IioChanInfo,
-+    ) -> Result<IioVal> {
-+        match info {
-+            IioChanInfo::Raw => {
-+                let _guard = self.io_lock.lock();
-+                let client: &I2cClient<Bound> = parent.try_into()?;
-+
-+                let io = client.smbus_io();
-+                // Read status register to verify magnet presence before
-+                // reading the angle.
-+                let status = io.try_read8(AS5600_REG_STATUS as usize)?;
-+
-+                if (status & AS5600_STATUS_MD) == 0 {
-+                    return Err(ENODATA);
-+                }
-+
-+                // Word read at register 0x0C returns big-endian data.
-+                // smbus_read_word_swapped() handles the byte swap.
-+                let raw = client.smbus_read_word_swapped(AS5600_REG_RAW_ANGLE_H)?;
-+                let angle = raw & AS5600_RAW_ANGLE_MASK;
-+                Ok(IioVal::Int(angle as i32))
-+            }
-+            // Scale factor: radians per LSB = 2*pi / 4096 ~= 0.001533981
-+            IioChanInfo::Scale => Ok(IioVal::IntPlusNano(0, 1533981)),
-+        }
-+    }
-+
-+    fn channels(&self) -> &'static [iio_chan_spec] {
-+        &AS5600_CHANNELS.0
-+    }
-+}
-+
-+#[pin_data]
-+struct As5600 {
-+    _registration: (),
-+}
-+
-+impl Driver for As5600 {
-+    type IdInfo = ();
-+    type Data<'bound> = As5600;
-+
-+    const I2C_ID_TABLE: Option<IdTable<Self::IdInfo>> = Some(&I2C_TABLE);
-+    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
-+
-+    // `try_pin_init!` returns a concrete anonymous type that may expose more
-+    // bounds than the trait signature declares (e.g. auto-traits like `Send`).
-+    // This refinement of the RPITIT return type is intentional.
-+    #[allow(refining_impl_trait)]
-+    fn probe<'bound>(
-+        dev: &'bound I2cClient<Core<'_>>,
-+        _id_info: Option<&'bound Self::IdInfo>,
-+    ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound {
-+        try_pin_init!(As5600 {
-+            _registration: {
-+                let priv_init = pin_init!(As5600Priv {
-+                    io_lock <- new_mutex!(()),
-+                });
-+
-+                Device::build_device(dev.as_ref(), c"as5600", INDIO_DIRECT_MODE, priv_init)?
-+                    .register(&crate::THIS_MODULE)?;
-+                dev_dbg!(dev.as_ref(), "AS5600 magnetic position sensor ready\n");
-+            }
-+        })
-+    }
-+}
-diff --git a/rust/kernel/bits.rs b/rust/kernel/bits.rs
-index 2daead125626..a6537a668dd6 100644
---- a/rust/kernel/bits.rs
-+++ b/rust/kernel/bits.rs
-@@ -41,6 +41,7 @@ pub const fn [<bit_ $ty>](n: u32) -> $ty {
- impl_bit_fn!(u32);
- impl_bit_fn!(u16);
- impl_bit_fn!(u8);
-+impl_bit_fn!(usize);
- 
- macro_rules! impl_genmask_fn {
-     (
-@@ -203,3 +204,31 @@ pub const fn [<genmask_ $ty>](range: RangeInclusive<u32>) -> $ty {
-     /// assert_eq!(genmask_u8(0..=7), u8::MAX);
-     /// ```
- );
-+
-+impl_genmask_fn!(
-+    usize,
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// # #![expect(clippy::reversed_empty_ranges)]
-+    /// # use kernel::bits::genmask_checked_usize;
-+    /// assert_eq!(genmask_checked_usize(0..=0), Some(0b1));
-+    /// assert_eq!(genmask_checked_usize(0..=3), Some(0b1111));
-+    /// assert_eq!(genmask_checked_usize(1..=3), Some(0b1110));
-+    ///
-+    /// // `200` is out of the supported bit range on all platforms.
-+    /// assert_eq!(genmask_checked_usize(0..=200), None);
-+    ///
-+    /// // Invalid range where the start is bigger than the end.
-+    /// assert_eq!(genmask_checked_usize(5..=2), None);
-+    /// ```
-+    ,
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// # use kernel::bits::genmask_usize;
-+    /// assert_eq!(genmask_usize(0..=0), 0b1);
-+    /// assert_eq!(genmask_usize(0..=3), 0b1111);
-+    /// assert_eq!(genmask_usize(1..=3), 0b1110);
-+    /// ```
-+);
--- 
-2.50.0
+> 
+> /Esben
+> 
+> >  
+> >>  
+> >> >> +	/*
+> >> >> +	 * pm_status is now 1 or -EINVAL (with CONFIG_PM not enabled). If
+> >> >> +	 * pm_status==1, runtime PM is enabled and device is RPM_ACTIVE. If
+> >> >> +	 * pm_status==-EINVAL, runtime PM is build-time disabled (i.e. CONFIG_PM
+> >> >> +	 * not enabled), and we can/must assume device is active.
+> >> >> +	 */
+> >> >> +
+> >> >>  	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+> >> >>  	if (src < 0)
+> >> >> -		return IRQ_NONE;
+> >> >> +		goto out_runtime_put;
+> >> >>
+> >> >>  	if (!(src & (data->chip_info->enabled_events | MMA8452_INT_DRDY)))
+> >> >> -		return IRQ_NONE;
+> >> >> +		goto out_runtime_put;
+> >> >>
+> >> >>  	if (src & MMA8452_INT_DRDY) {
+> >> >>  		iio_trigger_poll_nested(indio_dev->trig);
+> >> >> @@ -1120,6 +1139,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+> >> >>  		ret = IRQ_HANDLED;
+> >> >>  	}
+> >> >>
+> >> >> +out_runtime_put:
+> >> >> +	if (pm_status > 0)
+> >> >> +		pm_runtime_put_autosuspend(dev);
+> >> >> +
+> >> >>  	return ret;
+> >> >>  }  
+> >> >
+> >> > ...
+> >> >  
+> >> >> +	pm_runtime_enable(dev);
+> >> >> +	pm_runtime_set_autosuspend_delay(dev, MMA8452_AUTO_SUSPEND_DELAY_MS);
+> >> >> +	pm_runtime_use_autosuspend(dev);  
+> >> >
+> >> > I don't see the respective _dont_use_autosuspend() call anywhere.  
+> >>
+> >> Ah. I was not aware it was attached to a usage counter as well. I will
+> >> add a pm_runtime_dont_use_autosuspend() to the runtime_suspend: error handling.
+> >>  
+> >> > ...
+> >> >
+> >> > I am wondering how many of the above possible scenarios you were able
+> >> > to test.  
+> >>
+> >> Not enough. I haven't done any additional instrumentation to cause all
+> >> the various error conditions that is handled here in _probe().
+> >>  
+> >> > ...
+> >> >
+> >> > P.S.  I bet you can now make a presentation "PM runtime in Linux and
+> >> > why it is so hard."  
+> >>
+> >> LOL. I am getting there, yes. I have definitely learned a lot about how
+> >> runtime PM works. Especially since I was mostly starting from scratch on
+> >> that.
+> >>
+> >> But i fear it would easily end up being quite a chaotic presentation :)  
+> >
+> > :)
+> >
+> > I've vaguely be wondering if we need a bunch of self test + examples
+> > to poke all the more crazy corners of runtime pm.  That way we can
+> > at least be sure that if we do finally understand it we aren't going
+> > to get any regressions.  
+> 
+> Not a bad idea :)
+> 
+> /Esben
 
