@@ -1,125 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEFE744AB68;
-	Fri, 16 Oct 2026 10:19:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48DE940BCB2;
+	Fri, 16 Oct 2026 11:00:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792145992; cv=none; b=H3WYVtX4D8+d3SHxg46uD7NwAQ7Mcc5L9GbRUHyMDF+Vz61Ui22GzD+UZOnVtKgzN7ndQsdTsizw5rxve4KeAyAxZmLTnX8tqcyxxFbUeS1fOfwLPak9Now1VQGl4ph4i0SYWsqrwQxWLoaMYnJJTvIj94A8WRn7j0O1l9HjCC8=
+	t=1792148441; cv=none; b=g29EdMtiOw06P1ru+shu8chUFmxIgP+eJN32nY6EyngW5GLPj4Zgh/D/5J5/ITAzWveGQhBZ6K8GjIoBrmXpGtKxbUwiXJdOe9NbkGMaVeehaiDjrezzOMKirI9VCa7eZ1vVwrQxbf/nBA5W3GLq7UhUN34P1mujwvXHtl53cRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792145992; c=relaxed/simple;
-	bh=mV7apZJqXyrvkEGiIS0ISDfMrDM5bR6Fa2lY+w1Z2RU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bCmWKcKI/9HhnyCKmZBEd/tN/3DjT0sNwjfSPm8mm692Oxw7ZtYWk7rfiUyNb2swPCVQFtDFVnTHisZGAjgcMcgHezrZ9CksE/q262rzruThCK2SkPzFjcY9LIsKnQGKQMBhjbPlYkjR7oSIUsV28uRahDaZvUoIki4wMtEY8B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ry7CRrD9; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1792148441; c=relaxed/simple;
+	bh=A5vzqO97WgNgrRSuAFaMNoJdjRf2NsEvaKC2UjsFRLM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=KAo7F6fxfyxGuymAorxZqlHWpESHeRSe9ZunRZG/LeHH4kPCi6CffS77bPjG10AV3E3BM8C77z7z+YX6Gn5/hTDdwvVckxIZysmuy90jT/NkwfLsZoiIL9jWh5AFX5s4gdFkEwBbH9qW4iMhs1wgEW97SVwN5YIO+k6HKQ+1BCQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lSrDood8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ry7CRrD9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792145991; x=1823681991;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mV7apZJqXyrvkEGiIS0ISDfMrDM5bR6Fa2lY+w1Z2RU=;
-  b=Ry7CRrD9TpQ+m7XYL6cGXe1Nos35A+mdQZesw8bnAnE9eHjkX/1U0k6L
-   fOPBJgG1mqRHQfaDL6RajyLjNH0W9C2YXCew2cDu88Dxy2mh3VH604FwG
-   au0VqKExa/G95TyvA3y9SMkR3+ba+/2ixhjgdTwgadRBFjK4HoKcaN2MB
-   ZLM5QQs0JksYL5qb/5hcbbjDzvitBrv0UZ5x8g2gz25fDus7OhxGTcJPk
-   Ku3dNPsMsvhzr0aAHFcp1yqWrcfgYVFsbk4ZbvNxSHvv2YFkzshV78ZvC
-   SeFMUy6EKHs0gqxwfh0sH6r23W//I0SpXn/9ta4xq1tseKI3TBz2sfUoR
-   A==;
-X-CSE-ConnectionGUID: /Jc/6u0WRF2b2buHB45Unw==
-X-CSE-MsgGUID: HmztS/E+QHmZ3YEquonuwQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="818260"
-X-IronPort-AV: E=Sophos;i="6.27,161,1787036400"; 
-   d="scan'208";a="818260"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2026 03:19:51 -0700
-X-CSE-ConnectionGUID: VwgXEHenSZanZL/0PWwHRg==
-X-CSE-MsgGUID: qfMmHcJEQR6A6fktOcfTRQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,161,1787036400"; 
-   d="scan'208";a="1795965"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.35])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2026 03:19:48 -0700
-Date: Fri, 16 Oct 2026 13:19:45 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: jean-baptiste.maneyrol@tdk.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: inv_icm42600: fix parsing of all FIFO frames
- for odr change
-Message-ID: <atH6QdvvmEPzkGE2@ashevche-desk.local>
-References: <20261016-iio-imu-inv-icm42600-fix-odr-change-event-in-all-frames-v1-1-b2bb168a0551@tdk.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lSrDood8"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B2CDAC2BCFA;
+	Fri, 16 Oct 2026 11:00:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1792148440;
+	bh=A5vzqO97WgNgrRSuAFaMNoJdjRf2NsEvaKC2UjsFRLM=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=lSrDood8FrYKE2qrBZPbVIIwBUuTmfY80LHxX3LLFDwxBFXrbBE4XfXQqFarySAjK
+	 xlrPwYIzuthTl3EONWqLvvS07shSYasN1Zhf8XXL7Dd84eqQZ2CsTgeKnLDy2yQpvD
+	 wIWqm/7Kl2FjBnNFUI0aGW+5mHzeN8JeBV1nIBgcCRpY3tZrWmwFXdI7eI+PxdAza0
+	 +dMZwF2s2bLywpnbvmrPPh3+JVZMGVFHKc4Sb32+Ktm+q5j2Lrm0PVvikT4IDuuBs3
+	 r7UNwk7pzej2pQQzsrJcawyNpBmfFISRM/K1cmv8vVRHe69mY58iFi8aY3p0ZwGLNh
+	 rn79NkkHEn+2g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0494CCA464;
+	Fri, 16 Oct 2026 11:00:40 +0000 (UTC)
+From: Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org>
+Date: Fri, 16 Oct 2026 13:00:20 +0200
+Subject: [PATCH v2] iio: afe: rescale: always expose offset
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261016-iio-imu-inv-icm42600-fix-odr-change-event-in-all-frames-v1-1-b2bb168a0551@tdk.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261016-iio-rescale-offset-v2-1-02c825967139@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAMMD0moC/32NQQqDMBBFryKzbooTY4pd9R7FRZpMdECNJCItk
+ rs39QDlr96H//4BiSJTgnt1QKSdE4elgLxUYEezDCTYFQZZS401SsEcRKRkzUQieJ9oEwplq0z
+ TvLTTUIZrJM/vU/rsC4+cthA/58eOv/avbkdRoshh29067+VjmA1PVxtm6HPOX08tp+S0AAAA
+X-Change-ID: 20261012-iio-rescale-offset-41254a33b6d6
+To: Peter Rosin <peda@lysator.liu.se>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Liam Beguin <liambeguin@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>, Andrea Amer <and.amer@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792148437; l=1534;
+ i=and.amer@gmail.com; s=20261012; h=from:subject:message-id;
+ bh=smDOZf3s0TRH8qOItOidEFI5I1QOKi3ZjzCMwcFZDI8=;
+ b=UR/i6E6rwteZ0Erdlwc7kK0TfnZAzzWBdHcBVSiQNaCkKvutisIOPQoqdlDbpXTGqKVvuXrua
+ 8hVFvwQCq4KCzhsirlUCUM73+FI3tMml7m9wjmB4yKv3FiF/pmCQ/7Z
+X-Developer-Key: i=and.amer@gmail.com; a=ed25519;
+ pk=TiMK202FvcPM+yKGkAI4hsAZA7QkwyEgru97PAFa4pg=
+X-Endpoint-Received: by B4 Relay for and.amer@gmail.com/20261012 with
+ auth_id=1165
+X-Original-From: Andrea Amer <and.amer@gmail.com>
+Reply-To: and.amer@gmail.com
 
-On Fri, Oct 16, 2026 at 11:28:10AM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
+From: Andrea Amer <and.amer@gmail.com>
 
-> For getting all odr change events, we need to parse all FIFO frames
-> in each iio device. Fix this correctly by sending effectively all
-> frames to all iio devices.
-> 
-> Previously only batches of frames containing a matching sensor event
-> were sent to the corresponding iio device.
+A rescale channel advertises IIO_CHAN_INFO_OFFSET only when its own
+offset is non-zero. A child rescale therefore hides a source offset,
+and consumers apply raw * scale and drop it. rescale_read_raw() already
+folds the source offset in, so expose the attribute in every case.
 
-...
+Fixes: a29c3283653b ("iio: afe: rescale: add offset support")
+Signed-off-by: Andrea Amer <and.amer@gmail.com>
+---
+Changes in v2:
+- Keep the IIO_CHAN_INFO_SCALE line unchanged (Andy Shevchenko)
+- Link to v1: https://lore.kernel.org/r/20261012-iio-rescale-offset-v1-1-14ed15979ff2@gmail.com
+---
+ drivers/iio/afe/iio-rescale.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> -		ret = inv_icm42600_gyro_parse_fifo(st->indio_gyro);
-> -		if (ret)
-> -			return ret;
->  	}
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index 3a6a09ffa5267ddfd5131fbd04a5df928836589d..4639a67ea462bf5c29603783a6f230d769fb02b0 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -301,11 +301,9 @@ static int rescale_configure_channel(struct device *dev,
+ 	}
+ 
+ 	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_OFFSET) |
+ 		BIT(IIO_CHAN_INFO_SCALE);
+ 
+-	if (rescale->offset)
+-		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
+-
+ 	/*
+ 	 * Using .read_avail() is fringe to begin with and makes no sense
+ 	 * whatsoever for processed channels, so we make sure that this cannot
 
-+ Blank line.
+---
+base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+change-id: 20261012-iio-rescale-offset-41254a33b6d6
 
-> +	ret = inv_icm42600_gyro_parse_fifo(st->indio_gyro);
-> +	if (ret)
-> +		return ret;
->  
->  	/* handle accelerometer timestamp and FIFO data parsing */
->  	if (st->fifo.nb.accel > 0) {
->  		ts = &accel_st->ts;
->  		inv_sensors_timestamp_interrupt(ts, st->fifo.watermark.eff_accel,
->  						st->timestamp.accel);
-> -		ret = inv_icm42600_accel_parse_fifo(st->indio_accel);
-> -		if (ret)
-> -			return ret;
->  	}
-
-+ blank line.
-
-> +	ret = inv_icm42600_accel_parse_fifo(st->indio_accel);
-> +	if (ret)
-> +		return ret;
->  
->  	return 0;
->  }
-
-	return inv_icm42600_accel_parse_fifo(st->indio_accel);
-
-?
-
-...
-
-Similar comments to the inv_icm42600_buffer_hwfifo_flush() changes.
-
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Andrea Amer <and.amer@gmail.com>
 
 
