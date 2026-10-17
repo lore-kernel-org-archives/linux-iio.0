@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4AE35F162;
-	Sat, 17 Oct 2026 01:06:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0658368D4C;
+	Sat, 17 Oct 2026 01:11:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792199180; cv=none; b=UtLg8ya31eCjRg8VHykd3bSk/C/1cB9MqPdsdfz7mRYEqRy0ZebppQ8aYyAD3PwYV6NitHzqurOhwzzd8RdT3p7TnhPp/GMJrlqCwtsFSXxHcYmD4vJ1PYVbirKwudcjPx2pvEsGHp5Evh9/jyaB4WQZF1zYKAnA1AwQghfLGkM=
+	t=1792199509; cv=none; b=eJA8iuHfpI2a622ZUCycJMOhsAHKbofUijLa1PVY37L9pBTHlCjjC1ztyAunPbCcLHxB9HXK1XeYWZCjWE7q4MTjowBeVPLr1/yP472gyz1NOOTIsfIxJQvYa70JxQ8ApDsy0ETdAzccMeJ+eUZU0bdkKce/19wicQXi7SXlQvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792199180; c=relaxed/simple;
-	bh=hQ1aB5eP6mNJ8HuDu1pHdEejdaF+oyYRR7rE8h7AQYk=;
+	s=arc-20240116; t=1792199509; c=relaxed/simple;
+	bh=Tc+qWaLLbSD9D9Lls7lHXEoytPmpl4+LJ09JrbY00Dg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tr8dPfmpmS1kzDLGfAtA5XbNfmVuQrLodZ2ot2OqgZuiSqJ73DGwQ2TV5u3RM9pqJoin4d+xKQJXmnhBEcgaXRmALpTZwZaiEREzsTKuJWR6nrp8LnV9seFfMRY97OKMecEFMF2j3eFE1sNSg9HmufWcUtzoVuaMYQnQ+bixOKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZcU4I3wa; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rf9r38QALxs4+1Z/KYaa12OtkyQaWcS7cVeNG6g66D3Z5mTmguP1AHA6wKgoOn0voyRhRirYsldJBY1lEsqBB2ALDe9w27YRCxdpeqLKtC4ucQVdEZcXChCNsGZGiAziASjxEvlI/XYiEqnm0M+XeWlhatWBJ39NGM+hZcrIEHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xzv3ALTK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZcU4I3wa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32ABC1F000C4;
-	Sat, 17 Oct 2026 01:06:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xzv3ALTK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4CAA1F000C4;
+	Sat, 17 Oct 2026 01:11:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792199179;
-	bh=m6XszpuDtljDI26wJHSYdFKvUk/OFJg7/YCuSQq0f6I=;
+	s=k20260515; t=1792199507;
+	bh=kIMCpe5Yt1Y2+5Y/j1kd4e8zqh9gHeuCZZIS+MOh7e0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZcU4I3wa32RrMeks09h9t2NZEn7j8B+ohEsz220kJ+YexlMgKKcSreklFbZ54/t7V
-	 iQqDOWH0f7IIfXcp71aiGdmVZf6jiIS39K0A6lwCX566+2J8gOLgcKqb4ECDmTPZqQ
-	 65iQTAZEb4GInPF/c3KjEnoa1y+fD7Oc17l1yr17xtvaRlJRCwjERJ9nU8/PRSWVY3
-	 rDwHPYYaEjB1I4LUl8ZT1d+gk+uCF5rU1Xhf+64OI8zDAYakQ8qmOlPINB9UY6nsgQ
-	 2IxRAu1DLE55a0a+DS/dtqo4hn8Uk4JmJxDyCH0nqpn0/ocyA8u3uRgQKZusaZaN0f
-	 IS+YU7wNITE0Q==
-Date: Sat, 17 Oct 2026 02:06:12 +0100
+	b=Xzv3ALTKXcTtXWX5ADEpdHW/oD+O4r09sPDcfLW3T06wnrjngnCnRkd0Uj5aq6978
+	 nW6wPSDXdxomiCkFn/yB5v1hNP51LB9qO9KjlwMsE7E0tGF/e/zfqpsAx3iIF8DLEM
+	 jTEAcbcTm+10HjpgWOvktDvq/7AhUEUY8eZAKAIGSDwEIEdYed7HrUbjkv7rDxGlx3
+	 zLvU1TUu3nvq+wcBAvVfePraS53AqBLbGDZ6bhjKD4jIO6/gvSMWzD1Lzxfph23qSL
+	 DToCW+AXkrgwUy/qbUUVLZxmG4PnjvGB93NaDqqq7pfOx0gMTaofSfPqHqlf1u4beh
+	 xqLRVP3HHOC6g==
+Date: Sat, 17 Oct 2026 02:11:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
 Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
@@ -36,12 +36,12 @@ Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/6] iio: imu: adis: Add optional self_test callback
- and fix custom reset dispatch
-Message-ID: <20261017020612.0e16583c@jic23-hlaptop>
-In-Reply-To: <20261015-adis16607-v3-1-f972d4efee85@analog.com>
+Subject: Re: [PATCH v3 2/6] dt-bindings: iio: imu: Add bindings for ADI
+ ADIS16607
+Message-ID: <20261017021141.5b023e60@jic23-hlaptop>
+In-Reply-To: <20261015-adis16607-v3-2-f972d4efee85@analog.com>
 References: <20261015-adis16607-v3-0-f972d4efee85@analog.com>
-	<20261015-adis16607-v3-1-f972d4efee85@analog.com>
+	<20261015-adis16607-v3-2-f972d4efee85@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,169 +52,150 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 15 Oct 2026 12:32:58 +0300
+On Thu, 15 Oct 2026 12:32:59 +0300
 Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
 > From: Radu Sabau <radu.sabau@analog.com>
 > 
-> Add an optional self_test callback to struct adis_data, for devices
-> whose self-test doesn't fit the generic mask-write/sleep/check-status
-> sequence. Purely additive: defaults to NULL, no change for existing
-> drivers.
+> Add device tree bindings for the Analog Devices ADIS16607 Precision
+> MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
+> gyroscope, triaxial accelerometer, and temperature sensor, and
+> communicates over SPI Half-Duplex.
 > 
-> Also fix __adis_initial_startup()'s no-reset-gpio path: it called
+> Two variants are supported: adis16607-2 and adis16607-3.
 
-'Also' rings alarm bells.  Why not a separate patch for this?
+Say briefly how they are different and hence require their
+own compatibles.
 
-> __adis_reset() directly instead of adis->ops->reset(), silently
-> ignoring any driver's custom reset implementation. Invisible until now
-> since adis_default_ops.reset is __adis_reset() itself. Dispatch
-> through adis->ops->reset() instead, adding the settle-time sleep at
-> the call site for custom ops (documented not to sleep internally)
-> while skipping it for the default op (which already sleeps
-> internally).
-
-Why don't we stop __adis_reset() from having an internal sleep
-and simplify the code?
-
-There is a missing 'also'. The introduction of post_reset_setup().
-That should be a third patch.
+The hardware rest being a configurable pin is an unusual
+bit of hardware design given how do we reset the reset pin
+to issue a reset if the device is hung?  
 
 > 
-> Fixes: ecb010d44108 ("iio: imu: adis: Refactor adis_initial_startup")
+> The binding exposes optional properties for:
+>   - An external clock for sync mode (falling back to the internal 8 kHz
+>     clock when absent)
+>   - A hardware reset GPIO (active low)
+> 
 > Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 > ---
->  drivers/iio/imu/adis.c       | 30 +++++++++++++++++++++++-------
->  include/linux/iio/imu/adis.h | 32 +++++++++++++++++++++++++++++++-
->  2 files changed, 54 insertions(+), 8 deletions(-)
+>  .../devicetree/bindings/iio/imu/adi,adis16607.yaml | 82 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  7 ++
+>  2 files changed, 89 insertions(+)
 > 
-> diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-> index a2bc1d14ed91..448046fd2ada 100644
-> --- a/drivers/iio/imu/adis.c
-> +++ b/drivers/iio/imu/adis.c
-> @@ -355,11 +355,20 @@ int __adis_reset(struct adis *adis)
->  }
->  EXPORT_SYMBOL_NS_GPL(__adis_reset, "IIO_ADIS_LIB");
->  
-> +static const struct adis_ops adis_default_ops = {
-> +	.read = __adis_read_reg,
-> +	.write = __adis_write_reg,
-> +	.reset = __adis_reset,
-> +};
+> diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+> new file mode 100644
+> index 000000000000..1cf969154885
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+> @@ -0,0 +1,82 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/imu/adi,adis16607.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  static int adis_self_test(struct adis *adis)
->  {
->  	int ret;
->  	const struct adis_timeout *timeouts = adis->data->timeouts;
->  
-> +	if (adis->data->self_test)
-> +		return adis->data->self_test(adis);
+> +title: Analog Devices ADIS16607 IMU
 > +
->  	ret = __adis_write_reg_16(adis, adis->data->self_test_reg,
->  				  adis->data->self_test_mask);
->  	if (ret) {
-> @@ -413,7 +422,20 @@ int __adis_initial_startup(struct adis *adis)
->  		gpiod_set_value_cansleep(gpio, 0);
->  		msleep(timeouts->reset_ms);
->  	} else {
-> -		ret = __adis_reset(adis);
-> +		ret = adis->ops->reset(adis);
-> +		if (ret)
-> +			return ret;
-> +		/*
-> +		 * __adis_reset() already sleeps the settle time internally.
-> +		 * Custom reset ops are documented (struct adis_ops::reset)
-> +		 * not to, so sleep here for them.
-> +		 */
-> +		if (adis->ops->reset != __adis_reset)
-> +			msleep(timeouts->sw_reset_ms);
-> +	}
+> +maintainers:
+> +  - Radu Sabau <radu.sabau@analog.com>
 > +
-> +	if (adis->data->post_reset_setup) {
-> +		ret = adis->data->post_reset_setup(adis);
->  		if (ret)
->  			return ret;
->  	}
-> @@ -491,12 +513,6 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  }
->  EXPORT_SYMBOL_NS_GPL(adis_single_conversion, "IIO_ADISLIB");
->  
-> -static const struct adis_ops adis_default_ops = {
-> -	.read = __adis_read_reg,
-> -	.write = __adis_write_reg,
-> -	.reset = __adis_reset,
-> -};
-> -
->  /**
->   * adis_init() - Initialize adis device structure
->   * @adis:	The adis device
-> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-> index bfb6df68e6c9..5d0baeded3c9 100644
-> --- a/include/linux/iio/imu/adis.h
-> +++ b/include/linux/iio/imu/adis.h
-> @@ -10,6 +10,7 @@
->  #define __IIO_ADIS_H__
->  
->  #include <linux/cleanup.h>
-> +#include <linux/delay.h>
->  #include <linux/spi/spi.h>
->  #include <linux/interrupt.h>
->  #include <linux/iio/iio.h>
-> @@ -51,6 +52,18 @@ struct adis_timeout {
->   * @self_test_mask: Bitmask of supported self-test operations
->   * @self_test_reg: Register address to request self test command
->   * @self_test_no_autoclear: True if device's self-test needs clear of ctrl reg
-> + * @post_reset_setup: Optional device-specific hook called after reset,
-> + *		before self-test. Not all ADIS devices need extra bring-up
-> + *		between reset and self-test (SPI mode locking, status or
-> + *		bootloader checks, pin or burst-mode configuration, etc.) -
-> + *		only called when set. Must return 0 on success, a negative
-> + *		error code otherwise.
+> +description: |
+> +  Analog Devices ADIS16607 Precision MEMS Inertial Measurement Unit (IMU)
+> +  with a triaxial gyroscope, triaxial accelerometer, and temperature sensor.
+> +  Uses SPI Half-Duplex communication protocol.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,adis16607-2
+> +      - adi,adis16607-3
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-cpha: true
+> +
+> +  spi-cpol: true
+> +
+> +  spi-max-frequency:
+> +    maximum: 10000000
+> +
+> +  vdd-supply: true
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description:
+> +      Optional external clock for sync mode. If not provided, the internal
+> +      8 kHz clock is used.
+> +    maxItems: 1
+> +
+> +  reset-gpios:
+> +    description:
+> +      Optional GPIO for hardware reset. The line is active low.
+> +    maxItems: 1
 
-This doesn't seem related to the rest.  Separate patch I think.
+The datasheet I looked at has 4 gpio pins. You are calling out one
+as reset.  What happens if we don't have controllable supplies
+and someone else (firmware for instance) configured GPIO0 to not
+be reset?
 
-> + * @self_test: Optional device-specific self-test override. When set,
-> + *		it is called instead of the generic mask-write/sleep/
-> + *		check-status sequence. The callback owns its own pass/fail
-> + *		determination entirely (it should call __adis_check_status()
-> + *		itself if it wants status-register checks). Must return 0 on
-> + *		success, a negative error code otherwise.
->   * @status_error_msgs: Array of error messages
->   * @status_error_mask: Bitmask of errors supported by the device
->   * @timeouts: Chip specific delays
-> @@ -81,6 +94,8 @@ struct adis_data {
->  	unsigned int self_test_mask;
->  	unsigned int self_test_reg;
->  	bool self_test_no_autoclear;
-> +	int (*post_reset_setup)(struct adis *adis);
-> +	int (*self_test)(struct adis *adis);
->  	const struct adis_timeout *timeouts;
+Anyhow, feels like this isn't a full description.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - spi-cpha
+> +  - spi-cpol
+> +  - vdd-supply
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        imu@0 {
+> +            compatible = "adi,adis16607-2";
+> +            reg = <0>;
+> +            spi-cpha;
+> +            spi-cpol;
+> +            spi-max-frequency = <10000000>;
+> +            vdd-supply = <&vdd>;
+> +            interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
+> +            interrupt-parent = <&gpio>;
+> +            clocks = <&sync_clk>;
+> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a7fd31320b38..f6ad73be5260 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1717,6 +1717,13 @@ S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
 >  
->  	const char * const *status_error_msgs;
-> @@ -171,8 +186,23 @@ int __adis_reset(struct adis *adis);
->   */
->  static inline int adis_reset(struct adis *adis)
->  {
-> +	int ret;
+> +ANALOG DEVICES INC ADIS16607 DRIVER
+> +M:	Radu Sabau <radu.sabau@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +W:	https://ez.analog.com/linux-software-drivers
+> +F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
 > +
->  	guard(mutex)(&adis->state_lock);
-> -	return __adis_reset(adis);
-> +
-> +	ret = adis->ops->reset(adis);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * __adis_reset() already sleeps the settle time internally. Custom
-> +	 * reset ops are documented (struct adis_ops::reset) not to, so sleep
-> +	 * here for them.
-> +	 */
-> +	if (adis->ops->reset != __adis_reset)
-> +		msleep(adis->data->timeouts->sw_reset_ms);
-> +
-> +	return 0;
->  }
->  
->  int __adis_write_reg(struct adis *adis, unsigned int reg,
+>  ANALOG DEVICES INC ADL8113 DRIVER
+>  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+>  L:	linux-iio@vger.kernel.org
 > 
 
