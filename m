@@ -1,46 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D20FC38F950;
-	Sat, 17 Oct 2026 18:03:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 101A43A380C;
+	Sat, 17 Oct 2026 18:13:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792260225; cv=none; b=D9EFqzpbaSPYI+ewyBJsiOBjJUWbQFcTsKrwD7c0srElO70N/NdvPBhc3ahcS+stB15+3C5prirTIsPXPt1uKWMd/E8pw0Zz8r8BQpaHvndZz/JF0fLYqRUZy58uvgUtGueh1x8Wi1/5WVOCWg0Uog6zV3HFJ7cNYQq91xYeRtI=
+	t=1792260796; cv=none; b=ibXO68EbG22hUb+dqS1K0Wu6VysiFVZuqmQr2zHcj1q4BcopdGCEu4bN5Erx+2Q8DxyKba5wFlhYKpNuwICnTZLhRPiy6NXx5lXGLZtOKKGQSm9GFdKyzbgMHjVvjoDdnsg8JGF9B2vv4LAshV/CYucUmLtzgsDulKGaMtLHbKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792260225; c=relaxed/simple;
-	bh=DCm93Pp5AGmrkz6wgqf9B/Bj0h6ufC5XP8dotfL9rR0=;
+	s=arc-20240116; t=1792260796; c=relaxed/simple;
+	bh=lEvwS9mkI2v/PAmLohs0Mq6mhXOkMv2OZ2obiGLEcl8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=a5vHzyuvTlmdYgxfenb0Mi9g0iM83d/CPeBRBg9+MvH01Sbic8zCzftFOSJKeKmojOrDVXrBMQwRagCw7RcKoKoj9jauzE3Ngsmx4B7btW0kQ9GLQfrHe4z40G4mE1l+mkp6eN/p/vtb2Mg5/u/jqyOkNMwFSr9QNsJ8M1Q08VI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ayBRZUGm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hV8oAWFhITRpXKtG9MAy0tfdY9K1CjTPqG7HejSF6rCUzRbCOfqp/rM6mcZuWVvT2VKuWXyVmAPbxDpspoiPzf/4J49B/GCCjj01NQ0+0J8dW0ixpTjdKIVZpwOqL9/piJvOfe+uL13jX7QZ3ZTqEv4eLVP4hoFbKyh6nXCR43E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=okdnk2Dq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ayBRZUGm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2310B1F000C5;
-	Sat, 17 Oct 2026 18:03:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="okdnk2Dq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A6421F000C6;
+	Sat, 17 Oct 2026 18:13:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792260224;
-	bh=tK4uOsFJUtazuxNs5JxzECC92CbCr3nkpTxjClesdM0=;
+	s=k20260515; t=1792260794;
+	bh=oOam57k32MmF+7eBtrlBPpXcG+2QiRF6NSnFxaoB2rQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ayBRZUGmLay8go7JfCvHOwd0d2ygjoR51tm0y3LzT/MiAOmof6TcltTtLbWmiNHND
-	 NB4PrZr3AploA8gE4WWxFvinAXNN/m7BwhaenViJdpmU1zX5BX3Lcxq7mUuQg1ZWpt
-	 6A6RLIJ3EBfsgW332EQ2R/kAqKCRQELSm2kAJThcRvbv1eOHCkZB8DFowNLS5Acr9k
-	 tGJpoxV50IGLqdvxjtnfa7JAFhQ+Z09K7DlWdcAy2Vryd8s8/0GoyyNIrns6n3zeKk
-	 kz413uIq4BaYAF2GrPdSq3fGbGNbU4UaF3BhuD5ssujpavnJEaemqAxaMW1i0eYY+1
-	 LsCSZcXNAlisg==
-Date: Sat, 17 Oct 2026 19:03:39 +0100
+	b=okdnk2DqYKZ6uZCvATNhoTHC5Cpd4CdxEBVS6uuq032VAsxf7m1/KuIjs2QBNAC+j
+	 IPv29LgTrOK7WteG49oFwP1OU2cWZ/yswq+FfdGpc4iEUATnj+M29NNM4KESMuLM2A
+	 tJr+d8lZ6sphT8ef0n4Y4NYklbUKCDUp7VTrW0/Zs5rU5UUIaz90jKNm+CXiN7x2za
+	 YcQDXXFkyTkrofKYfHxSa4yAj0q/P+C0+waIRzH/YUiWtLC2M1G6RezDMk5kss0E8+
+	 9B8MqbNuEuT31hDErZOJcaMit1AmdpcDwt8zSZF2LbJfRDkhH46GaAzQ80UXmhz7n9
+	 s7pxFumHh71nA==
+Date: Sat, 17 Oct 2026 19:13:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Christoph Rudorff <chris@rudorff.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Bjorn
- Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] MSM8916-mainline: improve gp2ap002 proximity
- sensor v2
-Message-ID: <20261017190339.1706f96d@jic23-hlaptop>
-In-Reply-To: <20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com>
-References: <20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com>
+To: =?UTF-8?B?6LW15paH5by6?= <berringtoni36@gmail.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lothar Rubusch <l.rubusch@gmail.com>, Joshua
+ Crofts <joshua.crofts1@gmail.com>, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iio: accel: adxl345: propagate errors when
+ reading event configuration
+Message-ID: <20261017191310.3164205f@jic23-hlaptop>
+In-Reply-To: <CAF2O-sO3OJH1sNnm0TkDXkEwWPKM21+s0_iNgU-VAmF+kMWtLw@mail.gmail.com>
+References: <CAF2O-sPfK96Bvqtu-reg+y--nuV35tM57Med9irz_a3RK1xhsw@mail.gmail.com>
+	<CAF2O-sO3OJH1sNnm0TkDXkEwWPKM21+s0_iNgU-VAmF+kMWtLw@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,80 +50,90 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, 17 Oct 2026 19:27:40 +0200
-Christoph Rudorff <chris@rudorff.com> wrote:
+On Fri, 16 Oct 2026 19:39:08 -0700
+=E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com> wrote:
 
-> Samsung J5 is equipped with GP2AP002 proximity sensor.
-> Unfortunally the driver wasn't working, no irq received.
->=20
-> According to datasheet page 8 "Recommended external circuit",
-> it can have tree supplies: vio, vdd and vled.
->=20
-> It missed to power up the LED.
->=20
-> I found this looking in downstream kernel, where
-> several #ifdefs handled the case of 2 or 3 supplies.
->=20
-> Now it works. Tested on samsung-j5:
->=20
-> $ cd /sys/bus/iio/devices/iio\:device1
-> $ echo 1 > events/in_proximity_thresh_either_en
->=20
-> $ iio_event_monitor /dev/iio\:device1
->=20
-> Event: time: 1791460068846871297, type: proximity, channel: 0,
-> evtype: thresh, direction: rising
->=20
-> Event: time: 1791460068876669724, type: proximity, channel: 0,
-> evtype: thresh, direction: falling
->=20
-> Signed-off-by: Christoph Rudorff <chris@rudorff.com>
-> ---
-> Changes in v2:
-> - reorganized patch serie
-> - gp2ap002: use regulator bulk framework
-> - Link to v1: https://patch.msgid.link/20261016-iio-light-gp2ap002-v1-0-7=
-c93312fa8d5@rudorff.com
->=20
-> To: Linus Walleij <linusw@kernel.org>
-> To: Jonathan Cameron <jic23@kernel.org>
-> To: David Lechner <dlechner@baylibre.com>
-> To: Nuno S=C3=A1 <nuno.sa@analog.com>
-> To: Andy Shevchenko <andy@kernel.org>
-> To: Rob Herring <robh@kernel.org>
-> To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> To: Conor Dooley <conor+dt@kernel.org>
-> To: Bjorn Andersson <andersson@kernel.org>
-> To: Konrad Dybcio <konradybcio@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-arm-msm@vger.kernel.org
->=20
-https://sashiko.dev/#/patchset/20261017-iio-light-gp2ap002-v2-0-d6879767a44=
-6%40rudorff.com
+> adxl345_is_act_inact_en() returns either a boolean state or a negative
 
-Spotted stuff I missed.
+Returning true or false to a function that reports to return integers
+is rather nasty and is probably what lead to this bug in the first
+place!  Would you mind also changing that as part of this fix?
 
-J
+Cleanest solution is probably to pass a bool * in as a parameter and
+use that to 'return' the boolean rather than mixing up bool and error
+codes as it currently does.  That will keep the return value for whether
+the query succeeded or not.
+
+Thanks,
+
+Jonathan
+
+
+> regmap error. Applying !! in adxl345_read_mag_config() converts every
+> negative error to 1, so a failed register read is reported to userspace
+> as an enabled activity or inactivity event.
+>=20
+> Return the helper result directly. Its successful paths already return
+> 0 or 1, and the IIO event attribute read path propagates negative errors.
+> This also covers the adaptive magnitude events using the same helper.
+>=20
+> Fixes: 66a1af6d8a63 ("iio: accel: adxl345: add activity event feature")
+> Assisted-by: LLM
+> Signed-off-by: =E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com>
+
 > ---
-> Christoph Rudorff (3):
->       dt-bindings: iio: light: gp2ap002: add vled
->       iio: light: gp2ap002: add led power supply
->       arm64: dts: qcom: msm8916-samsung-j5: Add proximity sensor
+> Validation on macOS ARM64 with Apple clang 17:
+> - Compiled the three relevant driver functions verbatim with the driver
+>   header, using a host regmap stub for deterministic read failures.
+> - The original code failed 36 error cases; the patch passed all 53 cases.
+> - Covered activity/inactivity and DC/AC coupling, each of three regmap
+>   reads failing with -EIO, -ETIMEDOUT and -EREMOTEIO, enabled/disabled
+>   states, mismatched coupling and an unsupported direction.
+> - Checked read order, early exit and unchanged register state.
+> - Used -Wall -Wextra -Werror, AddressSanitizer and UndefinedBehaviorSanit=
+izer.
+> - git diff --check and checkpatch.pl --no-tree --no-signoff --strict
+>   on the code diff passed with no errors, warnings or checks.
+> - The full patch draft also passed checkpatch with no errors, warnings
+>   or checks after fetching the introducing commit for Fixes validation.
 >=20
->  .../bindings/iio/light/sharp,gp2ap002.yaml         |   4 +
->  .../boot/dts/qcom/msm8916-samsung-j5-common.dtsi   |  15 +++
->  arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts    |  32 +++++++
->  drivers/iio/light/gp2ap002.c                       | 101 +++++++++++----=
-------
->  4 files changed, 106 insertions(+), 46 deletions(-)
-> ---
-> base-commit: a2de78ee6ed8bf8cd99d177c74865a6e8c3cb6ea
-> change-id: 20261016-iio-light-gp2ap002-6bd553aecb4b
+> Also compiled adxl345_core.o, adxl345_spi.o and adxl345_i2c.o as
+> x86_64 ELF relocatable objects using clang and unpacked Debian Linux 6.1
+> headers supplemented by upstream IIO/regmap headers. This checks syntax
+> and types; it is not a full Kbuild/modpost build.
 >=20
-> Best regards,
-> -- =20
-> Christoph Rudorff <chris@rudorff.com>
+> No in-kernel KUnit execution or hardware sensor test was performed.
+> The checkout is sparse; --no-tree disables checkpatch's tree layout
+> check. Initial draft checks used --no-signoff before human review.
+> The final signed email also passed checkpatch without --no-signoff.
 >=20
+> AI assistance: Codex reviewed the event-read path, identified the errno
+> conversion, drafted this two-line fix, the reproducer and changelog.
+> The request was to prepare a driver/BSP/kernel contribution related to an
+> ADXL345 SPI/IIO vibration-monitoring project, with reproduction and check=
+s.
+>=20
+>  drivers/iio/accel/adxl345_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345=
+_core.c
+> index 6c9080d..5983fc7 100644
+> --- a/drivers/iio/accel/adxl345_core.c
+> +++ b/drivers/iio/accel/adxl345_core.c
+> @@ -1176,9 +1176,9 @@ static int adxl345_read_mag_config(struct
+> adxl345_state *st,
+>  {
+>  	switch (dir) {
+>  	case IIO_EV_DIR_RISING:
+> -		return !!adxl345_is_act_inact_en(st, type_act);
+> +		return adxl345_is_act_inact_en(st, type_act);
+>  	case IIO_EV_DIR_FALLING:
+> -		return !!adxl345_is_act_inact_en(st, type_inact);
+> +		return adxl345_is_act_inact_en(st, type_inact);
+>  	default:
+>  		return -EINVAL;
+>  	}
+>=20
+> base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
 
