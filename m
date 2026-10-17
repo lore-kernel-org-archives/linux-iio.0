@@ -1,81 +1,47 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE581397332
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 20:20:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D5E3A1A27;
+	Sat, 17 Oct 2026 20:20:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792268420; cv=none; b=tagGLzRmvsriCX9SwkkWcy6BgR6z7CMdLSOZsyn/3sxFPdmQbI0u84MNlfc+rMTZ+MSlRO644ltDrLoWEJmHsdATxKGcYs+O5mEJYypkgU8ltiPSXKAy3ahukzgbNYCqUDLsBqRQ0FoV3i6yMGSuJDTAy3t1aEtyn3EUSWRxOBs=
+	t=1792268443; cv=none; b=d/HAQCllMY3HFv/7BS6mVdkES2E2hKqI02mKXHt9uRaTIpMofEudypbrwN/sr/+AFdnrpDmeS7WQMRpeum0Vhv4j5NmoGvDg2BS6DAPJlgM0XWCPGeBy/5OWA5ESXDKUutSasi0r121mpxLcFR2ivoJeICxuugB2r4GbVmscTYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792268420; c=relaxed/simple;
-	bh=iOj45D9QjveBgDHXCRQAAzL9Yq6CKk3ChsV5jSGC1lQ=;
+	s=arc-20240116; t=1792268443; c=relaxed/simple;
+	bh=+Bmv+bH7yjyeIXhfyEWyPPu/RUvgmWqi9SHc8L4waNk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QDXUS3CKe6gBf17M/coLuYHdbTbDYpIPsQdnya6FUXKeOCVOKnShFiJZjuChzdOAPcH2mOJwxRP0PL+iXmRNLQqATAoGJQhD+0j6Kg/nByFTIzSzML+K/3JauhC4ED3zvcH4AR2eBGC7ctv0lbq3z/x4H2aGrW7sSsXvvD6bDcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YON0DWgG; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 MIME-Version:Content-Type; b=FPKpEvOftmlSdnwGUhALRlwb2YE6ecYeX/8iI3+Fco4P2YlNDPlyClTwEaObKdaSFAmKGfefuhBh2weSBj5CALcUtS3Cz3jTy5V5ywnQ6dsOCkNazbOcXiJwVkgllbJ1CL/IlvRDiTzhb4akrXtfQ/lAEQ6KiM8mUI5q347CFZ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IqeMw+8q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YON0DWgG"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a16bc2278aso7871595e9.1
-        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 13:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792268417; x=1792873217; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=gzxrQpRqiMxGfds7uvrOMz2fXfxEw8AQx180UBPaRVo=;
-        b=YON0DWgGN6Mfi/4sF/8gI+tiuKKQL22E6m9fR0MR1uDgCJjG6j2gehScbJDJ6ECg1h
-         dJoswkdUm2OV7xS70Lc5l8flzlAUMDEIqvzpqGS0vL+V8sHD+K4yc+dChq0SEDz5AhMK
-         mh1xZqKLKU+X4NlrfuAL05HuWUads3T2UUG53H/aezXaTPDdnI3N5ygaLQaiRRHK3jal
-         O+pxju9dYWCG3ehYGImy2+gznGREl6isRRhPII8zpRqBpJKtXJKt3az5+ixmZvGSE+Pf
-         n9Sl8s31b9/kkoWLwe/fUq5dDpkjUY5phbgplNPL8Klt5MwmeCdvbHCrH5bklReC0i1I
-         uAMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792268417; x=1792873217;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=gzxrQpRqiMxGfds7uvrOMz2fXfxEw8AQx180UBPaRVo=;
-        b=2kuJ6XzOM7LH/J2+C07jRXmHeT5kpILU26EZfPbYMoREpkjlMylnruqn5u6lLDdUBw
-         Xm7M3vAu0rqfCb4Lo+Al3WEt9hhUEQ3zfkT0Ajt+cLvoo/e52kVJjVEr7ien55+QDoR8
-         H3S5paeWwDwgyoOk32/9OZKN/qdzuNt/sJXVSMtZ+KYf9Rn/HggZ/4hOrxh4uZQgVvqd
-         XPtDRUj9+hWhZMovoUaAZjeuUUerXJPQj3TmKLBouak051d1rKWMNJ+iwXJbkP8KlPgD
-         7Sx1a+GCS6h9TJ2a4eEqzEaGQqhyvRlbfw1l1ze+QMPdyCHoYwRGpw2WT+yzDXJinYD7
-         VWFg==
-X-Forwarded-Encrypted: i=1; AKwUvBwWvT3Spj94lTSnTXTYZvlO1kmpckYh0UAaV5QCa6ry98yO2s6zsXFSM4PMXgihXl8iSU+OUA2wGxk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLtwAgjPxENG/NRjxnOdvn5Uk961OLjKiirVCFLQgcpd0FhcO9C
-	8Mym/VvpvaNE3RrUqRufHTg64NPsqhvZ4X+r2itQzV9sHHu600RyhFks
-X-Gm-Gg: AYBFou0REPUsDteYhDf1vhvDbdhZsYqdN0XMlSzEsw70V7HZr3ufB7sPDTDNivFNykj
-	WE4hJVBuNhK8cc/ysZWWjY8b4uVhCxO/wdieZ1GDHLQ+TulQh7aYAQCGF/GnjXcMa2kJ8IiycOs
-	u82Rhk6bRgiOWS0PzAeJBcNmcPY9vPRPX2aVyCvwverXmDL3Kmz0+cwn6Os4rlH3uWMdP5JRAgs
-	PITxC9fjYWKBfDymfP/dnEjgSgm+zw3oHYzOCMxC3qEmxhNS6a4tkjDr+XImJp4/Q/n37A3xn4V
-	6P6/YjRhznxYWWDs7TbV0VW2hEdcdMN7vTCjf432+qx5NjRbjEVJR/2Tg+SiGGORRbpVu9Gn4Qb
-	aFEPoQAZjrXxA1c9FuWiJPDtfNTDoGbGsNOrR5dfemb1RywytxaaoKJ09/6Kv+8YinvPp35rhjD
-	k8I6Gi8SFK466frkS735kGPRYEPHHIbwYw8NvkS3VUv0SvrUl3OQK79q1au9RChAWU9EC89Nj1a
-	pd7nsFj/xa9Ba0GSN7dppGPDL5BnAhVfKaqPifq00wGOHqqWgsQ1IVJYKFv9GqmYANmwl9gKaRD
-	1Ia27so1CowZjww7hxUUfrs4tXhPP7kCzCsypWPg+VZYXQXflI0uFFK0WzNTPbHxveHps3tNNij
-	n+xRYpvqAkwaRGPvychRDuXt3RIqGp8x1RPjQi7RkABR9zuPX
-X-Received: by 2002:a05:600c:4f42:b0:4a1:ddca:8b66 with SMTP id 5b1f17b1804b1-4a1ddca9066mr49709165e9.31.1792268416816;
-        Sat, 17 Oct 2026 13:20:16 -0700 (PDT)
-Received: from systembl0wer ([213.194.212.155])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1c8ddde4esm191084495e9.12.2026.10.17.13.20.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Oct 2026 13:20:16 -0700 (PDT)
-Date: Sat, 17 Oct 2026 22:20:13 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, Dingisoul
- <dingiso.kernel@gmail.com>
-Subject: Re: [PATCH v3 0/2] iio: gyro: mpu3050: add missing trigger cleanup
-Message-ID: <20261017222013.3ada690b@systembl0wer>
-In-Reply-To: <20261017192151.15986386@jic23-hlaptop>
-References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
-	<20261017192151.15986386@jic23-hlaptop>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IqeMw+8q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC431F000C4;
+	Sat, 17 Oct 2026 20:20:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792268441;
+	bh=cNQChqGmZXKpRKoayySFzv5GpNlTaDfGUQ5ySRB3g6o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=IqeMw+8qhlCohn/eWmjvWdSfyDwrl9JZA1MH7Pzm9zlMye/dBBkU+inV8cA0TsJE2
+	 Lhd65wgSGiTT06SnjxQ4x7+rb5Qz5ocZMOdXjGNa9pcGXyQazGZ1tEAFjPAhUGumPs
+	 //rT21DGjhIcYPkmnjqULbqyU5WBnCtEWsyPEnAlJl5ladqdmtFUkZMsJV6WmxKyts
+	 s9oMCXg1W0Vk+GLeY4tzUZF5Cn0M0skIlJ4lpeauePCpRnI2MaZ4epS0YrlG/vXVuH
+	 N2YPVQbkA3X2A2z6Y5vbJmgygL9GbpporEIdwZZG+z+EhIARXGQtLjJjHItKp9RkT+
+	 645Xq/31hhdeQ==
+Date: Sat, 17 Oct 2026 21:20:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Liu Yufei <lyf98405@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v3 2/2] iio: proximity: Add driver for Vishay VCNL36829
+Message-ID: <20261017212036.53e5a8c8@jic23-hlaptop>
+In-Reply-To: <20261016012218.40223-3-lyf98405@gmail.com>
+References: <20261006100943.78971-1-lyf98405@gmail.com>
+	<20261016012218.40223-1-lyf98405@gmail.com>
+	<20261016012218.40223-3-lyf98405@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,28 +51,113 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 17 Oct 2026 19:21:51 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, 16 Oct 2026 09:22:18 +0800
+Liu Yufei <lyf98405@gmail.com> wrote:
 
-> On Sat, 17 Oct 2026 07:19:19 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+> From: Liu Yufei <lyf98405@gmail.com>
 > 
-> > This series fixes an ignored error return value that causes the device
-> > to behave in a weird polling state and a subsequent use-after-free bug
-> > reported by Dingisoul.
-> > 
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>  
-> Not sure where signing off on cover letters came from. There is no need
-> as they don't form part of the permanent git record so DCO doesn't apply.
+> Add an IIO driver for the Vishay VCNL36829 proximity sensor with
+> integrated VCSEL, connected over I2C.
+> 
+> At probe the driver enables the vdd and vddio supplies, waits for the
+> sensor to power up, checks the device ID, configures the VCSEL current
+> and photodiodes, and turns the proximity engine on. The sensor is put
+> back into shutdown when the device is removed.
+> 
+> The following attributes are exposed:
+>   - in_proximity0_raw
+>   - in_proximity_integration_time
+>   - in_proximity_integration_time_available
+> 
+> Datasheet: https://www.vishay.com/docs/80580/vcnl36829um.pdf
+> Assisted-by: LLM
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Liu Yufei <lyf98405@gmail.com>
+> ---
+> v3:
+> - Use dev_info() instead of dev_warn() for an unknown device ID
+>   (Joshua Crofts).
+> - Wrap the write_raw() arguments on a logical boundary (Andy Shevchenko).
+> v2:
+> - Address review comments from Andy (see cover letter for details).
+> 
+Nice little driver. I'll tweak the first thing whilst applying.
 
-This is actually done by b4 automatically when creating a cover letter.
+Applied series to the testing branch of iio.git. That will be rebased on rc1
+once available at which point I'll push it out for linux-next to pick up.
 
-> Series looks fine to me but given others have been actively responding
-> to previous versions I'll leave it a while to pick up some tags.
+> diff --git a/drivers/iio/proximity/vcnl36829.c b/drivers/iio/proximity/vcnl36829.c
+> new file mode 100644
+> index 000000000..217a32aad
+> --- /dev/null
+> +++ b/drivers/iio/proximity/vcnl36829.c
 
-Sashiko had a remark about there still being a possibility of a UAF so
-I'll have to check that out either way.
+> +
+> +static const int vcnl36829_it_range[] = {0, 25, 0, 25, 0, 375};
+Trivial but preferred style for IIO has { 0, ... 375 };
+I'll tidy that up.
 
--- 
-Kind regards,
-Joshua Crofts
+
+> +
+> +static int vcnl36829_read_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      int *val, int *val2, long mask)
+> +{
+> +	struct vcnl36829_data *data = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	struct regmap *regmap = data->regmap;
+> +	unsigned int reg;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = regmap_read(regmap, chan->address, &reg);
+> +		if (ret) {
+> +			dev_err(dev, "Data read failed: %d\n", ret);
+> +			return ret;
+> +		}
+> +		*val = reg;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		ret = regmap_read(regmap, VCNL36829_PS_CONF2, &reg);
+> +		if (ret) {
+> +			dev_err(dev, "Data read failed: %d\n", ret);
+> +			return ret;
+> +		}
+> +		/*
+> +		 * PS_IT field 0 would mean 12.5us, which does not fit the
+> +		 * 25us step used here. The driver never programs field 0:
+> +		 * probe sets 25us and write_raw rejects anything below 25us,
+> +		 * so the field is always >= 1 and val2 = field * 25 holds.
+
+I suppose we can relax that later without it being a regression if
+it turns out someone wants to use 12.5 usecs.
+
+> +		 */
+> +		*val = 0;
+> +		*val2 = FIELD_GET(VCNL36829_PS_IT_MSK, reg) * 25;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+
+> +static int vcnl36829_probe(struct i2c_client *client)
+> +{
+
+> +
+> +	ret = regmap_read(regmap, VCNL36829_DEV_ID, &reg);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to read device ID\n");
+> +	if ((reg & 0xFF) != VCNL36829_DEV_ID_VAL)
+
+Not that important, but for consistency I'd have given that a field name,
+despite it not having one on the datasheet..
+
+> +		dev_info(dev, "Unknown device ID 0x%x\n", reg & 0xFF);
+>
+
