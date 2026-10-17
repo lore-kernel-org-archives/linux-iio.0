@@ -1,51 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141BE4CF490;
-	Sat, 17 Oct 2026 23:44:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 025E91F2B8D;
+	Sat, 17 Oct 2026 23:48:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792280656; cv=none; b=YUn5CNgrxDuSFBPAy5BuRpCkqjWJH5b3A2GMLhZ4tnHAzPz6Iwn/+5+4SW8lJaD04O2MlcdxHVRyum2yLDiwKJYTiCWOThuy+ntfPV1ruYskZWNUmyeDe8R+mQA70P4ui1Yso/RMehasAPiLIyXalyWfALjhvXMyygwArE6ZWJo=
+	t=1792280918; cv=none; b=s0r/FQ4EIAo1UqvcbDWNU0v1h71NEitGHBFysNpNSeytmp0vuaQqFEKJ4Xt8HqS9mX4bz5ErcClOiXN7CQgHTuX0eXWBbzEbsKfGyXw3bzDTRvaCk4QGhpIwxZooXrRHKl370si9B2s5C1pQ8dPuA1JMJrMIoBAwO+uJXEtVVqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792280656; c=relaxed/simple;
-	bh=PvSBQX7HKyUc93YW7gjnK9DSlXLiZ4eayc3bRmERyLE=;
+	s=arc-20240116; t=1792280918; c=relaxed/simple;
+	bh=OegNwtBlbWJsRetO1hLmtFJT3AEq7b+QO5Fjrq15TuI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CDCJNUN8HwPLTB0XUtgXJdV7cpjJKVoYvSoXzl26wUivVgK1xp4OT08e+xGfAcLTRaQUlVp+VkFrC1DdqDz3EyJvVFT4fDPnUZwE0YoGjy4IyM8NQDmh2sgH7UbAPwk/adPPsMDyuckkJZkCoNq/SlmNNRbbxm9F5Wowrc506hg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zeo+12Kd; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=mZ2V+fk6syuHVI0C1j+is1QuWYNrCqkzKVShEznH5HAkSZHcLuM2pCWpwQybqwzUzS9twvgTu+S/OsHfwuzQUNpWt7/G6h5HH5m4/5bQkO1CrZhfjhZkM0puZmACPHnbLu64WwZBit35wNwtLErhVEP9pyiY6uU4aN86hZN4qO4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h2SdRDhm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zeo+12Kd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B8341F000C4;
-	Sat, 17 Oct 2026 23:44:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h2SdRDhm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F06F1F000C4;
+	Sat, 17 Oct 2026 23:48:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792280654;
-	bh=GdkUJBJXGvO1JP6r+c8oq/P+9Ri/jpQUrghS/tRabB0=;
+	s=k20260515; t=1792280916;
+	bh=9cKmaOvO8+w475otCgj53iP5B3332djS6gNZeB1RDvc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Zeo+12Kd9xlUAbUSVqmuF129yu0usyK8TlsfMpnN5uxES/MIEEmWQHwX9+0l0LTff
-	 OAgjeX1h505sAVit/YqMY/7gQDxCMR2Zvm4urtz23Hb/VuS/ku3X8n57KiAEuFYEWu
-	 Jwh/J7eATiM0S9YfpftIYdTOSK9+oCvLTZlgDxrO8ESsWO0KfO1voPlhBZKtcIjMAn
-	 VL+pGyfu/V2MOA+7lRwpT4jDAWjVMOvaq+aaKjY9lawuOXmGM/pJsgKzbbYbPx/M3O
-	 OkPp2mNyS7X3F/F8qvVDzJLAbFPSFOOvsn98eAvBO6jolq0gUARb5R4JKkqm6XPz7+
-	 Vwux5cHWP/JgA==
-Date: Sun, 18 Oct 2026 00:44:07 +0100
+	b=h2SdRDhmFrBQskd/cMi+CKUqB0cROvdkoWcIJrAfPvLDiG96/qdo5iLSwxsU3sXMZ
+	 XLF4A/PP2QCgq7QocOMw0oEoloIq8x8AL1vShWaWeBxCDaZmiownK7o4VrvKUaUmtx
+	 PORP87fP+orVp8V9FW9pkjfbapLVrkQxlRolW/NqP1PuplKnF6T4kPVWUQb/WFLhRb
+	 v/QCtmhQQM+MSfUso9jIwzQLN7Dzrrimt1mUYuM7V0HJZZbnUk9jDIGdqfJKi4rczW
+	 ENTlVUmL/WZx+vWBDfI84koX2kQcNthCp3HNFkFgoUcelYMYnOvgLVtl99hUBqD9BY
+	 hJRT4FhQAbTsw==
+Date: Sun, 18 Oct 2026 00:48:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, "Shuah
- Khan" <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>, Joshua Crofts
- <joshua.crofts1@gmail.com>, Radu Sabau <radu.sabau@analog.com>, Janani
- Sunil <janani.sunil@analog.com>, Salih Erim <salih.erim@amd.com>, Jishnu
- Prakash <jishnu.prakash@oss.qualcomm.com>, Jakub Szczudlo
- <jakubszczudlo40@gmail.com>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH 4/4] docs: iio: ade9000: document ADE9039 support
-Message-ID: <20261018004407.46d95228@jic23-hlaptop>
-In-Reply-To: <20261012111342.48040-5-antoniu.miclaus@analog.com>
-References: <20261012111342.48040-1-antoniu.miclaus@analog.com>
-	<20261012111342.48040-5-antoniu.miclaus@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Yu-Hsiang Tseng <asas1asas200@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: acpi: Accept comma separated values in ROTM
+ strings
+Message-ID: <20261018004833.65dc0048@jic23-hlaptop>
+In-Reply-To: <as1JVWC8FiN704Uj@ashevche-desk.local>
+References: <20261012074144.1060625-1-asas1asas200@gmail.com>
+	<as1JVWC8FiN704Uj@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -56,77 +49,79 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 12 Oct 2026 14:13:40 +0300
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Mon, 12 Oct 2026 23:55:49 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Add the ADE9039 to the list of supported devices and note that, unlike the
-> ADE9078 and ADE9430, it does provide the on-chip dip/swell events. Also
-> document that it exposes no total reactive power attributes, since the part
-> computes only fundamental reactive power.
+> On Mon, Oct 12, 2026 at 03:41:44PM +0800, Yu-Hsiang Tseng wrote:
+> > The ROTM method of the MXC6655 accelerometer on the Higole F9B, an
+> > Alder Lake-N handheld (AMI BIOS F9D_16G_P800217, DMI strings are all
+> > "Default string"), separates the values with a comma and a space:
+> > 
+> > 	Method (ROTM, 0, NotSerialized)
+> > 	{
+> > 	    Name (SBUF, Package (0x03)
+> > 	    {
+> > 	        "-1, 0, 0",
+> > 	        "0, 1, 0",
+> > 	        "0, 0, 1"
+> > 	    })
+> > 	    Return (SBUF)
+> > 	}
+> > 
+> > iio_read_acpi_mount_matrix() only accepts the space separated form used
+> > in Microsoft's example ("0 1 0"). It rejects this matrix and mxc4005
+> > falls back to the identity matrix:
+> > 
+> > 	mxc4005 i2c-MXC6655:00: Incorrect ACPI mount matrix string format
+> > 	mxc4005 i2c-MXC6655:00: mounting matrix not found: using identity...
+> > 
+> > With the X axis not inverted, iio-sensor-proxy reports left-up when the
+> > device is held right-up and vice versa, so the desktop turns the
+> > picture upside down whenever the handheld is held in landscape.
+> > 
+> > It is not the only BIOS written this way. The BOSC0200 on the AYANEO
+> > Air Plus uses commas in its ROMS method as well, with a space before
+> > one of them, and its ROMK method has "1, 0,0":
+> > 
+> > 	Method (ROMS, 0, NotSerialized)
+> > 	{
+> > 	    Name (SBUF, Package (0x03)
+> > 	    {
+> > 	        "-1, 0, 0",
+> > 	        "0, -1 , 0",
+> > 	        "0, 0, -1"
+> > 	    })
+> > 	    Return (SBUF)
+> > 	}
+> > 
+> > The kernel's sscanf() does not support '%*[', so there is no clean way
+> > to take both separators in a single format string. That leaves either
+> > a second sscanf() call with a comma format, or normalizing the
+> > separator first. Do the latter: turn the commas into spaces before
+> > parsing, so the existing "%d %d %d" format, which already takes any
+> > amount of white space around the values, keeps working unchanged. The
+> > strings live in the buffer acpi_evaluate_object() allocated for us, so
+> > they can be modified in place.
+> > 
+> > With this change in_accel_mount_matrix on the Higole F9B reads
+> > "-1, 0, 0; 0, 1, 0; 0, 0, 1" and, with no udev hwdb override, the
+> > desktop rotates correctly in all four orientations. The AYANEO Air
+> > Plus was not tested; systemd's hwdb has an entry for it, which
+> > iio-sensor-proxy prefers over the kernel's matrix.  
 > 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
->  Documentation/iio/ade9000.rst | 24 +++++++++++++++---------
->  1 file changed, 15 insertions(+), 9 deletions(-)
+> Makes sense, and fix is neat.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> diff --git a/Documentation/iio/ade9000.rst b/Documentation/iio/ade9000.rst
-> index 0c0a8ea8213b..13b7ecf83cb8 100644
-> --- a/Documentation/iio/ade9000.rst
-> +++ b/Documentation/iio/ade9000.rst
-> @@ -1,12 +1,11 @@
->  .. SPDX-License-Identifier: GPL-2.0
->  
-> -==============================
-> -ADE9000/ADE9078/ADE9430 driver
-> -==============================
-> +======================================
-> +ADE9000/ADE9078/ADE9430/ADE9039 driver
-> +======================================
+Hmm. I debated dropping the stable tag, but meh, it's trivial and
+makes stuff work that didn't before.
 
-You can probably guess by now ;)  Numeric order.
+So applied to the fixes-togreg branch of iio.git keeping that tag.
 
->  
-> -+This driver supports Analog Devices' ADE9000, ADE9078 and ADE9430 energy
-> -+measurement ICs on SPI bus.
-> -ICs on SPI bus.
-> +This driver supports Analog Devices' ADE9000, ADE9078, ADE9430 and ADE9039
+I'll be rebasing that on rc1 once available before sending a pull
+request.
 
-and this one.  Might be worth switching to bullet points to reduce churn
-for the next device.
+Thanks,
 
-> +energy measurement ICs on SPI bus.
->  
->  1. Supported devices
->  ====================
-> @@ -14,6 +13,7 @@ ICs on SPI bus.
->  * `ADE9000 <https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9000.pdf>`_
->  * `ADE9078 <https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9078.pdf>`_
->  * `ADE9430 <https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9430.pdf>`_
-> +* `ADE9039 <https://www.analog.com/media/en/technical-documentation/data-sheets/ADE9039.pdf>`_
+Jonathan
 
-Guess what :)
-
-
->  
->  The supported parts are highly accurate, fully integrated,
->  multiphase energy and power quality monitoring devices. Superior analog
-> @@ -24,9 +24,15 @@ for the entire channel including a programmable gain amplifier (PGA) and an
->  analog-to-digital converter (ADC).
->  
->  The ADE9078 and ADE9430 do not provide the on-chip dip/swell (sag) detection
-> -available on the ADE9000, so the RMS voltage swell/dip events described below are
-> -only available on the ADE9000. The ADE9430 additionally has no on-chip digital
-> -integrator and instead uses an external analog integrator for Rogowski coils.
-> +available on the ADE9000 and the ADE9039, so the RMS voltage swell/dip events
-> +described below are only available on those two parts. The ADE9430 additionally
-> +has no on-chip digital integrator and instead uses an external analog integrator
-> +for Rogowski coils.
-> +
-> +The ADE9039 computes only fundamental reactive power and has no total reactive
-> +power register, so the ``in_power[0-2]_reactive_*`` files described below are
-> +not present on that part. The reactive energy files are unaffected, as every
-> +supported part accumulates fundamental reactive energy.
->  
->  2. Device attributes
->  ====================
 
