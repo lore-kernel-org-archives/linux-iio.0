@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 444484CF49E;
-	Sat, 17 Oct 2026 00:11:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B084CF477;
+	Sat, 17 Oct 2026 00:20:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792195880; cv=none; b=tkYV3nvvz6i/c+KoeoSTm/wPKby2xEYXOPQdK4VfhH0w0liB6n/XToF0t1/qM1adnb07HUk2qZkpP30+jn3OR8tBJJ0FDTZgKExcMlpR0uZHqC17Y4rTyK1SDucFNefiE/XWi87kxrzrHrUDpBOyb4Dh8sYith0l31zQ6p2I9xo=
+	t=1792196418; cv=none; b=SrzUOp0T3G5Ig0ZIrbj/tzYuwXNYCVpkYfVOoiGQwjfpGdQYk5czEVhxoJfybOZGAyF7MxVewf512hO+JAN4FGY+XThL/vzgWwD1qp15jNi58iMayIpPy/j0pVoSu3mTaz8y2ZxMb4pUA3rTCRYVe4jqBP8tURkx5cHeaEK7b3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792195880; c=relaxed/simple;
-	bh=S3BpuTcncoPRKYSf6BgBXL672v4BfbKAtvOGLJAoJ7U=;
+	s=arc-20240116; t=1792196418; c=relaxed/simple;
+	bh=0TAg9kwf3bBy6hz4ngcoqFMwcjlxEnjkj6ka1h5G9Pk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nPwfhUtaiNZOO6fplK/3LAhX/W5i756bZeAtx2aV89Lazp+cqWTqCmcp/Cg9n4n+9ym0nod0h4B1uC3710MelBCfQWGhiLyKVdrP17cxNH2oBogPNQN0wwjWmuz8RPg8ERVM++Jw/2amFiShclOtSsHEUhQnUVNLs8j0klgg3hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DKmM3ZJb; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=gaV94YWOir1Cc22kMR1XCrKIfzoiTZdFsrYHsMhfGzo/wQlwH+1jZGy84sPk8f9T+h7k7fvDjv8HVj2i0aesPBLtuaG+ZdfCCJYXrClnAT9ABV4lM43nkEgVWLfGa3hgaXezO58PXn+v/uNgBi1rpU1lr8vl/13RUEQQDogEdc0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lBH5faVC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DKmM3ZJb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0E3E1F000C4;
-	Sat, 17 Oct 2026 00:11:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lBH5faVC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D1501F000C4;
+	Sat, 17 Oct 2026 00:20:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792195878;
-	bh=4RCS+7D5EoxWLvekx7aj1PEI8tkTociXq4Yd/Tif9ds=;
+	s=k20260515; t=1792196417;
+	bh=T7gCl+qVVVNj8BjUCLZNh4b3oW8uH2GR5hEhwUea7s8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DKmM3ZJbmn0xTq8P/v65KiDBsU7TgZ+RXl6EgUk/ILV+7RgXU06nWo3iPBA770HPU
-	 ehUq/SFdZ+G1ngrLveGg8sOw7o062KDnZH5JQXqxBMDno8bUv+sajpxOb+nniqxIPD
-	 k1FJkaZ/TS8zpGH8OJt5pVkilnfm0Zyxp1X6PSCGMbFqwQsYZ24bol1Y9ivBpktfFn
-	 YcD4KlgBFBiiVwvbuAqvEKuc1g5K6mLIBcl/kbTM5DFyhT/X0mmze7anESNoSwz0J4
-	 f4x27kAA9/trc/am3VTLmE4yIbxGZYQRgTPWRS9B4AKv5eGmsCIrkE0QNijW7j4XDL
-	 BYcG9snPzQoZg==
-Date: Sat, 17 Oct 2026 01:11:14 +0100
+	b=lBH5faVCSPBlur4HNNtBz2Rz9iAlb5cimJsDa1iSOavVcmAot9t8RcyjYiKrggflB
+	 6GjOXHZITslrQSnEeswSDYox5M9pIrsUQzzpQcOjgPNO+mT+J1vZLJr6fW+713tBYJ
+	 Gw+uGSuYV+RkUY94PGhU9zY7pvFG5H4/+LjQ+PCcGJYnAw/luiDjNpF/n2/bt7mrvp
+	 3RUQkduczhWfn191IWo6xtdgL03mhEF1oxaFwjOSMtBg5e3GW+bKjGlGKkhWw5aCxB
+	 ciuWYevazih+c3bVOMKX/k+JI3ijTnUS9FZDYlOOfHQvPotAGcAL9CQTntTkPqQb3B
+	 ltWwk68CphJKg==
+Date: Sat, 17 Oct 2026 01:20:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Shehryar Ahmad <shehryar.amd@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] iio: accel: adis16209: add missing SPI and OF
- matching table
-Message-ID: <20261017011114.0597062f@jic23-hlaptop>
-In-Reply-To: <atIn5M6l__WKsjyv@ashevche-desk.local>
-References: <20261016114527.128364-1-shehryar.amd@gmail.com>
-	<atIn5M6l__WKsjyv@ashevche-desk.local>
+To: Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org>
+Cc: and.amer@gmail.com, Peter Rosin <peda@lysator.liu.se>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: afe: rescale: always expose offset
+Message-ID: <20261017012012.3390a90a@jic23-hlaptop>
+In-Reply-To: <20261016-iio-rescale-offset-v2-1-02c825967139@gmail.com>
+References: <20261016-iio-rescale-offset-v2-1-02c825967139@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,23 +47,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 16:34:28 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 16 Oct 2026 13:00:20 +0200
+Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org> wrote:
 
-> On Fri, Oct 16, 2026 at 04:45:25PM +0500, Shehryar Ahmad wrote:
-> > Replaced old manual matching via MODULE_ALIAS to modern SPI matching
-> > table.  Also added missing OF match table for DT based probe. Compatible
-> > adi,adis16209 is already enumerated in
-> > Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml  
+> From: Andrea Amer <and.amer@gmail.com>
 > 
-> Both LGTM,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Applied to the testing branch of iio.git which will be rebased on rc1
-once available and then pushed out for linux-next to pick up.
+> A rescale channel advertises IIO_CHAN_INFO_OFFSET only when its own
+> offset is non-zero. A child rescale therefore hides a source offset,
+> and consumers apply raw * scale and drop it. rescale_read_raw() already
+> folds the source offset in, so expose the attribute in every case.
+
+Hi Andrea,
+
+Why not check if there is either an offset in the rescaler or the underlying
+device? iio_channel_has_info(schan, IIO_CHAN_INFO_OFFSET) is used just above
+an should tell us that.
+
+If neither are present I think we can continue to not present that attribute.
 
 Thanks,
 
 Jonathan
 
+
+> 
+> Fixes: a29c3283653b ("iio: afe: rescale: add offset support")
+> Signed-off-by: Andrea Amer <and.amer@gmail.com>
+> ---
+> Changes in v2:
+> - Keep the IIO_CHAN_INFO_SCALE line unchanged (Andy Shevchenko)
+> - Link to v1: https://lore.kernel.org/r/20261012-iio-rescale-offset-v1-1-14ed15979ff2@gmail.com
+> ---
+>  drivers/iio/afe/iio-rescale.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+> index 3a6a09ffa5267ddfd5131fbd04a5df928836589d..4639a67ea462bf5c29603783a6f230d769fb02b0 100644
+> --- a/drivers/iio/afe/iio-rescale.c
+> +++ b/drivers/iio/afe/iio-rescale.c
+> @@ -301,11 +301,9 @@ static int rescale_configure_channel(struct device *dev,
+>  	}
+>  
+>  	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +		BIT(IIO_CHAN_INFO_OFFSET) |
+>  		BIT(IIO_CHAN_INFO_SCALE);
+>  
+> -	if (rescale->offset)
+> -		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
+> -
+>  	/*
+>  	 * Using .read_avail() is fringe to begin with and makes no sense
+>  	 * whatsoever for processed channels, so we make sure that this cannot
+> 
+> ---
+> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+> change-id: 20261012-iio-rescale-offset-41254a33b6d6
+> 
+> Best regards,
 
