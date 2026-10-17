@@ -1,40 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A9C3264FD;
-	Sat, 17 Oct 2026 18:18:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 874C934B437;
+	Sat, 17 Oct 2026 18:21:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792261099; cv=none; b=hHsGH2sGp8NHbGLyiVbxcuFIlygsBcSu7C4rHgP2+GeMSmtEbSO9b0mS7k1vTo/hBeQ48pnxp94tH//rYbuGO4vVdZ24EO4gk3aPY1JrzZhSgNLGVuYrWfGgU3yT7wybUmmg+fy6tihNQySv0dz+WexNzyQhdo7c/+kQy6wf+EE=
+	t=1792261317; cv=none; b=P743tEB10nnxD3fSQZ7tGKor60QTPesjd0ZjkY+Na+cLhS2zcmmY/GTeO/0a/Mm3oxZDBAqsMgunzSRZh/ufmAl/5HkI3SRpcQBh/4qA3nD+qVrd7we7lvLqmGAjoTkgjLzMAXyh5wB9T3nuJrqDgl2gOD+yty6jyGkbpRktNtE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792261099; c=relaxed/simple;
-	bh=UJvrkUpwgAjUB8i4BUeu4gVGoD4bjBcXb1bdO/1K2fQ=;
+	s=arc-20240116; t=1792261317; c=relaxed/simple;
+	bh=QETSnqD9zHjeV9yBvtwla31e3iQ8e0pj8gX4m8227gM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iljym5b5E2J/1tgZEzvZ3IEYopkzdDunS1QKCPgdTgHjlTj3faT/3zUi1kjupgLTcpYGWv/91WthrriOnM9+VnrB/pHK6wy1BdZbDPfo/l0nbbnKuiemcYbUFTwYqPiQKbghMXBFOGlsB+ztOgDyN+PvYksKxcQCrKW+yvIZAaA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W5MW4B/g; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KsAGg6QVICjpn09aALSKr00eKP7UTLdT9ej7iroBxQgBXbKF7dMDwrbgjgGp/92+HmbAV/WH6T/0OLey16AmmtnYLuh7sTuSR2pZg/DbToFUm3fZCeU6JJBPKM4KUo4rZWwjUX6NWbFNA4I4guWyoz1dXEh623ZzVxWh9RSDJO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hpzjDh9K; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W5MW4B/g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155611F000C4;
-	Sat, 17 Oct 2026 18:18:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hpzjDh9K"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C2081F000C4;
+	Sat, 17 Oct 2026 18:21:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792261098;
-	bh=2tybnaskFF1K3dm/+sU90/So1lPJtsLSrsZzRJnLBmI=;
+	s=k20260515; t=1792261316;
+	bh=QqYFkxl/6C3+duZbw8hxCBJgXVRgxDNSm7oaIlCYRzw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=W5MW4B/gIHuOih+r9qZAnYOky/WZVCQqj1m/5FTmJ01pkFwpvHvwZwPXDrek509TS
-	 JrQHhPFVHNhRivRuTVAag5CI2TM2p/R2eJEoLGfmIwXIDG0UlgQtuf3EssXLn1xiyh
-	 +Xa4rM9iJe5XDvq/iQME/xp1h7A2/2a6nIQvRUEDy4Csg//aZD1U57Nkb/RUN9btQB
-	 fsent+rqIQZj5oEYEApX4J7JcKByBSX0u9qJVJP5y0wbRabXtF1G6qDWfTLxS+FXBx
-	 AiZsXMMn5BpkXyXMatn6g0uomhJ/bMl2eAVovAqeOBewQQMhiANxVTYCb4z9/I9ra6
-	 M2rhfrgpJrnNg==
-Date: Sat, 17 Oct 2026 19:18:12 +0100
+	b=hpzjDh9Kr37vLYco+W9Zre3BIC92hP01J4HKjetV0adnU4amiG4Z/xfcr7mnpoUgo
+	 KYFES4x3LtrNUjYuBZqHD14ObzelHlwHt7fRpB/OKsboEjNXU6C7IVkcsXDOAOGQE9
+	 jTs30YWrCEWHXNcqRHYALydFBJFE43927m+69xAPB4nTv3hmxokDlH7oQYWp4wgpFU
+	 zPdyF2QxO0DEo3SRMVc7wHczuOp7S/MBuOvxGBdBm0mHvZniQaN19iGxtd4W5wItnl
+	 lb4eEmafkz/S5BkX+UfET9Xp/ciy3tCwKQf/unFa2wUqN0eIv4gJeoOALmagQyuQUf
+	 SsUHCVrlDqN2Q==
+Date: Sat, 17 Oct 2026 19:21:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nikhil Gautam <nikhilgtr@gmail.com>
-Cc: anshulusr@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: chemical: ags02ma: Check for short I2C reads
-Message-ID: <20261017191757.0e18754f@jic23-hlaptop>
-In-Reply-To: <20261017094639.3002-1-nikhilgtr@gmail.com>
-References: <20261017094639.3002-1-nikhilgtr@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Linus Walleij <linusw@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org, Dingisoul
+ <dingiso.kernel@gmail.com>
+Subject: Re: [PATCH v3 0/2] iio: gyro: mpu3050: add missing trigger cleanup
+Message-ID: <20261017192151.15986386@jic23-hlaptop>
+In-Reply-To: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
+References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,44 +48,46 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 17 Oct 2026 15:16:39 +0530
-Nikhil Gautam <nikhilgtr@gmail.com> wrote:
+On Sat, 17 Oct 2026 07:19:19 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> Check that the I2C receive operation transfers the expected number
-> of bytes before accessing the received data.
+> This series fixes an ignored error return value that causes the device
+> to behave in a weird polling state and a subsequent use-after-free bug
+> reported by Dingisoul.
 > 
-> Return -EIO if the transfer is incomplete.
-> 
-> Fixes: d58013f39b30 ("iio: chemical: add support for Aosong AGS02MA")
-> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
-Hi Nikhil,
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Not sure where signing off on cover letters came from. There is no need
+as they don't form part of the permanent git record so DCO doesn't apply.
 
-Given in practice we are very unlikely to ever see this condition I've
-not rushed this one in.  Next cycle is soon enough.
+Series looks fine to me but given others have been actively responding
+to previous versions I'll leave it a while to pick up some tags.
 
-As such, applied to the testing branch of iio.git.
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/chemical/ags02ma.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+> Changes in v3:
+> - Add a separate patch addressing the missing goto on trigger register
+>   failure
+> - Link to v2: https://lore.kernel.org/r/20261015-mpu3050-fix-v2-1-53f73581e62c@gmail.com
 > 
-> diff --git a/drivers/iio/chemical/ags02ma.c b/drivers/iio/chemical/ags02ma.c
-> index 151178d4e8f4..2219965d044f 100644
-> --- a/drivers/iio/chemical/ags02ma.c
-> +++ b/drivers/iio/chemical/ags02ma.c
-> @@ -61,6 +61,12 @@ static int ags02ma_register_read(struct i2c_client *client, u8 reg, u16 delay,
->  		return ret;
->  	}
->  
-> +	if (ret != sizeof(read_buffer)) {
-> +		dev_err(&client->dev,
-> +			"Short read from register 0x%x\n", reg);
-> +		return -EIO;
-> +	}
-> +
->  	crc = crc8(ags02ma_crc8_table, (u8 *)&read_buffer.data,
->  		   sizeof(read_buffer.data), AGS02MA_CRC8_INIT);
->  	if (crc != read_buffer.crc) {
+> Changes in v2:
+> - Add a local struct iio_trigger and assign it to the data struct only
+>   after a successful IRQ request to prevent a null pointer deref as
+>   pointed out by Sashiko
+> - Link to v1: https://lore.kernel.org/r/20261011-mpu3050-fix-v1-1-f55b0d138be4@gmail.com
+> 
+> ---
+> Joshua Crofts (2):
+>       iio: gyro: mpu3050: fail probe() on trigger registration failure
+>       iio: gyro: mpu3050: add missing trigger cleanup on remove()
+> 
+>  drivers/iio/gyro/mpu3050-core.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> ---
+> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+> change-id: 20261011-mpu3050-fix-145a77d5229b
+> 
+> Best regards,
 
