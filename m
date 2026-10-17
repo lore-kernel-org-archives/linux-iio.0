@@ -1,45 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4517D255E43;
-	Sat, 17 Oct 2026 19:10:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 339243B995B;
+	Sat, 17 Oct 2026 19:13:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792264246; cv=none; b=VyO4Wh0CflJbcKUwA8+gaZqI1bror1vs1p2W9C1HtFinlEL1uvlQFwvdVa1+Vy/ADMq/sYs2o5PF2jol/m0nkimJ12v+cUhsjmTQ6VAzIxqM7UFytFxk0eAJsFOPKTcEIWKR1ggFpBAHzDH0jHYkcLADYHvVCh9W+Q6i5H96+XQ=
+	t=1792264419; cv=none; b=oPXmFK5NGgluwm9wS0I9YYzSjs8lYknZ3lKr+uWag/iDicARoN9oUBRoRnyZ/NzNYrp5veSNFhsUKj3MY5DQO7kwkjZLeydIsmS9BWnuKPGaDwTfu0UjfzhgZ3KsrfPE0NcFrXvqBBkuMs8/geFtAxV0OaXqSz3NJ3ykDXBNQ9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792264246; c=relaxed/simple;
-	bh=orzydwwQvH+4TFpY2dG3asuXR+qpItNnlOB4/yGcQDU=;
+	s=arc-20240116; t=1792264419; c=relaxed/simple;
+	bh=ZWPwvp4yKc009tWAPvv+KysBtfFAvk1tlR+yG2D3R7M=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mUrqHkq9I8MWmY83mO70eIzkblV0Ay6bhZQv6ZJiH2bb3Bim/ENmcik4hzVw3wSaGgPH8A4c7h1kii4Jk2h/mpXaCyDvVrt8yFH5uzM79k/ktkc7p2S/oSX+woKPSEOYwvfpqH0SRFMHCLUXXdnJZCCYrCQVTOrN6Tripa1Bw9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ieogcHsz; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=YzWVR/J71rlIVzfsqVD5nQncVt3yyQR9e3WphGbjiMBbn6N93OR/Dzz68P8m+1G3/tzFvMzTpx6P2eRW4ysutEl9+TPUXH3egX/M+6xvGVBCGQkDy1ZoFr+vKUE47k43iRHI4SSmydDbzLR8ATp57xbSA36XD2uvXIPN8rQEnCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lBP2OTAk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ieogcHsz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C081F000C4;
-	Sat, 17 Oct 2026 19:10:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lBP2OTAk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3278A1F000C4;
+	Sat, 17 Oct 2026 19:13:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792264245;
-	bh=1t/2jUGkxv5LyP1PvSsusnqIWBP2jrYAkzX+eKb0a9M=;
+	s=k20260515; t=1792264417;
+	bh=ySB2z95OBV3amMWMDG5lzk6cX5XaLTz1FVqtPo+MV/s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ieogcHszQGt88CGu7RgJtcmPIP32ORtD+NMO16miZFs1OJMAEV31BQtiFXrE/APQu
-	 2m1YP2yfSihxpPP264tH/nt/zvDHw/EMjcXMYBpxx3Wbzi85itl6UahDRcDIdpFsSc
-	 P/3oXs2DQ7FY4IvlJ2Grrrd2skN6A6gEZzRqnVNxCMJ+K/aYfI0c/x1nMpRL0RMYrQ
-	 2VAknvprqm/PaFz4Hk27DyH44EX0jqncu0q1HzAeDuwxuW+KGOjBy0AkElJBAU2Q5p
-	 kprJt8bO2W+HPSSokToRsWF07m+5g51s7c8b8IWrl5HnH1dUIhKECn/CbQ4QHSzw0y
-	 P++TLqey6oAJA==
-Date: Sat, 17 Oct 2026 20:10:36 +0100
+	b=lBP2OTAkUDm1vGNdPW6KZ4qB0dTxY9A8RQogBJzeAL88wjyRz5Zd7ZYneKTWzMXDJ
+	 000KlHeWjyqrdecwzy2B4ytkD0j83LyIxFwB4PZ3RB+fEa64ZV2VfEqfVKR9zkcb3Q
+	 DiRYaXagOFkjNxaQD1YAtun/+C224U0c5lOVJkQcjK8wdUHzqvFOJYmIQIjR2GI6hr
+	 NpNX08TzNaXEX4v647ymJKEAPBaiXHF8C2sifjTMrgyZYOrNwbuvbS6LZQxVyc95uM
+	 cOzb6fKhptzkDgro1Xb8JeQwSMgrh2mxggLoCjWp6cyMe5XFvmNF032f2o5pq5lLLx
+	 pMnGQ4MoDiAbQ==
+Date: Sat, 17 Oct 2026 20:13:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <linux-kernel@vger.kernel.org>, <linux@analog.com>, <nuno.sa@analog.com>,
  <dlechner@baylibre.com>, <andy@kernel.org>, <Michael.Hennerich@analog.com>,
  <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
  <corbet@lwn.net>, <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v5 14/15] iio: adc: ad4134: Support high-speed data
- capture
-Message-ID: <20261017201036.28a64081@jic23-hlaptop>
-In-Reply-To: <44d545559aaf7cf2605aa30b5e9c9e5aa4aca879.1792200021.git.marcelo.schmitt@analog.com>
+Subject: Re: [PATCH v5 03/15] iio: adc: ad4134: Apply reset recovery wait
+ time
+Message-ID: <20261017201331.5d835dc4@jic23-hlaptop>
+In-Reply-To: <20261017075513.3a959a6a@systembl0wer>
 References: <cover.1792200021.git.marcelo.schmitt@analog.com>
-	<44d545559aaf7cf2605aa30b5e9c9e5aa4aca879.1792200021.git.marcelo.schmitt@analog.com>
+	<9f6d78d607b2f9a896513535fefa3329d52c4464.1792200021.git.marcelo.schmitt@analog.com>
+	<20261017075513.3a959a6a@systembl0wer>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,48 +52,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 23:00:34 -0300
-Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+On Sat, 17 Oct 2026 07:55:13 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> Make use of SPI transfer offloading to speed up data capture, enabling data
-> acquisition at faster sample rates (up to 1.496 MSPS).
+> On Fri, 16 Oct 2026 22:57:08 -0300
+> Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 > 
+> > Add a reset recovery wait time to avoid any SPI transfer from running too
+> > soon during device probe.
+> > 
+> > Fixes: e0bc6d7e2584 ("iio: adc: Initial support for AD4134")
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > ---
+> > New patch in v5.
+> > 
+> >  drivers/iio/adc/ad4134.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
+> > index 40b27b01f126..d555874b4959 100644
+> > --- a/drivers/iio/adc/ad4134.c
+> > +++ b/drivers/iio/adc/ad4134.c
+> > @@ -442,6 +442,7 @@ static int ad4134_probe(struct spi_device *spi)
+> >  		return dev_err_probe(dev, PTR_ERR(rst),
+> >  				     "failed to get and deassert reset\n");
+> >  
+> > +	fsleep(AD4134_RESET_TIME_US);
 
-I'd call out here that in this mode, you can't uses the sysfs interfaces
-to read channels.  Even when offloading is involved, no access at all
-is unusual. Is there a path to add that, if only for debug?
+Sashiko calls out that this is currently 10 seconds, which seems unlikely!
 
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-
-
-> diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-> index 6b05e40f7aeb..21e8039b3411 100644
-> --- a/drivers/iio/adc/ad4134.c
-> +++ b/drivers/iio/adc/ad4134.c
-
->  static irqreturn_t ad4134_trigger_handler(int irq, void *p)
->  {
->  	IIO_DECLARE_BUFFER_WITH_TS(u32, channels, AD4134_NUM_CHANNELS) = { };
-> @@ -520,6 +660,9 @@ static int ad4134_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (info) {
->  	case IIO_CHAN_INFO_RAW: {
-> +		if (!IS_ERR_OR_NULL(st->offload))
-> +			return -EPROTONOSUPPORT;
-
-If direct access is not supported when offload is in play
-then we shouldn't have an interface to get here (i.e. no
-IIO_CHAN_INFO_RAW bit set in the info mask bitmaps.
-As such is this just defensive coding?
-
-If so add a comment to say that, or just drop it.
-
-
-> +
->  		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
->  		if (IIO_DEV_ACQUIRE_FAILED(claim))
->  			return -EBUSY;
-
-
-
+> >  	crc8_populate_msb(ad4134_spi_crc_table, AD4134_SPI_CRC_POLYNOM);
+> >  
+> >  	st->regmap = devm_regmap_init(dev, NULL, st, &ad4134_regmap_config);  
+> 
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
 
