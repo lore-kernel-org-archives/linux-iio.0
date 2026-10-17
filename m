@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D07D8345EB0;
-	Sat, 17 Oct 2026 18:47:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD5A3D3326;
+	Sat, 17 Oct 2026 18:50:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792262833; cv=none; b=ocRjpMDD6I85/hCg9f4itM7Pfw1S7SkpOqm76JW7sl04QPxqgLpCUe8bDBgsbLeU4cHHeoMWLmTcka001GGXMZ5euMH4pJ/DM5nAFd11UN/dVhRzIC+a9OsCft+csHLm0frR3Hti57VL/NRBF6yxaREiqZXFqLnTeb+wi5aPsPM=
+	t=1792263046; cv=none; b=qYW3BD5Q/kLOq8SVbOfGYBwa4ty1F0KhJooR1SPN9C2nW7iQx7vylu/V4KExgh/voDzKKgCeo2Hx78q82OmjqeEcyYYYRBOCRhNhKSrKB4eNJ7J8GI4JvAVrtAm8Nrjo653rtZuIGxDVFRmxd6vLbjET+ZSKfz1O85UZBAxmYiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792262833; c=relaxed/simple;
-	bh=87oqsfBHVVsxZCaoGGkSeSOKMcNv2pQTppzPbV1NvP8=;
+	s=arc-20240116; t=1792263046; c=relaxed/simple;
+	bh=PGkzB09RuuWpB1ura3zGHWQ56j64JHnYqI2vkEBLkoE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OQWUMuNZ7rkudmHq5LDhNcTrUh7eySTs6KZBqdnn4teRFMNsptrldtptync6ysHwnTcwn6bwV/6OUhp+DjvuxdKK2RyPDyye0ZTjWpl6N4A4/BXYhGyO/b6/p2jdNuUFNJ8XqEU00x2hvAO34zV5w5G022yLnTNS7xXVpEmFpmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ndRCpubm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=fNluzlRRLeEqIwdbJFExKsfmpgHzVeIeKAS0FeUn2Bk4t+qHw+zTeEClWkVJK4yDn1bEV9jjvQJZkjE0zs6KwqiMZnNfhB4jGEoO+fh65jfwyy0WrYgeRO+Sb/TO1n8O02r5HVxpjyAMVvThnUe4Sc/SecW0SwqjmB+8abvdlJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eaUPNrin; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ndRCpubm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A62441F000C4;
-	Sat, 17 Oct 2026 18:47:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eaUPNrin"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B3BC1F000C4;
+	Sat, 17 Oct 2026 18:50:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792262832;
-	bh=sYvlStSz66uv+NV8wsfZqePA2CSRPfCcdD359Kbd6oU=;
+	s=k20260515; t=1792263045;
+	bh=0tKSwTjSH0ap5oKePnXXk+8FCIiUrNWgGYBWCoOi6+g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ndRCpubmDwY7H7OeTREabElrmk2+OL324MtiNyqRcLiCB2llsNOgKpOD4uVAw3XtC
-	 99REncwgqPu73VeafVIml/s7JRqiumle97o88D6EV8O/5LGY6FTw7hZd9I3jygGM9B
-	 jP1ZadMwdLo4wUrtBWSOqrgI9LhZZv0TM9COv9lUhN79PAjsU0SZw0W1EHCheb05Ux
-	 NsX2XBvg9cw15eBqrV80GOYSyl9YKjz8TDXX74qvwKx9iWBbYu1bvA7CjlK7+ZDrUO
-	 IwnfNiuzjm7PoKvl+osTaouDMA1uhOGXTjcRdpOPA/8wDKYi0+W8NkLV4BGpkLQH3U
-	 D54y1WHTkTRVw==
-Date: Sat, 17 Oct 2026 19:47:07 +0100
+	b=eaUPNrinWQtG5q4bOispMZioCQtvCUWiYr2hbytQwkCJe6qQ25TjptBmcv67/jpZp
+	 RT+wPW5VEFabdwidmUOwgr8CtrliErhjUsFIQGK0xQ68X3D8ZmaX4iX9rJgfP4ZUo6
+	 WD3E7nUOTXfiq8JjOiS3ALTXr8cI98M7b0742gj/p5k2HY4otNzdy5YlrpdMOizGWg
+	 GgqzZE1hI7wfa0HULeNQlvIekQ6akstZdN+skPaDzxBwR7KJ0FqTcvktx55oCoi2HW
+	 C/I3GBuVQkcNF/rn5uASRke+Q93bdDsO+ol2Lj1vlYelrHV5ofQkKbgk3mIkj0e9lp
+	 Lk1Kt6LCjn/PA==
+Date: Sat, 17 Oct 2026 19:50:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux@analog.com>, <nuno.sa@analog.com>,
- <dlechner@baylibre.com>, <andy@kernel.org>, <Michael.Hennerich@analog.com>,
- <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
- <corbet@lwn.net>, <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v5 06/15] iio: adc: ad4134: Protect conventional device
- access from debug accesses
-Message-ID: <20261017194707.48f6f242@jic23-hlaptop>
-In-Reply-To: <b05978468abb537f7fe5b1d0ed2753df9a69decb.1792200021.git.marcelo.schmitt@analog.com>
-References: <cover.1792200021.git.marcelo.schmitt@analog.com>
-	<b05978468abb537f7fe5b1d0ed2753df9a69decb.1792200021.git.marcelo.schmitt@analog.com>
+To: Wenqiang Zhao <berringtoni36@gmail.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: accel: adxl345: update period cache after
+ successful write
+Message-ID: <20261017195037.5501e184@jic23-hlaptop>
+In-Reply-To: <CAF2O-sN=PM1MUaWzv2r3zT0TozZZje+0eYPiJLQV_LHB3-Qj6g@mail.gmail.com>
+References: <CAF2O-sN=PM1MUaWzv2r3zT0TozZZje+0eYPiJLQV_LHB3-Qj6g@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,57 +48,99 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 22:58:05 -0300
-Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+On Sat, 17 Oct 2026 04:48:25 -0500
+Wenqiang Zhao <berringtoni36@gmail.com> wrote:
 
-> Require debug access to acquire device synchronization locks before
-> allowing any transfer from the debug interface so to avoid disrupting
-> operations issued from usual (non-debug) interfaces.
-
-These needs more.  What sort of disruption are we talking?
-
-A deliberate write to change state that breaks normal operation
-is a debug mess up that we don't guard against, but if a read
-is enough to break things, or there is an inherent disruption
-of other operations by using the bus at all then state that.
-
-What isn't regmap locking covering?  
-
-If this is all about the mux stuff and backend usage,
-then move it to nearer that in the series and refer to that.
-
-Jonathan
-
+> The ADXL345 event-period read path returns st->inact_time_ms. The setters
+> for inactivity, free-fall and the ODR-derived default currently update
+> this cache before writing TIME_INACT or TIME_FF. If the regmap write
+> fails, the sysfs write reports an error but a subsequent read returns
+> the requested period even though it was not programmed.
 > 
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> Update the cached period only after the corresponding regmap write
+> succeeds.
+> 
+> Fixes: 8a1536cc4a1c ("iio: accel: adxl345: add inactivity feature")
+> Fixes: f6f22950d925 ("iio: accel: adxl345: extend inactivity time for
+> less than 1s")
+> Assisted-by: LLM
+> Signed-off-by: Wenqiang Zhao <berringtoni36@gmail.com>
 > ---
-> New patch in v5.
+> v2:
+> - Keep Fixes: tags on a single line (Nuno)
+
+Sadly I think your email client or server is fighting back. I'm still
+seeing the split one. If that isn't easy to fix, look at using b4 and the
+web gateway that can use.  Avoids any opportunity for email corruption.
+
+> - Use a Latin-script name in From: and Signed-off-by: (Nuno)
+> - Drop the long validation notes; build-tested only, not tested on hardware
 > 
-> I'm not sure about this one and have no strong opinion about it.
-> Providing it according to suggestion from Nuno.
-> https://lore.kernel.org/linux-iio/179199692826.658576.4841754843069240356.b4-review@b4/
-> From previous discussions I guess this patch might not be welcome.
-> https://lore.kernel.org/linux-iio/20250421142359.11fb483f@jic23-huawei/
-> In that case, completely fine with it being dropped.
+> The missing serialization between concurrent sysfs callers that Nuno
+> pointed out is a separate issue and will be addressed in a follow-up
+> patch.
 > 
->  drivers/iio/adc/ad4134.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  drivers/iio/accel/adxl345_core.c | 27 ++++++++++++++++++++++-----
+>  1 file changed, 22 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-> index dc4d801490db..42a1272c2894 100644
-> --- a/drivers/iio/adc/ad4134.c
-> +++ b/drivers/iio/adc/ad4134.c
-> @@ -302,6 +302,12 @@ static int ad4134_debugfs_reg_access(struct iio_dev *indio_dev,
+> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+> index 6c9080d..cd58304 100644
+> --- a/drivers/iio/accel/adxl345_core.c
+> +++ b/drivers/iio/accel/adxl345_core.c
+> @@ -391,30 +391,47 @@ static int adxl345_set_default_time(struct
+> adxl345_state *st)
+>  	odr = FIELD_GET(ADXL345_BW_RATE_MSK, regval);
+>  	val = clamp(max_boundary - adxl345_odr_tbl[odr][0],
+>  		    min_boundary, max_boundary);
+> -	st->inact_time_ms = MILLI * val;
+> 
+>  	/* Inactivity time in s */
+> -	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
+> +	ret = regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->inact_time_ms = MILLI * val;
+> +
+> +	return 0;
+>  }
+> 
+>  static int adxl345_set_inactivity_time(struct adxl345_state *st, u32 val_int)
 >  {
->  	struct ad4134_state *st = iio_priv(indio_dev);
->  
-> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
-> +		return -EBUSY;
+> +	int ret;
 > +
-> +	guard(mutex)(&st->sync_lock);
+> +	ret = regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
+> +	if (ret)
+> +		return ret;
 > +
->  	if (readval)
->  		return regmap_read(st->regmap, reg, readval);
->  
+>  	st->inact_time_ms = MILLI * val_int;
+> 
+> -	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
+> +	return 0;
+>  }
+> 
+>  static int adxl345_set_freefall_time(struct adxl345_state *st, u32 val_fract)
+>  {
+> +	int ret;
+> +
+>  	/*
+>  	 * Datasheet max. value is 255 * 5000 us = 1.275000 seconds.
+>  	 *
+>  	 * Recommended values between 100ms and 350ms (0x14 to 0x46)
+>  	 */
+> +	ret = regmap_write(st->regmap, ADXL345_REG_TIME_FF,
+> +			   DIV_ROUND_CLOSEST(val_fract, 5));
+> +	if (ret)
+> +		return ret;
+> +
+>  	st->inact_time_ms = DIV_ROUND_UP(val_fract, MILLI);
+> 
+> -	return regmap_write(st->regmap, ADXL345_REG_TIME_FF,
+> -			    DIV_ROUND_CLOSEST(val_fract, 5));
+> +	return 0;
+>  }
+> 
+>  /**
+> 
+> base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
 
