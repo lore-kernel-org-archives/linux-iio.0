@@ -1,46 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D5E3A1A27;
-	Sat, 17 Oct 2026 20:20:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E822E3BBA04;
+	Sat, 17 Oct 2026 20:28:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792268443; cv=none; b=d/HAQCllMY3HFv/7BS6mVdkES2E2hKqI02mKXHt9uRaTIpMofEudypbrwN/sr/+AFdnrpDmeS7WQMRpeum0Vhv4j5NmoGvDg2BS6DAPJlgM0XWCPGeBy/5OWA5ESXDKUutSasi0r121mpxLcFR2ivoJeICxuugB2r4GbVmscTYg=
+	t=1792268923; cv=none; b=otbX8duE0QhzIr/cHXGgFwv8kjuTIgVqrkrym8yXZ9IILGSQ9LTD9F3eubSIeukZ/YhLUBKpc0Q3ECtaaCeCoXuDAYx+vGr188623EKMF4x8acOmAmF9h/pl6oiuTJBQrYZFEW0vKKR+gizx3VVlkt3qkRJ56uskTuI61zTBi5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792268443; c=relaxed/simple;
-	bh=+Bmv+bH7yjyeIXhfyEWyPPu/RUvgmWqi9SHc8L4waNk=;
+	s=arc-20240116; t=1792268923; c=relaxed/simple;
+	bh=kEiSxuOqtCpX5TGbh/HQD8KrZIp+uST+kLyovhv2jMY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FPKpEvOftmlSdnwGUhALRlwb2YE6ecYeX/8iI3+Fco4P2YlNDPlyClTwEaObKdaSFAmKGfefuhBh2weSBj5CALcUtS3Cz3jTy5V5ywnQ6dsOCkNazbOcXiJwVkgllbJ1CL/IlvRDiTzhb4akrXtfQ/lAEQ6KiM8mUI5q347CFZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IqeMw+8q; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=DYiS6zQRZn0wyoKFroehVYAtF9z/+J73Ogyc0S9fSSaNiN455ZMJ0AMXpiO9S1DGkwWYlIwuXw38E1+mpWJWtPVtj7vZtaL4qQ+ltBrOPOR5gByNvnobJkgwkz9SCAHnnTrR7ztJJhT6L6D0fEikx/Bnaoe7mwh/UWmNjvD7uY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dhPLSzHv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IqeMw+8q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC431F000C4;
-	Sat, 17 Oct 2026 20:20:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dhPLSzHv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F41791F000C4;
+	Sat, 17 Oct 2026 20:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792268441;
-	bh=cNQChqGmZXKpRKoayySFzv5GpNlTaDfGUQ5ySRB3g6o=;
+	s=k20260515; t=1792268921;
+	bh=eztiBbz0hHSLA0rg19Q99Plggh4R5jSlD7UXFCPsnDg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IqeMw+8qhlCohn/eWmjvWdSfyDwrl9JZA1MH7Pzm9zlMye/dBBkU+inV8cA0TsJE2
-	 Lhd65wgSGiTT06SnjxQ4x7+rb5Qz5ocZMOdXjGNa9pcGXyQazGZ1tEAFjPAhUGumPs
-	 //rT21DGjhIcYPkmnjqULbqyU5WBnCtEWsyPEnAlJl5ladqdmtFUkZMsJV6WmxKyts
-	 s9oMCXg1W0Vk+GLeY4tzUZF5Cn0M0skIlJ4lpeauePCpRnI2MaZ4epS0YrlG/vXVuH
-	 N2YPVQbkA3X2A2z6Y5vbJmgygL9GbpporEIdwZZG+z+EhIARXGQtLjJjHItKp9RkT+
-	 645Xq/31hhdeQ==
-Date: Sat, 17 Oct 2026 21:20:36 +0100
+	b=dhPLSzHvss9ECPD4QSQmRWgtjsa4DCWr8iO5QaPPyDV4sx+AGbyk5Fkf/wTxXPPd8
+	 f8tqyFHwno8KUg6mV78YwpD87wgYRR8l/kogbtyqeNr6W28HbT8XuWc+qkCENcIem5
+	 g+irmYtMhrphPGtK3fL8KIy/pXdeCRSdGLQtqVkF7jyeIjzPtYK0Qce8D1TsVaB9kW
+	 1dq552gtpmifFhNRSQimg8tH1xrvqM5RpP4Pj8v5SS1RGVjpHonVZ08KBBYM8yk4gK
+	 Z9LgAV17R302w2bdnOnYKXhX7wlgbZDYGB4jWiSosabTAEeupcFPQKs58tS69Ln+oX
+	 pt3lrZMcCDN1w==
+Date: Sat, 17 Oct 2026 21:28:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Liu Yufei <lyf98405@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v3 2/2] iio: proximity: Add driver for Vishay VCNL36829
-Message-ID: <20261017212036.53e5a8c8@jic23-hlaptop>
-In-Reply-To: <20261016012218.40223-3-lyf98405@gmail.com>
-References: <20261006100943.78971-1-lyf98405@gmail.com>
-	<20261016012218.40223-1-lyf98405@gmail.com>
-	<20261016012218.40223-3-lyf98405@gmail.com>
+To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Rodrigo Alencar
+ <455.rodrigo.alencar@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH 02/10] iio: backend: add devm_iio_backend_get_optional()
+Message-ID: <20261017212834.002392c6@jic23-hlaptop>
+In-Reply-To: <atIt3eXNeTT7cqxH@nsa>
+References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
+	<20261015-ad9910-backend-support-v1-2-3c21648c8e26@analog.com>
+	<atEeZPOLASHAcnjF@ashevche-desk.local>
+	<atHjHqyxXj6jkObW@nsa>
+	<w7waqang6lriwbcq6o5s5yuedouuwgacmnj55qsjpzjrv3jut2@cthvkakgyhpi>
+	<atIkZa0noHjcl13X@ashevche-desk.local>
+	<atIt3eXNeTT7cqxH@nsa>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,116 +57,111 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 16 Oct 2026 09:22:18 +0800
-Liu Yufei <lyf98405@gmail.com> wrote:
+On Fri, 16 Oct 2026 15:07:02 +0100
+Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-> From: Liu Yufei <lyf98405@gmail.com>
-> 
-> Add an IIO driver for the Vishay VCNL36829 proximity sensor with
-> integrated VCSEL, connected over I2C.
-> 
-> At probe the driver enables the vdd and vddio supplies, waits for the
-> sensor to power up, checks the device ID, configures the VCSEL current
-> and photodiodes, and turns the proximity engine on. The sensor is put
-> back into shutdown when the device is removed.
-> 
-> The following attributes are exposed:
->   - in_proximity0_raw
->   - in_proximity_integration_time
->   - in_proximity_integration_time_available
-> 
-> Datasheet: https://www.vishay.com/docs/80580/vcnl36829um.pdf
-> Assisted-by: LLM
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Liu Yufei <lyf98405@gmail.com>
-> ---
-> v3:
-> - Use dev_info() instead of dev_warn() for an unknown device ID
->   (Joshua Crofts).
-> - Wrap the write_raw() arguments on a logical boundary (Andy Shevchenko).
-> v2:
-> - Address review comments from Andy (see cover letter for details).
-> 
-Nice little driver. I'll tweak the first thing whilst applying.
+> On Fri, Oct 16, 2026 at 04:19:33PM +0300, Andy Shevchenko wrote:
+> > On Fri, Oct 16, 2026 at 08:18:08AM -0300, Rodrigo Alencar wrote: =20
+> > > On 16/10/26 09:45, Nuno S=C3=A1 wrote: =20
+> > > > On Thu, Oct 15, 2026 at 09:41:40PM +0300, Andy Shevchenko wrote: =20
+> > > > > On Thu, Oct 15, 2026 at 01:49:42PM -0300, Rodrigo Alencar via B4 =
+Relay wrote:
+> > > > >  =20
+> > > > > > Frontend devices might not need a backend driver to rely on. An=
+ IIO device
+> > > > > > that supports backends can behave differently when they are not=
+ available
+> > > > > > and that should be acceptable. Such parts may provide basic fun=
+ctionality
+> > > > > > solely using the control interface (SPI for instance), being ab=
+le to have
+> > > > > > extended features when a backend is present.
+> > > > > >=20
+> > > > > > Add devm_iio_backend_get_optional(), which returns NULL when th=
+e backend
+> > > > > > is not described in firmware, i.e., when the io-backends proper=
+ty is not
+> > > > > > present or, for a named lookup, when the name is not listed in =
+the
+> > > > > > io-backend-names property. Other errors, such as probe deferral=
+, are
+> > > > > > still returned.
+> > > > > >=20
+> > > > > > To make that possible, a named lookup that does not match any e=
+ntry of
+> > > > > > io-backend-names now fails with -ENOENT, the same error returne=
+d when the
+> > > > > > io-backends reference is missing. Also, the missing reference i=
+s no longer
+> > > > > > logged as an error, leaving that to the caller. =20
+> >=20
+> > ...
+> >  =20
+> > > > > >  		ret =3D device_property_match_string(dev, "io-backend-names"=
+, name);
+> > > > > > +		if (ret =3D=3D -EINVAL || ret =3D=3D -ENODATA)
+> > > > > > +			return ERR_PTR(-ENOENT); =20
+> > > > >=20
+> > > > > No. Please, use device_property_present() instead. =20
+> > > >=20
+> > > > Oh right! Totally forgot about that internally :). And it fits into=
+ my
+> > > > internal point where I don't agree much in treating -ENODATA the sa=
+me
+> > > > way as property does not exist. =20
+> >=20
+> > +1
+> >  =20
+> > > Say a frontend consumes multiple backends, but some of them are optio=
+nal.
+> > > If we care only about the presence of the property we would fail when
+> > > trying to acquire the optional ones when the required ones are define=
+d.
+> > > am I thinking correctly? =20
+> >=20
+> > If there is an empty property for names, shouldn't we simply fail? I ra=
+ther
+> > would consider the firmware table to be broken in such a case. =20
+>=20
+> What Rodrigo is saying is that an IIO frontend driver can have multiple
+> backends. So in practice:
+>=20
+> io-backend-names =3D "foo", "bar";
+>=20
+> But we might want to have foo as optional while bar is mandatory so that
+>=20
+> io-backend-names =3D "bar"
 
-Applied series to the testing branch of iio.git. That will be rebased on rc1
-once available at which point I'll push it out for linux-next to pick up.
+Not sure mandatory or not is relevant.  Two optional backends where the
+driver can run with either or both of them would hit the same problem of
+present property but particular backend not being there.
 
-> diff --git a/drivers/iio/proximity/vcnl36829.c b/drivers/iio/proximity/vcnl36829.c
-> new file mode 100644
-> index 000000000..217a32aad
-> --- /dev/null
-> +++ b/drivers/iio/proximity/vcnl36829.c
+>=20
+> So if we treat all errors (after checking for presence) the same we will =
+fail
+> in the optional one. Note -ENODATA also means match_string() failed.
+>=20
+> As of now there's no such usecase in tree or oeven out of tree (that I'm
+> aware of) but to support it is also fairly simple that I don't mind to
+> have it now.
 
-> +
-> +static const int vcnl36829_it_range[] = {0, 25, 0, 25, 0, 375};
-Trivial but preferred style for IIO has { 0, ... 375 };
-I'll tidy that up.
+I'm in two minds over this. It's unused complexity, but it also makes the
+function behave how a user might expect.  Definitely needs some
+good justifying comments in the code though as it will look weird!
 
-
-> +
-> +static int vcnl36829_read_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int *val, int *val2, long mask)
-> +{
-> +	struct vcnl36829_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	struct regmap *regmap = data->regmap;
-> +	unsigned int reg;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = regmap_read(regmap, chan->address, &reg);
-> +		if (ret) {
-> +			dev_err(dev, "Data read failed: %d\n", ret);
-> +			return ret;
-> +		}
-> +		*val = reg;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		ret = regmap_read(regmap, VCNL36829_PS_CONF2, &reg);
-> +		if (ret) {
-> +			dev_err(dev, "Data read failed: %d\n", ret);
-> +			return ret;
-> +		}
-> +		/*
-> +		 * PS_IT field 0 would mean 12.5us, which does not fit the
-> +		 * 25us step used here. The driver never programs field 0:
-> +		 * probe sets 25us and write_raw rejects anything below 25us,
-> +		 * so the field is always >= 1 and val2 = field * 25 holds.
-
-I suppose we can relax that later without it being a regression if
-it turns out someone wants to use 12.5 usecs.
-
-> +		 */
-> +		*val = 0;
-> +		*val2 = FIELD_GET(VCNL36829_PS_IT_MSK, reg) * 25;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
+Jonathan
 
 
-> +static int vcnl36829_probe(struct i2c_client *client)
-> +{
-
-> +
-> +	ret = regmap_read(regmap, VCNL36829_DEV_ID, &reg);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to read device ID\n");
-> +	if ((reg & 0xFF) != VCNL36829_DEV_ID_VAL)
-
-Not that important, but for consistency I'd have given that a field name,
-despite it not having one on the datasheet..
-
-> +		dev_info(dev, "Unknown device ID 0x%x\n", reg & 0xFF);
->
+>=20
+> - Nuno S=C3=A1
+>=20
+> >=20
+> > --=20
+> > With Best Regards,
+> > Andy Shevchenko
+> >=20
+> >  =20
 
