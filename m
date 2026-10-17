@@ -1,111 +1,182 @@
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
+Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25D0947F3C7
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 09:46:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792230418; cv=none; b=ixhfzT4Us6MLv/oyBeiWawOfDSGA1E0Qi4bjBBwrCuFcAyi5OW/bpBgXr+OhqCIjvF2gYJysV98WxLBCn2ejMtnmqsWiwU0EIBREsYrmzfK6tRfidd4D1/DpLVUbfMJXC0eF1b+1pFhg67k6QiBGXGJKMOR6AQfyyR08xyBqVsM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792230418; c=relaxed/simple;
-	bh=+VI8/d3lnZDa+xcOD2YfuTIpLOKrWMyzcnSDAv9p91s=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LZsQDeXeASbuNlrxiWnnoCQszongk3cWWMwkCqEk+PnSmCbf+y1qLXpy8JZuM1RK2y1A2Bz/eWMI11PjYjI0tgY3ykJRb87rtlu7z48czFfEewycC6ZSENOFOkIVJ5Xsmjt7XbgzC8GeMUi1wE1miRdDUmpA8Ve+HWTt5+kc8uI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H6618hkp; arc=none smtp.client-ip=74.125.82.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F87740EB90
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 09:48:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.176
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792230509; cv=pass; b=GmH5l4Z1TD/6hML8q/hx/oRNJChz6Xo8mMJJdl9NzKp2CxFoYN3vY/dsu3VrSOfWt/OjHBwLqyAcSbCPLKf3guSdk90ArsDuFaRSwvChh08s/Kc8wUZwCI+AvkOGa37Und6dnYo2If0OevSXcdPstJygJ5YTikEDGmDbXroTr74=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792230509; c=relaxed/simple;
+	bh=cPOKI0YwXXROnWh8Xa+QzrvdXvUSGF1yvdjlmF4zwH4=;
+	h=From:MIME-Version:Date:Message-ID:Subject:To:Cc:Content-Type; b=dNStvL2DWe5H8PkuUkMlOvDctSPARFLiyzsuqDkhgHxiusaFCPRuUjKrukyneodqIdWS0zXYXpiGrt+iCzWJymWJbQGyE55J3rTIBTktxAyF/4DDc5o5yI6Uh64ft0R0ffwM5i/zuo2efUDjp+9YakZwEqXy639c7pe4R6q7N+M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fk0ciDlf; arc=pass smtp.client-ip=209.85.221.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H6618hkp"
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-3535a54bed9so898983eec.1
-        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 02:46:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fk0ciDlf"
+Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-5e3e525cf4bso598398e0c.1
+        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 02:48:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792230505; cv=none;
+        d=google.com; s=arc-20260327;
+        b=FXgQmpC86C2gFkBKta/zRp86oTkA/ZbMGXTbW+KT2g77SySXVanqKBA11IO3ZH2j4A
+         cpS7w4BNX7sJaNVMfSAVPjGSSzSLLwGEHBn0zfWbulfXdDZM5t/Cc3XWZ2E/m8MM6O7s
+         Os4F8s3fgeCU7bCgWmC6WxZIRs8no3Or+s05ogav9UJMtLQG3diBCcfb0bSEWMnkHzKe
+         obJFNt6Ou+FcxDT327eg3RjAtBbg5VfyATIHyky1YObObwRVpJZJkXnAe08iNm4/qcST
+         ekr3nPzElUXlogMH0B4vyyPoKigbhCC+cC2P/Sd4+pRODb0MR9oU7BNh9I74Qa5o2teL
+         Gi7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:mime-version:from:dkim-signature;
+        bh=ga6N3yF0QQLdNTmXfoZ07LNIVQ63wj19E69wKGJBb5E=;
+        fh=aJXdsdDZn8B1rsolGLn7Dx159R5hQ3kay9kgBwo/fdM=;
+        b=F0aq721lZLO9/t9AW+wjdmhXbslVoFOXdIL31rQBVxegqdPNDIG5Qof3r7b3pFBY60
+         rQ4pDtdtioipdjBmug22PLMQgUWuvyonnM/SkJtB86NL6/YOh4+sRohFBPuS+DY0pSBI
+         3wO4p71ZowhbtMeo0WeJG0c4nAGTrACH1Text6+DWNeuBuwi8aaqOL5EqpL/mJcTvuig
+         pvAq+XKtW7EED9Pn5FfdM2FxevSfFz2geExTlIDGXQ1Irw5XZ/MHPvgaZSzKlOC+FW9Z
+         rsCdK/jxrt17V9J1m93Ws8SHwxsXZ2J+Q+KkRhmWAZGkW6KCKJphYgasNm/R29ovnafr
+         HBWQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792230415; x=1792835215; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=38+wpYROyyabUyi5vQ70P++iJLb+AS+U91iM8zmq47c=;
-        b=H6618hkptIPTgqXllU/WGnT3/Gesj0+IOUoJVHPKJtqldmtnhQ+cng9oY/1JLxcOLi
-         yGR22r9rQuZDWSxK0XMLM5/3oYTVnvLqp81IKPBo2q5J5OvJ2x4jOP2cdA9Bh7Ef59Fw
-         IMYHYQJq/Oi7YQv7TSLHKOuoX38BZOsXrwLjG+woKF3Q+RttKdLD3KXpv1WQVazB6+U+
-         P+DmIwjBd0NNzF6tc2bGK13M8n7SpntC+nWGc3w1awH90V2nuQ0Usz6YLCCZnZtgz0w+
-         PUpVNigHzxSZW7idyXQmBDW1GvpN1GGZPr5sUnh1WBMlvWDaJ1MqiZRn62imSPyNZGC4
-         oy2w==
+        d=gmail.com; s=20251104; t=1792230505; x=1792835305; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:mime-version:from:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ga6N3yF0QQLdNTmXfoZ07LNIVQ63wj19E69wKGJBb5E=;
+        b=fk0ciDlfpzpnsUmpV18rXCc1hWBS55UNHhOZyWwohcYSNTp4dOTYF1mDLVz0yMP8Wv
+         fDIqrylvNFN/whjxCrneu6MKv8gHnxwiVm/3cLKPoDY7woWwoLniHAUUdAROEs1hhOqN
+         TQDv9rcxd7iCbpbecRuPPcSPnegQPYisHCKPj7DbjwnmKSvi0JS67e0W0unoBk+rBJH9
+         /cWrFfVog53SbO6H99geYK9U6C4Anr3CvJCnYJ3tZ1a54ss7AtH4TQNS0GcXKK/yTenP
+         UVpbxlbgkTh71ddPkc3sZ5kwqeRiY/m4X/E+SG62qLyOy8DM2qsyqWKei2aYI+fBOq5V
+         s9xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792230415; x=1792835215;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=38+wpYROyyabUyi5vQ70P++iJLb+AS+U91iM8zmq47c=;
-        b=dUq6Qw6vYvdeNeNYnodYzxC+BlLVqAKjR0CJkLjO5MF1/D0OxMe9FWlIIZrMe1yQDA
-         QpF7bNdTuWg04cwxYrqjfDVeLK340e9FavFF8Q8LycUunLsXC6yKk7wyADzs57+kFHyE
-         eHxDFxWAZcCTU6Hm7FbZrTo+HjLAWppK8Hq5Q4BYB6iUSTLsxb+q1/qCNlWaitXZil3N
-         vj6DKrny8Lo6p3ErFRC7BVFn04qTXvFl3razPTJdlG9xY7J+HgrCnW11EdrU0MahpHoY
-         hH79V9QLXV2iYgDl8u99dMVaTqJC5E27ch8TPLmkf3OcsIsKZpzPTn6elxjW6juwvCRL
-         i0Zw==
-X-Forwarded-Encrypted: i=1; AKwUvBwSLRg0QIv2k+ZjcJWcK5qQEWdvvKnbExWkKYC0V+ZdW8dashU/r2bJi3uPR7yvlQqR36f8zwEWZMg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIu5L4NRNgAbmPPdofTdrmFzfWNJOGttF3F7UFfwxl537aHXMT8
-	VTnQupyinFZ1cW/+AcwRwcjXgYkMFGU88/5eLnZSrHOkDmhaWSeVZVc=
-X-Gm-Gg: AYBFou24PMxmEusWWe/6Y+ISWQcPUQyZQq7Bjy1cObOoRm0P5yLOpt7nX+AUob1rjQ7
-	zsxGFCyoCkHTSwSiLtWVajgQ+ghiqo+A6WBuHN5n4GxlYmj2maDVMm1JzkxmngTw5Wigcnw1c2p
-	3RVrMYHFnJ3xOyac4ZgXjn71HvH0TnYKcAUVxet19KkyLvWb5ihNVnLTvmDtfLipqP5H39RcKT/
-	PnZzlUMTwLduBDdAw/5csf5mSSU2/vpQQSujHoD7bqEkdhpc5Ur/+hqKJGV6JlI5sUFsKhPmHNj
-	QcJ0sj6NNvIw+Nh48B8hW84b6ZM8s2pAeSJKcUTrOZc4bRjjkEsO+wZx1HJ62NbubEwcmUBfM6L
-	in4r4nr3Ewbkv0KtUbi32MdjCMuFbpW/PBm8KsUSyyJQCi1lci/O5tgynIW+4WBAJRB9xyTrzE0
-	5SnDdvrKl91eAAkUcQ6kiUrcpFf6VF+cH5VIk2JRhxHLmCGeKpuepJbbsZCsCQVVhdl8sKkTPw4
-	Aahy4Hxd3niqTuUnm15cx80Msl1PsheSoRD4w==
-X-Received: by 2002:a05:7301:271f:b0:359:bdc8:c9d5 with SMTP id 5a478bee46e88-361a195b1c7mr3854306eec.21.1792230415068;
-        Sat, 17 Oct 2026 02:46:55 -0700 (PDT)
-Received: from localhost.localdomain ([45.127.46.52])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36081bafa7asm13475852eec.14.2026.10.17.02.46.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Oct 2026 02:46:53 -0700 (PDT)
-From: Nikhil Gautam <nikhilgtr@gmail.com>
-To: anshulusr@gmail.com
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v2] iio: chemical: ags02ma: Check for short I2C reads
-Date: Sat, 17 Oct 2026 15:16:39 +0530
-Message-Id: <20261017094639.3002-1-nikhilgtr@gmail.com>
-X-Mailer: git-send-email 2.39.5
+        d=1e100.net; s=20260707; t=1792230505; x=1792835305;
+        h=content-type:cc:to:subject:message-id:date:mime-version:from
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=ga6N3yF0QQLdNTmXfoZ07LNIVQ63wj19E69wKGJBb5E=;
+        b=0esuv0v9Xm8Y0nWNsFeGKt/0SpVzUfChOgSPRvMvlbFvsMnNEOzd+RmG241eE7lGD2
+         3zhAjniuZOITJrN+iZZ1oyh525evYnwj3Mg0JKTL3eyvSFvYDGvcuNG96UG2nh9pCIiD
+         H/07IqWlpqhbvKdZzA0WFQ7dtyzxmWVV028qgvX1rEnloYzHcBvGQUxrGW3pQmZbDoV7
+         0lfBzaR9zxM0OCTEY8iIIx32iy1yHd1ttAdfHcWL248tNO6T8f3Y18KSbM/Qek3mxKQm
+         JTy+3FLdupS4JiVSSkc48gDFC+vYMwBQaeDqSjYlZl6Y5N6er40pQVhbBUsCLUxeNpv/
+         QDCA==
+X-Forwarded-Encrypted: i=1; AKwUvByvxJ7goWntXvUKs+Th4XZDf7RpYkXfYUEXH+ES00IpdG3akntvgCPGm1/pY3H514LUxoBg4OLrxb4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKDqe2bG2IiV08kvvKYAiP6tpiZNHMIHoBRE7B9NjkKF7rg5eOD
+	gu36XKcBa8lECU4g9IJKNXYeb8F7/yfOZOB7lKGB/tCtLTwYiY9l9s63jxlS5dqAPRDLX7wOvJS
+	MHonnLN9K2yxL19WrWDsiJK+i0pu9ZHvqe0dr02o=
+X-Gm-Gg: AYBFou23ZLN1WyMq79OEjoWjgU61yN7qMMG64MPhXDVznB82mNpJB/55bHnAZSdlzHP
+	uf8M9AUeY6Aw3qijGuz0SjuVRlnzn2yJw1D1CVNrTPz4ie6SY3K5+0HcT1KQ0GFyRDDR8WWREFp
+	XfaQKvUoIF/cS03JGOyoj/EzA8UKJ3N0cs7Tzh8nkZjxF4tabhM3yMx/37eEx2AxfwSaMIbJQC6
+	nrYBxyQwbZXv1Ia6rl6azBi+hnhW7/7GRPwIJoVlsQtdfCqGhjhrAtuOI1iRubIPFcbycEyQsDL
+	bMrqJlIGJaFowGeZ1cQzi7tnrABvcbdMInDcEyu4ijJra4TvA2jz5g==
+X-Received: by 2002:a05:6102:38ca:b0:7cc:3246:3095 with SMTP id
+ ada2fe7eead31-7cc36b3d24emr711904137.34.1792230505414; Sat, 17 Oct 2026
+ 02:48:25 -0700 (PDT)
+Received: from 219304801992 named unknown by gmailapi.google.com with
+ HTTPREST; Sat, 17 Oct 2026 04:48:25 -0500
+Received: from 219304801992 named unknown by gmailapi.google.com with
+ HTTPREST; Sat, 17 Oct 2026 04:48:25 -0500
+From: Wenqiang Zhao <berringtoni36@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date: Sat, 17 Oct 2026 04:48:25 -0500
+X-Gm-Features: AclHuK9FxGlMlcCjimXZeRb-7era7lK_0Sasn_TOvi8XgQL9o8qfQmHKnbm2rH0
+Message-ID: <CAF2O-sN=PM1MUaWzv2r3zT0TozZZje+0eYPiJLQV_LHB3-Qj6g@mail.gmail.com>
+Subject: [PATCH v2] iio: accel: adxl345: update period cache after successful write
+To: =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Check that the I2C receive operation transfers the expected number
-of bytes before accessing the received data.
+The ADXL345 event-period read path returns st->inact_time_ms. The setters
+for inactivity, free-fall and the ODR-derived default currently update
+this cache before writing TIME_INACT or TIME_FF. If the regmap write
+fails, the sysfs write reports an error but a subsequent read returns
+the requested period even though it was not programmed.
 
-Return -EIO if the transfer is incomplete.
+Update the cached period only after the corresponding regmap write
+succeeds.
 
-Fixes: d58013f39b30 ("iio: chemical: add support for Aosong AGS02MA")
-Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+Fixes: 8a1536cc4a1c ("iio: accel: adxl345: add inactivity feature")
+Fixes: f6f22950d925 ("iio: accel: adxl345: extend inactivity time for
+less than 1s")
+Assisted-by: LLM
+Signed-off-by: Wenqiang Zhao <berringtoni36@gmail.com>
 ---
- drivers/iio/chemical/ags02ma.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+v2:
+- Keep Fixes: tags on a single line (Nuno)
+- Use a Latin-script name in From: and Signed-off-by: (Nuno)
+- Drop the long validation notes; build-tested only, not tested on hardware
 
-diff --git a/drivers/iio/chemical/ags02ma.c b/drivers/iio/chemical/ags02ma.c
-index 151178d4e8f4..2219965d044f 100644
---- a/drivers/iio/chemical/ags02ma.c
-+++ b/drivers/iio/chemical/ags02ma.c
-@@ -61,6 +61,12 @@ static int ags02ma_register_read(struct i2c_client *client, u8 reg, u16 delay,
- 		return ret;
- 	}
- 
-+	if (ret != sizeof(read_buffer)) {
-+		dev_err(&client->dev,
-+			"Short read from register 0x%x\n", reg);
-+		return -EIO;
-+	}
+The missing serialization between concurrent sysfs callers that Nuno
+pointed out is a separate issue and will be addressed in a follow-up
+patch.
+
+ drivers/iio/accel/adxl345_core.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 6c9080d..cd58304 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -391,30 +391,47 @@ static int adxl345_set_default_time(struct
+adxl345_state *st)
+ 	odr = FIELD_GET(ADXL345_BW_RATE_MSK, regval);
+ 	val = clamp(max_boundary - adxl345_odr_tbl[odr][0],
+ 		    min_boundary, max_boundary);
+-	st->inact_time_ms = MILLI * val;
+
+ 	/* Inactivity time in s */
+-	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
++	ret = regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
++	if (ret)
++		return ret;
 +
- 	crc = crc8(ags02ma_crc8_table, (u8 *)&read_buffer.data,
- 		   sizeof(read_buffer.data), AGS02MA_CRC8_INIT);
- 	if (crc != read_buffer.crc) {
--- 
-2.39.5
++	st->inact_time_ms = MILLI * val;
++
++	return 0;
+ }
 
+ static int adxl345_set_inactivity_time(struct adxl345_state *st, u32 val_int)
+ {
++	int ret;
++
++	ret = regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
++	if (ret)
++		return ret;
++
+ 	st->inact_time_ms = MILLI * val_int;
+
+-	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
++	return 0;
+ }
+
+ static int adxl345_set_freefall_time(struct adxl345_state *st, u32 val_fract)
+ {
++	int ret;
++
+ 	/*
+ 	 * Datasheet max. value is 255 * 5000 us = 1.275000 seconds.
+ 	 *
+ 	 * Recommended values between 100ms and 350ms (0x14 to 0x46)
+ 	 */
++	ret = regmap_write(st->regmap, ADXL345_REG_TIME_FF,
++			   DIV_ROUND_CLOSEST(val_fract, 5));
++	if (ret)
++		return ret;
++
+ 	st->inact_time_ms = DIV_ROUND_UP(val_fract, MILLI);
+
+-	return regmap_write(st->regmap, ADXL345_REG_TIME_FF,
+-			    DIV_ROUND_CLOSEST(val_fract, 5));
++	return 0;
+ }
+
+ /**
+
+base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
