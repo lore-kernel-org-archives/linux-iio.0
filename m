@@ -1,49 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E034C29BDBB;
-	Sat, 17 Oct 2026 00:01:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D93FF4CF49E;
+	Sat, 17 Oct 2026 00:05:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792195266; cv=none; b=ODlvkeuq4w08gvLXQPgVZY0xg5JalPrr1te/uEu3jwmlWvZ9Wm/TlxBVAFS2rtLpeA6xjBYRYkiQV3TVo87aIEU2ODq2A8oi0JXKKgE3e4CWCkrXaTmbx7RJ0nw/mTZndQgIBDhUZfabrGrbSQvohE+8uqBlaJGw+T1oNMQ8n/0=
+	t=1792195509; cv=none; b=scTBEk18IDAlWfIIQLpZEurdo0y3Mka4n+oSeloNrzTaQB6vYKSKVHfCodaHADgy4CNn+Ngp0gDDtFDn/MtlJPhw55VuZ4HeZfi9Ckb/Q8/npA9gjyCT3j/eM05aySIksXM3fPKP78kd5gZn1V+gex0dO04waP7hqluYNsHwGFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792195266; c=relaxed/simple;
-	bh=bbvyDCyl5V7rxc1BMkTXwlxZXxQVNgJhMBGAauiTPbw=;
+	s=arc-20240116; t=1792195509; c=relaxed/simple;
+	bh=DBOpTQMF0EgcSbdTbsSaWuCYTUflbitFRHuZzO9jhTs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GW+36WJ8sQx7zuwWtn6xQMMQM4rtA2S44q/EtDsQ1XZ2Bd0QDzHzv73R2/8G5swzpNHBvA3rRpEX3XOqCCCy1Tv09pvw92p0LfguBIr1fYYzeCw85CA9iN8IMoCnmEp6xUiVxW8EFDfdlLdzSTyge6qmc8RhgXh8P4BNU4Eyh7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BZqjl9xz; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Hm2WqXCQ86E7L0Miho02GWncYPkbx5RLR8iANzVDnRsaq71qFr3KXY7XVAjzpXYEV3lBPfl0aleVmLMU0MUjfQkzPP5A6pNuyM3X+V7pDQjdiUbJzumBRv9y8rPdFHUDlkXhl8+iCKthjjzJ6ejBX+B6+2omBOh9iBY0LkQrJJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KQiRf6KD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BZqjl9xz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22AEE1F000C4;
-	Sat, 17 Oct 2026 00:01:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KQiRf6KD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C2D1F000C4;
+	Sat, 17 Oct 2026 00:05:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792195264;
-	bh=mDyQS28YPpqG7oqyELh8/8B+SfUFxCQNLB98lk/aFPc=;
+	s=k20260515; t=1792195507;
+	bh=ZEEP+hDmF0puw+t08sFA5eA5k0+vUWBsEJ35A4r0ZiU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BZqjl9xzSdQ5AIXTod7KOQ1pFfNmvP91PwiRQYtnroxCV4NRMF233B4s4PVKTdq4S
-	 U4W7m53KTdyVpxgP2ey7IOyXOauy7h6F9v8sYuMnuLst4+0XfTO1MYIO4X83d+WdAU
-	 Cyy/rccrPTBjikueKrLjOQgr/JNqZtXGomZWWnZrHvyvHLjW228NOMZaAiImbkKCuP
-	 3EwIp6ZgmpQWo0oZC9//dtPr/W9r8jhhhW67Hs++GNLFioMZCUAv3paZs1GLLvJvbF
-	 j4F4MQwgwItL0X/obr+fZEGGeXDVOrnonvRFMUWnt4XwCxiDnSGcTqcXDz9T8E3TfA
-	 RL++vCK+/ZRyg==
-Date: Sat, 17 Oct 2026 01:00:58 +0100
+	b=KQiRf6KDaxFzOIAHP+DJxPT8/lu8MUTgGYrvKvS+QJO34vm9VQTTSc4+vpYfdDC/N
+	 QZ3KnoiZgF6hdO8y0g/UyZHr92Z0m9QL/HBrm5cFEsQ/D35tbC34qP8+zL2igifdfx
+	 zjSZbpBumP0WmbxybJ7F3nKbONnFTN/Sm6VN/hu4HyxvOXab8dt1olotjsbl4pXoiF
+	 y1qNSEj5tvIyrRD9Ges3Dr0RTES+jKmgZ1iL+MXSlKhzBFdWJdVOSk+zIaEZHTZXf1
+	 cXYSXp8/VQeR+YYV7i0bflrwj6PEGDDueU5c2ieH4a+RLeanJiS45oQpJSDku57bgN
+	 5qF82Hk5wxQ1Q==
+Date: Sat, 17 Oct 2026 01:05:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Cc: linux-iio@vger.kernel.org, Eddie James <eajames@linux.ibm.com>, Joel
- Stanley <joel@jms.id.au>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@intel.com>, Uwe =?UTF-8?B?S2xlaW5lLUs=?=
- =?UTF-8?B?w7ZuaWc=?= <u.kleine-koenig@baylibre.com>, Joshua Crofts
- <joshua.crofts1@gmail.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Rupesh
- Majhi <zoone.rupert@gmail.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 5/5] iio: pressure: dps310: add Zilltek ZTS8032
- support
-Message-ID: <20261017010058.667e7293@jic23-hlaptop>
-In-Reply-To: <20261016153533.3701000-6-paulius.zaleckas@gmail.com>
-References: <20261016153533.3701000-1-paulius.zaleckas@gmail.com>
-	<20261016153533.3701000-6-paulius.zaleckas@gmail.com>
+To: Christoph Rudorff <chris@rudorff.com>
+Cc: Linus Walleij <linusw@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Bjorn
+ Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: light: gp2ap002: add led power supply
+Message-ID: <20261017010501.70eb3ee4@jic23-hlaptop>
+In-Reply-To: <20261016-iio-light-gp2ap002-v1-1-7c93312fa8d5@rudorff.com>
+References: <20261016-iio-light-gp2ap002-v1-0-7c93312fa8d5@rudorff.com>
+	<20261016-iio-light-gp2ap002-v1-1-7c93312fa8d5@rudorff.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,85 +51,153 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 18:35:33 +0300
-Paulius Zaleckas <paulius.zaleckas@gmail.com> wrote:
+On Fri, 16 Oct 2026 16:43:06 +0200
+Christoph Rudorff <chris@rudorff.com> wrote:
 
-> The Zilltek ZTS8032 has the DPS310 register map, scale factors and
-> compensation, with these differences:
+> According to data sheet "Recommended external circuit"
+> this got up to three supplies, we missed VLED
 > 
-> - two more pressure coefficients, c31 and c40 at 0x22-0x25, adding
->   c40 * Praw_sc^4 + c31 * Traw_sc * Praw_sc^3 to the polynomial
-> - TMP_EXT is MEAS_CFG bit 3, and the temperature coefficients are for
->   the internal sensor (COEF_SRCE reads 0x06). TMP_CFG bit 7 is the top
->   bit of a 4-bit TMP_RATE, so the DPS310 TMP_EXT write would select a
->   25/16 Hz background rate instead of the external sensor.
-> - product ID 0x11 instead of 0x10, the driver does not check it
+> Now it works (tested on msm8916-samsung-j5):
 > 
-> Add its chip data, reading 22 coefficient bytes and leaving TMP_CFG at
-> 0, a Horner step for each of c40 and c31, and the I2C and OF IDs.
+> $ cd /sys/bus/iio/devices/iio\:device1
+> $ echo 1 > events/in_proximity_thresh_either_en
 > 
-> Tested on a ZTS8032 over I2C: in_pressure_input is within 1 Pa of the
-> datasheet formula evaluated from the raw and coefficient registers at
-> every oversampling rate from 1 to 128, and TMP_CFG reads 0x00 after
-> probe.
+> $ iio_event_monitor /dev/iio\:device1
 > 
-> Assisted-by: LLM
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Paulius Zaleckas <paulius.zaleckas@gmail.com>
+> Event: time: 1791460068846871297, type: proximity, channel: 0,
+> evtype: thresh, direction: rising
+> 
+> Event: time: 1791460068876669724, type: proximity, channel: 0,
+> evtype: thresh, direction: falling
+> 
+> ...
+> 
+> Signed-off-by: Christoph Rudorff <chris@rudorff.com>
 
-Just a few small things.
+A few comments inline if you resolve the question Linus raised.
 
-Thanks,
-
-Jonathan
-
-> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-> index d0a2f6c6ec48..a97e82843dcd 100644
-> --- a/drivers/iio/pressure/dps310.c
-> +++ b/drivers/iio/pressure/dps310.c
-
->  static const struct dps310_chip_info dps310_chip_info = {
-> @@ -101,6 +107,14 @@ static const struct dps310_chip_info dps310_chip_info = {
->  	.coef_len = DPS310_COEF_LEN,
->  };
+> ---
+>  drivers/iio/light/gp2ap002.c | 28 +++++++++++++++++++++++++---
+>  1 file changed, 25 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
+> index de29081fd3b2..c03eb0f1988b 100644
+> --- a/drivers/iio/light/gp2ap002.c
+> +++ b/drivers/iio/light/gp2ap002.c
+> @@ -129,6 +129,7 @@
+>   * @dev: pointer to parent device
+>   * @vdd: regulator controlling VDD
+>   * @vio: regulator controlling VIO
+> + * @vled: regulator controlling VLED
+>   * @alsout: IIO ADC channel to convert the ALSOUT signal
+>   * @hys_far: hysteresis control from device tree
+>   * @hys_close: hysteresis control from device tree
+> @@ -142,6 +143,7 @@ struct gp2ap002 {
+>  	struct device *dev;
+>  	struct regulator *vdd;
+>  	struct regulator *vio;
+> +	struct regulator *vled;
+>  	struct iio_channel *alsout;
+>  	u8 hys_far;
+>  	u8 hys_close;
+> @@ -169,7 +171,7 @@ static irqreturn_t gp2ap002_prox_irq(int irq, void *d)
 >  
-> +/* TMP_CFG bit 7 is a rate bit here; the internal sensor is the default */
+>  	if (val & GP2AP002_PROX_VO_DETECT) {
+>  		/* Close */
+> -		dev_dbg(gp2ap002->dev, "close\n");
+> +		dev_dbg(gp2ap002->dev, "close %i\n", val);
 
-This is the comment that really confused me and lead to suggestion
-of using a boolean for whether it was the external sensor or not.
+Why?
 
-> +static const struct dps310_chip_info zts8032_chip_info = {
-> +	.name = "zts8032",
-> +	.tmp_cfg = 0,
-> +	.coef_len = ZTS8032_COEF_LEN,
-> +	.has_c31_c40 = true,
-> +};
+>  		ret = regmap_write(gp2ap002->map, GP2AP002_HYS,
+>  				   gp2ap002->hys_far);
+>  		if (ret)
+> @@ -179,7 +181,7 @@ static irqreturn_t gp2ap002_prox_irq(int irq, void *d)
+>  					IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING);
+>  	} else {
+>  		/* Far */
+> -		dev_dbg(gp2ap002->dev, "far\n");
+> +		dev_dbg(gp2ap002->dev, "far %i\n", val);
+
+Why?
+
+>  		ret = regmap_write(gp2ap002->map, GP2AP002_HYS,
+>  				   gp2ap002->hys_close);
+>  		if (ret)
+> @@ -530,14 +532,22 @@ static int gp2ap002_probe(struct i2c_client *client)
+>  	if (IS_ERR(gp2ap002->vio))
+>  		return dev_err_probe(dev, PTR_ERR(gp2ap002->vio),
+>  				     "failed to get VIO regulator\n");
+> +	// returns a dummy if not declared:
+
+See comment syntax elsewhere and match it.
+
+> +	gp2ap002->vled = devm_regulator_get(dev, "vled");
+> +	if (IS_ERR(gp2ap002->vled))
+> +		return dev_err_probe(dev, PTR_ERR(gp2ap002->vled),
+> +				     "failed to get VLED regulator\n");
+>  
+>  	/* Operating voltage 2.4V .. 3.6V according to datasheet */
+>  	ret = regulator_set_voltage(gp2ap002->vdd, 2400000, 3600000);
+>  	if (ret) {
+> -		dev_err(dev, "failed to sett VDD voltage\n");
+> +		dev_err(dev, "failed to set VDD voltage\n");
+
+Good to fix, but unrelated so separate patch.
+
+>  		return ret;
+>  	}
+>  
+> +	/* LED voltage 2.4V .. 3.6V according to datasheet */
+> +	/* nothing to set: it's a simple "regulator-fixed" gpio pin */
+Use multiline comment syntax.
 > +
->  struct dps310_data {
->  	struct i2c_client *client;
->  	struct regmap *regmap;
-> @@ -109,6 +123,7 @@ struct dps310_data {
->  
->  	s32 c0, c1;
->  	s32 c00, c10, c20, c30, c01, c11, c21;
-> +	s32 c31, c40;
->  	s32 pressure_raw;
->  	s32 temp_raw;
->  	bool timeout_recovery_failed;
-> @@ -211,6 +226,11 @@ static int dps310_get_coefs(struct dps310_data *data)
->  	c30 = (coef[16] << 8) | coef[17];
->  	data->c30 = sign_extend32(c30, 15);
->  
-> +	if (data->info->has_c31_c40) {
-> +		data->c31 = sign_extend32((coef[18] << 8) | coef[19], 15);
-> +		data->c40 = sign_extend32((coef[20] << 8) | coef[21], 15);
-
-Obviously lots of it here already but ideally use
-
-data->c31 = sign_extend32(get_unaligned_be16(&coef[18]), 15);
-etc
-
+>  	/* VIO should be between 1.65V and VDD */
+>  	ret = regulator_get_voltage(gp2ap002->vdd);
+>  	if (ret < 0) {
+> @@ -560,6 +570,11 @@ static int gp2ap002_probe(struct i2c_client *client)
+>  		dev_err(dev, "failed to enable VIO regulator\n");
+>  		goto out_disable_vdd;
+>  	}
+> +	ret = regulator_enable(gp2ap002->vled);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable VLED regulator\n");
+> +		goto out_disable_vio;
 > +	}
-> +
+>  
+>  	msleep(20);
+>  
+> @@ -635,6 +650,7 @@ static void gp2ap002_remove(struct i2c_client *client)
+>  	iio_device_unregister(indio_dev);
+>  	regulator_disable(gp2ap002->vio);
+>  	regulator_disable(gp2ap002->vdd);
+> +	regulator_disable(gp2ap002->vled);
+
+There are enough of them that if this goes forward consider using
+the bulk handling.
+
+>  }
+>  
+>  static int gp2ap002_runtime_suspend(struct device *dev)
+> @@ -659,6 +675,7 @@ static int gp2ap002_runtime_suspend(struct device *dev)
+>  	 */
+>  	regulator_disable(gp2ap002->vio);
+>  	regulator_disable(gp2ap002->vdd);
+> +	regulator_disable(gp2ap002->vled);
+>  
 >  	return 0;
+>  }
+> @@ -679,6 +696,11 @@ static int gp2ap002_runtime_resume(struct device *dev)
+>  		dev_err(dev, "failed to enable VIO regulator in resume path\n");
+>  		goto out_disable_vdd;
+>  	}
+> +	ret = regulator_enable(gp2ap002->vled);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable VLED regulator in resume path\n");
+> +		goto out_disable_vio;
+> +	}
+>  
+>  	msleep(20);
+>  
+> 
 
