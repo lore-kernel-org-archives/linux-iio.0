@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA539335564;
-	Sat, 17 Oct 2026 19:03:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4517D255E43;
+	Sat, 17 Oct 2026 19:10:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792263841; cv=none; b=Byf+A09Lz8BXHw2+QzzZHhuuk7r4ABf2rFn5Yz7gZrfM4aES5n7Dr3jLoxR2cgrUij9zGEPw/D0TxbctFEeWqoCfPL4HmCT+CgxDVZtR9a9J+GgFXn1X426DTAca7VCkDwrDNUbEZo+4/1oXrTo+Uy1gHCi9ctAwSipme2G5jRY=
+	t=1792264246; cv=none; b=VyO4Wh0CflJbcKUwA8+gaZqI1bror1vs1p2W9C1HtFinlEL1uvlQFwvdVa1+Vy/ADMq/sYs2o5PF2jol/m0nkimJ12v+cUhsjmTQ6VAzIxqM7UFytFxk0eAJsFOPKTcEIWKR1ggFpBAHzDH0jHYkcLADYHvVCh9W+Q6i5H96+XQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792263841; c=relaxed/simple;
-	bh=2AozhjYn608MQwxmaMENSYYMnUQ2NfjVfCFKBcebf78=;
+	s=arc-20240116; t=1792264246; c=relaxed/simple;
+	bh=orzydwwQvH+4TFpY2dG3asuXR+qpItNnlOB4/yGcQDU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uyvtaTTKNnm74ouarg9kEpQgEpvuY3jpNlJnfukBNY4ilxzMKQCsW13GrfqEHHH/0RP1BksIATP1ZIplY2HOzRR4ius65jU/Tz1QMAfK/ky0CTUvwY/qX1rxLhlZWF0Jz99JSKq1EHPQFRGb2NjvHJsjULjRvUQ6z9A1P+pnZ1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QbkUNpTj; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=mUrqHkq9I8MWmY83mO70eIzkblV0Ay6bhZQv6ZJiH2bb3Bim/ENmcik4hzVw3wSaGgPH8A4c7h1kii4Jk2h/mpXaCyDvVrt8yFH5uzM79k/ktkc7p2S/oSX+woKPSEOYwvfpqH0SRFMHCLUXXdnJZCCYrCQVTOrN6Tripa1Bw9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ieogcHsz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QbkUNpTj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F631F000C4;
-	Sat, 17 Oct 2026 19:03:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ieogcHsz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C081F000C4;
+	Sat, 17 Oct 2026 19:10:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792263839;
-	bh=OH3U8u6orc4B4I3tUISqTAJgxXs5Rq+kG5e6idsxYeE=;
+	s=k20260515; t=1792264245;
+	bh=1t/2jUGkxv5LyP1PvSsusnqIWBP2jrYAkzX+eKb0a9M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=QbkUNpTj4o7d1NnuNvJ9Mb96jryQCDDSC3CRpkOE9FwbM8MoYe/CMquTEiio3oQdT
-	 BSLjhASFK9G3d46djIdVLmn/4hLSDDual+Zgw6PYYwiyffUrtwb57FtAq9z4/FwD8W
-	 Dy/bLE/M+blGblYIn3Cwo71Qcff5Pq+rPpLH0OBFwWjwaYdJ2shqb5IFMQMyGw8B78
-	 Nj73LFtQADn0NbXbKKZ+tPMjS4Y5FllFKVaerR87GJXUoTGtmdSUXOzV8jtPvIJf1G
-	 VvO4uIvfp+Tls0mdtXycBRyIKeBgZ6925hMqXhhQHiBrGfP5UrZ52CbnpX0kltxqxu
-	 hH35sjEqF6Fiw==
-Date: Sat, 17 Oct 2026 20:03:53 +0100
+	b=ieogcHszQGt88CGu7RgJtcmPIP32ORtD+NMO16miZFs1OJMAEV31BQtiFXrE/APQu
+	 2m1YP2yfSihxpPP264tH/nt/zvDHw/EMjcXMYBpxx3Wbzi85itl6UahDRcDIdpFsSc
+	 P/3oXs2DQ7FY4IvlJ2Grrrd2skN6A6gEZzRqnVNxCMJ+K/aYfI0c/x1nMpRL0RMYrQ
+	 2VAknvprqm/PaFz4Hk27DyH44EX0jqncu0q1HzAeDuwxuW+KGOjBy0AkElJBAU2Q5p
+	 kprJt8bO2W+HPSSokToRsWF07m+5g51s7c8b8IWrl5HnH1dUIhKECn/CbQ4QHSzw0y
+	 P++TLqey6oAJA==
+Date: Sat, 17 Oct 2026 20:10:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Marcelo Schmitt <marcelo.schmitt@analog.com>
 Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
@@ -34,11 +34,12 @@ Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <dlechner@baylibre.com>, <andy@kernel.org>, <Michael.Hennerich@analog.com>,
  <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
  <corbet@lwn.net>, <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v5 12/15] iio: adc: ad4134: Support SPI 4-wire mode
-Message-ID: <20261017200353.7b3dfbba@jic23-hlaptop>
-In-Reply-To: <fabe47973d8de0bc2f5177a99ef032a26b42d926.1792200021.git.marcelo.schmitt@analog.com>
+Subject: Re: [PATCH v5 14/15] iio: adc: ad4134: Support high-speed data
+ capture
+Message-ID: <20261017201036.28a64081@jic23-hlaptop>
+In-Reply-To: <44d545559aaf7cf2605aa30b5e9c9e5aa4aca879.1792200021.git.marcelo.schmitt@analog.com>
 References: <cover.1792200021.git.marcelo.schmitt@analog.com>
-	<fabe47973d8de0bc2f5177a99ef032a26b42d926.1792200021.git.marcelo.schmitt@analog.com>
+	<44d545559aaf7cf2605aa30b5e9c9e5aa4aca879.1792200021.git.marcelo.schmitt@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,175 +50,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 22:59:56 -0300
+On Fri, 16 Oct 2026 23:00:34 -0300
 Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-> AD4134 devices can be wired in a few different ways. So far, only minimum
-> I/O mode was supported. While minimum I/O mode allows interfacing with
-> AD4134 with a reduced number of wires, that wiring configuration is not
-> suitable for high-throughput data acquisition.
+> Make use of SPI transfer offloading to speed up data capture, enabling data
+> acquisition at faster sample rates (up to 1.496 MSPS).
 > 
-> Extend AD4134 support to enable interfacing in SPI 4-wire configuration.
-> 
+
+I'd call out here that in this mode, you can't uses the sysfs interfaces
+to read channels.  Even when offloading is involved, no access at all
+is unusual. Is there a path to add that, if only for debug?
+
 > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
-I think a bit of ACQUIRE() magic sprinkled in here to handle
-the claim / release pairs would make this more readable.
-
-Otherwise, just a few little style suggestions.
 
 > diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-> index eaf5bb55f25b..6b05e40f7aeb 100644
+> index 6b05e40f7aeb..21e8039b3411 100644
 > --- a/drivers/iio/adc/ad4134.c
 > +++ b/drivers/iio/adc/ad4134.c
-...
 
-> +
-> +/*
-> + * Must be balanced with successful calls to ad4134_claim_reg_access().
-
-If you follow the ACQUIRE() suggestion below, probably don't need
-this comment.
-
-> + */
-> +static int ad4134_release_reg_access(struct ad4134_state *st)
-> +{
-> +	if (st->spi_mode != AD4134_SPI_MODE_NO_CS && st->mux_st[AD4134_SDO_INPUT])
-> +		return mux_state_deselect(st->mux_st[AD4134_SDO_INPUT]);
-> +
-> +	return 0;
-> +}
-
-
->  static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
-> @@ -301,14 +416,18 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
->  		.len = st->crc_en ? AD4134_SPI_MAX_XFER_LEN : 2,
->  	};
->  	unsigned int inst;
-> -	int ret;
-> +	int access_ret, ret;
-> +
-> +	ret = ad4134_claim_reg_access(st);
-> +	if (ret)
-> +		return ret;
+>  static irqreturn_t ad4134_trigger_handler(int irq, void *p)
+>  {
+>  	IIO_DECLARE_BUFFER_WITH_TS(u32, channels, AD4134_NUM_CHANNELS) = { };
+> @@ -520,6 +660,9 @@ static int ad4134_read_raw(struct iio_dev *indio_dev,
 >  
->  	inst = AD4134_REG_READ_MASK | reg;
->  	ad4134_prepare_spi_tx_buf(inst, 0, st->tx_buf);
->  
->  	ret = spi_sync_transfer(st->spi, &xfer, 1);
->  	if (ret)
-> -		return ret;
-> +		goto out_read_release;
->  
->  	*val = st->rx_buf[1];
->  
-> @@ -316,7 +435,12 @@ static int ad4134_register_read(struct ad4134_state *st, unsigned int reg,
->  	if (st->crc_en && st->rx_buf[2] != st->tx_buf[2])
->  		dev_dbg(&st->spi->dev, "reg read CRC check failed\n");
->  
-> -	return 0;
-> +out_read_release:
-> +	access_ret = ad4134_release_reg_access(st);
-> +	if (access_ret)
-> +		dev_err(&st->spi->dev, "error on access release: %d\n", access_ret);
+>  	switch (info) {
+>  	case IIO_CHAN_INFO_RAW: {
+> +		if (!IS_ERR_OR_NULL(st->offload))
+> +			return -EPROTONOSUPPORT;
 
-If you are going to not return access_ret anyway (which is common simplifying
-approach for cases like this where we are stuck anyway), then how about wrapping
-all this in an ACQUIRE() and letting the cleanup.h magic call the release for you?
+If direct access is not supported when offload is in play
+then we shouldn't have an interface to get here (i.e. no
+IIO_CHAN_INFO_RAW bit set in the info mask bitmaps.
+As such is this just defensive coding?
+
+If so add a comment to say that, or just drop it.
+
 
 > +
-> +	return ret;
->  }
+>  		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+>  		if (IIO_DEV_ACQUIRE_FAILED(claim))
+>  			return -EBUSY;
 
->  static int ad4134_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val, int *val2, long info)
-> @@ -440,11 +579,6 @@ static int ad4134_min_io_mode_setup(struct ad4134_state *st)
->  	int ret;
->  
->  	st->crc_en = true; /* In minimum I/O mode CRC cannot be disabled */
-> -	st->odr_gpio = devm_gpiod_get(dev, "odr", GPIOD_OUT_LOW);
-> -	if (IS_ERR(st->odr_gpio))
-> -		return dev_err_probe(dev, PTR_ERR(st->odr_gpio),
-> -				     "failed to get ODR GPIO\n");
-> -
->  	ret = regmap_update_bits(st->regmap, AD4134_DIG_IF_CFG_REG,
->  				 AD4134_DIF_IF_CFG_FORMAT_MASK,
->  				 FIELD_PREP(AD4134_DIF_IF_CFG_FORMAT_MASK,
-> @@ -591,10 +725,61 @@ static int ad4134_probe(struct spi_device *spi)
->  		return dev_err_probe(dev, PTR_ERR(st->regmap),
->  				     "failed to initialize regmap");
->  
-> -	ret = ad4134_min_io_mode_setup(st);
-> -	if (ret)
-> -		return dev_err_probe(dev, ret,
-> -				     "failed to setup minimum I/O mode\n");
-> +	if (device_property_present(dev, "adi,spi-mode")) {
-> +		ret = device_property_match_property_string(dev, "adi,spi-mode",
-> +							    ad4134_spi_modes,
-> +							    ARRAY_SIZE(ad4134_spi_modes));
-> +		if (ret < 0)
-> +			return dev_err_probe(dev, ret,
-> +					     "getting adi,spi-mode property failed\n");
-> +
-> +		st->spi_mode = ret;
-> +	} else {
-> +		/* Default to no-cs mode if adi,spi-mode is not specified */
-> +		st->spi_mode = AD4134_SPI_MODE_NO_CS;
-> +	}
-> +
-> +	if (st->spi_mode == AD4134_SPI_MODE_NO_CS) {
-> +		/*
-> +		 * The support hardware for AD4134 may have a multiplexer for
-> +		 * selecting between AD4134 SDO and AD4134 DOUT0. If that mux
-> +		 * is set but the user still wants to run AD4134 in minimum I/O
-> +		 * mode, then DOUT0 is not used and the multiplexer OUTSIDE OF
-> +		 * AD4134 SILICON must be set to select AD4134 SDO. See AD4134
-> +		 * IIO documentation for details.
-> +		 */
-> +		st->mux_st[AD4134_SDO_INPUT] =
-> +			devm_mux_state_get_optional_selected(dev, "reg_access");
-> +		if (IS_ERR(st->mux_st[AD4134_SDO_INPUT]))
-> +			return dev_err_probe(dev, PTR_ERR(st->mux_st[AD4134_SDO_INPUT]),
-> +					     "failed to get reg_access mux-state\n");
 
-Maybe use a local variable for the return of devm_mux_state_get_optional_selected
-and only sets st->mux_st[] after we know it's not an error. Should make this
-a little more readable.
 
-Similar applies in other places.
-
-> +
-> +		ret = ad4134_min_io_mode_setup(st);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +					     "failed to setup minimum I/O mode\n");
-
-When it's 80-90 chars, feel free to put dev_err_probe() on one line.
-
-> +	} else {
-> +		/*
-> +		 * This controls a multiplexer OUTSIDE OF AD4134 SILICON.
-> +		 * See AD4134 IIO documentation for details.
-> +		 */
-> +		st->mux_st[AD4134_SDO_INPUT] = devm_mux_state_get(dev, "reg_access");
-> +		if (IS_ERR(st->mux_st[AD4134_SDO_INPUT]))
-> +			return dev_err_probe(dev, PTR_ERR(st->mux_st[AD4134_SDO_INPUT]),
-> +					     "failed to get reg_access mux-state\n");
-> +
-> +		st->mux_st[AD4134_DOUT0_INPUT] = devm_mux_state_get(dev, "data_read");
-> +		if (IS_ERR(st->mux_st[AD4134_DOUT0_INPUT]))
-> +			return dev_err_probe(dev, PTR_ERR(st->mux_st[AD4134_DOUT0_INPUT]),
-> +					     "failed to get data_read mux-state\n");
-> +
-> +		indio_dev->setup_ops = &ad4134_buffer_setup_ops;
-> +	}
-> +
-> +	st->odr_gpio = devm_gpiod_get(dev, "odr", GPIOD_OUT_LOW);
-> +	if (IS_ERR(st->odr_gpio))
-> +		return dev_err_probe(dev, PTR_ERR(st->odr_gpio),
-> +				     "failed to get ODR GPIO\n");
->  
->  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
->  					      iio_pollfunc_store_time,
 
