@@ -1,70 +1,71 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C174D54779
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:19:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3D013D6CC9
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:19:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792214387; cv=none; b=W20IWZHOsPhvu6hIEChwURGZzSLVyWOHJ65FVpCKdjVB4yCtVadM3pKpFdjBDkhkESS2h0Et9HfCQb/GfMjC7vaF4tyjP+8fZDIrtIN2C3ldsI1CWN2TLtCuBg86OvFiqZT7lnuT/n9gr/GRtr8N6OawM62kp+dAMXDIcOJAvQk=
+	t=1792214387; cv=none; b=uqO6zb9pg4FJkVWHc+roRw9BV+2DZmn/9eqnq+MQCLZ34tuD4xcPw4sLN44wPuNX8CX4IqAY/PHHdImIlWuEvkvs818QVoCySbmctLBr6Qa69lwOrED7dMA1oXXo/etAy6orzQ5zw349t/EU79VSqSbqjrRd4Ob9Dqg43ObFx8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1792214387; c=relaxed/simple;
-	bh=gXw+7TLfwGKFNKp/KJZijwrd5UKSHlNDKFQXo0yS+uM=;
+	bh=SWBmXu448zjzxYjCx3pUm9k+IVsTZM+Oeo1N4UfrkmA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=L7mryoaLPjgYtZiZbSJpZ3nSjjE9JM2ywTQf5ONwm8ViplE4UAn1CV26eyM0woijFYkvpi+Zn+AATihUtru3axZWmZKw5gB89PQBO78OPNwmFyrKJXESZ+2ztCVKOORH34jQrC+jTGibENjY3r+EyUEvXsEK7qY9/ifc9T9QooY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FX9WQObf; arc=none smtp.client-ip=209.85.128.46
+	 In-Reply-To:To:Cc; b=VgiKK1O8xyY8XWVar8Hiq6cvufLDaBAsiDZGzL4NA7ltEVFSYsztB5CuzMYhfDHAfYFt2c0v32vUlZ7bCLItnQ9Zts+kK84OAD4jbwZLWOx9k3Opd1DROj+GQkhNTIXgXANS95liT9ACPTRrAvNlJcpOszlUx35GRuxf2TQCGcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I02ItFUu; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FX9WQObf"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4a1635f7c89so5337185e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:19:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I02ItFUu"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-49ff680331aso5478795e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792214383; x=1792819183; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792214384; x=1792819184; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=7LHcXjNkmsuk5TeKHntdBtjC9h0fmxosoVJ6Kahrwto=;
-        b=FX9WQObfhOmxAA2cvIjLLoUklxaCKX/HIYaincyp8wlWq/t0jXptO+s8CFJxOAu5yD
-         SpgjwF+G/isbSOTi+RO/Trzyn/rWbP4HBx6CektOst/cdt/NE8GaB3nV24MWH6GOy2Bt
-         +FXRFjcBEt3Pbl2QtD8bUAfhGUSv3UQuMLYttYWrftfELF+CBCgagOJdCzoaQ9GdHX/U
-         kSJNuT2xg8iQnd2fMYeLpIC0RVCtrSjlnptUD2QXw3dfl205VRszu9kAtZIcPhyw0yNT
-         8aV+U4H94kFxfdCSUyUamCZOFOko8ZsCz0WRVbcJIpwL7etzU5q3RP7kkqhkndsv4qBz
-         CgVQ==
+        bh=/dnusO2vMBZJOXXq/LcKes7+kqYaIPlF1nsGZCt+1mw=;
+        b=I02ItFUupSWO3qGt/U1fQo2Y/vHnIePCw+EtE/R5rKNAoK0GDrZmxyfty0HjPeXHL6
+         k+TxVm1S1+H4rNz9zSYDFRfCJYxh21nsr79tAaq4jRU2hqj4MluvrHaBG0Fd8ORvPQH6
+         GDqM3x32sQF7qD11eHiDTsoJWnQveJAZPWHSWTtlC/wFrfWdwCOiU287Gl6dmzcUz1rn
+         HEhHkCqaj/TZTa4OA5x4PkIg4HeALufuIG/WaqyaqtXCvD5hPDIYZ2eodkd3deJhy7fR
+         t7x3Tm1fgZy2slneDZmiwrqg/3hHfgzr87gKOzmDbBR9IDszIjpWFQFQNJDst4PvRQy2
+         JJlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792214383; x=1792819183;
+        d=1e100.net; s=20260707; t=1792214384; x=1792819184;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7LHcXjNkmsuk5TeKHntdBtjC9h0fmxosoVJ6Kahrwto=;
-        b=Kzlu8p12L5O2O3KhN0e7mlK3Xrsbfy5zXL+EK6WB5xWcreVFa3toh+nKki1A4wKFBg
-         radJ0nc90nQGZVZarylFPNI1hxEzw0ta7C7RfSzGz0fcgWNmzMlrc5vtYhp9YkuXjHOL
-         citONDhySgqglXu6wA6jkYp5OWo1CwsHm+wPd23v1+CkhNhFKC+yizA2stCyykKa4GMH
-         w2bAbxvtkInLBhBWLjSxSXVZRRMPnQgmUKnsnd5zjxJ9iaTrofRMXpTiGLjzsWbmH7Dg
-         fnEeXFi848t7eJgAhYDC062ssC8PRTz5OSIEVsG3cD5pulYplekwbDDVrv+SKYrtDNy1
-         is7A==
-X-Gm-Message-State: AFq9FYLLak4mF5P6vSH2rFcjrnxXNER5+Y/DZtsCoVpPC0VehO10sEjj
-	GzQ6S2/Hdtnxxw0W8O66P2P7qMRpsOa4o9OT6M6mH4CZ9gu40RPCN1Y8
-X-Gm-Gg: AYBFou1k3A98HPUlEgXo3Wrxmet/Y13yZJ+bYgGKog2SLzagERsvY+RRpsZgA8s7GxF
-	vSU2t9yObl+P3m4q1pJqkb9stUENGYbymdMA4ybS6qemL/pu9qTomIdOk0aGgCNXJaHBCnYHlhR
-	dT3bdd8itogpS5BSEHMwnIhtWACPWEEr6NaTHo1OibQa5hejM1PPkadCRZ4FSOrbrKqeDbmGfWu
-	PGITJkK8Ukss5IYp4zQekzo0X+kWLq0RlRlvDNdsPABHvZVYpQHFOyiLV5C7USahLvl8Lk1gAnv
-	8ynMDJAntM7+7XR2OhwQotjLj7VA7uUqAQgaG+SMQSquBI4iF53zKp8fVFh7bWGKEpaegRawBMg
-	MYR+pC0IQfPZoiQ29n+tF3tifYLzSA918duTcvZlIh2PayprHu/FF8PIGdcGhgkImgCN6+Fnl9J
-	VtClC/4sjBwia4eaDvO4KEcEZIPM3dh5f2c5ssqmDOxcAbjFTLc/9YxHXSk19UmdYAHubXE1PyU
-	Dzd6J9M2AeJwwjnAYAc7aJ8u28Szd0a2JvnNNAcJacTT4PwIFuBHnvr7DrpMtEjwQWukA3lQIYu
-	4MG/78C4o+iEn8AU+SEJlp+WJPw04nWPJ50G+IzjYAZkhnvbVeUkqDqHfIBnYB/KjbXeVFr+yUD
-	Yb5w/pi47zWM7gHYuVrHeODb2QDImb22GpKRlLe/yfEIyh88aPOL7oSlptu1uXEKxmQ0smhwg
-X-Received: by 2002:a05:600c:4e50:b0:4a1:76c9:5408 with SMTP id 5b1f17b1804b1-4a1d7600190mr43042945e9.11.1792214383002;
+        bh=/dnusO2vMBZJOXXq/LcKes7+kqYaIPlF1nsGZCt+1mw=;
+        b=BB2Vx/NpPQiPwVVEpAaSbPVAwwcNhMI5wA9nE4jLAmcKK4EIN/jaGM/OqYjsllZFbY
+         H9cAe9qU1QMtVPazgStcfd8N8BlWcm0YS58V5Kl8IE2715EpdGU08m87V1vg2HC+OEY6
+         Mb0g/QMXeD/HL+M5hh1LIKjmAM6Z3BfXnpXEOzSuZHXYeXFtRxWa+4WSeEm7aslDGt1r
+         KLCxdM58aghQ+aM/PIhmUyVCZuSJgNJ6HfGuPWflCFOmry/QyFPgp5clDOVelR76q2Jm
+         YN4YlrrmZEqEYyYH1Hvv08b0XDVC913b5ob9l5/QW+iO4wESemwbEx0OrXsOdsfHeY+9
+         zJmg==
+X-Gm-Message-State: AFq9FYKKZluD2CywBk1dCpr5OAnAfjVNoSsg2hjNs8XLa+qSG7x/a6Ib
+	YtpRg7KVvKMni+uBrtPmnr2DwvmFYzWXzXY6WnSoa9Khsu52kDDFgsWI
+X-Gm-Gg: AYBFou2CRMOEjsYiCFioXLTzqdLKBVzQPvfJWWdEgntlJKTJwX+nQOWgjdtajTdgDDm
+	SjP8g6bKAh+6DDwPr6OA7OPceYRjhKKUvHUEmLCSEYoOumO6/aXKMy1sOEDDA4vL8DQItc/YzOM
+	G9CtazOGKumDRNJ6d8VRy/2UMz/gMdVLuP64IP9Au0wqcqX0XtKMyuzLj5Rnn0TwZ7WJFutCt+x
+	+EtlAZjezswQAcAyl1hlmVVpgz6Zu9BOpd0xVdJK41t0qXLhk1nWfAbjZs8TCImElZCCdGtUiXM
+	MOdV84yPtTnvKodRJF9rI1JHni+4W8gIBf4rXbuGyaFn2jLT4+XlrWCJif9LWVMnoK/JPmQ0SJY
+	129UHVGhPfMvdIg7U4UZ2w5Sf/D5jvZ8z8HoOPzg+sXDj8Ny92huZEqiSp+Tq5zysnqNSbjmsN+
+	rUNLqvFwNn/2DvnlD0IMW1ZqiXSPd08C+0kvIZydkuwLKLhvJUKWUF22fg32usUyNAbpCWPsoqa
+	aF0sS5rS5v0CynGHPkkhH7fZqCV9+AzJL35O49uDn2FyBXeLOp7LYsDBI1xhbpnrnsRJsvBhYJ4
+	pd0aEI0cs99+GNxaXsNFvJfAQmbLoFA5lR0DLUDgYPw4o1PZRx2jKtXpMZJeXkaQ7nxyNgc12rL
+	kXqGBlO/C1G/KiWP8V9Zec0uQx2zhyqP3+v/h9Na8CpUDzt6wHCTJ/z1hzBx1FTFatcc01NsneY
+	o6+0i5JRE=
+X-Received: by 2002:a05:600c:1552:b0:4a1:825a:56fd with SMTP id 5b1f17b1804b1-4a1d762a26bmr37921725e9.32.1792214383959;
         Fri, 16 Oct 2026 22:19:43 -0700 (PDT)
 Received: from [10.200.7.52] (109-81-110-105.rct.o2.cz. [109.81.110.105])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1dc952d63sm16432585e9.2.2026.10.16.22.19.42
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1dc952d63sm16432585e9.2.2026.10.16.22.19.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2026 22:19:42 -0700 (PDT)
+        Fri, 16 Oct 2026 22:19:43 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sat, 17 Oct 2026 07:19:20 +0200
-Subject: [PATCH v3 1/2] iio: gyro: mpu3050: fail probe() on trigger
- registration failure
+Date: Sat, 17 Oct 2026 07:19:21 +0200
+Subject: [PATCH v3 2/2] iio: gyro: mpu3050: add missing trigger cleanup on
+ remove()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,8 +73,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20261017-mpu3050-fix-v3-1-d6f29f335a2b@gmail.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261017-mpu3050-fix-v3-2-d6f29f335a2b@gmail.com>
 References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
 In-Reply-To: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
 To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
@@ -81,54 +82,56 @@ To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, stable@vger.kernel.org
+ Joshua Crofts <joshua.crofts1@gmail.com>, 
+ Dingisoul <dingiso.kernel@gmail.com>, stable@vger.kernel.org
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792214381; l=1394;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792214381; l=1550;
  i=joshua.crofts1@gmail.com; s=20261015; h=from:subject:message-id;
- bh=gXw+7TLfwGKFNKp/KJZijwrd5UKSHlNDKFQXo0yS+uM=;
- b=mHpAFkWrfA2yHnFAXyecRF0dHDXXg+N36a08VbYhPaR87pLuFUd+4j7PO9AkSaIrj6R/h/CJR
- 6dxR+T2totYAKjlGrKSnwj7gvYY0lmuQosTz6vmzPr+n0wT0ZBdEO0O
+ bh=SWBmXu448zjzxYjCx3pUm9k+IVsTZM+Oeo1N4UfrkmA=;
+ b=Fev/aLp/t11PuIxED9XWHh8KFvT+A+vQaVp18KaBwGEewZtgXbUFr+4wGlDOjtM2p045I2Rxo
+ mcfut4HanCTBy+iHu47QabIH0hrPyOukxNqQYLWwPzM2r2m9f1AoDr0
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-The current implementation lets mpu3050_common_probe() continue on trigger
-registration failure, causing the device to operate in an odd polling mode
-and making resource management harder.
+The mpu3050_trigger_probe() registers a trigger but
+mpu3050_common_remove() and error paths in mpu3050_common_probe() forget
+to clean it up, causing a use-after-free bug.
 
-Jump to the error handling logic if the trigger failed to register.
+Add the missing calls to the iio_trigger_unregister() function.
 
-Suggested-by: Nuno Sá <nuno.sa@analog.com>
+Reported-by: Dingisoul <dingiso.kernel@gmail.com>
+Closes: https://lore.kernel.org/all/20261010203601.1686148-1-dingiso.kernel@gmail.com/
 Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Cc: <stable@vger.kernel.org>
+Cc: stable@vger.kernel.org
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/gyro/mpu3050-core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/gyro/mpu3050-core.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 07c0f9011c63..879caf3b729c 100644
+index 879caf3b729c..9e747836df3e 100644
 --- a/drivers/iio/gyro/mpu3050-core.c
 +++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1231,8 +1231,10 @@ int mpu3050_common_probe(struct device *dev,
- 	/* Check if we have an assigned IRQ to use as trigger */
- 	if (irq) {
- 		ret = mpu3050_trigger_probe(indio_dev, irq);
--		if (ret)
-+		if (ret) {
- 			dev_err(dev, "failed to register trigger\n");
-+			goto err_cleanup_buffer;
-+		}
- 	}
- 
- 	/* Enable runtime PM */
-@@ -1262,6 +1264,7 @@ int mpu3050_common_probe(struct device *dev,
+@@ -1262,7 +1262,9 @@ int mpu3050_common_probe(struct device *dev,
+ 	pm_runtime_get_sync(dev);
+ 	pm_runtime_put_noidle(dev);
  	pm_runtime_disable(dev);
- 	if (irq)
+-	if (irq)
++	if (mpu3050->trig)
++		iio_trigger_unregister(mpu3050->trig);
++	if (mpu3050->irq)
  		free_irq(mpu3050->irq, mpu3050->trig);
-+err_cleanup_buffer:
+ err_cleanup_buffer:
  	iio_triggered_buffer_cleanup(indio_dev);
- err_power_down:
- 	mpu3050_power_down(mpu3050);
+@@ -1281,6 +1283,8 @@ void mpu3050_common_remove(struct device *dev)
+ 	pm_runtime_get_sync(dev);
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
++	if (mpu3050->trig)
++		iio_trigger_unregister(mpu3050->trig);
+ 	if (mpu3050->irq)
+ 		free_irq(mpu3050->irq, mpu3050->trig);
+ 	iio_triggered_buffer_cleanup(indio_dev);
 
 -- 
 2.56.0
