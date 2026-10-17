@@ -1,42 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B084CF477;
-	Sat, 17 Oct 2026 00:20:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A7E303A0D;
+	Sat, 17 Oct 2026 00:36:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792196418; cv=none; b=SrzUOp0T3G5Ig0ZIrbj/tzYuwXNYCVpkYfVOoiGQwjfpGdQYk5czEVhxoJfybOZGAyF7MxVewf512hO+JAN4FGY+XThL/vzgWwD1qp15jNi58iMayIpPy/j0pVoSu3mTaz8y2ZxMb4pUA3rTCRYVe4jqBP8tURkx5cHeaEK7b3w=
+	t=1792197368; cv=none; b=l9zshz6wDV8mYen20ad7w2RB3HKkCvtrmf5fw8WvZmyYaW8OMFd+/B3NSGMtCzYdswURPvbxZiGrpAlazvgwaHE+NM4yzvtyrmtcNLT2htYuq/zwPsLSLee8IvEH9QCs68KYjqwfjdXDy8+bVlvI0dIFQBIFK+rr2J4Ie6/8m5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792196418; c=relaxed/simple;
-	bh=0TAg9kwf3bBy6hz4ngcoqFMwcjlxEnjkj6ka1h5G9Pk=;
+	s=arc-20240116; t=1792197368; c=relaxed/simple;
+	bh=KT9mF2Y3V9O7//suWtnJcNC+HUMHPffHT1ackkPqZVk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gaV94YWOir1Cc22kMR1XCrKIfzoiTZdFsrYHsMhfGzo/wQlwH+1jZGy84sPk8f9T+h7k7fvDjv8HVj2i0aesPBLtuaG+ZdfCCJYXrClnAT9ABV4lM43nkEgVWLfGa3hgaXezO58PXn+v/uNgBi1rpU1lr8vl/13RUEQQDogEdc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lBH5faVC; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=gthprhDoQPZQ7/8CyHeyCplUuaspJh6htkCutkUkZtKN0YBg44zub7VhxYpNgd0dKpTu9MDiWCHfyNGnLNSsjMUcAptqxs7X+cyKcZ4L6FmlO3pJal/oArz2ZD7+XlwDW/mefyXB94Ih+jy8g0ZUNkzhvWycbMNIdvTy90Z8Uus=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KFyXf1Yq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lBH5faVC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D1501F000C4;
-	Sat, 17 Oct 2026 00:20:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KFyXf1Yq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B481C1F000C4;
+	Sat, 17 Oct 2026 00:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792196417;
-	bh=T7gCl+qVVVNj8BjUCLZNh4b3oW8uH2GR5hEhwUea7s8=;
+	s=k20260515; t=1792197366;
+	bh=kMRxpgmv2CDHgcE18V/xAzpysWCiat+7YVUS93pYBAY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=lBH5faVCSPBlur4HNNtBz2Rz9iAlb5cimJsDa1iSOavVcmAot9t8RcyjYiKrggflB
-	 6GjOXHZITslrQSnEeswSDYox5M9pIrsUQzzpQcOjgPNO+mT+J1vZLJr6fW+713tBYJ
-	 Gw+uGSuYV+RkUY94PGhU9zY7pvFG5H4/+LjQ+PCcGJYnAw/luiDjNpF/n2/bt7mrvp
-	 3RUQkduczhWfn191IWo6xtdgL03mhEF1oxaFwjOSMtBg5e3GW+bKjGlGKkhWw5aCxB
-	 ciuWYevazih+c3bVOMKX/k+JI3ijTnUS9FZDYlOOfHQvPotAGcAL9CQTntTkPqQb3B
-	 ltWwk68CphJKg==
-Date: Sat, 17 Oct 2026 01:20:12 +0100
+	b=KFyXf1YqIOsCvmLNtiAAebmUq4xdrIjj/weDnRlPJeh2lOMSBmT3bTJTQCb7jM4XC
+	 AfsUhZeu0GtjysDEx0pgN4I20jg+cIkZz3Js8RgY86Gk3OAQqcUw0UgTXVrX/oNSbL
+	 vTWL+1wZtY1iIKb3M88k9Z0OPEPdfYZ5PiPuMij6JPGhOFOTEwpzTBw7lDbwi5X+yg
+	 +r4mr+F6u5BSb5b4ZVqar6tJv/x12s2RHqLcwG+ha6aR/KIVYfRNaRsfIQySbXoe3V
+	 XNKwcN3r5ML/y2UkW3FqmGlFvKhnfcpCxA3/gO0kf8P8tM1FGykJBvAf+TE85fIviW
+	 SLKbTZVTGPvFQ==
+Date: Sat, 17 Oct 2026 01:36:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org>
-Cc: and.amer@gmail.com, Peter Rosin <peda@lysator.liu.se>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: afe: rescale: always expose offset
-Message-ID: <20261017012012.3390a90a@jic23-hlaptop>
-In-Reply-To: <20261016-iio-rescale-offset-v2-1-02c825967139@gmail.com>
-References: <20261016-iio-rescale-offset-v2-1-02c825967139@gmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: mocker-mug-unwoven@duck.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald-Stadler
+ <pmeerw@pmeerw.net>, Arka Mondal <arka@arkamondal.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add AMS TCS3472 and
+ TCS3400
+Message-ID: <20261017013600.077fee36@jic23-hlaptop>
+In-Reply-To: <af011ab8-b9ab-49d1-b9fe-4e87b3979bbd@kernel.org>
+References: <20261016-tcs3400-v1-0-3d79d2a7f449@duck.com>
+	<20261016-tcs3400-v1-1-3d79d2a7f449@duck.com>
+	<af011ab8-b9ab-49d1-b9fe-4e87b3979bbd@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,61 +53,94 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 13:00:20 +0200
-Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org> wrote:
+On Fri, 16 Oct 2026 16:43:42 +0200
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-> From: Andrea Amer <and.amer@gmail.com>
+> On 16/10/2026 10:15, HuskerMinion via B4 Relay wrote:
+> > From: HuskerMinion <mocker-mug-unwoven@duck.com>
+> > 
+> > The tcs3472 driver has no binding yet. It matches DT nodes only through
+> > its I2C device ID.
+> > 
+> > Document the TCS3472 family and the AMS TCS3400 family, which the next
+> > patch adds to the driver. Both are I2C color sensors with one threshold
+> > interrupt and a VDD supply.
+> > 
+> > Signed-off-by: HuskerMinion <mocker-mug-unwoven@duck.com>  
 > 
-> A rescale channel advertises IIO_CHAN_INFO_OFFSET only when its own
-> offset is non-zero. A child rescale therefore hides a source offset,
-> and consumers apply raw * scale and drop it. rescale_read_raw() already
-> folds the source offset in, so expose the attribute in every case.
+> Please read submitting patches how to properly attribute the work with
+> your real and known identity
+> 
+> 
+> > ---
+> >  .../devicetree/bindings/iio/light/ams,tcs3472.yaml | 57 ++++++++++++++++++++++
+> >  1 file changed, 57 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/light/ams,tcs3472.yaml b/Documentation/devicetree/bindings/iio/light/ams,tcs3472.yaml
+> > new file mode 100644
+> > index 000000000..cd4a0516e
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/light/ams,tcs3472.yaml
+> > @@ -0,0 +1,57 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/light/ams,tcs3472.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: AMS TCS3472 and TCS3400 color light-to-digital converters
+> > +
+> > +maintainers:
+> > +  - HuskerMinion <mocker-mug-unwoven@duck.com>
+> > +
+> > +description: |
+> > +  Color light sensors with 16-bit clear, red, green and blue channels, an
+> > +  I2C interface and a threshold interrupt.
+> > +
+> > +  The TCS3472 family covers the TCS34721, TCS34723, TCS34725 and TCS34727.
+> > +  The TCS3400 family covers the TCS34001, TCS34003, TCS34005 and TCS34007.  
+> 
+> We do not take families, but actual devices. TCS3400 seems to be a real
+> device, so I don't get why you call it a family.
+> 
+> 
+> > +  The variants differ in I2C address and interface voltage.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - ams,tcs3400
+> > +      - ams,tcs3472  
+> 
+> Your driver cod suggests these are compatible, so it should be expressed.
 
-Hi Andrea,
+That's only true because this driver hard rejects a whoami mismatch
+which is something we shouldn't really be doing. If we do a look
+up in driver and fail to match we should be using the data associated with
+the ID that the fallback compatible would have had.
 
-Why not check if there is either an offset in the rescaler or the underlying
-device? iio_channel_has_info(schan, IIO_CHAN_INFO_OFFSET) is used just above
-an should tell us that.
+Our old fun of what should we do about fallback compatibles and
+devices with ID registers.  Some of which (in this driver) are actually
+compatible with each other and some of which are not (in the sense
+that the match the WHOAMI and do different things depending on that
+matching).
 
-If neither are present I think we can continue to not present that attribute.
+I still prefer that we never claim devices that need different
+handling are compatible (even if detectable) because of that prevents
+new drop in parts being used (as they normally have different whoami
+values even as supposedly drop in replacements).
 
-Thanks,
+I don't mind enough to argue much about it however.
+Note that before this series all the supported parts were actually
+compatible and the only difference was a print on the id match. So
+if this patch hadn't turned up an I'd noticed, I have simply
+deleted the error return.
 
 Jonathan
 
 
 > 
-> Fixes: a29c3283653b ("iio: afe: rescale: add offset support")
-> Signed-off-by: Andrea Amer <and.amer@gmail.com>
-> ---
-> Changes in v2:
-> - Keep the IIO_CHAN_INFO_SCALE line unchanged (Andy Shevchenko)
-> - Link to v1: https://lore.kernel.org/r/20261012-iio-rescale-offset-v1-1-14ed15979ff2@gmail.com
-> ---
->  drivers/iio/afe/iio-rescale.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-> index 3a6a09ffa5267ddfd5131fbd04a5df928836589d..4639a67ea462bf5c29603783a6f230d769fb02b0 100644
-> --- a/drivers/iio/afe/iio-rescale.c
-> +++ b/drivers/iio/afe/iio-rescale.c
-> @@ -301,11 +301,9 @@ static int rescale_configure_channel(struct device *dev,
->  	}
->  
->  	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +		BIT(IIO_CHAN_INFO_OFFSET) |
->  		BIT(IIO_CHAN_INFO_SCALE);
->  
-> -	if (rescale->offset)
-> -		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
-> -
->  	/*
->  	 * Using .read_avail() is fringe to begin with and makes no sense
->  	 * whatsoever for processed channels, so we make sure that this cannot
-> 
-> ---
-> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> change-id: 20261012-iio-rescale-offset-41254a33b6d6
 > 
 > Best regards,
+> Krzysztof
 
