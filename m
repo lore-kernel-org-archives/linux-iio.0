@@ -1,183 +1,126 @@
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABC4C379EE0
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 02:39:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792204772; cv=pass; b=qzAVCwLo1pLSKoeKk+XLpgCnRXE4OfTvuM8uBz0F+f6EEll2XgvGT9nYE5mimlrJH5n6bVb61HW1xpBP6cxEVP7VFYVGZctrXPcKQKDwKUl28NqbPZEZ/pRsOHGg1I0vPwaYzwkq0QP9ssnXMemE6ID9O/Po5gr54TawKPM4NOg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792204772; c=relaxed/simple;
-	bh=KC3eu+jm7sIsJ7H5aJTfHeeBZbEsbgdbutde6b93XO0=;
-	h=MIME-Version:From:In-Reply-To:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bSMOl0R7TIrS/VD5NjeR6MqF3uVAlbnFtEP6/dpsl4uJ0Pza29MrHnKdXZNRfOxaYFOim593hTjGPOWDWxcPGawnHmWD277PWUhEC/+yUKj63uGCXzwfF5icOKoe3DeNHD3qXY6WynSb1zTjR6bLlrJuO+8F3LgjDP0AhEE4hQE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dfHTEMST; arc=pass smtp.client-ip=209.85.222.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED41637E2FE
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:19:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792214385; cv=none; b=VTPMGVMVeYqfLxCdJjDbsj2kegJ1DwynUmswMXlXg7PiHYFBA99p9tGJuFZbKQ+km0qynlzeTVLZxQ3e5h3EdjhVjLL8lAmFnT5EYkfGLJQe9z7Ld5bnqZuihxa0N3AAsFA2oOjisO6lN1CVtY8K/ZvxZTKZY6dQCUt1t7WK0tc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792214385; c=relaxed/simple;
+	bh=ky6PePi/fpetxqkSpkooLbGaqEzmRUTxqPP/Cm69q4U=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=CcHD4vwxfLD2duHyLRclhMBlLeMPv20TeCgwddI5Q0Wcgu8uZnVtGad/PuHCnTOMfirDrEa6/Bpr51uMrBDhAb9WVq1KQyBnW8oxXhZhwP9d4QiMHcd+2y1AVDS7+ELFe14hzQ+hXJ0NOHKNDJ3McF6EgH8oYzCKIqidIh/0N1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=okFXP1LQ; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dfHTEMST"
-Received: by mail-ua1-f41.google.com with SMTP id a1e0cc1a2514c-9906a5410f5so1531140241.0
-        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 19:39:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792204768; cv=none;
-        d=google.com; s=arc-20260327;
-        b=UEEbgFqtOorPvhuYYm7yZnjwVXv8xbVWRHVVyxgxy3Zul+tF6qLWQHnM8vh2tv2sWs
-         EjfjvY955tseNmHv3StcYwlNLnx/Vr1HmEsGMPDayLIltcG9JYeowGmJ1aJiZYroQDwP
-         Ps3U6DjbTieQW9dgfXNnecZcIS9N+Eks0rYKltobJzxfaP1ONbnSutGtIhKbPKPs/e+Y
-         cevKh87X0xyq5aI5Ihk8JwqlsqfqMvU6opj4gXr806CZPeCVKt1Ycztqk2/Oei0wnIYr
-         xSYkBR8fvqVIsrUzL5ifF3izlg68aoedhqVaUZKbRP3OfuCR7/ddv09ziforT3B8UhTU
-         5m7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:references
-         :in-reply-to:from:mime-version:dkim-signature;
-        bh=sdlsKEFzOLphdwnKgWd3lyNUyk5CQKvc4F8OOL4Kue8=;
-        fh=G0UdmNvkxCLZx9BiCx5o7GCRMLRpnp6aIrqA9adgNWM=;
-        b=AoQ0qodOwkNH4WOwMPLJ2FujHq1gBY4yuIOBmjIVEgLu9376TvN/A3m3HK04fsupeR
-         Y/2pdSUjq3iOjKFYrav3Z8jEX/knZ+MH1JC4KuOmjZWjBqkz1bEc0hW3JAjcf7TDgPsp
-         wZ3w5Gac7exqyhUHwUCmiUCMMhAUkqtH2TyebWO4bodABIfL2/CxOWhDawiV9z6Z7bOi
-         O3cLNDPzb9XD0SiLmRsauf19O1ubqxVy2p+BJ8QOm8NT+KX6vIaMK0U8zVDB3sEG+fMk
-         MN16BLZ94JtscgqwrhaL5hqX9uKYLenDp4F4p5b2MeSJ85yZAmQx0+2NUpLp7cmLYKNi
-         pFdg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="okFXP1LQ"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4a021c809e3so5785505e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:19:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792204768; x=1792809568; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:references:in-reply-to:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=sdlsKEFzOLphdwnKgWd3lyNUyk5CQKvc4F8OOL4Kue8=;
-        b=dfHTEMST/tgeW5FfVyWAvUnTAXcgMwmhamnasFCWAwILU2SmBJBXhHHSvGLE+GAPTN
-         1dPEg++H2baZtAAJa/TamxmSSxu/sDcCdOhr7EP/nh7oBADIUg+eyD+HH9ROHZTIZmdP
-         G4fZQ04IFC0bTbihWhyhAq0B8Alav2cFkYd4TrI92b1ZMU4SACvrEs37qlpYA3aEUO6F
-         ETB+eWN/VDwRnFXoZDhiQwQVhiIiU0Z/E8r4hDa7x1Y7wECuB9/Wks0USR8BylBlDqqm
-         Rbbem4O/0hQDA3anV9JRQBtK5w9SWGeaKdj3NOnfy0Udyntp2VPZwpwMNeTjcczIpzKO
-         9uDw==
+        d=gmail.com; s=20251104; t=1792214382; x=1792819182; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=jI5B6P/xW04ozzor4R64wJbnVhuui+cU4FBwYRf4wko=;
+        b=okFXP1LQCHhsR6CaDNvjGINHKyFbBoZ/WxFo7PdwyISuvckUtoC4LUiD6768UXfIXj
+         FEF8KmAnOlTslAqaX5z3lves3Ou/Bk+lH6qpoUT8+lD+P63qJZk3ylPB0d1Y/qoBqh7t
+         xZ+C3QuzyPhuGoBrfxNuZtfd7SgRx30VdSPMY13OdxoVWH62I9Pe3zzO5+pJlramaXI5
+         UHumHwzbSx5iSE1u5CGJjQYIBIPfKrXSG4hekNCWBqPynZDYq2PDvR47KLK1Dar9lZck
+         9RKd7Ge89TLVNgThyd28nHE1TghZbpri5qugzt34aE3NwZsFqKt2Fy/6mQHu/ckjHwNo
+         6Wrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792204768; x=1792809568;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:references:in-reply-to:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sdlsKEFzOLphdwnKgWd3lyNUyk5CQKvc4F8OOL4Kue8=;
-        b=j6ILQUbONoDgxd7HwCooQwVlBnooiT2GEoeSOk7gTwNJqwpJ9XUoePMlJa9aEsCKYL
-         6O3goIxC/Gmi/rQDI+AE6CTngwAnUlSTjDQYm/aJLYvITe4DuVOrg4fwBPlJ5QSWG7R9
-         x+79sEcqmtwRUHg1B2AwF60ydn/TURyyTHGydPhf0wn6cYvDYUzc9ZyD40r18L0+J3aT
-         1ZnLJsHpzPKmvkKatHXpW6y6OXAwtz8VkgtcUdrlCVtTBs+DRO+w4UiHY3hXhz75H0qV
-         5AK6WIUCSRSAkGX0JYx9NnikkwxoL6UJ74ZgT+r7rNWcsO4LR1zb6YuYdJfYRIeC/VUB
-         Fsgg==
-X-Forwarded-Encrypted: i=1; AKwUvBxA3lRT1ZE6Qh0niv1h8+TjQTb2ySj/PCkPvbQPvWv1VqF6mfI/JGKFs9YZyyrA+s7NWvMmbWtVWyg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIaQvDKIhqGqtb+2udhy/FwwLduqpQEmS1cvydLaTUiOga71qiR
-	alxO9Dj0dC5/ftrH1VOPTmKh9If/XhrzHRhtE3TzvZSawyL/fS5Iuizomb/w9TEXEaqNmAWUcmq
-	fmclP8pNN2sSwDG9GJqziJiRHIybgPvI=
-X-Gm-Gg: AYBFou3bu4UJOEik7lrS1pkv5mrpEIq0Sw8Bbgh6I3/1zz6d57CwbZNILFuqeqTZnjc
-	g1D+VFVTYEEcT92uC5uQmgajcfWS2KxjZ9a3fPyNuGH7txE8UPU3yQjHmlxok59hK9kcSHiUvLY
-	Yx9eDP6PR97lyCYxzwgDhPBsZKpIaoYjD5iuOftxcuWc089St1062QVMT8vH39k9aotBY6uYd4c
-	Kufxe/KNbdztorlmFLCwTtbTrjOb8sl67VIBDvxC46ZJy48U1lnldAOvZKDEeFEwPSphfof+qa6
-	MNit6ZYRUaX/88vXhAwzYWcJVIzyWZ7hYKDEY1BmOm13A6kWBch+QTktbK8dj6foIQ==
-X-Received: by 2002:a67:f34d:0:b0:7cc:ace:24ad with SMTP id
- ada2fe7eead31-7cc17c72bd9mr1070408137.0.1792204768576; Fri, 16 Oct 2026
- 19:39:28 -0700 (PDT)
-Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Fri, 16 Oct 2026 21:39:27 -0500
-Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Fri, 16 Oct 2026 19:39:19 -0700
+        d=1e100.net; s=20260707; t=1792214382; x=1792819182;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=jI5B6P/xW04ozzor4R64wJbnVhuui+cU4FBwYRf4wko=;
+        b=wfk43L+0len25eXARLWUe+8QbtM8jfJpoSKMztiHyaESxzkG13UXDUI/fgZcucXgdJ
+         94jg+H9A88oUu1bHGJ1rbvq/ak/xJ7hyHOqwbarvMOw+xs19vTvLGWSMjCglEaqaTmME
+         lqGze/bSYc1QaEIPhi3hiJr+J3VwYqWu6mnpnoGWy3b+6f16Vr/lb5VmXd/p5KK1HGw+
+         QqhV5WtCBAGe/pTvO65t/p/94H/T5Oa7Qb8OBNxr6vCtJ/OYlOXf6pXzxeSc9YDZOeAz
+         nybQ8o6Y4fEBz0Bk8zEcVdMdomD0IYiUg805SFE+x3i2T+j96zfOnNWZwyB4TsSbCEo0
+         oiVw==
+X-Gm-Message-State: AFq9FYKBsfj37yrWEICSGOA/4Vigcs53Okbp3OJD7H1O8vMmbkqNLRXw
+	N/GeRX7exAqqn2cvGLLHv6HzkTIbu0IW6ldEcaPTwXMG54pA7ib4kH4j
+X-Gm-Gg: AYBFou0cAkdO3rL6THjLWzw974ZsV2DmTdyCrnIRnWqrw53VlYzVL4ozDzZVjzCGvr6
+	9nQgbJJQSTRLAHt+/3F1dcfyhEPifKTjh+de63qvRuP/qMWZDUA6+JVIxvAFbvCSHJH9Kd5ojxg
+	QR0hNFOdGfoS/Cn3YBmOJid3SWOPrOESU+eTxZ0lZhHbvyArz8UeH48LRIcme3ztZUpLIh8p6LV
+	Ay0Nq68y0ejvneB7wvnpbjBJ8CRbEsN4Tfobyu47KL9ipy5EHA+y7DA2XjgTz6jfBrTWgMp2OZu
+	lhyX96JzR3YWiLpPn/bB8ywTz2B0wgt/7mTq0QgMhCLstffnYvORr1jb4jWRGaegahwnrxoaTlp
+	P+5p12DHthLuDv+F7IKNWRtqGMgeJDVxXihjYx3pyMuHTB/tDjf5YbCF16U8DoZzRmiwuczRbwj
+	29YbZCBfDW8D0NvhdHeFIwun+yX5imOJE/KFi91AcnshkQl98faV/XAQXDWla8h6bHA3lNJWs2B
+	e2c59PjT0N14zDNO1DIMB5XprhLF2qdQSnqslUS4tplRwMhu0gYWeOsRDPsFzPE2EN5cgfSScVZ
+	9453FXJwNleSGcVT1TgjIaEiJY9vlxj3JHZqwYD6ce62AyfQvPIyL2hVjiXC9s5w9PfnCuBh++p
+	qAJgNpBWp5JtpkSQhQ5z0zkWeNSZAgINnNCHgTYuoCms+MuA2/Wc0/aIk0JyB8SQERuyEmoBy
+X-Received: by 2002:a05:600c:1f83:b0:4a0:27eb:49b with SMTP id 5b1f17b1804b1-4a1d761b900mr33747025e9.30.1792214382055;
+        Fri, 16 Oct 2026 22:19:42 -0700 (PDT)
+Received: from [10.200.7.52] (109-81-110-105.rct.o2.cz. [109.81.110.105])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1dc952d63sm16432585e9.2.2026.10.16.22.19.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2026 22:19:41 -0700 (PDT)
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: [PATCH v3 0/2] iio: gyro: mpu3050: add missing trigger cleanup
+Date: Sat, 17 Oct 2026 07:19:19 +0200
+Message-Id: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Received: from 77377267392	named unknown	by gmailapi.google.com	with HTTPREST;
- Fri, 16 Oct 2026 19:38:21 -0700
-Received: from 77377267392	named unknown	by gmailapi.google.com	with HTTPREST;
- Fri, 16 Oct 2026 19:37:43 -0700
-From: =?UTF-8?B?6LW15paH5by6?= <berringtoni36@gmail.com>
-In-Reply-To: <CAF2O-sPfK96Bvqtu-reg+y--nuV35tM57Med9irz_a3RK1xhsw@mail.gmail.com>
-References: <CAF2O-sPfK96Bvqtu-reg+y--nuV35tM57Med9irz_a3RK1xhsw@mail.gmail.com>
-Date: Fri, 16 Oct 2026 21:39:27 -0500
-X-Gm-Features: AclHuK_3LJU8o98OAG69Xz_TNEuPj-B3u8dMNV-r9cFLjr8fkIzbRSp1qOk1GNo
-Message-ID: <CAF2O-sNM8HjOOH+sNc+QMTgDpLUKTar_3hXzHPoW+Bi-ve6CyQ@mail.gmail.com>
-Subject: [PATCH v2 2/2] iio: accel: adxl345: propagate errors when disabling
- activity events
-To: =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lothar Rubusch <l.rubusch@gmail.com>, Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22Myw6CMBAAf4Xs2ZrulgX05H8YDzwWaCJCWm00h
+ H+3cMLE40wyM4MXZ8XDOZnBSbDejo8I5pBA3ZePTpRtIgNpylAjqmF6Gc1atfatMOUyzxsmOlU
+ Qi8lJ1NvteovcW/8c3WebB1zt/09AhaplrnSDpqgkvXRDae/Hehxg/QTat/zbUmzZtLnhAiWje
+ t8uy/IFzir2HuIAAAA=
+X-Change-ID: 20261011-mpu3050-fix-145a77d5229b
+To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joshua Crofts <joshua.crofts1@gmail.com>, stable@vger.kernel.org, 
+ Dingisoul <dingiso.kernel@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792214381; l=1108;
+ i=joshua.crofts1@gmail.com; s=20261015; h=from:subject:message-id;
+ bh=ky6PePi/fpetxqkSpkooLbGaqEzmRUTxqPP/Cm69q4U=;
+ b=M0LgvKOdE5yjdYECNlUil2WtEt41lBcIPYWXooIAJS+O/mKpogTlJtcVyXYXIjFBabRb+aQ+6
+ VaGsWIXoEAzBZKdoyX5/8zWm+alcUgHmEZ9pO5ndFzUM3twFjICAXHo
+X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
+ pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-When disabling an activity or inactivity event in
-adxl345_set_act_inact_en(), adxl345_is_act_inact_ac() is called to
-verify that the currently configured AC/DC coupling matches the event
-being disabled.
+This series fixes an ignored error return value that causes the device
+to behave in a weird polling state and a subsequent use-after-free bug
+reported by Dingisoul.
 
-adxl345_is_act_inact_ac() returns 1 on a coupling match, 0 on a
-coupling mismatch, or a negative errno if regmap_read() fails. Checking
-<=3D 0 and unconditionally returning 0 swallows negative regmap errors
-and reports a successful write to userspace while leaving the event
-enabled in registers.
-
-Store the helper return value in ret and return ret when ret <=3D 0 so
-mismatched coupling still returns 0 while negative regmap errors are
-propagated.
-
-Fixes: 31f7679bb69a ("iio: accel: adxl345: add coupling detection for
-activity/inactivity")
-Assisted-by: LLM
-Signed-off-by: =E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com>
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-Validation on macOS ARM64 with Apple clang 17:
-- Compiled the seven event-write/disable driver functions verbatim with
-  the driver header, using a host regmap stub for deterministic read
-  failures and register state checks.
-- The original code failed all 12 disable regmap-error cases (returning 0
-  instead of -EIO, -ETIMEDOUT and -EREMOTEIO); the patch passed all 29
-  cases across DC/AC activity and inactivity disable error propagation,
-  coupling-mismatch ignore, normal disable, normal enable, enable read
-  failure and unsupported direction.
-- Verified that failed disable reads exit after the first regmap_read()
-  without issuing register writes or altering enabled register bits.
-- Used -Wall -Wextra -Werror, AddressSanitizer and UndefinedBehaviorSanitiz=
-er.
-- Also compiled adxl345_core.o, adxl345_spi.o and adxl345_i2c.o as 64-bit
-  x86_64 ELF relocatable objects with clang --target=3Dx86_64-unknown-linux=
--gnu
-  against unpacked Debian Linux 6.1 headers plus upstream IIO/regmap header=
-s.
-- git diff --check and checkpatch.pl --no-tree --no-signoff --strict
-  passed with 0 errors, 0 warnings and 0 checks.
+Changes in v3:
+- Add a separate patch addressing the missing goto on trigger register
+  failure
+- Link to v2: https://lore.kernel.org/r/20261015-mpu3050-fix-v2-1-53f73581e62c@gmail.com
 
-This is a host function-chain regression and cross-target object compile,
-not an in-kernel Kbuild/KUnit execution or hardware sensor test.
+Changes in v2:
+- Add a local struct iio_trigger and assign it to the data struct only
+  after a successful IRQ request to prevent a null pointer deref as
+  pointed out by Sashiko
+- Link to v1: https://lore.kernel.org/r/20261011-mpu3050-fix-v1-1-f55b0d138be4@gmail.com
 
-AI assistance: Antigravity identified the error-swallowing check in
-adxl345_set_act_inact_en(), drafted this fix, the fault-injection test
-and changelog.
+---
+Joshua Crofts (2):
+      iio: gyro: mpu3050: fail probe() on trigger registration failure
+      iio: gyro: mpu3050: add missing trigger cleanup on remove()
 
-The request was to prepare a driver/BSP/kernel contribution related to
-an ADXL345 SPI/IIO vibration-monitoring project with reproduction and check=
-s.
+ drivers/iio/gyro/mpu3050-core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+---
+base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+change-id: 20261011-mpu3050-fix-145a77d5229b
 
- drivers/iio/accel/adxl345_core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Best regards,
+-- 
+Joshua Crofts
 
-diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_c=
-ore.c
-index 5983fc7..8ec1bbc 100644
---- a/drivers/iio/accel/adxl345_core.c
-+++ b/drivers/iio/accel/adxl345_core.c
-@@ -692,8 +692,9 @@ static int adxl345_set_act_inact_en(struct
-adxl345_state *st,
- 		 * current call attempts to turn off a DC-coupled activity, this
- 		 * inconsistency should be detected here.
- 		 */
--		if (adxl345_is_act_inact_ac(st, type) <=3D 0)
--			return 0;
-+		ret =3D adxl345_is_act_inact_ac(st, type);
-+		if (ret <=3D 0)
-+			return ret;
- 	}
-
- 	/* Start modifying configuration registers */
---=20
-2.50.1 (Apple Git-155)
