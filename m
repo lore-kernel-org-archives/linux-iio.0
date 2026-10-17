@@ -1,140 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2E523A7D82;
-	Sat, 17 Oct 2026 20:51:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD74231E834
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 21:12:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792270285; cv=none; b=ul7zU7yS8W+pc8u6o3k3pWw3fjUoLKeMVLKs5fZRLB57qr0BWbSgpVZfEZBOZsj7J2zvrDQGpBKgyAuzkplkoaPv5w/XS6no74pJ7vFhXbMsDDWpKNA8Drs006SyB8R5LS4C6Olsp9kP7wznNxE98/WyIUHPJWE/DnzTfFq+D0A=
+	t=1792271545; cv=none; b=KhAHvzNRWojmELFN+EKK8n8XlExkxr+jKNU/qkfNEYUk7GK/Pj1ZsolvzggoivYudnmx+v+ByQzVq6xoI4HnrcFzz4PO35p59DDD7qiT1awM6ZQMyS1ySzUoITUFRKTl32Ylu4YSxN1qtaMrYIhSJMwT/TLHE2G58K+i8tZ+6MY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792270285; c=relaxed/simple;
-	bh=f/2H68jyAXF/ZWGlq4jQZmINjqhRrwiilOtA63DlJ7g=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=l+3BjA99es1QElEwuPcxsNzYlc1BjhMOWhQ0uwzgnVVHDXsRTx/bSTejti3bbhjWw6f9SMWeE2H7b0gXK8DIwxa9OB2cFp95X9w6wDg8PmiC8PjVfZ6vD6Cd4Too202ydyjm5pvsOGH/aphDIr2kKp29F30ZBEc8rF4DCc+oGYM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZqN6iZpg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792271545; c=relaxed/simple;
+	bh=1a6d4YWLN/lAapj6huADHnUJGpf/vQt1DOaw2a5vl+8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oq+maEbqoHHRke2eXj0VQdnwPOvtDXIFMB+JcCttpEI+zahQhxbhxfouArY7SnDtaAEwpKURu1xGFdFf6pffQA07uOIG+kHTwUw7hNS0FQDeSnLhIBV3jsSxM9fqs2PO4rsUmifPrCDabDX8wykCVIK3MEQjBnfi53BN4iSA3xc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sVADFAGH; arc=none smtp.client-ip=74.125.82.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZqN6iZpg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF3F51F000C4;
-	Sat, 17 Oct 2026 20:51:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792270284;
-	bh=7CRXe0R1sqRRc088500Ygp7wvqRKIksgHaSrDu77SwI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZqN6iZpgOxIJ4xTzOxwOp/qpO5YpG/ryTakacM/wvlMev7MbEiR98mhTlotCvTU1k
-	 YL2OnnjXAQyWv2ziEx7VyEetHVwo/aI7ShWe0s+yZeNWND6x4O/qwFj3PcxS0C0Hj/
-	 r4tt0FRJpSZQGrTFA296NEmd4YmvWsYfPmySv0mepbfHGh7a1TVPnMamXDV0s7HiIq
-	 nbuIgH4wfZmI9QIq6j37taJrsuoz9GzQLkRAuJZqrk0ReNABFLKlj4g51fb9RgOTuX
-	 tEYJRO9ejB++APU8xY6JHX5TOEkp+3jCly2wpGrnBpyrzeCG0m2AzWI0eDrn5Cnm+t
-	 L5fCJqOhbmn+A==
-Date: Sat, 17 Oct 2026 21:51:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <krzk+dt@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
- <Michael.Hennerich@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
- <conor+dt@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
- linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] Add support for Analog Devices MAX30210
-Message-ID: <20261017215117.56980dc4@jic23-hlaptop>
-In-Reply-To: <20261015012159.44-1-johnerasmusmari.geronimo@analog.com>
-References: <20261015012159.44-1-johnerasmusmari.geronimo@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sVADFAGH"
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-3282db206d3so263830eec.0
+        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 14:12:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792271544; x=1792876344; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=joO8dipaKt5pd8TYNmoROqoyiP5BZuk4U22kJRWCaOk=;
+        b=sVADFAGHoi+JQQ5l9tstwHW381DGjVBLUv2HpT/nhPwI1EHCMv5bR3cQeAznsvNRIL
+         CPagtuAvu9vVIVDOTLHLjVhs08UJkPLO+kcBfufhGDp/1VK9lHmgHxL/TpijJ4STXfRH
+         60ryyAiENs6k4vt16YOvVObm6M6kd11bZm+dAdnlxkRSHdLUD47ZuSDo/npbUOVWkMjK
+         B1oM79bmyluMqTCdWJTDwgeRW7/qqW6iD6nsnix4YIwoIbgMIW7aVh8MFfiTU3yb1wd6
+         ao5smBwZfNwFNZOwDrTgBVmrikZlu3yaG0kMXTKZY7IfcHZhPnA6iUBp9/Sx+vYMK+vT
+         qTaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792271544; x=1792876344;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=joO8dipaKt5pd8TYNmoROqoyiP5BZuk4U22kJRWCaOk=;
+        b=Yiu3r1CERTWx7SGhU4SjsGdaZlqKVG7uWHjTubMsRoFbGIi8BmLUocSNXLyS9xn5Fr
+         9O1ANElt9mftHTSb/1LIze/kc28L4V1oqAKNScoVhMOHXG1Qrk9QRLOB83EYn0ITR7Ym
+         XFx/7elBCu7JKGwPh5EY8fBoRK6oNpXRHgAqW8sSRhMPYElpX20E/L2eZ5wciPQKvl3B
+         llKLrBK6f2ACGVHD3FAQolqX/iDf8/UhqWMGtv890qxkUC9IT8pUFHdWyNOw7ZX1belV
+         TPvM07paYF5i/3IBspoSqPpRQZC+QjIKt8YSGaz+Lk3sj8UNKxZCRJcVSpEYBmyaK+S6
+         o53g==
+X-Gm-Message-State: AFq9FYJ9dXvaMDRjHqY9PdX7W+PfpiBuN5caOJ4zQspJSb28Pqk6epjg
+	jPojgujC7n1AxlF+RmhMGSad0T/ZpCUsWoEJigZDRp4V5KfSYCMGqwA=
+X-Gm-Gg: AYBFou1y4NyGPfzpuYWfdXHLJxbsLb66qOfqcA/VOV7MEw+sDyNM3wLFdVyhR8yz3jp
+	cs9+RQXMaqaBmYaRU1J/VhcIVRNvldKHAGIqrunOaD4dDGEn2Vhy1kAlajlRFmyJ1tqEyjGDPpr
+	uLcfBGORUQE8ClZ778GLZTd5Li5T9qUYsIHKTjiXVznt2TdP2ioOkLjOUXQjC+sGFV8h4S8W+Yr
+	n4a6tcLtT9tgjLpPSKlgK201pAHYwEgNRn1FWwqQA9BmD1RjlRpNMVnGSBt+C+P5etvx1KB6Hnv
+	h/7deOVNwSAva2alL5JSmUHhiluQpk1D3KLBIGsOfZkQcUl5iEdCS4/tn9738SoisC/CLYxhzlT
+	V1+JBEs+DX2c3tGFY1rYgo1nfBna1ogljmLjjm69nE8kIl3VHXgPYN3+kgDiqQfri970B/C0hQT
+	E2L/IYivhCbtUAJTQ7uTYRzMNvFHO1378yloIrBsmzPZSa4FKD6OpmyyKsoIG5hTC3Jmmafy+1d
+	WB6WfoF5Wz1B5qVgoC69U3EXjZqxvlaF5AGdo/gs0A=
+X-Received: by 2002:a05:7022:f50b:b0:17c:a0c5:8c9a with SMTP id a92af1059eb24-18514914deamr5675222c88.42.1792271543515;
+        Sat, 17 Oct 2026 14:12:23 -0700 (PDT)
+Received: from [192.168.1.45] ([45.127.46.52])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-185aaea8b24sm9294998c88.19.2026.10.17.14.12.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 17 Oct 2026 14:12:22 -0700 (PDT)
+Message-ID: <5d5812be-430d-47f3-9e08-287300284c62@gmail.com>
+Date: Sun, 18 Oct 2026 02:42:18 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: ccs811: Deassert WAKE GPIO on error paths
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ Joshua Crofts <joshua.crofts1@gmail.com>
+References: <20261015123023.3417-1-nikhilgtr@gmail.com>
+ <20261017214659.5bbebc38@jic23-hlaptop>
+Content-Language: en-US
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+In-Reply-To: <20261017214659.5bbebc38@jic23-hlaptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, 15 Oct 2026 09:21:57 +0800
-John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com> wrote:
+Hi Jonathan,
 
-> This series adds support for the Analog Devices MAX30210 I2C
-> temperature sensor.
-> 
-> The device provides a 16-bit temperature output and includes
-> features such as a hardware FIFO, programmable sampling rate,
-> threshold alarms, and interrupt support. These capabilities map
-> naturally to the IIO subsystem, particularly the buffered interface
-> and event framework -- hwmon has no equivalent buffered-capture
-> framework, and its alarm attributes are polled rather than
-> interrupt-driven, so there is no path to supporting the FIFO or the
-> autonomous threshold comparators there.
-> 
+Thanks for the review.
 
-Thanks for the explanation.  Just to make sure
-+CC Guenter and hwmon list.
+>> Ensure the WAKE GPIO is deasserted when status polling fails or
+>> the data-ready timeout expires. Early returns could leave WAKE asserted,
+>> preventing the sensor from returning to its low-power state and
+>> potentially disrupting subsequent I2C transactions.
+> I need more on this point to know whether we care if an error
+> means we don't deassert the wake pin.
+>
+> Why would failing to go to sleep break future transactions?
+> I'd kind of assume we'd awaken an already awake device (which sounds
+> idempotent but maybe not?) and carry on from there?
+>
+> Jonathan
 
+The relevant information is in the CCS811 datasheet (v1-06),
+under “CCS811 – Pin Assignment” (page 4) and “Detailed Description” 
+(page 7 onwards).
 
-> Although the MAX30210 belongs to the same device family as the
-> MAX30208, it is implemented as a separate driver. The MAX30210 has
-> a significantly different feature set, including a 64-sample hardware
-> FIFO with configurable watermark interrupts, programmable sampling
-> rates, and event support. These features require buffered operation
-> and IRQ-driven data handling which are not present in the MAX30208
-> driver (which talks to the device directly via i2c_smbus_*() calls
-> with no regmap, and has no IIO buffer or event interface at all).
-> 
-> In addition, the MAX30210 uses a different register map and a more
-> flexible I2C address selection scheme. Supporting both devices in a
-> single driver would introduce substantial conditional logic, so a
-> separate driver keeps the implementation simpler and easier to
-> maintain.
-> 
-> Patch 1 adds the devicetree binding.
-> Patch 2 adds the IIO driver implementation.
-> 
-> Changes since v3:
-> https://lore.kernel.org/all/cover.1789032019.git.johnerasmusmari.geronimo@analog.com/
-> - regmap_noinc_read() for FIFO reads instead of regmap_bulk_read(),
->   which (combined with regmap caching) could silently return stale
->   cached values of unrelated registers instead of real FIFO data.
-> - Mark both bytes of TEMP_DATA_REG volatile for the same reason.
-> - Decouple threshold events from the buffer via a refcounted
->   autoconv_get()/autoconv_put() pair, so either can be used
->   independently or concurrently.
-> - Don't let a single-shot direct-mode read race with/clobber
->   autonomous conversion mode if a threshold event or the buffer is
->   already using it -- return -EBUSY instead.
-> - Don't hard-fail probe when there is no interrupt; fall back to
->   direct-mode-only operation.
-> - Fix devm teardown ordering so an in-flight interrupt can't use a
->   freed event interface on removal.
-> - Re-assert the powerdown GPIO on removal so the device reaches
->   standby instead of staying powered indefinitely.
-> - Style/API fixes from review (register/field grouping, _MASK
->   naming, FIELD_PREP/regmap_assign_bits usage, C99 initializers,
->   dropped redundant i2c_check_functionality() check, comment
->   cleanup).
-> 
-> All of the above have been verified on real MAX30210 hardware
-> (Raspberry Pi 4 test rig), including the no-IRQ fallback, buffer and
-> event refcounting (independently and concurrently), rmmod/insmod
-> under live interrupts, powerdown GPIO assertion on removal, and FIFO
-> flush correctness.
-> 
-> Changes since v2:
-> https://lore.kernel.org/all/20260304122509.67931-1-johnerasmusmari.geronimo@analog.com/
-> - Fix FIFO byte-count handling and sample decoding.
-> - Fix IIO debug register read/write access.
-> - Validate event threshold values and sampling-frequency register values.
-> - Return the correct sampling-frequency format and reject direct reads
->   while buffered capture is enabled.
-> - Clean up the Kconfig entry and device-tree supply declaration.
-> 
-> John Erasmus Mari Geronimo (2):
->   dt-bindings: iio: temperature: add ADI MAX30210
->   iio: temperature: add support for Analog Devices MAX30210
-> 
->  .../iio/temperature/adi,max30210.yaml         |  61 ++
->  MAINTAINERS                                   |   8 +
->  drivers/iio/temperature/Kconfig               |  13 +
->  drivers/iio/temperature/Makefile              |   1 +
->  drivers/iio/temperature/max30210.c            | 788 ++++++++++++++++++
->  5 files changed, 871 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
->  create mode 100644 drivers/iio/temperature/max30210.c
-> 
+The datasheet specifies that nWAKE is active-low and should be asserted
+before an I²C transaction and held low throughout it. It also describes
+the sleep behavior: when nWAKE is deasserted, the device enters sleep
+mode and ignores I²C requests. The timing specifications specify a 50 µs
+wake-up time and a minimum 20 µs deassertion interval.
 
+I agree that the datasheet does not explicitly state that leaving nWAKE
+asserted after an error will cause subsequent transactions to fail.
+My concern is primarily that an early return leaves the device awake
+instead of restoring the intended low-power state.
+
+I'll adjust the justification accordingly, rather than claiming that 
+subsequent
+transactions would necessarily be disrupted.
+
+Thanks,
+Nikhil
