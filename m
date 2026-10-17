@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 760182F7EE9;
-	Sat, 17 Oct 2026 19:57:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDF1839184B;
+	Sat, 17 Oct 2026 20:00:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792267068; cv=none; b=t7HCyo/UNqb6fJlCYg9kE4vN+MNUZk2GORnpS2vC9c++VJ4fN/cKddV0cGKqymJJ0lkgvlxGP1XV4J02o2O/n9gS2vRuborHBcONHJdALp6VfguPR+3vEZzhiqDUiol1ZRanO8UWMaHXnuS8LkZPtJGy4pwwPNy7X1bIpWHa3cs=
+	t=1792267213; cv=none; b=Xg5BP8Ps97dEkMq+MRE/N8aHdwq3UmmDc1upy4pXWX6Q4UHYuu6NQnA9seAesP5fFho32y1sCwpgO5rhWXyBPTWq0hA3t+FsTFt2I7z9ICk6wQS9+/kUeFiFAjfc0fH62t3/XKctkk3dKn0OmQKcXKuMyZG2Y3dwUT2BGk0L0wY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792267068; c=relaxed/simple;
-	bh=jFOUbJRvmwljNYLP9C7pwCtr2ez3Y5BqXrI1SrvhAMQ=;
+	s=arc-20240116; t=1792267213; c=relaxed/simple;
+	bh=nyKi01ULEJMH5Y8pbW/BJjOGlMHbN/t1fcSUouRh6B4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=t+fWKTSOMiVMb7u0l+YqMbRqEEeIjfuxJHrvCxSiZNePLvIED/UB5YAGkHzTQhLTCUAfg/gCaV4upGkJz86ASuGE29QibUkHVXjgGqRLFJAnESbzUPx4C6Gec8kF7HGgaiIO5Jia82AhI500fp/CHH01dGPoG8fncKPBsJnl+40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WyIXQHzO; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=OVGEz32WwLOi6SBDijIuYDxvsc2xJsxvmiewmBIvuLoGkFie5C8bmn2QSaWhlbpf7mrvxAaGtW6/mp+JQmKqPOEpx++wpPEOVmmEn0nVO0ixwr7a9eMkbMWmmfPyg1h5ckPx5WemVDeGrvS8sPfE7+kXpht/1qXZifmHf9nCTbQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EJleIf3B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WyIXQHzO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA721F000C4;
-	Sat, 17 Oct 2026 19:57:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EJleIf3B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B711F000C4;
+	Sat, 17 Oct 2026 20:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792267066;
-	bh=QAUmvDdepyf61uGzRBrDNnO+jYriELG3v08EYg7DsEY=;
+	s=k20260515; t=1792267212;
+	bh=zL8xdxVruWYdEdsNkF9GkTtgoJqQv0ozozSTRpy9Dgg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WyIXQHzOu3fFThGzU6OEhBdHNiY0pHw/3dnt1V+be30jbf/pNnFlLWD1Pjr+iy15r
-	 5Yx7BL5tt2wXaOrck14OS/1aRs/0QJcxm8JxqQpuNr/HIL+FFL2VkWJclWSxXdg3CW
-	 IGjd8v4mcX+PYYSXLnyZPEXG02ZUzCmpuAHOMf6azHuI/ARkq/yKTKajcuiZV2Thzg
-	 qt+kU1LN0xhPPMwouOE+i8DRxZT6St8HppChNyiNXBd+rYTdYcTMlUSH7uDPlzXBDf
-	 QbWxBj+Xr6+vj7BRXIPpVmvo3/yjxWLUMvsCNHkv1CU2PnYnZTxEDzWilA7DXvqp64
-	 3cp168M/UBjnw==
-Date: Sat, 17 Oct 2026 20:57:42 +0100
+	b=EJleIf3B4A1yYi7lzbnpPGAS1GO2WRM/dutcgxzg3lCnw3XcgwO6mJsaW9zA68e/K
+	 H8ibjStuMNPJdyOn7dgRpGLdy8Ue8dEMb0DCbxUphEyRhWxuFECbt8sav98j7Co8f5
+	 4yTqaNrZAiNeeZAnCgI0+EJ8nsL93Qar8XrwthUL/br+nrqVSs0gvAO0f+GSU+VS+H
+	 E+ImFMCwcCf8CvY6Csnqumim7mghWYQnBSd9qExM2JowP4FBSxTwOA+6ioLYrcllBl
+	 uxNbxb2wp06Xt7oh6XpjlduDBFJiOlIPYYqgx2csw+Jewwefz/t4MrLxdUfBy9UmCy
+	 oVJiQndN4VWkw==
+Date: Sat, 17 Oct 2026 21:00:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Myeonghun Pak <mhun512@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Ijae Kim <ae878000@gmail.com>
-Subject: Re: [PATCH] iio: proximity: hx9023s: Allocate trigger before
- requesting IRQ
-Message-ID: <20261017205742.146b18c2@jic23-hlaptop>
-In-Reply-To: <20261016202524.6193abcd@systembl0wer>
-References: <20261016024735.3667060-1-mhun512@gmail.com>
-	<20261016202524.6193abcd@systembl0wer>
+To: Liu Yufei <lyf98405@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] iio: proximity: Add Vishay VCNL36829 driver
+Message-ID: <20261017210005.07472854@jic23-hlaptop>
+In-Reply-To: <20261016012218.40223-1-lyf98405@gmail.com>
+References: <20261006100943.78971-1-lyf98405@gmail.com>
+	<20261016012218.40223-1-lyf98405@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,39 +50,73 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 20:25:24 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Fri, 16 Oct 2026 09:22:16 +0800
+Liu Yufei <lyf98405@gmail.com> wrote:
 
-> On Thu, 15 Oct 2026 22:47:35 -0400
-> Myeonghun Pak <mhun512@gmail.com> wrote:
+> From: Liu Yufei <lyf98405@gmail.com>
 > 
-> > An IRQ handler that already read trigger_enabled can poll data->trig
-> > after buffer disable. Detaching the virtual IRQ does not join this
-> > physical IRQ, and trigger deselection can drop the consumer reference.
-> > Devres may then free the trigger before joining the handler.
-> > 
-> > Allocate the trigger before requesting the IRQ so devres joins the
-> > handler before dropping the allocation reference.
-> > 
-> > This issue was identified as part of our ongoing research while
-> > reviewing kernel code.
-> > 
-> > Fixes: 60df548277b7 ("iio: proximity: Add driver support for TYHX's HX9023S capacitive proximity sensor")
-> > Assisted-by: LLM
-> > Co-developed-by: Ijae Kim <ae878000@gmail.com>
-> > Signed-off-by: Ijae Kim <ae878000@gmail.com>
-> > Signed-off-by: Myeonghun Pak <mhun512@gmail.com>
-> > ---  
+> This series adds support for the Vishay VCNL36829, an I2C proximity
+> sensor with an integrated VCSEL emitter.
 > 
-> LGTM.
+> Patch 1 adds the devicetree binding.
+> Patch 2 adds the IIO driver, which exposes the proximity reading and
+> a configurable integration time.
 > 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Applied to the fixes-togreg branch of iio.git and marked
-for stable.
+> Tested on Orange Pi Zero 2W.
 
-Thanks,
+Hi Liu Yufei,
+
+Small process thing first.  Start a fresh thread for each version.
+This is to avoid the treads becoming complex to follow and has the side
+effect that they actually turn up as 'recent' in reviewer's inboxes.
+
+I'd have looked at this a lot later today (or perhaps not at all)
+if I didn't happen to notice it in patch work after changing status
+on another patch.
 
 Jonathan
 
 > 
+> Changes in v3:
+> - driver: Collect Reviewed-by from Joshua Crofts and Andy Shevchenko.
+> - driver: Use dev_info() instead of dev_warn() for an unknown device
+>   ID (Joshua Crofts).
+> - driver: Wrap the write_raw() arguments on a logical boundary
+>   (Andy Shevchenko).
+> 
+> Changes in v2:
+> - dt-bindings: Collect Reviewed-by from Krzysztof.
+> - driver: Address review comments from Andy:
+>   - Use a Datasheet: tag in the commit message.
+>   - Drop mod_devicetable.h, sort the includes and include what is used.
+>   - Drop the i2c_client pointer from the private data and use
+>     regmap_get_device() instead.
+>   - Drop the unused i2c_set_clientdata().
+>   - Enable a maple regmap cache, mark PS_DATA and DEV_ID volatile.
+>   - Rework the integration time validation in write_raw().
+>   - Use reverse xmas tree order for local variables.
+>   - Document the power-up delay and use 3 * USEC_PER_MSEC.
+>   - Warn and continue on an unknown device ID instead of failing.
+>   - Join lines that fit within 100 columns.
+>   - Simplify the Assisted-by tag.
+> - driver: Drop the i2c_check_functionality() call, as
+>   devm_regmap_init_i2c() already checks the adapter capabilities.
+> 
+> Link to v2: https://lore.kernel.org/linux-iio/20261006100943.78971-1-lyf98405@gmail.com/
+> Link to v1: https://lore.kernel.org/linux-iio/20261003050453.413700-1-lyf98405@gmail.com/
+> 
+> Liu Yufei (2):
+>   dt-bindings: iio: proximity: Add Vishay VCNL36829
+>   iio: proximity: Add driver for Vishay VCNL36829
+> 
+>  .../iio/proximity/vishay,vcnl36829.yaml       |  55 ++++
+>  MAINTAINERS                                   |   6 +
+>  drivers/iio/proximity/Kconfig                 |  11 +
+>  drivers/iio/proximity/Makefile                |   1 +
+>  drivers/iio/proximity/vcnl36829.c             | 298 ++++++++++++++++++
+>  5 files changed, 371 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/vishay,vcnl36829.yaml
+>  create mode 100644 drivers/iio/proximity/vcnl36829.c
+> 
+> base-commit: 52c36105f76e96b638152a42e735f2e7767ed946
 
