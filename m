@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 747C74CF468;
-	Sat, 17 Oct 2026 23:23:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A03D24BBEE;
+	Sat, 17 Oct 2026 23:28:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792279405; cv=none; b=jkcqVMh7pu3I1JzvvC5gGNxMusq+P99NN6tG6sQrOEdgzFeAz/HKVDIAWbrkkW6jbDJ0+5bVToG6Hj7S06AevuRLbMVfyXQT+GpWKN6Iz8Tx8F9bJVOFLZ75QpnN0NLcW1xpjBTfZJlhMU6MThFEjYmPV/MXVz3tRLUqLWYuZhE=
+	t=1792279707; cv=none; b=aW/nVItT1S5C01YPDAe7fJrck3WgqLWKYLtmgn+/wILkakUOVVKgzNA1PYQeSDbJUeh2VH/2ETfNV4s7nqxzzyGxmYxAtQnHDLvK0RmMw3De5exdSI57HSBCxN33D58z+L7oejE0WU0Dycj+3PrCn2ExB6PCTGMkGcwQugp1vm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792279405; c=relaxed/simple;
-	bh=ge1sX7tqJ5M5YkiTlKE95R7Z2sveXhKCd+120fLUy5w=;
+	s=arc-20240116; t=1792279707; c=relaxed/simple;
+	bh=k5zWeJXJEurOnDhHsF93exBiSxJgAlW9SNVyvu9qQqU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GfCZdS2Q42KPh6GECtIyY13Mq3rObJXstx7eSiIuLCSAfs7y7SNYm4AuZE+3417vta8FQ7aOk9olXVd3ZCyTU4OxPBeCfFbplD8biXBJm05c/1YnmFXdLEKhkl5Cujt6Lz/1RS3aBfr4YIqS1nMjBRRaW/o8biL+OKUbvLOmxCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BYKrHtsM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=V+57vz9rYLhs3PTjbcVlc2CM3EGmKaYJtK3R+fLfO0b7/jFuo+ERr7jQeMWwIk2oHrsApYNry0+yDCieid/pwkVerLii1LBiyVHOWCdzJAi8Nl7V/NOk33oIn4GC5Ajrf4ozbOoCEXP1m2faitw7dRKaeHAzmSOMGoqbVEcyVho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C/DF35Yw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BYKrHtsM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B4F91F000C4;
-	Sat, 17 Oct 2026 23:23:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C/DF35Yw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4021F000C4;
+	Sat, 17 Oct 2026 23:28:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792279404;
-	bh=2ARB+WOrEsDqvkcNsapN1ZdF/DS7I1AlxGQkxLGUk0c=;
+	s=k20260515; t=1792279705;
+	bh=qRc6XunMlGQk8dxay7+/4etC+5Ns2lA5EHpNlyAI7pk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BYKrHtsMa+9hNug3b1yHDIKrGsMhp6V8SGDANCjjcTi0hMTCXRjoC9uGTtT3y1Koo
-	 dShNpGdlxCyLPpx9GIVQigewc4cpE8wRXP+/N7rFOqZSJJI3XSrBcFTbySAHgzMM1l
-	 9yANNwRb2saYmjqO62ISZh0uc6gW/NnbnImm6i5OiZ3eYGm5PMDBGI7c+4P+Pcpb9B
-	 ee0MNzDSFo4yYquI7C0FG25Y5s1MVWa0hv1BsAk5ZGx8klRaLp1llN4X2iws3J5o1Q
-	 06RhwrR7K+mhUMBBU8M0YX2uvGRuun5XeChVIs4JKp0ootZuvY8DeMJ5BEV+BhWOHK
-	 lwWLcc7Gj5CSA==
-Date: Sun, 18 Oct 2026 00:23:18 +0100
+	b=C/DF35YwBaO+K0nsPc934z0kRUdiEuFW3LRHOKyrW/esIxV5j19FNloYHGt3JBWBw
+	 sMr65974v6zEOL6ZeShmB+y5m9u275s9Nt8rBEeS1RJqAQeIzvxRcRDUQpXlYgLG1Q
+	 FtpreyIzpYCIkBUeVHC14rdw8DqposRf2HV9CCTnj34nkC0RuY8HU7rg5lknVeL/d8
+	 XAsyeS5sO0qrvBok2SGjljb3Kwg2yYP5FyTUSMGJR34rHFI9sKxIQtAW+6A/iIIRmH
+	 7fuSpMEIbPTN7ooarkfxnWaHwNNk71rpyKNb0AcQlF4ZgOkeg2rHkGABEsxLv+yIAo
+	 TBuVuiJXOyFDA==
+Date: Sun, 18 Oct 2026 00:28:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Chang Yu <marcus.yu.56@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>, Shi Hao
- <i.shihao.999@gmail.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 0/2] Add support for AS7343 multi-spectral sensor
-Message-ID: <20261018002318.129a2bed@jic23-hlaptop>
-In-Reply-To: <20261013115639.167433-1-marcus.yu.56@gmail.com>
-References: <20261013115639.167433-1-marcus.yu.56@gmail.com>
+To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc: Alexander Sarmanow <as@discnull.de>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Parthiban
+ Nallathambi <pn@denx.de>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: light: vcnl4035: Fix reversed ALS mode bit
+Message-ID: <20261018002822.5a5f2102@jic23-hlaptop>
+In-Reply-To: <as0B1EnPqfwRO1D-@nsa>
+References: <20261012144315.1678195-1-as@discnull.de>
+	<as0B1EnPqfwRO1D-@nsa>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,24 +45,65 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 13 Oct 2026 19:56:37 +0800
-Chang Yu <marcus.yu.56@gmail.com> wrote:
+On Mon, 12 Oct 2026 16:51:05 +0100
+Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-> This series adds initial support for the AMS AS7343 14-channel
-> multi-spectral sensor.
-> 
-> The sensor has 14 optical channels (11 visible + NIR + clear +
-> flicker) in total. This initial driver supports reading raw counts
-> from all 12 spectral channels (11 visible + NIR) via sysfs and basic
-> power management.
+> On Mon, Oct 12, 2026 at 04:43:15PM +0200, Alexander Sarmanow wrote:
+> > According to the datasheet (table 2) the ALS_SD bit behaves the opposite
+> > way the current ALS mode defines are set, writing 0 powers the sensor
+> > and writing 1 shuts it down.
+> >=20
+> > The current driver thinks the ALS is up while it's actually shut down
+> > and it's down when the systems powers it up.
+> >=20
+> > Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Alexander Sarmanow <as@discnull.de>
+> > --- =20
+>=20
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Mystifying how this worked for original contributor.  Maybe it's one of
+those last minute edits that went wrong.
 
-FWIW I took a quick glance through and have nothing to add to the bits
-others have hightlighted.
+Anyhow, applied and marked for stable as what you have matches the datasheet
+and you've tested it so it's not an issue with a wrong datasheet.
 
-Fingers crossed, we should be good to merge v7!
-
-
+Thanks,
 Jonathan
+
+>=20
+> > Tested on a Raspberry Pi 3B+ with a VCNL4035 on I2C, running Raspberry
+> > Pi OS downstream kernel 6.18.50. Checked with i2cget that bit 0 of the
+> > config register 0x00 is 0 while PM runtime resume and 1 once it's
+> > runtime suspended. Also builds cleanly against iio/testing.
+> >=20
+> >  drivers/iio/light/vcnl4035.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
+> > index ce1bd42b0c7c..f1cc75245001 100644
+> > --- a/drivers/iio/light/vcnl4035.c
+> > +++ b/drivers/iio/light/vcnl4035.c
+> > @@ -44,8 +44,8 @@
+> >  #define VCNL4035_DEV_ID_MASK		GENMASK(7, 0)
+> > =20
+> >  /* Default values */
+> > -#define VCNL4035_MODE_ALS_ENABLE	BIT(0)
+> > -#define VCNL4035_MODE_ALS_DISABLE	0x00
+> > +#define VCNL4035_MODE_ALS_ENABLE	0x00
+> > +#define VCNL4035_MODE_ALS_DISABLE	BIT(0)
+> >  #define VCNL4035_MODE_ALS_INT_ENABLE	BIT(1)
+> >  #define VCNL4035_MODE_ALS_INT_DISABLE	0
+> >  #define VCNL4035_DEV_ID_VAL		0x80
+> >=20
+> > base-commit: a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
+> >=20
+> > Best regards,
+> > Alexander
+> > --=20
+> > 2.47.3
+> >  =20
+
