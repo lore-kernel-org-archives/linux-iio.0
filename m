@@ -1,46 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B483768EA;
-	Sat, 17 Oct 2026 20:18:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE581397332
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 20:20:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792268330; cv=none; b=hhfYy7od2fCo8U4KA7GlkwbyKXRWjmq/x/FD6f+NTjq03/QkH4mMQI4OvMMsi7pPxu0UnKORoZIxOIiIl7RnWPuWIkTW1I9fMERgXSxbs01463p+Z3N8Nh2W3P4t3Yv7H7CaOnhed6rJlhsYyL8/ASF57yDTQcnb5irkB6MFiUE=
+	t=1792268420; cv=none; b=tagGLzRmvsriCX9SwkkWcy6BgR6z7CMdLSOZsyn/3sxFPdmQbI0u84MNlfc+rMTZ+MSlRO644ltDrLoWEJmHsdATxKGcYs+O5mEJYypkgU8ltiPSXKAy3ahukzgbNYCqUDLsBqRQ0FoV3i6yMGSuJDTAy3t1aEtyn3EUSWRxOBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792268330; c=relaxed/simple;
-	bh=J4of0SVXjpfiFbNWy1jqatlgewJSzeYdwghUfogZjTM=;
+	s=arc-20240116; t=1792268420; c=relaxed/simple;
+	bh=iOj45D9QjveBgDHXCRQAAzL9Yq6CKk3ChsV5jSGC1lQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F7fD+P6cgwrjMDicfP31rYTQ9n7M0wN3oVmnPDPbEnSbilfcGvHJAeux0LLyfdjaB4Hh7mNa1ii7yGvLjHkGfyd6tRez/+/2SFuT/TLjgbmNDGMf+ue0vhwfRZHqf+Dp+fEiRX9ax3mUddivtXOvdFED7MXamsuLAxs3m7vweaA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i4vEkw00; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=QDXUS3CKe6gBf17M/coLuYHdbTbDYpIPsQdnya6FUXKeOCVOKnShFiJZjuChzdOAPcH2mOJwxRP0PL+iXmRNLQqATAoGJQhD+0j6Kg/nByFTIzSzML+K/3JauhC4ED3zvcH4AR2eBGC7ctv0lbq3z/x4H2aGrW7sSsXvvD6bDcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YON0DWgG; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i4vEkw00"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A281F000C4;
-	Sat, 17 Oct 2026 20:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792268328;
-	bh=sbe4+v17yEd5O0OdsAgh6j+PtDWNPdo2E7EGP1qGmCo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=i4vEkw00EsfD6O2O5v98/bv9yBSLylq8wvu2ghGG+ubPyWauQFdbDZCEjKb9A9PpL
-	 DLdmQzgeYrbyDS692885puYdlcxXfFHv7+oInkBo1hKpYhyKpP1X1Sps/UgHpQhqVS
-	 mIuMxkjsU5REoiuTi3KUxrL/9Vf/TjSqMnyxgGG/XCo5FIdSn216//aGpYZy5ayeWV
-	 Ex0nkZ02rxLlotsj5lBS9xDT2buXRtff8RvSf22ApclgIAqBDBaKKabGctPwIA8Hj/
-	 gbE2p2IF6OqqkHD0YNBgwYgnCj1CQ0hqZNM1f+mEIqb0xCjZ98BRK1Dwhk9AMYj4Ty
-	 BZ1pYhUF76j3A==
-Date: Sat, 17 Oct 2026 21:18:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Liu Yufei <lyf98405@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: proximity: Add Vishay VCNL36829
-Message-ID: <20261017211843.18bd5d87@jic23-hlaptop>
-In-Reply-To: <20261017210502.129d1709@jic23-hlaptop>
-References: <20261003050453.413700-1-lyf98405@gmail.com>
-	<20261003050453.413700-2-lyf98405@gmail.com>
-	<20261017210502.129d1709@jic23-hlaptop>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YON0DWgG"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a16bc2278aso7871595e9.1
+        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 13:20:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792268417; x=1792873217; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=gzxrQpRqiMxGfds7uvrOMz2fXfxEw8AQx180UBPaRVo=;
+        b=YON0DWgGN6Mfi/4sF/8gI+tiuKKQL22E6m9fR0MR1uDgCJjG6j2gehScbJDJ6ECg1h
+         dJoswkdUm2OV7xS70Lc5l8flzlAUMDEIqvzpqGS0vL+V8sHD+K4yc+dChq0SEDz5AhMK
+         mh1xZqKLKU+X4NlrfuAL05HuWUads3T2UUG53H/aezXaTPDdnI3N5ygaLQaiRRHK3jal
+         O+pxju9dYWCG3ehYGImy2+gznGREl6isRRhPII8zpRqBpJKtXJKt3az5+ixmZvGSE+Pf
+         n9Sl8s31b9/kkoWLwe/fUq5dDpkjUY5phbgplNPL8Klt5MwmeCdvbHCrH5bklReC0i1I
+         uAMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792268417; x=1792873217;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=gzxrQpRqiMxGfds7uvrOMz2fXfxEw8AQx180UBPaRVo=;
+        b=2kuJ6XzOM7LH/J2+C07jRXmHeT5kpILU26EZfPbYMoREpkjlMylnruqn5u6lLDdUBw
+         Xm7M3vAu0rqfCb4Lo+Al3WEt9hhUEQ3zfkT0Ajt+cLvoo/e52kVJjVEr7ien55+QDoR8
+         H3S5paeWwDwgyoOk32/9OZKN/qdzuNt/sJXVSMtZ+KYf9Rn/HggZ/4hOrxh4uZQgVvqd
+         XPtDRUj9+hWhZMovoUaAZjeuUUerXJPQj3TmKLBouak051d1rKWMNJ+iwXJbkP8KlPgD
+         7Sx1a+GCS6h9TJ2a4eEqzEaGQqhyvRlbfw1l1ze+QMPdyCHoYwRGpw2WT+yzDXJinYD7
+         VWFg==
+X-Forwarded-Encrypted: i=1; AKwUvBwWvT3Spj94lTSnTXTYZvlO1kmpckYh0UAaV5QCa6ry98yO2s6zsXFSM4PMXgihXl8iSU+OUA2wGxk=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLtwAgjPxENG/NRjxnOdvn5Uk961OLjKiirVCFLQgcpd0FhcO9C
+	8Mym/VvpvaNE3RrUqRufHTg64NPsqhvZ4X+r2itQzV9sHHu600RyhFks
+X-Gm-Gg: AYBFou0REPUsDteYhDf1vhvDbdhZsYqdN0XMlSzEsw70V7HZr3ufB7sPDTDNivFNykj
+	WE4hJVBuNhK8cc/ysZWWjY8b4uVhCxO/wdieZ1GDHLQ+TulQh7aYAQCGF/GnjXcMa2kJ8IiycOs
+	u82Rhk6bRgiOWS0PzAeJBcNmcPY9vPRPX2aVyCvwverXmDL3Kmz0+cwn6Os4rlH3uWMdP5JRAgs
+	PITxC9fjYWKBfDymfP/dnEjgSgm+zw3oHYzOCMxC3qEmxhNS6a4tkjDr+XImJp4/Q/n37A3xn4V
+	6P6/YjRhznxYWWDs7TbV0VW2hEdcdMN7vTCjf432+qx5NjRbjEVJR/2Tg+SiGGORRbpVu9Gn4Qb
+	aFEPoQAZjrXxA1c9FuWiJPDtfNTDoGbGsNOrR5dfemb1RywytxaaoKJ09/6Kv+8YinvPp35rhjD
+	k8I6Gi8SFK466frkS735kGPRYEPHHIbwYw8NvkS3VUv0SvrUl3OQK79q1au9RChAWU9EC89Nj1a
+	pd7nsFj/xa9Ba0GSN7dppGPDL5BnAhVfKaqPifq00wGOHqqWgsQ1IVJYKFv9GqmYANmwl9gKaRD
+	1Ia27so1CowZjww7hxUUfrs4tXhPP7kCzCsypWPg+VZYXQXflI0uFFK0WzNTPbHxveHps3tNNij
+	n+xRYpvqAkwaRGPvychRDuXt3RIqGp8x1RPjQi7RkABR9zuPX
+X-Received: by 2002:a05:600c:4f42:b0:4a1:ddca:8b66 with SMTP id 5b1f17b1804b1-4a1ddca9066mr49709165e9.31.1792268416816;
+        Sat, 17 Oct 2026 13:20:16 -0700 (PDT)
+Received: from systembl0wer ([213.194.212.155])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1c8ddde4esm191084495e9.12.2026.10.17.13.20.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Oct 2026 13:20:16 -0700 (PDT)
+Date: Sat, 17 Oct 2026 22:20:13 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linus Walleij <linusw@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org, Dingisoul
+ <dingiso.kernel@gmail.com>
+Subject: Re: [PATCH v3 0/2] iio: gyro: mpu3050: add missing trigger cleanup
+Message-ID: <20261017222013.3ada690b@systembl0wer>
+In-Reply-To: <20261017192151.15986386@jic23-hlaptop>
+References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
+	<20261017192151.15986386@jic23-hlaptop>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,41 +85,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 17 Oct 2026 21:05:02 +0100
+On Sat, 17 Oct 2026 19:21:51 +0100
 Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Sat,  3 Oct 2026 13:04:52 +0800
-> Liu Yufei <lyf98405@gmail.com> wrote:
+> On Sat, 17 Oct 2026 07:19:19 +0200
+> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 > 
-> > From: Liu Yufei <lyf98405@gmail.com>
+> > This series fixes an ignored error return value that causes the device
+> > to behave in a weird polling state and a subsequent use-after-free bug
+> > reported by Dingisoul.
 > > 
-> > Add devicetree binding for the Vishay VCNL36829 proximity sensor.
-> > 
-> > The VCNL36829 is a proximity sensor with an integrated VCSEL emitter
-> > in a small package. It is controlled over I2C and has an interrupt
-> > output. It is powered by two supplies, vdd and vddio.  
-> 
-> I wondered if we should just combine this with the vcml3020 binding
-> which is fairly similar but with the integrated vcsel rather than
-> an led, it would get just complicated enough that I guess for two such
-> short bindings keeping them separate is easier.
-> > 
-> > Signed-off-by: Liu Yufei <lyf98405@gmail.com>  
-> 
-> What changed enough to justify not picking up Krzysztof's tag?
-> https://lore.kernel.org/all/20261004-outgoing-outrageous-fulmar-2ba7f4@quoll/
-> Looks like nothing.  Please be careful around that in future.  If everything
-> else is fine I might just assume it is fine to put that tag back
+> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>  
+> Not sure where signing off on cover letters came from. There is no need
+> as they don't form part of the permanent git record so DCO doesn't apply.
 
-Oops. Illustrates my point about confused threads nicely :(
-I thought I was replying to v3!  Ignore this gibberish.
+This is actually done by b4 automatically when creating a cover letter.
 
-J
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> 
+> Series looks fine to me but given others have been actively responding
+> to previous versions I'll leave it a while to pick up some tags.
 
+Sashiko had a remark about there still being a possibility of a UAF so
+I'll have to check that out either way.
+
+-- 
+Kind regards,
+Joshua Crofts
