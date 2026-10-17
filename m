@@ -1,122 +1,260 @@
-Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD74231E834
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 21:12:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ABB3768EA;
+	Sat, 17 Oct 2026 21:13:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792271545; cv=none; b=KhAHvzNRWojmELFN+EKK8n8XlExkxr+jKNU/qkfNEYUk7GK/Pj1ZsolvzggoivYudnmx+v+ByQzVq6xoI4HnrcFzz4PO35p59DDD7qiT1awM6ZQMyS1ySzUoITUFRKTl32Ylu4YSxN1qtaMrYIhSJMwT/TLHE2G58K+i8tZ+6MY=
+	t=1792271584; cv=none; b=ocielNrssbMw9+asx26cFtD/YV0C8kbF4ifW+4QKKhgP1rM/THNvNBJc1rgEyw4xpZY/YOZn0EHQrl4CTyABlhGvieQ4vp6F0G8FamsbzHyLW1R40KJsa4l2gfQ4sRF7vKz3MhRkW/EVn3AXux+l+KaSnc41w6nbJr6cAwiBmo4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792271545; c=relaxed/simple;
-	bh=1a6d4YWLN/lAapj6huADHnUJGpf/vQt1DOaw2a5vl+8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oq+maEbqoHHRke2eXj0VQdnwPOvtDXIFMB+JcCttpEI+zahQhxbhxfouArY7SnDtaAEwpKURu1xGFdFf6pffQA07uOIG+kHTwUw7hNS0FQDeSnLhIBV3jsSxM9fqs2PO4rsUmifPrCDabDX8wykCVIK3MEQjBnfi53BN4iSA3xc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sVADFAGH; arc=none smtp.client-ip=74.125.82.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792271584; c=relaxed/simple;
+	bh=O0UpyZbM6yMxY95Xih+M89PeTAtqrWGlsc1e1u9J54I=;
+	h=From:Subject:Date:Message-Id:To:Cc:MIME-Version:Content-Type; b=DNYStx0Ful1SqL/TkZP9gUvkuB/CQWql+wHd/9vpQj63OBgLILLu2+TJxaMn4dj5AC/WQswJmPBi+TpW/DYN+0GZ+oeMYVVchs1AflOyeUHFIPyWhw7zS7vaitqzjTXMw2RyutE3DGbWDRlS1x7U0zEiFUN/MDXIhyU0j+FbYKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rm9/+Zh/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sVADFAGH"
-Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-3282db206d3so263830eec.0
-        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 14:12:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792271544; x=1792876344; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=joO8dipaKt5pd8TYNmoROqoyiP5BZuk4U22kJRWCaOk=;
-        b=sVADFAGHoi+JQQ5l9tstwHW381DGjVBLUv2HpT/nhPwI1EHCMv5bR3cQeAznsvNRIL
-         CPagtuAvu9vVIVDOTLHLjVhs08UJkPLO+kcBfufhGDp/1VK9lHmgHxL/TpijJ4STXfRH
-         60ryyAiENs6k4vt16YOvVObm6M6kd11bZm+dAdnlxkRSHdLUD47ZuSDo/npbUOVWkMjK
-         B1oM79bmyluMqTCdWJTDwgeRW7/qqW6iD6nsnix4YIwoIbgMIW7aVh8MFfiTU3yb1wd6
-         ao5smBwZfNwFNZOwDrTgBVmrikZlu3yaG0kMXTKZY7IfcHZhPnA6iUBp9/Sx+vYMK+vT
-         qTaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792271544; x=1792876344;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=joO8dipaKt5pd8TYNmoROqoyiP5BZuk4U22kJRWCaOk=;
-        b=Yiu3r1CERTWx7SGhU4SjsGdaZlqKVG7uWHjTubMsRoFbGIi8BmLUocSNXLyS9xn5Fr
-         9O1ANElt9mftHTSb/1LIze/kc28L4V1oqAKNScoVhMOHXG1Qrk9QRLOB83EYn0ITR7Ym
-         XFx/7elBCu7JKGwPh5EY8fBoRK6oNpXRHgAqW8sSRhMPYElpX20E/L2eZ5wciPQKvl3B
-         llKLrBK6f2ACGVHD3FAQolqX/iDf8/UhqWMGtv890qxkUC9IT8pUFHdWyNOw7ZX1belV
-         TPvM07paYF5i/3IBspoSqPpRQZC+QjIKt8YSGaz+Lk3sj8UNKxZCRJcVSpEYBmyaK+S6
-         o53g==
-X-Gm-Message-State: AFq9FYJ9dXvaMDRjHqY9PdX7W+PfpiBuN5caOJ4zQspJSb28Pqk6epjg
-	jPojgujC7n1AxlF+RmhMGSad0T/ZpCUsWoEJigZDRp4V5KfSYCMGqwA=
-X-Gm-Gg: AYBFou1y4NyGPfzpuYWfdXHLJxbsLb66qOfqcA/VOV7MEw+sDyNM3wLFdVyhR8yz3jp
-	cs9+RQXMaqaBmYaRU1J/VhcIVRNvldKHAGIqrunOaD4dDGEn2Vhy1kAlajlRFmyJ1tqEyjGDPpr
-	uLcfBGORUQE8ClZ778GLZTd5Li5T9qUYsIHKTjiXVznt2TdP2ioOkLjOUXQjC+sGFV8h4S8W+Yr
-	n4a6tcLtT9tgjLpPSKlgK201pAHYwEgNRn1FWwqQA9BmD1RjlRpNMVnGSBt+C+P5etvx1KB6Hnv
-	h/7deOVNwSAva2alL5JSmUHhiluQpk1D3KLBIGsOfZkQcUl5iEdCS4/tn9738SoisC/CLYxhzlT
-	V1+JBEs+DX2c3tGFY1rYgo1nfBna1ogljmLjjm69nE8kIl3VHXgPYN3+kgDiqQfri970B/C0hQT
-	E2L/IYivhCbtUAJTQ7uTYRzMNvFHO1378yloIrBsmzPZSa4FKD6OpmyyKsoIG5hTC3Jmmafy+1d
-	WB6WfoF5Wz1B5qVgoC69U3EXjZqxvlaF5AGdo/gs0A=
-X-Received: by 2002:a05:7022:f50b:b0:17c:a0c5:8c9a with SMTP id a92af1059eb24-18514914deamr5675222c88.42.1792271543515;
-        Sat, 17 Oct 2026 14:12:23 -0700 (PDT)
-Received: from [192.168.1.45] ([45.127.46.52])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-185aaea8b24sm9294998c88.19.2026.10.17.14.12.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 17 Oct 2026 14:12:22 -0700 (PDT)
-Message-ID: <5d5812be-430d-47f3-9e08-287300284c62@gmail.com>
-Date: Sun, 18 Oct 2026 02:42:18 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rm9/+Zh/"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 50A22C2BCF5;
+	Sat, 17 Oct 2026 21:13:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1792271583;
+	bh=O0UpyZbM6yMxY95Xih+M89PeTAtqrWGlsc1e1u9J54I=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=rm9/+Zh/Ntolkrx3Dvx2thlFpqlGthq0lP22FnlaPzzcBsfiekkWem6SOqhB91vo9
+	 XyloNZqqTGOz7AelkN1jzBHFsbAMuCeof0zubUEhbCBmqGb4MxILkEKD4XDwuWuB89
+	 PT7hd1FgkHZ+yScgMSPqbNw3MgY3l0ZGxQrLGy9Gz02RNRn5HSqmeDstgiAHd28EYN
+	 jlC9Fd8BYnxbLIdqzW6AXW8e4BjVNv/+gv8jlDpJM6QP30yE4ch+a/7Wsw2TLhPn6H
+	 kGS4bawmCBisUqLLqq6FOq3HsyuynQml4SVu/veZ+0RM3HUFFht1yS1bU3fi3/wEOc
+	 lgHyKZCCwxuEw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28516CCF2CC;
+	Sat, 17 Oct 2026 21:13:03 +0000 (UTC)
+From: Amir Atef via B4 Relay <devnull+amiratefabdallah1122.gmail.com@kernel.org>
+Subject: [PATCH v3] staging: iio: frequency: ad9834: use guard(mutex)
+Date: Sun, 18 Oct 2026 00:12:54 +0300
+Message-Id: <179227157492.345.14305383480190541762.20261018-ad9834-guard-mutex-v3@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org, 
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+X-Mailer: b4 0.14.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: ccs811: Deassert WAKE GPIO on error paths
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- Joshua Crofts <joshua.crofts1@gmail.com>
-References: <20261015123023.3417-1-nikhilgtr@gmail.com>
- <20261017214659.5bbebc38@jic23-hlaptop>
-Content-Language: en-US
-From: Nikhil Gautam <nikhilgtr@gmail.com>
-In-Reply-To: <20261017214659.5bbebc38@jic23-hlaptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792271574; l=5594;
+ i=amiratefabdallah1122@gmail.com; s=20261016; h=from:subject:message-id;
+ bh=cmg3zId0FkdtcWpW+YuNWILFMdxVWIEd84BWrtcT1bk=;
+ b=0GBySzvOnw223ToFk3EOc+Ox2oARIexfrRZoYPxfScC9r2vX6o8mAMJwZ7TLIYseBPqk/JSL8
+ GYEeCcEgSw5BEFgcTTsrSg9fnOsfoJBbf7DV76+DkrydukzcyVg5tWL
+X-Developer-Key: i=amiratefabdallah1122@gmail.com; a=ed25519;
+ pk=FRhtQptjt3GSkQBUg7qfVL8eusorsJqHzciu3+ss11o=
+X-Endpoint-Received: by B4 Relay for
+ amiratefabdallah1122@gmail.com/20261016 with auth_id=1209
+X-Original-From: Amir Atef <amiratefabdallah1122@gmail.com>
+Reply-To: amiratefabdallah1122@gmail.com
 
-Hi Jonathan,
+From: Amir Atef <amiratefabdallah1122@gmail.com>
 
-Thanks for the review.
+Use guard(mutex) to manage the state lock in ad9834_write() and
+ad9834_store_wavetype(). This simplifies error handling by allowing
+early returns instead of setting the return code and breaking out of the
+switch statement to manually unlock the mutex.
 
->> Ensure the WAKE GPIO is deasserted when status polling fails or
->> the data-ready timeout expires. Early returns could leave WAKE asserted,
->> preventing the sensor from returning to its low-power state and
->> potentially disrupting subsequent I2C transactions.
-> I need more on this point to know whether we care if an error
-> means we don't deassert the wake pin.
->
-> Why would failing to go to sleep break future transactions?
-> I'd kind of assume we'd awaken an already awake device (which sounds
-> idempotent but maybe not?) and carry on from there?
->
-> Jonathan
+Signed-off-by: Amir Atef <amiratefabdallah1122@gmail.com>
+---
+Changes in v3:
+- Check 'ret' and return early at each call site in ad9834_write(), and
+  replace the final ternary return with 'return len;'.
+- Link to v2: https://lore.kernel.org/r/179219435216.322.13409717511306957730.20261017-ad9834-guard-mutex-v2@gmail.com
 
-The relevant information is in the CCS811 datasheet (v1-06),
-under “CCS811 – Pin Assignment” (page 4) and “Detailed Description” 
-(page 7 onwards).
+Changes in v2:
+- Add blank line after guard(mutex) in ad9834_write().
+- Move 'int ret;' to the end of the variable declaration block in
+  ad9834_store_wavetype().
+- Drop redundant 'else' in ad9834_store_wavetype() case 1 by inverting
+  the condition (kept 'else' in ad9834_write() and case 0 where they are
+  part of if-else-if-else chains).
+- Replace ternary return with explicit 'if (ret) return ret;' in
+  ad9834_store_wavetype().
+- Link to v1: https://lore.kernel.org/r/179214943270.333.5921549521929682753.20261016-ad9834-guard-mutex@gmail.com
 
-The datasheet specifies that nWAKE is active-low and should be asserted
-before an I²C transaction and held low throughout it. It also describes
-the sleep behavior: when nWAKE is deasserted, the device enters sleep
-mode and ignores I²C requests. The timing specifications specify a 50 µs
-wake-up time and a minimum 20 µs deassertion interval.
+ drivers/staging/iio/frequency/ad9834.c | 70 +++++++++++++++-----------
+ 1 file changed, 41 insertions(+), 29 deletions(-)
 
-I agree that the datasheet does not explicitly state that leaving nWAKE
-asserted after an error will cause subsequent transactions to fail.
-My concern is primarily that an early return leaves the device awake
-instead of restoring the intended low-power state.
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index 0d20f796e0f0..8686a22f3fc1 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/dev_printk.h>
+ #include <linux/err.h>
+@@ -154,21 +155,26 @@ static ssize_t ad9834_write(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	switch ((u32)this_attr->address) {
+ 	case AD9834_REG_FREQ0:
+ 	case AD9834_REG_FREQ1:
+ 		ret = ad9834_write_frequency(st, this_attr->address, val);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	case AD9834_REG_PHASE0:
+ 	case AD9834_REG_PHASE1:
+ 		ret = ad9834_write_phase(st, this_attr->address, val);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	case AD9834_OPBITEN:
+-		if (st->control & AD9834_MODE) {
+-			ret = -EINVAL;  /* AD9834 reserved mode */
+-			break;
+-		}
++		if (st->control & AD9834_MODE)
++			return -EINVAL;  /* AD9834 reserved mode */
+ 
+ 		if (val)
+ 			st->control |= AD9834_OPBITEN;
+@@ -177,6 +183,9 @@ static ssize_t ad9834_write(struct device *dev,
+ 
+ 		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	case AD9834_PIN_SW:
+ 		if (val)
+@@ -185,6 +194,9 @@ static ssize_t ad9834_write(struct device *dev,
+ 			st->control &= ~AD9834_PIN_SW;
+ 		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	case AD9834_FSEL:
+ 	case AD9834_PSEL:
+@@ -194,11 +206,13 @@ static ssize_t ad9834_write(struct device *dev,
+ 			st->control |= this_attr->address;
+ 			st->control &= ~AD9834_PIN_SW;
+ 		} else {
+-			ret = -EINVAL;
+-			break;
++			return -EINVAL;
+ 		}
+ 		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	case AD9834_RESET:
+ 		if (val)
+@@ -208,13 +222,15 @@ static ssize_t ad9834_write(struct device *dev,
+ 
+ 		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
++
+ 		break;
+ 	default:
+-		ret = -ENODEV;
++		return -ENODEV;
+ 	}
+-	mutex_unlock(&st->lock);
+ 
+-	return ret ? ret : len;
++	return len;
+ }
+ 
+ static ssize_t ad9834_store_wavetype(struct device *dev,
+@@ -225,10 +241,10 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9834_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret = 0;
+ 	bool is_ad9833_7 = (st->devid == ID_AD9833) || (st->devid == ID_AD9837);
++	int ret;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 
+ 	switch ((u32)this_attr->address) {
+ 	case 0:
+@@ -241,7 +257,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+ 				st->control &= ~AD9834_OPBITEN;
+ 				st->control |= AD9834_MODE;
+ 			} else if (st->control & AD9834_OPBITEN) {
+-				ret = -EINVAL;	/* AD9834 reserved mode */
++				return -EINVAL;	/* AD9834 reserved mode */
+ 			} else {
+ 				st->control |= AD9834_MODE;
+ 			}
+@@ -249,31 +265,27 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+ 			st->control &= ~AD9834_MODE;
+ 			st->control |= AD9834_OPBITEN;
+ 		} else {
+-			ret = -EINVAL;
++			return -EINVAL;
+ 		}
+ 
+ 		break;
+ 	case 1:
+-		if (sysfs_streq(buf, "square") &&
+-		    !(st->control & AD9834_MODE)) {
+-			st->control &= ~AD9834_MODE;
+-			st->control |= AD9834_OPBITEN;
+-		} else {
+-			ret = -EINVAL;
+-		}
++		if (!sysfs_streq(buf, "square") || (st->control & AD9834_MODE))
++			return -EINVAL;
++
++		st->control &= ~AD9834_MODE;
++		st->control |= AD9834_OPBITEN;
+ 		break;
+ 	default:
+-		ret = -EINVAL;
+-		break;
++		return -EINVAL;
+ 	}
+ 
+-	if (!ret) {
+-		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+-		ret = spi_sync(st->spi, &st->msg);
+-	}
+-	mutex_unlock(&st->lock);
++	st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
++	ret = spi_sync(st->spi, &st->msg);
++	if (ret)
++		return ret;
+ 
+-	return ret ? ret : len;
++	return len;
+ }
+ 
+ static
+-- 
+2.51.0
 
-I'll adjust the justification accordingly, rather than claiming that 
-subsequent
-transactions would necessarily be disrupted.
 
-Thanks,
-Nikhil
+
