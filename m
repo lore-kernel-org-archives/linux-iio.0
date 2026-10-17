@@ -1,67 +1,68 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543D53AAF5D
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:55:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC5963D9DB3
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:59:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792216521; cv=none; b=fwuakM52Evt+wdZcE0QGOE6hdIbRAJrvz77tz2VAevOs61CtfSECXLTTn1rayp4wDmpefBVvtgD3fmAE1YtGKwoyygUWT50Sb81RtH8+aLSloK1EcwCFxFcefdloB6pUhH/TiD9l4gywG8gyomHfQpu/ynR4oSewSDEoR+Gvbvw=
+	t=1792216786; cv=none; b=bktQs5djUR/pCcejJD7MPqhHD3FFihYu9NV1Y8OoQ6THKV7aBPwMng3o9Ah0gP0UMeb9aweghBMv0gtvbqR7kAsjIa6CLwQ8LBKQX0L/UNDD729n3XdBKN7kfhObId5b4LfPjawVMjkhbm1qrFzZL2yhHlzl0sp3hjT54oBpU94=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792216521; c=relaxed/simple;
-	bh=4H4PumMFOkWTL8QF40HV7GYJCLyqj2M1mR7XH7UN8l4=;
+	s=arc-20240116; t=1792216786; c=relaxed/simple;
+	bh=P3dIQtl58vlK4vCvVGpo8bRmfchguwl0fdNJtOmLjU8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=O+IaV03F5mAG+TBjN7yZOeGpZNlooqI34NmMcOimaL6z4nf5kJZ7Bkfg6cLXZ6o3AoZbeTJoL5PrMuIE8gjl96lUZ37hvOqTUWpQ6pFtK3VFPBskXzlj7TYQxy6sl/hdUOfXnrJGHDZOhD6wu+Rx/pihO1Fc9YoCzQLgi03RiRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kUfnqNsl; arc=none smtp.client-ip=209.85.221.44
+	 MIME-Version:Content-Type; b=Hv/AVDO5b9K612qFz985IXggfEGBh3Ngj9pmfNSOudyvrJwmCPTgY3Vw+uNxn0JjyGkzp4L2ZwuAm/bldpyzapCP1FHIt46i8spSjjGuE3lmypB7e3ABp9SZ00zLPpx8T2mkBREe4L+2YgXFTvr3GtQyNhsLPM4Ev5ujwr7BHo8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ck7CtFlJ; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kUfnqNsl"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-48afbd2c386so195933f8f.3
-        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:55:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ck7CtFlJ"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4956869750eso3272575e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:59:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792216517; x=1792821317; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792216783; x=1792821583; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=hyAOm2K0XZGAzKdD2fYYYed+loFddeRK4BJxeSnK+7o=;
-        b=kUfnqNslcr1EuMTkiq5jDWkcpDyVNq258StXgmZlxbz7s4wvo8GjtG52NhhxllEgKq
-         YMJHOE87hL/hRZTp3IhORgu3f52L1A4FZ3Z2+qRfyvQh5xB0I6QxaxHQlUkxs3c76Ajy
-         MiVeacNpRvD8zfk+CzPSxRYgFR7uPzD3nobB3nQy29lGvHCVxBRZpqztBbarpExEvZjh
-         7XvtQjfpuFxUvcLpKjN5sb8U5UEjT1k4PhdfRs4BcUgIbxAFufSsdRAahXkOfcanYgwB
-         K9UUIl/YfNYQYxQfdvTC2poYnsiyIMt5HFcVjkWj2/7QXTb2vcK3o30XH0r/mZAHWx7U
-         pHgw==
+        bh=6YTnAJbuDLYQXb15/j1+EJM9ZwYexvHGmO5mPLB8bd4=;
+        b=Ck7CtFlJu8xLO15U+xw9yDDipRWoLY42+accE5BtY+x0umc06+S6qWUDdHdN3G6U+b
+         9tNmcqXNUiQ+N3vGFxIZ+xwOGsvRQq6zsNUihk7+moLH/v6ZEUIqthalOKPUkcB0Z8c9
+         2rVT+1SwBwvFojXHf1AzZLZFZtrkFNlEnedLmq78YBplfMoFgUk77wCD06FPG+ON7KwY
+         NpwjNlkHZkkfUasSoBBbTOPqH1irgTBKbDkjwaHomh6SYtHyFOdGU0NaDTgkRhw8qk64
+         D5208c34wXrhw8ZlU8Ky5tSRsBxiv/SnMuqLrCcwzVZ2kOO3DbtBhLy1MR1wdbgAdIbl
+         BgXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792216517; x=1792821317;
+        d=1e100.net; s=20260707; t=1792216783; x=1792821583;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=hyAOm2K0XZGAzKdD2fYYYed+loFddeRK4BJxeSnK+7o=;
-        b=U0aCbHtZJhaU+McoZpTxs68G50ogAiwyjCPy6DNH48u3nIc90mreUEJ8tQljIpW9kQ
-         SG7KQ5WC3fuI4tTZBo85AfW0LD5BJzoOxCBINhQ3brcy1VNquTDxUoyfJJLU/jK5VmKn
-         KL+OwR3obQlN98YsLVjuTN8bST97b84BTqAz507aj6h7rbIVv0kC8E3Gy9bhxdfiWDpV
-         ne/kHqyaUJUBGoTs7UJUAEPcvRHRCdPLOkFAEqjZNfr4JDptLhGtiRCN3qGEXoOtijEH
-         Z9YyTeLytB0ur8ApDxU2AeU79/1TILq46uNyCt5vAGxbqZbKenqO6sq/LnAlGDoiBMwP
-         kUqQ==
-X-Gm-Message-State: AFq9FYJHUO2MEQC2l2nPjh+VewMn5qdZXYrXe6TAYIt4n3DJZWdW4uDj
-	hcAZhS/CwR8ZN/1zLrTs2gEAldj7Ra9cJpAeE2ZTvh4RWpYeLnGh6T07
-X-Gm-Gg: AYBFou15ZVBe1WfztrzfqXncp9zOf7tDE5J+r11RNjOMEiSqCveERzX5alzN+j5QxFv
-	9pz341PsDrqi1539PhpMrg0tEzNB3AefO6oa20i7QEqtf3dULmuJs2PGSx/8uBPNjAKk9BjtQ+S
-	WuwHgRhDA0f47rbCuB7S1SOhGPjiQjmKyleV3e2z4jnZJYJiroJCdLcLSF+z00QcYLjBn+mBZxK
-	FVDmNFZkl+cV5lbrxrQF9/dlUygCRN4waDyA5Pl7PrjFKCJCAB8B1cjgNFQ2+drKqrXRQxDyJtl
-	Jb5Tb8xdGv9t81jJlWZLtm04kxyfl9ntqKEA8d59IkLw8F4xPc2e1M+D2bS9Cc/FSaksa4X/HK4
-	xLIv8WnFoAj1JqLexvMcA+Fr2NjxnIbIYOUUV1+0QEMhHea78L1kB3Zo0TgkJHKoabGom2AJtJb
-	jUYx8+g3FiKRItkO5rhPftUdb7lLRo06V15/W3XTPRBh4dKbjh2d0u+kpNXmFpNv2lNC7HkYJMC
-	RzGaPTLfft8H/jEPt7HhmMStzY12bewMF0ksR1/5hI53vsdSkXVFkoIxPX6yOh4MW7capwQHt5h
-	dJkcRWTaFCVMireTugJXfxvip1FPvPb/pm5FnY/OKUkl/pY2ZvnmHA/6F+mYzr3LaBd1UP/noab
-	KehA9031pxzY7arTLZqGdc3MXTCC094trsucmO2c/Fm/rBf3inQsva3K6s8eY/BM4rpOW
-X-Received: by 2002:a5d:5e8e:0:b0:48e:932:af01 with SMTP id ffacd0b85a97d-48e0932b079mr2213957f8f.31.1792216517468;
-        Fri, 16 Oct 2026 22:55:17 -0700 (PDT)
+        bh=6YTnAJbuDLYQXb15/j1+EJM9ZwYexvHGmO5mPLB8bd4=;
+        b=gEGi9mdJHXFMtx2+w0V5tqaFV2YvjfDoqL1XNLNve+umCXJhX+JJg8AEhZKHVe26kO
+         f6pXoRXKf5EzzVQYJXptGzTrMgKXCbDVYURTrsHdWjUMk/LYAT+yY9KO4eGN+trGyx3c
+         5bvS8r/ykSrK11iryQT1MBwxqZNxtc7leIVMYk3UlOUHh0Mfdc82yuD9aoyjlkN049dB
+         hdjAHvMz0feCGiRb3epbcAssB5k0SaqxwfEjwYqDBLApJLWkm7WEsPoSifpJhTuaIJhk
+         Z0UbqQrNgRqP4oDmVgxeIbvE7HoY9o6qB6oGrvPEWef0CMnj2MrwfSbeOL7YBpaBvSBr
+         EL2g==
+X-Gm-Message-State: AFq9FYIosiLvUrSb6V9IlnTFl0fb2lyGMiUrOnM9BEucKYQriWZIwBVe
+	DFtXABZYYq6nYbVTQbE24DDeysLrNHOtJHNBOdAzO8oEj+OlEJ4DYa3a
+X-Gm-Gg: AYBFou2YkptI5N2yLNTB0WLtHoF8dpajsbn8hx7bMH2q+MSgcYVi+Gc+s/AooDyGKbc
+	miil/PJwK1zdhsVjMPntyCxu1Se2A9+U8l1gyglcIry/XDKI623M62ILoK4SO2fQu2N7zsIgI7I
+	Lt5qpJ3XK2idY48/OHuDZch0v0g8YgMOBc/C6yBpLFKzyPLozqDwqYDnBO9/Mjb2V2t6HenoFae
+	j/csSLA3W8WFzjekxIayB5hJfUShaZhA3v9DVUTxphT3lQE1yZkJtnek6nY7Sb635viBym0+wpQ
+	wYtongn1pZwpOrohKXQD5FzoIZJZStWrKlViu21qDbfD53HpyYMASqy8GPW9ZovmdmBZXag8jQC
+	S0J5PvcLx87jT/fxHXV7UBHIk1IDLmoYw28OifHKuo7ZcCOxp6tYHaFYK2qN6Z2Kvpg7k1KHcCP
+	9+Q3XXGlZ5op/RAE9wPUJBVBiyNxmNdV5186uqmV53vfyI9dPVcaClWv7cxwuJwNmMXy4oJESQX
+	PqBBLpyFnemWEwBex5RJ1Ms2O2oIKZpyyaljWfd4xf0/Sm6IBzg513rv/JC+r6GG7w+McNJv2Sw
+	WKNWhlT/GbkzTIWuSpAxtXsfQIlLbrgKqvQ1PUuv3NhSQM2A0a90u0myN696JGc7XFvQ7nmSHos
+	iIT41DozClZNbO2CjLuWS/MMkWwOJYsaoT8vBqionjhREHIYlj+RpCft+rr3g6XzONRGFI/lreF
+	Ly9kk=
+X-Received: by 2002:a05:600c:4f94:b0:4a1:a2c0:7b73 with SMTP id 5b1f17b1804b1-4a1d76086damr33196555e9.30.1792216783026;
+        Fri, 16 Oct 2026 22:59:43 -0700 (PDT)
 Received: from systembl0wer (109-81-110-61.rct.o2.cz. [109.81.110.61])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48dfe4d2321sm10443937f8f.19.2026.10.16.22.55.15
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1cca43012sm45595395e9.3.2026.10.16.22.59.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2026 22:55:17 -0700 (PDT)
-Date: Sat, 17 Oct 2026 07:55:13 +0200
+        Fri, 16 Oct 2026 22:59:42 -0700 (PDT)
+Date: Sat, 17 Oct 2026 07:59:39 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Marcelo Schmitt <marcelo.schmitt@analog.com>
 Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
@@ -70,12 +71,11 @@ Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <Michael.Hennerich@analog.com>, <robh@kernel.org>, <krzk+dt@kernel.org>,
  <conor+dt@kernel.org>, <corbet@lwn.net>, <skhan@linuxfoundation.org>,
  <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v5 03/15] iio: adc: ad4134: Apply reset recovery wait
- time
-Message-ID: <20261017075513.3a959a6a@systembl0wer>
-In-Reply-To: <9f6d78d607b2f9a896513535fefa3329d52c4464.1792200021.git.marcelo.schmitt@analog.com>
+Subject: Re: [PATCH v5 09/15] iio: adc: ad4134: Support buffered data read
+Message-ID: <20261017075939.7c9a8bb5@systembl0wer>
+In-Reply-To: <dcc159585f0af92c145569331063bc867efeda8a.1792200021.git.marcelo.schmitt@analog.com>
 References: <cover.1792200021.git.marcelo.schmitt@analog.com>
-	<9f6d78d607b2f9a896513535fefa3329d52c4464.1792200021.git.marcelo.schmitt@analog.com>
+	<dcc159585f0af92c145569331063bc867efeda8a.1792200021.git.marcelo.schmitt@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -86,32 +86,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 16 Oct 2026 22:57:08 -0300
+On Fri, 16 Oct 2026 22:59:00 -0300
 Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-> Add a reset recovery wait time to avoid any SPI transfer from running too
-> soon during device probe.
+> Enable users to run buffered data captures triggered by IIO trigger device.
+> Add an IIO timestamp channel so each data scan is provided with measurement
+> time information. Require single-read operations to be in IIO device direct
+> access mode to prevent buffered and single-shot data captures to disrupt
+> each other.
 > 
-> Fixes: e0bc6d7e2584 ("iio: adc: Initial support for AD4134")
 > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 > ---
-> New patch in v5.
-> 
->  drivers/iio/adc/ad4134.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
-> index 40b27b01f126..d555874b4959 100644
-> --- a/drivers/iio/adc/ad4134.c
-> +++ b/drivers/iio/adc/ad4134.c
-> @@ -442,6 +442,7 @@ static int ad4134_probe(struct spi_device *spi)
->  		return dev_err_probe(dev, PTR_ERR(rst),
->  				     "failed to get and deassert reset\n");
->  
-> +	fsleep(AD4134_RESET_TIME_US);
->  	crc8_populate_msb(ad4134_spi_crc_table, AD4134_SPI_CRC_POLYNOM);
->  
->  	st->regmap = devm_regmap_init(dev, NULL, st, &ad4134_regmap_config);
 
 Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
