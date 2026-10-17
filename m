@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B44A3448CED;
-	Sat, 17 Oct 2026 23:17:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 747C74CF468;
+	Sat, 17 Oct 2026 23:23:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792279030; cv=none; b=sAZ8gX+TZJurkE7QoE2klGjbEEhQNQVBgg5WKZ0CyBF086B07P7vl7A1l1Hqssv40PkmzAqkYE2e9bDeUsYyVPCrq2kaLsEvV6nVmkuuXrGWcMUy7clAkSm6qdOWo9W5fsWescLqNVmDKTodAqueAxllvQAlEaG181Esz5sGkEE=
+	t=1792279405; cv=none; b=jkcqVMh7pu3I1JzvvC5gGNxMusq+P99NN6tG6sQrOEdgzFeAz/HKVDIAWbrkkW6jbDJ0+5bVToG6Hj7S06AevuRLbMVfyXQT+GpWKN6Iz8Tx8F9bJVOFLZ75QpnN0NLcW1xpjBTfZJlhMU6MThFEjYmPV/MXVz3tRLUqLWYuZhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792279030; c=relaxed/simple;
-	bh=E+vwgwxUYmHGNDMDq3oL9pWFcLnI+oBwhJX/6sJn9Sk=;
+	s=arc-20240116; t=1792279405; c=relaxed/simple;
+	bh=ge1sX7tqJ5M5YkiTlKE95R7Z2sveXhKCd+120fLUy5w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=E+XuswTegjGpdsgMniUD3mL7Fmu6sFMshYwO9DXnNEHAfEzna1v312435wnKapYrPE2+D3u8D7lONO73IrR/oK2G2HVkiFa9umxKvsOrjy0xS0WurLI3DhatUjaUxA8S/fXpKVfmNaLWFg1BW8MebYOnb+cbjsN90vFeXDfleg0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oV0/zFO+; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=GfCZdS2Q42KPh6GECtIyY13Mq3rObJXstx7eSiIuLCSAfs7y7SNYm4AuZE+3417vta8FQ7aOk9olXVd3ZCyTU4OxPBeCfFbplD8biXBJm05c/1YnmFXdLEKhkl5Cujt6Lz/1RS3aBfr4YIqS1nMjBRRaW/o8biL+OKUbvLOmxCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BYKrHtsM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oV0/zFO+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 973E21F000C4;
-	Sat, 17 Oct 2026 23:17:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BYKrHtsM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B4F91F000C4;
+	Sat, 17 Oct 2026 23:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792279029;
-	bh=fwIRFmThBv/Bf3eugia9PxP3kDcCChmUtw/z14sqLHk=;
+	s=k20260515; t=1792279404;
+	bh=2ARB+WOrEsDqvkcNsapN1ZdF/DS7I1AlxGQkxLGUk0c=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oV0/zFO+N+Hp+W2f3auxh/xGoZOthdqMSQ2Y+6EBWASpN6Imac0+VjngQNuRw+o8v
-	 kOyPypHIA2/KVq7xvz/UcObNIoYhzS2j0xlbbih78+ZMIhaQjfM5Zdsect9aDEuUak
-	 beQk7Rq738vQtLX19lv8lEy/nnf/R19M1KSUsFyeCw7AVnJsO/9AhlrqZ55qltpnhu
-	 EOmVTdzFJGVqSTFEsVHoSDbVgKrTakN3xTUyfGPUYUWv6otyPzMQswDOrbuufBN4ly
-	 PZb9bInH0rzIGSNf79iIiJeIGOLhczFxjoxtzzrl7awJBc/UZCzj/QhsKUOLah+Fde
-	 d0DJwUu/UT5Bw==
-Date: Sun, 18 Oct 2026 00:17:03 +0100
+	b=BYKrHtsMa+9hNug3b1yHDIKrGsMhp6V8SGDANCjjcTi0hMTCXRjoC9uGTtT3y1Koo
+	 dShNpGdlxCyLPpx9GIVQigewc4cpE8wRXP+/N7rFOqZSJJI3XSrBcFTbySAHgzMM1l
+	 9yANNwRb2saYmjqO62ISZh0uc6gW/NnbnImm6i5OiZ3eYGm5PMDBGI7c+4P+Pcpb9B
+	 ee0MNzDSFo4yYquI7C0FG25Y5s1MVWa0hv1BsAk5ZGx8klRaLp1llN4X2iws3J5o1Q
+	 06RhwrR7K+mhUMBBU8M0YX2uvGRuun5XeChVIs4JKp0ootZuvY8DeMJ5BEV+BhWOHK
+	 lwWLcc7Gj5CSA==
+Date: Sun, 18 Oct 2026 00:23:18 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, Jyoti Bhayana
- <jbhayana@google.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>, kernel test robot
- <lkp@intel.com>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: common: scmi_sensors: fix truncating 64-bit
- divisions
-Message-ID: <20261018001703.5b83cd35@jic23-hlaptop>
-In-Reply-To: <atEvb5jQsZCywGKs@ashevche-desk.local>
-References: <20261006045244.13993-1-kapoorarnav43@gmail.com>
-	<atEvb5jQsZCywGKs@ashevche-desk.local>
+To: Chang Yu <marcus.yu.56@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>, Shi Hao
+ <i.shihao.999@gmail.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 0/2] Add support for AS7343 multi-spectral sensor
+Message-ID: <20261018002318.129a2bed@jic23-hlaptop>
+In-Reply-To: <20261013115639.167433-1-marcus.yu.56@gmail.com>
+References: <20261013115639.167433-1-marcus.yu.56@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,37 +50,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 15 Oct 2026 22:54:23 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 13 Oct 2026 19:56:37 +0800
+Chang Yu <marcus.yu.56@gmail.com> wrote:
 
-> On Tue, Oct 06, 2026 at 10:22:41AM +0530, Arnav Kapoor wrote:
-> > do_div() divides a 64-bit dividend by a 32-bit divisor: the divisor is
-> > stored in a uint32_t on all architectures. The driver passes 64-bit
-> > divisors to it in several places, so they are silently truncated:
-> > 
-> > - scmi_iio_set_odr_val() divides by uHz, which exceeds 32 bits for
-> >   sampling frequencies above ~4294 Hz.
-> > - convert_ns_to_freq() divides by interval_ns, which exceeds 32 bits
-> >   for update intervals of ~4.29 s and above. If its low 32 bits happen
-> >   to be zero, this is a division by zero.
-> > - scmi_iio_get_odr_val(), scmi_iio_convert_interval_to_ns(),
-> >   scmi_iio_sensor_update_cb() and scmi_iio_get_raw_available() divide
-> >   by int_pow(10, n), which returns u64 and exceeds 32 bits for n >= 10.
-> >   The SCMI exponent fields allow values down to -16.
-> > 
-> > Truncation results in wrong sampling frequency, timestamp and
-> > raw_available values being reported to userspace.
-> > 
-> > Use div64_u64() and div64_u64_rem(), which take a 64-bit divisor.  
+> This series adds initial support for the AMS AS7343 14-channel
+> multi-spectral sensor.
 > 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Hmm. This came up before but they never came back with the code
-fixes asked for:
-https://lore.kernel.org/all/1644395873-3937-1-git-send-email-wangqing@vivo.com/
+> The sensor has 14 optical channels (11 visible + NIR + clear +
+> flicker) in total. This initial driver supports reading raw counts
+> from all 12 spectral channels (11 visible + NIR) via sysfs and basic
+> power management.
 
-Anyhow, this looks good and I haven't heard from Jyoti for a few years
-so will pick it up without waiting for a tag (most welcome though if Jyoti
-is still active!)
+FWIW I took a quick glance through and have nothing to add to the bits
+others have hightlighted.
 
-Applied to the fixes-togreg branch of iio.git 
+Fingers crossed, we should be good to merge v7!
+
+
+Jonathan
