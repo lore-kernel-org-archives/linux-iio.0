@@ -1,47 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9204D38424C;
-	Sat, 17 Oct 2026 02:03:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 366403976BE;
+	Sat, 17 Oct 2026 02:14:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792202587; cv=none; b=iIlcUR2+qUhR4u9fFwRBeXNhQ7IxYZMkTEoqreUfJY9kF65VCSbcrASVtXlfsVfgAiNbnPu7o1PZ8TN4OsTR6F0Gd3d9zuf4Tbk2ovg2XUAChjBmGMCWQ+5XCy21f4YWW6J91SNcrRpn0OZn1x0VLhBZmKtGYKVcISNnNOwOR1Q=
+	t=1792203259; cv=none; b=YAJU/UeMlgl5vjo/mOJbvxP7gQpMao12FIaG0gJQEK8VxPH6wrNxRh/S+uQ0VXKZSmDAqIROoFs52ZCujoD1fcMVaeS0w38k63HgE53aC+SpVEbjc4FTYrVgti4OOiFc+2vD22evozPX+IwgHsv/0dNd35JFHcdG8c13o0YajZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792202587; c=relaxed/simple;
-	bh=zxDyrKoG6b6BMQdhx2eHnKWY9oMDfv7nDAtzugsa2nU=;
+	s=arc-20240116; t=1792203259; c=relaxed/simple;
+	bh=8oG0xRxhnozYLwuAuQ77gXRnFasZA3ACSga8Y6pHrJY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=J1rG/8tP1WBferPXKwSUwCxzNnswYI9+FyD0HComYW/ttfz4ZoxU/+q6Z16ZzKtvXukaUYog7k6fIm4K73vpZqXKub4Bv2pksbAAUeWyuxoHvPdKHL3kAi4NKJsc8y5QculM/CuNzTxFv3iR/RLQkp8sXZ3zisjqxhZasfoW57Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KtOQI9Rn; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Gyqqu5z2kfrr1iQSuQw5HwXTSC+9CXuf2dAfw7/6Jby5ykKneomVAhPtj+34XIN2Qav0n77AaNAvEnGsd9OHb5p5cvG03iqNlZw99IS6Dy/Z8oc38PJM3t2y1sfKQhLJjPY2WHqKeOMYddgY2sCeG8HC7myQQ5v5J1dPM5AIwE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=imlOGIl9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KtOQI9Rn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC60B1F000C4;
-	Sat, 17 Oct 2026 02:03:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="imlOGIl9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4B51F000C4;
+	Sat, 17 Oct 2026 02:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792202586;
-	bh=LizRZHLnqt6c/yrgA4GIqDBk6Yug6XyQhPvTm9fd++4=;
+	s=k20260515; t=1792203257;
+	bh=yyh91KDx32xQbuyOeBLWhJ3b8Ku5eGQR/+SQQba/Bj0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KtOQI9RnFHw3a0CoeXTkSzBwQJ+27pgqXPYhVy575/zUoRUQB4hIQDSUtfgjJ7bw1
-	 Gfe9NgGIKeUcYqvFxksMarZM4M8pZmo9vcD0Dh+4jmjVhJDnIPE5rTy+9A8VVxLaJL
-	 GS7ULmg7O+sq/qv8mAnnRXT2IoM6DEw23O//sC8sYz0/tvyVdNsau0cvHZLs0TgLvu
-	 6VAjQccSKrGRP2+H/TqExBzD69Egh3kVt0pp8c1rLJKQSF8R5O9IWE0JyjIQ8ImYsI
-	 bGRM6OvkwrYueK24NXVmnfMuRbwj1tkx3Amdv9Tef3ZYXxPWrrqKP2n6SAExISaNg9
-	 jXjL6+gvevMiA==
-Date: Sat, 17 Oct 2026 03:02:58 +0100
+	b=imlOGIl9Mv4BN+6sTW0sNHVu/Jq+TiuYEk9KjruVXrIzCs5vCozvpF7FI/KCWb3W1
+	 6VUvmT+WgIxSga9HYYm7ryDEeKew08hlQQwb2SeS3jeMqmXjeF0MZcOzPZ2zl80Mnc
+	 EztVkhaHJhtztTtQM5HzNqp/eMlb1s1n9HDPcUcAOXvV5PD10OgXv9C+UToY0g77m3
+	 W+ThmzBWGAGSx93sdlXggCwFdaBfTqaMXZ84uCXrtFE8W/Xl9L4nQHeWUU6099MC9w
+	 nAM4XpcKJeO1mXuFG79Wv0526ES/AqRJke3DxLSmiB0k0wnr6k1M3Xj8HrFQwC6G9T
+	 9Ob8ZCnUVMPnw==
+Date: Sat, 17 Oct 2026 03:14:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] iio: imu: adis16607: Add external clock sync
- support
-Message-ID: <20261017030258.0157e651@jic23-hlaptop>
-In-Reply-To: <20261015-adis16607-v3-5-f972d4efee85@analog.com>
-References: <20261015-adis16607-v3-0-f972d4efee85@analog.com>
-	<20261015-adis16607-v3-5-f972d4efee85@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jan Remes <ciakval@gmail.com>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Joe Sandom <joe.g.sandom@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ martin.triska@mycroftmind.com, Jan Remes <jan.remes@mycroftmind.com>
+Subject: Re: [PATCH v2 0/4] iio: light: tsl2591: fix lux calculation and
+ precision, add I2C ID table, report saturation
+Message-ID: <20261017031411.05dee323@jic23-hlaptop>
+In-Reply-To: <atEdM6wi_FAGFjrr@ashevche-desk.local>
+References: <20261014141650.259929-1-ciakval@gmail.com>
+	<atEdM6wi_FAGFjrr@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,33 +50,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 15 Oct 2026 12:33:02 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+On Thu, 15 Oct 2026 21:36:35 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> From: Radu Sabau <radu.sabau@analog.com>
+> On Wed, Oct 14, 2026 at 04:16:46PM +0200, Jan Remes wrote:
 > 
-> Add support for an optional external clock (clocks property),
-> selecting between SYNC_DIRECT and SYNC_SCALED modes depending on the
-> supplied frequency, with the internal 8 kHz clock used as the default
-> when no clock is provided.
+> > This series fixes several issues found while using the TSL2591 in
+> > company products (Raspberry Pi CM5) and when testing (x86_64 laptops
+> > with MCP2221 USB-I2C bridge).
+> > 
+> > The original field report found that the illumination value has always
+> > been 0.0 (caused by division by zero on ARM).
+> > 
+> > Patch 1 fixes divisions by zero in the lux calculation, which occur with
+> > LOW gain and short integration times, or in darkness when CH0 = 0.
+> > 
+> > Patch 2 adds an i2c_device_id table so the driver can be probed on systems
+> > without CONFIG_OF.
+> > 
+> > Patch 3 makes the driver return an error instead of a bogus value when the
+> > sensor is saturated.
+> > 
+> > Patch 4 improves the formula for calculating lux values to make the
+> > returned value more accurate.
+> > 
+> > Patches 3 and 4 change existing behavior, I am OK with splitting the
+> > series into two, if that makes things better.
+> > 
+> > AI assistance: Claude Code (Claude Opus 5.5) was used for research on
+> > sensor behavior, datasheets and Adafruit library, to compare results
+> > produced by old and new formula, to draft some code for patches 1 and 4.
+> > I reviewed all of it and tested it on x86_64.  
 > 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-
-Just a very quick look as I'm out of time for today.
-
-> +
-> +	/* Default dec=0 after reset: period = 1 / clk_freq */
-
-Why does the comment make sense now but didn't before?
-
->  	st->sample_period_ns = DIV_ROUND_CLOSEST_ULL((u64)NSEC_PER_SEC * 1000ULL,
-> -						     st->clk_freq);
-> +						      st->clk_freq);
-Tidy this up.
-
-> +
->  	return 0;
->  }
->  
+> From my view (haven't checked the calculations, though) this looks good,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
+I'm guessing not huge urgency on patch 1, so to keep things simple I've
+applied the lot to the testing branch of iio.git. That will get rebased
+on rc1 once available in a couple of weeks.
+
+If you want the fix to go in faster, shout and I'll do that at risk
+of slowing down the rest.
+
+Thanks,
+
+Jonathan
+
 
