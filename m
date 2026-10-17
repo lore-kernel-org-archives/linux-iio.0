@@ -1,46 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CCFD346FB3;
-	Sat, 17 Oct 2026 23:34:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B824CF475;
+	Sat, 17 Oct 2026 23:37:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792280072; cv=none; b=ScE1MMjk/ijUGHVtJfvrSrjgj1sKrNXHG7bD7x5U7ps9f5HkAfp0a7cLt+IuglNzzRoSrxQfbdY8nTZubHd3wgpbBA8dle+FJC3LD8LEW5BNc/MA4nm3dkzdx8QVd+tsXGdsGyKH7GXQojnXhsJYlpaMhRFObhiwmr8sLrbLLt4=
+	t=1792280239; cv=none; b=ns3+vSTNp1tPfhzfIg6hlgWI5TXWQPkMGAZV4sBROf4OPgqKD5CoeQiSeU9sE+w3/9DgjiFQ2N0SRpXs9kYZ6amU0fhXNu3+SeAqWWupI8OwVtGiLkhVjt8BGdPjiUU6Nn3rPrMC8OmggNju+hixlLAcFEFEZ0Cd0WsW98rr1eY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792280072; c=relaxed/simple;
-	bh=b1BZXEy087/CoN0JXUauz7i00W8Fip7xOOSQ9dI3L/Q=;
+	s=arc-20240116; t=1792280239; c=relaxed/simple;
+	bh=xxQI6dI1NdyeQfHaaWLpPh1NCN9LlkOMhoj8PQCZVqI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rV1V+Qiaej54VemrYATA2qxFrrkON3VqBEII9IysH4Zu68FKhVuZzfG/8jypx1Q5aX/EL3KEdyYuFLIcXIPOGrcgyQSLEYvhPMOdXFh+7f/M/7ez/sr0dwGp+z8Lmc6FkVmOvF4lts5zYlbqwte7aEdIKPagBICtoSwWN6cQ4Mc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ARkikgv8; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=WU1kqQMg4eK1c1jT1rzXtJpvHB2NGHdMNFWGIES1Kl1wjKQXJmudB1IOyfhhVYVU3Z4T3XabmDiXBye0HMUyD5Lviw8FMu4kHz7pjVFr6IMUzpsEnW2CD3au4/wZgcIuuPP5SYMzBIV0U4i+k6cG7VdtttJwrsKKYpRzmXY/zec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OryF9FAw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ARkikgv8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 251DA1F000C4;
-	Sat, 17 Oct 2026 23:34:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OryF9FAw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D12CE1F000C4;
+	Sat, 17 Oct 2026 23:37:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792280070;
-	bh=HCs018pfV8pqZ/nSvaU0N/utrGR6OnsZDN8vjSf5xeE=;
+	s=k20260515; t=1792280238;
+	bh=3LwWqcoHb+vx06J28euZl5DxFMUKTdIO2FS/bS8j2fo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ARkikgv8LD55a7v3+ldb+VQihtedQYUJ3mF0iSLYRZk4SDT4IS/A499TCrZh5cGVs
-	 EjVvfcbbuRNQvIK9sYp+O9lkgd5Nl9xzKpBwK8uz+CqUROyUVbhQA0szNqsaNbIZhg
-	 0xo1gqywbv08FaA/yu/yeSKimoAfn2L2GBB6cgevveKeHnZnybiwkKPrSaiNIuozxb
-	 UeyVZN9eh4TzxPEyQpQF9ZY47ld3Dzq9fLqiOnKXKQh5L5C+KgpLXmUlK5TGtnIwCF
-	 Ic4teAA5B7/m6Gb4SIuzz2s+b2Ylr/vQVL7U1b8eUDIVrsMD4vFOlFNBEHHcJKcVOh
-	 Y0x2K03F/tcVw==
-Date: Sun, 18 Oct 2026 00:34:24 +0100
+	b=OryF9FAwQVKQ72nlt5AzDUrPzHA+9Pa5RHtMgTzNPBJ/mMyaRH+PouWXwSKY3/0HX
+	 tXhwzmD94w912YiqO9UNa8oGfOFYGvanWwinwmpncHb1xMr2Mgc8uap4mygZVIwjwL
+	 2xRuxJAgDzX8qhconN5qx2q2mClTiomcSnCVHi6NrcTznFxp1gA6n41bD5AzVMKGil
+	 k3vTT94PA989GNo9GH8lcJVDAqeiVXKp0FBnv+GFs+gyQfuCAEHGx55cOJwzMRDrl4
+	 YptrxKEFFQ8QfzkeRWqLAldcevxtC7vhuXoBX5deZlPq6wDTVl0nu8s2CCrasl2f2b
+	 5KLOj7xgaxjTw==
+Date: Sun, 18 Oct 2026 00:37:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Nikhil Gautam <nikhilgtr@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Matt Ranostay
- <matt@ranostay.sg>
-Subject: Re: [PATCH 1/1] iio: atlas-ezo: Fix humidity channel read support
-Message-ID: <20261018003424.5fc050a8@jic23-hlaptop>
-In-Reply-To: <20261018003129.533effef@jic23-hlaptop>
-References: <20261012114553.3327-1-nikhilgtr@gmail.com>
-	<20261012114553.3327-2-nikhilgtr@gmail.com>
-	<as1G0yGQ5wKhd-dh@ashevche-desk.local>
-	<ab328578-08a6-455d-a9bf-411aeb561c8c@gmail.com>
-	<20261018003129.533effef@jic23-hlaptop>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Joshua Crofts
+ <joshua.crofts1@gmail.com>
+Subject: Re: [PATCH v2] iio: ccs811: Deassert WAKE GPIO on error paths
+Message-ID: <20261018003712.29a2b9e7@jic23-hlaptop>
+In-Reply-To: <5d5812be-430d-47f3-9e08-287300284c62@gmail.com>
+References: <20261015123023.3417-1-nikhilgtr@gmail.com>
+	<20261017214659.5bbebc38@jic23-hlaptop>
+	<5d5812be-430d-47f3-9e08-287300284c62@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,63 +45,62 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 18 Oct 2026 00:31:29 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 18 Oct 2026 02:42:18 +0530
+Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 
-> On Tue, 13 Oct 2026 22:15:23 +0530
-> Nikhil Gautam <nikhilgtr@gmail.com> wrote:
-> 
-> > Hi Joshua, Andy,
-> > 
-> > Thanks for the review and feedback.
-> > 
-> > I checked the Git history and found that the channel type check was 
-> > already present
-> > in commit dc3ebfc ("iio: chemical: atlas-ezo-sensor: add humidity sensor 
-> > support").
-> > It was not removed when humidity sensor support was introduced, and
-> > I couldn't find any commit message explaining the original intent of the 
-> > check.
-> > 
-> > Regarding the potential I2C read issue reported by Sashiko,
-> > I'll investigate it and address it in a separate patch series.
-> > 
-> > I'll also omit the cover letter for future single-patch submissions.  
-> 
-> Matt normally gets back reasonably quickly so +CC but I'll
-> assume this is just one of those last minute editing errors and
-> apply the fix in the meantime.
-> 
-> So applied to the fxies-togreg branch of iio.git and marked for stable.
-fixes-togreg that is.
+> Hi Jonathan,
+>=20
+> Thanks for the review.
+>=20
+> >> Ensure the WAKE GPIO is deasserted when status polling fails or
+> >> the data-ready timeout expires. Early returns could leave WAKE asserte=
+d,
+> >> preventing the sensor from returning to its low-power state and
+> >> potentially disrupting subsequent I2C transactions. =20
+> > I need more on this point to know whether we care if an error
+> > means we don't deassert the wake pin.
+> >
+> > Why would failing to go to sleep break future transactions?
+> > I'd kind of assume we'd awaken an already awake device (which sounds
+> > idempotent but maybe not?) and carry on from there?
+> >
+> > Jonathan =20
+>=20
+> The relevant information is in the CCS811 datasheet (v1-06),
+> under =E2=80=9CCCS811 =E2=80=93 Pin Assignment=E2=80=9D (page 4) and =E2=
+=80=9CDetailed Description=E2=80=9D=20
+> (page 7 onwards).
+>=20
+> The datasheet specifies that nWAKE is active-low and should be asserted
+> before an I=C2=B2C transaction and held low throughout it. It also descri=
+bes
+> the sleep behavior: when nWAKE is deasserted, the device enters sleep
+> mode and ignores I=C2=B2C requests. The timing specifications specify a 5=
+0 =C2=B5s
+> wake-up time and a minimum 20 =C2=B5s deassertion interval.
+>=20
+> I agree that the datasheet does not explicitly state that leaving nWAKE
+> asserted after an error will cause subsequent transactions to fail.
+> My concern is primarily that an early return leaves the device awake
+> instead of restoring the intended low-power state.
+>=20
+> I'll adjust the justification accordingly, rather than claiming that=20
+> subsequent
+> transactions would necessarily be disrupted.
+Given it's an error path and just as likely the attempt to put it
+to sleep may also fail, this becomes a possible improvement rather htan
+a fix.  I'm not entirely convinced we care about that corner case
+but feel free to send it with a description that talks about this
+and we'll see what others think.
 
-I also added the missing fixes tag to point to the introduction of
-the humidity sensor.
+Thanks,
 
-J
-> 
+Jonathan
+
+>=20
 > Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > Thanks,
-> > Nikhil
-> > 
-> > On 13-10-2026 02:15 am, Andy Shevchenko wrote:  
-> > > On Mon, Oct 12, 2026 at 05:15:53PM +0530, Nikhil Gautam wrote:    
-> > >> The atlas_ezo_read_raw() function rejects channels that are not of
-> > >> type IIO_CONCENTRATION, preventing the relative humidity channel
-> > >> from reading raw and scale values.
-> > >>
-> > >> Remove the early channel type check to allow both concentration
-> > >> and relative humidity channels to reach the mask-specific handling.    
-> > > Have you checked the Git history on this change? Anything interesting there?
-> > >    
-> >   
-> 
-> 
+> Nikhil
 
