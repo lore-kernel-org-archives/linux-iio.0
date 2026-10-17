@@ -1,138 +1,120 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3D013D6CC9
-	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:19:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543D53AAF5D
+	for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 05:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792214387; cv=none; b=uqO6zb9pg4FJkVWHc+roRw9BV+2DZmn/9eqnq+MQCLZ34tuD4xcPw4sLN44wPuNX8CX4IqAY/PHHdImIlWuEvkvs818QVoCySbmctLBr6Qa69lwOrED7dMA1oXXo/etAy6orzQ5zw349t/EU79VSqSbqjrRd4Ob9Dqg43ObFx8Y=
+	t=1792216521; cv=none; b=fwuakM52Evt+wdZcE0QGOE6hdIbRAJrvz77tz2VAevOs61CtfSECXLTTn1rayp4wDmpefBVvtgD3fmAE1YtGKwoyygUWT50Sb81RtH8+aLSloK1EcwCFxFcefdloB6pUhH/TiD9l4gywG8gyomHfQpu/ynR4oSewSDEoR+Gvbvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792214387; c=relaxed/simple;
-	bh=SWBmXu448zjzxYjCx3pUm9k+IVsTZM+Oeo1N4UfrkmA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=VgiKK1O8xyY8XWVar8Hiq6cvufLDaBAsiDZGzL4NA7ltEVFSYsztB5CuzMYhfDHAfYFt2c0v32vUlZ7bCLItnQ9Zts+kK84OAD4jbwZLWOx9k3Opd1DROj+GQkhNTIXgXANS95liT9ACPTRrAvNlJcpOszlUx35GRuxf2TQCGcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I02ItFUu; arc=none smtp.client-ip=209.85.128.52
+	s=arc-20240116; t=1792216521; c=relaxed/simple;
+	bh=4H4PumMFOkWTL8QF40HV7GYJCLyqj2M1mR7XH7UN8l4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=O+IaV03F5mAG+TBjN7yZOeGpZNlooqI34NmMcOimaL6z4nf5kJZ7Bkfg6cLXZ6o3AoZbeTJoL5PrMuIE8gjl96lUZ37hvOqTUWpQ6pFtK3VFPBskXzlj7TYQxy6sl/hdUOfXnrJGHDZOhD6wu+Rx/pihO1Fc9YoCzQLgi03RiRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kUfnqNsl; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I02ItFUu"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-49ff680331aso5478795e9.3
-        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:19:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kUfnqNsl"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-48afbd2c386so195933f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 16 Oct 2026 22:55:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792214384; x=1792819184; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=/dnusO2vMBZJOXXq/LcKes7+kqYaIPlF1nsGZCt+1mw=;
-        b=I02ItFUupSWO3qGt/U1fQo2Y/vHnIePCw+EtE/R5rKNAoK0GDrZmxyfty0HjPeXHL6
-         k+TxVm1S1+H4rNz9zSYDFRfCJYxh21nsr79tAaq4jRU2hqj4MluvrHaBG0Fd8ORvPQH6
-         GDqM3x32sQF7qD11eHiDTsoJWnQveJAZPWHSWTtlC/wFrfWdwCOiU287Gl6dmzcUz1rn
-         HEhHkCqaj/TZTa4OA5x4PkIg4HeALufuIG/WaqyaqtXCvD5hPDIYZ2eodkd3deJhy7fR
-         t7x3Tm1fgZy2slneDZmiwrqg/3hHfgzr87gKOzmDbBR9IDszIjpWFQFQNJDst4PvRQy2
-         JJlw==
+        d=gmail.com; s=20251104; t=1792216517; x=1792821317; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=hyAOm2K0XZGAzKdD2fYYYed+loFddeRK4BJxeSnK+7o=;
+        b=kUfnqNslcr1EuMTkiq5jDWkcpDyVNq258StXgmZlxbz7s4wvo8GjtG52NhhxllEgKq
+         YMJHOE87hL/hRZTp3IhORgu3f52L1A4FZ3Z2+qRfyvQh5xB0I6QxaxHQlUkxs3c76Ajy
+         MiVeacNpRvD8zfk+CzPSxRYgFR7uPzD3nobB3nQy29lGvHCVxBRZpqztBbarpExEvZjh
+         7XvtQjfpuFxUvcLpKjN5sb8U5UEjT1k4PhdfRs4BcUgIbxAFufSsdRAahXkOfcanYgwB
+         K9UUIl/YfNYQYxQfdvTC2poYnsiyIMt5HFcVjkWj2/7QXTb2vcK3o30XH0r/mZAHWx7U
+         pHgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792214384; x=1792819184;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1792216517; x=1792821317;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=/dnusO2vMBZJOXXq/LcKes7+kqYaIPlF1nsGZCt+1mw=;
-        b=BB2Vx/NpPQiPwVVEpAaSbPVAwwcNhMI5wA9nE4jLAmcKK4EIN/jaGM/OqYjsllZFbY
-         H9cAe9qU1QMtVPazgStcfd8N8BlWcm0YS58V5Kl8IE2715EpdGU08m87V1vg2HC+OEY6
-         Mb0g/QMXeD/HL+M5hh1LIKjmAM6Z3BfXnpXEOzSuZHXYeXFtRxWa+4WSeEm7aslDGt1r
-         KLCxdM58aghQ+aM/PIhmUyVCZuSJgNJ6HfGuPWflCFOmry/QyFPgp5clDOVelR76q2Jm
-         YN4YlrrmZEqEYyYH1Hvv08b0XDVC913b5ob9l5/QW+iO4wESemwbEx0OrXsOdsfHeY+9
-         zJmg==
-X-Gm-Message-State: AFq9FYKKZluD2CywBk1dCpr5OAnAfjVNoSsg2hjNs8XLa+qSG7x/a6Ib
-	YtpRg7KVvKMni+uBrtPmnr2DwvmFYzWXzXY6WnSoa9Khsu52kDDFgsWI
-X-Gm-Gg: AYBFou2CRMOEjsYiCFioXLTzqdLKBVzQPvfJWWdEgntlJKTJwX+nQOWgjdtajTdgDDm
-	SjP8g6bKAh+6DDwPr6OA7OPceYRjhKKUvHUEmLCSEYoOumO6/aXKMy1sOEDDA4vL8DQItc/YzOM
-	G9CtazOGKumDRNJ6d8VRy/2UMz/gMdVLuP64IP9Au0wqcqX0XtKMyuzLj5Rnn0TwZ7WJFutCt+x
-	+EtlAZjezswQAcAyl1hlmVVpgz6Zu9BOpd0xVdJK41t0qXLhk1nWfAbjZs8TCImElZCCdGtUiXM
-	MOdV84yPtTnvKodRJF9rI1JHni+4W8gIBf4rXbuGyaFn2jLT4+XlrWCJif9LWVMnoK/JPmQ0SJY
-	129UHVGhPfMvdIg7U4UZ2w5Sf/D5jvZ8z8HoOPzg+sXDj8Ny92huZEqiSp+Tq5zysnqNSbjmsN+
-	rUNLqvFwNn/2DvnlD0IMW1ZqiXSPd08C+0kvIZydkuwLKLhvJUKWUF22fg32usUyNAbpCWPsoqa
-	aF0sS5rS5v0CynGHPkkhH7fZqCV9+AzJL35O49uDn2FyBXeLOp7LYsDBI1xhbpnrnsRJsvBhYJ4
-	pd0aEI0cs99+GNxaXsNFvJfAQmbLoFA5lR0DLUDgYPw4o1PZRx2jKtXpMZJeXkaQ7nxyNgc12rL
-	kXqGBlO/C1G/KiWP8V9Zec0uQx2zhyqP3+v/h9Na8CpUDzt6wHCTJ/z1hzBx1FTFatcc01NsneY
-	o6+0i5JRE=
-X-Received: by 2002:a05:600c:1552:b0:4a1:825a:56fd with SMTP id 5b1f17b1804b1-4a1d762a26bmr37921725e9.32.1792214383959;
-        Fri, 16 Oct 2026 22:19:43 -0700 (PDT)
-Received: from [10.200.7.52] (109-81-110-105.rct.o2.cz. [109.81.110.105])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1dc952d63sm16432585e9.2.2026.10.16.22.19.43
+        bh=hyAOm2K0XZGAzKdD2fYYYed+loFddeRK4BJxeSnK+7o=;
+        b=U0aCbHtZJhaU+McoZpTxs68G50ogAiwyjCPy6DNH48u3nIc90mreUEJ8tQljIpW9kQ
+         SG7KQ5WC3fuI4tTZBo85AfW0LD5BJzoOxCBINhQ3brcy1VNquTDxUoyfJJLU/jK5VmKn
+         KL+OwR3obQlN98YsLVjuTN8bST97b84BTqAz507aj6h7rbIVv0kC8E3Gy9bhxdfiWDpV
+         ne/kHqyaUJUBGoTs7UJUAEPcvRHRCdPLOkFAEqjZNfr4JDptLhGtiRCN3qGEXoOtijEH
+         Z9YyTeLytB0ur8ApDxU2AeU79/1TILq46uNyCt5vAGxbqZbKenqO6sq/LnAlGDoiBMwP
+         kUqQ==
+X-Gm-Message-State: AFq9FYJHUO2MEQC2l2nPjh+VewMn5qdZXYrXe6TAYIt4n3DJZWdW4uDj
+	hcAZhS/CwR8ZN/1zLrTs2gEAldj7Ra9cJpAeE2ZTvh4RWpYeLnGh6T07
+X-Gm-Gg: AYBFou15ZVBe1WfztrzfqXncp9zOf7tDE5J+r11RNjOMEiSqCveERzX5alzN+j5QxFv
+	9pz341PsDrqi1539PhpMrg0tEzNB3AefO6oa20i7QEqtf3dULmuJs2PGSx/8uBPNjAKk9BjtQ+S
+	WuwHgRhDA0f47rbCuB7S1SOhGPjiQjmKyleV3e2z4jnZJYJiroJCdLcLSF+z00QcYLjBn+mBZxK
+	FVDmNFZkl+cV5lbrxrQF9/dlUygCRN4waDyA5Pl7PrjFKCJCAB8B1cjgNFQ2+drKqrXRQxDyJtl
+	Jb5Tb8xdGv9t81jJlWZLtm04kxyfl9ntqKEA8d59IkLw8F4xPc2e1M+D2bS9Cc/FSaksa4X/HK4
+	xLIv8WnFoAj1JqLexvMcA+Fr2NjxnIbIYOUUV1+0QEMhHea78L1kB3Zo0TgkJHKoabGom2AJtJb
+	jUYx8+g3FiKRItkO5rhPftUdb7lLRo06V15/W3XTPRBh4dKbjh2d0u+kpNXmFpNv2lNC7HkYJMC
+	RzGaPTLfft8H/jEPt7HhmMStzY12bewMF0ksR1/5hI53vsdSkXVFkoIxPX6yOh4MW7capwQHt5h
+	dJkcRWTaFCVMireTugJXfxvip1FPvPb/pm5FnY/OKUkl/pY2ZvnmHA/6F+mYzr3LaBd1UP/noab
+	KehA9031pxzY7arTLZqGdc3MXTCC094trsucmO2c/Fm/rBf3inQsva3K6s8eY/BM4rpOW
+X-Received: by 2002:a5d:5e8e:0:b0:48e:932:af01 with SMTP id ffacd0b85a97d-48e0932b079mr2213957f8f.31.1792216517468;
+        Fri, 16 Oct 2026 22:55:17 -0700 (PDT)
+Received: from systembl0wer (109-81-110-61.rct.o2.cz. [109.81.110.61])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48dfe4d2321sm10443937f8f.19.2026.10.16.22.55.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2026 22:19:43 -0700 (PDT)
+        Fri, 16 Oct 2026 22:55:17 -0700 (PDT)
+Date: Sat, 17 Oct 2026 07:55:13 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sat, 17 Oct 2026 07:19:21 +0200
-Subject: [PATCH v3 2/2] iio: gyro: mpu3050: add missing trigger cleanup on
- remove()
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux@analog.com>, <jic23@kernel.org>,
+ <nuno.sa@analog.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+ <Michael.Hennerich@analog.com>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+ <conor+dt@kernel.org>, <corbet@lwn.net>, <skhan@linuxfoundation.org>,
+ <marcelo.schmitt1@gmail.com>
+Subject: Re: [PATCH v5 03/15] iio: adc: ad4134: Apply reset recovery wait
+ time
+Message-ID: <20261017075513.3a959a6a@systembl0wer>
+In-Reply-To: <9f6d78d607b2f9a896513535fefa3329d52c4464.1792200021.git.marcelo.schmitt@analog.com>
+References: <cover.1792200021.git.marcelo.schmitt@analog.com>
+	<9f6d78d607b2f9a896513535fefa3329d52c4464.1792200021.git.marcelo.schmitt@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261017-mpu3050-fix-v3-2-d6f29f335a2b@gmail.com>
-References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
-In-Reply-To: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
-To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Dingisoul <dingiso.kernel@gmail.com>, stable@vger.kernel.org
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792214381; l=1550;
- i=joshua.crofts1@gmail.com; s=20261015; h=from:subject:message-id;
- bh=SWBmXu448zjzxYjCx3pUm9k+IVsTZM+Oeo1N4UfrkmA=;
- b=Fev/aLp/t11PuIxED9XWHh8KFvT+A+vQaVp18KaBwGEewZtgXbUFr+4wGlDOjtM2p045I2Rxo
- mcfut4HanCTBy+iHu47QabIH0hrPyOukxNqQYLWwPzM2r2m9f1AoDr0
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-The mpu3050_trigger_probe() registers a trigger but
-mpu3050_common_remove() and error paths in mpu3050_common_probe() forget
-to clean it up, causing a use-after-free bug.
+On Fri, 16 Oct 2026 22:57:08 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-Add the missing calls to the iio_trigger_unregister() function.
+> Add a reset recovery wait time to avoid any SPI transfer from running too
+> soon during device probe.
+> 
+> Fixes: e0bc6d7e2584 ("iio: adc: Initial support for AD4134")
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> ---
+> New patch in v5.
+> 
+>  drivers/iio/adc/ad4134.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/adc/ad4134.c b/drivers/iio/adc/ad4134.c
+> index 40b27b01f126..d555874b4959 100644
+> --- a/drivers/iio/adc/ad4134.c
+> +++ b/drivers/iio/adc/ad4134.c
+> @@ -442,6 +442,7 @@ static int ad4134_probe(struct spi_device *spi)
+>  		return dev_err_probe(dev, PTR_ERR(rst),
+>  				     "failed to get and deassert reset\n");
+>  
+> +	fsleep(AD4134_RESET_TIME_US);
+>  	crc8_populate_msb(ad4134_spi_crc_table, AD4134_SPI_CRC_POLYNOM);
+>  
+>  	st->regmap = devm_regmap_init(dev, NULL, st, &ad4134_regmap_config);
 
-Reported-by: Dingisoul <dingiso.kernel@gmail.com>
-Closes: https://lore.kernel.org/all/20261010203601.1686148-1-dingiso.kernel@gmail.com/
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Cc: stable@vger.kernel.org
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/gyro/mpu3050-core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 879caf3b729c..9e747836df3e 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1262,7 +1262,9 @@ int mpu3050_common_probe(struct device *dev,
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
--	if (irq)
-+	if (mpu3050->trig)
-+		iio_trigger_unregister(mpu3050->trig);
-+	if (mpu3050->irq)
- 		free_irq(mpu3050->irq, mpu3050->trig);
- err_cleanup_buffer:
- 	iio_triggered_buffer_cleanup(indio_dev);
-@@ -1281,6 +1283,8 @@ void mpu3050_common_remove(struct device *dev)
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
-+	if (mpu3050->trig)
-+		iio_trigger_unregister(mpu3050->trig);
- 	if (mpu3050->irq)
- 		free_irq(mpu3050->irq, mpu3050->trig);
- 	iio_triggered_buffer_cleanup(indio_dev);
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-2.56.0
-
+Kind regards,
+Joshua Crofts
