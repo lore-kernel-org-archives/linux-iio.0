@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A03D24BBEE;
-	Sat, 17 Oct 2026 23:28:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF1213CA92;
+	Sat, 17 Oct 2026 23:31:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792279707; cv=none; b=aW/nVItT1S5C01YPDAe7fJrck3WgqLWKYLtmgn+/wILkakUOVVKgzNA1PYQeSDbJUeh2VH/2ETfNV4s7nqxzzyGxmYxAtQnHDLvK0RmMw3De5exdSI57HSBCxN33D58z+L7oejE0WU0Dycj+3PrCn2ExB6PCTGMkGcwQugp1vm4=
+	t=1792279895; cv=none; b=QKYdgtErejMPItDJmz0HAB4VSY3pa9BCbOYeRkwLceR//qUeLHyCw9V0kS1Zb9Hs7NwkzUWsbRqS7DFeGi+A17Y59N+CUYQzrhjs+YGsVRH7m6CB2Y1CKWfXooy0Moe0x731NNmprzvOJLcfXozJ0dtoEUs4mBEH/h4SMvzwqDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792279707; c=relaxed/simple;
-	bh=k5zWeJXJEurOnDhHsF93exBiSxJgAlW9SNVyvu9qQqU=;
+	s=arc-20240116; t=1792279895; c=relaxed/simple;
+	bh=p6QCZwFg51ej8x2rFYr0vVanelbz4FHVnYAlx9b83fg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=V+57vz9rYLhs3PTjbcVlc2CM3EGmKaYJtK3R+fLfO0b7/jFuo+ERr7jQeMWwIk2oHrsApYNry0+yDCieid/pwkVerLii1LBiyVHOWCdzJAi8Nl7V/NOk33oIn4GC5Ajrf4ozbOoCEXP1m2faitw7dRKaeHAzmSOMGoqbVEcyVho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C/DF35Yw; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=kQOJ++IEeTeQHS0/Uw2UnwOh7OAiRErDJgEMDRP/TtnOBqp787SqIWPN+3pdr00zsizPm6sacQKrRn9u1KLmtqWN2l4REsIARZNozHwEh6/I4fdMcf6ZPEaR7Iq/rRD99vk/peZ+gz7q6MPa26kOgHhz+un50LUJatqu2MnwV9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EDw4PMwH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C/DF35Yw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4021F000C4;
-	Sat, 17 Oct 2026 23:28:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EDw4PMwH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 317ED1F000C4;
+	Sat, 17 Oct 2026 23:31:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792279705;
-	bh=qRc6XunMlGQk8dxay7+/4etC+5Ns2lA5EHpNlyAI7pk=;
+	s=k20260515; t=1792279894;
+	bh=1W6axb7DItKPbOddrGUsux7Hds5fbgvG5hmJUZYVLWE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=C/DF35YwBaO+K0nsPc934z0kRUdiEuFW3LRHOKyrW/esIxV5j19FNloYHGt3JBWBw
-	 sMr65974v6zEOL6ZeShmB+y5m9u275s9Nt8rBEeS1RJqAQeIzvxRcRDUQpXlYgLG1Q
-	 FtpreyIzpYCIkBUeVHC14rdw8DqposRf2HV9CCTnj34nkC0RuY8HU7rg5lknVeL/d8
-	 XAsyeS5sO0qrvBok2SGjljb3Kwg2yYP5FyTUSMGJR34rHFI9sKxIQtAW+6A/iIIRmH
-	 7fuSpMEIbPTN7ooarkfxnWaHwNNk71rpyKNb0AcQlF4ZgOkeg2rHkGABEsxLv+yIAo
-	 TBuVuiJXOyFDA==
-Date: Sun, 18 Oct 2026 00:28:22 +0100
+	b=EDw4PMwHeGE1GmS03/ohK7VZ8/qtD0OfrP3MRB0tq93f8nUjufsuvv3VKVQhlJMxO
+	 d8NfaZjVlHjuRUAt10S5q24AxMmlblfin8MU8DDCCNv7iY7KLbY/8dqzqGQAvRAVCK
+	 plnWUjXk4E8AkmE5aW01W8PvRuKKDDg2bB9bbUhJKfLlNAfani4ggviRwC86uo4Z1Z
+	 ot8jzo/mWHCagPjNmYjT5eROu8E6qjvgfRp3yIaFWLSh/hGfuLIBhqVj2Vztap1zF+
+	 7GZtw72chN0MGnqTsy3NKtsxTetMZCf1FuWDxlsTyNngnSh5nR0D9hyxvK319dd7+D
+	 Po5yPMFg9Albg==
+Date: Sun, 18 Oct 2026 00:31:29 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Cc: Alexander Sarmanow <as@discnull.de>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Parthiban
- Nallathambi <pn@denx.de>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: light: vcnl4035: Fix reversed ALS mode bit
-Message-ID: <20261018002822.5a5f2102@jic23-hlaptop>
-In-Reply-To: <as0B1EnPqfwRO1D-@nsa>
-References: <20261012144315.1678195-1-as@discnull.de>
-	<as0B1EnPqfwRO1D-@nsa>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Matt Ranostay
+ <matt@ranostay.sg>
+Subject: Re: [PATCH 1/1] iio: atlas-ezo: Fix humidity channel read support
+Message-ID: <20261018003129.533effef@jic23-hlaptop>
+In-Reply-To: <ab328578-08a6-455d-a9bf-411aeb561c8c@gmail.com>
+References: <20261012114553.3327-1-nikhilgtr@gmail.com>
+	<20261012114553.3327-2-nikhilgtr@gmail.com>
+	<as1G0yGQ5wKhd-dh@ashevche-desk.local>
+	<ab328578-08a6-455d-a9bf-411aeb561c8c@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,65 +47,52 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 12 Oct 2026 16:51:05 +0100
-Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+On Tue, 13 Oct 2026 22:15:23 +0530
+Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 
-> On Mon, Oct 12, 2026 at 04:43:15PM +0200, Alexander Sarmanow wrote:
-> > According to the datasheet (table 2) the ALS_SD bit behaves the opposite
-> > way the current ALS mode defines are set, writing 0 powers the sensor
-> > and writing 1 shuts it down.
-> >=20
-> > The current driver thinks the ALS is up while it's actually shut down
-> > and it's down when the systems powers it up.
-> >=20
-> > Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Alexander Sarmanow <as@discnull.de>
-> > --- =20
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-Mystifying how this worked for original contributor.  Maybe it's one of
-those last minute edits that went wrong.
+> Hi Joshua, Andy,
+> 
+> Thanks for the review and feedback.
+> 
+> I checked the Git history and found that the channel type check was 
+> already present
+> in commit dc3ebfc ("iio: chemical: atlas-ezo-sensor: add humidity sensor 
+> support").
+> It was not removed when humidity sensor support was introduced, and
+> I couldn't find any commit message explaining the original intent of the 
+> check.
+> 
+> Regarding the potential I2C read issue reported by Sashiko,
+> I'll investigate it and address it in a separate patch series.
+> 
+> I'll also omit the cover letter for future single-patch submissions.
 
-Anyhow, applied and marked for stable as what you have matches the datasheet
-and you've tested it so it's not an issue with a wrong datasheet.
+Matt normally gets back reasonably quickly so +CC but I'll
+assume this is just one of those last minute editing errors and
+apply the fix in the meantime.
+
+So applied to the fxies-togreg branch of iio.git and marked for stable.
 
 Thanks,
+
 Jonathan
 
->=20
-> > Tested on a Raspberry Pi 3B+ with a VCNL4035 on I2C, running Raspberry
-> > Pi OS downstream kernel 6.18.50. Checked with i2cget that bit 0 of the
-> > config register 0x00 is 0 while PM runtime resume and 1 once it's
-> > runtime suspended. Also builds cleanly against iio/testing.
-> >=20
-> >  drivers/iio/light/vcnl4035.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
-> > index ce1bd42b0c7c..f1cc75245001 100644
-> > --- a/drivers/iio/light/vcnl4035.c
-> > +++ b/drivers/iio/light/vcnl4035.c
-> > @@ -44,8 +44,8 @@
-> >  #define VCNL4035_DEV_ID_MASK		GENMASK(7, 0)
-> > =20
-> >  /* Default values */
-> > -#define VCNL4035_MODE_ALS_ENABLE	BIT(0)
-> > -#define VCNL4035_MODE_ALS_DISABLE	0x00
-> > +#define VCNL4035_MODE_ALS_ENABLE	0x00
-> > +#define VCNL4035_MODE_ALS_DISABLE	BIT(0)
-> >  #define VCNL4035_MODE_ALS_INT_ENABLE	BIT(1)
-> >  #define VCNL4035_MODE_ALS_INT_DISABLE	0
-> >  #define VCNL4035_DEV_ID_VAL		0x80
-> >=20
-> > base-commit: a22dc7ebb21a6bd4c8b63bc2c1dd46a24945aae7
-> >=20
-> > Best regards,
-> > Alexander
-> > --=20
-> > 2.47.3
-> >  =20
+> 
+> Thanks,
+> Nikhil
+> 
+> On 13-10-2026 02:15 am, Andy Shevchenko wrote:
+> > On Mon, Oct 12, 2026 at 05:15:53PM +0530, Nikhil Gautam wrote:  
+> >> The atlas_ezo_read_raw() function rejects channels that are not of
+> >> type IIO_CONCENTRATION, preventing the relative humidity channel
+> >> from reading raw and scale values.
+> >>
+> >> Remove the early channel type check to allow both concentration
+> >> and relative humidity channels to reach the mask-specific handling.  
+> > Have you checked the Git history on this change? Anything interesting there?
+> >  
+> 
 
