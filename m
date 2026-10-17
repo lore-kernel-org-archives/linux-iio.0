@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 874C934B437;
-	Sat, 17 Oct 2026 18:21:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD455347533;
+	Sat, 17 Oct 2026 18:31:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792261317; cv=none; b=P743tEB10nnxD3fSQZ7tGKor60QTPesjd0ZjkY+Na+cLhS2zcmmY/GTeO/0a/Mm3oxZDBAqsMgunzSRZh/ufmAl/5HkI3SRpcQBh/4qA3nD+qVrd7we7lvLqmGAjoTkgjLzMAXyh5wB9T3nuJrqDgl2gOD+yty6jyGkbpRktNtE=
+	t=1792261882; cv=none; b=hnLir5MEg1l3SDDFejz5Ia/tYoTXG+hunGov1G6xx1rnM3SyMMQe/xYyNiBhCbxc6Mfnw4uP5bpL60KmjE7Utrf/mHaB6MYxl6txvuc8YovaaGfY0LGR4fmxlKMr4Pn++Gpl4mzEw/OjCGmtQBY6cLx9vrQrj0t1qUlQGzr1Alw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792261317; c=relaxed/simple;
-	bh=QETSnqD9zHjeV9yBvtwla31e3iQ8e0pj8gX4m8227gM=;
+	s=arc-20240116; t=1792261882; c=relaxed/simple;
+	bh=5MwvH6yXOWrWw954Zho6Vin04TWOYE30tOX1DrCbzU4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KsAGg6QVICjpn09aALSKr00eKP7UTLdT9ej7iroBxQgBXbKF7dMDwrbgjgGp/92+HmbAV/WH6T/0OLey16AmmtnYLuh7sTuSR2pZg/DbToFUm3fZCeU6JJBPKM4KUo4rZWwjUX6NWbFNA4I4guWyoz1dXEh623ZzVxWh9RSDJO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hpzjDh9K; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=NOgJR94LWMcr0vDO3+Dky2c+FjRKGInlYnVdV654dkFcppcf/34wtE7iAW5I3p8bSHjy6fOrwwCoOptE6nDnw/uxETE0eSeSJvbEpfCatd+sfJZPJcNZAbQagwDXG1ga5TYnPc0loA1tIRHjhSrhme5eyyGPae5lrzF51PGYOr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=It133tOL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hpzjDh9K"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C2081F000C4;
-	Sat, 17 Oct 2026 18:21:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="It133tOL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 903151F000C4;
+	Sat, 17 Oct 2026 18:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792261316;
-	bh=QqYFkxl/6C3+duZbw8hxCBJgXVRgxDNSm7oaIlCYRzw=;
+	s=k20260515; t=1792261880;
+	bh=31sZM63EOEAfwhJrcrA2P/23kgLtM+HNbtPomQJ6tkc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hpzjDh9Kr37vLYco+W9Zre3BIC92hP01J4HKjetV0adnU4amiG4Z/xfcr7mnpoUgo
-	 KYFES4x3LtrNUjYuBZqHD14ObzelHlwHt7fRpB/OKsboEjNXU6C7IVkcsXDOAOGQE9
-	 jTs30YWrCEWHXNcqRHYALydFBJFE43927m+69xAPB4nTv3hmxokDlH7oQYWp4wgpFU
-	 zPdyF2QxO0DEo3SRMVc7wHczuOp7S/MBuOvxGBdBm0mHvZniQaN19iGxtd4W5wItnl
-	 lb4eEmafkz/S5BkX+UfET9Xp/ciy3tCwKQf/unFa2wUqN0eIv4gJeoOALmagQyuQUf
-	 SsUHCVrlDqN2Q==
-Date: Sat, 17 Oct 2026 19:21:51 +0100
+	b=It133tOLnIkAgDNxl6oYfh2i4AegnUEw6W8DCsgU/zNYZ9RhQ5tax/q/pMR4YMTbM
+	 5evKlkrcKDURlM8225b4THB7PtTyjF4IQh5F1cm21HGhQJOuo05q2nbA7Ie37/SPie
+	 j1/X0hppwvLamU/5tlA78dYvbQ/P9X7OZu0eJ6Otx3f2b51/x1v0yz7S3he21Ay5D8
+	 Ru8AUa44PPvd8e6pk5Q3e4aOm/DUc5dEdMTPJEhJSxo9w2wk5hywJAnKDU2UwRiA6R
+	 r9eEo+Dy7+GXVHLYmGrNHIqP6QSQWTQPxwjR+kFXyTYUOLMHUWTIt+vu8vt+siUDjn
+	 ELpSFJYm6VsIA==
+Date: Sat, 17 Oct 2026 19:31:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, Dingisoul
- <dingiso.kernel@gmail.com>
-Subject: Re: [PATCH v3 0/2] iio: gyro: mpu3050: add missing trigger cleanup
-Message-ID: <20261017192151.15986386@jic23-hlaptop>
-In-Reply-To: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
-References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
+To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ robh@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH v3 10/13] iio: adc: ad4134: Support SPI 4-wire mode
+Message-ID: <20261017193117.04b71262@jic23-hlaptop>
+In-Reply-To: <ar1lg7PMwP_RdzzO@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1790719424.git.marcelo.schmitt@analog.com>
+	<c066072441fdba492c18c71d5332d84224379410.1790719425.git.marcelo.schmitt@analog.com>
+	<20260929230830.A8F3A1F000FF@smtp.kernel.org>
+	<ar1lg7PMwP_RdzzO@debian-BULLSEYE-live-builder-AMD64>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,46 +49,65 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 17 Oct 2026 07:19:19 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> This series fixes an ignored error return value that causes the device
-> to behave in a weird polling state and a subsequent use-after-free bug
-> reported by Dingisoul.
+> > > +static int ad4134_buffer_predisable(struct iio_dev *indio_dev)
+> > > +{
+> > > +	struct ad4134_state *st = iio_priv(indio_dev);
+> > > +	int ret;
+> > > +
+> > > +	ret = ad4134_release_sample_access(st);
+> > > +
+> > > +	mutex_unlock(&st->access_lock);  
+> > 
+> > [Severity: High]
+> > Is it intentional to hold st->access_lock across system calls here? Returning
+> > to user space with the mutex held violates lock ownership semantics and can
+> > trigger lockdep splats. Furthermore, could this deadlock any subsequent sysfs
+> > regmap accesses while the buffer is enabled?  
 > 
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Not sure where signing off on cover letters came from. There is no need
-as they don't form part of the permanent git record so DCO doesn't apply.
+> I'm not sure about this one. The intent is to prevent sysfs regmap access while
+> the buffer is enabled. IIO direct/buffer mode locking should provide that, no?
+> The rationale for the two mutexes is for access_lock to avoid concurrent updates
+> to the external multiplexer and for sync_lock to protect read/modify/write
+> sequences. Maybe IIO direct/buffer mode locking + sync_lock is enough?
 
-Series looks fine to me but given others have been actively responding
-to previous versions I'll leave it a while to pick up some tags.
+Technically claiming mode would be enough and if the locking is only coupled
+to "in buffered mode or not in buffered mode" I'm fine with that.
+However, if you need to serialize for other reasons we probably need to
+grow a more complex solution with a lock and a flag (similar to what the
+IIO mode stuff is doing) so as to avoid holding a lock across syscalls
+as this points out.
 
-Thanks,
+> 
+> >   
+> > > +
+> > > +	return ret;
+> > > +}  
+> > [ ... ]  
+> > > @@ -588,15 +768,69 @@ static int ad4134_probe(struct spi_device *spi)
+> > >  	if (ret)
+> > >  		return ret;
+> > >  
+> > > +	ret = devm_mutex_init(dev, &st->access_lock);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	ad4134_regmap_config.lock_arg = st;
+> > >  	st->regmap = devm_regmap_init(dev, NULL, st, &ad4134_regmap_config);  
+> > 
+> > [Severity: Medium]
+> > Is it safe to modify the global ad4134_regmap_config structure during probe?
+> > If multiple devices probe concurrently, could this cause a data race where one
+> > device's lock_arg overwrites another's before devm_regmap_init() copies it?
+> >   
+> Not sure. Should it lock on a mutex before editing the regmap_config. Maybe
+> I get rid of access_lock and make regmap_config const again.
+
+Good catch here.
+
+You shouldn't be modifying the global. The mutex solution works because
+devm_regmap_init() doesn't keep any references to the config anyway but
+I'd just use a local copy instead.  One on the stack should be fine.
+
 
 Jonathan
-
-> ---
-> Changes in v3:
-> - Add a separate patch addressing the missing goto on trigger register
->   failure
-> - Link to v2: https://lore.kernel.org/r/20261015-mpu3050-fix-v2-1-53f73581e62c@gmail.com
-> 
-> Changes in v2:
-> - Add a local struct iio_trigger and assign it to the data struct only
->   after a successful IRQ request to prevent a null pointer deref as
->   pointed out by Sashiko
-> - Link to v1: https://lore.kernel.org/r/20261011-mpu3050-fix-v1-1-f55b0d138be4@gmail.com
-> 
-> ---
-> Joshua Crofts (2):
->       iio: gyro: mpu3050: fail probe() on trigger registration failure
->       iio: gyro: mpu3050: add missing trigger cleanup on remove()
-> 
->  drivers/iio/gyro/mpu3050-core.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> ---
-> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> change-id: 20261011-mpu3050-fix-145a77d5229b
-> 
-> Best regards,
-
