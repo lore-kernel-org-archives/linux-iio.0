@@ -1,48 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EBF029D291;
-	Sun, 18 Oct 2026 17:56:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B1B415F12;
+	Sun, 18 Oct 2026 18:00:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792346185; cv=none; b=Ay0SBNSmt3OEuKl4B88giKgBkRbFxxYxUxD2D4D7snnBS8lZHDP0O0iXoTemdl+nY58eLeMn8GkyzAceFfzGyXBqXjnn/ozyiMsci8OnoAPHPZeUvLVOJLzgLDhSxgcFwQzYLAcFmtN3TnOP6XvEnl44299uZpjKGZHvZrDUTaQ=
+	t=1792346421; cv=none; b=OOV1JN6Bb4rihLUCkx1gv38jI2XOAG8uPx7bEWl//k81kJMq3G0Su8jkfUJD1VwC2LxT+w17U7Nbfn+bCWH2veLy8o+RuXsxkPFI4bOV5Y9CTowSm0yxiCGmF6QshnzlQMeNW77xydyY5ZU8G4cxZHFNxQE19WHB7DL7sloVhD4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792346185; c=relaxed/simple;
-	bh=7IgQgvCYxNvVaE+ueZonl8NCpJ9gvuDv8VYcY2+iM9o=;
+	s=arc-20240116; t=1792346421; c=relaxed/simple;
+	bh=HeQaUCu/1IU/VhOXcG6OSbLQac6KBI8Mye0x29OuKZA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZH4PUUz+8g1NP/P+pKcQ6ft1LB8qCe/Ua8D6XJp15uUcEaBr7Il53JIFQW5kYANo6cEcbUYHWJ9CPsHEnqiVFM4DzaKiqBwQOJjdsdLYlUkZSV+XZ32acs4ShhMKrv1CdNByWSfZxYu482kW2qyqEJTgyiLUNyX1qKxcpSbeTrA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m2PiBFOK; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=AnLOAi5k+9Rw8VmyimTNhgnMghEuirJGUawByk0e1zcjzSkQhbwbIm9RBUOJdGUNTdcpulg++/V1XHGVCx5fQ8eh+vPteYxGOg3y5PUu1FRb8LhMBrdqYx3f96gnQoNvvrPw8O5YVSRM7fUzoxIx1OuaXonJsqsoJtnM/ogZmHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KvDofq5/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m2PiBFOK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F0A71F000C4;
-	Sun, 18 Oct 2026 17:56:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KvDofq5/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2A821F000C4;
+	Sun, 18 Oct 2026 18:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792346184;
-	bh=liB8BgC1Ml46m5qJ2Km0vMLjnxc3Pun60AgSOQRsiBs=;
+	s=k20260515; t=1792346419;
+	bh=xcPpfCyvLjPxhYGHaKsHieTyFC2n7PDAu3LvsTZ1LIk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=m2PiBFOKh3/PBfkF09d5G2Pwrq2k/hNmmokceGySQIEf70CsesetjNFDxkLk+w9hR
-	 hu8j0pugh6irna+V40Dhr1NAeECfOrC0YtW8Dr+2iPWkHHvglwsywMy+HNz6MTQ92t
-	 Y4o5uCiPCdEeOatLDZFikNOtuhZiRy74n97SFe2Ty0eFJFor8S564Y5Sip3sbxZcQT
-	 yG04jSBwIXkOfWiJ0rNPYbcatwzm9CBpg0rqQVYFPIVzTzya1dRjNnOSEOBeOsHbkT
-	 aJRjs8TL7+7xhp/SPRvrMj/0n19BVMn7CMc5Qp7hYLzzpEJ6SYXwh61MnEyT/fFp0M
-	 WaacBoD5v00bQ==
-Date: Sun, 18 Oct 2026 18:56:19 +0100
+	b=KvDofq5/p/qKzCVbDGTjYhJFqP/HuaHYHI7Qlx2btBBSzUYxDXFlWSD5BuDE8yZDi
+	 IeB7RP9mVCLGSrd9YkQVZHcEVhpJlNxtSP4WMqlUVeFBxghciwGdwG+0EnBTJe+eJQ
+	 tnyzSEqsAplRcaTs3CxFkbo3BfVGsyE6jZrg2AI277FVvtYdwHLDq2ZtVQuRxL8SHF
+	 KNTcimzdYkAp2WSKtZ8vK3iSy4EQHvatuVE7TUT10Ptky3ovFohFv2+O78nOH3IXyl
+	 jlDc97Km6nGHeQHy1bek2shCyCBGdTTPhQS1HfRkKQMicgs1NZpMjlitIVX5ZgVwzH
+	 QlIPwOqtBq2oQ==
+Date: Sun, 18 Oct 2026 19:00:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "chr[]" <chris@rudorff.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
+To: Dixit Parmar <dixitparmar19@gmail.com>
+Cc: Viral Patel <viral8854@gmail.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Bjorn
- Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: light: gp2ap002: add led power supply
-Message-ID: <20261018185619.2aa694da@jic23-hlaptop>
-In-Reply-To: <d06d51cf-a53d-4bef-881e-cdcb4925a316@rudorff.com>
-References: <20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com>
-	<20261017-iio-light-gp2ap002-v2-2-d6879767a446@rudorff.com>
-	<20261017190006.224b73e7@jic23-hlaptop>
-	<d06d51cf-a53d-4bef-881e-cdcb4925a316@rudorff.com>
+ Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: magnetometer: tlv493d: fix magnetic field scale
+Message-ID: <20261018190013.02036a0b@jic23-hlaptop>
+In-Reply-To: <CAFmh=S2mXJLk=V_r_eie3=zDfXXRX+aUba=Kn+5h3PQ9pkwxnQ@mail.gmail.com>
+References: <20261014-tlv493d-scale-fix-v1-1-69a722176c06@gmail.com>
+	<20261017230910.77d1637b@jic23-hlaptop>
+	<CAFmh=S2O7TzFEe5WqH+Te9dQOK5TwAtjB-7GC7uDj7LGS9=w_Q@mail.gmail.com>
+	<CAFmh=S2mXJLk=V_r_eie3=zDfXXRX+aUba=Kn+5h3PQ9pkwxnQ@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,96 +48,94 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 18 Oct 2026 16:41:48 +0200
-"chr[]" <chris@rudorff.com> wrote:
+On Sun, 18 Oct 2026 21:29:49 +0530
+Dixit Parmar <dixitparmar19@gmail.com> wrote:
 
-> Hi,
-> 
-> In preparation of v3:
-> 
-> Am 17.10.26 um 20:00 schrieb Jonathan Cameron:
-> > On Sat, 17 Oct 2026 19:27:42 +0200
-> > Christoph Rudorff <chris@rudorff.com> wrote:
-> >   
-> >>   	/* VIO should be between 1.65V and VDD */
-> >> -	ret = regulator_get_voltage(gp2ap002->vdd);
-> >> +	ret = regulator_get_voltage(gp2ap002->supplies[SUPPLY_VDD].consumer);  
-> > 
-> > Ah. I'd failed to register the voltages were being manually set (generally
-> > we leave that to firmware in more modern drivers).
-> > That rather reduces the advantage in using bulk regulators.  Probably
-> > still just about worth doing.
-> >  
-> 
-> Yes, this is why I didn't made it in v1.
-> 
-> >   
-> >>   	if (ret < 0) {
-> >>   		dev_err(dev, "failed to get VDD voltage\n");
-> >>   		return ret;
-> >>   	}
-> >> -	ret = regulator_set_voltage(gp2ap002->vio, 1650000, ret);
-> >> +	ret = regulator_set_voltage(gp2ap002->supplies[SUPPLY_VIO].consumer, 1650000, ret);
-> >>   	if (ret) {
-> >>   		dev_err(dev, "failed to set VIO voltage\n");
-> >>   		return ret;
-> >>   	}
-> >> +	/* LED voltage 2.4V .. 3.6V according to datasheet */
-> >> +	/* We need to check this, as dummy or fixed controllers trigger an error. */  
-> > I'd make that a multiline comment and say what 'this' is.
-> > 	/*
-> > 	 * LED voltage 2.4V .. 3.6V according to datasheet
-> > 	 * We need to check control is supported, as controlling dummy or fixed
-> > 	 * controllers results in an error.
-> > 	 */
-> > 
-> > Do you actually need to control this for your board?  I'm not that
-> > keen to replicate the controlling of voltages if we don't have
-> > to.  We can't drop existing code as maybe a board is relying on it
-> > but we can avoid adding new examples!
-> >   
-> 
-> So we don't want to drop all the set_voltage code in general.
-> My board does not need that at all, all voltages are already set
-> to valid values in DT, ... I hope ... I check downstream ...
-Unfortunately it would be a bit of a gamble to remove the in
-driver voltage control on existing supplies. Given it works
-for yours though let us not do it for the new one! 
-> 
-> So I skip the "example" for set_voltage(vled)?!
+> LGTM. Good catch. There seem to be miscalculated Gauss scale due to
+> multiple conversion factor.
+>=20
+> Reviewed-by: Dixit Parmar <dixitparmar19@gmail.com>
+>=20
+Thanks for the fast response!
 
-Exactly.
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
 
 Jonathan
 
-> 
-> And thanks for the advice to pretty up the code!
-> 
-> chr[]
-> 
-> >> @@ -632,9 +650,8 @@ static void gp2ap002_remove(struct i2c_client 
-> *client)>>   	pm_runtime_get_sync(dev);
-> >>   	pm_runtime_put_noidle(dev);
-> >>   	pm_runtime_disable(dev);
-> >> +	regulator_bulk_disable(NUM_SUPPLIES, gp2ap002->supplies);  
-> > 
-> > Why at that point in sequence?  You are turning the power off
-> > before removing the userspace interfaces which seems unlikely to
-> > be race free. More generally it is no longer reverse of probe
-> > order. If that is necessary for some reason I'd expect a comment
-> > to say why.
-> >  
-> 
-> Sorry, just a stupid mistake.
-> 
-> >>   	iio_device_unregister(indio_dev);
-> >> -	regulator_disable(gp2ap002->vio);
-> >> -	regulator_disable(gp2ap002->vdd);
-> >>   }  
-> > 
-> >   
-> 
+> On Sun, Oct 18, 2026 at 9:22=E2=80=AFPM Dixit Parmar <dixitparmar19@gmail=
+.com> wrote:
+> >
+> > This change looks correct, the Gauss scale value seem to be miscalculat=
+ed due to multiple conversations and different reference. Good catch.
+> >
+> > On Sunday, October 18, 2026, Jonathan Cameron <jic23@kernel.org> wrote:=
+ =20
+> >>
+> >> On Wed, 14 Oct 2026 23:07:36 +0530
+> >> Viral Patel <viral8854@gmail.com> wrote:
+> >> =20
+> >> > The TLV493D-A1B6 datasheet specifies a magnetic resolution of
+> >> > 98 uT/LSB (0.098 mT/LSB). IIO reports magnetic field in Gauss
+> >> > (1 mT =3D 10 G), so the scale should be 0.98 G/LSB.
+> >> >
+> >> > The driver currently reports 98/1000 =3D 0.098 G/LSB, which
+> >> > under-reports the magnetic field by a factor of 10. The comment
+> >> > also gives the resolution as 0.0098 mT (9.8 uT), mixing up units.
+> >> >
+> >> > Correct the scale value and the comment.
+> >> >
+> >> > Fixes: 106511d280c7 ("iio: magnetometer: add support for Infineon TL=
+V493D 3D Magentic sensor")
+> >> > Signed-off-by: Viral Patel <viral8854@gmail.com> =20
+> >>
+> >> I'll give some time for Dixit to take a look at this.
+> >>
+> >> Thanks,
+> >>
+> >> Jonathan
+> >> =20
+> >> > ---
+> >> > Found while comparing this driver against the TLE493D-W2B6 register
+> >> > map for a new driver I am working on. Compile-tested only; I do not
+> >> > have TLV493D-A1B6 hardware.
+> >> > ---
+> >> >  drivers/iio/magnetometer/tlv493d.c | 6 +++---
+> >> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >> >
+> >> > diff --git a/drivers/iio/magnetometer/tlv493d.c b/drivers/iio/magnet=
+ometer/tlv493d.c
+> >> > index 03415cc2c9b3..234e3ce63ff7 100644
+> >> > --- a/drivers/iio/magnetometer/tlv493d.c
+> >> > +++ b/drivers/iio/magnetometer/tlv493d.c
+> >> > @@ -299,11 +299,11 @@ static int tlv493d_read_raw(struct iio_dev *in=
+dio_dev,
+> >> >               switch (chan->type) {
+> >> >               case IIO_MAGN:
+> >> >                       /*
+> >> > -                      * Magnetic field scale: 0.0098 mTesla (i.e. 9=
+.8 =C2=B5T)
+> >> > -                      * Magnetic field in Gauss: mT * 10 =3D 0.098.
+> >> > +                      * Magnetic field scale: 0.098 mTesla (i.e. 98=
+ =C2=B5T) per LSB.
+> >> > +                      * In Gauss (1 mT =3D 10 G): 0.98 G per LSB.
+> >> >                        */
+> >> >                       *val =3D 98;
+> >> > -                     *val2 =3D 1000;
+> >> > +                     *val2 =3D 100;
+> >> >                       return IIO_VAL_FRACTIONAL;
+> >> >               case IIO_TEMP:
+> >> >                       /*
+> >> >
+> >> > ---
+> >> > base-commit: ceb05f22e5cdc3f8bd3f7d5dcfc57843942191dd
+> >> > change-id: 20261014-tlv493d-scale-fix-5a0b83b52d2a
+> >> >
+> >> > Best regards, =20
+> >> =20
+>=20
 
