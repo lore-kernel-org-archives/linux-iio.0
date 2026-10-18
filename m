@@ -1,108 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B6C81BD9D0;
-	Sun, 18 Oct 2026 03:30:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B09BF3DF019
+	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 06:14:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792294231; cv=none; b=sME4rybwHu/dW1c6ZUroNXr+o/PTJ0NSDtFPdKBud8WFsrA6ZHGEhhgOdH6jmDVu2Sa6juLs2Ypz2dkNZzkdusk41lh8msMxTFIdx1El6G/2+TOXQh+SXRhyAtZJR3MfXN3YWM8TYZylX7TAxrSgj4ubwLxTL0aCy209xdBSdbM=
+	t=1792304063; cv=none; b=fioqo5dE+PXC7Om7s7PFZwmtQzkSjJ/JuHMxgrFckJpFEimFX9eHs8A6i9Nf1XzDoD8Vsa+hvXaFeiFydSjeC17/lqtasp/NJ/QRZap3u04TE0P+RbI6JTf+ZJV5B9bGQ+aUlHf7NcrYkCh5igOiu9ZVgZOSalDiKRqcaSSa7DA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792294231; c=relaxed/simple;
-	bh=JguZV1+0IrRdOB30BtSxAg/vguSQGclONVyrcO1N71M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eEZ0IhfBdIXoy+59YK2RrvfCI43dZ5Q6IvSEyUmKpN9TuwK3bha0O08CDQ5P3OresVN25D9RZm6g7rUEJTq0GH6qN7mXHSUUITlQR3e9V/hHS+avoTPOqxICAt3MssSNP3hBCKFs+60BfYdOwvxG793nQz9pysaF+BFduhe/SDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L7f1IUga; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792304063; c=relaxed/simple;
+	bh=+2lEsHyBEj6ioBUM00ZaO+fos5og6KcV34JeUe9h9kc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ig3QE0iuqS8qpezecVtmLsGCMt2TPXs5SRo7/ebkTEtB5MkZyhQHknvDGwNmb/xVU8IwyTlmINVQCW41m5mDgGjdlt5A1nX5Ze8It0a4yQ1QMCHrYESAu6uMcsxxkOeJRhPPuBmdoKdGwd9H67Prb6OODXyaeEO4+YVoayK+gI0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qASQ5Cbe; arc=none smtp.client-ip=74.125.82.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L7f1IUga"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D361F000C4;
-	Sun, 18 Oct 2026 03:30:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792294229;
-	bh=SuAKlG81oXxDMLny82s88G0fKI4/sznAQbkODVMg9Jc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=L7f1IUgaCe5b3f3UNHnAikrWUdzs3bQSaoc/+iEqZBO0X0uDgnV6I84sclN2yDPS2
-	 bVa2YMnA2Tx5PDxhLAFH0ZCOPNqsomVpnrfxUCGhDfYU9CLD7pfVhrsy58wUeqj76R
-	 8BueIIsUS6cGEjhhVs+yKFFqHpRJq6QSRtg01SlzCXqa0cuzEMYlJTBrOeHARAd/eg
-	 OROi0AxfdcEO+NLOrJwiJTLQZW1y+yRvrnLu362ORO77eptNOP1F3hRirVukJj+Nwd
-	 9nDMuTQTQeibA7Jkheyqmf6PFo74dGFLHdKSHszkyoDx5mdZcT6GsJL8HibLWIKXEr
-	 W6ok7FVWS7POg==
-Date: Sun, 18 Oct 2026 04:30:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andrei Stancovici via B4 Relay
- <devnull+andrei.stancovici.analog.com@kernel.org>
-Cc: andrei.stancovici@analog.com, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
- linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/6] iio: adc: ltc2497: enable line-frequency rejection
- on LTC2493
-Message-ID: <20261018043023.21071516@jic23-hlaptop>
-In-Reply-To: <20261009-submission-ltc2493-support-v1-v1-6-3dad1d4b152a@analog.com>
-References: <20261009-submission-ltc2493-support-v1-v1-0-3dad1d4b152a@analog.com>
-	<20261009-submission-ltc2493-support-v1-v1-6-3dad1d4b152a@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qASQ5Cbe"
+Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-15354aa70e8so394055c88.1
+        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 23:14:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792304060; x=1792908860; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Hcz1sgIE2hsxMXDV8dXqqMZVM6gJO/fdOKrjWhvUYTA=;
+        b=qASQ5CbeSnYv8rF9d4E/1QQXlPU4xp4jS4DDecT7VuB5icPrBfwyAT2RXA5+FaVero
+         0wAgr+O8UvVyg5AII9C4OF3aZKQYuwPLe6p1OWiwCwAdZ60/9ttMtbHuutao3USzx2PO
+         EKN20kDKftlH8gO4QfgR0KfUE3KqaoISx7DPnDuSAjzAk++0PapxGeKBfiU1wtyNHnoL
+         ziWdc5Us3JqWWP3+lHmq+jWYO5X3Pz7lSulv0eZrRXk0DAS4XVp2f1/8ygxDM62zqudB
+         dopUT0t6Rhq7DJLEXwmz1r4oCse7VBfXh8ufJRkUc5GgSIM8afkgBM0YIdypWhYcBt8n
+         81Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792304060; x=1792908860;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Hcz1sgIE2hsxMXDV8dXqqMZVM6gJO/fdOKrjWhvUYTA=;
+        b=BXw4jv+bLt10OgB5M6B8OTdUMwVpsoYKkHped3QrG564k8z1mq41J8iKF7JVs7JYuJ
+         rMeIxk2m3VTxzZ7VsDyQZsHICsNZIqPHYEs0lbur7dAlPh8p4yu5JSapMPBbhIrK611v
+         C+/esBnM5m9jv7Hp6lb2a9UjR5zipAFym/U16fFBaKmaM7CEOtdYxLCt/oZRLHTLEukb
+         q6ky7/j50p5hf3Wq60jfhT3QywrkMLgXD/VD9eDSSq7+jI+P9KSog54YePJ+1w/AYeaZ
+         5s3n+xAQ5B+SwSWOWRv3LLURPaU01zLAZcS4PeW2dtCDyXEcDXReFjLYv0JsV2qkEqCv
+         ETVg==
+X-Forwarded-Encrypted: i=1; AKwUvBw3nCMsh+SrZNqNvj6irk+F5N2UzJOVeeVNkFd91T/ysoi5JWs7HNdMgl1wvi0jBLUUYtTjLmm5LIE=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLqr/GcTvNSSNKkE+aqCXY/lHjaOIJ0Q3Mbzc1nU1vZPDCuFYnJ
+	QmdcCphaW+o3RTB4Y3Qsqm4FoEQNjnraK853/o8G2w/ViyiARyOkXAKQKwp45g==
+X-Gm-Gg: AYBFou2N2wWmrGfCAGcGxgIKH0Kc9JrynnFT27gWuXLav9IkBzG9DqIFnnJHdKBC0lO
+	rpCimk/bHpTWb7zFRNYXlKz8dzqvarfx85PjAzUBhH5D08g8SNhnivtds4Q1vRQ7Bt1F2Kmrnws
+	r2S1iFQtR+wvcLom0o+h+Z4l5qKy1WSPLYo/5ekYnQb4I5X9z0O4mr7gajAUhw6C+4vS7Ce9xh2
+	O5ySRtWEtT18AExOFysQG/mr4+Sprx0SQ9CvIpNUqonwaviJ7p4XthbhQ58RU5YZBFT953PokNr
+	PL5i7zw+JGCk+aCEO6vaj+CZwq+PGvQBhyFAAvMOhfianDMyUxHv0PohYnX+TrPM++pxVSrW2yr
+	Dc9/laRPqEZFH2J2uJ/bDDRKLcDPg2p6Fnnu6W3sPfGR9pK+g0mAxTQKpgVby5DGLuLsRNY9Z50
+	DG23lsU/yGjx9PW9p2bjAvKi/MG/G2k3J3/cHSq8DeiJBUt+AcPdND3OmclYc8PWxBo8at0G34o
+	8atQU4kVSMvFv1gRpb9BJN02J3fxLdchXFSXQ8=
+X-Received: by 2002:a05:701b:2319:b0:151:2e62:fe8d with SMTP id a92af1059eb24-1851238b627mr6194268c88.9.1792304059620;
+        Sat, 17 Oct 2026 23:14:19 -0700 (PDT)
+Received: from google.com ([2a00:79e0:2ebe:8:297c:6f48:9e5:4e5b])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-183190aa411sm21099809c88.4.2026.10.17.23.14.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Oct 2026 23:14:18 -0700 (PDT)
+Date: Sat, 17 Oct 2026 23:14:16 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: lee@kernel.org, jic23@kernel.org, linux-input@vger.kernel.org, 
+	mfd@lists.linux.dev, linux-iio@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] mfd: mxs-lradc: Pass mapped IRQs to child devices
+Message-ID: <atRjqcFvWVSSKKgX@google.com>
+References: <20261018022400.599028-1-festevam@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261018022400.599028-1-festevam@gmail.com>
 
-On Fri, 09 Oct 2026 11:43:39 +0300
-Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org> wrote:
-
-> From: Andrei Stancovici <andrei.stancovici@analog.com>
+On Sat, Oct 17, 2026 at 11:24:00PM -0300, Fabio Estevam wrote:
+> The MFD resource tables store indices into the parent DT interrupts
+> property. Since the MFD core is given neither an IRQ domain nor a base,
+> however, it exposes those indices to child devices as though they were
+> Linux IRQ numbers.
 > 
-> The LTC2493 carries the same second configuration byte as the LTC2499,
-> with identical FA/FB line-rejection semantics and the same per-rejection
-> conversion times (50Hz-only being the longest at 163.5ms). The generic
-> filter_mode infrastructure is already implemented in the core and enabled
-> for the LTC2499. Enable the same flag for the LTC2493.
+> The touchscreen interrupt is at DT index 0 on both supported SoCs.
+> platform_get_irq_byname() therefore rejects its child resource with:
 > 
-> Tested on live LTC2493 hardware connected through an IIO network backend:
-> all three modes are selectable; conversion times are respected; voltage
-> and temperature reads succeed in each mode with no -EIO.
+>  0 is an invalid IRQ number
 > 
-> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2493fe.pdf
-> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
+> On current kernels it also returns -EINVAL, preventing the touchscreen
+> driver from probing.
+> 
+> The child drivers try to map their resource values afterwards with
+> irq_of_parse_and_map(), but the touchscreen driver never reaches that
+> call for index 0. More generally, translating the parent firmware's IRQ
+> indices does not belong in the child drivers, where platform IRQ
+> resources are expected to contain mapped Linux IRQs already.
+> 
+> Have the MFD parent copy each resource template and resolve its IRQ
+> indices with platform_get_irq() before registering the child. The child
+> drivers can then request the mapped IRQs directly. Use per-device copies
+> so later instances and reprobes still start with the DT indices.
+> 
+> Apply the same fix to the ADC child, which uses the same IRQ mapping
+> scheme.
+> 
+> Tested on an i.MX28 EVK. The mxs-lradc-ts driver now probes
+> successfully, and its interrupt counters increase when the screen is
+> touched.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
+> Closes: https://lore.kernel.org/linux-input/CAOMZO5CgTzo6GuXptD4mFTN=UsJJqpkixDW1Q64gqZGrij8+uQ@mail.gmail.com/
+> Signed-off-by: Fabio Estevam <festevam@gmail.com>
 > ---
->  drivers/iio/adc/ltc2497.c | 1 +
->  drivers/iio/adc/ltc2497.h | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
+> This is a long-standing bug that I reported in 2020:
+> https://lore.kernel.org/linux-input/CAOMZO5CgTzo6GuXptD4mFTN=UsJJqpkixDW1Q64gqZGrij8+uQ@mail.gmail.com/
 > 
-> diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-> index 0df2ad9b3243..d668a81f1ff7 100644
-> --- a/drivers/iio/adc/ltc2497.c
-> +++ b/drivers/iio/adc/ltc2497.c
-> @@ -195,6 +195,7 @@ static const struct ltc2497_chip_info ltc2497_info[] = {
->  		.name = "ltc2493",
->  		.has_temp = true,
->  		.has_speed_mode = true,
-> +		.has_rejection_mode = true,
-I can't see a reason not do combine this with previous patch.
+> This patch touches MFD, IIO, and Input. Since the IRQ mapping is moved
+> into the MFD parent, I suggest merging it through the MFD tree, with
+> acks from the IIO and Input maintainers.
 
->  		.four_channel = true,
->  	},
->  	[TYPE_LTC2497] = {
-> diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-> index 34ea62c2a4bc..af939e57e1f8 100644
-> --- a/drivers/iio/adc/ltc2497.h
-> +++ b/drivers/iio/adc/ltc2497.h
-> @@ -50,7 +50,7 @@ struct ltc2497_chip_info {
->  	u32 resolution;
->  	bool has_temp;
->  	bool has_speed_mode;	/* SPD bit in the 2nd config byte (LTC2499/LTC2493) */
-> -	bool has_rejection_mode;	/* FA/FB bits in the 2nd config byte (LTC2499) */
-> +	bool has_rejection_mode;	/* FA/FB bits in the 2nd config byte (LTC2499/LTC2493) */
-Particularly as reduces churn here.
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
 
->  	bool four_channel;	/* 4 inputs (LTC2493) instead of 16 */
->  };
->  
-> 
+Thanks.
 
+-- 
+Dmitry
