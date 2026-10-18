@@ -1,130 +1,114 @@
-Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B09BF3DF019
-	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 06:14:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792304063; cv=none; b=fioqo5dE+PXC7Om7s7PFZwmtQzkSjJ/JuHMxgrFckJpFEimFX9eHs8A6i9Nf1XzDoD8Vsa+hvXaFeiFydSjeC17/lqtasp/NJ/QRZap3u04TE0P+RbI6JTf+ZJV5B9bGQ+aUlHf7NcrYkCh5igOiu9ZVgZOSalDiKRqcaSSa7DA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792304063; c=relaxed/simple;
-	bh=+2lEsHyBEj6ioBUM00ZaO+fos5og6KcV34JeUe9h9kc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ig3QE0iuqS8qpezecVtmLsGCMt2TPXs5SRo7/ebkTEtB5MkZyhQHknvDGwNmb/xVU8IwyTlmINVQCW41m5mDgGjdlt5A1nX5Ze8It0a4yQ1QMCHrYESAu6uMcsxxkOeJRhPPuBmdoKdGwd9H67Prb6OODXyaeEO4+YVoayK+gI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qASQ5Cbe; arc=none smtp.client-ip=74.125.82.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 534C6435504
+	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 06:22:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792304568; cv=pass; b=iOVHjM1Qi6DuBc4feekizyp++644VDbCd9Z3ftWhEUQZakH80jGM6ZXCXOBYPtNtC6PDwkGarN5urj5cShoMRq0Tfa9DiQLGKzSYJIYj/ipRTNByPHsLihynV5YCM/hv6JR5PsrSxMWrILNCK7dZ4UUoDiSCIp7VOTKV1VP9d44=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792304568; c=relaxed/simple;
+	bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IQXI6xtrTktNzNYTvBfStaAX6fPHBGAJ/aQeDiUlVBCwg8EPRw/GE25mQgDTb/z72jbIdYJiiRsm52+LMTWWucvtDPbz+AnbDYgdFga2juC0GZZQJrBuQGCZaLzkSmz3KiOGa85RzE7u9u8G6DM9Jg8L8cznrOlbQE6hHV7eKnM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PhDh+qrO; arc=pass smtp.client-ip=209.85.161.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qASQ5Cbe"
-Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-15354aa70e8so394055c88.1
-        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 23:14:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PhDh+qrO"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-6df7f544919so709910eaf.1
+        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 23:22:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792304566; cv=none;
+        d=google.com; s=arc-20260327;
+        b=TaCYL4VB6u/MVpRbndNI6mpkXskw8ucNl1G5ZmfO32+K1e5trFQ24p6ef3FFVyWSu5
+         2eRqOtCZUVE8CQxwQONLvHCehPIMxuHf8Cqdgfi+f3MxJIbDMi3BhTrZr7T7ivpPlnQd
+         vNwmzKl6E/e7MTkHnD9KJQntg3QHt/4QYfCQYqR67+7SuAAXyUOXlLF68Hzp/e5WRziv
+         2sLg8qxLxSjxFWyplBIMn6RIRklrCWIZE9K0TUXzgTdVBvYhzEB4bZME6Hn+LseEqviT
+         Kd/PcEaZV9+CUytD+FA/AuuDWvXkrccGjFlp/83MpB50uyb1ELyZr7HtziVYfYRw2Z92
+         9chw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
+        fh=PNDZAf80YyCIV8HGLRM6KRo/AiWxw6dQYLkGyb6rQfw=;
+        b=CIsovahK6USp+01STx20hQ29W7Ma9zUI99RxYN4XZmW7hiEGmscnr2AKqYvwAFwYHM
+         +rwrxn7C6WFcOVmCDC5VbqF59xUF6FPWWKdXW52jj5XH5x1+naWYkJ5p0t4+USvMGvy6
+         U85WlSVPPnDelZYI1nlSopZypISa1u4EGVn/HoUuJ7Ab6nsHx+rmKoRoyKS9FxGSFfO2
+         jV4DYbj4VoYYns4kGGtj69WKp+sJd2Che4KZAOs1osnittLLbi02KYOXJmiYSo3C6yI4
+         r+VS0BGQtpVmST4VVRn66ewrF19FgSeehdSmNoqa88HD4/PWCmvylDJ69u5m7u+S4J5I
+         tx0Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792304060; x=1792908860; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Hcz1sgIE2hsxMXDV8dXqqMZVM6gJO/fdOKrjWhvUYTA=;
-        b=qASQ5CbeSnYv8rF9d4E/1QQXlPU4xp4jS4DDecT7VuB5icPrBfwyAT2RXA5+FaVero
-         0wAgr+O8UvVyg5AII9C4OF3aZKQYuwPLe6p1OWiwCwAdZ60/9ttMtbHuutao3USzx2PO
-         EKN20kDKftlH8gO4QfgR0KfUE3KqaoISx7DPnDuSAjzAk++0PapxGeKBfiU1wtyNHnoL
-         ziWdc5Us3JqWWP3+lHmq+jWYO5X3Pz7lSulv0eZrRXk0DAS4XVp2f1/8ygxDM62zqudB
-         dopUT0t6Rhq7DJLEXwmz1r4oCse7VBfXh8ufJRkUc5GgSIM8afkgBM0YIdypWhYcBt8n
-         81Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792304060; x=1792908860;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1792304566; x=1792909366; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Hcz1sgIE2hsxMXDV8dXqqMZVM6gJO/fdOKrjWhvUYTA=;
-        b=BXw4jv+bLt10OgB5M6B8OTdUMwVpsoYKkHped3QrG564k8z1mq41J8iKF7JVs7JYuJ
-         rMeIxk2m3VTxzZ7VsDyQZsHICsNZIqPHYEs0lbur7dAlPh8p4yu5JSapMPBbhIrK611v
-         C+/esBnM5m9jv7Hp6lb2a9UjR5zipAFym/U16fFBaKmaM7CEOtdYxLCt/oZRLHTLEukb
-         q6ky7/j50p5hf3Wq60jfhT3QywrkMLgXD/VD9eDSSq7+jI+P9KSog54YePJ+1w/AYeaZ
-         5s3n+xAQ5B+SwSWOWRv3LLURPaU01zLAZcS4PeW2dtCDyXEcDXReFjLYv0JsV2qkEqCv
-         ETVg==
-X-Forwarded-Encrypted: i=1; AKwUvBw3nCMsh+SrZNqNvj6irk+F5N2UzJOVeeVNkFd91T/ysoi5JWs7HNdMgl1wvi0jBLUUYtTjLmm5LIE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLqr/GcTvNSSNKkE+aqCXY/lHjaOIJ0Q3Mbzc1nU1vZPDCuFYnJ
-	QmdcCphaW+o3RTB4Y3Qsqm4FoEQNjnraK853/o8G2w/ViyiARyOkXAKQKwp45g==
-X-Gm-Gg: AYBFou2N2wWmrGfCAGcGxgIKH0Kc9JrynnFT27gWuXLav9IkBzG9DqIFnnJHdKBC0lO
-	rpCimk/bHpTWb7zFRNYXlKz8dzqvarfx85PjAzUBhH5D08g8SNhnivtds4Q1vRQ7Bt1F2Kmrnws
-	r2S1iFQtR+wvcLom0o+h+Z4l5qKy1WSPLYo/5ekYnQb4I5X9z0O4mr7gajAUhw6C+4vS7Ce9xh2
-	O5ySRtWEtT18AExOFysQG/mr4+Sprx0SQ9CvIpNUqonwaviJ7p4XthbhQ58RU5YZBFT953PokNr
-	PL5i7zw+JGCk+aCEO6vaj+CZwq+PGvQBhyFAAvMOhfianDMyUxHv0PohYnX+TrPM++pxVSrW2yr
-	Dc9/laRPqEZFH2J2uJ/bDDRKLcDPg2p6Fnnu6W3sPfGR9pK+g0mAxTQKpgVby5DGLuLsRNY9Z50
-	DG23lsU/yGjx9PW9p2bjAvKi/MG/G2k3J3/cHSq8DeiJBUt+AcPdND3OmclYc8PWxBo8at0G34o
-	8atQU4kVSMvFv1gRpb9BJN02J3fxLdchXFSXQ8=
-X-Received: by 2002:a05:701b:2319:b0:151:2e62:fe8d with SMTP id a92af1059eb24-1851238b627mr6194268c88.9.1792304059620;
-        Sat, 17 Oct 2026 23:14:19 -0700 (PDT)
-Received: from google.com ([2a00:79e0:2ebe:8:297c:6f48:9e5:4e5b])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-183190aa411sm21099809c88.4.2026.10.17.23.14.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Oct 2026 23:14:18 -0700 (PDT)
-Date: Sat, 17 Oct 2026 23:14:16 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: lee@kernel.org, jic23@kernel.org, linux-input@vger.kernel.org, 
-	mfd@lists.linux.dev, linux-iio@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] mfd: mxs-lradc: Pass mapped IRQs to child devices
-Message-ID: <atRjqcFvWVSSKKgX@google.com>
-References: <20261018022400.599028-1-festevam@gmail.com>
+        bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
+        b=PhDh+qrOhxN77Im0x/CueAthayuaBjMkGBIkEp+yKQ2fsOeRAU8FUWk0P6oy+dhH44
+         Qv2ArKugNW7pjoiALVApj0wCwrEMqm3ukBFPS07qWoo/Ak6DHA7Ubg7ex4kaB0RaAsnD
+         E6Z7lXKG3WLfuVQH78+Sdp4ARVS+f0q0LripIU00IGzN2iiXYBSQd86EThnGbaieRGqu
+         rAbyntrQiEZxRIO49tTDbs8hQ8VFDlvTbzLUBI9M2OTR50Trvu5lt3QfVZPxmQw4B9ux
+         21DSgLfdnaX0fxpdySGIsxsW6yeD62HH0t0g5ZhScXUt7pP0pkEOTcV8b/uui2XYXaG2
+         I3KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792304566; x=1792909366;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
+        b=ffscWK6ir41sHxGovM0hPgXR64NmCZ0sJFnOUkUtgB6go/HFo4BCDTvvH71P34T7qO
+         p9iI9kx2yBRMOYdGlxOGlT6ocEo8R/LKA21mvNbkFlsSesP4NWzqkxI5TPn+C3Pury64
+         ccMxhvXaM96H8D0HovwNtS2wRuvlR75v804/77+51x+ijD+TTFU0VsU9C6sREOo2jkPF
+         KQ7pUa3SrMUVGcfSdvYFMFvUPCrxgxLSubsZjFIIwUhHHpOtsaLKgO07rBsSvczgkH1z
+         J1FhJ1EOhEJbEU6y7adDtm43xF+NNe2y7FN37PZTO9Tj11kDYem0YgLDDVvIqT7emNun
+         yRGw==
+X-Forwarded-Encrypted: i=1; AKwUvBzK+m+3WVXC3s/lOUg1HggMujimCiGR9AY4L+X7+V3F9UCfpSpBOhbU/OwQZyFvdJWbzuXxOFW/6Rg=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLIPhrln9+ZKus5QtPagigxTJyBQAinYfR4gscY7nT8S68YY2L8
+	//wNd77mZm5hv3W+Abj6tg9RiN0WfjDC79odF0ZyfOAPFk2QaSpndM4cOEDiY1A76Vd8Xu2qwP8
+	I+8SshhyrJICA9kAKUhz3hTD4eYahEn8=
+X-Gm-Gg: AYBFou31O3R3b7NPMj/p9M5Z64COEevSFYu5T0jjASkaSWuyJaPbaLBxTqj1RrWy1Xu
+	Urg9QDCb/QB1o16Me4l7sVRfSz2Du4t13oAUHbo3+P3NVvPuLs2NWT7UACluBNgN07Nk16snINM
+	z9CHmfVVwkM7clepjVrQKoJQUhFSvOqeLFw6z9pLyNkPZvqkAgDkcukIVknFya/D4P1yZN5qvAF
+	rS2JE/p4o8NL8oBTXdR0H9f/8m5sLk2YtttTvkUs07olXr2CYaLRgkiJ1RIENe/rj1xtis2kWaK
+	I7QUwY/bG3KHREidCcf/M9L1FYdiwyVaiaUOacelWrq9JqHEiJnIVDO6
+X-Received: by 2002:a05:6820:4b8d:b0:701:795:4eea with SMTP id
+ 006d021491bc7-70357495e00mr3531298eaf.62.1792304566146; Sat, 17 Oct 2026
+ 23:22:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261018022400.599028-1-festevam@gmail.com>
+References: <20261014091111.20059-1-abdelnasserhussein11@gmail.com> <20261017231747.4906975c@jic23-hlaptop>
+In-Reply-To: <20261017231747.4906975c@jic23-hlaptop>
+From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Date: Sun, 18 Oct 2026 09:22:35 +0300
+X-Gm-Features: AclHuK_Ca_Uy-OZ7tfLlUzH9RqHtWG8Rwb9-cwyEYDkMviqvqgdGx4a3apmhzxQ
+Message-ID: <CANpqX3YDqtqGeeqscxF0YqMWMmSB9fpkMbxapq8WbbZWSQH=EA@mail.gmail.com>
+Subject: Re: [PATCH v3] staging: iio: adt7316: use kstrtobool() for sysfs
+ boolean parsing
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, u.kleine-koenig@baylibre.com, joshua.crofts1@gmail.com, 
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Sat, Oct 17, 2026 at 11:24:00PM -0300, Fabio Estevam wrote:
-> The MFD resource tables store indices into the parent DT interrupts
-> property. Since the MFD core is given neither an IRQ domain nor a base,
-> however, it exposes those indices to child devices as though they were
-> Linux IRQ numbers.
-> 
-> The touchscreen interrupt is at DT index 0 on both supported SoCs.
-> platform_get_irq_byname() therefore rejects its child resource with:
-> 
->  0 is an invalid IRQ number
-> 
-> On current kernels it also returns -EINVAL, preventing the touchscreen
-> driver from probing.
-> 
-> The child drivers try to map their resource values afterwards with
-> irq_of_parse_and_map(), but the touchscreen driver never reaches that
-> call for index 0. More generally, translating the parent firmware's IRQ
-> indices does not belong in the child drivers, where platform IRQ
-> resources are expected to contain mapped Linux IRQs already.
-> 
-> Have the MFD parent copy each resource template and resolve its IRQ
-> indices with platform_get_irq() before registering the child. The child
-> drivers can then request the mapped IRQs directly. Use per-device copies
-> so later instances and reprobes still start with the DT indices.
-> 
-> Apply the same fix to the ADC child, which uses the same IRQ mapping
-> scheme.
-> 
-> Tested on an i.MX28 EVK. The mxs-lradc-ts driver now probes
-> successfully, and its interrupt counters increase when the screen is
-> touched.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
-> Closes: https://lore.kernel.org/linux-input/CAOMZO5CgTzo6GuXptD4mFTN=UsJJqpkixDW1Q64gqZGrij8+uQ@mail.gmail.com/
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
-> ---
-> This is a long-standing bug that I reported in 2020:
-> https://lore.kernel.org/linux-input/CAOMZO5CgTzo6GuXptD4mFTN=UsJJqpkixDW1Q64gqZGrij8+uQ@mail.gmail.com/
-> 
-> This patch touches MFD, IIO, and Input. Since the IRQ mapping is moved
-> into the MFD parent, I suggest merging it through the MFD tree, with
-> acks from the IIO and Input maintainers.
+Hi Jonathan,
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
+Thank you for your feedback.
 
-Thanks.
+I apologize for the confusion regarding Joshua's tag. When Joshua
+reviewed v1, he pointed out the necessary fixes and concluded with
+"Otherwise LGTM." Therefore, I mistakenly assumed that I was required
+to add a "Reviewed-by" tag for him in the next version to acknowledge
+his review.
 
--- 
-Dmitry
+Thank you for clarifying this for me, and I hope it didn't cause too
+much extra noise.
+
+I also really appreciate your encouraging words about these small cleanups.
+
+Best regards, Abdelnasser
