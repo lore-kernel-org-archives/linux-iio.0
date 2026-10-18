@@ -1,104 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E8744949ED;
-	Sun, 18 Oct 2026 21:42:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1BC1449B12
+	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 22:07:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792359741; cv=none; b=ixQs8WBlCAGcXamTXvEm4yy1Uk9Qe3jhpCr/Wzyed4mDvSQm5dtXT5zuA5NBQUUocRHMjqIJL+4vn23RJ9y+1Atvj2SaXQK+bse7MlfqP8MJLhEHnIx3WEGC8LaNU2Lv2CGAEkOFNeZ4B0fT53TuyfwIahl0ewqBEDbtdoKWvQ4=
+	t=1792361253; cv=none; b=CpHa463lsQ4NRrsFj7L3S0+xHLqMbFVKtHhEpjaDae4CB6NkTwUSezAubbP8CaZ1NrvGAUpkI2a0x+9a79PrYVTRccEVjApKi7C1nuprtpmtr4ZZWc7333aCQdpuqg1cBbZ0QfZG2Nru8HYKCpcpnXfDQVB8iPJR/QIqZILLPAg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792359741; c=relaxed/simple;
-	bh=KxlqlM08pSqbLCX75drsh8bl4LndMnKISQsj+OgCYyc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=d+9DcL+FD27xPo9WXzz8xiyx/b1Qgl4aHxORV7Pe9a4mpFwqh8oD8xUWyD+PJCOE92lEBzCmlMjb/uUki9IdmP599eT4waPePdhqKjLdFA7uGxV3IqP8lvuuTKwdiWHpAyv5KLvfCP/suzOmKVkB2BZQGeOqP5e73RTlD4BgTbg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xp4SQVSw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1792361253; c=relaxed/simple;
+	bh=F9xbwsOGYhZLxeYQhkkpp+B03a+2047+e+nLiVBNWDk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=C5d5ZCgKQBfeT7ejS/FORw66Ju/aDBSEyqKwUj/sE1jrJwbevkxaXtBdgS/lzHlricqWTNrmf2yUgsukLt/Xhv1r2KuRYTwBGNWhH7534Y4JBkKUqKYGptadHrBXwF9xXwBxnB7N0ShtR6qQNj4BBCWI2jKB4g9Xgvit8HBLPV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aRpH5Lad; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xp4SQVSw"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5132BC2BCF7;
-	Sun, 18 Oct 2026 21:42:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1792359741;
-	bh=KxlqlM08pSqbLCX75drsh8bl4LndMnKISQsj+OgCYyc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Xp4SQVSwoz11D6rPu40TPRVF4dEMVpzAPYM+XdtZDZCPNs3qlIoXTQ74maxexToZQ
-	 JzCBf7i/3burCtmi97SJKBTLB/8dAfXcD4LM1m3S5j3UZPD7jgL90QNBRtr0exEfrN
-	 /oZJUpV2onChZ64MwUV7CFvvThuuRH+izfLzlfsV2PhYUWrYGNvGgNaDnaLAWkzocN
-	 mYe6i5HVPaoosgmPxCZPqqZ7EgqIJmEuCxfl9eRMNFjhU9TDAz9KmVPsN3fkIrmUP5
-	 wizB+Y/1IXnoUGAcE95eKSu+EM9ync+SUizDlqtZw0tW7mNurF61jN89/8k19Vy63w
-	 9oLYQCdBJhGDA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32268CCF2C9;
-	Sun, 18 Oct 2026 21:42:21 +0000 (UTC)
-From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Date: Sun, 18 Oct 2026 22:41:51 +0100
-Subject: [PATCH 2/2] staging: iio: addac: adt7316: drop informational
- message in probe
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aRpH5Lad"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 839781F000C5
+	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 22:07:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792361252;
+	bh=CWdO1KyORGSqm7uhLPCSusKj/IGXrx0602wzuxRWapI=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=aRpH5LadcvD9j+QI5en9zFrZ1rw5eyWXbD7KE93jHW6YBtemaVpgklxxQvhxlgolO
+	 qS8hQ6V2BRnOrk46qwAjdqTJOjzKZVn7K7huCu8Z0xuKsXGKp1kSY27A/4vaXh+K/D
+	 ooAOdkjoB1zKMJMrYiys2UAx/yMYSxmBtnMN+HWVK883Mjcp6qFxh7CVOAIsgEsf37
+	 J8gGK54yuXAji9W9BuNereDgAJds8F+sLlwEiflqxQ0haHhQnZqipoxAOme/QXIoWQ
+	 Y1x2My6UO3PmLhrwjdG464dznAYtzSdsOjvWhe+/9L2zdDHoqKOiF3Mm+I6yizLASp
+	 RupLCaCaW8yRA==
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5ba3ec92031so1880134e87.2
+        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 15:07:32 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBw/dxpwQVXvfv3TajHXfXJoBCSMSQZzq0qEl8x//Utt24JfK1b2ruZdAc1EFfkiyTG2ndaCQciK8l4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYISc3DbXV5hrPxC0v7Gq4OSCnPs6JFWPKOMRz0YkhqNGfoX20+8
+	wMKqf7iL+boqdoQ/6hppyOn2hcLvIbPg5+Ga8Guu80JBjlK4P3nUn13pLsB9VP8oiwEaovmFYrl
+	GJTRPBjFzp73sWP9+Io/LeR9TLLOZlk4=
+X-Received: by 2002:a05:6512:10c1:b0:5b8:f4d4:7ff4 with SMTP id
+ 2adb3069b0e04-5be50a74cc6mr1663573e87.53.1792361250883; Sun, 18 Oct 2026
+ 15:07:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261018-adt7316-error-codes-v1-2-1970b7e242ac@gmail.com>
-References: <20261018-adt7316-error-codes-v1-0-1970b7e242ac@gmail.com>
-In-Reply-To: <20261018-adt7316-error-codes-v1-0-1970b7e242ac@gmail.com>
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, 
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792359739; l=1014;
- i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
- bh=yKADDDdmBBCSlIewg1RBic2YWBgdqUnAFXf9g80Iw9I=;
- b=4bGHkl86lqoxO05oSI3aEhN7pTSr3znRkYLdnGHa5tl+v8u/1hhgxkY53SqCTXNQvRjAG97/T
- SIIxK1ggLhkBYiRG3n2F56kbRHssFz7YzWDmUg3etjbvsaPKvgf8a0J
-X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
- pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
-X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
- with auth_id=1160
-X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Reply-To: raffaele.tranfaglia@gmail.com
+References: <20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com> <20261017-iio-light-gp2ap002-v2-1-d6879767a446@rudorff.com>
+In-Reply-To: <20261017-iio-light-gp2ap002-v2-1-d6879767a446@rudorff.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Mon, 19 Oct 2026 00:07:18 +0200
+X-Gmail-Original-Message-ID: <CAD++jLn92F+pt3TjBpZYJGa_yJc_vO6SNN4UQ7cQicr5303Z8Q@mail.gmail.com>
+X-Gm-Features: AclHuK-c09UZJfrcHpK9Gk0C-hPkHJfmtbKsGalJ_K_1dxEP5I0KdV6EMn4_rI4
+Message-ID: <CAD++jLn92F+pt3TjBpZYJGa_yJc_vO6SNN4UQ7cQicr5303Z8Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: iio: light: gp2ap002: add vled
+To: Christoph Rudorff <chris@rudorff.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+On Sat, Oct 17, 2026 at 7:28=E2=80=AFPM Christoph Rudorff <chris@rudorff.co=
+m> wrote:
 
-A successful probe does not need to be announced in the kernel log;
-the device can be found in sysfs. Remove the dev_info() and return the
-result of devm_iio_device_register() directly.
+> According to datasheet page 8 "Recommended external circuit",
+> it can have tree supplies: vio, vdd and vled. As vdd and vled wants the
+> same voltage, they may be connected to a single supply.
+>
+> Signed-off-by: Christoph Rudorff <chris@rudorff.com>
+> ---
+>  Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.y=
+aml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+> index 99bddf31cbed..f5b2c6a4d7e3 100644
+> --- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+> +++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+> @@ -33,6 +33,10 @@ properties:
+>    vio-supply:
+>      description: VIO power supply a phandle to a regulator
+>
+> +  vled-supply:
 
-Assisted-by: LLM
-Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
----
- drivers/staging/iio/addac/adt7316.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+So this should be named leda-supply like the pin on the component.
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index d495032786db..9fcbb640b7a5 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -2178,14 +2178,7 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- 	if (ret)
- 		return ret;
- 
--	ret = devm_iio_device_register(dev, indio_dev);
--	if (ret)
--		return ret;
--
--	dev_info(dev, "%s temperature sensor, ADC and DAC registered.\n",
--		 indio_dev->name);
--
--	return 0;
-+	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL(adt7316_probe);
- 
+> +    description: LED power supply a phandle to a regulator
+> +      Optional. It may already be connected to VDD.
 
--- 
-2.56.0
+Description should say "LED anode power supply" as that is what the
+"A" means in leda.
 
+I'm not sure it should be optional really as it technically *must*
+be connected but the diplomatic solution is to not make it
+required so we don't break a ton of device trees.
 
+If we wanna be really detail oriented, add it optional, fix all
+device trees, make it non-optional.
+
+Yours,
+Linus Walleij
