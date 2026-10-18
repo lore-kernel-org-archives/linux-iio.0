@@ -1,85 +1,84 @@
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 755777404E
-	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 07:40:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F6F429B795
+	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 07:40:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.217.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792309235; cv=pass; b=WjsIpi6VNhB2NooHmgxl2h9Xr1B8cR/hiyNzAKX7uv9rDzSt7oxENnFO3X+YqTQ7fS8fT6R/xoKz+Yd31Ljwsyc5RjbmQAEpr1oLXQCdUxFvkMw3BbvPfzsAMq1o2Vq2Qa0F3twMV2mN7l5AiEz/ggcDsNRE1ZEZ4+fjoInA6xw=
+	t=1792309240; cv=pass; b=dQEwstaT4UbcXzLa8MII03A1uZlsBj5BSyARk3UTJGKNrZ1DBi2c71TxuFKODJyJdxhKe26poTe9A75sQxVvK/SVXke0apIIWeaK/YHP4LEV7qxa+OuZF3Vy/XW4WYnVHT7As1bpbYMzrDPHAEW8fkUJtpdPoLZwTaIoRCko0v0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792309235; c=relaxed/simple;
-	bh=iNH5cBPj5R6PgQA/TFvew1uzSSWMiMYGGjLD0JtSrhc=;
+	s=arc-20240116; t=1792309240; c=relaxed/simple;
+	bh=OC3+EmPLTEor5PVw47zL3BXkFlIvHh3rzC0GTriEJqY=;
 	h=MIME-Version:From:In-Reply-To:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UGij3Vo8yMHGMUjPE0ynmFrFg23ndsw4twplsRm8OyRQkzaQjnyqspKUdFK0Gt1LRBDYu9ESO9fpOtwLLJGGfMh5wznDUlFLq+Wctkxf2FR4kS4HfLT5QMvf40MOBbXgaZafZwxN8Vibbe12PgUIU158R7n0EcjsZVp4aHRrhdM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dUMPJJZF; arc=pass smtp.client-ip=209.85.221.182
+	 To:Cc:Content-Type; b=WysGAbWIV16QEPJ6kYCb+L8bYFQgczAOpglE81UFW4JYb2jZnc259689DEzUkHzWZI/4Xb1NbAqLkwVF5kVS/rUj5PxZaHTuUdxFuyY1oAuRNksGfA+Zb3nfNnaPDqotkji9pIIq0iX04tC3Vk/2PBGUbxktyfOm4LRazk27mgA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=spjKT3QD; arc=pass smtp.client-ip=209.85.217.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dUMPJJZF"
-Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-5eac4855401so34394e0c.1
-        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 00:40:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792309231; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="spjKT3QD"
+Received: by mail-vs1-f41.google.com with SMTP id ada2fe7eead31-7c337cd6614so581632137.2
+        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 00:40:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792309238; cv=none;
         d=google.com; s=arc-20260327;
-        b=SoxdoAZQMYqRRyt9dx6808UoBK4XKg3TloUUq83LRtJ/UOkPOUjhi+A1ufuv3nKP38
-         Cmy86UbpQYZZSJLisw0Mx1o6bOPHFTHxZGmt1I97BXa0k8nCtgJ93Kbjru7NnHj0FWVx
-         5edI291BiWsITK85nibN6Vn+c+4eK81L1wRJjDqPU5mNz9Ad7BP3nOiL/oWm6RCAXRsW
-         55m7pTNnbfyr/f0osDQ9wj7hTPHF7z30LGTRo15bwul6AyvazQIrC+pG1E/X5GagNIAs
-         JXvr83+zanBwnktGbe30HItz7r0XUSuob5pXCcVVQWe5CAYj//XBUnFg3g+GOdqibEB7
-         uyeg==
+        b=RLrzA0IbOLU1cLUedT93q7bTO2YQGqU7IqPEKdr9xMBVtROu5Azoh/OwVGs/31+gcW
+         sKujOxMmLDB+OQK4xIpMTDMY+Hx4VFq+jK94w4AruNj11rKM84Uw8eRqQeuDsJYPd4x3
+         euq8YneXouFuVrpjeAieCSF+GODTpxQq+VQVoikqfF1pXwGcwOh90YR4RkE60CF6rlc/
+         0Wr2EZWwU8c9mv1T7PiWFL7Aihl9bWaIABhY0hFlAND3mREGFz3jgg9hkaPrIDA0YFj7
+         nj8xI2B3oCTUxYdkWScGs2np3Q65GdyQ1nsEO3wShjPrGox+xA0DW9iCFjV8l23TbH2w
+         M8HQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:references
-         :in-reply-to:from:mime-version:dkim-signature;
-        bh=PiknuQleKQZdkN7TMk/Fm0FoygQpJUvDYZ+IhR/rFZk=;
-        fh=Kenx65x9g81DXc4LI8GYE8ksPJ2sUeCfVf4CEtSXhJM=;
-        b=Rojnl1LUJzhyvuVNO8XEXZ1+MbR0gKQkq4GIc3ted1M3d2xV2uqGrTyIOvQkB57PEK
-         r4ONa+BGoKzRKE4y5FRbK/9ZHdq+zgRRMySGoC30RWPCJxx2nssv3CnsyWT+WcphPIVr
-         i0cW262ykHV86/JksVe5Z3ZY2HeZXEAZgx+pRzH6EqJr6NAGwRljQFYd1KR+gFa300cV
-         yfvON42se8MS2+IGdO6DZbKZxOCU+Ul7EcaQnCPDHx7VmJ7c/r8ryuFDduOQ0cDHOjgE
-         8W4ELEFNL2iYsmF1HgIKv02+1Su+Q/nXFcmTvOkScE5EouvI9P7st2RTatVwWZq9U5tL
-         zeog==;
+        h=cc:to:subject:message-id:date:references:in-reply-to:from
+         :mime-version:dkim-signature;
+        bh=W3zkFDAliGrfZVNHab7+yemqgQKzuzRr7Soqpwrq/Ts=;
+        fh=flme67Ps7A8JaYw0WbhelGXVvo1NEbJ7DC37T2DGyHo=;
+        b=Qo2ZyWvEbFWyQUuKmMjvd03MI3DPRCJUU8+F9hxOWmQuUGlbrlknYAC4sG3GYgAy/g
+         EQcsMaOo/wOExKeqmBNGJCBR6ofzQX9roLEkLOb2xjw63FAA9fQytXFxMMmZO7TEYlnx
+         AF1Rhm0/ZbzCcKUYpejmk7ZGaZ/VRn2S+rKUEgWbQ5XaRmfQvzknh0Jj6QHk6rq8eHqH
+         UNrxWHAtI5y3wC8K/uaf/HiNZ/cFzldVZodQ+ZLxGO9z4DM7yinaNJgN5fiUQjl38lzO
+         CyXI7EBox14tzSEz795hYFZ5fZOj62kkjTAZUstV8v/A9mVT9rYOz1FRptHfAg2yGFM7
+         4RkQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792309231; x=1792914031; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:references:in-reply-to:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=PiknuQleKQZdkN7TMk/Fm0FoygQpJUvDYZ+IhR/rFZk=;
-        b=dUMPJJZFUsHAqIAnqkBGj710qM01j0e9BlFqpmfzkJw1qVGbIZhDpfFnQpI6fM8DVT
-         saAXD6X3RLz54C3eQWBrJnFUAImBTlaLeh66RibM1cDPC1aGprXRD63rWRMRI6hffWSr
-         svdBszhHtGop3gEqr5ci13L2kOZMOTdtYzohlDNYsKL/XcpZAEgbXnuxryL0gbupd09l
-         2QKXZTXG2st16+agn+sj0S2mKgs7oiV6dmyTItqBSDm4NmaXLGmFXFoFdbjJpNvWz6Uz
-         sTFnVqF8v/JgrT+/D26cUIjg3dfpB2/UYA9MuFQpAH9CVZ+Jdf4haA23x8jSz6L7IX0l
-         F3CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792309231; x=1792914031;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:references:in-reply-to:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1792309238; x=1792914038; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:references:in-reply-to
+         :from:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=PiknuQleKQZdkN7TMk/Fm0FoygQpJUvDYZ+IhR/rFZk=;
-        b=BBIlJWFwM+hCHhL2zB7MWEu9+VJXU23ijvXJbNfndzTtFBWg0Vn9obAPi4XMsDHKEm
-         HPiWpeaFl8AjKL82tBfnKGuAMZIJmu7a3GJDe5sydz/UsAuXTBqDIAtzqGXKuaVIFwaE
-         aBZrrvYE6yAMyCYG1/QvwgZUW61EhO+Zy0mb+djqViJUVOakdsglSskLQO3aJgID/Ce5
-         hHfM6+6diHQLzmSGovwrhsAHWG9M7J71R4t67jY6xC3hGT/7Y3fwnYVFYlpTSQnuqXwz
-         G7pFEvTwqYUsqlGbFTr8+2p3Y6fvDiHUpZ+q+mNJ+aKGNvFjbb4jHuHOgDNAJnn65Hc7
-         J7Pg==
-X-Forwarded-Encrypted: i=1; AKwUvBxuDoLm3Lix+PvUgdg30pxsieylohXsEu9uWckWmdUOrdlbl5/Fd8WmO6w93azvK+fVF3zSO9qA+0Y=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJH+t8t6ONAr+4piobWWuyhZLoy5AlwOyF5w7MyxJXHsT9kqQfF
-	iR8u7QOpxGSatrrwmLpLaJGn9pWQa2K4nB9RBBr64PMVQcP3Ekmjp3LriwVKmNev9752bQ4ZYWt
-	lXYmkZdo7lIVAkx9+9A25O63QB83/GCY=
-X-Gm-Gg: AYBFou3TKJ2/8tIKwLyIZMUM0OCRedK60afRfTGLeRILpJ+aeQNEK7MB5oFs4mOqzmk
-	OOUOAKrjp7E+0AlZDaKgKj2uBIWlO/RUFLygT8fCsMj+tVjWnWHVoys96F/HXAaXnFqJM6vAIHC
-	9L3HIyIjvI5NsJnMGktcR3uuSlffNpevB70PpAMsaLYbBVZUU3P0nyaCzytdCp5mwxGSJjKwgFB
-	S6mzmZqgmL9kMtyhH6ABjoNs+arIkoEXJmoYob0m5VmH4OMOQDc95Qe8sjLzns/DA0xaKgBzdkE
-	vPqKNL1shqfyZtwhwjdqN+KFjy8cEh6FCfCG3C9uU4/iTEvnnH+uxfrV0A6VeRJpITA=
-X-Received: by 2002:a05:6102:5346:b0:7cc:23e7:e742 with SMTP id
- ada2fe7eead31-7cc369dd213mr1367935137.21.1792309231278; Sun, 18 Oct 2026
- 00:40:31 -0700 (PDT)
+        bh=W3zkFDAliGrfZVNHab7+yemqgQKzuzRr7Soqpwrq/Ts=;
+        b=spjKT3QDeLFQmJbNoxjfqU01v4f3kc7Z3W8U5aIdkhjyUUC05Mxzi15EGgIr7R+8m+
+         SVBFKAMbDu7Muh4bDr6KES9fJykZ8t6SI0FjpkBSk49+2ugBmw5frwWfxNoBMDM5MPt9
+         4+lliaTPEy97DWodukof/20S3JpHf3cXPYDtx72SsGyn4spZ0D93j5iqcjgF6pjJIa6W
+         hCQ6aXACoJntDU0JZ+CYFhne/VAwiZQx9EILE3WuTKZPCaU+9cSxawRBB2avQi9ZEZAs
+         CHJVpCpzB2/ssZgZ3iaR3PT7yBoGfwuMyNyv5BQHxgChGffgMYFm5zyxygZnHT5as7SE
+         UcDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792309238; x=1792914038;
+        h=content-type:cc:to:subject:message-id:date:references:in-reply-to
+         :from:mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=W3zkFDAliGrfZVNHab7+yemqgQKzuzRr7Soqpwrq/Ts=;
+        b=SI9VOYN+LlUVKwKdpANqi/yLlL/3vJqTTNR1wFhjOa2csgSz4Dx8w4bazuBrVr42Hq
+         jz1BtiuQGyipvhfufJPzII6HYMm3qJnHgSYWsR5bZ138SRtbiJyMB9TtVt66pleaL8X2
+         5vnbVa0SeDKSqRI0hIxyQaCjJLTpuoT9IwAXrZXy5ze5fsENp0QHZA5AFVSbxMsGxZ43
+         GMZpvOdFZEJ3MhaJlYeWWjxO6lxRmLlBeYBg9LxfhYsBsJ3XSHFSdz4mXHrVKPW85TLh
+         T24wRuCx4mKZZqzQZJC0/ceubtzUjYPprLvqssep7ObGUSnv2Ett0D0F3GseA3ZJqBe/
+         SKhA==
+X-Forwarded-Encrypted: i=1; AKwUvByqy61VTlV8wun9M9CyyVusZFOelwfwfn4xJV/xsfNg7U7+b51xS/DMPIgPFx07RP0p9fOyr9zqGBw=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLRhrhGu291epHACYCaulcDNMaqrXa4M+pQLUfSL1d1rc+iFUbj
+	W6hrCkqHFat98ctO59CpA++fMEeZFOgfR12Kro6Tt6e+tEru6/YFYbHXqbrnAC6BSCP2R+10Yi6
+	PU8VO6klqtM4db1EBjqkQzRUxM6sMHgU=
+X-Gm-Gg: AYBFou1kIFV5pKO7Exbo8zXEO26V/ioioOTf13EpQf7AgqpnJ0qdQzdGyMxGGApAQsB
+	Qpjd8q3sK/24aryR8jLuTTPb2mZhwomX5HJX8BRMLjW1oF0ax8Z0DR5+rzgoAJ6qu9v0EP0233V
+	5ei8QG/OKJVwOebkNUJecpTSkS0uKfCDE43hvPecSUs83vMHWL8ZvMXwYTObVupEsYtQhedHCgD
+	KyxJ6eJYMTAWp90H/78U+nV6g2bciDqw2IxuAyxFF3DG5RnT7eJIH3OX55KvhW6n7BHfbek8cbZ
+	l4y+gMDQCvH4yr8V6Cj9+JUNJwKl3ZTmQS5xn5JOsEXQeFA9ONehONbm
+X-Received: by 2002:a05:6102:1625:b0:7af:fef2:8ecf with SMTP id
+ ada2fe7eead31-7cc3691cf50mr1706262137.8.1792309237980; Sun, 18 Oct 2026
+ 00:40:37 -0700 (PDT)
 Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Sun, 18 Oct 2026 00:40:30 -0700
+ Sun, 18 Oct 2026 00:40:37 -0700
 Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
- Sun, 18 Oct 2026 00:40:30 -0700
+ Sun, 18 Oct 2026 00:40:37 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,125 +86,125 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 From: Wenqiang Zhao <berringtoni36@gmail.com>
-In-Reply-To: <20261017191310.3164205f@jic23-hlaptop>
-References: <CAF2O-sPfK96Bvqtu-reg+y--nuV35tM57Med9irz_a3RK1xhsw@mail.gmail.com>
- <CAF2O-sO3OJH1sNnm0TkDXkEwWPKM21+s0_iNgU-VAmF+kMWtLw@mail.gmail.com> <20261017191310.3164205f@jic23-hlaptop>
-Date: Sun, 18 Oct 2026 00:40:30 -0700
-X-Gm-Features: AclHuK-OmAEWgu0Yh6eWar_vIcBjdibwFfoT4ZkuKroHrklemOgvlV5sMBQrDcw
-Message-ID: <CAF2O-sPVdSPuwvGp8vrNNZ=y+pbBw5BkPniT_chHFPBWpVNeow@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] iio: accel: adxl345: propagate errors when reading
- event configuration
+In-Reply-To: <20261017195037.5501e184@jic23-hlaptop>
+References: <CAF2O-sN=PM1MUaWzv2r3zT0TozZZje+0eYPiJLQV_LHB3-Qj6g@mail.gmail.com>
+ <20261017195037.5501e184@jic23-hlaptop>
+Date: Sun, 18 Oct 2026 00:40:37 -0700
+X-Gm-Features: AclHuK8JKWALdvzAXKzaA9KhVvONm7cTVLuGr-8oL3l9JjZbRIhf609lS0VNoFI
+Message-ID: <CAF2O-sMFDgcgGFTPvga_iwkyqTX8bHUmsTp9rS8Xc9_5c3zFvQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: accel: adxl345: update period cache after
+ successful write
 To: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
 	Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lothar Rubusch <l.rubusch@gmail.com>, Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com, 
+Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, 
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-> Cleanest solution is probably to pass a bool * in as a parameter and
-> use that to 'return' the boolean rather than mixing up bool and error
-> codes as it currently does.
+> If that isn't easy to fix, look at using b4 and the
+> web gateway that can use.
 
-Thanks, Jonathan. I have reworked both the enable-state and coupling
-queries to return status separately from bool output parameters, and
-updated the event-read, disable and link-bit callers. The 534 host
-function-chain cases pass with UBSan; no full kernel build or hardware
-test has been performed. I will send v3 after the final review.
+Thanks for flagging this, Jonathan. The sent-folder checks did not
+catch the corruption seen on receipt. I will switch to b4 and the web
+submission endpoint, and resend the unchanged period-cache patch once
+that setup is verified.
 
 Thanks,
 Wenqiang
 
 
-On Sat, 17 Oct 2026 19:13:10 +0100, Jonathan Cameron <jic23@kernel.org> wro=
-te:
-> On Fri, 16 Oct 2026 19:39:08 -0700
-> =E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com> wrote:
+On Sat, 17 Oct 2026 19:50:37 +0100, Jonathan Cameron <jic23@kernel.org> wrote:
+> On Sat, 17 Oct 2026 04:48:25 -0500
+> Wenqiang Zhao <berringtoni36@gmail.com> wrote:
 >
-> > adxl345_is_act_inact_en() returns either a boolean state or a negative
->
-> Returning true or false to a function that reports to return integers
-> is rather nasty and is probably what lead to this bug in the first
-> place!  Would you mind also changing that as part of this fix?
->
-> Cleanest solution is probably to pass a bool * in as a parameter and
-> use that to 'return' the boolean rather than mixing up bool and error
-> codes as it currently does.  That will keep the return value for whether
-> the query succeeded or not.
->
-> Thanks,
->
-> Jonathan
->
->
-> > regmap error. Applying !! in adxl345_read_mag_config() converts every
-> > negative error to 1, so a failed register read is reported to userspace
-> > as an enabled activity or inactivity event.
+> > The ADXL345 event-period read path returns st->inact_time_ms. The setters
+> > for inactivity, free-fall and the ODR-derived default currently update
+> > this cache before writing TIME_INACT or TIME_FF. If the regmap write
+> > fails, the sysfs write reports an error but a subsequent read returns
+> > the requested period even though it was not programmed.
 > >
-> > Return the helper result directly. Its successful paths already return
-> > 0 or 1, and the IIO event attribute read path propagates negative error=
-s.
-> > This also covers the adaptive magnitude events using the same helper.
+> > Update the cached period only after the corresponding regmap write
+> > succeeds.
 > >
-> > Fixes: 66a1af6d8a63 ("iio: accel: adxl345: add activity event feature")
+> > Fixes: 8a1536cc4a1c ("iio: accel: adxl345: add inactivity feature")
+> > Fixes: f6f22950d925 ("iio: accel: adxl345: extend inactivity time for
+> > less than 1s")
 > > Assisted-by: LLM
-> > Signed-off-by: =E8=B5=B5=E6=96=87=E5=BC=BA <berringtoni36@gmail.com>
->
+> > Signed-off-by: Wenqiang Zhao <berringtoni36@gmail.com>
 > > ---
-> > Validation on macOS ARM64 with Apple clang 17:
-> > - Compiled the three relevant driver functions verbatim with the driver
-> >   header, using a host regmap stub for deterministic read failures.
-> > - The original code failed 36 error cases; the patch passed all 53 case=
-s.
-> > - Covered activity/inactivity and DC/AC coupling, each of three regmap
-> >   reads failing with -EIO, -ETIMEDOUT and -EREMOTEIO, enabled/disabled
-> >   states, mismatched coupling and an unsupported direction.
-> > - Checked read order, early exit and unchanged register state.
-> > - Used -Wall -Wextra -Werror, AddressSanitizer and UndefinedBehaviorSan=
-itizer.
-> > - git diff --check and checkpatch.pl --no-tree --no-signoff --strict
-> >   on the code diff passed with no errors, warnings or checks.
-> > - The full patch draft also passed checkpatch with no errors, warnings
-> >   or checks after fetching the introducing commit for Fixes validation.
+> > v2:
+> > - Keep Fixes: tags on a single line (Nuno)
+>
+> Sadly I think your email client or server is fighting back. I'm still
+> seeing the split one. If that isn't easy to fix, look at using b4 and the
+> web gateway that can use.  Avoids any opportunity for email corruption.
+>
+> > - Use a Latin-script name in From: and Signed-off-by: (Nuno)
+> > - Drop the long validation notes; build-tested only, not tested on hardware
 > >
-> > Also compiled adxl345_core.o, adxl345_spi.o and adxl345_i2c.o as
-> > x86_64 ELF relocatable objects using clang and unpacked Debian Linux 6.=
-1
-> > headers supplemented by upstream IIO/regmap headers. This checks syntax
-> > and types; it is not a full Kbuild/modpost build.
+> > The missing serialization between concurrent sysfs callers that Nuno
+> > pointed out is a separate issue and will be addressed in a follow-up
+> > patch.
 > >
-> > No in-kernel KUnit execution or hardware sensor test was performed.
-> > The checkout is sparse; --no-tree disables checkpatch's tree layout
-> > check. Initial draft checks used --no-signoff before human review.
-> > The final signed email also passed checkpatch without --no-signoff.
+> >  drivers/iio/accel/adxl345_core.c | 27 ++++++++++++++++++++++-----
+> >  1 file changed, 22 insertions(+), 5 deletions(-)
 > >
-> > AI assistance: Codex reviewed the event-read path, identified the errno
-> > conversion, drafted this two-line fix, the reproducer and changelog.
-> > The request was to prepare a driver/BSP/kernel contribution related to =
-an
-> > ADXL345 SPI/IIO vibration-monitoring project, with reproduction and che=
-cks.
-> >
-> >  drivers/iio/accel/adxl345_core.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl3=
-45_core.c
-> > index 6c9080d..5983fc7 100644
+> > diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+> > index 6c9080d..cd58304 100644
 > > --- a/drivers/iio/accel/adxl345_core.c
 > > +++ b/drivers/iio/accel/adxl345_core.c
-> > @@ -1176,9 +1176,9 @@ static int adxl345_read_mag_config(struct
-> > adxl345_state *st,
+> > @@ -391,30 +391,47 @@ static int adxl345_set_default_time(struct
+> > adxl345_state *st)
+> >  	odr = FIELD_GET(ADXL345_BW_RATE_MSK, regval);
+> >  	val = clamp(max_boundary - adxl345_odr_tbl[odr][0],
+> >  		    min_boundary, max_boundary);
+> > -	st->inact_time_ms = MILLI * val;
+> >
+> >  	/* Inactivity time in s */
+> > -	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
+> > +	ret = regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	st->inact_time_ms = MILLI * val;
+> > +
+> > +	return 0;
+> >  }
+> >
+> >  static int adxl345_set_inactivity_time(struct adxl345_state *st, u32 val_int)
 > >  {
-> >  	switch (dir) {
-> >  	case IIO_EV_DIR_RISING:
-> > -		return !!adxl345_is_act_inact_en(st, type_act);
-> > +		return adxl345_is_act_inact_en(st, type_act);
-> >  	case IIO_EV_DIR_FALLING:
-> > -		return !!adxl345_is_act_inact_en(st, type_inact);
-> > +		return adxl345_is_act_inact_en(st, type_inact);
-> >  	default:
-> >  		return -EINVAL;
-> >  	}
+> > +	int ret;
+> > +
+> > +	ret = regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	st->inact_time_ms = MILLI * val_int;
+> >
+> > -	return regmap_write(st->regmap, ADXL345_REG_TIME_INACT, val_int);
+> > +	return 0;
+> >  }
+> >
+> >  static int adxl345_set_freefall_time(struct adxl345_state *st, u32 val_fract)
+> >  {
+> > +	int ret;
+> > +
+> >  	/*
+> >  	 * Datasheet max. value is 255 * 5000 us = 1.275000 seconds.
+> >  	 *
+> >  	 * Recommended values between 100ms and 350ms (0x14 to 0x46)
+> >  	 */
+> > +	ret = regmap_write(st->regmap, ADXL345_REG_TIME_FF,
+> > +			   DIV_ROUND_CLOSEST(val_fract, 5));
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	st->inact_time_ms = DIV_ROUND_UP(val_fract, MILLI);
+> >
+> > -	return regmap_write(st->regmap, ADXL345_REG_TIME_FF,
+> > -			    DIV_ROUND_CLOSEST(val_fract, 5));
+> > +	return 0;
+> >  }
+> >
+> >  /**
 > >
 > > base-commit: 9ee8306121495d2a25aa5d1bfd519f2748786b83
