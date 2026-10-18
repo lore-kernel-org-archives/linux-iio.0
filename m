@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C02F43CB546;
-	Sun, 18 Oct 2026 18:37:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9785D388E58;
+	Sun, 18 Oct 2026 18:43:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792348657; cv=none; b=FRDtCCgOyQ6jnNxplrHdB/2fsl4fKR7lU+TCKdeEpsRx58eq0pNrcsqELS1+LT1Rbhg7V5dZ3eY9epmqek723wJ6rQEadwa9pM2NsiYEtRTQMVGAsp1rMH9jlN0g2no/xNwt94gA2aPPznO7HdT/Jbk7QOZ3GKxPhGw//L7VvCk=
+	t=1792349011; cv=none; b=WMIkL7o7Hlq+fANbDSgc5h5N0WqFguOi2mPCie7qfJn+U3yHFqHpr6wP3k5qWpnpYVX3JPr1AYMVV6zZboIygd2ZA/nGoZR1suWrF/r5/uTbiFwWv4nR8u4HDOfiopUWK5lTt896q2T/LjIce9DwUvoOTGSgLIYimltHt8ClFcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792348657; c=relaxed/simple;
-	bh=koL/Zye0yOEY2f2qrpZOxPWNVc6qfWgKEYA94SPC24M=;
+	s=arc-20240116; t=1792349011; c=relaxed/simple;
+	bh=b/mCOFAvVzM4HbmD+iL8o44VhpJfqZxQbnUrBbgDGU0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XWPJG6StOPEDJSx/oOWnmVWlooxm53eC4ekZX8QITCUnaukLtCQebfQ4xK1zFBLqFwkjNDbG8Pb0V9rl/EnL/G1Noz0yYu8c3DG4yqi8LDuywtd8qACZjYmBDBGbxVzVt+oP0Lavjd5eCiHkSZ1NbxqNU6aa7aZ0bxIWoxCmY6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NUQxdRXd; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=gxWDRYhQiFOQRiv7TYbOguo5nnq36a1a6Q1tqIchqf7CNzbspPTKpjxUQgm08us8/oLVV2ccxmDCuvn5WzdOOCVfubdCLBWmbo0gS0QfCLfvf/cpu+7/UdGxIDGWxVixUgG1rivvzjE2v0gtYsrYnVcC0whLEX2cuiT0kEmPXkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S0/pMrZv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NUQxdRXd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27EAF1F000C4;
-	Sun, 18 Oct 2026 18:37:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S0/pMrZv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D377E1F000C4;
+	Sun, 18 Oct 2026 18:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792348656;
-	bh=CWjDBO71xSodfTJwEHUuQd3js5p3IqLrES9sAP1AoFw=;
+	s=k20260515; t=1792349010;
+	bh=qiOERPCTQiGVFgwfZLglWEV6akVIWi2rX3u7+KbZC3I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NUQxdRXdN2ckz4P0AR0yl7ieQ+kOEasNxj/VaAjvozhXKIp8NQM0ZNDwasn/7V3rU
-	 VZH0zp3pt2A0BPa7XojyChkZIOiTncjyDZsgx4ZscrRRkttukZyvedE0v7GtjEtS/Z
-	 xuw+OFRrJ/zGmcVfT/heD2hkskf26fOZAeyEbxat4tBYE84hbWOJljf0iSdwA41E+W
-	 qTey9y2wtMW75L0cqF1WXz9MGuGcXWr+H9IOKmE2MlBFxcxdZOxE3j0PfbCUvukd4x
-	 JULIOZAB/emCSJZjx2BRdE6cCZyJ00n/cr11ooEX4N36iZ7L1OSC6QK6ClnsVqvhm6
-	 AfUyd7cmsoXmQ==
-Date: Sun, 18 Oct 2026 19:37:30 +0100
+	b=S0/pMrZvfE+oKfHNSjqsarg79YYCAUFYpYzLR77bM2i2Zh47WHatPZU1MggM2Km5c
+	 fhlbURllt5N1hl0PrERey7XFvnYqEgJ6lIAollpBlgfIAJvMSKz5ihOmiSqeL2x2CF
+	 pVvXNx7+ReZHJpUj1nyCb5EPV4NkTTJZgjJmSBHUaDJcB0eqZoPcK1T7C0BEwfwhEV
+	 CldAq+IJxnbNPPNULSYHru4stMUg5o1VXBPMaFuJcR3N8KSQFAaQRmMrKvvV9FonLG
+	 pOe+j0ZxfNKLPYXz0VLi249D9n69eXmu4AxeAyeM1xw7ZBsPM4MchQHgQWxA6JJkqx
+	 5HDpcCuS2udfQ==
+Date: Sun, 18 Oct 2026 19:43:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Muhammad Abu Bakar <m.abubakar365@yahoo.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 0/2] iio: pressure: add Sensirion SDP31 driver
-Message-ID: <20261018193730.3beb28cf@jic23-hlaptop>
-In-Reply-To: <20261007205104.4694-1-m.abubakar365@yahoo.com>
-References: <20261007205104.4694-1-m.abubakar365.ref@yahoo.com>
-	<20261007205104.4694-1-m.abubakar365@yahoo.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Guenter Roeck <linux@roeck-us.net>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>
+Subject: Re: [PATCH v4 0/3] Add support for Microchip PAC1711 Power Monitor
+Message-ID: <20261018194324.22e726ed@jic23-hlaptop>
+In-Reply-To: <20261007-pac1711-v4-0-6ef34d7a7947@microchip.com>
+References: <20261007-pac1711-v4-0-6ef34d7a7947@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,27 +49,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu,  8 Oct 2026 01:51:02 +0500
-Muhammad Abu Bakar <m.abubakar365@yahoo.com> wrote:
+On Wed, 7 Oct 2026 17:41:52 +0300
+Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-> This series adds support for the Sensirion SDP3x family of differential
-> pressure sensors (SDP31, SDP32 and SDP33), I2C devices that also report
-> temperature.
+> The PAC1711, PAC1721, PAC1811 and PAC1821 products are single-channel power
+> monitors with accumulator. The PAC1711 and PAC1721 devices use 12-bit
+> resolution for voltage and current measurements and 24 bits for power
+> calculations, while PAC1811 and PAC1821 have 16-bit resolution and use 32
+> bits for power calculations. The 56-bit accumulator register accumulates
+> power (energy) or current (Coulomb counter).
 > 
-> The SDP3x uses a completely different I2C command protocol from the
-> already supported SDP500, so extending the sdp500 driver does not make
-> sense.
-> 
-> Patch 1 adds the device tree binding.
-> Patch 2 adds the IIO driver, which exposes differential pressure and
-> temperature channels and validates each measurement using the sensor's
-> CRC-8 checksum. The SDP32 and SDP33 differ from the SDP31 only in range
-> and use it as a fallback compatible; the scale factor is read from the
-> sensor at runtime. Tested on an SDP31 wired to the I2C bus of a
-> Raspberry Pi 4.
-Lovely little driver.  Thanks!
+> PAC1711 and PAC1811 measure up to 42V Full-Scale Range, respectively 9V for
+> PAC1721 and PAC1821.
 
-Applied to the testing branch of iio.git. I'll rebase that on rc1 once
-that is available then push out for linux-next to pick up.
+I think the sashiko comments for this one are a mixed back but the
+one about intermediate unsigned state in particular looks like a good spot.
+I didn't look closely at all of them.
+
+https://sashiko.dev/#/patchset/20261007-pac1711-v4-0-6ef34d7a7947%40microchip.com
+
+Whilst I do plan to enable sashiko emails for IIO fairly soon (subject
+perhaps to more discussions) in the meantime, if you want to speed up
+review of your patches, you can reply to the thread addressing what sashiko
+has found.  That way you save reviewers from trying to figure out what
+is true and what is a false positive.
 
 Jonathan
