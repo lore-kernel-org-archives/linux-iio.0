@@ -1,77 +1,111 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9785D388E58;
-	Sun, 18 Oct 2026 18:43:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F23373F23C0;
+	Sun, 18 Oct 2026 18:50:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792349011; cv=none; b=WMIkL7o7Hlq+fANbDSgc5h5N0WqFguOi2mPCie7qfJn+U3yHFqHpr6wP3k5qWpnpYVX3JPr1AYMVV6zZboIygd2ZA/nGoZR1suWrF/r5/uTbiFwWv4nR8u4HDOfiopUWK5lTt896q2T/LjIce9DwUvoOTGSgLIYimltHt8ClFcs=
+	t=1792349437; cv=none; b=Jd7byMCWSh/7XYI7PKQCKd5SspqLe1/RctVSDg0Hczd8RvGU4cLA1PipAL2HAO76PW6rWIoFmhh8vUwM16Si/I83l7DRZ+euGOsEHxaur1Zp4Hss6pdYyvd6ABPESbMUB/cFUJuQPtix3RV3SbDIEBKY9PJ6EE6BwMMclGPhlPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792349011; c=relaxed/simple;
-	bh=b/mCOFAvVzM4HbmD+iL8o44VhpJfqZxQbnUrBbgDGU0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gxWDRYhQiFOQRiv7TYbOguo5nnq36a1a6Q1tqIchqf7CNzbspPTKpjxUQgm08us8/oLVV2ccxmDCuvn5WzdOOCVfubdCLBWmbo0gS0QfCLfvf/cpu+7/UdGxIDGWxVixUgG1rivvzjE2v0gtYsrYnVcC0whLEX2cuiT0kEmPXkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S0/pMrZv; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792349437; c=relaxed/simple;
+	bh=ujufb1hsN+idDb+vBcB3cB6Jxmd7uHUq8KKZNzTcgc4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N3jmyuWHan1nfaH0Y26l4ACJGMpaQDA7gYL6/KfcdHfyVz40am7jQ+f9Fbi74+HihabYdbdVKIonOsfs900fagWNBFYklVqERfc1xLZ3aw7EjICngtwi3okCOrQx7vScjcBEbmKRqqwq8htyYn4LSUcbKKB+43B2QYift4YG9Ks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nZHEI+AC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S0/pMrZv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D377E1F000C4;
-	Sun, 18 Oct 2026 18:43:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nZHEI+AC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2B91F000C4;
+	Sun, 18 Oct 2026 18:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792349010;
-	bh=qiOERPCTQiGVFgwfZLglWEV6akVIWi2rX3u7+KbZC3I=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=S0/pMrZvfE+oKfHNSjqsarg79YYCAUFYpYzLR77bM2i2Zh47WHatPZU1MggM2Km5c
-	 fhlbURllt5N1hl0PrERey7XFvnYqEgJ6lIAollpBlgfIAJvMSKz5ihOmiSqeL2x2CF
-	 pVvXNx7+ReZHJpUj1nyCb5EPV4NkTTJZgjJmSBHUaDJcB0eqZoPcK1T7C0BEwfwhEV
-	 CldAq+IJxnbNPPNULSYHru4stMUg5o1VXBPMaFuJcR3N8KSQFAaQRmMrKvvV9FonLG
-	 pOe+j0ZxfNKLPYXz0VLi249D9n69eXmu4AxeAyeM1xw7ZBsPM4MchQHgQWxA6JJkqx
-	 5HDpcCuS2udfQ==
-Date: Sun, 18 Oct 2026 19:43:24 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: Guenter Roeck <linux@roeck-us.net>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>
-Subject: Re: [PATCH v4 0/3] Add support for Microchip PAC1711 Power Monitor
-Message-ID: <20261018194324.22e726ed@jic23-hlaptop>
-In-Reply-To: <20261007-pac1711-v4-0-6ef34d7a7947@microchip.com>
-References: <20261007-pac1711-v4-0-6ef34d7a7947@microchip.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1792349436;
+	bh=RMwpf0KMhGlsmAsma1velbB+PsLjkn1Z8ybJYZMeYUo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=nZHEI+ACoaQ1CoG7DYretXyau9ldDUaNwf9AvT8S/+O6GrHSSahpvqSRzLG6eYDYT
+	 IXvU0/qf/1NakNt1XnIiw0ivgCIvwIMoyVpCjYBB2+thB7luJTDmaomq7TA7bwyT16
+	 Pzhd4EsqMckE7zianpkD8fcjfHswtgO6DqI3Sz7wLgHbISIgT5JZS/lclhHbAl0J5s
+	 ZuBWgiTvydWn4gfri9wmv44VEkUK1anBc/MtP/x+b1RHfddxrV7gF0K5dPzf8tCICY
+	 IaK247G8YcK2LQIodU0FE0L0Z17rRwbXOMkqth9TAub5TUout6ynDTfSXSIDTRz9m9
+	 4+9RrVHoZEToA==
+Date: Sun, 18 Oct 2026 19:50:31 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Christoph Rudorff <chris@rudorff.com>
+Cc: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: iio: light: gp2ap002: add vled
+Message-ID: <20261018-giggly-reminder-4404507f3f23@spud>
+References: <20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com>
+ <20261017-iio-light-gp2ap002-v2-1-d6879767a446@rudorff.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="+Mn879I/TmKW1p6b"
+Content-Disposition: inline
+In-Reply-To: <20261017-iio-light-gp2ap002-v2-1-d6879767a446@rudorff.com>
 
-On Wed, 7 Oct 2026 17:41:52 +0300
-Ariana Lazar <ariana.lazar@microchip.com> wrote:
+--+Mn879I/TmKW1p6b
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> The PAC1711, PAC1721, PAC1811 and PAC1821 products are single-channel power
-> monitors with accumulator. The PAC1711 and PAC1721 devices use 12-bit
-> resolution for voltage and current measurements and 24 bits for power
-> calculations, while PAC1811 and PAC1821 have 16-bit resolution and use 32
-> bits for power calculations. The 56-bit accumulator register accumulates
-> power (energy) or current (Coulomb counter).
-> 
-> PAC1711 and PAC1811 measure up to 42V Full-Scale Range, respectively 9V for
-> PAC1721 and PAC1821.
+On Sat, Oct 17, 2026 at 07:27:41PM +0200, Christoph Rudorff wrote:
+> According to datasheet page 8 "Recommended external circuit",
+> it can have tree supplies: vio, vdd and vled. As vdd and vled wants the
+> same voltage, they may be connected to a single supply.
+>=20
+> Signed-off-by: Christoph Rudorff <chris@rudorff.com>
 
-I think the sashiko comments for this one are a mixed back but the
-one about intermediate unsigned state in particular looks like a good spot.
-I didn't look closely at all of them.
+Valid comments from Jonathan here,
+pw-bot: changes-requested
 
-https://sashiko.dev/#/patchset/20261007-pac1711-v4-0-6ef34d7a7947%40microchip.com
+Thanks,
+COnor.
 
-Whilst I do plan to enable sashiko emails for IIO fairly soon (subject
-perhaps to more discussions) in the meantime, if you want to speed up
-review of your patches, you can reply to the thread addressing what sashiko
-has found.  That way you save reviewers from trying to figure out what
-is true and what is a false positive.
+> ---
+>  Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.y=
+aml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+> index 99bddf31cbed..f5b2c6a4d7e3 100644
+> --- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+> +++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+> @@ -33,6 +33,10 @@ properties:
+>    vio-supply:
+>      description: VIO power supply a phandle to a regulator
+> =20
+> +  vled-supply:
+> +    description: LED power supply a phandle to a regulator
+> +      Optional. It may already be connected to VDD.
+> +
+>    io-channels:
+>      maxItems: 1
+>      description: ALSOUT ADC channel to read the ambient light
+>=20
+> --=20
+> 2.39.5
+>=20
 
-Jonathan
+--+Mn879I/TmKW1p6b
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatUU8gAKCRB4tDGHoIJi
+0ublAQDq52TunNmV5wm29HeKs/ujJmoXxHkPditf6vJE+X+6xgEAoWmSd8+sREvm
+zoS7VRUp+0o9gvF5GqtidQdz3M0TxQk=
+=hIke
+-----END PGP SIGNATURE-----
+
+--+Mn879I/TmKW1p6b--
