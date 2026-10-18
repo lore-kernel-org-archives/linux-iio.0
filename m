@@ -1,114 +1,85 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 534C6435504
-	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 06:22:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.161.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792304568; cv=pass; b=iOVHjM1Qi6DuBc4feekizyp++644VDbCd9Z3ftWhEUQZakH80jGM6ZXCXOBYPtNtC6PDwkGarN5urj5cShoMRq0Tfa9DiQLGKzSYJIYj/ipRTNByPHsLihynV5YCM/hv6JR5PsrSxMWrILNCK7dZ4UUoDiSCIp7VOTKV1VP9d44=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792304568; c=relaxed/simple;
-	bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IQXI6xtrTktNzNYTvBfStaAX6fPHBGAJ/aQeDiUlVBCwg8EPRw/GE25mQgDTb/z72jbIdYJiiRsm52+LMTWWucvtDPbz+AnbDYgdFga2juC0GZZQJrBuQGCZaLzkSmz3KiOGa85RzE7u9u8G6DM9Jg8L8cznrOlbQE6hHV7eKnM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PhDh+qrO; arc=pass smtp.client-ip=209.85.161.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684503FE65F;
+	Sun, 18 Oct 2026 07:05:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792307119; cv=none; b=VE/mRzJEjuSUPb/vb0LMgvn3dekXfduCveZc64VRAjYlsnHIkFIAhNgCYaT0GvowZ8Fk/MhfQ1XRHrtHXDOzOwpekbJx4MltVZuGIM1i78NaG7LCn1aNyVG64bnBjZye5AxweHvdY/hNSaTMNCGJtK/PDm53q7L+LCNPgTBFzCk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792307119; c=relaxed/simple;
+	bh=zXeCUgzcgR4qsPSydby+zrufcPBOT82Ize1Bm32RGh0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MS0ExcsnGaMQ0QbVzlQUVNJc5hSZIwQgOYMLTf30bHh3Os/Bcoeb32aOIszOCe6hAAuazeSVXlpDJY2FLIcU2YWOYy0NFF7AJf6QE+INxueFpO2RbkG8g28ftcj8dSwnTXfXsMLy7W5HI+NnflOGtNfl8G46OQ21oi3zZNQhDGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LNqFhFlX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PhDh+qrO"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-6df7f544919so709910eaf.1
-        for <linux-iio@vger.kernel.org>; Sat, 17 Oct 2026 23:22:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792304566; cv=none;
-        d=google.com; s=arc-20260327;
-        b=TaCYL4VB6u/MVpRbndNI6mpkXskw8ucNl1G5ZmfO32+K1e5trFQ24p6ef3FFVyWSu5
-         2eRqOtCZUVE8CQxwQONLvHCehPIMxuHf8Cqdgfi+f3MxJIbDMi3BhTrZr7T7ivpPlnQd
-         vNwmzKl6E/e7MTkHnD9KJQntg3QHt/4QYfCQYqR67+7SuAAXyUOXlLF68Hzp/e5WRziv
-         2sLg8qxLxSjxFWyplBIMn6RIRklrCWIZE9K0TUXzgTdVBvYhzEB4bZME6Hn+LseEqviT
-         Kd/PcEaZV9+CUytD+FA/AuuDWvXkrccGjFlp/83MpB50uyb1ELyZr7HtziVYfYRw2Z92
-         9chw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
-        fh=PNDZAf80YyCIV8HGLRM6KRo/AiWxw6dQYLkGyb6rQfw=;
-        b=CIsovahK6USp+01STx20hQ29W7Ma9zUI99RxYN4XZmW7hiEGmscnr2AKqYvwAFwYHM
-         +rwrxn7C6WFcOVmCDC5VbqF59xUF6FPWWKdXW52jj5XH5x1+naWYkJ5p0t4+USvMGvy6
-         U85WlSVPPnDelZYI1nlSopZypISa1u4EGVn/HoUuJ7Ab6nsHx+rmKoRoyKS9FxGSFfO2
-         jV4DYbj4VoYYns4kGGtj69WKp+sJd2Che4KZAOs1osnittLLbi02KYOXJmiYSo3C6yI4
-         r+VS0BGQtpVmST4VVRn66ewrF19FgSeehdSmNoqa88HD4/PWCmvylDJ69u5m7u+S4J5I
-         tx0Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792304566; x=1792909366; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
-        b=PhDh+qrOhxN77Im0x/CueAthayuaBjMkGBIkEp+yKQ2fsOeRAU8FUWk0P6oy+dhH44
-         Qv2ArKugNW7pjoiALVApj0wCwrEMqm3ukBFPS07qWoo/Ak6DHA7Ubg7ex4kaB0RaAsnD
-         E6Z7lXKG3WLfuVQH78+Sdp4ARVS+f0q0LripIU00IGzN2iiXYBSQd86EThnGbaieRGqu
-         rAbyntrQiEZxRIO49tTDbs8hQ8VFDlvTbzLUBI9M2OTR50Trvu5lt3QfVZPxmQw4B9ux
-         21DSgLfdnaX0fxpdySGIsxsW6yeD62HH0t0g5ZhScXUt7pP0pkEOTcV8b/uui2XYXaG2
-         I3KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792304566; x=1792909366;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=HlmuKfI3kJB59+iXbrxqBJk3gEIqwcG51Ecw2r8EOIE=;
-        b=ffscWK6ir41sHxGovM0hPgXR64NmCZ0sJFnOUkUtgB6go/HFo4BCDTvvH71P34T7qO
-         p9iI9kx2yBRMOYdGlxOGlT6ocEo8R/LKA21mvNbkFlsSesP4NWzqkxI5TPn+C3Pury64
-         ccMxhvXaM96H8D0HovwNtS2wRuvlR75v804/77+51x+ijD+TTFU0VsU9C6sREOo2jkPF
-         KQ7pUa3SrMUVGcfSdvYFMFvUPCrxgxLSubsZjFIIwUhHHpOtsaLKgO07rBsSvczgkH1z
-         J1FhJ1EOhEJbEU6y7adDtm43xF+NNe2y7FN37PZTO9Tj11kDYem0YgLDDVvIqT7emNun
-         yRGw==
-X-Forwarded-Encrypted: i=1; AKwUvBzK+m+3WVXC3s/lOUg1HggMujimCiGR9AY4L+X7+V3F9UCfpSpBOhbU/OwQZyFvdJWbzuXxOFW/6Rg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLIPhrln9+ZKus5QtPagigxTJyBQAinYfR4gscY7nT8S68YY2L8
-	//wNd77mZm5hv3W+Abj6tg9RiN0WfjDC79odF0ZyfOAPFk2QaSpndM4cOEDiY1A76Vd8Xu2qwP8
-	I+8SshhyrJICA9kAKUhz3hTD4eYahEn8=
-X-Gm-Gg: AYBFou31O3R3b7NPMj/p9M5Z64COEevSFYu5T0jjASkaSWuyJaPbaLBxTqj1RrWy1Xu
-	Urg9QDCb/QB1o16Me4l7sVRfSz2Du4t13oAUHbo3+P3NVvPuLs2NWT7UACluBNgN07Nk16snINM
-	z9CHmfVVwkM7clepjVrQKoJQUhFSvOqeLFw6z9pLyNkPZvqkAgDkcukIVknFya/D4P1yZN5qvAF
-	rS2JE/p4o8NL8oBTXdR0H9f/8m5sLk2YtttTvkUs07olXr2CYaLRgkiJ1RIENe/rj1xtis2kWaK
-	I7QUwY/bG3KHREidCcf/M9L1FYdiwyVaiaUOacelWrq9JqHEiJnIVDO6
-X-Received: by 2002:a05:6820:4b8d:b0:701:795:4eea with SMTP id
- 006d021491bc7-70357495e00mr3531298eaf.62.1792304566146; Sat, 17 Oct 2026
- 23:22:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LNqFhFlX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39BF1F000C4;
+	Sun, 18 Oct 2026 07:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792307115;
+	bh=8U/HEpnOLtFQ6/ozb6bsm7OTEQo691HeSeDJ2ZzT5iQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=LNqFhFlXZcP3KN3JrARuKumRORMO5V3SzFULKHMcEB8sOOFCyjORz18uRUmPsn0pN
+	 wnVsE4Z78S69kjBo0KlzhgRpGj5ELA00i3fdUvDiOvyXK+OSf3WHa9baJriiRbDXgo
+	 1K3BiwatKfegGtrHgpD0AnvDUTNuZq1WG3EETELxMpv0pzP5+oKnIhWIQw6wcdUOB6
+	 FPrMLebwbbQAmML5+pyn2qnZg1pbCTGGWav8yyJg378/nHLtJgDTdEzesKoHYdql/I
+	 2l0Bf3yuSYJPqbs2KZtFO+FPCtbUQQgKlTPpov0ocpEP+cMxzuN30jymb7O4sd2jHQ
+	 ftmzYAquGUeOw==
+Date: Sun, 18 Oct 2026 07:05:12 +0000
+From: Tzung-Bi Shih <tzungbi@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Arnav Kapoor <kapoorarnav43@gmail.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Benson Leung <bleung@chromium.org>,
+	Guenter Roeck <groeck@chromium.org>,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, chrome-platform@lists.linux.dev,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: common: cros_ec_sensors: use sensor_scale union
+ member for CALIBSCALE
+Message-ID: <atRvqJiiAjjfbDcE@google.com>
+References: <20261011045410.356156-1-kapoorarnav43@gmail.com>
+ <20261011191641.4e9e2ac4@systembl0wer>
+ <20261012211733.575305-1-kapoorarnav43@gmail.com>
+ <as6Mr7BSbJeJRlBq@ashevche-desk.local>
+ <20261018000206.55b279de@jic23-hlaptop>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261014091111.20059-1-abdelnasserhussein11@gmail.com> <20261017231747.4906975c@jic23-hlaptop>
-In-Reply-To: <20261017231747.4906975c@jic23-hlaptop>
-From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Date: Sun, 18 Oct 2026 09:22:35 +0300
-X-Gm-Features: AclHuK_Ca_Uy-OZ7tfLlUzH9RqHtWG8Rwb9-cwyEYDkMviqvqgdGx4a3apmhzxQ
-Message-ID: <CANpqX3YDqtqGeeqscxF0YqMWMmSB9fpkMbxapq8WbbZWSQH=EA@mail.gmail.com>
-Subject: Re: [PATCH v3] staging: iio: adt7316: use kstrtobool() for sysfs
- boolean parsing
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, u.kleine-koenig@baylibre.com, joshua.crofts1@gmail.com, 
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261018000206.55b279de@jic23-hlaptop>
 
-Hi Jonathan,
+On Sun, Oct 18, 2026 at 12:02:06AM +0100, Jonathan Cameron wrote:
+> On Tue, 13 Oct 2026 22:55:27 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> 
+> > On Tue, Oct 13, 2026 at 02:47:30AM +0530, Arnav Kapoor wrote:
+> > > On Sun, 11 Oct 2026 19:16:41 +0200, Joshua Crofts wrote:  
+> > > > Please add a Fixes tag. Otherwise looks good to me!
+> > > >
+> > > > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>  
+> > > 
+> > > Thanks for the review. The mismatch was introduced when CALIBSCALE
+> > > support was added:
+> > > 
+> > > Fixes: ed1f2e85da79 ("iio: cros_ec: Add calibscale for 3d MEMS")
+> > > 
+> > > Jonathan, could you pick this up when applying, or would you prefer a v2?  
+> > 
+> > No need to resend, `b4` will scan the whole email thread for the tags.
+> If it could put them in the right order for 'late' fixes tags it would
+> be perfect (easy fix though so don't resend!)
+> > 
+> 
+> This driver tends to be well maintained so whilst I'm fine
+> with the change I'll wait a bit for a tag from one of the maintainers.
 
-Thank you for your feedback.
+Sorry for the delay, I somehow missed this in my inbox.
 
-I apologize for the confusion regarding Joshua's tag. When Joshua
-reviewed v1, he pointed out the necessary fixes and concluded with
-"Otherwise LGTM." Therefore, I mistakenly assumed that I was required
-to add a "Reviewed-by" tag for him in the next version to acknowledge
-his review.
-
-Thank you for clarifying this for me, and I hope it didn't cause too
-much extra noise.
-
-I also really appreciate your encouraging words about these small cleanups.
-
-Best regards, Abdelnasser
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
