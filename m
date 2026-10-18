@@ -1,175 +1,324 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D5373CFF79
-	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 16:00:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792339202; cv=pass; b=h1Qi2HJGuZmhcOxUw9fGgA6DDLJJ2MQOZRiaMLdStifI6CDW/Yfs1FiyTNjHDVwDysKH5X74i6kpoGqOxFlqeIdfw8cOMjcgsF+KNyN0cw4RpzUTUqKEiXDWGdG7zcah+M/ZFH0EkfRN5GL/tEERTG4O6q9s4vc1mF4UBawmpkk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792339202; c=relaxed/simple;
-	bh=JzcJJpy2gYrpseHQO+43yHXYRzGIqoHENqgeGBj30xo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WqTWtyINuAzBSGbscOL+gh+yzX6UvOY+UVkAO3XGrybjxua1M0zHwyt9CjoQP1TpQYybD/6sO4hkrRuVrq2nVLFSKdJjrMww/rqDLfonlnSSjsp4wl0UC2tdVyBcquKrEbZ0ZwiFiKNI0cFBMF+ZRoP/4EF/jT9OLfLIxs9VX8M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oS4yhCi1; arc=pass smtp.client-ip=209.85.160.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4542A3FA5F0
+	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 17:00:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792342826; cv=none; b=FwZ3hNa6TkN8p6de1tcyHf5lzD7h7hg27T41ozodrvVIss4s/I+EL9LFsBsgOQY5bsLMwS2He6Prb/59BRMgUNjXp6276FmqKOBKj2SnwLlZp8PqpLZmBrJHF+Xo3ulmCRTQAMq18pJynSbVFw06Pi5Ol/kifRLMJDkky4IrWqQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792342826; c=relaxed/simple;
+	bh=ZjedDeld5RX6fASryBMqBtDu/GcSA57+Ex/jbaQmc/g=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nIrs41a/k26h8MVztweoTrJLNyxaUzbKn9s6tASHy/GpituNL50ykXsW/hXEmdilWKtB3SSfTR72o0P/iCnLw6vrlp3gnQsaFUy+Ll1c5Uxbw6YUvm4NDiucDJyFsxhju8yLO/ItNrbJTc+1XjM8gt6aW7G/B6My4mWkvis6C74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kUPwox9Q; arc=none smtp.client-ip=74.125.82.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oS4yhCi1"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-483c607ccb4so900838fac.0
-        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 09:00:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792339200; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lr3VgbPinTfU5FB7T/Sw2mR6Pmm/GA7ScrO43o31trGDweQe7JgoIAaDUU+kdECHw4
-         MQpQD3s6vxBUx+TpTsKlFl7n4CTgMySXbMmfmYv4G0/YKoQNFaYy1K33U1iVrZMFaCLQ
-         82V6781UiOadseb1sju2InJBT0K99HNDnv03ZKofZC6QkhUIwbePFUy/vM7HpuxR0PLX
-         TT2tt1lQDLR+haZZxtaLL4TLaJ37xNcqEVlwVVUIuGDntpesTFM/xR/RHj6vDIgm/Pnm
-         i6ayQwG2yi3lJu5KM7mPZrUMWGRC/ZpTYO+1copq/P6WfdkJUJkTxP0x2ddy8kMmItyd
-         3aVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=PtH3imBx8royFPRkx74DeIp02F8wZK8wqgF5zK1e9pE=;
-        fh=/lO3yHFiyYsg3p1KcuBlYDfHRXxEV5gx3rlQh/HWlOc=;
-        b=LjN0F+3FBMTPAx27dcl7bpnaQ6qiPsU95yMDpRJA26ZeP2TDoEqyVoN8+0sSRfNrQ6
-         wd8GqP7YFfTVS+ysWIIxoZsBKcT+da5DhGgAX6y3TnCFt+7LRfyHF+6KQhPgqIQHML9v
-         EkOAEj+eNZn6X+O5pp01pifGPq6uOETq2lHg7kqY4JA/+sWcp7R4hgsKLqgqM/+z0AzU
-         mBZaZRC31E8HM0wFWfb5Xho4/EcLdB2o33f/vZkwUcIjF+C8TEryjlaFvw1m5uXHxW0C
-         y8S2YesXlV48GBunveum2lV8JEFAO3gEGskLVEX8lXxNaFCHjE4NM+d14Wy8c4sgPvtP
-         Lkmg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kUPwox9Q"
+Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-35cd4e8bdbdso3454807eec.1
+        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 10:00:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792339200; x=1792944000; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=PtH3imBx8royFPRkx74DeIp02F8wZK8wqgF5zK1e9pE=;
-        b=oS4yhCi1nmvpM+GJRWi5UUY7W3GJm1C0tNtgYv1RjbGBQj52jqt0zNqarucsXvIkyU
-         hOiZbDJdxGElO4DwsDzYdN7UOhWYHXS6Sd5siqBhmfIxTtDYvKLE28p/MIBRfUo4ANBX
-         AbWf4RB6lQ4Tfp/P0HY7wtiFFhsiGqhBylH5tbQDPqSoG3VPuzoIDm+Uf8nranH+9jsf
-         cursgX1HqYHsp0zTG9+0El+6DGmLHqF6mhtiRvQF8/GRok8pU5P/UheoZY0N5yi08w68
-         IwX04ODTtBjFD8VNgQWJcrE5qtwVJryRvdc+CsvuspKjJiax/Npi2srO++4CU707wISm
-         7GyQ==
+        d=gmail.com; s=20251104; t=1792342824; x=1792947624; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=6FM1MA66tNAmn5lRFJ2nA1E4CaxhhsRh1DU3FWW8nEE=;
+        b=kUPwox9Qigi2DGd7nvcWQbnDZjyeAu57d1stVXXTHZ7VKqAAAJx8JtHfFASINkKKLB
+         47/pPeOsLeblc3q9zhxc98RiwMb284IumbK8GnRhQW5TNE2gc4h5VmSpYNa/fTQeT2Uq
+         L0LDDeKWVajxRpOQdN//xmT4mxCW/A+/IW5BWIVW+BKOt9opRM/GJiZYS/MCgCxTj+4W
+         EAmNYzc9WLOQM9vJoCm//6K0BbsNtpwAI6YP46rnLOrIUbReP2MvDnmrD40x7KKt4/Tb
+         ZzvyF68uy7T69wcHo/URf1ybmSPCrugoN2efOdEi/nsWn27JXuF2n5PaS8kkLAy7DyCz
+         noGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792339200; x=1792944000;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=PtH3imBx8royFPRkx74DeIp02F8wZK8wqgF5zK1e9pE=;
-        b=Pp3DUrq1+KEChdtFIv9yAd0H+e2ltyoXbZ7P5rQjn14io1O386jiXdCDMWJVtkd3vX
-         jkD/d4n3L07D5BSXn5Plo0ACJi7gPwqMbzPtM6myxBmy01vc7yh6J0NOc3yq5HRNcag/
-         sWf8vWM3ExN22bBmz5IjKR+YzjkBLSaLo32QfwY7xI7WSHULKqnwkPl+gh23l6qPy+0N
-         kkTPmglK2gvKQrqCETZqYrOOaPKpaE1bCTHqME6/GShW1Iw88s+JJiaT8sGBoaAcmc6L
-         Z4deXNErZtODqn2+VKe7DqgptES81mXYoec+QcyCZPvxWahJOWOMn9sgfYBlC0KROi2s
-         pX5A==
-X-Forwarded-Encrypted: i=1; AKwUvBwPNxWxsrRV9ACbWYyqwAbTq5jZn07I8E9QxHyF+ZH1xL8H+IsypOC8oH5HBB3p0TX9PgyacU5n974=@vger.kernel.org
-X-Gm-Message-State: AFq9FYICjlLkRsCnqU7TLipI649Ztr54QHYUT//gxbnOgBEH3M4KTCYd
-	CZsz6kLBc6yyVlFqGLOQ60N56natACt3Y+Zp89yFYXtfGujKFK5fuU9SjHjkrhSmYRCMKs33uSv
-	E0KWF8v5NXQDUnyg6v13wt+KN30gaBx/c54o9
-X-Gm-Gg: AYBFou0vF6jiNKKwbzcRPIHGNqKwGgzmJ7mSaoAURCwXQ2tU5r0yIkRk1YQyCezjlM6
-	/Dx/g9tCgAXlymeopNxLHQzd82ABmQyBYtMln7YOGdyXyV5rn/sBVxtibbzYnFDb6xNp+xlHlDY
-	iFkUHwL9mvo9JrtTRJWMv7nE62t2M93x50DiCzTDlfnvpS8JiQDXPB893xQPThupMEANnjkDo6C
-	RGeqzHt+9Q+G5HTcloTEzvlGuq2UZUA5BLkijt40iaq6sKVVsjhIS463gIVxAuS+vm8Wfjnqg5c
-	hSFs8WUXPrCI9KGjvp/2TmmW1HWgYZCmobuLJDN8Vu/2BoQ12NTagxVJQRZ0rYLI+1Nru8CiWAv
-	v0//1LJ0uq6lNVw==
-X-Received: by 2002:a05:6870:b520:b0:4a7:1cb0:6287 with SMTP id
- 586e51a60fabf-4a7579e45f8mr4590240fac.17.1792339200348; Sun, 18 Oct 2026
- 09:00:00 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792342824; x=1792947624;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=6FM1MA66tNAmn5lRFJ2nA1E4CaxhhsRh1DU3FWW8nEE=;
+        b=Xewwq8G+ViRzFSLZGbwnXH4l2SWXVFCqJ0K/DdkUL+RQTvFaX4uKPY4YexuWoHpi44
+         g5m4NCFK7i2Q4d88TJkC1RBZMofbqto5KmlT/JpqB4/Bi64NT8f+kxdQjwJgf5Qh+Jjt
+         +CioUU00BjekZ5NBgF4+c2TxtV0oQd6JDD+vE7tgXay4kDtUtNfu2WgBZYB/8sOdanvi
+         4QTy9Crks5sqXeT9PqTglvxdK7MC3MElQjVHDeAtGAEjHypWwxCZNOke+2zsfdIvTBB8
+         4Fu5hO0LZa6Q/oVGey1Pk6MG2GiY10CQUK+gohV8COKs12s9XO0ablvIAUL/PV6s2WKR
+         QH2w==
+X-Gm-Message-State: AFq9FYJiy2RxQw72Ust5D67j0z3MulJlBzrmxQKA7iJnsf6JRwS1xNJv
+	PuqDw96a26fn1yOIKtsAn/xoBYxCDwyKdALXclOZF6mJwbdYVGDxfMDHpIg5gMTmog==
+X-Gm-Gg: AYBFou2NchwHIwGH00jeQ4VRB2mRWgVQj+77TIdgxi/4gGPrO9rNh6tvKt6lQDzNTjz
+	w8k6GB3pmWXSrcf68FePrv11vSAbhWuWJli5Awm7U6llFiUi/jgSQUl4fX5JNsmrbu7FRzd/KKH
+	0MNLVBnwB87v/QxQ3FBFO7W9rt8qbdWp2h+DOIKwYIqwjXXrbveTiicYTFAqHerKWi5io+bvnYW
+	PHWlq/8BrP50VLvzk4WsKkp+3+QlX0eh+AKQqf0hmd7W/IwpsIWpTHOwYUL2m3l6yV/msZf2gT0
+	nhBwnyNpSaSsAdLmsg/HssEUHY11Mb2IytBCnFMlOJAwU82krQRApzp2TRpMrEpGYJxCXjlRmrW
+	unaiaVVeK+dDv/AlIT1i0RDn7D5CCwDFGstmNp45sHvNdp8YT3PflVX1RBrz6UwGNXsRpJvzJVW
+	hG/HfsLB2ksukUYSxgaam474S6QsUFcHpdA9IY4HbFllhaoSOyXBu5p8tFPKZqDwiQQKTt8c2SE
+	apcOfyGbnAP5GVr+cQFRZVuOkgETzqwhLhnu0W0VHXkydXe
+X-Received: by 2002:a05:7301:1888:b0:351:595f:a941 with SMTP id 5a478bee46e88-361a166778fmr6962607eec.8.1792342822362;
+        Sun, 18 Oct 2026 10:00:22 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.63.175])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36083283478sm24222297eec.29.2026.10.18.10.00.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Oct 2026 10:00:21 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH] iio: chemical: ccs811: Make sampling frequency configurable
+Date: Sun, 18 Oct 2026 22:30:13 +0530
+Message-Id: <20261018170013.79443-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261014-tlv493d-scale-fix-v1-1-69a722176c06@gmail.com>
- <20261017230910.77d1637b@jic23-hlaptop> <CAFmh=S2O7TzFEe5WqH+Te9dQOK5TwAtjB-7GC7uDj7LGS9=w_Q@mail.gmail.com>
-In-Reply-To: <CAFmh=S2O7TzFEe5WqH+Te9dQOK5TwAtjB-7GC7uDj7LGS9=w_Q@mail.gmail.com>
-From: Dixit Parmar <dixitparmar19@gmail.com>
-Date: Sun, 18 Oct 2026 21:29:49 +0530
-X-Gm-Features: AclHuK-F7jJBC_8i46qI7Dk9IvquedrwAiAZVypGRkNENfn7t7YKgyI5OOzkNIE
-Message-ID: <CAFmh=S2mXJLk=V_r_eie3=zDfXXRX+aUba=Kn+5h3PQ9pkwxnQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: magnetometer: tlv493d: fix magnetic field scale
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Viral Patel <viral8854@gmail.com>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-LGTM. Good catch. There seem to be miscalculated Gauss scale due to
-multiple conversion factor.
+Allow userspace to configure the CCS811 IAQ measurement rate through
+the IIO sampling_frequency attribute.
 
-Reviewed-by: Dixit Parmar <dixitparmar19@gmail.com>
+Support the three IAQ measurement modes with sampling frequencies of
+1 Hz, 0.1 Hz, and approximately 0.016667 Hz, corresponding to
+measurement intervals of 1, 10, and 60 seconds.
 
-On Sun, Oct 18, 2026 at 9:22=E2=80=AFPM Dixit Parmar <dixitparmar19@gmail.c=
-om> wrote:
->
-> This change looks correct, the Gauss scale value seem to be miscalculated=
- due to multiple conversations and different reference. Good catch.
->
-> On Sunday, October 18, 2026, Jonathan Cameron <jic23@kernel.org> wrote:
->>
->> On Wed, 14 Oct 2026 23:07:36 +0530
->> Viral Patel <viral8854@gmail.com> wrote:
->>
->> > The TLV493D-A1B6 datasheet specifies a magnetic resolution of
->> > 98 uT/LSB (0.098 mT/LSB). IIO reports magnetic field in Gauss
->> > (1 mT =3D 10 G), so the scale should be 0.98 G/LSB.
->> >
->> > The driver currently reports 98/1000 =3D 0.098 G/LSB, which
->> > under-reports the magnetic field by a factor of 10. The comment
->> > also gives the resolution as 0.0098 mT (9.8 uT), mixing up units.
->> >
->> > Correct the scale value and the comment.
->> >
->> > Fixes: 106511d280c7 ("iio: magnetometer: add support for Infineon TLV4=
-93D 3D Magentic sensor")
->> > Signed-off-by: Viral Patel <viral8854@gmail.com>
->>
->> I'll give some time for Dixit to take a look at this.
->>
->> Thanks,
->>
->> Jonathan
->>
->> > ---
->> > Found while comparing this driver against the TLE493D-W2B6 register
->> > map for a new driver I am working on. Compile-tested only; I do not
->> > have TLV493D-A1B6 hardware.
->> > ---
->> >  drivers/iio/magnetometer/tlv493d.c | 6 +++---
->> >  1 file changed, 3 insertions(+), 3 deletions(-)
->> >
->> > diff --git a/drivers/iio/magnetometer/tlv493d.c b/drivers/iio/magnetom=
-eter/tlv493d.c
->> > index 03415cc2c9b3..234e3ce63ff7 100644
->> > --- a/drivers/iio/magnetometer/tlv493d.c
->> > +++ b/drivers/iio/magnetometer/tlv493d.c
->> > @@ -299,11 +299,11 @@ static int tlv493d_read_raw(struct iio_dev *indi=
-o_dev,
->> >               switch (chan->type) {
->> >               case IIO_MAGN:
->> >                       /*
->> > -                      * Magnetic field scale: 0.0098 mTesla (i.e. 9.8=
- =C2=B5T)
->> > -                      * Magnetic field in Gauss: mT * 10 =3D 0.098.
->> > +                      * Magnetic field scale: 0.098 mTesla (i.e. 98 =
-=C2=B5T) per LSB.
->> > +                      * In Gauss (1 mT =3D 10 G): 0.98 G per LSB.
->> >                        */
->> >                       *val =3D 98;
->> > -                     *val2 =3D 1000;
->> > +                     *val2 =3D 100;
->> >                       return IIO_VAL_FRACTIONAL;
->> >               case IIO_TEMP:
->> >                       /*
->> >
->> > ---
->> > base-commit: ceb05f22e5cdc3f8bd3f7d5dcfc57843942191dd
->> > change-id: 20261014-tlv493d-scale-fix-5a0b83b52d2a
->> >
->> > Best regards,
->>
+Preserve unrelated bits in the MEAS_MODE register when updating the
+drive mode, and cache the selected mode after a successful register
+write. Expose the supported frequencies through
+sampling_frequency_available.
+
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/chemical/ccs811.c | 139 +++++++++++++++++++++++++++++++---
+ 1 file changed, 130 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index d126ee12ffe5..4d157f3f5714 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -9,10 +9,9 @@
+  * IIO driver for AMS CCS811 (I2C address 0x5A/0x5B set by ADDR Low/High)
+  *
+  * TODO:
+- * 1. Make the drive mode selectable form userspace
+- * 2. Add support for interrupts
+- * 3. Adjust time to wait for data to be ready based on selected operation mode
+- * 4. Read error register and put the information in logs
++ * 1. Add support for interrupts
++ * 2. Adjust time to wait for data to be ready based on selected operation mode
++ * 3. Read error register and put the information in logs
+  */
+ 
+ #include <linux/cleanup.h>
+@@ -54,6 +53,7 @@
+ #define CCS811_STATUS_FW_MODE_APPLICATION	BIT(7)
+ 
+ /* Measurement modes */
++#define CCS811_MODE_MASK	GENMASK(6, 4)
+ #define CCS811_MODE_IDLE	0x00
+ #define CCS811_MODE_IAQ_1SEC	0x10
+ #define CCS811_MODE_IAQ_10SEC	0x20
+@@ -79,6 +79,7 @@ struct ccs811_data {
+ 	struct iio_trigger *drdy_trig;
+ 	struct gpio_desc *wakeup_gpio;
+ 	bool drdy_trig_on;
++	u8 drive_mode;
+ 	/* Ensures correct alignment of timestamp if present */
+ 	struct {
+ 		s16 channels[2];
+@@ -86,6 +87,12 @@ struct ccs811_data {
+ 	} scan;
+ };
+ 
++static const int ccs811_samp_freq[] = {
++	1, 0,
++	0, 100000,
++	0, 16667,
++};
++
+ static const struct iio_chan_spec ccs811_channels[] = {
+ 	{
+ 		.type = IIO_CURRENT,
+@@ -103,6 +110,8 @@ static const struct iio_chan_spec ccs811_channels[] = {
+ 		.modified = 1,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.scan_index = 0,
+ 		.scan_type = {
+ 			.sign = 'u',
+@@ -163,16 +172,21 @@ static int ccs811_start_sensor_application(struct i2c_client *client)
+ 	return 0;
+ }
+ 
+-static int ccs811_setup(struct i2c_client *client)
++static int ccs811_setup(struct ccs811_data *data)
+ {
+ 	int ret;
+ 
+-	ret = ccs811_start_sensor_application(client);
++	ret = ccs811_start_sensor_application(data->client);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, CCS811_MEAS_MODE,
++					CCS811_MODE_IAQ_1SEC);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return i2c_smbus_write_byte_data(client, CCS811_MEAS_MODE,
+-					 CCS811_MODE_IAQ_1SEC);
++	data->drive_mode = CCS811_MODE_IAQ_1SEC;
++	return 0;
+ }
+ 
+ static void ccs811_set_wakeup(struct ccs811_data *data, bool enable)
+@@ -188,6 +202,44 @@ static void ccs811_set_wakeup(struct ccs811_data *data, bool enable)
+ 		usleep_range(20, 30);
+ }
+ 
++static int ccs811_set_sampling_freq(struct ccs811_data *data,
++				    int val, int val2)
++{
++	u8 drive_mode;
++	int ret;
++
++	if (val == 1 && val2 == 0)
++		drive_mode = CCS811_MODE_IAQ_1SEC;
++	else if (val == 0 && val2 == 100000)
++		drive_mode = CCS811_MODE_IAQ_10SEC;
++	else if (val == 0 && val2 == 16667)
++		drive_mode = CCS811_MODE_IAQ_60SEC;
++	else
++		return -EINVAL;
++
++	guard(mutex)(&data->lock);
++	ccs811_set_wakeup(data, true);
++
++	ret = i2c_smbus_read_byte_data(data->client, CCS811_MEAS_MODE);
++	if (ret < 0)
++		goto out;
++
++	ret &= ~CCS811_MODE_MASK;
++	ret |= drive_mode;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					CCS811_MEAS_MODE, ret);
++	if (ret < 0)
++		goto out;
++
++	data->drive_mode = drive_mode;
++	ret = 0;
++
++out:
++	ccs811_set_wakeup(data, false);
++	return ret;
++}
++
+ static int ccs811_get_measurement(struct ccs811_data *data)
+ {
+ 	int ret, tries = 11;
+@@ -249,6 +301,28 @@ static int ccs811_read_info_raw(struct ccs811_data *data,
+ 	}
+ }
+ 
++static int ccs811_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct ccs811_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (!iio_device_claim_direct(indio_dev))
++			return -EBUSY;
++
++		ret = ccs811_set_sampling_freq(data, val, val2);
++
++		iio_device_release_direct(indio_dev);
++		return ret;
++
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int ccs811_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -293,13 +367,60 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		guard(mutex)(&data->lock);
++		switch (data->drive_mode) {
++		case CCS811_MODE_IAQ_1SEC:
++			*val = 1;
++			*val2 = 0;
++			return IIO_VAL_INT_PLUS_MICRO;
++		case CCS811_MODE_IAQ_10SEC:
++			*val = 0;
++			*val2 = 100000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		case CCS811_MODE_IAQ_60SEC:
++			*val = 0;
++			*val2 = 16667;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int ccs811_read_avail(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     const int **vals, int *type, int *length,
++			     long mask)
++{
++	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
++		return -EINVAL;
++
++	*vals = ccs811_samp_freq;
++	*type = IIO_VAL_INT_PLUS_MICRO;
++	*length = ARRAY_SIZE(ccs811_samp_freq);
++
++	return IIO_AVAIL_LIST;
++}
++
++static int ccs811_write_raw_get_fmt(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    long mask)
++{
++	if (mask == IIO_CHAN_INFO_SAMP_FREQ)
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	return -EINVAL;
++}
++
+ static const struct iio_info ccs811_info = {
+ 	.read_raw = ccs811_read_raw,
++	.write_raw = ccs811_write_raw,
++	.read_avail = ccs811_read_avail,
++	.write_raw_get_fmt = ccs811_write_raw_get_fmt,
+ };
+ 
+ static int ccs811_set_trigger_state(struct iio_trigger *trig,
+@@ -460,7 +581,7 @@ static int ccs811_probe(struct i2c_client *client)
+ 		return -ENODEV;
+ 	}
+ 
+-	ret = ccs811_setup(client);
++	ret = ccs811_setup(data);
+ 	if (ret < 0) {
+ 		ccs811_set_wakeup(data, false);
+ 		return ret;
+-- 
+2.39.5
+
