@@ -1,48 +1,44 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
+Received: from mail.noirlang.tr (mail.noirlang.tr [217.18.210.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95DCE3E6DD9;
-	Sun, 18 Oct 2026 10:44:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6AFF3264FD;
+	Sun, 18 Oct 2026 11:01:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.18.210.29
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792320304; cv=none; b=h5iT4HnySEPPNRQ6Dh9tInvOOvpAJfhR3xPBn3+7SDn34W+a5bINI9U8Og1ce5Nk2hePMHOnMdd/mvoslNm5LwTCjLB+XpQ6juoeAc45BMjKux8i7qGS8Skmb7H28H9KN+sMtuI0EhugqUIPf8HfPAA69FDCFjMOJunNex07kso=
+	t=1792321273; cv=none; b=si3r5/kyEvUUkB2TkKrhV01zsT8PF+sD9hCulJcAalrO7yPsRLcSJKafXEPQkgfFFFxPt/2JRD1qVNGb/zgS6lzvXWV1zzAZULpFJvrW5ra0kldP3thwcl8MtmiPuTnanUuMRjxHcYhSHAT4svQVBeWrGdaRYyfuhLYu5UnkXnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792320304; c=relaxed/simple;
-	bh=vNqaHCrfSA0b4VKqfRdlPpjbXdDNlSf9M0McDU4t62Y=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=K04lg6QpRzxKY8PHS4cchkhAbsDR5ghi5pmlB9WLhZv6hru1AZtHnSDQqZy8hUnsG2YxIkXHzEEbgXlcUTMP/XW6LzohdQf8+zg/kLDfrFKsLirLNSxe/T15xjJEiilgnhAxfUokNp2PmDj4tZU1jDzzc4o09wl0uJyf18Zg414=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=VOudf8Te; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1792321273; c=relaxed/simple;
+	bh=kBDTbaZ4GypmVwnlmzAlOCEtc1UQPdZjvVFyq0YaLXE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Jd+rCeUuTCTFyDyjTK+tWeeYh82AXrS1eG425+16IHusE2aFdS+j0QOYoIEshkEbB5W9gFOMXPms/3y01jWug0Kw9eS3+A6w1z8lO8DDP71PBdNYymccpsMJaeglFYAMeeyf5qiPP/jZt8Ih4Hotoufj8CEURuOs8Zfnk5HGc9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=noirlang.tr; spf=pass smtp.mailfrom=noirlang.tr; dkim=pass (2048-bit key) header.d=noirlang.tr header.i=@noirlang.tr header.b=RhzTWU+Z; arc=none smtp.client-ip=217.18.210.29
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=noirlang.tr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=noirlang.tr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="VOudf8Te"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=Mi
-	MF4+nj09eXhJ0U/z9DFw9etlGUXEWdhhThFMF/aeg=; b=VOudf8TedwmBasyZWK
-	rsKszhheksu2/hC5d1xV3g3xuqrkI7tFBbsKW9AFnS1gXSP4fEpgq7I9Oy8r+s0e
-	k3Lyt2auVvxT/fdasyEYVM9DZS5Qquk32oqWsPj9d9AzwDZTz+YEAmd7kAczr8tJ
-	JLYWWREYZU49Z0igAkm2/I7vk=
-Received: from localhost.localdomain (unknown [])
-	by gzsmtp4 (Coremail) with SMTP id PygvCgAX5pnxotRqUthIAg--.5987S2;
-	Sun, 18 Oct 2026 18:44:11 +0800 (CST)
-From: wrmfwv@163.com
-To: nuno.sa@analog.com,
-	jic23@kernel.org,
-	robh@kernel.org
-Cc: Michael.Hennerich@analog.com,
-	dlechner@baylibre.com,
+	dkim=pass (2048-bit key) header.d=noirlang.tr header.i=@noirlang.tr header.b="RhzTWU+Z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=noirlang.tr; s=mail;
+	t=1792321268; bh=kBDTbaZ4GypmVwnlmzAlOCEtc1UQPdZjvVFyq0YaLXE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=RhzTWU+ZU7/GHJrPpmMkayRRtinU2E6RppzYa5ZLND4LlwajcepGvey0CUR9341+J
+	 oWnYDm9G68XjN23oqfxjAHN6069wvg9oKpaZrHxLIrDvXOJedArhB3N05I3gzXv/nb
+	 pz6SJitPBp1UPePbbr8sCofSUJFVLqg2v2IHZhX/q/mMWgYH/bM52USsuDpBgogwXV
+	 gjzs1a1DE1GgvrXqHHxcifhVI/OAdgxwrHWOpIdHVAXURh5LYo+YXLqCj1tng8l2D4
+	 wbb8TysNbkPduWg7E8RP6r6MJffmyaFnG/UanzL5N3moOUxFR5+NETWFXvpYv9jt5a
+	 5YLfG7G/MLK2g==
+From: Melih Emik <melihemik@noirlang.tr>
+To: jic23@kernel.org,
+	gregkh@linuxfoundation.org,
+	nuno.sa@analog.com,
+	Michael.Hennerich@analog.com
+Cc: dlechner@baylibre.com,
 	andy@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	linux@analog.com,
 	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
+	linux-staging@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Tenglong Guo <admin@micronull.cn>,
-	Sashiko AI <sashiko-bot@kernel.org>
-Subject: [PATCH v2] dt-bindings: iio: adc: add documentation for adi,ad7816
-Date: Sun, 18 Oct 2026 18:43:58 +0800
-Message-Id: <20261018104358.38255-1-wrmfwv@163.com>
-X-Mailer: git-send-email 2.25.1
+	linux@analog.com
+Subject: [PATCH v2] staging: iio: frequency: ad9832: use guard(mutex)
+Date: Sun, 18 Oct 2026 14:01:07 +0300
+Message-ID: <20261018110107.297906-1-melihemik@noirlang.tr>
+X-Mailer: git-send-email 2.56.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -50,108 +46,144 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PygvCgAX5pnxotRqUthIAg--.5987S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7AF13AryxuF4rAFyfGr45KFg_yoW8Kw4UpF
-	4DCF93K3yfK3W3Ka1fKa40kFW5ZF1UCw1rK3WDWr1UGrZ0gF1jyw43KF13Xw1UWFyDtF9r
-	WFy5Cr15tw10vr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UkCzNUUUUU=
-X-CM-SenderInfo: xzupw4ry6rljoofrz/xtbC5hy3o2rUovxDxgAA3L
 
-From: Tenglong Guo <admin@micronull.cn>
+In ad9832_write(), manual mutex handling via mutex_lock() and
+mutex_unlock() necessitates error-exit trampolines (goto error_ret),
+intermediate variables, and deferred returns. This pattern is prone
+to unlock-omission bugs during refactoring and clutters the control
+flow.
 
-Add a YAML binding document for the AD7816 family of ADCs.
-This fixes the checkpatch.pl warning about un-documented
-DT compatible strings in the staging driver.
+Modernize the locking by using guard(mutex) from <linux/cleanup.h>.
+Scope-based resource management automatically releases the lock upon
+exiting the lexical scope, which enables immediate error propagation
+at call sites, removes the error_ret label, and simplifies the control
+flow across all switch cases.
 
-Reviewed-by: Sashiko AI <sashiko-bot@kernel.org>
-Signed-off-by: Tenglong Guo <admin@micronull.cn>
+Signed-off-by: Melih Emik <melihemik@noirlang.tr>
 ---
- .../bindings/iio/adc/adi,ad7816.yaml          | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
+v2:
+- Drop "Tested:" meta commentary from the commit message.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-new file mode 100644
-index 000000000000..d23ef9163e61
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad7816.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+Test notes:
+- Compiled with W=1 on x86_64 with zero warnings.
+- Verified with lockdep and debug mutexes enabled
+  (CONFIG_PROVE_LOCKING=y, CONFIG_DEBUG_MUTEXES=y).
+- Boot-tested full bzImage in QEMU with initcall_debug, confirming
+  successful driver initialization (ad9832_driver_init returned 0)
+  and zero lockdep/kernel warnings.
+- Disassembly inspected via objdump to ensure mutex_unlock on all
+  exit paths.
+- Verified with scripts/checkpatch.pl (0 errors, 0 warnings).
+
+ drivers/staging/iio/frequency/ad9832.c | 39 ++++++++++++++++++--------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+index a78249812b26..3ae5defec615 100644
+--- a/drivers/staging/iio/frequency/ad9832.c
++++ b/drivers/staging/iio/frequency/ad9832.c
+@@ -8,6 +8,7 @@
+ #include <linux/array_size.h>
+ #include <linux/bitfield.h>
+ #include <linux/bitops.h>
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/dev_printk.h>
+ #include <linux/err.h>
+@@ -182,19 +183,26 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 
+ 	ret = kstrtoul(buf, 10, &val);
+ 	if (ret)
+-		goto error_ret;
++		return ret;
 +
-+title: Analog Devices AD7816/AD7817/AD7818 ADC
++	guard(mutex)(&st->lock);
+ 
+-	mutex_lock(&st->lock);
+ 	switch ((u32)this_attr->address) {
+ 	case AD9832_FREQ0HM:
+ 	case AD9832_FREQ1HM:
+ 		ret = ad9832_write_frequency(st, this_attr->address, val);
++		if (ret)
++			return ret;
 +
-+maintainers:
-+  - Tenglong Guo <admin@micronull.cn>
+ 		break;
+ 	case AD9832_PHASE0H:
+ 	case AD9832_PHASE1H:
+ 	case AD9832_PHASE2H:
+ 	case AD9832_PHASE3H:
+ 		ret = ad9832_write_phase(st, this_attr->address, val);
++		if (ret)
++			return ret;
 +
-+description: |
-+  The AD7816/AD7817/AD7818 are 10-bit ADCs with on-chip temperature sensors.
-+  They use a SPI interface for communication.
+ 		break;
+ 	case AD9832_PINCTRL_EN:
+ 		st->ctrl_ss &= ~AD9832_SELSRC;
+@@ -203,24 +211,27 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 		st->data = cpu_to_be16(FIELD_PREP(AD9832_CMD_MSK, AD9832_CMD_SYNCSELSRC) |
+ 						  st->ctrl_ss);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
 +
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad7816
-+      - adi,ad7817
-+      - adi,ad7818
+ 		break;
+ 	case AD9832_FREQ_SYM:
+ 		if (val == 1 || val == 0) {
+ 			st->ctrl_fp &= ~AD9832_FREQ;
+ 			st->ctrl_fp |= FIELD_PREP(AD9832_FREQ, val ? 1 : 0);
+ 		} else {
+-			ret = -EINVAL;
+-			break;
++			return -EINVAL;
+ 		}
+ 		st->data = cpu_to_be16(FIELD_PREP(AD9832_CMD_MSK, AD9832_CMD_FPSELECT) |
+ 						  st->ctrl_fp);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
 +
-+  reg:
-+    maxItems: 1
+ 		break;
+ 	case AD9832_PHASE_SYM:
+-		if (val > 3) {
+-			ret = -EINVAL;
+-			break;
+-		}
++		if (val > 3)
++			return -EINVAL;
+ 
+ 		st->ctrl_fp &= ~AD9832_PHASE_MASK;
+ 		st->ctrl_fp |= FIELD_PREP(AD9832_PHASE_MASK, val);
+@@ -228,6 +239,9 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 		st->data = cpu_to_be16(FIELD_PREP(AD9832_CMD_MSK, AD9832_CMD_FPSELECT) |
+ 						  st->ctrl_fp);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
 +
-+  rdwr-gpios:
-+    description: GPIO connected to the RD/WR pin.
+ 		break;
+ 	case AD9832_OUTPUT_EN:
+ 		if (val)
+@@ -238,14 +252,15 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 		st->data = cpu_to_be16(FIELD_PREP(AD9832_CMD_MSK, AD9832_CMD_SLEEPRESCLR) |
+ 						  st->ctrl_src);
+ 		ret = spi_sync(st->spi, &st->msg);
++		if (ret)
++			return ret;
 +
-+  convert-gpios:
-+    description: GPIO connected to the CONVST pin.
-+
-+  busy-gpios:
-+    description: GPIO connected to the BUSY pin. Required for AD7816 and AD7817.
-+
-+  interrupts:
-+    maxItems: 1
-+    description: Optional interrupt for over-temperature indication.
-+
-+required:
-+  - compatible
-+  - reg
-+  - rdwr-gpios
-+  - convert-gpios
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad7816
-+              - adi,ad7817
-+    then:
-+      required:
-+        - busy-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "adi,ad7816";
-+            reg = <0>;
-+            rdwr-gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
-+            convert-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
-+            busy-gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
-+            interrupts-extended = <&gpio0 4 IRQ_TYPE_EDGE_FALLING>;
-+        };
-+    };
-+...
+ 		break;
+ 	default:
+-		ret = -ENODEV;
++		return -ENODEV;
+ 	}
+-	mutex_unlock(&st->lock);
+ 
+-error_ret:
+-	return ret ? ret : len;
++	return len;
+ }
+ 
+ /*
 -- 
-2.25.1
+2.56.0
+
 
