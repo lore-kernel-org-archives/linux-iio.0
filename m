@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B1B415F12;
-	Sun, 18 Oct 2026 18:00:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8B139EF3F;
+	Sun, 18 Oct 2026 18:03:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792346421; cv=none; b=OOV1JN6Bb4rihLUCkx1gv38jI2XOAG8uPx7bEWl//k81kJMq3G0Su8jkfUJD1VwC2LxT+w17U7Nbfn+bCWH2veLy8o+RuXsxkPFI4bOV5Y9CTowSm0yxiCGmF6QshnzlQMeNW77xydyY5ZU8G4cxZHFNxQE19WHB7DL7sloVhD4=
+	t=1792346585; cv=none; b=YxFOmb49nvgRrzUwZb/JtFyj/OK1HktW8WWb2rNRLAFXkyjc8dwF8x0/IVOjzVORWJVZktnsDz5mJKXABDsc4QB7Z9bti6xfw+WP8shgw710nZp4Uyzz0+vnH61qLdorDl0jD9tbZMyeU8pHW2hY3/WWrI9WQKHD9CJJFl0wbZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792346421; c=relaxed/simple;
-	bh=HeQaUCu/1IU/VhOXcG6OSbLQac6KBI8Mye0x29OuKZA=;
+	s=arc-20240116; t=1792346585; c=relaxed/simple;
+	bh=eehOXyMVrVm4iDvRrfcuY9w0098006H5ox3F9F6TRMg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AnLOAi5k+9Rw8VmyimTNhgnMghEuirJGUawByk0e1zcjzSkQhbwbIm9RBUOJdGUNTdcpulg++/V1XHGVCx5fQ8eh+vPteYxGOg3y5PUu1FRb8LhMBrdqYx3f96gnQoNvvrPw8O5YVSRM7fUzoxIx1OuaXonJsqsoJtnM/ogZmHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KvDofq5/; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=K10acAJpTHQY3x6f0vCrfBrRKppKZ0F+3gru09tzvuU6NDm3zM3O1HpBAC1V/LeC2qmZPBAD23uD8zHa+PkD5ZdwRBpxeFv3hQbq4eX8XKcyWhR8K4c9rKkhL3hNqrrrFWk1D34Q+wrBTgy+susThVWkxNA7QsOgXDZw2gFDLp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H3AZRMwe; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KvDofq5/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2A821F000C4;
-	Sun, 18 Oct 2026 18:00:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H3AZRMwe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CEA1F000C4;
+	Sun, 18 Oct 2026 18:03:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792346419;
-	bh=xcPpfCyvLjPxhYGHaKsHieTyFC2n7PDAu3LvsTZ1LIk=;
+	s=k20260515; t=1792346584;
+	bh=uxEMCbmJtXDM0C3prE30skAO6GSMi1K3kxl0v8hnH4E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KvDofq5/p/qKzCVbDGTjYhJFqP/HuaHYHI7Qlx2btBBSzUYxDXFlWSD5BuDE8yZDi
-	 IeB7RP9mVCLGSrd9YkQVZHcEVhpJlNxtSP4WMqlUVeFBxghciwGdwG+0EnBTJe+eJQ
-	 tnyzSEqsAplRcaTs3CxFkbo3BfVGsyE6jZrg2AI277FVvtYdwHLDq2ZtVQuRxL8SHF
-	 KNTcimzdYkAp2WSKtZ8vK3iSy4EQHvatuVE7TUT10Ptky3ovFohFv2+O78nOH3IXyl
-	 jlDc97Km6nGHeQHy1bek2shCyCBGdTTPhQS1HfRkKQMicgs1NZpMjlitIVX5ZgVwzH
-	 QlIPwOqtBq2oQ==
-Date: Sun, 18 Oct 2026 19:00:13 +0100
+	b=H3AZRMwewUyEXdWCBRDFMiZ5+Y3blIOlBgjbQO+Arvv/JL/a02lZbHk8jIzeRyhks
+	 rvClfGEBSqKm+0AHLGUYLa+DTr+XpBR1ApQQFV0cDVQuXMsl3/an6eLpideMiNWLT8
+	 UhN2C12SckeyGWVrOh6wDxpYx4ya5UEADO6JPBoJwr6RRDoH1pUaEjbczpBRAaVIbZ
+	 7Rl42WeqEW3uSmyVjV3Zd2Oukb2KPYRUUgjNs7uAOxrftdrPth3GslmZZf44H9kQWT
+	 ATN4FcOmQkUzvLP1jgf1cxY+B7oMyuN7CIGfkRzbYgeHY/J00TJ20M0iwE2CXet7xl
+	 MlNRym4+FFQjQ==
+Date: Sun, 18 Oct 2026 19:02:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dixit Parmar <dixitparmar19@gmail.com>
-Cc: Viral Patel <viral8854@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: magnetometer: tlv493d: fix magnetic field scale
-Message-ID: <20261018190013.02036a0b@jic23-hlaptop>
-In-Reply-To: <CAFmh=S2mXJLk=V_r_eie3=zDfXXRX+aUba=Kn+5h3PQ9pkwxnQ@mail.gmail.com>
-References: <20261014-tlv493d-scale-fix-v1-1-69a722176c06@gmail.com>
-	<20261017230910.77d1637b@jic23-hlaptop>
-	<CAFmh=S2O7TzFEe5WqH+Te9dQOK5TwAtjB-7GC7uDj7LGS9=w_Q@mail.gmail.com>
-	<CAFmh=S2mXJLk=V_r_eie3=zDfXXRX+aUba=Kn+5h3PQ9pkwxnQ@mail.gmail.com>
+To: Matt Ranostay <matt@ranostay.sg>
+Cc: Nikhil Gautam <nikhilgtr@gmail.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org
+Subject: Re: [PATCH 1/1] iio: atlas-ezo: Fix humidity channel read support
+Message-ID: <20261018190259.30f85279@jic23-hlaptop>
+In-Reply-To: <XRg2Dn6qienpjl0S8WbVJ4nwMKQ5nppuPTJ6HVuSwZRjdn4lggdxaeY5vtQk6j5ihd3lJ_j58o3ypATqaNo1h1eqMdoLcPd6HBuh23ZvJIo=@ranostay.sg>
+References: <20261012114553.3327-1-nikhilgtr@gmail.com>
+	<20261012114553.3327-2-nikhilgtr@gmail.com>
+	<as1G0yGQ5wKhd-dh@ashevche-desk.local>
+	<ab328578-08a6-455d-a9bf-411aeb561c8c@gmail.com>
+	<20261018003129.533effef@jic23-hlaptop>
+	<XRg2Dn6qienpjl0S8WbVJ4nwMKQ5nppuPTJ6HVuSwZRjdn4lggdxaeY5vtQk6j5ihd3lJ_j58o3ypATqaNo1h1eqMdoLcPd6HBuh23ZvJIo=@ranostay.sg>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,94 +49,68 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, 18 Oct 2026 21:29:49 +0530
-Dixit Parmar <dixitparmar19@gmail.com> wrote:
+On Sun, 18 Oct 2026 02:28:01 +0000
+Matt Ranostay <matt@ranostay.sg> wrote:
 
-> LGTM. Good catch. There seem to be miscalculated Gauss scale due to
-> multiple conversion factor.
->=20
-> Reviewed-by: Dixit Parmar <dixitparmar19@gmail.com>
->=20
-Thanks for the fast response!
+> On Sunday, October 18th, 2026 at 07:31, Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > On Tue, 13 Oct 2026 22:15:23 +0530
+> > Nikhil Gautam <nikhilgtr@gmail.com> wrote:
+> >   
+> > > Hi Joshua, Andy,
+> > >
+> > > Thanks for the review and feedback.
+> > >
+> > > I checked the Git history and found that the channel type check was
+> > > already present
+> > > in commit dc3ebfc ("iio: chemical: atlas-ezo-sensor: add humidity sensor
+> > > support").
+> > > It was not removed when humidity sensor support was introduced, and
+> > > I couldn't find any commit message explaining the original intent of the
+> > > check.
+> > >
+> > > Regarding the potential I2C read issue reported by Sashiko,
+> > > I'll investigate it and address it in a separate patch series.
+> > >
+> > > I'll also omit the cover letter for future single-patch submissions.  
+> > 
+> > Matt normally gets back reasonably quickly so +CC but I'll
+> > assume this is just one of those last minute editing errors and
+> > apply the fix in the meantime.  
+> 
+> Yeah this was probably an oversight on my part. Since the humidity sensor support came later, and don't think I actually ever had this EVO sensor.
+> So the patch LGTM.
+> 
+> Reviewed-by: Matt Ranostay <matt@ranostay.sg>
+Thanks and tag added.
 
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-
-Thanks,
-
-Jonathan
-
-> On Sun, Oct 18, 2026 at 9:22=E2=80=AFPM Dixit Parmar <dixitparmar19@gmail=
-.com> wrote:
-> >
-> > This change looks correct, the Gauss scale value seem to be miscalculat=
-ed due to multiple conversations and different reference. Good catch.
-> >
-> > On Sunday, October 18, 2026, Jonathan Cameron <jic23@kernel.org> wrote:=
- =20
-> >>
-> >> On Wed, 14 Oct 2026 23:07:36 +0530
-> >> Viral Patel <viral8854@gmail.com> wrote:
-> >> =20
-> >> > The TLV493D-A1B6 datasheet specifies a magnetic resolution of
-> >> > 98 uT/LSB (0.098 mT/LSB). IIO reports magnetic field in Gauss
-> >> > (1 mT =3D 10 G), so the scale should be 0.98 G/LSB.
-> >> >
-> >> > The driver currently reports 98/1000 =3D 0.098 G/LSB, which
-> >> > under-reports the magnetic field by a factor of 10. The comment
-> >> > also gives the resolution as 0.0098 mT (9.8 uT), mixing up units.
-> >> >
-> >> > Correct the scale value and the comment.
-> >> >
-> >> > Fixes: 106511d280c7 ("iio: magnetometer: add support for Infineon TL=
-V493D 3D Magentic sensor")
-> >> > Signed-off-by: Viral Patel <viral8854@gmail.com> =20
-> >>
-> >> I'll give some time for Dixit to take a look at this.
-> >>
-> >> Thanks,
-> >>
-> >> Jonathan
-> >> =20
-> >> > ---
-> >> > Found while comparing this driver against the TLE493D-W2B6 register
-> >> > map for a new driver I am working on. Compile-tested only; I do not
-> >> > have TLV493D-A1B6 hardware.
-> >> > ---
-> >> >  drivers/iio/magnetometer/tlv493d.c | 6 +++---
-> >> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >> >
-> >> > diff --git a/drivers/iio/magnetometer/tlv493d.c b/drivers/iio/magnet=
-ometer/tlv493d.c
-> >> > index 03415cc2c9b3..234e3ce63ff7 100644
-> >> > --- a/drivers/iio/magnetometer/tlv493d.c
-> >> > +++ b/drivers/iio/magnetometer/tlv493d.c
-> >> > @@ -299,11 +299,11 @@ static int tlv493d_read_raw(struct iio_dev *in=
-dio_dev,
-> >> >               switch (chan->type) {
-> >> >               case IIO_MAGN:
-> >> >                       /*
-> >> > -                      * Magnetic field scale: 0.0098 mTesla (i.e. 9=
-.8 =C2=B5T)
-> >> > -                      * Magnetic field in Gauss: mT * 10 =3D 0.098.
-> >> > +                      * Magnetic field scale: 0.098 mTesla (i.e. 98=
- =C2=B5T) per LSB.
-> >> > +                      * In Gauss (1 mT =3D 10 G): 0.98 G per LSB.
-> >> >                        */
-> >> >                       *val =3D 98;
-> >> > -                     *val2 =3D 1000;
-> >> > +                     *val2 =3D 100;
-> >> >                       return IIO_VAL_FRACTIONAL;
-> >> >               case IIO_TEMP:
-> >> >                       /*
-> >> >
-> >> > ---
-> >> > base-commit: ceb05f22e5cdc3f8bd3f7d5dcfc57843942191dd
-> >> > change-id: 20261014-tlv493d-scale-fix-5a0b83b52d2a
-> >> >
-> >> > Best regards, =20
-> >> =20
->=20
+J
+> 
+> > 
+> > So applied to the fxies-togreg branch of iio.git and marked for stable.
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> > >
+> > > Thanks,
+> > > Nikhil
+> > >
+> > > On 13-10-2026 02:15 am, Andy Shevchenko wrote:  
+> > > > On Mon, Oct 12, 2026 at 05:15:53PM +0530, Nikhil Gautam wrote:  
+> > > >> The atlas_ezo_read_raw() function rejects channels that are not of
+> > > >> type IIO_CONCENTRATION, preventing the relative humidity channel
+> > > >> from reading raw and scale values.
+> > > >>
+> > > >> Remove the early channel type check to allow both concentration
+> > > >> and relative humidity channels to reach the mask-specific handling.  
+> > > > Have you checked the Git history on this change? Anything interesting there?
+> > > >  
+> > >  
+> > 
+> >   
 
