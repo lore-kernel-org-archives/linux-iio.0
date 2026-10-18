@@ -1,324 +1,145 @@
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4542A3FA5F0
-	for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 17:00:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EBF029D291;
+	Sun, 18 Oct 2026 17:56:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792342826; cv=none; b=FwZ3hNa6TkN8p6de1tcyHf5lzD7h7hg27T41ozodrvVIss4s/I+EL9LFsBsgOQY5bsLMwS2He6Prb/59BRMgUNjXp6276FmqKOBKj2SnwLlZp8PqpLZmBrJHF+Xo3ulmCRTQAMq18pJynSbVFw06Pi5Ol/kifRLMJDkky4IrWqQ=
+	t=1792346185; cv=none; b=Ay0SBNSmt3OEuKl4B88giKgBkRbFxxYxUxD2D4D7snnBS8lZHDP0O0iXoTemdl+nY58eLeMn8GkyzAceFfzGyXBqXjnn/ozyiMsci8OnoAPHPZeUvLVOJLzgLDhSxgcFwQzYLAcFmtN3TnOP6XvEnl44299uZpjKGZHvZrDUTaQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792342826; c=relaxed/simple;
-	bh=ZjedDeld5RX6fASryBMqBtDu/GcSA57+Ex/jbaQmc/g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nIrs41a/k26h8MVztweoTrJLNyxaUzbKn9s6tASHy/GpituNL50ykXsW/hXEmdilWKtB3SSfTR72o0P/iCnLw6vrlp3gnQsaFUy+Ll1c5Uxbw6YUvm4NDiucDJyFsxhju8yLO/ItNrbJTc+1XjM8gt6aW7G/B6My4mWkvis6C74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kUPwox9Q; arc=none smtp.client-ip=74.125.82.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792346185; c=relaxed/simple;
+	bh=7IgQgvCYxNvVaE+ueZonl8NCpJ9gvuDv8VYcY2+iM9o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZH4PUUz+8g1NP/P+pKcQ6ft1LB8qCe/Ua8D6XJp15uUcEaBr7Il53JIFQW5kYANo6cEcbUYHWJ9CPsHEnqiVFM4DzaKiqBwQOJjdsdLYlUkZSV+XZ32acs4ShhMKrv1CdNByWSfZxYu482kW2qyqEJTgyiLUNyX1qKxcpSbeTrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m2PiBFOK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kUPwox9Q"
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-35cd4e8bdbdso3454807eec.1
-        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 10:00:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792342824; x=1792947624; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=6FM1MA66tNAmn5lRFJ2nA1E4CaxhhsRh1DU3FWW8nEE=;
-        b=kUPwox9Qigi2DGd7nvcWQbnDZjyeAu57d1stVXXTHZ7VKqAAAJx8JtHfFASINkKKLB
-         47/pPeOsLeblc3q9zhxc98RiwMb284IumbK8GnRhQW5TNE2gc4h5VmSpYNa/fTQeT2Uq
-         L0LDDeKWVajxRpOQdN//xmT4mxCW/A+/IW5BWIVW+BKOt9opRM/GJiZYS/MCgCxTj+4W
-         EAmNYzc9WLOQM9vJoCm//6K0BbsNtpwAI6YP46rnLOrIUbReP2MvDnmrD40x7KKt4/Tb
-         ZzvyF68uy7T69wcHo/URf1ybmSPCrugoN2efOdEi/nsWn27JXuF2n5PaS8kkLAy7DyCz
-         noGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792342824; x=1792947624;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=6FM1MA66tNAmn5lRFJ2nA1E4CaxhhsRh1DU3FWW8nEE=;
-        b=Xewwq8G+ViRzFSLZGbwnXH4l2SWXVFCqJ0K/DdkUL+RQTvFaX4uKPY4YexuWoHpi44
-         g5m4NCFK7i2Q4d88TJkC1RBZMofbqto5KmlT/JpqB4/Bi64NT8f+kxdQjwJgf5Qh+Jjt
-         +CioUU00BjekZ5NBgF4+c2TxtV0oQd6JDD+vE7tgXay4kDtUtNfu2WgBZYB/8sOdanvi
-         4QTy9Crks5sqXeT9PqTglvxdK7MC3MElQjVHDeAtGAEjHypWwxCZNOke+2zsfdIvTBB8
-         4Fu5hO0LZa6Q/oVGey1Pk6MG2GiY10CQUK+gohV8COKs12s9XO0ablvIAUL/PV6s2WKR
-         QH2w==
-X-Gm-Message-State: AFq9FYJiy2RxQw72Ust5D67j0z3MulJlBzrmxQKA7iJnsf6JRwS1xNJv
-	PuqDw96a26fn1yOIKtsAn/xoBYxCDwyKdALXclOZF6mJwbdYVGDxfMDHpIg5gMTmog==
-X-Gm-Gg: AYBFou2NchwHIwGH00jeQ4VRB2mRWgVQj+77TIdgxi/4gGPrO9rNh6tvKt6lQDzNTjz
-	w8k6GB3pmWXSrcf68FePrv11vSAbhWuWJli5Awm7U6llFiUi/jgSQUl4fX5JNsmrbu7FRzd/KKH
-	0MNLVBnwB87v/QxQ3FBFO7W9rt8qbdWp2h+DOIKwYIqwjXXrbveTiicYTFAqHerKWi5io+bvnYW
-	PHWlq/8BrP50VLvzk4WsKkp+3+QlX0eh+AKQqf0hmd7W/IwpsIWpTHOwYUL2m3l6yV/msZf2gT0
-	nhBwnyNpSaSsAdLmsg/HssEUHY11Mb2IytBCnFMlOJAwU82krQRApzp2TRpMrEpGYJxCXjlRmrW
-	unaiaVVeK+dDv/AlIT1i0RDn7D5CCwDFGstmNp45sHvNdp8YT3PflVX1RBrz6UwGNXsRpJvzJVW
-	hG/HfsLB2ksukUYSxgaam474S6QsUFcHpdA9IY4HbFllhaoSOyXBu5p8tFPKZqDwiQQKTt8c2SE
-	apcOfyGbnAP5GVr+cQFRZVuOkgETzqwhLhnu0W0VHXkydXe
-X-Received: by 2002:a05:7301:1888:b0:351:595f:a941 with SMTP id 5a478bee46e88-361a166778fmr6962607eec.8.1792342822362;
-        Sun, 18 Oct 2026 10:00:22 -0700 (PDT)
-Received: from localhost.localdomain ([101.0.63.175])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36083283478sm24222297eec.29.2026.10.18.10.00.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Oct 2026 10:00:21 -0700 (PDT)
-From: Nikhil Gautam <nikhilgtr@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH] iio: chemical: ccs811: Make sampling frequency configurable
-Date: Sun, 18 Oct 2026 22:30:13 +0530
-Message-Id: <20261018170013.79443-1-nikhilgtr@gmail.com>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m2PiBFOK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F0A71F000C4;
+	Sun, 18 Oct 2026 17:56:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792346184;
+	bh=liB8BgC1Ml46m5qJ2Km0vMLjnxc3Pun60AgSOQRsiBs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=m2PiBFOKh3/PBfkF09d5G2Pwrq2k/hNmmokceGySQIEf70CsesetjNFDxkLk+w9hR
+	 hu8j0pugh6irna+V40Dhr1NAeECfOrC0YtW8Dr+2iPWkHHvglwsywMy+HNz6MTQ92t
+	 Y4o5uCiPCdEeOatLDZFikNOtuhZiRy74n97SFe2Ty0eFJFor8S564Y5Sip3sbxZcQT
+	 yG04jSBwIXkOfWiJ0rNPYbcatwzm9CBpg0rqQVYFPIVzTzya1dRjNnOSEOBeOsHbkT
+	 aJRjs8TL7+7xhp/SPRvrMj/0n19BVMn7CMc5Qp7hYLzzpEJ6SYXwh61MnEyT/fFp0M
+	 WaacBoD5v00bQ==
+Date: Sun, 18 Oct 2026 18:56:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "chr[]" <chris@rudorff.com>
+Cc: Linus Walleij <linusw@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Bjorn
+ Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iio: light: gp2ap002: add led power supply
+Message-ID: <20261018185619.2aa694da@jic23-hlaptop>
+In-Reply-To: <d06d51cf-a53d-4bef-881e-cdcb4925a316@rudorff.com>
+References: <20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com>
+	<20261017-iio-light-gp2ap002-v2-2-d6879767a446@rudorff.com>
+	<20261017190006.224b73e7@jic23-hlaptop>
+	<d06d51cf-a53d-4bef-881e-cdcb4925a316@rudorff.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Allow userspace to configure the CCS811 IAQ measurement rate through
-the IIO sampling_frequency attribute.
+On Sun, 18 Oct 2026 16:41:48 +0200
+"chr[]" <chris@rudorff.com> wrote:
 
-Support the three IAQ measurement modes with sampling frequencies of
-1 Hz, 0.1 Hz, and approximately 0.016667 Hz, corresponding to
-measurement intervals of 1, 10, and 60 seconds.
+> Hi,
+> 
+> In preparation of v3:
+> 
+> Am 17.10.26 um 20:00 schrieb Jonathan Cameron:
+> > On Sat, 17 Oct 2026 19:27:42 +0200
+> > Christoph Rudorff <chris@rudorff.com> wrote:
+> >   
+> >>   	/* VIO should be between 1.65V and VDD */
+> >> -	ret = regulator_get_voltage(gp2ap002->vdd);
+> >> +	ret = regulator_get_voltage(gp2ap002->supplies[SUPPLY_VDD].consumer);  
+> > 
+> > Ah. I'd failed to register the voltages were being manually set (generally
+> > we leave that to firmware in more modern drivers).
+> > That rather reduces the advantage in using bulk regulators.  Probably
+> > still just about worth doing.
+> >  
+> 
+> Yes, this is why I didn't made it in v1.
+> 
+> >   
+> >>   	if (ret < 0) {
+> >>   		dev_err(dev, "failed to get VDD voltage\n");
+> >>   		return ret;
+> >>   	}
+> >> -	ret = regulator_set_voltage(gp2ap002->vio, 1650000, ret);
+> >> +	ret = regulator_set_voltage(gp2ap002->supplies[SUPPLY_VIO].consumer, 1650000, ret);
+> >>   	if (ret) {
+> >>   		dev_err(dev, "failed to set VIO voltage\n");
+> >>   		return ret;
+> >>   	}
+> >> +	/* LED voltage 2.4V .. 3.6V according to datasheet */
+> >> +	/* We need to check this, as dummy or fixed controllers trigger an error. */  
+> > I'd make that a multiline comment and say what 'this' is.
+> > 	/*
+> > 	 * LED voltage 2.4V .. 3.6V according to datasheet
+> > 	 * We need to check control is supported, as controlling dummy or fixed
+> > 	 * controllers results in an error.
+> > 	 */
+> > 
+> > Do you actually need to control this for your board?  I'm not that
+> > keen to replicate the controlling of voltages if we don't have
+> > to.  We can't drop existing code as maybe a board is relying on it
+> > but we can avoid adding new examples!
+> >   
+> 
+> So we don't want to drop all the set_voltage code in general.
+> My board does not need that at all, all voltages are already set
+> to valid values in DT, ... I hope ... I check downstream ...
+Unfortunately it would be a bit of a gamble to remove the in
+driver voltage control on existing supplies. Given it works
+for yours though let us not do it for the new one! 
+> 
+> So I skip the "example" for set_voltage(vled)?!
 
-Preserve unrelated bits in the MEAS_MODE register when updating the
-drive mode, and cache the selected mode after a successful register
-write. Expose the supported frequencies through
-sampling_frequency_available.
+Exactly.
 
-Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
----
- drivers/iio/chemical/ccs811.c | 139 +++++++++++++++++++++++++++++++---
- 1 file changed, 130 insertions(+), 9 deletions(-)
+Jonathan
 
-diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-index d126ee12ffe5..4d157f3f5714 100644
---- a/drivers/iio/chemical/ccs811.c
-+++ b/drivers/iio/chemical/ccs811.c
-@@ -9,10 +9,9 @@
-  * IIO driver for AMS CCS811 (I2C address 0x5A/0x5B set by ADDR Low/High)
-  *
-  * TODO:
-- * 1. Make the drive mode selectable form userspace
-- * 2. Add support for interrupts
-- * 3. Adjust time to wait for data to be ready based on selected operation mode
-- * 4. Read error register and put the information in logs
-+ * 1. Add support for interrupts
-+ * 2. Adjust time to wait for data to be ready based on selected operation mode
-+ * 3. Read error register and put the information in logs
-  */
- 
- #include <linux/cleanup.h>
-@@ -54,6 +53,7 @@
- #define CCS811_STATUS_FW_MODE_APPLICATION	BIT(7)
- 
- /* Measurement modes */
-+#define CCS811_MODE_MASK	GENMASK(6, 4)
- #define CCS811_MODE_IDLE	0x00
- #define CCS811_MODE_IAQ_1SEC	0x10
- #define CCS811_MODE_IAQ_10SEC	0x20
-@@ -79,6 +79,7 @@ struct ccs811_data {
- 	struct iio_trigger *drdy_trig;
- 	struct gpio_desc *wakeup_gpio;
- 	bool drdy_trig_on;
-+	u8 drive_mode;
- 	/* Ensures correct alignment of timestamp if present */
- 	struct {
- 		s16 channels[2];
-@@ -86,6 +87,12 @@ struct ccs811_data {
- 	} scan;
- };
- 
-+static const int ccs811_samp_freq[] = {
-+	1, 0,
-+	0, 100000,
-+	0, 16667,
-+};
-+
- static const struct iio_chan_spec ccs811_channels[] = {
- 	{
- 		.type = IIO_CURRENT,
-@@ -103,6 +110,8 @@ static const struct iio_chan_spec ccs811_channels[] = {
- 		.modified = 1,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.scan_index = 0,
- 		.scan_type = {
- 			.sign = 'u',
-@@ -163,16 +172,21 @@ static int ccs811_start_sensor_application(struct i2c_client *client)
- 	return 0;
- }
- 
--static int ccs811_setup(struct i2c_client *client)
-+static int ccs811_setup(struct ccs811_data *data)
- {
- 	int ret;
- 
--	ret = ccs811_start_sensor_application(client);
-+	ret = ccs811_start_sensor_application(data->client);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, CCS811_MEAS_MODE,
-+					CCS811_MODE_IAQ_1SEC);
- 	if (ret < 0)
- 		return ret;
- 
--	return i2c_smbus_write_byte_data(client, CCS811_MEAS_MODE,
--					 CCS811_MODE_IAQ_1SEC);
-+	data->drive_mode = CCS811_MODE_IAQ_1SEC;
-+	return 0;
- }
- 
- static void ccs811_set_wakeup(struct ccs811_data *data, bool enable)
-@@ -188,6 +202,44 @@ static void ccs811_set_wakeup(struct ccs811_data *data, bool enable)
- 		usleep_range(20, 30);
- }
- 
-+static int ccs811_set_sampling_freq(struct ccs811_data *data,
-+				    int val, int val2)
-+{
-+	u8 drive_mode;
-+	int ret;
-+
-+	if (val == 1 && val2 == 0)
-+		drive_mode = CCS811_MODE_IAQ_1SEC;
-+	else if (val == 0 && val2 == 100000)
-+		drive_mode = CCS811_MODE_IAQ_10SEC;
-+	else if (val == 0 && val2 == 16667)
-+		drive_mode = CCS811_MODE_IAQ_60SEC;
-+	else
-+		return -EINVAL;
-+
-+	guard(mutex)(&data->lock);
-+	ccs811_set_wakeup(data, true);
-+
-+	ret = i2c_smbus_read_byte_data(data->client, CCS811_MEAS_MODE);
-+	if (ret < 0)
-+		goto out;
-+
-+	ret &= ~CCS811_MODE_MASK;
-+	ret |= drive_mode;
-+
-+	ret = i2c_smbus_write_byte_data(data->client,
-+					CCS811_MEAS_MODE, ret);
-+	if (ret < 0)
-+		goto out;
-+
-+	data->drive_mode = drive_mode;
-+	ret = 0;
-+
-+out:
-+	ccs811_set_wakeup(data, false);
-+	return ret;
-+}
-+
- static int ccs811_get_measurement(struct ccs811_data *data)
- {
- 	int ret, tries = 11;
-@@ -249,6 +301,28 @@ static int ccs811_read_info_raw(struct ccs811_data *data,
- 	}
- }
- 
-+static int ccs811_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	struct ccs811_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+
-+		ret = ccs811_set_sampling_freq(data, val, val2);
-+
-+		iio_device_release_direct(indio_dev);
-+		return ret;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static int ccs811_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -293,13 +367,60 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		guard(mutex)(&data->lock);
-+		switch (data->drive_mode) {
-+		case CCS811_MODE_IAQ_1SEC:
-+			*val = 1;
-+			*val2 = 0;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case CCS811_MODE_IAQ_10SEC:
-+			*val = 0;
-+			*val2 = 100000;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case CCS811_MODE_IAQ_60SEC:
-+			*val = 0;
-+			*val2 = 16667;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		default:
-+			return -EINVAL;
-+		}
-+
- 	default:
- 		return -EINVAL;
- 	}
- }
- 
-+static int ccs811_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length,
-+			     long mask)
-+{
-+	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-+		return -EINVAL;
-+
-+	*vals = ccs811_samp_freq;
-+	*type = IIO_VAL_INT_PLUS_MICRO;
-+	*length = ARRAY_SIZE(ccs811_samp_freq);
-+
-+	return IIO_AVAIL_LIST;
-+}
-+
-+static int ccs811_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	if (mask == IIO_CHAN_INFO_SAMP_FREQ)
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	return -EINVAL;
-+}
-+
- static const struct iio_info ccs811_info = {
- 	.read_raw = ccs811_read_raw,
-+	.write_raw = ccs811_write_raw,
-+	.read_avail = ccs811_read_avail,
-+	.write_raw_get_fmt = ccs811_write_raw_get_fmt,
- };
- 
- static int ccs811_set_trigger_state(struct iio_trigger *trig,
-@@ -460,7 +581,7 @@ static int ccs811_probe(struct i2c_client *client)
- 		return -ENODEV;
- 	}
- 
--	ret = ccs811_setup(client);
-+	ret = ccs811_setup(data);
- 	if (ret < 0) {
- 		ccs811_set_wakeup(data, false);
- 		return ret;
--- 
-2.39.5
+> 
+> And thanks for the advice to pretty up the code!
+> 
+> chr[]
+> 
+> >> @@ -632,9 +650,8 @@ static void gp2ap002_remove(struct i2c_client 
+> *client)>>   	pm_runtime_get_sync(dev);
+> >>   	pm_runtime_put_noidle(dev);
+> >>   	pm_runtime_disable(dev);
+> >> +	regulator_bulk_disable(NUM_SUPPLIES, gp2ap002->supplies);  
+> > 
+> > Why at that point in sequence?  You are turning the power off
+> > before removing the userspace interfaces which seems unlikely to
+> > be race free. More generally it is no longer reverse of probe
+> > order. If that is necessary for some reason I'd expect a comment
+> > to say why.
+> >  
+> 
+> Sorry, just a stupid mistake.
+> 
+> >>   	iio_device_unregister(indio_dev);
+> >> -	regulator_disable(gp2ap002->vio);
+> >> -	regulator_disable(gp2ap002->vdd);
+> >>   }  
+> > 
+> >   
+> 
 
