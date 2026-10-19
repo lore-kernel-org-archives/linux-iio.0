@@ -1,350 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736C63CA49D;
-	Mon, 19 Oct 2026 03:09:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA7F47ECC2
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 05:07:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792379368; cv=none; b=IAXhZHUQmAbo4xGZwbiCO22/moIEKgK2fq5i/RDwLPsorhHqOpT64OT4P+QGL4/x/yvcRQdppBGP3Cq4EuvwVVvcJsVODR6eytZOh9A0bCpZTlPCbXcuIrQF727I0260QZMhlL9oZ+Fa61RhpYqsCSpEwNNVLwhsSpxm0uKddyY=
+	t=1792386442; cv=none; b=chhru+eB5uTLWeYh9BBZTGcOvLQ/u/osyolyveANTAuRUZsnsFfPdKkc/hhAIWHQdAofkV12M6XadJUrssPAMLMzlg7dE56aQwWJwnt/A9Pxj+lSBH1nTa2JKChj2GzAfuU8dO89Ey2QXZWW++RinnWAtmnC6ZExFlt7sY52oJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792379368; c=relaxed/simple;
-	bh=CzFcKQM33Cq5P8ORdmzit8Afzw2hh3huDqIDynegErY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CietfQLC9p0Im/z9vAnhQse9RiJEdB58dxWXmhLW2C8eBslsm8S93na6Mzh41DyjVsvI1JPBuJCmj2yK3IzewGO4NRgSnj4J1/8iMmNoPeMgXBNi5gB+Y3GP2C3A6U+tX6HKibJ7OMwFPWmiPIJEbpozW5WHky9TJf3kr46qWnA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uu3YOUVg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1792386442; c=relaxed/simple;
+	bh=x9wpxUyL530Iiw6P0N+3kTeiF91l97A3dxOFL5oObNY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FwWf8yLx+GpCLlsyzzgG/KD33qqeUpDkytHmMRvJaccAuE9/2CuhUhXXrUbPaa0DJDaUgOdqyRMhwFJgeFkv2IB82gXAHmbpai7J1xHVJUMvuIlBeujrdz7H/vYe7Z2PbWaA39/RUWhTipnTJXdYoLlMtJjz6daQ2MojBkmJ7rY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YlN3EpQ8; arc=none smtp.client-ip=74.125.82.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uu3YOUVg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8FBD1F000C4;
-	Mon, 19 Oct 2026 03:09:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792379364;
-	bh=6dNHJAmFPwSXAK4cpoPtlpkupCrYiUjrK1/Mm06OYLY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Uu3YOUVgiaPJCXGKS+iDpR/5WzD5L6gGBdZDiOqPI3wjUcCsiFKB1P+Fr+uEEGzsu
-	 6duyM8qJ1HSrs9rHvu1hcQdcGFWTWLsFqj5vlh/5qjqDkFBi2/YHx5sanqhMobSTIe
-	 4behsKOzDOKrTE/kX8QuPzfPyhKry1bffpEr6Ngdi4u+yk7kN70AShDZW/qDlAsOa1
-	 nqqe9JZ63AgWPTmuEeOTBXlzAS85yz+HEJ7Qg9+CEX6GXFpyj2iKhfb1OUL+sC3kXK
-	 OdrDf5VYByn/AXmsFBHTpLCZelZItZHVeVmQ9iT4r3T6cz9PhXCLTgUt0NoDzGlxZD
-	 JR3EfY2WGW2Mw==
-Date: Mon, 19 Oct 2026 04:09:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: linux-iio@vger.kernel.org, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
- linux@analog.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] staging: iio: adt7316: use kstrtobool() for sysfs
- boolean parsing
-Message-ID: <20261019040919.0381d31f@jic23-hlaptop>
-In-Reply-To: <20261018143108.14750-1-abdelnasserhussein11@gmail.com>
-References: <20261018143108.14750-1-abdelnasserhussein11@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YlN3EpQ8"
+Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-3645f0f3fcdso953660eec.0
+        for <linux-iio@vger.kernel.org>; Sun, 18 Oct 2026 22:07:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792386432; x=1792991232; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Fva8zL+n1OCI0oMJodhd5ulLyrv34XE8ucuw+gfKNzI=;
+        b=YlN3EpQ8H0+82aX+vWfFofSCYkGN7VEFNdl1mEMwqEvOUWMrZSWXIEFDoX3y1CYKiU
+         JG+VbOCGRFc+b5ejda+fE+5RT8aIVJiacmrCZOZYmRHgVGn9FHIA1XMfemUC1FlwFxsu
+         KXFX37t7TyCJb7PGu4DbSz+t5l7thYYBV9CZA3Tv2jDZnmKxOpfaRObk44JajtalTYZS
+         NOj1AJVh1AbxgN9PHaT0Je4+bImkUs9pj877tycdIpOkBrsh9PBcDStFoaMw6CKnIbSz
+         yeVYDpbkyiFPrwxfMIGJJGFVOoDebZ5FcwZCIQJMe+gKhh3T63sGXNv2suAsJ9cN48XC
+         ILPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792386432; x=1792991232;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Fva8zL+n1OCI0oMJodhd5ulLyrv34XE8ucuw+gfKNzI=;
+        b=poAZG7fdxUCUu3+9lNqv3OLcLuoWFR6WfH0kPm3K9r14ay66oPnOmFpyQPONeVQcJC
+         +P8CK8XOs7mcrQ58DvqezG2scwgFNj+FquSRQ9jK++SMFrvyQEcClta9b6clKkatvENT
+         Z26zlgZEDTRZMv9BcvQZM0nz0JS0ZNJb1bV4/gcPPthshLvP/WdH83v1oDjiRhoMay0/
+         8y6Y3DTaRWdj1DIOJ63nqr5nMg/tk6SGr5kIKxJGZbYoT6Vu4wdIxpuwFneXTxWVoWDl
+         pblObW7dOWAU4R0KDj7lR3+JE1Z4qymABDmqJJMtwebhJqaBlpWH8+lHj+z2GX/Amc6T
+         sEeA==
+X-Forwarded-Encrypted: i=1; AKwUvBypwHE2hE9n+GsXc5MMYBBRvPtHxJ7eW6ENSvP8N0KPxpIWf3wpYeN8d1khmlvGYS1SBWRoMKjFvAc=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKC0YyoBWVNVQFtMCnmpY/kn9hUc53H7rvOG8QU4YAxLKe1UvVI
+	uqcYfvjRf0POvWdiLmg0bpZCWz89D+eZkoFyGlGpFrbcaJAZxCPZci6O
+X-Gm-Gg: AYBFou2/4BvtL+Gfv8Kk0r5zWcCkMLQp8ApYjY9M4Qw2d9BlsNjCd15fBJqc7bs4RK9
+	YNe5e9LBpcaRe3RnPl1AS8kBJmFcA4rfPz6qfskjfTr+NzZadfmzNPWzXDx4xNDH93B92x7DrMj
+	J/N2SoYF6mCaLIQV/yHqUynfMScZUM6/E5xmkkq4wRuhwxZkIi3FUDRN4Y2JEbS9xwCL7RRG/nk
+	5ptRK0F/2DLPUTJGlJ5kqsQuCkFJ7qzIRlQAuUGqMmtXq5UDU3isrfy09xbC6KKxiLE8qabujfW
+	U/DVdYWeTMjPSNzirXyLpbRMne3vYP1Eve//hC458/WdoGfCQ/H+A7pWNHjfSJSMsRF0GA76uz5
+	mtc4woHuxu67VHDCvy9AMsyhyTRHzmNpXzYU5WN+YcEgkCAyNaxJhE0rxZZsgthBDbt2OaZ3mzE
+	xeAflOUr/zoTzaZS/cILMk3v9ydhbMTLxVaZEXXJAWgeZbiPmIkHyfWdsPLGTN1XotybgdQt5zv
+	mH8GAcYGKI7vvnHs+fdnw==
+X-Received: by 2002:a05:7022:302:b0:157:cbf6:89c4 with SMTP id a92af1059eb24-18514350f17mr15503005c88.26.1792386431972;
+        Sun, 18 Oct 2026 22:07:11 -0700 (PDT)
+Received: from NithishVelan.localdomain ([152.57.90.98])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-18314ef8ed8sm23760564c88.3.2026.10.18.22.07.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Oct 2026 22:07:11 -0700 (PDT)
+From: Nithishvelan M <mnithishvelan@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Nithishvelan M <mnithishvelan@gmail.com>
+Subject: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use guard(mutex) in ad5933_show()
+Date: Mon, 19 Oct 2026 05:07:02 +0000
+Message-ID: <20261019050702.419-1-mnithishvelan@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sun, 18 Oct 2026 17:31:08 +0300
-Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
+Use guard(mutex) to automatically manage the state lock in
+ad5933_show(). This simplifies the function by allowing direct returns
+from each switch case, eliminating the mutable return variables and
+manual mutex_unlock() calls.
 
-> Replace manual character checks (e.g., buf[0] == '1') with the standard
-> kstrtobool() API in sysfs store functions.
-> 
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Ah. No need to resend just to drop a tag.  I did that on v3.
+Signed-off-by: Nithishvelan M <mnithishvelan@gmail.com>
+---
+v2:
+ - Resend using git-send-email to preserve tabs and whitespace (v1 was
+   sent via Gmail web composer and had mangled whitespace).
+ - No code changes.
 
-Anyhow, all is well that ends well!
+ .../staging/iio/impedance-analyzer/ad5933.c   | 38 ++++++++-----------
+ 1 file changed, 15 insertions(+), 23 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
-> Changes in v4:
-> - Removed Joshua's Reviewed-by tag.
-> 
-> Changes in v3:
-> - Change _adt7316_store_enabled() parameter type from int to bool to match callers (Andy Shevchenko).
-> - Update adt7316_disable() and adt7316_enable() to pass false/true instead of 0/1 (Andy Shevchenko).
-> 
-> Changes in v2:
-> - Include <linux/kstrtox.h>.
-> - Rename the boolean variable from 'req' to 'val' for clarity.
-> - Add Reviewed-by tag from Joshua Crofts.
-> 
->  drivers/staging/iio/addac/adt7316.c | 101 ++++++++++++++++++++++------
->  1 file changed, 81 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> index 20f6052cc7fb..ec1c33ad5ace 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -17,6 +17,7 @@
->  #include <linux/i2c.h>
->  #include <linux/rtc.h>
->  #include <linux/module.h>
-> +#include <linux/kstrtox.h>
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/events.h>
-> @@ -220,7 +221,7 @@ static ssize_t adt7316_show_enabled(struct device *dev,
->  }
->  
->  static ssize_t _adt7316_store_enabled(struct adt7316_chip_info *chip,
-> -				      int enable)
-> +				      bool enable)
->  {
->  	u8 config1;
->  	int ret;
-> @@ -246,12 +247,12 @@ static ssize_t adt7316_store_enabled(struct device *dev,
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> -	int enable;
-> +	bool enable;
-> +	int ret;
->  
-> -	if (buf[0] == '1')
-> -		enable = 1;
-> -	else
-> -		enable = 0;
-> +	ret = kstrtobool(buf, &enable);
-> +	if (ret)
-> +		return ret;
->  
->  	if (_adt7316_store_enabled(chip, enable) < 0)
->  		return -EIO;
-> @@ -285,13 +286,18 @@ static ssize_t adt7316_store_select_ex_temp(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config1;
-> +	bool val;
->  	int ret;
->  
->  	if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
->  		return -EPERM;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config1 = chip->config1 & (~ADT7516_SEL_EX_TEMP);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config1 |= ADT7516_SEL_EX_TEMP;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
-> @@ -482,10 +488,15 @@ static ssize_t adt7316_store_disable_averaging(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config2;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config2 = chip->config2 & (~ADT7316_DISABLE_AVERAGING);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config2 |= ADT7316_DISABLE_AVERAGING;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
-> @@ -521,10 +532,15 @@ static ssize_t adt7316_store_enable_smbus_timeout(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config2;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config2 = chip->config2 & (~ADT7316_EN_SMBUS_TIMEOUT);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config2 |= ADT7316_EN_SMBUS_TIMEOUT;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
-> @@ -559,10 +575,15 @@ static ssize_t adt7316_store_powerdown(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config1;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config1 = chip->config1 & (~ADT7316_PD);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config1 |= ADT7316_PD;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
-> @@ -597,10 +618,15 @@ static ssize_t adt7316_store_fast_ad_clock(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config3;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config3 = chip->config3 & (~ADT7316_ADCLK_22_5);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config3 |= ADT7316_ADCLK_22_5;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-> @@ -640,13 +666,18 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config3;
-> +	bool val;
->  	int ret;
->  
->  	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
->  		return -EPERM;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config3 |= ADT7316_DA_HIGH_RESOLUTION;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-> @@ -685,12 +716,17 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config3;
-> +	bool val;
->  	int ret;
->  
->  	if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
->  		return -EPERM;
->  
-> -	if (buf[0] != '1')
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!val)
->  		config3 = chip->config3 & (~ADT7516_AIN_IN_VREF);
->  	else
->  		config3 = chip->config3 | ADT7516_AIN_IN_VREF;
-> @@ -728,10 +764,15 @@ static ssize_t adt7316_store_enable_prop_DACA(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config3;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config3 = chip->config3 & (~ADT7316_EN_IN_TEMP_PROP_DACA);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config3 |= ADT7316_EN_IN_TEMP_PROP_DACA;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-> @@ -767,10 +808,15 @@ static ssize_t adt7316_store_enable_prop_DACB(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config3;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config3 = chip->config3 & (~ADT7316_EN_EX_TEMP_PROP_DACB);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config3 |= ADT7316_EN_EX_TEMP_PROP_DACB;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-> @@ -967,10 +1013,15 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 dac_config;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_AB);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		dac_config |= ADT7316_VREF_BYPASS_DAC_AB;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
-> @@ -1006,10 +1057,15 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 dac_config;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_CD);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		dac_config |= ADT7316_VREF_BYPASS_DAC_CD;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
-> @@ -1969,10 +2025,15 @@ static ssize_t adt7316_set_int_enabled(struct device *dev,
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  	u8 config1;
-> +	bool val;
->  	int ret;
->  
-> +	ret = kstrtobool(buf, &val);
-> +	if (ret)
-> +		return ret;
-> +
->  	config1 = chip->config1 & (~ADT7316_INT_EN);
-> -	if (buf[0] == '1')
-> +	if (val)
->  		config1 |= ADT7316_INT_EN;
->  
->  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
-> @@ -2084,7 +2145,7 @@ static int adt7316_disable(struct device *dev)
->  	struct iio_dev *dev_info = dev_get_drvdata(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
-> -	return _adt7316_store_enabled(chip, 0);
-> +	return _adt7316_store_enabled(chip, false);
->  }
->  
->  static int adt7316_enable(struct device *dev)
-> @@ -2092,7 +2153,7 @@ static int adt7316_enable(struct device *dev)
->  	struct iio_dev *dev_info = dev_get_drvdata(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
-> -	return _adt7316_store_enabled(chip, 1);
-> +	return _adt7316_store_enabled(chip, true);
->  }
->  
->  EXPORT_GPL_SIMPLE_DEV_PM_OPS(adt7316_pm_ops, adt7316_disable, adt7316_enable);
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 798e62bae2..024c6b5a06 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+@@ -333,39 +334,30 @@ static ssize_t ad5933_show(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret = 0, len = 0;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	switch ((u32)this_attr->address) {
+ 	case AD5933_OUT_RANGE:
+-		len = sysfs_emit(buf, "%u\n",
+-				 st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+-		break;
++		return sysfs_emit(buf, "%u\n",
++				  st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+ 	case AD5933_OUT_RANGE_AVAIL:
+-		len = sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
+-				 st->range_avail[3], st->range_avail[2],
+-				 st->range_avail[1]);
+-		break;
++		return sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
++				  st->range_avail[3], st->range_avail[2],
++				  st->range_avail[1]);
+ 	case AD5933_OUT_SETTLING_CYCLES:
+-		len = sysfs_emit(buf, "%d\n", st->settling_cycles);
+-		break;
++		return sysfs_emit(buf, "%d\n", st->settling_cycles);
+ 	case AD5933_IN_PGA_GAIN:
+-		len = sysfs_emit(buf, "%s\n",
+-				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
+-				 "1" : "0.2");
+-		break;
++		return sysfs_emit(buf, "%s\n",
++				  (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
++				  "1" : "0.2");
+ 	case AD5933_IN_PGA_GAIN_AVAIL:
+-		len = sysfs_emit(buf, "1 0.2\n");
+-		break;
++		return sysfs_emit(buf, "1 0.2\n");
+ 	case AD5933_FREQ_POINTS:
+-		len = sysfs_emit(buf, "%d\n", st->freq_points);
+-		break;
++		return sysfs_emit(buf, "%d\n", st->freq_points);
+ 	default:
+-		ret = -EINVAL;
++		return -EINVAL;
+ 	}
+-
+-	mutex_unlock(&st->lock);
+-	return ret ? ret : len;
+ }
+ 
+ static ssize_t ad5933_store(struct device *dev,
+-- 
+2.53.0
 
