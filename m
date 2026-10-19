@@ -1,80 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792436958;
-	b=2fubCsdCvGVXwNIiO9Q0wKhMrpqYYC7RTxvCTWNZFf2Qkb/IEMF0tm3EBoMIMG2fOkxg
-	 A1i257LETxaZYuRYNc18zV3BpFmAMuqC2ERurH1OwYQYZCGS1LYodZDHNubG1N/1St2MY
-	 qskf+U7rKmXrUSztDgImqdI6nsUU7Yc8nB7wnhddaMX20jV2qd21e4Z1oEFdP/5JRe/nZ
-	 eHeDPtQSPdkEemCUELewNZtOqnBMf98I5y0O/LfcqvMpJgQgTveQzpfbaOXrE6YsAIUPs
-	 UjyhS0LhE5XPLsTo4nmf9XX7zmewxpCUT3qkU+RtwnLaCAn8Lu3zSCFfCGPyQGk5Vzg==
+	t=1792441296;
+	b=YR6Wl5bUJ9pZzVOy/qAM7k/8SSVz7/W5j5kAGTNoZY4WW8WBO4oX467QEq/bPemoWtNf
+	 yBU8hbSF2VYVg/DJPL6aQHcW6Chyca1CsT0bJztRR3tQhyARURbqdVRMv4hf6FH26daTr
+	 ydZbmX3azf+oxEAp6FzBUtXl5poYXT9uLQnq6I6dos6pK0APIQO9XmSo7cSLiA7tSY/63
+	 rEFUN7YAmZ4UfRPIGZ04Jm+OkCxj7/MtnGW2EDyvXh80ULZAs7oWGGTesmX96cuMzb07+
+	 bsi3jCbbPjjW7bCw/Ep0JKMDGE/3Lxiqx0vHJnWx/JhbnQsfxZh0NiBXnhzcSdp/GGw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792436958;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=TpG57D5r1lU2T1hO9/UVKS6qEvJQlV4XgEA7nKMmsdA=;
-	b=fsljH7G88uKXzPkzySmXPZhyN3PTMUwlouPZDEO4s5N/832UOGoUfToROAozpn8fGvnU
-	 Kk8S0ZvtPuqd0FBopJOoyOlhUj2Z2bsBbfDigJtw3Cb67QmM7uwzvS3Fo4oZYrTTRaat3
-	 PTZ90znwuQD998b7hvB6ef8YEssinoTVgthieGSQxJcAZ8kLPtGb7R6PjficllJ8iUIcJ
-	 HtJqJPA7q7iS+R5GHuDZ6ZUnFNBmt/eKH96eRM6F2SpSMbdOnWRQyL7ZzITxmt9V1lt49
-	 i1LTBlz5cK5+qu77YWULmRl6KjKITXu9WMX2PJxjiRZhtjE5QIDWb01Smr4hMlGBO4w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792441296;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=lxY+bUlnXkp9HLTP6VBDyo9xmYaSPEc8yORJWUbNihU=;
+	b=Qg0QLX9kdIQxC+QPgd/+DdCn7f95tK4ur65lHW+N635I6rCoWO6Fk3/UyS1zzJxin1qV
+	 ApNeDShWgl4IVCSvfdOH5kjZa5ofDf3Yd9IChX9Wpj63//rDkdQZ680DIqbpOMYChAcXT
+	 UQ6Fx9AK7o/mMMKTMGj4KhjLis3a3JXLBoSJWxfi5h/SvZyNaz9RjAZsXRflS4xj45Yr4
+	 UMEtaBFmTstCQSJb4GFFo9GLU1Qhe2o5ptw5keu88VGJIQFlGS8t2oS5qTV50eiRYdIrj
+	 qTbkGAeDHR6Sx07XAU3ws7AR8bT/hqO4bvrBTYvN1Mhz1QxUcvP3t57w5ROIIJbYZ4A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QUXGlwPw;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=XiBEVISy;
+	arc=none smtp.remote-ip=209.85.222.45
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com [209.85.222.45])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40DE4606A31F;
-	Mon, 19 Oct 2026 19:09:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40DE4606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FDBE606A31B
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 20:21:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3FDBE606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QUXGlwPw
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792436957; x=1823972957;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Rb/b13h+jFhVWzUzAl3ubaixIgBWcQk/eqQr2GkBJbU=;
-  b=QUXGlwPwiTB/R3yi4q/twDsJePMMAIIM1VbEoiQWZQhXeGAlzSWmlGzL
-   e7NjNZIyWeAW9xZn9BjFHBFmHWrS/9GqbaoQcZRAlBiUt31bctpOsQ7fJ
-   EL3w9KWU9YTkmToIgZvOMwxU/tWp1QBdvYXLK0GGvuF9D8D4eU9n+WCzl
-   XuXbFWPgrllZ+vVCUe9a/SJ+rLgmLdfqpsPleXXjsPS3IuuNCatLVjhLt
-   hzxwluNBDwhbvxQR6t/3m15flosfI0pxP7rWsY1fXt4DdvPdMBpOWRfLB
-   uL2ofE0g5ldp6Jdo+vzL4jTVzmwSWjuXRh1PdajCsUR3hIDSU46hYRASB
-   w==;
-X-CSE-ConnectionGUID: YaZphw5BRHmrfdGIabZ7pw==
-X-CSE-MsgGUID: jzlzFFmgTHWaN3CoLc7O0g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1231644"
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1231644"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:09:17 -0700
-X-CSE-ConnectionGUID: e19MQXKLRQmB9ZoHh1yAUA==
-X-CSE-MsgGUID: poWNiUHNT+e8kFbHrSskMw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="3077749"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:09:15 -0700
-Date: Mon, 19 Oct 2026 22:09:12 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nithishvelan M <mnithishvelan@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
- guard(mutex) in ad5933_show()
-Message-ID: <atZq2GstK_rxOgbj@ashevche-desk.local>
-References: <20261019150248.416-1-mnithishvelan@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=XiBEVISy
+Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-9906a5410f5so44812241.0
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 13:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792441295; x=1793046095; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=lxY+bUlnXkp9HLTP6VBDyo9xmYaSPEc8yORJWUbNihU=;
+        b=XiBEVISyRUSaKTM2KkccmpCYmSCxtkzIT9pO0e1ILZqqpIDrCarUcKeRKwEiqGqFjs
+         eTQ9qd8be3XLJSDCMiafjEnEUjd8zt1HB16T6EqvAo0fhnwhTkEWS0MStUFlZOm49U5t
+         jcW42PITAbU6s1v6JmqyMJCwYN0hkuXsoj2oP6T+Iv97KQ7gA7ICDvzCgsYE5TjxO6wn
+         UYYeAgUoeOlxW/2tqeR/V3WkNnyeZVHXii+Q/vMNkX7r+pROjGz2tKzAzWPwkxey7DAJ
+         SvlyEv1Olggw8DwwpfLuv77Ht85Lvi9uB8DN4EZzuwSYDA/hnvDofsVInA4wxHL0UUwy
+         g8bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792441295; x=1793046095;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=lxY+bUlnXkp9HLTP6VBDyo9xmYaSPEc8yORJWUbNihU=;
+        b=WiNJpg59WHp/G2vUZa3lBCoC7UJD0tMKkJQv85MWYZ8RkFuagAGTovEY7druHHMb3W
+         oIkt2DXacvl0aTOyZdxxO+zwJbxe/Rz7uhQAeWIRF71E4iEsKk6tFVld1VMQfgjbfKsd
+         duetZLKVjA8Gycs8/VQGgNXFcyrc4ZmvKypIqgq2PGwJWjR2phuhv7eb0dBCHgAEfplS
+         LOlsIhRDgrxvwBcZnis2+KryKpAaJf6IyE/FrprxuE1MpiXpRL9qjMb5Af/z/67tz4uI
+         AGw0DnvboYRxK+aNP01loEiHeJS/+MqUCPg0hNdDm/WyMVaIHebM9GGEQEBrpQoDLk9s
+         SuXw==
+X-Forwarded-Encrypted: i=1; AKwUvBxiNAenHBBXbBeizz9x+oeLyMv6m+uJL2tPTz74H+dzGmOJiPDk512Ju3Tw5z6SQaDwa0eE/L9Ga1g=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIoV0Sug/n18QysHHhT7r207yA7KRZ4EuB0KbOXBnswyFHGFBXK
+	zaS2J+2v7tbhz0HLRDwRdxym+BakgYRRcbjoh0GG0VIt49A+aa0sT8Or
+X-Gm-Gg: AYBFou0YT2FEL2nHmmlhH6YMCMy/LxW5ez3xjn8fRIMxKFfLnPbydD5yDPT2ABz7sP2
+	wBnRLIOPHFIITdWqhHfHl4WXhvysso9ETdH3pBQarYPZXqJ8rStQ0igaOym8bikQWhJK6mPHpkm
+	l2r5ONxBL+iD8ubL80Bs0yM2zqB+WwKxCkWjjuBEgep9RbCRdXi9g7rPTi2VhNypLK5Cp01bPuM
+	o5XeClOyCJYu0zotocoJsY2tyM7hs9bUGB82+DK5PwPPIXR7AvxUlULgY5JZsu9YUo7kS8ZZD7p
+	VDLrtQNcp+RB2zxm3tyL/70ZmWzfSatKBKabwp5apdQAnFWvoFhSMd8NXm6cCUd3M2ca7dtb/fL
+	gTyvVc7gMXX5UWg2LDDobl5/YKf22S7fBTonzXZ1gqKpJAOBnVxMHbpk9MZruALizwfzUvLfxBw
+	Wi1dV846H1edQQr/pTgxHVQpL8965RRMHES5vI9BoMjgUcPeGvUf1bvgY488yCuN1PILAci8uxX
+	HUwcPsur8XMYtYPTQ==
+X-Received: by 2002:a05:6102:4410:b0:7bb:64cc:1362 with SMTP id ada2fe7eead31-7cc7bac38f4mr58992137.6.1792441295093;
+        Mon, 19 Oct 2026 13:21:35 -0700 (PDT)
+Received: from localhost ([2804:30c:4067:b00:a68b:4892:7af1:b51d])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7cc77264634sm1081672137.9.2026.10.19.13.21.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 13:21:33 -0700 (PDT)
+Date: Mon, 19 Oct 2026 17:22:36 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux@analog.com, nuno.sa@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, Michael.Hennerich@analog.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net,
+	skhan@linuxfoundation.org,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v5 05/15] iio: adc: ad4134: Serialize single-read
+ operations
+Message-ID: <atZ8DPLg1Zqzhba0@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1792200021.git.marcelo.schmitt@analog.com>
+ <fadebc9f9fd6fe3924d086bdd7f549555dc069bb.1792200021.git.marcelo.schmitt@analog.com>
+ <20261017193929.12ce61bc@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,35 +104,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20261019150248.416-1-mnithishvelan@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261017193929.12ce61bc@jic23-hlaptop>
 
-On Mon, Oct 19, 2026 at 03:02:48PM +0000, Nithishvelan M wrote:
-> Use guard(mutex) to automatically manage the state lock in
-> ad5933_show(). This simplifies the function by allowing direct returns
-> from each switch case, eliminating the mutable return variables and
-> manual mutex_unlock() calls.
+On 10/17, Jonathan Cameron wrote:
+> On Fri, 16 Oct 2026 22:57:47 -0300
+> Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+> 
+> > Protect single-sample read operations from going wrong if two or more of
+> > them run concurrently. Serialize the data read operation so to avoid
+> > single-sample read requests disrupting each other.
+> 
+> Why isn't this a fix (with appropriate fixes tag)?
+> If nothing else comes up and you agree it should have one just
+> reply to this email with it.
 
-...
+I seem to have forgotten to add that.
 
->  	case AD5933_IN_PGA_GAIN:
-> -		len = sysfs_emit(buf, "%s\n",
-> -				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
-> -				 "1" : "0.2");
-> -		break;
-> +		return sysfs_emit(buf, "%s\n",
-> +				  st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1 ? "1" : "0.2");
+Fixes: e0bc6d7e2584 ("iio: adc: Initial support for AD4134")
 
-You can (re-)use ridx here as well
+> 
+> Otherwise LGTM
+> 
+> > 
+> > Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
-		ridx = st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1;
-		return sysfs_emit(buf, "%s\n", ridx ? "1" : "0.2");
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Marcelo
