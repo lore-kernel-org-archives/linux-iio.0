@@ -1,48 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD3592FD69E;
-	Mon, 19 Oct 2026 01:36:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 308F42222C5;
+	Mon, 19 Oct 2026 01:40:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792373790; cv=none; b=jB7noY84L4nFpVd0WjVL5xWehGaLiICfKM6QWLN9rdDv9eGcTSwd6K+vStFxbJvI0LDQwSbp8KSpp88vBqeVY+NA+yG7N3M+yqYNSXqGu2oxIWltbAOCEjriZU2ZRXG/7eTpulm+L0LalfRWm8aQaNwiquDbVxnPKD+2J/1ZUI4=
+	t=1792374029; cv=none; b=X3kU9GDDlimzvZuzVToWfhOChjh4tY0ZZmpCY/ilQ1y0aRrckNEydezAAkS3tDmuUPT2cQRN43iuyz4at17XBbC0CUeOwL1ylIkLxOTJbSZ/XvuKYNPgBxK3llJWzsnPo4TXlsrNA28M7eIBJFEgWwm9VicAaVz3StDJ2+3WuEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792373790; c=relaxed/simple;
-	bh=5fgBF32MV2zfzyR6XJ5xpYAGftwcOYwZOdP1GxVq/wU=;
+	s=arc-20240116; t=1792374029; c=relaxed/simple;
+	bh=trYEdX8uQs0hlx750aq4gfYSGLY7LPxJvgFUtb0TcwU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pASeCcwqg5jomLUqzcHtMc+TKWvCmxr0Ir4arbIvcKs6EduU1uiDAFK4TOqYAmqGzRkeATCFUKHPeMMs9VvEdKieSzXIPQkZlERLavbooAWs64btQv5XSK2iVk3B+x3MSyuWv/JDGSpymkxGp0n60HMDr9RUMF/l/cPP3l0+UE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dKhl0d/z; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=qqaKsb71fLdN8E4t7QIYHS3Ngkgn0I6BiLWS2kojBsQqGpGPyABiIy1CTJW/qxmwS00+pz3aXYesW1Cr9H6TM9uwbB8SA4jooofhLTAw3X9COPnCXKcgHVrmZlDd5YpB4kN6Wb/MQc3KzxCcFfNh7EdCK/YY88dyM2BZVEyPMLE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ScmAcf6h; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dKhl0d/z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4507C1F000C4;
-	Mon, 19 Oct 2026 01:36:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ScmAcf6h"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933E41F000C4;
+	Mon, 19 Oct 2026 01:40:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792373789;
-	bh=/BR6tYHepUWfOOub7vhEH5faC9Xm9yzzqG9QdBsvV0w=;
+	s=k20260515; t=1792374027;
+	bh=0TWAttW+jzTYSOQF5ruJVHSwvGCQ9V/PrVQgOjz6jAA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dKhl0d/zvx8hXUZ80O8Os9Fzq/g0IxUuxaDD9IiwG32VgcBhbPLFbFzB3Fz603fJE
-	 PAZ9HhmfFN1D4vkyrab6d9I/NYprcxHSoyDwH2CzRqYjkxKsBFuXwiNNlybdaTHkjK
-	 dchZJLLOKiv90mTloyvxpaSamyHlqe6mLpggBIe3JCTgEdltKqyv7VQTSp244s4M6D
-	 0klo2M847tLX9LIVcO8tMxaqZg59xOcDD2p5AqjHrdH2T26F4tltFQblQ+oyquhF6r
-	 Wp9MgtiNaMBr6L/HR4K1wx+hpgXBnM7IHyQRTuDEPBH0Ai/Jg+R1v8/c0kFSpMU3tp
-	 0ZhYqqjP/r25g==
-Date: Mon, 19 Oct 2026 02:36:21 +0100
+	b=ScmAcf6hDusWU128UigGUFFVGfqtCcrGpaK5wgPjoYptHoc6y/GfAOEM+nmO7Qc1o
+	 jU+ttxVdhgy0VCWiiJgArTayHzQTH4YpjE4ilrwGZ45e2ohoigP9sXNdDLU27XitoB
+	 /n4qHXXgy08pUSY0L0HIwf8kYf0YAk86J1EtuvVnis4kX4DrYMjKD8oQnsmn3rDold
+	 6eM8oKz6pfNa+6883aOwEb0ha/OJoWjvmn6F7XDvVkcjb+AfAGOZ4OF2eE7gV9ShwU
+	 DKvccDH25Zio88Tq1TGd/K9GfzWhhEyoAy0/Dq+Ergz79QEFAE8BPAo/TEmhzl3lzs
+	 W2WfJBIrxOyMw==
+Date: Mon, 19 Oct 2026 02:40:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Olivier Moysan <olivier.moysan@foss.st.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue
- <alexandre.torgue@foss.st.com>, Philipp Zabel <p.zabel@pengutronix.de>,
- Sumit Semwal <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, <linux-kernel@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-stm32@st-md-mailman.stormreply.com>,
- <linux-arm-kernel@lists.infradead.org>, <linux-media@vger.kernel.org>,
- <dri-devel@lists.freedesktop.org>, <linaro-mm-sig@lists.linaro.org>
-Subject: Re: [PATCH 2/3] iio: adc: add stm32 mdf support
-Message-ID: <20261019023621.30c413c6@jic23-hlaptop>
-In-Reply-To: <20261001145702.2628429-3-olivier.moysan@foss.st.com>
-References: <20261001145702.2628429-1-olivier.moysan@foss.st.com>
-	<20261001145702.2628429-3-olivier.moysan@foss.st.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Alexey Klimov <alexey.klimov@linaro.org>, Sam Protsenko
+ <semen.protsenko@linaro.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Peter Griffin
+ <peter.griffin@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] iio: adc: exynos_adc: add Exynos850 support
+Message-ID: <20261019024022.19b7bd4b@jic23-hlaptop>
+In-Reply-To: <ar9elr1_tuFhJi1r@ashevche-desk.local>
+References: <20261001-exynos850_adc-v1-0-791b3516bb9d@linaro.org>
+	<20261001-exynos850_adc-v1-2-791b3516bb9d@linaro.org>
+	<ar9elr1_tuFhJi1r@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,94 +54,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 1 Oct 2026 16:56:46 +0200
-Olivier Moysan <olivier.moysan@foss.st.com> wrote:
+On Fri, 2 Oct 2026 10:34:46 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Add the STM32 Multi-function Digital Filter (MDF) core, serial interface
-> and digital filter drivers. The MDF converts bitstreams from sigma-delta
-> modulators or digital microphones into samples exposed through IIO.
+> On Thu, Oct 01, 2026 at 04:09:13AM +0100, Alexey Klimov wrote:
+> > The Exynos850 ADC controller located inside the CMGP block differs from
+> > other Exynos ADC controllers, mainly in its register layout.
+> > Specifically, the data register sits at offset 0x08.
+> > 
+> > Abstract the read_value() operation in driver data exynos_adc_data to
+> > support SoC-dependent data register read callbacks.
+> > Add the exynos850_adc_data struct that describes Exynos850 ADC ops.
+> > It also requires its own hardware initialization and exit routines.
+> > Add them as well.  
 > 
-> Audio: capture PDM microphones via cyclic DMA for an ASoC consumer.
-> Support CIC scaling and filtering, synchronized and interleaving modes.
-> Audio use case requires a DMIC filter, and a separate ASoC DAI.
+> Split this to at least two patches:
+> - add .read_value() callback and switch existing users
+> - add new user
 > 
-> Analog: expose sigma-delta modulators as IIO voltage channels with
-> direct reads or DMA buffering mode. STM32 timer triggers can be used as
-> clock source.
-> Analog use case requires an IIO backend for the SD modulator.
-> 
-> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+Agreed. Other than that looks fine to me.
 
-I'm not going to spend long on this today, but a few trivial things noted
-from a quick glance.
+Thanks,
 
-> diff --git a/drivers/iio/adc/stm32-mdf-serial.c b/drivers/iio/adc/stm32-mdf-serial.c
-> new file mode 100644
-> index 000000000000..15a58cf833be
-> --- /dev/null
-> +++ b/drivers/iio/adc/stm32-mdf-serial.c
-
-...
-
-> +
-> +int stm32_mdf_sitf_stop(struct stm32_mdf_sitf *sitf)
-> +{
-> +	int ret = 0;
-> +
-> +	spin_lock(&sitf->lock);
-
-Use guard() for cases like this. Simplifies the flow and helps
-readabilty as a result.  Everyone loves an early return.
-
-> +
-> +	if (!sitf->refcnt) {
-> +		dev_err(sitf->dev, "Unbalanced serial interface stop ?\n");
-> +		ret = -EPERM;
-> +		goto out;
-> +	} else {
-> +		sitf->refcnt--;
-> +	}
-> +
-> +	if (!sitf->refcnt)
-> +		ret = regmap_clear_bits(sitf->regmap, MDF_SITFCR_REG, MDF_SITFCR_SITFEN);
-> +
-> +out:
-> +	spin_unlock(&sitf->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(stm32_mdf_sitf_stop);
->
-> +static int stm32_mdf_sitf_runtime_suspend(struct device *dev)
-> +{
-Add a comment on why you need these.
-> +	return 0;
-> +}
-> +
-> +static int stm32_mdf_sitf_runtime_resume(struct device *dev)
-> +{
-> +	return 0;
-> +}
-
-> diff --git a/drivers/iio/adc/stm32-mdf.h b/drivers/iio/adc/stm32-mdf.h
-> new file mode 100644
-> index 000000000000..7e403c26d4dc
-> --- /dev/null
-> +++ b/drivers/iio/adc/stm32-mdf.h
-> @@ -0,0 +1,312 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * This file is part of STM32 MDF driver
-> + *
-> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
-I'd guess you'll modify it enough that this might need
-an update!
+Jonathan
 
 
-> +/* MDF_SIDR: Size Identification Register */
-> +#define MDF_SIDR_SID_MASK GENMASK(31, 0)
-> +#define MDF_SIDR_SID(v) FIELD_PREP(MDF_SIDR_SID_MASK, v)
-I'd not bother with the second macro.  It is only a little
-shorter than FIELD_PREP() in most case.
-
-> 
