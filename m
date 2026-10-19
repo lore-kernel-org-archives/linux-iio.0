@@ -1,80 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792436815;
-	b=ttDPSYDDjLRGrZUEXUir+PLGrmH+8LP629o795cFPmY52sPAg0YZlWmG64kGYyXjEALc
-	 SdrDxxj8Qlx5348aLps0Zfx2VCWf3u5HBxTS+NrhMxYDX6o+bxK1sbdcPFwjwKU5/+HQD
-	 XtbWIb8SsPib0cpI9nfPPiK+S7Y03+MZrzLe6FwYe5HSEXVR5TtiEZfDTydma6++J5pMX
-	 PAbnQDkJSR9z83Khe1u0CYV2Y+LSU+RA2E5Ecpp0StijG/T8HBvE8A/AQ/v+k3+pHWDsZ
-	 CjYakmtB7n1L+Ndr7gtEjuFw+cW9xG9XF7jOdIve3+1FEZfY/6Fq96XTsrfurg0kdoQ==
+	t=1792436958;
+	b=2fubCsdCvGVXwNIiO9Q0wKhMrpqYYC7RTxvCTWNZFf2Qkb/IEMF0tm3EBoMIMG2fOkxg
+	 A1i257LETxaZYuRYNc18zV3BpFmAMuqC2ERurH1OwYQYZCGS1LYodZDHNubG1N/1St2MY
+	 qskf+U7rKmXrUSztDgImqdI6nsUU7Yc8nB7wnhddaMX20jV2qd21e4Z1oEFdP/5JRe/nZ
+	 eHeDPtQSPdkEemCUELewNZtOqnBMf98I5y0O/LfcqvMpJgQgTveQzpfbaOXrE6YsAIUPs
+	 UjyhS0LhE5XPLsTo4nmf9XX7zmewxpCUT3qkU+RtwnLaCAn8Lu3zSCFfCGPyQGk5Vzg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792436815;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792436958;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=eJ3KSdw/oco7NK/JJEH/QyQBpiIoD47j1DGgYtFv1Hk=;
-	b=mAPH4Jx//KtKOyb4/ouQhdIHn2Y1ZJ4GX/dpEQuZi0meJFJyOmFbusIZCXkovW9v8NXs
-	 h2sRuNq47VLVO5PasdJrlMfdLNXRE3BtdF0VJGij5piAPxHOyiRtj6JXlsRc9zYP5OlsW
-	 Xkl5acbTjDORhcLnYgk19UmaVNcwYlxkU/wP3YojOpUFdvj6l/Cx3Q2dUYRGACfEVfBji
-	 9Z1vmESqUnzzlvm5PhtQJHkuC3Kr+P33HRsk+U2y1Q9FeXlVRYuRpxUS7/lDnlJ/KLtsP
-	 12G2aVB+3VILmk58VMOeJBCK0JfMyquJJAfiQgH2CvzzN+MJSmRtQ0tD5UH3FKa74Nw==
+	bh=TpG57D5r1lU2T1hO9/UVKS6qEvJQlV4XgEA7nKMmsdA=;
+	b=fsljH7G88uKXzPkzySmXPZhyN3PTMUwlouPZDEO4s5N/832UOGoUfToROAozpn8fGvnU
+	 Kk8S0ZvtPuqd0FBopJOoyOlhUj2Z2bsBbfDigJtw3Cb67QmM7uwzvS3Fo4oZYrTTRaat3
+	 PTZ90znwuQD998b7hvB6ef8YEssinoTVgthieGSQxJcAZ8kLPtGb7R6PjficllJ8iUIcJ
+	 HtJqJPA7q7iS+R5GHuDZ6ZUnFNBmt/eKH96eRM6F2SpSMbdOnWRQyL7ZzITxmt9V1lt49
+	 i1LTBlz5cK5+qu77YWULmRl6KjKITXu9WMX2PJxjiRZhtjE5QIDWb01Smr4hMlGBO4w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y04muWZO;
-	arc=none smtp.remote-ip=192.198.163.9
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QUXGlwPw;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE32606A322;
-	Mon, 19 Oct 2026 19:06:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9AE32606A322
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40DE4606A31F;
+	Mon, 19 Oct 2026 19:09:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40DE4606A31F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y04muWZO
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QUXGlwPw
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792436814; x=1823972814;
+  t=1792436957; x=1823972957;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ZvmmG/j7C2uFnjYLLbt2EwQOQ4DYeskU4W145d6EpJc=;
-  b=Y04muWZOycVF0jN4RMSXnHteLASKZfXATL4mWz6In8upWJLkUKq9zhNL
-   au+XasSSEcSIkTeabFigUPc0EyB4xJwbCYIhuLrIVF2KxV9qthVV9p1Ls
-   2QAhXrT9x0M8EEdXWXdD2Ul6KaBATQ1Gv3gnLB89B2xoFOJYFubmvZayu
-   kn/1mk2RlWZf50FU/1DNs8DmQWquTvhOTfOFqY0uL1H9pCje0dR3Ne3yd
-   aKbvnzxWZIuuCQgTKoHW28rluZ5duzFSeqhI6am3l1LvLe0tckU7QMetD
-   LGQOweDfBcXesb152ID1mjzl0WIbGhZnbPOefugC3heEXLUzvUOHp8bT7
-   g==;
-X-CSE-ConnectionGUID: xNqdzzzDTa+HTEWpshY45g==
-X-CSE-MsgGUID: z97CwH4ERDe0ENWYFDPFyw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1023702"
+  bh=Rb/b13h+jFhVWzUzAl3ubaixIgBWcQk/eqQr2GkBJbU=;
+  b=QUXGlwPwiTB/R3yi4q/twDsJePMMAIIM1VbEoiQWZQhXeGAlzSWmlGzL
+   e7NjNZIyWeAW9xZn9BjFHBFmHWrS/9GqbaoQcZRAlBiUt31bctpOsQ7fJ
+   EL3w9KWU9YTkmToIgZvOMwxU/tWp1QBdvYXLK0GGvuF9D8D4eU9n+WCzl
+   XuXbFWPgrllZ+vVCUe9a/SJ+rLgmLdfqpsPleXXjsPS3IuuNCatLVjhLt
+   hzxwluNBDwhbvxQR6t/3m15flosfI0pxP7rWsY1fXt4DdvPdMBpOWRfLB
+   uL2ofE0g5ldp6Jdo+vzL4jTVzmwSWjuXRh1PdajCsUR3hIDSU46hYRASB
+   w==;
+X-CSE-ConnectionGUID: YaZphw5BRHmrfdGIabZ7pw==
+X-CSE-MsgGUID: jzlzFFmgTHWaN3CoLc7O0g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1231644"
 X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1023702"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:06:54 -0700
-X-CSE-ConnectionGUID: BThpq8gjToqSYUoKUD4OAQ==
-X-CSE-MsgGUID: qHqcI3fAQ02qkBE9hiyzTA==
+   d="scan'208";a="1231644"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:09:17 -0700
+X-CSE-ConnectionGUID: e19MQXKLRQmB9ZoHh1yAUA==
+X-CSE-MsgGUID: poWNiUHNT+e8kFbHrSskMw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2988333"
+   d="scan'208";a="3077749"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:06:51 -0700
-Date: Mon, 19 Oct 2026 22:06:49 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:09:15 -0700
+Date: Mon, 19 Oct 2026 22:09:12 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>,
+To: Nithishvelan M <mnithishvelan@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iio: pressure: dps310: wait for a new sample after a
- ratio change
-Message-ID: <atZqSXI14WojGso5@ashevche-desk.local>
-References: <20261019153328.80739-1-zoone.rupert@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
+ guard(mutex) in ad5933_show()
+Message-ID: <atZq2GstK_rxOgbj@ashevche-desk.local>
+References: <20261019150248.416-1-mnithishvelan@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,37 +86,30 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261019153328.80739-1-zoone.rupert@gmail.com>
+In-Reply-To: <20261019150248.416-1-mnithishvelan@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 19, 2026 at 06:33:28PM +0300, Rupesh Majhi wrote:
-> After an oversampling ratio change, the sample waiting in the result
-> registers and the one being measured are both from the old ratio, but
-> are scaled with the new one. Pressure ratio 2 to 16 reads 192 kPa instead
-> of 103 kPa, and temperature is off by hundreds of degrees. Pressure is
-> also wrong after a temperature ratio change, as it is compensated with
-> the cached temperature.
-> 
-> Discard those two samples on a ratio change, and for temperature cache
-> the one after. The ratio write now blocks until then.
-> 
-> That wait can be longer than the 1/rate timeout, after which the driver
-> resets the chip and the ratio silently goes back to 1. Allow two periods.
+On Mon, Oct 19, 2026 at 03:02:48PM +0000, Nithishvelan M wrote:
+> Use guard(mutex) to automatically manage the state lock in
+> ad5933_show(). This simplifies the function by allowing direct returns
+> from each switch case, eliminating the mutable return variables and
+> manual mutex_unlock() calls.
 
 ...
 
->  /* Make sure sleep time is <= 30ms for usleep_range */
->  #define DPS310_POLL_SLEEP_US(t)		min(30000, (t) / 8)
+>  	case AD5933_IN_PGA_GAIN:
+> -		len = sysfs_emit(buf, "%s\n",
+> -				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
+> -				 "1" : "0.2");
+> -		break;
+> +		return sysfs_emit(buf, "%s\n",
+> +				  st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1 ? "1" : "0.2");
 
-Seems the use of USEC_PER_SEC below should be postponed to a regular cleanup.
-Because otherwise it will be inconsistent with the above where it would need
-to be 30 * USEC_PER_MSEC
+You can (re-)use ridx here as well
 
-> -/* Silently handle error in rate value here */
-> -#define DPS310_POLL_TIMEOUT_US(rc)	((rc) <= 0 ? 1000000 : 1000000 / (rc))
-> +/* A period plus a measurement time; silently handle error in rate value */
-> +#define DPS310_POLL_TIMEOUT_US(rc)	(2 * USEC_PER_SEC / max(rc, 1))
+		ridx = st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1;
+		return sysfs_emit(buf, "%s\n", ridx ? "1" : "0.2");
 
 -- 
 With Best Regards,
