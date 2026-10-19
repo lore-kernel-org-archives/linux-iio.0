@@ -1,213 +1,216 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67CF93E411C;
-	Mon, 19 Oct 2026 07:26:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792394789; cv=none; b=Y+W0zLhLTIcjZWZ6Qz7aFgsl4bmlYmYqc5hq2osGL2uP/7c94xGA0u7I+jfBAjkzBmE6sMDnh1QOm2KpOKEiQkrug9CLvFTcjuCWX3+PYulgF/lNek+yd5ILXSn3U2Ieq9+sEWDD8TTNLySPmMVJZi1vfxOTI6RDSmTmumFFMzk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792394789; c=relaxed/simple;
-	bh=ojUZFWP2DlWCiuh9pouK9Gk6Nx7A2KYd43EqxPlj7Ic=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GK58EidOKHV3rtEqPNr6iWqjUeny2YM3sIhZ9gO22ivuWk01MkFIvFE9Jq/mDU7xz7E/XYeXX1o2j5ITObCry1B3CjFVWhLdZMNITG/0vuUtOfpy9SlmLq2fOq3FlCzkrFM8CHFCZ6n3TzoFU6UqyNmY3djBsneCHA8qJuU5QQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NggmA4Qo; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51C7148875D
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 07:34:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792395284; cv=pass; b=VpCzOuDQsByCX2Qn8pF2mjj7lhCZ2/hpALAcNUnoUrtZi7kHzPCgSe/pk+imAHe7IqmHm7puGt72sQwsQ2tEFDpjcIrc29ZXveehRK72Ym5bY/h3sBjPVyu6E2+svgAcqb0MBzvThW/7fbI2rxuv2G1hTOPTkamgNk/I2wUftEM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792395284; c=relaxed/simple;
+	bh=zzSBJEbQ3D9kyu8uohCICPb5V7tAUfamh/FCwHx6Zig=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=B11xiTP0uG6HRvfxJLv+RYgXKIUg5iw7JAVq8k16njo8g9FcnWJryLuV8lV/PP7foMgwgDDn/ctMNUpMeERn6zMvmFcmPyQs64K+5yvhuoZRZHesHkquMLer34ZgziHK0ugBQDN2NlNEDPavTHJSfGBAJiYTtKI/mGWMkBBDX3M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com; spf=pass smtp.mailfrom=melexis.com; dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b=XwUSu697; arc=pass smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=melexis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NggmA4Qo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792394788; x=1823930788;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ojUZFWP2DlWCiuh9pouK9Gk6Nx7A2KYd43EqxPlj7Ic=;
-  b=NggmA4QoCwLUe2h6h9hoAZ3c/ERkzbv7wlNuigRqOksWj0E0/6NYmA4P
-   XNnP3qHmRMPPhHAmlxG9gaoWGg+o4fleJN6WX7+2Mt5FCjAJHgInAn84k
-   dh54PR1rRdiV/R4Y8T/1k+fYcJr/uCHuzM20fOPLaAuGHnG0XnOChQb4M
-   zbQU1B6zGBzjSD4zMHd/joIoY2ynQ26+/77eWWN9jnDpic0HOoeQFzZmk
-   klc8Tk6NqWpKH3zwAJ6iVJYDuriD20NiRS0TOMpf2l/15Mz7yi+33C4Uk
-   IWVGP3Low2POG4hENLNsZ/4318ayl/2XtqsY5pr0f1mDaeSV0k6BZbPj2
-   Q==;
-X-CSE-ConnectionGUID: 6+2MOuQcTeKigiWptAtT2w==
-X-CSE-MsgGUID: IVtKDymjRZ2DeIuxNQZakg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="969292"
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="969292"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:26:27 -0700
-X-CSE-ConnectionGUID: Z48lC4aNQkO/puS+wgDuUQ==
-X-CSE-MsgGUID: ZBn93RzTQtKRXTscKLBrvA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2525540"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 19 Oct 2026 00:26:24 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xIhlF-00000000LNe-2kmD;
-	Mon, 19 Oct 2026 07:26:21 +0000
-Date: Mon, 19 Oct 2026 15:26:00 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-kernel@vger.kernel.org, Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: Re: [PATCH] iio: chemical: ccs811: Make sampling frequency
- configurable
-Message-ID: <202610191533.IG7DYuci-lkp@intel.com>
-References: <20261018170013.79443-1-nikhilgtr@gmail.com>
+	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="XwUSu697"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c43373ae89aso122438966b.3
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 00:34:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792395280; cv=none;
+        d=google.com; s=arc-20260327;
+        b=koZmL4CnoJnGzDyoELUTF6X0F9rDMxqd9TR/4X19fz/BBrWSa4LtqgykbZfpqGw8gx
+         ScRZcTf55pqsP+V6KOhvI8LgCx2yRTpvwF/SB/Kb/qzxcj3oO3P3dxg4UHDdWjcZX62+
+         wEkyUASC5/L9UW3XXXs0bWRYJqLeopxl0ty2lPJhjuEiGTZmXZk0jhibgU/Fyy+Nn0Vf
+         EKa1qrPQFXEjlNTY7jSwOIwkcA060hrsOE6ew5iVe7NT4yleJ/eMpLPHjCoh4fdeaQUr
+         WZqaxdTrP33jrYiaBVEWe3Bgou5aRR/Sh3h4BbxzkUAusyTBWmVWxR3JES4gfyCV4jN/
+         hi9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=QuLQGTBq/GHWEdWfb6Pl6kV6ni5j9Kr3GuQHGNwnH7k=;
+        fh=kFi4j1Rm4nC67s31YIW1bbcNn7rcd0RrAZyyKxfzGM8=;
+        b=NPnF6DjRinDpdJ1kiT0FOlWlbvr/Uy5l4uMclC+CBCpZLoJ8NClir27whEpHJEDCnl
+         0zjOIQtVoR2RRoNc5uzbDVa0g4LkRO+If06cRYpwkksE9DcwHYg6nCKYq+zgXU2VV7K0
+         9oxfRSrgmg2UKpG/wwyBRskd14U3xHiAMPXpD0F+O0D4EdVDK2BblY/YXN8xPhKSqwNE
+         FVP39jgIXDTw92lC8AmVwtAHOuxLJ1J+uPXpBfBLSodcpbdF2Kxh+2Ug+a92sILX2/yu
+         ySgub7S28tYg6QCSkT9Mr17ToYX9GnV4rZ0fIkVCOFb8TBh0l2Wr1ArQzSjWGCsDxelY
+         r9FA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=melexis.com; s=google; t=1792395280; x=1793000080; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QuLQGTBq/GHWEdWfb6Pl6kV6ni5j9Kr3GuQHGNwnH7k=;
+        b=XwUSu697Lv9ee6OEmMvJgkz2ewk8k1NOLtAhirHxyYwO8wHogzkd7KkKXDGq2f0XxA
+         xNTbesQmT5UCzFFtErfsO6q+XU/ZJO/QztLo45yuVEkcV7SjS0eff1YFa4B4QRNJSPl8
+         Ky1UM6QccI2zF+OXG6k+cDRHxhmzrc6QzjXX6dly5DEor2hLLQsLoYAHBc4s3sSpC33F
+         dxO/hqNSLhci7kD42ZLQuZc114RnVSHm2A2pUDJrvOWsGSdKY2zwe+OyP0gNJKR0sDbw
+         hvc7lNeflrzCEvDQMyrFkiDvvir9TcpNJ3r6PY2B2+3x1FNQbQgjTmNYq/e83a0g3P0l
+         9vBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792395280; x=1793000080;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=QuLQGTBq/GHWEdWfb6Pl6kV6ni5j9Kr3GuQHGNwnH7k=;
+        b=ldU+k6oWYrAz2x565JNe9+HdLd3+VrPZCFWlfUIQNLU5Aex6eGtHzQYbKLJU4P6dnq
+         v+oVWkDsRxsPK+4ZdVoNb0mf2uA+ZSsj8A19B9guqkFEsFOlT6nL5Vhrvi8eaE0TqTnp
+         NzWDcZHgbwqTNyTiD/eAHszaCxd9KIOouxmSR8Nvdfj+BEme0+1a5qa+G7KH9drq0s3p
+         iA5T77u+jlmt80rTWz9uZkzFrlTkMyKzqE1ZM7xYGW0jp8dS0QxrXrqQqdz8zlcX32pR
+         tFCrgCBEPzb+DigYkwJWYmPQw7ppX3nW+B1rG9nfNEpM86UAjqdnYbNq3EDuBn2DEn6t
+         GV1Q==
+X-Forwarded-Encrypted: i=1; AKwUvBwx7wixjL/MrtinOTUfPPUu9Hj036f6+LIbvR7jVNrOdIjecHKElq70oJPjhWe9dylbzBqHrIFEkug=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIIXk6xVS+aNHSagQV8IfjbwI7OxL+52OfgTc5BYKKetf18Ji8e
+	vGOp/JVZp3Ua/L5WUXvnonn90DhCaguTM2aHuDihnVEW75+nCsjJhr/L2VAYhmjcEuWWly06xwF
+	g2b8AA0I/B/GB7hgmASrPRokEDzZEkjSHqLT+UH0M
+X-Gm-Gg: AYBFou0EPMLET2IdXVKeQe8AyEkVOGYTHQwV59B1mRv8JDecGFB+Ba74Fgo4XMkl5M4
+	17OclVqKBRBMPLS1j80jToeRKzLQgOh4Ux0CRZciidRbXWZ3Y8ZRpEcoaQrLc8Yg8Tv9za8WFeM
+	4UATnfKnxXh3opl34XTqQ5l7e1WFpTKQY2ChO5JZiIukd/ikipAK9wEDT5wkfOGUS9mPCABOHiK
+	RnDc10up0FYbyVj7M6xHpldHu0jVMA4cIc9AZkC5Uzxy4cwZBx7I71/NZhmxrKsRuzP599Lqte8
+	MxMg3VxWu8Idty/JrQd/0wy2sm18GpB0YP3DkLBzL1ddFzSulESd
+X-Received: by 2002:a17:907:96ab:b0:c40:38b5:d784 with SMTP id
+ a640c23a62f3a-c419e23dccdmr466129766b.22.1792395280534; Mon, 19 Oct 2026
+ 00:34:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261018170013.79443-1-nikhilgtr@gmail.com>
+References: <20260917110121.631587-1-salah.triki@gmail.com>
+ <CAKv63utdoBrCFiw8vkGsMhY9PrWX0DWdxqP5szvTGpdmfSQh5A@mail.gmail.com>
+ <aqvoH9ohxkJ6iPei@pc> <20261019040135.1da889ec@jic23-hlaptop>
+In-Reply-To: <20261019040135.1da889ec@jic23-hlaptop>
+From: Crt Mori <cmo@melexis.com>
+Date: Mon, 19 Oct 2026 09:34:04 +0200
+X-Gm-Features: AclHuK8Qhha2TFYgLBfys_ZMbGLsTyM3cX7mEN5gt3EskW5QE0v2YufftZFcLiY
+Message-ID: <CAKv63usdo_QdcRyFrUvym_=_203CXLK55irpiPyVeipRNw1nEg@mail.gmail.com>
+Subject: Re: [PATCH] iio: temperature: mlx90614: Fix dual channel probe
+ condition check
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Salah Triki <salah.triki@gmail.com>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Nikhil,
+Hi,
+No objections, but I wanted to test it and can't find the time for
+this sorry. I don't think I have seen a single channel MLX90614 when I
+wrote a driver, so maybe that is something that came with 90615
+patches or later.
 
-kernel test robot noticed the following build errors:
+Best regards,
+Crt
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v7.3 next-20261016]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Nikhil-Gautam/iio-chemical-ccs811-Make-sampling-frequency-configurable/20261018-223013
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20261018170013.79443-1-nikhilgtr%40gmail.com
-patch subject: [PATCH] iio: chemical: ccs811: Make sampling frequency configurable
-config: i386-buildonly-randconfig-1003-20261019 (https://download.01.org/0day-ci/archive/20261019/202610191533.IG7DYuci-lkp@intel.com/config)
-compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261019/202610191533.IG7DYuci-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610191533.IG7DYuci-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/iio/chemical/ccs811.c:389:2: error: cannot jump from switch statement to this case label
-     389 |         default:
-         |         ^
-   drivers/iio/chemical/ccs811.c:371:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
-     371 |                 guard(mutex)(&data->lock);
-         |                 ^
-   include/linux/cleanup.h:423:2: note: expanded from macro 'guard'
-     423 |         CLASS(_name, __UNIQUE_ID(guard))
-         |         ^
-   include/linux/cleanup.h:303:3: note: expanded from macro 'CLASS'
-     303 |                 class_##_name##_constructor
-         |                 ^
-   <scratch space>:136:1: note: expanded from here
-     136 | class_mutex_constructor
-         | ^
-   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
-   include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
-      16 | #define __PASTE(a, b) ___PASTE(a, b)
-         |                       ^
-   include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
-      15 | #define ___PASTE(a, b) a##b
-         |                        ^
-   <scratch space>:142:1: note: expanded from here
-     142 | __UNIQUE_ID_unlock_406
-         | ^
-   drivers/iio/chemical/ccs811.c:371:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
-   include/linux/cleanup.h:423:15: note: expanded from macro 'guard'
-     423 |         CLASS(_name, __UNIQUE_ID(guard))
-         |                      ^
-   include/linux/compiler.h:165:2: note: expanded from macro '__UNIQUE_ID'
-     165 |         __PASTE(__UNIQUE_ID_,                                   \
-         |         ^
-   include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
-      16 | #define __PASTE(a, b) ___PASTE(a, b)
-         |                       ^
-   include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
-      15 | #define ___PASTE(a, b) a##b
-         |                        ^
-   <scratch space>:130:1: note: expanded from here
-     130 | __UNIQUE_ID_guard_405
-         | ^
-   1 error generated.
-
-
-vim +389 drivers/iio/chemical/ccs811.c
-
-1a2cae129fb93c Nikhil Gautam            2026-10-18  325  
-fef6da136ef283 Jonathan Cameron         2025-03-31  326  static int ccs811_read_raw(struct iio_dev *indio_dev,
-fef6da136ef283 Jonathan Cameron         2025-03-31  327  			   struct iio_chan_spec const *chan,
-fef6da136ef283 Jonathan Cameron         2025-03-31  328  			   int *val, int *val2, long mask)
-fef6da136ef283 Jonathan Cameron         2025-03-31  329  {
-fef6da136ef283 Jonathan Cameron         2025-03-31  330  	struct ccs811_data *data = iio_priv(indio_dev);
-fef6da136ef283 Jonathan Cameron         2025-03-31  331  	int ret;
-fef6da136ef283 Jonathan Cameron         2025-03-31  332  
-fef6da136ef283 Jonathan Cameron         2025-03-31  333  	switch (mask) {
-fef6da136ef283 Jonathan Cameron         2025-03-31  334  	case IIO_CHAN_INFO_RAW:
-e9786c540804c3 Jonathan Cameron         2025-03-31  335  		if (!iio_device_claim_direct(indio_dev))
-e9786c540804c3 Jonathan Cameron         2025-03-31  336  			return -EBUSY;
-fef6da136ef283 Jonathan Cameron         2025-03-31  337  
-fef6da136ef283 Jonathan Cameron         2025-03-31  338  		ret = ccs811_read_info_raw(data, chan, val, mask);
-fef6da136ef283 Jonathan Cameron         2025-03-31  339  
-e9786c540804c3 Jonathan Cameron         2025-03-31  340  		iio_device_release_direct(indio_dev);
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  341  
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  342  		return ret;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  343  
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  344  	case IIO_CHAN_INFO_SCALE:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  345  		switch (chan->type) {
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  346  		case IIO_VOLTAGE:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  347  			*val = 1;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  348  			*val2 = 612903;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  349  			return IIO_VAL_INT_PLUS_MICRO;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  350  		case IIO_CURRENT:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  351  			*val = 0;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  352  			*val2 = 1000;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  353  			return IIO_VAL_INT_PLUS_MICRO;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  354  		case IIO_CONCENTRATION:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  355  			switch (chan->channel2) {
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  356  			case IIO_MOD_CO2:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  357  				*val = 0;
-8f114acd4e1a9c Narcisa Ana Maria Vasile 2017-12-06  358  				*val2 = 100;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  359  				return IIO_VAL_INT_PLUS_MICRO;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  360  			case IIO_MOD_VOC:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  361  				*val = 0;
-8f114acd4e1a9c Narcisa Ana Maria Vasile 2017-12-06  362  				*val2 = 100;
-8f114acd4e1a9c Narcisa Ana Maria Vasile 2017-12-06  363  				return IIO_VAL_INT_PLUS_NANO;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  364  			default:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  365  				return -EINVAL;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  366  			}
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  367  		default:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  368  			return -EINVAL;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  369  		}
-1a2cae129fb93c Nikhil Gautam            2026-10-18  370  	case IIO_CHAN_INFO_SAMP_FREQ:
-1a2cae129fb93c Nikhil Gautam            2026-10-18  371  		guard(mutex)(&data->lock);
-1a2cae129fb93c Nikhil Gautam            2026-10-18  372  		switch (data->drive_mode) {
-1a2cae129fb93c Nikhil Gautam            2026-10-18  373  		case CCS811_MODE_IAQ_1SEC:
-1a2cae129fb93c Nikhil Gautam            2026-10-18  374  			*val = 1;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  375  			*val2 = 0;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  376  			return IIO_VAL_INT_PLUS_MICRO;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  377  		case CCS811_MODE_IAQ_10SEC:
-1a2cae129fb93c Nikhil Gautam            2026-10-18  378  			*val = 0;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  379  			*val2 = 100000;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  380  			return IIO_VAL_INT_PLUS_MICRO;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  381  		case CCS811_MODE_IAQ_60SEC:
-1a2cae129fb93c Nikhil Gautam            2026-10-18  382  			*val = 0;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  383  			*val2 = 16667;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  384  			return IIO_VAL_INT_PLUS_MICRO;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  385  		default:
-1a2cae129fb93c Nikhil Gautam            2026-10-18  386  			return -EINVAL;
-1a2cae129fb93c Nikhil Gautam            2026-10-18  387  		}
-1a2cae129fb93c Nikhil Gautam            2026-10-18  388  
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17 @389  	default:
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  390  		return -EINVAL;
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  391  	}
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  392  }
-a94c24a712acb2 Narcisa Ana Maria Vasile 2017-07-17  393  
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+On Mon, 19 Oct 2026 at 05:01, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Thu, 17 Sep 2026 14:16:15 +0100
+> Salah Triki <salah.triki@gmail.com> wrote:
+>
+> > Hi Crt,
+> >
+> > Thanks for your feedback.
+> >
+> > Actually, the patch primarily fixes the behavior for the MLX90614.
+> >
+> > In the current codebase, MLX90614 has `chip_info->dual_channel = true`.
+> > Because `mlx90614_probe_num_ir_sensors()` checks
+> > `if (chip_info->dual_channel)`, it returns 0 immediately for MLX90614
+> > without reading the EEPROM CONFIG1 register. As a result, dual-channel
+> > MLX90614 sensors are incorrectly registered as single-channel devices.
+> >
+> > For MLX90615 (`dual_channel = false`), the condition was bypassed, causing
+> > an unnecessary SMBus read to EEPROM CONFIG1, even though MLX90615 only
+> > supports a single object channel.
+> >
+> > By changing the check to `if (!chip_info->dual_channel)`, we fix both
+> > issues:
+> > 1. MLX90614 correctly reads EEPROM CONFIG1 to detect whether it operates
+> > in single or dual channel mode.
+> > 2. MLX90615 skips the EEPROM read entirely.
+> >
+> > I don't have physical hardware to test this on; this bug was spotted via
+> > code inspection.
+>
+> Explanation makes sense to me and as Crt hasn't come back with
+> a reply, I'll assuming Crt has no objections (shout if not!)
+>
+> Applied and marked stable
+>
+> Thanks,
+>
+> Jonathan
+>
+> >
+> > Best regards,
+> > Salah
+> >
+> > On Thu, Sep 17, 2026 at 01:27:48PM +0200, Crt Mori wrote:
+> > > So this fix is for the MLX90615, which is registered as single channel
+> > > operation? Did you test on 90614 as well?
+> > >
+> > > Best regards,
+> > > Crt
+> > >
+> > > Crt Mori
+> > >
+> > > Melexis Technologies NV
+> > > Transportstraat 1
+> > > 3980 Tessenderlo
+> > >
+> > > Mobile: +32 492 46 22 15
+> > > E-mail: cmo@melexis.com
+> > > Website: www.melexis.com
+> > >
+> > > ----------------------------------------------------------
+> > > The contents of this e-mail are CONFIDENTIAL AND PROPRIETARY. Please
+> > > read our disclaimer at http://www.melexis.com/mailpolicy
+> > >
+> > >
+> > > On Thu, 17 Sept 2026 at 13:01, Salah Triki <salah.triki@gmail.com> wrote:
+> > > >
+> > > > In mlx90614_probe_num_ir_sensors(), the check on chip_info->dual_channel
+> > > > is inverted.
+> > > >
+> > > > Currently, if dual_channel is true (MLX90614), the function returns 0
+> > > > immediately without checking op_eeprom_config1. This forces all MLX90614
+> > > > devices to be registered as single sensor (num_channels = 2), making the
+> > > > second object temperature channel inaccessible.
+> > > >
+> > > > Conversely, if dual_channel is false (MLX90615), the function skips the
+> > > > early return and performs an unnecessary SMBus read on EEPROM CONFIG1 even
+> > > > though MLX90615 does not support dual channel operation.
+> > > >
+> > > > Fix this by negating the condition so that single-channel chips return
+> > > > early with 0, while dual-channel capable chips (MLX90614) proceed to read
+> > > > the EEPROM configuration register to detect whether 1 or 2 object channels
+> > > > are present.
+> > > >
+> > > > Fixes: 3d5ead238bc8 ("iio: mlx90614: Factor our register IO and constants into model specific descriptor")
+> > > > Assisted-by: LLM
+> > > > Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> > > > ---
+> > > >  drivers/iio/temperature/mlx90614.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+> > > > index 27d6ab5f5d7a..4f79da1f905e 100644
+> > > > --- a/drivers/iio/temperature/mlx90614.c
+> > > > +++ b/drivers/iio/temperature/mlx90614.c
+> > > > @@ -565,7 +565,7 @@ static int mlx90614_probe_num_ir_sensors(struct i2c_client *client)
+> > > >         const struct mlx_chip_info *chip_info = data->chip_info;
+> > > >         s32 ret;
+> > > >
+> > > > -       if (chip_info->dual_channel)
+> > > > +       if (!chip_info->dual_channel)
+> > > >                 return 0;
+> > > >
+> > > >         ret = i2c_smbus_read_word_data(client, chip_info->op_eeprom_config1);
+> > > > --
+> > > > 2.43.0
+> > > >
+>
