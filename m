@@ -1,153 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD1E33F383;
-	Mon, 19 Oct 2026 09:53:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 927C24B3364
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 09:59:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792403619; cv=none; b=Qyes4ROMo+U3nSQOyHOePyWutSg6hAVhx40T9NCV5S99143tG9Bo/DHHN8e41ADbPLLiaRgmjyczeuY9H0y216GwqogeRo9W1N7ha6MVfkypUHwpuc00oVPWwGujoIZQxRRrJ1Y8X5bClUtKZ0xZMJYCY+Hj6UzelU3WogybDJs=
+	t=1792403985; cv=none; b=h4xLulY+yZ5+svgOOt79Iq4XT38UzOcP21fOvkrWAoa6Qo6ErbGmCo/Vqoz1pcvtlRy+FyATCz78Wv+PhnTeYPfExvX3cdAXR2XQadEsArmXSmyiahXlBKC1qVo3dAuGdFM1nvCsmSVtMUhXazYfuZZyQ0cu68EZOfQdkFlu7HU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792403619; c=relaxed/simple;
-	bh=UAvQEyO7YcF5XflKLEHcE1A94egeQEcAvUo8vH2B5p8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aWfb0b0O6NZRevc3fmdHnUROm/zAPKVZwbz/TWz4YJG5GcntMvAFnRwlaD95FOxhw+mkOrbcqeR5R4DXtNiRLZcpmI2ATX4ViXq9QwI1Py1X4aYzSuOfVogjdnsdr9Z3HmaR1ovfnFAMUSnlrJtDOO6ITU4a/uO1kYR5j8ntriM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lpxB26FN; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1792403985; c=relaxed/simple;
+	bh=6bNcxzUVlmQvjet7ksUI2Ld7TTjqmjQ//XfC+z0s0z8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=j0eGP2glFD7UBw8nvVJzyDV/k8p4Rii2nvI7fEodQCnOUa2GvsBRTC05q0j0FAFzdShQNyzaER+xp9+5yPJuThOKjGrzF10jDAXhJbo7avaraV5A1f57HMDafXg1ATRnv7eSPU6VAfynDSH8klxNWWoq9s4HnoaKsAty1NZpZro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JcGG5T6D; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lpxB26FN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792403619; x=1823939619;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UAvQEyO7YcF5XflKLEHcE1A94egeQEcAvUo8vH2B5p8=;
-  b=lpxB26FNf9h2MdNf0QRlvLzA9Ag3UxWx7UlvSOcshLPUMqD/BbClw4Cb
-   Fde4L8CXhElJSDHdJk8IuIWxPVEI7eEOAjHdJoW/72ZqhFQTiI7HMC0lw
-   1Ne0GELkUhtHpVvByXPoRSvf9FwLOKjEp82YBqax7FJVB8j6O8v3UKHSL
-   L36H8wrWcqKfrbmFMN5Ne2BbQpA4LYqCi0F+MnYLK0wlxHvC793/Oh42v
-   eFeQNEcetl9ifGtZdJmDh0F1qlGPBX/God6wjiLhw8ajPa1e/gSiKtUdU
-   ybmbR94/PsDL8fomNBck1Ts/VAYEFZhcAyNVPq/POhD3v7+FbXctpIma+
-   A==;
-X-CSE-ConnectionGUID: +75ddC3CSnC9YH+HYNt+tw==
-X-CSE-MsgGUID: KirXmCmORxCBxoAkM50gNQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1102566"
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1102566"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 02:53:38 -0700
-X-CSE-ConnectionGUID: 0seK9oIfTPqgkhf51t4w/Q==
-X-CSE-MsgGUID: V3lz7EfPRzG6GAcDkbzy+w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2873703"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 02:53:36 -0700
-Date: Mon, 19 Oct 2026 12:53:33 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nithishvelan M <mnithishvelan@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: impedance-analyzer: ad5933: use
- guard(mutex) in ad5933_show()
-Message-ID: <atXoncij2_IrGjZZ@ashevche-desk.local>
-References: <20261018200128.642-1-mnithishvelan@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JcGG5T6D"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2e608cd460eso10019775ad.3
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 02:59:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792403984; x=1793008784; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=EGOLZT0g0vS6HQl4RNLoJTQMf+l+IbI+5Jp/8hOXDLs=;
+        b=JcGG5T6DMSW0yCslPPmZMiWSE30yIYwQnkBWvriZ/vZPzRWHTpW95a7uGT3nGZdrTT
+         TXbPmk+beKg6ulF4VDwjin0mmmR5QI86OBrTV0zXbSgzfUvzhP7OgMAUp/uLYnhjynIc
+         AsJBubu26kIubSjUGzN12qRRwxmWv0Pvof/MzmeHZbJRP7ZmxMZzri9zoqBcDIQ48oTu
+         nZVLgv7GZ3TjeMfU0R7od424vQ01oKbrEfpMre7u2nBCG5K/oygsVzUFJmztviLps00X
+         gOxI5vuo5jn7sGYdZh8WypjT07Np7rvfP8NsDlQWhFkbof768CNPR9JQSgD8b07VYInN
+         M/IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792403984; x=1793008784;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=EGOLZT0g0vS6HQl4RNLoJTQMf+l+IbI+5Jp/8hOXDLs=;
+        b=qupwKha0JZkDWIvnFPQJceNzHcwTSlzlBoMvjRnUOHvIeo3uXUx5Su+ZCg6G3Q850N
+         3xMh7JWAeaY/OmXMUwnsAsZiTbY9KO/9e7nSh/KjZVYA6bdn3eEvHwTunA9Y9Br/pzcT
+         jxKbHwdGOArXzz3BjLG5qHdB7FAMoowlbLuzUvus7EMbgnYE/rHFSLL5TjvfE23n4AFa
+         q/2zQrp2Vjko9mu0QK0DaVxbuQ5/M5CpbE0U+57W5XGyZc2wdJm6DF8PMzkSa1ccVs2+
+         TeUXHHiQPBitVPI1CpCnMQ4sDaor+ABIAMNT03kzA6tcyiviCg/GufJPHM5CnIgq0YtG
+         v6oA==
+X-Gm-Message-State: AFq9FYIPBAECIYIN3P2ekSiNCwn/Jw+ARuruc6/O9aMtHl4nXFezDnla
+	R66s9cZz47qdrslEzt0n6TaeSrZgJK8iW83KkWu10Dnr7Ia5+O9xOp7Y
+X-Gm-Gg: AYBFou29Jd3rfHiZaIfOMCupieLhERdmB1i/bormG7tpHgv3rMkKOmUjrVxT0W54avs
+	aCOKzZp80QUJO5EzU+SzOmGM+e0Ui/p2nLQ46Qb1x5RGlNysw4JPxDSQ1lJmGvXBnBLoJ946KkP
+	cbe0L6egp32KYTfGcBe7l+xIYwPirsvkWUwK8yCC0hvUWCDGpPzs2/KtPwDtbsbAVTkI/D6Gj8P
+	fMEIEKIJ6jktFOhsU8uWEOdJavZG2u/Ti4tEBq7ajM/0Y/yfBUHhEXV0HJ84BR2wfD4LO98lYoV
+	aubCtzkgP+0zEsKABYS7ZG6ksQ3sI2qk9FqRKhyhp+uFP3z8xBdSuHmojE2NAZdzhOyLv1C6kEF
+	Z9NrsjBh179NmqqvHDPv/3y3pU4ElJCYb0ue4g1qzocOMJJy+pvVbLl9lqLjAOrK6pdMYm59JBY
+	3Ys6arfv2qp7+DFCinnR3pih9WbAOQ/j2xXPBURJNVzdYQvsP/w5nFDdCaE9bAToUOgX10vbUYv
+	r/YYd4/dYSwACBf3hvk7cteNazgeYP0TPNZYIVjN7A/biPnNWqOdpDiLfUHNJ39eSadTIkEBrRJ
+	Xkjxo5c=
+X-Received: by 2002:a17:902:f603:b0:2e5:70cd:b606 with SMTP id d9443c01a7336-2e9a705c7c9mr54901255ad.56.1792403983748;
+        Mon, 19 Oct 2026 02:59:43 -0700 (PDT)
+Received: from DESKTOP-G3E0OSP.localdomain ([58.224.60.243])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e97e834029sm36631725ad.31.2026.10.19.02.59.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 02:59:43 -0700 (PDT)
+From: Jinseob Kim <kimjinseob88@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-kernel@vger.kernel.org,
+	lkp@intel.com,
+	oe-kbuild-all@lists.linux.dev,
+	llvm@lists.linux.dev
+Subject: [PATCH] iio: osf: avoid a large stack frame in osf_core_init
+Date: Mon, 19 Oct 2026 18:58:49 +0900
+Message-ID: <fc593496353a60a15fd5ef1a2786d41dd9bdff3a.1792403576.git.kimjinseob88@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <202610191514.fRYyu0HX-lkp@intel.com>
+References: <202610191514.fRYyu0HX-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261018200128.642-1-mnithishvelan@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Sun, Oct 18, 2026 at 08:01:27PM +0000, Nithishvelan M wrote:
-> Use guard(mutex) to automatically manage the state lock in
-> ad5933_show(). This simplifies the function by allowing direct returns
-> from each switch case, eliminating the mutable return variables and
-> manual mutex_unlock() calls.
+Clang reports a 1344-byte stack frame in osf_core_init() for
+hexagon-allmodconfig, exceeding CONFIG_FRAME_WARN=1280.
 
-...
+The aggregate assignment materializes a temporary struct osf_device on
+the stack and copies it to the destination. With the mutex and caches
+added by the IIO support, this structure is 1328 bytes in the reported
+configuration.
 
->  	switch ((u32)this_attr->address) {
->  	case AD5933_OUT_RANGE:
-> -		len = sysfs_emit(buf, "%u\n",
-> -				 st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
-> -		break;
-> +		return sysfs_emit(buf, "%u\n",
-> +				  st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+Clear the destination directly, then set dev and initialize latest_lock
+as before. This preserves zero initialization of all other fields,
+including when the core is reinitialized for a new session, without the
+large temporary object.
 
-Keep it on a single (not so long) line.
+With the reported Clang 24.0.0git compiler and Hexagon configuration, the
+frame decreases from 1344 to 8 bytes and the warning disappears.
 
-		return sysfs_emit(buf, "%u\n", st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+Fixes: 7329986669f2 ("iio: osf: add IIO devices from capability reports")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202610191514.fRYyu0HX-lkp@intel.com/
+Assisted-by: LLM
+Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+---
+ drivers/iio/sensorhubs/osf/osf_core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Most likely Sashiko might warn of use ctrl_hb variable as an index without
-checking. So it might make sense to be prepared for that by adding a local
-variable:
+diff --git a/drivers/iio/sensorhubs/osf/osf_core.c b/drivers/iio/sensorhubs/osf/osf_core.c
+index 4f73ff5e9572..62b086f67e6f 100644
+--- a/drivers/iio/sensorhubs/osf/osf_core.c
++++ b/drivers/iio/sensorhubs/osf/osf_core.c
+@@ -16,9 +16,8 @@
+ 
+ void osf_core_init(struct osf_device *osf, struct device *dev)
+ {
+-	*osf = (struct osf_device) {
+-		.dev = dev,
+-	};
++	memset(osf, 0, sizeof(*osf));
++	osf->dev = dev;
+ 	mutex_init(&osf->latest_lock);
+ }
+ 
 
-		unsigned int ridx = (st->ctrl_hb >> 1) & 0x03;
-
-		return sysfs_emit(buf, "%u\n", st->range_avail[ridx]);
-
-
->  	case AD5933_OUT_RANGE_AVAIL:
-> -		len = sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
-> -				 st->range_avail[3], st->range_avail[2],
-> -				 st->range_avail[1]);
-> -		break;
-> +		return sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
-> +				  st->range_avail[3], st->range_avail[2],
-> +				  st->range_avail[1]);
-
-Split logically
-
-		return sysfs_emit(buf, "%u %u %u %u\n",
-				  st->range_avail[0], st->range_avail[3],
-				  st->range_avail[2], st->range_avail[1]);
-
->  	case AD5933_OUT_SETTLING_CYCLES:
-> -		len = sysfs_emit(buf, "%d\n", st->settling_cycles);
-> -		break;
-> +		return sysfs_emit(buf, "%d\n", st->settling_cycles);
->  	case AD5933_IN_PGA_GAIN:
-> -		len = sysfs_emit(buf, "%s\n",
-> -				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
-> -				 "1" : "0.2");
-> -		break;
-> +		return sysfs_emit(buf, "%s\n",
-
-> +				  (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
-> +				  "1" : "0.2");
-
-A single line
-
-				  (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?  "1" : "0.2");
-
-and, IIRC the operator precedences, the parentheses can be dropped.
-
->  	case AD5933_IN_PGA_GAIN_AVAIL:
-> -		len = sysfs_emit(buf, "1 0.2\n");
-> -		break;
-> +		return sysfs_emit(buf, "1 0.2\n");
->  	case AD5933_FREQ_POINTS:
-> -		len = sysfs_emit(buf, "%d\n", st->freq_points);
-> -		break;
-> +		return sysfs_emit(buf, "%d\n", st->freq_points);
->  	default:
-> -		ret = -EINVAL;
-> +		return -EINVAL;
->  	}
-
+base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
