@@ -1,47 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EDDE51DAE6;
-	Mon, 19 Oct 2026 13:58:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B6555810E7;
+	Mon, 19 Oct 2026 13:58:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792418285; cv=none; b=nH66x190PT4JVxVQKahXuDWdEnQ1pyHdV7iDyHuPrfsiw5Kmrh4RHzQD8T4xnyn/7+5mQmM6lI/ArGtJeaZ26uQ5BWVuMzhaptFyRSivO+ax98Wj+RB5r+sZC3E8E+xZw1H7+cAMFgOzdqpLVrCUoPodhhvCjDVjEUjbUyufkzI=
+	t=1792418325; cv=none; b=e/F9aWPOMSKTEXr1CMEQ9HbN/CuHz+TBxmGPHnKP65zNfkmfViR0SZoio4LdX8bFqik/JlrqfnPpL6UfwmXyeV7pdEyV1ihjBsneFeTHONsI+VkdnYLcdTlW+ftm5QfOKmYDj/uf2F4TkSayhF0/xMwS2qSJviFF5s62sE4wWUU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792418285; c=relaxed/simple;
-	bh=Gv6k1C/39ggz7wO/3bNh8gJiH5NU5JV0k6IW8N9JWMo=;
+	s=arc-20240116; t=1792418325; c=relaxed/simple;
+	bh=0/+oTq/iPFd4Dx56ED+kSetpVtEOv78MVIXbnFkc8HU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CGJ2jBhon/c8bLlOFYTPHGFgB+9twBoR8JVW5tTSo28SxsfeaRH6n6Ov76AHpAFYtZcNvGKa1yU7vOEfHun3yILZaQNnrEf3j+imxD5pGSqgatnBccIm8J5p3DpkfPhcyaqFY2gVRnJT15CWNRt1eEv3NIe9Vh/qwR4K5lc7cK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=am+o/k7+; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=s07MncBYvcUrdXu6GJySyT+pTOuNwtHHjhHYpi+1S7LTL5pyWB9bjRxVjDOx/+d+Sh9aZ/x8NtWEiGYMlhfeWoKlilGJ96F8mgCJawSSPJVjTd6FKuRo/iZzbEVGDzCQCQBeXcDnsyFM2jZ+slnsHThsQvFtVjcEFu5DjshWMss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gA39CcNJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="am+o/k7+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421FA1F000C8;
-	Mon, 19 Oct 2026 13:58:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gA39CcNJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BA3D1F000C7;
+	Mon, 19 Oct 2026 13:58:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792418282;
-	bh=cUgDBXxJlx6W2o3Tcn+WyqZtO/tJR3ZczkJTDItOmjQ=;
+	s=k20260515; t=1792418322;
+	bh=dENmD698szZzBSZbOBfmILBFw0Baf/1rZwQeB805f4o=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=am+o/k7+BFnkfbe/shplaYggAYQOJpBR1LQY9GUwvjSw5ILaxTfBEwrV8STf8Nzc+
-	 oZaTom7BqvI9RU0XqIkhYzh8pSBw6YQ3Q7DZd7p+u+41YT8eHrVv3+3f3OuByUgnz0
-	 vgEPwabuTvlO8h/1vbYFLfxmQYzVjkXafWXzz5dRDTu51TSdioYvdaS+q9Wm7KEuJb
-	 gda/8JYIg6g76yHCCUPhDuMRDV/yYENXnQrCWHVLEPTQQ9P4ibiwIszwuj5ynJHrrl
-	 PD6sVyadESvJe0eQ2G1ul29RQUteKZD9MUzQZaktltyVxv/O2cHvS2NfS5b7lgpEs5
-	 a4kWMRGmIWUGA==
+	b=gA39CcNJKhHgq7B59R2mfa5+NRFWq4whIH8Gtzo8fJwksfYAP3/FKwXQgBkstbElS
+	 mtEE9PDQ2LNE15+n7/iESZU6Ccq/FGTsZZzIJdDu19NzmGQlXkMQNOuGn61lM1tRkp
+	 L7X1Vjb5VYcobQv5Uur3hJH36oyyc+HO+kcrmaUdRhEbJQacQ+wZUNXn3lCtH6ZtJt
+	 cQuFxVr/uBCDSTEKUjLsFh47QnsT3qwQvY0w1uh93gSTrJi5ybo6pDv/bkNCbF/zZd
+	 d9icni/n6S0l68gOi5ctalm/2tq2BT9wCeEyHdbJOtmjTaBFKDyNmxs1OI2Bu4PMkl
+	 83zrrI8Aeoz0g==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Daniel Schaefer <dhs@frame.work>,
-	=?UTF-8?q?Sven=20Vaink=C3=BCla?= <sven@xn--vainkla-r2a.ee>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+Cc: Bryam Vargas <hexlabsecurity@proton.me>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	jikos@kernel.org,
-	jic23@kernel.org,
-	linux-input@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-6.12] iio: hid-sensor: als: scale each channel individually
-Date: Mon, 19 Oct 2026 09:47:08 -0400
-Message-ID: <20261019135441.1420968-137-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.18-5.15] iio: accel: fxls8962af: clamp the device-reported FIFO sample count
+Date: Mon, 19 Oct 2026 09:47:36 -0400
+Message-ID: <20261019135441.1420968-165-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261019135441.1420968-1-sashal@kernel.org>
 References: <20261019135441.1420968-1-sashal@kernel.org>
@@ -51,343 +47,284 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.18.57
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Daniel Schaefer <dhs@frame.work>
+From: Bryam Vargas <hexlabsecurity@proton.me>
 
-[ Upstream commit cad928dad9a4c26aa56b4223dc2a29bca517fb5f ]
+[ Upstream commit 2f8225b91eb478ca2e9aec8aaef4d229765bcebe ]
 
-Some sensors have multiple channels (not just brightness but color ALS
-sensors) with different scaling factors.
+fxls8962af_fifo_flush() transfers the sample count the device reports in
+BUF_STATUS into an on-stack buffer sized for FXLS8962AF_FIFO_LENGTH (32)
+samples, but the count is a 6-bit field (0..63) that is only checked for
+zero. A device, or an attacker on the I2C/SPI bus, reporting 33..63
+overflows the buffer by up to 186 bytes: a stack out-of-bounds write.
 
-Signed-off-by: Daniel Schaefer <dhs@frame.work>
-Link: https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/-/merge_requests/413
-Tested-by: Sven Vainküla <sven@xn--vainkla-r2a.ee> #Asus ProArt PX13 laptop.
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Clamp the count to FXLS8962AF_FIFO_LENGTH before the transfer, mirroring
+the clamp already applied in fxls8962af_set_watermark(). Conforming
+hardware reports at most that many samples and is unaffected.
+
+Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
 
 LLM Generated explanations, may be completely bogus:
 
-The local tree is **Linux 7.3-rc4** (mainline). Color ALS channels exist
-here (since v6.9), and this is a small per-channel IIO scale correctness
-fix with a real user report. Full phase walkthrough follows.
+The local tree is **6.18.53**. The FIFO clamp is not in `v6.18.53`; the
+32-sample stack buffer and 6-bit `BUF_CNT` path have been here since
+v5.14. That is a real stack out-of-bounds write, so this is a YES on
+technical merit.
 
 ===============================================================
 PHASE 1: COMMIT MESSAGE FORENSICS
 ===============================================================
 
 **Step 1.1: PARSE THE SUBJECT LINE**
-
-Record: **[iio/hid-sensor-als] [scale] scale each ALS channel
-individually rather than using one illuminance scale for every channel**
-
-- Subsystem: `iio: hid-sensor: als`
-- Verb: “scale” (correctness of IIO `in_*_scale`, not a refactor)
-- Claimed intent: color ALS sensors have per-channel scaling factors;
-  the driver used a single shared scale
+Record: **[iio/accel/fxls8962af] [clamp] [bound device-reported FIFO
+sample count before stack transfer]**
 
 **Step 1.2: PARSE ALL COMMIT MESSAGE TAGS**
-
-Record: tags (ignoring pipeline `Signed-off-by: Sasha Levin` /
-`[Upstream commit …]`):
-- **Signed-off-by:** Daniel Schaefer `<dhs@frame.work>` (author,
-  Framework)
-- **Link:** `https://gitlab.freedesktop.org/hadess/iio-sensor-
-  proxy/-/merge_requests/413`
-- **Tested-by:** Sven Vainküla (Asus ProArt PX13)
-- **Acked-by:** Srinivas Pandruvada (HID sensor hub maintainer)
-- **Signed-off-by:** Jonathan Cameron (IIO maintainer)
-- **No Fixes:** (expected for this review)
-- **No Cc: stable:** (expected)
-- **No Reported-by / syzbot / KASAN**
-
-Notable: real hardware Tested-by, userspace (iio-sensor-proxy) link,
-maintainer Ack.
+Record:
+- **Reviewed-by:** Andy Shevchenko `<andriy.shevchenko@intel.com>`
+- **Signed-off-by:** Bryam Vargas `<hexlabsecurity@proton.me>` (author)
+- **Signed-off-by:** Jonathan Cameron `<jic23@kernel.org>` (IIO
+  maintainer)
+- No **Fixes:**, **Cc: stable**, **Reported-by**, **Tested-by**, or
+  **Link:** on the committed message (v1 had Fixes/Cc: stable; they were
+  dropped after review)
+- Ignore pipeline markers: `[ Upstream commit
+  2f8225b91eb478ca2e9aec8aaef4d229765bcebe ]`, Sasha Levin SOB
 
 **Step 1.3: ANALYZE THE COMMIT BODY TEXT**
-
 Record:
-- **Bug:** some HID ALS devices are color ALS (illuminance + color
-  temperature + chromaticity), not brightness-only, and those extra
-  channels have different HID unit/exponent than illuminance.
-- **Symptom:** userspace (iio-sensor-proxy, compositors) applies the
-  illuminance scale to color-temp/chromaticity raw values → wrong
-  physical units (night light / color management broken or nonsense).
-- **Version info:** none in the message. Color/chromaticity channels
-  themselves landed in v6.9.
-- **Root cause:** `hid_sensor_format_scale()` was called only on
-  `als[CHANNEL_SCAN_INDEX_INTENSITY]` and that one scale was returned
-  for every channel.
+- **Bug:** `fxls8962af_fifo_flush()` copies `BUF_STATUS` `BUF_CNT`
+  (GENMASK(5,0), 0..63) into `u16 buffer[FXLS8962AF_FIFO_LENGTH * 3]`
+  (32 samples). Count is only checked for zero.
+- **Symptom:** stack out-of-bounds write of up to 186 bytes (63×6=378
+  into 192-byte buffer), canary/return-address smash.
+- **Root cause:** driver trusts a 6-bit device field against a 32-deep
+  FIFO buffer. Watermark path already clamps; flush path does not.
+- **Version:** unbounded since `79e3a5bdd9ef` (“add hw buffered
+  sampling”), 2021.
 
 **Step 1.4: DETECT HIDDEN BUG FIXES**
-
-Record: **Not a hidden cleanup.** It is an explicit correctness fix:
-wrong IIO SCALE sysfs values for extra ALS channels. Same class as
-`8b518cdb03f5f` (“iio: hid-sensor-prox: support multi-channel SCALE
-calculation”), which had `Cc: stable` and `Fixes:`.
+Record: Not disguised. It is a bounds-check / memory-safety fix. Review
+treated it as hardening against malformed device reports rather than a
+conforming-hardware bug.
 
 ===============================================================
-PHASE 2: DIFF ANALYSIS - LINE BY LINE
+PHASE 2: DIFF ANALYSIS
 ===============================================================
 
 **Step 2.1: INVENTORY THE CHANGES**
-
 Record:
-- **File:** `drivers/iio/light/hid-sensor-als.c` only
-- **Size:** 12 insertions, 10 deletions (net +2)
-- **Functions:** `struct als_state`, `als_read_raw()`,
-  `als_parse_report()`
-- **Scope:** single-file surgical driver fix
+- File: `drivers/iio/accel/fxls8962af-core.c` (+2 / −0)
+- Function: `fxls8962af_fifo_flush()`
+- Scope: single-file, two-line surgical fix
 
 **Step 2.2: UNDERSTAND THE CODE FLOW CHANGE**
-
-Record:
-1. **State:** `scale_pre_decml` / `scale_post_decml` / `scale_precision`
-   become arrays of `CHANNEL_SCAN_INDEX_MAX`.
-2. **`als_read_raw` IIO_CHAN_INFO_SCALE:** used to return the one
-   illuminance scale for any channel; now indexes by `chan->scan_index`,
-   with a bounds check.
-3. **`als_parse_report`:** scale is computed **inside** the per-usage
-   loop with `st->als[i]` (that channel’s units/exponent), instead of
-   once afterward from intensity only.
+Record: After `count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT` and the `if
+(!count) return 0` check, add `count = min(count,
+FXLS8962AF_FIFO_LENGTH)` before timestamp math and
+`fxls8962af_fifo_transfer(data, buffer, count)`. Normal path with count
+≤ 32 is unchanged. Path with count 33..63 is capped at 32 instead of
+overflowing the stack buffer.
 
 **Step 2.3: IDENTIFY THE BUG MECHANISM**
+Record: **Buffer overflow / out-of-bounds write.** Device-reported
+length used as transfer size without clamping to the on-stack array. Fix
+is a bounds clamp (memory-safety / hardware-value validation).
 
-Record: **[Logic / correctness]** IIO SCALE ABI wrong for color ALS.
-
-`hid_sensor_format_scale()` (verified in `hid-sensor-attributes.c`)
-matches `usage_id` (still the ALS sensor usage `0x200041`) **and**
-`attr_info->units`, then applies `attr_info->unit_expo`. The per-channel
-difference is those HID attribute fields. Intensity/illuminance share
-`HID_USAGE_SENSOR_LIGHT_ILLUM`; color-temp and chromaticity have
-different attributes, so they must not reuse intensity’s exponent.
-
-Classic brightness-only ALS is unchanged: both intensity and illum still
-use the same HID usage and therefore the same scale.
+Verified math:
+- `u16 buffer[32 * 3]` → 192 bytes
+- `fxls8962af_fifo_transfer()` reads `count * 3 * sizeof(u16)` = `count
+  * 6` bytes
+- count=32 → 192 (fits); count=33 → 198 (6 past); count=63 → 378 (**186
+  past**), matching the message
 
 **Step 2.4: ASSESS THE FIX QUALITY**
-
-Record:
-- **Quality:** obviously correct; same pattern as hid-sensor-prox
-  (`scale_pre_decml[index]` + format_scale in the parse loop).
-- **Minimal:** no unrelated edits.
-- **Regression risk:** low. Traditional ALS behavior is preserved.
-  Color-temp/chromaticity SCALE sysfs values change from wrong to
-  correct (intended).
-- **Known limitation (discussed on-list, not a NAK):**
-  `IIO_CHAN_INFO_SCALE` stays `info_mask_shared_by_type`, so
-  chromaticity X and Y share one sysfs scale. Jonathan Cameron: that
-  only matters if X and Y scales differ; the reported bug is illuminance
-  vs color-temp. Author: “in practice it's probably not needed and the
-  patch works as is.” No v2 was required; v1 was applied.
+Record: Obviously correct and minimal. `min()` is valid here: `count` is
+`u8`, `FXLS8962AF_FIFO_LENGTH` is 32; this tree’s `minmax.h` promotes
+unsigned char to signed int. Regression risk is very low: conforming
+devices report ≤32. Clamping a wild count to 32 can leave unread FIFO
+data rather than crashing; that is safer than a stack smash. Maintainer
+later preferred `dev_err` + abort over a silent clamp, but the clamp
+still prevents the overflow.
 
 ===============================================================
 PHASE 3: GIT HISTORY INVESTIGATION
 ===============================================================
 
 **Step 3.1: BLAME THE CHANGED LINES**
-
-Record:
-- Shared scale fields date to **`36783d09f1a5c`** (“iio: hid-sensors:
-  ALS: adjust scale and offset”, 2014) — correct when there was only
-  illuminance.
-- Extra channels: **`3765d426fe864`** color temperature,
-  **`2ec17b1950bb8`** chromaticity, both **v6.9-rc1**. That is when one
-  scale became wrong.
-- Dynamic channel assignment: **`f2a71ebdf2312`** (v6.9).
+Record: FIFO flush, stack buffer, and unclamped `BUF_CNT` came from
+**`79e3a5bdd9ef`** (Sean Nyekjaer, 2021-05-17), “iio: accel: fxls8962af:
+add hw buffered sampling”. First appeared around **v5.14**. Long-lived
+in this tree.
 
 **Step 3.2: FOLLOW THE FIXES: TAG**
-
-Record: **No Fixes: tag.** Closest introduction of the bug is the v6.9
-color-temp/chromaticity additions. Those commits **are** ancestors of
-this 7.3-rc4 tree (`git merge-base --is-ancestor` not required for each;
-`git describe --contains` shows `v6.9-rc1`).
+Record: No Fixes tag on the committed version. v1 tagged `79e3a5bdd9ef`.
+That commit **is** an ancestor of HEAD and of `v6.18.53`.
 
 **Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES**
-
-Record: recent ALS history includes channel init refactor, timestamp
-alignment, probe race fix. **No prerequisite series** for this patch
-(standalone v1). **No follow-ups** on this file after `cad928dad9a4c`.
+Record: Related: `1fe16dc1a2f50` (“Fix use after free in
+fxls8962af_fifo_flush”, CVE-2025-38485) — `synchronize_irq()` on
+predisable, **already in v6.18.53**. Different bug; does not bound FIFO
+count. Sibling **`3e766526827ac`** (bmc150 FIFO clamp) **is already in
+v6.18.53** with `Cc: stable`. This patch is standalone, not patch N/M.
 
 **Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS**
-
-Record: Daniel Schaefer has this single IIO commit in-tree. Not the
-subsystem maintainer. Weight comes from **Acked-by Srinivas Pandruvada**
-and **SOB Jonathan Cameron**.
+Record: Bryam Vargas is not the IIO maintainer. Same author submitted
+the bmc150 clamp (already in this tree). Driver author/regular is Sean
+Nyekjaer (CC’d). Applied by Jonathan Cameron.
 
 **Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS**
-
-Record: needs existing `als[]` per-channel attribute array,
-`CHANNEL_SCAN_INDEX_*`, and `hid_sensor_format_scale()` — all present
-here since v6.9 / much earlier. **Applies standalone.** Prox analog
-`8b518cdb03f5f` is a sibling pattern, not a dependency.
+Record: None. Uses existing `min()`, `FXLS8962AF_FIFO_LENGTH`, and
+`fxls8962af_fifo_flush()`. Applies standalone.
 
 ===============================================================
 PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
 ===============================================================
 
 **Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION**
-
 Record:
-- **b4 dig:** https://patch.msgid.link/20260723-chromaticity-v1-1-
-  5ef5746ace2a@frame.work
-- **Series:** v1 only (no v2/v3 despite author briefly offering a v2 for
-  `info_mask_separate`)
-- **Jonathan Cameron (2026-07-26):** SCALE shared-by-type is OK unless
-  chromaticity X/Y differ; “the change here looks fine”; queued on
-  iio.git testing.
-- **Srinivas Pandruvada:** Acked-by.
-- **David Lechner:** explained testing-branch means accepted/applied.
-- **No NAK.** No reviewer asked for Cc: stable.
-- **Sashiko bot:** flagged shared-by-type (addressed in discussion) and
-  a **pre-existing** buffer-layout concern, not introduced by this
-  patch.
+- **v1:** https://lore.kernel.org/all/20260613-b4-disp-22362900-v1-1-
+  c5e49f6af027@proton.me/ (had Fixes + Cc: stable, used `min_t(u8,
+  ...)`)
+- **v2:** https://lore.kernel.org/all/20260615-b4-disp-1a8c7886-v2-1-
+  0f0a2c48d840@proton.me/
+- **v3 (applied):** https://lore.kernel.org/all/20260616-b4-disp-
+  2e8d94cf-v3-1-c4e092eef3a2@proton.me/
+- Jonathan on v1: *“This is hardening against broken devices. Nice to
+  have, but not a fix and not back port material.”* Also asked for
+  `min()` instead of `min_t`.
+- Andy: shrink the AI-heavy commit message.
+- Author dropped Fixes/Cc: stable for v2/v3. Andy **Reviewed-by** on v3.
+  Jonathan applied to iio.git testing.
 
 **Step 4.2: CHECK WHO REVIEWED THE PATCH**
-
-Record: To/Cc included Jonathan Cameron, Srinivas Pandruvada, David
-Lechner, Nuno Sá, Andy Shevchenko, linux-iio, linux-input. Right
-maintainers were in the loop.
+Record: To/Cc included Jonathan Cameron (maintainer), Andy Shevchenko,
+David Lechner, Nuno Sá, Sean Nyekjaer, linux-iio, linux-kernel.
+Maintainer applied it; Andy reviewed it.
 
 **Step 4.3: SEARCH FOR THE BUG REPORT**
-
-Record: GitLab iio-sensor-proxy MR 413 returned **HTTP 403** (UNVERIFIED
-beyond the Link tag). Hardware evidence that **is** verified: Tested-by
-on Asus ProArt PX13; Framework author; iio-sensor-proxy is the standard
-userspace for laptop ALS.
+Record: No syzbot/bugzilla/user crash. Author reproduced with a
+KASAN_STACK litmus (count=36 → write of size 216 past the 192-byte
+buffer) and a userspace ASan model (count=63). Not a field report.
 
 **Step 4.4: CHECK FOR RELATED PATCHES AND SERIES**
-
-Record: standalone, not N/M. Prox multi-channel SCALE (`8b518cdb03f5f`,
-v6.15-rc6) is the same bug class and **was** `Cc: stable`.
+Record: Parallel bmc150 clamp (`ce0e1cae2609` / `3e766526827ac` in this
+tree) with Fixes + Cc: stable. Same author, same week. Jonathan agreed
+with that analysis and only nitted `min()` vs `min_t`.
 
 **Step 4.5: CHECK STABLE MAILING LIST HISTORY**
-
-Record: no “stable” in the lore mbox. UNVERIFIED whether linux-stable@
-discussed it separately (no lore.kernel.org/stable hit via b4 thread).
+Record: Duplicate sent to stable@ in Aug 2026 (Shengzhuo Wei). Jonathan:
+not a fix, don’t hide it by clamping. After learning Bryam’s patch was
+already in mainline: *“Oops… didn’t think of it in the same way… not
+worth more churn for something we don’t really expect to see in
+practice.”* He did not NAK backporting Bryam’s already-merged clamp; he
+rejected the duplicate and a follow-up rework.
 
 ===============================================================
 PHASE 5: CODE SEMANTIC ANALYSIS
 ===============================================================
 
-**Step 5.1: IDENTIFY KEY FUNCTIONS**
-
-Record: `als_read_raw`, `als_parse_report`; struct `als_state`. Probe
-path: `hid_als_probe` → `als_parse_report`. Sysfs/read path: IIO core →
-`als_info.read_raw` → `als_read_raw`.
+**Step 5.1: KEY FUNCTIONS**
+Record: `fxls8962af_fifo_flush()`; helper `fxls8962af_fifo_transfer()`.
 
 **Step 5.2: TRACE CALLERS**
-
-Record:
-- `als_parse_report`: only from `hid_als_probe` (HID-SENSOR-200041 /
-  LISS-0041 platform devices).
-- `als_read_raw`: IIO `read_raw` for sysfs (`in_illuminance_scale`,
-  `in_colortemp_scale`, `in_chromaticity_x_scale`, etc.) and buffered
-  metadata. **Userspace-reachable**, not IRQ-hot.
+Record: Only caller is `fxls8962af_interrupt()` when
+`FXLS8962AF_INT_STATUS_SRC_BUF` is set. IRQ is a threaded oneshot
+handler (`devm_request_threaded_irq(..., NULL, fxls8962af_interrupt,
+...)`). Runs when the IIO buffer is enabled and the device signals
+FIFO/watermark.
 
 **Step 5.3: TRACE CALLEES**
-
-Record: `hid_sensor_format_scale()` → unit table +
-`adjust_exponent_nano()`; `sensor_hub_input_get_attribute_info()` fills
-per-channel `units`/`unit_expo`.
+Record: `regmap_read` (`BUF_STATUS`), `iio_get_time_ns`,
+`fxls8962af_fifo_transfer` → `regmap_raw_read` (or I2C errata-3 per-
+sample reads), then `iio_push_to_buffers_with_ts`.
 
 **Step 5.4: FOLLOW THE CALL CHAIN**
-
-Record: unprivileged users can read IIO sysfs on a system with this HID
-ALS. Color ALS on recent AMD/laptop HID sensor hubs (v6.9+ channels).
-**Reachable from userspace.**
+Record: Userspace enables the IIO buffer → hardware FIFO IRQ → flush.
+Not a syscall that feeds the count; the count comes from the device over
+I2C/SPI. Unprivileged userspace cannot set `BUF_CNT` without controlling
+the bus or the part.
 
 **Step 5.5: SEARCH FOR SIMILAR PATTERNS**
-
-Record: hid-sensor-prox already uses per-channel scale arrays. Other
-hid-sensor drivers (accel, gyro, press, temp) still use a single scale
-because they are not mixed-unit multi-channel in the same way. ALS was
-the leftover mismatch after v6.9 extra channels.
+Record: Same bug/fix in bmc150 (`__bmc150_accel_fifo_flush`). Watermark
+path already clamps to `FXLS8962AF_FIFO_LENGTH`. `BUF_CNT` is only
+consumed here.
 
 ===============================================================
 PHASE 6: CROSS-REFERENCING AGAINST THE LOCAL TREE
 ===============================================================
 
 **Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?**
-
-Record:
-- **Tree:** `git describe HEAD` = `v7.3-rc4-27-gf0100363d8c37`; `make
-  kernelversion` = **7.3.0-rc4** (Linus mainline, not an LTS branch).
-- Color ALS channels **are** in `hid-sensor-als.c`.
-- Commit **`cad928dad9a4c` is already an ancestor of HEAD** (working
-  tree already has per-channel arrays). That is the mainline landing of
-  this fix during 7.3, **not** a reason to reject it on technical merit
-  (pipeline “already selected” markers ignored).
-- Bug introduced **v6.9** (2024), long before this tree.
+Record: **Yes.** `git describe HEAD` → `v6.18.53-5049-g0f0bdc2b0dffb`;
+`make kernelversion` → **6.18.53**.
+`v6.18.53:drivers/iio/accel/fxls8962af-core.c` has the 32-sample stack
+buffer and unclamped `BUF_CNT`. `git merge-base --is-ancestor
+e25456b3011d9 v6.18.53` is false (candidate only on autosel). Introduced
+**v5.14** (`79e3a5bdd9ef`). Driver configs: `FXLS8962AF_I2C` /
+`FXLS8962AF_SPI`.
 
 **Step 6.2: CHECK FOR BACKPORT COMPLICATIONS**
-
-Record: against **this** 7.3 tree the change is already applied / would
-apply cleanly. Context in the submitted v1 still used
-`als_adjust_channel_bit_mask`; this tree uses `iio_scan_type`
-initializer (`cded217233845`). For **this** checkout that is already
-resolved. No extra commits required for the logic of the fix.
+Record: **Clean apply.** `git diff v6.18.53 e25456b3011d9^ --
+drivers/iio/accel/fxls8962af-core.c` is empty. Dry-run of the two-line
+hunk against the v6.18.53 file succeeded.
 
 **Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE**
-
-Record: this exact commit is in HEAD. No later revert or competing fix.
-No other ALS scale fix in `git log cad928dad9a4c..HEAD --
-drivers/iio/light/hid-sensor-als.c`.
+Record: UAF/CVE-2025-38485 fix is in v6.18.53; it does not clamp count.
+No earlier FIFO-count clamp. bmc150 analog **is** in v6.18.53.
 
 ===============================================================
 PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
 ===============================================================
 
-**Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY**
+**Step 7.1: SUBSYSTEM AND CRITICALITY**
+Record: **IIO accelerometer driver** (`drivers/iio/accel/`).
+**PERIPHERAL / IMPORTANT for users of this NXP automotive accel**
+(FXLS8962AF/64/67/8974). Not core mm/net/fs.
 
-Record: **IIO light / HID sensor hub ALS** — **PERIPHERAL to IMPORTANT**
-depending on hardware. Laptop ambient/color light (Framework, Asus
-ProArt, HID sensor hubs). Not mm/net/fs core, but commonly used on
-notebooks via iio-sensor-proxy.
-
-**Step 7.2: ASSESS SUBSYSTEM ACTIVITY**
-
-Record: mature driver (2012), still getting channel and race fixes.
-Color ALS is several years old (v6.9), not brand-new staging code.
+**Step 7.2: SUBSYSTEM ACTIVITY**
+Record: Mature driver (2021) with ongoing IIO-wide and device-specific
+fixes. FIFO flush logic is stable, not newly introduced in 6.18.
 
 ===============================================================
 PHASE 8: IMPACT AND RISK ASSESSMENT
 ===============================================================
 
-**Step 8.1: DETERMINE WHO IS AFFECTED**
+**Step 8.1: WHO IS AFFECTED**
+Record: **Driver-specific / config-specific** (`CONFIG_FXLS8962AF_I2C`
+or `_SPI`), when the IIO buffer is on.
 
-Record: **driver-specific / config-specific** (`CONFIG_HID_SENSOR_ALS`).
-Users of HID color ALS (not every illuminance-only ALS). Confirmed: Asus
-ProArt PX13; likely other color-ALS HID laptops.
+**Step 8.2: TRIGGER CONDITIONS**
+Record: FIFO IRQ with `BUF_CNT` in 33..63 and `BUF_OVF` clear.
+Conforming silicon: FIFO depth 32; overflow sets `BUF_OVF` and the
+driver returns `-EOVERFLOW` without transferring. Trigger needs a
+bad/malicious/counterfeit part, bus tampering, or a corrupted
+`BUF_STATUS` read (e.g. I2C bit error on bit 5, which adds 32 to a 1..31
+count without setting OVF). Not reachable from syscalls alone. No field
+reports.
 
-**Step 8.2: DETERMINE THE TRIGGER CONDITIONS**
+**Step 8.3: FAILURE MODE SEVERITY**
+Record: **Stack out-of-bounds write** (up to 186 bytes) in IRQ-thread
+context → canary smash, oops, or worse. **Severity: HIGH** (CRITICAL if
+the bus is treated as adversarial). Conforming hardware: not hit.
 
-Record: **Every read of IIO SCALE** for color-temp/chromaticity, and
-every userspace conversion of those raw values. Not a race. Unprivileged
-users with IIO device node/sysfs access can observe it. Common on
-affected laptops at session start (iio-sensor-proxy).
-
-**Step 8.3: DETERMINE THE FAILURE MODE SEVERITY**
-
-Record: **Wrong sensor physical values** (color temperature /
-chromaticity), not oops/UAF/deadlock. Userspace brightness for classic
-ALS is unaffected (same HID usage). Compositor color/night-light using
-color ALS can be wrong. **Severity: MEDIUM** — real, user-visible, “oh
-that’s not good,” not CRITICAL.
-
-**Step 8.4: CALCULATE RISK-BENEFIT RATIO**
-
+**Step 8.4: RISK-BENEFIT RATIO**
 Record:
-- **Benefit:** correct IIO scale on color ALS; unbreaks iio-sensor-
-  proxy/hardware that already exists in this lineage.
-- **Risk:** very low (≈20-line, one file, no locking/API).
-- **Ratio:** favorable. Same class already taken for stable in prox.
+- **Benefit:** stops a kernel stack smash on a wild FIFO count. Same
+  class already shipped in this 6.18.53 tree for bmc150.
+- **Risk:** very low (2 lines, `min()`, no API/locking/structure change;
+  good devices unchanged).
+- **Ratio:** high benefit/risk for a memory-safety clamp. Maintainer
+  preference for “error out instead of clamp” is a design nit, not a
+  regression.
 
 ===============================================================
 PHASE 9: FINAL SYNTHESIS
@@ -395,172 +332,109 @@ PHASE 9: FINAL SYNTHESIS
 
 **Step 9.1: COMPILE THE EVIDENCE**
 
-**FOR backporting**
-- Real userspace-visible bug: mixed-unit color ALS channels reused
-  illuminance scale.
-- Hit on real hardware (Asus ProArt PX13 Tested-by); iio-sensor-proxy MR
-  linked.
-- Small, obviously correct, acked by HID-sensor maintainer, applied by
-  IIO maintainer.
-- Identical prox bug was explicitly `Cc: stable`.
-- This tree **has** the v6.9 color/chromaticity channels, so the bug
-  class exists in this lineage.
-- Traditional ALS unchanged; only extra channels’ SCALE change.
-- Fits documented stable bar: “real bug that bothers people” / “oh,
-  that’s not good.”
+FOR:
+- Real stack OOB: 6-bit count vs 32-sample stack buffer, overflow math
+  verified (186 bytes).
+- Bug exists in **this** 6.18.53 tree; driver since v5.14.
+- Two-line, obviously correct clamp; `min()` is type-safe here.
+- Applies cleanly; no prerequisites.
+- KASAN_STACK reproduction of the overflow.
+- Reviewed by Andy Shevchenko; applied by IIO maintainer.
+- Identical bmc150 clamp already in v6.18.53.
+- IRQ-time path, not dead init code.
 
-**AGAINST**
-- Not a crash, UAF, deadlock, or security issue.
-- No Fixes:/Cc: stable (not a negative per review rules).
-- SCALE still shared-by-type for chromaticity X/Y (accepted by
-  maintainer as OK for the reported bug).
-- Peripheral driver, not core kernel.
-- GitLab MR body UNVERIFIED (403).
+AGAINST:
+- Jonathan: hardening, *“not a fix and not back port material.”* Author
+  dropped Cc: stable for that reason.
+- No user/syzbot reports; needs non-conforming `BUF_CNT` (OVF already
+  bails out on overflow).
+- Later stable@ thread: prefer logging/error over silent clamp; “don’t
+  expect this in practice.”
 
-**UNRESOLVED**
-- Exact HID unit/exponent values on the PX13 (not in-tree).
-- Whether chromaticity X vs Y ever differ on some firmware (maintainers
-  assumed no).
+UNRESOLVED:
+- No datasheet fetch here beyond driver comments
+  (`FXLS8962AF_FIFO_LENGTH` 32, `BUF_CNT` GENMASK(5,0)). Driver and
+  review agree on those numbers.
 
-**Step 9.2: APPLY THE STABLE RULES CHECKLIST**
+**Step 9.2: STABLE RULES CHECKLIST**
+1. Obviously correct and tested? **PASS** — 2-line `min()`; KASAN
+   litmus; W=1 clean; maintainer applied.
+2. Fixes a real bug that affects users? **PASS** — driver uses an
+   unvalidated 6-bit length as a 32-slot stack transfer size. That is a
+   real memory-safety defect; analog already backported for bmc150 on
+   this tree.
+3. Important issue? **PASS** — stack smash / OOB write (HIGH). Not a
+   userspace-only theoretical race; it is a missing bounds check on a
+   device-supplied length.
+4. Small and contained? **PASS** — +2 lines, one function.
+5. No new features or APIs? **PASS**.
+6. Can apply to the local tree? **PASS** — v6.18.53 file matches pre-
+   image; dry-run succeeded.
 
-1. Obviously correct and tested? **PASS** — Tested-by, Acked-by, IIO
-   maintainer queued v1.
-2. Fixes a real bug that affects users? **PASS** — wrong IIO scale on
-   color ALS; userspace conversion broken.
-3. Important issue? **PASS** (medium “oh that’s not good,” not CRITICAL
-   crash) — wrong physical units for sensors userspace actually uses.
-4. Small and contained? **PASS** — one file, +12/−10.
-5. No new features or APIs? **PASS** — corrects SCALE for channels that
-   already exist; no new sysfs ABI.
-6. Can apply to the local tree? **PASS** — affected code is in 7.3-rc4;
-   change is already the current code here.
+**Step 9.3: EXCEPTION CATEGORIES**
+Record: Not a device-ID/quirk/DT/build/docs exception. Ordinary memory-
+safety bounds check.
 
-**Step 9.3: CHECK FOR EXCEPTION CATEGORIES**
-
-Record: not a device-ID/quirk/DT/build/docs exception. Ordinary driver
-correctness fix.
-
-**Step 9.4: MAKE YOUR DECISION**
-
-This tree’s ALS driver includes color-temperature and chromaticity
-channels added in v6.9 but, until this change, advertised a single
-illuminance-derived IIO scale for all of them. That is a real, tested
-userspace bug (wrong color ALS readings via iio-sensor-proxy), not a
-feature or cleanup. The patch is small, matches the already-stable-
-worthy prox multi-channel SCALE fix, and does not change classic
-illuminance ALS. Benefit outweighs the low regression risk.
-
-### What the commit solves and why it matters here
-
-Color HID ALS devices expose extra channels with different HID
-units/exponents. The driver formatted scale only from the intensity
-attribute, so `in_colortemp_scale` / chromaticity scale were wrong. On
-this 7.3-rc4 tree those channels exist, so the fix is applicable and is
-the right stable-style correctness change for that hardware.
-
-### Risk vs benefit
-
-Benefit: correct sensor units for color ALS on laptops that already use
-this driver. Risk: a few array/index changes on the sysfs read path;
-illuminance-only devices keep the same scale.
-
-### Concerns
-
-No crash-level severity; chromaticity X/Y still share type-wide scale
-(explicitly accepted). Neither blocks backport of this contained fix.
+**Step 9.4: DECISION**
+The IIO maintainer did not want this treated as a stable bug because
+conforming parts should never report >32 without `BUF_OVF`. That is why
+Cc: stable was dropped; that absence is not a reason to reject it. In
+this 6.18.53 tree the buggy flush is present, the fix is two lines, and
+the same pattern was already taken for bmc150. A wild `BUF_CNT` still
+produces a kernel stack overflow. That is enough technical merit to
+backport.
 
 Verification:
-- [Phase 1] Parsed tags: Tested-by Sven Vainküla (Asus ProArt PX13);
-  Acked-by Srinivas Pandruvada; SOB Jonathan Cameron; Link to iio-
-  sensor-proxy MR 413; no Fixes/Cc:stable
-- [Phase 2] Diff: 12+/10- in hid-sensor-als.c; scalar scale → per-
-  scan_index arrays; format_scale moved into parse loop over
-  `st->als[i]`
-- [Phase 2] Verified `hid_sensor_format_scale()` uses `attr_info->units`
-  and `unit_expo`; ALS unit table only has ALS+0 and ALS+LUX
-- [Phase 3] `git describe HEAD` = v7.3-rc4-27-gf0100363d8c37;
-  kernelversion 7.3.0-rc4
-- [Phase 3] `git merge-base --is-ancestor cad928dad9a4c HEAD` → already
-  in this tree (mainline landing)
-- [Phase 3] Color temp `3765d426fe864` and chromaticity `2ec17b1950bb8`
-  contained in v6.9-rc1
-- [Phase 3] Prox analog `8b518cdb03f5f` had Cc: stable + Fixes
-- [Phase 3] No follow-up commits on hid-sensor-als.c after cad928dad9a4c
-- [Phase 4] `b4 dig -c cad928dad9a4c`: lore https://patch.msgid.link/202
-  60723-chromaticity-v1-1-5ef5746ace2a@frame.work
-- [Phase 4] `b4 dig -a`: v1 only
-- [Phase 4] `b4 dig -w`: IIO + HID-sensor maintainers on To/Cc
-- [Phase 4] mbox: Jonathan OK with shared-by-type; Srinivas Ack; no NAK;
-  no stable nomination in thread
-- [Phase 4] GitLab MR fetch: 403, body UNVERIFIED
-- [Phase 5] semcode: not available; grep shows als_read_raw only from
-  als_info; hid_als_probe only caller of als_parse_report
-- [Phase 6] Working tree already has per-channel scale arrays at lines
-  36–38 and 332–334
-- [Phase 8] Failure mode: wrong IIO SCALE for color ALS → incorrect
-  userspace conversion; severity MEDIUM
-- UNVERIFIED: exact PX13 HID unit/exponent values; linux-stable@
-  discussion outside this thread
+- [Phase 1] Parsed subject/tags/body from `git log -1 e25456b3011d9` and
+  the user-supplied message; Fixes/Cc: stable dropped after v1 review
+- [Phase 2] Read `fxls8962af_fifo_flush` / `fxls8962af_fifo_transfer`;
+  confirmed 192-byte buffer, `count * 6` transfer, 186-byte max overflow
+- [Phase 2] Confirmed `min(u8, 32)` is valid in this tree’s
+  `include/linux/minmax.h`
+- [Phase 3] `git blame`: buggy FIFO flush from `79e3a5bdd9ef` (2021);
+  `git merge-base --is-ancestor 79e3a5bdd9ef HEAD` true
+- [Phase 3] UAF fix `1fe16dc1a2f50` is in v6.18.53; does not clamp count
+- [Phase 3] bmc150 clamp `3e766526827ac` is in v6.18.53 with Cc: stable
+- [Phase 4] `b4 dig -c 2f8225b91eb478ca2e9aec8aaef4d229765bcebe` → v2/v3
+  lore; `-a` showed v3 applied; `-w` listed IIO maintainers
+- [Phase 4] Fetched Jonathan v1 review: “not a fix and not back port
+  material”
+- [Phase 4] Fetched v3 apply mail and Andy Reviewed-by
+- [Phase 4] lore.kernel.org/stable search: Aug 2026 duplicate; Jonathan
+  restated hardening stance, then dropped rework of Bryam’s already-
+  merged clamp
+- [Phase 5] Only caller: `fxls8962af_interrupt` on BUF status, threaded
+  IRQ
+- [Phase 6] `make kernelversion` / Makefile: 6.18.53; clamp **not** in
+  `v6.18.53`; `git diff v6.18.53 e25456b3011d9^ -- fxls8962af-core.c`
+  empty; patch dry-run against v6.18.53 file succeeded
+- [Phase 7] Kconfig: FXLS8962AF I2C/SPI, automotive accelerometer
+- [Phase 8] Failure mode: stack OOB write in IRQ thread, HIGH
+- UNVERIFIED: live NXP datasheet fetch (FIFO=32 / BUF_CNT width taken
+  from in-tree defines and review, which agree)
+
+The patch is a two-line bounds clamp on a stack FIFO flush that exists
+in this 6.18.53 tree. It prevents a kernel stack out-of-bounds write if
+`BUF_CNT` is 33..63, applies cleanly, and matches a clamp already
+present here for bmc150.
 
 **YES**
 
- drivers/iio/light/hid-sensor-als.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/iio/accel/fxls8962af-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 384572844162c..232cb58e0a9ff 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -33,9 +33,9 @@ struct als_state {
- 		u32 illum[CHANNEL_SCAN_INDEX_MAX];
- 		aligned_s64 timestamp;
- 	} scan;
--	int scale_pre_decml;
--	int scale_post_decml;
--	int scale_precision;
-+	int scale_pre_decml[CHANNEL_SCAN_INDEX_MAX];
-+	int scale_post_decml[CHANNEL_SCAN_INDEX_MAX];
-+	int scale_precision[CHANNEL_SCAN_INDEX_MAX];
- 	int value_offset;
- 	int num_channels;
- 	s64 timestamp;
-@@ -186,9 +186,11 @@ static int als_read_raw(struct iio_dev *indio_dev,
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = als_state->scale_pre_decml;
--		*val2 = als_state->scale_post_decml;
--		ret_type = als_state->scale_precision;
-+		if (chan->scan_index >= CHANNEL_SCAN_INDEX_MAX)
-+			return -EINVAL;
-+		*val = als_state->scale_pre_decml[chan->scan_index];
-+		*val2 = als_state->scale_post_decml[chan->scan_index];
-+		ret_type = als_state->scale_precision[chan->scan_index];
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
- 		*val = als_state->value_offset;
-@@ -338,6 +340,10 @@ static int als_parse_report(struct platform_device *pdev,
- 		als_adjust_channel_bit_mask(channels, index, st->als[i].size);
- 		++index;
+diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+index 8763e91c63d2b..1ecffbf41f64f 100644
+--- a/drivers/iio/accel/fxls8962af-core.c
++++ b/drivers/iio/accel/fxls8962af-core.c
+@@ -970,6 +970,8 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
+ 	if (!count)
+ 		return 0;
  
-+		st->scale_precision[i] = hid_sensor_format_scale(usage_id,
-+					&st->als[i], &st->scale_pre_decml[i],
-+					&st->scale_post_decml[i]);
++	count = min(count, FXLS8962AF_FIFO_LENGTH);
 +
- 		dev_dbg(&pdev->dev, "als %x:%x\n", st->als[i].index,
- 			st->als[i].report_id);
- 	}
-@@ -347,10 +353,6 @@ static int als_parse_report(struct platform_device *pdev,
- 	if (index)
- 		ret = 0;
- 
--	st->scale_precision = hid_sensor_format_scale(usage_id,
--				&st->als[CHANNEL_SCAN_INDEX_INTENSITY],
--				&st->scale_pre_decml, &st->scale_post_decml);
--
- 	return ret;
- }
+ 	data->old_timestamp = data->timestamp;
+ 	data->timestamp = iio_get_time_ns(indio_dev);
  
 -- 
 2.53.0
