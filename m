@@ -1,136 +1,131 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D824E2F1A
-	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 12:09:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792411752; cv=none; b=CSNALcr2keQaDu6/11ByruiU4X7GxNaNyzw8x+q6bw+sQHwGMYnrlCBrau8Pco6TkKMuXX4gvA4CCtMgrUFl4JyYxxiFYJ+5wh4Oct+4aGOPk4yLYl6RSvx7VN+PXxMliN7VpLKxs7tpvrBJusfM8Ac3vojB4+mkZYVbiqybhXg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792411752; c=relaxed/simple;
-	bh=B6PGmkEOmOTvRMG4KJSxa+Qi5H7nSmTaQb5cEDlkSyE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qF25i3F0lLD1w8hrDhKdxadG5wzNUPFknCdHv8aGn6gpbEfMrIYRwIrM8+5+CaGHguzZr7zvS9BWRIAAGauJYNw8Jq1ngzIZA32dpwzexIbkFRWPVuxYFCYf6jCK3QFY/gPzR33qa/Jh0PyUy3Wn3PYfr8yGeKtqZvIq8ay2+Z4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aG0nZZZc; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 625214AB1A8
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 12:53:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792414413; cv=pass; b=coElN4+DZlWOdghcUMHSrwe1wgZPkOznPZpwICr7vuagoQCxTLjRoVbMfEHvbTrzgzzPEfk+fJAI0NRGqhSVDfx3lyUQzvGFTeDBulHzBDYMANYUJfsm5vU7zIBuhOFOy0HMPHvESGDq0O2ieqfqj7cJw9xbaW/6UAAoWXbHTgc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792414413; c=relaxed/simple;
+	bh=FNwgn3FhczlTdrGyWzEHio80X7+yKZEdfs8EY7scwzU=;
+	h=MIME-Version:In-Reply-To:References:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ex74S55C69tqj1yqX897DXM2PEOZhxrHylSW7QTzG3MuCIC16NizRo6qNs7Ivl10Upfa20WA8+kS7MU9DQrxt/4MpsK7D1ljU0HUK0TwRmiJJCAibcxqHHy5ivCDCn2qZNt6e57IBpUF7AYjnP5q4LRl7bbVT7k+3NCj+soFyt4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qaR1nuTi; arc=pass smtp.client-ip=209.85.222.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aG0nZZZc"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a1d75f2f11so13808655e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 05:09:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qaR1nuTi"
+Received: by mail-ua1-f42.google.com with SMTP id a1e0cc1a2514c-9903fde8db8so454471241.2
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 05:53:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792414409; cv=none;
+        d=google.com; s=arc-20260327;
+        b=f4uAbVEEi1BJeWsiUzLYuOn+bcuiuLevvbjWhKeT/F310AxxTjOv9laHxKrIGJwErO
+         I8sYSGr8vcefc/oEDbG9AzKu6TjBXdhY9S3np9FSEgiUQ4eCnTXM5yipm986nbOKW2aE
+         gmpOWXygYtyWm+cU+0mVgPWb77RPeKSGtPm5AiKn4y3rjkFh8bv05SZu6XuhVk33fma6
+         /TFISYfY1EBALs7VgauetzG/GrYdbQy47geVTp0l5GXDZHYmRD4LX82y+17ccjYpgHdR
+         OCWxWztwRtZKYb4SH8swetU/78gri17ZwBS3/s9akgBEO2F7gObaVTJKYPgMr1gQ75B8
+         xueA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:references:in-reply-to
+         :mime-version:dkim-signature;
+        bh=FNwgn3FhczlTdrGyWzEHio80X7+yKZEdfs8EY7scwzU=;
+        fh=yzyh2PVZ7nCev7ysAMybnc1NWVRDD83YQZpjG8vnZGc=;
+        b=LxkW6j4aM0Y7eAqwzG67sbgtsOYn6672lkBMCVXVMrmnxPn2/BKuxCKEtPHxOrCGN7
+         doyeFCSSQnM4odCkX6fFi7lnFUEiyghkt5Av+TtY3wyjl7GPDAsHKVZkxsrYXWVZAqIH
+         XvrxMOMvjiyjUGSCdNE5iriH7buCoMnv8Sj0pk1iDyE+tbiORzUnFlLLB+90dPRP/4q1
+         /ua5wq0wmaQNkl9PlQLIIjWECsPbvXBcTdO2NkNajjbLgRZUxMO22jckisWT1OU8lMLd
+         btk+ki8qTWOXqVEHmxmhwt/REiuJEViLE5EvhQtB1u7Ln4SF8QlPvWhuBXf5D/eEZVbq
+         vPDw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792411750; x=1793016550; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=LQMT+oVedzgIQTTgsSc7H1Q1yfN1sP8EFn/tjZr2lw0=;
-        b=aG0nZZZcNESLfrAJZ88dTK2CwmbB/xFE0YTlAIeNI3JH6AS3EtXBYYqJoUXNa8t1OG
-         bqu+9nzydFdpZsPMtljMGEz+EiPasNyyN4v/N1BANtsJK4lvHZKV2eb4ZrQlJtO9rJU8
-         GFhQ3uza5XhDizUYFWGt5eBMbZ9yje0ZAu3f7wPxHJ4FAYenBwEUWiOQNhW530wuXpPm
-         9VHoao8d5EYpwOz/C+HiFlDbKhBOIPo6n/Yx9QGMntzEML64Ymn21T7jNEtcniUGz1It
-         yEDNJaxe/uHBodggLQvTtIQYBEd9Rn52jeFLPKO+zG5qLQ9G1LurnbC/hq/sJpE7pCVW
-         Vodw==
+        d=gmail.com; s=20251104; t=1792414409; x=1793019209; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:references
+         :in-reply-to:mime-version:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=FNwgn3FhczlTdrGyWzEHio80X7+yKZEdfs8EY7scwzU=;
+        b=qaR1nuTixVyQmk2u80KxUFYI1gpZ8VyZ91daEtMon/CZyBUvM3a1nuimJenFCLAjwa
+         5jQyHju8ir3Rcqbel4SfS5LKHrucKT38Ak6jFDSk1Lg7DJqAgRnShmK5u1R2gow1oRlE
+         Xj1x1G35/ocveih6KIKNO3+XvhNyvxtzIwSNzq3zj3E66/KXjYnGf5OF+CFEocpp3sRd
+         YBCE2ZEkngsKiCBi9VRGaYFX+CzG+JzXALmXmSpokQSBxgJW/7Sv/5XwYa8S/iZBnkbk
+         NFngZlhms+Po8190oTHHTt8s0R0ULEGY8ErukFeHJThWE0UGP6xR91TGjCKCEeZx7WhU
+         SJNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792411750; x=1793016550;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=LQMT+oVedzgIQTTgsSc7H1Q1yfN1sP8EFn/tjZr2lw0=;
-        b=05iqwy/7tmwy5pwv5aJl5lLIrpqptfNNT3eqyQQWwu+VqY9feysVRrzbDioJ3gobCn
-         DtBynRYJbbc0zUj9wS2zsD7fo5E4qzN//LyeEbsGfUtSMnkCIGILjQcBQk6n74BpIAix
-         KWtj6B+F144ZzhIuZEVQTwJEcH8/TtiJb+kv4kN0BjIipTPmDPj3GEcAt/2W8ibfXJO/
-         ySdHLZP5OzrJldnScPaP9NSIWnETXSZOBbE0TV4yabJwK0+f240K87kV3gV4KVvka2w2
-         jTkk+6jNfVJJDQUAFwpunCtf/62MPvUh+zkHLzDY+M/PYvkpvt6opW1hPpVkdNoK9bhM
-         9ydA==
-X-Forwarded-Encrypted: i=1; AKwUvBwfhxNjcj9UZx9JSbF52swE1LBstayaielQLgRnA2/FGGAIPpyq0gLrCrO3/raM3D2L4zNCVFgulRk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKcAKCr43Na+CYSeqyp9nrj9U3GtzvLnMN4aPDln5+I0ObYWmxD
-	7sl8cpp6F6zlmtAdGrJatCvVNtYa974sGkN7VbzVuO7Sw4ZGnwyD8Sgo
-X-Gm-Gg: AYBFou1WUvqUOWQqm4jhwlBU6wYXUXBDjrFzIjyJt0wd0XHrpW07O9QQXi+yP4iYtOe
-	jbDvHqoX1AIL72d4lI3tEy0+ig/SLKXcrqRzL7v0jxPylT7HcpYrbbZahTpiKrK4rx5KLMTAb7g
-	vj8P0cB8isQhiNPtBX4F/rx5Uy2dItMy29ofBWH61YjL0ZRk1/BE40tWpFyrEZgvoB99Xkwa+lS
-	jpIexJi/xuPZhLr+dTIbWZIQW1UdA9VMybR4S0qfwDVYIy9DTTrsCGjyZgboi7pXr32T5risu4h
-	2fiDatQzTkhwg4D5UP+HzzpJeasNUhyQjfaYrIHY5mEkd3ZYjtd6lKR7PiWYQ8gmfXPGR0wrQQB
-	a4+ucE4dVXYEkbnH4GGY3zHwQuWGIh+0+Buwt/kKgMQ30rpKG4PWTWCQkJhWTrANshqi53781KY
-	q519qlsXA/oZKR0nOFJtHCrlHZe4SFwlMKMQbcjzU6g6LejqtDV63yulrNhmCkhnwyqPtuwMcUg
-	a+rUucQV469JqsXD2HVRq1xW3dxNR0C72OhclfJUW5SCoq/IWSpWiHFSYc28OlW7B5gbLSrQXAW
-	Cp3/bv6sWlwpnc4sEe/PabHTmyuwU0Rai0lahyEiKyt3NLPE3GuqtxiUX6qwF6oiry2GJc1nBQF
-	xonmUBN0o8KwgHkidf8O8/Q+5/+5Oex9xP+uWrxrrnONm9hHP7wwHCKDGxvNpEKbJdIMFaBHIYH
-	8DVehG
-X-Received: by 2002:a05:600c:4e8a:b0:4a1:8961:78dd with SMTP id 5b1f17b1804b1-4a1d7616464mr168857525e9.27.1792411749417;
-        Mon, 19 Oct 2026 05:09:09 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1c8ad6245sm279022375e9.3.2026.10.19.05.09.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2026 05:09:09 -0700 (PDT)
-Date: Mon, 19 Oct 2026 14:09:05 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Dingisoul
- <dingiso.kernel@gmail.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: gyro: mpu3050: add missing trigger cleanup
- on remove()
-Message-ID: <20261019140905.00000094@gmail.com>
-In-Reply-To: <atX1alPtnByIsGFr@nsa>
-References: <20261017-mpu3050-fix-v3-0-d6f29f335a2b@gmail.com>
-	<20261017-mpu3050-fix-v3-2-d6f29f335a2b@gmail.com>
-	<atX1alPtnByIsGFr@nsa>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        d=1e100.net; s=20260707; t=1792414409; x=1793019209;
+        h=content-type:cc:to:subject:message-id:date:from:references
+         :in-reply-to:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=FNwgn3FhczlTdrGyWzEHio80X7+yKZEdfs8EY7scwzU=;
+        b=w3elOv23ZL0FAYrwS//8RfZ4sXIO+/BsiQbfoLS9qWWl6xeRP5zXrUqIBY3gzud5iH
+         YcBZ4PSL2tjW5yl2vvM92ZEMKR2nuoqQrgFlsSzv8R+GfLsOeV2/etMiJWZSrCoisWd0
+         gtv+elmWtD4autU0bWsF+adNzqk20I4gmwXTeiqocr2J2u+WpucI62G1WwhH7wzWZZC9
+         RqPk6iwr/iGAHYRAmf0LBWy+LEWyONae5YLSUYVI+oXwIwBhC7H5dR73yqiZZ8gagnd3
+         qX5X0FPyOm6Yj7s5y1RjMZh9GYTptd/BBtGdNymWuM2JdwV1gwLNagFi+H4uWoh5aEZg
+         R1SA==
+X-Forwarded-Encrypted: i=1; AKwUvByGqlx0+7Uk33omaq+uMI9y5zwIRsdCuT+x2GvMJjlXcp/vE0S/K3X2Ui//ePtlVRsRX2PGABGbge0=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIQhPU+MQRV8W7QMd+117Lx+twg12n7f6QRo2SuETU2gXZmoW43
+	wv87kIxXJ70lXsyyjE9HLfJqmS3WH5Vu2Hjmcv6b/XQSg24qiCuJnOyEQD6kQk0lSkg2WMbnViA
+	U5qPSOXJlUfwc/2RR9AqjjirAvkOXKlQ=
+X-Gm-Gg: AYBFou0UBNc6NmcANrPwXnd32QdDrjiwpBMk45DeJ9HLZU/HcsqSnh01bT0xdbzFHTJ
+	1cdzx797Uw+cqsTDhmb/i9mYwUublOIaLEhEMrs6x1+f4pM3lmycyw/yp8gj28CUUiyE2hHuZ+S
+	JkDzjcItV4GNUUHc2BhBemnec2Et3QUts536BOhoxwOBsEHxF4Hr/s/olGMg6sNmjc8P8KBm66T
+	IUmXuCzjhNbsotGHnjqMcxf9qTsO2EqaaDdCLmTmYR+xUUjkR8T2o+K4n67JqW72enrx4KqRUkX
+	A3DMUG2sEIlpn4BkoQwsSH36abK6NpNkdXD1pTK7JfmLMOevZlE=
+X-Received: by 2002:a05:6102:f86:b0:7cb:288a:b66d with SMTP id
+ ada2fe7eead31-7cc369ac7b5mr1600977137.20.1792414409122; Mon, 19 Oct 2026
+ 05:53:29 -0700 (PDT)
+Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
+ Mon, 19 Oct 2026 07:53:28 -0500
+Received: from 77377267392 named unknown by gmailapi.google.com with HTTPREST;
+ Mon, 19 Oct 2026 07:53:28 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <atXvOA40_3qE2HA-@ashevche-desk.local>
+References: <20261018-adxl345-period-cache-v2-resend-1@gmail.com> <atXvOA40_3qE2HA-@ashevche-desk.local>
+From: Iron Berrington <berringtoni36@gmail.com>
+Date: Mon, 19 Oct 2026 07:53:28 -0500
+X-Gm-Features: AclHuK8Y7-0ZzVzseArWZiC8I0v3U9VeRhuq6uTpYC42bhbZYLVi-yDkZavvr_A
+Message-ID: <CAF2O-sPB3ggqwEA1LXsrA=tCpZGJMdx8KAXLXrW7RcaEk9y1iA@mail.gmail.com>
+Subject: Re: [PATCH v2 RESEND] iio: accel: adxl345: update period cache after
+ successful write
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, 19 Oct 2026 11:54:41 +0100
-Nuno S=E1 <nuno.sa@analog.com> wrote:
+Hi Andy,
 
-> On Sat, Oct 17, 2026 at 07:19:21AM +0200, Joshua Crofts wrote:
-> > The mpu3050_trigger_probe() registers a trigger but
-> > mpu3050_common_remove() and error paths in mpu3050_common_probe() forget
-> > to clean it up, causing a use-after-free bug.
-> >=20
-> > Add the missing calls to the iio_trigger_unregister() function.
-> >=20
-> > Reported-by: Dingisoul <dingiso.kernel@gmail.com>
-> > Closes: https://lore.kernel.org/all/20261010203601.1686148-1-dingiso.ke=
-rnel@gmail.com/
-> > Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > ---
-> >  drivers/iio/gyro/mpu3050-core.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050=
--core.c
-> > index 879caf3b729c..9e747836df3e 100644
-> > --- a/drivers/iio/gyro/mpu3050-core.c
-> > +++ b/drivers/iio/gyro/mpu3050-core.c
-> > @@ -1262,7 +1262,9 @@ int mpu3050_common_probe(struct device *dev,
-> >  	pm_runtime_get_sync(dev);
-> >  	pm_runtime_put_noidle(dev);
-> >  	pm_runtime_disable(dev);
-> > -	if (irq)
-> > +	if (mpu3050->trig)
-> > +		iio_trigger_unregister(mpu3050->trig); =20
->=20
-> Yeah, I think sashiko is right... I think we can just reuse the if
-> (mpu3050->irq) condition for unregistering  but then this patch depends
-> on the previous one. And such dependencies can be set for stable so
-> don't think it's an issue.
->=20
-> I already pointed it out and Jonathan seems to have said the same. If
-> you do have the time, converting the whole thing to devm would be nice=20
-> - could be patch 3 :)
+Thanks for the review and the Reviewed-by tag. I'll address the
+time-unit constants in a separate cleanup patch, keeping this fix
+focused on updating the cache after successful writes.
 
-Bad time to be lazy :P I'll have a look.
+Best regards,
+Wenqiang
 
---=20
-Kind regards,
-Joshua Crofts
+
+On Mon, 19 Oct 2026 13:21:44 +0300, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> On Sun, Oct 18, 2026 at 09:42:00PM +0800, Wenqiang Zhao via B4 Relay wrote:
+>
+> > The ADXL345 event-period read path returns st->inact_time_ms. The setters
+> > for inactivity, free-fall and the ODR-derived default currently update
+> > this cache before writing TIME_INACT or TIME_FF. If the regmap write
+> > fails, the sysfs write reports an error but a subsequent read returns
+> > the requested period even though it was not programmed.
+> >
+> > Update the cached period only after the corresponding regmap write
+> > succeeds.
+>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Assuming that my comments may lead to a separate cleanup patch later on.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
