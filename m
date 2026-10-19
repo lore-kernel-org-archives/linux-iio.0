@@ -1,60 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDAD4A0918;
-	Mon, 19 Oct 2026 09:34:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD1E33F383;
+	Mon, 19 Oct 2026 09:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792402453; cv=none; b=cJ5mT9/EhUcltNol6X1YgTO+K3LIoQHfmS65Y9NZ0RJk6EjGV0xagtszugmPB6yoqlsHgHIy0zZDpObJqYg7yLk3PYnuLBlFVp1Ux/OY+AkOM3YUu7jdOxMptj1/xxJzckQkjqC4mI87TMyjTu9Ul7oqG1K2AmfkuQvBrIXMn9A=
+	t=1792403619; cv=none; b=Qyes4ROMo+U3nSQOyHOePyWutSg6hAVhx40T9NCV5S99143tG9Bo/DHHN8e41ADbPLLiaRgmjyczeuY9H0y216GwqogeRo9W1N7ha6MVfkypUHwpuc00oVPWwGujoIZQxRRrJ1Y8X5bClUtKZ0xZMJYCY+Hj6UzelU3WogybDJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792402453; c=relaxed/simple;
-	bh=EyuxdG7AXXr/Y9TuCwVf7IWJuhW1DJZfRB7CpNeJsEM=;
+	s=arc-20240116; t=1792403619; c=relaxed/simple;
+	bh=UAvQEyO7YcF5XflKLEHcE1A94egeQEcAvUo8vH2B5p8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ILUmFfeKJ7ES0IF0PuWjq5b9C0EE/U6653/7+4Y9UBp5mIW+Mq5ZuPuYfJuko50Q770CGz4PFMPQ06Ezwow75z+/gr8EuFL4xoiSas73DzKlTImSdEnuRp8wZwJ1wG0WOAWn6FvlGGyru33kVAIwVz2bkl5d4fEegPYM3+BMMJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IBGFqaG7; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=aWfb0b0O6NZRevc3fmdHnUROm/zAPKVZwbz/TWz4YJG5GcntMvAFnRwlaD95FOxhw+mkOrbcqeR5R4DXtNiRLZcpmI2ATX4ViXq9QwI1Py1X4aYzSuOfVogjdnsdr9Z3HmaR1ovfnFAMUSnlrJtDOO6ITU4a/uO1kYR5j8ntriM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lpxB26FN; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IBGFqaG7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lpxB26FN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792402453; x=1823938453;
+  t=1792403619; x=1823939619;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EyuxdG7AXXr/Y9TuCwVf7IWJuhW1DJZfRB7CpNeJsEM=;
-  b=IBGFqaG7jMCTmyDK7UMN6mcR3IgHhg8rPLwIDiyDaZRBUErow6KcfZPP
-   QcTkyhCwzZjbRSyt9cPN+2rnZ6SaBIr4hP31rT7iY8SwENnE6aUMOpWJe
-   65+MkWD3yMJ2kvsPtTi2I66ZaMSXXyX93C/fMQFrNSiDWu7dPsPPGlHHI
-   C7VPDRnQXjFIKFBtxOMhrw3smzzfDjQ4deFVDYDWywJbni9g212ho4uSJ
-   yvCP8zBd3pg6HhyB5K3TMboTauqOX3BRgGTcImHYNyO/ZhObjlpJk5wrm
-   zWbkTdbkORmio6exrtvcJ9hy0BwilZwwztVktzihIKLTEZ78LocT7/n2j
-   w==;
-X-CSE-ConnectionGUID: bYZrHs/mTrGu/C+zXiVezA==
-X-CSE-MsgGUID: IjQXIBjpSZyesgfR1v5tIg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1090016"
+  bh=UAvQEyO7YcF5XflKLEHcE1A94egeQEcAvUo8vH2B5p8=;
+  b=lpxB26FNf9h2MdNf0QRlvLzA9Ag3UxWx7UlvSOcshLPUMqD/BbClw4Cb
+   Fde4L8CXhElJSDHdJk8IuIWxPVEI7eEOAjHdJoW/72ZqhFQTiI7HMC0lw
+   1Ne0GELkUhtHpVvByXPoRSvf9FwLOKjEp82YBqax7FJVB8j6O8v3UKHSL
+   L36H8wrWcqKfrbmFMN5Ne2BbQpA4LYqCi0F+MnYLK0wlxHvC793/Oh42v
+   eFeQNEcetl9ifGtZdJmDh0F1qlGPBX/God6wjiLhw8ajPa1e/gSiKtUdU
+   ybmbR94/PsDL8fomNBck1Ts/VAYEFZhcAyNVPq/POhD3v7+FbXctpIma+
+   A==;
+X-CSE-ConnectionGUID: +75ddC3CSnC9YH+HYNt+tw==
+X-CSE-MsgGUID: KirXmCmORxCBxoAkM50gNQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1102566"
 X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1090016"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 02:34:12 -0700
-X-CSE-ConnectionGUID: eBrZwxzISSypt/DoBWVmNQ==
-X-CSE-MsgGUID: 7NDFoBuMRj6F6jQQjhuY2Q==
+   d="scan'208";a="1102566"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 02:53:38 -0700
+X-CSE-ConnectionGUID: 0seK9oIfTPqgkhf51t4w/Q==
+X-CSE-MsgGUID: V3lz7EfPRzG6GAcDkbzy+w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2494202"
+   d="scan'208";a="2873703"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 02:34:09 -0700
-Date: Mon, 19 Oct 2026 12:34:07 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 02:53:36 -0700
+Date: Mon, 19 Oct 2026 12:53:33 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>,
-	linux-iio@vger.kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, linux@analog.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] staging: iio: adt7316: use kstrtobool() for sysfs
- boolean parsing
-Message-ID: <atXkD3WIgaeamrh9@ashevche-desk.local>
-References: <20261018143108.14750-1-abdelnasserhussein11@gmail.com>
- <20261019040919.0381d31f@jic23-hlaptop>
+To: Nithishvelan M <mnithishvelan@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: impedance-analyzer: ad5933: use
+ guard(mutex) in ad5933_show()
+Message-ID: <atXoncij2_IrGjZZ@ashevche-desk.local>
+References: <20261018200128.642-1-mnithishvelan@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,31 +65,86 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261019040919.0381d31f@jic23-hlaptop>
+In-Reply-To: <20261018200128.642-1-mnithishvelan@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 19, 2026 at 04:09:19AM +0100, Jonathan Cameron wrote:
-> On Sun, 18 Oct 2026 17:31:08 +0300
-> Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
-> 
-> > Replace manual character checks (e.g., buf[0] == '1') with the standard
-> > kstrtobool() API in sysfs store functions.
-> > 
-> > Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-> Ah. No need to resend just to drop a tag.  I did that on v3.
+On Sun, Oct 18, 2026 at 08:01:27PM +0000, Nithishvelan M wrote:
+> Use guard(mutex) to automatically manage the state lock in
+> ad5933_show(). This simplifies the function by allowing direct returns
+> from each switch case, eliminating the mutable return variables and
+> manual mutex_unlock() calls.
 
 ...
 
-> >  #include <linux/i2c.h>
-> >  #include <linux/rtc.h>
-> >  #include <linux/module.h>
-> > +#include <linux/kstrtox.h>
+>  	switch ((u32)this_attr->address) {
+>  	case AD5933_OUT_RANGE:
+> -		len = sysfs_emit(buf, "%u\n",
+> -				 st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+> -		break;
+> +		return sysfs_emit(buf, "%u\n",
+> +				  st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
 
-May you also move this before rtc.h to keep it a bit more ordered than now?
+Keep it on a single (not so long) line.
 
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/events.h>
+		return sysfs_emit(buf, "%u\n", st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+
+Most likely Sashiko might warn of use ctrl_hb variable as an index without
+checking. So it might make sense to be prepared for that by adding a local
+variable:
+
+		unsigned int ridx = (st->ctrl_hb >> 1) & 0x03;
+
+		return sysfs_emit(buf, "%u\n", st->range_avail[ridx]);
+
+
+>  	case AD5933_OUT_RANGE_AVAIL:
+> -		len = sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
+> -				 st->range_avail[3], st->range_avail[2],
+> -				 st->range_avail[1]);
+> -		break;
+> +		return sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
+> +				  st->range_avail[3], st->range_avail[2],
+> +				  st->range_avail[1]);
+
+Split logically
+
+		return sysfs_emit(buf, "%u %u %u %u\n",
+				  st->range_avail[0], st->range_avail[3],
+				  st->range_avail[2], st->range_avail[1]);
+
+>  	case AD5933_OUT_SETTLING_CYCLES:
+> -		len = sysfs_emit(buf, "%d\n", st->settling_cycles);
+> -		break;
+> +		return sysfs_emit(buf, "%d\n", st->settling_cycles);
+>  	case AD5933_IN_PGA_GAIN:
+> -		len = sysfs_emit(buf, "%s\n",
+> -				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
+> -				 "1" : "0.2");
+> -		break;
+> +		return sysfs_emit(buf, "%s\n",
+
+> +				  (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
+> +				  "1" : "0.2");
+
+A single line
+
+				  (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?  "1" : "0.2");
+
+and, IIRC the operator precedences, the parentheses can be dropped.
+
+>  	case AD5933_IN_PGA_GAIN_AVAIL:
+> -		len = sysfs_emit(buf, "1 0.2\n");
+> -		break;
+> +		return sysfs_emit(buf, "1 0.2\n");
+>  	case AD5933_FREQ_POINTS:
+> -		len = sysfs_emit(buf, "%d\n", st->freq_points);
+> -		break;
+> +		return sysfs_emit(buf, "%d\n", st->freq_points);
+>  	default:
+> -		ret = -EINVAL;
+> +		return -EINVAL;
+>  	}
 
 -- 
 With Best Regards,
