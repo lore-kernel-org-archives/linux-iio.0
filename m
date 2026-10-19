@@ -1,474 +1,190 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.172
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792422181;
+	b=yN/it/ZDc0kb1SuP2MsENbDMdxQhYIgC/dCXxL3gEkmgf3ANbgsA0neyZjaJmV8bXHAH
+	 5oR7teASpsq/UM/G57ocVcfwv9eeEx3AeTULKpkOelvl9XmrwiMDdJr5bQ/JNkGgTYG1z
+	 W3d59N+PlohPnr296Ktet6JBiL4KjLe6zl+HiOQr/QdI+vjOtUV3W5IxQzkNrinM8p7uq
+	 mx8YXgcKenLlEPa5YHAKPd770VpuU9I4/ZD1fH59vQKms1X1+Ltn7bl1L11fHG8pVhp2C
+	 JwK1lv4nKrfyRdZk16YKZ0VbmmAqy1CVXHHxuu3WEofsKxTshT481P6rCReF3YxT4FA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792422181;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=8ggX77WU3hUpk89gP84ckJ0nyPjIYp6mZHbVSorQiSI=;
+	b=TRznc+4E2RrMhJoxjjSoj4xd++o52wJGAE5EaSTgFlDC0SQ5aFiHzagmMwYGjjK3ZbbT
+	 yPqG3GDzUTaIrHUH0iTWvpIXIWOe5yxyGSJkpNkkuBZ0HMz07aIeO4kH42xx5a1e1BCck
+	 rp8YfHvCML1vFSegFyYmBska18r3ASfivXEl9v25Busg8RwipliILms+zcS7AdzSGLbj7
+	 gkP7syjvnTAKWLU/W8YV4ClO6QfvX4WkdnnykI9/mphVGpjW3+Tl4oXJ6w9zMuQ816kJI
+	 5hNrXwNsnhKE0CX0fbuHVWElKM9KjxOl6S17dIOubvckMibLj4ssyAMw2ok2ZmKSTgw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=MrrcT9uf;
+	arc=none smtp.remote-ip=74.125.82.172
+Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8062258278F
-	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 14:34:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792420443; cv=none; b=rLW1aGeCqEj1sOyW2TjDKRzQ2pPKo1f9YBE0hmY8jL3jBJoofoevgyrgkT0/mZMATxKxsRT41t/DDmhHZw7tJX7tpqupbbJHOeg+YyhE2YS8mQzaNE6vsSARelHrQ3mTodRc1sWZpuojT12eVYMpNf7/7nflfmQqP6r5OI4swPM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792420443; c=relaxed/simple;
-	bh=WMSkP6NaFBqM3UEQAOodzeKmxxYYIbT2hmlz+EQiRWQ=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=Rema3mbYhwdL1yYpY+bWdfznSv3/z7UBlxaL+AIogKkVHICuzzSZem5xjNklOv09TL5XiLnr4v2vvw6o7KDO1QiC9wrjUbPfQy3TJJSc2xOUK1FQyfFrGoqUO5h4Pg6DRnOjK6pOAXl5fEFA3XoeEWwMpGPA123hYLg53IytCUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=cJkPGW7Y; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAEE9607D345
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 15:03:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EAEE9607D345
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cJkPGW7Y"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-48e0d1c095dso1162187f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 07:34:01 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=MrrcT9uf
+Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-35c76e9614aso4293544eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 08:03:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1792420440; x=1793025240; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:organization
-         :autocrypt:content-language:references:cc:to:subject:reply-to:from
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=vi+C8vmeCIBFWfg066o+hCBfKjs/sEi6qTNyg3C8MLE=;
-        b=cJkPGW7Yg4+EQ2awTMxWA3DI09cQNt9ChAB2v2JRaPikXJcafqR1aavyMM6p1rfps9
-         iyBAX7q1TgfJ6s4OXj12+kMtbK5gj+02aGRIuLDylWYb2dnJuGdLQ6hzPkEprlFFUFxD
-         YnpTsjqroL08JtxZgd4LZiYWeHOFD4SAMLFwiFihnbEKf9K6IoMMTbLg/XGqZ10FJ/cu
-         zhLTtXOjU+6Ebg3CpnA80Xg+3bggu8Y9dyStpIVjtXXZv8NqdCKXA0R2NYoe16HxDM0q
-         jH+lOF4lqYkCNH2sP4yZ8ySeZQuAMl+8b4UkE7yg1+0jvTX8JZYZfdXt7JEOQu5BkoUz
-         HeYg==
+        d=gmail.com; s=20251104; t=1792422180; x=1793026980; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=8ggX77WU3hUpk89gP84ckJ0nyPjIYp6mZHbVSorQiSI=;
+        b=MrrcT9ufpw/FWHjRmfOLinDhB5piOvvNb9TkNUWnzYizbo/y3DAP+/tN1//zCiHeLj
+         gNi6FhqoYcvQDmhw7rq5Xjbyv7AOSy3pnXDsHpgoaVHzA4Z4PmfRNFDNKjUBWLFQk8gC
+         XOrSes2HX/VD9NP+puVIcUhhLhFG4otSUMwtPxfmhkC2JMoUTaQD7Mo73pvorlNhHz0n
+         bnGV9dGgZH0hcN4uEOnO+aoTKIq0KV38fIbjiKxFilBxwFo6TTxIIAKeHFqHwjM8sJ3C
+         RGD4tUQRpUHt/M++cNCat6hIo+p7VPAp59Ke0xqmNQBoyQrVcH6Z4/uX+Ou++fF3vGJT
+         M9Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792420440; x=1793025240;
-        h=content-transfer-encoding:content-type:in-reply-to:organization
-         :autocrypt:content-language:references:cc:to:subject:reply-to:from
-         :user-agent:mime-version:date:message-id:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=vi+C8vmeCIBFWfg066o+hCBfKjs/sEi6qTNyg3C8MLE=;
-        b=jxw2PGc7uH77euH5tHc58xIF3OaAFt00NOe+DHjAnbWJw9l7vND2op9sHtzsES0TSs
-         3UiTM5pEhZjLTbaut1vgfIbCPm9A7rpUaFoACCBmZA+2epIGfY3A8uMSDvd905aU/R5v
-         NH2Xa21VST6KwdwV5ZWE+tLBizFUjvlpgSloR9W4rOxaW+VUpPOVT493HNwvofw1trE8
-         B7eHAONFe2PDAc0oTBlP9l1zN8olJDjYMRWBUuEBRnWqyIKl6yk7F/FjdceVbukjn2gQ
-         78n4PULNkbiCv2kqSTV11ZimvrJ0bXtZ/n+NOGbX8K0rbBGB9Zz9AJTZSRI4YgKBfKnW
-         JkTg==
-X-Forwarded-Encrypted: i=1; AKwUvByZJYt4HDhAQE2iJ0gI3k87ftgRPpqFet2YPoJd9DhG14nORERFzFNI6M86vmSJrNwyqjzM3WAf9IU=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJHOmQUW3WprWF7O5daWl7s62nU18+cxYsocrU/GYwngyzYSyEh
-	t21lYYt5uZhe5Eh/fsvyNUOXPXeEVnys0Kwcwk9KFuQwGlylXHpD40LooBQ9miI4Xwc=
-X-Gm-Gg: AYBFou3s5dSZ3RYQE8eEbKgMGgCX9X20JDxUkSyeoxID8zf8tKXMc86Oz/jAT6u0FYz
-	QZW1zmBlKgK2EEjalbq3xJG6pA/b507tIgW1e+EHagFaYkcFkUAJaNG81dhI/S4By8xIJAe5DlV
-	1SsaIc6iZF0jbg730iyY87pVXpufzsjHeX715+F8IRTfRRPR7l4+ZZCJYcAcWGj5dzxSNxe+OUn
-	5GHUQr122zAP7ENmaA5dNiRRtg4viJXARXPTDnpBVlEBBNB5zgbE4SfX1kQe8qOCi+0fwB2CaeX
-	Fm36CvFpAdbblQAmx3gxHMXK+5VAvWDEZ3qjB/G/qwajGuUgdJn9vRBFRYdKtE8iVjg1CpipaGg
-	JGGau8LXa+qwCT3hkq2jbLhQBQluXKPi+jKH565s84sj00OaGbEnjcgUiwEoDCFL5dJIrbNPf6M
-	rtwTNs4ye6NfoF9X67eGLZ0vWjQLnwle3ATBFk0IiGnE5P2QtMrk+iVaAfN7c0dhDQUxvDUmWVk
-	lsq/wYXFZUC7VEyorqDEM9L8TcdTYms6TQNK8tInnfLDKl63phwvQ==
-X-Received: by 2002:a05:6000:1003:b0:487:15a3:1cab with SMTP id ffacd0b85a97d-48e07fb2b28mr13519211f8f.18.1792420439452;
-        Mon, 19 Oct 2026 07:33:59 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:106d:1080:3da2:14af:c1c3:cef8? ([2a01:e0a:106d:1080:3da2:14af:c1c3:cef8])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48dfd47104csm26302444f8f.8.2026.10.19.07.33.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Oct 2026 07:33:59 -0700 (PDT)
-Message-ID: <4ea0f567-b090-46f5-a3ea-e5c3ac4f3d1f@linaro.org>
-Date: Mon, 19 Oct 2026 16:33:55 +0200
-Precedence: bulk
+        d=1e100.net; s=20260707; t=1792422180; x=1793026980;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=8ggX77WU3hUpk89gP84ckJ0nyPjIYp6mZHbVSorQiSI=;
+        b=AGMbtB7kFcmOsXtht/ObuSBwY59YTkDAQrdshlmajo0UGaV16MR1slkY0y0wQt1NMa
+         4Jn1Ue2ZvalB2jbgiu3lAGE/ee/2OQsaIRy8fjK0wmarmoeweAnlBA9NxiwlFTIg2Wee
+         tLeiXde+j1DiCt12OjJmOX0XW84Ik1R2MX+sENwSclayQTDbgELq2hekolSz4f6zQFN9
+         4WSb5GmnJV1jP422ylPgkFxrcTujRSwGeQsm2PtyeghSBzQYEvZOWN0RmCBDYzINmef1
+         zp84AIGbzIb3q53rkQnrTLVZQKpR0r2OTo3Tbx6XdTRLFXF6CEeuGGyF91xtkiUcqpYh
+         vY5Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxxNKkjXkidX8at+lxJKEpCytYdGZQVyyaxh3ExL0gdH5ffvpx2K3JhOAmBu2sCkWKBUMGDgBUeGVA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYK22AdLLt7kiVr4PCv0OCzp9q9UyQDHL7H3KdUmse0yWGBpyfSy
+	alaTGrGNP4dxdBRlvwnls8WQ3b+1KLfDgZCX01iN+qKSQNwafu+y1NNZ
+X-Gm-Gg: AYBFou1F35UiCXMWZj/PXKG55y08dBmTflsdAIHmm4N5h/3LgX7R0Bbk94fpzIPjS6L
+	npJjTM/rrzf1TKWfmp8jWyBebwoes/AslFDoORmRZ7Qg1JxV9wQgx94KBMctIHarD7lpD45SQfR
+	Wp4vmMhBkkwYnSUNNKys+r1LAw+yi1me2btrrg2yjjKq+cZ4MrQUAqxiyZI05pbUCfSyLRN5WqG
+	Bnoz+e88Pa3KFQyHuY3NVNerySSSxfK6GD7tlBQNW497E8Bltm3jyEvyzNd044Wr8hkmSOoeiFv
+	UkYrCfcjU+3ozczNyCV1yHFm8tl00r5TmfmRGODTETS/11SvvUqOnyFHwmhbR4UEXyc+QX4muzw
+	+0MVNhbPL1uoR48FSv5/DFg4H5b6xTFFzxj5+YuI90m0tYh3M+Sp5L43IQxrigsSLZEde/pBYkN
+	n7bUifjnfPCGYGop371YsSqYe78siX4GzvpbqZtDe+xMhm4AuAxjeCCvvBfIS9WEBPfd1bkcNo9
+	B1l9tpXbtgJuf4QAAEzKQ==
+X-Received: by 2002:a05:7301:6497:b0:35e:5f8f:9665 with SMTP id 5a478bee46e88-361a254373dmr12519563eec.29.1792422179073;
+        Mon, 19 Oct 2026 08:02:59 -0700 (PDT)
+Received: from NithishVelan.localdomain ([152.57.90.98])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3608258aa66sm41480843eec.20.2026.10.19.08.02.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 08:02:58 -0700 (PDT)
+From: Nithishvelan M <mnithishvelan@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nuno Sa <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Nithishvelan M <mnithishvelan@gmail.com>
+Subject: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use guard(mutex) in ad5933_show()
+Date: Mon, 19 Oct 2026 15:02:48 +0000
+Message-ID: <20261019150248.416-1-mnithishvelan@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
+List-Post: <mailto:linux-iio@vger.kernel.org>
+List-Help: <mailto:linux-iio+help@vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
+List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
+Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: Neil Armstrong <neil.armstrong@linaro.org>
-Subject: Re: [PATCH v3 3/3] iio: adc: add driver for the MAX34417 Four-Channel
- High Dynamic Range Power Accumulator
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-hwmon@vger.kernel.org
-References: <20261013-topic-sm8x50-iio-max34417-adc-v3-0-d3604ae4a229@linaro.org>
- <20261013-topic-sm8x50-iio-max34417-adc-v3-3-d3604ae4a229@linaro.org>
- <20261017234746.4af7b7f6@jic23-hlaptop>
-Content-Language: en-US, fr
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro
-In-Reply-To: <20261017234746.4af7b7f6@jic23-hlaptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi,
+Use guard(mutex) to automatically manage the state lock in
+ad5933_show(). This simplifies the function by allowing direct returns
+from each switch case, eliminating the mutable return variables and
+manual mutex_unlock() calls.
 
-On 10/18/26 00:47, Jonathan Cameron wrote:
-> On Tue, 13 Oct 2026 16:07:13 +0200
-> Neil Armstrong <neil.armstrong@linaro.org> wrote:
-> 
->> The MAX34417 is a specialized current and voltage monitor used to
->> determine power consumption of portable systems. The driver support
->> getting the channels voltage, average power and accumulated average
->> power and energy over an I2C/SMBUS serial interface.
->>
->> The MAX34417 datasheet only specified on how to calculate the
->> accumulated average power, but with the Sample Per Second rate
->> we can easily get accumulated Energy in mJ.
->>
->> By default the IIO driver only supports single-shot Voltage
->> and Power sensing, but the accumulation can be enabled by
->> enabling the Energy IIO channel which then enables the
->> Continuous Accumulation Mode.
->>
->> The counter is common to all channels, so when reading a single
->> channel we will copy all accumulators to registers, so in order
->> to permit reading individual channels we must accumulate the
->> other channels in the driver when Continuous Accumulation Mode
->> is enabled.
->>
->> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> 
-> Reminder to check sashiko.  I haven't looked at whether they
-> are right this time.
-> https://sashiko.dev/#/patchset/20261013-topic-sm8x50-iio-max34417-adc-v3-0-d3604ae4a229%40linaro.org
-> 
+Signed-off-by: Nithishvelan M <mnithishvelan@gmail.com>
+---
+Changes in v2:
+ - Extract range index into local variable 'ridx' to prevent static
+   analysis warnings (Andy Shevchenko)
+ - Keep short return sysfs_emit() call on a single line (Andy Shevchenko)
+ - Split AD5933_OUT_RANGE_AVAIL arguments logically across lines (Andy Shevchenko)
+ - Remove redundant parentheses in AD5933_IN_PGA_GAIN ternary (Andy Shevchenko)
 
-I did and there's some good catches
+ .../staging/iio/impedance-analyzer/ad5933.c   | 38 ++++++++-----------
+ 1 file changed, 15 insertions(+), 23 deletions(-)
 
->> diff --git a/drivers/iio/adc/max34417.c b/drivers/iio/adc/max34417.c
->> new file mode 100644
->> index 000000000000..00d7f20cd953
->> --- /dev/null
->> +++ b/drivers/iio/adc/max34417.c
-> 
->> +/* TODO Implement trigger to update accumulator once and get all channels at once */
->> +
->> +static int max34417_reset_smm(struct max34417_data *max34417)
->> +{
->> +	u32 control;
->> +	int rc;
->> +
->> +	rc = regmap_read(max34417->regmap, MAX34417_CONTROL_REG, &control);
->> +	if (rc)
->> +		return rc;
->> +
->> +	/* Set SMM=0 to re-init the SMM mode */
->> +	control &= ~(MAX34417_CONTROL_SMM);
->> +	rc = regmap_write(max34417->regmap, MAX34417_CONTROL_REG, control);
->> +	if (rc)
->> +		return rc;
->> +
->> +	/* Reset accumulators after setting SMM=0 */
->> +	rc = regmap_write(max34417->regmap, MAX34417_UPDATE_REG, 1);
-> return regmap_write()
-> 
-> Might as well save a few lines.
-> 
->> +	if (rc)
->> +		return rc;
->> +
->> +	return 0;
->> +}
-> 
-> 
->> +
->> +static int max34417_check_ovf(struct max34417_data *max34417)
->> +{
->> +	u32 control;
->> +	int rc;
->> +
->> +	/* Check for overflow */
-> 
-> Given function name and the check below, not seeing value in this comment.
-> 
->> +	rc = regmap_read(max34417->regmap, MAX34417_CONTROL_REG, &control);
->> +	if (rc)
->> +		return rc;
->> +
->> +	if (control & MAX34417_CONTROL_OVF) {
->> +		rc = regmap_write(max34417->regmap, MAX34417_CONTROL_REG,
->> +				  control & ~MAX34417_CONTROL_OVF);
->> +		if (rc)
->> +			return rc;
->> +
->> +		rc = regmap_write(max34417->regmap, MAX34417_UPDATE_REG, 1);
->> +		if (rc)
->> +			return rc;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +/*
->> + * Save all power accumulators and counter after each UPDATE command
->> + * since it will reset the internal registers for ALL channels,
->> + * so in order to not loose any captured data we retrieve all registers
->> + * and accumulate them in the context variables.
->> + * When user gets either power or energy, those variables content
->> + * will be returned and zero-ed to return the power accumulated
->> + * since last read for each separate channel.
->> + */
->> +static int max34417_save_accumulators(struct max34417_data *max34417)
->> +{
->> +	unsigned int i;
->> +	u64 acc_power;
->> +	u32 acc_count;
->> +	int rc;
->> +
->> +	rc = max34417_read_acc_count(max34417, &acc_count);
->> +	if (rc)
->> +		return rc;
->> +
->> +	for (i = 0; i < MAX34417_CHANNEL_COUNT; ++i) {
->> +		rc = max34417_read_acc_power(max34417, MAX34417_PWR_ACC_1_REG + i,
->> +					     &acc_power);
->> +		if (rc)
->> +			return rc;
->> +
->> +		max34417->acc_power[i] += acc_power;
->> +		max34417->acc_count[i] += acc_count;
->> +	}
->> +
->> +	/* Check for overflow */
->> +	rc = max34417_check_ovf(max34417);
-> 
-> return max34417_..
-> 
->> +	if (rc)
->> +		return rc;
->> +
->> +	return 0;
->> +}
-> 
-> 
->> +
->> +static int max34417_setup_cam_mode(struct max34417_data *max34417, int val)
->> +{
->> +	u32 control;
->> +	int rc, i;
->> +
->> +	guard(mutex)(&max34417->lock);
->> +
->> +	rc = regmap_read(max34417->regmap, MAX34417_CONTROL_REG, &control);
->> +	if (rc)
->> +		return rc;
->> +
->> +	if (max34417->cam_mode && !val) {
->> +		/* SMM and CAM modes should not be enabled at the same time */
->> +		control &= ~(MAX34417_CONTROL_CAM | MAX34417_CONTROL_SMM);
-> 
-> The comment doesn't makes sense given neither are enabled.
-
-It's just some phrases from the Datasheet to pin point the process, will drop
-
-> 
->> +		rc = regmap_write(max34417->regmap, MAX34417_CONTROL_REG, control);
-> 
-> Feels like it would be cleaner as an update_bits() here and below rather than
-> sharing that read above.
-
-Yep will switch to _bits regmap ops
-
-> 
->> +		if (rc)
->> +			return rc;
->> +
->> +		/*
->> +		 * If CAM mode must be set, the Control byte must be set to
->> +		 * desired values with CAM = 0, then followed by an UPDATE
->> +		 */
->> +		rc = regmap_write(max34417->regmap, MAX34417_UPDATE_REG, 1);
->> +		if (rc)
->> +			return rc;
->> +	} else if (!max34417->cam_mode && val) {
->> +		/*
->> +		 * After this, the CAM mode bit can be set and another
->> +		 * UPDATE must be sent.
->> +		 */
->> +		control |= MAX34417_CONTROL_CAM;
->> +		/* SMM and CAM modes should not be enabled at the same time */
->> +		control &= ~(MAX34417_CONTROL_SMM);
-> 
-> As above, perhaps an update_bits is simpler?
-> 
->> +		rc = regmap_write(max34417->regmap, MAX34417_CONTROL_REG, control);
->> +		if (rc)
->> +			return rc;
->> +
->> +		rc = regmap_write(max34417->regmap, MAX34417_UPDATE_REG, 1);
->> +		if (rc)
->> +			return rc;
->> +
->> +		/* Reset counters and accumulators */
->> +		for (i = 0; i < MAX34417_CHANNEL_COUNT; ++i) {
->> +			max34417->acc_power[i] = 0;
->> +			max34417->acc_count[i] = 0;
->> +		}
->> +	}
->> +
->> +	max34417->cam_mode = val;
->> +
->> +	return 0;
->> +}
-> 
-> 
-> 
->> +static int max34417_probe(struct i2c_client *client)
->> +{
->> +	struct device *dev = &client->dev;
->> +	struct max34417_data *max34417;
->> +	struct iio_dev *indio_dev;
->> +	struct regmap *regmap;
->> +	int rc, i;
->> +
->> +	regmap = devm_regmap_init_i2c(client, &max34417_regmap_config);
->> +	if (IS_ERR(regmap))
->> +		return dev_err_probe(dev, PTR_ERR(regmap), "regmap_init failed\n");
->> +
->> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*max34417));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	rc = devm_regulator_get_enable(dev, "vdd");
->> +	if (rc)
->> +		return dev_err_probe(dev, rc, "failed to get vdd regulator\n");
->> +
->> +	rc = devm_regulator_get_enable(dev, "vio");
->> +	if (rc)
->> +		return dev_err_probe(dev, rc, "failed to get vio regulator\n");
->> +
->> +	max34417 = iio_priv(indio_dev);
->> +	max34417->regmap = regmap;
->> +	max34417->dev = dev;
->> +	max34417->indio_dev = indio_dev;
->> +	mutex_init(&max34417->lock);
->> +
->> +	/* Set default input correction for all channels */
->> +	for (i = 0; i < MAX34417_CHANNEL_COUNT; ++i)
->> +		max34417->input_correction[i] =
->> +			max34417_calc_input_correction(MAX34417_DEFAULT_RSENSE);
->> +
->> +	device_for_each_child_node_scoped(dev, node) {
->> +		u32 rsense, index;
->> +
->> +		if (!fwnode_property_present(node, "reg"))
->> +			return dev_err_probe(dev, -EINVAL, "missing reg property of %pfwP\n",
->> +					     node);
-> 
-> Bit unusual to check for a property that must be there.
-> We tend to use present checks for optional properties. Is the
-> following failure path not enough?
-
-It should, I maybe added too much checks, will drop.
-
-> 
->> +
->> +		rc = fwnode_property_read_u32(node, "reg", &index);
->> +		if (rc)
->> +			return dev_err_probe(dev, rc, "failure reading reg property of %pfwP\n",
->> +					     node);
->> +
->> +		if (index >= MAX34417_CHANNEL_COUNT)
->> +			return dev_err_probe(dev, -EINVAL, "invalid reg %d of %pfwP\n",
->> +					     index, node);
->> +
->> +		if (fwnode_property_present(node, "label")) {
->> +			rc = fwnode_property_read_string(node, "label",
->> +							 &max34417->input_label[index]);
->> +			if (rc)
->> +				return dev_err_probe(dev, rc,
->> +						"failure reading label property of %pfwP\n",
->> +						node);
->> +		}
->> +
->> +		if (fwnode_property_present(node, "shunt-resistor-micro-ohms")) {
->> +			rc = fwnode_property_read_u32(node, "shunt-resistor-micro-ohms",
->> +						      &rsense);
->> +			if (rc)
->> +				return dev_err_probe(dev, rc,
->> +						"failure reading shunt property of %pfwP\n",
->> +						node);
->> +
->> +			if (!rsense || rsense < MAX34417_MIN_RSENSE ||
-> 
-> Is !rsense useful given that is less than min?
-
-Indeed. leftover from previous version
-
-> 
->> +			    rsense > MAX34417_MAX_RSENSE)
->> +				return dev_err_probe(dev, -EINVAL,
->> +						     "invalid shunt value %d of %pfwP\n",
->> +						     rsense, node);
->> +
->> +			max34417->input_correction[index] =
->> +				max34417_calc_input_correction(rsense);
->> +		}
->> +	}
->> +
->> +	indio_dev->channels = max34417_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(max34417_channels);
->> +	indio_dev->name = "max34417";
->> +	indio_dev->info = &max34417_info;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +	rc = devm_iio_device_register(dev, indio_dev);
->> +	if (rc)
->> +		return rc;
->> +
->> +	/* Reset mode and set accumulator width to Wide */
-> 
-> The docs refer to this as choosing between the max34417 and the max34407.
-> Any idea what that is going on about?  Is it that the setting this to 0 would
-> make the device look just like the part with small accumulator?
-> Seems like an easy win if you fancy adding support for that part as well as
-> this would be the main difference I think (it's reserved on that part to 0)
-> 
-> Anyhow, just made me curious rather than a request to change anything!
-
-Indeed, I don't feel confident enough to add max34407 support, but I can definitely
-add a comment pointing this is the main difference between max34417 & max34407.
-
-> 
->> +	rc = regmap_write(max34417->regmap, MAX34417_CONTROL_REG, MAX34417_CONTROL_MODE);
->> +	if (rc)
->> +		return dev_err_probe(max34417->dev, rc, "Error writing control register\n");
->> +
->> +	/* Reset the accumulators */
->> +	rc = regmap_write(max34417->regmap, MAX34417_UPDATE_REG, 1);
-> 
-> return regmap_write();
-> 
-> Though I'm not sure why you'd do these two after setting up the userspace
-> interface (iio_device_register). Is there no potential race where something
-> related to the accumulators gets read before they are reset?  Seems that would look
-> a little more odd than the other way around where they aren't quite
-> zero when they first become readable.
-
-Yep, will move before,
-
-Thanks,
-Neil
-
-> 
->> +	if (rc)
->> +		return rc;
->> +
->> +	return 0;
->> +}
-> 
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 798e62bae2..7c3af47e0c 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+@@ -333,39 +334,30 @@ static ssize_t ad5933_show(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret = 0, len = 0;
++	unsigned int ridx;
++
++	guard(mutex)(&st->lock);
+ 
+-	mutex_lock(&st->lock);
+ 	switch ((u32)this_attr->address) {
+ 	case AD5933_OUT_RANGE:
+-		len = sysfs_emit(buf, "%u\n",
+-				 st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+-		break;
++		ridx = (st->ctrl_hb >> 1) & 0x03;
++		return sysfs_emit(buf, "%u\n", st->range_avail[ridx]);
+ 	case AD5933_OUT_RANGE_AVAIL:
+-		len = sysfs_emit(buf, "%u %u %u %u\n", st->range_avail[0],
+-				 st->range_avail[3], st->range_avail[2],
+-				 st->range_avail[1]);
+-		break;
++		return sysfs_emit(buf, "%u %u %u %u\n",
++				  st->range_avail[0], st->range_avail[3],
++				  st->range_avail[2], st->range_avail[1]);
+ 	case AD5933_OUT_SETTLING_CYCLES:
+-		len = sysfs_emit(buf, "%d\n", st->settling_cycles);
+-		break;
++		return sysfs_emit(buf, "%d\n", st->settling_cycles);
+ 	case AD5933_IN_PGA_GAIN:
+-		len = sysfs_emit(buf, "%s\n",
+-				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
+-				 "1" : "0.2");
+-		break;
++		return sysfs_emit(buf, "%s\n",
++				  st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1 ? "1" : "0.2");
+ 	case AD5933_IN_PGA_GAIN_AVAIL:
+-		len = sysfs_emit(buf, "1 0.2\n");
+-		break;
++		return sysfs_emit(buf, "1 0.2\n");
+ 	case AD5933_FREQ_POINTS:
+-		len = sysfs_emit(buf, "%d\n", st->freq_points);
+-		break;
++		return sysfs_emit(buf, "%d\n", st->freq_points);
+ 	default:
+-		ret = -EINVAL;
++		return -EINVAL;
+ 	}
+-
+-	mutex_unlock(&st->lock);
+-	return ret ? ret : len;
+ }
+ 
+ static ssize_t ad5933_store(struct device *dev,
+-- 
+2.53.0
 
