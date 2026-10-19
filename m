@@ -1,45 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261234CF490;
-	Mon, 19 Oct 2026 02:07:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 777EC35C1B1;
+	Mon, 19 Oct 2026 02:13:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792375653; cv=none; b=PBUIqAPDStTXHc1CGp2jD3Jq5D8T50i/zcDyq9mj4fhInKcVU9+MuqTlNHmjsMhJDi1njO9VuKzlrHMVx7x+w9UKUBl67aUVieNJDzj4jU/YjChmwOL6etnALhCk/0S+blEak6FYemkOWRqrkpEmbjzqRgD+Bj8Fh13wYMyivDM=
+	t=1792376020; cv=none; b=VtVeHdWYXKkpZkeuE1rV2jZkTmi/haIYr8J9EGh1edr7ZMFVtorSMJvNlFe7Q1hf5aHYUc9liS/+t0oRlATD7VU/10Urw9Jpubx9xoTmzXoChbYIQc+9ONWpUNOJtxqQKry7x0SdrLhsNJEBSEcs9PnsC/o7DdVOPHl+F5fCFHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792375653; c=relaxed/simple;
-	bh=A86l9dEsEPatM7NXqHEAD95dwG+3AkAV6PzK+X64M7w=;
+	s=arc-20240116; t=1792376020; c=relaxed/simple;
+	bh=wxDdBy0anSXi0XacyEa0RDHc47kzkwLEQAmg0kUTRwE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sojx1cYGUtS0oI8w7RtYUSOhZiYcOsxCqltKdTY5AS7EfV4NI5TOHUl0GzsCSMJAauYdgqXZobIo4JacrfqRhuvQxaI7gvviL1wStj0/ncSKYIdXWNdLIIewcSkDcL6+Msp6HXX8Sm1yuNo800Ba506YEmdhFFvIEYysWz6UnAM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FLpv3oET; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LqlJJytt5HwY1Tr8RT0XuTdGCyx9EziO0QXMGK7g3EgTlKLQjeX/AN5wF/F5YRL0Bf2QRH6qRbwq6Y1TdmXMdm0KHfvdAYJb/aAnpWFeIK8s0BqlE4HrEAkO5y5fOm30kqXB2Uge4CYNeMwj45bVJZga2w7/VFVpIGx9B/9c508=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GKU6Xjhh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FLpv3oET"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA961F000C4;
-	Mon, 19 Oct 2026 02:07:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GKU6Xjhh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F52E1F000C4;
+	Mon, 19 Oct 2026 02:13:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792375651;
-	bh=8ip6f8qGfEHT4Vcgxv8eqcl4CD3K4VIOqut2jNShi5o=;
+	s=k20260515; t=1792376019;
+	bh=OTeAHhDu6rLdIC+c7Ig9cS6MPdi5FFeMFdNOO55dM1c=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FLpv3oETC5nlyi4gad6kHpR/KcWu4jo85cyE2PGVkuYS2vHs52yNtvyhmcnAYBX1b
-	 JRPdbJNLMaBrcz0VUnP1twH4zz9n7CwqE5XxWVTNV4AIiz6WOGaXTeOj3vLhWlETm6
-	 ijkw7wI33jIjGVaRm7py1abdxBRN0HwgNjvHFQCfh0Uyjyg7LlOOlhGM1HGtlJn23G
-	 qxgSKW1emTGqUcRK5br5jqTwV1Xh2rz0+zCCiXKTpnrXPelQP/ieXduohcEA0y+I5l
-	 biWOMTAL8/yogP/LfuwwOpAFVrVDoUQlqq2ifAITRXafj+kRV/+MgFMtSsOm8BOCo8
-	 RwhBTWfATsD2g==
-Date: Mon, 19 Oct 2026 03:07:25 +0100
+	b=GKU6XjhhijXdkLvmKWqe2lHLbB69e8YJyKEBgRBXBX0UKQ9bA6S9G+Om7USxlUmSe
+	 0pQX1fEdIOiBPTfh2TQf6BFvoNNh9Ga0CwTWmPoeeEQcp3d9kVQVatwi84yNU75fD3
+	 rwxyaZcB1ozG7EuT5EpDA/o1xO+w/wN4s4C7IaxDzKSuZuC+TQJXSy2+EL9wOSJzM5
+	 AV+CEses5L1/LgQBDoJVCtXOCizpoHWfDmsJC/Nc1g9v11BEr+Z7/Xm2wfBPrTWM4x
+	 DkE92auy1x01Gcu2YXObxGdnKnjqOizVA83Mw/k7G3lFUiEJs+taTrAmvtC1vDggBi
+	 07MykhZB0Xhnw==
+Date: Mon, 19 Oct 2026 03:13:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jared Wuerzburger <jwuerz@gmail.com>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Samuel Dionne-Riel <samuel@dionne-riel.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: imu: st_lsm6dsx: Add ACPI ID SMOCF05 for
- LSM6DS3TR-C
-Message-ID: <20261019030725.72670a4f@jic23-hlaptop>
-In-Reply-To: <20260928210648.17166-3-jwuerz@gmail.com>
-References: <20260928210648.17166-1-jwuerz@gmail.com>
-	<20260928210648.17166-3-jwuerz@gmail.com>
+To: Ryan Brue <ryanbrue.dev@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Lee
+ Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ mfd@lists.linux.dev, Roman Vivchar <rva333@protonmail.com>, Luca Leonardo
+ Scorcia <l.scorcia@gmail.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v4 2/3] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
+ driver
+Message-ID: <20261019031333.1010682f@jic23-hlaptop>
+In-Reply-To: <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-2-23533a0d30e3@gmail.com>
+References: <20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-0-23533a0d30e3@gmail.com>
+	<20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-2-23533a0d30e3@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,79 +56,106 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 28 Sep 2026 16:06:48 -0500
-Jared Wuerzburger <jwuerz@gmail.com> wrote:
+On Mon, 28 Sep 2026 15:57:20 -0500
+Ryan Brue <ryanbrue.dev@gmail.com> wrote:
 
-> From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+> The mt6397 AUXADC is a 10-bit ADC behind the SoC's PMIC wrapper. On boards
+> built around this PMIC it is the only way to read the battery: the SoC's
+> AUXADC is wired to board thermistors and the charger ICs these boards use
+> have no ADC of their own.
 > 
-> The Minisforum V3 and V3 SE tablets declare their ST LSM6DS3TR-C IMU in
-> the DSDT with the hardware ID SMOCF05 instead of SMO8B30, so the driver
-> never binds and the accelerometer and gyroscope are missing. The
-> Windows driver (version 1.0.4.3) binds the LSM6DS3TR-C to both IDs.
+> Add a driver exposing the battery voltage and battery temperature
+> channels. Only those two are described, so a channel ID in the device tree
+> indexes the driver's channel array rather than the PMIC's channel number,
+> as mt6323-auxadc does. The ready bit lives in a channel's raw result
+> register, but the value comes from the chip's factory-calibrated copy.
 > 
-> The device has two I2C resources for the same address; the I2C core
-> uses the first one.
+> The battery voltage is measured through ISENSE, because a board with a
+> switching charger in the power path leaves BATSNS on the charger's system
+> rail instead of on the pack. The thermistor only reads correctly with the
+> PMIC's battery-detect bias and input buffer enabled, which take 20 ms to
+> settle. Both are switched back off afterwards.
 > 
-> The vendor-specific SLA0/SLG0 matrix methods in the DSDT are not parsed,
-> because SLA0 is not usable as a mount matrix as it is. Its X and Y signs
-> are right, but it also negates Z. It follows the Windows sensor
-> convention, which reports Z = -1g with the screen facing up, while
-> iio-sensor-proxy uses the same X and Y signs but expects Z = +1g in that
-> posture. Applied as a mount matrix, SLA0 gives correct screen rotation,
-> but iio-sensor-proxy reports the tilt inverted. The actual mounting is a
-> plain 180 degree rotation about Z (-1 0 0; 0 -1 0; 0 0 1), with which
-> orientation and tilt are both right. As for SMOCF00, the matrix is
-> therefore provided by the systemd hwdb instead.
+> Reads average sixteen conversions in software; the chip's sample
+> accumulator makes no measurable difference at any setting, so it is left
+> at one sample per conversion.
 > 
-> Tested on:
->  - V3 SE (Ryzen 7 7735U, BIOS 1.03) with this change.
->  - V3 (Ryzen 7 8840U, BIOS 1.06), kernel 7.2.7, with this change and
->    the stock firmware tables. The driver binds to i2c-SMOCF05:00, the
->    WHO_AM_I check passes (0x6a), and both lsm6ds3tr-c_accel and
->    lsm6ds3tr-c_gyro are registered. Screen auto-rotation and tilt work
->    with iio-sensor-proxy and the matrix above (checked with the device
->    renamed to SMO8B30 via a DSDT override, i.e. the same
->    ST_LSM6DS3TRC_ID driver data).
-> 
-> Closes: https://github.com/mudkipme/awesome-minisforum-v3/issues/2
-> Signed-off-by: Samuel Dionne-Riel <samuel@dionne-riel.com>
-> [Jared Wuerzburger: rewrote the changelog with test results and the
->  mount matrix rationale, converted the entry to C99 initializers,
->  dropped the mount matrix patch]
 > Assisted-by: LLM
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Jared Wuerzburger <jwuerz@gmail.com>
-> ---
-> 
-> Notes:
->     Jonathan, the full DSDT excerpt is in the cover letter; a Link: to the
->     series (or b4 shazam -M) would keep it reachable from the commit.
+> Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
+Hi Ryan
 
-Ah. I was working backwards in time today and applied a patch equivalent
-to your patch 1 from someone else.  So just this one applied on top
-of that.
+Sorry for the delay.
 
-Sorry about that!  I tend to work backwards when I'm way behind as
-a lot of older threads have already resolved themselves :)
+Just one thing inline. If I wasn't tired from a long day
+of review I might just have made the change and asked you
+to check it. So bad luck on that!
 
 Thanks,
 
 Jonathan
 
-> 
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> index c4097ce2bf..11e5ec3798 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> @@ -145,6 +145,7 @@ MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
->  static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
->  	{ .id = "SMO8B30", .driver_data = ST_LSM6DS3TRC_ID },
->  	{ .id = "SMOCF00", .driver_data = ST_LSM6DSO_ID },
-> +	{ .id = "SMOCF05", .driver_data = ST_LSM6DS3TRC_ID },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(acpi, st_lsm6dsx_i2c_acpi_match);
+> diff --git a/drivers/iio/adc/mt6397-auxadc.c b/drivers/iio/adc/mt6397-auxadc.c
+> new file mode 100644
+> index 000000000000..8d1702658876
+> --- /dev/null
+> +++ b/drivers/iio/adc/mt6397-auxadc.c
+
+> +static void mt6397_auxadc_release(struct mt6397_auxadc *adc,
+> +				  const struct iio_chan_spec *chan)
+> +{
+> +	/* Lowering START leaves the converter unarmed between reads. */
+> +	regmap_clear_bits(adc->regmap, MT6397_AUXADC_CON1, MT6397_AUXADC_CON1_START);
+> +
+> +	if (chan->channel == MT6397_AUXADC_ISENSE)
+> +		mt6397_auxadc_isense_disable(adc);
+> +	else
+> +		mt6397_auxadc_battemp_bias_off(adc);
+> +}
+> +
+> +static int mt6397_auxadc_read_channel(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      int *val)
+> +{
+> +	struct mt6397_auxadc *adc = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&adc->lock);
+> +
+> +	if (chan->channel == MT6397_AUXADC_ISENSE) {
+> +		ret = mt6397_auxadc_isense_enable(adc);
+> +		if (ret)
+> +			goto out_release;
+> +
+> +		fsleep(MT6397_AUXADC_ISENSE_SETTLE_US);
+> +	} else {
+> +		ret = mt6397_auxadc_battemp_bias_on(adc);
+> +		if (ret)
+> +			goto out_release;
+> +
+> +		fsleep(MT6397_AUXADC_BATTEMP_SETTLE_US);
+> +	}
+> +
+> +	ret = mt6397_auxadc_read_burst(adc, chan, val);
+> +
+> +out_release:
+> +	mt6397_auxadc_release(adc, chan);
+This ends up rather confusing.  Would you mind instead doing it as a pair of helpers
+and a top level bit of code that does.
+
+	guard(mutex)(&adc->lock);
+	if (chan->channel == MT6397_AUXADC_ISENSE) {
+		return mt6397_auxadc_isense_read();
+	else
+		return mt6397_auxadc_battemp_read();
+
+
+The only thing that get duplicated is the call to read_burst()
+which seems simpler than having a pair of if / else on the channel
+(one hidden in this release).
+
+> +	mutex_unlock(&adc->lock);
+> +
+> +	return ret;
+> +}
+
 
