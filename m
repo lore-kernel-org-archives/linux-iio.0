@@ -1,70 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792436112;
-	b=e3ezjREK2c87stC5j9Egu8u5Sjvu3RQXDHxYNBExSdFLKnuPxspt6blyXploSIp7kqLb
-	 FSvFx+Tt2CeLh2lxdb2tQjQG5kWKvZPEPUbjdPn+zjfP4XM9hmvgHDd8Dwp9sAeKs0xFr
-	 LvdYxPqN8BPlbxS0LawcGqxM23JEqj7v8AObepjhKehF6w/5D/r2do3lAr5bK/4emUZMi
-	 4Uk9MTkbDK59GK2yKaSxLwkOt5lnSkV8QrY7JpLDt4OM3wfmvcMaJ6qHdM+AayP4cOdqY
-	 S2uajh2qhgbUie/c/8Uegf7tTPPbVQ5Zb61MvQOD9iu98xzuQ+3lxcNKAZMlTEWvLMA==
+	t=1792436643;
+	b=YVzw2eeCthL4RZ1plAwvMPqYbcid0zy4qPOlYTIZ3IsrcK07p52Vw8rMNQvw08ygvAPA
+	 7RNG3K/YlrdmC7KHgeozOTMDyG7pFPRHxs9AeHPl7W4xTQEyhlGPtArGgbRZMnV9NJQMb
+	 gCNmbFzC2+kJDcbS2pK62QvnrPVjpohblqZWLlz+JdF3IYQcTayofHqXX4kh0LgVIySv2
+	 7o0vjE51QUTrnGU9c9Ox4ZA4fRCC7peQOFqCPU5pBe2f0lgIgL/PlwLhT3noSfhDZW/w6
+	 wJj8nPHBVI6pZBeLJ8e3UeUGG6OXMQGGUs5wtzz51/Nv+os5ZvZGEpLSajZ18w/IhhA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792436112;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=2RmZPFBfj7v4b5aamDYgEDfYQqHkIotKYcIH5uShXek=;
-	b=kxR+vAEgZ/EhesFRPO9PzYfRg719Y3I9wYj3ZrG4yJ+GGt1JuiDd3SJ/xrSttcMHTyi9
-	 iEbr4pUtG1OEorFlagPLg0XFZ7GrMcMV0dsrad/NQ21KU7x1vRXywEG/qBgsvqsSiGuMd
-	 e3QoMXhkY28tmMH0IX3CNHNHzA8YLSMcx0NMIewCpuQAR9xWA7Nn+q4rNRqFcYO/lsHtw
-	 gFVP1VZzkPpLQgUeyCSXiPSfSs+3/O/1/ePLdPkKqLBQWBWVAVhIWknDaaYnurD0DnvNj
-	 9SfuDKDccx0E1+9y4PKJgytmKklUu884AOlKZPcES64cBKwyXQYejd2OcKYAEBW3k3g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792436643;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=dL8ZGUobikYXfeavA/hCoH0m0XNsNI0h4JXi+H04Ge4=;
+	b=w1byPiLT3QicaMDc74213dnBVHuBU1VcGZv0Xh7+zfv77Z2sCKWhcC8Pm15yPThdv50J
+	 XAyrLAgGAoxIUPhgXHXgrchOYicDb/vaIu5sCRSQuC1KH4MhXjHOWA9td7LHzTywQI7Go
+	 erxwMg+nP68KeCSeszZNSCfM97abVDF/EaZLhTj6AVbAe9R/NbaSU87vA0swTpnkt0NBP
+	 UXT29YuZ4MvjyFSJeU4uuAVbZ5aGYe02vmKmexaRjbZsnf2z0bnIO4lnyZbZU0ENX/FUC
+	 ICQxWY98KZEwpM/FC7dW5uAsO2ec6ILDbxJfpo7JNPLDIZyFldwAoGjPFVD8ty7k7Bg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XHfKuVM9;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Liz8OJdp;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE4DA606A31D;
-	Mon, 19 Oct 2026 18:55:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E2CC606A320;
+	Mon, 19 Oct 2026 19:04:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E2CC606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XHfKuVM9
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A87211F000C4;
-	Mon, 19 Oct 2026 18:55:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792436111;
-	bh=2RmZPFBfj7v4b5aamDYgEDfYQqHkIotKYcIH5uShXek=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XHfKuVM95PPcz3dVwQJiCtFfo4RGV7OrTiZGSwVsbdpwdWZ+Dk0FbIR17Z0WIhpxl
-	 HHljZZZoG2Xkh9t6s8KrFS3GRWxWuw7hKwHE3LYCWxTDmJcZsVBDQCbAFO6iMD80GZ
-	 9wwUXN7PXUYC3B1HlTUpgR/jjoj4UgmqYKPxPZ27Qh3f9GRO10vniu1END3opd9mD9
-	 NbTNx90GoImBvwTiZ+0gGV33dGGlOzXXkKK6HmNDxO3YCJIIuCGfJyFPHro9N15b1Y
-	 BSAkPmN/yPXQLiQe6bKpZQbAy8DsdvkYRgAHj6tlrU62bWCMbQKc31a9WEoFa8hXTZ
-	 CcZpn8jpFDZiQ==
-Date: Mon, 19 Oct 2026 19:55:06 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: add bindings for stm32 mdf
- filter
-Message-ID: <20261019-puzzling-lyrically-8e28577ba301@spud>
-References: <20261001145702.2628429-1-olivier.moysan@foss.st.com>
- <20261001145702.2628429-2-olivier.moysan@foss.st.com>
- <20261001-tribesman-gauze-862e1ef0cdd8@spud>
- <bb8af256-5a77-4215-9eeb-fbcd0cae1829@foss.st.com>
- <20261008-9e2a48675c1a4c28f2dfa73b@squawk>
- <950f2801-a613-4f5a-a5a7-cb30101cf293@foss.st.com>
- <20261009-8db882a9fa159f8759aa7327@squawk>
- <2ba9235f-182e-4906-92e2-e35cf831d289@foss.st.com>
- <20261019023037.24674f30@jic23-hlaptop>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Liz8OJdp
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792436643; x=1823972643;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=J+FWQwTwrvLkVXTmczbs/r9eIiKcg2wlsFRu0rFmGOA=;
+  b=Liz8OJdpPD1tPYnlcOdsa4gqlBAjMM4horDj7xNL+hOFsMrcoNUhNXZ0
+   7AApGgM8Ou0I34oq81pnjdErnp5OXAlJqmWuSLCotbqMWuazFY7JVitvP
+   Pl+v1dD/WX2esAn/r2U8uex4hhMtlNDQokpQQTVce1EqswKiAZUA3dGY7
+   9eEBOn8GVzR9vsrWmlgrKU83GEO7HyehXGuF/mPgMveKjsfHvO6lf35ws
+   GyCG7dsfg4HYA/WR3ySSDcIe7YEHWzrUzj3ufWkDcxK7uCLyz8QR6GIe1
+   RmByG85g4e5V+6dsacuU4zQYPrwVj+1YAkXc/G90ABYqx5XIE0cSpnz6U
+   g==;
+X-CSE-ConnectionGUID: 3RVBW4zQSDyFC9pdrhh/oA==
+X-CSE-MsgGUID: uayJRRENQMeTfRYoCMFnJg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1009432"
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="1009432"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:03:45 -0700
+X-CSE-ConnectionGUID: DaLQB0JGQtiDRU5HnhCXig==
+X-CSE-MsgGUID: Ty9MtHA9QCqcz04CqgeBSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="2619666"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 12:03:42 -0700
+Date: Mon, 19 Oct 2026 22:03:40 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: amiratefabdallah1122@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] staging: iio: frequency: ad9834: use guard(mutex)
+Message-ID: <atZpjGgTBcdVMtQJ@ashevche-desk.local>
+References: <179241934543.347.7026859519510388428.20261019-ad9834-guard-mutex-v3@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -74,102 +84,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="dnsGHyuHUFnfWdYk"
-Content-Disposition: inline
-In-Reply-To: <20261019023037.24674f30@jic23-hlaptop>
-
---dnsGHyuHUFnfWdYk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <179241934543.347.7026859519510388428.20261019-ad9834-guard-mutex-v3@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 19, 2026 at 02:30:37AM +0100, Jonathan Cameron wrote:
->=20
-> > >> Yes, we can have two clocks gated independently but sharing the same=
- rate.
-> > >>
-> > >> Using the clock framework apis seemed to me the right way to manage =
-cck1 and
-> > >> cck0 gating and divider computing. I think I would have to introduce
-> > >> proprietary properties and have to implement code in the driver, tha=
-t would
-> > >> be handled natively by the framework otherwise. =20
-> > >=20
-> > > The CCF is still the right way to do it, especially since CCK0/1 can =
-be
-> > > exported to other devices. I don't believe you need to actually have a
-> > > reference in DT to do this though, plenty of "real" clock controllers
-> > > have only one input clock and hang a whole tree with multiple layers =
-off
-> > > that.
-> > > Down below I mentioned this under "ouroboros devices", I think this k=
-ind
-> > > of ability to chose which clock a channel uses is a fairly normal thi=
-ng
-> > > to do in IIO land, I just dunno what the preferred mechanism is - I j=
-ust
-> > > know that it is not referencing yourself (probably it's some sort of
-> > > property that you put in a channel node that says 'blah-clock =3D "cc=
-k0"',
-> > > but better that the IIO folks answer.
-> > >  =20
-> >=20
-> > The adc.yaml binding do not expose clock properties. But maybe IIO=20
-> > experts can answer about this.
->=20
-> Hmm.. For an 'conventional' ADC channel a clock is a novel thing to have
-> on a per channel basis. What does it mean for an analog signal?
+On Mon, Oct 19, 2026 at 05:15:45PM +0300, Amir Atef via B4 Relay wrote:
 
-tbh, I don't think this has anything to do with adc.yaml or ADC
-channels, the channel that I was talking about here was the channel on
-the backend since in Figure 349 the serial interfaces can select between
-the two clocks but also select to be clocked by the MDF_CKIx input. We
-definitely have some properties about that are used by devices to change
-between clock sources - I just dunno if any of them have that capability
-on a per-channel basis.
+> Use guard(mutex) to manage the state lock in ad9834_write() and
+> ad9834_store_wavetype(). This simplifies error handling by allowing
+> early returns instead of setting the return code and breaking out of the
+> switch statement to manually unlock the mutex.
 
-> I think these are signals between the front end (which here typically
-> has one channel only) and the backend. They are useful because they
-> end up indicating (I think) whether we want to interleave or not?
+If you want to continue improving the code, you can research the use of
+sysfs_match_string() and rather use it as an outer check.
 
-If it was just about interleaving, I don't think you'd need two of them,
-since only one set of interleaved channels is possible? There's also the
-option I mentioned of having the MDF_CKIx be the clock. Maybe being a
-clock controller is actually the right thing to do, just with the
-frontend sdmodulator or w/e connected to the SITFx being the consumer?
-In that case, you'd need to do something to actually represent the clock
-mux in dt, one mux per SITFx, leaving us with N output clocks from
-CLK_SITF0 to CLK_SITFx rather than two because we're thinking in terms
-of programming model not physical outputs. Additionally, the number of
-input clocks grows by N since MDF_CKIx are all parents of the muxes.
-You'd then use assigned-clock-parents from the frontend node to set the
-parent of the mux (I think anyway). I'd be a little afraid of creating a
-loop there though, that needs to be broken, if the MDF_CKIx provider is
-the sd-modulator - but idk if that's possible and cyclic dependencies
-like that can always be dealt with anyway.
+static const char * const wavetypes[] = { "sine", "triangle", "square" };
 
-That's probably the most natural way to go about things from a DT point
-of view, and makes some sense to me if the clock is being used to drive
-communication with the sd-modulator - although it seems a little forced.
-It's still better IMO than the MDF referencing itself as things are done
-now.
+	int wavetype;
+	...
+	wavetype = sysfs_match_string(wavetypes);
+	if (wavetype < 0)
+		return wavetype;
 
->=20
-> Anyhow, right now I don't have this clear enough in my head to
-> give a firm answer.
->=20
-> Jonathan
+but it might be actually worse than existing. Again, it needs a research to be
+conducted.
 
---dnsGHyuHUFnfWdYk
-Content-Type: application/pgp-signature; name=signature.asc
+As for this change, it's good enough.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
------BEGIN PGP SIGNATURE-----
+-- 
+With Best Regards,
+Andy Shevchenko
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatZnigAKCRB4tDGHoIJi
-0mKNAP9F3SWOYMYRc/4Of82HP549AOQX3WB3DwH966A+KxAz2QEAg1E5l/OKtJFY
-3Du86t2+XxQnrU6xgkcsMFsTwqp8PA0=
-=9ZWD
------END PGP SIGNATURE-----
 
---dnsGHyuHUFnfWdYk--
