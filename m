@@ -1,99 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.181
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792447335;
-	b=F8+lA8XfNWUnWRyud7RocCynjjBiV+FxgQcTltlqhlpua42OTJamYNSOPtgyyycv3/Lb
-	 2V3bB3qqjpomk77mfSLc0FhKAX1hD6qsunwTQTPCuh0A5eyOb+PK0w6e3Lc3h+I9hfND0
-	 MOGbDHVCr33Rhp4eGd645eJnP3fQGlsgt/mWziflnOuasyqj72IYJP8I7UjhJIb9+AUYx
-	 OXEk2d0K7A7n9Ad9VVTS7qz8JWnOT4Kq932wjeUhS0b/XNWlEQ3MGuyd4rAvfyc6n0f4z
-	 Qonwidl3lfLs0WWa5EZpNvXGalw5qIojpyeEF7uH87FSwBxgW5FyTsRa3Sr1501DvnA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792447335;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.179
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792448160;
+	b=EaH23HUEUy5LHPADAsHHqBOAnTeEIlCIB28nWoIafxlA75tfDXRcZy0Zhx5Y1gy/GrFH
+	 Whyin3MlU2L/1pS+T40Iv/1CqkDTM/Pk7XysWqhtExlrkauzCPNAGAp8/5csfSQoqiNc3
+	 bT3njAOOrTUJgEtwq9k8ErVxGWuf3gmCwnPJuPFWCdhLxCDyhqxGDs2v+L7pHA4Apf9DJ
+	 T9HMAuP4b7yGc0m9Pyr5KHHStKNLnb1aWQYJulQkD5EpPDj+QhT3QnAGZOTE5JpODUtCP
+	 dVaUL83rGRhbOtXHn/qUjpfyG9FOWm6ir1ldiUPEdEHp8yRjdMgWThszvlFfb0QHCyA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792448160;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=B2T7IEZCRbl9FocUwUazqp5V2uJWIVnD2e1z1NFYYw0=;
-	b=UgPpYysYTHEBtybx9oFiKG50eF1rZpW6Njr2tOyLvgXcDMuluWIEiZqvwCTYQEvWaTDj
-	 D0tUKa6sPxkdniTiVkfweDkOvmb/dYenJGQMt6vrYSAV7ThCgxz0kFH14xW+Kr+LTedFg
-	 oyArLOYV26+p5t9X11Mqni5bQxnybR44+rhdZIvbwu7GeKoP5mevocKC3e0omxFNlYVXb
-	 kAxwifdVlEZONeIFbCeEhzIAmgHGCNzK4oct/zMly1DlfVRC9v5UJFAN0+v3BlyT2Mrvs
-	 rpWj4HA1HvHzZrgl0sJnDIKTZh8JQXOAcODZJ++itf0PWUtW3ei3xu1gDgw48BzecOw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=QQzTlX7z;
-	arc=none smtp.remote-ip=74.125.82.181
-Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type;
+	bh=rdyNMiM+XBlxdbJkKkHd/PYJIa4td4GcgNTCZeLOXak=;
+	b=cQ5bYmJTAZzKiCfMMA3Gft6hv/G8DiAuAqvF69T83+zk8jOjvnBdWosKWE9a6Fr+BYdD
+	 DB11eqAWB/iMsopElNE+L59u14S86W7PLLD3a90Cxu7Z3scDAH9emNZ6VZiIzVIlkIaY6
+	 K80AYSRpdKTzVrBJaxhw+YKw8bqAyfHriA+EYAREM9runnckc2D9LHBtbc/lRsaxxQpWe
+	 9W9u1fslB7MlPPCdaO4vqpgyxrdZkTHHOhOKj8qAoao9JNbNZvY90Egb8pjbcRRXIarzs
+	 ErE+8tvu3oQ6AWBq7GJvUwx0HQRuVXbLlXqcl6PEYbIvqhWoT6LcAA2Vjprdv0B4BgQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Z+jFQGuM;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.179
+Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A4B2606A31B
-	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 22:02:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A4B2606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6C2360A3816
+	for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 22:15:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6C2360A3816
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=QQzTlX7z
-Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-3514b90bb89so6775078eec.1
-        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 15:02:13 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Z+jFQGuM
+Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-35c76e9614aso4952148eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 19 Oct 2026 15:15:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792448159; cv=none;
+        d=google.com; s=arc-20260327;
+        b=jW04WcKTTEj4eGJno1Yx5acluXO+PLluw05VqvmV0GOk92J0UnMekYUaOzKDQeZwvM
+         qxsV+JTri1TiJAP2/W7lEKBrdDk/3JGgaLMEz+s9+vVaxHIyi0lsK4GuqZw3SUS+oWeq
+         eTry9PRgPQ6C/47RtIrr861SsUvbV/5iFFj5IJyH8AHoVkHYm57GxwBbFW3TSAkGA+5F
+         H1yq0t9CguteSjhfS7yoBHC5d+PROz+LKhBIUak+JkxEpbdyMCfkwUtb+k/8Sgm8m488
+         4E6RE1RJVLzvicjNTkCJQkraTqdHAsJEW5SFjvAURUwf+m/TrWSy/6DaQRYS3AWH4qkB
+         sf2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=rdyNMiM+XBlxdbJkKkHd/PYJIa4td4GcgNTCZeLOXak=;
+        fh=nIABZ/5QbcQOo4deZPhydP+9qoeb7EN94KDXK2/amHk=;
+        b=QPTlJuqskaC2SIfOUz1aelz7QxoE9Daa836zk4fdPB9uRdmV1vf4LA7kdDTH+PCzW5
+         IA96uQxAJYL8MRXumJ1Xh+LUlua6E7IJtiTHXPA1WvmpK7dGVoXN/5fKMd5kErwu7oBt
+         z3lId50qTE3GpHM7UosjsoNEQLiAeDCGC05vPlHnr7wTeBU8mm8/ZsXhK2cMUgnMq89O
+         TqIVGv1hkYxehjeZl4NFPeQR/LZIdf1oLrIi3Yxp1lmnViDBWwAF8lBjvVzOr1lnUpwZ
+         u2Y2Xj2T+mVQY4DNP/WIDvgz6uNMKsPjd41Q5SHibyjmFP3cOiv6bBll9uotWQ8M8MIP
+         QP6Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1792447333; x=1793052133; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=B2T7IEZCRbl9FocUwUazqp5V2uJWIVnD2e1z1NFYYw0=;
-        b=QQzTlX7zTjFNmflXi1V2iuLR0hVniQzwiq1nlSBHzbj+1Zat/UTl6LrT7uaUmWfYqT
-         rO3YU17vKHmoegWYAZ17R1VBTxHmKXC/M5dML6TzqHIUm+1KmLfIg9Xe5Eo+4GjyLSoo
-         d/2+yvdtYlG0y5awl54WADSVnRN5VU7pl0cP0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792447333; x=1793052133;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=google.com; s=20251104; t=1792448159; x=1793052959; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=B2T7IEZCRbl9FocUwUazqp5V2uJWIVnD2e1z1NFYYw0=;
-        b=b72e7qGR1YZqKj0lf/BjOSq1Q3F0IcdKTskJZzgXmPIgxWsUyBBHHADcqGkrFXUKUL
-         N69YCg/nYmThEhFBCT8eqCTn1jZSOR0+YQu4i9JNNsBffGMPQGN8KgR3VNT9f3kryswE
-         kIoS8FbMU4OaJho0TaaXSao8x4QohAfl3/twktHTphAnwWmbfs8kgh14Sd/XH6RtHt6t
-         rgux+fx+VqcVJlDwDzkHXLTKGTSBk5ELvfkqlZ1wU1vt2XOLqUaZnJLWO2yG0y2vDeRz
-         ZvjkxK/x3LoCPPlB+s/6YJDxbpTdVUjgB//pOkswQPgvAAzHJk4b5lD6VN4sQKEHXlmJ
-         fb9w==
-X-Forwarded-Encrypted: i=1; AKwUvBw0f2bD/wdvS3gFTGHcWyfjhiKz29G6tR/+MPUO3bHVLwlmEhSkSV2aawM6ygzhD87MekCUN8EHlOI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIcuhmR78MXsfnM/GdZBtIBTHdU5/ItulFlj8eU6SwF3sB9YKCa
-	lU/CbcVk7LpH2Oer5wWfHd8oUnvz6Q/VZeRbD70ujZkEKzmBh+2mdl0MTKcimiBPGQ==
-X-Gm-Gg: AYBFou2K2UfJVyl5csUInxmZ8HZDh12T41D2Grt1wg/U+Zntwe/Ms/KnnudZoyYkXvN
-	HrYYouM+ay41JW53/aIkP3Afx0qIZO5UVbZ5SRs0f/LUmBuNCz/hifnYHHA2FcyR/Av2LZ8E36c
-	0EgPxUs1mJ/CJq/cz5gvs5pqkNVIp87AjzpMe7voiJMcg6f+CCNV9Od9wuBcKf4n+YnhW824uEY
-	Xg8ZIM9AaOLQzH2AxTJK8MKhMqw3HEdzi/vpMP59XTurpzwP2ZC5oVXgZKKw/aZnofItvkl4zD5
-	IkyhMA86IEVno8RVfEMMDpC2r6fUXxl9DoVnoABcNTRLWBv8Ia3OVroomkNWj6DCK9uvhSiRvR+
-	Jz9w+V+ROZJcjP7vWQ/6Wefqm9BTbLbJI2GdrOK9f6DesI140qCU5Pq/z7VSbmKb7jlZcfvfNPX
-	fQvty/T03S0J2IF0VQNvq19f1SGbaYmjsoyxEEef9CPBIsUg4RY1rhVYWyeC34IkbDvB9ktqyYY
-	YiFm3ECfXcYv+sfI/ob+8XWfu5co1c9V6WdFWk=
-X-Received: by 2002:a05:7300:8256:b0:360:d4c5:7243 with SMTP id 5a478bee46e88-361a146ee7fmr11262690eec.11.1792447332696;
-        Mon, 19 Oct 2026 15:02:12 -0700 (PDT)
-Received: from localhost ([2a00:79e0:2e7c:8:42e7:1057:ba3a:2c19])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-360813b684dsm34798959eec.10.2026.10.19.15.02.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Oct 2026 15:02:10 -0700 (PDT)
-Date: Mon, 19 Oct 2026 15:02:08 -0700
-From: Brian Norris <briannorris@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
-	Ulf Hansson <ulfh@kernel.org>, linux-kernel@vger.kernel.org,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Marek Vasut <marek.vasut+renesas@mailbox.org>,
-	Rui Miguel Silva <rmfrfs@gmail.com>, linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 03/13] iio: Discard pm_runtime_put_autosuspend() return
- values
-Message-ID: <ataTYER7XM_MEYKL@google.com>
-References: <20261006231900.3230373-1-briannorris@chromium.org>
- <20261006161337.3.If2263e6ae9eaa4493881b72922dcde031ce9d81d@changeid>
- <20261018211807.66bfea0d@jic23-hlaptop>
+        bh=rdyNMiM+XBlxdbJkKkHd/PYJIa4td4GcgNTCZeLOXak=;
+        b=Z+jFQGuM+R8S6JsKAZwv6LyJH/Y9IcZLAIfMG9qO65yJSvvkJip1WU0/fePsvMvrdM
+         yYvyExnOZ/UDbo7f5/ZNZaPmFvXELK/csgabOGxEJuKLv3eMRHi0j8pbMorAeDeWXPy6
+         if+FoWjEM68ZMFBEzCawUsBFbTdl1flplJBqveirwOvMyeYZfPexKkwMexScRX+ZMfIr
+         Ox3ItrAbZ0kYTh5IhPqoMCvUaY/xYlw4WvIn+vC4GqdKa9wnrVccc6+xEDQgnJXnzfr7
+         XOxauoWlOliEqhaFDaUzCO1Lwi3uB1phcKCIy2wQzogQzIQowzJ6dIzbRPaDUO00JOoX
+         JcKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792448159; x=1793052959;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=rdyNMiM+XBlxdbJkKkHd/PYJIa4td4GcgNTCZeLOXak=;
+        b=lneiOIRi+JjWaw0QMiXTgDZvly1MgrnnsXx9WLwmW3joCnHk9WQ+4PJnDgKfxV/kkG
+         PpkvQBvbqCCZlNEzxH/hO20r89CRbODwIbVInJEvzQsdWRb8u7lPkS7L7Ju/OVJY+JxC
+         K+Xtp2ghHw7SDD1ZevI1Gn1CA5pZBHlHKTBidcYqfoQsjYLzpfE7R+ctEW1UNbNLZS3U
+         M0vmdbHpOK37dhIuAZRd9hoyoUP9Jhjs54+08Psn48oBbBijWh0BzBJd7yFMhlImtTu6
+         sznYUQcgQs5y4zmAW3R1j0kCOw76i4aIHtyx5Q+Ri0tZ/z5yl0hRZqvSABzyvgZxcg16
+         j/LQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwDs3DICfsAjOZNUEAyriSClb5wPKd+1ducO+v0lNjJuaj28nfkDUUQAL3qo2M5Y8W0ZENIBu1jLQA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLl3rVMZNOgd0tnUV0Je+dPCjCLfhmylvsuQupwds0oqGPGA12X
+	qKTGEP6Ipnhxs3giYmjzdFSjIvF1ExYu19ewfJtQorryEb85b8SayHmnr7K1djUE24v1ynbG1/u
+	CEnOyfLV3hNorcpfod/3GLJOZKZ0sI6Y4D6kgYne4
+X-Gm-Gg: AYBFou0nS2Y2uUo0hNt0w9DC4dJYQ7DQKCJ+7T3pL9F0YXU4XEupBdqF5nWWEXK8lKx
+	HyQdyh74arf1AQzzwZ7ryP3o1YwSIjUnPAIukn7ZH2xw+hwUUKbGsJGEz7g9NkwclMwp0q/C6V6
+	AHH6kNe3hsBA3wfpmXEe+qZkMuDc6vGFSA7ZQeYV2+2iKVAHPhG9upBH0HL0RwvNQAkJX+dRt8y
+	2dkkkSsSxFVijSaOaRwRdMJbC5Vd0vfW5+Dft8c2CFIRLPaljmBy0N1iBfALaqzWIxbIwilJst4
+	pk18VUFzoH7dYE/MFqzuSvAJFO/UF7IUeRcxFFrcmiklI1xqM15FOOu2YuYelt03Ap1fPoP3esf
+	kYBduHTyCJE4=
+X-Received: by 2002:a05:7022:7e8d:b0:151:2e62:fe8a with SMTP id
+ a92af1059eb24-18514256ee0mr13912895c88.40.1792448157775; Mon, 19 Oct 2026
+ 15:15:57 -0700 (PDT)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,668 +103,79 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261018211807.66bfea0d@jic23-hlaptop>
+References: <20261003214516.128573-1-zoone.rupert@gmail.com>
+ <asIRkK-uUz4FKQBN@ashevche-desk.local> <20261019004509.68409863@jic23-hlaptop>
+In-Reply-To: <20261019004509.68409863@jic23-hlaptop>
+From: Marco Elver <elver@google.com>
+Date: Tue, 20 Oct 2026 00:15:20 +0200
+X-Gm-Features: AclHuK_a0n-l-qngv8FVuS94ECxKd9nndQfPACOvwyf1hlN0WIx1_aiPJEfhYO8
+Message-ID: <CANpmjNOY2=M_G4uaRe+QENQRaet342UZDfXVkh3=gLaVBwW+Wg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on
+ mutex helpers
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Rupesh Majhi <zoone.rupert@gmail.com>, 
+	Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Jonathan,
-
-On Sun, Oct 18, 2026 at 09:18:07PM +0100, Jonathan Cameron wrote:
-> On Tue,  6 Oct 2026 16:13:31 -0700
-> Brian Norris <briannorris@chromium.org> wrote:
-> 
-> > Multiple IIO drivers inspect or propagate the return value of
-> > pm_runtime_put_autosuspend(), which is not particularly useful.
-> > 
-> > Returning an error code from pm_runtime_put_autosuspend() merely means
-> > that it has not queued up a timer or work item to check whether or not
-> > the device can be suspended and there are many perfectly valid
-> > situations in which that can happen, like after writing "on" to the
-> > device's runtime PM "control" attribute in sysfs for one example.
-> > 
-> > For this reason, modify these drivers to simply discard the
-> > pm_runtime_put_autosuspend() return value, and change the return types
-> > of fxls8962af_power_off() and fxas21002c_pm_put() to void.
-> > 
-> > This will facilitate a planned change of the
-> > pm_runtime_put_autosuspend() return type to void in the future, similar
-> > to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
-> > type to void").
-> > 
-> > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > ---
-> > This patch is independent of the rest of the series, except for the end
-> > (changing the return type). I expect it can be applied by individual
-> > maintainers, and we pick up the end once the dust is settled.
-> > 
-> > I couldn't decide if I should split this up by individual driver, or
-> > just 1 for the whole drivers/iio/ subsystem. Many of these drivers have
-> > borrowed the same patterns, so I chose to just send 1. Let me know if I
-> > should split it up.
-> 
-> Hi Brian,
-> 
-> Great that you are doing this, but sadly it opens the can of worms that
-> are the helpers a lot of these drivers have.  They just about made
-> sense before various recent runtime_pm useability improvements.
-> Now they make very little sense at all. Dropping the return value
-> here also removes the reason for a bunch of odd defensive ifdefs.
-> 
-> As such, I'm requesting some slightly more involved changes. Some of
-> them I think are coupled tightly to what you are doing here so should
-> be in this series, others can be left for later.
-
-Thanks for the notes. I'll handle the ones that are at least
-approximately related to the code I'm touching. I think there are a few
-bugs that get resolved along the way too.
-
-I may not get the more tangential ones though.
-
-Also, unless you'd prefer otherwise, I plan to wait a bit more to send
-v2, since the merge window only just opened, and some of this series
-will just be a RESEND. I'd prefer maximizing the chance that the
-recipients will actually notice the patches, by submitting outside that
-window.
-
-(OTOH, the bulk of these changes are in IIO, so I can just make IIO its
-own series if that helps things along.)
-
-I'll leave a few comments below.
-
-> With that in mind, I think the changes will become a little more
-> complex and so we probably end up with one patch per driver.
-> 
-> Jonathan
-> 
-> p.s. I'm feeling a bit mean asking for so many additional changes,
-> so if you don't have time say that and I'll see if I can find some
-> time (or someone else!) to do the extra work.
-> 
-> > 
-> >  drivers/iio/accel/bmc150-accel-core.c         | 14 +++++-----
-> >  drivers/iio/accel/fxls8962af-core.c           | 11 +++-----
-> >  drivers/iio/accel/kxcjk-1013.c                | 15 ++++++-----
-> >  drivers/iio/accel/mma8452.c                   | 15 +++++------
-> >  drivers/iio/accel/mma9551_core.c              | 15 +++++------
-> >  drivers/iio/adc/rcar-gyroadc.c                |  4 +--
-> >  drivers/iio/adc/ti-ads1015.c                  |  8 +++---
-> >  drivers/iio/chemical/atlas-sensor.c           |  4 +--
-> >  .../common/hid-sensors/hid-sensor-trigger.c   | 14 ++++------
-> >  drivers/iio/gyro/bmg160_core.c                | 17 +++++-------
-> >  drivers/iio/gyro/fxas21002c_core.c            | 12 +++------
-> >  drivers/iio/imu/kmx61.c                       | 17 ++++++------
-> >  drivers/iio/light/apds9960.c                  |  2 +-
-> >  drivers/iio/light/isl29028.c                  | 15 +++--------
-> >  drivers/iio/light/pa12203001.c                |  3 ++-
-> >  drivers/iio/light/rpr0521.c                   | 15 +++++------
-> >  drivers/iio/light/tsl2583.c                   | 27 +++----------------
-> >  drivers/iio/light/us5182d.c                   |  3 ++-
-> >  18 files changed, 80 insertions(+), 131 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> > index 46bb36d9366e..2f7fe28e3e0b 100644
-> > --- a/drivers/iio/accel/bmc150-accel-core.c
-> > +++ b/drivers/iio/accel/bmc150-accel-core.c
-> > @@ -332,14 +332,14 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
-> >  	struct device *dev = regmap_get_device(data->regmap);
-> This driver could do with modernizing to use the stuff that
-> lets the compiler drop unused pm functions.  That is a bit
-> of a bigger change though so entirely optional wrt to this set.
-> 
-> >  	int ret;
-> >  
-> > -	if (on)
-> > +	if (on) {
-> >  		ret = pm_runtime_resume_and_get(dev);
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(dev);
-> > -	if (ret < 0) {
-> > -		dev_err(dev,
-> > -			"Failed: %s for %d\n", __func__, on);
-> > -		return ret;
-> > +		if (ret < 0) {
-> > +			dev_err(dev, "%s: failed to resume: %d\n", __func__, ret);
-> > +			return ret;
-> > +		}
-> > +	} else {
-> > +		pm_runtime_put_autosuspend(dev);
-> >  	}
-> >  
-> >  	return 0;
-> > diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-> > index 18d7b09bddd2..3a2c4ce0557c 100644
-> > --- a/drivers/iio/accel/fxls8962af-core.c
-> > +++ b/drivers/iio/accel/fxls8962af-core.c
-> > @@ -216,16 +216,11 @@ static int fxls8962af_power_on(struct fxls8962af_data *data)
-> >  	return ret;
+On Mon, 19 Oct 2026 at 01:45, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Sun, 4 Oct 2026 11:42:56 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+>
+> > On Sun, Oct 04, 2026 at 12:45:16AM +0300, Rupesh Majhi wrote:
+> > > The __acquires() and __releases() on adc5_gen3_mutex_lock() and
+> > > adc5_gen3_mutex_unlock() name adc, a local declared in the body. With
+> > > context analysis enabled for this file, the build fails:
+> > >
+> > >   error: use of undeclared identifier 'adc'
+> > >
+> > > The lock and unlock are split across these two helpers for the ADC_TM
+> > > driver, so mark them __context_unsafe() instead.
+> >
+> > Doesn't sound right to me. The __acquires() and __releases() IIRC are sparse
+> > annotations. If clang has something special, it needs to be addressed in
+> > the compiler-clang.h, no?
+> >
+> It's in compiler-context-analysis.h and for now I believe is clang
+> only.  Reuses the older sparse definitions. I think the intent is to avoid
+> churn.
+>
+> I currently have no idea if this is the right fix. The only users
+> today are places where a lock is intentionally skipped.
+>
+> +CC Marco and Bart and putting back the patch content for context.
+>
+> > diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> > index c68c6c5f6aca..6a3cabedf4e8 100644
+> > --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> > +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> > @@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
 > >  }
-> >  
-> > -static int fxls8962af_power_off(struct fxls8962af_data *data)
-> > +static void fxls8962af_power_off(struct fxls8962af_data *data)
-> 
-> This helper is completely pointless after you cleanup. Please drop
-> it.  The _on() one just exists to print an error. So ideally drop
-> that one as well.
-
-Ack.
-
+> >
+> >  void adc5_gen3_mutex_lock(struct device *dev)
+> > -     __acquires(&adc->lock)
+> > +     __context_unsafe(/* returns with adc->lock held */)
 > >  {
-> >  	struct device *dev = regmap_get_device(data->regmap);
-> > -	int ret;
-> > -
-> > -	ret = pm_runtime_put_autosuspend(dev);
-> > -	if (ret)
-> > -		dev_err(dev, "failed to power off\n");
-> >  
-> > -	return ret;
-> > +	pm_runtime_put_autosuspend(dev);
-> >  }
-> >  
-> >  static int fxls8962af_standby(struct fxls8962af_data *data)
-> > @@ -692,7 +687,7 @@ fxls8962af_write_event_config(struct iio_dev *indio_dev,
-> >  			return -EBUSY;
-> >  
-> >  		/* Not in buffered mode so disable power */
-> > -		ret = fxls8962af_power_off(data);
-> > +		fxls8962af_power_off(data);
-> >  
-> >  		iio_device_release_direct(indio_dev);
-> >  	}
-> > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> > index 166fb786425f..f068753469a8 100644
-> > --- a/drivers/iio/accel/kxcjk-1013.c
-> > +++ b/drivers/iio/accel/kxcjk-1013.c
-> > @@ -633,14 +633,15 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
-> 
-> Same as the one below. 
-
-Ack.
-
-> >  #ifdef CONFIG_PM
-> >  	int ret;
-> >  
-> > -	if (on)
-> > +	if (on) {
-> >  		ret = pm_runtime_resume_and_get(&data->client->dev);
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(&data->client->dev);
-> > -	if (ret < 0) {
-> > -		dev_err(&data->client->dev,
-> > -			"Failed: %s for %d\n", __func__, on);
-> > -		return ret;
-> > +		if (ret < 0) {
-> > +			dev_err(&data->client->dev,
-> > +				"%s: failed to resume: %d\n", __func__, ret);
-> > +			return ret;
-> > +		}
-> > +	} else {
-> > +		pm_runtime_put_autosuspend(&data->client->dev);
-> >  	}
-> >  #endif
-> >  
-> > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> > index 7d683686dd9d..711689db8694 100644
-> > --- a/drivers/iio/accel/mma8452.c
-> > +++ b/drivers/iio/accel/mma8452.c
-> > @@ -224,15 +224,14 @@ static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
-> 
-> As with so many of the others. This is now a pointless function.
-> The reason for the ifdef is gone I believe after this patch so dropping
-> that would be minimum. Better would be to get rid of the helper
-> and just make the runtime pm calls directly wherever this
-> was called.
-
-Ack.
-
-> >  #ifdef CONFIG_PM
-> >  	int ret;
-> >  
-> > -	if (on)
-> > +	if (on) {
-> >  		ret = pm_runtime_resume_and_get(&client->dev);
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(&client->dev);
-> > -	if (ret < 0) {
-> > -		dev_err(&client->dev,
-> > -			"failed to change power state to %d\n", on);
-> > -
-> > -		return ret;
-> > +		if (ret < 0) {
-> > +			dev_err(&client->dev, "failed to resume: %d\n", ret);
-> > +			return ret;
-> > +		}
-> > +	} else {
-> > +		pm_runtime_put_autosuspend(&client->dev);
-> >  	}
-> >  #endif
-> >  
-> > diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-> > index 2ccb1fb19b96..d8aa0a062779 100644
-> > --- a/drivers/iio/accel/mma9551_core.c
-> > +++ b/drivers/iio/accel/mma9551_core.c
-> > @@ -669,15 +669,14 @@ int mma9551_set_power_state(struct i2c_client *client, bool on)
-> >  #ifdef CONFIG_PM
-> >  	int ret;
-> 
-> Another one where I think the ifdef was for the return value of stubbed
-> pm_runtime_put_autosuspend.  So we can drop that.
-> Also the function no longer has any real purpose - so if you don't
-> mind going a little further, dropping this helper and calling
-> the pm_runtime functions inline would be much nicer.
-
-Ack.
-
-> >  
-> > -	if (on)
-> > +	if (on) {
-> >  		ret = pm_runtime_resume_and_get(&client->dev);
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(&client->dev);
-> > -	if (ret < 0) {
-> > -		dev_err(&client->dev,
-> > -			"failed to change power state to %d\n", on);
-> > -
-> > -		return ret;
-> > +		if (ret < 0) {
-> > +			dev_err(&client->dev, "failed to resume: %d\n", ret);
-> > +			return ret;
-> > +		}
-> > +	} else {
-> > +		pm_runtime_put_autosuspend(&client->dev);
-> >  	}
-> >  #endif
-> >  
-> 
-> > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> > index 0fbfa4e499aa..817ec1c73df4 100644
-> > --- a/drivers/iio/adc/ti-ads1015.c
-> > +++ b/drivers/iio/adc/ti-ads1015.c
-> > @@ -370,15 +370,13 @@ static const struct iio_chan_spec tla2024_channels[] = {
-> >  #ifdef CONFIG_PM
-> >  static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+> >       struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+> >       struct adc5_chip *adc = iio_priv(indio_dev);
+> > @@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
+> >  EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
+> >
+> >  void adc5_gen3_mutex_unlock(struct device *dev)
+> > -     __releases(&adc->lock)
+> > +     __context_unsafe(/* releases adc->lock */)
 > >  {
-> > -	int ret;
-> >  	struct device *dev = regmap_get_device(data->regmap);
-> >  
-> >  	if (on)
-> > -		ret = pm_runtime_resume_and_get(dev);
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(dev);
-> > +		return pm_runtime_resume_and_get(dev);
-> >  
-> > -	return ret < 0 ? ret : 0;
-> > +	pm_runtime_put_autosuspend(dev);
-> > +	return 0;
-> >  }
-> >  
-> >  #else /* !CONFIG_PM */
-> 
-> I think the ifdef stuff here was to paper over the return value
-> you are removing.  Should be able to drop it now.
-> 
-> 
-> > diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> > index d611341a0e2a..e8e511daa7c4 100644
-> > --- a/drivers/iio/gyro/bmg160_core.c
-> > +++ b/drivers/iio/gyro/bmg160_core.c
-> > @@ -319,18 +319,15 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
-> >  	struct device *dev = regmap_get_device(data->regmap);
-> >  	int ret;
-> >  
-> > -	if (on)
-> > +	if (on) {
-> >  		ret = pm_runtime_get_sync(dev);
-> 
-> gah.  Please just change this to use pm_runtime_resume_and_get() whilst you
-> are here.
-> 
-> Ideally squash the helper in favour of direct calls to the runtime
-> pm.  Yet another pace that the recent improvements in runtime pm useability
-> have made what was of minor benefit entirely pointless.
-> 
-> The ifdef can go away as well as I think the only thing that helped with
-> was the return value of the put you are removing.
+> >       struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+> >       struct adc5_chip *adc = iio_priv(indio_dev);
 
-One thing I found while looking through this driver:
-
-bmg160_write_event_config() and bmg160_data_rdy_trigger_set_state() do
-some ghastly things w.r.t. runtime PM. In particular, they seem to
-perform put_autosuspend() *before* they're done touching the hardware,
-and then rely on the (very large) autosuspend delay to defer the
-runtime_suspend() operation. It even has a bunch of comments about the
-incorrect ordering.
-
-That's one giant race condition. And the autosuspend delay is
-configurable via user space, so it's extra dangerous.
-
-Anyway, that's to say: I plan to refactor/reorder the put_autosuspend()
-ordering there while I'm at it.
-
-(There's also some strange error handling that potentially leads to
-runtime PM underflow. I'll fix that one while I'm here.)
-
-I think this one is imitated in another few drivers as well.
-
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(dev);
-> > -
-> > -	if (ret < 0) {
-> > -		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
-> > -
-> > -		if (on)
-> > +		if (ret < 0) {
-> > +			dev_err(dev, "%s: failed to resume: %d\n", __func__, ret);
-> >  			pm_runtime_put_noidle(dev);
-> > -
-> > -		return ret;
-> > +			return ret;
-> > +		}
-> > +	} else {
-> > +		pm_runtime_put_autosuspend(dev);
-> >  	}
-> >  #endif
-> >  
-> > diff --git a/drivers/iio/gyro/fxas21002c_core.c b/drivers/iio/gyro/fxas21002c_core.c
-> > index a88670207cec..408f88f12fe7 100644
-> > --- a/drivers/iio/gyro/fxas21002c_core.c
-> > +++ b/drivers/iio/gyro/fxas21002c_core.c
-> > @@ -369,11 +369,11 @@ static int  fxas21002c_pm_get(struct fxas21002c_data *data)
-> >  	return pm_runtime_resume_and_get(regmap_get_device(data->regmap));
-> >  }
-> >  
-> > -static int  fxas21002c_pm_put(struct fxas21002c_data *data)
-> > +static void fxas21002c_pm_put(struct fxas21002c_data *data)
-> The two runtime pm helpers in here have evolved to become a terrible
-> idea.
-> 
-> Can we just drop them as part of your change and make the
-> runtime pm calls directly instead?  The dev is always available
-> at the call sites so this should be trivial.
-
-Ack.
-
-> >  {
-> >  	struct device *dev = regmap_get_device(data->regmap);
-> >  
-> > -	return pm_runtime_put_autosuspend(dev);
-> > +	pm_runtime_put_autosuspend(dev);
-> >  }
-> >  
-> >  static int fxas21002c_temp_get(struct fxas21002c_data *data, int *val)
-> > @@ -396,9 +396,7 @@ static int fxas21002c_temp_get(struct fxas21002c_data *data, int *val)
-> >  
-> >  	*val = sign_extend32(temp, 7);
-> >  
-> > -	ret = fxas21002c_pm_put(data);
-> > -	if (ret < 0)
-> > -		goto data_unlock;
-> > +	fxas21002c_pm_put(data);
-> >  
-> >  	ret = IIO_VAL_INT;
-> >  
-> > @@ -430,9 +428,7 @@ static int fxas21002c_axis_get(struct fxas21002c_data *data,
-> >  
-> >  	*val = sign_extend32(be16_to_cpu(axis_be), 15);
-> >  
-> > -	ret = fxas21002c_pm_put(data);
-> > -	if (ret < 0)
-> > -		goto data_unlock;
-> > +	fxas21002c_pm_put(data);
-> >  
-> >  	ret = IIO_VAL_INT;
-> >  
-> 
-> > diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-> > index afe520de60e2..611e59d6b027 100644
-> > --- a/drivers/iio/light/apds9960.c
-> > +++ b/drivers/iio/light/apds9960.c
-> 
-> Not needed for this series but...
-> 
-> Another one that has become rather pointless and should just be split
-> into separate functions for enable and disable (where disable one
-> is just pm_runtime_put_autosuspend)
-> 
-> > @@ -495,7 +495,7 @@ static int apds9960_set_power_state(struct apds9960_data *data, bool on)
-> >  			usleep_range(data->als_adc_int_us,
-> >  				     APDS9960_MAX_INT_TIME_IN_US);
-> >  	} else {
-> > -		ret = pm_runtime_put_autosuspend(dev);
-> > +		pm_runtime_put_autosuspend(dev);
-> >  	}
-> >  
-> >  	mutex_unlock(&data->lock);
-> > diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
-> > index 33deb1726689..190ce67d2efe 100644
-> > --- a/drivers/iio/light/isl29028.c
-> > +++ b/drivers/iio/light/isl29028.c
-> > @@ -395,9 +395,7 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
-> >  	if (ret < 0)
-> >  		return ret;
-> >  
-> > -	ret = pm_runtime_put_autosuspend(dev);
-> > -	if (ret < 0)
-> > -		return ret;
-> > +	pm_runtime_put_autosuspend(dev);
-> >  
-> >  	return 0;
-> >  }
-> > @@ -408,7 +406,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
-> >  {
-> >  	struct isl29028_chip *chip = iio_priv(indio_dev);
-> >  	struct device *dev = regmap_get_device(chip->regmap);
-> > -	int ret, pm_ret;
-> > +	int ret;
-> 
-> Not one for this series (the patch for this LGTM),
-> but if anyone is reading and bored, cleanup.h magic would simplify
-> this code nicely.
-> 
-> 
-> >  
-> >  	ret = pm_runtime_resume_and_get(dev);
-> >  	if (ret < 0)
-> > @@ -464,14 +462,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
-> >  	if (ret < 0)
-> >  		return ret;
-> >  
-> > -	/**
-> > -	 * Preserve the ret variable if the call to
-> > -	 * pm_runtime_put_autosuspend() is successful so the reading
-> > -	 * (if applicable) is returned to user space.
-> > -	 */
-> > -	pm_ret = pm_runtime_put_autosuspend(dev);
-> > -	if (pm_ret < 0)
-> > -		return pm_ret;
-> > +	pm_runtime_put_autosuspend(dev);
-> >  
-> >  	return ret;
-> >  }
-> > diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
-> > index c0f4db8d95f7..d4e197e05d26 100644
-> > --- a/drivers/iio/light/pa12203001.c
-> > +++ b/drivers/iio/light/pa12203001.c
-> > @@ -188,7 +188,8 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
-> >  	if (on)
-> >  		return pm_runtime_resume_and_get(&data->client->dev);
-> >  
-> > -	return pm_runtime_put_autosuspend(&data->client->dev);
-> > +	pm_runtime_put_autosuspend(&data->client->dev);
-> > +	return 0;
-> 
-> This function has evolved to the point of silliness.
-> Given how minor your change is, feel free to ignore the following however!
-> 
-> There is zero shared code in here between the on and off paths so
-> rename the function pa12203001_runtime_enable() and cover only the
-> 'on' case.  Then just put the pm_runtime_put_autosuspend() in wherever
-> on was previously false.
-
-Ack. But because "runtime_enable()" has a specific runtime PM meaning
-that is very different than the usage here, I've chosen the name
-"pa12203001_runtime_resume_and_get()" instead, which I think makes for
-more API symmetry.
-
-> Given that presumably one of the things is being turned on whenever
-> we enable it, also pull the mutex out of the if blocks and use
-> guard() to simplify that.
-
-guard() is tricky, since it produces a deadlock if you hold the lock
-across pm_runtime_resume_and_get(). So I'll skip that part and leave it
-to someone (or no one) who is more particularly interested in this
-driver.
-
-> >  
-> >  err:
-> >  	mutex_unlock(&data->lock);
-> > diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-> > index 7d82efc31f3a..60c5e85bac2c 100644
-> > --- a/drivers/iio/light/rpr0521.c
-> > +++ b/drivers/iio/light/rpr0521.c
-> > @@ -357,15 +357,14 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
-> >  	 * Note: If either measurement is re-enabled before _suspend(),
-> >  	 * both stay enabled until _suspend().
-> 
-> Not asking for it in your series as beyond the scope, but
-> this function should just be split in two.  Almost no code is shared
-> between the get and put paths.
-> 
-> However...
-> 
-> >  	 */
-> > -	if (on)
-> > +	if (on) {
-> >  		ret = pm_runtime_resume_and_get(&data->client->dev);
-> > -	else
-> > -		ret = pm_runtime_put_autosuspend(&data->client->dev);
-> > -	if (ret < 0) {
-> > -		dev_err(&data->client->dev,
-> > -			"Failed: rpr0521_set_power_state for %d, ret %d\n",
-> > -			on, ret);
-> > -		return ret;
-> > +		if (ret < 0) {
-> > +			dev_err(&data->client->dev, "Failed to resume: %d\n", ret);
-> > +			return ret;
-> > +		}
-> > +	} else {
-> > +		pm_runtime_put_autosuspend(&data->client->dev);
-> >  	}
-> >  
-> >  	if (on) {
-> 
-> This no longer makes any sense so maybe it is better to just split the
-> code as part of your change set or at minimum change to
-> 
-> 	if (!on) {
-> 		pm_runtime_put_autosuspend(&data->client->dev);
-> 
-> 		return 0;
-> 	}
-> 
-> 	ret = pm_runtime_resume_and_get(&data->client->dev);
-> 	if (ret < 0) {
-> 		dev_err(&data->client->dev, "Failed to resume: %d\n", ret);
-> 		return ret;
-> 	}
-> 
-> 	/* If _resume() was not called, enable measurement now. */
-> 	if (data->als_ps_need_en) {
-> 		ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
-> 		if (ret)
-> 			return ret;
-> 		data->als_ps_need_en = false;
-> 	}
-> 
-> 	if (data->pxs_ps_need_en) {
-> 		ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
-> 		if (ret)
-> 			return ret;
-> 		data->pxs_ps_need_en = false;
-> 	}
-> #endif //mess that makes sense with more context!
-> 	return 0;
-> }
-
-Ack.
-
-> > diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-> > index 53fd423aa7ae..deaa71485468 100644
-> > --- a/drivers/iio/light/tsl2583.c
-> > +++ b/drivers/iio/light/tsl2583.c
-> > @@ -640,7 +640,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
-> >  			    int *val, int *val2, long mask)
-> >  {
-> >  	struct tsl2583_chip *chip = iio_priv(indio_dev);
-> > -	int ret, pm_ret;
-> > +	int ret;
-> >  
-> >  	ret = pm_runtime_resume_and_get(&chip->client->dev);
-> >  	if (ret < 0)
-> > @@ -709,19 +709,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
-> >  read_done:
-> >  	mutex_unlock(&chip->als_mutex);
-> >  
-> > -	if (ret < 0) {
-> > -		pm_runtime_put_autosuspend(&chip->client->dev);
-> > -		return ret;
-> > -	}
-> > -
-> > -	/*
-> > -	 * Preserve the ret variable if the call to
-> > -	 * pm_runtime_put_autosuspend() is successful so the reading
-> > -	 * (if applicable) is returned to user space.
-> > -	 */
-> > -	pm_ret = pm_runtime_put_autosuspend(&chip->client->dev);
-> > -	if (pm_ret < 0)
-> > -		return pm_ret;
-> > +	pm_runtime_put_autosuspend(&chip->client->dev);
-> >  
-> >  	return ret;
-> >  }
-> > @@ -773,16 +761,9 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
-> >  
-> >  	mutex_unlock(&chip->als_mutex);
-> >  
-> > -	if (ret < 0) {
-> > -		pm_runtime_put_autosuspend(&chip->client->dev);
-> > -		return ret;
-> > -	}
-> > +	pm_runtime_put_autosuspend(&chip->client->dev);
-> >  
-> > -	ret = pm_runtime_put_autosuspend(&chip->client->dev);
-> > -	if (ret < 0)
-> > -		return ret;
-> > -
-> > -	return 0;
-> > +	return ret;
-> Yuck this was indeed a mess, so great to clean that up!
-> 
-> Not asking for it in this series, but this is a great place to use
-> some cleanup.h magic for the mutex and the runtime pm.
-> 
-> 
-> >  }
-> >  
-> >  static const struct iio_info tsl2583_info = {
-> > diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-> > index ab518311fd79..e76c40b422f4 100644
-> > --- a/drivers/iio/light/us5182d.c
-> > +++ b/drivers/iio/light/us5182d.c
-> > @@ -366,7 +366,8 @@ static int us5182d_set_power_state(struct us5182d_data *data, bool on)
-> >  	if (on)
-> >  		return pm_runtime_resume_and_get(&data->client->dev);
-> >  
-> > -	return pm_runtime_put_autosuspend(&data->client->dev);
-> > +	pm_runtime_put_autosuspend(&data->client->dev);
-> 
-> Prefer a blank line here.  Always nice before a simple return like this.
-
-Ack.
-
-Brian
-
-> > +	return 0;
-> >  }
-> >  
-> >  static int us5182d_read_value(struct us5182d_data *data,
-> 
+You could probably stick the whole
+iio_priv(dev_get_drvdata(dev->parent)) expression into a helper
+get_adc5_chip(...), and then
+__acquires/__releases(&get_adc5_chip(dev)->lock) should work. But
+that's only worth it if the declarations get the annotations, because
+if only the definitions have the annotation, any calls outside this
+particular TU ignore the annotations anyway, so __context_unsafe is
+reasonable if you don't want to do a larger change.
